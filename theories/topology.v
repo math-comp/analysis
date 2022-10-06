@@ -3673,12 +3673,6 @@ by move=> ->; have := projT2 (sigW (npts N)).
 Qed.
 
 End perfect_sets.
-Definition separates_points_from_closed {I : Type} {T : topologicalType} 
-    {U_ : I -> topologicalType} (f_ : forall i, (T -> U_ i)) := 
-  forall (U : set T) x, 
-  closed U -> ~ U x -> exists i, ~ (closure (f_ i @` U)) (f_ i x).
-
-
 
 (** * Uniform spaces *)
 
@@ -6795,6 +6789,18 @@ Qed.
 
 End SubspaceWeak.
 
+Definition separates_points_from_closed {I : Type} {T : topologicalType} 
+    {U_ : I -> topologicalType} (f_ : forall i, (T -> U_ i)) := 
+  forall (U : set T) x, 
+  closed U -> ~ U x -> exists i, ~ (closure (f_ i @` U)) (f_ i x).
+
+(* A handy technique for emebdding a space T into a product. The key interface
+   is 'separates_points_from_closed', which guarantees that the topologies 
+   - T's native topology
+   - sup (weak f_i) - the sup of all the weak topologies of f_i
+   - weak (x => (f_1 x, f_2 x,...)) - the weak topology from the product space
+  are equivalent (the last equivalence seems to require accessible_space).
+*)
 Section product_embeddings.
 Context {I : choiceType} {T : topologicalType}.
 Context {U_ : I -> topologicalType}.
@@ -6831,10 +6837,8 @@ Lemma weak_sep_nbhsE x :
   @nbhs T T x = @nbhs T weakT x.
 Proof.
 rewrite predeqE => U; split; move: U.
-  have P := @weak_sep_cvg (@nbhs T weakT x) x (nbhs_filter (x : weakT)).
-  exact/P.
-have P := @weak_sep_cvg (@nbhs T T x) x (nbhs_filter (x : T)).
-exact/P.
+  by have P := weak_sep_cvg x (nbhs_filter (x : weakT)); exact/P.
+by have P := weak_sep_cvg x (nbhs_filter (x : T)); exact/P.
 Qed.
 
 Lemma weak_sep_openE : 
@@ -6878,9 +6882,6 @@ apply: open_subspaceW; apply: open_comp.
   by move=> + _; exact: prod_topo_apply_continuous.
 by apply: closed_openC; exact: closed_closure.
 Qed.
-
-Lemma preimage_range {A B : Type} (f : A -> B) : f @^-1` (range f) = [set: A].
-Proof. by rewrite eqEsubset; split=> x // _; exists x. Qed.
 
 Lemma join_product_inj : accessible_space T -> set_inj [set: T] join_product.
 Proof.
