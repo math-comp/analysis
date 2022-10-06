@@ -3505,7 +3505,7 @@ Record mixin_of (M : Type) (nbhs : M -> set (set M)) := Mixin {
   ax1 : Filter entourage ;
   ax2 : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A ;
   ax3 : forall A, entourage A -> entourage (A^-1)%classic ;
-  ax4 : forall A, entourage A -> exists2 B, entourage B & B \@ B `<=` A ;
+  ax4 : forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A ;
   ax5 : nbhs = nbhs_ entourage
 }.
 
@@ -3638,14 +3638,14 @@ Lemma entourage_inv (A : set (M * M)) : entourage A -> entourage (A^-1)%classic.
 Proof. exact: Uniform.ax3. Qed.
 
 Lemma entourage_split_ex (A : set (M * M)) :
-  entourage A -> exists2 B, entourage B & B \@ B `<=` A.
+  entourage A -> exists2 B, entourage B & B \; B `<=` A.
 Proof. exact: Uniform.ax4. Qed.
 
 Definition split_ent (A : set (M * M)) :=
-  get (entourage `&` [set B | B \@ B `<=` A]).
+  get (entourage `&` [set B | B \; B `<=` A]).
 
 Lemma split_entP (A : set (M * M)) : entourage A ->
-  entourage (split_ent A) /\ split_ent A \@ split_ent A `<=` A.
+  entourage (split_ent A) /\ split_ent A \; split_ent A `<=` A.
 Proof. by move/entourage_split_ex/exists2P/getPex. Qed.
 
 Lemma entourage_split_ent (A : set (M * M)) : entourage A ->
@@ -3653,7 +3653,7 @@ Lemma entourage_split_ent (A : set (M * M)) : entourage A ->
 Proof. by move=> /split_entP []. Qed.
 
 Lemma subset_split_ent (A : set (M * M)) : entourage A ->
-  split_ent A \@ split_ent A `<=` A.
+  split_ent A \; split_ent A `<=` A.
 Proof. by move=> /split_entP []. Qed.
 
 Lemma entourage_split (z x y : M) A : entourage A ->
@@ -3809,7 +3809,7 @@ move=> _ [p /(sBA (_,_)) [[x y] ? xyE] <-]; exists (y,x) => //; move/eqP: xyE.
 by rewrite !xpair_eqE => /andP[/andP[/eqP-> /eqP->] /andP[/eqP-> /eqP->]].
 Qed.
 
-Lemma prod_ent_split A : prod_ent A -> exists2 B, prod_ent B & B \@ B `<=` A.
+Lemma prod_ent_split A : prod_ent A -> exists2 B, prod_ent B & B \; B `<=` A.
 Proof.
 move=> [B [entB1 entB2]] sBA; exists [set xy | split_ent B.1 (xy.1.1,xy.2.1) /\
   split_ent B.2 (xy.1.2,xy.2.2)].
@@ -3880,15 +3880,15 @@ move=> [B entB sBA]; exists (fun i j => ((B i j)^-1)%classic).
 by move=> MN BMN; apply: sBA.
 Qed.
 
-Lemma mx_ent_split A : mx_ent A -> exists2 B, mx_ent B & B \@ B `<=` A.
+Lemma mx_ent_split A : mx_ent A -> exists2 B, mx_ent B & B \; B `<=` A.
 Proof.
 move=> [B entB sBA].
-have Bsplit : forall i j, exists C, entourage C /\ C \@ C `<=` B i j.
+have Bsplit : forall i j, exists C, entourage C /\ C \; C `<=` B i j.
   by move=> ??; apply/exists2P/entourage_split_ex.
 exists [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
-  forall i j, get [set C | entourage C /\ C \@ C `<=` B i j]
+  forall i j, get [set C | entourage C /\ C \; C `<=` B i j]
   (MN.1 i j, MN.2 i j)].
-  by exists (fun i j => get [set C | entourage C /\ C \@ C `<=` B i j]).
+  by exists (fun i j => get [set C | entourage C /\ C \; C `<=` B i j]).
 move=> MN [P CMN1P CPMN2]; apply/sBA => i j.
 have /getPex [_] := Bsplit i j; apply; exists (P i j); first exact: CMN1P.
 exact: CPMN2.
@@ -3967,7 +3967,7 @@ move=> [B entB sBA]; exists (B^-1)%classic; first exact: entourage_inv.
 by move=> fg Bgf; apply/sBA.
 Qed.
 
-Lemma fct_ent_split A : fct_ent A -> exists2 B, fct_ent B & B \@ B `<=` A.
+Lemma fct_ent_split A : fct_ent A -> exists2 B, fct_ent B & B \; B `<=` A.
 Proof.
 move=> [B entB sBA].
 (* have Bsplit : exists C, entourage C /\ C \o C `<=` B. *)
@@ -4020,7 +4020,7 @@ Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
   @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
 Proof. by []. Qed.
 
-Definition map_pair {S U} (f : S -> U) (x : (S * S)) : (U * U) := 
+Definition map_pair {S U} (f : S -> U) (x : (S * S)) : (U * U) :=
   (f x.1, f x.2).
 
 Section weak_uniform.
@@ -4049,9 +4049,9 @@ move=> [B ? sBA]; exists (B^-1)%classic; first exact: entourage_inv.
 by move=> ??; exact/sBA.
 Qed.
 
-Lemma weak_ent_split A : weak_ent A -> exists2 B, weak_ent B & B \@ B `<=` A.
+Lemma weak_ent_split A : weak_ent A -> exists2 B, weak_ent B & B \; B `<=` A.
 Proof.
-move=> [B entB sBA]; have : exists C, entourage C /\ C \@ C `<=` B.
+move=> [B entB sBA]; have : exists C, entourage C /\ C \; C `<=` B.
   exact/exists2P/entourage_split_ex.
 case=> C [entC CsubB]; exists ((map_pair f)@^-1` C); first by exists C.
 by case=> x y [a ? ?]; apply/sBA/CsubB; exists (f a).
@@ -4120,7 +4120,7 @@ rewrite -FB eqEsubset; split; case=> x y + ie.
 by move=> + /imfsetP [v vW ->]; exact.
 Qed.
 
-Lemma sup_ent_split A : sup_ent A -> exists2 B, sup_ent B & B \@ B `<=` A.
+Lemma sup_ent_split A : sup_ent A -> exists2 B, sup_ent B & B \; B `<=` A.
 Proof.
 have spt : (forall ie : IEnt, ent_of ((projT1 ie).1,
     ((@split_ent (TS (projT1 ie).1) (projT1 ie).2)))).
@@ -5779,13 +5779,13 @@ move=> n IH; rewrite leq_eqVlt ltnS => /orP [/eqP <- //|] /IH.
 by apply: subset_trans; exact: descendG1.
 Qed.
 
-Local Lemma splitG3 n : g_ n.+1 \@ g_ n.+1 \@ g_ n.+1 `<=` g_ n.
+Local Lemma splitG3 n : g_ n.+1 \; g_ n.+1 \; g_ n.+1 `<=` g_ n.
 Proof.
-suff g2split : g_ n.+1 \@ g_ n.+1 `<=` split_ent (g_ n).
+suff g2split : g_ n.+1 \; g_ n.+1 `<=` split_ent (g_ n).
   apply: subset_trans; last exact: subset_split_ent (entG n).
-  apply: set_compose_subset; rewrite // -[_ n.+1]set_compose_diag.
-  apply: subset_trans; last (exact: g2split); apply: set_compose_subset => //.
-  by case=> ? ? [? _] /pair_equal_spec [] <- <-; exact: entourage_refl.
+  apply: set_compose_subset (g2split); rewrite -[_ n.+1]set_compose_diag.
+  apply: subset_trans g2split; apply: set_compose_subset => //.
+  by move=> [_ _] [z _] [<- <-]; exact: entourage_refl.
 apply: subset_trans; last exact: subset_split_ent.
 by apply: set_compose_subset; apply: subIset; left; apply: subIset; left.
 Qed.
@@ -5828,10 +5828,8 @@ Qed.
 Local Lemma distN_le e1 e2 : e1 > 0 -> e1 <= e2 -> (distN e2 <= distN e1)%N.
 Proof.
 move=> e1pos e1e2; rewrite /distN; apply: lez_abs2.
-  rewrite floor_ge0; apply: ltW; rewrite invr_gt0.
-  exact: (lt_le_trans _ e1e2).
-apply: le_floor; rewrite lef_pinv ?invrK // ?invr_gt0 //.
-exact: (lt_le_trans _ e1e2).
+  by rewrite floor_ge0 ltW// invr_gt0 (lt_le_trans _ e1e2).
+by rewrite le_floor// lef_pinv ?invrK ?invr_gt0//; exact: (lt_le_trans _ e1e2).
 Qed.
 
 Local Fixpoint n_step_ball n x e z :=
@@ -5871,20 +5869,18 @@ Local Lemma n_step_ball_triangle n m x y z d1 d2 :
   n_step_ball m y d2 z ->
   n_step_ball (n + m).+1 x (d1 + d2) z.
 Proof.
-move: n x y z d1 d2; elim: m.
-  move=> n x y z d1 d2 Nxy [? ?]; exists y; exists d1; exists d2.
-  by split; rewrite ?addn0 // (n_step_ball_pos Nxy).
-move=> n IH m x y z d1 d2 Oxy [w] [e1] [e2] [Oyw ? ? ? <-].
-exists w; exists (d1 + e1); exists e2; rewrite addnS addrA.
-split => //; last by apply: addr_gt0 => //; exact: n_step_ball_pos Oxy.
-case: (IH m x y w d1 e1 Oxy Oyw) => t [e3] [e4] [] Oxt ? ? ? <-.
-by exists t; exists e3; exists e4; split.
+move: n z d2; elim: m => [n z d2 Nxy [? ?]|n IH m z d2 Oxy].
+  by exists y, d1, d2; split; rewrite ?addn0 // (n_step_ball_pos Nxy).
+move=> [w] [e1] [e2] [Oyw ? ? ? <-].
+exists w, (d1 + e1), e2; rewrite addnS addrA.
+split => //; last by rewrite addr_gt0//; exact: n_step_ball_pos Oxy.
+by case: (IH m w e1 Oxy Oyw) => t [e3] [e4] [] Oxt ? ? ? <-; exists t, e3, e4.
 Qed.
 
 Local Lemma step_ball_triangle x y z d1 d2 :
   step_ball x d1 y -> step_ball y d2 z -> step_ball x (d1 + d2) z.
 Proof.
-move=> [n Oxy] [m Oyz]; exists ((n + m).+1).
+move=> [n Oxy] [m Oyz]; exists (n + m).+1.
 exact: n_step_ball_triangle Oxy Oyz.
 Qed.
 
@@ -5925,9 +5921,9 @@ move: x e1 e2; elim: n.
 move=> n IH x e1 e2 e1e2 z [y] [d1] [d2] [] /IH P d1pos d2pos gyz d1d2e1.
 have d1e1d2 : d1 = e1 - d2 by rewrite -d1d2e1 -addrA subrr addr0.
 have e2d2le : e1 - d2 <= e2 - d2 by exact: ler_sub.
-exists y; exists (e2-d2); exists d2; split => //.
-- by apply: P; apply: le_trans; last exact: e2d2le; rewrite d1e1d2.
-- by apply: lt_le_trans; last exact: e2d2le; rewrite -d1e1d2.
+exists y, (e2 - d2), d2; split => //.
+- by apply: P; apply: le_trans e2d2le; rewrite d1e1d2.
+- by apply: lt_le_trans e2d2le; rewrite -d1e1d2.
 - by rewrite -addrA [-_ + _]addrC subrr addr0.
 Qed.
 
@@ -5937,9 +5933,9 @@ Proof. by move=> e1e2 ? [n P]; exists n; exact: (n_step_ball_le e1e2). Qed.
 
 Local Lemma distN_half (n : nat) : n.+1%:R^-1 / (2:R) <= n.+2%:R^-1.
 Proof.
-rewrite -invrM //; [| apply: unitf_gt0 | apply: unitf_gt0] => //.
+rewrite -invrM //; [|exact: unitf_gt0 |exact: unitf_gt0].
 rewrite lef_pinv ?posrE // -?natrM ?ler_nat -addn1 -addn1 -addnA mulnDr.
-rewrite muln1 leq_add2r; exact: leq_pmull.
+by rewrite muln1 leq_add2r leq_pmull.
 Qed.
 
 Local Lemma split_n_step_ball n x e1 e2 z :
@@ -6012,7 +6008,7 @@ have l1n : (l1 <= n)%N.
   by apply (leq_trans (leq_addr l2 l1)); rewrite l1l2 -ltnS.
 have l2n : (l2 <= n)%N.
   by apply (leq_trans (leq_addl l1 l2)); rewrite l1l2 -ltnS.
-apply: splitG3; exists x2 => //; last exists x3 => //.
+apply: splitG3; exists x3; [exists x2 => //|].
   by move/(n_step_ball_le (distN_half N))/(IH1 _ l1n) : P1.
 by move/(n_step_ball_le (distN_half N))/(IH1 _ l2n) : P3.
 Qed.
@@ -6026,7 +6022,7 @@ Proof.
 rewrite predeqE => E; split; first last.
   by case=> e /= epos esubE; apply: (filterS esubE); exact: entourage_nball.
 move=> entE; case: (countableBase entE) => N fN.
-exists (N.+2%:R)^-1; first by rewrite /= invr_gt0.
+exists N.+2%:R^-1; first by rewrite /= invr_gt0.
 apply: (subset_trans _ fN); apply: subset_trans; last apply: gsubf.
 by case=> x y /= N1ball; apply: (@subset_step_ball x N.+1).
 Qed.

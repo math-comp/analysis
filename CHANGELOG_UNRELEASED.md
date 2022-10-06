@@ -44,7 +44,7 @@
   + lemma `floor0`
 - in `classical_sets.v`:
   + lemmas `set_compose_subset`, `compose_diag`
-  + notation `\@` for the composition of relations
+  + notation `\;` for the composition of relations
 
 ### Changed
 - in `topology.v`
