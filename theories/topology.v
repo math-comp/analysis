@@ -6769,26 +6769,35 @@ apply: (@filterS _ _ _ ((join_product @` setT) `&` B)).
   have -> : prod_topo_apply i (join_product w) = f_ i w by [].
   by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
 apply: open_nbhs_nbhs; split; last by rewrite -jxy.
-apply: openI.
-  apply: open_subspaceT.
-apply: open_subspaceW.
-  apply: open_comp; first by move=> + _; apply: prod_topo_apply_continuous.
-  by apply: closed_openC; exact: closed_closure.
+apply: openI; first exact: open_subspaceT.
+apply: open_subspaceW; apply: open_comp. 
+  by move=> + _; exact: prod_topo_apply_continuous.
+by apply: closed_openC; exact: closed_closure.
 Qed.
 
-Lemma join_product_inj : accessible_space T -> 
-  set_inj [set: T] join_product.
+Lemma preimage_range {A B : Type} (f : A -> B) : f @^-1` (range f) = [set: A].
+Proof. by rewrite eqEsubset; split=> x // _; exists x. Qed.
+
+Lemma join_product_inj : accessible_space T -> set_inj [set: T] join_product.
 Proof.
-move=> /accessible_closed_set1 cl1 x y.
-case: (eqVneq x y) => // xny _ _ jxjy.
+move=> /accessible_closed_set1 cl1 x y; case: (eqVneq x y) => // xny _ _ jxjy.
 have [] := (@sepf [set y] x (cl1 y)); first by exact/eqP.
-move=> i clfxy; suff : join_product x i != join_product y i.
-  by rewrite jxjy => /eqP.
-apply/negP; move: clfxy; apply: contra_not => /eqP; rewrite /join_product => ->.
+move=> i P; suff : join_product x i != join_product y i by rewrite jxjy => /eqP.
+apply/negP; move: P; apply: contra_not => /eqP; rewrite /join_product => ->.
 by apply subset_closure; exists y.
 Qed.
 
-Search hausdorff_space accessible_space.
+Lemma join_product_weak : accessible_space T ->
+  @open weakT = @open (weak_topologicalType join_product).
+Proof.
+move=> /join_product_inj => inj; rewrite predeqE => U; split; first last.
+  by move=> [V ? <-]; apply open_comp => // + _; exact: join_product_continuous.
+move=> /join_product_open/open_subspaceP [V [oU VU]].
+exists V => //; have := @f_equal _ _ (preimage join_product) _ _ VU.
+rewrite !preimage_setI // !preimage_range !setIT => ->.
+rewrite eqEsubset; split; last exact: preimage_image.
+by move=> z [w Uw] /inj <- //; rewrite inE.
+Qed.
 
 End product_embeddings.
 
