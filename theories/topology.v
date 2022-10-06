@@ -116,6 +116,13 @@ Require Import reals signed.
 (*                              \oo == "eventually" filter on nat: set of     *)
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true.                       *)
+(*   separates_points_from_closed f == For a closed set U and point x outside *)
+(*                                     some member of the family `f` sends    *)
+(*                                     f_i(x) outside (closure (f_i@` U)).    *)
+(*                                     used together with `join_product`      *)
+(*                   join_product f == The function (x i => f i x). When the  *)
+(*                                     family f separates points from closed  *)
+(*                                     sets, join_product is an embedding     *)
 (*                                                                            *)
 (* * Near notations and tactics:                                              *)
 (*   --> The purpose of the near notations and tactics is to make the         *)
@@ -6684,9 +6691,9 @@ Qed.
 
 End SubspaceWeak.
 
-Definition separates_points_from_closed {I : Type} {T : topologicalType} 
-    {U_ : I -> topologicalType} (f_ : forall i, (T -> U_ i)) := 
-  forall (U : set T) x, 
+Definition separates_points_from_closed {I : Type} {T : topologicalType}
+    {U_ : I -> topologicalType} (f_ : forall i, (T -> U_ i)) :=
+  forall (U : set T) x,
   closed U -> ~ U x -> exists i, ~ (closure (f_ i @` U)) (f_ i x).
 
 (* A handy technique for emebdding a space T into a product. The key interface
@@ -6704,78 +6711,71 @@ Variable (f_ : forall i, (T -> U_ i)).
 Hypothesis sepf : separates_points_from_closed f_.
 Hypothesis ctsf : forall i, continuous (f_ i).
 
-Let weakT := @sup_topologicalType T I (fun i => Topological.class
-    (weak_topologicalType (f_ i))).
+Let weakT := @sup_topologicalType T I
+  (fun i => Topological.class (weak_topologicalType (f_ i))).
 Let PU := product_topologicalType U_.
 
-Lemma weak_sep_cvg (F : set (set T)) (x : T) : 
-  Filter F ->
-  (F --> (x : T)) <-> (F --> (x : weakT)).
+Lemma weak_sep_cvg (F : set (set T)) (x : T) :
+  Filter F -> (F --> (x : T)) <-> (F --> (x : weakT)).
 Proof.
 move=> FF; split.
-  move=> FTx; apply/cvg_sup => i U /=.
-  have -> := @nbhsE (weak_topologicalType (f_ i)) x.
-  case=> B [[[C oC <- Cfx]]] /filterS; apply; apply: FTx => /=. 
-  by rewrite nbhsE; exists (f_ i @^-1` C); repeat split => //; exact: open_comp.
-move/cvg_sup => wiFx U /=; rewrite nbhs_simpl nbhsE => [[B [[oB Bx]]]].
-move/filterS; apply; have nBx : ~ (~`B) x by [].
-have [i nclfix] := sepf (open_closedC oB) nBx.
+  move=> FTx; apply/cvg_sup => i U.
+  have /= -> := @nbhsE (weak_topologicalType (f_ i)) x.
+  case=> B [[[C oC <- ?]]] /filterS; apply; apply: FTx; rewrite /= nbhsE.
+  by exists (f_ i @^-1` C); repeat split => //; exact: open_comp.
+move/cvg_sup => wiFx U; rewrite /= nbhs_simpl nbhsE => [[B [[oB ?]]]].
+move/filterS; apply; have [//|i nclfix] := @sepf _ x (open_closedC oB).
 apply: (wiFx i); have /= -> := @nbhsE (weak_topologicalType (f_ i)) x.
 exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); repeat split => //.
   apply: open_comp; last by rewrite ?openC; last apply: closed_closure.
   by move=> + _; exact: weak_continuous.
 rewrite closureC preimage_bigcup => z [V [oV]] VnB => /VnB.
-by move/forall2NP => /(_ z) [] //= /contrapT.
+by move/forall2NP => /(_ z) [] // /contrapT.
 Qed.
 
-Lemma weak_sep_nbhsE x : 
-  @nbhs T T x = @nbhs T weakT x.
+Lemma weak_sep_nbhsE x : @nbhs T T x = @nbhs T weakT x.
 Proof.
 rewrite predeqE => U; split; move: U.
   by have P := weak_sep_cvg x (nbhs_filter (x : weakT)); exact/P.
 by have P := weak_sep_cvg x (nbhs_filter (x : T)); exact/P.
 Qed.
 
-Lemma weak_sep_openE : 
-  @open T = @open weakT.
+Lemma weak_sep_openE : @open T = @open weakT.
 Proof.
-rewrite predeqE => A; split; rewrite ? openE => P z => /P.
-  by rewrite /= /interior weak_sep_nbhsE. 
-by rewrite /= /interior weak_sep_nbhsE. 
+rewrite predeqE => A; rewrite ?openE /interior.
+by split => + z => /(_ z); rewrite weak_sep_nbhsE.
 Qed.
 
-Definition join_product (x : weakT) : PU := fun i => f_ i x.
+Definition join_product (x : T) : PU := fun i => f_ i x.
 
 Lemma join_product_continuous : continuous join_product.
 Proof.
+suff : continuous (join_product : weakT -> PU).
+  by move=> cts x U => /cts; rewrite /= nbhs_simpl /= -weak_sep_nbhsE.
 move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : weakT)).
-move=> i; move: x.
-apply/(@continuousP _ (weak_topologicalType _)) => A [B oB <-].
-rewrite (_ : @^~ i = prod_topo_apply i) //.
+move=> i; move: x; apply/(@continuousP _ (weak_topologicalType _)) => A [B ? E].
+rewrite -E (_ : @^~ i = prod_topo_apply i) //.
 have -> : join_product @^-1` (prod_topo_apply i @^-1` B) = f_ i @^-1` B by [].
-apply: open_comp => // + _; rewrite /cvg_to => x U //=. 
-rewrite nbhs_simpl /= -weak_sep_nbhsE; move: x U; exact: ctsf.
+apply: open_comp => // + _; rewrite /cvg_to => x U.
+by rewrite nbhs_simpl /= -weak_sep_nbhsE; move: x U; exact: ctsf.
 Qed.
 
-Lemma join_product_open : forall (A : set weakT), open A -> 
+Lemma join_product_open : forall (A : set T), open A -> 
   open ((join_product @` A) : set (subspace (join_product @` setT))).
 Proof.
-move=> A; rewrite -weak_sep_openE => oA.
-have S := @sepf (~` A) _ (open_closedC oA). 
-rewrite openE => y /= [x Ax] jxy; rewrite /interior.
-have [// | i nAfiy] := S x.
+move=> A oA; rewrite openE => y /= [x Ax] jxy.
+have [// | i nAfiy] := @sepf (~` A) x (open_closedC oA).
 pose B := prod_topo_apply i @^-1` (~` closure (f_ i @` ~` A)).
 apply: (@filterS _ _ _ ((join_product @` setT) `&` B)). 
   move=> z [[w ?]] wzE Bz; exists w => //.
-  move: Bz; rewrite /B -wzE /preimage /mkset closureC.
-  case=> K /= [oK KsubA] => /KsubA /=.
+  move: Bz; rewrite /B -wzE closureC; case=> K [oK KsubA] /KsubA.
   have -> : prod_topo_apply i (join_product w) = f_ i w by [].
   by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
 apply: open_nbhs_nbhs; split; last by rewrite -jxy.
 apply: openI; first exact: open_subspaceT.
-apply: open_subspaceW; apply: open_comp. 
+apply: open_subspaceW; apply: open_comp.
   by move=> + _; exact: prod_topo_apply_continuous.
-by apply: closed_openC; exact: closed_closure.
+by exact/closed_openC/closed_closure.
 Qed.
 
 Lemma join_product_inj : accessible_space T -> set_inj [set: T] join_product.
@@ -6787,10 +6787,10 @@ apply/negP; move: P; apply: contra_not => /eqP; rewrite /join_product => ->.
 by apply subset_closure; exists y.
 Qed.
 
-Lemma join_product_weak : accessible_space T ->
-  @open weakT = @open (weak_topologicalType join_product).
+Lemma join_product_weak : set_inj [set: T] join_product ->
+  @open T = @open (weak_topologicalType join_product).
 Proof.
-move=> /join_product_inj => inj; rewrite predeqE => U; split; first last.
+move=> inj; rewrite predeqE => U; split; first last.
   by move=> [V ? <-]; apply open_comp => // + _; exact: join_product_continuous.
 move=> /join_product_open/open_subspaceP [V [oU VU]].
 exists V => //; have := @f_equal _ _ (preimage join_product) _ _ VU.
