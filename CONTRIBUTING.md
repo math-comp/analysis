@@ -14,7 +14,7 @@ Text markup files may be edited directly though, should you have commit rights.
 
 - `F --> x` means `F` tends to `x`. _This is the preferred way of stating a convergence._ **Lemmas about it use the string `cvg`.**
 - `lim F` is the limit of `F`, it makes sense only when `F` converges and defaults to a distinguished point otherwise. _It should only be used when there is no other expression for the limit._ **Lemmas about it use the string `lim`.**
-- `cvg F` is defined as `F --> lim F`, and is equivalent through `cvgP` and `cvg_ex` to the existence of some `x` such that `F --> x`. _When the limit is known, `F --> x` should be preferred._ **Lemmas about it use the string `is_cvg`.**```
+- `cvg F` is defined as `F --> lim F`, and is equivalent through `cvgP` and `cvg_ex` to the existence of some `x` such that `F --> x`. _When the limit is known, `F --> x` should be preferred._ **Lemmas about it use the string `is_cvg`.**
 
 ## `near` tactics vs. `filterS`, `filterS2`, `filterS3` lemmas
 
