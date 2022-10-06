@@ -5375,20 +5375,14 @@ Notation "{ 'uniform`' A -> V }" := (@fct_RestrictedUniform _ A V) :
 Notation "{ 'uniform' U -> V }" := ({uniform` (@setT U) -> V}) :
   classical_set_scope.
 
-Definition uniform_fun {U : choiceType} A (V : uniformType)
-  (f : U -> V) : {uniform` A -> V} := f.
-Arguments uniform_fun : simpl never.
-
 Notation "{ 'uniform' A , F --> f }" :=
-  (F --> f : @fct_RestrictedUniform _ A _)
-  (only printing) : classical_set_scope.
+  (cvg_to [filter of F] 
+     (filter_of (Phantom (fct_RestrictedUniform A) f)))
+   : classical_set_scope.
 Notation "{ 'uniform' , F --> f }" :=
-  (F --> f : @fct_RestrictedUniform _ setT _)
-  (only printing) : classical_set_scope.
-Notation "{ 'uniform' A , F --> f }" :=
-  (F --> uniform_fun A f) : classical_set_scope.
-Notation "{ 'uniform' , F --> f }" :=
-  (F --> uniform_fun setT f) : classical_set_scope.
+  (cvg_to [filter of F] 
+     (filter_of (Phantom (fct_RestrictedUniform setT) f)))
+   : classical_set_scope.
 
 (* We use this function to help coq identify the correct notation to use
    when printing. Otherwise you get goals like `F --> f -> F --> f`      *)
@@ -5414,14 +5408,10 @@ Canonical fct_PointwiseTopologicalType (U : Type) (V : topologicalType) :=
      @fct_PointwiseTopology U V].
 
 Notation "{ 'ptws' U -> V }" := (@fct_Pointwise U V).
-Definition pointwise_fun {U : Type} {V : topologicalType}
-  (f : U -> V) : {ptws U -> V} := f.
 
 Notation "{ 'ptws' , F --> f }" :=
-  (F --> (f : @fct_Pointwise _ _))
-  (only printing) : classical_set_scope.
-Notation "{ 'ptws' , F --> f }" :=
-  (F --> @pointwise_fun _ _ f) : classical_set_scope.
+  (cvg_to [filter of F] (filter_of (Phantom (@fct_Pointwise _ _) f)))
+  : classical_set_scope.
 
 Lemma pointwise_cvgE {U : Type} {V : topologicalType}
     (F : set (set(U -> V))) (A : set U) (f : U -> V) :
@@ -5436,9 +5426,9 @@ Lemma uniform_set1 F (f : U -> V) (x : U) :
 Proof.
 move=> FF; rewrite propeqE; split.
   move=> + W => /(_ [set t | W (t x)]) +; rewrite /filter_of -nbhs_entourageE.
-  rewrite /uniform_fun uniform_nbhs => + [Q entQ subW].
+  rewrite uniform_nbhs => + [Q entQ subW].
   by apply; exists Q; split => // h Qf; exact/subW/Qf.
-move=> Ff W; rewrite /filter_of uniform_nbhs /uniform_fun => [[E] [entE subW]].
+move=> Ff W; rewrite /filter_of uniform_nbhs => [[E] [entE subW]].
 apply: (filterS subW); move/(nbhs_entourage (f x))/Ff: entE => //=; near_simpl.
 by apply: filter_app; apply: nearW=> ? ? ? ->.
 Qed.
@@ -5454,7 +5444,7 @@ Qed.
 Lemma uniform_subset_cvg (f : U -> V) (A B : set U) F :
   Filter F -> B `<=` A -> {uniform A, F --> f} -> {uniform B, F --> f}.
 Proof.
-move => FF /uniform_subset_nbhs => /(_ f); rewrite /uniform_fun.
+move => FF /uniform_subset_nbhs => /(_ f). 
 by move=> nbhsF Acvg; apply: cvg_trans; [exact: Acvg|exact: nbhsF].
 Qed.
 
@@ -5462,7 +5452,7 @@ Lemma pointwise_uniform_cvg  (f : U -> V) (F : set (set (U -> V))) :
   Filter F -> {uniform, F --> f} -> {ptws, F --> f}.
 Proof.
 move=> FF; rewrite cvg_sup => + i; have isubT : [set i] `<=` setT by move=> ?.
-move=> /(uniform_subset_cvg _ isubT); rewrite /pointwise_fun uniform_set1.
+move=> /(uniform_subset_cvg _ isubT); rewrite uniform_set1.
 rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
 apply: cvg_trans => W /=; rewrite nbhs_simpl; exists (@^~ i @^-1` W) => //.
 by rewrite image_preimage // eqEsubset; split=> // j _; exists (fun _ => j).
@@ -5512,8 +5502,7 @@ Lemma uniform_restrict_cvg
   {uniform A, F --> f} <-> {uniform, restrict A @ F --> restrict A f}.
 Proof.
 move=> FF; rewrite cvg_sigL; split.
-- rewrite -sigLK /uniform_fun.
-  move /(cvg_app valL) => D.
+- rewrite -sigLK; move/(cvg_app valL) => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
   apply/uniform_nbhs; exists E; split=> //= h /=.
@@ -5524,7 +5513,7 @@ move=> FF; rewrite cvg_sigL; split.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
   apply/uniform_nbhs; exists E; split=> //= h /=.
-  rewrite /sigL /uniform_fun => R [u Au] _ /=.
+  rewrite /sigL => R [u Au] _ /=.
   by have := R u I; rewrite /patch Au.
 Qed.
 
@@ -5533,7 +5522,7 @@ Lemma cvg_uniformU (f : U -> V) (F : set (set (U -> V))) A B : Filter F ->
   {uniform (A `|` B), F --> f}.
 Proof.
 move=> FF AFf BFf Q /=/uniform_nbhs [E [entE EsubQ]].
-apply: (filterS EsubQ); rewrite /uniform_fun.
+apply: (filterS EsubQ).
 rewrite (_:  [set h | (forall y : U, (A `|` B) y -> E (f y, h y))] =
     [set h | forall y, A y -> E (f y, h y)] `&`
     [set h | forall y, B y -> E (f y, h y)]).
@@ -5561,9 +5550,6 @@ Definition family_cvg_uniformType (fam: set U -> Prop) :=
     (sigT fam) 
     (fun k => Uniform.class (@fct_restrictedUniformType U (projT1 k) V)).
 
-Definition restrict_fam fam (f : U -> V) : fct_UniformFamily fam := f.
-Arguments restrict_fam : simpl never.
-
 Canonical fct_UniformFamilyFilteredType fam :=
   [filteredType fct_UniformFamily fam of
     fct_UniformFamily fam for
@@ -5580,7 +5566,8 @@ Canonical fct_UniformFamilyUniformType fam :=
      family_cvg_uniformType fam].
 
 Local Notation "{ 'family' fam , F --> f }" :=
-  (F --> restrict_fam fam f) : classical_set_scope.
+  (cvg_to [filter of F] (filter_of (Phantom (fct_UniformFamily fam) f)))
+  : classical_set_scope.
 
 Lemma fam_cvgP (fam : set U -> Prop) (F : set (set (U -> V))) (f : U -> V) :
   Filter F -> {family fam, F --> f} <->
@@ -5618,7 +5605,8 @@ End UniformCvgLemmas.
 
 Notation "{ 'family' fam , U -> V }" :=  (@fct_UniformFamily U V fam).
 Notation "{ 'family' fam , F --> f }" :=
-  (F --> restrict_fam fam f) : classical_set_scope.
+  (cvg_to [filter of F] (filter_of (Phantom (fct_UniformFamily fam) f)))
+  : classical_set_scope.
 
 Lemma fam_cvgE {U : choiceType} {V : uniformType} (F : set (set (U -> V)))
     (f : U -> V) fam :
@@ -6282,7 +6270,7 @@ Definition singletons {T : Type} := [set [set x] | x in @setT T].
 Lemma pointwise_cvg_family_singleton F (f: U -> V):
   Filter F -> {ptws, F --> f} = {family @singletons U, F --> f}.
 Proof.
-move=> FF; rewrite propeqE fam_cvgP cvg_sup /pointwise_fun; split.
+move=> FF; rewrite propeqE fam_cvgP cvg_sup; split.
   move=> + A [x _ <-] => /(_ x); rewrite uniform_set1.
   rewrite cvg_image; last by rewrite eqEsubset; split=> v // _; exists (cst v).
   apply: cvg_trans => W /=; rewrite ?nbhs_simpl /fmap /= => [[W' + <-]].
