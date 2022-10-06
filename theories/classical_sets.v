@@ -153,6 +153,9 @@ Require Import mathcomp_extra boolp.
 (*   (i.e., of type set rT)                                                   *)
 (* - indexed sets are rather named F                                          *)
 (*                                                                            *)
+(* * Composition of relations:                                                *)
+(*                A \@ B == [set x | exists z, A (x.1, z) & B (z, x.2)]       *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -223,6 +226,7 @@ Reserved Notation "[ 'disjoint' A & B ]" (at level 0,
 Reserved Notation "F `#` G"
  (at level 48, left associativity, format "F  `#`  G").
 Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
+Reserved Notation "f \@ g" (at level 50, format "f  \@ '/ '  g").
 
 Definition set T := T -> Prop.
 (* we use fun x => instead of pred to prevent inE from working *)
@@ -3041,3 +3045,19 @@ by rewrite inE => -[Xxy Yxy]; rewrite 2!inE.
 Qed.
 
 End section.
+
+Notation "B \@ A" :=
+  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : classical_set_scope.
+
+Lemma set_compose_subset {X Y : Type} (A C : set (X * Y)) (B D : set (Y * X)) :
+  A `<=` C -> B `<=` D -> A \@ B `<=` C \@ D.
+Proof.
+by move=> AsubC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AsubC].
+Qed.
+
+Lemma set_compose_diag {X : Type} (E : set (X * X)) :
+  E \@ range (fun x => (x, x)) = E.
+Proof.
+rewrite eqEsubset; split => [[_ _] [_ [_ _ [<- <-//]]]|[x y] Exy]/=.
+by exists x => //; exists x.
+Qed.

@@ -688,6 +688,9 @@ Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 Lemma floor_natz n : floor (n%:R : R) = n%:~R :> int.
 Proof. by rewrite /floor (Rfloor_natz n) Rtointz intz. Qed.
 
+Lemma floor0 : floor (0 : R) = 0.
+Proof. by rewrite /floor Rfloor0 (_ : 0 = 0%:R) // Rtointn. Qed.
+
 Lemma floor1 : floor (1 : R) = 1.
 Proof. by rewrite /floor Rfloor1 (_ : 1 = 1%:R) // Rtointn. Qed.
 

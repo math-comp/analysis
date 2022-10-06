@@ -38,9 +38,13 @@
 - in `constructive_ereal.v`:
   + lemma `sum_fine`
 - in `topology.v`
-  + lemmas `set_compose_diag`, `set_compose_subset`, `set_composeA`
-  + lemmas `entourage_invI` `split_ent_subset`
+  + lemmas `entourage_invI`, `split_ent_subset`
   + definition `countable_uniform_pseudoMetricType_mixin`
+- in `reals.v`:
+  + lemma `floor0`
+- in `classical_sets.v`:
+  + lemmas `set_compose_subset`, `compose_diag`
+  + notation `\@` for the composition of relations
 
 ### Changed
 - in `topology.v`
