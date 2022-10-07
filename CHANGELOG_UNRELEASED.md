@@ -409,6 +409,8 @@
   + `nat_cvgPpinfty` -> `cvgnyPge`
 - in file `topology.v`
   + `prod_topo_apply` -> `proj`
+- in `lebesgue_integral.v`:
+  + `integral_sum` -> `integral_nneseries`
 
 ### Deprecated
 
