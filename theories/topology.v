@@ -367,6 +367,7 @@ Require Import reals signed.
 (*                                                                            *)
 (* We endow several standard types with the types of topological notions:     *)
 (* - products: prod_topologicalType, prod_uniformType, prod_pseudoMetricType  *)
+(*     sup_pseudoMetricType, weak_pseudoMetricType, product_pseudoMetricType  *)
 (* - matrices: matrix_filtered, matrix_topologicalType, matrix_uniformType,   *)
 (*     matrix_pseudoMetricType, matrix_completeType,                          *)
 (*     matrix_completePseudoMetricType                                        *)
@@ -6096,10 +6097,10 @@ Hypothesis cnt_unif : @countable_uniformity T.
 
 Let f_ := projT1 (cid (iffLR countable_uniformityP cnt_unif)).
 
-Lemma countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
+Local Lemma countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
 Proof. by have [] := projT2 (cid (iffLR countable_uniformityP cnt_unif)). Qed.
 
-Lemma entF : forall n, entourage (f_ n).
+Local Lemma entF : forall n, entourage (f_ n).
 Proof. by have [] := projT2 (cid (iffLR countable_uniformityP cnt_unif)). Qed.
 
 #[local] Hint Resolve entF : core.
