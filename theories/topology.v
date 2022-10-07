@@ -6360,7 +6360,8 @@ move=> oA; rewrite -continuous_open_subspace// continuousP.
 by under eq_forall do rewrite -open_setSI//.
 Qed.
 
-Lemma pasting {U} A B (f : T -> U) : closed A -> closed B ->
+(* pasting lemma *)
+Lemma withinU_continuous {U} A B (f : T -> U) : closed A -> closed B ->
   {within A, continuous f} -> {within B, continuous f} ->
   {within A `|` B, continuous f}.
 Proof.
