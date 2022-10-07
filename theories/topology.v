@@ -3913,22 +3913,20 @@ Definition countable_uniformity (T : uniformType) :=
     R `<=` entourage &
     forall P, entourage P -> exists Q, R Q /\ Q `<=` P].
 
-Lemma countable_uniformityP {T : uniformType} : 
-  countable_uniformity T <-> exists f : nat -> set (T * T), 
+Lemma countable_uniformityP {T : uniformType} :
+  countable_uniformity T <-> exists f : nat -> set (T * T),
     (forall A, entourage A -> exists N, f N `<=` A) /\
     (forall n, entourage (f n)).
 Proof.
 split.
-  case=> M [] /pfcard_geP []. 
+  case=> M [] /pfcard_geP [].
     by move=> -> _ /(_ setT); case; [exact: entourageT | move=> ? []].
   move=> [f] eM Msub; exists f; split; last by move=> n; apply: eM; exact: funS.
   move=> ? /Msub [Q [MQ ?]]; have [n ? fQ] := (@surj _ _ _ _  f _ MQ).
   by exists n; rewrite fQ.
-case => f [fsubE] entf; exists (f @` [set: nat]); split.
-- exact: card_image_le.
-- by move=> E [n _] <-; exact: entf.
-- move=> E entE; have [n fnA] := fsubE _ entE.
-  by exists (f n); split => //; exists n.
+case => f [fsubE] entf; exists (range f); split; first exact: card_image_le.
+  by move=> E [n _] <-; exact: entf.
+by move=> E /fsubE [n fnA]; exists (f n); split => //; exists n.
 Qed.
 
 Section uniform_closeness.
@@ -4404,21 +4402,19 @@ Definition sup_uniform_mixin:=
 Definition sup_uniformType := UniformType Tt sup_uniform_mixin.
 
 Lemma countable_sup_ent :
-  countable [set: Ii] ->
-  (forall n, countable_uniformity (TS n)) ->
+  countable [set: Ii] -> (forall n, countable_uniformity (TS n)) ->
   countable_uniformity sup_uniformType.
 Proof.
 move=> Icnt countable_ent; pose f := fun n => cid (countable_ent n).
 pose g : Ii -> set (set (T * T)) := fun n => projT1 (f n).
 case (pselect ([set: I] = set0)) => [I0 | /eqP/set0P [i0 _]].
-  exists [set setT]; split; first apply countable1.
+  exists [set setT]; split; first exact: countable1.
     move=> A; rewrite /entourage /= => ->.
     by exists setT => //; exists fset0 => //; rewrite set_fset0 bigcap_set0.
   move=> P [w [A _]] <- subP; exists setT; split => //.
   apply: (subset_trans _ subP) => t _ i iA.
   by suff : [set: I] (projT1 i).1 by rewrite I0.
-rewrite /countable_uniformity /=.
-exists (finI_from (\bigcup_n (g n)) id); split.
+rewrite /countable_uniformity /=; exists (finI_from (\bigcup_n g n) id); split.
 - by apply/finI_from_countable/bigcup_countable => // i _; case: (projT2 (f i)).
 - move=> E [A AsubGn AE]; exists E => //.
   have h : forall w, { p : IEnt | w \in A -> w = (projT1 p).2}.
@@ -4432,7 +4428,7 @@ exists (finI_from (\bigcup_n (g n)) id); split.
     by move=> ?; rewrite mem_set.
   rewrite -AE /=; rewrite eqEsubset; split => t Ia.
     by move=> w Aw; have -> := projT2 (h w) Aw; apply/Ia/imfsetP; exists w.
-  case=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia; rewrite (_ : w = x) //. 
+  case=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia; rewrite (_ : w = x) //.
   by rewrite (projT2 (h x) xA) (_ : projT1 (h x) = proj1_sig (h x)) -M.
 - move=> E [w] [ A _ wIA wsubE]. 
   have ent_Ip : forall (i : IEnt), @entourage (TS (projT1 i).1) (projT1 i).2.
@@ -4447,7 +4443,7 @@ exists (finI_from (\bigcup_n (g n)) id); split.
   exists (\bigcap_(i in [set` AH]) i); split.
     exists AH => // p /imfsetP [i iA pE]; rewrite mem_set //.
     by exists (projT1 i).1; have [] := projT2 (h i); rewrite // pE.
-  apply: (subset_trans _ wsubE); rewrite -wIA => t It i Ai.
+  apply: (subset_trans _ wsubE); rewrite -wIA => ? It i ?.
   have [?] := projT2 (h i); apply; apply: It; apply/imfsetP.
   by exists i.
 Qed.
