@@ -6094,11 +6094,19 @@ End weak_pseudoMetric.
    - infinite products of metric spaces are metrizable
 *)
 Section countable_uniform.
-Context {R : realType} {T : uniformType} (f_ : nat -> set (T * T)).
+Context {R : realType} {T : uniformType}.
 
-Hypothesis countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
+Hypothesis cnt_unif : @countable_uniformity T.
 
-Hypothesis entF : forall n, entourage (f_ n).
+Let f_ := projT1 (cid (iffLR countable_uniformityP cnt_unif)).
+
+Lemma countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
+Proof. by have [] := projT2 (cid (iffLR countable_uniformityP cnt_unif)). Qed.
+
+Lemma entF : forall n, entourage (f_ n).
+Proof. by have [] := projT2 (cid (iffLR countable_uniformityP cnt_unif)). Qed.
+
+#[local] Hint Resolve entF : core.
 
 (* Step 1:
    We build a nicer base `g` for `entourage` with better assumptions than `f`
@@ -6392,6 +6400,39 @@ Definition countable_uniform_pseudoMetricType_mixin := PseudoMetric.Mixin
 
 End countable_uniform.
 
+Section sup_pseudometric. 
+Variable (R : realType) (T : pointedType) (Ii : Type).
+Variable (Tc : Ii -> PseudoMetric.class_of R T).
+
+Hypothesis Icnt : countable [set: Ii].
+
+Let I : choiceType := classicType_choiceType Ii.
+Let TS := fun i => PseudoMetric.Pack (Tc i).
+
+Definition countable_uniformityT := (@countable_sup_ent T Ii Tc Icnt 
+    (fun i => @countable_uniformity_metric _ (TS i) )).
+
+Definition sup_pseudoMetric_mixin := @countable_uniform_pseudoMetricType_mixin R
+    (sup_uniformType Tc) countable_uniformityT.
+
+Definition sup_pseudoMetricType := 
+  PseudoMetricType (sup_uniformType Tc) sup_pseudoMetric_mixin.
+
+End sup_pseudometric.
+
+Section product_pseudometric.
+
+Variable (R : realType) (Ii : countType) (Tc : Ii -> pseudoMetricType R).
+
+Hypothesis Icnt : countable [set: Ii].
+
+Definition product_pseudoMetricType := 
+  sup_pseudoMetricType (fun i => PseudoMetric.class
+    (weak_pseudoMetricType (fun f : dep_arrow_pointedType Tc => f i)))
+    Icnt.
+
+End product_pseudometric.
+
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
 
@@ -6651,7 +6692,7 @@ Global Instance subspace_proper_filter {T : topologicalType}
   (continuous (f : subspace A -> _)).*)
 Notation "{ 'within' A , 'continuous' f }" := (forall x,
   cvg_to [filter of fmap f (filter_of (Phantom (subspace A) x))]
-         [filter of f x]).
+         [filter of f x]) : classical_set_scope.
 
 Section SubspaceRelative.
 Context {T : topologicalType}.
