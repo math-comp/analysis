@@ -793,3 +793,6 @@ Qed.
 
 End onem.
 Notation "`1- r" := (onem r) : ring_scope.
+
+Lemma lez_abs2 (a b : int) : 0 <= a -> a <= b -> (`|a| <= `|b|)%N.
+Proof. by case: a => //= n _; case: b. Qed.
