@@ -411,8 +411,8 @@ Variable R : realType.
 Definition ret (f : X -> Y) (mf : measurable_fun setT f) :=
   locked [the R.-sfker X ~> Y of kdirac mf].
 
-Definition sample (P : probability Y R) :=
-  locked [the R.-pker X ~> Y of kprobability P] .
+Definition sample (P : pprobability Y R) :=
+  locked [the R.-pker X ~> Y of kprobability (measurable_fun_cst P)] .
 
 Definition normalize (k : R.-sfker X ~> Y) P x :=
   locked [the probability _ _ of mnormalize k P x].

@@ -60,6 +60,30 @@ Qed.
 End probability_lemmas.
 (* /PR 516 in progress *)
 
+(* PR 765 in progress *)
+Require Import set_interval.
+
+Module ErealGenInftyO.
+Section erealgeninftyo.
+Variable R : realType.
+
+Definition G := [set A : set \bar R | exists x, A = `]-oo, x[%classic].
+
+Lemma measurableE : emeasurable (R.-ocitv.-measurable) = G.-sigma.-measurable.
+Proof.
+rewrite ErealGenCInfty.measurableE eqEsubset; split => A.
+  apply: smallest_sub; first exact: smallest_sigma_algebra.
+  move=> _ [x ->]; rewrite -[X in _.-measurable X]setCK; apply: measurableC.
+  by apply: sub_sigma_algebra; exists x; rewrite setCitvr.
+apply: smallest_sub; first exact: smallest_sigma_algebra.
+move=> x Gx; rewrite -(setCK x); apply: measurableC; apply: sub_sigma_algebra.
+by case: Gx => y ->; exists y; rewrite setCitvl.
+Qed.
+
+End erealgeninftyo.
+End ErealGenInftyO.
+(* /PR 765 in progress *)
+
 (* TODO: PR*)
 Lemma setT0 (T : pointedType) : setT != set0 :> set T.
 Proof. by apply/eqP => /seteqP[] /(_ point) /(_ Logic.I). Qed.
@@ -925,23 +949,48 @@ End dist_salgebra_instance.
 
 Section kprobability.
 Variables (d d' : _) (X : measurableType d) (Y : measurableType d').
-Variables (R : realType) (P : probability Y R).
+Variables (R : realType) (P : X -> pprobability Y R).
 
-Definition kprobability
-  : X -> {measure set Y -> \bar R} := fun=> P.
+Definition kprobability (mP : measurable_fun setT P)
+  : X -> {measure set Y -> \bar R} := P.
+
+Hypothesis mP : measurable_fun setT P.
 
 Let measurable_fun_kprobability U : measurable U ->
-  measurable_fun setT (kprobability ^~ U).
-Proof. by move=> mU; exact: measurable_fun_cst. Qed.
+  measurable_fun setT (kprobability mP ^~ U).
+Proof.
+move=> mU.
+apply: (measurability (ErealGenInftyO.measurableE R)) => A /= -[B [x ->]].
+rewrite setTI => <-; case: x => [r| |]; last 2 first.
+  - rewrite (_ : _ @^-1` _ = setT)//; apply/seteqP; split => // x _ /=.
+    by rewrite in_itv/= (le_lt_trans (probability_le1 _ _)) ?ltey.
+  - rewrite (_ : _ @^-1` _ = set0)//; apply/seteqP; split => // x /=.
+    by rewrite in_itv/=; apply/negP; rewrite -leNgt leNye.
+rewrite (_ : _ @^-1` _ = (fun x => P x U < r%:E)); last first.
+  by apply/funext => x; rewrite /= in_itv.
+rewrite [X in measurable X](_ : _ = P @^-1` [set mu | mu U < r%:E]) //.
+have [r0|r0] := leP 0%R r; last first.
+  rewrite [X in _ @^-1` X](_ : _ = set0) ?preimage_set0//.
+  apply/seteqP; split => // x/=.
+  by apply/negP; rewrite -leNgt (@le_trans _ _ 0)// lee_fin ltW.
+have [r1|r1] := leP r 1%R; last first.
+  rewrite [X in _ @^-1` X](_ : _ = setT) ?preimage_setT//.
+  apply/seteqP; split => // x/= _.
+  by rewrite (le_lt_trans (probability_le1 _ _)).
+move: mP => /(_ measurableT)/(_ [set mu | mu U < r%:E]).
+rewrite setTI; apply; apply: sub_sigma_algebra; exists r => /=.
+  by rewrite in_itv/= r0.
+by exists U.
+Qed.
 
 HB.instance Definition _ :=
-  @isKernel.Build _ _ X Y R kprobability measurable_fun_kprobability.
+  @isKernel.Build _ _ X Y R (kprobability mP) measurable_fun_kprobability.
 
-Let kprobability_prob x : kprobability x setT = 1.
+Let kprobability_prob x : kprobability mP x setT = 1.
 Proof. by rewrite /kprobability/= probability_setT. Qed.
 
 HB.instance Definition _ :=
-  @Kernel_isProbability.Build _ _ X Y R kprobability kprobability_prob.
+  @Kernel_isProbability.Build _ _ X Y R (kprobability mP) kprobability_prob.
 
 End kprobability.
 
