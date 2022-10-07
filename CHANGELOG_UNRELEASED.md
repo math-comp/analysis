@@ -86,6 +86,8 @@
   + renamed `continuous_subspaceT` to `continuous_in_subspaceT`
 - in `constructive_ereal.v`:
   + `lte_spdaddr` -> `lte_spdaddre`
+- in `topology.v`:
+ + `pasting` -> `withinU_continuous`
 
 ### Deprecated
 
