@@ -39,12 +39,12 @@ HB.structure Definition CF (R : realType) := { f of isCumulative R f }.
 Arguments cumulative_is_nondecreasing {R} _.
 Arguments cumulative_is_right_continuous {R} _.
 
-Lemma nondecreasing_right_continuousP (R : realType) (a : R) (e : R)
+Lemma nondecreasing_right_continuousP (R : realType) (a : R) (e : {posnum R})
     (f : cumulative R) :
-  e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
+  exists d : {posnum R}, f (a + d%:num) <= f a + (e%:num).
 Proof.
-move=> e0; move: (cumulative_is_right_continuous f) => /(_ a)/(@cvg_dist _ [normedModType R of R^o]).
-move=> /(_ _ e0)[] _ /posnumP[d] => h.
+move: (cumulative_is_right_continuous f) => /(_ a) /(@cvg_dist _ [normedModType R of R^o]).
+move=> /(_ _ (gt0 e))[] _ /posnumP[d] => h.
 exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
 rewrite opprD addrA subrr distrC subr0 ger0_norm //.
