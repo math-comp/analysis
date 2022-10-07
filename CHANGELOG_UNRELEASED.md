@@ -96,6 +96,8 @@
   + lemmas `emeasurable_fun_fsum`, `ge0_integral_fsum`
 - in `ereal.v`:
   + lemma `fsumEFin`
+- in `lebesgue_measure.v`:
+  + definition `ErealGenInftyO.R` and lemma `ErealGenInftyO.measurableE`
 
 ### Changed
 - in `topology.v`
