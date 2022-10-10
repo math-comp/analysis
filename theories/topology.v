@@ -6751,7 +6751,7 @@ Definition join_product (x : T) : PU := fun i => f_ i x.
 Lemma join_product_continuous : continuous join_product.
 Proof.
 suff : continuous (join_product : weakT -> PU).
-  by move=> cts x U => /cts; rewrite /= nbhs_simpl /= -weak_sep_nbhsE.
+  by move=> cts x U => /cts; rewrite nbhs_simpl /= -weak_sep_nbhsE.
 move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : weakT)).
 move=> i; move: x; apply/(@continuousP _ (weak_topologicalType _)) => A [B ? E].
 rewrite -E (_ : @^~ i = prod_topo_apply i) //.
@@ -6772,9 +6772,8 @@ apply: (@filterS _ _ _ ((join_product @` setT) `&` B)).
   have -> : prod_topo_apply i (join_product w) = f_ i w by [].
   by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
 apply: open_nbhs_nbhs; split; last by rewrite -jxy.
-apply: openI; first exact: open_subspaceT.
-apply: open_subspaceW; apply: open_comp.
-  by move=> + _; exact: prod_topo_apply_continuous.
+apply: openI; first exact: open_subspaceT; apply: open_subspaceW. 
+apply: open_comp; first by move=> + _; exact: prod_topo_apply_continuous.
 by exact/closed_openC/closed_closure.
 Qed.
 
