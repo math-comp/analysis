@@ -239,6 +239,18 @@ Qed.
 
 Variables (Y : {RV P >-> R}) (iY : P.-integrable setT (EFin \o Y)).
 
+Lemma expectation_le : (forall x, 0 <= X x)%R ->
+  (forall x, X x <= Y x)%R -> ('E X <= 'E Y).
+Proof.
+  move => hXpos hXleY.
+  rewrite /expectation ge0_le_integral => //.
+    move => ? _; apply: hXpos.
+    apply EFin_measurable_fun => //.
+    move => x ?; apply: (le_trans (y:=X x)) => //; apply: hXleY.
+    apply EFin_measurable_fun => //.
+    move => x ?; apply: lee_tofin => //.
+Qed.
+
 Lemma expectationD : 'E (X `+ Y) = 'E X + 'E Y.
 Proof. by rewrite /expectation integralD_EFin. Qed.
 
@@ -413,11 +425,104 @@ Qed.
 
 End discrete_distribution.
 
+(* NB: available in lebesgue-stieltjes PR *)
+Section from_lebesgue_stieltjes.
+Definition EFinf {R : numDomainType} (f : R -> R) : \bar R -> \bar R :=
+  fun x => if x is r%:E then (f r)%:E else x.
+
+Lemma nondecreasing_EFinf (R : realDomainType) (f : R -> R) :
+  {homo f : x y / (x <= y)%R} -> {homo EFinf f : x y / (x <= y)%E}.
+Proof.
+move=> ndf.
+by move=> [r| |] [l| |]//=; rewrite ?leey ?leNye// !lee_fin; exact: ndf.
+Qed.
+
+Lemma nondecreasing_EFinf' (R : realDomainType) (f : R -> R) {D : set R} :
+  {in D &, {homo f : x y / (x <= y)%R}} -> {in (@EFin R) @` D &, {homo EFinf f : x y / (x <= y)%E}}.
+Proof.
+move=> ndf [r| |] [l| |] rD lD //= rl; rewrite ?leey ?leNye// lee_fin ndf //.
+  by move: rD; rewrite inE /= => -[] x /mem_set ? [] <-.
+by move: lD; rewrite inE /= => -[] x /mem_set ? [] <-.
+Qed.
+End from_lebesgue_stieltjes.
+
+Section markov_chebyshev.
+
+Variables (d : _) (T : measurableType d) (R : realType) (P : probability T R).
+
+Lemma mul_cst (k : R) (X : {RV P >-> R})
+  : k `\o* X = (cst_mfun k) `* X.
+Proof.
+  rewrite /scale_RV /mul_RV.
+  apply /mfuneqP => x /=.
+  exact: mulrC.
+Qed.
+
+Lemma markov (X : {RV P >-> R}) (f : {mfun R >-> R}) (eps : R) :
+  0 < eps -> (forall r : R, 0 <= f r) -> {in `[0, +oo[%classic &, {homo f : x y / x <= y}} ->
+ ((f eps)%:E * P [set x | eps%:E <= `| (X x)%:E | ]%E <=
+  'E ([the {mfun _ >-> R} of f \o @mabs R] `o X))%E.
+Proof.
+move=> e0 f0 f_nd.
+rewrite -(setTI [set _ | _]).
+apply: (le_trans (@le_integral_comp_abse d T R P setT measurableT (EFin \o X) eps
+  (EFinf f) _ _ _ _ e0)) => //=.
+- rewrite (_ : EFinf _ = fun x => if x \is a fin_num then (f (fine x))%:E else x); last first.
+    by apply: funext=> -[].
+  apply: measurable_fun_ifT => /=.
+  + apply: (measurable_fun_bool true).
+    rewrite /preimage/= -[X in measurable X]setTI.
+    by apply/emeasurable_fin_num => //; exact: measurable_fun_id.
+  + apply/EFin_measurable_fun/measurable_fun_comp => //.
+    exact/measurable_fun_fine.
+  + exact: measurable_fun_id.
+- by case => //= r _; exact: f0.
+- move=> x y.
+  rewrite !inE/= !in_itv/= !andbT.
+  move: x y => [x| |] [y| |] x0 y0 xy//=.
+  by rewrite lee_fin f_nd// inE /= in_itv/= andbT -lee_fin.
+  by rewrite leey.
+- exact/EFin_measurable_fun.
+Qed.
+
+Lemma chebyshev (X : {RV P >-> R}) (eps : R) : 0 < eps ->
+  (P [set x | (eps <= `| X x - fine ('E X)|)%R ] <= (eps ^- 2)%:E * 'V X)%E.
+Proof.
+move => heps.
+have [hv|hv] := eqVneq ('V X)%E (+oo)%E.
+  by rewrite hv mulr_infty gtr0_sg; [rewrite mul1e; apply: leey |rewrite invr_gt0// exprn_gt0].
+have h (Y : {RV P >-> R}) : (P [set x | (eps <= `|Y x|)%R] <= (eps ^- 2)%:E * 'E (Y `^+ 2))%E.
+  rewrite -lee_pdivr_mull; last by rewrite invr_gt0// exprn_gt0.
+  rewrite exprnN expfV exprz_inv opprK -exprnP.
+  have : {in `[0, +oo[%classic &, {homo mexp 2 : x y / x <= y :> R}}.
+    by move=> x y; rewrite !inE !mksetE !in_itv/= !andbT => x0 y0; rewrite /mexp ler_sqr.
+  move=> /(@markov Y [the {mfun _ >-> R} of @mexp R 2] _ heps (@sqr_ge0 _)) /=.
+  move=> /le_trans; apply => /=.
+  apply: expectation_le => //=.
+  - by move=> x; rewrite /mexp /mabs sqr_ge0.
+  - by move=> x; rewrite /mexp /mexp /mabs real_normK// num_real.
+have := h [the {RV P >-> R} of X `- cst_mfun (fine ('E X))].
+by move=> /le_trans; apply; rewrite lee_pmul2l// lte_fin invr_gt0 exprn_gt0.
+Qed.
+
+End markov_chebyshev.
+
 Section cvg_random_variable.
 Variables (d : _) (T : measurableType d) (R : realType) (P : probability T R).
 
 Definition probabilistic_cvg (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
-  := forall a : {posnum R}, [sequence P [set x | a%:num <= `| X n x - Y x | ] ]_n --> 0%E.
+  := forall a : {posnum R}, [sequence (fine \o P) [set x | a%:num <= `| X n x - Y x | ] ]_n --> (0%R:R).
+
+Lemma prop_23_1 (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
+  : (*(@mabs R `o (X n `- Y) ) @[n --> \oo]--> cst_mfun 0*)
+    (forall x, `| X n x - Y x | @[n --> \oo]--> (0%R:R)) -> probabilistic_cvg X Y.
+Proof.
+move => h a /=.
+apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]).
+move => eps heps.
+rewrite near_map /=.
+near=> n.
+Abort.
 
 End cvg_random_variable.
 
