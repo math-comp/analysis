@@ -1,7 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum.
-Require Import boolp ereal reals mathcomp_extra.
-Require Import classical_sets signed functions topology normedtype.
+From mathcomp.classical Require Import boolp classical_sets functions.
+Require Import ereal reals mathcomp_extra.
+Require Import signed topology normedtype.
 Require Import prodnormedzmodule.
 
 (******************************************************************************)

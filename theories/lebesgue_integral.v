@@ -1,9 +1,11 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
+From mathcomp.classical Require Import boolp classical_sets.
+From mathcomp.classical Require Import functions cardinality fsbigop.
+Require Import mathcomp_extra signed.
 Require Import reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure fsbigop numfun.
+Require Import lebesgue_measure numfun.
 
 (******************************************************************************)
 (*                            Lebesgue Integral                               *)
@@ -768,7 +770,7 @@ transitivity (\sum_(z \in FG) z%:E * \sum_(a \in F) m (pf a `&` pg (z - a)%R)).
   apply: eq_fsbigr => z _; rewrite preimage_add -fsbig_setU// measure_fsbig//.
     by move=> x Fx; apply: measurableI.
   exact/trivIset_setIr/trivIset_preimage1.
-under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsum//.
+under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsbig//.
 transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
   apply: eq_fsbigr => x _; rewrite /pf /pg (fsbig_widen G setT)//=; last first.
     by move=> y [_ /= /preimage10->]; rewrite setI0 measure0 mule0.
@@ -782,7 +784,7 @@ transitivity (\sum_(x \in F) \sum_(y \in G) x%:E * m (pf x `&` pg y) +
               \sum_(x \in F) \sum_(y \in G) y%:E * m (pf x `&` pg y)).
   do 2![rewrite -fsbig_split//; apply: eq_fsbigr => _ /set_mem [? _ <-]].
   by rewrite EFinD ge0_muleDl// ?lee_fin.
-congr (_ + _)%E; last rewrite exchange_fsum//; apply: eq_fsbigr => x _.
+congr (_ + _)%E; last rewrite exchange_fsbig//; apply: eq_fsbigr => x _.
   by rewrite -ge0_mule_fsumr// additive_nnsfunr nnsfun_cover setIT.
 by rewrite -ge0_mule_fsumr// additive_nnsfunl nnsfun_cover setTI.
 Qed.

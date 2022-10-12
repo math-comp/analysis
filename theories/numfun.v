@@ -2,7 +2,9 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
-Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
+From mathcomp.classical Require Import boolp classical_sets.
+From mathcomp.classical Require Import functions cardinality.
+Require Import mathcomp_extra signed.
 Require Import reals ereal topology normedtype sequences.
 
 (******************************************************************************)

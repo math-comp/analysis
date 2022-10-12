@@ -1,8 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-Require Import boolp classical_sets mathcomp_extra reals ereal signed.
-Require Import functions topology normedtype sequences cardinality esum fsbigop.
-Require Import numfun.
+From mathcomp.classical Require Import boolp classical_sets.
+From mathcomp.classical Require Import functions cardinality fsbigop.
+Require Import mathcomp_extra reals ereal signed.
+Require Import topology normedtype sequences esum numfun.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -2068,7 +2069,7 @@ transitivity (\sum_(X \in E) \sum_(i \in D) mu (X `&` F i)).
   rewrite [in LHS]XDF content_fin_bigcup//; first exact: trivIset_setI.
   - by move=> i /mem_set Di; apply: measurableI; [exact: Em|exact: Fm].
   - by rewrite -XDF; exact: Em.
-rewrite exchange_fsum //; last exact: decomp_finite_set.
+rewrite exchange_fsbig //; last exact: decomp_finite_set.
 apply eq_fsbigr => i Di; have Feq : F i = \bigcup_(X in E) (X `&` F i).
   rewrite -setI_bigcupl setIidr// cover_decomp.
   by apply/bigcup_sup; exact: set_mem.

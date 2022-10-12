@@ -36,7 +36,8 @@
 (******************************************************************************)
 
 From mathcomp Require Import all_ssreflect all_algebra.
-(* ------- *) Require Import mathcomp_extra boolp classical_sets.
+From mathcomp.classical Require Import boolp classical_sets set_interval.
+Require Import mathcomp_extra.
 
 Require Import Setoid.
 
@@ -59,42 +60,6 @@ Local Open Scope ring_scope.
 Section subr_image.
 Variable R : numDomainType.
 Implicit Types (E : set R) (x : R).
-
-Lemma setNK : involutive (fun E => -%R @` E).
-Proof.
-move=> A; rewrite image_comp (_ : _ \o _ = id) ?image_id//.
-by rewrite funeqE => r /=; rewrite opprK.
-Qed.
-
-Lemma memNE E x : E x = (-%R @` E) (- x).
-Proof. by rewrite image_inj //; exact: oppr_inj. Qed.
-
-Lemma lb_ubN E x : lbound E x <-> ubound (-%R @` E) (- x).
-Proof.
-split=> [/lbP xlbE|/ubP xlbE].
-by move=> _ [z Ez <-]; rewrite ler_oppr opprK; apply xlbE.
-by move=> y Ey; rewrite -(opprK x) ler_oppl; apply xlbE; exists y.
-Qed.
-
-Lemma ub_lbN E x : ubound E x <-> lbound (-%R @` E) (- x).
-Proof.
-split=> [? | /lb_ubN]; first by apply/lb_ubN; rewrite opprK setNK.
-by rewrite opprK setNK.
-Qed.
-
-Lemma nonemptyN E : nonempty (-%R @` E) <-> nonempty E.
-Proof.
-split=> [[x ENx]|[x Ex]]; exists (- x); last by rewrite -memNE.
-by rewrite memNE opprK.
-Qed.
-
-Lemma opp_set_eq0 E : (-%R @` E) = set0 <-> E = set0.
-Proof. by split; apply: contraPP => /eqP/set0P/nonemptyN/set0P/eqP. Qed.
-
-Lemma has_lb_ubN E : has_lbound E <-> has_ubound (-%R @` E).
-Proof.
-by split=> [[x /lb_ubN] | [x /ub_lbN]]; [|rewrite setNK]; exists (- x).
-Qed.
 
 Lemma has_ub_lbN E : has_ubound E <-> has_lbound (-%R @` E).
 Proof.
@@ -122,26 +87,6 @@ Section has_bound_lemmas.
 Variable R : realDomainType.
 Implicit Types E : set R.
 Implicit Types x : R.
-
-Lemma has_ubPn {E} : ~ has_ubound E <-> (forall x, exists2 y, E y & x < y).
-Proof.
-split; last first.
-  move=> h [x] /ubP hle; case/(_ x): h => y /hle.
-  by rewrite leNgt => /negbTE ->.
-move/forallNP => h x; have {h} := h x.
-move=> /ubP /existsNP => -[y /not_implyP[Ey /negP]].
-by rewrite -ltNge => ltx; exists y.
-Qed.
-
-Lemma has_lbPn E : ~ has_lbound E <-> (forall x, exists2 y, E y & y < x).
-Proof.
-split=> [/has_lb_ubN /has_ubPn NEnub x|Enlb /has_lb_ubN].
-  have [y ENy ltxy] := NEnub (- x); exists (- y); rewrite 1?ltr_oppl //.
-  by case: ENy => z Ez <-; rewrite opprK.
-apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x).
-exists (- y); last by rewrite ltr_oppr.
-by exists y => //; rewrite opprK.
-Qed.
 
 Lemma has_ub_image_norm E : has_ubound (normr @` E) -> has_ubound E.
 Proof.

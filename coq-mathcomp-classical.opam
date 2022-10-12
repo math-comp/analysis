@@ -10,26 +10,28 @@ dev-repo: "git+https://github.com/math-comp/analysis.git"
 bug-reports: "https://github.com/math-comp/analysis/issues"
 license: "CECILL-C"
 
-synopsis: "An analysis library for mathematical components"
+synopsis: "A library for classical logic for mathematical components"
 description: """
-This repository contains an experimental library for real analysis for
+This repository contains a library for classical logic for
 the Coq proof-assistant and using the Mathematical Components library."""
 
-build: [make "-C" "theories" "-j%{jobs}%"]
-install: [make "-C" "theories" "install"]
+build: [make "-C" "classical" "-j%{jobs}%"]
+install: [make "-C" "classical" "install"]
 depends: [
-  "coq-mathcomp-classical" { = version}
-  "coq-mathcomp-solvable" { (>= "1.13.0" & < "1.16~") | (= "dev") }
-  "coq-mathcomp-field"
-  "coq-mathcomp-bigenough" { (>= "1.0.0") }
+  "coq" { (>= "8.14" & < "8.17~") | (= "dev") }
+  "coq-mathcomp-ssreflect" { (>= "1.13.0" & < "1.16~") | (= "dev") }
+  "coq-mathcomp-fingroup"
+  "coq-mathcomp-algebra"
+  "coq-mathcomp-finmap" { (>= "1.5.1" & < "1.6~") | (= "dev") }
+  "coq-hierarchy-builder" { (>= "1.2.0") }
 ]
 
 tags: [
-  "category:Mathematics/Real Calculus and Topology"
-  "keyword:analysis"
-  "keyword:topology"
-  "keyword:real numbers"
-  "logpath:mathcomp.analysis"
+  "category:Mathematics/Classical Logic"
+  "keyword:classical"
+  "keyword:logic"
+  "keyword:sets"
+  "logpath:mathcomp.classical"
 ]
 authors: [
   "Reynald Affeldt"

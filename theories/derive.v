@@ -1,6 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
-Require Import boolp reals mathcomp_extra classical_sets signed functions.
+From mathcomp.classical Require Import boolp classical_sets functions.
+Require Import reals mathcomp_extra signed.
 Require Import topology prodnormedzmodule normedtype landau forms.
 
 (******************************************************************************)

@@ -1,18 +1,25 @@
--arg -w
--arg -parsing
--arg -w -arg +non-primitive-record
+-R classical mathcomp.classical
+-R theories mathcomp.analysis
+
+-arg -w -arg -parsing
 -arg -w -arg +undeclared-scope
+-arg -w -arg +non-primitive-record
 -arg -w -arg -ambiguous-paths
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
 
+classical/boolp.v
+classical/classical_sets.v
+classical/mathcomp_extra.v
+classical/functions.v
+classical/cardinality.v
+classical/fsbigop.v
+classical/set_interval.v
 theories/mathcomp_extra.v
-theories/boolp.v
 theories/constructive_ereal.v
 theories/ereal.v
 theories/reals.v
 theories/landau.v
-theories/classical_sets.v
 theories/Rstruct.v
 theories/topology.v
 theories/prodnormedzmodule.v
@@ -22,9 +29,7 @@ theories/sequences.v
 theories/exp.v
 theories/trigo.v
 theories/nsatz_realtype.v
-theories/cardinality.v
 theories/esum.v
-theories/fsbigop.v
 theories/set_interval.v
 theories/lebesgue_measure.v
 theories/forms.v
@@ -33,12 +38,9 @@ theories/measure.v
 theories/numfun.v
 theories/lebesgue_integral.v
 theories/summability.v
-theories/functions.v
 theories/signed.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
 theories/altreals/realsum.v
 theories/altreals/distr.v
-
--R theories mathcomp.analysis

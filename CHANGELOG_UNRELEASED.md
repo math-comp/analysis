@@ -45,6 +45,51 @@
 - in `classical_sets.v`:
   + lemmas `set_compose_subset`, `compose_diag`
   + notation `\;` for the composition of relations
+- OPAM package `coq-mathcomp-classical` containing `boolp.v`
+- file `all_classical.v`
+- file `classical/mathcomp_extra.v`
+- in file `classical/mathcomp_extra.v`:
+  + lemmas `pred_oappE` and `pred_oapp_set` (from `classical_sets.v`)
+  + definition `olift` (from `mathcomp_extra.v`)
+  + definition `pred_oapp` (from `mathcomp_extra.v`)
+  + definition `mul_fun` and notation `f \* g` (from `mathcomp_extra.v`)
+  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
+    `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`,
+    `eqbRL` (from `mathcomp_extra.v`)
+  + definition `opp_fun` and notation `\- f` (from `mathcomp_extra.v`)
+  + lemma `sumr_le0`
+- in file `fsbigop.v`:
+  + lemmas `fsumr_ge0`, `fsumr_le0`, `fsumr_gt0`, `fsumr_lt0`, `pfsumr_eq0`,
+    `pair_fsbig`, `exchange_fsbig`
+- in file `ereal.v`:
+  + notation `\sum_(_ \in _) _` (from `fsbigop.v`)
+  + lemmas `fsume_ge0`, `fsume_le0`, `fsume_gt0`, `fsume_lt0`,
+    `pfsume_eq0`, `lee_fsum_nneg_subset`, `lee_fsum`,
+    `ge0_mule_fsumr`, `ge0_mule_fsuml` (from `fsbigop.v`)
+  + lemmas `finite_supportNe`, `dual_fsumeE`, `dfsume_ge0`, `dfsume_le0`,
+    `dfsume_gt0`, `dfsume_lt0`, `pdfsume_eq0`, `le0_mule_dfsumr`, `le0_mule_dfsuml`
+- file `classical/set_interval.v`
+- in file `classical/set_interval.v`:
+  + definitions `neitv`, `set_itv_infty_set0`, `set_itvE`, `disjoint_itv`
+    (from `set_interval.v`)
+  + lemmas `neitv_lt_bnd`, `set_itvP`, `subset_itvP`, `set_itvoo`, `set_itv_cc`,
+    `set_itvco`, `set_itvoc`, `set_itv1`, `set_itvoo0`, `set_itvoc0`, `set_itvco0`,
+    `set_itv_infty_infty`, `set_itv_o_infty`, `set_itv_c_infty`, `set_itv_infty_o`,
+    `set_itv_infty_c`, `set_itv_pinfty_bnd`, `set_itv_bnd_ninfty`, `setUitv1`,
+    `setU1itv`, `set_itvI`, `neitvE`, `neitvP`, `setitv0`, `has_lbound_itv`,
+    `has_ubound_itv`, `hasNlbound`, `hasNubound`, `opp_itv_bnd_infty`, `opp_itvoo`,
+    `setCitvl`, `setCitvr`, `set_itv_splitI`, `setCitv`, `set_itv_splitD`,
+    `set_itv_ge`, `trivIset_set_itv_nth`, `disjoint_itvxx`, `lt_disjoint`,
+    `disjoint_neitv`, `neitv_bnd1`, `neitv_bnd2` (from `set_interval.v`)
+  + lemmas `setNK`, `lb_ubN`, `ub_lbN`, `mem_NE`, `nonemptyN`, `opp_set_eq0`,
+    `has_lb_ubN`, `has_ubPn`, `has_lbPn` (from `reals.v`)
+- in file `classical/mathcomp_extra.v`:
+  + coercion `pair_of_interval` (from `mathcomp_extra.v`)
+  + definition `miditv` (from `mathcomp_extra.v`)
+  + lemmas `ltBside`, `leBside`, `ltBRight`, `leBRight`, `bnd_simp`,
+    `itv_splitU1`, `itv_split1U`, `mem_miditv`, `miditv_le_left`,
+    `miditv_ge_right`, `predC_itvl`, `predC_itvr`, `predC_itv`
+    (from `mathcomp_extra.v`)
 
 ### Changed
 - in `topology.v`
@@ -88,6 +133,11 @@
   + `lte_spdaddr` -> `lte_spdaddre`
 - in `topology.v`:
  + `pasting` -> `withinU_continuous`
+- file `theories/boolp.v` -> `classical/boolp.v`
+- file `theories/classical_sets.v` -> `classical/classical_sets.v`
+- file `theories/functions.v` -> `classical/functions.v`
+- file `theories/cardinality.v` -> `classical/cardinality.v`
+- file `theories/fsbigop.v` -> `classical/fsbigop.v`
 
 ### Deprecated
 
@@ -95,6 +145,46 @@
   + lemma `lte_spaddr`, renamed `lte_spaddre`
 
 ### Removed
+
+- in file `classical_sets.v`:
+  + lemmas `pred_oappE` and `pred_oapp_set` (moved to `classical/mathcomp_extra.v`)
+- in file `mathcomp_extra.v`:
+  + definition `olift` (moved to `classical/mathcomp_extra.v`)
+  + definition `pred_oapp` (moved to `classical/mathcomp_extra.v`)
+  + definition `mul_fun` and notation `f \* g` (moved to `classical/mathcomp_extra.v`)
+  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
+    `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`, `eqbRL` (moved to
+    `classical/mathcomp_extra.v`)
+  + definition `opp_fun` and notation `\- f` (moved to `classical/mathcomp_extra.v`)
+- in file `fsbigop.v`:
+  + notation `\sum_(_ \in _) _` (moved to `ereal.v`)
+  + lemma `lee_fsum_nneg_subset`, `lee_fsum`, `ge0_mule_fsumr`,
+    `ge0_mule_fsuml`, `fsume_ge0`, `fsume_le0`, `fsume_gt0`,
+    `fsume_lt0`, `pfsume_eq0` (moved to `ereal.v`)
+  + lemma `pair_fsum` (subsumed by `pair_fsbig`)
+  + lemma `exchange_fsum` (subsumed by `exchange_fsbig`)
+- in file `mathcomp_extra.v`:
+  + coercion `pair_of_interval` (moved to `classical/mathcomp_extra.v`)
+  + definition `miditv` (moved to `classical/mathcomp_extra.v`)
+  + lemmas `ltBside`, `leBside`, `ltBRight`, `leBRight`, `bnd_simp`,
+    `itv_splitU1`, `itv_split1U`, `mem_miditv`, `miditv_le_left`,
+    `miditv_ge_right`, `predC_itvl`, `predC_itvr`, `predC_itv`
+    (moved to `classical/mathcomp_extra.v`)
+- in file `reals.v`:
+  + lemmas `setNK`, `lb_ubN`, `ub_lbN`, `mem_NE`, `nonemptyN`, `opp_set_eq0`,
+    `has_lb_ubN`, `has_ubPn`, `has_lbPn` (moved to `classical/set_interval.v`)
+- in file `set_interval.v`:
+  + definitions `neitv`, `set_itv_infty_set0`, `set_itvE`, `disjoint_itv`
+    (moved to `classical/set_interval.v`)
+  + lemmas `neitv_lt_bnd`, `set_itvP`, `subset_itvP`, `set_itvoo`, `set_itv_cc`,
+    `set_itvco`, `set_itvoc`, `set_itv1`, `set_itvoo0`, `set_itvoc0`, `set_itvco0`,
+    `set_itv_infty_infty`, `set_itv_o_infty`, `set_itv_c_infty`, `set_itv_infty_o`,
+    `set_itv_infty_c`, `set_itv_pinfty_bnd`, `set_itv_bnd_ninfty`, `setUitv1`,
+    `setU1itv`, `set_itvI`, `neitvE`, `neitvP`, `setitv0`, `has_lbound_itv`,
+    `has_ubound_itv`, `hasNlbound`, `hasNubound`, `opp_itv_bnd_infty`, `opp_itvoo`,
+    `setCitvl`, `setCitvr`, `set_itv_splitI`, `setCitv`, `set_itv_splitD`,
+    `set_itv_ge`, `trivIset_set_itv_nth`, `disjoint_itvxx`, `lt_disjoint`,
+    `disjoint_neitv`, `neitv_bnd1`, `neitv_bnd2` (moved to `classical/set_interval.v`)
 
 ### Infrastructure
 
