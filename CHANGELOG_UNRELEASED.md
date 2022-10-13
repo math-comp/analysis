@@ -113,6 +113,8 @@
 - in file `normedtype.v`
   + lemmas `closed_ballR_compact` and `locally_compactR` 
 
+- in `sequences.v`:
+  + lemma `inv_cvg`
 
 ### Changed
 - in `topology.v`

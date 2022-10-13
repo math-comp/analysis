@@ -501,6 +501,20 @@ Proof. by move/is_cvgN/cvg_has_sup; rewrite -has_inf_supN image_comp. Qed.
 
 End sequences_R_lemmas_realFieldType.
 
+Lemma inv_cvg (R : realFieldType) (u : R ^nat) :
+  (forall n, 0 < u n) -> (fun n => (u n)^-1) --> 0 -> u --> +oo.
+Proof.
+move=> u0 uV0; apply/cvgPpinfty => M.
+move/cvg_distP : uV0 => /(_ (`|M| + 1)^-1%R).
+rewrite invr_gt0 ltr_paddl// => /(_ erefl); rewrite !near_map.
+apply: filterS => n.
+rewrite sub0r normrN normrV ?unitfE ?gt_eqF// ger0_norm; last exact: ltW.
+rewrite ltr_pinv.
+- by move/ltW; apply: le_trans; rewrite (le_trans (ler_norm _))// ler_addl.
+- by rewrite inE unitfE u0 andbT gt_eqF.
+- by rewrite inE unitfE ltr_paddl// andbT gt_eqF.
+Qed.
+
 Section partial_sum.
 Variables (V : zmodType) (u_ : V ^nat).
 
