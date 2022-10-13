@@ -4062,20 +4062,10 @@ Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
 HB.instance Definition _ (U : uniformType) := isSource.Build Prop _ U
   (fun A => nbhs_ (@entourage_set U) A).
 
-(** * PseudoMetric spaces defined using balls *)
-
-Definition entourage_ {R : numDomainType} {T T'} (ball : T -> R -> set T') :=
-  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
-
-Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
-  entourage_ ball =
-  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
-Proof. by []. Qed.
-
 Definition map_pair {S U} (f : S -> U) (x : (S * S)) : (U * U) :=
   (f x.1, f x.2).
 
-(* TODO: port once weak topology is ported
+(* TODO_HB: port once weak topology is ported
 Section weak_uniform.
 
 Variable (pS : pointedType) (U : uniformType) (f : pS -> U).
@@ -4131,7 +4121,6 @@ Definition weak_uniformType :=
   UniformType S weak_uniform_mixin.
 
 End weak_uniform.
-*)
 
 Section sup_uniform.
 
@@ -4245,23 +4234,17 @@ Definition product_uniformType :=
     (weak_uniformType (fun f : dep_arrow_pointedType T => f i))).
 
 End product_uniform.
+*)
 
-Module PseudoMetric.
+(** * PseudoMetric spaces defined using balls *)
 
-HB.mixin Record Uniform_isPseudoMetric (R : Type) M := {
-  ball : M -> R -> M -> Prop ;
-  (* pseudo_metric_ax1 : forall x (e : R), 0 < e -> ball x e x ; *)
-  (* pseudo_metric_ax2 : forall x y (e : R), ball x e y -> ball y e x ; *)
-  (* pseudo_metric_ax3 : *)
-  (*   forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z; *)
-  (* pseudo_metric_ax4 : entourage = entourage_ ball *)
-}.
+Definition entourage_ {R : numDomainType} {T T'} (ball : T -> R -> set T') :=
+  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
 
-#[short(type="pseudoMetricType")]
-HB.structure Definition PseudoMetric (R : Type) :=
-  {T of Uniform T & Uniform_isPseudoMetric R T}.
-
-
+Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
+  entourage_ ball =
+  @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
+Proof. by []. Qed.
 
 HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M of Uniform M := {
   ball : M -> R -> M -> Prop ;
@@ -4321,7 +4304,7 @@ rewrite pseudo_metric_ax4 => - [e egt0 sbeA].
 by exists e => // xy xye; apply: sbeA; apply: pseudo_metric_ax2.
 Qed.
 
-Lemma uniform_ax4 A : ent A -> exists2 B, ent B & B \o B `<=` A.
+Lemma uniform_ax4 A : ent A -> exists2 B, ent B & B \; B `<=` A.
 Proof.
 rewrite pseudo_metric_ax4; move=> [_/posnumP[e] sbeA].
 exists [set xy | ball xy.1 (e%:num / 2) xy.2].
@@ -5297,6 +5280,7 @@ apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
 by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
 Qed.
 
+(* TODO_HB
 Section weak_pseudoMetric.
 Context {R : realType} (pS : pointedType) (U : pseudoMetricType R) .
 Variable (f : pS -> U).
@@ -5343,6 +5327,7 @@ Lemma weak_ballE (e : R) (x : weak_pseudoMetricType) :
 Proof. by []. Qed.
 
 End weak_pseudoMetric.
+*)
 
 (* This section proves that uniform spaces, with a countable base for their
    entourage, are metrizable. The definition of this metric is rather arcane,
@@ -5647,8 +5632,10 @@ by case=> x y /= N1ball; apply: (@subset_step_ball x N.+1).
 Qed.
 
 (* Note this is the only non-local result from this section *)
+(* TODO_HB
 Definition countable_uniform_pseudoMetricType_mixin := PseudoMetric.Mixin
   step_ball_center step_ball_sym step_ball_triangle step_ball_entourage.
+*)
 
 End countable_uniform.
 
@@ -6062,7 +6049,7 @@ by move=> [? [? Vxy]]; right; repeat split => //.
 Qed.
 
 Let subspace_uniform_ax4 : forall A : set (subspace A * subspace A),
-  subspace_ent A -> exists2 B, subspace_ent B & B \o B `<=` A.
+  subspace_ent A -> exists2 B, subspace_ent B & B \; B `<=` A.
 Proof.
 move=> ?; case=> E entE Esub.
 exists  [set xy | xy.1 = xy.2 \/ A xy.1 /\ A xy.2 /\ split_ent E xy].
@@ -6152,6 +6139,7 @@ HB.instance Definition _ := subspace_pseudoMetricType_mixin.
 
 End SubspacePseudoMetric.
 
+(* TODO_HB
 Section SubspaceWeak.
 Context {T : topologicalType} {U : pointedType}.
 Variables (f : U -> T).
@@ -6167,6 +6155,7 @@ by case=> w _ <- [v] ? <-.
 Qed.
 
 End SubspaceWeak.
+*)
 
 Lemma continuous_compact {T U : topologicalType} (f : T -> U) A :
   {within A, continuous f} -> compact A -> compact (f @` A).
