@@ -3978,3 +3978,18 @@ by rewrite ler_pmul //; near: r; exists 1; split => // x /ltW; apply le_trans.
 Unshelve. all: by end_near. Qed.
 
 End LinearContinuousBounded.
+
+Section locally_compact.
+
+Lemma locally_compactR (R : realType) : locally_compact [set: R].
+Proof.
+move=> x  _; rewrite withinET; exists (`[x-1, x+1]%classic); first last.
+split; [|apply: compact_closed] => //; exact: segment_compact.
+apply: (@filterS _ _ _ `]x-1, x+1[%classic).
+  by move=> z /=; rewrite ?in_itv //= => /andP [/ltW -> /ltW ->].
+apply: open_nbhs_nbhs; split; first exact: interval_open.
+rewrite /= in_itv /=; apply/andP. 
+by split; rewrite ?ltr_subl_addl ?[1+_]addrC ltr_addl.
+Qed.
+
+End locally_compact.
