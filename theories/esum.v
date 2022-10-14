@@ -300,7 +300,7 @@ Lemma nneseries_esum (R : realType) (a : nat -> \bar R) (P : pred nat) :
   \sum_(i <oo | P i) a i = \esum_(i in [set x | P x]) a i.
 Proof.
 move=> a0; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: (ereal_lim_le (is_cvg_nneseries_cond a0)); apply: nearW => n.
+  apply: (lim_lee (is_cvg_nneseries_cond a0)); apply: nearW => n.
   apply: ereal_sup_ub => /=; exists [set` [fset val i | i in 'I_n & P i]%fset].
     split; first exact: finite_fset.
     by move=> /= k /imfsetP[/= i]; rewrite inE => + ->.
@@ -554,7 +554,7 @@ suff: ((fun n => C_ n - (A - B)) --> (0 : R^o))%R.
   move=> CAB.
   rewrite [X in  X - _]summable_nneseries_lim//; last exact/summable_funepos.
   rewrite [X in _ - X]summable_nneseries_lim//; last exact/summable_funeneg.
-  rewrite -EFinB; apply/cvg_lim => //; apply/ereal_cvg_real; split.
+  rewrite -EFinB; apply/cvg_lim => //; apply/fine_cvgP; split.
     apply: nearW => n.
     rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
     by rewrite -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
@@ -563,8 +563,7 @@ have : ((fun x => A_ x - B_ x) --> A - B)%R.
   apply: cvgD.
   - by apply: summable_cvg => //; exact/summable_funepos.
   - by apply: cvgN; apply: summable_cvg => //; exact/summable_funeneg.
-move=> /cvg_distP cvgAB; apply/cvg_distP => e e0.
-rewrite near_simpl.
+move=> /cvgrPdist_lt cvgAB; apply/cvgrPdist_lt => e e0.
 move: cvgAB => /(_ _ e0) [N _/= hN] /=.
 near=> n.
 rewrite distrC subr0.

@@ -693,27 +693,6 @@ case: x => [r| |].
 Qed.
 #[local] Hint Resolve emeasurable_set1 : core.
 
-Lemma itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
-Proof.
-by rewrite set_itvE predeqE => t; split => /= [|<-//]; rewrite leye_eq => /eqP.
-Qed.
-
-Lemma itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
-Proof.
-by rewrite set_itvE predeqE => t; split => //=; apply/negP; rewrite -leNgt leey.
-Qed.
-
-Lemma itv_cninfty_pinfty : `[-oo%E, +oo[%classic = setT :> set (\bar R).
-Proof. by rewrite set_itvE predeqE => t; split => //= _; rewrite leNye. Qed.
-
-Lemma itv_oninfty_pinfty :
-  `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
-Proof.
-rewrite set_itvE predeqE => x; split => /=.
-- by move: x => [x| |]; rewrite ?ltxx.
-- by move: x => [x h|//|/(_ erefl)]; rewrite ?ltNye.
-Qed.
-
 Lemma emeasurable_itv_bnd_pinfty b (y : \bar R) :
   measurable [set` Interval (BSide b y) +oo%O].
 Proof.
@@ -878,9 +857,9 @@ rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
   rewrite hlength_itv/= lte_fin ifT; last first.
     by rewrite ler_lt_sub// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
   by rewrite !(EFinB,EFinN) oppeB// addeAC addeA subee// add0e.
-apply/cvg_lim => //=; apply/ereal_cvg_real; split => /=; first exact: nearW.
-apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
-rewrite !near_simpl; near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
+apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
+apply/(@cvgrPdist_lt _ [pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
+near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
 by near: n; exact: near_infty_natSinv_lt.
 Unshelve. all: by end_near. Qed.
 
@@ -943,11 +922,7 @@ by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
 Qed.
 
 Let limnatR : lim (fun k => (k%:R)%:E : \bar R) = +oo%E.
-Proof.
-apply/cvg_lim => //; apply/dvg_ereal_cvg/cvgPpinfty => A.
-exists `|ceil A|%N => //= => n/=; rewrite -(@ler_nat R); apply: le_trans.
-by rewrite natr_absz (le_trans (ceil_ge _))// intr_norm ler_norm.
-Qed.
+Proof. by apply/cvg_lim => //; apply/cvgenyP. Qed.
 
 Let lebesgue_measure_itv_bnd_infty x (a : R) :
   lebesgue_measure ([set` Interval (BSide x a) +oo%O] : set R) = +oo%E.
@@ -1830,9 +1805,9 @@ have /emeasurable_funN := emeasurable_fun_max mf mg.
 by apply eq_measurable_fun => i Di; rewrite -oppe_min oppeK.
 Qed.
 
-Lemma measurable_fun_elim_sup D (f : (T -> \bar R)^nat) :
+Lemma measurable_fun_lim_esup D (f : (T -> \bar R)^nat) :
   (forall n, measurable_fun D (f n)) ->
-  measurable_fun D (fun x => elim_sup (f ^~ x)).
+  measurable_fun D (fun x => lim_esup (f ^~ x)).
 Proof.
 move=> mf mD; rewrite (_ :  (fun _ => _) =
     (fun x => ereal_inf [set esups (f^~ x) n | n in [set n | n >= 0]%N])).
@@ -1847,11 +1822,11 @@ Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall m, measurable_fun D (f_ m)) ->
   (forall x, D x -> f_ ^~ x --> f x) -> measurable_fun D f.
 Proof.
-move=> mf_ f_f; have fE x : D x -> f x = elim_sup (f_^~ x).
+move=> mf_ f_f; have fE x : D x -> f x = lim_esup (f_^~ x).
   by move=> Dx; have /cvg_lim  <-// := @cvg_esups _ (f_^~x) (f x) (f_f x Dx).
-apply: (measurable_fun_ext (fun x => elim_sup (f_ ^~ x))) => //.
+apply: (measurable_fun_ext (fun x => lim_esup (f_ ^~ x))) => //.
   by move=> x; rewrite inE => Dx; rewrite fE.
-exact: measurable_fun_elim_sup.
+exact: measurable_fun_lim_esup.
 Qed.
 
 End emeasurable_fun.

@@ -7,7 +7,6 @@ Coercion choice.Choice.mixin : choice.Choice.class_of >-> choice.Choice.mixin_of
 
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
-Require Import boolp classical_sets.
 
 (***************************)
 (* MathComp 1.15 additions *)
@@ -34,7 +33,6 @@ Unset Printing Implicit Defensive.
 Reserved Notation "f \* g" (at level 40, left associativity).
 Reserved Notation "f \- g" (at level 50, left associativity).
 Reserved Notation "\- f"  (at level 35, f at level 35).
-
 Reserved Notation "f \max g" (at level 50, left associativity).
 
 Lemma all_sig2_cond {I : Type} {T : Type} (D : pred I)
@@ -80,22 +78,6 @@ Proof.
 move=> hD fK hK c cD /=; rewrite -[RHS]hK/=; case hcE : (h c) => [b|]//=.
 have bD : b \in D by have := hD _ cD; rewrite hcE inE.
 by rewrite -[b in RHS]fK; case: (f b) => //=; have /hK := cD; rewrite hcE.
-Qed.
-
-Lemma pred_oappE {T : Type} (D : {pred T}) :
-  pred_oapp D = mem (some @` D)%classic.
-Proof.
-apply/funext=> -[x|]/=; apply/idP/idP; rewrite /pred_oapp/= inE //=.
-- by move=> xD; exists x.
-- by move=> [// + + [<-]].
-- by case.
-Qed.
-
-Lemma pred_oapp_set {T : Type} (D : set T) :
-  pred_oapp (mem D) = mem (some @` D)%classic.
-Proof.
-by rewrite pred_oappE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
-   move=> [y/= ]; rewrite ?in_setE; exists y; rewrite ?in_setE.
 Qed.
 
 Lemma eqbRL (b1 b2 : bool) : b1 = b2 -> b2 -> b1.
@@ -427,9 +409,21 @@ Qed.
 
 End lt_le_gt_ge.
 
+Lemma itvxx d (T : porderType d) (x : T) : `[x, x] =i pred1 x.
+Proof. by move=> y; rewrite in_itv/= -eq_le eq_sym. Qed.
+
+Lemma itvxxP d (T : porderType d) (x y : T) : reflect (y = x) (y \in `[x, x]).
+Proof. by rewrite itvxx; apply/eqP. Qed.
+
+Lemma subset_itv_oo_cc d (T : porderType d) (a b : T) : {subset `]a, b[ <= `[a, b]}.
+Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
+
 (**********************************)
 (* End of MathComp 1.15 additions *)
 (**********************************)
+
+Reserved Notation "`1- r" (format "`1- r", at level 2).
+Reserved Notation "f \^-1" (at level 3, format "f \^-1").
 
 Lemma natr1 (R : ringType) (n : nat) : (n%:R + 1 = n.+1%:R :> R)%R.
 Proof. by rewrite GRing.mulrSr. Qed.
@@ -765,8 +759,6 @@ Arguments bigmin_inf {d T I x} j.
 Arguments bigmin_eq_arg {d T I} x j.
 Arguments eq_bigmin {d T I x} j.
 
-Reserved Notation "`1- r" (format "`1- r", at level 2).
-
 Section onem.
 Variable R : numDomainType.
 Implicit Types r : R.
@@ -815,3 +807,23 @@ Notation "`1- r" := (onem r) : ring_scope.
 
 Lemma lez_abs2 (a b : int) : 0 <= a -> a <= b -> (`|a| <= `|b|)%N.
 Proof. by case: a => //= n _; case: b. Qed.
+
+Lemma ler_gtP (R : numFieldType) (x y : R) :
+  reflect (forall z, z > y -> x <= z) (x <= y).
+Proof.
+apply: (equivP (ler_addgt0Pr _ _)); split=> [xy z|xz e e_gt0].
+  by rewrite -subr_gt0 => /xy; rewrite addrC addrNK.
+by apply: xz; rewrite -[ltLHS]addr0 ler_lt_add.
+Qed.
+
+Lemma ler_ltP (R : numFieldType) (x y : R) :
+  reflect (forall z, z < x -> z <= y) (x <= y).
+Proof.
+apply: (equivP (ler_addgt0Pr _ _)); split=> [xy z|xz e e_gt0].
+  by rewrite -subr_gt0 => /xy; rewrite addrCA -[leLHS]addr0 ler_add2l subr_ge0.
+by rewrite -ler_subl_addr xz// -[ltRHS]subr0 ler_lt_sub.
+Qed.
+
+Definition inv_fun T (R : unitRingType) (f : T -> R) x := (f x)^-1%R.
+Notation "f \^-1" := (inv_fun f) : ring_scope.
+Arguments inv_fun {T R} _ _ /.

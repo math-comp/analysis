@@ -635,6 +635,11 @@ Arguments prop_near2 : simpl never.
 Lemma nearE {T} {F : set (set T)} (P : set T) : (\forall x \near F, P x) = F P.
 Proof. by []. Qed.
 
+Lemma eq_near {T} {F : set (set T)} (P Q : set T) :
+   (forall x, P x <-> Q x) ->
+   (\forall x \near F, P x) = (\forall x \near F, Q x).
+Proof. by move=> /predeqP ->. Qed.
+
 Definition filter_of X (fX : filteredType X) (x : fX) of phantom fX x :=
    nbhs x.
 Notation "[ 'filter' 'of' x ]" :=
@@ -655,6 +660,7 @@ Definition cvg_to {T : Type} (F G : set (set T)) := G `<=` F.
 Notation "F `=>` G" := (cvg_to F G) : classical_set_scope.
 Lemma cvg_refl T (F : set (set T)) : F `=>` F.
 Proof. exact. Qed.
+Arguments cvg_refl {T F}.
 #[global] Hint Resolve cvg_refl : core.
 
 Lemma cvg_trans T (G F H : set (set T)) :
@@ -696,6 +702,10 @@ Proof. by move=> Fl; apply/cvg_ex; exists l. Qed.
 Lemma dvgP {U : Type} (T : filteredType U) (F : set (set U)) :
   ~ [cvg F in T] -> [lim F in T] = point.
 Proof. by rewrite /lim_in /=; case xgetP. Qed.
+
+Lemma cvgNpoint {U} (T : filteredType U) (F : set (set U)) :
+  [lim F in T] != point -> [cvg F in T].
+Proof. by apply: contra_neqP; apply: dvgP. Qed.
 
 End FilteredTheory.
 Arguments cvgP {U T F} l.
@@ -928,6 +938,13 @@ Tactic Notation "near:" ident(x) :=
   then idtac
   else fail "the goal depends on variables introduced after" x.
 
+Ltac under_near i tac := near=> i; tac; near: i.
+Tactic Notation "near=>" ident(i) "do" tactic1(tac) := under_near i ltac:(tac).
+Tactic Notation "near=>" ident(i) "do" "[" tactic4(tac) "]" := near=> i do tac.
+Tactic Notation "near" "do" tactic1(tac) :=
+  let i := fresh "i" in under_near i ltac:(tac).
+Tactic Notation "near" "do" "[" tactic4(tac) "]" := near do tac.
+
 Ltac end_near := do ?exact: in_filterT.
 
 Ltac done :=
@@ -961,7 +978,7 @@ Proof. by move=> [FT _ +] P fP => /(_ setT); apply. Qed.
 
 Lemma filter_app (T : Type) (F : set (set T)) :
   Filter F -> forall P Q : set T, F (fun x => P x -> Q x) -> F P -> F Q.
-Proof. by move=> FF P Q subPQ FP; near=> x; suff: P x; near: x.
+Proof. by move=> FF P Q subPQ FP; near=> x do suff: P x.
 Unshelve. all: by end_near. Qed.
 
 Lemma filter_app2 (T : Type) (F : set (set T)) :
@@ -1206,7 +1223,7 @@ Lemma cvg_near_const (T U : Type) (f : T -> U) (F : set (set T)) (G : set (set U
   (\forall y \near G, \forall x \near F, f x = y) -> f @ F --> G.
 Proof.
 move=> FF FG fFG P /= GP; rewrite !near_simpl; apply: (have_near G).
-by apply: filter_app fFG; near=> y => /=; apply: filterS => x /= ->; near: y.
+by apply: filter_app fFG; near do apply: filterS => x /= ->.
 Unshelve. all: by end_near. Qed.
 
 (* globally filter *)
@@ -1352,9 +1369,9 @@ Lemma filter_pair_set (T T' : Type) (F : set (set T)) (F' : set (set T')) :
    (forall x x', P x -> P' x' -> Q (x, x')) -> F P /\ F' P' ->
    filter_prod F F' Q.
 Proof.
-move=> FF FF' P P' Q PQ [FP FP']; near=> x.
-have := PQ x.1 x.2; rewrite -surjective_pairing; apply; near: x;
-by [apply: cvg_fst|apply: cvg_snd].
+by move=> FF FF' P P' Q PQ [FP FP'];
+   near=> x do [have := PQ x.1 x.2; rewrite -surjective_pairing; apply];
+   [apply: cvg_fst | apply: cvg_snd].
 Unshelve. all: by end_near. Qed.
 
 Lemma filter_pair_near_of (T T' : Type) (F : set (set T)) (F' : set (set T')) :
@@ -1732,6 +1749,12 @@ End Topological1.
 Notation "A ^°" := (interior A) : classical_set_scope.
 
 Notation continuous f := (forall x, f%function @ x --> f%function x).
+
+Lemma near_fun (T T' : topologicalType) (f : T -> T') (x : T) (P : T' -> Prop) :
+    {for x, continuous f} ->
+  (\forall y \near f x, P y) -> (\near x, P (f x)).
+Proof. exact. Qed.
+Arguments near_fun {T T'} f x.
 
 Lemma continuousP (S T : topologicalType) (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
@@ -2139,6 +2162,51 @@ Qed.
 Lemma near_inftyS (P : set nat) :
   (\forall x \near \oo, P (S x)) -> (\forall x \near \oo, P x).
 Proof. case=> N _ NPS; exists (S N) => // [[]]; rewrite /= ?ltn0 //. Qed.
+
+Section infty_nat.
+Local Open Scope nat_scope.
+
+Let cvgnyP {F : set (set nat)} {FF : Filter F} : [<->
+(* 0 *) F --> \oo;
+(* 1 *) forall A, \forall x \near F, A <= x;
+(* 2 *) forall A, \forall x \near F, A < x;
+(* 3 *) \forall A \near \oo, \forall x \near F, A < x;
+(* 4 *) \forall A \near \oo, \forall x \near F, A <= x ].
+Proof.
+tfae; first by move=> Foo A; apply: Foo; apply: nbhs_infty_ge.
+- move=> AF A; near \oo => B; near=> x.
+  suff : (B <= x)%N by apply: leq_trans; near: B; apply: nbhs_infty_gt.
+  by near: x; apply: AF; near: B.
+- by move=> Foo; near do apply: Foo.
+- by apply: filterS => ?; apply: filterS => ?; apply: ltnW.
+case=> [A _ AF] P [n _ Pn]; near \oo => B; near=> m; apply: Pn => /=.
+suff: (B <= m)%N by apply: leq_trans; near: B; apply: nbhs_infty_ge.
+by near: m; apply: AF; near: B; apply: nbhs_infty_ge.
+Unshelve. all: end_near. Qed.
+
+Section map.
+
+Context {I : Type} {F : set (set I)} {FF : Filter F} (f : I -> nat).
+
+Lemma cvgnyPge :
+  f @ F --> \oo <-> forall A, \forall x \near F, A <= f x.
+Proof. exact: (cvgnyP 0%N 1%N). Qed.
+
+Lemma cvgnyPgt :
+  f @ F --> \oo <-> forall A, \forall x \near F, A < f x.
+Proof. exact: (cvgnyP 0%N 2%N). Qed.
+
+Lemma cvgnyPgty :
+  f @ F --> \oo <-> \forall A \near \oo, \forall x \near F, A < f x.
+Proof. exact: (cvgnyP 0%N 3%N). Qed.
+
+Lemma cvgnyPgey :
+  f @ F --> \oo <-> \forall A \near \oo, \forall x \near F, A <= f x.
+Proof. exact: (cvgnyP 0%N 4%N). Qed.
+
+End map.
+
+End infty_nat.
 
 (** ** Topology on the product of two spaces *)
 
@@ -3196,7 +3264,7 @@ Lemma cvgi_close T' {F} {FF : ProperFilter F} (f : T' -> set T) (l l' : T) :
 Proof.
 move=> f_prop fFl fFl'.
 suff f_totalfun: infer {near F, is_totalfun f} by exact: cvg_close fFl fFl'.
-apply: filter_app f_prop; near=> x; split=> //=; near: x.
+apply: filter_app f_prop; near do split=> //=.
 have: (f `@ F) setT by apply: fFl; apply: filterT.
 by rewrite fmapiE; apply: filterS => x [y []]; exists y.
 Unshelve. all: by end_near. Qed.
@@ -3242,20 +3310,17 @@ Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 Lemma lim_id x : lim x = x.
 Proof. by apply/esym/cvg_eq/cvg_ex; exists x. Qed.
 
-Lemma cvg_lim {F} {FF : ProperFilter F} (l : T) : F --> l -> lim F = l.
-Proof. by move=> Fl; have /cvgP Fcv := Fl; apply: (@cvg_unique F). Qed.
+Lemma cvg_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
+  f @ F --> l -> lim (f @ F) = l.
+Proof. by move=> /[dup] /cvgP /cvg_unique; apply. Qed.
 
-Lemma lim_near_cst U {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
+Lemma lim_near_cst {U} {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
    (\forall x \near F, f x = l) -> lim (f @ F) = l.
 Proof. by move=> /cvg_near_cst/cvg_lim. Qed.
 
-Lemma lim_cst U {F} {FF : ProperFilter F} (k : T) :
+Lemma lim_cst {U} {F} {FF : ProperFilter F} (k : T) :
    lim ((fun _ : U => k) @ F) = k.
 Proof. by apply: cvg_lim; apply: cvg_cst. Qed.
-
-Lemma cvg_map_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
-  f @ F --> l -> lim (f @ F) = l.
-Proof. exact: cvg_lim. Qed.
 
 Lemma cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
   {near F, is_fun f} -> is_subset1 [set x : T | f `@ F --> x].
@@ -4019,8 +4084,8 @@ Proof.
 split.
   move=> /cvg_entourageP Ff A entA.
   by apply: (Ff [set fg | forall t : T, A (fg.1 t, fg.2 t)]); exists A.
-move=> Ff; apply/cvg_entourageP => A [P entP sPA]; near=> g.
-by apply: sPA => /=; near: g; apply: Ff.
+move=> Ff; apply/cvg_entourageP => A [P entP sPA].
+by near=> g do apply: sPA; apply: Ff.
 Unshelve. all: by end_near. Qed.
 
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
@@ -4412,24 +4477,28 @@ Lemma near_ball (y : M) (eps : {posnum R}) :
    \forall y' \near y, ball y eps%:num y'.
 Proof. exact: nbhsx_ballx. Qed.
 
-Lemma cvg_ballP {F} {FF : Filter F} (y : M) :
+Lemma fcvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !nbhs_simpl /=. Qed.
 
-Lemma cvg_ballPpos {F} {FF : Filter F} (y : M) :
+Lemma fcvg_ballPpos {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
 Proof.
-split => [/cvg_ballP + eps|pos]; first exact.
-by apply/cvg_ballP=> _/posnumP[eps] //.
+split => [/fcvg_ballP + eps|pos]; first exact.
+by apply/fcvg_ballP=> _/posnumP[eps] //.
 Qed.
 
-Lemma cvg_ball {F} {FF : Filter F} (y : M) :
+Lemma fcvg_ball {F} {FF : Filter F} (y : M) :
   F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
-Proof. by move/cvg_ballP. Qed.
+Proof. by move/fcvg_ballP. Qed.
 
-Lemma app_cvg_locally T {F} {FF : Filter F} (f : T -> M) y :
+Lemma cvg_ballP {T} {F} {FF : Filter F} (f : T -> M) y :
   f @ F --> y <-> forall eps : R, 0 < eps -> \forall x \near F, ball y eps (f x).
-Proof. exact: cvg_ballP. Qed.
+Proof. exact: fcvg_ballP. Qed.
+
+Lemma cvg_ball {T} {F} {FF : Filter F} (f : T -> M) y :
+  f @ F --> y -> forall eps : R, 0 < eps -> \forall x \near F, ball y eps (f x).
+Proof. exact: fcvg_ball. Qed.
 
 Lemma cvgi_ballP T {F} {FF : Filter F} (f : T -> M -> Prop) y :
   f `@ F --> y <->
@@ -4596,12 +4665,24 @@ Canonical prod_pseudoMetricType (R : numDomainType) (U V : pseudoMetricType R) :
 
 Section Nbhs_fct2.
 Context {T : Type} {R : numDomainType} {U V : pseudoMetricType R}.
-Lemma cvg_ball2P {F : set (set U)} {G : set (set V)}
+Lemma fcvg_ball2P {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) <->
   forall eps : R, eps > 0 -> \forall y' \near F & z' \near G,
                 ball y eps y' /\ ball z eps z'.
-Proof. exact: cvg_ballP. Qed.
+Proof. exact: fcvg_ballP. Qed.
+
+Lemma cvg_ball2P {I J} {F : set (set I)} {G : set (set J)}
+  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V):
+  (f @ F, g @ G) --> (y, z) <->
+  forall eps : R, eps > 0 -> \forall i \near F & j \near G,
+                ball y eps (f i) /\ ball z eps (g j).
+Proof.
+rewrite fcvg_ball2P; split=> + e e0 => /(_ e e0).
+  by rewrite near_map2; apply.
+by move=> fgyz; rewrite near_map2; apply: fgyz.
+Qed.
+
 End Nbhs_fct2.
 
 (** Functional metric spaces *)
@@ -4823,7 +4904,7 @@ Proof.
 split=> cauchyF; last first.
   by move=> _/posnumP[eps]; apply/cauchyF/entourage_ball.
 move=> U; rewrite -entourage_ballE => - [_/posnumP[eps] xyepsU].
-by near=> x; apply: xyepsU; near: x; apply: cauchyF.
+by near do apply: xyepsU; apply: cauchyF.
 Unshelve. all: by end_near. Qed.
 Arguments cauchy_ballP {R T} F {FF}.
 

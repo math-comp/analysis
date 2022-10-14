@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg matrix finmap order ssrnum.
 From mathcomp Require Import ssrint interval.
-Require Import boolp.
+Require Import mathcomp_extra boolp.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
@@ -421,6 +421,22 @@ Definition SigSub {T} {pT : predType T} {P : pT} x : x \in P -> {x | x \in P} :=
   exist (fun x => x \in P) x.
 
 Lemma set0fun {P T : Type} : @set0 T -> P. Proof. by case=> x; rewrite inE. Qed.
+
+Lemma pred_oappE {T : Type} (D : {pred T}) :
+  pred_oapp D = mem (some @` D)%classic.
+Proof.
+apply/funext=> -[x|]/=; apply/idP/idP; rewrite /pred_oapp/= inE //=.
+- by move=> xD; exists x.
+- by move=> [// + + [<-]].
+- by case.
+Qed.
+
+Lemma pred_oapp_set {T : Type} (D : set T) :
+  pred_oapp (mem D) = mem (some @` D)%classic.
+Proof.
+by rewrite pred_oappE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
+   move=> [y/= ]; rewrite ?in_setE; exists y; rewrite ?in_setE.
+Qed.
 
 Section basic_lemmas.
 Context {T : Type}.
@@ -1257,6 +1273,9 @@ Proof.
 by move=> h; rewrite predeqE=> y; split=> [][x ? <-]; exists x=> //; rewrite h.
 Qed.
 
+Lemma eq_image_id g A : (forall x, A x -> g x = x) -> g @` A = A.
+Proof. by move=> /eq_imagel->; rewrite image_id. Qed.
+
 Lemma preimage_setU f Y1 Y2 : f @^-1` (Y1 `|` Y2) = f @^-1` Y1 `|` f @^-1` Y2.
 Proof. exact/predeqP. Qed.
 
@@ -1338,6 +1357,21 @@ Lemma image_comp T1 T2 T3 (f : T1 -> T2) (g : T2 -> T3) A :
 Proof.
 by rewrite eqEsubset; split => [x [b [a Aa] <- <-]|x [a Aa] <-];
   [apply/imageP |apply/imageP/imageP].
+Qed.
+
+Lemma subKimage {T T'} {P : set (set T')} (f : T -> T') (g : T' -> T) :
+  cancel f g -> [set A | P (f @` A)] `<=` [set g @` A | A in P].
+Proof. by move=> ? A; exists (f @` A); rewrite ?image_comp ?eq_image_id/=. Qed.
+
+Lemma subimageK T T' (P : set (set T')) (f : T -> T') (g : T' -> T) :
+  cancel g f -> [set g @` A | A in P] `<=` [set A | P (f @` A)].
+Proof. by move=> gK _ [B /= ? <-]; rewrite image_comp eq_image_id/=. Qed.
+
+Lemma eq_imageK {T T'} {P : set (set T')} (f : T -> T') (g : T' -> T) :
+    cancel f g -> cancel g f ->
+  [set g @` A | A in P] = [set A | P (f @` A)].
+Proof.
+by move=> fK gK; apply/seteqP; split; [apply: subimageK | apply: subKimage].
 Qed.
 
 Lemma some_set0 {T} : some @` set0 = set0 :> set (option T).

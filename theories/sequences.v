@@ -41,7 +41,7 @@ Require Import reals ereal signed topology normedtype landau.
 (* Sections sequences_R_* contain properties of sequences of real numbers.    *)
 (* For example:                                                               *)
 (*                 squeeze == squeeze lemma                                   *)
-(*           cvgNpinfty u_ == (- u_ --> +oo) = (u_ --> -oo).                  *)
+(*           cvgNy u_ == (- u_ --> +oo) = (u_ --> -oo).                  *)
 (* nonincreasing_cvg_ge u_ == if u_ is nonincreasing and convergent then      *)
 (*                            forall n, lim u_ <= u_ n                        *)
 (* nondecreasing_cvg_le u_ == if u_ is nondecreasing and convergent then      *)
@@ -73,7 +73,7 @@ Require Import reals ereal signed topology normedtype landau.
 (*         lim_{inf,sup} == limit inferior/superior for realType              *)
 (*               esups u := [sequence ereal_sup (sdrop u n)]_n                *)
 (*               einfs u := [sequence ereal_inf (sdrop u n)]_n                *)
-(*        elim_{inf,sup} == limit inferior/superior for \bar R                *)
+(*        lim_e{inf,sup} == limit inferior/superior for \bar R                *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -332,7 +332,7 @@ Lemma cvg_restrict f u_ l :
   (u_ @ \oo --> l).
 Proof.
 rewrite propeqE; split; apply: cvg_trans; apply: near_eq_cvg;
-by near=> n => /=; case: ifP => //; rewrite ltn_geF//; near: n.
+by near do [move=> /=; case: ifP => //; rewrite ltn_geF//].
 Unshelve. all: by end_near. Qed.
 
 Lemma is_cvg_restrict f u_ :
@@ -355,7 +355,7 @@ Lemma cvg_shiftn u_ l : ([sequence u_ (n + N)%N]_n --> l) = (u_ --> l).
 Proof.
 rewrite propeqE; split; last by apply: cvg_comp; apply: cvg_addnr.
 rewrite -[X in X -> _]cvg_centern; apply: cvg_trans => /=.
-by apply: near_eq_cvg; near=> n; rewrite subnK//; near: n; exists N.
+by apply: near_eq_cvg; near do rewrite subnK; exists N.
 Unshelve. all: by end_near. Qed.
 
 End NatShift.
@@ -374,71 +374,6 @@ Section sequences_R_lemmas_realFieldType.
 Variable R : realFieldType.
 Implicit Types u v : R ^nat.
 
-Lemma squeeze T (f g h : T -> R) (a : filter_on T) :
-  (\forall x \near a, f x <= g x <= h x) -> forall (l : R),
-  f @ a --> l -> h @ a --> l -> g @ a --> l.
-Proof.
-move=> fgh l /cvg_distP lfa /cvg_distP lga; apply/cvg_distP => _/posnumP[e].
-rewrite near_map; near=> x; have /(_ _)/andP[//|fg gh] := near fgh x.
-have : `|l - h x| < e%:num by near: x; apply: lga.
-have : `|l - f x| < e%:num by near: x; apply: lfa.
-rewrite ![`|l - _|]distrC; rewrite !ltr_distl => /andP[lf _] /andP[_ hl].
-by rewrite (lt_le_trans lf)? (le_lt_trans gh).
-Unshelve. all: end_near. Qed.
-
-Lemma cvgPpinfty (u_ : R ^nat) :
-  u_ --> +oo <-> forall A, \forall n \near \oo, A <= u_ n.
-Proof.
-split => [u_cvg A|u_ge X [A [Ar AX]]].
-  rewrite -(near_map u_ \oo (<=%R A)).
-  by apply: u_cvg; apply: nbhs_pinfty_ge; rewrite num_real.
-rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
-apply: AX; rewrite (@lt_le_trans _ _ ((maxr 0 A) +1)) //.
-  by rewrite ltr_spaddr // le_maxr lexx orbT.
-by near: x; apply: u_ge; rewrite ltr_spaddr // le_maxr lexx.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgNpinfty u_ : (- u_ --> +oo) = (u_ --> -oo).
-Proof.
-rewrite propeqE; split => u_cvg P [/= l [l_real Pl]];
-rewrite !near_simpl [\forall x \near _, P _](near_map _ \oo);
-have [|/=n _]:= u_cvg (fun x => P (- x)); do ?by [exists n
-  | exists (- l); split; rewrite ?rpredN// => x;
-    rewrite (ltr_oppl, ltr_oppr); apply: Pl].
-by under [X in _ `<=` X]funext do rewrite /= opprK; exists n.
-Qed.
-
-Lemma cvgNninfty u_ : (- u_ --> -oo) = (u_ --> +oo).
-Proof. by rewrite -cvgNpinfty opprK. Qed.
-
-Lemma cvgPninfty (u_ : R ^nat) :
-  u_ --> -oo <-> forall A, \forall n \near \oo, A >= u_ n.
-Proof.
-rewrite -cvgNpinfty cvgPpinfty; split => uA A; near=> n.
-- by rewrite -(opprK A) ler_oppr; near: n; apply: uA.
-- by rewrite ler_oppr; near: n; apply: uA.
-Unshelve. all: by end_near. Qed.
-
-Lemma ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
-  u_ --> +oo -> v_ --> +oo.
-Proof.
-move=> uv /cvgPpinfty ucvg; apply/cvgPpinfty => A.
-by apply: filterS2 (ucvg A) uv => x; apply: le_trans.
-Qed.
-
-Lemma ler_cvg_ninfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
-  v_ --> -oo -> u_ --> -oo.
-Proof.
-move=> uv /cvgPninfty ucvg; apply/cvgPninfty => A.
-by apply: filterS2 uv (ucvg A) => x; apply: le_trans.
-Qed.
-
-Lemma lim_ge x u : cvg u -> (\forall n \near \oo, x <= u n) -> x <= lim u.
-Proof. by move=> /[swap] /(closed_cvg (>= x)); exact. Qed.
-
-Lemma lim_le x u : cvg u -> (\forall n \near \oo, x >= u n) -> x >= lim u.
-Proof. by move=> /[swap] /(closed_cvg (fun y => y <= x)); exact. Qed.
-
 Lemma lt_lim u (M : R) : nondecreasing_seq u -> cvg u -> M < lim u ->
   \forall n \near \oo, M <= u n.
 Proof.
@@ -446,25 +381,16 @@ move=> ndu cu Ml; have [[n Mun]|/forallNP Mu] := pselect (exists n, M <= u n).
   near=> m; suff : u n <= u m by exact: le_trans.
   by near: m; exists n.+1 => // p q; apply/ndu/ltnW.
 have {}Mu : forall x, M > u x by move=> x; rewrite ltNge; apply/negP.
-have : lim u <= M by apply lim_le => //; near=> m; apply/ltW/Mu.
+have : lim u <= M by apply: lim_le => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
-
-Lemma ler_lim u_ v_ : cvg u_ -> cvg v_ ->
-  (\forall n \near \oo, u_ n <= v_ n) -> lim u_ <= lim v_.
-Proof.
-move=> uv cu cv; rewrite -subr_ge0 -limB //.
-apply: lim_ge; first exact: is_cvgB.
-by apply: filterS cv => n; rewrite subr_ge0.
-Qed.
 
 Lemma nonincreasing_cvg_ge u_ : nonincreasing_seq u_ -> cvg u_ ->
   forall n, lim u_ <= u_ n.
 Proof.
 move=> du ul p; rewrite leNgt; apply/negP => up0.
-move/cvg_distP : ul => /(_ `|u_ p - lim u_|%R).
-rewrite {1}ltr0_norm ?subr_lt0 // opprB subr_gt0 => /(_ up0).
-rewrite near_map => ul.
+move/cvgrPdist_lt : ul => /(_ `|u_ p - lim u_|%R).
+rewrite {1}ltr0_norm ?subr_lt0 // opprB subr_gt0 => /(_ up0) ul.
 near \oo => N.
 have /du uNp : (p <= N)%nat by near: N; rewrite nearE; exists p.
 have : `|lim u_ - u_ N| >= `|u_ p - lim u_|%R.
@@ -498,81 +424,7 @@ Qed.
 Lemma cvg_has_inf u_ : cvg u_ -> has_inf (u_ @` setT).
 Proof. by move/is_cvgN/cvg_has_sup; rewrite -has_inf_supN image_comp. Qed.
 
-Lemma cvgPpinfty_lt (u_ : R ^nat) :
-  u_ --> +oo%R <-> forall A, \forall n \near \oo, (A < u_ n)%R.
-Proof.
-split=> [uoo A|uB]; last by apply/cvgPpinfty => A; near=> n; apply/ltW; near: n.
-near=> n; rewrite (@lt_le_trans _ _ (A + 1)) ?ltr_addl//.
-by near: n; apply: (cvgPpinfty _).1.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgPninfty_lt (u_ : R ^nat) :
-  u_ --> -oo%R <-> forall A, \forall n \near \oo, (A > u_ n)%R.
-Proof.
-split=> [uoo A|uB]; last by apply/cvgPninfty => A; near=> n; apply/ltW; near: n.
-near=> n; rewrite (@le_lt_trans _ _ (A - 1)) ?ltr_subl_addr ?ltr_addl//.
-by near: n; apply: (cvgPninfty _).1.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgPpinfty_near (u_ : R ^nat) :
-  u_ --> +oo%R <-> \forall A \near +oo, \forall n \near \oo, (A <= u_ n)%R.
-Proof.
-split=> [uoo|]; first by apply: nearW; apply/cvgPpinfty.
-case=> M [Mreal Mu]; apply/cvgPpinfty => A.
-have [|AM] := ltP M A; first exact: Mu.
-near=> n; rewrite (le_trans AM)// ltW// (@lt_le_trans _ _ (M + 1)) ?ltr_addl//.
-by near: n; apply: Mu; rewrite ltr_addl.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgPninfty_near (u_ : R ^nat) :
-  u_ --> -oo%R <-> \forall A \near -oo, \forall n \near \oo, (A >= u_ n)%R.
-Proof.
-split=> [uoo|]; first by apply: nearW; apply/cvgPninfty.
-case=> M [Mreal Mu]; apply/cvgPninfty => A.
-have [|AM] := ltP A M; first exact: Mu.
-near=> n; rewrite (le_trans _ AM)// ltW//.
-rewrite (@le_lt_trans _ _ (M - 1)) ?gtr_addl//.
-by near: n; apply: Mu; rewrite gtr_addl.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgPpinfty_lt_near (u_ : R ^nat) :
-  u_ --> +oo%R <-> \forall A \near +oo, \forall n \near \oo, (A < u_ n)%R.
-Proof.
-split=> uB; first by near=> A; apply: (cvgPpinfty_lt _).1.
-by apply/cvgPpinfty_near; near=> A; near=> n; apply/ltW; near: n; near: A.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgPninfty_lt_near (u_ : R ^nat) :
-  u_ --> -oo%R <-> \forall A \near -oo, \forall n \near \oo, (A > u_ n)%R.
-Proof.
-split=> uB; first by near=> A; apply: (cvgPninfty_lt _).1.
-by apply/cvgPninfty_near; near=> A; near=> n; apply/ltW; near: n; near: A.
-Unshelve. all: by end_near. Qed.
-
 End sequences_R_lemmas_realFieldType.
-
-Lemma invr_cvg0 (R : realFieldType) (u : R^nat) :
-  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> 0) <-> (u --> +oo).
-Proof.
-move=> u_gt0; split; last first.
-  move=> cvg_u_oo; apply/cvg_distP => _/posnumP[e]; rewrite !near_simpl.
-  near=> n; rewrite distrC subr0 gtr0_norm ?invr_gt0//.
-  rewrite -ltf_pinv ?qualifE//= ?invr_gt0// invrK.
-  rewrite (@lt_le_trans _ _ (e%:num^-1 + 1)) ?ltr_addl//; near: n.
-  exact: (cvgPpinfty _).1.
-move=> /cvg_distP uB. apply/cvgPpinfty_near; near=> M; near=> n.
-rewrite -lef_pinv ?qualifE//; last by near: M; apply: nbhs_pinfty_gt.
-suff: `|0 - (u n)^-1| <= M^-1 by rewrite distrC subr0 gtr0_norm ?invr_gt0.
-rewrite ltW//; near: n; apply: uB.
-by rewrite invr_gt0; near: M; apply: nbhs_pinfty_gt.
-Unshelve. all: by end_near. Qed.
-
-Lemma invr_cvg_pinfty (R : realFieldType) (u : R^nat) :
-  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> +oo) <-> (u --> 0).
-Proof.
-move=> u_gt0; rewrite -invr_cvg0; last by move=> i; rewrite invr_gt0.
-by under eq_fun do rewrite invrK.
-Qed.
 
 Section partial_sum.
 Variables (V : zmodType) (u_ : V ^nat).
@@ -703,15 +555,14 @@ Lemma nondecreasing_cvg (u_ : R ^nat) :
     nondecreasing_seq u_ -> has_ubound (range u_) ->
   u_ --> sup (range u_).
 Proof.
-move=> u_nd u_ub; set M := sup (range u_).
+move=> leu u_ub; set M := sup (range u_).
 have su_ : has_sup (range u_) by split => //; exists (u_ 0%N), 0%N.
-apply: cvg_distW => _/posnumP[e]; rewrite near_map.
+apply/cvgrPdist_le => _/posnumP[e].
 have [p /andP[Mu_p u_pM]] : exists p, M - e%:num <= u_ p <= M.
   have [_ -[p _] <- /ltW Mu_p] := sup_adherent (gt0 e) su_.
   by exists p; rewrite Mu_p; have /ubP := sup_upper_bound su_; apply; exists p.
 near=> n; have pn : (p <= n)%N by near: n; exact: nbhs_infty_ge.
-rewrite distrC ler_norml ler_sub_addl (le_trans Mu_p (u_nd _ _ pn)) /=.
-rewrite ler_subl_addr (@le_trans _ _ M) ?ler_addr //.
+rewrite ler_distlC (le_trans Mu_p (leu _ _ _))//= (@le_trans _ _ M) ?ler_addl//.
 by have /ubP := sup_upper_bound su_; apply; exists n.
 Unshelve. all: by end_near. Qed.
 
@@ -722,7 +573,7 @@ Proof. by move=> u_nd u_ub; apply: cvgP; apply: nondecreasing_cvg. Qed.
 Lemma nondecreasing_dvg_lt (u_ : R ^nat) :
   nondecreasing_seq u_ -> ~ cvg u_ -> u_ --> +oo.
 Proof.
-move=> nu du; apply: contrapT => /cvgPpinfty/existsNP[l lu]; apply: du.
+move=> nu du; apply: contrapT => /cvgryPge/existsNP[l lu]; apply: du.
 apply: nondecreasing_is_cvg => //; exists l => _ [n _ <-].
 rewrite leNgt; apply/negP => lun; apply: lu; near=> m.
 by rewrite (le_trans (ltW lun)) //; apply: nu; near: m; exists n.
@@ -791,7 +642,7 @@ Proof. exact/ltW/harmonic_gt0. Qed.
 
 Lemma cvg_harmonic {R : archiFieldType} : harmonic --> (0 : R).
 Proof.
-apply: cvg_distW => _/posnumP[e]; rewrite near_map; near=> i.
+apply/cvgrPdist_le => _/posnumP[e]; near=> i.
 rewrite distrC subr0 ger0_norm//= -lef_pinv ?qualifE// invrK.
 rewrite (le_trans (ltW (archi_boundP _)))// ler_nat -add1n -leq_subLR.
 by near: i; apply: nbhs_infty_ge.
@@ -836,7 +687,7 @@ move=> u0_cvg; have ssplit v_ m n : (m <= n)%N -> `|n%:R^-1 * series v_ n| <=
     n%:R^-1 * `|series v_ m| + n%:R^-1 * `|\sum_(m <= i < n) v_ i|.
   move=> /subnK<-; rewrite series_addn mulrDr (le_trans (ler_norm_add _ _))//.
   by rewrite !normrM ger0_norm.
-apply/cvg_distP=> _/posnumP[e]; rewrite near_simpl; near \oo => m; near=> n.
+apply/cvgrPdist_lt=> _/posnumP[e]; near \oo => m; near=> n.
 have {}/ssplit -/(_ _ [sequence l - u_ n]_n) : (m.+1 <= n.+1)%nat.
   by near: n; exists m.
 rewrite !seriesEnat /= big_split/=.
@@ -853,7 +704,7 @@ rewrite (le_lt_trans (@ler_sum_nat _ _ _ _ (fun i => e%:num / 2) _))//; last fir
   by rewrite sumr_const_nat mulr_natl ltr_pmuln2l// ltn_subrL.
 move=> i /andP[mi _]; move: i mi; near: m.
 have : \forall x \near \oo, `|l - u_ x| < e%:num / 2.
-  by move/cvg_distP : u0_cvg; apply.
+  by move/cvgrPdist_lt : u0_cvg; apply.
 move=> -[N _ Nu]; exists N => // k Nk i ki.
 by rewrite ltW// Nu//= (leq_trans Nk)// ltnW.
 Unshelve. all: by end_near. Qed.
@@ -867,8 +718,8 @@ Let cesaro_converse_off_by_one (u_ : R ^nat) :
   [sequence n.+1%:R^-1 * series u_ n.+1]_ n --> (0 : R) ->
   [sequence n.+1%:R^-1 * series u_ n]_ n --> (0 : R).
 Proof.
-move=> H; apply/cvg_distP => _/posnumP[e]; rewrite near_map.
-move/cvg_distP : H => /(_ _ (gt0 e)); rewrite near_map => -[m _ mu].
+move=> H; apply/cvgrPdist_lt => _/posnumP[e].
+move/cvgrPdist_lt : H => /(_ _ (gt0 e)) -[m _ mu].
 near=> n; rewrite sub0r normrN /=.
 have /andP[n0] : ((0 < n) && (m <= n.-1))%N.
   near: n; exists m.+1 => // k mk; rewrite (leq_trans _ mk) //=.
@@ -992,8 +843,8 @@ Proof. by rewrite funeq2E => z n /=; rewrite mul1r. Qed.
 Lemma cvg_arithmetic (R : archiFieldType) a (z : R) :
   z > 0 -> arithmetic a z --> +oo.
 Proof.
-move=> z_gt0; apply/cvgPpinfty => A; near=> n => /=.
-rewrite -ler_subl_addl -mulr_natl -ler_pdivr_mulr//; set x := leLHS.
+move=> z_gt0; apply/cvgryPge => A; near=> n => /=.
+rewrite -ler_subl_addl -mulr_natl -ler_pdivr_mulr//.
 rewrite ler_normlW// ltW// (lt_le_trans (archi_boundP _))// ler_nat.
 by near: n; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
@@ -1002,9 +853,8 @@ Unshelve. all: by end_near. Qed.
 Lemma cvg_expr (R : archiFieldType) (z : R) :
   `|z| < 1 -> (GRing.exp z : R ^nat) --> (0 : R).
 Proof.
-move=> Nz_lt1; apply: cvg_dist0; pose t := (1 - `|z|).
-pose oo_filter := eventually_filterType. (* Cyril: fixme *)
-apply: (@squeeze _ _ (cst 0) _ (t^-1 *: (@harmonic R)) oo_filter); last 2 first.
+move=> Nz_lt1; apply/norm_cvg0P; pose t := (1 - `|z|).
+apply: (@squeeze _ _ _ _ (cst 0) _ (t^-1 *: @harmonic R)); last 2 first.
 - exact: cvg_cst.
 - by rewrite -(scaler0 _ t^-1); exact: (cvgZr cvg_harmonic).
 near=> n; rewrite normr_ge0 normrX/= ler_pdivl_mull ?subr_gt0//.
@@ -1120,7 +970,7 @@ Lemma cvg_to_0_linear (R : realFieldType) (f : R -> R) K k :
     f x @[x --> 0^'] --> 0.
 Proof.
 move=> k0 kfK; have [K0|K0] := lerP K 0.
-- apply/cvg_distP => _/posnumP[e]; rewrite near_map; near=> x.
+- apply/cvgrPdist_lt => _/posnumP[e]; near=> x.
   rewrite distrC subr0 (le_lt_trans (kfK _ _)) //; last first.
     by rewrite (@le_lt_trans _ _ 0)// mulr_le0_ge0.
   near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
@@ -1252,8 +1102,8 @@ Qed.
 Lemma is_cvg_series_exp_coeff x : cvg (series (exp x)).
 Proof.
 have [->|x0] := eqVneq x 0.
-  apply/cvg_ex; exists 1; apply/cvg_distP => // => _/posnumP[e].
-  rewrite near_map; near=> n; have [m ->] : exists m, n = m.+1.
+  apply/cvg_ex; exists 1; apply/cvgrPdist_lt => // => _/posnumP[e].
+  near=> n; have [m ->] : exists m, n = m.+1.
     by exists n.-1; rewrite prednK //; near: n; exists 1%N.
   by rewrite series_exp_coeff0 subrr normr0.
 apply: normed_cvg; rewrite normed_series_exp_coeff.
@@ -1271,27 +1121,6 @@ Definition expR {R : realType} (x : R) : R := lim (series (exp_coeff x)).
 (********************************)
 (* Sequences of natural numbers *)
 (********************************)
-
-Lemma nat_dvg_real (R : realType) (u_ : nat ^nat) : u_ --> \oo ->
-  ([sequence (u_ n)%:R : R^o]_n --> +oo)%R.
-Proof.
-move=> uoo; apply/cvgPpinfty => A /=.
-have /uoo[N _ NuA] : \oo [set m | `|ceil A|.+1 <= m]%N by exists `|ceil A|.+1.
-near=> n; have /NuA : (N <= n)%N by near: n; exact: nbhs_infty_ge.
-rewrite /= -(ler_nat R); apply: le_trans.
-have [A0|A0] := leP 0%R A; last by rewrite (le_trans (ltW A0)).
-by rewrite -natr1 natr_absz ger0_norm// ?ceil_ge0// ler_paddr// ceil_ge.
-Unshelve. all: by end_near. Qed.
-
-Lemma nat_cvgPpinfty (u : nat^nat) :
-  u --> \oo <-> forall A, \forall n \near \oo, (A <= u n)%N.
-Proof.
-split => [uoo A|oou X [N _ NX]].
-  by rewrite -(near_map u \oo (leq A)); apply: uoo; exists A.
-rewrite !near_simpl [\near u, X _](near_map u \oo); near=> n.
-apply: NX => /=; rewrite (@leq_trans N.+1) //.
-by near: n; apply: oou; rewrite ltr_spaddr // le_maxr lexx.
-Unshelve. all: by end_near. Qed.
 
 Lemma nat_nondecreasing_is_cvg (u_ : nat^nat) :
   nondecreasing_seq u_ -> has_ubound (range u_) -> cvg u_.
@@ -1341,10 +1170,10 @@ Qed.
 
 Lemma dvg_nseries (u : nat^nat) : ~ cvg (nseries u) -> nseries u --> \oo.
 Proof.
-move=> du; apply: contrapT => /nat_cvgPpinfty/existsNP[l lu]; apply: du.
+move=> du; apply: contrapT => /cvgnyPgt/existsNP[l lu]; apply: du.
 apply: nat_nondecreasing_is_cvg => //; first exact: le_nseries.
-exists l => _ [n _ <-]; rewrite leNgt; apply/negP => lun; apply: lu; near=> m.
-by rewrite (leq_trans (ltW lun)) // le_nseries//; near: m; exists n.
+exists l => _ [n _ <-]; rewrite leNgt; apply/negP => lun; apply: lu.
+by near do rewrite (leq_trans lun) ?le_nseries//; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
 
 (**************************************)
@@ -1444,86 +1273,6 @@ End sequences_ereal_realDomainType.
 Section sequences_ereal.
 Local Open Scope ereal_scope.
 
-Lemma ereal_cvg_abs0 (R : realFieldType) (f : (\bar R)^nat) :
-  abse \o f --> 0 -> f --> 0.
-Proof.
-move=> /cvg_ballP f0; apply/cvg_ballP => _/posnumP[e].
-have := !! f0 _ (gt0 e); rewrite !near_map => -[n _ {}f0].
-near=> m; have /f0 : (n <= m)%N by near: m; exists n.
-rewrite /ball /= /ereal_ball !contract0 !sub0r !normrN; apply: le_lt_trans.
-have [fm0|fm0] := leP 0 (f m); first by rewrite gee0_abs.
-by rewrite (lte0_abs fm0) contractN normrN.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
-  (forall n, 0 <= f n) -> f --> a -> 0 <= a.
-Proof.
-move=> f0; apply: (closed_cvg (fun x => 0 <= x)) => //;
-  [exact: closed_ereal_le_ereal | exact: nearW].
-Qed.
-
-Lemma ereal_lim_ge (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
-  (\forall n \near \oo, x <= u_ n) -> x <= lim u_.
-Proof.
-move=> /[swap] /(closed_cvg (fun y => x <= y)); apply.
-exact: closed_ereal_le_ereal.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_lim_le (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
-  (\forall n \near \oo, u_ n <= x) -> lim u_ <= x.
-Proof.
-move=> /[swap] /(closed_cvg (fun y => y <= x)); apply.
-exact: closed_ereal_ge_ereal.
-Unshelve. all: by end_near. Qed.
-
-
-Lemma dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
-  u_ --> +oo%R -> [sequence (u_ n)%:E]_n --> +oo.
-Proof.
-move/cvgPpinfty_lt => uoo; apply/cvg_ballP => _/posnumP[e]; rewrite near_map.
-have [e1|e1] := lerP 1 e%:num.
-  case: (uoo 1%R) => k _ k1un; near=> n.
-  rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
-    by move: (contract_le1 (u_ n)%:E); rewrite ler_norml => /andP[].
-  rewrite ltr_subl_addr addrC -ltr_subl_addr.
-  have /le_lt_trans->// : (contract 1%:E < contract (u_ n)%:E)%R.
-    by rewrite lt_contract lte_fin k1un//; near: n; exists k.
-  by rewrite (@le_trans _ _ 0%R) // ?subr_le0 //= normr1.
-have onee1 : (`|1 - e%:num| < 1)%R.
-  by rewrite gtr0_norm // ?subr_gt0 // ltr_subl_addl addrC -ltr_subl_addl subrr.
-have [k _ k1un] := uoo (fine (expand (1 - e%:num))%R); near=> n.
-rewrite /ball /= /ereal_ball [contract +oo]/= ger0_norm ?subr_ge0; last first.
-  by move: (contract_le1 (u_ n)%:E); rewrite ler_norml => /andP[].
-rewrite ltr_subl_addr addrC -ltr_subl_addr.
-suff : (`|1 - e%:num| < contract (u_ n)%:E)%R by exact: le_lt_trans (ler_norm _).
-rewrite gtr0_norm ?subr_gt0 // -lt_expandLR ?inE ?ltW//.
-by rewrite -fine_expand // lte_fin k1un//; near: n; exists k.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_cvg_real (R : realFieldType) (f : (\bar R)^nat) a :
-  {near \oo, forall x, f x \is a fin_num} /\
-  (fine \o f --> a) <-> f --> a%:E.
-Proof.
-split=> [[[N _ foo] fa]|fa].
-  rewrite -(cvg_shiftn N).
-  have /(cvg_app (@EFin R)) : [sequence fine (f (n + N)%N)]_n --> a.
-    by rewrite (@cvg_shiftn _ _ (fine \o f)).
-  apply: cvg_trans; apply: near_eq_cvg; near=> n => /=.
-  by rewrite fineK // foo//= leq_addl.
-split; last first.
-  by move/(cvg_app fine) : fa; apply: cvg_trans; exact: cvg_id.
-move/cvg_ballP : fa.
-have e0 : (0 < minr (1 + contract a%:E) (1 - contract a%:E))%R.
-  by rewrite lt_minr -ltr_subl_addl add0r subr_gt0 -ltr_norml contract_lt1.
-move/(_ _ e0); rewrite near_map => -[N _ fa]; near=> n.
-have /fa : (N <= n)%N by near: n; exists N.
-rewrite /ball /= /ereal_ball; case: (f n) => //.
-- rewrite ltr0_norm; first by rewrite opprB lt_minr ltxx andbF.
-  by rewrite -opprB ltr_oppl oppr0; move: e0; rewrite lt_minr => -/andP[].
-- rewrite opprK gtr0_norm; first by rewrite lt_minr addrC ltxx.
-  by rewrite addrC; move: e0; rewrite lt_minr => -/andP[].
-Unshelve. all: by end_near. Qed.
-
 Lemma ereal_nondecreasing_cvg (R : realType) (u_ : (\bar R)^nat) :
   nondecreasing_seq u_ -> u_ --> ereal_sup (u_ @` setT).
 Proof.
@@ -1546,7 +1295,7 @@ have [/ereal_sup_ninfty loo|lnoo] := eqVneq l -oo.
   by rewrite funeqE => m; apply (loo (u_ m)); exists m.
 apply/cvg_ballP => _/posnumP[e].
 have [{lnoo}loo|lpoo] := eqVneq l +oo.
-  rewrite near_map; near=> n; rewrite /ball /= /ereal_ball.
+  near=> n; rewrite /ball /= /ereal_ball.
   have unoo : u_ n != -oo.
     near: n; have [m /eqP umoo] : exists m, u_ m <> -oo.
       apply/existsNP => uoo.
@@ -1576,7 +1325,7 @@ have [{lnoo}loo|lpoo] := eqVneq l +oo.
     by rewrite ler_subl_addr ler_addl.
 have l_fin_num : l \is a fin_num by rewrite fin_numE lpoo lnoo.
 have [le1|le1] := (ltrP (`|contract l - e%:num|) 1)%R; last first.
-  rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
+  near=> n; rewrite /ball /= /ereal_ball /=.
   have unoo : u_ n != -oo.
     near: n.
     have [m /eqP umoo] : exists m, u_ m <> -oo.
@@ -1607,7 +1356,7 @@ have e'0 : (0 < e')%R.
   rewrite lt_expandLR ?inE ?ltW// ltr_subl_addr fineK //.
   by rewrite ltr_addl.
 have [y [m _ umx] Se'y] := ub_ereal_sup_adherent e'0 l_fin_num.
-rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /=.
+near=> n; rewrite /ball /= /ereal_ball /=.
 rewrite ger0_norm ?subr_ge0 ?le_contract ?ereal_sup_ub//; last by exists n.
 move: Se'y; rewrite -{}umx {y} /= => le'um.
 have leum : (contract l - e%:num < contract (u_ m))%R.
@@ -1628,7 +1377,7 @@ Lemma ereal_nonincreasing_cvg (R : realType) (u_ : (\bar R)^nat) :
 Proof.
 move=> ni_u; rewrite [X in X --> _](_ : _ = -%E \o -%E \o u_); last first.
   by rewrite funeqE => n; rewrite /= oppeK.
-apply: ereal_cvgN.
+apply: cvgeN.
 rewrite [X in _ --> X](_ : _ = ereal_sup (range (-%E \o u_))); last first.
   congr ereal_sup; rewrite predeqE => x; split=> [[_ [n _ <-]] <-|[n _] <-];
     by [exists n | exists (u_ n) => //; exists n].
@@ -1743,14 +1492,14 @@ Proof. by move=> ?; exact: is_cvg_npeseries_cond. Qed.
 Lemma nneseries_ge0 P : (forall n, P n -> 0 <= u_ n) ->
   0 <= \sum_(i <oo | P i) u_ i.
 Proof.
-move=> u0; apply: (ereal_lim_ge (is_cvg_nneseries u0)).
+move=> u0; apply: (lim_gee (is_cvg_nneseries u0)).
 by apply: nearW => k; rewrite sume_ge0.
 Qed.
 
 Lemma npeseries_le0 P : (forall n : nat, P n -> u_ n <= 0) ->
   \sum_(i <oo | P i) u_ i <= 0.
 Proof.
-move=> u0; apply: (ereal_lim_le (is_cvg_npeseries u0)).
+move=> u0; apply: (lim_lee (is_cvg_npeseries u0)).
 by apply: nearW => k; rewrite sume_le0.
 Qed.
 
@@ -1775,7 +1524,7 @@ Lemma nneseriesrM (R : realType) (f : nat -> \bar R) (P : pred nat) x :
   (forall i, P i -> 0 <= f i) ->
   (\sum_(i <oo | P i) (x%:E * f i) = x%:E * \sum_(i <oo | P i) f i).
 Proof.
-move=> f0; rewrite -ereal_limrM//; last exact: is_cvg_nneseries.
+move=> f0; rewrite -limeMl//; last exact: is_cvg_nneseries.
 by congr (lim _); apply/funext => /= n; rewrite ge0_sume_distrr.
 Qed.
 
@@ -1789,100 +1538,16 @@ move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split; apply/orP.
 - by left; apply/eqP => Pf; have := nneseries_ge0 f0; rewrite Pf.
 Qed.
 
-Lemma ereal_cvgPpinfty (R : realFieldType) (u_ : (\bar R)^nat) :
-  u_ --> +oo <-> (forall A, (0 < A)%R -> \forall n \near \oo, A%:E <= u_ n).
+Lemma nneseries_pinfty (R : realType) (u_ : (\bar R)^nat)
+  (P : pred nat) k : (forall n, P n -> 0 <= u_ n) -> P k ->
+  u_ k = +oo -> \sum_(i <oo | P i) u_ i = +oo.
 Proof.
-split => [u_cvg _/posnumP[A]|u_ge X [A [Ar AX]]].
-  rewrite -(near_map u_ \oo (fun x => A%:num%:E <= x)).
-  by apply: u_cvg; apply: ereal_nbhs_pinfty_ge.
-rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
-apply: AX.
-rewrite (@lt_le_trans _ _ (maxr 0 A + 1)%:E) //.
-  by rewrite EFinD lte_spaddre // ?lte_fin// lee_fin le_maxr lexx orbT.
-by near: x; apply: u_ge; rewrite ltr_spaddr // le_maxr lexx.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_cvgPninfty (R : realFieldType) (u_ : (\bar R)^nat) :
-  u_ --> -oo <-> (forall A, (A < 0)%R -> \forall n \near \oo, u_ n <= A%:E).
-Proof.
-split => [u_cvg A A0|u_le X [A [Ar AX]]].
-  rewrite -(near_map u_ \oo (fun x => x <= A%:E)).
-  by apply: u_cvg; apply: ereal_nbhs_ninfty_le.
-rewrite !near_simpl [\near u_, X _](near_map u_ \oo); near=> x.
-apply: AX.
-rewrite (@le_lt_trans _ _ (minr 0 A - 1)%:E) //.
-  by near: x; apply: u_le; rewrite ltr_subl_addl addr0 lt_minl ltr01.
-by rewrite lte_fin ltr_subl_addl lt_minl ltr_addr ltr01 orbT.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_squeeze (R : realType) (f g h : (\bar R)^nat) :
-  (\forall x \near \oo, f x <= g x <= h x) -> forall (l : \bar R),
-  f --> l -> h --> l -> g --> l.
-Proof.
-move=> pfgh [l| |] fl hl.
-- move: fl hl => /ereal_cvg_real[ffin fl] /ereal_cvg_real[hfin hl].
-  suff g_fin: \forall x \near \oo, g x \is a fin_num.
-    apply/ereal_cvg_real; split=> //; apply: squeeze fl hl; near=> n.
-    by rewrite -?lee_fin ?fineK ?pfgh//; near: n => //; apply: nbhs_infty_ge.
-  near=> n; have /(_ _)/andP[//|fg gh] := near pfgh n.
-  have /fin_numPlt/andP[fn _] : f n \is a fin_num by near: n.
-  have /fin_numPlt/andP[_ hn] : h n \is a fin_num by near: n.
-  by rewrite fin_numElt (lt_le_trans _ fg) ?(le_lt_trans gh)//=.
-- apply/ereal_cvgPpinfty => M M0; near=> n.
-  have /(_ _)/andP[//|fg gh] := near pfgh n.
-  by rewrite (le_trans _ fg)//; near: n; move: M M0; apply/ereal_cvgPpinfty.
-- apply/ereal_cvgPninfty => M M0; near=> n.
-  have /(_ _)/andP[//|fg gh] := near pfgh n.
-  by rewrite (le_trans gh)//; near: n; move: M M0; apply/ereal_cvgPninfty.
-Unshelve. all: by end_near. Qed.
-
-Lemma lee_lim (R : realFieldType) (u_ v_ : (\bar R)^nat) : cvg u_ -> cvg v_ ->
-  (\forall n \near \oo, u_ n <= v_ n) -> lim u_ <= lim v_.
-Proof.
-move=> cu cv uv; move lu : (lim u_) => l; move kv : (lim v_) => k.
-case: l k => [l| |] [k| |] // in lu kv *.
-- have /ereal_cvg_real[realu ul] : u_ --> l%:E by rewrite -lu.
-  have /ereal_cvg_real[realv vk] : v_ --> k%:E by rewrite -kv.
-  rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk)//; apply: ler_lim.
-  + by apply/cvg_ex; eexists; exact: ul.
-  + by apply/cvg_ex; eexists; exact: vk.
-  + near=> n => /=; rewrite -lee_fin fineK; last by near: n; apply realu.
-    by rewrite fineK; [near: n; exact: uv|near: n; apply realv].
-- by rewrite leey.
-- exfalso.
-  have /ereal_cvg_real [realu ul] : u_ --> l%:E by rewrite -lu.
-  have /ereal_cvgPninfty voo : v_ --> -oo by rewrite -kv.
-  have /cvg_has_inf[uT0 [M uTM]] : cvg (fine \o u_ ) by apply/cvg_ex; exists l.
-  have {}/voo vM : (minr (M - 1) (-1) < 0)%R by rewrite lt_minl ltrN10 orbT.
-  near \oo => n.
-  suff : v_ n < u_ n by apply/negP; rewrite -leNgt; near: n; exact: uv.
-  rewrite (@le_lt_trans _ _ (minr (M - 1) (-1))%:E)//.
-    by near: n; exact: vM.
-  rewrite -(@fineK _ (u_ n)); last by near: n; exact: realu.
-  by rewrite lte_fin lt_minl ltr_subl_addl ltr_spaddl// uTM//; exists n.
-- exfalso.
-  have /ereal_cvg_real [realv vk] : v_ --> k%:E by rewrite -kv.
-  have /ereal_cvgPpinfty uoo : u_ --> +oo by rewrite -lu.
-  have /cvg_has_sup[vT0 [M vTM]] : cvg (fine \o v_ ) by apply/cvg_ex; exists k.
-  have {}/uoo uM : (0 < maxr (M + 1) 1)%R by rewrite lt_maxr ltr01 orbT.
-  near \oo => n.
-  suff : v_ n < u_ n by apply/negP; rewrite -leNgt; near: n; exact: uv.
-  rewrite (@lt_le_trans _ _ (maxr (M + 1) 1)%:E)//.
-    rewrite -(@fineK _ (v_ n)); last by near: n; exact: realv.
-    by rewrite lte_fin lt_maxr ltr_spaddr// vTM//; exists n.
-  by near: n; exact: uM.
-- exfalso.
-  have /ereal_cvgPpinfty uoo : u_ --> +oo by rewrite -lu.
-  have /ereal_cvgPninfty voo : v_ --> -oo by rewrite -kv.
-  near \oo => n.
-  suff : v_ n < u_ n by apply/negP; rewrite -leNgt; near: n; exact: uv.
-  rewrite (@lt_trans _ _ 0) //.
-    rewrite (@le_lt_trans _ _ (- 1)%:E)// ?lte_fin ?ltrN10//.
-    by near: n; apply: voo; exact: ltrN10.
-  rewrite (@lt_le_trans _ _ 1)// ?lte_fin ?ltr10//.
-  by near: n; apply: uoo; exact: ltr01.
-- by rewrite leNye.
-Unshelve. all: by end_near. Qed.
+move=> u0 Pk ukoo; apply/eqP; rewrite -leye_eq.
+apply: le_trans (nneseries_lim_ge k.+1 u0) => //.
+rewrite leye_eq; apply/eqP/esumyP=> [i /u0|].
+ by rewrite leNgt; apply: contra => /eqP ->.
+by exists k; split => //; rewrite mem_iota subn0 add0n ltnS leqnn.
+Qed.
 
 Lemma lee_nneseries (R : realType) (u v : (\bar R)^nat) (P : pred nat) :
   (forall i, P i -> 0 <= u i) -> (forall n, P n -> u n <= v n) ->
@@ -1906,96 +1571,22 @@ move=> u0 Puv; apply: lee_lim.
 - by near=> n; exact: lee_sum.
 Unshelve. all: by end_near. Qed.
 
-Lemma ereal_cvgD_pinfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
-  f --> +oo -> g --> b%:E -> f \+ g --> +oo.
-Proof.
-move=> /ereal_cvgPpinfty foo /ereal_cvg_real -[realg gb].
-apply/ereal_cvgPpinfty => A A0.
-have /cvg_has_inf[gT0 [M gtM]] : cvg (fine \o g) by apply/cvg_ex; exists b.
-have /foo[m _ {}foo] : (0 < maxr A (A - M))%R by rewrite lt_maxr A0.
-case: realg => k _ realg.
-near=> n.
-have : (n >= maxn m k)%N by near: n; exists (maxn m k).
-rewrite geq_max => /andP[mn] /realg /fineK <-.
-rewrite -lee_subl_addr // (le_trans _ (foo _ mn)) // lee_fin.
-by rewrite le_maxr; apply/orP; right; apply ler_sub => //; apply gtM; exists n.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_cvgD_ninfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
-  f --> -oo -> g --> b%:E -> f \+ g --> -oo.
-Proof.
-move=> /ereal_cvgPninfty foo /ereal_cvg_real -[realg gb].
-apply/ereal_cvgPninfty => A A0.
-have /cvg_has_sup[gT0 [M gtM]] : cvg (fine \o g) by apply/cvg_ex; exists b.
-have /foo [m _ {}foo] : (minr A (A - M) < 0)%R by rewrite lt_minl A0.
-case: realg => k _ realg.
-near=> n.
-have : (n >= maxn m k)%N by near: n; exists (maxn m k).
-rewrite geq_max => /andP[mn].
-move/realg => /fineK <-.
-rewrite -lee_subr_addr // (le_trans (foo _ mn)) // lee_fin.
-by rewrite le_minl; apply/orP; right; apply ler_sub => //; apply gtM; exists n.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_cvgD_pinfty_pinfty (R : realFieldType) (f g : (\bar R)^nat) :
-  f --> +oo -> g --> +oo -> f \+ g --> +oo.
-Proof.
-move=> /ereal_cvgPpinfty foo /ereal_cvgPpinfty goo.
-apply/ereal_cvgPpinfty => A A0; near=> n; rewrite (splitr A) EFinD lee_add//.
-- by near: n; apply: foo; rewrite divr_gt0.
-- by near: n; apply: goo; rewrite divr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_cvgD_ninfty_ninfty (R : realFieldType) (f g : (\bar R)^nat) :
-  f --> -oo -> g --> -oo -> f \+ g --> -oo.
-Proof.
-move=> /ereal_cvgPninfty foo /ereal_cvgPninfty goo.
-apply/ereal_cvgPninfty => A A0; near=> n; rewrite (splitr A) EFinD lee_add//.
-- by near: n; apply: foo; rewrite ltr_pdivr_mulr // mul0r.
-- by near: n; apply: goo; rewrite ltr_pdivr_mulr // mul0r.
-Unshelve. all: by end_near. Qed.
-
-Lemma ereal_cvgD (R : realFieldType) (f g : (\bar R)^nat) a b :
-  a +? b -> f --> a -> g --> b -> f \+ g --> a + b.
-Proof.
-move: a b => [a| |] [b| |] // _.
-- move=> /ereal_cvg_real[finf fa] /ereal_cvg_real[fing gb].
-  apply/ereal_cvg_real; split.
-    by near=> n; rewrite fin_numD; apply/andP; split;
-      [near: n; apply finf|near: n; apply fing].
-  apply: (@cvg_trans _ [filter of fun n => fine (f n) + fine (g n)]%R).
-    apply: near_eq_cvg; near=> n => //=.
-    rewrite -[in RHS](@fineK _ (f n)); last by near: n; exact: finf.
-    by rewrite -[in RHS](@fineK _ (g n)) //; near: n; exact: fing.
-  exact: cvgD.
-- move=> fa goo.
-  rewrite (_ : _ \+ _ = g \+ f); last by rewrite funeqE => i; rewrite addeC.
-  exact: ereal_cvgD_pinfty_fin fa.
-- move=> fa goo.
-  rewrite (_ : _ \+ _ = g \+ f); last by rewrite funeqE => i; rewrite addeC.
-  exact: ereal_cvgD_ninfty_fin fa.
-- exact: ereal_cvgD_pinfty_fin.
-- exact: ereal_cvgD_pinfty_pinfty.
-- exact: ereal_cvgD_ninfty_fin.
-- exact: ereal_cvgD_ninfty_ninfty.
-Unshelve. all: by end_near. Qed.
-
 Section nneseries_split.
 
 Let lim_shift_cst (R : realFieldType) (u : (\bar R) ^nat) (l : \bar R) :
   cvg u -> (forall n, 0 <= u n) -> -oo < l -> lim (fun x => l + u x) = l + lim u.
 Proof.
-move=> cu u0 hl; apply/cvg_lim => //; apply: ereal_cvgD (cu); last first.
+move=> cu u0 hl; apply/cvg_lim => //; apply: cvgeD (cu); last first.
   exact: cvg_cst.
 rewrite ltninfty_adde_def// inE (@lt_le_trans _ _ 0)//.
-by apply: ereal_lim_ge => //; exact: nearW.
+by apply: lim_gee => //; exact: nearW.
 Qed.
 
 Let near_eq_lim (R : realFieldType) (f g : nat -> \bar R) :
   cvg g -> {near \oo, f =1 g} -> lim f = lim g.
 Proof.
 move=> cg fg; suff: f --> lim g by exact/cvg_lim.
-by apply: cvg_trans cg; apply: near_eq_cvg; near=> x; apply/esym; near: x.
+by apply: cvg_trans cg; apply: near_eq_cvg; near do apply/esym.
 Unshelve. all: by end_near. Qed.
 
 Lemma nneseries_split (R : realType) (f : nat -> \bar R) n :
@@ -2007,156 +1598,12 @@ rewrite big_ord_recr/= -addeA [f n + _](_ : _ = \sum_(n <= k <oo) f k)//.
 rewrite -lim_shift_cst; last by rewrite (@lt_le_trans _ _ 0).
 - apply: (@near_eq_lim _ (fun x => f n + _)).
     exact: is_cvg_ereal_nneg_natsum.
-  by near=> x; rewrite -big_ltn//; near: x; exact: nbhs_infty_gt.
+  by near do rewrite -big_ltn//; exact: nbhs_infty_gt.
 - exact: is_cvg_ereal_nneg_natsum.
 - by move=> m; exact: sume_ge0.
 Unshelve. all: by end_near. Qed.
 
 End nneseries_split.
-
-Lemma ereal_cvgB (R : realFieldType) (f g : (\bar R)^nat) a b :
-  a +? - b -> f --> a -> g --> b -> f \- g --> a - b.
-Proof. by move=> ab fa gb; apply: ereal_cvgD => //; exact: ereal_cvgN. Qed.
-
-Lemma ereal_is_cvgD (R : realFieldType) (u v : (\bar R)^nat) :
-  lim u +? lim v -> cvg u -> cvg v -> cvg (u \+ v).
-Proof.
-move=> uv /cvg_ex[l ul] /cvg_ex[k vk]; apply/cvg_ex; exists (l + k)%E.
-by apply: ereal_cvgD => //; rewrite -(cvg_lim _ ul)// -(cvg_lim _ vk).
-Qed.
-
-Lemma ereal_cvg_sub0 (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
-  k \is a fin_num -> (fun x => f x - k) --> 0 <-> f --> k.
-Proof.
-move=> kfin; split.
-  move=> /ereal_cvgD-/(_ (cst k) _ isT (cvg_cst _)).
-  by rewrite add0e; under eq_fun => x do rewrite subeK//.
-move: k kfin => [k _ fk| |]//; rewrite -(@subee _ k%:E)//.
-by apply: ereal_cvgB => //; exact: cvg_cst.
-Qed.
-
-Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
-  cvg f -> cvg g -> lim f +? lim g ->
-  lim (f \+ g) = lim f + lim g.
-Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: ereal_cvgD. Qed.
-
-Lemma ereal_cvgM_gt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
-  (0 < b)%R -> f --> +oo -> g --> b%:E -> f \* g --> +oo.
-Proof.
-move=> b0 /ereal_cvgPpinfty foo /ereal_cvg_real -[gfin gb].
-apply/ereal_cvgPpinfty => A A0; near=> n.
-rewrite (@le_trans _ _ (f n * (b / 2)%:E))//.
-  rewrite -lee_pdivr_mulr ?divr_gt0//.
-  by near: n; apply: foo; rewrite !divr_gt0.
-rewrite lee_pmul//.
-- by rewrite (@le_trans _ _ 1) ?lee_fin//; near: n; apply: foo.
-- by rewrite lee_fin divr_ge0// ltW.
-- rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
-  near: n; apply: (cvg_gt_ge gb) => //.
-  by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
-Unshelve. all: end_near. Qed.
-
-Lemma ereal_cvgM_lt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
-  (b < 0)%R -> f --> +oo -> g --> b%:E -> f \* g --> -oo.
-Proof.
-move=> b0 /ereal_cvgPpinfty foo /ereal_cvg_real -[gfin gb].
-apply/ereal_cvgPninfty => A A0; near=> n.
-rewrite -lee_opp -muleN (@le_trans _ _ (f n * (- b / 2)%:E))//.
-  rewrite -lee_pdivr_mulr ?mulr_gt0 ?oppr_gt0//.
-  by near: n; apply: foo; rewrite divr_gt0// ?mulNr ?oppr_gt0// pmulr_llt0.
-rewrite lee_pmul//.
-- by rewrite (@le_trans _ _ 1) ?lee_fin//; near: n; apply: foo.
-- by rewrite mulNr EFinN lee_oppr oppe0 lee_fin mulr_le0_ge0// ltW.
-- rewrite EFinM EFinN mulNe lee_opp.
-  rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
-  by near: n; apply: (cvg_lt_le gb) => //; rewrite ltr_nmulr// invf_lt1// ltr1n.
-Unshelve. all: end_near. Qed.
-
-Lemma ereal_cvgM_gt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
-  (0 < b)%R -> f --> -oo -> g --> b%:E -> f \* g --> -oo.
-Proof.
-move=> b0 foo gb; under eq_fun do rewrite -muleNN.
-apply: (@ereal_cvgM_lt0_pinfty _ _ _ (- b)%R); first by rewrite oppr_lt0.
-- by rewrite -(oppeK +oo); apply: ereal_cvgN.
-- by rewrite EFinN; apply: ereal_cvgN.
-Qed.
-
-Lemma ereal_cvgM_lt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
-  (b < 0)%R -> f --> -oo -> g --> b%:E -> f \* g --> +oo.
-Proof.
-move=> b0 foo gb; under eq_fun do rewrite -muleNN.
-apply: (@ereal_cvgM_gt0_pinfty _ _ _ (- b)%R); first by rewrite oppr_gt0.
-- by rewrite -(oppeK +oo); apply: ereal_cvgN.
-- by rewrite EFinN; apply: ereal_cvgN.
-Qed.
-
-Lemma ereal_cvgM (R : realType) (f g : (\bar R) ^nat) (a b : \bar R) :
- a *? b -> f --> a -> g --> b -> f \* g --> a * b.
-Proof.
-move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
-- move=> _ /ereal_cvg_real[finf fa] /ereal_cvg_real[fing gb].
-  apply/ereal_cvg_real; split.
-    by near=> n; apply: fin_numM; [near: n; apply finf|near: n; apply fing].
-  apply: (@cvg_trans _ [filter of (fun n => fine (f n) * fine (g n))%R]).
-    apply: near_eq_cvg; near=> n => //=.
-    rewrite -[in RHS](@fineK _ (f n)); last by near: n; exact: finf.
-    by rewrite -[in RHS](@fineK _ (g n)) //; near: n; exact: fing.
-  exact: cvgM.
-- move: f g a; abstract: apoo.
-  move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
-  + rewrite mulry ltr0_sg// ?mulN1e.
-    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_pinfty a0).
-  + rewrite mulry gtr0_sg// ?mul1e.
-    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_pinfty a0).
-  + by rewrite /mule_def eqxx.
-- move: f g a; abstract: bnoo.
-  move=> {}f {}g {}a + fa goo; have [a0 _|a0 _|->] := ltgtP a 0%R.
-  + rewrite mulrNy ltr0_sg// ?mulN1e.
-    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_lt0_ninfty a0).
-  + rewrite mulrNy gtr0_sg// ?mul1e.
-    by under eq_fun do rewrite muleC; exact: (ereal_cvgM_gt0_ninfty a0).
-  + by rewrite /mule_def eqxx.
-- rewrite mule_defC => ? foo gb; rewrite muleC.
-  by under eq_fun do rewrite muleC; exact: apoo.
-- move=> _; move: f g; abstract: poopoo.
-  move=> {}f {}g /ereal_cvgPpinfty foo /ereal_cvgPpinfty goo.
-  rewrite mulyy; apply/ereal_cvgPpinfty => A A0; near=> n.
-  rewrite -(sqr_sqrtr (ltW A0)) expr2 EFinM lee_pmul//.
-    by near: n; apply: foo; rewrite sqrtr_gt0.
-  by near: n; apply: goo; rewrite sqrtr_gt0.
-- move=> _; move: f g; abstract: poonoo.
-  move=> {}f {}g /ereal_cvgPpinfty foo /ereal_cvgPninfty goo.
-  rewrite mulyNy; apply/ereal_cvgPninfty => A A0; near=> n.
-  rewrite (@le_trans _ _ (g n))//; last by near: n; exact: goo.
-  apply: lee_nemull; last by near: n; apply: foo.
-  by rewrite (@le_trans _ _ (- 1)%:E)//; near: n; apply: goo; rewrite ltrN10.
-- rewrite mule_defC => ? foo gb; rewrite muleC.
-  by under eq_fun do rewrite muleC; exact: bnoo.
-- move=> _ foo goo.
-  by under eq_fun do rewrite muleC; exact: poonoo.
-- move=> _ foo goo; rewrite mulNyNy -mulyy.
-  by under eq_fun do rewrite -muleNN; apply: poopoo;
-    rewrite -/(- -oo); apply: ereal_cvgN.
-Unshelve. all: end_near. Qed.
-
-Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
-    (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :
-  (forall k n, P k -> 0 <= f k n) ->
-  (forall k, P k -> f k --> l k) ->
-  (fun n => \sum_(k <- r | P k) f k n) --> \sum_(k <- r | P k) l k.
-Proof.
-elim: r => [_ fl|a b ih f0 fl].
-  rewrite !big_nil [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
-  by under eq_fun do rewrite big_nil.
-rewrite big_cons; under eq_fun do rewrite big_cons.
-case: ifPn => Pa; last exact: ih.
-apply: ereal_cvgD; [|exact: fl|exact:ih].
-suff P0l i : P i -> 0 <= l i.
-  by apply ge0_adde_def; rewrite !inE ?P0l// sume_ge0.
-move=> Pi; rewrite -(cvg_lim _ (fl _ Pi)) // ereal_lim_ge //.
-- by apply/cvg_ex; eexists; exact: fl.
-- by apply: nearW => // n; exact: f0.
-Unshelve. all: by end_near. Qed.
 
 Lemma nneseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) :
   (forall i, P i -> 0 <= f i) -> (forall i, P i -> 0 <= g i) ->
@@ -2167,7 +1614,7 @@ move=> f_eq0 g_eq0.
 transitivity (lim (fun n => \sum_(0 <= i < n | P i) f i +
                          \sum_(0 <= i < n | P i) g i)).
   by congr (lim _); apply/funext => n; rewrite big_split.
-rewrite ereal_limD /adde_def //=; do ? exact: is_cvg_nneseries.
+rewrite limeD /adde_def //=; do ? exact: is_cvg_nneseries.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
            ?[_ < _]real0// nneseries_ge0.
 Qed.
@@ -2206,7 +1653,7 @@ move=> ndu cu Ml; have [[n Mun]|] := pselect (exists n, M%:E <= u n).
   by near: m; exists n.+1 => // p q; apply/ndu/ltnW.
 move/forallNP => Mu.
 have {}Mu : forall x, M%:E > u x by move=> x; rewrite ltNge; apply/negP.
-have : lim u <= M%:E by apply ereal_lim_le => //; near=> m; apply/ltW/Mu.
+have : lim u <= M%:E by apply lim_lee => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
 
@@ -2438,14 +1885,14 @@ suff: lim_sup u <= l <= lim_inf u.
 apply/andP; split.
 - apply/ler_addgt0Pr => e e0.
   apply: lim_le; first by apply: is_cvg_sups; apply/cvg_ex; exists l.
-  move/cvg_distP : (ul) => /(_ _ e0); rewrite near_map => -[k _ klu].
+  move/cvgrPdist_lt : (ul) => /(_ _ e0) -[k _ klu].
   near=> n; have kn : (k <= n)%N by near: n; exists k.
   apply: sup_le_ub; first by exists (u n) => /=; exists n => //=.
   move=> _ /= [m nm] <-; apply/ltW/ltr_distl_addr; rewrite distrC.
   by apply: (klu m) => /=; rewrite (leq_trans kn).
 - apply/ler_addgt0Pr => e e0; rewrite -ler_subl_addr.
   apply: lim_ge; first by apply: is_cvg_infs; apply/cvg_ex; exists l.
-  move/cvg_distP : (ul) => /(_ _ e0); rewrite near_map => -[k _ klu].
+  move/cvgrPdist_lt : (ul) => /(_ _ e0) -[k _ klu].
   near=> n; have kn: (k <= n)%N by near: n; exists k.
   apply: lb_le_inf; first by exists (u n) => /=; exists n => //=.
   move=> _ /= [m nm] <-; apply/ltW/ltr_distl_subl.
@@ -2621,20 +2068,20 @@ Qed.
 
 End esups_einfs.
 
-Section elim_sup_inf.
+Section lim_esup_inf.
 Local Open Scope ereal_scope.
 Variable R : realType.
 Implicit Types (u v : (\bar R)^nat) (l : \bar R).
 
-Definition elim_sup u := lim (esups u).
+Definition lim_esup u := lim (esups u).
 
-Definition elim_inf u := lim (einfs u).
+Definition lim_einf u := lim (einfs u).
 
-Lemma elim_inf_shift u l : l \is a fin_num ->
-  elim_inf (fun x => l + u x) = l + elim_inf u.
+Lemma lim_einf_shift u l : l \is a fin_num ->
+  lim_einf (fun x => l + u x) = l + lim_einf u.
 Proof.
 move=> lfin; apply/cvg_lim => //; apply: cvg_trans; last first.
-  apply: (@ereal_cvgD _ (cst l) (einfs u) _ (lim (einfs u))).
+  apply: (@cvgeD _ \oo _ _ (cst l) (einfs u) _ (lim (einfs u))).
   - by rewrite adde_defC fin_num_adde_def.
   - exact: cvg_cst.
   - exact: is_cvg_einfs.
@@ -2648,83 +2095,82 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite lee_add2l//; apply: ereal_inf_lb; exists m => /=.
 Qed.
 
-Lemma elim_sup_le_cvg u l : elim_sup u <= l -> (forall n, l <= u n) -> u --> l.
+Lemma lim_esup_le_cvg u l : lim_esup u <= l -> (forall n, l <= u n) -> u --> l.
 Proof.
 move=> supul ul; have usupu n : l <= u n <= esups u n.
   by rewrite ul /=; apply/ereal_sup_ub; exists n => /=.
 suff : esups u --> l.
-  by apply: (@ereal_squeeze _ (cst l)) => //; [exact: nearW|exact: cvg_cst].
+  by apply: (@esqueeze _ _ _ _ (cst l)) => //; [exact: nearW|exact: cvg_cst].
 apply/cvg_closeP; split; first exact: is_cvg_esups.
 rewrite closeE//; apply/eqP; rewrite eq_le supul.
-apply: (ereal_lim_ge (@is_cvg_esups _ _)); apply: nearW => m.
+apply: (lim_gee (@is_cvg_esups _ _)); apply: nearW => m.
 have /le_trans : l <= einfs u m by apply: lb_ereal_inf => _ [p /= pm] <-.
 by apply; exact: einfs_le_esups.
 Qed.
 
-Lemma elim_infN u : elim_inf (-%E \o u) = - elim_sup u.
+Lemma lim_einfN u : lim_einf (-%E \o u) = - lim_esup u.
 Proof.
-by rewrite /elim_inf einfsN /elim_sup ereal_limN //; exact/is_cvg_esups.
+by rewrite /lim_einf einfsN /lim_esup limeN //; exact/is_cvg_esups.
 Qed.
 
-Lemma elim_supN u : elim_sup (-%E \o u) = - elim_inf u.
+Lemma lim_esupN u : lim_esup (-%E \o u) = - lim_einf u.
 Proof.
-apply/eqP; rewrite -eqe_oppLR -elim_infN /=.
+apply/eqP; rewrite -eqe_oppLR -lim_einfN /=.
 by rewrite (_ : _ \o _ = u) // funeqE => n /=; rewrite oppeK.
 Qed.
 
-Lemma elim_inf_sup u : elim_inf u <= elim_sup u.
+Lemma lim_einf_sup u : lim_einf u <= lim_esup u.
 Proof.
 apply: lee_lim; [exact/is_cvg_einfs|exact/is_cvg_esups|].
 by apply: nearW; exact: einfs_le_esups.
 Qed.
 
-Lemma cvg_ninfty_elim_inf_sup u : u --> -oo ->
-  (elim_inf u = -oo) * (elim_sup u = -oo).
+Lemma cvgNy_lim_einf_sup u : u --> -oo ->
+  (lim_einf u = -oo) * (lim_esup u = -oo).
 Proof.
-move=> uoo; suff: elim_sup u = -oo.
-  by move=> {}uoo; split => //; apply/eqP; rewrite -leeNy_eq -uoo elim_inf_sup.
-apply/cvg_lim => //=; apply/ereal_cvgPninfty => M M0.
-move: uoo => /ereal_cvgPninfty /(_ _ M0)[m _ h].
-near=> n; apply ub_ereal_sup => _ [k /= nk] <-.
-by apply h => /=; rewrite (leq_trans _ nk) //; near: n; exists m.
+move=> uoo; suff: lim_esup u = -oo.
+  by move=> {}uoo; split => //; apply/eqP; rewrite -leeNy_eq -uoo lim_einf_sup.
+apply/cvg_lim => //=; apply/cvgeNyPle => M.
+have /cvgeNyPle/(_ M)[m _ uM] := uoo.
+near=> n; apply: ub_ereal_sup => _ [k /= nk <-].
+by apply: uM => /=; rewrite (leq_trans _ nk)//; near: n; exists m.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_ninfty_einfs u : u --> -oo -> einfs u --> -oo.
+Lemma cvgNy_einfs u : u --> -oo -> einfs u --> -oo.
 Proof.
-move=> /cvg_ninfty_elim_inf_sup[uoo _].
+move=> /cvgNy_lim_einf_sup[uoo _].
 by apply/cvg_closeP; split; [exact: is_cvg_einfs|rewrite closeE].
 Qed.
 
-Lemma cvg_ninfty_esups u : u --> -oo -> esups u --> -oo.
+Lemma cvgNy_esups u : u --> -oo -> esups u --> -oo.
 Proof.
-move=> /cvg_ninfty_elim_inf_sup[_ uoo].
+move=> /cvgNy_lim_einf_sup[_ uoo].
 by apply/cvg_closeP; split; [exact: is_cvg_esups|rewrite closeE].
 Qed.
 
-Lemma cvg_pinfty_einfs u : u --> +oo -> einfs u --> +oo.
+Lemma cvgy_einfs u : u --> +oo -> einfs u --> +oo.
 Proof.
-move=> /ereal_cvgN/cvg_ninfty_esups/ereal_cvgN; rewrite esupsN.
+move=> /cvgeN/cvgNy_esups/cvgeN; rewrite esupsN.
 apply: cvg_trans; rewrite (_ : _ \o (_ \o _) = einfs u) //.
 by rewrite funeqE => n /=; rewrite oppeK.
 Qed.
 
-Lemma cvg_pinfty_esups u : u --> +oo -> esups u --> +oo.
+Lemma cvgy_esups u : u --> +oo -> esups u --> +oo.
 Proof.
-move=> /ereal_cvgN/cvg_ninfty_einfs/ereal_cvgN; rewrite einfsN.
+move=> /cvgeN/cvgNy_einfs/cvgeN; rewrite einfsN.
 apply: cvg_trans; rewrite (_ : _ \o (_ \o _) = esups u) //.
 by rewrite funeqE => n /=; rewrite oppeK.
 Qed.
 
 Lemma cvg_esups u l : u --> l -> esups u --> l.
 Proof.
-case: l => [l /ereal_cvg_real[u_fin_num] ul| |]; last 2 first.
-  - exact: cvg_pinfty_esups.
-  - exact: cvg_ninfty_esups.
+case: l => [l /fine_cvgP[u_fin_num] ul| |]; last 2 first.
+  - exact: cvgy_esups.
+  - exact: cvgNy_esups.
 have [p _ pu] := u_fin_num; apply/cvg_ballP => _/posnumP[e].
 have : EFin \o sups (fine \o u) --> l%:E.
   by apply: continuous_cvg => //; apply: cvg_sups.
-move=> /cvg_ballP /(_ e%:num (gt0 _))[q _ qsupsu].
-rewrite near_simpl; near=> n.
+move=> /cvg_ballP /(_ e%:num (gt0 _))[q _ qsupsu]; near=> n.
 have -> : esups u n = (EFin \o sups (fine \o u)) n.
   rewrite /= -ereal_sup_EFin; last 2 first.
     - apply/has_ubound_sdrop/bounded_fun_has_ubound.
@@ -2741,28 +2187,28 @@ Unshelve. all: by end_near. Qed.
 
 Lemma cvg_einfs u l : u --> l -> einfs u --> l.
 Proof.
-move=> /ereal_cvgN/cvg_esups/ereal_cvgN; rewrite oppeK esupsN.
+move=> /cvgeN/cvg_esups/cvgeN; rewrite oppeK esupsN.
 by rewrite (_ : _ \o (_ \o _) = einfs u) // funeqE => n /=; rewrite oppeK.
 Qed.
 
-Lemma cvg_elim_inf_sup u l : u --> l -> (elim_inf u = l) * (elim_sup u = l).
+Lemma cvg_lim_einf_sup u l : u --> l -> (lim_einf u = l) * (lim_esup u = l).
 Proof.
 by move=> ul; split; apply/cvg_lim => //; [apply/cvg_einfs|apply/cvg_esups].
 Qed.
 
-Lemma is_cvg_elim_infE u : cvg u -> elim_inf u = lim u.
+Lemma is_cvg_lim_einfE u : cvg u -> lim_einf u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [-> _] := cvg_elim_inf_sup ul.
+move=> /cvg_ex[l ul]; have [-> _] := cvg_lim_einf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-Lemma is_cvg_elim_supE u : cvg u -> elim_sup u = lim u.
+Lemma is_cvg_lim_esupE u : cvg u -> lim_esup u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [_ ->] := cvg_elim_inf_sup ul.
+move=> /cvg_ex[l ul]; have [_ ->] := cvg_lim_einf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-End elim_sup_inf.
+End lim_esup_inf.
 
 Section banach_contraction.
 
@@ -2771,17 +2217,20 @@ Variables (f : {fun U >-> U}).
 
 Section contractions.
 Variables (q : {nonneg R}) (ctrf : contraction q f) (base : X) (Ubase : U base).
+Let C := `|f base - base| / (1 - q%:num).
+Let y := fun n => iter n f base.
+Let q1 := ctrf.1.
+Let ctrfq := ctrf.2.
+Let C_ge0 : 0 <= C.
+Proof. by rewrite ?(invr_ge0, mulr_ge0, subr_ge0, ltW q1). Qed.
 
-Lemma contraction_dist n m :
-  `| iter n f base - iter (n + m) f base| <=
-   (`|f base - base| / (1 - q%:num)) * q%:num ^+ n.
+Lemma contraction_dist n m : `|y n - y (n + m)| <= C * q%:num ^+ n.
 Proof.
-case: ctrf => q1 ctrfq; pose y := fun n => iter n f base.
 have f1 k : `|y k.+1 - y k| <= q%:num ^+ k * `|f base - base|.
-  elim: k => [|k /(ler_wpmul2l [ge0 of q%:num])]; first by rewrite expr0 mul1r.
-  rewrite mulrA -exprS; apply: le_trans; rewrite ![y _.+1]iterS.
-  by apply: (ctrfq (iter k.+1 f base, _)); split; exact: funS.
-have /le_trans -> // : `| y n - y (n + m)%N| <=
+  elim: k => [|k /(ler_wpmul2l (ge0 q))]; first by rewrite expr0 mul1r.
+  rewrite mulrA -exprS; apply: le_trans.
+  by rewrite (@ctrfq (y k.+1, y k)); split; exact: funS.
+have /le_trans -> // : `| y n - y (n + m)| <=
     series (geometric (`|f base - base| * q%:num ^+ n) q%:num) m.
   elim: m => [|m ih].
     by rewrite geometric_seriesE ?lt_eqF//= addn0 subrr normr0 subrr mulr0 mul0r.
@@ -2792,39 +2241,32 @@ have /le_trans -> // : `| y n - y (n + m)%N| <=
   rewrite -!mulrA -mulrDr ler_pmul// -mulrDr exprSr onemM -addrA.
   rewrite -[in leRHS](mulrC _ `1-(_ ^+ m)) -onemMr onemK.
   by rewrite [in leRHS]mulrDl mulrAC mulrV ?mul1r// unitf_gt0// onem_gt0.
-rewrite geometric_seriesE ?lt_eqF//=.
-rewrite -!/(`1-_) (onem_PosNum ctrf.1) (onemX_NngNum (ltW ctrf.1)).
-rewrite -!mulrA ler_pmul// [leRHS]mulrC ler_pmul// -ler_pdivl_mulr ?invr_gt0//.
-by rewrite divrr ?unitf_gt0// onem_le1.
+rewrite geometric_seriesE ?lt_eqF//= -[leRHS]mulr1 (ACl (1*4*2*3))/= -/C.
+by rewrite ler_wpmul2l// 1?mulr_ge0// ler_subl_addr ler_addl.
 Qed.
 
-Lemma contraction_cvg : cvg (iter n f base @[n-->\oo]).
+Lemma contraction_cvg : cvg y.
 Proof.
-apply/cauchy_cvgP; case: ctrf => q1 ctrfq.
-pose y := fun n => iter n f base; pose C := `|f base - base| / (1 - q%:num).
-apply/cauchy_ballP => _/posnumP[e]; near_simpl.
+apply/cauchy_cvgP; apply/cauchy_ballP => _/posnumP[e]; near_simpl.
 have lt_min n m : `|y n - y m| <= C * q%:num ^+ minn n m.
   wlog : n m / (n <= m)%N => W.
     by case/orP: (leq_total n m) => /W //; rewrite distrC minnC.
-  rewrite -(@subnKC n m) //; apply: le_trans; first exact: contraction_dist.
-  by rewrite -/(`1-_) (onem_PosNum ctrf.1) ler_pmul ?subnKC//; move/minn_idPl : W => ->.
-have [Cpos| |C0] := ltrgt0P C; last first.
-  - near=> n m => /=; rewrite -ball_normE.
-    by apply: (le_lt_trans (lt_min _ _)); rewrite C0 mul0r.
-  - rewrite ltNge //; apply: contraNP => _; rewrite /C.
-    by rewrite -/(`1-_) (onem_PosNum ctrf.1).
+  by rewrite (minn_idPl _)// (le_trans _ (contraction_dist _ (m - n)))// subnKC.
+case: ltrgt0P C_ge0 => // [Cpos|C0] _; last first.
+  near=> n m => /=; rewrite -ball_normE.
+  by apply: (le_lt_trans (lt_min _ _)); rewrite C0 mul0r.
 near=> n; rewrite -ball_normE /= (le_lt_trans (lt_min n.1 n.2)) //.
 rewrite // -ltr_pdivl_mull //.
 suff : ball 0 (C^-1 * e%:num) (q%:num ^+ minn n.1 n.2).
   by rewrite /ball /= sub0r normrN ger0_norm.
 near: n; rewrite nbhs_simpl.
 pose g := fun w : nat * nat => q%:num ^+ minn w.1 w.2.
-have := @cvg_ball _ _ (g @ filter_prod \oo \oo) _ 0 _ (C^-1 * e%:num).
+have := @fcvg_ball _ _ (g @ filter_prod \oo \oo) _ 0 _ (C^-1 * e%:num).
 move: (@cvg_geometric _ 1 q%:num); rewrite ger0_norm // => /(_ q1) geo.
 near_simpl; apply; last by rewrite mulr_gt0 // invr_gt0.
 apply/cvg_ballP => _/posnumP[delta]; near_simpl.
 have [N _ Q] : \forall N \near \oo, ball 0 delta%:num (geometric 1 q%:num N).
-  exact: (@cvg_ball R R _ _ 0 geo).
+  exact: (@fcvg_ball R R _ _ 0 geo).
 exists ([set n | N <= n], [set n | N <= n])%N; first by split; exists N.
 move=> [n m] [Nn Nm]; rewrite /ball /= sub0r normrN ger0_norm /g //.
 apply: le_lt_trans; last by apply: (Q N) => /=.
@@ -2832,30 +2274,30 @@ rewrite sub0r normrN ger0_norm /geometric //= mul1r.
 by rewrite ler_wiexpn2l // ?ltW // leq_min Nn.
 Unshelve. all: end_near. Qed.
 
-Lemma contraction_cvg_fixed :
-  closed U -> let p := lim ((fun n => iter n f base) @ \oo) in p = f p.
+Lemma contraction_cvg_fixed : closed U -> lim y = f (lim y).
 Proof.
-move=> clU ; apply: cvg_lim => //; case: ctrf => q1 ctrfq.
-apply/cvg_distP => _/posnumP[e]; near_simpl; apply: near_inftyS.
+move=> clU; apply: cvg_lim => //.
+apply/cvgrPdist_lt => _/posnumP[e]; near_simpl; apply: near_inftyS.
 have [q_gt0 | | q0] := ltrgt0P q%:num.
-- near=> n => /=; apply: (le_lt_trans (ctrfq (_, _) _)) => //=.
+- near=> n => /=; apply: (le_lt_trans (@ctrfq (_, _) _)) => //=.
   + split; last exact: funS.
     by apply: closed_cvg contraction_cvg => //; apply: nearW => ?; exact: funS.
-  + rewrite -ltr_pdivl_mull //; near: n; move/cvg_distP: contraction_cvg; apply.
+  + rewrite -ltr_pdivl_mull //; near: n; move/cvgrPdist_lt: contraction_cvg; apply.
     by rewrite mulr_gt0 // invr_gt0.
 - by rewrite ltNge//; exact: contraNP.
-- apply: nearW => /= n; apply: (le_lt_trans (ctrfq (_, _) _)).
+- apply: nearW => /= n; apply: (le_lt_trans (@ctrfq (_, _) _)).
   + split; last exact: funS.
     by apply: closed_cvg contraction_cvg => //; apply: nearW => ?; exact: funS.
   + by rewrite q0 mul0r.
 Unshelve. all: end_near. Qed.
+
 End contractions.
 
 Variable ctrf : is_contraction f.
 
 Theorem banach_fixed_point : closed U -> U !=set0 -> exists2 p, U p & p = f p.
 Proof.
-case: ctrf => q ctrq ? [base Ubase]; exists (lim (iter n f base @[n -->\oo])).
+case: ctrf => [q ctrq] ? [base Ubase]; exists (lim (iter n f base @[n -->\oo])).
   apply: closed_cvg (contraction_cvg ctrq Ubase) => //.
   by apply: nearW => ?; exact: funS.
 exact: (contraction_cvg_fixed ctrq).

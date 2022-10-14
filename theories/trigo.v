@@ -75,8 +75,7 @@ Lemma cvg_series_cvg_series_group (R : realFieldType) (f : R ^nat) k :
   [series \sum_(n * k <= i < n.+1 * k) f i]_n --> lim (series f).
 Proof.
 move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
-have := !! cf _ (gt0 e); rewrite near_map => -[n _ nl].
-rewrite near_map; near=> m.
+have := !! cf _ (gt0 e) => -[n _ nl]; near=> m.
 rewrite /ball /= [in X in `|_ - X|]/series [in X in `|_ - X|]/= -big_nat_mul.
 have /nl : (n <= m * k)%N.
   by near: m; exists n.+1 => //= p /ltnW /leq_trans /(_ (leq_pmulr _ k0)).
@@ -90,7 +89,6 @@ Proof.
 move=> /cvg_ballP cf fn.
 have fn0 : 0 < f n + f n.+1 by have := fn 0%N; rewrite double0 addn0 addn1.
 rewrite ltNge; apply: contraPN cf => ffn /(_ _ fn0).
-rewrite near_map /ball /=.
 have nf_ub N : \sum_(0 <= i < n.+2) f i <= \sum_(0 <= i < N.+1.*2 + n) f i.
   elim: N => // N /le_trans ->//; rewrite -(addn1 (N.+1)) doubleD addnAC.
   rewrite [in leRHS]/index_iota subn0 iotaD big_cat.

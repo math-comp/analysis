@@ -170,10 +170,7 @@ Lemma differentiable_continuous (x : V) (f : V -> W) :
 Proof.
 move=> /diff_locallyP [dfc]; rewrite -addrA.
 rewrite (littleo_bigO_eqo (cst (1 : R))); last first.
-  apply/eqOP; near=> k; rewrite /cst [`|1|]normr1 mulr1.
-  near=> y; rewrite ltW //; near: y; apply/nbhs_normP.
-  exists k; first by near: k; exists 0.
-  by move=> ? /=; rewrite -ball_normE /= sub0r normrN.
+  by apply/eqOP; near=> k; rewrite /cst [`|1|]normr1 mulr1; near do by [].
 rewrite addfo; first by move=> /eqolim; rewrite cvg_comp_shift add0r.
 by apply/eqolim0P; apply: (cvg_trans (dfc 0)); rewrite linear0.
 Unshelve. all: by end_near. Qed.
@@ -243,7 +240,7 @@ apply: filter_app; rewrite /= !near_simpl near_withinE; near=> h => hN0.
 rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
 rewrite /cst /= [`|1|]normr1 mulr1 => dfv.
 rewrite addrA -[X in X + _]scale1r -(@mulVf _ h) //.
-rewrite mulrC -scalerA -scalerBr normmZ.
+rewrite mulrC -scalerA -scalerBr normrZ.
 rewrite -ler_pdivl_mull; last by rewrite normr_gt0.
 by rewrite mulrCA mulVf ?mulr1; last by rewrite normr_eq0.
 Unshelve. all: by end_near. Qed.
@@ -261,7 +258,7 @@ rewrite /= !(near_simpl, near_withinE); apply: filter_app; near=> h.
 rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
 rewrite /cst /= [`|1|]normr1 mulr1 addrA => dfv hN0.
 rewrite -[X in _ - X]scale1r -(@mulVf _ h) //.
-rewrite -scalerA -scalerBr normmZ normfV ler_pdivr_mull ?normr_gt0 //.
+rewrite -scalerA -scalerBr normrZ normfV ler_pdivr_mull ?normr_gt0 //.
 by rewrite mulrC.
 Unshelve. all: by end_near. Qed.
 
@@ -298,7 +295,7 @@ rewrite /derive => /diff_locally -> /=; set k := 'o _.
 evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   rewrite funeqE=> h; rewrite !scalerDr scalerN /cst /=.
   by rewrite addrC !addrA addNr add0r linearZ /= scalerA /g.
-apply: cvg_map_lim => //.
+apply: cvg_lim => //.
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: cvgD.
@@ -310,20 +307,20 @@ rewrite /g2.
 have [/eqP ->|v0] := boolP (v == 0).
   rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
-apply/cvg_distP => e e0.
+apply/cvgrPdist_lt => e e0.
 rewrite nearE /=; apply/nbhs_ballP.
 have /(littleoP [littleo of k]) /nbhs_ballP[i i0 Hi] : 0 < e / (2 * `|v|).
   by rewrite divr_gt0 // pmulr_rgt0 // normr_gt0.
 exists (i / `|v|); first by rewrite /= divr_gt0 // normr_gt0.
 move=> /= j; rewrite /ball /= /ball_ add0r normrN.
 rewrite ltr_pdivl_mulr ?normr_gt0 // => jvi j0.
-rewrite add0r normrN normmZ -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
+rewrite add0r normrN normrZ -ltr_pdivl_mull ?normr_gt0 ?invr_neq0 //.
 have /Hi/le_lt_trans -> // : ball 0 i (j *: v).
-  by rewrite -ball_normE /ball_/= add0r normrN (le_lt_trans _ jvi) // normmZ.
+   by rewrite -ball_normE/= add0r normrN (le_lt_trans _ jvi) // normrZ.
 rewrite -(mulrC e) -mulrA -ltr_pdivl_mull // mulrA mulVr ?unitfE ?gt_eqF //.
 rewrite normrV ?unitfE // div1r invrK ltr_pdivr_mull; last first.
   by rewrite pmulr_rgt0 // normr_gt0.
-rewrite normmZ mulrC -mulrA.
+rewrite normrZ mulrC -mulrA.
 by rewrite ltr_pmull ?ltr1n // pmulr_rgt0 ?normm_gt0 // normr_gt0.
 Qed.
 
@@ -452,10 +449,7 @@ move=>  /(_ (e%:num / k%:num)) /(_ _) /nbhs_ballP [//|_ /posnumP[d] hd].
 apply: filter_app; near=> x => leOxkx; apply: le_trans (hd _ _) _; last first.
   rewrite -ler_pdivl_mull //; apply: le_trans leOxkx _.
   by rewrite invf_div mulrA -[_ / _ * _]mulrA mulVf // mulr1.
-rewrite -ball_normE /= distrC subr0 (le_lt_trans leOxkx) //.
-rewrite -ltr_pdivl_mull //; near: x; rewrite /= !nbhs_simpl.
-apply/nbhs_ballP; exists (k%:num ^-1 * d%:num) => //= x.
-by rewrite -ball_normE /= distrC subr0.
+by rewrite -ball_normE /= distrC subr0 (le_lt_trans leOxkx) // -ltr_pdivl_mull.
 Unshelve. all: by end_near. Qed.
 
 Lemma compoO_eqox (U V' W' : normedModType R) (f : U -> V')
@@ -475,10 +469,7 @@ have ekgt0 : e%:num / k%:num > 0 by [].
 have /(_ _ ekgt0) := littleoP [littleo of [o_ (0 : U) id of f]].
 apply: filter_app; near=> x => leoxekx; apply: le_trans (hd _ _) _; last first.
   by rewrite -ler_pdivl_mull // mulrA [_^-1 * _]mulrC.
-rewrite -ball_normE /= distrC subr0; apply: le_lt_trans leoxekx _.
-rewrite -ltr_pdivl_mull //; near: x; rewrite /= nbhs_simpl.
-apply/nbhs_ballP; exists ((e%:num / k%:num) ^-1 * d%:num) => //= x.
-by rewrite -ball_normE /= distrC subr0.
+by rewrite -ball_normE /= distrC subr0 (le_lt_trans leoxekx)// -ltr_pdivl_mull //.
 Unshelve. all: by end_near. Qed.
 
 End DifferentialR3.
@@ -493,15 +484,14 @@ move/eqoP => oid.
 rewrite funeqE => x; apply/eqP; have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP ->; rewrite linear0.
 rewrite -normr_le0 -(mul0r `|x|) -ler_pdivr_mulr //.
-apply/ler0_addgt0P => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
+apply/ler_gtP => _ /posnumP[e]; rewrite ler_pdivr_mulr //.
 have /oid /nbhs_ballP [_ /posnumP[d] dfe] := !! gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
-rewrite -{1}(@scalerKV _ _ k _ x) /k // linearZZ normmZ.
+rewrite -{1}(@scalerKV _ _ k _ x) /k // linearZZ normrZ.
 rewrite -ler_pdivl_mull; last by rewrite gtr0_norm.
 rewrite mulrCA (@le_trans _ _ (e%:num * `|k^-1 *: x|)) //; last first.
-  by rewrite ler_pmul // normmZ normfV.
-apply: dfe.
-rewrite -ball_normE /ball_/= sub0r normrN normmZ.
+  by rewrite ler_pmul // normrZ normfV.
+apply: dfe; rewrite -ball_normE /= sub0r normrN normrZ.
 rewrite invrK -ltr_pdivl_mulr // ger0_norm // ltr_pdivr_mulr //.
 by rewrite -mulrA mulVf ?lt0r_neq0 // mulr1 [ltRHS]splitr ltr_addl.
 Qed.
@@ -683,11 +673,11 @@ have [|xn0] := real_le0P (normr_real x).
 set k := 2 / e%:num * (PosNum xn0)%:num.
 have kn0 : k != 0 by rewrite /k.
 have abskgt0 : `|k| > 0 by rewrite normr_gt0.
-rewrite -[x in leLHS](scalerKV kn0) linearZZ normmZ -ler_pdivl_mull //.
+rewrite -[x in leLHS](scalerKV kn0) linearZZ normrZ -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (k^-1 *: x).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
   by rewrite ger0_norm /k // mulVf.
-rewrite -ball_normE /= distrC subr0 normmZ.
+rewrite -ball_normE /= distrC subr0 normrZ.
 rewrite normfV ger0_norm /k // invrM ?unitfE // mulrAC mulVf //.
 by rewrite invf_div mul1r [ltRHS]splitr; apply: ltr_spaddr.
 Qed.
@@ -754,9 +744,9 @@ have [|vn0] := real_le0P (normr_real v).
 rewrite -[`|u|]/((PosNum un0)%:num) -[`|v|]/((PosNum vn0)%:num).
 set ku := 2 / e%:num * (PosNum un0)%:num.
 set kv := 2 / e%:num * (PosNum vn0)%:num.
-rewrite -[X in f X](@scalerKV _ _ ku) /ku // linearZl_LR normmZ.
+rewrite -[X in f X](@scalerKV _ _ ku) /ku // linearZl_LR normrZ.
 rewrite gtr0_norm // -ler_pdivl_mull //.
-rewrite -[X in f _ X](@scalerKV _ _ kv) /kv // linearZr_LR normmZ.
+rewrite -[X in f _ X](@scalerKV _ _ kv) /kv // linearZr_LR normrZ.
 rewrite gtr0_norm // -ler_pdivl_mull //.
 suff /he : ball 0 e%:num (ku^-1 *: u, kv^-1 *: v).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
@@ -768,8 +758,8 @@ have -> : (ku^-1 *: u, kv^-1 *: v) =
   rewrite invrM ?unitfE // [kv ^-1]invrM ?unitfE //.
   rewrite mulrC -[_ *: u]scalerA [X in X *: v]mulrC -[_ *: v]scalerA.
   by rewrite invf_div.
-rewrite normmZ ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
-by rewrite prod_normE/= !normmZ !normfV !normr_id !mulVf ?gt_eqF// maxxx ltr1n.
+rewrite normrZ ger0_norm // -mulrA gtr_pmulr // ltr_pdivr_mull // mulr1.
+by rewrite prod_normE/= !normrZ !normfV !normr_id !mulVf ?gt_eqF// maxxx ltr1n.
 Qed.
 
 Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
@@ -781,7 +771,7 @@ rewrite ler_pmul ?pmulr_rge0 //; last by rewrite num_le_maxr /= lexx orbT.
 rewrite -ler_pdivl_mull //.
 suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite num_le_maxr /= lexx.
 near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
-by exists (k%:num ^-1 * e%:num) => //= ? /=; rewrite -ball_normE /= distrC subr0 => /ltW.
+by exists (k%:num ^-1 * e%:num) => //= ? /=; rewrite /= distrC subr0 => /ltW.
 Unshelve. all: by end_near. Qed.
 
 Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
@@ -934,7 +924,7 @@ rewrite mulrA mulf_div mulr1.
 have hDx_neq0 : h + x != 0.
   near: h; rewrite !nbhs_simpl; apply/nbhs_normP.
   exists `|x|; first by rewrite /= normr_gt0.
-  move=> h /=; rewrite -ball_normE /= distrC subr0 -subr_gt0 => lthx.
+  move=> h /=; rewrite /= distrC subr0 -subr_gt0 => lthx.
   rewrite -(normr_gt0 (h + x)) addrC -[h]opprK.
   apply: lt_le_trans (ler_dist_dist _ _).
   by rewrite ger0_norm normrN //; apply: ltW.
@@ -1104,7 +1094,7 @@ Qed.
 
 Lemma deriveD f g (x v : V) : derivable f x v -> derivable g x v ->
   'D_v (f + g) x = 'D_v f x + 'D_v g x.
-Proof. by move=> df dg; apply: cvg_map_lim (der_add df dg). Qed.
+Proof. by move=> df dg; apply: cvg_lim (der_add df dg). Qed.
 
 Lemma derivableD f g (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f + g) x v.
@@ -1156,7 +1146,7 @@ Qed.
 
 Lemma deriveN f (x v : V) : derivable f x v ->
   'D_v (- f) x = - 'D_v f x.
-Proof. by move=> df; apply: cvg_map_lim (der_opp df). Qed.
+Proof. by move=> df; apply: cvg_lim (der_opp df). Qed.
 
 Lemma derivableN f (x v : V) :
   derivable f x v -> derivable (- f) x v.
@@ -1193,7 +1183,7 @@ Qed.
 
 Lemma deriveZ f (k : R) (x v : V) : derivable f x v ->
   'D_v (k \*: f) x = k *: 'D_v f x.
-Proof. by move=> df; apply: cvg_map_lim (der_scal df). Qed.
+Proof. by move=> df; apply: cvg_lim (der_scal df). Qed.
 
 Lemma derivableZ f (k : R) (x v : V) :
   derivable f x v -> derivable (k \*: f) x v.
@@ -1236,7 +1226,7 @@ Qed.
 
 Lemma deriveM f g (x v : V) : derivable f x v -> derivable g x v ->
   'D_v (f * g) x = f x *: 'D_v g x + g x *: 'D_v f x.
-Proof. by move=> df dg; apply: cvg_map_lim (der_mult df dg). Qed.
+Proof. by move=> df dg; apply: cvg_lim (der_mult df dg). Qed.
 
 Lemma derivableM f g (x v : V) :
   derivable f x v -> derivable g x v -> derivable (f * g) x v.
@@ -1300,7 +1290,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma deriveV f x v : f x != 0 -> derivable f x v ->
   'D_v (fun y => (f y)^-1) x = - (f x) ^- 2 *: 'D_v f x.
-Proof. by move=> fxn0 df; apply: cvg_map_lim (der_inv fxn0 df). Qed.
+Proof. by move=> fxn0 df; apply: cvg_lim (der_inv fxn0 df). Qed.
 
 Lemma derivableV f (x v : V) :
   f x != 0 -> derivable f x v -> derivable (fun y => (f y)^-1) x v.
@@ -1364,7 +1354,7 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_right_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+apply: (@cvg_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 by exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
 Arguments cvg_at_rightE {R V} f x.
@@ -1375,13 +1365,13 @@ Proof.
 move=> cvfx; apply/Logic.eq_sym.
 (* should be inferred *)
 have atrF := at_left_proper_filter x.
-apply: (@cvg_map_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
-Lemma le0r_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma le0r_fcvg (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
 Proof.
@@ -1395,27 +1385,27 @@ rewrite ltr_subl_addr => /lt_le_trans; apply.
 by rewrite ltr0_norm // addrC subrr.
 Unshelve. all: by end_near. Qed.
 
-Lemma ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma ler0_fcvg (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, f x <= 0) -> cvg (f @ F) -> lim (f @ F) <= 0.
 Proof.
 move=> fle0 fcv; rewrite -oppr_ge0.
 have limopp : - lim (f @ F) = lim (- f @ F).
-  apply: Logic.eq_sym; apply: cvg_map_lim; first by apply: Rhausdorff.
+  apply: Logic.eq_sym; apply: cvg_lim; first by apply: Rhausdorff.
   by apply: cvgN.
-rewrite limopp; apply: le0r_cvg_map; last by rewrite -limopp; apply: cvgN.
+rewrite limopp; apply: le0r_fcvg; last by rewrite -limopp; apply: cvgN.
 by move: fle0; apply: filterS => x; rewrite oppr_ge0.
 Qed.
 
-Lemma ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma ler_fcvg (R : realFieldType) (T : topologicalType) (F : set (set T))
     (FF : ProperFilter F) (f g : T -> R) :
   (\forall x \near F, f x <= g x) -> cvg (f @ F) -> cvg (g @ F) ->
   lim (f @ F) <= lim (g @ F).
 Proof.
 move=> lefg fcv gcv; rewrite -subr_ge0.
 have eqlim : lim (g @ F) - lim (f @ F) = lim ((g - f) @ F).
-  by apply/esym; apply: cvg_map_lim => //; apply: cvgD => //; apply: cvgN.
-rewrite eqlim; apply: le0r_cvg_map; last first.
+  by apply/esym; apply: cvg_lim => //; apply: cvgD => //; apply: cvgN.
+rewrite eqlim; apply: le0r_fcvg; last first.
   by rewrite /(cvg _) -eqlim /=; apply: cvgD => //; apply: cvgN.
 by move: lefg; apply: filterS => x; rewrite subr_ge0.
 Qed.
@@ -1427,7 +1417,7 @@ Proof.
 move=> leab fdrvbl cab cmax; apply: DeriveDef; first exact: fdrvbl.
 apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ['D_1 f c]cvg_at_rightE; last exact: fdrvbl.
-  apply: ler0_cvg_map; last first.
+  apply: ler0_fcvg; last first.
     have /fdrvbl dfc := cab.
     rewrite -(cvg_at_rightE (fun h : R => h^-1 *: ((f \o shift c) _ - f c))) //.
     apply: cvg_trans dfc; apply: cvg_app.
@@ -1441,7 +1431,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   move=> /(le_lt_trans (ler_norm _)) -> /ltr_spsaddl -> //.
   by rewrite (itvP cab).
 rewrite ['D_1 f c]cvg_at_leftE; last exact: fdrvbl.
-apply: le0r_cvg_map; last first.
+apply: le0r_fcvg; last first.
   have /fdrvbl dfc := cab; rewrite -(cvg_at_leftE (fun h => h^-1 *: ((f \o shift c) _ - f c))) //.
   apply: cvg_trans dfc; apply: cvg_app.
   move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.

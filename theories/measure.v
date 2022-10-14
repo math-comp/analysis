@@ -311,7 +311,7 @@ Lemma sigma_algebra_bigcap T (I : choiceType) (D : set T)
 Proof.
 move=> mG; split=> [i Ji|A AJ i Ji|H GH i Ji]; first by have [] := mG i.
 - by have [_ mGiC _] := mG i Ji; exact/mGiC/AJ.
-- by have [_ _ mGiU] := mG i Ji; apply mGiU => j; exact: GH.
+- by have [_ _ mGiU] := mG i Ji; apply: mGiU => j; exact: GH.
 Qed.
 
 Lemma sigma_algebraP T U (C : set (set T)) :
@@ -447,7 +447,7 @@ have setDH_ A : setD_closed (H_ A).
   rewrite (_ : _ `&` _ = (X `&` A) `\` (Y `&` A)); last first.
     rewrite predeqE => x; split=> [[[? ?] ?]|]; first by split => // -[].
     by move=> [[? ?] YAx]; split => //; split => //; apply: contra_not YAx.
-  by apply setDH => //; exact: setSI.
+  by apply: setDH => //; exact: setSI.
 have ndH_ A : ndseq_closed (H_ A).
   move=> F ndF H_AF; split.
     by case: monoH => h _ _; apply => // => n; have [] := H_AF n.
@@ -512,15 +512,15 @@ Implicit Types D G : set (set T).
 Lemma dynkin_monotone G : dynkin G <-> monotone_class setT G.
 Proof.
 split => [[GT setCG trG]|[_ GT setDG ndG]]; split => //.
-- move=> A B BA GA GB; rewrite setDE -(setCK (_ `&` _)) setCI; apply setCG.
-  rewrite setCK -bigcup2E; apply: trG.
+- move=> A B BA GA GB; rewrite setDE -(setCK (_ `&` _)) setCI; apply: (setCG).
+  rewrite setCK -bigcup2E; apply trG.
   + by rewrite -trivIset_bigcup2 setIC; apply subsets_disjoint.
   + by move=> [|[//|n]]; [exact: setCG|rewrite /bigcup2 -setCT; apply: setCG].
-- move=> F ndF GF; rewrite eq_bigcup_seqD; apply trG.
+- move=> F ndF GF; rewrite eq_bigcup_seqD; apply: (trG).
     exact: trivIset_seqD.
   move=> [/=|n]; first exact: GF.
-  rewrite /seqD setDE -(setCK (_ `&` _)) setCI; apply setCG.
-  rewrite setCK -bigcup2E; apply trG.
+  rewrite /seqD setDE -(setCK (_ `&` _)) setCI; apply: (setCG).
+  rewrite setCK -bigcup2E; apply: trG.
   + rewrite -trivIset_bigcup2 setIC; apply subsets_disjoint.
     exact/subsetPset/ndF/ltnW.
   + move=> [|[|]]; rewrite /bigcup2 /=; [exact/setCG/GF|exact/GF|].
@@ -531,13 +531,13 @@ split => [[GT setCG trG]|[_ GT setDG ndG]]; split => //.
     rewrite predeqE => t; split => [[n _ Fn]|[n _]].
       by exists n => //; rewrite /A -bigcup_mkord; exists n=> //=; rewrite ltnS.
     by rewrite /A -bigcup_mkord => -[m /=]; rewrite ltnS => mn Fmt; exists m.
-  apply ndG; first by move=> a b ab; exact/subsetPset/subset_bigsetU.
+  apply: ndG; first by move=> a b ab; exact/subsetPset/subset_bigsetU.
   elim=> /= => [|n ih].
     by rewrite /A big_ord_recr /= big_ord0 set0U; exact: GF.
   rewrite /A /= big_ord_recr /= -/(A n).
   rewrite (_ : _ `|` _ = ~` (~` A n `\` F n.+1)); last first.
     by rewrite setDE setCI !setCK.
-  rewrite -setTD; apply setDG => //; apply setDG => //; last first.
+  rewrite -setTD; apply: (setDG) => //; apply: (setDG) => //; last first.
     by rewrite -setTD; apply: setDG.
   apply/disjoints_subset; rewrite setIC.
   by apply: (@trivIset_bigsetUI _ predT) => //; rewrite /predT /= trueE.
@@ -587,7 +587,7 @@ have ddelta (D : set T) : <<d G >> D -> dynkin (delta D).
     have -> : (~` E) `&` D = ~` ((E `&` D) `|` (~` D)).
       by rewrite -[LHS]setU0 -(setICl D) -setIUl -setCI -{2}(setCK D) -setCU.
     have : <<d G >> ((E `&` D) `|` ~` D).
-      rewrite -bigcup2E => S [dS GS]; apply (dynkinU dS).
+      rewrite -bigcup2E => S [dS GS]; apply: (dynkinU dS).
         move=> [|[|i]] [|[|j]] => // _ _; rewrite /bigcup2 /=.
         + by rewrite -setIA setICr setI0 => /set0P; rewrite eqxx.
         + by rewrite setI0 => /set0P; rewrite eqxx.
@@ -598,11 +598,11 @@ have ddelta (D : set T) : <<d G >> D -> dynkin (delta D).
         + by rewrite set0I => /set0P; rewrite eqxx.
       move=> [|[|n]] //; rewrite /bigcup2 /=; [exact: DE| |].
       + suff: <<d G >> (~` D) by exact.
-        by move=> F [dF GF]; apply (dynkinC dF) => //; exact: dGD.
+        by move=> F [dF GF]; apply: (dynkinC dF) => //; exact: dGD.
       + by rewrite -setCT; apply/(dynkinC dS)/(dynkinT dS).
     by move=> dGEDD S /= [+ GS] => dS; apply/(dynkinC dS); exact: dGEDD.
   - move=> F tF deltaDF; rewrite /delta /= => S /= [dS GS].
-    rewrite setI_bigcupl; apply (dynkinU dS) => //.
+    rewrite setI_bigcupl; apply: (dynkinU dS) => //.
       by under eq_fun do rewrite setIC; exact: trivIset_setI.
     by move=> n; exact: deltaDF.
 have GdG : G `<=` <<d G >> by move=> ? ? ? [_]; apply.
@@ -756,7 +756,7 @@ Obligation Tactic := idtac.
 Lemma mU : setU_closed measurable.
 Proof.
 move=> A B mA mB; rewrite -bigcup2E.
-by apply measurable_bigcup => -[//|[//|i]]; exact: measurable0.
+by apply: measurable_bigcup => -[//|[//|i]]; exact: measurable0.
 Qed.
 
 Lemma mC : setC_closed measurable. Proof. by move=> *; apply: measurableC. Qed.
@@ -1025,7 +1025,7 @@ case=> h0 hC hU; split; first by exists set0 => //; rewrite preimage_set0 setI0.
     by have := mF n => -[B mB <-]; exists B.
   have [F' mF'] := @choice _ _ (fun x y => G y /\ D `&` f @^-1` y = F x) mF.
   exists (\bigcup_k (F' k)); first by apply: hU => n; exact: (mF' n).1.
-  rewrite preimage_bigcup setI_bigcupr; apply eq_bigcupr => i _.
+  rewrite preimage_bigcup setI_bigcupr; apply: eq_bigcupr => i _.
   exact: (mF' i).2.
 Qed.
 
@@ -1058,7 +1058,7 @@ rewrite eqEsubset; split.
     exact/sigma_algebra_preimage_class/sigma_algebra_measurable.
   have subset_preimage : preimage_class D f G' `<=`
                          preimage_class D f (G'.-sigma.-measurable).
-    by move=> A [B CCB <-{A}]; exists B => //; apply sub_sigma_algebra.
+    by move=> A [B CCB <-{A}]; exists B => //; apply: sub_sigma_algebra.
   exact: smallest_sub.
 have G'pre A' : G' A' -> (preimage_class D f G') (D `&` f @^-1` A').
   by move=> ?; exists A'.
@@ -1508,7 +1508,7 @@ move=> F mF tF mUF; rewrite /dirac indicE; have [|aFn] /= := boolP (a \in _).
     move=> mn; rewrite notin_set => Fma.
     move/trivIsetP : tF => /(_ _ _ Logic.I Logic.I mn).
     by rewrite predeqE => /(_ a)[+ _]; exact.
-  apply/cvg_ballP => _/posnumP[e]; rewrite near_map; near=> m.
+  apply/cvg_ballP => _/posnumP[e]; near=> m.
   have mn : (n < m)%N by near: m; exists n.+1.
   rewrite big_mkord (bigID (xpred1 (Ordinal mn)))//= big_pred1_eq/= big1/=.
     by rewrite adde0 indicE mem_set//; exact: ballxx.
@@ -1546,7 +1546,7 @@ Qed.
 Lemma infinite_card_dirac (A : set T) : infinite_set A ->
   \esum_(i in A) \d_ i A = +oo :> \bar R.
 Proof.
-move=> infA; apply/eq_pinftyP => r r0.
+move=> infA; apply/eqyP => r r0.
 have [B BA Br] := infinite_set_fset `|ceil r| infA.
 apply: esum_ge; exists [set` B] => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
   by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
@@ -1644,7 +1644,7 @@ move=> F mF tF mUF; rewrite [X in X --> _](_ : _ =
 rewrite /mscale; have [->|r0] := eqVneq r%:num 0%R.
   rewrite mul0e [X in X --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
-by apply: ereal_cvgrM => //; exact: measure_semi_sigma_additive.
+by apply: cvgeMl => //; exact: measure_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mscale
@@ -1741,7 +1741,7 @@ have [[i Fi]|infinF] := pselect (exists k, infinite_set (F k)).
   have -> : counting (\bigcup_n F n) = +oo.
     rewrite /counting asboolF//.
     by apply: contra_not Fi; exact/sub_finite_set/bigcup_sup.
-  apply/ereal_cvgPpinfty => M M0; near=> n.
+  apply/cvgeyPge => M; near=> n.
   have ni : (i < n)%N by near: n; exists i.+1.
   rewrite (bigID (xpred1 i))/= big_mkord (big_pred1 (Ordinal ni))//=.
   rewrite [X in X + _]/counting asboolF// addye ?leey//.
@@ -1751,7 +1751,7 @@ pose u : nat^nat := fun n => #|` fset_set (F n) |.
 have sumFE n : \sum_(i < n) counting (F i) =
                #|` fset_set (\big[setU/set0]_(k < n) F k) |%:R%:E.
   rewrite -trivIset_sum_card// natr_sum -sumEFin.
-  by apply eq_bigr => // i _; rewrite /counting asboolT.
+  by apply: eq_bigr => // i _; rewrite /counting asboolT.
 have [cvg_u|dvg_u] := pselect (cvg (nseries u)).
   have [N _ Nu] : \forall n \near \oo, u n = 0%N by apply: cvg_nseries_near.
   rewrite [X in _ --> X](_ : _ = \sum_(i < N) counting (F i)); last first.
@@ -1770,16 +1770,15 @@ have [cvg_u|dvg_u] := pselect (cvg (nseries u)).
   by rewrite /counting asboolT//= -/(u _) Nu.
 have {dvg_u}cvg_F : (fun n => \sum_(i < n) counting (F i)) --> +oo.
   rewrite (_ : (fun n => _) = [sequence (\sum_(0 <= i < n) (u i))%:R%:E]_n).
-    exact/dvg_ereal_cvg/nat_dvg_real/dvg_nseries.
+    exact/cvgenyP/dvg_nseries.
   apply/funext => n /=; under eq_bigr.
     by rewrite /counting => i _; rewrite asboolT//; over.
   by rewrite sumEFin natr_sum big_mkord.
 have [UFoo|/contrapT[k UFk]] := pselect (infinite_set (\bigcup_n F n)).
   rewrite /counting asboolF//.
   by under eq_fun do rewrite big_mkord.
-exfalso.
-move: cvg_F =>/ereal_cvgPpinfty/(_ k.+1%:R)/[!ltr0n]/(_ erefl)[K _].
-move=> /(_ K (leqnn _)); rewrite leNgt => /negP; apply.
+suff: false by [].
+move: cvg_F =>/cvgeyPge/(_ k.+1%:R) [K _] /(_ K (leqnn _)) /=; apply: contra_leT => _.
 rewrite sumFE lte_fin ltr_nat ltnS.
 have -> : k = #|` fset_set (\bigcup_n F n) |.
   by apply/esym/card_eq_fsetP; rewrite fset_setK//; exists k.
@@ -1977,7 +1976,7 @@ exists (B `&` [set X | X != set0]); split.
 - by move=> ?/= [_ /set0P].
 - by move=> X Y/= [XB _] [YB _]; exact: Btriv.
 - by move=> X/= /[!inE] -[] /Bm.
-rewrite bigcup_mkcondr; apply eq_bigcupr => X Bx; case: ifPn => //.
+rewrite bigcup_mkcondr; apply: eq_bigcupr => X Bx; case: ifPn => //.
 by rewrite notin_set/= => /negP/negPn/eqP.
 Qed.
 
@@ -2063,13 +2062,13 @@ have [->|/set0P[i0 Di0]] := eqVneq D set0.
   by rewrite bigcup_set0 decomp_set0 fsbig_set0 fsbig_set1.
 set E := decomp _; have Em X := decomp_measurable mUD X.
 transitivity (\sum_(X \in E) \sum_(i \in D) mu (X `&` F i)).
-  apply eq_fsbigr => /= X XE; have XDF : X = \bigcup_(i in D) (X `&` F i).
+  apply: eq_fsbigr => /= X XE; have XDF : X = \bigcup_(i in D) (X `&` F i).
     by rewrite -setI_bigcupr setIidl//; exact: decomp_sub.
   rewrite [in LHS]XDF content_fin_bigcup//; first exact: trivIset_setI.
   - by move=> i /mem_set Di; apply: measurableI; [exact: Em|exact: Fm].
   - by rewrite -XDF; exact: Em.
 rewrite exchange_fsbig //; last exact: decomp_finite_set.
-apply eq_fsbigr => i Di; have Feq : F i = \bigcup_(X in E) (X `&` F i).
+apply: eq_fsbigr => i Di; have Feq : F i = \bigcup_(X in E) (X `&` F i).
   rewrite -setI_bigcupl setIidr// cover_decomp.
   by apply/bigcup_sup; exact: set_mem.
 rewrite -content_fin_bigcup -?Feq//; [exact/decomp_finite_set| | |exact/Fm].
@@ -2229,7 +2228,7 @@ Lemma content_ring_sup_sigma_additive (A : nat -> set T) :
   (forall i, measurable (A i)) -> measurable (\bigcup_i A i) ->
   trivIset [set: nat] A -> \sum_(i <oo) mu (A i) <= mu (\bigcup_i A i).
 Proof.
-move=> Am UAm At; rewrite ereal_lim_le//; first exact: is_cvg_nneseries.
+move=> Am UAm At; rewrite lim_lee//; first exact: is_cvg_nneseries.
 near=> n; rewrite big_mkord -measure_bigsetU//= le_measure ?inE//=.
 - exact: bigsetU_measurable.
 - by rewrite -bigcup_mkord; apply: bigcup_sub => i lein; apply: bigcup_sup.
@@ -2719,7 +2718,7 @@ have /le_trans : mu (X `&` (A `|` B)) + mu (X `&` ~` (A `|` B)) <=
   rewrite setIUr (_ : X `&` A `|` X `&` B = Y) //.
   rewrite /Y -[in LHS](setIT B) -(setUCr A) 2!setIUr setUC -[in RHS]setIA.
   rewrite setUC setUA; congr (_ `|` _).
-  by rewrite setUidPl setICA; apply subIset; right.
+  by rewrite setUidPl setICA; apply: subIset; right.
 suff -> : mu (X `&` A) + mu (X `&` B `&` ~` A) +
     mu (X `&` (~` (A `|` B))) = mu X by exact.
 by rewrite setCU setIA -(setIA X) setICA (setIC B) -addeA -mB -mA.
@@ -2735,7 +2734,7 @@ Lemma caratheodory_measurable_bigsetU (A : (set T) ^nat) : (forall n, M (A n)) -
   forall n, M (\big[setU/set0]_(i < n) A i).
 Proof.
 move=> MA; elim=> [|n ih]; first by rewrite big_ord0; exact: caratheodory_measurable_set0.
-by rewrite big_ord_recr; apply caratheodory_measurable_setU.
+by rewrite big_ord_recr; apply: caratheodory_measurable_setU.
 Qed.
 
 Lemma caratheodory_measurable_setI A B : M A -> M B -> M (A `&` B).
@@ -2747,7 +2746,7 @@ Qed.
 
 Lemma caratheodory_measurable_setD A B : M A -> M B -> M (A `\` B).
 Proof.
-move=> mA mB; rewrite setDE; apply caratheodory_measurable_setI => //.
+move=> mA mB; rewrite setDE; apply: caratheodory_measurable_setI => //.
 exact: caratheodory_measurable_setC.
 Qed.
 
@@ -2765,12 +2764,12 @@ Let caratheorody_decompIU X : mu (X `&` (A `|` B)) =
 Proof.
 rewrite caratheodory_decomp -!addeA; congr (mu _ + _).
   rewrite -!setIA; congr (_ `&` _).
-  by rewrite setIC; apply/setIidPl; apply subIset; left; left.
+  by rewrite setIC; apply/setIidPl; apply: subIset; left; left.
 rewrite addeA addeC [X in mu X + _](_ : _ = set0); last first.
   by rewrite -setIA -setCU -setIA setICr setI0.
 rewrite outer_measure0 add0e addeC -!setIA; congr (mu (X `&` _) + mu (X `&` _)).
-by rewrite setIC; apply/setIidPl; apply subIset; right; right.
-by rewrite setIC; apply/setIidPl; apply subIset; left; left.
+by rewrite setIC; apply/setIidPl; apply: subIset; right; right.
+by rewrite setIC; apply/setIidPl; apply: subIset; left; left.
 Qed.
 
 Lemma disjoint_caratheodoryIU X : [disjoint A & B] ->
@@ -2810,13 +2809,13 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
     apply: (lee_sum_nneg_ord (fun n => mu (X `&` A n)) xpredT) => n _.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => [x| |].
-  - rewrite -lee_subr_addr //; apply ub_ereal_sup => /= _ [n _] <-.
+  - rewrite -lee_subr_addr //; apply: ub_ereal_sup => /= _ [n _] <-.
     by rewrite EFinN lee_subr_addr // -XAx XA.
   - suff : mu X = +oo by move=> ->; rewrite leey.
     by apply/eqP; rewrite -leye_eq -XAx le_outer_measure.
   - by rewrite addeC /= leNye.
 move=> n.
-apply (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
+apply: (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
   apply/lee_add2l/le_outer_measure; apply: setIS; apply: subsetC => t.
   by rewrite /B -bigcup_mkord => -[i ? ?]; exists i.
 rewrite [in leRHS](caratheodory_measurable_bigsetU MA n) lee_add2r //.
@@ -2826,7 +2825,7 @@ Qed.
 Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) :
   (forall n, M (A n)) -> trivIset setT A -> M (\bigcup_k (A k)).
 Proof.
-move=> MA tA; apply le_caratheodory_measurable => X /=.
+move=> MA tA; apply: le_caratheodory_measurable => X /=.
 have /(lee_add2r (mu (X `&` ~` \bigcup_k A k))) := outer_measure_bigcup_lim A X.
 by move/le_trans; apply; exact: caratheodory_lim_lee.
 Qed.
@@ -2887,7 +2886,7 @@ move=> A mA tA mbigcupA; set B := \bigcup_k A k.
 suff : forall X, mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B).
   move/(_ B); rewrite setICr outer_measure0 adde0.
   rewrite (_ : (fun n => _) = fun n => \sum_(k < n) mu (A k)); last first.
-    rewrite funeqE => n; rewrite big_mkord; apply eq_bigr => i _; congr (mu _).
+    rewrite funeqE => n; rewrite big_mkord; apply: eq_bigr => i _; congr (mu _).
     by rewrite setIC; apply/setIidPl => t Ait; exists i.
   move=> ->; have := fun n (_ : xpredT n) => outer_measure_ge0 mu (A n).
   move/is_cvg_nneseries => /cvg_ex[l] hl.
@@ -2907,14 +2906,14 @@ HB.instance Definition _ := isMeasure.Build _ _ _ (mu : set (caratheodory_type m
 Lemma measure_is_complete_caratheodory :
   measure_is_complete (mu : set (caratheodory_type mu) -> _).
 Proof.
-move=> B [A [mA muA0 BA]]; apply le_caratheodory_measurable => X.
+move=> B [A [mA muA0 BA]]; apply: le_caratheodory_measurable => X.
 suff -> : mu (X `&` B) = 0.
-  by rewrite add0e le_outer_measure //; apply subIset; left.
+  by rewrite add0e le_outer_measure //; apply: subIset; left.
 have muB0 : mu B = 0.
   apply/eqP; rewrite eq_le outer_measure_ge0 andbT.
   by apply: (le_trans (le_outer_measure mu _ _ BA)); rewrite -muA0.
 apply/eqP; rewrite eq_le outer_measure_ge0 andbT.
-have : X `&` B `<=` B by apply subIset; right.
+have : X `&` B `<=` B by apply: subIset; right.
 by move/(le_outer_measure mu); rewrite muB0 => ->.
 Qed.
 
@@ -2928,7 +2927,7 @@ Proof.
 move=> A0 /nonnegP[{}e].
 rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
     \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E))) //.
-  rewrite nneseriesD // ereal_limD //.
+  rewrite nneseriesD // limeD //.
   - rewrite lee_add2l //; apply: lee_lim => //.
     + exact: is_cvg_nneseries.
     + exact: is_cvg_nneseries.
@@ -2938,7 +2937,7 @@ rewrite (@le_trans _ _ (lim (fun n => (\sum_(0 <= i < n | P i) A i) +
   - exact: adde_def_nneseries.
 suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) -->
     e%:num%:E.
-  rewrite ereal_limD //.
+  rewrite limeD //.
   - by rewrite lee_add2l // (cvg_lim _ cvggeo).
   - exact: is_cvg_nneseries.
   - by apply: is_cvg_nneseries => ?; rewrite lee_fin divr_ge0.
@@ -2947,7 +2946,7 @@ rewrite (_ : (fun n => _) = EFin \o
     (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ (i + 1))%:R))%R); last first.
   rewrite funeqE => n /=; rewrite (@big_morph _ _ EFin 0 adde)//.
   by under [in RHS]eq_bigr do rewrite addn1.
-apply: cvg_comp; last apply cvg_refl.
+apply: cvg_comp; last by apply cvg_refl.
 have := cvg_geometric_series_half e%:num O.
 by rewrite expr0 divr1; apply: cvg_trans.
 Unshelve. all: by end_near. Qed.
@@ -2991,7 +2990,7 @@ Qed.
 
 Lemma mu_ext_ge0 A : 0 <= mu^* A.
 Proof.
-apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite ereal_lim_ge //=.
+apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite lim_gee //=.
   exact: is_cvg_nneseries.
 by near=> n; rewrite sume_ge0.
 Unshelve. all: by end_near. Qed.
@@ -2999,7 +2998,7 @@ Unshelve. all: by end_near. Qed.
 Lemma mu_ext0 : mu^* set0 = 0.
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split; last exact/mu_ext_ge0.
-rewrite /mu_ext; apply ereal_inf_lb; exists (fun _ => set0); first by split.
+rewrite /mu_ext; apply: ereal_inf_lb; exists (fun _ => set0); first by split.
 by apply: (@lim_near_cst _ _ _ _ _ 0) => //; near=> n => /=; rewrite big1.
 Unshelve. all: by end_near. Qed.
 
@@ -3011,7 +3010,7 @@ move=> A; have [[i ioo]|] := pselect (exists i, mu^* (A i) = +oo).
 rewrite -forallNE => Aoo.
 suff add2e : forall e : {posnum R},
     mu^* (\bigcup_n A n) <= \sum_(i <oo) mu^* (A i) + e%:num%:E.
-  by apply lee_adde => e.
+  by apply: lee_adde => e.
 move=> e; rewrite (le_trans _ (epsilon_trick _ _ _))//; last first.
   by move=> n; apply: mu_ext_ge0.
 pose P n (B : (set T)^nat) := measurable_cover (A n) B /\
@@ -3030,7 +3029,7 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
   - suff : lbound S 0 by move/lb_ereal_inf; rewrite Soo.
     by move=> /= _ [B [mB AnB] <-]; exact: nneseries_ge0.
 have muG_ge0 x : 0 <= (mu \o uncurry G) x by exact/measure_ge0.
-apply (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
+apply: (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
   rewrite /mu_ext; apply: ereal_inf_lb => /=.
   have /card_esym/ppcard_eqP[f] := card_nat2.
   exists (uncurry G \o f).
@@ -3058,7 +3057,7 @@ rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
   rewrite -(esum_pred_image (mu \o uncurry G) (pair j) predT)//=; last first.
     by move=> ? ? _ _; exact: (@can_inj _ _ _ snd).
   by congr esum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
-apply lee_lim.
+apply: lee_lim.
 - apply: is_cvg_nneseries => n _.
   by apply: nneseries_ge0 => m _; exact: (muG_ge0 (n, m)).
 - by apply: is_cvg_nneseries => n _; apply: adde_ge0 => //; exact: mu_ext_ge0.
@@ -3230,7 +3229,7 @@ Lemma measurable_mu_extE d (R : realType) (T : semiRingOfSetsType d)
   measurable X -> mu^* X = mu X.
 Proof.
 move=> muS mX; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
+  apply: ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
     by split=> [[]// _|t Xt]; exists 0%N.
   apply/cvg_lim => //; rewrite -cvg_shiftS.
   rewrite (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
@@ -3241,7 +3240,7 @@ have XUA : X = \bigcup_n (X `&` A n).
   by have [i _ Ait] := XA _ Xt; exists i; split.
 apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))).
   by rewrite muS//= -?XUA => // i; apply: measurableI.
-apply lee_lim; [exact: is_cvg_nneseries|exact: is_cvg_nneseries|].
+apply: lee_lim; [exact: is_cvg_nneseries|exact: is_cvg_nneseries|].
 apply: nearW => n; apply: lee_sum => i  _; apply: le_measure => // /[!inE]//=.
 exact: measurableI.
 Qed.
@@ -3268,7 +3267,7 @@ pose g i := (f^-1%FUN i).2; exists g; first split.
   by exists (f (k, D)) => //; rewrite /g invK// inE.
 rewrite !nneseries_esum//= /measure ?set_true.
 transitivity (\esum_(i in setT) \sum_(X0 \in decomp (F i)) mu X0); last first.
-  by apply eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
+  by apply: eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
 rewrite (eq_esum (fun _ _ => fsbig_esum _ _))//; last first.
   by move=> ? _; exact: decomp_finite_set.
 rewrite esum_esum//= (reindex_esum K setT f) => //=.
@@ -3308,18 +3307,18 @@ rewrite -(eq_eseries (fun _ _ => SetRing.RmuE _ (mB _)))=> //.
 have RmB i : measurable (B i : set rT) by exact: sub_gen_smallest.
 set BA := eseries (fun n => Rmu (B n `&` A)).
 set BNA := eseries (fun n => Rmu (B n `&` ~` A)).
-apply (@le_trans _ _ (lim BA + lim BNA)); [apply: lee_add|].
+apply: (@le_trans _ _ (lim BA + lim BNA)); [apply: lee_add|].
   - rewrite (_ : BA = eseries (fun n => mu_ext mu (B n `&` A))); last first.
       rewrite funeqE => n; apply: eq_bigr => k _.
       by rewrite /= measurable_Rmu_extE //; exact: measurableI.
-    apply (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `&` A)))).
-      by apply le_mu_ext; rewrite -setI_bigcupl; exact: setISS.
+    apply: (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `&` A)))).
+      by apply: le_mu_ext; rewrite -setI_bigcupl; exact: setISS.
     exact: outer_measure_sigma_subadditive.
   - rewrite (_ : BNA = eseries (fun n => mu_ext mu (B n `\` A))); last first.
-      rewrite funeqE => n; apply eq_bigr => k _.
+      rewrite funeqE => n; apply: eq_bigr => k _.
       rewrite /= measurable_Rmu_extE //; exact: measurableD.
-    apply (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `\` A)))).
-      by apply le_mu_ext; rewrite -setI_bigcupl; exact: setISS.
+    apply: (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `\` A)))).
+      by apply: le_mu_ext; rewrite -setI_bigcupl; exact: setISS.
     exact: outer_measure_sigma_subadditive.
 have ? : cvg BNA.
   apply/is_cvg_nneseries => n _.
@@ -3337,9 +3336,9 @@ have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
     apply/eqP; rewrite -leye_eq -(eqP BNAoo); apply/lee_lim => //.
     by near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
        rewrite /mkset ?inE//; apply: measurableD.
-rewrite -ereal_limD // (_ : (fun _ => _) =
+rewrite -limeD // (_ : (fun _ => _) =
     eseries (fun k => Rmu (B k `&` A) + Rmu (B k `&` ~` A))); last first.
-  by rewrite funeqE => n; rewrite -big_split /=; apply eq_bigr.
+  by rewrite funeqE => n; rewrite -big_split /=; apply: eq_bigr.
 apply/lee_lim => //.
   apply/is_cvg_nneseries => // n _; apply/adde_ge0.
   by apply: measure_ge0 => //; exact: measurableI.

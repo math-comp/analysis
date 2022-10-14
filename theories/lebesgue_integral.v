@@ -882,7 +882,7 @@ have [cf|df] := pselect (cvg (g^~ x)).
   suff [n cfgn] : exists n, g n x >= c * f x by exists n.
   move/(@lt_lim _ _ _ (nd_g x) cf) : cfg => [n _ nf].
   by exists n; apply: nf => /=.
-have /cvgPpinfty/(_ (c * f x))[n _ ncfgn]:= nondecreasing_dvg_lt (nd_g x) df.
+have /cvgryPge/(_ (c * f x))[n _ ncfgn]:= nondecreasing_dvg_lt (nd_g x) df.
 by exists n => //; rewrite /fleg /=; apply: ncfgn => /=.
 Qed.
 
@@ -903,7 +903,7 @@ have cg1g n : c%:E * sintegral mu (g1 c n) <= sintegral mu (g n).
 suff {cg1g}<- : lim (fun n => sintegral mu (g1 c n)) = sintegral mu f.
   have is_cvg_g1 : cvg (fun n => sintegral mu (g1 c n)).
     by apply: is_cvg_sintegral => //= x m n /(le_ffleg c)/lefP/(_ x).
-  rewrite -ereal_limrM // lee_lim//; first exact: ereal_is_cvgrM.
+  rewrite -limeMl // lee_lim//; first exact: is_cvgeMl.
   - by apply: is_cvg_sintegral => // m n mn; apply/lefP => t; apply: nd_g.
   - by apply: nearW; exact: cg1g.
 suff : (fun n => sintegral mu (g1 c n)) --> sintegral mu f by apply/cvg_lim.
@@ -931,10 +931,11 @@ rewrite [X in X --> _](_ : _ = fun n => \sum_(x <- fset_set (range f))
     have [|_] := boolP (_ \in _); first by rewrite mulr1 inE.
     by rewrite mulr0 => /esym/eqP; rewrite (negbTE r0).
   by rewrite /preimage/= => -[fxr cnx]; rewrite mindicE mem_set// mulr1.
-rewrite sintegralE fsbig_finite//=; apply: ereal_lim_sum => [r n _|r _].
-  apply: (mulemu_ge0 (fun x => f @^-1` [set x] `&` fleg c n)) => r0.
+rewrite sintegralE fsbig_finite//=.
+apply: lim_nnesum=> [r _|r _].
+  near=> A; apply: (mulemu_ge0 (fun x => f @^-1` [set x] `&` fleg c A)) => r0.
   by rewrite preimage_nnfun0// set0I.
-apply: ereal_cvgrM => //; rewrite [X in _ --> X](_ : _ =
+apply: cvgeMl => //=; rewrite [X in _ --> X](_ : _ =
     mu (\bigcup_n (f @^-1` [set r] `&` fleg c n))); last first.
   by rewrite -setI_bigcupr bigcup_fleg// setIT.
 have ? k i : measurable (f @^-1` [set k] `&` fleg c i) by exact: measurableI.
@@ -1153,7 +1154,7 @@ Lemma nd_ge0_integral_lim : \int[mu]_x f x = lim (sintegral mu \o g).
 Proof.
 rewrite ge0_integralTE//.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  apply: ereal_lim_le; first exact: is_cvg_sintegral.
+  apply: lim_lee; first exact: is_cvg_sintegral.
   near=> n; apply: ereal_sup_ub; exists (g n) => //= => x.
   have <- : lim (EFin \o g ^~ x) = f x by apply/cvg_lim => //; exact: gf.
   have : (EFin \o g ^~ x) --> ereal_sup (range (EFin \o g ^~ x)).
@@ -1173,11 +1174,11 @@ rewrite le_eqVlt => /predU1P[|] mufoo; last first.
   by apply: le_trans; exact: ltW.
 suff : lim (sintegral mu \o g) = +oo.
   by move=> ->; rewrite -ge0_integralTE// mufoo.
-apply/eq_pinftyP => r r0.
+apply/eqyP => r r0.
 have [G [Gf rG]] : exists h : {nnsfun T >-> R},
     (forall x, (h x)%:E <= f x) /\ (r%:E <= sintegral mu h).
   have : r%:E < \int[mu]_x (f x).
-    move: (mufoo) => /eq_pinftyP/(_ _ (addr_gt0 r0 r0)).
+    move: (mufoo) => /eqyP/(_ _ (addr_gt0 r0 r0)).
     by apply: lt_le_trans => //; rewrite lte_fin ltr_addr.
   rewrite ge0_integralTE// => /ereal_sup_gt[x [/= G Gf Gx rx]].
   by exists G; split => //; rewrite (le_trans (ltW rx)) // Gx.
@@ -1486,8 +1487,7 @@ Proof.
 move=> Dx fxoo; have fxfin : f x \is a fin_num.
   rewrite fin_numE; apply/andP; split; last by rewrite lt_eqF.
   by rewrite gt_eqF // (lt_le_trans _ (f0 _ Dx)).
-apply/(@cvg_distP _ [normedModType R of R^o]) => _/posnumP[e].
-rewrite near_map.
+apply/(@cvgrPdist_lt _ [normedModType R of R^o]) => _/posnumP[e].
 have [fx0|fx0] := eqVneq (f x) 0%E.
   by near=> n; rewrite f0_approx0 // fx0 /= subrr normr0.
 have /(fpos_approx_neq0 Dx) [m   _ Hm] : (0 < f x < +oo)%E.
@@ -1537,14 +1537,14 @@ move=> Dx fxoo; have approx_x n : approx n x = n%:R.
   rewrite /approx foo_B1// mulr1 big1 ?add0r// => /= i _.
   by rewrite fgen_A0 // ?mulr0 // fxoo leey.
 case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
-- move=> /cvg_distP/(_ _ ltr01); rewrite near_map => -[n _].
+- move=> /cvgrPdist_lt/(_ _ ltr01) -[n _].
   move=> /(_ (`|ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
   rewrite approx_x.
   apply/negP; rewrite -leNgt distrC (le_trans _ (ler_sub_norm_add _ _)) //.
   rewrite normrN ler_subr_addl addSnnS [leRHS]ger0_norm ?ler0n//.
   rewrite natrD ler_add// ?ler1n// ger0_norm // (le_trans (ceil_ge _)) //.
   by rewrite -(@gez0_abs (ceil _)) // ceil_ge0.
-- move/cvg_distP => /(_ _ ltr01); rewrite near_map => -[n _].
+- move/cvgrPdist_lt => /(_ _ ltr01) -[n _].
   move=> /(_ (`|floor l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
   rewrite approx_x.
   apply/negP; rewrite -leNgt distrC (le_trans _ (ler_sub_norm_add _ _)) //.
@@ -1563,7 +1563,7 @@ have dvg_approx := dvg_approx Dx fxoo.
   have : {homo approx ^~ x : n m / (n <= m)%N >-> n <= m}.
     by move=> m n mn; have := nd_approx mn => /lefP; exact.
   move/nondecreasing_dvg_lt => /(_ dvg_approx).
-  by rewrite fxoo; exact/dvg_ereal_cvg.
+  by rewrite fxoo => ?; apply/cvgeryP.
 rewrite -(@fineK _ (f x)); first exact: (cvg_comp (cvg_approx f0 Dx fxoo)).
 by rewrite fin_numElt fxoo andbT (lt_le_trans _ (f0 _ _)).
 Qed.
@@ -1627,7 +1627,7 @@ pose kg := fun n => scale_nnsfun (g n) k0.
 rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
 - rewrite (_ : _ \o _ = fun n => sintegral mu (scale_nnsfun (g n) k0))//.
   rewrite (_ : (fun _ => _) = (fun n => k%:E * sintegral mu (g n))).
-    rewrite ereal_limrM //; last first.
+    rewrite limeMl //; last first.
       by apply: is_cvg_sintegral => // x m n mn; apply/(lef_at x nd_g).
     by rewrite -(nd_ge0_integral_lim mu h10) // => x;
       [exact/(lef_at x nd_g)|exact: gh1].
@@ -1636,7 +1636,7 @@ rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
 - by move=> x m n mn; rewrite /kg ler_pmul//; exact/lefP/nd_g.
 - move=> x.
   rewrite [X in X --> _](_ : _ = (fun n => k%:E * (g n x)%:E)) ?funeqE//.
-  by apply: ereal_cvgrM => //; exact: gh1.
+  by apply: cvgeMl => //; exact: gh1.
 Qed.
 
 End semi_linearity0.
@@ -1666,9 +1666,8 @@ rewrite (@nd_ge0_integral_lim _ _ _ mu _ g12) //; last 3 first.
   - by move=> x; rewrite adde_ge0.
   - by apply: nondecreasing_seqD => // x;
       [exact/(lef_at x nd_g1)|exact/(lef_at x nd_g2)].
-  - move=> x Dx.
-    rewrite (_ : _ \o _ = (fun n => (g1 n x)%:E + (g2 n x)%:E)) ?funeqE//.
-    apply: ereal_cvgD => //; [|exact: gh1|exact: gh2].
+  - move=> x; rewrite (_ : _ \o _ = (fun n => (g1 n x)%:E + (g2 n x)%:E))//.
+    apply: cvgeD => //; [|exact: gh1|exact: gh2].
     by apply: ge0_adde_def => //; rewrite !inE; [exact: h10|exact: h20].
 rewrite (_ : _ \o _ =
     fun n => sintegral mu (g1 n) + sintegral mu (g2 n)); last first.
@@ -1677,10 +1676,10 @@ rewrite (nd_ge0_integral_lim _ _ (fun x => lef_at x nd_g1)) //; last first.
   by move=> x; exact: gh1.
 rewrite (nd_ge0_integral_lim _ _ (fun x => lef_at x nd_g2)) //; last first.
   by move=> x; exact: gh2.
-rewrite ereal_limD //.
+rewrite limeD //.
   by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g1).
   by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g2).
-rewrite ge0_adde_def => //; rewrite inE; apply: ereal_lim_ge.
+rewrite ge0_adde_def => //; rewrite inE; apply: lim_gee.
 - by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g1).
 - by apply: nearW => n; exact: sintegral_ge0.
 - by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g2).
@@ -1700,7 +1699,7 @@ have h12 x : h1 x <= h2 x by apply: lee_restrict.
 have [g1 [nd_g1 /(_ _ Logic.I)gh1]] :=
   approximation measurableT mh1 (fun x _ => h10 _).
 rewrite (nd_ge0_integral_lim _ h10 (fun x => lef_at x nd_g1) gh1)//.
-apply: ereal_lim_le.
+apply: lim_lee.
   by apply: is_cvg_sintegral => // t Dt; exact/(lef_at t nd_g1).
 near=> n; rewrite ge0_integralTE//; apply: ereal_sup_ub => /=.
 exists (g1 n) => // t; rewrite (le_trans _ (h12 _)) //.
@@ -1710,7 +1709,7 @@ have := leey (h1 t); rewrite le_eqVlt => /predU1P[->|ftoo].
 have h1tfin : h1 t \is a fin_num.
   by rewrite fin_numE gt_eqF/= ?lt_eqF// (lt_le_trans _ (h10 t)).
 have := gh1 t.
-rewrite -(fineK h1tfin) => /ereal_cvg_real[ft_near].
+rewrite -(fineK h1tfin) => /fine_cvgP[ft_near].
 set u_ := (X in X --> _) => u_h1 g1h1.
 have <- : lim u_ = fine (h1 t) by apply/cvg_lim => //; exact: Rhausdorff.
 rewrite lee_fin; apply: nondecreasing_cvg_le.
@@ -1746,8 +1745,8 @@ exists (fun n => [the {sfun T >-> R} of fp_ n \+ cst (-1) \* fn_ n]) => x /=.
 rewrite [X in X --> _](_ : _ =
     EFin \o fp_^~ x \+ (-%E \o EFin \o fn_^~ x))%E; last first.
   by apply/funext => n/=; rewrite EFinD mulN1r.
-by move=> Dx; rewrite (funeposneg f); apply: ereal_cvgD;
-  [exact: add_def_funeposneg|apply: fp_cvg|apply:ereal_cvgN; exact: fn_cvg].
+by move=> Dx; rewrite (funeposneg f); apply: cvgeD;
+  [exact: add_def_funeposneg|apply: fp_cvg|apply:cvgeN; exact: fn_cvg].
 Qed.
 
 End approximation_sfun.
@@ -1777,7 +1776,7 @@ wlog fg : D mD mf mg mfg / forall x, D x -> f x +? g x => [hwlogD|]; last first.
    apply: (emeasurable_fun_cvg (fun n x => (f_ n x + g_ n x)%:E)) => //.
      by move=> n; apply/EFin_measurable_fun/measurable_funTS/measurable_funD.
   move=> x Dx; under eq_fun do rewrite EFinD.
-  by apply: ereal_cvgD; [exact: fg|exact: f_cvg|exact: g_cvg].
+  exact: cvgeD (fg _ _) (f_cvg _ _) (g_cvg _ _).
 move=> A mA; wlog NAnoo: A mD mf mg mA / ~ (A -oo) => [hwlogA|].
   have [] := pselect (A -oo); last exact: hwlogA.
   move=> /(@setD1K _ -oo)<-; rewrite preimage_setU setIUr.
@@ -1828,10 +1827,10 @@ Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) :
   measurable_fun D (fun x => \sum_(i <oo) h i x).
 Proof.
 move=> h0 mh; rewrite [X in measurable_fun _ X](_ : _ =
-    (fun x => elim_sup (fun n => \sum_(0 <= i < n) h i x))); last first.
-  apply/funext=> x; rewrite is_cvg_elim_supE//.
+    (fun x => lim_esup (fun n => \sum_(0 <= i < n) h i x))); last first.
+  apply/funext=> x; rewrite is_cvg_lim_esupE//.
   exact: is_cvg_ereal_nneg_natsum.
-by apply: measurable_fun_elim_sup => k; exact: emeasurable_fun_sum.
+by apply: measurable_fun_lim_esup => k; exact: emeasurable_fun_sum.
 Qed.
 
 Lemma emeasurable_funB D f g :
@@ -1866,7 +1865,7 @@ wlog fg : D mD mf mg mfg / forall x, D x -> f x *? g x => [hwlogM|]; last first.
     move=> n; apply/EFin_measurable_fun.
     by apply: measurable_funM => //; exact: measurable_funTS.
   move=> x Dx; under eq_fun do rewrite EFinM.
-  by apply: ereal_cvgM; [exact: fg|exact: f_cvg|exact: g_cvg].
+  exact: cvgeM (fg _ _) (f_cvg _ _) (g_cvg _ _).
 move=> A mA; wlog NA0: A mD mf mg mA / ~ (A 0) => [hwlogA|].
   have [] := pselect (A 0); last exact: hwlogA.
   move=> /(@setD1K _ 0)<-; rewrite preimage_setU setIUr.
@@ -2013,12 +2012,14 @@ Qed.
 
 Let lim_max_g2_f t : lim (EFin \o max_g2 ^~ t) <= f t.
 Proof.
-by apply: lee_lim => //; near=> n; exact/max_g2_g.
+apply: lee_lim => //=; [apply: is_cvg_max_g2|apply: is_cvg_g|].
+by near=> n; exact/max_g2_g.
 Unshelve. all: by end_near. Qed.
 
 Let lim_g2_max_g2 t n : lim (EFin\o g2 n ^~ t) <= lim (EFin \o max_g2 ^~ t).
 Proof.
-apply: lee_lim => //; near=> k; rewrite /= bigmax_nnsfunE lee_fin.
+apply: lee_lim => //; [apply: is_cvg_g2|apply: is_cvg_max_g2|].
+near=> k; rewrite /= bigmax_nnsfunE lee_fin.
 have nk : (n < k)%N by near: k; exists n.+1.
 exact: (bigmax_sup (Ordinal nk)).
 Unshelve. all: by end_near. Qed.
@@ -2030,13 +2031,13 @@ suff : l == f t by move=> /eqP <-.
 rewrite eq_le; apply/andP; split.
   by rewrite /f (le_trans _ (lim_max_g2_f _)) // (cvg_lim _ g_l).
 have := leey l; rewrite le_eqVlt => /predU1P[->|loo]; first by rewrite leey.
-rewrite -(cvg_lim _ g_l) //= ereal_lim_le => //.
+rewrite -(cvg_lim _ g_l) //= lim_lee => //; first exact: is_cvg_g.
 near=> n.
 have := leey (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
   have h := @dvg_approx _ _ _ setT _ t Logic.I fntoo.
   have g2oo : lim (EFin \o g2 n ^~ t) = +oo.
-    apply/cvg_lim => //; apply/dvg_ereal_cvg.
-    under [X in X --> _]eq_fun do rewrite nnsfun_approxE.
+    apply/cvg_lim => //; apply/cvgeryP.
+    under [in X in X --> _]eq_fun do rewrite nnsfun_approxE.
     have : {homo (approx setT (g n))^~ t : n0 m / (n0 <= m)%N >-> (n0 <= m)%R}.
       exact/lef_at/nd_approx.
     by move/nondecreasing_dvg_lt => /(_ h).
@@ -2067,15 +2068,17 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
     by move=> *; exact: nd_g.
   have ub n : \int[mu]_x g n x <= \int[mu]_x f x.
     apply: ge0_le_integral => //.
-    - by move=> x _; apply: ereal_lim_ge => //; apply: nearW => k; exact/g0.
+    - move=> x _; apply: lim_gee => //; first exact: is_cvg_g.
+      by apply: nearW => k; exact/g0.
     - apply: emeasurable_fun_cvg mg _ => x _.
       exact: ereal_nondecreasing_is_cvg.
-    - move=> x Dx; apply: ereal_lim_ge => //.
+    - move=> x Dx; apply: lim_gee => //; first exact: is_cvg_g.
       near=> m; have nm : (n <= m)%N by near: m; exists n.
       exact/nd_g.
-  by apply: ereal_lim_le => //; [exact:ereal_nondecreasing_is_cvg|exact:nearW].
+  by apply: lim_lee => //; [exact:ereal_nondecreasing_is_cvg|exact:nearW].
 rewrite (@nd_ge0_integral_lim _ _ _ mu _ max_g2) //; last 2 first.
-  - by move=> t; apply: ereal_lim_ge => //; apply: nearW => n; exact: g0.
+  - move=> t; apply: lim_gee => //; first exact: is_cvg_g.
+    by apply: nearW => n; exact: g0.
   - by move=> t m n mn; exact/lefP/nd_max_g2.
 apply: lee_lim.
 - by apply: is_cvg_sintegral => // t m n mn; exact/lefP/nd_max_g2.
@@ -2138,15 +2141,17 @@ pose h := fun x => lim (g^~ x).
 transitivity (\int[mu]_(x in D) lim (g^~ x)).
   apply: eq_integral => x Dx; apply/esym/cvg_lim => //.
   have [fx0|fx0|fx0] := ltgtP 0 (f x).
-  - rewrite gt0_mulye//; apply/ereal_cvgPpinfty => M M0.
+  - rewrite gt0_mulye//; apply/cvgeyPgey; near=> M.
+    have M0 : (0 <= M)%R by [].
     rewrite /g; case: (f x) fx0 => [r r0|_|//]; last first.
       exists 1%N => // m /= m0.
       by rewrite mulry gtr0_sg// ?mul1e ?leey// ltr0n.
     near=> n; rewrite lee_fin -ler_pdivr_mulr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
-    by rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// divr_ge0// ltW.
-  - rewrite lt0_mulye//; apply/ereal_cvgPninfty => M M0.
+    by rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// divr_ge0// ?ltW.
+  - rewrite lt0_mulye//; apply/cvgeNyPleNy; near=> M;
+    have M0 : (M <= 0)%R by [].
     rewrite /g; case: (f x) fx0 => [r r0|//|_]; last first.
       exists 1%N => // m /= m0.
       by rewrite mulrNy gtr0_sg// ?ltr0n// mul1e ?leNye.
@@ -2154,7 +2159,7 @@ transitivity (\int[mu]_(x in D) lim (g^~ x)).
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
     rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// -mulrNN.
-    by rewrite mulr_ge0// ler_oppr oppr0 ltW// invr_lt0.
+    by rewrite mulr_ge0// ler_oppr oppr0// ltW// invr_lt0.
   - rewrite -fx0 mule0 /g -fx0 [X in X @ _ --> _](_ : _ = cst 0).
       exact: cvg_cst.
     by rewrite funeqE => n /=; rewrite mule0.
@@ -2165,7 +2170,8 @@ have : 0 <= \int[mu]_(x in D) (f x) by exact: integral_ge0.
 rewrite le_eqVlt => /predU1P[<-|if_gt0].
   rewrite mule0 (_ : (fun _ => _) = cst 0) ?lim_cst//.
   by under eq_fun do rewrite mule0.
-rewrite gt0_mulye//; apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
+rewrite gt0_mulye//; apply/cvg_lim => //; apply/cvgeyPgey; near=> M.
+have M0 : (0 <= M)%R by [].
 near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) (f x)) +oo; last first.
   rewrite leye_eq => /eqP ->; rewrite mulry muleC gt0_mulye ?leey//.
   by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
@@ -2177,7 +2183,7 @@ near: n.
 exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 rewrite lee_fin natr_absz ger0_norm ?ceil_ge// ceil_ge0//.
-by rewrite mulr_ge0// ?invr_ge0; [exact:ltW|exact/fine_ge0/integral_ge0].
+by rewrite mulr_ge0// ?invr_ge0//; apply/fine_ge0/integral_ge0.
 Unshelve. all: by end_near. Qed.
 
 End ge0_integralM.
@@ -2282,7 +2288,7 @@ rewrite (_ : \int[m]_(x in D) _ =
   - by move=> n; exact/EFin_measurable_fun/measurable_funTS.
   - by move=> n x _; rewrite lee_fin.
   - by move=> x _ a b /ndf_ /lefP; rewrite lee_fin.
-rewrite -ereal_limrM//.
+rewrite -limeMl//.
   by congr (lim _); apply/funext => n /=; rewrite integral_mscale_nnsfun.
 apply/ereal_nondecreasing_is_cvg => a b ab; apply ge0_le_integral => //.
 - by move=> x _; rewrite lee_fin.
@@ -2302,8 +2308,8 @@ Variable (f : (T -> \bar R)^nat).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 
-Lemma fatou : \int[mu]_(x in D) elim_inf (f^~ x) <=
-              elim_inf (fun n => \int[mu]_(x in D) f n x).
+Lemma fatou : \int[mu]_(x in D) lim_einf (f^~ x) <=
+              lim_einf (fun n => \int[mu]_(x in D) f n x).
 Proof.
 pose g n := fun x => einfs (f ^~ x) n.
 have mg := measurable_fun_einfs mf.
@@ -2396,13 +2402,13 @@ Proof.
 move=> muD0; pose g : (T -> \bar R)^nat := fun n => cst n%:R%:E.
 have <- : (fun t => lim (g^~ t)) = cst +oo.
   rewrite funeqE => t; apply/cvg_lim => //=.
-  apply/dvg_ereal_cvg/cvgPpinfty => M; exists `|ceil M|%N => //= m.
+  apply/cvgeryP/cvgryPge => M; exists `|ceil M|%N => //= m.
   rewrite /= -(ler_nat R); apply: le_trans.
   by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
 rewrite monotone_convergence //.
 - rewrite /g (_ : (fun _ => _) = (fun n => n%:R%:E * mu D)); last first.
     by rewrite funeqE => n; rewrite -integral_cst.
-  apply/cvg_lim => //; apply/ereal_cvgPpinfty => M M0.
+  apply/cvg_lim => //; apply/cvgeyPge => M.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
     exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
@@ -2606,10 +2612,9 @@ transitivity (lim (fun n =>
 transitivity (lim (fun n =>
   \int[msum m_ N]_(x in D) (f_ n x)%:E + \int[m_ N]_(x in D) (f_ n x)%:E)).
   by congr (lim _); apply/funext => n; by rewrite integral_measure_add_nnsfun.
-rewrite ereal_limD//; last first.
-  by apply: ge0_adde_def; rewrite inE;
-    apply: ereal_lim_ge => //; apply: nearW => n;
-    apply: integral_ge0 => //; exact: f_ge0.
+rewrite limeD//; do?[exact: cvg_f_]; last first.
+  by apply: ge0_adde_def; rewrite inE; apply: lim_gee => //; do?[exact: cvg_f_];
+      apply: nearW => n;  apply: integral_ge0 => //; exact: f_ge0.
 by congr (_ + _); (rewrite -monotone_convergence//; [
     apply eq_integral => t /[!inE] Dt; apply/cvg_lim => //; exact: f_f |
     move=> t Dt a b ab; rewrite lee_fin; exact/lefP/f_nd]).
@@ -2682,7 +2687,7 @@ Proof.
 move=> f0 mf.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   suff : forall n, \sum_(k < n) \int[m_ k]_(x in D) f x <= \int[m]_(x in D) f x.
-    move=> n; apply: ereal_lim_le => //.
+    move=> n; apply: lim_lee => //.
       by apply: is_cvg_ereal_nneg_natsum => k _; exact: integral_ge0.
     by apply: nearW => x; rewrite big_mkord.
   move=> n.
@@ -3491,7 +3496,7 @@ move=> mf; split=> [iDf0|Df0].
 pose f_ := fun n x => mine `|f x| n%:R%:E.
 have -> : (fun x => `|f x|) = (fun x => lim (f_^~ x)).
   rewrite funeqE => x; apply/esym/cvg_lim => //; apply/cvg_ballP => _/posnumP[e].
-  rewrite near_map; near=> n; rewrite /ball /= /ereal_ball /= /f_.
+  near=> n; rewrite /ball /= /ereal_ball /= /f_.
   have [->|fxoo] := eqVneq `|f x|%E +oo.
     rewrite /= (@ger0_norm _ n%:R)// ger0_norm; last first.
       by rewrite subr_ge0 ler_pdivr_mulr ?mul1r ?ler_addr.
@@ -3986,7 +3991,7 @@ Proof.
 split => //; have Dfg x : D x -> `| f x | <= g x.
   move=> Dx; have /(@cvg_lim _) <- // : `|f_ n x| @[n --> \oo] --> `|f x|.
     by apply: cvg_abse => //; exact: f_f.
-  apply: ereal_lim_le => //.
+  apply: lim_lee => //.
   - by apply: is_cvg_abse; apply/cvg_ex; eexists; exact: f_f.
   - by apply: nearW => n; exact: absfg.
 move: ig => [mg]; apply: le_lt_trans; apply: ge0_le_integral => //.
@@ -4001,15 +4006,12 @@ Let cvg_g_ x : D x -> g_ ^~ x --> 0.
 Proof.
 move=> Dx; rewrite -abse0; apply: cvg_abse.
 move: (f_f Dx); case: (f x) => [r|/=|/=].
-- by move=> f_r; apply/ereal_cvg_sub0.
-- have gx1 : (0 < fine (g x) + 1)%R by rewrite ltr_paddl//; exact/fine_ge0/g0.
-  move/ereal_cvgPpinfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
+- by move=> f_r; apply/cvge_sub0.
+- move/cvgeyPge/(_ (fine (g x) + 1)%R) => [n _]/(_ _ (leqnn n))/= h.
   have : (fine (g x) + 1)%:E <= g x.
     by rewrite (le_trans h)// (le_trans _ (absfg n Dx))// lee_abs.
   by case: (g x) (fing Dx) => [r _| |]//; rewrite leNgt EFinD lte_addl ?lte01.
-- have gx1 : (- (fine (g x) + 1) < 0)%R.
-    by rewrite ltr_oppl oppr0 ltr_spaddr//; exact/fine_ge0/g0.
-  move/ereal_cvgPninfty/(_ _ gx1) => [n _]/(_ _ (leqnn n)) h.
+- move/cvgeNyPle/(_ (- (fine (g x) + 1))%R) => [n _]/(_ _ (leqnn n)) h.
   have : (fine (g x) + 1)%:E <= g x.
     move: h; rewrite EFinN lee_oppr => /le_trans ->//.
     by rewrite (le_trans _ (absfg n Dx))// -abseN lee_abs.
@@ -4024,7 +4026,7 @@ rewrite (le_trans (lee_abs_sub _ _))// [in leRHS]EFinD lee_add//.
   by rewrite fineK// ?fing// absfg.
 have f_fx : `|(f_ n x)| @[n --> \oo] --> `|f x| by apply: cvg_abse; exact: f_f.
 move/cvg_lim : (f_fx) => <-//.
-apply: ereal_lim_le; first by apply/cvg_ex; eexists; exact: f_fx.
+apply: lim_lee; first by apply/cvg_ex; eexists; exact: f_fx.
 by apply: nearW => k; rewrite fineK ?fing//; apply: absfg.
 Qed.
 
@@ -4037,16 +4039,16 @@ Qed.
 Let gg_ge0 n x : D x -> 0 <= 2%:E * g x - g_ n x.
 Proof. by move=> Dx; rewrite gg_. Qed.
 
-Local Lemma dominated_cvg0 : (fun n => \int[mu]_(x in D) g_ n x) --> 0.
+Local Lemma dominated_cvg0 : [sequence \int[mu]_(x in D) g_ n x]_n --> 0.
 Proof.
 have := fatou mu mD mgg gg_ge0.
 rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x) ); last first.
   apply: eq_integral => t; rewrite inE => Dt.
-  rewrite elim_inf_shift//; last by rewrite fin_numM// fing.
-  rewrite is_cvg_elim_infE//; last first.
-    by apply: ereal_is_cvgN; apply/cvg_ex; eexists; exact: cvg_g_.
+  rewrite lim_einf_shift//; last by rewrite fin_numM// fing.
+  rewrite is_cvg_lim_einfE//; last first.
+    by apply: is_cvgeN; apply/cvg_ex; eexists; exact: cvg_g_.
   rewrite [X in _ + X](_ : _ = 0) ?adde0//; apply/cvg_lim => //.
-  by rewrite -(oppe0); apply: ereal_cvgN; exact: cvg_g_.
+  by rewrite -(oppe0); apply: cvgeN; exact: cvg_g_.
 have i2g : \int[mu]_(x in D) (2%:E * g x)  < +oo.
   rewrite integralM// lte_mul_pinfty// ?lee_fin//; case: ig => _.
   apply: le_lt_trans; rewrite le_eqVlt; apply/orP; left; apply/eqP.
@@ -4054,7 +4056,7 @@ have i2g : \int[mu]_(x in D) (2%:E * g x)  < +oo.
 have ? : \int[mu]_(x in D) (2%:E * g x)  \is a fin_num.
   by rewrite ge0_fin_numE// integral_ge0// => ? ?; rewrite mule_ge0 ?lee_fin ?g0.
 rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
-    elim_sup (fun n => \int[mu]_(x in D) g_ n x)); last first.
+    lim_esup (fun n => \int[mu]_(x in D) g_ n x)); last first.
   rewrite (_ : (fun _ => _) = (fun n => \int[mu]_(x in D) (2%:E * g x)  +
       \int[mu]_(x in D) - g_ n x)); last first.
     rewrite funeqE => n; rewrite integralB//.
@@ -4073,10 +4075,10 @@ rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
       apply: le_integrable dominated_integrable => //.
       - exact: measurable_fun_comp.
       - by move=> x Dx; rewrite /= abse_id.
-  rewrite elim_inf_shift // -elim_infN; congr (_ + elim_inf _).
+  rewrite lim_einf_shift // -lim_einfN; congr (_ + lim_einf _).
   by rewrite funeqE => n /=; rewrite -integral_ge0N// => x Dx; rewrite /g_.
 rewrite addeC -lee_subl_addr// subee// lee_oppr oppe0 => lim_ge0.
-by apply/elim_sup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
+by apply/lim_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
 Qed.
 
 Local Lemma dominated_cvg :
@@ -4088,11 +4090,11 @@ have h n : `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |
     by apply: le_integrable ig => // x Dx /=; rewrite (gee0_abs (g0 Dx)) absfg.
   by apply: le_abse_integral => //; exact: emeasurable_funB.
 suff: (fun n => `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |) --> 0.
-   move/ereal_cvg_abs0/ereal_cvg_sub0; apply.
+   move/cvg_abse0P/cvge_sub0; apply.
    rewrite fin_numElt (_ : -oo = - +oo)// -lte_absl.
    case: dominated_integrable => ?; apply: le_lt_trans.
    by apply: (le_trans _ (@le_abse_integral _ _ _ mu D f mD _)).
-apply: (@ereal_squeeze _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)).
+apply: (@esqueeze _ _ _ _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)).
 - by apply: nearW => n; rewrite abse_ge0//=; exact: h.
 - exact: cvg_cst.
 - exact: dominated_cvg0.

@@ -580,16 +580,6 @@ Canonical ereal_ereal_filter :=
   FilteredType (extended R) (extended R) (ereal_nbhs).
 End ereal_nbhs.
 
-Lemma ereal_nbhs_pinfty_ge (R : numFieldType) (e : {posnum R}) :
-  \forall x \near +oo, e%:num%:E <= x.
-Proof. by exists e%:num; rewrite realE ge0; split => //; apply: ltW. Qed.
-
-Lemma ereal_nbhs_ninfty_le (R : numFieldType) (r : R) : (r < 0)%R ->
-  \forall x \near -oo, x <= r%:E.
-Proof.
-by move=> /ltW r0; exists r; rewrite realE r0 orbT; split => // x /ltW.
-Qed.
-
 Section ereal_nbhs_instances.
 Context {R : numFieldType}.
 
@@ -675,6 +665,36 @@ Qed.
 Typeclasses Opaque ereal_nbhs.
 
 End ereal_nbhs_instances.
+
+Section ereal_nbhs_infty.
+Context (R : numFieldType).
+Implicit Type (r : R).
+
+Lemma ereal_nbhs_pinfty_gt r : r \is Num.real -> \forall x \near +oo, r%:E < x.
+Proof. by exists r. Qed.
+
+Lemma ereal_nbhs_pinfty_ge r : r \is Num.real -> \forall x \near +oo, r%:E <= x.
+Proof. by exists r; split => //; apply: ltW. Qed.
+
+Lemma ereal_nbhs_ninfty_lt r : r \is Num.real -> \forall x \near -oo, r%:E > x.
+Proof. by exists r. Qed.
+
+Lemma ereal_nbhs_ninfty_le r : r \is Num.real -> \forall x \near -oo, r%:E >= x.
+Proof. by exists r; split => // ?; apply: ltW. Qed.
+
+Lemma ereal_nbhs_pinfty_real : \forall x \near +oo, fine x \is @Num.real R.
+Proof.
+apply: filterS (ereal_nbhs_pinfty_gt (@real0 _)) => x.
+by case: x => //= x; apply: gtr0_real.
+Qed.
+
+Lemma ereal_nbhs_ninfty_real : \forall x \near -oo, fine x \is @Num.real R.
+Proof.
+apply: filterS (ereal_nbhs_ninfty_lt (@real0 _)) => x.
+by case: x => //= x; apply: ltr0_real.
+Qed.
+
+End ereal_nbhs_infty.
 
 Section ereal_topologicalType.
 Variable R : realFieldType.

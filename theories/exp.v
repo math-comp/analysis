@@ -196,7 +196,7 @@ have Csx : cvg (pseries c x) by apply: is_cvg_pseries_inside Ck _.
 pose shx := fun h (n : nat) => c n * (h + x) ^+ n.
 suff Cc : lim (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> lim (series s).
   apply: cvg_sub0 Cc.
-  apply/cvg_distP => eps eps_gt0 /=; rewrite !near_simpl /=.
+  apply/cvgrPdist_lt => eps eps_gt0 /=.
   near=> h; rewrite sub0r normrN /=.
   rewrite (le_lt_trans _ eps_gt0)//.
   rewrite normr_le0 subr_eq0 -/sx -/(shx _); apply/eqP.
@@ -215,8 +215,7 @@ suff Cc : lim
     (series (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
     @[h --> 0^'] --> (0 : R).
   apply: cvg_sub0 Cc.
-  apply/cvg_distP => eps eps_gt0 /=.
-  rewrite !near_simpl /=.
+  apply/cvgrPdist_lt => eps eps_gt0 /=.
   near=> h; rewrite sub0r normrN /=.
   rewrite (le_lt_trans _ eps_gt0)// normr_le0 subr_eq0; apply/eqP.
   have Cs : cvg (series s) by apply: is_cvg_pseries_inside CdK _.
