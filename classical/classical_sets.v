@@ -1897,6 +1897,9 @@ Lemma bigcap_mkord n F :
   \bigcap_(i in `I_n) F i = \big[setI/setT]_(i < n) F i.
 Proof. by apply: setC_inj; rewrite setC_bigsetI setC_bigcap bigcup_mkord. Qed.
 
+Lemma bigsetU_sup i n F : (i < n)%N -> F i `<=` \big[setU/set0]_(j < n) F j.
+Proof. by move: n => // n ni; rewrite -bigcup_mkord; exact/bigcup_sup. Qed.
+
 Lemma bigsetU_bigcup F n : \big[setU/set0]_(i < n) F i `<=` \bigcup_k F k.
 Proof. by rewrite -bigcup_mkord => x [k _ Fkx]; exists k. Qed.
 

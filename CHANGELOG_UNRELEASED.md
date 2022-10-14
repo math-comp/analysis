@@ -90,6 +90,8 @@
     `itv_splitU1`, `itv_split1U`, `mem_miditv`, `miditv_le_left`,
     `miditv_ge_right`, `predC_itvl`, `predC_itvr`, `predC_itv`
     (from `mathcomp_extra.v`)
+- in `classical_sets.v`:
+  + lemma `bigsetU_sup`
 
 ### Changed
 - in `topology.v`
