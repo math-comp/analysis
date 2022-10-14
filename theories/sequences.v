@@ -499,20 +499,80 @@ Qed.
 Lemma cvg_has_inf u_ : cvg u_ -> has_inf (u_ @` setT).
 Proof. by move/is_cvgN/cvg_has_sup; rewrite -has_inf_supN image_comp. Qed.
 
+Lemma cvgPpinfty_lt (u_ : R ^nat) :
+  u_ --> +oo%R <-> forall A, \forall n \near \oo, (A < u_ n)%R.
+Proof.
+split=> [uoo A|uB]; last by apply/cvgPpinfty => A; near=> n; apply/ltW; near: n.
+near=> n; rewrite (@lt_le_trans _ _ (A + 1)) ?ltr_addl//.
+by near: n; apply: (cvgPpinfty _).1.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgPninfty_lt (u_ : R ^nat) :
+  u_ --> -oo%R <-> forall A, \forall n \near \oo, (A > u_ n)%R.
+Proof.
+split=> [uoo A|uB]; last by apply/cvgPninfty => A; near=> n; apply/ltW; near: n.
+near=> n; rewrite (@le_lt_trans _ _ (A - 1)) ?ltr_subl_addr ?ltr_addl//.
+by near: n; apply: (cvgPninfty _).1.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgPpinfty_near (u_ : R ^nat) :
+  u_ --> +oo%R <-> \forall A \near +oo, \forall n \near \oo, (A <= u_ n)%R.
+Proof.
+split=> [uoo|]; first by apply: nearW; apply/cvgPpinfty.
+case=> M [Mreal Mu]; apply/cvgPpinfty => A.
+have [|AM] := ltP M A; first exact: Mu.
+near=> n; rewrite (le_trans AM)// ltW// (@lt_le_trans _ _ (M + 1)) ?ltr_addl//.
+by near: n; apply: Mu; rewrite ltr_addl.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgPninfty_near (u_ : R ^nat) :
+  u_ --> -oo%R <-> \forall A \near -oo, \forall n \near \oo, (A >= u_ n)%R.
+Proof.
+split=> [uoo|]; first by apply: nearW; apply/cvgPninfty.
+case=> M [Mreal Mu]; apply/cvgPninfty => A.
+have [|AM] := ltP A M; first exact: Mu.
+near=> n; rewrite (le_trans _ AM)// ltW//.
+rewrite (@le_lt_trans _ _ (M - 1)) ?gtr_addl//.
+by near: n; apply: Mu; rewrite gtr_addl.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgPpinfty_lt_near (u_ : R ^nat) :
+  u_ --> +oo%R <-> \forall A \near +oo, \forall n \near \oo, (A < u_ n)%R.
+Proof.
+split=> uB; first by near=> A; apply: (cvgPpinfty_lt _).1.
+by apply/cvgPpinfty_near; near=> A; near=> n; apply/ltW; near: n; near: A.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvgPninfty_lt_near (u_ : R ^nat) :
+  u_ --> -oo%R <-> \forall A \near -oo, \forall n \near \oo, (A > u_ n)%R.
+Proof.
+split=> uB; first by near=> A; apply: (cvgPninfty_lt _).1.
+by apply/cvgPninfty_near; near=> A; near=> n; apply/ltW; near: n; near: A.
+Unshelve. all: by end_near. Qed.
+
 End sequences_R_lemmas_realFieldType.
 
-Lemma inv_cvg (R : realFieldType) (u : R ^nat) :
-  (forall n, 0 < u n) -> (fun n => (u n)^-1) --> 0 -> u --> +oo.
+Lemma invr_cvg0 (R : realFieldType) (u : R^nat) :
+  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> 0) <-> (u --> +oo).
 Proof.
-move=> u0 uV0; apply/cvgPpinfty => M.
-move/cvg_distP : uV0 => /(_ (`|M| + 1)^-1%R).
-rewrite invr_gt0 ltr_paddl// => /(_ erefl); rewrite !near_map.
-apply: filterS => n.
-rewrite sub0r normrN normrV ?unitfE ?gt_eqF// ger0_norm; last exact: ltW.
-rewrite ltr_pinv.
-- by move/ltW; apply: le_trans; rewrite (le_trans (ler_norm _))// ler_addl.
-- by rewrite inE unitfE u0 andbT gt_eqF.
-- by rewrite inE unitfE ltr_paddl// andbT gt_eqF.
+move=> u_gt0; split; last first.
+  move=> cvg_u_oo; apply/cvg_distP => _/posnumP[e]; rewrite !near_simpl.
+  near=> n; rewrite distrC subr0 gtr0_norm ?invr_gt0//.
+  rewrite -ltf_pinv ?qualifE//= ?invr_gt0// invrK.
+  rewrite (@lt_le_trans _ _ (e%:num^-1 + 1)) ?ltr_addl//; near: n.
+  exact: (cvgPpinfty _).1.
+move=> /cvg_distP uB. apply/cvgPpinfty_near; near=> M; near=> n.
+rewrite -lef_pinv ?qualifE//; last by near: M; apply: nbhs_pinfty_gt.
+suff: `|0 - (u n)^-1| <= M^-1 by rewrite distrC subr0 gtr0_norm ?invr_gt0.
+rewrite ltW//; near: n; apply: uB.
+by rewrite invr_gt0; near: M; apply: nbhs_pinfty_gt.
+Unshelve. all: by end_near. Qed.
+
+Lemma invr_cvg_pinfty (R : realFieldType) (u : R^nat) :
+  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> +oo) <-> (u --> 0).
+Proof.
+move=> u_gt0; rewrite -invr_cvg0; last by move=> i; rewrite invr_gt0.
+by under eq_fun do rewrite invrK.
 Qed.
 
 Section partial_sum.
@@ -1417,16 +1477,6 @@ move=> /[swap] /(closed_cvg (fun y => y <= x)); apply.
 exact: closed_ereal_ge_ereal.
 Unshelve. all: by end_near. Qed.
 
-(* NB: worth keeping in addition to cvgPpinfty? *)
-Lemma cvgPpinfty_lt (R : realFieldType) (u_ : R ^nat) :
-  u_ --> +oo%R <-> forall A, \forall n \near \oo, (A < u_ n)%R.
-Proof.
-split => [/cvgPpinfty uoo A|uoo]; last first.
-  apply/cvgPpinfty=> A; have [n _ nA] := uoo A.
-  by exists n => // m /= nm; apply/ltW/nA.
-have [n _ nA] := uoo (A + 1)%R.
-by exists n => // m nm; rewrite (@lt_le_trans _ _ (A + 1)%R) // ?ltr_addl// nA.
-Qed.
 
 Lemma dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
   u_ --> +oo%R -> [sequence (u_ n)%:E]_n --> +oo.

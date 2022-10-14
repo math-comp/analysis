@@ -114,7 +114,9 @@
   + lemmas `closed_ballR_compact` and `locally_compactR` 
 
 - in `sequences.v`:
-  + lemma `inv_cvg`
+  + lemma `invr_cvg0` and `invr_cvg_pinfty`
+  + lemma `cvgPninfty_lt`, `cvgPpinfty_near`, `cvgPninfty_near`,
+    `cvgPpinfty_lt_near` and `cvgPninfty_lt_near`
 
 ### Changed
 - in `topology.v`
