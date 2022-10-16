@@ -3983,13 +3983,10 @@ Section locally_compact.
 
 Lemma locally_compactR (R : realType) : locally_compact [set: R].
 Proof.
-move=> x  _; rewrite withinET; exists (`[x-1, x+1]%classic); first last.
-split; [|apply: compact_closed] => //; exact: segment_compact.
-apply: (@filterS _ _ _ `]x-1, x+1[%classic).
-  by move=> z /=; rewrite ?in_itv //= => /andP [/ltW -> /ltW ->].
-apply: open_nbhs_nbhs; split; first exact: interval_open.
-rewrite /= in_itv /=; apply/andP. 
-by split; rewrite ?ltr_subl_addl ?[1+_]addrC ltr_addl.
-Qed.
+move=> x _; rewrite withinET; exists (`[x - 1, x + 1]%classic); first last.
+  by split; [|apply: compact_closed] => //; apply: segment_compact.
+near=> y; apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
+by rewrite in_itv -ltr_distl subrr normr0.
+Unshelve. all: by end_near. Qed.
 
 End locally_compact.
