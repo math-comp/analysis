@@ -3717,9 +3717,9 @@ Proof. move=> r0; rewrite /closed_ball; apply: subset_closure. Qed.
 
 Lemma locally_compactR (R : realType) : locally_compact [set: R].
 Proof.
-move=> x _; rewrite withinET; exists (closed_ball x 1); last first.
-  by split; [apply: closed_ballR_compact|apply: closed_ball_closed].
-by apply/nbhs_closedballP; exists 1%:pos.
+move=> x _; rewrite withinET; exists (closed_ball x 1).
+  by apply/nbhs_closedballP; exists 1%:pos.
+by split; [apply: closed_ballR_compact | apply: closed_ball_closed].
 Qed.
 
 (*TBA topology.v once ball_normE is there*)
