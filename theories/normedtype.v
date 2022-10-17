@@ -3984,9 +3984,9 @@ Section locally_compact.
 Lemma locally_compactR (R : realType) : locally_compact [set: R].
 Proof.
 move=> x _; rewrite withinET; exists (`[x - 1, x + 1]%classic); first last.
-  by split; [|apply: compact_closed] => //; apply: segment_compact.
-near=> y; apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
-by rewrite in_itv -ltr_distl subrr normr0.
-Unshelve. all: by end_near. Qed.
+  by split; [|apply: compact_closed] => //; exact: segment_compact.
+apply/nbhs_closedballP; exists 1%:pos => y; rewrite closed_ballE//= in_itv.
+by rewrite -ler_distlC.
+Qed.
 
 End locally_compact.
