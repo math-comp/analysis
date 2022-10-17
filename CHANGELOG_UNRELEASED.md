@@ -111,7 +111,7 @@
 - in `constructive_ereal.v`:
   + lemma `fine_lt0E`
 - in file `normedtype.v`
-  + lemma `locally_compactR` 
+  + lemmas `closed_ballR_compact` and `locally_compactR` 
 
 
 ### Changed
