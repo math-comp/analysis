@@ -3686,6 +3686,13 @@ Lemma closed_ball_closed (R : realFieldType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> closed (closed_ball x r).
 Proof. by move => r0; rewrite closed_ballE //; exact: closed_closed_ball_. Qed.
 
+Lemma closed_ballR_compact (R : realType) (x e : R) : 0 < e ->
+   compact (closed_ball x e).
+Proof.
+move=> e_gt0; have : compact `[x - e, x + e] by apply: segment_compact.
+by rewrite closed_ballE//; under eq_set do rewrite in_itv -ler_distlC.
+Qed.
+
 Lemma closed_ball_subset (R : realFieldType) (M : normedModType R) (x : M)
   (r0 r1 : R) : 0 < r0 -> r0 < r1 -> closed_ball x r0 `<=` ball x r1.
 Proof.
@@ -3710,10 +3717,9 @@ Proof. move=> r0; rewrite /closed_ball; apply: subset_closure. Qed.
 
 Lemma locally_compactR (R : realType) : locally_compact [set: R].
 Proof.
-move=> x _; rewrite withinET; exists (`[x - 1, x + 1]%classic); first last.
-  by split; [|apply: compact_closed] => //; exact: segment_compact.
-apply/nbhs_closedballP; exists 1%:pos => y; rewrite closed_ballE//= in_itv.
-by rewrite -ler_distlC.
+move=> x _; rewrite withinET; exists (closed_ball x 1); last first.
+  by split; [apply: closed_ballR_compact|apply: closed_ball_closed].
+by apply/nbhs_closedballP; exists 1%:pos.
 Qed.
 
 (*TBA topology.v once ball_normE is there*)
