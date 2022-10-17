@@ -110,6 +110,9 @@
   + lemma `nnseries_is_cvg`
 - in `constructive_ereal.v`:
   + lemma `fine_lt0E`
+- in file `normedtype.v`
+  + lemmas `closed_ballR_compact` and `locally_compactR` 
+
 
 ### Changed
 - in `topology.v`
