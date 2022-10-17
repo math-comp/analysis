@@ -3708,6 +3708,14 @@ Lemma subset_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> ball x r `<=` closed_ball x r.
 Proof. move=> r0; rewrite /closed_ball; apply: subset_closure. Qed.
 
+Lemma locally_compactR (R : realType) : locally_compact [set: R].
+Proof.
+move=> x _; rewrite withinET; exists (`[x - 1, x + 1]%classic); first last.
+  by split; [|apply: compact_closed] => //; exact: segment_compact.
+apply/nbhs_closedballP; exists 1%:pos => y; rewrite closed_ballE//= in_itv.
+by rewrite -ler_distlC.
+Qed.
+
 (*TBA topology.v once ball_normE is there*)
 
 Lemma nbhs0_lt (K : numFieldType) (V : normedModType K) e :
@@ -3978,15 +3986,3 @@ by rewrite ler_pmul //; near: r; exists 1; split => // x /ltW; apply le_trans.
 Unshelve. all: by end_near. Qed.
 
 End LinearContinuousBounded.
-
-Section locally_compact.
-
-Lemma locally_compactR (R : realType) : locally_compact [set: R].
-Proof.
-move=> x _; rewrite withinET; exists (`[x - 1, x + 1]%classic); first last.
-  by split; [|apply: compact_closed] => //; exact: segment_compact.
-apply/nbhs_closedballP; exists 1%:pos => y; rewrite closed_ballE//= in_itv.
-by rewrite -ler_distlC.
-Qed.
-
-End locally_compact.
