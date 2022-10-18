@@ -175,6 +175,9 @@
 - in `measure.v`:
   + definition `discrete_measurable_bool` with an instance of measurable type
   + lemmas `measurable_fun_if`, `measurable_fun_ifT`
+- in `constructive_ereal.v`:
+  + canonical `maxe_monoid`
+  + lemma `lee_bigmax_ord`
 
 ### Changed
 - in `topology.v`

@@ -2250,6 +2250,17 @@ Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge leNye. Qed.
 Lemma maxeNy : right_id (-oo : \bar R) maxe.
 Proof. by move=> x; rewrite maxC maxNye. Qed.
 
+Canonical maxe_monoid := Monoid.Law maxA maxNye maxeNy.
+
+Lemma lee_bigmax_ord (F : nat -> \bar R) (n m : nat) : (n <= m)%N ->
+  \big[maxe/-oo]_(j < n) F j <= \big[maxe/-oo]_(j < m) F j.
+Proof.
+move=> nm.
+rewrite -[in leRHS](subnKC nm) -[in leRHS](big_mkord xpredT F).
+rewrite/index_iota subn0 iotaD big_cat /= le_maxr.
+by rewrite -[in iota _ _](subn0 n) big_mkord lexx.
+Qed.
+
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
 
