@@ -1339,7 +1339,7 @@ Qed.
 
 HB.mixin Record isContent d
     (T : semiRingOfSetsType d) (R : numFieldType) (mu : set T -> \bar R) := {
-  measure_ge0 : forall x, 0 <= mu x ;
+  measure_ge0 : forall x, measurable x -> 0 <= mu x ;
   measure_semi_additive : semi_additive mu }.
 
 HB.structure Definition Content d
@@ -1358,10 +1358,10 @@ Context d (T : semiRingOfSetsType d) (R : numFieldType).
 
 Variable mu : {content set T -> \bar R}.
 
-Lemma content_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
+(*Lemma content_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
 Proof. exact: measure_ge0. Qed.
 
-Canonical content_snum S := Signed.mk (content_snum_subproof S).
+Canonical content_snum S := Signed.mk (content_snum_subproof S).*)
 
 End content_signed.
 
@@ -1508,17 +1508,17 @@ Context d (R : numFieldType) (T : semiRingOfSetsType d).
 
 Variable mu : {measure set T -> \bar R}.
 
-Lemma measure_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
+(*Lemma measure_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
 Proof. exact: measure_ge0. Qed.
 
-Canonical measure_snum S := Signed.mk (measure_snum_subproof S).
+Canonical measure_snum S := Signed.mk (measure_snum_subproof S).}*)
 
 End measure_signed.
 
 HB.factory Record isMeasure d
     (R : realFieldType) (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
   measure0 : mu set0 = 0 ;
-  measure_ge0 : forall x, 0 <= mu x ;
+  measure_ge0 : forall x, measurable x -> 0 <= mu x ;
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
 HB.builders Context d (R : realFieldType) (T : semiRingOfSetsType d)
@@ -1597,8 +1597,10 @@ Hypothesis mf : measurable_fun setT f.
 Let pushforward0 : pushforward mf set0 = 0.
 Proof. by rewrite /pushforward preimage_set0 measure0. Qed.
 
-Let pushforward_ge0 A : 0 <= pushforward mf A.
-Proof. by apply: measure_ge0; rewrite -[X in measurable X]setIT; apply: mf. Qed.
+Let pushforward_ge0 A : measurable A -> 0 <= pushforward mf A.
+Proof.
+by move=> mA; apply: measure_ge0; rewrite -[X in measurable X]setTI; apply: mf.
+Qed.
 
 Let pushforward_sigma_additive : semi_sigma_additive (pushforward mf).
 Proof.
@@ -1623,7 +1625,7 @@ Definition dirac (A : set T) : \bar R := (\1_A a)%:E.
 
 Let dirac0 : dirac set0 = 0. Proof. by rewrite /dirac indic0. Qed.
 
-Let dirac_ge0 B : 0 <= dirac B. Proof. by rewrite /dirac indicE. Qed.
+Let dirac_ge0 B : measurable B -> 0 <= dirac B. Proof. by move=> _; rewrite /dirac indicE. Qed.
 
 Let dirac_sigma_additive : semi_sigma_additive dirac.
 Proof.
@@ -1670,12 +1672,14 @@ Section dirac_lemmas.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 
-Lemma finite_card_dirac (A : set T) : finite_set A ->
+Lemma finite_card_dirac (A : set T) : finite_set A -> measurable A ->
   \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
 Proof.
-move=> finA; rewrite esum_fset// (eq_fsbigr (cst 1))//.
-  by rewrite card_fset_sum1// natr_sum -sumEFin fsbig_finite.
-by move=> i iA; rewrite diracE iA.
+move=> finA mA.
+rewrite esum_fset//; last by move=> *; rewrite measure_ge0.
+rewrite fsbig_finite// big_seq_cond (eq_bigr (fun=> 1)) -?big_seq_cond.
+  by rewrite card_fset_sum1// natr_sum -sumEFin.
+by move=> i; rewrite andbT in_fset_set//= /dirac indicE => ->.
 Qed.
 
 Lemma infinite_card_dirac (A : set T) : infinite_set A ->
@@ -1702,14 +1706,17 @@ Definition msum (A : set T) : \bar R := \sum_(k < n) m k A.
 
 Let msum0 : msum set0 = 0. Proof. by rewrite /msum big1. Qed.
 
-Let msum_ge0 B : 0 <= msum B. Proof. by rewrite /msum; apply: sume_ge0. Qed.
+Let msum_ge0 B : measurable B -> 0 <= msum B.
+Proof. by move=> mB; rewrite /msum; apply: sume_ge0 => i _; exact: measure_ge0. Qed.
 
 Let msum_sigma_additive : semi_sigma_additive msum.
 Proof.
 move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
     lim (fun n => \sum_(0 <= i < n) msum (F i))).
-  by apply: is_cvg_ereal_nneg_natsum => k _; exact: sume_ge0.
-rewrite nneseries_sum//; apply: eq_bigr => /= i _.
+  apply: is_cvg_ereal_nneg_natsum => k _; apply: sume_ge0 => // i _.
+  exact: measure_ge0.
+rewrite nneseries_sum//; last by move=> i j _; exact: measure_ge0.
+apply: eq_bigr => /= i _.
 exact: measure_semi_bigcup.
 Qed.
 
@@ -1727,7 +1734,7 @@ Definition mzero (A : set T) : \bar R := 0.
 
 Let mzero0 : mzero set0 = 0. Proof. by []. Qed.
 
-Let mzero_ge0 B : 0 <= mzero B. Proof. by []. Qed.
+Let mzero_ge0 B : measurable B -> 0 <= mzero B. Proof. by []. Qed.
 
 Let mzero_sigma_additive : semi_sigma_additive mzero.
 Proof.
@@ -1767,14 +1774,14 @@ Definition mscale (A : set T) : \bar R := r%:num%:E * m A.
 
 Let mscale0 : mscale set0 = 0. Proof. by rewrite /mscale measure0 mule0. Qed.
 
-Let mscale_ge0 B : 0 <= mscale B.
-Proof. by rewrite /mscale mule_ge0. Qed.
+Let mscale_ge0 B : measurable B -> 0 <= mscale B.
+Proof. by move=> mB; rewrite /mscale mule_ge0// measure_ge0. Qed.
 
 Let mscale_sigma_additive : semi_sigma_additive mscale.
 Proof.
 move=> F mF tF mUF; rewrite [X in X --> _](_ : _ =
     (fun n => (r%:num)%:E * \sum_(0 <= i < n) m (F i))); last first.
-  by apply/funext => k; rewrite ge0_sume_distrr.
+  by apply/funext => k; rewrite ge0_sume_distrr// => i _; rewrite measure_ge0.
 rewrite /mscale; have [->|r0] := eqVneq r%:num 0%R.
   rewrite mul0e [X in X --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
@@ -1797,9 +1804,11 @@ Definition mseries (A : set T) : \bar R := \sum_(n <= k <oo) m k A.
 Let mseries0 : mseries set0 = 0.
 Proof. by rewrite /mseries ereal_series eseries0. Qed.
 
-Let mseries_ge0 B : 0 <= mseries B.
+Let mseries_ge0 B : measurable B -> 0 <= mseries B.
 Proof.
-by rewrite /mseries ereal_series nneseries_esum//; exact: esum_ge0.
+move=> mB; rewrite /mseries ereal_series nneseries_esum//; last first.
+  by move=> p _; exact: measure_ge0.
+by apply: esum_ge0 => p _; rewrite measure_ge0.
 Qed.
 
 Let mseries_sigma_additive : semi_sigma_additive mseries.
@@ -1811,12 +1820,14 @@ move=> F mF tF mUF; rewrite [X in _ --> X](_ : _ =
     rewrite 2!ereal_series.
     apply: (@eq_eseries _ (fun k => m k (\bigcup_n0 F n0))) => i ni.
     exact: measure_semi_bigcup.
-  rewrite ereal_series nneseries_interchange//.
+  rewrite ereal_series nneseries_interchange//; last first.
+    by move=> i j; rewrite measure_ge0.
   apply: (@eq_eseries R (fun j => \sum_(i <oo | (n <= i)%N) m i (F j))
                           (fun i => \sum_(n <= k <oo) m k (F i))).
   by move=> i _; rewrite ereal_series.
 apply: is_cvg_ereal_nneg_natsum => k _.
-by rewrite /mseries ereal_series; exact: nneseries_ge0.
+rewrite /mseries ereal_series; apply: nneseries_ge0 => p _.
+by rewrite measure_ge0.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mseries
@@ -1836,8 +1847,10 @@ Local Notation restr := (mrestr mu mD).
 
 Let restr0 : restr set0 = 0%E. Proof. by rewrite /mrestr set0I measure0. Qed.
 
-Let restr_ge0 (A : set _) : (0 <= restr A)%E.
-Proof. by rewrite /restr; apply: measure_ge0; exact: measurableI. Qed.
+Let restr_ge0 (A : set _) : measurable A -> (0 <= restr A)%E.
+Proof.
+by move=> mA; rewrite /restr; apply: measure_ge0; apply: measurableI.
+Qed.
 
 Let restr_sigma_additive : semi_sigma_additive restr.
 Proof.
@@ -1865,8 +1878,10 @@ Definition counting (X : set T) : \bar R :=
 Let counting0 : counting set0 = 0.
 Proof. by rewrite /counting asboolT// fset_set0. Qed.
 
-Let counting_ge0 (A : set _) : 0 <= counting A.
-Proof. by rewrite /counting; case: ifPn; rewrite ?lee_fin// lee_pinfty. Qed.
+Let counting_ge0 (A : set _) : measurable A -> 0 <= counting A.
+Proof.
+by move=> _; rewrite /counting; case: ifPn; rewrite ?lee_fin// lee_pinfty.
+Qed.
 
 Let counting_sigma_additive : semi_sigma_additive counting.
 Proof.
@@ -1879,7 +1894,8 @@ have [[i Fi]|infinF] := pselect (exists k, infinite_set (F k)).
   have ni : (i < n)%N by near: n; exists i.+1.
   rewrite (bigID (xpred1 i))/= big_mkord (big_pred1 (Ordinal ni))//=.
   rewrite [X in X + _]/counting asboolF// addye ?leey//.
-  by rewrite gt_eqF// (@lt_le_trans _ _ 0)//; exact: sume_ge0.
+  rewrite gt_eqF// (@lt_le_trans _ _ 0)// sume_ge0// => j _.
+  by rewrite counting_ge0.
 have {infinF}finF : forall i, finite_set (F i) by exact/not_forallP.
 pose u : nat^nat := fun n => #|` fset_set (F n) |.
 have sumFE n : \sum_(i < n) counting (F i) =
@@ -2215,8 +2231,13 @@ rewrite -(bigcup_set0 (fun _ : void => set0)).
 by rewrite Rmu_fin_bigcup// fsbig_set0.
 Qed.
 
-Lemma Rmu_ge0 A : Rmu A >= 0.
-Proof. by rewrite sume_ge0. Qed.
+Lemma Rmu_ge0 A : measurable A -> Rmu A >= 0.
+Proof.
+move=> mA.
+rewrite /measure/= fsbig_mkcond/= sume_ge0 // => f _.
+rewrite /patch; case: ifPn => // fA.
+by rewrite measure_ge0//; apply: decomp_measurable fA.
+Qed.
 
 Lemma Rmu_additive : semi_additive Rmu.
 Proof.
@@ -2261,15 +2282,16 @@ Proof.
 move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
   by rewrite leye_eq => /eqP ->; rewrite leey.
 rewrite -[leRHS]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
-- by rewrite SetRing.RmuE ?lee_addl.
+- rewrite SetRing.RmuE ?lee_addl// measure_ge0//.
+  by apply: measurableD => //; exact: sub_gen_smallest.
 - exact: sub_gen_smallest.
 - by apply: measurableD; exact: sub_gen_smallest.
 Qed.
 
 Lemma measure_le0 d (T : semiRingOfSetsType d) (R : realFieldType)
-  (mu : {content set T -> \bar R}) (A : set T) :
+  (mu : {content set T -> \bar R}) (A : set T) : measurable A ->
   (mu A <= 0)%E = (mu A == 0)%E.
-Proof. by case: ltgtP (measure_ge0 mu A). Qed.
+Proof. by move=> mA; case: ltgtP (measure_ge0 mu A) => // _ /(_ mA). Qed.
 
 Section more_content_semiring_lemmas.
 Context d (R : realFieldType) (T : semiRingOfSetsType d).
@@ -2354,7 +2376,8 @@ Lemma content_ring_sup_sigma_additive (A : nat -> set T) :
   (forall i, measurable (A i)) -> measurable (\bigcup_i A i) ->
   trivIset [set: nat] A -> \sum_(i <oo) mu (A i) <= mu (\bigcup_i A i).
 Proof.
-move=> Am UAm At; rewrite lime_le//; first exact: is_cvg_nneseries.
+move=> Am UAm At; rewrite lime_le//.
+  by apply: is_cvg_nneseries => // n _; rewrite measure_ge0.
 near=> n; rewrite big_mkord -measure_bigsetU//= le_measure ?inE//=.
 - exact: bigsetU_measurable.
 - by rewrite -bigcup_mkord; apply: bigcup_sub => i lein; apply: bigcup_sup.
@@ -2363,7 +2386,8 @@ Unshelve. all: by end_near. Qed.
 Lemma content_ring_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive mu.
 Proof.
 move=> mu_sub A Am Atriv UAm.
-suff <- : \sum_(i <oo) mu (A i) = mu (\bigcup_n A n) by exact: is_cvg_nneseries.
+suff <- : \sum_(i <oo) mu (A i) = mu (\bigcup_n A n).
+  by apply: is_cvg_nneseries => // n _; rewrite measure_ge0.
 by apply/eqP; rewrite eq_le mu_sub// ?content_ring_sup_sigma_additive.
 Qed.
 
@@ -2378,9 +2402,15 @@ Import SetRing.
 Lemma ring_sigma_sub_additive : sigma_sub_additive mu -> sigma_sub_additive Rmu.
 Proof.
 move=> muS; move=> /= D A Am Dm Dsub.
-rewrite /Rmu -(eq_eseries (fun _ _ => esum_fset _ _))//; last first.
+rewrite /Rmu -(eq_eseries (fun _ _ => esum_fset _ _))//; last 2 first.
   by move=> *; exact: decomp_finite_set.
-rewrite nneseries_esum ?esum_esum//=; last by move=> *; rewrite esum_ge0.
+  by move=> n _ x Anx; rewrite measure_ge0//; exact: (decomp_measurable (Am n)).
+rewrite nneseries_esum; last first.
+  move=> n _; rewrite esum_ge0//= => f Anf; rewrite measure_ge0//.
+  by apply: (decomp_measurable (Am n)); rewrite inE.
+rewrite esum_esum; last first.
+  move=> /= n f _ Anf; rewrite measure_ge0//.
+  by apply: (decomp_measurable (Am n)); rewrite inE.
 set K := _ `*`` _.
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
   apply: cardMR_eq_nat => [|i].
@@ -2391,8 +2421,16 @@ have {Dsub} : D `<=` \bigcup_(k in K) k.2.
   apply: (subset_trans Dsub); apply: bigcup_sub => i _.
   rewrite -[A i]cover_decomp; apply: bigcup_sub => X/= XAi.
   by move=> x Xx; exists (i, X).
-rewrite -(image_eq [bij of f^-1%FUN])/=.
-rewrite (esum_set_image _ f^-1)//= bigcup_image => Dsub.
+rewrite -(image_eq [bij of f^-1%FUN])/= (esum_set_image _ f^-1)//=; last first.
+  move=> n _; rewrite measure_ge0//.
+  have f2An : ((f^-1)%function n).2 \in decomp (A ((f^-1)%function n).1).
+    have : (f^-1)%function n \in K.
+      rewrite inE.
+      have [+ _ _] : set_bij [set: nat] K (f^-1)%function by [].
+      exact.
+    by rewrite inE => -[/= _]; rewrite inE.
+  by apply: decomp_measurable f2An.
+rewrite bigcup_image => Dsub.
 have DXsub X : X \in decomp D -> X `<=` \bigcup_i ((f^-1%FUN i).2 `&` X).
   move=> XD; rewrite -setI_bigcupl -[Y in Y `<=` _](setIidr (decomp_sub XD)).
   by apply: setSI.
@@ -2403,13 +2441,27 @@ have mfD i X : X \in decomp D -> measurable (((f^-1)%FUN i).2 `&` X : set T).
   by move=> XD; apply: measurableI; [exact: mf|exact: (decomp_measurable _ XD)].
 apply: (@le_trans _ _
     (\sum_(i <oo) \sum_(X <- fset_set (decomp D)) mu ((f^-1%FUN i).2 `&` X))).
-  rewrite nneseries_sum// fsbig_finite/=; last exact: decomp_finite_set.
-  rewrite [leLHS]big_seq_cond [leRHS]big_seq_cond.
+  rewrite [leRHS](_ : _ = \sum_(i <oo) \sum_(X <- fset_set (decomp D) | X \in fset_set (decomp D)) mu (((f^-1)%function i).2 `&` X)); last first.
+    under eq_eseries.
+      move=> i _.
+      by rewrite big_seq.
+      done.
+  rewrite nneseries_sum//; last first.
+    move=> /= i j; rewrite in_fset_set//; last exact: decomp_finite_set.
+    move=> iD; rewrite measure_ge0 => //.
+    apply: measurableI => //.
+    exact: decomp_measurable iD.
+  rewrite fsbig_finite/=; last exact: decomp_finite_set.
+  rewrite [leLHS]big_seq.
   rewrite lee_sum// => X /[!(andbT,in_fset_set)]; last exact: decomp_finite_set.
   move=> XD; have Xm := decomp_measurable Dm XD.
   by apply: muS => // [i|]; [exact: mfD|exact: DXsub].
-apply: lee_lim => /=; do ?apply: is_cvg_nneseries=> //.
-  by move=> n _; exact: sume_ge0.
+apply: lee_lim => /=.
+- apply: is_cvg_nneseries => n _; rewrite big_seq sume_ge0// => t.
+  rewrite in_fset_set; last exact: decomp_finite_set.
+  move=> tD; rewrite measure_ge0//; apply: measurableI => //.
+  exact: decomp_measurable tD.
+- by apply: is_cvg_nneseries => n _; rewrite measure_ge0.
 near=> n; rewrite [n in _ <= n]big_mkcond; apply: lee_sum => i _.
 rewrite ifT ?inE//.
 under eq_big_seq.
@@ -2473,8 +2525,21 @@ have g_inj : set_inj [set i | g i != set0] g.
 move=> XEbig; rewrite measure_semi_bigcup//= -?XEbig//; last first.
   move=> i; have [/= _ /mem_set] : K (f' i) by apply: funS.
   exact: decomp_measurable.
+have mg n : 0 <= mu (g n).
+  rewrite measure_ge0//.
+  rewrite /g.
+  have f2Bn : ((f^-1)%function n).2 \in decomp (seqDU B ((f^-1)%function n).1).
+    have : (f^-1)%function n \in K.
+      rewrite inE.
+      have [+ _ _] : set_bij [set: nat] K (f^-1)%function by [].
+      exact.
+    rewrite inE => -[/= _].
+    by rewrite inE.
+  by apply: decomp_measurable f2Bn.
 rewrite [leLHS](_ : _ = \sum_(i <oo | g i != set0) mu (g i)); last first.
-  rewrite !nneseries_esum// esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
+  rewrite !nneseries_esum//; last first.
+    by move=> n _; exact: mg.
+  rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
   move=> i _; rewrite ifT ?inE//=; case: ifPn => //.
   by rewrite notin_set /= -/(g _) => /negP/negPn/eqP ->.
 rewrite -(esum_pred_image mu g)//.
@@ -2490,24 +2555,30 @@ have -> : range g = \bigcup_i (decomp (seqDU B i)).
   have [/= _ f'nB] : K (f' n) by apply: funS.
     by exists (f' n).1 => //=; rewrite -gnY.
   by exists (f (n, Y)) => //; rewrite /g /f' funK//= inE.
-rewrite esum_bigcup//; last first.
-   move=> i j /=.
-   have [->|/set0P DUBiN0] := eqVneq (seqDU B i) set0.
-     rewrite decomp_set0 ?set_fset1 => /negP[].
-     apply/eqP/predeqP=> x; split=> [[Y/=->]|->]//; first by rewrite measure0.
-     by exists set0.
-   have [->|/set0P DUBjN0] := eqVneq (seqDU B j) set0.
-     rewrite decomp_set0 ?set_fset1 => _ /negP[].
-     apply/eqP/predeqP=> x; split=> [[Y/=->]|->]//=; first by rewrite measure0.
-     by exists set0.
-   move=> _ _ [Y /= [/[dup] +]].
-   move=> /mem_set /decomp_sub YBi /mem_set + /mem_set /decomp_sub YBj.
-   move=> /(decomp_neq0 DUBiN0) [y Yy].
-   apply: (@trivIset_seqDU _ B) => //; exists y.
-   by split => //; [exact: YBi|exact: YBj].
-rewrite nneseries_esum// set_true le_esum// => i _.
+rewrite esum_bigcup//; last 2 first.
+   - move=> i j /=.
+     have [->|/set0P DUBiN0] := eqVneq (seqDU B i) set0.
+       rewrite decomp_set0 ?set_fset1 => /negP[].
+       apply/eqP/predeqP=> x; split=> [[Y/=->]|->]//; first by rewrite measure0.
+       by exists set0.
+     have [->|/set0P DUBjN0] := eqVneq (seqDU B j) set0.
+       rewrite decomp_set0 ?set_fset1 => _ /negP[].
+       apply/eqP/predeqP=> x; split=> [[Y/=->]|->]//=; first by rewrite measure0.
+       by exists set0.
+     move=> _ _ [Y /= [/[dup] +]].
+     move=> /mem_set /decomp_sub YBi /mem_set + /mem_set /decomp_sub YBj.
+     move=> /(decomp_neq0 DUBiN0) [y Yy].
+     apply: (@trivIset_seqDU _ B) => //; exists y.
+     by split => //; [exact: YBi|exact: YBj].
+   - move=> x [m _] /mem_set Bmx.
+     rewrite measure_ge0//.
+     exact: decomp_measurable Bmx.
+rewrite nneseries_esum//; last by move=> n _; rewrite measure_ge0.
+rewrite set_true le_esum// => i _.
 rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j); last first.
-  by rewrite esum_fset//; exact: decomp_finite_set.
+  rewrite esum_fset//; first exact: decomp_finite_set.
+  move=> x xBi; rewrite measure_ge0//.
+  exact: decomp_measurable xBi.
 rewrite -SetRing.Rmu_fin_bigcup//=; last 3 first.
   exact: decomp_finite_set.
   exact: decomp_triv.
@@ -2689,7 +2760,7 @@ Lemma finite_measure_fin_num_fun d (T : measurableType d)
     (R : realType) (mu : {measure set T -> \bar R}) :
   finite_measure mu -> fin_num_fun mu.
 Proof.
-move=> h U mU; rewrite fin_real// (lt_le_trans _ (measure_ge0 mu U))//=.
+move=> h U mU; rewrite fin_real// (lt_le_trans _ (measure_ge0 mu U mU))//=.
 by rewrite (le_lt_trans _ h)//= le_measure// inE.
 Qed.
 
@@ -2748,8 +2819,8 @@ Let s : (set T -> \bar R)^nat :=
 Let s0 n : s n set0 = 0.
 Proof. by rewrite /s; case: cid2. Qed.
 
-Let s_ge0 n x : 0 <= s n x.
-Proof. by rewrite /s; case: cid2. Qed.
+Let s_ge0 n x : measurable x -> 0 <= s n x.
+Proof. by move=> mx; rewrite /s; case: cid2 => ? ? ?; exact: measure_ge0. Qed.
 
 Let s_semi_sigma_additive n : semi_sigma_additive (s n).
 Proof.
@@ -2896,7 +2967,7 @@ Proof.
 move=> mA mB mAoo.
 rewrite (measureDI mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
 - by rewrite (le_lt_trans _ mAoo)// le_measure // ?inE//; exact: measurableI.
-- by rewrite (lt_le_trans _ (measure_ge0 _ _)).
+- by rewrite (lt_le_trans _ (measure_ge0 _ _ _))//; exact: measurableI.
 Qed.
 
 End measureD.
@@ -3324,8 +3395,8 @@ Let U := caratheodory_type mu.
 Lemma caratheodory_measure0 : mu (set0 : set U) = 0.
 Proof. exact: outer_measure0. Qed.
 
-Lemma caratheodory_measure_ge0 (A : set U) : 0 <= mu A.
-Proof. exact: outer_measure_ge0. Qed.
+Lemma caratheodory_measure_ge0 (A : set U) : measurable A -> 0 <= mu A.
+Proof. by move=> _; exact: outer_measure_ge0. Qed.
 
 Lemma caratheodory_measure_sigma_additive :
   semi_sigma_additive (mu : set U -> _).
@@ -3423,7 +3494,7 @@ Section measure_extension.
 Context (R : realType) d (T : semiRingOfSetsType d).
 Variable mu : set T -> \bar R.
 Hypothesis measure0 : mu set0 = 0.
-Hypothesis measure_ge0 : forall X, mu X >= 0.
+Hypothesis measure_ge0 : forall X, measurable X -> mu X >= 0.
 Hint Resolve measure_ge0 measure0 : core.
 
 Definition mu_ext (X : set T) : \bar R :=
@@ -3439,8 +3510,8 @@ Qed.
 Lemma mu_ext_ge0 A : 0 <= mu^* A.
 Proof.
 apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite lime_ge //=.
-  exact: is_cvg_nneseries.
-by near=> n; rewrite sume_ge0.
+  by apply: is_cvg_nneseries => n _; rewrite measure_ge0.
+by near=> n; rewrite sume_ge0// => t _; rewrite measure_ge0.
 Unshelve. all: by end_near. Qed.
 
 Lemma mu_ext0 : mu^* set0 = 0.
@@ -3475,8 +3546,12 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     by rewrite (lt_le_trans xS) // lee_add2l //= lee_fin ler_pmul.
   - by have := Aoo n; rewrite /mu^* Soo.
   - suff : lbound S 0 by move/lb_ereal_inf; rewrite Soo.
-    by move=> /= _ [B [mB AnB] <-]; exact: nneseries_ge0.
-have muG_ge0 x : 0 <= (mu \o uncurry G) x by exact/measure_ge0.
+    move=> /= _ [B [mB AnB] <-]; apply: nneseries_ge0.
+    by move=> m _; rewrite measure_ge0.
+have muG_ge0 x : 0 <= (mu \o uncurry G) x.
+  rewrite measure_ge0//.
+  apply/measurable_uncurry.
+  by have [[]] := PG x.1.
 apply: (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
   rewrite /mu_ext; apply: ereal_inf_lb => /=.
   have /card_esym/ppcard_eqP[f] := card_nat2.
@@ -3500,10 +3575,15 @@ rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
     - by move=> /= [n m]; apply/measure_ge0; exact: (cover_measurable (PG n).1).
   rewrite (_ : setT = id @` xpredT); last first.
     by rewrite image_id funeqE => x; rewrite trueE.
-  rewrite esum_pred_image //; last by move=> n _; exact: esum_ge0.
+  rewrite esum_pred_image //; last first.
+    move=> n _; apply: esum_ge0 => -[a b] Jnab.
+    rewrite measure_ge0//.
+    apply/measurable_uncurry => /=.
+    by have [[]] := PG a.
   apply: eq_eseries => /= j _.
-  rewrite -(esum_pred_image (mu \o uncurry G) (pair j) predT)//=; last first.
-    by move=> ? ? _ _; exact: (@can_inj _ _ _ snd).
+  rewrite -(esum_pred_image (mu \o uncurry G) (pair j) predT)//=; last 2 first.
+    - by move=> n _; rewrite measure_ge0//; have [[]] := PG j.
+    - by move=> ? ? _ _; exact: (@can_inj _ _ _ snd).
   by congr esum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
 apply: lee_lim.
 - apply: is_cvg_nneseries => n _.
@@ -3688,7 +3768,12 @@ have XUA : X = \bigcup_n (X `&` A n).
   by have [i _ Ait] := XA _ Xt; exists i; split.
 apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))).
   by rewrite muS//= -?XUA => // i; apply: measurableI.
-apply: lee_lim; [exact: is_cvg_nneseries|exact: is_cvg_nneseries|].
+apply: lee_lim.
+- apply: is_cvg_nneseries => n _.
+  rewrite measure_ge0//.
+  exact: measurableI.
+- apply: is_cvg_nneseries => n _.
+  by rewrite measure_ge0.
 apply: nearW => n; apply: lee_sum => i  _; apply: le_measure => // /[!inE]//=.
 exact: measurableI.
 Qed.
@@ -3713,12 +3798,37 @@ pose g i := (f^-1%FUN i).2; exists g; first split.
   exact: decomp_measurable.
 - move=> i /XS [k _]; rewrite -[F k]cover_decomp => -[D /= DFk Di].
   by exists (f (k, D)) => //; rewrite /g invK// inE.
-rewrite !nneseries_esum//= /measure ?set_true.
+rewrite !nneseries_esum//= /measure ?set_true; last 2 first.
+  - move=> n _.
+    rewrite fsbig_mkcond.
+    apply: sume_ge0 => t _.
+    rewrite /patch.
+    case: ifPn => // tFn.
+    rewrite measure_ge0//.
+    exact: decomp_measurable tFn.
+  - move=> n _.
+    rewrite measure_ge0//.
+    rewrite /g.
+    have f1n : ((f^-1)%function n).2 \in decomp (F ((f^-1)%function n).1).
+    have : (f^-1)%function n \in K.
+      rewrite inE.
+      have [+ _ _] : set_bij [set: nat] K (f^-1)%function by [].
+      exact.
+      rewrite inE => -[/= _].
+      by rewrite inE.
+    by apply: decomp_measurable f1n.
 transitivity (\esum_(i in setT) \sum_(X0 \in decomp (F i)) mu X0); last first.
   by apply: eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
-rewrite -(eq_esum (fun _ _ => esum_fset _ _))//; last first.
-  by move=> ? _; exact: decomp_finite_set.
-rewrite esum_esum//= (reindex_esum K setT f) => //=.
+rewrite -(eq_esum (fun _ _ => esum_fset _ _))//; last 2 first.
+  - by move=> ? _; exact: decomp_finite_set.
+  - move=> s _ x xFs.
+    rewrite measure_ge0//.
+    exact: decomp_measurable xFs.
+rewrite esum_esum//=; last first.
+  move=> i j _ /mem_set jFi.
+  rewrite measure_ge0//.
+  exact: decomp_measurable jFi.
+rewrite (reindex_esum K setT f) => //=.
 by apply: eq_esum => i Ki; rewrite /g funK ?inE.
 Qed.
 
@@ -3773,7 +3883,9 @@ have ? : cvg BNA.
   by rewrite -setDE; apply: measure_ge0 => //; exact: measurableD.
 have ? : cvg BA.
   by apply/is_cvg_nneseries => n _; apply: measure_ge0 =>//; apply: measurableI.
-have ? : cvg (eseries (Rmu \o B)) by exact/is_cvg_nneseries.
+have ? : cvg (eseries (Rmu \o B)).
+  apply/is_cvg_nneseries => n _.
+  by rewrite measure_ge0.
 have [def|] := boolP (adde_def (lim BA) (lim BNA)); last first.
   rewrite /adde_def negb_and !negbK=> /orP[/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
   - suff -> : lim (eseries (Rmu \o B)) = +oo by rewrite leey.
@@ -3805,10 +3917,13 @@ Let I := [the measurableType _ of salgebraType (@measurable _ T)].
 Definition Hahn_ext : set I -> \bar R := mu^*.
 
 Local Lemma Hahn_ext0 : Hahn_ext set0 = 0.
-Proof. exact: mu_ext0. Qed.
+Proof. by apply: mu_ext0 => // X mX; rewrite measure_ge0. Qed.
 
-Local Lemma Hahn_ext_ge0 (A : set I) : 0 <= Hahn_ext A.
-Proof. exact: mu_ext_ge0. Qed.
+Local Lemma Hahn_ext_ge0 (A : set I) : measurable A -> 0 <= Hahn_ext A.
+Proof.
+move=> mA; apply: mu_ext_ge0.
+by move=> X mX; rewrite measure_ge0.
+Qed.
 
 Local Lemma Hahn_ext_sigma_additive : semi_sigma_additive Hahn_ext.
 Proof.

@@ -232,7 +232,7 @@ Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
 Notation "R .-ocitv.-measurable" := (measurable : set (set (ocitv_type))) :
   classical_set_scope.
 
-Lemma hlength_ge0' (I : set ocitv_type) : (0 <= hlength I)%E.
+Lemma hlength_ge0' (I : set ocitv_type) : measurable I -> (0 <= hlength I)%E.
 Proof. by rewrite -hlength0 le_hlength. Qed.
 
 (* Unused *)
@@ -341,10 +341,20 @@ Lemma hlength_sigma_sub_additive :
 Proof.
 move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE.
 move=> [a _ <-]; rewrite hlength_itv ?lte_fin/= -EFinB => lebig.
-case: ifPn => a12; last by rewrite nneseries_esum// esum_ge0.
+case: ifPn => a12; last first.
+  rewrite nneseries_esum//; last first.
+    move=> n _.
+    rewrite AE.
+    exact: hlength_ge0'.
+  rewrite esum_ge0// => x _.
+  rewrite AE.
+  exact: hlength_ge0'.
 apply: lee_adde => e.
 rewrite [e%:num]splitr [in leRHS]EFinD addeA -lee_subl_addr//.
-apply: le_trans (epsilon_trick _ _ _) => //=.
+apply: le_trans (epsilon_trick _ _ _) => //=; last first.
+  move=> n.
+  rewrite AE.
+  exact: hlength_ge0'.
 have eVn_gt0 n : 0 < e%:num / 2 / (2 ^ n.+1)%:R.
   by rewrite divr_gt0// ltr0n// expn_gt0.
 have eVn_ge0 n := ltW (eVn_gt0 n).
@@ -369,7 +379,9 @@ have /[apply] := @content_sub_fsum _ _ _
 move=> /(_ _ _ _)/Box[]//=; apply: le_le_trans.
   rewrite hlength_itv ?lte_fin -?EFinD/= -addrA -opprD.
   by case: ltP => //; rewrite lee_fin subr_le0.
-rewrite nneseries_esum//; last by move=> *; rewrite adde_ge0//= ?lee_fin.
+rewrite nneseries_esum//; last first.
+  move=> *; rewrite adde_ge0//= ?lee_fin.
+  by rewrite AE hlength_ge0'.
 rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite// ?set_fsetK//=.
 rewrite fsbig_finite//= set_fsetK//.
 rewrite lee_sum // => i _; rewrite ?AE// !hlength_itv/= ?lte_fin -?EFinD/=.
@@ -394,7 +406,7 @@ Definition lebesgue_measure := Hahn_ext
 Let lebesgue_measure0 : lebesgue_measure set0 = 0%E.
 Proof. by []. Qed.
 
-Let lebesgue_measure_ge0 : forall x, (0 <= lebesgue_measure x)%E.
+Let lebesgue_measure_ge0 : forall x, measurable x -> (0 <= lebesgue_measure x)%E.
 Proof. exact: measure.Hahn_ext_ge0. Qed.
 
 Let lebesgue_measure_semi_sigma_additive : semi_sigma_additive lebesgue_measure.
@@ -755,8 +767,11 @@ case => Y mY [X' [ | <-{X} | <-{X} | <-{X} ]].
   by move=> Yr; exists r%:E => //; split => [|[]//]; left; exists r.
 Qed.
 
-Lemma elebesgue_measure_ge0 X : (0 <= elebesgue_measure X)%E.
-Proof. exact/measure_ge0. Qed.
+Lemma elebesgue_measure_ge0 X : measurable X -> (0 <= elebesgue_measure X)%E.
+Proof.
+move=> mX; apply/measure_ge0.
+by apply: measurable_fine.
+Qed.
 
 Lemma semi_sigma_additive_elebesgue_measure :
   semi_sigma_additive elebesgue_measure.
