@@ -3866,8 +3866,6 @@ Lemma rV_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
 Proof.
 move=> Aico.
-Admitted.
-(* TODO_HB when product_topologicalType is ported in topology.v
 have : @compact (product_topologicalType _) [set f | forall i, A i (f i)].
   by apply: tychonoff.
 move=> Aco F FF FA.
@@ -3919,7 +3917,6 @@ move=> C D FC f_D; have {}f_D :
 have GC : G [set g | C (\row_j g j)] by exists C.
 by have [g []] := clGf _ _ GC f_D; exists (\row_j (g j : T)).
 Qed.
-*)
 
 Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n.+1) :
   bounded_set A -> closed A -> compact A.

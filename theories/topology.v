@@ -2319,15 +2319,25 @@ End Sup_Topology.
 
 (** ** Product topology *)
 
+(* TODO: move to boolp or classical_sets *)
+Definition dep_arrow (T : Type) (T' : T -> Type) := forall x : T, T' x.
+
+HB.instance Definition _ (T : Type) (T' : T -> eqType) :=
+  gen_eqMixin (dep_arrow T').
+
+HB.instance Definition _ (T : Type) (T' : T -> choiceType) :=
+  gen_choiceMixin (dep_arrow T').
+
+HB.instance Definition _ (T : Type) (T' : T -> pointedType) :=
+  isPointed.Build (dep_arrow T') (fun=> point).
+
 Section Product_Topology.
 
 Variable (I : Type) (T : I -> topologicalType).
 
-(* TODO_HB find a way to port that
 Definition product_topologicalType :=
-  sup_topologicalType (fun i => Topological.class
-    (weak_topologicalType (fun f : dep_arrow_pointedType T => f i))).
-*)
+  sup_topology (fun i => Topological.class
+    (weak_topology (fun f : [the pointedType of dep_arrow T] => f i))).
 
 End Product_Topology.
 
@@ -2867,7 +2877,6 @@ rewrite preimage_setC image_preimage // => GnA.
 by have /filter_ex [? []] : G (A `&` (~` A)) by apply: filterI.
 Qed.
 
-(* TODO_HB
 Lemma tychonoff (I : eqType) (T : I -> topologicalType)
   (A : forall i, set (T i)) :
   (forall i, compact (A i)) ->
@@ -2902,7 +2911,6 @@ exists (fun i => get (A i `&` [set p | pF i --> p])).
 split=> [i|]; first by have /getPex [] := cvpFA i.
 by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
-*)
 
 End Tychonoff.
 
@@ -2965,7 +2973,6 @@ Context {I : eqType} {K : I -> topologicalType}.
 (* This a helper function to prove products preserve hausdorff. In particular *)
 (* we use its continuity turn clustering in `product_topologicalType K` to    *)
 (* clustering in K x for each X.                                              *)
-(* TODO_HB
 Definition prod_topo_apply x (f : product_topologicalType K) := f x.
 
 (* Note we have to give the signature explicitly because there's no canonical *)
@@ -3004,6 +3011,21 @@ apply: (@filterS _ _ _ ((dfwith f i) @^-1` A)).
 apply: dfwith_continuous => /=; move: nAf; congr (nbhs _ A).
 by apply: functional_extensionality_dep => ?; case: dfwithP.
 Qed.
+(* ======= *)
+(* move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id. *)
+(* move=> h; apply: (cvg_trans _ (h _)) => {h}; last first. *)
+(*   pose xval x (y : K x) i : K i := *)
+(*     match eqVneq x i return K i with *)
+(*     | EqNotNeq r => @eq_rect X x K y i r *)
+(*     | NeqNotEq _ => point *)
+(*     end. *)
+(*   rewrite eqEsubset; split => y //= _; exists (xval x y) => //; rewrite /xval. *)
+(*   by case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK. *)
+(* move=> Q /= [W nbdW <-]; apply: filterS nbdW. *)
+(* admit. (* Goal: Filter [filter of f] *) (*TODO_HB*) *)
+(* exact: preimage_image. *)
+(* Admitted. *)
+(* >>>>>>> c6c1d648 (product topology goes through) *)
 
 Lemma hausdorff_product :
   (forall x, hausdorff_space (K x)) -> hausdorff_space PK.
@@ -3016,7 +3038,6 @@ exists (proj x @ G); [exact: fmap_proper_filter|split].
 move/(cvg_app (proj x)): psubG => /cvg_trans; apply.
 exact: proj_continuous.
 Qed.
-*)
 
 End product_spaces.
 
@@ -4065,12 +4086,11 @@ HB.instance Definition _ (U : uniformType) := isSource.Build Prop _ U
 Definition map_pair {S U} (f : S -> U) (x : (S * S)) : (U * U) :=
   (f x.1, f x.2).
 
-(* TODO_HB: port once weak topology is ported
 Section weak_uniform.
 
 Variable (pS : pointedType) (U : uniformType) (f : pS -> U).
 
-Let S := weak_topologicalType f.
+Let S := weak_topology f.
 
 Definition weak_ent : set (set (S * S)) :=
   filter_from (@entourage U) (fun V => (map_pair f)@^-1` V).
@@ -4113,15 +4133,12 @@ rewrite (@nbhsE U) => [[O [[openU Ofx Osub]]]].
 by move=> w ? ; apply: V'subW; exact: Osub.
 Qed.
 
-Definition weak_uniform_mixin :=
-  @UniformMixin S nbhs weak_ent
-    weak_ent_filter weak_ent_refl weak_ent_inv weak_ent_split weak_ent_nbhs.
-
-Definition weak_uniformType :=
-  UniformType S weak_uniform_mixin.
+HB.instance Definition _ := @Filtered_isUniform.Build (weak_topology f) (*S nbhs*)
+  weak_ent weak_ent_filter weak_ent_refl weak_ent_inv weak_ent_split weak_ent_nbhs.
 
 End weak_uniform.
 
+(* TODO_HB
 Section sup_uniform.
 
 Variable (T : pointedType) (Ii : Type) (Tc : Ii -> Uniform.class_of T).
