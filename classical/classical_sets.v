@@ -2126,8 +2126,8 @@ HB.mixin Record isPointed T := { point : T }.
 HB.structure Definition Pointed := {T of isPointed T & Choice T}.
 
 (* NB: was arrow_pointedType *)
-HB.instance Definition _ (T : Type) (T' : pointedType) :=
-  isPointed.Build (T -> T') (fun=> point).
+HB.instance Definition _ (T : Type) (T' : T -> pointedType) :=
+  isPointed.Build (forall t : T, T' t) (fun=> point).
 
 HB.instance Definition _ := isPointed.Build bool false.
 HB.instance Definition _ := isPointed.Build Prop False.

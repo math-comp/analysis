@@ -2319,25 +2319,15 @@ End Sup_Topology.
 
 (** ** Product topology *)
 
-(* TODO: move to boolp or classical_sets *)
-Definition dep_arrow (T : Type) (T' : T -> Type) := forall x : T, T' x.
-
-HB.instance Definition _ (T : Type) (T' : T -> eqType) :=
-  gen_eqMixin (dep_arrow T').
-
-HB.instance Definition _ (T : Type) (T' : T -> choiceType) :=
-  gen_choiceMixin (dep_arrow T').
-
-HB.instance Definition _ (T : Type) (T' : T -> pointedType) :=
-  isPointed.Build (dep_arrow T') (fun=> point).
-
 Section Product_Topology.
 
 Variable (I : Type) (T : I -> topologicalType).
 
 Definition product_topologicalType :=
   sup_topology (fun i => Topological.class
-    (weak_topology (fun f : [the pointedType of dep_arrow T] => f i))).
+    (weak_topology (fun f : [the pointedType of (forall i : I, T i)] => f i))).
+
+HB.instance Definition _ := Topological.on product_topologicalType.
 
 End Product_Topology.
 
@@ -3026,6 +3016,19 @@ Qed.
 (* exact: preimage_image. *)
 (* Admitted. *)
 (* >>>>>>> c6c1d648 (product topology goes through) *)
+(* ======= *)
+(* move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id. *)
+(* move=> h; apply: (cvg_trans _ (h _)) => {h}; last first. *)
+(*   pose xval x (y : K x) i : K i := *)
+(*     match eqVneq x i return K i with *)
+(*     | EqNotNeq r => @eq_rect X x K y i r *)
+(*     | NeqNotEq _ => point *)
+(*     end. *)
+(*   rewrite eqEsubset; split => y //= _; exists (xval x y) => //; rewrite /xval. *)
+(*   by case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK. *)
+(* by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image. *)
+(* Qed. *)
+(* >>>>>>> 74208281 (fix inference of product topology structure) *)
 
 Lemma hausdorff_product :
   (forall x, hausdorff_space (K x)) -> hausdorff_space PK.

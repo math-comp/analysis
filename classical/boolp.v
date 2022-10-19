@@ -325,11 +325,11 @@ Proof. by move=> x y; apply: (iffP (asboolP _)). Qed.
 Definition gen_eqMixin (T : Type) : hasDecEq T :=
   hasDecEq.Build T (@gen_eqP T).
 
-HB.instance Definition _ (T : Type) (T' : eqType) :=
-  gen_eqMixin (T -> T').
+HB.instance Definition _ (T : Type) (T' : T -> eqType) :=
+  gen_eqMixin (forall t : T, T' t).
 
-HB.instance Definition _ (T : Type) (T' : choiceType) :=
-  gen_choiceMixin (T -> T').
+HB.instance Definition _ (T : Type) (T' : T -> choiceType) :=
+  gen_choiceMixin (forall t : T, T' t).
 
 HB.instance Definition _ := gen_eqMixin Prop.
 HB.instance Definition _ := gen_choiceMixin Prop.
@@ -366,7 +366,7 @@ Proof. by apply: canon => T; exists  [eqType of {classic T}]. Qed.
 Lemma Pchoice : canonical Type choiceType.
 Proof. by apply: canon => T; exists [choiceType of {classic T}]. Qed.
 Lemma eqPchoice : canonical eqType choiceType.
-Proof. 
+Proof.
 apply: canon => T; exists [choiceType of {eclassic T}].
 by case: T => //= T [?]//.
 Qed.

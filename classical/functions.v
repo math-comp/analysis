@@ -49,7 +49,7 @@ Add Search Blacklist "_mixin_".
 (*             [fun f in A] == the function f from the set A to the set f @` A*)
 (*            'split_ d f == partial injection from aT : Type to rt : Type;   *)
 (*                           f : aT -> rT, d : rT -> aT                       *)
-(*                  split := 'split_point                                     *)
+(*                  split := 'split_(fun=> point)                             *)
 (*             @to_setT T == function that associates to x : T a dependent    *)
 (*                           pair of x with a proof that x belongs to setT    *)
 (*                           (i.e., the type set_type [set: T])               *)
@@ -77,7 +77,7 @@ Add Search Blacklist "_mixin_".
 (*                           A and B are intended to be the ranges of f and g *)
 (*           'pinv_ d A f == inverse of the function [fun f in A] over        *)
 (*                           f @` A, function d outside of f @` A             *)
-(*                  pinv := notation for 'pinv_point                          *)
+(*                  pinv := notation for 'pinv_(fun=> point)                  *)
 (*                                                                            *)
 (* * Function restriction:                                                    *)
 (*            patch d A f == "partial function" that behaves as the function  *)
@@ -961,7 +961,7 @@ HB.instance Definition _ (f : {bij A >-> B}) := Surject.on (split f).
 
 End split.
 Notation "''split_' a" := (split_ a) : form_scope.
-Notation split := 'split_point.
+Notation split := 'split_(fun=> point).
 
 (*****************)
 (* More Builders *)
@@ -2582,16 +2582,16 @@ End funpPinj.
 
 End pointed_inverse.
 Notation "''pinv_' dflt" := (pinv_ dflt) : form_scope.
-Notation pinv := 'pinv_point.
+Notation pinv := 'pinv_(fun=> point).
 Notation "''pPbij_' dflt" := (pPbij_ dflt) : form_scope.
-Notation pPbij := 'pPbij_point.
+Notation pPbij := 'pPbij_(fun=> point).
 Notation selfPbij := 'pPbij_id.
 Notation "''pPinj_' dflt" := (pPinj_ dflt) : form_scope.
-Notation pPinj := 'pPinj_point.
+Notation pPinj := 'pPinj_(fun=> point).
 Notation "''injpPfun_' dflt" := (injpPfun_ dflt) : form_scope.
-Notation injpPfun := 'injpPfun_point.
+Notation injpPfun := 'injpPfun_(fun=> point).
 Notation "''funpPinj_' dflt" := (funpPinj_ dflt) : form_scope.
-Notation funpPinj := 'funpPinj_point.
+Notation funpPinj := 'funpPinj_(fun=> point).
 
 Section function_space.
 Local Open Scope ring_scope.
