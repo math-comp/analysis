@@ -2,9 +2,8 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp.classical Require Import boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality.
-Require Import ereal reals mathcomp_extra.
-Require Import signed topology prodnormedzmodule.
+From mathcomp.classical Require Import functions cardinality mathcomp_extra.
+Require Import ereal reals signed topology prodnormedzmodule.
 Require Import normedtype derive set_interval.
 From HB Require Import structures.
 

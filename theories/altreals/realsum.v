@@ -7,8 +7,8 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.classical Require Import boolp.
 Require Import xfinmap ereal reals discrete realseq.
-From mathcomp.classical Require Import classical_sets functions.
-Require Import mathcomp_extra topology.
+From mathcomp.classical Require Import classical_sets functions mathcomp_extra.
+Require Import topology.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

@@ -2,9 +2,9 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp.classical Require Import boolp classical_sets functions.
-Require Import mathcomp_extra reals ereal nsatz_realtype.
-Require Import signed topology normedtype landau sequences derive.
-Require Import realfun exp.
+From mathcomp.classical Require Import mathcomp_extra.
+Require Import reals ereal nsatz_realtype signed topology normedtype landau.
+Require Import sequences derive realfun exp.
 
 (******************************************************************************)
 (*                     Theory of trigonometric functions                      *)

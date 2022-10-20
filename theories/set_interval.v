@@ -2,11 +2,9 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat.
 From mathcomp.classical Require Import boolp classical_sets functions.
-From mathcomp.classical Require Export set_interval.
-Require Import reals ereal signed topology.
-Require Import mathcomp_extra normedtype.
+From mathcomp.classical Require Export set_interval mathcomp_extra.
 From HB Require Import structures.
-Require Import sequences.
+Require Import reals ereal signed topology normedtype sequences.
 
 (******************************************************************************)
 (* This files contains lemmas about sets and intervals on reals.              *)

@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp.classical Require Import boolp classical_sets functions.
-Require Import reals mathcomp_extra signed.
-Require Import topology prodnormedzmodule normedtype landau forms.
+From mathcomp.classical Require Import mathcomp_extra.
+Require Import reals signed topology prodnormedzmodule normedtype landau forms.
 
 (******************************************************************************)
 (* This file provides a theory of differentiation. It includes the standard   *)
