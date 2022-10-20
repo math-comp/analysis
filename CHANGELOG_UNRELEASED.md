@@ -178,6 +178,9 @@
 - in `constructive_ereal.v`:
   + canonicals `maxe_monoid`, `maxe_comoid`, `mine_monoid`, `mine_comoid`
   + lemma `lee_bigmax_ord`, `bigmine_maxe`, `lee_bigmin_ord`
+- in `mathcomp_extra.v`:
+  + generalize lemmas `bigmax_le`, `bigmax_lt`, `lt_bigmin` and
+    `le_bigmin` from `finType` to `Type`
 
 ### Changed
 - in `topology.v`

@@ -553,22 +553,22 @@ Local Notation max := Order.max.
 Local Notation min := Order.min.
 Local Open Scope order_scope.
 Variables (d : _) (T : porderType d).
-Variables (I : finType) (f : I -> T) (x0 x : T) (P : pred I).
+Variables (I : Type) (r : seq I) (f : I -> T) (x0 x : T) (P : pred I).
 
 Lemma bigmax_le :
-  x0 <= x -> (forall i, P i -> f i <= x) -> \big[max/x0]_(i | P i) f i <= x.
+  x0 <= x -> (forall i, P i -> f i <= x) -> \big[max/x0]_(i <- r | P i) f i <= x.
 Proof. by move=> ? ?; elim/big_ind: _ => // *; rewrite maxEle; case: ifPn. Qed.
 
 Lemma bigmax_lt :
-  x0 < x -> (forall i, P i -> f i < x) -> \big[max/x0]_(i | P i) f i < x.
+  x0 < x -> (forall i, P i -> f i < x) -> \big[max/x0]_(i <- r | P i) f i < x.
 Proof. by move=> ? ?; elim/big_ind: _ => // *; rewrite maxElt; case: ifPn. Qed.
 
 Lemma lt_bigmin :
-  x < x0 -> (forall i, P i -> x < f i) -> x < \big[min/x0]_(i | P i) f i.
+  x < x0 -> (forall i, P i -> x < f i) -> x < \big[min/x0]_(i <- r | P i) f i.
 Proof. by move=> ? ?; elim/big_ind: _ => // *; rewrite minElt; case: ifPn. Qed.
 
 Lemma le_bigmin :
-  x <= x0 -> (forall i, P i -> x <= f i) -> x <= \big[min/x0]_(i | P i) f i.
+  x <= x0 -> (forall i, P i -> x <= f i) -> x <= \big[min/x0]_(i <- r | P i) f i.
 Proof. by move=> ? ?; elim/big_ind: _ => // *; rewrite minEle; case: ifPn. Qed.
 
 End bigmaxmin.
