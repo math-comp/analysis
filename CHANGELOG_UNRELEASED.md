@@ -113,6 +113,10 @@
     `cvgPpinfty_lt_near` and `cvgPninfty_lt_near`
 - in `classical_sets.v`:
   + notations `\bigcup_(i < n) F` and `\bigcap_(i < n) F`
+- in `lebesgue_integral.v`:
+  + lemma `integral_cstNy`
+  + lemma `ae_eq0`
+  + lemma `integral_cst`
 
 - in `fsbig.v`:
   + lemma `fsbig_setU_set1`
@@ -243,6 +247,8 @@
   + definition `fimfunE` now uses fsbig
 - in `sequence.v`:
   + `nneseries_pinfty` generalized to `eseries_pinfty`
+- in `lebesgue_integral.v`:
+  + implicits of `ae_eq_integral`
 
 - moved from `mathcomp_extra.v` to `classical_sets.v`: `pred_oappE`, and
     `pred_oapp_set`.
@@ -304,6 +310,10 @@
   + `seqDUE` -> `seqDU_seqD`
 - file `theories/mathcomp_extra.v` moved to `classical/mathcomp_extra.v`
 - `theories/set_interval.v` -> `theories/real_interval.v`
+- in `lebesgue_integral.v`:
+  + `integral_cst_pinfty` -> `integral_csty`
+  + `sintegral_cst` -> `sintegral_EFin_cst`
+  + `integral_cst` -> `integral_EFin_cst`
 
 - in file `constructive_ereal.v`,
   + `esum_ninftyP` -> `esum_eqNyP`

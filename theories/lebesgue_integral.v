@@ -2377,19 +2377,19 @@ Context d (T : measurableType d) (R : realType)
         (mu : {measure set T -> \bar R}).
 Variables (f : T -> \bar R) (D : set T) (mD : measurable D).
 
-Lemma sintegral_cst (x : {nonneg R}) :
+Lemma sintegral_EFin_cst (x : {nonneg R}) :
   sintegral mu (cst x%:num \_ D) = x%:num%:E * mu D.
 Proof.
-rewrite sintegralE (fsbig_widen _ [set 0%R; x%:num])/=; last 2 first.
+rewrite sintegralE (fsbig_widen _ [set 0%R; x%:num])/=.
+- have [->|x0] := eqVneq x%:num 0%R; first by rewrite setUid fsbig_set1 !mul0e.
+  rewrite fsbigU0//=; last by move=> y [->]/esym; apply/eqP.
+  rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
+  by rewrite ifN ?set0U ?setIidl//= notin_set => /esym; exact/eqP.
 - by move=> y [t _ <-] /=; rewrite /patch; case: ifPn; [right|left].
 - by move=> y [_ /=/preimage10->]; rewrite measure0 mule0.
-have [->|x0] := eqVneq x%:num 0%R; first by rewrite setUid fsbig_set1 !mul0e.
-rewrite fsbigU0//=; last by move=> y [->]/esym; apply/eqP.
-rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
-by rewrite ifN ?set0U ?setIidl//= notin_set; apply/eqP; rewrite eq_sym.
 Qed.
 
-Lemma integral_cst (r : R) : \int[mu]_(x in D) (EFin \o cst r) x = r%:E * mu D.
+Lemma integral_EFin_cst r : \int[mu]_(x in D) (EFin \o cst r) x = r%:E * mu D.
 Proof.
 wlog r0 : r / (0 <= r)%R.
   move=> h; have [|r0] := leP 0%R r; first exact: h.
@@ -2397,10 +2397,10 @@ wlog r0 : r / (0 <= r)%R.
   rewrite -integral_ge0N//; last by move=> t ?; rewrite /= lee_fin oppr_ge0 ltW.
   by under [RHS]eq_integral do rewrite /= opprK.
 rewrite (eq_integral (EFin \o cst_nnsfun T (NngNum r0)))//.
-by rewrite integral_nnsfun// sintegral_cst.
+by rewrite integral_nnsfun// sintegral_EFin_cst.
 Qed.
 
-Lemma integral_cst_pinfty : mu D != 0 -> \int[mu]_(x in D) (cst +oo) x = +oo.
+Lemma integral_csty : mu D != 0 -> \int[mu]_(x in D) (cst +oo) x = +oo.
 Proof.
 move=> muD0; pose g : (T -> \bar R)^nat := fun n => cst n%:R%:E.
 have <- : (fun t => lim (g^~ t)) = cst +oo.
@@ -2410,7 +2410,7 @@ have <- : (fun t => lim (g^~ t)) = cst +oo.
   by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
 rewrite monotone_convergence //.
 - rewrite /g (_ : (fun _ => _) = (fun n => n%:R%:E * mu D)); last first.
-    by rewrite funeqE => n; rewrite -integral_cst.
+    by rewrite funeqE => n; rewrite -integral_EFin_cst.
   apply/cvg_lim => //; apply/cvgeyPge => M.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
     exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
@@ -2425,6 +2425,11 @@ rewrite monotone_convergence //.
 - by move=> n; exact: measurable_fun_cst.
 - by move=> n x Dx; rewrite lee_fin.
 - by move=> t Dt n m nm; rewrite /g lee_fin ler_nat.
+Qed.
+
+Lemma integral_cstNy : mu D != 0 -> \int[mu]_(x in D) (cst -oo) x = -oo.
+Proof.
+by move=> ?; rewrite (eq_integral (\- cst +oo)) ?integral_ge0N/= ?integral_csty.
 Qed.
 
 End integral_cst.
@@ -2795,7 +2800,7 @@ Proof.
 move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
   by apply: emeasurable_fun_c_infty => //; exact: measurable_fun_comp.
 apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) `|g x|)).
-  rewrite -integral_cst//; apply: ge0_le_integral => //.
+  rewrite -integral_EFin_cst//; apply: ge0_le_integral => //.
   - by move=> x _ /=; rewrite ltW.
   - exact/EFin_measurable_fun/measurable_fun_cst.
   - by apply: measurable_fun_comp => //; exact: measurable_funS mg.
@@ -3124,7 +3129,7 @@ have [ET|ET] := eqVneq E setT.
   have foo t : `|f t| = +oo by have [] : E t by rewrite ET.
   move: fint.2.
   suff: \int[mu]_(x in D) `|f x| = +oo by move=> ->; rewrite ltxx.
-  by rewrite -(integral_cst_pinfty mD muD0)//; exact: eq_integral.
+  by rewrite -(integral_csty mD muD0)//; exact: eq_integral.
 suff: mu E = 0.
   move=> muE0; exists E; split => // t /= /not_implyP[Dt ftfin]; split => //.
   apply/eqP; rewrite eqe_absl leey andbT.
@@ -3339,6 +3344,9 @@ Variables (mu : {measure set T -> \bar R}) (D : set T).
 Implicit Types f g h i : T -> \bar R.
 
 Definition ae_eq f g := {ae mu, forall x, D x -> f x = g x}.
+
+Lemma ae_eq0 f g : measurable D -> mu D = 0 -> ae_eq f g.
+Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
 
 Lemma ae_eq_comp (j : \bar R -> \bar R) f g :
   ae_eq f g -> ae_eq (j \o f) (j \o g).
@@ -3684,7 +3692,7 @@ rewrite [RHS](negligible_integral mN)//; last 2 first.
   by rewrite !mule0.
 Qed.
 
-Lemma ae_eq_integral (D : set T) (f g : T -> \bar R) :
+Lemma ae_eq_integral (D : set T) (g f : T -> \bar R) :
   measurable D -> measurable_fun D f -> measurable_fun D g ->
   ae_eq D f g -> integral mu D f = integral mu D g.
 Proof.
@@ -3697,6 +3705,21 @@ by apply: ge0_ae_eq_integral => //; [exact: emeasurable_fun_funeneg|
 Qed.
 
 End ae_eq_integral.
+Arguments ae_eq_integral {d T R mu D} g.
+
+Local Open Scope ereal_scope.
+Lemma integral_cst d (T : measurableType d) (R : realType)
+    (mu : {measure set T -> \bar R}) (D : set T) : d.-measurable D ->
+  forall r, \int[mu]_(x in D) (cst r) x = r * mu D.
+Proof.
+move=> mD; have [D0 r|D0 [r| |]] := eqVneq (mu D) 0.
+  by rewrite (ae_eq_integral (cst 0))// ?integral0 ?D0 ?mule0//;
+    [exact: measurable_fun_cst|exact: measurable_fun_cst|exact: ae_eq0].
+- by rewrite integral_EFin_cst.
+- by rewrite integral_csty// gt0_mulye// lt_neqAle eq_sym D0/=.
+- by rewrite integral_cstNy// gt0_mulNye// lt_neqAle eq_sym D0/=.
+Qed.
+Local Close Scope ereal_scope.
 
 Section ae_measurable_fun.
 Context d (T : measurableType d) (R : realType)
