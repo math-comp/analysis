@@ -2,9 +2,8 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp.classical Require Import boolp classical_sets.
-From mathcomp.classical Require Import functions set_interval.
-Require Import reals ereal mathcomp_extra signed.
-Require Import topology normedtype landau.
+From mathcomp.classical Require Import functions set_interval mathcomp_extra.
+Require Import reals ereal signed topology normedtype landau.
 
 (******************************************************************************)
 (*                Definitions and lemmas about sequences                      *)

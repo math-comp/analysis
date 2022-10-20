@@ -7,7 +7,6 @@
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
 
-mathcomp_extra.v
 constructive_ereal.v
 ereal.v
 reals.v

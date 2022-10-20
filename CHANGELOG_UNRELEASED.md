@@ -47,16 +47,8 @@
   + notation `\;` for the composition of relations
 - OPAM package `coq-mathcomp-classical` containing `boolp.v`
 - file `all_classical.v`
-- file `classical/mathcomp_extra.v`
-- in file `classical/mathcomp_extra.v`:
+- in file `mathcomp_extra.v`:
   + lemmas `pred_oappE` and `pred_oapp_set` (from `classical_sets.v`)
-  + definition `olift` (from `mathcomp_extra.v`)
-  + definition `pred_oapp` (from `mathcomp_extra.v`)
-  + definition `mul_fun` and notation `f \* g` (from `mathcomp_extra.v`)
-  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
-    `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`,
-    `eqbRL` (from `mathcomp_extra.v`)
-  + definition `opp_fun` and notation `\- f` (from `mathcomp_extra.v`)
   + lemma `sumr_le0`
 - in file `fsbigop.v`:
   + lemmas `fsumr_ge0`, `fsumr_le0`, `fsumr_gt0`, `fsumr_lt0`, `pfsumr_eq0`,
@@ -83,13 +75,6 @@
     `disjoint_neitv`, `neitv_bnd1`, `neitv_bnd2` (from `set_interval.v`)
   + lemmas `setNK`, `lb_ubN`, `ub_lbN`, `mem_NE`, `nonemptyN`, `opp_set_eq0`,
     `has_lb_ubN`, `has_ubPn`, `has_lbPn` (from `reals.v`)
-- in file `classical/mathcomp_extra.v`:
-  + coercion `pair_of_interval` (from `mathcomp_extra.v`)
-  + definition `miditv` (from `mathcomp_extra.v`)
-  + lemmas `ltBside`, `leBside`, `ltBRight`, `leBRight`, `bnd_simp`,
-    `itv_splitU1`, `itv_split1U`, `mem_miditv`, `miditv_le_left`,
-    `miditv_ge_right`, `predC_itvl`, `predC_itvr`, `predC_itv`
-    (from `mathcomp_extra.v`)
 - in `classical_sets.v`:
   + lemma `bigsetU_sup`
 - in `lebesgue_integral.v`:
@@ -179,6 +164,7 @@
   + `homo_le_bigmax` -> `le_bigmax2`
 - in `sequences.v`:
   + `seqDUE` -> `seqDU_seqD`
+- file `theories/mathcomp_extra.v` moved to `classical/mathcomp_extra.v`
 
 ### Deprecated
 
@@ -188,15 +174,7 @@
 ### Removed
 
 - in file `classical_sets.v`:
-  + lemmas `pred_oappE` and `pred_oapp_set` (moved to `classical/mathcomp_extra.v`)
-- in file `mathcomp_extra.v`:
-  + definition `olift` (moved to `classical/mathcomp_extra.v`)
-  + definition `pred_oapp` (moved to `classical/mathcomp_extra.v`)
-  + definition `mul_fun` and notation `f \* g` (moved to `classical/mathcomp_extra.v`)
-  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `compA`,
-    `can_in_pcan`, `pcan_in_inj`, `ocan_in_comp`, `eqbRL` (moved to
-    `classical/mathcomp_extra.v`)
-  + definition `opp_fun` and notation `\- f` (moved to `classical/mathcomp_extra.v`)
+  + lemmas `pred_oappE` and `pred_oapp_set` (moved to `mathcomp_extra.v`)
 - in file `fsbigop.v`:
   + notation `\sum_(_ \in _) _` (moved to `ereal.v`)
   + lemma `lee_fsum_nneg_subset`, `lee_fsum`, `ge0_mule_fsumr`,
@@ -204,13 +182,6 @@
     `fsume_lt0`, `pfsume_eq0` (moved to `ereal.v`)
   + lemma `pair_fsum` (subsumed by `pair_fsbig`)
   + lemma `exchange_fsum` (subsumed by `exchange_fsbig`)
-- in file `mathcomp_extra.v`:
-  + coercion `pair_of_interval` (moved to `classical/mathcomp_extra.v`)
-  + definition `miditv` (moved to `classical/mathcomp_extra.v`)
-  + lemmas `ltBside`, `leBside`, `ltBRight`, `leBRight`, `bnd_simp`,
-    `itv_splitU1`, `itv_split1U`, `mem_miditv`, `miditv_le_left`,
-    `miditv_ge_right`, `predC_itvl`, `predC_itvr`, `predC_itv`
-    (moved to `classical/mathcomp_extra.v`)
 - in file `reals.v`:
   + lemmas `setNK`, `lb_ubN`, `ub_lbN`, `mem_NE`, `nonemptyN`, `opp_set_eq0`,
     `has_lb_ubN`, `has_ubPn`, `has_lbPn` (moved to `classical/set_interval.v`)
