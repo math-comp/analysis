@@ -254,7 +254,7 @@ Implicit Types F : (set T) ^nat.
 
 Definition seqD F := fun n => if n isn't n'.+1 then F O else F n `\` F n'.
 
-Lemma seqDUE F : nondecreasing_seq F -> seqDU F = seqD F.
+Lemma seqDU_seqD F : nondecreasing_seq F -> seqDU F = seqD F.
 Proof.
 move=> ndF; rewrite funeqE => -[|n] /=; first by rewrite /seqDU big_ord0 setD0.
 rewrite /seqDU big_ord_recr /= setUC; congr (_ `\` _); apply/setUidPl.
@@ -262,7 +262,7 @@ by rewrite -bigcup_mkord => + [k /= kn]; exact/subsetPset/ndF/ltnW.
 Qed.
 
 Lemma trivIset_seqD F : nondecreasing_seq F -> trivIset setT (seqD F).
-Proof. by move=> ndF; rewrite -seqDUE //; exact: trivIset_seqDU. Qed.
+Proof. by move=> ndF; rewrite -seqDU_seqD //; exact: trivIset_seqDU. Qed.
 
 Lemma bigsetU_seqD F n :
   \big[setU/set0]_(i < n) F i = \big[setU/set0]_(i < n) seqD F i.

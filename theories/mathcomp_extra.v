@@ -437,7 +437,7 @@ Lemma eq_bigmax j P F : P j -> (forall i, P i -> x <= F i) ->
   {i0 | i0 \in I & \big[max/x]_(i | P i) F i = F i0}.
 Proof. by move=> Pi0 Hx; rewrite (bigmax_eq_arg Pi0) //; eexists. Qed.
 
-Lemma homo_le_bigmax P F1 F2 : (forall i, P i -> F1 i <= F2 i) ->
+Lemma le_bigmax2 P F1 F2 : (forall i, P i -> F1 i <= F2 i) ->
   \big[max/x]_(i | P i) F1 i <= \big[max/x]_(i | P i) F2 i.
 Proof.
 move=> FG; elim/big_ind2 : _ => // a b e f ba fe.

@@ -130,7 +130,7 @@ Require Import mathcomp_extra reals signed.
 (*                                     must have the form forall x, Q x.      *)
 (*                                     Equivalent to F Q.                     *)
 (*          \forall x \near F, P x <-> F (fun x => P x).                      *)
-(*                     \near x, P x := \forall y \near x, P x.                *)
+(*                     \near x, P x := \forall y \near x, P y.                *)
 (*                  {near F & G, P} == same as {near H, P}, where H is the    *)
 (*                                     product of the filters F and G.        *)
 (*   \forall x \near F & y \near G, P x y := {near F & G, forall x y, P x y}. *)
