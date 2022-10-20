@@ -175,6 +175,10 @@
   + `nneseries_pred0` -> `eseries_pred0`
   + `eq_nneseries` -> `eq_eseries`
   + `nneseries_mkcond` -> `eseries_mkcond`
+- in `mathcomp_extra.v`:
+  + `homo_le_bigmax` -> `le_bigmax2`
+- in `sequences.v`:
+  + `seqDUE` -> `seqDU_seqD`
 
 ### Deprecated
 
