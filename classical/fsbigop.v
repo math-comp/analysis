@@ -484,6 +484,13 @@ Lemma fsbig_setU {T} {I : choiceType} (A : set I) (F : I -> set T) :
   \big[setU/set0]_(i \in A) F i = \bigcup_(i in A) F i.
 Proof. by move=> Afin; rewrite fsbig_finite// bigcup_fset_set. Qed.
 
+Lemma fsbig_setU_set1 {T : choiceType} (A : set T) :
+  finite_set A -> \big[setU/set0]_(x \in A) [set x] = A.
+Proof.
+move=> fA; rewrite fsbig_setU//.
+by apply/seteqP; split=> [t [x Ax ->]//|t At]; exists t.
+Qed.
+
 Lemma pair_fsbig (R : Type) (idx : R) (op : Monoid.com_law idx)
     (I J : choiceType) (P : set I) (Q : set J) (F : I -> J -> R) :
   finite_set P -> finite_set Q ->

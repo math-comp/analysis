@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp.classical Require Import boolp classical_sets functions.
-From mathcomp.classical Require Import cardinality mathcomp_extra.
+From mathcomp.classical Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
 
 (******************************************************************************)
@@ -2528,6 +2528,14 @@ Lemma closedU (T : topologicalType) (D E : set T) :
   closed D -> closed E -> closed (D `|` E).
 Proof. by rewrite -?openC setCU; exact: openI. Qed.
 
+Lemma closed_bigsetU (T : topologicalType) (I : eqType) (s : seq I)
+    (F : I -> set T) : (forall x, x \in s -> closed (F x)) ->
+  closed (\big[setU/set0]_(x <- s) F x).
+Proof.
+move=> scF; rewrite big_seq.
+by elim/big_ind : _ => //; [exact: closed0|exact: closedU].
+Qed.
+
 Section closure_lemmas.
 Variable T : topologicalType.
 Implicit Types E A B U : set T.
@@ -3126,10 +3134,20 @@ rewrite /interior nbhsE /=; exists U; split; last by rewrite subsetC1.
 by split=> //; rewrite inE in yU.
 Qed.
 
-Definition accessible_kolmogorov : accessible_space -> kolmogorov_space.
+Lemma accessible_kolmogorov : accessible_space -> kolmogorov_space.
 Proof.
 move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
 by rewrite nbhsE inE; exists A; do !split=> //; rewrite inE in xA.
+Qed.
+
+Lemma accessible_finite_set_closed :
+  accessible_space <-> forall A : set T, finite_set A -> closed A.
+Proof.
+split => [TT1 A fA|h x y xy].
+  rewrite -(fsbig_setU_set1 fA) fsbig_finite//=.
+  by apply: closed_bigsetU => x xA; exact: accessible_closed_set1.
+exists (~` [set y]); split; first by rewrite openC; exact: h.
+by rewrite !inE/=; split=> [|/eqP]; [exact/eqP|rewrite eqxx].
 Qed.
 
 Definition close x y : Prop := forall M, open_nbhs y M -> closure M x.

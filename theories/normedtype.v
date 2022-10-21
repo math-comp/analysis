@@ -3686,7 +3686,7 @@ Lemma closed_ball_closed (R : realFieldType) (V : normedModType R) (x : V)
 Proof. by move => r0; rewrite closed_ballE //; exact: closed_closed_ball_. Qed.
 
 Lemma closed_ballR_compact (R : realType) (x e : R) : 0 < e ->
-   compact (closed_ball x e).
+  compact (closed_ball x e).
 Proof.
 move=> e_gt0; have : compact `[x - e, x + e] by apply: segment_compact.
 by rewrite closed_ballE//; under eq_set do rewrite in_itv -ler_distlC.
