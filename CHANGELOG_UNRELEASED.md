@@ -62,15 +62,23 @@
     `dfsume_gt0`, `dfsume_lt0`, `pdfsume_eq0`, `le0_mule_dfsumr`, `le0_mule_dfsuml`
 - file `classical/set_interval.v`
 - in file `classical/set_interval.v`:
-  + definitions `neitv`, `set_itv_infty_set0`, `set_itvE`, `disjoint_itv`
-    (from `set_interval.v`)
+  + definitions `neitv`, `set_itv_infty_set0`, `set_itvE`,
+    `disjoint_itv`, `conv`, `factor`, `ndconv` (from `set_interval.v`)
   + lemmas `neitv_lt_bnd`, `set_itvP`, `subset_itvP`, `set_itvoo`, `set_itv_cc`,
     `set_itvco`, `set_itvoc`, `set_itv1`, `set_itvoo0`, `set_itvoc0`, `set_itvco0`,
     `set_itv_infty_infty`, `set_itv_o_infty`, `set_itv_c_infty`, `set_itv_infty_o`,
     `set_itv_infty_c`, `set_itv_pinfty_bnd`, `set_itv_bnd_ninfty`, `setUitv1`,
     `setU1itv`, `set_itvI`, `neitvE`, `neitvP`, `setitv0`, `has_lbound_itv`,
-    `has_ubound_itv`, `hasNlbound`, `hasNubound`, `opp_itv_bnd_infty`, `opp_itvoo`,
+    `has_ubound_itv`, `hasNlbound`, `hasNubound`, `opp_itv_bnd_infty`,
+    `opp_itv_infty_bnd`, `opp_itv_bnd_bnd`, `opp_itvoo`,
     `setCitvl`, `setCitvr`, `set_itv_splitI`, `setCitv`, `set_itv_splitD`,
+    `mem_1B_itvcc`, `conv_id`, `convEl`, `convEr`, `conv10`, `conv0`,
+    `conv1`, `conv_sym`, `conv_flat`, `leW_conv`, `leW_factor`,
+    `factor_flat`, `factorl`, `ndconvE`, `factorr`, `factorK`,
+    `convK`, `conv_inj`, `factor_inj`, `conv_bij`, `factor_bij`,
+    `le_conv`, `le_factor`, `lt_conv`, `lt_factor`, `conv_itv_bij`,
+    `factor_itv_bij`, `mem_conv_itv`, `mem_conv_itvcc`, `range_conv`,
+    `range_factor`, `mem_factor_itv`,
     `set_itv_ge`, `trivIset_set_itv_nth`, `disjoint_itvxx`, `lt_disjoint`,
     `disjoint_neitv`, `neitv_bnd1`, `neitv_bnd2` (from `set_interval.v`)
   + lemmas `setNK`, `lb_ubN`, `ub_lbN`, `mem_NE`, `nonemptyN`, `opp_set_eq0`,
@@ -187,15 +195,23 @@
   + lemmas `setNK`, `lb_ubN`, `ub_lbN`, `mem_NE`, `nonemptyN`, `opp_set_eq0`,
     `has_lb_ubN`, `has_ubPn`, `has_lbPn` (moved to `classical/set_interval.v`)
 - in file `set_interval.v`:
-  + definitions `neitv`, `set_itv_infty_set0`, `set_itvE`, `disjoint_itv`
-    (moved to `classical/set_interval.v`)
+  + definitions `neitv`, `set_itv_infty_set0`, `set_itvE`,
+    `disjoint_itv`, `conv`, `factor`, `ndconv` (moved to `classical/set_interval.v`)
   + lemmas `neitv_lt_bnd`, `set_itvP`, `subset_itvP`, `set_itvoo`, `set_itv_cc`,
     `set_itvco`, `set_itvoc`, `set_itv1`, `set_itvoo0`, `set_itvoc0`, `set_itvco0`,
     `set_itv_infty_infty`, `set_itv_o_infty`, `set_itv_c_infty`, `set_itv_infty_o`,
     `set_itv_infty_c`, `set_itv_pinfty_bnd`, `set_itv_bnd_ninfty`, `setUitv1`,
     `setU1itv`, `set_itvI`, `neitvE`, `neitvP`, `setitv0`, `has_lbound_itv`,
-    `has_ubound_itv`, `hasNlbound`, `hasNubound`, `opp_itv_bnd_infty`, `opp_itvoo`,
+    `has_ubound_itv`, `hasNlbound`, `hasNubound`, `opp_itv_bnd_infty`,
+    `opp_itv_infty_bnd`, `opp_itv_bnd_bnd`, `opp_itvoo`,
     `setCitvl`, `setCitvr`, `set_itv_splitI`, `setCitv`, `set_itv_splitD`,
+    `mem_1B_itvcc`, `conv_id`, `convEl`, `convEr`, `conv10`, `conv0`,
+    `conv1`, `conv_sym`, `conv_flat`, `leW_conv`, `leW_factor`,
+    `factor_flat`, `factorl`, `ndconvE`, `factorr`, `factorK`,
+    `convK`, `conv_inj`, `factor_inj`, `conv_bij`, `factor_bij`,
+    `le_conv`, `le_factor`, `lt_conv`, `lt_factor`, `conv_itv_bij`,
+    `factor_itv_bij`, `mem_conv_itv`, `mem_conv_itvcc`, `range_conv`,
+    `range_factor`, `mem_factor_itv`,
     `set_itv_ge`, `trivIset_set_itv_nth`, `disjoint_itvxx`, `lt_disjoint`,
     `disjoint_neitv`, `neitv_bnd1`, `neitv_bnd2` (moved to `classical/set_interval.v`)
 
