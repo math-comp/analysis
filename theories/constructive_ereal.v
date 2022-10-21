@@ -2253,15 +2253,6 @@ Proof. by move=> x; rewrite maxC maxNye. Qed.
 Canonical maxe_monoid := Monoid.Law maxA maxNye maxeNy.
 Canonical maxe_comoid := Monoid.ComLaw maxC.
 
-Lemma lee_bigmax_ord (F : nat -> \bar R) (n m : nat) (P : pred nat) : (n <= m)%N ->
-  \big[maxe/-oo]_(j < n | P j) F j <= \big[maxe/-oo]_(j < m | P j) F j.
-Proof.
-move=> nm.
-rewrite -[in leRHS](subnKC nm) -[in leRHS](big_mkord P F).
-rewrite/index_iota subn0 iotaD big_cat /= le_maxr.
-by rewrite -[in iota _ _](subn0 n) big_mkord lexx.
-Qed.
-
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
 
@@ -2289,16 +2280,6 @@ Qed.
 
 Lemma oppe_min : {morph -%E : x y / mine x y >-> maxe x y : \bar R}.
 Proof. by move=> x y; rewrite -[RHS]oppeK oppe_max !oppeK. Qed.
-
-Lemma bigmine_maxe I (r : seq I) (P : pred I) (F : I -> \bar R) (x : \bar R):
-  \big[mine/x]_(i <- r | P i) F i = - \big[maxe/- x]_(i <- r | P i) - F i.
-Proof. by elim/big_rec2: _ => [|i y _ _ ->]; rewrite ?oppe_max ?oppeK. Qed.
-
-Lemma lee_bigmin_ord (F : nat -> \bar R) (n m : nat) (P : pred nat) : (m <= n)%N ->
-  \big[mine/+oo]_(j < n | P j) F j <= \big[mine/+oo]_(j < m | P j) F j.
-Proof.
-by move=> nm; rewrite -lee_opp !bigmine_maxe !oppeK (lee_bigmax_ord (-%E \o F)).
-Qed.
 
 Lemma maxeMr z x y : z \is a fin_num -> 0 < z ->
   z * maxe x y = maxe (z * x) (z * y).
