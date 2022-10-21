@@ -94,9 +94,10 @@ Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in 
 
 MathComp-Analysis adds mathematical structures on top of MathComp's ones.
 The following inheritance diagram displays the resulting hiearchy
-(excluding `countalg` and `finalg` structures). MathComp-Analysis
-mathematical structures are on the right, below `pointedType`
-included.
+(excluding `finGroupType`, `countalg`, `finalg`, and some `order` structures).
+The structures and inheritance introduced by MathComp-Analysis are highlighted.
+The dotted inheritance edges to the `numFieldType` structure are enabled only
+when one imports `numFieldNormedType.Exports`.
 
 ![Inheritance diagram](./hierarchy.png "Inheritance diagram")
 
