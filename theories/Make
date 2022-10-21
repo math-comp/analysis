@@ -21,7 +21,7 @@ exp.v
 trigo.v
 nsatz_realtype.v
 esum.v
-set_interval.v
+real_interval.v
 lebesgue_measure.v
 forms.v
 derive.v
