@@ -113,6 +113,11 @@
 - in `classical_sets.v`:
   + notations `\bigcup_(i < n) F` and `\bigcap_(i < n) F`
 
+- in `fsbig.v`:
+  + lemma `fsbig_setU_set1`
+- in `tooplogy.v`:
+  + lemmas `closed_bigsetU`, `accessible_finite_set_closed`
+
 ### Changed
 - in `topology.v`
   + definition `fct_restrictedUniformType` changed to use `weak_uniformType`
