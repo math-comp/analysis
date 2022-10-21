@@ -180,9 +180,9 @@
 - in `mathcomp_extra.v`:
   + generalize lemmas `bigmax_le`, `bigmax_lt`, `lt_bigmin` and
     `le_bigmin` from `finType` to `Type`
-  + lemmas `big_undup_AC`, `le_bigmax_seq`, `le_bigmax_seq_cond`,
+  + lemmas `big_undup_AC`, `le_bigmax_seq`, `le_bigmax_condW`,
     `le_bigmax_nat`, `le_bigmax_ord`, `le_bigmin_seq`,
-    `le_bigmin_seq_cond`, `le_bigmin_nat`, `le_bigmin_ord`
+    `le_bigmin_seqW`, `le_bigmin_nat`, `le_bigmin_ord`
 
 ### Changed
 - in `topology.v`

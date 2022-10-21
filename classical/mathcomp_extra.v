@@ -616,28 +616,33 @@ case: ifP => [r_i | _]; rewrite !big_cons {}IHr //.
 by rewrite (big_rem_AC opA opC _ _ _ r_i) opA opxx.
 Qed.
 
-Lemma le_bigmax_seq (I : eqType) s s' (F : I -> T) x0 :
-  {subset s <= s'} -> \big[max/x0]_(i <- s) F i <= \big[max/x0]_(i <- s') F i.
+Lemma le_bigmax_seq (I : eqType) s s' P (F : I -> T) x0 : {subset s <= s'} ->
+  \big[max/x0]_(i <- s | P i) F i <= \big[max/x0]_(i <- s' | P i) F i.
 Proof.
-move=> less'; rewrite big_seq; apply: bigmax_le => [|i /less' is'].
-  elim: s' {less'} => [|x s' IHs']; first by rewrite big_nil.
-  by rewrite big_cons le_maxr IHs' orbT.
+move=> less'; rewrite -[in leRHS]big_filter big_seq_cond.
+apply: bigmax_le => [|i /andP[/less' is' Pi]].
+  by rewrite -(big_id_idem maxA) ?maxxx // le_maxr lexx orbT.
 rewrite -(big_undup_AC maxA maxC _ _ _ _ maxxx) (bigmaxID _ _ (xpred1 i)) /=.
-rewrite -big_filter filter_pred1_uniq ?undup_uniq ?mem_undup //.
+rewrite -big_filter filter_pred1_uniq ?undup_uniq ?mem_undup ?mem_filter ?Pi //.
 by rewrite big_cons 2!le_maxr lexx.
 Qed.
 
-Lemma le_bigmax_seq_cond (I : eqType) s s' P P' (F : I -> T) x0 :
-  {subset [seq i <- s | P i] <= [seq i <- s' | P' i]} ->
-  \big[max/x0]_(i <- s | P i) F i <= \big[max/x0]_(i <- s' | P' i) F i.
-Proof. rewrite -big_filter -[in leRHS]big_filter; exact: le_bigmax_seq. Qed.
+Lemma le_bigmax_condW (I : eqType) s (P P' : pred I) (F : I -> T) x0 :
+    (forall i, i \in s -> P i -> P' i) ->
+  \big[max/x0]_(i <- s | P i) F i <= \big[max/x0]_(i <- s | P' i) F i.
+Proof.
+move=> lePP'; rewrite [in leRHS](bigmaxID _ _ P) [in leRHS]big_seq_cond.
+under [in leRHS]eq_bigl => i
+  do (rewrite andbCA andb_idl => [|/andP[]]; [|exact: lePP']).
+by rewrite -big_seq_cond le_maxr lexx.
+Qed.
 
 Lemma le_bigmax_nat n m n' m' P (F : nat -> T) x0 :
   (n' <= n)%N -> (m <= m')%N ->
   \big[max/x0]_(n <= i < m | P i) F i <= \big[max/x0]_(n' <= i < m' | P i) F i.
 Proof.
-move=> len'n lemm'; apply: le_bigmax_seq_cond => i.
-rewrite !mem_filter !mem_index_iota => /andP[-> /andP[leni leim]] /=.
+move=> len'n lemm'; apply: le_bigmax_seq => i.
+rewrite !mem_index_iota => /andP[leni leim] /=.
 by rewrite (leq_trans len'n) // (leq_trans leim).
 Qed.
 
@@ -742,28 +747,33 @@ Proof. by rewrite (bigID_idem minA minC _ _ a) ?minxx. Qed.
 
 End bigmin_Type.
 
-Lemma le_bigmin_seq (I : eqType) s s' (F : I -> T) x0 :
-  {subset s' <= s} -> \big[min/x0]_(i <- s) F i <= \big[min/x0]_(i <- s') F i.
+Lemma le_bigmin_seq (I : eqType) s s' P (F : I -> T) x0 : {subset s' <= s} ->
+  \big[min/x0]_(i <- s | P i) F i <= \big[min/x0]_(i <- s' | P i) F i.
 Proof.
-move=> les's; rewrite [leRHS]big_seq; apply: le_bigmin => [|i /les's is'].
-  elim: s {les's} => [|x s IHs]; first by rewrite big_nil.
-  by rewrite big_cons le_minl IHs orbT.
+move=> les's; rewrite -big_filter [in leRHS]big_seq_cond.
+apply: le_bigmin => [|i /andP[/les's is' Pi]].
+  by rewrite -(big_id_idem minA) ?minxx // le_minl lexx orbT.
 rewrite -(big_undup_AC minA minC _ _ _ _ minxx) (bigminID _ _ (xpred1 i)) /=.
-rewrite -big_filter filter_pred1_uniq ?undup_uniq ?mem_undup //.
+rewrite -big_filter filter_pred1_uniq ?undup_uniq ?mem_undup ?mem_filter ?Pi //.
 by rewrite big_cons 2!le_minl lexx.
 Qed.
 
-Lemma le_bigmin_seq_cond (I : eqType) s s' P P' (F : I -> T) x0 :
-  {subset [seq i <- s' | P' i] <= [seq i <- s | P i]} ->
-  \big[min/x0]_(i <- s | P i) F i <= \big[min/x0]_(i <- s' | P' i) F i.
-Proof. rewrite -big_filter -[in leRHS]big_filter; exact: le_bigmin_seq. Qed.
+Lemma le_bigmin_condW (I : eqType) s (P P' : pred I) (F : I -> T) x0 :
+    (forall i, i \in s -> P' i -> P i) ->
+  \big[min/x0]_(i <- s | P i) F i <= \big[min/x0]_(i <- s | P' i) F i.
+Proof.
+move=> leP'P; rewrite (bigminID _ _ P') [in leLHS]big_seq_cond.
+under [in leLHS]eq_bigl => i
+  do (rewrite -andbCA andb_idl => [|/andP[]]; [|exact: leP'P]).
+by rewrite -big_seq_cond le_minl lexx.
+Qed.
 
 Lemma le_bigmin_nat n m n' m' P (F : nat -> T) x0 :
   (n <= n')%N -> (m' <= m)%N ->
   \big[min/x0]_(n <= i < m | P i) F i <= \big[min/x0]_(n' <= i < m' | P i) F i.
 Proof.
-move=> lenn' lem'm; apply: le_bigmin_seq_cond => i.
-rewrite !mem_filter !mem_index_iota => /andP[-> /andP[len'i leim']] /=.
+move=> lenn' lem'm; apply: le_bigmin_seq => i.
+rewrite !mem_index_iota => /andP[len'i leim'] /=.
 by rewrite (leq_trans lenn') // (leq_trans leim').
 Qed.
 
