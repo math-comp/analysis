@@ -29,7 +29,7 @@ theories/exp.v
 theories/trigo.v
 theories/nsatz_realtype.v
 theories/esum.v
-theories/set_interval.v
+theories/real_interval.v
 theories/lebesgue_measure.v
 theories/forms.v
 theories/derive.v

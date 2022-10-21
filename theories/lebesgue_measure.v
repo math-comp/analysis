@@ -5,7 +5,7 @@ From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import cardinality fsbigop mathcomp_extra.
 Require Import reals ereal signed topology numfun normedtype.
 From HB Require Import structures.
-Require Import sequences esum measure set_interval realfun.
+Require Import sequences esum measure real_interval realfun.
 
 (******************************************************************************)
 (*                            Lebesgue Measure                                *)

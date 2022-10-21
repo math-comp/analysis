@@ -9,9 +9,6 @@ Require Import reals ereal signed topology normedtype sequences.
 (******************************************************************************)
 (* This files contains lemmas about sets and intervals on reals.              *)
 (*                                                                            *)
-(*         conv, ndconv == convexity operator                                 *)
-(*         factor a b x := (x - a) / (b - a)                                  *)
-(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.

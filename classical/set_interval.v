@@ -10,6 +10,8 @@ From HB Require Import structures.
 (*                         when the support type is a numFieldType, this      *)
 (*                         is equivalent to (i.1 < i.2)%O (lemma neitvE)      *)
 (*   set_itv_infty_set0 == multirule to simplify empty intervals              *)
+(*         conv, ndconv == convexity operator                                 *)
+(*         factor a b x := (x - a) / (b - a)                                  *)
 (*             set_itvE == multirule to turn intervals into inequalities      *)
 (*     disjoint_itv i j == intervals i and j are disjoint                     *)
 (*                                                                            *)

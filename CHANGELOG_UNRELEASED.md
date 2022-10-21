@@ -165,6 +165,7 @@
 - in `sequences.v`:
   + `seqDUE` -> `seqDU_seqD`
 - file `theories/mathcomp_extra.v` moved to `classical/mathcomp_extra.v`
+- `theories/set_interval.v` -> `theories/real_interval.v`
 
 ### Deprecated
 
