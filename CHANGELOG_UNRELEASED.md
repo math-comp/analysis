@@ -43,6 +43,27 @@
   + lemmas `integral0_eq`, `fubini_tonelli`
   + product measures now take `{measure _ -> _}` arguments and their
     theory quantifies over a `{sigma_finite_measure _ -> _}`.
+  + definition `ErealGenInftyO.R` and lemma `ErealGenInftyO.measurableE`
+  + lemma `sub1set`
+- in `constructive_ereal.v`:
+  + lemmas `lteN10`, `leeN10`
+  + lemmas `le0_fin_numE`
+  + lemmas `fine_lt0`, `fine_le0`
+- in `sequences.v`:
+  + lemmas `is_cvg_ereal_npos_natsum_cond`, `lee_npeseries`,
+    `is_cvg_npeseries_cond`, `is_cvg_npeseries`, `npeseries_le0`,
+    `is_cvg_ereal_npos_natsum`
+  + lemma `nnseries_is_cvg`
+- in `constructive_ereal.v`:
+  + lemma `fine_lt0E`
+- in file `normedtype.v`
+  + lemmas `closed_ballR_compact` and `locally_compactR`
+
+- in `sequences.v`:
+  + lemma `invr_cvg0` and `invr_cvg_pinfty`
+  + lemma `cvgPninfty_lt`, `cvgPpinfty_near`, `cvgPninfty_near`,
+    `cvgPpinfty_lt_near` and `cvgPninfty_lt_near`
+- in `classical_sets.v`:
   + notations `\bigcup_(i < n) F` and `\bigcap_(i < n) F`
 
 - in `fsbig.v`:

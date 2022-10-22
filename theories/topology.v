@@ -4823,8 +4823,14 @@ Canonical quotient_pointed := PointedType Q (\pi_Q point).
 
 Definition quotient_open (U : set Q) := open (\pi_Q@^-1` U).
 
+<<<<<<< HEAD
 Program Definition quotient_topologicalType_mixin := 
   @topologyOfOpenMixin Q quotient_open _ _ _.
+=======
+Definition quotient_open (U : set {eq_quot R}) := open (\pi_{eq_quot R}@^-1` U).
+Program Definition quotient_topologicalType_mixin := 
+  @topologyOfOpenMixin {eq_quot R} quotient_open _ _ _.
+>>>>>>> docs
 
 Next Obligation. by rewrite /quotient_open preimage_setT; exact: openT. Qed.
 Next Obligation. by move=> ? ? ? ?; exact: openI. Qed.
@@ -4832,6 +4838,7 @@ Next Obligation. by move=> I f ofi; apply: bigcup_open => i _; exact: ofi. Qed.
 
 Let quotient_filtered := Filtered.Class (Pointed.class quotient_pointed) 
   (nbhs_of_open quotient_open).
+<<<<<<< HEAD
 
 Canonical quotient_topologicalType := @Topological.Pack Q
   (@Topological.Class _ quotient_filtered quotient_topologicalType_mixin).
@@ -4843,15 +4850,34 @@ Proof. exact/continuousP. Qed.
 
 Lemma quotient_continuous {Z : topologicalType} (f : Q' -> Z) :
   continuous f <-> continuous (f \o \pi_Q).
+=======
+Canonical quotient_topologicalType := @Topological.Pack {eq_quot R} 
+  (@Topological.Class _ quotient_filtered quotient_topologicalType_mixin).
+
+Let Q := quotient_topologicalType.
+
+Lemma pi_continuous : continuous (\pi_Q : T -> Q).
+Proof. exact/continuousP. Qed.
+
+Lemma quotient_continuous {Z : topologicalType} (f : Q -> Z) :
+  continuous f <-> continuous (f \o \pi_{eq_quot R}).
+>>>>>>> docs
 Proof.
 split => /continuousP /= cts; apply/continuousP => A oA.
   by rewrite comp_preimage; move/continuousP: pi_continuous; apply; exact: cts.
 by have := cts _ oA.
 Qed.
 
+<<<<<<< HEAD
 Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) :
   continuous g -> {homo g : a b / a == b %[mod Q] >-> a == b} -> 
   continuous (g \o repr : Q' -> Z).
+=======
+Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) : 
+  continuous g ->
+  {homo g : a b / R a b >-> a = b} -> 
+  continuous (g \o repr : Q -> Z).
+>>>>>>> docs
 Proof.
 move=> /continuousP ctsG rgE; apply/continuousP => A oA.
 rewrite /open /= /quotient_open comp_preimage; have := ctsG _ oA.
