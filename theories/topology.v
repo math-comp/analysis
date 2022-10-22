@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
@@ -4811,6 +4811,52 @@ Definition fct_pseudoMetricType_mixin :=
   PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage.
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
+
+Section quotients. 
+Local Open Scope quotient_scope.
+Context {T : topologicalType} {R : equiv_rel T}.
+
+Canonical quotient_eq := EqType {eq_quot R} gen_eqMixin.
+Canonical quotient_choice := ChoiceType {eq_quot R} gen_choiceMixin .
+Canonical quotient_pointed := PointedType {eq_quot R} (\pi_{eq_quot R} point).
+
+Definition quotient_open (U : set {eq_quot R}) := open (\pi_{eq_quot R}@^-1` U).
+Program Definition quotient_open_mixin := 
+  @topologyOfOpenMixin {eq_quot R} quotient_open _ _ _.
+
+Next Obligation. by rewrite /quotient_open preimage_setT; exact: openT. Qed.
+Next Obligation. by move=> ? ? ? ?; exact: openI. Qed.
+Next Obligation. by move=> I f ofi; apply: bigcup_open => i _; exact: ofi. Qed.
+
+Let quotient_filtered := Filtered.Class (Pointed.class quotient_pointed) 
+  (nbhs_of_open quotient_open).
+Canonical quotient_topology := @Topological.Pack {eq_quot R} 
+  (@Topological.Class _ quotient_filtered quotient_open_mixin).
+
+Lemma pi_continuous : continuous (\pi_{eq_quot R} : T -> quotient_topology).
+Proof. exact/continuousP. Qed.
+
+Lemma quotient_continuous {Z : topologicalType} (f : quotient_topology -> Z) :
+  continuous f <-> continuous (f \o \pi_{eq_quot R}).
+Proof.
+split => /continuousP /= cts; apply/continuousP => A oA.
+  by rewrite comp_preimage; move/continuousP: pi_continuous; apply; exact: cts.
+by have := cts _ oA.
+Qed.
+
+Lemma quotient_morph (Z : topologicalType) (g : T -> Z) : 
+  continuous g ->
+  {homo g : a b / R a b >-> a = b} -> 
+  continuous (g \o repr : quotient_topology -> Z).
+Proof.
+move=> /continuousP ctsG rgE; apply/continuousP => A oA. 
+rewrite /open /= /quotient_open comp_preimage; have := ctsG _ oA.
+have greprE : forall x, g (repr (\pi_{eq_quot R} x)) = g x.
+  by move=> x; apply: rgE; apply/(@eqquotP _ _ {eq_quot R}); rewrite reprK.
+by congr (open _); rewrite eqEsubset; split => x /=; rewrite greprE.
+Qed.
+
+End quotients.
 
 (** ** Complete uniform spaces *)
 
