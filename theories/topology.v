@@ -302,6 +302,7 @@ Require Import reals signed.
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
 (*          weak_pseudoMetricType == the metric space for weak topologies     *)
+(*       quotient_topologicalType == the quotient topology                    *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -4821,7 +4822,7 @@ Canonical quotient_choice := ChoiceType {eq_quot R} gen_choiceMixin .
 Canonical quotient_pointed := PointedType {eq_quot R} (\pi_{eq_quot R} point).
 
 Definition quotient_open (U : set {eq_quot R}) := open (\pi_{eq_quot R}@^-1` U).
-Program Definition quotient_open_mixin := 
+Program Definition quotient_topologicalType_mixin := 
   @topologyOfOpenMixin {eq_quot R} quotient_open _ _ _.
 
 Next Obligation. by rewrite /quotient_open preimage_setT; exact: openT. Qed.
@@ -4830,13 +4831,15 @@ Next Obligation. by move=> I f ofi; apply: bigcup_open => i _; exact: ofi. Qed.
 
 Let quotient_filtered := Filtered.Class (Pointed.class quotient_pointed) 
   (nbhs_of_open quotient_open).
-Canonical quotient_topology := @Topological.Pack {eq_quot R} 
-  (@Topological.Class _ quotient_filtered quotient_open_mixin).
+Canonical quotient_topologicalType := @Topological.Pack {eq_quot R} 
+  (@Topological.Class _ quotient_filtered quotient_topologicalType_mixin).
 
-Lemma pi_continuous : continuous (\pi_{eq_quot R} : T -> quotient_topology).
+Let Q := quotient_topologicalType.
+
+Lemma pi_continuous : continuous (\pi_Q : T -> Q).
 Proof. exact/continuousP. Qed.
 
-Lemma quotient_continuous {Z : topologicalType} (f : quotient_topology -> Z) :
+Lemma quotient_continuous {Z : topologicalType} (f : Q -> Z) :
   continuous f <-> continuous (f \o \pi_{eq_quot R}).
 Proof.
 split => /continuousP /= cts; apply/continuousP => A oA.
@@ -4844,10 +4847,10 @@ split => /continuousP /= cts; apply/continuousP => A oA.
 by have := cts _ oA.
 Qed.
 
-Lemma quotient_morph (Z : topologicalType) (g : T -> Z) : 
+Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) : 
   continuous g ->
   {homo g : a b / R a b >-> a = b} -> 
-  continuous (g \o repr : quotient_topology -> Z).
+  continuous (g \o repr : Q -> Z).
 Proof.
 move=> /continuousP ctsG rgE; apply/continuousP => A oA. 
 rewrite /open /= /quotient_open comp_preimage; have := ctsG _ oA.
