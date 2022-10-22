@@ -4855,7 +4855,7 @@ Proof.
 move=> /continuousP ctsG rgE; apply/continuousP => A oA. 
 rewrite /open /= /quotient_open comp_preimage; have := ctsG _ oA.
 have greprE : forall x, g (repr (\pi_{eq_quot R} x)) = g x.
-  by move=> x; apply: rgE; apply/(@eqquotP _ _ {eq_quot R}); rewrite reprK.
+  by move=> x; apply: rgE; apply/(@eqquotP _ _ Q); rewrite reprK.
 by congr (open _); rewrite eqEsubset; split => x /=; rewrite greprE.
 Qed.
 
