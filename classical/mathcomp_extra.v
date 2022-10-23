@@ -670,7 +670,14 @@ Lemma le_bigmax_ordW x0 n m (P P' : pred nat) (F : nat -> T) :
   \big[max/x0]_(i < n | P i) F i <= \big[max/x0]_(i < m | P' i) F i.
 Proof.
 move=> lenm PP'i; apply: le_trans (le_bigmax_ord _ _ _ lenm).
-apply: le_bigmax_condW => i; rewrite mem_index_enum => _; exact: PP'i.
+apply: le_bigmax_condW => i _; exact: PP'i.
+Qed.
+
+Lemma le_bigmax_inW x0 (I : finType) (A P P' : pred I) (F : I -> T) :
+    (forall i, i \in A -> P i -> P' i) ->
+  \big[max/x0]_(i in A | P i) F i <= \big[max/x0]_(i in A | P' i) F i.
+Proof.
+move=> PP'i; apply: le_bigmax_condW => i _ /andP[/[dup] + -> /=]; exact: PP'i.
 Qed.
 
 Section bigmax_finType.
@@ -824,7 +831,14 @@ Lemma le_bigmin_ordW x0 n m (P P' : pred nat) (F : nat -> T) :
   \big[min/x0]_(i < n | P i) F i <= \big[min/x0]_(i < m | P' i) F i.
 Proof.
 move=> lemn P'Pi; apply: le_trans (le_bigmin_ord _ _ _ lemn) _.
-apply: le_bigmin_condW => i; rewrite mem_index_enum => _; exact: P'Pi.
+apply: le_bigmin_condW => i _; exact: P'Pi.
+Qed.
+
+Lemma le_bigmin_inW x0 (I : finType) (A P P' : pred I) (F : I -> T) :
+    (forall i, i \in A -> P' i -> P i) ->
+  \big[min/x0]_(i in A | P i) F i <= \big[min/x0]_(i in A | P' i) F i.
+Proof.
+move=> P'Pi; apply: le_bigmin_condW => i _ /andP[/[dup] + -> /=]; exact: P'Pi.
 Qed.
 
 Section bigmin_finType.
