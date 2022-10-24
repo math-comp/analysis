@@ -4818,10 +4818,11 @@ Local Open Scope quotient_scope.
 Context {T : topologicalType} {R : equiv_rel T}.
 
 Canonical quotient_eq := EqType {eq_quot R} gen_eqMixin.
-Canonical quotient_choice := ChoiceType {eq_quot R} gen_choiceMixin .
+Canonical quotient_choice := ChoiceType {eq_quot R} gen_choiceMixin.
 Canonical quotient_pointed := PointedType {eq_quot R} (\pi_{eq_quot R} point).
 
 Definition quotient_open (U : set {eq_quot R}) := open (\pi_{eq_quot R}@^-1` U).
+
 Program Definition quotient_topologicalType_mixin := 
   @topologyOfOpenMixin {eq_quot R} quotient_open _ _ _.
 
@@ -4831,7 +4832,8 @@ Next Obligation. by move=> I f ofi; apply: bigcup_open => i _; exact: ofi. Qed.
 
 Let quotient_filtered := Filtered.Class (Pointed.class quotient_pointed) 
   (nbhs_of_open quotient_open).
-Canonical quotient_topologicalType := @Topological.Pack {eq_quot R} 
+
+Canonical quotient_topologicalType := @Topological.Pack {eq_quot R}
   (@Topological.Class _ quotient_filtered quotient_topologicalType_mixin).
 
 Let Q := quotient_topologicalType.
@@ -4847,16 +4849,15 @@ split => /continuousP /= cts; apply/continuousP => A oA.
 by have := cts _ oA.
 Qed.
 
-Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) : 
-  continuous g ->
-  {homo g : a b / R a b >-> a = b} -> 
+Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) :
+  continuous g -> {homo g : a b / R a b >-> a = b} -> 
   continuous (g \o repr : Q -> Z).
 Proof.
-move=> /continuousP ctsG rgE; apply/continuousP => A oA. 
+move=> /continuousP ctsG rgE; apply/continuousP => A oA.
 rewrite /open /= /quotient_open comp_preimage; have := ctsG _ oA.
 have greprE : forall x, g (repr (\pi_{eq_quot R} x)) = g x.
-  by move=> x; apply: rgE; apply/(@eqquotP _ _ Q); rewrite reprK.
-by congr (open _); rewrite eqEsubset; split => x /=; rewrite greprE.
+  by move=> x; apply: rgE; rewrite -eqmodE reprK.
+by congr (open _); rewrite eqEsubset; split => x; rewrite /= greprE.
 Qed.
 
 End quotients.
