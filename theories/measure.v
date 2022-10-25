@@ -1850,7 +1850,7 @@ Lemma covered_by_finite P :
     (forall (I : pointedType) D A, finite_set D -> P I D A ->
        P nat `I_#|` fset_set D| (A \o nth point (fset_set D))) ->
   covered_by (@finite_set) P =
-    [set X : set T | exists n A, [/\ P nat `I_n A & X = \bigcup_(i in `I_n) A i]].
+    [set X : set T | exists n A, [/\ P nat `I_n A & X = \bigcup_(i < n) A i]].
 Proof.
 move=> P0 Pc; apply/predeqP=> X; rewrite /covered_by /cover/=; split; last first.
   by move=> [n [A [Am ->]]]; exists nat, `I_n, A; split.
@@ -3137,7 +3137,7 @@ Lemma g_salgebra_measure_unique_cover :
   forall A, <<s G >> A -> m1 A = m2 A.
 Proof.
 pose GT := [the ringOfSetsType _ of salgebraType G].
-move=> sGm1m2; pose g' k := \bigcup_(i in `I_k) g i.
+move=> sGm1m2; pose g' k := \bigcup_(i < k) g i.
 have sGm := smallest_sub (@sigma_algebra_measurable _ T) Gm.
 have Gg' i : <<s G >> (g' i).
   apply: (@fin_bigcup_measurable _ GT) => //.
