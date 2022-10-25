@@ -102,6 +102,8 @@
   + lemma `invr_cvg0` and `invr_cvg_pinfty`
   + lemma `cvgPninfty_lt`, `cvgPpinfty_near`, `cvgPninfty_near`,
     `cvgPpinfty_lt_near` and `cvgPninfty_lt_near`
+- in `classical_sets.v`:
+  + notations `\bigcup_(i < n) F` and `\bigcap_(i < n) F`
 
 ### Changed
 - in `topology.v`

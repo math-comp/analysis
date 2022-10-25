@@ -46,13 +46,16 @@ Require Import boolp.
 (*                    [set~ a] == complement of [set a].                      *)
 (*                     A `\` B == complement of B in A.                       *)
 (*                      A `\ a == A deprived of a.                            *)
+(*                        `I_n := [set k | k < n]                             *)
 (*          \bigcup_(i in P) F == union of the elements of the family F whose *)
 (*                                index satisfies P.                          *)
 (*           \bigcup_(i : T) F == union of the family F indexed on T.         *)
+(*           \bigcup_(i < n) F := \bigcup_(i in `I_n) F                       *)
 (*                 \bigcup_i F == same as before with T left implicit.        *)
 (*          \bigcap_(i in P) F == intersection of the elements of the family  *)
 (*                                F whose index satisfies P.                  *)
 (*           \bigcap_(i : T) F == union of the family F indexed on T.         *)
+(*           \bigcap_(i < n) F := \bigcap_(i in `I_n) F                       *)
 (*                 \bigcap_i F == same as before with T left implicit.        *)
 (*                smallest C G := \bigcap_(A in [set M | C M /\ G `<=` M]) A  *)
 (*                   A `<=` B <-> A is included in B.                         *)
@@ -72,7 +75,6 @@ Require Import boolp.
 (*                   `[a, +oo[ := [set` `[a, +oo[]                            *)
 (*                   `]a, +oo[ := [set` `]a, +oo[]                            *)
 (*                 `]-oo, +oo[ := [set` `]-oo, +oo[]                          *)
-(*                        `I_n := [set k | k < n]                             *)
 (*               is_subset1 A <-> A contains only 1 element.                  *)
 (*                   is_fun f <-> for each a, f a contains only 1 element.    *)
 (*                 is_total f <-> for each a, f a is non empty.               *)
@@ -202,6 +204,9 @@ Reserved Notation "\bigcup_ ( i 'in' P ) F"
 Reserved Notation "\bigcup_ ( i : T ) F"
   (at level 41, F at level 41, i at level 50,
            format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i < n ) F"
+  (at level 41, F at level 41, i, n at level 50,
+           format "'[' \bigcup_ ( i  <  n ) '/  '  F ']'").
 Reserved Notation "\bigcup_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcup_ i '/  '  F ']'").
@@ -211,6 +216,9 @@ Reserved Notation "\bigcap_ ( i 'in' P ) F"
 Reserved Notation "\bigcap_ ( i : T ) F"
   (at level 41, F at level 41, i at level 50,
            format "'[' \bigcap_ ( i  :  T ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i < n ) F"
+  (at level 41, F at level 41, i, n at level 50,
+           format "'[' \bigcap_ ( i  <  n ) '/  '  F ']'").
 Reserved Notation "\bigcap_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcap_ i '/  '  F ']'").
@@ -332,15 +340,21 @@ Notation "A `\` B" := (setD A B) : classical_set_scope.
 Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
 Notation "[ 'disjoint' A & B ]" := (disj_set A B) : classical_set_scope.
 
+Notation "'`I_' n" := [set k | is_true (k < n)%N].
+
 Notation "\bigcup_ ( i 'in' P ) F" :=
   (bigcup P (fun i => F)) : classical_set_scope.
 Notation "\bigcup_ ( i : T ) F" :=
   (\bigcup_(i in @setT T) F) : classical_set_scope.
+Notation "\bigcup_ ( i < n ) F" :=
+  (\bigcup_(i in `I_n) F) : classical_set_scope.
 Notation "\bigcup_ i F" := (\bigcup_(i : _) F) : classical_set_scope.
 Notation "\bigcap_ ( i 'in' P ) F" :=
   (bigcap P (fun i => F)) : classical_set_scope.
 Notation "\bigcap_ ( i : T ) F" :=
   (\bigcap_(i in @setT T) F) : classical_set_scope.
+Notation "\bigcap_ ( i < n ) F" :=
+  (\bigcap_(i in `I_n) F) : classical_set_scope.
 Notation "\bigcap_ i F" := (\bigcap_(i : _) F) : classical_set_scope.
 
 Notation "A `<=` B" := (subset A B) : classical_set_scope.
@@ -396,8 +410,6 @@ Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
 Lemma preimage_itv_infty_c T (d : unit) (rT : orderType d) (f : T -> rT) y :
   f @^-1` `]-oo, y]%classic = [set x | (f x <= y)%O].
 Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
-
-Notation "'`I_' n" := [set k | is_true (k < n)%N].
 
 Lemma eq_set T (P Q : T -> Prop) : (forall x : T, P x = Q x) ->
   [set x | P x] = [set x | Q x].
@@ -1710,7 +1722,7 @@ rewrite predeqE => t; split=> [|[At|Bt]]; [|by exists 0|by exists 1].
 by case=> -[_ At|[_ Bt|//]]; [left|right].
 Qed.
 
-Lemma bigcup2inE T (A B : set T) : \bigcup_(i in `I_2) (bigcup2 A B) i = A `|` B.
+Lemma bigcup2inE T (A B : set T) : \bigcup_(i < 2) (bigcup2 A B) i = A `|` B.
 Proof.
 rewrite predeqE => t; split=> [|[At|Bt]]; [|by exists 0|by exists 1].
 by case=> -[_ At|[_ Bt|//]]; [left|right].
@@ -1726,7 +1738,7 @@ apply: setC_inj; rewrite setC_bigcap setCI -bigcup2E /bigcap2 /bigcup2.
 by apply: eq_bigcupr => -[|[|[]]]//=; rewrite setCT.
 Qed.
 
-Lemma bigcap2inE T (A B : set T) : \bigcap_(i in `I_2) (bigcap2 A B) i = A `&` B.
+Lemma bigcap2inE T (A B : set T) : \bigcap_(i < 2) (bigcap2 A B) i = A `&` B.
 Proof.
 apply: setC_inj; rewrite setC_bigcap setCI -bigcup2inE /bigcap2 /bigcup2.
 by apply: eq_bigcupr => // -[|[|[]]].
@@ -1889,15 +1901,13 @@ Section bigop_nat_lemmas.
 Context {T : Type}.
 Implicit Types (A : set T) (F : nat -> set T).
 
-Lemma bigcup_mkord n F :
-  \bigcup_(i in `I_n) F i = \big[setU/set0]_(i < n) F i.
+Lemma bigcup_mkord n F : \bigcup_(i < n) F i = \big[setU/set0]_(i < n) F i.
 Proof.
 rewrite -(big_mkord xpredT F) -bigcup_set.
 by apply: eq_bigcupl; split=> i; rewrite /= mem_index_iota leq0n.
 Qed.
 
-Lemma bigcap_mkord n F :
-  \bigcap_(i in `I_n) F i = \big[setI/setT]_(i < n) F i.
+Lemma bigcap_mkord n F : \bigcap_(i < n) F i = \big[setI/setT]_(i < n) F i.
 Proof. by apply: setC_inj; rewrite setC_bigsetI setC_bigcap bigcup_mkord. Qed.
 
 Lemma bigsetU_sup i n F : (i < n)%N -> F i `<=` \big[setU/set0]_(j < n) F j.
