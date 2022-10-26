@@ -45,7 +45,7 @@ Lemma gauss01_densityE x :
 Proof. by rewrite /gauss01_density /gauss_density mul1r subr0 divr1. Qed.
 
 Definition mgauss01 (V : set R) :=
-  \int[lebesgue_measure]_(x in V) (gauss01_density x)%:E.
+  (\int[lebesgue_measure]_(x in V) (gauss01_density x)%:E)%E.
 
 Lemma measurable_fun_gauss_density m s :
   measurable_fun setT (gauss_density m s).
@@ -70,7 +70,7 @@ by rewrite /mgauss01 integral_ge0//= => x _; rewrite lee_fin gauss_density_ge0.
 Qed.
 
 Axiom integral_gauss01_density :
-  \int[lebesgue_measure]_x (gauss01_density x)%:E = 1%E.
+  (\int[lebesgue_measure]_x (gauss01_density x)%:E = 1%E)%E.
 
 Let mgauss01_sigma_additive : semi_sigma_additive mgauss01.
 Proof.

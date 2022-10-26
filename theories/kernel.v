@@ -377,19 +377,18 @@ transitivity (\sum_(n <oo) \int[s1 n]_x \sum_(m <oo) \int[s2 m]_y f (x, y)).
     apply: ge0_emeasurable_fun_sum; first by move=> k x; exact: integral_ge0.
     move=> k; apply: measurable_fun_fubini_tonelli_F => //=.
     exact: finite_measure_sigma_finite.
-  apply: eq_nneseries => n _; apply eq_integral => x _.
+  apply: eq_eseries => n _; apply eq_integral => x _.
   by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
 transitivity (\sum_(n <oo) \sum_(m <oo) \int[s1 n]_x \int[s2 m]_y f (x, y)).
-  apply eq_nneseries => n _.
-  rewrite integral_sum//.
+  apply eq_eseries => n _; rewrite integral_sum//.
     move=> m; apply: measurable_fun_fubini_tonelli_F => //=.
     exact: finite_measure_sigma_finite.
   by move=> m x _; exact: integral_ge0.
 transitivity (\sum_(n <oo) \sum_(m <oo) \int[s2 m]_y \int[s1 n]_x f (x, y)).
-  apply eq_nneseries => n _; apply eq_nneseries => m _.
+  apply eq_eseries => n _; apply eq_eseries => m _.
   by rewrite fubini_tonelli//; exact: finite_measure_sigma_finite.
 transitivity (\sum_(n <oo) \int[mseries s2 0]_y \int[s1 n]_x f (x, y)).
-  apply eq_nneseries => n _ /=.  rewrite ge0_integral_measure_series//.
+  apply eq_eseries => n _ /=.  rewrite ge0_integral_measure_series//.
     by move=> y _; exact: integral_ge0.
   apply: measurable_fun_fubini_tonelli_G => //=.
   by apply: finite_measure_sigma_finite; exact: fm1.
@@ -560,8 +559,8 @@ exists (fun n => if n is O then [the _.-ker _ ~> _ of k] else
   by case => [|_]; [exact: measure_uub|exact: kzero_uub].
 move=> t U mU/=; rewrite /mseries.
 rewrite (nneseries_split 1%N)// big_ord_recl/= big_ord0 adde0.
-rewrite ereal_series (@eq_nneseries _ _ (fun=> 0%E)); last by case.
-by rewrite nneseries0// adde0.
+rewrite ereal_series (@eq_eseries _ _ (fun=> 0%E)); last by case.
+by rewrite eseries0// adde0.
 Qed.
 
 HB.instance Definition _ := @Kernel_isSFinite_subdef.Build d d' X Y R k sfinite_finite.
@@ -824,20 +823,19 @@ rewrite (_ : (fun x => _) =
   - by move=> y _ m n mn; rewrite lee_fin; exact/lefP/ndk_.
 apply: measurable_fun_elim_sup => n.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x => \int[l x]_y
-  (\sum_(r <- fset_set (range (k_ n)))(*TODO: upd when PR 743 is merged*)
-     r * \1_(k_ n @^-1` [set r]) (x, y))%:E)); last first.
+    (\sum_(r \in range (k_ n))
+      r * \1_(k_ n @^-1` [set r]) (x, y))%:E)); last first.
   by apply/funext => x; apply: eq_integral => y _; rewrite fimfunE.
-rewrite [X in measurable_fun _ X](_ : _ = (fun x =>
-  \sum_(r <- fset_set (range (k_ n)))(*TODO: upd when PR 743 is merged*)
+rewrite [X in measurable_fun _ X](_ : _ = (fun x => \sum_(r \in range (k_ n))
     (\int[l x]_y (r * \1_(k_ n @^-1` [set r]) (x, y))%:E))); last first.
-  apply/funext => x; rewrite -ge0_integral_sum//.
-  - by apply: eq_integral => y _; rewrite sumEFin.
+  apply/funext => x; rewrite -ge0_integral_fsum//.
+  - by apply: eq_integral => y _; rewrite -fsumEFin.
   - move=> r.
     apply/EFin_measurable_fun/measurable_funrM/measurable_fun_prod1 => /=.
     rewrite (_ : \1_ _ = mindic R (measurable_sfunP (k_ n) r))//.
     exact/measurable_funP.
   - by move=> m y _; rewrite nnfun_muleindic_ge0.
-apply emeasurable_fun_sum => r.
+apply: emeasurable_fun_fsum => // r.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x => r%:E *
     \int[l x]_y (\1_(k_ n @^-1` [set r]) (x, y))%:E)); last first.
   apply/funext => x; under eq_integral do rewrite EFinM.
@@ -1036,7 +1034,7 @@ rewrite -/(measure_add (k1 x) (k2 x)) measure_addE.
 rewrite /mseries.
 rewrite hk1//= hk2//= /mseries.
 rewrite -nneseriesD//.
-apply: eq_nneseries => n _.
+apply: eq_eseries => n _.
 by rewrite -/(measure_add (f1 n x) (f2 n x)) measure_addE.
 Qed.
 
@@ -1248,7 +1246,7 @@ Definition mkcomp : X -> {measure set Z -> \bar R} :=
 
 End kcomp_is_measure.
 
-Notation "l \; k" := (mkcomp l k).
+Notation "l \; k" := (mkcomp l k) : ereal_scope.
 
 Module KCOMP_FINITE_KERNEL.
 
@@ -1322,7 +1320,7 @@ transitivity (([the _.-ker _ ~> _ of kseries l_] \;
 rewrite /= /kcomp/= integral_sum//=; last first.
   by move=> n; have /measurable_fun_prod1 := measurable_kernel (k_ n) _ mU; exact.
 transitivity (\sum_(i <oo) \sum_(j <oo) (l_ j \; k_ i) x U).
-  apply: eq_nneseries => i _; rewrite integral_kseries//.
+  apply: eq_eseries => i _; rewrite integral_kseries//.
   by have /measurable_fun_prod1 := measurable_kernel (k_ i) _ mU; exact.
 rewrite /mseries -hkl/=.
 rewrite (_ : setT = setT `*`` (fun=> setT)); last by apply/seteqP; split.
@@ -1431,8 +1429,8 @@ Qed.
 Let integral_kcomp_nnsfun x (f : {nnsfun Z >-> R}) :
   \int[(l \; k) x]_z (f z)%:E = \int[l x]_y (\int[k (x, y)]_z (f z)%:E).
 Proof.
-under [in LHS]eq_integral do rewrite fimfunE -sumEFin.
-rewrite ge0_integral_sum//; last 2 first.
+under [in LHS]eq_integral do rewrite fimfunE -fsumEFin//.
+rewrite ge0_integral_fsum//; last 2 first.
   - move=> r; apply/EFin_measurable_fun/measurable_funrM.
     have fr : measurable (f @^-1` [set r]) by exact/measurable_sfunP.
     by rewrite (_ : \1__ = mindic R fr).
@@ -1440,27 +1438,27 @@ rewrite ge0_integral_sum//; last 2 first.
 under [in RHS]eq_integral.
   move=> y _.
   under eq_integral.
-    by move=> z _; rewrite fimfunE -sumEFin; over.
-  rewrite /= ge0_integral_sum//; last 2 first.
+    by move=> z _; rewrite fimfunE -fsumEFin//; over.
+  rewrite /= ge0_integral_fsum//; last 2 first.
     - move=> r; apply/EFin_measurable_fun/measurable_funrM.
       have fr : measurable (f @^-1` [set r]) by exact/measurable_sfunP.
       by rewrite (_ : \1__ = mindic R fr).
     - by move=> r z _; rewrite EFinM nnfun_muleindic_ge0.
-  under eq_bigr.
+  under eq_fsbigr.
     move=> r _.
     rewrite (integralM_indic _ (fun r => f @^-1` [set r]))//; last first.
       by move=> r0; rewrite preimage_nnfun0.
     rewrite integral_indic// setIT.
     over.
   over.
-rewrite /= ge0_integral_sum//; last 2 first.
+rewrite /= ge0_integral_fsum//; last 2 first.
   - move=> r; apply: measurable_funeM.
     have := measurable_kernel k (f @^-1` [set r]) (measurable_sfunP f r).
     by move=> /measurable_fun_prod1; exact.
   - move=> n y _.
     have := mulemu_ge0 (fun n => f @^-1` [set n]).
     by apply; exact: preimage_nnfun0.
-apply eq_bigr => r _.
+apply eq_fsbigr => r _.
 rewrite (integralM_indic _ (fun r => f @^-1` [set r]))//; last first.
   exact: preimage_nnfun0.
 rewrite /= integral_kcomp_indic; last exact/measurable_sfunP.

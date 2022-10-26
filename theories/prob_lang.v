@@ -215,7 +215,7 @@ Proof.
 rewrite /=.
 exists (fun i => [the R.-fker _ ~> _ of mk mr i]) => /= t U mU.
 rewrite /mseries /kscore/= mscoreE; case: ifPn => [/eqP U0|U0].
-  by apply/esym/nneseries0 => i _; rewrite U0 measure0.
+  by apply/esym/eseries0 => i _; rewrite U0 measure0.
 rewrite /mk /= /k /= mscoreE (negbTE U0).
 apply/esym/cvg_lim => //.
 rewrite -(cvg_shiftn `|floor (fine `|(r t)%:E|)|%N.+1)/=.
@@ -286,7 +286,7 @@ exists (fun n => [the _.-ker _ ~> _ of kiteT (k_ n)]) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteT//= /mzero//.
 move=> [x b] U mU; rewrite /kiteT; case: ifPn => hb; first by rewrite hk.
-by rewrite /mseries nneseries0.
+by rewrite /mseries eseries0.
 Qed.
 
 #[export]
@@ -345,7 +345,7 @@ exists (fun n => [the _.-ker _ ~> _ of kiteF (k_ n)]) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteF//= /mzero//.
 move=> [x b] U mU; rewrite /kiteF; case: ifPn => hb; first by rewrite hk.
-by rewrite /mseries nneseries0.
+by rewrite /mseries eseries0.
 Qed.
 
 #[export]
