@@ -2793,21 +2793,6 @@ rewrite ih ?big_ord_recr//.
 - by apply: sub_trivIset tF => x; exact: leq_trans.
 Qed.
 
-Lemma le_integral_abse (D : set T) (mD : measurable D) (g : T -> \bar R) a :
-  measurable_fun D g -> (0 < a)%R ->
-  a%:E * mu (D `&` [set x | (`|g x| >= a%:E)%E]) <= \int[mu]_(x in D) `|g x|.
-Proof.
-move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
-  by apply: emeasurable_fun_c_infty => //; exact: measurable_fun_comp.
-apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) `|g x|)).
-  rewrite -integral_EFin_cst//; apply: ge0_le_integral => //.
-  - by move=> x _ /=; rewrite ltW.
-  - exact/EFin_measurable_fun/measurable_fun_cst.
-  - by apply: measurable_fun_comp => //; exact: measurable_funS mg.
-  - by move=> x /= [].
-by apply: subset_integral => //; exact: measurable_fun_comp.
-Qed.
-
 End subset_integral.
 
 Section Rintegral.
@@ -3468,27 +3453,42 @@ have -> : mu Df_neq0 = 0.
 by rewrite mule0 -eq_le => /eqP.
 Qed.
 
+Let le_integral_abse (D : set T) (mD : measurable D) (g : T -> \bar R) a :
+  measurable_fun D g -> (0 < a)%R ->
+  a%:E * mu (D `&` [set x | `|g x| >= a%:E]) <= \int[mu]_(x in D) `|g x|.
+Proof.
+move=> mg a0; have ? : measurable (D `&` [set x | a%:E <= `|g x|]).
+  by apply: emeasurable_fun_c_infty => //; exact: measurable_fun_comp.
+apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) `|g x|)).
+  rewrite -integral_EFin_cst//; apply: ge0_le_integral => //.
+  - by move=> x _ /=; rewrite ltW.
+  - exact/EFin_measurable_fun/measurable_fun_cst.
+  - by apply: measurable_fun_comp => //; exact: measurable_funS mg.
+  - by move=> x /= [].
+by apply: subset_integral => //; exact: measurable_fun_comp.
+Qed.
+
 Lemma ae_eq_integral_abs (D : set T) (mD : measurable D) (f : T -> \bar R) :
   measurable_fun D f -> \int[mu]_(x in D) `|f x|  = 0 <-> ae_eq D f (cst 0).
 Proof.
 move=> mf; split=> [iDf0|Df0].
-  exists (D `&` [set x | f x != 0]); split; [exact: emeasurable_neq| |]; last first.
-    by move=> t /= /not_implyP [Dt /eqP ft0].
-  have muDf a : (0 < a)%R -> mu (D `&` [set x | a%:E <= `|f x |]) = 0.
-    move=> a0; apply/eqP; rewrite eq_le measure_ge0 ?andbT; last first.
-    move: (@le_integral_abse _ _ _ mu _ mD _ _ mf a0).
+  exists (D `&` [set x | f x != 0]); split;
+    [exact: emeasurable_neq| |by move=> t /= /not_implyP [Dt /eqP ft0]].
+  have muDf a : (0 < a)%R -> mu (D `&` [set x | a%:E <= `|f x|]) = 0.
+    move=> a0; apply/eqP; rewrite eq_le measure_ge0 ?andbT.
+    have := @le_integral_abse _ mD _ _ mf a0.
     by rewrite -lee_pdivl_mull// iDf0 mule0 setIC.
   rewrite [X in mu X](_ : _ =
      \bigcup_n (D `&` [set x | `|f x| >= n.+1%:R^-1%:E])); last first.
     rewrite predeqE => t; split=> [[Dt ft0]|[n _ /= [Dt nft]]].
-      have [ftoo|ftoo] := eqVneq `|f t| +oo%E.
+      have [ftoo|ftoo] := eqVneq `|f t| +oo.
         by exists 0%N => //; split => //=; rewrite ftoo /= leey.
       pose m := `|ceil (fine `|f t|)^-1|%N.
       have ftfin : `|f t|%E \is a fin_num.
-        by rewrite fin_numE gt_eqF //= (lt_le_trans _ (abse_ge0 _)).
+        by rewrite ge0_fin_numE// lt_neqAle ftoo/= leey.
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin -ler_pinv; last 2 first.
-        - rewrite inE unitfE fine_eq0 // abse_eq0 ft0/=; apply/fine_gt0.
+        - rewrite inE unitfE fine_eq0// abse_eq0 ft0/= fine_gt0//.
           by rewrite lt_neqAle abse_ge0 -ge0_fin_numE// eq_sym abse_eq0 ft0.
         - by rewrite inE unitfE invr_eq0 pnatr_eq0 /= invr_gt0.
       rewrite invrK /m -natr1 natr_absz ger0_norm ?ceil_ge0//.
@@ -3509,26 +3509,14 @@ have -> : (fun x => `|f x|) = (fun x => lim (f_^~ x)).
   rewrite funeqE => x; apply/esym/cvg_lim => //; apply/cvg_ballP => _/posnumP[e].
   near=> n; rewrite /ball /= /ereal_ball /= /f_.
   have [->|fxoo] := eqVneq `|f x|%E +oo.
-    rewrite /= (@ger0_norm _ n%:R)// ger0_norm; last first.
-      by rewrite subr_ge0 ler_pdivr_mulr ?mul1r ?ler_addr.
-    rewrite -{1}(@divrr _ (1 + n%:R)%R) ?unitfE; last first.
-      by rewrite gt_eqF// {1}(_ : 1 = 1%:R)%R // natrS.
-    rewrite -mulrBl addrK ltr_pdivr_mulr; last first.
-      by rewrite {1}(_ : 1 = 1%:R)%R // natrS.
-    rewrite mulrDr mulr1 ltr_spsaddl// -ltr_pdivr_mull// mulr1.
-    near: n.
-    exists `|ceil (1 + e%:num^-1)|%N => // n /=.
-    rewrite -(@ler_nat R); apply: lt_le_trans.
-    rewrite natr_absz ger0_norm ?ceil_ge ?ceil_ge0//.
-    by rewrite (lt_le_trans _ (ceil_ge _))// ltr_addr.
+    rewrite -[contract +oo](@divrr _ (1 + n%:R)%R) ?unitfE ?nat1r//=.
+    rewrite (@ger0_norm _ n%:R)// nat1r -mulrBl -natrB// subSnn ger0_norm//.
+    by rewrite div1r; near: n; exact: near_infty_natSinv_lt.
   have fxn : `|f x| <= n%:R%:E.
     rewrite -(@fineK _ `|f x|); last first.
       by rewrite fin_numE fxoo andbT gt_eqF// (lt_le_trans _ (abse_ge0 _)).
-    rewrite lee_fin.
-    near: n.
-    exists `|ceil (fine (`|f x|))|%N => // n /=.
-    rewrite -(@ler_nat R); apply: le_trans.
-    by rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0.
+    rewrite lee_fin; near: n; exists (Num.bound (fine `|f x|)) => //= n/=.
+    by rewrite -(ler_nat R); apply: le_trans; exact/ltW/archi_boundP.
   by rewrite min_l// subrr normr0.
 transitivity (lim (fun n => \int[mu]_(x in D) (f_ n x) )).
   apply/esym/cvg_lim => //; apply: cvg_monotone_convergence => //.
@@ -3554,10 +3542,8 @@ have if_0 n : \int[mu]_(x in D) `|f_ n x|  = 0.
     by apply: emeasurable_fun_min => //;
       [exact: measurable_fun_comp|exact: measurable_fun_cst].
   exact: f_bounded.
-rewrite (_ : (fun _ => _) = (cst 0)) // ?lim_cst// funeqE => n.
-rewrite (_ : (fun x => f_ n x) = abse \o f_ n); first exact: if_0.
-rewrite funeqE => x /=; rewrite gee0_abs// /f_.
-by have [|_] := leP `|f x| n%:R%:E; [by []|rewrite lee_fin].
+rewrite (_ : (fun _ => _) = cst 0) // ?lim_cst// funeqE => n.
+by rewrite -(if_0 n); apply: eq_integral => x _; rewrite gee0_abs// /f_.
 Unshelve. all: by end_near. Qed.
 
 Lemma integral_abs_eq0 D (N : set T) (f : T -> \bar R) :
@@ -3719,6 +3705,30 @@ move=> mD; have [D0 r|D0 [r| |]] := eqVneq (mu D) 0.
 - by rewrite integral_csty// gt0_mulye// lt_neqAle eq_sym D0/=.
 - by rewrite integral_cstNy// gt0_mulNye// lt_neqAle eq_sym D0/=.
 Qed.
+
+Lemma le_integral_abse d (T : measurableType d) (R : realType)
+    (mu : {measure set T -> \bar R})  (D : set T) (mD : measurable D)
+    (g : T -> \bar R) a (f : \bar R -> \bar R) (mf : measurable_fun setT f)
+    (f0 : forall r, 0 <= r -> 0 <= f r)
+    (f_nd : {in `[0, +oo[%classic &, {homo f : x y / x <= y}}) :
+  measurable_fun D g -> (0 < a)%R ->
+  (f a%:E) * mu (D `&` [set x | (`|g x| >= a%:E)%E]) <= \int[mu]_(x in D) f `|g x|.
+Proof.
+move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
+  by apply: emeasurable_fun_c_infty => //; exact: measurable_fun_comp.
+apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) f `|g x|)).
+  rewrite -integral_cst//; apply: ge0_le_integral => //.
+  - by move=> x _ /=; rewrite f0 // lee_fin ltW.
+  - exact/measurable_fun_cst.
+  - by move=> x _ /=; rewrite f0.
+  - apply: measurable_fun_comp => //; apply: measurable_fun_comp => //.
+    exact: measurable_funS mg.
+  - by move=> x /= [Dx]; apply: f_nd;
+      rewrite inE /= in_itv /= andbT// lee_fin ltW.
+apply: subset_integral => //; last by move=> x _ /=; rewrite f0.
+by apply: measurable_fun_comp => //; exact: measurable_fun_comp.
+Qed.
+
 Local Close Scope ereal_scope.
 
 Section ae_measurable_fun.
