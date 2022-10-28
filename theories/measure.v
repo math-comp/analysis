@@ -60,8 +60,10 @@ From HB Require Import structures.
 (*                            of measurableType                               *)
 (*  G.-sigma.-measurable A == A is measurable for the sigma-algebra <<s G >>  *)
 (*                                                                            *)
-(* discrete_measurable_nat == the measurableType corresponding to             *)
-(*                            [set: set nat]                                  *)
+(* discrete_measurable_bool == the measurableType corresponding to            *)
+(*                             [set: set bool]                                *)
+(*  discrete_measurable_nat == the measurableType corresponding to            *)
+(*                             [set: set nat]                                 *)
 (*          salgebraType G == the measurableType corresponding to <<s G >>    *)
 (*                                                                            *)
 (*      measurable_fun D f == the function f with domain D is measurable      *)
@@ -861,6 +863,27 @@ move=> Fm; have /ppcard_eqP[f] := card_rat.
 by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
 Qed.
 
+Section discrete_measurable_bool.
+
+Definition discrete_measurable_bool : set (set bool) := [set: set bool].
+
+Let discrete_measurable0 : discrete_measurable_bool set0. Proof. by []. Qed.
+
+Let discrete_measurableC X :
+  discrete_measurable_bool X -> discrete_measurable_bool (~` X).
+Proof. by []. Qed.
+
+Let discrete_measurableU (F : (set bool)^nat) :
+  (forall i, discrete_measurable_bool (F i)) ->
+  discrete_measurable_bool (\bigcup_i F i).
+Proof. by []. Qed.
+
+HB.instance Definition _ := @isMeasurable.Build default_measure_display bool
+  (Pointed.class _) discrete_measurable_bool discrete_measurable0
+  discrete_measurableC discrete_measurableU.
+
+End discrete_measurable_bool.
+
 Section discrete_measurable_nat.
 
 Definition discrete_measurable_nat : set (set nat) := [set: set nat].
@@ -920,8 +943,9 @@ Variables (d1 d2 d3 : measure_display).
 Variables (T1 : measurableType d1).
 Variables (T2 : measurableType d2).
 Variables (T3 : measurableType d3).
+Implicit Type D E : set T1.
 
-Lemma measurable_fun_id (D : set T1) : measurable_fun D id.
+Lemma measurable_fun_id D : measurable_fun D id.
 Proof. by move=> mD A mA; apply: measurableI. Qed.
 
 Lemma measurable_fun_comp (f : T2 -> T3) E (g : T1 -> T2) :
@@ -931,7 +955,7 @@ move=> mf mg /= mE A mA; rewrite comp_preimage; apply/mg => //.
 by rewrite -[X in measurable X]setTI; apply/mf.
 Qed.
 
-Lemma eq_measurable_fun (D : set T1) (f g : T1 -> T2) :
+Lemma eq_measurable_fun D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
 Proof.
 move=> Dfg Df mD A mA; rewrite (_ : D `&` _ = D `&` f @^-1` A); first exact: Df.
@@ -940,13 +964,13 @@ apply/seteqP; rewrite /preimage; split => [x /= [Dx Agx]|x /= [Dx Afx]].
 by split=> //; rewrite -Dfg// inE.
 Qed.
 
-Lemma measurable_fun_cst (D : set T1) (r : T2) :
+Lemma measurable_fun_cst D (r : T2) :
   measurable_fun D (cst r : T1 -> _).
 Proof.
 by move=> mD /= Y mY; rewrite preimage_cst; case: ifPn; rewrite ?setIT ?setI0.
 Qed.
 
-Lemma measurable_funU (D E : set T1) (f : T1 -> T2) :
+Lemma measurable_funU D E (f : T1 -> T2) :
   measurable D -> measurable E ->
   measurable_fun (D `|` E) f <-> measurable_fun D f /\ measurable_fun E f.
 Proof.
@@ -959,7 +983,7 @@ split.
  by rewrite setICA setIA setUC setUK.
 Qed.
 
-Lemma measurable_funS (E D : set T1) (f : T1 -> T2) :
+Lemma measurable_funS E D (f : T1 -> T2) :
     measurable E -> D `<=` E -> measurable_fun E f ->
   measurable_fun D f.
 Proof.
@@ -970,11 +994,11 @@ suff -> : D `|` (E `\` D) = E by move=> [[]] //.
 by rewrite setDUK.
 Qed.
 
-Lemma measurable_funTS (D : set T1) (f : T1 -> T2) :
+Lemma measurable_funTS D (f : T1 -> T2) :
   measurable_fun setT f -> measurable_fun D f.
 Proof. exact: measurable_funS. Qed.
 
-Lemma measurable_fun_ext (D : set T1) (f g : T1 -> T2) :
+Lemma measurable_fun_ext D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
 Proof.
 by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
@@ -994,6 +1018,31 @@ move=> mD mE DE; split => mf _ /= X mX.
     by rewrite (setIA D) (setIidl DE) setIA setIid.
   rewrite setUIr setvU setTI => /(measurableI _ _ mD).
   by rewrite setIA (setIidl DE) setIUr setICr set0U.
+Qed.
+
+Lemma measurable_fun_if (g h : T1 -> T2) D (mD : measurable D)
+    (f : T1 -> bool) (mf : measurable_fun D f) :
+  measurable_fun (D `&` (f @^-1` [set true])) g ->
+  measurable_fun (D `&` (f @^-1` [set false])) h ->
+  measurable_fun D (fun t => if f t then g t else h t).
+Proof.
+move=> mx my /= _ B mB; rewrite (_ : _ @^-1` B =
+  ((f @^-1` [set true]) `&` (g @^-1` B) `&` (f @^-1` [set true])) `|`
+  ((f @^-1` [set false]) `&` (h @^-1` B) `&` (f @^-1` [set false]))).
+  rewrite setIUr; apply: measurableU.
+  - by rewrite setIAC setIid setIA; apply: mx => //; exact: mf.
+  - by rewrite setIAC setIid setIA; apply: my => //; exact: mf.
+apply/seteqP; split=> [t /=| t]; first by case: ifPn => ft; [left|right].
+by move=> /= [|]; case: ifPn => ft; case=> -[].
+Qed.
+
+Lemma measurable_fun_ifT (g h : T1 -> T2) (f : T1 -> bool)
+    (mf : measurable_fun setT f) :
+  measurable_fun setT g -> measurable_fun setT h ->
+  measurable_fun setT (fun t => if f t then g t else h t).
+Proof.
+by move=> mx my; apply: measurable_fun_if => //;
+  [exact: measurable_funS mx|exact: measurable_funS my].
 Qed.
 
 End measurable_fun.
