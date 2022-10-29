@@ -117,6 +117,28 @@
   + lemma `fsbig_setU_set1`
 - in `tooplogy.v`:
   + lemmas `closed_bigsetU`, `accessible_finite_set_closed`
+- in file `classical_sets.v`
+  + new lemmas `eq_image_id`, `subKimage`, `subimageK`, and `eq_imageK`.
+- in file `functions.v`
+  + new lemmas `inv_oppr`, `preimageEoinv`, `preimageEinv`, and `inv_funK`.
+- in file `mathcomp_extra.v`
+  + new Definition `inv_fun`
+  + new lemmas `ler_gtP`, and `ler_ltP`.
+- in file `constructive_ereal.v`
+  + new lemmas `real_ltey`, `real_ltNye`, `real_leey`, `real_leNye`, `fin_real`, `addNye`, `addeNy`, `esumNyP`, `esumyP`, `desumyP`, `desumNyP`, `eqyP`, `gt0_muley`, `lt0_muley`, `gt0_muleNy`, and `lt0_muleNy`.
+- in file `derive.v`
+  + new lemmas `le0r_fcvg`, `ler0_fcvg`, and `ler_fcvg`.
+- in file `ereal.v`
+  + new lemmas `ereal_nbhs_pinfty_gt`, `ereal_nbhs_ninfty_lt`, `ereal_nbhs_pinfty_real`, and `ereal_nbhs_ninfty_real`.
+- in file `lebesgue_measure.v`
+  + new Lemma `measurable_fun_lim_esup`
+- in file `normedtype.v`
+  + new lemmas `nbhsNimage`, `nbhs_pinfty_real`, `nbhs_ninfty_real`, `pinfty_ex_ge`, `cvgryPger`, `cvgryPgtr`, `cvgryPgty`, `cvgryPgey`, `cvgrNyPler`, `cvgrNyPltr`, `cvgrNyPltNy`, `cvgrNyPleNy`, `cvgry_ger`, `cvgry_gtr`, `cvgrNy_ler`, `cvgrNy_ltr`, `cvgrNy`, `cvgNrNy`, `cvgryPge`, `cvgryPgt`, `cvgrNyPle`, `cvgrNyPlt`, `cvgry_ge`, `cvgry_gt`, `cvgrNy_le`, `cvgrNy_lt`, `cvgrnyP`, `cvgeyPger`, `cvgeyPgtr`, `cvgeyPgty`, `cvgeyPgey`, `cvgeNyPler`, `cvgeNyPltr`, `cvgeNyPltNy`, `cvgeNyPleNy`, `cvgey_ger`, `cvgey_gtr`, `cvgeNy_ler`, `cvgeNy_ltr`, `cvgNey`, `cvgNeNy`, `cvgeryP`, `cvgerNyP`, `cvgeyPge`, `cvgeyPgt`, `cvgeNyPle`, `cvgeNyPlt`, `cvgey_ge`, `cvgey_gt`, `cvgeNy_le`, `cvgeNy_lt`, `cvgenyP`, `normrZ`, `normfZV`, `fcvgrPdist_lt`, `cvgrPdist_lt`, `cvgrPdistC_lt`, `cvgr_dist_lt`, `cvgr_distC_lt`, `cvgr_dist_le`, `cvgr_distC_le`, `nbhs_norm0P`, `cvgr0Pnorm_lt`, `cvgr0_norm_lt`, `cvgr0_norm_le`, `nbhsDl`, `nbhsDr`, `nbhs0P`, `real_ltr_distlC`, `filter_imply`, `nbhs_right0P`, `nbhs_left0P`, `nbhs_right_gt`, `nbhs_left_lt`, `nbhs_right_neq`, `nbhs_left_neq`, `nbhs_right_ge`, `nbhs_left_le`, `nbhs_right_lt`, `nbhs_right_le`, `nbhs_left_gt`, `nbhs_left_ge`, `nbhsr0P`, `cvgrPdist_le`, `cvgrPdist_ltp`, `cvgrPdist_lep`, `cvgrPdistC_le`, `cvgrPdistC_ltp`, `cvgrPdistC_lep`, `cvgr0Pnorm_le`, `cvgr0Pnorm_ltp`, `cvgr0Pnorm_lep`, `cvgr_norm_lt`, `cvgr_norm_le`, `cvgr_norm_gt`, `cvgr_norm_ge`, `cvgr_neq0`, `real_cvgr_lt`, `real_cvgr_le`, `real_cvgr_gt`, `real_cvgr_ge`, `cvgr_lt`, `cvgr_le`, `cvgr_gt`, `cvgr_ge`, `cvgr_norm_lty`, `cvgr_norm_ley`, `cvgr_norm_gtNy`, `cvgr_norm_geNy`, `fcvgr_dist_lt2P`, `cvgr_dist_lt2P`, `cvgr_dist_lt2`, `cvgNP`, `norm_cvg0P`, `cvgVP`, `is_cvgVE`, `cvg_ge`, `cvg_le`, `nbhs_EFin`, `nbhs_ereal_pinfty`, `nbhs_ereal_ninfty`, `fine_fcvg`, `fcvg_is_fine`, `fine_cvg`, `cvg_is_fine`, `cvg_EFin`, `fine_cvgP`, `neq0_fine_cvgP`, `cvgeD`, `cvgeN`, `cvgeB`, `cvge_sub0`, `is_cvgeN`, `cvgeMl`, `is_cvgeMl`, `cvgeMr`, `is_cvgeMr`, `cvg_abse0P`, `cvgeM`, `lim_gee`, `lim_lee`, `is_cvgeD`, `limeD`, `limeMl`, `limeMr`, `is_cvgeM`, `limeM`, `limeN`, `cvge_ge`, `cvge_le`, `lim_nnesum`, `gt0_cvgV0`, `cvgVy`, `lt0_cvgV0`, `cvgVNy`, `ger_cvgy`, `ler_cvgNy`, `gee_cvgy`, `lee_cvgNy`, `fin_squeeze`, `esqueeze`, `continuous_linear_bounded`, and `bounded_linear_continuous`.
+- in file `sequences.v`
+  + new definitions `lim_esup`, and `lim_einf`.
+  + new lemmas `nneseries_pinfty`, `lim_einf_shift`, `lim_esup_le_cvg`, `lim_einfN`, `lim_esupN`, `lim_einf_sup`, `cvgNy_lim_einf_sup`, `cvgNy_einfs`, `cvgNy_esups`, `cvgy_einfs`, `cvgy_esups`, `cvg_lim_einf_sup`, `is_cvg_lim_einfE`, and `is_cvg_lim_esupE`.
+- in file `topology.v`
+  + new lemmas `eq_near`, `cvgNpoint`, `near_fun`, `cvgnyPge`, `cvgnyPgt`, `cvgnyPgty`, `cvgnyPgey`, `fcvg_ballP`, `fcvg_ballPpos`, `fcvg_ball`, and `fcvg_ball2P`.
 
 ### Changed
 - in `topology.v`
@@ -136,7 +158,6 @@
 - in `realfun.v`:
   + Instance for `GRing.opp` over real intervals
 
-### Changed
 - in `realfun.v`
   + lemmas `itv_continuous_inj_le`, `itv_continuous_inj_ge`,
      `itv_continuous_inj_mono`, `segment_continuous_inj_le`,
@@ -221,6 +242,24 @@
     `range_factor`, `mem_factor_itv`,
     `set_itv_ge`, `trivIset_set_itv_nth`, `disjoint_itvxx`, `lt_disjoint`,
     `disjoint_neitv`, `neitv_bnd1`, `neitv_bnd2` (moved to `classical/set_interval.v`)
+
+- in file `constructive_ereal.v`
+  + removed lemmas `esum_ninftyP`, `esum_pinftyP`, `desum_pinftyP`, `desum_ninftyP`, and `eq_pinftyP`.
+- in file `derive.v`
+  + removed lemmas `le0r_cvg_map`, `ler0_cvg_map`, and `ler_cvg_map`.
+- in file `lebesgue_measure.v`
+  + removed Lemma `measurable_fun_elim_sup`
+- in file `normedtype.v`
+  + removed lemmas `normmZ`, `cvg_distP`, `cvg_dist`, `cvg_gt_ge`, `cvg_lt_le`, `cvg_distW`, `cvg_bounded_real`, `continuous_cvg_dist`, `cvg_dist2P`, `cvg_dist2`, `cvg_dist0`, `ereal_cvgN`, `ereal_is_cvgN`, `ereal_cvgrM`, `ereal_is_cvgrM`, `ereal_cvgMr`, `ereal_is_cvgMr`, `ler0_addgt0P`, `ereal_limrM`, `ereal_limMr`, `ereal_limN`, `linear_continuous0`, and `linear_bounded0`.
+- in file `sequences.v`
+  + removed definitions `elim_sup`, and `elim_inf`.
+  + removed lemmas `cvgPpinfty`, `cvgNpinfty`, `cvgNninfty`, `cvgPninfty`, `ger_cvg_pinfty`, `ler_cvg_ninfty`, `cvgPpinfty_lt`, `cvgPninfty_lt`, `cvgPpinfty_near`, `cvgPninfty_near`, `cvgPpinfty_lt_near`, `cvgPninfty_lt_near`, `invr_cvg0`, `invr_cvg_pinfty`, `nat_dvg_real`, `nat_cvgPpinfty`, `ereal_cvg_abs0`, `ereal_cvg_ge0`, `ereal_lim_ge`, `ereal_lim_le`, `dvg_ereal_cvg`, `ereal_cvg_real`, `ereal_cvgPpinfty`, `ereal_cvgPninfty`, `ereal_squeeze`, `ereal_cvgD_pinfty_fin`, `ereal_cvgD_ninfty_fin`, `ereal_cvgD_pinfty_pinfty`, `ereal_cvgD_ninfty_ninfty`, `ereal_cvgD`, `ereal_cvgB`, `ereal_is_cvgD`, `ereal_cvg_sub0`, `ereal_limD`, `ereal_cvgM_gt0_pinfty`, `ereal_cvgM_lt0_pinfty`, `ereal_cvgM_gt0_ninfty`, `ereal_cvgM_lt0_ninfty`, `ereal_cvgM`, `ereal_lim_sum`, `elim_inf_shift`, `elim_sup_le_cvg`, `elim_infN`, `elim_supN`, `elim_inf_sup`, `cvg_ninfty_elim_inf_sup`, `cvg_ninfty_einfs`, `cvg_ninfty_esups`, `cvg_pinfty_einfs`, `cvg_pinfty_esups`, `cvg_elim_inf_sup`, `is_cvg_elim_infE`, and `is_cvg_elim_supE`.
+- in file `topology.v`
+  + removed lemmas `cvg_map_lim`, `cvg_ballPpos`, and `app_cvg_locally`.
+
+### Potentially changed
+
+`pred_oappE`, `pred_oapp_set`, `itvxx`, `itvxxP`, `subset_itv_oo_cc`, `gee0P`, `fin_num_abs`, `abse_fin_num`, `addye`, `addey`, `lee_opp2`, `lte_opp2`, `ereal_nbhs_pinfty_ge`, `ereal_nbhs_ninfty_le`, `fatou`, `nbhsN`, `nearN`, `pinfty_ex_gt`, `pinfty_ex_gt0`, `near_pinfty_div2`, `normrZV`, `nbhs_normP`, `nbhs_le_nbhs_norm`, `nbhs_norm_le_nbhs`, `nbhs_normE`, `filter_from_normE`, `near_nbhs_norm`, `nbhs0_lt`, `dnbhs0_lt`, `nbhs0_le`, `dnbhs0_le`, `nbhs_norm_ball`, `bound_side`, `open_lt`, `open_gt`, `open_neq`, `interval_open`, `closed_le`, `closed_ge`, `closed_eq`, `interval_closed`, `at_left`, `at_right`, `at_right_in_segment`, `self_sub`, `fun1`, `dominated_by`, `strictly_dominated_by`, `sub_dominatedl`, `sub_dominatedr`, `dominated_by1`, `strictly_dominated_by1`, `ex_dom_bound`, `ex_strict_dom_bound`, `cvg_bounded`, `opp_continuous`, `add_continuous`, `natmul_continuous`, `scale_continuous`, `scaler_continuous`, `scalel_continuous`, `cvgN`, `cvg_norm`, `is_cvg_norm`, `cvgV`, `is_cvgV`, `cvgM`, `is_cvgM`, `is_cvgMr`, `is_cvgMrE`, `is_cvgMl`, `is_cvgMlE`, `lim_norm`, `limV`, `lim_ge`, `lim_le`, `abse_continuous`, `cvg_abse`, `is_cvg_abse`, `mule_continuous`, `open_ereal_lt`, `open_ereal_gt`, `open_ereal_lt'`, `open_ereal_gt'`, `open_ereal_lt_ereal`, `open_ereal_gt_ereal`, `closed_ereal_le_ereal`, `closed_ereal_ge_ereal`, `closure_gt`, `closure_lt`, `is_interval`, `is_intervalPlt`, `interval_is_interval`, `nbhs_image_ERFin`, `nbhs_open_ereal_lt`, `nbhs_open_ereal_gt`, `nbhs_open_ereal_pinfty`, `nbhs_open_ereal_ninfty`, `ereal_hausdorff`, `EFin_lim`, `squeeze`, `ler_lim`, `lee_lim`, `linear_boundedP`, `le_bnd_ereal`, `lt_ereal_bnd`, `Interval_ereal_mem`, `ereal_mem_Interval`, `itv_cpinfty_pinfty`, `itv_opinfty_pinfty`, `itv_cninfty_pinfty`, `itv_oninfty_pinfty`, `contraction_dist`, `contraction_cvg`, `contraction_cvg_fixed`, `cvg_lim`, `lim_near_cst`, `lim_cst`, `cvg_ballP`, `cvg_ball`, and `cvg_ball2P`.
 
 ### Infrastructure
 
