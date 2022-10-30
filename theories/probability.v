@@ -34,6 +34,7 @@ Reserved Notation "f `o X" (at level 50, format "f  `o '/ '  X").
 Reserved Notation "X '`^+' n" (at level 11).
 Reserved Notation "X `+ Y" (at level 50).
 Reserved Notation "X `- Y" (at level 50).
+Reserved Notation "X `* Y" (at level 49).
 Reserved Notation "k `\o* X" (at level 49).
 Reserved Notation "''E' X" (format "''E'  X", at level 5).
 Reserved Notation "''V' X" (format "''V'  X", at level 5).
@@ -74,6 +75,9 @@ Proof.
 apply/set0P/negP => /eqP setT0; have := probability0.
 by rewrite -setT0 probability_setT; apply/eqP; rewrite oner_neq0.
 Qed.
+
+Lemma probability_ge0 (A : set T) : (0 <= P A)%E.
+Proof. exact: measure_ge0. Qed.
 
 Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
 Proof.
@@ -120,6 +124,21 @@ Qed.
 HB.instance Definition _ m := subr_mfun_subproof m.
 Definition subr_mfun m := [the {mfun _ >-> R} of subr m].
 
+Definition mabs : R -> R := fun x => `| x |.
+
+Lemma measurable_fun_mabs : measurable_fun setT (mabs).
+Proof. exact: measurable_fun_normr. Qed.
+
+HB.instance Definition _ := @IsMeasurableFun.Build _ _ R
+  (mabs) (measurable_fun_mabs).
+
+Let measurable_fun_mmul d (T : measurableType d) (f g : {mfun T >-> R}) :
+  measurable_fun setT (f \* g).
+Proof. exact/measurable_funM. Qed.
+
+HB.instance Definition _ d (T : measurableType d) (f g : {mfun T >-> R}) :=
+  @IsMeasurableFun.Build _ _ R (f \* g) (measurable_fun_mmul f g).
+
 End mfun.
 
 Section comp_mfun.
@@ -158,11 +177,15 @@ Definition sub_RV (X Y : {RV P >-> R}) : {RV P >-> R} :=
 Definition scale_RV k (X : {RV P >-> R}) : {RV P >-> R} :=
   [the {mfun _ >-> _} of k \o* X].
 
+Definition mul_RV (X Y : {RV P >-> R}) : {RV P >-> R} :=
+  [the {mfun _ >-> _} of (X \* Y)].
+
 End random_variables.
 Notation "f `o X" := (comp_RV f X).
 Notation "X '`^+' n" := (exp_RV X n).
 Notation "X `+ Y" := (add_RV X Y).
 Notation "X `- Y" := (sub_RV X Y).
+Notation "X `* Y" := (mul_RV X Y).
 Notation "k `\o* X" := (scale_RV k X).
 
 Section expectation.
