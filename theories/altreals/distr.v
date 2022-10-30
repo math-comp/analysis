@@ -1206,7 +1206,7 @@ elim: {i} s (l i) (ge0_l i) (x i) => [|j s ih] li ge0_li xi.
   by rewrite !big_nil !addr0 => ->; rewrite !mul1r.
 rewrite !big_cons; have := ge0_l j; rewrite le_eqVlt.
 case/orP => [/eqP<-|gt0_lj].
-  by rewrite !Monoid.simpm /=; apply/ih.
+  by rewrite !Monoid.simpm /= !Monoid.simpm; apply/ih.
 rewrite !addrA => eq1; pose z := (li * xi + l j * x j) / (li + l j).
 have nz_lij: li + l j != 0 by rewrite gt_eqF ?ltr_paddl.
 have/ih := eq1 => -/(_ _ z); rewrite [_ * (_ / _)]mulrC.
