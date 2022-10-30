@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
-Require Import boolp reals ereal.
+Require Import boolp reals ereal exp.
 From HB Require Import structures.
 Require Import classical_sets signed functions topology normedtype cardinality.
 Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
@@ -119,6 +119,209 @@ Coercion LfunType_of_LType (f : LType) : LfunType mu p :=
 
 End Lequiv.
 
+Section esqrt.
+Local Open Scope ereal_scope.
+Context (R : realType).
+Implicit Types x : \bar R.
+
+Definition sqrte x :=
+  if x is +oo then +oo else if x is r%:E then (Num.sqrt r)%:E else 0.
+
+Lemma esqrt_ge0 x : 0 <= sqrte x.
+Proof. by case: x => [r||]/=. Qed.
+
+Lemma fin_num_esqrt x : x \is a fin_num -> sqrte x \is a fin_num.
+Proof. case: x => [r||] //=. Qed.
+
+Lemma esqrtE x : x < +oo -> sqrte x = (Num.sqrt (fine x))%:E.
+Proof. case: x => [r||] //=. rewrite sqrtr0 //. Qed. 
+
+End esqrt.
+
+(* TODO write issue *)
+Section powere_pos.
+Variables (R : realType).
+
+Local Open Scope ereal_scope.
+
+Definition powere_pos (a : \bar R) (x : R) :=
+  if a == 0 then 0 else if x == 0%R then 1
+    else
+      match a with
+        a'%:E => (expR (x * ln a'))%:E
+      | +oo => +oo
+      | -oo => 0
+      end.
+Local Notation "a `^ x" := (powere_pos a x) : ereal_scope.
+Local Notation "a `^ x" := (power_pos a x) : ring_scope.
+
+Lemma power_posr0' (a : R) : (a != 0 -> a `^ 0 = 1)%R.
+Proof.
+move=> a0; rewrite /power_pos mul0r expR0; case: ifPn => //.
+by move: a0 => /eqP ane0 /eqP a0 //.
+Qed.
+
+Lemma powere_posr (a x : R) :
+  ((a%:E) `^ x = (power_pos a x)%R%:E)%E.
+Proof.
+rewrite /powere_pos.
+case: ifPn => [/eqP|].
+  by case=> ->; rewrite /power_pos; case: ifP; rewrite eq_refl.
+case: ifPn => [/eqP -> r0|].
+  rewrite power_posr0' //.
+move=> x0 an0; rewrite /power_pos ifF => //.
+by apply/eqP => a0; move: an0 => /eqP; rewrite a0.
+Qed.
+
+Lemma powere_posy (x : R) : (x != 0)%R -> +oo `^ x = +oo.
+Proof.
+  move => xne0; rewrite /powere_pos ifF //; apply/eqP => x0.
+  by move: x0 xne0 => ->; rewrite eq_refl.
+Qed.
+
+Lemma powere_pos_fine (a : \bar R) (x : R) :
+  (x != 0)%R -> ((fine a) `^ x = fine (a `^ x))%R.
+Proof.
+case: a => [a'||] x0.
+- by rewrite /fine powere_posr.
+- by rewrite /fine powere_posy /power_pos ?ifT.
+- rewrite /fine /powere_pos /= ifF.
+    by apply/ifT => //.
+  by apply/eqP => xeq0; move: xeq0 x0 => ->; rewrite eq_refl.
+Qed.
+
+Lemma powere_posNy (x : R) : (x != 0)%R -> -oo `^ x = 0.
+Proof.
+  move => xne0. rewrite /powere_pos ifF //.
+  by apply/eqP; move: xne0 => /eqP.
+Qed.
+
+Lemma powere_funr1 (a : \bar R) : 0 <= a -> a `^ 1 = a.
+Proof.
+move: a; case => a //.
+  move=> a0; rewrite /powere_pos oner_eq0 /power_pos mul1r. case: ifPn => [/eqP -> // | h].
+  by rewrite lnK// posrE lt_neqAle eq_sym h -lee_fin a0.
+by rewrite /powere_pos oner_eq0.
+Qed.
+
+Lemma powere_pos_ge0 (a : \bar R) (x : R) : 0 <= a `^ x.
+Proof.
+rewrite /powere_pos; case: ifPn => //.
+move: a => [a|_|_]; case: ifP => //.
+  by rewrite lee_fin expR_ge0.
+Qed.
+
+Lemma powere_pos_gt0 (a : \bar R) x : 0 < a -> 0 < a `^ x.
+Proof. 
+case: a => // [a|_].
+ by rewrite powere_posr lte_fin => a0; apply: lte_tofin; apply power_pos_gt0.
+by rewrite /powere_pos; case:ifP.
+Qed.
+
+Lemma powere_posr1 a : 0 <= a -> a `^ 1 = a.
+Proof.
+case: a => // [a|_].
+  by rewrite powere_posr lee_fin => h; apply: congr1; exact: power_posr1.
+by rewrite /powere_pos ifF // oner_eq0.
+Qed.
+
+Lemma powere_posr0 a : a != 0 -> a `^ 0 = 1.
+Proof. by move=> /eqP a0; rewrite /powere_pos eq_refl ifF; apply/eqP. Qed.
+
+Lemma powere_pos0 (x : R) : 0 `^ x = 0.
+Proof. by rewrite powere_posr power_pos0. Qed.
+
+Lemma powere_pos1 x : 1 `^ x = 1.
+Proof. by rewrite powere_posr power_pos1. Qed.
+Close Scope ereal_scope.
+
+Lemma power_pos_eq0 (x p : R) : x `^ p = 0 -> x = 0.
+Proof.
+rewrite /power_pos. have [->|_] := eqVneq x 0 => //.
+by move: (expR_gt0 (p * ln x)) => /gt_eqF /eqP.
+Qed.
+
+Lemma power_posM (x y : R) r :
+  (0 <= x)%R -> (0 <= y)%R -> ((x * y) `^ r = x `^ r * y `^ r)%R.
+Proof.
+rewrite 2!le_eqVlt.
+move=> /orP [/eqP <-|x0] /orP [/eqP <-|y0];
+  rewrite ?mul0r ?mulr0 ?power_pos0 ?mul0r ?mulr0 //.
+rewrite /power_pos gt_eqF ?mulr_gt0 // !gt_eqF //.
+by rewrite lnM ?posrE // -expRD mulrDr.
+Qed.
+
+Lemma power_posC (x y z : R) :
+  (x `^ y) `^ z = (x `^ z) `^ y.
+Proof. rewrite /power_pos.
+have [x0|x0] := eqVneq x 0.
+ by rewrite ln0 // ifT // ifT.
+rewrite gt_eqF; last exact: expR_gt0.
+rewrite gt_eqF; last exact: expR_gt0.
+by rewrite !expK 2!mulrA (mulrC z).
+Qed.
+
+Lemma measurable_fun_power_pos (D : set R) p : measurable D -> measurable_fun D (fun x => power_pos x p).
+Proof.
+rewrite /power_pos => mD.
+apply: measurable_fun_if => //.
+- apply: (measurable_fun_bool true).
+  rewrite /preimage/= -[X in measurable X]setTI.
+  apply: measurableI => //.
+  admit. (* apply: measurable_set1. *)
+- apply: measurable_fun_cst.
+- apply: subspace_continuous_measurable_fun => //= [|x].
+    apply: measurableI => //.
+    rewrite /preimage/= -[X in measurable X]setTI.
+    apply: measurableI => //.
+    admit.
+  apply: continuous_comp => //.
+    apply: continuousM.
+      apply: cst_continuous.
+    admit. (* apply: continuous_ln. *)
+    apply: continuous_expR.
+Admitted.
+
+Local Open Scope ereal_scope.
+Lemma powere_pos_eq0 (x : \bar R) (p : R) : -oo < x -> x `^ p = 0 -> x = 0.
+Proof.
+case: x => // [x|_].
+rewrite powere_posr => xp0.
+  by case; move/power_pos_eq0 => ->.
+rewrite /powere_pos.
+case: ifP => _ // /eqP.
+by rewrite onee_eq0.
+Qed.
+
+Lemma powere_posM (x y : \bar R) r :
+  0 <= x -> 0 <= y -> (x * y)%E `^ r = x `^ r * y `^ r.
+Proof.
+rewrite le_eqVlt eq_sym => /orP [/eqP ->|x0].
+  by rewrite mul0e powere_pos0 mul0e.
+rewrite le_eqVlt eq_sym => /orP [/eqP ->|y0].
+  by rewrite mule0 powere_pos0 mule0.
+have [->|r0] := eqVneq r 0%R.
+  move: x0 y0; rewrite 2!lt_neqAle eq_sym (eq_sym _ y) => /andP [x0 _] /andP [y0 _].
+  by rewrite powere_posr0 ?mule_neq0 ?powere_posr0 ?powere_posr0 ?mule1.
+move: x y x0 y0 => [x| |] [y| |] x0 y0; rewrite ?mulyy ?mulyNy ?mulNyy ?gt0_muleNy //.
+- by rewrite -EFinM !powere_posr power_posM // le_eqVlt; apply/orP; right.
+- by rewrite gt0_muley // powere_posy // gt0_muley // powere_pos_gt0.
+- by rewrite gt0_mulye // powere_posy // gt0_mulye // powere_pos_gt0.
+- by rewrite powere_posy // mulyy.
+Qed.
+
+Lemma powere12_sqrt (a : \bar R) : (0 <= a)%E -> (a `^ (2^-1))%E = sqrte a.
+Proof.
+case: a => // [r r0|_].
+  by rewrite powere_posr /sqrte; apply congr1; apply power12_sqrt; rewrite -lee_fin. 
+by rewrite powere_posy //.
+Qed.
+
+Local Close Scope ereal_scope.
+End powere_pos.
+Notation "a `^ x" := (powere_pos a x) : ereal_scope.
+Notation "a `^ x" := (power_pos a x) : ring_scope.
+
 Section Lspace.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
@@ -149,9 +352,194 @@ rewrite (le_lt_trans _ (lfuny f))// ge0_le_integral//.
   exact/measurable_fun_exprn/measurable_funT_comp.
 - by move=> t _/=; rewrite lee_fin normrX power_pos_mulrn.
 Qed.
+End Lspace.
+
+Section Lspace.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {finite_measure set T -> \bar R}.
+
+Definition Lp_norm (p : nat) (f : T -> R) : \bar R :=
+  ((\int[mu]_x (`|f x| ^+ p)%:E) `^ (p%:R^-1))%E.
+
+Local Notation "`|| f ||_ p" := (Lp_norm p f) (at level 0).
+
+Lemma Lp_norm_ge0 (p : nat) (f : T -> R) : (0 <= `|| f ||_(p%R))%E.
+Proof. by rewrite /Lp_norm powere_pos_ge0. Qed.
+
+Lemma Lp_norm_hoelder0 (f g : T -> R) p q :
+  (p != 0)%N -> (q != 0)%N ->
+  (`|| f ||_p = 0)%E ->
+  measurable_fun setT f -> measurable_fun setT g -> (p%:R^-1 + q%:R^-1 = 1 :> R) ->
+    (`|| (f \* g)%R ||_1 <= `|| f ||_p * `|| g ||_q)%E.
+Proof.
+move=> p0 q0 f0 mf mg pq; rewrite f0 mul0e.
+suff: `|| (f \* g)%R ||_ (1) = 0%E by move=> ->.
+move: f0; rewrite /Lp_norm; move/powere_pos_eq0.
+rewrite /= invr1 powere_funr1// => [fp|]; last by apply: integral_ge0.
+have f0 : ae_eq mu setT (fun x => (`|f x| ^+ p)%:E) (cst 0%E).
+  apply/ae_eq_integral_abs => //=.
+    by apply/EFin_measurable_fun; apply/measurable_fun_exprn; apply: measurable_funT_comp.
+  under eq_integral => x _. rewrite ger0_norm. over. 
+    by apply exprn_ge0; apply normr_ge0.
+  by apply fp; apply: lt_le_trans; last
+    by apply: integral_ge0 => x _; apply: exprn_ge0; apply: normr_ge0.
+rewrite (ae_eq_integral (cst 0)%E) => //.
+- by rewrite integral_cst // mul0e.
+- by apply measurable_funT_comp => //;
+    have ->: (fun x : T => (`|f x * g x| ^+ 1)) = normr \o (fun x : T => f x * g x) => //;
+    apply measurable_funT_comp => //; apply measurable_funM.
+- by apply:measurable_fun_cst.
+apply:ae_imply => [x fp0 _|]; [move: fp0 => /= fp0|apply f0].
+apply congr1; apply EFin_inj in fp0 => //; rewrite expr1.
+have ->: f x = 0.
+  move: fp0; apply contraPP; move/eqP; rewrite -normr_gt0.
+  move=> fp0; apply/eqP; apply lt0r_neq0.
+  rewrite (_ : 0 = (p == 0%N)%:R) -?expr0n //=; first by rewrite ltr_expn2r => //.
+  by rewrite expr0n (negPf p0).
+by rewrite mul0r normr0 //.
+Qed.
+
+Section Rintegral.
+Implicit Types (f : T -> R) (D : set T).
+
+Lemma eq_Rintegral D g f : {in D, f =1 g} ->
+  (\int[mu]_(x in D) f x)%R = (\int[mu]_(x in D) g x)%R.
+Proof.
+move=> fg.
+rewrite /Rintegral.
+congr fine.
+apply eq_integral => x Dx.
+f_equal.
+by apply: fg.
+Qed.
+
+End Rintegral.
+
+Section fine.
+Definition inve (x : \bar R) := EFin ((fine x)^-1).
+
+Lemma fine_inv x : (fine x)^-1 = fine (inve x).
+Proof. by case: x. Qed.
+End fine.
+
+Local Open Scope ring_scope.
+Lemma Lp_norm_hoelder (f g : T -> R) p q :
+  (p != 0)%N -> (q != 0)%N ->
+  measurable_fun setT f -> measurable_fun setT g -> (p%:R^-1 + q%:R^-1 = 1 :> R) ->
+    (`|| (f \* g)%R ||_1 <= `|| f ||_p * `|| g ||_q)%E.
+Proof.
+move=> p0 q0 mf mg pq.
+have [f0|f0] := eqVneq (`|| f ||_ (p)) 0%E; first by apply Lp_norm_hoelder0.
+have [g0|g0] := eqVneq (`|| g ||_ (q)) 0%E.
+  rewrite muleC.
+  have ->: `|| (f \* g)%R ||_ (1) = `|| (g \* f)%R ||_ (1)
+    by apply congr1; rewrite /GRing.mul_fun; apply funext => x; rewrite mulrC.
+  by apply Lp_norm_hoelder0 => //; rewrite addrC.
+have [foo|foo] := eqVneq (`|| f ||_(p)) +oo%E.
+  rewrite foo gt0_mulye ?leey//.
+  by rewrite lt_neqAle eq_sym g0/= powere_pos_ge0.
+have [goo|goo] := eqVneq (`|| g ||_(q)) +oo%E.
+  rewrite goo gt0_muley ?leey//.
+  by rewrite lt_neqAle eq_sym f0/= powere_pos_ge0.
+pose F x := `| f x | / (fine `|| f ||_p).
+pose G x := `| g x | / (fine `|| g ||_q).
+have fpos : (0 < `|| f ||_ (p))%E
+  by rewrite lt_neqAle eq_sym; apply/andP; split; [|apply Lp_norm_ge0].
+have gpos : (0 < `|| g ||_ (q))%E
+  by rewrite lt_neqAle eq_sym; apply/andP; split; [|apply Lp_norm_ge0].
+have mfpow : measurable_fun [set: T] (fun x : T => (`|f x| `^ p%:R)%:E)
+  by apply: measurable_funT_comp => //;
+     apply: (@measurable_funT_comp _ _ _ _ _ _ (fun x => power_pos x (p%:R))) => //;
+     [apply: measurable_fun_power_pos|apply: measurable_funT_comp].
+have Fp1 : \int[mu]_x (F x `^ p%:R) = 1.
+  rewrite /F.
+  transitivity (\int[mu]_x ((`|f x| `^ p %:R) / (fine `|| f ||_ (p) `^ p%:R))).
+    apply: eq_Rintegral => t _.
+    have [->|t0] := eqVneq `| f t | 0.
+      rewrite mul0r power_pos0 mul0r => //.
+    rewrite power_posM =>[|//|]; last by
+      rewrite -power_pos_inv; [apply power_pos_ge0|];
+        apply:fine_ge0; apply Lp_norm_ge0.
+    apply congr1; rewrite -!power_pos_inv;
+      [|apply power_pos_ge0|rewrite fine_ge0 // Lp_norm_ge0 //].
+    by rewrite power_posC.
+  transitivity (
+    \int[mu]_x (`|f x| `^ p%:R) / (fine (`|| f ||_ (p) `^ p%:R))
+  ).
+  rewrite /Rintegral fine_inv mulrC -fineM => //;
+    last first.
+    apply: integral_fune_fin_num => //.
+    rewrite /integrable; split.
+      apply mfpow.
+    admit. (* maybe use Lfun.intf? *)
+  rewrite -integralM => //;
+    last first.
+    rewrite /integrable; split.
+      apply mfpow.
+    admit.
+  apply congr1; apply eq_integral => x _.
+  rewrite mulrC -EFinM.
+  apply congr1; apply congr2 => //; apply congr1.
+  by rewrite powere_pos_fine // pnatr_eq0.
+have Gq1 : \int[mu]_x (G x `^ q%:R) = 1.
+  admit.
+pose s x := ln ((F x) `^ p%:R).
+pose t x := ln ((G x) `^ q%:R).
+have Fs x : F x = expR (s x / p%:R).
+  rewrite /F /s.
+  admit.
+have Gt x : G x = expR (t x / q%:R).
+  admit.
+have exp_convex x : F x * G x <= (F x) `^ p%:R / p%:R + (G x) `^ q%:R / q%:R.
+  rewrite /F /G.
+  have: expR (s x / p%:R + t x / q%:R) <= p%:R^-1 * expR (s x) + q%:R^-1 * expR (t x).
+    admit. (* using convexity of exp *)
+  rewrite expRD.
+  rewrite -/(F x).
+  rewrite -/(G x).
+  rewrite -Fs -Gt => /le_trans; apply.
+  rewrite /s /t.
+  rewrite [X in _ * X + _](@lnK _ (F x `^ p%:R)); last by admit.
+  admit.
+Admitted.
+(* follow http://pi.math.cornell.edu/~erin/analysis/lectures.pdf version with convexity, not young inequality *)
+
+(* FROM https://ocw.mit.edu/courses/18-125-measure-and-integration-fall-2003/6f21af6c40de1eccd70349bd3a3b0095_18125_lec17.pdf *)
+Lemma Lspace2_Lspace1 (f : Ltype mu 2%N) : mu.-integrable [set: T] (EFin \o repr f).
+Proof.
+have mf := Lfun.mf (repr f).
+have foo := Lfun.intf (repr f).
+split; [exact/EFin_measurable_fun|].
+apply: (@le_lt_trans _ _
+    (sqrte (\int[mu]_x (`|repr f x| ^+ 2)%:E) * sqrte (mu setT)))%E; last first.
+  rewrite muleC lte_mul_pinfty//.
+  + by rewrite esqrt_ge0.
+  + by rewrite fin_num_esqrt// fin_num_measure.
+  + by rewrite -ge0_fin_numE ?esqrt_ge0// fin_num_esqrt// ge0_fin_numE// integral_ge0//.
+rewrite -[X in (_ * sqrte (mu X))%E](setTI setT).
+rewrite -integral_indic//.
+under [X in (_ * sqrte X)%E]eq_integral. move => x _. rewrite indicT. rewrite -(@ger0_norm _ (cst 1 x) _) //=. over.
+rewrite -powere12_sqrt; last by apply: integral_ge0.
+rewrite -powere12_sqrt; last by apply: integral_ge0.
+rewrite (_ : (\int[mu]__ `|1|%:E)%E = (\int[mu]_x `|cst 1 x| ^+ 2)%E); last first.
+  by apply: eq_integral => t _ /=; rewrite normr1 mule1.
+have : 2^-1 + 2^-1 = 1 :> R by rewrite -div1r -splitr.
+have := (@Lp_norm_hoelder _ (cst 1%R) 2%N 2%N erefl erefl mf (measurable_fun_cst _)).
+move=> /[apply].
+rewrite /Lp_norm.
+apply: le_trans.
+rewrite /Lp_norm /=.
+rewrite /Rintegral.
+rewrite invr1 powere_funr1; last by apply: integral_ge0.
+rewrite /fine.
+by under [leRHS]eq_integral do rewrite mulr1.
+Qed.
+(* follows https://ocw.mit.edu/courses/18-125-measure-and-integration-fall-2003/6f21af6c40de1eccd70349bd3a3b0095_18125_lec17.pdf *)
+
 
 End Lspace.
 Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
+Notation "`|| f ||_ p" := (Lp_norm _ p f) (at level 0).
 
 Definition random_variable (d : _) (T : measurableType d) (R : realType)
   (P : probability T R) := {mfun T >-> R}.
@@ -278,6 +666,34 @@ Lemma expectationB (X Y : {RV P >-> R}) :
   'E_P[X \- Y] = 'E_P[X] - 'E_P[Y].
 Proof. by move=> ? ?; rewrite /expectation integralB_EFin. Qed.
 
+(* To be used in cauchy_schwarz *)
+Lemma expectation_sqr_is_l2_norm (X : {RV P >-> R}) :
+  Lp_norm P 2 X = sqrte 'E_P[X ^+ 2].
+Proof.
+  rewrite /Lp_norm /expectation powere12_sqrt.
+  apply congr1; apply eq_integral => x _ /=; apply congr1.
+  rewrite real_normK //; apply num_real.
+  apply integral_ge0 => x _; rewrite lee_fin; apply sqr_ge0.
+Qed.
+
+Lemma expectation_sqr_eq0 (X : {RV P >-> R}) :
+  'E_P[X ^+ 2] = 0 -> ae_eq P setT (EFin \o X) (EFin \o cst 0%R).
+Proof.
+move => hx.
+have x20: ae_eq P setT (EFin \o (X ^+ 2)%R) (EFin \o cst 0%R).
+  apply ae_eq_integral_abs => //; first by apply/EFin_measurable_fun.
+    have -> : \int[P]_x `|(EFin \o (X ^+ 2)%R) x| = 'E_P[X ^+ 2] => //.
+      under eq_integral => x _. rewrite gee0_abs. over.
+      apply sqr_ge0.
+      reflexivity.
+apply: (ae_imply _ x20) => x /=.
+rewrite -expr2 => h0 _.
+apply EFin_inj in h0 => //.
+have: (X ^+ 2)%R x == 0%R. rewrite -h0 //.
+rewrite sqrf_eq0 /= => h1.
+rewrite (eqP h1) //.
+Qed.
+
 End expectation_lemmas.
 
 Section variance.
@@ -376,6 +792,7 @@ by move=> /le_trans; apply; rewrite lee_pmul2l// lte_fin invr_gt0 exprn_gt0.
 Qed.
 
 End markov_chebyshev.
+
 
 HB.mixin Record MeasurableFun_isDiscrete d (T : measurableType d) (R : realType)
     (X : T -> R) of @MeasurableFun d T R X := {
@@ -537,3 +954,74 @@ Qed.
 Local Close Scope ereal_scope.
 
 End discrete_distribution.
+
+Section covariance.
+Local Open Scope ereal_scope.
+Variables (d : _) (T : measurableType d) (R : realType) (P : probability T R).
+
+Definition covariance (X Y : {RV P >-> R}) :=
+  ('E_P [(X \- cst (fine 'E_P[X])) \* (Y \- cst (fine 'E_P[Y]))])%R.
+Local Notation "''Cov' [ X , Y ]" := (covariance X Y).
+
+(* Note: this could actually be proved as a special case of hoelder's inequality,
+   by choosing p = q = 2, see https://en.wikipedia.org/wiki/H%C3%B6lder%27s_inequality *)
+Lemma cauchy_schwarz (X Y : {RV P >-> R}) :
+  P.-integrable [set: T] (EFin \o X) -> P.-integrable [set: T] (EFin \o Y) ->
+  (* 'E X < +oo -> 'E Y < +oo -> TODO: use lspaces *)
+    'E_P[(X \* Y)%R] ^+2 <= 'E_P[(X ^+ 2)%R] * 'E_P[(Y ^+ 2)%R].
+Proof.
+move => hfinex hfiney.
+have mf : measurable_fun [set: T] X by admit.
+have mg : measurable_fun [set: T] Y by admit.
+have twoone : (2^-1 + 2^-1)%R = 1%R :> R by admit.
+have := @Lp_norm_hoelder d T R P X Y 2%N 2%N erefl erefl mf mg twoone.
+rewrite /expectation /Lp_norm/=.
+under eq_integral do rewrite expr1.
+rewrite invr1.
+rewrite powere_funr1; last by admit.
+Admitted.
+
+(* Old proof not using hoelder:
+pose a := Num.sqrt (fine 'E_P[(Y ^+ 2)%R]).
+pose b := Num.sqrt (fine 'E_P[(X ^+ 2)%R]).
+have ex2_ge0 : 0 <= 'E_P[(X ^+ 2)%R] by apply expectation_ge0 => x /=; exact: sqr_ge0.
+have ey2_ge0 : 0 <= 'E_P[(Y ^+ 2)%R] by apply expectation_ge0 => x /=; exact: sqr_ge0.
+have [a0|a0] := eqVneq ('E_P[(Y ^+ 2)%R]) 0.
+- rewrite a0 adde0.
+  have y0: ae_eq P setT (EFin \o Y) (EFin \o cst 0%R) by apply expectation_sqr_eq0.
+  have -> : 'E_P[X \* Y] = 'E_P[cst 0%R].
+    apply: ae_eq_integral => //=.
+      apply measurable_funT_comp => //; apply measurable_funM => //.
+      apply measurable_fun_cst.
+      apply: (ae_imply _ y0) => x /= h _.
+      apply EFin_inj in h => //.
+      by rewrite h mulr0.
+  rewrite expectation_cst /= mule0.
+  apply expectation_ge0 => x.
+  apply sqr_ge0.
+have [b0|b0] := eqVneq ('E_P[(X ^+ 2)%R]) 0.
+- rewrite b0 add0e.
+  have x0: ae_eq P setT (EFin \o X) (EFin \o cst 0%R) by apply expectation_sqr_eq0.
+  have -> : 'E_P[X \* Y] = 'E_P[cst 0%R].
+    apply: ae_eq_integral => //=.
+      apply measurable_funT_comp => //; apply measurable_funM => //.
+      apply measurable_fun_cst.
+      apply: (ae_imply _ x0) => x /= h _.
+      apply EFin_inj in h => //.
+      by rewrite h mul0r.
+  rewrite expectation_cst /= mule0.
+  apply expectation_ge0 => x.
+  apply sqr_ge0.
+have H2ab : (2 * a * b * (b * a) = a * a * (fine 'E_P[X ^+ 2]) + b * b * (fine 'E_P[Y ^+ 2]))%R.
+  rewrite -(sqr_sqrtr (a:=fine 'E_P[X ^+ 2])); last (apply: fine_ge0; apply: expectation_ge0 => x; apply sqr_ge0).
+  rewrite -(sqr_sqrtr (a:=fine 'E_P[Y ^+ 2])); last (apply: fine_ge0; apply: expectation_ge0 => x; apply sqr_ge0).
+  rewrite -/a -/b /GRing.exp /=.
+  by rewrite mulrA (mulrC (_ * _) a)%R ![in LHS]mulrA (mulrC a) (mulrC _ (a * a)%R)
+             -![in LHS]mulrA mulrC mulr2n !mulrA mulrDr mulr1. *)
+
+Lemma cauchy_schwarz' (X Y : {RV P >-> R}) :
+  ('Cov[ X , Y ])^+2 <= 'V_P[X] + 'V_P[Y].
+Admitted.
+
+End covariance.
+Notation "''Cov' [ X , Y ]" := (covariance X Y).
