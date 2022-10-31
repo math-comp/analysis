@@ -2193,12 +2193,12 @@ Definition strictly_dominated_by {T : Type} {K : numDomainType} {V W : pseudoMet
   (h : T -> V) (k : K) (f : T -> W) (F : set (set T)) :=
   F [set x | `|f x| < k * `|h x|].
 
-Lemma sub_dominatedl (T : Type) (K : numFieldType) (V W : pseudoMetricNormedZmodType K)
+Lemma sub_dominatedl (T : Type) (K : numDomainType) (V W : pseudoMetricNormedZmodType K)
    (h : T -> V) (k : K) (F G : set (set T)) : F `=>` G ->
   (@dominated_by T K V W h k)^~ G `<=` (dominated_by h k)^~ F.
 Proof. by move=> FG f; exact: FG. Qed.
 
-Lemma sub_dominatedr (T : Type) (K : numFieldType) (V : pseudoMetricNormedZmodType K)
+Lemma sub_dominatedr (T : Type) (K : numDomainType) (V : pseudoMetricNormedZmodType K)
     (h : T -> V) (k : K) (f g : T -> V) (F : set (set T)) (FF : Filter F) :
    (\forall x \near F, `|f x| <= `|g x|) ->
    dominated_by h k g F -> dominated_by h k f F.
@@ -3193,7 +3193,7 @@ Proof. by apply; apply/nbhs_EFin; near=> x. Unshelve. all: by end_near. Qed.
 End filter.
 
 Section limit.
-Context {I : Type} {F : set (set I)} {FF : Filter F} (f : I -> \barR).
+Context {I : Type} {F : set (set I)} {FF : Filter F} (f : I -> \bar R).
 
 Lemma fine_cvg a : f @ F --> a%:E -> fine \o f @ F --> a.
 Proof. exact: fine_fcvg. Qed.
@@ -3839,7 +3839,7 @@ Section ereal_is_hausdorff.
 Variable R : realFieldType.
 Implicit Types r : R.
 
-Lemma nbhs_image_ERFin (x : R) (X : set R) :
+Lemma nbhs_image_EFin (x : R) (X : set R) :
   nbhs x X -> nbhs x%:E ((fun r => r%:E) @` X).
 Proof.
 case => _/posnumP[e] xeX; exists e%:num => //= r xer.
@@ -3877,7 +3877,7 @@ Proof.
 move=> -[r| |] // [r' | |] //=.
 - move=> rr'; congr (_%:E); apply Rhausdorff => /= A B rA r'B.
   have [/= z [[r0 ? r0z] [r1 ?]]] :=
-    rr' _ _ (nbhs_image_ERFin rA) (nbhs_image_ERFin r'B).
+    rr' _ _ (nbhs_image_EFin rA) (nbhs_image_EFin r'B).
   by rewrite -r0z => -[r1r0]; exists r0; split => //; rewrite -r1r0.
 - have /(@nbhs_open_ereal_lt _ (fun x => x + 1)) loc_r : r < r + 1.
     by rewrite ltr_addl.

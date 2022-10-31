@@ -699,9 +699,9 @@ Proof.
 move: y => [y| |].
 - exists [set` Interval (BSide b y) +oo%O]; first exact: measurable_itv.
   by exists [set +oo%E]; [constructor|rewrite -punct_eitv_bnd_pinfty].
-- by case: b; rewrite ?itv_opinfty_pinfty ?itv_cpinfty_pinfty.
-- case: b; first by rewrite itv_cninfty_pinfty.
-  by rewrite itv_oninfty_pinfty; exact/measurableC.
+- by case: b; rewrite ?itv_oyy ?itv_cyy.
+- case: b; first by rewrite itv_cNyy.
+  by rewrite itv_oNyy; exact/measurableC.
 Qed.
 
 Lemma emeasurable_itv_ninfty_bnd b (y : \bar R) :
@@ -1332,9 +1332,9 @@ apply/seteqP; split; last first.
       exact: RGenOInfty.measurable_itv_bnd_infty.
     by exists [set +oo]; [constructor|rewrite -punct_eitv_bnd_pinfty].
   + exists set0 => //.
-    by exists set0; [constructor|rewrite setU0 itv_opinfty_pinfty image_set0].
+    by exists set0; [constructor|rewrite setU0 itv_oyy image_set0].
   + exists setT => //; exists [set +oo]; first by constructor.
-    by rewrite itv_oninfty_pinfty punct_eitv_setTR.
+    by rewrite itv_oNyy punct_eitv_setTR.
 move=> A [B mB [C mC]] <-; apply: measurableU; last first.
   case: mC; [by []|exact: measurable_set1_ninfty
                   |exact: measurable_set1_pinfty|].
@@ -1390,9 +1390,9 @@ apply/seteqP; split; last first.
       exact: RGenOInfty.measurable_itv_bnd_infty.
     by exists [set +oo]; [constructor | rewrite -punct_eitv_bnd_pinfty].
    - exists set0 => //; exists [set +oo]; first by constructor.
-     by rewrite image_set0 set0U itv_cpinfty_pinfty.
+     by rewrite image_set0 set0U itv_cyy.
    - exists setT => //; exists [set -oo; +oo]; first by constructor.
-     by rewrite itv_cninfty_pinfty setUA punct_eitv_setTL setUCl.
+     by rewrite itv_cNyy setUA punct_eitv_setTL setUCl.
 move=> _ [A' mA' [C mC]] <-; apply: measurableU; last first.
   case: mC; [by []|exact: measurable_set1_ninfty|
                    exact: measurable_set1_pinfty|].
@@ -1707,8 +1707,8 @@ move=> /= _ [_ [x ->] <-]; move: x => [x| |].
     rewrite ?/= /= ?in_itv /= ?andbT => xr//.
     + by move=> [ry]; exists `|y| => //=; rewrite in_itv/= andbT -ry.
     + by move=> [ry]; exists y => //=; rewrite /= in_itv/= andbT -ry.
-- by apply: measurableI => //; rewrite itv_opinfty_pinfty preimage_set0.
-- apply: measurableI => //; rewrite itv_oninfty_pinfty -preimage_setC.
+- by apply: measurableI => //; rewrite itv_oyy preimage_set0.
+- apply: measurableI => //; rewrite itv_oNyy -preimage_setC.
   by apply: measurableC; rewrite preimage_abse_ninfty.
 Qed.
 

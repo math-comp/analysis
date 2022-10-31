@@ -40,8 +40,6 @@ Require Import reals ereal signed topology normedtype landau.
 (*                                                                            *)
 (* Sections sequences_R_* contain properties of sequences of real numbers.    *)
 (* For example:                                                               *)
-(*                 squeeze == squeeze lemma                                   *)
-(*           cvgNy u_ == (- u_ --> +oo) = (u_ --> -oo).                  *)
 (* nonincreasing_cvg_ge u_ == if u_ is nonincreasing and convergent then      *)
 (*                            forall n, lim u_ <= u_ n                        *)
 (* nondecreasing_cvg_le u_ == if u_ is nondecreasing and convergent then      *)
@@ -1542,11 +1540,8 @@ Lemma nneseries_pinfty (R : realType) (u_ : (\bar R)^nat)
   (P : pred nat) k : (forall n, P n -> 0 <= u_ n) -> P k ->
   u_ k = +oo -> \sum_(i <oo | P i) u_ i = +oo.
 Proof.
-move=> u0 Pk ukoo; apply/eqP; rewrite -leye_eq.
-apply: le_trans (nneseries_lim_ge k.+1 u0) => //.
-rewrite leye_eq; apply/eqP/esumyP=> [i /u0|].
- by rewrite leNgt; apply: contra => /eqP ->.
-by exists k; split => //; rewrite mem_iota subn0 add0n ltnS leqnn.
+move=> u_ge0 Pk ukoo; apply: (eseries_pinfty _ Pk ukoo) => // n Pn.
+by rewrite gt_eqF// (lt_le_trans _ (u_ge0 _ Pn)).
 Qed.
 
 Lemma lee_nneseries (R : realType) (u v : (\bar R)^nat) (P : pred nat) :

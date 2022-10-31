@@ -305,21 +305,20 @@ move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lte_fin ?in_itv //= => /andP[] //;
 by do ?[move->|move/ltW|move=>_].
 Qed.
 
-Lemma itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
+Lemma itv_cyy : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
 Proof.
 by rewrite set_itvE predeqE => t; split => /= [|<-//]; rewrite leye_eq => /eqP.
 Qed.
 
-Lemma itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
+Lemma itv_oyy : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
 Proof.
 by rewrite set_itvE predeqE => t; split => //=; apply/negP; rewrite -leNgt leey.
 Qed.
 
-Lemma itv_cninfty_pinfty : `[-oo%E, +oo[%classic = setT :> set (\bar R).
+Lemma itv_cNyy : `[-oo%E, +oo[%classic = setT :> set (\bar R).
 Proof. by rewrite set_itvE predeqE => t; split => //= _; rewrite leNye. Qed.
 
-Lemma itv_oninfty_pinfty :
-  `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
+Lemma itv_oNyy : `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
 Proof.
 rewrite set_itvE predeqE => x; split => /=.
 - by move: x => [x| |]; rewrite ?ltxx.
