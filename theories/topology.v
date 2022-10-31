@@ -2223,13 +2223,13 @@ End matrix_Topology.
 
 (** ** Weak topology by a function *)
 
-Definition weak_topology {S : pointedType} {T : topologicalType}
+Definition weak_topology' {S : pointedType} {T : topologicalType}
   (f : S -> T) : Type := S.
 
 Section Weak_Topology.
 
 Variable (S : pointedType) (T : topologicalType) (f : S -> T).
-Local Notation W := (weak_topology f).
+Local Notation W := (weak_topology' f).
 
 Definition wopen := [set f @^-1` A | A in open].
 
@@ -2258,6 +2258,8 @@ Qed.
 HB.instance Definition _ := Pointed.on W.
 HB.instance Definition _ :=
   Pointed_isOpenTopological.Build W wopT wopI wop_bigU.
+
+Definition weak_topology := [the topologicalType of weak_topology' f].
 
 Lemma weak_continuous : continuous (f : W -> T).
 Proof. by apply/continuousP => A ?; exists A. Qed.
@@ -2323,11 +2325,14 @@ Section Product_Topology.
 
 Variable (I : Type) (T : I -> topologicalType).
 
-Definition product_topologicalType :=
+Definition product_topologicalType' :=
   sup_topology (fun i => Topological.class
     (weak_topology (fun f : [the pointedType of (forall i : I, T i)] => f i))).
 
-HB.instance Definition _ := Topological.on product_topologicalType.
+HB.instance Definition _ := Topological.on product_topologicalType'.
+
+Definition product_topologicalType :=
+  [the topologicalType of product_topologicalType'].
 
 End Product_Topology.
 
@@ -6110,8 +6115,10 @@ case: (@nbhs_subspaceP X A x); rewrite propeqE; split => //=.
   by apply: subU; apply: subW; left.
 Unshelve. all: by end_near. Qed.
 
+(* TODO_HB
 HB.instance Definition _ := Filtered_isUniform_mixin.Build (subspace A)
   Filter_subspace_ent subspace_uniform_ax2 subspace_uniform_ax3 subspace_uniform_ax4 subspace_uniform_ax5.
+*)
 
 End SubspaceUniform.
 
@@ -6142,6 +6149,8 @@ move=> x y z e1 e2; rewrite /subspace_ball; (repeat case: ifP => /asboolP).
 Qed.
 Next Obligation.
 rewrite eqEsubset; split; rewrite /subspace_ball.
+Admitted.
+(* TODO_HB
   move=> U [W + subU]; rewrite -entourage_ballE => [[eps] nneg subW].
   exists eps => //; apply: (subset_trans _ subU).
   move=> [x y] /=; case: ifP => /asboolP ?.
@@ -6153,6 +6162,7 @@ move=> [x y] /= [->|[]Ax []Ay xBy]; apply: subE => //=.
   by case: ifP => /asboolP; split => //; exact: ballxx.
 by case: ifP => /asboolP.
 Qed.
+*)
 
 (* FIXME: this should build a pseudoMetricType on subspace A *)
 HB.instance Definition _ := subspace_pseudoMetricType_mixin.
