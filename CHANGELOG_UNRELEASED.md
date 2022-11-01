@@ -85,6 +85,7 @@
     `has_lb_ubN`, `has_ubPn`, `has_lbPn` (from `reals.v`)
 - in `classical_sets.v`:
   + lemma `bigsetU_sup`
+  + lemma `image2_subset`
 - in `lebesgue_integral.v`:
   + lemmas `emeasurable_fun_fsum`, `ge0_integral_fsum`
 - in `ereal.v`:
