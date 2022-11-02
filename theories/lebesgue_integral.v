@@ -932,7 +932,7 @@ rewrite [X in X --> _](_ : _ = fun n => \sum_(x <- fset_set (range f))
     by rewrite mulr0 => /esym/eqP; rewrite (negbTE r0).
   by rewrite /preimage/= => -[fxr cnx]; rewrite mindicE mem_set// mulr1.
 rewrite sintegralE fsbig_finite//=.
-apply: lim_nnesum=> [r _|r _].
+apply: cvg_nnesum=> [r _|r _].
   near=> A; apply: (mulemu_ge0 (fun x => f @^-1` [set x] `&` fleg c A)) => r0.
   by rewrite preimage_nnfun0// set0I.
 apply: cvgeMl => //=; rewrite [X in _ --> X](_ : _ =
@@ -1154,7 +1154,7 @@ Lemma nd_ge0_integral_lim : \int[mu]_x f x = lim (sintegral mu \o g).
 Proof.
 rewrite ge0_integralTE//.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  apply: lim_lee; first exact: is_cvg_sintegral.
+  apply: lime_le; first exact: is_cvg_sintegral.
   near=> n; apply: ereal_sup_ub; exists (g n) => //= => x.
   have <- : lim (EFin \o g ^~ x) = f x by apply/cvg_lim => //; exact: gf.
   have : (EFin \o g ^~ x) --> ereal_sup (range (EFin \o g ^~ x)).
@@ -1679,7 +1679,7 @@ rewrite (nd_ge0_integral_lim _ _ (fun x => lef_at x nd_g2)) //; last first.
 rewrite limeD //.
   by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g1).
   by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g2).
-rewrite ge0_adde_def => //; rewrite inE; apply: lim_gee.
+rewrite ge0_adde_def => //; rewrite inE; apply: lime_ge.
 - by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g1).
 - by apply: nearW => n; exact: sintegral_ge0.
 - by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g2).
@@ -1699,7 +1699,7 @@ have h12 x : h1 x <= h2 x by apply: lee_restrict.
 have [g1 [nd_g1 /(_ _ Logic.I)gh1]] :=
   approximation measurableT mh1 (fun x _ => h10 _).
 rewrite (nd_ge0_integral_lim _ h10 (fun x => lef_at x nd_g1) gh1)//.
-apply: lim_lee.
+apply: lime_le.
   by apply: is_cvg_sintegral => // t Dt; exact/(lef_at t nd_g1).
 near=> n; rewrite ge0_integralTE//; apply: ereal_sup_ub => /=.
 exists (g1 n) => // t; rewrite (le_trans _ (h12 _)) //.
@@ -2031,7 +2031,7 @@ suff : l == f t by move=> /eqP <-.
 rewrite eq_le; apply/andP; split.
   by rewrite /f (le_trans _ (lim_max_g2_f _)) // (cvg_lim _ g_l).
 have := leey l; rewrite le_eqVlt => /predU1P[->|loo]; first by rewrite leey.
-rewrite -(cvg_lim _ g_l) //= lim_lee => //; first exact: is_cvg_g.
+rewrite -(cvg_lim _ g_l) //= lime_le => //; first exact: is_cvg_g.
 near=> n.
 have := leey (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
   have h := @dvg_approx _ _ _ setT _ t Logic.I fntoo.
@@ -2068,16 +2068,16 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
     by move=> *; exact: nd_g.
   have ub n : \int[mu]_x g n x <= \int[mu]_x f x.
     apply: ge0_le_integral => //.
-    - move=> x _; apply: lim_gee => //; first exact: is_cvg_g.
+    - move=> x _; apply: lime_ge => //; first exact: is_cvg_g.
       by apply: nearW => k; exact/g0.
     - apply: emeasurable_fun_cvg mg _ => x _.
       exact: ereal_nondecreasing_is_cvg.
-    - move=> x Dx; apply: lim_gee => //; first exact: is_cvg_g.
+    - move=> x Dx; apply: lime_ge => //; first exact: is_cvg_g.
       near=> m; have nm : (n <= m)%N by near: m; exists n.
       exact/nd_g.
-  by apply: lim_lee => //; [exact:ereal_nondecreasing_is_cvg|exact:nearW].
+  by apply: lime_le => //; [exact:ereal_nondecreasing_is_cvg|exact:nearW].
 rewrite (@nd_ge0_integral_lim _ _ _ mu _ max_g2) //; last 2 first.
-  - move=> t; apply: lim_gee => //; first exact: is_cvg_g.
+  - move=> t; apply: lime_ge => //; first exact: is_cvg_g.
     by apply: nearW => n; exact: g0.
   - by move=> t m n mn; exact/lefP/nd_max_g2.
 apply: lee_lim.
@@ -2613,7 +2613,7 @@ transitivity (lim (fun n =>
   \int[msum m_ N]_(x in D) (f_ n x)%:E + \int[m_ N]_(x in D) (f_ n x)%:E)).
   by congr (lim _); apply/funext => n; by rewrite integral_measure_add_nnsfun.
 rewrite limeD//; do?[exact: cvg_f_]; last first.
-  by apply: ge0_adde_def; rewrite inE; apply: lim_gee => //; do?[exact: cvg_f_];
+  by apply: ge0_adde_def; rewrite inE; apply: lime_ge => //; do?[exact: cvg_f_];
       apply: nearW => n;  apply: integral_ge0 => //; exact: f_ge0.
 by congr (_ + _); (rewrite -monotone_convergence//; [
     apply eq_integral => t /[!inE] Dt; apply/cvg_lim => //; exact: f_f |
@@ -2687,7 +2687,7 @@ Proof.
 move=> f0 mf.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   suff : forall n, \sum_(k < n) \int[m_ k]_(x in D) f x <= \int[m]_(x in D) f x.
-    move=> n; apply: lim_lee => //.
+    move=> n; apply: lime_le => //.
       by apply: is_cvg_ereal_nneg_natsum => k _; exact: integral_ge0.
     by apply: nearW => x; rewrite big_mkord.
   move=> n.
@@ -3991,7 +3991,7 @@ Proof.
 split => //; have Dfg x : D x -> `| f x | <= g x.
   move=> Dx; have /(@cvg_lim _) <- // : `|f_ n x| @[n --> \oo] --> `|f x|.
     by apply: cvg_abse => //; exact: f_f.
-  apply: lim_lee => //.
+  apply: lime_le => //.
   - by apply: is_cvg_abse; apply/cvg_ex; eexists; exact: f_f.
   - by apply: nearW => n; exact: absfg.
 move: ig => [mg]; apply: le_lt_trans; apply: ge0_le_integral => //.
@@ -4026,7 +4026,7 @@ rewrite (le_trans (lee_abs_sub _ _))// [in leRHS]EFinD lee_add//.
   by rewrite fineK// ?fing// absfg.
 have f_fx : `|(f_ n x)| @[n --> \oo] --> `|f x| by apply: cvg_abse; exact: f_f.
 move/cvg_lim : (f_fx) => <-//.
-apply: lim_lee; first by apply/cvg_ex; eexists; exact: f_fx.
+apply: lime_le; first by apply/cvg_ex; eexists; exact: f_fx.
 by apply: nearW => k; rewrite fineK ?fing//; apply: absfg.
 Qed.
 
@@ -4094,7 +4094,7 @@ suff: (fun n => `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |) --> 0.
    rewrite fin_numElt (_ : -oo = - +oo)// -lte_absl.
    case: dominated_integrable => ?; apply: le_lt_trans.
    by apply: (le_trans _ (@le_abse_integral _ _ _ mu D f mD _)).
-apply: (@esqueeze _ _ _ _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)).
+apply: (@squeeze_cvge _ _ _ _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)).
 - by apply: nearW => n; rewrite abse_ge0//=; exact: h.
 - exact: cvg_cst.
 - exact: dominated_cvg0.

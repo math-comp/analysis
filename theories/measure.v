@@ -2228,7 +2228,7 @@ Lemma content_ring_sup_sigma_additive (A : nat -> set T) :
   (forall i, measurable (A i)) -> measurable (\bigcup_i A i) ->
   trivIset [set: nat] A -> \sum_(i <oo) mu (A i) <= mu (\bigcup_i A i).
 Proof.
-move=> Am UAm At; rewrite lim_lee//; first exact: is_cvg_nneseries.
+move=> Am UAm At; rewrite lime_le//; first exact: is_cvg_nneseries.
 near=> n; rewrite big_mkord -measure_bigsetU//= le_measure ?inE//=.
 - exact: bigsetU_measurable.
 - by rewrite -bigcup_mkord; apply: bigcup_sub => i lein; apply: bigcup_sup.
@@ -2795,7 +2795,7 @@ rewrite big_ord_recr /= disjoint_caratheodoryIU // ?ih ?big_ord_recr //.
 - by apply/eqP/(@trivIset_bigsetUI _ predT) => //; rewrite /predT /= trueE.
 Qed.
 
-Lemma caratheodory_lim_lee (A : (set T) ^nat) : (forall n, M (A n)) ->
+Lemma caratheodory_lime_le (A : (set T) ^nat) : (forall n, M (A n)) ->
   trivIset setT A -> forall X,
   \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` \bigcup_k A k) <= mu X.
 Proof.
@@ -2822,12 +2822,16 @@ rewrite [in leRHS](caratheodory_measurable_bigsetU MA n) lee_add2r //.
 by rewrite caratheodory_additive.
 Qed.
 
+#[deprecated(since="mathcomp-analysis 1.6.0",
+      note="renamed `caratheodory_lime_le`")]
+Notation caratheodory_lim_lee := caratheodory_lime_le.
+
 Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) :
   (forall n, M (A n)) -> trivIset setT A -> M (\bigcup_k (A k)).
 Proof.
 move=> MA tA; apply: le_caratheodory_measurable => X /=.
 have /(lee_add2r (mu (X `&` ~` \bigcup_k A k))) := outer_measure_bigcup_lim A X.
-by move/le_trans; apply; exact: caratheodory_lim_lee.
+by move/le_trans; apply; exact: caratheodory_lime_le.
 Qed.
 
 Lemma caratheodory_measurable_bigcup (A : (set T) ^nat) : (forall n, M (A n)) ->
@@ -2894,7 +2898,7 @@ suff : forall X, mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B).
   by move/(@cvg_lim _ (@ereal_hausdorff R)) : (hl) => ->.
 move=> X.
 have mB : mu.-cara.-measurable B := caratheodory_measurable_bigcup mA.
-apply/eqP; rewrite eq_le (caratheodory_lim_lee mA tA X) andbT.
+apply/eqP; rewrite eq_le (caratheodory_lime_le mA tA X) andbT.
 have /(lee_add2r (mu (X `&` ~` B))) := outer_measure_bigcup_lim mu A X.
 by rewrite -le_caratheodory_measurable // => ?; rewrite -mB.
 Qed.
@@ -2990,7 +2994,7 @@ Qed.
 
 Lemma mu_ext_ge0 A : 0 <= mu^* A.
 Proof.
-apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite lim_gee //=.
+apply: lb_ereal_inf => x [B [mB AB] <-{x}]; rewrite lime_ge //=.
   exact: is_cvg_nneseries.
 by near=> n; rewrite sume_ge0.
 Unshelve. all: by end_near. Qed.

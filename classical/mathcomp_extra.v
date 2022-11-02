@@ -830,3 +830,10 @@ Qed.
 Definition inv_fun T (R : unitRingType) (f : T -> R) x := (f x)^-1%R.
 Notation "f \^-1" := (inv_fun f) : ring_scope.
 Arguments inv_fun {T R} _ _ /.
+
+Definition bound_side d (T : porderType d) (c : bool) (x : itv_bound T) :=
+  if x is BSide c' _ then c == c' else false.
+
+Lemma real_ltr_distlC [R : numDomainType] [x y : R] (e : R) :
+  x - y \is Num.real -> (`|x - y| < e) = (x - e < y < x + e).
+Proof. by move=> ?; rewrite distrC real_ltr_distl// -rpredN opprB. Qed.

@@ -1371,44 +1371,27 @@ by apply: xe_A => //; rewrite eq_sym.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
-Lemma le0r_fcvg (R : realFieldType) (T : topologicalType) (F : set (set T))
+#[deprecated(since="mathcomp-analysis 1.6.0",
+  note="generalized by `limr_ge`")]
+Lemma le0r_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
-Proof.
-move=> fge0 fcv; case: (lerP 0 (lim (f @ F))) => // limlt0; near F => x.
-have := near fge0 x; rewrite leNgt => /(_ _) /negbTE<- //; near: x.
-have normlimgt0 : `|lim (f @ F)| > 0 by rewrite normr_gt0 ltr0_neq0.
-have /fcv := nbhs_ball_norm (lim (f @ F)) (PosNum normlimgt0).
-rewrite /= !near_simpl; apply: filterS => x.
-rewrite /= distrC => /(le_lt_trans (ler_norm _)).
-rewrite ltr_subl_addr => /lt_le_trans; apply.
-by rewrite ltr0_norm // addrC subrr.
-Unshelve. all: by end_near. Qed.
+Proof. by move=> ? ?; rewrite limr_ge. Qed.
 
-Lemma ler0_fcvg (R : realFieldType) (T : topologicalType) (F : set (set T))
+#[deprecated(since="mathcomp-analysis 1.6.0",
+  note="generalized by `limr_le`")]
+Lemma ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, f x <= 0) -> cvg (f @ F) -> lim (f @ F) <= 0.
-Proof.
-move=> fle0 fcv; rewrite -oppr_ge0.
-have limopp : - lim (f @ F) = lim (- f @ F).
-  apply: Logic.eq_sym; apply: cvg_lim; first by apply: Rhausdorff.
-  by apply: cvgN.
-rewrite limopp; apply: le0r_fcvg; last by rewrite -limopp; apply: cvgN.
-by move: fle0; apply: filterS => x; rewrite oppr_ge0.
-Qed.
+Proof. by move=> ? ?; rewrite limr_le. Qed.
 
-Lemma ler_fcvg (R : realFieldType) (T : topologicalType) (F : set (set T))
+#[deprecated(since="mathcomp-analysis 1.6.0",
+  note="subsumed by `ler_lim`")]
+Lemma ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
     (FF : ProperFilter F) (f g : T -> R) :
   (\forall x \near F, f x <= g x) -> cvg (f @ F) -> cvg (g @ F) ->
   lim (f @ F) <= lim (g @ F).
-Proof.
-move=> lefg fcv gcv; rewrite -subr_ge0.
-have eqlim : lim (g @ F) - lim (f @ F) = lim ((g - f) @ F).
-  by apply/esym; apply: cvg_lim => //; apply: cvgD => //; apply: cvgN.
-rewrite eqlim; apply: le0r_fcvg; last first.
-  by rewrite /(cvg _) -eqlim /=; apply: cvgD => //; apply: cvgN.
-by move: lefg; apply: filterS => x; rewrite subr_ge0.
-Qed.
+Proof. by move=> ? ? ?; rewrite ler_lim. Qed.
 
 Lemma derive1_at_max (R : realFieldType) (f : R -> R) (a b c : R) :
   a <= b -> (forall t, t \in `]a, b[%R -> derivable f t 1) -> c \in `]a, b[%R ->
@@ -1417,7 +1400,7 @@ Proof.
 move=> leab fdrvbl cab cmax; apply: DeriveDef; first exact: fdrvbl.
 apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ['D_1 f c]cvg_at_rightE; last exact: fdrvbl.
-  apply: ler0_fcvg; last first.
+  apply: limr_le.
     have /fdrvbl dfc := cab.
     rewrite -(cvg_at_rightE (fun h : R => h^-1 *: ((f \o shift c) _ - f c))) //.
     apply: cvg_trans dfc; apply: cvg_app.
@@ -1431,7 +1414,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   move=> /(le_lt_trans (ler_norm _)) -> /ltr_spsaddl -> //.
   by rewrite (itvP cab).
 rewrite ['D_1 f c]cvg_at_leftE; last exact: fdrvbl.
-apply: le0r_fcvg; last first.
+apply: limr_ge.
   have /fdrvbl dfc := cab; rewrite -(cvg_at_leftE (fun h => h^-1 *: ((f \o shift c) _ - f c))) //.
   apply: cvg_trans dfc; apply: cvg_app.
   move=> A [e egt0 Ae]; exists e => // x xe xgt0; apply: Ae => //.

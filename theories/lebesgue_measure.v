@@ -693,6 +693,23 @@ case: x => [r| |].
 Qed.
 #[local] Hint Resolve emeasurable_set1 : core.
 
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_cyy`")]
+Lemma itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
+Proof. by rewrite itv_cyy. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_oyy`")]
+Lemma itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
+Proof. by rewrite itv_oyy. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_cNyy`")]
+Lemma itv_cninfty_pinfty : `[-oo%E, +oo[%classic = setT :> set (\bar R).
+Proof. by rewrite itv_cNyy. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_oNyy`")]
+Lemma itv_oninfty_pinfty :
+  `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
+Proof. by rewrite itv_oNyy. Qed.
+
 Lemma emeasurable_itv_bnd_pinfty b (y : \bar R) :
   measurable [set` Interval (BSide b y) +oo%O].
 Proof.
@@ -1817,6 +1834,10 @@ rewrite [X in _ --> X](_ : _ = ereal_inf (range (esups (f^~t)))).
   exact: cvg_esups_inf.
 by congr (ereal_inf [set _ | _ in _]); rewrite predeqE.
 Qed.
+
+#[deprecated(since="mathcomp-analysis 1.6.0",
+  note="renamed `measurable_fun_lim_esup`")]
+Notation measurable_fun_elim_sup := measurable_fun_lim_esup.
 
 Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall m, measurable_fun D (f_ m)) ->

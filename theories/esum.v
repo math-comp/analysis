@@ -300,7 +300,7 @@ Lemma nneseries_esum (R : realType) (a : nat -> \bar R) (P : pred nat) :
   \sum_(i <oo | P i) a i = \esum_(i in [set x | P x]) a i.
 Proof.
 move=> a0; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: (lim_lee (is_cvg_nneseries_cond a0)); apply: nearW => n.
+  apply: (lime_le (is_cvg_nneseries_cond a0)); apply: nearW => n.
   apply: ereal_sup_ub => /=; exists [set` [fset val i | i in 'I_n & P i]%fset].
     split; first exact: finite_fset.
     by move=> /= k /imfsetP[/= i]; rewrite inE => + ->.

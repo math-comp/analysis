@@ -699,6 +699,10 @@ Lemma cvgP {U : Type} (T : filteredType U) (F : set (set U)) (l : T) :
    F --> l -> [cvg F in T].
 Proof. by move=> Fl; apply/cvg_ex; exists l. Qed.
 
+Lemma cvg_toP {U : Type} (T : filteredType U) (F : set (set U)) (l : T) :
+   [cvg F in T] -> [lim F in T] = l -> F --> l.
+Proof. by move=> /[swap]->. Qed.
+
 Lemma dvgP {U : Type} (T : filteredType U) (F : set (set U)) :
   ~ [cvg F in T] -> [lim F in T] = point.
 Proof. by rewrite /lim_in /=; case xgetP. Qed.
@@ -1107,6 +1111,13 @@ move=> FF fIF; apply: filterS (@filter_bigI T I [fset x in I]%fset f F FF _).
 by move=> i; rewrite inE/= => _; apply: (fIF i).
 Qed.
 
+Lemma filter_imply [T : Type] [P : Prop] [f : set T] [F : set (set T)] :
+  Filter F -> (P -> \near F, f F) -> \near F, P -> f F.
+Proof.
+move=> ? PF; near do move=> /asboolP.
+by case: asboolP=> [/PF|_]; by [apply: filterS|apply: nearW].
+Unshelve. all: by end_near. Qed.
+
 (** ** Limits expressed with filters *)
 
 Definition fmap {T U : Type} (f : T -> U) (F : set (set T)) :=
@@ -1210,6 +1221,14 @@ Proof. by move=> fFG gGH; apply: cvg_trans gGH => P /fFG. Qed.
 Lemma near_eq_cvg {T U} {F : set (set T)} {FF : Filter F} (f g : T -> U) :
   {near F, f =1 g} -> g @ F `=>` f @ F.
 Proof. by move=> eq_fg P /=; apply: filterS2 eq_fg => x /= <-. Qed.
+
+Lemma eq_cvg (T T' : Type) (F : set (set T)) (f g : T -> T') (x : set (set T')) :
+  f =1 g -> (f @ F --> x) = (g @ F --> x).
+Proof. by move=> /funext->. Qed.
+
+Lemma eq_is_cvg (T T' : Type) (fT : filteredType T') (F : set (set T)) (f g : T -> T') :
+  f =1 g -> [cvg (f @ F) in fT] = [cvg (g @ F) in fT].
+Proof. by move=> /funext->. Qed.
 
 Lemma neari_eq_loc {T U} {F : set (set T)} {FF : Filter F} (f g : T -> set U) :
   {near F, f =2 g} -> g `@ F `=>` f `@ F.
@@ -1640,12 +1659,14 @@ Definition open := Topological.open (Topological.class T).
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
-Global Instance nbhs_filter (p : T) : ProperFilter (nbhs p).
+Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: Topological.ax1; case: T p => ? []. Qed.
 Typeclasses Opaque nbhs.
 
-Canonical nbhs_filter_on (x : T) :=
-  FilterType (nbhs x) (@filter_filter' _ _ (nbhs_filter x)).
+Lemma nbhs_filter (p : T) : Filter (nbhs p).
+Proof. exact: (@nbhs_pfilter). Qed.
+
+Canonical nbhs_filter_on (x : T) := FilterType (nbhs x) (@nbhs_filter x).
 
 Lemma nbhsE (p : T) :
   nbhs p = [set A : set T | exists B : set T, open_nbhs p B /\ B `<=` A].
@@ -1745,6 +1766,11 @@ rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 [?]] | []].
 Qed.
 
 End Topological1.
+
+#[global] Hint Extern 0 (Filter (nbhs _)) =>
+  solve [apply: nbhs_filter] : typeclass_instances.
+#[global] Hint Extern 0 (ProperFilter (nbhs _)) =>
+  solve [apply: nbhs_pfilter] : typeclass_instances.
 
 Notation "A ^°" := (interior A) : classical_set_scope.
 
@@ -3326,7 +3352,7 @@ Lemma cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
   {near F, is_fun f} -> is_subset1 [set x : T | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
 
-Lemma cvgi_map_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
+Lemma cvgi_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
   F (fun x : U => is_subset1 (f x)) ->
   f `@ F --> l -> lim (f `@ F) = l.
 Proof.
@@ -3334,6 +3360,11 @@ move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
 Qed.
 
 End separated_topologicalType.
+
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvg_lim`")]
+Notation cvg_map_lim := cvg_lim.
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgi_lim`")]
+Notation cvgi_map_lim := cvgi_lim.
 
 Section connected_sets.
 Variable T : topologicalType.
@@ -4481,7 +4512,9 @@ Lemma fcvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !nbhs_simpl /=. Qed.
 
-Lemma fcvg_ballPpos {F} {FF : Filter F} (y : M) :
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="use a combination of `cvg_ballP` and `posnumP`")]
+Lemma cvg_ballPpos {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
 Proof.
 split => [/fcvg_ballP + eps|pos]; first exact.
@@ -4521,6 +4554,9 @@ End pseudoMetricType_numDomainType.
 #[global] Hint Resolve nbhsx_ballx : core.
 #[global] Hint Resolve close_refl : core.
 Arguments close_cvg {T} F1 F2 {FF2} _.
+
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `cvg_ball`")]
+Notation app_cvg_locally := cvg_ball.
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.
@@ -5489,11 +5525,11 @@ Notation "{ 'uniform' U -> V }" := ({uniform` (@setT U) -> V}) :
   classical_set_scope.
 
 Notation "{ 'uniform' A , F --> f }" :=
-  (cvg_to [filter of F] 
+  (cvg_to [filter of F]
      (filter_of (Phantom (fct_RestrictedUniform A) f)))
    : classical_set_scope.
 Notation "{ 'uniform' , F --> f }" :=
-  (cvg_to [filter of F] 
+  (cvg_to [filter of F]
      (filter_of (Phantom (fct_RestrictedUniform setT) f)))
    : classical_set_scope.
 
@@ -5557,7 +5593,7 @@ Qed.
 Lemma uniform_subset_cvg (f : U -> V) (A B : set U) F :
   Filter F -> B `<=` A -> {uniform A, F --> f} -> {uniform B, F --> f}.
 Proof.
-move => FF /uniform_subset_nbhs => /(_ f). 
+move => FF /uniform_subset_nbhs => /(_ f).
 by move=> nbhsF Acvg; apply: cvg_trans; [exact: Acvg|exact: nbhsF].
 Qed.
 

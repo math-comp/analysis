@@ -870,7 +870,7 @@ Lemma adde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
   x + y == 0 = (x == 0) && (y == 0).
 Proof. by move=> /orP[|] /andP[]; [exact: padde_eq0|exact: nadde_eq0]. Qed.
 
-Lemma esumNyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma esum_eqNyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
 split=> [|[i [si Pi fi]]].
@@ -884,15 +884,15 @@ rewrite inE => /predU1P[<-/=|it]; first by rewrite eqxx.
 by rewrite /= iterD ih//=; case: (_ == _).
 Qed.
 
-Lemma esum_ninfty (I : finType) (f : I -> \bar R) (P : {pred I}) :
+Lemma esum_eqNy (I : finType) (f : I -> \bar R) (P : {pred I}) :
   (\sum_(i | P i) f i == -oo) = [exists i in P, f i == -oo].
 Proof.
-apply/idP/idP => [/eqP/esumNyP|/existsP[i /andP[Pi /eqP fi]]].
+apply/idP/idP => [/eqP/esum_eqNyP|/existsP[i /andP[Pi /eqP fi]]].
   by move=> -[i [_ Pi fi]]; apply/existsP; exists i; rewrite fi eqxx andbT.
-by apply/eqP/esumNyP; exists i.
+by apply/eqP/esum_eqNyP; exists i.
 Qed.
 
-Lemma esumyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma esum_eqyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != -oo) ->
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
@@ -902,19 +902,28 @@ move=> finoo; split=> [|[i [si Pi fi]]].
 elim: s i Pi fi si => // h t ih i Pi fi.
 rewrite inE => /predU1P[<-/=|it].
   rewrite big_cons Pi fi addye//.
-  by apply/eqP => /esumNyP[j [jt /finoo/negbTE/eqP]].
+  by apply/eqP => /esum_eqNyP[j [jt /finoo/negbTE/eqP]].
 by rewrite big_cons; case: ifPn => Ph; rewrite (ih i)// addey// finoo.
 Qed.
 
-Lemma esum_pinfty (I : finType) (P : {pred I}) (f : I -> \bar R) :
+Lemma esum_eqy (I : finType) (P : {pred I}) (f : I -> \bar R) :
   (forall i, P i -> f i != -oo) ->
   (\sum_(i | P i) f i == +oo) = [exists i in P, f i == +oo].
 Proof.
 move=> fio; apply/idP/existsP => [/eqP /=|[/= i /andP[Pi /eqP fi]]].
   have {}fio : (forall i, P i -> f i != -oo) by move=> i Pi; exact: fio.
-  by move=> /(esumyP _ fio)[i [_ Pi fi]]; exists i; rewrite fi eqxx andbT.
-by apply/eqP/esumyP => //; exists i.
+  by move=> /(esum_eqyP _ fio)[i [_ Pi fi]]; exists i; rewrite fi eqxx andbT.
+by apply/eqP/esum_eqyP => //; exists i.
 Qed.
+
+#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqNyP`")]
+Notation esum_ninftyP := esum_eqNyP.
+#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqNy`")]
+Notation esum_ninfty := esum_eqNy.
+#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqyP`")]
+Notation esum_pinftyP := esum_eqyP.
+#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqy`")]
+Notation esum_pinfty := esum_eqy.
 
 Lemma adde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
 Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
@@ -1196,11 +1205,21 @@ Qed.
 Lemma dadde_eq_pinfty x y : (x + y == +oo) = ((x == +oo) || (y == +oo)).
 Proof. by move: x y => [?| |] [?| |]. Qed.
 
-Lemma daddooe x : x != -oo -> +oo + x = +oo.
-Proof. by case: x. Qed.
+Lemma daddye x : +oo + x = +oo. Proof. by []. Qed.
 
-Lemma daddeoo x : x != -oo -> x + +oo = +oo.
-Proof. by case: x. Qed.
+Lemma daddey x : x + +oo = +oo. Proof. by case: x. Qed.
+
+Lemma daddNye x : x != +oo -> -oo + x = -oo. Proof. by case: x. Qed.
+
+Lemma daddeNy x : x != +oo -> x + -oo = -oo. Proof. by case: x. Qed.
+
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed `daddye` and generalized")]
+Lemma daddooe x : x != -oo -> +oo + x = +oo. Proof. by rewrite daddye. Qed.
+
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed `daddey` and generalized")]
+Lemma daddeoo x : x != -oo -> x + +oo = +oo. Proof. by rewrite daddey. Qed.
 
 Lemma dadde_Neq_pinfty x y : x != -oo -> y != -oo ->
   (x + y != +oo) = (x != +oo) && (y != +oo).
@@ -1228,39 +1247,48 @@ Lemma dadde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
   x + y == 0 = (x == 0) && (y == 0).
 Proof. move=> /orP[|] /andP[]; [exact: pdadde_eq0|exact: ndadde_eq0]. Qed.
 
-Lemma desumyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma desum_eqyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
-rewrite dual_sumeE eqe_oppLRP /= esumNyP.
+rewrite dual_sumeE eqe_oppLRP /= esum_eqNyP.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_pinfty (I : finType) (f : I -> \bar R) (P : {pred I}) :
+Lemma desum_eqy (I : finType) (f : I -> \bar R) (P : {pred I}) :
   (\sum_(i | P i) f i == +oo) = [exists i in P, f i == +oo].
 Proof.
-rewrite dual_sumeE eqe_oppLR esum_ninfty.
+rewrite dual_sumeE eqe_oppLR esum_eqNy.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
-Lemma desumNyP
+Lemma desum_eqNyP
     (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
   (forall i, P i -> f i != +oo) ->
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
 move=> fioo.
-rewrite dual_sumeE eqe_oppLRP /= esumyP => [|i Pi]; last first.
+rewrite dual_sumeE eqe_oppLRP /= esum_eqyP => [|i Pi]; last first.
   by rewrite eqe_oppLR fioo.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_ninfty (I : finType) (f : I -> \bar R) (P : {pred I}) :
+Lemma desum_eqNy (I : finType) (f : I -> \bar R) (P : {pred I}) :
   (forall i, f i != +oo) ->
   (\sum_(i | P i) f i == -oo) = [exists i in P, f i == -oo].
 Proof.
 move=> finoo.
-rewrite dual_sumeE eqe_oppLR /= esum_pinfty => [|i]; rewrite ?eqe_oppLR //.
+rewrite dual_sumeE eqe_oppLR /= esum_eqy => [|i]; rewrite ?eqe_oppLR //.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
+
+#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqNyP`")]
+Notation desum_ninftyP := desum_eqNyP.
+#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqNy`")]
+Notation desum_ninfty := desum_eqNy.
+#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqyP`")]
+Notation desum_pinftyP := desum_eqyP.
+#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqy`")]
+Notation desum_pinfty := desum_eqy.
 
 Lemma dadde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
 Proof. rewrite dual_addeE oppe_ge0 -!oppe_le0; exact: adde_le0. Qed.
@@ -1340,6 +1368,9 @@ suff: ~ x%:E < (Order.max 0 x + 1)%:E.
 by apply/negP; rewrite -leNgt; apply/Ax/ltr_spaddr; rewrite // le_maxr lexx.
 Qed.
 
+#[deprecated(since="mathcomp 1.6.0", note="renamed `eqyP`")]
+Notation eq_pinftyP := eqyP.
+
 Lemma seq_psume_eq0 (I : choiceType) (r : seq I)
     (P : pred I) (F : I -> \bar R) : (forall i, P i -> 0 <= F i)%E ->
   (\sum_(i <- r | P i) F i == 0)%E = all (fun i => P i ==> (F i == 0%E)) r.
@@ -1354,7 +1385,7 @@ have rPF : {in r, forall i, P i ==> (F i \is a fin_num)}.
   rewrite ltNge; apply/eqP; rewrite leye_eq; apply/eqP/negP => /eqP Fjoo.
   have PFninfty k : P k -> F k != -oo%E.
     by move=> Pk; rewrite gt_eqF// (lt_le_trans _ (F0 _ Pk))// ltNye.
-  have /esumyP : exists i, [/\ i \in r, P i & F i = +oo%E] by exists j.
+  have /esum_eqyP : exists i, [/\ i \in r, P i & F i = +oo%E] by exists j.
   by move=> /(_ PFninfty); rewrite PF0.
 have ? : (\sum_(i <- r | P i) (fine \o F) i == 0)%R.
   apply/eqP/EFin_inj; rewrite big_seq_cond -sumEFin.

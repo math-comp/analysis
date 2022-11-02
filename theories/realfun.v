@@ -344,6 +344,7 @@ have lltfb : l < f b.
   rewrite /u comparable_lt_maxl ?real_comparable ?num_real// flt// aLb andbT.
   by rewrite (@lt_le_trans _ _ (f x)) ?fle// ltr_subl_addr ltr_addl.
 case: pselect => // _; rewrite near_withinE; near_simpl.
+have Fnbhs : Filter (nbhs x) by apply: nbhs_filter.
 have := ax; rewrite le_eqVlt => /orP[/eqP|] {}ax.
   near=> y => /[dup] yab; rewrite /= in_itv => /andP[ay yb]; apply/andP; split.
     by rewrite (@le_trans _ _ (f a)) ?fle// ler_subl_addr ax ler_paddr.
@@ -428,10 +429,9 @@ Qed.
 
 Lemma near_can_continuousAcan_sym f g (x : R) :
     {near x, cancel f g} -> {near x, continuous f} ->
-  {near (f x), continuous g} /\ {near (f x), cancel g f}.
+  {near f x, continuous g} /\ {near f x, cancel g f}.
 Proof.
-move=> fK fct; near (at_right (0 : R)) => e.
-have e_gt0 : 0 < e by near: e; exists 1 => /=.
+move=> fK fct; near (0 : R)^'+ => e; have e_gt0 : 0 < e by [].
 have xBeLxDe : x - e <= x + e by rewrite ler_add2l gt0_cp.
 have fcte : {in `[x - e, x + e], continuous f}.
   by near: e; apply/at_right_in_segment.
@@ -443,7 +443,7 @@ have fKe : {in `[x - e, x + e], cancel f g}
 have nearfx : \forall y \near f x, y \in f @`](x - e), (x + e)[.
   apply: near_in_itv; apply: mono_mem_image_itvoo; last first.
     by rewrite in_itv/= -ltr_distlC subrr normr0.
-  apply: itv_continuous_inj_mono; first exact: fwcte.
+  apply: itv_continuous_inj_mono => //.
   by apply: (@can_in_inj _ _ _ _ g); near: e; apply/at_right_in_segment.
 have fxI : f x \in f @`]x - e, x + e[ by exact: (nbhs_singleton nearfx).
 split; near=> y; first last.
@@ -453,16 +453,16 @@ near: y; apply: (filter_app _ _ nearfx); near_simpl; near=> y => yfe.
 have : {within f @`]x - e, (x + e)[, continuous g}.
   apply: continuous_subspaceW; last exact: (segment_can_continuous _ fwcte _).
   exact: subset_itv_oo_cc.
-rewrite continuous_open_subspace; first by (apply;exact: mem_set).
+rewrite continuous_open_subspace; first by apply; exact: mem_set.
 exact: interval_open.
 Unshelve. all: by end_near. Qed.
 
 Lemma near_can_continuous f g (x : R) :
-  {near x, cancel f g} -> {near x, continuous f} -> {near (f x), continuous g}.
+  {near x, cancel f g} -> {near x, continuous f} -> {near f x, continuous g}.
 Proof. by move=> fK fct; have [] := near_can_continuousAcan_sym fK fct. Qed.
 
 Lemma near_continuous_can_sym f g (x : R) :
-  {near x, continuous f} -> {near x, cancel f g} -> {near (f x), cancel g f}.
+  {near x, continuous f} -> {near x, cancel f g} -> {near f x, cancel g f}.
 Proof. by move=> fct fK; have [] := near_can_continuousAcan_sym fK fct. Qed.
 
 End real_inverse_functions.
