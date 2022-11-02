@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+Require Import BinPos.
 From mathcomp Require choice.
 (* Missing coercion (done before Import to avoid redeclaration error,
    thanks to KS for the trick) *)
@@ -34,6 +35,8 @@ Reserved Notation "f \* g" (at level 40, left associativity).
 Reserved Notation "f \- g" (at level 50, left associativity).
 Reserved Notation "\- f"  (at level 35, f at level 35).
 Reserved Notation "f \max g" (at level 50, left associativity).
+
+Number Notation positive Pos.of_num_int Pos.to_num_uint : AC_scope.
 
 Lemma all_sig2_cond {I : Type} {T : Type} (D : pred I)
    (P Q : I -> T -> Prop) : T ->
