@@ -117,6 +117,8 @@
   + lemma `integral_cstNy`
   + lemma `ae_eq0`
   + lemma `integral_cst`
+- in `contructive_ereal.v`:
+  + multi-rules `lteey`, `lteNye`
 
 - in `fsbig.v`:
   + lemma `fsbig_setU_set1`
@@ -253,6 +255,10 @@
   + `nneseries_pinfty` generalized to `eseries_pinfty`
 - in `lebesgue_integral.v`:
   + implicits of `ae_eq_integral`
+- in `lebesgue_measure.v`:
+  + generalize and rename `eitv_c_infty` to `eitv_bnd_infty` and
+    `eitv_infty_c` to `eitv_infty_bnd`
+  + generalize `ErealGenOInfty.G`, `ErealGenCInfty.G`, `ErealGenInftyO.G`
 
 - moved from `mathcomp_extra.v` to `classical_sets.v`: `pred_oappE`, and
     `pred_oapp_set`.
