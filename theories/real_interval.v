@@ -275,34 +275,57 @@ Coercion ereal_of_itv_bound T (b : itv_bound T) : \bar T :=
   match b with BSide _ y => y%:E | +oo%O => +oo%E | -oo%O => -oo%E end.
 Arguments ereal_of_itv_bound T !b.
 
-Lemma le_bnd_ereal (R : realDomainType) (a b : itv_bound R) :
-  (a <= b)%O -> (a <= b)%E.
+Section erealDomainType.
+Context (R : realDomainType).
+
+Lemma le_bnd_ereal (a b : itv_bound R) : (a <= b)%O -> (a <= b)%E.
 Proof.
 move: a b => -[[] a|[]] [bb b|[]] //=; rewrite ?(leey,leNye)//.
   by rewrite bnd_simp.
 by move=> /lteifW.
 Qed.
 
-Lemma lt_ereal_bnd (R : realDomainType) (a b : itv_bound R) :
-  (a < b)%E -> (a < b)%O.
+Lemma lt_ereal_bnd (a b : itv_bound R) : (a < b)%E -> (a < b)%O.
 Proof.
 by move: a b => -[[] a|[]] [[] b|[]] //=;
   rewrite ?(lee_pinfty,lee_ninfty,lte_fin)// => ab; rewrite bnd_simp ltW.
 Qed.
 
-Lemma Interval_ereal_mem (R : realDomainType) (r : R) (a b : itv_bound R) :
+Lemma Interval_ereal_mem (r : R) (a b : itv_bound R) :
   r \in Interval a b -> (a <= r%:E <= b)%E.
 Proof.
 case: a b => [[] a|[]] [[] b|[]] => /[dup] rab /itvP rw//=;
 by rewrite ?lee_fin ?rw//= ?leey ?leNye//; move: rab; rewrite in_itv//= andbF.
 Qed.
 
-Lemma ereal_mem_Interval (R : realDomainType) (r : R) (a b : itv_bound R) :
+Lemma ereal_mem_Interval (r : R) (a b : itv_bound R) :
   (a < r%:E < b)%E -> r \in Interval a b.
 Proof.
 move: a b => [[]a|[]] [[]b|[]] //=; rewrite ?lte_fin ?in_itv //= => /andP[] //;
 by do ?[move->|move/ltW|move=>_].
 Qed.
+
+Lemma itv_cyy : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
+Proof.
+by rewrite set_itvE predeqE => t; split => /= [|<-//]; rewrite leye_eq => /eqP.
+Qed.
+
+Lemma itv_oyy : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
+Proof.
+by rewrite set_itvE predeqE => t; split => //=; apply/negP; rewrite -leNgt leey.
+Qed.
+
+Lemma itv_cNyy : `[-oo%E, +oo[%classic = setT :> set (\bar R).
+Proof. by rewrite set_itvE predeqE => t; split => //= _; rewrite leNye. Qed.
+
+Lemma itv_oNyy : `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
+Proof.
+rewrite set_itvE predeqE => x; split => /=.
+- by move: x => [x| |]; rewrite ?ltxx.
+- by move: x => [x h|//|/(_ erefl)]; rewrite ?ltNye.
+Qed.
+
+End erealDomainType.
 
 Lemma disj_itv_Rhull {R : realType} (A B : set R) : A `&` B = set0 ->
   is_interval A -> is_interval B -> disjoint_itv (Rhull A) (Rhull B).

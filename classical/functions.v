@@ -1609,6 +1609,23 @@ HB.instance Definition _ := addr_can2_subproof.
 
 End addition.
 
+(************************************)
+(* Z-module opposite is a bijection *)
+(************************************)
+
+Section addition.
+Context {V : zmodType} (x : V).
+
+HB.instance Definition _ := Inv.Build V V (-%R) (-%R).
+
+Lemma inv_oppr : (-%R)^-1 = (-%R). by []. Qed.
+
+Lemma oppr_can2_subproof : Inv_Can2 V V setT setT (-%R).
+Proof. by split => // y _; rewrite inv_oppr ?GRing.opprK. Qed.
+HB.instance Definition _ := oppr_can2_subproof.
+
+End addition.
+
 (*************)
 (* emtpyType *)
 (*************)
@@ -1713,6 +1730,11 @@ by apply: (subset_trans (image_subset CB)); rewrite image_eq.
 Qed.
 Arguments oinv_sub_image {aT rT A B} f {C} _.
 
+Lemma preimageEoinv {aT rT} {B : set rT} {f : {bij [set: aT] >-> B}}
+   {C : set rT} (CB : C `<=` B) : some @` (f @^-1` C) = 'oinv_f @` C.
+Proof. by rewrite oinv_sub_image// setTI. Qed.
+Arguments preimageEoinv {aT rT B} f {C} _.
+
 Lemma inv_image_sub {aT rT : Type} {A : set aT} {B : set rT}
     (f : {splitsurj A >-> B}) {C : set rT} :
   C `<=` B -> f^-1 @` C `<=` f @^-1` C.
@@ -1731,6 +1753,11 @@ Proof.
 by apply: image_some_inj; rewrite image_comp [Some \o _]oliftV oinv_sub_image.
 Qed.
 Arguments inv_sub_image {aT rT A B} f {C} _.
+
+Lemma preimageEinv {aT rT} {B : set rT} {f : {splitbij [set: aT] >-> B}}
+    {C : set rT} (CB : C `<=` B) : f @^-1` C = f^-1 @` C.
+Proof. by rewrite inv_sub_image// setTI. Qed.
+Arguments preimageEinv {aT rT B} f {C} _.
 
 Lemma reindex_bigcup {aT rT I} (f : aT -> I) (P : set aT) (Q : set I)
     (F : I -> set rT) : set_fun P Q f -> set_surj P Q f ->
@@ -2655,3 +2682,6 @@ Definition fctE :=
   (cstE, compE, opprfctE, addrfctE, mulrfctE, scalrfctE, exprfctE).
 
 End function_space_lemmas.
+
+Lemma inv_funK T (R : unitRingType) (f : T -> R) : f\^-1\^-1%R = f.
+Proof. by apply/funeqP => x; rewrite /inv_fun/= GRing.invrK. Qed.

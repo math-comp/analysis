@@ -693,26 +693,22 @@ case: x => [r| |].
 Qed.
 #[local] Hint Resolve emeasurable_set1 : core.
 
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_cyy`")]
 Lemma itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
-Proof.
-by rewrite set_itvE predeqE => t; split => /= [|<-//]; rewrite leye_eq => /eqP.
-Qed.
+Proof. by rewrite itv_cyy. Qed.
 
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_oyy`")]
 Lemma itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
-Proof.
-by rewrite set_itvE predeqE => t; split => //=; apply/negP; rewrite -leNgt leey.
-Qed.
+Proof. by rewrite itv_oyy. Qed.
 
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_cNyy`")]
 Lemma itv_cninfty_pinfty : `[-oo%E, +oo[%classic = setT :> set (\bar R).
-Proof. by rewrite set_itvE predeqE => t; split => //= _; rewrite leNye. Qed.
+Proof. by rewrite itv_cNyy. Qed.
 
+#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_oNyy`")]
 Lemma itv_oninfty_pinfty :
   `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
-Proof.
-rewrite set_itvE predeqE => x; split => /=.
-- by move: x => [x| |]; rewrite ?ltxx.
-- by move: x => [x h|//|/(_ erefl)]; rewrite ?ltNye.
-Qed.
+Proof. by rewrite itv_oNyy. Qed.
 
 Lemma emeasurable_itv_bnd_pinfty b (y : \bar R) :
   measurable [set` Interval (BSide b y) +oo%O].
@@ -720,9 +716,9 @@ Proof.
 move: y => [y| |].
 - exists [set` Interval (BSide b y) +oo%O]; first exact: measurable_itv.
   by exists [set +oo%E]; [constructor|rewrite -punct_eitv_bnd_pinfty].
-- by case: b; rewrite ?itv_opinfty_pinfty ?itv_cpinfty_pinfty.
-- case: b; first by rewrite itv_cninfty_pinfty.
-  by rewrite itv_oninfty_pinfty; exact/measurableC.
+- by case: b; rewrite ?itv_oyy ?itv_cyy.
+- case: b; first by rewrite itv_cNyy.
+  by rewrite itv_oNyy; exact/measurableC.
 Qed.
 
 Lemma emeasurable_itv_ninfty_bnd b (y : \bar R) :
@@ -878,9 +874,9 @@ rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
   rewrite hlength_itv/= lte_fin ifT; last first.
     by rewrite ler_lt_sub// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
   by rewrite !(EFinB,EFinN) oppeB// addeAC addeA subee// add0e.
-apply/cvg_lim => //=; apply/ereal_cvg_real; split => /=; first exact: nearW.
-apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
-rewrite !near_simpl; near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
+apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
+apply/(@cvgrPdist_lt _ [pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
+near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
 by near: n; exact: near_infty_natSinv_lt.
 Unshelve. all: by end_near. Qed.
 
@@ -943,11 +939,7 @@ by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
 Qed.
 
 Let limnatR : lim (fun k => (k%:R)%:E : \bar R) = +oo%E.
-Proof.
-apply/cvg_lim => //; apply/dvg_ereal_cvg/cvgPpinfty => A.
-exists `|ceil A|%N => //= => n/=; rewrite -(@ler_nat R); apply: le_trans.
-by rewrite natr_absz (le_trans (ceil_ge _))// intr_norm ler_norm.
-Qed.
+Proof. by apply/cvg_lim => //; apply/cvgenyP. Qed.
 
 Let lebesgue_measure_itv_bnd_infty x (a : R) :
   lebesgue_measure ([set` Interval (BSide x a) +oo%O] : set R) = +oo%E.
@@ -1357,9 +1349,9 @@ apply/seteqP; split; last first.
       exact: RGenOInfty.measurable_itv_bnd_infty.
     by exists [set +oo]; [constructor|rewrite -punct_eitv_bnd_pinfty].
   + exists set0 => //.
-    by exists set0; [constructor|rewrite setU0 itv_opinfty_pinfty image_set0].
+    by exists set0; [constructor|rewrite setU0 itv_oyy image_set0].
   + exists setT => //; exists [set +oo]; first by constructor.
-    by rewrite itv_oninfty_pinfty punct_eitv_setTR.
+    by rewrite itv_oNyy punct_eitv_setTR.
 move=> A [B mB [C mC]] <-; apply: measurableU; last first.
   case: mC; [by []|exact: measurable_set1_ninfty
                   |exact: measurable_set1_pinfty|].
@@ -1415,9 +1407,9 @@ apply/seteqP; split; last first.
       exact: RGenOInfty.measurable_itv_bnd_infty.
     by exists [set +oo]; [constructor | rewrite -punct_eitv_bnd_pinfty].
    - exists set0 => //; exists [set +oo]; first by constructor.
-     by rewrite image_set0 set0U itv_cpinfty_pinfty.
+     by rewrite image_set0 set0U itv_cyy.
    - exists setT => //; exists [set -oo; +oo]; first by constructor.
-     by rewrite itv_cninfty_pinfty setUA punct_eitv_setTL setUCl.
+     by rewrite itv_cNyy setUA punct_eitv_setTL setUCl.
 move=> _ [A' mA' [C mC]] <-; apply: measurableU; last first.
   case: mC; [by []|exact: measurable_set1_ninfty|
                    exact: measurable_set1_pinfty|].
@@ -1732,8 +1724,8 @@ move=> /= _ [_ [x ->] <-]; move: x => [x| |].
     rewrite ?/= /= ?in_itv /= ?andbT => xr//.
     + by move=> [ry]; exists `|y| => //=; rewrite in_itv/= andbT -ry.
     + by move=> [ry]; exists y => //=; rewrite /= in_itv/= andbT -ry.
-- by apply: measurableI => //; rewrite itv_opinfty_pinfty preimage_set0.
-- apply: measurableI => //; rewrite itv_oninfty_pinfty -preimage_setC.
+- by apply: measurableI => //; rewrite itv_oyy preimage_set0.
+- apply: measurableI => //; rewrite itv_oNyy -preimage_setC.
   by apply: measurableC; rewrite preimage_abse_ninfty.
 Qed.
 
@@ -1830,9 +1822,9 @@ have /emeasurable_funN := emeasurable_fun_max mf mg.
 by apply eq_measurable_fun => i Di; rewrite -oppe_min oppeK.
 Qed.
 
-Lemma measurable_fun_elim_sup D (f : (T -> \bar R)^nat) :
+Lemma measurable_fun_lim_esup D (f : (T -> \bar R)^nat) :
   (forall n, measurable_fun D (f n)) ->
-  measurable_fun D (fun x => elim_sup (f ^~ x)).
+  measurable_fun D (fun x => lim_esup (f ^~ x)).
 Proof.
 move=> mf mD; rewrite (_ :  (fun _ => _) =
     (fun x => ereal_inf [set esups (f^~ x) n | n in [set n | n >= 0]%N])).
@@ -1843,15 +1835,19 @@ rewrite [X in _ --> X](_ : _ = ereal_inf (range (esups (f^~t)))).
 by congr (ereal_inf [set _ | _ in _]); rewrite predeqE.
 Qed.
 
+#[deprecated(since="mathcomp-analysis 1.6.0",
+  note="renamed `measurable_fun_lim_esup`")]
+Notation measurable_fun_elim_sup := measurable_fun_lim_esup.
+
 Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall m, measurable_fun D (f_ m)) ->
   (forall x, D x -> f_ ^~ x --> f x) -> measurable_fun D f.
 Proof.
-move=> mf_ f_f; have fE x : D x -> f x = elim_sup (f_^~ x).
+move=> mf_ f_f; have fE x : D x -> f x = lim_esup (f_^~ x).
   by move=> Dx; have /cvg_lim  <-// := @cvg_esups _ (f_^~x) (f x) (f_f x Dx).
-apply: (measurable_fun_ext (fun x => elim_sup (f_ ^~ x))) => //.
+apply: (measurable_fun_ext (fun x => lim_esup (f_ ^~ x))) => //.
   by move=> x; rewrite inE => Dx; rewrite fE.
-exact: measurable_fun_elim_sup.
+exact: measurable_fun_lim_esup.
 Qed.
 
 End emeasurable_fun.
