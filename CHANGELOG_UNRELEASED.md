@@ -172,6 +172,9 @@
 - in `topology.v`, added `near do` and `near=> x do` tactic notations
   to perform some tactics under a `\forall x \near F, ...` quantification.
 - in `normedtype.v`, added notations `^'+`, `^'-`, `+oo_R`, `-oo_R`
+- in `measure.v`:
+  + definition `discrete_measurable_bool` with an instance of measurable type
+  + lemmas `measurable_fun_if`, `measurable_fun_ifT`
 
 ### Changed
 - in `topology.v`
