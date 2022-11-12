@@ -3609,8 +3609,98 @@ Lemma bool_compact : compact [set: bool].
 Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
 
 End DiscreteTopology.
-
 #[global] Hint Resolve discrete_bool : core.
+
+Definition second_countable (T : topologicalType) := exists B, 
+  [/\ countable B,
+      forall A, B A -> open A &
+      forall (x:T) V, nbhs x V -> exists A, B A /\ nbhs x A /\ A `<=` V].
+
+Section ClopenSets.
+Implicit Types (T : topologicalType).
+
+Definition clopen {T} (A : set T) := open A /\ closed A.
+
+Definition totally_disconnected {T} := forall (x y : T),
+  x != y -> exists A, A x /\ ~ A y /\ clopen A.
+
+Lemma clopenI {T} (A B : set T) : clopen A -> clopen B -> clopen (A `&` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openI | exact: closedI]. Qed.
+
+Lemma clopenU {T} (A B : set T) : clopen A -> clopen B -> clopen (A `|` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openU | exact: closedU]. Qed.
+
+Lemma clopenC {T} (A B : set T) : clopen A -> clopen (~`A).
+Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
+
+Lemma clopen0 {T} : @clopen T set0.
+Proof. by split; [exact: open0 | exact: closed0]. Qed.
+
+Lemma clopenT {T} : clopen [set: T].
+Proof. by split; [exact: openT | exact: closedT]. Qed.
+
+Lemma clopen_separatedP {T} (A : set T) : clopen A <-> separated A (~` A).
+Proof.
+split.
+  case=> oA cA; rewrite /separated -((closure_id A).1 cA) setICr; split => //.
+  by rewrite -((closure_id _).1 (open_closedC oA)) setICr.
+case; rewrite ?disjoints_subset => clAA AclA; split.
+  rewrite -closedC closure_id eqEsubset; split; first exact: subset_closure.
+  exact: subsetCr.
+rewrite closure_id eqEsubset; split => //; first exact: subset_closure.
+by rewrite -[x in _ `<=` x]setCK.
+Qed.
+
+Lemma totally_disconnected_cvg {T} (x : T) :
+  {for x, totally_disconnected} -> compact [set: T] ->
+  filter_from [set D | D x /\ clopen D] id --> x.
+Proof.
+pose F := filter_from [set D | D x /\ clopen D] id.
+have PF : ProperFilter F.
+  apply: filter_from_proper; first apply: filter_from_filter.
+  - by exists setT; split => //; exact: clopenT.
+  - move=> A B [] ? ? [] ? ?; exists (A `&` B); [split |] => //; exact: clopenI.
+  - by move=> ? [? _]; exists x.
+move=> disct cmpT U Ux; rewrite nbhs_simpl -/F; wlog oU : U Ux / open U.
+  move: Ux; rewrite /= {1}nbhsE => [][] O [] Ox OsubU P; apply: (filterS OsubU).
+  by apply: P => //; [exact: open_nbhs_nbhs | case: Ox].
+have /compact_near_coveringP.1 : compact (~`U).
+  by apply: (subclosed_compact _ cmpT) => //; exact: open_closedC.
+move=> /( _ _ _ (fun C y => ~ C y) (powerset_filter_from_filter PF)); case.
+  move=> y nUy; have /disct [C [Cx [] ? [] ? ?]] : x != y.
+    by apply/eqP => E; move: nUy; rewrite -E; apply; apply: nbhs_singleton.
+  exists (~`C, [set U | U `<=` C]); last by move=> [? ?] [? /subsetC]; exact.
+  split; first by apply: open_nbhs_nbhs; split => //; exact: closed_openC.
+  apply/near_powerset_filter_fromP; first by move=> ? ?; exact: subset_trans.
+  by exists C => //; exists C.
+by move=> D [] DF Dsub [C] DC /(_ _ DC) /subsetC2/filterS; apply; exact: DF.
+Qed.
+
+Lemma clopen_countable {T} : 
+  compact [set: T] -> second_countable T -> countable (@clopen T).
+Proof.
+move=> cmpT [B []] /fset_subset_countable cntB obase Bbase.
+apply/(card_le_trans _ cntB)/pcard_surjP.
+pose f := (fun (F : {fset set T}) => \bigcup_(x in [set` F]) x); exists f.
+move=> D [] oD cD /=; have cmpt : cover_compact D. 
+  by rewrite -compact_cover; exact: (subclosed_compact _ cmpT).
+have h : forall (x : T), exists (V : set T), D x -> B V /\ nbhs x V /\ V `<=` D.
+  move=> x; case: (pselect (D x)); last by move=> ?; exists set0.
+  by rewrite openE in oD; move=> /oD/Bbase [A[] ? [] ? ?]; exists A.
+pose h' := fun z => projT1 (cid (h z)); have [] := @cmpt T D h'.
+- by move=> z Dz; apply: obase; have [] := projT2 (cid (h z)) Dz.
+- move=> z Dz; exists z => //; apply: nbhs_singleton. 
+  by have [? []] := projT2 (cid (h z)) Dz.
+move=> fs fsD DsubC; exists ([fset h' z | z in fs])%fset.
+  move=> U/imfsetP [z] /fsD /set_mem Dz ->; rewrite inE.
+  by have [? []] := projT2 (cid (h z)) Dz.
+rewrite eqEsubset; split => z.
+  case=> y /imfsetP [x /fsD/set_mem Dx ->]; move: z.
+  by have [? []] := projT2 (cid (h x)) Dx.
+by move=> /DsubC [y yfs hyz]; exists (h' y) => //; rewrite set_imfset; exists y.
+Qed.
+
+End ClopenSets.
 
 (** * Uniform spaces *)
 
@@ -4759,6 +4849,33 @@ Definition fct_pseudoMetricType_mixin :=
   PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage.
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
+
+Lemma compact_second_countable {R : realType} {T : pseudoMetricType R} : 
+  compact [set: T] -> second_countable T.
+Proof.
+have npos : forall n, ((0:R) < (n.+1%:R^-1))%R by [].
+pose f : nat -> T -> (set T) := fun n z => (ball z (PosNum (npos n))%:num)^°.
+move=> cmpt; have h : forall n, finSubCover [set: T] (f n) [set: T].
+  move=> n; rewrite compact_cover in cmpt; apply: cmpt.
+    by move=> z _; rewrite /f; exact: open_interior.
+  by move=> z _; exists z => //; rewrite /f/interior; exact: nbhsx_ballx.
+pose h' := fun n => (cid (iffLR (exists2P _ _) (h n))).
+pose h'' := fun n => projT1 (h' n).
+pose B := \bigcup_n (f n) @` [set` (h'' n)]; exists B; split.
+- apply: bigcup_countable => // n _; apply: finite_set_countable.
+  exact/finite_image/ finite_fset.
+- by move=> z [n _ [w wn <-]]; exact: open_interior.
+- move=> x V /nbhs_ballP [] _/posnumP[eps] ballsubV.
+  have [//|N] := @ltr_add_invr R 0%R (eps%:num/2) _; rewrite add0r => deleps.
+  have [w [wh fx]] : exists w : T, w \in h'' N /\ f N w x. 
+    by have [_ /(_ x) [// | w ? ?]] := projT2 (h' N); exists w.
+  exists (f N w); split; first (by exists N); split.
+    by apply: open_nbhs_nbhs; split => //; exact: open_interior.
+  apply: (subset_trans _ ballsubV) => z bz.
+  rewrite [_%:num]splitr; apply: (@ball_triangle _ _ w). 
+    by apply: (le_ball (ltW deleps)); apply/ball_sym; apply: interior_subset.
+  by apply: (le_ball (ltW deleps)); apply: interior_subset.
+Qed.
 
 (** ** Complete uniform spaces *)
 
