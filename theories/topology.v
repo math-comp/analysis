@@ -3624,7 +3624,7 @@ Implicit Types (T : topologicalType).
 
 Definition clopen {T} (A : set T) := open A /\ closed A.
 
-Definition totally_disconnected {T} := forall (x y : T),
+Definition totally_disconnected T := forall (x y : T),
   x != y -> exists A, A x /\ ~ A y /\ clopen A.
 
 Lemma clopenI {T} (A B : set T) : clopen A -> clopen B -> clopen (A `&` B).
@@ -3642,6 +3642,10 @@ Proof. by split; [exact: open0 | exact: closed0]. Qed.
 Lemma clopenT {T} : clopen [set: T].
 Proof. by split; [exact: openT | exact: closedT]. Qed.
 
+Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
+ clopen A -> continuous f -> clopen (f@^-1` A).
+Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
+
 Lemma clopen_separatedP {T} (A : set T) : clopen A <-> separated A (~` A).
 Proof.
 split.
@@ -3655,7 +3659,7 @@ by rewrite -[x in _ `<=` x]setCK.
 Qed.
 
 Lemma totally_disconnected_cvg {T} (x : T) :
-  {for x, totally_disconnected} -> compact [set: T] ->
+  {for x, totally_disconnected T} -> compact [set: T] ->
   filter_from [set D | D x /\ clopen D] id --> x.
 Proof.
 pose F := filter_from [set D | D x /\ clopen D] id.
@@ -3701,6 +3705,25 @@ rewrite eqEsubset; split => z.
   case=> y /imfsetP [x /fsD/set_mem Dx ->]; move: z.
   by have [? []] := projT2 (cid (h x)) Dx.
 by move=> /DsubC [y yfs hyz]; exists (h' y) => //; rewrite set_imfset; exists y.
+Qed.
+
+Lemma totally_disconnected_prod (I : choiceType) (T : I -> topologicalType) :
+  (forall i, @totally_disconnected (T i)) ->
+  (@totally_disconnected (product_topologicalType T)).
+Proof.
+move=> dctTI /= x y /eqP xneqy.
+have [i /eqP /dctTI [A] [] Axi [] nAy coA] : exists i, x i <> y i.
+  by apply/existsNP=> W; apply/xneqy/functional_extensionality_dep.
+exists ((prod_topo_apply i)@^-1` A); split;[|split] => //.
+apply: clopen_comp => //; exact: prod_topo_apply_continuous.
+Qed.
+
+Lemma totally_disconnected_discrete {T} :
+  discrete_space T -> totally_disconnected T.
+Proof.
+move=> dsct x y /eqP xneqy; exists [set x]; split; [|split] => //.
+  by move=> W; apply: xneqy; rewrite W.
+by split => //; [exact: discrete_open | exact: discrete_closed].
 Qed.
 
 End ClopenSets.

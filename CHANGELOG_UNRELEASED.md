@@ -217,7 +217,8 @@
 - in file `topology.v`,
   + new definitions `second_countable`, `clopen`, and `totally_disconnected`.
   + new lemmas `clopenI`, `clopenU`, `clopenC`, `clopen0`, `clopenT`,
-    `clopen_separatedP`, `totally_disconnected_cvg`, `clopen_countable`, and
+    `clopen_separatedP`, `totally_disconnected_cvg`, `clopen_countable`, 
+    `totally_disconnected_prod`, `totally_disconnected_discrete`, and
     `compact_second_countable`.
 
 ### Changed
