@@ -1024,14 +1024,6 @@ apply/predeqP => x; split=> [[a ? [b ? <-]]|[[a b] [? ? <-]]]/=;
 by [exists (a, b) | exists a => //; exists b].
 Qed.
 
-Lemma image2_subset {aT bT rT : Type} [f : aT -> bT -> rT] [A B: set aT] [C D : set bT] :
-   A `<=` B -> C `<=` D ->
-   [set f x y | x in A & y in C] `<=` [set f x y | x in B & y in D].
-Proof.
-move=> AB CD x [a aA [c cC xe]]; subst x; exists a; (try by apply AB).
-by exists c; (try by apply CD).
-Qed.
-
 Lemma set_nil (T : choiceType) : [set` [::]] = @set0 T.
 Proof. by rewrite predeqP. Qed.
 
@@ -1359,6 +1351,11 @@ Proof. by move/preimage10P. Qed.
 
 End image_lemmas.
 Arguments sub_image_setI {aT rT f A B} t _.
+
+Lemma image2_subset {aT bT rT : Type} (f : aT -> bT -> rT)
+    (A B : set aT) (C D : set bT) : A `<=` B -> C `<=` D ->
+  [set f x y | x in A & y in C] `<=` [set f x y | x in B & y in D].
+Proof. by move=> AB CD; rewrite !image2E; apply: image_subset; exact: setSM. Qed.
 
 Lemma image_comp T1 T2 T3 (f : T1 -> T2) (g : T2 -> T3) A :
   g @` (f @` A) = (g \o f) @` A.
