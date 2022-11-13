@@ -202,6 +202,12 @@
 - in `measure.v`:
   + lemma `measurable_fun_bool`
 
+- in file `topology.v`,
+  + new definition `product_embed`.
+  + new lemmas `product_embedE`, `product_embedNE`, `product_embed_id`, 
+    `embed_projectK`, `product_embed_continuous`, and `projection_open`.
+
+
 ### Changed
 - in `topology.v`
   + definition `fct_restrictedUniformType` changed to use `weak_uniformType`
@@ -345,6 +351,10 @@
   + `cvg_map_lim` -> `cvg_lim`
   + `cvgi_map_lim` -> `cvgi_lim`
   + `app_cvg_locally` -> `cvg_ball`
+- in file `topology.v`,
+  + `prod_topo_apply` -> `projection`
+  + `prod_topo_applyE` -> `projectionE` 
+  + `prod_topo_apply_continuous` -> `projection_continuous`
 
 ### Generalized
 
