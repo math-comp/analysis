@@ -1666,7 +1666,7 @@ Lemma cvgr_dist_lt {T} {F : set (set T)} {FF : Filter F} (f : T -> V) (y : V) :
 Proof. by move=> /cvgrPdist_lt. Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvg_dist_lt` or a variation instead")]
+  note="use `cvgr_dist_lt` or a variation instead")]
 Lemma cvg_dist {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. exact: cvgr_dist_lt. Qed.
@@ -2483,7 +2483,7 @@ by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgPdist_le` or a variation instead")]
+  note="use `cvgrPdist_le` or a variation instead")]
 Lemma cvg_distW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
@@ -2763,46 +2763,46 @@ Section prod_NormedModule_lemmas.
 
 Context {T : Type} {K : numDomainType} {U V : normedModType K}.
 
-Lemma fcvgr_dist_lt2P {F : set (set U)} {G : set (set V)}
+Lemma fcvgr2dist_ltP {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
   (F, G) --> (y, z) <->
   forall eps, 0 < eps ->
    \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
 Proof. exact: fcvgrPdist_lt. Qed.
 
-Lemma cvgr_dist_lt2P {I J} {F : set (set I)} {G : set (set J)}
+Lemma cvgr2dist_ltP {I J} {F : set (set I)} {G : set (set J)}
   {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
   (f @ F, g @ G) --> (y, z) <->
   forall eps, 0 < eps ->
    \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
 Proof.
-rewrite fcvgr_dist_lt2P; split=> + e e0 => /(_ e e0);
+rewrite fcvgr2dist_ltP; split=> + e e0 => /(_ e e0);
   by rewrite !near_simpl// => ?; rewrite !near_simpl.
 Qed.
 
-Lemma cvgr_dist_lt2 {I J} {F : set (set I)} {G : set (set J)}
+Lemma cvgr2dist_lt {I J} {F : set (set I)} {G : set (set J)}
   {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
   (f @ F, g @ G) --> (y, z) ->
   forall eps, 0 < eps ->
    \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
-Proof. by rewrite cvgr_dist_lt2P. Qed.
+Proof. by rewrite cvgr2dist_ltP. Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
-note="use `cvgr_dist_lt2` or a variant instead")]
+note="use `cvgr2dist_lt` or a variant instead")]
 Lemma cvg_dist2 {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) ->
   forall eps, 0 < eps ->
    \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
-Proof. by rewrite cvgr_dist_lt2P. Qed.
+Proof. exact: cvgr2dist_lt. Qed.
 
 End prod_NormedModule_lemmas.
-Arguments cvgr_dist_lt2P {_ _ _ _ _ F G FF FG}.
-Arguments cvgr_dist_lt2 {_ _ _ _ _ F G FF FG}.
+Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
+Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
-note="use `cvgr_dist_lt2P` or a variant instead")]
-Notation cvg_dist2P := fcvgr_dist_lt2P.
+note="use `fcvgr2dist_ltP` or a variant instead")]
+Notation cvg_dist2P := fcvgr2dist_ltP.
 
 (** Normed vector spaces have some continuous functions *)
 (** that are in fact continuous on pseudoMetricNormedZmodType *)

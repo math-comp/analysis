@@ -391,7 +391,7 @@ Lemma cvgNpinfty u_ : (- u_ --> +oo) = (u_ --> -oo).
 Proof. exact/propeqP/cvgNry. Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgrNyN` instead")]
+  note="use `cvgNrNy` instead")]
 Lemma cvgNninfty u_ : (- u_ --> -oo) = (u_ --> +oo).
 Proof. exact/propeqP/cvgNrNy. Qed.
 
