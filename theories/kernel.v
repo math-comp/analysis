@@ -800,7 +800,7 @@ rewrite (_ : (fun x => _) =
   - by move=> n; exact/EFin_measurable_fun/measurable_fun_prod1.
   - by move=> n y _; rewrite lee_fin.
   - by move=> y _ m n mn; rewrite lee_fin; exact/lefP/ndk_.
-apply: measurable_fun_elim_sup => n.
+apply: measurable_fun_lim_esup => n.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x => \int[l x]_y
     (\sum_(r \in range (k_ n))
       r * \1_(k_ n @^-1` [set r]) (x, y))%:E)); last first.

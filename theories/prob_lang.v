@@ -721,8 +721,8 @@ apply: measurable_fun_comp; last exact: measurable_fun_opp.
 by apply: continuous_measurable_fun; exact: continuous_expR.
 Qed.
 
-Definition poisson3 := poisson 4 3. (* 0.168 *)
-Definition poisson10 := poisson 4 10. (* 0.019 *)
+Definition poisson3 := poisson 4 3%:R. (* 0.168 *)
+Definition poisson10 := poisson 4 10%:R. (* 0.019 *)
 
 End poisson.
 
@@ -771,7 +771,7 @@ Definition sample_and_return : R.-sfker T ~> _ :=
     (ret var2of2) (* T * B -> B *).
 
 Lemma sample_and_returnE t U : sample_and_return t U =
-  (2 / 7)%:E * \d_true U + (5 / 7)%:E * \d_false U.
+  (2 / 7%:R)%:E * \d_true U + (5%:R / 7%:R)%:E * \d_false U.
 Proof.
 rewrite /sample_and_return.
 rewrite letin_sample_bernoulli/=.
@@ -797,8 +797,8 @@ Definition sample_and_branch :
     (ite var2of2 (ret k3) (ret k10)).
 
 Lemma sample_and_branchE t U : sample_and_branch t U =
-  (2 / 7)%:E * \d_(3 : R) U +
-  (5 / 7)%:E * \d_(10 : R) U.
+  (2 / 7%:R)%:E * \d_(3%:R : R) U +
+  (5%:R / 7%:R)%:E * \d_(10%:R : R) U.
 Proof.
 rewrite /sample_and_branch letin_sample_bernoulli/=.
 rewrite !iteE/= !retE.
@@ -836,8 +836,8 @@ Definition kstaton_bus_poisson : R.-sfker (mR R) ~> mbool :=
   kstaton_bus _ mpoisson4.
 
 Let kstaton_bus_poissonE t U : kstaton_bus_poisson t U =
-  (2 / 7)%:E * (poisson4 3)%:E * \d_true U +
-  (5 / 7)%:E * (poisson4 10)%:E * \d_false U.
+  (2 / 7%:R)%:E * (poisson4 3%:R)%:E * \d_true U +
+  (5%:R / 7%:R)%:E * (poisson4 10%:R)%:E * \d_false U.
 Proof.
 rewrite /kstaton_bus.
 rewrite letin_sample_bernoulli.
@@ -857,11 +857,11 @@ Qed.
 (* false -> 5/7 * 0.019 = 5/7 * 10^4 e^-10 / 4! *)
 
 Lemma staton_busE P (t : R) U :
-  let N := ((2 / 7) * poisson4 3 +
-            (5 / 7) * poisson4 10)%R in
+  let N := ((2 / 7%:R) * poisson4 3%:R +
+            (5%:R / 7%:R) * poisson4 10%:R)%R in
   staton_bus mpoisson4 P t U =
-  ((2 / 7)%:E * (poisson4 3)%:E * \d_true U +
-   (5 / 7)%:E * (poisson4 10)%:E * \d_false U) * N^-1%:E.
+  ((2 / 7%:R)%:E * (poisson4 3%:R)%:E * \d_true U +
+   (5%:R / 7%:R)%:E * (poisson4 10%:R)%:E * \d_false U) * N^-1%:E.
 Proof.
 rewrite /staton_bus normalizeE /= !kstaton_bus_poissonE !diracT !mule1 ifF //.
 apply/negbTE; rewrite gt_eqF// lte_fin.
@@ -886,8 +886,8 @@ Definition kstaton_bus_exponential : R.-sfker (mR R) ~> mbool :=
   kstaton_bus _ mexp1560.
 
 Let kstaton_bus_exponentialE t U : kstaton_bus_exponential t U =
-  (2 / 7)%:E * (exp1560 3)%:E * \d_true U +
-  (5 / 7)%:E * (exp1560 10)%:E * \d_false U.
+  (2 / 7%:R)%:E * (exp1560 3%:R)%:E * \d_true U +
+  (5%:R / 7%:R)%:E * (exp1560 10%:R)%:E * \d_false U.
 Proof.
 rewrite /kstaton_bus.
 rewrite letin_sample_bernoulli.
@@ -907,11 +907,11 @@ Qed.
 (* false -> 2/7 * 0.168 = 2/7 * 3^4 e^-3 / 4! *)
 
 Lemma staton_bus_exponentialE P (t : R) U :
-  let N := ((2 / 7) * exp1560 3 +
-            (5 / 7) * exp1560 10)%R in
+  let N := ((2 / 7%:R) * exp1560 3%:R +
+            (5%:R / 7%:R) * exp1560 10%:R)%R in
   staton_bus mexp1560 P t U =
-  ((2 / 7)%:E * (exp1560 3)%:E * \d_true U +
-   (5 / 7)%:E * (exp1560 10)%:E * \d_false U) * N^-1%:E.
+  ((2 / 7%:R)%:E * (exp1560 3%:R)%:E * \d_true U +
+   (5%:R / 7%:R)%:E * (exp1560 10%:R)%:E * \d_false U) * N^-1%:E.
 Proof.
 rewrite /staton_bus.
 rewrite normalizeE /= !kstaton_bus_exponentialE !diracT !mule1 ifF //.
