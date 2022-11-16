@@ -1912,7 +1912,7 @@ Qed.
 
 Lemma covered_by_countable P :
     (forall I (D : set I) A, (forall i, D i -> A i = set0) -> P I D A) ->
-    (forall (I : pointedType) (D : set I) (A : I -> set T) (f : nat -> I),
+    (forall (I : choiceType) (D : set I) (A : I -> set T) (f : nat -> I),
        set_surj [set: nat] D f ->
        P I D A -> P nat [set: nat] (A \o f)) ->
   covered_by (@countable) P =
