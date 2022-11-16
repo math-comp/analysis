@@ -246,6 +246,8 @@
   `nbhs_norm_ball` which were not about `nbhs_ball_ ball_norm` but
   should have been.
 - `EFin_lim` generalized from `realType` to `realFieldType`
+- in `measure.v`:
+  + `covered_by_countable` generalized from `pointedType` to `choiceType`
 
 ### Renamed
 
