@@ -2250,6 +2250,9 @@ Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge leNye. Qed.
 Lemma maxeNy : right_id (-oo : \bar R) maxe.
 Proof. by move=> x; rewrite maxC maxNye. Qed.
 
+Canonical maxe_monoid := Monoid.Law maxA maxNye maxeNy.
+Canonical maxe_comoid := Monoid.ComLaw maxC.
+
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
 
@@ -2261,6 +2264,9 @@ Proof. by move=> x; have [//|] := leP x +oo; rewrite ltNge leey. Qed.
 
 Lemma miney : right_id (+oo : \bar R) mine.
 Proof. by move=> x; rewrite minC minye. Qed.
+
+Canonical mine_monoid := Monoid.Law minA minye miney.
+Canonical mine_comoid := Monoid.ComLaw minC.
 
 Lemma oppe_max : {morph -%E : x y / maxe x y >-> mine x y : \bar R}.
 Proof.

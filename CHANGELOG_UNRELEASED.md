@@ -175,6 +175,25 @@
 - in `measure.v`:
   + definition `discrete_measurable_bool` with an instance of measurable type
   + lemmas `measurable_fun_if`, `measurable_fun_ifT`
+- in `constructive_ereal.v`:
+  + canonicals `maxe_monoid`, `maxe_comoid`, `mine_monoid`, `mine_comoid`
+- in `mathcomp_extra.v`:
+  + generalize lemmas `bigmax_le`, `bigmax_lt`, `lt_bigmin` and
+    `le_bigmin` from `finType` to `Type`
+  + new definition `oAC` to turn an AC operator `T -> T -> T`,
+    into a monoid com_law `option T -> option T -> option T`.
+  + new generic lemmas `opACE`, `some_big_AC`, `big_ACE`, `big_undup_AC`,
+    `perm_big_AC`, `sub_big`, `sub_big_seq`, `sub_big_seq_cond`,
+    `uniq_sub_big`, `uniq_sub_big_cond`, `sub_big_idem`, `sub_big_idem_cond`,
+    `sub_in_big`, `le_big_ord`, `subset_big`, `subset_big_cond`,
+    `le_big_nat_cond`, `le_big_nat`, and `le_big_ord_cond`,
+  + specialization to `bigmax`: `sub_bigmax`, `sub_bigmax_seq`,
+    `sub_bigmax_cond`, `sub_in_bigmax`, `le_bigmax_nat`,
+    `le_bigmax_nat_cond`, `le_bigmax_ord`, `le_bigmax_ord_cond`,
+    `subset_bigmax`, and `subset_bigmax_cond`.
+  + specialization to `bigmin`,  `sub_bigmax`, `sub_bigmin_seq`,
+    `sub_bigmin_cond`, `sub_in_bigmin`, `le_bigmin_nat`,
+    `le_bigmin_nat_cond`, `le_bigmin_ord`, `le_bigmin_ord_cond`, `subset_bigmin`, and `subset_bigmin_cond`.
 
 ### Changed
 - in `topology.v`
