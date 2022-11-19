@@ -3726,6 +3726,57 @@ Qed.
 
 End ae_measurable_fun.
 
+Section tmp.
+Local Open Scope ereal_scope.
+Variables (d : measure_display) (T : measurableType d) (R : realType)
+          (mu : {measure set T -> \bar R}).
+
+Lemma integral_cst_ninfty (D : set T) : measurable D ->
+  mu D != 0 -> \int[mu]_(x in D) (cst -oo) x = -oo.
+Proof.
+move=> mD D0.
+by rewrite (eq_integral (\- cst +oo))// integral_ge0N//= ?integral_cst_pinfty.
+Qed.
+
+Lemma integral_ecst  (D : set T) : d.-measurable D ->
+  forall r, \int[mu]_(x in D) (cst r) x = r * mu D.
+Proof.
+move=> mD.
+have [D0 r|D0 [r| |]] := eqVneq (mu D) 0.
+  rewrite (@ae_eq_integral(*TODO: fix implicits*) _ _ _ _ _ _ (cst 0))//.
+  - by rewrite integral0 D0 mule0.
+  - exact: measurable_fun_cst.
+  - exact: measurable_fun_cst.
+  - by exists D; split => // x/= /not_implyP[].
+- by rewrite integral_cst.
+- by rewrite integral_cst_pinfty// gt0_mulye// lt_neqAle eq_sym D0/=.
+- by rewrite integral_cst_ninfty// gt0_mulNye// lt_neqAle eq_sym D0/=.
+Qed.
+
+Lemma le_integral_abse_fun (D : set T) (mD : measurable D) (g : T -> \bar R) a
+    (f : \bar R -> \bar R) (mf : measurable_fun setT f)
+    (f0 : forall r, 0 <= r -> 0 <= f r)
+    (f_nd : {in `[0, +oo[%classic &, {homo f : x y / x <= y}}) :
+  measurable_fun D g -> (0 < a)%R ->
+  (f a%:E) * mu (D `&` [set x | (`|g x| >= a%:E)%E]) <= \int[mu]_(x in D) f `|g x|.
+Proof.
+move=> mg a0; have ? : measurable (D `&` [set x | (a%:E <= `|g x|)%E]).
+  by apply: emeasurable_fun_c_infty => //; exact: measurable_fun_comp.
+apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) f `|g x|)).
+  rewrite -integral_ecst//; apply: ge0_le_integral => //.
+  - by move=> x _ /=; rewrite f0 // lee_fin ltW.
+  - exact/measurable_fun_cst.
+  - by move=> x _ /=; rewrite f0.
+  - apply: measurable_fun_comp => //; apply: measurable_fun_comp => //.
+    exact: measurable_funS mg.
+  - by move=> x /= [Dx]; apply: f_nd;
+      rewrite inE /= in_itv /= andbT// lee_fin ltW.
+apply: subset_integral => //; last by move=> x _ /=; rewrite f0.
+by apply: measurable_fun_comp => //; exact: measurable_fun_comp.
+Qed.
+
+End tmp.
+
 Section integralD.
 Local Open Scope ereal_scope.
 Variables (d : measure_display) (T : measurableType d) (R : realType).
