@@ -1765,7 +1765,7 @@ Local Open Scope ereal_scope.
 Variables (d : measure_display) (T : measurableType d) (R : realType).
 Implicit Types (D : set T).
 
-Lemma emeasurable_fun_bool (D : set T) (f : D -> bool) b :
+Lemma emeasurable_fun_bool (D : set T) (f : T -> bool) b :
   measurable (f @^-1` [set b]) -> measurable_fun D f.
 Proof.
 have FNT : [set false] = [set~ true] by apply/seteqP; split => -[]//=.
