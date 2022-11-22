@@ -25,6 +25,9 @@ From mathcomp Require Import finset interval.
 (*                           interval bounds                                  *)
 (*               miditv i == middle point of interval i                       *)
 (*                                                                            *)
+(*               proj f i == f i, where f : forall i, T i                     *)
+(*             dfwith f x == fun j => x if j = i, and f j otherwise           *)
+(*                           given x : T i                                    *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -1068,3 +1071,30 @@ Definition bound_side d (T : porderType d) (c : bool) (x : itv_bound T) :=
 Lemma real_ltr_distlC [R : numDomainType] [x y : R] (e : R) :
   x - y \is Num.real -> (`|x - y| < e) = (x - e < y < x + e).
 Proof. by move=> ?; rewrite distrC real_ltr_distl// -rpredN opprB. Qed.
+
+Definition proj {I} {T : I -> Type} (f : forall i, T i) i := f i.
+
+Section DFunWith.
+Variables (I : eqType) (T : I -> Type) (f : forall i, T i).
+
+Definition dfwith i (x : T i) (j : I) : T j :=
+  if (i =P j) is ReflectT ij then ecast j (T j) ij x else f j.
+
+Lemma dfwithin i x : dfwith x i = x.
+Proof. by rewrite /dfwith; case: eqP => // ii; rewrite eq_axiomK. Qed.
+
+Lemma dfwithout i (x : T i) j : i != j -> dfwith x j = f j.
+Proof. by rewrite /dfwith; case: eqP. Qed.
+
+Variant dfwith_spec i (x : T i) : forall j, T j -> Type:=
+  | DFunWithin : dfwith_spec x x
+  | DFunWithout j : i != j -> dfwith_spec x (f j).
+
+Lemma dfwithP i (x : T i) (j : I) : dfwith_spec x (dfwith x j).
+Proof.
+by case: (eqVneq i j) => [<-|nij];
+   [rewrite dfwithin|rewrite dfwithout//]; constructor.
+Qed.
+
+End DFunWith.
+Arguments dfwith {I T} f [i] x.

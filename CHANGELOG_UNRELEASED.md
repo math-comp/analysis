@@ -196,6 +196,10 @@
     `sub_bigmin_cond`, `sub_in_bigmin`, `le_bigmin_nat`,
     `le_bigmin_nat_cond`, `le_bigmin_ord`, `le_bigmin_ord_cond`, `subset_bigmin`, and `subset_bigmin_cond`.
 
+- in file `mathcomp_extra.v`,
+  + new definitions `proj`, and `dfwith`.
+  + new lemmas `dfwithin`, `dfwithout`, and `dfwithP`.
+
 ### Changed
 - in `topology.v`
   + definition `fct_restrictedUniformType` changed to use `weak_uniformType`
