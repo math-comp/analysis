@@ -3614,10 +3614,10 @@ Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
 End DiscreteTopology.
 #[global] Hint Resolve discrete_bool : core.
 
-Definition second_countable (T : topologicalType) := exists B, 
+Definition second_countable (T : topologicalType) := exists B,
   [/\ countable B,
-      forall A, B A -> open A &
-      forall (x:T) V, nbhs x V -> exists A, B A /\ nbhs x A /\ A `<=` V].
+      B `<=` open &
+      forall (x : T) V, nbhs x V -> exists A, [/\ B A, nbhs x A & A `<=` V]].
 
 Section ClopenSets.
 Implicit Types (T : topologicalType).
@@ -3643,7 +3643,7 @@ Lemma clopenT {T} : clopen [set: T].
 Proof. by split; [exact: openT | exact: closedT]. Qed.
 
 Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
- clopen A -> continuous f -> clopen (f@^-1` A).
+ clopen A -> continuous f -> clopen (f @^-1` A).
 Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
 
 Lemma clopen_separatedP {T} (A : set T) : clopen A <-> separated A (~` A).
@@ -3683,20 +3683,20 @@ move=> /( _ _ _ (fun C y => ~ C y) (powerset_filter_from_filter PF)); case.
 by move=> D [] DF Dsub [C] DC /(_ _ DC) /subsetC2/filterS; apply; exact: DF.
 Qed.
 
-Lemma clopen_countable {T} : 
+Lemma clopen_countable {T} :
   compact [set: T] -> second_countable T -> countable (@clopen T).
 Proof.
 move=> cmpT [B []] /fset_subset_countable cntB obase Bbase.
 apply/(card_le_trans _ cntB)/pcard_surjP.
-pose f := (fun (F : {fset set T}) => \bigcup_(x in [set` F]) x); exists f.
-move=> D [] oD cD /=; have cmpt : cover_compact D. 
+pose f := fun (F : {fset set T}) => \bigcup_(x in [set` F]) x; exists f.
+move=> D [] oD cD /=; have cmpt : cover_compact D.
   by rewrite -compact_cover; exact: (subclosed_compact _ cmpT).
-have h : forall (x : T), exists (V : set T), D x -> B V /\ nbhs x V /\ V `<=` D.
-  move=> x; case: (pselect (D x)); last by move=> ?; exists set0.
-  by rewrite openE in oD; move=> /oD/Bbase [A[] ? [] ? ?]; exists A.
-pose h' := fun z => projT1 (cid (h z)); have [] := @cmpt T D h'.
+have h (x : T) : exists (V : set T), D x -> B V /\ nbhs x V /\ V `<=` D.
+  case: (pselect (D x)); last by move=> ?; exists set0.
+  by rewrite openE in oD => /oD/Bbase [A[] ? ? ?]; exists A.
+pose h' z := projT1 (cid (h z)); have [] := @cmpt T D h'.
 - by move=> z Dz; apply: obase; have [] := projT2 (cid (h z)) Dz.
-- move=> z Dz; exists z => //; apply: nbhs_singleton. 
+- move=> z Dz; exists z => //; apply: nbhs_singleton.
   by have [? []] := projT2 (cid (h z)) Dz.
 move=> fs fsD DsubC; exists ([fset h' z | z in fs])%fset.
   move=> U/imfsetP [z] /fsD /set_mem Dz ->; rewrite inE.
@@ -3709,13 +3709,13 @@ Qed.
 
 Lemma totally_disconnected_prod (I : choiceType) (T : I -> topologicalType) :
   (forall i, @totally_disconnected (T i)) ->
-  (@totally_disconnected (product_topologicalType T)).
+  totally_disconnected (product_topologicalType T).
 Proof.
 move=> dctTI /= x y /eqP xneqy.
 have [i /eqP /dctTI [A] [] Axi [] nAy coA] : exists i, x i <> y i.
-  by apply/existsNP=> W; apply/xneqy/functional_extensionality_dep.
-exists ((prod_topo_apply i)@^-1` A); split;[|split] => //.
-apply: clopen_comp => //; exact: prod_topo_apply_continuous.
+  by apply/existsNP=> W; exact/xneqy/functional_extensionality_dep.
+exists (prod_topo_apply i @^-1` A); split;[|split] => //.
+by apply: clopen_comp => //; exact: prod_topo_apply_continuous.
 Qed.
 
 Lemma totally_disconnected_discrete {T} :
@@ -4876,31 +4876,30 @@ Definition fct_pseudoMetricType_mixin :=
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
 
-Lemma compact_second_countable {R : realType} {T : pseudoMetricType R} : 
+Lemma compact_second_countable {R : realType} {T : pseudoMetricType R} :
   compact [set: T] -> second_countable T.
 Proof.
-have npos : forall n, ((0:R) < (n.+1%:R^-1))%R by [].
-pose f : nat -> T -> (set T) := fun n z => (ball z (PosNum (npos n))%:num)^°.
-move=> cmpt; have h : forall n, finSubCover [set: T] (f n) [set: T].
-  move=> n; rewrite compact_cover in cmpt; apply: cmpt.
-    by move=> z _; rewrite /f; exact: open_interior.
-  by move=> z _; exists z => //; rewrite /f/interior; exact: nbhsx_ballx.
-pose h' := fun n => (cid (iffLR (exists2P _ _) (h n))).
-pose h'' := fun n => projT1 (h' n).
-pose B := \bigcup_n (f n) @` [set` (h'' n)]; exists B; split.
+pose f n z : set T := (ball z n.+1%:R^-1)^°.
+move=> cmpt; have h n : finSubCover [set: T] (f n) [set: T].
+  move: cmpt; rewrite compact_cover; apply.
+    by move=> z _; exact: open_interior.
+  by move=> z _; exists z => //; exact: (nbhsx_ballx _ n.+1%:R^-1%:pos).
+pose h' n := cid (iffLR (exists2P _ _) (h n)).
+pose h'' n := projT1 (h' n).
+pose B := \bigcup_n (f n) @` [set` h'' n]; exists B; split.
 - apply: bigcup_countable => // n _; apply: finite_set_countable.
-  exact/finite_image/ finite_fset.
-- by move=> z [n _ [w wn <-]]; exact: open_interior.
-- move=> x V /nbhs_ballP [] _/posnumP[eps] ballsubV.
-  have [//|N] := @ltr_add_invr R 0%R (eps%:num/2) _; rewrite add0r => deleps.
-  have [w [wh fx]] : exists w : T, w \in h'' N /\ f N w x. 
+  exact/finite_image/finite_fset.
+- by move=> _ [n _ [w wn <-]]; exact: open_interior.
+- move=> x V /nbhs_ballP[] _/posnumP[eps] ballsubV.
+  have [//|N] := @ltr_add_invr R 0 (eps%:num / 2) _; rewrite add0r => deleps.
+  have [w [wh fx]] : exists w : T, w \in h'' N /\ f N w x.
     by have [_ /(_ x) [// | w ? ?]] := projT2 (h' N); exists w.
-  exists (f N w); split; first (by exists N); split.
+  exists (f N w); split; first by exists N.
     by apply: open_nbhs_nbhs; split => //; exact: open_interior.
-  apply: (subset_trans _ ballsubV) => z bz.
-  rewrite [_%:num]splitr; apply: (@ball_triangle _ _ w). 
-    by apply: (le_ball (ltW deleps)); apply/ball_sym; apply: interior_subset.
-  by apply: (le_ball (ltW deleps)); apply: interior_subset.
+  apply: subset_trans ballsubV => z bz.
+  rewrite [_%:num]splitr; apply: (@ball_triangle _ _ w).
+    by apply: (le_ball (ltW deleps)); apply/ball_sym; exact: interior_subset.
+  by apply: (le_ball (ltW deleps)); exact: interior_subset.
 Qed.
 
 (** ** Complete uniform spaces *)
