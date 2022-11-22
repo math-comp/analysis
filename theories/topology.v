@@ -4778,14 +4778,13 @@ Qed.
 End entourages.
 
 Lemma countable_uniformity_metric {R : realType} {T : pseudoMetricType R} :
-   countable_uniformity T.
+  countable_uniformity T.
 Proof.
-apply/countable_uniformityP; have ninvp : forall n, 0 < n.+1%:R^-1.
-  by move=> ? n; rewrite invr_gt0.
-exists (fun n => [set xy : T * T | ball xy.1 (PosNum (ninvp _ n))%:num xy.2]).
-split; last by move=> n; exact: entourage_ball.
+apply/countable_uniformityP.
+exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]).
+split; last by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
 move=> E; rewrite -entourage_ballE => [[e]] ? subE.
-exists `|floor e^-1|%N; apply: (subset_trans _ subE) => xy; apply: le_ball.
+exists `|floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
 rewrite /= -{2}[e]invrK lef_pinv ?posrE ?invr_gt0 // ? natr_absz.
 apply: le_trans; first by apply: ltW; exact: lt_succ_floor.
 by rewrite -natr1 ler_add //= natr_absz ler_int ler_norm.
