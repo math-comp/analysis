@@ -6712,7 +6712,13 @@ Hypothesis ctsf : forall i, continuous (f_ i).
 
 Let weakT := @sup_topologicalType T I
   (fun i => Topological.class (weak_topologicalType (f_ i))).
+
 Let PU := product_topologicalType U_.
+
+Local Notation sup_open := (@open weakT).
+Local Notation "'weak_open' i" := 
+  (@open (weak_topologicalType (f_ i))) (at level 0).
+Local Notation natural_open := (@open T).
 
 Lemma weak_sep_cvg (F : set (set T)) (x : T) :
   Filter F -> (F --> (x : T)) <-> (F --> (x : weakT)).
@@ -6758,6 +6764,8 @@ have -> : join_product @^-1` (prod_topo_apply i @^-1` B) = f_ i @^-1` B by [].
 apply: open_comp => // + _; rewrite /cvg_to => x U.
 by rewrite nbhs_simpl /= -weak_sep_nbhsE; move: x U; exact: ctsf.
 Qed.
+
+Local Notation prod_open := (@open (subspace_topologicalType (range join_product))).
 
 Lemma join_product_open (A : set T) : open A ->
   open ((join_product @` A) : set (subspace (range join_product))).
