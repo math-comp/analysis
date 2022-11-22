@@ -25,7 +25,7 @@ From mathcomp Require Import finset interval.
 (*                           interval bounds                                  *)
 (*               miditv i == middle point of interval i                       *)
 (*                                                                            *)
-(*               proj f i == f i, where f : forall i, T i                     *)
+(*               proj i f == f i, where f : forall i, T i                     *)
 (*             dfwith f x == fun j => x if j = i, and f j otherwise           *)
 (*                           given x : T i                                    *)
 (******************************************************************************)
@@ -1072,7 +1072,7 @@ Lemma real_ltr_distlC [R : numDomainType] [x y : R] (e : R) :
   x - y \is Num.real -> (`|x - y| < e) = (x - e < y < x + e).
 Proof. by move=> ?; rewrite distrC real_ltr_distl// -rpredN opprB. Qed.
 
-Definition proj {I} {T : I -> Type} (f : forall i, T i) i := f i.
+Definition proj {I} {T : I -> Type} i (f : forall i, T i) := f i.
 
 Section DFunWith.
 Variables (I : eqType) (T : I -> Type) (f : forall i, T i).
@@ -1086,7 +1086,7 @@ Proof. by rewrite /dfwith; case: eqP => // ii; rewrite eq_axiomK. Qed.
 Lemma dfwithout i (x : T i) j : i != j -> dfwith x j = f j.
 Proof. by rewrite /dfwith; case: eqP. Qed.
 
-Variant dfwith_spec i (x : T i) : forall j, T j -> Type:=
+Variant dfwith_spec i (x : T i) : forall j, T j -> Type :=
   | DFunWithin : dfwith_spec x x
   | DFunWithout j : i != j -> dfwith_spec x (f j).
 
