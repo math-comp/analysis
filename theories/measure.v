@@ -775,7 +775,7 @@ HB.end.
 #[global] Hint Extern 0 (measurable setT) => solve [apply: measurableT] : core.
 
 Section ringofsets_lemmas.
-Variables (d : measure_display) (T : ringOfSetsType d).
+Context d (T : ringOfSetsType d).
 Implicit Types A B : set T.
 
 Lemma bigsetU_measurable I r (P : pred I) (F : I -> set T) :
@@ -802,7 +802,7 @@ Qed.
 End ringofsets_lemmas.
 
 Section algebraofsets_lemmas.
-Variables (d : measure_display) (T : algebraOfSetsType d).
+Context d (T : algebraOfSetsType d).
 Implicit Types A B : set T.
 
 Lemma measurableC A : measurable A -> measurable (~` A).
@@ -829,7 +829,7 @@ Qed.
 End algebraofsets_lemmas.
 
 Section measurable_lemmas.
-Variables (d : measure_display) (T : measurableType d).
+Context d (T : measurableType d).
 Implicit Types (A B : set T) (F : (set T)^nat) (P : set nat).
 
 Lemma sigma_algebra_measurable : sigma_algebra setT (@measurable d T).
@@ -855,8 +855,7 @@ Proof. by move=> ?; exact: bigcap_measurable. Qed.
 
 End measurable_lemmas.
 
-Lemma bigcupT_measurable_rat (d : measure_display) (T : measurableType d)
-    (F : rat -> set T) :
+Lemma bigcupT_measurable_rat d (T : measurableType d) (F : rat -> set T) :
   (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
 Proof.
 move=> Fm; have /ppcard_eqP[f] := card_rat.
@@ -939,10 +938,8 @@ Definition measurable_fun d d' (T : measurableType d) (U : measurableType d')
   measurable D -> forall Y, measurable Y -> measurable (D `&` f @^-1` Y).
 
 Section measurable_fun.
-Variables (d1 d2 d3 : measure_display).
-Variables (T1 : measurableType d1).
-Variables (T2 : measurableType d2).
-Variables (T3 : measurableType d3).
+Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
+        (T3 : measurableType d3).
 Implicit Type D E : set T1.
 
 Lemma measurable_fun_id D : measurable_fun D id.
@@ -1159,8 +1156,8 @@ End measurability.
 Local Open Scope ereal_scope.
 
 Section additivity.
-Variables (d : measure_display) (R : numFieldType)
-          (T : semiRingOfSetsType d) (mu : set T -> \bar R).
+Context d (R : numFieldType) (T : semiRingOfSetsType d)
+        (mu : set T -> \bar R).
 
 Definition semi_additive2 := forall A B, measurable A -> measurable B ->
   measurable (A `|` B) ->
@@ -1213,8 +1210,7 @@ Qed.
 End additivity.
 
 Section ring_additivity.
-Variables (d : measure_display) (R : numFieldType)
-          (T : ringOfSetsType d) (mu : set T -> \bar R).
+Context d (R : numFieldType) (T : ringOfSetsType d) (mu : set T -> \bar R).
 
 Lemma semi_additiveE : semi_additive mu = additive mu.
 Proof.
@@ -1308,8 +1304,8 @@ Canonical additive_measure_snum S :=
 End additive_measure_signed.
 
 Section additive_measure_on_semiring_of_sets.
-Variables (d : measure_display) (R : numFieldType) (T : semiRingOfSetsType d)
-  (mu : {additive_measure set T -> \bar R}).
+Context d (R : numFieldType) (T : semiRingOfSetsType d)
+        (mu : {additive_measure set T -> \bar R}).
 
 Lemma measure0 : mu set0 = 0.
 Proof.
@@ -1383,8 +1379,8 @@ Arguments measure0 {d R T} _.
 Hint Resolve measure0 measure_semi_additive2 measure_semi_additive : core.
 
 Section additive_measure_on_ring_of_sets.
-Variables (d : measure_display)  (R : realFieldType)(T : ringOfSetsType d)
-  (mu : {additive_measure set T -> \bar R}).
+Context d (R : realFieldType)(T : ringOfSetsType d)
+        (mu : {additive_measure set T -> \bar R}).
 
 Lemma measureU : additive2 mu.
 Proof. by rewrite -semi_additive2E. Qed.
@@ -1447,7 +1443,7 @@ Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure R T)
     format "{ 'measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
 Section measure_signed.
-Variables (d : _) (R : numFieldType) (T : semiRingOfSetsType d).
+Context d (R : numFieldType) (T : semiRingOfSetsType d).
 
 Variable mu : {measure set T -> \bar R}.
 
@@ -1479,7 +1475,7 @@ HB.instance Definition _ := isAdditiveMeasure.Build d R T mu
 HB.instance Definition _ := isMeasure0.Build d R T mu measure_semi_sigma_additive.
 HB.end.
 
-Lemma eq_measure (d : measure_display) (T : measurableType d) (R : realType)
+Lemma eq_measure d (T : measurableType d) (R : realType)
   (m1 m2 : {measure set T -> \bar R}) :
   (m1 = m2 :> (set T -> \bar R)) -> m1 = m2.
 Proof.
@@ -1489,7 +1485,7 @@ by rewrite (_ : m10' = m10)// (_ : m1ge0' = m1ge0)// (_ : m1sa' = m1sa).
 Qed.
 
 Section measure_lemmas.
-Variables (d : measure_display) (R : realFieldType) (T : semiRingOfSetsType d).
+Context d (R : realFieldType) (T : semiRingOfSetsType d).
 
 Variable mu : {measure set T -> \bar R}.
 
@@ -1501,7 +1497,7 @@ Proof. by move=> Am Atriv /measure_semi_sigma_additive/cvg_lim<-//. Qed.
 End measure_lemmas.
 
 Section measure_lemmas.
-Variables (d : measure_display) (R : realFieldType) (T : measurableType d).
+Context d (R : realFieldType) (T : measurableType d).
 Variable mu : {measure set T -> \bar R}.
 
 Lemma measure_sigma_additive : sigma_additive mu.
@@ -1526,8 +1522,7 @@ Arguments measure_bigcup {d R T} mu A.
 
 Section pushforward_measure.
 Local Open Scope ereal_scope.
-Variables (d d' : measure_display).
-Variables (T1 : measurableType d) (T2 : measurableType d') (f : T1 -> T2).
+Context d d' (T1 : measurableType d) (T2 : measurableType d') (f : T1 -> T2).
 Variables (R : realFieldType) (m : {measure set T1 -> \bar R}).
 
 Definition pushforward (mf : measurable_fun setT f) A := m (f @^-1` A).
@@ -1557,8 +1552,7 @@ End pushforward_measure.
 
 Section dirac_measure.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (a : T).
-Variable (R : realFieldType).
+Context d (T : measurableType d) (a : T) (R : realFieldType).
 
 Definition dirac (A : set T) : \bar R := (\1_A a)%:E.
 
@@ -1598,7 +1592,7 @@ Proof. by rewrite /dirac indicE. Qed.
 
 Section dirac_lemmas.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 
 Lemma finite_card_dirac (A : set T) : finite_set A ->
   \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
@@ -1627,7 +1621,7 @@ End dirac_lemmas.
 
 Section measure_sum.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 Variables (m : {measure set T -> \bar R}^nat) (n : nat).
 
 Definition msum (A : set T) : \bar R := \sum_(k < n) m k A.
@@ -1653,7 +1647,7 @@ Arguments msum {d T R}.
 
 Section measure_zero.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 
 Definition mzero (A : set T) : \bar R := 0.
 
@@ -1673,14 +1667,14 @@ HB.instance Definition _ := isMeasure.Build _ _ _ mzero
 End measure_zero.
 Arguments mzero {d T R}.
 
-Lemma msum_mzero (d : _) (T : measurableType d) (R : realType)
+Lemma msum_mzero d (T : measurableType d) (R : realType)
     (m_ : {measure set T -> \bar R}^nat) :
   msum m_ 0 = mzero.
 Proof. by apply/funext => A/=; rewrite /msum big_ord0. Qed.
 
 Section measure_add.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 Variables (m1 m2 : {measure set T -> \bar R}).
 
 Definition measure_add := msum (fun n => if n is 0%N then m1 else m2) 2.
@@ -1692,7 +1686,7 @@ End measure_add.
 
 Section measure_scale.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realFieldType).
+Context d (T : measurableType d) (R : realFieldType).
 Variables (r : {nonneg R}) (m : {measure set T -> \bar R}).
 
 Definition mscale (A : set T) : \bar R := r%:num%:E * m A.
@@ -1721,7 +1715,7 @@ Arguments mscale {d T R}.
 
 Section measure_series.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 Variables (m : {measure set T -> \bar R}^nat) (n : nat).
 
 Definition mseries (A : set T) : \bar R := \sum_(n <= k <oo) m k A.
@@ -1761,7 +1755,7 @@ Definition mrestr d (T : measurableType d) (R : realFieldType) (D : set T)
   (f : set T -> \bar R) (mD : measurable D) := fun X => f (X `&` D).
 
 Section measure_restr.
-Variables (d : measure_display) (T : measurableType d) (R : realFieldType).
+Context d (T : measurableType d) (R : realFieldType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 
 Local Notation restr := (mrestr mu mD).
@@ -1788,7 +1782,7 @@ HB.instance Definition _ := isMeasure.Build _ _ _ restr
 End measure_restr.
 
 Section measure_count.
-Variables (d : _) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 Variables (D : set T) (mD : measurable D).
 
 Definition counting (X : set T) : \bar R :=
@@ -2212,7 +2206,7 @@ Lemma measure_le0 d (T : semiRingOfSetsType d) (R : realFieldType)
 Proof. by case: ltgtP (measure_ge0 mu A). Qed.
 
 Section more_content_semiring_lemmas.
-Variables (d : measure_display) (R : realFieldType) (T : semiRingOfSetsType d).
+Context d (R : realFieldType) (T : semiRingOfSetsType d).
 Variable mu : {additive_measure set T -> \bar R}.
 
 Lemma content_sub_additive : sub_additive mu.
@@ -2287,7 +2281,7 @@ Qed.
 End more_content_semiring_lemmas.
 
 Section content_ring_lemmas.
-Variables (d : measure_display) (R : realType) (T : ringOfSetsType d).
+Context d (R : realType) (T : ringOfSetsType d).
 Variable mu : {additive_measure set T -> \bar R}.
 
 Lemma content_ring_sup_sigma_additive (A : nat -> set T) :
@@ -2375,7 +2369,7 @@ Qed.
 End ring_sigma_sub_additive_content.
 
 Section more_premeasure_ring_lemmas.
-Variables (d : measure_display) (R : realType) (T : semiRingOfSetsType d).
+Context d (R : realType) (T : semiRingOfSetsType d).
 Variable mu : {measure set T -> \bar R}.
 Import SetRing.
 
@@ -2495,7 +2489,7 @@ by apply: le_measure; rewrite ?inE.
 Qed.
 
 Section measureD.
-Variables (d : measure_display) (R : realFieldType) (T : ringOfSetsType d).
+Context d (R : realFieldType) (T : ringOfSetsType d).
 Variable mu : {measure set T -> \bar R}.
 
 Lemma measureDI A B : measurable A -> measurable B ->
@@ -2584,7 +2578,7 @@ exact/(nS m.+1)/(leq_trans nm).
 Qed.
 
 Section boole_inequality.
-Variables (d : measure_display) (R : realFieldType) (T : ringOfSetsType d).
+Context d (R : realFieldType) (T : ringOfSetsType d).
 Variables (mu : {additive_measure set T -> \bar R}).
 
 Theorem Boole_inequality (A : (set T) ^nat) n :
@@ -2599,9 +2593,8 @@ End boole_inequality.
 Notation le_mu_bigsetU := Boole_inequality.
 
 Section sigma_finite_lemma.
-Variables (d : measure_display) (R : realFieldType)
-  (T : ringOfSetsType d) (A : set T)
-  (mu : {additive_measure set T -> \bar R}).
+Context d (R : realFieldType) (T : ringOfSetsType d) (A : set T)
+        (mu : {additive_measure set T -> \bar R}).
 
 Lemma sigma_finiteP : sigma_finite A mu ->
   exists2 F, A = \bigcup_i F i &
@@ -2623,7 +2616,7 @@ Qed.
 End sigma_finite_lemma.
 
 Section generalized_boole_inequality.
-Variables (d : measure_display) (R : realType) (T : ringOfSetsType d).
+Context d (R : realType) (T : ringOfSetsType d).
 Variable (mu : {measure set T -> \bar R}).
 
 Theorem generalized_Boole_inequality (A : (set T) ^nat) :
@@ -2635,7 +2628,7 @@ End generalized_boole_inequality.
 Notation le_mu_bigcup := generalized_Boole_inequality.
 
 Section negligible.
-Variables (d : measure_display) (R : realFieldType) (T : ringOfSetsType d).
+Context d (R : realFieldType) (T : ringOfSetsType d).
 
 Definition negligible (mu : set T -> \bar R) (N : set T) :=
   exists A : set T, [/\ measurable A, mu A = 0 & N `<=` A].
@@ -3022,7 +3015,7 @@ by rewrite expr0 divr1; apply: cvg_trans.
 Unshelve. all: by end_near. Qed.
 
 Section measurable_cover.
-Variable (d : measure_display) (T : semiRingOfSetsType d).
+Context d (T : semiRingOfSetsType d).
 Implicit Types (X : set T) (F : (set T)^nat).
 
 Definition measurable_cover X := [set F : (set T)^nat |
@@ -3036,13 +3029,13 @@ Proof. by case. Qed.
 
 End measurable_cover.
 
-Lemma measurable_uncurry (T1 T2 : Type) (d : _) (T : semiRingOfSetsType d)
+Lemma measurable_uncurry (T1 T2 : Type) d (T : semiRingOfSetsType d)
     (G : T1 -> T2 -> set T) (x : T1 * T2) :
   measurable (G x.1 x.2) <-> measurable (uncurry G x).
 Proof. by case: x. Qed.
 
 Section measure_extension.
-Variables (R : realType) (d : measure_display) (T : semiRingOfSetsType d).
+Context (R : realType) d (T : semiRingOfSetsType d).
 Variable mu : set T -> \bar R.
 Hypothesis measure0 : mu set0 = 0.
 Hypothesis measure_ge0 : forall X, mu X >= 0.
@@ -3141,7 +3134,7 @@ Notation "mu ^*" := (mu_ext mu) : measure_scope.
 Local Open Scope measure_scope.
 
 Section measure_extension.
-Variables (d : measure_display) (R : realType) (T : semiRingOfSetsType d).
+Context d (R : realType) (T : semiRingOfSetsType d).
 Variable mu : {additive_measure set T -> \bar R}.
 
 HB.instance Definition _ := isOuterMeasure.Build
@@ -3153,7 +3146,7 @@ HB.instance Definition _ := isOuterMeasure.Build
 End measure_extension.
 
 Section g_salgebra_measure_unique_trace.
-Variables (d : measure_display) (R : realType) (T : measurableType d).
+Context d (R : realType) (T : measurableType d).
 Variables (G : set (set T)) (D : set T) (mD : measurable D).
 Let H := [set X | G X /\ X `<=` D] (* "trace" of G wrt D *).
 Hypotheses (Hm : H `<=` measurable) (setIH : setI_closed H) (HD : H D).
@@ -3193,11 +3186,11 @@ Qed.
 End g_salgebra_measure_unique_trace.
 
 Section g_salgebra_measure_unique.
-Variables (d : measure_display) (R : realType) (T : measurableType d).
-Variable  (G : set (set T)).
-Hypothesis (Gm : G `<=` measurable).
+Context d (R : realType) (T : measurableType d).
+Variable G : set (set T).
+Hypothesis Gm : G `<=` measurable.
 Variable g : (set T)^nat.
-Hypotheses (Gg : forall i, G (g i)).
+Hypotheses Gg : forall i, G (g i).
 Hypothesis g_cover : \bigcup_k (g k) = setT.
 Variables m1 m2 : {measure set T -> \bar R}.
 
@@ -3275,7 +3268,7 @@ Qed.
 End g_salgebra_measure_unique.
 
 Section measure_unique.
-Variables (d : measure_display) (R : realType) (T : measurableType d).
+Context d (R : realType) (T : measurableType d).
 Variables  (G : set (set T)) (g : (set T)^nat).
 Hypotheses (mG : measurable = <<s G >>) (setIG : setI_closed G).
 Hypothesis Gg : forall i, G (g i).
@@ -3356,7 +3349,7 @@ exact: ring_sigma_sub_additive.
 Qed.
 
 Section Hahn_extension.
-Variables (d : measure_display) (R : realType) (T : semiRingOfSetsType d).
+Context d (R : realType) (T : semiRingOfSetsType d).
 Variable mu : {additive_measure set T -> \bar R}.
 Hypothesis mu_sub : sigma_sub_additive mu.
 Let Rmu := SetRing.measure mu.
@@ -3480,8 +3473,8 @@ Definition preimage_classes d1 d2
       preimage_class setT f2 measurable >>.
 
 Section product_lemma.
-Variables (d1 d2 : measure_display) (T1 : measurableType d1).
-Variables (T2 : measurableType d2) (T : pointedType) (f1 : T -> T1) (f2 : T -> T2).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
+Variables (T : pointedType) (f1 : T -> T1) (f2 : T -> T2).
 Variables (T3 : Type) (g : T3 -> T).
 
 Lemma preimage_classes_comp : preimage_classes (f1 \o g) (f2 \o g) =
@@ -3504,8 +3497,7 @@ Definition measure_prod_display :
 Proof. exact. Qed.
 
 Section product_salgebra_instance.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
 Let f1 := @fst T1 T2.
 Let f2 := @snd T1 T2.
 
@@ -3544,8 +3536,7 @@ rewrite setMT setTM; apply: measurableI.
 Qed.
 
 Section product_salgebra_measurableType.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
 Let M1 := @measurable _ T1.
 Let M2 := @measurable _ T2.
 Let M1xM2 := [set A `*` B | A in M1 & B in M2].
@@ -3569,9 +3560,8 @@ Qed.
 End product_salgebra_measurableType.
 
 Section product_salgebra_g_measurableTypeR.
-Variables (d1 : measure_display) (T1 : measurableType d1).
-Variables (T2 : pointedType) (C2 : set (set T2)).
-Hypothesis (setTC2 : setT `<=` C2).
+Context d1 (T1 : measurableType d1) (T2 : pointedType) (C2 : set (set T2)).
+Hypothesis setTC2 : setT `<=` C2.
 
 (* NB: useful? *)
 Lemma measurable_prod_g_measurableTypeR :
@@ -3603,9 +3593,9 @@ Qed.
 End product_salgebra_g_measurableType.
 
 Section prod_measurable_fun.
-Variables (d d1 d2 : measure_display).
-Variables (T : measurableType d) (T1 : measurableType d1).
-Variables (T2 : measurableType d2) (f : T -> T1 * T2).
+Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
+        (T2 : measurableType d2).
+Variable f : T -> T1 * T2.
 
 Lemma prod_measurable_funP : measurable_fun setT f <->
   measurable_fun setT (fst \o f) /\ measurable_fun setT (snd \o f).
@@ -3623,9 +3613,9 @@ Qed.
 End prod_measurable_fun.
 
 Section partial_measurable_fun.
-Variables (d d1 d2 : measure_display).
-Variables (T : measurableType d) (T1 : measurableType d1).
-Variables (T2 : measurableType d2) (f : T1 * T2 -> T).
+Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
+  (T2 : measurableType d2).
+Variable f : T1 * T2 -> T.
 
 Lemma measurable_fun_prod1 x :
   measurable_fun setT f -> measurable_fun setT (fun y => f (x, y)).
