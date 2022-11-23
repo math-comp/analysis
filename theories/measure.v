@@ -279,7 +279,7 @@ Proof.
 split=> [[G0 GU] I D A DF GA|GU]; last first.
   have G0 : G set0 by have := GU void set0 point; rewrite bigcup0//; apply.
   by split=> // A B GA GB; rewrite -bigcup2inE; apply: GU => // -[|[|[]]].
-elim/Pchoice: I => I in D DF A GA *; rewrite bigcup_fset_set// big_seq.
+elim/Pchoice: I => I in D DF A GA *; rewrite -bigsetU_fset_set// big_seq.
 by elim/big_ind: _ => // i; rewrite in_fset_set// inE => /GA.
 Qed.
 
@@ -290,7 +290,7 @@ split=> [GI I D A DF [i Di] GA|GI A B GA GB]; last first.
   by rewrite -bigcap2inE; apply: GI => // [|[|[|[]]]]; first by exists 0%N.
 elim/Pchoice: I => I in D DF i Di A GA *.
 have finDDi : finite_set (D `\ i) by exact: finite_setD.
-rewrite (bigcap_setD1 i)// bigcap_fset_set// big_seq.
+rewrite (bigcap_setD1 i)// -bigsetI_fset_set// big_seq.
 elim/big_rec: _ => // [|j B]; first by rewrite setIT; apply: GA.
 rewrite in_fset_set// inE => -[Dj /eqP nij] GAB.
 by rewrite setICA; apply: GI => //; apply: GA.
@@ -605,7 +605,7 @@ have ddelta (D : set T) : <<d G >> D -> dynkin (delta D).
     by move=> dGEDD S /= [+ GS] => dS; apply/(dynkinC dS); exact: dGEDD.
   - move=> F tF deltaDF; rewrite /delta /= => S /= [dS GS].
     rewrite setI_bigcupl; apply: (dynkinU dS) => //.
-      by under eq_fun do rewrite setIC; exact: trivIset_setI.
+      by under eq_fun do rewrite setIC; exact: trivIset_setIl.
     by move=> n; exact: deltaDF.
 have GdG : G `<=` <<d G >> by move=> ? ? ? [_]; apply.
 have Gdelta A : G A -> G `<=` delta A.
@@ -789,7 +789,7 @@ Lemma fin_bigcup_measurable I (D : set I) (F : I -> set T) :
   measurable (\bigcup_(i in D) F i).
 Proof.
 elim/Pchoice: I => I in D F * => Dfin Fm.
-rewrite bigcup_fset_set// big_seq; apply: bigsetU_measurable => i.
+rewrite -bigsetU_fset_set// big_seq; apply: bigsetU_measurable => i.
 by rewrite in_fset_set ?inE// => *; apply: Fm.
 Qed.
 
@@ -822,7 +822,7 @@ Lemma fin_bigcap_measurable I (D : set I) (F : I -> set T) :
   measurable (\bigcap_(i in D) F i).
 Proof.
 elim/Pchoice: I => I in D F * => Dfin Fm.
-rewrite bigcap_fset_set// big_seq; apply: bigsetI_measurable => i.
+rewrite -bigsetI_fset_set// big_seq; apply: bigsetI_measurable => i.
 by rewrite in_fset_set ?inE// => *; apply: Fm.
 Qed.
 
@@ -1907,7 +1907,7 @@ case; elim/Ppointed=> I [D [A [Dfin Am ->]]].
   by rewrite //= emptyE II0 !bigcup0.
 exists #|`fset_set D|, (A \o nth point (fset_set D)).
 split; first exact: Pc.
-by rewrite bigcup_fset_set// (big_nth point) big_mkord bigcup_mkord.
+by rewrite -bigsetU_fset_set// (big_nth point) big_mkord bigcup_mkord.
 Qed.
 
 Lemma covered_by_countable P :
@@ -2113,7 +2113,7 @@ set E := decomp _; have Em X := decomp_measurable mUD X.
 transitivity (\sum_(X \in E) \sum_(i \in D) mu (X `&` F i)).
   apply: eq_fsbigr => /= X XE; have XDF : X = \bigcup_(i in D) (X `&` F i).
     by rewrite -setI_bigcupr setIidl//; exact: decomp_sub.
-  rewrite [in LHS]XDF content_fin_bigcup//; first exact: trivIset_setI.
+  rewrite [in LHS]XDF content_fin_bigcup//; first exact: trivIset_setIl.
   - by move=> i /mem_set Di; apply: measurableI; [exact: Em|exact: Fm].
   - by rewrite -XDF; exact: Em.
 rewrite exchange_fsbig //; last exact: decomp_finite_set.
@@ -2345,7 +2345,7 @@ rewrite -measure_fin_bigcup//=.
     by apply: measurableI => //; apply: sub_gen_smallest; apply: mf.
   by apply: sub_gen_smallest; apply: mf.
 - exact: decomp_finite_set.
-- by apply: trivIset_setI; apply: decomp_triv.
+- by apply: trivIset_setIl; apply: decomp_triv.
 - by move=> X /= XD; apply: sub_gen_smallest; apply: mfD; rewrite inE.
 Unshelve. all: by end_near. Qed.
 

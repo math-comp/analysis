@@ -243,8 +243,7 @@ rewrite (fsbigE [:: x])//= ?big_cons ?big_nil ?ifT ?inE ?Monoid.simpm//.
 by move=> i ->; rewrite inE eqxx.
 Qed.
 
-#[deprecated(note="Use fsbigID instead")]
-Lemma full_fsbigID (R : Type) (idx : R) (op : Monoid.com_law idx)
+Lemma __deprecated__full_fsbigID (R : Type) (idx : R) (op : Monoid.com_law idx)
     (I : choiceType) (B : set I) (A : set I) (F : I -> R) :
   finite_set (A `&` F @^-1` [set~ idx]) ->
   \big[op/idx]_(i \in A) F i = op (\big[op/idx]_(i \in A `&` B) F i)
@@ -264,15 +263,18 @@ rewrite (big_fsetID _ [pred i | i \in B])/= [locked_with _ _]unlock.
 rewrite fsbig_setI; congr (op _ _); rewrite -fsbig_setI.
 by apply eq_fbigl => i; rewrite !inE in_setC.
 Qed.
-Arguments full_fsbigID {R idx op I} B.
+Arguments __deprecated__full_fsbigID {R idx op I} B.
 
 Lemma fsbigID (R : Type) (idx : R) (op : Monoid.com_law idx)
     (I : choiceType) (B : set I) (A : set I) (F : I -> R) :
     finite_set A ->
   \big[op/idx]_(i \in A) F i = op (\big[op/idx]_(i \in A `&` B) F i)
                                   (\big[op/idx]_(i \in A `&` ~` B) F i).
-Proof. by move=> Afin; apply: full_fsbigID; apply: finite_setIl. Qed.
+Proof. by move=> Afin; apply: __deprecated__full_fsbigID; apply: finite_setIl. Qed.
 Arguments fsbigID {R idx op I} B.
+
+#[deprecated(note="Use fsbigID instead")]
+Notation full_fsbigID := __deprecated__full_fsbigID.
 
 Lemma fsbigU (R : Type) (idx : R) (op : Monoid.com_law idx)
     (I : choiceType) (A B : set I) (F : I -> R) :
@@ -399,8 +401,7 @@ Lemma fsbig_image {I J : choiceType} P (h : I -> J) (F : J -> R) : set_inj P h -
 Proof. by move=> /inj_bij; apply: reindex_fsbig. Qed.
 
 (* Lemma reindex_inside I F P ...  : finite_set (P `&` F @` [set~ id]) -> ... *)
-#[deprecated(note="use reindex_fsbig, fsbig_image or reindex_fsbigT instead")]
-Lemma reindex_inside {I J : choiceType} P Q (h : I -> J) (F : J -> R) :
+Lemma __deprecated__reindex_inside {I J : choiceType} P Q (h : I -> J) (F : J -> R) :
   bijective h -> P `<=` h @` Q -> Q `<=` h @^-1` P ->
   \big[op/idx]_(j \in P) F j = \big[op/idx]_(i \in Q) F (h i).
 Proof.
@@ -411,16 +412,15 @@ Qed.
 Lemma reindex_fsbigT {I J : choiceType} (h : I -> J) (F : J -> R) :
   bijective h ->
   \big[op/idx]_(j \in [set: J]) F j = \big[op/idx]_(i \in [set: I]) F (h i).
-Proof.
-move=> hbij; apply: reindex_inside => // x _ /=.
-by case: hbij => h1 hh1 h1h; exists (h1 x).
-Qed.
+Proof. by rewrite -setTT_bijective => -[? ? ?]; apply: reindex_fsbig. Qed.
 
 End fsbig2.
 Arguments reindex_fsbig {R idx op I J} _ _ _.
 Arguments fsbig_image {R idx op I J} _ _.
-Arguments reindex_inside {R idx op I J} _ _.
+Arguments __deprecated__reindex_inside {R idx op I J} _ _.
 Arguments reindex_fsbigT {R idx op I J} _ _.
+#[deprecated(note="use reindex_fsbig, fsbig_image or reindex_fsbigT instead")]
+Notation reindex_inside := __deprecated__reindex_inside.
 #[deprecated(note="use reindex_fsbigT instead")]
 Notation reindex_inside_setT := reindex_fsbigT.
 
@@ -482,7 +482,7 @@ Qed.
 Lemma fsbig_setU {T} {I : choiceType} (A : set I) (F : I -> set T) :
   finite_set A ->
   \big[setU/set0]_(i \in A) F i = \bigcup_(i in A) F i.
-Proof. by move=> Afin; rewrite fsbig_finite// bigcup_fset_set. Qed.
+Proof. by move=> Afin; rewrite fsbig_finite// bigsetU_fset_set. Qed.
 
 Lemma fsbig_setU_set1 {T : choiceType} (A : set T) :
   finite_set A -> \big[setU/set0]_(x \in A) [set x] = A.

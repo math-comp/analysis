@@ -157,7 +157,7 @@
     `cvgr_norm_le`, `cvgr_norm_gt`, `cvgr_norm_ge`, `cvgr_neq0`,
     `real_cvgr_lt`, `real_cvgr_le`, `real_cvgr_gt`, `real_cvgr_ge`, `cvgr_lt`,
     `cvgr_gt`, `cvgr_norm_lty`, `cvgr_norm_ley`, `cvgr_norm_gtNy`,
-    `cvgr_norm_geNy`, `fcvgr_dist_lt2P`, `cvgr_dist_lt2P`, `cvgr_dist_lt2`,
+    `cvgr_norm_geNy`, `fcvgr2dist_ltP`, `cvgr2dist_ltP`, `cvgr2dist_lt`,
     `cvgNP`, `norm_cvg0P`, `cvgVP`, `is_cvgVE`, `cvgr_to_ge`, `cvgr_to_le`,
     `nbhs_EFin`, `nbhs_ereal_pinfty`, `nbhs_ereal_ninfty`, `fine_fcvg`,
     `fcvg_is_fine`, `fine_cvg`, `cvg_is_fine`, `cvg_EFin`, `neq0_fine_cvgP`,
@@ -409,14 +409,14 @@
 - in file `normedtype.v`, deprecated
   + `cvg_distP` (use `cvgrPdist_lt` or a variation instead),
   + `cvg_dist` (use `cvg_dist_lt` or a variation instead),
-  + `cvg_distW` (use `cvgPdist_le` or a variation instead),
+  + `cvg_distW` (use `cvgrPdist_le` or a variation instead),
   + `cvg_bounded_real` (use `cvgr_norm_lty` or a variation instead),
   + `continuous_cvg_dist` (simply use the fact that `(x --> l) -> (x = l)`),
-  + `cvg_dist2P` (use `cvgr_dist_lt2P` or a variant instead),
-  + `cvg_dist2` (use `cvgr_dist_lt2` or a variant instead),
+  + `cvg_dist2P` (use `cvgr2dist_ltP` or a variant instead),
+  + `cvg_dist2` (use `cvgr2dist_lt` or a variant instead),
 - in file `sequences.v`, deprecated
   + `cvgNpinfty` (use `cvgNry` instead),
-  + `cvgNninfty` (use `cvgrNyN` instead),
+  + `cvgNninfty` (use `cvgNrNy` instead),
   + `ereal_cvg_ge0` (use `cvge_ge` instead),
   + `ereal_cvgPpinfty` (use `cvgeyPge` or a variant instead),
   + `ereal_cvgPninfty` (use `cvgeNyPle` or a variant instead),
@@ -430,6 +430,8 @@
   + `ereal_cvgM_lt0_ninfty` (use `cvgeM` instead),
 - in file `topology.v`, deprecated
   + `cvg_ballPpos` (use a combination of `cvg_ballP` and `posnumP`),
+- in `topology.v`:
+  + `cvg_dist` (use `cvgr_dist_lt` or a variation instead)
 
 ### Removed
 

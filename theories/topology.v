@@ -4512,14 +4512,15 @@ Lemma fcvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !nbhs_simpl /=. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use a combination of `cvg_ballP` and `posnumP`")]
-Lemma cvg_ballPpos {F} {FF : Filter F} (y : M) :
+Lemma __deprecated__cvg_ballPpos {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
 Proof.
 split => [/fcvg_ballP + eps|pos]; first exact.
 by apply/fcvg_ballP=> _/posnumP[eps] //.
 Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="use a combination of `cvg_ballP` and `posnumP`")]
+Notation cvg_ballPpos := __deprecated__cvg_ballPpos.
 
 Lemma fcvg_ball {F} {FF : Filter F} (y : M) :
   F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.

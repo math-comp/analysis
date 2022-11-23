@@ -1371,27 +1371,30 @@ by apply: xe_A => //; rewrite eq_sym.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
-#[deprecated(since="mathcomp-analysis 1.6.0",
-  note="generalized by `limr_ge`")]
-Lemma le0r_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma __deprecated__le0r_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
 Proof. by move=> ? ?; rewrite limr_ge. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="generalized by `limr_ge`")]
+Notation le0r_cvg_map := __deprecated__le0r_cvg_map.
 
-#[deprecated(since="mathcomp-analysis 1.6.0",
-  note="generalized by `limr_le`")]
-Lemma ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma __deprecated__ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
   (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, f x <= 0) -> cvg (f @ F) -> lim (f @ F) <= 0.
 Proof. by move=> ? ?; rewrite limr_le. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="generalized by `limr_le`")]
+Notation ler0_cvg_map := __deprecated__ler0_cvg_map.
 
-#[deprecated(since="mathcomp-analysis 1.6.0",
-  note="subsumed by `ler_lim`")]
-Lemma ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
+Lemma __deprecated__ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
     (FF : ProperFilter F) (f g : T -> R) :
   (\forall x \near F, f x <= g x) -> cvg (f @ F) -> cvg (g @ F) ->
   lim (f @ F) <= lim (g @ F).
 Proof. by move=> ? ? ?; rewrite ler_lim. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="subsumed by `ler_lim`")]
+Notation ler_cvg_map := __deprecated__ler_cvg_map.
 
 Lemma derive1_at_max (R : realFieldType) (f : R -> R) (a b c : R) :
   a <= b -> (forall t, t \in `]a, b[%R -> derivable f t 1) -> c \in `]a, b[%R ->
