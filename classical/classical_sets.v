@@ -2390,11 +2390,6 @@ Proof.
 by move=> tF i j Di Dj [x [[Fix Gix] [Fjx Gjx]]]; apply tF => //; exists x.
 Qed.
 
-#[deprecated(note="Use trivIset_setIl instead")]
-Lemma trivIset_setI T I D (F : I -> set T) X :
-  trivIset D F -> trivIset D (fun i => X `&` F i).
-Proof. exact: trivIset_setIl. Qed.
-
 Lemma sub_trivIset I T (D D' : set I) (F : I -> set T) :
   D `<=` D' -> trivIset D' F -> trivIset D F.
 Proof. by move=> DD' Ftriv i j /DD' + /DD' + /Ftriv->//. Qed.
@@ -2498,6 +2493,9 @@ rewrite (nth_map O)// ts1 ?(nth_uniq,(perm_uniq ss1),iota_uniq)//; apply/s1D.
 Qed.
 
 End partitions.
+
+#[deprecated(note="Use trivIset_setIl instead")]
+Notation trivIset_setI := trivIset_setIl.
 
 Definition total_on T (A : set T) (R : T -> T -> Prop) :=
   forall s t, A s -> A t -> R s t \/ R t s.

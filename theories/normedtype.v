@@ -1665,11 +1665,12 @@ Lemma cvgr_dist_lt {T} {F : set (set T)} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|y - f t| < eps.
 Proof. by move=> /cvgrPdist_lt. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgr_dist_lt` or a variation instead")]
-Lemma cvg_dist {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma __deprecated__cvg_dist {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
 Proof. exact: cvgr_dist_lt. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="use `cvgr_dist_lt` or a variation instead")]
+Notation cvg_dist := __deprecated__cvg_dist.
 
 Lemma cvgr_distC_lt {T} {F : set (set T)} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|f t - y| < eps.
@@ -2482,15 +2483,15 @@ Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgrPdist_le` or a variation instead")]
-Lemma cvg_distW {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma __deprecated__cvg_distW {F : set (set V)} {FF : Filter F} (y : V) :
   (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
   F --> y.
 Proof. by move=> /cvgrPdist_le. Qed.
 
 End PseudoNormedZMod_numFieldType.
-
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="use `cvgrPdist_le` or a variation instead")]
+Notation cvg_distW := __deprecated__cvg_distW.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to `norm_cvgi_lim`")]
 Notation norm_cvgi_map_lim := norm_cvgi_lim.
@@ -2526,9 +2527,7 @@ Unshelve. all: by end_near. Qed.
 
 End cvgr_norm_infty.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgr_norm_lty` or a variation instead")]
-Lemma cvg_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
+Lemma __deprecated__cvg_bounded_real {F : set (set V)} {FF : Filter F} (y : V) :
   F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
 Proof. exact: cvgr_norm_lty. Qed.
 
@@ -2544,6 +2543,9 @@ Arguments cvgr_norm_geNy {R V I F FF}.
 Arguments cvg_bounded {R V I F FF}.
 #[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="use `cvgr_norm_lty` or a variation instead")]
+Notation cvg_bounded_real := __deprecated__cvg_bounded_real.
 
 Module Export NbhsNorm.
 Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
@@ -2585,12 +2587,13 @@ Definition near_simpl := (@near_simpl, @nbhs_normE, @filter_from_normE,
 Ltac near_simpl := rewrite ?near_simpl.
 End NearNorm.
 
-#[deprecated(since="mathcomp-analysis 1.6.0",
-  note="simply use the fact that `(x --> l) -> (x = l)`")]
-Lemma continuous_cvg_dist {R : numFieldType}
+Lemma __deprecated__continuous_cvg_dist {R : numFieldType}
   (V W : pseudoMetricNormedZmodType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof. by move=> cf /cvg_eq->// e; rewrite subrr normr0. Qed.
+#[deprecated(since="mathcomp-analysis 1.6.0",
+  note="simply use the fact that `(x --> l) -> (x = l)`")]
+Notation continuous_cvg_dist := __deprecated__continuous_cvg_dist.
 
 (** ** Matrices *)
 
@@ -2787,14 +2790,15 @@ Lemma cvgr2dist_lt {I J} {F : set (set I)} {G : set (set J)}
    \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
 Proof. by rewrite cvgr2dist_ltP. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-note="use `cvgr2dist_lt` or a variant instead")]
-Lemma cvg_dist2 {F : set (set U)} {G : set (set V)}
+Lemma __deprecated__cvg_dist2 {F : set (set U)} {G : set (set V)}
   {FF : Filter F} {FG : Filter G} (y : U) (z : V):
   (F, G) --> (y, z) ->
   forall eps, 0 < eps ->
    \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
 Proof. exact: cvgr2dist_lt. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+note="use `cvgr2dist_lt` or a variant instead")]
+Notation cvg_dist2 := __deprecated__cvg_dist2.
 
 End prod_NormedModule_lemmas.
 Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
@@ -2965,13 +2969,14 @@ Proof. by rewrite norm_cvg0P. Qed.
 
 End cvg_composition_pseudometric.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
- note="renamed to `norm_cvg0` and generalized to `pseudoMetricNormedZmodType`")]
-Lemma cvg_dist0 {U} {K : numFieldType} {V : normedModType K}
+Lemma __deprecated__cvg_dist0 {U} {K : numFieldType} {V : normedModType K}
   {F : set (set U)} {FF : Filter F} (f : U -> V) :
   (fun x => `|f x|) @ F --> (0 : K)
   -> f @ F --> (0 : V).
 Proof. exact: norm_cvg0. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+ note="renamed to `norm_cvg0` and generalized to `pseudoMetricNormedZmodType`")]
+Notation cvg_dist0 := __deprecated__cvg_dist0.
 
 Section cvg_composition_normed.
 Context {K : numFieldType} {V : normedModType K} {T : Type}.
@@ -3145,19 +3150,21 @@ Proof. exact: cvgr_to_ge. Qed.
 Lemma limr_le x f : cvg (f @ F) -> (\near F, x >= f F) -> x >= lim (f @ F).
 Proof. exact: cvgr_to_le. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgr_ge` and generalized to a `Filter`")]
-Lemma cvg_gt_ge (u : T -> R) a b :
+Lemma __deprecated__cvg_gt_ge (u : T -> R) a b :
   u @ F --> b -> a < b -> \forall n \near F, a <= u n.
 Proof. by move=> ?; apply: cvgr_ge. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgr_le` and generalized to a `Filter`")]
-Lemma cvg_lt_le (u : T -> R) c b :
+Lemma __deprecated__cvg_lt_le (u : T -> R) c b :
   u @ F --> b -> b < c -> \forall n \near F, u n <= c.
 Proof. by move=> ?; apply: cvgr_le. Qed.
 
 End ProperFilterRealType.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvgr_ge` and generalized to a `Filter`")]
+Notation cvg_gt_ge := __deprecated__cvg_gt_ge.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvgr_le` and generalized to a `Filter`")]
+Notation cvg_lt_le_:= __deprecated__cvg_lt_le.
 
 Section local_continuity.
 
@@ -4566,11 +4573,12 @@ Qed.
 
 End segment.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `ler_gtP` instead which generalizes it to any upper bound.")]
-Lemma ler0_addgt0P (R : numFieldType) (x : R) :
+Lemma __deprecated__ler0_addgt0P (R : numFieldType) (x : R) :
   reflect (forall e, e > 0 -> x <= e) (x <= 0).
 Proof. exact: ler_gtP. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="use `ler_gtP` instead which generalizes it to any upper bound.")]
+Notation ler0_addgt0P := __deprecated__ler0_addgt0P.
 
 Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
   a <= b -> {within `[a, b], continuous f} ->
@@ -5155,9 +5163,7 @@ near do rewrite /= linearD (le_trans (ler_norm_add _ _))// -ler_subr_addl.
 by apply: cvgr0_norm_le; rewrite // subr_gt0.
 Unshelve. all: by end_near. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="generalized to `continuous_linear_bounded`")]
-Lemma linear_continuous0 (f : {linear V -> W}) :
+Lemma __deprecated__linear_continuous0 (f : {linear V -> W}) :
   {for 0, continuous f} -> bounded_near f (nbhs (0 : V)).
 Proof. exact: continuous_linear_bounded. Qed.
 
@@ -5170,9 +5176,7 @@ rewrite (le_lt_trans (fr r _ _))// -?ltr_pdivl_mull//.
 by near: z; apply: cvgr_dist_lt => //; rewrite mulrC divr_gt0.
 Unshelve. all: by end_near. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="generalized to `bounded_linear_continuous`")]
-Lemma linear_bounded0 (f : {linear V -> W}) :
+Lemma __deprecated__linear_bounded0 (f : {linear V -> W}) :
   bounded_near f (nbhs (0 : V)) -> {for 0, continuous f}.
 Proof. by move=> ? ?; exact: bounded_linear_continuous. Qed.
 
@@ -5200,3 +5204,9 @@ by rewrite ler_pmul //.
 Unshelve. all: by end_near. Qed.
 
 End LinearContinuousBounded.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="generalized to `continuous_linear_bounded`")]
+Notation linear_continuous0 := __deprecated__linear_continuous0.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="generalized to `bounded_linear_continuous`")]
+Notation linear_bounded0 := __deprecated__linear_bounded0.

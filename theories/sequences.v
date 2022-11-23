@@ -372,56 +372,65 @@ Section sequences_R_lemmas_realFieldType.
 Variable R : realFieldType.
 Implicit Types u v : R ^nat.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `squeeze_cvgr`")]
-Lemma squeeze T (f g h : T -> R) (a : filter_on T) :
+Lemma __deprecated__squeeze T (f g h : T -> R) (a : filter_on T) :
   (\forall x \near a, f x <= g x <= h x) -> forall (l : R),
   f @ a --> l -> h @ a --> l -> g @ a --> l.
 Proof. exact: squeeze_cvgr. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgryPge`, and generalized to any filter")]
-Lemma cvgPpinfty (u_ : R ^nat) :
+  note="renamed to `squeeze_cvgr`")]
+Notation squeeze := __deprecated__squeeze.
+
+Lemma __deprecated__cvgPpinfty (u_ : R ^nat) :
   u_ --> +oo <-> forall A, \forall n \near \oo, A <= u_ n.
 Proof. exact: cvgryPge. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvgryPge`, and generalized to any filter")]
+Notation cvgPpinfty := __deprecated__cvgPpinfty.
 
+Lemma __deprecated__cvgNpinfty u_ : (- u_ --> +oo) = (u_ --> -oo).
+Proof. exact/propeqP/cvgNry. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="use `cvgNry` instead")]
-Lemma cvgNpinfty u_ : (- u_ --> +oo) = (u_ --> -oo).
-Proof. exact/propeqP/cvgNry. Qed.
+Notation cvgNpinfty := __deprecated__cvgNpinfty.
 
+Lemma __deprecated__cvgNninfty u_ : (- u_ --> -oo) = (u_ --> +oo).
+Proof. exact/propeqP/cvgNrNy. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="use `cvgNrNy` instead")]
-Lemma cvgNninfty u_ : (- u_ --> -oo) = (u_ --> +oo).
-Proof. exact/propeqP/cvgNrNy. Qed.
+Notation cvgNninfty := __deprecated__cvgNninfty.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrNyPle`, and generalized to any filter")]
-Lemma cvgPninfty (u_ : R ^nat) :
+Lemma __deprecated__cvgPninfty (u_ : R ^nat) :
   u_ --> -oo <-> forall A, \forall n \near \oo, A >= u_ n.
 Proof. exact: cvgrNyPle. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `ger_cvgy`, and generalized to any filter")]
-Lemma ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
+  note="renamed to `cvgrNyPle`, and generalized to any filter")]
+Notation cvgPninfty := __deprecated__cvgPninfty.
+
+Lemma __deprecated__ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
   u_ --> +oo -> v_ --> +oo.
 Proof. exact: ger_cvgy. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `ler_cvgNy`, and generalized to any filter")]
-Lemma ler_cvg_ninfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
+  note="renamed to `ger_cvgy`, and generalized to any filter")]
+Notation ger_cvg_pinfty := __deprecated__ger_cvg_pinfty.
+
+Lemma __deprecated__ler_cvg_ninfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
   v_ --> -oo -> u_ --> -oo.
 Proof. exact: ler_cvgNy. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `ler_cvgNy`, and generalized to any filter")]
+Notation ler_cvg_ninfty := __deprecated__ler_cvg_ninfty.
 
+Lemma __deprecated__lim_ge x u : cvg u -> (\forall n \near \oo, x <= u n) -> x <= lim u.
+Proof. exact: limr_ge. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to `limr_ge`, and generalized to any proper filter")]
-Lemma lim_ge x u : cvg u -> (\forall n \near \oo, x <= u n) -> x <= lim u.
-Proof. exact: limr_ge. Qed.
+Notation lim_ge := __deprecated__lim_ge.
 
+Lemma __deprecated__lim_le x u : cvg u -> (\forall n \near \oo, x >= u n) -> x >= lim u.
+Proof. exact: limr_le. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to `limr_le`, and generalized to any proper filter")]
-Lemma lim_le x u : cvg u -> (\forall n \near \oo, x >= u n) -> x >= lim u.
-Proof. exact: limr_le. Qed.
+Notation lim_le := __deprecated__lim_le.
 
 Lemma lt_lim u (M : R) : nondecreasing_seq u -> cvg u -> M < lim u ->
   \forall n \near \oo, M <= u n.
@@ -473,55 +482,63 @@ Qed.
 Lemma cvg_has_inf u_ : cvg u_ -> has_inf (u_ @` setT).
 Proof. by move/is_cvgN/cvg_has_sup; rewrite -has_inf_supN image_comp. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgryPgt`, and generalized to any proper filter")]
-Lemma cvgPpinfty_lt (u_ : R ^nat) :
+Lemma __deprecated__cvgPpinfty_lt (u_ : R ^nat) :
   u_ --> +oo%R <-> forall A, \forall n \near \oo, (A < u_ n)%R.
 Proof. exact: cvgryPgt. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrNyPlt`, and generalized to any proper filter")]
-Lemma cvgPninfty_lt (u_ : R ^nat) :
+  note="renamed to `cvgryPgt`, and generalized to any proper filter")]
+Notation cvgPpinfty_lt := __deprecated__cvgPpinfty_lt.
+
+Lemma __deprecated__cvgPninfty_lt (u_ : R ^nat) :
   u_ --> -oo%R <-> forall A, \forall n \near \oo, (A > u_ n)%R.
 Proof. exact: cvgrNyPlt. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgryPgey`, and generalized to any proper filter")]
-Lemma cvgPpinfty_near (u_ : R ^nat) :
+  note="renamed to `cvgrNyPlt`, and generalized to any proper filter")]
+Notation cvgPninfty_lt := __deprecated__cvgPninfty_lt.
+
+Lemma __deprecated__cvgPpinfty_near (u_ : R ^nat) :
   u_ --> +oo%R <-> \forall A \near +oo, \forall n \near \oo, (A <= u_ n)%R.
 Proof. exact: cvgryPgey. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrNyPleNy`, and generalized to any proper filter")]
-Lemma cvgPninfty_near (u_ : R ^nat) :
+  note="renamed to `cvgryPgey`, and generalized to any proper filter")]
+Notation cvgPpinfty_near := __deprecated__cvgPpinfty_near.
+
+Lemma __deprecated__cvgPninfty_near (u_ : R ^nat) :
   u_ --> -oo%R <-> \forall A \near -oo, \forall n \near \oo, (A >= u_ n)%R.
 Proof. exact: cvgrNyPleNy. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgryPgty`, and generalized to any proper filter")]
-Lemma cvgPpinfty_lt_near (u_ : R ^nat) :
+  note="renamed to `cvgrNyPleNy`, and generalized to any proper filter")]
+Notation cvgPninfty_near := __deprecated__cvgPninfty_near.
+
+Lemma __deprecated__cvgPpinfty_lt_near (u_ : R ^nat) :
   u_ --> +oo%R <-> \forall A \near +oo, \forall n \near \oo, (A < u_ n)%R.
 Proof. exact: cvgryPgty. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrNyPltNy`, and generalized to any proper filter")]
-Lemma cvgPninfty_lt_near (u_ : R ^nat) :
+  note="renamed to `cvgryPgty`, and generalized to any proper filter")]
+Notation cvgPpinfty_lt_near := __deprecated__cvgPpinfty_lt_near.
+
+Lemma __deprecated__cvgPninfty_lt_near (u_ : R ^nat) :
   u_ --> -oo%R <-> \forall A \near -oo, \forall n \near \oo, (A > u_ n)%R.
 Proof. exact: cvgrNyPltNy. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvgrNyPltNy`, and generalized to any proper filter")]
+Notation cvgPninfty_lt_near := __deprecated__cvgPninfty_lt_near.
 
 End sequences_R_lemmas_realFieldType.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `gtr0_cvgV0` and generalized")]
-Lemma invr_cvg0 (R : realFieldType) (u : R^nat) :
+Lemma __deprecated__invr_cvg0 (R : realFieldType) (u : R^nat) :
   (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> 0) <-> (u --> +oo).
 Proof. by move=> ?; rewrite gtr0_cvgV0//; apply: nearW. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrVy` and generalized")]
-Lemma invr_cvg_pinfty (R : realFieldType) (u : R^nat) :
+  note="renamed to `gtr0_cvgV0` and generalized")]
+Notation invr_cvg0 := __deprecated__invr_cvg0.
+
+Lemma __deprecated__invr_cvg_pinfty (R : realFieldType) (u : R^nat) :
   (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> +oo) <-> (u --> 0).
 Proof. by move=> ?; rewrite cvgrVy//; apply: nearW. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvgrVy` and generalized")]
+Notation invr_cvg_pinfty := __deprecated__invr_cvg_pinfty.
 
 Section partial_sum.
 Variables (V : zmodType) (u_ : V ^nat).
@@ -1218,17 +1235,19 @@ Definition expR {R : realType} (x : R) : R := lim (series (exp_coeff x)).
 (* Sequences of natural numbers *)
 (********************************)
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrnyP` and generalized")]
-Lemma nat_dvg_real (R : realType) (u_ : nat ^nat) : u_ --> \oo ->
+Lemma __deprecated__nat_dvg_real (R : realType) (u_ : nat ^nat) : u_ --> \oo ->
   ([sequence (u_ n)%:R : R^o]_n --> +oo)%R.
 Proof. by move=> ?; apply/cvgrnyP. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-      note="renamed to `cvgnyPge` and generalized")]
-Lemma nat_cvgPpinfty (u : nat^nat) :
+  note="renamed to `cvgrnyP` and generalized")]
+Notation nat_dvg_real := __deprecated__nat_dvg_real.
+
+Lemma __deprecated__nat_cvgPpinfty (u : nat^nat) :
   u --> \oo <-> forall A, \forall n \near \oo, (A <= u n)%N.
 Proof. exact: cvgnyPge. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+      note="renamed to `cvgnyPge` and generalized")]
+Notation nat_cvgPpinfty:= __deprecated__nat_cvgPpinfty.
 
 Lemma nat_nondecreasing_is_cvg (u_ : nat^nat) :
   nondecreasing_seq u_ -> has_ubound (range u_) -> cvg u_.
@@ -1381,41 +1400,47 @@ End sequences_ereal_realDomainType.
 Section sequences_ereal.
 Local Open Scope ereal_scope.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvg_abse0P` and generalized")]
-Lemma ereal_cvg_abs0 (R : realFieldType) (f : (\bar R)^nat) :
+Lemma __deprecated__ereal_cvg_abs0 (R : realFieldType) (f : (\bar R)^nat) :
   abse \o f --> nbhs 0 -> f --> 0.
 Proof. by move/cvg_abse0P. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvg_abse0P` and generalized")]
+Notation ereal_cvg_abs0 := __deprecated__ereal_cvg_abs0.
 
-#[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvge_ge` instead")]
-Lemma ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
+Lemma __deprecated__ereal_cvg_ge0 (R : realFieldType) (f : (\bar R)^nat) (a : \bar R) :
   (forall n, 0 <= f n) -> f --> a -> 0 <= a.
 Proof. by move=> f_ge0; apply: cvge_ge; apply: nearW. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvge_ge` instead")]
+Notation ereal_cvg_ge0 := __deprecated__ereal_cvg_ge0.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `lime_ge` and generalized")]
-Lemma ereal_lim_ge (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
+Lemma __deprecated__ereal_lim_ge (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
   (\forall n \near \oo, x <= u_ n) -> x <= lim u_.
 Proof. exact: lime_ge. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `lime_le` and generalized")]
-Lemma ereal_lim_le (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
+  note="renamed to `lime_ge` and generalized")]
+Notation ereal_lim_ge := __deprecated__ereal_lim_ge.
+
+Lemma __deprecated__ereal_lim_le (R : realFieldType) x (u_ : (\bar R)^nat) : cvg u_ ->
   (\forall n \near \oo, u_ n <= x) -> lim u_ <= x.
 Proof. exact: lime_le. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgeryP` and generalized")]
-Lemma dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
+  note="renamed to `lime_le` and generalized")]
+Notation ereal_lim_le := __deprecated__ereal_lim_le.
+
+Lemma __deprecated__dvg_ereal_cvg (R : realFieldType) (u_ : R ^nat) :
   u_ --> +oo%R -> [sequence (u_ n)%:E]_n --> +oo.
 Proof. by rewrite cvgeryP. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `fine_cvgP` and generalized")]
-Lemma ereal_cvg_real (R : realFieldType) (f : (\bar R)^nat) a :
+  note="renamed to `cvgeryP` and generalized")]
+Notation dvg_ereal_cvg := __deprecated__dvg_ereal_cvg.
+
+Lemma __deprecated__ereal_cvg_real (R : realFieldType) (f : (\bar R)^nat) a :
   {near \oo, forall x, f x \is a fin_num} /\
   (fine \o f --> a) <-> f --> a%:E.
 Proof. by rewrite fine_cvgP. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `fine_cvgP` and generalized")]
+Notation ereal_cvg_real := __deprecated__ereal_cvg_real.
 
 Lemma ereal_nondecreasing_cvg (R : realType) (u_ : (\bar R)^nat) :
   nondecreasing_seq u_ -> u_ --> ereal_sup (u_ @` setT).
@@ -1682,28 +1707,31 @@ move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split; apply/orP.
 - by left; apply/eqP => Pf; have := nneseries_ge0 f0; rewrite Pf.
 Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgeyPge` or a variant instead")]
-Lemma ereal_cvgPpinfty (R : realFieldType) (u_ : (\bar R)^nat) :
+Lemma __deprecated__ereal_cvgPpinfty (R : realFieldType) (u_ : (\bar R)^nat) :
   u_ --> +oo <-> (forall A, (0 < A)%R -> \forall n \near \oo, A%:E <= u_ n).
 Proof.
 by split=> [/cvgeyPge//|u_ge]; apply/cvgeyPgey; near=> x; apply u_ge.
 Unshelve. all: by end_near. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgeNyPle` or a variant instead")]
-Lemma ereal_cvgPninfty (R : realFieldType) (u_ : (\bar R)^nat) :
+  note="use `cvgeyPge` or a variant instead")]
+Notation ereal_cvgPpinfty := __deprecated__ereal_cvgPpinfty.
+
+Lemma __deprecated__ereal_cvgPninfty (R : realFieldType) (u_ : (\bar R)^nat) :
   u_ --> -oo <-> (forall A, (A < 0)%R -> \forall n \near \oo, u_ n <= A%:E).
 Proof.
 by split=> [/cvgeNyPle//|u_ge]; apply/cvgeNyPleNy; near=> x; apply u_ge.
 Unshelve. all: by end_near. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `squeeze_cvge` and generalized")]
-Lemma ereal_squeeze (R : realType) (f g h : (\bar R)^nat) :
+  note="use `cvgeNyPle` or a variant instead")]
+Notation ereal_cvgPninfty := __deprecated__ereal_cvgPninfty.
+
+Lemma __deprecated__ereal_squeeze (R : realType) (f g h : (\bar R)^nat) :
   (\forall x \near \oo, f x <= g x <= h x) -> forall (l : \bar R),
   f --> l -> h --> l -> g --> l.
 Proof. by move=> ? ?; apply: squeeze_cvge. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `squeeze_cvge` and generalized")]
+Notation ereal_squeeze := __deprecated__ereal_squeeze.
 
 Lemma nneseries_pinfty (R : realType) (u_ : (\bar R)^nat)
   (P : pred nat) k : (forall n, P n -> 0 <= u_ n) -> P k ->
@@ -1735,100 +1763,112 @@ move=> u0 Puv; apply: lee_lim.
 - by near=> n; exact: lee_sum.
 Unshelve. all: by end_near. Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeD` instead")]
-Lemma ereal_cvgD_pinfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
+Lemma __deprecated__ereal_cvgD_pinfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
   f --> +oo -> g --> b%:E -> f \+ g --> +oo.
 Proof. exact: cvgeD. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeD` instead")]
-Lemma ereal_cvgD_ninfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
+Notation ereal_cvgD_pinfty_fin := __deprecated__ereal_cvgD_pinfty_fin.
+
+Lemma __deprecated__ereal_cvgD_ninfty_fin (R : realFieldType) (f g : (\bar R)^nat) b :
   f --> -oo -> g --> b%:E -> f \+ g --> -oo.
 Proof. exact: cvgeD. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeD` instead")]
-Lemma ereal_cvgD_pinfty_pinfty (R : realFieldType) (f g : (\bar R)^nat) :
+Notation ereal_cvgD_ninfty_fin := __deprecated__ereal_cvgD_ninfty_fin.
+
+Lemma __deprecated__ereal_cvgD_pinfty_pinfty (R : realFieldType) (f g : (\bar R)^nat) :
   f --> +oo -> g --> +oo -> f \+ g --> +oo.
 Proof. exact: cvgeD. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeD` instead")]
-Lemma ereal_cvgD_ninfty_ninfty (R : realFieldType) (f g : (\bar R)^nat) :
+Notation ereal_cvgD_pinfty_pinfty := __deprecated__ereal_cvgD_pinfty_pinfty.
+
+Lemma __deprecated__ereal_cvgD_ninfty_ninfty (R : realFieldType) (f g : (\bar R)^nat) :
   f --> -oo -> g --> -oo -> f \+ g --> -oo.
 Proof. exact: cvgeD. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeD` instead")]
+Notation ereal_cvgD_ninfty_ninfty := __deprecated__ereal_cvgD_ninfty_ninfty.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgeD` and generalized")]
-Lemma ereal_cvgD (R : realFieldType) (f g : (\bar R)^nat) a b :
+Lemma __deprecated__ereal_cvgD (R : realFieldType) (f g : (\bar R)^nat) a b :
   a +? b -> f --> a -> g --> b -> f \+ g --> a + b.
 Proof. exact: cvgeD. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvgeD` and generalized")]
+Notation ereal_cvgD := __deprecated__ereal_cvgD.
 
 Section nneseries_split.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgeB` and generalized")]
-Lemma ereal_cvgB (R : realFieldType) (f g : (\bar R)^nat) a b :
+Lemma __deprecated__ereal_cvgB (R : realFieldType) (f g : (\bar R)^nat) a b :
   a +? - b -> f --> a -> g --> b -> f \- g --> a - b.
 Proof. exact: cvgeB. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `is_cvgeD` and generalized")]
-Lemma ereal_is_cvgD (R : realFieldType) (u v : (\bar R)^nat) :
+  note="renamed to `cvgeB` and generalized")]
+Notation ereal_cvgB := __deprecated__ereal_cvgB.
+
+Lemma __deprecated__ereal_is_cvgD (R : realFieldType) (u v : (\bar R)^nat) :
   lim u +? lim v -> cvg u -> cvg v -> cvg (u \+ v).
 Proof. exact: is_cvgeD. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvge_sub0` and generalized")]
-Lemma ereal_cvg_sub0 (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
+  note="renamed to `is_cvgeD` and generalized")]
+Notation ereal_is_cvgD := __deprecated__ereal_is_cvgD.
+
+Lemma __deprecated__ereal_cvg_sub0 (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
   k \is a fin_num -> (fun x => f x - k) --> 0 <-> f --> k.
 Proof. exact: cvge_sub0. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `limeD` and generalized")]
-Lemma ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
+  note="renamed to `cvge_sub0` and generalized")]
+Notation ereal_cvg_sub0 := __deprecated__ereal_cvg_sub0.
+
+Lemma __deprecated__ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
   cvg f -> cvg g -> lim f +? lim g ->
   lim (f \+ g) = lim f + lim g.
 Proof. exact: limeD. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `limeD` and generalized")]
+Notation ereal_limD := __deprecated__ereal_limD.
 
-#[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeM` instead")]
-Lemma ereal_cvgM_gt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
+Lemma __deprecated__ereal_cvgM_gt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
   (0 < b)%R -> f --> +oo -> g --> b%:E -> f \* g --> +oo.
 Proof.
 move=> b_lt0 fl gl; have /= := cvgeM _ fl gl; rewrite gt0_mulye//; apply.
 by rewrite mule_def_infty_neq0// gt_eqF.
 Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeM` instead")]
-Lemma ereal_cvgM_lt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
+Notation ereal_cvgM_gt0_pinfty := __deprecated__ereal_cvgM_gt0_pinfty.
+
+Lemma __deprecated__ereal_cvgM_lt0_pinfty (R : realFieldType) (f g : (\bar R)^nat) b :
   (b < 0)%R -> f --> +oo -> g --> b%:E -> f \* g --> -oo.
 Proof.
 move=> b_lt0 fl gl; have /= := cvgeM _ fl gl; rewrite lt0_mulye//; apply.
 by rewrite mule_def_infty_neq0// lt_eqF.
 Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeM` instead")]
-Lemma ereal_cvgM_gt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
+Notation ereal_cvgM_lt0_pinfty := __deprecated__ereal_cvgM_lt0_pinfty.
+
+Lemma __deprecated__ereal_cvgM_gt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
   (0 < b)%R -> f --> -oo -> g --> b%:E -> f \* g --> -oo.
 Proof.
 move=> b_lt0 fl gl; have /= := cvgeM _ fl gl; rewrite gt0_mulNye//; apply.
 by rewrite mule_def_infty_neq0// gt_eqF.
 Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeM` instead")]
-Lemma ereal_cvgM_lt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
+Notation ereal_cvgM_gt0_ninfty := __deprecated__ereal_cvgM_gt0_ninfty.
+
+Lemma __deprecated__ereal_cvgM_lt0_ninfty (R : realFieldType) (f g : (\bar R)^nat) b :
   (b < 0)%R -> f --> -oo -> g --> b%:E -> f \* g --> +oo.
 Proof.
 move=> b_lt0 fl gl; have /= := cvgeM _ fl gl; rewrite lt0_mulNye//; apply.
 by rewrite mule_def_infty_neq0// lt_eqF.
 Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0", note="use `cvgeM` instead")]
+Notation ereal_cvgM_lt0_ninfty := __deprecated__ereal_cvgM_lt0_ninfty.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgeM` and generalized")]
-Lemma ereal_cvgM (R : realType) (f g : (\bar R) ^nat) (a b : \bar R) :
+Lemma __deprecated__ereal_cvgM (R : realType) (f g : (\bar R) ^nat) (a b : \bar R) :
  a *? b -> f --> a -> g --> b -> f \* g --> a * b.
 Proof. exact: cvgeM. Qed.
-
 #[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvg_nnesum` and generalized")]
-Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
+  note="renamed to `cvgeM` and generalized")]
+Notation ereal_cvgM := __deprecated__ereal_cvgM.
+
+Lemma __deprecated__ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
     (f : I -> (\bar R)^nat) (l : I -> \bar R) (P : pred I) :
   (forall k n, P k -> 0 <= f k n) ->
   (forall k, P k -> f k --> l k) ->
@@ -1836,6 +1876,9 @@ Lemma ereal_lim_sum (R : realFieldType) (I : Type) (r : seq I)
 Proof.
 by move=> f0 ?; apply: cvg_nnesum => // ? ?; apply: nearW => ?; apply: f0.
 Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0",
+  note="renamed to `cvg_nnesum` and generalized")]
+Notation ereal_lim_sum := __deprecated__ereal_lim_sum.
 
 Let lim_shift_cst (R : realFieldType) (u : (\bar R) ^nat) (l : \bar R) :
   cvg u -> (forall n, 0 <= u n) -> -oo < l -> lim (fun x => l + u x) = l + lim u.

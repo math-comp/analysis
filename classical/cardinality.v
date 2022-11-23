@@ -898,23 +898,25 @@ apply/seteqP; split=> [x [i /=]|x [i Ai Fix]].
 by exists i => //; case: cid => // B AB /=; move: Ai; rewrite AB.
 Qed.
 
-#[deprecated(note="Use -bigsetU_fset_set instead")]
-Lemma bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
+Lemma __deprecated__bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
   finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
 Proof. by move=> /bigsetU_fset_set->. Qed.
+#[deprecated(note="Use -bigsetU_fset_set instead")]
+Notation bigcup_fset_set := __deprecated__bigcup_fset_set.
 
 Lemma bigsetU_fset_set_cond T (I : choiceType) (A : set I) (F : I -> set T)
     (P : pred I) : finite_set A ->
   \big[setU/set0]_(i <- fset_set A | P i) F i = \bigcup_(i in A `&` P) F i.
 Proof.
-by move=> *; rewrite bigcup_mkcondr big_mkcond -bigcup_fset_set ?mem_setE.
+by move=> *; rewrite bigcup_mkcondr big_mkcond -bigsetU_fset_set ?mem_setE.
 Qed.
 
-#[deprecated(note="Use -bigsetU_fset_set_cond instead")]
-Lemma bigcup_fset_set_cond T (I : choiceType) (A : set I) (F : I -> set T)
+Lemma __deprecated__bigcup_fset_set_cond T (I : choiceType) (A : set I) (F : I -> set T)
     (P : pred I) : finite_set A ->
   \bigcup_(i in A `&` P) F i = \big[setU/set0]_(i <- fset_set A | P i) F i.
 Proof. by move=> /bigsetU_fset_set_cond->. Qed.
+#[deprecated(note="Use -bigsetU_fset_set_cond instead")]
+Notation bigcup_fset_set_cond := __deprecated__bigcup_fset_set_cond.
 
 Lemma bigsetI_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
   finite_set A -> \big[setI/setT]_(i <- fset_set A) F i =\bigcap_(i in A) F i.
@@ -922,16 +924,17 @@ Proof.
 by move=> *; apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigsetU_fset_set.
 Qed.
 
-#[deprecated(note="Use -bigsetI_fset_set instead")]
-Lemma bigcap_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
+Lemma __deprecated__bigcap_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
   finite_set A -> \bigcap_(i in A) F i = \big[setI/setT]_(i <- fset_set A) F i.
 Proof. by move=> /bigsetI_fset_set->. Qed.
+#[deprecated(note="Use -bigsetI_fset_set instead")]
+Notation bigcap_fset_set := __deprecated__bigcap_fset_set.
 
 Lemma bigsetI_fset_set_cond T (I : choiceType) (A : set I) (F : I -> set T)
     (P : pred I) : finite_set A ->
   \big[setI/setT]_(i <- fset_set A | P i) F i = \bigcap_(i in A `&` P) F i.
 Proof.
-by move=> *; rewrite bigcap_mkcondr big_mkcond -bigcap_fset_set ?mem_setE.
+by move=> *; rewrite bigcap_mkcondr big_mkcond -bigsetI_fset_set ?mem_setE.
 Qed.
 
 Lemma super_bij T U (X A : set T) (Y B : set U) (f : {bij X >-> Y}) :

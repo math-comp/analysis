@@ -610,7 +610,7 @@ Lemma measure_fsbig (I : choiceType) (A : set I) (F : I -> set T) :
   m (\big[setU/set0]_(i \in A) F i) = \sum_(i \in A) m (F i).
 Proof.
 move=> Afin Fm Ft.
-by rewrite fsbig_finite// -measure_fin_bigcup// bigcup_fset_set.
+by rewrite fsbig_finite// -measure_fin_bigcup// -bigsetU_fset_set.
 Qed.
 
 Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
@@ -620,7 +620,7 @@ Proof.
 rewrite -?measure_fsbig//.
 - by rewrite !fsbig_finite//= big_distrr//.
 - by move=> i Ai; apply: measurableI => //.
-- exact/trivIset_setI/trivIset_preimage1.
+- exact/trivIset_setIl/trivIset_preimage1.
 Qed.
 
 Lemma additive_nnsfunl (g f : {nnsfun T >-> R}) x :
@@ -857,8 +857,8 @@ rewrite predeqE => t; split => [/= cfgn|].
 - rewrite -bigcup_set; exists (f t); first by rewrite /= in_fset_set//= mem_set.
   rewrite -bigcup_set_cond; exists (g n t) => //=.
   by rewrite in_fset_set// mem_set.
-- rewrite -bigcup_fset_set// => -[r [x _ fxr]].
-  rewrite -bigcup_fset_set_cond// => -[r' [[x' _ gnx'r'] crr']].
+- rewrite bigsetU_fset_set// => -[r [x _ fxr]].
+  rewrite bigsetU_fset_set_cond// => -[r' [[x' _ gnx'r'] crr']].
   by rewrite /preimage/= => -[-> ->].
 Qed.
 
