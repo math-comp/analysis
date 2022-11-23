@@ -218,12 +218,6 @@ Require Import reals signed.
 (*                                     (and closed) neighborhood              *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
 (*                discrete_space T <-> every nbhs is a principal filter       *)
-(*                   projection x f == application of f to x, f being in a    *)
-(*                                     product topology of a family K         *)
-(*                                     (K : X -> topologicalType)             *)
-(*              product_embed g i y == an element of a product space which    *)
-(*                                     has value `y` at the ith coordinate,   *)
-(*                                     otherwise it's identical to g          *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                    near_covering == a reformulation of covering compact    *)
@@ -3036,91 +3030,62 @@ Definition locally_compact (A : set X) := [locally precompact A].
 
 End Precompact.
 
-Section Product_Hausdorff.
-Context {X : choiceType} {K : X -> topologicalType}.
+Section product_spaces.
+Context {I : eqType} {K : I -> topologicalType}.
 
-(* This a helper function to prove products preserve hausdorff. In particular *)
-(* we use its continuity turn clustering in `product_topologicalType K` to    *)
-(* clustering in K x for each X.                                              *)
-Definition projection x (f : product_topologicalType K) := f x.
+Let PK := product_topologicalType K.
 
-Definition product_embed g {x} (y : K x) : product_topologicalType K :=
-  fun i => match eqVneq x i return K i with
-    | EqNotNeq r => @eq_rect X x K y i r
-    | NeqNotEq _ => g i
-    end.
+(* Note we have to give the signature explicitly because there's no canonical *)
+(* topology associated with `K`. This should be cleaned up after HB port.     *)
 
-Lemma product_embedE g (x : X) (y : K x) : product_embed g y x = y.
+Lemma proj_continuous i : continuous (proj i : PK -> K i).
 Proof.
-by rewrite /product_embed; case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK.
-Qed.
-
-Lemma product_embedNE g (i j : X) (y : K i) : 
-  (i != j) -> product_embed g y j = g j.
-Proof. by rewrite /product_embed; case (eqVneq i j) => //. Qed.
-
-Lemma product_embed_id g (x : X) : product_embed g (g x) = g.
-Proof.
-apply: functional_extensionality_dep => y.
-case (eqVneq x y) => [-> | ?]; first by rewrite product_embedE.
-by rewrite product_embedNE.
-Qed.
-
-Lemma projectionE x f : projection x f = f x.
-Proof. by []. Qed.
-
-Lemma embed_projectK g (x : X) : cancel (@product_embed g x) (projection x).
-Proof. by move=> z; rewrite projectionE product_embedE. Qed.
-
-Lemma projection_continuous x : continuous (projection x).
-Proof.
-move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id.
+move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
 move=> h; apply: (cvg_trans _ (h _)) => {h}.
   by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
-rewrite eqEsubset; split => y // _; exists (product_embed (fun=> point) y) => //.
-exact: product_embedE.
+rewrite eqEsubset; split => y //; exists (@dfwith I _ (fun=> point) i y) => //.
+by rewrite dfwithin.
 Qed.
 
-Lemma product_embed_continuous g (x : X) : continuous (@product_embed g x).
+Lemma dfwith_continuous g (i : I) : continuous ((@dfwith I _ g i) : K i -> PK).
 Proof.
-move=> z U [] I [] [] J JfinI <- [] [] V JV Vpz.
-move /(@preimage_subset _ _ (@product_embed g x))/filterS; apply.
-apply: (@filterS _ _ _ (product_embed g @^-1` V)); first by exists V.
-have [L Lsub /[dup] VL <-] := JfinI _ JV; rewrite preimage_bigcap.
+move=> z U [] P [] [] Q QfinP <- [] [] V JV Vpz.
+move /(@preimage_subset _ _ (@dfwith I _ g i))/filterS; apply.
+apply: (@filterS _ _ _ ((@dfwith I _ g _) @^-1` V)); first by exists V.
+have [L Lsub /[dup] VL <-] := QfinP _ JV; rewrite preimage_bigcap.
 apply: filter_bigI => /= M /[dup] LM /Lsub /set_mem [] w _ [N] oN /[dup] NM <-.
-case: (eqVneq w x) => [wx|].
+case: (eqVneq w i) => [wx|].
   move: N NM oN; rewrite wx => N NM oN; apply (@filterS _ _ _ N).
-    by move=> ? ?; rewrite /= product_embedE.
+    by move=> ? ?; rewrite /= dfwithin.
   apply: open_nbhs_nbhs; split => //; move: Vpz.
-  by rewrite -VL => /(_ _ LM); rewrite -NM /= product_embedE.
+  by rewrite -VL => /(_ _ LM); rewrite -NM /= dfwithin.
 move=> wnx; (apply: filterS; last exact: filterT) => y _ /=; move: Vpz.
-by rewrite -VL => /(_ _ LM); rewrite -NM /= ? product_embedNE // eq_sym.
+by rewrite -VL => /(_ _ LM); rewrite -NM /= ? dfwithout // eq_sym.
 Qed.
 
-Lemma projection_open x (A : set (product_topologicalType K)) :
-  open A -> open (projection x @` A).
+Lemma proj_open i (A : set PK) : open A -> open (proj i @` A).
 Proof.
 move=> oA; rewrite openE => z [f Af <-]; rewrite openE in oA.
 have {oA} := oA _ Af; rewrite /interior => nAf.
-apply: (@filterS _ _ _ (product_embed f @^-1` A)). 
-  by move=> w Apw; exists (product_embed f w) => //; rewrite embed_projectK.
-by apply: product_embed_continuous; rewrite product_embed_id.
+apply: (@filterS _ _ _ ((@dfwith I _ f _) @^-1` A)).
+  by move=> w Apw; exists (@dfwith I _ f _ w) => //; rewrite dfwith_projK.
+apply: dfwith_continuous => /=; move: nAf; congr (nbhs _ A).
+by apply: functional_extensionality_dep => ?; case: dfwithP.
 Qed.
 
 Lemma hausdorff_product :
-  (forall x, hausdorff_space (K x)) -> hausdorff_space (@product_topologicalType X K).
+  (forall x, hausdorff_space (K x)) -> hausdorff_space PK.
 Proof.
 move=> hsdfK p q /= clstr; apply: functional_extensionality_dep => x.
 apply: hsdfK; move: clstr; rewrite ?cluster_cvgE /= => -[G PG [GtoQ psubG]].
-exists (projection x @ G); [exact: fmap_proper_filter|split].
-  rewrite -(projectionE x).
-  apply: cvg_trans; last exact: (@projection_continuous x q).
+exists (proj x @ G); [exact: fmap_proper_filter|split].
+  apply: cvg_trans; last exact: (@proj_continuous x q).
   by apply: cvg_app; exact: GtoQ.
-move/(cvg_app (projection x)): psubG => /cvg_trans; apply.
-exact: projection_continuous.
+move/(cvg_app (proj x)): psubG => /cvg_trans; apply.
+exact: proj_continuous.
 Qed.
 
-End Product_Hausdorff.
+End product_spaces.
 
 Definition finI (I : choiceType) T (D : set I) (f : I -> set T) :=
   forall D' : {fset I}, {subset D' <= D} ->
@@ -6931,9 +6896,9 @@ Lemma precompact_pointwise_precompact (W : set {family compact, X -> Y}) :
   precompact W -> pointwise_precompact W id.
 Proof.
 move=> + x; rewrite ?precompactE => pcptW.
-have : compact (projection x @` (closure W)).
+have : compact (proj x @` (closure W)).
   apply: continuous_compact => //; apply: continuous_subspaceT=> g.
-  move=> E nbhsE; have := (@projection_continuous _ _ x g E nbhsE).
+  move=> E nbhsE; have := (@proj_continuous _ _ x g E nbhsE).
   exact: (@pointwise_cvg_compact_family _ _ (nbhs g)).
 move=> /[dup]/(compact_closed hsdf)/closure_id -> /subclosed_compact.
 apply; first exact: closed_closure.

@@ -202,10 +202,9 @@
 - in `measure.v`:
   + lemma `measurable_fun_bool`
 
+  + new lemma `dfwith_projK`
 - in file `topology.v`,
-  + new definition `product_embed`.
-  + new lemmas `product_embedE`, `product_embedNE`, `product_embed_id`, 
-    `embed_projectK`, `product_embed_continuous`, and `projection_open`.
+  + new lemmas `dfwith_continuous`, and `proj_open`.
 
 
 ### Changed
@@ -352,9 +351,7 @@
   + `cvgi_map_lim` -> `cvgi_lim`
   + `app_cvg_locally` -> `cvg_ball`
 - in file `topology.v`,
-  + `prod_topo_apply` -> `projection`
-  + `prod_topo_applyE` -> `projectionE` 
-  + `prod_topo_apply_continuous` -> `projection_continuous`
+  + `prod_topo_apply_continuous` -> `proj_continuous`
 
 ### Generalized
 
@@ -410,6 +407,8 @@
   + `ereal_lim_sum` -> `cvg_nnesum`
 - moved from `sequences.v` to `topology.v`:
   + `nat_cvgPpinfty` -> `cvgnyPge`
+- in file `topology.v`
+  + `prod_topo_apply` -> `proj`
 
 ### Deprecated
 
@@ -479,6 +478,8 @@
     `range_factor`, `mem_factor_itv`,
     `set_itv_ge`, `trivIset_set_itv_nth`, `disjoint_itvxx`, `lt_disjoint`,
     `disjoint_neitv`, `neitv_bnd1`, `neitv_bnd2` (moved to `classical/set_interval.v`)
+- in file `topology.v`
+  + lemmas `prod_topo_applyE`
 
 ### Infrastructure
 

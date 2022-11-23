@@ -1096,5 +1096,8 @@ by case: (eqVneq i j) => [<-|nij];
    [rewrite dfwithin|rewrite dfwithout//]; constructor.
 Qed.
 
+Lemma dfwith_projK (i : I) (x : T i) : cancel (@dfwith i) (proj i).
+Proof. by move=> z; rewrite /proj dfwithin. Qed.
+
 End DFunWith.
 Arguments dfwith {I T} f [i] x.
