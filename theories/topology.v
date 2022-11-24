@@ -3041,25 +3041,24 @@ Let PK := product_topologicalType K.
 Lemma proj_continuous i : continuous (proj i : PK -> K i).
 Proof.
 move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
-move=> h; apply: (cvg_trans _ (h _)) => {h}.
+move=> h; apply: cvg_trans (h _) => {h}.
   by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
-rewrite eqEsubset; split => y //; exists (@dfwith I _ (fun=> point) i y) => //.
+rewrite eqEsubset; split => y //; exists (dfwith (fun=> point) i y) => //.
 by rewrite dfwithin.
 Qed.
 
-Lemma dfwith_continuous g (i : I) : continuous ((@dfwith I _ g i) : K i -> PK).
+Lemma dfwith_continuous g (i : I) : continuous (dfwith g _ : K i -> PK).
 Proof.
 move=> z U [] P [] [] Q QfinP <- [] [] V JV Vpz.
-move /(@preimage_subset _ _ (@dfwith I _ g i))/filterS; apply.
-apply: (@filterS _ _ _ ((@dfwith I _ g _) @^-1` V)); first by exists V.
+move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
+apply: (@filterS _ _ _ ((dfwith g i) @^-1` V)); first by exists V.
 have [L Lsub /[dup] VL <-] := QfinP _ JV; rewrite preimage_bigcap.
-apply: filter_bigI => /= M /[dup] LM /Lsub /set_mem [] w _ [N] oN /[dup] NM <-.
-case: (eqVneq w i) => [wx|].
-  move: N NM oN; rewrite wx => N NM oN; apply (@filterS _ _ _ N).
-    by move=> ? ?; rewrite /= dfwithin.
+apply: filter_bigI => /= M /[dup] LM /Lsub /set_mem [] w _ [+] + /[dup] + <-.
+have [->|wnx] := eqVneq w i => N oN NM.
+  apply (@filterS _ _ _ N); first by move=> ? ?; rewrite /= dfwithin.
   apply: open_nbhs_nbhs; split => //; move: Vpz.
   by rewrite -VL => /(_ _ LM); rewrite -NM /= dfwithin.
-move=> wnx; (apply: filterS; last exact: filterT) => y _ /=; move: Vpz.
+apply: nearW => y /=; move: Vpz.
 by rewrite -VL => /(_ _ LM); rewrite -NM /= ? dfwithout // eq_sym.
 Qed.
 
@@ -3067,8 +3066,8 @@ Lemma proj_open i (A : set PK) : open A -> open (proj i @` A).
 Proof.
 move=> oA; rewrite openE => z [f Af <-]; rewrite openE in oA.
 have {oA} := oA _ Af; rewrite /interior => nAf.
-apply: (@filterS _ _ _ ((@dfwith I _ f _) @^-1` A)).
-  by move=> w Apw; exists (@dfwith I _ f _ w) => //; rewrite dfwith_projK.
+apply: (@filterS _ _ _ ((dfwith f i) @^-1` A)).
+  by move=> w Apw; exists (dfwith f i w) => //; rewrite projK.
 apply: dfwith_continuous => /=; move: nAf; congr (nbhs _ A).
 by apply: functional_extensionality_dep => ?; case: dfwithP.
 Qed.
@@ -5672,7 +5671,7 @@ move=> FF; rewrite cvg_sigL; split.
   apply/uniform_nbhs; exists E; split=> //= h /=.
   rewrite /sigL => R u _; rewrite oinv_set_val.
   by case: insubP=> /= *; [apply: R|apply: entourage_refl].
-- move /(@cvg_app _ _ _ _ (sigL A)).
+- move/(@cvg_app _ _ _ _ (sigL A)).
   rewrite -fmap_comp sigL_restrict => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
