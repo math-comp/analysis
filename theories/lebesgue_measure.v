@@ -1765,6 +1765,24 @@ Local Open Scope ereal_scope.
 Variables (d : measure_display) (T : measurableType d) (R : realType).
 Implicit Types (D : set T).
 
+Lemma emeasurable_fun_bool (D : set T) (f : T -> bool) b :
+  measurable (f @^-1` [set b]) -> measurable_fun D f.
+Proof.
+have FNT : [set false] = [set~ true] by apply/seteqP; split => -[]//=.
+wlog {b}-> : b / b = true.
+  case: b => [|h]; first exact.
+  by rewrite FNT -preimage_setC => /measurableC; rewrite setCK; exact: h.
+move=> mfT mD /= Y; have := @subsetT _ Y; rewrite setT_bool => YT.
+have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
+- by rewrite preimage0 ?setI0.
+- by apply: measurableI => //; exact: mfT.
+- rewrite -[X in measurable X]setCK; apply: measurableC; rewrite setCI.
+  apply: measurableU; first exact: measurableC.
+  by rewrite FNT preimage_setC setCK; exact: mfT.
+- by rewrite -setT_bool preimage_setT setIT.
+Qed.
+Arguments emeasurable_fun_bool {D f} b.
+
 Lemma measurable_fun_einfs D (f : (T -> \bar R)^nat) :
   (forall n, measurable_fun D (f n)) ->
   forall n, measurable_fun D (fun x => einfs (f ^~ x) n).
