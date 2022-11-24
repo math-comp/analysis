@@ -1375,9 +1375,12 @@ Hint Resolve measure_semi_additive2 : core.
 End additive_measure_on_semiring_of_sets.
 Arguments measure0 {d R T} _.
 
+(* <=%E contains casts but we don't mind that they are ignored when matching for this hint *)
+Set Warnings "-cast-in-pattern".
 #[global] Hint Extern 0
-  (is_true (0 <= (_ : {additive_measure set _ -> \bar _}) _)%E) =>
+  (is_true (0 <= _ _)%E) =>
   solve [apply: measure_ge0] : core.
+Set Warnings "+cast-in-pattern".
 
 #[global]
 Hint Resolve measure0 measure_semi_additive2 measure_semi_additive : core.
@@ -1522,7 +1525,11 @@ Arguments measure_bigcup {d R T} mu A.
 #[global] Hint Extern 0 (_ set0 = 0) => solve [apply: measure0] : core.
 #[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
+
+(* <=%E contains casts but we don't mind that they are ignored when matching for this hint *)
+Set Warnings "-cast-in-pattern".
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
+Set Warnings "+cast-in-pattern".
 
 Section pushforward_measure.
 Local Open Scope ereal_scope.

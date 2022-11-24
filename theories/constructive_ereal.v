@@ -2427,7 +2427,11 @@ Arguments lee_sum_nneg_natr {R}.
 Arguments lee_sum_npos_natr {R}.
 Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
+
+(* <=%E contains casts but we don't mind that they are ignored when matching for this hint *)
+Set Warnings "-cast-in-pattern".
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
+Set Warnings "+cast-in-pattern".
 
 #[deprecated(since="mathcomp-analysis 0.6", note="Use lte_spaddre instead.")]
 Notation lte_spaddr := lte_spaddre.

@@ -130,7 +130,11 @@ rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
 - by rewrite ltNge leey.
 - by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
 Qed.
+
+(* <=%E contains casts but we don't mind that they are ignored when matching for this hint *)
+Set Warnings "-cast-in-pattern".
 Local Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
+Set Warnings "+cast-in-pattern".
 
 Lemma hlength_Rhull (A : set R) : hlength [set` Rhull A] = hlength A.
 Proof. by rewrite /hlength Rhull_involutive. Qed.

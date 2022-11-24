@@ -680,8 +680,11 @@ Proof. by []. Qed.
 
 End simple_fun_raw_integral.
 
-#[global] Hint Extern 0 (is_true (0 <= (_ : {measure set _ -> \bar _}) _)%E) =>
+(* <=%E contains casts but we don't mind that they are ignored when matching for this hint *)
+Set Warnings "-cast-in-pattern".
+#[global] Hint Extern 0 (is_true (0 <= _ _)%E) =>
   solve [apply: measure_ge0] : core.
+Set Warnings "+cast-in-pattern".
 
 Section sintegral_lemmas.
 Variables (d : measure_display) (T : measurableType d).

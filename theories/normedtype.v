@@ -474,6 +474,8 @@ End infty_nbhs_instances.
 #[global] Hint Extern 0 (is_true (?x \is Num.real)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: nbhs_ninfty_real end : core.
 
+(* <=%E and company contain casts but we don't mind that they are ignored when matching for these hints *)
+Set Warnings "-cast-in-pattern".
 #[global] Hint Extern 0 (is_true (_ < ?x)%E) => match goal with
   H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_gt end : core.
 #[global] Hint Extern 0 (is_true (_ <= ?x)%E) => match goal with
@@ -482,6 +484,8 @@ End infty_nbhs_instances.
   H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_lt end : core.
 #[global] Hint Extern 0 (is_true (_ >= ?x)%E) => match goal with
   H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_le end : core.
+Set Warnings "+cast-in-pattern".
+
 #[global] Hint Extern 0 (is_true (fine ?x \is Num.real)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_real end : core.
 #[global] Hint Extern 0 (is_true (fine ?x \is Num.real)) => match goal with

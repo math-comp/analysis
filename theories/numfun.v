@@ -221,10 +221,13 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
 Qed.
 
 End funposneg_lemmas.
+(* <=%E contains casts but we don't mind that they are ignored when matching for this hint *)
+Set Warnings "-cast-in-pattern".
 #[global]
 Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
 #[global]
 Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
+Set Warnings "+cast-in-pattern".
 
 Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
