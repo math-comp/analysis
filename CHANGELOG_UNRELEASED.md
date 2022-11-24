@@ -199,6 +199,8 @@
 - in file `mathcomp_extra.v`,
   + new definitions `proj`, and `dfwith`.
   + new lemmas `dfwithin`, `dfwithout`, and `dfwithP`.
+- in `measure.v`:
+  + lemma `measurable_fun_bool`
 
 ### Changed
 - in `topology.v`

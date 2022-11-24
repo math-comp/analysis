@@ -964,8 +964,7 @@ apply/seteqP; rewrite /preimage; split => [x /= [Dx Agx]|x /= [Dx Afx]].
 by split=> //; rewrite -Dfg// inE.
 Qed.
 
-Lemma measurable_fun_cst D (r : T2) :
-  measurable_fun D (cst r : T1 -> _).
+Lemma measurable_fun_cst D (r : T2) : measurable_fun D (cst r : T1 -> _).
 Proof.
 by move=> mD /= Y mY; rewrite preimage_cst; case: ifPn; rewrite ?setIT ?setI0.
 Qed.
@@ -1045,8 +1044,26 @@ by move=> mx my; apply: measurable_fun_if => //;
   [exact: measurable_funS mx|exact: measurable_funS my].
 Qed.
 
+Lemma measurable_fun_bool D (f : T1 -> bool) b :
+  measurable (f @^-1` [set b]) -> measurable_fun D f.
+Proof.
+have FNT : [set false] = [set~ true] by apply/seteqP; split => -[]//=.
+wlog {b}-> : b / b = true.
+  case: b => [|h]; first exact.
+  by rewrite FNT -preimage_setC => /measurableC; rewrite setCK; exact: h.
+move=> mfT mD /= Y; have := @subsetT _ Y; rewrite setT_bool => YT.
+have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
+- by rewrite preimage0 ?setI0.
+- by apply: measurableI => //; exact: mfT.
+- rewrite -[X in measurable X]setCK; apply: measurableC; rewrite setCI.
+  apply: measurableU; first exact: measurableC.
+  by rewrite FNT preimage_setC setCK; exact: mfT.
+- by rewrite -setT_bool preimage_setT setIT.
+Qed.
+
 End measurable_fun.
 Arguments measurable_fun_ext {d1 d2 T1 T2 D} f {g}.
+Arguments measurable_fun_bool {d1 T1 D f} b.
 
 Section measurability.
 
