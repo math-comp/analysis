@@ -218,9 +218,6 @@ Require Import reals signed.
 (*                                     (and closed) neighborhood              *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
 (*                discrete_space T <-> every nbhs is a principal filter       *)
-(*              prod_topo_apply x f == application of f to x, f being in a    *)
-(*                                     product topology of a family K         *)
-(*                                     (K : X -> topologicalType)             *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                    near_covering == a reformulation of covering compact    *)
@@ -3033,45 +3030,61 @@ Definition locally_compact (A : set X) := [locally precompact A].
 
 End Precompact.
 
-Section Product_Hausdorff.
-Context {X : choiceType} {K : X -> topologicalType}.
+Section product_spaces.
+Context {I : eqType} {K : I -> topologicalType}.
 
-(* This a helper function to prove products preserve hausdorff. In particular *)
-(* we use its continuity turn clustering in `product_topologicalType K` to    *)
-(* clustering in K x for each X.                                              *)
-Definition prod_topo_apply x (f : product_topologicalType K) := f x.
+Let PK := product_topologicalType K.
 
-Lemma prod_topo_applyE x f : prod_topo_apply x f = f x.
-Proof. by []. Qed.
+(* Note we have to give the signature explicitly because there's no canonical *)
+(* topology associated with `K`. This should be cleaned up after HB port.     *)
 
-Lemma prod_topo_apply_continuous x : continuous (prod_topo_apply x).
+Lemma proj_continuous i : continuous (proj i : PK -> K i).
 Proof.
-move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id.
-move=> h; apply: (cvg_trans _ (h _)) => {h}; last first.
-  pose xval x (y : K x) i : K i :=
-    match eqVneq x i return K i with
-    | EqNotNeq r => @eq_rect X x K y i r
-    | NeqNotEq _ => point
-    end.
-  rewrite eqEsubset; split => y //= _; exists (xval x y) => //; rewrite /xval.
-  by case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK.
-by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
+move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
+move=> h; apply: cvg_trans (h _) => {h}.
+  by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
+rewrite eqEsubset; split => y //; exists (dfwith (fun=> point) i y) => //.
+by rewrite dfwithin.
+Qed.
+
+Lemma dfwith_continuous g (i : I) : continuous (dfwith g _ : K i -> PK).
+Proof.
+move=> z U [] P [] [] Q QfinP <- [] [] V JV Vpz.
+move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
+apply: (@filterS _ _ _ ((dfwith g i) @^-1` V)); first by exists V.
+have [L Lsub /[dup] VL <-] := QfinP _ JV; rewrite preimage_bigcap.
+apply: filter_bigI => /= M /[dup] LM /Lsub /set_mem [] w _ [+] + /[dup] + <-.
+have [->|wnx] := eqVneq w i => N oN NM.
+  apply (@filterS _ _ _ N); first by move=> ? ?; rewrite /= dfwithin.
+  apply: open_nbhs_nbhs; split => //; move: Vpz.
+  by rewrite -VL => /(_ _ LM); rewrite -NM /= dfwithin.
+apply: nearW => y /=; move: Vpz.
+by rewrite -VL => /(_ _ LM); rewrite -NM /= ? dfwithout // eq_sym.
+Qed.
+
+Lemma proj_open i (A : set PK) : open A -> open (proj i @` A).
+Proof.
+move=> oA; rewrite openE => z [f Af <-]; rewrite openE in oA.
+have {oA} := oA _ Af; rewrite /interior => nAf.
+apply: (@filterS _ _ _ ((dfwith f i) @^-1` A)).
+  by move=> w Apw; exists (dfwith f i w) => //; rewrite projK.
+apply: dfwith_continuous => /=; move: nAf; congr (nbhs _ A).
+by apply: functional_extensionality_dep => ?; case: dfwithP.
 Qed.
 
 Lemma hausdorff_product :
-  (forall x, hausdorff_space (K x)) -> hausdorff_space (@product_topologicalType X K).
+  (forall x, hausdorff_space (K x)) -> hausdorff_space PK.
 Proof.
 move=> hsdfK p q /= clstr; apply: functional_extensionality_dep => x.
 apply: hsdfK; move: clstr; rewrite ?cluster_cvgE /= => -[G PG [GtoQ psubG]].
-exists (prod_topo_apply x @ G); [exact: fmap_proper_filter|split].
-  rewrite -(prod_topo_applyE x).
-  apply: cvg_trans; last exact: (@prod_topo_apply_continuous x q).
+exists (proj x @ G); [exact: fmap_proper_filter|split].
+  apply: cvg_trans; last exact: (@proj_continuous x q).
   by apply: cvg_app; exact: GtoQ.
-move/(cvg_app (prod_topo_apply x)): psubG => /cvg_trans; apply.
-exact: prod_topo_apply_continuous.
+move/(cvg_app (proj x)): psubG => /cvg_trans; apply.
+exact: proj_continuous.
 Qed.
 
-End Product_Hausdorff.
+End product_spaces.
 
 Definition finI (I : choiceType) T (D : set I) (f : I -> set T) :=
   forall D' : {fset I}, {subset D' <= D} ->
@@ -5658,7 +5671,7 @@ move=> FF; rewrite cvg_sigL; split.
   apply/uniform_nbhs; exists E; split=> //= h /=.
   rewrite /sigL => R u _; rewrite oinv_set_val.
   by case: insubP=> /= *; [apply: R|apply: entourage_refl].
-- move /(@cvg_app _ _ _ _ (sigL A)).
+- move/(@cvg_app _ _ _ _ (sigL A)).
   rewrite -fmap_comp sigL_restrict => D.
   apply: cvg_trans; first exact: D.
   move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
@@ -6882,9 +6895,9 @@ Lemma precompact_pointwise_precompact (W : set {family compact, X -> Y}) :
   precompact W -> pointwise_precompact W id.
 Proof.
 move=> + x; rewrite ?precompactE => pcptW.
-have : compact (prod_topo_apply x @` (closure W)).
+have : compact (proj x @` (closure W)).
   apply: continuous_compact => //; apply: continuous_subspaceT=> g.
-  move=> E nbhsE; have := (@prod_topo_apply_continuous _ _ x g E nbhsE).
+  move=> E nbhsE; have := (@proj_continuous _ _ x g E nbhsE).
   exact: (@pointwise_cvg_compact_family _ _ (nbhs g)).
 move=> /[dup]/(compact_closed hsdf)/closure_id -> /subclosed_compact.
 apply; first exact: closed_closure.
