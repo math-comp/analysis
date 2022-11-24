@@ -322,7 +322,7 @@ Lemma itv_oNyy : `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
 Proof.
 rewrite set_itvE predeqE => x; split => /=.
 - by move: x => [x| |]; rewrite ?ltxx.
-- by move: x => [x h|//|/(_ erefl)]; rewrite ?ltNye.
+- by move: x => [x h|//|/(_ erefl)]; rewrite ?ltNyr.
 Qed.
 
 End erealDomainType.

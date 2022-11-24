@@ -133,7 +133,7 @@
   + new definition `inv_fun`.
   + new lemmas `ler_ltP`, and `real_ltr_distlC`.
 - in file `constructive_ereal.v`,
-  + new lemmas `real_ltey`, `real_ltNye`, `real_leey`, `real_leNye`,
+  + new lemmas `real_ltry`, `real_ltNyr`, `real_leey`, `real_leNye`,
     `fin_real`, `addNye`, `addeNy`, `gt0_muley`, `lt0_muley`, `gt0_muleNy`, and
     `lt0_muleNy`.
   + new lemmas `daddNye`, and `daddeNy`.
@@ -205,6 +205,10 @@
   + new lemmas `dfwithin`, `dfwithout`, and `dfwithP`.
 - in `measure.v`:
   + lemma `measurable_fun_bool`
+- in `constructive_ereal.v`:
+  + lemma `lt0e`
+- in `lebesgue_integral.v`:
+  + lemma `le_integral_comp_abse`
 
   + new lemma `dfwith_projK`
 - in file `topology.v`,
@@ -362,6 +366,9 @@
   + `app_cvg_locally` -> `cvg_ball`
 - in file `topology.v`,
   + `prod_topo_apply_continuous` -> `proj_continuous`
+- in `constructive_ereal.v`:
+  + `ltey` -> `ltry`
+  + `ltNye` -> `ltNyr`
 
 ### Generalized
 
@@ -421,6 +428,8 @@
   + `prod_topo_apply` -> `proj`
 - in `lebesgue_integral.v`:
   + `integral_sum` -> `integral_nneseries`
+- in `constructive_ereal.v`:
+  + `ltey`, `ltNye`
 
 ### Deprecated
 

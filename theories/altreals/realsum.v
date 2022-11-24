@@ -180,7 +180,7 @@ case: (pselect (has_sup E)); last first.
   move/has_supPn=> -/(_ nzE) h; exists +oo%E => //; elim/nbh_pinfW => M /=.
   case/(_ M): h=> x [K -> lt_MuK]; exists K=> n le_Kn; rewrite inE.
   by apply/(lt_le_trans lt_MuK)/mono_u.
-move=> supE; exists (sup E)%:E => //; first exact: ltNye.
+move=> supE; exists (sup E)%:E => //; first exact: ltNyr.
 elim/nbh_finW=>e /= gt0_e.
 case: (sup_adherent gt0_e supE)=> x [K ->] lt_uK.
 exists K=> n le_Kn; rewrite inE distrC ger0_norm ?subr_ge0.
