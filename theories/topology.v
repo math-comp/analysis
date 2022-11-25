@@ -3621,40 +3621,38 @@ Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
 Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
 Proof.
 split.
-  case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]). 
+  case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
   by case; [by apply: open_nbhs_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
 move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
 move=> U; rewrite nbhsE; case=> V [][] oV Vx VU.
-have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M. 
+have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
 have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
   move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset. 
   by split => // ? ->. 
 by exists y; split => //; [exact/eqP | exact: VU].
 Qed.
 
-Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) : 
+Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) :
   perfect_set [set: K i] -> perfect_set [set: product_topologicalType K].
 Proof.
-move=> /perfectTP KPo; apply/perfectTP => f oF; apply (KPo (f i)).
+move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
 rewrite (_ : [set f i] = proj i @` [set f]).
   by apply: (@proj_open (classicType_choiceType I) _ i); exact: oF.
 by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
 Qed.
 
-Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType) 
-    (permute : forall (i : nat), K i -> K i) :
-  (forall i x, permute i x != x) ->
+Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType)
+    (derange : forall (i : nat), K i -> K i) :
+  (forall i x, derange i x != x) ->
   perfect_set [set: product_topologicalType K].
 Proof.
 move=> nfix; split; [exact: closedT|]; rewrite eqEsubset; split => f // _.
-pose g := (fun N i => if (i < N)%nat then f i else permute _ (f i) ).
-have Fg : Filter (g @ \oo) by exact: fmap_filter.
+pose g := fun N i => if (i < N)%nat then f i else derange _ (f i).
 have gcvg : g @ \oo --> (f : product_topologicalType K).
   apply/(@cvg_sup (product_topologicalType K)) => N U [V] [[W] oW <-] [] WfN WU.
-  apply: (filterS WU); rewrite nbhs_simpl; exists N.+1 => // i /= Ni.
-  by rewrite /g Ni.
-move=> A /gcvg; rewrite nbhs_simpl /=; case=> N _ An.
-exists (g N); split => //; last apply: An; rewrite /= ?leqnn //.
+  by apply: (filterS WU); rewrite nbhs_simpl /g; exists N.+1 => // i /= ->.
+move=> A /gcvg; rewrite nbhs_simpl; case=> N _ An.
+exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
 apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
 by rewrite /g ltnn; exact: nfix.
 Qed.
