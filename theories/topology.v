@@ -228,6 +228,8 @@ Require Import reals signed.
 (*              accessible_space T <-> T is an accessible space (T_1).        *)
 (*                    separated A B == the two sets A and B are separated     *)
 (*                      component x == the connected component of point x     *)
+(*                    perfect_set A == A is closed, and is every point in A   *)
+(*                                     is a limit point of A.                 *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
 (*                                     if P is convertible to G (globally A)  *)
 (*                                                                            *)
@@ -3647,7 +3649,7 @@ Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType) :
 Proof.
 move=> npts; split; [exact: closedT|]; rewrite eqEsubset; split => f // _.
 pose distincts := fun (i : nat) => projT1 (sigW (npts i)).
-pose derange := fun (i : nat) (z : K i) => 
+pose derange := fun (i : nat) (z : K i) =>
   if z == (distincts i).1 then (distincts i).2 else (distincts i).1.
 pose g := fun N i => if (i < N)%nat then f i else derange _ (f i).
 have gcvg : g @ \oo --> (f : product_topologicalType K).
