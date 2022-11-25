@@ -61,6 +61,36 @@ Notation "q %:pr" := (@Prob.mk _ q (@Prob.O1 _ _)).
 Coercion Prob.p : prob >-> Num.NumDomain.sort.
 (*  ^^^ probability ^^^ *)
 
+Definition derivable_interval {R : numFieldType}(f : R -> R) (a b: R) :=
+  forall x, x \in `]a, b[ -> derivable f x 1.
+
+Lemma BRightLeft_le {R:numFieldType} (x y: R) :
+  x <= y <-> (BRight x <= BLeft y)%O.
+Admitted.
+
+Lemma Interval_le_l {R: numFieldType} (a b a': R):
+  a <= a' -> forall x,  x \in `]a', b[ -> x \in `]a, b[.
+Proof.
+  move=> aa' x.
+  move /andP => [l r]. apply /andP. split => //.
+  rewrite -BRightLeft_le in l.
+  apply /BRightLeft_le.
+  by apply: (le_trans aa').
+Qed.
+
+Lemma derivable_interval_le {R : numFieldType} (f:R -> R) (a b a' : R):
+    a <= a' -> derivable_interval f a b -> derivable_interval f a' b.
+Proof.
+  rewrite /derivable_interval.
+  move=> aa' dab x xin.
+  by apply /dab /(Interval_le_l aa').
+Qed.
+
+
+
+Lemma derivable_interval_ge {R: numFieldType} (f:R -> R) (a b b': R):
+    b >= b' -> derivable_interval f a b -> derivable_interval f a b'.
+Admitted.
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
 Section twice_derivable_convex.
 
@@ -115,21 +145,8 @@ have -> : ((x - a) / (b - a) = p).
 done.
 Qed.
 
-Variable pderivable : (R -> R) -> (R -> Prop) -> Prop.
-Definition derive_pt (f: R -> R) (x: R) : R := f^`() x.
-Let I := fun x0 => (a <= x0 <= b).
-
-Definition derivable_interval (f : R -> R) (a b: R) :=
-  forall x, x \in `]a, b[ -> derivable f x 1.
 Hypothesis HDf : derivable_interval f a b.
 Hypothesis HDDf : derivable_interval Df a b.
-
-Lemma derivable_interval_le : forall f a b a',
-    a <= a' -> derivable_interval f a b -> derivable_interval f a' b.
-Admitted.
-Lemma derivable_interval_ge : forall f a b b',
-    b >= b' -> derivable_interval f a b -> derivable_interval f a b'.
-Admitted.
 
 Lemma unitfB: forall (x y:R), x < y -> y - x \is a GRing.unit.
 Proof.
