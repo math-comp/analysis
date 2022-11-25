@@ -3553,7 +3553,7 @@ Lemma open_ereal_lt y : open [set r : R | r%:E < y].
 Proof.
 case: y => [y||] /=; first exact: open_lt.
 - rewrite (_ : [set _ | _] = setT); first exact: openT.
-  by rewrite funeqE => ? /=; rewrite ltey trueE.
+  by rewrite funeqE => ? /=; rewrite ltry trueE.
 - rewrite (_ : [set _ | _] = set0); first exact: open0.
   by rewrite funeqE => ? /=; rewrite falseE.
 Qed.
@@ -3564,7 +3564,7 @@ case: y => [y||] /=; first exact: open_gt.
 - rewrite (_ : [set _ | _] = set0); first exact: open0.
   by rewrite funeqE => ? /=; rewrite falseE.
 - rewrite (_ : [set _ | _] = setT); first exact: openT.
-  by rewrite funeqE => ? /=; rewrite ltNye trueE.
+  by rewrite funeqE => ? /=; rewrite ltNyr trueE.
 Qed.
 
 Lemma open_ereal_lt' x y : x < y -> ereal_nbhs x (fun u => u < y).
@@ -3594,7 +3594,7 @@ case: x => [ // | | [] // ].
 suff -> : [set y | y < +oo] = \bigcup_r [set y : \bar R | y < r%:E].
   exact: bigcup_open.
 rewrite predeqE => -[r | | ]/=.
-- rewrite ltey; split => // _.
+- rewrite ltry; split => // _.
   by exists (r + 1)%R => //=; rewrite lte_fin ltr_addl.
 - by rewrite ltxx; split => // -[] x /=; rewrite ltNge leey.
 - by split => // _; exists 0%R => //=.
@@ -3609,7 +3609,7 @@ case: x => [ // | [] // | ].
 suff -> : [set y | -oo < y] = \bigcup_r [set y : \bar R | r%:E < y].
   exact: bigcup_open.
 rewrite predeqE => -[r | | ]/=.
-- rewrite ltNye; split => // _.
+- rewrite ltNyr; split => // _.
   by exists (r - 1)%R => //=; rewrite lte_fin ltr_subl_addr ltr_addl.
 - by split => // _; exists 0%R => //=.
 - by rewrite ltxx; split => // -[] x _ /=; rewrite ltNge leNye.
@@ -3954,13 +3954,13 @@ Qed.
 Lemma nbhs_open_ereal_pinfty r : (nbhs +oo [set y | r%:E < y])%E.
 Proof.
 rewrite nbhsE /=; eexists; split; last by move=> y; exact.
-by split; [apply open_ereal_gt_ereal | rewrite /= ltey].
+by split; [apply open_ereal_gt_ereal | rewrite /= ltry].
 Qed.
 
 Lemma nbhs_open_ereal_ninfty r : (nbhs -oo [set y | y < r%:E])%E.
 Proof.
 rewrite nbhsE /=; eexists; split; last by move=> y; exact.
-by split; [apply open_ereal_lt_ereal | rewrite /= ltNye].
+by split; [apply open_ereal_lt_ereal | rewrite /= ltNyr].
 Qed.
 
 Lemma ereal_hausdorff : hausdorff_space (ereal_topologicalType R).

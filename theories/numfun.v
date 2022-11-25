@@ -194,7 +194,7 @@ Qed.
 Lemma add_def_funeposneg f x : (f^\+ x +? - f^\- x).
 Proof.
 by rewrite /funeneg /funepos; case: (f x) => [r| |];
-  [rewrite !maxEFin|rewrite /maxe /= ltNye|rewrite /maxe /= ltNye].
+  [rewrite !maxEFin|rewrite /maxe /= ltNyr|rewrite /maxe /= ltNyr].
 Qed.
 
 Lemma funeD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.

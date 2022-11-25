@@ -90,8 +90,8 @@ Lemma hlength_finite_fin_num i : neitv i -> hlength [set` i] < +oo ->
   ((i.1 : \bar R) \is a fin_num) /\ ((i.2 : \bar R) \is a fin_num).
 Proof.
 move: i => [[ba a|[]] [bb b|[]]] /neitvP //=; do ?by rewrite ?set_itvE ?eqxx.
-by move=> _; rewrite hlength_itv /= ltey.
-by move=> _; rewrite hlength_itv /= ltNye.
+by move=> _; rewrite hlength_itv /= ltry.
+by move=> _; rewrite hlength_itv /= ltNyr.
 by move=> _; rewrite hlength_itv.
 Qed.
 
@@ -106,11 +106,11 @@ Qed.
 
 Lemma hlength_infty_bnd b r :
   hlength [set` Interval -oo%O (BSide b r)] = +oo :> \bar R.
-Proof. by rewrite hlength_itv /= ltNye. Qed.
+Proof. by rewrite hlength_itv /= ltNyr. Qed.
 
 Lemma hlength_bnd_infty b r :
   hlength [set` Interval (BSide b r) +oo%O] = +oo :> \bar R.
-Proof. by rewrite hlength_itv /= ltey. Qed.
+Proof. by rewrite hlength_itv /= ltry. Qed.
 
 Lemma pinfty_hlength i : hlength [set` i] = +oo ->
   (exists s r, i = Interval -oo%O (BSide s r) \/ i = Interval (BSide s r) +oo%O)
@@ -386,7 +386,7 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
   suff: `|x| < `|(floor `|x|)%:~R + 1| by rewrite ltr_norml => /andP[-> /ltW->].
   rewrite [ltRHS]ger0_norm//; last by rewrite addr_ge0// ler0z floor_ge0.
   by rewrite (le_lt_trans _ (lt_succ_floor _)) ?ler_norm.
-by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltey.
+by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 
 Let gitvs := [the semiRingOfSetsType _ of salgebraType ocitv].
@@ -525,7 +525,7 @@ rewrite predeqE => x; split; rewrite /= in_itv andbT.
   by left; exists x => //; rewrite in_itv /= andbT; case: b yxb.
 - move=> [[r]|->].
   + by rewrite in_itv /= andbT => yxb <-; case: b yxb.
-  + by case: b => /=; rewrite ?(ltey, leey).
+  + by case: b => /=; rewrite ?(ltry, leey).
 Qed.
 
 Lemma punct_eitv_ninfty_bnd b y : [set` Interval -oo%O (BSide b y%:E)] =
@@ -535,7 +535,7 @@ rewrite predeqE => x; split; rewrite /= in_itv.
 - move: x => [x| |] yxb; [|by case: b yxb|by left].
   by right; exists x => //; rewrite in_itv /= andbT; case: b yxb.
 - move=> [->|[r]].
-  + by case: b => /=; rewrite ?(ltNye, leNye).
+  + by case: b => /=; rewrite ?(ltNyr, leNye).
   + by rewrite in_itv /= => yxb <-; case: b yxb.
 Qed.
 
@@ -1060,7 +1060,7 @@ rewrite predeqE => t; split => [/= [Dt ft]|].
     by rewrite -{2}(fineK ft) lee_fin mulrNz opprK floor_le.
   by rewrite -(fineK ft)// lee_fin (le_trans (ltW ft0)).
 move=> [n _] [/= Dt [nft fnt]]; split => //; rewrite fin_numElt.
-by rewrite (lt_le_trans _ nft) ?ltNye//= (le_lt_trans fnt)// ltey.
+by rewrite (lt_le_trans _ nft) ?ltNyr//= (le_lt_trans fnt)// ltry.
 Qed.
 
 Lemma emeasurable_neq y : measurable (D `&` [set x | f x != y]).
@@ -1248,7 +1248,7 @@ rewrite eqEsubset; split => [x [s /itvP rs <-]|x []].
   split => //=; rewrite in_itv /=.
   by case: b in rs *; rewrite /= ?(lee_fin, lte_fin) rs.
 move: x => [s|_ /(_ erefl)|] //=; rewrite in_itv /= andbT; last first.
-  by case: b => /=; rewrite 1?(leNgt,ltNge) 1?(ltNye, leNye).
+  by case: b => /=; rewrite 1?(leNgt,ltNge) 1?(ltNyr, leNye).
 by case: b => /=; rewrite 1?(lte_fin,lee_fin) => rs _;
   exists s => //; rewrite in_itv /= rs.
 Qed.
@@ -1260,7 +1260,7 @@ Qed.
 
 Lemma preimage_EFin_setT : @EFin R @^-1` [set x | x \in `]-oo%E, +oo[] = setT.
 Proof.
-by rewrite set_itvE predeqE => r; split=> // _; rewrite /preimage /= ltNye.
+by rewrite set_itvE predeqE => r; split=> // _; rewrite /preimage /= ltNyr.
 Qed.
 
 Lemma eitv_c_infty r : `[r%:E, +oo[%classic =
@@ -1270,7 +1270,7 @@ rewrite predeqE => x; split=> [|].
 - move: x => [s /=| _ n _|//].
   + rewrite in_itv /= andbT lee_fin => rs n _ /=.
     by rewrite in_itv/= andbT lte_fin ltr_subl_addl (le_lt_trans rs)// ltr_addr.
-  + by rewrite /= in_itv /= andbT ltey.
+  + by rewrite /= in_itv /= andbT ltry.
 - move: x => [s| |/(_ 0%N Logic.I)] //=; last by rewrite in_itv /= leey.
   move=> h; rewrite in_itv /= lee_fin leNgt andbT; apply/negP.
   move=> /ltr_add_invr[k skr]; have {h} := h k Logic.I.
@@ -1295,7 +1295,7 @@ Qed.
 Lemma eset1_ninfty :
   [set -oo] = \bigcap_k `]-oo, (-k%:R%:E)[%classic :> set (\bar R).
 Proof.
-rewrite eqEsubset; split=> [_ -> i _ |]; first by rewrite /= in_itv /= ltNye.
+rewrite eqEsubset; split=> [_ -> i _ |]; first by rewrite /= in_itv /= ltNyr.
 move=> [r|/(_ O Logic.I)|]//.
 move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
@@ -1308,7 +1308,7 @@ Qed.
 Lemma eset1_pinfty :
   [set +oo] = \bigcap_k `]k%:R%:E, +oo[%classic :> set (\bar R).
 Proof.
-rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltey.
+rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
 move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).

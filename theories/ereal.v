@@ -95,7 +95,7 @@ Qed.
 Lemma preimage_abse_ninfty : (@abse R @^-1` [set -oo])%classic = set0.
 Proof.
 rewrite predeqE => t; split => //=; apply/eqP.
-by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t))// ltNye.
+by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t)).
 Qed.
 
 Local Close Scope classical_set_scope.

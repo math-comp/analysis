@@ -141,7 +141,7 @@ wlog : a b ag0 bg0 / \esum_(i in I) a i \isn't a fin_num => [saoo|]; last first.
   move=> /fin_numPn[->|/[dup] aoo ->]; first by rewrite leNye.
   rewrite (@le_trans _ _ +oo)//; first by rewrite /adde/=; case: esum.
   rewrite leye_eq; apply/eqP/eq_infty => y; rewrite esum_ge//.
-  have : y%:E < \esum_(i in I) a i by rewrite aoo// ltey.
+  have : y%:E < \esum_(i in I) a i by rewrite aoo// ltry.
   move=> /ereal_sup_gt[_ [X [finX XI]] <-] /ltW yle; exists X => //=.
   rewrite (le_trans yle)// fsbig_split// lee_addl// fsume_ge0// => // i.
   by move=> /XI; exact: bg0.
@@ -462,7 +462,7 @@ Qed.
 Lemma summableE D f : summable D f = (\esum_(x in D) `| f x | \is a fin_num).
 Proof.
 rewrite /summable fin_numElt; apply/idP/idP => [->|/andP[]//].
-by rewrite andbT (lt_le_trans (ltNye 0))//; exact: esum_ge0.
+by rewrite andbT (lt_le_trans (ltNyr 0))//; exact: esum_ge0.
 Qed.
 
 Lemma summableD D f g : summable D f -> summable D g -> summable D (f \+ g).
