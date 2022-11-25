@@ -13,6 +13,24 @@
   + definition `discrete_measurable_unit`
   + structures `sigma_finite_additive_measure` and `sigma_finite_measure`
 
+  + new lemma `dfwith_projK`
+- in file `topology.v`,
+  + new lemmas `dfwith_continuous`, and `proj_open`.
+
+- in file `topology.v`,
+  + new definition `perfect_set`.
+  + new lemmas `perfectTP`, `perfect_prod`, and `perfect_diagonal`.
+
+
+### Changed
+- in `topology.v`
+  + definition `fct_restrictedUniformType` changed to use `weak_uniformType`
+  + definition `family_cvg_topologicalType` changed to use `sup_uniformType`
+
+- in `constructive_ereal.v`:
+  + lemmas `lee_paddl`, `lte_paddl`, `lee_paddr`, `lte_paddr`,
+    `lte_spaddr`, `lee_pdaddl`, `lte_pdaddl`, `lee_pdaddr`,
+    `lte_pdaddr`, `lte_spdaddr` generalized to `realDomainType`
 - in `constructive_ereal.v`:
   + lemma `oppe_inj`
 
