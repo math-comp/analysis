@@ -1018,8 +1018,8 @@ Qed.
 
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d).
-Variables (R : realType) (D : set T) (f : T -> \bar R).
+Context d (T : measurableType d) (R : realType).
+Variables (D : set T) (f : T -> \bar R).
 Hypotheses (mD : measurable D) (mf : measurable_fun D f).
 Implicit Types y : \bar R.
 
@@ -1562,7 +1562,7 @@ End standard_measurable_fun.
   solve [exact: measurable_fun_normr] : core.
 
 Section measurable_fun_realType.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> R).
 
 Lemma measurable_funD D f g :
@@ -1762,7 +1762,7 @@ Qed.
 
 Section emeasurable_fun.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T).
 
 Lemma emeasurable_fun_bool (D : set T) (f : T -> bool) b :
