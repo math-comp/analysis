@@ -335,13 +335,13 @@ Implicit Types (x y : \bar R) (r : R).
 
 Lemma ltry r : r%:E < +oo. Proof. exact: num_real. Qed.
 
-Lemma ltey x : x != +oo -> x < +oo.
-Proof. by case: x => // r _; rewrite ltry. Qed.
+Lemma ltey x : (x < +oo) = (x != +oo).
+Proof. by case: x => // r; rewrite ltry. Qed.
 
 Lemma ltNyr r : -oo < r%:E. Proof. exact: num_real. Qed.
 
-Lemma ltNye x : x != -oo -> -oo < x.
-Proof. by case: x => // r _; rewrite ltNyr. Qed.
+Lemma ltNye x : (-oo < x) = (x != -oo).
+Proof. by case: x => // r; rewrite ltNyr. Qed.
 
 Lemma leey x : x <= +oo. Proof. by case: x => //= r; exact: num_real. Qed.
 

@@ -317,7 +317,7 @@
 - in `lebesgue_integral.v`:
   + `integral_cst_pinfty` -> `integral_csty`
   + `sintegral_cst` -> `sintegral_EFin_cst`
-  + `integral_cst` -> `integral_EFin_cst`
+  + `integral_cst` -> `integral_cstr`
 
 - in file `constructive_ereal.v`,
   + `esum_ninftyP` -> `esum_eqNyP`
