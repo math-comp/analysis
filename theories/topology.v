@@ -3641,12 +3641,14 @@ rewrite (_ : [set f i] = proj i @` [set f]).
 by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
 Qed.
 
-Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType)
-    (derange : forall (i : nat), K i -> K i) :
-  (forall i x, derange i x != x) ->
+Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType) :
+  (forall i, exists (xy: K i * K i), xy.1 != xy.2) ->
   perfect_set [set: product_topologicalType K].
 Proof.
-move=> nfix; split; [exact: closedT|]; rewrite eqEsubset; split => f // _.
+move=> npts; split; [exact: closedT|]; rewrite eqEsubset; split => f // _.
+pose distincts := fun (i : nat) => projT1 (sigW (npts i)).
+pose derange := fun (i : nat) (z : K i) => 
+  if z == (distincts i).1 then (distincts i).2 else (distincts i).1.
 pose g := fun N i => if (i < N)%nat then f i else derange _ (f i).
 have gcvg : g @ \oo --> (f : product_topologicalType K).
   apply/(@cvg_sup (product_topologicalType K)) => N U [V] [[W] oW <-] [] WfN WU.
@@ -3654,7 +3656,8 @@ have gcvg : g @ \oo --> (f : product_topologicalType K).
 move=> A /gcvg; rewrite nbhs_simpl; case=> N _ An.
 exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
 apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
-by rewrite /g ltnn; exact: nfix.
+rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
+by move=> ->; have := projT2 (sigW (npts N)). 
 Qed.
 
 End perfect_sets.
