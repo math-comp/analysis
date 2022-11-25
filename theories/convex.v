@@ -68,8 +68,8 @@ Variable R : realType.
 Variables (f : R -> R) (a b : R).
 Hypothesis ab : (a < b)%R.
 
-Definition Df x: R := f^`() x.
-Definition DDf x := f^`(2) x.
+Definition Df x: R := 'D_1 f x.
+Definition DDf x := 'D_1 Df x.
 
 Hypothesis DDf_ge0 : forall x, a <= x <= b -> (0 <= DDf x)%R.
 
@@ -118,24 +118,36 @@ Qed.
 Variable pderivable : (R -> R) -> (R -> Prop) -> Prop.
 Definition derive_pt (f: R -> R) (x: R) : R := f^`() x.
 Let I := fun x0 => (a <= x0 <= b).
-Hypothesis HDf : pderivable f I.
 
-Lemma MVT_cor1_pderivable
-     : forall (a b : R) (f : R -> R) (pr : pderivable f (fun x : R => a <= x <= b)),
-    a < b ->
-    exists (c : R) (Hc : a <= c <= b),
-      f b - f a = derive_pt f c * (b - a) /\ a < c < b.
-Proof.
+Definition derivable_interval (f : R -> R) (a b: R) :=
+  forall x, x \in `]a, b[ -> derivable f x 1.
+Hypothesis HDf : derivable_interval f a b.
+Hypothesis HDDf : derivable_interval Df a b.
+
+Lemma derivable_interval_le : forall f a b a',
+    a <= a' -> derivable_interval f a b -> derivable_interval f a' b.
 Admitted.
-(*use MVT in derive.v *)
-
-Hypothesis DfE : forall (x : R) (Hx : I x), Df x = derive_pt f x.
-Hypothesis DDfE : forall x (Hx : I x), DDf x = derive_pt Df x.
+Lemma derivable_interval_ge : forall f a b b',
+    b >= b' -> derivable_interval f a b -> derivable_interval f a b'.
+Admitted.
 
 Lemma unitfB: forall (x y:R), x < y -> y - x \is a GRing.unit.
 Proof.
   by move=> x y xy; rewrite unitfE subr_eq0 (gt_eqF xy).
 Qed.
+
+Lemma derivable_continuous (F: R -> R) (x y: R): derivable_interval F x y -> {within `[x, y], continuous F}.
+Proof.
+rewrite /derivable_interval.
+move=> di.
+have h: (forall x0, x0 \in `]x, y[ -> {for x0, continuous F}); last first .
+  Search "sub" "continuous".
+  admit. (*TODO*)
+move=> x0 x0xy.
+apply/differentiable_continuous.
+rewrite -derivable1_diffP.
+by apply di.
+Admitted.
 
 Lemma second_derivative_convexf_pt : forall t : prob,
     f (conv a b t) <= conv (f a) (f b) t.
@@ -159,69 +171,53 @@ have {step1}step2 : L x - f x =
   (x - a) * (b - x) / (b - a) * ((f b - f x) / (b - x)) -
   (b - x) * (x - a) / (b - a) * ((f x - f a) / (x - a)).
   rewrite {1}step1 {step1}.
-  rewrite opprD addrA addrC addrA.
-  rewrite LE //.
+  rewrite opprD addrA addrC addrA LE //.
   rewrite -(mulrN _ (f x)).
   rewrite addrA. rewrite -mulrDr (addrC _ (f a)).
-  rewrite -(mulrN _ (f x)) -addrA -mulrDr.
-  rewrite addrC.
+  rewrite -(mulrN _ (f x)) -addrA -mulrDr addrC.
   rewrite -(opprK (f a - f x)) mulrN  opprB.
   congr (_ + _).
   - rewrite -!mulrA; congr (_ * _); rewrite mulrCA; congr (_ * _).
     by rewrite mulrCA mulrV ?mulr1 // unitfB //.
   - rewrite -!mulNr -!mulrA; congr (_ * _); rewrite mulrCA; congr (_ * _).
     by rewrite mulrCA mulrV ?mulr1 // unitfB //.
-have [c2 [Ic2 Hc2]] : exists c2, (x < c2 < b /\ (f b - f x) / (b - x) = Df c2).
-  have H : pderivable f (fun x0 => x <= x0 <= b).
-(*    move=> z [z1 z2]; apply HDf; split => //.
-    apply (@leR_trans x) => //; exact: ltRW.
-*)
-    admit.
-  case: (@MVT_cor1_pderivable x b f H xb) => c2 [Ic2 [H1 H2]].
-  exists c2; split => //.
-  rewrite H1  -mulrA mulrV ?mulr1; last exact/unitfB.
-  rewrite DfE //.
-  apply /andP. split.
-    apply (@le_trans _ _ x); [exact/ltW | by move: Ic2 => /andP []].
-  by case: (andP H2) => _ /ltW.
-have [c1 [Ic1 Hc1]] : exists c1, (a < c1 < x /\ (f x - f a) / (x - a) = Df c1).
-  have H : pderivable f (fun x0 => a <= x0 <= x).
-(*    move=> z [z1 z2]; apply HDf; split => //.
-    apply (@leR_trans x) => //; exact: ltRW.
-*)
-    admit.
-  case: (@MVT_cor1_pderivable a x f H ax) => c1 [Ic1 [H1 H2]].
-  exists c1; split => //.
-  rewrite H1 -mulrA mulrV ?mulr1; last by exact/unitfB.
-  rewrite DfE// . (*; last by move=> ?; exact: proof_derive_irrelevance.*)
-  apply/andP. split.
-  - by case: (andP H2) => /ltW.
-  - apply (@le_trans _ _ x).
-    by case: (andP H2) => _ /ltW.
-    apply (@le_trans _ _ c2); apply/ltW; by case: (andP Ic2).
+have [c2 [Ic2 Hc2]] : exists c2, (x < c2 < b /\ (f b - f x) / (b - x) = 'D_1 f c2).
+  have H : derivable_interval f x b.
+    apply: (derivable_interval_le); last exact HDf.
+    by apply /ltW.
+  have derivef: forall x0:R, x0 \in `]x, b[ -> is_derive x0 1 f ('D_1 f x0).
+    by move=> x0 x0in; apply /derivableP /H.
+  case: (MVT xb derivef ) => [ | b0 b0in fbfx]; first by apply /derivable_continuous.
+  exists b0. split => //.
+  rewrite fbfx -mulrA divff; last by rewrite -unitfE unitfB.
+  by rewrite mulr1.
+have [c1 [Ic1 Hc1]] : exists c1, (a < c1 < x /\ (f x - f a) / (x - a) = 'D_1 f c1).
+  have H : derivable_interval f a x.
+    apply: (derivable_interval_ge); last exact HDf.
+    by apply /ltW.
+  have derivef: forall x0:R, x0 \in `]a, x[ -> is_derive x0 1 f ('D_1 f x0).
+    by move=> x0 x0in; apply /derivableP /H.
+  case: (MVT ax derivef); first by apply /derivable_continuous.
+  move=> a0 a0in fxfa.
+  exists a0. split => //.
+  rewrite fxfa -mulrA divff; last by rewrite -unitfE unitfB.
+  by rewrite mulr1.
 have c1c2 : c1 < c2 by apply (@lt_trans _ _ x); [case: (andP Ic1) | case: (andP Ic2)].
 have {step2 Hc1 Hc2}step3 : (L x - f x =
-  (b - x) * (x - a) * (c2 - c1) / (b - a) * ((Df c2 - Df c1) / (c2 - c1)))%R.
+  (b - x) * (x - a) * (c2 - c1) / (b - a) * (('D_1 f c2 - 'D_1 f c1) / (c2 - c1)))%R.
   rewrite {}step2 Hc2 Hc1 (mulrC (x - a)%R) -mulrBr -!mulrA.
   congr (_ * (_ * _)); rewrite mulrCA; congr (_ * _).
   rewrite mulrCA mulrV ?mulr1 //. exact/unitfB.
-have [d [Id H]] : exists d, c1 < d < c2 /\ (Df c2 - Df c1) / (c2 - c1) = DDf d.
-  have H : pderivable Df (fun x0 => c1 <= x0 <= c2)%R.
-(*
-    move=> z [z1 z2]; apply HDDf; split => //.
-    - apply (@leR_trans c1) => //; by case: Ic1 => /ltRW.
-    - apply (@leR_trans c2) => //; by case: Ic2 => _ /ltRW.
-*)
-    admit.
-  case: (@MVT_cor1_pderivable c1 c2 Df H c1c2) => d [Id [H1 H2]].
-  exists d; split => //.
-  rewrite H1 -mulrA mulrV ?mulr1; last exact/unitfB.
-  rewrite DDfE //.
-  apply/andP. split.
-  - apply (@le_trans _ _ c1); last by case: (andP Id) H1.
-    by apply/ltW; case: (andP Ic1).
-  - apply (@le_trans _ _ c2); last by case: (andP Ic2) => _ /ltW.
-    by case: (andP H2) => _ /ltW.
+have [d [Id H]] : exists d, c1 < d < c2 /\ ('D_1 f c2 - 'D_1 f c1) / (c2 - c1) = DDf d.
+  have H : derivable_interval Df c1 c2.
+    by apply /(derivable_interval_le (ltW (proj1 (andP Ic1))))
+             /(derivable_interval_ge (ltW (proj2 (andP Ic2)))).
+  have derivef: forall x0:R, x0 \in `]c1, c2[ -> is_derive x0 1 Df ('D_1 Df x0).
+    by move=> x0 x0in; apply /derivableP /H.                                            
+  case: (MVT c1c2 derivef); first by apply /derivable_continuous.
+  move=> x0 x0in Dfc2Dfc1. exists x0. split => //.
+  rewrite Dfc2Dfc1 -mulrA divff; last by rewrite -unitfE unitfB.
+  by rewrite mulr1.
 rewrite {}step3 {}H.
 apply/mulr_ge0; last first.
   apply /DDf_ge0 /andP; split.
@@ -235,6 +231,6 @@ apply/mulr_ge0; last by rewrite invr_ge0 subr_ge0 ltW.
 apply/mulr_ge0; last first.
   by rewrite subr_ge0; case: (andP Id) => Id1 Id2; apply (@le_trans _ _ d); exact/ltW.
 by apply/mulr_ge0; rewrite subr_ge0; exact/ltW.
-Admitted.
+Qed.
 
 End twice_derivable_convex.
