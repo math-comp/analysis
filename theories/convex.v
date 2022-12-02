@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2022               *)
+(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp.classical Require Import boolp classical_sets.
@@ -62,35 +62,31 @@ Coercion Prob.p : prob >-> Num.NumDomain.sort.
 (*  ^^^ probability ^^^ *)
 
 Definition derivable_interval {R : numFieldType}(f : R -> R) (a b: R) :=
-  forall x, x \in `]a, b[ -> derivable f x 1.
+  forall x, x \in `[a, b] -> derivable f x 1.
 
-Lemma BRightLeft_le {R:numFieldType} (x y: R) :
-  x <= y <-> (BRight x <= BLeft y)%O.
-Admitted.
-
-Lemma Interval_le_l {R: numFieldType} (a b a': R):
-  a <= a' -> forall x,  x \in `]a', b[ -> x \in `]a, b[.
+Lemma in_IntervalW [disp: unit] [T: porderType disp] (a b c d: T):
+  (a <= b)%O -> (c <= d)%O -> forall x, x \in `[b, c] -> x \in `[a, d].
 Proof.
-  move=> aa' x.
-  move /andP => [l r]. apply /andP. split => //.
-  rewrite -BRightLeft_le in l.
-  apply /BRightLeft_le.
-  by apply: (le_trans aa').
+move=> ab cd x. rewrite 2!in_itv /= => /andP [bx xc].
+apply/andP. split.
+  exact: (le_trans ab).
+exact: (le_trans _ cd).
 Qed.
 
 Lemma derivable_interval_le {R : numFieldType} (f:R -> R) (a b a' : R):
     a <= a' -> derivable_interval f a b -> derivable_interval f a' b.
 Proof.
-  rewrite /derivable_interval.
-  move=> aa' dab x xin.
-  by apply /dab /(Interval_le_l aa').
+rewrite /derivable_interval => aa' deriv x xin. apply/deriv.
+by move: xin; apply/in_IntervalW.
 Qed.
 
-
-
 Lemma derivable_interval_ge {R: numFieldType} (f:R -> R) (a b b': R):
-    b >= b' -> derivable_interval f a b -> derivable_interval f a b'.
-Admitted.
+  b >= b' -> derivable_interval f a b -> derivable_interval f a b'.
+Proof.
+rewrite/derivable_interval => b'b deriv x xin. apply/deriv.
+by move: xin; apply in_IntervalW.
+Qed.
+
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
 Section twice_derivable_convex.
 
@@ -122,7 +118,7 @@ Qed.
 Lemma divrNN (x y: R): (- x) / (- y) = x / y.
 Proof. by rewrite -[RHS]mulrNN -invrN. Qed.
 
-Lemma sub_divC (x y c d: R): 
+Lemma sub_divC (x y c d: R):
     (x - y) / (c - d) = (y - x) / (d - c).
 Proof. by rewrite -divrNN !opprB. Qed.
 
@@ -153,18 +149,20 @@ Proof.
   by move=> x y xy; rewrite unitfE subr_eq0 (gt_eqF xy).
 Qed.
 
-Lemma derivable_continuous (F: R -> R) (x y: R): derivable_interval F x y -> {within `[x, y], continuous F}.
+Lemma derivable_continuous (F: R -> R) (x y: R):
+  derivable_interval F x y -> {within `[x, y], continuous F}.
 Proof.
 rewrite /derivable_interval.
 move=> di.
-have h: (forall x0, x0 \in `]x, y[ -> {for x0, continuous F}); last first .
-  Search "sub" "continuous".
-  admit. (*TODO*)
+have h: (forall x0, x0 \in `[x, y] -> {for x0, continuous F}); last first .
+  apply/continuous_in_subspaceT.
+  move=> z zin. apply h.
+  by rewrite inE in zin.
 move=> x0 x0xy.
 apply/differentiable_continuous.
 rewrite -derivable1_diffP.
 by apply di.
-Admitted.
+Qed.
 
 Lemma second_derivative_convexf_pt : forall t : prob,
     f (conv a b t) <= conv (f a) (f b) t.
@@ -203,8 +201,9 @@ have [c2 [Ic2 Hc2]] : exists c2, (x < c2 < b /\ (f b - f x) / (b - x) = 'D_1 f c
     apply: (derivable_interval_le); last exact HDf.
     by apply /ltW.
   have derivef: forall x0:R, x0 \in `]x, b[ -> is_derive x0 1 f ('D_1 f x0).
-    by move=> x0 x0in; apply /derivableP /H.
-  case: (MVT xb derivef ) => [ | b0 b0in fbfx]; first by apply /derivable_continuous.
+    move=> x0 x0in; apply/derivableP /H. move: x0in.
+    exact: subset_itv_oo_cc.
+  case: (MVT xb derivef ) => [ | b0 b0in fbfx]; first by apply/derivable_continuous.
   exists b0. split => //.
   rewrite fbfx -mulrA divff; last by rewrite -unitfE unitfB.
   by rewrite mulr1.
@@ -213,7 +212,8 @@ have [c1 [Ic1 Hc1]] : exists c1, (a < c1 < x /\ (f x - f a) / (x - a) = 'D_1 f c
     apply: (derivable_interval_ge); last exact HDf.
     by apply /ltW.
   have derivef: forall x0:R, x0 \in `]a, x[ -> is_derive x0 1 f ('D_1 f x0).
-    by move=> x0 x0in; apply /derivableP /H.
+    move=> x0 x0in; apply /derivableP /H.
+    exact: subset_itv_oo_cc.
   case: (MVT ax derivef); first by apply /derivable_continuous.
   move=> a0 a0in fxfa.
   exists a0. split => //.
@@ -230,7 +230,8 @@ have [d [Id H]] : exists d, c1 < d < c2 /\ ('D_1 f c2 - 'D_1 f c1) / (c2 - c1) =
     by apply /(derivable_interval_le (ltW (proj1 (andP Ic1))))
              /(derivable_interval_ge (ltW (proj2 (andP Ic2)))).
   have derivef: forall x0:R, x0 \in `]c1, c2[ -> is_derive x0 1 Df ('D_1 Df x0).
-    by move=> x0 x0in; apply /derivableP /H.                                            
+    move=> x0 x0in; apply /derivableP /H.
+    exact: subset_itv_oo_cc.
   case: (MVT c1c2 derivef); first by apply /derivable_continuous.
   move=> x0 x0in Dfc2Dfc1. exists x0. split => //.
   rewrite Dfc2Dfc1 -mulrA divff; last by rewrite -unitfE unitfB.
