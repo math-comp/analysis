@@ -4188,7 +4188,7 @@ split.
     by rewrite /f_' /f' /restrict mem_set.
 - have := @dominated_cvg _ _ _ _ _ mD _ _ _ mu_ f_f' finv ig' f_g'.
   set X := (X in _ -> X --> _); rewrite [X in X --> _ -> _](_ : _ = X) //; last first.
-    apply/funext => n; apply ae_eq_integral => //.
+    apply/funext => n; apply: ae_eq_integral => //.
     exists N; split => //; rewrite -(setCK N); apply: subsetC => x /= Nx Dx.
     by rewrite /f_' /restrict mem_set.
   set Y := (X in _ -> _ --> X); rewrite [X in _ --> X -> _](_ : _ = Y) //.
