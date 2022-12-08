@@ -536,8 +536,13 @@ rewrite fine_lt //.
   apply: le_lt_trans.
   apply probability_le1. admit.
   rewrite ltry //.
-  (* HERE *)
-near: n.
+have -> : [set x | (a%:num <= `|X n x - Y x|)%R] = set0. admit.
+apply: le_lt_trans.
+  rewrite le_eqVlt.
+  apply /orP. left.
+  apply /eqP.
+  apply probability0.
+apply heps.
 Abort.
 
 End cvg_random_variable.
