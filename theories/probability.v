@@ -522,6 +522,22 @@ apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]).
 move => eps heps.
 rewrite near_map /=.
 near=> n.
+rewrite sub0r.
+rewrite normrN.
+rewrite ger0_norm; last first.
+  apply: fine_ge0; apply: probability_ge0.
+change eps with (fine eps%:E).
+rewrite fine_lt //.
+  apply fin_real.
+  apply /andP. split.
+  apply: lt_le_trans; last first.
+  apply probability_ge0.
+  by [].
+  apply: le_lt_trans.
+  apply probability_le1. admit.
+  rewrite ltry //.
+  (* HERE *)
+near: n.
 Abort.
 
 End cvg_random_variable.
