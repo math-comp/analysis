@@ -85,6 +85,13 @@ move=> mA; rewrite -(@probability_setT _ _ _ P).
 by apply: le_measure => //; rewrite ?in_setE.
 Qed.
 
+Lemma probability_fin (A : set T) : measurable A -> (P A \is a fin_num).
+Proof.
+move=> mA; apply/fin_real/andP; split.
+  by apply: lt_le_trans; [|exact: probability_ge0].
+  by apply: le_lt_trans; [exact: probability_le1|exact: ltry].
+Qed.
+
 Lemma probability_integrable_cst k : P.-integrable [set: T] (EFin \o cst k).
 Proof.
 split; first exact/EFin_measurable_fun/measurable_fun_cst.
@@ -527,6 +534,7 @@ Definition norm1 (X : {RV P >-> R})
 Lemma prop_23_1 (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
   : (norm1 (X n `- Y) @[n --> \oo]--> (0:R)%R) -> probabilistic_cvg X Y.
 Proof.
+rewrite /norm1.
 move => h a /=.
 apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]).
 move => eps heps.
@@ -536,22 +544,14 @@ have a0: 0 < a%:num by [].
 move /(_ (a%:num) a0) => h1.
 case: h1 => m _ h1 .
 near=> n.
-(* rewrite sub0r.
+rewrite sub0r.
 rewrite normrN.
 rewrite ger0_norm; last first.
   apply: fine_ge0; apply: probability_ge0.
 change eps with (fine eps%:E).
-rewrite fine_lt //.
-  apply fin_real.
-  apply /andP. split.
-  apply: lt_le_trans; last first.
-  apply probability_ge0.
-  by [].
-  apply: le_lt_trans.
-  apply probability_le1.
-    (* apply emeaasurable_c_ *)admit.
-  rewrite ltry //. *)
-have -> : P [set x | (a%:num <= `|X n x - Y x|)%R] = 0%E.
+rewrite fine_lt => //; first apply probability_fin.
+  admit.
+(* have -> : P [set x | (a%:num <= `|X n x - Y x|)%R] = 0%E.
   have mn : (m <= n)%N.
   near: n.
   exists m => //.
@@ -559,7 +559,7 @@ have -> : P [set x | (a%:num <= `|X n x - Y x|)%R] = 0%E.
   unfold norm1.
   rewrite /=.
   have := (@markov _ T R P (X n - Y) [the {mfun R >-> R} of (@mid R)] (a%:num) a0).
-  move => /=.
+  move => /=. *)
   (* apply: le_lt_trans. *)
   (* move: x.
   near: n.
@@ -571,13 +571,13 @@ have -> : P [set x | (a%:num <= `|X n x - Y x|)%R] = 0%E.
   move /(_ (leqnn m)).
   rewrite normr_id.
   rewrite ltNge. *)
-  admit.
+  (* admit.
 apply: le_lt_trans.
   rewrite le_eqVlt.
   apply /orP. left.
   apply /eqP.
   apply probability0.
-apply heps.
+apply heps. *)
 Abort.
 
 End cvg_random_variable.
