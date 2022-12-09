@@ -71,6 +71,13 @@ Qed.
 Lemma probability_ge0 (A : set T) : (0 <= P A)%E.
 Proof. exact: measure_ge0. Qed.
 
+Lemma probability_fin (A : set T) : measurable A -> (P A \is a fin_num).
+Proof.
+move=> mA; apply/fin_real/andP; split.
+  by apply: lt_le_trans; [|exact: probability_ge0].
+  by apply: le_lt_trans; [exact: probability_le1|exact: ltry].
+Qed.
+
 Lemma probability_integrable_cst k : P.-integrable [set: T] (EFin \o cst k).
 Proof.
 split; first exact/EFin_measurable_fun/measurable_fun_cst.
