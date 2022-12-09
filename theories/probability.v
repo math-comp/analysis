@@ -124,6 +124,14 @@ Qed.
 HB.instance Definition _ m := subr_mfun_subproof m.
 Definition subr_mfun m := [the {mfun _ >-> R} of subr m].
 
+Definition mid : R -> R := id.
+
+Lemma measurable_fun_mid : measurable_fun setT (mid).
+Proof. exact: measurable_fun_id. Qed.
+
+HB.instance Definition _ := @IsMeasurableFun.Build _ _ R
+  (mid) (measurable_fun_mid).
+
 Definition mabs : R -> R := fun x => `| x |.
 
 Lemma measurable_fun_mabs : measurable_fun setT (mabs).
@@ -513,16 +521,22 @@ Variables (d : _) (T : measurableType d) (R : realType) (P : probability T R).
 Definition probabilistic_cvg (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
   := forall a : {posnum R}, [sequence (fine \o P) [set x | a%:num <= `| X n x - Y x | ] ]_n --> (0%R:R).
 
+Definition norm1 (X : {RV P >-> R})
+  := fine ('E ((@mabs R) `o X)).
+
 Lemma prop_23_1 (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
-  : (*(@mabs R `o (X n `- Y) ) @[n --> \oo]--> cst_mfun 0*)
-    (forall x, `| X n x - Y x | @[n --> \oo]--> (0%R:R)) -> probabilistic_cvg X Y.
+  : (norm1 (X n `- Y) @[n --> \oo]--> (0:R)%R) -> probabilistic_cvg X Y.
 Proof.
 move => h a /=.
 apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]).
 move => eps heps.
 rewrite near_map /=.
+move /(@cvgr0Pnorm_lt _ [pseudoMetricNormedZmodType R of R^o]) : h.
+have a0: 0 < a%:num by [].
+move /(_ (a%:num) a0) => h1.
+case: h1 => m _ h1 .
 near=> n.
-rewrite sub0r.
+(* rewrite sub0r.
 rewrite normrN.
 rewrite ger0_norm; last first.
   apply: fine_ge0; apply: probability_ge0.
@@ -534,9 +548,30 @@ rewrite fine_lt //.
   apply probability_ge0.
   by [].
   apply: le_lt_trans.
-  apply probability_le1. admit.
-  rewrite ltry //.
-have -> : [set x | (a%:num <= `|X n x - Y x|)%R] = set0. admit.
+  apply probability_le1.
+    (* apply emeaasurable_c_ *)admit.
+  rewrite ltry //. *)
+have -> : P [set x | (a%:num <= `|X n x - Y x|)%R] = 0%E.
+  have mn : (m <= n)%N.
+  near: n.
+  exists m => //.
+  have := h1 _ mn.
+  unfold norm1.
+  rewrite /=.
+  have := (@markov _ T R P (X n - Y) [the {mfun R >-> R} of (@mid R)] (a%:num) a0).
+  move => /=.
+  (* apply: le_lt_trans. *)
+  (* move: x.
+  near: n.
+  by [].
+  have := h x.
+  move => [m] _.
+  have mn : (m <= n)%N.
+  move /(_ m) => /=.
+  move /(_ (leqnn m)).
+  rewrite normr_id.
+  rewrite ltNge. *)
+  admit.
 apply: le_lt_trans.
   rewrite le_eqVlt.
   apply /orP. left.
