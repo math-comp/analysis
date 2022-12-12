@@ -347,6 +347,10 @@ Lemma leey x : x <= +oo. Proof. by case: x => //= r; exact: num_real. Qed.
 
 Lemma leNye x : -oo <= x. Proof. by case: x => //= r; exact: num_real. Qed.
 
+Definition lteey := (ltey, leey).
+
+Definition lteNye := (ltNye, leNye).
+
 Lemma le_total_ereal : totalPOrderMixin [porderType of \bar R].
 Proof.
 by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
