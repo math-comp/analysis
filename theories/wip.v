@@ -105,7 +105,7 @@ End gauss.
 
 Section gauss_lebesgue.
 Import Notations.
-Variables (R : realType) (d : _) (T : measurableType d).
+Context d (T : measurableType d) (R : realType).
 
 Let f1 (x : R) := (gauss01_density x) ^-1.
 
@@ -131,16 +131,13 @@ Lemma staton_lebesgueE x U : measurable U ->
   staton_lebesgue x U = lebesgue_measure U.
 Proof.
 move=> mU; rewrite [in LHS]/staton_lebesgue/=.
-rewrite [in LHS]letinE.
-rewrite [in LHS]/sample.
-unlock.
-rewrite [in LHS]/=.
+rewrite [in LHS]letinE /=.
 transitivity (\int[@mgauss01 R]_(y in U) (f1 y)%:E).
   rewrite -[in RHS](setTI U) integral_setI_indic//=.
   apply: eq_integral => /= r _.
   rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
     by rewrite invr_ge0// gauss_density_ge0.
-  by rewrite integral_dirac// indicT mul1e retE/= diracE indicE.
+  by rewrite integral_dirac// indicT mul1e diracE indicE.
 transitivity (\int[lebesgue_measure]_(x in U) (gauss01_density x * f1 x)%:E).
   admit.
 transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
