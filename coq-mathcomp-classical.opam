@@ -23,7 +23,7 @@ depends: [
   "coq-mathcomp-fingroup"
   "coq-mathcomp-algebra"
   "coq-mathcomp-finmap" { (>= "1.5.1" & < "1.6~") | (= "dev") }
-  "coq-hierarchy-builder" { (>= "1.2.0") }
+  "coq-hierarchy-builder" { (>= "1.3.0") }
 ]
 
 tags: [

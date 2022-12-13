@@ -47,7 +47,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.0.5.4
+$ opam install coq-mathcomp-analysis.0.6.0
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -91,7 +91,7 @@ $ opam install coq-mathcomp-finmap.1.5.1
 ```
 4. Install the Hierarchy Builder
 ```
-$ opam install coq-hierarchy-builder.1.2.0
+$ opam install coq-hierarchy-builder.1.3.0
 ```
 5. Download and compile `coq-mathcomp-analysis` without installing
 ```
