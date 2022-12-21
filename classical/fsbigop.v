@@ -98,6 +98,7 @@ Proof.
 move=> fg; rewrite (eq_finite_support _ fg); apply: eq_big_seq => x.
 by case: finite_supportP => //= X XP _ gidx xX; rewrite fg // ?inE; apply/XP.
 Qed.
+Arguments eq_fsbigr {R idx op T f} g.
 
 Lemma fsbigTE (R : Type) (idx : R) (op : Monoid.com_law idx) (T : choiceType)
     (A : {fset T}) (f : T -> R) :
