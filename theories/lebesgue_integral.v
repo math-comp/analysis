@@ -744,7 +744,7 @@ have [->|r0] := eqVneq r 0%R.
   by rewrite mul0e (eq_sintegral (cst 0%R)) ?sintegral0// => x/=; rewrite mul0r.
 rewrite !sintegralET.
 transitivity (\sum_(x \in [set: R]) x%:E * m (f @^-1` [set x / r])).
-  by apply: eq_fsbigr => x; rewrite preimage_cstM.
+  by under eq_fsbigr do rewrite preimage_cstM//.
 transitivity (\sum_(x \in [set: R]) r%:E * (x%:E * m (f @^-1` [set x]))).
   rewrite (reindex_fsbigT (fun x => r * x)%R)//; last first.
     by exists ( *%R r ^-1)%R; [exact: mulKf|exact: mulVKf].
@@ -766,7 +766,7 @@ rewrite !sintegralE; set F := f @` _; set G := g @` _; set FG := _ @` _.
 pose pf x := f @^-1` [set x]; pose pg y := g @^-1` [set y].
 transitivity (\sum_(z \in FG) z%:E * \sum_(a \in F) m (pf a `&` pg (z - a)%R)).
   apply: eq_fsbigr => z _; rewrite preimage_add -fsbig_setU// measure_fsbig//.
-    by move=> x Fx; apply: measurableI.
+    by move=> x Fx; exact: measurableI.
   exact/trivIset_setIr/trivIset_preimage1.
 under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsbig//.
 transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
@@ -2492,7 +2492,7 @@ rewrite (_ : (fun _ => _) = (fun n => (f_ n a)%:E)).
 apply/funext => n.
 under eq_integral do rewrite fimfunE// -fsumEFin//.
 rewrite ge0_integral_fsum//.
-- under eq_fsbigr; first by move=> r _; rewrite integralM_indic_nnsfun//; over.
+- under eq_fsbigr do rewrite integralM_indic_nnsfun//.
   rewrite /= (fsbigD1 (f_ n a))//=; last by exists a.
   rewrite integral_indic//= diracE mem_set// mule1.
   rewrite fsbig1 ?adde0// => r /= [_ rfna].
@@ -4815,7 +4815,7 @@ rewrite -ge0_integral_fsum //; last 2 first.
     rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0// => y _.
     by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
-by apply: eq_fsbigr => ? _; rewrite indic_fubini_tonelli_FE.
+by under eq_fsbigr do rewrite indic_fubini_tonelli_FE//.
 Qed.
 
 Lemma sfun_fubini_tonelli2 : \int[m']_z (f z)%:E = \int[m2]_y G y.
@@ -4843,7 +4843,7 @@ rewrite -ge0_integral_fsum //; last 2 first.
     rewrite (eq_integral (cst 0%E)) ?integral0 ?mule0// => y _.
     by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
-by apply: eq_fsbigr => i _; rewrite indic_fubini_tonelli_GE.
+by under eq_fsbigr do rewrite indic_fubini_tonelli_GE//.
 Qed.
 
 Lemma sfun_fubini_tonelli : \int[m]_z (f z)%:E = \int[m']_z (f z)%:E.

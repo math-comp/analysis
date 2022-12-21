@@ -97,10 +97,6 @@ Proof.
 by move=> ?; rewrite esum_fset// ?fset_set1// ?fsbig_set1// => t' /[!inE] ->.
 Qed.
 
-Lemma fsbig_esum (A : set T) a : finite_set A -> (forall x, 0 <= a x) ->
-  \sum_(x \in A) (a x) = \esum_(x in A) a x.
-Proof. by move=> *; rewrite esum_fset. Qed.
-
 End esum_realType.
 
 Lemma esum_ge [R : realType] [T : choiceType] (I : set T) (a : T -> \bar R) x :
@@ -219,14 +215,16 @@ Qed.
 
 Lemma esum_esum [R : realType] [T1 T2 : choiceType]
     (I : set T1) (J : T1 -> set T2) (a : T1 -> T2 -> \bar R) :
-  (forall i j, 0 <= a i j) ->
+  (forall i j, I i -> J i j -> 0 <= a i j) ->
   \esum_(i in I) \esum_(j in J i) a i j = \esum_(k in I `*`` J) a k.1 k.2.
 Proof.
 move=> a_ge0; apply/eqP; rewrite eq_le; apply/andP; split.
   apply: ub_ereal_sup => /= _ [X [finX XI]] <-.
   under eq_fsbigr do rewrite esum_mkcond.
-  rewrite fsbig_finite//= -esum_sum; last by move=> i j _ _; case: ifP.
-  under eq_esum do rewrite -big_mkcond/=.
+  rewrite fsbig_finite//= big_seq -esum_sum; last first.
+    move=> i j _ /[!in_fset_set]// /[!inE] /XI Ij.
+    by case: ifPn => // /[!inE] /a_ge0-/(_ Ij).
+  under eq_esum do rewrite -big_seq -big_mkcond/=.
   apply: ub_ereal_sup => /= _ [Y [finY _] <-]; apply: ereal_sup_ub => /=.
   set XYJ := [set z | z \in X `*` Y /\ z.2 \in J z.1].
   have ? : finite_set XYJ.
@@ -249,7 +247,14 @@ apply: (@le_trans _ _
   rewrite [leRHS](big_fsetID _ (mem X))/=.
   rewrite (_ : [fset x | x in Y & x \in X] = Y `&` fset_set X)%fset; last first.
     by apply/fsetP => x; rewrite 2!inE/= in_fset_set.
-  rewrite (fsetIidPr _); first by rewrite fsbig_finite// lee_addl// sume_ge0.
+  rewrite (fsetIidPr _).
+    rewrite fsbig_finite// lee_addl// big_seq sume_ge0//=.
+    move=> [x y] /imfsetP[[x1 y1]] /[!inE] /andP[] /imfset2P[x2]/= /[!inE].
+    rewrite andbT in_fset_set//; last exact: finite_set_fst.
+    move=> /[!inE] x2X [y2] /[!inE] /andP[] /[!in_fset_set]; last first.
+      exact: finite_set_snd.
+    move=> /[!inE] y2X y2J [-> ->] _ [-> ->]; rewrite a_ge0//.
+    by move: x2X => [y3 /XIJ []].
   apply/fsubsetP => -[i j]; rewrite in_fset_set// inE => Xij; apply/imfset2P.
   exists i => /=.
     rewrite !inE/= in_fset_set//; last exact: finite_set_fst.
@@ -334,7 +339,7 @@ exists [set` (e^-1 @` (fset_set X))%fset].
 rewrite fsbig_finite//= set_fsetK big_imfset => //=; last first.
   move=> x y; rewrite !in_fset_set// !inE => /XQ ? /XQ ? /(congr1 e).
   by rewrite !invK ?inE.
-by rewrite -fsbig_finite//; apply eq_fsbigr=> x /[!inE]/XQ ?; rewrite invK ?inE.
+by rewrite -fsbig_finite//; apply: eq_fsbigr=> x /[!inE]/XQ ?; rewrite invK ?inE.
 Qed.
 Arguments reindex_esum {R T T'} P Q e a.
 

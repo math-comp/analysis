@@ -1597,10 +1597,9 @@ Context d (T : measurableType d) (R : realType).
 Lemma finite_card_dirac (A : set T) : finite_set A ->
   \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
 Proof.
-move=> finA.
-rewrite esum_fset// fsbig_finite// big_seq_cond (eq_bigr (fun=> 1)) -?big_seq_cond.
-  by rewrite card_fset_sum1// natr_sum -sumEFin.
-by move=> i; rewrite andbT in_fset_set//= /dirac indicE => ->.
+move=> finA; rewrite esum_fset// (eq_fsbigr (cst 1))//.
+  by rewrite card_fset_sum1// natr_sum -sumEFin fsbig_finite.
+by move=> i iA; rewrite diracE iA.
 Qed.
 
 Lemma infinite_card_dirac (A : set T) : infinite_set A ->
@@ -1611,10 +1610,9 @@ have [B BA Br] := infinite_set_fset `|ceil r| infA.
 apply: esum_ge; exists [set` B] => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
   by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
-rewrite fsbig_finite// big_seq (eq_bigr (cst 1))/=; last first.
-  move=> i; rewrite in_fset_set// inE/= => Bi; rewrite diracE mem_set//.
-  exact: BA.
-by rewrite -big_seq card_fset_sum1 sumEFin natr_sum// set_fsetK.
+rewrite (eq_fsbigr (cst 1))/=; last first.
+  by move=> i /[!inE] /BA /mem_set iA; rewrite diracE iA.
+by rewrite fsbig_finite//= card_fset_sum1 sumEFin natr_sum// set_fsetK.
 Qed.
 
 End dirac_lemmas.
@@ -2312,7 +2310,7 @@ Import SetRing.
 Lemma ring_sigma_sub_additive : sigma_sub_additive mu -> sigma_sub_additive Rmu.
 Proof.
 move=> muS; move=> /= D A Am Dm Dsub.
-rewrite /Rmu (eq_eseries (fun _ _ => fsbig_esum _ _))//; last first.
+rewrite /Rmu -(eq_eseries (fun _ _ => esum_fset _ _))//; last first.
   by move=> *; exact: decomp_finite_set.
 rewrite nneseries_esum ?esum_esum//=; last by move=> *; rewrite esum_ge0.
 set K := _ `*`` _.
@@ -2441,7 +2439,7 @@ rewrite esum_bigcup//; last first.
    by split => //; [exact: YBi|exact: YBj].
 rewrite nneseries_esum// set_true le_esum// => i _.
 rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j); last first.
-  by rewrite fsbig_esum//; exact: decomp_finite_set.
+  by rewrite esum_fset//; exact: decomp_finite_set.
 rewrite -SetRing.Rmu_fin_bigcup//=; last 3 first.
   exact: decomp_finite_set.
   exact: decomp_triv.
@@ -3331,7 +3329,7 @@ pose g i := (f^-1%FUN i).2; exists g; first split.
 rewrite !nneseries_esum//= /measure ?set_true.
 transitivity (\esum_(i in setT) \sum_(X0 \in decomp (F i)) mu X0); last first.
   by apply: eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
-rewrite (eq_esum (fun _ _ => fsbig_esum _ _))//; last first.
+rewrite -(eq_esum (fun _ _ => esum_fset _ _))//; last first.
   by move=> ? _; exact: decomp_finite_set.
 rewrite esum_esum//= (reindex_esum K setT f) => //=.
 by apply: eq_esum => i Ki; rewrite /g funK ?inE.
