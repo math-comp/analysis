@@ -2445,6 +2445,14 @@ move=> trivF i j Di Dj Ffij; apply: finj; rewrite ?in_setE//.
 by apply: trivF => //=; [exists i| exists j].
 Qed.
 
+Lemma trivIset_preimage1 {aT rT} D (f : aT -> rT) :
+  trivIset D (fun x => f @^-1` [set x]).
+Proof. by move=> y z _ _ [x [<- <-]]. Qed.
+
+Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
+  (f : aT -> rT) : trivIset D (fun x => A `&` f @^-1` [set x]).
+Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
+
 Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.
 
 Lemma cover_restr T I D' D (F : I -> set T) :

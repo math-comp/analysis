@@ -37,6 +37,19 @@
 
 - in `fsbigop.v`:
   + implicits of `eq_fsbigr`
+- move from `lebesgue_integral.v` to `classical_sets.v`
+  + lemmas `trivIset_preimage1`, `trivIset_preimage1_in`
+- move from `lebesgue_integral.v` to `numfun.v`
+  + lemmas `fimfunE`, `fimfunEord`, factory `FiniteDecomp`
+  + lemmas `fimfun_mulr_closed`
+  + canonicals `fimfun_mul`, `fimfun_ring`, `fimfun_ringType`
+  + defintion `fimfun_ringMixin`
+  + lemmas `fimfunM`, `fimfun1`, `fimfun_prod`, `fimfunX`,
+    `indic_fimfun_subproof`.
+  + definitions `indic_fimfun`, `scale_fimfun`, `fimfun_comRingMixin`
+  + canonical `fimfun_comRingType`
+  + lemma `max_fimfun_subproof`
+  + mixin `IsNonNegFun`, structure `NonNegFun`, notation `{nnfun _ >-> _}`
 
 ### Renamed
 
@@ -62,3 +75,5 @@
 ### Infrastructure
 
 ### Misc
+
+
