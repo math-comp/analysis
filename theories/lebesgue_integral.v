@@ -2222,8 +2222,8 @@ Lemma integral_ge0N (D : set T) (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x) ->
   \int[mu]_(x in D) - f x = - \int[mu]_(x in D) f x.
 Proof.
-move=> f0; rewrite integralN// (eq_integral _ _ (ge0_funenegE _))// integral0.
-by rewrite oppe0 fin_num_adde_def.
+move=> f0; rewrite integralN // (eq_integral _ _ (ge0_funenegE _))// integral0.
+by rewrite oppe0 fin_num_adde_defl.
 Qed.
 
 End integralN.
@@ -3097,12 +3097,11 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
         exact: integral_funepos_lt_pinfty.
       apply: adde_ge0; last exact: integral_ge0.
       by apply: adde_ge0; exact: integral_ge0.
-    - by rewrite adde_defC fin_num_adde_def.
+    - by rewrite fin_num_adde_defr.
   rewrite -(addeA (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
   rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
   rewrite -addeA (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
-  rewrite eq_sym -(sube_eq g12pos); last by rewrite fin_num_adde_def.
-  move/eqP => <-.
+  rewrite eq_sym -(sube_eq g12pos) ?fin_num_adde_defl// => /eqP <-.
   rewrite oppeD; last first.
     rewrite ge0_fin_numE; first exact: integral_funeneg_lt_pinfty if2.
     exact: integral_ge0.
@@ -3726,7 +3725,7 @@ Lemma integral_fune_fin_num (f : T -> \bar R) :
 Proof.
 move=> h; apply/fin_numPlt; rewrite integral_fune_lt_pinfty// andbC/= -/(- +oo).
 rewrite lte_oppl -integralN; first exact/integral_fune_lt_pinfty/integrableN.
-by rewrite fin_num_adde_def// fin_numN integrable_neg_fin_num.
+by rewrite fin_num_adde_defl// fin_numN integrable_neg_fin_num.
 Qed.
 
 End integrable_fune.

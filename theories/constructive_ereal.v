@@ -621,8 +621,17 @@ Local Notation "x +? y" := (adde_def x y).
 Lemma adde_defC x y : x +? y = y +? x.
 Proof. by rewrite /adde_def andbC (andbC (x == -oo)) (andbC (x == +oo)). Qed.
 
-Lemma adde_defNN x y : - x +? - y = x +? y.
+Lemma fin_num_adde_defr x y : x \is a fin_num -> x +? y.
+Proof. by move: x y => [x| |] [y | |]. Qed.
+
+Lemma fin_num_adde_defl x y : y \is a fin_num -> x +? y.
+Proof. by rewrite adde_defC; exact: fin_num_adde_defr. Qed.
+
+Lemma adde_defN x y : x +? - y = - x +? y.
 Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma adde_defD x y z : x +? y -> x +? z -> x +? (y + z).
+Proof. by move: x y z => [x||] [y||] [z||]. Qed.
 
 Lemma adde_defEninfty x : (x +? -oo) = (x != +oo).
 Proof. by case: x. Qed.
@@ -644,6 +653,15 @@ Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
 
 Canonical adde_monoid := Monoid.Law addeA add0e adde0.
 Canonical adde_comoid := Monoid.ComLaw addeC.
+
+Lemma adde_def_sum (I : eqType) h t (P : pred I) (f : I -> \bar R) :
+    {in h :: t &, forall i j : I, f i +? f j} ->
+  f h +? \sum_(j <- t | P j) f j.
+Proof.
+move=> htf; rewrite big_mkcond big_seq -big_mkcondr.
+elim/big_rec : _ => [|i x /andP[it Pi] fhx/=]; first by rewrite adde_defC.
+by rewrite adde_defD// htf// ?mem_head// inE it orbT.
+Qed.
 
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
 Proof. exact: Monoid.mulmAC. Qed.
@@ -683,11 +701,17 @@ Proof. by case=> [x||] //=; rewrite opprK. Qed.
 Lemma oppe_inj : @injective (\bar R) _ -%E.
 Proof. exact: inv_inj oppeK. Qed.
 
+Lemma adde_defNN x y : - x +? - y = x +? y.
+Proof. by rewrite adde_defN oppeK. Qed.
+
 Lemma oppe_eq0 x : (- x == 0)%E = (x == 0)%E.
 Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
 
-Lemma oppeD x y : y \is a fin_num -> - (x + y) = - x - y.
+Lemma adde_def_oppeD x y : x +? y -> - (x + y) = - x - y.
 Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
+
+Lemma oppeD x y : y \is a fin_num -> - (x + y) = - x - y.
+Proof. by move=> finy; rewrite adde_def_oppeD// fin_num_adde_defl. Qed.
 
 Lemma sube0 x : x - 0 = x.
 Proof. by move: x => [x| |] //; rewrite -EFinB subr0. Qed.
@@ -786,8 +810,11 @@ Qed.
 Lemma fin_numN x : (- x \is a fin_num) = (x \is a fin_num).
 Proof. by rewrite !fin_num_abs abseN. Qed.
 
+Lemma adde_def_oppeB x y : x +? - y -> - (x - y) = - x + y.
+Proof. by move=> xy; rewrite adde_def_oppeD// oppeK. Qed.
+
 Lemma oppeB x y : y \is a fin_num -> - (x - y) = - x + y.
-Proof. by move=> yfin; rewrite oppeD ?oppeK// fin_numN. Qed.
+Proof. by move=> ?; rewrite adde_def_oppeB// adde_defN fin_num_adde_defl. Qed.
 
 Lemma fin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).
@@ -829,20 +856,38 @@ Proof. by move=> [r| |] [s| |]. Qed.
 Lemma fineM : {in @fin_num R &, {morph fine : x y / x * y >-> (x * y)%R}}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
-Lemma fin_num_adde_def x y : y \is a fin_num -> x +? y.
-Proof. by move: x y => [x| |] [y | |]. Qed.
-
 Lemma fineK x : x \is a fin_num -> (fine x)%:E = x.
 Proof. by case: x. Qed.
 
-Lemma sum_fine (I : Type) s (P : pred I) (F : I -> \bar R) :
-  (forall i, P i -> F i \is a fin_num) ->
-  (\sum_(i <- s | P i) fine (F i) = fine (\sum_(i <- s | P i) F i))%R.
+Lemma EFin_sum_fine (I : Type) s (P : pred I) (f : I -> \bar R) :
+    (forall i, P i -> f i \is a fin_num) ->
+  (\sum_(i <- s | P i) fine (f i))%:E = \sum_(i <- s | P i) f i.
 Proof.
-move=> h; apply: EFin_inj; rewrite -sumEFin fineK.
-  by apply eq_bigr => ? ?; rewrite fineK// h.
-rewrite sum_fin_num; apply/allP => x; elim: s => //= a b ih.
-by case: ifPn => // /h ? /[!inE] /predU1P[->//|]; exact: ih.
+by move=> h; rewrite -sumEFin; apply: eq_bigr => i Pi; rewrite fineK// h.
+Qed.
+
+Lemma sum_fine (I : Type) s (P : pred I) (F : I -> \bar R) :
+    (forall i, P i -> F i \is a fin_num) ->
+  (\sum_(i <- s | P i) fine (F i) = fine (\sum_(i <- s | P i) F i))%R.
+Proof. by move=> h; rewrite -EFin_sum_fine. Qed.
+
+Lemma adde_def_sumeN (I : eqType) s (P : pred I) (f : I -> \bar R) :
+    {in s &, forall i j, f i +? f j} ->
+  \sum_(i <- s | P i) - f i = - \sum_(i <- s | P i) f i.
+Proof.
+elim: s => [|a b ih h]; first by rewrite !big_nil oppe0.
+rewrite !big_cons; case: ifPn => Pa.
+- rewrite adde_def_oppeD ?adde_def_sum// ih// => i j ib jb.
+  by rewrite h// inE? ib ?jb orbT.
+- by rewrite ih// => i j ib jb; rewrite h// inE ?ib ?jb orbT.
+Qed.
+
+Lemma sumeN I s (P : pred I) (f : I -> \bar R) :
+    (forall i, P i -> f i \is a fin_num) ->
+  \sum_(i <- s | P i) - f i = - \sum_(i <- s | P i) f i.
+Proof.
+move=> h; rewrite -EFin_sum_fine//; last by move=> i Pi; rewrite fin_numN h.
+by under eq_bigr do rewrite fineN; rewrite sumrN EFinN EFin_sum_fine.
 Qed.
 
 Lemma telescope_sume n m (f : nat -> \bar R) :
@@ -1157,7 +1202,7 @@ Proof. by []. Qed.
 
 Lemma dsumEFin I r P (F : I -> R) :
   \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
-Proof. by rewrite dual_sumeE sumEFin sumrN EFinN oppeK. Qed.
+Proof. by rewrite dual_sumeE sumeN// oppeK sumEFin. Qed.
 
 Lemma daddeC : commutative (S := \bar R) +%dE.
 Proof. by move=> x y; rewrite !dual_addeE addeC. Qed.
@@ -1186,8 +1231,11 @@ Proof. exact: Monoid.mulmACA. Qed.
 Lemma realDed x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x + y)%O.
 Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
 
+Lemma adde_def_doppeD x y : x +? y -> - (x + y) = - x - y.
+Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
+
 Lemma doppeD x y : y \is a fin_num -> - (x + y) = - x - y.
-Proof. by move: y => [y| |] _ //; rewrite !dual_addeE !oppeK oppeD. Qed.
+Proof. by move=> finy; rewrite adde_def_doppeD// fin_num_adde_defl. Qed.
 
 Lemma dsube0 x : x - 0 = x.
 Proof. by move: x => [x| |] //; rewrite -dEFinB subr0. Qed.
@@ -1195,8 +1243,11 @@ Proof. by move: x => [x| |] //; rewrite -dEFinB subr0. Qed.
 Lemma dsub0e x : 0 - x = - x.
 Proof. by move: x => [x| |] //; rewrite -dEFinB sub0r. Qed.
 
+Lemma adde_def_doppeB x y : x +? - y -> - (x - y) = - x + y.
+Proof. by move=> xy; rewrite adde_def_doppeD// oppeK. Qed.
+
 Lemma doppeB x y : y \is a fin_num -> - (x - y) = - x + y.
-Proof. by move=> yfin; rewrite doppeD ?oppeK// fin_numN. Qed.
+Proof. by move=> ?; rewrite adde_def_doppeB// fin_num_adde_defl// fin_numN. Qed.
 
 Lemma dfin_numD x y :
   (x + y \is a fin_num) = (x \is a fin_num) && (y \is a fin_num).

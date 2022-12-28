@@ -635,14 +635,14 @@ rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.
     move: Dg; rewrite summableE (@eq_esum _ _ _ _ g)//.
       by rewrite ge0_esum_posneg// => t Tt; rewrite gee0_abs// g0.
     by move=> t Tt; rewrite gee0_abs// g0.
-  - rewrite adde_defC fin_num_adde_def// ge0_esum_posneg//.
+  - rewrite fin_num_adde_defr// ge0_esum_posneg//.
     rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
     by rewrite /= gee0_abs// f0.
 rewrite -addeA addeCA eq_sym [X in _ == X -> _]addeC -sube_eq; last 2 first.
   - rewrite ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
     by rewrite /= gee0_abs// f0.
-  - rewrite fin_num_adde_def//.
-    rewrite ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
+  - rewrite fin_num_adde_defl// ge0_esum_posneg//.
+    rewrite (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
     by rewrite /= gee0_abs// g0.
 by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
 Qed.

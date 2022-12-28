@@ -16,6 +16,10 @@
 - in file `topology.v`,
   + new definition `perfect_set`.
   + new lemmas `perfectTP`, `perfect_prod`, and `perfect_diagonal`.
+- in `constructive_ereal.v`:
+  + lemmas `EFin_sum_fine`, `sumeN`
+  + lemmas `adde_defD`, `adde_def_sum`, `adde_def_oppD`, `adde_def_sumeN`
+  + lemma `fin_num_adde_defr`, `adde_def_oppeB`, `adde_defN`
 
 - in `constructive_ereal.v`:
   + lemma `oppe_inj`
@@ -56,6 +60,9 @@
   + lemma `countable_bijP`
   + lemma `patchE`
 
+- in `constructive_ereal.v`:
+  + lemmas `adde_def_doppeD`, `adde_def_doppeB`
+
 ### Changed
 
 - in `fsbigop.v`:
@@ -92,6 +99,8 @@
   + `SigmaFiniteAdditiveMeasure` -> `SigmaFiniteContent`
   + `sigma_finite_additive_measure` -> `sigma_finite_content`
   + `{sigma_finite_additive_measure _ -> _}` -> `{sigma_finite_content _ -> _}`
+- in `constructive_ereal.v`:
+  + `fin_num_adde_def` -> `fin_num_adde_defl`
 
 ### Generalized
 

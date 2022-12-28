@@ -890,8 +890,7 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
   rewrite lebesgue_measure_itvoo_subr1 lebesgue_measure_itvoc => /eqP.
   rewrite hlength_itv lte_fin ltr_subl_addr ltr_addl ltr01.
   rewrite [in X in X == _]/= EFinN EFinB oppeB// addeA subee// add0e.
-  rewrite addeC -sube_eq//; last by rewrite fin_num_adde_def.
-  by rewrite subee// => /eqP.
+  by rewrite addeC -sube_eq ?fin_num_adde_defl// subee// => /eqP.
 rewrite -setUitv1// ?bnd_simp; last by rewrite ltr_subl_addr ltr_addl.
 rewrite measureU//; first exact: measurable_itv.
 apply/seteqP; split => // x []/=; rewrite in_itv/= => + xa.

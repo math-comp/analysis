@@ -2397,10 +2397,8 @@ Lemma lim_einf_shift u l : l \is a fin_num ->
   lim_einf (fun x => l + u x) = l + lim_einf u.
 Proof.
 move=> lfin; apply/cvg_lim => //; apply: cvg_trans; last first.
-  apply: (@cvgeD _ \oo _ _ (cst l) (einfs u) _ (lim (einfs u))).
-  - by rewrite adde_defC fin_num_adde_def.
-  - exact: cvg_cst.
-  - exact: is_cvg_einfs.
+  by apply: (@cvgeD _ \oo _ _ (cst l) (einfs u) _ (lim (einfs u)));
+    [exact: fin_num_adde_defr|exact: cvg_cst|exact: is_cvg_einfs].
 suff : einfs (fun n => l + u n) = (fun n => l + einfs u n) by move=> ->.
 rewrite funeqE => n.
 apply/eqP; rewrite eq_le; apply/andP; split.
