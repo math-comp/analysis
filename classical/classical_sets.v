@@ -2159,6 +2159,7 @@ Definition dep_arrow_pointedType (T : Type) (T' : T -> pointedType) :=
   Pointed.Pack
    (Pointed.Class (dep_arrow_choiceClass T') (fun i => @point (T' i))).
 
+Canonical unit_pointedType := PointedType unit tt.
 Canonical bool_pointedType := PointedType bool false.
 Canonical Prop_pointedType := PointedType Prop False.
 Canonical nat_pointedType := PointedType nat 0.

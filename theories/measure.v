@@ -60,6 +60,8 @@ From HB Require Import structures.
 (*                            of measurableType                               *)
 (*  G.-sigma.-measurable A == A is measurable for the sigma-algebra <<s G >>  *)
 (*                                                                            *)
+(* discrete_measurable_unit == the measurableType corresponding to            *)
+(*                             [set: set unit]                                *)
 (* discrete_measurable_bool == the measurableType corresponding to            *)
 (*                             [set: set bool]                                *)
 (*  discrete_measurable_nat == the measurableType corresponding to            *)
@@ -85,6 +87,7 @@ From HB Require Import structures.
 (*                   the proof that it is semi_sigma_additive                 *)
 (*     isMeasure == factory corresponding to the type of measures             *)
 (*     Measure == structure corresponding to measures                         *)
+(*     finite_measure mu == the measure mu is finite                          *)
 (*                                                                            *)
 (*  pushforward mf m == pushforward/image measure of m by f, where mf is a    *)
 (*                      proof that f is measurable                            *)
@@ -148,6 +151,9 @@ From HB Require Import structures.
 (*   (d1, d2).-prod.-measurable A == A is measurable for the sigma-algebra    *)
 (*                             generated from T1 x T2, with T1 and T2         *)
 (*                             measurableType's with resp. display d1 and d2  *)
+(*                                                                            *)
+(*      probability T R == probability measure over the measurableType T with *)
+(*                         value in R : realType                              *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -862,6 +868,27 @@ move=> Fm; have /ppcard_eqP[f] := card_rat.
 by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
 Qed.
 
+Section discrete_measurable_unit.
+
+Definition discrete_measurable_unit : set (set unit) := [set: set unit].
+
+Let discrete_measurable0 : discrete_measurable_unit set0. Proof. by []. Qed.
+
+Let discrete_measurableC X :
+  discrete_measurable_unit X -> discrete_measurable_unit (~` X).
+Proof. by []. Qed.
+
+Let discrete_measurableU (F : (set unit)^nat) :
+  (forall i, discrete_measurable_unit (F i)) ->
+  discrete_measurable_unit (\bigcup_i F i).
+Proof. by []. Qed.
+
+HB.instance Definition _ := @isMeasurable.Build default_measure_display unit
+  (Pointed.class _) discrete_measurable_unit discrete_measurable0
+  discrete_measurableC discrete_measurableU.
+
+End discrete_measurable_unit.
+
 Section discrete_measurable_bool.
 
 Definition discrete_measurable_bool : set (set bool) := [set: set bool].
@@ -1519,6 +1546,10 @@ Arguments measure_bigcup {d R T} mu A.
 #[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
+
+Definition finite_measure d (T : measurableType d) (R : realType)
+    (mu : set T -> \bar R) :=
+  mu setT < +oo.
 
 Section pushforward_measure.
 Local Open Scope ereal_scope.
@@ -3636,3 +3667,22 @@ exact: measurable_fun_comp.
 Qed.
 
 End partial_measurable_fun.
+
+HB.mixin Record isProbability d (T : measurableType d)
+  (R : realType) (P : set T -> \bar R) of isMeasure d R T P :=
+  { probability_setT : P setT = 1%E }.
+
+#[short(type=probability)]
+HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
+  {P of isProbability d T R P & isMeasure d R T P }.
+
+Section probability_lemmas.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
+Proof.
+move=> mA; rewrite -(@probability_setT _ _ _ P).
+by apply: le_measure => //; rewrite ?in_setE.
+Qed.
+
+End probability_lemmas.
