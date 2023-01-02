@@ -6759,30 +6759,30 @@ suff : continuous (join_product : weakT -> PU).
   by move=> cts x U => /cts; rewrite nbhs_simpl /= -weak_sep_nbhsE.
 move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : weakT)).
 move=> i; move: x; apply/(@continuousP _ (weak_topologicalType _)) => A [B ? E].
-rewrite -E (_ : @^~ i = prod_topo_apply i) //.
-have -> : join_product @^-1` (prod_topo_apply i @^-1` B) = f_ i @^-1` B by [].
+rewrite -E (_ : @^~ i =  proj i) //.
+have -> : join_product @^-1` (proj i @^-1` B) = f_ i @^-1` B by [].
 apply: open_comp => // + _; rewrite /cvg_to => x U.
 by rewrite nbhs_simpl /= -weak_sep_nbhsE; move: x U; exact: ctsf.
 Qed.
 
-Local Notation prod_open := (@open (subspace_topologicalType (range join_product))).
+Local Notation prod_open := 
+  (@open (subspace_topologicalType (range join_product))).
 
 Lemma join_product_open (A : set T) : open A ->
   open ((join_product @` A) : set (subspace (range join_product))).
 Proof.
 move=> oA; rewrite openE => y /= [x Ax] jxy.
 have [// | i nAfiy] := @sepf (~` A) x (open_closedC oA).
-pose B := prod_topo_apply i @^-1` (~` closure (f_ i @` ~` A)).
+pose B : set PU := proj i @^-1` (~` closure (f_ i @` ~` A)).
 apply: (@filterS _ _ _ (range join_product `&` B)).
   move=> z [[w ?]] wzE Bz; exists w => //.
   move: Bz; rewrite /B -wzE closureC; case=> K [oK KsubA] /KsubA.
-  have -> : prod_topo_apply i (join_product w) = f_ i w by [].
+  have -> : proj i (join_product w) = f_ i w by [].
   by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
 apply: open_nbhs_nbhs; split; last by rewrite -jxy.
 apply: openI; first exact: open_subspaceT.
-apply: open_subspaceW; apply: open_comp.
- by move=> + _; exact: prod_topo_apply_continuous.
-exact/closed_openC/closed_closure.
+apply: open_subspaceW; apply: open_comp; last exact/closed_openC/closed_closure.
+by move=> + _; exact: proj_continuous.
 Qed.
 
 Lemma join_product_inj : accessible_space T -> set_inj [set: T] join_product.
