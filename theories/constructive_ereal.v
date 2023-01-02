@@ -680,6 +680,9 @@ Proof. by rewrite /= oppr0. Qed.
 Lemma oppeK : involutive (A := \bar R) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
+Lemma oppe_inj : @injective (\bar R) _ -%E.
+Proof. exact: inv_inj oppeK. Qed.
+
 Lemma oppe_eq0 x : (- x == 0)%E = (x == 0)%E.
 Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
 

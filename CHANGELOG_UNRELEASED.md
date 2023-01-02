@@ -12,6 +12,9 @@
   + lemma `probability_le1`
   + definition `discrete_measurable_unit`
 
+- in `constructive_ereal.v`:
+  + lemma `oppe_inj`
+
 ### Changed
 
 - in `fsbigop.v`:
