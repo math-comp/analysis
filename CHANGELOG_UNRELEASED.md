@@ -4,47 +4,6 @@
 
 ### Added
 
-- in `topology.v`:
-  + lemmas `continuous_subspaceT`, `subspaceT_continuous`
-- in `constructive_ereal.v`
-  + lemmas `fine_le`, `fine_lt`, `fine_abse`, `abse_fin_num`
-- in `lebesgue_integral.v`
-  + lemmas `integral_fune_lt_pinfty`, `integral_fune_fin_num`
-- in `topology.v`
-  + lemma `weak_subspace_open`
-  + lemma `weak_ent_filter`, `weak_ent_refl`, `weak_ent_inv`, `weak_ent_split`,
-      `weak_ent_nbhs`
-  + definition `map_pair`, `weak_ent`, `weak_uniform_mixin`, `weak_uniformType`
-  + lemma `sup_ent_filter`, `sup_ent_refl`, `sup_ent_inv`, `sup_ent_split`,
-      `sup_ent_nbhs`
-  + definition `sup_ent`, `sup_uniform_mixin`, `sup_uniformType`
-  + definition `product_uniformType`
-  + lemma `uniform_entourage`
-  + definition `weak_ball`, `weak_pseudoMetricType`
-  + lemma `weak_ballE`
-  + lemma `finI_from_countable`
-  + definition `countable_uniformity`
-  + lemmas `countable_uniformityP`, `countable_sup_ent`,
-     `countable_uniformity_metric`
-- in `cardinality.v`
-  + lemmas `eq_card1`, `card_set1`, `card_eqSP`, `countable_n_subset`,
-     `countable_finite_subset`, `eq_card_fset_subset`, `fset_subset_countable`
-- in `classical_sets.v`
-  + lemmas `IIDn`, `IISl`
-- in `mathcomp_extra.v`
-  + lemma `lez_abs2n`
-- in `constructive_ereal.v`:
-  + lemmas `gte_addl`, `gte_addr`
-  + lemmas `gte_daddl`, `gte_daddr`
-  + lemma `lte_spadder`, `lte_spaddre`
-  + lemma `lte_spdadder`
-- in `constructive_ereal.v`:
-  + lemma `sum_fine`
-- in `topology.v`
-  + lemmas `entourage_invI`, `split_ent_subset`
-  + definition `countable_uniform_pseudoMetricType_mixin`
-- in `reals.v`:
-  + lemma `floor0`
 - in `classical_sets.v`:
   + canonical `unit_pointedType`
 - in `measure.v`:
@@ -225,12 +184,11 @@
 - in file `sequences.v`,
   + new lemma `nneseries_pinfty`.
 - in file `topology.v`,
-  + new lemmas `eq_cvg`, `eq_is_cvg`, `eq_near`, `cvg_toP`, `cvgNpoint`,
-    `filter_imply`, `nbhs_filter`, `near_fun`, `cvgnyPgt`, `cvgnyPgty`,
-    `cvgnyPgey`, `fcvg_ballP`, `fcvg_ball`, and `fcvg_ball2P`.
-- in `topology.v`, added `near do` and `near=> x do` tactic notations
-  to perform some tactics under a `\forall x \near F, ...` quantification.
-- in `normedtype.v`, added notations `^'+`, `^'-`, `+oo_R`, `-oo_R`
+  + new definitions `countable_uniformity`, `countable_uniformityT`, 
+    `sup_pseudoMetric_mixin`, `sup_pseudoMetricType`, and 
+    `product_pseudoMetricType`.
+  + new lemmas `countable_uniformityP`, `countable_sup_ent`, and 
+    `countable_uniformity_metric`.
 
 - in `constructive_ereal.v`:
   + lemmas `adde_def_doppeD`, `adde_def_doppeB`
