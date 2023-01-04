@@ -680,6 +680,9 @@ Proof. by rewrite /= oppr0. Qed.
 Lemma oppeK : involutive (A := \bar R) -%E.
 Proof. by case=> [x||] //=; rewrite opprK. Qed.
 
+Lemma oppe_inj : @injective (\bar R) _ -%E.
+Proof. exact: inv_inj oppeK. Qed.
+
 Lemma oppe_eq0 x : (- x == 0)%E = (x == 0)%E.
 Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
 
@@ -1962,53 +1965,20 @@ Qed.
 
 Lemma muleA : associative ( *%E : \bar R -> \bar R -> \bar R ).
 Proof.
-move=> [x||] [y||] [z||] //;
-  rewrite /mule/mule_subdef/= ?(ltry, eqe, lte_fin, mulrA)//=.
-- case: ltrgtP => [y0|y0|<-{y}]; last by rewrite mulr0 eqxx.
-    case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
-      by rewrite gt_eqF mulr_gt0.
-    by rewrite lt_eqF ?nmulr_rlt0// nmulr_rgt0// ltNge (ltW y0).
-  case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
-    by rewrite lt_eqF ?nmulr_llt0// nmulr_lgt0// ltNge (ltW x0).
-  by rewrite gt_eqF ?nmulr_rgt0// y0.
-- case: ltrgtP => [y0|y0|<-{y}]; last by rewrite mulr0 eqxx.
-    case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
-      by rewrite gt_eqF mulr_gt0.
-    by rewrite lt_eqF ?nmulr_rlt0// nmulr_rgt0// ltNge (ltW y0).
-  case: ltrgtP => [x0|x0|<-{x}]; last by rewrite mul0r eqxx.
-    by rewrite lt_eqF ?nmulr_llt0// nmulr_lgt0// ltNge (ltW x0).
-  by rewrite gt_eqF ?nmulr_rgt0// y0.
-- case: ltrgtP => [z0|z0|<-{z}]; try
-    by case: ltrgtP => [x0|x0|_] //; rewrite mul0r.
-  by case: ltrgtP; rewrite !mulr0.
-- by case: ltrgtP => //=; rewrite ?ltry// eqxx.
-- by case: ltrgtP => /=; rewrite ?ltry// eqxx.
-- case: ltrgtP => //= [z0|z0|<-{z}]; try by case: ltrgtP => //=; rewrite mul0r.
-  by case: ltrgtP; rewrite !mulr0.
-- by case: ltrgtP => //=; rewrite eqxx.
-- by case: ltrgtP => //=; rewrite ?ltry ?eqxx.
-- case: (ltrgtP 0 y) => [y0/=|y0/=|<-{y}]; last by rewrite mul0r eqxx.
-    case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
-      by rewrite (negbTE (mulf_neq0 _ _)) ?gt_eqF // mulr_gt0// lte_fin z0.
-    by rewrite lt_eqF ?nmulr_llt0// ltNge nmulr_lle0// (ltW y0).
-  case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
-    by rewrite lt_eqF ?nmulr_rlt0// ltNge nmulr_rle0// (ltW z0).
-  by rewrite gt_eqF nmulr_lgt0// y0.
-- by case: ltrgtP => //=; rewrite ltry.
-- by case: ltrgtP; rewrite /= ?ltry// eqxx.
-- by case: ltrgtP; rewrite /= ?ltry// eqxx.
-- by case: ltrgtP; rewrite /= ?ltry// eqxx.
-- case: (ltrgtP 0 y) => [y0/=|y0/=|<-{y}]; last by rewrite mul0r eqxx.
-    case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
-      by rewrite (negbTE (mulf_neq0 _ _)) ?gt_eqF // mulr_gt0// lte_fin z0.
-    by rewrite lt_eqF ?nmulr_llt0// ltNge nmulr_lle0// (ltW y0).
-  case: (ltrgtP 0 z) => [z0/=|z0|<-{z}]; last by rewrite mulr0 eqxx.
-    by rewrite lt_eqF ?nmulr_rlt0// ltNge nmulr_rle0// (ltW z0).
-  by rewrite gt_eqF nmulr_lgt0// y0.
-- by case: ltrgtP; rewrite ?eqxx// ?mul0e//= ltry.
-- by case: ltrgtP.
-- by case: ltrgtP => //= [z0|z0]; rewrite ?eqxx// ltry.
-- by case: ltrgtP; rewrite ?eqxx// ltry.
+move=> x y z.
+wlog x0 : x y z / 0 < x => [hwlog|].
+  have [x0| |->] := ltgtP x 0; [ |exact: hwlog|by rewrite !mul0e].
+  by apply: oppe_inj; rewrite -!mulNe hwlog ?oppe_gt0.
+wlog y0 : x y z x0 / 0 < y => [hwlog|].
+  have [y0| |->] := ltgtP y 0; [ |exact: hwlog|by rewrite !(mul0e, mule0)].
+  by apply: oppe_inj; rewrite -muleN -2!mulNe -muleN hwlog ?oppe_gt0.
+wlog z0 : x y z x0 y0 / 0 < z => [hwlog|].
+  have [z0| |->] := ltgtP z 0; [ |exact: hwlog|by rewrite !mule0].
+  by apply: oppe_inj; rewrite -!muleN hwlog ?oppe_gt0.
+case: x x0 => [x x0| |//]; last by rewrite !gt0_mulye ?mule_gt0.
+case: y y0 => [y y0| |//]; last by rewrite gt0_mulye // muleC !gt0_mulye.
+case: z z0 => [z z0| |//]; last by rewrite !gt0_muley ?mule_gt0.
+by rewrite /mule/= mulrA.
 Qed.
 
 Local Open Scope ereal_scope.
