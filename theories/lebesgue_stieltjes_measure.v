@@ -5,7 +5,7 @@ From mathcomp Require Import finmap fingroup perm rat.
 Require Import boolp reals ereal classical_sets signed topology numfun.
 Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
-Require Import sequences esum measure fsbigop cardinality set_interval.
+Require Import sequences esum measure fsbigop cardinality real_interval.
 Require Import realfun.
 
 (******************************************************************************)
@@ -49,7 +49,7 @@ Lemma nondecreasing_right_continuousP (R : numFieldType) (a : R) (e : R)
   e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
 Proof.
 move=> e0; move: (cumulative_is_right_continuous f).
-move=> /(_ a)/(@cvg_dist _ [normedModType R of R^o]).
+move=> /(_ a)/(@cvgr_dist_lt _ [normedModType R of R^o]).
 move=> /(_ _ e0)[] _ /posnumP[d] => h.
 exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
@@ -132,7 +132,7 @@ Lemma hlength_finite_fin_num i : neitv i -> hlength [set` i] < +oo ->
   ((i.1 : \bar R) \is a fin_num) /\ ((i.2 : \bar R) \is a fin_num).
 Proof.
 move: i => [[ba a|[]] [bb b|[]]] /neitvP //=; do ?by rewrite ?set_itvE ?eqxx.
-by move=> _; rewrite hlength_itv /= ltey.
+by move=> _; rewrite hlength_itv /= ltry.
 by move=> _; rewrite hlength_itv /= ltNye.
 by move=> _; rewrite hlength_itv.
 Qed.
@@ -150,7 +150,7 @@ rewrite hlength_itv; case: ifPn => //; rewrite -leNgt le_eqVlt => /predU1P[->|].
 by move/lt_ereal_bnd/ltW; rewrite leNgt; move: i0 => /neitvP => ->.
 Qed.
 
-Lemma hlength_itv_bnd (a b : R) (x y : bool): (a <= b)%R ->
+Lemma hlength_itv_bnd (a b : R) (x y : bool) : (a <= b)%R ->
   hlength [set` Interval (BSide x a) (BSide y b)] = (f b - f a)%:E.
 Proof.
 move=> ab; rewrite hlength_itv/= lte_fin lt_neqAle ab andbT.
@@ -357,7 +357,7 @@ Hint Extern 0 (measurable _) => solve [apply: is_ocitv] : core.
 Lemma hlength_sigma_finite (f : R -> R) :
   sigma_finite [set: ocitv_type] (hlength f).
 Proof.
-exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
+exists (fun k => `](- k%:R), k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
   exists `|(floor `|x|%R + 1)%R|%N; rewrite //= in_itv/=.
   rewrite !natr_absz intr_norm intrD -RfloorE.
@@ -438,10 +438,10 @@ have [D De] : exists D : nat -> {posnum R}, forall i,
   by rewrite divr_gt0 // exprn_gt0.
 have acbd : `[ a.1 + c%:num / 2, a.2] `<=`
             \bigcup_i `](b i).1, (b i).2 + (D i)%:num[%classic.
-  apply (@subset_trans _ `]a.1, a.2]).
+  apply: (@subset_trans _ `]a.1, a.2]).
     move=> r; rewrite /= !in_itv/= => /andP [+ ->].
     by rewrite andbT; apply: lt_le_trans; rewrite ltr_addl.
-  apply (subset_trans lebig) => r [n _ Anr]; exists n => //.
+  apply: (subset_trans lebig) => r [n _ Anr]; exists n => //.
   move: Anr; rewrite AE /= !in_itv/= => /andP [->]/= /le_lt_trans.
   by apply; rewrite ltr_addl.
 have := @segment_compact _ (a.1 + c%:num / 2) a.2; rewrite compact_cover.
@@ -478,20 +478,38 @@ Let gitvs := [the measurableType _ of salgebraType ocitv].
 Definition lebesgue_stieltjes_measure (f : cumulative R) :=
   Hahn_ext [the additive_measure _ _ of hlength f : set ocitv_type -> _ ].
 
+Let lebesgue_stieltjes_measure0 (f : cumulative R) :
+  lebesgue_stieltjes_measure f set0 = 0%E.
+Proof. by []. Qed.
+
+Let lebesgue_stieltjes_measure_ge0 (f : cumulative R) :
+  forall x, (0 <= lebesgue_stieltjes_measure f x)%E.
+Proof. exact: measure.Hahn_ext_ge0. Qed.
+
+Let lebesgue_stietjes_measure_semi_sigma_additive (f : cumulative R) :
+  semi_sigma_additive (lebesgue_stieltjes_measure f).
+Proof. exact/measure.Hahn_ext_sigma_additive/hlength_sigma_sub_additive. Qed.
+
+HB.instance Definition _ (f : cumulative R) := isMeasure.Build _ _ _
+  (lebesgue_stieltjes_measure f)
+  (lebesgue_stieltjes_measure0 f)
+  (lebesgue_stieltjes_measure_ge0 f)
+  (@lebesgue_stietjes_measure_semi_sigma_additive f).
+
 End itv_semiRingOfSets.
 Arguments lebesgue_stieltjes_measure {R}.
 
 Section lebesgue_stieltjes_measure_itv.
 Variables (d : measure_display) (R : realType) (f : cumulative R).
 
-Let m := lebesgue_stieltjes_measure d f.
+Let m := [the measure _ _ of lebesgue_stieltjes_measure d f].
 
 Let g : \bar R -> \bar R := EFinf f.
 
 Let lebesgue_stieltjes_measure_itvoc (a b : R) :
   (m `]a, b] = hlength f `]a, b])%classic.
 Proof.
-rewrite /m /lebesgue_stieltjes_measure /= /Hahn_ext measurable_mu_extE//.
+rewrite /m/= /lebesgue_stieltjes_measure /= /Hahn_ext measurable_mu_extE//.
   exact: hlength_sigma_sub_additive.
 by exists (a, b).
 Qed.
@@ -499,5 +517,5 @@ Qed.
 End lebesgue_stieltjes_measure_itv.
 
 Example lebesgue_measure d (R : realType)
-    : set [the measurableType (d.-measurable).-sigma of salgebraType (d.-measurable)] -> \bar R :=
-  lebesgue_stieltjes_measure _ [the cumulative _ of @idfun R].
+    : {measure set [the measurableType (d.-measurable).-sigma of salgebraType (d.-measurable)] -> \bar R} :=
+  [the measure _ _ of lebesgue_stieltjes_measure _ [the cumulative _ of @idfun R]].
