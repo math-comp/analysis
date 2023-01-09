@@ -932,13 +932,13 @@ move=> fio; apply/idP/existsP => [/eqP /=|[/= i /andP[Pi /eqP fi]]].
 by apply/eqP/esum_eqyP => //; exists i.
 Qed.
 
-#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqNyP`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqNyP`")]
 Notation esum_ninftyP := esum_eqNyP.
-#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqNy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqNy`")]
 Notation esum_ninfty := esum_eqNy.
-#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqyP`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqyP`")]
 Notation esum_pinftyP := esum_eqyP.
-#[deprecated(since="mathcomp 1.6.0", note="renamed `esum_eqy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqy`")]
 Notation esum_pinfty := esum_eqy.
 
 Lemma adde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
@@ -1297,13 +1297,13 @@ rewrite dual_sumeE eqe_oppLR /= esum_eqy => [|i]; rewrite ?eqe_oppLR //.
 by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
-#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqNyP`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqNyP`")]
 Notation desum_ninftyP := desum_eqNyP.
-#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqNy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqNy`")]
 Notation desum_ninfty := desum_eqNy.
-#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqyP`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqyP`")]
 Notation desum_pinftyP := desum_eqyP.
-#[deprecated(since="mathcomp 1.6.0", note="renamed `desum_eqy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqy`")]
 Notation desum_pinfty := desum_eqy.
 
 Lemma dadde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
@@ -1384,7 +1384,7 @@ suff: ~ x%:E < (Order.max 0 x + 1)%:E.
 by apply/negP; rewrite -leNgt; apply/Ax/ltr_spaddr; rewrite // le_maxr lexx.
 Qed.
 
-#[deprecated(since="mathcomp 1.6.0", note="renamed `eqyP`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `eqyP`")]
 Notation eq_pinftyP := eqyP.
 
 Lemma seq_psume_eq0 (I : choiceType) (r : seq I)

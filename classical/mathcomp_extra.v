@@ -28,6 +28,8 @@ From mathcomp Require Import finset interval.
 (*               proj i f == f i, where f : forall i, T i                     *)
 (*             dfwith f x == fun j => x if j = i, and f j otherwise           *)
 (*                           given x : T i                                    *)
+(*                 swap x := (x.2, x.1)                                       *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -1010,6 +1012,9 @@ Lemma onem1 : `1-1 = 0. Proof. by rewrite /onem subrr. Qed.
 Lemma onemK r : `1-(`1-r) = r.
 Proof. by rewrite /onem opprB addrCA subrr addr0. Qed.
 
+Lemma add_onemK r : r + `1- r = 1.
+Proof. by rewrite /onem addrC subrK. Qed.
+
 Lemma onem_gt0 r : r < 1 -> 0 < `1-r. Proof. by rewrite subr_gt0. Qed.
 
 Lemma onem_ge0 r : r <= 1 -> 0 <= `1-r.
@@ -1101,3 +1106,5 @@ Proof. by move=> z; rewrite /proj dfwithin. Qed.
 
 End DFunWith.
 Arguments dfwith {I T} f i x.
+
+Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).

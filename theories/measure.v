@@ -650,6 +650,11 @@ Canonical semiRingOfSets_choiceType d (T : semiRingOfSetsType d) :=
 Canonical semiRingOfSets_ptType d (T : semiRingOfSetsType d) :=
   PointedType T ptclass.
 
+Lemma measurable_curry (T1 T2 : Type) d (T : semiRingOfSetsType d)
+    (G : T1 * T2 -> set T) (x : T1 * T2) :
+  measurable (G x) <-> measurable (curry G x.1 x.2).
+Proof. by case: x. Qed.
+
 Notation "d .-measurable" := (@measurable d%mdisp) : classical_set_scope.
 Notation "'measurable" :=
   (@measurable default_measure_display) : classical_set_scope.
@@ -972,12 +977,21 @@ Implicit Type D E : set T1.
 Lemma measurable_fun_id D : measurable_fun D id.
 Proof. by move=> mD A mA; apply: measurableI. Qed.
 
-Lemma measurable_fun_comp (f : T2 -> T3) E (g : T1 -> T2) :
-  measurable_fun setT f -> measurable_fun E g -> measurable_fun E (f \o g).
+Lemma measurable_fun_comp F (f : T2 -> T3) E (g : T1 -> T2) :
+  measurable F -> g @` E `<=` F ->
+  measurable_fun F f -> measurable_fun E g -> measurable_fun E (f \o g).
 Proof.
-move=> mf mg /= mE A mA; rewrite comp_preimage; apply/mg => //.
-by rewrite -[X in measurable X]setTI; apply/mf.
+move=> mF FgE mf mg /= mE A mA.
+rewrite comp_preimage.
+rewrite (_ : _ `&` _ = E `&` g @^-1` (F `&` f @^-1` A)); last first.
+  apply/seteqP; split=> [|? [?] []//].
+  by move=> x/= [Ex Afgx]; split => //; split => //; exact: FgE.
+by apply/mg => //; exact: mf.
 Qed.
+
+Lemma measurable_funT_comp (f : T2 -> T3) E (g : T1 -> T2) :
+  measurable_fun setT f -> measurable_fun E g -> measurable_fun E (f \o g).
+Proof. exact: measurable_fun_comp. Qed.
 
 Lemma eq_measurable_fun D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
@@ -1547,9 +1561,19 @@ Arguments measure_bigcup {d R T} mu A.
   solve [apply: measure_sigma_additive] : core.
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
 
-Definition finite_measure d (T : measurableType d) (R : realType)
+Definition finite_measure d (T : measurableType d) (R : numDomainType)
     (mu : set T -> \bar R) :=
   mu setT < +oo.
+
+Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realFieldType)
+  (mu : {measure set T -> \bar R}) :
+  finite_measure mu -> sigma_finite setT mu.
+Proof.
+exists (fun i => if i \in [set 0%N] then setT else set0).
+  by rewrite -bigcup_mkcondr setTI bigcup_const//; exists 0%N.
+move=> n; split; first by case: ifPn.
+by case: ifPn => // _; rewrite ?measure0//; exact: finite_measure.
+Qed.
 
 Section pushforward_measure.
 Local Open Scope ereal_scope.
@@ -1617,9 +1641,20 @@ Arguments dirac {d T} _ {R}.
 
 Notation "\d_ a" := (dirac a) : ring_scope.
 
-Lemma diracE d (T : measurableType d) (R : realFieldType) a (A : set T) :
-  \d_a A = (a \in A)%:R%:E :> \bar R.
+Section dirac_lemmas_realFieldType.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realFieldType).
+
+Lemma diracE a (A : set T) : \d_a A = (a \in A)%:R%:E :> \bar R.
 Proof. by rewrite /dirac indicE. Qed.
+
+Lemma dirac0 (a : T) : \d_a set0 = 0 :> \bar R.
+Proof. by rewrite diracE in_set0. Qed.
+
+Lemma diracT (a : T) : \d_a setT = 1 :> \bar R.
+Proof. by rewrite diracE in_setT. Qed.
+
+End dirac_lemmas_realFieldType.
 
 Section dirac_lemmas.
 Local Open Scope ereal_scope.
@@ -2909,8 +2944,7 @@ apply: (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
 rewrite [in leRHS](caratheodory_measurable_bigsetU MA n) lee_add2r //.
 by rewrite caratheodory_additive.
 Qed.
-
-#[deprecated(since="mathcomp-analysis 1.6.0",
+#[deprecated(since="mathcomp-analysis 0.6.0",
       note="renamed `caratheodory_lime_le`")]
 Notation caratheodory_lim_lee := caratheodory_lime_le.
 
@@ -3624,22 +3658,62 @@ End product_salgebra_g_measurableType.
 Section prod_measurable_fun.
 Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
         (T2 : measurableType d2).
-Variable f : T -> T1 * T2.
 
-Lemma prod_measurable_funP : measurable_fun setT f <->
-  measurable_fun setT (fst \o f) /\ measurable_fun setT (snd \o f).
+Lemma prod_measurable_funP (h : T -> T1 * T2) : measurable_fun setT h <->
+  measurable_fun setT (fst \o h) /\ measurable_fun setT (snd \o h).
 Proof.
-apply: (@iff_trans _ (preimage_classes (fst \o f) (snd \o f) `<=` measurable)).
+apply: (@iff_trans _ (preimage_classes (fst \o h) (snd \o h) `<=` measurable)).
 - rewrite preimage_classes_comp; split=> [mf A [C HC <-]|f12]; first exact: mf.
   by move=> _ A mA; apply: f12; exists A.
-- split => [h|[mf1 mf2]].
-    split => _ A mA; apply: h; apply: sub_sigma_algebra;
+- split => [h12|[mf1 mf2]].
+    split => _ A mA; apply: h12; apply: sub_sigma_algebra;
     by [left; exists A|right; exists A].
   apply: smallest_sub; first exact: sigma_algebra_measurable.
   by rewrite subUset; split=> [|] A [C mC <-]; [exact: mf1|exact: mf2].
 Qed.
 
+Lemma measurable_fun_pair (f : T -> T1) (g : T -> T2) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (fun x => (f x, g x)).
+Proof. by move=> mf mg; apply/prod_measurable_funP. Qed.
+
 End prod_measurable_fun.
+
+Section prod_measurable_proj.
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
+
+Lemma measurable_fun_fst : measurable_fun setT (@fst T1 T2).
+Proof.
+by have /prod_measurable_funP[] :=
+  @measurable_fun_id _ [the measurableType _ of (T1 * T2)%type] setT.
+Qed.
+
+Lemma measurable_fun_snd : measurable_fun setT (@snd T1 T2).
+Proof.
+by have /prod_measurable_funP[] :=
+  @measurable_fun_id _ [the measurableType _ of (T1 * T2)%type] setT.
+Qed.
+
+Lemma measurable_fun_swap : measurable_fun [set: T1 * T2] (@swap T1 T2).
+Proof.
+by apply/prod_measurable_funP => /=; split;
+  [exact: measurable_fun_snd|exact: measurable_fun_fst].
+Qed.
+
+End prod_measurable_proj.
+
+Lemma measurable_fun_if_pair d d' (X : measurableType d)
+    (Y : measurableType d') (x y : X -> Y) :
+  measurable_fun setT x -> measurable_fun setT y ->
+  measurable_fun setT (fun tb => if tb.2 then x tb.1 else y tb.1).
+Proof.
+move=> mx my.
+have {}mx : measurable_fun [set: X * bool] (x \o fst).
+  by apply: measurable_funT_comp => //; exact: measurable_fun_fst.
+have {}my : measurable_fun [set: X * bool] (y \o fst).
+  by apply: measurable_funT_comp => //; exact: measurable_fun_fst.
+by apply: measurable_fun_ifT => //=; exact: measurable_fun_snd.
+Qed.
 
 Section partial_measurable_fun.
 Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
@@ -3652,8 +3726,8 @@ Proof.
 move=> mf; pose pairx := fun y : T2 => (x, y).
 have m1pairx : measurable_fun setT (fst \o pairx) by exact/measurable_fun_cst.
 have m2pairx : measurable_fun setT (snd \o pairx) by exact/measurable_fun_id.
-have : measurable_fun setT pairx by exact/(proj2 (prod_measurable_funP _)).
-exact: measurable_fun_comp.
+have ? : measurable_fun setT pairx by exact/(proj2 (prod_measurable_funP _)).
+exact: (measurable_fun_comp _ _ mf).
 Qed.
 
 Lemma measurable_fun_prod2 y :
@@ -3663,7 +3737,7 @@ move=> mf; pose pairy := fun x : T1 => (x, y).
 have m1pairy : measurable_fun setT (fst \o pairy) by exact/measurable_fun_id.
 have m2pairy : measurable_fun setT (snd \o pairy) by exact/measurable_fun_cst.
 have : measurable_fun setT pairy by exact/(proj2 (prod_measurable_funP _)).
-exact: measurable_fun_comp.
+exact: (measurable_fun_comp _ _ mf).
 Qed.
 
 End partial_measurable_fun.
