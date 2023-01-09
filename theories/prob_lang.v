@@ -59,9 +59,10 @@ Section bernoulli.
 Variables (R : realType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
 Local Open Scope ring_scope.
 
-Definition bernoulli := measure_add
-  (mscale p (dirac true))
-  (mscale (onem_nonneg p1) (dirac false)).
+Definition bernoulli : set _ -> \bar R :=
+  measure_add
+    [the measure _ _ of mscale p [the measure _ _ of dirac true]]
+    [the measure _ _ of mscale (onem_nonneg p1) [the measure _ _ of dirac false]].
 
 HB.instance Definition _ := Measure.on bernoulli.
 
@@ -81,9 +82,9 @@ Section mscore.
 Context d (T : measurableType d) (R : realType).
 Variable f : T -> R.
 
-Definition mscore t : {measure set unit -> \bar R} :=
+Definition mscore t : {measure set _ -> \bar R} :=
   let p := NngNum (normr_ge0 (f t)) in
-  mscale p (dirac tt).
+  [the measure _ _ of mscale p [the measure _ _ of dirac tt]].
 
 Lemma mscoreE t U : mscore t U = if U == set0 then 0 else `| (f t)%:E |.
 Proof.
@@ -168,10 +169,10 @@ rewrite (_ : (fun x => _) = (fun x => x *
   by rewrite indicE/= memNset ?mule0// /= in_itv/=; exact/negP.
 apply emeasurable_funM => /=; first exact: measurable_fun_id.
 apply/EFin_measurable_fun.
-by rewrite (_ : \1__ = mindic R (emeasurable_itv R i)).
+by rewrite (_ : \1__ = mindic R (emeasurable_itv1 R i)).
 Qed.
 
-Definition mk i t : {measure set unit -> \bar R} := k mf i t.
+Definition mk i t := [the measure _ _ of k mf i t].
 
 HB.instance Definition _ i :=
   isKernel.Build _ _ _ _ _ (mk i) (measurable_fun_k i).
@@ -193,7 +194,7 @@ Context d (T : measurableType d) (R : realType).
 Variable f : T -> R.
 
 Definition kscore (mf : measurable_fun setT f)
-    : T -> {measure set unit -> \bar R} :=
+    : T -> {measure set _ -> \bar R} :=
   mscore f.
 
 Variable mf : measurable_fun setT f.
@@ -207,11 +208,11 @@ HB.instance Definition _ := isKernel.Build _ _ T _ R
 
 Import SCORE.
 
-Let sfinite_kscore : exists k : (R.-fker T ~> unit)^nat,
+Let sfinite_kscore : exists k : (R.-fker T ~> _)^nat,
   forall x U, measurable U ->
     kscore mf x U = mseries (k ^~ x) 0 U.
 Proof.
-rewrite /=; exists (mk mf) => /= t U mU.
+rewrite /=; exists (fun i => [the R.-fker _ ~> _ of mk mf i]) => /= t U mU.
 rewrite /mseries /kscore/= mscoreE; case: ifPn => [/eqP U0|U0].
   by apply/esym/eseries0 => i _; rewrite U0 measure0.
 rewrite /mk /= /k /= mscoreE (negbTE U0).
@@ -252,7 +253,7 @@ Section kiteT.
 Variable k : R.-ker X ~> Y.
 
 Definition kiteT : X * bool -> {measure set Y -> \bar R} :=
-  fun xb => if xb.2 then k xb.1 else mzero.
+  fun xb => if xb.2 then k xb.1 else [the measure _ _ of mzero].
 
 Let measurable_fun_kiteT U : measurable U -> measurable_fun setT (kiteT ^~ U).
 Proof.
@@ -278,7 +279,7 @@ Let sfinite_kiteT : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall x U, measurable U -> kiteT k x U = mseries (k_ ^~ x) 0 U.
 Proof.
 have [k_ hk /=] := sfinite k.
-exists (kiteT \o k_) => /=.
+exists (fun n => [the _.-ker _ ~> _ of kiteT (k_ n)]) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteT//= /mzero//.
 move=> [x b] U mU; rewrite /kiteT; case: ifPn => hb; first by rewrite hk.
@@ -309,7 +310,7 @@ Section kiteF.
 Variable k : R.-ker X ~> Y.
 
 Definition kiteF : X * bool -> {measure set Y -> \bar R} :=
-  fun xb => if ~~ xb.2 then k xb.1 else mzero.
+  fun xb => if ~~ xb.2 then k xb.1 else [the measure _ _ of mzero].
 
 Let measurable_fun_kiteF U : measurable U -> measurable_fun setT (kiteF ^~ U).
 Proof.
@@ -336,7 +337,7 @@ Let sfinite_kiteF : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall x U, measurable U -> kiteF k x U = mseries (k_ ^~ x) 0 U.
 Proof.
 have [k_ hk /=] := sfinite k.
-exists (kiteF \o k_) => /=.
+exists (fun n => [the _.-ker _ ~> _ of kiteF (k_ n)]) => /=.
   move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
   by exists r%:num => /= -[x []]; rewrite /kiteF//= /mzero//.
 move=> [x b] U mU; rewrite /kiteF; case: ifPn => hb; first by rewrite hk.
@@ -391,8 +392,15 @@ HB.instance Definition _ t := isMeasure.Build _ _ _ (mite mf t)
 
 Import ITE.
 
+(*
 Definition kite : R.-sfker T ~> T' :=
   kdirac mf \; kadd (kiteT u1) (kiteF u2).
+*)
+Definition kite :=
+  [the R.-sfker _ ~> _ of kdirac mf] \;
+  [the R.-sfker _ ~> _ of kadd
+    [the R.-sfker _ ~> T' of kiteT u1]
+    [the R.-sfker _ ~> T' of kiteF u2] ].
 
 End ite.
 
@@ -400,17 +408,17 @@ Section insn2.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 
 Definition ret (f : X -> Y) (mf : measurable_fun setT f)
-  : R.-sfker X ~> Y := kdirac mf.
+  : R.-sfker X ~> Y := [the R.-sfker _ ~> _ of kdirac mf].
 
 Definition sample (P : pprobability Y R) : R.-pker X ~> Y :=
-  kprobability (measurable_fun_cst P).
+  [the R.-pker _ ~> _ of kprobability (measurable_fun_cst P)].
 
 Definition normalize (k : R.-sfker X ~> Y) P : X -> probability Y R :=
-  mnormalize k P.
+  fun x => [the probability _ _ of mnormalize k P x].
 
 Definition ite (f : X -> bool) (mf : measurable_fun setT f)
     (k1 k2 : R.-sfker X ~> Y) : R.-sfker X ~> Y :=
-  locked (kite k1 k2 mf).
+  locked [the R.-sfker X ~> Y of kite k1 k2 mf].
 
 End insn2.
 Arguments ret {d d' X Y R f} mf.
@@ -452,9 +460,9 @@ Section insn3.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
 
-Definition letin (l : R.-sfker X ~> Y) (k : R.-sfker (X * Y)%type ~> Z)
+Definition letin (l : R.-sfker X ~> Y) (k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z)
    : R.-sfker X ~> Z :=
-  l \; k.
+  [the R.-sfker X ~> Z of l \; k].
 
 End insn3.
 
@@ -462,9 +470,9 @@ Section insn3_lemmas.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
 
-Lemma letinE (l : R.-sfker X ~> Y) (k : R.-sfker (X * Y)%type ~> Z) x U :
+Lemma letinE (l : R.-sfker X ~> Y) (k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z) x U :
   letin l k x U = \int[l x]_y k (x, y) U.
-Proof. by rewrite /letin; unlock. Qed.
+Proof. by []. Qed.
 
 End insn3_lemmas.
 
@@ -487,7 +495,7 @@ Qed.
 
 Lemma letin_retk
   (f : X -> Y) (mf : measurable_fun setT f)
-  (k : R.-sfker (X * Y)%type ~> Z)
+  (k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z)
   x U : measurable U ->
   letin (ret mf) k x U = k (x, f x) U.
 Proof.
@@ -502,8 +510,8 @@ Section insn1.
 Context d (X : measurableType d) (R : realType).
 
 Definition score (f : X -> R) (mf : measurable_fun setT f)
-    : R.-sfker X ~> unit :=
-  kscore mf.
+    : R.-sfker X ~> _ :=
+  [the R.-sfker X ~> _ of kscore mf].
 
 End insn1.
 
@@ -555,7 +563,7 @@ Import Notations.
 Context d (T : measurableType d) (R : realType).
 
 Let kcomp_scoreE d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
-  (g : R.-sfker (T1 * unit)%type ~> T2)
+  (g : R.-sfker [the measurableType _ of (T1 * unit)%type] ~> T2)
   f (mf : measurable_fun setT f) r U :
   (score mf \; g) r U = `|f r|%:E * g (r, tt) U.
 Proof.
@@ -587,7 +595,7 @@ Import Notations.
 (* hard constraints to express score below 1 *)
 Lemma score_fail (r : {nonneg R}) (r1 : (r%:num <= 1)%R) :
   score (kr r%:num) =
-  letin (sample (bernoulli r1) : R.-pker T ~> _)
+  letin (sample [the probability _ _ of bernoulli r1] : R.-pker T ~> _)
         (ite var2of2 (ret ktt) fail).
 Proof.
 apply/eq_sfkernel => x U.
@@ -602,7 +610,7 @@ End insn1_lemmas.
 Section letin_ite.
 Context d d2 d3 (T : measurableType d) (T2 : measurableType d2)
   (Z : measurableType d3) (R : realType).
-Variables  (k1 k2 : R.-sfker T ~> Z) (u : R.-sfker (T * Z)%type ~> T2)
+Variables  (k1 k2 : R.-sfker T ~> Z) (u : R.-sfker [the measurableType _ of (T * Z)%type] ~> T2)
   (f : T -> bool) (mf : measurable_fun setT f)
   (t : T) (U : set T2).
 
@@ -631,10 +639,10 @@ Context d d1 d' (X : measurableType d) (Y : measurableType d1)
 Import Notations.
 
 Variables (t : R.-sfker Z ~> X)
-          (t' : R.-sfker (Z * Y)%type ~> X)
+          (t' : R.-sfker [the measurableType _ of (Z * Y)%type] ~> X)
           (tt' : forall y, t =1 fun z => t' (z, y))
           (u : R.-sfker Z ~> Y)
-          (u' : R.-sfker (Z * X)%type ~> Y)
+          (u' : R.-sfker [the measurableType _ of (Z * X)%type] ~> Y)
           (uu' : forall x, u =1 fun z => u' (z, x)).
 
 Lemma letinC z A : measurable A ->
@@ -738,7 +746,7 @@ End exponential.
 Lemma letin_sample_bernoulli d d' (T : measurableType d)
     (T' : measurableType d') (R : realType)(r : {nonneg R}) (r1 : (r%:num <= 1)%R)
     (u : R.-sfker [the measurableType _ of (T * bool)%type] ~> T') x y :
-  letin (sample (bernoulli r1)) u x y =
+  letin (sample [the probability _ _ of bernoulli r1]) u x y =
   r%:num%:E * u (x, true) y + (`1- (r%:num : R))%:E * u (x, false) y.
 Proof.
 rewrite letinE/=.
@@ -752,7 +760,7 @@ Context d (T : measurableType d) (R : realType).
 
 Definition sample_and_return : R.-sfker T ~> _ :=
   letin
-    (sample (bernoulli p27)) (* T -> B *)
+    (sample [the probability _ _ of bernoulli p27]) (* T -> B *)
     (ret var2of2) (* T * B -> B *).
 
 Lemma sample_and_returnE t U : sample_and_return t U =
@@ -778,7 +786,7 @@ Context d (T : measurableType d) (R : realType).
 Definition sample_and_branch :
   R.-sfker T ~> mR R :=
   letin
-    (sample (bernoulli p27)) (* T -> B *)
+    (sample [the probability _ _ of bernoulli p27]) (* T -> B *)
     (ite var2of2 (ret k3) (ret k10)).
 
 Lemma sample_and_branchE t U : sample_and_branch t U =
@@ -797,7 +805,7 @@ Import Notations.
 Context d (T : measurableType d) (R : realType) (h : R -> R).
 Hypothesis mh : measurable_fun setT h.
 Definition kstaton_bus : R.-sfker T ~> mbool :=
-  letin (sample (bernoulli p27))
+  letin (sample [the probability _ _ of bernoulli p27])
   (letin
     (letin (ite var2of2 (ret k3) (ret k10))
       (score (measurable_fun_comp mh var3of3)))
