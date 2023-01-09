@@ -695,23 +695,23 @@ Qed.
 
 Lemma __deprecated__itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
 Proof. by rewrite itv_cyy. Qed.
-#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_cyy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_cyy`")]
 Notation itv_cpinfty_pinfty := __deprecated__itv_cpinfty_pinfty.
 
 Lemma __deprecated__itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
 Proof. by rewrite itv_oyy. Qed.
-#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_oyy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_oyy`")]
 Notation itv_opinfty_pinfty := __deprecated__itv_opinfty_pinfty.
 
 Lemma __deprecated__itv_cninfty_pinfty : `[-oo%E, +oo[%classic = setT :> set (\bar R).
 Proof. by rewrite itv_cNyy. Qed.
-#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_cNyy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_cNyy`")]
 Notation itv_cninfty_pinfty := __deprecated__itv_cninfty_pinfty.
 
 Lemma __deprecated__itv_oninfty_pinfty :
   `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
 Proof. by rewrite itv_oNyy. Qed.
-#[deprecated(since="mathcomp-analysis 1.6.0", note="renamed `itv_oNyy`")]
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_oNyy`")]
 Notation itv_oninfty_pinfty := __deprecated__itv_oninfty_pinfty.
 
 Lemma emeasurable_itv_bnd_pinfty b (y : \bar R) :
@@ -1536,6 +1536,12 @@ End coutinuous_measurable.
 
 Section standard_measurable_fun.
 
+Lemma measurable_fun_opp (R : realType) : measurable_fun [set: R] -%R.
+Proof.
+apply: continuous_measurable_fun.
+by have := @opp_continuous R [the normedModType R of R^o].
+Qed.
+
 Lemma measurable_fun_normr (R : realType) (D : set R) :
   measurable_fun D (@normr _ R).
 Proof.
@@ -1586,7 +1592,7 @@ Qed.
 Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
   measurable_fun D (fun x => k * f x).
 Proof.
-apply: (@measurable_fun_comp _ _ _ _ _ _ ( *%R k)).
+apply: (@measurable_funT_comp _ _ _ _ _ _ ( *%R k)).
 by apply: continuous_measurable_fun; apply: mulrl_continuous.
 Qed.
 
@@ -1606,7 +1612,7 @@ Qed.
 Lemma measurable_fun_exprn D n f :
   measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
-apply: measurable_fun_comp ((@GRing.exp R)^~ n) _ _ _.
+apply: measurable_funT_comp ((@GRing.exp R)^~ n) _ _ _.
 by apply: continuous_measurable_fun; apply: exprn_continuous.
 Qed.
 
@@ -1747,7 +1753,7 @@ Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
     (g : T -> R) :
   measurable_fun D (EFin \o g) <-> measurable_fun D g.
 Proof.
-split=> [mf mD A mA|]; last by move=> mg; exact: measurable_fun_comp.
+split=> [mf mD A mA|]; last by move=> mg; exact: measurable_funT_comp.
 rewrite [X in measurable X](_ : _ = D `&` (EFin \o g) @^-1` (EFin @` A)).
   by apply: mf => //; exists A => //; exists set0; [constructor|rewrite setU0].
 congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
@@ -1814,7 +1820,7 @@ Qed.
 
 Lemma emeasurable_funN D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D (\- f).
-Proof. by apply: measurable_fun_comp => //; exact: emeasurable_fun_minus. Qed.
+Proof. by apply: measurable_funT_comp => //; exact: emeasurable_fun_minus. Qed.
 
 Lemma emeasurable_fun_funepos D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\+.
@@ -1851,7 +1857,7 @@ rewrite [X in _ --> X](_ : _ = ereal_inf (range (esups (f^~t)))).
 by congr (ereal_inf [set _ | _ in _]); rewrite predeqE.
 Qed.
 
-#[deprecated(since="mathcomp-analysis 1.6.0",
+#[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed `measurable_fun_lim_esup`")]
 Notation measurable_fun_elim_sup := measurable_fun_lim_esup.
 

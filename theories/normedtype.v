@@ -2591,7 +2591,7 @@ Lemma __deprecated__continuous_cvg_dist {R : numFieldType}
   (V W : pseudoMetricNormedZmodType R) (f : V -> W) x l :
   continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
 Proof. by move=> cf /cvg_eq->// e; rewrite subrr normr0. Qed.
-#[deprecated(since="mathcomp-analysis 1.6.0",
+#[deprecated(since="mathcomp-analysis 0.6.0",
   note="simply use the fact that `(x --> l) -> (x = l)`")]
 Notation continuous_cvg_dist := __deprecated__continuous_cvg_dist.
 

@@ -378,6 +378,8 @@ case: (ltrgt0P x) => [x_gt0|x_gt0|->]; last by rewrite expR0.
   by rewrite -(pmulr_lgt0 _ F) expRxMexpNx_1.
 Qed.
 
+Lemma expR_ge0 x : 0 <= expR x. Proof. by rewrite ltW// expR_gt0. Qed.
+
 Lemma expRN x : expR (- x) = (expR x)^-1.
 Proof.
 apply: (mulfI (lt0r_neq0 (expR_gt0 x))).

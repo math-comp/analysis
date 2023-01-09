@@ -1088,8 +1088,30 @@ End InitialSegment.
 Lemma setT_unit : [set: unit] = [set tt].
 Proof. by apply/seteqP; split => // -[]. Qed.
 
+Lemma set_unit (A : set unit) : A = set0 \/ A = setT.
+Proof.
+have [->|/set0P[[] Att]] := eqVneq A set0; [by left|right].
+by apply/seteqP; split => [|] [].
+Qed.
+
 Lemma setT_bool : [set: bool] = [set true; false].
 Proof. by rewrite eqEsubset; split => // [[]] // _; [left|right]. Qed.
+
+Lemma set_bool (B : set bool) :
+  [\/ B == [set true], B == [set false], B == set0 | B == setT].
+Proof.
+have [Bt|Bt] := boolP (true \in B); have [Bf|Bf] := boolP (false \in B).
+- have -> : B = setT by apply/seteqP; split => // -[] _; exact: set_mem.
+  by apply/or4P; rewrite eqxx/= !orbT.
+- suff : B = [set true] by move=> ->; apply/or4P; rewrite eqxx.
+  apply/seteqP; split => -[]// /mem_set; last by move=> _; exact: set_mem.
+  by rewrite (negbTE Bf).
+- suff : B = [set false] by move=> ->; apply/or4P; rewrite eqxx/= orbT.
+  apply/seteqP; split => -[]// /mem_set; last by move=> _; exact: set_mem.
+  by rewrite (negbTE Bt).
+- suff : B = set0 by move=> ->; apply/or4P; rewrite eqxx/= !orbT.
+  by apply/seteqP; split => -[]//=; rewrite 2!notin_set in Bt, Bf.
+Qed.
 
 (* TODO: other lemmas that relate fset and classical sets *)
 Lemma fdisjoint_cset (T : choiceType) (A B : {fset T}) :
@@ -2179,7 +2201,6 @@ Notation "[ 'get' x | E ]" := (get (fun x => E))
   (at level 0, x name, format "[ 'get'  x  |  E ]") : form_scope.
 
 Section PointedTheory.
-
 Context {T : pointedType}.
 
 Lemma getPex (P : set T) : (exists x, P x) -> P (get P).
@@ -2197,6 +2218,9 @@ Proof. exact: (xget_unique point). Qed.
 
 Lemma getPN (P : set T) : (forall x, ~ P x) -> get P = point.
 Proof. exact: (xgetPN point). Qed.
+
+Lemma setT0 : setT != set0 :> set T.
+Proof. by apply/eqP => /seteqP[] /(_ point) /(_ Logic.I). Qed.
 
 End PointedTheory.
 
@@ -3082,6 +3106,14 @@ Proof.
 rewrite predeqE /ysection /= => x; split; last by rewrite 3!inE.
 by rewrite inE => -[Xxy Yxy]; rewrite 2!inE.
 Qed.
+
+Lemma xsection_preimage_snd (Z : Type) (f : T2 -> Z) (A : set Z) (x : T1) :
+  xsection ((f \o snd) @^-1` A) x = f @^-1` A.
+Proof. by apply/seteqP; split; move=> y/=; rewrite /xsection/= inE. Qed.
+
+Lemma ysection_preimage_fst (Z : Type) (f : T1 -> Z) (A : set Z) (y : T2) :
+  ysection ((f \o fst) @^-1` A) y = f @^-1` A.
+Proof. by apply/seteqP; split; move=> x/=; rewrite /ysection/= inE. Qed.
 
 End section.
 
