@@ -677,6 +677,12 @@ Section constants.
 Variable R : realType.
 Local Open Scope ring_scope.
 
+Lemma onem12 : `1- (1 / 2%:R) = (1%:R / 2%:R)%:nng%:num :> R.
+Proof. by rewrite /onem/= {1}(splitr 1) addrK. Qed.
+
+Lemma p12 : (1 / 2%:R)%:nng%:num <= 1 :> R.
+Proof. by rewrite ler_pdivr_mulr//= mul1r ler1n. Qed.
+
 Lemma onem27 : `1- (2 / 7%:R) = (5%:R / 7%:R)%:nng%:num :> R.
 Proof. by apply/eqP; rewrite subr_eq/= -mulrDl -natrD divrr// unitfE. Qed.
 
@@ -684,6 +690,7 @@ Lemma p27 : (2 / 7%:R)%:nng%:num <= 1 :> R.
 Proof. by rewrite /= lter_pdivr_mulr// mul1r ler_nat. Qed.
 
 End constants.
+Arguments p12 {R}.
 Arguments p27 {R}.
 
 Section poisson.
@@ -800,6 +807,54 @@ Qed.
 
 End sample_and_branch.
 
+Section bernoulli_and.
+Context d (T : measurableType d) (R : realType).
+Import Notations.
+
+Definition mand (x y : T * mbool * mbool -> mbool)
+  (t : T * mbool * mbool) : mbool := x t && y t.
+
+Lemma measurable_fun_mand (x y : T * mbool * mbool -> mbool) :
+  measurable_fun setT x -> measurable_fun setT y ->
+  measurable_fun setT (mand x y).
+Proof.
+move=> /= mx my; apply: (@emeasurable_fun_bool _ _ _ _ true).
+rewrite [X in measurable X](_ : _ =
+    (x @^-1` [set true]) `&` (y @^-1` [set true])); last first.
+  by rewrite /mand; apply/seteqP; split => z/= /andP.
+apply: measurableI.
+- by rewrite -[X in measurable X]setTI; exact: mx.
+- by rewrite -[X in measurable X]setTI; exact: my.
+Qed.
+
+Definition bernoulli_and : R.-sfker T ~> mbool :=
+    (letin (sample [the probability _ _ of bernoulli p12])
+     (letin (sample [the probability _ _ of bernoulli p12])
+        (ret (measurable_fun_mand var2of3 var3of3)))).
+
+Lemma bernoulli_andE t U :
+  bernoulli_and t U = (1 / 4 * \1_U true)%:E + (3 / 4 * \1_U false)%:E.
+Proof.
+rewrite /bernoulli_and.
+rewrite !letin_sample_bernoulli//=.
+rewrite /mand/=.
+rewrite muleDr//=.
+rewrite -muleDl//.
+rewrite !muleA.
+rewrite -addeA.
+rewrite -muleDl//.
+rewrite -!EFinM.
+rewrite !onem12/= -splitr mulr1.
+have -> : (1 / 2 * (1 / 2) = 1 / 4 :> R)%R.
+  by rewrite mulf_div mulr1// -natrM.
+congr (_ + (_ * _)%:E).
+have -> : (1 / 2 = 2 / 4 :> R)%R.
+  by apply/eqP; rewrite eqr_div// ?pnatr_eq0// mul1r -natrM.
+by rewrite -mulrDl.
+Qed.
+
+End bernoulli_and.
+
 Section staton_bus.
 Import Notations.
 Context d (T : measurableType d) (R : realType) (h : R -> R).
@@ -913,3 +968,4 @@ by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exp_density_gt0 ?ltr0n.
 Qed.
 
 End staton_bus_exponential.
+
