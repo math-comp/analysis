@@ -49,6 +49,8 @@
   + lemma `esum_esum`
 - in `measure.v`
   + lemma `measurable_fun_comp`
+- in `lebesgue_integral.v`:
+  + lemma `measurable_sfunP`
 
 ### Deprecated
 

@@ -89,9 +89,9 @@ Reserved Notation "[ 'sfun' 'of' f ]"
 Notation "{ 'sfun' aT >-> T }" := (@SimpleFun.type _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
-Lemma measurable_sfunP {d} {aT : measurableType d} {rT : realType} (f : {mfun aT >-> rT}) (y : rT) :
-  measurable (f @^-1` [set y]).
-Proof. by rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
+Lemma measurable_sfunP {d} {aT : measurableType d} {rT : realType}
+  (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
+Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 
 HB.mixin Record IsNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
   fun_ge0 : forall x, 0 <= f x
@@ -587,7 +587,7 @@ Qed.
 End nnsfun_cover.
 
 #[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
-  solve [apply: measurable_sfunP] : core.
+  solve [apply: measurable_sfunP; exact: measurable_set1] : core.
 
 Lemma measurable_sfun_inP {d} {aT : measurableType d} {rT : realType}
    (f : {mfun aT >-> rT}) D (y : rT) :
@@ -2461,7 +2461,7 @@ transitivity (\sum_(k \in range (f_ n))
   rewrite ge0_integral_fsum//; last 2 first.
     - move=> y; apply/EFin_measurable_fun; apply: measurable_funM.
         exact: measurable_fun_cst.
-      by rewrite (_ : \1_ _ = mindic R (measurable_sfunP (f_ n) y)).
+      by rewrite (_ : \1_ _ = mindic R (measurable_sfunP (f_ n) (measurable_set1 y))).
     - by move=> y x _; rewrite nnfun_muleindic_ge0.
   apply eq_fsbigr => r _; rewrite integralM_indic_nnsfun// integral_indic//=.
   rewrite (integralM_indic _ (fun r => f_ n @^-1` [set r] \o phi))//.
