@@ -408,7 +408,7 @@ Section insn2.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 
 Definition ret (f : X -> Y) (mf : measurable_fun setT f)
-  : R.-sfker X ~> Y := [the R.-sfker _ ~> _ of kdirac mf].
+  : R.-pker X ~> Y := [the R.-pker _ ~> _ of kdirac mf].
 
 Definition sample (P : pprobability Y R) : R.-pker X ~> Y :=
   [the R.-pker _ ~> _ of kprobability (measurable_fun_cst P)].
@@ -632,6 +632,35 @@ Qed.
 
 End letin_ite.
 
+Section letinA.
+Context d d' d1 d2 d3 (X : measurableType d) (Y : measurableType d')
+  (T1 : measurableType d1) (T2 : measurableType d2) (T3 : measurableType d3)
+  (R : realType).
+Import Notations.
+Variables (t : R.-sfker X ~> T1)
+          (u : R.-sfker [the measurableType _ of (X * T1)%type] ~> T2)
+          (v : R.-sfker [the measurableType _ of (X * T2)%type] ~> Y)
+          (v' : R.-sfker [the measurableType _ of (X * T1 * T2)%type] ~> Y)
+          (vv' : forall y, v =1 fun xz => v' (xz.1, y, xz.2)).
+
+Lemma letinA x A : measurable A ->
+  letin t (letin u v') x A
+  =
+  (letin (letin t u) v) x A.
+Proof.
+move=> mA.
+rewrite !letinE.
+under eq_integral do rewrite letinE.
+rewrite integral_kcomp; [|by []|].
+- apply: eq_integral => y _.
+  apply: eq_integral => z _.
+  by rewrite (vv' y).
+have /measurable_fun_prod1 := @measurable_kernel _ _ _ _ _ v _ mA.
+exact.
+Qed.
+
+End letinA.
+
 Section letinC.
 Context d d1 d' (X : measurableType d) (Y : measurableType d1)
   (Z : measurableType d') (R : realType).
@@ -677,11 +706,17 @@ Section constants.
 Variable R : realType.
 Local Open Scope ring_scope.
 
-Lemma onem12 : `1- (1 / 2%:R) = (1%:R / 2%:R)%:nng%:num :> R.
-Proof. by rewrite /onem/= {1}(splitr 1) addrK. Qed.
+Lemma onem1S n : `1- (1 / n.+1%:R) = (n%:R / n.+1%:R)%:nng%:num :> R.
+Proof.
+by rewrite /onem/= -{1}(@divrr _ n.+1%:R) ?unitfE// -mulrBl -natr1 addrK.
+Qed.
 
-Lemma p12 : (1 / 2%:R)%:nng%:num <= 1 :> R.
+Lemma p1S n : (1 / n.+1%:R)%:nng%:num <= 1 :> R.
 Proof. by rewrite ler_pdivr_mulr//= mul1r ler1n. Qed.
+
+Lemma p12 : (1 / 2%:R)%:nng%:num <= 1 :> R. Proof. by rewrite p1S. Qed.
+
+Lemma p14 : (1 / 4%:R)%:nng%:num <= 1 :> R. Proof. by rewrite p1S. Qed.
 
 Lemma onem27 : `1- (2 / 7%:R) = (5%:R / 7%:R)%:nng%:num :> R.
 Proof. by apply/eqP; rewrite subr_eq/= -mulrDl -natrD divrr// unitfE. Qed.
@@ -691,6 +726,7 @@ Proof. by rewrite /= lter_pdivr_mulr// mul1r ler_nat. Qed.
 
 End constants.
 Arguments p12 {R}.
+Arguments p14 {R}.
 Arguments p27 {R}.
 
 Section poisson.
@@ -833,7 +869,8 @@ Definition bernoulli_and : R.-sfker T ~> mbool :=
         (ret (measurable_fun_mand var2of3 var3of3)))).
 
 Lemma bernoulli_andE t U :
-  bernoulli_and t U = (1 / 4 * \1_U true)%:E + (3 / 4 * \1_U false)%:E.
+  bernoulli_and t U =
+  sample [the probability _ _ of bernoulli p14] t U.
 Proof.
 rewrite /bernoulli_and.
 rewrite !letin_sample_bernoulli//=.
@@ -844,12 +881,14 @@ rewrite !muleA.
 rewrite -addeA.
 rewrite -muleDl//.
 rewrite -!EFinM.
-rewrite !onem12/= -splitr mulr1.
+rewrite !onem1S/= -splitr mulr1.
 have -> : (1 / 2 * (1 / 2) = 1 / 4 :> R)%R.
   by rewrite mulf_div mulr1// -natrM.
-congr (_ + (_ * _)%:E).
+rewrite /bernoulli/= measure_addE/= /mscale/= -!EFinM.
+congr( _ + (_ * _)%:E).
 have -> : (1 / 2 = 2 / 4 :> R)%R.
   by apply/eqP; rewrite eqr_div// ?pnatr_eq0// mul1r -natrM.
+rewrite onem1S//.
 by rewrite -mulrDl.
 Qed.
 
@@ -968,4 +1007,3 @@ by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exp_density_gt0 ?ltr0n.
 Qed.
 
 End staton_bus_exponential.
-
