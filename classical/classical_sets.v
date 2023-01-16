@@ -2382,6 +2382,15 @@ Section partitions.
 Definition trivIset T I (D : set I) (F : I -> set T) :=
   forall i j : I, D i -> D j -> F i `&` F j !=set0 -> i = j.
 
+Lemma trivIset_mkcond T I (D : set I) (F : I -> set T) :
+  trivIset D F <-> trivIset setT (fun i => if i \in D then F i else set0).
+Proof.
+split=> [tA i j _ _|tA i j Di Dj]; last first.
+  by have := tA i j Logic.I Logic.I; rewrite !mem_set.
+case: ifPn => iD; last by rewrite set0I => -[].
+by case: ifPn => [jD /tA|jD]; [apply; exact: set_mem|rewrite setI0 => -[]].
+Qed.
+
 Lemma trivIset_set0 {I T} (D : set I) : trivIset D (fun=> set0 : set T).
 Proof. by move=> i j Di Dj; rewrite setI0 => /set0P; rewrite eqxx. Qed.
 
@@ -2429,14 +2438,14 @@ apply/trivIsetP => -[/=|]; rewrite /bigcup2 /=.
   by move=> [//|j _ _ _]; rewrite setI0.
 Qed.
 
-Lemma trivIset_image (T I I' : Type) (D : set I) (f : I -> I') (F : I' -> set T) :
+Lemma trivIset_image T I I' (D : set I) (f : I -> I') (F : I' -> set T) :
   trivIset D (F \o f) -> trivIset (f @` D) F.
 Proof.
 by move=> trivF i j [{}i Di <-] [{}j Dj <-] Ffij; congr (f _); apply: trivF.
 Qed.
 Arguments trivIset_image {T I I'} D f F.
 
-Lemma trivIset_comp (T I I' : Type) (D : set I) (f : I -> I') (F : I' -> set T) :
+Lemma trivIset_comp T I I' (D : set I) (f : I -> I') (F : I' -> set T) :
     {in D &, injective f} ->
   trivIset D (F \o f) = trivIset (f @` D) F.
 Proof.

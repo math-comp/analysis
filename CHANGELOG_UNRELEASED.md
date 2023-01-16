@@ -33,6 +33,9 @@
 - in `lebesgue_integral.v`
   + lemmas `integral0_eq`, `fubini_tonelli`
 
+- in `classical_sets.v`:
+  + lemma `trivIset_mkcond`
+
 ### Changed
 
 - in `fsbigop.v`:
@@ -64,6 +67,8 @@
   + lemma `measurable_fun_comp`
 - in `lebesgue_integral.v`:
   + lemma `measurable_sfunP`
+- in `measure.v`:
+  + lemma `measure_bigcup` generalized,
 
 ### Deprecated
 

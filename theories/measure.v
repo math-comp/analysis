@@ -1537,6 +1537,9 @@ Proof. by move=> Am Atriv /measure_semi_sigma_additive/cvg_lim<-//. Qed.
 
 End measure_lemmas.
 
+#[global] Hint Extern 0 (_ set0 = 0) => solve [apply: measure0] : core.
+#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
+
 Section measure_lemmas.
 Context d (R : realFieldType) (T : measurableType d).
 Variable mu : {measure set T -> \bar R}.
@@ -1546,20 +1549,21 @@ Proof.
 by rewrite -semi_sigma_additiveE //; apply: measure_semi_sigma_additive.
 Qed.
 
-Lemma measure_bigcup A : (forall i : nat, measurable (A i)) ->
-  trivIset setT A ->
-  mu (\bigcup_n A n) = \sum_(i <oo) mu (A i).
+Lemma measure_bigcup (D : set nat) F : (forall i, D i -> measurable (F i)) ->
+  trivIset D F -> mu (\bigcup_(n in D) F n) = \sum_(i <oo | i \in D) mu (F i).
 Proof.
-by move=> Am Atriv; rewrite measure_semi_bigcup//; exact: bigcupT_measurable.
+move=> mF tF; rewrite bigcup_mkcond measure_semi_bigcup.
+- by rewrite [in RHS]eseries_mkcond; apply: eq_eseries => n _; case: ifPn.
+- by move=> i; case: ifPn => // /set_mem; exact: mF.
+- by move/trivIset_mkcond : tF.
+- by rewrite -bigcup_mkcond; apply: bigcup_measurable.
 Qed.
 
 End measure_lemmas.
-Arguments measure_bigcup {d R T} mu A.
+Arguments measure_bigcup {d R T} _ _.
 
-#[global] Hint Extern 0 (_ set0 = 0) => solve [apply: measure0] : core.
 #[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
-#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
 
 Definition finite_measure d (T : measurableType d) (R : numDomainType)
     (mu : set T -> \bar R) :=
@@ -2798,7 +2802,6 @@ move=> suf X; apply/eqP; rewrite eq_le; apply/andP; split;
 Qed.
 
 Section caratheodory_theorem_sigma_algebra.
-
 Variables (R : realType) (T : Type) (mu : {outer_measure set T -> \bar R}).
 
 Lemma outer_measure_bigcup_lim (A : (set T) ^nat) X :
