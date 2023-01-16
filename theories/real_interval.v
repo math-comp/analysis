@@ -199,6 +199,13 @@ have [i0  /(congr1 (@Rhull _))|] := boolP (neitv i).
 by rewrite negbK => /eqP ->; rewrite predeqE => /(_ 0)[_]/(_ Logic.I).
 Qed.
 
+Lemma set_itv_set (a b r :R) : r \in `[a,b] = (r \in `[a,b]%classic).
+Proof.
+rewrite ?in_itv /= ?mem_setE ?in_itv /=.
+by apply: Bool.eq_true_iff_eq; split => /andP [] P Q; apply/andP; split.
+Qed.
+
+
 End set_itv_realType.
 
 Section Rhull_lemmas.
