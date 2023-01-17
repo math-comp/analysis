@@ -30,10 +30,10 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.mixin Record IsNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
+HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
   fun_ge0 : forall x, (0 <= f x)%R
 }.
-HB.structure Definition NonNegFun aT rT := {f of @IsNonNegFun aT rT f}.
+HB.structure Definition NonNegFun aT rT := {f of @isNonNegFun aT rT f}.
 Reserved Notation "{ 'nnfun' aT >-> T }"
   (at level 0, format "{ 'nnfun'  aT  >->  T }").
 Reserved Notation "[ 'nnfun' 'of' f ]"
@@ -253,29 +253,19 @@ Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
 Notation "'\1_' A" := (indic A) : ring_scope.
 
-Lemma indicE {T} {R : ringType} (A : set T) (x : T) :
-  indic A x = (x \in A)%:R :> R.
-Proof. by []. Qed.
+Section indic_lemmas.
+Context (T : Type) (R : ringType).
+Implicit Types A D : set T.
 
-Lemma indicT {T} {R : ringType} : \1_[set: T] = cst (1 : R).
+Lemma indicE A (x : T) : \1_A x = (x \in A)%:R :> R. Proof. by []. Qed.
+
+Lemma indicT : \1_[set: T] = cst (1 : R).
 Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
 
-Lemma indic0 {T} {R : ringType} : \1_(@set0 T) = cst (0 : R).
+Lemma indic0 : \1_(@set0 T) = cst (0 : R).
 Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
 
-Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
-  \1_A = 1 \_ A :> (T -> R).
-Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
-
-Lemma restrict_indic T (R : numFieldType) (E A : set T) :
-  (\1_E \_ A) = \1_(E `&` A) :> (T -> R).
-Proof.
-apply/funext => x; rewrite /restrict 2!indicE.
-case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
-by rewrite in_setI (negbTE xA) andbF.
-Qed.
-
-Lemma preimage_indic (T : Type) (R : ringType) (D : set T) (B : set R) :
+Lemma preimage_indic D (B : set R) :
   \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
                             else (if 0 \in B then ~` D else set0).
 Proof.
@@ -294,7 +284,7 @@ rewrite /preimage/= /indic; apply/seteqP; split => x;
   by rewrite inE in B0.
 Qed.
 
-Lemma image_indic T (R : ringType) (D A : set T) :
+Lemma image_indic D A :
   \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
               (if A `&` D != set0 then [set 1 : R] else set0).
 Proof.
@@ -305,17 +295,46 @@ by move=> []; case: ifPn; rewrite ?negbK// => /set0P[t [At Dt]] ->;
    exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_set).
 Qed.
 
-Lemma image_indic_sub T (R : ringType) (D A : set T) :
-  \1_D @` A `<=` [set (0 : R); 1].
+Lemma image_indic_sub D A : \1_D @` A `<=` ([set 0; 1] : set R).
 Proof.
 by rewrite image_indic; do ![case: ifP=> //= _] => // t []//= ->; [left|right].
 Qed.
 
-Lemma fimfunE T (R : ringType) (f : {fimfun T >-> R}) x :
+Lemma fimfunE (f : {fimfun T >-> R}) x :
   f x = \sum_(y \in range f) (y * \1_(f @^-1` [set y]) x).
 Proof.
 rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
 by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
+Qed.
+
+End indic_lemmas.
+
+Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
+  xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
+Proof.
+apply/seteqP; split => [y/mem_set/=|y/=]; rewrite indicE.
+by rewrite mem_xsection => ->.
+by rewrite /xsection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
+Qed.
+
+Lemma ysection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) y :
+  ysection A y = (fun x => (\1_A (x, y) : R)) @^-1` [set 1].
+Proof.
+apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
+by rewrite mem_ysection => ->.
+by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
+Qed.
+
+Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
+  \1_A = 1 \_ A :> (T -> R).
+Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
+
+Lemma restrict_indic T (R : numFieldType) (E A : set T) :
+  (\1_E \_ A) = \1_(E `&` A) :> (T -> R).
+Proof.
+apply/funext => x; rewrite /restrict 2!indicE.
+case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
+by rewrite in_setI (negbTE xA) andbF.
 Qed.
 
 Section ring.

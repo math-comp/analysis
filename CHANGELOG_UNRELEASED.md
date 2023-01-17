@@ -35,6 +35,8 @@
 
 - in `classical_sets.v`:
   + lemma `trivIset_mkcond`
+- in `numfun.v`:
+  + lemmas `xsection_indic`, `ysection_indic`
 
 ### Changed
 
@@ -58,6 +60,10 @@
 
 - in `measurable.v`:
   + `measurable_fun_comp` -> `measurable_funT_comp`
+- in `numfun.v`:
+  + `IsNonNegFun` -> `isNonNegFun`
+- in `lebesgue_integral.v`:
+  + `IsMeasurableFunP` -> `isMeasurableFun`
 
 ### Generalized
 

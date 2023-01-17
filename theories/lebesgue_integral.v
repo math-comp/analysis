@@ -65,12 +65,12 @@ Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
-HB.mixin Record IsMeasurableFun d (aT : measurableType d) (rT : realType)
+HB.mixin Record isMeasurableFun d (aT : measurableType d) (rT : realType)
     (f : aT -> rT) := {
   measurable_funP : measurable_fun setT f
 }.
 HB.structure Definition MeasurableFun d aT rT :=
-  {f of @IsMeasurableFun d aT rT f}.
+  {f of @isMeasurableFun d aT rT f}.
 Reserved Notation "{ 'mfun' aT >-> T }"
   (at level 0, format "{ 'mfun'  aT  >->  T }").
 Reserved Notation "[ 'mfun' 'of' f ]"
@@ -80,7 +80,7 @@ Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 #[global] Hint Resolve measurable_funP : core.
 
 HB.structure Definition SimpleFun d (aT : measurableType d) (rT : realType) :=
-  {f of @IsMeasurableFun d aT rT f & @FiniteImage aT rT f}.
+  {f of @isMeasurableFun d aT rT f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
 Reserved Notation "[ 'sfun' 'of' f ]"
@@ -115,7 +115,7 @@ Notation T := {mfun aT >-> rT}.
 Notation mfun := (@mfun _ aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in mfun).
-Definition mfun_Sub_subproof := @IsMeasurableFun.Build d aT rT f (set_mem fP).
+Definition mfun_Sub_subproof := @isMeasurableFun.Build d aT rT f (set_mem fP).
 #[local] HB.instance Definition _ := mfun_Sub_subproof.
 Definition mfun_Sub := [mfun of f].
 End Sub.
@@ -140,7 +140,7 @@ Canonical mfuneqType := EqType {mfun aT >-> rT} mfuneqMixin.
 Definition mfunchoiceMixin := [choiceMixin of {mfun aT >-> rT} by <:].
 Canonical mfunchoiceType := ChoiceType {mfun aT >-> rT} mfunchoiceMixin.
 
-Lemma cst_mfun_subproof x : @IsMeasurableFun d aT rT (cst x).
+Lemma cst_mfun_subproof x : @isMeasurableFun d aT rT (cst x).
 Proof. by split; apply: measurable_fun_cst. Qed.
 HB.instance Definition _ x := @cst_mfun_subproof x.
 Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
@@ -199,7 +199,7 @@ Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
 HB.instance Definition _ (D : set aT) (mD : measurable D) :
    @FImFun aT rT (mindic mD) := FImFun.on (mindic mD).
 Lemma indic_mfun_subproof (D : set aT) (mD : measurable D) :
-  @IsMeasurableFun d aT rT (mindic mD).
+  @isMeasurableFun d aT rT (mindic mD).
 Proof.
 split=> mA /= B mB; rewrite preimage_indic.
 case: ifPn => B1; case: ifPn => B0 //.
@@ -216,7 +216,7 @@ Definition indic_mfun (D : set aT) (mD : measurable D) :=
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_mfun k).
 Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
 
-Lemma max_mfun_subproof f g : @IsMeasurableFun d aT rT (f \max g).
+Lemma max_mfun_subproof f g : @isMeasurableFun d aT rT (f \max g).
 Proof. by split; apply: measurable_fun_max. Qed.
 HB.instance Definition _ f g := max_mfun_subproof f g.
 Definition max_mfun f g := [the {mfun aT >-> _} of f \max g].
@@ -247,7 +247,7 @@ Notation sfun := (@sfun _ aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in sfun).
 Definition sfun_Sub1_subproof :=
-  @IsMeasurableFun.Build d aT rT f (set_mem (sub_sfun_mfun fP)).
+  @isMeasurableFun.Build d aT rT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
 Definition sfun_Sub2_subproof :=
   @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
@@ -391,7 +391,7 @@ Qed.
 Section nnsfun_functions.
 Context d (T : measurableType d) (R : realType).
 
-Lemma cst_nnfun_subproof (x : {nonneg R}) : @IsNonNegFun T R (cst x%:num).
+Lemma cst_nnfun_subproof (x : {nonneg R}) : @isNonNegFun T R (cst x%:num).
 Proof. by split=> /=. Qed.
 HB.instance Definition _ x := @cst_nnfun_subproof x.
 
@@ -399,7 +399,7 @@ Definition cst_nnsfun (r : {nonneg R}) := [the {nnsfun T >-> R} of cst r%:num].
 
 Definition nnsfun0 : {nnsfun T >-> R} := cst_nnsfun 0%R%:nng.
 
-Lemma indic_nnfun_subproof (D : set T) : @IsNonNegFun T R (\1_D).
+Lemma indic_nnfun_subproof (D : set T) : @isNonNegFun T R (\1_D).
 Proof. by split=> //=; rewrite /indic. Qed.
 HB.instance Definition _ D := @indic_nnfun_subproof D.
 
@@ -412,15 +412,15 @@ Arguments nnsfun0 {d T R}.
 Section nnfun_bin.
 Variables (T : Type) (R : numDomainType) (f g : {nnfun T >-> R}).
 
-Lemma add_nnfun_subproof : @IsNonNegFun T R (f \+ g).
+Lemma add_nnfun_subproof : @isNonNegFun T R (f \+ g).
 Proof. by split => x; rewrite addr_ge0//; apply/fun_ge0. Qed.
 HB.instance Definition _ := add_nnfun_subproof.
 
-Lemma mul_nnfun_subproof : @IsNonNegFun T R (f \* g).
+Lemma mul_nnfun_subproof : @isNonNegFun T R (f \* g).
 Proof. by split => x; rewrite mulr_ge0//; apply/fun_ge0. Qed.
 HB.instance Definition _ := mul_nnfun_subproof.
 
-Lemma max_nnfun_subproof : @IsNonNegFun T R (f \max g).
+Lemma max_nnfun_subproof : @isNonNegFun T R (f \max g).
 Proof. by split => x /=; rewrite /maxr; case: ifPn => _; apply: fun_ge0. Qed.
 HB.instance Definition _ := max_nnfun_subproof.
 
@@ -687,7 +687,7 @@ Context d (T : measurableType d) (R : realType) (m : {measure set T -> \bar R}).
 Variables f g : {nnsfun T >-> R}.
 Hypothesis fg : forall x, f x <= g x.
 
-Let fgnn : @IsNonNegFun T R (g \- f).
+Let fgnn : @isNonNegFun T R (g \- f).
 Proof. by split=> x; rewrite subr_ge0 fg. Qed.
 #[local] HB.instance Definition _ := fgnn.
 
@@ -1784,7 +1784,7 @@ End ge0_integral_sum.
 
 Section ge0_integral_fsum.
 Local Open Scope ereal_scope.
-Variables (d : measure_display) (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 Variables (I : choiceType) (f : I -> (T -> \bar R)).
 Hypothesis mf : forall n, measurable_fun D (f n).
@@ -2288,9 +2288,9 @@ End integral_cst.
 
 Section transfer.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : _) (X : measurableType d1) (Y : measurableType d2).
+Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
 Variables (phi : X -> Y) (mphi : measurable_fun setT phi).
-Variables (R : realType) (mu : {measure set X -> \bar R}).
+Variables (mu : {measure set X -> \bar R}).
 
 Lemma integral_pushforward (f : Y -> \bar R) :
   measurable_fun setT f -> (forall y, 0 <= f y) ->
@@ -4072,45 +4072,25 @@ End dominated_convergence_theorem.
 (******************************************************************************)
 
 Section measurable_section.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types (A : set (T1 * T2)).
-
-Variable R : realType.
 
 Lemma measurable_xsection A x : measurable A -> measurable (xsection A x).
 Proof.
-move=> mA.
-pose f : T1 * T2 -> \bar R := EFin \o indic_nnsfun R mA.
-have mf : measurable_fun setT f by exact/EFin_measurable_fun/measurable_funP.
-have _ : (fun y => (y \in xsection A x)%:R%:E) = f \o (fun y => (x, y)).
-  by apply/funext => y/=; rewrite mem_xsection.
-have -> : xsection A x = (fun y => f (x, y)) @^-1` [set 1%E].
-  apply/funext => y/=; rewrite -(in_setE (xsection A x)) mem_xsection.
-  rewrite /f/= mindicE//; apply/propext; split=> [->//|[]].
-  by case: (_ \in _)=> // /esym/eqP; rewrite oner_eq0.
-by rewrite -(setTI (_ @^-1` _)); exact: measurable_fun_prod1.
+move=> mA; rewrite (xsection_indic R) -(setTI (_ @^-1` _)).
+by apply: measurable_fun_prod1 => //; exact/measurable_fun_indic.
 Qed.
 
 Lemma measurable_ysection A y : measurable A -> measurable (ysection A y).
 Proof.
-move=> mA.
-pose f : T1 * T2 -> \bar R := EFin \o indic_nnsfun R mA.
-have mf : measurable_fun setT f by apply/EFin_measurable_fun/measurable_funP.
-have _ : (fun x => (x \in ysection A y)%:R%:E) = f \o (fun x => (x, y)).
-  by apply/funext => x/=; rewrite mem_ysection.
-have -> : ysection A y = (fun x => f (x, y)) @^-1` [set 1%E].
-  apply/funext => x/=; rewrite -(in_setE (ysection A y)) mem_ysection.
-  rewrite /f/= mindicE//; apply/propext; split=> [->//|[]].
-  by case: (_ \in _)=> // /esym/eqP; rewrite oner_eq0.
-by rewrite -(setTI (_ @^-1` _)); exact: measurable_fun_prod2.
+move=> mA; rewrite (ysection_indic R) -(setTI (_ @^-1` _)).
+by apply: measurable_fun_prod2 => //; exact/measurable_fun_indic.
 Qed.
 
 End measurable_section.
 
 Section ndseq_closed_B.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
@@ -4134,7 +4114,7 @@ Qed.
 End xsection.
 
 Section ysection.
-Variables (m1 : {measure set T1 -> \bar R}).
+Variable m1 : {measure set T1 -> \bar R}.
 Let psi A := m1 \o ysection A.
 Let B := [set A | measurable A /\ measurable_fun setT (psi A)].
 
@@ -4156,8 +4136,7 @@ End ysection.
 End ndseq_closed_B.
 
 Section measurable_prod_subset.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
@@ -4245,9 +4224,8 @@ End ysection.
 End measurable_prod_subset.
 
 Section measurable_fun_xsection.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m2 : {measure set T2 -> \bar R}).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Variable m2 : {measure set T2 -> \bar R}.
 Hypothesis sf_m2 : sigma_finite setT m2.
 Implicit Types A : set (T1 * T2).
 
@@ -4286,9 +4264,8 @@ Qed.
 End measurable_fun_xsection.
 
 Section measurable_fun_ysection.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Variable m1 : {measure set T1 -> \bar R}.
 Hypothesis sf_m1 : sigma_finite setT m1.
 Implicit Types A : set (T1 * T2).
 
@@ -4334,8 +4311,7 @@ Definition product_measure1 d1 d2
 
 Section product_measure1.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis sm2 : sigma_finite setT m2.
 Implicit Types A : set (T1 * T2).
@@ -4343,10 +4319,7 @@ Implicit Types A : set (T1 * T2).
 Notation pm1 := (product_measure1 m1 sm2).
 
 Let pm10 : pm1 set0 = 0.
-Proof.
-rewrite /pm1 (eq_integral (cst 0)) ?integral0//= => x _.
-by rewrite xsection0 measure0.
-Qed.
+Proof. by rewrite /pm1 integral0_eq// => x/= _; rewrite xsection0 measure0. Qed.
 
 Let pm1_ge0 A : 0 <= pm1 A.
 Proof.
@@ -4355,15 +4328,16 @@ Qed.
 
 Let pm1_sigma_additive : semi_sigma_additive pm1.
 Proof.
-move=> F mF tF mUF; have -> : pm1 (\bigcup_n F n) = \sum_(n <oo) pm1 (F n).
-  transitivity (\int[m1]_x \sum_(n <oo) m2 (xsection (F n) x)).
-    apply: eq_integral => x _; apply/esym/cvg_lim => //=.
-    rewrite xsection_bigcup.
-    apply: (measure_sigma_additive _ (trivIset_xsection tF)).
-    by move=> ?; exact: measurable_xsection.
-  by rewrite integral_nneseries // => n; apply: measurable_fun_xsection => // /[!inE].
-apply/cvg_closeP; split; last by rewrite closeE.
-by apply: is_cvg_nneseries => *; exact: integral_ge0.
+move=> F mF tF mUF.
+rewrite [X in _ --> X](_ : _ = \sum_(n <oo) pm1 (F n)).
+  apply/cvg_closeP; split; last by rewrite closeE.
+  by apply: is_cvg_nneseries => *; exact: integral_ge0.
+rewrite -integral_nneseries //; last first.
+  by  move=> n; apply: measurable_fun_xsection => // /[!inE].
+apply: eq_integral => x _; apply/esym/cvg_lim => //=.
+rewrite xsection_bigcup.
+apply: (measure_sigma_additive _ (trivIset_xsection tF)) => ?.
+exact: measurable_xsection.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ pm1
@@ -4373,8 +4347,7 @@ End product_measure1.
 
 Section product_measure1E.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis sm2 : sigma_finite setT m2.
 Implicit Types A : set (T1 * T2).
@@ -4398,8 +4371,7 @@ End product_measure1E.
 
 Section product_measure_unique.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypotheses (sm1 : sigma_finite setT m1) (sm2 : sigma_finite setT m2).
 
@@ -4451,8 +4423,7 @@ Definition product_measure2 d1 d2
 
 Section product_measure2.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis sm1 : sigma_finite setT m1.
 Implicit Types A : set (T1 * T2).
@@ -4460,10 +4431,7 @@ Implicit Types A : set (T1 * T2).
 Notation pm2 := (product_measure2 sm1 m2).
 
 Let pm20 : pm2 set0 = 0.
-Proof.
-rewrite /pm2 (eq_integral (cst 0)) ?integral0//= => y _.
-by rewrite ysection0 measure0.
-Qed.
+Proof. by rewrite /pm2 integral0_eq// => y/= _; rewrite ysection0 measure0. Qed.
 
 Let pm2_ge0 A : 0 <= pm2 A.
 Proof.
@@ -4473,14 +4441,13 @@ Qed.
 Let pm2_sigma_additive : semi_sigma_additive pm2.
 Proof.
 move=> F mF tF mUF.
-have -> : pm2 (\bigcup_n F n) = \sum_(n <oo) pm2 (F n).
-  transitivity (\int[m2]_y \sum_(n <oo) m1 (ysection (F n) y)).
-    apply: eq_integral => y _; apply/esym/cvg_lim => //=.
-    rewrite ysection_bigcup.
-    apply: (measure_sigma_additive _ (trivIset_ysection tF)).
-    by move=> ?; apply: measurable_ysection.
-  rewrite integral_nneseries // => n; apply: measurable_fun_ysection => //.
-  by rewrite inE.
+rewrite [X in _ --> X](_ : _ = \sum_(n <oo) pm2 (F n)); last first.
+  rewrite -integral_nneseries//; last first.
+    by move=> n; apply: measurable_fun_ysection => //; rewrite inE.
+  apply: eq_integral => y _; apply/esym/cvg_lim => //=.
+  rewrite ysection_bigcup.
+  apply: (measure_sigma_additive _ (trivIset_ysection tF)) => ?.
+  exact: measurable_ysection.
 apply/cvg_closeP; split; last by rewrite closeE.
 by apply: is_cvg_nneseries => *; exact: integral_ge0.
 Qed.
@@ -4492,8 +4459,7 @@ End product_measure2.
 
 Section product_measure2E.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypothesis sm1 : sigma_finite setT m1.
 
@@ -4517,8 +4483,7 @@ End product_measure2E.
 
 Section fubini_functions.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Variable f : T1 * T2 -> \bar R.
 
@@ -4529,8 +4494,7 @@ End fubini_functions.
 
 Section fubini_tonelli.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypotheses (sm1 : sigma_finite setT m1) (sm2 : sigma_finite setT m2).
 
@@ -4654,7 +4618,7 @@ by apply/measurable_funeM/measurable_fun_ysection => // /[!inE].
 Qed.
 
 Let EFinf x : (f x)%:E =
-    \sum_(k \in range f) k%:E * (\1_(f @^-1` [set k]) x)%:E.
+  \sum_(k \in range f) k%:E * (\1_(f @^-1` [set k]) x)%:E.
 Proof. by rewrite fsumEFin //= fimfunE. Qed.
 
 Lemma sfun_fubini_tonelli1 : \int[m]_z (f z)%:E = \int[m1]_x F x.
@@ -4864,16 +4828,18 @@ Arguments measurable_fun_fubini_tonelli_G {d1 d2 T1 T2 R m1} sm1 f.
 
 Section fubini.
 Local Open Scope ereal_scope.
-Variables (d1 d2 : measure_display).
-Variables (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
 Hypotheses (sm1 : sigma_finite setT m1) (sm2 : sigma_finite setT m2).
 Variable f : T1 * T2 -> \bar R.
-Hypothesis mf : measurable_fun setT f.
 
 Let m := product_measure1 m1 sm2.
 HB.instance Definition _ := Measure.on m.
 
+Hypothesis imf : m.-integrable setT f.
+Let mf : measurable_fun setT f := imf.1.
+
+(* NB: only relies on mf *)
 Lemma fubini1a :
   m.-integrable setT f <-> \int[m1]_x \int[m2]_y `|f (x, y)| < +oo.
 Proof.
@@ -4901,8 +4867,7 @@ Proof.
 apply: (measurable_fun_fubini_tonelli_G _ (abse \o f)) => //=.
 exact: measurable_funT_comp.
 Qed.
-
-Hypothesis imf : m.-integrable setT f.
+(* /NB: only relies on mf *)
 
 Lemma ae_integrable1 :
   {ae m1, forall x, m2.-integrable setT (fun y => f (x, y))}.
