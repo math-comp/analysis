@@ -3511,7 +3511,7 @@ by rewrite /Hahn_ext /= measurable_mu_extE //;
   [exact: (mS i).2 | exact: (mS i).1].
 Qed.
 
-Lemma Hahn_ext_unique : @sigma_finite _ _ T setT mu ->
+Lemma Hahn_ext_unique : sigma_finite [set: T] mu ->
   (forall mu' : {measure set I -> \bar R},
     (forall X, d.-measurable X -> mu X = mu' X) ->
     (forall X, (d.-measurable).-sigma.-measurable X -> Hahn_ext X = mu' X)).
@@ -3522,6 +3522,7 @@ apply: (@measure_unique _ _ [the measurableType _ of I] d.-measurable F) => //.
 - by move=> A Am; rewrite /= /Hahn_ext measurable_mu_extE// mu'mu.
 - by move=> k; rewrite /= /Hahn_ext measurable_mu_extE.
 Qed.
+
 End Hahn_extension.
 
 Lemma caratheodory_measurable_mu_ext d (R : realType) (T : measurableType d)
