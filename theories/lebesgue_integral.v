@@ -4032,7 +4032,7 @@ Section xsection.
 Variables (pt2 : T2) (m2 : T1 -> {measure set T2 -> \bar R}).
 (* the generalization from m2 : {measure set T2 -> \bar R}t to
    T1 -> {measure set T2 -> \bar R} is needed to develop the theory
-   of kernels; the original type was sufficient for the the development
+   of kernels; the original type was sufficient for the development
    of the theory of integration  *)
 Let phi A x := m2 x (xsection A x).
 Let B := [set A | measurable A /\ measurable_fun setT (phi A)].

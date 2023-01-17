@@ -90,7 +90,7 @@ Lemma mscoreE t U : mscore t U = if U == set0 then 0 else `| (f t)%:E |.
 Proof.
 rewrite /mscore/= /mscale/=; have [->|->] := set_unit U.
   by rewrite eqxx dirac0 mule0.
-by rewrite diracT mule1 (negbTE (setT0 _)).
+by rewrite diracT mule1 (negbTE setT0).
 Qed.
 
 Lemma measurable_fun_mscore U : measurable_fun setT f ->
@@ -98,7 +98,7 @@ Lemma measurable_fun_mscore U : measurable_fun setT f ->
 Proof.
 move=> mr; under eq_fun do rewrite mscoreE/=.
 have [U0|U0] := eqVneq U set0; first exact: measurable_fun_cst.
-by apply: measurable_fun_comp => //; exact: measurable_fun_comp.
+by apply: measurable_funT_comp => //; exact: measurable_funT_comp.
 Qed.
 
 End mscore.
@@ -162,7 +162,7 @@ Lemma measurable_fun_k i U : measurable U -> measurable_fun setT (k mf i ^~ U).
 Proof.
 move=> /= mU; rewrite /k /= (_ : (fun x => _) =
   (fun x => if i%:R%:E <= x < i.+1%:R%:E then x else 0) \o (mscore f ^~ U)) //.
-apply: measurable_fun_comp => /=; last exact/measurable_fun_mscore.
+apply: measurable_funT_comp => /=; last exact/measurable_fun_mscore.
 rewrite (_ : (fun x => _) = (fun x => x *
     (\1_(`[i%:R%:E, i.+1%:R%:E [%classic : set _) x)%:E)); last first.
   apply/funext => x; case: ifPn => ix; first by rewrite indicE/= mem_set ?mule1.
@@ -532,9 +532,9 @@ Module Notations.
 
 Notation var1of2 := (@measurable_fun_fst _ _ _ _).
 Notation var2of2 := (@measurable_fun_snd _ _ _ _).
-Notation var1of3 := (measurable_fun_comp (@measurable_fun_fst _ _ _ _)
+Notation var1of3 := (measurable_funT_comp (@measurable_fun_fst _ _ _ _)
                                          (@measurable_fun_fst _ _ _ _)).
-Notation var2of3 := (measurable_fun_comp (@measurable_fun_snd _ _ _ _)
+Notation var2of3 := (measurable_funT_comp (@measurable_fun_snd _ _ _ _)
                                          (@measurable_fun_fst _ _ _ _)).
 Notation var3of3 := (@measurable_fun_snd _ _ _ _).
 
@@ -574,7 +574,7 @@ Qed.
 Lemma scoreE d' (T' : measurableType d') (x : T * T') (U : set T') (f : R -> R)
     (r : R) (r0 : (0 <= r)%R)
     (f0 : (forall r, 0 <= r -> 0 <= f r)%R) (mf : measurable_fun setT f) :
-  score (measurable_fun_comp mf var2of2)
+  score (measurable_funT_comp mf var2of2)
     (x, r) (curry (snd \o fst) x @^-1` U) =
   (f r)%:E * \d_x.2 U.
 Proof. by rewrite /score/= /mscale/= ger0_norm// f0. Qed.
@@ -753,7 +753,7 @@ Proof.
 apply: measurable_funM => /=.
   apply: measurable_funM => //=; last exact: measurable_fun_cst.
   exact/measurable_fun_exprn/measurable_fun_id.
-apply: measurable_fun_comp; last exact: measurable_fun_opp.
+apply: measurable_funT_comp; last exact: measurable_fun_opp.
 by apply: continuous_measurable_fun; exact: continuous_expR.
 Qed.
 
@@ -778,7 +778,7 @@ Proof. by move=> r0; rewrite /exp_density mulr_ge0// expR_ge0. Qed.
 Lemma mexp_density x : measurable_fun setT (exp_density x).
 Proof.
 apply: measurable_funM => /=; first exact: measurable_fun_id.
-apply: measurable_fun_comp.
+apply: measurable_funT_comp.
   by apply: continuous_measurable_fun; exact: continuous_expR.
 apply: measurable_funM => /=; first exact: measurable_fun_opp.
 exact: measurable_fun_cst.
@@ -790,7 +790,7 @@ Lemma letin_sample_bernoulli d d' (T : measurableType d)
     (T' : measurableType d') (R : realType)(r : {nonneg R}) (r1 : (r%:num <= 1)%R)
     (u : R.-sfker [the measurableType _ of (T * bool)%type] ~> T') x y :
   letin (sample [the probability _ _ of bernoulli r1]) u x y =
-  r%:num%:E * u (x, true) y + (`1- (r%:num : R))%:E * u (x, false) y.
+  r%:num%:E * u (x, true) y + (`1- (r%:num))%:E * u (x, false) y.
 Proof.
 rewrite letinE/=.
 rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
@@ -809,10 +809,7 @@ Definition sample_and_return : R.-sfker T ~> _ :=
 Lemma sample_and_returnE t U : sample_and_return t U =
   (2 / 7%:R)%:E * \d_true U + (5%:R / 7%:R)%:E * \d_false U.
 Proof.
-rewrite /sample_and_return.
-rewrite letin_sample_bernoulli.
-rewrite !retE.
-by rewrite onem27.
+by rewrite /sample_and_return letin_sample_bernoulli !retE onem27.
 Qed.
 
 End sample_and_return.
@@ -826,8 +823,7 @@ Context d (T : measurableType d) (R : realType).
    let r = case x of {(1, _) => return (k3()), (2, _) => return (k10())} in
    return r *)
 
-Definition sample_and_branch :
-  R.-sfker T ~> mR R :=
+Definition sample_and_branch : R.-sfker T ~> mR R :=
   letin
     (sample [the probability _ _ of bernoulli p27]) (* T -> B *)
     (ite var2of2 (ret k3) (ret k10)).
@@ -836,9 +832,7 @@ Lemma sample_and_branchE t U : sample_and_branch t U =
   (2 / 7%:R)%:E * \d_(3%:R : R) U +
   (5%:R / 7%:R)%:E * \d_(10%:R : R) U.
 Proof.
-rewrite /sample_and_branch letin_sample_bernoulli/=.
-rewrite !iteE !retE.
-by rewrite onem27.
+by rewrite /sample_and_branch letin_sample_bernoulli/= !iteE !retE onem27.
 Qed.
 
 End sample_and_branch.
@@ -872,24 +866,13 @@ Lemma bernoulli_andE t U :
   bernoulli_and t U =
   sample [the probability _ _ of bernoulli p14] t U.
 Proof.
-rewrite /bernoulli_and.
-rewrite !letin_sample_bernoulli//=.
-rewrite /mand/=.
-rewrite muleDr//=.
-rewrite -muleDl//.
-rewrite !muleA.
-rewrite -addeA.
-rewrite -muleDl//.
-rewrite -!EFinM.
-rewrite !onem1S/= -splitr mulr1.
-have -> : (1 / 2 * (1 / 2) = 1 / 4 :> R)%R.
-  by rewrite mulf_div mulr1// -natrM.
-rewrite /bernoulli/= measure_addE/= /mscale/= -!EFinM.
-congr( _ + (_ * _)%:E).
+rewrite /bernoulli_and 3!letin_sample_bernoulli/= /mand/= muleDr//= -muleDl//.
+rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
+have -> : (1 / 2 * (1 / 2) = 1 / 4 :> R)%R by rewrite mulf_div mulr1// -natrM.
+rewrite /bernoulli/= measure_addE/= /mscale/= -!EFinM; congr( _ + (_ * _)%:E).
 have -> : (1 / 2 = 2 / 4 :> R)%R.
   by apply/eqP; rewrite eqr_div// ?pnatr_eq0// mul1r -natrM.
-rewrite onem1S//.
-by rewrite -mulrDl.
+by rewrite onem1S// -mulrDl.
 Qed.
 
 End bernoulli_and.
@@ -902,7 +885,7 @@ Definition kstaton_bus : R.-sfker T ~> mbool :=
   letin (sample [the probability _ _ of bernoulli p27])
   (letin
     (letin (ite var2of2 (ret k3) (ret k10))
-      (score (measurable_fun_comp mh var3of3)))
+      (score (measurable_funT_comp mh var3of3)))
     (ret var2of3)).
 
 Definition staton_bus := normalize kstaton_bus.
