@@ -126,6 +126,7 @@
   to perform some tactics under a `\forall x \near F, ...` quantification.
 - in `normedtype.v`, added notations `^'+`, `^'-`, `+oo_R`, `-oo_R`
 - in `topology.v`
+  + definition `quotient_topology`
   + definition `quotient_topologicalType_mixin`, `quotient_topologicalType`
   + definition `quotient_open`
   + lemma `pi_continuous`, `quotient_continuous`,`repr_comp_continuous`
