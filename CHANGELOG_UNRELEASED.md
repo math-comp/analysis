@@ -127,6 +127,7 @@
 - in `normedtype.v`, added notations `^'+`, `^'-`, `+oo_R`, `-oo_R`
 - in `topology.v`
   + definition `quotient_topologicalType_mixin`, `quotient_topologicalType`
+  + definition `quotient_open`
   + lemma `pi_continuous`, `quotient_continuous`,`repr_comp_continuous`
 
 - in `classical_sets.v`:
