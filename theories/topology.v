@@ -302,7 +302,9 @@ Require Import reals signed.
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
 (*          weak_pseudoMetricType == the metric space for weak topologies     *)
-(*       quotient_topologicalType == the quotient topology                    *)
+(*            quotient_topology Q == the quotient topology corresponding to   *)
+(*                                   quotient Q : quotType T. where T has     *)
+(*                                   type topologicalType                     *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -4813,9 +4815,13 @@ Definition fct_pseudoMetricType_mixin :=
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
 
+Definition quotient_topology (T : topologicalType) (Q : quotType T) := Q.
+
 Section quotients.
 Local Open Scope quotient_scope.
-Context {T : topologicalType} {Q : quotType T}.
+Context {T : topologicalType} {Q0 : quotType T}.
+
+Let Q := quotient_topology Q0.
 
 Canonical quotient_eq := EqType Q gen_eqMixin.
 Canonical quotient_choice := ChoiceType Q gen_choiceMixin.
