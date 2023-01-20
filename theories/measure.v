@@ -88,6 +88,11 @@ From HB Require Import structures.
 (*     isMeasure == factory corresponding to the type of measures             *)
 (*     Measure == structure corresponding to measures                         *)
 (*     finite_measure mu == the measure mu is finite                          *)
+(*  {sigma_finite_additive_measure set T -> \bar R} ==                        *)
+(*                   additive measures that are also sigma finite             *)
+(*  {sigma_finite_measure set T -> \bar R} ==                                 *)
+(*                    measures that are also sigma finite                     *)
+(*     isSigmaFinite == factory corresponding to sigma finiteness             *)
 (*                                                                            *)
 (*  pushforward mf m == pushforward/image measure of m by f, where mf is a    *)
 (*                      proof that f is measurable                            *)
@@ -1579,6 +1584,33 @@ move=> n; split; first by case: ifPn.
 by case: ifPn => // _; rewrite ?measure0//; exact: finite_measure.
 Qed.
 
+HB.mixin Record isSigmaFinite d (R : numFieldType) (T : semiRingOfSetsType d)
+    (mu : set T -> \bar R) := {
+  sigma_finiteT : sigma_finite setT mu
+}.
+
+#[short(type="sigma_finite_additive_measure")]
+HB.structure Definition SigmaFiniteAdditiveMeasure d R T :=
+  {mu of isSigmaFinite d R T mu & @AdditiveMeasure d R T mu}.
+Arguments sigma_finiteT {d R T} s.
+
+Notation "{ 'sigma_finite_additive_measure' 'set' T '->' '\bar' R }" :=
+  (sigma_finite_additive_measure R T)
+  (at level 36, T, R at next level,
+    format "{ 'sigma_finite_additive_measure'  'set'  T  '->'  '\bar'  R }")
+  : ring_scope.
+
+#[global]
+Hint Resolve sigma_finiteT : core.
+
+#[short(type="sigma_finite_measure")]
+HB.structure Definition SigmaFiniteMeasure d R T :=
+  {mu of isSigmaFinite d R T mu & @Measure d R T mu}.
+
+Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" := (sigma_finite_measure R T)
+  (at level 36, T, R at next level,
+    format "{ 'sigma_finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+
 Section pushforward_measure.
 Local Open Scope ereal_scope.
 Context d d' (T1 : measurableType d) (T2 : measurableType d') (f : T1 -> T2).
@@ -1927,6 +1959,8 @@ Proof.
 exists (fun n => `I_n.+1); first by apply/seteqP; split=> //x _; exists x => /=.
 by move=> k; split => //; rewrite /counting/= asboolT// ltry.
 Qed.
+HB.instance Definition _ R :=
+  @isSigmaFinite.Build _ _ _ (counting R) (sigma_finite_counting R).
 
 Lemma big_trivIset (I : choiceType) D T (R : Type) (idx : R)
    (op : Monoid.com_law idx) (A : I -> set T) (F : set T -> R) :

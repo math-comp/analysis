@@ -11,6 +11,7 @@
   + mixin `isProbability`, structure `Probability`, type `probability`
   + lemma `probability_le1`
   + definition `discrete_measurable_unit`
+  + structures `sigma_finite_additive_measure` and `sigma_finite_measure`
 
 - in `constructive_ereal.v`:
   + lemma `oppe_inj`
@@ -32,6 +33,8 @@
   + lemma `measurable_fun_opp`
 - in `lebesgue_integral.v`
   + lemmas `integral0_eq`, `fubini_tonelli`
+  + product measures now takes `{measure _ -> _}` arguments and their
+    theory quantify over a `{sigma_finite_measure}`.
 
 - in `classical_sets.v`:
   + lemma `trivIset_mkcond`
@@ -86,5 +89,3 @@
 ### Infrastructure
 
 ### Misc
-
-
