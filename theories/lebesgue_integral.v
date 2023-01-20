@@ -39,10 +39,12 @@ Require Import lebesgue_measure numfun.
 (*     mu.-integrable D f == f is measurable over D and the integral of f     *)
 (*                           w.r.t. D is < +oo                                *)
 (*            ae_eq D f g == f is equal to g almost everywhere                *)
-(* product_measure1 m1 s2 == product measure over T1 * T2, m1 is a measure    *)
-(*                           measure over T1, s2 is a proof that a measure m2 *)
-(*                           over T2 is sigma-finite                          *)
-(* product_measure2 s2 m2 == product_measure1 mutatis mutandis                *)
+(*               m1 \x m2 == product measure over T1 * T2, m1 is a measure    *)
+(*                           measure over T1, and  m2 is a sigma finite       *)
+(*                           measure over T2                                  *)
+(*              m1 \x^ m2 == product measure over T1 * T2, m2 is a measure    *)
+(*                           measure over T1, and m1 is a sigma finite        *)
+(*                           measure over T2                                  *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -4225,8 +4227,7 @@ End measurable_prod_subset.
 
 Section measurable_fun_xsection.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m2 : {measure set T2 -> \bar R}.
-Hypothesis sf_m2 : sigma_finite setT m2.
+Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
 Implicit Types A : set (T1 * T2).
 
 Let phi A := m2 \o xsection A.
@@ -4236,7 +4237,7 @@ Lemma measurable_fun_xsection A :
   A \in measurable -> measurable_fun setT (phi A).
 Proof.
 move: A; suff : measurable `<=` B by move=> + A; rewrite inE => /[apply] -[].
-move/sigma_finiteP : sf_m2 => [F F_T [F_nd F_oo]] X mX.
+have /sigma_finiteP [F F_T [F_nd F_oo]] := sigma_finiteT m2 => X mX.
 have -> : X = \bigcup_n (X `&` (setT `*` F n)).
   by rewrite -setI_bigcupr -setM_bigcupr -F_T setMTT setIT.
 apply: xsection_ndseq_closed.
@@ -4265,8 +4266,7 @@ End measurable_fun_xsection.
 
 Section measurable_fun_ysection.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variable m1 : {measure set T1 -> \bar R}.
-Hypothesis sf_m1 : sigma_finite setT m1.
+Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
 Implicit Types A : set (T1 * T2).
 
 Let phi A := m1 \o ysection A.
@@ -4275,7 +4275,7 @@ Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 Lemma measurable_fun_ysection A : A \in measurable -> measurable_fun setT (phi A).
 Proof.
 move: A; suff : measurable `<=` B by move=> + A; rewrite inE => /[apply] -[].
-move : sf_m1 => /sigma_finiteP[F F_T [F_nd F_oo]] X mX.
+have /sigma_finiteP[F F_T [F_nd F_oo]] := sigma_finiteT m1 => X mX.
 have -> : X = \bigcup_n (X `&` (F n `*` setT)).
   by rewrite -setI_bigcupr -setM_bigcupl -F_T setMTT setIT.
 apply: ysection_ndseq_closed.
@@ -4303,33 +4303,39 @@ Qed.
 
 End measurable_fun_ysection.
 
-Definition product_measure1 d1 d2
-    (T1 : measurableType d1) (T2 : measurableType d2) (R : realType)
-    (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R})
-    (sm2 : sigma_finite setT m2) :=
-  (fun A => \int[m1]_x (m2 \o xsection A) x)%E.
+Section product_measures.
+
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
+Context (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
+Definition product_measure1 := (fun A => \int[m1]_x (m2 \o xsection A) x)%E.
+Definition product_measure2 := (fun A => \int[m2]_x (m1 \o ysection A) x)%E.
+
+End product_measures.
+
+Notation "m1 '\x' m2" := (product_measure1 m1 m2)
+  (at level 40, m2 at next level) : ereal_scope.
+Notation "m1 '\x^' m2" := (product_measure2 m1 m2)
+  (at level 40, m2 at next level) : ereal_scope.
 
 Section product_measure1.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypothesis sm2 : sigma_finite setT m2.
+Variable (m1 : {measure set T1 -> \bar R}).
+Variable (m2 : {sigma_finite_measure set T2 -> \bar R}).
 Implicit Types A : set (T1 * T2).
 
-Notation pm1 := (product_measure1 m1 sm2).
+Let pm10 : (m1 \x m2) set0 = 0.
+Proof. by rewrite [LHS]integral0_eq// => x/= _; rewrite xsection0 measure0. Qed.
 
-Let pm10 : pm1 set0 = 0.
-Proof. by rewrite /pm1 integral0_eq// => x/= _; rewrite xsection0 measure0. Qed.
-
-Let pm1_ge0 A : 0 <= pm1 A.
+Let pm1_ge0 A : 0 <= (m1 \x m2) A.
 Proof.
 by apply: integral_ge0 => // *; exact/measure_ge0/measurable_xsection.
 Qed.
 
-Let pm1_sigma_additive : semi_sigma_additive pm1.
+Let pm1_sigma_additive : semi_sigma_additive (m1 \x m2).
 Proof.
 move=> F mF tF mUF.
-rewrite [X in _ --> X](_ : _ = \sum_(n <oo) pm1 (F n)).
+rewrite [X in _ --> X](_ : _ = \sum_(n <oo) (m1 \x m2) (F n)).
   apply/cvg_closeP; split; last by rewrite closeE.
   by apply: is_cvg_nneseries => *; exact: integral_ge0.
 rewrite -integral_nneseries //; last first.
@@ -4340,7 +4346,7 @@ apply: (measure_sigma_additive _ (trivIset_xsection tF)) => ?.
 exact: measurable_xsection.
 Qed.
 
-HB.instance Definition _ := isMeasure.Build _ _ _ pm1
+HB.instance Definition _ := isMeasure.Build _ _ _ (m1 \x m2)
   pm10 pm1_ge0 pm1_sigma_additive.
 
 End product_measure1.
@@ -4348,13 +4354,13 @@ End product_measure1.
 Section product_measure1E.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypothesis sm2 : sigma_finite setT m2.
+Variable (m1 : {measure set T1 -> \bar R}).
+Variable (m2 : {sigma_finite_measure set T2 -> \bar R}).
 Implicit Types A : set (T1 * T2).
 
 Lemma product_measure1E (A1 : set T1) (A2 : set T2) :
   measurable A1 -> measurable A2 ->
-  product_measure1 m1 sm2 (A1 `*` A2) = m1 A1 * m2 A2.
+  (m1 \x m2) (A1 `*` A2) = m1 A1 * m2 A2.
 Proof.
 move=> mA1 mA2 /=; rewrite /product_measure1 /=.
 rewrite (_ : (fun _ => _) = fun x => m2 A2 * (\1_A1 x)%:E); last first.
@@ -4372,18 +4378,18 @@ End product_measure1E.
 Section product_measure_unique.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypotheses (sm1 : sigma_finite setT m1) (sm2 : sigma_finite setT m2).
+Variable (m1 : {sigma_finite_measure set T1 -> \bar R}).
+Variable (m2 : {sigma_finite_measure set T2 -> \bar R}).
 
 Lemma product_measure_unique
     (m' : {measure set [the semiRingOfSetsType _ of (T1 * T2)%type] -> \bar R}) :
     (forall A1 A2, measurable A1 -> measurable A2 ->
       m' (A1 `*` A2) = m1 A1 * m2 A2) ->
-  forall X : set (T1 * T2), measurable X -> product_measure1 m1 sm2 X = m' X.
+  forall X : set (T1 * T2), measurable X -> (m1 \x m2) X = m' X.
 Proof.
-move=> m'E; pose m := product_measure1 m1 sm2.
-move/sigma_finiteP : sm1 => [F1 F1_T [F1_nd F1_oo]].
-move/sigma_finiteP : sm2 => [F2 F2_T [F2_nd F2_oo]].
+move=> m'E; pose m := product_measure1 m1 m2.
+have /sigma_finiteP [F1 F1_T [F1_nd F1_oo]] := sigma_finiteT m1.
+have /sigma_finiteP [F2 F2_T [F2_nd F2_oo]] := sigma_finiteT m2.
 have UF12T : \bigcup_k (F1 k `*` F2 k) = setT.
   rewrite -setMTT F1_T F2_T predeqE => -[x y]; split.
     by move=> [n _ []/= ? ?]; split; exists n.
@@ -4415,33 +4421,25 @@ Qed.
 
 End product_measure_unique.
 
-Definition product_measure2 d1 d2
-    (T1 : measurableType d1) (T2 : measurableType d2) (R : realType)
-    (m1 : {measure set T1 -> \bar R}) (sm1 : sigma_finite setT m1)
-    (m2 : {measure set T2 -> \bar R}) :=
-  (fun A => \int[m2]_x (m1 \o ysection A) x)%E.
-
 Section product_measure2.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypothesis sm1 : sigma_finite setT m1.
+Variable (m1 : {sigma_finite_measure set T1 -> \bar R}).
+Variable (m2 : {measure set T2 -> \bar R}).
 Implicit Types A : set (T1 * T2).
 
-Notation pm2 := (product_measure2 sm1 m2).
+Let pm20 : (m1 \x^ m2) set0 = 0.
+Proof. by rewrite /(_ \x^ _) integral0_eq// => y/= _; rewrite ysection0 measure0. Qed.
 
-Let pm20 : pm2 set0 = 0.
-Proof. by rewrite /pm2 integral0_eq// => y/= _; rewrite ysection0 measure0. Qed.
-
-Let pm2_ge0 A : 0 <= pm2 A.
+Let pm2_ge0 A : 0 <= (m1 \x^ m2) A.
 Proof.
 by apply: integral_ge0 => // *; exact/measure_ge0/measurable_ysection.
 Qed.
 
-Let pm2_sigma_additive : semi_sigma_additive pm2.
+Let pm2_sigma_additive : semi_sigma_additive (m1 \x^ m2).
 Proof.
 move=> F mF tF mUF.
-rewrite [X in _ --> X](_ : _ = \sum_(n <oo) pm2 (F n)); last first.
+rewrite [X in _ --> X](_ : _ = \sum_(n <oo) (m1 \x^ m2) (F n)); last first.
   rewrite -integral_nneseries//; last first.
     by move=> n; apply: measurable_fun_ysection => //; rewrite inE.
   apply: eq_integral => y _; apply/esym/cvg_lim => //=.
@@ -4452,7 +4450,7 @@ apply/cvg_closeP; split; last by rewrite closeE.
 by apply: is_cvg_nneseries => *; exact: integral_ge0.
 Qed.
 
-HB.instance Definition _ := isMeasure.Build _ _ _ pm2
+HB.instance Definition _ := isMeasure.Build _ _ _ (m1 \x^ m2)
   pm20 pm2_ge0 pm2_sigma_additive.
 
 End product_measure2.
@@ -4460,12 +4458,12 @@ End product_measure2.
 Section product_measure2E.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypothesis sm1 : sigma_finite setT m1.
+Variable (m1 : {sigma_finite_measure set T1 -> \bar R}).
+Variable (m2 : {measure set T2 -> \bar R}).
 
 Lemma product_measure2E (A1 : set T1) (A2 : set T2)
     (mA1 : measurable A1) (mA2 : measurable A2) :
-  product_measure2 sm1 m2 (A1 `*` A2) = m1 A1 * m2 A2.
+  (m1 \x^ m2) (A1 `*` A2) = m1 A1 * m2 A2.
 Proof.
 have mA1A2 : measurable (A1 `*` A2) by apply: measurableM.
 transitivity (\int[m2]_y (m1 \o ysection (A1 `*` A2)) y) => //.
@@ -4495,13 +4493,8 @@ End fubini_functions.
 Section fubini_tonelli.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypotheses (sm1 : sigma_finite setT m1) (sm2 : sigma_finite setT m2).
-
-Let m := product_measure1 m1 sm2.
-Let m' := product_measure2 sm1 m2.
-HB.instance Definition _ := Measure.on m.
-HB.instance Definition _ := Measure.on m'.
+Variable (m1 : {sigma_finite_measure set T1 -> \bar R}).
+Variable (m2 : {sigma_finite_measure set T2 -> \bar R}).
 
 Section indic_fubini_tonelli.
 Variables (A : set (T1 * T2)) (mA : measurable A).
@@ -4547,20 +4540,17 @@ rewrite indic_fubini_tonelli_GE//; apply: measurable_fun_ysection => //.
 by rewrite inE.
 Qed.
 
-Let mE : m A = \int[m1]_x F x.
-Proof. by rewrite /m /product_measure1 /= indic_fubini_tonelli_FE. Qed.
-
-Lemma indic_fubini_tonelli1 : \int[m]_z (f z)%:E = \int[m1]_x F x.
+Lemma indic_fubini_tonelli1 : \int[m1 \x m2]_z (f z)%:E = \int[m1]_x F x.
 Proof. by rewrite /f integral_indic// setIT indic_fubini_tonelli_FE. Qed.
 
-Lemma indic_fubini_tonelli2 : \int[m']_z (f z)%:E = \int[m2]_y G y.
- by rewrite /f integral_indic// setIT indic_fubini_tonelli_GE. Qed.
+Lemma indic_fubini_tonelli2 : \int[m1 \x^ m2]_z (f z)%:E = \int[m2]_y G y.
+Proof. by rewrite /f integral_indic// setIT indic_fubini_tonelli_GE. Qed.
 
 Lemma indic_fubini_tonelli : \int[m1]_x F x = \int[m2]_y G y.
 Proof.
 rewrite -indic_fubini_tonelli1// -indic_fubini_tonelli2//.
 rewrite integral_indic // integral_indic // setIT/=.
-by apply: product_measure_unique => //= ? ? ? ?; rewrite /m' product_measure2E.
+by apply: product_measure_unique => //= ? ? ? ?; rewrite product_measure2E.
 Qed.
 
 End indic_fubini_tonelli.
@@ -4621,7 +4611,7 @@ Let EFinf x : (f x)%:E =
   \sum_(k \in range f) k%:E * (\1_(f @^-1` [set k]) x)%:E.
 Proof. by rewrite fsumEFin //= fimfunE. Qed.
 
-Lemma sfun_fubini_tonelli1 : \int[m]_z (f z)%:E = \int[m1]_x F x.
+Lemma sfun_fubini_tonelli1 : \int[m1 \x m2]_z (f z)%:E = \int[m1]_x F x.
 Proof.
 under [LHS]eq_integral
   do rewrite EFinf; rewrite ge0_integral_fsum //; last 2 first.
@@ -4649,7 +4639,7 @@ apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
 by under eq_fsbigr do rewrite indic_fubini_tonelli_FE//.
 Qed.
 
-Lemma sfun_fubini_tonelli2 : \int[m']_z (f z)%:E = \int[m2]_y G y.
+Lemma sfun_fubini_tonelli2 : \int[m1 \x^ m2]_z (f z)%:E = \int[m2]_y G y.
 Proof.
 under [LHS]eq_integral
   do rewrite EFinf; rewrite ge0_integral_fsum //; last 2 first.
@@ -4677,31 +4667,10 @@ apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
 by under eq_fsbigr do rewrite indic_fubini_tonelli_GE//.
 Qed.
 
-Lemma sfun_fubini_tonelli : \int[m]_z (f z)%:E = \int[m']_z (f z)%:E.
+Lemma sfun_fubini_tonelli : \int[m1 \x m2]_z (f z)%:E = \int[m1 \x^ m2]_z (f z)%:E.
 Proof.
-under eq_integral do rewrite EFinf.
-under [RHS]eq_integral do rewrite EFinf.
-rewrite ge0_integral_fsum //; last 2 first.
-  - move=> i.
-    exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
-  - by move=> r z _; exact: nnfun_muleindic_ge0.
-transitivity (\sum_(k \in range f) k%:E *
-    \int[m']_z ((EFin \o \1_(f @^-1` [set k])) z)).
-  apply: eq_fsbigr => i; rewrite inE => -[t _ <-].
-  rewrite ge0_integralM//; last 3 first.
-    - exact/EFin_measurable_fun/measurable_fun_indic.
-    - by move=> /= x _; rewrite lee_fin.
-    - by rewrite lee_fin.
-  rewrite indic_fubini_tonelli1// indic_fubini_tonelli//.
-  by rewrite -indic_fubini_tonelli2.
-apply/esym; rewrite ge0_integral_fsum //; last 2 first.
-  - move=> i.
-    exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
-  - by move=> r z _; exact: nnfun_muleindic_ge0.
-apply: eq_fsbigr => i; rewrite inE => -[x _ <-].
-rewrite ge0_integralM//; last by rewrite lee_fin.
-- exact/EFin_measurable_fun/measurable_fun_indic.
-- by move=> /= y _; rewrite lee_fin.
+apply: eq_measure_integral => /= A Ameasurable _.
+by apply: product_measure_unique => //= *; rewrite product_measure2E.
 Qed.
 
 End sfun_fubini_tonelli.
@@ -4747,7 +4716,7 @@ apply: (emeasurable_fun_cvg (G_ g)) => //.
   - by move=> x _ a b ab; rewrite lee_fin; exact/lefP/g_nd.
 Qed.
 
-Lemma fubini_tonelli1 : \int[m]_z f z = \int[m1]_x F x.
+Lemma fubini_tonelli1 : \int[m1 \x m2]_z f z = \int[m1]_x F x.
 Proof.
 have [g [g_nd /= g_f]] := approximation measurableT mf (fun x _ => f0 x).
 have F_F x : F x = lim (F_ g ^~ x).
@@ -4758,7 +4727,7 @@ have F_F x : F x = lim (F_ g ^~ x).
     - by move=> n /= y _; rewrite lee_fin; exact: fun_ge0.
     - by move=> y /= _ a b; rewrite lee_fin => /g_nd/lefP; exact.
   by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: g_f.
-rewrite [RHS](_ : _ = lim (fun n => \int[m]_z (EFin \o g n) z)).
+rewrite [RHS](_ : _ = lim (fun n => \int[m1 \x m2]_z (EFin \o g n) z)).
   rewrite -monotone_convergence //; last 3 first.
     - by move=> n; exact/EFin_measurable_fun.
     - by move=> n /= x _; rewrite lee_fin; exact: fun_ge0.
@@ -4780,7 +4749,7 @@ rewrite -monotone_convergence //; first exact: eq_integral.
   + by move=> y _; rewrite lee_fin; move/g_nd : ab => /lefP; exact.
 Qed.
 
-Lemma fubini_tonelli2 : \int[m]_z f z = \int[m2]_y G y.
+Lemma fubini_tonelli2 : \int[m1 \x m2]_z f z = \int[m2]_y G y.
 Proof.
 have [g [g_nd /= g_f]] := approximation measurableT mf (fun x _ => f0 x).
 have G_G y : G y = lim (G_ g ^~ y).
@@ -4791,7 +4760,7 @@ have G_G y : G y = lim (G_ g ^~ y).
     - by move=> n /= x _; rewrite lee_fin; exact: fun_ge0.
     - by move=> x /= _ a b; rewrite lee_fin => /g_nd/lefP; exact.
   by apply: eq_integral => x _; apply/esym/cvg_lim => //; exact: g_f.
-rewrite [RHS](_ : _ = lim (fun n => \int[m]_z (EFin \o g n) z)).
+rewrite [RHS](_ : _ = lim (fun n => \int[m1 \x m2]_z (EFin \o g n) z)).
   rewrite -monotone_convergence //; last 3 first.
     - by move=> n; exact/EFin_measurable_fun.
     - by move=> n /= x _; rewrite lee_fin; exact: fun_ge0.
@@ -4820,51 +4789,48 @@ Proof. by rewrite -fubini_tonelli1// fubini_tonelli2. Qed.
 End fubini_tonelli.
 
 End fubini_tonelli.
-Arguments fubini_tonelli1 {d1 d2 T1 T2 R m1 m2} sm2 f.
-Arguments fubini_tonelli2 {d1 d2 T1 T2 R m1 m2} sm1 sm2 f.
-Arguments fubini_tonelli {d1 d2 T1 T2 R m1 m2} sm1 sm2 f.
-Arguments measurable_fun_fubini_tonelli_F {d1 d2 T1 T2 R m2} sm2 f.
-Arguments measurable_fun_fubini_tonelli_G {d1 d2 T1 T2 R m1} sm1 f.
+Arguments fubini_tonelli1 {d1 d2 T1 T2 R m1 m2} f.
+Arguments fubini_tonelli2 {d1 d2 T1 T2 R m1 m2} f.
+Arguments fubini_tonelli {d1 d2 T1 T2 R m1 m2} f.
+Arguments measurable_fun_fubini_tonelli_F {d1 d2 T1 T2 R m2} f.
+Arguments measurable_fun_fubini_tonelli_G {d1 d2 T1 T2 R m1} f.
 
 Section fubini.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Variables (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
-Hypotheses (sm1 : sigma_finite setT m1) (sm2 : sigma_finite setT m2).
+Variable (m1 : {sigma_finite_measure set T1 -> \bar R}).
+Variable (m2 : {sigma_finite_measure set T2 -> \bar R}).
 Variable f : T1 * T2 -> \bar R.
 
-Let m := product_measure1 m1 sm2.
-HB.instance Definition _ := Measure.on m.
-
-Hypothesis imf : m.-integrable setT f.
+Hypothesis imf : (m1 \x m2).-integrable setT f.
 Let mf : measurable_fun setT f := imf.1.
 
 (* NB: only relies on mf *)
 Lemma fubini1a :
-  m.-integrable setT f <-> \int[m1]_x \int[m2]_y `|f (x, y)| < +oo.
+  (m1 \x m2).-integrable setT f <-> \int[m1]_x \int[m2]_y `|f (x, y)| < +oo.
 Proof.
 split=> [[_]|] ioo.
-- by rewrite -(fubini_tonelli1 _ (abse \o f))//=; exact: measurable_funT_comp.
+- by rewrite -(fubini_tonelli1 (abse \o f))//=; exact: measurable_funT_comp.
 - by split=> //; rewrite fubini_tonelli1//; exact: measurable_funT_comp.
 Qed.
 
 Lemma fubini1b :
-  m.-integrable setT f <-> \int[m2]_y \int[m1]_x `|f (x, y)| < +oo.
+  (m1 \x m2).-integrable setT f <-> \int[m2]_y \int[m1]_x `|f (x, y)| < +oo.
 Proof.
 split=> [[_]|] ioo.
-- by rewrite -(fubini_tonelli2 _ _ (abse \o f))//=; exact: measurable_funT_comp.
+- by rewrite -(fubini_tonelli2 (abse \o f))//=; exact: measurable_funT_comp.
 - by split=> //; rewrite fubini_tonelli2//; exact: measurable_funT_comp.
 Qed.
 
 Let measurable_fun1 : measurable_fun setT (fun x => \int[m2]_y `|f (x, y)|).
 Proof.
-apply: (measurable_fun_fubini_tonelli_F _ (abse \o f)) => //=.
+apply: (measurable_fun_fubini_tonelli_F (abse \o f)) => //=.
 exact: measurable_funT_comp.
 Qed.
 
 Let measurable_fun2 : measurable_fun setT (fun y => \int[m1]_x `|f (x, y)|).
 Proof.
-apply: (measurable_fun_fubini_tonelli_G _ (abse \o f)) => //=.
+apply: (measurable_fun_fubini_tonelli_G (abse \o f)) => //=.
 exact: measurable_funT_comp.
 Qed.
 (* /NB: only relies on mf *)
@@ -5001,14 +4967,14 @@ split=> //; apply: le_lt_trans (fubini1b.1 imf); apply: ge0_le_integral => //.
   + by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse lee_addr.
 Qed.
 
-Lemma fubini1 : \int[m1]_x F x = \int[m]_z f z.
+Lemma fubini1 : \int[m1]_x F x = \int[m1 \x m2]_z f z.
 Proof.
 rewrite FE integralB// [in RHS]integralE//.
 rewrite fubini_tonelli1//; last exact: emeasurable_fun_funepos.
 by rewrite fubini_tonelli1//; exact: emeasurable_fun_funeneg.
 Qed.
 
-Lemma fubini2 : \int[m2]_x G x = \int[m]_z f z.
+Lemma fubini2 : \int[m2]_x G x = \int[m1 \x m2]_z f z.
 Proof.
 rewrite GE integralB// [in RHS]integralE//.
 rewrite fubini_tonelli2//; last exact: emeasurable_fun_funepos.
