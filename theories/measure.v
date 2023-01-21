@@ -88,8 +88,8 @@ From HB Require Import structures.
 (*     isMeasure == factory corresponding to the type of measures             *)
 (*     Measure == structure corresponding to measures                         *)
 (*     finite_measure mu == the measure mu is finite                          *)
-(*  {sigma_finite_additive_measure set T -> \bar R} ==                        *)
-(*                   additive measures that are also sigma finite             *)
+(*  {sigma_finite_content set T -> \bar R} == contents that are also sigma    *)
+(*                                            finite                          *)
 (*  {sigma_finite_measure set T -> \bar R} ==                                 *)
 (*                    measures that are also sigma finite                     *)
 (*     isSigmaFinite == factory corresponding to sigma finiteness             *)
@@ -1586,15 +1586,15 @@ HB.mixin Record isSigmaFinite d (R : numFieldType) (T : semiRingOfSetsType d)
   sigma_finiteT : sigma_finite setT mu
 }.
 
-#[short(type="sigma_finite_additive_measure")]
-HB.structure Definition SigmaFiniteAdditiveMeasure d R T :=
-  {mu of isSigmaFinite d R T mu & @AdditiveMeasure d R T mu}.
+#[short(type="sigma_finite_content")]
+HB.structure Definition SigmaFiniteContent d R T :=
+  {mu of isSigmaFinite d R T mu & @Content d R T mu}.
 Arguments sigma_finiteT {d R T} s.
 
-Notation "{ 'sigma_finite_additive_measure' 'set' T '->' '\bar' R }" :=
-  (sigma_finite_additive_measure R T)
+Notation "{ 'sigma_finite_content' 'set' T '->' '\bar' R }" :=
+  (sigma_finite_content R T)
   (at level 36, T, R at next level,
-    format "{ 'sigma_finite_additive_measure'  'set'  T  '->'  '\bar'  R }")
+    format "{ 'sigma_finite_content'  'set'  T  '->'  '\bar'  R }")
   : ring_scope.
 
 #[global]
@@ -2553,19 +2553,19 @@ Qed.
 
 End more_premeasure_ring_lemmas.
 
-Section ring_sigma_additive_measure.
+Section ring_sigma_content.
 Context d (R : realType) (T : semiRingOfSetsType d)
         (mu : {measure set T -> \bar R}).
 Local Notation Rmu := (SetRing.measure mu).
 Import SetRing.
 
-Let ring_sigma_additive_measure : semi_sigma_additive Rmu.
+Let ring_sigma_content : semi_sigma_additive Rmu.
 Proof. exact/ring_sigma_additive/measure_sigma_sub_additive. Qed.
 
 HB.instance Definition _ := isMeasure0.Build _ _ _ Rmu
-  ring_sigma_additive_measure.
+  ring_sigma_content.
 
-End ring_sigma_additive_measure.
+End ring_sigma_content.
 
 Lemma measureIl d (R : realFieldType) (T : semiRingOfSetsType d)
     (mu : {content set T -> \bar R}) (A B : set T) :
