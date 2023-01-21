@@ -42,6 +42,8 @@
   + lemmas `xsection_indic`, `ysection_indic`
 - in `classical_sets.v`:
   + lemmas `xsectionI`, `ysectionI`
+- in `lebesgue_integral.v`:
+  + notations `\x`, `\x^` for `product_measure1` and `product_measure2`
 
 ### Changed
 
