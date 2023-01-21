@@ -3112,24 +3112,22 @@ Proof. by move=> X Y XY y; rewrite /xsection /= 2!inE => /XY. Qed.
 Lemma le_ysection y : {homo ysection ^~ y : X Y / X `<=` Y >-> X `<=` Y}.
 Proof. by move=> X Y XY x; rewrite /ysection /= 2!inE => /XY. Qed.
 
+Lemma xsectionI A B x : xsection (A `&` B) x = xsection A x `&` xsection B x.
+Proof. by rewrite /xsection predeqE => y/=; split; rewrite !inE => -[]. Qed.
+
+Lemma ysectionI A B y : ysection (A `&` B) y = ysection A y `&` ysection B y.
+Proof. by rewrite /ysection predeqE => x/=; split; rewrite !inE => -[]. Qed.
+
 Lemma xsectionD X Y x : xsection (X `\` Y) x = xsection X x `\` xsection Y x.
-Proof.
-rewrite predeqE /xsection /= => y; split; last by rewrite 3!inE.
-by rewrite inE => -[Xxy Yxy]; rewrite 2!inE.
-Qed.
+Proof. by rewrite predeqE /xsection /= => y; split; rewrite !inE. Qed.
 
 Lemma ysectionD X Y y : ysection (X `\` Y) y = ysection X y `\` ysection Y y.
-Proof.
-rewrite predeqE /ysection /= => x; split; last by rewrite 3!inE.
-by rewrite inE => -[Xxy Yxy]; rewrite 2!inE.
-Qed.
+Proof. by rewrite predeqE /ysection /= => x; split; rewrite !inE. Qed.
 
-Lemma xsection_preimage_snd (Z : Type) (f : T2 -> Z) (A : set Z) (x : T1) :
-  xsection ((f \o snd) @^-1` A) x = f @^-1` A.
+Lemma xsection_preimage_snd (B : set T2) x : xsection (snd @^-1` B) x = B.
 Proof. by apply/seteqP; split; move=> y/=; rewrite /xsection/= inE. Qed.
 
-Lemma ysection_preimage_fst (Z : Type) (f : T1 -> Z) (A : set Z) (y : T2) :
-  ysection ((f \o fst) @^-1` A) y = f @^-1` A.
+Lemma ysection_preimage_fst (A : set T1) y : ysection (fst @^-1` A) y = A.
 Proof. by apply/seteqP; split; move=> x/=; rewrite /ysection/= inE. Qed.
 
 End section.

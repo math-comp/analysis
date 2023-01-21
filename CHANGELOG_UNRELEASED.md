@@ -33,13 +33,15 @@
   + lemma `measurable_fun_opp`
 - in `lebesgue_integral.v`
   + lemmas `integral0_eq`, `fubini_tonelli`
-  + product measures now takes `{measure _ -> _}` arguments and their
-    theory quantify over a `{sigma_finite_measure}`.
+  + product measures now take `{measure _ -> _}` arguments and their
+    theory quantifies over a `{sigma_finite_measure _ -> _}`.
 
 - in `classical_sets.v`:
   + lemma `trivIset_mkcond`
 - in `numfun.v`:
   + lemmas `xsection_indic`, `ysection_indic`
+- in `classical_sets.v`:
+  + lemmas `xsectionI`, `ysectionI`
 
 ### Changed
 
@@ -78,6 +80,8 @@
   + lemma `measurable_sfunP`
 - in `measure.v`:
   + lemma `measure_bigcup` generalized,
+- in `classical_sets.v`:
+  + `xsection_preimage_snd`, `ysection_preimage_fst`
 
 ### Deprecated
 
