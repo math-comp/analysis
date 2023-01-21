@@ -331,7 +331,7 @@ apply/andP; split=> //; apply: contraTneq xbj => ->.
 by rewrite in_itv/= le_gtF// (itvP xabi).
 Qed.
 
-HB.instance Definition _ := isAdditiveMeasure.Build _ R _
+HB.instance Definition _ := isContent.Build _ R _
   (hlength : set ocitv_type -> _) (@hlength_ge0') hlength_semi_additive.
 
 Hint Extern 0 ((_ .-ocitv).-measurable _) => solve [apply: is_ocitv] : core.
@@ -365,7 +365,7 @@ have: `](a.1 + e%:num / 2), a.2] `<=` \bigcup_(i in [set` X]) Aoc i.
   move=> x /subset_itv_oc_cc /Xc [i /= Xi] Aooix.
   by exists i => //; apply: subset_itv_oo_oc Aooix.
 have /[apply] := @content_sub_fsum _ _ _
-  [the additive_measure _ _ of hlength : set ocitv_type -> _] _ [set` X].
+  [the content _ _ of hlength : set ocitv_type -> _] _ [set` X].
 move=> /(_ _ _ _)/Box[]//=; apply: le_le_trans.
   rewrite hlength_itv ?lte_fin -?EFinD/= -addrA -opprD.
   by case: ltP => //; rewrite lee_fin subr_le0.
@@ -389,10 +389,8 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 
-Let gitvs := [the semiRingOfSetsType _ of salgebraType ocitv].
-
 Definition lebesgue_measure := Hahn_ext
-  [the additive_measure _ _ of hlength : set ocitv_type -> _].
+  [the content _ _ of hlength : set ocitv_type -> _].
 
 Let lebesgue_measure0 : lebesgue_measure set0 = 0%E.
 Proof. by []. Qed.
