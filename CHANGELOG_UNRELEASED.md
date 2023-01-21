@@ -71,6 +71,16 @@
   + `IsNonNegFun` -> `isNonNegFun`
 - in `lebesgue_integral.v`:
   + `IsMeasurableFunP` -> `isMeasurableFun`
+- in `measure.v`:
+  + `{additive_measure _ -> _}` -> `{content _ -> _}`
+  + `isAdditiveMeasure` -> `isContent`
+  + `AdditiveMeasure` -> `Content`
+  + `additive_measure` -> `content`
+  + `additive_measure_snum_subproof` -> `content_snum_subproof`
+  + `additive_measure_snum` -> `content_snum`
+  + `SigmaFiniteAdditiveMeasure` -> `SigmaFiniteContent`
+  + `sigma_finite_additive_measure` -> `sigma_finite_content`
+  + `{sigma_finite_additive_measure _ -> _}` -> `{sigma_finite_content _ -> _}`
 
 ### Generalized
 
