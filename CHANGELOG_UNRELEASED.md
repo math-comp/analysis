@@ -188,6 +188,40 @@
     `dRV_expectation`
   + definion `pmf`, lemma `expectation_pmf`
 
+- file `probability.v`:
+  + mixin `isConvn`, structure `Convn`, notation `convn`
+  + lemmas `probability_fin_num`, `probability_integrable_cst`,
+  + definition `mexp`, instance of `isMeasurableFun`
+  + definition `subr`, instance of `isMeasurableFun`
+  + definition `mabs`, instance of `isMeasurableFun`
+  + `\*` instance of `isMeasurableFun`
+  + `\o` instance of `isMeasurableFun`
+  + definition `random_variable`, notation `{RV _ >-> _}`
+  + lemmas `notin_range_probability`, `probability_range`
+  + definition `comp_RV`, notation ``` `o ````,
+    definition `exp_RV`, notation ``` `^+ ```,
+    definition `add_RV`, notation ``` `+ ```,
+    definition `sub_RV`, notation ``` `- ```,
+    definition `mul_RV`, notation ``` `* ```,
+    definition `scale_RV`, notation ``` `\o* ```
+  + lemma `mul_cst`
+  + definition `expectation`, notation `'E`
+  + lemmas `expectation_cst`, `expectation_indic`, `integrable_expectation`,
+    `expectationM`, `expectation_ge0`, `expectation_le`, `expectationD`,
+    `expectationB`
+  + definition `Lspace`, notation `.-Lspace`
+  + lemmas `Lspace1`, `Lspace2`
+  + definition `variance`, `'V`
+  + lemma `varianceE`
+  + definition `distribution`, instance of `isProbability`
+  + lemmas `integral_distribution`, `markov`, `chebyshev`,
+  + mixin `isDiscreteRV`, structure `DiscreteRV`, type `discrete_random_variable`,
+    notation `{dRV _ >-> _}`
+  + definitions `dRV_dom_enum`, `dRV_dom`, `dRV_enum`, `enum_prob`
+  + lemmas `distribution_dRV_enum`, `distribution_dRV`, `convn_enum_prob`,
+    `probability_distribution`, `dRV_expectation`
+  + definion `pmf`, lemma `expectation_pmf`
+
 ### Changed
 
 - in `mathcomp_extra.v`
