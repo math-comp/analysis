@@ -3648,10 +3648,10 @@ Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType) :
   perfect_set [set: product_topologicalType K].
 Proof.
 move=> npts; split; [exact: closedT|]; rewrite eqEsubset; split => f // _.
-pose distincts := fun (i : nat) => projT1 (sigW (npts i)).
-pose derange := fun (i : nat) (z : K i) =>
+pose distincts (i : nat) := projT1 (sigW (npts i)).
+pose derange (i : nat) (z : K i) :=
   if z == (distincts i).1 then (distincts i).2 else (distincts i).1.
-pose g := fun N i => if (i < N)%nat then f i else derange _ (f i).
+pose g :N i := if (i < N)%nat then f i else derange _ (f i).
 have gcvg : g @ \oo --> (f : product_topologicalType K).
   apply/(@cvg_sup (product_topologicalType K)) => N U [V] [[W] oW <-] [] WfN WU.
   by apply: (filterS WU); rewrite nbhs_simpl /g; exists N.+1 => // i /= ->.
