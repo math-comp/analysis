@@ -32,6 +32,7 @@ Require Import exp.
 (*                                                                            *)
 (******************************************************************************)
 
+Reserved Notation "mu .-Lspace p" (at level 4, format "mu .-Lspace  p").
 Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
 Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]", at level 5).
