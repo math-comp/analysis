@@ -228,6 +228,8 @@ Require Import reals signed.
 (*              accessible_space T <-> T is an accessible space (T_1).        *)
 (*                    separated A B == the two sets A and B are separated     *)
 (*                      component x == the connected component of point x     *)
+(*                    perfect_set A == A is closed, and is every point in A   *)
+(*                                     is a limit point of A.                 *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
 (*                                     if P is convertible to G (globally A)  *)
 (*                                                                            *)
@@ -3611,6 +3613,56 @@ Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
 End DiscreteTopology.
 
 #[global] Hint Resolve discrete_bool : core.
+
+Section perfect_sets.
+
+Implicit Types (T : topologicalType).
+
+Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
+
+Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
+Proof.
+split.
+  case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
+  by case; [by apply: open_nbhs_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
+move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
+move=> U; rewrite nbhsE; case=> V [][] oV Vx VU.
+have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
+have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
+  move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset. 
+  by split => // ? ->. 
+by exists y; split => //; [exact/eqP | exact: VU].
+Qed.
+
+Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) :
+  perfect_set [set: K i] -> perfect_set [set: product_topologicalType K].
+Proof.
+move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
+rewrite (_ : [set f i] = proj i @` [set f]).
+  by apply: (@proj_open (classicType_choiceType I) _ i); exact: oF.
+by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
+Qed.
+
+Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType) :
+  (forall i, exists (xy: K i * K i), xy.1 != xy.2) ->
+  perfect_set [set: product_topologicalType K].
+Proof.
+move=> npts; split; [exact: closedT|]; rewrite eqEsubset; split => f // _.
+pose distincts (i : nat) := projT1 (sigW (npts i)).
+pose derange (i : nat) (z : K i) :=
+  if z == (distincts i).1 then (distincts i).2 else (distincts i).1.
+pose g (N i : nat) := if (i < N)%nat then f i else derange _ (f i).
+have gcvg : g @ \oo --> (f : product_topologicalType K).
+  apply/(@cvg_sup (product_topologicalType K)) => N U [V] [[W] oW <-] [] WfN WU.
+  by apply: (filterS WU); rewrite nbhs_simpl /g; exists N.+1 => // i /= ->.
+move=> A /gcvg; rewrite nbhs_simpl; case=> N _ An.
+exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
+apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
+rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
+by move=> ->; have := projT2 (sigW (npts N)). 
+Qed.
+
+End perfect_sets.
 
 (** * Uniform spaces *)
 
