@@ -352,7 +352,7 @@ split=> [|[->|[r r0 ->//]]]; last exact: leey.
 by case: x => [r r0 | _ |//]; [right; exists r|left].
 Qed.
 
-Lemma le_total_ereal : totalPOrderMixin [porderType of \bar R].
+Lemma le_total_ereal : total (Order.le : rel (\bar R)).
 Proof.
 by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
 Qed.

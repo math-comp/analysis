@@ -1552,7 +1552,7 @@ Context {T : topologicalType}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
-Global Instance nbhs_filter (p : T) : ProperFilter (pnbhs p).
+Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: topological_ax1; case: T p => ? []. Qed.
 Typeclasses Opaque nbhs.
 

@@ -4,7 +4,6 @@ From mathcomp Require choice.
 (* Missing coercion (done before Import to avoid redeclaration error,
    thanks to KS for the trick) *)
 (* MathComp 1.15 addition *)
-Coercion choice.Choice.mixin : choice.Choice.class_of >-> choice.Choice.mixin_of.
 
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
