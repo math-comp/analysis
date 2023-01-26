@@ -49,6 +49,10 @@
 - in `lebesgue_integral.v`:
   + notations `\x`, `\x^` for `product_measure1` and `product_measure2`
 
+- in `constructive_ereal.v`:
+  + lemmas `expeS`, `fin_numX`
+
+
 ### Changed
 
 - in `fsbigop.v`:
