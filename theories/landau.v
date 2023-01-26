@@ -1134,7 +1134,7 @@ Lemma linear_continuous (R : realFieldType) (U : normedModType R)
 Proof. by apply: linear_for_continuous => ? ?; rewrite normrZ. Qed.
 
 Lemma linear_for_mul_continuous (R : realFieldType) (U : normedModType R)
-  (f : {linear U -> R | (@GRing.mul [ringType of R^o])}) :
+  (f : {linear U -> R^o | (@GRing.mul [ringType of R^o])}) :
   (f : _ -> _) =O_ (0 : U) (cst (1 : R^o)) -> continuous f.
 Proof. by apply: linear_for_continuous => ? ?; rewrite normrZ. Qed.
 

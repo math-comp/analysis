@@ -133,7 +133,7 @@ HB.instance Definition _ :=
   GRing.isAdditive.Build _ _ (f z) (@additiver_subproof _ _ _ _ _ _ f z).
 #[local, non_forgetful_inheritance]
 HB.instance Definition _ :=
-  GRing.isLinear.Build _ _ _ _ (f z) (@linearr_subproof _ _ _ _ _ _ f z).
+  GRing.isScalable.Build _ _ _ _ (f z) (@linearr_subproof _ _ _ _ _ _ f z).
 
 Lemma linear0r : f z 0 = 0. Proof. by rewrite raddf0. Qed.
 Lemma linearNr : {morph f z : x / - x}. Proof. exact: raddfN. Qed.
@@ -162,7 +162,7 @@ HB.instance Definition _ :=
   GRing.isAdditive.Build _ _ (applyr f z) (@additivel_subproof _ _ _ _ _ _ f z).
 #[local, non_forgetful_inheritance]
 HB.instance Definition _ :=
-  GRing.isLinear.Build _ _ _ _ (applyr f z) (@linearl_subproof _ _ _ _ _ _ f z).
+  GRing.isScalable.Build _ _ _ _ (applyr f z) (@linearl_subproof _ _ _ _ _ _ f z).
 
 Lemma linear0l : f 0 z = 0. Proof. by rewrite -applyrE raddf0. Qed.
 Lemma linearNl : {morph f^~ z : x / - x}.
@@ -338,7 +338,7 @@ Proof.
 rewrite /form [M in LHS](sesquiP _) // -mulmxA !mxE rmorph_sum mulr_sumr.
 apply: eq_bigr => /= i _; rewrite !(mxE, mulr_sumr, mulr_suml, rmorph_sum).
 apply: eq_bigr => /= j _; rewrite !mxE !rmorphM  mulrCA -!mulrA.
-by congr (_ * _); rewrite mulrA mulrC thetaK.
+by congr (_ * _); rewrite mulrA mulrC /= thetaK.
 Qed.
 
 Lemma form_eq0C u v : ('[u, v] == 0) = ('[v, u] == 0).

@@ -267,7 +267,8 @@ Proof. by rewrite -hlength0 le_hlength. Qed.
 (* by rewrite lt_geF ?midf_lt//= andbF le_gtF ?midf_le//= ltW. *)
 (* Qed. *)
 
-Lemma hlength_semi_additive : semi_additive (hlength : set ocitv_type -> _).
+Lemma hlength_semi_additive :
+  measure.semi_additive (hlength : set ocitv_type -> _).
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.

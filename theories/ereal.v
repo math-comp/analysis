@@ -564,19 +564,19 @@ Context {R : numFieldType}.
 Local Open Scope ereal_scope.
 Local Open Scope classical_set_scope.
 
-Definition ereal_dnbhs (x : \bar R) (P : \bar R -> Prop) : Prop :=
-  match x with
+Definition ereal_dnbhs (x : \bar R) : set_system (\bar R) :=
+  [set P | match x with
     | r%:E => r^' (fun r => P r%:E)
     | +oo => exists M, M \is Num.real /\ forall y, M%:E < y -> P y
     | -oo => exists M, M \is Num.real /\ forall y, y < M%:E -> P y
-  end.
-Definition ereal_nbhs (x : \bar R) (P : \bar R -> Prop) : Prop :=
-  match x with
+  end].
+Definition ereal_nbhs (x : \bar R) : set_system (\bar R) :=
+  [set P | match x with
     | x%:E => nbhs x (fun r => P r%:E)
     | +oo => exists M, M \is Num.real /\ forall y, M%:E < y -> P y
     | -oo => exists M, M \is Num.real /\ forall y, y < M%:E -> P y
-  end.
-HB.instance Definition _ := isFiltered.Build _ (\bar R) ereal_nbhs.
+  end].
+HB.instance Definition _ := hasNbhs.Build (\bar R) ereal_nbhs.
 End ereal_nbhs.
 
 Section ereal_nbhs_instances.
@@ -794,7 +794,8 @@ have : (-%E @` A) (- x) by exists x.
 by move/h => [y Sy] /eqP; rewrite eqe_opp => /eqP <-.
 Qed.
 
-Lemma oppe_continuous (R : realFieldType) : continuous (@oppe R).
+Lemma oppe_continuous (R : realFieldType) :
+  continuous (-%E : \bar R -> \bar R).
 Proof.
 move=> x S /= xS; apply nbhsNKe; rewrite image_preimage //.
 by rewrite predeqE => y; split => // _; exists (- y) => //; rewrite oppeK.
@@ -1285,7 +1286,7 @@ rewrite predeq2E => x A; split.
     by rewrite -ltNge => /nbhs_oo_down_1e; apply => ? ?; exact/sEA/reA.
 Qed.
 
-HB.instance Definition _ := Filtered_isPseudoMetric.Build R (\bar R)
+HB.instance Definition _ := Nbhs_isPseudoMetric.Build R (\bar R)
   ereal_nbhsE ereal_ball_center ereal_ball_sym ereal_ball_triangle erefl.
 
 End ereal_PseudoMetric.
@@ -1322,7 +1323,7 @@ Definition ereal_loc_seq (R : numDomainType) (x : \bar R) (n : nat) :=
   end.
 
 Lemma cvg_ereal_loc_seq (R : realType) (x : \bar R) :
-  ereal_loc_seq x --> ereal_dnbhs x.
+  ereal_loc_seq x  @ \oo--> ereal_dnbhs x.
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 first.
