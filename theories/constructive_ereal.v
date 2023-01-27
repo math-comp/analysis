@@ -717,6 +717,9 @@ Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
 Canonical mule_mulmonoid := @Monoid.MulLaw _ _ mule mul0e mule0.
 
+Lemma expeS x n : x ^+ n.+1 = x * x ^+ n.
+Proof. by case: n => //=; rewrite mule1. Qed.
+
 Definition mule_def x y :=
   ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
 
@@ -813,6 +816,9 @@ Proof. by move: x y => [x| |] [y| |]. Qed.
 Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
   x * y \is a fin_num.
 Proof. by move: x y => [x| |] [y| |]. Qed.
+
+Lemma fin_numX x n : x \is a fin_num -> x ^+ n \is a fin_num.
+Proof. by elim: n x => // n ih x finx; rewrite expeS fin_numM// ih. Qed.
 
 Lemma fineD : {in @fin_num R &, {morph fine : x y / x + y >-> (x + y)%R}}.
 Proof. by move=> [r| |] [s| |]. Qed.
