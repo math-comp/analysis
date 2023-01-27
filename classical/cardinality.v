@@ -474,6 +474,14 @@ Lemma countable_injP T (A : set T) :
   reflect (exists f : T -> nat, {in A &, injective f}) (countable A).
 Proof. exact: pcard_injP. Qed.
 
+Lemma countable_bijP T (A : set T) :
+  reflect (exists B : set nat, (A #= B)%card) (countable A).
+Proof.
+apply: (iffP idP); last by move=> [B] /eq_countable ->.
+move=> /pcard_leP[f]; exists (f @` A).
+by apply/pcard_eqP; squash [fun f in A].
+Qed.
+
 Lemma sub_countable T U (A : set T) (B : set U) : A #<= B ->
   countable B -> countable A.
 Proof. exact: card_le_trans. Qed.

@@ -52,6 +52,9 @@
 - in `constructive_ereal.v`:
   + lemmas `expeS`, `fin_numX`
 
+- in `functions.v`:
+  + lemma `countable_bijP`
+  + lemma `patchE`
 
 ### Changed
 
