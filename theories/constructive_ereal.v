@@ -784,7 +784,7 @@ by rewrite -eqe_oppLR => /eqP.
 Qed.
 
 Lemma fin_numN x : (- x \is a fin_num) = (x \is a fin_num).
-Proof. by rewrite !fin_numE 2!eqe_oppLR andbC. Qed.
+Proof. by rewrite !fin_num_abs abseN. Qed.
 
 Lemma oppeB x y : y \is a fin_num -> - (x - y) = - x + y.
 Proof. by move=> yfin; rewrite oppeD ?oppeK// fin_numN. Qed.
