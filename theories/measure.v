@@ -748,7 +748,7 @@ Qed.
 HB.instance Definition T_isRingOfSets := @isRingOfSets.Build d T ptclass
   measurable measurable0 measurableU mD.
 
-Lemma measurableT : measurable (@setT T).
+Lemma measurableT : measurable [set: T].
 Proof. by rewrite -setC0; apply: measurableC; exact: measurable0. Qed.
 
 HB.instance Definition T_isAlgebraOfSets : AlgebraOfSets_from_RingOfSets d T :=
