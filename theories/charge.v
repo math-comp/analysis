@@ -10,22 +10,20 @@ Require Import realfun.
 Require Import lebesgue_measure lebesgue_integral.
 
 (******************************************************************************)
-(* This file contains a formalization of signed measures and a proof of the   *)
-(* Hahn decomposition theorem.                                                *)
+(* This file contains a formalization of charges and a proof of the Hahn      *)
+(* decomposition theorem.                                                     *)
 (*                                                                            *)
-(* signed measures:                                                           *)
-(*          isSignedMeasure0 == mixin for measure functions with fin_num      *)
-(*                              values                                        *)
-(*   isAdditiveSignedMeasure == mixin for additive signed measures            *)
-(*   {additive_smeasure set T -> \bar R} == additive signed measure over T,   *)
-(*                              a semi ring of sets                           *)
-(*           isSignedMeasure == mixin for signed measures                     *)
-(*   {smeasure set T -> \bar R} == signed measure over T, a semi ring of sets *)
-(*              smrestr D mu == restriction of the signed measured mu to the  *)
-(*                              domain D                                      *)
+(* charge (a.k.a. signed measure):                                            *)
+(*               isCharge0 == mixin for measure functions with fin_num values *)
+(*        isAdditiveCharge == mixin for additive charges                      *)
+(*  {additive_charge set T -> \bar R} == additive charge over T, a semiring   *)
+(*                            of sets                                         *)
+(*                isCharge == mixin for charges                               *)
+(*  {charge set T -> \bar R} == charge over T, a semiring of sets             *)
+(*             crestr D mu == restriction of the charge mu to the domain D    *)
 (*                                                                            *)
-(* positive_set nu P == P is a positive set                                   *)
-(* negative_set nu N == N is a negative set                                   *)
+(*      positive_set nu P == P is a positive set                              *)
+(*      negative_set nu N == N is a negative set                              *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -89,55 +87,55 @@ move=> x [Sx [Fnx UFx]]; split=> //; apply: contra_not UFx => /=.
 by rewrite bigcup_mkord -big_distrr/= => -[].
 Qed.
 
-HB.mixin Record isSignedMeasure0 d (R : numFieldType)
+HB.mixin Record isCharge0 d (R : numFieldType)
   (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
     isfinite : forall U, measurable U -> mu U \is a fin_num}.
 
-HB.structure Definition SignedMeasure0 d
+HB.structure Definition Charge0 d
     (R : numFieldType) (T : semiRingOfSetsType d) := {
-  mu of isSignedMeasure0 d R T mu }.
+  mu of isCharge0 d R T mu }.
 
-HB.mixin Record isAdditiveSignedMeasure d (R : numFieldType)
-    (T : semiRingOfSetsType d) mu of isSignedMeasure0 d R T mu := {
-  smeasure_semi_additive : semi_additive mu }.
+HB.mixin Record isAdditiveCharge d (R : numFieldType)
+    (T : semiRingOfSetsType d) mu of isCharge0 d R T mu := {
+  charge_semi_additive : semi_additive mu }.
 
-#[short(type=additive_smeasure)]
-HB.structure Definition AdditiveSignedMeasure d (R : numFieldType)
+#[short(type=additive_charge)]
+HB.structure Definition AdditiveCharge d (R : numFieldType)
     (T : semiRingOfSetsType d) :=
-  { mu of isAdditiveSignedMeasure d R T mu & SignedMeasure0 d mu }.
+  { mu of isAdditiveCharge d R T mu & Charge0 d mu }.
 
-Notation "{ 'additive_smeasure' 'set' T '->' '\bar' R }" :=
-  (additive_smeasure R T) (at level 36, T, R at next level,
-    format "{ 'additive_smeasure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+Notation "{ 'additive_charge' 'set' T '->' '\bar' R }" :=
+  (additive_charge R T) (at level 36, T, R at next level,
+    format "{ 'additive_charge'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
-#[export] Hint Resolve smeasure_semi_additive : core.
+#[export] Hint Resolve charge_semi_additive : core.
 
-HB.mixin Record isSignedMeasure d (R : numFieldType) (T : semiRingOfSetsType d)
-    mu of isAdditiveSignedMeasure d R T mu & isSignedMeasure0 d R T mu := {
-  smeasure_semi_sigma_additive : semi_sigma_additive mu }.
+HB.mixin Record isCharge d (R : numFieldType) (T : semiRingOfSetsType d)
+    mu of isAdditiveCharge d R T mu & isCharge0 d R T mu := {
+  charge_semi_sigma_additive : semi_sigma_additive mu }.
 
-#[short(type=smeasure)]
-HB.structure Definition SignedMeasure d (R : numFieldType)
+#[short(type=charge)]
+HB.structure Definition Charge d (R : numFieldType)
     (T : semiRingOfSetsType d) :=
-  { mu of isSignedMeasure d R T mu & AdditiveSignedMeasure d mu }.
+  { mu of isCharge d R T mu & AdditiveCharge d mu }.
 
-Notation "{ 'smeasure' 'set' T '->' '\bar' R }" := (smeasure R T)
+Notation "{ 'charge' 'set' T '->' '\bar' R }" := (charge R T)
   (at level 36, T, R at next level,
-    format "{ 'smeasure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+    format "{ 'charge'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
-Section signed_measure_prop.
+Section charge_prop.
 Context d (R : realType) (T : measurableType d).
-Implicit Type mu : {smeasure set T -> \bar R}.
+Implicit Type mu : {charge set T -> \bar R}.
 
-Lemma smeasure0 mu : mu set0 = 0.
+Lemma charge0 mu : mu set0 = 0.
 Proof.
-have /[!big_ord0] ->// := @smeasure_semi_additive _ _ _ mu (fun=> set0) 0%N.
+have /[!big_ord0] ->// := @charge_semi_additive _ _ _ mu (fun=> set0) 0%N.
 exact: trivIset_set0.
 Qed.
 
-Hint Resolve smeasure0 : core.
+Hint Resolve charge0 : core.
 
-Lemma ssemi_additiveW mu : mu set0 = 0 -> semi_additive mu -> semi_additive2 mu.
+Lemma charge_semi_additiveW mu : mu set0 = 0 -> semi_additive mu -> semi_additive2 mu.
 Proof.
 move=> mu0 amx A B mA mB + AB; rewrite -bigcup2inE bigcup_mkord.
 move=> /(amx (bigcup2 A B)) ->.
@@ -153,23 +151,23 @@ move=> /(amx (bigcup2 A B)) ->.
   + by rewrite setI0 => -[].
 Qed.
 
-Lemma ssemi_additive2E mu : semi_additive2 mu = additive2 mu.
+Lemma charge_semi_additive2E mu : semi_additive2 mu = additive2 mu.
 Proof.
 rewrite propeqE; split=> [amu A B ? ? ?|amu A B ? ? _ ?]; last by rewrite amu.
 by rewrite amu //; exact: measurableU.
 Qed.
 
-Lemma smeasure_semi_additive2 mu : semi_additive2 mu.
-Proof. exact: ssemi_additiveW. Qed.
+Lemma charge_semi_additive2 mu : semi_additive2 mu.
+Proof. exact: charge_semi_additiveW. Qed.
 
-Hint Resolve smeasure_semi_additive2 : core.
+Hint Resolve charge_semi_additive2 : core.
 
-Lemma smeasureU mu : additive2 mu. Proof. by rewrite -ssemi_additive2E. Qed.
+Lemma chargeU mu : additive2 mu. Proof. by rewrite -charge_semi_additive2E. Qed.
 
-Lemma smeasureDI mu (A B : set T) : measurable A -> measurable B ->
+Lemma chargeDI mu (A B : set T) : measurable A -> measurable B ->
   mu A = mu (A `\` B) + mu (A `&` B).
 Proof.
-move=> mA mB; rewrite -smeasure_semi_additive2.
+move=> mA mB; rewrite -charge_semi_additive2.
 - by rewrite -setDDr setDv setD0.
 - exact: measurableD.
 - exact: measurableI.
@@ -177,49 +175,48 @@ move=> mA mB; rewrite -smeasure_semi_additive2.
 - by rewrite setDE setIACA setICl setI0.
 Qed.
 
-Lemma smeasureD mu (A B : set T) : measurable A -> measurable B ->
+Lemma chargeD mu (A B : set T) : measurable A -> measurable B ->
   mu (A `\` B) = mu A - mu (A `&` B).
 Proof.
 move=> mA mB.
-rewrite (smeasureDI mu mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
+rewrite (chargeDI mu mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
 - by rewrite ltey_eq isfinite //; exact:measurableI.
 - by rewrite ltNye_eq isfinite//; exact:measurableI.
 Qed.
 
-Lemma smeasure_partition mu S P N :
+Lemma charge_partition mu S P N :
   measurable S -> measurable P -> measurable N ->
   P `|` N = setT -> P `&` N = set0 ->
   mu S = mu (S `&` P) + mu (S `&` N).
 Proof.
-move=> mS mP mN PNT PN0; rewrite -{1}(setIT S) -PNT setIUr smeasureU//.
+move=> mS mP mN PNT PN0; rewrite -{1}(setIT S) -PNT setIUr chargeU//.
 - exact: measurableI.
 - exact: measurableI.
 - by rewrite setICA -(setIA S P N) PN0 setIA setI0.
 Qed.
 
-End signed_measure_prop.
-#[export] Hint Resolve smeasure0 : core.
-#[export] Hint Resolve smeasure_semi_additive2 : core.
+End charge_prop.
+#[export] Hint Resolve charge0 : core.
+#[export] Hint Resolve charge_semi_additive2 : core.
 
-Definition smrestr d (T : measurableType d) (R : realFieldType) (D : set T)
+Definition crestr d (T : measurableType d) (R : realFieldType) (D : set T)
   (f : set T -> \bar R) (mD : measurable D) := fun X => f (X `&` D).
 
-Section signed_measure_restriction.
+Section charge_restriction.
 Context d (T : measurableType d) (R : realFieldType).
-Variables (mu : {smeasure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (mu : {charge set T -> \bar R}) (D : set T) (mD : measurable D).
 
-Local Notation restr := (smrestr mu mD).
+Local Notation restr := (crestr mu mD).
 
-Let s_restr_isfinite U : measurable U -> restr U \is a fin_num.
+Let crestr_isfinite U : measurable U -> restr U \is a fin_num.
 Proof.
 move=> mU.
 by have /(@isfinite _ _ _ mu) : measurable (U `&` D) by exact: measurableI.
 Qed.
 
-HB.instance Definition _ :=
-  isSignedMeasure0.Build _ _ _ restr s_restr_isfinite.
+HB.instance Definition _ := isCharge0.Build _ _ _ restr crestr_isfinite.
 
-Let s_restr_smeasure_semi_additive : semi_additive restr.
+Let crestr_semi_additive : semi_additive restr.
 Proof.
 move=> F n mF tF mU; pose FD i := F i `&` D.
 have mFD i : measurable (FD i) by exact: measurableI.
@@ -227,14 +224,14 @@ have tFD : trivIset setT FD.
   apply/trivIsetP => i j _ _ ij.
   move/trivIsetP : tF => /(_ i j Logic.I Logic.I ij).
   by rewrite /FD setIACA => ->; rewrite set0I.
-rewrite -(smeasure_semi_additive _ _ mFD)//; last exact: bigsetU_measurable.
-by rewrite /smrestr /FD big_distrl.
+rewrite -(charge_semi_additive _ _ mFD)//; last exact: bigsetU_measurable.
+by rewrite /crestr /FD big_distrl.
 Qed.
 
 HB.instance Definition _ :=
-  isAdditiveSignedMeasure.Build _ _ _ restr s_restr_smeasure_semi_additive.
+  isAdditiveCharge.Build _ _ _ restr crestr_semi_additive.
 
-Let s_restr_smeasure_semi_sigma_additive : semi_sigma_additive restr.
+Let crestr_semi_sigma_additive : semi_sigma_additive restr.
 Proof.
 move=> F mF tF mU; pose FD i := F i `&` D.
 have mFD i : measurable (FD i) by exact: measurableI.
@@ -242,14 +239,14 @@ have tFD : trivIset setT FD.
   apply/trivIsetP => i j _ _ ij.
   move/trivIsetP : tF => /(_ i j Logic.I Logic.I ij).
   by rewrite /FD setIACA => ->; rewrite set0I.
-rewrite /restr setI_bigcupl; apply: smeasure_semi_sigma_additive => //.
+rewrite /restr setI_bigcupl; apply: charge_semi_sigma_additive => //.
 by apply: bigcup_measurable => k _; exact: measurableI.
 Qed.
 
 HB.instance Definition _ :=
-  isSignedMeasure.Build _ _ _ restr s_restr_smeasure_semi_sigma_additive.
+  isCharge.Build _ _ _ restr crestr_semi_sigma_additive.
 
-End signed_measure_restriction.
+End charge_restriction.
 
 Section positive_negative_set.
 Context d (R : realType) (T : measurableType d).
@@ -265,13 +262,13 @@ End positive_negative_set.
 
 Section positive_negative_set_prop.
 Context d (T : measurableType d) (R : realType).
-Implicit Types nu : {smeasure set T -> \bar R}.
+Implicit Types nu : {charge set T -> \bar R}.
 
-Lemma negative_set_smeasure_le0 nu N : negative_set nu N -> nu N <= 0.
+Lemma negative_set_charge_le0 nu N : negative_set nu N -> nu N <= 0.
 Proof. by move=> [mN]; exact. Qed.
 
 Lemma negative_set0 nu : negative_set nu set0.
-Proof. by split => // E _; rewrite subset0 => ->; rewrite smeasure0. Qed.
+Proof. by split => // E _; rewrite subset0 => ->; rewrite charge0. Qed.
 
 Lemma bigcup_negative_set nu (F : (set T)^nat) :
     (forall i, negative_set nu (F i)) ->
@@ -289,7 +286,7 @@ have mSF n : measurable (SF n).
   apply: measurableD; first by apply: measurableI => //; have [] := hF n.
   by apply: bigcup_measurable => // k _; have [] := hF k.
 have SFS : (fun n => \sum_(0 <= i < n) nu (SF i)) --> nu S.
-  by rewrite SSF; apply: smeasure_semi_sigma_additive => //;
+  by rewrite SSF; apply: charge_semi_sigma_additive => //;
     [by rewrite /SF -seqDUIE; exact: trivIset_seqDU|exact: bigcup_measurable].
 have nuS_ n : nu (SF n) <= 0 by have [_] := hF n; apply => // x -[[]].
 move/cvg_lim : (SFS) => <-//; apply: lime_le.
@@ -319,7 +316,7 @@ End positive_negative_set_prop.
 
 Section hahn_decomp_lemma.
 Context d (T : measurableType d) (R : realType).
-Variable nu : {smeasure set T -> \bar R}.
+Variable nu : {charge set T -> \bar R}.
 
 Variable D : set T.
 
@@ -365,7 +362,7 @@ Let next_elt A : 0 <= dd A -> { B | [/\ measurable B,
 Proof.
 move=> d_ge0; pose m := mine (dd A * 2^-1%R%:E) 1%E; apply/cid.
 move: d_ge0; rewrite le_eqVlt => /predU1P[<-|d_gt0].
-  by exists set0; split => //; rewrite smeasure0.
+  by exists set0; split => //; rewrite charge0.
 have m_gt0 : 0 < m by rewrite /m lt_minr lte01 andbT mule_gt0.
 have : m < dd A.
   rewrite /m; have [->|dn1oo] := eqVneq (dd A) +oo.
@@ -385,7 +382,7 @@ Lemma hahn_decomp_lemma : measurable D -> nu D <= 0 ->
 Proof.
 move=> mD nuD_ge0.
 have d0_ge0 : 0 <= dd set0.
-  by apply: ereal_sup_ub => /=; exists set0; split => //; rewrite smeasure0.
+  by apply: ereal_sup_ub => /=; exists set0; split => //; rewrite charge0.
 have [A0 [mA0 nuA0 + A0d0]] := next_elt d0_ge0.
 rewrite setD0 => A0D.
 have [v [v0 Pv]] : {v : nat -> elt_type |
@@ -393,7 +390,7 @@ have [v [v0 Pv]] : {v : nat -> elt_type |
     forall n, seq_sup (v n) (v n.+1)}.
   apply dependent_choice_Type => -[[[A' ?] U] [/= mA' mA'0]].
   have d1_ge0 : 0 <= dd U.
-    by apply: ereal_sup_ub => /=; exists set0; split => //; rewrite smeasure0.
+    by apply: ereal_sup_ub => /=; exists set0; split => //; rewrite charge0.
   have [A1 [mA1 muA10 A1DU A1d1] ] := next_elt d1_ge0.
   have A1D : A1 `<=` D by apply: (subset_trans A1DU); apply: subDsetl.
   by exists (exist _ (A1, dd U, U `|` A1) (And4 mA1 d1_ge0 A1D A1d1)).
@@ -409,7 +406,7 @@ have tA : trivIset setT (A_ \o v).
   by rewrite -setTD; apply: setDSS => //; rewrite Ubig big_ord_recr.
 exists (D `\` Aoo).
 have cvg_nuA : (fun n => \sum_(0 <= i < n) nu (A_ (v i))) --> nu Aoo.
-  exact: smeasure_semi_sigma_additive.
+  exact: charge_semi_sigma_additive.
 have nuAoo : 0 <= nu Aoo.
   move/cvg_lim : cvg_nuA => <-//=; apply: nneseries_ge0 => n _.
   exact: elt_A_ge0.
@@ -465,7 +462,7 @@ have d_cvg_0 : d_ \o v --> 0.
 have nuDAoo : nu D >= nu (D `\` Aoo).
   rewrite -[in leRHS](@setDUK _ Aoo D); last first.
     by apply: bigcup_sub => i _; exact: elt_D.
-  by rewrite smeasureU// ?lee_addr// ?setDIK//; exact: measurableD.
+  by rewrite chargeU// ?lee_addr// ?setDIK//; exact: measurableD.
 split; [by []|exact: measurableD| | by []].
 split; first exact: measurableD.
 move=> E mE EDAoo.
@@ -495,12 +492,12 @@ Unshelve. all: by end_near. Qed.
 End hahn_decomp_lemma.
 
 Definition hahn_decomp d (T : measurableType d) (R : realType)
-    (nu : {smeasure set T -> \bar R}) P N :=
+    (nu : {charge set T -> \bar R}) P N :=
   [/\ positive_set nu P, negative_set nu N, P `|` N = setT & P `&` N = set0].
 
 Section hahn_decomposition_theorem.
 Context d (T : measurableType d) (R : realType).
-Variable nu : {smeasure set T -> \bar R}.
+Variable nu : {charge set T -> \bar R}.
 
 Let elt_prop (x : set T * \bar R) := [/\ x.2 <= 0,
   negative_set nu x.1 &
@@ -517,7 +514,7 @@ Proof. by move: x => [[[? ?] ?] [/= ? []]]. Qed.
 
 Let elt_nuA x : nu (A_ x) <= 0.
 Proof.
-by move: x => [[[? ?] ?]] [/= ? h ?]; exact: negative_set_smeasure_le0.
+by move: x => [[[? ?] ?]] [/= ? h ?]; exact: negative_set_charge_le0.
 Qed.
 
 Let elt_s x : s_ x <= 0.
@@ -544,7 +541,7 @@ Let next_elt U : ss U <= 0 -> { A | [/\ A `<=` setT `\` U,
 Proof.
 move=> s_le0; pose m := maxe (ss U * 2^-1%R%:E) (- 1%E); apply/cid.
 move: s_le0; rewrite le_eqVlt => /predU1P[->|s_lt0].
-  by exists set0; split => //; rewrite ?smeasure0//; exact: negative_set0.
+  by exists set0; split => //; rewrite ?charge0//; exact: negative_set0.
 have m0_lt0 : m < 0 by rewrite /m lt_maxl lteN10 andbT nmule_rlt0.
 have : ss U < m.
   rewrite /m; have [->|s0oo] := eqVneq (ss U) -oo.
@@ -566,7 +563,7 @@ Qed.
 Theorem Hahn_decomposition : exists P N, hahn_decomp nu P N.
 Proof.
 have ss0 : ss set0 <= 0.
-  by apply: ereal_inf_lb => /=; exists set0; split => //; rewrite smeasure0.
+  by apply: ereal_inf_lb => /=; exists set0; split => //; rewrite charge0.
 have [A0 [_ negA0 A0s0]] := next_elt ss0.
 have [v [v0 Pv]] : {v |
     v 0%N = exist _ (A0, ss set0, A0) (And3 ss0 negA0 A0s0) /\
@@ -574,7 +571,7 @@ have [v [v0 Pv]] : {v |
   apply: dependent_choice_Type => -[[[A s] U] [/= s_le0 negA]].
   pose s' := ss U.
   have s'_le0 : s' <= 0.
-    by apply: ereal_inf_lb => /=; exists set0; split => //; rewrite smeasure0.
+    by apply: ereal_inf_lb => /=; exists set0; split => //; rewrite charge0.
   have [A' [? negA' A's'] ] := next_elt s'_le0.
   by exists (exist _ (A', s', U `|` A') (And3 s'_le0 negA' A's')).
 set N := \bigcup_k (A_ (v k)).
@@ -621,7 +618,7 @@ have not_s_cvg_0 : ~ s_ \o v --> 0.
   - exact: snuD.
 have nuN : nu N = \sum_(n <oo) nu (A_ (v n)).
   apply/esym/cvg_lim => //.
-  apply: smeasure_semi_sigma_additive; [by []|exact: tA|].
+  apply: charge_semi_sigma_additive; [by []|exact: tA|].
   exact: bigcup_measurable.
 have sum_A_maxe : \sum_(n <oo) nu (A_ (v n)) <=
     \sum_(n <oo) maxe (s_ (v n) * 2^-1%:E) (- (1)).
@@ -683,14 +680,14 @@ move=> [posP1 negN1 PN1T PN10] [posP2 negN2 PN2T PN20] S mS.
 move: (posP1) (negN1) (posP2) (negN2) => [mP1 _] [mN1 _] [mP2 _] [mN2 _].
 split.
   transitivity (nu (S `&` P1 `&` P2)).
-    rewrite (smeasure_partition _ _ mP2 mN2)//; last exact: measurableI.
+    rewrite (charge_partition _ _ mP2 mN2)//; last exact: measurableI.
     by rewrite (positive_negative0 posP1 negN2 mS) adde0.
-  rewrite [RHS](smeasure_partition _ _ mP1 mN1)//; last exact: measurableI.
+  rewrite [RHS](charge_partition _ _ mP1 mN1)//; last exact: measurableI.
   by rewrite (positive_negative0 posP2 negN1 mS) adde0 setIAC.
 transitivity (nu (S `&` N1 `&` N2)).
-   rewrite (smeasure_partition nu _ mP2 mN2)//; last exact: measurableI.
+   rewrite (charge_partition nu _ mP2 mN2)//; last exact: measurableI.
    by rewrite {1}setIAC (positive_negative0 posP2 negN1 mS) add0e.
-rewrite [RHS](smeasure_partition nu _ mP1 mN1)//; last exact: measurableI.
+rewrite [RHS](charge_partition nu _ mP1 mN1)//; last exact: measurableI.
 by rewrite (setIAC _ _ P1) (positive_negative0 posP1 negN2 mS) add0e setIAC.
 Qed.
 
