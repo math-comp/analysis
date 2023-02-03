@@ -43,114 +43,6 @@ Qed.
 Lemma cantor_space_hausdorff : hausdorff_space cantor_space.
 Proof. apply: hausdorff_product => ?; exact: discrete_hausdorff. Qed.
 
-Definition common_prefix (n : nat) (x y : cantor_space) :=
-  (forall i, i < n -> x i == y i).
-
-Definition pull (x : cantor_space) : cantor_space := fun n => x (S n).
-
-Lemma common_prefixS (n : nat) (x y : cantor_space) :
-  common_prefix n.+1 x y <-> x 0 == y 0 /\ common_prefix n (pull x) (pull y).
-Proof.
-split; last by case=> ?? []. 
-by (move=> cmn; split; first exact: cmn) => i ?; apply: cmn.
-Qed.
-
-Lemma empty_prefix (x : cantor_space) : common_prefix 0 x = setT .
-Proof. by rewrite eqEsubset; split. Qed.
-
-Lemma prefix_of_prefix (x : cantor_space) (n : nat) : 
-  common_prefix n x x.
-Proof. by move=> ?. Qed.
-
-Lemma fixed_prefixW (x : cantor_space) (i j : nat) : 
-  i < j ->
-  common_prefix j x `<=` common_prefix i x.
-Proof. by move=> ij y + q ?; apply; apply: (ltn_trans _ ij). Qed.
-
-Lemma prefix_cvg (x : cantor_space) : 
-  filter_from [set: nat] (common_prefix^~ x) --> x.
-Proof.
-have ? : Filter (filter_from [set: nat] (common_prefix^~ x)).
-  apply: filter_from_filter; first by exists 0.
-  move=> i j _ _; exists (i.+1 + j.+1) => //; rewrite -[x in x `<=` _]setIid. 
-  by apply: setISS; apply: fixed_prefixW; [exact: ltn_addr| exact: ltn_addl].
-apply/cvg_sup => n; apply/cvg_image; first by (rewrite eqEsubset; split).
-move=> W /=; rewrite /nbhs /= => /principal_filterP.
-have [] := (@subset_set2 _ W true false). 
-- by rewrite -bool2E; exact: subsetT.
-- by move ->.
-- move => -> <-; exists (common_prefix (n.+1) x); first by exists (n.+1).
-  rewrite eqEsubset; split => y; first by case=> z P <-; apply/sym_equal/eqP/P.
-  by move=> ->; exists x => //=; exact: (prefix_of_prefix x (n.+1)).
-- move => -> <-; exists (common_prefix (n.+1) x); first by exists (n.+1).
-  rewrite eqEsubset; split => y; first by case=> z P <-; apply/sym_equal/eqP/P.
-  by move=> ->; exists x => //=; exact: (prefix_of_prefix x (n.+1)).
-- rewrite -bool2E => ->; exists setT; last by rewrite eqEsubset; split.
-  exact: filterT.
-Qed.
-
-Lemma nbhs_prefix (x : cantor_space) (W : set cantor_space) : 
-  nbhs x W -> exists n, common_prefix n x `<=` W.
-Proof. by move=> /prefix_cvg => /=; case=> n _ ?; exists n. Qed.
-
-Lemma pull_projection_preimage (n : nat) (b : bool) : 
-  pull @^-1` (proj n @^-1` [set b]) = proj (n.+1) @^-1` [set b].
-Proof.  by rewrite eqEsubset; split=> x /=; rewrite /proj /pull /=. Qed.
-
-Lemma continuous_pull : continuous pull.
-move=> x; apply/ cvg_sup; first by apply: fmap_filter; case: (nbhs_filter x).
-move=> n; apply/cvg_image; first by apply: fmap_filter; case: (nbhs_filter x).
-  by rewrite eqEsubset; split=> u //= _; exists (fun=> u).
-move=> W.
-have Q: nbhs [set[set f n | f in A] | A in pull x @[x --> x]] [set pull x n].
-  exists (proj n @^-1` [set (pull x n)]); first last.
-    rewrite eqEsubset; split => u //=; first by  by case=> ? <- <-.
-    move->; exists (pull x) => //=.
-  apply: open_nbhs_nbhs; split.
-    rewrite pull_projection_preimage; apply: open_comp; last exact: discrete_open.
-    by move=> + _; apply: proj_continuous.
-  done.
-have [] := (@subset_set2 _ W true false). 
-- by rewrite -bool2E; exact: subsetT.
-- by move=> ->; rewrite /nbhs /= => /principal_filterP.
-- by move -> => /= /nbhs_singleton <-; exact Q.
-- by move -> => /= /nbhs_singleton <-; exact Q.
-- rewrite -bool2E => -> _; exists setT; last by rewrite eqEsubset; split.
-  by rewrite /= preimage_setT; exact: filterT.
-Qed.
-
-Lemma open_prefix (x : cantor_space) (n : nat) : 
-  open (common_prefix n x).
-Proof.
-move: x; elim: n; first by move=>?; rewrite empty_prefix; exact: openT.
-move=> n IH x; rewrite openE=> z /common_prefixS [/eqP x0z0] cmn; near=> y. 
-apply/common_prefixS; split. 
-  apply/eqP; rewrite x0z0; apply: sym_equal; near: y; near_simpl.
-  have : open_nbhs (z : cantor_space) (proj 0 @^-1` [set (z 0)]).
-    (split; last by []); apply: open_comp => //=; last exact: discrete_open.
-    by move=> + _; exact: proj_continuous.
-  by rewrite open_nbhsE => [[_]].
-by near: y; by move: (IH (pull x)); rewrite openE => /(_ _ cmn)/continuous_pull.
-Unshelve. all: end_near. Qed.
-
-Lemma closed_fixed  (x : cantor_space) (n : nat) : closed (common_prefix n x).
-Proof.
-move: x; elim: n; first by move=> ?; rewrite empty_prefix; exact: closedT.
-move=> n IH x.
-pose B1 : set cantor_space := pull @^-1` common_prefix n (pull x).
-pose B2 : set cantor_space := proj 0 @^-1` [set x 0].
-suff <- : B1 `&` B2 = common_prefix n.+1 x.
-  apply: closedI; apply: closed_comp.
-  - move=> + _; exact: continuous_pull.
-  - exact: IH.
-  - move=> + _; exact: proj_continuous.
-  - apply: compact_closed => //=; last exact: compact_set1.
-    exact: discrete_hausdorff.
-rewrite eqEsubset; split => y /=; rewrite common_prefixS; case=> P Q. 
-(split => //; first (by apply/eqP)). 
-by move/eqP: P.
-Qed.
-
 Section perfect_sets.
 
 Implicit Types (T : topologicalType).
@@ -239,25 +131,6 @@ End clopen.
 Definition totally_disconnected (T : topologicalType) :=
   forall (x y : T), x != y -> exists A, A x /\ ~ A y /\ clopen A.
 
-Lemma cantor_totally_disconnected : totally_disconnected cantor_space.
-Proof.
-move=> x y; have := cantor_space_hausdorff; rewrite open_hausdorff => chsdf. 
-move=> /chsdf [[A B /=]]; rewrite ?inE => [[Ax By] [] + oB AB0].
-rewrite {1}openE => /(_ _ Ax) /nbhs_prefix [N] pfxNsubA.
-exists (common_prefix N x); split => //; split.
-  by move=> /pfxNsubA Ay; suff : (A `&` B) y by rewrite AB0.
-split; [apply: open_prefix | apply: closed_fixed].
-Qed.
-
-Lemma cantor_perfect : perfect_set [set: cantor_space].
-Proof.
-split; [exact: closedT|]; rewrite eqEsubset; split => x // _.
-move=> A /nbhs_prefix [N] pfxNsubA.
-exists (fun n => if N < n then ~~ x n else x n); split => //.
-- apply/eqP; rewrite funeqE; apply/existsNP; exists N.+1.
-  by rewrite ltnSn; exact: Bool.no_fixpoint_negb.
-by apply: pfxNsubA => i /ltnW/leq_gtF ->.
-Qed.
 
 Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
  clopen A -> continuous f -> clopen (f @^-1` A).
@@ -282,12 +155,22 @@ move=> dsct x y /eqP xneqy; exists [set x]; split; [|split] => //.
 by split => //; [exact: discrete_open | exact: discrete_closed].
 Qed.
 
+Lemma cantor_totally_disconnected : totally_disconnected cantor_space.
+Proof.
+by apply: totally_disconnected_prod => _; apply: totally_disconnected_discrete.
+Qed.
+
+Lemma cantor_perfect : perfect_set [set: cantor_space].
+Proof.
+by apply: perfect_diagonal => _; exists (true, false).
+Qed. 
+
 Definition countable_basis (T : topologicalType) := exists B, 
   [/\ countable B,
       forall A, B A -> open A &
       forall (x:T) V, nbhs x V -> exists A, B A /\ nbhs x A /\ A `<=` V].
 
-Definition cantor_like {R} (T : pseudoMetricType R) :=
+Definition cantor_like (T : topologicalType) :=
   [/\ perfect_set [set: T], 
       compact [set: T],
       hausdorff_space T
@@ -306,11 +189,6 @@ move=> oA /closed_openC oAc; apply/continuousP; rewrite bool_predE; split => _.
   by move=> + /mem_set => ->.
 - rewrite -bool2E preimage_setT; exact: openT.
 Qed.
-
-Definition separates_points_from_closed {I : Type} {T : topologicalType}
-    {U_ : I -> topologicalType} (f_ : forall i, (T -> U_ i)) :=
-  forall (U : set T) x,
-  closed U -> ~ U x -> exists i, ~ (closure (f_ i @` U)) (f_ i x).
 
 Lemma discrete_closed {T : topologicalType} (dsc : discrete_space T) A : 
   @closed T A.
@@ -349,7 +227,7 @@ move=> /( _ _ _ (fun C y => ~ C y) (powerset_filter_from_filter PF)); case.
 by move=> D [] DF Dsub [C] DC /(_ _ DC) /subsetC2/filterS; apply; exact: DF.
 Qed.
 
-Lemma clopen_countable {T : topologicalType} : 
+Lemma clopen_countable {T : topologicalType}: 
   compact [set: T] ->
   countable_basis T ->
   countable (@clopen T).
@@ -731,8 +609,7 @@ Qed.
 End TreeStructure.
 
 
-Lemma cantor_like_cantor_space {R : realType}: 
-  cantor_like (@cantor_psuedoMetric R).
+Lemma cantor_like_cantor_space: cantor_like (cantor_space).
 Proof.
 split.
 - by apply: perfect_diagonal => //= _; exists (true, false).
