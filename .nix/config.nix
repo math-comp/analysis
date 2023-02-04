@@ -31,20 +31,12 @@
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.15";
+  default-bundle = "8.16";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
-  bundles."8.15".coqPackages = {
-    coq.override.version = "8.15";
-    hierarchy-builder.override.version = "master";
-    mathcomp.override.version = "hierarchy-builder";
-    mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "proux01:hierarchy-builder";
-  };
-
   bundles."8.16".coqPackages = {
     coq.override.version = "8.16";
     hierarchy-builder.override.version = "master";

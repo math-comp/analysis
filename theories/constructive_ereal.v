@@ -346,12 +346,6 @@ Definition lteey := (ltey, leey).
 
 Definition lteNye := (ltNye, leNye).
 
-Lemma gee0P x : 0 <= x <-> x = +oo \/ exists2 r, (r >= 0)%R & x = r%:E.
-Proof.
-split=> [|[->|[r r0 ->//]]]; last exact: leey.
-by case: x => [r r0 | _ |//]; [right; exists r|left].
-Qed.
-
 Lemma le_total_ereal : total (Order.le : rel (\bar R)).
 Proof.
 by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
@@ -2239,8 +2233,6 @@ Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge leNye. Qed.
 Lemma maxeNy : right_id (-oo : \bar R) maxe.
 Proof. by move=> x; rewrite maxC maxNye. Qed.
 
-Canonical maxe_monoid := Monoid.Law maxA maxNye maxeNy.
-Canonical maxe_comoid := Monoid.ComLaw maxC.
 
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
@@ -2254,8 +2246,6 @@ Proof. by move=> x; have [//|] := leP x +oo; rewrite ltNge leey. Qed.
 Lemma miney : right_id (+oo : \bar R) mine.
 Proof. by move=> x; rewrite minC minye. Qed.
 
-Canonical mine_monoid := Monoid.Law minA minye miney.
-Canonical mine_comoid := Monoid.ComLaw minC.
 
 Lemma oppe_max : {morph -%E : x y / maxe x y >-> mine x y : \bar R}.
 Proof.

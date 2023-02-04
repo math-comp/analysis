@@ -512,8 +512,7 @@ End Linear1.
 Section Linear2.
 Context (R : ringType) (U : lmodType R) (V : zmodType) (s : GRing.Scale.law R V).
 HB.instance Definition _ :=
-  isPointed.Build {linear U -> V | GRing.Scale.Law.sort s}
-                  [the GRing.Linear.type U s of \0].
+  isPointed.Build {linear U -> V | GRing.Scale.Law.sort s} (\0).
 End Linear2.
 
 HB.mixin Record isFiltered U T := {
@@ -2325,16 +2324,16 @@ Section Product_Topology.
 
 Variable (I : Type) (T : I -> topologicalType).
 
-Definition product_topologicalType' :=
+Definition product_topology :=
   sup_topology (fun i => Topological.class
     (weak_topology (fun f : [the pointedType of (forall i : I, T i)] => f i))).
 
-HB.instance Definition _ := Topological.on product_topologicalType'.
-
-Definition product_topologicalType :=
-  [the topologicalType of product_topologicalType'].
+HB.instance Definition _ :=
+  Topological.copy (forall i : I, T i) product_topology.
 
 End Product_Topology.
+
+Print Canonical Projections.
 
 (** dnbhs *)
 
@@ -2875,8 +2874,7 @@ Qed.
 Lemma tychonoff (I : eqType) (T : I -> topologicalType)
   (A : forall i, set (T i)) :
   (forall i, compact (A i)) ->
-  @compact (product_topologicalType T)
-    [set f : forall i, T i | forall i, A i (f i)].
+  compact [set f : forall i, T i | forall i, A i (f i)].
 Proof.
 move=> Aco; rewrite compact_ultra => F FU FA.
 set subst_coord := fun (i : I) (pi : T i) (f : forall x : I, T x) (j : I) =>
@@ -2968,12 +2966,14 @@ Context {I : eqType} {K : I -> topologicalType}.
 (* This a helper function to prove products preserve hausdorff. In particular *)
 (* we use its continuity turn clustering in `product_topologicalType K` to    *)
 (* clustering in K x for each X.                                              *)
-Definition prod_topo_apply x (f : product_topologicalType K) := f x.
+Definition prod_topo_apply x (f : forall i, K i) := f x.
 
 (* Note we have to give the signature explicitly because there's no canonical *)
 (* topology associated with `K`. This should be cleaned up after HB port.     *)
 
-Lemma proj_continuous i : continuous (proj i : PK -> K i).
+Let PK : filteredType _ := [the filteredType _ of forall j, K j].
+
+Lemma proj_continuous i : continuous (proj i : (forall j, K j : filteredType _) -> K i).
 Proof.
 move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
 move=> h; apply: cvg_trans (h _) => {h}.
