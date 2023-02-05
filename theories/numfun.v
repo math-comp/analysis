@@ -239,7 +239,7 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
     by rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0 oppeK addeC.
   move gg' : (g x) => g'; move: g' gg' => [g' gg' g'0|//|goo _].
   + move/ltW : (g'0); rewrite -{1}oppe0 -lee_oppr => /max_idPl => ->.
-    by rewrite oppeD// 2!oppeK.
+    by rewrite fin_num_oppeD// 2!oppeK.
   + by rewrite /maxe /=; case: (f x) fx0.
 Qed.
 

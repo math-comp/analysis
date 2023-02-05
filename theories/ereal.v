@@ -378,7 +378,7 @@ Lemma lb_ereal_inf_adherent S (e : R) : (0 < e)%R ->
 Proof.
 move=> e0; rewrite fin_numN => /(ub_ereal_sup_adherent e0)[x []].
 move=> y Sy <-; rewrite -lte_oppr => /lt_le_trans ex; exists y => //.
-by apply: ex; rewrite oppeD// oppeK.
+by apply: ex; rewrite fin_num_oppeD// oppeK.
 Qed.
 
 Lemma ereal_sup_gt S x : x < ereal_sup S -> exists2 y, S y & x < y.

@@ -1374,7 +1374,7 @@ Lemma sub_eseries m n : eseries m \is a fin_num -> eseries n \is a fin_num ->
                         else - \sum_(n <= k < m) u_ k.
 Proof.
 move=> ? ?; have [mn|/ltnW mn] := leqP m n; rewrite -sub_eseries_geq//.
-by rewrite oppeD ?fin_numN// oppeK addeC.
+by rewrite fin_num_oppeD ?fin_numN// oppeK addeC.
 Qed.
 
 Lemma sub_double_eseries n : eseries n \is a fin_num ->
@@ -2419,7 +2419,7 @@ Lemma lim_einf_shift u l : l \is a fin_num ->
 Proof.
 move=> lfin; apply/cvg_lim => //; apply: cvg_trans; last first.
   apply: (@cvgeD _ \oo _ _ (cst l) (einfs u) _ (limn (einfs u))).
-  - by rewrite adde_defC fin_num_adde_def.
+  - by rewrite fin_num_adde_defr.
   - exact: cvg_cst.
   - exact: is_cvg_einfs.
 suff : einfs (fun n => l + u n) = (fun n => l + einfs u n) by move=> ->.

@@ -3079,7 +3079,7 @@ suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) @ \oo -->
   - by rewrite lee_add2l // (cvg_lim _ cvggeo).
   - exact: is_cvg_nneseries.
   - by apply: is_cvg_nneseries => ?; rewrite lee_fin divr_ge0.
-  - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_def.
+  - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_defl.
 rewrite (_ : (fun n => _) = EFin \o
     (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ (i + 1))%:R))%R); last first.
   rewrite funeqE => n /=; rewrite (@big_morph _ _ EFin 0 adde)//.
