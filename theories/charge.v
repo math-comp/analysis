@@ -14,16 +14,18 @@ Require Import lebesgue_measure lebesgue_integral.
 (* decomposition theorem.                                                     *)
 (*                                                                            *)
 (* charge (a.k.a. signed measure):                                            *)
-(*               isCharge0 == mixin for measure functions with fin_num values *)
-(*        isAdditiveCharge == mixin for additive charges                      *)
+(*                 isCharge0 == mixin for measure functions with fin_num      *)
+(*                              values                                        *)
+(*          isAdditiveCharge == mixin for additive charges                    *)
 (*  {additive_charge set T -> \bar R} == additive charge over T, a semiring   *)
 (*                            of sets                                         *)
-(*                isCharge == mixin for charges                               *)
+(*                  isCharge == mixin for charges                             *)
 (*  {charge set T -> \bar R} == charge over T, a semiring of sets             *)
-(*             crestr D mu == restriction of the charge mu to the domain D    *)
-(*                                                                            *)
-(*      positive_set nu P == P is a positive set                              *)
-(*      negative_set nu N == N is a negative set                              *)
+(*               crestr D mu == restriction of the charge mu to the domain D  *)
+(*                     czero == zero charge                                   *)
+(*                    cscale == scaled charge                                 *)
+(*         positive_set nu P == P is a positive set                           *)
+(*         negative_set nu N == N is a negative set                           *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -87,22 +89,33 @@ move=> x [Sx [Fnx UFx]]; split=> //; apply: contra_not UFx => /=.
 by rewrite bigcup_mkord -big_distrr/= => -[].
 Qed.
 
-HB.mixin Record isCharge0 d (R : numFieldType)
-  (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
-    isfinite : forall U, measurable U -> mu U \is a fin_num}.
+HB.mixin Record isCharge0 d (T : semiRingOfSetsType d) (R : numFieldType)
+    (mu : set T -> \bar R) := {
+  isfinite : forall U, measurable U -> mu U \is a fin_num}.
 
-HB.structure Definition Charge0 d
-    (R : numFieldType) (T : semiRingOfSetsType d) := {
-  mu of isCharge0 d R T mu }.
+HB.structure Definition Charge0 d (T : semiRingOfSetsType d) (R : numFieldType)  := {
+  mu of @isCharge0 d T R mu }.
+Arguments isfinite {d T R} s.
+
+HB.structure Definition FiniteMeasure d (T : semiRingOfSetsType d) (R : realFieldType) :=
+  {mu of isCharge0 d T R mu & SigmaFiniteMeasure d mu}.
+
+Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" := (FiniteMeasure.type T R)
+  (at level 36, T, R at next level,
+    format "{ 'finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+
+Lemma finite_measureT d (T : measurableType d) (R : realFieldType) (mu : {finite_measure set T -> \bar R}) :
+  finite_measure mu.
+Proof. by rewrite /finite_measure fin_num_ltey// isfinite. Qed.
 
 HB.mixin Record isAdditiveCharge d (R : numFieldType)
-    (T : semiRingOfSetsType d) mu of isCharge0 d R T mu := {
+    (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
   charge_semi_additive : semi_additive mu }.
 
 #[short(type=additive_charge)]
 HB.structure Definition AdditiveCharge d (R : numFieldType)
     (T : semiRingOfSetsType d) :=
-  { mu of isAdditiveCharge d R T mu & Charge0 d mu }.
+  { mu of isAdditiveCharge d R T mu & @isCharge0 d T R mu }.
 
 Notation "{ 'additive_charge' 'set' T '->' '\bar' R }" :=
   (additive_charge R T) (at level 36, T, R at next level,
@@ -111,7 +124,7 @@ Notation "{ 'additive_charge' 'set' T '->' '\bar' R }" :=
 #[export] Hint Resolve charge_semi_additive : core.
 
 HB.mixin Record isCharge d (R : numFieldType) (T : semiRingOfSetsType d)
-    mu of isAdditiveCharge d R T mu & isCharge0 d R T mu := {
+    (mu : set T -> \bar R) := {
   charge_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=charge)]
@@ -248,6 +261,76 @@ HB.instance Definition _ :=
 
 End charge_restriction.
 
+Section charge_zero.
+Context d (T : measurableType d) (R : realFieldType).
+Local Open Scope ereal_scope.
+
+Definition czero (A : set T) : \bar R := 0.
+
+Let czero0 : czero set0 = 0. Proof. by []. Qed.
+
+Let czero_isfinite B :measurable B -> czero B \is a fin_num. Proof. by []. Qed.
+
+HB.instance Definition _ := isCharge0.Build _ _ _ czero czero_isfinite.
+
+Let czero_semi_additive : semi_additive czero.
+Proof. by move=> F n mF tF mUF; rewrite /czero big1. Qed.
+
+HB.instance Definition _ :=
+  isAdditiveCharge.Build _ _ _ czero czero_semi_additive.
+
+Let czero_sigma_additive : semi_sigma_additive czero.
+Proof.
+move=> F mF tF mUF; rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
+by apply/funext => n; rewrite big1.
+Qed.
+
+HB.instance Definition _ := isCharge.Build _ _ _ czero czero_sigma_additive.
+
+End charge_zero.
+Arguments czero {d T R}.
+
+Section charge_scale.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType). (* R : realFieldType? *)
+Variables (r : R) (m : {charge set T -> \bar R}).
+
+Definition cscale (A : set T) : \bar R := r%:E * m A.
+
+Let cscale0 : cscale set0 = 0. Proof. by rewrite /cscale charge0 mule0. Qed.
+
+Let cscale_isfinite U : measurable U -> cscale U \is a fin_num.
+Proof. by move=> mU; apply: fin_numM => //; exact: isfinite. Qed.
+
+HB.instance Definition _ := isCharge0.Build _ _ _ cscale cscale_isfinite.
+
+Let cscale_semi_additive : semi_additive cscale.
+Proof.
+move=> F n mF tF mU; rewrite /cscale charge_semi_additive//.
+rewrite fin_num_sume_distrr// => i j _ _.
+by rewrite fin_num_adde_defl// isfinite.
+Qed.
+
+HB.instance Definition _ :=
+  isAdditiveCharge.Build _ _ _ cscale cscale_semi_additive.
+
+Let cscale_sigma_additive : semi_sigma_additive cscale.
+Proof.
+move=> F mF tF mUF; rewrite /cscale; rewrite [X in X --> _](_ : _ =
+    (fun n => r%:E * \sum_(0 <= i < n) m (F i))); last first.
+  apply/funext => k; rewrite fin_num_sume_distrr// => i j _ _.
+  by rewrite fin_num_adde_defl// isfinite.
+rewrite /mscale; have [->|r0] := eqVneq r 0%R.
+  rewrite mul0e [X in X --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
+  by under eq_fun do rewrite mul0e.
+by apply: cvgeMl => //; apply: charge_semi_sigma_additive.
+Qed.
+
+HB.instance Definition _ := isCharge.Build _ _ _ cscale
+  cscale_sigma_additive.
+
+End charge_scale.
+
 Section positive_negative_set.
 Context d (R : realType) (T : measurableType d).
 Implicit Types nu : set T -> \bar R.
@@ -373,7 +456,8 @@ have : m < dd A.
   rewrite ltr_pdivr_mulr// ltr_pmulr// ?ltr1n// fine_gt0// d_gt0/=.
   by rewrite lt_neqAle dn1oo/= leey.
 move=> /ereal_sup_gt/cid2[x/= /cid[B [-> mB BDA mmuB]]].
-exists B; split => //; first by rewrite (le_trans _ (ltW mmuB))// ltW.
+exists B; split => //.
+by rewrite ltW// (lt_trans _ mmuB)//.
 by rewrite (le_trans _ (ltW mmuB)).
 Qed.
 
