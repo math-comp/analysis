@@ -654,13 +654,12 @@ Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
 Canonical adde_monoid := Monoid.Law addeA add0e adde0.
 Canonical adde_comoid := Monoid.ComLaw addeC.
 
-Lemma adde_def_sum (I : eqType) h t (P : pred I) (f : I -> \bar R) :
-    {in h :: t &, forall i j : I, f i +? f j} ->
+Lemma adde_def_sum I h t (P : pred I) (f : I -> \bar R) :
+    {in P, forall i : I, f h +? f i} ->
   f h +? \sum_(j <- t | P j) f j.
 Proof.
-move=> htf; rewrite big_mkcond big_seq -big_mkcondr.
-elim/big_rec : _ => [|i x /andP[it Pi] fhx/=]; first by rewrite adde_defC.
-by rewrite adde_defD// htf// ?mem_head// inE it orbT.
+move=> fhi; elim/big_rec : _; first by rewrite fin_num_adde_defl.
+by move=> i x Pi fhx; rewrite adde_defD// fhi.
 Qed.
 
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
@@ -871,23 +870,20 @@ Lemma sum_fine (I : Type) s (P : pred I) (F : I -> \bar R) :
   (\sum_(i <- s | P i) fine (F i) = fine (\sum_(i <- s | P i) F i))%R.
 Proof. by move=> h; rewrite -EFin_sum_fine. Qed.
 
-Lemma sumeN (I : eqType) s (P : pred I) (f : I -> \bar R) :
-    {in s &, forall i j, f i +? f j} ->
+Lemma sumeN I s (P : pred I) (f : I -> \bar R) :
+    {in P &, forall i j, f i +? f j} ->
   \sum_(i <- s | P i) - f i = - \sum_(i <- s | P i) f i.
 Proof.
 elim: s => [|a b ih h]; first by rewrite !big_nil oppe0.
-rewrite !big_cons; case: ifPn => Pa.
-- rewrite oppeD ?adde_def_sum// ih// => i j ib jb.
-  by rewrite h// inE? ib ?jb orbT.
-- by rewrite ih// => i j ib jb; rewrite h// inE ?ib ?jb orbT.
+rewrite !big_cons; case: ifPn => Pa; last by rewrite ih.
+by rewrite oppeD ?ih// adde_def_sum// => i Pi; rewrite h.
 Qed.
 
 Lemma fin_num_sumeN I s (P : pred I) (f : I -> \bar R) :
     (forall i, P i -> f i \is a fin_num) ->
   \sum_(i <- s | P i) - f i = - \sum_(i <- s | P i) f i.
 Proof.
-move=> h; rewrite -EFin_sum_fine//; last by move=> i Pi; rewrite fin_numN h.
-by under eq_bigr do rewrite fineN; rewrite sumrN EFinN EFin_sum_fine.
+by move=> h; rewrite sumeN// => i j Pi Pj; rewrite fin_num_adde_defl// h.
 Qed.
 
 Lemma telescope_sume n m (f : nat -> \bar R) :
@@ -2187,11 +2183,12 @@ Proof.
 by move=> F0; rewrite muleC le0_sume_distrl//; under eq_bigr do rewrite muleC.
 Qed.
 
-Lemma fin_num_sume_distrr (I : Type) (s : seq I) r (P : pred I)
-    (F : I -> \bar R) : (forall i, P i -> F i \is a fin_num) ->
-  (r%:E * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (r%:E * F i))%E.
+Lemma fin_num_sume_distrr (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar R) :
+  x \is a fin_num -> (forall i, P i -> F i \is a fin_num) ->
+    x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) x * F i.
 Proof.
-move=> PF; elim/big_rec2 : _ => //; first by rewrite mule0.
+move=> xfin PF; elim/big_rec2 : _ => //; first by rewrite mule0.
 by move=> i y1 y2 Pi <-; rewrite muleDr// adde_defC fin_num_adde_defl// PF.
 Qed.
 
