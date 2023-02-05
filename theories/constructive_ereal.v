@@ -630,7 +630,7 @@ Proof. by rewrite adde_defC; exact: fin_num_adde_defr. Qed.
 Lemma adde_defN x y : x +? - y = - x +? y.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
-Lemma adde_defD x y z : x +? y -> x +? z -> x +? (y + z).
+Lemma adde_defDr x y z : x +? y -> x +? z -> x +? (y + z).
 Proof. by move: x y z => [x||] [y||] [z||]. Qed.
 
 Lemma adde_defEninfty x : (x +? -oo) = (x != +oo).
@@ -659,7 +659,7 @@ Lemma adde_def_sum I h t (P : pred I) (f : I -> \bar R) :
   f h +? \sum_(j <- t | P j) f j.
 Proof.
 move=> fhi; elim/big_rec : _; first by rewrite fin_num_adde_defl.
-by move=> i x Pi fhx; rewrite adde_defD// fhi.
+by move=> i x Pi fhx; rewrite adde_defDr// fhi.
 Qed.
 
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
@@ -2185,11 +2185,12 @@ Qed.
 
 Lemma fin_num_sume_distrr (I : Type) (s : seq I) x (P : pred I)
     (F : I -> \bar R) :
-  x \is a fin_num -> (forall i, P i -> F i \is a fin_num) ->
+  x \is a fin_num -> {in P &, forall i j, F i +? F j} ->
     x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) x * F i.
 Proof.
-move=> xfin PF; elim/big_rec2 : _ => //; first by rewrite mule0.
-by move=> i y1 y2 Pi <-; rewrite muleDr// adde_defC fin_num_adde_defl// PF.
+move=> xfin PF; elim: s => [|h t ih]; first by rewrite !big_nil mule0.
+rewrite !big_cons; case: ifPn => Ph //.
+by rewrite muleDr// ?ih// adde_def_sum// => i Pi; rewrite PF.
 Qed.
 
 Lemma eq_infty x : (forall r, r%:E <= x) -> x = +oo.

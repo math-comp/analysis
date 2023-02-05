@@ -18,7 +18,7 @@
   + new lemmas `perfectTP`, `perfect_prod`, and `perfect_diagonal`.
 - in `constructive_ereal.v`:
   + lemmas `EFin_sum_fine`, `sumeN`
-  + lemmas `adde_defD`, `adde_def_sum`, `fin_num_sumeN`
+  + lemmas `adde_defDr`, `adde_def_sum`, `fin_num_sumeN`
   + lemma `fin_num_adde_defr`, `adde_defN`
 
 - in `constructive_ereal.v`:
