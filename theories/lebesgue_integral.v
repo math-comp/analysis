@@ -2207,13 +2207,13 @@ Lemma integralN D (f : T -> \bar R) :
   \int[mu]_(x in D) - f x = - \int[mu]_(x in D) f x.
 Proof.
 have [f_fin _|] := boolP (\int[mu]_(x in D) f^\- x \is a fin_num).
-  rewrite integralE// [in RHS]integralE// oppeD ?fin_numN// oppeK addeC.
+  rewrite integralE// [in RHS]integralE// fin_num_oppeD ?fin_numN// oppeK addeC.
   by rewrite funenegN.
 rewrite fin_numE negb_and 2!negbK => /orP[nfoo|/eqP nfoo].
   exfalso; move/negP : nfoo; apply; rewrite -leeNy_eq; apply/negP.
   by rewrite -ltNge (lt_le_trans _ (integral_ge0 _ _)).
 rewrite nfoo adde_defEninfty -leye_eq -ltNge ltey_eq => /orP[f_fin|/eqP pfoo].
-  rewrite integralE// [in RHS]integralE// nfoo [in RHS]addeC oppeD//.
+  rewrite integralE// [in RHS]integralE// nfoo [in RHS]addeC fin_num_oppeD//.
   by rewrite funenegN.
 by rewrite integralE// [in RHS]integralE// funeposN funenegN nfoo pfoo.
 Qed.
@@ -3102,7 +3102,7 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
   rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
   rewrite -addeA (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
   rewrite eq_sym -(sube_eq g12pos) ?fin_num_adde_defl// => /eqP <-.
-  rewrite oppeD; last first.
+  rewrite fin_num_oppeD; last first.
     rewrite ge0_fin_numE; first exact: integral_funeneg_lt_pinfty if2.
     exact: integral_ge0.
   rewrite -addeA (addeCA (\int[mu]_(x in D) (g2^\+ x) )).

@@ -18,8 +18,8 @@
   + new lemmas `perfectTP`, `perfect_prod`, and `perfect_diagonal`.
 - in `constructive_ereal.v`:
   + lemmas `EFin_sum_fine`, `sumeN`
-  + lemmas `adde_defD`, `adde_def_sum`, `adde_def_oppD`, `adde_def_sumeN`
-  + lemma `fin_num_adde_defr`, `adde_def_oppeB`, `adde_defN`
+  + lemmas `adde_defD`, `adde_def_sum`, `fin_num_sumeN`
+  + lemma `fin_num_adde_defr`, `adde_defN`
 
 - in `constructive_ereal.v`:
   + lemma `oppe_inj`
@@ -62,6 +62,7 @@
 
 - in `constructive_ereal.v`:
   + lemmas `adde_def_doppeD`, `adde_def_doppeB`
+  + lemma `fin_num_sume_distrr`
 
 ### Changed
 
@@ -101,6 +102,10 @@
   + `{sigma_finite_additive_measure _ -> _}` -> `{sigma_finite_content _ -> _}`
 - in `constructive_ereal.v`:
   + `fin_num_adde_def` -> `fin_num_adde_defl`
+  + `oppeD` -> `fin_num_oppeD`
+  + `oppeB` -> `fin_num_oppeB`
+  + `doppeD` -> `fin_num_doppeD`
+  + `doppeB` -> `fin_num_doppeB`
 
 ### Generalized
 
@@ -114,6 +119,8 @@
   + lemma `measure_bigcup` generalized,
 - in `classical_sets.v`:
   + `xsection_preimage_snd`, `ysection_preimage_fst`
+- in `constructive_ereal.v`:
+  + `oppeD`, `oppeB`
 
 ### Deprecated
 

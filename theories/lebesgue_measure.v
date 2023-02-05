@@ -875,7 +875,7 @@ rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
   have [->|n0] := eqVneq n 0%N; first by rewrite invr1 subrr set_itvoc0.
   rewrite hlength_itv/= lte_fin ifT; last first.
     by rewrite ler_lt_sub// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
-  by rewrite !(EFinB,EFinN) oppeB// addeAC addeA subee// add0e.
+  by rewrite !(EFinB,EFinN) fin_num_oppeB// addeAC addeA subee// add0e.
 apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
 apply/(@cvgrPdist_lt _ [pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
 near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
@@ -889,7 +889,7 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
         lebesgue_measure [set a])%E.
   rewrite lebesgue_measure_itvoo_subr1 lebesgue_measure_itvoc => /eqP.
   rewrite hlength_itv lte_fin ltr_subl_addr ltr_addl ltr01.
-  rewrite [in X in X == _]/= EFinN EFinB oppeB// addeA subee// add0e.
+  rewrite [in X in X == _]/= EFinN EFinB fin_num_oppeB// addeA subee// add0e.
   by rewrite addeC -sube_eq ?fin_num_adde_defl// subee// => /eqP.
 rewrite -setUitv1// ?bnd_simp; last by rewrite ltr_subl_addr ltr_addl.
 rewrite measureU//; first exact: measurable_itv.
@@ -971,8 +971,8 @@ rewrite itv_infty_bnd_bigcup; transitivity (lim (lebesgue_measure \o
 rewrite (_ : _ \o _ = (fun k : nat => k%:R%:E))//.
 apply/funext => n /=; rewrite lebesgue_measure_itv_bnd hlength_itv/= lte_fin.
 have [->|n0] := eqVneq n 0%N; first by rewrite subr0 ltxx.
-rewrite ltr_subl_addr ltr_addl ltr0n lt0n n0 EFinN EFinB oppeB// addeA subee//.
-by rewrite add0e.
+rewrite ltr_subl_addr ltr_addl ltr0n lt0n n0 EFinN EFinB fin_num_oppeB// addeA.
+by rewrite subee// add0e.
 Qed.
 
 Lemma lebesgue_measure_itv (i : interval R) :

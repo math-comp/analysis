@@ -625,7 +625,7 @@ have /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_pos
     rewrite max_r 1?lee_oppl ?oppe0// add0e subeK//.
     by rewrite fin_num_abs (summable_pinfty Dg).
   rewrite add0e max_l; last by rewrite lee_oppr oppe0 ltW.
-  rewrite oppeB//; last by rewrite fin_num_abs (summable_pinfty Dg).
+  rewrite fin_num_oppeB//; last by rewrite fin_num_abs (summable_pinfty Dg).
   by rewrite -addeA addeCA addeA subeK// fin_num_abs (summable_pinfty Df).
 rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.
   - rewrite fin_numD; apply/andP; split.

@@ -1361,7 +1361,7 @@ Lemma sub_eseries m n : eseries m \is a fin_num -> eseries n \is a fin_num ->
                         else - \sum_(n <= k < m) u_ k.
 Proof.
 move=> ? ?; have [mn|/ltnW mn] := leqP m n; rewrite -sub_eseries_geq//.
-by rewrite oppeD ?fin_numN// oppeK addeC.
+by rewrite fin_num_oppeD ?fin_numN// oppeK addeC.
 Qed.
 
 Lemma sub_double_eseries n : eseries n \is a fin_num ->
