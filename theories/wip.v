@@ -51,10 +51,10 @@ Lemma measurable_fun_gauss_density m s :
   measurable_fun setT (gauss_density m s).
 Proof.
 apply: measurable_funM; first exact: measurable_fun_cst.
-apply: measurable_fun_comp => /=.
+apply: measurable_funT_comp => /=.
   by apply: continuous_measurable_fun; apply continuous_expR.
 apply: measurable_funM; last exact: measurable_fun_cst.
-apply: measurable_fun_comp => /=; first exact: measurable_fun_opp.
+apply: measurable_funT_comp => /=; first exact: measurable_fun_opp.
 apply: measurable_fun_exprn.
 apply: measurable_funM => /=; last exact: measurable_fun_cst.
 apply: measurable_funD => //; first exact: measurable_fun_id.
@@ -111,7 +111,7 @@ Let f1 (x : R) := (gauss01_density x) ^-1.
 
 Let mf1 : measurable_fun setT f1.
 Proof.
-apply: (measurable_fun_comp' (F := [set r : R | r != 0%R])) => //.
+apply: (measurable_fun_comp (F := [set r : R | r != 0%R])) => //.
 - exact: open_measurable.
 - by move=> /= r [t _ <-]; rewrite gt_eqF// gauss_density_gt0.
 - apply: open_continuous_measurable_fun => //.
@@ -124,7 +124,7 @@ Variable mu : {measure set mR R -> \bar R}.
 Definition staton_lebesgue : R.-sfker T ~> _ :=
   letin (sample (@gauss01 R))
   (letin
-    (score (measurable_fun_comp mf1 var2of2))
+    (score (measurable_funT_comp mf1 var2of2))
     (ret var2of3)).
 
 Lemma staton_lebesgueE x U : measurable U ->

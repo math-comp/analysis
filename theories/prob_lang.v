@@ -50,9 +50,6 @@ Proof. by rewrite /onem/= subr_ge0. Qed.
 Definition onem_nonneg (R : numDomainType) (p : {nonneg R})
    (p1 : (p%:num <= 1)%R) :=
   NngNum (onem_nonneg_proof p1).
-
-Lemma expR_ge0 (R : realType) (x : R) : (0 <= expR x)%R.
-Proof. by rewrite ltW// expR_gt0. Qed.
 (* /TODO: PR *)
 
 Section bernoulli.
@@ -674,6 +671,30 @@ Variables (t : R.-sfker Z ~> X)
           (u' : R.-sfker [the measurableType _ of (Z * X)%type] ~> Y)
           (uu' : forall x, u =1 fun z => u' (z, x)).
 
+Definition T z : set X -> \bar R := t z.
+Let T0 z : (T z) set0 = 0. Proof. by []. Qed.
+Let T_ge0 z x : 0 <= (T z) x. Proof. by []. Qed.
+Let T_semi_sigma_additive z : semi_sigma_additive (T z).
+Proof. exact: measure_semi_sigma_additive. Qed.
+HB.instance Definition _ z := @isMeasure.Build _ R X (T z) (T0 z) (T_ge0 z)
+  (@T_semi_sigma_additive z).
+
+Let sfinT z : sfinite_measure_def (T z). Proof. exact: sfinite_kernel_measure. Qed.
+HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ X R
+  (T z) (sfinT z).
+
+Definition U z : set Y -> \bar R := u z.
+Let U0 z : (U z) set0 = 0. Proof. by []. Qed.
+Let U_ge0 z x : 0 <= (U z) x. Proof. by []. Qed.
+Let U_semi_sigma_additive z : semi_sigma_additive (U z).
+Proof. exact: measure_semi_sigma_additive. Qed.
+HB.instance Definition _ z := @isMeasure.Build _ R Y (U z) (U0 z) (U_ge0 z)
+  (@U_semi_sigma_additive z).
+
+Let sfinU z : sfinite_measure_def (U z). Proof. exact: sfinite_kernel_measure. Qed.
+HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ Y R
+  (U z) (sfinU z).
+
 Lemma letinC z A : measurable A ->
   letin t
   (letin u'
@@ -689,13 +710,15 @@ under eq_integral.
   rewrite letinE -uu'.
   under eq_integral do rewrite retE /=.
   over.
-rewrite (sfinite_fubini  _ _ (fun x => \d_(x.1, x.2) A ))//; last 3 first.
-  exact: sfinite_kernel_measure.
-  exact: sfinite_kernel_measure.
+rewrite (sfinite_fubini
+  [the {sfinite_measure set X -> \bar R} of T z]
+  [the {sfinite_measure set Y -> \bar R} of U z]
+  (fun x => \d_(x.1, x.2) A ))//; last first.
   apply/EFin_measurable_fun => /=; rewrite (_ : (fun x => _) = mindic R mA)//.
   by apply/funext => -[].
-apply eq_integral => y _.
-by rewrite letinE/= -tt'; apply eq_integral => // x _; rewrite retE.
+rewrite /=.
+apply: eq_integral => y _.
+by rewrite letinE/= -tt'; apply: eq_integral => // x _; rewrite retE.
 Qed.
 
 End letinC.

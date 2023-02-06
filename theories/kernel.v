@@ -53,37 +53,23 @@ apply: measurableU.
 exact: emeasurable_itv_bnd_pinfty.
 Qed.
 
-Definition sfinite_measure d (T : measurableType d) (R : realType)
-    (mu : set T -> \bar R) :=
-  exists2 s : {measure set T -> \bar R}^nat,
-    forall n, finite_measure (s n) & forall U, measurable U -> mu U = mseries s 0 U.
-
-Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realType)
-  (mu : {measure set T -> \bar R}) :
-  finite_measure mu -> sigma_finite setT mu.
-Proof.
-exists (fun i => if i \in [set 0%N] then setT else set0).
-  by rewrite -bigcup_mkcondr setTI bigcup_const//; exists 0%N.
-move=> n; split; first by case: ifPn.
-by case: ifPn => // _; rewrite ?measure0//; exact: finite_measure.
-Qed.
-
 Section sfinite_fubini.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
-Variables (m1 : {measure set X -> \bar R}) (sfm1 : sfinite_measure m1).
-Variables (m2 : {measure set Y -> \bar R}) (sfm2 : sfinite_measure m2).
+Variables (m1 : {sfinite_measure set X -> \bar R}).
+Variables (m2 : {sfinite_measure set Y -> \bar R}).
 Variables (f : X * Y -> \bar R) (f0 : forall xy, 0 <= f xy).
 Hypothesis mf : measurable_fun setT f.
 
 Lemma sfinite_fubini :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
 Proof.
-have [s1 fm1 m1E] := sfm1.
-have [s2 fm2 m2E] := sfm2.
+have [s1 m1E] := sfinite_measure m1.
+have [s2 m2E] := sfinite_measure m2.
 rewrite [LHS](eq_measure_integral [the measure _ _ of mseries s1 0]); last first.
-  by move=> A mA _; rewrite m1E.
+  by move=> A mA _; rewrite /= -m1E.
 transitivity (\int[mseries s1 0]_x \int[mseries s2 0]_y f (x, y)).
-  by apply eq_integral => x _; apply: eq_measure_integral => ? ? _; rewrite m2E.
+  apply eq_integral => x _; apply: eq_measure_integral => ? ? _.
+  by rewrite /= -m2E.
 transitivity (\sum_(n <oo) \int[s1 n]_x \sum_(m <oo) \int[s2 m]_y f (x, y)).
   rewrite ge0_integral_measure_series; [|by []| |]; last 2 first.
     by move=> t _; exact: integral_ge0.
@@ -92,14 +78,12 @@ transitivity (\sum_(n <oo) \int[s1 n]_x \sum_(m <oo) \int[s2 m]_y f (x, y)).
       apply/funext => x.
       by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
     apply: ge0_emeasurable_fun_sum; first by move=> k x; exact: integral_ge0.
-    move=> k; apply: measurable_fun_fubini_tonelli_F => //=.
-    exact: finite_measure_sigma_finite.
+    by move=> k; apply: measurable_fun_fubini_tonelli_F.
   apply: eq_eseries => n _; apply eq_integral => x _.
   by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
 transitivity (\sum_(n <oo) \sum_(m <oo) \int[s1 n]_x \int[s2 m]_y f (x, y)).
   apply eq_eseries => n _; rewrite integral_nneseries//.
-    move=> m; apply: measurable_fun_fubini_tonelli_F => //=.
-    exact: finite_measure_sigma_finite.
+    by move=> m; exact: measurable_fun_fubini_tonelli_F.
   by move=> m x _; exact: integral_ge0.
 transitivity (\sum_(n <oo) \sum_(m <oo) \int[s2 m]_y \int[s1 n]_x f (x, y)).
   apply eq_eseries => n _; apply eq_eseries => m _.
@@ -107,12 +91,10 @@ transitivity (\sum_(n <oo) \sum_(m <oo) \int[s2 m]_y \int[s1 n]_x f (x, y)).
 transitivity (\sum_(n <oo) \int[mseries s2 0]_y \int[s1 n]_x f (x, y)).
   apply eq_eseries => n _ /=.  rewrite ge0_integral_measure_series//.
     by move=> y _; exact: integral_ge0.
-  apply: measurable_fun_fubini_tonelli_G => //=.
-  by apply: finite_measure_sigma_finite; exact: fm1.
+  exact: measurable_fun_fubini_tonelli_G.
 transitivity (\int[mseries s2 0]_y \sum_(n <oo) \int[s1 n]_x f (x, y)).
   rewrite integral_nneseries//.
-    move=> n; apply: measurable_fun_fubini_tonelli_G => //=.
-    by apply: finite_measure_sigma_finite; exact: fm1.
+    by move=> n; apply: measurable_fun_fubini_tonelli_G.
   by move=> n y _; exact: integral_ge0.
 transitivity (\int[mseries s2 0]_y \int[mseries s1 0]_x f (x, y)).
   apply eq_integral => y _.
@@ -123,7 +105,7 @@ by apply eq_integral => y _; apply eq_measure_integral => A mA _ /=; rewrite m1E
 Qed.
 
 End sfinite_fubini.
-Arguments sfinite_fubini {d d' X Y R m1} _ {m2} _ f.
+Arguments sfinite_fubini {d d' X Y R} m1 m2 f.
 
 Reserved Notation "R .-ker X ~> Y" (at level 42, format "R .-ker  X  ~>  Y").
 Reserved Notation "R .-sfker X ~> Y" (at level 42, format "R .-sfker  X  ~>  Y").
@@ -143,8 +125,8 @@ Notation "R .-ker X ~> Y" := (kernel X Y R).
 
 Arguments measurable_kernel {_ _ _ _ _} _.
 
-Lemma eq_kernel d d' (T : measurableType d) (T' : measurableType d') (R : realType)
-    (k1 k2 : R.-ker T ~> T') :
+Lemma eq_kernel d d' (T : measurableType d) (T' : measurableType d')
+    (R : realType) (k1 k2 : R.-ker T ~> T') :
   (forall x U, k1 x U = k2 x U) -> k1 = k2.
 Proof.
 move: k1 k2 => [m1 [[?]]] [m2 [[?]]] /= k12.
@@ -314,6 +296,17 @@ Qed.
 
 End sfinite.
 
+Lemma sfinite_kernel_measure d d' (Z : measurableType d) (X : measurableType d')
+    (R : realType) (k : R.-sfker Z ~> X) (z : Z) :
+  sfinite_measure_def (k z).
+Proof.
+have [s ks] := sfinite k.
+exists (s ^~ z).
+  move=> n; have [r snr] := measure_uub (s n).
+  by rewrite /finite_measure (lt_le_trans (snr _))// leey.
+by move=> U mU; rewrite ks.
+Qed.
+
 HB.instance Definition _ d d' (X : measurableType d)
     (Y : measurableType d') (R : realType) :=
   @Kernel_isFinite.Build _ _ _ _ R (@kzero _ _ X Y R)
@@ -409,16 +402,6 @@ Lemma finite_kernel_measure d d' (X : measurableType d)
 Proof.
 have [r k_r] := measure_uub k.
 by rewrite /finite_measure (@lt_trans _ _ r%:E) ?ltey.
-Qed.
-
-Lemma sfinite_kernel_measure d d' (X : measurableType d)
-    (Y : measurableType d') (R : realType) (k : R.-sfker X ~> Y) (x : X) :
-  sfinite_measure (k x).
-Proof.
-have [k_ k_E] := sfinite k.
-exists (fun n => k_ n x); last by move=> A mA; rewrite k_E.
-move=> n; rewrite /finite_measure.
-exact: finite_kernel_measure.
 Qed.
 
 (* see measurable_prod_subset in lebesgue_integral.v;
@@ -1068,12 +1051,12 @@ Let k_2 : (X * Y -> R)^nat := fun n => k_ n \o snd.
 
 Let k_2_ge0 n x : (0 <= k_2 n x)%R. Proof. by []. Qed.
 
-HB.instance Definition _ n := @IsNonNegFun.Build _ _ _ (k_2_ge0 n).
+HB.instance Definition _ n := @isNonNegFun.Build _ _ _ (k_2_ge0 n).
 
 Let mk_2 n : measurable_fun setT (k_2 n).
 Proof. by apply: measurable_funT_comp => //; exact: measurable_fun_snd. Qed.
 
-HB.instance Definition _ n := @IsMeasurableFun.Build _ _ _ _ (mk_2 n).
+HB.instance Definition _ n := @isMeasurableFun.Build _ _ _ _ (mk_2 n).
 
 Let fk_2 n : finite_set (range (k_2 n)).
 Proof.
@@ -1096,7 +1079,8 @@ move=> h; apply: (measurable_fun_xsection_integral (k \o snd) l
   have := h n r measurableT B mB; rewrite !setTI.
   suff : (l ^~ (k_ n @^-1` [set r])) @^-1` B =
          (fun x => l x (xsection (k_2 n @^-1` [set r]) x)) @^-1` B by move=> ->.
-  by apply/seteqP; split => x/=; rewrite xsection_preimage_snd.
+  by apply/seteqP; split => x/=;
+    rewrite (comp_preimage _ snd (k_ n)) xsection_preimage_snd.
 Qed.
 
 End measurable_fun_preimage_integral.
