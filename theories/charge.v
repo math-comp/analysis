@@ -14,8 +14,6 @@ Require Import lebesgue_measure lebesgue_integral.
 (* decomposition theorem.                                                     *)
 (*                                                                            *)
 (* charge (a.k.a. signed measure):                                            *)
-(*                 isCharge0 == mixin for measure functions with fin_num      *)
-(*                              values                                        *)
 (*          isAdditiveCharge == mixin for additive charges                    *)
 (*  {additive_charge set T -> \bar R} == additive charge over T, a semiring   *)
 (*                            of sets                                         *)
@@ -89,55 +87,35 @@ move=> x [Sx [Fnx UFx]]; split=> //; apply: contra_not UFx => /=.
 by rewrite bigcup_mkord -big_distrr/= => -[].
 Qed.
 
-HB.mixin Record isCharge0 d (T : semiRingOfSetsType d) (R : numFieldType)
+HB.mixin Record isAdditiveCharge d (T : semiRingOfSetsType d) (R : numFieldType)
     (mu : set T -> \bar R) := {
-  isfinite : forall U, measurable U -> mu U \is a fin_num}.
-
-HB.structure Definition Charge0 d (T : semiRingOfSetsType d) (R : numFieldType)  := {
-  mu of @isCharge0 d T R mu }.
-Arguments isfinite {d T R} s.
-
-HB.structure Definition FiniteMeasure d (T : semiRingOfSetsType d) (R : realFieldType) :=
-  {mu of isCharge0 d T R mu & SigmaFiniteMeasure d mu}.
-
-Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" := (FiniteMeasure.type T R)
-  (at level 36, T, R at next level,
-    format "{ 'finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
-
-Lemma finite_measureT d (T : measurableType d) (R : realFieldType) (mu : {finite_measure set T -> \bar R}) :
-  finite_measure mu.
-Proof. by rewrite /finite_measure fin_num_ltey// isfinite. Qed.
-
-HB.mixin Record isAdditiveCharge d (R : numFieldType)
-    (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
   charge_semi_additive : semi_additive mu }.
 
 #[short(type=additive_charge)]
-HB.structure Definition AdditiveCharge d (R : numFieldType)
-    (T : semiRingOfSetsType d) :=
-  { mu of isAdditiveCharge d R T mu & @isCharge0 d T R mu }.
+HB.structure Definition AdditiveCharge d (T : semiRingOfSetsType d)
+    (R : numFieldType) :=
+  { mu of isAdditiveCharge d T R mu & SigmaFinite_isFinite d T R mu }.
 
 Notation "{ 'additive_charge' 'set' T '->' '\bar' R }" :=
-  (additive_charge R T) (at level 36, T, R at next level,
+  (additive_charge T R) (at level 36, T, R at next level,
     format "{ 'additive_charge'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
 #[export] Hint Resolve charge_semi_additive : core.
 
-HB.mixin Record isCharge d (R : numFieldType) (T : semiRingOfSetsType d)
+HB.mixin Record isCharge d (T : semiRingOfSetsType d) (R : numFieldType)
     (mu : set T -> \bar R) := {
   charge_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=charge)]
-HB.structure Definition Charge d (R : numFieldType)
-    (T : semiRingOfSetsType d) :=
-  { mu of isCharge d R T mu & AdditiveCharge d mu }.
+HB.structure Definition Charge d (T : algebraOfSetsType d) (R : realFieldType) :=
+  { mu of isCharge d T R mu & AdditiveCharge d mu }.
 
-Notation "{ 'charge' 'set' T '->' '\bar' R }" := (charge R T)
+Notation "{ 'charge' 'set' T '->' '\bar' R }" := (charge T R)
   (at level 36, T, R at next level,
     format "{ 'charge'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
 Section charge_prop.
-Context d (R : realType) (T : measurableType d).
+Context d (T : measurableType d) (R : realType).
 Implicit Type mu : {charge set T -> \bar R}.
 
 Lemma charge0 mu : mu set0 = 0.
@@ -193,8 +171,8 @@ Lemma chargeD mu (A B : set T) : measurable A -> measurable B ->
 Proof.
 move=> mA mB.
 rewrite (chargeDI mu mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
-- by rewrite ltey_eq isfinite //; exact:measurableI.
-- by rewrite ltNye_eq isfinite//; exact:measurableI.
+- by rewrite ltey_eq fin_num_measure//; exact:measurableI.
+- by rewrite ltNye_eq fin_num_measure//; exact:measurableI.
 Qed.
 
 Lemma charge_partition mu S P N :
@@ -221,13 +199,14 @@ Variables (mu : {charge set T -> \bar R}) (D : set T) (mD : measurable D).
 
 Local Notation restr := (crestr mu mD).
 
-Let crestr_isfinite U : measurable U -> restr U \is a fin_num.
+Let crestr_finite_measure_function U : measurable U -> restr U \is a fin_num.
 Proof.
 move=> mU.
-by have /(@isfinite _ _ _ mu) : measurable (U `&` D) by exact: measurableI.
+by have /(@fin_num_measure _ _ _ mu) : measurable (U `&` D) by exact: measurableI.
 Qed.
 
-HB.instance Definition _ := isCharge0.Build _ _ _ restr crestr_isfinite.
+HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
+  restr crestr_finite_measure_function.
 
 Let crestr_semi_additive : semi_additive restr.
 Proof.
@@ -269,9 +248,11 @@ Definition czero (A : set T) : \bar R := 0.
 
 Let czero0 : czero set0 = 0. Proof. by []. Qed.
 
-Let czero_isfinite B :measurable B -> czero B \is a fin_num. Proof. by []. Qed.
+Let czero_finite_measure_function B : measurable B -> czero B \is a fin_num.
+Proof. by []. Qed.
 
-HB.instance Definition _ := isCharge0.Build _ _ _ czero czero_isfinite.
+HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
+  czero czero_finite_measure_function.
 
 Let czero_semi_additive : semi_additive czero.
 Proof. by move=> F n mF tF mUF; rewrite /czero big1. Qed.
@@ -299,16 +280,17 @@ Definition cscale (A : set T) : \bar R := r%:E * m A.
 
 Let cscale0 : cscale set0 = 0. Proof. by rewrite /cscale charge0 mule0. Qed.
 
-Let cscale_isfinite U : measurable U -> cscale U \is a fin_num.
-Proof. by move=> mU; apply: fin_numM => //; exact: isfinite. Qed.
+Let cscale_finite_measure_function U : measurable U -> cscale U \is a fin_num.
+Proof. by move=> mU; apply: fin_numM => //; exact: fin_num_measure. Qed.
 
-HB.instance Definition _ := isCharge0.Build _ _ _ cscale cscale_isfinite.
+HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
+  cscale cscale_finite_measure_function.
 
 Let cscale_semi_additive : semi_additive cscale.
 Proof.
 move=> F n mF tF mU; rewrite /cscale charge_semi_additive//.
 rewrite fin_num_sume_distrr// => i j _ _.
-by rewrite fin_num_adde_defl// isfinite.
+by rewrite fin_num_adde_defl// fin_num_measure.
 Qed.
 
 HB.instance Definition _ :=
@@ -319,7 +301,7 @@ Proof.
 move=> F mF tF mUF; rewrite /cscale; rewrite [X in X --> _](_ : _ =
     (fun n => r%:E * \sum_(0 <= i < n) m (F i))); last first.
   apply/funext => k; rewrite fin_num_sume_distrr// => i j _ _.
-  by rewrite fin_num_adde_defl// isfinite.
+  by rewrite fin_num_adde_defl// fin_num_measure.
 rewrite /mscale; have [->|r0] := eqVneq r 0%R.
   rewrite mul0e [X in X --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
@@ -496,15 +478,15 @@ have nuAoo : 0 <= nu Aoo.
   exact: elt_A_ge0.
 have A_cvg_0 : (fun n => nu (A_ (v n))) --> 0.
   rewrite [X in X --> _](_ : _ = EFin \o (fun n => fine (nu (A_ (v n))))); last first.
-    by apply/funext => n/=; rewrite fineK// isfinite.
+    by apply/funext => n/=; rewrite fineK// fin_num_measure.
   apply: continuous_cvg => //.
   apply/(@cvg_series_cvg_0 _ [normedModType R of R^o]).
   move: cvg_nuA.
-  rewrite -(@fineK _ (nu Aoo)) ?isfinite//.
+  rewrite -(@fineK _ (nu Aoo)) ?fin_num_measure//.
   move/fine_cvgP => [_ ?].
   rewrite (_ : series _ = fine \o (fun n => \sum_(0 <= i < n) nu (A_ (v i)))); last first.
     apply/funext => n /=.
-    by rewrite /series/= sum_fine//= => i _; rewrite isfinite.
+    by rewrite /series/= sum_fine//= => i _; rewrite fin_num_measure.
   by apply/cvg_ex; exists (fine (nu Aoo)).
 have mine_cvg_0 : (fun n => mine (d_ (v n) * 2^-1%:E) 1) --> 0.
   apply: (@squeeze_cvge _ _ _ _ (cst 0) _ (fun n => nu (A_ (v n))));
@@ -523,7 +505,7 @@ have d_cvg_0 : d_ \o v --> 0.
       rewrite lte_pdivr_mulr// mul1e => d2.
       by rewrite ge0_fin_numE// (lt_le_trans d2)// leey.
     move=> _ /[swap]; rewrite ltNge => -/[swap].
-    by move/fine_le => -> //; rewrite isfinite.
+    by move/fine_le => -> //; rewrite fin_num_measure.
   apply/fine_cvgP; split => //.
   apply/(@cvgrPdist_lt _ [normedModType R of R^o]) => e e0.
   move/fine_cvgP : mine_cvg_0 => -[_].
@@ -691,14 +673,14 @@ have not_s_cvg_0 : ~ s_ \o v --> 0.
   move/fine_cvgP => -[sfin].
   move/(@cvgrPdist_lt _ [normedModType R of R^o]).
   have /[swap] /[apply] -[M _ hM] : (0 < `|fine (nu D)|)%R.
-    by rewrite normr_gt0// fine_eq0// ?lt_eqF// isfinite.
+    by rewrite normr_gt0// fine_eq0// ?lt_eqF// fin_num_measure.
   near \oo => n.
   have /hM : (M <= n)%N by near: n; exists M.
   rewrite sub0r normrN /= ler0_norm//; last by rewrite fine_le0.
-  rewrite ltr0_norm//; last by rewrite fine_lt0// nuD0 andbT ltNye_eq isfinite.
+  rewrite ltr0_norm//; last by rewrite fine_lt0// nuD0 andbT ltNye_eq fin_num_measure.
   rewrite ltr_opp2; apply/negP; rewrite -leNgt; apply: fine_le.
   - near: n; exact.
-  - by rewrite isfinite.
+  - by rewrite fin_num_measure.
   - exact: snuD.
 have nuN : nu N = \sum_(n <oo) nu (A_ (v n)).
   apply/esym/cvg_lim => //.
@@ -713,7 +695,7 @@ move=> /cvg_ex[[l| |]]; first last.
   - move/cvg_lim => limNoo.
     have : nu N <= -oo by rewrite -limNoo// nuN.
     rewrite leeNy_eq => /eqP nuNoo.
-    have := @isfinite _ _ _ nu N mN.
+    have := @fin_num_measure _ _ _ nu N mN.
     by rewrite fin_numE => /andP[+ _] => /eqP; apply.
   - move/cvg_lim => limoo.
     have := @npeseries_le0 _ (fun n => maxe (s_ (v n) * 2^-1%:E) (- (1))) xpredT.
@@ -727,7 +709,7 @@ have : cvg (series (fun n => fine (maxe (s_ (v n) * 2^-1%:E) (- (1))))).
     \sum_(0 <= k < n) fine (maxe (s_ (v k) * 2^-1%:E)%E (- (1))%E))%R) //.
   apply/funext => n/=; rewrite sum_fine// => m _.
   rewrite le0_fin_numE.
-    by rewrite (lt_le_trans _ (elt_maxe _))// -le0_fin_numE// ?isfinite.
+    by rewrite (lt_le_trans _ (elt_maxe _))// -le0_fin_numE// ?fin_num_measure.
   by rewrite /maxe; case: ifPn => // _; rewrite mule_le0_ge0.
 move/(@cvg_series_cvg_0 _ [normedModType R of R^o]) => maxe_cvg_0.
 apply: not_s_cvg_0.
@@ -770,7 +752,8 @@ split.
   by rewrite (positive_negative0 posP2 negN1 mS) adde0 setIAC.
 transitivity (nu (S `&` N1 `&` N2)).
    rewrite (charge_partition nu _ mP2 mN2)//; last exact: measurableI.
-   by rewrite {1}setIAC (positive_negative0 posP2 negN1 mS) add0e.
+   have := positive_negative0 posP2 negN1 mS.
+   by rewrite setIAC => ->; rewrite add0e.
 rewrite [RHS](charge_partition nu _ mP1 mN1)//; last exact: measurableI.
 by rewrite (setIAC _ _ P1) (positive_negative0 posP1 negN2 mS) add0e setIAC.
 Qed.
