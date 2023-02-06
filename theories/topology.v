@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
@@ -302,6 +302,9 @@ Require Import reals signed.
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
 (*          weak_pseudoMetricType == the metric space for weak topologies     *)
+(*            quotient_topology Q == the quotient topology corresponding to   *)
+(*                                   quotient Q : quotType T. where T has     *)
+(*                                   type topologicalType                     *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -4811,6 +4814,56 @@ Definition fct_pseudoMetricType_mixin :=
   PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage.
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
+
+Definition quotient_topology (T : topologicalType) (Q : quotType T) := Q.
+
+Section quotients.
+Local Open Scope quotient_scope.
+Context {T : topologicalType} {Q0 : quotType T}.
+
+Let Q := quotient_topology Q0.
+
+Canonical quotient_eq := EqType Q gen_eqMixin.
+Canonical quotient_choice := ChoiceType Q gen_choiceMixin.
+Canonical quotient_pointed := PointedType Q (\pi_Q point).
+
+Definition quotient_open U := open (\pi_Q @^-1` U).
+
+Program Definition quotient_topologicalType_mixin :=
+  @topologyOfOpenMixin Q quotient_open _ _ _.
+Next Obligation. by rewrite /quotient_open preimage_setT; exact: openT. Qed.
+Next Obligation. by move=> ? ? ? ?; exact: openI. Qed.
+Next Obligation. by move=> I f ofi; apply: bigcup_open => i _; exact: ofi. Qed.
+
+Let quotient_filtered := Filtered.Class (Pointed.class quotient_pointed)
+  (nbhs_of_open quotient_open).
+
+Canonical quotient_topologicalType := @Topological.Pack Q
+  (@Topological.Class _ quotient_filtered quotient_topologicalType_mixin).
+
+Let Q' := quotient_topologicalType.
+
+Lemma pi_continuous : continuous (\pi_Q : T -> Q').
+Proof. exact/continuousP. Qed.
+
+Lemma quotient_continuous {Z : topologicalType} (f : Q' -> Z) :
+  continuous f <-> continuous (f \o \pi_Q).
+Proof.
+split => /continuousP /= cts; apply/continuousP => A oA; last exact: cts.
+by rewrite comp_preimage; move/continuousP: pi_continuous; apply; exact: cts.
+Qed.
+
+Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) :
+  continuous g -> {homo g : a b / a == b %[mod Q] >-> a == b} ->
+  continuous (g \o repr : Q' -> Z).
+Proof.
+move=> /continuousP ctsG rgE; apply/continuousP => A oA.
+rewrite /open/= /quotient_open (_ : _ @^-1` _ = g @^-1` A); first exact: ctsG.
+have greprE x : g (repr (\pi_Q x)) = g x by apply/eqP; rewrite rgE// reprK.
+by rewrite eqEsubset; split => x /=; rewrite greprE.
+Qed.
+
+End quotients.
 
 (** ** Complete uniform spaces *)
 
