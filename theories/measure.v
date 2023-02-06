@@ -87,12 +87,14 @@ From HB Require Import structures.
 (*                   that it is semi_sigma_additive                           *)
 (*     isMeasure == factory corresponding to the type of measures             *)
 (*     Measure == structure corresponding to measures                         *)
-(*     finite_measure mu == the measure mu is finite                          *)
 (*  {sigma_finite_content set T -> \bar R} == contents that are also sigma    *)
 (*                                            finite                          *)
 (*  {sigma_finite_measure set T -> \bar R} ==                                 *)
 (*                    measures that are also sigma finite                     *)
 (*     isSigmaFinite == factory corresponding to sigma finiteness             *)
+(*  isFiniteMeasureFunction == mixin for a function mu : set T -> \bar R such *)
+(*                      that mu A is a fin_num for any measurable set A       *)
+(*  {finite_measure set T -> \bar R} == finite measure                        *)
 (*                                                                            *)
 (*  pushforward mf m == pushforward/image measure of m by f, where mf is a    *)
 (*                      proof that f is measurable                            *)
@@ -1567,20 +1569,6 @@ Arguments measure_bigcup {d R T} _ _.
 #[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
 
-Definition finite_measure d (T : measurableType d) (R : numDomainType)
-    (mu : set T -> \bar R) :=
-  mu setT < +oo.
-
-Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realFieldType)
-  (mu : {measure set T -> \bar R}) :
-  finite_measure mu -> sigma_finite setT mu.
-Proof.
-exists (fun i => if i \in [set 0%N] then setT else set0).
-  by rewrite -bigcup_mkcondr setTI bigcup_const//; exists 0%N.
-move=> n; split; first by case: ifPn.
-by case: ifPn => // _; rewrite ?measure0//; exact: finite_measure.
-Qed.
-
 HB.mixin Record isSigmaFinite d (R : numFieldType) (T : semiRingOfSetsType d)
     (mu : set T -> \bar R) := {
   sigma_finiteT : sigma_finite setT mu
@@ -1607,6 +1595,28 @@ HB.structure Definition SigmaFiniteMeasure d R T :=
 Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" := (sigma_finite_measure R T)
   (at level 36, T, R at next level,
     format "{ 'sigma_finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+
+HB.mixin Record isFiniteMeasureFunction d (T : semiRingOfSetsType d)
+    (R : numDomainType) (mu : set T -> \bar R) := {
+  finite_measure_function : forall U, measurable U -> mu U \is a fin_num}.
+
+HB.structure Definition FiniteMeasureFunction d (T : semiRingOfSetsType d)
+    (R : numDomainType)  :=
+  { mu of @isFiniteMeasureFunction d T R mu }.
+Arguments finite_measure_function {d T R} s.
+
+HB.structure Definition FiniteMeasure d (T : semiRingOfSetsType d) (R : realFieldType) :=
+  {mu of isFiniteMeasureFunction d T R mu & SigmaFiniteMeasure d mu}.
+
+Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" :=
+  (FiniteMeasure.type T R)
+    (at level 36, T, R at next level,
+      format "{ 'finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+
+Lemma finite_measure d (T : measurableType d) (R : realFieldType)
+    (mu : {finite_measure set T -> \bar R}) :
+  mu setT < +oo.
+Proof. by rewrite -ge0_fin_numE// finite_measure_function. Qed.
 
 Section pushforward_measure.
 Local Open Scope ereal_scope.

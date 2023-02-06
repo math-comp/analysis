@@ -88,6 +88,10 @@
   + new lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`, 
     `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
     `join_product_weak`. 
+- in `measure.v`:
+  + mixin `isFiniteMeasureFunction` with field `finite_measure_function`
+  + structure `FiniteMeasureFunction`
+  + structure `FiniteMeasure`, notation `{finite_measure set _ -> \bar _}`
 
 ### Changed
 
@@ -106,6 +110,9 @@
   + canonical `fimfun_comRingType`
   + lemma `max_fimfun_subproof`
   + mixin `IsNonNegFun`, structure `NonNegFun`, notation `{nnfun _ >-> _}`
+
+- in `measure.v`:
+  + `finite_measure` is now a lemma that applies to a finite measure
 
 ### Renamed
 
