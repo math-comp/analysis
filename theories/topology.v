@@ -116,7 +116,7 @@ Require Import reals signed.
 (*                              \oo == "eventually" filter on nat: set of     *)
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true.                       *)
-(*   separates_points_from_closed f == For a closed set U and point x outside *)
+(*    separate_points_from_closed f == For a closed set U and point x outside *)
 (*                                     some member of the family f sends      *)
 (*                                     f_i(x) outside (closure (f_i @` U)).   *)
 (*                                     Used together with join_product.       *)
@@ -6795,13 +6795,13 @@ Qed.
 
 End SubspaceWeak.
 
-Definition separates_points_from_closed {I : Type} {T : topologicalType}
+Definition separate_points_from_closed {I : Type} {T : topologicalType}
     {U_ : I -> topologicalType} (f_ : forall i, T -> U_ i) :=
   forall (U : set T) x,
   closed U -> ~ U x -> exists i, ~ (closure (f_ i @` U)) (f_ i x).
 
 (* A handy technique for embedding a space T into a product. The key interface
-   is 'separates_points_from_closed', which guarantees that the topologies
+   is 'separate_points_from_closed', which guarantees that the topologies
    - T's native topology
    - sup (weak f_i) - the sup of all the weak topologies of f_i
    - weak (x => (f_1 x, f_2 x,...)) - the weak topology from the product space
@@ -6811,7 +6811,7 @@ Section product_embeddings.
 Context {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType}.
 Variable (f_ : forall i, T -> U_ i).
 
-Hypothesis sepf : separates_points_from_closed f_.
+Hypothesis sepf : separate_points_from_closed f_.
 Hypothesis ctsf : forall i, continuous (f_ i).
 
 Let weakT := @sup_topologicalType T I
