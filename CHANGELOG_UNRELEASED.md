@@ -69,6 +69,17 @@
   + new lemmas `pi_continuous`, `quotient_continuous`, and
     `repr_comp_continuous`.
 
+- in file `boolp.v`,
+  + new lemma `forallp_asboolPn2`.
+- in file `classical_sets.v`,
+  + new lemma `preimage_range`.
+- in file `topology.v`,
+  + new definitions `hausdorff_accessible`, `separate_points_from_closed`, and 
+    `join_product`.
+  + new lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`, 
+    `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
+    `join_product_weak`. 
+
 ### Changed
 
 - in `fsbigop.v`:

@@ -1278,6 +1278,9 @@ Proof. by case=> [t ?]; exists (f t). Qed.
 Lemma preimage_image f A : A `<=` f @^-1` (f @` A).
 Proof. by move=> a Aa; exists a. Qed.
 
+Lemma preimage_range {A B : Type} (f : A -> B) : f @^-1` (range f) = [set: A].
+Proof. by rewrite eqEsubset; split=> x // _; exists x. Qed.
+
 Lemma image_preimage_subset f Y : f @` (f @^-1` Y) `<=` Y.
 Proof. by move=> _ [t /= Yft <-]. Qed.
 

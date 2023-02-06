@@ -2983,26 +2983,26 @@ Qed.
 Lemma nbhs_open_ereal_lt r (f : R -> R) : r < f r ->
   nbhs r%:E [set y | y < (f r)%:E]%E.
 Proof.
-move=> xfx; rewrite nbhsE /=; eexists; split; last by move=> y; exact.
+move=> xfx; rewrite nbhsE /=; eexists; last by move=> y; exact.
 by split; [apply open_ereal_lt_ereal | rewrite /= lte_fin].
 Qed.
 
 Lemma nbhs_open_ereal_gt r (f : R -> R) : f r < r ->
   nbhs r%:E [set y | (f r)%:E < y]%E.
 Proof.
-move=> xfx; rewrite nbhsE /=; eexists; split; last by move=> y; exact.
+move=> xfx; rewrite nbhsE /=; eexists; last by move=> y; exact.
 by split; [apply open_ereal_gt_ereal | rewrite /= lte_fin].
 Qed.
 
 Lemma nbhs_open_ereal_pinfty r : (nbhs +oo [set y | r%:E < y])%E.
 Proof.
-rewrite nbhsE /=; eexists; split; last by move=> y; exact.
+rewrite nbhsE /=; eexists; last by move=> y; exact.
 by split; [apply open_ereal_gt_ereal | rewrite /= ltry].
 Qed.
 
 Lemma nbhs_open_ereal_ninfty r : (nbhs -oo [set y | y < r%:E])%E.
 Proof.
-rewrite nbhsE /=; eexists; split; last by move=> y; exact.
+rewrite nbhsE /=; eexists; last by move=> y; exact.
 by split; [apply open_ereal_lt_ereal | rewrite /= ltNyr].
 Qed.
 
@@ -3333,7 +3333,7 @@ move=> oU; have [->|U0] := eqVneq U set0.
 apply/seteqP; split=> [x Ux|x [p _ Ipx]]; last exact: bigcup_ointsub_sub Ipx.
 suff [q Iqx] : exists q, bigcup_ointsub U q x.
   by exists q => //=; rewrite in_setE; case: Iqx => A [[_ _ +] ? _]; exact.
-have : nbhs x U by rewrite nbhsE /=; exists U; split => //.
+have : nbhs x U by rewrite nbhsE /=; exists U.
 rewrite -nbhs_ballE /nbhs_ball /nbhs_ball_ => -[_/posnumP[r] xrU].
 have /rat_in_itvoo[q qxxr] : (x - r%:num < x + r%:num)%R.
   by rewrite ltr_subl_addr -addrA ltr_addl.
@@ -3847,7 +3847,7 @@ move=> C D FC f_D; have {}f_D :
   have exPj : forall j, exists Bj, open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
     move=> j; have := f_E ord0 j; rewrite nbhsE => - [Bj].
     by rewrite row_simpl'; exists Bj.
-  exists [set g | forall j, (get (Pj j)) (g j)]; split; last first.
+  exists [set g | forall j, (get (Pj j)) (g j)]; last first.
     move=> g Pg; apply: sED => i j; rewrite ord1 row_simpl'.
     by have /getPex [_ /(_ _ (Pg j))] := exPj j.
   split; last by move=> j; have /getPex [[]] := exPj j.
