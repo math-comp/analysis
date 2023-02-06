@@ -64,6 +64,11 @@
   + lemmas `adde_def_doppeD`, `adde_def_doppeB`
   + lemma `fin_num_sume_distrr`
 
+- in file `topology.v`,
+  + new definitions `quotient_topology`, and `quotient_open`.
+  + new lemmas `pi_continuous`, `quotient_continuous`, and
+    `repr_comp_continuous`.
+
 ### Changed
 
 - in `fsbigop.v`:
