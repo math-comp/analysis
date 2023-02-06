@@ -3642,7 +3642,7 @@ split.
   case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
   by case; [by apply: open_nbhs_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
 move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
-move=> U; rewrite nbhsE; case=> V [][] oV Vx VU.
+move=> U; rewrite nbhsE; case=> V [] oV Vx VU.
 have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
 have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
   move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset. 
