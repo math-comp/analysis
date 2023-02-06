@@ -1282,8 +1282,7 @@ Lemma cvg_nseries_near (u : nat^nat) : cvg (nseries u) ->
   \forall n \near \oo, u n = 0%N.
 Proof.
 move=> /cvg_ex[l ul]; have /ul[a _ aul] : nbhs l [set l].
-  exists [set l]; split; last by split.
-  by exists [set l] => //; rewrite bigcup_set1.
+  by exists [set l]; split=> //; exists [set l] => //; rewrite bigcup_set1.
 have /ul[b _ bul] : nbhs l [set l.-1; l].
   by exists [set l]; split => //; exists [set l] => //; rewrite bigcup_set1.
 exists (maxn a b) => // n /= abn.

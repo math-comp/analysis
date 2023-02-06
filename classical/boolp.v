@@ -676,6 +676,14 @@ split=> [[x Px NQx] /(_ x Px)//|]; apply: contra_notP => + x Px.
 by apply: contra_notP => NQx; exists x.
 Qed.
 
+Lemma forallp_asboolPn2 {T} {P Q : T -> Prop} :
+  reflect (forall x : T, ~ P x \/ ~ Q x) (~~ `[<exists2 x : T, P x & Q x>]).
+Proof.
+apply: (iffP idP)=> [/asboolPn NP x|NP].
+  by move/forallPNP : NP => /(_ x)/and_rec/not_andP.
+by apply/asboolP=> -[x Px Qx]; have /not_andP := NP x; exact.
+Qed.
+
 Module FunOrder.
 Section FunOrder.
 Import Order.TTheory.

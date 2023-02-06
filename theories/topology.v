@@ -1594,7 +1594,7 @@ Record mixin_of (T : Type) (nbhs : T -> set (set T)) := Mixin {
   open : set (set T) ;
   ax1 : forall p : T, ProperFilter (nbhs p) ;
   ax2 : forall p : T, nbhs p =
-    [set A : set T | exists B : set T, open B /\ B p /\ B `<=` A] ;
+    [set A : set T | exists B : set T, [/\ open B, B p & B `<=` A] ] ;
   ax3 : open = [set A : set T | A `<=` nbhs^~ A ]
 }.
 
@@ -1673,17 +1673,17 @@ Proof. exact: (@nbhs_pfilter). Qed.
 Canonical nbhs_filter_on (x : T) := FilterType (nbhs x) (@nbhs_filter x).
 
 Lemma nbhsE (p : T) :
-  nbhs p = [set A : set T | exists B : set T, open_nbhs p B /\ B `<=` A].
+  nbhs p = [set A : set T | exists2 B : set T, open_nbhs p B & B `<=` A].
 Proof.
-have -> : nbhs p = [set A : set T | exists B, open B /\ B p /\ B `<=` A].
+have -> : nbhs p = [set A : set T | exists B, [/\ open B, B p & B `<=` A] ].
   exact: Topological.ax2.
-by rewrite predeqE => A; split=> [[B [? []]]|[B [[]]]]; exists B.
+by rewrite predeqE => A; split=> [[B [?]]|[B[]]]; exists B.
 Qed.
 
 Lemma open_nbhsE (p : T) (A : set T) : open_nbhs p A = (open A /\ nbhs p A).
 Proof.
-rewrite nbhsE propeqE; split=> [[? ?]|[? [B [[? ?] BA]]]]; split => //;
-  [by exists A; split | exact: BA].
+by rewrite nbhsE propeqE; split=> [[? ?]|[? [B [? ?] BA]]]; split => //;
+  [exists A | exact: BA].
 Qed.
 
 Definition interior (A : set T) := (@nbhs _ T)^~ A.
@@ -1692,19 +1692,19 @@ Local Notation "A ^°" := (interior A).
 
 Lemma interior_subset (A : set T) : A^° `<=` A.
 Proof.
-by move=> p; rewrite /interior nbhsE => -[? [[??]]]; apply.
+by move=> p; rewrite /interior nbhsE => -[? [? ?]]; apply.
 Qed.
 
 Lemma openE : open = [set A : set T | A `<=` A^°].
 Proof. exact: Topological.ax3. Qed.
 
 Lemma nbhs_singleton (p : T) (A : set T) : nbhs p A -> A p.
-Proof. by rewrite nbhsE => - [? [[_ ?]]]; apply. Qed.
+Proof. by rewrite nbhsE => - [? [_ ?]]; apply. Qed.
 
 Lemma nbhs_interior (p : T) (A : set T) : nbhs p A -> nbhs p A^°.
 Proof.
-rewrite nbhsE /open_nbhs openE => - [B [[Bop Bp] sBA]].
-by exists B; split=> // q Bq; apply: filterS sBA _; apply: Bop.
+rewrite nbhsE /open_nbhs openE => - [B [Bop Bp] sBA].
+by exists B => // q Bq; apply: filterS sBA _; apply: Bop.
 Qed.
 
 Lemma open0 : open set0.
@@ -1740,15 +1740,15 @@ Qed.
 
 Lemma open_interior (A : set T) : open A^°.
 Proof.
-rewrite openE => p; rewrite /interior nbhsE => - [B [[Bop Bp]]].
+rewrite openE => p; rewrite /interior nbhsE => - [B [Bop Bp]].
 by rewrite open_subsetE //; exists B.
 Qed.
 
 Lemma interior_bigcup I (D : set I) (f : I -> set T) :
   \bigcup_(i in D) (f i)^° `<=` (\bigcup_(i in D) f i)^°.
 Proof.
-move=> p [i Di]; rewrite /interior nbhsE => - [B [[Bop Bp] sBfi]].
-by exists B; split=> // ? /sBfi; exists i.
+move=> p [i Di]; rewrite /interior nbhsE => - [B [Bop Bp] sBfi].
+by exists B => // ? /sBfi; exists i.
 Qed.
 
 Lemma open_nbhsT (p : T) : open_nbhs p setT.
@@ -1759,14 +1759,14 @@ Lemma open_nbhsI (p : T) (A B : set T) :
 Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
 
 Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
-Proof. by rewrite nbhsE => p_A; exists A; split. Qed.
+Proof. by rewrite nbhsE => p_A; exists A. Qed.
 
 Lemma interiorI (A B:set T): (A `&` B)^° = A^° `&` B^°.
 Proof.
-rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 [?]] | []].
+rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
 - by rewrite subsetI => // -[? ?]; split; exists B0.
-- move=> -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
-  [exact: open_nbhsI | by rewrite subsetI; split; apply: subIset; [left|right]].
+- by move=> -[B0 ? ?] [B1 ? ?]; exists (B0 `&` B1);
+  [exact: open_nbhsI | rewrite subsetI; split; apply: subIset; [left|right]].
 Qed.
 
 End Topological1.
@@ -1790,8 +1790,8 @@ Lemma continuousP (S T : topologicalType) (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
 Proof.
 split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
-move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [[Bop Bfs] sBA]].
-by exists (f @^-1` B); split; [split=> //; apply/fcont|move=> ? /sBA].
+move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [Bop Bfs] sBA].
+by exists (f @^-1` B); [split=> //; apply/fcont|move=> ? /sBA].
 Qed.
 
 Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
@@ -1917,10 +1917,9 @@ Local Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 Lemma within_interior (x : T) : A^° x -> within A (nbhs x) = nbhs x.
 Proof.
 move=> Aox; rewrite eqEsubset; split; last exact: cvg_within.
-rewrite ?nbhsE => W /= => [[B [+ BsubW]]].
+rewrite ?nbhsE => W /= => [[B + BsubW]].
 rewrite open_nbhsE => [[oB nbhsB]].
-exists (B `&` A^°); split; last first.
-  by move=> t /= [] /BsubW + /interior_subset; apply.
+exists (B `&` A^°); last by move=> t /= [] /BsubW + /interior_subset; apply.
 rewrite open_nbhsE; split; first by apply: openI => //; exact: open_interior.
 by apply: filterI => //; move:(open_interior A); rewrite openE; exact.
 Qed.
@@ -1967,9 +1966,9 @@ Program Definition topologyOfFilterMixin : Topological.mixin_of nbhs' :=
   @Topological.Mixin T nbhs' open_of_nbhs _ _ _.
 Next Obligation.
 move=> p; rewrite predeqE => A; split=> [p_A|]; last first.
-  by move=> [B [Bop [Bp sBA]]]; apply: filterS sBA _; apply: Bop.
-exists (nbhs'^~ A); split; first by move=> ?; apply: nbhs'_nbhs'.
-by split => // q /nbhs'_singleton.
+  by move=> [B [Bop Bp sBA]]; apply: filterS sBA _; apply: Bop.
+exists (nbhs'^~ A) ; split => //; first by move=> ?; apply: nbhs'_nbhs'.
+by move=> q /nbhs'_singleton.
 Qed.
 Next Obligation. done. Qed.
 
@@ -1986,19 +1985,19 @@ Hypothesis (op_bigU : forall (I : Type) (f : I -> set T),
   (forall i, op (f i)) -> op (\bigcup_i f i)).
 
 Definition nbhs_of_open (p : T) (A : set T) :=
-  exists B, op B /\ B p /\ B `<=` A.
+  exists B, [/\ op B, B p & B `<=` A].
 
 Program Definition topologyOfOpenMixin : Topological.mixin_of nbhs_of_open :=
   @Topological.Mixin T nbhs_of_open op _ _ _.
 Next Obligation.
 move=> p; apply: Build_ProperFilter.
-  by move=> A [B [_ [Bp sBA]]]; exists p; apply: sBA.
+  by move=> A [B [_ Bp sBA]]; exists p; apply: sBA.
 split; first by exists setT.
-  move=> A B [C [Cop [Cp sCA]]] [D [Dop [Dp sDB]]].
-  exists (C `&` D); split; first exact: opI.
-  by split=> // q [/sCA Aq /sDB Bq].
-move=> A B sAB [C [Cop [p_C sCA]]].
-by exists C; split=> //; split=> //; apply: subset_trans sAB.
+  move=> A B [C [Cop Cp sCA]] [D [Dop Dp sDB]].
+  exists (C `&` D); split => //; first exact: opI.
+  by move=> q [/sCA Aq /sDB Bq].
+move=> A B sAB [C [Cop p_C sCA]].
+by exists C; split=> //; apply: subset_trans sAB.
 Qed.
 Next Obligation. done. Qed.
 Next Obligation.
@@ -2007,7 +2006,7 @@ rewrite predeqE => A; split=> [Aop p Ap|Aop].
 suff -> : A = \bigcup_(B : {B : set T & op B /\ B `<=` A}) projT1 B.
   by apply: op_bigU => B; have [] := projT2 B.
 rewrite predeqE => p; split=> [|[B _ Bp]]; last by have [_] := projT2 B; apply.
-by move=> /Aop [B [Bop [Bp sBA]]]; exists (existT _ B (conj Bop sBA)).
+by move=> /Aop [B [Bop Bp sBA]]; exists (existT _ B (conj Bop sBA)).
 Qed.
 
 End TopologyOfOpen.
@@ -2350,12 +2349,12 @@ Lemma cvg_image (F : set (set S)) (s : S) :
   F --> (s : weak_topologicalType) <-> [set f @` A | A in F] --> f s.
 Proof.
 move=> FF fsurj; split=> [cvFs|cvfFfs].
-  move=> A /weak_continuous [B [Bop [Bs sBAf]]].
+  move=> A /weak_continuous [B [Bop Bs sBAf]].
   have /cvFs FB : nbhs (s : weak_topologicalType) B by apply: open_nbhs_nbhs.
   rewrite nbhs_simpl; exists (f @^-1` A); first exact: filterS FB.
   exact: image_preimage.
-move=> A /= [_ [[B Bop <-] [Bfs sBfA]]].
-have /cvfFfs [C FC fCeB] : nbhs (f s) B by rewrite nbhsE; exists B; split.
+move=> A /= [_ [[B Bop <-] Bfs sBfA]].
+have /cvfFfs [C FC fCeB] : nbhs (f s) B by rewrite nbhsE; exists B.
 rewrite nbhs_filterE; apply: filterS FC.
 by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
 Qed.
@@ -2382,16 +2381,16 @@ Lemma cvg_sup (F : set (set T)) (t : T) :
   Filter F -> F --> (t : sup_topologicalType) <-> forall i, F --> (t : TS i).
 Proof.
 move=> Ffilt; split=> cvFt.
-  move=> i A /=; rewrite (@nbhsE (TS i)) => - [B [[Bop Bt] sBA]].
+  move=> i A /=; rewrite (@nbhsE (TS i)) => - [B [Bop Bt] sBA].
   apply: cvFt; exists B; split=> //; exists [set B]; last first.
     by rewrite predeqE => ?; split=> [[_ ->]|] //; exists B.
   move=> _ ->; exists [fset B]%fset.
     by move=> ?; rewrite inE inE => /eqP->; exists i.
   by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite /= inE // =>/eqP->.
 move=> A /=; rewrite (@nbhsE sup_topologicalType).
-move=> [_ [[[B sB <-] [C BC Ct]] sUBA]].
+move=> [_ [[B sB <-] [C BC Ct] sUBA]].
 rewrite nbhs_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
-  by move=> ??; exists C.
+  by move=> ? ?; exists C.
 have /sB [D sD IDeC] := BC; rewrite -IDeC; apply: filter_bigI => E DE.
 have /sD := DE; rewrite inE => - [i _]; rewrite openE => Eop.
 by apply: (cvFt i); apply: Eop; move: Ct; rewrite -IDeC => /(_ _ DE).
@@ -2421,10 +2420,10 @@ Lemma dnbhsE (T : topologicalType) (x : T) : nbhs x = x^' `&` at_point x.
 Proof.
 rewrite predeqE => A; split=> [x_A|[x_A Ax]].
   split; last exact: nbhs_singleton.
-  move: x_A; rewrite nbhsE => -[B [x_B sBA]]; rewrite /dnbhs nbhsE.
-  by exists B; split=> // ? /sBA.
-move: x_A; rewrite /dnbhs !nbhsE => -[B [x_B sBA]]; exists B.
-by split=> // y /sBA Ay; case: (eqVneq y x) => [->|].
+  move: x_A; rewrite nbhsE => -[B [oB x_B sBA]]; rewrite /dnbhs nbhsE.
+  by exists B => // ? /sBA.
+move: x_A; rewrite /dnbhs !nbhsE => -[B [oB x_B sBA]]; exists B => //.
+by move=> y /sBA Ay; case: (eqVneq y x) => [->|].
 Qed.
 
 Global Instance dnbhs_filter {T : topologicalType} (x : T) : Filter x^'.
@@ -2455,7 +2454,7 @@ Lemma meets_openr {T : topologicalType} (F : set (set T)) (x : T) :
   F `#` nbhs x = F `#` open_nbhs x.
 Proof.
 rewrite propeqE; split; [exact/meetsSr/open_nbhs_nbhs|].
-by move=> P A B {}/P P; rewrite nbhsE => -[B' [/P + sB]]; apply: subsetI_neq0.
+by move=> P A B {}/P P; rewrite nbhsE => -[B' /P + sB]; apply: subsetI_neq0.
 Qed.
 
 Lemma meets_openl {T : topologicalType} (F : set (set T)) (x : T) :
@@ -2566,11 +2565,11 @@ Proof.
 rewrite predeqE => A; split=> Acl p; last first.
   by move=> clAp; apply: Acl; rewrite -nbhs_nearE => /clAp [? []].
 rewrite -nbhs_nearE nbhsE => /asboolP.
-rewrite asbool_neg => /forallp_asboolPn clAp.
-apply: Acl => B; rewrite nbhsE => - [C [p_C sCB]].
+rewrite asbool_neg => /forallp_asboolPn2 clAp.
+apply: Acl => B; rewrite nbhsE => - [C [oC pC]].
 have /asboolP := clAp C.
-rewrite asbool_neg asbool_and => /nandP [/asboolP//|/existsp_asboolPn [q]].
-move/asboolP; rewrite asbool_neg => /imply_asboolPn [/sCB Bq /contrapT Aq].
+rewrite asbool_or 2!asbool_neg => /orP[/asboolP/not_andP[]//|/existsp_asboolPn [q]].
+move/asboolP; rewrite asbool_neg => /imply_asboolPn[+ /contrapT Aq sCB] => /sCB.
 by exists q.
 Qed.
 
@@ -2599,7 +2598,7 @@ Proof.
 rewrite !closedE=> f_continuous D_cl x /= xDf.
 apply: D_cl; apply: contra_not xDf => fxD.
 have NDfx : ~ D (f x).
-  by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [[??]]]; apply.
+  by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; apply.
 by apply: f_continuous fxD; rewrite inE.
 Qed.
 
@@ -3056,7 +3055,7 @@ Qed.
 
 Lemma dfwith_continuous g (i : I) : continuous (dfwith g _ : K i -> PK).
 Proof.
-move=> z U [] P [] [] Q QfinP <- [] [] V JV Vpz.
+move=> z U [] P [] [] Q QfinP <- [] V JV Vpz.
 move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
 apply: (@filterS _ _ _ ((dfwith g i) @^-1` V)); first by exists V.
 have [L Lsub /[dup] VL <-] := QfinP _ JV; rewrite preimage_bigcap.
@@ -3244,14 +3243,14 @@ Lemma accessible_closed_set1 : accessible_space -> forall x, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
 rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
-rewrite /interior nbhsE /=; exists U; split; last by rewrite subsetC1.
-by split=> //; rewrite inE in yU.
+rewrite /interior nbhsE /=; exists U; last by rewrite subsetC1.
+by split=> //; exact: set_mem.
 Qed.
 
 Lemma accessible_kolmogorov : accessible_space -> kolmogorov_space.
 Proof.
 move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
-by rewrite nbhsE inE; exists A; do !split=> //; rewrite inE in xA.
+by rewrite nbhsE inE; exists A => //; rewrite inE in xA.
 Qed.
 
 Lemma accessible_finite_set_closed :
@@ -3328,7 +3327,7 @@ rewrite propeqE; split => [T_filterT2|T_openT2] x y.
   rewrite asbool_imply !negb_imply => /andP[/asboolP xA] /andP[/asboolP yB].
   move=> /asboolPn; rewrite -set0P => /negP; rewrite negbK => /eqP AIB_eq0.
   move: xA yB; rewrite !nbhsE.
-  move=> - [oA [[oA_open oAx] oAA]] [oB [[oB_open oBx] oBB]].
+  move=> - [oA [oA_open oAx] oAA] [oB [oB_open oBx] oBB].
   by exists (oA, oB); rewrite ?inE; split => //; apply: subsetI_eq0 AIB_eq0.
 apply: contraPP => /eqP /T_openT2[[/=A B]].
 rewrite !inE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
@@ -4202,12 +4201,12 @@ Qed.
 Lemma weak_ent_nbhs : nbhs = nbhs_ weak_ent.
 Proof.
 rewrite predeq2E => x V; split.
-  case=> [? [[B  ? <-] [? BsubV]]]; have: nbhs (f x) B by apply: open_nbhs_nbhs.
+  case=> [? [[B  ? <-] ? BsubV]]; have: nbhs (f x) B by apply: open_nbhs_nbhs.
   move=> /nbhsP [W ? WsubB]; exists ((map_pair f) @^-1` W); first by exists W.
   by move=>??; exact/BsubV/WsubB.
 case=> W [V' entV' V'subW] /filterS; apply.
 have : nbhs (f x) to_set V' (f x) by apply/nbhsP; exists V'.
-rewrite (@nbhsE U) => [[O [[openU Ofx Osub]]]].
+rewrite (@nbhsE U) => [[O [openU Ofx Osub]]].
 (exists (f @^-1` O); repeat split => //); first by exists O => //.
 by move=> w ? ; apply: V'subW; exact: Osub.
 Qed.
@@ -4283,7 +4282,7 @@ Qed.
 Lemma sup_ent_nbhs : @nbhs Tt Tt = nbhs_ sup_ent.
 Proof.
 rewrite predeq2E => x V; split.
-  rewrite /nbhs_of_open => [[? [[B  + <-] [[W BW Wx] BV]]]] => /(_ W BW) [].
+  rewrite /nbhs_of_open => [[? [[B  + <-] [W BW Wx] BV]]] => /(_ W BW) [].
   move=> F Fsup Weq; move: Weq Wx BW => <- Fx BF.
   case (pselect ([set: I] = set0)) => [I0 | /eqP/set0P [i0 _]].
     suff -> : V = setT  by exists setT; apply: filterT; exact: sup_ent_filter.
@@ -5516,7 +5515,7 @@ Lemma uniform_nbhs (f : fct_RestrictedUniformTopology) P:
   nbhs f P <-> (exists E, entourage E /\
     [set h | forall y, A y -> E(f y, h y)] `<=` P).
 Proof.
-split=> [[Q [[/= W oW <- /=] [Wf subP]]]|[E [entE subP]]].
+split=> [[Q [[/= W oW <- /=] Wf subP]]|[E [entE subP]]].
   rewrite openE /= /interior in oW.
   case: (oW _ Wf) => ? [ /= E entE] Esub subW.
   exists E; split=> // h Eh; apply/subP/subW/Esub => /= [[u Au]].
@@ -6305,7 +6304,7 @@ Section SubspaceOpen.
 Lemma open_subspace1out (x : subspace A) : ~ A x -> open [set x].
 Proof.
 move=> /nbhs_subspace_out E; have : nbhs x [set x] by rewrite /nbhs //= -E.
-rewrite nbhsE => [[U [[]]]] oU Ux Usub; suff : U = [set x] by move=> <-.
+rewrite nbhsE => [[U []]] oU Ux Usub; suff : U = [set x] by move=> <-.
 by rewrite eqEsubset; split => // t ->.
 Qed.
 
@@ -6716,7 +6715,7 @@ Let weakT := @sup_topologicalType T I
 Let PU := product_topologicalType U_.
 
 Local Notation sup_open := (@open weakT).
-Local Notation "'weak_open' i" := 
+Local Notation "'weak_open' i" :=
   (@open (weak_topologicalType (f_ i))) (at level 0).
 Local Notation natural_open := (@open T).
 
@@ -6726,12 +6725,12 @@ Proof.
 move=> FF; split.
   move=> FTx; apply/cvg_sup => i U.
   have /= -> := @nbhsE (weak_topologicalType (f_ i)) x.
-  case=> B [[[C oC <- ?]]] /filterS; apply; apply: FTx; rewrite /= nbhsE.
-  by exists (f_ i @^-1` C); repeat split => //; exact: open_comp.
-move/cvg_sup => wiFx U; rewrite /= nbhs_simpl nbhsE => [[B [[oB ?]]]].
+  case=> B [[C oC <- ?]] /filterS; apply; apply: FTx; rewrite /= nbhsE.
+  by exists (f_ i @^-1` C) => //; split => //; exact: open_comp.
+move/cvg_sup => wiFx U; rewrite /= nbhs_simpl nbhsE => [[B [oB ?]]].
 move/filterS; apply; have [//|i nclfix] := @sepf _ x (open_closedC oB).
 apply: (wiFx i); have /= -> := @nbhsE (weak_topologicalType (f_ i)) x.
-exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); split; [split=>//|].
+exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); [split=>//|].
   apply: open_comp; last by rewrite ?openC; last apply: closed_closure.
   by move=> + _; exact: weak_continuous.
 rewrite closureC preimage_bigcup => z [V [oV]] VnB => /VnB.
@@ -6765,7 +6764,7 @@ apply: open_comp => // + _; rewrite /cvg_to => x U.
 by rewrite nbhs_simpl /= -weak_sep_nbhsE; move: x U; exact: ctsf.
 Qed.
 
-Local Notation prod_open := 
+Local Notation prod_open :=
   (@open (subspace_topologicalType (range join_product))).
 
 Lemma join_product_open (A : set T) : open A ->
@@ -6905,9 +6904,8 @@ split; first by move=> ? ?; near=> U; apply: continuous_subspaceT=> ?; exact.
 move=> + x => /(_ x)/near_powerset_filter_fromP.
 case; first by move=> ? ?; exact: continuous_subspaceW.
 move=> U nbhsU wctsf; wlog oU : U wctsf nbhsU / open U.
-  move: nbhsU; rewrite nbhsE => -[] W [[oW Wx WU]] /(_ W).
-  move/(_ (continuous_subspaceW WU wctsf)); apply => //.
-  by exists W; split.
+  move: nbhsU; rewrite nbhsE => -[] W [oW Wx WU] /(_ W).
+  by move/(_ (continuous_subspaceW WU wctsf)); apply => //; exists W.
 move/nbhs_singleton: nbhsU; move: x; apply/in_setP.
 by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
