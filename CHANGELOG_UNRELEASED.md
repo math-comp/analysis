@@ -167,6 +167,9 @@
   + new lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`, 
     `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
     `join_product_weak`.
+- in `boolp.v`:
+  + lemma `forallp_asboolPn2`
+
 ### Changed
 
 - in `fsbigop.v`:
@@ -184,6 +187,8 @@
   + canonical `fimfun_comRingType`
   + lemma `max_fimfun_subproof`
   + mixin `IsNonNegFun`, structure `NonNegFun`, notation `{nnfun _ >-> _}`
+- in `topology.v`:
+  + `Topological.ax2`
 
 ### Renamed
 
