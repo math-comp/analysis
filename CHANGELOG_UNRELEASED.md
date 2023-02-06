@@ -88,6 +88,10 @@
   + new lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`, 
     `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
     `join_product_weak`. 
+- in `measure.v`:
+  + mixin `isFiniteMeasureFunction` with field `finite_measure_function`
+  + structure `FiniteMeasureFunction`
+  + structure `FiniteMeasure`, notation `{finite_measure set _ -> \bar _}`
 
 - in file `topology.v`,
   + new definition `clopen`.
@@ -120,6 +124,9 @@
   + lemma `compact_near_coveringP`
 - in `functions.v`:
   + notation `mem_fun_`
+- in `measure.v`:
+  + `finite_measure` is now a lemma that applies to a finite measure
+
 ### Renamed
 
 - in `measurable.v`:
