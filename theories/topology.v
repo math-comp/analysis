@@ -2770,6 +2770,32 @@ Qed.
 End Compact.
 Arguments hausdorff_space : clear implicits.
 
+Section ClopenSets.
+Implicit Types (T : topologicalType).
+
+Definition clopen {T} (A : set T) := open A /\ closed A.
+
+Lemma clopenI {T} (A B : set T) : clopen A -> clopen B -> clopen (A `&` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openI | exact: closedI]. Qed.
+
+Lemma clopenU {T} (A B : set T) : clopen A -> clopen B -> clopen (A `|` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openU | exact: closedU]. Qed.
+
+Lemma clopenC {T} (A B : set T) : clopen A -> clopen (~`A).
+Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
+
+Lemma clopen0 {T} : @clopen T set0.
+Proof. by split; [exact: open0 | exact: closed0]. Qed.
+
+Lemma clopenT {T} : clopen [set: T].
+Proof. by split; [exact: openT | exact: closedT]. Qed.
+
+Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
+ clopen A -> continuous f -> clopen (f @^-1` A).
+Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
+
+End ClopenSets.
+
 Section near_covering.
 Context {X : topologicalType}.
 
@@ -3569,6 +3595,43 @@ Lemma same_connected_component A x y : connected_component A x y ->
 Proof.
 move=> Axy; apply/seteqP; split => z; apply: connected_component_trans => //.
 by apply: connected_component_sym.
+Qed.
+
+Lemma clopen_separatedP A : clopen A <-> separated A (~` A).
+Proof.
+split.
+  case=> oA cA; rewrite /separated -((closure_id A).1 cA) setICr; split => //.
+  by rewrite -((closure_id _).1 (open_closedC oA)) setICr.
+case; rewrite ?disjoints_subset => clAA AclA; split.
+  rewrite -closedC closure_id eqEsubset; split; first exact: subset_closure.
+  exact: subsetCr.
+rewrite closure_id eqEsubset; split => //; first exact: subset_closure.
+by rewrite -[x in _ `<=` x]setCK.
+Qed.
+
+Lemma connected0T A : connected A <-> 
+  (forall U, clopen U -> A `<=` U  \/ A `&` U = set0).
+Proof.
+split.
+  move=> ctdA U [? ?]. case: (pselect (A `&` U!=set0)) => U0; [left | right].
+  
+    apply: ctdA => //; exists U => //; apply/sym_equal/setIidr.
+  by move/set0P/negP/negPn/eqP:U0.
+move=> A0T U U0 [C1 oC1 /[dup] UA1 ->] [C2 clC2 /[dup] C1C2].
+have := A0T (A `&` C1)
+    by move/set0P/negP; rewrite negbK => /eqP => ->; right.
+  move=> /(ctdA _).
+  case: ctdA _ 
+  Search (~ _) (~~ _).
+    move=> /. negbK
+    move=> /negP. U0. right.
+  case=> oA cA; rewrite /separated -((closure_id A).1 cA) setICr; split => //.
+  by rewrite -((closure_id _).1 (open_closedC oA)) setICr.
+case; rewrite ?disjoints_subset => clAA AclA; split.
+  rewrite -closedC closure_id eqEsubset; split; first exact: subset_closure.
+  exact: subsetCr.
+rewrite closure_id eqEsubset; split => //; first exact: subset_closure.
+by rewrite -[x in _ `<=` x]setCK.
 Qed.
 
 End connected_sets.
