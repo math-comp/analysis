@@ -3554,10 +3554,10 @@ split; [by rewrite C2E | suff : A `<=` U].
 rewrite -setIidPl; apply: ctdA.
 - rewrite C1E in U0; case: U0 => z [clAx C1z]; have [] := clAx C1.
     exact: open_nbhs_nbhs.
-  move=> w [Aw C1w]; exists w; split => //; rewrite C1E; split => //.
+  move=> w [Aw C1w]; exists w; split; rewrite // C1E; split => //.
   exact: subset_closure.
-- exists C1 => //; rewrite C1E setIA (@setIidl _ A _) //; exact: subset_closure.
-- exists C2 => //; rewrite C2E setIA (@setIidl _ A _) //; exact: subset_closure.
+- by exists C1; rewrite // C1E setIA (@setIidl _ A) //; exact: subset_closure.
+- by exists C2; rewrite // C2E setIA (@setIidl _ A) //; exact: subset_closure.
 Qed.
 
 Definition connected_component (A : set T) (x : T) :=
@@ -6720,12 +6720,11 @@ Lemma clopen_connectedP : connected A <->
     U `<=` A  -> U !=set0 -> U = A).
 Proof.
 split.
-  move=> ctdA U [/open_subspaceP oU /closed_subspaceP cU] UA U0; apply: ctdA.
-  - by [].
-  - case: oU => V [oV VAUA]; exists V => //; rewrite setIC VAUA. 
+  move=> + U [/open_subspaceP oU /closed_subspaceP cU] UA U0; apply => //.
+    case: oU => V [oV VAUA]; exists V => //; rewrite setIC VAUA. 
     exact/sym_equal/setIidPl.
-  - case: cU => V [cV VAUA]; exists V => //; rewrite setIC VAUA. 
-    exact/sym_equal/setIidPl.
+  case: cU => V [cV VAUA]; exists V => //; rewrite setIC VAUA.
+  exact/sym_equal/setIidPl.
 move=> clpnA U Un0 [V oV UVA] [W cW UWA]; apply: clpnA => //; first split.
 - by apply/open_subspaceP; exists V; split; rewrite //setIC UVA setIAC setIid.
 - by apply/closed_subspaceP; exists W; split; rewrite //setIC UWA setIAC setIid.
