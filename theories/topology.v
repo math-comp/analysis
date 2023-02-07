@@ -2078,7 +2078,7 @@ End TopologyOfBase.
 (** ** Topology defined by a subbase of open sets *)
 
 Definition finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
-  [set \bigcap_(i in [set i | i \in D']) f i |
+  [set \bigcap_(i in [set` D']) f i |
     D' in [set A : {fset I} | {subset A <= D}]].
 
 Lemma finI_from_cover (I : choiceType) T (D : set I) (f : I -> set T) :
@@ -3912,22 +3912,20 @@ Definition countable_uniformity (T : uniformType) :=
   exists R : set (set (T * T)), [/\
     countable R,
     R `<=` entourage &
-    forall P, entourage P -> exists Q, R Q /\ Q `<=` P].
+    forall P, entourage P -> exists2 Q, R Q & Q `<=` P].
 
 Lemma countable_uniformityP {T : uniformType} :
-  countable_uniformity T <-> exists f : nat -> set (T * T),
-    (forall A, entourage A -> exists N, f N `<=` A) /\
+  countable_uniformity T <-> exists2 f : nat -> set (T * T),
+    (forall A, entourage A -> exists N, f N `<=` A) &
     (forall n, entourage (f n)).
 Proof.
-split.
-  case=> M [] /pfcard_geP [].
-    by move=> -> _ /(_ setT); case; [exact: entourageT | move=> ? []].
-  move=> [f] eM Msub; exists f; split; last by move=> n; apply: eM; exact: funS.
-  move=> ? /Msub [Q [MQ ?]]; have [n ? fQ] := (@surj _ _ _ _  f _ MQ).
-  by exists n; rewrite fQ.
-case => f [fsubE] entf; exists (range f); split; first exact: card_image_le.
+split=> [[M []]|[f fsubE entf]].
+  move=> /pfcard_geP[-> _ /(_ _ entourageT)[]//|/unsquash f eM Msub].
+  exists f; last by move=> n; apply: eM; exact: funS.
+  by move=> ? /Msub [Q + ?] => /(@surj _ _ _ _ f)[n _ fQ]; exists n; rewrite fQ.
+exists (range f); split; first exact: card_image_le.
   by move=> E [n _] <-; exact: entf.
-by move=> E /fsubE [n fnA]; exists (f n); split => //; exists n.
+by move=> E /fsubE [n fnA]; exists (f n) => //; exists n.
 Qed.
 
 Section uniform_closeness.
@@ -4406,47 +4404,41 @@ Lemma countable_sup_ent :
   countable [set: Ii] -> (forall n, countable_uniformity (TS n)) ->
   countable_uniformity sup_uniformType.
 Proof.
-move=> Icnt countable_ent; pose f := fun n => cid (countable_ent n).
-pose g : Ii -> set (set (T * T)) := fun n => projT1 (f n).
-case (pselect ([set: I] = set0)) => [I0 | /eqP/set0P [i0 _]].
-  exists [set setT]; split; first exact: countable1.
-    move=> A; rewrite /entourage /= => ->.
-    by exists setT => //; exists fset0 => //; rewrite set_fset0 bigcap_set0.
-  move=> P [w [A _]] <- subP; exists setT; split => //.
-  apply: (subset_trans _ subP) => t _ i iA.
+move=> Icnt countable_ent; pose f n := cid (countable_ent n).
+pose g (n : Ii) : set (set (T * T)) := projT1 (f n).
+have [I0 | /set0P [i0 _]] := eqVneq [set: I] set0.
+  exists [set setT]; split; [exact: countable1|move=> A ->; exact: entourageT|].
+  move=> P [w [A _]] <- subP; exists setT => //.
+  apply: subset_trans subP; apply: sub_bigcap => i _ ? _.
   by suff : [set: I] (projT1 i).1 by rewrite I0.
-rewrite /countable_uniformity /=; exists (finI_from (\bigcup_n g n) id); split.
-- by apply/finI_from_countable/bigcup_countable => // i _; case: (projT2 (f i)).
+exists (finI_from (\bigcup_n g n) id); split.
+- by apply/finI_from_countable/bigcup_countable => //i _; case: (projT2 (f i)).
 - move=> E [A AsubGn AE]; exists E => //.
-  have h : forall w, { p : IEnt | w \in A -> w = (projT1 p).2}.
-    move=> w; apply cid; case: (pselect (w \in A)); first last.
-      by move=> ?; exists (exist ent_of _ (IEnt_pointT i0)).
-    move=> /[dup] /AsubGn/set_mem [n _ gnw] wA. 
-    have [_ subE Ebase] := projT2 (f n).
-    have ent : ent_of (n,w) by apply/asboolP; exact: subE _ gnw.
-    by exists (exist ent_of (n, w) ent).
-  exists [fset (fun i => projT1 (h i)) w | w in A]%fset.
-    by move=> ?; rewrite mem_set.
-  rewrite -AE /=; rewrite eqEsubset; split => t Ia.
-    by move=> w Aw; have -> := projT2 (h w) Aw; apply/Ia/imfsetP; exists w.
-  case=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia; rewrite (_ : w = x) //.
-  by rewrite (projT2 (h x) xA) (_ : projT1 (h x) = proj1_sig (h x)) -M.
-- move=> E [w] [ A _ wIA wsubE]. 
-  have ent_Ip : forall (i : IEnt), @entourage (TS (projT1 i).1) (projT1 i).2.
-    by move=> i; apply/asboolP; apply: (projT2 i).
-  pose h : forall i : IEnt, {x : set (T * T) | _} := fun i : IEnt =>
-    cid ((and3_rec (fun _ _ P => P)
-      (projT2 (f ((projT1 i).1)))) ((projT1 i).2) (ent_Ip i)).
-  have ehi : forall i : IEnt, ent_of ((projT1 i).1, projT1 (h i)).
-    move=> i; apply/asboolP => /=; have [] := projT2 (h i).
-    by have [_ + _ ? ?] := (projT2 (f (projT1 i).1)); exact.
-  pose AH := [fset (fun i => (projT1 (h i))) w | w in A]%fset.
-  exists (\bigcap_(i in [set` AH]) i); split.
-    exists AH => // p /imfsetP [i iA pE]; rewrite mem_set //.
-    by exists (projT1 i).1; have [] := projT2 (h i); rewrite // pE.
-  apply: (subset_trans _ wsubE); rewrite -wIA => ? It i ?.
-  have [?] := projT2 (h i); apply; apply: It; apply/imfsetP.
-  by exists i.
+  have h (w : set (T * T)) : { p : IEnt | w \in A -> w = (projT1 p).2 }.
+    apply cid; have [|] := boolP (w \in A); last first.
+      by exists (exist ent_of _ (IEnt_pointT i0)).
+    move=> /[dup] /AsubGn /set_mem [n _ gnw] wA.
+    suff ent : ent_of (n, w) by exists (exist ent_of (n, w) ent).
+    by apply/asboolP; have [_ + _] := projT2 (f n); exact.
+  exists [fset sval (h w) | w in A]%fset; first by move=> ?; exact: in_setT.
+  rewrite -AE; rewrite eqEsubset; split => t Ia.
+    by move=> w Aw; rewrite (svalP (h w) Aw); apply/Ia/imfsetP; exists w.
+  case=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia.
+  by rewrite (_ : w = x) // (svalP (h x) xA) -M.
+- move=> E [w] [ A _ wIA wsubE].
+  have ent_Ip (i : IEnt) : @entourage (TS (projT1 i).1) (projT1 i).2.
+    by apply/asboolP; exact: (projT2 i).
+  pose h (i : IEnt) : {x : set (T * T) | _} := cid2 (and3_rec
+    (fun _ _ P => P) (projT2 (f (projT1 i).1)) (projT1 i).2 (ent_Ip i)).
+  have ehi (i : IEnt) : ent_of ((projT1 i).1, projT1 (h i)).
+    apply/asboolP => /=; have [] := projT2 (h i).
+    by have [_ + _ ? ?] := projT2 (f (projT1 i).1); exact.
+  pose AH := [fset projT1 (h w) | w in A]%fset.
+  exists (\bigcap_(i in [set` AH]) i).
+    exists AH => // p /imfsetP [i iA ->]; rewrite inE //.
+    by exists (projT1 i).1 => //; have [] := projT2 (h i).
+  apply: subset_trans wsubE; rewrite -wIA => ? It i ?.
+  by have [?] := projT2 (h i); apply; apply: It; apply/imfsetP; exists i.
 Qed.
 
 End sup_uniform.
@@ -4781,13 +4773,12 @@ Lemma countable_uniformity_metric {R : realType} {T : pseudoMetricType R} :
   countable_uniformity T.
 Proof.
 apply/countable_uniformityP.
-exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]).
-split; last by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
-move=> E; rewrite -entourage_ballE => [[e]] ? subE.
+exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
+  by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
+move=> E; rewrite -entourage_ballE => -[e e0 subE].
 exists `|floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
-rewrite /= -{2}[e]invrK lef_pinv ?posrE ?invr_gt0 // ? natr_absz.
-apply: le_trans; first by apply: ltW; exact: lt_succ_floor.
-by rewrite -natr1 ler_add //= natr_absz ler_int ler_norm.
+rewrite /= -[leRHS]invrK lef_pinv ?posrE ?invr_gt0// -natr1.
+by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// lt_succ_floor.
 Qed.
 
 (** ** Specific pseudoMetric spaces *)
@@ -6094,15 +6085,13 @@ Context {R : realType} {T : uniformType}.
 
 Hypothesis cnt_unif : @countable_uniformity T.
 
-Let f_ := projT1 (cid (iffLR countable_uniformityP cnt_unif)).
+Let f_ := projT1 (cid2 (iffLR countable_uniformityP cnt_unif)).
 
 Local Lemma countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
-Proof. by have [] := projT2 (cid (iffLR countable_uniformityP cnt_unif)). Qed.
+Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
 
-Local Lemma entF : forall n, entourage (f_ n).
-Proof. by have [] := projT2 (cid (iffLR countable_uniformityP cnt_unif)). Qed.
-
-#[local] Hint Resolve entF : core.
+Let entF : forall n, entourage (f_ n).
+Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
 
 (* Step 1:
    We build a nicer base `g` for `entourage` with better assumptions than `f`
@@ -6115,13 +6104,11 @@ Local Fixpoint g_ (n : nat) : set (T * T) :=
   if n is S n then let W := split_ent (split_ent (g_ n)) `&` f_ n in W `&` W^-1
   else [set: T*T].
 
-Local Lemma entG (n : nat) : entourage (g_ n).
+Let entG (n : nat) : entourage (g_ n).
 Proof.
 elim: n => /=; first exact: entourageT.
 by move=> n entg; apply/entourage_invI; exact: filterI.
 Qed.
-
-#[local] Hint Resolve entG : core.
 
 Local Lemma symG (n : nat) : ((g_ n)^-1)%classic = g_ n.
 Proof.
@@ -6396,7 +6383,7 @@ Definition countable_uniform_pseudoMetricType_mixin := PseudoMetric.Mixin
 
 End countable_uniform.
 
-Section sup_pseudometric. 
+Section sup_pseudometric.
 Variable (R : realType) (T : pointedType) (Ii : Type).
 Variable (Tc : Ii -> PseudoMetric.class_of R T).
 
@@ -6405,24 +6392,23 @@ Hypothesis Icnt : countable [set: Ii].
 Let I : choiceType := classicType_choiceType Ii.
 Let TS := fun i => PseudoMetric.Pack (Tc i).
 
-Definition countable_uniformityT := (@countable_sup_ent T Ii Tc Icnt 
-    (fun i => @countable_uniformity_metric _ (TS i) )).
+Definition countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
+  (fun i => @countable_uniformity_metric _ (TS i)).
 
 Definition sup_pseudoMetric_mixin := @countable_uniform_pseudoMetricType_mixin R
-    (sup_uniformType Tc) countable_uniformityT.
+  (sup_uniformType Tc) countable_uniformityT.
 
-Definition sup_pseudoMetricType := 
+Definition sup_pseudoMetricType :=
   PseudoMetricType (sup_uniformType Tc) sup_pseudoMetric_mixin.
 
 End sup_pseudometric.
 
 Section product_pseudometric.
-
 Variable (R : realType) (Ii : countType) (Tc : Ii -> pseudoMetricType R).
 
 Hypothesis Icnt : countable [set: Ii].
 
-Definition product_pseudoMetricType := 
+Definition product_pseudoMetricType :=
   sup_pseudoMetricType (fun i => PseudoMetric.class
     (weak_pseudoMetricType (fun f : dep_arrow_pointedType Tc => f i)))
     Icnt.
