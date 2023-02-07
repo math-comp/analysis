@@ -389,8 +389,7 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
   apply/esym; rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
   rewrite in_itv/= !natr_absz intr_norm intrD.
   suff: `|x| < `|(floor `|x|)%:~R + 1| by rewrite ltr_norml => /andP[-> /ltW->].
-  rewrite [ltRHS]ger0_norm//; last by rewrite addr_ge0// ler0z floor_ge0.
-  by rewrite (le_lt_trans _ (lt_succ_floor _)) ?ler_norm.
+  by rewrite ger0_norm ?addr_ge0 ?ler0z ?floor_ge0// lt_succ_floor.
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 

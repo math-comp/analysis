@@ -286,6 +286,8 @@ Require Import reals signed.
 (*                   unif_continuous f <-> f is uniformly continuous.         *)
 (*               weak_uniformType == the uniform space for weak topologies    *)
 (*                sup_uniformType == the uniform space for sup topologies     *)
+(*         countable_uniformity T == T's entourage has a countable base. This *)
+(*                                   is equivalent to `T` being metrizable    *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
 (*                entourage_ ball == entourages defined using balls           *)
@@ -366,6 +368,7 @@ Require Import reals signed.
 (*                                                                            *)
 (* We endow several standard types with the types of topological notions:     *)
 (* - products: prod_topologicalType, prod_uniformType, prod_pseudoMetricType  *)
+(*     sup_pseudoMetricType, weak_pseudoMetricType, product_pseudoMetricType  *)
 (* - matrices: matrix_filtered, matrix_topologicalType, matrix_uniformType,   *)
 (*     matrix_pseudoMetricType, matrix_completeType,                          *)
 (*     matrix_completePseudoMetricType                                        *)
@@ -2038,7 +2041,7 @@ HB.end.
 (** ** Topology defined by a subbase of open sets *)
 
 Definition finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
-  [set \bigcap_(i in [set i | i \in D']) f i |
+  [set \bigcap_(i in [set` D']) f i |
     D' in [set A : {fset I} | {subset A <= D}]].
 
 Lemma finI_from1 (I : choiceType) T (D : set I) (f : I -> set T) i :
@@ -3839,6 +3842,27 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
+(* This property is primarily useful only for metrizability on uniform spaces *)
+Definition countable_uniformity (T : uniformType) :=
+  exists R : set (set (T * T)), [/\
+    countable R,
+    R `<=` entourage &
+    forall P, entourage P -> exists2 Q, R Q & Q `<=` P].
+
+Lemma countable_uniformityP {T : uniformType} :
+  countable_uniformity T <-> exists2 f : nat -> set (T * T),
+    (forall A, entourage A -> exists N, f N `<=` A) &
+    (forall n, entourage (f n)).
+Proof.
+split=> [[M []]|[f fsubE entf]].
+  move=> /pfcard_geP[-> _ /(_ _ entourageT)[]//|/unsquash f eM Msub].
+  exists f; last by move=> n; apply: eM; exact: funS.
+  by move=> ? /Msub [Q + ?] => /(@surj _ _ _ _ f)[n _ fQ]; exists n; rewrite fQ.
+exists (range f); split; first exact: card_image_le.
+  by move=> E [n _] <-; exact: entf.
+by move=> E /fsubE [n fnA]; exists (f n) => //; exists n.
+Qed.
+
 Section uniform_closeness.
 
 Variable (U : uniformType).
@@ -4285,6 +4309,47 @@ Qed.
 HB.instance Definition _ := @Nbhs_isUniform.Build Tt sup_ent
    sup_ent_filter sup_ent_refl sup_ent_inv sup_ent_split sup_ent_nbhs.
 
+Lemma countable_sup_ent :
+  countable [set: Ii] -> (forall n, countable_uniformity (TS n)) ->
+  countable_uniformity Tt.
+Proof.
+move=> Icnt countable_ent; pose f n := cid (countable_ent n).
+pose g (n : Ii) : set (set (T * T)) := projT1 (f n).
+have [I0 | /set0P [i0 _]] := eqVneq [set: I] set0.
+  exists [set setT]; split; [exact: countable1|move=> A ->; exact: entourageT|].
+  move=> P [w [A _]] <- subP; exists setT => //.
+  apply: subset_trans subP; apply: sub_bigcap => i _ ? _.
+  by suff : [set: I] (projT1 i).1 by rewrite I0.
+exists (finI_from (\bigcup_n g n) id); split.
+- by apply/finI_from_countable/bigcup_countable => //i _; case: (projT2 (f i)).
+- move=> E [A AsubGn AE]; exists E => //.
+  have h (w : set (T * T)) : { p : IEnt | w \in A -> w = (projT1 p).2 }.
+    apply cid; have [|] := boolP (w \in A); last first.
+      by exists (exist ent_of _ (IEnt_pointT i0)).
+    move=> /[dup] /AsubGn /set_mem [n _ gnw] wA.
+    suff ent : ent_of (n, w) by exists (exist ent_of (n, w) ent).
+    by apply/asboolP; have [_ + _] := projT2 (f n); exact.
+  exists [fset sval (h w) | w in A]%fset; first by move=> ?; exact: in_setT.
+  rewrite -AE; rewrite eqEsubset; split => t Ia.
+    by move=> w Aw; rewrite (svalP (h w) Aw); apply/Ia/imfsetP; exists w.
+  case=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia.
+  by rewrite (_ : w = x) // (svalP (h x) xA) -M.
+- move=> E [w] [ A _ wIA wsubE].
+  have ent_Ip (i : IEnt) : @entourage (TS (projT1 i).1) (projT1 i).2.
+    by apply/asboolP; exact: (projT2 i).
+  pose h (i : IEnt) : {x : set (T * T) | _} := cid2 (and3_rec
+    (fun _ _ P => P) (projT2 (f (projT1 i).1)) (projT1 i).2 (ent_Ip i)).
+  have ehi (i : IEnt) : ent_of ((projT1 i).1, projT1 (h i)).
+    apply/asboolP => /=; have [] := projT2 (h i).
+    by have [_ + _ ? ?] := projT2 (f (projT1 i).1); exact.
+  pose AH := [fset projT1 (h w) | w in A]%fset.
+  exists (\bigcap_(i in [set` AH]) i).
+    exists AH => // p /imfsetP [i iA ->]; rewrite inE //.
+    by exists (projT1 i).1 => //; have [] := projT2 (h i).
+  apply: subset_trans wsubE; rewrite -wIA => ? It i ?.
+  by have [?] := projT2 (h i); apply; apply: It; apply/imfsetP; exists i.
+Qed.
+
 End sup_uniform.
 
 HB.instance Definition _ (I : Type) (T : I -> uniformType) :=
@@ -4572,6 +4637,18 @@ have fappF : Filter ((fun xy => (f xy.1, f xy.2)) @ entourage_ ball).
 by rewrite /unif_continuous -!entourage_ballE filter_fromP.
 Qed.
 End entourages.
+
+Lemma countable_uniformity_metric {R : realType} {T : pseudoMetricType R} :
+  countable_uniformity T.
+Proof.
+apply/countable_uniformityP.
+exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
+  by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
+move=> E; rewrite -entourage_ballE => -[e e0 subE].
+exists `|floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
+rewrite /= -[leRHS]invrK lef_pinv ?posrE ?invr_gt0// -natr1.
+by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// lt_succ_floor.
+Qed.
 
 (** ** Specific pseudoMetric spaces *)
 
@@ -5388,11 +5465,17 @@ End weak_pseudoMetric.
 *)
 Module countable_uniform.
 Section countable_uniform.
-Context {R : realType} {T : uniformType} (f_ : nat -> set (T * T)).
+Context {R : realType} {T : uniformType}.
 
-Hypothesis countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
+Hypothesis cnt_unif : @countable_uniformity T.
 
-Hypothesis entF : forall n, entourage (f_ n).
+Let f_ := projT1 (cid2 (iffLR countable_uniformityP cnt_unif)).
+
+Local Lemma countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
+Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
+
+Let entF : forall n, entourage (f_ n).
+Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
 
 (* Step 1:
    We build a nicer base `g` for `entourage` with better assumptions than `f`
@@ -5405,13 +5488,11 @@ Local Fixpoint g_ (n : nat) : set (T * T) :=
   if n is S n then let W := split_ent (split_ent (g_ n)) `&` f_ n in W `&` W^-1
   else [set: T*T].
 
-Local Lemma entG (n : nat) : entourage (g_ n).
+Let entG (n : nat) : entourage (g_ n).
 Proof.
 elim: n => /=; first exact: entourageT.
 by move=> n entg; apply/entourage_invI; exact: filterI.
 Qed.
-
-#[local] Hint Resolve entG : core.
 
 Local Lemma symG (n : nat) : ((g_ n)^-1)%classic = g_ n.
 Proof.
@@ -5682,14 +5763,42 @@ Qed.
 
 Definition type : Type := let _ := countableBase in let _ := entF in T.
 
-HB.instance Definition _ := Uniform.on type.
-HB.instance Definition _ := Uniform_isPseudoMetric.Build R type
+#[export] HB.instance Definition _ := Uniform.on type.
+#[export] HB.instance Definition _ := Uniform_isPseudoMetric.Build R type
   step_ball_center step_ball_sym step_ball_triangle step_ball_entourage.
 
 End countable_uniform.
+Module Exports. HB.reexport. End Exports.
 End countable_uniform.
+Export countable_uniform.Exports.
 
 Notation countable_uniform := countable_uniform.type.
+
+Definition sup_pseudometric (R : realType) (T : pointedType) (Ii : Type)
+  (Tc : Ii -> PseudoMetric R T) (Icnt : countable [set: Ii]) : Type := T.
+
+Section sup_pseudometric.
+Variable (R : realType) (T : pointedType) (Ii : Type).
+Variable (Tc : Ii -> PseudoMetric R T).
+
+Hypothesis Icnt : countable [set: Ii].
+
+Local Notation S := (sup_pseudometric Tc Icnt).
+
+Let TS := fun i => PseudoMetric.Pack (Tc i).
+
+Definition countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
+  (fun i => @countable_uniformity_metric _ (TS i)).
+
+HB.instance Definition _ : PseudoMetric R S :=
+  PseudoMetric.on (countable_uniform countable_uniformityT).
+
+End sup_pseudometric.
+
+HB.instance Definition _ (R : realType) (Ii : countType)
+    (Tc : Ii -> pseudoMetricType R) := PseudoMetric.copy (prod_topology Tc)
+  (sup_pseudometric (fun i => PseudoMetric.class
+     [the pseudoMetricType R of weak_topology (@proj _ Tc i)]) (countableP _)).
 
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
@@ -5955,9 +6064,7 @@ Global Instance subspace_proper_filter {T : topologicalType}
    ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
 Notation "{ 'within' A , 'continuous' f }" :=
-  (continuous (f : subspace A -> _)).
-(* Notation "{ 'within' A , 'continuous' f }" := (forall x, *)
-(*   cvg_to (fmap f (@nbhs _ (subspace A) x)) (nbhs (f x))). *)
+  (continuous (f : subspace A -> _)) : classical_set_scope.
 
 Arguments nbhs_subspaceP {T} A x.
 
