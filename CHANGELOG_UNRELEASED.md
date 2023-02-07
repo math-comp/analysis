@@ -63,6 +63,8 @@
 - in `constructive_ereal.v`:
   + lemmas `adde_def_doppeD`, `adde_def_doppeB`
   + lemma `fin_num_sume_distrr`
+- in `classical_sets.v`:
+  + lemma `coverE`
 
 - in file `topology.v`,
   + new definitions `quotient_topology`, and `quotient_open`.
@@ -122,6 +124,8 @@
   + `oppeB` -> `fin_num_oppeB`
   + `doppeD` -> `fin_num_doppeD`
   + `doppeB` -> `fin_num_doppeB`
+- in `topology.v`:
+  + `finSubCover` -> `finite_subset_cover`
 
 ### Generalized
 

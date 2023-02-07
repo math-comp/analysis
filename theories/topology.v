@@ -226,6 +226,8 @@ Require Import reals signed.
 (*                                     (and closed) neighborhood              *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
 (*                discrete_space T <-> every nbhs is a principal filter       *)
+(*        finite_subset_cover D F A == the family of sets F is a cover of A   *)
+(*                                     for a finite number of indices in D    *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                    near_covering == a reformulation of covering compact    *)
@@ -245,7 +247,7 @@ Require Import reals signed.
 (*     {uniform` A -> V} == The space U -> V, equipped with the topology of   *)
 (*                          uniform convergence from a set A to V, where      *)
 (*                          V is a uniformType.                               *)
-(*      {uniform U -> V} := {uniform` @setT U -> V}                           *)
+(*      {uniform U -> V} := {uniform` [set: U] -> V}                          *)
 (*  {uniform A, F --> f} == F converges to f in {uniform A -> V}.             *)
 (*    {uniform, F --> f} := {uniform setT, F --> f}                           *)
 (*         {ptws U -> V} == The space U -> V, equipped with the topology of   *)
@@ -768,7 +770,7 @@ Arguments filter_not_empty {T} F {_}.
 
 Notation ProperFilter := ProperFilter'.
 
-Lemma filter_setT (T' : Type) : Filter (@setT (set T')).
+Lemma filter_setT (T' : Type) : Filter [set: set T'].
 Proof. by constructor. Qed.
 
 Lemma filterP_strong T (F : set_system T) {FF : Filter F} (P : set T) :
@@ -2932,7 +2934,7 @@ have subst_coordT i pi f : subst_coord i pi f i = pi.
 have subst_coordN i pi f j : i != j -> subst_coord i pi f j = f j.
   move=> inej; rewrite /subst_coord; case: eqP => // e.
   by move: inej; rewrite {1}e => /negP.
-have pr_surj i : @^~ i @` (@setT (forall i, T i)) = setT.
+have pr_surj i : @^~ i @` [set: forall i, T i] = setT.
   rewrite predeqE => pi; split=> // _.
   by exists (subst_coord i pi (fun _ => point))=> //; rewrite subst_coordT.
 pose pF i : set_system _ := [set @^~ i @` B | B in F].
@@ -3092,10 +3094,9 @@ move=> FF sDFf D' sD; apply: (@filter_ex _ F); apply: filter_bigI.
 by move=> A /sD; rewrite inE => /sDFf.
 Qed.
 
-Definition finSubCover (I : choiceType) (D : set I)
+Definition finite_subset_cover (I : choiceType) (D : set I)
     U (F : I -> set U) (A : set U) :=
-  exists2 D' : {fset I}, {subset D' <= D} &
-    A `<=` \bigcup_(i in [set i | i \in D']) F i.
+  exists2 D' : {fset I}, {subset D' <= D} & A `<=` cover [set` D'] F.
 
 Section Covers.
 
@@ -3103,18 +3104,17 @@ Variable T : topologicalType.
 
 Definition cover_compact (A : set T) :=
   forall (I : choiceType) (D : set I) (f : I -> set T),
-  (forall i, D i -> open (f i)) -> A `<=` \bigcup_(i in D) f i ->
-  finSubCover D f A.
+  (forall i, D i -> open (f i)) -> A `<=` cover D f ->
+  finite_subset_cover D f A.
 
 Definition open_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
   exists2 g : I -> set T, (forall i, D i -> open (g i)) &
     forall i, D i -> f i = A `&` g i.
 
-Lemma cover_compactE :
-  cover_compact =
+Lemma cover_compactE : cover_compact =
   [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
-    open_fam_of A D f -> A `<=` \bigcup_(i in D) f i -> finSubCover D f A].
-
+    open_fam_of A D f ->
+      A `<=` cover D f -> finite_subset_cover D f A].
 Proof.
 rewrite predeqE => A; split=> [Aco I D f [g gop feAg] fcov|Aco I D f fop fcov].
   have gcov : A `<=` \bigcup_(i in D) g i.
@@ -3170,8 +3170,7 @@ split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
       by move=> gip; apply: nfip; rewrite feAg.
     by rewrite feAg // => - [].
   move=> D' sD.
-  have /asboolP : ~ A `<=` \bigcup_(i in [set i | i \in D']) f i.
-    by move=> sAIf; apply: (sfncov D').
+  have /asboolP : ~ A `<=` cover [set` D'] f by move=> sAIf; exact: (sfncov D').
   rewrite asbool_neg => /existsp_asboolPn [p /asboolP].
   rewrite asbool_neg => /imply_asboolPn [Ap nUfp].
   by exists p => i D'i; split=> // fip; apply: nUfp; exists i.
@@ -3611,8 +3610,8 @@ move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
 move=> U; rewrite nbhsE; case=> V [] oV Vx VU.
 have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
 have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
-  move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset. 
-  by split => // ? ->. 
+  move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset.
+  by split => // ? ->.
 by exists y; split => //; [exact/eqP | exact: VU].
 Qed.
 
@@ -5025,7 +5024,7 @@ Qed.
 Definition uniform_fun {U : Type} (A : set U) (V : Type) := U -> V.
 
 Notation "{ 'uniform`' A -> V }" := (@uniform_fun _ A V) : type_scope.
-Notation "{ 'uniform' U -> V }" := ({uniform` (@setT U) -> V}) : type_scope.
+Notation "{ 'uniform' U -> V }" := ({uniform` [set: U] -> V}) : type_scope.
 Notation "{ 'uniform' A , F --> f }" :=
   (cvg_to F (nbhs (f : {uniform` A -> _}))) : classical_set_scope.
 Notation "{ 'uniform' , F --> f }" :=
@@ -5261,19 +5260,20 @@ Lemma family_cvg_finite_covers (famA famB : set U -> Prop)
   (F : set_system (U -> V)) (f : U -> V) : Filter F ->
   (forall P, famA P ->
     exists (I : choiceType) f,
-      (forall i, famB (f i)) /\ finSubCover (@setT I) f P) ->
+      (forall i, famB (f i)) /\ finite_subset_cover [set: I] f P) ->
   {family famB, F --> f} -> {family famA, F --> f}.
 Proof.
 move=> FF ex_finCover /fam_cvgP rFf; apply/fam_cvgP => A famAA.
 move: ex_finCover => /(_ _ famAA) [R [g [g_famB [D _]]]].
 move/uniform_subset_cvg; apply.
 elim/finSet_rect: D => X IHX.
-have [/eqP ->|/set0P[x xX]] := boolP ([set i | i \in X] == set0).
-  by rewrite bigcup_set0; apply: cvg_uniform_set0.
-rewrite (bigcup_fsetD1 x)//; apply: cvg_uniformU.
+have [->|/set0P[x xX]] := eqVneq [set` X] set0.
+  by rewrite coverE bigcup_set0; apply: cvg_uniform_set0.
+rewrite coverE (bigcup_fsetD1 x)//; apply: cvg_uniformU.
   exact/rFf/g_famB.
 exact/IHX/fproperD1.
 Qed.
+
 End UniformCvgLemmas.
 
 Lemma fam_cvgE {U : choiceType} {V : uniformType} (F : set_system (U -> V))
@@ -5984,7 +5984,7 @@ Qed.
 
 Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs x.
 Proof.
-have [_|] := nbhs_subspaceP (@setT T); last by cbn.
+have [_|] := nbhs_subspaceP [set: T]; last by cbn.
 rewrite eqEsubset withinE; split => [W [V nbhsV]|W ?]; last by exists W.
 by rewrite 2!setIT => ->.
 Qed.
@@ -6432,7 +6432,7 @@ Unshelve. end_near. Qed.
 Section UniformPointwise.
 Context {U : topologicalType} {V : uniformType}.
 
-Definition singletons {T : Type} := [set [set x] | x in @setT T].
+Definition singletons {T : Type} := [set [set x] | x in [set: T]].
 
 Lemma pointwise_cvg_family_singleton F (f: U -> V):
   Filter F -> {ptws, F --> f} = {family @singletons U, F --> f}.
@@ -6640,7 +6640,7 @@ exists (closure (W : set {ptws X -> Y })) => //; exact: equicontinuous_closure.
 Qed.
 
 Section precompact_equicontinuous.
-Hypothesis lcptX : locally_compact (@setT X).
+Hypothesis lcptX : locally_compact [set: X].
 
 Let compact_equicontinuous (W : set {family compact, X -> Y}) :
   (forall f, W f -> continuous f) ->

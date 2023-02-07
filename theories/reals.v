@@ -75,7 +75,7 @@ Lemma has_ubound0 : has_ubound (@set0 R). Proof. by exists 0. Qed.
 Lemma ubound0 : ubound (@set0 R) = setT.
 Proof. by rewrite predeqE => r; split => // _. Qed.
 
-Lemma lboundT : lbound (@setT R) = set0.
+Lemma lboundT : lbound [set: R] = set0.
 Proof.
 rewrite predeqE => r; split => // /(_ (r - 1) Logic.I).
 rewrite ler_subr_addl addrC -ler_subr_addl subrr.
