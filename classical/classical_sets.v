@@ -2467,6 +2467,9 @@ Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
 
 Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.
 
+Lemma coverE T I D (F : I -> set T) : cover D F = \bigcup_(i in D) F i.
+Proof. by []. Qed.
+
 Lemma cover_restr T I D' D (F : I -> set T) :
   D `<=` D' -> (forall i, D' i -> ~ D i -> F i = set0) ->
   cover D F = cover D' F.
