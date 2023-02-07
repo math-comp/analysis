@@ -3544,6 +3544,21 @@ move=> [x [Ax Bx]] Ac Bc; rewrite -bigcup2inE; apply: bigcup_connected.
 by move=> [|[|[]]].
 Qed.
 
+Lemma connected_closure A : connected A -> connected (closure A).
+Proof.
+move=> ctdA U U0 [C1 oC1 C1E] [C2 cC2 C2E]; rewrite eqEsubset.
+split; [by rewrite C2E | suff : A `<=` U]. 
+  move/closure_subset; rewrite {2}[U](iffLR (closure_id _)) // C2E.
+  apply: closedI => //; exact: closed_closure.
+rewrite -setIidPl; apply: ctdA.
+- rewrite C1E in U0; case: U0 => z [clAx C1z]; have [] := clAx C1.
+    exact: open_nbhs_nbhs.
+  move=> w [Aw C1w]; exists w; split => //; rewrite C1E; split => //.
+  exact: subset_closure.
+- exists C1 => //; rewrite C1E setIA (@setIidl _ A _) //; exact: subset_closure.
+- exists C2 => //; rewrite C2E setIA (@setIidl _ A _) //; exact: subset_closure.
+Qed.
+
 Definition connected_component (A : set T) (x : T) :=
   \bigcup_(A in [set C : set T | [/\ C x, C `<=` A & connected C]]) A.
 
@@ -3609,30 +3624,6 @@ rewrite closure_id eqEsubset; split => //; first exact: subset_closure.
 by rewrite -[x in _ `<=` x]setCK.
 Qed.
 
-Lemma connected0T A : connected A <-> 
-  (forall U, clopen U -> A `<=` U  \/ A `&` U = set0).
-Proof.
-split.
-  move=> ctdA U [? ?]. case: (pselect (A `&` U!=set0)) => U0; [left | right].
-  
-    apply: ctdA => //; exists U => //; apply/sym_equal/setIidr.
-  by move/set0P/negP/negPn/eqP:U0.
-move=> A0T U U0 [C1 oC1 /[dup] UA1 ->] [C2 clC2 /[dup] C1C2].
-have := A0T (A `&` C1)
-    by move/set0P/negP; rewrite negbK => /eqP => ->; right.
-  move=> /(ctdA _).
-  case: ctdA _ 
-  Search (~ _) (~~ _).
-    move=> /. negbK
-    move=> /negP. U0. right.
-  case=> oA cA; rewrite /separated -((closure_id A).1 cA) setICr; split => //.
-  by rewrite -((closure_id _).1 (open_closedC oA)) setICr.
-case; rewrite ?disjoints_subset => clAA AclA; split.
-  rewrite -closedC closure_id eqEsubset; split; first exact: subset_closure.
-  exact: subsetCr.
-rewrite closure_id eqEsubset; split => //; first exact: subset_closure.
-by rewrite -[x in _ `<=` x]setCK.
-Qed.
 
 End connected_sets.
 Arguments connected {T}.
@@ -6722,6 +6713,23 @@ rewrite withinE => W/= -[V nbhsV WV]; apply: filterS (V `&` (U `&` A)) _ _ _.
   by rewrite setIC -setIA [A `&` _]setIC -WV=>?[]?[].
 by apply: filterI; rewrite nbhs_simpl //; exact: Fp.
 Qed.
+
+Lemma clopen_connectedP : connected A <-> 
+  (forall U, @clopen (subspace_topologicalType) U -> 
+    U `<=` A  -> U !=set0 -> U = A).
+Proof.
+split.
+  move=> ctdA U [/open_subspaceP oU /closed_subspaceP cU] UA U0; apply: ctdA.
+  - by [].
+  - case: oU => V [oV VAUA]; exists V => //; rewrite setIC VAUA. 
+    exact/sym_equal/setIidPl.
+  - case: cU => V [cV VAUA]; exists V => //; rewrite setIC VAUA. 
+    exact/sym_equal/setIidPl.
+move=> clpnA U Un0 [V oV UVA] [W cW UWA]; apply: clpnA => //; first split.
+- by apply/open_subspaceP; exists V; split; rewrite //setIC UVA setIAC setIid.
+- by apply/closed_subspaceP; exists W; split; rewrite //setIC UWA setIAC setIid.
+- by rewrite UWA => ? [].
+Qed. 
 
 End Subspace.
 
