@@ -60,6 +60,13 @@
   + lemma `countable_bijP`
   + lemma `patchE`
 
+- in file `topology.v`,
+  + new definitions `countable_uniformity`, `countable_uniformityT`, 
+    `sup_pseudoMetric_mixin`, `sup_pseudoMetricType`, and 
+    `product_pseudoMetricType`.
+  + new lemmas `countable_uniformityP`, `countable_sup_ent`, and 
+    `countable_uniformity_metric`.
+
 - in `constructive_ereal.v`:
   + lemmas `adde_def_doppeD`, `adde_def_doppeB`
   + lemma `fin_num_sume_distrr`
