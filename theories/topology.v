@@ -4913,8 +4913,9 @@ Context {T : topologicalType} {Q0 : quotType T}.
 
 Let Q := quotient_topology Q0.
 
-Canonical quotient_eq := EqType Q gen_eqMixin.
-Canonical quotient_choice := ChoiceType Q gen_choiceMixin.
+Canonical quotient_subtype := [subType Q of T by %/].
+Canonical quotient_eq := EqType Q [eqMixin of Q by <:].
+Canonical quotient_choice := ChoiceType Q  [choiceMixin of Q by <:].
 Canonical quotient_pointed := PointedType Q (\pi_Q point).
 
 Definition quotient_open U := open (\pi_Q @^-1` U).
