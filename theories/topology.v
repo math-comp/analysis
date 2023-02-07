@@ -116,6 +116,7 @@ Require Import reals signed.
 (*                              \oo == "eventually" filter on nat: set of     *)
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true.                       *)
+(*                         clopen U == U is both open and closed              *)
 (*    separate_points_from_closed f == For a closed set U and point x outside *)
 (*                                     some member of the family f sends      *)
 (*                                     f_i(x) outside (closure (f_i @` U)).   *)
