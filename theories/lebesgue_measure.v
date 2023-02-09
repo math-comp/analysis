@@ -331,7 +331,7 @@ apply/andP; split=> //; apply: contraTneq xbj => ->.
 by rewrite in_itv/= le_gtF// (itvP xabi).
 Qed.
 
-HB.instance Definition _ := isContent.Build _ R _
+HB.instance Definition _ := isContent.Build _ _ R
   (hlength : set ocitv_type -> _) (@hlength_ge0') hlength_semi_additive.
 
 Hint Extern 0 ((_ .-ocitv).-measurable _) => solve [apply: is_ocitv] : core.

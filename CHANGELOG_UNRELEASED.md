@@ -93,6 +93,18 @@
   + structure `FiniteMeasureFunction`
   + structure `FiniteMeasure`, notation `{finite_measure set _ -> \bar _}`
 
+
+- in `measure.v`:
+  + definition `sfinite_measure_def`
+  + mixin `Measure_isSFinite_subdef`, structure `SFiniteMeasure`,
+    notation `{sfinite_measure set _ -> \bar _}`
+  + mixin `SigmaFinite_isFinite`, structure `FiniteMeasure`,
+    notation `{finite_measure set _ -> \bar _}`
+  + lemma `sfinite_measure_sigma_finite`, `sigma_finite_mzero`,
+  + instances `isSigmaFinite`, `SigmaFinite_isFinite` for `mzero`
+  + factory `Measure_isFinite`, `Measure_isSFinite`
+  + lemma `sfinite_measure`
+
 ### Changed
 
 - in `fsbigop.v`:
@@ -113,6 +125,8 @@
 
 - in `measure.v`:
   + `finite_measure` is now a lemma that applies to a finite measure
+  + order of arguments of `isContent`, `Content`, `measure0`, `isMeasure0`,
+    `Measure`, `isSigmaFinite`, `SigmaFiniteContent`, `SigmaFiniteMeasure`
 
 ### Renamed
 
@@ -155,6 +169,9 @@
   + `xsection_preimage_snd`, `ysection_preimage_fst`
 - in `constructive_ereal.v`:
   + `oppeD`, `oppeB`
+- in `measure.v`:
+  + `sigma_finite` generalized from `numFieldType` to `numDomainType`
+  + `finite_measure_sigma_finite` generalized from `measurableType` to `algebraOfSetsType`
 
 ### Deprecated
 
