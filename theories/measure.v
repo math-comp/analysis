@@ -124,6 +124,18 @@ From HB Require Import structures.
 (*     FiniteMeasure == structure of finite measures                          *)
 (*     Measure_isFinite == factory for finite measures                        *)
 (*                                                                            *)
+(*     FiniteMeasure_isSubProbability = mixin corresponding to subprobability *)
+(*     SubProbability = structure of subprobability                           *)
+(*     subprobability T R == subprobability measure over the measurableType T *)
+(*                           with value in R : realType                       *)
+(*     Measure_isSubProbability == factory for subprobability measures        *)
+(*                                                                            *)
+(*     isProbability == mixin corresponding to probability measures           *)
+(*     Probability == structure of probability measures                       *)
+(*     probability T R == probability measure over the measurableType T with  *)
+(*                        value in R : realType                               *)
+(*     Measure_isProbability == factor for probability measures               *)
+(*                                                                            *)
 (*   mu.-negligible A == A is mu negligible                                   *)
 (*   {ae mu, forall x, P x} == P holds almost everywhere for the measure mu   *)
 (*                                                                            *)
@@ -168,8 +180,6 @@ From HB Require Import structures.
 (*                             generated from T1 x T2, with T1 and T2         *)
 (*                             measurableType's with resp. display d1 and d2  *)
 (*                                                                            *)
-(*      probability T R == probability measure over the measurableType T with *)
-(*                         value in R : realType                              *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -2548,7 +2558,7 @@ by move=> n; split; case: ifPn.
 Qed.
 
 HB.mixin Record Measure_isSFinite_subdef d (T : measurableType d)
-    (R : realType) (mu : set T -> \bar R) of @Measure _ _ _ mu := {
+    (R : realType) (mu : set T -> \bar R) := {
   sfinite_measure_subdef : sfinite_measure_def mu }.
 
 HB.structure Definition SFiniteMeasure
@@ -2577,7 +2587,7 @@ Notation "{ 'sigma_finite_content' 'set' T '->' '\bar' R }" :=
 
 #[short(type="sigma_finite_measure")]
 HB.structure Definition SigmaFiniteMeasure d T R :=
-  { mu of @Measure d T R mu & isSigmaFinite d T R mu }.
+  { mu of @SFiniteMeasure d T R mu & isSigmaFinite d T R mu }.
 
 Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" :=
   (sigma_finite_measure T R) (at level 36, T, R at next level,
@@ -2725,6 +2735,68 @@ by rewrite /mseries /= /s; case: cid2 => // x xfin ->//.
 Qed.
 
 End sfinite_measure.
+
+HB.mixin Record FiniteMeasure_isSubProbability d (T : measurableType d)
+  (R : realType) (P : set T -> \bar R) :=
+  { sprobability_setT : P setT <= 1%E }.
+
+#[short(type=subprobability)]
+HB.structure Definition SubProbability d (T : measurableType d)
+  (R : realType) := {mu of @FiniteMeasure d T R mu &
+                           FiniteMeasure_isSubProbability d T R mu }.
+
+HB.factory Record Measure_isSubProbability d (T : measurableType d)
+  (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=
+  { sprobability_setT : P setT <= 1%E }.
+
+HB.builders Context d (T : measurableType d) (R : realType)
+  P of Measure_isSubProbability d T R P.
+
+Let finite : @Measure_isFinite d T R P.
+Proof.
+by split; rewrite /finite_measure (le_lt_trans (@sprobability_setT))// ltey.
+Qed.
+
+HB.instance Definition _ := finite.
+
+HB.instance Definition _ := @FiniteMeasure_isSubProbability.Build _ _ _ P sprobability_setT.
+
+HB.end.
+
+HB.mixin Record isProbability d (T : measurableType d)
+  (R : realType) (P : set T -> \bar R) :=
+  { probability_setT : P setT = 1%E }.
+
+#[short(type=probability)]
+HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
+  {P of @SubProbability d T R P & isProbability d T R P }.
+
+Section probability_lemmas.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
+Proof.
+move=> mA; rewrite -(@probability_setT _ _ _ P).
+by apply: le_measure => //; rewrite ?in_setE.
+Qed.
+
+End probability_lemmas.
+
+HB.factory Record Measure_isProbability d (X : measurableType d)
+    (R : realType) (P : set X -> \bar R) of isMeasure _ _ _ P :=
+  { probability_setT : P setT = 1%E }.
+
+HB.builders Context d (X : measurableType d) (R : realType)
+  P of Measure_isProbability d X R P.
+
+Let subprobability : @Measure_isSubProbability d X R P.
+Proof. by split; rewrite probability_setT. Qed.
+
+HB.instance Definition _ := subprobability.
+
+HB.instance Definition _ := @isProbability.Build _ _ _ P probability_setT.
+
+HB.end.
 
 Lemma sigma_finite_counting (R : realType) :
   sigma_finite [set: nat] (counting R).
@@ -3942,22 +4014,3 @@ exact: (measurable_fun_comp _ _ mf).
 Qed.
 
 End partial_measurable_fun.
-
-HB.mixin Record isProbability d (T : measurableType d)
-  (R : realType) (P : set T -> \bar R) of isMeasure d R T P :=
-  { probability_setT : P setT = 1%E }.
-
-#[short(type=probability)]
-HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
-  {P of isProbability d T R P & isMeasure d R T P }.
-
-Section probability_lemmas.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
-
-Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
-Proof.
-move=> mA; rewrite -(@probability_setT _ _ _ P).
-by apply: le_measure => //; rewrite ?in_setE.
-Qed.
-
-End probability_lemmas.

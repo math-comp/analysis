@@ -112,6 +112,10 @@
   + instances `isSigmaFinite`, `SigmaFinite_isFinite` for `mzero`
   + factory `Measure_isFinite`, `Measure_isSFinite`
   + lemma `sfinite_measure`
+  + mixin `FiniteMeasure_isSubProbability`, structure `SubProbability`,
+    notation `subprobability`
+  + factory `Measure_isSubProbability`
+  + factory `FiniteMeasure_isSubProbability`
 
 ### Changed
 
