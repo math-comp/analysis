@@ -2798,6 +2798,14 @@ HB.instance Definition _ := @isProbability.Build _ _ _ P probability_setT.
 
 HB.end.
 
+Section pdirac.
+Context d (T : measurableType d) (R : realType).
+
+HB.instance Definition _ x :=
+  Measure_isProbability.Build _ _ _ (@dirac _ T x R) (diracT R x).
+
+End pdirac.
+
 Lemma sigma_finite_counting (R : realType) :
   sigma_finite [set: nat] (counting R).
 Proof.
