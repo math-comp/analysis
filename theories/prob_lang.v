@@ -71,7 +71,7 @@ rewrite /bernoulli/= /measure_add/= /msum 2!big_ord_recr/= big_ord0 add0e/=.
 by rewrite /mscale/= !diracT !mule1 -EFinD onem1'.
 Qed.
 
-HB.instance Definition _ := @isProbability.Build _ _ R bernoulli bernoulli_setT.
+HB.instance Definition _ := @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
 
 End bernoulli.
 

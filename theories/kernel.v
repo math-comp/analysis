@@ -582,14 +582,6 @@ Arguments measurable_fun_xsection_integral {_ _ _ _ _} k l.
 Arguments measurable_fun_integral_finite_kernel {_ _ _ _ _} k l.
 Arguments measurable_fun_integral_sfinite_kernel {_ _ _ _ _} k l.
 
-Section pdirac.
-Context d (T : measurableType d) (R : realType).
-
-HB.instance Definition _ x :=
-  isProbability.Build _ _ _ (@dirac _ T x R) (diracT R x).
-
-End pdirac.
-
 Section kdirac.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variable f : X -> Y.
@@ -825,7 +817,7 @@ by rewrite -{1}(@fineK _ (f x setT))// -EFinM divrr// ?unitfE fine_eq0.
 Qed.
 
 HB.instance Definition _ x :=
-  isProbability.Build _ _ _ (mnormalize x) (mnormalize1 x).
+  Measure_isProbability.Build _ _ _ (mnormalize x) (mnormalize1 x).
 
 End mnormalize.
 

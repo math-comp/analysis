@@ -97,7 +97,7 @@ HB.instance Definition _ := isMeasure.Build _ _ _
 Let mgauss01_setT : mgauss01 [set: _] = 1%E.
 Proof. by rewrite /mgauss01 integral_gauss01_density. Qed.
 
-HB.instance Definition _ := @isProbability.Build _ _ R mgauss01 mgauss01_setT.
+HB.instance Definition _ := @Measure_isProbability.Build _ _ R mgauss01 mgauss01_setT.
 
 Definition gauss01 := [the probability _ _ of mgauss01].
 
