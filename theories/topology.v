@@ -116,6 +116,7 @@ Require Import reals signed.
 (*                              \oo == "eventually" filter on nat: set of     *)
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true.                       *)
+(*                         clopen U == U is both open and closed              *)
 (*    separate_points_from_closed f == For a closed set U and point x outside *)
 (*                                     some member of the family f sends      *)
 (*                                     f_i(x) outside (closure (f_i @` U)).   *)
@@ -2770,6 +2771,32 @@ Qed.
 End Compact.
 Arguments hausdorff_space : clear implicits.
 
+Section ClopenSets.
+Implicit Type T : topologicalType.
+
+Definition clopen {T} (A : set T) := open A /\ closed A.
+
+Lemma clopenI {T} (A B : set T) : clopen A -> clopen B -> clopen (A `&` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openI | exact: closedI]. Qed.
+
+Lemma clopenU {T} (A B : set T) : clopen A -> clopen B -> clopen (A `|` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openU | exact: closedU]. Qed.
+
+Lemma clopenC {T} (A B : set T) : clopen A -> clopen (~`A).
+Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
+
+Lemma clopen0 {T} : @clopen T set0.
+Proof. by split; [exact: open0 | exact: closed0]. Qed.
+
+Lemma clopenT {T} : clopen [set: T].
+Proof. by split; [exact: openT | exact: closedT]. Qed.
+
+Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
+ clopen A -> continuous f -> clopen (f @^-1` A).
+Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
+
+End ClopenSets.
+
 Section near_covering.
 Context {X : topologicalType}.
 
@@ -3518,6 +3545,20 @@ move=> [x [Ax Bx]] Ac Bc; rewrite -bigcup2inE; apply: bigcup_connected.
 by move=> [|[|[]]].
 Qed.
 
+Lemma connected_closure A : connected A -> connected (closure A).
+Proof.
+move=> ctdA U U0 [C1 oC1 C1E] [C2 cC2 C2E]; rewrite eqEsubset C2E; split => //.
+suff : A `<=` U.
+  move/closure_subset; rewrite [_ `&` _](iffLR (closure_id _)) ?C2E//.
+  by apply: closedI => //; exact: closed_closure.
+rewrite -setIidPl; apply: ctdA.
+- move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
+    exact: open_nbhs_nbhs.
+  by move=> w [Aw C1w]; exists w; rewrite setIA (setIidl (@subset_closure _ _)).
+- by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _)).
+- by exists C2 => //; rewrite C2E setIA (setIidl (@subset_closure _ _)).
+Qed.
+
 Definition connected_component (A : set T) (x : T) :=
   \bigcup_(A in [set C : set T | [/\ C x, C `<=` A & connected C]]) A.
 
@@ -3569,6 +3610,16 @@ Lemma same_connected_component A x y : connected_component A x y ->
 Proof.
 move=> Axy; apply/seteqP; split => z; apply: connected_component_trans => //.
 by apply: connected_component_sym.
+Qed.
+
+Lemma clopen_separatedP A : clopen A <-> separated A (~` A).
+Proof.
+split=> [[oA cA]|[] /[!(@disjoints_subset T)] /[!(@setCK T)] clAA AclA].
+  rewrite /separated -((closure_id A).1 cA) setICr ; split => //.
+  by rewrite -((closure_id _).1 (open_closedC oA)) setICr.
+split; last by rewrite closure_id eqEsubset; split => //; exact: subset_closure.
+by rewrite -closedC closure_id eqEsubset; split;
+  [exact: subset_closure|exact: subsetCr].
 Qed.
 
 End connected_sets.
@@ -6658,6 +6709,22 @@ exists x; split=> //; apply/subspace_cvgP => //.
 rewrite withinE => W/= -[V nbhsV WV]; apply: filterS (V `&` (U `&` A)) _ _ _.
   by rewrite setIC -setIA [A `&` _]setIC -WV=>?[]?[].
 by apply: filterI; rewrite nbhs_simpl //; exact: Fp.
+Qed.
+
+Lemma clopen_connectedP : connected A <->
+  (forall U, @clopen (subspace_topologicalType) U ->
+    U `<=` A  -> U !=set0 -> U = A).
+Proof.
+split.
+  move=> + U [/open_subspaceP oU /closed_subspaceP cU] UA U0; apply => //.
+  - case: oU => V [oV VAUA]; exists V; rewrite // setIC VAUA.
+    exact/esym/setIidPl.
+  - case: cU => V [cV VAUA]; exists V => //; rewrite setIC VAUA.
+    exact/esym/setIidPl.
+move=> clpnA U Un0 [V oV UVA] [W cW UWA]; apply: clpnA => //; first split.
+- by apply/open_subspaceP; exists V; rewrite setIC UVA setIAC setIid.
+- by apply/closed_subspaceP; exists W; rewrite setIC UWA setIAC setIid.
+- by rewrite UWA; exact: subIsetl.
 Qed.
 
 End Subspace.

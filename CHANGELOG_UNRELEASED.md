@@ -89,6 +89,12 @@
     `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
     `join_product_weak`. 
 
+- in file `topology.v`,
+  + new definition `clopen`.
+  + new lemmas `clopenI`, `clopenU`, `clopenC`, `clopen0`, `clopenT`, 
+    `clopen_comp`, `connected_closure`, `clopen_separatedP`, and 
+    `clopen_connectedP`.
+
 ### Changed
 
 - in `fsbigop.v`:
