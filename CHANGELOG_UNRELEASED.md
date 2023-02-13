@@ -89,8 +89,6 @@
     `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
     `join_product_weak`. 
 - in `measure.v`:
-  + mixin `isFiniteMeasureFunction` with field `finite_measure_function`
-  + structure `FiniteMeasureFunction`
   + structure `FiniteMeasure`, notation `{finite_measure set _ -> \bar _}`
 
 - in file `topology.v`,
