@@ -11,6 +11,23 @@
   + lemma `emeasurable_itv`
 - in `lebesgue_integral.v`:
   + lemma `sfinite_Fubini`
+- in `classical_sets.v`:
+  + lemmas `ltn_trivIset`, `subsetC_trivIset`
+- in `sequences.v`:
+  + lemma `seqDUIE`
+- file `charge.v`:
+  + mixin `isAdditiveCharge`, structure `AdditiveCharge`, notations
+    `additive_charge`, `{additive_charge set T -> \bar R}`
+  + mixin `isCharge`, structure `Charge`, notations `charge`,
+    `{charge set T -> \bar R}`
+  + lemmas `charge0`, `charge_semi_additiveW`, `charge_semi_additive2E`,
+    `charge_semi_additive2`, `chargeU`, `chargeDI`, `chargeD`,
+    `charge_partition`
+  + definitions `crestr`, `cszero`, `cscale`, `positive_set`, `negative_set`
+  + lemmas `negative_set_charge_le0`, `negative_set0`, `bigcup_negative_set`,
+    `negative_setU`, `positive_negative0`
+  + definition `hahn_decomposition`
+  + lemmas `hahn_decomposition_lemma`, `Hahn_decomposition`, `Hahn_decomposition_uniq`
 
 - file `itv.v`:
   + definition `wider_itv`
@@ -148,6 +165,10 @@
     `_ <| _ |> _`
   + lemmas `conv1`, `second_derivative_convex`
 
+- in `mathcomp_extra.v`:
+  + lemma `lt_min_lt`
+- in `constructive_ereal.v`:
+  + lemmas `EFin_min`, `EFin_max`
 
 ### Changed
 
@@ -178,6 +199,10 @@
   + weaken condition of `exp_fun_mulrn` and rename to `power_pos_mulrn`
   + the notation ``` `^ ``` has now scope `real_scope`
   + weaken condition of `riemannR_gt0` and `dvg_riemannR`
+- in `constructive_ereal.v`:
+  + `maxEFin` changed to `fine_max`
+  + `minEFin` changed to `fine_min`
+
 
 ### Renamed
 

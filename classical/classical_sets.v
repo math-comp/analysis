@@ -2385,6 +2385,20 @@ Section partitions.
 Definition trivIset T I (D : set I) (F : I -> set T) :=
   forall i j : I, D i -> D j -> F i `&` F j !=set0 -> i = j.
 
+Lemma ltn_trivIset T (F : nat -> set T) :
+  (forall n m, (m < n)%N -> F m `&` F n = set0) -> trivIset setT F.
+Proof.
+move=> h m n _ _ [t [mt nt]]; apply/eqP/negPn/negP.
+by rewrite neq_ltn => /orP[] /h; apply/eqP/set0P; exists t.
+Qed.
+
+Lemma subsetC_trivIset T (F : nat -> set T) :
+  (forall n, F n.+1 `<=` ~` \big[setU/set0]_(i < n.+1) F i) -> trivIset setT F.
+Proof.
+move=> sF; apply: ltn_trivIset => n m h; rewrite setIC; apply/disjoints_subset.
+by case: n h => // n h; apply: (subset_trans (sF n)); exact/subsetC/bigsetU_sup.
+Qed.
+
 Lemma trivIset_mkcond T I (D : set I) (F : I -> set T) :
   trivIset D F <-> trivIset setT (fun i => if i \in D then F i else set0).
 Proof.
