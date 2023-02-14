@@ -94,3 +94,7 @@ analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
 theories/prob_lang.v
 theories/prob_lang_wip.v
+theories/lang_syntax_util.v
+theories/lang_syntax_toy.v
+theories/lang_syntax.v
+theories/lang_syntax_examples.v

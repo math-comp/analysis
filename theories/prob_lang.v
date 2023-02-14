@@ -12,14 +12,14 @@ Require Import lebesgue_measure  numfun lebesgue_integral exp kernel.
 (*                                                                            *)
 (*       bernoulli r1 == Bernoulli probability with r1 a proof that           *)
 (*                       r : {nonneg R} is smaller than 1                     *)
-(*                                                                            *)
-(*           sample P == sample according to the probability P                *)
+(* uniform_probability a b ab0 == uniform probability over the interval [a,b] *)
+(*       sample_cst P == sample according to the probability P                *)
 (*          letin l k == execute l, augment the context, and execute k        *)
 (*             ret mf == access the context with f and return the result      *)
 (*           score mf == observe t from d, where f is the density of d and    *)
 (*                       t occurs in f                                        *)
 (*                       e.g., score (r e^(-r * t)) = observe t from exp(r)   *)
-(*     pnormalize k P == normalize the kernel k into a probability kernel,    *)
+(*      normalize k P == normalize the kernel k into a probability kernel,    *)
 (*                       P is a default probability in case normalization is  *)
 (*                       not possible                                         *)
 (*       ite mf k1 k2 == access the context with the boolean function f and   *)
@@ -41,9 +41,6 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
 (* TODO: PR *)
-Lemma onem1' (R : numDomainType) (p : R) : (p + `1- p = 1)%R.
-Proof. by rewrite /onem addrCA subrr addr0. Qed.
-
 Lemma onem_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
   (p%:num <= 1 -> 0 <= `1-(p%:num))%R.
 Proof. by rewrite /onem/= subr_ge0. Qed.
@@ -52,6 +49,39 @@ Definition onem_nonneg (R : numDomainType) (p : {nonneg R})
    (p1 : (p%:num <= 1)%R) :=
   NngNum (onem_nonneg_proof p1).
 (* /TODO: PR *)
+
+Lemma invr_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
+  (0 <= (p%:num)^-1)%R.
+Proof. by rewrite invr_ge0. Qed.
+
+Definition invr_nonneg (R : numDomainType) (p : {nonneg R}) :=
+  NngNum (invr_nonneg_proof p).
+
+(* TODO: move *)
+Lemma eq_probability R d (Y : measurableType d) (m1 m2 : probability Y R) :
+  (m1 =1 m2 :> (set Y -> \bar R)) -> m1 = m2.
+Proof.
+move: m1 m2 => [m1 +] [m2 +] /= m1m2.
+move/funext : m1m2 => <- -[[c11 c12] [m01] [sf1] [sig1] [fin1] [sub1] [p1]]
+                    [[c21 c22] [m02] [sf2] [sig2] [fin2] [sub2] [p2]].
+have ? : c11 = c21 by [].
+subst c21.
+have ? : c12 = c22 by [].
+subst c22.
+have ? : m01 = m02 by [].
+subst m02.
+have ? : sf1 = sf2 by [].
+subst sf2.
+have ? : sig1 = sig2 by [].
+subst sig2.
+have ? : fin1 = fin2 by [].
+subst fin2.
+have ? : sub1 = sub2 by [].
+subst sub2.
+have ? : p1 = p2 by [].
+subst p2.
+by f_equal.
+Qed.
 
 Section bernoulli.
 Variables (R : realType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
@@ -69,12 +99,45 @@ Local Close Scope ring_scope.
 Let bernoulli_setT : bernoulli [set: _] = 1.
 Proof.
 rewrite /bernoulli/= /measure_add/= /msum 2!big_ord_recr/= big_ord0 add0e/=.
-by rewrite /mscale/= !diracT !mule1 -EFinD onem1'.
+by rewrite /mscale/= !diracT !mule1 -EFinD add_onemK.
 Qed.
 
-HB.instance Definition _ := @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
+HB.instance Definition _ :=
+  @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
 
 End bernoulli.
+
+Lemma integral_bernoulli {R : realType}
+    (p : {nonneg R}) (p1 : (p%:num <= 1)%R) (f : bool -> set bool -> _) U :
+  (forall x y, 0 <= f x y) ->
+  \int[bernoulli p1]_y (f y ) U =
+  p%:num%:E * f true U + (`1-(p%:num))%:E * f false U.
+Proof.
+move=> f0.
+rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= indicT 2!mul1e.
+Qed.
+
+Section uniform_probability.
+Context {R : realType}.
+Variables (a b : R) (ab0 : (0 < b - a)%R).
+
+Definition uniform_probability := mscale (invr_nonneg (NngNum (ltW ab0)))
+  (mrestr lebesgue_measure (measurable_itv `[a, b])).
+
+HB.instance Definition _ := Measure.on uniform_probability.
+
+Let uniform_probability_setT : uniform_probability [set: _] = 1.
+Proof.
+rewrite /uniform_probability /mscale/= /mrestr/=.
+rewrite setTI lebesgue_measure_itv hlength_itv/= lte_fin.
+by rewrite -subr_gt0 ab0 -EFinD -EFinM mulVf// gt_eqF// subr_gt0.
+Qed.
+
+HB.instance Definition _ := @Measure_isProbability.Build _ _ R
+  uniform_probability uniform_probability_setT.
+
+End uniform_probability.
 
 Section mscore.
 Context d (T : measurableType d) (R : realType).
@@ -283,7 +346,7 @@ by rewrite /mseries eseries0.
 Qed.
 
 #[export]
-HB.instance Definition _ t := @Kernel_isSFinite_subdef.Build _ _ _ _ _
+HB.instance Definition _ := @Kernel_isSFinite_subdef.Build _ _ _ _ _
   (kiteT k) sfinite_kiteT.
 End sfkiteT.
 
@@ -298,7 +361,7 @@ by rewrite /= /mzero.
 Qed.
 
 #[export]
-HB.instance Definition _ t := Kernel_isFinite.Build _ _ _ _ _
+HB.instance Definition _ := Kernel_isFinite.Build _ _ _ _ _
   (kiteT k) kiteT_uub.
 End fkiteT.
 
@@ -366,6 +429,7 @@ Section ite.
 Context d d' (T : measurableType d) (T' : measurableType d') (R : realType).
 Variables (f : T -> bool) (u1 u2 : R.-sfker T ~> T').
 
+(* NB: not used? *)
 Definition mite (mf : measurable_fun setT f) : T -> set T' -> \bar R :=
   fun t => if f t then u1 t else u2 t.
 
@@ -405,8 +469,11 @@ Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Definition ret (f : X -> Y) (mf : measurable_fun setT f)
   : R.-pker X ~> Y := [the R.-pker _ ~> _ of kdirac mf].
 
-Definition sample (P : pprobability Y R) : R.-pker X ~> Y :=
+Definition sample_cst (P : pprobability Y R) : R.-pker X ~> Y :=
   [the R.-pker _ ~> _ of kprobability (measurable_cst P)].
+
+Definition sample (P : X -> pprobability Y R) (mP : measurable_fun setT P) : R.-pker X ~> Y :=
+  [the R.-pker _ ~> _ of kprobability mP].
 
 Definition normalize (k : R.-sfker X ~> Y) P : X -> probability Y R :=
   fun x => [the probability _ _ of mnormalize (k x) P].
@@ -417,6 +484,7 @@ Definition ite (f : X -> bool) (mf : measurable_fun setT f)
 
 End insn2.
 Arguments ret {d d' X Y R f} mf.
+Arguments sample_cst {d d' X Y R}.
 Arguments sample {d d' X Y R}.
 
 Section insn2_lemmas.
@@ -426,7 +494,10 @@ Lemma retE (f : X -> Y) (mf : measurable_fun setT f) x :
   ret mf x = \d_(f x) :> (_ -> \bar R).
 Proof. by []. Qed.
 
-Lemma sampleE (P : probability Y R) (x : X) : sample P x = P.
+Lemma sample_cstE (P : probability Y R) (x : X) : sample_cst P x = P.
+Proof. by []. Qed.
+
+Lemma sampleE (P : X -> pprobability Y R) (mP : measurable_fun setT P) (x : X) : sample P mP x = P x.
 Proof. by []. Qed.
 
 Lemma normalizeE (f : R.-sfker X ~> Y) P x U :
@@ -450,6 +521,15 @@ by case: ifPn => fx /=; rewrite /mzero ?(adde0,add0e).
 Qed.
 
 End insn2_lemmas.
+
+Lemma normalize_kdirac (R : realType)
+    d (T : measurableType d) d' (T' : measurableType d') (x : T) (r : T') P :
+  normalize (kdirac (measurable_cst r)) P x = \d_r :> probability T' R.
+Proof.
+apply: eq_probability => U.
+rewrite normalizeE /= diracE in_setT/=.
+by rewrite onee_eq0/= indicE in_setT/= -div1r divr1 mule1.
+Qed.
 
 Section insn3.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
@@ -523,13 +603,13 @@ Arguments fail {d d' X Y R}.
 
 Module Notations.
 
-Notation var1of2 := (@measurable_fst _ _ _ _).
+(*Notation var1of2 := (@measurable_fst _ _ _ _).
 Notation var2of2 := (@measurable_snd _ _ _ _).
 Notation var1of3 := (measurableT_comp (@measurable_fst _ _ _ _)
                                          (@measurable_fst _ _ _ _)).
 Notation var2of3 := (measurableT_comp (@measurable_snd _ _ _ _)
                                          (@measurable_fst _ _ _ _)).
-Notation var3of3 := (@measurable_snd _ _ _ _).
+Notation var3of3 := (@measurable_snd _ _ _ _).*)
 
 Notation mR := Real_sort__canonical__measure_Measurable.
 Notation munit := Datatypes_unit__canonical__measure_Measurable.
@@ -544,12 +624,249 @@ Definition kr (r : R) := @measurable_cst _ _ T _ setT r.
 Definition k3 : measurable_fun _ _ := kr 3%:R.
 Definition k10 : measurable_fun _ _ := kr 10%:R.
 Definition ktt := @measurable_cst _ _ T _ setT tt.
+Definition kb (b : bool) := @measurable_cst _ _ T _ setT b.
 
 End cst_fun.
 Arguments kr {d T R}.
 Arguments k3 {d T R}.
 Arguments k10 {d T R}.
 Arguments ktt {d T}.
+Arguments kb {d T}.
+
+Section iter_mprod.
+Import Notations.
+
+Fixpoint iter_mprod (l : list {d & measurableType d})
+    : {d & measurableType d} :=
+  match l with
+  | [::] => existT measurableType _ munit
+  | h :: t => let t' := iter_mprod t in
+    existT _ _ [the measurableType (projT1 h, projT1 t').-prod of
+                (projT2 h * projT2 t')%type]
+  end.
+
+End iter_mprod.
+
+Section acc.
+Import Notations.
+Context {R : realType}.
+
+Fixpoint acc (l : seq {d & measurableType d}) n :
+  projT2 (iter_mprod l) -> projT2 (nth (existT _ _ munit) l n) :=
+  match l return
+     projT2 (iter_mprod l) -> projT2 (nth (existT _ _ munit) l n)
+  with
+  | [::] => match n with | O => id | m.+1 => id end
+  | _ :: _ => match n with
+               | O => fst
+               | m.+1 => fun H => acc m H.2
+               end
+  end.
+
+Lemma measurable_acc (l : seq {d & measurableType d}) n :
+  measurable_fun setT (@acc l n).
+Proof.
+by elim: l n => //= h t ih [|m] //; exact: (measurableT_comp (ih _)).
+Qed.
+End acc.
+Arguments acc : clear implicits.
+Arguments measurable_acc : clear implicits.
+
+Section rpair_pairA.
+Context d0 d1 d2 (T0 : measurableType d0) (T1 : measurableType d1)
+  (T2 : measurableType d2).
+
+Definition rpair d (T : measurableType d) t :
+    ([the measurableType _ of T0] -> [the measurableType _ of T0 * T])%type :=
+  fun x => (x, t).
+
+Lemma mrpair d (T : measurableType d) t : measurable_fun setT (@rpair _ T t).
+Proof. exact: measurable_fun_prod. Qed.
+
+Definition pairA : ([the measurableType _ of T0 * T1 * T2] ->
+                    [the measurableType _ of T0 * (T1 * T2)])%type :=
+  fun x => (x.1.1, (x.1.2, x.2)).
+
+Definition mpairA : measurable_fun setT pairA.
+Proof.
+apply: measurable_fun_prod => /=; first exact: measurableT_comp.
+by apply: measurable_fun_prod => //=; exact: measurableT_comp.
+Qed.
+
+Definition pairAi : ([the measurableType _ of T0 * (T1 * T2)] ->
+                    [the measurableType _ of T0 * T1 * T2])%type :=
+  fun x => (x.1, x.2.1, x.2.2).
+
+Definition mpairAi : measurable_fun setT pairAi.
+Proof.
+apply: measurable_fun_prod => //=; last exact: measurableT_comp.
+apply: measurable_fun_prod => //=; exact: measurableT_comp.
+Qed.
+
+End rpair_pairA.
+Arguments rpair {d0 T0 d} T.
+#[global] Hint Extern 0 (measurable_fun _ (rpair _ _)) =>
+  solve [apply: mrpair] : core.
+Arguments pairA {d0 d1 d2 T0 T1 T2}.
+#[global] Hint Extern 0 (measurable_fun _ pairA) =>
+  solve [apply: mpairA] : core.
+Arguments pairAi {d0 d1 d2 T0 T1 T2}.
+#[global] Hint Extern 0 (measurable_fun _ pairAi) =>
+  solve [apply: mpairAi] : core.
+
+Section rpair_pairA_comp.
+Import Notations.
+Context d0 d1 d2 d3 (T0 : measurableType d0) (T1 : measurableType d1)
+  (T2 : measurableType d2) (T3 : measurableType d3) (R : realType).
+
+Definition pairAr d (T : measurableType d) t :
+    ([the measurableType _ of T0 * T1] ->
+     [the measurableType _ of T0 * (T1 * T)])%type :=
+  pairA \o rpair T t.
+Arguments pairAr {d} T.
+
+Lemma mpairAr d (T : measurableType d) t : measurable_fun setT (pairAr T t).
+Proof. exact: measurableT_comp. Qed.
+
+Definition pairAAr : ([the measurableType _ of T0 * T1 * T2] ->
+    [the measurableType _ of T0 * (T1 * (T2 * munit))])%type :=
+  pairA \o pairA \o rpair munit tt.
+
+Lemma mpairAAr : measurable_fun setT pairAAr.
+Proof. by do 2 apply: measurableT_comp => //. Qed.
+
+Definition pairAAAr : ([the measurableType _ of T0 * T1 * T2 * T3] ->
+    [the measurableType _ of T0 * (T1 * (T2 * (T3 * munit)))])%type :=
+  pairA \o pairA \o pairA \o rpair munit tt.
+
+Lemma mpairAAAr : measurable_fun setT pairAAAr.
+Proof. by do 3 apply: measurableT_comp => //. Qed.
+
+Definition pairAArAi : ([the measurableType _ of T0 * (T1 * T2)] ->
+    [the measurableType _ of T0 * (T1 * (T2 * munit))])%type :=
+  pairAAr \o pairAi.
+
+Lemma mpairAArAi : measurable_fun setT pairAArAi.
+Proof. by apply: measurableT_comp => //=; exact: mpairAAr. Qed.
+
+Definition pairAAArAAi : ([the measurableType _ of T3 * (T0 * (T1 * T2))] ->
+    [the measurableType _ of T3 * (T0 * (T1 * (T2 * munit)))])%type :=
+  pairA \o pairA \o pairA \o rpair munit tt \o pairAi \o pairAi.
+
+Lemma mpairAAARAAAi : measurable_fun setT pairAAArAAi.
+Proof. by do 5 apply: measurableT_comp => //=. Qed.
+
+End rpair_pairA_comp.
+Arguments pairAr {d0 d1 T0 T1 d} T.
+Arguments pairAAr {d0 d1 d2 T0 T1 T2}.
+Arguments pairAAAr {d0 d1 d2 d3 T0 T1 T2 T3}.
+Arguments pairAArAi {d0 d1 d2 T0 T1 T2}.
+Arguments pairAAArAAi {d0 d1 d2 d3 T0 T1 T2 T3}.
+
+Section accessor_functions.
+Import Notations.
+Context d0 d1 d2 d3 (T0 : measurableType d0) (T1 : measurableType d1)
+  (T2 : measurableType d2) (T3 : measurableType d3) (R : realType).
+
+Definition Of2 := [:: existT _ _ T0; existT _ _ T1].
+
+Definition acc0of2 : [the measurableType _ of (T0 * T1)%type] -> T0 :=
+  @acc Of2 0 \o pairAr munit tt.
+
+Lemma macc0of2 : measurable_fun setT acc0of2.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of2 0)|exact: mpairAr].
+Qed.
+
+Definition acc1of2 : [the measurableType _ of (T0 * T1)%type] -> T1 :=
+  acc Of2 1 \o pairAr munit tt.
+
+Lemma macc1of2 : measurable_fun setT acc1of2.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of2 1)|exact: mpairAr].
+Qed.
+
+Definition Of3 := [:: existT _ _ T0; existT _ _ T1; existT _ d2 T2].
+
+Definition acc1of3 : [the measurableType _ of (T0 * T1 * T2)%type] -> T1 :=
+  acc Of3 1 \o pairAAr.
+
+Lemma macc1of3 : measurable_fun setT acc1of3.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of3 1)|exact: mpairAAr].
+Qed.
+
+Definition acc2of3 : [the measurableType _ of (T0 * T1 * T2)%type] -> T2 :=
+  acc Of3 2 \o pairAAr.
+
+Lemma macc2of3 : measurable_fun setT acc2of3.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of3 2)|exact: mpairAAr].
+Qed.
+
+Definition acc0of3' : [the measurableType _ of (T0 * (T1 * T2))%type] -> T0 :=
+  acc Of3 0 \o pairAArAi.
+
+Lemma macc0of3' : measurable_fun setT acc0of3'.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of3 0)|exact: mpairAArAi].
+Qed.
+
+Definition acc1of3' : [the measurableType _ of (T0 * (T1 * T2))%type] -> T1 :=
+  acc Of3 1 \o pairAArAi.
+
+Lemma macc1of3' : measurable_fun setT acc1of3'.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of3 1)|exact: mpairAArAi].
+Qed.
+
+Definition acc2of3' : [the measurableType _ of (T0 * (T1 * T2))%type] -> T2 :=
+  acc Of3 2 \o pairAArAi.
+
+Lemma macc2of3' : measurable_fun setT acc2of3'.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of3 2)|exact: mpairAArAi].
+Qed.
+
+Definition Of4 :=
+  [:: existT _ _ T0; existT _ _ T1; existT _ d2 T2; existT _ d3 T3].
+
+Definition acc1of4 : [the measurableType _ of (T0 * T1 * T2 * T3)%type] -> T1 :=
+  acc Of4 1 \o pairAAAr.
+
+Lemma macc1of4 : measurable_fun setT acc1of4.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of4 1)|exact: mpairAAAr].
+Qed.
+
+Definition acc2of4' :
+    [the measurableType _ of (T0 * (T1 * (T2 * T3)))%type] -> T2 :=
+  acc Of4 2 \o pairAAArAAi.
+
+Lemma macc2of4' : measurable_fun setT acc2of4'.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of4 2)|exact: mpairAAARAAAi].
+Qed.
+
+Definition acc3of4 : [the measurableType _ of (T0 * T1 * T2 * T3)%type] -> T3 :=
+  acc Of4 3 \o pairAAAr.
+
+Lemma macc3of4 : measurable_fun setT acc3of4.
+Proof.
+by apply: measurableT_comp; [exact: (measurable_acc Of4 3)|exact: mpairAAAr].
+Qed.
+
+End accessor_functions.
+Arguments macc0of2 {d0 d1 _ _}.
+Arguments macc1of2 {d0 d1 _ _}.
+Arguments macc0of3' {d0 d1 d2 _ _ _}.
+Arguments macc1of3 {d0 d1 d2 _ _ _}.
+Arguments macc1of3' {d0 d1 d2 _ _ _}.
+Arguments macc2of3 {d0 d1 d2 _ _ _}.
+Arguments macc2of3' {d0 d1 d2 _ _ _}.
+Arguments macc1of4 {d0 d1 d2 d3 _ _ _ _}.
+Arguments macc2of4' {d0 d1 d2 d3 _ _ _ _}.
+Arguments macc3of4 {d0 d1 d2 d3 _ _ _ _}.
 
 Section insn1_lemmas.
 Import Notations.
@@ -567,10 +884,12 @@ Qed.
 Lemma scoreE d' (T' : measurableType d') (x : T * T') (U : set T') (f : R -> R)
     (r : R) (r0 : (0 <= r)%R)
     (f0 : (forall r, 0 <= r -> 0 <= f r)%R) (mf : measurable_fun setT f) :
-  score (measurableT_comp mf var2of2)
+  score (measurableT_comp mf (@macc1of2 _ _ _ _))
     (x, r) (curry (snd \o fst) x @^-1` U) =
   (f r)%:E * \d_x.2 U.
-Proof. by rewrite /score/= /mscale/= ger0_norm// f0. Qed.
+Proof.
+by rewrite /score/= /mscale/= ger0_norm//= f0.
+Qed.
 
 Lemma score_score (f : R -> R) (g : R * unit -> R)
     (mf : measurable_fun setT f)
@@ -583,13 +902,11 @@ rewrite {1}/letin; unlock.
 by rewrite kcomp_scoreE/= /mscale/= diracE normrM muleA EFinM.
 Qed.
 
-Import Notations.
-
 (* hard constraints to express score below 1 *)
 Lemma score_fail (r : {nonneg R}) (r1 : (r%:num <= 1)%R) :
   score (kr r%:num) =
-  letin (sample [the probability _ _ of bernoulli r1] : R.-pker T ~> _)
-        (ite var2of2 (ret ktt) fail).
+  letin (sample_cst (bernoulli r1) : R.-pker T ~> _)
+        (ite (@macc1of2 _ _ _ _) (ret ktt) fail).
 Proof.
 apply/eq_sfkernel => x U.
 rewrite letinE/= /sample; unlock.
@@ -603,7 +920,8 @@ End insn1_lemmas.
 Section letin_ite.
 Context d d2 d3 (T : measurableType d) (T2 : measurableType d2)
   (Z : measurableType d3) (R : realType).
-Variables  (k1 k2 : R.-sfker T ~> Z) (u : R.-sfker [the measurableType _ of (T * Z)%type] ~> T2)
+Variables (k1 k2 : R.-sfker T ~> Z)
+  (u : R.-sfker [the measurableType _ of (T * Z)%type] ~> T2)
   (f : T -> bool) (mf : measurable_fun setT f)
   (t : T) (U : set T2).
 
@@ -693,10 +1011,10 @@ HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ Y R
 Lemma letinC z A : measurable A ->
   letin t
   (letin u'
-  (ret (measurable_fun_prod var2of3 var3of3))) z A =
+  (ret (measurable_fun_prod macc1of3 macc2of3))) z A =
   letin u
   (letin t'
-  (ret (measurable_fun_prod var3of3 var2of3))) z A.
+  (ret (measurable_fun_prod macc2of3 macc1of3))) z A.
 Proof.
 move=> mA.
 rewrite !letinE.
@@ -746,29 +1064,36 @@ End constants.
 Arguments p12 {R}.
 Arguments p14 {R}.
 Arguments p27 {R}.
+Arguments p1S {R}.
 
 Section poisson.
 Variable R : realType.
 Local Open Scope ring_scope.
 
 (* density function for Poisson *)
-Definition poisson k r : R := r ^+ k / k`!%:R^-1 * expR (- r).
+Definition poisson k r : R :=
+  if r > 0 then r ^+ k / k`!%:R^-1 * expR (- r) else 1%:R.
 
-Lemma poisson_ge0 k r : 0 <= r -> 0 <= poisson k r.
+Lemma poisson_ge0 k r : 0 <= poisson k r.
 Proof.
-move=> r0; rewrite /poisson mulr_ge0 ?expR_ge0//.
-by rewrite mulr_ge0// exprn_ge0.
+rewrite /poisson; case: ifPn => r0//.
+by rewrite mulr_ge0 ?expR_ge0// mulr_ge0// exprn_ge0 ?ltW.
 Qed.
 
 Lemma poisson_gt0 k r : 0 < r -> 0 < poisson k.+1 r.
 Proof.
-move=> r0; rewrite /poisson mulr_gt0 ?expR_gt0//.
+move=> r0; rewrite /poisson r0 mulr_gt0  ?expR_gt0//.
 by rewrite divr_gt0// ?exprn_gt0// invr_gt0 ltr0n fact_gt0.
 Qed.
 
-Lemma mpoisson k : measurable_fun setT (poisson k).
+Lemma measurable_poisson k : measurable_fun setT (poisson k).
 Proof.
-by apply: measurable_funM => /=; [exact: measurable_funM|exact: measurableT_comp].
+rewrite /poisson; apply: measurable_fun_if => //.
+  apply: (measurable_fun_bool true).
+  rewrite (_ : _ @^-1` _ = `]0, +oo[%classic)//.
+  by apply/seteqP; split => x /=; rewrite in_itv/= andbT.
+by apply: measurable_funM => /=;
+  [exact: measurable_funM|exact: measurableT_comp].
 Qed.
 
 Definition poisson3 := poisson 4 3%:R. (* 0.168 *)
@@ -800,7 +1125,7 @@ End exponential.
 Lemma letin_sample_bernoulli d d' (T : measurableType d)
     (T' : measurableType d') (R : realType)(r : {nonneg R}) (r1 : (r%:num <= 1)%R)
     (u : R.-sfker [the measurableType _ of (T * bool)%type] ~> T') x y :
-  letin (sample [the probability _ _ of bernoulli r1]) u x y =
+  letin (sample_cst (bernoulli r1)) u x y =
   r%:num%:E * u (x, true) y + (`1- (r%:num))%:E * u (x, false) y.
 Proof.
 rewrite letinE/=.
@@ -814,8 +1139,8 @@ Context d (T : measurableType d) (R : realType).
 
 Definition sample_and_return : R.-sfker T ~> _ :=
   letin
-    (sample [the probability _ _ of bernoulli p27]) (* T -> B *)
-    (ret var2of2) (* T * B -> B *).
+    (sample_cst [the probability _ _ of bernoulli p27]) (* T -> B *)
+    (ret macc1of2) (* T * B -> B *).
 
 Lemma sample_and_returnE t U : sample_and_return t U =
   (2 / 7%:R)%:E * \d_true U + (5%:R / 7%:R)%:E * \d_false U.
@@ -836,8 +1161,8 @@ Context d (T : measurableType d) (R : realType).
 
 Definition sample_and_branch : R.-sfker T ~> mR R :=
   letin
-    (sample [the probability _ _ of bernoulli p27]) (* T -> B *)
-    (ite var2of2 (ret k3) (ret k10)).
+    (sample_cst [the probability _ _ of bernoulli p27]) (* T -> B *)
+    (ite macc1of2 (ret k3) (ret k10)).
 
 Lemma sample_and_branchE t U : sample_and_branch t U =
   (2 / 7%:R)%:E * \d_(3%:R : R) U +
@@ -859,7 +1184,7 @@ Lemma measurable_fun_mand (x y : T * mbool * mbool -> mbool) :
   measurable_fun setT x -> measurable_fun setT y ->
   measurable_fun setT (mand x y).
 Proof.
-move=> /= mx my; apply: (@measurable_fun_bool _ _ _ _ true).
+move=> /= mx my; apply: (measurable_fun_bool true).
 rewrite [X in measurable X](_ : _ =
     (x @^-1` [set true]) `&` (y @^-1` [set true])); last first.
   by rewrite /mand; apply/seteqP; split => z/= /andP.
@@ -869,13 +1194,13 @@ apply: measurableI.
 Qed.
 
 Definition bernoulli_and : R.-sfker T ~> mbool :=
-    (letin (sample [the probability _ _ of bernoulli p12])
-     (letin (sample [the probability _ _ of bernoulli p12])
-        (ret (measurable_fun_mand var2of3 var3of3)))).
+    (letin (sample_cst [the probability _ _ of bernoulli p12])
+     (letin (sample_cst [the probability _ _ of bernoulli p12])
+        (ret (measurable_fun_mand macc1of3 macc2of3)))).
 
 Lemma bernoulli_andE t U :
   bernoulli_and t U =
-  sample [the probability _ _ of bernoulli p14] t U.
+  sample_cst (bernoulli p14) t U.
 Proof.
 rewrite /bernoulli_and 3!letin_sample_bernoulli/= /mand/= muleDr//= -muleDl//.
 rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
@@ -893,11 +1218,11 @@ Import Notations.
 Context d (T : measurableType d) (R : realType) (h : R -> R).
 Hypothesis mh : measurable_fun setT h.
 Definition kstaton_bus : R.-sfker T ~> mbool :=
-  letin (sample [the probability _ _ of bernoulli p27])
+  letin (sample_cst [the probability _ _ of bernoulli p27])
   (letin
-    (letin (ite var2of2 (ret k3) (ret k10))
-      (score (measurableT_comp mh var3of3)))
-    (ret var2of3)).
+    (letin (ite macc1of2 (ret k3) (ret k10))
+      (score (measurableT_comp mh macc2of3)))
+    (ret macc1of3)).
 
 Definition staton_bus := normalize kstaton_bus.
 
@@ -911,7 +1236,7 @@ Section staton_bus_poisson.
 Import Notations.
 Context d (T : measurableType d) (R : realType).
 Let poisson4 := @poisson R 4%N.
-Let mpoisson4 := @mpoisson R 4%N.
+Let mpoisson4 := @measurable_poisson R 4%N.
 
 Definition kstaton_bus_poisson : R.-sfker (mR R) ~> mbool :=
   kstaton_bus _ mpoisson4.
@@ -1001,3 +1326,574 @@ by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exp_density_gt0 ?ltr0n.
 Qed.
 
 End staton_bus_exponential.
+
+(* X + Y is a measurableType if X and Y are *)
+Canonical sum_pointedType (X Y : pointedType) :=
+  PointedType (X + Y) (@inl X Y point).
+
+Section measurable_sum.
+Context d d' (X : measurableType d) (Y : measurableType d').
+
+Definition measurable_sum : set (set (X + Y)) := setT.
+
+Let sum0 : measurable_sum set0. Proof. by []. Qed.
+
+Let sumC A : measurable_sum A -> measurable_sum (~` A). Proof. by []. Qed.
+
+Let sumU (F : (set (X + Y))^nat) : (forall i, measurable_sum (F i)) ->
+  measurable_sum (\bigcup_i F i).
+Proof. by []. Qed.
+
+HB.instance Definition _ := @isMeasurable.Build default_measure_display (X + Y)%type
+  (Pointed.class _) measurable_sum sum0 sumC sumU.
+
+End measurable_sum.
+
+Lemma measurable_fun_sum dA dB d' (A : measurableType dA) (B : measurableType dB)
+    (Y : measurableType d') (f : A -> Y) (g : B -> Y) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (fun tb : A + B =>
+    match tb with inl a => f a | inr b => g b end).
+Proof.
+move=> mx my/= _ Z mZ /=; rewrite setTI /=.
+rewrite (_ : _ @^-1` Z = inl @` (f @^-1` Z) `|` inr @` (g @^-1` Z)).
+  exact: measurableU.
+apply/seteqP; split.
+  by move=> [a Zxa|b Zxb]/=; [left; exists a|right; exists b].
+by move=> z [/= [a Zxa <-//=]|]/= [b Zyb <-//=].
+Qed.
+
+(* TODO: measurable_fun_if_pair -> measurable_fun_if_pair_bool? *)
+Lemma measurable_fun_if_pair_nat d d' (X : measurableType d)
+    (Y : measurableType d') (f g : X -> Y) (n : nat) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (fun xn => if xn.2 == n then f xn.1 else g xn.1).
+Proof.
+move=> mx my; apply: measurable_fun_ifT => //=.
+- have h : measurable_fun [set: nat] (fun t => t == n) by [].
+  exact: (@measurableT_comp _ _ _ _ _ _ _ _ _ h).
+- exact: measurableT_comp.
+- exact: measurableT_comp.
+Qed.
+
+Module CASE_NAT.
+Section case_nat.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+
+Section case_nat_ker.
+Variable k : R.-ker X ~> Y.
+
+Definition case_nat_ j : X * nat -> {measure set Y -> \bar R} :=
+  fun xn => if xn.2 == j then k xn.1 else [the measure _ _ of mzero].
+
+Let measurable_fun_case_nat_ m U : measurable U ->
+  measurable_fun setT (case_nat_ m ^~ U).
+Proof.
+move=> mU; rewrite /case_nat_ (_ : (fun _ => _) =
+    (fun x => if x.2 == m then k x.1 U else mzero U)) /=; last first.
+  by apply/funext => -[t b]/=; case: ifPn.
+apply: (@measurable_fun_if_pair_nat _ _ _ _ (k ^~ U) (fun=> mzero U)) => //.
+exact/measurable_kernel.
+Qed.
+
+#[export]
+HB.instance Definition _ j := isKernel.Build _ _ _ _ _
+  (case_nat_ j) (measurable_fun_case_nat_ j).
+End case_nat_ker.
+
+Section sfcase_nat.
+Variable k : R.-sfker X ~> Y.
+
+Let sfcase_nat_ j  : exists2 k_ : (R.-ker _ ~> _)^nat,
+  forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U -> case_nat_ k j x U = mseries (k_ ^~ x) 0 U.
+Proof.
+have [k_ hk /=] := sfinite_kernel k.
+exists (fun n => [the _.-ker _ ~> _ of case_nat_ (k_ n) j]) => /=.
+  move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
+  exists r%:num => /= -[x [|n']]; rewrite /case_nat_//= /mzero//.
+    by case: ifPn => //= ?; rewrite /mzero.
+  by case: ifPn => // ?; rewrite /= /mzero.
+move=> [x b] U mU; rewrite /case_nat_; case: ifPn => hb; first by rewrite hk.
+by rewrite /mseries eseries0.
+Qed.
+
+#[export]
+HB.instance Definition _ j := @Kernel_isSFinite_subdef.Build _ _ _ _ _
+  (case_nat_ k j) (sfcase_nat_ j).
+End sfcase_nat.
+
+Section fkcase_nat.
+Variable k : R.-fker X ~> Y.
+
+Let case_nat_uub (m : nat) : measure_fam_uub (case_nat_ k m).
+Proof.
+have /measure_fam_uubP[M hM] := measure_uub k.
+exists M%:num => /= -[]; rewrite /case_nat_ => t [|m']/=.
+  by case: ifPn => //= ?; rewrite /mzero//=.
+by case: ifPn => //= ?; rewrite /mzero//=.
+Qed.
+
+#[export]
+HB.instance Definition _ j := Kernel_isFinite.Build _ _ _ _ _
+  (case_nat_ k j) (case_nat_uub j).
+End fkcase_nat.
+
+End case_nat.
+End CASE_NAT.
+
+Import CASE_NAT.
+
+Section case_nat.
+Context d d' (T : measurableType d) (T' : measurableType d') (R : realType).
+
+Import CASE_NAT.
+
+(* case analysis on the nat datatype *)
+Definition case_nat (t : R.-sfker T ~> nat) (u_ : (R.-sfker T ~> T')^nat)
+    : R.-sfker T ~> T' :=
+  [the R.-sfker T ~> nat of t] \;
+  [the R.-sfker T * nat ~> T' of
+    kseries (fun n => [the R.-sfker T * nat ~> T' of case_nat_ (u_ n) n])].
+
+End case_nat.
+
+Definition measure_sum_display :
+  (measure_display * measure_display) -> measure_display.
+Proof. exact. Qed.
+
+Definition image_classes d1 d2
+    (T1 : measurableType d1) (T2 : measurableType d2) (T : Type)
+    (f1 : T1 -> T) (f2 : T2 -> T)  :=
+  <<s image_class setT f1 measurable `|`
+      image_class setT f2 measurable >>.
+
+Section sum_salgebra_instance.
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
+Let f1 : T1 -> T1 + T2 := @inl T1 T2.
+Let f2 : T2 -> T1 + T2 := @inr T1 T2.
+
+Lemma sum_salgebra_set0 : image_classes f1 f2 (set0 : set (T1 + T2)).
+Proof. exact: sigma_algebra0. Qed.
+
+Lemma sum_salgebra_setC A : image_classes f1 f2 A ->
+  image_classes f1 f2 (~` A).
+Proof. exact: sigma_algebraC. Qed.
+
+Lemma sum_salgebra_bigcup (F : _^nat) : (forall i, image_classes f1 f2 (F i)) ->
+  image_classes f1 f2 (\bigcup_i (F i)).
+Proof. exact: sigma_algebra_bigcup. Qed.
+
+HB.instance Definition sum_salgebra_mixin :=
+  @isMeasurable.Build (measure_sum_display (d1, d2))
+    (T1 + T2)%type (Pointed.class _) (image_classes f1 f2)
+    (sum_salgebra_set0) (sum_salgebra_setC) (sum_salgebra_bigcup).
+
+End sum_salgebra_instance.
+Reserved Notation "p .-sum" (at level 1, format "p .-sum").
+Reserved Notation "p .-sum.-measurable"
+ (at level 2, format "p .-sum.-measurable").
+Notation "p .-sum" := (measure_sum_display p) : measure_display_scope.
+Notation "p .-sum.-measurable" :=
+  ((p.-sum).-measurable : set (set (_ + _))) :
+    classical_set_scope.
+
+Module CASE_SUM.
+
+Section case_suml.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Let A : measurableType _ := unit.
+
+Section kcase_suml.
+Variable k : R.-ker X ~> Y.
+
+Definition case_suml (a : A) : X * A -> {measure set Y -> \bar R} :=
+  fun xa => k xa.1.
+
+Let measurable_fun_case_suml a U : measurable U ->
+  measurable_fun setT (case_suml a ^~ U).
+Proof.
+move=> /= mU; rewrite /case_suml.
+have h := measurable_kernel k _ mU.
+rewrite (_ : (fun x : X * unit => k x.1 U) = (fun x : X => k x U) \o fst) //.
+by apply: measurableT_comp => //.
+Qed.
+
+#[export]
+HB.instance Definition _ a := isKernel.Build _ _ _ _ _
+  (case_suml a) (measurable_fun_case_suml a).
+End kcase_suml.
+
+Section sfkcase_suml.
+Variable k : R.-sfker X ~> Y.
+
+Let sfinite_case_suml (a : A) : exists2 k_ : (R.-ker _ ~> _)^nat,
+  forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U -> case_suml k a x U = mseries (k_ ^~ x) 0 U.
+Proof.
+have [k_ hk /=] := sfinite_kernel k.
+exists (fun n => [the _.-ker _ ~> _ of case_suml (k_ n) a]) => /=.
+  move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
+  by exists r%:num => /= -[x []]; rewrite /case_suml//= /mzero//.
+move=> [x b] U mU; rewrite /case_suml /=.
+by rewrite /mseries hk.
+Qed.
+
+#[export]
+HB.instance Definition _ (a : A) := @Kernel_isSFinite_subdef.Build _ _ _ _ _
+  (case_suml k a) (sfinite_case_suml a).
+End sfkcase_suml.
+
+Section fkcase_suml.
+Variable k : R.-fker X ~> Y.
+
+Let case_suml_uub (a : A) : measure_fam_uub (case_suml k a).
+Proof.
+have /measure_fam_uubP[M hM] := measure_uub k.
+by exists M%:num => /= -[]; rewrite /case_suml.
+Qed.
+
+#[export]
+HB.instance Definition _ a := Kernel_isFinite.Build _ _ _ _ _
+  (case_suml k a) (case_suml_uub a).
+End fkcase_suml.
+
+End case_suml.
+
+Section case_sumr.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Let B : measurableType _ := bool.
+
+Section kcase_sumr.
+Variable k : R.-ker X ~> Y.
+
+Definition case_sumr (b : B) : X * B -> {measure set Y -> \bar R} :=
+  fun xa => if xa.2 == b then k xa.1 else [the measure _ _ of mzero].
+
+Let measurable_fun_case_sumr b U : measurable U ->
+  measurable_fun setT (case_sumr b ^~ U).
+Proof.
+move=> /= mU; rewrite /case_suml.
+have h := measurable_kernel k _ mU.
+rewrite /case_sumr.
+rewrite (_ : (fun x : X * bool => case_sumr b x U) =
+  (fun x : X * bool => (if x.2 == b then k x.1 U else [the {measure set Y -> \bar R} of mzero] U))); last first.
+  apply/funext => x.
+  rewrite /case_sumr.
+  by case: ifPn.
+apply: measurable_fun_ifT => //=.
+  rewrite (_ : (fun t : X * bool => t.2 == b) = (fun t : bool => t == b) \o snd)//.
+  apply: measurableT_comp => //.
+rewrite (_ : (fun t : X * bool => k t.1 U) = (fun t : X => k t U) \o fst)//.
+by apply: measurableT_comp => //.
+Qed.
+
+#[export]
+HB.instance Definition _ b := isKernel.Build _ _ _ _ _
+  (case_sumr b) (measurable_fun_case_sumr b).
+End kcase_sumr.
+
+Section sfkcase_sumr.
+Variable k : R.-sfker X ~> Y.
+
+Let sfinite_case_sumr b : exists2 k_ : (R.-ker _ ~> _)^nat,
+  forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U -> case_sumr k b x U = mseries (k_ ^~ x) 0 U.
+Proof.
+have [k_ hk /=] := sfinite_kernel k.
+exists (fun n => [the _.-ker _ ~> _ of case_sumr (k_ n) b]) => /=.
+  move=> n; have /measure_fam_uubP[r k_r] := measure_uub (k_ n).
+  by exists r%:num => /= -[x []]; rewrite /case_sumr//=; case: ifPn => // _;
+    rewrite /= (le_lt_trans _ (k_r x))// /mzero//.
+move=> [x [|]] U mU; rewrite /case_sumr /=; case: b => //=; rewrite ?hk//;
+by rewrite /mseries/= eseries0.
+Qed.
+
+#[export]
+HB.instance Definition _ b := @Kernel_isSFinite_subdef.Build _ _ _ _ _
+  (case_sumr k b) (sfinite_case_sumr b).
+End sfkcase_sumr.
+
+Section fkcase_sumr.
+Variable k : R.-fker X ~> Y.
+
+Let case_sumr_uub b : measure_fam_uub (case_sumr k b).
+Proof.
+have /measure_fam_uubP[M hM] := measure_uub k.
+by exists M%:num => /= -[]; rewrite /case_sumr => x [|] /=; case: b => //=;
+  rewrite (le_lt_trans _ (hM x))// /mzero.
+Qed.
+
+#[export]
+HB.instance Definition _ b := Kernel_isFinite.Build _ _ _ _ _
+  (case_sumr k b) (case_sumr_uub b).
+End fkcase_sumr.
+
+End case_sumr.
+End CASE_SUM.
+
+Section case_sum'.
+
+Section kcase_sum'.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Let A : measurableType _ := unit.
+Let B : measurableType _ := bool.
+Variables (k : (A + B)%type -> R.-sfker X ~> Y).
+
+Definition case_sum' : X * (A + B)%type -> {measure set Y -> \bar R} :=
+  fun xab => match xab with
+             | (x, inl a) => CASE_SUM.case_suml (k xab.2) a (x, a)
+             | (x, inr b) => CASE_SUM.case_sumr (k xab.2) b (x, b)
+             end.
+
+Let measurable_fun_case_sum' U : measurable U ->
+  measurable_fun setT (case_sum' ^~ U).
+Proof.
+rewrite /= => mU.
+apply: (measurability (ErealGenInftyO.measurableE R)) => //.
+move=> /= _ [_ [x ->] <-]; apply: measurableI => //.
+rewrite /case_sum' /CASE_SUM.case_suml /CASE_SUM.case_sumr /=.
+rewrite (_ :
+  (fun x : X * (unit + bool) => (let (x0, s) := x in
+   match s with inl _ => k x.2 x0 | inr b => if b == b then k x.2 x0 else mzero
+   end) U) =
+  (fun x : X * (unit + bool) => k x.2 x.1 U)); last first.
+  by apply/funext => -[x1 [a|b]] //; rewrite eqxx.
+rewrite (_ : _ @^-1` _ =
+  ([set x1 | k (inl tt) x1 U < x%:E] `*` inl @` [set tt]) `|`
+  ([set x1 | k (inr false) x1 U < x%:E] `*` inr @` [set false]) `|`
+  ([set x1 | k (inr true) x1 U < x%:E] `*` inr @` [set true])); last first.
+  apply/seteqP; split.
+  - move=> z /=; rewrite in_itv/=; move: z => [z [[]|[|]]]//= ?.
+    + by do 2 left; split => //; exists tt.
+    + by right; split => //; exists true.
+    + by left; right; split => //; exists false.
+  - move=> z /=; rewrite in_itv/=; move: z => [z [[]|[|]]]//=.
+    - move=> [[[]//|]|].
+      + by move=> [_ []].
+      + by move=> [_ []].
+    - move=> [[|]|[]//].
+      + by move=> [_ []].
+      + by move=> [_ [] [|]].
+    - move=> [[|[]//]|].
+      + by move=> [_ []].
+      + by move=> [_ [] [|]].
+pose h1 := [set xub : X * (unit + bool) | k (inl tt) xub.1 U < x%:E].
+have mh1 : measurable h1.
+  rewrite -[X in measurable X]setTI; apply: emeasurable_fun_infty_o => //=.
+  have H : measurable_fun [set: X] (fun x => k (inl tt) x U) by exact/measurable_kernel.
+  move=> _ /= C mC; rewrite setTI.
+  have := H measurableT _ mC; rewrite setTI => {}H.
+  rewrite [X in measurable X](_ : _ = ((fun x => k (inl tt) x U) @^-1` C) `*` setT)//.
+    exact: measurableM.
+  by apply/seteqP; split => [z//=| z/= []].
+set h2 := [set xub : X * (unit + bool)| k (inr false) xub.1 U < x%:E].
+have mh2 : measurable h2.
+  rewrite -[X in measurable X]setTI.
+  apply: emeasurable_fun_infty_o => //=.
+  have H : measurable_fun [set: X] (fun x => k (inr false) x U) by exact/measurable_kernel.
+  move=> _ /= C mC; rewrite setTI.
+  have := H measurableT _ mC; rewrite setTI => {}H.
+  rewrite [X in measurable X](_ : _ = ((fun x => k (inr false) x U) @^-1` C) `*` setT)//.
+    exact: measurableM.
+  by apply/seteqP; split => [z //=|z/= []].
+set h3 := [set xub : X * (unit + bool)| k (inr true) xub.1 U < x%:E].
+have mh3 : measurable h3.
+  rewrite -[X in measurable X]setTI.
+  apply: emeasurable_fun_infty_o => //=.
+  have H : measurable_fun [set: X] (fun x => k (inr true) x U) by exact/measurable_kernel.
+  move=> _ /= C mC; rewrite setTI.
+  have := H measurableT _ mC; rewrite setTI => {}H.
+  rewrite [X in measurable X](_ : _ = ((fun x => k (inr true) x U) @^-1` C) `*` setT)//.
+    exact: measurableM.
+  by apply/seteqP; split=> [z//=|z/= []].
+apply: measurableU.
+- apply: measurableU.
+  + apply: measurableM => //.
+    rewrite [X in measurable X](_ : _ = ysection h1 (inl tt))//.
+    * by apply: measurable_ysection.
+    * by apply/seteqP; split => z /=; rewrite /ysection /= inE.
+  + apply: measurableM => //.
+    rewrite [X in measurable X](_ : _ = ysection h2 (inr false))//.
+    * by apply: measurable_ysection.
+    * by apply/seteqP; split => z /=; rewrite /ysection /= inE.
+- apply: measurableM => //.
+  rewrite [X in measurable X](_ : _ = ysection h3 (inr true))//.
+  + by apply: measurable_ysection.
+  + by apply/seteqP; split => z /=; rewrite /ysection /= inE.
+Qed.
+
+#[export]
+HB.instance Definition _ := isKernel.Build _ _ _ _ _
+  (case_sum') (measurable_fun_case_sum').
+End kcase_sum'.
+
+Section sfkcase_sum'.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Let A : measurableType _ := unit.
+Let B : measurableType _ := bool.
+Variables (k : (A + B)%type -> R.-sfker X ~> Y).
+
+Let sfinite_case_sum' : exists2 k_ : (R.-ker _ ~> _)^nat,
+  forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U -> case_sum' k x U = mseries (k_ ^~ x) 0 U.
+Proof.
+rewrite /=.
+set f : A + B -> (R.-fker _ ~> _)^nat :=
+  fun ab : A + B => sval (cid (sfinite_kernel (k ab))).
+set Hf := fun ab : A + B => svalP (cid (sfinite_kernel (k ab))).
+rewrite /= in Hf.
+exists (fun n => [the R.-ker _ ~> _ of case_sum' (fun ab => [the R.-fker _ ~> _ of f ab n])]).
+  move=> n /=.
+  have [rtt Hrtt] := measure_uub (f (inl tt) n).
+  have [rfalse Hrfalse] := measure_uub (f (inr false) n).
+  have [rtrue Hrtrue] := measure_uub (f (inr true) n).
+  exists (maxr rtt (maxr rfalse rtrue)) => //= -[x [[]|[|]]] /=.
+  by rewrite 2!EFin_max lt_maxr Hrtt.
+  by rewrite /CASE_SUM.case_sumr /= 2!EFin_max 2!lt_maxr Hrtrue 2!orbT.
+  by rewrite /CASE_SUM.case_sumr /= 2!EFin_max 2!lt_maxr Hrfalse orbT.
+move=> [x [[]|[|]]] U mU/=-.
+by rewrite (Hf (inl tt) x _ mU).
+by rewrite (Hf (inr true) x _ mU).
+by rewrite (Hf (inr false) x _ mU).
+Qed.
+
+#[export]
+HB.instance Definition _ := @Kernel_isSFinite_subdef.Build _ _ _ _ _
+  (case_sum' k) (sfinite_case_sum').
+End sfkcase_sum'.
+
+End case_sum'.
+
+Section case_sum.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Let A : measurableType _ := unit.
+Let B : measurableType _ := bool.
+
+Import CASE_SUM.
+
+(* case analysis on the datatype unit + bool *)
+Definition case_sum (f : R.-sfker X ~> (A + B)%type)
+    (k : (A + B)%type-> R.-sfker X ~> Y) : R.-sfker X ~> Y :=
+  [the R.-sfker X ~> (A + B)%type of f] \;
+  [the R.-sfker X * (A + B) ~> Y of case_sum' k].
+
+End case_sum.
+
+(* counting measure as a kernel *)
+Section kcounting.
+Context d (G : measurableType d) (R : realType).
+
+Definition kcounting : G -> {measure set nat -> \bar R} := fun=> counting.
+
+Let mkcounting U : measurable U -> measurable_fun setT (kcounting ^~ U).
+Proof. by []. Qed.
+
+HB.instance Definition _ := isKernel.Build _ _ _ _ _ kcounting mkcounting.
+
+Let sfkcounting : exists2 k_ : (R.-ker _ ~> _)^nat,
+  forall n, measure_fam_uub (k_ n) &
+  forall x U, measurable U -> kcounting x U = mseries (k_ ^~ x) 0 U.
+Proof.
+exists (fun n => [the R.-fker _ ~> _ of
+  @kdirac _ _ G nat R _ (@measurable_cst _ _ _ _ setT n)]).
+  by move=> n /=; exact: measure_uub.
+by move=> g U mU; rewrite /kcounting/= counting_dirac.
+Qed.
+
+HB.instance Definition _ :=
+  Kernel_isSFinite_subdef.Build _ _ _ _ R kcounting sfkcounting.
+
+End kcounting.
+
+(* formalization of the iterate construct of Staton ESOP 2017, Sect. 4.2 *)
+Section iterate.
+Context d {G : measurableType d} {R : realType}.
+Let A : measurableType _ := unit.
+Let B : measurableType _ := bool.
+
+(* formalization of iterate^n
+   Gamma |-p iterate^n t from x = u : B *)
+Variables (t : R.-sfker (G * A) ~> (A + B)%type)
+          (u : G -> A) (mu : measurable_fun setT u).
+
+Fixpoint iterate_ n : R.-sfker G ~> B :=
+  match n with
+  | 0%N => case_sum (letin (ret mu) t)
+             (fun x => match x with
+                       | inl a => fail
+                       | inr b => ret (measurable_cst b)
+                       end)
+  | m.+1 => case_sum (letin (ret mu) t)
+              (fun x => match x with
+                        | inl a => iterate_ m
+                        | inr b => fail
+                        end)
+  end.
+
+(* formalization of iterate (A = unit, B = bool)
+ Gamma, x : A |-p t : A + B    Gamma |-d u : A
+-----------------------------------------------
+    Gamma |-p iterate t from x = u : B *)
+Definition iterate : R.-sfker G ~> B := case_nat (kcounting R) iterate_.
+
+End iterate.
+
+(* an s-finite kernel to test that two expressions are different *)
+Section lift_neq.
+Context {R : realType} d (G : measurableType d).
+Variables (f : G -> bool) (g : G -> bool).
+
+Definition flift_neq  : G -> bool := fun x' => f x' != g x'.
+
+Hypotheses (mf : measurable_fun setT f) (mg : measurable_fun setT g).
+
+(* see also emeasurable_fun_neq *)
+Lemma measurable_fun_flift_neq : measurable_fun setT flift_neq.
+Proof.
+apply: (measurable_fun_bool true).
+rewrite /flift_neq /= (_ : _ @^-1` _ = ([set x | f x] `&` [set x | ~~ g x]) `|`
+                                       ([set x | ~~ f x] `&` [set x | g x])).
+  apply: measurableU; apply: measurableI.
+  - by rewrite -[X in measurable X]setTI; exact: mf.
+  - rewrite [X in measurable X](_ : _ = ~` [set x | g x]); last first.
+      by apply/seteqP; split => x /= /negP.
+    by apply: measurableC; rewrite -[X in measurable X]setTI; exact: mg.
+  - rewrite [X in measurable X](_ : _ = ~` [set x | f x]); last first.
+      by apply/seteqP; split => x /= /negP.
+    by apply: measurableC; rewrite -[X in measurable X]setTI; exact: mf.
+  - by rewrite -[X in measurable X]setTI; exact: mg.
+by apply/seteqP; split => x /=; move: (f x) (g x) => [|] [|]//=; intuition.
+Qed.
+
+Definition lift_neq : R.-sfker G ~> bool := ret measurable_fun_flift_neq.
+
+End lift_neq.
+
+Section von_neumann_trick.
+Context d {T : measurableType d} {R : realType}.
+
+Definition kinrtt {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} :=
+  @measurable_cst _ _ T1 _ setT (@inl unit T2 tt).
+
+Definition finlb d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
+    : T1 * bool -> T2 + bool := fun t1b => inr t1b.2.
+
+Lemma minlb {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} :
+  measurable_fun setT (@finlb _ _ T1 T2).
+Proof. exact: measurableT_comp. Qed.
+
+Variable (D : pprobability bool R (* biased coin *)).
+
+Definition von_neumann_trick' : R.-sfker (T * unit) ~> (unit + bool)%type :=
+  letin (sample_cst D)
+    (letin (sample_cst D)
+      (letin (lift_neq macc1of3 macc2of3)
+        (ite (macc3of4)
+           (letin (ret macc1of4) (ret minlb))
+           (ret kinrtt)))).
+
+Definition von_neumann_trick : R.-sfker T ~> bool :=
+  iterate von_neumann_trick' ktt.
+
+End von_neumann_trick.
