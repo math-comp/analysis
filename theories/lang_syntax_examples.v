@@ -187,10 +187,11 @@ Import Notations.
 Context {R : realType}.
 
 Lemma exec_normalize_return g x r :
-  projT1 (@execD _ g _ [Normalize return r:R]) x = \d_r :> probability _ R.
+  projT1 (@execD _ g _ [Normalize return r:R]) x = 
+  @dirac _ (measurableTypeR R) r _ :> probability _ R.
+  (* TODO: try to use the notation \d_r *)
 Proof.
-rewrite execD_normalize_pt execP_return execD_real/=.
-exact: normalize_kdirac.
+by rewrite execD_normalize_pt execP_return execD_real//=; exact: normalize_kdirac.
 Qed.
 
 End trivial_example.
@@ -302,12 +303,6 @@ by congr (_ + _)%E; rewrite ?addeA !muleA -?muleDl//;
 congr (_ * _)%E; congr (_%:E); field.
 Qed.
 
-Definition sample_add_syntax0 : @exp R _ [::] _ :=
-  [let "x" := Sample {exp_bernoulli (1 / 2)%:nng (p1S 1)} in
-   let "y" := Sample {exp_bernoulli (1 / 2)%:nng (p1S 1)} in
-   let "z" := Sample {exp_bernoulli (1 / 2)%:nng (p1S 1)} in
-   return #{"x"} && #{"y"} && #{"z"}].
-
 End sample_pair.
 
 Section bernoulli_examples.
@@ -346,7 +341,7 @@ rewrite !integral_indic//= !iteE/= /mscale/=.
 rewrite setTI !diracT !mule1.
 rewrite ger0_norm//.
 rewrite -EFinD/= eqe ifF; last first.
-  by apply/negbTE/negP => /orP[/eqP|//]; rewrite /onem; lra.
+  apply/negbTE/negP => /orP[/eqP|//]; rewrite /onem. lra.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
@@ -452,6 +447,51 @@ Qed.
 
 End bernoulli_examples.
 
+Section binomial_examples.
+Context {R : realType}.
+Open Scope lang_scope.
+Open Scope ring_scope.
+
+Definition sample_binomial3 : @exp R _ [::] _ :=
+  [let "x" := Sample {exp_binomial 3 (1 / 2)%:nng (p1S 1)} in
+   return #{"x"}].
+
+Lemma exec_sample_binomial3 t U : measurable U ->
+  execP sample_binomial3 t U = ((1 / 8)%:E * \d_(0%:R : R) U +
+                                (3 / 8)%:E * \d_(1%:R : R) U +
+                                (3 / 8)%:E * \d_(2%:R : R) U +
+                                (1 / 8)%:E * \d_(3%:R : R) U)%E.
+Proof.
+move=> mU; rewrite /sample_binomial3 execP_letin execP_sample execP_return.
+rewrite exp_var'E (execD_var_erefl "x") !execD_binomial/=.
+rewrite letin'E ge0_integral_measure_sum//=; last first.
+  exact: measurable_fun_dirac.
+rewrite !big_ord_recl big_ord0 !ge0_integral_mscale//=; [|exact: measurable_fun_dirac..].
+rewrite !integral_dirac// /bump; [|exact: measurable_fun_dirac..].
+rewrite !binS/= !bin0 bin1 bin2 bin_small// addn0.
+rewrite expr0 mulr1 mul1r subn0.
+rewrite -2!addeA !mul1r.
+congr _%:E.
+rewrite indicT !mul1r.
+congr (_ + _).
+  congr (_ * _).
+  by field.
+congr (_ + _).
+  congr (_ * _).
+  rewrite expr1 /onem.
+  by field.
+congr (_ + _).
+  congr (_ * _).
+  rewrite /onem/=.
+  by field.
+rewrite addr0.
+congr (_ * _).
+rewrite /onem/=.
+by field.
+Qed.
+
+End binomial_examples.
+
 Section hard_constraint'.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 
@@ -475,7 +515,7 @@ Proof.
 apply/eq_sfkernel => x U.
 rewrite letin'E/= /sample; unlock.
 rewrite ge0_integral_measure_add//= ge0_integral_mscale//= ge0_integral_mscale//=.
-rewrite integral_dirac//= integral_dirac//= !diracT/= !mul1e.
+rewrite !integral_dirac//= !diracT/= !mul1e.
 by rewrite /mscale/= iteE//= iteE//= fail'E mule0 adde0 ger0_norm.
 Qed.
 
@@ -571,52 +611,21 @@ Local Open Scope lang_scope.
 Import Notations.
 Context {R : realType}.
 
-Section tests.
-
-Local Notation "$ str" := (@exp_var _ _ str%string _ erefl)
-  (in custom expr at level 1, format "$ str").
-
-Definition staton_bus_syntax0_generic (x r u : string)
-    (rx : infer (r != x)) (Rx : infer (u != x))
-    (ur : infer (u != r)) (xr : infer (x != r))
-    (xu : infer (x != u)) (ru : infer (r != u)) : @exp R P [::] _ :=
-  [let x := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
-   let r := if #x then return {3}:R else return {10}:R in
-   let u := Score {exp_poisson 4 [#r]} in
-   return #x].
-
-Fail Definition staton_bus_syntax0_generic' (x r u : string)
-    (rx : infer (r != x)) (Rx : infer (u != x))
-    (ur : infer (u != r)) (xr : infer (x != r))
-    (xu : infer (x != u)) (ru : infer (r != u)) : @exp R P [::] _ :=
-  [let x := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
-   let r := if $x then return {3}:R else return {10}:R in
-   let u := Score {exp_poisson 4 [$r]} in
-   return $x].
-
-Fail Definition staton_bus_syntax0' : @exp R _ [::] _ :=
-  [let "x" := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
-   let "r" := if ${"x"} then return {3}:R else return {10}:R in
-   let "_" := Score {exp_poisson 4 [${"r"}]} in
-   return ${"x"}].
-
 Definition staton_bus_syntax0 : @exp R _ [::] _ :=
   [let "x" := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
    let "r" := if #{"x"} then return {3}:R else return {10}:R in
    let "_" := Score {exp_poisson 4 [#{"r"}]} in
    return #{"x"}].
 
-End tests.
-
 Definition staton_bus_syntax := [Normalize {staton_bus_syntax0}].
 
 Let sample_bern : R.-sfker munit ~> mbool := sample_cst (bernoulli p27).
 
-Let ite_3_10 : R.-sfker mbool * munit ~> (mR R) :=
-  ite macc0of2 (ret k3) (ret k10).
+Let ite_3_10 : R.-sfker mbool * munit ~> measurableTypeR R :=
+  ite macc0of2 (@ret _ _ _ (measurableTypeR R) R _ (kr 3)) (@ret _ _ _ (measurableTypeR R) R _ (kr 10)).
 
-Let score_poisson4 : R.-sfker mR R * (mbool * munit) ~> munit :=
-  score (measurableT_comp (measurable_poisson 4) macc0of2).
+Let score_poisson4 : R.-sfker measurableTypeR R * (mbool * munit) ~> munit :=
+  score (measurableT_comp (measurable_poisson 4) (@macc0of2 _ _ (measurableTypeR R) _)).
 
 Let kstaton_bus' :=
   letin' sample_bern
@@ -703,11 +712,11 @@ Definition staton_busA_syntax : exp _ [::] _ :=
 
 Let sample_bern : R.-sfker munit ~> mbool := sample_cst (bernoulli p27).
 
-Let ite_3_10 : R.-sfker mbool * munit ~> (mR R) :=
-  ite macc0of2 (ret k3) (ret k10).
+Let ite_3_10 : R.-sfker mbool * munit ~> measurableTypeR R :=
+  ite macc0of2 (@ret _ _ _ (measurableTypeR R) R _ (kr 3)) (@ret _ _ _ (measurableTypeR R) R _ (kr 10)).
 
-Let score_poisson4 : R.-sfker mR R * (mbool * munit) ~> munit :=
-  score (measurableT_comp (measurable_poisson 4) macc0of3').
+Let score_poisson4 : R.-sfker measurableTypeR R * (mbool * munit) ~> munit :=
+  score (measurableT_comp (measurable_poisson 4) (@macc0of3' _ _ _ (measurableTypeR R) _ _)).
 
 (* same as kstaton_bus _ (measurable_poisson 4) but expressed with letin'
    instead of letin *)
@@ -805,6 +814,11 @@ Section letinC.
 Local Open Scope lang_scope.
 Variable (R : realType).
 
+Require Import Classical_Prop. (* TODO: mv *)
+
+Let weak_head g {t1 t2} x (e : @exp R P g t2) (xg : x \notin dom g) :=
+  exp_weak P [::] _ (x, t1) e xg.
+
 Lemma letinC g t1 t2 (e1 : @exp R P g t1) (e2 : exp P g t2)
   (x y : string)
   (xy : infer (x != y)) (yx : infer (y != x))
@@ -812,11 +826,11 @@ Lemma letinC g t1 t2 (e1 : @exp R P g t1) (e2 : exp P g t2)
   forall U, measurable U ->
   execP [
     let x := e1 in
-    let y := {exp_weak _ [::] _ (x, t1) e2 xg} in
+    let y := {weak_head e2 xg} in
     return (#x, #y)] ^~ U =
   execP [
     let y := e2 in
-    let x := {exp_weak _ [::] _ (y, t2) e1 yg} in
+    let x := {weak_head e1 yg} in
     return (#x, #y)] ^~ U.
 Proof.
 move=> U mU; apply/funext => z.
