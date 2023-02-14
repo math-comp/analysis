@@ -104,16 +104,19 @@
   + definition `sfinite_measure_def`
   + mixin `Measure_isSFinite_subdef`, structure `SFiniteMeasure`,
     notation `{sfinite_measure set _ -> \bar _}`
-  + mixin `SigmaFinite_isFinite`, structure `FiniteMeasure`,
+  + mixin `SigmaFinite_isFinite` with field `fin_num_measure`, structure `FiniteMeasure`,
     notation `{finite_measure set _ -> \bar _}`
-  + lemma `sfinite_measure_sigma_finite`, `sigma_finite_mzero`,
-  + instances `isSigmaFinite`, `SigmaFinite_isFinite` for `mzero`
+  + lemmas `sfinite_measure_sigma_finite`, `sfinite_mzero`, `sigma_finite_mzero`, `finite_mzero`
   + factory `Measure_isFinite`, `Measure_isSFinite`
   + lemma `sfinite_measure`
   + mixin `FiniteMeasure_isSubProbability`, structure `SubProbability`,
     notation `subprobability`
   + factory `Measure_isSubProbability`
   + factory `FiniteMeasure_isSubProbability`
+  + factory `Measure_isSigmaFinite`
+  + lemmas `fin_num_fun_finite_measure`, `finite_measure_fin_num_fun`
+  + definition `fin_num_fun`
+  + structure `FinNumFun`
 
 ### Changed
 
