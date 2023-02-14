@@ -62,25 +62,6 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
-(* TODO: PR? *)
-Lemma onem_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
-  (p%:num <= 1 -> 0 <= `1-(p%:num))%R.
-Proof. by rewrite /onem/= subr_ge0. Qed.
-
-Definition onem_nonneg (R : numDomainType) (p : {nonneg R})
-   (p1 : (p%:num <= 1)%R) :=
-  NngNum (onem_nonneg_proof p1).
-(* /TODO: PR? *)
-
-Lemma nneseries_sum_bigcup {R : realType} (T : choiceType) (F : (set T)^nat)
-    (f : T -> \bar R) : trivIset [set: nat] F -> (forall i, 0 <= f i)%E ->
-  \esum_(i in \bigcup_n F n) f i = \sum_(0 <= i <oo) (\esum_(j in F i) f j).
-Proof.
-move=> tF f0; rewrite esum_bigcupT// nneseries_esum//; last first.
-  by move=> k _; exact: esum_ge0.
-by rewrite fun_true; apply: eq_esum => /= i _.
-Qed.
-
 Lemma eq_probability R d (Y : measurableType d) (m1 m2 : probability Y R) :
   (m1 =1 m2 :> (set Y -> \bar R)) -> m1 = m2.
 Proof.
@@ -104,18 +85,6 @@ subst sub2.
 have ? : p1 = p2 by [].
 subst p2.
 by f_equal.
-Qed.
-
-Definition dep_uncurry (A : Type) (B : A -> Type) (C : Type) :
-    (forall a : A, B a -> C) -> {a : A & B a} -> C :=
-  fun f p => let (a, Ba) := p in f a Ba.
-
-(* TODO: move *)
-Lemma measurable_natmul {R : realType} D n :
-  measurable_fun D ((@GRing.natmul R)^~ n).
-Proof.
-under eq_fun do rewrite -mulr_natr.
-by do 2 apply: measurable_funM => //.
 Qed.
 
 Section bernoulli_pmf.
@@ -776,6 +745,83 @@ Arguments p12 {R}.
 Arguments p14 {R}.
 (*Arguments p27 {R}.*)
 Arguments p1S {R}.
+
+Section uniform_probability.
+Context (R : realType) (a b : R) (ab0 : (0 < b - a)%R).
+
+Definition uniform_probability (* : set _ -> \bar R *) :=
+  @mscale _ _ R (invr_nonneg (NngNum (ltW ab0)))
+    (mrestr lebesgue_measure (measurable_itv `[a, b])).
+
+(* NB: set R -> \bar R を書くとMeasure.onが通らない *)
+HB.instance Definition _ := Measure.on uniform_probability.
+
+(* Let uniform0 : uniform_probability set0 = 0.
+Proof. exact: measure0. Qed.
+
+Let uniform_ge0 U : 0 <= uniform_probability U.
+Proof. exact: measure_ge0. Qed.
+
+Let uniform_sigma_additive : semi_sigma_additive uniform_probability.
+Proof. move=> /= F mF tF mUF; exact: measure_semi_sigma_additive. Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ uniform_probability
+  uniform0 uniform_ge0 uniform_sigma_additive. *)
+
+Let uniform_probability_setT : uniform_probability [set: _] = 1%:E.
+Proof.
+rewrite /uniform_probability /mscale/= /mrestr/=.
+rewrite setTI lebesgue_measure_itv/= lte_fin.
+by rewrite -subr_gt0 ab0 -EFinD -EFinM mulVf// gt_eqF// subr_gt0.
+Qed.
+
+HB.instance Definition _ := @Measure_isProbability.Build _ _ R
+  uniform_probability uniform_probability_setT.
+
+End uniform_probability.
+
+Section integral_uniform.
+Context {R : realType}.
+
+Let integral_uniform_indic (a b : R) (ab0 : (0 < b - a)%R) E :
+    measurable E -> let m := uniform_probability ab0 in
+  \int[m]_x (\1_E x)%:E =
+  (b - a)^-1%:E * \int[lebesgue_measure]_(x in `[a, b]) (\1_E x)%:E.
+Proof.
+move=> mE m.
+by rewrite !integral_indic//= /uniform_probability/= /mscale/= /mrestr setIT.
+Qed.
+
+Let integral_uniform_nnsfun (f : {nnsfun _ >-> R})
+    (a b : R) (ab0 : (0 < b - a)%R) : let m := uniform_probability ab0 in
+  \int[m]_x (f x)%:E =
+  (b - a)^-1%:E * \int[lebesgue_measure]_(x in `[a, b]) (f x)%:E.
+Proof.
+move=> m.
+under [LHS]eq_integral do rewrite fimfunE -fsumEFin//.
+rewrite [LHS]ge0_integral_fsum//; last 2 first.
+  - by move=> r; exact/EFin_measurable_fun/measurableT_comp.
+  - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
+rewrite -[RHS]ge0_integralZl//; last 3 first.
+  - exact/EFin_measurable_fun/measurable_funTS.
+  - by move=> x _; rewrite lee_fin.
+  - by rewrite lee_fin invr_ge0// ltW.
+under [RHS]eq_integral.
+  move=> x xD; rewrite fimfunE -fsumEFin// ge0_mule_fsumr; last first.
+    by move=> r; rewrite EFinM nnfun_muleindic_ge0.
+  over.
+rewrite [RHS]ge0_integral_fsum//; last 2 first.
+  - by move=> r; apply/EFin_measurable_fun; do 2 apply/measurableT_comp => //.
+  - move=> n x _; rewrite EFinM mule_ge0//; last by rewrite nnfun_muleindic_ge0.
+    by rewrite lee_fin invr_ge0// ltW.
+apply: eq_fsbigr => r _; rewrite ge0_integralZl//.
+- by rewrite !integralZl_indic_nnsfun//= integral_uniform_indic// muleCA.
+- exact/EFin_measurable_fun/measurableT_comp.
+- by move=> t _; rewrite nnfun_muleindic_ge0.
+- by rewrite lee_fin invr_ge0// ltW.
+Qed.
+
+End integral_uniform.
 
 Section mscore.
 Context d (T : measurableType d) (R : realType).
@@ -1877,8 +1923,9 @@ Hypotheses (mf : measurable_fun setT f) (mg : measurable_fun setT g).
 (* see also emeasurable_fun_neq *)
 Lemma measurable_fun_flift_neq : measurable_fun setT flift_neq.
 Proof.
-apply: (measurable_fun_bool true).
-rewrite setTI /flift_neq /= (_ : _ @^-1` _ = ([set x | f x] `&` [set x | ~~ g x]) `|`
+apply: (@measurable_fun_bool _ _ _ _ true).
+rewrite setTI.
+rewrite /flift_neq /= (_ : _ @^-1` _ = ([set x | f x] `&` [set x | ~~ g x]) `|`
                                        ([set x | ~~ f x] `&` [set x | g x])).
   apply: measurableU; apply: measurableI.
   - by rewrite -[X in measurable X]setTI; exact: mf.
