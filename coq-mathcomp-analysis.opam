@@ -23,6 +23,7 @@ depends: [
   "coq-mathcomp-solvable" { (>= "2.0.0") | (= "dev") }
   "coq-mathcomp-field"
   "coq-mathcomp-bigenough" { (>= "1.0.0") }
+  "coq-mathcomp-algebra-tactics" { (>= "1.1.1") }
 ]
 
 tags: [

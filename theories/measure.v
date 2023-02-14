@@ -1573,8 +1573,8 @@ Lemma measurable_fun_if (g h : T1 -> T2) D (mD : measurable D)
   measurable_fun D (fun t => if f t then g t else h t).
 Proof.
 move=> mx my /= _ B mB; rewrite (_ : _ @^-1` B =
-    ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
-    ((f @^-1` [set false]) `&` (h @^-1` B))).
+   ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
+   ((f @^-1` [set false]) `&` (h @^-1` B))).
   rewrite setIUr; apply: measurableU.
   - by rewrite setIA; apply: mx => //; exact: mf.
   - by rewrite setIA; apply: my => //; exact: mf.

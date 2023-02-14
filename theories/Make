@@ -45,6 +45,10 @@ showcase/uniform_bigO.v
 showcase/summability.v
 prob_lang.v
 prob_lang_wip.v
+lang_syntax_util.v
+lang_syntax_toy.v
+lang_syntax.v
+lang_syntax_examples.v
 altreals/xfinmap.v
 altreals/discrete.v
 altreals/realseq.v
