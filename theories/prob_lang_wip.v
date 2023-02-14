@@ -124,7 +124,7 @@ apply: (measurable_comp (F := [set r : R | r != 0%R])) => //.
 - exact: measurable_fun_gauss_density.
 Qed.
 
-Variable mu : {measure set mR R -> \bar R}.
+Variable mu : {measure set R -> \bar R}.
 
 Definition staton_lebesgue : R.-sfker T ~> _ :=
   letin (sample_cst (gauss01 integral_gauss01_density : pprobability _ _))
