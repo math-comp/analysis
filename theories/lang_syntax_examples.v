@@ -1,12 +1,14 @@
 Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
+From mathcomp.classical Require Import mathcomp_extra boolp.
+From mathcomp Require Import ring.
+From mathcomp Require Import classical_sets.
 From mathcomp.classical Require Import functions cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences esum measure.
 Require Import lebesgue_measure numfun lebesgue_integral kernel prob_lang.
 Require Import lang_syntax_util lang_syntax.
-From mathcomp Require Import ring lra.
+From mathcomp Require Import lra.
 
 (**md**************************************************************************)
 (* # Examples using the Probabilistic Programming Language of lang_syntax.v   *)
@@ -565,39 +567,36 @@ Qed.
 
 End test_binomial.
 
-Section test_beta.
+Section beta_bernoulli_bernoulli.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.
 Context (R : realType).
 Local Notation mu := (@lebesgue_measure R).
 
-Lemma integral_beta_nat_bernoulli_lty a b U :
-  (\int[beta_nat a b]_x `|bernoulli (x : R) U| < +oo)%E.
-Proof.
-apply: (@le_lt_trans _ _ (\int[beta_nat a b]_x cst 1 x))%E.
-  apply: ge0_le_integral => //=.
-    by apply: measurableT_comp => //=; exact: measurable_bernoulli2.
-  by move=> x _; rewrite gee0_abs// probability_le1.
-rewrite integral_cst//= mul1e.
-by rewrite -ge0_fin_numE// beta_nat_fin_num.
-Qed.
-
-Lemma integrable_bernoulli_ubeta_nat_pdf a b U
-  (mu : {measure set (g_sigma_algebraType (R.-ocitv.-measurable)) -> \bar R}) :
+(* TODO: move? *)
+Lemma integrable_bernoulli_XMonemX01 a b U
+  (mu : {measure set (g_sigma_algebraType R.-ocitv.-measurable) -> \bar R}) :
   measurable U -> (mu `[0%R, 1%R]%classic < +oo)%E ->
-  mu.-integrable `[0, 1] (fun x => bernoulli (ubeta_nat_pdf a b x) U).
+  mu.-integrable `[0, 1] (fun x => bernoulli (XMonemX01 a b x) U).
 Proof.
 move=> mU mu01oo.
 apply/integrableP; split.
   apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-  by apply: measurable_funTS; exact: measurable_ubeta_nat_pdf.
+  by apply: measurable_funTS; exact: measurable_XMonemX01.
 apply: (@le_lt_trans _ _ (\int[mu]_(x in `[0%R, 1%R]) cst 1 x)%E).
   apply: ge0_le_integral => //=.
     apply/measurable_funTS/measurableT_comp => //=.
     apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-    exact: measurable_ubeta_nat_pdf.
+    exact: measurable_XMonemX01.
   by move=> x _; rewrite gee0_abs// probability_le1.
 by rewrite integral_cst//= mul1e.
+Qed.
+
+Let measurable_bernoulli_XMonemX01 U :
+   measurable_fun setT (fun x : R => bernoulli (XMonemX01 2 1 x) U).
+Proof.
+apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
+exact: measurable_XMonemX01.
 Qed.
 
 Lemma beta_bernoulli_bernoulli U : measurable U ->
@@ -606,59 +605,51 @@ Lemma beta_bernoulli_bernoulli U : measurable U ->
   @execP R [::] _ [Sample {exp_bernoulli [{3 / 5}:R]}] tt U.
 Proof.
 move=> mU.
-rewrite execP_letin !execP_sample execD_beta_nat !execD_bernoulli/=.
+rewrite execP_letin !execP_sample execD_beta !execD_bernoulli/=.
 rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
-transitivity (beta_nat_bernoulli 6 4 1 0 U : \bar R).
-  rewrite /beta_nat_bernoulli !letin'E/=.
-  rewrite integral_beta_nat//=; last 2 first.
+transitivity (beta_prob_bernoulli 6 4 1 0 U : \bar R).
+  rewrite /beta_prob_bernoulli !letin'E/=.
+  rewrite integral_beta_prob//=; last 2 first.
     exact: measurable_bernoulli2.
-    exact: integral_beta_nat_bernoulli_lty.
-  rewrite integral_beta_nat//=; last 2 first.
-    apply: measurable_funTS => /=.
-    apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-    exact: measurable_ubeta_nat_pdf.
-    rewrite integral_beta_nat//=.
+    exact: integral_beta_prob_bernoulli_lty.
+  rewrite integral_beta_prob//=; last 2 first.
+    by apply: measurable_funTS => /=; exact: measurable_bernoulli_XMonemX01.
+    rewrite integral_beta_prob//=.
     + suff: mu.-integrable `[0%R, 1%R]
-          (fun x => (bernoulli (ubeta_nat_pdf 2 1 x) U * (beta_nat_pdf 6 4 x)%:E))%E.
+          (fun x => bernoulli (XMonemX01 2 1 x) U * (beta_pdf 6 4 x)%:E)%E.
         move=> /integrableP[_].
         under eq_integral.
           move=> x _.
           rewrite gee0_abs//; last first.
-            by rewrite mule_ge0// lee_fin beta_nat_pdf_ge0.
+            by rewrite mule_ge0// lee_fin beta_pdf_ge0.
         over.
         move=> ?.
         by under eq_integral do rewrite gee0_abs//.
     + apply: integrableMl => //=.
-      * apply: integrable_bernoulli_ubeta_nat_pdf => //=.
+      * apply: integrable_bernoulli_XMonemX01 => //=.
         by rewrite lebesgue_measure_itv//= lte01 EFinN sube0 ltry.
-      * by apply: measurable_funTS; exact: measurable_beta_nat_pdf.
-      * exact: bounded_beta_nat_pdf_01.
-    + apply: measurable_funTS => /=; apply/measurableT_comp => //.
-      apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-      exact: measurable_ubeta_nat_pdf.
+      * by apply: measurable_funTS; exact: measurable_beta_pdf.
+      * exact: bounded_beta_pdf_01.
+    + apply/measurableT_comp => //; apply: measurable_funTS => /=.
+      exact: measurable_bernoulli_XMonemX01.
     + under eq_integral do rewrite gee0_abs//=.
-      have : (beta_nat 6 4 `[0%R, 1%R]%classic < +oo :> \bar R)%E.
-        by rewrite -ge0_fin_numE// beta_nat_fin_num.
-      move=> /(@integrable_bernoulli_ubeta_nat_pdf 2 1 _ (beta_nat 6 4) mU).
-      by move=> /integrableP[].
+      have : (beta_prob 6 4 `[0%R, 1%R] < +oo :> \bar R)%E.
+        by rewrite -ge0_fin_numE// beta_prob_fin_num.
+      by move=> /(@integrable_bernoulli_XMonemX01 2 1 _ (beta_prob 6 4) mU) /integrableP[].
   rewrite [RHS]integral_mkcond.
   apply: eq_integral => x _ /=.
   rewrite patchE.
-  rewrite /beta_nat_pdf /ubeta_nat_pdf.
-  case: ifPn => [/andP[x0 x1]|].
-    rewrite ifT; last by rewrite inE/= in_itv/= x0.
-    by rewrite expr0 expr1 mulr1.
-  rewrite !mul0r !mule0.
-  by case: ifPn.
-rewrite beta_nat_bernoulliE// !bernoulliE//=; last 2 first.
+  case: ifPn => x01.
+    by rewrite /XMonemX01 patchE x01 XMonemX0' expr1.
+  by rewrite /beta_pdf /XMonemX01 patchE (negbTE x01) mul0r mule0.
+rewrite beta_prob_bernoulliE// !bernoulliE//=; last 2 first.
   lra.
-  by rewrite div_beta_nat_norm_ge0 div_beta_nat_norm_le1.
-congr (_ * _ + _ * _)%:E.
-  by rewrite /div_beta_nat_norm/= !beta_nat_normE/= !factE/=; field.
-by rewrite /onem /div_beta_nat_norm !beta_nat_normE/= !factE/=; field.
+  by rewrite div_betafun_ge0 div_betafun_le1.
+by congr (_ * _ + _ * _)%:E;
+  rewrite /div_betafun/= /onem !betafunE/= !factE/=; field.
 Qed.
 
-End test_beta.
+End beta_bernoulli_bernoulli.
 
 Section letinA.
 Local Open Scope lang_scope.
@@ -732,9 +723,7 @@ Let kstaton_bus' :=
 Lemma eval_staton_bus0 : staton_bus_syntax0 -P> kstaton_bus'.
 Proof.
 apply: eval_letin.
-  apply: eval_sample.
-  apply: eval_bernoulli.
-  exact: eval_real.
+  by apply: eval_sample; apply: eval_bernoulli; exact: eval_real.
 apply: eval_letin.
   apply/evalP_if; [|exact/eval_return/eval_real..].
   rewrite exp_var'E.

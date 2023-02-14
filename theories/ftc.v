@@ -29,11 +29,68 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+(* TODO: move to normedtype.v? *)
+Lemma nbhs_right_lt_lt {R : realType} (x y : R) :
+  (y < x)%R -> \forall z \near nbhs y^'+, (z < x)%R.
+Proof.
+move=> yx.
+exists (x - y)%R => /=; first by rewrite subr_gt0.
+move=> z/= /[swap] yz.
+by rewrite ltr0_norm ?subr_lt0// opprB ltrBlDl addrC subrK.
+Qed.
+
+(* TODO: move to normedtype.v? *)
+Lemma nbhs_right_lt_le {R : realType} (x y : R) :
+  (y < x)%R -> \forall z \near nbhs y^'+, (z <= x)%R.
+Proof.
+by move=> yx; near=> z; apply/ltW; near: z; exact: nbhs_right_lt_lt.
+Unshelve. all: by end_near. Qed.
+
+(* TODO: move to normedtype.v? *)
+Lemma cvg_patch {R : realType} (f : R -> R^o) (a b : R) (x : R) : (a < b)%R ->
+  x \in `]a, b[ ->
+  f @ (x : subspace `[a, b]) --> f x ->
+  (f \_ `[a, b] x) @[x --> x] --> f x.
+Proof.
+move=> ab xab xf; apply/cvgrPdist_lt => /= e e0.
+move/cvgrPdist_lt : xf => /(_ e e0) xf.
+rewrite near_simpl; near=> z.
+rewrite patchE ifT//; last first.
+  rewrite inE; apply: subset_itv_oo_cc.
+  by near: z; exact: near_in_itv.
+near: z.
+rewrite /prop_near1 /nbhs/= /nbhs_subspace ifT// in xf; last first.
+  by rewrite inE/=; exact: subset_itv_oo_cc xab.
+case: xf => x0 /= x00 xf.
+near=> z.
+apply: xf => //=.
+rewrite inE; apply: subset_itv_oo_cc.
+by near: z; exact: near_in_itv.
+Unshelve. all: by end_near. Qed.
+
 Section FTC.
 Context {R : realType}.
 Notation mu := (@lebesgue_measure R).
 Local Open Scope ereal_scope.
 Implicit Types (f : R -> R) (a : itv_bound R).
+
+Let integrable_locally f (A : set R) : measurable A ->
+  mu.-integrable A (EFin \o f) -> locally_integrable [set: R] (f \_ A).
+Proof.
+move=> mA intf; split.
+- move/integrableP : intf => [mf _].
+  by apply/(measurable_restrictT _ _).1 => //; exact/EFin_measurable_fun.
+- exact: openT.
+- move=> K _ cK.
+  move/integrableP : intf => [mf].
+  rewrite integral_mkcond/=.
+  under eq_integral do rewrite restrict_EFin restrict_normr.
+  apply: le_lt_trans.
+  apply: ge0_subset_integral => //=; first exact: compact_measurable.
+  apply/EFin_measurable_fun/measurableT_comp/EFin_measurable_fun => //=.
+  move/(measurable_restrictT _ _).1 : mf => /=.
+  by rewrite restrict_EFin; exact.
+Qed.
 
 Let FTC0 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) f t)%R in
