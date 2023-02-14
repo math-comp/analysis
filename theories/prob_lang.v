@@ -1630,7 +1630,7 @@ Qed.
 Definition bernoulli_and : R.-sfker T ~> mbool :=
     (letin (sample_cst [the probability _ _ of bernoulli p12])
      (letin (sample_cst [the probability _ _ of bernoulli p12])
-     (ret (measurable_fun_mand macc1of3 macc2of3)))).
+        (ret (measurable_fun_mand macc1of3 macc2of3)))).
 *)
 
 Lemma bernoulli_andE t U :
