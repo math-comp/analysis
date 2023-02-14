@@ -108,6 +108,8 @@
   + lemmas `fin_num_fun_finite_measure`, `finite_measure_fin_num_fun`
   + definition `fin_num_fun`
   + structure `FinNumFun`
+  + definition `finite_measure2`
+  + lemmas `finite_measure2_finite_measure`, `finite_measure_finite_measure2`
 
 ### Changed
 
