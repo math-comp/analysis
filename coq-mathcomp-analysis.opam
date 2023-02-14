@@ -19,6 +19,7 @@ depends: [
   "coq-mathcomp-solvable"
   "coq-mathcomp-field"
   "coq-mathcomp-bigenough" { (>= "1.0.0") }
+  "coq-mathcomp-algebra-tactics" { (>= "1.1.1") }
 ]
 
 tags: [
