@@ -1536,7 +1536,7 @@ HB.instance Definition _ := isContent.Build d T R mu
 HB.instance Definition _ := isMeasure0.Build d T R mu measure_semi_sigma_additive.
 HB.end.
 
-Lemma eq_measure d (T : measurableType d) (R : realType)
+Lemma eq_measure d (T : measurableType d) (R : realFieldType)
   (m1 m2 : {measure set T -> \bar R}) :
   (m1 = m2 :> (set T -> \bar R)) -> m1 = m2.
 Proof.
