@@ -94,7 +94,7 @@ HB.mixin Record isAdditiveCharge d (T : semiRingOfSetsType d) (R : numFieldType)
 #[short(type=additive_charge)]
 HB.structure Definition AdditiveCharge d (T : semiRingOfSetsType d)
     (R : numFieldType) :=
-  { mu of isAdditiveCharge d T R mu & SigmaFinite_isFinite d T R mu }.
+  { mu of isAdditiveCharge d T R mu & FinNumFun d mu }.
 
 Notation "{ 'additive_charge' 'set' T '->' '\bar' R }" :=
   (additive_charge T R) (at level 36, T, R at next level,
