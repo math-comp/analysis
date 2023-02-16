@@ -3816,7 +3816,7 @@ Variable (mu : {measure set T -> \bar R}).
 Lemma integrable_abse (D : set T) : measurable D ->
   forall f : T -> \bar R, mu.-integrable D f -> mu.-integrable D (abse \o f).
 Proof.
-move=> mD f [mf fi]; split; first exact: measurable_funT_comp.
+move=> mD_ f [mf fi]; split; first exact: measurable_funT_comp.
 apply: le_lt_trans fi; apply: ge0_le_integral => //.
 - by apply: measurable_funT_comp => //; exact: measurable_funT_comp.
 - exact: measurable_funT_comp.

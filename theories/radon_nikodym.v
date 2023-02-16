@@ -97,34 +97,27 @@ Local Open Scope ereal_scope.
 
 Let E j := [set x | f x - g x >= j.+1%:R^-1%:E].
 
-Lemma eset_lt_bigcup :
-  [set x | f x > g x] = \bigcup_j E j.
+Lemma eset_lt_bigcup : [set x | f x > g x] = \bigcup_j E j.
 Proof.
 apply/seteqP; split => [x/=|x [n _]]; last first.
   rewrite /E/= -sube_gt0; apply: lt_le_trans.
   by rewrite lte_fin invr_gt0.
 move Hgx : (g x) => gx.
-case: gx Hgx => [gx| |].
-  move Hfx : (f x) => fx.
-  case: fx Hfx => [fx| |].
-    move=> Hfx Hgx; rewrite lte_fin -subr_gt0 => fgx.
+case: gx Hgx => [gx| |gxoo fxoo].
+- move Hfx : (f x) => fx.
+  case: fx Hfx => [fx Hfx Hgx|fxoo Hgx _|].
+  + rewrite lte_fin -subr_gt0 => fgx.
     exists `|floor (fx - gx)^-1%R|%N => //.
     rewrite /E/= -natr1 natr_absz.
     rewrite ger0_norm ?floor_ge0 ?invr_ge0; last exact/ltW.
-    rewrite Hfx Hgx lee_fin.
-    rewrite -[leRHS]invrK lef_pinv//.
+    rewrite Hfx Hgx lee_fin -[leRHS]invrK lef_pinv//.
     - by apply/ltW; rewrite lt_succ_floor.
     - by rewrite posrE// ltr_spaddr// ler0z floor_ge0 invr_ge0 ltW.
     - by rewrite posrE invr_gt0.
-  move=> fxoo Hgx _.
-  exists 0%N => //.
-  rewrite /E/=.
-  by rewrite fxoo Hgx// addye// leey.
-  by rewrite lteNy.
-  by rewrite ltye.
-move=> gxoo fxoo.
-exists 0%N => //.
-by rewrite /E/= gxoo addey// ?leey// -ltNye.
+  + by exists 0%N => //; rewrite /E/= fxoo Hgx// addye// leey.
+  + by rewrite lteNy.
+- by rewrite ltye.
+- by exists 0%N => //; rewrite /E/= gxoo addey// ?leey// -ltNye.
 Qed.
 
 End eset_lt.
@@ -172,7 +165,7 @@ Qed.
 
 End move_to_measure.
 
-(* TODO: move to lebesgue_integral.v? *)
+(* TODO: PR to replace the eponymous lemma *)
 Lemma integrable_abse d (T : measurableType d) (R : realType) D
     (f : T -> \bar R) (mu : {measure set T -> \bar R}) :
   mu.-integrable D f -> mu.-integrable D (abse \o f).
@@ -432,19 +425,19 @@ Abort.
 (* NB: specialized to positive set *)
 
 Definition measure_of_charge d (T : measurableType d) (R : realType)
-  (nu : set T -> \bar R) of positive_set nu setT := nu.
+  (nu : set T -> \bar R) of (forall E, d.-measurable E -> 0 <= nu E) := nu.
 
 Section measure_of_charge.
 Context d (T : measurableType d) (R : realType).
 Variable nu : {charge set T -> \bar R}.
-Hypothesis nupos : positive_set nu setT.
+Hypothesis nupos : forall E, d.-measurable E -> 0 <= nu E.
 
 Local Notation mu := (measure_of_charge nupos).
 
 Let mu0 : mu set0 = 0. Proof. exact: charge0. Qed.
 
 Let mu_ge0 S : measurable S -> 0 <= mu S.
-Proof. by move=> mS; have [_ ->//] := nupos; rewrite inE. Qed.
+Proof. by move=> mS; rewrite nupos. Qed.
 
 Let mu_sigma_additive : semi_sigma_additive mu.
 Proof. exact: charge_semi_sigma_additive. Qed.
@@ -487,30 +480,16 @@ Let mN : measurable N. Proof. by have [_ [mN _] _ _] := nuPN. Qed.
 Definition cjordan_pos : {charge set X -> \bar R} :=
   [the charge _ _ of crestr nu mP].
 
-Lemma positive_set_cjordan_pos : positive_set cjordan_pos setT.
+Let positive_set_cjordan_pos E : measurable E -> 0 <= cjordan_pos E.
 Proof.
-have [posP _ _ _] := nuPN.
-split => // E mE _.
+have [posP _ _ _ mE] := nuPN.
 rewrite /cjordan_pos/= /crestr/=.
 by apply posP; [apply: measurableI|apply: subIsetr].
-Qed.
-
-Definition cjordan_neg : {charge set X -> \bar R} :=
-  [the charge _ _ of cscale (-1) [the charge _ _ of crestr nu mN]].
-
-Lemma positive_set_cjordan_neg : positive_set cjordan_neg setT.
-Proof.
-split => // E mE _.
-rewrite /cjordan_neg /= /cscale /= /crestr muleC mule_le0//.
-by move: nuPN => [_ [_ +] _ _] => ->//; exact: measurableI.
 Qed.
 
 Definition jordan_pos := measure_of_charge _ positive_set_cjordan_pos.
 
 HB.instance Definition _ := Measure.on jordan_pos.
-
-(*Definition jordan_pos : {measure set X -> \bar R} :=
-  [the measure _ _ of measure_of_charge _ positive_set_cjordan_pos].*)
 
 Let finite_jordan_pos : fin_num_fun jordan_pos.
 Proof.
@@ -518,20 +497,22 @@ move=> U mU.
 by rewrite /= /crestr/= /measure_of_charge fin_num_measure.
 Qed.
 
-HB.instance Definition _ := @Measure_isFinite.Build _ _ _ jordan_pos finite_jordan_pos.
+HB.instance Definition _ := @Measure_isFinite.Build _ _ _
+  jordan_pos finite_jordan_pos.
+
+Definition cjordan_neg : {charge set X -> \bar R} :=
+  [the charge _ _ of cscale (-1) [the charge _ _ of crestr nu mN]].
+
+Let positive_set_cjordan_neg E : measurable E -> 0 <= cjordan_neg E.
+Proof.
+move=> mE.
+rewrite /cjordan_neg /= /cscale /= /crestr muleC mule_le0//.
+by move: nuPN => [_ [_ +] _ _] => ->//; exact: measurableI.
+Qed.
 
 Definition jordan_neg := measure_of_charge _ positive_set_cjordan_neg.
 
-(*Definition jordan_neg : {measure set X -> \bar R} :=
-  [the measure _ _ of measure_of_charge _ positive_set_cjordan_neg].*)
-
 HB.instance Definition _ := Measure.on jordan_neg.
-
-(*Let finite_jordan_pos : finite_measure jordan_pos.
-Proof.
-rewrite /finite_measure /jordan_pos/= /crestr/=.
-by rewrite /measure_of_charge setTI fin_num_ltey// fin_num_measure.
-Qed.*)
 
 Let finite_jordan_neg : fin_num_fun jordan_neg.
 Proof.
@@ -539,16 +520,11 @@ move=> U mU.
 by rewrite /measure_of_charge/= /cscale/= fin_numM// /crestr fin_num_measure.
 Qed.
 
-(*Let finite_jordan_neg : finite_measure jordan_neg.
-Proof.
-rewrite /finite_measure /jordan_neg/= /cscale/=.
-rewrite /measure_of_charge EFinN mulN1e /crestr setTI.
-by rewrite fin_num_ltey// fin_numN fin_num_measure.
-Qed.*)
+HB.instance Definition _ := @Measure_isFinite.Build _ _ _
+  jordan_neg finite_jordan_neg.
 
-HB.instance Definition _ := @Measure_isFinite.Build _ _ _ (measure_of_charge _ positive_set_cjordan_neg) finite_jordan_neg.
-
-Lemma jordan_decomp A : measurable A -> nu A = jordan_pos A - jordan_neg A.
+Lemma jordan_decomp A : measurable A ->
+  nu A = jordan_pos A - jordan_neg A.
 Proof.
 move=> mA; rewrite /= /cscale /= /crestr /= -[in LHS](setIT A).
 case: nuPN => _ _ <- PN0; rewrite setIUr chargeU//; last 3 first.
@@ -657,152 +633,152 @@ Qed.
 End integral_ae_eq.
 
 (* preparation of the elements of the proof of Radon-Nikodym *)
-Section approxRN.
+Section approxRN_measure.
 Context d (X : measurableType d) (R : realType).
-Variables mu : {measure set X -> \bar R}.
+Variable mu : {measure set X -> \bar R}.
+Variable nu : {measure set X -> \bar R}.
 
-Definition approxRN (nu : {measure set X -> \bar R}) :=
-  [set g : X -> \bar R | [/\
-    forall x, 0 <= g x, mu.-integrable setT g &
-    forall E, measurable E -> \int[mu]_(x in E) g x <= nu E] ].
+Definition approxRN := [set g : X -> \bar R | [/\
+  forall x, 0 <= g x, mu.-integrable setT g &
+  forall E, measurable E -> \int[mu]_(x in E) g x <= nu E] ].
 
-Let approxRN_neq0 (nu : {measure set X -> \bar R}) : approxRN nu !=set0.
+Let approxRN_neq0 : approxRN !=set0.
 Proof.
 exists (cst 0); split => //; first exact: integrable0.
 by move=> E mE; rewrite integral0 measure_ge0.
 Qed.
 
-Definition int_approxRN (nu : {measure set X -> \bar R}) :=
-  [set \int[mu]_x g x | g in approxRN nu].
+Definition int_approxRN := [set \int[mu]_x g x | g in approxRN].
 
-Let int_approxRN_ub (nu : {finite_measure set X -> \bar R}) :
-  exists M, forall x, x \in int_approxRN nu -> x <= M%:E.
+Definition sup_int_approxRN := ereal_sup int_approxRN.
+
+Local Notation M := sup_int_approxRN.
+
+Definition sup_int_approxRN_ge0 : 0 <= M.
+Proof.
+rewrite -(ereal_sup1 0) (@le_ereal_sup _ [set 0] int_approxRN)// sub1set inE.
+exists (fun=> 0); last exact: integral0.
+split => //; first exact : integrable0.
+by move=> E; rewrite integral0 => mE; rewrite measure_ge0.
+Qed.
+
+End approxRN_measure.
+
+Section approxRN_finite_measure.
+Context d (X : measurableType d) (R : realType).
+Variable mu : {measure set X -> \bar R}.
+Variable nu : {finite_measure set X -> \bar R}.
+
+Local Notation approxRN := (approxRN mu nu).
+Local Notation int_approxRN := (int_approxRN mu nu).
+Local Notation M := (sup_int_approxRN mu nu).
+
+Let int_approxRN_ub :
+  exists M, forall x, x \in int_approxRN -> x <= M%:E.
 Proof.
 exists (fine (nu setT)) => x.
 rewrite inE => -[g [g0 g1 g2] <-{x}].
 by rewrite fineK ?fin_num_measure// (le_trans (g2 setT _))// inE.
 Qed.
 
-Definition sup_int_approxRN (nu : {measure set X -> \bar R}) :=
-  ereal_sup (int_approxRN nu).
-
-Local Notation M := sup_int_approxRN.
-
-Definition sup_int_approxRN_ge0 (nu : {measure set X -> \bar R}) : 0 <= M nu.
+Definition sup_int_approxRN_lty : M < +oo.
 Proof.
-rewrite -(ereal_sup1 0) (@le_ereal_sup _ [set 0] (int_approxRN nu))// sub1set inE.
-exists (fun=> 0); last exact: integral0.
-split => //; first exact : integrable0.
-by move=> E; rewrite integral0 => mE; rewrite measure_ge0.
-Qed.
-
-Definition sup_int_approxRN_lty (nu : {finite_measure set X -> \bar R}) : M nu < +oo.
-Proof.
-rewrite /sup_int_approxRN; have [m hm] := int_approxRN_ub nu.
+rewrite /sup_int_approxRN; have [m hm] := int_approxRN_ub.
 rewrite (@le_lt_trans _ _ m%:E)// ?ltey// ub_ereal_sup// => x IGx.
 by apply: hm; rewrite inE.
 Qed.
 
-Definition sup_int_approxRN_fin_num (nu : {finite_measure set X -> \bar R}) :
-  M nu \is a fin_num.
+Definition sup_int_approxRN_fin_num :
+  M \is a fin_num.
 Proof.
-rewrite ge0_fin_numE//; first exact: (sup_int_approxRN_lty nu).
+rewrite ge0_fin_numE//; first exact: sup_int_approxRN_lty.
 exact: sup_int_approxRN_ge0.
 Qed.
 
-Lemma approxRN_seq_ex (nu : {finite_measure set X -> \bar R}) :
-  { g : (X -> \bar R)^nat &
-    forall k, g k \in approxRN nu /\ \int[mu]_x g k x > M nu - k.+1%:R^-1%:E }.
+Lemma approxRN_seq_ex :
+  { g : (X -> \bar R)^nat |
+    forall k, g k \in approxRN /\ \int[mu]_x g k x > M - k.+1%:R^-1%:E }.
 Proof.
-pose P m g := g \in approxRN nu /\ M nu - m.+1%:R^-1%:E < \int[mu]_x g x.
+pose P m g := g \in approxRN /\ M - m.+1%:R^-1%:E < \int[mu]_x g x.
 suff : { g : (X -> \bar R) ^nat & forall m, P m (g m)} by case => g ?; exists g.
 apply: (@choice _ _ P) => m.
 rewrite /P.
-have /(@ub_ereal_sup_adherent _ (int_approxRN nu)) : (0 < m.+1%:R^-1 :> R)%R.
+have /(@ub_ereal_sup_adherent _ int_approxRN) : (0 < m.+1%:R^-1 :> R)%R.
   by rewrite invr_gt0.
-move/(_ (sup_int_approxRN_fin_num nu)) => [_ [h Gh <-]].
+move/(_ sup_int_approxRN_fin_num) => [_ [h Gh <-]].
 by exists h; rewrite inE; split => //; rewrite -/M in q.
 Qed.
 
-Definition approxRN_seq (nu : {finite_measure set X -> \bar R}) : (X -> \bar R)^nat :=
-  projT1 (approxRN_seq_ex nu).
+Definition approxRN_seq : (X -> \bar R)^nat := sval approxRN_seq_ex.
 
 Local Notation g_ := approxRN_seq.
 
-Lemma approxRN_seq_prop (nu : {finite_measure set X -> \bar R}) : forall m,
-  g_ nu m \in approxRN nu /\ \int[mu]_x (g_ nu m x) > M nu - m.+1%:R^-1%:E.
-Proof. exact: (projT2 (approxRN_seq_ex nu)). Qed.
+Lemma approxRN_seq_prop : forall m,
+  g_ m \in approxRN /\ \int[mu]_x (g_ m x) > M - m.+1%:R^-1%:E.
+Proof. exact: (projT2 approxRN_seq_ex). Qed.
 
-Lemma approxRN_seq_ge0 (nu : {finite_measure set X -> \bar R}) x n : 0 <= g_ nu n x.
-Proof. by have [+ _]:= approxRN_seq_prop nu n; rewrite inE /= => -[]. Qed.
+Lemma approxRN_seq_ge0 x n : 0 <= g_ n x.
+Proof. by have [+ _]:= approxRN_seq_prop n; rewrite inE /= => -[]. Qed.
 
-Lemma measurable_approxRN_seq (nu : {finite_measure set X -> \bar R}) n :
-  measurable_fun setT (g_ nu n).
-Proof. by have := approxRN_seq_prop nu n; rewrite inE /= => -[[_ []]]. Qed.
+Lemma measurable_approxRN_seq n : measurable_fun setT (g_ n).
+Proof. by have := approxRN_seq_prop n; rewrite inE /= => -[[_ []]]. Qed.
 
-Definition max_approxRN_seq (nu : {finite_measure set X -> \bar R}) n x :=
-  \big[maxe/-oo]_(j < n.+1) g_ nu j x.
+Definition max_approxRN_seq n x :=
+  \big[maxe/-oo]_(j < n.+1) g_ j x.
 
 Local Notation F_ := max_approxRN_seq.
 
-Lemma measurable_max_approxRN_seq (nu : {finite_measure set X -> \bar R}) n :
-  measurable_fun setT (F_ nu n).
+Lemma measurable_max_approxRN_seq n : measurable_fun setT (F_ n).
 Proof.
 elim: n => [|n ih].
   rewrite /max_approxRN_seq.
   under eq_fun do rewrite big_ord_recr/=; rewrite -/(measurable_fun _ _).
   under eq_fun do rewrite big_ord0; rewrite -/(measurable_fun _ _).
   under eq_fun do rewrite maxNye; rewrite -/(measurable_fun _ _).
-  have [+ _] := approxRN_seq_prop nu 0%N.
+  have [+ _] := approxRN_seq_prop 0%N.
   by rewrite inE /= => -[]// _ _ _; exact: measurable_approxRN_seq.
 rewrite /max_approxRN_seq => m.
 under eq_fun do rewrite big_ord_recr.
 by apply : emeasurable_fun_max => //; exact: measurable_approxRN_seq.
 Qed.
 
-Lemma max_approxRN_seq_ge0 (nu : {finite_measure set X -> \bar R}) n x :
-  0 <= F_ nu n x.
+Lemma max_approxRN_seq_ge0 n x : 0 <= F_ n x.
 Proof.
 by apply/bigmax_geP; right => /=; exists ord0 => //; exact: approxRN_seq_ge0.
 Qed.
 
-Lemma max_approxRN_seq_ge (nu : {finite_measure set X -> \bar R}) n x :
-  F_ nu n x >= g_ nu n x.
+Lemma max_approxRN_seq_ge n x : F_ n x >= g_ n x.
 Proof. by apply/bigmax_geP; right => /=; exists ord_max. Qed.
 
-Lemma max_approxRN_seq_nd (nu : {finite_measure set X -> \bar R}) x :
-  nondecreasing_seq (F_ nu ^~ x).
-Proof. by move=> a b ab; rewrite (le_bigmax_ord xpredT (g_ nu ^~ x)). Qed.
+Lemma max_approxRN_seq_nd x : nondecreasing_seq (F_ ^~ x).
+Proof. by move=> a b ab; rewrite (le_bigmax_ord xpredT (g_ ^~ x)). Qed.
 
-Lemma is_cvg_max_approxRN_seq (nu : {finite_measure set X -> \bar R}) n :
-  cvg (F_ nu ^~ n).
+Lemma is_cvg_max_approxRN_seq n : cvg (F_ ^~ n).
 Proof. by apply: ereal_nondecreasing_is_cvg; exact: max_approxRN_seq_nd. Qed.
 
-Lemma is_cvg_int_max_approxRN_seq (nu : {finite_measure set X -> \bar R}) A :
-  measurable A -> cvg (fun n => \int[mu]_(x in A) F_ nu n x).
+Lemma is_cvg_int_max_approxRN_seq A :
+  measurable A -> cvg (fun n => \int[mu]_(x in A) F_ n x).
 Proof.
 move=> mA; apply: ereal_nondecreasing_is_cvg => a b ab.
 apply ge0_le_integral => //.
 - by move=> ? ?; exact: max_approxRN_seq_ge0.
-- by apply: measurable_funS (measurable_max_approxRN_seq nu a).
+- by apply: measurable_funS (measurable_max_approxRN_seq a).
 - by move=> ? ?; exact: max_approxRN_seq_ge0.
-- exact: measurable_funS (measurable_max_approxRN_seq nu b).
+- exact: measurable_funS (measurable_max_approxRN_seq b).
 - by move=> x _; exact: max_approxRN_seq_nd.
 Qed.
 
-Definition is_max_approxRN (nu : {finite_measure set X -> \bar R}) m j :=
-  [set x | F_ nu m x = g_ nu j x /\
-    forall k, (k < j)%N -> g_ nu k x < g_ nu j x].
+Definition is_max_approxRN m j :=
+  [set x | F_ m x = g_ j x /\ forall k, (k < j)%N -> g_ k x < g_ j x].
 
 Local Notation E := is_max_approxRN.
 
-Lemma is_max_approxRNE (nu : {finite_measure set X -> \bar R}) m j :
-  E nu m j = [set x| F_ nu m x = g_ nu j x] `&`
-    [set x |forall k, (k < j)%nat -> g_ nu k x < g_ nu j x].
+Lemma is_max_approxRNE m j :
+  E m j = [set x| F_ m x = g_ j x] `&`
+    [set x |forall k, (k < j)%nat -> g_ k x < g_ j x].
 Proof. by apply/seteqP; split. Qed.
 
-Lemma trivIset_is_max_approxRN (nu : {finite_measure set X -> \bar R}) n :
-  trivIset setT (E nu n).
+Lemma trivIset_is_max_approxRN n : trivIset setT (E n).
 Proof.
 apply/trivIsetP => /= i j _ _ ij.
 apply/seteqP; split => // x []; rewrite /E/= => -[+ + [+ +]].
@@ -813,16 +789,15 @@ wlog : i j ij / (i < j)%N.
 by move=> {}ij Fmgi h Fmgj  => /(_ _ ij); rewrite -Fmgi -Fmgj ltxx.
 Qed.
 
-Lemma bigsetU_is_max_approx_RN (nu : {finite_measure set X -> \bar R}) m :
-  \big[setU/set0]_(j < m.+1) E nu m j = [set: X].
+Lemma bigsetU_is_max_approx_RN m : \big[setU/set0]_(j < m.+1) E m j = [set: X].
 Proof.
 apply/seteqP; split => // x _; rewrite -bigcup_mkord.
-pose j := [arg max_(j > @ord0 m) g_ nu j x]%O.
-have j0_proof : exists k, (k < m.+1)%N && (g_ nu k x == g_ nu j x).
+pose j := [arg max_(j > @ord0 m) g_ j x]%O.
+have j0_proof : exists k, (k < m.+1)%N && (g_ k x == g_ j x).
   by exists j => //; rewrite eqxx andbT.
 pose j0 := ex_minn j0_proof.
 have j0m : (j0 < m.+1)%N by rewrite /j0; case: ex_minnP => // ? /andP[].
-have j0max k : (k < j0)%N -> g_ nu k x < g_ nu j0 x.
+have j0max k : (k < j0)%N -> g_ k x < g_ j0 x.
   rewrite /j0; case: ex_minnP => //= j' /andP[j'm j'j] h kj'.
   rewrite lt_neqAle; apply/andP; split; last first.
     rewrite (eqP j'j) /j; case: arg_maxP => //= i _.
@@ -838,20 +813,19 @@ exists j0 => //; split.
 by move=> k kj; exact: j0max.
 Qed.
 
-Lemma measurable_is_max_approx_RN (nu : {finite_measure set X -> \bar R}) m j :
-  measurable (E nu m j).
+Lemma measurable_is_max_approx_RN m j : measurable (E m j).
 Proof.
 rewrite is_max_approxRNE; apply measurableI => /=.
   by apply: measurable_eq_fun; [exact: measurable_max_approxRN_seq|
                              exact: measurable_approxRN_seq].
 (* TODO : want to use \bigcap_(k < j) [set x | g k x < g j x]) *)
-rewrite [T in measurable T](_ : _ = \bigcap_(k in `I_j) [set x | g_ nu k x < g_ nu j x]).
+rewrite [T in measurable T](_ : _ = \bigcap_(k in `I_j) [set x | g_ k x < g_ j x]).
   apply bigcap_measurable => k _; apply : measurable_lt_fun => //;
   exact: measurable_approxRN_seq.
 by apply/seteqP; split.
 Qed.
 
-End approxRN.
+End approxRN_finite_measure.
 
 (* main lemma for Radon-Nikodym *)
 Section radon_nikodym_finite_ge0.
@@ -1017,7 +991,7 @@ rewrite -(@fineK _ (nu A))// ?fin_num_measure// -[X in _ - X](@fineK _)// -EFinB
 by rewrite /mid ltr_pdivr_mulr// ltr_pmulr// ?ltr1n// subr_gt0 fine_lt// fin_num_measure.
 Qed.
 
-Definition epsRN := proj1_sig epsRN_ex.
+Definition epsRN := sval epsRN_ex.
 
 Definition sigmaRN B := nu B - \int[mu]_(x in B) (f x + epsRN%:num%:E).
 
@@ -1339,8 +1313,7 @@ rewrite -measure_bigcup//.
 - exact: trivIset_setIl.
 Qed.
 
-Theorem Radon_Nikodym
-    (mu : {sigma_finite_measure set X -> \bar R})
+Theorem Radon_Nikodym (mu : {sigma_finite_measure set X -> \bar R})
     (nu : {charge set X -> \bar R}) :
   nu `<< mu ->
   exists2 f : X -> \bar R, mu.-integrable setT f &
