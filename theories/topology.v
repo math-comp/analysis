@@ -1580,6 +1580,14 @@ split=> [E [] //| |]; last by exists U; split.
 by move=> E1 E2 [F1 E1U F2 E2subE1]; split => //; exact: subset_trans E1U.
 Qed.
 
+Lemma powerset_filter_fromP C :
+  F C -> powerset_filter_from [set W | F W /\ W `<=` C].
+Proof.
+move=> FC; exists [set W | F W /\ W `<=` C] => //; split; first by move=> ? [].
+  by move=> ? ? [? ?] ? E2E1; split => //; apply: (subset_trans E2E1).
+by exists C; split.
+Qed.
+
 End NearSet.
 
 Section PrincipalFilters.
@@ -2851,6 +2859,12 @@ Proof.
 by split; [exact: compact_near_covering| exact: near_covering_compact].
 Qed.
 
+Lemma compact_near_coveringE : compact = near_covering.
+Proof.
+apply/ predeqP => ?.
+by split; [exact: compact_near_covering| exact: near_covering_compact].
+Qed.
+
 End near_covering.
 
 Section Tychonoff.
@@ -3019,6 +3033,31 @@ by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 End Tychonoff.
+
+Lemma compact_cluster_set1 {T : topologicalType} (x : T) F V :
+  hausdorff_space T -> compact V -> nbhs x V ->
+  ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
+Proof.
+move=> ? cptV nxV PF FV clFx1 U nbhsU; rewrite nbhs_simpl.
+wlog oU : U nbhsU / open U.
+  rewrite /= nbhsE in nbhsU; case: nbhsU => O oO OsubU /(_ O) WH.
+  by apply: (filterS OsubU); apply: WH; [exact: open_nbhs_nbhs | by case: oO].
+have cptVU : compact (V `\` U). 
+  apply: (subclosed_compact _ cptV) => //.
+  by apply: closedI; [exact: compact_closed | exact: open_closedC].
+rewrite compact_near_coveringE in cptVU.
+have [] := cptVU _ (powerset_filter_from F) (fun W x => ~ W x).
+  move=> z [Vz ?]; have zE : x <> z by move/nbhs_singleton: nbhsU => /[swap] ->.
+  have : ~ cluster F z by move: zE; apply: contra_not; rewrite clFx1 => ->.
+  case/existsNP=> C /existsPNP [D] FC /existsNP [Dz] /set0P/negP/negPn/eqP.
+  rewrite setIC => /disjoints_subset CD0; exists (D, [set W | F W /\ W `<=` C]).
+    by split; rewrite //= nbhs_simpl; exact: powerset_filter_fromP.
+  by case => t W [Dt] [FW] /subsetCP; apply; apply: CD0.
+move=> M [MF ME2 [W] MW /(_ _ MW) VUW].
+apply: (@filterS _ _ _ (V `&` W)); last by apply: filterI => //; exact: MF.
+apply: subsetC2 => t ?; rewrite setCI /=; case: (pselect (V t)); last by left.
+by move=> Vt; right; apply: VUW; split.
+Qed.
 
 Section Precompact.
 
