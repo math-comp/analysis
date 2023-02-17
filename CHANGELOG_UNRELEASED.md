@@ -95,6 +95,9 @@
     `clopen_comp`, `connected_closure`, `clopen_separatedP`, and 
     `clopen_connectedP`.
 
+- in file `topology.v`,
+  + new lemmas `powerset_filter_fromP`, `compact_near_coveringE`, and `compact_cluster_set1`.
+
 ### Changed
 
 - in `fsbigop.v`:
