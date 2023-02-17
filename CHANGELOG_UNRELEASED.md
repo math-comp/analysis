@@ -154,6 +154,11 @@
   + `xsection_preimage_snd`, `ysection_preimage_fst`
 - in `constructive_ereal.v`:
   + `oppeD`, `oppeB`
+- in `measure.v`:
+  + lemma `eq_measure`
+- in `lebesgue_integral.v`:
+  + lemma `integrable_abse`
+
 
 ### Deprecated
 
