@@ -3878,14 +3878,11 @@ Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variable (mu : {measure set T -> \bar R}).
 
-Lemma integrable_abse (D : set T) : measurable D ->
-  forall f : T -> \bar R, mu.-integrable D f -> mu.-integrable D (abse \o f).
+Lemma integrable_abse (D : set T) (f : T -> \bar R) :
+  mu.-integrable D f -> mu.-integrable D (abse \o f).
 Proof.
-move=> mD f [mf fi]; split; first exact: measurable_funT_comp.
-apply: le_lt_trans fi; apply: ge0_le_integral => //.
-- by apply: measurable_funT_comp => //; exact: measurable_funT_comp.
-- exact: measurable_funT_comp.
-- by move=> t Dt //=; rewrite abse_id.
+move=> [mf foo]; split; first exact: measurable_funT_comp.
+by under eq_integral do rewrite abse_id.
 Qed.
 
 Lemma integrable_summable (F : (set T)^nat) (g : T -> \bar R):
@@ -3896,8 +3893,7 @@ Proof.
 move=> tF mF fi.
 rewrite /summable -(_ : [set _ | true] = setT); last exact/seteqP.
 rewrite -nneseries_esum//.
-case: (fi) => _; rewrite ge0_integral_bigcup//; last first.
-  by apply: integrable_abse => //; exact: bigcup_measurable.
+case: (fi) => _; rewrite ge0_integral_bigcup//; last exact: integrable_abse.
 apply: le_lt_trans; apply: lee_lim.
 - exact: is_cvg_ereal_nneg_natsum_cond.
 - by apply: is_cvg_ereal_nneg_natsum_cond => n _ _; exact: integral_ge0.
