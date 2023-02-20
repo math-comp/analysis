@@ -3158,37 +3158,6 @@ split=> [i|]; first by have /getPex [] := cvpFA i.
 by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
-Lemma cluster_set1 {T : topologicalType} (x : T) F V : compact V -> 
-  nbhs x V -> ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
-Proof.
-move=> cptV nxV PF FV clFx1 U/= nbhsU; rewrite nbhs_simpl.
-wlog UsubV : U nbhsU / U `<=` V.
-  move=> WH; apply: (@filterS _ _ _(V `&` U)) => //.
-  by apply: WH => //; exact: filterI.
-wlog oU : U UsubV nbhsU / open U.
-  rewrite nbhsE in nbhsU; case: nbhsU => O [oO OsubU] /(_ O) WH.
-  apply: (filterS OsubU). apply: WH => //; last by case: oO. 
-    exact: (subset_trans _ UsubV).
-  exact: open_nbhs_nbhs.
-apply: contrapT => nFU.
-pose G := filter_from [set A `\` U | A in F] id; have PG : ProperFilter G.
-  apply: filter_from_proper; first apply: filter_from_filter.
-  - by exists (V `\` U); exists V.
-  - move=> i j [A fA <-] [B fB <-]. 
-    rewrite setDE setDE -setIA [~` _ `&` _]setIC -setIA setIid setIA -setDE.
-    by exists (A`&`B `\` U) => //; exists (A `&` B); first exact: filterI.
-  - move=> A [B FB <-]; apply/set0P/eqP => M; rewrite setD_eq0 in M.
-    by apply: nFU; apply: (filterS M).
-have [//|] := cptV G; first by exists (V `\` U) => //; exists V.
-move=> w [Vw clGw].
-have wnx : w != x.
-  apply/eqP => E; have := clGw (V `\` U) U; rewrite setDKI ?E; case => //.
-  by exists (V `\` U) => //; exists V.
-have clFw : cluster F w.
-  by move=> A B FA nbhswB; apply: clGw => //; exists (A `\` U) => //; exists A.
-by move/negP: wnx; apply; apply/eqP; rewrite clFx1 in clFw.
-Qed.
-
 End Tychonoff.
 
 Lemma compact_cluster_set1 {T : topologicalType} (x : T) F V :
