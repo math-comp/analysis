@@ -378,7 +378,7 @@ do !case: ifPn => //= ?; do ?by rewrite ?adde_ge0 ?lee_fin// ?subr_ge0// ?ltW.
 by rewrite addrAC lee_fin ler_add// subr_le0 leNgt.
 Qed.
 
-Lemma hlength_sigma_finite : sigma_finite [set: ocitv_type] hlength.
+Lemma hlength_sigma_finite : sigma_finite (hlength : set ocitv_type -> _).
 Proof.
 exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
   apply/esym; rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
