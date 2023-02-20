@@ -2854,14 +2854,8 @@ move=> /(_ _ _ GP U1x) => [[x'[]]][] Kx' /[swap] U1x'.
 by case; split => // i [? ?]; exact: (subP (x', i)).
 Unshelve. end_near. Qed.
 
-Lemma compact_near_coveringP : compact `<=>` near_covering.
+Lemma compact_near_coveringP A : compact A <-> near_covering A.
 Proof.
-by split; [exact: compact_near_covering| exact: near_covering_compact].
-Qed.
-
-Lemma compact_near_coveringE : compact = near_covering.
-Proof.
-apply/ predeqP => ?.
 by split; [exact: compact_near_covering| exact: near_covering_compact].
 Qed.
 
@@ -3042,10 +3036,9 @@ move=> ? cptV nxV PF FV clFx1 U nbhsU; rewrite nbhs_simpl.
 wlog oU : U nbhsU / open U.
   rewrite /= nbhsE in nbhsU; case: nbhsU => O oO OsubU /(_ O) WH.
   by apply: (filterS OsubU); apply: WH; [exact: open_nbhs_nbhs | by case: oO].
-have cptVU : compact (V `\` U). 
+have /compact_near_coveringP cptVU : compact (V `\` U). 
   apply: (subclosed_compact _ cptV) => //.
   by apply: closedI; [exact: compact_closed | exact: open_closedC].
-rewrite compact_near_coveringE in cptVU.
 have [] := cptVU _ (powerset_filter_from F) (fun W x => ~ W x).
   move=> z [Vz ?]; have zE : x <> z by move/nbhs_singleton: nbhsU => /[swap] ->.
   have : ~ cluster F z by move: zE; apply: contra_not; rewrite clFx1 => ->.
@@ -7400,7 +7393,7 @@ suff : \forall g \near within W (nbhs f), forall y, K y -> E (f y, g y).
 near (powerset_filter_from (@entourage Y)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
 pose Q := fun (h : X -> Y) x => E' (f x, h x).
-apply: compact_near_coveringP.1 => // x Kx.
+apply: (iffLR (compact_near_coveringP K)) => // x Kx.
 near=> y g => /=.
 apply: (entourage_split (f x) eE).
   apply entourage_sym; apply: (near (small_ent_sub _) E') => //.
@@ -7455,7 +7448,7 @@ have [//|U UWx [cptU clU]] := @lcptX x; rewrite withinET in UWx.
 near (powerset_filter_from (@entourage Y)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
 pose Q := fun (y : X) (f : {family compact, X -> Y}) => E' (f x, f y).
-apply: (compact_near_coveringP.1 _ cptW) => f Wf; near=> g y => /=.
+apply: (iffLR (compact_near_coveringP W)) => // f Wf; near=> g y => /=.
 apply: (entourage_split (f x) entE).
   apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
   exact: (near (fam_nbhs _ entE' (@compact_set1 _ x)) g).
