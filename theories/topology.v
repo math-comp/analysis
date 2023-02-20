@@ -3055,8 +3055,7 @@ have [] := cptVU _ (powerset_filter_from F) (fun W x => ~ W x).
   by case => t W [Dt] [FW] /subsetCP; apply; apply: CD0.
 move=> M [MF ME2 [W] MW /(_ _ MW) VUW].
 apply: (@filterS _ _ _ (V `&` W)); last by apply: filterI => //; exact: MF.
-apply: subsetC2 => t ?; rewrite setCI /=; case: (pselect (V t)); last by left.
-by move=> Vt; right; apply: VUW; split.
+by move=> t [Vt Wt]; apply: contrapT => Ut; exact: (VUW t).
 Qed.
 
 Section Precompact.
