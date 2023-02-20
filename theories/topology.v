@@ -1584,7 +1584,7 @@ Lemma powerset_filter_fromP C :
   F C -> powerset_filter_from [set W | F W /\ W `<=` C].
 Proof.
 move=> FC; exists [set W | F W /\ W `<=` C] => //; split; first by move=> ? [].
-  by move=> ? ? [? ?] ? E2E1; split => //; apply: (subset_trans E2E1).
+  by move=> A B [_ AC] FB /subset_trans/(_ AC).
 by exists C; split.
 Qed.
 
