@@ -113,7 +113,7 @@
   + factory `Measure_isSubProbability`
   + factory `FiniteMeasure_isSubProbability`
   + factory `Measure_isSigmaFinite`
-  + lemmas `fin_num_fun_lty`, `finite_measure_fin_num_fun`
+  + lemmas `fin_num_fun_lty`, `lty_fin_num_fun`
   + definition `fin_num_fun`
   + structure `FinNumFun`
 
@@ -140,7 +140,6 @@
 - in `functions.v`:
   + notation `mem_fun_`
 - in `measure.v`:
-  + `finite_measure` is now a lemma that applies to a finite measure
   + order of arguments of `isContent`, `Content`, `measure0`, `isMeasure0`,
     `Measure`, `isSigmaFinite`, `SigmaFiniteContent`, `SigmaFiniteMeasure`
   + `sigma_finite` now specialized to the full set
@@ -197,7 +196,7 @@
   + lemma `integrable_abse`
 
   + `sigma_finite` generalized from `numFieldType` to `numDomainType`
-  + `finite_measure_sigma_finite` generalized from `measurableType` to `algebraOfSetsType`
+  + `fin_num_fun_sigma_finite` generalized from `measurableType` to `algebraOfSetsType`
 
 ### Deprecated
 
