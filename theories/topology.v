@@ -3036,10 +3036,10 @@ move=> ? cptV nxV PF FV clFx1 U nbhsU; rewrite nbhs_simpl.
 wlog oU : U nbhsU / open U.
   rewrite /= nbhsE in nbhsU; case: nbhsU => O oO OsubU /(_ O) WH.
   by apply: (filterS OsubU); apply: WH; [exact: open_nbhs_nbhs | by case: oO].
-have /compact_near_coveringP cptVU : compact (V `\` U). 
+have /compact_near_coveringP : compact (V `\` U).
   apply: (subclosed_compact _ cptV) => //.
   by apply: closedI; [exact: compact_closed | exact: open_closedC].
-have [] := cptVU _ (powerset_filter_from F) (fun W x => ~ W x).
+move=> /(_ _ (powerset_filter_from F) (fun W x => ~ W x))[].
   move=> z [Vz ?]; have zE : x <> z by move/nbhs_singleton: nbhsU => /[swap] ->.
   have : ~ cluster F z by move: zE; apply: contra_not; rewrite clFx1 => ->.
   case/existsNP=> C /existsPNP [D] FC /existsNP [Dz] /set0P/negP/negPn/eqP.
