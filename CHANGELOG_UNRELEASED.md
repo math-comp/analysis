@@ -95,6 +95,9 @@
     `clopen_comp`, `connected_closure`, `clopen_separatedP`, and 
     `clopen_connectedP`.
 
+- in file `topology.v`,
+  + new lemmas `powerset_filter_fromP` and `compact_cluster_set1`.
+
 ### Changed
 
 - in `fsbigop.v`:
@@ -113,6 +116,8 @@
   + lemma `max_fimfun_subproof`
   + mixin `IsNonNegFun`, structure `NonNegFun`, notation `{nnfun _ >-> _}`
 
+- in file `topology.v`,
+  + lemma `compact_near_coveringP`
 ### Renamed
 
 - in `measurable.v`:
