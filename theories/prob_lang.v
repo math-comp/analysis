@@ -164,9 +164,9 @@ rewrite (_ : (fun x => _) = (fun x => x *
     (\1_(`[i%:R%:E, i.+1%:R%:E [%classic : set _) x)%:E)); last first.
   apply/funext => x; case: ifPn => ix; first by rewrite indicE/= mem_set ?mule1.
   by rewrite indicE/= memNset ?mule0// /= in_itv/=; exact/negP.
-apply emeasurable_funM => /=; first exact: measurable_fun_id.
+apply: emeasurable_funM => /=; first exact: measurable_fun_id.
 apply/EFin_measurable_fun.
-by rewrite (_ : \1__ = mindic R (emeasurable_itv1 R i)).
+by rewrite (_ : \1__ = mindic R (emeasurable_itv `[(i%:R)%:E, (i.+1%:R)%:E[)).
 Qed.
 
 Definition mk i t := [the measure _ _ of k mf i t].
@@ -615,7 +615,7 @@ Lemma letin_iteT : f t -> letin (ite mf k1 k2) u t U = letin k1 u t U.
 Proof.
 move=> ftT.
 rewrite !letinE/=.
-apply eq_measure_integral => V mV _.
+apply: eq_measure_integral => V mV _.
 by rewrite iteE ftT.
 Qed.
 
@@ -623,7 +623,7 @@ Lemma letin_iteF : ~~ f t -> letin (ite mf k1 k2) u t U = letin k2 u t U.
 Proof.
 move=> ftF.
 rewrite !letinE/=.
-apply eq_measure_integral => V mV _.
+apply: eq_measure_integral => V mV _.
 by rewrite iteE (negbTE ftF).
 Qed.
 
@@ -679,7 +679,7 @@ Proof. exact: measure_semi_sigma_additive. Qed.
 HB.instance Definition _ z := @isMeasure.Build _ R X (T z) (T0 z) (T_ge0 z)
   (@T_semi_sigma_additive z).
 
-Let sfinT z : sfinite_measure_def (T z). Proof. exact: sfinite_kernel_measure. Qed.
+Let sfinT z : sfinite_measure (T z). Proof. exact: sfinite_kernel_measure. Qed.
 HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ X R
   (T z) (sfinT z).
 
@@ -691,7 +691,7 @@ Proof. exact: measure_semi_sigma_additive. Qed.
 HB.instance Definition _ z := @isMeasure.Build _ R Y (U z) (U0 z) (U_ge0 z)
   (@U_semi_sigma_additive z).
 
-Let sfinU z : sfinite_measure_def (U z). Proof. exact: sfinite_kernel_measure. Qed.
+Let sfinU z : sfinite_measure (U z). Proof. exact: sfinite_kernel_measure. Qed.
 HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ Y R
   (U z) (sfinU z).
 
@@ -710,7 +710,7 @@ under eq_integral.
   rewrite letinE -uu'.
   under eq_integral do rewrite retE /=.
   over.
-rewrite (sfinite_fubini
+rewrite (sfinite_Fubini
   [the {sfinite_measure set X -> \bar R} of T z]
   [the {sfinite_measure set Y -> \bar R} of U z]
   (fun x => \d_(x.1, x.2) A ))//; last first.
