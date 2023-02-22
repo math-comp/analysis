@@ -142,7 +142,6 @@
 - in `measure.v`:
   + order of arguments of `isContent`, `Content`, `measure0`, `isMeasure0`,
     `Measure`, `isSigmaFinite`, `SigmaFiniteContent`, `SigmaFiniteMeasure`
-  + `sigma_finite` now specialized to the full set
 
 ### Renamed
 

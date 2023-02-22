@@ -4381,7 +4381,7 @@ have mF1F2 n : measurable (F1 n `*` F2 n) /\ m (F1 n `*` F2 n) < +oo.
   have [? ?] := F1_oo n; have [? ?] := F2_oo n.
   split; first exact: measurableM.
   by rewrite /m product_measure1E // lte_mul_pinfty// ge0_fin_numE.
-have sm : sigma_finite m by exists (fun n => F1 n `*` F2 n).
+have sm : sigma_finite setT m by exists (fun n => F1 n `*` F2 n).
 pose C : set (set (T1 * T2)) := [set C |
   exists A1, measurable A1 /\ exists A2, measurable A2 /\ C = A1 `*` A2].
 have CI : setI_closed C.
