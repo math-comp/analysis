@@ -7,7 +7,6 @@
 - in `classical_sets.v`:
   + canonical `unit_pointedType`
 - in `measure.v`:
-  + definition `finite_measure`
   + mixin `isProbability`, structure `Probability`, type `probability`
   + lemma `probability_le1`
   + definition `discrete_measurable_unit`
@@ -36,7 +35,7 @@
   + lemmas `measurable_curry`, `measurable_fun_fst`, `measurable_fun_snd`,
     `measurable_fun_swap`, `measurable_fun_pair`, `measurable_fun_if_pair`
   + lemmas `dirac0`, `diracT`
-  + lemma `finite_measure_sigma_finite`
+  + lemma `fin_num_fun_sigma_finite`
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_opp`
 - in `lebesgue_integral.v`
@@ -106,7 +105,7 @@
     notation `{sfinite_measure set _ -> \bar _}`
   + mixin `SigmaFinite_isFinite` with field `fin_num_measure`, structure `FiniteMeasure`,
     notation `{finite_measure set _ -> \bar _}`
-  + lemmas `sfinite_measure_sigma_finite`, `sfinite_mzero`, `sigma_finite_mzero`, `finite_mzero`
+  + lemmas `sfinite_measure_sigma_finite`, `sfinite_mzero`, `sigma_finite_mzero`
   + factory `Measure_isFinite`, `Measure_isSFinite`
   + lemma `sfinite_measure`
   + mixin `FiniteMeasure_isSubProbability`, structure `SubProbability`,
@@ -114,7 +113,7 @@
   + factory `Measure_isSubProbability`
   + factory `FiniteMeasure_isSubProbability`
   + factory `Measure_isSigmaFinite`
-  + lemmas `fin_num_fun_finite_measure`, `finite_measure_fin_num_fun`
+  + lemmas `fin_num_fun_lty`, `finite_measure_fin_num_fun`
   + definition `fin_num_fun`
   + structure `FinNumFun`
 
