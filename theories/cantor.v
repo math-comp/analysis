@@ -46,95 +46,27 @@ Proof. apply: hausdorff_product => ?; exact: discrete_hausdorff. Qed.
 Section perfect_sets.
 
 Implicit Types (T : topologicalType).
-
-Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
-
-Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
+Lemma perfect_set2 {T} : perfect_set [set: T] <->
+  forall (U : set T), open U -> U !=set0 -> 
+  exists x y, [/\ U x, U y & x != y] .
 Proof.
-split.
-  case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
-  by case; [by apply: open_nbhs_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
-move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
-move=> U; rewrite nbhsE; case=> V [][] oV Vx VU.
-have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
-have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
-  move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset. 
-  by split => // ? ->. 
-by exists y; split => //; [exact/eqP | exact: VU].
-Qed.
 
-Lemma perfectTP2 {T} : perfect_set [set: T] <->
-  forall (U : set T), open U -> U!=set0 -> 
-  exists x y, U x /\ U y /\ x != y.
-Proof.
 apply: iff_trans; first exact: perfectTP; split.
   move=> nx1 U oU [] x Ux; exists x.
   have : U <> [set x] by move=> Ux1; apply: (nx1 x); rewrite -Ux1.
   apply: contra_notP; move/not_existsP/contrapT=> Uyx; rewrite eqEsubset.
-  (split => //; last by move=> ? ->); move=> y Uy; have /not_andP := Uyx y.
-  by case => // /not_andP; case => // /negP; rewrite negbK => /eqP ->.
+  (split => //; last by move=> ? ->); move=> y Uy; have  /not_and3P := Uyx y.
+  by case => // /negP; rewrite negbK => /eqP ->.
 move=> Unxy x Ox; have [] := Unxy _ Ox; first by exists x.
-by move=> y [] ? [->] [->] /eqP.
-Qed.
-
-
-Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) :
-  perfect_set [set: K i] -> perfect_set [set: product_topologicalType K].
-Proof.
-move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
-rewrite (_ : [set f i] = proj i @` [set f]).
-  by apply: (@proj_open (classicType_choiceType I) _ i); exact: oF.
-by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
-Qed.
-
-Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType) :
-  (forall i, exists (xy: K i * K i), xy.1 != xy.2) ->
-  perfect_set [set: product_topologicalType K].
-Proof.
-move=> npts; split; [exact: closedT|]; rewrite eqEsubset; split => f // _.
-pose distincts := fun (i : nat) => projT1 (sigW (npts i)).
-pose derange := fun (i : nat) (z : K i) =>
-  if z == (distincts i).1 then (distincts i).2 else (distincts i).1.
-pose g := fun N i => if (i < N)%nat then f i else derange _ (f i).
-have gcvg : g @ \oo --> (f : product_topologicalType K).
-  apply/(@cvg_sup (product_topologicalType K)) => N U [V] [[W] oW <-] [] WfN WU.
-  by apply: (filterS WU); rewrite nbhs_simpl /g; exists N.+1 => // i /= ->.
-move=> A /gcvg; rewrite nbhs_simpl; case=> N _ An.
-exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
-apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
-rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
-by move=> ->; have := projT2 (sigW (npts N)). 
+by move=> y [] ? [->] -> /eqP.
 Qed.
 
 End perfect_sets.
 
 Section clopen.
-Context {T : topologicalType}.
-Definition clopen (U : set T) := open U /\ closed U.
-
-Lemma clopenI (U V : set T) : clopen U -> clopen V -> clopen (U `&` V).
-Proof. by case=> ? ? [? ?]; split; [exact: openI | exact: closedI]. Qed.
-
-Lemma clopenU (U V : set T) : clopen U -> clopen V -> clopen (U `|` V).
-Proof. by case=> ? ? [? ?]; split; [exact: openU | exact: closedU]. Qed.
-
-Lemma clopenC (U : set T) : clopen U -> clopen (~` U).
-Proof. by case=> ??; split; [exact: closed_openC | exact: open_closedC]. Qed.
-
-Lemma clopen0 : clopen set0.
-Proof. by split; [exact: open0 | exact: closed0]. Qed.
-
-Lemma clopenT : clopen setT.
-Proof. by split; [exact: openT | exact: closedT]. Qed.
-End clopen.
-
 Definition totally_disconnected (T : topologicalType) :=
   forall (x y : T), x != y -> exists A, A x /\ ~ A y /\ clopen A.
 
-
-Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
- clopen A -> continuous f -> clopen (f @^-1` A).
-Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
 
 Lemma totally_disconnected_prod (I : choiceType) (T : I -> topologicalType) :
   (forall i, @totally_disconnected (T i)) ->
@@ -213,9 +145,9 @@ have PF : ProperFilter F.
     by split => //; split; [exact: openI | exact: closedI].
   - by move=> ? [? _]; exists x.
 move=> disct cmpT U Ux; rewrite nbhs_simpl -/F; wlog oU : U Ux / open U.
-  move: Ux; rewrite /= {1}nbhsE => [][] O [] Ox OsubU P; apply: (filterS OsubU).
+  move: Ux; rewrite /= {1}nbhsE => [][] O Ox OsubU P; apply: (filterS OsubU).
   by apply: P => //; [exact: open_nbhs_nbhs | case: Ox].
-have /compact_near_coveringP.1 : compact (~`U).
+have /(iffLR (compact_near_coveringP _)): compact (~`U).
   by apply: (subclosed_compact _ cmpT) => //; exact: open_closedC.
 move=> /( _ _ _ (fun C y => ~ C y) (powerset_filter_from_filter PF)); case.
   move=> y nUy; have /disct [C [Cx [] ? [] ? ?]] : x != y. 
@@ -259,7 +191,7 @@ Lemma compact_countable_base {R : realType} {T : pseudoMetricType R} :
 Proof.
 have npos : forall n, ((0:R) < (n.+1%:R^-1))%R by [].
 pose f : nat -> T -> (set T) := fun n z => (ball z (PosNum (npos n))%:num)^°.
-move=> cmpt; have h : forall n, finSubCover [set: T] (f n) [set: T].
+move=> cmpt; have h : forall n, finite_subset_cover [set: T] (f n) [set: T].
   move=> n; rewrite compact_cover in cmpt; apply: cmpt.
     by move=> z _; rewrite /f; exact: open_interior.
   move=> z _; exists z => //; rewrite /f/interior; exact: nbhsx_ballx.
@@ -310,7 +242,7 @@ Let U_ := unsquash clopen_surj.
 Local Lemma split_clopen (U : set T) : open U -> U !=set0 -> 
   exists V, clopen V /\ V `&` U !=set0 /\ ~`V `&` U !=set0.
 Proof.
-move=> oU Un0; have [x [y] [Ux] [Uy] xny] := (iffLR perfectTP2) pftT U oU Un0.
+move=> oU Un0; have [x [y] [Ux] Uy xny] := (iffLR perfect_set2) pftT U oU Un0.
 have [V [?] [?] [? ?]] := dsctT xny; exists V. 
 by repeat split => //; [exists x | exists y].
 Qed.
@@ -464,8 +396,7 @@ Let tree_map (x : T) : cantor_space := fun n => x \in level n true.
 
 Local Lemma continuous_tree_map : continuous tree_map.
 move=> x; apply/cvg_sup => /= n U /=; rewrite {1}/nbhs /=; case=> ? [][M oM <-].
-case => /= Mtxn /filterS; apply; rewrite /nbhs /=.
-rewrite /preimage /=; apply: separator_continuous.
+move=> Mtxn /filterS; apply; apply: separator_continuous.
 - by case: (lvl_clopen n true).
 - by case: (lvl_clopen n true).
 - by rewrite /=/nbhs /=; apply/principal_filterP.
@@ -558,7 +489,7 @@ have PG : ProperFilter G.
   - move=> i _; apply: node_n0.
 exists G; split => //; apply/cvg_sup => i U.
 rewrite /= {1}/nbhs /=; case=> ? [][M oM <-].
-case => /= Mtxn /filterS; apply; rewrite /nbhs /= nbhs_simpl.
+move => /= Mtxn /filterS; apply; rewrite /nbhs /= nbhs_simpl.
 exists i.+1 => // z fiz /=; suff -> : tree_map z i = f i by done.
 rewrite /tree_map; move: fiz; rewrite [branch_prefix _ _]/=; case E: (f i). 
   move=> nfz. apply: asboolT; exists (branch_prefix f i) => //.
@@ -1072,9 +1003,8 @@ elim: n; first by near=> z => ?; rewrite ltn0.
 move=> n IH.
 near=> z => i; rewrite leq_eqVlt => /orP []; first last.
   move=> iSn; have -> := near IH z => //.
-  move=> /eqP/(succn_inj) ->.
-near: z.
-  exists ((proj n)@^-1` [set (y n)]); split; last by split.
+move=> /eqP/(succn_inj) ->; near: z.
+  exists ((proj n)@^-1` [set (y n)]); split => //.
   suff : @open Ttree ((proj n)@^-1` [set (y n)]) by [].
   apply: open_comp; last apply: discrete_open => //.
   by move=> + _; apply: proj_continuous.

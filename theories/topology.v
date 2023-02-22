@@ -2985,12 +2985,6 @@ Proof.
 by split; [exact: compact_near_covering| exact: near_covering_compact].
 Qed.
 
-Lemma compact_near_coveringE : compact = near_covering.
-Proof.
-apply/predeqP => E; have [P Q] := compact_near_coveringP.
-by split; [exact: P | exact: Q].
-Qed.
-
 End near_covering.
 
 Section Tychonoff.
