@@ -1562,8 +1562,9 @@ Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : (\bar R)^nat)
   nondecreasing_seq (fun n => \sum_(0 <= i < n | P i) u_ i).
 Proof. by move=> u_ge0 n m nm; rewrite lee_sum_nneg_natr// => k _ /u_ge0. Qed.
 
-Lemma eq_eseries (R : realFieldType) (f g : (\bar R)^nat) (P : pred nat) :
-  (forall i, P i -> f i = g i) -> \sum_(i <oo | P i) f i = \sum_(i <oo | P i) g i.
+Lemma eq_eseriesr (R : realFieldType) (f g : (\bar R)^nat) (P : pred nat) :
+  (forall i, P i -> f i = g i) ->
+  \sum_(i <oo | P i) f i = \sum_(i <oo | P i) g i.
 Proof. by move=> efg; congr (lim _); apply/funext => n; exact: eq_bigr. Qed.
 
 Section ereal_series.
@@ -1944,8 +1945,8 @@ Proof.
 move=> f_ge0; case Dr : r => [|i r']; rewrite -?{}[_ :: _]Dr.
   by rewrite big_nil eseries0// => i; rewrite big_nil.
 rewrite {r'}(big_nth i) big_mkcond.
-rewrite (eq_eseries (fun _ _ => big_nth i _ _)).
-rewrite (eq_eseries (fun _ _ => big_mkcond _ _))/=.
+rewrite (eq_eseriesr (fun _ _ => big_nth i _ _)).
+rewrite (eq_eseriesr (fun _ _ => big_mkcond _ _))/=.
 rewrite nneseries_sum_nat; last by move=> ? ?; case: ifP => // /f_ge0.
 by apply: eq_bigr => j _; case: ifP => //; rewrite eseries0.
 Qed.
@@ -1977,8 +1978,8 @@ Proof. by congr (lim _); apply: eq_fun => n /=; apply: big_mkcond. Qed.
 End sequences_ereal.
 #[deprecated(since="analysis 0.6.0", note="Use eseries0 instead.")]
 Notation nneseries0 := eseries0.
-#[deprecated(since="analysis 0.6.0", note="Use eq_eseries instead.")]
-Notation eq_nneseries := eq_eseries.
+#[deprecated(since="analysis 0.6.0", note="Use eq_eseriesr instead.")]
+Notation eq_nneseries := eq_eseriesr.
 #[deprecated(since="analysis 0.6.0", note="Use eseries_pred0 instead.")]
 Notation nneseries_pred0 := eseries_pred0.
 #[deprecated(since="analysis 0.6.0", note="Use eseries_mkcond instead.")]

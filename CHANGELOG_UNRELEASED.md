@@ -144,6 +144,8 @@
   + `doppeB` -> `fin_num_doppeB`
 - in `topology.v`:
   + `finSubCover` -> `finite_subset_cover`
+- in `sequences.v`:
+  + `eq_eseries` -> `eq_eseriesr`
 
 ### Generalized
 
