@@ -105,11 +105,13 @@ From HB Require Import structures.
 (*      counting T R == counting measure                                      *)
 (*                                                                            *)
 (* * Hierarchy of s-finite, sigma-finite, finite measures:                    *)
-(*     sfinite_measure_def == predicate for s-finite measure functions        *)
+(*     sfinite_measure == predicate for s-finite measure functions            *)
 (*     Measure_isSFinite_subdef == mixin for s-finite measures                *)
 (*     SFiniteMeasure == structure of s-finite measures                       *)
 (*     {sfinite_measure set T -> \bar R} == type of s-finite measures         *)
 (*     Measure_isSFinite == factory for s-finite measures                     *)
+(*     sfinite_measure_seq mu == the sequence of finite measures of the       *)
+(*                               s-finite measure mu                          *)
 (*                                                                            *)
 (*     sigma_finite A f == the measure function f is sigma-finite on the set  *)
 (*                         A : set T  with T : semiRingOfSetsType             *)
@@ -2552,7 +2554,7 @@ move=> h U mU; rewrite fin_real// (lt_le_trans _ (measure_ge0 mu U))//=.
 by rewrite (le_lt_trans _ h)//= le_measure// inE.
 Qed.
 
-Definition sfinite_measure_def d (T : measurableType d) (R : realType)
+Definition sfinite_measure d (T : measurableType d) (R : realType)
     (mu : set T -> \bar R) :=
   exists2 s : {measure set T -> \bar R}^nat,
     forall n, fin_num_fun (s n) &
@@ -2574,9 +2576,9 @@ Qed.
 
 Lemma sfinite_measure_sigma_finite d (T : measurableType d)
     (R : realType) (mu : {measure set T -> \bar R}) :
-  sigma_finite setT mu -> sfinite_measure_def mu.
+  sigma_finite setT mu -> sfinite_measure mu.
 Proof.
-move=> [F UF mF]; rewrite /sfinite_measure_def.
+move=> [F UF mF]; rewrite /sfinite_measure.
 have mDF k : measurable (seqDU F k).
   apply: measurableD; first exact: (mF k).1.
   by apply: bigsetU_measurable => i _; exact: (mF i).1.
@@ -2597,7 +2599,7 @@ Qed.
 
 HB.mixin Record Measure_isSFinite_subdef d (T : measurableType d)
     (R : realType) (mu : set T -> \bar R) := {
-  sfinite_measure_subdef : sfinite_measure_def mu }.
+  sfinite_measure_subdef : sfinite_measure mu }.
 
 HB.structure Definition SFiniteMeasure
     d (T : measurableType d) (R : realType) :=
@@ -2639,7 +2641,7 @@ HB.factory Record Measure_isSigmaFinite d (T : measurableType d) (R : realType)
 HB.builders Context d (T : measurableType d) (R : realType)
   mu of @Measure_isSigmaFinite d T R mu.
 
-Lemma sfinite : sfinite_measure_def mu.
+Lemma sfinite : sfinite_measure mu.
 Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finiteT. Qed.
 
 HB.instance Definition _ := @Measure_isSFinite_subdef.Build _ _ _ mu sfinite.
@@ -2655,8 +2657,8 @@ Proof. by apply: fin_num_fun_sigma_finite => //; rewrite measure0. Qed.
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
   @isSigmaFinite.Build d T R mzero (@sigma_finite_mzero d T R).
 
-Lemma sfinite_mzero d (T : measurableType d)
-  (R : realType) : sfinite_measure_def (@mzero d T R).
+Lemma sfinite_mzero d (T : measurableType d) (R : realType) :
+  sfinite_measure (@mzero d T R).
 Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finite_mzero. Qed.
 
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
@@ -2684,7 +2686,7 @@ HB.factory Record Measure_isFinite d (T : measurableType d)
 HB.builders Context d (T : measurableType d) (R : realType) k
   of Measure_isFinite d T R k.
 
-Let sfinite : sfinite_measure_def k.
+Let sfinite : sfinite_measure k.
 Proof.
 apply: sfinite_measure_sigma_finite.
 by apply: fin_num_fun_sigma_finite; [rewrite measure0|exact: fin_num_measure].
@@ -2713,14 +2715,13 @@ HB.factory Record Measure_isSFinite d (T : measurableType d)
 HB.builders Context d (T : measurableType d) (R : realType)
   k of Measure_isSFinite d T R k.
 
-Let sfinite : sfinite_measure_def k.
+Let sfinite : sfinite_measure k.
 Proof.
 have [s sE] := sfinite_measure_subdef.
 by exists s => //=> n; exact: fin_num_measure.
 Qed.
 
-HB.instance Definition _ := @Measure_isSFinite_subdef.Build d T R k
-  sfinite.
+HB.instance Definition _ := @Measure_isSFinite_subdef.Build d T R k sfinite.
 
 HB.end.
 
@@ -2739,8 +2740,7 @@ Proof. by rewrite /s; case: cid2. Qed.
 
 Let s_semi_sigma_additive n : semi_sigma_additive (s n).
 Proof.
-rewrite /s; case: cid2 => s' s'1 s'2.
-exact: measure_semi_sigma_additive.
+by rewrite /s; case: cid2 => s' s'1 s'2; exact: measure_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ n := @isMeasure.Build _ _ _ (s n) (s0 n) (s_ge0 n)
@@ -2749,14 +2749,15 @@ HB.instance Definition _ n := @isMeasure.Build _ _ _ (s n) (s0 n) (s_ge0 n)
 Let s_fin n : fin_num_fun (s n).
 Proof. by rewrite /s; case: cid2 => F finF muE; exact: finF. Qed.
 
-HB.instance Definition _ n :=
-  @Measure_isFinite.Build d T R (s n) (s_fin n).
+HB.instance Definition _ n := @Measure_isFinite.Build d T R (s n) (s_fin n).
 
-Lemma sfinite_measure : exists s : {finite_measure set T -> \bar R}^nat,
-  forall U, measurable U -> mu U = mseries s O U.
+Definition sfinite_measure_seq : {finite_measure set T -> \bar R}^nat :=
+  fun n => [the {finite_measure set T -> \bar R} of s n].
+
+Lemma sfinite_measure_seqP U : measurable U ->
+  mu U = mseries sfinite_measure_seq O U.
 Proof.
-exists (fun n => [the {finite_measure set T -> \bar R} of s n]) => U mU.
-by rewrite /mseries /= /s; case: cid2 => // x xfin ->.
+by move=> mU; rewrite /mseries /= /s; case: cid2 => // x xfin ->.
 Qed.
 
 End sfinite_measure.

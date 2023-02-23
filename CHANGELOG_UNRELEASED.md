@@ -107,7 +107,7 @@
     notation `{finite_measure set _ -> \bar _}`
   + lemmas `sfinite_measure_sigma_finite`, `sfinite_mzero`, `sigma_finite_mzero`
   + factory `Measure_isFinite`, `Measure_isSFinite`
-  + lemma `sfinite_measure`
+  + defintion `sfinite_measure_seq`, lemma `sfinite_measure_seqP`
   + mixin `FiniteMeasure_isSubProbability`, structure `SubProbability`,
     notation `subprobability`
   + factory `Measure_isSubProbability`
