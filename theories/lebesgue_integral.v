@@ -3754,9 +3754,8 @@ apply: (@le_lt_trans _ _ (\sum_(i <oo) `|fine (a i)|%:E)).
   apply: lee_nneseries => // n _; rewrite integral_dirac//.
   move: (@summable_pinfty _ _ _ _ sa n Logic.I).
   by case: (a n) => //= r _; rewrite indicE/= mem_set// mul1r.
-move: (sa); rewrite /summable (_ : [set: nat] = xpredT)//; last exact/seteqP.
-rewrite -nneseries_esum//; apply: le_lt_trans.
-by apply: lee_nneseries => // n _ /=; case: (a n) => //; rewrite leey.
+move: (sa); rewrite /summable -fun_true -nneseries_esum//; apply: le_lt_trans.
+by apply lee_nneseries => // n _ /=; case: (a n) => //; rewrite leey.
 Qed.
 
 Lemma integral_count (a : nat -> \bar R) : summable setT a ->

@@ -2543,7 +2543,7 @@ Definition fin_num_fun d (T : semiRingOfSetsType d) (R : numDomainType)
   (mu : set T -> \bar R) := forall U, measurable U -> mu U \is a fin_num.
 
 Lemma fin_num_fun_lty d (T : algebraOfSetsType d) (R : realFieldType)
-    (mu : set T -> \bar R) : fin_num_fun mu -> mu setT < +oo.
+  (mu : set T -> \bar R) : fin_num_fun mu -> mu setT < +oo.
 Proof. by move=> h; rewrite ltey_eq h. Qed.
 
 Lemma lty_fin_num_fun d (T : algebraOfSetsType d)
