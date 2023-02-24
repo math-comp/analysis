@@ -3829,9 +3829,10 @@ End integrable_fune.
 
 Section integral_counting.
 Local Open Scope ereal_scope.
-Variables (R : realType).
+Variable R : realType.
 
-Lemma counting_dirac (A : set nat) : counting R A = \sum_(n <oo) \d_ n A.
+Lemma counting_dirac (A : set nat) :
+  counting A = \sum_(n <oo) \d_ n A :> \bar R.
 Proof.
 have -> : \sum_(n <oo) \d_ n A = \esum_(i in A) \d_ i A :> \bar R.
   rewrite nneseries_esum// (_ : [set _ | _] = setT); last exact/seteqP.
@@ -3850,13 +3851,12 @@ apply: (@le_lt_trans _ _ (\sum_(i <oo) `|fine (a i)|%:E)).
   apply: lee_nneseries => // n _; rewrite integral_dirac//.
   move: (@summable_pinfty _ _ _ _ sa n Logic.I).
   by case: (a n) => //= r _; rewrite indicE/= mem_set// mul1r.
-move: (sa); rewrite /summable (_ : [set: nat] = (fun=> true))//; last exact/seteqP.
-rewrite -nneseries_esum//; apply: le_lt_trans.
-by apply: lee_nneseries => // n _ /=; case: (a n) => //; rewrite leey.
+move: (sa); rewrite /summable -fun_true -nneseries_esum//; apply: le_lt_trans.
+by apply lee_nneseries => // n _ /=; case: (a n) => //; rewrite leey.
 Qed.
 
 Lemma integral_count (a : nat -> \bar R) : summable setT a ->
-  \int[counting R]_t (a t) = \sum_(k <oo) (a k).
+  \int[counting]_t (a t) = \sum_(k <oo) (a k).
 Proof.
 move=> sa.
 transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).

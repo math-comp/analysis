@@ -87,12 +87,6 @@ From HB Require Import structures.
 (*                   that it is semi_sigma_additive                           *)
 (*     isMeasure == factory corresponding to the type of measures             *)
 (*     Measure == structure corresponding to measures                         *)
-(*     finite_measure mu == the measure mu is finite                          *)
-(*  {sigma_finite_content set T -> \bar R} == contents that are also sigma    *)
-(*                                            finite                          *)
-(*  {sigma_finite_measure set T -> \bar R} ==                                 *)
-(*                    measures that are also sigma finite                     *)
-(*     isSigmaFinite == factory corresponding to sigma finiteness             *)
 (*                                                                            *)
 (*  pushforward mf m == pushforward/image measure of m by f, where mf is a    *)
 (*                      proof that f is measurable                            *)
@@ -110,8 +104,40 @@ From HB Require Import structures.
 (*                      proof that D is measurable                            *)
 (*      counting T R == counting measure                                      *)
 (*                                                                            *)
-(*   sigma_finite A f == the measure f is sigma-finite on A : set T with      *)
-(*                       T : ringOfSetsType.                                  *)
+(* * Hierarchy of s-finite, sigma-finite, finite measures:                    *)
+(*     sfinite_measure == predicate for s-finite measure functions            *)
+(*     Measure_isSFinite_subdef == mixin for s-finite measures                *)
+(*     SFiniteMeasure == structure of s-finite measures                       *)
+(*     {sfinite_measure set T -> \bar R} == type of s-finite measures         *)
+(*     Measure_isSFinite == factory for s-finite measures                     *)
+(*     sfinite_measure_seq mu == the sequence of finite measures of the       *)
+(*                               s-finite measure mu                          *)
+(*                                                                            *)
+(*     sigma_finite A f == the measure function f is sigma-finite on the set  *)
+(*                         A : set T  with T : semiRingOfSetsType             *)
+(*     isSigmaFinite == mixin corresponding to sigma finiteness               *)
+(*     {sigma_finite_content set T -> \bar R} == contents that are also sigma *)
+(*                                               finite                       *)
+(*     {sigma_finite_measure set T -> \bar R} == measures that are also sigma *)
+(*                                               finite                       *)
+(*                                                                            *)
+(*     fin_num_fun == predicate for finite function over measurable sets      *)
+(*     SigmaFinite_isFinite == mixin for finite measures                      *)
+(*     FiniteMeasure == structure of finite measures                          *)
+(*     Measure_isFinite == factory for finite measures                        *)
+(*                                                                            *)
+(*     FiniteMeasure_isSubProbability = mixin corresponding to subprobability *)
+(*     SubProbability = structure of subprobability                           *)
+(*     subprobability T R == subprobability measure over the measurableType T *)
+(*                           with value in R : realType                       *)
+(*     Measure_isSubProbability == factory for subprobability measures        *)
+(*                                                                            *)
+(*     isProbability == mixin corresponding to probability measures           *)
+(*     Probability == structure of probability measures                       *)
+(*     probability T R == probability measure over the measurableType T with  *)
+(*                        value in R : realType                               *)
+(*     Measure_isProbability == factor for probability measures               *)
+(*                                                                            *)
 (*   mu.-negligible A == A is mu negligible                                   *)
 (*   {ae mu, forall x, P x} == P holds almost everywhere for the measure mu   *)
 (*                                                                            *)
@@ -156,8 +182,6 @@ From HB Require Import structures.
 (*                             generated from T1 x T2, with T1 and T2         *)
 (*                             measurableType's with resp. display d1 and d2  *)
 (*                                                                            *)
-(*      probability T R == probability measure over the measurableType T with *)
-(*                         value in R : realType                              *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -1215,10 +1239,6 @@ Definition sigma_sub_additive := forall (A : set T) (F : nat -> set T),
   A `<=` \bigcup_n F n ->
   mu A <= \sum_(n <oo) mu (F n).
 
-Definition sigma_finite (A : set T) (mu : set T -> \bar R) :=
-  exists2 F : (set T)^nat,  A = \bigcup_(i : nat) F i &
-      forall i, measurable (F i) /\ mu (F i) < +oo.
-
 Lemma semi_additiveW : mu set0 = 0 -> semi_additive -> semi_additive2.
 Proof.
 move=> mu0 amx A B mA mB + AB; rewrite -bigcup2inE bigcup_mkord.
@@ -1259,7 +1279,7 @@ End ring_additivity.
 
 Lemma semi_sigma_additive_is_additive d
   (R : realFieldType (*TODO: numFieldType if possible?*))
-  (X : semiRingOfSetsType d) (mu : set X -> \bar R) :
+  (T : semiRingOfSetsType d) (mu : set T -> \bar R) :
   mu set0 = 0 -> semi_sigma_additive mu -> semi_additive mu.
 Proof.
 move=> mu0 samu A n Am Atriv UAm.
@@ -1280,7 +1300,7 @@ by rewrite [X in _ + X]big1 ?adde0// => ?; rewrite -ltn_subRL subnn.
 Unshelve. all: by end_near. Qed.
 
 Lemma semi_sigma_additiveE
-  (R : numFieldType) d (X : measurableType d) (mu : set X -> \bar R) :
+  (R : numFieldType) d (T : measurableType d) (mu : set T -> \bar R) :
   semi_sigma_additive mu = sigma_additive mu.
 Proof.
 rewrite propeqE; split=> [amu A mA tA|amu A mA tA mbigcupA]; last exact: amu.
@@ -1288,7 +1308,7 @@ by apply: amu => //; exact: bigcupT_measurable.
 Qed.
 
 Lemma sigma_additive_is_additive
-  (R : realFieldType) d (X : measurableType d) (mu : set X -> \bar R) :
+  (R : realFieldType) d (T : measurableType d) (mu : set T -> \bar R) :
   mu set0 = 0 -> sigma_additive mu -> additive mu.
 Proof.
 move=> mu0; rewrite -semi_sigma_additiveE -semi_additiveE.
@@ -1296,23 +1316,23 @@ exact: semi_sigma_additive_is_additive.
 Qed.
 
 HB.mixin Record isContent d
-    (R : numFieldType) (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
+    (T : semiRingOfSetsType d) (R : numFieldType) (mu : set T -> \bar R) := {
   measure_ge0 : forall x, 0 <= mu x ;
   measure_semi_additive : semi_additive mu }.
 
 HB.structure Definition Content d
-    (R : numFieldType) (T : semiRingOfSetsType d) := {
-  mu & isContent d R T mu }.
+    (T : semiRingOfSetsType d) (R : numFieldType) := {
+  mu & isContent d T R mu }.
 
 Notation content := Content.type.
 Notation "{ 'content' 'set' T '->' '\bar' R }" :=
-  (content R T) (at level 36, T, R at next level,
+  (content T R) (at level 36, T, R at next level,
     format "{ 'content'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
-Arguments measure_ge0 {d R T} _.
+Arguments measure_ge0 {d T R} _.
 
 Section content_signed.
-Context d (R : numFieldType) (T : semiRingOfSetsType d).
+Context d (T : semiRingOfSetsType d) (R : numFieldType).
 
 Variable mu : {content set T -> \bar R}.
 
@@ -1324,7 +1344,7 @@ Canonical content_snum S := Signed.mk (content_snum_subproof S).
 End content_signed.
 
 Section content_on_semiring_of_sets.
-Context d (R : numFieldType) (T : semiRingOfSetsType d)
+Context d (T : semiRingOfSetsType d) (R : numFieldType)
         (mu : {content set T -> \bar R}).
 
 Lemma measure0 : mu set0 = 0.
@@ -1389,7 +1409,7 @@ Proof. exact/semi_additiveW. Qed.
 Hint Resolve measure_semi_additive2 : core.
 
 End content_on_semiring_of_sets.
-Arguments measure0 {d R T} _.
+Arguments measure0 {d T R} _.
 
 #[global] Hint Extern 0
   (is_true (0%R <= (_ : {content set _ -> \bar _}) _)%E) =>
@@ -1452,17 +1472,16 @@ End content_on_ring_of_sets.
 #[global]
 Hint Resolve measureU measure_bigsetU : core.
 
-HB.mixin Record isMeasure0 d
-    (R : numFieldType) (T : semiRingOfSetsType d)
-    mu of isContent d R T mu := {
+HB.mixin Record isMeasure0 d (T : semiRingOfSetsType d) (R : numFieldType)
+    mu of isContent d T R mu := {
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=measure)]
-HB.structure Definition Measure d
-    (R : numFieldType) (T : semiRingOfSetsType d) :=
-  {mu of isMeasure0 d R T mu & Content d mu}.
+HB.structure Definition Measure d (T : semiRingOfSetsType d)
+    (R : numFieldType) :=
+  {mu of isMeasure0 d T R mu & Content d mu}.
 
-Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure R T)
+Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure T R)
   (at level 36, T, R at next level,
     format "{ 'measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
@@ -1494,9 +1513,9 @@ apply: semi_sigma_additive_is_additive.
 - exact: measure_semi_sigma_additive.
 Qed.
 
-HB.instance Definition _ := isContent.Build d R T mu
+HB.instance Definition _ := isContent.Build d T R mu
   measure_ge0 semi_additive_mu.
-HB.instance Definition _ := isMeasure0.Build d R T mu measure_semi_sigma_additive.
+HB.instance Definition _ := isMeasure0.Build d T R mu measure_semi_sigma_additive.
 HB.end.
 
 Lemma eq_measure d (T : measurableType d) (R : realFieldType)
@@ -1547,47 +1566,6 @@ Arguments measure_bigcup {d R T} _ _.
 
 #[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
-
-Definition finite_measure d (T : measurableType d) (R : numDomainType)
-    (mu : set T -> \bar R) :=
-  mu setT < +oo.
-
-Lemma finite_measure_sigma_finite d (T : measurableType d) (R : realFieldType)
-  (mu : {measure set T -> \bar R}) :
-  finite_measure mu -> sigma_finite setT mu.
-Proof.
-exists (fun i => if i \in [set 0%N] then setT else set0).
-  by rewrite -bigcup_mkcondr setTI bigcup_const//; exists 0%N.
-move=> n; split; first by case: ifPn.
-by case: ifPn => // _; rewrite ?measure0//; exact: finite_measure.
-Qed.
-
-HB.mixin Record isSigmaFinite d (R : numFieldType) (T : semiRingOfSetsType d)
-    (mu : set T -> \bar R) := {
-  sigma_finiteT : sigma_finite setT mu
-}.
-
-#[short(type="sigma_finite_content")]
-HB.structure Definition SigmaFiniteContent d R T :=
-  {mu of isSigmaFinite d R T mu & @Content d R T mu}.
-Arguments sigma_finiteT {d R T} s.
-
-Notation "{ 'sigma_finite_content' 'set' T '->' '\bar' R }" :=
-  (sigma_finite_content R T)
-  (at level 36, T, R at next level,
-    format "{ 'sigma_finite_content'  'set'  T  '->'  '\bar'  R }")
-  : ring_scope.
-
-#[global]
-Hint Resolve sigma_finiteT : core.
-
-#[short(type="sigma_finite_measure")]
-HB.structure Definition SigmaFiniteMeasure d R T :=
-  {mu of isSigmaFinite d R T mu & @Measure d R T mu}.
-
-Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" := (sigma_finite_measure R T)
-  (at level 36, T, R at next level,
-    format "{ 'sigma_finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
 Section pushforward_measure.
 Local Open Scope ereal_scope.
@@ -1859,17 +1837,20 @@ HB.instance Definition _ := isMeasure.Build _ _ _ restr
 
 End measure_restr.
 
+Definition counting (T : choiceType) (R : realType) (X : set T) : \bar R :=
+  if `[< finite_set X >] then (#|` fset_set X |)%:R%:E else +oo.
+Arguments counting {T R}.
+
 Section measure_count.
 Context d (T : measurableType d) (R : realType).
 Variables (D : set T) (mD : measurable D).
 
-Definition counting (X : set T) : \bar R :=
-  if `[< finite_set X >] then (#|` fset_set X |)%:R%:E else +oo.
+Local Notation counting := (@counting [choiceType of T] R).
 
 Let counting0 : counting set0 = 0.
 Proof. by rewrite /counting asboolT// fset_set0. Qed.
 
-Let counting_ge0 (A : set _) : 0 <= counting A.
+Let counting_ge0 (A : set T) : 0 <= counting A.
 Proof. by rewrite /counting; case: ifPn; rewrite ?lee_fin// lee_pinfty. Qed.
 
 Let counting_sigma_additive : semi_sigma_additive counting.
@@ -1882,7 +1863,7 @@ have [[i Fi]|infinF] := pselect (exists k, infinite_set (F k)).
   apply/cvgeyPge => M; near=> n.
   have ni : (i < n)%N by near: n; exists i.+1.
   rewrite (bigID (xpred1 i))/= big_mkord (big_pred1 (Ordinal ni))//=.
-  rewrite [X in X + _]/counting asboolF// addye ?leey//.
+  rewrite [X in X + _]/(counting _) asboolF// addye ?leey//.
   by rewrite gt_eqF// (@lt_le_trans _ _ 0)//; exact: sume_ge0.
 have {infinF}finF : forall i, finite_set (F i) by exact/not_forallP.
 pose u : nat^nat := fun n => #|` fset_set (F n) |.
@@ -1930,15 +1911,6 @@ HB.instance Definition _ := isMeasure.Build _ _ _ counting
   counting0 counting_ge0 counting_sigma_additive.
 
 End measure_count.
-
-Lemma sigma_finite_counting (R : realType) :
-  sigma_finite [set: nat] (counting R).
-Proof.
-exists (fun n => `I_n.+1); first by apply/seteqP; split=> //x _; exists x => /=.
-by move=> k; split => //; rewrite /counting/= asboolT// ltry.
-Qed.
-HB.instance Definition _ R :=
-  @isSigmaFinite.Build _ _ _ (counting R) (sigma_finite_counting R).
 
 Lemma big_trivIset (I : choiceType) D T (R : Type) (idx : R)
    (op : Monoid.com_law idx) (A : I -> set T) (F : set T -> R) :
@@ -2544,6 +2516,308 @@ HB.instance Definition _ := isMeasure0.Build _ _ _ Rmu
   ring_sigma_content.
 
 End ring_sigma_content.
+
+Definition fin_num_fun d (T : semiRingOfSetsType d) (R : numDomainType)
+  (mu : set T -> \bar R) := forall U, measurable U -> mu U \is a fin_num.
+
+Lemma fin_num_fun_lty d (T : algebraOfSetsType d) (R : realFieldType)
+  (mu : set T -> \bar R) : fin_num_fun mu -> mu setT < +oo.
+Proof. by move=> h; rewrite ltey_eq h. Qed.
+
+Lemma lty_fin_num_fun d (T : algebraOfSetsType d)
+    (R : realFieldType) (mu : {measure set T -> \bar R}) :
+  mu setT < +oo -> fin_num_fun mu.
+Proof.
+move=> h U mU; rewrite fin_real// (lt_le_trans _ (measure_ge0 mu U))//=.
+by rewrite (le_lt_trans _ h)//= le_measure// inE.
+Qed.
+
+Definition sfinite_measure d (T : measurableType d) (R : realType)
+    (mu : set T -> \bar R) :=
+  exists2 s : {measure set T -> \bar R}^nat,
+    forall n, fin_num_fun (s n) &
+    forall U, measurable U -> mu U = mseries s 0 U.
+
+Definition sigma_finite d (T : semiRingOfSetsType d) (R : numDomainType)
+    (A : set T) (mu : set T -> \bar R) :=
+  exists2 F : (set T)^nat, A = \bigcup_(i : nat) F i &
+      forall i, measurable (F i) /\ mu (F i) < +oo.
+
+Lemma fin_num_fun_sigma_finite d (T : algebraOfSetsType d)
+    (R : realFieldType) (mu : set T -> \bar R) : mu set0 < +oo ->
+  fin_num_fun mu -> sigma_finite setT mu.
+Proof.
+move=> muoo; exists (fun i => if i \in [set 0%N] then setT else set0).
+  by rewrite -bigcup_mkcondr setTI bigcup_const//; exists 0%N.
+by move=> n; split; case: ifPn => // _; rewrite fin_num_fun_lty.
+Qed.
+
+Lemma sfinite_measure_sigma_finite d (T : measurableType d)
+    (R : realType) (mu : {measure set T -> \bar R}) :
+  sigma_finite setT mu -> sfinite_measure mu.
+Proof.
+move=> [F UF mF]; rewrite /sfinite_measure.
+have mDF k : measurable (seqDU F k).
+  apply: measurableD; first exact: (mF k).1.
+  by apply: bigsetU_measurable => i _; exact: (mF i).1.
+exists (fun k => [the measure _ _ of mrestr mu (mDF k)]) => [n|U mU].
+- apply: lty_fin_num_fun => //=.
+  rewrite /mrestr setTI (@le_lt_trans _ _ (mu (F n)))//.
+  + apply: le_measure; last exact: subDsetl.
+    * rewrite inE; apply: measurableD; first exact: (mF n).1.
+      by apply: bigsetU_measurable => i _; exact: (mF i).1.
+    * by rewrite inE; exact: (mF n).1.
+  + exact: (mF n).2.
+rewrite /mseries/= /mrestr/=; apply/esym/cvg_lim => //.
+rewrite -[X in _ --> mu X]setIT UF seqDU_bigcup_eq setI_bigcupr.
+apply: (@measure_sigma_additive _ _ _ mu (fun k => U `&` seqDU F k)).
+  by move=> i; exact: measurableI.
+exact/trivIset_setIl/trivIset_seqDU.
+Qed.
+
+HB.mixin Record Measure_isSFinite_subdef d (T : measurableType d)
+    (R : realType) (mu : set T -> \bar R) := {
+  sfinite_measure_subdef : sfinite_measure mu }.
+
+HB.structure Definition SFiniteMeasure
+    d (T : measurableType d) (R : realType) :=
+  {mu of @Measure _ T R mu & Measure_isSFinite_subdef _ T R mu }.
+Arguments sfinite_measure_subdef {d T R} _.
+
+Notation "{ 'sfinite_measure' 'set' T '->' '\bar' R }" :=
+  (SFiniteMeasure.type T R) (at level 36, T, R at next level,
+    format "{ 'sfinite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+
+HB.mixin Record isSigmaFinite d (T : semiRingOfSetsType d) (R : numFieldType)
+  (mu : set T -> \bar R) := { sigma_finiteT : sigma_finite setT mu }.
+
+#[short(type="sigma_finite_content")]
+HB.structure Definition SigmaFiniteContent d T R :=
+  { mu of isSigmaFinite d T R mu & @Content d T R mu }.
+
+Arguments sigma_finiteT {d T R} s.
+#[global] Hint Resolve sigma_finiteT : core.
+
+Notation "{ 'sigma_finite_content' 'set' T '->' '\bar' R }" :=
+  (sigma_finite_content T R) (at level 36, T, R at next level,
+    format "{ 'sigma_finite_content'  'set'  T  '->'  '\bar'  R }")
+  : ring_scope.
+
+#[short(type="sigma_finite_measure")]
+HB.structure Definition SigmaFiniteMeasure d T R :=
+  { mu of @SFiniteMeasure d T R mu & isSigmaFinite d T R mu }.
+
+Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" :=
+  (sigma_finite_measure T R) (at level 36, T, R at next level,
+    format "{ 'sigma_finite_measure'  'set'  T  '->'  '\bar'  R }")
+  : ring_scope.
+
+HB.factory Record Measure_isSigmaFinite d (T : measurableType d) (R : realType)
+    (mu : set T -> \bar R) of isMeasure _ _ _ mu :=
+  { sigma_finiteT : sigma_finite setT mu }.
+
+HB.builders Context d (T : measurableType d) (R : realType)
+  mu of @Measure_isSigmaFinite d T R mu.
+
+Lemma sfinite : sfinite_measure mu.
+Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finiteT. Qed.
+
+HB.instance Definition _ := @Measure_isSFinite_subdef.Build _ _ _ mu sfinite.
+
+HB.instance Definition _ := @isSigmaFinite.Build _ _ _ mu sigma_finiteT.
+
+HB.end.
+
+Lemma sigma_finite_mzero d (T : measurableType d) (R : realType) :
+  sigma_finite setT (@mzero d T R).
+Proof. by apply: fin_num_fun_sigma_finite => //; rewrite measure0. Qed.
+
+HB.instance Definition _ d (T : measurableType d) (R : realType) :=
+  @isSigmaFinite.Build d T R mzero (@sigma_finite_mzero d T R).
+
+Lemma sfinite_mzero d (T : measurableType d) (R : realType) :
+  sfinite_measure (@mzero d T R).
+Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finite_mzero. Qed.
+
+HB.instance Definition _ d (T : measurableType d) (R : realType) :=
+  @Measure_isSFinite_subdef.Build d T R mzero (@sfinite_mzero d T R).
+
+HB.mixin Record SigmaFinite_isFinite d (T : semiRingOfSetsType d)
+    (R : numDomainType) (k : set T -> \bar R) :=
+  { fin_num_measure : fin_num_fun k }.
+
+HB.structure Definition FinNumFun d (T : semiRingOfSetsType d)
+    (R : numFieldType) := { k of SigmaFinite_isFinite _ T R k }.
+
+HB.structure Definition FiniteMeasure d (T : measurableType d) (R : realType) :=
+  { k of @SigmaFiniteMeasure _ _ _ k & SigmaFinite_isFinite _ T R k }.
+Arguments fin_num_measure {d T R} _.
+
+Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" :=
+  (FiniteMeasure.type T R) (at level 36, T, R at next level,
+    format "{ 'finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+
+HB.factory Record Measure_isFinite d (T : measurableType d)
+    (R : realType) (k : set T -> \bar R)
+  of isMeasure _ _ _ k := { fin_num_measure : fin_num_fun k }.
+
+HB.builders Context d (T : measurableType d) (R : realType) k
+  of Measure_isFinite d T R k.
+
+Let sfinite : sfinite_measure k.
+Proof.
+apply: sfinite_measure_sigma_finite.
+by apply: fin_num_fun_sigma_finite; [rewrite measure0|exact: fin_num_measure].
+Qed.
+
+HB.instance Definition _ := @Measure_isSFinite_subdef.Build d T R k sfinite.
+
+Let sigma_finite : sigma_finite setT k.
+Proof.
+by apply: fin_num_fun_sigma_finite; [rewrite measure0|exact: fin_num_measure].
+Qed.
+
+HB.instance Definition _ := @isSigmaFinite.Build d T R k sigma_finite.
+
+Let finite : fin_num_fun k. Proof. exact: fin_num_measure. Qed.
+
+HB.instance Definition _ := @SigmaFinite_isFinite.Build d T R k finite.
+
+HB.end.
+
+HB.factory Record Measure_isSFinite d (T : measurableType d)
+    (R : realType) (k : set T -> \bar R) of isMeasure _ _ _ k := {
+  sfinite_measure_subdef : exists s : {finite_measure set T -> \bar R}^nat,
+    forall U, measurable U -> k U = mseries s 0 U }.
+
+HB.builders Context d (T : measurableType d) (R : realType)
+  k of Measure_isSFinite d T R k.
+
+Let sfinite : sfinite_measure k.
+Proof.
+have [s sE] := sfinite_measure_subdef.
+by exists s => //=> n; exact: fin_num_measure.
+Qed.
+
+HB.instance Definition _ := @Measure_isSFinite_subdef.Build d T R k sfinite.
+
+HB.end.
+
+Section sfinite_measure.
+Context d (T : measurableType d) (R : realType)
+        (mu : {sfinite_measure set T -> \bar R}).
+
+Let s : (set T -> \bar R)^nat :=
+  let: exist2 x _ _ := cid2 (sfinite_measure_subdef mu) in x.
+
+Let s0 n : s n set0 = 0.
+Proof. by rewrite /s; case: cid2. Qed.
+
+Let s_ge0 n x : 0 <= s n x.
+Proof. by rewrite /s; case: cid2. Qed.
+
+Let s_semi_sigma_additive n : semi_sigma_additive (s n).
+Proof.
+by rewrite /s; case: cid2 => s' s'1 s'2; exact: measure_semi_sigma_additive.
+Qed.
+
+HB.instance Definition _ n := @isMeasure.Build _ _ _ (s n) (s0 n) (s_ge0 n)
+  (@s_semi_sigma_additive n).
+
+Let s_fin n : fin_num_fun (s n).
+Proof. by rewrite /s; case: cid2 => F finF muE; exact: finF. Qed.
+
+HB.instance Definition _ n := @Measure_isFinite.Build d T R (s n) (s_fin n).
+
+Definition sfinite_measure_seq : {finite_measure set T -> \bar R}^nat :=
+  fun n => [the {finite_measure set T -> \bar R} of s n].
+
+Lemma sfinite_measure_seqP U : measurable U ->
+  mu U = mseries sfinite_measure_seq O U.
+Proof.
+by move=> mU; rewrite /mseries /= /s; case: cid2 => // x xfin ->.
+Qed.
+
+End sfinite_measure.
+
+HB.mixin Record FiniteMeasure_isSubProbability d (T : measurableType d)
+    (R : realType) (P : set T -> \bar R) :=
+  { sprobability_setT : P setT <= 1%E }.
+
+#[short(type=subprobability)]
+HB.structure Definition SubProbability d (T : measurableType d) (R : realType)
+  := {mu of @FiniteMeasure d T R mu & FiniteMeasure_isSubProbability d T R mu }.
+
+HB.factory Record Measure_isSubProbability d (T : measurableType d)
+    (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=
+  { sprobability_setT : P setT <= 1%E }.
+
+HB.builders Context d (T : measurableType d) (R : realType)
+  P of Measure_isSubProbability d T R P.
+
+Let finite : @Measure_isFinite d T R P.
+Proof.
+split; apply: lty_fin_num_fun.
+by rewrite (le_lt_trans (@sprobability_setT))// ltey.
+Qed.
+
+HB.instance Definition _ := finite.
+
+HB.instance Definition _ :=
+  @FiniteMeasure_isSubProbability.Build _ _ _ P sprobability_setT.
+
+HB.end.
+
+HB.mixin Record isProbability d (T : measurableType d) (R : realType)
+  (P : set T -> \bar R) := { probability_setT : P setT = 1%E }.
+
+#[short(type=probability)]
+HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
+  {P of @SubProbability d T R P & isProbability d T R P }.
+
+Section probability_lemmas.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
+Proof.
+move=> mA; rewrite -(@probability_setT _ _ _ P).
+by apply: le_measure => //; rewrite ?in_setE.
+Qed.
+
+End probability_lemmas.
+
+HB.factory Record Measure_isProbability d (T : measurableType d)
+    (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=
+  { probability_setT : P setT = 1%E }.
+
+HB.builders Context d (T : measurableType d) (R : realType)
+  P of Measure_isProbability d T R P.
+
+Let subprobability : @Measure_isSubProbability d T R P.
+Proof. by split; rewrite probability_setT. Qed.
+
+HB.instance Definition _ := subprobability.
+
+HB.instance Definition _ := @isProbability.Build _ _ _ P probability_setT.
+
+HB.end.
+
+Section pdirac.
+Context d (T : measurableType d) (R : realType).
+
+HB.instance Definition _ x :=
+  Measure_isProbability.Build _ _ _ (@dirac _ T x R) (diracT R x).
+
+End pdirac.
+
+Lemma sigma_finite_counting (R : realType) :
+  sigma_finite [set: nat] (@counting _ R).
+Proof.
+exists (fun n => `I_n.+1); first by apply/seteqP; split=> //x _; exists x => /=.
+by move=> k; split => //; rewrite /counting/= asboolT// ltry.
+Qed.
+HB.instance Definition _ R :=
+  @isSigmaFinite.Build _ _ _ (@counting _ R) (sigma_finite_counting R).
 
 Lemma measureIl d (R : realFieldType) (T : semiRingOfSetsType d)
     (mu : {content set T -> \bar R}) (A B : set T) :
@@ -3510,7 +3784,7 @@ Qed.
 HB.instance Definition _ := isMeasure.Build _ _ _ Hahn_ext
   Hahn_ext0 Hahn_ext_ge0 Hahn_ext_sigma_additive.
 
-Lemma Hahn_ext_sigma_finite : @sigma_finite _ _ T setT mu ->
+Lemma Hahn_ext_sigma_finite : @sigma_finite _ T _ setT mu ->
   @sigma_finite _ _ _ setT Hahn_ext.
 Proof.
 move=> -[S setTS mS]; exists S => //; move=> i; split.
@@ -3754,22 +4028,3 @@ exact: (measurable_fun_comp _ _ mf).
 Qed.
 
 End partial_measurable_fun.
-
-HB.mixin Record isProbability d (T : measurableType d)
-  (R : realType) (P : set T -> \bar R) of isMeasure d R T P :=
-  { probability_setT : P setT = 1%E }.
-
-#[short(type=probability)]
-HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
-  {P of isProbability d T R P & isMeasure d R T P }.
-
-Section probability_lemmas.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
-
-Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
-Proof.
-move=> mA; rewrite -(@probability_setT _ _ _ P).
-by apply: le_measure => //; rewrite ?in_setE.
-Qed.
-
-End probability_lemmas.
