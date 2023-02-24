@@ -118,6 +118,8 @@
 
 - in file `topology.v`,
   + lemma `compact_near_coveringP`
+- in `functions.v`:
+  + notation `mem_fun_`
 ### Renamed
 
 - in `measurable.v`:
@@ -146,6 +148,9 @@
   + `finSubCover` -> `finite_subset_cover`
 - in `sequences.v`:
   + `eq_eseries` -> `eq_eseriesr`
+- in `esum.v`:
+  + `summable_nneseries_esum` -> `summable_eseries_esum`
+  + `summable_nneseries` -> `summable_eseries`
 
 ### Generalized
 

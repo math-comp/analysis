@@ -545,7 +545,7 @@ transitivity (lim (EFin \o A_)).
 by rewrite EFin_lim//; apply: summable_cvg.
 Qed.
 
-Lemma summable_nneseries (f : nat -> \bar R) (P : pred nat) : summable P f ->
+Lemma summable_eseries (f : nat -> \bar R) (P : pred nat) : summable P f ->
   \sum_(i <oo | P i) (f i) =
   \sum_(i <oo | P i) f^\+ i - \sum_(i <oo | P i) f^\- i.
 Proof.
@@ -559,11 +559,10 @@ suff: ((fun n => C_ n - (A - B)) --> (0 : R^o))%R.
   move=> CAB.
   rewrite [X in  X - _]summable_nneseries_lim//; last exact/summable_funepos.
   rewrite [X in _ - X]summable_nneseries_lim//; last exact/summable_funeneg.
-  rewrite -EFinB; apply/cvg_lim => //; apply/fine_cvgP; split.
-    apply: nearW => n.
-    rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
-    by rewrite -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
-  by apply: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB) => //; exact: cvg_cst.
+  rewrite -EFinB; apply/cvg_lim => //; apply/fine_cvgP; split; last first.
+    apply: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB); exact: cvg_cst.
+  apply: nearW => n; rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
+  by rewrite -nneseries_esum ?(le_trans (lee_abs_sum _ _ _)) ?nneseries_lim_ge.
 have : ((fun x => A_ x - B_ x) --> A - B)%R.
   apply: cvgD.
   - by apply: summable_cvg => //; exact/summable_funepos.
@@ -575,23 +574,20 @@ rewrite distrC subr0.
 have -> : (C_ = A_ \- B_)%R.
   apply/funext => k.
   rewrite /= /A_ /C_ /B_ -sumrN -big_split/= -summable_fine_sum//.
-  apply eq_bigr => i Pi.
-  rewrite -fineB//.
+  apply eq_bigr => i Pi; rewrite -fineB//.
   - by rewrite [in LHS](funeposneg f).
   - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funepos.
   - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funeneg.
 by rewrite distrC; apply: hN; near: n; exists N.
 Unshelve. all: by end_near. Qed.
 
-Lemma summable_nneseries_esum  (f : nat -> \bar R) (P : pred nat) :
+Lemma summable_eseries_esum  (f : nat -> \bar R) (P : pred nat) :
   summable P f -> \sum_(i <oo | P i) f i = esum P f^\+ - esum P f^\-.
 Proof.
-move=> Pfoo.
-rewrite -nneseries_esum; last first.
+move=> Pfoo; rewrite -nneseries_esum; last first.
   by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite -leNgt.
-rewrite -nneseries_esum; last first.
-  by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite leNgt.
-by rewrite [LHS]summable_nneseries.
+rewrite -nneseries_esum ?[LHS]summable_eseries//.
+by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite leNgt.
 Qed.
 
 End summable_nat.

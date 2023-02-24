@@ -2864,15 +2864,15 @@ rewrite -esumB//; last 4 first.
   - by rewrite /summable /= -nneseries_esum// -fineKn; exact: fmoo.
   - by move=> n _; exact/fine_ge0/integral_ge0.
   - by move=> n _; exact/fine_ge0/integral_ge0.
-rewrite -summable_nneseries_esum; last first.
-  rewrite /summable.
+rewrite -summable_eseries_esum; last first.
   apply: (@le_lt_trans _ _ (\esum_(i in (fun=> true))
      `|(fine (\int[m_ i]_(x in D) f x))%:E|)).
-    apply: le_esum => k _; rewrite -EFinB -fineB// -?integralE//;
+    by apply: le_esum => k _; rewrite -EFinB -fineB// -?integralE//;
       [exact: integrable_pos_fin_num|exact: integrable_neg_fin_num].
   rewrite -nneseries_esum; last by [].
-  apply: (@le_lt_trans _ _ (\sum_(n <oo) `|(fine (\int[m_ n]_(x in D) f^\+ x))%:E| +
-                            \sum_(n <oo) `|(fine (\int[m_ n]_(x in D) f^\- x))%:E|)).
+  apply: (@le_lt_trans _ _
+      (\sum_(n <oo) `|(fine (\int[m_ n]_(x in D) f^\+ x))%:E| +
+       \sum_(n <oo) `|(fine (\int[m_ n]_(x in D) f^\- x))%:E|)).
     rewrite -nneseriesD//; apply: lee_nneseries => // n _.
     rewrite integralE fineB// ?EFinB.
     - exact: (le_trans (lee_abs_sub _ _)).
@@ -3841,7 +3841,7 @@ rewrite set_true -esumB//=; last 4 first.
   - exact: integrableN.
   - by move=> n _; exact: integral_ge0.
   - by move=> n _; exact: integral_ge0.
-rewrite summable_nneseries; last first.
+rewrite summable_eseries; last first.
   under [X in summable _ X]eq_fun do rewrite -integralE.
   by rewrite fun_true; exact: integrable_summable.
 by congr (_ - _)%E; rewrite nneseries_esum// set_true.
