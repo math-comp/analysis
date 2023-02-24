@@ -3,6 +3,14 @@
 ## [Unreleased]
 
 ### Added
+- in file `topology.v`,
+  + new definitions `split_sym`, `gauge`, `gauge_uniformType_mixin`, 
+    `gauge_topologicalTypeMixin`, `gauge_filtered`, `gauge_topologicalType`, 
+    `gauge_uniformType`, `gauge_psuedoMetric_mixin`, and 
+    `gauge_psuedoMetricType`.
+  + new lemmas `iter_split_ent`, `gauge_ent`, `gauge_filter`, 
+    `gauge_refl`, `gauge_inv`, `gauge_split`, `gauge_countable_uniformity`, and 
+    `uniform_pseudometric_sup`.
 
 - in `contructive_ereal.v`:
   + lemmas `ereal_blatticeMixin`, `ereal_tblatticeMixin`
