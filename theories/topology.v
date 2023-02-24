@@ -7258,6 +7258,109 @@ Qed.
 
 End UniformPointwise.
 
+Section UniformPseudoMetricSup.
+
+Context {T : uniformType} {R : realType}.
+
+Section gauge.
+
+Definition split_sym (W : set (T*T)) := (split_ent W) `&` (split_ent W)^-1.
+
+Context (E : set (T * T)) (entE : entourage E).
+
+Definition gauge :=
+  filter_from [set: nat] (fun n => iter n split_sym (E `&` E^-1)).
+
+Lemma iter_split_ent  j : entourage (iter j split_sym (E `&` E^-1)).
+Proof.
+by elim: j; first exact: filterI; move=> j IH; apply: filterI.
+Qed.
+
+Lemma gauge_ent G: gauge G -> entourage G.
+Proof.
+case=> n; elim: n G; first by move=> ? _ /filterS; apply; apply: filterI.
+by move=> n ? G _ /filterS; apply; apply: filterI; have ? := iter_split_ent n.
+Qed.
+
+Lemma gauge_filter : Filter (gauge).
+Proof.
+apply: filter_from_filter; first by exists O.
+move=> i j _ _; wlog ilej : i j / (i <= j)%N.
+  move=> WH; case/orP: (leq_total i j); [|rewrite [iter _ _ _ `&` _]setIC];
+    exact: WH.
+exists j => // x jx; split => //; move: x jx; elim: j i ilej.
+  by move=> i; rewrite leqn0 => /eqP ->.
+move=> j IH i; rewrite leq_eqVlt => /orP [/eqP <- // | /ltnSE/IH jsubi].
+apply: (subset_trans _ jsubi) => x [? _]; apply: split_ent_subset => //.
+exact: iter_split_ent.
+Qed.
+
+Lemma gauge_refl A : gauge A -> [set fg | fg.1 = fg.2] `<=` A.
+Proof.
+case=> n _ nEA; apply: (subset_trans _ nEA); case=> ? ? /= ->. 
+by apply: entourage_refl; exact: iter_split_ent.
+Qed.
+
+Lemma gauge_inv A : gauge A -> gauge (A^-1)%classic.
+Proof.
+case=> n _ EA; apply: (@filterS _ _ _ (iter n split_sym (E `&` E^-1))).
+- exact: gauge_filter.
+- case: n EA; first by move=> EA [? ?] [] ? ?; exact: EA.
+  by move=> n /= EA /= [? ?] [/=] ? ?; apply EA.
+- by exists n .
+Qed.
+
+Lemma gauge_split A : gauge A -> exists2 B, gauge B & B \; B `<=` A.
+Proof.
+case => n _ EA; exists (iter n.+1 split_sym (E `&` E^-1)); first by exists n.+1.
+apply: subset_trans EA; apply: subset_trans; first last.
+  by apply: subset_split_ent; exact: iter_split_ent.
+by case=> a c /= [b] [] /= ? ? [] /= ? ?; exists b.
+Qed.
+
+Definition gauge_uniformType_mixin :=
+ UniformMixin gauge_filter gauge_refl gauge_inv gauge_split erefl. 
+
+Definition nsplit_topologicalTypeMixin :=
+  topologyOfEntourageMixin gauge_uniformType_mixin.
+
+Definition gauge_filtered := FilteredType T T (nbhs_ gauge).
+Definition gauge_topologicalType :=
+  TopologicalType gauge_filtered nsplit_topologicalTypeMixin.
+Definition gauge_uniformType := UniformType 
+  gauge_topologicalType gauge_uniformType_mixin.
+
+Lemma gauge_countable_uniformity : countable_uniformity gauge_uniformType.
+Proof.
+exists [set (fun n => (iter n split_sym (E `&` E^-1))) n | n in [set: nat]].
+split; [exact: card_image_le | by move=> W [n] _ <-; exists n|].
+by move=> D [n _ ?]; exists (iter n split_sym (E `&` E^-1)).
+Qed.
+
+Definition gauge_psuedoMetric_mixin := 
+  @countable_uniform_pseudoMetricType_mixin R _ gauge_countable_uniformity.
+
+Definition gauge_psuedoMetricType := 
+  PseudoMetricType gauge_uniformType gauge_psuedoMetric_mixin.
+  
+End gauge.
+
+Lemma entourage_sup_gauge:
+  @entourage T = @sup_ent T ({E : set (T*T) | @entourage T E})
+    (fun E => Uniform.class (@gauge_uniformType (projT1 E) (projT2 E))).
+Proof.
+rewrite eqEsubset; split => E.
+  move=> entE; exists E => //=. 
+  pose pe : {classic {E0 : set (T*T) | _}} * _ := ((exist _ E entE), E).
+  have entPE : `[<@entourage (gauge_uniformType entE) E>].
+    by apply/asboolP; exists 0%N => // ? [].
+  exists (fset1 (exist _ pe entPE)) => //=; first by move=> ?; rewrite in_setE.
+  by rewrite set_fset1 bigcap_set1.
+case=> W /= [/= J] _ <- /filterS; apply; apply: filter_bigI.
+case; case; case=> /= D entD G /[dup] /asboolP [n _ + _ _] => /filterS; apply.
+exact: iter_split_ent.
+Qed.
+
 Section ArzelaAscoli.
 Context {X : topologicalType}.
 Context {Y : uniformType}.
