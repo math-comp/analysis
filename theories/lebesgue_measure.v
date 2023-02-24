@@ -331,7 +331,7 @@ apply/andP; split=> //; apply: contraTneq xbj => ->.
 by rewrite in_itv/= le_gtF// (itvP xabi).
 Qed.
 
-HB.instance Definition _ := isContent.Build _ R _
+HB.instance Definition _ := isContent.Build _ _ R
   (hlength : set ocitv_type -> _) (@hlength_ge0') hlength_semi_additive.
 
 Hint Extern 0 ((_ .-ocitv).-measurable _) => solve [apply: is_ocitv] : core.
@@ -378,7 +378,7 @@ do !case: ifPn => //= ?; do ?by rewrite ?adde_ge0 ?lee_fin// ?subr_ge0// ?ltW.
 by rewrite addrAC lee_fin ler_add// subr_le0 leNgt.
 Qed.
 
-Lemma hlength_sigma_finite : sigma_finite [set: ocitv_type] hlength.
+Lemma hlength_sigma_finite : sigma_finite setT (hlength : set ocitv_type -> _).
 Proof.
 exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
   apply/esym; rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.

@@ -7,7 +7,6 @@
 - in `classical_sets.v`:
   + canonical `unit_pointedType`
 - in `measure.v`:
-  + definition `finite_measure`
   + mixin `isProbability`, structure `Probability`, type `probability`
   + lemma `probability_le1`
   + definition `discrete_measurable_unit`
@@ -36,7 +35,7 @@
   + lemmas `measurable_curry`, `measurable_fun_fst`, `measurable_fun_snd`,
     `measurable_fun_swap`, `measurable_fun_pair`, `measurable_fun_if_pair`
   + lemmas `dirac0`, `diracT`
-  + lemma `finite_measure_sigma_finite`
+  + lemma `fin_num_fun_sigma_finite`
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_opp`
 - in `lebesgue_integral.v`
@@ -88,6 +87,8 @@
   + new lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`, 
     `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
     `join_product_weak`. 
+- in `measure.v`:
+  + structure `FiniteMeasure`, notation `{finite_measure set _ -> \bar _}`
 
 - in file `topology.v`,
   + new definition `clopen`.
@@ -97,6 +98,24 @@
 
 - in file `topology.v`,
   + new lemmas `powerset_filter_fromP` and `compact_cluster_set1`.
+
+- in `measure.v`:
+  + definition `sfinite_measure_def`
+  + mixin `Measure_isSFinite_subdef`, structure `SFiniteMeasure`,
+    notation `{sfinite_measure set _ -> \bar _}`
+  + mixin `SigmaFinite_isFinite` with field `fin_num_measure`, structure `FiniteMeasure`,
+    notation `{finite_measure set _ -> \bar _}`
+  + lemmas `sfinite_measure_sigma_finite`, `sfinite_mzero`, `sigma_finite_mzero`
+  + factory `Measure_isFinite`, `Measure_isSFinite`
+  + defintion `sfinite_measure_seq`, lemma `sfinite_measure_seqP`
+  + mixin `FiniteMeasure_isSubProbability`, structure `SubProbability`,
+    notation `subprobability`
+  + factory `Measure_isSubProbability`
+  + factory `FiniteMeasure_isSubProbability`
+  + factory `Measure_isSigmaFinite`
+  + lemmas `fin_num_fun_lty`, `lty_fin_num_fun`
+  + definition `fin_num_fun`
+  + structure `FinNumFun`
 
 ### Changed
 
@@ -120,6 +139,10 @@
   + lemma `compact_near_coveringP`
 - in `functions.v`:
   + notation `mem_fun_`
+- in `measure.v`:
+  + order of arguments of `isContent`, `Content`, `measure0`, `isMeasure0`,
+    `Measure`, `isSigmaFinite`, `SigmaFiniteContent`, `SigmaFiniteMeasure`
+
 ### Renamed
 
 - in `measurable.v`:
@@ -171,6 +194,8 @@
 - in `lebesgue_integral.v`:
   + lemma `integrable_abse`
 
+  + `sigma_finite` generalized from `numFieldType` to `numDomainType`
+  + `fin_num_fun_sigma_finite` generalized from `measurableType` to `algebraOfSetsType`
 
 ### Deprecated
 
