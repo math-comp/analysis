@@ -389,7 +389,7 @@ Definition mem_fun aT rT (A : set aT) (B : set rT) (f : {fun A >-> B}) :=
 
 Definition phant_mem_fun aT rT (A : set aT) (B : set rT)
   (f : {fun A >-> B}) of phantom (_ -> _) f := homo_setP.2 (@funS _ _ _ _ f).
-Notation "'mem_fun_  f" := (phant_funS (Phantom (_ -> _) f))
+Notation "'mem_fun_  f" := (phant_mem_fun (Phantom (_ -> _) f))
   (at level 8, f at level 2) : form_scope.
 
 Lemma some_inv {aT rT} (f : {inv aT >-> rT}) x : Some (f^-1 x) = 'oinv_f x.

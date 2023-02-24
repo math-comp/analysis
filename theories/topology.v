@@ -189,6 +189,8 @@ Require Import reals signed.
 (*                                     a pointedType, as well as the carrier. *)
 (*                                     nbhs_of_open \o open_from must be      *)
 (*                                     used to declare a filterType           *)
+(*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
+(*                                     a finite subset of D                   *)
 (*       topologyOfSubbaseMixin D b == builds the mixin for a topological     *)
 (*                                     space from a subbase of open sets b    *)
 (*                                     indexed on domain D; the type of       *)
