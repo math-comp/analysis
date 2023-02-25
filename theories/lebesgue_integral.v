@@ -3607,7 +3607,7 @@ rewrite [X in measurable X](_ : _ = D `&` ~` N `&` (f @^-1` `]x%:E, +oo[)
   - by move=> [[]].
 apply: measurableU.
 - rewrite setIAC; apply: measurableI; last exact/measurableC.
-  exact/mf/emeasurable_itv_bnd_pinfty.
+  exact/mf/emeasurable_itv.
 - by apply: cmu; exists N; split => //; rewrite setIAC; apply: subIset; right.
 Qed.
 
