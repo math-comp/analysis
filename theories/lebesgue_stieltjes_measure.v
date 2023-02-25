@@ -376,7 +376,7 @@ by rewrite -(hlength0 f) le_hlength//; exact: cumulative_is_nondecreasing.
 Qed.
 
 HB.instance Definition _ (f : cumulative R) :=
-  isAdditiveMeasure.Build _ R _ (hlength f : set ocitv_type -> _)
+  isContent.Build _ _ R (hlength f : set ocitv_type -> _)
     (hlength_ge0' f) (hlength_semi_additive f).
 
 Lemma hlength_content_sub_fsum (f : cumulative R) (D : {fset nat}) a0 b0
@@ -393,7 +393,7 @@ have mab k :
   [set` D] k -> @measurable d itvs_semiRingOfSets `]a k, b k]%classic by [].
 move: h; rewrite -bigcup_fset.
 move/(@content_sub_fsum d R _
-    [the additive_measure _ _ of hlength f : set ocitv_type -> _] _ [set` D]
+    [the content _ _ of hlength f : set ocitv_type -> _] _ [set` D]
     `]a0, b0]%classic (fun x => `](a x), (b x)]%classic) (finite_fset D) mab
   (is_ocitv _ _)) => /=.
 rewrite hlength_itv_bnd// -lee_fin => /le_trans; apply.
@@ -414,7 +414,7 @@ wlog wlogh : b A AE lebig / forall n, (b n).1 <= (b n).2.
   set A' := fun n => if (b n).1 >= (b n).2 then set0 else A n.
   set b' := fun n => if (b n).1 >= (b n).2 then (0, 0) else b n.
   rewrite [X in (_ <= X)%E](_ : _ = \sum_(n <oo) hlength f (A' n))%E; last first.
-    apply: (@eq_eseries _ (hlength f \o A) (hlength f \o A')) => k.
+    apply: (@eq_eseriesr _ (hlength f \o A) (hlength f \o A')) => k.
     rewrite /= /A' AE; case: ifPn => // bn.
     by rewrite set_itv_ge//= bnd_simp -leNgt.
   apply (h b').
@@ -476,7 +476,7 @@ Qed.
 Let gitvs := [the measurableType _ of salgebraType ocitv].
 
 Definition lebesgue_stieltjes_measure (f : cumulative R) :=
-  Hahn_ext [the additive_measure _ _ of hlength f : set ocitv_type -> _ ].
+  Hahn_ext [the content _ _ of hlength f : set ocitv_type -> _ ].
 
 Let lebesgue_stieltjes_measure0 (f : cumulative R) :
   lebesgue_stieltjes_measure f set0 = 0%E.
