@@ -418,6 +418,9 @@ Qed.
 HB.instance Definition _ := Order.POrder_isTotal.Build ereal_display (\bar R)
   le_total_ereal.
 
+HB.instance Definition _ := Order.hasBottom.Build ereal_display (\bar R) leNye.
+HB.instance Definition _ := Order.hasTop.Build ereal_display (\bar R) leey.
+
 End ERealOrder_realDomainType.
 
 Section ERealZmodule.
