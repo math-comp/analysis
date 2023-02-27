@@ -360,6 +360,16 @@ Canonical ereal_latticeType := LatticeType (extended R) le_total_ereal.
 Canonical ereal_distrLatticeType :=  DistrLatticeType (extended R) le_total_ereal.
 Canonical ereal_orderType := OrderType (extended R) le_total_ereal.
 
+Lemma ereal_blatticeMixin :
+  Order.BLattice.mixin_of (Order.POrder.class (@ereal_porderType R)).
+Proof. by exists -oo; exact leNye. Qed.
+Canonical ereal_blatticeType := BLatticeType (extended R) ereal_blatticeMixin.
+
+Lemma ereal_tblatticeMixin :
+  Order.TBLattice.mixin_of (Order.POrder.class ereal_blatticeType).
+Proof. by exists +oo; exact leey. Qed.
+Canonical ereal_tblatticeType := TBLatticeType (extended R) ereal_tblatticeMixin.
+
 End ERealOrder_realDomainType.
 
 Section ERealArith.
