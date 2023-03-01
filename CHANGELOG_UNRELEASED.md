@@ -12,6 +12,9 @@
 
 ### Changed
 
+- in `mathcomp_extra.v`
+  + lemmas `eq_bigmax`, `eq_bigmin` changed to respect `P` in the returned type.
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
