@@ -3781,6 +3781,10 @@ Lemma nbhs_E {T T'} (ent : set (set (T * T'))) x :
   nbhs_ ent x = filter_from ent (fun A => to_set A x).
 Proof. by []. Qed.
 
+Lemma subset_inv {T T'} (A B : set (T * T')) : 
+  A `<=` B <-> (A^-1 `<=` B^-1)%classic.
+Proof. by split; by move=> AB; case=> a b /= ?; exact: (AB (b,a)). Qed.
+
 Module Uniform.
 
 Record mixin_of (M : Type) (nbhs : M -> set (set M)) := Mixin {
@@ -4313,6 +4317,91 @@ Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
     PQ.1 p -> PQ.2 q -> B (p,q).
 Canonical set_filter_source (U : uniformType) :=
   @Filtered.Source Prop _ U (fun A => nbhs_ (@entourage_set U) A).
+
+Section covering_uniformity.
+
+Context {T : Type}.
+
+Definition is_cover (C : set (set T)) := [set: T] = \bigcup_(W in C) W.
+
+Definition cover_refine (C1 C2 : set (set T)) :=
+  forall W, C1 W -> exists2 V, C2 V & W `<=` V.
+
+Definition coverI (C1 C2 : set (set T)) := 
+  [set (uncurry setI) AB | AB in C1 `*` C2].
+
+Definition cover_support (C : set (set T)) (A : set T) := 
+  \bigcup_(W in [set W | C W /\ W `&` A !=set0]) W.
+
+Definition cover_star (C : set (set T)) := [set (cover_support C) A | A in C ].
+
+Context (F : set(set(set T))).
+
+Definition ent_of_cover (C : set (set T)) := \bigcup_(A in C) (A `*` A).
+
+Hypothesis fcvr : forall C, F C -> is_cover C.
+Hypothesis fT : F [set setT].
+Hypothesis Fref : forall C, F C -> exists2 D, 
+  F D & cover_refine (cover_star D) C.
+Hypothesis FI : forall C D, F C -> F D -> F (coverI C D).
+Hypothesis Fsub : forall C D, F C -> cover_refine C D -> F D.
+
+Definition cover_ent := filter_from F ent_of_cover. 
+
+Lemma cover_ent_filter : Filter (cover_ent).
+Proof.
+apply: filter_from_filter; first by exists [set [set: T]].
+move=> C1 C2 FC1 FC2; exists (coverI C1 C2); first exact: FI.
+case=> x y [W] [[/= X Y] [C1X C2Y]] <- [] /= [? ?] [? ?]. 
+by split; [exists X | exists Y].
+Qed.
+
+Lemma cover_ent_refl A : cover_ent A -> [set fg | fg.1 = fg.2] `<=` A.
+Proof.
+case=> C FC /(subset_trans _); apply; case=> x ? /= <-.
+have := fcvr FC; rewrite /is_cover eqEsubset; case=> /(_ x I) [W CW Wx] _.
+by exists W.
+Qed.
+
+Lemma cover_ent_inv A : cover_ent A -> cover_ent (A^-1)%classic.
+Proof.
+case=> C FC /subset_inv/filterS; apply; first exact: cover_ent_filter.
+by exists C => //; case=> x y /= [W CW] [/= Wx Wy]; exists W.
+Qed.
+
+Lemma cover_refine_trans (C1 C2 C3 : (set (set T))) : 
+  cover_refine C1 C2 -> 
+  cover_refine C2 C3 -> 
+  cover_refine C1 C3.
+Proof.
+move=> + + W C1W => /(_ _ C1W) [V C2V WV] /(_ _ C2V) [R ? VR].
+by exists R => //; apply: (subset_trans _ VR).
+Qed.
+
+Lemma cover_refine_star (C : (set (set T))) : 
+  cover_refine C (cover_star C).
+Proof.
+move=> W CW; exists (cover_support C W); first by exists W.
+by move=> x Wx; exists W => //; split => //; exists x.
+Qed.
+
+Lemma cover_ent_split A : cover_ent A -> exists2 B, 
+  cover_ent B & B \; B `<=` A.
+Proof.
+case=> C FC CA; have [D FD cvrC] := Fref FC.
+exists (ent_of_cover D); first by exists D.
+case=> a c [b /= [W DW [/=] Wa Wb] [V DV [/=] Vb Vc]].
+apply: CA.
+have /cvrC [R CR CDR] : cover_star D (cover_support D W) by exists W.
+exists R => //; split; apply: CDR => /=. 
+  by exists W => //; split => //; exists a.
+by exists V => //; split => //; exists b.
+Qed.
+
+Definition cover_uniformity_mixin := 
+  @UniformMixin T (nbhs_ cover_ent) cover_ent
+    cover_ent_filter cover_ent_refl cover_ent_inv cover_ent_split erefl.
+End covering_uniformity.
 
 (** * PseudoMetric spaces defined using balls *)
 
