@@ -4322,7 +4322,7 @@ Section covering_uniformity.
 
 Context {T : Type}.
 
-Definition is_cover (C : set (set T)) := [set: T] = \bigcup_(W in C) W.
+Definition is_cover (C : set (set T)) := \bigcup_(W in C) W = [set: T].
 
 Definition cover_refine (C1 C2 : set (set T)) :=
   forall W, C1 W -> exists2 V, C2 V & W `<=` V.
@@ -4339,27 +4339,28 @@ Context (F : set(set(set T))).
 
 Definition ent_of_cover (C : set (set T)) := \bigcup_(A in C) (A `*` A).
 
-Hypothesis fcvr : forall C, F C -> is_cover C.
-Hypothesis fT : F [set setT].
+Hypothesis Fcvr : forall C, F C -> is_cover C.
+Hypothesis Fn0 : exists C, F C.
 Hypothesis Fref : forall C, F C -> exists2 D, 
   F D & cover_refine (cover_star D) C.
-Hypothesis FI : forall C D, F C -> F D -> F (coverI C D).
-Hypothesis Fsub : forall C D, F C -> cover_refine C D -> F D.
+Hypothesis FI : forall C D,  F C -> F D -> exists2 E, F E &
+  cover_refine E (coverI C D).
 
 Definition cover_ent := filter_from F ent_of_cover. 
 
 Lemma cover_ent_filter : Filter (cover_ent).
 Proof.
-apply: filter_from_filter; first by exists [set [set: T]].
-move=> C1 C2 FC1 FC2; exists (coverI C1 C2); first exact: FI.
-case=> x y [W] [[/= X Y] [C1X C2Y]] <- [] /= [? ?] [? ?]. 
-by split; [exists X | exists Y].
+apply: filter_from_filter; first exact: Fn0.
+move=> C1 C2 FC1 FC2; have [D FD rfD] := FI FC1 FC2.
+exists D => //.
+case=> x y [W /rfD] [/= V] [[/= X Y] [C1X C2Y]] <- WXY [/WXY [??] /WXY [??]].
+by split; [exists X | exists Y] => //.
 Qed.
 
 Lemma cover_ent_refl A : cover_ent A -> [set fg | fg.1 = fg.2] `<=` A.
 Proof.
 case=> C FC /(subset_trans _); apply; case=> x ? /= <-.
-have := fcvr FC; rewrite /is_cover eqEsubset; case=> /(_ x I) [W CW Wx] _.
+have := Fcvr FC; rewrite /is_cover -subTset; move=> /(_ x I) [W CW Wx].
 by exists W.
 Qed.
 
@@ -7317,6 +7318,76 @@ move=> U nbhsU wctsf; wlog oU : U wctsf nbhsU / open U.
 move/nbhs_singleton: nbhsU; move: x; apply/in_setP.
 by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
+
+Section urysohn.
+Context {T : topologicalType}.
+
+Local Definition nice (UV : (set T) * (set T)) := 
+  open UV.1 /\ open UV.2 /\ closure UV.1 `&` closure UV.2 = set0.
+
+Hypothesis nice_separable : forall (UV : (set T) * (set T)), 
+  nice UV -> exists2 U'V', 
+    (UV.1 `<=` U'V'.1 /\ UV.2 `<=` U'V'.2) & nice U'V'.
+
+Definition split_normal (UV : (set T) * (set T)) := 
+  if pselect (nice UV) is left sep
+  then projT1 (cid2 (nice_separable sep))
+  else (set0 , set0).
+
+Lemma split_normal_nice AB : nice AB -> nice (split_normal AB).
+Proof.
+move=> nAB; rewrite/ split_normal; case: pselect => // ?.
+
+Lemma set0UsetT (A B : set T) : A `&` B = set0 -> ~`A `|` ~` B = [set: T].
+Proof.
+move=> AB0; rewrite -subTset => t _ /=; apply/not_andP => W.
+by suff : (A `&` B) t by rewrite AB0.
+Qed.
+
+Context (AB : (set T) * (set T)).
+Hypothesis abnice : nice AB.
+
+Definition celems (AB : (set T) * (set T)) := 
+  [set ~`(closure AB.1); ~` (closure AB.2)].
+
+Fixpoint normal_cover_tier n : set (set (set T)) := 
+  if n is S m
+  then 
+    let npair := celems (iter m split_normal AB) in
+    npair |` ((coverI npair) @` (normal_cover_tier m))
+  else [set [set [set: T]]]
+.
+
+Definition normal_cover := \bigcup_n normal_cover_tier n.
+
+Lemma normal_coverT C : normal_cover C -> is_cover C.
+Proof.
+case; elim; first by move=> _ ->; rewrite /is_cover -subTset => ? _; exists [set: T].
+move=> n /(_ I) IH _ /= [].
+
+  rewrite /is_cover.
+case=> n _.
+
+Hypothesis Fcvr : forall C, F C -> is_cover C.
+Hypothesis Fn0 : exists C, F C.
+Hypothesis Fref : forall C, F C -> exists2 D, 
+  F D & cover_refine (cover_star D) C.
+Hypothesis FI : forall C D,  F C -> F D -> exists2 E, F E &
+  cover_refine E (coverI C D).
+
+Lemma normal_cover_covers C : normal_cover C -> is_cover C.
+Proof.
+case=> n _ <-; rewrite /is_cover -subTset=> x.
+rewrite /normal_cover_tier /=.
+rewrite (set0UsetT 
+exists [set: T] => //; exist (normal_cover_tier O).
+Hypothesis fcvr : forall C, F C -> is_cover C.
+Hypothesis fT : F [set setT].
+Hypothesis Fref : forall C, F C -> exists2 D, 
+  F D & cover_refine (cover_star D) C.
+Hypothesis FI : forall C D, F C -> F D -> F (coverI C D).
+Hypothesis Fsub : forall C D, F C -> cover_refine C D -> F D.
+Lemma normal_ent_
 
 Section UniformPointwise.
 Context {U : topologicalType} {V : uniformType}.
