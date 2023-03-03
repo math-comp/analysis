@@ -586,20 +586,17 @@ Lemma eq_near {T} {F : set_system T} (P Q : set T) :
    (\forall x \near F, P x) = (\forall x \near F, Q x).
 Proof. by move=> /predeqP ->. Qed.
 
-Definition filter_of X (fX : filteredType X) (x : fX) of phantom fX x :=
-   nbhs x.
-Notation "[ 'filter' 'of' x ]" :=
-  (@filter_of _ _ _ (Phantom _ x)) : classical_set_scope.
-Arguments filter_of _ _ _ _ _ /.
-
-Lemma filter_of_filterE {T : Type} (F : set_system T) : [filter of F] = F.
-Proof. by []. Qed.
+(* Definition filter_of X (fX : filteredType X) (x : fX) of phantom fX x := *)
+(*    nbhs x. *)
+(* Notation "[ 'filter' 'of' x ]" := *)
+(*   (@filter_of _ _ _ (Phantom _ x)) : classical_set_scope. *)
+(* Arguments filter_of _ _ _ _ _ /. *)
 
 Lemma nbhs_filterE {T : Type} (F : set_system T) : nbhs F = F.
 Proof. by []. Qed.
 
 Module Export NbhsFilter.
-Definition nbhs_simpl := (@filter_of_filterE, @nbhs_filterE).
+Definition nbhs_simpl := (@nbhs_filterE).
 End NbhsFilter.
 
 Definition cvg_to {T : Type} (F G : set_system T) := G `<=` F.
@@ -613,15 +610,15 @@ Lemma cvg_trans T (G F H : set_system T) :
   (F `=>` G) -> (G `=>` H) -> (F `=>` H).
 Proof. by move=> FG GH P /GH /FG. Qed.
 
-Notation "F --> G" := (cvg_to [filter of F] [filter of G]) : classical_set_scope.
+Notation "F --> G" := (cvg_to (nbhs F) (nbhs G)) : classical_set_scope.
 Definition type_of_filter {T} (F : set_system T) := T.
 
 Definition lim_in {U : Type} (T : filteredType U) :=
   fun F : set_system U => get (fun l : T => F --> l).
-Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T [filter of F]) : classical_set_scope.
-Notation lim F := [lim F in [filteredType _ of @type_of_filter _ [filter of F]]].
+Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T (nbhs F)) : classical_set_scope.
+Notation lim F := [lim F in @type_of_filter _ (nbhs F)].
 Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T]) : classical_set_scope.
-Notation cvg F := [cvg F in [filteredType _ of @type_of_filter _ [filter of F]]].
+Notation cvg F := [cvg F in @type_of_filter _ (nbhs F)].
 
 Section FilteredTheory.
 
@@ -679,8 +676,8 @@ Proof. by symmetry; congr (nbhs _); rewrite predeqE => -[]. Qed.
 Definition near2E := (@near2_curry, @near2_pair).
 
 Lemma filter_of_nearI (X : Type) (fX : filteredType X)
-  (x : fX) (ph : phantom fX x) : forall P,
-  @filter_of X fX x ph P = @prop_near1 X fX x P (inPhantom (forall x, P x)).
+  (x : fX) : forall P,
+  nbhs x P = @prop_near1 X fX x P (inPhantom (forall x, P x)).
 Proof. by []. Qed.
 
 Module Export NearNbhs.
@@ -1072,8 +1069,8 @@ Lemma fmapE {U V : Type} (f : U -> V)
 Proof. by []. Qed.
 
 Notation "E @[ x --> F ]" :=
-  (fmap (fun x => E) [filter of F]) : classical_set_scope.
-Notation "f @ F" := (fmap f [filter of F]) : classical_set_scope.
+  (fmap (fun x => E) (nbhs F)) : classical_set_scope.
+Notation "f @ F" := (fmap f (nbhs F)) : classical_set_scope.
 Global Instance fmap_filter T U (f : T -> U) (F : set_system T) :
   Filter F -> Filter (f @ F).
 Proof.
@@ -1097,8 +1094,8 @@ Definition fmapi {T U : Type} (f : T -> set U) (F : set_system T) :
   [set P | \forall x \near F, exists y, f x y /\ P y].
 
 Notation "E `@[ x --> F ]" :=
-  (fmapi (fun x => E) [filter of F]) : classical_set_scope.
-Notation "f `@ F" := (fmapi f [filter of F]) : classical_set_scope.
+  (fmapi (fun x => E) (nbhs F)) : classical_set_scope.
+Notation "f `@ F" := (fmapi f (nbhs F)) : classical_set_scope.
 
 Lemma fmapiE {U V : Type} (f : U -> set V)
   (F : set_system U) (P : set V) :
@@ -2962,8 +2959,6 @@ Definition prod_topo_apply x (f : forall i, K i) := f x.
 (* Note we have to give the signature explicitly because there's no canonical *)
 (* topology associated with `K`. This should be cleaned up after HB port.     *)
 
-Let PK : filteredType _ := [the filteredType _ of forall j, K j].
-
 Lemma proj_continuous i : continuous (proj i : (forall j, K j : filteredType _) -> K i).
 Proof.
 move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
@@ -2973,7 +2968,7 @@ rewrite eqEsubset; split => y //; exists (dfwith (fun=> point) i y) => //.
 by rewrite dfwithin.
 Qed.
 
-Lemma dfwith_continuous g (i : I) : continuous (dfwith g _ : K i -> PK).
+Lemma dfwith_continuous g (i : I) : continuous (dfwith g _ : K i -> forall i, K i).
 Proof.
 move=> z U [] P [] [] Q QfinP <- [] [] V JV Vpz.
 move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
@@ -2988,7 +2983,7 @@ apply: nearW => y /=; move: Vpz.
 by rewrite -VL => /(_ _ LM); rewrite -NM /= ? dfwithout // eq_sym.
 Qed.
 
-Lemma proj_open i (A : set PK) : open A -> open (proj i @` A).
+Lemma proj_open i (A : set (forall i, K i)) : open A -> open (proj i @` A).
 Proof.
 move=> oA; rewrite openE => z [f Af <-]; rewrite openE in oA.
 have {oA} := oA _ Af; rewrite /interior => nAf.
@@ -3027,7 +3022,7 @@ Qed.
 (* >>>>>>> 74208281 (fix inference of product topology structure) *)
 
 Lemma hausdorff_product :
-  (forall x, hausdorff_space (K x)) -> hausdorff_space PK.
+  (forall x, hausdorff_space (K x)) -> hausdorff_space (forall i, K i).
 Proof.
 move=> hsdfK p q /= clstr; apply: functional_extensionality_dep => x.
 apply: hsdfK; move: clstr; rewrite ?cluster_cvgE /= => -[G PG [GtoQ psubG]].
@@ -3541,7 +3536,7 @@ Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.
 Lemma discrete_cvg (F : set_system X) (x : X) :
   Filter F -> F --> x <-> F [set x].
 Proof.
-rewrite /filter_of dsc nbhs_simpl; split; first by exact.
+rewrite dsc nbhs_simpl; split; first by exact.
 by move=> Fx U /principal_filterP ?; apply: filterS Fx => ? ->.
 Qed.
 
@@ -3786,8 +3781,7 @@ Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
   {for x, continuous f} <-> f @ x^' --> f x.
 Proof.
 split=> - cfx P /= fxP.
-  rewrite /dnbhs !near_simpl near_withinE.
-  by rewrite /dnbhs; apply: cvg_within; apply: cfx.
+  by rewrite !near_simpl; apply: cvg_within; apply: cfx.
 rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
@@ -4746,8 +4740,15 @@ End fun_Complete.
 
 (** ** Limit switching *)
 Section Cvg_switch.
-Context {T1 T2 : choiceType}.
+Context {T V : eqType}.
+Context {U : T -> uniformType}.
+Check ((forall x : T, U x) : filteredType _).
 
+Context {T1 T2 : choiceType}.
+Context {U : uniformType}.
+Check ((forall _ : T2, U) : filteredType _).
+Check (forall (g : T2 -> U) (T2U : filteredType _ := (T2 -> U) : uniformType),
+   @nbhs _ T2U g = @nbhs _ T2U g).
 Lemma cvg_switch_1 {U : uniformType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
