@@ -4322,7 +4322,7 @@ Section covering_uniformity.
 
 Context {T : Type}.
 
-Definition is_cover (C : set (set T)) := \bigcup_(W in C) W = [set: T].
+Definition is_cover (C : set (set T)) := forall x, (\bigcup_(W in C) W) x.
 
 Definition cover_refine (C1 C2 : set (set T)) :=
   forall W, C1 W -> exists2 V, C2 V & W `<=` V.
@@ -4360,7 +4360,7 @@ Qed.
 Lemma cover_ent_refl A : cover_ent A -> [set fg | fg.1 = fg.2] `<=` A.
 Proof.
 case=> C FC /(subset_trans _); apply; case=> x ? /= <-.
-have := Fcvr FC; rewrite /is_cover -subTset; move=> /(_ x I) [W CW Wx].
+have := Fcvr FC; move=> /(_ x) [W CW Wx].
 by exists W.
 Qed.
 
@@ -4403,6 +4403,87 @@ Definition cover_uniformity_mixin :=
   @UniformMixin T (nbhs_ cover_ent) cover_ent
     cover_ent_filter cover_ent_refl cover_ent_inv cover_ent_split erefl.
 End covering_uniformity.
+
+Section covering_uniformity_base.
+
+Context {T : Type} (F : set(set(set T))).
+
+Hypothesis Fcvr : forall C, F C -> is_cover C.
+Hypothesis Fn0 : exists C, F C.
+Hypothesis Fref : forall C, F C -> exists2 D, 
+  F D & cover_refine (cover_star D) C.
+
+Definition pairwiseI (F : (set (set (set T)))) := 
+  [set (uncurry coverI) CC | CC in F`*`F].
+
+Fixpoint full_cover_aux n := 
+  if n is S m 
+  then full_cover_aux m `|`  pairwiseI (full_cover_aux m)
+  else F.
+
+Definition full_cover := \bigcup_n full_cover_aux n.
+
+Lemma coverIT (C D : set (set T)) : 
+  is_cover C -> is_cover D -> is_cover (coverI C D).
+Proof.
+move=> + + b => /(_ b) [V ? ?] /(_ b) [W ? ?]; exists (V `&` W) => //.
+by exists (V,W).
+Qed.
+
+Lemma cover_refineI (C : set (set T)) : cover_refine (coverI C C) C.
+Proof. by move=> W [[]P Q [/= CP CQ] <-]; exists (P) => //. Qed.
+
+Lemma full_coverS i : full_cover_aux i `<=` full_cover_aux i.+1.
+Proof. by move=> W /= ?; left. Qed.
+
+Lemma refine_starI (A B X Y : set (set T)) :
+  cover_refine (cover_star A) B ->
+  cover_refine (cover_star X) Y ->
+  cover_refine (cover_star (coverI A X)) (coverI B Y).
+Proof.
+move=> AsB XsY W [? [[p q]] [/= AP BQ <-]] <-.
+case: (AsB (cover_support A p)); first by exists p.
+move=> m Bm cApm.
+case: (XsY (cover_support X q)); first by exists q.
+move=> n Ym cXqn.
+exists (m `&` n); first by exists (m, n) => //.
+move=> z /= [r /= [] [[i j] /=] [Ai Xj] <- [z0] [[??][??]] [? ?]].
+split; first by apply: cApm; exists i => //=; split => //; exists z0.
+by apply: cXqn; exists j => //=; split => //; exists z0.
+Qed.
+    
+Lemma full_cover_sub (i j : nat) : 
+  (i <= j)%N -> full_cover_aux i `<=` full_cover_aux j.
+Proof.
+elim: j i; first by move=> i; rewrite leqn0 => /eqP ->.
+move=> n IH j /=; rewrite leq_eqVlt => /orP [/eqP -> //| jn1].
+by move=> W fjW; left; apply: (IH j).
+Qed.
+
+Lemma full_coverT C : full_cover C -> is_cover C.
+Proof.
+case=> n _; elim: n C; first by move=> ? ; exact: Fcvr.
+move=> n IH C /= []; first exact: IH.
+by case; case=> W V [/=] /IH fnC /IH coverV <-; exact: coverIT.
+Qed.
+
+Lemma fulln0 : exists C, full_cover C.
+Proof. by case: Fn0 => C ?; exists C; exists O. Qed.
+
+Lemma full_star C : full_cover C -> exists2 D, 
+  full_cover D & cover_refine (cover_star D) C.
+Proof.
+case=> n _; elim: n C. 
+  by move=> C PF; have [R FR RsC] := Fref PF; exists R => //; exists O.
+move=> n IH C /= []; first exact: IH.
+case; case=> W V [/=] /IH [D [i _ fiD] DsW] /IH [E [j _ fjE] EsV] <-. 
+exists (coverI D E); last exact: refine_starI.
+exists (maxn i j).+1 => //=; right; exists (D,E) => //.
+split => /=; first exact: (full_cover_sub (leq_maxl _ _)).
+exact: (full_cover_sub (leq_maxr _ _)).
+Qed.
+
+End covering_uniformity_base.
 
 (** * PseudoMetric spaces defined using balls *)
 
@@ -7320,14 +7401,90 @@ by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
 
 Section urysohn.
-Context {T : topologicalType}.
+Context {T : uniformType}.
 
-Local Definition nice (UV : (set T) * (set T)) := 
-  open UV.1 /\ open UV.2 /\ closure UV.1 `&` closure UV.2 = set0.
+Hypothesis normal : forall (A B : set T), 
+  closed A -> closed B -> A `&` B = set0 -> 
+  exists U V, 
+    [/\ open U,
+        A `<=` U, 
+        open V,
+        B `<=` V &
+        closure U `&` closure V = set0].
 
-Hypothesis nice_separable : forall (UV : (set T) * (set T)), 
-  nice UV -> exists2 U'V', 
-    (UV.1 `<=` U'V'.1 /\ UV.2 `<=` U'V'.2) & nice U'V'.
+Lemma closed_prod (A B : set T) : closed A -> closed B -> closed (A `*` B).
+Proof.
+Admitted.
+
+
+Lemma urysohn A B : 
+  closed A -> closed B -> A `&` B = set0 -> 
+  exists 
+
+Lemma separating_entourage A B :
+  closed A -> closed B -> A `&` B = set0 -> 
+  exists2 E : set (T*T), 
+  entourage E & ((A `*` B) `<=` ~`E).
+Proof.
+move=> clA clB AB0.
+have [U [V] [oU AU oV BV UV0]] := normal clA clB AB0.
+have /closed_openC oUVc : closed (closure U `*` closure V). 
+  by apply: closed_prod; exact: closed_closure.
+have eqUV : [set xy | xy.1 = xy.2] `<=` ~` (closure U `*` closure V).
+  apply: subsetCr; case => p q [/= + +] pqE; rewrite pqE => ? ?.
+  by (suff : (closure U `&` closure V) q by rewrite UV0); split.
+have Wx : forall (x:T), exists W, open W /\ W (x,x) /\ 
+    W `<=` ~` (closure U `*` closure V).
+  rewrite openE in oUVc.
+  move=> x; have /oUVc /= := eqUV (x,x) erefl.
+  rewrite /interior nbhsE /=; case=> R [oR] Rx RcUV.
+  by exists R; split.
+pose W := \bigcup_x (projT1 (cid (Wx x))).
+
+Search nbhs entourage.
+
+
+-------------------------
+D W         UV  UV  UV
+  D W       UV  AB  UV
+    D W     UV  UV  UV
+      D W
+        D W
+          D W
+            D W
+-------------------------
+
+suff : exists R, open R /\ A`*`B `<=` ~` R.
+  case=> R [oR ABR].
+  
+  
+
+  
+  rewrite /closed /closure => pq /=.
+apply/not_exists2P => EAB'.
+have EAB : forall (E: set (T*T)), entourage E -> A `*` B `&` E !=set0.
+  by move=> E entE; have := EAB' E; case => // /nonsubset; rewrite setCK.
+pose G := filter_from (@entourage T) (setI (A `*` B)).
+have PG : ProperFilter G.
+  split; first by move=> P; case: P => E /EAB /[swap] ABE [? /ABE].
+  apply: filter_from_filter; first by exists [set: T*T]; exact: filterT.
+  move=> E1 E2 ent1 ent2; exists (E1 `&` E2); first exact: filterI.
+  by rewrite setIA [(_ `*` _) `&` _ `&` _]setIC setIA setIid setIA.
+
+
+U `*` V
+
+
+  
+have EAx : forall x, A x -> exists2 E, entourage E & to_set E x `<=` U.
+  move=> x Ax; move: oU; rewrite openE => /(_ x (AU _ Ax)).
+  by rewrite /interior -nbhs_entourageE; case => E entE ?; exists E.
+have EBx : forall x, B x -> exists2 E, entourage E & to_set E x `<=` V.
+  move=> x Bx; move: oV; rewrite openE => /(_ x (BV _ Bx)).
+  by rewrite /interior -nbhs_entourageE; case => E entE ?; exists E.
+
+
+  
 
 Definition split_normal (UV : (set T) * (set T)) := 
   if pselect (nice UV) is left sep
