@@ -16,9 +16,9 @@ Require Import boolp signed.
 (* * types for values within known interval                                   *)
 (*       {i01 R} == interface type for elements in R that live in `[0, 1];    *)
 (*                  R must have a numDomainType structure.                    *)
-(*                  Allows to solve automatically goals of the form x >= 0 if *)
-(*                  x is canonically a {i01 R}. {i01 R} is canonically        *)
-(*                  stable by common operations.                              *)
+(*                  Allows to solve automatically goals of the form x >= 0    *)
+(*                  and x <= 1 if x is canonically a {i01 R}. {i01 R} is      *)
+(*                  canonically stable by common operations.                  *)
 (*   {itv R & i} == more generic type of values in interval i : interval int  *)
 (*                  R must have a numDomainType structure. This type is shown *)
 (*                  to be a porderType.                                       *)
@@ -258,6 +258,30 @@ move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= => /le_gtF.
 Qed.
 
+Lemma lt1 x : unify_itv `]-oo, Posz 1[ i -> x%:inum < 1%R :> R.
+Proof.
+move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
+by rewrite in_itv.
+Qed.
+
+Lemma ge1F x : unify_itv `]-oo, Posz 1[ i -> 1%R <= x%:inum :> R = false.
+Proof.
+move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
+by rewrite in_itv/= => /lt_geF.
+Qed.
+
+Lemma le1 x : unify_itv `]-oo, Posz 1] i -> x%:inum <= 1%R :> R.
+Proof.
+move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
+by rewrite in_itv/=.
+Qed.
+
+Lemma gt1F x : unify_itv `]-oo, Posz 1] i -> 1%R < x%:inum :> R = false.
+Proof.
+move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
+by rewrite in_itv/= => /le_gtF.
+Qed.
+
 Lemma widen_itv_subproof x i' : unify_itv i' i -> Itv.spec i' x%:inum.
 Proof.
 by move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
@@ -280,6 +304,10 @@ Arguments ge0 {R i} _ {_}.
 Arguments lt0F {R i} _ {_}.
 Arguments le0 {R i} _ {_}.
 Arguments gt0F {R i} _ {_}.
+Arguments lt1 {R i} _ {_}.
+Arguments ge1F {R i} _ {_}.
+Arguments le1 {R i} _ {_}.
+Arguments gt1F {R i} _ {_}.
 Arguments widen_itv {R i} _ {_ _}.
 Arguments widen_itvE {R i} _ {_}.
 
@@ -287,6 +315,8 @@ Arguments widen_itvE {R i} _ {_}.
 #[global] Hint Extern 0 (is_true (_ < 0%R)%O) => solve [apply: lt0] : core.
 #[global] Hint Extern 0 (is_true (0%R <= _)%O) => solve [apply: ge0] : core.
 #[global] Hint Extern 0 (is_true (_ <= 0%R)%O) => solve [apply: le0] : core.
+#[global] Hint Extern 0 (is_true (_ < 1%R)%O) => solve [apply: lt1] : core.
+#[global] Hint Extern 0 (is_true (_ <= 1%R)%O) => solve [apply: le1] : core.
 
 Notation "x %:i01" := (widen_itv x%:itv : {i01 _}) (only parsing) : ring_scope.
 Notation "x %:i01" := (@widen_itv _ _
