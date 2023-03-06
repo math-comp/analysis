@@ -73,6 +73,7 @@ Reserved Notation "x %:E" (at level 2, format "x %:E").
 Reserved Notation "x +? y" (at level 50, format "x  +?  y").
 Reserved Notation "x *? y" (at level 50, format "x  *?  y").
 Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
+Reserved Notation "'\bar' '^d' x" (at level 2, format "'\bar' '^d'  x").
 Reserved Notation "{ 'posnum' '\bar' R }" (at level 0,
   format "{ 'posnum'  '\bar'  R }").
 Reserved Notation "{ 'nonneg' '\bar' R }" (at level 0,
@@ -101,8 +102,10 @@ Notation "+oo" := (@EPInf _ : dual_extended _) : ereal_dual_scope.
 Notation "+oo" := (@EPInf _) : ereal_scope.
 Notation "-oo" := (@ENInf _ : dual_extended _) : ereal_dual_scope.
 Notation "-oo" := (@ENInf _) : ereal_scope.
+Notation "r %:E" := (@EFin _ r%R : dual_extended _) : ereal_dual_scope.
 Notation "r %:E" := (@EFin _ r%R).
 Notation "'\bar' R" := (extended R) : type_scope.
+Notation "'\bar' '^d' R" := (dual_extended R) : type_scope.
 Notation "0" := (0%R%:E : dual_extended _) : ereal_dual_scope.
 Notation "0" := (0%R%:E) : ereal_scope.
 Notation "1" := (1%R%:E : dual_extended _) : ereal_dual_scope.
@@ -408,7 +411,7 @@ Definition ednatmul x n := iterop n dual_adde x 0.
 
 End ERealArith.
 
-Notation "+%dE"   := dual_adde.
+Notation "+%dE"  := dual_adde.
 Notation "+%E"   := adde.
 Notation "-%E"   := oppe.
 Notation "x + y" := (dual_adde x%dE y%dE) : ereal_dual_scope.
@@ -1126,12 +1129,12 @@ Local Open Scope ereal_dual_scope.
 
 Context {R : numDomainType}.
 
-Implicit Types x y z : \bar R.
+Implicit Types x y z : \bar^d R.
 
 Lemma dual_addeE x y : (x + y)%dE = - ((- x) + (- y))%E.
 Proof. by case: x => [x| |]; case: y => [y| |] //=; rewrite opprD !opprK. Qed.
 
-Lemma dual_sumeE I (r : seq I) (P : pred I) (F : I -> \bar R) :
+Lemma dual_sumeE I (r : seq I) (P : pred I) (F : I -> \bar^d R) :
   (\sum_(i <- r | P i) F i)%dE = - (\sum_(i <- r | P i) (- F i)%E)%E.
 Proof.
 apply: (big_ind2 (fun x y => x = - y)%E) => [|_ x _ y -> ->|i _].
@@ -1153,28 +1156,28 @@ Lemma dsumEFin I r P (F : I -> R) :
   \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
 Proof. by rewrite dual_sumeE sumEFin sumrN EFinN oppeK. Qed.
 
-Lemma daddeC : commutative (S := \bar R) +%dE.
+Lemma daddeC : commutative (S := \bar^d R) +%dE.
 Proof. by move=> x y; rewrite !dual_addeE addeC. Qed.
 
-Lemma dadde0 : right_id (0 : \bar R) +%dE.
+Lemma dadde0 : right_id (0 : \bar^d R) +%dE.
 Proof. by move=> x; rewrite dual_addeE eqe_oppLRP oppe0 adde0. Qed.
 
-Lemma dadd0e : left_id (0 : \bar R) +%dE.
+Lemma dadd0e : left_id (0 : \bar^d R) +%dE.
 Proof. by move=> x;rewrite dual_addeE eqe_oppLRP oppe0 add0e. Qed.
 
-Lemma daddeA : associative (S := \bar R) +%dE.
+Lemma daddeA : associative (S := \bar^d R) +%dE.
 Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeA. Qed.
 
-HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 0 +%dE
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar^d R) 0 +%dE
   daddeA daddeC dadd0e.
 
-Lemma daddeAC : right_commutative (S := \bar R) +%dE.
+Lemma daddeAC : right_commutative (S := \bar^d R) +%dE.
 Proof. exact: Monoid.mulmAC. Qed.
 
-Lemma daddeCA : left_commutative (S := \bar R) +%dE.
+Lemma daddeCA : left_commutative (S := \bar^d R) +%dE.
 Proof. exact: Monoid.mulmCA. Qed.
 
-Lemma daddeACA : @interchange (\bar R) +%dE +%dE.
+Lemma daddeACA : @interchange (\bar^d R) +%dE +%dE.
 Proof. exact: Monoid.mulmACA. Qed.
 
 Lemma realDed x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x + y)%O.
@@ -1263,7 +1266,7 @@ Lemma dadde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
   x + y == 0 = (x == 0) && (y == 0).
 Proof. move=> /orP[|] /andP[]; [exact: pdadde_eq0|exact: ndadde_eq0]. Qed.
 
-Lemma desum_eqyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma desum_eqyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar^d R) :
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
 rewrite dual_sumeE eqe_oppLRP /= esum_eqNyP.
@@ -1278,7 +1281,7 @@ by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
 Lemma desum_eqNyP
-    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar^d R) :
   (forall i, P i -> f i != +oo) ->
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
@@ -1288,7 +1291,7 @@ rewrite dual_sumeE eqe_oppLRP /= esum_eqyP => [|i Pi]; last first.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_eqNy (I : finType) (f : I -> \bar R) (P : {pred I}) :
+Lemma desum_eqNy (I : finType) (f : I -> \bar^d R) (P : {pred I}) :
   (forall i, f i != +oo) ->
   (\sum_(i | P i) f i == -oo) = [exists i in P, f i == -oo].
 Proof.
@@ -1312,27 +1315,27 @@ Proof. rewrite dual_addeE oppe_ge0 -!oppe_le0; exact: adde_le0. Qed.
 Lemma dadde_le0 x y : x <= 0 -> y <= 0 -> x + y <= 0.
 Proof. rewrite dual_addeE oppe_le0 -!oppe_ge0; exact: adde_ge0. Qed.
 
-Lemma dsume_ge0 T (f : T -> \bar R) (P : pred T) :
+Lemma dsume_ge0 T (f : T -> \bar^d R) (P : pred T) :
   (forall n, P n -> 0 <= f n) -> forall l, 0 <= \sum_(i <- l | P i) f i.
 Proof.
 move=> u0 l; rewrite dual_sumeE oppe_ge0 sume_le0 // => t Pt.
 rewrite oppe_le0; exact: u0.
 Qed.
 
-Lemma dsume_le0 T (f : T -> \bar R) (P : pred T) :
+Lemma dsume_le0 T (f : T -> \bar^d R) (P : pred T) :
   (forall n, P n -> f n <= 0) -> forall l, \sum_(i <- l | P i) f i <= 0.
 Proof.
 move=> u0 l; rewrite dual_sumeE oppe_le0 sume_ge0 // => t Pt.
 rewrite oppe_ge0; exact: u0.
 Qed.
 
-Lemma gte_dopp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
+Lemma gte_dopp (r : \bar^d R) : (0 < r)%E -> (- r < r)%E.
 Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
 
-Lemma ednatmul_pinfty n : +oo *+ n.+1 = +oo :> \bar R.
+Lemma ednatmul_pinfty n : +oo *+ n.+1 = +oo :> \bar^d R.
 Proof. by elim: n => //= n ->. Qed.
 
-Lemma ednatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar R.
+Lemma ednatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar^d R.
 Proof. by elim: n => //= n ->. Qed.
 
 Lemma EFin_dnatmul (r : R) n : (r *+ n.+1)%:E = r%:E *+ n.+1.
@@ -2420,7 +2423,7 @@ Import DualAddTheoryNumDomain.
 Local Open Scope ereal_dual_scope.
 
 Context {R : realDomainType}.
-Implicit Types x y z a b : \bar R.
+Implicit Types x y z a b : \bar^d R.
 
 Lemma dsube_lt0 x y : (x - y < 0) = (x < y).
 Proof. by rewrite dual_addeE oppe_lt0 sube_gt0 lte_opp. Qed.
@@ -2510,7 +2513,7 @@ Proof.
 rewrite !dual_addeE lte_opp !oppeK -lte_opp; exact: lte_le_add.
 Qed.
 
-Lemma lee_dsum I (f g : I -> \bar R) s (P : pred I) :
+Lemma lee_dsum I (f g : I -> \bar^d R) s (P : pred I) :
   (forall i, P i -> f i <= g i) ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
 Proof.
@@ -2518,7 +2521,7 @@ move=> Pfg; rewrite !dual_sumeE lee_opp.
 apply: lee_sum => i Pi; rewrite lee_opp; exact: Pfg.
 Qed.
 
-Lemma lee_dsum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
+Lemma lee_dsum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar^d R) :
   {subset Q <= P} -> {in [predD P & Q], forall i, 0 <= f i} ->
   \sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i.
 Proof.
@@ -2526,7 +2529,7 @@ move=> QP PQf; rewrite !dual_sumeE lee_opp.
 apply: lee_sum_npos_subset => [//|i iPQ]; rewrite oppe_le0; exact: PQf.
 Qed.
 
-Lemma lee_dsum_npos_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
+Lemma lee_dsum_npos_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar^d R) :
   {subset Q <= P} -> {in [predD P & Q], forall i, f i <= 0} ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | Q i) f i.
 Proof.
@@ -2535,7 +2538,7 @@ apply: lee_sum_nneg_subset => [//|i iPQ]; rewrite oppe_ge0; exact: PQf.
 Qed.
 
 Lemma lee_dsum_nneg (I : eqType) (s : seq I) (P Q : pred I)
-  (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> 0 <= f i) ->
+  (f : I -> \bar^d R) : (forall i, P i -> ~~ Q i -> 0 <= f i) ->
   \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
 Proof.
 move=> PQf; rewrite !dual_sumeE lee_opp.
@@ -2543,14 +2546,14 @@ apply: lee_sum_npos => i Pi nQi; rewrite oppe_le0; exact: PQf.
 Qed.
 
 Lemma lee_dsum_npos (I : eqType) (s : seq I) (P Q : pred I)
-  (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> f i <= 0) ->
+  (f : I -> \bar^d R) : (forall i, P i -> ~~ Q i -> f i <= 0) ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i && Q i) f i.
 Proof.
 move=> PQf; rewrite !dual_sumeE lee_opp.
 apply: lee_sum_nneg => i Pi nQi; rewrite oppe_ge0; exact: PQf.
 Qed.
 
-Lemma lee_dsum_nneg_ord (f : nat -> \bar R) (P : pred nat) :
+Lemma lee_dsum_nneg_ord (f : nat -> \bar^d R) (P : pred nat) :
   (forall n, P n -> 0 <= f n)%E ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
@@ -2559,7 +2562,7 @@ apply: (lee_sum_npos_ord (fun i => - f i)%E) => [i Pi|//].
 rewrite oppe_le0; exact: f0.
 Qed.
 
-Lemma lee_dsum_npos_ord (f : nat -> \bar R) (P : pred nat) :
+Lemma lee_dsum_npos_ord (f : nat -> \bar^d R) (P : pred nat) :
   (forall n, P n -> f n <= 0)%E ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
@@ -2568,7 +2571,7 @@ apply: (lee_sum_nneg_ord (fun i => - f i)%E) => [i Pi|//].
 rewrite oppe_ge0; exact: f0.
 Qed.
 
-Lemma lee_dsum_nneg_natr (f : nat -> \bar R) (P : pred nat) m :
+Lemma lee_dsum_nneg_natr (f : nat -> \bar^d R) (P : pred nat) m :
   (forall n, (m <= n)%N -> P n -> 0 <= f n) ->
   {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
@@ -2576,7 +2579,7 @@ move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
 apply: lee_sum_npos_natr => [n ? ?|//]; rewrite oppe_le0; exact: f0.
 Qed.
 
-Lemma lee_dsum_npos_natr (f : nat -> \bar R) (P : pred nat) m :
+Lemma lee_dsum_npos_natr (f : nat -> \bar^d R) (P : pred nat) m :
   (forall n, (m <= n)%N -> P n -> f n <= 0) ->
   {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
@@ -2584,7 +2587,7 @@ move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
 apply: lee_sum_nneg_natr => [n ? ?|//]; rewrite oppe_ge0; exact: f0.
 Qed.
 
-Lemma lee_dsum_nneg_natl (f : nat -> \bar R) (P : pred nat) n :
+Lemma lee_dsum_nneg_natl (f : nat -> \bar^d R) (P : pred nat) n :
   (forall m, (m < n)%N -> P m -> 0 <= f m) ->
   {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
@@ -2592,7 +2595,7 @@ move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
 apply: lee_sum_npos_natl => [m ? ?|//]; rewrite oppe_le0; exact: f0.
 Qed.
 
-Lemma lee_dsum_npos_natl (f : nat -> \bar R) (P : pred nat) n :
+Lemma lee_dsum_npos_natl (f : nat -> \bar^d R) (P : pred nat) n :
   (forall m, (m < n)%N -> P m -> f m <= 0) ->
   {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
@@ -2601,7 +2604,7 @@ apply: lee_sum_nneg_natl => [m ? ?|//]; rewrite oppe_ge0; exact: f0.
 Qed.
 
 Lemma lee_dsum_nneg_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
-  (f : T -> \bar R) : {subset A <= B} ->
+  (f : T -> \bar^d R) : {subset A <= B} ->
   {in [predD B & A], forall t, P t -> 0 <= f t} ->
   \sum_(t <- A | P t) f t <= \sum_(t <- B | P t) f t.
 Proof.
@@ -2610,7 +2613,7 @@ apply: lee_sum_npos_subfset => [//|? ? ?]; rewrite oppe_le0; exact: f0.
 Qed.
 
 Lemma lee_dsum_npos_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
-  (f : T -> \bar R) : {subset A <= B} ->
+  (f : T -> \bar^d R) : {subset A <= B} ->
   {in [predD B & A], forall t, P t -> f t <= 0} ->
   \sum_(t <- B | P t) f t <= \sum_(t <- A | P t) f t.
 Proof.
@@ -2726,7 +2729,8 @@ Proof. by move=> *; rewrite !dual_addeE mulNe ge0_muleDl ?oppe_ge0 ?mulNe. Qed.
 Lemma dle0_muleDr x y z : y <= 0 -> z <= 0 -> x * (y + z) = x * y + x * z.
 Proof. by move=> *; rewrite !dual_addeE muleN ge0_muleDr ?oppe_ge0 ?muleN. Qed.
 
-Lemma ge0_dsume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma ge0_dsume_distrl (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> 0 <= F i) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
 Proof.
@@ -2735,14 +2739,16 @@ move=> F0; rewrite !dual_sumeE !mulNe le0_sume_distrl => [|i Pi].
 - by rewrite oppe_le0 F0.
 Qed.
 
-Lemma ge0_dsume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma ge0_dsume_distrr (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> 0 <= F i) ->
   x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
 Proof.
 by move=> F0; rewrite muleC ge0_dsume_distrl//; under eq_bigr do rewrite muleC.
 Qed.
 
-Lemma le0_dsume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma le0_dsume_distrl (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> F i <= 0) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
 Proof.
@@ -2751,7 +2757,8 @@ move=> F0; rewrite !dual_sumeE mulNe ge0_sume_distrl => [|i Pi].
 - by rewrite oppe_ge0 F0.
 Qed.
 
-Lemma le0_dsume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma le0_dsume_distrr (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> F i <= 0) ->
   x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
 Proof.
@@ -2763,7 +2770,7 @@ Proof.
 by move: x y => [x| |] [y| |] //; rewrite /abse -dEFinD lee_fin ler_norm_add.
 Qed.
 
-Lemma lee_abs_dsum (I : Type) (s : seq I) (F : I -> \bar R) (P : pred I) :
+Lemma lee_abs_dsum (I : Type) (s : seq I) (F : I -> \bar^d R) (P : pred I) :
   `|\sum_(i <- s | P i) F i| <= \sum_(i <- s | P i) `|F i|.
 Proof.
 elim/big_ind2 : _ => //; first by rewrite abse0.
@@ -2977,7 +2984,7 @@ Import DualAddTheoryNumDomain DualAddTheoryRealDomain.
 Section DualRealFieldType_lemmas.
 Local Open Scope ereal_dual_scope.
 Variable R : realFieldType.
-Implicit Types x y : \bar R.
+Implicit Types x y : \bar^d R.
 
 Lemma lee_dadde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
 Proof. by move=> xye; apply: lee_adde => e; case: x {xye} (xye e). Qed.
@@ -2997,9 +3004,9 @@ Export DualAddTheory.
 End ConstructiveDualAddTheory.
 
 Definition posnume (R : numDomainType) of phant R := {> 0 : \bar R}.
-Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R))  : type_scope.
+Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R)) : type_scope.
 Definition nonnege (R : numDomainType) of phant R := {>= 0 : \bar R}.
-Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R))  : type_scope.
+Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R)) : type_scope.
 
 Notation "x %:pos" := (widen_signed x%:sgn : {posnum \bar _}) (only parsing)
   : ereal_dual_scope.
