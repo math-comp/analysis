@@ -7425,56 +7425,8 @@ split.
   by move=> ?; left.
 by move=> Wc ; apply/eqP/negbNE/negP/set0P; case=> w [Pw Qw]; have [] := Wc w.
 Qed.
-Section urysohn.
-Context {T : uniformType}.
 
-Definition nice (AB : (set T) * (set T)) := 
-  [/\ open AB.1, 
-      open AB.2 & 
-      closure AB.1 `&` closure AB.2 = set0].
-
-Hypothesis normal : forall (AB : (set T) * (set T)), 
-  nice AB -> exists UV,
-    nice UV /\ (closure AB.1 `<=` UV.1 /\ closure AB.2 `<=` UV.2).
-
-Definition next (AB : (set T) * (set T)) := 
-  if pselect (nice AB) is left n
-  then  
-    let UV := projT1 (cid (normal n)) in
-    (closure UV.1, closure UV.2)
-  else (set0, set0).
-
-U (~` closure U)
-
-U0 `<=` closure U0 `<=` U1 `<=` closure U1
-
-U0 (U1 `\` closure U0) ~` (closure U1)
-
-________________ closure U1
-
----------------- U1
-
-________________ closure U(1/2)
-                                
----------------- U(1/2)                      
-                               
-________________ closure U0   
-
----------------- U0              
-
-U2 `\` closure U1
-U1 `\` closure U0
-U0
-
-U0, ~` closure U0, U1
-
-                                    
-
-
-Definition to_cover (AB : (set T) * (set T)) := 
-  [set ~`(AB.1); ~`(AB.2)].
-
-Lemma bigcup_set2 (P Q : set T) : 
+Lemma bigcup_set2 {T: Type} (P Q : set T) : 
   \bigcup_(W in [set P;Q]) W = P `|` Q.
 Proof.
 rewrite eqEsubset; split => W /=. 
@@ -7482,26 +7434,131 @@ rewrite eqEsubset; split => W /=.
 by case => ?;[exists P | exists Q] => //; [left | right].
 Qed.
 
+Section urysohn.
+Context {T : topologicalType}.
+
+Definition nice (AB : (set T) * (set T)) := 
+  [/\ open AB.1, 
+      open AB.2 & 
+      closure AB.1 `&` closure AB.2 = set0].
+
+Hypothesis normal : forall (A B : (set T)),
+  closed A -> closed B -> exists UV,
+    nice UV /\ (A `<=` UV.1 /\ B `<=` UV.2).
+
+(*
+
+setT                         |
+                             |
+_______________ closure V    |
+                             |
+----------------------- V
+
+----------------------- V'
+
+_______________ closure U'
+
+---------------  U'
+
+_______________ closure U   
+                             
+--------------- U           
+
+set0
+
+                            C0     C1       C2
+                            
+                             |      |      |
+_______________ closure U0   |      |      |
+                             |      |      |
+--------------- U0           |     ||      ||
+                             |     ||      ||
+_______________ closure U1   |     ||       |
+                             |     ||       ||
+--------------- U1           |     ||       ||
+                             |     ||       ||
+_______________ closure U2   |     ||        |
+                             |     ||        |
+--------------- U2           |     ||        |
+                             |     ||        ||
+_______________ closure U3   |     |          |
+                             |     |          |
+--------------- U3           |     |          |
+
+[
+  setT `\` closure set0
+]
+
+[ 
+  setT `\` closure U3,
+  U0 `\` closure set0
+]
+
+[ 
+  setT `\` closure U1,
+  U0 `\` closure U2
+  U1 `\` closure U3
+  U2 `\` closure set0
+]
+*)
 Section urysohn_ents.
 
 Context (AB : (set T) * (set T)).
+
 Hypothesis niceAB : nice AB.
 
+Definition urysohn_chain (C : set (set T)) := 
+  [/\ C set0,
+      C setT,
+      finite_set C,
+      (forall U V, C U -> C V -> V = U \/ closure U `<=` V \/ closure V `<=` U)&
+      (forall U, C U -> open U)].
 
-A `<=` U `<=` cl U 
-
-  
-Definition A_ n := (iter n next AB).1.
-Definition B_ n := (iter n next AB).2.
-
-Definition urysohn_cov := [set (to_cover (iter n next AB)) | n in [set: nat]].
-
-Lemma urysohn_covT C : urysohn_cov C -> is_cover C.
+Lemma urysohn_chain0 : urysohn_chain [set set0; setT].
 Proof.
-case=> n _ <- w; rewrite /to_cover bigcup_set2 /=.
-elim: n w => /=.
+split; [left | right | exact: finite_set2 | |] => //.
+  by move=> U V /= [->|->] [-> | ->]; [left | right; left | right;right | left].
+move=> ? [] ->; [exact: open0 | exact: openT].
+Qed.
 
-           
+Lemma split_levels (U V : (set T)) : open U -> open V -> closure U `<=` V ->
+    exists U' V', 
+    [/\ open U', open V', closure U `<=` U' ,
+      closure U' `<=` V' & closure V' `<=` V].
+Proof.
+move=> oU oV UV. 
+have clU : closed (closure U) by exact: closed_closure.
+have clV : closed (~` V) by exact: open_closedC.
+have [] := @normal (closure U) (~` V); first exact: closed_closure.
+  exact: open_closedC. 
+case=> U' V' [[/= U'o V'o U'V'0]] [UU' VV'].
+exists U', (~` (closure V')); split => //.
+- by apply: closed_openC; exact: closed_closure.
+- exact/disjoints_subset.
+- move/subsetCPl/(subset_trans _) : VV'; apply.
+  rewrite {1}closureE; apply: bigcap_inf; split; first exact: open_closedC.
+  by apply: subsetC; exact: subset_closure.
+Qed.
+
+Lemma urysohn_chainS C : urysohn_chain C -> 
+  exists2 D, urysohn_chain D & cover_refine (cover_star D) C.
+Proof.
+case=> C0 CT finC Clin Co.
+pose G := [set UV | (C `*` C) UV /\ closure UV.1 `<=` UV.2].
+    Search subset setC.
+    Search bigcap subset.
+    Search closure smallest.
+    
+    apply: (subset_trans _ VV'); apply/disjoints_subset.
+    apply: (@subsetI_eq0 _ _ (closure U') _ (closure V')) => //.
+    Search setI set0 subset.
+    Search setC subset set0.
+  by apply: subsetCl; apply: (subset_trans VV'); exact: subset_closure.
+fmap
+
+case => C0 CT Clin Co.
+
+
 
 Definition urysohn_mixin := 
   cover_uniformity_subbase_mixin.
