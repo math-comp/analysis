@@ -642,6 +642,9 @@ Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
 HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 0 +%E
   addeA addeC add0e.
 
+HB.instance Definition _ := GRing.isZsemimodule.Build (\bar R)
+  addeA addeC add0e.
+
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
 Proof. exact: Monoid.mulmAC. Qed.
 
@@ -1169,6 +1172,10 @@ Lemma daddeA : associative (S := \bar^d R) +%dE.
 Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeA. Qed.
 
 HB.instance Definition _ := Monoid.isComLaw.Build (\bar^d R) 0 +%dE
+  daddeA daddeC dadd0e.
+
+HB.instance Definition _ := Choice.on (\bar^d R).
+HB.instance Definition _ := GRing.isZsemimodule.Build (\bar^d R)
   daddeA daddeC dadd0e.
 
 Lemma daddeAC : right_commutative (S := \bar^d R) +%dE.
