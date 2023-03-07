@@ -82,30 +82,24 @@ move: x y => [x| |] [y| |] x0 y0 xy//=.
 by rewrite leey.
 Qed.
 
-(*NB: not used anymore *)
-HB.mixin Record isConvn (R : realType) (f : nat -> R) of isNonNegFun nat R f :=
-  { convn1 : (\sum_(n <oo) (f n)%:E = 1)%E }.
+Section finite_measure_lemma.
+Context d (T : measurableType d) (R : realType).
+Variable (P : {finite_measure set T -> \bar R}).
 
-#[short(type=convn)]
-HB.structure Definition Convn (R : realType) :=
-  { f of isConvn R f & isNonNegFun nat R f }.
-
-Section probability_lemmas.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
-
-Lemma probability_integrable_cst k : P.-integrable [set: T] (EFin \o cst k).
+Lemma finite_measure_integrable_cst k : P.-integrable [set: T] (EFin \o cst k).
 Proof.
 split; first exact/EFin_measurable_fun/measurable_fun_cst.
 have [k0|k0] := leP 0 k.
-- rewrite (eq_integral (EFin \o cst k))//; last first.
-    by move=> x _ /=; rewrite ger0_norm.
-  by rewrite /= integral_cst//= probability_setT mule1 ltey.
-- rewrite (eq_integral (EFin \o cst (- k)))//; last first.
-    by move=> x _ /=; rewrite ltr0_norm.
-  by rewrite /= integral_cst//= probability_setT mule1 ltey.
+- under eq_integral do rewrite /= ger0_norm//.
+  rewrite integral_cst//= lte_mul_pinfty// fin_num_fun_lty//.
+  exact: fin_num_measure.
+- under eq_integral do rewrite /= ltr0_norm//.
+  rewrite integral_cst//= lte_mul_pinfty//.
+    by rewrite lee_fin ler_oppr oppr0 ltW.
+  by rewrite fin_num_fun_lty//; exact: fin_num_measure.
 Qed.
 
-End probability_lemmas.
+End finite_measure_lemma.
 
 Section mfun.
 Variable R : realType.
