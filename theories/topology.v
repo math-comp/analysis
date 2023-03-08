@@ -7468,16 +7468,20 @@ exists (U', (~` (closure V'))); split => //.
   by apply: subsetC; exact: subset_closure.
 Qed.
 
-Definition split_level A B := projT1 (cid (@split_level' A B)).
+Definition split_level A B := 
+  if (A == set0) 
+  then (set0,set0)
+  else projT1 (cid (@split_level' A B)).
 
-Section urysohn_ents.
+Lemma split_level0E B : split_level set0 B = (set0,set0).
+Proof. by rewrite /split_level; rewrite eq_refl. Qed.
 
 (* a nested chain of open sets, ending in the whole space, with 
    closure Un `<=` Un.+1
 *)
 Fixpoint urysohn_chain A (L : list (set T)) :=
   match L with
-  | nil => A = setT
+  | nil => True
   | B :: tail => [/\ open B, closure A `<=` B & (urysohn_chain B tail)]
   end.
 
@@ -7490,32 +7494,25 @@ Fixpoint urysohn_cover A (L : list (set T)) : Prop :=
                      urysohn_cover B tail]
   end.
 
-Lemma urysohn_chain_open A L U : urysohn_chain A L -> U \in L -> open U.
-case: L U => // /[swap]; elim => //=.
-  move=> ? ? [? ? ->]; rewrite inE => /eqP ->; exact: openT.
-move=> ? ? IH ? ? [?] WA [? AB ?]; rewrite inE => /orP; case.
-  by move/eqP => ->.
-by move/IH; apply; split => //= ?/WA/subset_closure/AB.
-Qed.
-
-Lemma urysohn_cover_open A L U : urysohn_cover A L -> U \in L -> open U.
-case: L U => // /[swap]; elim => //=.
-  by move=> ? ? [?] _ ?; rewrite inE => /eqP ->.
-move=> ? ? IH ? ? [?] WA [? AB ?]; rewrite inE => /orP; case.
-  by move/eqP => ->.
-by move/IH; apply; split => // ? ?; apply: WA; rewrite inE; apply/orP; right.
+Lemma urysohn_chain0P : forall A L, 
+  open A -> urysohn_chain set0 (A :: L) <-> urysohn_chain A L.
+Proof.
+move=> A L; split => //=; rewrite closure0; first by case.
+by move=> ?; split.
 Qed.
 
 Fixpoint cover_of_chain A B (L : list (set T)) : list (set T) := 
   match L with 
-  | nil => nil
+  | nil => ~` closure A :: nil
   | C :: tail => (C `\` closure A) :: cover_of_chain B C tail
   end.
 
 Lemma cover_of_chain_subset A B L W: 
   urysohn_chain A (B :: L) -> [set` cover_of_chain A B L] W -> W `<=` ~` closure A.
 Proof.
-elim: L A B W => // C L IH A B W /= [oB cAB ucBCL]; rewrite inE => /orP; case.
+elim: L A B W.
+  by move=> A B W [oB cAB _ /=]; rewrite inE => /eqP ->.
+move=> C L IH A B W /= [oB cAB ucBCL]; rewrite inE => /orP; case.
   by move/eqP => -> ? [_]; apply/subsetC. 
 move/IH=>/(_ ucBCL)/subset_trans; apply; apply/subsetC. 
 by move=> ?/cAB/subset_closure.
@@ -7525,7 +7522,10 @@ Lemma urysohn_cover_of_chain A B C L :
   urysohn_chain A (B :: C :: L) ->
   urysohn_cover (C `\` closure A) (cover_of_chain B C L).
 Proof.
-elim: L A B C => // D L IH A B C /= [oB cAB [oc cBC ucCL]]; split.
+elim: L A B C.
+  move=> A B C /= [? ?] [? ?] _; split => //. 
+  apply: closed_openC; apply: closed_closure.
+move=> D L IH A B C /= [oB cAB [oc cBC ucCL]]; split.
 - apply: openI; first by case: ucCL. 
   by apply: closed_openC; exact: closed_closure.
 - move=> W /cover_of_chain_subset => /(_ ucCL) WcB; apply /disjoints_subset.
@@ -7534,45 +7534,42 @@ elim: L A B C => // D L IH A B C /= [oB cAB [oc cBC ucCL]]; split.
 - by apply: IH; split.
 Qed.
 
-Lemma chain_cover_aux_is_cover A B C L : urysohn_chain A (B :: C :: L) -> 
-  ~` (closure A) `<=` \bigcup_(F in [set` (cover_of_chain A B (C :: L))]) F.
+Lemma chain_cover_aux_is_cover A B L : urysohn_chain A (B :: L) -> 
+  ~` (closure A) `<=` \bigcup_(F in [set` (cover_of_chain A B L)]) F.
 Proof.
-elim: L A B C.
-  move=> A B ? [? _ [_ _] ->].
-  by rewrite bigcup_set big_cons big_nil setU0 setTD.
-move=> D L IH A B C /= [oB cAB ucBCDL] x ncA.
+elim: L A B.
+  by move=> A B [? cAB _]; rewrite bigcup_set /= big_cons big_nil setU0.
+move=> C L IH A B /= [oB cAB ucBCL] x ncA.
 rewrite bigcup_set big_cons.
 case: (pselect (C x)); first by move=> ?; left.
-move=> nCx; right; have /= := IH B C D ucBCDL; rewrite bigcup_set; apply.
-by move: nCx; apply/subsetC; case: ucBCDL.
+move=> nCx; right; have /= := IH B C ucBCL; rewrite bigcup_set; apply.
+by move: nCx; apply/subsetC; case: ucBCL.
 Qed.
 
 Fixpoint star_cover_of_chain A B C D L : list (set T) := 
   match L with 
-  | nil => nil
+  | nil => ~` (closure A) :: nil
   | E :: tail => E `\` closure A :: star_cover_of_chain B C D E tail
   end.
 
-Lemma star_cover_refines_aux A B C D E L :
-  urysohn_chain A (B::C::D::E::L) ->
+Lemma star_cover_refines_aux A B C D L :
+  urysohn_chain A (B::C::D::L) ->
   cover_refine
-    (cover_star [set` cover_of_chain A B (C :: D :: E :: L)])
-    [set` star_cover_of_chain A B C D (E :: L)]
+    (cover_star [set` cover_of_chain A B (C :: D :: L)])
+    [set` star_cover_of_chain A B C D L]
   .
 Proof.
-elim: L A B C D E.
-  move=> A B C D E uc => /= W [U] OEC <-; exists (E `\` closure A).
+elim: L A B C D.
+  move=> A B C D uc => /= W [U] OEC <-; exists (~` closure A).
     by rewrite /= inE.
-  case: uc => ? cAB [? cBC [? cCD [? cDE ->]]] ? [?]; rewrite ?inE; case=> /orP.
-  case; first move=> /eqP ->.
-    move=> _ [//] _ nBt; split => //; move: nBt; apply/subsetC.
-  move/orP; case; first move=> /eqP -> _ [//] _ nBt.
-    by split => //; move: nBt; apply/subsetC => ? /cAB/subset_closure.
-  move/orP; case => // /eqP -> _ [_ nCx]; split => //; move: nCx; apply/subsetC.
-  by move=> ? /cAB/subset_closure/cBC/subset_closure.
-move=> F L IH A B C D E ucABCDEFL W [R] cvrR REW.
-have [_ cAB [_ cBC] [_ cCD] [_ cDE] [_ cEF] _] := ucABCDEFL.
-have {cvrR} : R == C `\` closure A \/ [set` cover_of_chain B C [:: D, E,F & L]] R.
+  move=> x /= [R] /= [/orP]; rewrite ?inE; case; first by move=> -> _ [].
+  have [_ cAB [_ cBC _]] := uc;  move=>/orP; case. 
+    by move=> /eqP -> _ [?]; apply/subsetC => ? /cAB/subset_closure.
+  case/orP => // /eqP -> _.
+  by apply/subsetC => ? /cAB/subset_closure/cBC/subset_closure.
+move=> E L IH A B C D ucABCDEL W [R] cvrR REW.
+have [_ cAB [_ cBC] [_ cCD] [_ cDE] _] := ucABCDEL.
+have {cvrR} : R == C `\` closure A \/ [set` cover_of_chain B C [:: D, E & L]] R.
   by move: cvrR; rewrite /= inE => /orP.
 case => [|cvrR].
   rewrite -REW; move/eqP=>->; exists (E`\` closure A). 
@@ -7581,11 +7578,11 @@ case => [|cvrR].
   - by move=> _ [? ?]; split => //; apply/cDE/subset_closure/cCD/subset_closure.
   - move=> _ [? nBx]; split => //; first exact/cDE/subset_closure. 
     by move: nBx; apply/subsetC; move=> ? /cAB/subset_closure.
-  have /= [_ UsC] := @urysohn_cover_of_chain A B C (D :: E :: F :: L) ucABCDEFL.
+  have /= [_ UsC] := @urysohn_cover_of_chain A B C (D :: E :: L) ucABCDEL.
   by move=> ? /UsC; rewrite setIC => /eqP + /set0P => ->.
-have : R == D `\` closure B \/ [set` cover_of_chain C D [:: E,F & L]] R.
+have : R == D `\` closure B \/ [set` cover_of_chain C D [:: E & L]] R.
   by move: cvrR; rewrite /= inE => /orP.
-have [_ _ ucBCDEFL] := ucABCDEFL.
+have [_ _ ucBCDEL] := ucABCDEL.
 case.
   rewrite -REW; move/eqP=>->; exists (E`\` closure A). 
     by rewrite /= inE eq_refl orTb.
@@ -7593,20 +7590,20 @@ case.
   - by move=> _ [? ?]; split => //; apply/cDE/subset_closure/cCD/subset_closure.
   - move=> _ [? nBx]; split => //; first exact/cDE/subset_closure. 
     by move: nBx; apply/subsetC; move=> ? /cAB/subset_closure.
-  have /= [_ UsC] := @urysohn_cover_of_chain B C D (E :: F :: L) ucBCDEFL.
+  have /= [_ UsC] := @urysohn_cover_of_chain B C D (E :: L) ucBCDEL.
   move=> _; rewrite inE => /orP [/eqP -> _ [? nCx]|].
     split => //; move: nCx; apply/subsetC; move=> ?. 
     by move/cAB/subset_closure/cBC/subset_closure.
   by move=> /UsC; rewrite setIC => /eqP + /set0P => ->.
-have [_ _ ucCDEFL] := ucBCDEFL.
-move=> cvrR2; have [|U starU supRU] := IH B C D E F ucBCDEFL  
-    (cover_support [set` cover_of_chain B C [:: D,E,F&L]] R).
+have [_ _ ucCDEFL] := ucBCDEL.
+move=> cvrR2; have [|U starU supRU] := IH B C D E ucBCDEL  
+    (cover_support [set` cover_of_chain B C [:: D,E&L]] R).
   by exists R.
 exists U; first by rewrite ?inE; apply/orP; right. 
 rewrite -REW; apply: (subset_trans _ supRU) => x [S /= [SRx SR0] Sx].
 exists S => //=; split => //; move: SRx; rewrite inE=> /orP; case => //.
 move/eqP => SCE; move: SR0; rewrite SCE; case=> z [[/subset_closure ? ? Rz]].
-have ucdefl : urysohn_chain C (D :: E :: F :: L) by done.
+have ucdefl : urysohn_chain C (D :: E :: L) by done.
 by have /(_ _ Rz) := cover_of_chain_subset ucdefl cvrR2.
 Qed.
 
@@ -7620,7 +7617,12 @@ Fixpoint refine_chain A (L : list (set T)) : list (set T) :=
 Lemma refine_chain_urysohn A L : 
   open A -> urysohn_chain A L -> urysohn_chain A (refine_chain A L).
 Proof.
-elim: L A => // B L IH A oA /= [oB clAB] ucBL. 
+
+elim: L A => // B L IH A oA [oB clAB] ucBL. 
+rewrite /refine_chain /split_level.
+case : (eqVneq A set0).
+  move=> -> /=; rewrite ?closure0; do 2 (split => //; first exact: open0). 
+  by split => //; apply: IH => //.
 have [//|//|//| oT1 oT2 cAT1 cT1T2 cT2B] := projT2 (cid (split_level' A B)).
 by do 3 (split => //); apply: IH.
 Qed.
@@ -7633,10 +7635,13 @@ Lemma reduce_cover_refines A B (L : list (set T)) :
             (split_level A B).2 B (refine_chain B L)]
     [set` cover_of_chain A B L].
 Proof.
-elim: L A B => // C L IH A B oA ucABCL.
+elim: L A B.
+  move=> A B ? [] ? ? ? ?; rewrite /= ?inE => ->; exists (~` closure A) => //.
+  by rewrite inE.
+move=> // C L IH A B oA ucABCL.
 have [/= oB cAB [oC cBC _]] := ucABCL.
-have [] := projT2 (cid (split_level' B C)) => // _ _ cBT1 cBT1T2 cT2C.
-have [] := projT2 (cid (split_level' A B)) => // _ _ cAT1 cAT1T2 cT2B.
+have := refine_chain_urysohn oA ucABCL.
+case=>_ cAT1 [_ cAT1T2] [_ cT2B] [_ cBT1] [_ cBT1T2] [_ cT2C] _.
 move=> W; rewrite /= in_cons=> /orP [].
   move=> /eqP ->; exists (C `\` closure A) => //; first by rewrite inE eq_refl.
   by move=> ? [/subset_closure/cBT1T2/subset_closure/cT2C].
@@ -7653,24 +7658,72 @@ move=> WE; suff : exists2 V, V \in cover_of_chain B C L & W `<=` V.
 by move: W WE; apply: IH => //; case: ucABCL.
 Qed.
 
-Lemma star_cover_refines_aux A B L :
-  open A ->
-  urysohn_chain A (B :: L) ->
-  cover_refine
+Lemma cover_refine_star_subset (C D : set (set T)) :
+  C `<=` D -> cover_refine (cover_star C) (cover_star D).
+Proof.
+move=> CD W [V /CD CV <-]; exists (cover_support D V); first exists V => //.
+by move=> x [R] [/CD ?] RVn0 Rx; exists R.
+Qed.
+  
 
-    [set` star_cover_of_chain A (split_level A B).1 
-            (split_level A B).2 B (refine_chain B L)]
-    (cover_star [set` 
-      cover_of_chain A (split_level A B).1 ((split_level A B).2 :: B :: E :: L)])
-    
-     cover_of_chain A (split_level A B).1 
-                       B (refine_chain B L)])
-    [set` cover_of_chain A B L].
-  .
+Lemma star_cover_refines A B L :
+  open A -> urysohn_chain A (B :: L) -> cover_refine
+    (cover_star [set` (cover_of_chain set0 A (refine_chain set0 (A :: B :: L)))]) 
+    [set` cover_of_chain set0 A (B :: L)].
+Proof.
+move=> oA ucABL. 
+apply: cover_refine_trans; last apply: reduce_cover_refines; first last.
+- exact/urysohn_chain0P.
+- exact: open0.
+apply: cover_refine_trans; last apply: star_cover_refines_aux; first last.
+  rewrite ?split_level0E. 
+  do 3 (apply/urysohn_chain0P; first try exact: open0) => //.
+  by have [] := refine_chain_urysohn oA ucABL.
+rewrite /= split_level0E /= closure0 ?setD0 set0D; apply: cover_refine_star_subset.
+move=> W /=; rewrite {1}in_cons => /orP; case => // /eqP ->.
+by rewrite in_cons eq_refl.
+Qed.
 
-Definition urysohn_mixin := 
-  cover_uniformity_subbase_mixin.
-have :
+Section urysohn_uniform.
+Context (A B : set T).
+Hypothesis oA : open A.
+Hypothesis oB : open B.
+Hypothesis cAB : closure A `<=` B.
+
+Definition urysohn_uniform_chains := 
+  [set iter n (refine_chain A) (B :: nil) | n in [set: nat]].
+
+Lemma uniform_chains_chain L : urysohn_uniform_chains L -> urysohn_chain set0 L.
+Proof.
+case => + _ <-; elim; first by split => //; rewrite closure0.
+move=> n IH /=. 
+move=> n IH; apply: refine_chain_urysohn => //=; exact: open0.
+Qed.
+
+Definition urysohn_uniform := 
+  (fun L => [set` cover_of_chain set0 A L]) @` urysohn_uniform_chains.
+
+Program Definition urysohn_mixin := 
+  @cover_uniformity_subbase_mixin T urysohn_uniform _ _ _.
+Next Obligation.
+move=> C [L] /uniform_chains_chain/(urysohn_chain0P _ open0) ucL <- w. 
+by apply: chain_cover_aux_is_cover => //; rewrite closure0.
+Qed.
+Next Obligation.
+exists ([set` (cover_of_chain set0 set0 (A :: B :: nil))]). 
+by exists (A :: B :: nil) => //; exists O => //.
+Qed.
+Next Obligation.
+move=> C [L [n] _ <- <-]; exists [set` (cover_of_chain set0 set0 
+    (iter n.+1 (refine_chain set0) [:: A; B]))].
+  exists (iter n.+1 (refine_chain set0) [:: A; B]) => //.
+  by exists n.+1.
+rewrite /=; apply: cover_refine_trans; first last.
+apply star_cover_refines.
+
+
+
+
 
 Lemma closed_prod (A B : set T) : closed A -> closed B -> closed (A `*` B).
 Proof.
