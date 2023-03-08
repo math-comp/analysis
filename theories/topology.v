@@ -7502,15 +7502,13 @@ Lemma split_level' (U V : (set T)) :
     [/\ open U'V'.1, open U'V'.2, closure U `<=` U'V'.1 ,
       closure U'V'.1 `<=` U'V'.2 & closure U'V'.2 `<=` V].
 Proof.
-case: (pselect (open U)); [move=> oU | by move=>?; exists point].
-case: (pselect (open V)); [move=> oV | by move=>?; exists point].
-case: (pselect (closure U `<=` V)); [move=> UV | by move=>?; exists point].
-have clU : closed (closure U) by exact: closed_closure.
-have clV : closed (~` V) by exact: open_closedC.
-have [] := @normal (closure U) (~` V); first exact: closed_closure.
-  exact: open_closedC. 
-case=> U' V' [[/= U'o V'o U'V'0]] [UU' VV'].
-exists (U', (~` (closure V'))); split => //.
+case: (pselect (open U)); case: (pselect (open V));
+  case: (pselect (closure U `<=` V)); try by move=>?; exists point.
+move=> cUV oV oU.
+have [] := @normal (closure U) (~` V); [exact: closed_closure | | ].
+  exact: open_closedC.
+case=> U' V' [[/= U'o V'o U'V'0]] [UU' VV']; exists (U', (~` (closure V'))). 
+split => //.
 - by apply: closed_openC; exact: closed_closure.
 - exact/disjoints_subset.
 - move/subsetCPl/(subset_trans _) : VV'; apply.
@@ -7518,24 +7516,18 @@ exists (U', (~` (closure V'))); split => //.
   by apply: subsetC; exact: subset_closure.
 Qed.
 
-Definition split_level A B := 
-  if (A == set0) 
-  then (set0,set0)
-  else projT1 (cid (@split_level' A B)).
+Definition split_level A B := if (A == set0) 
+  then (set0,set0) else projT1 (cid (@split_level' A B)).
 
 Lemma split_level0E B : split_level set0 B = (set0,set0).
 Proof. by rewrite /split_level; rewrite eq_refl. Qed.
 
-(* a nested chain of open sets, ending in the whole space, with 
-   closure Un `<=` Un.+1
-*)
 Fixpoint urysohn_chain A (L : list (set T)) :=
   match L with
   | nil => True
   | B :: tail => [/\ open B, closure A `<=` B & (urysohn_chain B tail)]
   end.
 
-(* a family of open sets which intersect only their neighbors in the list *)
 Fixpoint urysohn_cover A (L : list (set T)) : Prop :=
   match L with
   | nil => True
@@ -7544,44 +7536,38 @@ Fixpoint urysohn_cover A (L : list (set T)) : Prop :=
                      urysohn_cover B tail]
   end.
 
-Lemma urysohn_chain0P : forall A L, 
+Lemma urysohn_chain0P : forall A L,
   open A -> urysohn_chain set0 (A :: L) <-> urysohn_chain A L.
 Proof.
-move=> A L; split => //=; rewrite closure0; first by case.
-by move=> ?; split.
+by move=> A L; split => //=; rewrite closure0; [case |  move=> ?; split].
 Qed.
 
-Fixpoint cover_of_chain A B (L : list (set T)) : list (set T) := 
+Fixpoint cover_of_chain A B (L : list (set T)) : list (set T) :=
   match L with 
   | nil => ~` closure A :: nil
   | C :: tail => (C `\` closure A) :: cover_of_chain B C tail
   end.
 
-Lemma cover_of_chain_subset A B L W: 
-  urysohn_chain A (B :: L) -> [set` cover_of_chain A B L] W -> W `<=` ~` closure A.
+Lemma cover_of_chain_subset A B L W : urysohn_chain A (B :: L) -> 
+  [set` cover_of_chain A B L] W -> W `<=` ~` closure A.
 Proof.
-elim: L A B W.
-  by move=> A B W [oB cAB _ /=]; rewrite inE => /eqP ->.
-move=> C L IH A B W /= [oB cAB ucBCL]; rewrite inE => /orP; case.
+elim: L A B W; first by move=> A B W [oB cAB _ /=]; rewrite inE => /eqP ->.
+move=> C L IH A B W /= [oB cAB uc]; rewrite inE => /orP; case.
   by move/eqP => -> ? [_]; apply/subsetC. 
-move/IH=>/(_ ucBCL)/subset_trans; apply; apply/subsetC. 
-by move=> ?/cAB/subset_closure.
+by move/IH=>/(_ uc)/subset_trans; apply; apply/subsetC => ?/cAB/subset_closure.
 Qed.
 
-Lemma urysohn_cover_of_chain A B C L : 
-  urysohn_chain A (B :: C :: L) ->
+Lemma urysohn_cover_of_chain A B C L : urysohn_chain A (B :: C :: L) ->
   urysohn_cover (C `\` closure A) (cover_of_chain B C L).
 Proof.
 elim: L A B C.
-  move=> A B C /= [? ?] [? ?] _; split => //. 
-  apply: closed_openC; apply: closed_closure.
-move=> D L IH A B C /= [oB cAB [oc cBC ucCL]]; split.
-- apply: openI; first by case: ucCL. 
+  by move=> A B C [? ?] [? ?] _; split => //; exact/closed_openC/closed_closure.
+move=> D L IH A B C /= [oB cAB [oc cBC ucCL]]; split; last by apply: IH; split.
+  apply: openI; first by case: ucCL. 
   by apply: closed_openC; exact: closed_closure.
-- move=> W /cover_of_chain_subset => /(_ ucCL) WcB; apply /disjoints_subset.
-  apply/subsetCr; apply: (subset_trans WcB); apply/subsetC => ?. 
-  by case=> /subset_closure.
-- by apply: IH; split.
+move=> W /cover_of_chain_subset => /(_ ucCL) WcB; apply /disjoints_subset.
+apply/subsetCr; apply: (subset_trans WcB); apply/subsetC => ?.
+by case=> /subset_closure.
 Qed.
 
 Lemma chain_cover_aux_is_cover A B L : urysohn_chain A (B :: L) -> 
@@ -7590,8 +7576,7 @@ Proof.
 elim: L A B.
   by move=> A B [? cAB _]; rewrite bigcup_set /= big_cons big_nil setU0.
 move=> C L IH A B /= [oB cAB ucBCL] x ncA.
-rewrite bigcup_set big_cons.
-case: (pselect (C x)); first by move=> ?; left.
+rewrite bigcup_set big_cons; case: (pselect (C x)); first by move=> ?; left.
 move=> nCx; right; have /= := IH B C ucBCL; rewrite bigcup_set; apply.
 by move: nCx; apply/subsetC; case: ucBCL.
 Qed.
@@ -7820,44 +7805,6 @@ move=> n IH C; case => [/IH|] //; case;case=> C1 C2.
 case=> /IH [X /= ? [? ?]] /IH [Y /= ? [? ?]].
 by move=> <-; exists (X `&` Y) => //; exists (X,Y) => //.
 Qed.
-
-Lemma ent_sep : exists2 E,
-  @entourage Tsep_Uniform E & E `&` (A `*` ~` closure B) = set0.
-Proof.
-exists (ent_of_cover [set` (cover_of_chain set0 A (B :: nil))]).
-  exists [set` (cover_of_chain set0 A (B :: nil))] => //.
-  by exists O => //=; exists (B :: nil) => //; exists O.
-apply: contrapT => /eqP/set0P [[/= z1 z2] [[/= R +]] [+ +] [Az1 Bz2] /=].
-rewrite ?inE closure0 setD0 => /orP; case => /eqP RE; rewrite RE //.
-  by move=> _ /subset_closure.
-by move/subset_closure : Az1.
-Qed.
-
-  
-
-  rewrite /urysohn_uniform //=.
-  exists [:: B `\` closure set0; ~` closure A] => //.
-
-
-Lemma openAsep : forall (U : set Tsep_Topological), 
-  open U -> A `&` U !=set0 -> A `<=` U.
-Proof.
-move=> U + [z [Az +]]; rewrite openE => Un => /Un [E [C [n _ fnC]]] EzU +.
-apply:subset_trans => w Aw; apply:EzU.
-move: fnC; elim: n => //=.
-  case=> L [m _ <- <-] /=; elim: m => //=; rewrite ?closure0 ?setD0.
-    exists B => //; first by rewrite /= inE eq_refl.
-    by split; apply/cAB/subset_closure. 
-  move=> m /= [R]
-
-
-Lemma uniform_closeA (x y : Tsep_Topological) : A x -> A y -> close x y.
-Proof.
-move=> Ax Ay U [] oU Uy W [E [C [+ _]]]; elim => //=.
-  case=> L [m _ ? ?] cvrAE /(@subsetI_neq0 _ U _ _ _ _); apply => //.
-  apply:(@subsetI_neq0 _ U _ (to_set (ent_of_cover C) x)) => //.
-    by move=> z [R ? [? ?]]; apply: cvrAE; exists R => //.
-  
 
 Context {R : realType}.
 Definition tsep_pseudoMetricMixin := 
