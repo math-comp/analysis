@@ -4317,8 +4317,7 @@ Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
     PQ.1 p -> PQ.2 q -> B (p,q).
 Canonical set_filter_source (U : uniformType) :=
   @Filtered.Source Prop _ U (fun A => nbhs_ (@entourage_set U) A).
-
-Section covering_uniformity.
+Section covering_ops.
 
 Context {T : Type}.
 
@@ -4335,9 +4334,64 @@ Definition cover_support (C : set (set T)) (A : set T) :=
 
 Definition cover_star (C : set (set T)) := [set (cover_support C) A | A in C ].
 
-Context (F : set(set(set T))).
-
 Definition ent_of_cover (C : set (set T)) := \bigcup_(A in C) (A `*` A).
+
+Lemma cover_refine_refl C : cover_refine C C.
+Proof. by move=> W ?; exists W. Qed.
+
+Lemma cover_refine_trans (C1 C2 C3 : (set (set T))) : 
+  cover_refine C1 C2 -> 
+  cover_refine C2 C3 -> 
+  cover_refine C1 C3.
+Proof.
+move=> + + W C1W => /(_ _ C1W) [V C2V WV] /(_ _ C2V) [R ? VR].
+by exists R => //; apply: (subset_trans _ VR).
+Qed.
+
+Definition cover_star_refine (C1 C2 : set (set T)) := 
+  cover_refine (cover_star C1) C2.
+
+Lemma cover_refine_star (C : (set (set T))) :
+  cover_refine C (cover_star C).
+Proof.
+move=> W CW; exists (cover_support C W); first by exists W.
+by move=> x Wx; exists W => //; split => //; exists x.
+Qed.
+
+Lemma refine_starI (A B X Y : set (set T)) :
+  cover_star_refine A B ->
+  cover_star_refine X Y ->
+  cover_star_refine (coverI A X) (coverI B Y).
+Proof.
+move=> AsB XsY W [? [[p q]] [/= AP BQ <-]] <-.
+case: (AsB (cover_support A p)); first by exists p.
+move=> m Bm cApm.
+case: (XsY (cover_support X q)); first by exists q.
+move=> n Ym cXqn.
+exists (m `&` n); first by exists (m, n) => //.
+move=> z /= [r /= [] [[i j] /=] [Ai Xj] <- [z0] [[??][??]] [? ?]].
+split; first by apply: cApm; exists i => //=; split => //; exists z0.
+by apply: cXqn; exists j => //=; split => //; exists z0.
+Qed.
+
+Lemma cover_refine_star_subset (C D : set (set T)) :
+  cover_refine C D -> cover_refine (cover_star C) (cover_star D).
+Proof.
+move=> CD W [V /CD [R ? VR] <-]; exists (cover_support D R); first by exists R.
+move=> x [S] [/CD [S' ? SS' SV0 ?]]; exists S'; last by exact: SS'.
+by split => //; apply: (subsetI_neq0 SS' VR).
+Qed.
+  
+Lemma subset_cover_refine (C D : set (set T)) : C `<=` D -> cover_refine C D.
+Proof. by move=> CD W /CD ?; exists W. Qed.
+
+End covering_ops.
+
+Section covering_uniformity.
+
+Context {T : pointedType}.
+
+Context (F : set(set(set T))).
 
 Hypothesis Fcvr : forall C, F C -> is_cover C.
 Hypothesis Fn0 : exists C, F C.
@@ -4370,25 +4424,6 @@ case=> C FC /subset_inv/filterS; apply; first exact: cover_ent_filter.
 by exists C => //; case=> x y /= [W CW] [/= Wx Wy]; exists W.
 Qed.
 
-Lemma cover_refine_refl C : cover_refine C C.
-Proof. by move=> W ?; exists W. Qed.
-
-Lemma cover_refine_trans (C1 C2 C3 : (set (set T))) : 
-  cover_refine C1 C2 -> 
-  cover_refine C2 C3 -> 
-  cover_refine C1 C3.
-Proof.
-move=> + + W C1W => /(_ _ C1W) [V C2V WV] /(_ _ C2V) [R ? VR].
-by exists R => //; apply: (subset_trans _ VR).
-Qed.
-
-Lemma cover_refine_star (C : (set (set T))) : 
-  cover_refine C (cover_star C).
-Proof.
-move=> W CW; exists (cover_support C W); first by exists W.
-by move=> x Wx; exists W => //; split => //; exists x.
-Qed.
-
 Lemma cover_ent_split A : cover_ent A -> exists2 B, 
   cover_ent B & B \; B `<=` A.
 Proof.
@@ -4405,11 +4440,28 @@ Qed.
 Definition cover_uniformity_mixin := 
   @UniformMixin T (nbhs_ cover_ent) cover_ent
     cover_ent_filter cover_ent_refl cover_ent_inv cover_ent_split erefl.
+
+Definition T_covered := 
+  UniformType 
+    (TopologicalType
+      (FilteredType T T (nbhs_ cover_ent))
+    (topologyOfEntourageMixin cover_uniformity_mixin)) 
+  cover_uniformity_mixin.
+
+Lemma covering_countable_uniformity : 
+  countable F -> countable_uniformity T_covered.
+Proof.
+move=> cntF; exists (ent_of_cover @` F); split.
+- by apply: card_le_trans; first exact: card_image_le.
+- by move=> ? [E ? <-]; exists E.
+by move=> P [E ? ?]; exists (ent_of_cover E) => //.
+Qed.
 End covering_uniformity.
+
 
 Section covering_uniformity_base.
 
-Context {T : Type} (F : set(set(set T))).
+Context {T : pointedType} (F : set(set(set T))).
 
 Hypothesis Fcvr : forall C, F C -> is_cover C.
 Hypothesis Fn0 : exists C, F C.
@@ -4439,22 +4491,6 @@ Proof. by move=> W [[]P Q [/= CP CQ] <-]; exists (P) => //. Qed.
 Lemma full_coverS i : full_cover_aux i `<=` full_cover_aux i.+1.
 Proof. by move=> W /= ?; left. Qed.
 
-Lemma refine_starI (A B X Y : set (set T)) :
-  cover_refine (cover_star A) B ->
-  cover_refine (cover_star X) Y ->
-  cover_refine (cover_star (coverI A X)) (coverI B Y).
-Proof.
-move=> AsB XsY W [? [[p q]] [/= AP BQ <-]] <-.
-case: (AsB (cover_support A p)); first by exists p.
-move=> m Bm cApm.
-case: (XsY (cover_support X q)); first by exists q.
-move=> n Ym cXqn.
-exists (m `&` n); first by exists (m, n) => //.
-move=> z /= [r /= [] [[i j] /=] [Ai Xj] <- [z0] [[??][??]] [? ?]].
-split; first by apply: cApm; exists i => //=; split => //; exists z0.
-by apply: cXqn; exists j => //=; split => //; exists z0.
-Qed.
-    
 Lemma full_cover_sub (i j : nat) : 
   (i <= j)%N -> full_cover_aux i `<=` full_cover_aux j.
 Proof.
@@ -4499,6 +4535,20 @@ Qed.
 Definition cover_uniformity_subbase_mixin := 
   @cover_uniformity_mixin T _ full_coverT fulln0 full_star full_coverI.
 
+Lemma countableU {K} (A B : set K) : 
+  countable A -> countable B -> countable (A `|` B).
+Proof.
+move=> cA cB; rewrite -bigcup2inE; apply: bigcup_countable => //.
+by move=> i ?; rewrite /bigcup2; case: (i == 0%N) => //; case(i == 1%N).
+Qed.
+
+Lemma sub_covering_countable_uniformity : countable F -> countable (full_cover).
+Proof.
+move=> cntF; apply: bigcup_countable => // i _.
+elim: i => // n cntFn /=; apply: countableU => //.
+apply: card_le_trans; first exact: card_image_le.
+exact: countableM.
+Qed.
 End covering_uniformity_base.
 
 (** * PseudoMetric spaces defined using balls *)
@@ -7658,30 +7708,25 @@ move=> WE; suff : exists2 V, V \in cover_of_chain B C L & W `<=` V.
 by move: W WE; apply: IH => //; case: ucABCL.
 Qed.
 
-Lemma cover_refine_star_subset (C D : set (set T)) :
-  C `<=` D -> cover_refine (cover_star C) (cover_star D).
-Proof.
-move=> CD W [V /CD CV <-]; exists (cover_support D V); first exists V => //.
-by move=> x [R] [/CD ?] RVn0 Rx; exists R.
-Qed.
-  
 
-Lemma star_cover_refines A B L :
-  open A -> urysohn_chain A (B :: L) -> cover_refine
-    (cover_star [set` (cover_of_chain set0 A (refine_chain set0 (A :: B :: L)))]) 
-    [set` cover_of_chain set0 A (B :: L)].
+Lemma star_cover_refines A L :
+  open A -> urysohn_chain A L -> cover_refine
+    (cover_star [set` (cover_of_chain set0 A (refine_chain A L))]) 
+    [set` cover_of_chain set0 A L].
 Proof.
-move=> oA ucABL. 
-apply: cover_refine_trans; last apply: reduce_cover_refines; first last.
+case: L => //.
+  by move=> ? ? W ?; exists setT => //=; rewrite closure0 /= inE setC0.
+move=> B L oA ucABL. 
+apply: cover_refine_trans; last apply reduce_cover_refines; first last.
 - exact/urysohn_chain0P.
 - exact: open0.
 apply: cover_refine_trans; last apply: star_cover_refines_aux; first last.
   rewrite ?split_level0E. 
   do 3 (apply/urysohn_chain0P; first try exact: open0) => //.
   by have [] := refine_chain_urysohn oA ucABL.
-rewrite /= split_level0E /= closure0 ?setD0 set0D; apply: cover_refine_star_subset.
-move=> W /=; rewrite {1}in_cons => /orP; case => // /eqP ->.
-by rewrite in_cons eq_refl.
+rewrite /= split_level0E /= closure0 ?setD0 ?set0D.
+apply/cover_refine_star_subset/subset_cover_refine => W /= Win.
+by rewrite in_cons; apply /orP; right; apply/orP; right. 
 Qed.
 
 Section urysohn_uniform.
@@ -7693,171 +7738,136 @@ Hypothesis cAB : closure A `<=` B.
 Definition urysohn_uniform_chains := 
   [set iter n (refine_chain A) (B :: nil) | n in [set: nat]].
 
-Lemma uniform_chains_chain L : urysohn_uniform_chains L -> urysohn_chain set0 L.
+Lemma uniform_chains_chain L : urysohn_uniform_chains L -> urysohn_chain A L.
 Proof.
 case => + _ <-; elim; first by split => //; rewrite closure0.
-move=> n IH /=. 
-move=> n IH; apply: refine_chain_urysohn => //=; exact: open0.
+by move=> n IH /=; apply: refine_chain_urysohn.
 Qed.
 
 Definition urysohn_uniform := 
   (fun L => [set` cover_of_chain set0 A L]) @` urysohn_uniform_chains.
 
+Definition sep_nbhs := nbhs_ (cover_ent (full_cover urysohn_uniform)).
 Program Definition urysohn_mixin := 
   @cover_uniformity_subbase_mixin T urysohn_uniform _ _ _.
 Next Obligation.
-move=> C [L] /uniform_chains_chain/(urysohn_chain0P _ open0) ucL <- w. 
-by apply: chain_cover_aux_is_cover => //; rewrite closure0.
+move=> C [L] /uniform_chains_chain ucL <- w. 
+apply: chain_cover_aux_is_cover => //; last by rewrite closure0.
+by apply/urysohn_chain0P.
 Qed.
 Next Obligation.
-exists ([set` (cover_of_chain set0 set0 (A :: B :: nil))]). 
-by exists (A :: B :: nil) => //; exists O => //.
+exists ([set` (cover_of_chain set0 A (B :: nil))]). 
+exists (B :: nil) => //; first by exists O => //.
 Qed.
 Next Obligation.
-move=> C [L [n] _ <- <-]; exists [set` (cover_of_chain set0 set0 
-    (iter n.+1 (refine_chain set0) [:: A; B]))].
-  exists (iter n.+1 (refine_chain set0) [:: A; B]) => //.
+move=> C [L [n] _ <- <-]; exists [set` (cover_of_chain set0 A 
+    (iter n.+1 (refine_chain A) (B::nil)))].
+  exists (iter n.+1 (refine_chain A) (B :: nil)) => //.
   by exists n.+1.
-rewrite /=; apply: cover_refine_trans; first last.
-apply star_cover_refines.
-
-
-
-
-
-Lemma closed_prod (A B : set T) : closed A -> closed B -> closed (A `*` B).
-Proof.
-
-Definition split_
-
-Lemma urysohn A B : 
-  closed A -> closed B -> A `&` B = set0 -> 
-  exists 
-
-Lemma separating_entourage A B :
-  closed A -> closed B -> A `&` B = set0 -> 
-  exists2 E : set (T*T), 
-  entourage E & ((A `*` B) `<=` ~`E).
-Proof.
-move=> clA clB AB0.
-have [U [V] [oU AU oV BV UV0]] := normal clA clB AB0.
-have /closed_openC oUVc : closed (closure U `*` closure V). 
-  by apply: closed_prod; exact: closed_closure.
-have eqUV : [set xy | xy.1 = xy.2] `<=` ~` (closure U `*` closure V).
-  apply: subsetCr; case => p q [/= + +] pqE; rewrite pqE => ? ?.
-  by (suff : (closure U `&` closure V) q by rewrite UV0); split.
-have Wx : forall (x:T), exists W, open W /\ W (x,x) /\ 
-    W `<=` ~` (closure U `*` closure V).
-  rewrite openE in oUVc.
-  move=> x; have /oUVc /= := eqUV (x,x) erefl.
-  rewrite /interior nbhsE /=; case=> R [oR] Rx RcUV.
-  by exists R; split.
-pose W := \bigcup_x (projT1 (cid (Wx x))).
-
-Search nbhs entourage.
-
-
--------------------------
-D W         UV  UV  UV
-  D W       UV  AB  UV
-    D W     UV  UV  UV
-      D W
-        D W
-          D W
-            D W
--------------------------
-
-suff : exists R, open R /\ A`*`B `<=` ~` R.
-  case=> R [oR ABR].
-  
-  
-
-  
-  rewrite /closed /closure => pq /=.
-apply/not_exists2P => EAB'.
-have EAB : forall (E: set (T*T)), entourage E -> A `*` B `&` E !=set0.
-  by move=> E entE; have := EAB' E; case => // /nonsubset; rewrite setCK.
-pose G := filter_from (@entourage T) (setI (A `*` B)).
-have PG : ProperFilter G.
-  split; first by move=> P; case: P => E /EAB /[swap] ABE [? /ABE].
-  apply: filter_from_filter; first by exists [set: T*T]; exact: filterT.
-  move=> E1 E2 ent1 ent2; exists (E1 `&` E2); first exact: filterI.
-  by rewrite setIA [(_ `*` _) `&` _ `&` _]setIC setIA setIid setIA.
-
-
-U `*` V
-
-
-  
-have EAx : forall x, A x -> exists2 E, entourage E & to_set E x `<=` U.
-  move=> x Ax; move: oU; rewrite openE => /(_ x (AU _ Ax)).
-  by rewrite /interior -nbhs_entourageE; case => E entE ?; exists E.
-have EBx : forall x, B x -> exists2 E, entourage E & to_set E x `<=` V.
-  move=> x Bx; move: oV; rewrite openE => /(_ x (BV _ Bx)).
-  by rewrite /interior -nbhs_entourageE; case => E entE ?; exists E.
-
-
-  
-
-Definition split_normal (UV : (set T) * (set T)) := 
-  if pselect (nice UV) is left sep
-  then projT1 (cid2 (nice_separable sep))
-  else (set0 , set0).
-
-Lemma split_normal_nice AB : nice AB -> nice (split_normal AB).
-Proof.
-move=> nAB; rewrite/ split_normal; case: pselect => // ?.
-
-Lemma set0UsetT (A B : set T) : A `&` B = set0 -> ~`A `|` ~` B = [set: T].
-Proof.
-move=> AB0; rewrite -subTset => t _ /=; apply/not_andP => W.
-by suff : (A `&` B) t by rewrite AB0.
+by apply: star_cover_refines => //; apply: uniform_chains_chain; exists n.
 Qed.
 
-Context (AB : (set T) * (set T)).
-Hypothesis abnice : nice AB.
+Definition Tsep :=  T^o.
 
-Definition celems (AB : (set T) * (set T)) := 
-  [set ~`(closure AB.1); ~` (closure AB.2)].
+Canonical Tsep_Pointed := [pointedType of Tsep for T].
+Canonical Tsep_Filtered := FilteredType Tsep Tsep sep_nbhs.
+Canonical Tsep_Topological := 
+  TopologicalType Tsep_Filtered (topologyOfEntourageMixin urysohn_mixin).
+Canonical Tsep_Uniform := UniformType Tsep_Topological urysohn_mixin.
 
-Fixpoint normal_cover_tier n : set (set (set T)) := 
-  if n is S m
-  then 
-    let npair := celems (iter m split_normal AB) in
-    npair |` ((coverI npair) @` (normal_cover_tier m))
-  else [set [set [set: T]]]
-.
-
-Definition normal_cover := \bigcup_n normal_cover_tier n.
-
-Lemma normal_coverT C : normal_cover C -> is_cover C.
+Lemma Tsep_countable_uniformity : countable_uniformity Tsep_Uniform.
 Proof.
-case; elim; first by move=> _ ->; rewrite /is_cover -subTset => ? _; exists [set: T].
-move=> n /(_ I) IH _ /= [].
+apply: covering_countable_uniformity.
+apply: sub_covering_countable_uniformity.
+by apply: card_le_trans; exact: card_image_le.
+Qed.
 
-  rewrite /is_cover.
-case=> n _.
-
-Hypothesis Fcvr : forall C, F C -> is_cover C.
-Hypothesis Fn0 : exists C, F C.
-Hypothesis Fref : forall C, F C -> exists2 D, 
-  F D & cover_refine (cover_star D) C.
-Hypothesis FI : forall C D,  F C -> F D -> exists2 E, F E &
-  cover_refine E (coverI C D).
-
-Lemma normal_cover_covers C : normal_cover C -> is_cover C.
+Lemma ent_sep : exists2 E,
+  @entourage Tsep_Uniform E & E `&` (A `*` ~` closure B) = set0.
 Proof.
-case=> n _ <-; rewrite /is_cover -subTset=> x.
-rewrite /normal_cover_tier /=.
-rewrite (set0UsetT 
-exists [set: T] => //; exist (normal_cover_tier O).
-Hypothesis fcvr : forall C, F C -> is_cover C.
-Hypothesis fT : F [set setT].
-Hypothesis Fref : forall C, F C -> exists2 D, 
-  F D & cover_refine (cover_star D) C.
-Hypothesis FI : forall C D, F C -> F D -> F (coverI C D).
-Hypothesis Fsub : forall C D, F C -> cover_refine C D -> F D.
-Lemma normal_ent_
+exists (ent_of_cover [set` (cover_of_chain set0 A (B :: nil))]).
+  exists [set` (cover_of_chain set0 A (B :: nil))] => //.
+  by exists O => //=; exists (B :: nil) => //; exists O.
+apply: contrapT => /eqP/set0P [[/= z1 z2] [[/= R +]] [+ +] [Az1 Bz2] /=].
+rewrite ?inE closure0 setD0 => /orP; case => /eqP RE; rewrite RE //.
+  by move=> _ /subset_closure.
+by move/subset_closure : Az1.
+Qed.
+
+Lemma iter_refineN0 n : iter n (refine_chain A) [:: B] != [::].
+Proof. by elim: n => // n /=; case :(iter n _ _). Qed.
+
+Lemma iter_refine_chain n : urysohn_chain A (iter n (refine_chain A) [:: B]).
+Proof. by elim: n => // n IH; exact: refine_chain_urysohn. Qed.
+
+
+Lemma urysohn_uniform_Ac C : urysohn_uniform C -> exists2 R, C R & A `<=` R.
+Proof.
+case=> L; case=> n _ <- <-; have := iter_refineN0 n.
+have := iter_refine_chain n.
+case : (iter _ _ _) => // => R ? [_ AR _] _; exists R => //=.
+  by rewrite closure0 setD0 in_cons eq_refl.
+by move=> ? /subset_closure/AR.
+Qed.
+
+Lemma urysohn_A_collapse (x : Tsep_Topological) U : nbhs x U -> A x -> A `<=` U.
+Proof.
+case => E [C] [n _] cvrnC entCE /(subset_trans _) + Ax; apply.
+move=> z Az; apply: entCE; elim: n C cvrnC => //=.
+  move=> ?; case/urysohn_uniform_Ac=> R Cr AR; exists R => //. 
+  by split; apply: AR.
+move=> n IH C; case => [/IH|] //; case;case=> C1 C2.
+case=> /IH [X /= ? [? ?]] /IH [Y /= ? [? ?]].
+by move=> <-; exists (X `&` Y) => //; exists (X,Y) => //.
+Qed.
+
+Lemma ent_sep : exists2 E,
+  @entourage Tsep_Uniform E & E `&` (A `*` ~` closure B) = set0.
+Proof.
+exists (ent_of_cover [set` (cover_of_chain set0 A (B :: nil))]).
+  exists [set` (cover_of_chain set0 A (B :: nil))] => //.
+  by exists O => //=; exists (B :: nil) => //; exists O.
+apply: contrapT => /eqP/set0P [[/= z1 z2] [[/= R +]] [+ +] [Az1 Bz2] /=].
+rewrite ?inE closure0 setD0 => /orP; case => /eqP RE; rewrite RE //.
+  by move=> _ /subset_closure.
+by move/subset_closure : Az1.
+Qed.
+
+  
+
+  rewrite /urysohn_uniform //=.
+  exists [:: B `\` closure set0; ~` closure A] => //.
+
+
+Lemma openAsep : forall (U : set Tsep_Topological), 
+  open U -> A `&` U !=set0 -> A `<=` U.
+Proof.
+move=> U + [z [Az +]]; rewrite openE => Un => /Un [E [C [n _ fnC]]] EzU +.
+apply:subset_trans => w Aw; apply:EzU.
+move: fnC; elim: n => //=.
+  case=> L [m _ <- <-] /=; elim: m => //=; rewrite ?closure0 ?setD0.
+    exists B => //; first by rewrite /= inE eq_refl.
+    by split; apply/cAB/subset_closure. 
+  move=> m /= [R]
+
+
+Lemma uniform_closeA (x y : Tsep_Topological) : A x -> A y -> close x y.
+Proof.
+move=> Ax Ay U [] oU Uy W [E [C [+ _]]]; elim => //=.
+  case=> L [m _ ? ?] cvrAE /(@subsetI_neq0 _ U _ _ _ _); apply => //.
+  apply:(@subsetI_neq0 _ U _ (to_set (ent_of_cover C) x)) => //.
+    by move=> z [R ? [? ?]]; apply: cvrAE; exists R => //.
+  
+
+Context {R : realType}.
+Definition tsep_pseudoMetricMixin := 
+  (@countable_uniform_pseudoMetricType_mixin R _ Tsep_countable_uniformity).
+Canonical Tsep_pseudoMetric := 
+  PseudoMetricType Tsep_Uniform tsep_pseudoMetricMixin.
+
+End urysohn_uniform.
+
+End urysohn.
 
 Section UniformPointwise.
 Context {U : topologicalType} {V : uniformType}.
