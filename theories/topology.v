@@ -7487,14 +7487,34 @@ Qed.
 Section urysohn.
 Context {T : topologicalType}.
 
-Definition nice (AB : (set T) * (set T)) := 
-  [/\ open AB.1, 
-      open AB.2 & 
-      closure AB.1 `&` closure AB.2 = set0].
-
 Hypothesis normal : forall (A B : (set T)),
-  closed A -> closed B -> exists UV,
-    nice UV /\ (A `<=` UV.1 /\ B `<=` UV.2).
+  closed A -> closed B -> A `&` B = set0 -> exists UV,
+    [/\ open UV.1, 
+      open UV.2, 
+      UV.1 `&` UV.2 = set0,
+      A `<=` UV.1 & 
+      B `<=` UV.2].
+
+Lemma normal_strong : forall (A B : (set T)),
+  closed A -> closed B -> A `&` B = set0 -> exists UV,
+    [/\ open UV.1, open UV.2, closure UV.1 `&` closure UV.2 = set0,
+      A `<=` UV.1 & B `<=` UV.2].
+Proof.
+move=> A B cA cB ab0; pose UV := projT1 (cid (normal cA cB ab0)).
+have [oU oV UV0 AU BV] := projT2 (cid (normal cA cB ab0)).
+have cUB0 : closure UV.1 `&` B = set0.
+  apply/disjoints_subset; apply: subset_trans; last apply/subsetC/BV. 
+  have /disjoints_subset/closure_subset/subset_trans := UV0; apply.
+  by rewrite -(iffLR (closure_id _)) //; apply: open_closedC.
+pose XY := projT1 (cid (normal (@closed_closure _ UV.1) cB cUB0)).
+have [oX oY XY0 cUX BY] := projT2 (cid (normal (@closed_closure _ UV.1) cB _)).
+exists (UV.1,XY.2); split => //=.
+apply/disjoints_subset; apply: (subset_trans cUX).
+move:XY0; rewrite setIC => /disjoints_subset/closure_subset.
+rewrite -(iffLR (@closure_id _ (~` XY.1))) //; last exact: open_closedC.
+by move => /disjoints_subset => ?; apply/disjoints_subset; rewrite setIC.
+Qed.
+
 
 Lemma split_level' (U V : (set T)) : 
     exists (U'V' : (set T) * (set T)), 
@@ -7505,9 +7525,10 @@ Proof.
 case: (pselect (open U)); case: (pselect (open V));
   case: (pselect (closure U `<=` V)); try by move=>?; exists point.
 move=> cUV oV oU.
-have [] := @normal (closure U) (~` V); [exact: closed_closure | | ].
-  exact: open_closedC.
-case=> U' V' [[/= U'o V'o U'V'0]] [UU' VV']; exists (U', (~` (closure V'))). 
+have [] := @normal_strong (closure U) (~` V); first exact: closed_closure.
+- exact: open_closedC.
+- exact/subsets_disjoint.
+case=> U' V' [/= U'o V'o U'V'0 UU' VV']; exists (U', (~` (closure V'))). 
 split => //.
 - by apply: closed_openC; exact: closed_closure.
 - exact/disjoints_subset.
@@ -7748,7 +7769,6 @@ apply: chain_cover_aux_is_cover => //; last by rewrite closure0.
 by apply/urysohn_chain0P.
 Qed.
 
-
 Lemma full_cover_aux_uniform_open n C R : 
   full_cover_aux urysohn_uniform n C -> C R -> open R.
 Proof.
@@ -7811,7 +7831,6 @@ Proof. by elim: n => // n /=; case :(iter n _ _). Qed.
 
 Lemma iter_refine_chain n : urysohn_chain A (iter n (refine_chain A) [:: B]).
 Proof. by elim: n => // n IH; exact: refine_chain_urysohn. Qed.
-
 
 Lemma urysohn_uniform_Ac C : urysohn_uniform C -> exists2 R, C R & A `<=` R.
 Proof.
