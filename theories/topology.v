@@ -7652,7 +7652,6 @@ Fixpoint refine_chain A (L : list (set T)) : list (set T) :=
 Lemma refine_chain_urysohn A L : 
   open A -> urysohn_chain A L -> urysohn_chain A (refine_chain A L).
 Proof.
-
 elim: L A => // B L IH A oA [oB clAB] ucBL. 
 rewrite /refine_chain /split_level.
 case : (eqVneq A set0).
@@ -7693,7 +7692,6 @@ move=> WE; suff : exists2 V, V \in cover_of_chain B C L & W `<=` V.
 by move: W WE; apply: IH => //; case: ucABCL.
 Qed.
 
-
 Lemma star_cover_refines A L :
   open A -> urysohn_chain A L -> cover_refine
     (cover_star [set` (cover_of_chain set0 A (refine_chain A L))]) 
@@ -7714,6 +7712,18 @@ apply/cover_refine_star_subset/subset_cover_refine => W /= Win.
 by rewrite in_cons; apply /orP; right; apply/orP; right. 
 Qed.
 
+Lemma urysohn_chain_open A B L R : 
+  open A -> urysohn_chain A (B :: L) -> R \in cover_of_chain A B L -> open R.
+Proof.
+elim: L A B R.
+  move=> A B R ? [? ? _]; rewrite ?inE => ->. 
+  by apply: closed_openC; exact: closed_closure.
+move=> C L IH A B R oA /= [oB cAB uc]; rewrite ?inE => /orP; case.
+  move=> /eqP ->; apply: openI; first by case: uc.
+  by apply: closed_openC; exact: closed_closure.
+exact: IH.
+Qed.
+
 Section urysohn_uniform.
 Context (A B : set T).
 Hypothesis oA : open A.
@@ -7728,18 +7738,35 @@ Proof.
 case => + _ <-; elim; first by split => //; rewrite closure0.
 by move=> n IH /=; apply: refine_chain_urysohn.
 Qed.
-
 Definition urysohn_uniform := 
   (fun L => [set` cover_of_chain set0 A L]) @` urysohn_uniform_chains.
 
-Definition sep_nbhs := nbhs_ (cover_ent (full_cover urysohn_uniform)).
-Program Definition urysohn_mixin := 
-  @cover_uniformity_subbase_mixin T urysohn_uniform _ _ _.
-Next Obligation.
-move=> C [L] /uniform_chains_chain ucL <- w. 
+Lemma urysohn_uniform_is_cover C : urysohn_uniform C -> is_cover C.
+Proof.
+move=> [L] /uniform_chains_chain ucL <- w. 
 apply: chain_cover_aux_is_cover => //; last by rewrite closure0.
 by apply/urysohn_chain0P.
 Qed.
+
+
+Lemma full_cover_aux_uniform_open n C R : 
+  full_cover_aux urysohn_uniform n C -> C R -> open R.
+Proof.
+elim: n C R.
+  move=> C R /= [L [m _ <- <-]] /= Rcvr.
+  apply: (urysohn_chain_open _ _ Rcvr) => //; first exact: open0.
+  apply/urysohn_chain0P => //.
+  by apply: uniform_chains_chain; exists m.
+move=> n IH C R /= [/IH|]; [apply|] => //; case; case => I J [/= fnI fnJ].
+move=> <- [[P Q] [/= ? ? <-]]; apply: openI. 
+  by apply: IH; first exact: fnI.
+by apply: IH; first exact: fnJ.
+Qed.
+
+Definition sep_nbhs := nbhs_ (cover_ent (full_cover urysohn_uniform)).
+Program Definition urysohn_mixin := 
+  @cover_uniformity_subbase_mixin T urysohn_uniform 
+    urysohn_uniform_is_cover _ _.
 Next Obligation.
 exists ([set` (cover_of_chain set0 A (B :: nil))]). 
 exists (B :: nil) => //; first by exists O => //.
@@ -7754,11 +7781,11 @@ Qed.
 
 Definition Tsep :=  T^o.
 
-Canonical Tsep_Pointed := [pointedType of Tsep for T].
-Canonical Tsep_Filtered := FilteredType Tsep Tsep sep_nbhs.
-Canonical Tsep_Topological := 
+Definition Tsep_Pointed := [pointedType of Tsep for T].
+Definition Tsep_Filtered := FilteredType Tsep Tsep sep_nbhs.
+Definition Tsep_Topological := 
   TopologicalType Tsep_Filtered (topologyOfEntourageMixin urysohn_mixin).
-Canonical Tsep_Uniform := UniformType Tsep_Topological urysohn_mixin.
+Definition Tsep_Uniform := UniformType Tsep_Topological urysohn_mixin.
 
 Lemma Tsep_countable_uniformity : countable_uniformity Tsep_Uniform.
 Proof.
@@ -7804,6 +7831,26 @@ move=> z Az; apply: entCE; elim: n C cvrnC => //=.
 move=> n IH C; case => [/IH|] //; case;case=> C1 C2.
 case=> /IH [X /= ? [? ?]] /IH [Y /= ? [? ?]].
 by move=> <-; exists (X `&` Y) => //; exists (X,Y) => //.
+Qed.
+
+Lemma ent_of_cover_bigcup N (x : T) : 
+  to_set (ent_of_cover N) (x) = \bigcup_(W in [set W' | N W' /\ W' x]) W.
+Proof.
+rewrite eqEsubset; split; first by move=> r /= [R] ? [? ?]; exists R.
+by move=> r [R] [? ? ?]; exists R.
+Qed.
+
+Lemma urysohn_open (x:T) U : nbhs (x : Tsep_Topological) U -> nbhs (x : T) U.
+Proof.
+case => E [C [n _ fcnC] entC] /filterS; apply.
+apply: (@filterS _ _ _ (to_set (ent_of_cover C) x)); first by move=> z /entC.
+rewrite ent_of_cover_bigcup; apply: open_nbhs_nbhs; split => //; first last.
+  elim: n C {entC} fcnC => /= [? /urysohn_uniform_is_cover/(_ x) [R ? ?]|]. 
+    by exists R.
+  move=> n IH C; case=> [/IH //|] [[/= I J [/IH + /IH +]]] <-.
+  case => W1 [? ? ?] [W2 [? ? ?]]; exists (W1 `&` W2) => //; split => //.
+  by exists (W1, W2).
+by apply: bigcup_open => R [CR Rx]; apply: (full_cover_aux_uniform_open fcnC).
 Qed.
 
 Context {R : realType}.
