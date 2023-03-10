@@ -256,6 +256,17 @@ Proof. by move=> ? ?; rewrite /expectation integralB_EFin. Qed.
 
 End expectation_lemmas.
 
+(* TODO: move *)
+Lemma compreBr (R : numDomainType) T (h : R -> \bar R) (f g : T -> R) :
+  {morph h : x y / (x - y)%R >-> (x - y)%E} ->
+  h \o (f \- g)%R = ((h \o f) \- (h \o g))%E.
+Proof. by move=> mh; apply/funext => t /=; rewrite mh. Qed.
+
+Lemma compre_scale (R : numDomainType) T (h : R -> \bar R) (f : T -> R) k :
+  {morph h : x y / (x * y)%R >-> (x * y)%E} ->
+  h \o (k \o* f) = (fun x => h k * h (f x))%E.
+Proof. by move=> mf; apply/funext => t /=; rewrite mf; rewrite muleC. Qed.
+
 Section variance.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
@@ -276,19 +287,13 @@ rewrite [X in 'E_P[X]](_ : _ =
   apply/funeqP => x /=.
   by rewrite -expr2 sqrrB mulr_natl -mulrnAr mul1r fineM.
 rewrite expectationD/=; last 2 first.
-  - rewrite (_ : _ \o _ =
-      (fun x => (EFin \o (X ^+ 2)%R) x - (EFin \o (2 * fine 'E_P[X] \o* X)) x)) //.
-    apply: integrableB => //.
-    apply: (eq_integrable _ (fun x => (2 * fine 'E_P[X])%:E * (X x)%:E)) => //.
-      by move=> t _ /=; rewrite muleC EFinM.
-    exact: integrablerM.
-  - apply: (eq_integrable _ (fun x => (fine ('E_P[X] ^+ 2))%:E * (cst 1 x)%:E)) => //.
-      by move=> t _ /=; rewrite mul1r mule1.
-    by apply: integrablerM => //; exact: finite_measure_integrable_cst.
-rewrite expectationB //; last first.
-  apply: (eq_integrable _ (fun x => (2 * fine 'E_P[X])%:E * (X x)%:E)) => //.
-    by move=> t _ /=; rewrite !EFinM [in RHS]muleC.
-  exact: integrablerM.
+  - rewrite compreBr; last by [].
+    apply: integrableB; [exact: measurableT|assumption|].
+    by rewrite compre_scale; [exact: integrablerM|by []].
+  - rewrite compre_scale; last by [].
+    by apply: integrablerM; [exact: measurableT|exact: finite_measure_integrable_cst].
+rewrite expectationB/=; [|assumption|]; last first.
+  by rewrite compre_scale; [exact: integrablerM|by []].
 rewrite expectationM// expectationM; last exact: finite_measure_integrable_cst.
 rewrite expectation_cst mule1 EFinM fineK// fineK ?fin_numM// -muleA -expe2.
 rewrite mule_natl mule2n oppeD; last by rewrite fin_num_adde_defl// fin_numX.
