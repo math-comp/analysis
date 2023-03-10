@@ -263,7 +263,6 @@
   + lemma `ae_eq_mul`
   + `emeasurable_fun_bool` -> `measurable_fun_bool`
 
-
 ### Infrastructure
 
 ### Misc
