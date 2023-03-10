@@ -99,6 +99,16 @@ rewrite predeqE => t; split => //=; apply/eqP.
 by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t)).
 Qed.
 
+Lemma compreBr T (h : R -> \bar R) (f g : T -> R) :
+  {morph h : x y / (x - y)%R >-> (x - y)%E} ->
+  h \o (f \- g)%R = ((h \o f) \- (h \o g))%E.
+Proof. by move=> mh; apply/funext => t /=; rewrite mh. Qed.
+
+Lemma compre_scale T (h : R -> \bar R) (f : T -> R) k :
+  {morph h : x y / (x * y)%R >-> (x * y)%E} ->
+  h \o (k \o* f) = (fun t => h k * h (f t))%E.
+Proof. by move=> mf; apply/funext => t /=; rewrite mf; rewrite muleC. Qed.
+
 Local Close Scope classical_set_scope.
 
 End ERealArith.
@@ -138,6 +148,15 @@ End ERealArithTh_numDomainType.
 Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y z u a b : \bar R) (r : R).
+
+Lemma le_er_map (f : R -> R) :
+  {in `[0, +oo[%classic%R &, {homo f : x y / (x <= y)%O}} ->
+  {in `[0, +oo[%classic%E &, {homo er_map f : x y / (x <= y)%E}}.
+Proof.
+move=> f_nd x y; rewrite !inE/= !in_itv/= !andbT.
+move: x y => [x| |] [y| |] x0 y0 xy//=; last by rewrite leey.
+by rewrite lee_fin f_nd// inE /= in_itv/= andbT -lee_fin.
+Qed.
 
 Lemma fsume_gt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
   0 < \sum_(i \in P) F i -> exists2 i, P i & 0 < F i.

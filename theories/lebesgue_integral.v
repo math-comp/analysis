@@ -152,6 +152,9 @@ Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
 
 Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 
+HB.instance Definition _ := @isMeasurableFun.Build _ _ rT
+  (@normr rT rT) (@measurable_fun_normr rT setT).
+
 End mfun.
 
 Section ring.
@@ -2959,6 +2962,21 @@ Qed.
 
 End integrable_lemmas.
 Arguments integrable_mkcond {d T R mu D} f.
+
+Lemma finite_measure_integrable_cst d (T : measurableType d) (R : realType)
+    (mu : {finite_measure set T -> \bar R}) k :
+  mu.-integrable [set: T] (EFin \o cst k).
+Proof.
+split; first exact/EFin_measurable_fun/measurable_fun_cst.
+have [k0|k0] := leP 0 k.
+- under eq_integral do rewrite /= ger0_norm//.
+  rewrite integral_cstr//= lte_mul_pinfty// fin_num_fun_lty//.
+  exact: fin_num_measure.
+- under eq_integral do rewrite /= ltr0_norm//.
+  rewrite integral_cstr//= lte_mul_pinfty//.
+    by rewrite lee_fin ler_oppr oppr0 ltW.
+  by rewrite fin_num_fun_lty//; exact: fin_num_measure.
+Qed.
 
 Section integrable_ae.
 Local Open Scope ereal_scope.
