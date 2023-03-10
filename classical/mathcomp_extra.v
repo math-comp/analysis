@@ -39,7 +39,6 @@ Unset Printing Implicit Defensive.
 Reserved Notation "f \* g" (at level 40, left associativity).
 Reserved Notation "f \- g" (at level 50, left associativity).
 Reserved Notation "\- f"  (at level 35, f at level 35).
-Reserved Notation "f \max g" (at level 50, left associativity).
 
 Number Notation positive Pos.of_num_int Pos.to_num_uint : AC_scope.
 
@@ -305,10 +304,6 @@ Qed.
 Lemma eqbLR (b1 b2 : bool) : b1 = b2 -> b1 -> b2.
 Proof. by move->. Qed.
 
-Definition max_fun T (R : numDomainType) (f g : T -> R) x := Num.max (f x) (g x).
-Notation "f \max g" := (max_fun f g) : ring_scope.
-Arguments max_fun {T R} _ _ _ /.
-
 Lemma gtr_opp (R : numDomainType) (r : R) : (0 < r)%R -> (- r < r)%R.
 Proof. by move=> n0; rewrite -subr_lt0 -opprD oppr_lt0 addr_gt0. Qed.
 
@@ -465,9 +460,9 @@ Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
 Arguments big_rmcond {R idx op I r} P.
 Arguments big_rmcond_in {R idx op I r} P.
 
-(*******************************)
-(* MathComp > 1.15.0 additions *)
-(*******************************)
+(*****************************)
+(* MathComp 1.16.0 additions *)
+(*****************************)
 
 Section bigminr_maxr.
 Import Num.Def.
@@ -997,6 +992,24 @@ Arguments bigminD1 {d T I x} j.
 Arguments bigmin_inf {d T I x} j.
 Arguments bigmin_eq_arg {d T I} x j.
 Arguments eq_bigmin {d T I x} j.
+
+(************************************)
+(* End of MathComp 1.16.0 additions *)
+(************************************)
+
+(*****************************)
+(* MathComp > 1.16 additions *)
+(*****************************)
+
+Reserved Notation "f \max g" (at level 50, left associativity).
+
+Definition max_fun T (R : numDomainType) (f g : T -> R) x := Num.max (f x) (g x).
+Notation "f \max g" := (max_fun f g) : ring_scope.
+Arguments max_fun {T R} _ _ _ /.
+
+(************************************)
+(* End of mathComp > 1.16 additions *)
+(************************************)
 
 Section onem.
 Variable R : numDomainType.
