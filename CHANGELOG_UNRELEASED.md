@@ -157,38 +157,33 @@
 - in `lebesgue_integral.v`:
   + notations `\x`, `\x^` for `product_measure1` and `product_measure2`
 
+- file `ereal.v`:
+  + lemmas `compreBr`, `compre_scale`
+  + lemma `le_er_map`
+- file `lebesgue_integral.v`:
+  + instance of `isMeasurableFun` for `normr`
+  + lemma `finite_measure_integrable_cst`
+  + lemma `measurable_fun_er_map`
 - file `probability.v`:
-  + mixin `isConvn`, structure `Convn`, notation `convn`
-  + lemmas `probability_fin_num`, `probability_integrable_cst`,
-  + definition `mexp`, instance of `isMeasurableFun`
-  + definition `subr`, instance of `isMeasurableFun`
-  + definition `mabs`, instance of `isMeasurableFun`
-  + `\*` instance of `isMeasurableFun`
-  + `\o` instance of `isMeasurableFun`
+  + definition `Lspace`, notation `.-Lspace`
+  + lemmas `Lspace1`, `Lspace2`
   + definition `random_variable`, notation `{RV _ >-> _}`
-  + lemmas `notin_range_probability`, `probability_range`
-  + definition `comp_RV`, notation ``` `o ````,
-    definition `exp_RV`, notation ``` `^+ ```,
-    definition `add_RV`, notation ``` `+ ```,
-    definition `sub_RV`, notation ``` `- ```,
-    definition `mul_RV`, notation ``` `* ```,
-    definition `scale_RV`, notation ``` `\o* ```
-  + lemma `mul_cst`
-  + definition `expectation`, notation `'E`
+  + lemmas `notin_range_measure`, `probability_range`
+  + definition `distribution`, instance of `isProbability`
+  + lemma `probability_distribution`, `integral_distribution`
+  + definition `expectation`, notation `'E_P[X]`
   + lemmas `expectation_cst`, `expectation_indic`, `integrable_expectation`,
     `expectationM`, `expectation_ge0`, `expectation_le`, `expectationD`,
     `expectationB`
-  + definition `Lspace`, notation `.-Lspace`
-  + lemmas `Lspace1`, `Lspace2`
-  + definition `variance`, `'V`
+  + definition `variance`, `'V_P[X]`
   + lemma `varianceE`
-  + definition `distribution`, instance of `isProbability`
-  + lemmas `integral_distribution`, `markov`, `chebyshev`,
-  + mixin `isDiscreteRV`, structure `DiscreteRV`, type `discrete_random_variable`,
-    notation `{dRV _ >-> _}`
+  + lemmas `markov`, `chebyshev`,
+  + mixin `MeasurableFun_isDiscrete`, structure `discreteMeasurableFun`,
+    notation `{dmfun aT >-> T}`
+  + definition `discrete_random_variable`, notation `{dRV _ >-> _}`
   + definitions `dRV_dom_enum`, `dRV_dom`, `dRV_enum`, `enum_prob`
-  + lemmas `distribution_dRV_enum`, `distribution_dRV`, `convn_enum_prob`,
-    `probability_distribution`, `dRV_expectation`
+  + lemmas `distribution_dRV_enum`, `distribution_dRV`, `sum_enum_prob`,
+    `dRV_expectation`
   + definion `pmf`, lemma `expectation_pmf`
 
 ### Changed
@@ -262,6 +257,7 @@
 - in `lebesgue_measure.v`:
   + lemma `ae_eq_mul`
   + `emeasurable_fun_bool` -> `measurable_fun_bool`
+
 
 ### Infrastructure
 
