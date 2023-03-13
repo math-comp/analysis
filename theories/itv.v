@@ -894,15 +894,10 @@ apply/val_inj => /=.
 by rewrite subr0 mulr1 opprB addrCA subrr addr0.
 Qed.
 
-Reserved Notation "p .~" (format "p .~", at level 5).
-
-Definition onem (p : R) : R := 1 - p.
-Notation "p .~" := (onem p).
-
 Canonical onem_itv01 (p : {i01 R}) : {i01 R} :=
   @Itv.mk _ _ (onem p%:inum) [itv of 1 - p%:inum].
 
 Definition s_of_pq' (p q : {i01 R}) : {i01 R} :=
-  (1 - (p%:inum.~ * q%:inum.~))%:i01.
+  (`1- (`1-(p%:inum) * `1-(q%:inum)))%:i01.
 
 End Test2'.
