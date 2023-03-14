@@ -182,15 +182,16 @@ Qed.
 
 Lemma expectation_le (X Y : T -> R) :
     measurable_fun [set: T] X -> measurable_fun [set: T] Y ->
-  (forall x, 0 <= X x)%R ->
-  (forall x, X x <= Y x)%R -> 'E_P[X] <= 'E_P[Y].
+    (forall x, 0 <= X x)%R -> (forall x, 0 <= Y x)%R ->
+  {ae P, (forall x, X x <= Y x)%R} -> 'E_P[X] <= 'E_P[Y].
 Proof.
-move=> mX mY X0 XY; rewrite /expectation ge0_le_integral => //.
+move=> mX mY X0 Y0 XY; rewrite /expectation ae_ge0_le_integral => //.
 - by move=> t _; apply: X0.
 - by apply EFin_measurable_fun.
-- by move=> t _; rewrite lee_fin (le_trans _ (XY _)).
+- by move=> t _; apply: Y0.
 - by apply EFin_measurable_fun.
-- by move=> t _; rewrite lee_fin.
+- move: XY => [N [mN PN XYN]]; exists N; split => // t /= h.
+  by apply: XYN => /=; apply: contra_not h; rewrite lee_fin.
 Qed.
 
 Lemma expectationD (X Y : {RV P >-> R}) :
@@ -280,7 +281,8 @@ have h (Y : {RV P >-> R}) :
   - apply: measurable_funT_comp => //; apply: measurable_funT_comp => //.
     exact/measurable_fun_exprn/measurable_fun_id.
   - by move=> x /=; apply: sqr_ge0.
-  - by move=> x /=; rewrite real_normK// num_real.
+  - by move=> x /=; apply: sqr_ge0.
+  - by apply/aeW => t /=; rewrite real_normK// num_real.
 have := h [the {mfun T >-> R} of (X \- cst (fine ('E_P[X])))%R].
 by move=> /le_trans; apply; rewrite lee_pmul2l// lte_fin invr_gt0 exprn_gt0.
 Qed.
