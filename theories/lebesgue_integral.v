@@ -4020,6 +4020,31 @@ Qed.
 
 End dominated_convergence_theorem.
 
+Section ae_ge0_le_integral.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+Variables (D : set T) (mD : measurable D) (f1 f2 : T -> \bar R).
+Hypothesis f10 : forall x, D x -> 0 <= f1 x.
+Hypothesis mf1 : measurable_fun D f1.
+Hypothesis f20 : forall x, D x -> 0 <= f2 x.
+Hypothesis mf2 : measurable_fun D f2.
+
+Lemma ae_ge0_le_integral : {ae mu, forall x, D x -> f1 x <= f2 x} ->
+  \int[mu]_(x in D) f1 x <= \int[mu]_(x in D) f2 x.
+Proof.
+move=> [N [mN muN f1f2N]]; rewrite (negligible_integral _ _ _ _ muN)//.
+rewrite [leRHS](negligible_integral _ _ _ _ muN)//.
+apply: ge0_le_integral; first exact: measurableD.
+- by move=> t [Dt _]; exact: f10.
+- exact: measurable_funS mf1.
+- by move=> t [Dt _]; exact: f20.
+- exact: measurable_funS mf2.
+- by move=> t [Dt Nt]; move/subsetCl : f1f2N; apply.
+Qed.
+
+End ae_ge0_le_integral.
+
 (******************************************************************************)
 (* * product measure                                                          *)
 (******************************************************************************)
