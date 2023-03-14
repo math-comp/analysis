@@ -96,6 +96,8 @@
   + `PseudoMetric.ax2` -> `PseudoMetric.ball_sym`
   + `PseudoMetric.ax3` -> `PseudoMetric.ball_triangle`
   + `PseudoMetric.ax4` -> `PseudoMetric.entourageE`
+- in `functions.v`:
+  + `IsFun` -> `isFun`
 
 ### Generalized
 
