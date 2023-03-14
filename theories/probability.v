@@ -367,6 +367,9 @@ have h (Y : {RV P >-> R}) :
     exact/measurable_fun_exprn/measurable_fun_id.
   - by move=> x /=; apply: sqr_ge0.
   - by move=> x /=; apply: sqr_ge0.
+simpl.
+
+
   - by apply/aeW => t /=; rewrite real_normK// num_real.
 have := h [the {mfun T >-> R} of (X \- cst (fine ('E_P[X])))%R].
 by move=> /le_trans; apply; rewrite lee_pmul2l// lte_fin invr_gt0 exprn_gt0.
