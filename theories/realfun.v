@@ -196,7 +196,7 @@ Qed.
 Section negation_itv.
 Local Definition itvN_oppr a b := @GRing.opp R.
 Local Lemma itv_oppr_is_fun a b :
-  IsFun _ _ `[- b, - a]%classic `[a, b]%classic (itvN_oppr a b).
+  isFun _ _ `[- b, - a]%classic `[a, b]%classic (itvN_oppr a b).
 Proof. by split=> x /=; rewrite oppr_itvcc. Qed.
 HB.instance Definition _ a b := itv_oppr_is_fun a b.
 End negation_itv.
