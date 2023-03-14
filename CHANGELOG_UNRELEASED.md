@@ -71,7 +71,7 @@
 - in `measure.v`:
   + generalize `negligible` to `semiRingOfSetsType`
 - in `exp.v`:
-  + new lemma `power_pos_ge0`
+  + new lemmas `power_pos_ge0`, `power_pos0`, `power12_sqrt`
 
 ### Changed
 
