@@ -74,12 +74,6 @@ Import GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 Local Open Scope order_scope.
 
-(* infer class to help typeclass inference on the fly *)
-Class infer (P : Prop) := Infer : P.
-#[global] Hint Mode infer ! : typeclass_instances.
-#[global] Hint Extern 0 (infer _) => (exact) : typeclass_instances.
-Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
-
 Definition wider_itv (x y : interval int) := subitv y x.
 
 Module Itv.
@@ -184,13 +178,6 @@ Proof. by move: xt x => []. Qed.
    Itv.typ, like the ones above, will be looked for. *)
 Canonical typ_inum (xt : Itv.typ) (x : Itv.sort xt) :=
   Itv.mk (typ_inum_subproof x).
-
-Class unify {T} f (x y : T) := Unify : f x y = true.
-#[global] Hint Mode unify - - - + : typeclass_instances.
-Class unify' {T} f (x y : T) := Unify' : f x y = true.
-#[global] Instance unify'P {T} f (x y : T) : unify' f x y -> unify f x y := id.
-#[global]
-Hint Extern 0 (unify' _ _ _) => vm_compute; reflexivity : typeclass_instances.
 
 Notation unify_itv ix iy := (unify wider_itv ix iy).
 
@@ -881,8 +868,8 @@ Abort.
 
 End Test2.
 
-Section Test2'.
-
+Module Test3.
+Section Test3.
 Variable R : realDomainType.
 
 Definition s_of_pq (p q : {i01 R}) : {i01 R} :=
@@ -900,4 +887,5 @@ Canonical onem_itv01 (p : {i01 R}) : {i01 R} :=
 Definition s_of_pq' (p q : {i01 R}) : {i01 R} :=
   (`1- (`1-(p%:inum) * `1-(q%:inum)))%:i01.
 
-End Test2'.
+End Test3.
+End Test3.
