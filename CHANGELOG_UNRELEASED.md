@@ -128,6 +128,7 @@
   + instance of `isMeasurableFun` for `normr`
   + lemma `finite_measure_integrable_cst`
   + lemma `measurable_fun_er_map`
+  + lemma `ae_ge0_le_integral`
 - file `probability.v`:
   + definition `Lspace`, notation `.-Lspace`
   + lemmas `Lspace1`, `Lspace2`
