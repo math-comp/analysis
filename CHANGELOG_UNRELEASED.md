@@ -23,6 +23,20 @@
   + `ErealGenOInfty.measurable_set1_pinfty` -> `ErealGenOInfty.measurable_set1y`
   + `ErealGenCInfty.measurable_set1_ninfty` -> `ErealGenCInfty.measurable_set1Ny`
   + `ErealGenCInfty.measurable_set1_pinfty` -> `ErealGenCInfty.measurable_set1y`
+- in `topology.v`:
+  + `Topological.ax1` -> `Topological.nbhs_pfilter`
+  + `Topological.ax2` -> `Topological.nbhsE`
+  + `Topological.ax3` -> `Topological.openE`
+  + `entourage_filter` -> `entourage_pfilter`
+  + `Uniform.ax1` -> `Uniform.entourage_filter`
+  + `Uniform.ax2` -> `Uniform.entourage_refl`
+  + `Uniform.ax3` -> `Uniform.entourage_inv`
+  + `Uniform.ax4` -> `Uniform.entourage_split_ex`
+  + `Uniform.ax5` -> `Uniform.nbhsE`
+  + `PseudoMetric.ax1` -> `PseudoMetric.ball_center`
+  + `PseudoMetric.ax2` -> `PseudoMetric.ball_sym`
+  + `PseudoMetric.ax3` -> `PseudoMetric.ball_triangle`
+  + `PseudoMetric.ax4` -> `PseudoMetric.entourageE`
 
 ### Generalized
 
