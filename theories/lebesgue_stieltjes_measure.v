@@ -2,11 +2,11 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat.
-Require Import boolp reals ereal classical_sets signed topology numfun.
-Require Import mathcomp_extra functions normedtype.
 From HB Require Import structures.
-Require Import sequences esum measure fsbigop cardinality real_interval.
-Require Import realfun.
+From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
+From mathcomp.classical Require Import functions fsbigop cardinality.
+Require Import reals ereal signed topology numfun normedtype sequences esum.
+Require Import real_interval measure realfun.
 
 (******************************************************************************)
 (*                       Lebesgue Stieltjes Measure                           *)
@@ -82,11 +82,8 @@ move=> S21 S12 S1i; rewrite ler_oppl opprK le_sup// ?has_inf_supN//.
 exact/nonemptyN.
 Qed.
 
-Definition EFinf {R : numDomainType} (f : R -> R) : \bar R -> \bar R :=
-  fun x => if x is r%:E then (f r)%:E else x.
-
-Lemma nondecreasing_EFinf (R : realDomainType) (f : R -> R) :
-  {homo f : x y / (x <= y)%R} -> {homo EFinf f : x y / (x <= y)%E}.
+Lemma nondecreasing_er_map (R : realDomainType) (f : R -> R) :
+  {homo f : x y / (x <= y)%R} -> {homo er_map f : x y / (x <= y)%E}.
 Proof.
 move=> ndf.
 by move=> [r| |] [l| |]//=; rewrite ?leey ?leNye// !lee_fin; exact: ndf.
@@ -95,7 +92,7 @@ Qed.
 Section hlength.
 Local Open Scope ereal_scope.
 Variables (R : realType) (f : R -> R).
-Let g : \bar R -> \bar R := EFinf f.
+Let g : \bar R -> \bar R := er_map f.
 
 Implicit Types i j : interval R.
 Definition itvs : Type := R.
@@ -179,7 +176,7 @@ Qed.
 Lemma hlength_ge0 (ndf : {homo f : x y / (x <= y)%R}) i : 0 <= hlength [set` i].
 Proof.
 rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
-- by rewrite suber_ge0// => /ltW /(nondecreasing_EFinf ndf).
+- by rewrite suber_ge0// => /ltW /(nondecreasing_er_map ndf).
 - by rewrite ltNge leey.
 - by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
 Qed.
@@ -504,7 +501,7 @@ Variables (d : measure_display) (R : realType) (f : cumulative R).
 
 Let m := [the measure _ _ of lebesgue_stieltjes_measure d f].
 
-Let g : \bar R -> \bar R := EFinf f.
+Let g : \bar R -> \bar R := er_map f.
 
 Let lebesgue_stieltjes_measure_itvoc (a b : R) :
   (m `]a, b] = hlength f `]a, b])%classic.
