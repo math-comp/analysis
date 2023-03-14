@@ -1124,7 +1124,7 @@ Section iter_inv.
 Context {aT} {A : set aT}.
 
 Local Lemma iter_fun_subproof n (f : {fun A >-> A}) : isFun _ _ A A (iter n f).
-Proof. 
+Proof.
 split => x; elim: n => // n /[apply] ?; apply/(fun_image_sub f).
 by exists (iter n f x).
 Qed.
@@ -1133,7 +1133,7 @@ HB.instance Definition _ n f := iter_fun_subproof n f.
 
 Section OInv.
 Context {f : {oinv aT >-> aT}}.
-HB.instance Definition _ n := OInv.Build _ _ (iter n f) 
+HB.instance Definition _ n := OInv.Build _ _ (iter n f)
   (iter n (obind 'oinv_f) \o some).
 Lemma oinv_iter n : 'oinv_(iter n f) = iter n (obind 'oinv_f) \o some.
 Proof. by []. Qed.
@@ -1152,9 +1152,9 @@ Lemma inv_iter n : (iter n f)^-1 = iter n f^-1. Proof. by []. Qed.
 End OInv.
 
 Lemma iter_can_subproof n (f : {injfun A >-> A}) : OInv_Can aT aT A (iter n f).
-Proof. 
+Proof.
 split=> x Ax; rewrite oinv_iter /=; elim: n=> // n IH.
-rewrite iterfSr /= funoK //; exact: mem_fun. 
+by rewrite iterfSr /= funoK //; exact: mem_fun.
 Qed.
 
 HB.instance Definition _ f g := iter_can_subproof f g.
