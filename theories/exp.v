@@ -19,7 +19,7 @@ Require Import signed topology normedtype landau sequences derive realfun.
 (*   pseries_diffs f i == (i + 1) * f (i + 1)                                 *)
 (*                                                                            *)
 (*                ln x == the natural logarithm                               *)
-(*              a `^ x == exponential functions                               *)
+(*              a `^ x == power function (assumes a >= 0)                     *)
 (*          riemannR a == sequence n |-> 1 / (n.+1) `^ a where a has a type   *)
 (*                        of type realType                                    *)
 (*                                                                            *)
@@ -572,68 +572,81 @@ Unshelve. all: by end_near. Qed.
 
 End Ln.
 
-Section ExpFun.
+Section PowerPos.
 Variable R : realType.
 Implicit Types a x : R.
 
-Definition exp_fun a x := expR (x * ln a).
+Definition power_pos a x := if a == 0 then 0 else expR (x * ln a).
 
-Local Notation "a `^ x" := (exp_fun a x).
+Local Notation "a `^ x" := (power_pos a x).
 
-Lemma exp_fun_gt0 a x : 0 < a `^ x. Proof. by rewrite expR_gt0. Qed.
+Lemma power_pos_ge0 a x : 0 <= a `^ x.
+Proof. by rewrite /power_pos; case: ifPn => // a0; rewrite expR_ge0. Qed.
 
-Lemma exp_funr1 a : 0 < a -> a `^ 1 = a.
-Proof. by move=> a0; rewrite /exp_fun mul1r lnK. Qed.
+Lemma power_pos_gt0 a x : 0 < a -> 0 < a `^ x.
+Proof. by move=> a0; rewrite /power_pos gt_eqF// expR_gt0. Qed.
 
-Lemma exp_funr0 a : 0 < a -> a `^ 0 = 1.
-Proof. by move=> a0; rewrite /exp_fun mul0r expR0. Qed.
-
-Lemma exp_fun1 : exp_fun 1 = fun=> 1.
-Proof. by rewrite funeqE => x; rewrite /exp_fun ln1 mulr0 expR0. Qed.
-
-Lemma ler_exp_fun a : 1 < a -> {homo exp_fun a : x y / x <= y}.
-Proof. by move=> a1 x y xy; rewrite /exp_fun ler_expR ler_pmul2r // ln_gt0. Qed.
-
-Lemma exp_funD a : 0 < a -> {morph exp_fun a : x y / x + y >-> x * y}.
-Proof. by move=> a0 x y; rewrite [in LHS]/exp_fun mulrDl expRD. Qed.
-
-Lemma exp_fun_inv a : 0 < a -> a `^ (-1) = a ^-1.
+Lemma power_posr1 a : 0 <= a -> a `^ 1 = a.
 Proof.
-move=> a0.
+rewrite /power_pos => a0; case: ifPn => [/eqP//|h].
+by rewrite mul1r lnK// posrE lt_neqAle eq_sym h.
+Qed.
+
+Lemma power_posr0 a : 0 < a -> a `^ 0 = 1.
+Proof.
+move=> a0; rewrite /power_pos mul0r expR0; case: ifPn => //.
+by rewrite eq_le leNgt a0.
+Qed.
+
+Lemma power_pos1 : power_pos 1 = fun=> 1.
+Proof. by apply/funext => x; rewrite /power_pos oner_eq0 ln1 mulr0 expR0. Qed.
+
+Lemma ler_power_pos a : 1 < a -> {homo power_pos a : x y / x <= y}.
+Proof.
+move=> a1 x y xy.
+by rewrite /power_pos gt_eqF ?(le_lt_trans _ a1)// ler_expR ler_pmul2r// ln_gt0.
+Qed.
+
+Lemma power_posD a : 0 < a -> {morph power_pos a : x y / x + y >-> x * y}.
+Proof. by move=> a0 x y; rewrite /power_pos gt_eqF// mulrDl expRD. Qed.
+
+Lemma power_pos_inv a : 0 <= a -> a `^ (-1) = a ^-1.
+Proof.
+rewrite le_eqVlt => /orP[/eqP <-|a0]; first by rewrite invr0 /power_pos eqxx.
 apply/(@mulrI _ a); first by rewrite unitfE gt_eqF.
-rewrite -[X in X * _ = _](exp_funr1 a0) -exp_funD // subrr exp_funr0 //.
-by rewrite divrr // unitfE gt_eqF.
+rewrite -[X in X * _ = _](power_posr1 (ltW a0)) -power_posD // subrr.
+by rewrite power_posr0 // divrr // unitfE gt_eqF.
 Qed.
 
-Lemma exp_fun_mulrn a n : 0 < a -> exp_fun a n%:R = a ^+ n.
+Lemma power_pos_mulrn a n : 0 < a -> a `^ n%:R = a ^+ n.
 Proof.
-move=> a0; elim: n => [|n ih]; first by rewrite mulr0n expr0 exp_funr0.
-by rewrite -natr1 exprSr exp_funD// ih exp_funr1.
+move=> a0; elim: n => [|n ih]; first by rewrite mulr0n expr0 power_posr0.
+by rewrite -natr1 exprSr power_posD// ih power_posr1// ltW.
 Qed.
 
-End ExpFun.
-Notation "a `^ x" := (exp_fun a x).
+End PowerPos.
+Notation "a `^ x" := (power_pos a x) : real_scope.
 
 Section riemannR_series.
 Variable R : realType.
 Implicit Types a : R.
-Local Open Scope ring_scope.
+Local Open Scope real_scope.
 
 Definition riemannR a : R ^nat := fun n => (n.+1%:R `^ a)^-1.
 Arguments riemannR a n /.
 
-Lemma riemannR_gt0 a i : 0 < a -> 0 < riemannR a i.
-Proof. move=> ?; by rewrite /riemannR invr_gt0 exp_fun_gt0. Qed.
+Lemma riemannR_gt0 a i : 0 <= a -> 0 < riemannR a i.
+Proof. by move=> ?; rewrite /riemannR invr_gt0 power_pos_gt0. Qed.
 
-Lemma dvg_riemannR a : 0 < a <= 1 -> ~ cvg (series (riemannR a)).
+Lemma dvg_riemannR a : 0 <= a <= 1 -> ~ cvg (series (riemannR a)).
 Proof.
 case/andP => a0; rewrite le_eqVlt => /orP[/eqP ->|a1].
   rewrite (_ : riemannR 1 = harmonic); first exact: dvg_harmonic.
-  by rewrite funeqE => i /=; rewrite exp_funr1.
+  by rewrite funeqE => i /=; rewrite power_posr1.
 have : forall n, harmonic n <= riemannR a n.
-  case=> /= [|n]; first by rewrite exp_fun1 invr1.
-  rewrite -[leRHS]div1r ler_pdivl_mulr ?exp_fun_gt0 // mulrC ler_pdivr_mulr //.
-  by rewrite mul1r -[leRHS]exp_funr1 // (ler_exp_fun) // ?ltr1n // ltW.
+  case=> /= [|n]; first by rewrite power_pos1 invr1.
+  rewrite -[leRHS]div1r ler_pdivl_mulr ?power_pos_gt0 // mulrC ler_pdivr_mulr //.
+  by rewrite mul1r -[leRHS]power_posr1 // (ler_power_pos) // ?ltr1n // ltW.
 move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
 by move/contra_not; apply; exact: dvg_harmonic.
 Qed.
