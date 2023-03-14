@@ -255,7 +255,7 @@ Require Import reals signed.
 (*    {uniform, F --> f} := {uniform setT, F --> f}                           *)
 (*         {ptws U -> V} == The space U -> V, equipped with the topology of   *)
 (*                          pointwise convergence from U to V, where V is a   *)
-(*                          topologicalType.                                  *)
+(*                          topologicalType; notation for @fct_Pointwise U V. *)
 (*       {ptws, F --> f} == F converges to f in {ptws U -> V}.                *)
 (*  {family fam, U -> V} == The space U -> V, equipped with the supremum      *)
 (*                          topology of {uniform A -> f} for each A in 'fam'  *)
