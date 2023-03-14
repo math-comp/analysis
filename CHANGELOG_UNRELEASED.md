@@ -129,9 +129,13 @@
   + lemma `finite_measure_integrable_cst`
   + lemma `measurable_fun_er_map`
   + lemma `ae_ge0_le_integral`
+  + lemma `ae_eq_refl`
 - file `probability.v`:
+  + mixin `isLfun`, structure `Lfun`, notation `LfunType`
+  + canonicals `Lfun_eqType`, `Lfun_choiceType`, `Lequiv_canonical`
+  + definition `LType`
   + definition `Lspace`, notation `.-Lspace`
-  + lemmas `Lspace1`, `Lspace2`
+  + lemmas `LequivP`, `Lspace1`, `Lspace2`
   + definition `random_variable`, notation `{RV _ >-> _}`
   + lemmas `notin_range_measure`, `probability_range`
   + definition `distribution`, instance of `isProbability`
