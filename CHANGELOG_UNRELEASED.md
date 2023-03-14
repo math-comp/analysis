@@ -24,6 +24,22 @@
   + `ErealGenCInfty.measurable_set1_ninfty` -> `ErealGenCInfty.measurable_set1Ny`
   + `ErealGenCInfty.measurable_set1_pinfty` -> `ErealGenCInfty.measurable_set1y`
 
+- in `set_interval.v`:
+  + `conv` -> `line_path`
+  + `conv_id` -> `line_path_id`
+  + `ndconv` -> `ndline_path`
+  + `convEl` -> `line_pathEl`
+  + `convEr` -> `line_pathEr`
+  + `conv10` -> `line_path10`
+  + `conv0` -> `line_path0`
+  + `conv1` -> `line_path1`
+  + `conv_sym` -> `line_path_sym`
+  + `conv_flat` -> `line_path_flat`
+  + `leW_conv` -> `leW_line_path`
+  + `convK` -> `line_pathK`
+  + `conv_inj` -> `line_path_inj`
+  + `conv_bij` -> `line_path_bij`
+
 ### Generalized
 
 ### Deprecated
