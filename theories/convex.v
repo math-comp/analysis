@@ -8,14 +8,14 @@ Require Import normedtype derive set_interval itv.
 From HB Require Import structures.
 
 (******************************************************************************)
-(* isConvexSpace R T == interface for convex spaces *)
-(* ConvexSpace R == structure of convex space*)
-(* a <| t |> b == convexity operator*)
-(* E : lmodType R with R : realDomainType and R : realDomainType are shown to be convex spaces *)
+(* isConvexSpace R T == interface for convex spaces                           *)
+(* ConvexSpace R == structure of convex space                                 *)
+(* a <| t |> b == convexity operator                                          *)
+(* E : lmodType R with R : realDomainType and R : realDomainType are shown to *)
+(* be convex spaces                                                           *)
 (******************************************************************************)
 
 Reserved Notation "x <| p |> y" (format "x  <| p |>  y", at level 49).
-
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -107,7 +107,7 @@ Proof. by rewrite /avg/= onem0 scale0r scale1r addr0. Qed.
 Let avgI p x : avg p x x = x.
 Proof. by rewrite /avg -scalerDl/= addrC add_onemK scale1r. Qed.
 
-Let avgC p x y : avg p x y = avg (`1-(p%:inum))%:i01 y x.
+Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. by rewrite /avg onemK addrC. Qed.
 
 Let avgA p q r (a b c : E) :
@@ -139,7 +139,7 @@ Proof. by rewrite /avg conv0. Qed.
 Let avgI p x : avg p x x = x.
 Proof. by rewrite /avg convmm. Qed.
 
-Let avgC p x y : avg p x y = avg `1-(p%:inum)%:i01 y x.
+Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. by rewrite /avg convC. Qed.
 
 Let avgA p q r (a b c : R) :
@@ -209,7 +209,7 @@ Proof.
 move=> H t; set x := a <| t |> b.
 have /H : a <= x <= b.
   rewrite -(conv1 (a : R^o) b) -{1}(conv0 (a : R^o) b) /x.
-  by rewrite !le_conv//= ge0/=.
+  by rewrite !le_conv//= itv_ge0/=.
 rewrite subr_ge0 => /le_trans; apply.
 by rewrite LE /x convK ?lt_eqF// convC convK ?gt_eqF.
 Qed.
