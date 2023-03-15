@@ -48,7 +48,7 @@ Require Import boolp signed.
 (* the appropriate Canonical.                                                 *)
 (* --> Canonical instances are also provided according to types, as a         *)
 (* fallback when no known operator appears in the expression. Look to         *)
-(* top_typ below for an example on how to add your favorite type.             *)
+(* itv_top_typ below for an example on how to add your favorite type.         *)
 (******************************************************************************)
 
 Reserved Notation "{ 'itv' R & i }"
@@ -161,11 +161,11 @@ Canonical itv_porderType := POrderType ring_display nR itv_porderMixin.
 End POrder.
 (* TODO: numDomainType on sT ? *)
 
-Lemma top_typ_subproof (R : numDomainType) (x : R) :
+Lemma itv_top_typ_subproof (R : numDomainType) (x : R) :
   Itv.spec `]-oo, +oo[ x.
 Proof. by []. Qed.
 
-Canonical top_typ (R : numDomainType) := Itv.Typ (@top_typ_subproof R).
+Canonical itv_top_typ (R : numDomainType) := Itv.Typ (@itv_top_typ_subproof R).
 
 Lemma typ_inum_subproof (xt : Itv.typ) (x : Itv.sort xt) :
   Itv.spec (Itv.sort_itv xt) x.
@@ -190,56 +190,56 @@ Lemma itv_intro {x} : x%:inum = x%:inum :> R. Proof. by []. Qed.
 
 Definition empty_itv := `[Posz 1, Posz 0].
 
-Lemma bottom x : unify_itv empty_itv i -> False.
+Lemma itv_bottom x : unify_itv empty_itv i -> False.
 Proof.
 move: x => [x /subitvP /(_ x)]; rewrite in_itv/= lexx => /(_ erefl) xi.
 move=> /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= => /andP[] /le_trans /[apply]; rewrite ler10.
 Qed.
 
-Lemma gt0 x : unify_itv `]Posz 0, +oo[ i -> 0%R < x%:inum :> R.
+Lemma itv_gt0 x : unify_itv `]Posz 0, +oo[ i -> 0%R < x%:inum :> R.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= andbT.
 Qed.
 
-Lemma le0F x : unify_itv `]Posz 0, +oo[ i -> x%:inum <= 0%R :> R = false.
+Lemma itv_le0F x : unify_itv `]Posz 0, +oo[ i -> x%:inum <= 0%R :> R = false.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= andbT => /lt_geF.
 Qed.
 
-Lemma lt0 x : unify_itv `]-oo, Posz 0[ i -> x%:inum < 0%R :> R.
+Lemma itv_lt0 x : unify_itv `]-oo, Posz 0[ i -> x%:inum < 0%R :> R.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv.
 Qed.
 
-Lemma ge0F x : unify_itv `]-oo, Posz 0[ i -> 0%R <= x%:inum :> R = false.
+Lemma itv_ge0F x : unify_itv `]-oo, Posz 0[ i -> 0%R <= x%:inum :> R = false.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= => /lt_geF.
 Qed.
 
-Lemma ge0 x : unify_itv `[Posz 0, +oo[ i -> 0%R <= x%:inum :> R.
+Lemma itv_ge0 x : unify_itv `[Posz 0, +oo[ i -> 0%R <= x%:inum :> R.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= andbT.
 Qed.
 
-Lemma lt0F x : unify_itv `[Posz 0, +oo[ i -> x%:inum < 0%R :> R = false.
+Lemma itv_lt0F x : unify_itv `[Posz 0, +oo[ i -> x%:inum < 0%R :> R = false.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= andbT => /le_gtF.
 Qed.
 
-Lemma le0 x : unify_itv `]-oo, Posz 0] i -> x%:inum <= 0%R :> R.
+Lemma itv_le0 x : unify_itv `]-oo, Posz 0] i -> x%:inum <= 0%R :> R.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/=.
 Qed.
 
-Lemma gt0F x : unify_itv `]-oo, Posz 0] i -> 0%R < x%:inum :> R = false.
+Lemma itv_gt0F x : unify_itv `]-oo, Posz 0] i -> 0%R < x%:inum :> R = false.
 Proof.
 move: x => [x /= xi] /(@Itv.subitv_map_itv R) /subitvP /(_ _ xi).
 by rewrite in_itv/= => /le_gtF.
@@ -282,15 +282,15 @@ Proof. exact/val_inj. Qed.
 
 End Theory.
 
-Arguments bottom {R i} _ {_}.
-Arguments gt0 {R i} _ {_}.
-Arguments le0F {R i} _ {_}.
-Arguments lt0 {R i} _ {_}.
-Arguments ge0F {R i} _ {_}.
-Arguments ge0 {R i} _ {_}.
-Arguments lt0F {R i} _ {_}.
-Arguments le0 {R i} _ {_}.
-Arguments gt0F {R i} _ {_}.
+Arguments itv_bottom {R i} _ {_}.
+Arguments itv_gt0 {R i} _ {_}.
+Arguments itv_le0F {R i} _ {_}.
+Arguments itv_lt0 {R i} _ {_}.
+Arguments itv_ge0F {R i} _ {_}.
+Arguments itv_ge0 {R i} _ {_}.
+Arguments itv_lt0F {R i} _ {_}.
+Arguments itv_le0 {R i} _ {_}.
+Arguments itv_gt0F {R i} _ {_}.
 Arguments lt1 {R i} _ {_}.
 Arguments ge1F {R i} _ {_}.
 Arguments le1 {R i} _ {_}.
@@ -298,10 +298,10 @@ Arguments gt1F {R i} _ {_}.
 Arguments widen_itv {R i} _ {_ _}.
 Arguments widen_itvE {R i} _ {_}.
 
-#[global] Hint Extern 0 (is_true (0%R < _)%O) => solve [apply: gt0] : core.
-#[global] Hint Extern 0 (is_true (_ < 0%R)%O) => solve [apply: lt0] : core.
-#[global] Hint Extern 0 (is_true (0%R <= _)%O) => solve [apply: ge0] : core.
-#[global] Hint Extern 0 (is_true (_ <= 0%R)%O) => solve [apply: le0] : core.
+#[global] Hint Extern 0 (is_true (0%R < _)%O) => solve [apply: itv_gt0] : core.
+#[global] Hint Extern 0 (is_true (_ < 0%R)%O) => solve [apply: itv_lt0] : core.
+#[global] Hint Extern 0 (is_true (0%R <= _)%O) => solve [apply: itv_ge0] : core.
+#[global] Hint Extern 0 (is_true (_ <= 0%R)%O) => solve [apply: itv_le0] : core.
 #[global] Hint Extern 0 (is_true (_ < 1%R)%O) => solve [apply: lt1] : core.
 #[global] Hint Extern 0 (is_true (_ <= 1%R)%O) => solve [apply: le1] : core.
 

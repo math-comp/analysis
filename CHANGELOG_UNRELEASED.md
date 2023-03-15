@@ -21,14 +21,14 @@
   + notations `{itv R & i}`, `{i01 R}`, `%:itv`, `[itv of _]`, `inum`, `%:inum`
   + definitions `itv_eqMixin`, `itv_choiceMixin`, `itv_porderMixin`
   + canonical `itv_subType`, `itv_eqType`, `itv_choiceType`, `itv_porderType`
-  + lemma `top_typ_subproof`
-  + canonical `top_typ`
+  + lemma `itv_top_typ_subproof`
+  + canonical `itv_top_typ`
   + lemma `typ_inum_subproof`
   + canonical `typ_inum`
   + notation `unify_itv`
   + lemma `itv_intro`
   + definition `empty_itv`
-  + lemmas `bottom`, `gt0`, `le0F`, `lt0`, `ge0F`, `ge0`, `lt0F`, `le0`, `gt0F`, `lt1`,
+  + lemmas `itv_bottom`, `itv_gt0`, `itv_le0F`, `itv_lt0`, `itv_ge0F`, `itv_ge0`, `lt0F`, `le0`, `gt0F`, `lt1`,
     `ge1F`, `le1`, `gt1F`
   + lemma `widen_itv_subproof`
   + definition `widen_itv`
