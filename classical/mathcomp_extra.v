@@ -830,8 +830,10 @@ by apply/bigmax_leP; split => //; exact: PxF.
 Qed.
 
 Lemma eq_bigmax j P F : P j -> (forall i, P i -> x <= F i) ->
-  {i0 | i0 \in I & \big[max/x]_(i | P i) F i = F i0}.
-Proof. by move=> Pi0 Hx; rewrite (bigmax_eq_arg Pi0) //; eexists. Qed.
+  {i0 | i0 \in P & \big[max/x]_(i | P i) F i = F i0}.
+Proof.
+by move=> Pi0 Hx; rewrite (bigmax_eq_arg Pi0) //; eexists => //; case:arg_maxP.
+Qed.
 
 Lemma le_bigmax2 P F1 F2 : (forall i, P i -> F1 i <= F2 i) ->
   \big[max/x]_(i | P i) F1 i <= \big[max/x]_(i | P i) F2 i.
@@ -980,8 +982,10 @@ by apply/bigmin_geP; split => //; exact: PFx.
 Qed.
 
 Lemma eq_bigmin j P F : P j -> (forall i, P i -> F i <= x) ->
-  {i0 | i0 \in I & \big[min/x]_(i | P i) F i = F i0}.
-Proof. by move=> Pi0 Hx; rewrite (bigmin_eq_arg Pi0) //; eexists. Qed.
+  {i0 | i0 \in P & \big[min/x]_(i | P i) F i = F i0}.
+Proof.
+by move=> Pi0 Hx; rewrite (bigmin_eq_arg Pi0) //; eexists => //; case:arg_minP.
+Qed.
 
 End bigmin_finType.
 
