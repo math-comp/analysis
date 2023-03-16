@@ -59,11 +59,15 @@
   + lemmas `map_itv_bound_min`, `map_itv_bound_max`, `mul_inum_subproof`
   + canonical `mul_inum`
   + lemmas `inum_eq`, `inum_le`, `inum_lt`
+- in `measure.v`:
+  + lemmas `ae_imply`, `ae_imply2`
 
 ### Changed
 
 - in `mathcomp_extra.v`
   + lemmas `eq_bigmax`, `eq_bigmin` changed to respect `P` in the returned type.
+- in `measure.v`:
+  + generalize `negligible` to `semiRingOfSetsType`
 
 ### Renamed
 
@@ -86,6 +90,9 @@
     (use `emeasurable_itv` instead)
 
 ### Removed
+
+- in `lebesgue_measure.v`:
+  + lemma `ae_eq_mul`
 
 ### Infrastructure
 
