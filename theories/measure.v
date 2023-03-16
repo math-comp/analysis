@@ -2978,7 +2978,7 @@ End generalized_boole_inequality.
 Notation le_mu_bigcup := generalized_Boole_inequality.
 
 Section negligible.
-Context d (R : realFieldType) (T : ringOfSetsType d).
+Context d (T : semiRingOfSetsType d) (R : realFieldType).
 
 Definition negligible (mu : set T -> \bar R) (N : set T) :=
   exists A : set T, [/\ measurable A, mu A = 0 & N `<=` A].
@@ -3013,11 +3013,31 @@ move=> aP; have -> : P = setT by rewrite predeqE => t; split.
 by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
 Qed.
 
+Lemma ae_imply (mu : {measure set T -> \bar R}) (P Q : T -> Prop) :
+  (forall x, Q x -> P x) ->
+  {ae mu, forall x, Q x} -> {ae mu, forall x, P x}.
+Proof.
+move=> QP [N [mN nuN QN]]; exists N; split => //.
+by apply: subset_trans QN; apply: subsetC.
+Qed.
+
 End negligible.
 
 Notation "mu .-negligible" := (negligible mu) : type_scope.
-
 Notation "{ 'ae' m , P }" := (almost_everywhere m (inPhantom P)) : type_scope.
+
+Lemma ae_imply2 {d} {T : ringOfSetsType d} {R : realFieldType}
+  (mu : {measure set T -> \bar R}) (P1 P2 P3 : T -> Prop) :
+  (forall x, P1 x -> P2 x -> P3 x) ->
+  {ae mu, forall x, P1 x} -> {ae mu, forall x, P2 x} -> {ae mu, forall x, P3 x}.
+Proof.
+move=> h [A [mA A0 P1A]] [B [mB B0 P2B]]; exists (A `|` B); split.
+- exact: measurableU.
+- by rewrite null_set_setU.
+- rewrite -(setCK A) -(setCK B) -setCI; apply: subsetC => x [Ax Bx] /=.
+  move/subsetC : P1A => /(_ _ Ax); rewrite setCK /= => P1x.
+  by move/subsetC : P2B => /(_ _ Bx); rewrite setCK /=; exact: h.
+Qed.
 
 Definition sigma_subadditive (R : numFieldType) (T : Type)
   (mu : set T -> \bar R) := forall (F : (set T) ^nat),
