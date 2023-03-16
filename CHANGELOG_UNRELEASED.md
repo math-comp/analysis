@@ -64,6 +64,11 @@
 
 ### Changed
 
+- in `mathcomp_extra.v`
+  + lemmas `eq_bigmax`, `eq_bigmin` changed to respect `P` in the returned type.
+- in `measure.v`:
+  + generalize `negligible` to `semiRingOfSetsType`
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
