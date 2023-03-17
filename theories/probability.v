@@ -248,7 +248,7 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 
 Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) :
     (0 < eps)%R ->
-    measurable_fun [set: R] f -> (forall r : R, 0 <= f r)%R ->
+    measurable_fun [set: R] f -> (forall r, 0 <= f r)%R ->
     {in `[0, +oo[%classic &, {homo f : x y / x <= y}}%R ->
   (f eps)%:E * P [set x | eps%:E <= `| (X x)%:E | ] <=
     'E_P[f \o (fun x => `| x |%R) \o X].
@@ -258,7 +258,7 @@ apply: (le_trans (@le_integral_comp_abse d T R P setT measurableT (EFin \o X)
   eps (er_map f) _ _ _ _ e0)) => //=.
 - exact: measurable_fun_er_map.
 - by case => //= r _; exact: f0.
-- exact: le_er_map.
+- by move=> [x| |] [y| |] xP yP xy//=; rewrite ?leey ?leNye// lee_fin f_nd.
 - exact/EFin_measurable_fun.
 Qed.
 
