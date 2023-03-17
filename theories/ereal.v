@@ -149,13 +149,12 @@ Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y z u a b : \bar R) (r : R).
 
-Lemma le_er_map (f : R -> R) :
-  {in `[0, +oo[%classic%R &, {homo f : x y / (x <= y)%O}} ->
-  {in `[0, +oo[%classic%E &, {homo er_map f : x y / (x <= y)%E}}.
+Lemma le_er_map (A : set R) (f : R -> R) :
+  {in A &, {homo f : x y / (x <= y)%O}} ->
+  {in (EFin @` A)%classic &, {homo er_map f : x y / (x <= y)%E}}.
 Proof.
-move=> f_nd x y; rewrite !inE/= !in_itv/= !andbT.
-move: x y => [x| |] [y| |] x0 y0 xy//=; last by rewrite leey.
-by rewrite lee_fin f_nd// inE /= in_itv/= andbT -lee_fin.
+move=> h x y; rewrite !inE/= => -[r Ar <-{x}] [s As <-{y}].
+by rewrite !lee_fin/= => /h; apply; rewrite inE.
 Qed.
 
 Lemma fsume_gt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
