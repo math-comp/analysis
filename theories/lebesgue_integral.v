@@ -4900,3 +4900,59 @@ Theorem Fubini :
 Proof. by rewrite fubini1 -fubini2. Qed.
 
 End fubini.
+
+Section sfinite_fubini.
+Local Open Scope ereal_scope.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Variables (m1 : {sfinite_measure set X -> \bar R}).
+Variables (m2 : {sfinite_measure set Y -> \bar R}).
+Variables (f : X * Y -> \bar R) (f0 : forall xy, 0 <= f xy).
+Hypothesis mf : measurable_fun setT f.
+
+Lemma sfinite_Fubini :
+  \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
+Proof.
+pose s1 := sfinite_measure_seq m1.
+pose s2 := sfinite_measure_seq m2.
+rewrite [LHS](eq_measure_integral [the measure _ _ of mseries s1 0]); last first.
+  by move=> A mA _; rewrite /=; exact: sfinite_measure_seqP.
+transitivity (\int[mseries s1 0]_x \int[mseries s2 0]_y f (x, y)).
+  apply: eq_integral => x _; apply: eq_measure_integral => ? ? _.
+  exact: sfinite_measure_seqP.
+transitivity (\sum_(n <oo) \int[s1 n]_x \sum_(m <oo) \int[s2 m]_y f (x, y)).
+  rewrite ge0_integral_measure_series; [|by []| |]; last 2 first.
+    by move=> t _; exact: integral_ge0.
+    rewrite [X in measurable_fun _ X](_ : _ =
+        fun x => \sum_(n <oo) \int[s2 n]_y f (x, y)); last first.
+      apply/funext => x.
+      by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
+    apply: ge0_emeasurable_fun_sum; first by move=> k x; exact: integral_ge0.
+    by move=> k; apply: measurable_fun_fubini_tonelli_F.
+  apply: eq_eseriesr => n _; apply: eq_integral => x _.
+  by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod1.
+transitivity (\sum_(n <oo) \sum_(m <oo) \int[s1 n]_x \int[s2 m]_y f (x, y)).
+  apply: eq_eseriesr => n _; rewrite integral_nneseries//.
+    by move=> m; exact: measurable_fun_fubini_tonelli_F.
+  by move=> m x _; exact: integral_ge0.
+transitivity (\sum_(n <oo) \sum_(m <oo) \int[s2 m]_y \int[s1 n]_x f (x, y)).
+  apply: eq_eseriesr => n _; apply: eq_eseriesr => m _.
+  by rewrite fubini_tonelli//; exact: finite_measure_sigma_finite.
+transitivity (\sum_(n <oo) \int[mseries s2 0]_y \int[s1 n]_x f (x, y)).
+  apply: eq_eseriesr => n _; rewrite ge0_integral_measure_series//.
+    by move=> y _; exact: integral_ge0.
+  exact: measurable_fun_fubini_tonelli_G.
+transitivity (\int[mseries s2 0]_y \sum_(n <oo) \int[s1 n]_x f (x, y)).
+  rewrite integral_nneseries//.
+    by move=> n; apply: measurable_fun_fubini_tonelli_G.
+  by move=> n y _; exact: integral_ge0.
+transitivity (\int[mseries s2 0]_y \int[mseries s1 0]_x f (x, y)).
+  apply: eq_integral => y _.
+  by rewrite ge0_integral_measure_series//; exact/measurable_fun_prod2.
+transitivity (\int[m2]_y \int[mseries s1 0]_x f (x, y)).
+  by apply: eq_measure_integral => A mA _ /=; rewrite sfinite_measure_seqP.
+apply: eq_integral => y _; apply: eq_measure_integral => A mA _ /=.
+by rewrite sfinite_measure_seqP.
+Qed.
+
+End sfinite_fubini.
+Arguments sfinite_Fubini {d d' X Y R} m1 m2 f.
