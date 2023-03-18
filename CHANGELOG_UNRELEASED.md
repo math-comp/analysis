@@ -9,6 +9,8 @@
   + canonicals `ereal_blatticeType`, `ereal_tblatticeType`
 - in `lebesgue_measure.v`:
   + lemma `emeasurable_itv`
+- in `lebesgue_integral.v`:
+  + lemma `sfinite_Fubini`
 
 - file `itv.v`:
   + definition `wider_itv`
