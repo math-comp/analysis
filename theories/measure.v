@@ -1392,11 +1392,15 @@ End content_on_semiring_of_sets.
 Arguments measure0 {d R T} _.
 
 #[global] Hint Extern 0
-  (is_true (0 <= (_ : {content set _ -> \bar _}) _)%E) =>
+  (is_true (0%R <= (_ : {content set _ -> \bar _}) _)%E) =>
   solve [apply: measure_ge0] : core.
 
+#[global] Hint Extern 0
+  ((_ : {content set _ -> \bar _}) set0 = 0%R) =>
+  solve [apply: measure0] : core.
+
 #[global]
-Hint Resolve measure0 measure_semi_additive2 measure_semi_additive : core.
+Hint Resolve measure_semi_additive2 measure_semi_additive : core.
 
 Section content_on_ring_of_sets.
 Context d (R : realFieldType)(T : ringOfSetsType d)
@@ -1516,8 +1520,8 @@ Proof. by move=> Am Atriv /measure_semi_sigma_additive/cvg_lim<-//. Qed.
 
 End measure_lemmas.
 
-#[global] Hint Extern 0 (_ set0 = 0) => solve [apply: measure0] : core.
-#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
+#[global] Hint Extern 0 (_ set0 = 0%R) => solve [apply: measure0] : core.
+#[global] Hint Extern 0 (is_true (0%R <= _)) => solve [apply: measure_ge0] : core.
 
 Section measure_lemmas.
 Context d (R : realFieldType) (T : measurableType d).
@@ -2760,7 +2764,7 @@ Notation "{ 'outer_measure' 'set' T '->' '\bar' R }" := (outer_measure R T)
   (at level 36, T, R at next level,
     format "{ 'outer_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
 
-#[global] Hint Extern 0 (_ set0 = 0) => solve [apply: outer_measure0] : core.
+#[global] Hint Extern 0 (_ set0 = 0%R) => solve [apply: outer_measure0] : core.
 #[global] Hint Extern 0 (sigma_subadditive _) =>
   solve [apply: outer_measure_sigma_subadditive] : core.
 

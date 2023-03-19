@@ -76,7 +76,7 @@ Qed.
 
 Local Close Scope classical_set_scope.
 
-Notation "\sum_ ( i '\in' A ) F" := (\big[+%dE/0%E]_(i \in A) F%dE) :
+Notation "\sum_ ( i '\in' A ) F" := (\big[+%dE/0%dE]_(i \in A) F%dE) :
   ereal_dual_scope.
 Notation "\sum_ ( i '\in' A ) F" := (\big[+%E/0%E]_(i \in A) F%E) :
   ereal_scope.
@@ -233,7 +233,7 @@ apply: (big_ind2 (fun x y => x = - y)%E) => [|_ x _ y -> ->|i _].
 - by rewrite oppeK.
 Qed.
 
-Lemma dfsume_ge0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+Lemma dfsume_ge0 (I : choiceType) (P : set I) (F : I -> \bar^d R) :
   (forall i, P i -> 0 <= F i) -> 0 <= \sum_(i \in P) F i.
 Proof.
 move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
@@ -256,23 +256,23 @@ Import DualAddTheory.
 Local Open Scope ereal_dual_scope.
 
 Context {R : realDomainType}.
-Implicit Types x y z a b : \bar R.
+Implicit Types x y z a b : \bar^d R.
 
-Lemma dfsume_gt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+Lemma dfsume_gt0 (I : choiceType) (P : set I) (F : I -> \bar^d R) :
   0 < \sum_(i \in P) F i -> exists2 i, P i & 0 < F i.
 Proof.
 rewrite dual_fsumeE oppe_gt0 => /fsume_lt0[i Pi].
 by rewrite oppe_lt0 => ?; exists i.
 Qed.
 
-Lemma dfsume_lt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+Lemma dfsume_lt0 (I : choiceType) (P : set I) (F : I -> \bar^d R) :
   \sum_(i \in P) F i < 0 -> exists2 i, P i & F i < 0.
 Proof.
 rewrite dual_fsumeE oppe_lt0 => /fsume_gt0[i Pi].
 by rewrite oppe_gt0 => ?; exists i.
 Qed.
 
-Lemma pdfsume_eq0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+Lemma pdfsume_eq0 (I : choiceType) (P : set I) (F : I -> \bar^d R) :
   finite_set P ->
   (forall i, P i -> 0 <= F i) ->
   \sum_(i \in P) F i = 0 -> forall i, P i -> F i = 0.
@@ -282,7 +282,7 @@ rewrite (fsbigD1 i)//= pdadde_eq0 ?F0 ?negb_and ?Fi0//.
 by rewrite dfsume_ge0// => j [/F0->].
 Qed.
 
-Lemma le0_mule_dfsumr (T : choiceType) x (F : T -> \bar R) (P : set T) :
+Lemma le0_mule_dfsumr (T : choiceType) x (F : T -> \bar^d R) (P : set T) :
   (forall i : T, F i <= 0) -> x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i.
 Proof.
 move=> Fge0.
@@ -291,7 +291,7 @@ rewrite (eq_bigr _ (fun _ _ => muleN _ _)).
 by rewrite (eq_finite_support _ (fun i _ => muleN _ _)).
 Qed.
 
-Lemma le0_mule_dfsuml (T : choiceType) x (F : T -> \bar R) (P : set T) :
+Lemma le0_mule_dfsuml (T : choiceType) x (F : T -> \bar^d R) (P : set T) :
   (forall i : T, F i <= 0) -> (\sum_(i \in P) F i) * x = \sum_(i \in P) F i * x.
 Proof.
 move=> F0; rewrite muleC le0_mule_dfsumr//.

@@ -202,9 +202,9 @@ Proof.
 rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
 - rewrite lee0_abs// /funepos /funeneg.
   move/max_idPr : (fx0) => ->; rewrite add0e.
-  by move: fx0; rewrite -{1}oppr0 EFinN lee_oppr => /max_idPl ->.
+  by move: fx0; rewrite -{1}oppe0 lee_oppr => /max_idPl ->.
 - rewrite gee0_abs// /funepos /funeneg; move/max_idPl : (fx0) => ->.
-  by move: fx0; rewrite -{1}oppr0 EFinN lee_oppl => /max_idPr ->; rewrite adde0.
+  by move: fx0; rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0.
 Qed.
 
 Lemma funeposneg f : f = (fun x => f^\+ x - f^\- x).
@@ -245,9 +245,9 @@ Qed.
 
 End funposneg_lemmas.
 #[global]
-Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
+Hint Extern 0 (is_true (0%R <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
 #[global]
-Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
+Hint Extern 0 (is_true (0%R <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
 
 Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .

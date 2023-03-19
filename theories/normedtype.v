@@ -2760,7 +2760,7 @@ rewrite predeqE => -[r | | ]/=.
 - rewrite ltry; split => // _.
   by exists (r + 1)%R => //=; rewrite lte_fin ltr_addl.
 - by rewrite ltxx; split => // -[] x /=; rewrite ltNge leey.
-- by split => // _; exists 0%R => //=.
+- by split => // _; exists 0%R => //=; rewrite ltNye.
 Qed.
 
 Lemma open_ereal_gt_ereal x : open [set y | x < y].
@@ -2774,7 +2774,7 @@ suff -> : [set y | -oo < y] = \bigcup_r [set y : \bar R | r%:E < y].
 rewrite predeqE => -[r | | ]/=.
 - rewrite ltNyr; split => // _.
   by exists (r - 1)%R => //=; rewrite lte_fin ltr_subl_addr ltr_addl.
-- by split => // _; exists 0%R => //=.
+- by split => // _; exists 0%R => //=; rewrite ltey.
 - by rewrite ltxx; split => // -[] x _ /=; rewrite ltNge leNye.
 Qed.
 
@@ -3884,7 +3884,6 @@ have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v x.1 x.2| | x : 'I_1 * 'I_n.+1].
   by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
 by rewrite [leRHS]/normr /= mx_normrE; apply/bigmax_geP; right => /=; exists j.
 Qed.
-
 
 (** * Some limits on real functions *)
 

@@ -70,6 +70,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Reserved Notation "x %:E" (at level 2, format "x %:E").
+Reserved Notation "x %:dE" (at level 2, format "x %:dE").
 Reserved Notation "x +? y" (at level 50, format "x  +?  y").
 Reserved Notation "x *? y" (at level 50, format "x  *?  y").
 Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
@@ -94,6 +95,8 @@ Proof. by move=> a b; case. Qed.
 
 Definition dual_extended := extended.
 
+Definition dEFin : forall {R}, R -> dual_extended R := @EFin.
+
 (* Notations in ereal_dual_scope should be kept *before* the
    corresponding notation in ereal_scope, otherwise when none of the
    scope is open (lte x y) would be displayed as (x < y)%dE, instead
@@ -102,12 +105,13 @@ Notation "+oo" := (@EPInf _ : dual_extended _) : ereal_dual_scope.
 Notation "+oo" := (@EPInf _) : ereal_scope.
 Notation "-oo" := (@ENInf _ : dual_extended _) : ereal_dual_scope.
 Notation "-oo" := (@ENInf _) : ereal_scope.
-Notation "r %:E" := (@EFin _ r%R : dual_extended _) : ereal_dual_scope.
+Notation "r %:dE" := (@dEFin _ r%R) : ereal_dual_scope.
+Notation "r %:E" := (@dEFin _ r%R) : ereal_dual_scope.
 Notation "r %:E" := (@EFin _ r%R).
 Notation "'\bar' R" := (extended R) : type_scope.
 Notation "'\bar' '^d' R" := (dual_extended R) : type_scope.
-Notation "0" := (0%R%:E : dual_extended _) : ereal_dual_scope.
-Notation "0" := (0%R%:E) : ereal_scope.
+Notation "0" := (@GRing.zero (\bar^d _)) : ereal_dual_scope.
+Notation "0" := (@GRing.zero (\bar _)) : ereal_scope.
 Notation "1" := (1%R%:E : dual_extended _) : ereal_dual_scope.
 Notation "1" := (1%R%:E) : ereal_scope.
 
@@ -273,6 +277,63 @@ Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_scope.
 Notation "x <= y :> T" := ((x : T) <= (y : T)) (only parsing) : ereal_scope.
 Notation "x < y :> T" := ((x : T) < (y : T)) (only parsing) : ereal_scope.
 
+Section ERealZsemimodule.
+Context {R : zsemimodType}.
+Implicit Types x y z : \bar R.
+
+Definition adde_subdef x y :=
+  match x, y with
+  | x%:E , y%:E  => (x + y)%:E
+  | -oo, _     => -oo
+  | _    , -oo => -oo
+  | +oo, _     => +oo
+  | _    , +oo => +oo
+  end.
+
+Definition adde := nosimpl adde_subdef.
+
+Definition dual_adde_subdef x y :=
+  match x, y with
+  | x%:E , y%:E  => (x + y)%R%:E
+  | +oo, _     => +oo
+  | _    , +oo => +oo
+  | -oo, _     => -oo
+  | _    , -oo => -oo
+  end.
+
+Definition dual_adde := nosimpl dual_adde_subdef.
+
+Lemma addeA_subproof : associative (S := \bar R) adde.
+Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
+
+Lemma addeC_subproof : commutative (S := \bar R) adde.
+Proof. by case=> [x||] [y||] //; rewrite /adde /= addrC. Qed.
+
+Lemma add0e_subproof : left_id (0%:E : \bar R) adde.
+Proof. by case=> // r; rewrite /adde /= add0r. Qed.
+
+HB.instance Definition _ := GRing.isZsemimodule.Build (\bar R)
+  addeA_subproof addeC_subproof add0e_subproof.
+
+Lemma daddeA_subproof : associative (S := \bar^d R) dual_adde.
+Proof. by case=> [x||] [y||] [z||] //; rewrite /dual_adde /= addrA. Qed.
+
+Lemma daddeC_subproof : commutative (S := \bar^d R) dual_adde.
+Proof. by case=> [x||] [y||] //; rewrite /dual_adde /= addrC. Qed.
+
+Lemma dadd0e_subproof : left_id (0%:dE%dE : \bar^d R) dual_adde.
+Proof. by case=> // r; rewrite /dual_adde /= add0r. Qed.
+
+HB.instance Definition _ := Choice.on (\bar^d R).
+HB.instance Definition _ := GRing.isZsemimodule.Build (\bar^d R)
+  daddeA_subproof daddeC_subproof dadd0e_subproof.
+
+Definition enatmul x n : \bar R := iterop n +%R x 0.
+
+Definition ednatmul (x : \bar^d R) n : \bar^d R := iterop n +%R x 0.
+
+End ERealZsemimodule.
+
 Section ERealOrder_numDomainType.
 Context {R : numDomainType}.
 Implicit Types (x y : \bar R) (r : R).
@@ -359,31 +420,9 @@ HB.instance Definition _ := Order.POrder_isTotal.Build ereal_display (\bar R)
 
 End ERealOrder_realDomainType.
 
-Section ERealArith.
-Context {R : numDomainType}.
+Section ERealZmodule.
+Context {R : zmodType}.
 Implicit Types x y z : \bar R.
-
-Definition adde_subdef x y :=
-  match x, y with
-  | x%:E , y%:E  => (x + y)%:E
-  | -oo, _     => -oo
-  | _    , -oo => -oo
-  | +oo, _     => +oo
-  | _    , +oo => +oo
-  end.
-
-Definition adde := nosimpl adde_subdef.
-
-Definition dual_adde_subdef x y :=
-  match x, y with
-  | x%:E , y%:E  => (x + y)%R%:E
-  | +oo, _     => +oo
-  | _    , +oo => +oo
-  | -oo, _     => -oo
-  | _    , -oo => -oo
-  end.
-
-Definition dual_adde := nosimpl dual_adde_subdef.
 
 Definition oppe x :=
   match x with
@@ -391,6 +430,12 @@ Definition oppe x :=
   | -oo => +oo
   | +oo => -oo
   end.
+
+End ERealZmodule.
+
+Section ERealArith.
+Context {R : numDomainType}.
+Implicit Types x y z : \bar R.
 
 Definition mule_subdef x y :=
   match x, y with
@@ -401,35 +446,31 @@ Definition mule_subdef x y :=
 
 Definition mule := nosimpl mule_subdef.
 
-Definition abse x := if x is r%:E then `|r|%:E else +oo.
+Definition abse x : \bar R := if x is r%:E then `|r|%:E else +oo.
 
 Definition expe x n := iterop n mule x 1.
 
-Definition enatmul x n := iterop n adde x 0.
-
-Definition ednatmul x n := iterop n dual_adde x 0.
-
 End ERealArith.
 
-Notation "+%dE"  := dual_adde.
-Notation "+%E"   := adde.
+Notation "+%dE"  := (@GRing.add (\bar^d _)).
+Notation "+%E"   := (@GRing.add (\bar _)).
 Notation "-%E"   := oppe.
-Notation "x + y" := (dual_adde x%dE y%dE) : ereal_dual_scope.
-Notation "x + y" := (adde x y) : ereal_scope.
-Notation "x - y" := (dual_adde x%dE (oppe y%dE)) : ereal_dual_scope.
-Notation "x - y" := (adde x (oppe y)) : ereal_scope.
-Notation "- x"   := (oppe (x%dE : dual_extended _)) : ereal_dual_scope.
-Notation "- x"   := (oppe x) : ereal_scope.
+Notation "x + y" := (GRing.add (x%dE : \bar^d _) y%dE) : ereal_dual_scope.
+Notation "x + y" := (GRing.add x%E y%E) : ereal_scope.
+Notation "x - y" := ((x%dE : \bar^d _) + oppe y%dE) : ereal_dual_scope.
+Notation "x - y" := (x%E + (oppe y%E)) : ereal_scope.
+Notation "- x"   := (oppe x%dE : \bar^d _) : ereal_dual_scope.
+Notation "- x"   := (oppe x%E) : ereal_scope.
 Notation "*%E"   := mule.
-Notation "x * y" := (mule (x%dE : dual_extended _) (y%dE : dual_extended _)) : ereal_dual_scope.
-Notation "x * y" := (mule x y) : ereal_scope.
-Notation "`| x |" := (abse (x%dE : dual_extended _)) : ereal_dual_scope.
-Notation "`| x |" := (abse x) : ereal_scope.
+Notation "x * y" := (mule x%dE y%dE : \bar^d _) : ereal_dual_scope.
+Notation "x * y" := (mule x%E y%E) : ereal_scope.
+Notation "`| x |" := (abse x%dE : \bar^d _) : ereal_dual_scope.
+Notation "`| x |" := (abse x%E) : ereal_scope.
 Arguments abse {R}.
-Notation "x ^+ n" := (expe x%dE n) : ereal_dual_scope.
-Notation "x ^+ n" := (expe x n) : ereal_scope.
+Notation "x ^+ n" := (expe x%dE n : \bar^d _) : ereal_dual_scope.
+Notation "x ^+ n" := (expe x%E n) : ereal_scope.
 Notation "x *+ n" := (ednatmul x%dE n) : ereal_dual_scope.
-Notation "x *+ n" := (enatmul x n) : ereal_scope.
+Notation "x *+ n" := (enatmul x%E n) : ereal_scope.
 
 Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
 Notation "\- f" := (fun x => - f x)%E : ereal_scope.
@@ -441,53 +482,53 @@ Notation "f \- g" := (fun x => f x - g x)%dE : ereal_dual_scope.
 Notation "f \- g" := (fun x => f x - g x)%E : ereal_scope.
 
 Notation "\sum_ ( i <- r | P ) F" :=
-  (\big[+%dE/0%:E]_(i <- r | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i <- r | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i <- r | P ) F" :=
-  (\big[+%E/0%:E]_(i <- r | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i <- r | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i <- r ) F" :=
-  (\big[+%dE/0%:E]_(i <- r) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i <- r) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i <- r ) F" :=
-  (\big[+%E/0%:E]_(i <- r) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i <- r) F%E) : ereal_scope.
 Notation "\sum_ ( m <= i < n | P ) F" :=
-  (\big[+%dE/0%:E]_(m <= i < n | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(m <= i < n | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( m <= i < n | P ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(m <= i < n | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( m <= i < n ) F" :=
-  (\big[+%dE/0%:E]_(m <= i < n) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(m <= i < n) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( m <= i < n ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(m <= i < n) F%E) : ereal_scope.
 Notation "\sum_ ( i | P ) F" :=
-  (\big[+%dE/0%:E]_(i | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i | P ) F" :=
-  (\big[+%E/0%:E]_(i | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i | P%B) F%E) : ereal_scope.
 Notation "\sum_ i F" :=
-  (\big[+%dE/0%:E]_i F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_i F%dE) : ereal_dual_scope.
 Notation "\sum_ i F" :=
-  (\big[+%E/0%:E]_i F%E) : ereal_scope.
+  (\big[+%E/0%E]_i F%E) : ereal_scope.
 Notation "\sum_ ( i : t | P ) F" :=
-  (\big[+%dE/0%:E]_(i : t | P%B) F%dE) (only parsing) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i : t | P%B) F%dE) (only parsing) : ereal_dual_scope.
 Notation "\sum_ ( i : t | P ) F" :=
-  (\big[+%E/0%:E]_(i : t | P%B) F%E) (only parsing) : ereal_scope.
+  (\big[+%E/0%E]_(i : t | P%B) F%E) (only parsing) : ereal_scope.
 Notation "\sum_ ( i : t ) F" :=
-  (\big[+%dE/0%:E]_(i : t) F%dE) (only parsing) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i : t) F%dE) (only parsing) : ereal_dual_scope.
 Notation "\sum_ ( i : t ) F" :=
-  (\big[+%E/0%:E]_(i : t) F%E) (only parsing) : ereal_scope.
+  (\big[+%E/0%E]_(i : t) F%E) (only parsing) : ereal_scope.
 Notation "\sum_ ( i < n | P ) F" :=
-  (\big[+%dE/0%:E]_(i < n | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i < n | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i < n | P ) F" :=
-  (\big[+%E/0%:E]_(i < n | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i < n | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i < n ) F" :=
-  (\big[+%dE/0%:E]_(i < n) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i < n) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i < n ) F" :=
-  (\big[+%E/0%:E]_(i < n) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i < n) F%E) : ereal_scope.
 Notation "\sum_ ( i 'in' A | P ) F" :=
-  (\big[+%dE/0%:E]_(i in A | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i in A | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i 'in' A | P ) F" :=
-  (\big[+%E/0%:E]_(i in A | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i in A | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i 'in' A ) F" :=
-  (\big[+%dE/0%:E]_(i in A) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i in A) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i 'in' A ) F" :=
-  (\big[+%E/0%:E]_(i in A) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i in A) F%E) : ereal_scope.
 
 Section ERealOrderTheory.
 Context {R : numDomainType}.
@@ -602,6 +643,10 @@ Proof. by case: x => //=; rewrite oppr0. Qed.
 
 Lemma EFinD r r' : (r + r')%:E = r%:E + r'%:E. Proof. by []. Qed.
 
+Lemma EFin_semi_additive : @semi_additive _ (\bar R) EFin. Proof. by split. Qed.
+HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar R) EFin
+  EFin_semi_additive.
+
 Lemma EFinB r r' : (r - r')%:E = r%:E - r'%:E. Proof. by []. Qed.
 
 Lemma EFinM r r' : (r * r')%:E = r%:E * r'%:E. Proof. by []. Qed.
@@ -627,23 +672,13 @@ Proof. by case: x. Qed.
 Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, x +? y}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
-Lemma addeC : commutative (S := \bar R) +%E.
-Proof. by case=> [x||] [y||] //; rewrite /adde /= addrC. Qed.
+Lemma addeC : commutative (S := \bar R) +%E. Proof. exact: addrC. Qed.
 
-Lemma adde0 : right_id (0 : \bar R) +%E.
-Proof. by case=> // r; rewrite /adde /= addr0. Qed.
+Lemma adde0 : right_id (0 : \bar R) +%E. Proof. exact: addr0. Qed.
 
-Lemma add0e : left_id (0 : \bar R) +%E.
-Proof. by move=> x; rewrite addeC adde0. Qed.
+Lemma add0e : left_id (0 : \bar R) +%E. Proof. exact: add0r. Qed.
 
-Lemma addeA : associative (S := \bar R) +%E.
-Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
-
-HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 0 +%E
-  addeA addeC add0e.
-
-HB.instance Definition _ := GRing.isZsemimodule.Build (\bar R)
-  addeA addeC add0e.
+Lemma addeA : associative (S := \bar R) +%E. Proof. exact: addrA. Qed.
 
 Lemma addeAC : @right_commutative (\bar R) _ +%E.
 Proof. exact: Monoid.mulmAC. Qed.
@@ -758,7 +793,7 @@ Proof. by move=> [x| |] [y| |]. Qed.
 Lemma abse_eq0 x : (`|x| == 0) = (x == 0).
 Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
 
-Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse normr0. Qed.
+Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse/= normr0. Qed.
 
 Lemma abse1 : `|1| = 1 :> \bar R. Proof. by rewrite /abse normr1. Qed.
 
@@ -1152,6 +1187,12 @@ Proof. by case: x => [x| |]; case: y. Qed.
 Lemma dEFinD (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
 Proof. by []. Qed.
 
+Lemma dEFin_semi_additive : @semi_additive _ (\bar^d R) dEFin.
+Proof. by split. Qed.
+#[export]
+HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar^d R) dEFin
+  dEFin_semi_additive.
+
 Lemma dEFinB (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
 Proof. by []. Qed.
 
@@ -1159,24 +1200,13 @@ Lemma dsumEFin I r P (F : I -> R) :
   \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
 Proof. by rewrite dual_sumeE sumEFin sumrN EFinN oppeK. Qed.
 
-Lemma daddeC : commutative (S := \bar^d R) +%dE.
-Proof. by move=> x y; rewrite !dual_addeE addeC. Qed.
+Lemma daddeC : commutative (S := \bar^d R) +%dE. Proof. exact: addrC. Qed.
 
-Lemma dadde0 : right_id (0 : \bar^d R) +%dE.
-Proof. by move=> x; rewrite dual_addeE eqe_oppLRP oppe0 adde0. Qed.
+Lemma dadde0 : right_id (0 : \bar^d R) +%dE. Proof. exact: addr0. Qed.
 
-Lemma dadd0e : left_id (0 : \bar^d R) +%dE.
-Proof. by move=> x;rewrite dual_addeE eqe_oppLRP oppe0 add0e. Qed.
+Lemma dadd0e : left_id (0 : \bar^d R) +%dE. Proof. exact: add0r. Qed.
 
-Lemma daddeA : associative (S := \bar^d R) +%dE.
-Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeA. Qed.
-
-HB.instance Definition _ := Monoid.isComLaw.Build (\bar^d R) 0 +%dE
-  daddeA daddeC dadd0e.
-
-HB.instance Definition _ := Choice.on (\bar^d R).
-HB.instance Definition _ := GRing.isZsemimodule.Build (\bar^d R)
-  daddeA daddeC dadd0e.
+Lemma daddeA : associative (S := \bar^d R) +%dE. Proof. exact: addrA. Qed.
 
 Lemma daddeAC : right_commutative (S := \bar^d R) +%dE.
 Proof. exact: Monoid.mulmAC. Qed.
@@ -1187,11 +1217,11 @@ Proof. exact: Monoid.mulmCA. Qed.
 Lemma daddeACA : @interchange (\bar^d R) +%dE +%dE.
 Proof. exact: Monoid.mulmACA. Qed.
 
-Lemma realDed x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x + y)%O.
+Lemma realDed x y : (0%dE >=< x)%O -> (0%dE >=< y)%O -> (0%dE >=< x + y)%O.
 Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
 
 Lemma doppeD x y : y \is a fin_num -> - (x + y) = - x - y.
-Proof. by move: y => [y| |] _ //; rewrite !dual_addeE !oppeK oppeD. Qed.
+Proof. by move: y => [y| |] _ //=; rewrite !dual_addeE EFinN !oppeK oppeD. Qed.
 
 Lemma dsube0 x : x - 0 = x.
 Proof. by move: x => [x| |] //; rewrite -dEFinB subr0. Qed.
@@ -2217,14 +2247,14 @@ by have [ab|ba] := leP r1 r2;
   [apply/min_idPl; rewrite lee_fin|apply/min_idPr; rewrite lee_fin ltW].
 Qed.
 
-Lemma adde_maxl : left_distributive (@adde R) maxe.
+Lemma adde_maxl : left_distributive (@GRing.add (\bar R)) maxe.
 Proof.
 move=> x y z; have [xy|yx] := leP x y.
 by apply/esym/max_idPr; rewrite lee_add2r.
 by apply/esym/max_idPl; rewrite lee_add2r// ltW.
 Qed.
 
-Lemma adde_maxr : right_distributive (@adde R) maxe.
+Lemma adde_maxr : right_distributive (@GRing.add (\bar R)) maxe.
 Proof.
 move=> x y z; have [yz|zy] := leP y z.
 by apply/esym/max_idPr; rewrite lee_add2l.
@@ -2285,7 +2315,8 @@ Proof. by move=> zfin z0; rewrite muleC maxeMr// !(muleC z). Qed.
 Lemma mineMr z x y : z \is a fin_num -> 0 < z ->
   z * mine x y = mine (z * x) (z * y).
 Proof.
-by move=> ? ?; rewrite -eqe_oppP -muleN oppe_min maxeMr// !muleN -oppe_min.
+move=> fz zgt0.
+by rewrite -eqe_oppP -muleN [in LHS]oppe_min maxeMr// !muleN -oppe_min.
 Qed.
 
 Lemma mineMl z x y : z \is a fin_num -> 0 < z ->
@@ -2481,7 +2512,7 @@ Proof. by rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addr. Qed.
 
 Lemma gte_daddl x y : x \is a fin_num -> (x + y < x) = (y < 0).
 Proof.
-by rewrite -fin_numN dual_addeE lte_oppl -oppe0 lte_oppr; exact: lte_addl.
+by rewrite -fin_numN dual_addeE lte_oppl -[0]oppe0 lte_oppr; exact: lte_addl.
 Qed.
 
 Lemma gte_daddr x y : x \is a fin_num -> (y + x < x) = (y < 0).
@@ -2719,7 +2750,9 @@ Lemma dsube_gt0 x y : (x \is a fin_num) || (y \is a fin_num) ->
 Proof. by move=> /orP[?|?]; [rewrite dsuber_gt0|rewrite dsubre_gt0]. Qed.
 
 Lemma dmuleDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
-Proof. by move=> *; rewrite !dual_addeE muleN muleDr ?adde_defNN// !muleN. Qed.
+Proof.
+by move=> *; rewrite !dual_addeE/= muleN muleDr ?adde_defNN// !muleN.
+Qed.
 
 Lemma dmuleDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
 Proof. by move=> *; rewrite -!(muleC x) dmuleDr. Qed.
@@ -2789,10 +2822,10 @@ Proof.
 by move: x y => [x| |] [y| |] //; rewrite /abse -dEFinD lee_fin ler_norm_sub.
 Qed.
 
-Lemma dadde_minl : left_distributive (@dual_adde R) mine.
+Lemma dadde_minl : left_distributive (@GRing.add (\bar^d R)) mine.
 Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxl oppe_max. Qed.
 
-Lemma dadde_minr : right_distributive (@dual_adde R) mine.
+Lemma dadde_minr : right_distributive (@GRing.add (\bar^d R)) mine.
 Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
 
 Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
@@ -3109,7 +3142,7 @@ Lemma adde_snum_subproof (xnz ynz : KnownSign.nullity)
     (y : {compare (0 : \bar R) & ynz & yr})
     (rnz := add_nonzero_subdef xnz ynz xr yr)
     (rrl := add_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (x%:num + y%:num).
+  Signed.spec 0 rnz rrl (adde x%:num y%:num).
 Proof.
 rewrite {}/rnz {}/rrl; apply/andP; split.
   move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
@@ -3117,7 +3150,7 @@ rewrite {}/rnz {}/rrl; apply/andP; split.
 move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
   do ?[by case: (bottom x)|by case: (bottom y)
       |by rewrite adde_ge0|by rewrite adde_le0
-      |exact: realDe|by rewrite 2!eq0 add0e].
+      |exact: realDe|by rewrite 2!eq0 /adde/= addr0].
 Qed.
 
 Canonical adde_snum (xnz ynz : KnownSign.nullity)
@@ -3128,13 +3161,20 @@ Canonical adde_snum (xnz ynz : KnownSign.nullity)
 
 Import DualAddTheory.
 
+Lemma dEFin_snum_subproof nz cond (x : {num R & nz & cond}) :
+  Signed.spec 0 nz cond (dEFin x%:num).
+Proof. exact: EFin_snum_subproof. Qed.
+
+Canonical dEFin_snum nz cond (x : {num R & nz & cond}) :=
+  Signed.mk (dEFin_snum_subproof x).
+
 Lemma dadde_snum_subproof (xnz ynz : KnownSign.nullity)
     (xr yr : KnownSign.reality)
     (x : {compare (0 : \bar R) & xnz & xr})
     (y : {compare (0 : \bar R) & ynz & yr})
     (rnz := add_nonzero_subdef xnz ynz xr yr)
     (rrl := add_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (x%:num + y%:num)%dE.
+  Signed.spec 0 rnz rrl (dual_adde x%:num y%:num)%dE.
 Proof.
 rewrite {}/rnz {}/rrl; apply/andP; split.
   move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
@@ -3142,7 +3182,7 @@ rewrite {}/rnz {}/rrl; apply/andP; split.
 move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
   do ?[by case: (bottom x)|by case: (bottom y)
       |by rewrite dadde_ge0|by rewrite dadde_le0
-      |exact: realDed|by rewrite 2!eq0 dadd0e].
+      |exact: realDed|by rewrite 2!eq0 /dual_adde/= addr0].
 Qed.
 
 Canonical dadde_snum (xnz ynz : KnownSign.nullity)
@@ -3200,7 +3240,7 @@ Context {R : numDomainType} {nz : KnownSign.nullity} {cond : KnownSign.reality}.
 Local Notation nR := {compare (0 : \bar R) & nz & cond}.
 Implicit Types (a : \bar R).
 
-Lemma num_abse_eq0 a : (`|a|%:nng == 0%:nng) = (a == 0).
+Lemma num_abse_eq0 a : (`|a|%:nng == 0%:E%:nng) = (a == 0).
 Proof. by rewrite -abse_eq0. Qed.
 
 End MorphNum.
@@ -3309,7 +3349,7 @@ by case: x => [r| |] /=; rewrite ?normrN1 ?normr1 // (ltW (contract_lt1 _)).
 Qed.
 
 Lemma contract0 : contract 0 = 0%R.
-Proof. by rewrite /contract mul0r. Qed.
+Proof. by rewrite /contract/= mul0r. Qed.
 
 Lemma contractN x : contract (- x) = (- contract x)%R.
 Proof. by case: x => //= [r|]; [ rewrite normrN mulNr | rewrite opprK]. Qed.

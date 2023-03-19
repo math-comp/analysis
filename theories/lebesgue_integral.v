@@ -2623,7 +2623,8 @@ rewrite fsbig_finite//= -nneseries_sum; last first.
   move=> r j _.
   have [r0|r0] := leP 0%R r.
     by rewrite mule_ge0//; apply integral_ge0 => // t _; rewrite lee_fin.
-  by rewrite integral0_eq// => x _; rewrite preimage_nnfun0// indicE in_set0.
+  rewrite integral0_eq ?mule0// => x _.
+  by rewrite preimage_nnfun0// indicE in_set0.
 apply: eq_eseries => k _.
 rewrite integralT_nnsfun sintegralE fsbig_finite//=; apply eq_bigr => r _.
 by congr (_ * _); rewrite integral_indic// setIT.
@@ -2833,6 +2834,7 @@ move=> [mf foo] [mg goo]; split; first exact: emeasurable_funD.
 apply: (@le_lt_trans _ _ (\int[mu]_(x in D) (`|f x| + `|g x|))).
   apply: ge0_le_integral => //.
   - by apply: measurable_funT_comp => //; exact: emeasurable_funD.
+  - by move=> ? ?; apply: adde_ge0.
   - by apply: emeasurable_funD; apply: measurable_funT_comp.
   - by move=> *; exact: lee_abs_add.
 by rewrite ge0_integralD //; [exact: lte_add_pinfty|
@@ -3192,7 +3194,7 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
         exact: integral_funepos_lt_pinfty.
       apply: adde_ge0; last exact: integral_ge0.
       by apply: adde_ge0; exact: integral_ge0.
-    - by rewrite adde_defC fin_num_adde_def.
+    - by rewrite adde_defC fin_num_adde_def ?g12pos.
   rewrite -(addeA (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
   rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
   rewrite -addeA (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
@@ -3201,8 +3203,7 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
   rewrite oppeD; last first.
     rewrite ge0_fin_numE; first exact: integral_funeneg_lt_pinfty if2.
     exact: integral_ge0.
-  rewrite -addeA (addeCA (\int[mu]_(x in D) (g2^\+ x) )).
-  by rewrite addeA -(integralE _ _ g1) -(integralE _ _ g2).
+  by rewrite addeACA (integralE _ _ g1) (integralE _ _ g2).
 have : (g1 \+ g2)^\+ \+ g1^\- \+ g2^\- = (g1 \+ g2)^\- \+ g1^\+ \+ g2^\+.
   rewrite funeqE => x.
   apply/eqP; rewrite -2!addeA [in eqRHS]addeC -sube_eq; last 2 first.
@@ -3554,6 +3555,7 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
     (\int[mu]_(x in D) (`|f x * (oneCN x)%:E| + `|f x * (oneN x)%:E|))).
     apply: ge0_le_integral => //.
     - by apply: measurable_funT_comp => //; exact: emeasurable_funD.
+    - by move=> ? ?; apply: adde_ge0.
     - by apply: emeasurable_funD; exact: measurable_funT_comp.
     - by move=> *; rewrite lee_abs_add.
   rewrite ge0_integralD//;
@@ -4715,7 +4717,8 @@ rewrite -ge0_integral_fsum //; last 2 first.
   - move=> r x _; rewrite /fubini_F.
     have [r0|r0] := leP 0%R r.
       by rewrite mule_ge0//; exact: indic_fubini_tonelli_F_ge0.
-    by rewrite integral0_eq// => y _; rewrite preimage_nnfun0//= indicE in_set0.
+    rewrite integral0_eq ?mule0// => y _.
+    by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
 by under eq_fsbigr do rewrite indic_fubini_tonelli_FE//.
 Qed.
@@ -4742,7 +4745,8 @@ rewrite -ge0_integral_fsum //; last 2 first.
   - move=> r y _; rewrite /fubini_G.
     have [r0|r0] := leP 0%R r.
       by rewrite mule_ge0//; exact: indic_fubini_tonelli_G_ge0.
-    by rewrite integral0_eq// => x _; rewrite preimage_nnfun0//= indicE in_set0.
+    rewrite integral0_eq ?mule0// => x _.
+    by rewrite preimage_nnfun0//= indicE in_set0.
 apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
 by under eq_fsbigr do rewrite indic_fubini_tonelli_GE//.
 Qed.

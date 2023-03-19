@@ -58,7 +58,8 @@ Local Open Scope ereal_scope.
 Variable R : realType.
 Implicit Types i j : interval R.
 
-Definition hlength (A : set R) : \bar R := let i := Rhull A in i.2 - i.1.
+Definition hlength (A : set R) : \bar R :=
+  let i := Rhull A in (i.2 : \bar R) - i.1.
 
 Lemma hlength0 : hlength (set0 : set R) = 0.
 Proof. by rewrite /hlength Rhull0 /= subee. Qed.
@@ -72,7 +73,8 @@ Qed.
 Lemma hlength_setT : hlength setT = +oo%E :> \bar R.
 Proof. by rewrite /hlength RhullT. Qed.
 
-Lemma hlength_itv i : hlength [set` i] = if i.2 > i.1 then i.2 - i.1 else 0.
+Lemma hlength_itv i :
+  hlength [set` i] = if i.2 > i.1 then (i.2 : \bar R) - i.1 else 0.
 Proof.
 case: ltP => [/lt_ereal_bnd/neitvP i12|]; first by rewrite /hlength set_itvK.
 rewrite le_eqVlt => /orP[|/lt_ereal_bnd i12]; last first.
@@ -128,9 +130,10 @@ Proof.
 rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
 - by rewrite suber_ge0//; exact: ltW.
 - by rewrite ltNge leey.
-- by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
+- by move=> i2gtNy; rewrite addey//; case: (i.2 : \bar R) i2gtNy.
 Qed.
-Local Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
+Local Hint Extern 0 (is_true (0%R <= hlength _)) =>
+  solve[apply: hlength_ge0] : core.
 
 Lemma hlength_Rhull (A : set R) : hlength [set` Rhull A] = hlength A.
 Proof. by rewrite /hlength Rhull_involutive. Qed.
@@ -876,7 +879,8 @@ rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
       rewrite inE ltr0n andbT unitfE.
 rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
   apply/funext => n /=; rewrite lebesgue_measure_itvoc.
-  have [->|n0] := eqVneq n 0%N; first by rewrite invr1 subrr set_itvoc0.
+  have [->|n0] := eqVneq n 0%N.
+    by rewrite invr1 subrr set_itvoc0 hlength0.
   rewrite hlength_itv/= lte_fin ifT; last first.
     by rewrite ler_lt_sub// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
   by rewrite !(EFinB,EFinN) oppeB// addeAC addeA subee// add0e.
