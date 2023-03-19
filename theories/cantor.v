@@ -213,6 +213,77 @@ pose B := \bigcup_n (f n) @` [set` (h'' n)]; exists B; split.
   by apply: (le_ball (ltW deleps)); apply: interior_subset.
 Qed.
 
+Section topological_trees.
+
+Context {K : nat -> topologicalType} {X : topologicalType}.
+Context (tree_ind : forall n, set X -> K n -> set X).
+Context (tree_invariant : (set X -> Prop)).
+
+Hypothesis compK : forall i, compact [set: (K i)].
+Hypothesis hsdfX : hausdorff_space X.
+Hypothesis ind_sub : forall n U e, @tree_ind n U e `<=` U.
+Hypothesis ind_invar : forall n U e, 
+  tree_invariant U -> tree_invariant (@tree_ind n U e).
+Hypothesis invar_n0 : forall U, tree_invariant U -> U !=set0.
+Hypothesis invarT : tree_invariant [set: X].
+
+Let T := product_topologicalType K.
+
+Fixpoint branch_apx (b : T) n := 
+  if n is S m 
+  then tree_ind (branch_apx b m) (b m)
+  else [set: X].
+
+Definition tree_mapF (b : T) := 
+  filter_from [set: nat] (branch_apx b).
+
+Lemma tree_map_invar b n : tree_invariant (branch_apx b n).
+Proof. elim: n => // n ? /=; exact: ind_invar. Qed.
+
+Lemma tree_map_sub b i j : (i <= j)%N -> branch_apx b j `<=` branch_apx b i.
+elim: j i => //=; first by move=> ?; rewrite leqn0 => /eqP ->.
+move=> j IH i; rewrite leq_eqVlt => /orP; case; first by move=> /eqP ->.
+by move/IH/(subset_trans _); apply; exact: ind_sub.
+Qed.
+
+Lemma tree_map_filter b : ProperFilter (tree_mapF b).
+Proof.
+split. 
+  by case => n _ brn; case: (invar_n0 (tree_map_invar b n)) => x /brn.
+apply: filter_from_filter; first by exists O.
+move=> i j _ _; exists (maxn i j) => //; rewrite subsetI.
+by split; apply: tree_map_sub; [exact: leq_maxl | exact: leq_maxr].
+Qed.
+
+Definition tree_map (b : T) := lim (tree_mapF b).
+
+Lemma tree_map_surj :
+  (forall b, cvg (tree_mapF b)) ->
+  (forall n, \bigcap_b (branch_apx b n) = [set: X]) ->
+  set_surj [set: T] [set: X] tree_map.
+Proof.
+move=> tcvg tcvr => z _; suff : exists g, forall n, branch_apx g n z.
+  case=> g gnz; exists g => //; apply: close_eq => // U [oU Uz] V ngV; exists z.
+  split => //; have /(_ _ ngV) [n _] : tree_mapF g --> tree_map g by exact:tcvg.
+  by apply; exact: gnz.
+apply/not_existsP => Tnz; pose G' n := 
+  [set b | forall N, (N < n)%N -> ~ branch_apx b N z].
+pose G := filter_from [set: nat] G'; have : Filter G.
+  apply: filter_from_filter; first by exists O.
+  move=> i j _ _; exists (maxn i j) => // w /= G'w.
+  split=> N /leq_trans Nij; apply: G'w; apply: Nij. 
+    exact: leq_maxl.
+  exact: leq_maxr.
+
+Search ex2 not.
+
+pose fix g (n : nat) := 
+  if n is S m
+  then g  (exists (e : K n))
+  else [set: T].
+pose g := fun n -> 
+
+
 (* A technique for encoding 'cantor_like' spaces as trees. We build a new
    function 'node' which encodes the homeomorphism to the cantor space.
    Other than the 'tree_map is a homeomorphism', no additinal information is

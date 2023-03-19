@@ -3594,6 +3594,7 @@ Qed.
 Lemma close_eq x y : close x y -> x = y.
 Proof. by rewrite closeE. Qed.
 
+
 Lemma cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : T | F --> x].
 Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
 
