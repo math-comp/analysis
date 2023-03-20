@@ -105,8 +105,8 @@ Notation "+oo" := (@EPInf _ : dual_extended _) : ereal_dual_scope.
 Notation "+oo" := (@EPInf _) : ereal_scope.
 Notation "-oo" := (@ENInf _ : dual_extended _) : ereal_dual_scope.
 Notation "-oo" := (@ENInf _) : ereal_scope.
-Notation "r %:dE" := (@dEFin _ r%R) : ereal_dual_scope.
-Notation "r %:E" := (@dEFin _ r%R) : ereal_dual_scope.
+Notation "r %:dE" := (@EFin _ r%R : dual_extended _) : ereal_dual_scope.
+Notation "r %:E" := (@EFin _ r%R : dual_extended _) : ereal_dual_scope.
 Notation "r %:E" := (@EFin _ r%R).
 Notation "'\bar' R" := (extended R) : type_scope.
 Notation "'\bar' '^d' R" := (dual_extended R) : type_scope.
@@ -1186,6 +1186,8 @@ Proof. by case: x => [x| |]; case: y. Qed.
 
 Lemma dEFinD (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
 Proof. by []. Qed.
+
+Lemma dEFinE (r : R) : dEFin r = r%:E. Proof. by []. Qed.
 
 Lemma dEFin_semi_additive : @semi_additive _ (\bar^d R) dEFin.
 Proof. by split. Qed.
