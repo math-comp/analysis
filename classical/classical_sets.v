@@ -2129,6 +2129,7 @@ HB.structure Definition Pointed := {T of isPointed T & Choice T}.
 HB.instance Definition _ (T : Type) (T' : T -> pointedType) :=
   isPointed.Build (forall t : T, T' t) (fun=> point).
 
+HB.instance Definition _ := isPointed.Build unit tt.
 HB.instance Definition _ := isPointed.Build bool false.
 HB.instance Definition _ := isPointed.Build Prop False.
 HB.instance Definition _ := isPointed.Build nat 0.

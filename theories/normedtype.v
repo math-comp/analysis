@@ -276,9 +276,9 @@ Definition ninfty_nbhs (R : numFieldType) : set_system R :=
   fun P => exists M, M \is Num.real /\ forall x, x < M -> P x.
 Arguments ninfty_nbhs R : clear implicits.
 
-Notation "+oo_ R" := (pinfty_nbhs [the numFieldType of R])
+Notation "+oo_ R" := (pinfty_nbhs R)
   (only parsing) : ring_scope.
-Notation "-oo_ R" := (ninfty_nbhs [the numFieldType of R])
+Notation "-oo_ R" := (ninfty_nbhs R)
   (only parsing) : ring_scope.
 
 Notation "+oo" := (pinfty_nbhs _) : ring_scope.
@@ -1651,7 +1651,7 @@ Lemma norm_cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : V | F --> 
 Proof. exact: cvg_unique. Qed.
 
 Lemma norm_cvg_eq (x y : V) : x --> y -> x = y. Proof. exact: (@cvg_eq V). Qed.
-Lemma norm_lim_id (x : V) : lim x = x. Proof. exact: lim_id. Qed.
+Lemma norm_lim_id (x : V) : lim (nbhs x) = x. Proof. exact: lim_id. Qed.
 
 Lemma norm_cvg_lim {F} {FF : ProperFilter F} (l : V) : F --> l -> lim F = l.
 Proof. exact: (@cvg_lim V). Qed.
@@ -2089,7 +2089,7 @@ Proof. exact: scale_continuous. Qed.
 Lemma mulrl_continuous (x : K) : continuous ( *%R x).
 Proof. exact: scaler_continuous. Qed.
 
-Lemma mulrr_continuous (y : K) : continuous ( *%R^~ y).
+Lemma mulrr_continuous (y : K) : continuous ( *%R^~ y : K -> K).
 Proof. exact: scalel_continuous. Qed.
 
 Lemma inv_continuous (x : K) : x != 0 -> {for x, continuous (@GRing.inv K)}.
@@ -2132,7 +2132,7 @@ Lemma is_cvgMn f n : cvg (f @ F) -> cvg (((@GRing.natmul _)^~n \o f) @ F).
 Proof. by move=> /cvgMn /cvgP. Qed.
 
 Lemma cvgD f g a b : f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
-Proof. by move=> ? ?; apply: continuous2_cvg => //; exact: add_continuous. Qed.
+Proof. by move=> ? ?; apply: continuous2_cvg => //; apply add_continuous. Qed.
 
 Lemma is_cvgD f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f + g @ F).
 Proof. by have := cvgP _ (cvgD _ _); apply. Qed.
@@ -2194,7 +2194,7 @@ Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
 
 Lemma cvgZ s f k a : s @ F --> k -> f @ F --> a ->
                      s x *: f x @[x --> F] --> k *: a.
-Proof. move=> ? ?; apply: continuous2_cvg => //; exact: scale_continuous. Qed.
+Proof. by move=> ? ?; apply: continuous2_cvg => //; apply scale_continuous. Qed.
 
 Lemma is_cvgZ s f : cvg (s @ F) ->
   cvg (f @ F) -> cvg ((fun x => s x *: f x) @ F).
@@ -2493,14 +2493,6 @@ End limit.
 
 End cvg_fin.
 
-Lemma eq_cvg (T T' : Type) (F : set_system T) (f g : T -> T') (x : set_system T') :
-  f =1 g -> (f @ F --> x) = (g @ F --> x).
-Proof. by move=> /funext->. Qed.
-
-Lemma eq_is_cvg (T T' : Type) (fT : filteredType T') (F : set_system T) (f g : T -> T') :
-  f =1 g -> [cvg (f @ F) in fT] = [cvg (g @ F) in fT].
-Proof. by move=> /funext->. Qed.
-
 Section ecvg_realFieldType.
 Context {I} {F : set_system I} {FF : Filter F} {R : realFieldType}.
 Implicit Types f g u v : I -> \bar R.
@@ -2588,7 +2580,7 @@ Qed.
 
 Lemma mule_continuous (r : R) : continuous (mule r%:E).
 Proof.
-wlog r0 : r / (r > 0)%R => [hwlog|].
+rewrite /continuous_at; wlog r0 : r / (r > 0)%R => [hwlog|].
   have [r0|r0|->] := ltrgtP r 0; do ?exact: hwlog; last first.
     by move=> x; rewrite mul0e; apply: cvg_near_cst; near=> y; rewrite mul0e.
   have -> : *%E r%:E = \- ( *%E (- r)%:E ).
@@ -2921,7 +2913,7 @@ Context {K : numFieldType}.
 Local Notation "'+oo'" := (@pinfty_nbhs K).
 
 Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
-  cvg (a @ \oo) -> bounded_fun a.
+  cvgn a -> bounded_fun a.
 Proof.
 move=> /cvg_bounded/ex_bound => -[/= Moo] => -[N _ /(_ _) aM].
 have Moo_real : Moo \is Num.real by rewrite ger0_real ?(le_trans _ (aM N _))/=.
@@ -3091,8 +3083,8 @@ Hint Extern 0 (hausdorff_space _) => solve[apply: ereal_hausdorff] : core.
   note="renamed to `nbhs_image_EFin`")]
 Notation nbhs_image_ERFin := nbhs_image_EFin.
 
-Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvg (f @ \oo) ->
-  lim (EFin \o f @ \oo) = (lim (f @ \oo))%:E.
+Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
+  limn (EFin \o f) = (limn f)%:E.
 Proof.
 move=> cf; apply: cvg_lim => //; move/cvg_ex : cf => [l fl].
 by apply: (cvg_comp fl); rewrite (cvg_lim _ fl).
@@ -3679,7 +3671,7 @@ move=> leab fcont; gen have ivt : f v fcont / f a <= v <= f b ->
     exists2 c, c \in `[a, b] & f c = v; last first.
   case: (leP (f a) (f b)) => [] _ fabv /=; first exact: ivt.
   have [| |c cab /oppr_inj] := ivt (- f) (- v); last by exists c.
-  - move=> x /=. have /= := (@continuousN _ _ _ f). apply: fcont.
+  - by move=> x /=; apply/continuousN/fcont.
   - by rewrite ler_oppr opprK ler_oppr opprK andbC.
 move=> favfb; suff: is_interval (f @` `[a,b]).
   apply; last exact: favfb.
@@ -3864,7 +3856,7 @@ Lemma rV_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
 Proof.
 move=> Aico.
-have : @compact (product_topologicalType _) [set f | forall i, A i (f i)].
+have : @compact (prod_topology _) [set f | forall i, A i (f i)].
   by apply: tychonoff.
 move=> Aco F FF FA.
 set G := [set [set f : 'I_n.+1 -> T | B (\row_j f j)] | B in F].
@@ -3873,7 +3865,7 @@ have row_simpl (v : 'rV[T]_n.+1) : \row_j (v ord0 j) = v.
 have row_simpl' (f : 'I_n.+1 -> T) : (\row_j f j) ord0 = f.
   by rewrite funeqE=> ?; rewrite mxE.
 have [f [Af clGf]] : [set f | forall i, A i (f i)] `&`
-  @cluster (product_topologicalType _) G !=set0.
+  @cluster (prod_topology _) G !=set0.
   suff GF : ProperFilter G.
     apply: Aco; exists [set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)] => //.
     by rewrite predeqE => f; split => Af i; [have := Af i|]; rewrite row_simpl'.
@@ -3888,7 +3880,7 @@ have [f [Af clGf]] : [set f | forall i, A i (f i)] `&`
   by rewrite predeqE => ? /=; rewrite row_simpl'.
 exists (\row_j f j); split; first by move=> i; rewrite mxE; apply: Af.
 move=> C D FC f_D; have {}f_D :
-  nbhs (f : product_topologicalType _) [set g | D (\row_j g j)].
+  nbhs (f : prod_topology _) [set g | D (\row_j g j)].
   have [E f_E sED] := f_D; rewrite nbhsE.
   set Pj := fun j Bj => open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
   have exPj : forall j, exists Bj, open_nbhs (f j) Bj /\ Bj `<=` E ord0 j.
@@ -3966,11 +3958,11 @@ Proof.
 (* rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE. *)
 (* by apply: eq_near => e; rewrite ![_ + e]addrC addrACA subrr addr0. *)
 rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
-apply/nbhs_normP; exists e%:num => //= t; rewrite -ball_normE /= => et.
-  apply: ye; rewrite -ball_normE /= !opprD addrA addrACA subrr add0r.
+apply/nbhs_normP; exists e%:num => //= t et.
+  apply: ye; rewrite /= !opprD addrA addrACA subrr add0r.
   by rewrite opprK addrC.
 have /= := ye (t - (x - y)); rewrite addrNK; apply.
-by rewrite -ball_normE /= opprB addrCA addrA subrK.
+by rewrite /= opprB addrCA addrA subrK.
 Qed.
 
 Lemma cvg_comp_shift {T : Type} {K : numDomainType} {R : normedModType K}
@@ -3986,7 +3978,9 @@ Variables (K : numFieldType) (U V : normedModType K).
 
 Lemma continuous_shift (f : U -> V) u :
   {for u, continuous f} = {for 0, continuous (f \o shift u)}.
-Proof. by rewrite [in RHS]forE /= add0r cvg_comp_shift add0r. Qed.
+Proof.
+by rewrite [in RHS]forE /continuous_at/= add0r cvg_comp_shift add0r.
+Qed.
 
 Lemma continuous_withinNshiftx (f : U -> V) u :
   f \o shift u @ 0^' --> f u <-> {for u, continuous f}.
@@ -4254,7 +4248,8 @@ Unshelve. all: by end_near. Qed.
 Lemma continuous_linear_bounded (x : V) (f : {linear V -> W}) :
   {for 0, continuous f} -> bounded_near f (nbhs x).
 Proof.
-rewrite /prop_for linear0 /bounded_near => f0; near=> M; apply/nbhs0P.
+rewrite /prop_for/continuous_at linear0 /bounded_near => f0.
+near=> M; apply/nbhs0P.
 near do rewrite /= linearD (le_trans (ler_norm_add _ _))// -ler_subr_addl.
 by apply: cvgr0_norm_le; rewrite // subr_gt0.
 Unshelve. all: by end_near. Qed.

@@ -706,10 +706,10 @@ Lemma continuity_pt_cvg (f : R -> R) (x : R) :
 Proof.
 eapply iff_trans; first exact: continuity_pt_nbhs.
 apply iff_sym.
-have FF : Filter (f @ x).
+have FF : Filter (f @ x)%classic.
   by typeclasses eauto.
   (*by apply fmap_filter; apply: @filter_filter' (locally_filter _).*)
-case: (@fcvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
+case: (@fcvg_ballP _ _ (f @ x)%classic FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} - /H1 {}H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
@@ -734,7 +734,7 @@ Lemma continuity_pt_dnbhs f x :
   continuity_pt f x <->
   forall eps, 0 < eps -> x^' (fun u => `|f x - f u| < eps).
 Proof.
-rewrite continuity_pt_cvg' (@cvgrPdist_lt _ [normedModType _ of R^o]).
+rewrite continuity_pt_cvg' (@cvgrPdist_lt _ [the normedModType _ of R^o]).
 exact.
 Qed.
 

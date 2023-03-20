@@ -389,6 +389,8 @@ Reserved Notation "[ 'cvg' F 'in' T ]" (format "[ 'cvg'  F  'in'  T ]").
 Reserved Notation "x \is_near F" (at level 10, format "x  \is_near  F").
 Reserved Notation "E @[ x --> F ]"
   (at level 60, x name, format "E  @[ x  -->  F ]").
+Reserved Notation "E @[ x \oo ]"
+  (at level 60, x name, format "E  @[ x  \oo ]").
 Reserved Notation "f @ F" (at level 60, format "f  @  F").
 Reserved Notation "E `@[ x --> F ]"
   (at level 60, x name, format "E  `@[ x  -->  F ]").
@@ -631,9 +633,13 @@ Definition type_of_filter {T} (F : set_system T) := T.
 Definition lim_in {U : Type} (T : filteredType U) :=
   fun F : set_system U => get (fun l : T => F --> l).
 Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T (nbhs F)) : classical_set_scope.
-Notation lim F := [lim F in @type_of_filter _ (nbhs F)].
+Definition lim {T : nbhsType} (F : set_system T) := [lim F in T].
 Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T]) : classical_set_scope.
-Notation cvg F := [cvg F in @type_of_filter _ (nbhs F)].
+Notation cvg F := (F --> lim F).
+
+(* :TODO: ultimately nat could be replaced by any lattice *)
+Definition eventually := filter_from setT (fun N => [set n | (N <= n)%N]).
+Notation "'\oo'" := eventually : classical_set_scope.
 
 Section FilteredTheory.
 
@@ -651,29 +657,48 @@ move=> xl yk X [[X1 X2] /= [HX1 HX2] H]; exists (X1, X2) => //=.
 split; [exact: xl | exact: yk].
 Qed.
 
-Lemma cvg_ex {U : Type} (T : filteredType U) (F : set_system U) :
+Lemma cvg_in_ex {U : Type} (T : filteredType U) (F : set_system U) :
   [cvg F in T] <-> (exists l : T, F --> l).
 Proof. by split=> [cvg|/getPex//]; exists [lim F in T]. Qed.
 
-Lemma cvgP {U : Type} (T : filteredType U) (F : set_system U) (l : T) :
-   F --> l -> [cvg F in T].
-Proof. by move=> Fl; apply/cvg_ex; exists l. Qed.
+Lemma cvg_ex (T : nbhsType) (F : set_system T) :
+  cvg F <-> (exists l : T, F --> l).
+Proof. exact: cvg_in_ex. Qed.
 
-Lemma cvg_toP {U : Type} (T : filteredType U) (F : set_system U) (l : T) :
+Lemma cvg_inP {U : Type} (T : filteredType U) (F : set_system U) (l : T) :
+   F --> l -> [cvg F in T].
+Proof. by move=> Fl; apply/cvg_in_ex; exists l. Qed.
+
+Lemma cvgP (T : nbhsType) (F : set_system T) (l : T) : F --> l -> cvg F.
+Proof. exact: cvg_inP. Qed.
+
+Lemma cvg_in_toP {U : Type} (T : filteredType U) (F : set_system U) (l : T) :
    [cvg F in T] -> [lim F in T] = l -> F --> l.
 Proof. by move=> /[swap]->. Qed.
 
-Lemma dvgP {U : Type} (T : filteredType U) (F : set_system U) :
+Lemma cvg_toP (T : nbhsType) (F : set_system T) (l : T) :
+  cvg F -> lim F = l -> F --> l.
+Proof. exact: cvg_in_toP. Qed.
+
+Lemma dvg_inP {U : Type} (T : filteredType U) (F : set_system U) :
   ~ [cvg F in T] -> [lim F in T] = point.
 Proof. by rewrite /lim_in /=; case xgetP. Qed.
 
-Lemma cvgNpoint {U} (T : filteredType U) (F : set_system U) :
+Lemma dvgP (T : nbhsType) (F : set_system T) : ~ cvg F -> lim F = point.
+Proof. exact: dvg_inP. Qed.
+
+Lemma cvg_inNpoint {U} (T : filteredType U) (F : set_system U) :
   [lim F in T] != point -> [cvg F in T].
-Proof. by apply: contra_neqP; apply: dvgP. Qed.
+Proof. by apply: contra_neqP; apply: dvg_inP. Qed.
+
+Lemma cvgNpoint (T : nbhsType) (F : set_system T) : lim F != point -> cvg F.
+Proof. exact: cvg_inNpoint. Qed.
 
 End FilteredTheory.
-Arguments cvgP {U T F} l.
-Arguments dvgP {U} T {F}.
+Arguments cvg_inP {U T F} l.
+Arguments dvg_inP {U} T {F}.
+Arguments cvgP {T F} l.
+Arguments dvgP {T F}.
 
 Lemma nbhs_nearE {U} {T : filteredType U} (x : T) (P : set U) :
   nbhs x P = \near x, P x.
@@ -1088,7 +1113,13 @@ Proof. by []. Qed.
 
 Notation "E @[ x --> F ]" :=
   (fmap (fun x => E) (nbhs F)) : classical_set_scope.
+Notation "E @[ x \oo ]" :=
+  (fmap (fun x => E) \oo) : classical_set_scope.
 Notation "f @ F" := (fmap f (nbhs F)) : classical_set_scope.
+
+Notation limn F := (lim (F @ \oo)).
+Notation cvgn F := (cvg (F @ \oo)).
+
 Global Instance fmap_filter T U (f : T -> U) (F : set_system T) :
   Filter F -> Filter (f @ F).
 Proof.
@@ -1185,8 +1216,12 @@ Lemma eq_cvg (T T' : Type) (F : set_system T) (f g : T -> T') (x : set_system T'
   f =1 g -> (f @ F --> x) = (g @ F --> x).
 Proof. by move=> /funext->. Qed.
 
-Lemma eq_is_cvg (T T' : Type) (fT : filteredType T') (F : set_system T) (f g : T -> T') :
+Lemma eq_is_cvg_in (T T' : Type) (fT : filteredType T') (F : set_system T) (f g : T -> T') :
   f =1 g -> [cvg (f @ F) in fT] = [cvg (g @ F) in fT].
+Proof. by move=> /funext->. Qed.
+
+Lemma eq_is_cvg (T : Type) (T' : nbhsType) (F : set_system T) (f g : T -> T') :
+  f =1 g -> cvg (f @ F) = cvg (g @ F).
 Proof. by move=> /funext->. Qed.
 
 Lemma neari_eq_loc {T U} {F : set_system T} {FF : Filter F} (f g : T -> set U) :
@@ -2063,9 +2098,6 @@ HB.instance Definition _ := Pointed_isBaseTopological.Build nat bT bD.
 
 End nat_topologicalType.
 
-(* :TODO: ultimately nat could be replaced by any lattice *)
-Definition eventually := filter_from setT (fun N => [set n | (N <= n)%N]).
-Notation "'\oo'" := eventually : classical_set_scope.
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
@@ -3313,7 +3345,7 @@ Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
 Lemma cvg_eq x y : x --> y -> x = y.
 Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 
-Lemma lim_id x : lim x = x.
+Lemma lim_id x : lim (nbhs x) = x.
 Proof. by apply/esym/cvg_eq/cvg_ex; exists x. Qed.
 
 Lemma cvg_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
@@ -4802,7 +4834,7 @@ Lemma cvg_switch {U : completeType}
   exists l : U, h @ F1 --> l /\ g @ F2 --> l.
 Proof.
 move=> Hfg Hfh; have hcv := !! cvg_switch_2 Hfg Hfh.
-by exists [lim h @ F1 in U]; split=> //; apply: cvg_switch_1 Hfg Hfh hcv.
+by exists (lim (h @ F1)); split=> //; apply: cvg_switch_1 Hfg Hfh hcv.
 Qed.
 
 End Cvg_switch.
@@ -5891,10 +5923,10 @@ Global Instance subspace_proper_filter {T : topologicalType}
      (A : set T) (x : subspace A) :
    ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
-(*Notation "{ 'within' A , 'continuous' f }" :=
-  (continuous (f : subspace A -> _)).*)
-Notation "{ 'within' A , 'continuous' f }" := (forall x,
-  cvg_to (fmap f (@nbhs _ (subspace A) x)) (nbhs (f x))).
+Notation "{ 'within' A , 'continuous' f }" :=
+  (continuous (f : subspace A -> _)).
+(* Notation "{ 'within' A , 'continuous' f }" := (forall x, *)
+(*   cvg_to (fmap f (@nbhs _ (subspace A) x)) (nbhs (f x))). *)
 
 Arguments nbhs_subspaceP {T} A x.
 
@@ -6198,8 +6230,7 @@ have [fAfE cEIE] :
 have ? : f @` closure (AfE b) `<=` closure (E b).
   have /(@image_subset _ _ f) : closure (AfE b) `<=` f @^-1` closure (E b).
     have /closure_id -> : closed (f @^-1` closure (E b) : set (subspace A)).
-      apply: closed_comp => //; first by move=> ? ?; apply: cf.
-      exact: closed_closure.
+      by apply: closed_comp => //; exact: closed_closure.
     apply: closure_subset.
     have /(@preimage_subset _ _ f) A0cA0 := @subset_closure _ (E b).
     by apply: subset_trans A0cA0; apply: subIset; right.

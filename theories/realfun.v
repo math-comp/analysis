@@ -196,7 +196,7 @@ Qed.
 Section negation_itv.
 Local Definition itvN_oppr a b := @GRing.opp R.
 Local Lemma itv_oppr_is_fun a b :
-  IsFun _ _ `[- b, - a]%classic `[a, b]%classic (itvN_oppr a b).
+  isFun _ _ `[- b, - a]%classic `[a, b]%classic (itvN_oppr a b).
 Proof. by split=> x /=; rewrite oppr_itvcc. Qed.
 HB.instance Definition _ a b := itv_oppr_is_fun a b.
 End negation_itv.
@@ -482,7 +482,7 @@ Variable R : realType.
 Lemma exprn_continuous n : continuous (@GRing.exp R ^~ n).
 Proof.
 move=> x; elim: n=> [|n /(continuousM cvg_id) ih]; first exact: cst_continuous.
-by rewrite exprS; under eq_fun do rewrite exprS; exact: ih.
+by rewrite /continuous_at exprS; under eq_fun do rewrite exprS; exact: ih.
 Qed.
 
 Lemma sqr_continuous : continuous (@exprz R ^~ 2).
@@ -502,7 +502,7 @@ move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
   apply: (@segment_can_le_continuous _ _ _ (@GRing.exp _^~ _)) => //.
     by apply: continuous_subspaceT; exact: exprn_continuous.
   by move=> y y0b; rewrite sqrtr_sqr ger0_norm// (itvP y0b).
-- rewrite sqrtr0; apply/cvgr0Pnorm_lt => _ /posnumP[e]; near=> y.
+- rewrite /continuous_at sqrtr0; apply/cvgr0Pnorm_lt => _ /posnumP[e]; near=> y.
   have [ylt0|yge0] := ltrP y 0; first by rewrite ltr0_sqrtr ?normr0.
   rewrite ger0_norm ?sqrtr_ge0//; have: `|y| < e%:num ^+ 2 by [].
   by rewrite -ltr_sqrt// ger0_norm// sqrtr_sqr ger0_norm.

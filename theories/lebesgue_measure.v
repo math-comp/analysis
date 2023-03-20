@@ -866,7 +866,7 @@ Qed.
 Let lebesgue_measure_itvoo_subr1 (a : R) :
   lebesgue_measure (`]a - 1, a[%classic : set R) = 1%E.
 Proof.
-rewrite itv_bnd_open_bigcup//; transitivity (lim (lebesgue_measure \o
+rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
     (fun k => `]a - 1, a - k.+1%:R^-1]%classic : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   - by move=> ?; exact: measurable_itv.
@@ -944,13 +944,13 @@ by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
   exact: lebesgue_measure_itvoc].
 Qed.
 
-Let limnatR : lim (fun k => (k%:R)%:E : \bar R) = +oo%E.
+Let limnatR : lim (((k%:R)%:E : \bar R) @[k --> \oo]) = +oo%E.
 Proof. by apply/cvg_lim => //; apply/cvgenyP. Qed.
 
 Let lebesgue_measure_itv_bnd_infty x (a : R) :
   lebesgue_measure ([set` Interval (BSide x a) +oo%O] : set R) = +oo%E.
 Proof.
-rewrite itv_bnd_infty_bigcup; transitivity (lim (lebesgue_measure \o
+rewrite itv_bnd_infty_bigcup; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
@@ -966,7 +966,7 @@ Qed.
 Let lebesgue_measure_itv_infty_bnd y (b : R) :
   lebesgue_measure ([set` Interval -oo%O (BSide y b)] : set R) = +oo%E.
 Proof.
-rewrite itv_infty_bnd_bigcup; transitivity (lim (lebesgue_measure \o
+rewrite itv_infty_bnd_bigcup; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
@@ -1691,7 +1691,7 @@ by move=> k; exact: measurable_fun_sups.
 Qed.
 
 Lemma measurable_fun_cvg D (h : (T -> R)^nat) f :
-  (forall m, measurable_fun D (h m)) -> (forall x, D x -> h ^~ x --> f x) ->
+  (forall m, measurable_fun D (h m)) -> (forall x, D x -> h ^~ x @ \oo --> f x) ->
   measurable_fun D f.
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = lim_sup (h ^~ x).
@@ -1862,7 +1862,7 @@ Notation measurable_fun_elim_sup := measurable_fun_lim_esup.
 
 Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall m, measurable_fun D (f_ m)) ->
-  (forall x, D x -> f_ ^~ x --> f x) -> measurable_fun D f.
+  (forall x, D x -> f_ ^~ x @ \oo --> f x) -> measurable_fun D f.
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = lim_esup (f_^~ x).
   by move=> Dx; have /cvg_lim  <-// := @cvg_esups _ (f_^~x) (f x) (f_f x Dx).

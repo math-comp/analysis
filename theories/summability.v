@@ -24,11 +24,8 @@ Import fintype bigop finmap.
 Local Open Scope fset_scope.
 (* :TODO: when eventually is generalized to any lattice *)
 (* totally can just be replaced by eventually *)
-Definition totally {I : choiceType} : set (set {fset I}) :=
+Definition totally {I : choiceType} : set_system {fset I} :=
   filter_from setT (fun A => [set B | A `<=` B]).
-
-HB.instance Definition _ {I : choiceType} X :=
-  isSource.Build X _ {fset I} (fun f => f @ totally).
 
 Instance totally_filter {I : choiceType} : ProperFilter (@totally I).
 Proof.
@@ -41,7 +38,7 @@ Definition partial_sum {I : choiceType} {R : zmodType}
   (x : I -> R) (A : {fset I}) : R := \sum_(i : A) x (val i).
 
 Definition sum (I : choiceType) {K : numDomainType} {R : normedModType K}
-   (x : I -> R) : R := lim (partial_sum x).
+   (x : I -> R) : R := lim (partial_sum x @ totally).
 
 Definition summable (I : choiceType) {K : realType} {R : normedModType K}
    (x : I -> R) :=

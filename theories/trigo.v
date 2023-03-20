@@ -71,8 +71,8 @@ Qed.
 (* /NB: backport to mathcomp in progress *)
 
 Lemma cvg_series_cvg_series_group (R : realFieldType) (f : R ^nat) k :
-  cvg (series f) -> (0 < k)%N ->
-  [series \sum_(n * k <= i < n.+1 * k) f i]_n --> lim (series f).
+  cvg (series f @ \oo) -> (0 < k)%N ->
+  [series \sum_(n * k <= i < n.+1 * k) f i]_n @ \oo --> lim (series f @ \oo).
 Proof.
 move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
 have := !! cf _ (gt0 e) => -[n _ nl]; near=> m.
@@ -82,9 +82,10 @@ have /nl : (n <= m * k)%N.
 by rewrite /ball /= distrC.
 Unshelve. all: by end_near. Qed.
 
-Lemma lt_sum_lim_series (R : realFieldType) (f : R ^nat) n : cvg (series f) ->
+Lemma lt_sum_lim_series (R : realFieldType) (f : R ^nat) n :
+    cvg (series f @ \oo) ->
   (forall d, 0 < f (n + d.*2)%N + f (n + d.*2.+1)%N) ->
-  \sum_(0 <= i < n) f i < lim (series f).
+  \sum_(0 <= i < n) f i < lim (series f @ \oo).
 Proof.
 move=> /cvg_ballP cf fn.
 have fn0 : 0 < f n + f n.+1 by have := fn 0%N; rewrite double0 addn0 addn1.
@@ -97,7 +98,7 @@ have nf_ub N : \sum_(0 <= i < n.+2) f i <= \sum_(0 <= i < N.+1.*2 + n) f i.
 case=> N _ Nfn; have /Nfn/ltr_distlC_addr : (N.+1.*2 + n >= N)%N.
   by rewrite doubleS -addn2 -addnn -2!addnA leq_addr.
 rewrite addrA => ffnfn.
-have : lim (series f) + f n + f n.+1 <= \sum_(0 <= i < N.+1.*2 + n) f i.
+have : lim (series f @ \oo) + f n + f n.+1 <= \sum_(0 <= i < N.+1.*2 + n) f i.
   apply: (le_trans _ (nf_ub N)).
   by do 2 rewrite big_nat_recr //=; by rewrite -2!addrA ler_add2r.
 by move/(lt_le_trans ffnfn); rewrite ltxx.
@@ -144,7 +145,7 @@ Proof. by apply/funext => i; rewrite /sin_coeff /= -!mulrA [_ / _]mulrC. Qed.
 Lemma sin_coeff_even n x : sin_coeff x n.*2 = 0.
 Proof. by rewrite /sin_coeff /= odd_double /= !mul0r. Qed.
 
-Lemma is_cvg_series_sin_coeff x : cvg (series (sin_coeff x)).
+Lemma is_cvg_series_sin_coeff x : cvg (series (sin_coeff x) @ \oo).
 Proof.
 apply: normed_cvg.
 apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
@@ -155,10 +156,10 @@ apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
   by case: odd; [rewrite mul1r| rewrite !mul0r].
 Qed.
 
-Definition sin x : R := lim (series (sin_coeff x)).
+Definition sin x : R := lim (series (sin_coeff x) @ \oo).
 
 Lemma sinE : sin = fun x =>
-  lim (pseries (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) x).
+  lim (pseries (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) x @ \oo).
 Proof. by apply/funext => x; rewrite /pseries -sin_coeffE. Qed.
 
 Definition sin_coeff' x (n : nat) := (-1)^n * x ^+ n.*2.+1 / n.*2.+1`!%:R.
@@ -168,12 +169,12 @@ Proof.
 by rewrite /sin_coeff' /sin_coeff /= odd_double mul1r -2!mulrA doubleK.
 Qed.
 
-Lemma cvg_sin_coeff' x : series (sin_coeff' x) --> sin x.
+Lemma cvg_sin_coeff' x : series (sin_coeff' x) @ \oo --> sin x.
 Proof.
 have /(@cvg_series_cvg_series_group _ _ 2) := @is_cvg_series_sin_coeff x.
 move=> /(_ isT); apply: cvg_trans.
-rewrite [X in _ --> series X](_ : _ = (fun n => sin_coeff x n.*2.+1)).
-  rewrite [X in series X --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
+rewrite [X in _ --> series X @ \oo](_ : _ = (fun n => sin_coeff x n.*2.+1)).
+  rewrite [X in series X @ \oo --> _](_ : _ = (fun n => sin_coeff x n.*2.+1)) //.
   by rewrite funeqE => n; exact: sin_coeff'E.
 rewrite funeqE=> n; rewrite /= 2!muln2 big_nat_recl //= sin_coeff_even add0r.
 by rewrite big_nat_recl // big_geq // addr0.
@@ -227,7 +228,7 @@ Proof.
 by apply/funext => i; rewrite /cos_coeff /= -!mulrA [_ / _]mulrC.
 Qed.
 
-Lemma is_cvg_series_cos_coeff x : cvg (series (cos_coeff x)).
+Lemma is_cvg_series_cos_coeff x : cvg (series (cos_coeff x) @ \oo).
 Proof.
 apply: normed_cvg.
 apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
@@ -238,12 +239,12 @@ apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
   by case: odd; [rewrite !mul0r | rewrite mul1r].
 Qed.
 
-Definition cos x : R := lim (series (cos_coeff x)).
+Definition cos x : R := lim (series (cos_coeff x) @ \oo).
 
 Lemma cosE : cos = fun x =>
   lim (series (fun n =>
                 (fun n => (~~(odd n))%:R * (-1)^+ n./2 * (n`!%:R)^-1) n
-                * x ^+ n)).
+                * x ^+ n) @ \oo).
 Proof. by apply/funext => x; rewrite -cos_coeffE. Qed.
 
 Definition cos_coeff' x (n : nat) := (-1)^n * x ^+ n.*2 / n.*2`!%:R.
@@ -254,14 +255,14 @@ rewrite /cos_coeff' /cos_coeff /= odd_double /= mul1r -2!mulrA; congr (_ * _).
 by rewrite (half_bit_double n false).
 Qed.
 
-Lemma cvg_cos_coeff' x : series (cos_coeff' x) --> cos x.
+Lemma cvg_cos_coeff' x : series (cos_coeff' x) @ \oo --> cos x.
 Proof.
 have /(@cvg_series_cvg_series_group _ _ 2) := @is_cvg_series_cos_coeff x.
 move=> /(_ isT); apply: cvg_trans.
-rewrite [X in _ --> series X](_ : _ = (fun n => cos_coeff x n.*2)); last first.
+rewrite [X in _ --> series X @ \oo](_ : _ = (fun n => cos_coeff x n.*2)); last first.
   rewrite funeqE=> n; rewrite /= 2!muln2 big_nat_recr //= cos_coeff_odd addr0.
   by rewrite big_nat_recl//= /index_iota subnn big_nil addr0.
-rewrite [X in series X --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
+rewrite [X in series X @ \oo --> _](_ : _ = (fun n => cos_coeff x n.*2)) //.
 by rewrite funeqE => n; exact: cos_coeff'E.
 Qed.
 

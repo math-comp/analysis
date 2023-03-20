@@ -50,7 +50,7 @@ Definition diff (F : filter_on V) (_ : phantom (set (set V)) F) (f : V -> W) :=
   (get (fun (df : {linear V -> W}) => continuous df /\ forall x,
       f x = f (lim F) + df (x - lim F) +o_(x \near F) (x - lim F))).
 
-Local Notation "''d' f x" := (@diff _ (Phantom _ [filter of x]) f).
+Local Notation "''d' f x" := (@diff _ (Phantom _ (nbhs x)) f).
 
 Fact diff_key : forall T, T -> unit. Proof. by constructor. Qed.
 CoInductive differentiable_def (f : V -> W) (x : filter_on V)
@@ -58,7 +58,8 @@ CoInductive differentiable_def (f : V -> W) (x : filter_on V)
   (continuous ('d f x) /\
   f = cst (f (lim x)) + 'd f x \o center (lim x) +o_x (center (lim x))).
 
-Local Notation differentiable f F := (@differentiable_def f _ (Phantom _ [filter of F])).
+Local Notation differentiable f F :=
+  (@differentiable_def f _ (Phantom _ (nbhs F))).
 
 Class is_diff_def (x : filter_on V) (Fph : phantom (set (set V)) x) (f : V -> W)
   (df : V -> W) := DiffDef {
@@ -101,8 +102,9 @@ Section Differential_numFieldType.
 Context {K : numFieldType (*TODO: to numDomainType?*)} {V W : normedModType K}.
 
 (* duplicate from Section Differential *)
-Local Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
-Local Notation "''d' f x" := (@diff _ _ _ _ (Phantom _ [filter of x]) f).
+Local Notation differentiable f F :=
+  (@differentiable_def _ _ _ f _ (Phantom _ (nbhs F))).
+Local Notation "''d' f x" := (@diff _ _ _ _ (Phantom _ (nbhs x)) f).
 Hint Extern 0 (continuous _) => exact: diff_continuous : core.
 
 Lemma diff_locallyxP (x : V) (f : V -> W) :
@@ -138,10 +140,10 @@ Proof. by move=> /diff_locallyP []. Qed.
 
 End Differential_numFieldType.
 
-Notation "''d' f F" := (@diff _ _ _ _ (Phantom _ [filter of F]) f).
-Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ [filter of F])).
+Notation "''d' f F" := (@diff _ _ _ _ (Phantom _ (nbhs F)) f).
+Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ (nbhs F))).
 
-Notation "'is_diff' F" := (is_diff_def (Phantom _ [filter of F])).
+Notation "'is_diff' F" := (is_diff_def (Phantom _ (nbhs F))).
 #[global] Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
 #[global] Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
 
@@ -514,8 +516,10 @@ have hdf h :
 rewrite (hdf _ dxf).
 suff /diff_locally /hdf -> : differentiable f x.
   by rewrite opprD addrCA -(addrA (_ - _)) addKr oppox addox.
-apply/diffP; apply: (@getPex _ (fun (df : {linear V -> W}) => continuous df /\
-  forall y, f y = f (lim x) + df (y - lim x) +o_(y \near x) (y - lim x))).
+apply/diffP => /=.
+apply: (@getPex _ (fun (df : {linear V -> W}) => continuous df /\
+  forall y, f y = f (lim (nbhs x)) + df (y - lim (nbhs x))
+                  +o_(y \near x) (y - lim (nbhs x)))).
 exists df; split=> //; apply: eqaddoEx => z.
 rewrite (hdf _ dxf) !addrA lim_id // /(_ \o _) /= subrK [f _ + _]addrC addrK.
 rewrite -addrA -[LHS]addr0; congr (_ + _).
@@ -673,7 +677,7 @@ Qed.
 Lemma linear_lipschitz (V' W' : normedModType R) (f : {linear V' -> W'}) :
   continuous f -> exists2 k, k > 0 & forall x, `|f x| <= k * `|x|.
 Proof.
-move=> /(_ 0); rewrite linear0 => /(_ _ (nbhsx_ballx 0 1%:pos)).
+move=> /(_ 0); rewrite /continuous_at linear0 => /(_ _ (nbhsx_ballx 0 1%:pos)).
 move=> /nbhs_ballP [_ /posnumP[e] he]; exists (2 / e%:num) => // x.
 have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP->; rewrite linear0 !normr0 mulr0.
@@ -742,7 +746,7 @@ Lemma bilinear_schwarz (U V' W' : normedModType R)
   (f : {bilinear U -> V' -> W'}) : continuous (fun p => f p.1 p.2) ->
   exists2 k, k > 0 & forall u v, `|f u v| <= k * `|u| * `|v|.
 Proof.
-move=> /(_ 0); rewrite linear0r => /(_ _ (nbhsx_ballx 0 1%:pos)).
+move=> /(_ 0); rewrite /continuous_at linear0r => /(_ _ (nbhsx_ballx 0 1%:pos)).
 move=> /nbhs_ballP [_ /posnumP[e] he]; exists ((2 / e%:num) ^+2) => // u v.
 have [|un0] := real_le0P (normr_real u).
   by rewrite normr_le0 => /eqP->; rewrite linear0l !normr0 mulr0 mul0r.
@@ -1402,24 +1406,24 @@ by apply: xe_A => //; rewrite eq_sym.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
-Lemma __deprecated__le0r_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
-  (FF : ProperFilter F) (f : T -> R) :
+Lemma __deprecated__le0r_cvg_map (R : realFieldType) (T : topologicalType)
+  (F : set_system T) (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, 0 <= f x) -> cvg (f @ F) -> 0 <= lim (f @ F).
 Proof. by move=> ? ?; rewrite limr_ge. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="generalized by `limr_ge`")]
 Notation le0r_cvg_map := __deprecated__le0r_cvg_map.
 
-Lemma __deprecated__ler0_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
-  (FF : ProperFilter F) (f : T -> R) :
+Lemma __deprecated__ler0_cvg_map (R : realFieldType) (T : topologicalType)
+  (F : set_system T) (FF : ProperFilter F) (f : T -> R) :
   (\forall x \near F, f x <= 0) -> cvg (f @ F) -> lim (f @ F) <= 0.
 Proof. by move=> ? ?; rewrite limr_le. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="generalized by `limr_le`")]
 Notation ler0_cvg_map := __deprecated__ler0_cvg_map.
 
-Lemma __deprecated__ler_cvg_map (R : realFieldType) (T : topologicalType) (F : set (set T))
-    (FF : ProperFilter F) (f g : T -> R) :
+Lemma __deprecated__ler_cvg_map (R : realFieldType) (T : topologicalType)
+  (F : set_system T) (FF : ProperFilter F) (f g : T -> R) :
   (\forall x \near F, f x <= g x) -> cvg (f @ F) -> cvg (g @ F) ->
   lim (f @ F) <= lim (g @ F).
 Proof. by move=> ? ? ?; rewrite ler_lim. Qed.
@@ -1600,7 +1604,8 @@ Proof. exact/diff_derivable. Qed.
 Global Instance is_derive_id (x v : V) : is_derive x v id v.
 Proof.
 apply: (DeriveDef (@derivable_id _ _)).
-by rewrite deriveE// (@diff_lin _ _ _ [linear of idfun]).
+rewrite deriveE// (@diff_lin _ _ _ [linear of idfun])//=.
+by rewrite /continuous_at.
 Qed.
 
 Global Instance is_deriveNid (x v : V) : is_derive x v -%R (- v).

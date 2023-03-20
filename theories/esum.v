@@ -517,7 +517,7 @@ Qed.
 
 Lemma summable_cvg (P : pred nat) (f : (\bar R)^nat) :
   (forall i, P i -> 0 <= f i)%E -> summable P f ->
-  cvg (fun n => \sum_(0 <= k < n | P k) fine (f k))%R.
+  cvg ((fun n => \sum_(0 <= k < n | P k) fine (f k))%R @ \oo).
 Proof.
 move=> f0 Pf; apply: nondecreasing_is_cvg.
   by apply: nondecreasing_series => n Pn; exact/fine_ge0/f0.
@@ -535,10 +535,10 @@ Qed.
 Lemma summable_nneseries_lim (P : pred nat) (f : (\bar R)^nat) :
     (forall i, P i -> 0 <= f i)%E -> summable P f ->
   \sum_(i <oo | P i) f i =
-  (lim (fun n => (\sum_(0 <= k < n | P k) fine (f k))%R))%:E.
+  (lim ((fun n => (\sum_(0 <= k < n | P k) fine (f k))%R) @ \oo))%:E.
 Proof.
 move=> f0 Pf; pose A_ n := (\sum_(0 <= k < n | P k) fine (f k))%R.
-transitivity (lim (EFin \o A_)).
+transitivity (lim (EFin \o A_ @ \oo)).
   apply/congr_lim/funext => /= n; rewrite /A_ /= -sumEFin.
   apply eq_bigr => i Pi/=; rewrite fineK//.
   by rewrite fin_num_abs (@summable_pinfty _ _ P).
@@ -553,9 +553,9 @@ move=> Pf.
 pose A_ n := (\sum_(0 <= k < n | P k) fine (f^\+ k))%R.
 pose B_ n := (\sum_(0 <= k < n | P k) fine (f^\- k))%R.
 pose C_ n := fine (\sum_(0 <= k < n | P k) f k).
-pose A := lim A_.
-pose B := lim B_.
-suff: ((fun n => C_ n - (A - B)) --> (0 : R^o))%R.
+pose A := lim (A_ @ \oo).
+pose B := lim (B_ @ \oo).
+suff: ((fun n => C_ n - (A - B)) @ \oo --> (0 : R^o))%R.
   move=> CAB.
   rewrite [X in  X - _]summable_nneseries_lim//; last exact/summable_funepos.
   rewrite [X in _ - X]summable_nneseries_lim//; last exact/summable_funeneg.
@@ -564,7 +564,7 @@ suff: ((fun n => C_ n - (A - B)) --> (0 : R^o))%R.
     rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
     by rewrite -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
   by apply: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB) => //; exact: cvg_cst.
-have : ((fun x => A_ x - B_ x) --> A - B)%R.
+have : ((fun x => A_ x - B_ x) @ \oo --> A - B)%R.
   apply: cvgD.
   - by apply: summable_cvg => //; exact/summable_funepos.
   - by apply: cvgN; apply: summable_cvg => //; exact/summable_funeneg.
