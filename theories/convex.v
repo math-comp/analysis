@@ -55,6 +55,13 @@ move=> ab ce x; rewrite 2!in_itv /= => /andP[bx xc].
 by rewrite (le_trans ab)//= (le_trans _ ce).
 Qed.
 
+Lemma in_IntervalW' d {T : porderType d} (a b c e : T):
+  (a <= b)%O -> (c <= e)%O -> forall x, x \in `]b, c[ -> x \in `]a, e[.
+Proof.
+move=> ab ce x; rewrite 2!in_itv /= => /andP[bx xc].
+by rewrite (le_lt_trans ab)//= (lt_le_trans xc).
+Qed.
+
 Declare Scope convex_scope.
 
 Local Open Scope convex_scope.
@@ -153,30 +160,73 @@ HB.instance Definition _ := @isConvexSpace.Build R R^o
 End realDomainType_convex_space.
 
 Definition derivable_interval {R : numFieldType} (f : R -> R) (a b : R) :=
-  forall x, x \in `[a, b] -> derivable f x 1.
+  forall x, x \in `]a, b[ -> derivable f x 1.
 
 Lemma derivable_continuous {R : realType} (F : R -> R) (x y : R):
-  derivable_interval F x y -> {within `[x, y], continuous F}.
+  derivable_interval F x y -> {within `]x, y[, continuous F}.
 Proof.
 move=> di.
-have h z : z \in `[x, y] -> {for z, continuous F}.
+have h z : z \in `]x, y[ -> {for z, continuous F}.
   move=> zxy; apply/differentiable_continuous.
   by rewrite -derivable1_diffP; exact: di.
 by apply/continuous_in_subspaceT => z /[1!inE] zin; exact: h.
 Qed.
 
+Lemma derivable_continuous_new {R : realType} (F : R -> R) (x y : R):
+  derivable_interval F x y ->
+  F @ x^'+ --> F x -> F @ y^'- --> F y ->
+  {within `[x, y], continuous F}.
+Proof.
+move=> di Fxl Fxr.
+have h z : z \in `]x, y[ -> {for z, continuous F}.
+  move=> zxy; apply/differentiable_continuous.
+  by rewrite -derivable1_diffP; exact: di.
+apply/subspace_continuousP => z /=.
+rewrite /= in_itv/= => /andP[].
+rewrite le_eqVlt => /predU1P[xz|xz].
+  subst z.
+  move=> xy.
+  rewrite /at_right in Fxl.
+  have Fxl' : F x @[x --> within (fun u : R => x <= u) (nbhs x)] --> F x.
+    apply/cvgrPdist_lt => e e0.
+    move/cvgrPdist_lt : Fxl => /(_ _ e0) H.
+    near=> z.
+    have [->|] := eqVneq x z; first by rewrite subrr normr0.
+    rewrite neq_lt => /orP[xz|].
+      near: z.
+      move: H.
+      rewrite near_simpl => -[r /= r0 H1].
+      exists r => //.
+      apply: (subset_trans H1) => a H2.
+      rewrite le_eqVlt => /predU1P[->|].
+      by rewrite subrr normr0.
+      done.
+    near: z.
+    exists e => // z _.
+    by rewrite leNgt => /[swap] ->.
+  apply: cvg_trans Fxl'.
+  apply: cvg_app.
+  apply: within_subset.
+  by move=> z/=; rewrite in_itv/= => /andP[].
+rewrite le_eqVlt => /predU1P[zy|zy].
+  admit. (* similar as above *)
+apply: cvg_within_filter.
+apply: h.
+by rewrite in_itv/= xz zy.
+Admitted.
+
 Lemma derivable_interval_le {R : numFieldType} (f : R -> R) (a b a' : R) :
   a <= a' -> derivable_interval f a b -> derivable_interval f a' b.
 Proof.
 rewrite /derivable_interval => aa' deriv x xab; apply/deriv.
-exact: in_IntervalW xab.
+exact: in_IntervalW' xab.
 Qed.
 
 Lemma derivable_interval_ge {R : numFieldType} (f : R -> R) (a b b' : R) :
   b >= b' -> derivable_interval f a b -> derivable_interval f a b'.
 Proof.
 rewrite/derivable_interval => b'b deriv x xab'; apply/deriv.
-exact: in_IntervalW xab'.
+exact: in_IntervalW' xab'.
 Qed.
 
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
@@ -188,7 +238,9 @@ Hypothesis ab : a < b.
 Let Df := 'D_1 f.
 Let DDf := 'D_1 Df.
 
-Hypothesis DDf_ge0 : forall x, a <= x <= b -> 0 <= DDf x.
+Hypothesis DDf_ge0 : forall x, a < x < b -> 0 <= DDf x.
+Hypothesis cvg_left : (f @ b^'-) --> f b.
+Hypothesis cvg_right : (f @ a^'+) --> f a.
 
 Let L x := f a + factor a b x * (f b - f a).
 
@@ -238,14 +290,32 @@ have LfE : L x - f x =
 have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
   have h : derivable_interval f x b := derivable_interval_le (ltW ax) HDf.
   have derivef z : z \in `]x, b[ -> is_derive z 1 f ('D_1 f z).
-    by move=> zxb; apply/derivableP/h; exact: subset_itv_oo_cc zxb.
-  have [ |z zxb fbfx] := MVT xb derivef; first by apply/derivable_continuous.
+    by move=> zxb; apply/derivableP/h; exact: (*subset_itv_oo_cc*) zxb.
+  have [ |z zxb fbfx] := MVT xb derivef.
+    apply/derivable_continuous_new.
+    assumption.
+    suff : f x @[x --> x] --> f x.
+      apply: cvg_trans.
+      apply: cvg_app => A [r/= r0 H1].
+      exists r => //.
+      by apply: (subset_trans H1) => z.
+    have := derivable_continuous HDf.
+    rewrite continuous_open_subspace//; last first.
+      admit.
+    move=> /(_ x); apply.
+    admit.
+    assumption.
   by exists z => //; rewrite fbfx -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
   have h : derivable_interval f a x := derivable_interval_ge (ltW xb) HDf.
   have derivef z : z \in `]a, x[ -> is_derive z 1 f ('D_1 f z).
-    by move=> zax; apply /derivableP/h/subset_itv_oo_cc.
-  have [|z zax fxfa] := MVT ax derivef; first exact/derivable_continuous.
+    by move=> zax; apply /derivableP/h.
+(* /subset_itv_oo_cc.*)
+  have [|z zax fxfa] := MVT ax derivef.
+    apply/derivable_continuous_new.
+    assumption.
+    assumption.
+    admit. (* same as above *)
   by exists z => //; rewrite fxfa -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have c1c2 : c1 < c2.
   by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
@@ -260,13 +330,19 @@ have [d Id h] :
     exact/(derivable_interval_le (ltW (andP Ic1).1))
          /(derivable_interval_ge (ltW (andP Ic2).2)).
   have derivef z : z \in `]c1, c2[ -> is_derive z 1 Df ('D_1 Df z).
-    by move=> zc1c2; apply/derivableP/h/subset_itv_oo_cc.
-  have [|z zc1c2 {}h] := MVT c1c2 derivef; first by apply /derivable_continuous.
+    by move=> zc1c2; apply/derivableP/h(*/subset_itv_oo_cc*).
+  have [|z zc1c2 {}h] := MVT c1c2 derivef.
+    apply: derivable_continuous_new.
+    assumption.
+    admit.
+    admit.
   by exists z => //; rewrite h -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 rewrite {}lfE {}h mulr_ge0//; last first.
   rewrite DDf_ge0//; apply/andP; split.
-    by rewrite (le_trans (ltW (andP Ic1).1))// (le_trans (ltW (andP Id).1)).
-  by rewrite (le_trans (ltW (andP Id).2))// (le_trans (ltW (andP Ic2).2)).
+    rewrite (lt_trans ((*ltW*) (andP Ic1).1))//.
+    by case/andP : Id.
+  rewrite (lt_trans ((*ltW*) (andP Id).2))//. (*/(le_trans (ltW (andP Ic2).2)).*)
+    by case/andP : Ic2.
 rewrite mulr_ge0// ?invr_ge0 ?subr_ge0 ?(ltW ab)//.
 rewrite mulr_ge0// ?subr_ge0 ?(ltW c1c2)//.
 by rewrite mulr_ge0// subr_ge0 ltW.
