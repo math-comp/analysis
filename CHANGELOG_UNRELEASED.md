@@ -164,50 +164,55 @@
 - in `lebesgue_integral.v`:
   + lemma `le_integral_comp_abse`
 
-  + new lemma `dfwith_projK`
-- in file `topology.v`,
-  + new lemmas `dfwith_continuous`, and `proj_open`.
-
-- in `topoogy.v`
-  + definitions `sup_pseudoMetricType`, `product_pseudoMetricType`
-
-- in file `topology.v`,
-  + new definitions `countable_uniformity`, `countable_uniformityT`, 
-    `sup_pseudoMetric_mixin`, `sup_pseudoMetricType`, and 
-    `product_pseudoMetricType`.
-  + new lemmas `countable_uniformityP`, `countable_sup_ent`, and 
-    `countable_uniformity_metric`.
-
-- in `constructive_ereal.v`:
-  + lemmas `adde_def_doppeD`, `adde_def_doppeB`
-  + lemma `fin_num_sume_distrr`
-- in `classical_sets.v`:
-  + lemma `coverE`
-
-- in file `topology.v`,
-  + new definitions `quotient_topology`, and `quotient_open`.
-  + new lemmas `pi_continuous`, `quotient_continuous`, and
-    `repr_comp_continuous`.
-
-- in file `boolp.v`,
-  + new lemma `forallp_asboolPn2`.
-- in file `classical_sets.v`,
-  + new lemma `preimage_range`.
-- in file `topology.v`,
-  + new definitions `hausdorff_accessible`, `separate_points_from_closed`, and 
-    `join_product`.
-  + new lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`, 
-    `join_product_continuous`, `join_product_open`, `join_product_inj`, and 
-    `join_product_weak`. 
-
-- in file `topology.v`,
-  + new definition `clopen`.
-  + new lemmas `clopenI`, `clopenU`, `clopenC`, `clopen0`, `clopenT`, 
-    `clopen_comp`, `connected_closure`, `clopen_separatedP`, and 
-    `clopen_connectedP`.
-
-- in file `topology.v`,
-  + new lemmas `powerset_filter_fromP` and `compact_cluster_set1`.
+- file `itv.v`:
+  + definition `wider_itv`
+  + module `Itv`:
+    * definitions `map_itv_bound`, `map_itv`
+    * lemmas `le_map_itv_bound`, `subitv_map_itv`
+    * definition `itv_cond`
+    * record `def`
+    * notation `spec`
+    * record `typ`
+    * definitions `mk`, `from`, `fromP`
+  + notations `{itv R & i}`, `{i01 R}`, `%:itv`, `[itv of _]`, `inum`, `%:inum`
+  + definitions `itv_eqMixin`, `itv_choiceMixin`, `itv_porderMixin`
+  + canonical `itv_subType`, `itv_eqType`, `itv_choiceType`, `itv_porderType`
+  + lemma `itv_top_typ_subproof`
+  + canonical `itv_top_typ`
+  + lemma `typ_inum_subproof`
+  + canonical `typ_inum`
+  + notation `unify_itv`
+  + lemma `itv_intro`
+  + definition `empty_itv`
+  + lemmas `itv_bottom`, `itv_gt0`, `itv_le0F`, `itv_lt0`, `itv_ge0F`, `itv_ge0`, `lt0F`, `le0`, `gt0F`, `lt1`,
+    `ge1F`, `le1`, `gt1F`
+  + lemma `widen_itv_subproof`
+  + definition `widen_itv`
+  + lemma `widen_itvE`
+  + notation `%:i01`
+  + lemma `zero_inum_subproof`
+  + canonical `zero_inum`
+  + lemma `one_inum_subproof`
+  + canonical `one_inum`
+  + definition `opp_itv_bound_subdef`
+  + lemmas `opp_itv_ge0_subproof`, `opp_itv_gt0_subproof`, `opp_itv_boundr_subproof`,
+    `opp_itv_le0_subproof`, `opp_itv_lt0_subproof`, `opp_itv_boundl_subproof`
+  + definition `opp_itv_subdef`
+  + lemma `opp_inum_subproof `
+  + canonical `opp_inum`
+  + definitions `add_itv_boundl_subdef`, `add_itv_boundr_subdef`, `add_itv_subdef`
+  + lemma `add_inum_subproof`
+  + canonical `add_inum`
+  + definitions `itv_bound_signl`, `itv_bound_signr`, `interval_sign`
+  + variant `interval_sign_spec`
+  + lemma `interval_signP`
+  + definitions `mul_itv_boundl_subdef`, `mul_itv_boundr_subdef`
+  + lemmas `mul_itv_boundl_subproof`, `mul_itv_boundrC_subproof`, `mul_itv_boundr_subproof`,
+    `mul_itv_boundr'_subproof`
+  + definition `mul_itv_subdef`
+  + lemmas `map_itv_bound_min`, `map_itv_bound_max`, `mul_inum_subproof`
+  + canonical `mul_inum`
+  + lemmas `inum_eq`, `inum_le`, `inum_lt`
 
 - file `itv.v`:
   + definition `wider_itv`

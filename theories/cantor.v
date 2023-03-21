@@ -108,27 +108,15 @@ Definition cantor_like (T : topologicalType) :=
       hausdorff_space T
       & totally_disconnected T].
 
-Lemma separator_continuous {T: topologicalType} (A : set T) :
-  open A -> closed A -> continuous (fun x => x \in A).
+Lemma cantor_like_cantor_space: cantor_like (cantor_space).
 Proof.
-move=> oA /closed_openC oAc; apply/continuousP; rewrite bool_predE; split => _.
-- by rewrite preimage_set0; exact: open0.
-- suff -> : (in_mem^~ (mem A) @^-1` [set true] = A) by [].
-  rewrite eqEsubset; split => x //=; first by move=> /set_mem.
-  by move=> ?; apply/mem_set.
-- suff -> : (in_mem^~ (mem A) @^-1` [set false] = ~`A) by [].
-  rewrite eqEsubset; split => x //=; last exact: memNset.
-  by move=> + /mem_set => ->.
-- rewrite -bool2E preimage_setT; exact: openT.
+split.
+- by apply: perfect_diagonal => //= _; exists (true, false).
+- exact: cantor_space_compact.
+- exact: cantor_space_hausdorff.
+- exact: cantor_totally_disconnected.
 Qed.
 
-Lemma discrete_closed {T : topologicalType} (dsc : discrete_space T) A : 
-  @closed T A.
-Proof. rewrite -openC; exact: discrete_open. Qed.
-
-Lemma closure_discrete {T : topologicalType} (dsc : discrete_space T) A : 
-  @closure T A = A.
-Proof. by apply/sym_equal/closure_id; exact: discrete_closed. Qed.
 
 Section totally_disconnected.
 Local Open Scope ring_scope.
@@ -186,6 +174,7 @@ rewrite eqEsubset; split => z.
 move=> /DsubC /= [y /= yfs hyz]; exists (h' y) => //.
 by rewrite set_imfset /=; exists y.
 Qed.
+
 Lemma compact_countable_base {R : realType} {T : pseudoMetricType R} : 
   compact [set: T] -> countable_basis T.
 Proof.
@@ -348,7 +337,7 @@ have := tree_prefix b n; apply: filter_app; near_simpl => /=.
 by near=> z => /apx_prefix ->; apply: tree_map_apx.
 Unshelve. all: end_near. Qed.
 
-Local Lemma tree_map_inj :
+Local Lemma tree_map_inj:
   (forall n U, trivIset [set: K n] (@tree_ind n U)) -> 
   set_inj [set: T] tree_map.
 Proof.
@@ -379,7 +368,6 @@ exists tree_map; split.
 Qed.
 
 End topological_trees.
-
 (* A technique for encoding 'cantor_like' spaces as trees. We build a new
    function 'node' which encodes the homeomorphism to the cantor space.
    Other than the 'tree_map is a homeomorphism', no additinal information is
@@ -397,7 +385,7 @@ Proof. by case: cantorT. Qed.
 Local Lemma hsdfT : @hausdorff_space T.
 Proof. by case: cantorT. Qed.
 
-Definition c_invar (U : set T) := clopen U /\ U !=set0.
+Let c_invar (U : set T) := clopen U /\ U !=set0.
 
 Local Lemma clopen_surj : $|{surjfun [set: nat] >-> @clopen T}|.
 Proof. 
@@ -420,14 +408,14 @@ Qed.
 
 Let split_clopen (U : set T) := projT1 (cid (split_clopen' U)).
 
-Definition c_ind (n : nat) (V : set T) (b : bool) := 
+Let c_ind (n : nat) (V : set T) (b : bool) := 
   let Wn := 
     if pselect ((U_ n) `&` V !=set0 /\ ~` (U_ n) `&` V !=set0)
     then (U_ n) 
     else split_clopen V in 
   (if b then Wn else ~` Wn) `&` V.
 
-Lemma cantor_map : exists (f : cantor_space -> T), 
+Local Lemma cantor_map : exists (f : cantor_space -> T), 
   [/\ continuous f,
       set_surj [set: cantor_space] [set: T] f &
       set_inj [set: cantor_space] f
@@ -468,7 +456,7 @@ have [] := (@tree_map_props
   by move=> ?; case: i; case: j => //.
 Qed.
 
-Definition tree_map := projT1 (cid (cantor_map)).
+Let tree_map := projT1 (cid (cantor_map)).
 
 Local Lemma tree_map_bij : bijective tree_map.
 Proof. 
@@ -490,17 +478,6 @@ exact: cantor_space_compact.
 Qed.
 
 End TreeStructure.
-
-
-Lemma cantor_like_cantor_space: cantor_like (cantor_space).
-Proof.
-split.
-- by apply: perfect_diagonal => //= _; exists (true, false).
-- exact: cantor_space_compact.
-- exact: cantor_space_hausdorff.
-- exact: cantor_totally_disconnected.
-Qed.
-
 Section FinitelyBranchingTrees.
 Context {R : realType}.
 Definition pointedDiscrete (P : pointedType) : pseudoMetricType R :=
@@ -542,7 +519,7 @@ move=> entE /(_ [set y | E' (z, y)]) [].
 by move=> y [/=] + [_]; apply: entourage_split.
 Qed.
 
-Section CompactEmbedding.
+Section alexandroff_hausdorff.
 Context {R: realType} {T : pseudoMetricType R}.
 
 Hypothesis cptT : compact [set: T].
@@ -593,35 +570,36 @@ split.
   by case => ->; apply: accessible_closed_set1; apply: hausdorff_accessible. 
 Qed.
 
-Definition ent_balls E := projT1 (cid (ent_balls' E)).
+Let ent_balls E := projT1 (cid (ent_balls' E)).
 
 Let count_unif' := (cid2 
   ((iffLR countable_uniformityP) (@countable_uniformity_metric _ T))).
 Let count_unif := projT1 count_unif'.
 
-Lemma ent_count_unif n : entourage (count_unif n).
+Local Lemma ent_count_unif n : entourage (count_unif n).
 Proof.
 have := projT2 (cid (ent_balls' (count_unif n))).
 rewrite /count_unif; case: count_unif'.
 by move=> /= f fnA fnE; case /(_ (fnE _)) => _ _ _ + _; rewrite -subTset.
 Qed.
 
-Lemma count_unif_sub E : entourage E -> exists N, count_unif N `<=` E.
+Local Lemma count_unif_sub E : entourage E -> exists N, count_unif N `<=` E.
 Proof.
 by move=> entE; rewrite /count_unif; case: count_unif' => f + ? /=; exact.
 Qed.
 
 Hint Resolve ent_count_unif : core.
+
 Let K' (n : nat) : Type := @sigT (set T) (ent_balls (count_unif n)).
-Lemma K'p n :  K' n.
+
+Local Lemma K'p n :  K' n.
 Proof.
 apply: cid; have [//| _ _ _ + _] := projT2 (cid (ent_balls' (count_unif n))).
 by rewrite -subTset => /(_ point I) [W Q ?]; exists W; apply Q.
 Qed.
 
-
-Canonical K n := PointedType (classicType_choiceType (K' n)) (K'p n).
-Canonical Tree := (@tree_of R K).
+Let K n := PointedType (classicType_choiceType (K' n)) (K'p n).
+Let Tree := (@tree_of R K).
 
 Let emb_ind n (U : set T) (k : K n) :=
   (if (pselect (projT1 k `&` U !=set0))
@@ -631,14 +609,13 @@ Let emb_ind n (U : set T) (k : K n) :=
     else set0) `&` U.
 Let emb_invar (U : set T) := closed U /\ U!=set0.
 
-Lemma Kn_closed n (e : K n) : closed (projT1 e).
+Local Lemma Kn_closed n (e : K n) : closed (projT1 e).
 Proof.
 case: e => //= W; have [//| _ _ _ _] := projT2 (cid (ent_balls' (count_unif n))).
 exact.
 Qed.
 
-
-Lemma cantor_surj_pt1 : exists (f : Tree -> T), 
+Local Lemma cantor_surj_pt1 : exists (f : Tree -> T), 
   continuous f /\ set_surj [set: Tree] [set: T] f.
 Proof.
 pose entn n := projT2 (cid (ent_balls' (count_unif n))).
@@ -682,7 +659,7 @@ have [] := (@tree_map_props (fun (n : nat) => @pointedDiscrete R (K n))
 by move=> f [ctsf surjf _]; exists f.
 Qed.
 
-Lemma cantor_surj_pt2 :
+Local Lemma cantor_surj_pt2 :
   exists (f : {surj [set: cantor_space] >->  [set: Tree]}), continuous f.
 Proof.
 have [] := @homeomorphism_cantor_like R Tree; first last.
@@ -699,7 +676,7 @@ simpl; exists ((existT _ _ pA), (existT _ _ pB)).
 by move: AB; apply: contra_neq; apply: EqdepFacts.eq_sigT_fst.
 Qed.
 
-Lemma cantor_surj_twop :
+Local Lemma cantor_surj_twop :
   exists (f : {surj [set: cantor_space] >->  [set: T]}), continuous f.
 Proof.
 case: cantor_surj_pt2 => f ctsf; case: cantor_surj_pt1.
@@ -718,3 +695,4 @@ have : set_surj [set: cantor_space] [set: T] (cst point).
   by move=> q _; exists point => //; have /negP := xpt q; rewrite negbK => /eqP.
 by case/Psurj => f cstf; exists f; rewrite -cstf; apply: cst_continuous.
 Qed.
+Section alexandroff_hausdorff.
