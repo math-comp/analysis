@@ -213,29 +213,6 @@ pose B := \bigcup_n (f n) @` [set` (h'' n)]; exists B; split.
   by apply: (le_ball (ltW deleps)); apply: interior_subset.
 Qed.
 
-Lemma compact_cluster_set1 {T : topologicalType} (x : T) F V :
-  hausdorff_space T -> compact V -> nbhs x V ->
-  ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
-Proof.
-move=> ? cptV nxV PF FV clFx1 U nbhsU; rewrite nbhs_simpl.
-wlog oU : U nbhsU / open U.
-  rewrite /= nbhsE in nbhsU; case: nbhsU => O oO OsubU /(_ O) WH.
-  by apply: (filterS OsubU); apply: WH; [exact: open_nbhs_nbhs | by case: oO].
-have /compact_near_coveringP : compact (V `\` U).
-  apply: (subclosed_compact _ cptV) => //.
-  by apply: closedI; [exact: compact_closed | exact: open_closedC].
-move=> /(_ _ (powerset_filter_from F) (fun W x => ~ W x))[].
-  move=> z [Vz ?]; have zE : x <> z by move/nbhs_singleton: nbhsU => /[swap] ->.
-  have : ~ cluster F z by move: zE; apply: contra_not; rewrite clFx1 => ->.
-  case/existsNP=> C /existsPNP [D] FC /existsNP [Dz] /set0P/negP/negPn/eqP.
-  rewrite setIC => /disjoints_subset CD0; exists (D, [set W | F W /\ W `<=` C]).
-    by split; rewrite //= nbhs_simpl; exact: powerset_filter_fromP.
-  by case => t W [Dt] [FW] /subsetCP; apply; apply: CD0.
-move=> M [MF ME2 [W] MW /(_ _ MW) VUW].
-apply: (@filterS _ _ _ (V `&` W)); last by apply: filterI => //; exact: MF.
-by move=> t [Vt Wt]; apply: contrapT => Ut; exact: (VUW t).
-Qed.
-
 Section topological_trees.
 Context {K : nat -> topologicalType} {X : topologicalType}.
 Context (tree_ind : forall n, set X -> K n -> set X).
@@ -491,40 +468,27 @@ have [] := (@tree_map_props
   by move=> ?; case: i; case: j => //.
 Qed.
 
+Definition tree_map := projT1 (cid (cantor_map)).
+
 Local Lemma tree_map_bij : bijective tree_map.
 Proof. 
-rewrite -setTT_bijective.
-by split=> //; [exact: inj_tree_map | exact: surj_tree_map ].
+by rewrite -setTT_bijective; have [? ? ?] := projT2 (cid cantor_map); split. 
 Qed.
 
 #[local] HB.instance Definition _ := @BijTT.Build _ _ _ tree_map_bij.
-
-Lemma cantor_like_homeomorphism : 
-  exists (f : {splitbij [set: T] >->  [set: cantor_space]}), 
-    continuous f /\
-    (forall A, closed A -> closed (f@`A)).
-Proof.
-exists tree_map.
-by split; [exact: continuous_tree_map | exact: closed_tree_map ].
-Qed.
 
 Lemma homeomorphism_cantor_like : 
   exists (f : {splitbij [set: cantor_space] >->  [set: T]}), 
     continuous f /\
     (forall A, closed A -> closed (f@`A)).
 Proof.
-case: cantor_like_homeomorphism => f [ctsf clsdf].
-exists [splitbij of (f^-1)%FUN]; split.
-  apply/continuous_closedP => A /clsdf /=; congr(_ _).
-  rewrite eqEsubset; split => // z /=.
-    by case => t Ax <-; rewrite invK // in_setE.
-  move=> ?; exists (f^-1 z)%FUN => //.
-  by apply: funK; rewrite in_setE.
-move=> A clA /=; move/continuous_closedP/(_ _ clA): ctsf; congr(_ _).
-rewrite eqEsubset; split => z.
-  by move=> Az; exists (f z) => //; rewrite funK // in_setE.
-by case=> x Ax <-; rewrite /= invK // in_setE.
+exists tree_map => /=; have [? ? ?] := projT2 (cid cantor_map); split => //.
+move=> A clA; apply: compact_closed; first exact: hsdfT.
+apply (@continuous_compact _ _ tree_map); first exact: continuous_subspaceT.
+apply: (@subclosed_compact _ _ [set: cantor_space]) => //.
+exact: cantor_space_compact.
 Qed.
+
 End TreeStructure.
 
 
@@ -568,477 +532,189 @@ Qed.
 
 End FinitelyBranchingTrees.
 
+Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
+Lemma ent_closure {X : uniformType} (x z : X) E : entourage E -> 
+  closure [set y | split_ent E (x, y)] z -> E (x, z).
+Proof.
+pose E' := ((split_ent E) `&` ((split_ent E)^-1)%classic).
+move=> entE /(_ [set y | E' (z, y)]) [].
+  by rewrite -nbhs_entourageE; exists E' => //; apply: filterI.
+by move=> y [/=] + [_]; apply: entourage_split.
+Qed.
+
 Section CompactEmbedding.
 Context {R: realType} {T : pseudoMetricType R}.
 
 Hypothesis cptT : compact [set: T].
 Hypothesis hsdfT : hausdorff_space T.
 
-Local Definition oball eps x : set T := interior (ball x eps).
+Section two_pointed.
+Context (t0 t1 : T).
+Hypothesis T2e : (t0 != t1).
 
-Local Lemma refine_aux (eps : R) (B : set T) : 0 < eps ->
-  exists (U : set (set T)), 
-  [/\
-    finite_set U,
-    (forall C, U C -> C `<=` B),  
-    B `<=` bigcup U id,
-    (forall C, U C -> B `&` C !=set0) &
-    (forall C, U C -> exists t, C `<=` ball t eps)
-  ].
+Let ent_balls' (E : set (T*T)) : 
+  exists (M : set (set T)), 
+    entourage E -> [/\ 
+      finite_set M,
+      (forall A, M A -> exists a, A a /\ 
+        A `<=` closure [set y | split_ent E (a,y)]),
+      (exists (A B : set T), M A /\ M B /\ A != B),
+      \bigcup_(A in M) A = [set: T] &
+      M `<=` closed].
 Proof.
-move:eps=>_/posnumP[eps]; have : compact (closure B).
- by apply: (subclosed_compact _ cptT) => //; exact: closed_closure.
-rewrite compact_cover => /(_ T (closure B) (oball eps%:num)) [].
-- by move=> i _; exact: open_interior.
-- move=> t clBt; exists t => //; exact: nbhsx_ballx.
-move=> C CsubB cvrBcl; exists (
-  (fun i => B `&` (oball eps%:num i)) @` [set` C]); split.
-- exact/finite_image/finite_fset.
-- by move=> ? [?] ? <-.
-- move=> z Bz; have /cvrBcl [d /= Cd odz] : closure B z by exact: subset_closure.
-  by exists (B `&` (oball eps%:num d)) => //; exists d.
-- move=> ? /= [d] Cd <-; have : closure B d by move/CsubB/set_mem:Cd.
-  case/(_ (oball eps%:num d)). 
-    apply: open_nbhs_nbhs; split; [exact: open_interior | apply: nbhsx_ballx].
-  by move=> e ?; exists e; rewrite setIA setIid.
-- move=> ? /= [e /CsubB/set_mem] ? <-; exists e.
-  by apply: subset_trans; last exact: interior_subset.
-Qed.
-
-Local Lemma harmonic_pos (n : nat) : 0 < (n.+1%:R^-1:R).
-Proof. by []. Qed.
-
-Local Lemma harmonicS (n : nat) : (n.+2%:R^-1) < (n.+1%:R^-1) :> R.
-Proof. 
-rewrite ltr_pinv ?inE ?unitfE ?ltr_nat //; by apply/andP. 
-Qed.
-  
-Local Lemma ltn_leq_trans (n m p : nat) :
-  (m < n)%N -> (n <= p)%N -> (m < p)%N.
-Proof. exact: (@leq_ltn_trans n (S m) (S p)). Qed.
-
-Local Definition tier : Type := ((set (set T)) * (nat -> set T) * nat).
-
-Local Lemma refine_indexed (eps : R) (B : set T) : 0 < eps ->
-  exists (Ufn : tier), 
-    forall n, (n >= Ufn.2)%N ->
-  [/\
-    B!=set0 -> Ufn.1.2 @` `I_n = Ufn.1.1 ,
-    (forall C, Ufn.1.1 C -> C `<=` B),  
-    B `<=` bigcup `I_n Ufn.1.2,
-    (forall i, B!=set0 -> B `&` Ufn.1.2 i !=set0) &
-    (forall i, exists t, Ufn.1.2 i `<=` ball t eps)
-  ].
-Proof.
-case: (pselect (B != set0)); first last.
-  move=>/negP; rewrite negbK=> /eqP -> epspos.
-  exists (set0, (fun=> interior (ball point eps)), O) => n /= ?; split.
-  - by move/set0P/eqP.
-  - by move=> ?.
-  - by move=> ? ?. 
-  - by move=> ? /set0P /negP.
-  - move=> ?; exists point; exact: interior_subset.
-case/set0P => b0 Bb0 /(@refine_aux _ B) [U]. 
-move=> [/finite_setP [N idx] subB cvrB BIU Ueps].
-have [U0 UU0 U0b0] := cvrB _ Bb0; case/card_esym/ppcard_eqP: idx => f.
-pose g := patch (fun=> U0) `I_N f; exists (U, g, N) => // n /= Nsubn;
-have Ugi : forall (i : nat), U (g i).
-  by move=> i; rewrite /=/g patch_pred; case E: (_<_)%N => //; exact: funS.
+case: (pselect (entourage E)); last by move=> ?; exists point.
+move=> entE; move: cptT; rewrite compact_cover.
+pose fs x := interior [set y | split_ent E (x, y)].
+case/(_ T ([set: T]) fs).
+- by move=> i _; apply: open_interior.
+- move=> t _; exists t => //. 
+- by rewrite /fs /interior -nbhs_entourageE; exists (split_ent E).
+move=> M' _ Mcov; exists (
+    ((fun x => closure (fs x)) @` [set` M']) `|` [set [set t0];[set t1]]) => _.
 split.
-- move=> _; rewrite eqEsubset; split; first by move=> i [] ? ? <-; exact: Ugi.
-  move=> C /(@surj _ _ _ _ f) [m /= mN <-]. 
-  exists m; first exact: (ltn_leq_trans mN).
-  by rewrite /g patchT // in_setE /=.
-- by move=> C UC; exact: subB.
-- move=> ? /cvrB [C] /(@surj _ _ _ _ f) [m] ? <- ?. 
-  by exists m; [exact: (@ltn_leq_trans N) | by rewrite /=/g patchT // in_setE].
-- by move=> i ?; exact: BIU.
-- by move=> i; exact: Ueps.
+- rewrite finite_setU; split; first by apply: finite_image; exact: finite_fset.
+  exact: finite_set2.
+- move=> A []. 
+    case=> z M'z <-; exists z; split. 
+    apply: subset_closure; apply: nbhs_singleton; apply: nbhs_interior.
+    by rewrite -nbhs_entourageE; exists (split_ent E).
+  by apply:closure_subset; exact:interior_subset.
+  by case => ->; [exists t0 | exists t1]; split => // t ->;
+    apply: subset_closure; apply:entourage_refl.
+- exists [set t0], [set t1]; split;[|split]. 
+  + by right; left.
+  + by right; right.
+  + apply/eqP; rewrite eqEsubset; case=> /(_ t0) => /= /(_ erefl).
+    by move: T2e => /[swap] ->/eqP.
+- rewrite -subTset => t /Mcov [t' M't' fsxt]; exists (closure (fs t')).
+  left; by exists t' => //.
+  by apply: subset_closure.
+- move=> ? []; first by case=> ? ? <-; exact: closed_closure.
+  by case => ->; apply: accessible_closed_set1; apply: hausdorff_accessible. 
 Qed.
 
-Local Definition refine (n : nat) (B : set T) : tier :=
-  (projT1 (cid (@refine_indexed _ B (harmonic_pos n) ))).
+Definition ent_balls E := projT1 (cid (ent_balls' E)).
 
-Local Lemma refine_spec (N : nat) (B : set T) :
-  let Ufn := refine N B in 
-  [/\
-    forall n, (n >= Ufn.2)%N -> B!=set0 -> Ufn.1.2 @` `I_n = Ufn.1.1,
-    forall C, Ufn.1.1 C -> C `<=` B,  
-    forall n, (n >= Ufn.2)%N -> B `<=` bigcup `I_n Ufn.1.2,
-    forall i, B!=set0 -> B `&` Ufn.1.2 i !=set0 &
-    forall i, exists t, Ufn.1.2 i `<=` ball t (N.+1%:R^-1)
-  ].
+Let count_unif' := (cid2 
+  ((iffLR countable_uniformityP) (@countable_uniformity_metric _ T))).
+Let count_unif := projT1 count_unif'.
+
+Lemma ent_count_unif n : entourage (count_unif n).
 Proof.
-split.
-- by move=> n /(projT2 (cid (refine_indexed B (harmonic_pos N))) _) [].
-- by have [] := projT2 (cid (refine_indexed B (harmonic_pos N))) _ (leqnn _).
-- by move=> n /(projT2 (cid (refine_indexed B (harmonic_pos N))) _) [].
-- by have [] := projT2 (cid (refine_indexed B (harmonic_pos N))) _ (leqnn _).
-- by have [] := projT2 (cid (refine_indexed B (harmonic_pos N))) _ (leqnn _).
+have := projT2 (cid (ent_balls' (count_unif n))).
+rewrite /count_unif; case: count_unif'.
+by move=> /= f fnA fnE; case /(_ (fnE _)) => _ _ _ + _; rewrite -subTset.
 Qed.
 
-Local Fixpoint tiers (n : nat) : set tier := 
-  if n is S m
-  then refine n @` (\bigcup_(Ufn in tiers m) Ufn.1.1)
-  else [set ([set setT], (fun=> setT), (2)%N)].
-
-Local Definition lvl_aux (n : nat) : nat :=
-  (supremum (0)%N ((fun Ufn => Ufn.2) @` tiers n)).
-
-Local Lemma lt02 (n : nat) : (0 \in `I_(n.+2))%N. 
-Proof. by rewrite in_setE. Qed.
-
-Local Definition lvl (n : nat) :=
-  PointedType (`I_(lvl_aux n).+2) (exist _ O (lt02 n)).
-
-Local Definition Ttree := @tree_of R lvl.
-  
-Local Fixpoint target (branch : Ttree) (n : nat) : (set T) := 
-  if n is S m 
-  then (refine n (target branch m) ).1.2 (projT1 (branch n))
-  else setT.
-  
-Local Lemma targetN0 (b : Ttree) (n : nat) : target b n !=set0.
+Lemma count_unif_sub E : entourage E -> exists N, count_unif N `<=` E.
 Proof.
-elim: n => //=; first by exists point.
-move=> n [x tbnx]. 
-have [_ _ _ /(_ (proj1_sig (b (S n)))) + _] := @refine_spec n.+1 (target b n).
-by (case; first by exists x); move=> t [? ?]; exists t.
+by move=> entE; rewrite /count_unif; case: count_unif' => f + ? /=; exact.
 Qed.
 
-Local Lemma tierN0 n Ufn : tiers n Ufn -> 
-  Ufn.1.1 !=set0 /\ (forall V, Ufn.1.1 V -> V!=set0).
-elim: n Ufn => //. 
-  move=> ?; rewrite /tiers=> ->; split; first by exists [set: T].
-  by move=> ? /= ->; exists point.
-move=> n IH Ufn /= [V [t /IH [IH1 IH2]] tV <-].
-have VN0 : V!=set0 by exact: IH2.
-have [/(_ (refine n.+1 V).2.+1) img _ _ UN0 _] := refine_spec (n.+1) V; split.
-  rewrite -img //.
-  by exists ((refine n.+1 V).1.2 (refine n.+1 V).2), (refine n.+1 V).2 => //=.
-move=> U /=; rewrite -img //=.
-by case=> M + <-; have [z [_ ?] _] := UN0 M VN0; exists z.
-Qed.
-
-Local Lemma tiersN0 n : tiers n !=set0.
-elim: n => //=; first by exists ([set [set: T]], fun=> [set: T], 2%N).
-move=> n [Ufn] Ufn_tier; have [[U UfnU] _] := tierN0 Ufn_tier.
-by exists (refine n.+1 U); exists U => //; exists Ufn.
-Qed.
-
-Local Lemma refine_finite (n : nat) (B : set T) :
-  B!=set0 -> finite_set (refine n B).1.1.
+Hint Resolve ent_count_unif : core.
+Let K' (n : nat) : Type := @sigT (set T) (ent_balls (count_unif n)).
+Lemma K'p n :  K' n.
 Proof.
-move=> Bn0; have [/(_ _ (leqnn _) Bn0) <- _ _ _ _] := refine_spec n B.
-exact/finite_image/finite_II.
-Qed.
- 
-Local Lemma tier_finite Ufn n : tiers n Ufn -> finite_set Ufn.1.1.
-Proof.
-elim: n Ufn; first by move=> ? -> /=; exact: finite_set1.
-move=> n IH Ufn /= [V [tr] tier_tr trV <-]; apply: refine_finite.
-by have [_ ] := (tierN0 tier_tr); exact.
+apply: cid; have [//| _ _ _ + _] := projT2 (cid (ent_balls' (count_unif n))).
+by rewrite -subTset => /(_ point I) [W Q ?]; exists W; apply Q.
 Qed.
 
 
-Local Lemma tiers_finite n : finite_set (tiers n).
-Proof.
-elim: n; first exact: finite_set1.
-move=> n IH /=; apply: finite_image; apply: bigcup_finite => //.
-by move=> ? ?; apply: (@tier_finite _ n).
-Qed.
+Canonical K n := PointedType (classicType_choiceType (K' n)) (K'p n).
+Canonical Tree := (@tree_of R K).
 
-Local Lemma cauchy_branch (b : Ttree) : 
-  cauchy (filter_from [set: nat] (target b)).
-Proof.
-move=> E; rewrite /= nbhs_simpl -entourage_from_ballE; case => _/posnumP[eps].
-have [] := @cvg_harmonic R (ball (0:R) eps%:num); first exact: nbhsx_ballx.
-move=> n _ /(_ n (leqnn n)) /=; rewrite /ball /= sub0r normrE ger0_norm //.
-move=> neps nE; exists (target b (n*2)%N.+1, target b (n*2)%N.+1). 
-  by split; exists (n*2)%N.+1.
-case=> y z [] /= rfy rfz; apply: nE; apply: (le_ball (ltW neps)) => /=.
-have [_ _ _ _] := refine_spec (n * 2)%N.+1 (target b (n*2)).
-move=> /= /(_ (proj1_sig (b ((n * 2)%N.+1)))) [] t rfball.
-have zball := rfball z rfz; have /ball_sym yball := rfball y rfy.
-have := ball_triangle yball zball; apply: le_ball.
-suff P : (n*2).+2%:R^-1 <= n.+1%:R^-1/2 :> R. 
-  by rewrite (splitr n.+1%:R^-1) ler_add //; exact: P.
-rewrite -invrM // ?unitfE // ler_pinv ?inE ?unitfE; first last.
-  by apply/andP. 
-  by apply/andP. 
-by rewrite mulrC -natrM ler_nat ?mulSn addnC ?addnS addn0.
-Qed.
+Let emb_ind n (U : set T) (k : K n) :=
+  (if (pselect (projT1 k `&` U !=set0))
+  then projT1 k
+  else if (pselect (exists e : K n , projT1 e `&` U !=set0)) is left e
+    then projT1 (projT1 (cid e))
+    else set0) `&` U.
+Let emb_invar (U : set T) := closed U /\ U!=set0.
 
-Lemma ubound_finite_set (U : set nat) : 
-  finite_set U -> ubound U !=set0.
+Lemma Kn_closed n (e : K n) : closed (projT1 e).
 Proof.
-case/finite_setP => n; move: U; elim: n.
-  by move=> ?; rewrite II0 card_eq0 => /eqP ->; exists O => ?.
-move=> n IH U /eq_cardSP [N UN] /IH [/= M ubdM]; exists (maxn M N).
-move=> w; case: (eqVneq w N); first by move=> -> ?; exact: leq_maxr.
-by move=> /eqP wN Uw; apply: leq_trans; [exact: ubdM  |  exact: leq_maxl].
-Qed.
-
-Lemma lvl_aux_ge : forall n Ufn, tiers n Ufn -> (Ufn.2 <= lvl_aux n)%N.
-Proof.
-elim. 
-  move => /= ? -> /=; rewrite /lvl_aux.
-  rewrite (_ : [set Ufn.2 | Ufn in tiers 0] = [set 2%N]) ?supremum1 //.
-  rewrite eqEsubset; split => t /=; first by (do 3 case) => ? ? ? /= + <-; case.
-  by move=> ->; exists ([set [set: T]], fun=> [set: T], 2%N).
-move=> n IH Ufn TUfn; rewrite /lvl_aux/supremum; case: ifPn. 
-  move=> /eqP/image_set0_set0 /= /image_set0_set0/bigcup0P.
-  have [Ufn2 Ufn_tier] := tiersN0 n => /(_ _ Ufn_tier).
-  by have [/set0P/eqP + _] := @tierN0 _ Ufn2 Ufn_tier.
-move=> cands.
-case: xgetP => [y yA [uAy ?]|]. 
-  apply: (@leq_trans y) => //.
-  by apply: uAy => /=; exists Ufn => //.
-move=> /forallNP; apply: contra_notP => _; apply: nat_supremums_neq0.
-apply/ubound_finite_set/finite_image/tiers_finite.
-Qed.
-
-Lemma refine_inje n B C : B!=set0 -> 
-  refine n B = refine n C -> B `<=` C.
-Proof.
-move=> ? rfnBC t Bt. 
-have [img _ /(_ _ (leqnn _ ) _ Bt) + _ _] := refine_spec n B.
-case => m/= msmall rfbm.
-have [_ /(_ _ _ _ rfbm) + _ _ _] := refine_spec n C.
-apply; rewrite -rfnBC -(img _ (leqnn _)) => //.
-Qed.
-
-Lemma refine_inj n B C : B!=set0 -> C !=set0 -> 
-  refine n B = refine n C -> B = C.
-Proof.
-by move=> ? ? rfnBC; rewrite eqEsubset; split; apply: (@refine_inje n).
-Qed.
-
-Lemma tier_target b n : tiers n.+1 (refine n.+1 (target b n)).
-Proof.
-elim: n; first by exists [set: T]; rewrite // bigcup_set1.
-move=> n IH /=; exists ((refine n.+1 (target b n)).1.2 (projT1 (b n.+1))) => //.
-exists (refine n.+1 (target b n)) => //.
-have [/(_ (lvl_aux n.+1).+2) img _ _ _ _] := refine_spec n.+1 (target b n).
-rewrite -img; last exact: targetN0.
-  by exists (projT1 (b n.+1)) => //; have := projT2 (b n.+1); rewrite in_setE.
-do 2 apply: leqW; apply: lvl_aux_ge; exists (target b n) => //.
-case: IH => V [ Ufn trUfn UfnV E]; exists Ufn => //.
-have := UfnV; congr (_ _); apply: (@refine_inj n.+1) => //.
-  by have [_ ] := tierN0 trUfn; apply.
-apply: targetN0.
+case: e => //= W; have [//| _ _ _ _] := projT2 (cid (ent_balls' (count_unif n))).
+exact.
 Qed.
 
 
-Lemma branch_subsetS b n : target b n.+1 `<=` target b n.
-Proof. 
-have [img + _ _ _] /= := refine_spec n.+1 (target b n).
-apply; rewrite -(img (lvl_aux n.+1).+2 _ ); first last. 
-- exact: targetN0.
-- by do 2 apply: leqW; apply: lvl_aux_ge; exact: tier_target.
-by exists (projT1 (b n.+1)) => //; have := projT2 (b n.+1); rewrite in_setE.
+Lemma cantor_surj_pt1 : exists (f : Tree -> T), 
+  continuous f /\ set_surj [set: Tree] [set: T] f.
+Proof.
+pose entn n := projT2 (cid (ent_balls' (count_unif n))).
+have [] := (@tree_map_props (fun (n : nat) => @pointedDiscrete R (K n)) 
+  T (emb_ind) (emb_invar) cptT hsdfT).
+- done.
+- move=> n U; rewrite eqEsubset; split; last by move => t [? ? []].
+  move=> t Ut; have [//|_ _ _ + _] := entn n; rewrite -subTset.
+  case/(_ t I) => W cbW Wt; exists (existT _ W cbW) => //.
+  by rewrite /emb_ind; case: pselect => //=; apply: absurd; exists t.
+- move=> n U e [clU Un0]; split.
+    apply: closedI => //; case: pselect => //= ?; first exact: Kn_closed.
+    case: pselect; last by move=> ?; exact: closed0.
+    move=> ?; exact: Kn_closed.
+  rewrite /emb_ind; case: pselect => //=  ?; case: pselect.
+    by case => i [z [pz bz]]; set P := cid _; have := projT2 P; apply.
+  case: Un0 => z Uz; apply: absurd.
+  have [//|_ _ _ + _] := entn n; rewrite -subTset; case/(_ z I)=> i bi iz.
+  by exists (existT _ _ bi); exists z.
+- by move => ? []. 
+- by split; [exact: closedT | exists point].
+- by move => ? [].
+- move=> x y xny; move: hsdfT; rewrite open_hausdorff.
+  case/(_ _ _ xny); case => U V /= [/set_mem Ux /set_mem Vy] [oU oV UVI0].
+  move: oU; rewrite openE => /(_ _ Ux); rewrite /interior -nbhs_entourageE.
+  case => E entE ExU. 
+  have [//| n ctE] := @count_unif_sub ((split_ent E) `&` ((split_ent E)^-1%classic)).
+    exact: filterI.
+  exists n => B [C ebC]; have [//|_ Csub _ _ _] := entn n => embx emby.
+  have [[D cbD] /= [Dx Dy]] : exists (e : K n), projT1 e x /\ projT1 e y.
+    move: embx emby; rewrite /emb_ind; case: pselect => /=.
+      by move => ? [? ?] [? ?]; exists (existT _ _ ebC); split.
+    case: pselect ; last by move => ? ? [].
+    by move=> e _ [? ?] [? ?]; exists (projT1 (cid e)).
+  suff : E (x, y).
+    by move/ExU; move/eqP/disjoints_subset:UVI0 => /[apply].
+  have [z [Dz DzE]] := Csub _ cbD. 
+  have /ent_closure:= DzE _ Dx => /(_ (ent_count_unif n))/ctE [_ /= ?].
+  have /ent_closure:= DzE _ Dy => /(_ (ent_count_unif n))/ctE [? _].
+  exact: (@entourage_split [uniformType of T] z).
+by move=> f [ctsf surjf _]; exists f.
 Qed.
 
-Lemma branch_subset b i j : (i <= j)%N -> target b j `<=` target b i.
-Proof. 
-elim: j i; first by move => ?; rewrite leqn0 => /eqP ->.
-move=> j IH i; rewrite leq_eqVlt => /orP [/eqP -> //| /IH ji1].
-exact/(subset_trans _ ji1)/branch_subsetS.
-Qed.
-
-Lemma filter_branch b: 
-  ProperFilter (filter_from [set: nat] (target b)).
+Lemma cantor_surj_pt2 :
+  exists (f : {surj [set: cantor_space] >->  [set: Tree]}), continuous f.
 Proof.
-apply: filter_from_proper; last by move=>? _; exact: targetN0.
-apply: filter_from_filter; first by exists O.
-move=> i j _ _; exists (maxn i j) => // t targetIJ. 
-by split; apply: (branch_subset _ targetIJ); rewrite ?leq_maxl ?leq_maxr.
-Qed.
-
-Local Lemma target_cvg b : cvg (filter_from [set: nat] (target b)).
-Proof.
-apply: (@compact_cauchy_cvg _ [set: T]) => //=.
-- apply: filter_branch.
-- apply: cauchy_branch.
-- by exists O => //.
-Qed.
-
-Local Definition bullseye (b : Ttree) : T :=
-  lim (filter_from [set: nat] (target b)).
-
-
-Local Fixpoint retract_aux (t : T) (n : nat) : ((set T) * lvl n) := 
-  if n is S m 
-  then 
-    let rfn := refine n (retract_aux t m).1 in
-    get (fun (Ui :((set T) * lvl n)) => Ui.1 t /\ rfn.1.2 (projT1 Ui.2) = Ui.1)
-  else (setT, point).
-
-Local Lemma retract_refine (t : T) (n : nat) : 
-    (retract_aux t n).1 t /\ 
-    exists Ufn, [/\
-      if n is S m then Ufn = (refine n (retract_aux t m).1) else True,
-      tiers n Ufn, 
-      Ufn.1.1 (retract_aux t n).1 &
-      Ufn.1.2 (projT1 (retract_aux t n).2) = (retract_aux t n).1
-    ].
-Proof.
-elim: n; first by split => //; exists ([set setT], (fun=> setT), (2)%N).
-move=> n [rtt] [Ufn [? tn retractN] ufnT]; split; first last.
-  exists (refine n.+1 (retract_aux t n).1) => //=; split => //.
-  - exists (retract_aux t n).1 => //; exists Ufn => //.
-  - have rtN0 : (retract_aux t n).1 !=set0 by have [_] := (tierN0 tn); exact.
-    case: xgetP => [[U lvln] uAx /= [? <-]|].
-      have [rsurj _ _ _ _] := refine_spec n.+1 (retract_aux t n).1.
-      have <- /= := rsurj (lvl_aux n.+1).+2 => //.
-        by exists (projT1 lvln) => //; have := projT2 lvln; rewrite in_setE.
-      do 2 apply: leqW; apply: lvl_aux_ge; exists (retract_aux t n).1 => //.
-      by exists Ufn.
-    move=> /forallNP; apply: contra_notP => /= _.
-    have [rsurj _ cvr _ _] := refine_spec n.+1 (retract_aux t n).1.
-    have [|N Nlt rfNt] := cvr (lvl_aux n.+1).+2 _ t rtt.
-      do 2 apply: leqW; apply: lvl_aux_ge; exists (retract_aux t n).1 => //.
-      by exists Ufn.
-    have Nlvl : N \in `I_(lvl_aux n.+1).+2 by rewrite in_setE.
-    by exists ( (refine n.+1 (retract_aux t n).1).1.2 N, exist _ N Nlvl). 
-  - case: xgetP => [[U lvln] uAx /= [? <-]|] => //.
-    move=> /forallNP; apply: contra_notP => /= _.
-    have [rsurj _ cvr _ _] := refine_spec n.+1 (retract_aux t n).1.
-    have [|N Nlt rfNt] := cvr (lvl_aux n.+1).+2 _ t rtt.
-      do 2 apply: leqW; apply: lvl_aux_ge; exists (retract_aux t n).1 => //.
-      by exists Ufn.
-    have Nlvl : N \in `I_(lvl_aux n.+1).+2 by rewrite in_setE.
-    by exists ( (refine n.+1 (retract_aux t n).1).1.2 N, exist _ N Nlvl). 
-move=> /=; case: xgetP => [[U lvln] uAx [/= //]|].
-move=> /forallNP; apply: contra_notP => /= _.
-have [rsurj _ cvr _ _] := refine_spec n.+1 (retract_aux t n).1.
-have [|N Nlt rfNt] := cvr (lvl_aux n.+1).+2 _ t rtt.
-  do 2 apply: leqW; apply: lvl_aux_ge; exists (retract_aux t n).1 => //.
-  by exists Ufn.
-have Nlvl : N \in `I_(lvl_aux n.+1).+2 by rewrite in_setE.
-by exists ( (refine n.+1 (retract_aux t n).1).1.2 N, exist _ N Nlvl). 
-Qed.
-
-Local Definition retract (t : T) : Ttree := fun n => (retract_aux t n).2.
-
-Local Lemma bullseye_surj : set_surj [set: Ttree] [set: T] bullseye.
-Proof.
-move=> t _; suff : exists f : Ttree, forall n, target f n t.
-  case=> f fnt; exists f => //.
-  apply/close_eq/close_sym => // U /open_nbhs_nbhs Ubf W Wt; exists t.
-  split; last exact: nbhs_singleton.
-  have /= [M _] := target_cvg (Ubf); apply; exact: fnt.
-exists (retract t) => n; case: n => // n /=.
-suff -> : target (retract t) n = (retract_aux t n).1.
-  by have [rtxt [Ufn] [-> trUfn ? ->]] // := retract_refine t n.+1.
-elim: n => // n IH; rewrite [LHS]/= IH.
-by have [_ [?] [-> ?] ] := retract_refine t n.+1.
-Qed.
-
-Lemma bullseye_prefixE (br1 br2 : Ttree) (n : nat) : 
-  (forall i, (i <= n)%N -> br1 i = br2 i) -> 
-  (forall i, (i <= n)%N -> target br1 i = target br2 i).
-Proof.
-elim: n; first by move=> i ?; rewrite leqn0 => /eqP ->.
-move=> n IH eqSn i; rewrite leq_eqVlt => /orP []; first last.
-  by apply: IH => // ? /leqW; exact: eqSn.
-move/eqP => -> /=; rewrite IH => //; first last.
-  by move=> ? /leqW; exact: eqSn.
-by rewrite eqSn.
-Qed.
-
-Lemma bullseye_target_clousre (br : Ttree) (n : nat) :
-  closure (target br n) (bullseye br).
-Proof.
-move=> B /target_cvg [N] _ NsubB; suff : target br n `&` target br N !=set0.
-  by case=> z [??]; exists z; split => //; exact: NsubB.
-move=> {NsubB}; wlog nN : N n / (n <= N)%N.
-  move=> WL; case/orP: (leq_total N n); last exact: WL. 
-  rewrite setIC; exact: WL.
-have [z ?] := targetN0 br N; exists z; split => //.
-by apply: (branch_subset nN). 
-Qed.
- 
-Lemma closed_ball_subset (M : pseudoMetricType R) (x : M)
-  (r0 r1 : R) : 0 < r0 -> r0 < r1 -> closed_ball x r0 `<=` ball x r1.
-Proof.
-move=> r00 r01; rewrite (_ : r0 = (PosNum r00)%:num) // => y.
-have r0r1 : 0 < r1 - r0 by rewrite subr_gt0.
-move=> /(_ (ball y (PosNum r0r1)%:num)) []; first exact: nbhsx_ballx.
-move=> z [xz /ball_sym zy]; have := ball_triangle xz zy; congr(ball _ _ _).
-by rewrite /= addrC -addrA [-_ + _]addrC subrr addr0.
-Qed.
-
-Lemma bullseye_prefix (br1 br2 : Ttree) (n : nat) : 
-  (forall i, (i <= n.+1)%N -> br1 i = br2 i) -> 
-  ball (bullseye br1) (2 * (n.+1%:R^-1)) (bullseye br2).
-Proof.
-move=> pfxE; have := @bullseye_target_clousre br1 n.+1.
-rewrite (@bullseye_prefixE br1 br2 n.+1) // => /= near_br1. 
-have /= near_br2 := @bullseye_target_clousre br2 n.+1.
-have [surj _ _ _ rball] := refine_spec n.+1 (target br2 n).
-have [t /= /closure_subset rfn] := rball (proj1_sig (br2 n.+1)).
-have /(closed_ball_subset (harmonic_pos n.+1) (harmonicS n)) := rfn _ near_br1.
-have /(closed_ball_subset (harmonic_pos n.+1) (harmonicS n)) := rfn _ near_br2.
-rewrite [_ / _]splitr mulrC mulrA mulVf // div1r => /ball_sym b1 b2.
-by have /ball_sym := ball_triangle b1 b2.
-Qed.
-
-Lemma tree_prefix (y: Ttree) (n : nat) : 
-  \forall z \near y, forall i,  (i < n)%N -> y i = z i.
-Proof.
-elim: n; first by near=> z => ?; rewrite ltn0.
-move=> n IH.
-near=> z => i; rewrite leq_eqVlt => /orP []; first last.
-  move=> iSn; have -> := near IH z => //.
-move=> /eqP/(succn_inj) ->; near: z.
-  exists ((proj n)@^-1` [set (y n)]); split => //.
-  suff : @open Ttree ((proj n)@^-1` [set (y n)]) by [].
-  apply: open_comp; last apply: discrete_open => //.
-  by move=> + _; apply: proj_continuous.
-Unshelve. all: end_near. Qed.
-
-Lemma tree_prefix_le (y: Ttree) (n : nat) : 
-  \forall z \near y, forall i,  (i <= n)%N -> y i = z i.
-Proof. exact: (tree_prefix y n.+1). Qed.
- 
-Local Lemma bullseye_cts : continuous bullseye.
-Proof.
-move=> x; apply/ cvg_ballP; first exact: nbhs_filter.
-move=> _/posnumP[eps].
-have [] := @cvg_harmonic R (ball (0:R) eps%:num); first exact: nbhsx_ballx.
-move=> n _ /(_  n (leqnn n)); rewrite /ball [x in x -> _]/= sub0r.
-rewrite normrE ger0_norm // => neps; have n2 : n.+2%:R^-1 <= n.+1%:R^-1 :> R.
-  by rewrite ler_pinv ?inE ?unitfE ?ler_nat //; exact/andP. 
-near=> z. 
-  apply/(@le_ball _ _ _ (2 * ((2 *n).+2)%:R^-1)); last apply: bullseye_prefix.
-    apply: le_trans; last apply/ltW/neps.
-    rewrite ( _ : (2 * n).+2 = 2 * n.+1)%N ?natrM; first last.
-      by rewrite ?mulSn ?mul0n ?addn0 ?addnS addSn. 
-    by rewrite -[x in x/(_ * _)]mulr1 -mulf_div divrr ?unitfE // ?mul1r.
-near: z.
-exact: tree_prefix_le.
-Unshelve. all: end_near. Qed.
-
-Lemma ttree_finite : cantor_like Ttree.
-Proof.
+have [] := @homeomorphism_cantor_like R Tree; first last.
+  by move=> f [ctsf _]; exists f.
 apply: cantor_like_finite_prod.
-  by move=> n /=; apply/ finite_setP; exists (lvl_aux n).+2; exact: card_setT.
-move=> n /=. 
-have IO : O \in `I_(lvl_aux n).+2 by rewrite in_setE.
-have I1 : 1%N \in `I_(lvl_aux n).+2 by rewrite in_setE.
-by exists (exist _ O IO, exist _ 1%N I1).
+  move=> n /=; have [// | fs _ _ _ _] := projT2 (cid (ent_balls' (count_unif n))).
+  suff -> : [set: {classic K' n}] =  
+      (@projT1 (set T) _) @^-1` (projT1 (cid (ent_balls' (count_unif n)))).
+    by apply: finite_preimage => //; move=> ? ? _ _; apply: eq_sigT_hprop.
+  by rewrite eqEsubset; split => //; case=> /= W p.
+move=> n; have [// | _ _ [A [B [pA [pB AB]]]] _ _] := 
+  projT2 (cid (ent_balls' (count_unif n))).
+simpl; exists ((existT _ _ pA), (existT _ _ pB)).
+by move: AB; apply: contra_neq; apply: EqdepFacts.eq_sigT_fst.
 Qed.
 
-Lemma cantor_surj : exists (f : {surj [set: cantor_space] >-> [set: T]}), 
-  continuous f.
+Lemma cantor_surj_twop :
+  exists (f : {surj [set: cantor_space] >->  [set: T]}), continuous f.
 Proof.
-have [f [ctsf _]] := homeomorphism_cantor_like (ttree_finite).
-have /Psurj blz := bullseye_surj.
-pose g := [surj of (projT1 blz) \o f].
-exists g => /= x; apply: (@continuous_comp cantor_space Ttree).
-  exact: ctsf.
-have <- := projT2 blz; exact: bullseye_cts.
+case: cantor_surj_pt2 => f ctsf; case: cantor_surj_pt1.
+move => g [ctsg /Psurj [sjg gsjg]]; exists [surj of sjg \o f].
+by move=> z; apply continuous_comp; [apply: ctsf|rewrite -gsjg; apply: ctsg].
 Qed.
+End two_pointed.
 
-End CompactEmbedding.
+Lemma cantor_surj :
+  exists (f : {surj [set: cantor_space] >->  [set: T]}), continuous f.
+Proof.
+case: (pselect (exists (p : T), p != point)).
+  case => p ppt; apply: cantor_surj_twop; exact: ppt.
+move=> /forallNP xpt.
+have : set_surj [set: cantor_space] [set: T] (cst point).
+  by move=> q _; exists point => //; have /negP := xpt q; rewrite negbK => /eqP.
+by case/Psurj => f cstf; exists f; rewrite -cstf; apply: cst_continuous.
+Qed.
