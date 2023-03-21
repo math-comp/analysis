@@ -324,6 +324,99 @@
 
 - in `constructive_ereal.v`:
   + lemma `bigmaxe_fin_num`
+  + lemmas `lee_sqr`, `lte_sqr`, `lee_sqrE`, `lte_sqrE`, `sqre_ge0`,
+    `EFin_expe`, `sqreD`, `sqredD`
+- in `probability.v`
+  + definition of `covariance`
+  + lemmas `expectation_sum`, `covarianceE`, `covarianceC`,
+    `covariance_fin_num`, `covariance_cst_l`, `covariance_cst_r`,
+    `covarianceZl`, `covarianceZr`, `covarianceNl`, `covarianceNr`,
+    `covarianceNN`, `covarianceDl`, `covarianceDr`, `covarianceBl`,
+    `covarianceBr`, `variance_fin_num`, `varianceZ`, `varianceN`,
+    `varianceD`, `varianceB`, `varianceD_cst_l`, `varianceD_cst_r`,
+    `varianceB_cst_l`, `varianceB_cst_r`
+- in `functions.v`:
+  + lemma `sumrfctE`
+- in `lebesgue_integral.v`:
+  + lemma `integrable_sum`
+- in `probability.v`
+  + lemma `cantelli`
+- in `classical_sets.v`:
+  + lemmas `preimage_mem_true`, `preimage_mem_false`
+- in `measure.v`:
+  + definition `measure_dominates`, notation `` `<< ``
+  + lemma `measure_dominates_trans`
+- in `measure.v`:
+  + defintion `mfrestr`
+- in `charge.v`:
+  + definition `measure_of_charge`
+  + definition `crestr0`
+  + definitions `jordan_neg`, `jordan_pos`
+  + lemmas `jordan_decomp`, `jordan_pos_dominates`, `jordan_neg_dominates`
+  + lemma `radon_nikodym_finite`
+  + definition `Radon_Nikodym`, notation `'d nu '/d mu`
+  + theorems `Radon_Nikodym_integrable`, `Radon_Nikodym_integral`
+
+- in `measure.v`:
+  + lemmas `measurable_pair1`, `measurable_pair2`
+  + lemma `covariance_le`
+- in `mathcomp_extra.v`
+  + definition `coefE` (will be in MC 2.1/1.18)
+  + lemmas `deg2_poly_canonical`, `deg2_poly_factor`, `deg2_poly_min`,
+    `deg2_poly_minE`, `deg2_poly_ge0`, `Real.deg2_poly_factor`,
+    `deg_le2_poly_delta_ge0`, `deg_le2_poly_ge0`
+    (will be in MC 2.1/1.18)
+  + lemma `deg_le2_ge0`
+  + new lemmas `measurable_subring`, and `semiring_sigma_additive`.
+  + added factory `Content_SubSigmaAdditive_isMeasure`
+
+- in `lebesgue_integral.v`:
+  + lemmas `integrableP`, `measurable_int`
+  + new definitions `split_sym`, `gauge`, `gauge_uniformType_mixin`, 
+    `gauge_topologicalTypeMixin`, `gauge_filtered`, `gauge_topologicalType`, 
+    `gauge_uniformType`, `gauge_psuedoMetric_mixin`, and 
+    `gauge_psuedoMetricType`.
+  + new lemmas `iter_split_ent`, `gauge_ent`, `gauge_filter`, 
+    `gauge_refl`, `gauge_inv`, `gauge_split`, `gauge_countable_uniformity`, and 
+    `uniform_pseudometric_sup`.
+  + new definitions `discrete_ent`, `discrete_uniformType`, `discrete_ball`, 
+    `discrete_pseudoMetricType`, and `pseudoMetric_bool`.
+  + new lemmas `finite_compact`, `discrete_ball_center`, `compact_cauchy_cvg`
+
+- in file `cantor.v`,
+  + new definitions `countable_nat`, `totally_disconnected`, `countable_basis`, 
+    `cantor_like`, `pointedDiscrete`, and `tree_of`.
+  + new lemmas `bool2E`, `bool_predE`, `cantor_space_compact`, 
+    `cantor_space_hausdorff`, `perfect_set2`, `totally_disconnected_prod`, 
+    `totally_disconnected_discrete`, `cantor_totally_disconnected`, 
+    `cantor_perfect`, `cantor_like_cantor_space`, `totally_disconnected_cvg`, 
+    `clopen_countable`, `compact_countable_base`, `tree_map_props`, 
+    `homeomorphism_cantor_like`, `cantor_like_finite_prod`, `ent_closure`, and 
+    `cantor_surj`.
+- in file `topology.v`,
+  + new definitions `discrete_ent`, `discrete_ent_filter`, 
+    `discrete_uniform_mixin`, `discrete_uniformType`, `discrete_ball`, 
+    `discrete_pseudoMetricType_mixin`, `discrete_pseudoMetricType`, and 
+    `pseudoMetric_bool`.
+  + new lemmas `finite_compact`, `discrete_ent_refl`, `discrete_ent_inv`, 
+    `discrete_ent_split`, `discrete_ent_nbhs`, `discrete_ball_center`, 
+    `discrete_ball_sym`, `discrete_ball_triangle`, `discrete_entourage`, and 
+    `compact_cauchy_cvg`.
+
+### Changed
+
+- in `mathcomp_extra.v`
+  + lemmas `eq_bigmax`, `eq_bigmin` changed to respect `P` in the returned type.
+- in `measure.v`:
+  + generalize `negligible` to `semiRingOfSetsType`
+- in `exp.v`:
+  + new lemmas `power_pos_ge0`, `power_pos0`, `power_pos_eq0`,
+    `power_posM`, `power_posAC`, `power12_sqrt`, `power_pos_inv1`,
+    `power_pos_inv`, `power_pos_intmul`
+- in `lebesgue_measure.v`:
+  + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
+- in `measure.v`:
+  + definition `almost_everywhere`
 
 ### Changed
   
