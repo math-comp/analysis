@@ -563,14 +563,19 @@ Section other_norms.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {finite_measure set T -> \bar R}.
 
-Definition uniform_norm (f : T -> R) : R := sup (range (normr \o f)).
+Definition esup (X : set R) : \bar R := ereal_sup (EFin @` X).
+
+Lemma esupT : esup [set: R] = +oo%E.
+Abort.
+
+Definition uniform_norm (f : T -> R) : \bar R := esup (range (normr \o f)).
 (*Local Notation "`|| X ||_unif" := (uniform_norm X) (at level 0).*)
 
 (* essential supremum *)
-Definition ess_sup : set R -> R.
+Definition ess_sup : set R -> \bar R.
 Admitted.
 
-Definition Linfty_norm (f : T -> R) : R := ess_sup (range (normr \o f)).
+Definition Linfty_norm (f : T -> R) : \bar R := ess_sup (range (normr \o f)).
 End other_norms.
 
 Section cvg_random_variable.
@@ -578,16 +583,16 @@ Variables (d : _) (T : measurableType d) (R : realType) (P : probability T R).
 
 Definition cvg_in_probability (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
   := forall a : {posnum R},
-    [sequence P [set x | a%:num <= `| X n x - Y x | ] ]_n --> (0%:E).
+    [sequence P [set x | a%:num <= `| X n x - Y x | ] ]_n --> 0%E.
 
 Definition cvg_in_Lp_norm (p : nat) (X : {RV P >-> R}^nat) (Y : {RV P >-> R}) :=
-  Lp_norm P p (X n - Y) @[n --> \oo] --> (0%:E).
+  Lp_norm P p (X n - Y) @[n --> \oo] --> 0%E.
 
 Definition cvg_in_uniform_norm (X : {RV P >-> R}^nat) (Y : {RV P >-> R}) :=
-  uniform_norm (X n - Y) @[n --> \oo] --> (0%R:R).
+  uniform_norm (X n - Y) @[n --> \oo] --> 0%E.
 
 Definition cvg_in_Linfty_norm (p : nat) (X : {RV P >-> R}^nat) (Y : {RV P >-> R}) :=
-  Linfty_norm P (X n - Y) @[n --> \oo] --> (0%R:R).
+  Linfty_norm P (X n - Y) @[n --> \oo] --> 0%E.
 
 Lemma prop_23_1 (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
   : cvg_in_Lp_norm 1 X Y -> cvg_in_probability X Y.
