@@ -695,4 +695,4 @@ have : set_surj [set: cantor_space] [set: T] (cst point).
   by move=> q _; exists point => //; have /negP := xpt q; rewrite negbK => /eqP.
 by case/Psurj => f cstf; exists f; rewrite -cstf; apply: cst_continuous.
 Qed.
-Section alexandroff_hausdorff.
+End alexandroff_hausdorff.
