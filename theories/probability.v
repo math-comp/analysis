@@ -524,3 +524,124 @@ Qed.
 Local Close Scope ereal_scope.
 
 End discrete_distribution.
+
+(* borrowed from cauchy-schwarz branch *)
+Require Import exp.
+Section from_cauchy_schwarz_branch.
+Definition powere_pos (R : realType) (a : \bar R) (x : R) :=
+  if x == 0 then 1%E else if a is a'%:E then if a' == 0 then 0%E else (exp_fun a' x)%:E else +oo%E.
+Local Notation "a `^ x" := (powere_pos a x) : ereal_scope.
+
+Lemma powere_funr1 (R : realType) (a : \bar R) : (0 <= a)%E -> (a `^ 1)%E = a.
+Proof.
+move: a; case => a //.
+  move=> a0; rewrite /powere_pos oner_eq0 /exp_fun mul1r. case: ifPn => [/eqP -> // | h].
+  by rewrite lnK// posrE lt_neqAle eq_sym h -lee_fin a0.
+by rewrite /powere_pos oner_eq0.
+Qed.
+
+Lemma powere_pos_ge0 (R : realType) (a : \bar R) (x : R) : (0 <= a `^ x)%E.
+Proof.
+rewrite /powere_pos; case: ifPn => // x0.
+move: a => [a| |] //; case: ifPn => // a0.
+by rewrite ltW// lte_fin exp_fun_gt0.
+Qed.
+
+Context d (T : measurableType d) (R : realType).
+Variable mu : {finite_measure set T -> \bar R}.
+
+Definition Lp_norm (p : nat) (f : T -> R) : \bar R :=
+  ((\int[mu]_x (`|f x| ^+ p)%:E) `^ (p%:R^-1))%E.
+
+Local Notation "`|| f ||_ p" := (Lp_norm p f) (at level 0).
+
+Lemma Lp_norm_ge0 (p : nat) (f : T -> R) : (0 <= `|| f ||_(p%R))%E.
+Proof. by rewrite /Lp_norm powere_pos_ge0. Qed.
+End from_cauchy_schwarz_branch.
+
+Section other_norms.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {finite_measure set T -> \bar R}.
+
+Definition esup (X : set R) : \bar R := ereal_sup (EFin @` X).
+
+Lemma esupT : esup [set: R] = +oo%E.
+Abort.
+
+Definition uniform_norm (f : T -> R) : \bar R := esup (range (normr \o f)).
+(*Local Notation "`|| X ||_unif" := (uniform_norm X) (at level 0).*)
+
+(* essential supremum *)
+Definition ess_sup : set R -> \bar R.
+Admitted.
+
+Definition Linfty_norm (f : T -> R) : \bar R := ess_sup (range (normr \o f)).
+End other_norms.
+
+Section cvg_random_variable.
+Variables (d : _) (T : measurableType d) (R : realType) (P : probability T R).
+
+Definition cvg_in_probability (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
+  := forall a : {posnum R},
+    [sequence P [set x | a%:num <= `| X n x - Y x | ] ]_n --> 0%E.
+
+Definition cvg_in_Lp_norm (p : nat) (X : {RV P >-> R}^nat) (Y : {RV P >-> R}) :=
+  Lp_norm P p (X n - Y) @[n --> \oo] --> 0%E.
+
+Definition cvg_in_uniform_norm (X : {RV P >-> R}^nat) (Y : {RV P >-> R}) :=
+  uniform_norm (X n - Y) @[n --> \oo] --> 0%E.
+
+Definition cvg_in_Linfty_norm (p : nat) (X : {RV P >-> R}^nat) (Y : {RV P >-> R}) :=
+  Linfty_norm P (X n - Y) @[n --> \oo] --> 0%E.
+
+Lemma prop_23_1 (X : {RV P >-> R}^nat) (Y : {RV P >-> R})
+  : cvg_in_Lp_norm 1 X Y -> cvg_in_probability X Y.
+Proof.
+move => h a /=.
+(*
+apply/(@cvg_distP _ [pseudoMetricNormedZmodType R of R^o]).
+move => eps heps.
+rewrite near_map /=.
+move /(@cvgr0Pnorm_lt _ [pseudoMetricNormedZmodType R of R^o]) : h.
+have a0: 0 < a%:num by [].
+move /(_ (a%:num) a0) => h1.
+case: h1 => m _ h1 .
+near=> n.
+rewrite sub0r.
+rewrite normrN.
+rewrite ger0_norm; last first.
+  apply: fine_ge0; apply: probability_ge0.
+change eps with (fine eps%:E).
+rewrite fine_lt => //; first apply probability_fin.
+  admit.
+*)
+(* have -> : P [set x | (a%:num <= `|X n x - Y x|)%R] = 0%E.
+  have mn : (m <= n)%N.
+  near: n.
+  exists m => //.
+  have := h1 _ mn.
+  unfold norm1.
+  rewrite /=.
+  have := (@markov _ T R P (X n - Y) [the {mfun R >-> R} of (@mid R)] (a%:num) a0).
+  move => /=. *)
+  (* apply: le_lt_trans. *)
+  (* move: x.
+  near: n.
+  by [].
+  have := h x.
+  move => [m] _.
+  have mn : (m <= n)%N.
+  move /(_ m) => /=.
+  move /(_ (leqnn m)).
+  rewrite normr_id.
+  rewrite ltNge. *)
+  (* admit.
+apply: le_lt_trans.
+  rewrite le_eqVlt.
+  apply /orP. left.
+  apply /eqP.
+  apply probability0.
+apply heps. *)
+Abort.
+
+End cvg_random_variable.
