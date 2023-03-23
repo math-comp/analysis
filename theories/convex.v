@@ -9,10 +9,11 @@ From HB Require Import structures.
 
 (******************************************************************************)
 (* isConvexSpace R T == interface for convex spaces                           *)
-(* ConvexSpace R == structure of convex space                                 *)
-(* a <| t |> b == convexity operator                                          *)
+(*     ConvexSpace R == structure of convex space                             *)
+(*       a <| t |> b == convexity operator                                    *)
 (* E : lmodType R with R : realDomainType and R : realDomainType are shown to *)
 (* be convex spaces                                                           *)
+(*                                                                            *)
 (******************************************************************************)
 
 Reserved Notation "x <| p |> y" (format "x  <| p |>  y", at level 49).
@@ -29,38 +30,41 @@ Local Open Scope ring_scope.
 
 Import numFieldNormedType.Exports.
 
-(* NB: recent addition to MathComp *)
-Lemma divrNN (R : unitRingType) (x y: R) : (- x) / (- y) = x / y.
-Proof. exact: divrNN. Qed.
-
 (* TODO: move *)
-Lemma factorE {R : numDomainType} (a b x : R) : factor a b x = (a - x) / (a - b).
+Lemma factorNN {R : numDomainType} (a b x : R) :
+  factor a b x = (a - x) / (a - b).
 Proof.
 by rewrite /factor -(opprB x a) -(opprB b a) invrN mulrNN.
 Qed.
 
-(* TODO: move *)
 Lemma factor1 {R : numFieldType} (a b x : R) : a != b ->
   factor a b x + factor b a x = 1.
 Proof.
 move=> ab.
-by rewrite factorE /factor -mulrDl addrA subrK divrr// unitfE subr_eq0.
+by rewrite factorNN /factor -mulrDl addrA subrK divrr// unitfE subr_eq0.
 Qed.
 
 (* TODO: move *)
-Lemma in_IntervalW d {T : porderType d} (a b c e : T):
-  (a <= b)%O -> (c <= e)%O -> forall x, x \in `[b, c] -> x \in `[a, e].
+Lemma subset_itvW d {T : porderType d} (a b c e : T) u v :
+    (a <= b)%O -> (c <= e)%O ->
+  `]b, c[ `<=` [set` Interval (BSide u a) (BSide v e)].
 Proof.
-move=> ab ce x; rewrite 2!in_itv /= => /andP[bx xc].
-by rewrite (le_trans ab)//= (le_trans _ ce).
+move=> ab ce; apply: (@subset_trans _ `]a, e[%classic).
+  move=> x/=; rewrite 2!in_itv/= => /andP[].
+  by move=> /(le_lt_trans ab) ->/= /lt_le_trans; exact.
+move: u v => [] [] /=; [exact: subset_itv_oo_co|exact: subset_itv_oo_cc|
+                        exact: subset_refl|exact: subset_itv_oo_oc].
 Qed.
 
-Lemma in_IntervalW' d {T : porderType d} (a b c e : T):
-  (a <= b)%O -> (c <= e)%O -> forall x, x \in `]b, c[ -> x \in `]a, e[.
-Proof.
-move=> ab ce x; rewrite 2!in_itv /= => /andP[bx xc].
-by rewrite (le_lt_trans ab)//= (lt_le_trans xc).
-Qed.
+(* TODO: move *)
+Lemma cvg_at_right_filter (R : numFieldType) (f : R -> R) (x : R) :
+  f z @[z --> x] --> f x -> f z @[z --> x^'+] --> f x.
+Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
+
+(* TODO: move *)
+Lemma cvg_at_left_filter (R : numFieldType) (f : R -> R) (x : R) :
+  f z @[z --> x] --> f x -> f z @[z --> x^'-] --> f x.
+Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
 
 Declare Scope convex_scope.
 
@@ -159,75 +163,55 @@ HB.instance Definition _ := @isConvexSpace.Build R R^o
 
 End realDomainType_convex_space.
 
-Definition derivable_interval {R : numFieldType} (f : R -> R) (a b : R) :=
-  forall x, x \in `]a, b[ -> derivable f x 1.
+Lemma derivable_oo_itvW {R : numFieldType} (f : R -> R) (a b a' b' : R) :
+    a <= a' -> b' <= b -> {in `]a, b[, forall x, derivable f x 1} ->
+  {in `]a', b'[, forall x, derivable f x 1}.
+Proof. by move=> aa' bb' + x xab; apply; exact: subset_itvW xab. Qed.
 
-Lemma derivable_continuous {R : realType} (F : R -> R) (x y : R):
-  derivable_interval F x y -> {within `]x, y[, continuous F}.
+Lemma derivable_within_continuous {R : numFieldType} (F : R -> R) (A : interval R) :
+  {in A, forall x, derivable F x 1} -> {within [set` A], continuous F}.
 Proof.
-move=> di.
-have h z : z \in `]x, y[ -> {for z, continuous F}.
-  move=> zxy; apply/differentiable_continuous.
-  by rewrite -derivable1_diffP; exact: di.
-by apply/continuous_in_subspaceT => z /[1!inE] zin; exact: h.
+move=> di; apply/continuous_in_subspaceT => z /[1!inE] zA.
+apply/differentiable_continuous; rewrite -derivable1_diffP.
+by apply: di; rewrite inE.
 Qed.
 
-Lemma derivable_continuous_new {R : realType} (F : R -> R) (x y : R):
-  derivable_interval F x y ->
-  F @ x^'+ --> F x -> F @ y^'- --> F y ->
-  {within `[x, y], continuous F}.
+Lemma cvg_at_right_within (R : numFieldType) (F : R -> R) (x : R) :
+  F x @[x --> x^'+] --> F x ->
+  F x @[x --> within (fun u => x <= u) (nbhs x)] --> F x.
 Proof.
-move=> di Fxl Fxr.
-have h z : z \in `]x, y[ -> {for z, continuous F}.
-  move=> zxy; apply/differentiable_continuous.
-  by rewrite -derivable1_diffP; exact: di.
-apply/subspace_continuousP => z /=.
-rewrite /= in_itv/= => /andP[].
-rewrite le_eqVlt => /predU1P[xz|xz].
-  subst z.
-  move=> xy.
-  rewrite /at_right in Fxl.
-  have Fxl' : F x @[x --> within (fun u : R => x <= u) (nbhs x)] --> F x.
-    apply/cvgrPdist_lt => e e0.
-    move/cvgrPdist_lt : Fxl => /(_ _ e0) H.
-    near=> z.
-    have [->|] := eqVneq x z; first by rewrite subrr normr0.
-    rewrite neq_lt => /orP[xz|].
-      near: z.
-      move: H.
-      rewrite near_simpl => -[r /= r0 H1].
-      exists r => //.
-      apply: (subset_trans H1) => a H2.
-      rewrite le_eqVlt => /predU1P[->|].
-      by rewrite subrr normr0.
-      done.
-    near: z.
-    exists e => // z _.
-    by rewrite leNgt => /[swap] ->.
-  apply: cvg_trans Fxl'.
-  apply: cvg_app.
-  apply: within_subset.
-  by move=> z/=; rewrite in_itv/= => /andP[].
-rewrite le_eqVlt => /predU1P[zy|zy].
-  admit. (* similar as above *)
+move=> Fxr; apply/cvgrPdist_lt => e e0.
+rewrite /at_right in Fxr; move/cvgrPdist_lt : Fxr => /(_ _ e0).
+rewrite !near_withinE; apply: filterS => y h.
+by rewrite le_eqVlt => /predU1P[->|//]; rewrite subrr normr0.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvg_at_left_within (R : numFieldType) (F : R -> R) (y : R) :
+  F x @[x --> y^'-] --> F y ->
+  F x @[x --> within (fun u => u <= y) (nbhs y)] --> F y.
+Proof.
+move=> Fyl; apply/cvgrPdist_lt => e e0.
+rewrite /at_left in Fyl; move/cvgrPdist_lt : Fyl => /(_ _ e0).
+rewrite !near_withinE; apply: filterS => x h.
+by rewrite le_eqVlt => /predU1P[->|//]; rewrite subrr normr0.
+Unshelve. all: by end_near. Qed.
+
+Lemma derivable_oo_within_cc_continuous {R : numFieldType} (F : R -> R) (x y : R):
+  {in `]x, y[, forall x, derivable F x 1} ->
+  F @ x^'+ --> F x -> F @ y^'- --> F y -> {within `[x, y], continuous F}.
+Proof.
+move=> Fxy Fxr Fyl; apply/subspace_continuousP => z /=.
+rewrite in_itv/= => /andP[]; rewrite le_eqVlt => /predU1P[<-{z} xy|].
+  have := cvg_at_right_within Fxr; apply: cvg_trans; apply: cvg_app.
+  by apply: within_subset => z/=; rewrite in_itv/= => /andP[].
+move=> /[swap].
+rewrite le_eqVlt => /predU1P[->{z} xy|zy xz].
+  have := cvg_at_left_within Fyl; apply: cvg_trans; apply: cvg_app.
+  by apply: within_subset => z/=; rewrite in_itv/= => /andP[].
 apply: cvg_within_filter.
-apply: h.
-by rewrite in_itv/= xz zy.
-Admitted.
-
-Lemma derivable_interval_le {R : numFieldType} (f : R -> R) (a b a' : R) :
-  a <= a' -> derivable_interval f a b -> derivable_interval f a' b.
-Proof.
-rewrite /derivable_interval => aa' deriv x xab; apply/deriv.
-exact: in_IntervalW' xab.
-Qed.
-
-Lemma derivable_interval_ge {R : numFieldType} (f : R -> R) (a b b' : R) :
-  b >= b' -> derivable_interval f a b -> derivable_interval f a b'.
-Proof.
-rewrite/derivable_interval => b'b deriv x xab'; apply/deriv.
-exact: in_IntervalW' xab'.
-Qed.
+apply/differentiable_continuous; rewrite -derivable1_diffP.
+by apply: Fxy; rewrite in_itv/= xz zy.
+Unshelve. all: by end_near. Qed.
 
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
 Section twice_derivable_convex.
@@ -247,27 +231,23 @@ Let L x := f a + factor a b x * (f b - f a).
 Let LE x : L x = factor b a x * f a + factor a b x * f b.
 Proof.
 rewrite /L mulrBr [in LHS]addrA addrAC; congr +%R.
-rewrite -{1}(mul1r (f a)) -mulrBl; congr *%R.
-rewrite -(@mulrV _ (b-a)); last first.
-  by move: ab; rewrite unitfE subr_eq0 lt_def => /andP [ba _].
-rewrite -factorE.
-rewrite factorr ?gt_eqF// -(@factor1 _ a b x) ?lt_eqF//.
-by rewrite addrAC subrr add0r.
+by apply/eqP; rewrite subr_eq -mulrDl factor1 ?mul1r// gt_eqF.
 Qed.
 
 Let convexf_ptP : (forall x, a <= x <= b -> 0 <= L x - f x) ->
   forall t, f (a <| t |> b) <= f a <| t |> f b.
 Proof.
-move=> H t; set x := a <| t |> b.
-have /H : a <= x <= b.
-  rewrite -(conv1 (a : R^o) b) -{1}(conv0 (a : R^o) b) /x.
-  by rewrite !le_conv//= itv_ge0/=.
+move=> h t; set x := a <| t |> b; have /h : a <= x <= b.
+  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_conv//= itv_ge0/=.
 rewrite subr_ge0 => /le_trans; apply.
 by rewrite LE /x convK ?lt_eqF// convC convK ?gt_eqF.
 Qed.
 
-Hypothesis HDf : derivable_interval f a b.
-Hypothesis HDDf : derivable_interval Df a b.
+Hypothesis HDf : {in `]a, b[, forall x, derivable f x 1}.
+Hypothesis HDDf : {in `]a, b[, forall x, derivable Df x 1}.
+
+Let cDf : {within `]a, b[, continuous Df}.
+Proof. by apply: derivable_within_continuous => z zab; exact: HDDf. Qed.
 
 Lemma second_derivative_convexf_pt (t : {i01 R}) :
   f (a <| t |> b) <= f a <| t |> f b.
@@ -284,65 +264,60 @@ have LfE : L x - f x =
   rewrite mulVr ?mul1r ?unitfE ?subr_eq0 ?gt_eqF//.
   rewrite -(mulrC (x - a)) -(mulrC (x - a)^-1) !mulrA.
   rewrite mulVr ?mul1r ?unitfE ?subr_eq0 ?gt_eqF//.
-  rewrite -factorE -/(factor _ _ _).
+  rewrite -factorNN -/(factor _ _ _).
   rewrite !mulrBr opprB -!mulrN addrACA -mulrDl factor1 ?mul1r ?lt_eqF//.
   by rewrite LE (addrC (_ * f b)).
 have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
-  have h : derivable_interval f x b := derivable_interval_le (ltW ax) HDf.
+  have h : {in `]x, b[, forall z, derivable f z 1}.
+    by apply: derivable_oo_itvW HDf => //; exact/ltW.
   have derivef z : z \in `]x, b[ -> is_derive z 1 f ('D_1 f z).
-    by move=> zxb; apply/derivableP/h; exact: (*subset_itv_oo_cc*) zxb.
-  have [ |z zxb fbfx] := MVT xb derivef.
-    apply/derivable_continuous_new.
-    assumption.
-    suff : f x @[x --> x] --> f x.
-      apply: cvg_trans.
-      apply: cvg_app => A [r/= r0 H1].
-      exists r => //.
-      by apply: (subset_trans H1) => z.
-    have := derivable_continuous HDf.
-    rewrite continuous_open_subspace//; last first.
-      admit.
-    move=> /(_ x); apply.
-    admit.
-    assumption.
+    by move=> zxb; apply/derivableP/h; exact: zxb.
+  have [|z zxb fbfx] := MVT xb derivef.
+    apply/(derivable_oo_within_cc_continuous h _ cvg_left)/cvg_at_right_filter.
+    have := derivable_within_continuous HDf.
+    rewrite continuous_open_subspace//; last exact: interval_open.
+    by apply; rewrite inE/= in_itv/= ax.
   by exists z => //; rewrite fbfx -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
-  have h : derivable_interval f a x := derivable_interval_ge (ltW xb) HDf.
+  have h : {in `]a, x[, forall z, derivable f z 1} :=
+    derivable_oo_itvW (@lexx _ _ _) (ltW xb) HDf.
   have derivef z : z \in `]a, x[ -> is_derive z 1 f ('D_1 f z).
     by move=> zax; apply /derivableP/h.
-(* /subset_itv_oo_cc.*)
   have [|z zax fxfa] := MVT ax derivef.
-    apply/derivable_continuous_new.
-    assumption.
-    assumption.
-    admit. (* same as above *)
+    apply/(derivable_oo_within_cc_continuous h cvg_right)/cvg_at_left_filter.
+    have := derivable_within_continuous HDf.
+    rewrite continuous_open_subspace//; last exact: interval_open.
+    by apply; rewrite inE/= in_itv/= ax.
   by exists z => //; rewrite fxfa -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have c1c2 : c1 < c2.
   by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
 have {LfE Hc1 Hc2}lfE : L x - f x = (b - x) * (x - a) * (c2 - c1) / (b - a) *
                                     (('D_1 f c2 - 'D_1 f c1) / (c2 - c1)).
   rewrite LfE Hc2 Hc1 (mulrC (x - a)%R) -mulrBr -!mulrA.
-  congr (_ * (_ * _)); rewrite mulrCA; congr (_ * _).
+  congr (_ * (_ * _)); rewrite mulrCA; congr *%R.
   by rewrite mulrCA mulrV ?mulr1// unitfE subr_eq0 gt_eqF.
 have [d Id h] :
     exists2 d, c1 < d < c2 & ('D_1 f c2 - 'D_1 f c1) / (c2 - c1) = DDf d.
-  have h : derivable_interval Df c1 c2.
-    exact/(derivable_interval_le (ltW (andP Ic1).1))
-         /(derivable_interval_ge (ltW (andP Ic2).2)).
+  have h : {in `]c1, c2[, forall z, derivable Df z 1}.
+    exact/(derivable_oo_itvW (ltW (andP Ic1).1) (@lexx _ _ _))
+         /(derivable_oo_itvW (@lexx _ _ _) (ltW (andP Ic2).2)).
   have derivef z : z \in `]c1, c2[ -> is_derive z 1 Df ('D_1 Df z).
-    by move=> zc1c2; apply/derivableP/h(*/subset_itv_oo_cc*).
+    by move=> zc1c2; apply/derivableP/h.
   have [|z zc1c2 {}h] := MVT c1c2 derivef.
-    apply: derivable_continuous_new.
-    assumption.
-    admit.
-    admit.
+    apply: (derivable_oo_within_cc_continuous h).
+    + apply: cvg_at_right_filter.
+      move: cDf; rewrite continuous_open_subspace//; last exact: interval_open.
+      move=> /(_ c1); apply.
+      by rewrite inE/= in_itv/= (andP Ic1).1/= (lt_trans _ (andP Ic2).2).
+    + apply: cvg_at_left_filter.
+      move: cDf; rewrite continuous_open_subspace//; last exact: interval_open.
+      move=> /(_ c2); apply.
+      by rewrite inE/= in_itv/= (andP Ic2).2 andbT (lt_trans (andP Ic1).1).
   by exists z => //; rewrite h -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 rewrite {}lfE {}h mulr_ge0//; last first.
   rewrite DDf_ge0//; apply/andP; split.
-    rewrite (lt_trans ((*ltW*) (andP Ic1).1))//.
-    by case/andP : Id.
-  rewrite (lt_trans ((*ltW*) (andP Id).2))//. (*/(le_trans (ltW (andP Ic2).2)).*)
-    by case/andP : Ic2.
+    by rewrite (lt_trans (andP Ic1).1)//; case/andP : Id.
+  by rewrite (lt_trans (andP Id).2)//; case/andP : Ic2.
 rewrite mulr_ge0// ?invr_ge0 ?subr_ge0 ?(ltW ab)//.
 rewrite mulr_ge0// ?subr_ge0 ?(ltW c1c2)//.
 by rewrite mulr_ge0// subr_ge0 ltW.
