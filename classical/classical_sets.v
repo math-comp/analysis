@@ -1088,8 +1088,30 @@ End InitialSegment.
 Lemma setT_unit : [set: unit] = [set tt].
 Proof. by apply/seteqP; split => // -[]. Qed.
 
+Lemma set_unit (A : set unit) : A = set0 \/ A = setT.
+Proof.
+have [->|/set0P[[] Att]] := eqVneq A set0; [by left|right].
+by apply/seteqP; split => [|] [].
+Qed.
+
 Lemma setT_bool : [set: bool] = [set true; false].
 Proof. by rewrite eqEsubset; split => // [[]] // _; [left|right]. Qed.
+
+Lemma set_bool (B : set bool) :
+  [\/ B == [set true], B == [set false], B == set0 | B == setT].
+Proof.
+have [Bt|Bt] := boolP (true \in B); have [Bf|Bf] := boolP (false \in B).
+- have -> : B = setT by apply/seteqP; split => // -[] _; exact: set_mem.
+  by apply/or4P; rewrite eqxx/= !orbT.
+- suff : B = [set true] by move=> ->; apply/or4P; rewrite eqxx.
+  apply/seteqP; split => -[]// /mem_set; last by move=> _; exact: set_mem.
+  by rewrite (negbTE Bf).
+- suff : B = [set false] by move=> ->; apply/or4P; rewrite eqxx/= orbT.
+  apply/seteqP; split => -[]// /mem_set; last by move=> _; exact: set_mem.
+  by rewrite (negbTE Bt).
+- suff : B = set0 by move=> ->; apply/or4P; rewrite eqxx/= !orbT.
+  by apply/seteqP; split => -[]//=; rewrite 2!notin_set in Bt, Bf.
+Qed.
 
 (* TODO: other lemmas that relate fset and classical sets *)
 Lemma fdisjoint_cset (T : choiceType) (A B : {fset T}) :
@@ -1256,6 +1278,9 @@ Proof. by case=> [t ?]; exists (f t). Qed.
 
 Lemma preimage_image f A : A `<=` f @^-1` (f @` A).
 Proof. by move=> a Aa; exists a. Qed.
+
+Lemma preimage_range {A B : Type} (f : A -> B) : f @^-1` (range f) = [set: A].
+Proof. by rewrite eqEsubset; split=> x // _; exists x. Qed.
 
 Lemma image_preimage_subset f Y : f @` (f @^-1` Y) `<=` Y.
 Proof. by move=> _ [t /= Yft <-]. Qed.
@@ -2159,6 +2184,7 @@ Definition dep_arrow_pointedType (T : Type) (T' : T -> pointedType) :=
   Pointed.Pack
    (Pointed.Class (dep_arrow_choiceClass T') (fun i => @point (T' i))).
 
+Canonical unit_pointedType := PointedType unit tt.
 Canonical bool_pointedType := PointedType bool false.
 Canonical Prop_pointedType := PointedType Prop False.
 Canonical nat_pointedType := PointedType nat 0.
@@ -2178,7 +2204,6 @@ Notation "[ 'get' x | E ]" := (get (fun x => E))
   (at level 0, x name, format "[ 'get'  x  |  E ]") : form_scope.
 
 Section PointedTheory.
-
 Context {T : pointedType}.
 
 Lemma getPex (P : set T) : (exists x, P x) -> P (get P).
@@ -2196,6 +2221,9 @@ Proof. exact: (xget_unique point). Qed.
 
 Lemma getPN (P : set T) : (forall x, ~ P x) -> get P = point.
 Proof. exact: (xgetPN point). Qed.
+
+Lemma setT0 : setT != set0 :> set T.
+Proof. by apply/eqP => /seteqP[] /(_ point) /(_ Logic.I). Qed.
 
 End PointedTheory.
 
@@ -2357,6 +2385,15 @@ Section partitions.
 Definition trivIset T I (D : set I) (F : I -> set T) :=
   forall i j : I, D i -> D j -> F i `&` F j !=set0 -> i = j.
 
+Lemma trivIset_mkcond T I (D : set I) (F : I -> set T) :
+  trivIset D F <-> trivIset setT (fun i => if i \in D then F i else set0).
+Proof.
+split=> [tA i j _ _|tA i j Di Dj]; last first.
+  by have := tA i j Logic.I Logic.I; rewrite !mem_set.
+case: ifPn => iD; last by rewrite set0I => -[].
+by case: ifPn => [jD /tA|jD]; [apply; exact: set_mem|rewrite setI0 => -[]].
+Qed.
+
 Lemma trivIset_set0 {I T} (D : set I) : trivIset D (fun=> set0 : set T).
 Proof. by move=> i j Di Dj; rewrite setI0 => /set0P; rewrite eqxx. Qed.
 
@@ -2404,14 +2441,14 @@ apply/trivIsetP => -[/=|]; rewrite /bigcup2 /=.
   by move=> [//|j _ _ _]; rewrite setI0.
 Qed.
 
-Lemma trivIset_image (T I I' : Type) (D : set I) (f : I -> I') (F : I' -> set T) :
+Lemma trivIset_image T I I' (D : set I) (f : I -> I') (F : I' -> set T) :
   trivIset D (F \o f) -> trivIset (f @` D) F.
 Proof.
 by move=> trivF i j [{}i Di <-] [{}j Dj <-] Ffij; congr (f _); apply: trivF.
 Qed.
 Arguments trivIset_image {T I I'} D f F.
 
-Lemma trivIset_comp (T I I' : Type) (D : set I) (f : I -> I') (F : I' -> set T) :
+Lemma trivIset_comp T I I' (D : set I) (f : I -> I') (F : I' -> set T) :
     {in D &, injective f} ->
   trivIset D (F \o f) = trivIset (f @` D) F.
 Proof.
@@ -2420,7 +2457,18 @@ move=> trivF i j Di Dj Ffij; apply: finj; rewrite ?in_setE//.
 by apply: trivF => //=; [exists i| exists j].
 Qed.
 
+Lemma trivIset_preimage1 {aT rT} D (f : aT -> rT) :
+  trivIset D (fun x => f @^-1` [set x]).
+Proof. by move=> y z _ _ [x [<- <-]]. Qed.
+
+Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
+  (f : aT -> rT) : trivIset D (fun x => A `&` f @^-1` [set x]).
+Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
+
 Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.
+
+Lemma coverE T I D (F : I -> set T) : cover D F = \bigcup_(i in D) F i.
+Proof. by []. Qed.
 
 Lemma cover_restr T I D' D (F : I -> set T) :
   D `<=` D' -> (forall i, D' i -> ~ D i -> F i = set0) ->
@@ -3070,17 +3118,23 @@ Proof. by move=> X Y XY y; rewrite /xsection /= 2!inE => /XY. Qed.
 Lemma le_ysection y : {homo ysection ^~ y : X Y / X `<=` Y >-> X `<=` Y}.
 Proof. by move=> X Y XY x; rewrite /ysection /= 2!inE => /XY. Qed.
 
+Lemma xsectionI A B x : xsection (A `&` B) x = xsection A x `&` xsection B x.
+Proof. by rewrite /xsection predeqE => y/=; split; rewrite !inE => -[]. Qed.
+
+Lemma ysectionI A B y : ysection (A `&` B) y = ysection A y `&` ysection B y.
+Proof. by rewrite /ysection predeqE => x/=; split; rewrite !inE => -[]. Qed.
+
 Lemma xsectionD X Y x : xsection (X `\` Y) x = xsection X x `\` xsection Y x.
-Proof.
-rewrite predeqE /xsection /= => y; split; last by rewrite 3!inE.
-by rewrite inE => -[Xxy Yxy]; rewrite 2!inE.
-Qed.
+Proof. by rewrite predeqE /xsection /= => y; split; rewrite !inE. Qed.
 
 Lemma ysectionD X Y y : ysection (X `\` Y) y = ysection X y `\` ysection Y y.
-Proof.
-rewrite predeqE /ysection /= => x; split; last by rewrite 3!inE.
-by rewrite inE => -[Xxy Yxy]; rewrite 2!inE.
-Qed.
+Proof. by rewrite predeqE /ysection /= => x; split; rewrite !inE. Qed.
+
+Lemma xsection_preimage_snd (B : set T2) x : xsection (snd @^-1` B) x = B.
+Proof. by apply/seteqP; split; move=> y/=; rewrite /xsection/= inE. Qed.
+
+Lemma ysection_preimage_fst (A : set T1) y : ysection (fst @^-1` A) y = A.
+Proof. by apply/seteqP; split; move=> x/=; rewrite /ysection/= inE. Qed.
 
 End section.
 

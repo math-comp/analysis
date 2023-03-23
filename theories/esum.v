@@ -97,10 +97,6 @@ Proof.
 by move=> ?; rewrite esum_fset// ?fset_set1// ?fsbig_set1// => t' /[!inE] ->.
 Qed.
 
-Lemma fsbig_esum (A : set T) a : finite_set A -> (forall x, 0 <= a x) ->
-  \sum_(x \in A) (a x) = \esum_(x in A) a x.
-Proof. by move=> *; rewrite esum_fset. Qed.
-
 End esum_realType.
 
 Lemma esum_ge [R : realType] [T : choiceType] (I : set T) (a : T -> \bar R) x :
@@ -219,14 +215,16 @@ Qed.
 
 Lemma esum_esum [R : realType] [T1 T2 : choiceType]
     (I : set T1) (J : T1 -> set T2) (a : T1 -> T2 -> \bar R) :
-  (forall i j, 0 <= a i j) ->
+  (forall i j, I i -> J i j -> 0 <= a i j) ->
   \esum_(i in I) \esum_(j in J i) a i j = \esum_(k in I `*`` J) a k.1 k.2.
 Proof.
 move=> a_ge0; apply/eqP; rewrite eq_le; apply/andP; split.
   apply: ub_ereal_sup => /= _ [X [finX XI]] <-.
   under eq_fsbigr do rewrite esum_mkcond.
-  rewrite fsbig_finite//= -esum_sum; last by move=> i j _ _; case: ifP.
-  under eq_esum do rewrite -big_mkcond/=.
+  rewrite fsbig_finite//= big_seq -esum_sum; last first.
+    move=> i j _ /[!in_fset_set]// /[!inE] /XI Ij.
+    by case: ifPn => // /[!inE] /a_ge0-/(_ Ij).
+  under eq_esum do rewrite -big_seq -big_mkcond/=.
   apply: ub_ereal_sup => /= _ [Y [finY _] <-]; apply: ereal_sup_ub => /=.
   set XYJ := [set z | z \in X `*` Y /\ z.2 \in J z.1].
   have ? : finite_set XYJ.
@@ -249,7 +247,14 @@ apply: (@le_trans _ _
   rewrite [leRHS](big_fsetID _ (mem X))/=.
   rewrite (_ : [fset x | x in Y & x \in X] = Y `&` fset_set X)%fset; last first.
     by apply/fsetP => x; rewrite 2!inE/= in_fset_set.
-  rewrite (fsetIidPr _); first by rewrite fsbig_finite// lee_addl// sume_ge0.
+  rewrite (fsetIidPr _).
+    rewrite fsbig_finite// lee_addl// big_seq sume_ge0//=.
+    move=> [x y] /imfsetP[[x1 y1]] /[!inE] /andP[] /imfset2P[x2]/= /[!inE].
+    rewrite andbT in_fset_set//; last exact: finite_set_fst.
+    move=> /[!inE] x2X [y2] /[!inE] /andP[] /[!in_fset_set]; last first.
+      exact: finite_set_snd.
+    move=> /[!inE] y2X y2J [-> ->] _ [-> ->]; rewrite a_ge0//.
+    by move: x2X => [y3 /XIJ []].
   apply/fsubsetP => -[i j]; rewrite in_fset_set// inE => Xij; apply/imfset2P.
   exists i => /=.
     rewrite !inE/= in_fset_set//; last exact: finite_set_fst.
@@ -334,7 +339,7 @@ exists [set` (e^-1 @` (fset_set X))%fset].
 rewrite fsbig_finite//= set_fsetK big_imfset => //=; last first.
   move=> x y; rewrite !in_fset_set// !inE => /XQ ? /XQ ? /(congr1 e).
   by rewrite !invK ?inE.
-by rewrite -fsbig_finite//; apply eq_fsbigr=> x /[!inE]/XQ ?; rewrite invK ?inE.
+by rewrite -fsbig_finite//; apply: eq_fsbigr=> x /[!inE]/XQ ?; rewrite invK ?inE.
 Qed.
 Arguments reindex_esum {R T T'} P Q e a.
 
@@ -540,7 +545,7 @@ transitivity (lim (EFin \o A_)).
 by rewrite EFin_lim//; apply: summable_cvg.
 Qed.
 
-Lemma summable_nneseries (f : nat -> \bar R) (P : pred nat) : summable P f ->
+Lemma summable_eseries (f : nat -> \bar R) (P : pred nat) : summable P f ->
   \sum_(i <oo | P i) (f i) =
   \sum_(i <oo | P i) f^\+ i - \sum_(i <oo | P i) f^\- i.
 Proof.
@@ -554,11 +559,10 @@ suff: ((fun n => C_ n - (A - B)) --> (0 : R^o))%R.
   move=> CAB.
   rewrite [X in  X - _]summable_nneseries_lim//; last exact/summable_funepos.
   rewrite [X in _ - X]summable_nneseries_lim//; last exact/summable_funeneg.
-  rewrite -EFinB; apply/cvg_lim => //; apply/fine_cvgP; split.
-    apply: nearW => n.
-    rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
-    by rewrite -nneseries_esum// (le_trans (lee_abs_sum _ _ _))// nneseries_lim_ge.
-  by apply: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB) => //; exact: cvg_cst.
+  rewrite -EFinB; apply/cvg_lim => //; apply/fine_cvgP; split; last first.
+    apply: (@cvg_sub0 _ _ _ _ _ _ (cst (A - B)%R) _ CAB); exact: cvg_cst.
+  apply: nearW => n; rewrite fin_num_abs; apply: le_lt_trans Pf => /=.
+  by rewrite -nneseries_esum ?(le_trans (lee_abs_sum _ _ _)) ?nneseries_lim_ge.
 have : ((fun x => A_ x - B_ x) --> A - B)%R.
   apply: cvgD.
   - by apply: summable_cvg => //; exact/summable_funepos.
@@ -570,23 +574,20 @@ rewrite distrC subr0.
 have -> : (C_ = A_ \- B_)%R.
   apply/funext => k.
   rewrite /= /A_ /C_ /B_ -sumrN -big_split/= -summable_fine_sum//.
-  apply eq_bigr => i Pi.
-  rewrite -fineB//.
+  apply eq_bigr => i Pi; rewrite -fineB//.
   - by rewrite [in LHS](funeposneg f).
   - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funepos.
   - by rewrite fin_num_abs (@summable_pinfty _ _ P) //; exact/summable_funeneg.
 by rewrite distrC; apply: hN; near: n; exists N.
 Unshelve. all: by end_near. Qed.
 
-Lemma summable_nneseries_esum  (f : nat -> \bar R) (P : pred nat) :
+Lemma summable_eseries_esum  (f : nat -> \bar R) (P : pred nat) :
   summable P f -> \sum_(i <oo | P i) f i = esum P f^\+ - esum P f^\-.
 Proof.
-move=> Pfoo.
-rewrite -nneseries_esum; last first.
+move=> Pfoo; rewrite -nneseries_esum; last first.
   by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite -leNgt.
-rewrite -nneseries_esum; last first.
-  by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite leNgt.
-by rewrite [LHS]summable_nneseries.
+rewrite -nneseries_esum ?[LHS]summable_eseries//.
+by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite leNgt.
 Qed.
 
 End summable_nat.
@@ -620,7 +621,7 @@ have /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_pos
     rewrite max_r 1?lee_oppl ?oppe0// add0e subeK//.
     by rewrite fin_num_abs (summable_pinfty Dg).
   rewrite add0e max_l; last by rewrite lee_oppr oppe0 ltW.
-  rewrite oppeB//; last by rewrite fin_num_abs (summable_pinfty Dg).
+  rewrite fin_num_oppeB//; last by rewrite fin_num_abs (summable_pinfty Dg).
   by rewrite -addeA addeCA addeA subeK// fin_num_abs (summable_pinfty Df).
 rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.
   - rewrite fin_numD; apply/andP; split.
@@ -630,14 +631,14 @@ rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.
     move: Dg; rewrite summableE (@eq_esum _ _ _ _ g)//.
       by rewrite ge0_esum_posneg// => t Tt; rewrite gee0_abs// g0.
     by move=> t Tt; rewrite gee0_abs// g0.
-  - rewrite adde_defC fin_num_adde_def// ge0_esum_posneg//.
+  - rewrite fin_num_adde_defr// ge0_esum_posneg//.
     rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
     by rewrite /= gee0_abs// f0.
 rewrite -addeA addeCA eq_sym [X in _ == X -> _]addeC -sube_eq; last 2 first.
   - rewrite ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
     by rewrite /= gee0_abs// f0.
-  - rewrite fin_num_adde_def//.
-    rewrite ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
+  - rewrite fin_num_adde_defl// ge0_esum_posneg//.
+    rewrite (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.
     by rewrite /= gee0_abs// g0.
 by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
 Qed.

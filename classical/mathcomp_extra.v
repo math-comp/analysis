@@ -28,6 +28,8 @@ From mathcomp Require Import finset interval.
 (*               proj i f == f i, where f : forall i, T i                     *)
 (*             dfwith f x == fun j => x if j = i, and f j otherwise           *)
 (*                           given x : T i                                    *)
+(*                 swap x := (x.2, x.1)                                       *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -37,7 +39,6 @@ Unset Printing Implicit Defensive.
 Reserved Notation "f \* g" (at level 40, left associativity).
 Reserved Notation "f \- g" (at level 50, left associativity).
 Reserved Notation "\- f"  (at level 35, f at level 35).
-Reserved Notation "f \max g" (at level 50, left associativity).
 
 Number Notation positive Pos.of_num_int Pos.to_num_uint : AC_scope.
 
@@ -303,10 +304,6 @@ Qed.
 Lemma eqbLR (b1 b2 : bool) : b1 = b2 -> b1 -> b2.
 Proof. by move->. Qed.
 
-Definition max_fun T (R : numDomainType) (f g : T -> R) x := Num.max (f x) (g x).
-Notation "f \max g" := (max_fun f g) : ring_scope.
-Arguments max_fun {T R} _ _ _ /.
-
 Lemma gtr_opp (R : numDomainType) (r : R) : (0 < r)%R -> (- r < r)%R.
 Proof. by move=> n0; rewrite -subr_lt0 -opprD oppr_lt0 addr_gt0. Qed.
 
@@ -463,9 +460,9 @@ Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
 Arguments big_rmcond {R idx op I r} P.
 Arguments big_rmcond_in {R idx op I r} P.
 
-(*******************************)
-(* MathComp > 1.15.0 additions *)
-(*******************************)
+(*****************************)
+(* MathComp 1.16.0 additions *)
+(*****************************)
 
 Section bigminr_maxr.
 Import Num.Def.
@@ -833,8 +830,10 @@ by apply/bigmax_leP; split => //; exact: PxF.
 Qed.
 
 Lemma eq_bigmax j P F : P j -> (forall i, P i -> x <= F i) ->
-  {i0 | i0 \in I & \big[max/x]_(i | P i) F i = F i0}.
-Proof. by move=> Pi0 Hx; rewrite (bigmax_eq_arg Pi0) //; eexists. Qed.
+  {i0 | i0 \in P & \big[max/x]_(i | P i) F i = F i0}.
+Proof.
+by move=> Pi0 Hx; rewrite (bigmax_eq_arg Pi0) //; eexists => //; case:arg_maxP.
+Qed.
 
 Lemma le_bigmax2 P F1 F2 : (forall i, P i -> F1 i <= F2 i) ->
   \big[max/x]_(i | P i) F1 i <= \big[max/x]_(i | P i) F2 i.
@@ -983,8 +982,10 @@ by apply/bigmin_geP; split => //; exact: PFx.
 Qed.
 
 Lemma eq_bigmin j P F : P j -> (forall i, P i -> F i <= x) ->
-  {i0 | i0 \in I & \big[min/x]_(i | P i) F i = F i0}.
-Proof. by move=> Pi0 Hx; rewrite (bigmin_eq_arg Pi0) //; eexists. Qed.
+  {i0 | i0 \in P & \big[min/x]_(i | P i) F i = F i0}.
+Proof.
+by move=> Pi0 Hx; rewrite (bigmin_eq_arg Pi0) //; eexists => //; case:arg_minP.
+Qed.
 
 End bigmin_finType.
 
@@ -995,6 +996,24 @@ Arguments bigminD1 {d T I x} j.
 Arguments bigmin_inf {d T I x} j.
 Arguments bigmin_eq_arg {d T I} x j.
 Arguments eq_bigmin {d T I x} j.
+
+(************************************)
+(* End of MathComp 1.16.0 additions *)
+(************************************)
+
+(*****************************)
+(* MathComp > 1.16 additions *)
+(*****************************)
+
+Reserved Notation "f \max g" (at level 50, left associativity).
+
+Definition max_fun T (R : numDomainType) (f g : T -> R) x := Num.max (f x) (g x).
+Notation "f \max g" := (max_fun f g) : ring_scope.
+Arguments max_fun {T R} _ _ _ /.
+
+(************************************)
+(* End of mathComp > 1.16 additions *)
+(************************************)
 
 Section onem.
 Variable R : numDomainType.
@@ -1009,6 +1028,9 @@ Lemma onem1 : `1-1 = 0. Proof. by rewrite /onem subrr. Qed.
 
 Lemma onemK r : `1-(`1-r) = r.
 Proof. by rewrite /onem opprB addrCA subrr addr0. Qed.
+
+Lemma add_onemK r : r + `1- r = 1.
+Proof. by rewrite /onem addrC subrK. Qed.
 
 Lemma onem_gt0 r : r < 1 -> 0 < `1-r. Proof. by rewrite subr_gt0. Qed.
 
@@ -1101,3 +1123,5 @@ Proof. by move=> z; rewrite /proj dfwithin. Qed.
 
 End DFunWith.
 Arguments dfwith {I T} f i x.
+
+Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).

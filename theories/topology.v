@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
@@ -116,6 +116,14 @@ Require Import reals signed.
 (*                              \oo == "eventually" filter on nat: set of     *)
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true.                       *)
+(*                         clopen U == U is both open and closed              *)
+(*    separate_points_from_closed f == For a closed set U and point x outside *)
+(*                                     some member of the family f sends      *)
+(*                                     f_i(x) outside (closure (f_i @` U)).   *)
+(*                                     Used together with join_product.       *)
+(*                   join_product f == The function (x => f ^~ x). When the   *)
+(*                                     family f separates points from closed  *)
+(*                                     sets, join_product is an embedding.    *)
 (*                                                                            *)
 (* * Near notations and tactics:                                              *)
 (*   --> The purpose of the near notations and tactics is to make the         *)
@@ -180,6 +188,8 @@ Require Import reals signed.
 (*                                     a pointedType, as well as the carrier. *)
 (*                                     nbhs_of_open \o open_from must be      *)
 (*                                     used to declare a filterType           *)
+(*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
+(*                                     a finite subset of D                   *)
 (*       topologyOfSubbaseMixin D b == builds the mixin for a topological     *)
 (*                                     space from a subbase of open sets b    *)
 (*                                     indexed on domain D; the type of       *)
@@ -218,6 +228,8 @@ Require Import reals signed.
 (*                                     (and closed) neighborhood              *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
 (*                discrete_space T <-> every nbhs is a principal filter       *)
+(*        finite_subset_cover D F A == the family of sets F is a cover of A   *)
+(*                                     for a finite number of indices in D    *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness. *)
 (*                    near_covering == a reformulation of covering compact    *)
@@ -228,6 +240,8 @@ Require Import reals signed.
 (*              accessible_space T <-> T is an accessible space (T_1).        *)
 (*                    separated A B == the two sets A and B are separated     *)
 (*                      component x == the connected component of point x     *)
+(*                    perfect_set A == A is closed, and is every point in A   *)
+(*                                     is a limit point of A.                 *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
 (*                                     if P is convertible to G (globally A)  *)
 (*                                                                            *)
@@ -235,7 +249,7 @@ Require Import reals signed.
 (*     {uniform` A -> V} == The space U -> V, equipped with the topology of   *)
 (*                          uniform convergence from a set A to V, where      *)
 (*                          V is a uniformType.                               *)
-(*      {uniform U -> V} := {uniform` @setT U -> V}                           *)
+(*      {uniform U -> V} := {uniform` [set: U] -> V}                          *)
 (*  {uniform A, F --> f} == F converges to f in {uniform A -> V}.             *)
 (*    {uniform, F --> f} := {uniform setT, F --> f}                           *)
 (*         {ptws U -> V} == The space U -> V, equipped with the topology of   *)
@@ -274,6 +288,8 @@ Require Import reals signed.
 (*                   unif_continuous f <-> f is uniformly continuous.         *)
 (*               weak_uniformType == the uniform space for weak topologies    *)
 (*                sup_uniformType == the uniform space for sup topologies     *)
+(*         countable_uniformity T == T's entourage has a countable base. This *)
+(*                                   is equivalent to `T` being metrizable    *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
 (*                entourage_ ball == entourages defined using balls           *)
@@ -300,6 +316,9 @@ Require Import reals signed.
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
 (*          weak_pseudoMetricType == the metric space for weak topologies     *)
+(*            quotient_topology Q == the quotient topology corresponding to   *)
+(*                                   quotient Q : quotType T. where T has     *)
+(*                                   type topologicalType                     *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -351,6 +370,7 @@ Require Import reals signed.
 (*                                                                            *)
 (* We endow several standard types with the types of topological notions:     *)
 (* - products: prod_topologicalType, prod_uniformType, prod_pseudoMetricType  *)
+(*     sup_pseudoMetricType, weak_pseudoMetricType, product_pseudoMetricType  *)
 (* - matrices: matrix_filtered, matrix_topologicalType, matrix_uniformType,   *)
 (*     matrix_pseudoMetricType, matrix_completeType,                          *)
 (*     matrix_completePseudoMetricType                                        *)
@@ -770,7 +790,7 @@ Arguments filter_not_empty {T} F {_}.
 
 Notation ProperFilter := ProperFilter'.
 
-Lemma filter_setT (T' : Type) : Filter (@setT (set T')).
+Lemma filter_setT (T' : Type) : Filter [set: set T'].
 Proof. by constructor. Qed.
 
 Lemma filterP_strong T (F : set (set T)) {FF : Filter F} (P : set T) :
@@ -1562,6 +1582,14 @@ split=> [E [] //| |]; last by exists U; split.
 by move=> E1 E2 [F1 E1U F2 E2subE1]; split => //; exact: subset_trans E1U.
 Qed.
 
+Lemma powerset_filter_fromP C :
+  F C -> powerset_filter_from [set W | F W /\ W `<=` C].
+Proof.
+move=> FC; exists [set W | F W /\ W `<=` C] => //; split; first by move=> ? [].
+  by move=> A B [_ AC] FB /subset_trans/(_ AC).
+by exists C; split.
+Qed.
+
 End NearSet.
 
 Section PrincipalFilters.
@@ -1587,7 +1615,7 @@ Record mixin_of (T : Type) (nbhs : T -> set (set T)) := Mixin {
   open : set (set T) ;
   ax1 : forall p : T, ProperFilter (nbhs p) ;
   ax2 : forall p : T, nbhs p =
-    [set A : set T | exists B : set T, open B /\ B p /\ B `<=` A] ;
+    [set A : set T | exists B : set T, [/\ open B, B p & B `<=` A] ] ;
   ax3 : open = [set A : set T | A `<=` nbhs^~ A ]
 }.
 
@@ -1666,17 +1694,17 @@ Proof. exact: (@nbhs_pfilter). Qed.
 Canonical nbhs_filter_on (x : T) := FilterType (nbhs x) (@nbhs_filter x).
 
 Lemma nbhsE (p : T) :
-  nbhs p = [set A : set T | exists B : set T, open_nbhs p B /\ B `<=` A].
+  nbhs p = [set A : set T | exists2 B : set T, open_nbhs p B & B `<=` A].
 Proof.
-have -> : nbhs p = [set A : set T | exists B, open B /\ B p /\ B `<=` A].
+have -> : nbhs p = [set A : set T | exists B, [/\ open B, B p & B `<=` A] ].
   exact: Topological.ax2.
-by rewrite predeqE => A; split=> [[B [? []]]|[B [[]]]]; exists B.
+by rewrite predeqE => A; split=> [[B [?]]|[B[]]]; exists B.
 Qed.
 
 Lemma open_nbhsE (p : T) (A : set T) : open_nbhs p A = (open A /\ nbhs p A).
 Proof.
-rewrite nbhsE propeqE; split=> [[? ?]|[? [B [[? ?] BA]]]]; split => //;
-  [by exists A; split | exact: BA].
+by rewrite nbhsE propeqE; split=> [[? ?]|[? [B [? ?] BA]]]; split => //;
+  [exists A | exact: BA].
 Qed.
 
 Definition interior (A : set T) := (@nbhs _ T)^~ A.
@@ -1685,19 +1713,19 @@ Local Notation "A ^°" := (interior A).
 
 Lemma interior_subset (A : set T) : A^° `<=` A.
 Proof.
-by move=> p; rewrite /interior nbhsE => -[? [[??]]]; apply.
+by move=> p; rewrite /interior nbhsE => -[? [? ?]]; apply.
 Qed.
 
 Lemma openE : open = [set A : set T | A `<=` A^°].
 Proof. exact: Topological.ax3. Qed.
 
 Lemma nbhs_singleton (p : T) (A : set T) : nbhs p A -> A p.
-Proof. by rewrite nbhsE => - [? [[_ ?]]]; apply. Qed.
+Proof. by rewrite nbhsE => - [? [_ ?]]; apply. Qed.
 
 Lemma nbhs_interior (p : T) (A : set T) : nbhs p A -> nbhs p A^°.
 Proof.
-rewrite nbhsE /open_nbhs openE => - [B [[Bop Bp] sBA]].
-by exists B; split=> // q Bq; apply: filterS sBA _; apply: Bop.
+rewrite nbhsE /open_nbhs openE => - [B [Bop Bp] sBA].
+by exists B => // q Bq; apply: filterS sBA _; apply: Bop.
 Qed.
 
 Lemma open0 : open set0.
@@ -1733,15 +1761,15 @@ Qed.
 
 Lemma open_interior (A : set T) : open A^°.
 Proof.
-rewrite openE => p; rewrite /interior nbhsE => - [B [[Bop Bp]]].
+rewrite openE => p; rewrite /interior nbhsE => - [B [Bop Bp]].
 by rewrite open_subsetE //; exists B.
 Qed.
 
 Lemma interior_bigcup I (D : set I) (f : I -> set T) :
   \bigcup_(i in D) (f i)^° `<=` (\bigcup_(i in D) f i)^°.
 Proof.
-move=> p [i Di]; rewrite /interior nbhsE => - [B [[Bop Bp] sBfi]].
-by exists B; split=> // ? /sBfi; exists i.
+move=> p [i Di]; rewrite /interior nbhsE => - [B [Bop Bp] sBfi].
+by exists B => // ? /sBfi; exists i.
 Qed.
 
 Lemma open_nbhsT (p : T) : open_nbhs p setT.
@@ -1752,14 +1780,14 @@ Lemma open_nbhsI (p : T) (A B : set T) :
 Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
 
 Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
-Proof. by rewrite nbhsE => p_A; exists A; split. Qed.
+Proof. by rewrite nbhsE => p_A; exists A. Qed.
 
 Lemma interiorI (A B:set T): (A `&` B)^° = A^° `&` B^°.
 Proof.
-rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 [?]] | []].
+rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
 - by rewrite subsetI => // -[? ?]; split; exists B0.
-- move=> -[B0 [? ?]] [B1 [? ?]]; exists (B0 `&` B1); split;
-  [exact: open_nbhsI | by rewrite subsetI; split; apply: subIset; [left|right]].
+- by move=> -[B0 ? ?] [B1 ? ?]; exists (B0 `&` B1);
+  [exact: open_nbhsI | rewrite subsetI; split; apply: subIset; [left|right]].
 Qed.
 
 End Topological1.
@@ -1783,8 +1811,8 @@ Lemma continuousP (S T : topologicalType) (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
 Proof.
 split=> fcont; first by rewrite !openE => A Aop ? /Aop /fcont.
-move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [[Bop Bfs] sBA]].
-by exists (f @^-1` B); split; [split=> //; apply/fcont|move=> ? /sBA].
+move=> s A; rewrite nbhs_simpl /= !nbhsE => - [B [Bop Bfs] sBA].
+by exists (f @^-1` B); [split=> //; apply/fcont|move=> ? /sBA].
 Qed.
 
 Lemma continuous_comp (R S T : topologicalType) (f : R -> S) (g : S -> T) x :
@@ -1910,10 +1938,9 @@ Local Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 Lemma within_interior (x : T) : A^° x -> within A (nbhs x) = nbhs x.
 Proof.
 move=> Aox; rewrite eqEsubset; split; last exact: cvg_within.
-rewrite ?nbhsE => W /= => [[B [+ BsubW]]].
+rewrite ?nbhsE => W /= => [[B + BsubW]].
 rewrite open_nbhsE => [[oB nbhsB]].
-exists (B `&` A^°); split; last first.
-  by move=> t /= [] /BsubW + /interior_subset; apply.
+exists (B `&` A^°); last by move=> t /= [] /BsubW + /interior_subset; apply.
 rewrite open_nbhsE; split; first by apply: openI => //; exact: open_interior.
 by apply: filterI => //; move:(open_interior A); rewrite openE; exact.
 Qed.
@@ -1960,9 +1987,9 @@ Program Definition topologyOfFilterMixin : Topological.mixin_of nbhs' :=
   @Topological.Mixin T nbhs' open_of_nbhs _ _ _.
 Next Obligation.
 move=> p; rewrite predeqE => A; split=> [p_A|]; last first.
-  by move=> [B [Bop [Bp sBA]]]; apply: filterS sBA _; apply: Bop.
-exists (nbhs'^~ A); split; first by move=> ?; apply: nbhs'_nbhs'.
-by split => // q /nbhs'_singleton.
+  by move=> [B [Bop Bp sBA]]; apply: filterS sBA _; apply: Bop.
+exists (nbhs'^~ A) ; split => //; first by move=> ?; apply: nbhs'_nbhs'.
+by move=> q /nbhs'_singleton.
 Qed.
 Next Obligation. done. Qed.
 
@@ -1979,19 +2006,19 @@ Hypothesis (op_bigU : forall (I : Type) (f : I -> set T),
   (forall i, op (f i)) -> op (\bigcup_i f i)).
 
 Definition nbhs_of_open (p : T) (A : set T) :=
-  exists B, op B /\ B p /\ B `<=` A.
+  exists B, [/\ op B, B p & B `<=` A].
 
 Program Definition topologyOfOpenMixin : Topological.mixin_of nbhs_of_open :=
   @Topological.Mixin T nbhs_of_open op _ _ _.
 Next Obligation.
 move=> p; apply: Build_ProperFilter.
-  by move=> A [B [_ [Bp sBA]]]; exists p; apply: sBA.
+  by move=> A [B [_ Bp sBA]]; exists p; apply: sBA.
 split; first by exists setT.
-  move=> A B [C [Cop [Cp sCA]]] [D [Dop [Dp sDB]]].
-  exists (C `&` D); split; first exact: opI.
-  by split=> // q [/sCA Aq /sDB Bq].
-move=> A B sAB [C [Cop [p_C sCA]]].
-by exists C; split=> //; split=> //; apply: subset_trans sAB.
+  move=> A B [C [Cop Cp sCA]] [D [Dop Dp sDB]].
+  exists (C `&` D); split => //; first exact: opI.
+  by move=> q [/sCA Aq /sDB Bq].
+move=> A B sAB [C [Cop p_C sCA]].
+by exists C; split=> //; apply: subset_trans sAB.
 Qed.
 Next Obligation. done. Qed.
 Next Obligation.
@@ -2000,7 +2027,7 @@ rewrite predeqE => A; split=> [Aop p Ap|Aop].
 suff -> : A = \bigcup_(B : {B : set T & op B /\ B `<=` A}) projT1 B.
   by apply: op_bigU => B; have [] := projT2 B.
 rewrite predeqE => p; split=> [|[B _ Bp]]; last by have [_] := projT2 B; apply.
-by move=> /Aop [B [Bop [Bp sBA]]]; exists (existT _ B (conj Bop sBA)).
+by move=> /Aop [B [Bop Bp sBA]]; exists (existT _ B (conj Bop sBA)).
 Qed.
 
 End TopologyOfOpen.
@@ -2062,7 +2089,7 @@ End TopologyOfBase.
 (** ** Topology defined by a subbase of open sets *)
 
 Definition finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
-  [set \bigcap_(i in [set i | i \in D']) f i |
+  [set \bigcap_(i in [set` D']) f i |
     D' in [set A : {fset I} | {subset A <= D}]].
 
 Lemma finI_from_cover (I : choiceType) T (D : set I) (f : I -> set T) :
@@ -2343,12 +2370,12 @@ Lemma cvg_image (F : set (set S)) (s : S) :
   F --> (s : weak_topologicalType) <-> [set f @` A | A in F] --> f s.
 Proof.
 move=> FF fsurj; split=> [cvFs|cvfFfs].
-  move=> A /weak_continuous [B [Bop [Bs sBAf]]].
+  move=> A /weak_continuous [B [Bop Bs sBAf]].
   have /cvFs FB : nbhs (s : weak_topologicalType) B by apply: open_nbhs_nbhs.
   rewrite nbhs_simpl; exists (f @^-1` A); first exact: filterS FB.
   exact: image_preimage.
-move=> A /= [_ [[B Bop <-] [Bfs sBfA]]].
-have /cvfFfs [C FC fCeB] : nbhs (f s) B by rewrite nbhsE; exists B; split.
+move=> A /= [_ [[B Bop <-] Bfs sBfA]].
+have /cvfFfs [C FC fCeB] : nbhs (f s) B by rewrite nbhsE; exists B.
 rewrite nbhs_filterE; apply: filterS FC.
 by apply: subset_trans sBfA; rewrite -fCeB; apply: preimage_image.
 Qed.
@@ -2375,16 +2402,16 @@ Lemma cvg_sup (F : set (set T)) (t : T) :
   Filter F -> F --> (t : sup_topologicalType) <-> forall i, F --> (t : TS i).
 Proof.
 move=> Ffilt; split=> cvFt.
-  move=> i A /=; rewrite (@nbhsE (TS i)) => - [B [[Bop Bt] sBA]].
+  move=> i A /=; rewrite (@nbhsE (TS i)) => - [B [Bop Bt] sBA].
   apply: cvFt; exists B; split=> //; exists [set B]; last first.
     by rewrite predeqE => ?; split=> [[_ ->]|] //; exists B.
   move=> _ ->; exists [fset B]%fset.
     by move=> ?; rewrite inE inE => /eqP->; exists i.
   by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite /= inE // =>/eqP->.
 move=> A /=; rewrite (@nbhsE sup_topologicalType).
-move=> [_ [[[B sB <-] [C BC Ct]] sUBA]].
+move=> [_ [[B sB <-] [C BC Ct] sUBA]].
 rewrite nbhs_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
-  by move=> ??; exists C.
+  by move=> ? ?; exists C.
 have /sB [D sD IDeC] := BC; rewrite -IDeC; apply: filter_bigI => E DE.
 have /sD := DE; rewrite inE => - [i _]; rewrite openE => Eop.
 by apply: (cvFt i); apply: Eop; move: Ct; rewrite -IDeC => /(_ _ DE).
@@ -2414,10 +2441,10 @@ Lemma dnbhsE (T : topologicalType) (x : T) : nbhs x = x^' `&` at_point x.
 Proof.
 rewrite predeqE => A; split=> [x_A|[x_A Ax]].
   split; last exact: nbhs_singleton.
-  move: x_A; rewrite nbhsE => -[B [x_B sBA]]; rewrite /dnbhs nbhsE.
-  by exists B; split=> // ? /sBA.
-move: x_A; rewrite /dnbhs !nbhsE => -[B [x_B sBA]]; exists B.
-by split=> // y /sBA Ay; case: (eqVneq y x) => [->|].
+  move: x_A; rewrite nbhsE => -[B [oB x_B sBA]]; rewrite /dnbhs nbhsE.
+  by exists B => // ? /sBA.
+move: x_A; rewrite /dnbhs !nbhsE => -[B [oB x_B sBA]]; exists B => //.
+by move=> y /sBA Ay; case: (eqVneq y x) => [->|].
 Qed.
 
 Global Instance dnbhs_filter {T : topologicalType} (x : T) : Filter x^'.
@@ -2448,7 +2475,7 @@ Lemma meets_openr {T : topologicalType} (F : set (set T)) (x : T) :
   F `#` nbhs x = F `#` open_nbhs x.
 Proof.
 rewrite propeqE; split; [exact/meetsSr/open_nbhs_nbhs|].
-by move=> P A B {}/P P; rewrite nbhsE => -[B' [/P + sB]]; apply: subsetI_neq0.
+by move=> P A B {}/P P; rewrite nbhsE => -[B' /P + sB]; apply: subsetI_neq0.
 Qed.
 
 Lemma meets_openl {T : topologicalType} (F : set (set T)) (x : T) :
@@ -2559,11 +2586,11 @@ Proof.
 rewrite predeqE => A; split=> Acl p; last first.
   by move=> clAp; apply: Acl; rewrite -nbhs_nearE => /clAp [? []].
 rewrite -nbhs_nearE nbhsE => /asboolP.
-rewrite asbool_neg => /forallp_asboolPn clAp.
-apply: Acl => B; rewrite nbhsE => - [C [p_C sCB]].
+rewrite asbool_neg => /forallp_asboolPn2 clAp.
+apply: Acl => B; rewrite nbhsE => - [C [oC pC]].
 have /asboolP := clAp C.
-rewrite asbool_neg asbool_and => /nandP [/asboolP//|/existsp_asboolPn [q]].
-move/asboolP; rewrite asbool_neg => /imply_asboolPn [/sCB Bq /contrapT Aq].
+rewrite asbool_or 2!asbool_neg => /orP[/asboolP/not_andP[]//|/existsp_asboolPn [q]].
+move/asboolP; rewrite asbool_neg => /imply_asboolPn[+ /contrapT Aq sCB] => /sCB.
 by exists q.
 Qed.
 
@@ -2592,7 +2619,7 @@ Proof.
 rewrite !closedE=> f_continuous D_cl x /= xDf.
 apply: D_cl; apply: contra_not xDf => fxD.
 have NDfx : ~ D (f x).
-  by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [[??]]]; apply.
+  by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; apply.
 by apply: f_continuous fxD; rewrite inE.
 Qed.
 
@@ -2754,6 +2781,32 @@ Qed.
 End Compact.
 Arguments hausdorff_space : clear implicits.
 
+Section ClopenSets.
+Implicit Type T : topologicalType.
+
+Definition clopen {T} (A : set T) := open A /\ closed A.
+
+Lemma clopenI {T} (A B : set T) : clopen A -> clopen B -> clopen (A `&` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openI | exact: closedI]. Qed.
+
+Lemma clopenU {T} (A B : set T) : clopen A -> clopen B -> clopen (A `|` B).
+Proof. by case=> ? ? [] ? ?; split; [exact: openU | exact: closedU]. Qed.
+
+Lemma clopenC {T} (A B : set T) : clopen A -> clopen (~`A).
+Proof. by case=> ? ?; split;[exact: closed_openC | exact: open_closedC ]. Qed.
+
+Lemma clopen0 {T} : @clopen T set0.
+Proof. by split; [exact: open0 | exact: closed0]. Qed.
+
+Lemma clopenT {T} : clopen [set: T].
+Proof. by split; [exact: openT | exact: closedT]. Qed.
+
+Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
+ clopen A -> continuous f -> clopen (f @^-1` A).
+Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
+
+End ClopenSets.
+
 Section near_covering.
 Context {X : topologicalType}.
 
@@ -2803,7 +2856,7 @@ move=> /(_ _ _ GP U1x) => [[x'[]]][] Kx' /[swap] U1x'.
 by case; split => // i [? ?]; exact: (subP (x', i)).
 Unshelve. end_near. Qed.
 
-Lemma compact_near_coveringP : compact `<=>` near_covering.
+Lemma compact_near_coveringP A : compact A <-> near_covering A.
 Proof.
 by split; [exact: compact_near_covering| exact: near_covering_compact].
 Qed.
@@ -2955,7 +3008,7 @@ have subst_coordT i pi f : subst_coord i pi f i = pi.
 have subst_coordN i pi f j : i != j -> subst_coord i pi f j = f j.
   move=> inej; rewrite /subst_coord; case: eqP => // e.
   by move: inej; rewrite {1}e => /negP.
-have pr_surj i : @^~ i @` (@setT (forall i, T i)) = setT.
+have pr_surj i : @^~ i @` [set: forall i, T i] = setT.
   rewrite predeqE => pi; split=> // _.
   by exists (subst_coord i pi (fun _ => point))=> //; rewrite subst_coordT.
 set pF := fun i => [set @^~ i @` B | B in F].
@@ -2976,6 +3029,29 @@ by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 End Tychonoff.
+
+Lemma compact_cluster_set1 {T : topologicalType} (x : T) F V :
+  hausdorff_space T -> compact V -> nbhs x V ->
+  ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
+Proof.
+move=> ? cptV nxV PF FV clFx1 U nbhsU; rewrite nbhs_simpl.
+wlog oU : U nbhsU / open U.
+  rewrite /= nbhsE in nbhsU; case: nbhsU => O oO OsubU /(_ O) WH.
+  by apply: (filterS OsubU); apply: WH; [exact: open_nbhs_nbhs | by case: oO].
+have /compact_near_coveringP : compact (V `\` U).
+  apply: (subclosed_compact _ cptV) => //.
+  by apply: closedI; [exact: compact_closed | exact: open_closedC].
+move=> /(_ _ (powerset_filter_from F) (fun W x => ~ W x))[].
+  move=> z [Vz ?]; have zE : x <> z by move/nbhs_singleton: nbhsU => /[swap] ->.
+  have : ~ cluster F z by move: zE; apply: contra_not; rewrite clFx1 => ->.
+  case/existsNP=> C /existsPNP [D] FC /existsNP [Dz] /set0P/negP/negPn/eqP.
+  rewrite setIC => /disjoints_subset CD0; exists (D, [set W | F W /\ W `<=` C]).
+    by split; rewrite //= nbhs_simpl; exact: powerset_filter_fromP.
+  by case => t W [Dt] [FW] /subsetCP; apply; apply: CD0.
+move=> M [MF ME2 [W] MW /(_ _ MW) VUW].
+apply: (@filterS _ _ _ (V `&` W)); last by apply: filterI => //; exact: MF.
+by move=> t [Vt Wt]; apply: contrapT => Ut; exact: (VUW t).
+Qed.
 
 Section Precompact.
 
@@ -3049,7 +3125,7 @@ Qed.
 
 Lemma dfwith_continuous g (i : I) : continuous (dfwith g _ : K i -> PK).
 Proof.
-move=> z U [] P [] [] Q QfinP <- [] [] V JV Vpz.
+move=> z U [] P [] [] Q QfinP <- [] V JV Vpz.
 move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
 apply: (@filterS _ _ _ ((dfwith g i) @^-1` V)); first by exists V.
 have [L Lsub /[dup] VL <-] := QfinP _ JV; rewrite preimage_bigcap.
@@ -3112,10 +3188,9 @@ move=> FF sDFf D' sD; apply: (@filter_ex _ F); apply: filter_bigI.
 by move=> A /sD; rewrite inE => /sDFf.
 Qed.
 
-Definition finSubCover (I : choiceType) (D : set I)
+Definition finite_subset_cover (I : choiceType) (D : set I)
     U (F : I -> set U) (A : set U) :=
-  exists2 D' : {fset I}, {subset D' <= D} &
-    A `<=` \bigcup_(i in [set i | i \in D']) F i.
+  exists2 D' : {fset I}, {subset D' <= D} & A `<=` cover [set` D'] F.
 
 Section Covers.
 
@@ -3123,18 +3198,17 @@ Variable T : topologicalType.
 
 Definition cover_compact (A : set T) :=
   forall (I : choiceType) (D : set I) (f : I -> set T),
-  (forall i, D i -> open (f i)) -> A `<=` \bigcup_(i in D) f i ->
-  finSubCover D f A.
+  (forall i, D i -> open (f i)) -> A `<=` cover D f ->
+  finite_subset_cover D f A.
 
 Definition open_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
   exists2 g : I -> set T, (forall i, D i -> open (g i)) &
     forall i, D i -> f i = A `&` g i.
 
-Lemma cover_compactE :
-  cover_compact =
+Lemma cover_compactE : cover_compact =
   [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
-    open_fam_of A D f -> A `<=` \bigcup_(i in D) f i -> finSubCover D f A].
-
+    open_fam_of A D f ->
+      A `<=` cover D f -> finite_subset_cover D f A].
 Proof.
 rewrite predeqE => A; split=> [Aco I D f [g gop feAg] fcov|Aco I D f fop fcov].
   have gcov : A `<=` \bigcup_(i in D) g i.
@@ -3190,8 +3264,7 @@ split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
       by move=> gip; apply: nfip; rewrite feAg.
     by rewrite feAg // => - [].
   move=> D' sD.
-  have /asboolP : ~ A `<=` \bigcup_(i in [set i | i \in D']) f i.
-    by move=> sAIf; apply: (sfncov D').
+  have /asboolP : ~ A `<=` cover [set` D'] f by move=> sAIf; exact: (sfncov D').
   rewrite asbool_neg => /existsp_asboolPn [p /asboolP].
   rewrite asbool_neg => /imply_asboolPn [Ap nUfp].
   by exists p => i D'i; split=> // fip; apply: nUfp; exists i.
@@ -3237,14 +3310,14 @@ Lemma accessible_closed_set1 : accessible_space -> forall x, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
 rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
-rewrite /interior nbhsE /=; exists U; split; last by rewrite subsetC1.
-by split=> //; rewrite inE in yU.
+rewrite /interior nbhsE /=; exists U; last by rewrite subsetC1.
+by split=> //; exact: set_mem.
 Qed.
 
 Lemma accessible_kolmogorov : accessible_space -> kolmogorov_space.
 Proof.
 move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
-by rewrite nbhsE inE; exists A; do !split=> //; rewrite inE in xA.
+by rewrite nbhsE inE; exists A => //; rewrite inE in xA.
 Qed.
 
 Lemma accessible_finite_set_closed :
@@ -3321,12 +3394,19 @@ rewrite propeqE; split => [T_filterT2|T_openT2] x y.
   rewrite asbool_imply !negb_imply => /andP[/asboolP xA] /andP[/asboolP yB].
   move=> /asboolPn; rewrite -set0P => /negP; rewrite negbK => /eqP AIB_eq0.
   move: xA yB; rewrite !nbhsE.
-  move=> - [oA [[oA_open oAx] oAA]] [oB [[oB_open oBx] oBB]].
+  move=> - [oA [oA_open oAx] oAA] [oB [oB_open oBx] oBB].
   by exists (oA, oB); rewrite ?inE; split => //; apply: subsetI_eq0 AIB_eq0.
 apply: contraPP => /eqP /T_openT2[[/=A B]].
 rewrite !inE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
 move=> /(_ A B (open_nbhs_nbhs _) (open_nbhs_nbhs _)).
 by rewrite -set0P => /(_ _ _)/negP; apply.
+Qed.
+
+Definition hausdorff_accessible : hausdorff_space T -> accessible_space.
+Proof.
+rewrite open_hausdorff => hsdfT => x y /hsdfT [[U V] [xU yV]] [/= ? ? /eqP].
+rewrite setIC => /disjoints_subset VUc; exists U; repeat split => //.
+by rewrite inE; apply: VUc; rewrite -inE.
 Qed.
 
 Hypothesis sep : hausdorff_space T.
@@ -3498,6 +3578,20 @@ move=> [x [Ax Bx]] Ac Bc; rewrite -bigcup2inE; apply: bigcup_connected.
 by move=> [|[|[]]].
 Qed.
 
+Lemma connected_closure A : connected A -> connected (closure A).
+Proof.
+move=> ctdA U U0 [C1 oC1 C1E] [C2 cC2 C2E]; rewrite eqEsubset C2E; split => //.
+suff : A `<=` U.
+  move/closure_subset; rewrite [_ `&` _](iffLR (closure_id _)) ?C2E//.
+  by apply: closedI => //; exact: closed_closure.
+rewrite -setIidPl; apply: ctdA.
+- move: U0; rewrite C1E => -[z [clAx C1z]]; have [] := clAx C1.
+    exact: open_nbhs_nbhs.
+  by move=> w [Aw C1w]; exists w; rewrite setIA (setIidl (@subset_closure _ _)).
+- by exists C1 => //; rewrite C1E setIA (setIidl (@subset_closure _ _)).
+- by exists C2 => //; rewrite C2E setIA (setIidl (@subset_closure _ _)).
+Qed.
+
 Definition connected_component (A : set T) (x : T) :=
   \bigcup_(A in [set C : set T | [/\ C x, C `<=` A & connected C]]) A.
 
@@ -3549,6 +3643,16 @@ Lemma same_connected_component A x y : connected_component A x y ->
 Proof.
 move=> Axy; apply/seteqP; split => z; apply: connected_component_trans => //.
 by apply: connected_component_sym.
+Qed.
+
+Lemma clopen_separatedP A : clopen A <-> separated A (~` A).
+Proof.
+split=> [[oA cA]|[] /[!(@disjoints_subset T)] /[!(@setCK T)] clAA AclA].
+  rewrite /separated -((closure_id A).1 cA) setICr ; split => //.
+  by rewrite -((closure_id _).1 (open_closedC oA)) setICr.
+split; last by rewrite closure_id eqEsubset; split => //; exact: subset_closure.
+by rewrite -closedC closure_id eqEsubset; split;
+  [exact: subset_closure|exact: subsetCr].
 Qed.
 
 End connected_sets.
@@ -3611,6 +3715,57 @@ Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
 End DiscreteTopology.
 
 #[global] Hint Resolve discrete_bool : core.
+
+Section perfect_sets.
+
+Implicit Types (T : topologicalType).
+
+Definition perfect_set {T} (A : set T) := closed A /\ limit_point A = A.
+
+Lemma perfectTP {T} : perfect_set [set: T] <-> forall x : T, ~ open [set x].
+Proof.
+split.
+  case=> _; rewrite eqEsubset; case=> _ + x Ox => /(_ x I [set x]).
+  by case; [by apply: open_nbhs_nbhs; split |] => y [+ _] => /[swap] -> /eqP.
+move=> NOx; split; [exact: closedT |]; rewrite eqEsubset; split => x // _.
+move=> U; rewrite nbhsE; case=> V [] oV Vx VU.
+have Vnx: V != [set x] by apply/eqP => M; apply: (NOx x); rewrite -M.
+have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
+  move/negP: Vnx; apply: contra_not => Vxy; apply/eqP; rewrite eqEsubset.
+  by split => // ? ->.
+by exists y; split => //; [exact/eqP | exact: VU].
+Qed.
+
+Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) :
+  perfect_set [set: K i] -> perfect_set [set: product_topologicalType K].
+Proof.
+move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
+rewrite (_ : [set f i] = proj i @` [set f]).
+  by apply: (@proj_open (classicType_choiceType I) _ i); exact: oF.
+by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
+Qed.
+
+Lemma perfect_diagonal (K : nat_topologicalType -> topologicalType) :
+  (forall i, exists (xy: K i * K i), xy.1 != xy.2) ->
+  perfect_set [set: product_topologicalType K].
+Proof.
+move=> npts; split; first exact: closedT.
+rewrite eqEsubset; split => f // _.
+pose distincts (i : nat) := projT1 (sigW (npts i)).
+pose derange (i : nat) (z : K i) :=
+  if z == (distincts i).1 then (distincts i).2 else (distincts i).1.
+pose g (N i : nat) := if (i < N)%nat then f i else derange _ (f i).
+have gcvg : g @ \oo --> (f : product_topologicalType K).
+  apply/(@cvg_sup (product_topologicalType K)) => N U [V] [][W] oW <- WfN WU.
+  by apply: (filterS WU); rewrite nbhs_simpl /g; exists N.+1 => // i /= ->.
+move=> A /gcvg; rewrite nbhs_simpl; case=> N _ An.
+exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
+apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
+rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
+by move=> ->; have := projT2 (sigW (npts N)). 
+Qed.
+
+End perfect_sets.
 
 (** * Uniform spaces *)
 
@@ -3759,7 +3914,7 @@ apply Build_ProperFilter; last exact: Uniform.ax1.
 by move=> A entA; exists (point, point); apply: entourage_refl.
 Qed.
 
-Lemma entourageT : entourage (@setT (M * M)).
+Lemma entourageT : entourage [set: M * M].
 Proof. exact: filterT. Qed.
 
 Lemma entourage_inv (A : set (M * M)) : entourage A -> entourage (A^-1)%classic.
@@ -3835,6 +3990,27 @@ rewrite !nbhs_nearE !near_map !near_nbhs in fxP *; have /= := cfx P fxP.
 rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
+
+(* This property is primarily useful only for metrizability on uniform spaces *)
+Definition countable_uniformity (T : uniformType) :=
+  exists R : set (set (T * T)), [/\
+    countable R,
+    R `<=` entourage &
+    forall P, entourage P -> exists2 Q, R Q & Q `<=` P].
+
+Lemma countable_uniformityP {T : uniformType} :
+  countable_uniformity T <-> exists2 f : nat -> set (T * T),
+    (forall A, entourage A -> exists N, f N `<=` A) &
+    (forall n, entourage (f n)).
+Proof.
+split=> [[M []]|[f fsubE entf]].
+  move=> /pfcard_geP[-> _ /(_ _ entourageT)[]//|/unsquash f eM Msub].
+  exists f; last by move=> n; apply: eM; exact: funS.
+  by move=> ? /Msub [Q + ?] => /(@surj _ _ _ _ f)[n _ fQ]; exists n; rewrite fQ.
+exists (range f); split; first exact: card_image_le.
+  by move=> E [n _] <-; exact: entf.
+by move=> E /fsubE [n fnA]; exists (f n) => //; exists n.
+Qed.
 
 Section uniform_closeness.
 
@@ -4188,12 +4364,12 @@ Qed.
 Lemma weak_ent_nbhs : nbhs = nbhs_ weak_ent.
 Proof.
 rewrite predeq2E => x V; split.
-  case=> [? [[B  ? <-] [? BsubV]]]; have: nbhs (f x) B by apply: open_nbhs_nbhs.
+  case=> [? [[B  ? <-] ? BsubV]]; have: nbhs (f x) B by apply: open_nbhs_nbhs.
   move=> /nbhsP [W ? WsubB]; exists ((map_pair f) @^-1` W); first by exists W.
   by move=>??; exact/BsubV/WsubB.
 case=> W [V' entV' V'subW] /filterS; apply.
 have : nbhs (f x) to_set V' (f x) by apply/nbhsP; exists V'.
-rewrite (@nbhsE U) => [[O [[openU Ofx Osub]]]].
+rewrite (@nbhsE U) => [[O [openU Ofx Osub]]].
 (exists (f @^-1` O); repeat split => //); first by exists O => //.
 by move=> w ? ; apply: V'subW; exact: Osub.
 Qed.
@@ -4269,7 +4445,7 @@ Qed.
 Lemma sup_ent_nbhs : @nbhs Tt Tt = nbhs_ sup_ent.
 Proof.
 rewrite predeq2E => x V; split.
-  rewrite /nbhs_of_open => [[? [[B  + <-] [[W BW Wx] BV]]]] => /(_ W BW) [].
+  rewrite /nbhs_of_open => [[? [[B  + <-] [W BW Wx] BV]]] => /(_ W BW) [].
   move=> F Fsup Weq; move: Weq Wx BW => <- Fx BF.
   case (pselect ([set: I] = set0)) => [I0 | /eqP/set0P [i0 _]].
     suff -> : V = setT  by exists setT; apply: filterT; exact: sup_ent_filter.
@@ -4307,6 +4483,47 @@ Definition sup_uniform_mixin:=
     sup_ent sup_ent_filter sup_ent_refl sup_ent_inv sup_ent_split sup_ent_nbhs.
 
 Definition sup_uniformType := UniformType Tt sup_uniform_mixin.
+
+Lemma countable_sup_ent :
+  countable [set: Ii] -> (forall n, countable_uniformity (TS n)) ->
+  countable_uniformity sup_uniformType.
+Proof.
+move=> Icnt countable_ent; pose f n := cid (countable_ent n).
+pose g (n : Ii) : set (set (T * T)) := projT1 (f n).
+have [I0 | /set0P [i0 _]] := eqVneq [set: I] set0.
+  exists [set setT]; split; [exact: countable1|move=> A ->; exact: entourageT|].
+  move=> P [w [A _]] <- subP; exists setT => //.
+  apply: subset_trans subP; apply: sub_bigcap => i _ ? _.
+  by suff : [set: I] (projT1 i).1 by rewrite I0.
+exists (finI_from (\bigcup_n g n) id); split.
+- by apply/finI_from_countable/bigcup_countable => //i _; case: (projT2 (f i)).
+- move=> E [A AsubGn AE]; exists E => //.
+  have h (w : set (T * T)) : { p : IEnt | w \in A -> w = (projT1 p).2 }.
+    apply cid; have [|] := boolP (w \in A); last first.
+      by exists (exist ent_of _ (IEnt_pointT i0)).
+    move=> /[dup] /AsubGn /set_mem [n _ gnw] wA.
+    suff ent : ent_of (n, w) by exists (exist ent_of (n, w) ent).
+    by apply/asboolP; have [_ + _] := projT2 (f n); exact.
+  exists [fset sval (h w) | w in A]%fset; first by move=> ?; exact: in_setT.
+  rewrite -AE; rewrite eqEsubset; split => t Ia.
+    by move=> w Aw; rewrite (svalP (h w) Aw); apply/Ia/imfsetP; exists w.
+  case=> [[n w]] p /imfsetP [x /= xA M]; apply: Ia.
+  by rewrite (_ : w = x) // (svalP (h x) xA) -M.
+- move=> E [w] [ A _ wIA wsubE].
+  have ent_Ip (i : IEnt) : @entourage (TS (projT1 i).1) (projT1 i).2.
+    by apply/asboolP; exact: (projT2 i).
+  pose h (i : IEnt) : {x : set (T * T) | _} := cid2 (and3_rec
+    (fun _ _ P => P) (projT2 (f (projT1 i).1)) (projT1 i).2 (ent_Ip i)).
+  have ehi (i : IEnt) : ent_of ((projT1 i).1, projT1 (h i)).
+    apply/asboolP => /=; have [] := projT2 (h i).
+    by have [_ + _ ? ?] := projT2 (f (projT1 i).1); exact.
+  pose AH := [fset projT1 (h w) | w in A]%fset.
+  exists (\bigcap_(i in [set` AH]) i).
+    exists AH => // p /imfsetP [i iA ->]; rewrite inE //.
+    by exists (projT1 i).1 => //; have [] := projT2 (h i).
+  apply: subset_trans wsubE; rewrite -wIA => ? It i ?.
+  by have [?] := projT2 (h i); apply; apply: It; apply/imfsetP; exists i.
+Qed.
 
 End sup_uniform.
 
@@ -4636,6 +4853,18 @@ by rewrite /unif_continuous -!entourage_ballE filter_fromP.
 Qed.
 End entourages.
 
+Lemma countable_uniformity_metric {R : realType} {T : pseudoMetricType R} :
+  countable_uniformity T.
+Proof.
+apply/countable_uniformityP.
+exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
+  by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
+move=> E; rewrite -entourage_ballE => -[e e0 subE].
+exists `|floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
+rewrite /= -[leRHS]invrK lef_pinv ?posrE ?invr_gt0// -natr1.
+by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// lt_succ_floor.
+Qed.
+
 (** ** Specific pseudoMetric spaces *)
 
 (** matrices *)
@@ -4759,6 +4988,56 @@ Definition fct_pseudoMetricType_mixin :=
   PseudoMetricMixin fct_ball_center fct_ball_sym fct_ball_triangle fct_entourage.
 Canonical fct_pseudoMetricType := PseudoMetricType (T -> U) fct_pseudoMetricType_mixin.
 End fct_PseudoMetric.
+
+Definition quotient_topology (T : topologicalType) (Q : quotType T) := Q.
+
+Section quotients.
+Local Open Scope quotient_scope.
+Context {T : topologicalType} {Q0 : quotType T}.
+
+Let Q := quotient_topology Q0.
+
+Canonical quotient_eq := EqType Q gen_eqMixin.
+Canonical quotient_choice := ChoiceType Q gen_choiceMixin.
+Canonical quotient_pointed := PointedType Q (\pi_Q point).
+
+Definition quotient_open U := open (\pi_Q @^-1` U).
+
+Program Definition quotient_topologicalType_mixin :=
+  @topologyOfOpenMixin Q quotient_open _ _ _.
+Next Obligation. by rewrite /quotient_open preimage_setT; exact: openT. Qed.
+Next Obligation. by move=> ? ? ? ?; exact: openI. Qed.
+Next Obligation. by move=> I f ofi; apply: bigcup_open => i _; exact: ofi. Qed.
+
+Let quotient_filtered := Filtered.Class (Pointed.class quotient_pointed)
+  (nbhs_of_open quotient_open).
+
+Canonical quotient_topologicalType := @Topological.Pack Q
+  (@Topological.Class _ quotient_filtered quotient_topologicalType_mixin).
+
+Let Q' := quotient_topologicalType.
+
+Lemma pi_continuous : continuous (\pi_Q : T -> Q').
+Proof. exact/continuousP. Qed.
+
+Lemma quotient_continuous {Z : topologicalType} (f : Q' -> Z) :
+  continuous f <-> continuous (f \o \pi_Q).
+Proof.
+split => /continuousP /= cts; apply/continuousP => A oA; last exact: cts.
+by rewrite comp_preimage; move/continuousP: pi_continuous; apply; exact: cts.
+Qed.
+
+Lemma repr_comp_continuous (Z : topologicalType) (g : T -> Z) :
+  continuous g -> {homo g : a b / a == b %[mod Q] >-> a == b} ->
+  continuous (g \o repr : Q' -> Z).
+Proof.
+move=> /continuousP ctsG rgE; apply/continuousP => A oA.
+rewrite /open/= /quotient_open (_ : _ @^-1` _ = g @^-1` A); first exact: ctsG.
+have greprE x : g (repr (\pi_Q x)) = g x by apply/eqP; rewrite rgE// reprK.
+by rewrite eqEsubset; split => x /=; rewrite greprE.
+Qed.
+
+End quotients.
 
 (** ** Complete uniform spaces *)
 
@@ -5502,7 +5781,7 @@ Lemma uniform_nbhs (f : fct_RestrictedUniformTopology) P:
   nbhs f P <-> (exists E, entourage E /\
     [set h | forall y, A y -> E(f y, h y)] `<=` P).
 Proof.
-split=> [[Q [[/= W oW <- /=] [Wf subP]]]|[E [entE subP]]].
+split=> [[Q [[/= W oW <- /=] Wf subP]]|[E [entE subP]]].
   rewrite openE /= /interior in oW.
   case: (oW _ Wf) => ? [ /= E entE] Esub subW.
   exists E; split=> // h Eh; apply/subP/subW/Esub => /= [[u Au]].
@@ -5535,7 +5814,7 @@ End RestrictedUniformTopology.
 
 Notation "{ 'uniform`' A -> V }" := (@fct_RestrictedUniform _ A V) :
   classical_set_scope.
-Notation "{ 'uniform' U -> V }" := ({uniform` (@setT U) -> V}) :
+Notation "{ 'uniform' U -> V }" := ({uniform` [set: U] -> V}) :
   classical_set_scope.
 
 Notation "{ 'uniform' A , F --> f }" :=
@@ -5751,19 +6030,20 @@ Lemma family_cvg_finite_covers (famA famB : set U -> Prop)
   (F : set (set (U -> V))) (f : U -> V) : Filter F ->
   (forall P, famA P ->
     exists (I : choiceType) f,
-      (forall i, famB (f i)) /\ finSubCover (@setT I) f P) ->
+      (forall i, famB (f i)) /\ finite_subset_cover [set: I] f P) ->
   {family famB, F --> f} -> {family famA, F --> f}.
 Proof.
 move=> FF ex_finCover /fam_cvgP rFf; apply/fam_cvgP => A famAA.
 move: ex_finCover => /(_ _ famAA) [R [g [g_famB [D _]]]].
 move/uniform_subset_cvg; apply.
 elim/finSet_rect: D => X IHX.
-have [/eqP ->|/set0P[x xX]] := boolP ([set i | i \in X] == set0).
-  by rewrite bigcup_set0; apply: cvg_uniform_set0.
-rewrite (bigcup_fsetD1 x)//; apply: cvg_uniformU.
+have [->|/set0P[x xX]] := eqVneq [set` X] set0.
+  by rewrite coverE bigcup_set0; apply: cvg_uniform_set0.
+rewrite coverE (bigcup_fsetD1 x)//; apply: cvg_uniformU.
   exact/rFf/g_famB.
 exact/IHX/fproperD1.
 Qed.
+
 End UniformCvgLemmas.
 
 Notation "{ 'family' fam , U -> V }" :=  (@fct_UniformFamily U V fam).
@@ -5885,11 +6165,17 @@ End weak_pseudoMetric.
    - infinite products of metric spaces are metrizable
 *)
 Section countable_uniform.
-Context {R : realType} {T : uniformType} (f_ : nat -> set (T * T)).
+Context {R : realType} {T : uniformType}.
 
-Hypothesis countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
+Hypothesis cnt_unif : @countable_uniformity T.
 
-Hypothesis entF : forall n, entourage (f_ n).
+Let f_ := projT1 (cid2 (iffLR countable_uniformityP cnt_unif)).
+
+Local Lemma countableBase : forall A, entourage A -> exists N, f_ N `<=` A.
+Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
+
+Let entF : forall n, entourage (f_ n).
+Proof. by have [] := projT2 (cid2 (iffLR countable_uniformityP cnt_unif)). Qed.
 
 (* Step 1:
    We build a nicer base `g` for `entourage` with better assumptions than `f`
@@ -5902,13 +6188,11 @@ Local Fixpoint g_ (n : nat) : set (T * T) :=
   if n is S n then let W := split_ent (split_ent (g_ n)) `&` f_ n in W `&` W^-1
   else [set: T*T].
 
-Local Lemma entG (n : nat) : entourage (g_ n).
+Let entG (n : nat) : entourage (g_ n).
 Proof.
 elim: n => /=; first exact: entourageT.
 by move=> n entg; apply/entourage_invI; exact: filterI.
 Qed.
-
-#[local] Hint Resolve entG : core.
 
 Local Lemma symG (n : nat) : ((g_ n)^-1)%classic = g_ n.
 Proof.
@@ -6183,6 +6467,38 @@ Definition countable_uniform_pseudoMetricType_mixin := PseudoMetric.Mixin
 
 End countable_uniform.
 
+Section sup_pseudometric.
+Variable (R : realType) (T : pointedType) (Ii : Type).
+Variable (Tc : Ii -> PseudoMetric.class_of R T).
+
+Hypothesis Icnt : countable [set: Ii].
+
+Let I : choiceType := classicType_choiceType Ii.
+Let TS := fun i => PseudoMetric.Pack (Tc i).
+
+Definition countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
+  (fun i => @countable_uniformity_metric _ (TS i)).
+
+Definition sup_pseudoMetric_mixin := @countable_uniform_pseudoMetricType_mixin R
+  (sup_uniformType Tc) countable_uniformityT.
+
+Definition sup_pseudoMetricType :=
+  PseudoMetricType (sup_uniformType Tc) sup_pseudoMetric_mixin.
+
+End sup_pseudometric.
+
+Section product_pseudometric.
+Variable (R : realType) (Ii : countType) (Tc : Ii -> pseudoMetricType R).
+
+Hypothesis Icnt : countable [set: Ii].
+
+Definition product_pseudoMetricType :=
+  sup_pseudoMetricType (fun i => PseudoMetric.class
+    (weak_pseudoMetricType (fun f : dep_arrow_pointedType Tc => f i)))
+    Icnt.
+
+End product_pseudometric.
+
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
 
@@ -6291,7 +6607,7 @@ Section SubspaceOpen.
 Lemma open_subspace1out (x : subspace A) : ~ A x -> open [set x].
 Proof.
 move=> /nbhs_subspace_out E; have : nbhs x [set x] by rewrite /nbhs //= -E.
-rewrite nbhsE => [[U [[]]]] oU Ux Usub; suff : U = [set x] by move=> <-.
+rewrite nbhsE => [[U []]] oU Ux Usub; suff : U = [set x] by move=> <-.
 by rewrite eqEsubset; split => // t ->.
 Qed.
 
@@ -6428,6 +6744,22 @@ rewrite withinE => W/= -[V nbhsV WV]; apply: filterS (V `&` (U `&` A)) _ _ _.
 by apply: filterI; rewrite nbhs_simpl //; exact: Fp.
 Qed.
 
+Lemma clopen_connectedP : connected A <->
+  (forall U, @clopen (subspace_topologicalType) U ->
+    U `<=` A  -> U !=set0 -> U = A).
+Proof.
+split.
+  move=> + U [/open_subspaceP oU /closed_subspaceP cU] UA U0; apply => //.
+  - case: oU => V [oV VAUA]; exists V; rewrite // setIC VAUA.
+    exact/esym/setIidPl.
+  - case: cU => V [cV VAUA]; exists V => //; rewrite setIC VAUA.
+    exact/esym/setIidPl.
+move=> clpnA U Un0 [V oV UVA] [W cW UWA]; apply: clpnA => //; first split.
+- by apply/open_subspaceP; exists V; rewrite setIC UVA setIAC setIid.
+- by apply/closed_subspaceP; exists W; rewrite setIC UWA setIAC setIid.
+- by rewrite UWA; exact: subIsetl.
+Qed.
+
 End Subspace.
 
 Global Instance subspace_filter {T : topologicalType}
@@ -6442,7 +6774,7 @@ Global Instance subspace_proper_filter {T : topologicalType}
   (continuous (f : subspace A -> _)).*)
 Notation "{ 'within' A , 'continuous' f }" := (forall x,
   cvg_to [filter of fmap f (filter_of (Phantom (subspace A) x))]
-         [filter of f x]).
+         [filter of f x]) : classical_set_scope.
 
 Section SubspaceRelative.
 Context {T : topologicalType}.
@@ -6467,7 +6799,7 @@ Qed.
 
 Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs x.
 Proof.
-rewrite {1}/nbhs //=; have [_|] := nbhs_subspaceP (@setT T); last by cbn.
+rewrite {1}/nbhs //=; have [_|] := nbhs_subspaceP [set: T]; last by cbn.
 rewrite eqEsubset withinE; split => [W [V nbhsV]|W ?]; last by exists W.
 by rewrite 2!setIT => ->.
 Qed.
@@ -6677,6 +7009,123 @@ Qed.
 
 End SubspaceWeak.
 
+Definition separate_points_from_closed {I : Type} {T : topologicalType}
+    {U_ : I -> topologicalType} (f_ : forall i, T -> U_ i) :=
+  forall (U : set T) x,
+  closed U -> ~ U x -> exists i, ~ (closure (f_ i @` U)) (f_ i x).
+
+(* A handy technique for embedding a space T into a product. The key interface
+   is 'separate_points_from_closed', which guarantees that the topologies
+   - T's native topology
+   - sup (weak f_i) - the sup of all the weak topologies of f_i
+   - weak (x => (f_1 x, f_2 x,...)) - the weak topology from the product space
+  are equivalent (the last equivalence seems to require accessible_space).
+*)
+Section product_embeddings.
+Context {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType}.
+Variable (f_ : forall i, T -> U_ i).
+
+Hypothesis sepf : separate_points_from_closed f_.
+Hypothesis ctsf : forall i, continuous (f_ i).
+
+Let weakT := @sup_topologicalType T I
+  (fun i => Topological.class (weak_topologicalType (f_ i))).
+
+Let PU := product_topologicalType U_.
+
+Local Notation sup_open := (@open weakT).
+Local Notation "'weak_open' i" :=
+  (@open (weak_topologicalType (f_ i))) (at level 0).
+Local Notation natural_open := (@open T).
+
+Lemma weak_sep_cvg (F : set (set T)) (x : T) :
+  Filter F -> (F --> (x : T)) <-> (F --> (x : weakT)).
+Proof.
+move=> FF; split.
+  move=> FTx; apply/cvg_sup => i U.
+  have /= -> := @nbhsE (weak_topologicalType (f_ i)) x.
+  case=> B [[C oC <- ?]] /filterS; apply; apply: FTx; rewrite /= nbhsE.
+  by exists (f_ i @^-1` C) => //; split => //; exact: open_comp.
+move/cvg_sup => wiFx U; rewrite /= nbhs_simpl nbhsE => [[B [oB ?]]].
+move/filterS; apply; have [//|i nclfix] := @sepf _ x (open_closedC oB).
+apply: (wiFx i); have /= -> := @nbhsE (weak_topologicalType (f_ i)) x.
+exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); [split=>//|].
+  apply: open_comp; last by rewrite ?openC; last apply: closed_closure.
+  by move=> + _; exact: weak_continuous.
+rewrite closureC preimage_bigcup => z [V [oV]] VnB => /VnB.
+by move/forall2NP => /(_ z) [] // /contrapT.
+Qed.
+
+Lemma weak_sep_nbhsE x : @nbhs T T x = @nbhs T weakT x.
+Proof.
+rewrite predeqE => U; split; move: U.
+  by have P := weak_sep_cvg x (nbhs_filter (x : weakT)); exact/P.
+by have P := weak_sep_cvg x (nbhs_filter (x : T)); exact/P.
+Qed.
+
+Lemma weak_sep_openE : @open T = @open weakT.
+Proof.
+rewrite predeqE => A; rewrite ?openE /interior.
+by split => + z => /(_ z); rewrite weak_sep_nbhsE.
+Qed.
+
+Definition join_product (x : T) : PU := f_ ^~ x.
+
+Lemma join_product_continuous : continuous join_product.
+Proof.
+suff : continuous (join_product : weakT -> PU).
+  by move=> cts x U => /cts; rewrite nbhs_simpl /= -weak_sep_nbhsE.
+move=> x; apply/cvg_sup; first exact/fmap_filter/(nbhs_filter (x : weakT)).
+move=> i; move: x; apply/(@continuousP _ (weak_topologicalType _)) => A [B ? E].
+rewrite -E (_ : @^~ i =  proj i) //.
+have -> : join_product @^-1` (proj i @^-1` B) = f_ i @^-1` B by [].
+apply: open_comp => // + _; rewrite /cvg_to => x U.
+by rewrite nbhs_simpl /= -weak_sep_nbhsE; move: x U; exact: ctsf.
+Qed.
+
+Local Notation prod_open :=
+  (@open (subspace_topologicalType (range join_product))).
+
+Lemma join_product_open (A : set T) : open A ->
+  open ((join_product @` A) : set (subspace (range join_product))).
+Proof.
+move=> oA; rewrite openE => y /= [x Ax] jxy.
+have [// | i nAfiy] := @sepf (~` A) x (open_closedC oA).
+pose B : set PU := proj i @^-1` (~` closure (f_ i @` ~` A)).
+apply: (@filterS _ _ _ (range join_product `&` B)).
+  move=> z [[w ?]] wzE Bz; exists w => //.
+  move: Bz; rewrite /B -wzE closureC; case=> K [oK KsubA] /KsubA.
+  have -> : proj i (join_product w) = f_ i w by [].
+  by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
+apply: open_nbhs_nbhs; split; last by rewrite -jxy.
+apply: openI; first exact: open_subspaceT.
+apply: open_subspaceW; apply: open_comp; last exact/closed_openC/closed_closure.
+by move=> + _; exact: proj_continuous.
+Qed.
+
+Lemma join_product_inj : accessible_space T -> set_inj [set: T] join_product.
+Proof.
+move=> /accessible_closed_set1 cl1 x y; case: (eqVneq x y) => // xny _ _ jxjy.
+have [] := (@sepf [set y] x (cl1 y)); first by exact/eqP.
+move=> i P; suff : join_product x i != join_product y i by rewrite jxjy => /eqP.
+apply/negP; move: P; apply: contra_not => /eqP; rewrite /join_product => ->.
+by apply subset_closure; exists y.
+Qed.
+
+Lemma join_product_weak : set_inj [set: T] join_product ->
+  @open T = @open (weak_topologicalType join_product).
+Proof.
+move=> inj; rewrite predeqE => U; split; first last.
+  by move=> [V ? <-]; apply open_comp => // + _; exact: join_product_continuous.
+move=> /join_product_open/open_subspaceP [V [oU VU]].
+exists V => //; have := @f_equal _ _ (preimage join_product) _ _ VU.
+rewrite !preimage_setI // !preimage_range !setIT => ->.
+rewrite eqEsubset; split; last exact: preimage_image.
+by move=> z [w Uw] /inj <- //; rewrite inE.
+Qed.
+
+End product_embeddings.
+
 Lemma continuous_compact {T U : topologicalType} (f : T -> U) A :
   {within A, continuous f} -> compact A -> compact (f @` A).
 Proof.
@@ -6774,9 +7223,8 @@ split; first by move=> ? ?; near=> U; apply: continuous_subspaceT=> ?; exact.
 move=> + x => /(_ x)/near_powerset_filter_fromP.
 case; first by move=> ? ?; exact: continuous_subspaceW.
 move=> U nbhsU wctsf; wlog oU : U wctsf nbhsU / open U.
-  move: nbhsU; rewrite nbhsE => -[] W [[oW Wx WU]] /(_ W).
-  move/(_ (continuous_subspaceW WU wctsf)); apply => //.
-  by exists W; split.
+  move: nbhsU; rewrite nbhsE => -[] W [oW Wx WU] /(_ W).
+  by move/(_ (continuous_subspaceW WU wctsf)); apply => //; exists W.
 move/nbhs_singleton: nbhsU; move: x; apply/in_setP.
 by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
@@ -6784,7 +7232,7 @@ Unshelve. end_near. Qed.
 Section UniformPointwise.
 Context {U : topologicalType} {V : uniformType}.
 
-Definition singletons {T : Type} := [set [set x] | x in @setT T].
+Definition singletons {T : Type} := [set [set x] | x in [set: T]].
 
 Lemma pointwise_cvg_family_singleton F (f: U -> V):
   Filter F -> {ptws, F --> f} = {family @singletons U, F --> f}.
@@ -6947,7 +7395,7 @@ suff : \forall g \near within W (nbhs f), forall y, K y -> E (f y, g y).
 near (powerset_filter_from (@entourage Y)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
 pose Q := fun (h : X -> Y) x => E' (f x, h x).
-apply: compact_near_coveringP.1 => // x Kx.
+apply: (iffLR (compact_near_coveringP K)) => // x Kx.
 near=> y g => /=.
 apply: (entourage_split (f x) eE).
   apply entourage_sym; apply: (near (small_ent_sub _) E') => //.
@@ -6990,7 +7438,7 @@ exists (closure (W : set {ptws X -> Y })) => //; exact: equicontinuous_closure.
 Qed.
 
 Section precompact_equicontinuous.
-Hypothesis lcptX : locally_compact (@setT X).
+Hypothesis lcptX : locally_compact [set: X].
 
 Let compact_equicontinuous (W : set {family compact, X -> Y}) :
   (forall f, W f -> continuous f) ->
@@ -7002,7 +7450,7 @@ have [//|U UWx [cptU clU]] := @lcptX x; rewrite withinET in UWx.
 near (powerset_filter_from (@entourage Y)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
 pose Q := fun (y : X) (f : {family compact, X -> Y}) => E' (f x, f y).
-apply: (compact_near_coveringP.1 _ cptW) => f Wf; near=> g y => /=.
+apply: (iffLR (compact_near_coveringP W)) => // f Wf; near=> g y => /=.
 apply: (entourage_split (f x) entE).
   apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
   exact: (near (fam_nbhs _ entE' (@compact_set1 _ x)) g).

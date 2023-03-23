@@ -2,13 +2,14 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
-From mathcomp.classical Require Import boolp classical_sets.
+From mathcomp.classical Require Import boolp classical_sets fsbigop.
 From mathcomp.classical Require Import functions cardinality mathcomp_extra.
 Require Import signed reals ereal topology normedtype sequences.
 
 (******************************************************************************)
 (* This file provides definitions and lemmas about numerical functions.       *)
 (*                                                                            *)
+(*    {nnfun T >-> R} == type of non-negative functions                       *)
 (*              f ^\+ == the function formed by the non-negative outputs      *)
 (*                       of f (from a type to the type of extended real       *)
 (*                       numbers) and 0 otherwise                             *)
@@ -28,6 +29,28 @@ Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
+  fun_ge0 : forall x, (0 <= f x)%R
+}.
+HB.structure Definition NonNegFun aT rT := {f of @isNonNegFun aT rT f}.
+Reserved Notation "{ 'nnfun' aT >-> T }"
+  (at level 0, format "{ 'nnfun'  aT  >->  T }").
+Reserved Notation "[ 'nnfun' 'of' f ]"
+  (at level 0, format "[ 'nnfun'  'of'  f ]").
+Notation "{ 'nnfun' aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
+Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
+#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
+
+Section fimfun_bin.
+Context (T : Type) (R : numDomainType).
+Variables f g : {fimfun T >-> R}.
+
+Lemma max_fimfun_subproof : @FiniteImage T R (f \max g).
+Proof. by split; apply: (finite_image11 maxr). Qed.
+HB.instance Definition _ := max_fimfun_subproof.
+
+End fimfun_bin.
 
 Reserved Notation "f ^\+" (at level 1, format "f ^\+").
 Reserved Notation "f ^\-" (at level 1, format "f ^\-").
@@ -216,7 +239,7 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
     by rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0 oppeK addeC.
   move gg' : (g x) => g'; move: g' gg' => [g' gg' g'0|//|goo _].
   + move/ltW : (g'0); rewrite -{1}oppe0 -lee_oppr => /max_idPl => ->.
-    by rewrite oppeD// 2!oppeK.
+    by rewrite fin_num_oppeD// 2!oppeK.
   + by rewrite /maxe /=; case: (f x) fx0.
 Qed.
 
@@ -230,29 +253,19 @@ Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
 Notation "'\1_' A" := (indic A) : ring_scope.
 
-Lemma indicE {T} {R : ringType} (A : set T) (x : T) :
-  indic A x = (x \in A)%:R :> R.
-Proof. by []. Qed.
+Section indic_lemmas.
+Context (T : Type) (R : ringType).
+Implicit Types A D : set T.
 
-Lemma indicT {T} {R : ringType} : \1_[set: T] = cst (1 : R).
+Lemma indicE A (x : T) : \1_A x = (x \in A)%:R :> R. Proof. by []. Qed.
+
+Lemma indicT : \1_[set: T] = cst (1 : R).
 Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
 
-Lemma indic0 {T} {R : ringType} : \1_(@set0 T) = cst (0 : R).
+Lemma indic0 : \1_(@set0 T) = cst (0 : R).
 Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
 
-Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
-  \1_A = 1 \_ A :> (T -> R).
-Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
-
-Lemma restrict_indic T (R : numFieldType) (E A : set T) :
-  (\1_E \_ A) = \1_(E `&` A) :> (T -> R).
-Proof.
-apply/funext => x; rewrite /restrict 2!indicE.
-case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
-by rewrite in_setI (negbTE xA) andbF.
-Qed.
-
-Lemma preimage_indic (T : Type) (R : ringType) (D : set T) (B : set R) :
+Lemma preimage_indic D (B : set R) :
   \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
                             else (if 0 \in B then ~` D else set0).
 Proof.
@@ -271,7 +284,7 @@ rewrite /preimage/= /indic; apply/seteqP; split => x;
   by rewrite inE in B0.
 Qed.
 
-Lemma image_indic T (R : ringType) (D A : set T) :
+Lemma image_indic D A :
   \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
               (if A `&` D != set0 then [set 1 : R] else set0).
 Proof.
@@ -282,8 +295,106 @@ by move=> []; case: ifPn; rewrite ?negbK// => /set0P[t [At Dt]] ->;
    exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_set).
 Qed.
 
-Lemma image_indic_sub T (R : ringType) (D A : set T) :
-  \1_D @` A `<=` [set (0 : R); 1].
+Lemma image_indic_sub D A : \1_D @` A `<=` ([set 0; 1] : set R).
 Proof.
 by rewrite image_indic; do ![case: ifP=> //= _] => // t []//= ->; [left|right].
 Qed.
+
+Lemma fimfunE (f : {fimfun T >-> R}) x :
+  f x = \sum_(y \in range f) (y * \1_(f @^-1` [set y]) x).
+Proof.
+rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
+by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
+Qed.
+
+End indic_lemmas.
+
+Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
+  xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
+Proof.
+apply/seteqP; split => [y/mem_set/=|y/=]; rewrite indicE.
+by rewrite mem_xsection => ->.
+by rewrite /xsection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
+Qed.
+
+Lemma ysection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) y :
+  ysection A y = (fun x => (\1_A (x, y) : R)) @^-1` [set 1].
+Proof.
+apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
+by rewrite mem_ysection => ->.
+by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
+Qed.
+
+Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
+  \1_A = 1 \_ A :> (T -> R).
+Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
+
+Lemma restrict_indic T (R : numFieldType) (E A : set T) :
+  (\1_E \_ A) = \1_(E `&` A) :> (T -> R).
+Proof.
+apply/funext => x; rewrite /restrict 2!indicE.
+case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
+by rewrite in_setI (negbTE xA) andbF.
+Qed.
+
+Section ring.
+Context (aT : pointedType) (rT : ringType).
+
+Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT).
+Proof.
+split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
+by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
+Qed.
+Canonical fimfun_mul := MulrPred fimfun_mulr_closed.
+Canonical fimfun_ring := SubringPred fimfun_mulr_closed.
+Definition fimfun_ringMixin := [ringMixin of {fimfun aT >-> rT} by <:].
+Canonical fimfun_ringType := RingType {fimfun aT >-> rT} fimfun_ringMixin.
+
+Implicit Types (f g : {fimfun aT >-> rT}).
+
+Lemma fimfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
+Lemma fimfun1 : (1 : {fimfun aT >-> rT}) = cst 1 :> (_ -> _). Proof. by []. Qed.
+Lemma fimfun_prod I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+Lemma fimfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
+Proof.
+by apply/funext => x; elim: n => [|n IHn]//; rewrite !exprS fimfunM/= IHn.
+Qed.
+
+Lemma indic_fimfun_subproof X : @FiniteImage aT rT \1_X.
+Proof.
+split; apply: (finite_subfset [fset 0; 1]%fset) => x [tt /=].
+by rewrite !inE indicE; case: (_ \in _) => _ <-; rewrite ?eqxx ?orbT.
+Qed.
+HB.instance Definition _ X := indic_fimfun_subproof X.
+Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
+
+HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
+Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
+
+End ring.
+Arguments indic_fimfun {aT rT} _.
+
+Section comring.
+Context (aT : pointedType) (rT : comRingType).
+Definition fimfun_comRingMixin := [comRingMixin of {fimfun aT >-> rT} by <:].
+Canonical fimfun_comRingType :=
+  ComRingType {fimfun aT >-> rT} fimfun_comRingMixin.
+
+Implicit Types (f g : {fimfun aT >-> rT}).
+HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
+End comring.
+
+HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (f : T -> R) :=
+  { fimfunE : exists (r : seq R) (A_ : R -> set T),
+      forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x) }.
+HB.builders Context T R f of @FiniteDecomp T R f.
+  Lemma finite_subproof: @FiniteImage T R f.
+  Proof.
+  split; have [r [A_ fE]] := fimfunE.
+  suff -> : f = \sum_(y <- r) cst_fimfun y * indic_fimfun (A_ y) by [].
+  by apply/funext=> x; rewrite fE fimfun_sum.
+  Qed.
+  HB.instance Definition _ := finite_subproof.
+HB.end.

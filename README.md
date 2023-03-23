@@ -88,7 +88,10 @@ Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/coh
 
 See also "Related publication(s)" [above](https://github.com/math-comp/analysis#meta).
 
-Other work using MathComp-Analysis: [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
+Other work using MathComp-Analysis:
+- [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
+- [Semantics of Probabilistic Programs using s-Finite Kernels in Coq](https://hal.inria.fr/hal-03917948/document) (2023)
+- [CoqQ: Foundational Verification of Quantum Programs](https://arxiv.org/pdf/2207.11350.pdf) (2023)
 
 ## Mathematical structures
 

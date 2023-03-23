@@ -175,10 +175,10 @@ Lemma itv_bnd_inftyEbigcup b x : [set` Interval (BSide b x) +oo%O] =
 Proof.
 rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[xy yn]; rewrite in_itv /= xy.
-rewrite in_itv /= andbT => xy; exists (`|floor y|%N.+1) => //=.
-rewrite in_itv /= xy /= -natr1.
+rewrite in_itv /= andbT => xy; exists `|floor y|%N.+1 => //=.
+rewrite in_itv /= xy /=.
 have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_spaddr.
-by rewrite natr_absz ger0_norm ?lt_succ_floor// floor_ge0 ltW.
+by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 1?ltW// lt_succ_floor.
 Qed.
 
 Lemma itv_o_inftyEbigcup x :

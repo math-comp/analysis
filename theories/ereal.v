@@ -14,7 +14,8 @@ Require Export constructive_ereal.
 (******************************************************************************)
 (*                   Extended real numbers, classical part                    *)
 (*                                                                            *)
-(* This is an addition to the file ereal.v with classical logic elements.     *)
+(* This is an addition to the file constructive_ereal.v with classical logic  *)
+(* elements.                                                                  *)
 (*                                                                            *)
 (*  (\sum_(i \in A) f i)%E == finitely supported sum, see fsbigop.v           *)
 (*                                                                            *)
@@ -98,6 +99,16 @@ rewrite predeqE => t; split => //=; apply/eqP.
 by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t)).
 Qed.
 
+Lemma compreBr T (h : R -> \bar R) (f g : T -> R) :
+  {morph h : x y / (x - y)%R >-> (x - y)%E} ->
+  h \o (f \- g)%R = ((h \o f) \- (h \o g))%E.
+Proof. by move=> mh; apply/funext => t /=; rewrite mh. Qed.
+
+Lemma compre_scale T (h : R -> \bar R) (f : T -> R) k :
+  {morph h : x y / (x * y)%R >-> (x * y)%E} ->
+  h \o (k \o* f) = (fun t => h k * h (f t))%E.
+Proof. by move=> mf; apply/funext => t /=; rewrite mf; rewrite muleC. Qed.
+
 Local Close Scope classical_set_scope.
 
 End ERealArith.
@@ -137,6 +148,14 @@ End ERealArithTh_numDomainType.
 Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y z u a b : \bar R) (r : R).
+
+Lemma le_er_map (A : set R) (f : R -> R) :
+  {in A &, {homo f : x y / (x <= y)%O}} ->
+  {in (EFin @` A)%classic &, {homo er_map f : x y / (x <= y)%E}}.
+Proof.
+move=> h x y; rewrite !inE/= => -[r Ar <-{x}] [s As <-{y}].
+by rewrite !lee_fin/= => /h; apply; rewrite inE.
+Qed.
 
 Lemma fsume_gt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
   0 < \sum_(i \in P) F i -> exists2 i, P i & 0 < F i.
@@ -378,7 +397,7 @@ Lemma lb_ereal_inf_adherent S (e : R) : (0 < e)%R ->
 Proof.
 move=> e0; rewrite fin_numN => /(ub_ereal_sup_adherent e0)[x []].
 move=> y Sy <-; rewrite -lte_oppr => /lt_le_trans ex; exists y => //.
-by apply: ex; rewrite oppeD// oppeK.
+by apply: ex; rewrite fin_num_oppeD// oppeK.
 Qed.
 
 Lemma ereal_sup_gt S x : x < ereal_sup S -> exists2 y, S y & x < y.

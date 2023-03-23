@@ -20,7 +20,8 @@ Add Search Blacklist "_mixin_".
 (*          set_bij A B f == f is bijective                                   *)
 (*                                                                            *)
 (*          {fun A >-> B} == type of functions f : aT -> rT from A : set aT   *)
-(*                           to B : set rT                                    *)
+(*                           to B : set rT.                                   *)
+(*                           funS f  is a proof of  set_fun A B f             *)
 (*       {oinv aT >-> rT} == type of functions with a partial inverse         *)
 (*      {oinvfun A >-> B} == combination of {fun A >-> B} and                 *)
 (*                           {oinv aT >-> rT}                                 *)
@@ -41,6 +42,8 @@ Add Search Blacklist "_mixin_".
 (*                           {surjfun A >-> B}                                *)
 (*     {splitbij A >-> B} == combination of {splitinj A >-> B} and            *)
 (*                           {splitsurj A >-> B}                              *)
+(*                'inj_ f == proof of {in A &, injective f} where f has type  *)
+(*                           {splitinj A >-> _}                               *)
 (*                                                                            *)
 (*              funin A f == alias for f : aT -> rT, with A : set aT          *)
 (*             [fun f in A] == the function f from the set A to the set f @` A*)
@@ -386,7 +389,7 @@ Definition mem_fun aT rT (A : set aT) (B : set rT) (f : {fun A >-> B}) :=
 
 Definition phant_mem_fun aT rT (A : set aT) (B : set rT)
   (f : {fun A >-> B}) of phantom (_ -> _) f := homo_setP.2 (@funS _ _ _ _ f).
-Notation "'mem_fun_  f" := (phant_funS (Phantom (_ -> _) f))
+Notation "'mem_fun_  f" := (phant_mem_fun (Phantom (_ -> _) f))
   (at level 8, f at level 2) : form_scope.
 
 Lemma some_inv {aT rT} (f : {inv aT >-> rT}) x : Some (f^-1 x) = 'oinv_f x.
@@ -1895,6 +1898,10 @@ End inj.
 End patch.
 Notation restrict := (patch (fun=> point)).
 Notation "f \_ D" := (restrict D f) : fun_scope.
+
+Lemma patchE aT (rT : pointedType) (f : aT -> rT) (B : set aT) x :
+  (f \_ B) x = if x \in B then f x else point.
+Proof. by []. Qed.
 
 Lemma patch_pred {I T} (D : {pred I}) (d f : I -> T) :
   patch d D f = fun i => if D i then f i else d i.
