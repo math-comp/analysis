@@ -113,45 +113,6 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* TODO_HB: used only in Rstruct.v
-Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
-
-Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
-  : filteredType R := Filtered.Pack (Filtered.Class
-    (@Pointed.class (pointed_of_zmodule R))
-    (nbhs_ball_ (ball_ (fun x => `|x|)))).
-*)
-
-(* TODO_HB: isn't this section redudnat with the one with the same name in topology.v? *)
-(* Section pseudoMetric_of_normedDomain. *)
-(* Variables (K : numDomainType) (R : normedZmodType K). *)
-(* Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ normr x e x. *)
-(* Proof. by move=> ? /=; rewrite subrr normr0. Qed. *)
-(* Lemma ball_norm_symmetric (x y : R) (e : K) : *)
-(*   ball_ normr x e y -> ball_ normr y e x. *)
-(* Proof. by rewrite /= distrC. Qed. *)
-(* Lemma ball_norm_triangle (x y z : R) (e1 e2 : K) : *)
-(*   ball_ normr x e1 y -> ball_ normr y e2 z -> ball_ normr x (e1 + e2) z. *)
-(* Proof. *)
-(* move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK (addrA x _ y) -addrA. *)
-(* by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add. *)
-(* Qed. *)
-(* TODO_HB: used only in Rstruct.v
-Definition pseudoMetric_of_normedDomain
-  : PseudoMetric.mixin_of K (@entourage_ K R R (ball_ (fun x => `|x|)))
-  := PseudoMetricMixin ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
-*)
-
-(* Lemma nbhs_ball_normE : *)
-(*   @nbhs_ball_ K R R (ball_ normr) = nbhs_ (entourage_ (ball_ normr)). *)
-(* Proof. *)
-(* rewrite /nbhs_ entourage_E predeq2E => x A; split. *)
-(*   move=> [e egt0 sbeA]. *)
-(*   by exists [set xy | ball_ normr xy.1 e xy.2] => //; exists e. *)
-(* by move=> [E [e egt0 sbeE] sEA]; exists e => // ??; apply/sEA/sbeE. *)
-(* Qed. *)
-(* End pseudoMetric_of_normedDomain. *)
-
 Lemma nbhsN (R : numFieldType) (x : R) : nbhs (- x) = -%R @ x.
 Proof.
 rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.

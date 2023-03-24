@@ -1595,7 +1595,7 @@ Qed.
 Section is_derive_instances.
 Variables (R : numFieldType) (V : normedModType R).
 
-Lemma derivable_cst (x : V) : derivable (fun=> x) 0 (1 : R(*TODO_HB: wasn't here before*)).
+Lemma derivable_cst (x : V) : derivable (fun=> x) 0 (1 : R).
 Proof. exact/diff_derivable. Qed.
 
 Lemma derivable_id (x v : V) : derivable id x v.
@@ -1615,5 +1615,5 @@ End is_derive_instances.
 
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
-  is_derive x (1 : R(*TODO_HB: wasn't here before*)) f x1 -> x1 = y1 -> is_derive x 1 f y1.
+  is_derive x (1 : R) f x1 -> x1 = y1 -> is_derive x 1 f y1.
 Proof. by move=> Hi <-. Qed.

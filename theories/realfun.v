@@ -331,24 +331,18 @@ have lfab : l \in `[f a, f b].
   by rewrite ler_subl_addr ler_paddr// fle // lexx.
 have guab : g u \in `[a, b].
   rewrite !in_itv; apply/andP; split; have := ufab; rewrite in_itv => /andP.
-    admit.  (* TODO_HB *)
-    (* by case; rewrite /= -gle // ?fK // bound_itvE fle. *)
-  admit.  (* TODO_HB *)
-  (* by case => _; rewrite /= -gle // ?fK // bound_itvE fle. *)
+    by case; rewrite /= -[f _ <= _]gle // ?fK // bound_itvE fle.
+  by case => _; rewrite /= -[_ <= f _]gle // ?fK // bound_itvE fle.
 have glab : g l \in `[a, b].
   rewrite !in_itv; apply/andP; split; have := lfab; rewrite in_itv /= => /andP.
-    admit.  (* TODO_HB *)
-    (* by case; rewrite -gle // ?fK // bound_itvE fle. *)
-  admit.  (* TODO_HB *)
-  (* by case => _; rewrite -gle // ?fK // bound_itvE fle. *)
+    by case; rewrite -[f _ <= _]gle // ?fK // bound_itvE fle.
+  by case => _; rewrite -[_ <= f _]gle // ?fK // bound_itvE fle.
 have faltu : f a < u.
   rewrite /u comparable_lt_minr ?real_comparable ?num_real// flt// aLb andbT.
   by rewrite (@le_lt_trans _ _ (f x)) ?fle// ltr_addl.
 have lltfb : l < f b.
   rewrite /u comparable_lt_maxl ?real_comparable ?num_real// flt// aLb andbT.
   by rewrite (@lt_le_trans _ _ (f x)) ?fle// ltr_subl_addr ltr_addl.
-admit.  (* TODO_HB *)
-(*
 case: pselect => // _; rewrite near_withinE; near_simpl.
 have Fnbhs : Filter (nbhs x) by apply: nbhs_filter.
 have := ax; rewrite le_eqVlt => /orP[/eqP|] {}ax.
@@ -373,8 +367,6 @@ apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv /=.
 rewrite -[x]fK // !glt//= lt_minr lt_maxl ?andbT ltr_subl_addr ltr_spaddr //.
 by apply/and3P; split; rewrite // flt.
 Unshelve. all: by end_near. Qed.
-*)
-Admitted.
 
 Lemma segment_dec_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y /~ x <= y}} ->

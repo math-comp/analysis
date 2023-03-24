@@ -3042,34 +3042,6 @@ apply: (@filterS _ _ _ ((dfwith f i) @^-1` A)).
 apply: dfwith_continuous => /=; move: nAf; congr (nbhs _ A).
 by apply: functional_extensionality_dep => ?; case: dfwithP.
 Qed.
-(* ======= *)
-(* move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id. *)
-(* move=> h; apply: (cvg_trans _ (h _)) => {h}; last first. *)
-(*   pose xval x (y : K x) i : K i := *)
-(*     match eqVneq x i return K i with *)
-(*     | EqNotNeq r => @eq_rect X x K y i r *)
-(*     | NeqNotEq _ => point *)
-(*     end. *)
-(*   rewrite eqEsubset; split => y //= _; exists (xval x y) => //; rewrite /xval. *)
-(*   by case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK. *)
-(* move=> Q /= [W nbdW <-]; apply: filterS nbdW. *)
-(* admit. (* Goal: Filter [filter of f] *) (*TODO_HB*) *)
-(* exact: preimage_image. *)
-(* Admitted. *)
-(* >>>>>>> c6c1d648 (product topology goes through) *)
-(* ======= *)
-(* move=> f; have /cvg_sup/(_ x)/cvg_image : f --> f by apply: cvg_id. *)
-(* move=> h; apply: (cvg_trans _ (h _)) => {h}; last first. *)
-(*   pose xval x (y : K x) i : K i := *)
-(*     match eqVneq x i return K i with *)
-(*     | EqNotNeq r => @eq_rect X x K y i r *)
-(*     | NeqNotEq _ => point *)
-(*     end. *)
-(*   rewrite eqEsubset; split => y //= _; exists (xval x y) => //; rewrite /xval. *)
-(*   by case (eqVneq x x) => [e|/eqP//]; rewrite eq_axiomK. *)
-(* by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image. *)
-(* Qed. *)
-(* >>>>>>> 74208281 (fix inference of product topology structure) *)
 
 Lemma hausdorff_product :
   (forall x, hausdorff_space (K x)) -> hausdorff_space (prod_topology K).
@@ -5301,23 +5273,19 @@ apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
 by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
 Qed.
 
-(* TODO_HB
 Section weak_pseudoMetric.
 Context {R : realType} (pS : pointedType) (U : pseudoMetricType R) .
 Variable (f : pS -> U).
 
-Let S := weak_uniformType f.
+Notation S := (weak_topology f).
 
 Definition weak_ball (x : S) (r : R) (y : S) := ball (f x) r (f y).
 
-Program Definition weak_pseudoMetricType_mixin :=
-  @PseudoMetric.Mixin R S entourage weak_ball
-  _ _ _ _.
+Lemma weak_pseudo_metric_ax1 (x : S) (e : R) : 0 < e -> weak_ball x e x.
+Proof. by move=> /posnumP[{}e]; exact: ball_center. Qed.
 
-Next Obligation. by move=> ? _/posnumP[e]; exact: ball_center. Qed.
-Next Obligation. by move=> ? ? ?; exact: ball_sym. Qed.
-Next Obligation. move=> ? ? ? ? ?; exact: ball_triangle. Qed.
-Next Obligation.
+Lemma weak_pseudo_metric_ax4 : entourage = entourage_ weak_ball.
+Proof.
 rewrite /entourage /= /weak_ent -entourage_ballE /entourage_.
 have -> : (fun e => [set xy | ball (f xy.1) e (f xy.2)]) =
    (preimage (map_pair f) \o fun e => [set xy | ball xy.1 e xy.2])%FUN.
@@ -5340,15 +5308,14 @@ rewrite eqEsubset; split; apply/filter_fromP.
 - by move=> e ?; exists ([set xy | ball xy.1 e xy.2]) => //; by exists e => /=.
 Qed.
 
-Definition weak_pseudoMetricType :=
-  PseudoMetricType S weak_pseudoMetricType_mixin.
+HB.instance Definition _ := Uniform_isPseudoMetric.Build R S
+  weak_pseudo_metric_ax1 (fun _ _ _ => @ball_sym _ _ _ _ _)
+    (fun _ _ _ _ _ => @ball_triangle _ _ _ _ _ _ _) weak_pseudo_metric_ax4.
 
-Lemma weak_ballE (e : R) (x : weak_pseudoMetricType) :
-  f@^-1` (ball (f x) e) = ball x e.
+Lemma weak_ballE (e : R) (x : S) : f@^-1` (ball (f x) e) = ball x e.
 Proof. by []. Qed.
 
 End weak_pseudoMetric.
-*)
 
 (* This section proves that uniform spaces, with a countable base for their
    entourage, are metrizable. The definition of this metric is rather arcane,
@@ -5359,6 +5326,7 @@ End weak_pseudoMetric.
    - `in metric spaces, compactness and sequential compactness agree`
    - infinite products of metric spaces are metrizable
 *)
+Module countable_uniform.
 Section countable_uniform.
 Context {R : realType} {T : uniformType} (f_ : nat -> set (T * T)).
 
@@ -5397,7 +5365,7 @@ apply: subIset; left; apply: subIset; left; apply: subset_trans.
 by apply: subset_trans; last exact: split_ent_subset.
 Qed.
 
-Local Lemma descendG (n m: nat) : (m <= n)%N -> g_ n `<=` g_ m.
+Local Lemma descendG (n m : nat) : (m <= n)%N -> g_ n `<=` g_ m.
 Proof.
 elim: n; rewrite ?leqn0; first by move=>/eqP ->.
 move=> n IH; rewrite leq_eqVlt ltnS => /orP [/eqP <- //|] /IH.
@@ -5652,13 +5620,16 @@ apply: (subset_trans _ fN); apply: subset_trans; last apply: gsubf.
 by case=> x y /= N1ball; apply: (@subset_step_ball x N.+1).
 Qed.
 
-(* Note this is the only non-local result from this section *)
-(* TODO_HB
-Definition countable_uniform_pseudoMetricType_mixin := PseudoMetric.Mixin
+Definition type : Type := let _ := countableBase in let _ := entF in T.
+
+HB.instance Definition _ := Uniform.on type.
+HB.instance Definition _ := Uniform_isPseudoMetric.Build R type
   step_ball_center step_ball_sym step_ball_triangle step_ball_entourage.
-*)
 
 End countable_uniform.
+End countable_uniform.
+
+Notation countable_uniform := countable_uniform.type.
 
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.
