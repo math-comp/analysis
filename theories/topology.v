@@ -2106,6 +2106,117 @@ HB.instance Definition _ := Pointed_isBaseTopological.Build T
 
 HB.end.
 
+(* Topology Species *)
+
+(* Order Topology*)
+
+Section order_nbhs. 
+
+Context {d} {M : porderType d}.
+
+Definition itv_of (lr : (option M) * (option M)) := 
+  match lr with 
+  | (Some l, Some r) => `]l, r[%classic
+  | (None, Some r) => `]-oo, r[%classic
+  | (Some l, None) => `]l, +oo[%classic
+  | (None, None) => setT
+  end.
+Definition order_nbhs x := 
+  filter_from [set lr : (option M) * (option M) | itv_of lr x] itv_of.
+End order_nbhs.
+
+#[short(type="pointedPOrderType")]
+HB.structure Definition PointedPOrder d :=
+  { M of Pointed M & Order.POrder d M }.
+
+#[short(type="pointedOrderType")]
+HB.structure Definition PointedOrder d :=
+  { M of Pointed M & Order.Total d M }.
+
+HB.mixin Record Nbhs_isOrderTopology d M of Topological M & Order.POrder d M := {
+  order_nbhsE : forall x, nbhs x = @order_nbhs d M x}.
+
+#[short(type="orderTopoogyType")]
+HB.structure Definition OrderTopology d :=
+  {M of Topological M & Order.POrder d M & Nbhs_isOrderTopology d M }.
+
+Definition order_topology {d} (M : pointedOrderType d) := M.
+Section order_topology.
+
+Context {d} {M : pointedOrderType d}.
+
+Let pick_opt op (x: option M) (y : option M) := 
+  match x,y with 
+  | Some l, Some r => Some (op l r)
+  | Some l, None => Some l
+  | None, Some r => Some r 
+  | None, None => None
+  end.
+
+Lemma order_nbhs_filter (m : M) :  
+  ProperFilter (order_nbhs m).
+Proof.
+split; first by case; case=> l r W; apply; apply W.
+apply: filter_from_filter; first by exists (None, None). 
+case=> a b [x y] abm xym.
+exists (pick_opt Order.max a x,pick_opt Order.min b y).
+  move: abm xym => /=; case: a; case: b; case: x; case: y => //;
+    (by move=> > /=; rewrite ?in_itv /= ?maxElt ?minElt;
+      repeat (case: (P in if P then _ else _));
+      do 2 (tryif case/andP then move=> P1 P2; rewrite ?{}P1 ?{}P2 
+        else move=>P1; rewrite ?{}P1)).
+move=> t; move: abm xym => _ _.
+  by case: a; case: b; case: x; case: y => //=;
+    move=> > /=; rewrite ?in_itv /= ?lt_minr ?lt_maxl -?andbA;
+    repeat (tryif move=> -> then idtac else (try (case/andP))).
+Qed.
+
+Lemma order_nbhs_singleton (m : M) A : order_nbhs m A -> A m.
+Proof. case; case=> oa ob oabm; apply; apply: oabm. Qed.
+
+Lemma order_nbhs_nbhs (m : M) A :
+  order_nbhs m A -> order_nbhs m (order_nbhs^~ A).
+Proof.
+case; case=> oa ob oabm oabA.
+by exists (oa, ob) => // t oatb; exists (oa, ob).
+Qed.
+
+HB.instance Definition _ := hasNbhs.Build (order_topology M) order_nbhs.
+
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build 
+  (order_topology M) order_nbhs_filter order_nbhs_singleton order_nbhs_nbhs.
+
+HB.instance Definition _ := Nbhs_isOrderTopology.Build 
+  d (order_topology M) (fun x => erefl).
+
+End order_topology.
+
+Module EndowOrderTopology.
+Section foo. 
+Context (M : pointedOrderType tt).
+HB.instance Definition P1 := OrderTopology.on M. 
+End foo.
+End EndowOrderTopology.
+
+HB.instance Definition _ := Order.Total.on nat.
+HB.instance Definition _ := PointedOrder.on nat.
+
+Import EndowOrderTopology.
+HB.instance Definition _  := OrderTopology.copy nat (@order_topology _ nat).
+Definition foo := nbhs O.
+
+
+
+
+(* Separating this into a module for two cases
+   1. Rich structures like R that have many equivalent definitions of its 
+      topology. We avoid non-forgetful inheritance by letting one 
+      structure generate the topology (norm) and proving the others
+      are equivalent (by building an instance of Nbhs_isOrderTopology)
+   2. Sometimes you want an 'incompatible' topology on an order type.
+      Frequently nat wants the co-finite topology, not the order topology.
+*)
+
 (* Topology on nat *)
 
 Section nat_topologicalType.
