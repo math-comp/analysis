@@ -254,7 +254,7 @@ Require Import reals signed.
 (*    {uniform, F --> f} := {uniform setT, F --> f}                           *)
 (*         {ptws U -> V} == The space U -> V, equipped with the topology of   *)
 (*                          pointwise convergence from U to V, where V is a   *)
-(*                          topologicalType.                                  *)
+(*                          topologicalType; notation for @fct_Pointwise U V. *)
 (*       {ptws, F --> f} == F converges to f in {ptws U -> V}.                *)
 (*  {family fam, U -> V} == The space U -> V, equipped with the supremum      *)
 (*                          topology of {uniform A -> f} for each A in 'fam'  *)
@@ -1613,10 +1613,10 @@ Module Topological.
 
 Record mixin_of (T : Type) (nbhs : T -> set (set T)) := Mixin {
   open : set (set T) ;
-  ax1 : forall p : T, ProperFilter (nbhs p) ;
-  ax2 : forall p : T, nbhs p =
+  nbhs_pfilter : forall p : T, ProperFilter (nbhs p) ;
+  nbhsE : forall p : T, nbhs p =
     [set A : set T | exists B : set T, [/\ open B, B p & B `<=` A] ] ;
-  ax3 : open = [set A : set T | A `<=` nbhs^~ A ]
+  openE : open = [set A : set T | A `<=` nbhs^~ A ]
 }.
 
 Record class_of (T : Type) := Class {
@@ -1685,7 +1685,7 @@ Definition open := Topological.open (Topological.class T).
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
-Proof. by apply: Topological.ax1; case: T p => ? []. Qed.
+Proof. by apply: Topological.nbhs_pfilter; case: T p => ? []. Qed.
 Typeclasses Opaque nbhs.
 
 Lemma nbhs_filter (p : T) : Filter (nbhs p).
@@ -1697,7 +1697,7 @@ Lemma nbhsE (p : T) :
   nbhs p = [set A : set T | exists2 B : set T, open_nbhs p B & B `<=` A].
 Proof.
 have -> : nbhs p = [set A : set T | exists B, [/\ open B, B p & B `<=` A] ].
-  exact: Topological.ax2.
+  exact: Topological.nbhsE.
 by rewrite predeqE => A; split=> [[B [?]]|[B[]]]; exists B.
 Qed.
 
@@ -1717,7 +1717,7 @@ by move=> p; rewrite /interior nbhsE => -[? [? ?]]; apply.
 Qed.
 
 Lemma openE : open = [set A : set T | A `<=` A^°].
-Proof. exact: Topological.ax3. Qed.
+Proof. exact: Topological.openE. Qed.
 
 Lemma nbhs_singleton (p : T) (A : set T) : nbhs p A -> A p.
 Proof. by rewrite nbhsE => - [? [_ ?]]; apply. Qed.
@@ -3762,7 +3762,7 @@ move=> A /gcvg; rewrite nbhs_simpl; case=> N _ An.
 exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
 apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
 rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
-by move=> ->; have := projT2 (sigW (npts N)). 
+by move=> ->; have := projT2 (sigW (npts N)).
 Qed.
 
 End perfect_sets.
@@ -3785,11 +3785,12 @@ Module Uniform.
 
 Record mixin_of (M : Type) (nbhs : M -> set (set M)) := Mixin {
   entourage : (M * M -> Prop) -> Prop ;
-  ax1 : Filter entourage ;
-  ax2 : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A ;
-  ax3 : forall A, entourage A -> entourage (A^-1)%classic ;
-  ax4 : forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A ;
-  ax5 : nbhs = nbhs_ entourage
+  entourage_filter : Filter entourage ;
+  entourage_refl : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A ;
+  entourage_inv : forall A, entourage A -> entourage (A^-1)%classic ;
+  entourage_split_ex :
+    forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A ;
+  nbhsE : nbhs = nbhs_ entourage
 }.
 
 Record class_of (M : Type) := Class {
@@ -3859,20 +3860,20 @@ Program Definition topologyOfEntourageMixin (T : Type)
   Topological.mixin_of nbhs := topologyOfFilterMixin _ _ _.
 Next Obligation.
 move=> T nbhsT m p.
-rewrite (Uniform.ax5 m) nbhs_E; apply filter_from_proper; last first.
-  by move=> A entA; exists p; apply: Uniform.ax2 entA _ _.
+rewrite (Uniform.nbhsE m) nbhs_E; apply filter_from_proper; last first.
+  by move=> A entA; exists p; apply: Uniform.entourage_refl entA _ _.
 apply: filter_from_filter.
-  by exists setT; apply: @filterT (Uniform.ax1 m).
+  by exists setT; apply: @filterT (Uniform.entourage_filter m).
 move=> A B entA entB; exists (A `&` B) => //.
-exact: (@filterI _ _ (Uniform.ax1 m)).
+exact: (@filterI _ _ (Uniform.entourage_filter m)).
 Qed.
 Next Obligation.
-move=> T nbhsT m p A; rewrite (Uniform.ax5 m) nbhs_E  => - [B entB sBpA].
-by apply: sBpA; apply: Uniform.ax2 entB _ _.
+move=> T nbhsT m p A; rewrite (Uniform.nbhsE m) nbhs_E  => - [B entB sBpA].
+by apply: sBpA; apply: Uniform.entourage_refl entB _ _.
 Qed.
 Next Obligation.
-move=> T nbhsT m p A; rewrite (Uniform.ax5 m) nbhs_E => - [B entB sBpA].
-have /Uniform.ax4 [C entC sC2B] := entB.
+move=> T nbhsT m p A; rewrite (Uniform.nbhsE m) nbhs_E => - [B entB sBpA].
+have /Uniform.entourage_split_ex [C entC sC2B] := entB.
 exists C => // q Cpq; rewrite nbhs_E; exists C => // r Cqr.
 by apply/sBpA/sC2B; exists q.
 Qed.
@@ -3904,13 +3905,12 @@ Proof. by rewrite nbhs_simpl. Qed.
 Section uniformType1.
 Context {M : uniformType}.
 
-Lemma entourage_refl (A : set (M * M)) x :
-  entourage A -> A (x, x).
-Proof. by move=> entA; apply: Uniform.ax2 entA _ _. Qed.
+Lemma entourage_refl (A : set (M * M)) x : entourage A -> A (x, x).
+Proof. by move=> entA; apply: Uniform.entourage_refl entA _ _. Qed.
 
-Global Instance entourage_filter : ProperFilter (@entourage M).
+Global Instance entourage_pfilter : ProperFilter (@entourage M).
 Proof.
-apply Build_ProperFilter; last exact: Uniform.ax1.
+apply: Build_ProperFilter; last exact: Uniform.entourage_filter.
 by move=> A entA; exists (point, point); apply: entourage_refl.
 Qed.
 
@@ -3918,11 +3918,11 @@ Lemma entourageT : entourage [set: M * M].
 Proof. exact: filterT. Qed.
 
 Lemma entourage_inv (A : set (M * M)) : entourage A -> entourage (A^-1)%classic.
-Proof. exact: Uniform.ax3. Qed.
+Proof. exact: Uniform.entourage_inv. Qed.
 
 Lemma entourage_split_ex (A : set (M * M)) :
   entourage A -> exists2 B, entourage B & B \; B `<=` A.
-Proof. exact: Uniform.ax4. Qed.
+Proof. exact: Uniform.entourage_split_ex. Qed.
 
 Definition split_ent (A : set (M * M)) :=
   get (entourage `&` [set B | B \; B `<=` A]).
@@ -4084,10 +4084,10 @@ Qed.
 
 Lemma prod_ent_filter : Filter prod_ent.
 Proof.
-have prodF := filter_prod_filter (@entourage_filter U) (@entourage_filter V).
+have prodF := filter_prod_filter (@entourage_pfilter U) (@entourage_pfilter V).
 split; rewrite /prod_ent; last 1 first.
 - by move=> A B sAB /=; apply: filterS => ? [xy /sAB ??]; exists xy.
-- rewrite -setMTT; apply: prod_entP filterT filterT.
+- by rewrite -setMTT; apply: prod_entP filterT filterT.
 move=> A B /= entA entB; apply: filterS (filterI entA entB) => xy [].
 move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
 move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.
@@ -4539,12 +4539,14 @@ End product_uniform.
 
 Module PseudoMetric.
 
-Record mixin_of (R : numDomainType) (M : Type) (entourage : set (set (M * M))) := Mixin {
+Record mixin_of (R : numDomainType) (M : Type)
+    (entourage : set (set (M * M))) := Mixin {
   ball : M -> R -> M -> Prop ;
-  ax1 : forall x (e : R), 0 < e -> ball x e x ;
-  ax2 : forall x y (e : R), ball x e y -> ball y e x ;
-  ax3 : forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
-  ax4 : entourage = entourage_ ball
+  ball_center : forall x (e : R), 0 < e -> ball x e x ;
+  ball_sym : forall x y (e : R), ball x e y -> ball y e x ;
+  ball_triangle :
+    forall x y z e1 e2, ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z;
+  entourageE : entourage = entourage_ ball
 }.
 
 Record class_of (R : numDomainType) (M : Type) := Class {
@@ -4612,15 +4614,16 @@ Export PseudoMetric.Exports.
 
 Section PseudoMetricUniformity.
 
-Lemma my_ball_le (R : numDomainType) (M : Type) (ent : set (set (M * M))) (m : PseudoMetric.mixin_of R ent) :
+Lemma my_ball_le (R : numDomainType) (M : Type) (ent : set (set (M * M)))
+    (m : PseudoMetric.mixin_of R ent) :
   forall (x : M), {homo PseudoMetric.ball m x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
 move=> x e1 e2 le12 y xe1_y.
 move: le12; rewrite le_eqVlt => /orP [/eqP <- //|].
 rewrite -subr_gt0 => lt12.
-rewrite -[e2](subrK e1); apply: PseudoMetric.ax3 xe1_y.
+rewrite -[e2](subrK e1); apply: PseudoMetric.ball_triangle xe1_y.
 suff : PseudoMetric.ball m x (PosNum lt12)%:num x by [].
-exact: PseudoMetric.ax1.
+exact: PseudoMetric.ball_center.
 Qed.
 
 Program Definition uniformityOfBallMixin (R : numFieldType) (T : Type)
@@ -4628,35 +4631,37 @@ Program Definition uniformityOfBallMixin (R : numFieldType) (T : Type)
   (m : PseudoMetric.mixin_of R ent) : Uniform.mixin_of nbhs :=
   UniformMixin _ _ _ _ nbhsE.
 Next Obligation.
-move=> R T ent nbhs nbhsE m; rewrite (PseudoMetric.ax4 m).
+move=> R T ent nbhs nbhsE m; rewrite (PseudoMetric.entourageE m).
 apply: filter_from_filter; first by exists 1 => /=.
 move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //=.
 by rewrite subsetI; split=> ?; apply: my_ball_le;
    rewrite -leEsub// le_minl lexx ?orbT.
 Qed.
 Next Obligation.
-move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m).
+move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.entourageE m).
 move=> [e egt0 sbeA] xy xey.
-apply: sbeA; rewrite /= xey; exact: PseudoMetric.ax1.
+by apply: sbeA; rewrite /= xey; exact: PseudoMetric.ball_center.
 Qed.
 Next Obligation.
-move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m) => - [e egt0 sbeA].
-by exists e => // xy xye; apply: sbeA; apply: PseudoMetric.ax2.
+move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.entourageE m) => - [e egt0 sbeA].
+by exists e => // xy xye; apply: sbeA; apply: PseudoMetric.ball_sym.
 Qed.
 Next Obligation.
-move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.ax4 m).
+move=> R T ent nbhs nbhsE m A; rewrite (PseudoMetric.entourageE m).
 move=> [_/posnumP[e] sbeA].
 exists [set xy | PseudoMetric.ball m xy.1 (e%:num / 2) xy.2].
   by exists (e%:num / 2) => /=.
 move=> xy [z xzhe zyhe]; apply: sbeA.
-by rewrite [e%:num]splitr; apply: PseudoMetric.ax3 zyhe.
+by rewrite [e%:num]splitr; apply: PseudoMetric.ball_triangle zyhe.
 Qed.
 
 End PseudoMetricUniformity.
 
-Definition ball {R : numDomainType} {M : pseudoMetricType R} := PseudoMetric.ball (PseudoMetric.class M).
+Definition ball {R : numDomainType} {M : pseudoMetricType R} :=
+  PseudoMetric.ball (PseudoMetric.class M).
 
-Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
+Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R}
+  : entourage_ (@ball R M) = entourage.
 Proof. by case: M=> [?[?[]]]. Qed.
 
 Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
@@ -4697,7 +4702,7 @@ Proof. by rewrite nbhs_simpl. Qed.
 
 Lemma ball_center {R : numDomainType} (M : pseudoMetricType R) (x : M)
   (e : {posnum R}) : ball x e%:num x.
-Proof. exact: PseudoMetric.ax1. Qed.
+Proof. exact: PseudoMetric.ball_center. Qed.
 #[global] Hint Resolve ball_center : core.
 
 Section pseudoMetricType_numDomainType.
@@ -4707,11 +4712,11 @@ Lemma ballxx (x : M) (e : R) : 0 < e -> ball x e x.
 Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
 
 Lemma ball_sym (x y : M) (e : R) : ball x e y -> ball y e x.
-Proof. exact: PseudoMetric.ax2. Qed.
+Proof. exact: PseudoMetric.ball_sym. Qed.
 
 Lemma ball_triangle (y x z : M) (e1 e2 : R) :
   ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
-Proof. exact: PseudoMetric.ax3. Qed.
+Proof. exact: PseudoMetric.ball_triangle. Qed.
 
 Lemma nbhsx_ballx (x : M) (eps : {posnum R}) : nbhs x (ball x eps%:num).
 Proof. by apply/nbhs_ballP; exists eps%:num => /=. Qed.
