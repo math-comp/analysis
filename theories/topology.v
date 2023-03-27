@@ -2257,8 +2257,23 @@ by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q))[x [] -> ->].
 Qed.
 *)
 
+Section bool_topology.
 HB.instance Definition _ := DiscreteTopological.copy bool 
   (discrete_topology bool).
+
+Lemma bool_order_nbhs : forall (b : bool), nbhs b = order_nbhs b.
+Proof.
+case; rewrite principal_nbhsE /=; rewrite eqEsubset; split => A.
+- move/principal_filterP => At; exists (Some false, None); rewrite ?in_itv //=.
+  by case.
+- by case => /= ? ? iA; apply/principal_filterP; apply: iA.
+- move/principal_filterP => At; exists (None, Some true); rewrite ?in_itv //=.
+  by case.
+- by case => /= ? ? iA; apply/principal_filterP; apply: iA.
+Qed.
+
+HB.instance Definition _ := Nbhs_isOrderTopology.Build _ bool bool_order_nbhs.
+End bool_topology.
 
 (* TODO MOVE 
 Lemma bool_compact : compact [set: bool].
