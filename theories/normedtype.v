@@ -1026,6 +1026,29 @@ End open_closed_sets.
 #[global] Hint Extern 0 (closed _) => now apply: closed_le : core.
 #[global] Hint Extern 0 (closed _) => now apply: closed_eq : core.
 
+Section field_order_topology.
+
+Context {R : realFieldType}.
+
+Lemma rft_nbhs_order (x : R) : nbhs x = order_nbhs x.
+Proof.
+rewrite eqEsubset; split => A.
+  case => eps Peps /filterS; apply; first exact: order_nbhs_filter.
+  exists (Some (x-eps), Some (x + eps)).
+    by rewrite /= ?in_itv /= (ltr_distlC, =^~ltr_distlC) subrr normrE.
+  by move=> t /=; rewrite in_itv real_ltr_distlC // num_real.
+case; case=> l r lritv /filterS; apply; case: r lritv; case: l => /=.
+- by move=> a b ?; apply: open_nbhs_nbhs; split => //; apply: interval_open.
+- move=> ? ?; apply: open_nbhs_nbhs; split => //.
+- move=> a ?; apply: open_nbhs_nbhs; split => //. 
+  have := @open_gt _ a; congr (open _); rewrite eqEsubset. 
+  by split => ? /=; rewrite in_itv /= andbT.
+- move=> ?; exact: filterT.
+Qed.
+
+HB.instance Definition _ := Nbhs_isOrderTopology.Build _ R rft_nbhs_order.
+End field_order_topology.
+
 Section at_left_right_pmNormedZmod.
 Variable (R : numFieldType) (V : pseudoMetricNormedZmodType R).
 

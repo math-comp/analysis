@@ -1598,8 +1598,6 @@ Proof. by split=> [|? ? ->]; [exact|]. Qed.
 Lemma principal_filter_proper {X} (x : X) : ProperFilter (principal_filter x).
 Proof. exact: globally_properfilter. Qed.
 
-HB.instance Definition _ := hasNbhs.Build bool principal_filter.
-
 End PrincipalFilters.
 
 HB.mixin Record Nbhs_isTopological (T : Type) of Nbhs T := {
@@ -2110,10 +2108,9 @@ HB.end.
 
 (* Order Topology*)
 
+
 Section order_nbhs. 
-
 Context {d} {M : porderType d}.
-
 Definition itv_of (lr : (option M) * (option M)) := 
   match lr with 
   | (Some l, Some r) => `]l, r[%classic
@@ -2125,25 +2122,8 @@ Definition order_nbhs x :=
   filter_from [set lr : (option M) * (option M) | itv_of lr x] itv_of.
 End order_nbhs.
 
-#[short(type="pointedPOrderType")]
-HB.structure Definition PointedPOrder d :=
-  { M of Pointed M & Order.POrder d M }.
-
-#[short(type="pointedOrderType")]
-HB.structure Definition PointedOrder d :=
-  { M of Pointed M & Order.Total d M }.
-
-HB.mixin Record Nbhs_isOrderTopology d M of Topological M & Order.POrder d M := {
-  order_nbhsE : forall x, nbhs x = @order_nbhs d M x}.
-
-#[short(type="orderTopoogyType")]
-HB.structure Definition OrderTopology d :=
-  {M of Topological M & Order.POrder d M & Nbhs_isOrderTopology d M }.
-
-Definition order_topology {d} (M : pointedOrderType d) := M.
-Section order_topology.
-
-Context {d} {M : pointedOrderType d}.
+Section order_nbhs_total.
+Context {d} {M : orderType d}.
 
 Let pick_opt op (x: option M) (y : option M) := 
   match x,y with 
@@ -2152,6 +2132,7 @@ Let pick_opt op (x: option M) (y : option M) :=
   | None, Some r => Some r 
   | None, None => None
   end.
+
 
 Lemma order_nbhs_filter (m : M) :  
   ProperFilter (order_nbhs m).
@@ -2181,42 +2162,124 @@ case; case=> oa ob oabm oabA.
 by exists (oa, ob) => // t oatb; exists (oa, ob).
 Qed.
 
-HB.instance Definition _ := hasNbhs.Build (order_topology M) order_nbhs.
+End order_nbhs_total.
+Set Warnings "+HB.non-forgetful-inheritance".
 
+#[short(type="pointedPOrderType")]
+HB.structure Definition PointedPOrder d := { M of Pointed M & Order.POrder d M}.
+
+HB.mixin Record Nbhs_isOrderTopology d M of Topological M & Order.POrder d M := 
+  {order_nbhsE : forall x, nbhs x = @order_nbhs d M x}.
+
+#[short(type="orderTopologyType")]
+HB.structure Definition OrderTopological d :=
+  {M of Topological M & Order.POrder d M & Nbhs_isOrderTopology d M }.
+
+#[short(type="pointedOrderType")]
+HB.structure Definition PointedOrder d := {M of Pointed M & Order.Total d M}.
+
+Definition order_topology {d} (M : pointedOrderType d) : Type := M.
+
+Section order_topology.
+Context {d} (M' : pointedOrderType d).
+Local Notation M := (@order_topology d M').
+HB.instance Definition _ := PointedOrder.on M.
+HB.instance Definition _ := hasNbhs.Build M order_nbhs.
 HB.instance Definition _ := Nbhs_isNbhsTopological.Build 
-  (order_topology M) order_nbhs_filter order_nbhs_singleton order_nbhs_nbhs.
-
+  M order_nbhs_filter order_nbhs_singleton order_nbhs_nbhs.
 HB.instance Definition _ := Nbhs_isOrderTopology.Build 
-  d (order_topology M) (fun x => erefl).
-
+  d M (fun x => erefl).
+HB.instance Definition _ := OrderTopological.on M.
 End order_topology.
 
 Module EndowOrderTopology.
-Section foo. 
-Context (M : pointedOrderType tt).
-HB.instance Definition P1 := OrderTopology.on M. 
-End foo.
+HB.instance Definition _ {d} (M : pointedOrderType d) :=
+  OrderTopological.copy (M : Type) (order_topology M).
 End EndowOrderTopology.
 
-HB.instance Definition _ := Order.Total.on nat.
-HB.instance Definition _ := PointedOrder.on nat.
 
-Import EndowOrderTopology.
-HB.instance Definition _  := OrderTopology.copy nat (@order_topology _ nat).
-Definition foo := nbhs O.
+(* Discrete Topology*)
+(*
+HB.mixin Record Nbhs_isDiscreteTopology M of Nbhs M := {
+  principal_nbhsE : forall (x : M), nbhs x = principal_filter x}.
 
-
-
-
-(* Separating this into a module for two cases
-   1. Rich structures like R that have many equivalent definitions of its 
-      topology. We avoid non-forgetful inheritance by letting one 
-      structure generate the topology (norm) and proving the others
-      are equivalent (by building an instance of Nbhs_isOrderTopology)
-   2. Sometimes you want an 'incompatible' topology on an order type.
-      Frequently nat wants the co-finite topology, not the order topology.
+#[short(type="discreteTopologicalType")]
+HB.structure Definition DiscreteTopological := 
+  {M of Topological M & Nbhs_isDiscreteTopology M }.
 *)
+Lemma principal_nbhs_nbhs {M : Type} (m : M) A :
+  principal_filter m A -> principal_filter m (principal_filter^~ A).
+Proof. by move=> ?; apply/principal_filterP. Qed.
 
+Lemma principal_sing {M : Type} (p : M) A : principal_filter p A -> A p.
+Proof. by move=> /principal_filterP. Qed.
+(*
+HB.instance Definition asdf := @Nbhs.Class 
+  discrete_topology P1 P2 P3 P5 P6.
+HB.instance Definition _ := Nbhs.on discrete_topology.
+
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build 
+  discrete_topology principal_filter_proper principal_sing principal_nbhs_nbhs.
+
+HB.instance Definition _ := Nbhs_isDiscreteTopology.Build 
+  M (fun x => erefl).
+
+HB.instance Definition _ := DiscreteTopological.on M. 
+HB.end.
+End DiscreteTopology.
+
+Section endow_bool.
+Local Import DiscreteTopology.
+HB.instance Definition _ := (DiscreteTopology.Endow.Build bool).
+End endow_bool.
+
+*)
+(*
+Lemma discrete_nbhs (p : X) (A : set X) :
+  principal_filter p A -> principal_filter p (principal_filter^~ A).
+Proof. by move=> ?; exact/principal_filterP. Qed.
+
+End DiscreteMixin.
+
+Definition discrete_space (X : topologicalType) :=
+  @nbhs X _ = @principal_filter X.
+
+Context {X : topologicalType} {dsc: discrete_space X}.
+
+Lemma discrete_open (A : set X) : open A.
+Proof.
+by rewrite openE => ? ?; rewrite /interior dsc; exact/principal_filterP.
+Qed.
+
+Lemma discrete_set1 (x : X) : nbhs x [set x].
+Proof. by apply open_nbhs_nbhs; split => //; exact: discrete_open. Qed.
+
+Lemma discrete_closed (A : set X) : closed A.
+Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.
+
+Lemma discrete_cvg (F : set_system X) (x : X) :
+  Filter F -> F --> x <-> F [set x].
+Proof.
+rewrite dsc nbhs_simpl; split; first by exact.
+by move=> Fx U /principal_filterP ?; apply: filterS Fx => ? ->.
+Qed.
+
+Lemma discrete_hausdorff : hausdorff_space X.
+Proof.
+by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q))[x [] -> ->].
+Qed.
+
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build bool
+  principal_filter_proper discrete_sing discrete_nbhs.
+
+Lemma discrete_bool : discrete_space [the topologicalType of bool : Type].
+Proof. by []. Qed.
+
+Lemma bool_compact : compact [set: bool].
+Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
+
+End DiscreteTopology.
+*)
 (* Topology on nat *)
 
 Section nat_topologicalType.
@@ -3743,53 +3806,6 @@ Section DiscreteTopology.
 Section DiscreteMixin.
 Context {X : Type}.
 
-Lemma discrete_sing (p : X) (A : set X) : principal_filter p A -> A p.
-Proof. by move=> /principal_filterP. Qed.
-
-Lemma discrete_nbhs (p : X) (A : set X) :
-  principal_filter p A -> principal_filter p (principal_filter^~ A).
-Proof. by move=> ?; exact/principal_filterP. Qed.
-
-End DiscreteMixin.
-
-Definition discrete_space (X : topologicalType) :=
-  @nbhs X _ = @principal_filter X.
-
-Context {X : topologicalType} {dsc: discrete_space X}.
-
-Lemma discrete_open (A : set X) : open A.
-Proof.
-by rewrite openE => ? ?; rewrite /interior dsc; exact/principal_filterP.
-Qed.
-
-Lemma discrete_set1 (x : X) : nbhs x [set x].
-Proof. by apply open_nbhs_nbhs; split => //; exact: discrete_open. Qed.
-
-Lemma discrete_closed (A : set X) : closed A.
-Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.
-
-Lemma discrete_cvg (F : set_system X) (x : X) :
-  Filter F -> F --> x <-> F [set x].
-Proof.
-rewrite dsc nbhs_simpl; split; first by exact.
-by move=> Fx U /principal_filterP ?; apply: filterS Fx => ? ->.
-Qed.
-
-Lemma discrete_hausdorff : hausdorff_space X.
-Proof.
-by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q))[x [] -> ->].
-Qed.
-
-HB.instance Definition _ := Nbhs_isNbhsTopological.Build bool
-  principal_filter_proper discrete_sing discrete_nbhs.
-
-Lemma discrete_bool : discrete_space [the topologicalType of bool : Type].
-Proof. by []. Qed.
-
-Lemma bool_compact : compact [set: bool].
-Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
-
-End DiscreteTopology.
 
 #[global] Hint Resolve discrete_bool : core.
 
@@ -5282,6 +5298,8 @@ Module Exports. HB.reexport. End Exports.
 
 End numFieldTopology.
 Import numFieldTopology.Exports.
+
+
 
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.
