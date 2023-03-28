@@ -592,10 +592,10 @@ rewrite /power_pos => a0; case: ifPn => [/eqP//|h].
 by rewrite mul1r lnK// posrE lt_neqAle eq_sym h.
 Qed.
 
-Lemma power_posr0 a : 0 < a -> a `^ 0 = 1.
+Lemma power_posr0 a : a != 0 -> a `^ 0 = 1.
 Proof.
 move=> a0; rewrite /power_pos mul0r expR0; case: ifPn => //.
-by rewrite eq_le leNgt a0.
+by move: a0 => /eqP ane0 /eqP a0 //.
 Qed.
 
 Lemma power_pos0 : power_pos 0 = fun=> 0.
@@ -604,10 +604,34 @@ Proof. by apply/funext => x; rewrite /power_pos eqxx. Qed.
 Lemma power_pos1 : power_pos 1 = fun=> 1.
 Proof. by apply/funext => x; rewrite /power_pos oner_eq0 ln1 mulr0 expR0. Qed.
 
+Lemma power_pos_eq0 x p : x `^ p = 0 -> x = 0.
+Proof.
+rewrite /power_pos. have [->|_] := eqVneq x 0 => //.
+by move: (expR_gt0 (p * ln x)) => /gt_eqF /eqP.
+Qed.
+
 Lemma ler_power_pos a : 1 < a -> {homo power_pos a : x y / x <= y}.
 Proof.
 move=> a1 x y xy.
 by rewrite /power_pos gt_eqF ?(le_lt_trans _ a1)// ler_expR ler_pmul2r// ln_gt0.
+Qed.
+
+Lemma power_posM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
+Proof.
+rewrite 2!le_eqVlt.
+move=> /orP [/eqP <-|x0] /orP [/eqP <-|y0];
+  rewrite ?mul0r ?mulr0 ?power_pos0 ?mul0r ?mulr0 //.
+rewrite /power_pos gt_eqF ?mulr_gt0 // !gt_eqF //.
+by rewrite lnM ?posrE // -expRD mulrDr.
+Qed.
+
+Lemma power_posC x y z :  (x `^ y) `^ z = (x `^ z) `^ y.
+Proof. rewrite /power_pos.
+have [x0|x0] := eqVneq x 0.
+ by rewrite ln0 // ifT // ifT.
+rewrite gt_eqF; last exact: expR_gt0.
+rewrite gt_eqF; last exact: expR_gt0.
+by rewrite !expK 2!mulrA (mulrC z).
 Qed.
 
 Lemma power_posD a : 0 < a -> {morph power_pos a : x y / x + y >-> x * y}.
@@ -618,12 +642,13 @@ Proof.
 rewrite le_eqVlt => /predU1P[<-|a0]; first by rewrite invr0 /power_pos eqxx.
 apply/(@mulrI _ a); first by rewrite unitfE gt_eqF.
 rewrite -[X in X * _ = _](power_posr1 (ltW a0)) -power_posD // subrr.
-by rewrite power_posr0 // divrr // unitfE gt_eqF.
+by rewrite power_posr0; [rewrite divrr // unitfE gt_eqF|apply lt0r_neq0].
 Qed.
 
 Lemma power_pos_mulrn a n : 0 < a -> a `^ n%:R = a ^+ n.
 Proof.
-move=> a0; elim: n => [|n ih]; first by rewrite mulr0n expr0 power_posr0.
+move=> a0; elim: n => [|n ih].
+  by rewrite mulr0n expr0 power_posr0//; apply lt0r_neq0.
 by rewrite -natr1 exprSr power_posD// ih power_posr1// ltW.
 Qed.
 
