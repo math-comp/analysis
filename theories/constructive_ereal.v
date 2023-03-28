@@ -31,6 +31,7 @@ Require Import signed.
 (*                    r%:E == injects real numbers into \bar R                *)
 (*           +%E, -%E, *%E == addition/opposite/multiplication for extended   *)
 (*                            reals                                           *)
+(*                   sqrte == square root for extended reals                  *)
 (*                `| x |%E == the absolute value of x                         *)
 (*                  x ^+ n == iterated multiplication                         *)
 (*                  x *+ n == iterated addition                               *)
@@ -3094,6 +3095,58 @@ Proof. by move=> xye; apply: lee_adde => e; case: x {xye} (xye e). Qed.
 End DualRealFieldType_lemmas.
 
 End DualAddTheoryRealField.
+
+Section sqrte.
+Variable R : rcfType.
+Implicit Types x y : \bar R.
+
+Definition sqrte x :=
+  if x is +oo then +oo else if x is r%:E then (Num.sqrt r)%:E else 0.
+
+Lemma sqrte0 : sqrte 0 = 0 :> \bar R.
+Proof. by rewrite /= sqrtr0. Qed.
+
+Lemma sqrte_ge0 x : 0 <= sqrte x.
+Proof. by case: x => [x|//|]; rewrite /= ?leey// lee_fin sqrtr_ge0. Qed.
+
+Lemma lee_sqrt x y : 0 <= y -> (sqrte x <= sqrte y) = (x <= y).
+Proof.
+case: x y => [x||] [y||] yge0 //=.
+- exact: mathcomp_extra.ler_sqrt.
+- by rewrite !leey.
+- by rewrite leNye lee_fin sqrtr_ge0.
+Qed.
+
+Lemma sqrteM x y : 0 <= x -> sqrte (x * y) = sqrte x * sqrte y.
+Proof.
+case: x y => [x||] [y||] //= age0.
+- by rewrite sqrtrM ?EFinM.
+- move: age0; rewrite le_eqVlt eqe => /predU1P[<-|x0].
+    by rewrite mul0e sqrte0 sqrtr0 mul0e.
+  by rewrite mulry gtr0_sg ?mul1e// mulry gtr0_sg ?mul1e// sqrtr_gt0.
+- move: age0; rewrite mule0 mulrNy lee_fin -sgr_ge0.
+  by case: sgrP; rewrite ?mul0e ?sqrte0// ?mul1e// ler0N1.
+- rewrite !mulyr; case: (sgrP y) => [->||].
+  + by rewrite sqrtr0 sgr0 mul0e sqrte0.
+  + by rewrite mul1e/= -sqrtr_gt0 -sgr_gt0 -lte_fin => /gt0_muley->.
+  + by move=> y0; rewrite EFinN mulN1e/= ltr0_sqrtr// sgr0 mul0e.
+- by rewrite mulyy.
+- by rewrite mulyNy mule0.
+Qed.
+
+Lemma sqr_sqrte x : 0 <= x -> sqrte x ^+ 2 = x.
+Proof.
+case: x => [x||] xge0; rewrite expe2 ?mulyy//.
+by rewrite -sqrteM// -EFinM/= sqrtr_sqr ger0_norm.
+Qed.
+
+Lemma sqrte_sqr x : sqrte (x ^+ 2) = `|x|%E.
+Proof. by case: x => [x||//]; rewrite /expe/= ?sqrtr_sqr// mulyy. Qed.
+
+Lemma sqrte_fin_num x : 0 <= x -> (sqrte x \is a fin_num) = (x \is a fin_num).
+Proof. by case: x => [x|//|//]; rewrite !qualifE/=. Qed.
+
+End sqrte.
 
 Module DualAddTheory.
 Export DualAddTheoryNumDomain.
