@@ -63,6 +63,12 @@
   + lemmas `inum_eq`, `inum_le`, `inum_lt`
 - in `measure.v`:
   + lemmas `ae_imply`, `ae_imply2`
+- in `mathcomp_extra.v`
+  + lemma `ler_sqrt`
+- in `constructive_ereal.v`
+  + definition `sqrte`
+  + lemmas `sqrte0`, `sqrte_ge0`, `lee_sqrt`, `sqrteM`, `sqr_sqrte`,
+    `sqrte_sqr`, `sqrte_fin_num`
 
 ### Changed
 
