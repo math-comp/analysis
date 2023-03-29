@@ -4871,9 +4871,10 @@ Context {T : topologicalType} {Q0 : quotType T}.
 
 Local Notation Q := (quotient_topology Q0).
 
-HB.instance Definition _ := gen_eqMixin Q.
-HB.instance Definition _ := gen_choiceMixin Q.
-HB.instance Definition _ := isPointed.Build Q (\pi_Q point).
+HB.instance Definition _ := Quotient.copy Q Q0.
+HB.instance Definition _ := [Sub Q of T by %/].
+HB.instance Definition _ := [Choice of Q by <:].
+HB.instance Definition _ := isPointed.Build Q (\pi_Q point : Q).
 
 Definition quotient_open U := open (\pi_Q @^-1` U).
 
