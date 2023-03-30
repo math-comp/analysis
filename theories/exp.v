@@ -649,7 +649,16 @@ Qed.
 Lemma power_posD a : 0 < a -> {morph power_pos a : x y / x + y >-> x * y}.
 Proof. by move=> a0 x y; rewrite /power_pos gt_eqF// mulrDl expRD. Qed.
 
-Lemma power_pos_inv a : 0 <= a -> a `^ (-1) = a ^-1.
+Lemma power_pos_mulrn a n : 0 <= a -> a `^ n%:R = a ^+ n.
+Proof.
+move=> a0; elim: n => [|n ih].
+  by rewrite mulr0n expr0 power_posr0//; apply: lt0r_neq0.
+move: a0; rewrite le_eqVlt => /predU1P[<-|a0].
+  by rewrite !power_pos0 mulrn_eq0/= oner_eq0/= expr0n.
+by rewrite -natr1 power_posD// ih power_posr1// ?exprS 1?mulrC// ltW.
+Qed.
+
+Lemma power_pos_inv1 a : 0 <= a -> a `^ (-1) = a ^-1.
 Proof.
 rewrite le_eqVlt => /predU1P[<-|a0].
   by rewrite power_pos0 invr0 oppr_eq0 oner_eq0.
@@ -658,13 +667,23 @@ rewrite -[X in X * _ = _](power_posr1 (ltW a0)) -power_posD // subrr.
 by rewrite power_posr0 divff// gt_eqF.
 Qed.
 
-Lemma power_pos_mulrn a n : 0 <= a -> a `^ n%:R = a ^+ n.
+Lemma power_pos_inv a n : 0 <= a -> a `^ (- n%:R) = a ^- n.
 Proof.
 move=> a0; elim: n => [|n ih].
-  by rewrite mulr0n expr0 power_posr0//; apply: lt0r_neq0.
+  by rewrite -mulNrn mulr0n power_posr0 -exprVn expr0.
 move: a0; rewrite le_eqVlt => /predU1P[<-|a0].
-  by rewrite !power_pos0 mulrn_eq0/= oner_eq0/= expr0n.
-by rewrite -natr1 power_posD// ih power_posr1// ?exprS 1?mulrC// ltW.
+  by rewrite power_pos0 oppr_eq0 mulrn_eq0 oner_eq0 orbF exprnN exp0rz oppr_eq0.
+rewrite -natr1 opprD power_posD// (power_pos_inv1 (ltW a0)) ih.
+by rewrite -[in RHS]exprVn exprS [in RHS]mulrC exprVn.
+Qed.
+
+Lemma power_pos_intmul a (z : int) : 0 <= a -> a `^ z%:~R = a ^ z.
+Proof.
+move=> a0; have [z0|z0] := leP 0 z.
+  rewrite -[in RHS](gez0_abs z0) abszE -exprnP -power_pos_mulrn//.
+  by rewrite natr_absz -abszE gez0_abs.
+rewrite -(opprK z) (_ : - z = `|z|%N); last by rewrite ltz0_abs.
+by rewrite -exprnN -power_pos_inv// nmulrn.
 Qed.
 
 Lemma power12_sqrt a : 0 <= a -> a `^ (2^-1) = Num.sqrt a.
