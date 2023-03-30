@@ -72,6 +72,8 @@
   + generalize `negligible` to `semiRingOfSetsType`
 - in `exp.v`:
   + new lemmas `power_pos_ge0`, `power_pos0`, `power12_sqrt`
+- in `lebesgue_measure.v`:
+  + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
 
 ### Changed
 
