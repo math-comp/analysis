@@ -71,7 +71,8 @@
 - in `measure.v`:
   + generalize `negligible` to `semiRingOfSetsType`
 - in `exp.v`:
-  + new lemmas `power_pos_ge0`, `power_pos0`, `power12_sqrt`
+  + new lemmas `power_pos_ge0`, `power_pos0`, `power_pos_eq0`,
+    `power_posM`, `power_posAC`, `power12_sqrt`
 - in `lebesgue_measure.v`:
   + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
 
@@ -80,9 +81,9 @@
 - in `exp.v`:
   + generalize `exp_fun` and rename to `power_pos`
   + `exp_fun_gt0` has now a condition and is renamed to `power_pos_gt0`
+  + remove condition of `exp_funr0` and rename to `power_posr0`
   + weaken condition of `exp_funr1` and rename to `power_posr1`
   + weaken condition of `exp_fun_inv` and rename to `power_pos_inv`
-  + `exp_funr0` -> `power_posr0`
   + `exp_fun1` -> `power_pos1`
   + `ler_exp_fun` -> `ler_power_pos`
   + `exp_funD` -> `power_posD`
