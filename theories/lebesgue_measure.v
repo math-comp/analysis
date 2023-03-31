@@ -5,7 +5,7 @@ From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import cardinality fsbigop mathcomp_extra.
 Require Import reals ereal signed topology numfun normedtype.
 From HB Require Import structures.
-Require Import sequences esum measure real_interval realfun.
+Require Import sequences esum measure real_interval realfun exp.
 
 (******************************************************************************)
 (*                            Lebesgue Measure                                *)
@@ -1638,7 +1638,7 @@ rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
 Qed.
 
-Lemma measurable_fun_max  D f g :
+Lemma measurable_fun_max D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \max g).
 Proof.
 move=> mf mg mD; apply (measurability (RGenCInfty.measurableE R)) => //.
@@ -1704,6 +1704,36 @@ apply: (@measurable_fun_lim_sup _ h) => // t Dt.
 Qed.
 
 End measurable_fun_realType.
+
+Lemma measurable_fun_ln (R : realType) : measurable_fun [set~ (0:R)] (@ln R).
+Proof.
+rewrite (_ : [set~ 0] = `]-oo, 0[ `|` `]0, +oo[); last first.
+  by rewrite -(setCitv `[0, 0]); apply/seteqP; split => [|]x/=;
+    rewrite in_itv/= -eq_le eq_sym; [move/eqP/negbTE => ->|move/negP/eqP].
+apply/measurable_funU; [exact: measurable_itv|exact: measurable_itv|split].
+- apply/(@measurable_restrict _ _ _ _ _ setT)=> //; first exact: measurable_itv.
+  rewrite (_ : _ \_ _ = cst (0:R)); first exact: measurable_fun_cst.
+  apply/funext => y; rewrite patchE.
+  by case: ifPn => //; rewrite inE/= in_itv/= => y0; rewrite ln0// ltW.
+- have : {in `]0, +oo[%classic, continuous (@ln R)}.
+    by move=> x; rewrite inE/= in_itv/= andbT => x0; exact: continuous_ln.
+  rewrite -continuous_open_subspace; last exact: interval_open.
+  by move/subspace_continuous_measurable_fun; apply; exact: measurable_itv.
+Qed.
+
+Lemma measurable_fun_power_pos (R : realType) p :
+  measurable_fun [set: R] (@power_pos R ^~ p).
+Proof.
+apply: measurable_fun_if => //.
+- apply: (measurable_fun_bool true); rewrite (_ : _ @^-1` _ = [set 0])//.
+  by apply/seteqP; split => [_ /eqP ->//|_ -> /=]; rewrite eqxx.
+- exact: measurable_fun_cst.
+- rewrite setTI; apply: (@measurable_fun_comp _ _ _ _ _ _ setT) => //.
+    by apply: continuous_measurable_fun; exact: continuous_expR.
+  rewrite (_ : _ @^-1` _ = [set~ 0]); last first.
+    by apply/seteqP; split => [x [/negP/negP/eqP]|x x0]//=; exact/negbTE/eqP.
+  by apply: measurable_funrM; exact: measurable_fun_ln.
+Qed.
 
 Section standard_emeasurable_fun.
 Variable R : realType.
