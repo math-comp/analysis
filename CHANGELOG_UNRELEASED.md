@@ -70,6 +70,27 @@
   + lemmas `eq_bigmax`, `eq_bigmin` changed to respect `P` in the returned type.
 - in `measure.v`:
   + generalize `negligible` to `semiRingOfSetsType`
+- in `exp.v`:
+  + new lemmas `power_pos_ge0`, `power_pos0`, `power_pos_eq0`,
+    `power_posM`, `power_posAC`, `power12_sqrt`, `power_pos_inv1`,
+    `power_pos_inv`, `power_pos_intmul`
+- in `lebesgue_measure.v`:
+  + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
+
+### Changed
+
+- in `exp.v`:
+  + generalize `exp_fun` and rename to `power_pos`
+  + `exp_fun_gt0` has now a condition and is renamed to `power_pos_gt0`
+  + remove condition of `exp_funr0` and rename to `power_posr0`
+  + weaken condition of `exp_funr1` and rename to `power_posr1`
+  + weaken condition of `exp_fun_inv` and rename to `power_pos_inv`
+  + `exp_fun1` -> `power_pos1`
+  + rename `ler_exp_fun` to `ler_power_pos`
+  + `exp_funD` -> `power_posD`
+  + weaken condition of `exp_fun_mulrn` and rename to `power_pos_mulrn`
+  + the notation ``` `^ ``` has now scope `real_scope`
+  + weaken condition of `riemannR_gt0` and `dvg_riemannR`
 
 ### Renamed
 
