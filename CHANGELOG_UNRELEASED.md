@@ -72,8 +72,8 @@
   + generalize `negligible` to `semiRingOfSetsType`
 - in `exp.v`:
   + new lemmas `power_pos_ge0`, `power_pos0`, `power_pos_eq0`,
-    `power_posM`, `power_posAC`, `power12_sqrt`, `power_pos_inv`,
-    `power_pos_intmul`
+    `power_posM`, `power_posAC`, `power12_sqrt`, `power_pos_inv1`,
+    `power_pos_inv`, `power_pos_intmul`
 - in `lebesgue_measure.v`:
   + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
 
@@ -86,9 +86,9 @@
   + weaken condition of `exp_funr1` and rename to `power_posr1`
   + weaken condition of `exp_fun_inv` and rename to `power_pos_inv`
   + `exp_fun1` -> `power_pos1`
-  + weaken condition of `ler_exp_fun` and rename to `ler_power_pos`
+  + rename `ler_exp_fun` to `ler_power_pos`
   + `exp_funD` -> `power_posD`
-  + `exp_fun_mulrn` -> `power_pos_mulrn`
+  + weaken condition of `exp_fun_mulrn` and rename to `power_pos_mulrn`
   + the notation ``` `^ ``` has now scope `real_scope`
   + weaken condition of `riemannR_gt0` and `dvg_riemannR`
 
