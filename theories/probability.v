@@ -145,70 +145,61 @@ Variables (R : realType).
 Local Open Scope ereal_scope.
 
 Definition powere_pos (a : \bar R) (x : R) :=
-  if a == 0 then 0 else if x == 0%R then 1
+  if x == 0%R then 1
     else
       match a with
-        a'%:E => (expR (x * ln a'))%:E
+        a'%:E => (power_pos a' x)%:E
       | +oo => +oo
       | -oo => 0
       end.
 Local Notation "a `^ x" := (powere_pos a x) : ereal_scope.
 Local Notation "a `^ x" := (power_pos a x) : ring_scope.
 
-Lemma power_posr0' (a : R) : (a != 0 -> a `^ 0 = 1)%R.
-Proof.
-move=> a0; rewrite /power_pos mul0r expR0; case: ifPn => //.
-by move: a0 => /eqP ane0 /eqP a0 //.
-Qed.
-
 Lemma powere_posr (a x : R) :
-  ((a%:E) `^ x = (power_pos a x)%R%:E)%E.
+  ((a%:E) `^ x = (a `^ x)%R%:E)%E.
 Proof.
 rewrite /powere_pos.
-case: ifPn => [/eqP|].
-  by case=> ->; rewrite /power_pos; case: ifP; rewrite eq_refl.
-case: ifPn => [/eqP -> r0|].
-  rewrite power_posr0' //.
-move=> x0 an0; rewrite /power_pos ifF => //.
-by apply/eqP => a0; move: an0 => /eqP; rewrite a0.
+by case: ifPn => [/eqP->|//]; rewrite power_posr0.
 Qed.
 
 Lemma powere_posy (x : R) : (x != 0)%R -> +oo `^ x = +oo.
 Proof.
-  move => xne0; rewrite /powere_pos ifF //; apply/eqP => x0.
-  by move: x0 xne0 => ->; rewrite eq_refl.
+move => xne0; rewrite /powere_pos ifF //; apply/eqP => x0.
+by move: x0 xne0 => ->; rewrite eq_refl.
 Qed.
 
-Lemma powere_pos_fine (a : \bar R) (x : R) :
-  (x != 0)%R -> ((fine a) `^ x = fine (a `^ x))%R.
+Lemma powere_posr0 a : a `^ 0 = 1.
+Proof. by rewrite /powere_pos; case: ifPn => /eqP //. Qed.
+
+Lemma powere_posr1 (a : \bar R) : 0 <= a -> a `^ 1 = a.
 Proof.
-case: a => [a'||] x0.
-- by rewrite /fine powere_posr.
-- by rewrite /fine powere_posy /power_pos ?ifT.
-- rewrite /fine /powere_pos /= ifF.
-    by apply/ifT => //.
-  by apply/eqP => xeq0; move: xeq0 x0 => ->; rewrite eq_refl.
+rewrite /powere_pos; case: ifPn; first by rewrite oner_eq0.
+by case: a => a _ // /power_posr1 ->.
+Qed.
+
+Lemma powere_pos0 (x : R) : 0 `^ x = (x == 0)%:R%:E.
+Proof. by rewrite powere_posr power_pos0. Qed.
+
+Lemma powere_pos1 x : 1 `^ x = 1.
+Proof. by rewrite powere_posr power_pos1. Qed.
+
+Lemma powere_pos_fine (a : \bar R) (x : R) :
+  ((fine a) `^ x = fine (a `^ x))%R.
+Proof.
+case: a => [a'||]; by
+  rewrite /fine ?powere_posr// power_pos0 /powere_pos; case: ifPn.
 Qed.
 
 Lemma powere_posNy (x : R) : (x != 0)%R -> -oo `^ x = 0.
 Proof.
-  move => xne0. rewrite /powere_pos ifF //.
-  by apply/eqP; move: xne0 => /eqP.
-Qed.
-
-Lemma powere_funr1 (a : \bar R) : 0 <= a -> a `^ 1 = a.
-Proof.
-move: a; case => a //.
-  move=> a0; rewrite /powere_pos oner_eq0 /power_pos mul1r. case: ifPn => [/eqP -> // | h].
-  by rewrite lnK// posrE lt_neqAle eq_sym h -lee_fin a0.
-by rewrite /powere_pos oner_eq0.
+move => xne0; rewrite /powere_pos ifF //.
+by apply/eqP; move: xne0 => /eqP.
 Qed.
 
 Lemma powere_pos_ge0 (a : \bar R) (x : R) : 0 <= a `^ x.
 Proof.
-rewrite /powere_pos; case: ifPn => //.
-move: a => [a|_|_]; case: ifP => //.
-  by rewrite lee_fin expR_ge0.
+case: a => [a||]; by
+  rewrite ?powere_posr ?lee_fin ?power_pos_ge0// /powere_pos; case: ifP.
 Qed.
 
 Lemma powere_pos_gt0 (a : \bar R) x : 0 < a -> 0 < a `^ x.
@@ -218,71 +209,6 @@ case: a => // [a|_].
 by rewrite /powere_pos; case:ifP.
 Qed.
 
-Lemma powere_posr1 a : 0 <= a -> a `^ 1 = a.
-Proof.
-case: a => // [a|_].
-  by rewrite powere_posr lee_fin => h; apply: congr1; exact: power_posr1.
-by rewrite /powere_pos ifF // oner_eq0.
-Qed.
-
-Lemma powere_posr0 a : a != 0 -> a `^ 0 = 1.
-Proof. by move=> /eqP a0; rewrite /powere_pos eq_refl ifF; apply/eqP. Qed.
-
-Lemma powere_pos0 (x : R) : 0 `^ x = 0.
-Proof. by rewrite powere_posr power_pos0. Qed.
-
-Lemma powere_pos1 x : 1 `^ x = 1.
-Proof. by rewrite powere_posr power_pos1. Qed.
-Close Scope ereal_scope.
-
-Lemma power_pos_eq0 (x p : R) : x `^ p = 0 -> x = 0.
-Proof.
-rewrite /power_pos. have [->|_] := eqVneq x 0 => //.
-by move: (expR_gt0 (p * ln x)) => /gt_eqF /eqP.
-Qed.
-
-Lemma power_posM (x y : R) r :
-  (0 <= x)%R -> (0 <= y)%R -> ((x * y) `^ r = x `^ r * y `^ r)%R.
-Proof.
-rewrite 2!le_eqVlt.
-move=> /orP [/eqP <-|x0] /orP [/eqP <-|y0];
-  rewrite ?mul0r ?mulr0 ?power_pos0 ?mul0r ?mulr0 //.
-rewrite /power_pos gt_eqF ?mulr_gt0 // !gt_eqF //.
-by rewrite lnM ?posrE // -expRD mulrDr.
-Qed.
-
-Lemma power_posC (x y z : R) :
-  (x `^ y) `^ z = (x `^ z) `^ y.
-Proof. rewrite /power_pos.
-have [x0|x0] := eqVneq x 0.
- by rewrite ln0 // ifT // ifT.
-rewrite gt_eqF; last exact: expR_gt0.
-rewrite gt_eqF; last exact: expR_gt0.
-by rewrite !expK 2!mulrA (mulrC z).
-Qed.
-
-Lemma measurable_fun_power_pos (D : set R) p : measurable D -> measurable_fun D (fun x => power_pos x p).
-Proof.
-rewrite /power_pos => mD.
-apply: measurable_fun_if => //.
-- apply: (measurable_fun_bool true).
-  rewrite /preimage/= -[X in measurable X]setTI.
-  apply: measurableI => //.
-  admit. (* apply: measurable_set1. *)
-- apply: measurable_fun_cst.
-- apply: subspace_continuous_measurable_fun => //= [|x].
-    apply: measurableI => //.
-    rewrite /preimage/= -[X in measurable X]setTI.
-    apply: measurableI => //.
-    admit.
-  apply: continuous_comp => //.
-    apply: continuousM.
-      apply: cst_continuous.
-    admit. (* apply: continuous_ln. *)
-    apply: continuous_expR.
-Admitted.
-
-Local Open Scope ereal_scope.
 Lemma powere_pos_eq0 (x : \bar R) (p : R) : -oo < x -> x `^ p = 0 -> x = 0.
 Proof.
 case: x => // [x|_].
@@ -296,19 +222,21 @@ Qed.
 Lemma powere_posM (x y : \bar R) r :
   0 <= x -> 0 <= y -> (x * y)%E `^ r = x `^ r * y `^ r.
 Proof.
-rewrite le_eqVlt eq_sym => /orP [/eqP ->|x0].
-  by rewrite mul0e powere_pos0 mul0e.
-rewrite le_eqVlt eq_sym => /orP [/eqP ->|y0].
-  by rewrite mule0 powere_pos0 mule0.
 have [->|r0] := eqVneq r 0%R.
-  move: x0 y0; rewrite 2!lt_neqAle eq_sym (eq_sym _ y) => /andP [x0 _] /andP [y0 _].
-  by rewrite powere_posr0 ?mule_neq0 ?powere_posr0 ?powere_posr0 ?mule1.
-move: x y x0 y0 => [x| |] [y| |] x0 y0; rewrite ?mulyy ?mulyNy ?mulNyy ?gt0_muleNy //.
-- by rewrite -EFinM !powere_posr power_posM // le_eqVlt; apply/orP; right.
-- by rewrite gt0_muley // powere_posy // gt0_muley // powere_pos_gt0.
-- by rewrite gt0_mulye // powere_posy // gt0_mulye // powere_pos_gt0.
-- by rewrite powere_posy // mulyy.
-Qed.
+by rewrite 3!powere_posr0 mule1.
+rewrite le_eqVlt=> /orP [/eqP<-|x0].
+  rewrite mul0e powere_pos0; admit.
+rewrite le_eqVlt=> /orP [/eqP<-|y0].
+  rewrite mule0 powere_pos0; admit.
+move: x0 y0.
+case: x => // [x|_].
+case: y => // [y|/[swap] _].
+by rewrite 2!lte_fin=> x0 y0; rewrite -EFinM 3!powere_posr -EFinM power_posM// le_eqVlt; apply/orP; right.
+by rewrite lte_fin=>x0; rewrite gt0_muley// powere_posy// powere_posr gt0_muley// lte_fin; apply power_pos_gt0.
+case: y => // [y|_].
+by rewrite lte_fin=>y0; rewrite gt0_mulye// powere_posy// powere_posr gt0_mulye// lte_fin; apply power_pos_gt0.
+by rewrite mulyy powere_posy// mulyy.
+Admitted.
 
 Lemma powere12_sqrt (a : \bar R) : (0 <= a)%E -> (a `^ (2^-1))%E = sqrte a.
 Proof.

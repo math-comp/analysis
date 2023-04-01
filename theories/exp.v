@@ -600,13 +600,8 @@ Proof.
 by rewrite /power_pos; case: ifPn; rewrite ?eqxx// mul0r expR0.
 Qed.
 
-<<<<<<< HEAD
 Lemma power_pos0 x : power_pos 0 x = (x == 0)%:R.
 Proof. by rewrite /power_pos eqxx. Qed.
-=======
-Lemma power_pos0 : power_pos 0 = fun=> 0.
-Proof. by apply/funext => x; rewrite /power_pos eqxx. Qed.
->>>>>>> 9ea42dd (add lemma power12_sqrt)
 
 Lemma power_pos1 : power_pos 1 = fun=> 1.
 Proof. by apply/funext => x; rewrite /power_pos oner_eq0 ln1 mulr0 expR0. Qed.
@@ -657,18 +652,11 @@ Proof. by move=> a0 x y; rewrite /power_pos gt_eqF// mulrDl expRD. Qed.
 
 Lemma power_pos_mulrn a n : 0 <= a -> a `^ n%:R = a ^+ n.
 Proof.
-<<<<<<< HEAD
 move=> a0; elim: n => [|n ih].
   by rewrite mulr0n expr0 power_posr0//; apply: lt0r_neq0.
 move: a0; rewrite le_eqVlt => /predU1P[<-|a0].
   by rewrite !power_pos0 mulrn_eq0/= oner_eq0/= expr0n.
 by rewrite -natr1 power_posD// ih power_posr1// ?exprS 1?mulrC// ltW.
-=======
-rewrite le_eqVlt => /predU1P[<-|a0]; first by rewrite invr0 /power_pos eqxx.
-apply/(@mulrI _ a); first by rewrite unitfE gt_eqF.
-rewrite -[X in X * _ = _](power_posr1 (ltW a0)) -power_posD // subrr.
-by rewrite power_posr0 // divrr // unitfE gt_eqF.
->>>>>>> 9ea42dd (add lemma power12_sqrt)
 Qed.
 
 Lemma power_pos_inv1 a : 0 <= a -> a `^ (-1) = a ^-1.
@@ -706,17 +694,6 @@ Lemma power12_sqrt a : 0 <= a -> a `^ (2^-1) = Num.sqrt a.
 Proof.
 rewrite le_eqVlt => /predU1P[<-|a0].
   by rewrite power_pos0 sqrtr0 invr_eq0 pnatr_eq0.
-have /eqP : (a `^ (2^-1)) ^+ 2 = (Num.sqrt a) ^+ 2.
-  rewrite sqr_sqrtr; last exact: ltW.
-  by rewrite /power_pos gt_eqF// -expRMm mulrA divrr ?mul1r ?unitfE// lnK.
-rewrite eqf_sqr => /predU1P[//|/eqP h].
-have : 0 < a `^ 2^-1 by apply: power_pos_gt0.
-by rewrite h oppr_gt0 ltNge sqrtr_ge0.
-Qed.
-
-Lemma power12_sqrt a : 0 <= a -> a `^ (2^-1) = Num.sqrt a.
-Proof.
-rewrite le_eqVlt => /predU1P[<-|a0]; first by rewrite power_pos0 sqrtr0.
 have /eqP : (a `^ (2^-1)) ^+ 2 = (Num.sqrt a) ^+ 2.
   rewrite sqr_sqrtr; last exact: ltW.
   by rewrite /power_pos gt_eqF// -expRMm mulrA divrr ?mul1r ?unitfE// lnK.
