@@ -130,6 +130,12 @@
     `discrete_pseudoMetricType`, and `pseudoMetric_bool`.
   + new lemmas `finite_compact`, `discrete_ball_center`, `compact_cauchy_cvg`
 
+- in `set_interval.v`:
+  + lemma `onem_factor`
+- in `set_interval.v`:
+  + lemma `subset_itvW`
+- new file `convex.v`
+
 ### Changed
 
 - in `mathcomp_extra.v`
