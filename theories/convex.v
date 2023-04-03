@@ -35,22 +35,27 @@ Local Open Scope ring_scope.
 
 Import numFieldNormedType.Exports.
 
-Lemma cvg_at_right_filter (R : numFieldType) (f : R -> R) (x : R) :
+Lemma cvg_at_right_filter (R : numFieldType)
+  (K : numDomainType) (V : pseudoMetricNormedZmodType K)
+  (f : R -> V) (x : R) :
   f z @[z --> x] --> f x -> f z @[z --> x^'+] --> f x.
 Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
 
-Lemma cvg_at_left_filter (R : numFieldType) (f : R -> R) (x : R) :
+Lemma cvg_at_left_filter (R : numFieldType)
+  (K : numDomainType) (V : pseudoMetricNormedZmodType K)
+  (f : R -> V) (x : R) :
   f z @[z --> x] --> f x -> f z @[z --> x^'-] --> f x.
 Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
 
-Lemma derivable_oo_itvW {R : numFieldType} (f : R -> R) (a b a' b' : R) :
+Lemma derivable_oo_itvW {R : numFieldType} (V : normedModType R)
+    (f : R -> V) (a b a' b' : R) :
     a <= a' -> b' <= b ->
   {in `]a, b[, forall x, derivable f x 1} ->
   {in `]a', b'[, forall x, derivable f x 1}.
 Proof. by move=> aa' bb' + x xab; apply; exact: subset_itvW xab. Qed.
 
-Lemma derivable_within_continuous {R : numFieldType} (F : R -> R)
-    (i : interval R) :
+Lemma derivable_within_continuous {R : numFieldType} (V : normedModType R)
+    (F : R -> V) (i : interval R) :
   {in i, forall x, derivable F x 1} ->
   {within [set` i], continuous F}.
 Proof.
@@ -59,7 +64,8 @@ apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: di; rewrite inE.
 Qed.
 
-Lemma cvg_at_right_within (R : numFieldType) (F : R -> R) (x : R) :
+Lemma cvg_at_right_within (R : numFieldType)
+  (K : numDomainType) (V : pseudoMetricNormedZmodType K) (F : R -> V) (x : R) :
   F x @[x --> x^'+] --> F x ->
   F x @[x --> within (fun u => x <= u) (nbhs x)] --> F x.
 Proof.
@@ -69,7 +75,8 @@ rewrite !near_withinE; apply: filterS => y h.
 by rewrite le_eqVlt => /predU1P[->|//]; rewrite subrr normr0.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_at_left_within (R : numFieldType) (F : R -> R) (y : R) :
+Lemma cvg_at_left_within (R : numFieldType)
+  (K : numDomainType) (V : pseudoMetricNormedZmodType K) (F : R -> V) (y : R) :
   F x @[x --> y^'-] --> F y ->
   F x @[x --> within (fun u => u <= y) (nbhs y)] --> F y.
 Proof.
@@ -79,8 +86,8 @@ rewrite !near_withinE; apply: filterS => x h.
 by rewrite le_eqVlt => /predU1P[->|//]; rewrite subrr normr0.
 Unshelve. all: by end_near. Qed.
 
-Lemma derivable_oo_within_cc_continuous {R : numFieldType} (F : R -> R)
-  (x y : R):
+Lemma derivable_oo_within_cc_continuous {R : numFieldType} {V : normedModType R}
+  (F : R -> V) (x y : R):
     {in `]x, y[, forall x, derivable F x 1} ->
   F @ x^'+ --> F x -> F @ y^'- --> F y -> {within `[x, y], continuous F}.
 Proof.
