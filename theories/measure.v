@@ -1023,10 +1023,8 @@ Proof. exact: measurable_fun_comp. Qed.
 Lemma eq_measurable_fun D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
 Proof.
-move=> Dfg Df mD A mA; rewrite (_ : D `&` _ = D `&` f @^-1` A); first exact: Df.
-apply/seteqP; rewrite /preimage; split => [x /= [Dx Agx]|x /= [Dx Afx]].
-  by split=> //; rewrite Dfg// inE.
-by split=> //; rewrite -Dfg// inE.
+by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
+  [exact: mf|exact/esym/eq_preimage].
 Qed.
 
 Lemma measurable_fun_cst D (r : T2) : measurable_fun D (cst r : T1 -> _).
@@ -1061,13 +1059,6 @@ Qed.
 Lemma measurable_funTS D (f : T1 -> T2) :
   measurable_fun setT f -> measurable_fun D f.
 Proof. exact: measurable_funS. Qed.
-
-Lemma measurable_fun_ext D (f g : T1 -> T2) :
-  {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
-Proof.
-by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
-  [exact: mf|exact/esym/eq_preimage].
-Qed.
 
 Lemma measurable_restrict D E (f : T1 -> T2) :
   measurable D -> measurable E -> D `<=` E ->
@@ -1127,7 +1118,9 @@ have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
 Qed.
 
 End measurable_fun.
-Arguments measurable_fun_ext {d1 d2 T1 T2 D} f {g}.
+Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
+#[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
+Notation measurable_fun_ext := eq_measurable_fun.
 Arguments measurable_fun_bool {d1 T1 D f} b.
 
 Section measurability.

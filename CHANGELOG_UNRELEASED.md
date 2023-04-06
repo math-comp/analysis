@@ -69,6 +69,13 @@
   + definition `sqrte`
   + lemmas `sqrte0`, `sqrte_ge0`, `lee_sqrt`, `sqrteM`, `sqr_sqrte`,
     `sqrte_sqr`, `sqrte_fin_num`
+- in `exp.v`:
+  + lemma `ln_power_pos`
+  + definition `powere_pos`, notation ``` _ `^ _ ``` in `ereal_scope`
+  + lemmas `powere_pos_EFin`, `powere_posyr`, `powere_pose0`,
+    `powere_pose1`, `powere_posNyr` `powere_pos0r`, `powere_pos1r`,
+    `powere_posNyr`, `fine_powere_pos`, `powere_pos_ge0`,
+    `powere_pos_gt0`, `powere_pos_eq0`, `powere_posM`, `powere12_sqrt`
 
 ### Changed
 
@@ -133,6 +140,8 @@
 - in `lebesgue_measure.v`:
   + lemmas `emeasurable_itv_bnd_pinfty`, `emeasurable_itv_ninfty_bnd`
     (use `emeasurable_itv` instead)
+- in `measure.v`:
+  + lemma `measurable_fun_ext`
 
 ### Removed
 
