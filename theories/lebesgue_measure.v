@@ -1731,7 +1731,7 @@ apply: measurable_fun_if => //.
 - rewrite setTI; apply: (@measurable_fun_comp _ _ _ _ _ _ setT) => //.
     by apply: continuous_measurable_fun; exact: continuous_expR.
   rewrite (_ : _ @^-1` _ = [set~ 0]); last first.
-    by apply/seteqP; split => [x [/negP/negP/eqP]|x x0]//=; exact/negbTE/eqP.
+    by apply/seteqP; split => [x /negP/negP/eqP|x x0]//=; exact/negbTE/eqP.
   by apply: measurable_funrM; exact: measurable_fun_ln.
 Qed.
 
@@ -1895,7 +1895,7 @@ Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = lim_esup (f_^~ x).
   by move=> Dx; have /cvg_lim  <-// := @cvg_esups _ (f_^~x) (f x) (f_f x Dx).
-apply: (measurable_fun_ext (fun x => lim_esup (f_ ^~ x))) => //.
+apply: (eq_measurable_fun (fun x => lim_esup (f_ ^~ x))) => //.
   by move=> x; rewrite inE => Dx; rewrite fE.
 exact: measurable_fun_lim_esup.
 Qed.
