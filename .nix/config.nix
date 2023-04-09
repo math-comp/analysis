@@ -40,6 +40,7 @@
   bundles."8.14".coqPackages.coq.override.version = "8.14";
   bundles."8.15".coqPackages.coq.override.version = "8.15";
   bundles."8.16".coqPackages.coq.override.version = "8.16";
+  bundles."8.17".coqPackages.coq.override.version = "8.17";
 
   bundles."master".coqPackages = {
     coq.override.version = "master";
