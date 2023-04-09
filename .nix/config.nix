@@ -54,7 +54,7 @@
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
-    hierarchy-builder.override.version = "coq-master";
+    hierarchy-builder.override.version = "proux01:coq-master";
     mathcomp.override.version = "hierarchy-builder";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "proux01:hierarchy-builder";
