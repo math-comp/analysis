@@ -311,6 +311,15 @@ rewrite mule_natl mule2n oppeD; last by rewrite fin_num_adde_defl// fin_numX.
 by rewrite addeA subeK// fin_numX.
 Qed.
 
+Lemma variance_ge0 (X : {RV P >-> R}) : (0 <= 'V_P[X])%E.
+Proof. by apply: expectation_ge0 => x; apply: sqr_ge0. Qed.
+
+Lemma variance_cst r : 'V_P[cst r] = 0%E.
+Proof.
+rewrite /variance expectation_cst/=.
+rewrite [X in 'E_P[X]](_ : _ = cst 0%R) ?expectation_cst//.
+by apply/funext => x; rewrite /GRing.exp/GRing.mul/= subrr mulr0.
+Qed.
 End variance.
 Notation "'V_ P [ X ]" := (variance P X).
 
