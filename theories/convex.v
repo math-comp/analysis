@@ -35,8 +35,7 @@ Local Open Scope ring_scope.
 
 Import numFieldNormedType.Exports.
 
-Lemma cvg_at_right_filter (R : numFieldType)
-  (K : numDomainType) (V : pseudoMetricNormedZmodType K)
+Lemma cvg_at_right_filter (R : numFieldType) (V : topologicalType)
   (f : R -> V) (x : R) :
   f z @[z --> x] --> f x -> f z @[z --> x^'+] --> f x.
 Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
