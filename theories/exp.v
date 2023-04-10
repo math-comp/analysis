@@ -19,7 +19,8 @@ Require Import signed topology normedtype landau sequences derive realfun.
 (*   pseries_diffs f i == (i + 1) * f (i + 1)                                 *)
 (*                                                                            *)
 (*                ln x == the natural logarithm                               *)
-(*              a `^ x == power function (assumes a >= 0)                     *)
+(*              s `^ r == power function, in ring_scope (assumes s >= 0)      *)
+(*              e `^ r == power function, in ereal_scope (assumes e >= 0)     *)
 (*          riemannR a == sequence n |-> 1 / (n.+1) `^ a where a has a type   *)
 (*                        of type realType                                    *)
 (*                                                                            *)
@@ -686,6 +687,9 @@ rewrite -(opprK z) (_ : - z = `|z|%N); last by rewrite ltz0_abs.
 by rewrite -exprnN -power_pos_inv// nmulrn.
 Qed.
 
+Lemma ln_power_pos s r : s != 0 -> ln (s `^ r) = r * ln s.
+Proof. by move=> s0; rewrite /power_pos (negbTE s0) expK. Qed.
+
 Lemma power12_sqrt a : 0 <= a -> a `^ (2^-1) = Num.sqrt a.
 Proof.
 rewrite le_eqVlt => /predU1P[<-|a0].
@@ -699,7 +703,96 @@ by rewrite h oppr_gt0 ltNge sqrtr_ge0.
 Qed.
 
 End PowerPos.
-Notation "a `^ x" := (power_pos a x) : real_scope.
+Notation "a `^ x" := (power_pos a x) : ring_scope.
+
+Section powere_pos.
+Local Open Scope ereal_scope.
+Context {R : realType}.
+Implicit Types (r : R) (x y : \bar R).
+
+Definition powere_pos x r :=
+  match x with
+  | x'%:E => (x' `^ r)%:E
+  | +oo => if r == 0%R then 1%E else +oo
+  | -oo => if r == 0%R then 1%E else 0%E
+  end.
+
+Local Notation "x `^ r" := (powere_pos x r).
+
+Lemma powere_pos_EFin (s : R) r : s%:E `^ r = (s `^ r)%:E.
+Proof. by []. Qed.
+
+Lemma powere_posyr r : r != 0%R -> +oo `^ r = +oo.
+Proof. by move/negbTE => /= ->. Qed.
+
+Lemma powere_pose0 x : x `^ 0 = 1.
+Proof. by move: x => [x'| |]/=; rewrite ?power_posr0// eqxx. Qed.
+
+Lemma powere_pose1 x : 0 <= x -> x `^ 1 = x.
+Proof.
+by move: x => [x'| |]//= x0; rewrite ?power_posr1// (negbTE (oner_neq0 _)).
+Qed.
+
+Lemma powere_posNyr r : r != 0%R -> -oo `^ r = 0.
+Proof.
+by move => xne0; rewrite /powere_pos ifF //; apply/eqP; move: xne0 => /eqP.
+Qed.
+
+Lemma powere_pos0r r : 0 `^ r = (r == 0)%:R%:E.
+Proof. by rewrite powere_pos_EFin power_pos0. Qed.
+
+Lemma powere_pos1r r : 1 `^ r = 1.
+Proof. by rewrite powere_pos_EFin power_pos1. Qed.
+
+Lemma fine_powere_pos x r : fine (x `^ r) = ((fine x) `^ r)%R.
+Proof. by move: x => [x| |]//=; rewrite power_pos0; case: ifPn. Qed.
+
+Lemma powere_pos_ge0 x r : 0 <= x `^ r.
+Proof.
+by move: x => [x| |];
+  rewrite ?powere_pos_EFin ?lee_fin ?power_pos_ge0// /powere_pos; case: ifPn.
+Qed.
+
+Lemma powere_pos_gt0 x r : 0 < x -> 0 < x `^ r.
+Proof.
+move: x => [x|_|//]; rewrite ?lte_fin; first exact: power_pos_gt0.
+by rewrite /powere_pos; case: ifPn.
+Qed.
+
+Lemma powere_pos_eq0 x r : -oo < x -> x `^ r = 0 -> x = 0.
+Proof.
+move: x => [x _|_/=|//].
+- by rewrite powere_pos_EFin => -[] /power_pos_eq0 ->.
+- by case: ifPn => // _ /eqP; rewrite onee_eq0.
+Qed.
+
+Lemma powere_posM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
+Proof.
+move: x y => [x| |] [y| |]//=.
+- by move=> x0 y0; rewrite -EFinM power_posM.
+- move=> x0 _; case: ifPn => /= [/eqP ->|r0].
+  + by rewrite mule1 power_posr0 powere_pose0.
+  + move: x0; rewrite le_eqVlt => /predU1P[[]<-|/[1!(@lte_fin R)] x0].
+    * by rewrite mul0e powere_pos0r power_pos0 (negbTE r0)/= mul0e.
+    * by rewrite mulry [RHS]mulry !gtr0_sg ?power_pos_gt0// !mul1e powere_posyr.
+- move=> _ y0; case: ifPn => /= [/eqP ->|r0].
+  + by rewrite power_posr0 powere_pose0 mule1.
+  + move: y0; rewrite le_eqVlt => /predU1P[[]<-|/[1!(@lte_fin R)] u0].
+    by rewrite mule0 powere_pos0r power_pos0 (negbTE r0) mule0.
+  + by rewrite 2!mulyr !gtr0_sg ?power_pos_gt0// mul1e powere_posyr.
+- move=> _ _; case: ifPn => /= [/eqP ->|r0].
+  + by rewrite powere_pose0 mule1.
+  + by rewrite mulyy powere_posyr.
+Qed.
+
+Lemma powere12_sqrt x : 0 <= x -> x `^ 2^-1 = sqrte x.
+Proof.
+move: x => [x|_|//]; last by rewrite powere_posyr.
+by rewrite lee_fin => x0 /=; rewrite power12_sqrt.
+Qed.
+
+End powere_pos.
+Notation "a `^ x" := (powere_pos a x) : ereal_scope.
 
 Section riemannR_series.
 Variable R : realType.
