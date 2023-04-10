@@ -50,6 +50,10 @@ Qed.
 Lemma subset_itvP i j : {subset i <= j} <-> [set` i] `<=` [set` j].
 Proof. by []. Qed.
 
+Lemma in1_subset_itv (P : T -> Prop) i j :
+  [set` j] `<=` [set` i] -> {in i, forall x, P x} -> {in j, forall x, P x}.
+Proof. by move=> /subset_itvP ji iP z zB; apply: iP; exact: ji. Qed.
+
 Lemma subset_itvW x y z u b0 b1 :
     (x <= y)%O -> (z <= u)%O ->
   `]y, z[ `<=` [set` Interval (BSide b0 x) (BSide b1 u)].
@@ -58,7 +62,7 @@ move=> xy zu; apply: (@subset_trans _ `]x, u[%classic).
   move=> x0/=; rewrite 2!in_itv/= => /andP[].
   by move=> /(le_lt_trans xy) ->/= /lt_le_trans; exact.
 by move: b0 b1 => [] [] /=; [exact: subset_itv_oo_co|exact: subset_itv_oo_cc|
-                        exact: subset_refl|exact: subset_itv_oo_oc].
+  exact: subset_refl|exact: subset_itv_oo_oc].
 Qed.
 
 Lemma set_itvoo x y : `]x, y[%classic = [set z | (x < z < y)%O].
