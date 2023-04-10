@@ -62,26 +62,22 @@ apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: di; rewrite inE.
 Qed.
 
-Lemma cvg_at_right_within (R : numFieldType)
-  (K : numDomainType) (V : pseudoMetricNormedZmodType K) (F : R -> V) (x : R) :
+Lemma cvg_at_right_within (R : numFieldType) (V : topologicalType)
+  (F : R -> V) (x : R) :
   F x @[x --> x^'+] --> F x ->
   F x @[x --> within (fun u => x <= u) (nbhs x)] --> F x.
 Proof.
-move=> Fxr; apply/cvgrPdist_lt => e e0.
-rewrite /at_right in Fxr; move/cvgrPdist_lt : Fxr => /(_ _ e0).
-rewrite !near_withinE; apply: filterS => y h.
-by rewrite le_eqVlt => /predU1P[->|//]; rewrite subrr normr0.
+move=> Fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
+by move/predU1P => [<-|]; [exact: nbhs_singleton | near: z; exact: Fxr].
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_at_left_within (R : numFieldType)
-  (K : numDomainType) (V : pseudoMetricNormedZmodType K) (F : R -> V) (y : R) :
+Lemma cvg_at_left_within (R : numFieldType) (V : topologicalType)
+  (F : R -> V) (y : R) :
   F x @[x --> y^'-] --> F y ->
   F x @[x --> within (fun u => u <= y) (nbhs y)] --> F y.
 Proof.
-move=> Fyl; apply/cvgrPdist_lt => e e0.
-rewrite /at_left in Fyl; move/cvgrPdist_lt : Fyl => /(_ _ e0).
-rewrite !near_withinE; apply: filterS => x h.
-by rewrite le_eqVlt => /predU1P[->|//]; rewrite subrr normr0.
+move=> Fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
+by move/predU1P => [->|]; [exact: nbhs_singleton | near: z; exact: Fxr].
 Unshelve. all: by end_near. Qed.
 
 Lemma derivable_oo_within_cc_continuous {R : numFieldType} {V : normedModType R}
