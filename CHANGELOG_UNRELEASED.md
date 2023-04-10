@@ -141,10 +141,13 @@
   + lemma `derivable_within_continuous`
 - in `realfun.v`:
   + definition `derivable_oo_continuous_bnd`, lemma `derivable_oo_continuous_bnd_within`
+- in `exp.v`:
+  + lemmas `derive_expR`, `convex_expR`
 - new file `convex.v`:
   + mixin `isConvexSpace`, structure `ConvexSpace`, notations `convType`,
     `_ <| _ |> _`
-  + lemmas `conv1`, `second_derivative_convexf_pt`
+  + lemmas `conv1`, `second_derivative_convex`
+
 
 ### Changed
 

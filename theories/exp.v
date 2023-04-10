@@ -5,6 +5,7 @@ From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import mathcomp_extra.
 Require Import reals ereal nsatz_realtype.
 Require Import signed topology normedtype landau sequences derive realfun.
+Require Import itv convex.
 
 (******************************************************************************)
 (*               Theory of exponential/logarithm functions                    *)
@@ -349,6 +350,9 @@ Qed.
 Lemma derivable_expR x : derivable expR x 1.
 Proof. by apply: ex_derive; apply: is_derive_exp. Qed.
 
+Lemma derive_expR : 'D_1 expR = expR :> (R -> R).
+Proof. by apply/funext => r /=; rewrite derive_val. Qed.
+
 Lemma continuous_expR : continuous (@expR R).
 Proof.
 by move=> x; exact/differentiable_continuous/derivable1_diffP/derivable_expR.
@@ -463,6 +467,18 @@ case: (lerP 1 x) => [/expR_total_gt1[y [_ _ Hy]]|x_lt1 x_gt0].
 have /expR_total_gt1[y [H1y H2y H3y]] : 1 <= x^-1 by rewrite ltW // !invf_cp1.
 by exists (-y); rewrite expRN H3y invrK.
 Qed.
+
+Local Open Scope convex_scope.
+Lemma convex_expR (t : {i01 R}) (a b : R^o) : a <= b ->
+  expR (a <| t |> b) <= (expR a : R^o) <| t |> (expR b : R^o).
+Proof.
+move=> ab; apply: second_derivative_convex => //.
+- by move=> x axb; rewrite derive_expR derive_val expR_ge0.
+- exact/cvg_at_left_filter/continuous_expR.
+- exact/cvg_at_right_filter/continuous_expR.
+- by move=> z zab; rewrite derive_expR; exact: derivable_expR.
+Qed.
+Local Close Scope convex_scope.
 
 End expR.
 

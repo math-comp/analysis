@@ -136,7 +136,6 @@ End realDomainType_convex_space.
 Section twice_derivable_convex.
 Context {R : realType}.
 Variables (f : R -> R^o) (a b : R^o).
-Hypothesis ab : a < b.
 
 Let Df := 'D_1 f.
 Let DDf := 'D_1 Df.
@@ -147,19 +146,19 @@ Hypothesis cvg_right : (f @ a^'+) --> f a.
 
 Let L x := f a + factor a b x * (f b - f a).
 
-Let LE x : L x = factor b a x * f a + factor a b x * f b.
+Let LE x : a < b -> L x = factor b a x * f a + factor a b x * f b.
 Proof.
-rewrite /L -(@onem_factor _ a) ?lt_eqF// /onem mulrBl mul1r.
+move=> ab; rewrite /L -(@onem_factor _ a) ?lt_eqF// /onem mulrBl mul1r.
 by rewrite -addrA -mulrN -mulrDr (addrC (f b)).
 Qed.
 
-Let convexf_ptP : (forall x, a <= x <= b -> 0 <= L x - f x) ->
+Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
   forall t, f (a <| t |> b) <= f a <| t |> f b.
 Proof.
-move=> h t; set x := a <| t |> b; have /h : a <= x <= b.
+move=> ab h t; set x := a <| t |> b; have /h : a <= x <= b.
   by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= itv_ge0/=.
 rewrite subr_ge0 => /le_trans; apply.
-by rewrite LE /x line_pathK ?lt_eqF// convC line_pathK ?gt_eqF.
+by rewrite LE// /x line_pathK ?lt_eqF// convC line_pathK ?gt_eqF.
 Qed.
 
 Hypothesis HDf : {in `]a, b[, forall x, derivable f x 1}.
@@ -168,10 +167,11 @@ Hypothesis HDDf : {in `]a, b[, forall x, derivable Df x 1}.
 Let cDf : {within `]a, b[, continuous Df}.
 Proof. by apply: derivable_within_continuous => z zab; exact: HDDf. Qed.
 
-Lemma second_derivative_convexf_pt (t : {i01 R}) :
+Lemma second_derivative_convex (t : {i01 R}) : a <= b ->
   f (a <| t |> b) <= f a <| t |> f b.
 Proof.
-apply/convexf_ptP => x /andP[].
+rewrite le_eqVlt => /predU1P[<-|/[dup] ab]; first by rewrite !convmm.
+move/convexf_ptP; apply => x /andP[].
 rewrite le_eqVlt => /predU1P[<-|ax].
   by rewrite /L factorl mul0r addr0 subrr.
 rewrite le_eqVlt => /predU1P[->|xb].
