@@ -3203,38 +3203,38 @@ Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
 
 Lemma ae_eq_comp (j : \bar R -> \bar R) f g :
   ae_eq f g -> ae_eq (j \o f) (j \o g).
-Proof. by apply: ae_imply => x /[apply] /= ->. Qed.
+Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
 Lemma ae_eq_funeposneg f g : ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
 Proof.
 split=> [fg|[]].
-  by rewrite /funepos /funeneg; split; apply: ae_imply fg => x /[apply] ->.
-apply: ae_imply2 => x + + Dx => /(_ Dx) fg /(_ Dx) gf.
+  by rewrite /funepos /funeneg; split; apply: filterS fg => x /[apply] ->.
+apply: filterS2 => x + + Dx => /(_ Dx) fg /(_ Dx) gf.
 by rewrite (funeposneg f) (funeposneg g) fg gf.
 Qed.
 
 Lemma ae_eq_refl f : ae_eq f f. Proof. exact/aeW. Qed.
 
 Lemma ae_eq_sym f g : ae_eq f g -> ae_eq g f.
-Proof. by apply: ae_imply => x + Dx => /(_ Dx). Qed.
+Proof. by apply: filterS => x + Dx => /(_ Dx). Qed.
 
 Lemma ae_eq_trans f g h : ae_eq f g -> ae_eq g h -> ae_eq f h.
-Proof. by apply: ae_imply2 => x + + Dx => /(_ Dx) ->; exact. Qed.
+Proof. by apply: filterS2 => x + + Dx => /(_ Dx) ->; exact. Qed.
 
 Lemma ae_eq_sub f g h i : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
-Proof. by apply: ae_imply2 => x + + Dx => /(_ Dx) -> /(_ Dx) ->. Qed.
+Proof. by apply: filterS2 => x + + Dx => /(_ Dx) -> /(_ Dx) ->. Qed.
 
 Lemma ae_eq_mul2r f g h : ae_eq f g -> ae_eq (f \* h) (g \* h).
-Proof. by apply: ae_imply => x /[apply] ->. Qed.
+Proof. by apply: filterS => x /[apply] ->. Qed.
 
 Lemma ae_eq_mul2l f g h : ae_eq f g -> ae_eq (h \* f) (h \* g).
-Proof. by apply: ae_imply => x /[apply] ->. Qed.
+Proof. by apply: filterS => x /[apply] ->. Qed.
 
 Lemma ae_eq_mul1l f g : ae_eq f (cst 1) -> ae_eq g (g \* f).
-Proof. by apply: ae_imply => x /[apply] ->; rewrite mule1. Qed.
+Proof. by apply: filterS => x /[apply] ->; rewrite mule1. Qed.
 
 Lemma ae_eq_abse f g : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
-Proof. by apply: ae_imply => x /[apply] /= ->. Qed.
+Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
 End ae_eq.
 
@@ -3605,7 +3605,7 @@ transitivity (\int[mu]_(x in D) (EFin \o (g1 \+ g2)%R) x).
   - by apply: emeasurable_funD => //; [case: if1|case: if2].
   - rewrite (_ : _ \o _ = (EFin \o g1) \+ (EFin \o g2))//.
     by apply: emeasurable_funD => //; [case: ig1|case: ig2].
-  - apply: (ae_imply2 _ (integrable_ae mD if1) (integrable_ae mD if2)).
+  - apply: (filterS2 _ _ (integrable_ae mD if1) (integrable_ae mD if2)).
     move=> x + + Dx => /(_ Dx) f1fin /(_ Dx) f2fin /=.
     rewrite EFinD /g1 /g2 /restrict /=; have [|] := boolP (x \in A `&` B).
       by rewrite in_setI => /andP[xA xB] /=; rewrite !fineK.
@@ -3614,13 +3614,13 @@ transitivity (\int[mu]_(x in D) (EFin \o (g1 \+ g2)%R) x).
 - rewrite (_ : _ \o _ = (EFin \o g1) \+ (EFin \o g2))// integralD_EFin//.
   congr (_ + _).
   + apply: ae_eq_integral => //; [by case: ig1|by case: if1|].
-  - apply: (ae_imply2 _ (integrable_ae mD if1) (integrable_ae mD if2)).
+  - apply: (filterS2 _ _ (integrable_ae mD if1) (integrable_ae mD if2)).
     move=> x + + Dx => /(_ Dx) f1fin /(_ Dx) f2fin /=; rewrite /g1 /restrict /=.
     have [/=|] := boolP (x \in A `&` B); first by rewrite fineK.
     by rewrite in_setI negb_and => /orP[|];
       rewrite in_setI negb_and /= (mem_set Dx) /= notin_set/=.
   + apply: ae_eq_integral => //;[by case: ig2|by case: if2|].
-    apply: (ae_imply2 _ (integrable_ae mD if1) (integrable_ae mD if2)).
+    apply: (filterS2 _ _ (integrable_ae mD if1) (integrable_ae mD if2)).
     move=> x + + Dx => /(_ Dx) f1fin /(_ Dx) f2fin /=; rewrite /g2 /restrict /=.
     have [/=|] := boolP (x \in A `&` B); first by rewrite fineK.
     by rewrite in_setI negb_and => /orP[|];
@@ -4759,7 +4759,7 @@ have : m1.-integrable setT (fun x => \int[m2]_y `|f (x, y)|).
   - exact: measurable_funT_comp.
   - by move=> *; exact: integral_ge0.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
-move/integrable_ae => /(_ measurableT); apply: ae_imply => x /= /(_ I) im2f.
+move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
 by split; [exact/measurable_fun_prod1|by move/fin_numPlt : im2f => /andP[]].
 Qed.
 
@@ -4771,7 +4771,7 @@ have : m2.-integrable setT (fun y => \int[m1]_x `|f (x, y)|).
   - exact: measurable_funT_comp.
   - by move=> *; exact: integral_ge0.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
-move/integrable_ae => /(_ measurableT); apply: ae_imply => x /= /(_ I) im2f.
+move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
 by split; [exact/measurable_fun_prod2|move/fin_numPlt : im2f => /andP[]].
 Qed.
 
