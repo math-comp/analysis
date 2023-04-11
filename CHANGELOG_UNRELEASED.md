@@ -91,6 +91,9 @@
   + new lemmas `iter_split_ent`, `gauge_ent`, `gauge_filter`, 
     `gauge_refl`, `gauge_inv`, `gauge_split`, `gauge_countable_uniformity`, and 
     `uniform_pseudometric_sup`.
+  + new definitions `discrete_ent`, `discrete_uniformType`, `discrete_ball`, 
+    `discrete_pseudoMetricType`, and `pseudoMetric_bool`.
+  + new lemmas `finite_compact`, and `discrete_ball_center`.
 
 ### Changed
 
