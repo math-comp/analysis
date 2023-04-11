@@ -5416,6 +5416,20 @@ exact/Fcauchy/entourage_ball.
 Unshelve. all: by end_near. Qed.
 Arguments cauchyP {R T} F {PF}.
 
+Lemma compact_cauchy_cvg {T : uniformType} (U : set T) (F : set (set T)) :
+  ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
+Proof.
+move=> PF cf FU /(_ F PF FU) [x [? clFx]]. 
+suff /cvg_closeP [+ _] : F --> x by exact.
+apply/cvg_entourageP => E entE; have /= := cf (split_ent E); case.
+  by rewrite nbhs_simpl.
+case=> [D1 D2] /=; rewrite nbhs_simpl; case => FD1 FD2 D1D2E.
+have [| z [] Dz Exz] := clFx _ (to_set (split_ent E) x) FD1. 
+  exact: nbhs_entourage.
+near=> t; apply: entourage_split => //; first exact: Exz.
+by apply: D1D2E; split => //=; near: t.
+Unshelve. all: by end_near. Qed.
+
 Module CompletePseudoMetric.
 Section ClassDef.
 Variable R : numDomainType.
