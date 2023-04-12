@@ -133,6 +133,29 @@
 - in `functions.v`:
   + `IsFun` -> `isFun`
 
+- in `set_interval.v`:
+  + `conv` -> `line_path`
+  + `conv_id` -> `line_path_id`
+  + `ndconv` -> `ndline_path`
+  + `convEl` -> `line_pathEl`
+  + `convEr` -> `line_pathEr`
+  + `conv10` -> `line_path10`
+  + `conv0` -> `line_path0`
+  + `conv1` -> `line_path1`
+  + `conv_sym` -> `line_path_sym`
+  + `conv_flat` -> `line_path_flat`
+  + `leW_conv` -> `leW_line_path`
+  + `ndconvE` -> `ndline_pathE`
+  + `convK` -> `line_pathK`
+  + `conv_inj` -> `line_path_inj`
+  + `conv_bij` -> `line_path_bij`
+  + `le_conv` -> `le_line_path`
+  + `lt_conv` -> `lt_line_path`
+  + `conv_itv_bij` -> `line_path_itv_bij`
+  + `mem_conv_itv` -> `mem_line_path_itv`
+  + `mem_conv_itvcc` -> `mem_line_path_itvcc`
+  + `range_conv` -> `range_line_path`
+
 ### Generalized
 
 ### Deprecated

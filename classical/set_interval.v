@@ -10,7 +10,9 @@ From HB Require Import structures.
 (*                         when the support type is a numFieldType, this      *)
 (*                         is equivalent to (i.1 < i.2)%O (lemma neitvE)      *)
 (*   set_itv_infty_set0 == multirule to simplify empty intervals              *)
-(*         conv, ndconv == convexity operator                                 *)
+(*      line_path a b t := (1 - t) * a + t * b, convexity operator over a     *)
+(*                         numDomainType                                      *)
+(*          ndline_path == line_path a b with the constraint that a < b       *)
 (*         factor a b x := (x - a) / (b - a)                                  *)
 (*             set_itvE == multirule to turn intervals into inequalities      *)
 (*     disjoint_itv i j == intervals i and j are disjoint                     *)
@@ -330,44 +332,46 @@ Proof. by rewrite set_itv_splitI/= setDE setCitvr. Qed.
 
 End set_itv_porderType.
 
-Section conv_factor_numDomainType.
+Section line_path_factor_numDomainType.
 Variable R : numDomainType.
 Implicit Types (a b t r : R) (A : set R).
 
 Lemma mem_1B_itvcc t : (1 - t \in `[0, 1]) = (t \in `[0, 1]).
 Proof. by rewrite !in_itv/= subr_ge0 ger_addl oppr_le0 andbC. Qed.
 
-Definition conv a b t : R := (1 - t) * a + t * b.
+Definition line_path a b t : R := (1 - t) * a + t * b.
 
-Lemma conv_id : conv 0 1 = id.
-Proof. by apply/funext => t; rewrite /conv mulr0 add0r mulr1. Qed.
+Lemma line_path_id : line_path 0 1 = id.
+Proof. by apply/funext => t; rewrite /line_path mulr0 add0r mulr1. Qed.
 
-Lemma convEl a b t : conv a b t = t * (b - a) + a.
-Proof. by rewrite /conv mulrBl mul1r mulrBr addrAC [RHS]addrC addrA. Qed.
+Lemma line_pathEl a b t : line_path a b t = t * (b - a) + a.
+Proof. by rewrite /line_path mulrBl mul1r mulrBr addrAC [RHS]addrC addrA. Qed.
 
-Lemma convEr a b t : conv a b t = (1 - t) * (a - b) + b.
+Lemma line_pathEr a b t : line_path a b t = (1 - t) * (a - b) + b.
 Proof.
-rewrite /conv mulrBr -addrA; congr (_ + _).
+rewrite /line_path mulrBr -addrA; congr (_ + _).
 by rewrite mulrBl opprB mul1r addrNK.
 Qed.
 
-Lemma conv10 t : conv 1 0 t = 1 - t.
-Proof. by rewrite /conv mulr0 addr0 mulr1. Qed.
+Lemma line_path10 t : line_path 1 0 t = 1 - t.
+Proof. by rewrite /line_path mulr0 addr0 mulr1. Qed.
 
-Lemma conv0 a b : conv a b 0 = a.
-Proof. by rewrite /conv subr0 mul1r mul0r addr0. Qed.
+Lemma line_path0 a b : line_path a b 0 = a.
+Proof. by rewrite /line_path subr0 mul1r mul0r addr0. Qed.
 
-Lemma conv1 a b : conv a b 1 = b.
-Proof. by rewrite /conv subrr mul0r add0r mul1r. Qed.
+Lemma line_path1 a b : line_path a b 1 = b.
+Proof. by rewrite /line_path subrr mul0r add0r mul1r. Qed.
 
-Lemma conv_sym a b t : conv a b t = conv b a (1 - t).
-Proof. by rewrite /conv opprB addrCA subrr addr0 addrC. Qed.
+Lemma line_path_sym a b t : line_path a b t = line_path b a (1 - t).
+Proof. by rewrite /line_path opprB addrCA subrr addr0 addrC. Qed.
 
-Lemma conv_flat a : conv a a = cst a.
-Proof. by apply/funext => t; rewrite convEl subrr mulr0 add0r. Qed.
+Lemma line_path_flat a : line_path a a = cst a.
+Proof. by apply/funext => t; rewrite line_pathEl subrr mulr0 add0r. Qed.
 
-Lemma leW_conv a b : a <= b -> {homo conv a b : x y / x <= y}.
-Proof. by move=> ? ? ? ?; rewrite !convEl ler_add ?ler_wpmul2r// subr_ge0. Qed.
+Lemma leW_line_path a b : a <= b -> {homo line_path a b : x y / x <= y}.
+Proof.
+by move=> ? ? ? ?; rewrite !line_pathEl ler_add ?ler_wpmul2r// subr_ge0.
+Qed.
 
 Definition factor a b x := (x - a) / (b - a).
 
@@ -382,51 +386,56 @@ Proof. by apply/funext => x; rewrite /factor subrr invr0 mulr0. Qed.
 Lemma factorl a b : factor a b a = 0.
 Proof. by rewrite /factor subrr mul0r. Qed.
 
-Definition ndconv a b of a < b := conv a b.
+Definition ndline_path a b of a < b := line_path a b.
 
-Lemma ndconvE a b (ab : a < b) : ndconv ab = conv a b. Proof. by []. Qed.
+Lemma ndline_pathE a b (ab : a < b) : ndline_path ab = line_path a b.
+Proof. by []. Qed.
 
-End conv_factor_numDomainType.
+End line_path_factor_numDomainType.
 
-Section conv_factor_numFieldType.
+Section line_path_factor_numFieldType.
 Variable R : numFieldType.
 Implicit Types (a b t r : R) (A : set R).
 
 Lemma factorr a b : a != b -> factor a b b = 1.
 Proof. by move=> Nab; rewrite /factor divff// subr_eq0 eq_sym. Qed.
 
-Lemma factorK a b : a != b -> cancel (factor a b) (conv a b).
-Proof. by move=> ? x; rewrite convEl mulfVK ?addrNK// subr_eq0 eq_sym. Qed.
+Lemma factorK a b : a != b -> cancel (factor a b) (line_path a b).
+Proof. by move=> ? x; rewrite line_pathEl mulfVK ?addrNK// subr_eq0 eq_sym. Qed.
 
-Lemma convK a b : a != b -> cancel (conv a b) (factor a b).
-Proof. by move=> ? x; rewrite /factor convEl addrK mulfK// subr_eq0 eq_sym. Qed.
+Lemma line_pathK a b : a != b -> cancel (line_path a b) (factor a b).
+Proof.
+by move=> ? x; rewrite /factor line_pathEl addrK mulfK// subr_eq0 eq_sym.
+Qed.
 
-Lemma conv_inj a b : a != b -> injective (conv a b).
-Proof. by move/convK/can_inj. Qed.
+Lemma line_path_inj a b : a != b -> injective (line_path a b).
+Proof. by move/line_pathK/can_inj. Qed.
 
 Lemma factor_inj a b : a != b -> injective (factor a b).
 Proof. by move/factorK/can_inj. Qed.
 
-Lemma conv_bij a b : a != b -> bijective (conv a b).
-Proof. by move=> ab; apply: Bijective (convK ab) (factorK ab). Qed.
+Lemma line_path_bij a b : a != b -> bijective (line_path a b).
+Proof. by move=> ab; apply: Bijective (line_pathK ab) (factorK ab). Qed.
 
 Lemma factor_bij a b : a != b -> bijective (factor a b).
-Proof. by move=> ab; apply: Bijective (factorK ab) (convK ab). Qed.
+Proof. by move=> ab; apply: Bijective (factorK ab) (line_pathK ab). Qed.
 
-Lemma le_conv a b : a < b -> {mono conv a b : x y / x <= y}.
+Lemma le_line_path a b : a < b -> {mono line_path a b : x y / x <= y}.
 Proof.
 move=> ltab; have leab := ltW ltab.
-by apply: homo_mono (convK _) (leW_factor _) (leW_conv _); rewrite // lt_eqF.
+apply: homo_mono (line_pathK _) (leW_factor _) (leW_line_path _) => //.
+by rewrite lt_eqF.
 Qed.
 
 Lemma le_factor a b : a < b -> {mono factor a b : x y / x <= y}.
 Proof.
 move=> ltab; have leab := ltW ltab.
-by apply: homo_mono (factorK _) (leW_conv _) (leW_factor _); rewrite // lt_eqF.
+apply: homo_mono (factorK _) (leW_line_path _) (leW_factor _) => //.
+by rewrite lt_eqF.
 Qed.
 
-Lemma lt_conv a b : a < b -> {mono conv a b : x y / x < y}.
-Proof. by move/le_conv/leW_mono. Qed.
+Lemma lt_line_path a b : a < b -> {mono line_path a b : x y / x < y}.
+Proof. by move/le_line_path/leW_mono. Qed.
 
 Lemma lt_factor a b : a < b -> {mono factor a b : x y / x < y}.
 Proof. by move/le_factor/leW_mono. Qed.
@@ -434,16 +443,17 @@ Proof. by move/le_factor/leW_mono. Qed.
 Let ltNeq a b : a < b -> a != b. Proof. by move=> /lt_eqF->. Qed.
 
 HB.instance Definition _ a b (ab : a < b) :=
-  @Can2.Build _ _ setT setT (ndconv ab) (factor a b)
+  @Can2.Build _ _ setT setT (ndline_path ab) (factor a b)
     (fun _ _ => I) (fun _ _ => I)
-    (in1W (convK (ltNeq ab))) (in1W (factorK (ltNeq ab))).
+    (in1W (line_pathK (ltNeq ab))) (in1W (factorK (ltNeq ab))).
 
-Lemma conv_itv_bij ba bb a b : a < b ->
+Lemma line_path_itv_bij ba bb a b : a < b ->
   set_bij [set` Interval (BSide ba 0) (BSide bb 1)]
-          [set` Interval (BSide ba a) (BSide bb b)] (conv a b).
+          [set` Interval (BSide ba a) (BSide bb b)] (line_path a b).
 Proof.
-move=> ltab; rewrite -ndconvE; apply: bij_subr => //=; rewrite setTI ?ndconvE.
-apply/predeqP => t /=; rewrite !in_itv/= {1}convEl convEr.
+move=> ltab; rewrite -ndline_pathE.
+apply: bij_subr => //=; rewrite setTI ?ndline_pathE.
+apply/predeqP => t /=; rewrite !in_itv/= {1}line_pathEl line_pathEr.
 rewrite -lteif_subl_addr subrr -lteif_pdivr_mulr ?subr_gt0// mul0r.
 rewrite -lteif_subr_addr subrr -lteif_ndivr_mulr ?subr_lt0// mul0r.
 by rewrite lteif_subr_addl addr0.
@@ -453,32 +463,32 @@ Lemma factor_itv_bij ba bb a b : a < b ->
   set_bij [set` Interval (BSide ba a) (BSide bb b)]
           [set` Interval (BSide ba 0) (BSide bb 1)] (factor a b).
 Proof.
-move=> ltab; have -> : factor a b = (ndconv ltab)^-1%FUN by [].
-by apply/splitbij_sub_sym => //; apply: conv_itv_bij.
+move=> ltab; have -> : factor a b = (ndline_path ltab)^-1%FUN by [].
+by apply/splitbij_sub_sym => //; apply: line_path_itv_bij.
 Qed.
 
-Lemma mem_conv_itv ba bb a b : a < b ->
+Lemma mem_line_path_itv ba bb a b : a < b ->
   set_fun [set` Interval (BSide ba 0) (BSide bb 1)]
-          [set` Interval (BSide ba a) (BSide bb b)] (conv a b).
-Proof. by case/(conv_itv_bij ba bb). Qed.
+          [set` Interval (BSide ba a) (BSide bb b)] (line_path a b).
+Proof. by case/(line_path_itv_bij ba bb). Qed.
 
-Lemma mem_conv_itvcc a b : a <= b -> set_fun `[0, 1] `[a, b] (conv a b).
+Lemma mem_line_path_itvcc a b : a <= b -> set_fun `[0, 1] `[a, b] (line_path a b).
 Proof.
-rewrite le_eqVlt => /predU1P[<-|]; first by rewrite set_itv1 conv_flat.
-by move=> lt_ab; case: (conv_itv_bij true false lt_ab).
+rewrite le_eqVlt => /predU1P[<-|]; first by rewrite set_itv1 line_path_flat.
+by move=> lt_ab; case: (line_path_itv_bij true false lt_ab).
 Qed.
 
-Lemma range_conv ba bb a b : a < b ->
-   conv a b @` [set` Interval (BSide ba 0) (BSide bb 1)] =
+Lemma range_line_path ba bb a b : a < b ->
+   line_path a b @` [set` Interval (BSide ba 0) (BSide bb 1)] =
                [set` Interval (BSide ba a) (BSide bb b)].
-Proof. by move=> /(conv_itv_bij ba bb)/Pbij[f ->]; rewrite image_eq. Qed.
+Proof. by move=> /(line_path_itv_bij ba bb)/Pbij[f ->]; rewrite image_eq. Qed.
 
 Lemma range_factor ba bb a b : a < b ->
    factor a b @` [set` Interval (BSide ba a) (BSide bb b)] =
                  [set` Interval (BSide ba 0) (BSide bb 1)].
 Proof. by move=> /(factor_itv_bij ba bb)/Pbij[f ->]; rewrite image_eq. Qed.
 
-End conv_factor_numFieldType.
+End line_path_factor_numFieldType.
 
 Lemma mem_factor_itv (R : realFieldType) ba bb (a b : R) :
   set_fun [set` Interval (BSide ba a) (BSide bb b)]
