@@ -3308,10 +3308,9 @@ End Covers.
 Lemma finite_compact {X : topologicalType} (A : set X) :
   finite_set A -> compact A.
 Proof.
-case/finite_setP=> n; elim: n A.
-  move=> A; rewrite II0 card_eq0 => /eqP ->; exact: compact0.
-move=> n IHn A /eq_cardSP [] x Ax /IHn ?; rewrite -(setD1K Ax).
-by apply: compactU => //; exact: compact_set1.
+case/finite_setP=> n; elim: n A => [A|n ih A /eq_cardSP[x Ax /ih ?]].
+  by rewrite II0 card_eq0 => /eqP ->; exact: compact0.
+by rewrite -(setD1K Ax); apply: compactU => //; exact: compact_set1.
 Qed.
 
 Section separated_topologicalType.
@@ -4637,8 +4636,8 @@ Section discrete_uniform.
 
 Context {T : topologicalType} {dsc: discrete_space T}.
 
-Definition discrete_ent : (set (set (T * T))) :=
-  globally ((fun x : T => (x, x)) @` [set: T]).
+Definition discrete_ent : set (set (T * T)) :=
+  globally (range (fun x => (x, x))).
 
 Program Definition discrete_uniform_mixin :=
   @UniformMixin T nbhs discrete_ent _ _ _ _ _.
@@ -4646,16 +4645,16 @@ Next Obligation.
 by move=> ? + x x12; apply; exists x.1; rewrite // {2}x12 -surjective_pairing.
 Qed.
 Next Obligation.
-by move=> ? dA x [i _ <-]; apply: dA; exists i. 
+by move=> ? dA x [i _ <-]; apply: dA; exists i.
 Qed.
 Next Obligation.
-move=> ? dA; exists ((fun x : T => (x,x)) @` [set: T]) => //.
+move=> ? dA; exists (range (fun x => (x, x))) => //.
 by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
 Qed.
 Next Obligation.
-rewrite dsc predeq2E => x V; split.
-  move=> Px; exists (range (fun x : T => (x,x))) => //.
-  by move=> z [i _] /pair_equal_spec [+ <-] => ->; exact/principal_filterP.
+rewrite dsc predeq2E => x V; split => [].
+  move=> Px; exists (range (fun x => (x, x))) => //.
+  by move=> z [i _] [+ <-] => ->; exact/principal_filterP.
 by case=> U dV UV; apply/principal_filterP/UV/dV; exists x.
 Qed.
 
@@ -5173,6 +5172,7 @@ End quotients.
 
 Section discrete_pseudoMetric.
 Context {R : numDomainType} {T : topologicalType} {dsc : discrete_space T}.
+
 Definition discrete_ball (x : T) (eps : R) y : Prop := x = y.
 
 Lemma discrete_ball_center x (eps : R) : 0 < eps -> discrete_ball x eps x.
@@ -5183,14 +5183,13 @@ Program Definition discrete_pseudoMetricType_mixin :=
 Next Obligation. by done. Qed.
 Next Obligation. by move=> ? ? ? ->. Qed.
 Next Obligation. by move=> ? ? ? ? ? -> ->. Qed.
-Next Obligation. 
-rewrite predeqE => P; split; last first.
-  by case=> e _ subP [a b] [i _] /pair_equal_spec [-> ->]; apply: subP. 
-move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //=.
+Next Obligation.
+rewrite predeqE => P; split; last by case=> e _ + [a b] [i _] [-> ->]; apply.
+move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //.
 by rewrite {2}z12 -surjective_pairing.
 Qed.
 
-Definition discrete_pseudoMetricType := PseudoMetricType 
+Definition discrete_pseudoMetricType := PseudoMetricType
   (@discrete_uniformType _ dsc) discrete_pseudoMetricType_mixin.
 
 End discrete_pseudoMetric.
@@ -5419,15 +5418,13 @@ Arguments cauchyP {R T} F {PF}.
 Lemma compact_cauchy_cvg {T : uniformType} (U : set T) (F : set (set T)) :
   ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
 Proof.
-move=> PF cf FU /(_ F PF FU) [x [? clFx]]. 
-suff /cvg_closeP [+ _] : F --> x by exact.
-apply/cvg_entourageP => E entE; have /= := cf (split_ent E); case.
-  by rewrite nbhs_simpl.
-case=> [D1 D2] /=; rewrite nbhs_simpl; case => FD1 FD2 D1D2E.
-have [| z [] Dz Exz] := clFx _ (to_set (split_ent E) x) FD1. 
-  exact: nbhs_entourage.
-near=> t; apply: entourage_split => //; first exact: Exz.
-by apply: D1D2E; split => //=; near: t.
+move=> PF cf FU /(_ F PF FU) [x [_ clFx]]; apply: (cvgP x).
+apply/cvg_entourageP => E entE.
+have : nbhs entourage (split_ent E) by rewrite nbhs_filterE.
+move=> /(cf (split_ent E))[] [D1 D2]/= /[!nbhs_simpl] -[FD1 FD2 D1D2E].
+have : nbhs x to_set (split_ent E) x by exact: nbhs_entourage.
+move=> /(clFx _ (to_set (split_ent E) x) FD1)[z [Dz Exz]].
+by near=> t; apply/(entourage_split z entE Exz)/D1D2E; split => //; near: t.
 Unshelve. all: by end_near. Qed.
 
 Module CompletePseudoMetric.
