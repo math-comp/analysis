@@ -122,3 +122,5 @@ theories/gauss_integral.v
 theories/showcase/summability.v
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
+theories/prob_lang.v
+theories/prob_lang_wip.v
