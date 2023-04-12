@@ -7266,7 +7266,7 @@ End UniformPointwise.
 
 Section gauges.
 
-Definition split_sym {T : uniformType} (W : set (T * T)) :=
+Let split_sym {T : uniformType} (W : set (T * T)) :=
   (split_ent W) `&` (split_ent W)^-1.
 
 Section entourage_gauge.
