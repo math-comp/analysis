@@ -3825,10 +3825,10 @@ Lemma totally_disconnected_cvg {T : topologicalType} (x : T) :
   filter_from [set D : set T | D x /\ clopen D] id --> x.
 Proof.
 pose F := filter_from [set D : set T | D x /\ clopen D] id.
-have PF : ProperFilter F.
-  apply: filter_from_proper; last by move=> ? [? _]; exists x.
+have FF : Filter F.
   apply: filter_from_filter; first by exists setT; split => //; exact: clopenT.
   by move=> A B [? ?] [? ?]; exists (A `&` B) => //; split=> //; exact: clopenI.
+have PF : ProperFilter F by apply: filter_from_proper; move=> ? [? _]; exists x.
 move=> hsdfT zdT cmpT U Ux; rewrite nbhs_simpl -/F.
 wlog oU : U Ux / open U.
   move: Ux; rewrite /= nbhsE => -[] V [? ?] /filterS + /(_ V) P.
