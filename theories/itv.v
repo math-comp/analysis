@@ -843,6 +843,9 @@ Lemma inum_lt : {mono inum : x y / (x < y)%O}. Proof. by []. Qed.
 
 End Morph.
 
+Canonical onem_itv01 {R : realDomainType} (p : {i01 R}) : {i01 R} :=
+  @Itv.mk _ _ (onem p%:inum) [itv of 1 - p%:inum].
+
 Section Test1.
 
 Variable R : numDomainType.
@@ -882,8 +885,6 @@ apply/val_inj => /=.
 by rewrite subr0 mulr1 opprB addrCA subrr addr0.
 Qed.
 
-Canonical onem_itv01 (p : {i01 R}) : {i01 R} :=
-  @Itv.mk _ _ (onem p%:inum) [itv of 1 - p%:inum].
 
 Definition s_of_pq' (p q : {i01 R}) : {i01 R} :=
   (`1- (`1-(p%:inum) * `1-(q%:inum)))%:i01.
