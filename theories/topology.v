@@ -245,7 +245,7 @@ Require Import reals signed.
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
 (*                                     if P is convertible to G (globally A)  *)
 (*              quotient_topology Q == the quotient topology corresponding to *)
-(*                                     quotient Q : quotType T. where T has   *)
+(*                                     quotient Q : quotType T where T has    *)
 (*                                     type topologicalType                   *)
 (*                                                                            *)
 (* * Function space topologies :                                              *)
