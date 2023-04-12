@@ -56,6 +56,8 @@ theories/charge.v
 theories/kernel.v
 theories/showcase/uniform_bigO.v
 theories/showcase/summability.v
+theories/prob_lang.v
+theories/prob_lang_wip.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
