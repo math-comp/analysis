@@ -250,6 +250,9 @@ Require Import reals signed.
 (*                                                                            *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
 (*                                     if P is convertible to G (globally A)  *)
+(*              quotient_topology Q == the quotient topology corresponding to *)
+(*                                     quotient Q : quotType T where T has    *)
+(*                                     type topologicalType                   *)
 (*                                                                            *)
 (* * Function space topologies :                                              *)
 (*     {uniform` A -> V} == The space U -> V, equipped with the topology of   *)
@@ -296,6 +299,12 @@ Require Import reals signed.
 (*                sup_uniformType == the uniform space for sup topologies     *)
 (*         countable_uniformity T == T's entourage has a countable base. This *)
 (*                                   is equivalent to `T` being metrizable    *)
+(*                        gauge E == For an entourage E, gauge E is a filter  *)
+(*                                   which includes `iter n split_ent E`.     *)
+(*                                   Critically, `gauge E` forms a uniform    *)
+(*                                   space with a countable uniformity        *)
+(*       gauge_psuedoMetricType E == the pseudoMetricType associated with the *)
+(*                                   `gauge E`                                *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
 (*                entourage_ ball == entourages defined using balls           *)
@@ -322,9 +331,6 @@ Require Import reals signed.
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
 (*          weak_pseudoMetricType == the metric space for weak topologies     *)
-(*            quotient_topology Q == the quotient topology corresponding to   *)
-(*                                   quotient Q : quotType T. where T has     *)
-(*                                   type topologicalType                     *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -6777,6 +6783,105 @@ by move=> A [x _ <-]; exact: compact_set1.
 Qed.
 
 End UniformPointwise.
+
+Section gauges.
+
+Let split_sym {T : uniformType} (W : set (T * T)) :=
+  (split_ent W) `&` (split_ent W)^-1.
+
+Section entourage_gauge.
+Context {T : uniformType} (E : set (T * T)) (entE : entourage E).
+
+Definition gauge :=
+  filter_from [set: nat] (fun n => iter n split_sym (E `&` E^-1)).
+
+Lemma iter_split_ent j : entourage (iter j split_sym (E `&` E^-1)).
+Proof. by elim: j => [|i IH]; exact: filterI. Qed.
+
+Lemma gauge_ent A : gauge A -> entourage A.
+Proof.
+case=> n; elim: n A; first by move=> ? _ /filterS; apply; apply: filterI.
+by move=> n ? A _ /filterS; apply; apply: filterI; have ? := iter_split_ent n.
+Qed.
+
+Lemma gauge_filter : Filter gauge.
+Proof.
+apply: filter_from_filter; first by exists 0%N.
+move=> i j _ _; wlog ilej : i j / (i <= j)%N.
+  by move=> WH; have [|/ltnW] := leqP i j;
+    [|rewrite (setIC (iter _ _ _))]; exact: WH.
+exists j => //; rewrite subsetI; split => //; elim: j i ilej => [i|j IH i].
+  by rewrite leqn0 => /eqP ->.
+rewrite leq_eqVlt => /predU1P[<-//|/ltnSE/IH]; apply: subset_trans.
+by move=> x/= [jx _]; apply: split_ent_subset => //; exact: iter_split_ent.
+Qed.
+
+Lemma gauge_refl A : gauge A -> [set fg | fg.1 = fg.2] `<=` A.
+Proof.
+case=> n _; apply: subset_trans => -[_ a]/= ->.
+by apply: entourage_refl; exact: iter_split_ent.
+Qed.
+
+Lemma gauge_inv A : gauge A -> gauge (A^-1)%classic.
+Proof.
+case=> n _ EA; apply: (@filterS _ _ _ (iter n split_sym (E `&` E^-1))).
+- exact: gauge_filter.
+- by case: n EA; last move=> n; move=> EA [? ?] [/=] ? ?; exact: EA.
+- by exists n .
+Qed.
+
+Lemma gauge_split A : gauge A -> exists2 B, gauge B & B \; B `<=` A.
+Proof.
+case => n _ EA; exists (iter n.+1 split_sym (E `&` E^-1)); first by exists n.+1.
+apply: subset_trans EA; apply: subset_trans; first last.
+  by apply: subset_split_ent; exact: iter_split_ent.
+by case=> a c [b] [] ? ? [] ? ?; exists b.
+Qed.
+
+Definition gauge_uniformType_mixin :=
+ UniformMixin gauge_filter gauge_refl gauge_inv gauge_split erefl.
+
+Definition gauge_topologicalTypeMixin :=
+  topologyOfEntourageMixin gauge_uniformType_mixin.
+
+Definition gauge_filtered := FilteredType T T (nbhs_ gauge).
+Definition gauge_topologicalType :=
+  TopologicalType gauge_filtered gauge_topologicalTypeMixin.
+Definition gauge_uniformType := UniformType
+  gauge_topologicalType gauge_uniformType_mixin.
+
+Lemma gauge_countable_uniformity : countable_uniformity gauge_uniformType.
+Proof.
+exists [set iter n split_sym (E `&` E^-1) | n in [set: nat]].
+split; [exact: card_image_le | by move=> W [n] _ <-; exists n|].
+by move=> D [n _ ?]; exists (iter n split_sym (E `&` E^-1)).
+Qed.
+
+Definition gauge_pseudoMetric_mixin {R : realType} :=
+  @countable_uniform_pseudoMetricType_mixin R _ gauge_countable_uniformity.
+
+Definition gauge_pseudoMetricType {R : realType} :=
+  PseudoMetricType gauge_uniformType (@gauge_pseudoMetric_mixin R).
+
+End entourage_gauge.
+
+Lemma uniform_pseudometric_sup {R : realType} {T : uniformType} :
+    @entourage T = @sup_ent T {E : set (T * T) | @entourage T E}
+  (fun E => Uniform.class (@gauge_pseudoMetricType T (projT1 E) (projT2 E) R)).
+Proof.
+rewrite eqEsubset; split => [E entE|E].
+  exists E => //=.
+  pose pe : {classic {E0 : set (T * T) | _}} * _ := (exist _ E entE, E).
+  have entPE : `[< @entourage (gauge_uniformType entE) E >].
+    by apply/asboolP; exists 0%N => // ? [].
+  exists (fset1 (exist _ pe entPE)) => //=; first by move=> ?; rewrite in_setE.
+  by rewrite set_fset1 bigcap_set1.
+case=> W /= [/= J] _ <- /filterS; apply; apply: filter_bigI => -[] [] [] /= D.
+move=> entD G /[dup] /asboolP [n _ + _ _] => /filterS; apply.
+exact: iter_split_ent.
+Qed.
+
+End gauges.
 
 Section ArzelaAscoli.
 Context {X : topologicalType}.
