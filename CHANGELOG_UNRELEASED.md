@@ -77,6 +77,12 @@
     `powere_posNyr`, `fine_powere_pos`, `powere_pos_ge0`,
     `powere_pos_gt0`, `powere_pos_eq0`, `powere_posM`, `powere12_sqrt`
 
+- in file `topology.v`,
+  + new definitions `totally_disconnected`, and `zero_dimensional`.
+  + new lemmas `component_closed`, `zero_dimension_prod`, 
+    `discrete_zero_dimension`, `zero_dimension_totally_disconnected`, 
+    `totally_disconnected_cvg`, and `totally_disconnected_prod`.
+
 ### Changed
 
 - in `mathcomp_extra.v`
