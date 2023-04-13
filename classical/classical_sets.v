@@ -1243,9 +1243,15 @@ Proof. by split=> fAY x; have := fAY x; rewrite !inE. Qed.
 Lemma image_subP {A Y f} : f @` A `<=` Y <-> {homo f : x / A x >-> Y x}.
 Proof. by split=> fAY x => [Ax|[y + <-]]; apply: fAY=> //; exists x. Qed.
 
-Lemma image_sub  {f : aT -> rT} {A : set aT} {B : set rT} :
+Lemma image_sub {f : aT -> rT} {A : set aT} {B : set rT} :
   (f @` A `<=` B) = (A `<=` f @^-1` B).
 Proof. by apply/propext; rewrite image_subP; split=> AB a /AB. Qed.
+
+Lemma imsub1 x A f : f @` A `<=` [set x] -> forall a, A a -> f a = x.
+Proof. by move=> + a Aa; apply; exists a. Qed.
+
+Lemma imsub1P x A f : f @` A `<=` [set x] <-> forall a, A a -> f a = x.
+Proof. by split=> [/(@imsub1 _)//|+ _ [a Aa <-]]; apply. Qed.
 
 Lemma image_setU f A B : f @` (A `|` B) = f @` A `|` f @` B.
 Proof.

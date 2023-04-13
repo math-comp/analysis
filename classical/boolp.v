@@ -492,6 +492,20 @@ Proof. by move=> Pxy; apply: contraNP => /Pxy/eqP. Qed.
 Lemma contra_eqP (T : eqType) (x y : T) (Q : Prop) : (~ Q -> x != y) -> x = y -> Q.
 Proof. by move=> Qxy /eqP; apply: contraTP. Qed.
 
+Lemma contra_leP {disp1 : unit} {T1 : porderType disp1} [P : Prop] [x y : T1] :
+  (~ P -> (x < y)%O) -> (y <= x)%O -> P.
+Proof.
+move=> Pxy yx; apply/asboolP.
+by apply: Order.POrderTheory.contra_leT yx => /asboolPn.
+Qed.
+
+Lemma contra_ltP {disp1 : unit} {T1 : porderType disp1} [P : Prop] [x y : T1] :
+  (~ P -> (x <= y)%O) -> (y < x)%O -> P.
+Proof.
+move=> Pxy yx; apply/asboolP.
+by apply: Order.POrderTheory.contra_ltT yx => /asboolPn.
+Qed.
+
 Lemma wlog_neg P : (~ P -> P) -> P.
 Proof. by move=> ?; case: (pselect P). Qed.
 
