@@ -304,6 +304,7 @@ Require Import reals signed.
 (*                                   space with a countable uniformity        *)
 (*       gauge_psuedoMetricType E == the pseudoMetricType associated with the *)
 (*                                   `gauge E`                                *)
+(*                   discrete_ent == entourages for the discrete topology     *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
 (*                entourage_ ball == entourages defined using balls           *)
@@ -330,6 +331,10 @@ Require Import reals signed.
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
 (*          weak_pseudoMetricType == the metric space for weak topologies     *)
+(*            quotient_topology Q == the quotient topology corresponding to   *)
+(*                                   quotient Q : quotType T. where T has     *)
+(*                                   type topologicalType                     *)
+(*                  discrete_ball == singleton balls for thediscrete topology *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -3305,6 +3310,14 @@ Qed.
 
 End Covers.
 
+Lemma finite_compact {X : topologicalType} (A : set X) :
+  finite_set A -> compact A.
+Proof.
+case/finite_setP=> n; elim: n A => [A|n ih A /eq_cardSP[x Ax /ih ?]].
+  by rewrite II0 card_eq0 => /eqP ->; exact: compact0.
+by rewrite -(setD1K Ax); apply: compactU => //; exact: compact_set1.
+Qed.
+
 Section separated_topologicalType.
 Variable (T : topologicalType).
 Implicit Types x y : T.
@@ -4624,6 +4637,36 @@ Definition product_uniformType :=
 
 End product_uniform.
 
+Section discrete_uniform.
+
+Context {T : topologicalType} {dsc: discrete_space T}.
+
+Definition discrete_ent : set (set (T * T)) :=
+  globally (range (fun x => (x, x))).
+
+Program Definition discrete_uniform_mixin :=
+  @UniformMixin T nbhs discrete_ent _ _ _ _ _.
+Next Obligation.
+by move=> ? + x x12; apply; exists x.1; rewrite // {2}x12 -surjective_pairing.
+Qed.
+Next Obligation.
+by move=> ? dA x [i _ <-]; apply: dA; exists i.
+Qed.
+Next Obligation.
+move=> ? dA; exists (range (fun x => (x, x))) => //.
+by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
+Qed.
+Next Obligation.
+rewrite dsc predeq2E => x V; split => [].
+  move=> Px; exists (range (fun x => (x, x))) => //.
+  by move=> z [i _] [+ <-] => ->; exact/principal_filterP.
+by case=> U dV UV; apply/principal_filterP/UV/dV; exists x.
+Qed.
+
+Definition discrete_uniformType := UniformType T discrete_uniform_mixin.
+
+End discrete_uniform.
+
 Module PseudoMetric.
 
 Record mixin_of (R : numDomainType) (M : Type)
@@ -5132,6 +5175,33 @@ Qed.
 
 End quotients.
 
+Section discrete_pseudoMetric.
+Context {R : numDomainType} {T : topologicalType} {dsc : discrete_space T}.
+
+Definition discrete_ball (x : T) (eps : R) y : Prop := x = y.
+
+Lemma discrete_ball_center x (eps : R) : 0 < eps -> discrete_ball x eps x.
+Proof. by []. Qed.
+
+Program Definition discrete_pseudoMetricType_mixin :=
+  @PseudoMetric.Mixin R T discrete_ent discrete_ball _ _ _ _.
+Next Obligation. by done. Qed.
+Next Obligation. by move=> ? ? ? ->. Qed.
+Next Obligation. by move=> ? ? ? ? ? -> ->. Qed.
+Next Obligation.
+rewrite predeqE => P; split; last by case=> e _ + [a b] [i _] [-> ->]; apply.
+move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //.
+by rewrite {2}z12 -surjective_pairing.
+Qed.
+
+Definition discrete_pseudoMetricType := PseudoMetricType
+  (@discrete_uniformType _ dsc) discrete_pseudoMetricType_mixin.
+
+End discrete_pseudoMetric.
+
+Definition pseudoMetric_bool {R : realType} :=
+  @discrete_pseudoMetricType R [topologicalType of bool] discrete_bool.
+
 (** ** Complete uniform spaces *)
 
 Definition cauchy {T : uniformType} (F : set (set T)) := (F, F) --> entourage.
@@ -5349,6 +5419,18 @@ near F => x; exists x; near: x; apply: (@nearP_dep _ _ F F).
 exact/Fcauchy/entourage_ball.
 Unshelve. all: by end_near. Qed.
 Arguments cauchyP {R T} F {PF}.
+
+Lemma compact_cauchy_cvg {T : uniformType} (U : set T) (F : set (set T)) :
+  ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
+Proof.
+move=> PF cf FU /(_ F PF FU) [x [_ clFx]]; apply: (cvgP x).
+apply/cvg_entourageP => E entE.
+have : nbhs entourage (split_ent E) by rewrite nbhs_filterE.
+move=> /(cf (split_ent E))[] [D1 D2]/= /[!nbhs_simpl] -[FD1 FD2 D1D2E].
+have : nbhs x to_set (split_ent E) x by exact: nbhs_entourage.
+move=> /(clFx _ (to_set (split_ent E) x) FD1)[z [Dz Exz]].
+by near=> t; apply/(entourage_split z entE Exz)/D1D2E; split => //; near: t.
+Unshelve. all: by end_near. Qed.
 
 Module CompletePseudoMetric.
 Section ClassDef.
