@@ -3764,7 +3764,7 @@ Definition zero_dimensional T :=
 
 Lemma zero_dimension_prod (I : choiceType) (T : I -> topologicalType) :
   (forall i, zero_dimensional (T i)) ->
-  zero_dimensional (product_topologicalType T).
+  zero_dimensional (prod_topology T).
 Proof.
 move=> dctTI x y /eqP xneqy.
 have [i/eqP/dctTI [U [clU Ux nUy]]] : exists i, x i <> y i.
@@ -6734,7 +6734,7 @@ Unshelve. end_near. Qed.
 Lemma totally_disconnected_prod (I : choiceType)
   (T : I -> topologicalType) (A : forall i, set (T i)) :
   (forall i, totally_disconnected (A i)) ->
-  @totally_disconnected (product_topologicalType T)
+  @totally_disconnected (prod_topology T)
     (fun f => forall i, A i (f i)).
 Proof.
 move=> dsctAi x /= Aix; rewrite eqEsubset; split; last first.
