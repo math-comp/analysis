@@ -8,6 +8,12 @@
   + lemma `globally0`
 - in `normedtype.v`:
   + lemma `lipschitz_set0`, `lipschitz_set1`
+
+- in file `topology.v`,
+  + definitions `discrete_ent`, `discrete_ball`, `discrete_topology`
+    and `pseudoMetric_bool`.
+  + lemmas `finite_compact`, `discrete_ball_center`, `compact_cauchy_cvg`
+
 - in `measure.v`:
   + lemma `measurable_fun_bigcup`
 - in `sequences.v`:
