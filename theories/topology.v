@@ -7762,6 +7762,100 @@ exact: iter_split_ent.
 Qed.
 
 End gauges.
+Section set_nbhs.
+
+Context {T : topologicalType} (A : set T).
+
+Definition set_nbhs := \bigcap_(x in A) (nbhs x).
+
+Lemma set_nbhs_filter : Filter set_nbhs.
+Proof.
+split; first by move => ? ?; exact: filterT.
+  by move=> P Q Px Qx x Ax; apply: filterI; [exact: Px | exact: Qx].
+by move=> P Q PQ + x Ax => /(_ _ Ax)/filterS; apply. 
+Qed.
+
+Lemma set_nbhs_pfilter : A!=set0 -> ProperFilter set_nbhs.
+Proof.
+case=> x Ax; split; last exact: set_nbhs_filter.
+by move/(_ x Ax)/nbhs_singleton.
+Qed.
+
+Lemma set_nbhsP (B : set T) :
+   set_nbhs B <-> (exists C, [/\ open C, A `<=` C & C `<=` B]).
+Proof.
+split; first last.
+  by case=> V [? AV /filterS +] x /AV ?; apply; apply: open_nbhs_nbhs; split.
+move=> snB; have Ux : forall x, exists U, A x -> U x /\ open U /\ U `<=` B.
+  move=> x; case: (pselect (A x)); last by move => ?; exists point.
+  by move/snB; rewrite nbhsE; case=> V [? ? ?]; exists V.
+exists (\bigcup_(x in A) (projT1 (cid (Ux x)))); split.
+- by apply: bigcup_open => x Ax; have := projT2 (cid (Ux x)); firstorder.
+- by move=> x Ax; exists x => //; have := projT2 (cid (Ux x)); firstorder.
+- by move=> x [y Ay]; have [//|_ [_]] := projT2 (cid (Ux y)); apply.
+Qed.
+End set_nbhs.
+
+Definition normal (T : topologicalType) :=
+  forall (A : set T), closed A -> 
+    set_nbhs A = filter_from (set_nbhs A) closure.
+
+Section urysohn.
+Context {T : topologicalType} (A : set T).
+Hypothesis An0 : A!=set0.
+Hypothesis normalT : normal T.
+
+Let apxU (UV : (set T) * (set T)) : set (T*T) := 
+  (UV.2 `*` UV.2) `|` (~` (closure UV.1) `*` ~` (closure UV.1)).
+
+Let nested (UV : (set T) * (set T)) : Prop := 
+  [/\ open UV.1, 
+      open UV.2, 
+      A `<=` UV.1 & 
+      closure UV.1 `<=`UV.2].
+
+Let ury_base := [set apxU UV | UV in nested].
+
+Lemma ury_base_refl E : 
+  ury_base E -> [set fg | fg.1 = fg.2] `<=` E.
+Proof.
+case; case=> L R [_ _ _ /= LR] <- [? x /= ->].
+case: (pselect (R x)); first by left => /=; split. 
+by move/subsetC:LR => /[apply] => ?; right => /=; split.
+Qed.
+
+Lemma ury_base_inv E : ury_base E -> ury_base (E^-1)%classic.
+Proof.
+case; case=> L R ? <-; exists (L,R) => //.
+rewrite eqEsubset; split => //; case=> x y /= [] [//= ? ?].
+- by left.
+- by right.
+- by left.
+- by right.
+Qed.
+
+Lemma ury_base_split E : 
+  ury_base E -> exists E1 E2, [/\ ury_base E1, ury_base E2 &
+    (E1 `&` E2) \; (E1 `&` E2) `<=` E].
+Proof.
+case; case => L R [/= oL oR AL cLR <-].
+have [R' []] : exists R', [/\ open R', closure L `<=` R' & closure R' `<=` R].
+  have := @normalT (closure L) (@closed_closure T L).
+  rewrite eqEsubset; case=> /(_ R) + _; case.
+    by move=> x /cLR ?; apply: open_nbhs_nbhs; split. 
+  move=> V /set_nbhsP [U] [? ? ? cVR]; exists U; split => //. 
+  by apply: (subset_trans _ cVR); apply: closure_subset.
+move=> oR' cLR' cR'R; exists (apxU (L, R')), (apxU (R', R)); split. 
+- by exists (L,R') => //.
+- exists (R',R) => //; split => //; apply: (subset_trans AL).
+  by apply: (subset_trans _ cLR'); exact: subset_closure.
+case=> x z /= [y [+ +] []].
+(do 4 (case; case=> /= ? ?)); try (by left); try (by right);
+  match goal with nG : (~ closure ?S ?y), G : ?S ?y |- _ => 
+    by move/subset_closure: G
+  end.
+Qed.
+
 
 Section ArzelaAscoli.
 Context {X : topologicalType}.
