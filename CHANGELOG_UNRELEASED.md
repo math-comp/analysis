@@ -88,12 +88,6 @@
   + lemma `ae_ge0_le_integral`
   + lemma `ae_eq_refl`
 - file `probability.v`:
-  + mixin `isLfun`, structure `Lfun`, notation `LfunType`
-  + canonicals `Lfun_eqType`, `Lfun_choiceType`, `Lequiv_canonical`
-  + definition `LType`
-  + definitions `Lequiv`, `LspaceType`
-  + definition `Lspace`, notation `.-Lspace`
-  + lemmas `LequivP`, `LType1_integrable`, `LType2_integrable_sqr`
   + definition `random_variable`, notation `{RV _ >-> _}`
   + lemmas `notin_range_measure`, `probability_range`
   + definition `distribution`, instance of `isProbability`
