@@ -6784,7 +6784,8 @@ Qed.
 
 End UniformPointwise.
 
-Section gauges.
+Module gauge.
+Section gauge.
 
 Let split_sym {T : uniformType} (W : set (T * T)) :=
   (split_ent W) `&` (split_ent W)^-1.
@@ -6838,50 +6839,46 @@ apply: subset_trans EA; apply: subset_trans; first last.
 by case=> a c [b] [] ? ? [] ? ?; exists b.
 Qed.
 
-Definition gauge_uniformType_mixin :=
- UniformMixin gauge_filter gauge_refl gauge_inv gauge_split erefl.
+Let gauged : Type := T.
 
-Definition gauge_topologicalTypeMixin :=
-  topologyOfEntourageMixin gauge_uniformType_mixin.
+HB.instance Definition _ := Pointed.on gauged.
+HB.instance Definition _ :=
+  @isUniform.Build gauged gauge gauge_filter gauge_refl gauge_inv gauge_split.
 
-Definition gauge_filtered := FilteredType T T (nbhs_ gauge).
-Definition gauge_topologicalType :=
-  TopologicalType gauge_filtered gauge_topologicalTypeMixin.
-Definition gauge_uniformType := UniformType
-  gauge_topologicalType gauge_uniformType_mixin.
-
-Lemma gauge_countable_uniformity : countable_uniformity gauge_uniformType.
+Lemma gauge_countable_uniformity : countable_uniformity gauged.
 Proof.
 exists [set iter n split_sym (E `&` E^-1) | n in [set: nat]].
 split; [exact: card_image_le | by move=> W [n] _ <-; exists n|].
 by move=> D [n _ ?]; exists (iter n split_sym (E `&` E^-1)).
 Qed.
 
-Definition gauge_pseudoMetric_mixin {R : realType} :=
-  @countable_uniform_pseudoMetricType_mixin R _ gauge_countable_uniformity.
+Definition type := countable_uniform.type gauge_countable_uniformity.
 
-Definition gauge_pseudoMetricType {R : realType} :=
-  PseudoMetricType gauge_uniformType (@gauge_pseudoMetric_mixin R).
+#[export] HB.instance Definition _ := Uniform.on type.
+#[export] HB.instance Definition _ {R : realType} : PseudoMetric R _ := 
+  PseudoMetric.on type.
 
 End entourage_gauge.
+End gauge.
+Module Exports. HB.reexport. End Exports.
+End gauge.
+Export gauge.Exports.
 
 Lemma uniform_pseudometric_sup {R : realType} {T : uniformType} :
     @entourage T = @sup_ent T {E : set (T * T) | @entourage T E}
-  (fun E => Uniform.class (@gauge_pseudoMetricType T (projT1 E) (projT2 E) R)).
+  (fun E => Uniform.class (@gauge.type T (projT1 E) (projT2 E))).
 Proof.
 rewrite eqEsubset; split => [E entE|E].
   exists E => //=.
   pose pe : {classic {E0 : set (T * T) | _}} * _ := (exist _ E entE, E).
-  have entPE : `[< @entourage (gauge_uniformType entE) E >].
+  have entPE : `[< @entourage (gauge.type entE) E >].
     by apply/asboolP; exists 0%N => // ? [].
   exists (fset1 (exist _ pe entPE)) => //=; first by move=> ?; rewrite in_setE.
   by rewrite set_fset1 bigcap_set1.
 case=> W /= [/= J] _ <- /filterS; apply; apply: filter_bigI => -[] [] [] /= D.
 move=> entD G /[dup] /asboolP [n _ + _ _] => /filterS; apply.
-exact: iter_split_ent.
+exact: gauge.iter_split_ent.
 Qed.
-
-End gauges.
 
 Section ArzelaAscoli.
 Context {X : topologicalType}.
@@ -7117,6 +7114,5 @@ move=> lcpt; split => [[Wid ectsW]|[fWf]pcptW].
   exact: pointwise_precompact_equicontinuous.
 split; last exact: precompact_equicontinuous.
 exact: precompact_pointwise_precompact.
-Qed.
-
+Qed. 
 End ArzelaAscoli.
