@@ -7800,6 +7800,66 @@ Definition normal (T : topologicalType) :=
   forall (A : set T), closed A -> 
     set_nbhs A = filter_from (set_nbhs A) closure.
 
+Lemma filter_inv {T : Type} (F : set (set (T*T))) : 
+  Filter F -> Filter [set (V^-1)%classic | V in F].
+Proof.
+move=> FF; split => /=.
+- by exists [set: T*T] => //; exact: filterT.
+- move=> P Q [R FR <-] [S FS <-]; exists (R `&` S); first exact: filterI.
+  by rewrite eqEsubset; split; case=> ? ?.
+- move=> P Q PQ [R FR RP]; exists Q^-1%classic => //; first last.
+    by rewrite eqEsubset; split; case=> ? ?.
+  by apply: (filterS _ FR); case=> ? ? /= ?; apply: PQ; rewrite -RP.
+Qed.
+
+Lemma smallest_filter {T : Type} (F : set (set T)) : 
+  Filter (smallest Filter F).
+Proof.
+split. 
+- by move=> G [? _]; apply: filterT.
+- by move=> P Q sFP sFQ G [FG ?]; apply: filterI; [apply: sFP | apply: sFQ].
+- by move=> P Q PQ sFP G [FG FsG]; apply: (filterS PQ); apply: sFP.
+Qed.
+
+Fixpoint smallest_stage {T : Type} (F : set (set T)) (n : nat) :=
+  if n is S m 
+  then (smallest_stage F m) `|` 
+    ([set PQ.1 `&` PQ.2 | 
+       PQ in (smallest_stage F m) `*` (smallest_stage F m)])
+  else F.
+
+Lemma smallest_stage_sub {T : Type} (F : set (set T)) (i j : nat) :
+  (i <= j)%N -> smallest_stage F i `<=` smallest_stage F j.
+Proof.
+elim: j i => //; first by move=> i; rewrite leqn0 => /eqP ->.
+move=> j IH i; rewrite leq_eqVlt => /orP; case; first by move/eqP => ->.
+by move=> /IH/subset_trans; apply=> A ?; left.
+Qed.
+
+Lemma smallest_filterP {T : Type} (F : set (set T)) : 
+  F!=set0 ->
+  smallest Filter F = 
+  filter_from (\bigcup_n (smallest_stage F n)) id.
+Proof.
+case=> W FW; rewrite eqEsubset; split.
+  apply: smallest_sub => //; first last.
+    by move=> A FA; exists A => //; exists O.
+  apply: filter_from_filter; first by exists W; exists O.
+  move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.
+  exists (S (maxn i j)) => //=; simpl; right; exists (P,Q) => //=; split.
+    by apply: smallest_stage_sub; first exact: leq_maxl.
+  by apply: smallest_stage_sub; first exact: leq_maxr.
+move=> A [B [n _]]; elim: n B A.
+  move=> B A FB /filterS; apply; first exact: smallest_filter.
+  exact: sub_gen_smallest.
+move=> n IH /= B A []; first by move=> FnB BA; apply: (IH B A).
+case; case=> P Q /= [sFP sFQ] PQB /filterS; apply.
+  exact: smallest_filter.
+rewrite -PQB; apply: (filterI _ _); first exact: smallest_filter.
+  exact: (IH _ _ sFP).
+exact: (IH _ _ sFQ).
+Qed.
+  
 Section urysohn.
 Context {T : topologicalType} (A : set T).
 Hypothesis An0 : A!=set0.
@@ -7855,6 +7915,45 @@ case=> x z /= [y [+ +] []].
     by move/subset_closure: G
   end.
 Qed.
+
+Lemma ury_base_split' E : 
+  exists E1E2, ury_base E ->
+  let E1 := E1E2.1 in
+  let E2 := E1E2.2 in [/\ ury_base E1, ury_base E2 &
+    (E1 `&` E2) \; (E1 `&` E2) `<=` E].
+Proof.
+case: (pselect (ury_base E)); last by move => ?; exists point.
+by move=> uryE; case: (ury_base_split uryE) => E1 [E2 [? ? ?]]; exists (E1, E2).
+Qed.
+
+Definition ury_unif := smallest Filter ury_base.  
+
+Lemma ury_unif_refl E : ury_unif E -> [set fg | fg.1 = fg.2] `<=` E.
+Proof.
+move/(_ (globally [set fg | fg.1 = fg.2])); apply; split. 
+  exact: globally_filter.
+exact: ury_base_refl.
+Qed.
+
+Lemma ury_unif_inv E : ury_unif E -> ury_unif (E^-1)%classic.
+Proof.
+move=> ufE F [/filter_inv FF urF]; have [] := ufE [set (V^-1)%classic | V in F].
+  split => // B /ury_base_inv/urF /= ?; exists (B^-1)%classic => //.
+  by rewrite eqEsubset; split; case=> ? ?.
+move=> R FR <-; rewrite (_ : (R^-1^-1)%classic = R) => //.
+by rewrite eqEsubset; split; case=> ? ?.
+Qed.
+
+Lemma ury_base_unif_split E : 
+  ury_unif E -> exists2 B, ury_unif B & B \; B `<=` E.
+Proof.
+rewrite /ury_unif; have := (smallest_filterP _).
+move=> /[dup] uryS /ury_base_split [E1 [E2]] [ub1 ub2] E12E.
+exists (E1 `&` E2) => //.
+by apply: (@filterI _ _ (smallest_filter _)); apply: sub_gen_smallest.
+Qed.
+
+Lemma ury_unif_split E :
 
 
 Section ArzelaAscoli.
