@@ -31,6 +31,7 @@ Require Import signed.
 (*                    r%:E == injects real numbers into \bar R                *)
 (*           +%E, -%E, *%E == addition/opposite/multiplication for extended   *)
 (*                            reals                                           *)
+(*    er_map (f : T -> T') == the \bar T -> \bar T' lifting of f              *)
 (*                   sqrte == square root for extended reals                  *)
 (*                `| x |%E == the absolute value of x                         *)
 (*                  x ^+ n == iterated multiplication                         *)
