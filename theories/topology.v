@@ -7859,10 +7859,20 @@ rewrite -PQB; apply: (filterI _ _); first exact: smallest_filter.
   exact: (IH _ _ sFP).
 exact: (IH _ _ sFQ).
 Qed.
-  
+
+Lemma close_closure {T : topologicalType} (x y : T) :
+ closure [set y] x -> close x y. 
+Proof.
+by move=> cxy U [? ?] V xV; exists y; split => //; case/(_ _ xV): cxy => ? [->].
+Qed.
+
 Section urysohn.
-Context {T : topologicalType} (A : set T).
+Context {T : topologicalType} (A B : set T).
 Hypothesis An0 : A!=set0.
+Hypothesis Bn0 : B!=set0.
+Hypothesis closedA : closed A.
+Hypothesis closedB : closed B.
+Hypothesis AB0 : A `&` B = set0.
 Hypothesis normalT : normal T.
 
 Let apxU (UV : (set T) * (set T)) : set (T*T) := 
@@ -7938,22 +7948,47 @@ Qed.
 Lemma ury_unif_inv E : ury_unif E -> ury_unif (E^-1)%classic.
 Proof.
 move=> ufE F [/filter_inv FF urF]; have [] := ufE [set (V^-1)%classic | V in F].
-  split => // B /ury_base_inv/urF /= ?; exists (B^-1)%classic => //.
+  split => // K /ury_base_inv/urF /= ?; exists (K^-1)%classic => //.
   by rewrite eqEsubset; split; case=> ? ?.
 move=> R FR <-; rewrite (_ : (R^-1^-1)%classic = R) => //.
 by rewrite eqEsubset; split; case=> ? ?.
 Qed.
 
-Lemma ury_base_unif_split E : 
-  ury_unif E -> exists2 B, ury_unif B & B \; B `<=` E.
+Lemma ury_base0 : ury_base !=set0.
 Proof.
-rewrite /ury_unif; have := (smallest_filterP _).
-move=> /[dup] uryS /ury_base_split [E1 [E2]] [ub1 ub2] E12E.
-exists (E1 `&` E2) => //.
-by apply: (@filterI _ _ (smallest_filter _)); apply: sub_gen_smallest.
+have := normalT closedA; rewrite eqEsubset; case=> + _.
+case/(_ (~`B)); first last.
+  move=> V /set_nbhsP [U [oU AU UV]] cVcb; exists (apxU (U, ~`B)).
+  exists (U, ~`B) => //; split => //=; first by exact/closed_openC.
+  by move/closure_subset/subset_trans: UV; apply.
+move=> x Ax; apply: open_nbhs_nbhs; split => //; first exact/closed_openC.
+by move: x Ax; apply/ disjoints_subset.
 Qed.
 
-Lemma ury_unif_split E :
+Lemma ury_unif_split_aux E n :
+  smallest_stage ury_base n E -> exists2 K : set (T*T), 
+    smallest_stage ury_base n.+1 K & K\;K `<=` E.
+Proof.
+elim: n E.
+  move=> E /ury_base_split [E1 [E2] [ub1 ub2 e12E]]; exists (E1 `&` E2) => //.
+  by right; exists (E1, E2).
+move=> n IH E []; first by move=> /IH [K ? ?]; exists K => //; left.
+case; case=> E1 E2 [/IH [K1 SnK1 K1E1] /IH [K2 SnK2 K2E2]] <-. 
+exists (K1 `&` K2); first by right ;exists (K1, K2).
+move=> /= [x z ] [y /= [K1xy K2xy] [K1yz K2yz]]; split.
+  by apply: K1E1; exists y.
+by apply: K2E2; exists y.
+Qed.
+
+Lemma ury_unif_split E : ury_unif E -> 
+  exists2 K, ury_unif K & K \; K `<=` E.
+Proof.
+rewrite /ury_unif (@smallest_filterP _ ury_base); last exact: ury_base0.
+case=> G [n _] /ury_unif_split_aux [K SnK KG GE]; exists K.
+  by exists K => //; exists n.+1.
+exact: (subset_trans _ GE).
+Qed.
+
 
 
 Section ArzelaAscoli.
