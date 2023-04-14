@@ -1784,28 +1784,25 @@ congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
 Qed.
 
+Lemma measurable_fun_er_map d (T : measurableType d) (R : realType) (f : R -> R)
+  : measurable_fun setT f -> measurable_fun [set: \bar R] (er_map f).
+Proof.
+move=> mf;rewrite (_ : er_map _ =
+  fun x => if x \is a fin_num then (f (fine x))%:E else x); last first.
+  by apply: funext=> -[].
+apply: measurable_fun_ifT => /=.
++ apply: (measurable_fun_bool true).
+  rewrite /preimage/= -[X in measurable X]setTI.
+  by apply/emeasurable_fin_num => //; exact: measurable_fun_id.
++ apply/EFin_measurable_fun/measurable_funT_comp => //.
+  exact/measurable_fun_fine.
++ exact: measurable_fun_id.
+Qed.
+
 Section emeasurable_fun.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T).
-
-Lemma emeasurable_fun_bool (D : set T) (f : T -> bool) b :
-  measurable (f @^-1` [set b]) -> measurable_fun D f.
-Proof.
-have FNT : [set false] = [set~ true] by apply/seteqP; split => -[]//=.
-wlog {b}-> : b / b = true.
-  case: b => [|h]; first exact.
-  by rewrite FNT -preimage_setC => /measurableC; rewrite setCK; exact: h.
-move=> mfT mD /= Y; have := @subsetT _ Y; rewrite setT_bool => YT.
-have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
-- by rewrite preimage0 ?setI0.
-- by apply: measurableI => //; exact: mfT.
-- rewrite -[X in measurable X]setCK; apply: measurableC; rewrite setCI.
-  apply: measurableU; first exact: measurableC.
-  by rewrite FNT preimage_setC setCK; exact: mfT.
-- by rewrite -setT_bool preimage_setT setIT.
-Qed.
-Arguments emeasurable_fun_bool {D f} b.
 
 Lemma measurable_fun_einfs D (f : (T -> \bar R)^nat) :
   (forall n, measurable_fun D (f n)) ->
