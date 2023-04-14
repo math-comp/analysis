@@ -39,6 +39,7 @@ theories/lebesgue_integral.v
 theories/summability.v
 theories/signed.v
 theories/itv.v
+theories/lspace.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
