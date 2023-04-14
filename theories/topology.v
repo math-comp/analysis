@@ -7995,6 +7995,22 @@ case=> G [n _] /ury_unif_split_aux [K SnK KG GE]; exists K.
 exact: (subset_trans _ GE).
 Qed.
 
+Lemma ury_unif_covA E : ury_unif E -> A `*` A `<=` E.
+Proof.
+rewrite /ury_unif (@smallest_filterP _ ury_base); first last. 
+  by case: divideAB => K ? _; exists K.
+case=> G [n _] sG /(subset_trans _); apply.
+elim: n G sG.
+  move=> G [[P Q]] [/= _ _ AP cPQ] <- [x y] [/= /AP ? ?].
+  left; split => //=; first exact/cPQ/subset_closure.
+  exact/cPQ/subset_closure/AP.
+move=> n IH G []; first by move/IH.
+case; case=> P Q [/IH unP /IH unQ] <- [x y /= [Ax Ay]]; split.
+  exact: unP.
+exact: unQ.
+Qed.
+
+
 Let urysohn_uniformType_mixin :=
  UniformMixin ury_unif_filter ury_unif_refl ury_unif_inv ury_unif_split erefl.
 
@@ -8060,16 +8076,13 @@ by apply: filterI.
 Qed.
 
 Lemma ury_gauge_closeA (x y : T'') : A x -> A y -> close x y.
+Proof.
+move=> Ax Ay U [oU Uy] V; rewrite -nbhs_entourageE; case=> E + EV.
+move/ury_gauge_unif/ury_unif_covA=> AAE; exists y; split => //.
+exact/EV/AAE.
+Qed.
 
-Lemma ury_gauge_closeB (x y : T'') : B x -> B y -> close x y.
-
-
-forall x
-
-Section urysohn_metric.
-Context {R : realType}.
-Definition ury_gauge := @gauge_pseudoMetricType T' _ divider_ent R.
-
+End urysohn.
 
 Section ArzelaAscoli.
 Context {X : topologicalType}.
