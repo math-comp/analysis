@@ -7938,6 +7938,9 @@ Qed.
 
 Definition ury_unif := smallest Filter ury_base.  
 
+Lemma ury_unif_filter : Filter ury_unif.
+Proof. exact: smallest_filter. Qed.
+
 Lemma ury_unif_refl E : ury_unif E -> [set fg | fg.1 = fg.2] `<=` E.
 Proof.
 move/(_ (globally [set fg | fg.1 = fg.2])); apply; split. 
@@ -7954,15 +7957,17 @@ move=> R FR <-; rewrite (_ : (R^-1^-1)%classic = R) => //.
 by rewrite eqEsubset; split; case=> ? ?.
 Qed.
 
-Lemma ury_base0 : ury_base !=set0.
+Lemma divideAB : exists2 E, ury_base E & (A `*` B) `&` E = set0.
 Proof.
 have := normalT closedA; rewrite eqEsubset; case=> + _.
-case/(_ (~`B)); first last.
-  move=> V /set_nbhsP [U [oU AU UV]] cVcb; exists (apxU (U, ~`B)).
+case/(_ (~`B)).
+  move=> x Ax; apply: open_nbhs_nbhs; split => //; first exact/closed_openC.
+  by move: x Ax; apply/ disjoints_subset.
+move=> V /set_nbhsP [U [oU AU UV]] cVcb; exists (apxU (U, ~`B)).
   exists (U, ~`B) => //; split => //=; first by exact/closed_openC.
   by move/closure_subset/subset_trans: UV; apply.
-move=> x Ax; apply: open_nbhs_nbhs; split => //; first exact/closed_openC.
-by move: x Ax; apply/ disjoints_subset.
+rewrite eqEsubset; split; case=> // a b [/=[Aa Bb] [[//]|]].
+by have /subset_closure ? := AU _ Aa; case.
 Qed.
 
 Lemma ury_unif_split_aux E n :
@@ -7983,12 +7988,87 @@ Qed.
 Lemma ury_unif_split E : ury_unif E -> 
   exists2 K, ury_unif K & K \; K `<=` E.
 Proof.
-rewrite /ury_unif (@smallest_filterP _ ury_base); last exact: ury_base0.
+rewrite /ury_unif (@smallest_filterP _ ury_base); first last. 
+  by case: divideAB => K ? _; exists K.
 case=> G [n _] /ury_unif_split_aux [K SnK KG GE]; exists K.
   by exists K => //; exists n.+1.
 exact: (subset_trans _ GE).
 Qed.
 
+Let urysohn_uniformType_mixin :=
+ UniformMixin ury_unif_filter ury_unif_refl ury_unif_inv ury_unif_split erefl.
+
+Let urysohn_topologicalTypeMixin :=
+  topologyOfEntourageMixin urysohn_uniformType_mixin.
+
+Let urysohn_filtered := FilteredType T T (nbhs_ ury_unif).
+Let urysohn_topologicalType :=
+  TopologicalType urysohn_filtered urysohn_topologicalTypeMixin.
+Let urysohn_uniformType := UniformType
+  urysohn_topologicalType urysohn_uniformType_mixin.
+
+Local Notation T' := urysohn_uniformType.
+
+Lemma ury_base_ent E : ury_base E -> @entourage T' E. 
+Proof. by move=> ?; exact: sub_gen_smallest. Qed.
+
+Let divider : set (T' * T') := projT1 (cid2 divideAB).
+Lemma divider_ent : @entourage urysohn_uniformType divider.
+Proof. by apply: ury_base_ent; have [] := projT2 (cid2 divideAB). Qed.
+
+Let ury_gauge := @gauge_uniformType T' _ divider_ent.
+Local Notation T'' := ury_gauge.
+
+Search gauge.
+Lemma ury_gauge_unif E : gauge divider E -> ury_unif E.
+Proof.
+case=> n _ dE; apply: (@filterS _ _ ury_unif_filter _ _ dE).
+elim: n {E dE} => /=.
+  apply: (@filterI _ _ ury_unif_filter); first exact: divider_ent.
+  apply: (@entourage_inv T'); exact: divider_ent.
+move=> n IH; apply: (@filterI _ _ ury_unif_filter). 
+  exact : (@entourage_split_ent T').
+by apply: (@entourage_inv T'); exact : (@entourage_split_ent T').
+Qed.
+
+Lemma ury_gauge_open x U : nbhs (x : T'') U -> nbhs (x : T) (U : set T).
+Proof.
+case => E gE /(@filterS T); apply; move/ury_gauge_unif:gE.
+rewrite /ury_unif (@smallest_filterP _ ury_base); first last. 
+  by case: divideAB => K ? _; exists K.
+case => K /= [i _] /= uiK KE; suff : @nbhs T T x to_set K (x). 
+  by apply: filterS => y /KE.
+elim: i K uiK {E KE}. 
+  move=> K; case; case => P Q [/= oP oQ AP cPQ <-];  rewrite /apxU /=. 
+  set M := [set y | _ \/ _]; case (pselect (Q x)); first last.
+    move=> nQx; suff -> : M = ~` closure P.
+      apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
+      by move/cPQ.
+    rewrite eqEsubset /M; split => z; first by case; case => //.
+    by move=> ?; right; split => // /cPQ.
+  case: (pselect (~ closure P x)); first last.
+    move=> nPx ?; suff -> : M = Q by apply: open_nbhs_nbhs; split.
+    rewrite eqEsubset /M; split => z; first by case; case => //.
+    by move=> ?; left; split.
+  move=> cPx Qx; suff -> : M = setT by exact: filterT.
+  rewrite eqEsubset; split => // z _; case: (pselect (Q z)).
+    by move=> ?; left.
+  by move/subsetC: cPQ => /[apply] ?; right.
+move=> n IH K []; first by move/IH.
+case; case=> K1 K2 [/IH uK1 /IH uK2] <- /=. 
+by apply: filterI. 
+Qed.
+
+Lemma ury_gauge_closeA (x y : T'') : A x -> A y -> close x y.
+
+Lemma ury_gauge_closeB (x y : T'') : B x -> B y -> close x y.
+
+
+forall x
+
+Section urysohn_metric.
+Context {R : realType}.
+Definition ury_gauge := @gauge_pseudoMetricType T' _ divider_ent R.
 
 
 Section ArzelaAscoli.
