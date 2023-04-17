@@ -2606,16 +2606,6 @@ End NbhsNorm.
 (* TODO: generalize to R : numFieldType *)
 Section hausdorff.
 
-Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
-Proof.
-move=> x y clxy; apply/eqP; rewrite eq_le.
-apply/in_segment_addgt0Pr => _ /posnumP[e].
-rewrite in_itv /= -ler_distl; set he := (e%:num / 2)%:pos.
-have [z [zx_he yz_he]] := clxy _ _ (nbhsx_ballx x he) (nbhsx_ballx y he).
-have := ball_triangle yz_he (ball_sym zx_he).
-by rewrite -mulr2n -mulr_natr divfK // => /ltW.
-Qed.
-
 Lemma pseudoMetricNormedZModType_hausdorff (R : realFieldType)
     (V : pseudoMetricNormedZmodType R) :
   hausdorff_space V.
