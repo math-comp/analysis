@@ -4218,7 +4218,7 @@ Qed.
 End ereal_is_hausdorff.
 
 #[global]
-Hint Extern 0 (hausdorff_space _) => solve[apply: ereal_hausdorff] : core.
+Hint Extern 0 (_space _) => solve[apply: ereal_hausdorff] : core.
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to `nbhs_image_EFin`")]
