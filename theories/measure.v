@@ -139,7 +139,8 @@ From HB Require Import structures.
 (*     Measure_isProbability == factor for probability measures               *)
 (*                                                                            *)
 (*   mu.-negligible A == A is mu negligible                                   *)
-(*   {ae mu, forall x, P x} == P holds almost everywhere for the measure mu   *)
+(*   {ae mu, forall x, P x} == P holds almost everywhere for the measure mu,  *)
+(*                             declared as an instance of the type of filters *)
 (*                                                                            *)
 (*  {outer_measure set T -> \bar R} == type of an outer measure over sets     *)
 (*                   of elements of type T where R is expected to be a        *)
@@ -2936,7 +2937,7 @@ End boole_inequality.
 Notation le_mu_bigsetU := Boole_inequality.
 
 Section sigma_finite_lemma.
-Context d (R : realFieldType) (T : ringOfSetsType d) (A : set T)
+Context d (T : ringOfSetsType d) (R : realFieldType) (A : set T)
         (mu : {content set T -> \bar R}).
 
 Lemma sigma_finiteP : sigma_finite A mu ->
@@ -2959,8 +2960,8 @@ Qed.
 End sigma_finite_lemma.
 
 Section generalized_boole_inequality.
-Context d (R : realType) (T : ringOfSetsType d).
-Variable (mu : {measure set T -> \bar R}).
+Context d (T : ringOfSetsType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
 
 Theorem generalized_Boole_inequality (A : (set T) ^nat) :
   (forall i, measurable (A i)) -> measurable (\bigcup_n A n) ->
@@ -2978,61 +2979,126 @@ Definition negligible (mu : set T -> \bar R) (N : set T) :=
 
 Local Notation "mu .-negligible" := (negligible mu).
 
-Lemma negligibleP (mu : {content set _ -> \bar _}) A :
-  measurable A -> mu.-negligible A <-> mu A = 0.
+Variable mu : {content set T -> \bar R}.
+
+Lemma negligibleP A : measurable A -> mu.-negligible A <-> mu A = 0.
 Proof.
 move=> mA; split => [[B [mB mB0 AB]]|mA0]; last by exists A; split.
 apply/eqP; rewrite eq_le measure_ge0 // andbT -mB0.
 by apply: (le_measure mu) => //; rewrite in_setE.
 Qed.
 
-Lemma negligible_set0 (mu : {content set _ -> \bar _}) : mu.-negligible set0.
+Lemma negligible_set0 : mu.-negligible set0.
 Proof. exact/negligibleP. Qed.
 
-Lemma measure_negligible (mu : {content set T -> \bar R}) (A : set T) :
+Lemma measure_negligible (A : set T) :
   measurable A -> mu.-negligible A -> mu A = 0%E.
 Proof. by move=> mA /negligibleP ->. Qed.
 
-Definition almost_everywhere (mu : set T -> \bar R) (P : T -> Prop)
-     & (phantom Prop (forall x, P x)) :=
-   mu.-negligible (~` [set x | P x]).
-Local Notation "{ 'ae' m , P }" :=
-  (almost_everywhere m (inPhantom P)) : type_scope.
+Lemma negligibleS A B : B `<=` A -> mu.-negligible A -> mu.-negligible B.
+Proof.
+by move=> BA [N [mN N0 AN]]; exists N; split => //; exact: subset_trans AN.
+Qed.
 
-Lemma aeW (mu : {measure set _ -> \bar _}) (P : T -> Prop) :
+End negligible.
+Notation "mu .-negligible" := (negligible mu) : type_scope.
+
+Section negligible_ringOfSetsType.
+Context d (T : ringOfSetsType d) (R : realFieldType).
+Variable mu : {content set T -> \bar R}.
+
+Lemma negligibleU A B :
+  mu.-negligible A -> mu.-negligible B -> mu.-negligible (A `|` B).
+Proof.
+move=> [N [mN N0 AN]] [M [mM M0 BM]]; exists (N `|` M); split => //.
+- exact: measurableU.
+- apply/eqP; rewrite eq_le measure_ge0 andbT.
+  rewrite -N0 -[leRHS]adde0 -M0 -bigsetU_bigcup2; apply: le_trans.
+  + apply: (@content_sub_additive _ _ _ _ _ (bigcup2 N M) 2%N) => //.
+    * by move=> [|[|[|]]].
+    * apply: bigsetU_measurable => // i _; rewrite /bigcup2.
+      by case: ifPn => // i0; case: ifPn.
+  + by rewrite big_ord_recr/= big_ord_recr/= big_ord0 add0e.
+- exact: setUSS.
+Qed.
+
+End negligible_ringOfSetsType.
+
+Section ae.
+
+Definition almost_everywhere d (T : semiRingOfSetsType d) (R : realFieldType)
+  (mu : set T -> \bar R) (P : T -> Prop) := mu.-negligible (~` [set x | P x]).
+
+Let almost_everywhereT d (T : semiRingOfSetsType d) (R : realFieldType)
+    (mu : {content set T -> \bar R}) : almost_everywhere mu setT.
+Proof. by rewrite /almost_everywhere setCT; exact: negligible_set0. Qed.
+
+Let almost_everywhereS d (T : semiRingOfSetsType d) (R : realFieldType)
+    (mu : {measure set T -> \bar R}) A B : A `<=` B ->
+  almost_everywhere mu A -> almost_everywhere mu B.
+Proof. by move=> AB; apply: negligibleS; exact: subsetC. Qed.
+
+Let almost_everywhereI d (T : ringOfSetsType d) (R : realFieldType)
+    (mu : {measure set T -> \bar R}) A B :
+  almost_everywhere mu A -> almost_everywhere mu B ->
+  almost_everywhere mu (A `&` B).
+Proof.
+by rewrite /almost_everywhere => mA mB; rewrite setCI; exact: negligibleU.
+Qed.
+
+#[global]
+Instance ae_filter_ringOfSetsType d {T : ringOfSetsType d} (R : realFieldType)
+  (mu : {measure set T -> \bar R}) : Filter (almost_everywhere mu).
+Proof.
+by split; [exact: almost_everywhereT|exact: almost_everywhereI|
+  exact: almost_everywhereS].
+Qed.
+
+#[global]
+Instance ae_filter_algebraOfSetsType d {T : algebraOfSetsType d}
+    (R : realFieldType) (mu : {measure set T -> \bar R}) :
+  Filter (almost_everywhere mu).
+Proof. exact: ae_filter_ringOfSetsType. Qed.
+
+#[global]
+Instance ae_properfilter_algebraOfSetsType d {T : algebraOfSetsType d}
+    (R : realFieldType) (mu : {measure set T -> \bar R}) :
+  mu [set: T] > 0 -> ProperFilter (almost_everywhere mu).
+Proof.
+move=> muT; split=> [|]; last exact: ae_filter_ringOfSetsType.
+rewrite /almost_everywhere setC0 => /(measure_negligible measurableT).
+by apply/eqP; rewrite eq_le negb_and measure_ge0 orbF -ltNge.
+Qed.
+
+#[global]
+Instance ae_filter_measurableType d {T : measurableType d}
+    (R : realFieldType) (mu : {measure set T -> \bar R}) :
+  Filter (almost_everywhere mu).
+Proof. exact: ae_filter_ringOfSetsType. Qed.
+
+#[global]
+Instance ae_properfilter_measurableType d {T : measurableType d}
+    (R : realFieldType) (mu : {measure set T -> \bar R}) :
+  mu [set: T] > 0 -> ProperFilter (almost_everywhere mu).
+Proof. exact: ae_properfilter_algebraOfSetsType. Qed.
+
+End ae.
+
+Definition almost_everywhere_notation d (T : semiRingOfSetsType d)
+    (R : realFieldType) (mu : set T -> \bar R) (P : T -> Prop)
+  & (phantom Prop (forall x, P x)) := almost_everywhere mu P.
+Notation "{ 'ae' m , P }" :=
+  (almost_everywhere_notation m (inPhantom P)) : type_scope.
+
+Lemma aeW {d} {T : semiRingOfSetsType d} {R : realFieldType}
+    (mu : {measure set _ -> \bar R}) (P : T -> Prop) :
   (forall x, P x) -> {ae mu, forall x, P x}.
 Proof.
 move=> aP; have -> : P = setT by rewrite predeqE => t; split.
 by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
 Qed.
 
-Lemma ae_imply (mu : {measure set T -> \bar R}) (P Q : T -> Prop) :
-  (forall x, Q x -> P x) ->
-  {ae mu, forall x, Q x} -> {ae mu, forall x, P x}.
-Proof.
-move=> QP [N [mN nuN QN]]; exists N; split => //.
-by apply: subset_trans QN; apply: subsetC.
-Qed.
-
-End negligible.
-
-Notation "mu .-negligible" := (negligible mu) : type_scope.
-Notation "{ 'ae' m , P }" := (almost_everywhere m (inPhantom P)) : type_scope.
-
-Lemma ae_imply2 {d} {T : ringOfSetsType d} {R : realFieldType}
-  (mu : {measure set T -> \bar R}) (P1 P2 P3 : T -> Prop) :
-  (forall x, P1 x -> P2 x -> P3 x) ->
-  {ae mu, forall x, P1 x} -> {ae mu, forall x, P2 x} -> {ae mu, forall x, P3 x}.
-Proof.
-move=> h [A [mA A0 P1A]] [B [mB B0 P2B]]; exists (A `|` B); split.
-- exact: measurableU.
-- by rewrite null_set_setU.
-- rewrite -(setCK A) -(setCK B) -setCI; apply: subsetC => x [Ax Bx] /=.
-  move/subsetC : P1A => /(_ _ Ax); rewrite setCK /= => P1x.
-  by move/subsetC : P2B => /(_ _ Bx); rewrite setCK /=; exact: h.
-Qed.
-
-Definition sigma_subadditive (R : numFieldType) (T : Type)
+Definition sigma_subadditive {T} {R : numFieldType}
   (mu : set T -> \bar R) := forall (F : (set T) ^nat),
   mu (\bigcup_n (F n)) <= \sum_(i <oo) mu (F i).
 

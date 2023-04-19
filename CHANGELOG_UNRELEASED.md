@@ -61,8 +61,6 @@
   + lemmas `map_itv_bound_min`, `map_itv_bound_max`, `mul_inum_subproof`
   + canonical `mul_inum`
   + lemmas `inum_eq`, `inum_le`, `inum_lt`
-- in `measure.v`:
-  + lemmas `ae_imply`, `ae_imply2`
 - in `mathcomp_extra.v`
   + lemma `ler_sqrt`
 - in `constructive_ereal.v`
@@ -76,6 +74,12 @@
     `powere_pose1`, `powere_posNyr` `powere_pos0r`, `powere_pos1r`,
     `powere_posNyr`, `fine_powere_pos`, `powere_pos_ge0`,
     `powere_pos_gt0`, `powere_pos_eq0`, `powere_posM`, `powere12_sqrt`
+- in `measure.v`:
+  + lemmas `negligibleU`, `negligibleS`
+  + definition `almost_everywhere_notation`
+  + instances `ae_filter_ringOfSetsType`, `ae_filter_algebraOfSetsType`,
+    `ae_filter_measurableType`
+  + instances `ae_properfilter_algebraOfSetsType`, `ae_properfilter_measurableType`
 
 - file `ereal.v`:
   + lemmas `compreBr`, `compre_scale`
@@ -135,6 +139,8 @@
     `power_pos_inv`, `power_pos_intmul`
 - in `lebesgue_measure.v`:
   + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
+- in `measure.v`:
+  + definition `almost_everywhere`
 
 ### Changed
 
