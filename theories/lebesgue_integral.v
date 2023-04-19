@@ -2964,7 +2964,7 @@ Section integrable_ae.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variable (f : T -> \bar R).
+Variable f : T -> \bar R.
 Hypotheses fint : mu.-integrable D f.
 
 Lemma integrable_ae : {ae mu, forall x, D x -> f x \is a fin_num}.
@@ -2973,27 +2973,22 @@ have [muD0|muD0] := eqVneq (mu D) 0.
   by exists D; split => // t /= /not_implyP[].
 pose E := [set x | `|f x| = +oo /\ D x ].
 have mE : measurable E.
-  rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set -oo; +oo]).
+  rewrite (_ : E = D `&` f @^-1` [set -oo; +oo]).
     by apply: fint.1 => //; exact: measurableU.
-  rewrite predeqE => t; split=> [[/eqP ftoo Dt]|[Dt]].
-    split => //.
-    by move: ftoo; rewrite /preimage /= eqe_absl => /andP[/orP[|]/eqP]; tauto.
-  by rewrite /preimage /= => -[|]; rewrite /E /= => ->.
+  rewrite /E predeqE => t; split=> [[/eqP]|[Dt [|]/= ->//]].
+  by rewrite eqe_absl leey andbT /preimage/= => /orP[|]/eqP; tauto.
 have [ET|ET] := eqVneq E setT.
   have foo t : `|f t| = +oo by have [] : E t by rewrite ET.
-  move: fint.2.
-  suff: \int[mu]_(x in D) `|f x| = +oo by move=> ->; rewrite ltxx.
+  suff: \int[mu]_(x in D) `|f x| = +oo by case: fint => _; rewrite ltey => /eqP.
   by rewrite -(integral_csty mD muD0)//; exact: eq_integral.
 suff: mu E = 0.
-  move=> muE0; exists E; split => // t /= /not_implyP[Dt ftfin]; split => //.
-  apply/eqP; rewrite eqe_absl leey andbT.
-  by move/negP : ftfin; rewrite fin_numE negb_and 2!negbK orbC.
+  move=> muE0; exists E; split => // t /= /not_implyP[Dt].
+  by rewrite fin_num_abs => /negP; rewrite -leNgt leye_eq => /eqP.
 have [->|/set0P E0] := eqVneq E set0; first by rewrite measure0.
 have [M M0 muM] : exists2 M, (0 <= M)%R &
     forall n, n%:R%:E * mu (E `&` D) <= M%:E.
   exists (fine (\int[mu]_(x in D) `|f x|)); first exact/fine_ge0/integral_ge0.
-  move=> n.
-  rewrite -integral_indic// -ge0_integralM//; last 2 first.
+  move=> n; rewrite -integral_indic// -ge0_integralM//; last 2 first.
     - by apply: measurable_funT_comp=> //; exact/measurable_fun_indic.
     - by move=> *; rewrite lee_fin.
   rewrite fineK//; last first.
@@ -3005,8 +3000,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
   - move=> x Dx; rewrite /= indicE.
     have [|xE] := boolP (x \in E); last by rewrite mule0.
     by rewrite /E inE /= => -[->]; rewrite leey.
-apply/eqP/negPn/negP => /eqP muED0.
-move/not_forallP : muM; apply.
+apply/eqP/negPn/negP => /eqP muED0; move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
   by rewrite leye_eq => /eqP ->; exists 1%N; rewrite mul1e leye_eq.
 exists `|ceil (M * (fine (mu (E `&` D)))^-1)|%N.+1.
@@ -3063,7 +3057,7 @@ Section linearity.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variable (f1 f2 : T -> R).
+Variables f1 f2 : T -> R.
 Let g1 := EFin \o f1.
 Let g2 := EFin \o f2.
 Hypothesis if1 : mu.-integrable D g1.

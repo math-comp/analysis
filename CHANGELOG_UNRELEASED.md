@@ -75,10 +75,11 @@
     `powere_posNyr`, `fine_powere_pos`, `powere_pos_ge0`,
     `powere_pos_gt0`, `powere_pos_eq0`, `powere_posM`, `powere12_sqrt`
 - in `measure.v`:
-  + lemmas `almost_everywhereT`, `negligibleU`, `negligibleS`
+  + lemmas `negligibleU`, `negligibleS`
   + definition `almost_everywhere_notation`
   + instances `ae_filter_ringOfSetsType`, `ae_filter_algebraOfSetsType`,
     `ae_filter_measurableType`
+  + instances `ae_properfilter_algebraOfSetsType`, `ae_properfilter_measurableType`
 
 ### Changed
 

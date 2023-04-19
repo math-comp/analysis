@@ -3019,10 +3019,6 @@ Proof. by move=> mA /negligibleP ->. Qed.
 Definition almost_everywhere (mu : set T -> \bar R) (P : T -> Prop) :=
   mu.-negligible (~` [set x | P x]).
 
-Lemma almost_everywhereT (mu : {content set T -> \bar R}) :
-  almost_everywhere mu [set: T].
-Proof. by rewrite /almost_everywhere setCT; exact: negligible_set0. Qed.
-
 End negligible.
 Notation "mu .-negligible" := (negligible mu) : type_scope.
 
@@ -3060,6 +3056,10 @@ Notation "{ 'ae' m , P }" :=
 
 Section ae_filter.
 
+Let almost_everywhereT d (T : semiRingOfSetsType d) (R : realFieldType)
+    (mu : {content set T -> \bar R}) : almost_everywhere mu setT.
+Proof. by rewrite /almost_everywhere setCT; exact: negligible_set0. Qed.
+
 Let almost_everywhereI d (T : ringOfSetsType d) (R : realFieldType)
     (mu : {measure set T -> \bar R}) A B :
   almost_everywhere mu A -> almost_everywhere mu B ->
@@ -3088,10 +3088,26 @@ Instance ae_filter_algebraOfSetsType d {T : algebraOfSetsType d}
 Proof. exact: ae_filter_ringOfSetsType. Qed.
 
 #[global]
+Instance ae_properfilter_algebraOfSetsType d {T : algebraOfSetsType d}
+    (R : realFieldType) (mu : {measure set T -> \bar R}) :
+  mu [set: T] > 0 -> ProperFilter (almost_everywhere mu).
+Proof.
+move=> muT; split=> [|]; last exact: ae_filter_ringOfSetsType.
+rewrite /almost_everywhere setC0 => /(measure_negligible measurableT).
+by apply/eqP; rewrite eq_le negb_and measure_ge0 orbF -ltNge.
+Qed.
+
+#[global]
 Instance ae_filter_measurableType d {T : measurableType d}
     (R : realFieldType) (mu : {measure set T -> \bar R}) :
   Filter (almost_everywhere mu).
 Proof. exact: ae_filter_ringOfSetsType. Qed.
+
+#[global]
+Instance ae_properfilter_measurableType d {T : measurableType d}
+    (R : realFieldType) (mu : {measure set T -> \bar R}) :
+  mu [set: T] > 0 -> ProperFilter (almost_everywhere mu).
+Proof. exact: ae_properfilter_algebraOfSetsType. Qed.
 
 End ae_filter.
 
