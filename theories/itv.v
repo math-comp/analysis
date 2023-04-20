@@ -457,11 +457,11 @@ Variant interval_sign_spec (l u : itv_bound int) : option KnownSign.real -> Set 
   | ISignNone : (u <= l)%O -> interval_sign_spec l u None
   | ISignEqZero : l = BLeft 0 -> u = BRight 0 ->
                   interval_sign_spec l u (Some (KnownSign.Sign =0))
-  | ISignNeg : (l < BLeft 0%Z)%O -> (u <= BRight 0%Z)%O ->
+  | ISignNeg : (l < BLeft 0%:Z)%O -> (u <= BRight 0%:Z)%O ->
                interval_sign_spec l u (Some (KnownSign.Sign <=0))
-  | ISignPos : (BLeft 0%Z <= l)%O -> (BRight 0%Z < u)%O ->
+  | ISignPos : (BLeft 0%:Z <= l)%O -> (BRight 0%:Z < u)%O ->
                interval_sign_spec l u (Some (KnownSign.Sign >=0))
-  | ISignBoth : (l < BLeft 0%Z)%O -> (BRight 0%Z < u)%O ->
+  | ISignBoth : (l < BLeft 0%:Z)%O -> (BRight 0%:Z < u)%O ->
                 interval_sign_spec l u (Some >=<0%snum_sign).
 
 Lemma interval_signP l u :
@@ -503,7 +503,7 @@ Definition mul_itv_boundr_subdef (b1 b2 : itv_bound int) : itv_bound int :=
 Arguments mul_itv_boundr_subdef /.
 
 Lemma mul_itv_boundl_subproof b1 b2 (x1 x2 : R) :
-  (BLeft 0%Z <= b1 -> BLeft 0%Z <= b2 ->
+  (BLeft 0%:Z <= b1 -> BLeft 0%:Z <= b2 ->
    Itv.map_itv_bound intr b1 <= BLeft x1 ->
    Itv.map_itv_bound intr b2 <= BLeft x2 ->
    Itv.map_itv_bound intr (mul_itv_boundl_subdef b1 b2) <= BLeft (x1 * x2))%O.
@@ -579,7 +579,7 @@ case: b1 => [[|p1]|p1].
 Qed.
 
 Lemma mul_itv_boundr'_subproof b1 b2 (x1 x2 : R) :
-  (BLeft 0%R <= BLeft x1 -> BRight 0%Z <= b2 ->
+  (BLeft 0%:R <= BLeft x1 -> BRight 0%:Z <= b2 ->
    BRight x1 <= Itv.map_itv_bound intr b1 ->
    BRight x2 <= Itv.map_itv_bound intr b2 ->
    BRight (x1 * x2) <= Itv.map_itv_bound intr (mul_itv_boundr_subdef b1 b2))%O.
