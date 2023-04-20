@@ -212,7 +212,7 @@ Require Import reals signed.
 (*                             open == set of open sets.                      *)
 (*                      open_nbhs p == set of open neighbourhoods of p.       *)
 (*                          basis B == a family of open sets that converges   *)
-(*                                     to each point.                         *)
+(*                                     to each point                          *)
 (*               second_countable T == T has a countable basis                *)
 (*                    continuous f <-> f is continuous w.r.t the topology.    *)
 (*                              x^' == set of neighbourhoods of x where x is  *)
@@ -1706,9 +1706,9 @@ Definition open := Topological.open (Topological.class T).
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.
 
 Definition basis (B : set (set T)) :=
-  (B `<=` open) /\ (forall x, filter_from [set U | B U /\ U x] id --> x).
+  B `<=` open /\ forall x, filter_from [set U | B U /\ U x] id --> x.
 
-Definition second_countable := exists B, countable B /\ basis B.
+Definition second_countable := exists2 B, countable B & basis B.
 
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: Topological.nbhs_pfilter; case: T p => ? []. Qed.
@@ -3328,30 +3328,31 @@ case/finite_setP=> n; elim: n A => [A|n ih A /eq_cardSP[x Ax /ih ?]].
 by rewrite -(setD1K Ax); apply: compactU => //; exact: compact_set1.
 Qed.
 
-Lemma clopen_countable {T : topologicalType}: 
+Lemma clopen_countable {T : topologicalType}:
   compact [set: T] -> @second_countable T -> countable (@clopen T).
 Proof.
-move=> cmpT [B [/fset_subset_countable cntB] [obase Bbase]].
+move=> cmpT [B /fset_subset_countable cntB] [obase Bbase].
 apply/(card_le_trans _ cntB)/pcard_surjP.
-pose f := (fun (F : {fset set T}) => \bigcup_(x in [set` F]) x); exists f.
-move=> D [] oD cD /=; have cmpt : cover_compact D. 
+pose f := fun F : {fset set T} => \bigcup_(x in [set` F]) x; exists f.
+move=> D [] oD cD /=; have cmpt : cover_compact D.
   by rewrite -compact_cover; exact: (subclosed_compact _ cmpT).
-have h : forall (x : T), exists (V : set T), D x -> B V /\ nbhs x V /\ V `<=` D.
-  move=> x; case: (pselect (D x)) => [Dx|]; last by move=> ?; exists set0.
-  have [| V [BV Vx VD]] := Bbase x D; first exact: open_nbhs_nbhs.
-  exists V => _; split => //; split => //; apply: open_nbhs_nbhs; split => //.
+have h (x : T) : exists V : set T, D x -> [/\ B V, nbhs x V & V `<=` D].
+  have [Dx|] := pselect (D x); last by move=> ?; exists set0.
+  have [V [BV Vx VD]] := Bbase x D (open_nbhs_nbhs (conj oD Dx)).
+  exists V => _; split => //; apply: open_nbhs_nbhs; split => //.
   exact: obase.
 pose h' := fun z => projT1 (cid (h z)).
-have [] := @cmpt T D h'.
-- by move=> z Dz; apply: obase; have [] := projT2 (cid (h z)) Dz.
-- move=> z Dz; exists z => //; apply: nbhs_singleton. 
-  by have [? []] := projT2 (cid (h z)) Dz.
-move=> fs fsD DsubC; exists ([fset h' z | z in fs])%fset.
+have [fs fsD DsubC] : finite_subset_cover D h' D.
+  apply: cmpt.
+  - by move=> z Dz; apply: obase; have [] := projT2 (cid (h z)) Dz.
+  - move=> z Dz; exists z => //; apply: nbhs_singleton.
+    by have [] := projT2 (cid (h z)) Dz.
+exists [fset h' z | z in fs]%fset.
   move=> U/imfsetP [z /=] /fsD /set_mem Dz ->; rewrite inE.
-  by have [? []] := projT2 (cid (h z)) Dz.
+  by have [] := projT2 (cid (h z)) Dz.
 rewrite eqEsubset; split => z.
   case=> y /imfsetP [x /= /fsD/set_mem Dx ->]; move: z.
-  by have [? []] := projT2 (cid (h x)) Dx.
+  by have [] := projT2 (cid (h x)) Dx.
 move=> /DsubC /= [y /= yfs hyz]; exists (h' y) => //.
 by rewrite set_imfset /=; exists y.
 Qed.
@@ -6321,7 +6322,6 @@ apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
 by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
 Qed.
 
-
 Section weak_pseudoMetric.
 Context {R : realType} (pS : pointedType) (U : pseudoMetricType R) .
 Variable (f : pS -> U).
@@ -6369,32 +6369,31 @@ Proof. by []. Qed.
 
 End weak_pseudoMetric.
 
-Lemma compact_second_countable {R : realType} {T : pseudoMetricType R} : 
-  compact [set: T] -> second_countable T.
+Lemma compact_second_countable {R : realType} {T : pseudoMetricType R} :
+  compact [set: T] -> @second_countable T.
 Proof.
-have npos : forall n, ((0:R) < (n.+1%:R^-1))%R by [].
-pose f : nat -> T -> (set T) := fun n z => (ball z (PosNum (npos n))%:num)^°.
-move=> cmpt; have h : forall n, finite_subset_cover [set: T] (f n) [set: T].
-  move=> n; rewrite compact_cover in cmpt; apply: cmpt.
-    by move=> z _; rewrite /f; exact: open_interior.
-  move=> z _; exists z => //; rewrite /f/interior; exact: nbhsx_ballx.
-pose h' := fun n => (cid (iffLR (exists2P _ _) (h n))).
-pose h'' := fun n => projT1 (h' n).
-pose B := \bigcup_n (f n) @` [set` (h'' n)]; exists B; split;[|split].
+have npos n : (0:R) < n.+1%:R^-1 by [].
+pose f n (z : T): set T := (ball z (PosNum (npos n))%:num)^°.
+move=> cmpt; have h n : finite_subset_cover [set: T] (f n) [set: T].
+  move: cmpt; rewrite compact_cover; apply.
+  - by move=> z _; rewrite /f; exact: open_interior.
+  - by move=> z _; exists z => //; rewrite /f /interior; exact: nbhsx_ballx.
+pose h' n := cid (iffLR (exists2P _ _) (h n)).
+pose h'' n := projT1 (h' n).
+pose B := \bigcup_n (f n) @` [set` h'' n]; exists B;[|split].
 - apply: bigcup_countable => // n _; apply: finite_set_countable.
   exact/finite_image/ finite_fset.
 - by move => ? [? _ [? _ <-]]; exact: open_interior.
 - move=> x V /nbhs_ballP [] _/posnumP[eps] ballsubV.
   have [//|N] := @ltr_add_invr R 0%R (eps%:num/2) _; rewrite add0r => deleps.
-  have [w [wh fx]] : exists w : T, w \in h'' N /\ f N w x. 
+  have [w wh fx] : exists2 w : T, w \in h'' N & f N w x.
     by have [_ /(_ x) [// | w ? ?]] := projT2 (h' N); exists w.
-  exists (f N w); first split => //; first (by exists N). 
+  exists (f N w); first split => //; first (by exists N).
   apply: (subset_trans _ ballsubV) => z bz.
-  rewrite [_%:num]splitr; apply: (@ball_triangle _ _ w). 
+  rewrite [_%:num]splitr; apply: (@ball_triangle _ _ w).
     by apply: (le_ball (ltW deleps)); apply/ball_sym; apply: interior_subset.
   by apply: (le_ball (ltW deleps)); apply: interior_subset.
 Qed.
-
 
 (* This section proves that uniform spaces, with a countable base for their
    entourage, are metrizable. The definition of this metric is rather arcane,
