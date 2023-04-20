@@ -130,6 +130,25 @@
     `discrete_pseudoMetricType`, and `pseudoMetric_bool`.
   + new lemmas `finite_compact`, `discrete_ball_center`, `compact_cauchy_cvg`
 
+- in `set_interval.v`:
+  + lemma `onem_factor`
+- in `set_interval.v`:
+  + lemmas `in1_subset_itv`, `subset_itvW`
+- in `normedtype.v`:
+  + lemmas `cvg_at_right_filter`, `cvg_at_left_filter`,
+    `cvg_at_right_within`, `cvg_at_left_within`
+- in `derive.v`:
+  + lemma `derivable_within_continuous`
+- in `realfun.v`:
+  + definition `derivable_oo_continuous_bnd`, lemma `derivable_oo_continuous_bnd_within`
+- in `exp.v`:
+  + lemmas `derive_expR`, `convex_expR`
+- new file `convex.v`:
+  + mixin `isConvexSpace`, structure `ConvexSpace`, notations `convType`,
+    `_ <| _ |> _`
+  + lemmas `conv1`, `second_derivative_convex`
+
+
 ### Changed
 
 - in `mathcomp_extra.v`
