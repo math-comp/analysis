@@ -10,6 +10,10 @@ From HB Require Import structures.
 (******************************************************************************)
 (* This file provides properties of standard real-valued functions over real  *)
 (* numbers (e.g., the continuity of the inverse of a continuous function).    *)
+(*                                                                            *)
+(*   derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and       *)
+(*                                        continuous up to the boundary       *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -23,6 +27,31 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Import numFieldNormedType.Exports.
+
+Section derivable_oo_continuous_bnd.
+Context {R : numFieldType} {V : normedModType R}.
+
+Definition derivable_oo_continuous_bnd (f : R -> V) (x y : R) :=
+  [/\ {in `]x, y[, forall x, derivable f x 1},
+      f @ x^'+ --> f x & f @ y^'- --> f y].
+
+Lemma derivable_oo_continuous_bnd_within (f : R -> V) (x y : R) :
+  derivable_oo_continuous_bnd f x y -> {within `[x, y], continuous f}.
+Proof.
+move=> [fxy fxr fyl]; apply/subspace_continuousP => z /=.
+rewrite in_itv/= => /andP[]; rewrite le_eqVlt => /predU1P[<-{z} xy|].
+  have := cvg_at_right_within fxr; apply: cvg_trans; apply: cvg_app.
+  by apply: within_subset => z/=; rewrite in_itv/= => /andP[].
+move=> /[swap].
+rewrite le_eqVlt => /predU1P[->{z} xy|zy xz].
+  have := cvg_at_left_within fyl; apply: cvg_trans; apply: cvg_app.
+  by apply: within_subset => z/=; rewrite in_itv/= => /andP[].
+apply: cvg_within_filter.
+apply/differentiable_continuous; rewrite -derivable1_diffP.
+by apply: fxy; rewrite in_itv/= xz zy.
+Qed.
+
+End derivable_oo_continuous_bnd.
 
 Section real_inverse_functions.
 Variable R : realType.

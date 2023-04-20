@@ -1026,8 +1026,8 @@ End open_closed_sets.
 #[global] Hint Extern 0 (closed _) => now apply: closed_le : core.
 #[global] Hint Extern 0 (closed _) => now apply: closed_eq : core.
 
-Section at_left_right_pmNormedZmod.
-Variable (R : numFieldType) (V : pseudoMetricNormedZmodType R).
+Section at_left_right.
+Variable R : numFieldType.
 
 Definition at_left (x : R) := within (fun u => u < x) (nbhs x).
 Definition at_right (x : R) := within (fun u => x < u) (nbhs x).
@@ -1104,8 +1104,42 @@ Lemma nbhs_left_ge x z : z < x -> \forall y \near x^'-, z <= y.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
 Unshelve. all: by end_near. Qed.
 
+End at_left_right.
+#[global] Typeclasses Opaque at_left at_right.
+Notation "x ^'-" := (at_left x) : classical_set_scope.
+Notation "x ^'+" := (at_right x) : classical_set_scope.
+
+Section at_left_right_topologicalType.
+Variables (R : numFieldType) (V : topologicalType) (f : R -> V) (x : R).
+
+Lemma cvg_at_right_filter : f z @[z --> x] --> f x -> f z @[z --> x^'+] --> f x.
+Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
+
+Lemma cvg_at_left_filter : f z @[z --> x] --> f x -> f z @[z --> x^'-] --> f x.
+Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
+
+Lemma cvg_at_right_within : f x @[x --> x^'+] --> f x ->
+  f x @[x --> within (fun u => x <= u) (nbhs x)] --> f x.
+Proof.
+move=> fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
+by move/predU1P => [<-|]; [exact: nbhs_singleton | near: z; exact: fxr].
+Unshelve. all: by end_near. Qed.
+
+Lemma cvg_at_left_within : f x @[x --> x^'-] --> f x ->
+  f x @[x --> within (fun u => u <= x) (nbhs x)] --> f x.
+Proof.
+move=> fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
+by move/predU1P => [->|]; [exact: nbhs_singleton | near: z; exact: fxr].
+Unshelve. all: by end_near. Qed.
+
+End at_left_right_topologicalType.
+
+Section at_left_right_pmNormedZmod.
+Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
+
 Lemma nbhsr0P (P : set V) x :
-  (\forall y \near x, P y) <-> (\forall e \near 0^'+, forall y, `|x - y| <= e -> P y).
+  (\forall y \near x, P y) <->
+  (\forall e \near 0^'+, forall y, `|x - y| <= e -> P y).
 Proof.
 rewrite nbhs0P/= near_withinE/= !near_simpl.
 split=> /nbhs_norm0P[/= _/posnumP[e] /(_ _) Px]; apply/nbhs_norm0P.
@@ -1124,10 +1158,10 @@ Let cvgrP {F : set_system V} {FF : Filter F} (y : V) : [<->
 Proof.
 tfae; first by move=> *; apply: cvgr_dist_le.
 - by move=> Fy; near do apply: Fy; apply: nbhs_right_gt.
-- move=> Fy; near=> e; near 0^'+ => d; near=> x.
+- move=> Fy; near=> e; near (0:R)^'+ => d; near=> x.
   rewrite (@le_lt_trans _ _ d)//; first by near: x; near: d.
   by near: d; apply: nbhs_right_lt; near: e; apply: nbhs_right_gt.
-- move=> Fy; apply/cvgrPdist_lt => e e_gt0; near 0^'+ => d.
+- move=> Fy; apply/cvgrPdist_lt => e e_gt0; near (0:R)^'+ => d.
   near=> x; rewrite (@lt_le_trans _ _ d)//; first by near: x; near: d.
   by near: d; apply: nbhs_right_le.
 Unshelve. all: by end_near. Qed.
@@ -1185,7 +1219,7 @@ Qed.
 Lemma cvgr_norm_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y -> forall u, `|y| < u -> \forall t \near F, `|f t| < u.
 Proof.
-move=> Fy z zy; near 0^'+ => k; near=> x; have : `|f x - y| < k.
+move=> Fy z zy; near (0:R)^'+ => k; near=> x; have : `|f x - y| < k.
   by near: x; apply: cvgr_distC_lt => //; near: k; apply: nbhs_right_gt.
 move=> /(le_lt_trans (ler_dist_dist _ _)) /real_ltr_normlW.
 rewrite realB// ltr_subl_addl => /(_ _)/lt_le_trans; apply => //.
@@ -1201,7 +1235,7 @@ Unshelve. all: by end_near. Qed.
 Lemma cvgr_norm_gt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y -> forall u, `|y| > u -> \forall t \near F, `|f t| > u.
 Proof.
-move=> Fy z zy; near 0^'+ => k; near=> x; have: `|f x - y| < k.
+move=> Fy z zy; near (0:R)^'+ => k; near=> x; have: `|f x - y| < k.
   by near: x; apply: cvgr_distC_lt => //; near: k; apply: nbhs_right_gt.
 move=> /(le_lt_trans (ler_dist_dist _ _)); rewrite distrC => /real_ltr_normlW.
 rewrite realB// ltr_subl_addl  -ltr_subl_addr => /(_ isT); apply: le_lt_trans.
@@ -1263,9 +1297,6 @@ Arguments cvgr_neq0 {R V T F FF f}.
 #[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
 
-#[global] Typeclasses Opaque at_left at_right.
-Notation "x ^'-" := (at_left x) : classical_set_scope.
-Notation "x ^'+" := (at_right x) : classical_set_scope.
 
 Section at_left_rightR.
 Variable (R : numFieldType).

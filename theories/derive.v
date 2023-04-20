@@ -1077,6 +1077,14 @@ have -> : (fun h => (f \o shift x) h%:A) = f \o shift x.
 by have /diff_locally := dfx; rewrite diff1E // derive1E =>->.
 Qed.
 
+Lemma derivable_within_continuous f (i : interval R) :
+  {in i, forall x, derivable f x 1} -> {within [set` i], continuous f}.
+Proof.
+move=> di; apply/continuous_in_subspaceT => z /[1!inE] zA.
+apply/differentiable_continuous; rewrite -derivable1_diffP.
+by apply: di; rewrite inE.
+Qed.
+
 End DeriveRU.
 
 Section DeriveVW.
