@@ -30,6 +30,8 @@ numfun.v
 lebesgue_integral.v
 summability.v
 signed.v
+itv.v
+convex.v
 altreals/xfinmap.v
 altreals/discrete.v
 altreals/realseq.v
