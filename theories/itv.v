@@ -2,7 +2,8 @@
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
 From mathcomp Require Import interval mathcomp_extra.
-Require Import boolp signed.
+From mathcomp.classical Import boolp.
+Require Import signed.
 
 (******************************************************************************)
 (* This file develops tools to make the manipulation of numbers within        *)
