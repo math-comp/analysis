@@ -264,6 +264,13 @@
     (use `emeasurable_itv` instead)
 - in `measure.v`:
   + lemma `measurable_fun_ext`
+- in `realsum.v`:
+  + `psumB`, `interchange_sup`, `interchange_psum`
+- in `distr.v`:
+  + `dlet_lim`, `dlim_let`, `exp_split`, `exp_dlet`,
+    `dlet_dlet`, `dmargin_dlet`, `dlet_dmargin`,
+    `dfst_dswap`, `dsnd_dswap`, `dsndE`, `pr_dlet`,
+    `exp_split`, `exp_dlet`
 
 ### Removed
 
