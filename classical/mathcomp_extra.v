@@ -1134,3 +1134,17 @@ have [b_gt0 _|//|<- _] := ltgtP; last first.
 have [a_le0|a_gt0] := ler0P a; last by rewrite ler_psqrt.
 by rewrite ler0_sqrtr // sqrtr_ge0 (le_trans a_le0) ?ltW.
 Qed.
+
+Section order_min.
+Variables (d : unit) (T : orderType d).
+Import Order.
+Local Open Scope order_scope.
+
+Lemma lt_min_lt (x y z : T) : (min x z < min y z)%O -> (x < y)%O.
+Proof.
+rewrite /Order.min/=; case: ifPn => xz; case: ifPn => yz; rewrite ?ltxx//.
+- by move=> /lt_le_trans; apply; rewrite leNgt.
+- by rewrite ltNge (ltW yz).
+Qed.
+
+End order_min.
