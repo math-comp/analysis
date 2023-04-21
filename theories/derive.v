@@ -1360,8 +1360,6 @@ Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_right x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
-(* should be inferred *)
-have atrF := at_right_proper_filter x.
 apply: (@cvg_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 by exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
@@ -1371,8 +1369,6 @@ Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_left x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
-(* should be inferred *)
-have atrF := at_left_proper_filter x.
 apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
