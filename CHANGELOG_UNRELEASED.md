@@ -8,6 +8,16 @@
 
 ### Renamed
 
+- in `derive.v`:
+  + `Rmult_rev` -> `mulr_rev`
+  + `rev_Rmult` -> `rev_mulr`
+  + `Rmult_is_linear` -> `mulr_is_linear`
+  + `Rmult_linear` -> `mulr_linear`
+  + `Rmult_rev_is_linear` -> `mulr_rev_is_linear`
+  + `Rmult_rev_linear` -> `mulr_rev_linear`
+  + `Rmult_bilinear` -> `mulr_bilinear`
+  + `is_diff_Rmult` -> `is_diff_mulr`
+
 ### Generalized
 
 ### Deprecated
