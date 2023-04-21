@@ -31,8 +31,8 @@ Lastest releases: [[0.6.2] - 2023-04-21](#062---2023-04-21) and [[0.6.1] - 2023-
     `totally_disconnected_cvg`, and `totally_disconnected_prod`.
   + new definitions `split_sym`, `gauge`, `gauge_uniformType_mixin`,
     `gauge_topologicalTypeMixin`, `gauge_filtered`, `gauge_topologicalType`,
-    `gauge_uniformType`, `gauge_psuedoMetric_mixin`, and
-    `gauge_psuedoMetricType`.
+    `gauge_uniformType`, `gauge_pseudoMetric_mixin`, and
+    `gauge_pseudoMetricType`.
   + new lemmas `iter_split_ent`, `gauge_ent`, `gauge_filter`,
     `gauge_refl`, `gauge_inv`, `gauge_split`, `gauge_countable_uniformity`, and
     `uniform_pseudometric_sup`.
@@ -56,6 +56,9 @@ Lastest releases: [[0.6.2] - 2023-04-21](#062---2023-04-21) and [[0.6.1] - 2023-
     `powere_posNyr`, `fine_powere_pos`, `powere_pos_ge0`,
     `powere_pos_gt0`, `powere_pos_eq0`, `powere_posM`, `powere12_sqrt`
   + lemmas `derive_expR`, `convex_expR`
+  + lemmas `power_pos_ge0`, `power_pos0`, `power_pos_eq0`,
+    `power_posM`, `power_posAC`, `power12_sqrt`, `power_pos_inv1`,
+    `power_pos_inv`, `power_pos_intmul`
 - in `measure.v`:
   + lemmas `negligibleU`, `negligibleS`
   + definition `almost_everywhere_notation`
@@ -65,6 +68,7 @@ Lastest releases: [[0.6.2] - 2023-04-21](#062---2023-04-21) and [[0.6.1] - 2023-
 - in `lebesgue_measure.v`:
   + lemma `emeasurable_itv`
   + lemma `measurable_fun_er_map`
+  + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
 - in `lebesgue_integral.v`:
   + lemma `sfinite_Fubini`
   + instance of `isMeasurableFun` for `normr`
@@ -166,9 +170,6 @@ Lastest releases: [[0.6.2] - 2023-04-21](#062---2023-04-21) and [[0.6.1] - 2023-
   + `maxEFin` changed to `fine_max`
   + `minEFin` changed to `fine_min`
 - in `exp.v`:
-  + new lemmas `power_pos_ge0`, `power_pos0`, `power_pos_eq0`,
-    `power_posM`, `power_posAC`, `power12_sqrt`, `power_pos_inv1`,
-    `power_pos_inv`, `power_pos_intmul`
   + generalize `exp_fun` and rename to `power_pos`
   + `exp_fun_gt0` has now a condition and is renamed to `power_pos_gt0`
   + remove condition of `exp_funr0` and rename to `power_posr0`
@@ -183,8 +184,6 @@ Lastest releases: [[0.6.2] - 2023-04-21](#062---2023-04-21) and [[0.6.1] - 2023-
 - in `measure.v`:
   + generalize `negligible` to `semiRingOfSetsType`
   + definition `almost_everywhere`
-- in `lebesgue_measure.v`:
-  + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
 
 ### Renamed
 
