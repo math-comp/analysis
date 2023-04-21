@@ -2402,6 +2402,22 @@ Notation "[ 'lipschitz' E | x 'in' A ]" :=
   (at level 0, x name, format "[ 'lipschitz'  E  |  x  'in'  A ]").
 Notation lipschitz f := [lipschitz f x | x in setT].
 
+Lemma lipschitz_set0 (f : R^o -> R^o) :[lipschitz f x | x in set0].
+near=> r.
+rewrite setM0.
+exact: globally0.
+Unshelve. by end_near.
+Qed.
+
+Lemma lipschitz_set1 (f : R^o -> R^o) a :[lipschitz f x | x in set1 a].
+Proof.
+apply (@klipschitzW _ _ _ (f a)).
+  apply (@globally_properfilter _ _ (a, a)).
+  by apply inferP => /=.
+move=> [x y] /= [] -> ->.
+by rewrite !subrr normr0 mulr0.
+Qed.
+
 Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R)
    (k : R) (f : V -> W) (A : set V) :
   k.-lipschitz_A f -> [locally k.-lipschitz_A f].
