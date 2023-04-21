@@ -17,7 +17,9 @@ From HB Require Import structures.
 (*       ConvexSpace R == structure of convex space                           *)
 (*         a <| t |> b == convexity operator                                  *)
 (* E : lmodType R with R : realDomainType and R : realDomainType are shown to *)
-(* be convex spaces                                                           *)
+(* be convex spaces with the following aliases:                               *)
+(*       convex_lmodType E == E : lmodType T as a convex spaces               *)
+(* convex_realDomainType R == R : realDomainType as a convex space            *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -38,8 +40,7 @@ Import numFieldNormedType.Exports.
 Declare Scope convex_scope.
 Local Open Scope convex_scope.
 
-HB.mixin Record isConvexSpace (R : realDomainType) (T : Type) := {
-  convexspacechoiceclass : Choice.class_of T ;
+HB.mixin Record isConvexSpace (R : realDomainType) T := {
   conv : {i01 R} -> T -> T -> T ;
   conv0 : forall a b, conv 0%:i01 a b = a ;
   convmm : forall (p : {i01 R}) a, conv p a a = a ;
@@ -51,13 +52,7 @@ HB.mixin Record isConvexSpace (R : realDomainType) (T : Type) := {
 
 #[short(type=convType)]
 HB.structure Definition ConvexSpace (R : realDomainType) :=
-  {T of isConvexSpace R T }.
-
-Canonical conv_eqType (R : realDomainType) (T : convType R) :=
-  Eval hnf in EqType (ConvexSpace.sort T) convexspacechoiceclass.
-Canonical conv_choiceType (R : realDomainType) (T : convType R) :=
-  Eval hnf in ChoiceType (ConvexSpace.sort T) convexspacechoiceclass.
-Coercion conv_choiceType : convType >-> choiceType.
+  {T of isConvexSpace R T & Choice T}.
 
 Notation "a <| p |> b" := (conv p a b) : convex_scope.
 
@@ -75,9 +70,13 @@ End convex_space_lemmas.
 
 Local Open Scope convex_scope.
 
+Definition convex_lmodType {R : realDomainType} (E : lmodType R) : Type := E.
+
 Section lmodType_convex_space.
-Context {R : realDomainType} {E : lmodType R}.
+Context {R : realDomainType} {E' : lmodType R}.
 Implicit Type p q r : {i01 R}.
+
+Let E := convex_lmodType E'.
 
 Let avg p (a b : E) := `1-(p%:inum) *: a + p%:inum *: b.
 
@@ -102,16 +101,22 @@ rewrite [in LHS]scalerDr [in LHS]addrA [in RHS]scalerDr; congr (_ + _ + _).
 - by rewrite scalerA.
 Qed.
 
+HB.instance Definition _ := Choice.on E.
+
 HB.instance Definition _ :=
-  @isConvexSpace.Build R E (Choice.class _) avg avg0 avgI avgC avgA.
+  isConvexSpace.Build R E avg0 avgI avgC avgA.
 
 End lmodType_convex_space.
+
+Definition convex_realDomainType (R : realDomainType) : Type := R^o.
 
 Section realDomainType_convex_space.
 Context {R : realDomainType}.
 Implicit Types p q : {i01 R}.
 
-Let avg p (a b : [the lmodType R of R^o]) := a <| p |> b.
+Let E := @convex_realDomainType R.
+
+Let avg p (a b : convex_lmodType R^o) := a <| p |> b.
 
 Let avg0 a b : avg 0%:i01 a b = a.
 Proof. by rewrite /avg conv0. Qed.
@@ -128,7 +133,7 @@ Let avgA p q r (a b c : R) :
 Proof. by move=> h; rewrite /avg (convA _ _ r). Qed.
 
 HB.instance Definition _ := @isConvexSpace.Build R R^o
-  (Choice.class _) _ avg0 avgI avgC avgA.
+  _ avg0 avgI avgC avgA.
 
 End realDomainType_convex_space.
 

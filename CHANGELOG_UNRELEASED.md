@@ -144,6 +144,7 @@
   + mixin `isConvexSpace`, structure `ConvexSpace`, notations `convType`,
     `_ <| _ |> _`
   + lemmas `conv1`, `second_derivative_convex`
+  + definitions `convex_lmodType`, `convex_realDomainType``
 
 
 ### Changed
