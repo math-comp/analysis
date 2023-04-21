@@ -1970,7 +1970,7 @@ Proof.
 rewrite bigmax_nnsfunE.
 apply: (@le_trans _ _ (\big[maxe/0%:E]_(i < k) g k x)); last first.
   by apply/bigmax_leP; split => //; apply: g0D.
-rewrite (@big_morph _ _ EFin 0%:E maxe) //; last by move=> *; rewrite maxEFin.
+rewrite (big_morph _ (@EFin_max R) erefl) //.
 apply: le_bigmax2 => i _; rewrite nnsfun_approxE /=.
 by rewrite (le_trans (le_approx _ _ _)) => //; exact/nd_g/ltnW.
 Qed.
@@ -3218,11 +3218,11 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
 have : (g1 \+ g2)^\+ \+ g1^\- \+ g2^\- = (g1 \+ g2)^\- \+ g1^\+ \+ g2^\+.
   rewrite funeqE => x.
   apply/eqP; rewrite -2!addeA [in eqRHS]addeC -sube_eq; last 2 first.
-    by rewrite /funepos /funeneg /g1 /g2 /= !maxEFin.
-    by rewrite /funepos /funeneg /g1 /g2 /= !maxEFin.
+    by rewrite /funepos /funeneg -!fine_max.
+    by rewrite /funepos /funeneg -!fine_max.
   rewrite addeAC eq_sym -sube_eq; last 2 first.
-    by rewrite /funepos /funeneg !maxEFin.
-    by rewrite /funepos /funeneg !maxEFin.
+    by rewrite /funepos /funeneg -!fine_max.
+    by rewrite /funepos /funeneg -!fine_max.
   apply/eqP.
   rewrite -[LHS]/((g1^\+ \+ g2^\+ \- (g1^\- \+ g2^\-)) x) -funeD_posD.
   by rewrite -[RHS]/((_ \- _) x) -funeD_Dpos.

@@ -32,6 +32,7 @@ summability.v
 signed.v
 itv.v
 convex.v
+charge.v
 altreals/xfinmap.v
 altreals/discrete.v
 altreals/realseq.v

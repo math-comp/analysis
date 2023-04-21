@@ -242,6 +242,15 @@ move=> /existsNP[i] /not_implyP[ik] /contrapT Fit; apply (ih t i) => //.
 by rewrite (leq_ltn_trans ik).
 Qed.
 
+Lemma seqDUIE (S : set T) (F : (set T)^nat) :
+  seqDU (fun n => S `&` F n) = (fun n => S `&` F n `\` \bigcup_(i < n) F i).
+Proof.
+apply/funext => n; rewrite -setIDA; apply/seteqP; split; last first.
+  move=> x [Sx [Fnx UFx]]; split=> //; apply: contra_not UFx => /=.
+  by rewrite bigcup_mkord -big_distrr/= => -[].
+by rewrite /seqDU -setIDA bigcup_mkord -big_distrr/= setDIr setIUr setDIK set0U.
+Qed.
+
 End seqDU.
 #[global] Hint Resolve trivIset_seqDU : core.
 

@@ -2299,17 +2299,25 @@ move=> [x| |] [y| |] //=; first by rewrite normrM.
 - by rewrite mulyy.
 Qed.
 
-Lemma maxEFin r1 r2 : maxe r1%:E r2%:E = (Num.max r1 r2)%:E.
+Lemma fine_max :
+  {in fin_num &, {mono @fine R : x y / maxe x y >-> (Num.max x y)%:E}}.
 Proof.
-by have [ab|ba] := leP r1 r2;
+by move=> [x| |] [y| |]//= _ _; apply/esym; have [ab|ba] := leP x y;
   [apply/max_idPr; rewrite lee_fin|apply/max_idPl; rewrite lee_fin ltW].
 Qed.
 
-Lemma minEFin r1 r2 : mine r1%:E r2%:E = (Num.min r1 r2)%:E.
+Lemma EFin_max : {morph (@EFin R) : r s / Num.max r s >-> maxe r s}.
+Proof. by move=> a b /=; rewrite -fine_max. Qed.
+
+Lemma fine_min :
+  {in fin_num &, {mono @fine R : x y / mine x y >-> (Num.min x y)%:E}}.
 Proof.
-by have [ab|ba] := leP r1 r2;
+by move=> [x| |] [y| |]//= _ _; apply/esym; have [ab|ba] := leP x y;
   [apply/min_idPl; rewrite lee_fin|apply/min_idPr; rewrite lee_fin ltW].
 Qed.
+
+Lemma EFin_min : {morph (@EFin R) : r s / Num.min r s >-> mine r s}.
+Proof. by move=> a b /=; rewrite -fine_min. Qed.
 
 Lemma adde_maxl : left_distributive (@GRing.add (\bar R)) maxe.
 Proof.
@@ -2354,7 +2362,7 @@ Proof. by move=> x; rewrite minC minye. Qed.
 Lemma oppe_max : {morph -%E : x y / maxe x y >-> mine x y : \bar R}.
 Proof.
 move=> [x| |] [y| |] //=.
-- by rewrite maxEFin minEFin -EFinN oppr_max.
+- by rewrite -fine_max//= -fine_min//= oppr_max.
 - by rewrite maxey mineNy.
 - by rewrite miney.
 - by rewrite minNye.
