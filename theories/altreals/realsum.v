@@ -821,7 +821,7 @@ rewrite /D big_split /=; apply/ler_add; apply/big_fset_subset=> //.
 Qed.
 
 (* -------------------------------------------------------------------- *)
-Lemma psumB S1 S2 :
+Lemma __admitted__psumB S1 S2 :
     (forall x, 0 <= S2 x <= S1 x) -> summable S1
   -> psum (S1 \- S2) = (psum S1 - psum S2).
 Proof using Type. Admitted.
@@ -908,6 +908,10 @@ case/summable_of_bd: h => smS le_psum; apply/eqP.
 by rewrite eq_le le_psum /=; apply/gerfinseq_psum.
 Qed.
 End StdSum.
+
+#[deprecated(since="mathcomp-analysis 0.6.2",
+  note="lacks proof, use __admitted__psumB explicitly if you really want to")]
+Notation psumB := __admitted__psumB.
 
 (* -------------------------------------------------------------------- *)
 Section PSumReindex.
@@ -1098,7 +1102,7 @@ End PSumPair.
 Section SupInterchange.
 Context {R : realType} {T U : Type}.
 
-Lemma interchange_sup (S : T -> U -> R) :
+Lemma __admitted__interchange_sup (S : T -> U -> R) :
     (forall x, has_sup [set r | exists y, r = S x y])
   -> has_sup [set r | exists x, r = sup [set r | exists y, r = S x y]]
   -> sup [set r | exists x, r = sup [set r | exists y, r = S x y]]
@@ -1106,16 +1110,24 @@ Lemma interchange_sup (S : T -> U -> R) :
 Proof using Type. Admitted.
 End SupInterchange.
 
+#[deprecated(since="mathcomp-analysis 0.6.2",
+  note="lacks proof, use __admitted__interchange_sup explicitly if you really want to use this lemma")]
+Notation interchange_sup := __admitted__interchange_sup.
+
 (* -------------------------------------------------------------------- *)
 Section PSumInterchange.
 Context {R : realType} {T U : choiceType}.
 
-Lemma interchange_psum (S : T -> U -> R) :
+Lemma __admitted__interchange_psum (S : T -> U -> R) :
     (forall x, summable (S x))
   -> summable (fun x => psum (fun y => S x y))
   -> psum (fun x => psum (fun y => S x y)) = psum (fun y => psum (fun x => S x y)).
 Proof using Type. Admitted.
 End PSumInterchange.
+
+#[deprecated(since="mathcomp-analysis 0.6.2",
+  note="lacks proof, use __admitted__interchange_psum explicitly if you really want to use this lemma")]
+Notation interchange_psum := __admitted__interchange_psum.
 
 (* -------------------------------------------------------------------- *)
 Section SumTheory.
