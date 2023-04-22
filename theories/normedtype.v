@@ -2402,20 +2402,16 @@ Notation "[ 'lipschitz' E | x 'in' A ]" :=
   (at level 0, x name, format "[ 'lipschitz'  E  |  x  'in'  A ]").
 Notation lipschitz f := [lipschitz f x | x in setT].
 
-Lemma lipschitz_set0 (f : R^o -> R^o) :[lipschitz f x | x in set0].
-near=> r.
-rewrite setM0.
-exact: globally0.
-Unshelve. by end_near.
-Qed.
+Lemma lipschitz_set0 (K : numFieldType) (V W : normedModType K)
+  (f : V -> W) : [lipschitz f x | x in set0].
+Proof. by apply: nearW; rewrite setM0 => ?;apply: globally0. Qed.
 
-Lemma lipschitz_set1 (f : R^o -> R^o) a :[lipschitz f x | x in set1 a].
+Lemma lipschitz_set1 (K : numFieldType) (V W : normedModType K)
+(f : V -> W) (a : V) :[lipschitz f x | x in set1 a].
 Proof.
-apply (@klipschitzW _ _ _ (f a)).
-  apply (@globally_properfilter _ _ (a, a)).
-  by apply inferP => /=.
-move=> [x y] /= [] -> ->.
-by rewrite !subrr normr0 mulr0.
+apply: (@klipschitzW _ _ _ `|f a|).
+  by apply: (@globally_properfilter _ _ (a, a)).
+by move=> [x y] /= [] -> ->; rewrite !subrr !normr0 mulr0.
 Qed.
 
 Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R)
