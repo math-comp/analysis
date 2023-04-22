@@ -8207,3 +8207,184 @@ exact: precompact_pointwise_precompact.
 Qed.
 
 End ArzelaAscoli.
+
+Lemma fst_open {U V : topologicalType} (A : set (U * V)) : 
+  open A -> open (fst @` A).
+Proof.
+rewrite ?openE=> oA z [[a b/=] Aab <-]; rewrite /interior.
+have [[P Q] [Pa ?] pqA] := oA _ Aab; apply: (@filterS _ _ _ P) => //.
+move=> p Pp; exists (p, b) => //; apply: pqA; split => //. 
+exact: nbhs_singleton.
+Qed.
+
+Lemma snd_open {U V : topologicalType} (A : set (U * V)) : 
+  open A -> open (snd @` A).
+Proof.
+rewrite ?openE=> oA z [[a b/=] Aab <-]; rewrite /interior.
+have [[P Q] [? Qb] pqA] := oA _ Aab; apply: (@filterS _ _ _ Q) => //.
+move=> q Qq; exists (a, q) => //; apply: pqA; split => //. 
+exact: nbhs_singleton.
+Qed.
+
+Lemma near_powerset_map {T U : topologicalType} (f : T -> U) (F : set (set T))
+  (P : (set U) -> Prop) : 
+  ProperFilter F ->
+  (\forall y \near powerset_filter_from (f x @[x --> F]), P y) -> 
+  (\forall y \near powerset_filter_from F, P (f @` y)).
+Proof.
+move=> FF [] G /= [Gf Gs [D GD GP]]. 
+have PpF : ProperFilter (powerset_filter_from F).
+  by apply: powerset_filter_from_filter.
+have /= := Gf _ GD; rewrite nbhs_simpl => FfD.
+near=> M; apply: GP; apply: (Gs D) => //.
+  apply: filterS; first exact: preimage_image.
+  by apply: (near (near_small_set _) M).
+have : M `<=` f @^-1` D by apply: (near (small_set_sub FfD) M).
+by move/image_subset/subset_trans; apply; apply: image_preimage_subset.
+Unshelve. all: by end_near. Qed.
+
+Lemma near_map_powerset {T U : topologicalType} (f : T -> U) (F : set (set T))
+  (P : (set U) -> Prop) : 
+  (forall X Y, X `<=` Y -> P Y -> P X) ->
+  ProperFilter F ->
+  (\forall y \near powerset_filter_from F, P (f @` y)) ->
+  (\forall y \near powerset_filter_from (f x @[x --> F]), P y).
+Proof.
+move=> Psub FF [] G /= [Gf Gs [D GD GP]]. 
+have PpF : ProperFilter (powerset_filter_from (f x @[x-->F])).
+  by apply: powerset_filter_from_filter.
+have /= := Gf _ GD; rewrite nbhs_simpl => FfD.
+have ffiD : fmap f F (f@` D).
+  by rewrite /fmap /=; apply: filterS; first exact: preimage_image.
+near=> M; have FfM : (fmap f F M) by apply (near (near_small_set _) M).
+apply: (@Psub _ (f@`D)); first exact: (near (small_set_sub ffiD) M).
+exact: GP.
+Unshelve. all: by end_near. Qed.
+
+Section currying.
+Context {U : topologicalType} {V W : uniformType}.
+
+Hypothesis lcU : locally_compact [set: U].
+Hypothesis hsdf : hausdorff_space U.
+
+Let UV := [topologicalType of (U * V)].
+Definition curry (f : {family compact, UV -> W}) : 
+  {family compact, U -> [uniformType of {family compact, V -> W}]} := 
+    fun u v => f (u, v).
+
+Lemma continuous_curry (f : {family compact, UV -> W}) : 
+  continuous f -> continuous (curry f).
+Proof.
+move=> ctsf x; apply/pointwise_compact_cvg; first last.
+  apply/cvg_sup => y D [/= ? [[E oE] <- /=] ecfxy /filterS]; apply.
+  have [[P Q] [Px Qy] PQfE] : nbhs (x, y) (f@^-1` E). 
+    by apply: ctsf; apply: open_nbhs_nbhs.
+  rewrite nbhs_simpl /=; near=> z; rewrite /curry /=. 
+  by apply: PQfE => /=; split; last exact: nbhs_singleton; apply (near Px z).
+have Pfx : ProperFilter (powerset_filter_from (curry f x @[x --> x])).
+  apply: powerset_filter_from_filter.
+have Pfx2 : ProperFilter (powerset_filter_from (nbhs (curry f x))).
+  apply: powerset_filter_from_filter.
+apply: near_map_powerset; first exact: equicontinuous_subset_id.
+have [A] := @lcU x I; rewrite withinET => nAx [cptA clA].
+exists [set W | nbhs x W /\ W `<=` A] => /=; first split.
+- by move=> ? [].
+- by move=> E1 E2 [nE1 E1A E2x ?]; split => //; apply: (subset_trans _ E1A).
+- by exists A; split.
+move=> B /= [Bx BA] y /= E entE; near=> z => + [ + + <-] => _; near: z.
+suff : \forall x0 \near y, forall x1 : U, closure B x1 -> 
+  E (f (x1, y), f (x1, x0)).
+  by apply: filter_app; apply: nearW=> ? + ? ?; apply; apply/subset_closure.
+have /compact_near_coveringP : compact (closure B).
+  apply: (subclosed_compact _ cptA); first exact: closed_closure.
+  by rewrite closure_id in clA; rewrite clA; apply: closure_subset.
+apply => x' clBx'; near (powerset_filter_from (@entourage W)) => E'.
+have entE' : entourage E' by exact: (near (near_small_set _)).
+have : nbhs (x' , y) (f@^-1` (to_set E' (f (x',y)))).
+  by apply: ctsf; rewrite /= -nbhs_entourageE; exists E'.
+case; case=> P Q /= [Px Qy] PQfE; exists (P, Q); first by split => //.
+case=> a b /= [Pa Qb]; apply: subset_split_ent => //.
+exists (f (x', y)); last by apply: (near (small_ent_sub _) E')=>//; exact: PQfE.
+apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
+by apply: PQfE; split => //; apply: nbhs_singleton.
+Unshelve. all: by end_near. Qed.
+  
+  
+
+  near_simpl; near=> i j => /=.
+apply: PQfE.
+exists (P, Q); [by split|]; move => ij /PQfE /=. 
+have := PQfE (i,j).
+  exists Q.
+  Search (nbhs _ (to_set _ _)).
+near=> A'. 
+  have : A' `<=` A.
+ have := (near (small_set_sub nAx) A').
+y E entE. 
+suff : \forall y' \near y, forall x1, closure B x1 -> (E (f ))
+have : \forall C \near powerset_filter_from (nbhs y), forall a, A x -> 
+  (E (a ))
+
+near=> y' => + [z Az <-] => _.
+suff : (fun xy => (f xy.1, f xy.2)) @^-1` E ()
+
+have := ctsf (to_set E (f (x,y))).
+move: E entE y; near: A.
+have := ctsf 
+
+
+suff : \forall W0 \near powerset_filter_from (nbhs (curry f x)), 
+  equicontinuous W0 id.
+  apply: filter_app.
+
+near=> E.
+have Efx : nbhs (curry f x) E. apply (near (near_small_set Pfx)).
+  done.
+near=> z => g Eg.
+have := 
+have Q := ctsf (x ) (to_set J (g y)).
+  
+  
+
+
+
+  apply: open_nbhs_nbhs; split => //; have : 
+  apply: fst_open; apply: open_comp => //. 
+  congr (open _). rewrite eqEsubset; split => z /=.
+    case=> [w v <-].
+    
+    
+    
+  fst
+    have -> : [set z | E (curry f z y)] = proj  @` 
+  have : nbhs (x,y) (f @^-1` E).
+  move=> D /=; rewrite nbhsE /=; case => O [oO ocfx] /filterS; apply.
+  rewrite nbhs_simpl /=.
+  apply: open_nbhs_nbhs; split => //.
+  have := curry f @^-1` O = proj x 
+
+apply/uniform_restrict_cvg => E; rewrite /= nbhs_simpl /= nbhs_simpl /=.
+suff : {uniform A, curry f x @[x --> x] --> curry f x}.
+
+
+
+rewrite /= -nbhs_entourageE; case=> /= E entE /filterS; apply. 
+move: entE; rewrite /entourage /=.
+have := ctsf 
+
+Lemma curry_continuous (f : {family compact, UV -> W}) : 
+  continuous f -> {for f, continuous curry}.
+Proof.
+move=> ctsf ; apply/ fam_cvgP; first exact/fmap_filter/nbhs_filter.
+move=> A cptA. 
+
+apply/uniform_restrict_cvg; first exact/fmap_filter/nbhs_filter.
+move=> E /=.
+move=> L [/= I []] [N oN <- /= Ncf] /filterS. apply.
+  apply/fmap_filter/fmap_filter/nbhs_filter.
+rewrite nbhs_simpl /= nbhs_simpl /=. 
+
+[/= ? [[/= N oN <-]]] /= Nacf /filterS; apply. 
+  exact/fmap_filter/nbhs_filter.
+rewrite /= ?nbhs_simpl /=.
+
