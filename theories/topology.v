@@ -8333,153 +8333,28 @@ apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
 apply: PQfE; split => //; exact: nbhs_singleton.
 Unshelve. all: by end_near. Qed.
 
-exists (setT , curry f x @^-1` [set g | forall (z:V), K z -> E (curry f x z, g z)]).
-have /filterS := @fam_nbhs _ W _ K _ (curry f x) entE cptK; apply.
-near: z.
-apply: (filterS RT); near=> z => /=.
-move=> z /= zke; apply/RT/EKR/EE'; case=> w Kw; have ? : K w by rewrite inE in Kw. 
-exact: zke.
-set F := fmap _ _.
-have [] := @pointwise_compact_cvg V W F (curry f x) _. 
-  rewrite /F; apply: near_map_powerset; first exact: equicontinuous_subset_id.
-  admit.
-have Pfc : {ptws, F --> curry f x}.
-  apply/cvg_sup => y D [/= ? [[E oE] <- /=] ecfxy /filterS]; apply.
-  have [[P Q] [Px Qy] PQfE] : nbhs (x, y) (f@^-1` E). 
-    by apply: ctsf; apply: open_nbhs_nbhs.
-  rewrite nbhs_simpl /= /F /=.
-  near=> z; rewrite /curry /=;  apply: PQfE => /=. 
-  by split; last exact: nbhs_singleton; apply (near Px z).
-move=> /(_ Pfc) + _ => /cvg_trans; apply.
-move=> T /= [? [[R oR <- /= Rxcf RT]]]. 
-move: oR; rewrite openE => /(_ _ Rxcf); case => E' [E entE] EE' EKR.
-have /filterS := @fam_nbhs _ W _ K _ (curry f x) entE cptK; apply.
-move=> z /= zke; apply/RT/EKR/EE'; case=> w Kw; have ? : K w by rewrite inE in Kw. 
-exact: zke.
-Qed.
-
-move oR; rewrite -nbhs_entourageE.
-rewrite /filter_of /= nbhs_simpl .
-congr (cvg_to _); rewrite /filter_of.
-move=> R /= [] /= E [[/= J oJ]] <- /= jsgl /filterS; apply.
-rewrite nbhs_simpl /=; near=> z => /=; near: z; near_simpl.
-  
-
-=> NR.
-near=> z => /=.
-near=> R.
-rewrite 
-apply/cvg_sup.
-  admit.
-move=> /(_ Pfc) + _.
-rewrite /cvg_to /= /GRing.regular.
-rewrite /filter_of /= ?nbhs_simpl /nbhs /fct_UniformFamilyFilteredType /=.
-rewrite /filter_of /=.
-rewrite /nbhs /=.
-congr(_ _).
-rewrite eqEsubset; split => Z /=.
-suff : @nbhs {family compact, V -> W}  (curry f x) = nbhs (curry f x : {ptws V -> W}) .
- 
-rewrite eqEsubset; split => R /=; rewrite /nbhs /=.
-
-simpl.
-apply P1.
-apply/Q.
-  apply/cvg_sup => y D [/= ? [[E oE] <- /=] ecfxy /filterS]; apply.
-  have [[P Q] [Px Qy] PQfE] : nbhs (x, y) (f@^-1` E). 
-    by apply: ctsf; apply: open_nbhs_nbhs.
-  rewrite nbhs_simpl /=; near=> z; rewrite /curry /=. 
-  by apply: PQfE => /=; split; last exact: nbhs_singleton; apply (near Px z).
-apply: near_map_powerset; first exact: equicontinuous_subset_id.
-have [A] := @lcU x I; rewrite withinET => nAx [cptA clA].
-exists [set W | nbhs x W /\ W `<=` A] => /=; first split.
-- by move=> ? [].
-- by move=> E1 E2 [nE1 E1A E2x ?]; split => //; apply: (subset_trans _ E1A).
-- by exists A; split.
-move=> B /= [Bx BA] y /= E entE; near=> z => + [ + + <-] => _; near: z.
-suff : \forall x0 \near y, forall x1 : U, closure B x1 -> 
-  E (f (x1, y), f (x1, x0)).
-  by apply: filter_app; apply: nearW=> ? + ? ?; apply; apply/subset_closure.
-have /compact_near_coveringP : compact (closure B).
-  apply: (subclosed_compact _ cptA); first exact: closed_closure.
-  by rewrite closure_id in clA; rewrite clA; apply: closure_subset.
-apply => x' clBx'; near (powerset_filter_from (@entourage W)) => E'.
-have entE' : entourage E' by exact: (near (near_small_set _)).
-have : nbhs (x' , y) (f@^-1` (to_set E' (f (x',y)))).
-  by apply: ctsf; rewrite /= -nbhs_entourageE; exists E'.
-case; case=> P Q /= [Px Qy] PQfE; exists (P, Q); first by split => //.
-case=> a b /= [Pa Qb]; apply: subset_split_ent => //.
-exists (f (x', y)); last by apply: (near (small_ent_sub _) E')=>//; exact: PQfE.
-apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
-by apply: PQfE; split => //; apply: nbhs_singleton.
-Unshelve. all: by end_near. Qed.
-
-Lemma continuous_snd (f : U ~> V ~> W) v :
-  continuous f -> 
-  (forall u, continuous (f u)) ->
-  continuous (fun q => f q v).
-Proof.
-move=> ctsf ctsfp x ?. 
-rewrite /= -nbhs_entourageE; case=> E entE /filterS; apply.
-rewrite ?nbhs_simpl /=; near=> z => /=; near: z.
-near (powerset_filter_from (@entourage W)) => E'.
-have entE' : entourage E' by exact: (near (near_small_set _)).
-have nvE' : nbhs v (f x @^-1` (to_set E' (f x v))). 
-  by apply: ctsfp; rewrite /= -nbhs_entourageE; exists E'.
-suff [O Ofx OE] : exists2 O, nbhs (f x) O & (forall g, O g -> E (f x v, g v)).
-  move/ctsf: Ofx; rewrite /= nbhs_simpl /=; apply: filter_app.
-  by near_simpl; near=> z => foz; apply: OE.
-exists [set g | forall z, [set v] z -> E (f x z, g z)].
-  by apply: fam_nbhs => //; exact: compact_set1.
-by move=> g; apply.
-Unshelve. all: by end_near. Qed.
-
 Lemma continuous_uncurry (f : U ~> V ~> W):
+  locally_compact [set: V] ->
   continuous f ->
   (forall u, continuous (f u)) ->
   continuous ((uncurry : (U ~> V ~> W) -> ((U * V) ~> W)) f).
 Proof.
-move=> ctsf ctsfp /= [u v] D /=. 
-rewrite -nbhs_entourageE; case => E entE /filterS; apply.
-have [A] := @lcU u I; rewrite withinET; move=> Au [cptA clA]. 
-have cptfA : compact (f @` A).
-  by apply: continuous_compact => //; apply: continuous_subspaceT.
-(*
-have ects : equicontinuous (f @` A) id.
-  by apply: compact_equicontinuous => //= g [? ? <-]; apply: ctsfp.
-*)
+move=> lcV ctsf ctsfp /= [u v] D /=; rewrite -nbhs_entourageE.
+case => E entE /filterS; apply.
+have [B] := @lcV v I; rewrite withinET; move=> Bv [cptB clB].
 near (powerset_filter_from (@entourage W)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
-simpl.
-move=> Mv; exists ((fun q => f q v) @^-1` (to_set E' (f u v)) `&` A, M).
-split => //; apply: filterI => //; apply: continuous_snd => //=.
-case=> a b [/=] [fuav] Aa Mb.
-apply: subset_split_ent => //; exists (f a v) => /=; first last.
+have /ctsf /= cfN := @fam_nbhs _ _ _ B _ (f u : V ~> W) entE' cptB.
+exists (
+    f@^-1`[set g | forall y, B y -> E' (f u y, g y)],
+    f u @^-1` (to_set E' (f u v)) `&` B).
+  split => //; apply: filterI => //; apply: ctsfp. 
+  by rewrite /= -nbhs_entourageE /=; exists E'.
+case=> a b /= [Eua [Evb Bb]].
+apply: subset_split_ent => //; exists (f u b) => /=.
   apply: (near (small_ent_sub _) E') => //; apply: Mb; exists a => //.
-apply: (near (small_ent_sub _) E') => //.
+by apply: (near (small_ent_sub _) E') => //; apply: Eua.
 Unshelve. all: by end_near. Qed.
-
-End currying_pt1.
-Section currying_pt2.
-Context {U V : uniformType}.
-
-Local Notation "U '~>' V" := 
-  ({family compact, [topologicalType of U] -> [uniformType of V]}) 
-  (at level 99,  right associativity). 
-
-Hypothesis lcU : locally_compact [set: U].
-Hypothesis hsdfU : hausdorff_space U.
-
-Definition eval : ((U ~> V) * U) ~> V := fun fx => fx.1 fx.2.
-
-Lemma eval_continuous (f : U ~> V) (x : U) :
-  continuous f -> {for (f,x), continuous eval}.
-Proof.
-move=> ctsf.
-have : eval = curry 
-apply: curry_continuous.
-apply: uncurry
-
 
 Lemma curry_continuous (f : ((U * V) ~> W)) :
   continuous f -> 
