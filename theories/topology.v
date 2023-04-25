@@ -553,6 +553,10 @@ Reserved Notation "{ 'family' fam , U -> V }"
   (at level 0, U at level 69, format "{ 'family'  fam ,  U  ->  V }").
 Reserved Notation "{ 'family' fam , F --> f }"
   (at level 0, F at level 69, format "{ 'family'  fam ,  F  -->  f }").
+Reserved Notation "{ 'compact-open' , U -> V }"
+  (at level 0, U at level 69, format "{ 'compact-open' ,  U  ->  V }").
+Reserved Notation "{ 'compact-open' , F --> f }"
+  (at level 0, F at level 69, format "{ 'compact-open' ,  F  -->  f }").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -1621,12 +1625,24 @@ Qed.
 
 #[global] Typeclasses Opaque within.
 
+Lemma filter_bigI_within T (I : choiceType) (D : {fset I}) (f : I -> set T)
+  (F : set (set T)) (P : set T) :
+  Filter F -> (forall i, i \in D -> F ([set j | P j -> f i j])) ->
+  F ([set j | P j -> (\bigcap_(i in [set i | i \in D]) f i) j]).
+Proof. move=> FF FfD; exact: (@filter_bigI T I D f _ (within_filter P FF)). Qed.
+
 Canonical within_filter_on T D (F : filter_on T) :=
   FilterType (within D F) (within_filter _ _).
 
 Definition subset_filter {T} (F : set (set T)) (D : set T) :=
   [set P : set {x | D x} | F [set x | forall Dx : D x, P (exist _ x Dx)]].
 Arguments subset_filter {T} F D _.
+
+Lemma filter_bigI_within T (I : choiceType) (D : {fset I}) (f : I -> set T)
+  (F : set (set T)) (P : set T) :
+  Filter F -> (forall i, i \in D -> F ([set j | P j -> f i j])) ->
+  F ([set j | P j -> (\bigcap_(i in [set i | i \in D]) f i) j]).
+Proof. move=> FF FfD; exact: (@filter_bigI T I D f _ (within_filter P FF)). Qed.
 
 Global Instance subset_filter_filter T F (D : set T) :
   Filter F -> Filter (subset_filter F D).
@@ -1708,6 +1724,41 @@ by exists C; split.
 Qed.
 
 End NearSet.
+
+Lemma near_powerset_map {T U : Type} (f : T -> U) (F : set (set T))
+  (P : (set U) -> Prop) : 
+  ProperFilter F ->
+  (\forall y \near powerset_filter_from (f x @[x --> F]), P y) -> 
+  (\forall y \near powerset_filter_from F, P (f @` y)).
+Proof.
+move=> FF [] G /= [Gf Gs [D GD GP]]. 
+have PpF : ProperFilter (powerset_filter_from F).
+  by apply: powerset_filter_from_filter.
+have /= := Gf _ GD; rewrite nbhs_simpl => FfD.
+near=> M; apply: GP; apply: (Gs D) => //.
+  apply: filterS; first exact: preimage_image.
+  by apply: (near (near_small_set _) M).
+have : M `<=` f @^-1` D by apply: (near (small_set_sub FfD) M).
+by move/image_subset/subset_trans; apply; apply: image_preimage_subset.
+Unshelve. all: by end_near. Qed.
+
+Lemma near_map_powerset {T U : Type} (f : T -> U) (F : set (set T))
+  (P : (set U) -> Prop) : 
+  (forall X Y, X `<=` Y -> P Y -> P X) ->
+  ProperFilter F ->
+  (\forall y \near powerset_filter_from F, P (f @` y)) ->
+  (\forall y \near powerset_filter_from (f x @[x --> F]), P y).
+Proof.
+move=> Psub FF [] G /= [Gf Gs [D GD GP]]. 
+have PpF : ProperFilter (powerset_filter_from (f x @[x-->F])).
+  by apply: powerset_filter_from_filter.
+have /= := Gf _ GD; rewrite nbhs_simpl => FfD.
+have ffiD : fmap f F (f@` D).
+  by rewrite /fmap /=; apply: filterS; first exact: preimage_image.
+near=> M; have FfM : (fmap f F M) by apply (near (near_small_set _) M).
+apply: (@Psub _ (f@`D)); first exact: (near (small_set_sub ffiD) M).
+exact: GP.
+Unshelve. all: by end_near. Qed.
 
 Section PrincipalFilters.
 
@@ -2492,6 +2543,24 @@ End Prod_Topology.
 
 (** Topology on matrices *)
 
+Lemma fst_open {U V : topologicalType} (A : set (U * V)) :
+  open A -> open (fst @` A).
+Proof.
+rewrite ?openE=> oA z [[a b/=] Aab <-]; rewrite /interior.
+have [[P Q] [Pa ?] pqA] := oA _ Aab; apply: (@filterS _ _ _ P) => //.
+move=> p Pp; exists (p, b) => //; apply: pqA; split => //.
+exact: nbhs_singleton.
+Qed.
+
+Lemma snd_open {U V : topologicalType} (A : set (U * V)) :
+  open A -> open (snd @` A).
+Proof.
+rewrite ?openE=> oA z [[a b/=] Aab <-]; rewrite /interior.
+have [[P Q] [? Qb] pqA] := oA _ Aab; apply: (@filterS _ _ _ Q) => //.
+move=> q Qq; exists (a, q) => //; apply: pqA; split => //.
+exact: nbhs_singleton.
+Qed.
+
 Section matrix_Topology.
 
 Variables (m n : nat) (T : topologicalType).
@@ -2998,6 +3067,7 @@ by apply: filter_ex; [exact: PF| exact: filterI].
 Qed.
 
 End Compact.
+
 Arguments hausdorff_space : clear implicits.
 
 Section ClopenSets.
@@ -3080,7 +3150,46 @@ Proof.
 by split; [exact: compact_near_covering| exact: near_covering_compact].
 Qed.
 
+Definition near_covering_within (K : set X) :=
+  forall (I : Type) (F : set (set I)) (P : I -> X -> Prop),
+  Filter F ->
+  (forall x, K x -> \forall x' \near x & i \near F, K x' -> P i x') ->
+  \near F, K `<=` P F.
+
+Lemma near_covering_withinP (K : set X): 
+  near_covering_within K <-> near_covering K.
+Proof.
+split. 
+  move=> cvrW I F P FF cvr.
+  near=> i; suff : K `<=` (fun q : X => K q -> P i q).
+    by move=> KKP k Kk; apply: KKP.
+  near: i; apply: cvrW=> x Kx; move: (cvr x Kx); apply: filter_app.
+  by near=> j => /=.
+move=> cvrW I F P FF cvr.
+near=> i; suff : K `<=` (fun q : X => K q -> P i q).
+  by move=> KKP k Kk; apply: KKP.
+near: i.
+have := (cvrW I F (fun i q => K q -> P i q) FF). 
+apply => x Kx; have := cvr x Kx; apply: filter_app.
+by near=> j => + ?; apply.
+Unshelve. all: by end_near. Qed.
+
 End near_covering.
+
+Lemma compact_setM {U V : topologicalType} (P : set U) (Q : set V) :
+  compact P -> compact Q -> compact (P `*` Q).
+Proof.
+rewrite ?compact_near_coveringP => cptP cptQ I F Pr Ff cvfPQ.
+have := cptP I F (fun i u => forall q, Q q -> Pr i (u,q)) Ff.
+set R := (R in (R -> _) -> _); suff R' : R.
+  by move/(_ R'); apply:filter_app; near=> i => + [a b] [Pa Qb]; apply.
+rewrite /R => x Px;  apply: (@cptQ _ (filter_prod _ _)).
+move=> v Qv.
+case: (cvfPQ (x,v)) => // [[N G]] /= [[[N1 N2 /= [N1x N2v]]]] N1N2N FG ngPr.
+exists (N2,(N1`*`G)); first by split => //; exists (N1, G) => //.
+case=> a [b i] /= [? [?]] ?.
+by apply: (ngPr (b,a, i)); split => //; apply: N1N2N.
+Unshelve. all: by end_near. Qed.
 
 Section Tychonoff.
 
@@ -6579,6 +6688,173 @@ move=> entE famA; have /fam_cvgP /(_ A) : (nbhs f --> f) by []; apply => //.
 by apply uniform_nbhs; exists E; split.
 Qed.
 
+Lemma fam_compact_nbhs {U : topologicalType} {V : uniformType}
+    (A : set U) (O : set V) (f : {family compact, U -> V}) :
+  open O -> (f @` A `<=` O) -> compact A -> continuous f ->
+  nbhs (f : {family compact, U -> V}) [set g | forall y, A y -> O (g y)].
+Proof.
+move=> oO fAO /[dup] ? /compact_near_coveringP/near_covering_withinP cfA ctsf. 
+near=> z => /=; (suff : A `<=` [set y | O (z y)] by exact); near: z.
+apply: cfA => x Ax; have : O (f x) by apply: fAO. 
+move: (oO); rewrite openE /= => /[apply] /[dup] /ctsf Ofx /=. 
+rewrite /interior -nbhs_entourageE; case => E entE EfO.
+exists (f @^-1` (to_set (split_ent E) (f x)), 
+    [set g | forall w, A w -> split_ent E (f w, g w)]).
+  split => //=; last exact: fam_nbhs.
+  by apply: ctsf; rewrite /= -nbhs_entourageE; exists (split_ent E).
+case=> y g [/= Efxy] AEg Ay; apply: EfO; apply: subset_split_ent => //.
+by exists (f y) => //=; last exact: AEg.
+Unshelve. all: by end_near. Qed.
+
+(* It turns out {family compact, U -> V} can be generalized to only assume    *)
+(* `topologicalType` on V. This topology is called the compact-open topology. *)
+(* This topology is special becaise its the _only_  topology that will allow  *)
+(* curry/uncurry to be continuous.                                            *)
+
+Section compact_open.
+
+Context {T U : topologicalType}.
+
+Definition compact_open := (T->U)^o.
+
+Section compact_open_setwise.
+Context {K : set T}.
+
+Definition compact_openK := let _ := K in compact_open.
+
+Definition compact_openK_nbhs (f : compact_openK) := 
+  filter_from 
+    [set O | f @` K `<=` O /\ open O] 
+    (fun O =>  [set g | g @` K `<=` O]).
+
+Global Instance compact_openK_nbhs_filter (f : compact_openK) : 
+  ProperFilter (compact_openK_nbhs f).
+Proof.
+split; first by case=> g [gKO oO] /(_ f); apply.
+apply: filter_from_filter; first by exists setT; split => //; exact: openT.
+move=> P Q [fKP oP] [fKQ oQ]; exists (P `&` Q); first split.
+- by move=> ? [z Kz M-]; split; [apply: fKP | apply: fKQ]; exists z.
+- exact: openI.
+by move=> g /= gPQ; split; apply: (subset_trans gPQ) => ? [].
+Qed.
+
+Program Definition compact_openK_topological_mixin : 
+  Topological.mixin_of compact_openK_nbhs :=
+    @Topological.Mixin compact_openK compact_openK_nbhs 
+    (@open_of_nbhs _ compact_openK_nbhs) _ _ _.
+Next Obligation.
+move=> f; rewrite eqEsubset; split => A /=.
+  case=> B /= [fKB oB gKBA]; exists [set g | g @` K `<=` B]; split => //.
+  by move=> h /= hKB; exists B.
+by case=> B [oB Bf /filterS]; apply; apply: oB.
+Qed.
+Next Obligation. done. Qed.
+
+Canonical compact_openK_filter := FilteredType 
+  compact_openK compact_openK compact_openK_nbhs.
+Canonical compact_openK_topological := TopologicalType 
+  compact_openK compact_openK_topological_mixin.
+End compact_open_setwise.
+
+Canonical compact_open_pointedType : pointedType := 
+  PointedType compact_open point.
+
+Definition compact_open_topologicalType : topologicalType := 
+  @sup_topologicalType _ (sigT (@compact T))
+    (fun K => Topological.class (@compact_openK_topological (projT1 K))).
+
+Canonical compact_open_filtered := 
+  [filteredType compact_open of compact_open for compact_open_topologicalType].
+
+Canonical compact_open_topological := 
+  [topologicalType of compact_open for compact_open_topologicalType].
+
+Lemma compact_open_cvgP (F : set (set (compact_open_topological))) 
+    (f : compact_open_topological) :
+  Filter F ->
+  (F --> f) <-> (forall K O, @compact T K -> @open U O -> f @` K `<=` O ->
+    F [set g | g @` K `<=` O] ).
+Proof.
+move=> FF; split.
+  by move/cvg_sup => + K O cptK ? ? => /(_ (existT _ _ cptK)); apply; exists O.
+move=> fko; apply/cvg_sup; case=> A cptK O /= [C /= [fAC oC]]. 
+by move/filterS; apply; apply: fko.
+Qed.
+
+Lemma compact_open_open (K : set T) (O : set U) :
+  compact K -> open O -> open ([set g | g @` K `<=` O] : set compact_open).
+Proof.
+pose C := [set g | g @` K `<=` O]; move=> cptK oO. 
+exists [set C]; last by rewrite bigcup_set1.
+move=> ? ->; exists (fset1 C) => //; last by rewrite set_fset1 bigcap_set1.
+by move=> ?; rewrite ?inE => ->; exists (existT _ _ cptK) => // z Cz; exists O.
+Qed.
+
+End compact_open.
+
+Lemma compact_closedI {T : topologicalType} (A B : set T) : 
+  compact A -> closed B -> compact (A `&` B).
+Proof.
+move=> cptA clB F PF FAB; have FA : F A by move: FAB; apply: filterS.
+(have FB : F B by move: FAB; apply: filterS); have [x [Ax]] := cptA F PF FA. 
+move=> /[dup] clx; rewrite {1}clusterE => /(_ (closure B)); move: clB. 
+by rewrite closure_id => /[dup] + <- => <- /(_ FB) Bx; exists x; split.
+Qed.
+
+Notation "{ 'compact-open' , U -> V }" := (@compact_open U V).
+Notation "{ 'compact-open' , F --> f }" := 
+  (F --> (f : @compact_open_topological _ _)).
+
+Section compact_open_uniform.
+Context {U : topologicalType} {V : uniformType}.
+
+Let small_ent_sub := @small_set_sub _ (@entourage V).
+
+Lemma compact_open_fam_compactP (f : U -> V) (F : set (set (U -> V))) :
+  continuous f -> (Filter F) -> 
+  {compact-open, F --> f} <-> {family compact, F --> f}.
+Proof.
+move=> ctsf FF; split. 
+  move/compact_open_cvgP=> cptOF; apply/cvg_sup; case=> K cptK R.
+  case=> D /= [[E oE <- /=] Ekf] /filterS; apply.
+  move: oE; rewrite openE => /(_ _ Ekf); case => ? [J entJ /=] EKR KfE.
+  near=> z; apply/KfE/EKR; case => u /= Kp.
+  rewrite /= /set_val /= /eqincl /incl/set_val /= /comp.
+  (have Ku : K u by rewrite inE in Kp); move: u Ku {D Kp}; near: z.
+  move/compact_near_coveringP/near_covering_withinP:(cptK); apply.
+  move=> u Ku; near (powerset_filter_from (@entourage V)) => E'.
+  have entE' : entourage E' by exact: (near (near_small_set _)).
+  pose C := f@^-1`(to_set E' (f u))%classic. 
+  pose B := \bigcup_(z in K `&` closure C) interior (to_set E' (f z)).
+  have oB : open B by apply: bigcup_open => ? ?; exact: open_interior.
+  have fKB : f @` (K `&` closure C) `<=` B.
+    move=> ? [z ? <-]; exists z => //; rewrite /interior. 
+    by rewrite -nbhs_entourageE; exists E'.
+  have cptKC : compact (K `&` closure C).
+    apply: compact_closedI => //; exact: closed_closure.
+  have := cptOF (K `&` closure C) B cptKC oB fKB.
+  exists (C, [set g | [set g x | x in K `&` closure C] `<=` B]).
+  split. 
+  - by apply: (ctsf) => //; rewrite /filter_of -nbhs_entourageE; exists E'.
+  - exact: cptOF. 
+  - case=> z h /= [Cz KB Kz]. 
+    case: (KB (h z)); first by (exists z; split => //; apply: subset_closure).
+    move=> w [Kw Cw /interior_subset Jfwhz]; apply:subset_split_ent => //.
+    exists (f w); last apply:(near (small_ent_sub _) E') => //.
+    apply: subset_split_ent => //; exists (f u).
+      apply entourage_sym; apply:(near (small_ent_sub _) E') => //.
+    have [] := Cw (f@^-1` (to_set E' (f w))). 
+      by apply: ctsf; rewrite /= -nbhs_entourageE; exists E'.
+    move=> r [Cr /= Ewr]; apply: subset_split_ent => //; exists (f r).
+      by apply:(near (small_ent_sub _) E') => //.
+    by apply entourage_sym; apply:(near (small_ent_sub _) E') => //.
+move=> cptF; apply/compact_open_cvgP => K O cptK oO fKO.
+apply: cptF; have := fam_compact_nbhs oO fKO cptK ctsf; apply: filter_app.
+by near=> g => /=  gKO ? [z Kx <-]; apply: gKO.
+Unshelve. all: by end_near. Qed.
+
+End compact_open_uniform.
+
 Definition compactly_in {U : topologicalType} (A : set U) :=
   [set B | B `<=` A /\ compact B].
 
@@ -7632,7 +7908,7 @@ move/filterS; apply; have [//|i nclfix] := @sepf _ x (open_closedC oB).
 apply: (wiFx i); have /= -> := @nbhsE (weak_topologicalType (f_ i)) x.
 exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); [split=>//|].
   apply: open_comp; last by rewrite ?openC; last apply: closed_closure.
-  by move=> + _; exact: weak_continuous.
+  by move=> + _; exact: (@weak_continuous _ _ (f_ i)).
 rewrite closureC preimage_bigcup => z [V [oV]] VnB => /VnB.
 by move/forall2NP => /(_ z) [] // /contrapT.
 Qed.
@@ -8210,141 +8486,21 @@ Qed.
 
 End ArzelaAscoli.
 
-Lemma fst_open {U V : topologicalType} (A : set (U * V)) : 
-  open A -> open (fst @` A).
-Proof.
-rewrite ?openE=> oA z [[a b/=] Aab <-]; rewrite /interior.
-have [[P Q] [Pa ?] pqA] := oA _ Aab; apply: (@filterS _ _ _ P) => //.
-move=> p Pp; exists (p, b) => //; apply: pqA; split => //. 
-exact: nbhs_singleton.
-Qed.
-
-Lemma snd_open {U V : topologicalType} (A : set (U * V)) : 
-  open A -> open (snd @` A).
-Proof.
-rewrite ?openE=> oA z [[a b/=] Aab <-]; rewrite /interior.
-have [[P Q] [? Qb] pqA] := oA _ Aab; apply: (@filterS _ _ _ Q) => //.
-move=> q Qq; exists (a, q) => //; apply: pqA; split => //. 
-exact: nbhs_singleton.
-Qed.
-
-Lemma near_powerset_map {T U : topologicalType} (f : T -> U) (F : set (set T))
-  (P : (set U) -> Prop) : 
-  ProperFilter F ->
-  (\forall y \near powerset_filter_from (f x @[x --> F]), P y) -> 
-  (\forall y \near powerset_filter_from F, P (f @` y)).
-Proof.
-move=> FF [] G /= [Gf Gs [D GD GP]]. 
-have PpF : ProperFilter (powerset_filter_from F).
-  by apply: powerset_filter_from_filter.
-have /= := Gf _ GD; rewrite nbhs_simpl => FfD.
-near=> M; apply: GP; apply: (Gs D) => //.
-  apply: filterS; first exact: preimage_image.
-  by apply: (near (near_small_set _) M).
-have : M `<=` f @^-1` D by apply: (near (small_set_sub FfD) M).
-by move/image_subset/subset_trans; apply; apply: image_preimage_subset.
-Unshelve. all: by end_near. Qed.
-
-Lemma near_map_powerset {T U : topologicalType} (f : T -> U) (F : set (set T))
-  (P : (set U) -> Prop) : 
-  (forall X Y, X `<=` Y -> P Y -> P X) ->
-  ProperFilter F ->
-  (\forall y \near powerset_filter_from F, P (f @` y)) ->
-  (\forall y \near powerset_filter_from (f x @[x --> F]), P y).
-Proof.
-move=> Psub FF [] G /= [Gf Gs [D GD GP]]. 
-have PpF : ProperFilter (powerset_filter_from (f x @[x-->F])).
-  by apply: powerset_filter_from_filter.
-have /= := Gf _ GD; rewrite nbhs_simpl => FfD.
-have ffiD : fmap f F (f@` D).
-  by rewrite /fmap /=; apply: filterS; first exact: preimage_image.
-near=> M; have FfM : (fmap f F M) by apply (near (near_small_set _) M).
-apply: (@Psub _ (f@`D)); first exact: (near (small_set_sub ffiD) M).
-exact: GP.
-Unshelve. all: by end_near. Qed.
-
-Lemma continuous_fst_arg {U V W : topologicalType} (f : U * V -> W) (u : U) :
-  continuous f -> continuous (curry f u).
-Proof.
-move=> ctsf; rewrite (_ : curry f u = f \o (pair u)); last exact:funext.
-move=> y; apply: continuous_comp; last exact: ctsf.
-by apply: cvg_pair; [exact: cvg_cst | exact: cvg_id].
-Qed.
-
-Lemma continuous_snd_arg {U V W : topologicalType} (f : U * V -> W) (v : V) :
-  continuous f -> continuous (fun q => curry f q v).
-Proof.
-move=> ctsf; suff : continuous (f \o (fun q => pair q v)) by exact. 
-move=> y; apply: continuous_comp; last exact: ctsf.
-by apply: cvg_pair; [exact: cvg_id | exact: cvg_cst].
-Qed.
-
-Lemma compact_setM {U V : topologicalType} (P : set U) (Q : set V) :
-  compact P -> compact Q -> compact (P `*` Q).
-Proof.
-rewrite ?compact_near_coveringP => cptP cptQ I F Pr Ff cvfPQ.
-have := cptP I F (fun i u => forall q, Q q -> Pr i (u,q)) Ff.
-set R := (R in (R -> _) -> _); suff R' : R.
-  by move/(_ R'); apply:filter_app; near=> i => + [a b] [Pa Qb]; apply.
-rewrite /R => x Px;  apply: (@cptQ _ (filter_prod _ _)).
-move=> v Qv.
-case: (cvfPQ (x,v)) => // [[N G]] /= [[[N1 N2 /= [N1x N2v]]]] N1N2N FG ngPr.
-exists (N2,(N1`*`G)); first by split => //; exists (N1, G) => //.
-case=> a [b i] /= [? [?]] ?.
-by apply: (ngPr (b,a, i)); split => //; apply: N1N2N.
-Unshelve. all: by end_near. Qed.
-
-Definition near_covering_within {X : topologicalType} (K : set X) :=
-  forall (I : Type) (F : set (set I)) (P : I -> X -> Prop),
-  Filter F ->
-  (forall x, K x -> \forall x' \near x & i \near F, K x' -> P i x') ->
-  \near F, K `<=` P F.
-
-Lemma near_covering_withinP {X : topologicalType} (K : set X): 
-  near_covering_within K <-> near_covering K.
-Proof.
-split. 
-  move=> cvrW I F P FF cvr.
-  near=> i; suff : K `<=` (fun q : X => K q -> P i q).
-    by move=> KKP k Kk; apply: KKP.
-  near: i; apply: cvrW=> x Kx; move: (cvr x Kx); apply: filter_app.
-  by near=> j => /=.
-move=> cvrW I F P FF cvr.
-near=> i; suff : K `<=` (fun q : X => K q -> P i q).
-  by move=> KKP k Kk; apply: KKP.
-near: i.
-have := (cvrW I F (fun i q => K q -> P i q) FF). 
-apply => x Kx; have := cvr x Kx; apply: filter_app.
-by near=> j => + ?; apply.
-Unshelve. all: by end_near. Qed.
-
-Lemma filter_bigI_within T (I : choiceType) (D : {fset I}) (f : I -> set T)
-  (F : set (set T)) (P : set T) :
-  Filter F -> (forall i, i \in D -> F ([set j | P j -> f i j])) ->
-  F ([set j | P j -> (\bigcap_(i in [set i | i \in D]) f i) j]).
-Proof.
-move=> FF FfD.
-have := @filter_bigI T I D f (within P F) (within_filter P FF).
-exact.
-Qed.
-
 Section currying.
-Context {U V W : uniformType}.
-
 Local Notation "U '~>' V" := 
-  ({family compact, [topologicalType of U] -> [uniformType of V]}) 
-  (at level 99,  right associativity).
+  ({compact-open, [topologicalType of U] -> [topologicalType of V]}) 
+  (at level 99, right associativity).
 
-Lemma continuous_snd (f : U ~> V ~> W) v :
-  continuous f -> 
+Context {U V W : topologicalType}.
+
+(*
+Lemma continuous_snd (f : U ~> V ~> W) (v : V) :
+  continuous f ->
   (forall u, continuous (f u)) ->
-  continuous (fun q => f q v).
+  continuous (fun (q : U) => f q v).
 Proof.
-move=> ctsf ctsfp x ?. 
-rewrite /= -nbhs_entourageE; case=> E entE /filterS; apply.
-rewrite ?nbhs_simpl /=; near=> z => /=; near: z.
-near (powerset_filter_from (@entourage W)) => E'.
-have entE' : entourage E' by exact: (near (near_small_set _)).
+move=> ctsf ctsfp x R /= fxvR; rewrite nbhs_simpl /=.
+near=> z => /=; near: z.
 have nvE' : nbhs v (f x @^-1` (to_set E' (f x v))). 
   by apply: ctsfp; rewrite /= -nbhs_entourageE; exists E'.
 suff [O Ofx OE] : exists2 O, nbhs (f x) O & (forall g, O g -> E (f x v, g v)).
@@ -8354,43 +8510,55 @@ exists [set g | forall z, [set v] z -> E (f x z, g z)].
   by apply: fam_nbhs => //; exact: compact_set1.
 by move=> g; apply.
 Unshelve. all: by end_near. Qed.
+*)
 
 Lemma continuous_curry (f : U * V ~> W) : 
-  continuous f -> continuous ((curry : ((U * V) ~> W) -> (U ~> V ~> W))  f).
+  continuous f -> continuous ((curry : ((U * V) ~> W) -> (U ~> V ~> W)) f).
 Proof.
-move=> ctsf x; apply/cvg_sup; case => K cptK /=.
-have Pfx : ProperFilter (powerset_filter_from (curry f x @[x --> x])).
-  apply: powerset_filter_from_filter.
-have Pfx2 : ProperFilter (powerset_filter_from (nbhs (curry f x))).
-  apply: powerset_filter_from_filter.
-move=> T /= [? [[? oR <- /= Rxcf RT]]]. 
-move: oR; rewrite openE => /(_ _ Rxcf); case => ? [E entE] EE' EKR.
-near=> z; apply/RT/EKR/EE'; case=> w Kiw; have Kw : K w by rewrite inE in Kiw.
-rewrite /= /set_val /= /eqincl /incl; move: w Kw {Kiw}; near: z.
-rewrite nbhs_simpl; near_simpl; move/compact_near_coveringP : cptK; apply.
-move=> v Kv /=. 
-near (powerset_filter_from (@entourage W)) => E'.
-have entE' : entourage E' by exact: (near (near_small_set _)).
-have : nbhs (x,v) (f @^-1` to_set E' (f (x,v))).
-  by apply: ctsf; rewrite /= -nbhs_entourageE; exists E'.
-case; case=> /= P Q [Px Qy] PQfE.
-exists (Q,P); first by split => //.
-case=> b a [/=] Qb Pa; rewrite /curry; apply: subset_split_ent => //.
-exists (f (x,v)); last by apply: (near (small_ent_sub _) E') => //; apply: PQfE.
-rewrite /fst.
-apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
-apply: PQfE; split => //; exact: nbhs_singleton.
+move=> ctsf x; apply/compact_open_cvgP => K O /= cptK oO fKO.
+near=> z => /= w /= [+ + <-]; near: z. 
+move/compact_near_coveringP/near_covering_withinP: cptK; apply.
+move=> v Kv; have [[P Q] [Px Qv] PQfO]: nbhs (x,v) (f@^-1` O).
+  by apply: ctsf; move: oO; rewrite openE; apply; apply: fKO; exists v.
+by exists (Q,P); [split => // |]; case=> b a /= [Qb Pa] Kb; apply: PQfO.
 Unshelve. all: by end_near. Qed.
 
 Lemma continuous_uncurry (f : U ~> V ~> W):
   locally_compact [set: V] ->
+  hausdorff_space V ->
   continuous f ->
   (forall u, continuous (f u)) ->
   continuous ((uncurry : (U ~> V ~> W) -> ((U * V) ~> W)) f).
 Proof.
-move=> lcV ctsf ctsfp /= [u v] D /=; rewrite -nbhs_entourageE.
-case => E entE /filterS; apply.
+move=> lcV ctsf ctsfp /= [u v] D; rewrite /= nbhsE; case=> O [oO Ofuv].
+move/filterS; apply.
 have [B] := @lcV v I; rewrite withinET; move=> Bv [cptB clB].
+have [G [gv EG2 [M GM GO]]] : \forall C \near powerset_filter_from (nbhs v),
+    forall z, closure C z -> O (f u z).
+  move/compact_near_coveringP/near_covering_withinP: cptB; apply=> z Bz.
+  have [K] := @lcV z I; rewrite withinET; move=> Kz [cptK clK].
+
+
+exists (f @^-1` ([set g | g @` (B `&` closure M) `<=` O]), (B `&` closure M)).
+  split; [apply/ctsf/open_nbhs_nbhs; split | apply: filterI]. 
+  - apply: compact_open_open => //; apply: compact_closedI => //. 
+    exact: closed_closure.
+  - by move=> ? [x [? + <-]]; apply: GO.
+  - done.
+  - by apply: filterS; [exact: subset_closure|]; exact: gv.
+by case=> a r /= [fBMO [Br] cmR]; apply: fBMO; exists r.
+simpl.
+  
+pose B' := B `&` closure .
+rewrite /nbhs /=; near=> z => /=; near: z.
+have : nbhs u (f @^-1` [set g | g @` B' `<=` O]).
+    exact: closed_closure.
+  move=> z [? [? clfO] <-]. 
+
+
+
+have : nbhs (curry f u) ([set g | g @` B `<=` O]).
+  apply: ctsf; apply: compact_open_nbhs => //.
 near (powerset_filter_from (@entourage W)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
 have /ctsf /= cfN := @fam_nbhs _ _ _ B _ (f u : V ~> W) entE' cptB.
@@ -8405,7 +8573,7 @@ apply: subset_split_ent => //; exists (f u b) => /=.
 by apply: (near (small_ent_sub _) E') => //; apply: Eua.
 Unshelve. all: by end_near. Qed.
 
-Lemma curry_continuous (f : U * V ~> W) : 
+Lemma curry_continuous (f : U * V ~> W) :
   continuous f ->
   {for f, continuous ((curry : ((U * V) ~> W) -> (U ~> V ~> W)))}.
 Proof.
@@ -8430,13 +8598,88 @@ rewrite /= /set_val /= /eqincl /incl.
 by apply: pJR; split => //; rewrite inE in Jiv.
 Unshelve. all: by end_near. Qed.
 
-End currying.
-(*
 Lemma uncurry_continuous (f : U ~> V ~> W) : 
   locally_compact [set: V] ->
   continuous f ->
   (forall u, continuous (f u)) ->
   {for f, continuous ((uncurry : (U ~> V ~> W) -> (U * V ~> W)))}.
 Proof.
-*)
+move=> lcV ctsf ctsfp; apply/cvg_sup.
+  by apply: fmap_filter; apply:nbhs_filter.
+case=> K cptK T [C1 [[C2 oR <- Rxcf RT]]]. 
+move: oR; rewrite openE => /(_ _ Rxcf); case => C3 [E entE] EE' EKR.
+rewrite nbhs_simpl /=.
+near=> z; apply/RT/EKR/EE'; case=> w Kiw; have Kw : K w by rewrite inE in Kiw.
+rewrite /= /set_val /= /eqincl /incl. 
+move: w Kw {Kiw C1 C2 Rxcf RT EKR C3 EE' T}; near: z.
+near_simpl; move/compact_near_coveringP/near_covering_withinP : (cptK).
+near (powerset_filter_from (@entourage W)) => E'.
+have entE' : entourage E' by exact: (near (near_small_set _)).
+move=> /(_ _ (nbhs f)); apply; case => u v Kxy.
+have ectsf : equicontinuous (f @` (fst @` K)) id.
+  apply: compact_equicontinuous => //.
+    by move=> ? [? [? ? <- <-]]; apply: ctsfp.
+  apply: continuous_compact; first exact: continuous_subspaceT.
+  apply: continuous_compact => //; apply: continuous_subspaceT => ?; exact: cvg_fst.
+have Efv : forall b, \forall y \near b, forall a, (fst @` K) a -> E' (f a b, f a y).
+  move=> b; move: (ectsf b E' entE'). 
+  apply: filter_app; near=> z => + a [[? r /[swap] /= ->] Kab].
+  by apply; exists a => //; exists (a,r).
+have cptK2 : compact (snd @` K).
+  apply: continuous_compact => //; apply: continuous_subspaceT => ?; exact: cvg_snd.
+have : \forall y \near v, forall b, (snd @` K) b -> (forall a, (fst @` K) a -> E' (f a b, f a y)).
+  move/compact_near_coveringP/near_covering_withinP: cptK2.
+  apply=> // z K2z; have := Efv z E' entE'.
+  
+exists ( 
+    (((f^~ v) @^-1` to_set E' (f u v)) `*` 
+    [set y | forall b, (fst @` K) b -> E' (f b v, f b y)]), 
+    [set g | forall ab, K ab -> E' (f u v, g ab.1 ab.2)]); first last.
+  case; case => /= a b g [[fvE' P1b] fgE'] Kab.
+  apply: subset_split_ent => //; exists (f a v) => /=.
+    apply/entourage_sym; apply: (near (small_ent_sub _) E') => //; apply: P1b.
+    by exists (a,b).
+  apply: subset_split_ent => //; exists (f u v) => /=.
+    apply/entourage_sym; apply: (near (small_ent_sub _) E') => //; apply: fvE'.
+  by apply: (near (small_ent_sub _) E') => //; apply: (fgE' (a,b)).
+split; first exists 
+  (((f^~ v) @^-1` to_set E' (f u v)), 
+  [set y | forall b, (fst @` K) b -> E' (f b v, f b y)]) => //=. 
+  split => //; apply: continuous_snd => //; rewrite /= -nbhs_entourageE.
+  by exists E'.
+rewrite nbhs_simpl /=.
 
+  exists (((f^~ v) @^-1` to_set E' (f u v)), P1) => //; split => //.
+  by apply: continuous_snd => //=.
+rewrite nbhs_simpl /=.
+suff : [set g | forall a, (fst @` K) a -> N (f a, g a) ]`<=` 
+       [set g | forall a b, K (a , b) -> E'(f u v, g a b) ].
+  move/filterS; apply; apply: fam_nbhs => //; apply: continuous_compact => //.
+  by apply: continuous_subspaceT => ?; exact: cvg_fst.
+move=> g /= fa a b Kab. 
+apply: fa.
+have : nbhs f [set g | forall a b, (fst @` K) -> ]
+
+  
+
+
+have := P1b (g a).
+case.
+move: P1b; rewrite /P1 (g a).
+have := Evcts.
+  
+have [B] := @lcV v I; rewrite withinET; move=> Bv [cptB clB].
+have fzE : forall z, nbhs (f z) [set g | forall w, B w -> E (f z w, g w)].
+  move=> z; apply: fam_nbhs => //.
+move: (fzE u); rewrite -nbhs_entourageE; case=> R entR RBE.
+have fE : nbhs f [set g | forall w, (fst @` K) w -> R (f w, g w)].
+  apply: fam_nbhs=>//; 
+  by apply: continuous_subspaceT => ?; apply: cvg_fst.
+exists ((setT `*` B), [set g | forall w, (fst @` K) w -> R (f w, g w)]).
+  split => //; exists (setT, B) => //; split => //; exact: filterT.
+case;case=> a b /= g [[_ Bb] wKR] KAB.
+have /= := (RBE (f a)).
+have : nbhs f [set g | forall z, fst @` K z -> ]
+
+
+End currying.
