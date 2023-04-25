@@ -8329,14 +8329,12 @@ exact.
 Qed.
 
 Section currying.
+Context {U V W : uniformType}.
 
 Local Notation "U '~>' V" := 
   ({family compact, [topologicalType of U] -> [uniformType of V]}) 
   (at level 99,  right associativity).
 
-Section currying_pt1.
-Context {U V W : uniformType}.
- 
 Lemma continuous_snd (f : U ~> V ~> W) v :
   continuous f -> 
   (forall u, continuous (f u)) ->
@@ -8413,19 +8411,16 @@ Lemma curry_continuous (f : U * V ~> W) :
 Proof.
 move=> ctsf; apply/cvg_sup.
   by apply: fmap_filter; apply:nbhs_filter.
-case=> K cptK /=.
-move=> T /= [C1 [[C2 oR <- /= Rxcf RT]]]. 
+case=> K cptK T [C1 [[C2 oR <- Rxcf RT]]]. 
 move: oR; rewrite openE => /(_ _ Rxcf); case => C3 [E entE] EE' EKR.
-rewrite nbhs_simpl /=.
-move: entE => [O [/=]].
-move=> D dcpt <- IDE.
+move: entE => [O []] => D dcpt <- IDE; rewrite nbhs_simpl /=.
 near=> z; apply/RT/EKR/EE'; case=> w Kiw; have Kw : K w by rewrite inE in Kiw.
 apply: IDE; rewrite /= /set_val /= /eqincl /incl. 
-move: w Kw {Kiw C1 C2 Rxcf RT EKR C3 EE' O T}. near: z.
+move: w Kw {Kiw C1 C2 Rxcf RT EKR C3 EE' O T}; near: z.
 near_simpl; move/compact_near_coveringP/near_covering_withinP : (cptK).
-move=> /(_ _ (nbhs f)); apply => /= u Ku.
-apply: filter_bigI_within; case; case; case => /= J cptJ L /= /[dup] /asboolP entL ? _.
-case: entL => C1 [R /= entR] RC1 C1L.
+move=> /(_ _ (nbhs f)); apply => u Ku.
+apply: filter_bigI_within; (do 3 case) => J cptJ L /[dup] /asboolP entL ? _.
+case: entL => C1 [R entR] RC1 C1L.
 exists (setT, [set g | forall pq, (K `*` J) pq -> R (f pq, g pq)]).
   split; last apply: fam_nbhs => //; last exact: compact_setM.
   apply: filterT.
