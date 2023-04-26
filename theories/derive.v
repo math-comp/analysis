@@ -807,22 +807,22 @@ Proof.
 by move=> fc; apply/diff_locallyP; rewrite diff_bilin //; apply: dbilin p fc.
 Qed.
 
-Definition Rmult_rev (y x : R) := x * y.
-Canonical rev_Rmult := @RevOp _ _ _ Rmult_rev (@GRing.mul [ringType of R])
+Definition mulr_rev (y x : R) := x * y.
+Canonical rev_mulr := @RevOp _ _ _ mulr_rev (@GRing.mul [ringType of R])
   (fun _ _ => erefl).
 
-Lemma Rmult_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
+Lemma mulr_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
 Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
-Canonical Rmult_linear x := Linear (Rmult_is_linear x).
+Canonical mulr_linear x := Linear (mulr_is_linear x).
 
-Lemma Rmult_rev_is_linear y : linear (Rmult_rev y : R -> R).
-Proof. by move=> ???; rewrite /Rmult_rev mulrDl scalerAl. Qed.
-Canonical Rmult_rev_linear y := Linear (Rmult_rev_is_linear y).
+Lemma mulr_rev_is_linear y : linear (mulr_rev y : R -> R).
+Proof. by move=> ???; rewrite /mulr_rev mulrDl scalerAl. Qed.
+Canonical mulr_rev_linear y := Linear (mulr_rev_is_linear y).
 
-Canonical Rmult_bilinear :=
-  [bilinear of (@GRing.mul [ringType of [lmodType R of R]])].
+Canonical mulr_bilinear :=
+  [bilinear of @GRing.mul [ringType of [lmodType R of R]]].
 
-Global Instance is_diff_Rmult (p : R*R ) :
+Global Instance is_diff_mulr (p : R * R) :
   is_diff p (fun q => q.1 * q.2) (fun q => p.1 * q.2 + q.1 * p.2).
 Proof.
 apply: DiffDef; last by rewrite diff_bilin // => ?; apply: mul_continuous.
@@ -885,8 +885,7 @@ Global Instance is_diffM (f g df dg : V -> R) x :
 Proof.
 move=> dfx dgx.
 have -> : f * g = (fun p => p.1 * p.2) \o (fun y => (f y, g y)) by [].
-(* TODO: type class inference should succeed or fail, not leave an evar *)
-apply: is_diff_eq; do ?exact: is_diff_comp.
+apply: is_diff_eq.
 by rewrite funeqE => ?; rewrite /= [_ * g _]mulrC.
 Qed.
 
@@ -1123,8 +1122,8 @@ Global Instance is_derive_sum n (h : 'I_n -> V -> W) (x v : V)
   is_derive x v (\sum_(i < n) h i) (\sum_(i < n) dh i).
 Proof.
 elim: n h dh => [h dh dhx|h dh dhx n ihn].
-  by rewrite !big_ord0 //; apply: is_derive_cst.
-by rewrite !big_ord_recr /=; apply: is_deriveD.
+  by rewrite !big_ord0; exact: is_derive_cst.
+by rewrite !big_ord_recr; exact: is_deriveD.
 Qed.
 
 Lemma derivable_sum n (h : 'I_n -> V -> W) (x v : V) :
@@ -1360,8 +1359,6 @@ Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_right x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
-(* should be inferred *)
-have atrF := at_right_proper_filter x.
 apply: (@cvg_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 by exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
 Qed.
@@ -1371,8 +1368,6 @@ Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
   cvg (f @ x^') -> lim (f @ x^') = lim (f @ at_left x).
 Proof.
 move=> cvfx; apply/Logic.eq_sym.
-(* should be inferred *)
-have atrF := at_left_proper_filter x.
 apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
 exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
 by apply: xe_A => //; rewrite eq_sym.
