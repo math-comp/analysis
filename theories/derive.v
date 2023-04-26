@@ -821,24 +821,24 @@ Proof.
 by move=> fc; apply/diff_locallyP; rewrite diff_bilin //; apply: dbilin p fc.
 Qed.
 
-Definition Rmult_rev (y x : R) := x * y.
-Canonical rev_Rmult := @RevOp _ _ _ Rmult_rev (@GRing.mul [ringType of R])
+Definition mulr_rev (y x : R) := x * y.
+Canonical rev_mulr := @RevOp _ _ _ mulr_rev (@GRing.mul [ringType of R])
   (fun _ _ => erefl).
 
-Lemma Rmult_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
+Lemma mulr_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
 Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
 HB.instance Definition _ x :=
   GRing.isLinear.Build R
-    [the lalgType R of R : Type] [ringType of R] _ ( *%R x) (Rmult_is_linear x).
+    [the lalgType R of R : Type] [ringType of R] _ ( *%R x) (mulr_is_linear x).
 
-Lemma Rmult_rev_is_linear y : linear (Rmult_rev y : R -> R).
-Proof. by move=> ???; rewrite /Rmult_rev mulrDl scalerAl. Qed.
+Lemma mulr_rev_is_linear y : linear (mulr_rev y : R -> R).
+Proof. by move=> ???; rewrite /mulr_rev mulrDl scalerAl. Qed.
 HB.instance Definition _ y :=
   GRing.isLinear.Build R
-    [the lmodType R of R : Type] [the lalgType R of R : Type] _ (Rmult_rev y)
-    (Rmult_rev_is_linear y).
+    [the lmodType R of R : Type] [the lalgType R of R : Type] _ (mulr_rev y)
+    (mulr_rev_is_linear y).
 
-Lemma Rmult_is_bilinear :
+Lemma mulr_is_bilinear :
   bilinear_for
     (GRing.Scale.Law.clone _ _ *:%R _) (GRing.Scale.Law.clone _ _ *:%R _)
     (@GRing.mul [ringType of R]).
@@ -847,13 +847,12 @@ split=> [u'|u] a x y /=.
 - by rewrite mulrDl scalerAl.
 - by rewrite mulrDr scalerAr.
 Qed.
-
 HB.instance Definition _ :=
   bilinear_isBilinear.Build R
     [the lmodType R of R : Type]  [the lmodType R of R : Type] R _ _
-    (@GRing.mul R) Rmult_is_bilinear.
+    (@GRing.mul R) mulr_is_bilinear.
 
-Global Instance is_diff_Rmult (p : R*R ) :
+Global Instance is_diff_mulr (p : R * R) :
   is_diff p (fun q => q.1 * q.2) (fun q => p.1 * q.2 + q.1 * p.2).
 Proof.
 apply: DiffDef; last by rewrite diff_bilin // => ?; apply: mul_continuous.
@@ -918,8 +917,7 @@ Global Instance is_diffM (f g df dg : V -> R) x :
 Proof.
 move=> dfx dgx.
 have -> : f * g = (fun p => p.1 * p.2) \o (fun y => (f y, g y)) by [].
-(* TODO: type class inference should succeed or fail, not leave an evar *)
-apply: is_diff_eq; do ?exact: is_diff_comp.
+apply: is_diff_eq.
 by rewrite funeqE => ?; rewrite /= [_ * g _]mulrC.
 Qed.
 
@@ -1158,8 +1156,8 @@ Global Instance is_derive_sum n (h : 'I_n -> V -> W) (x v : V)
   is_derive x v (\sum_(i < n) h i) (\sum_(i < n) dh i).
 Proof.
 elim: n h dh => [h dh dhx|h dh dhx n ihn].
-  by rewrite !big_ord0 //; apply: is_derive_cst.
-by rewrite !big_ord_recr /=; apply: is_deriveD.
+  by rewrite !big_ord0; exact: is_derive_cst.
+by rewrite !big_ord_recr; exact: is_deriveD.
 Qed.
 
 Lemma derivable_sum n (h : 'I_n -> V -> W) (x v : V) :
