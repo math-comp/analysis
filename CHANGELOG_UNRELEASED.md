@@ -14,9 +14,6 @@
 
 ### Removed
 
-- in `lebesgue_measure.v`:
-  + lemma `ae_eq_mul`
-  + `emeasurable_fun_bool` -> `measurable_fun_bool`
 - in `normedtype.v`:
   + instance `Proper_dnbhs_realType`
 - in `measure.v`:
