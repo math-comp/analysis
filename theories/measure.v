@@ -3055,12 +3055,6 @@ by split; [exact: almost_everywhereT|exact: almost_everywhereI|
 Qed.
 
 #[global]
-Instance ae_filter_algebraOfSetsType d {T : algebraOfSetsType d}
-    (R : realFieldType) (mu : {measure set T -> \bar R}) :
-  Filter (almost_everywhere mu).
-Proof. exact: ae_filter_ringOfSetsType. Qed.
-
-#[global]
 Instance ae_properfilter_algebraOfSetsType d {T : algebraOfSetsType d}
     (R : realFieldType) (mu : {measure set T -> \bar R}) :
   mu [set: T] > 0 -> ProperFilter (almost_everywhere mu).
@@ -3070,19 +3064,13 @@ rewrite /almost_everywhere setC0 => /(measure_negligible measurableT).
 by apply/eqP; rewrite eq_le negb_and measure_ge0 orbF -ltNge.
 Qed.
 
-#[global]
-Instance ae_filter_measurableType d {T : measurableType d}
-    (R : realFieldType) (mu : {measure set T -> \bar R}) :
-  Filter (almost_everywhere mu).
-Proof. exact: ae_filter_ringOfSetsType. Qed.
-
-#[global]
-Instance ae_properfilter_measurableType d {T : measurableType d}
-    (R : realFieldType) (mu : {measure set T -> \bar R}) :
-  mu [set: T] > 0 -> ProperFilter (almost_everywhere mu).
-Proof. exact: ae_properfilter_algebraOfSetsType. Qed.
-
 End ae.
+
+#[global] Hint Extern 0 (Filter (almost_everywhere _)) =>
+  (apply: ae_filter_ringOfSetsType) : typeclass_instances.
+
+#[global] Hint Extern 0 (ProperFilter (almost_everywhere _)) =>
+  (apply: ae_properfilter_algebraOfSetsType) : typeclass_instances.
 
 Definition almost_everywhere_notation d (T : semiRingOfSetsType d)
     (R : realFieldType) (mu : set T -> \bar R) (P : T -> Prop)
