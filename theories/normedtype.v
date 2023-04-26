@@ -367,9 +367,8 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_spaddl.
 Qed.
 
-Global Instance Proper_dnbhs_realType (R : realType) (x : R) :
-  ProperFilter x^'.
-Proof. exact: Proper_dnbhs_numFieldType. Qed.
+#[global] Hint Extern 0 (ProperFilter _^') =>
+  (apply: Proper_dnbhs_numFieldType) : typeclass_instances.
 
 (** * Some Topology on extended real numbers *)
 
@@ -2123,6 +2122,11 @@ Arguments cvgr_neq0 {R V T F FF f}.
 #[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
 
+
+#[global] Hint Extern 0 (ProperFilter _^'-) =>
+  (apply: at_left_proper_filter) : typeclass_instances.
+#[global] Hint Extern 0 (ProperFilter _^'+) =>
+  (apply: at_right_proper_filter) : typeclass_instances.
 
 Section at_left_rightR.
 Variable (R : numFieldType).
