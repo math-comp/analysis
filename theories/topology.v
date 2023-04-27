@@ -188,8 +188,8 @@ Require Import reals signed.
 (*                                     a pointedType, as well as the carrier. *)
 (*                                     nbhs_of_open \o open_from must be      *)
 (*                                     used to declare a filterType           *)
-(*          smallest_filter_aux F n == nth stage of recursively building the  *)
-(*                                     filter of finite intersections         *)
+(*        smallest_filter_stage F n == nth stage of recursively building the  *)
+(*                                     filter of finite intersections of F    *)
 (*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
 (*                                     a finite subset of D                   *)
 (*       topologyOfSubbaseMixin D b == builds the mixin for a topological     *)
@@ -2125,14 +2125,14 @@ split.
 - by move=> ? ? /filterS + sFP ? [? ?]; apply; apply: sFP.
 Qed.
 
-Fixpoint smallest_filter_aux {T : Type} (F : set (set T)) (n : nat) :=
+Fixpoint smallest_filter_stage {T : Type} (F : set (set T)) (n : nat) :=
   if n is S m 
   then [set PQ.1 `&` PQ.2 | 
-    PQ in (smallest_filter_aux F m) `*` (smallest_filter_aux F m)]
+    PQ in (smallest_filter_stage F m) `*` (smallest_filter_stage F m)]
   else F.
 
 Lemma smallest_filter_aux_sub {T : Type} (F : set (set T)) (i j : nat) :
-  (i <= j)%N -> smallest_filter_aux F i `<=` smallest_filter_aux F j.
+  (i <= j)%N -> smallest_filter_stage F i `<=` smallest_filter_stage F j.
 Proof.
 elim: j i => //; first by move=> i; rewrite leqn0 => /eqP ->.
 move=> j IH i; rewrite leq_eqVlt => /orP; case; first by move/eqP => ->.
@@ -2140,7 +2140,7 @@ by move=> /IH/subset_trans; apply=> A ?; exists (A,A) => //; rewrite setIid.
 Qed.
 
 Lemma smallest_filter_auxP {T : Type} (F : set (set T)) : F!=set0 -> 
-  smallest Filter F = filter_from (\bigcup_n (smallest_filter_aux F n)) id.
+  smallest Filter F = filter_from (\bigcup_n (smallest_filter_stage F n)) id.
 Proof.
 case=> W FW; rewrite eqEsubset; split.
   apply: smallest_sub => //; first last.
