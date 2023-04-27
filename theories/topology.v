@@ -250,6 +250,7 @@ Require Import reals signed.
 (*           totally_disconnected A == The only connected subsets of A are    *)
 (*                                     empty or singletons.                   *)
 (*               zero_dimensional T == Points are separable by a clopen set.  *)
+(*                       set_nbhs A == filter from open sets containing A     *)
 (*                                                                            *)
 (*                                                                            *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
@@ -3970,7 +3971,6 @@ by move=> D [DF _ [C DC]]/(_ _ DC)/subsetC2/filterS; apply; exact: DF.
 Qed.
 
 End totally_disconnected.
-
 
 Section set_nbhs.
 
