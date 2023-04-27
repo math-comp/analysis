@@ -16,6 +16,14 @@
 - in file `topology.v`,
   + new definitions `basis`, and `second_countable`.
   + new lemmas `clopen_countable` and `compact_countable_base`.
+- in `classical_sets.v`:
+  + lemmas `set_eq_le`, `set_neq_lt`
+- in `set_interval.v`:
+  + lemma `set_lte_bigcup`
+- in `lebesgue_integral.v`:
+  + lemmas `emeasurable_fun_lt`, `emeasurable_fun_le`, `emeasurable_fun_eq`,
+    `emeasurable_fun_neq`
+  + lemma `integral_ae_eq`
 
 ### Changed
 
