@@ -64,6 +64,19 @@
   + lemma `integrable_sum`
 - in `probability.v`
   + lemma `cantelli`
+- in `classical_sets.v`:
+  + lemmas `preimage_mem_true`, `preimage_mem_false`
+- in `measure.v`:
+  + definition `dominates`, notation `` `<< ``
+  + lemma `dominates_trans`
+- in `measure.v`:
+  + defintion `mfrestr`
+- in `charge.v`:
+  + definition `measure_of_charge`
+  + definition `crestr0`
+  + definitions `jordan_neg`, `jordan_pos`
+  + lemmas `jordan_decomp`, `jordan_pos_dominates`, `jordan_neg_dominates`
+  + lemma `radon_nikodym_finite`, theorem `Radon_Nikodym`
 
 - in `measure.v`:
   + lemmas `measurable_pair1`, `measurable_pair2`
