@@ -1033,17 +1033,24 @@ Proof.
 by move=> mD /= Y mY; rewrite preimage_cst; case: ifPn; rewrite ?setIT ?setI0.
 Qed.
 
-Lemma measurable_funU D E (f : T1 -> T2) :
-  measurable D -> measurable E ->
+Lemma measurable_fun_bigcup (E : (set T1)^nat) (f : T1 -> T2) :
+  (forall i, measurable (E i)) ->
+  measurable_fun (\bigcup_i E i) f <-> (forall i, measurable_fun (E i) f).
+Proof.
+move=> mE; split => [|mf /= _ A mA]; last first.
+  by rewrite setI_bigcupl; apply: bigcup_measurable => i _; exact: mf.
+move=> mf i _ A /mf => /(_ (bigcup_measurable (fun k _ => mE k))).
+move=> /(measurableI (E i))-/(_ (mE i)).
+by rewrite setICA setIA (@setIidr _ _ (E i))//; exact: bigcup_sup.
+Qed.
+
+Lemma measurable_funU D E (f : T1 -> T2) : measurable D -> measurable E ->
   measurable_fun (D `|` E) f <-> measurable_fun D f /\ measurable_fun E f.
 Proof.
-move=> mD mE; split=> [mDEf|[mDf mEf] mDE A mA]; last first.
-  by rewrite setIUl; apply: measurableU; [exact: mDf|exact: mEf].
-split.
-- move=> {}mD A /mDEf => /(_ (measurableU _ _ mD mE))/(measurableI D)-/(_ mD).
-  by rewrite setICA setIA setUK.
-- move=> {}mE A /mDEf => /(_ (measurableU _ _ mD mE))/(measurableI E)-/(_ mE).
- by rewrite setICA setIA setUC setUK.
+move=> mD mE; rewrite -bigcup2E; apply: (iff_trans (measurable_fun_bigcup _ _)).
+  by move=> [//|[//|//=]].
+split=> [mf|[Df Dg] [//|[//|/= _ _ Y mY]]]; last by rewrite set0I.
+by split; [exact: (mf 0%N)|exact: (mf 1%N)].
 Qed.
 
 Lemma measurable_funS E D (f : T1 -> T2) :
