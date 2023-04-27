@@ -10,6 +10,8 @@
   + lemma `lipschitz_set0`, `lipschitz_set1`
 - in `measure.v`:
   + lemma `measurable_fun_bigcup`
+- in `sequences.v`:
+  + lemma `eq_eseriesl`
 
 ### Changed
 
