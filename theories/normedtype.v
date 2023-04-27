@@ -2407,7 +2407,7 @@ Lemma lipschitz_set0 (K : numFieldType) (V W : normedModType K)
 Proof. by apply: nearW; rewrite setM0 => ?;apply: globally0. Qed.
 
 Lemma lipschitz_set1 (K : numFieldType) (V W : normedModType K)
-(f : V -> W) (a : V) :[lipschitz f x | x in set1 a].
+  (f : V -> W) (a : V) : [lipschitz f x | x in set1 a].
 Proof.
 apply: (@klipschitzW _ _ _ `|f a|).
   by apply: (@globally_properfilter _ _ (a, a)).
