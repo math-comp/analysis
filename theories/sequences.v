@@ -1595,7 +1595,7 @@ Proof. by move=> efg; congr (limn _); apply/funext => n; exact: eq_bigr. Qed.
 
 Lemma eq_eseriesl (R : realFieldType) (P Q : pred nat) (f : (\bar R)^nat) :
   P =1 Q -> \sum_(i <oo | P i) f i = \sum_(i <oo | Q i) f i.
-Proof. by move=> efg; congr (lim _); apply/funext => n; exact: eq_bigl. Qed.
+Proof. by move=> efg; apply/congr_lim/funext => n; apply: eq_bigl. Qed.
 Arguments eq_eseriesl {R P} Q.
 
 Section ereal_series.
