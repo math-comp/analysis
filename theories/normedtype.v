@@ -102,6 +102,15 @@ Reserved Notation "x ^'+" (at level 3, format "x ^'+").
 Reserved Notation "x ^'-" (at level 3, format "x ^'-").
 Reserved Notation "+oo_ R" (at level 3, format "+oo_ R").
 Reserved Notation "-oo_ R" (at level 3, format "-oo_ R").
+Reserved Notation "[ 'bounded' E | x 'in' A ]"
+  (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
+Reserved Notation "k .-lipschitz_on f"
+  (at level 2, format "k .-lipschitz_on  f").
+Reserved Notation "k .-lipschitz_ A f"
+  (at level 2, A at level 0, format "k .-lipschitz_ A  f").
+Reserved Notation "k .-lipschitz f" (at level 2, format "k .-lipschitz  f").
+Reserved Notation "[ 'lipschitz' E | x 'in' A ]"
+  (at level 0, x name, format "[ 'lipschitz'  E  |  x  'in'  A ]").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -1502,8 +1511,8 @@ move=> /pinfty_ex_gt0[M M_gt0 FM]; exists (M + 1); rewrite ?addr_gt0//.
 by apply: filterS FM => x /le_lt_trans/= ->//; rewrite ltr_addl.
 Qed.
 
-Notation "[ 'bounded' E | x 'in' A ]" := (bounded_near (fun x => E) (globally A))
-  (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
+Notation "[ 'bounded' E | x 'in' A ]" :=
+  (bounded_near (fun x => E) (globally A)).
 Notation bounded_set := [set A | [bounded x | x in A]].
 Notation bounded_fun := [set f | [bounded f x | x in setT]].
 
@@ -1544,8 +1553,8 @@ Lemma bounded_locally (T : topologicalType)
   [bounded f x | x in A] -> [locally [bounded f x | x in A]].
 Proof. by move=> /sub_boundedr AB x Ax; apply: AB; apply: within_nbhsW. Qed.
 
-Notation "k .-lipschitz_on f" := (dominated_by (self_sub id) k (self_sub f))
-  (at level 2, format "k .-lipschitz_on  f") : type_scope.
+Notation "k .-lipschitz_on f" :=
+  (dominated_by (self_sub id) k (self_sub f)) : type_scope.
 
 Definition sub_klipschitz (K : numFieldType) (V W : normedModType K) (k : K)
            (f : V -> W) (F G : set_system (V * V)) :
@@ -1567,30 +1576,36 @@ Lemma klipschitzW (K : numFieldType) (V W : normedModType K) (k : K)
 Proof. by move=> f_lip; apply/ex_dom_bound; exists k. Qed.
 
 Notation "k .-lipschitz_ A f" :=
-  (k.-lipschitz_on f (globally (A `*` A)))
-  (at level 2, A at level 0, format "k .-lipschitz_ A  f").
-Notation "k .-lipschitz f" := (k.-lipschitz_setT f)
-  (at level 2, format "k .-lipschitz  f") : type_scope.
+  (k.-lipschitz_on f (globally (A `*` A))) : type_scope.
+Notation "k .-lipschitz f" := (k.-lipschitz_setT f) : type_scope.
 Notation "[ 'lipschitz' E | x 'in' A ]" :=
-  (lipschitz_on (fun x => E) (globally (A `*` A)))
-  (at level 0, x name, format "[ 'lipschitz'  E  |  x  'in'  A ]").
+  (lipschitz_on (fun x => E) (globally (A `*` A))) : type_scope.
 Notation lipschitz f := [lipschitz f x | x in setT].
 
-Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R)
-   (k : R) (f : V -> W) (A : set V) :
-  k.-lipschitz_A f -> [locally k.-lipschitz_A f].
+Lemma lipschitz_set0 (K : numFieldType) (V W : normedModType K)
+  (f : V -> W) : [lipschitz f x | x in set0].
+Proof. by apply: nearW; rewrite setM0 => ?; apply: globally0. Qed.
+
+Lemma lipschitz_set1 (K : numFieldType) (V W : normedModType K)
+  (f : V -> W) (a : V) : [lipschitz f x | x in [set a]].
 Proof.
-by move=> bndf x Ax; apply: sub_klipschitz bndf; apply: within_nbhsW.
+apply: (@klipschitzW _ _ _ `|f a|).
+  exact: (@globally_properfilter _ _ (a, a)).
+by move=> [x y] /= [] -> ->; rewrite !subrr !normr0 mulr0.
 Qed.
+
+Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R) (k : R)
+    (f : V -> W) (A : set V) :
+  k.-lipschitz_A f -> [locally k.-lipschitz_A f].
+Proof. by move=> + x Ax; apply: sub_klipschitz; apply: within_nbhsW. Qed.
 
 Lemma lipschitz_locally (R : numFieldType) (V W : normedModType R)
     (A : set V) (f : V -> W) :
   [lipschitz f x | x in A] -> [locally [lipschitz f x | x in A]].
-Proof.
-by move=> bndf x Ax; apply: sub_lipschitz bndf; apply: within_nbhsW.
-Qed.
+Proof. by move=> + x Ax; apply: sub_lipschitz; apply: within_nbhsW. Qed.
 
-Lemma lipschitz_id (R : numFieldType) (V : normedModType R) : 1.-lipschitz (@id V).
+Lemma lipschitz_id (R : numFieldType) (V : normedModType R) :
+  1.-lipschitz (@id V).
 Proof. by move=> [/= x y] _; rewrite mul1r. Qed.
 Arguments lipschitz_id {R V}.
 

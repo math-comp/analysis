@@ -1274,6 +1274,8 @@ Definition globally {T : Type} (A : set T) : set_system T :=
    [set P : set T | forall x, A x -> P x].
 Arguments globally {T} A _ /.
 
+Lemma globally0 {T : Type} (A : set T) : globally set0 A. Proof. by []. Qed.
+
 Global Instance globally_filter {T : Type} (A : set T) :
   Filter (globally A).
 Proof.
