@@ -2132,7 +2132,7 @@ Fixpoint smallest_filter_stage {T : Type} (F : set (set T)) (n : nat) :=
     PQ in (smallest_filter_stage F m) `*` (smallest_filter_stage F m)]
   else F.
 
-Lemma smallest_filter_aux_sub {T : Type} (F : set (set T)) (i j : nat) :
+Lemma smallest_filter_stage_sub {T : Type} (F : set (set T)) (i j : nat) :
   (i <= j)%N -> smallest_filter_stage F i `<=` smallest_filter_stage F j.
 Proof.
 elim: j i => //; first by move=> i; rewrite leqn0 => /eqP ->.
@@ -2140,7 +2140,7 @@ move=> j IH i; rewrite leq_eqVlt => /orP; case; first by move/eqP => ->.
 by move=> /IH/subset_trans; apply=> A ?; exists (A,A) => //; rewrite setIid.
 Qed.
 
-Lemma smallest_filter_auxP {T : Type} (F : set (set T)) : F!=set0 -> 
+Lemma smallest_filter_stageP {T : Type} (F : set (set T)) : F!=set0 -> 
   smallest Filter F = filter_from (\bigcup_n (smallest_filter_stage F n)) id.
 Proof.
 case=> W FW; rewrite eqEsubset; split.
@@ -2149,8 +2149,8 @@ case=> W FW; rewrite eqEsubset; split.
   apply: filter_from_filter; first by exists W; exists O.
   move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.
   exists (S (maxn i j)) => //=; exists (P,Q) => //=; split.
-    by apply: smallest_filter_aux_sub; first exact: leq_maxl.
-  by apply: smallest_filter_aux_sub; first exact: leq_maxr.
+    by apply: smallest_filter_stage_sub; first exact: leq_maxl.
+  by apply: smallest_filter_stage_sub; first exact: leq_maxr.
 move=> A [B [n _]]; elim: n B A.
   by move=> B A FB /filterS; apply; exact: sub_gen_smallest.
 move=> n IH /= B A [].
