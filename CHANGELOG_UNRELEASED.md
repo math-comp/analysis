@@ -8,6 +8,8 @@
   + lemma `globally0`
 - in `normedtype.v`:
   + lemma `lipschitz_set0`, `lipschitz_set1`
+- in `measure.v`:
+  + lemma `measurable_fun_bigcup`
 
 ### Changed
 
