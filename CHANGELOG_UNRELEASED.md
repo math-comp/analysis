@@ -4,6 +4,11 @@
 
 ### Added
 
+- in `topology.v`:
+  + lemma `globally0`
+- in `normedtype.v`:
+  + lemma `lipschitz_set0`, `lipschitz_set1`
+
 ### Changed
 
 ### Renamed
