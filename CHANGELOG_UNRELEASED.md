@@ -110,7 +110,7 @@
 - in `lebesgue_integral.v`:
   + lemmas `integrableP`, `measurable_int`
 - in file `topology.v`,
-  + new definition `set_nbhs`.
+  + new definition `set_nbhs`, `smallest_filter_stage`.
   + new lemmas `smallest_filter_stage_sub`, `smallest_filter_stageP`, 
     `smallest_filter_finI`, and `set_nbhsP`.
 
