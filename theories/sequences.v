@@ -1593,6 +1593,11 @@ Lemma eq_eseriesr (R : realFieldType) (f g : (\bar R)^nat) (P : pred nat) :
   \sum_(i <oo | P i) f i = \sum_(i <oo | P i) g i.
 Proof. by move=> efg; congr (limn _); apply/funext => n; exact: eq_bigr. Qed.
 
+Lemma eq_eseriesl (R : realFieldType) (P Q : pred nat) (f : (\bar R)^nat) :
+  P =1 Q -> \sum_(i <oo | P i) f i = \sum_(i <oo | Q i) f i.
+Proof. by move=> efg; congr (lim _); apply/funext => n; exact: eq_bigl. Qed.
+Arguments eq_eseriesl {R P} Q.
+
 Section ereal_series.
 Variables (R : realFieldType) (f : (\bar R)^nat).
 Implicit Types P : pred nat.
