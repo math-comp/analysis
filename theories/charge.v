@@ -1543,7 +1543,8 @@ rewrite nneseries_esum; last by move=> m _; rewrite integral_ge0.
 under eq_esum do rewrite int_f_E//.
 rewrite -nneseries_esum; last first.
   by move=> n; rewrite measure_ge0//; exact: measurableI.
-rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])); last by move=> x; rewrite in_setT.
+rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])); last first.
+  by move=> x; rewrite in_setT.
 rewrite -measure_bigcup//.
 - by rewrite -setI_bigcupr bigcupE setIT.
 - by move=> i _; exact: measurableI.
