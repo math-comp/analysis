@@ -13,6 +13,8 @@ From HB Require Import structures.
 (*                                                                            *)
 (*   derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and       *)
 (*                                        continuous up to the boundary       *)
+(*                           C1 a b f  == f is a continuously differentiable  *)
+(*                                        function on `[a, b]                 *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -52,6 +54,54 @@ by apply: fxy; rewrite in_itv/= xz zy.
 Qed.
 
 End derivable_oo_continuous_bnd.
+
+Section C1.
+Context {R : realType}.
+
+Definition C1 (a b : R) (f : R^o -> R^o) :=
+  derivable_oo_continuous_bnd f a b /\
+  {within `[a, b], continuous f^`()}.
+
+Lemma C1_lipschitz (a b : R) (f : R^o -> R^o) :
+  C1 a b f -> [lipschitz f x | x in `[a, b]].
+Proof.
+move=> [df cf]; have [|ab] := leP b a.
+  rewrite le_eqVlt => /predU1P [->|ba].
+    by rewrite set_itvE; exact: lipschitz_set1.
+  by rewrite set_itv_ge ?bnd_simp -?ltNge//; exact: lipschitz_set0.
+have : {within `[a, b], continuous (fun x => `|f^`() x|)}.
+  by move=> x; apply: continuous_comp; [exact: cf|exact: norm_continuous].
+move=> /(EVT_max (ltW ab))[c cab dfmax].
+pose M := `|f^`() c|; apply: (@klipschitzW _ _ _ M).
+  apply: (@globally_properfilter _ _ (a, a)); apply inferP.
+  by rewrite /= in_itv /= lexx (ltW ab).
+move=> [x y] /= [xab yab] /=.
+wlog : x y xab yab / x < y.
+  move=> h; have [|] := ltP x y; first exact: (h x y xab yab).
+  rewrite le_eqVlt => /predU1P[->|]; first by rewrite !subrr !normr0 mulr0.
+  by rewrite distrC (distrC x); exact: (h y x yab xab).
+move=> xy.
+have xydf (z : R) : z \in `]x, y[ -> differentiable f z.
+  move=> zxy; apply/derivable1_diffP.
+  move: df => [+ _ _]; apply.
+  have xyabo : `]x, y[ `<=` `]a, b[.
+    move=> d /= dxy; move: dxy xab yab; rewrite !in_itv/=.
+    move=> /andP[xz zy]/andP[ax xb] /andP[ay yb].
+    by rewrite (le_lt_trans ax xz)//= (lt_le_trans zy yb).
+  exact: xyabo.
+have xyab : `[x, y] `<=` `[a, b].
+  move=> d /= dxy; move: dxy xab yab; rewrite !in_itv/=.
+  move=> /andP[xd dy]/andP[ax xb] /andP[ay yb].
+  by rewrite (le_trans ax xd)//= (le_trans dy yb).
+have: {within `[x, y], continuous f}.
+  have /continuous_subspaceW := derivable_oo_continuous_bnd_within df.
+  exact.
+move=> /(MVT xy (fun z h => derivableP (diff_derivable (xydf z h))))[d dxy mvt].
+rewrite distrC {}mvt -derive1E normrM (distrC y) ler_pmul//.
+exact/dfmax/xyab/subset_itv_oo_cc.
+Qed.
+
+End C1.
 
 Section real_inverse_functions.
 Variable R : realType.
