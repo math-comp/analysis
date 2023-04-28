@@ -755,6 +755,9 @@ Canonical mule_mulmonoid := @Monoid.MulLaw _ _ mule mul0e mule0.
 Lemma expeS x n : x ^+ n.+1 = x * x ^+ n.
 Proof. by case: n => //=; rewrite mule1. Qed.
 
+Lemma EFin_expe r n : (r ^+ n)%:E = r%:E ^+ n.
+Proof. by elim: n => [//|n IHn]; rewrite exprS EFinM IHn expeS. Qed.
+
 Definition mule_def x y :=
   ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
 
@@ -1145,6 +1148,13 @@ case: x y => [x||] [y||]// rx ry;
       |by rewrite mulNyNy /Order.comparable le0y].
 Qed.
 
+Lemma sqreD x y : x + y \is a fin_num ->
+  (x + y) ^+ 2 = x ^+ 2 + x * y *+ 2 + y ^+ 2.
+Proof.
+case: x y => [x||] [y||] // _.
+by rewrite -EFinM -EFin_natmul -!EFin_expe -!EFinD sqrrD.
+Qed.
+
 Lemma abse_ge0 x : 0 <= `|x|.
 Proof. by move: x => [x| |] /=; rewrite ?le0y ?lee_fin. Qed.
 
@@ -1412,6 +1422,13 @@ case: x => [x| |]; case: n => [//|n].
 Qed.
 
 Lemma dmule2n x : x *+ 2 = x + x. Proof. by []. Qed.
+
+Lemma sqredD x y : x + y \is a fin_num ->
+  (x + y) ^+ 2 = x ^+ 2 + x * y *+ 2 + y ^+ 2.
+Proof.
+case: x y => [x||] [y||] // _.
+by rewrite -EFinM -EFin_dnatmul -!EFin_expe -!dEFinD sqrrD.
+Qed.
 
 End DualERealArithTh_numDomainType.
 
@@ -2461,6 +2478,37 @@ Qed.
 
 Lemma lee_pmul2r x : x \is a fin_num -> 0 < x -> {mono *%E^~ x : x y / x <= y}.
 Proof. by move=> xfin x0 y z; rewrite -2!(muleC x) lee_pmul2l. Qed.
+
+Lemma lee_sqr x y : 0 <= x -> 0 <= y -> (x ^+ 2 <= y ^+ 2) = (x <= y).
+Proof.
+move=> xge0 yge0; apply/idP/idP; rewrite !expe2.
+  by apply: contra_le => yltx; apply: lte_pmul.
+by move=> xley; apply: lee_pmul.
+Qed.
+
+Lemma lte_sqr x y : 0 <= x -> 0 <= y -> (x ^+ 2 < y ^+ 2) = (x < y).
+Proof.
+move=> xge0 yge0; apply/idP/idP; rewrite !expe2.
+  by apply: contra_lt => yltx; apply: lee_pmul.
+by move=> xley; apply: lte_pmul.
+Qed.
+
+Lemma lee_sqrE x y : 0 <= y -> x ^+ 2 <= y ^+ 2 -> x <= y.
+Proof.
+move=> yge0; have [xge0|xlt0 x2ley2] := leP 0 x; first by rewrite lee_sqr.
+exact: le_trans (ltW xlt0) _.
+Qed.
+
+Lemma lte_sqrE x y : 0 <= y -> x ^+ 2 < y ^+ 2 -> x < y.
+Proof.
+move=> yge0; have [xge0|xlt0 x2ley2] := leP 0 x; first by rewrite lte_sqr.
+exact: lt_le_trans xlt0 _.
+Qed.
+
+Lemma sqre_ge0 x : 0 <= x ^+ 2.
+Proof.
+by case: x => [x||]; rewrite /= ?mulyy ?mulNyNy ?le0y//; apply: sqr_ge0.
+Qed.
 
 Lemma lee_paddl y x z : 0 <= x -> y <= z -> y <= x + z.
 Proof. by move=> *; rewrite -[y]add0e lee_add. Qed.
