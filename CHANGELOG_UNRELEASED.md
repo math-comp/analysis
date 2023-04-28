@@ -48,6 +48,12 @@
 - in `constructive_ereal.v`:
   + lemmas `lee_sqr`, `lte_sqr`, `lee_sqrE`, `lte_sqrE`, `sqre_ge0`,
     `EFin_expe`, `sqreD`, `sqredD`
+- in `probability.v`
+  + lemma `expectation_sum`
+- in `functions.v`:
+  + lemma `sumrfctE`
+- in `lebesgue_integral.v`:
+  + lemma `integrable_sum`
 
 ### Changed
 

@@ -155,9 +155,9 @@ Lemma expectation_le (X Y : T -> R) :
 Proof.
 move=> mX mY X0 Y0 XY; rewrite /expectation ae_ge0_le_integral => //.
 - by move=> t _; apply: X0.
-- by apply EFin_measurable_fun.
+- exact/EFin_measurable_fun.
 - by move=> t _; apply: Y0.
-- by apply EFin_measurable_fun.
+- exact/EFin_measurable_fun.
 - move: XY => [N [mN PN XYN]]; exists N; split => // t /= h.
   by apply: XYN => /=; apply: contra_not h; rewrite lee_fin.
 Qed.
@@ -171,6 +171,21 @@ Lemma expectationB (X Y : {RV P >-> R}) :
     P.-integrable [set: T] (EFin \o X) -> P.-integrable [set: T] (EFin \o Y) ->
   'E_P[X \- Y] = 'E_P[X] - 'E_P[Y].
 Proof. by move=> ? ?; rewrite /expectation integralB_EFin. Qed.
+
+Lemma expectation_sum (X : seq {RV P >-> R}) :
+    (forall Xi, Xi \in X -> P.-integrable [set: T] (EFin \o Xi)) ->
+  'E_P[\sum_(Xi <- X) Xi] = \sum_(Xi <- X) 'E_P[Xi].
+Proof.
+elim: X => [|X0 X IHX] intX; first by rewrite !big_nil expectation_cst.
+have intX0 : P.-integrable [set: T] (EFin \o X0).
+  by apply: intX; rewrite in_cons eqxx.
+have {}intX Xi : Xi \in X -> P.-integrable [set: T] (EFin \o Xi).
+  by move=> XiX; apply: intX; rewrite in_cons XiX orbT.
+rewrite !big_cons expectationD ?IHX// (_ : _ \o _ = fun x =>
+    \sum_(f <- map (fun x : {RV P >-> R} => EFin \o x) X) f x).
+  by apply: integrable_sum => // _ /mapP[h hX ->]; exact: intX.
+by apply/funext => t/=; rewrite big_map sumEFin mfun_sum.
+Qed.
 
 End expectation_lemmas.
 
