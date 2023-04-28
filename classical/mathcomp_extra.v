@@ -1360,3 +1360,13 @@ by apply: mulr_gt0; rewrite subr_gt0 lt_maxr ltr_addl ltr01 ?orbT.
 Qed.
 
 End Degle2PolyRealClosedConvex.
+
+(* not yet backported *)
+Lemma deg_le2_ge0 (F : rcfType) (a b c : F) :
+  (forall x, 0 <= a * x ^+ 2 + b * x + c)%R -> (b ^+ 2 - 4%:R * a * c <= 0)%R.
+Proof.
+move=> pge0; pose p := \poly_(i < 3) [:: c; b; a]`_i.
+have := @deg_le2_poly_ge0 _ p (size_poly _ _); rewrite !coef_poly/=; apply=> r.
+rewrite horner_poly !big_ord_recr !big_ord0/= !Monoid.simpm/= expr1.
+by rewrite -mulrA -expr2 addrC addrA addrAC.
+Qed.

@@ -66,12 +66,14 @@
 
 - in `measure.v`:
   + lemmas `measurable_pair1`, `measurable_pair2`
+  + lemma `covariance_le`
 - in `mathcomp_extra.v`
   + definition `coefE` (will be in MC 2.1/1.18)
   + lemmas `deg2_poly_canonical`, `deg2_poly_factor`, `deg2_poly_min`,
     `deg2_poly_minE`, `deg2_poly_ge0`, `Real.deg2_poly_factor`,
     `deg_le2_poly_delta_ge0`, `deg_le2_poly_ge0`
     (will be in MC 2.1/1.18)
+  + lemma `deg_le2_ge0`
 
 - in `lebesgue_integral.v`:
   + lemmas `integrableP`, `measurable_int`

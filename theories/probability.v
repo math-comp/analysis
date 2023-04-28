@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect.
-From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
 Require Import mathcomp_extra boolp reals ereal.
 From HB Require Import structures.
 Require Import classical_sets signed functions topology normedtype cardinality.
@@ -475,6 +475,29 @@ Lemma varianceB_cst_r (X : {RV P >-> R}) c :
   'V_P[(X \- cst c)%R] = 'V_P[X].
 Proof.
 by move=> X1 X2; rewrite -[(X \- cst c)%R]/(X \+ (cst (- c)))%R varianceD_cst_r.
+Qed.
+
+Lemma covariance_le (X Y : {RV P >-> R}) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+    P.-integrable setT (EFin \o Y) -> P.-integrable setT (EFin \o (Y ^+ 2)%R) ->
+    P.-integrable setT (EFin \o (X * Y)%R) ->
+  covariance P X Y <= sqrte 'V_P[X] * sqrte 'V_P[Y].
+Proof.
+move=> X1 X2 Y1 Y2 XY1.
+rewrite -sqrteM ?variance_ge0//.
+rewrite lee_sqrE ?sqrte_ge0// sqr_sqrte ?mule_ge0 ?variance_ge0//.
+rewrite -(fineK (variance_fin_num X1 X2)) -(fineK (variance_fin_num Y1 Y2)).
+rewrite -(fineK (covariance_fin_num X1 Y1 XY1)).
+rewrite -EFin_expe -EFinM lee_fin -(@ler_pmul2l _ 4) ?ltr0n// [leRHS]mulrA.
+rewrite [in leLHS](_ : 4 = 2 * 2)%R -natrM// natrM mulrACA -expr2 -subr_le0.
+apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
+rewrite EFinM fineK ?variance_fin_num// muleC -varianceZ//.
+rewrite -mulrA EFinM mulrC EFinM ?fineK ?covariance_fin_num// -covarianceZl//.
+rewrite addeAC -varianceD ?variance_ge0//=.
+- by rewrite compre_scale ?integrablerM.
+- rewrite [X in EFin \o X](_ : _ = r ^+2 \o* X ^+ 2)%R 1?mulrACA//.
+  by rewrite compre_scale ?integrablerM.
+- by rewrite -mulrAC compre_scale// integrablerM.
 Qed.
 
 End variance.
