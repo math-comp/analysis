@@ -374,42 +374,122 @@ Section variance.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
-Definition variance (X : T -> R) := 'E_P[(X \- cst (fine 'E_P[X])) ^+ 2]%R.
+Definition variance (X : T -> R) := covariance P X X.
 Local Notation "''V_' P [ X ]" := (variance X).
 
 Lemma varianceE (X : {RV P >-> R}) :
-  P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
   'V_P[X] = 'E_P[X ^+ 2] - ('E_P[X]) ^+ 2.
-Proof.
-move=> X1 X2.
-have ? : 'E_P[X] \is a fin_num by rewrite fin_num_abs// integrable_expectation.
-rewrite /variance.
-rewrite [X in 'E_P[X]](_ : _ = (X ^+ 2 \- (2 * fine 'E_P[X]) \o* X \+
-    fine ('E_P[X] ^+ 2) \o* cst 1)%R); last first.
-  by apply/funeqP => x /=; rewrite -expr2 sqrrB mulr_natl -mulrnAr mul1r fineM.
-rewrite expectationD/=; last 2 first.
-  - rewrite compreBr; last by [].
-    apply: integrableB; [exact: measurableT|by []|].
-    by rewrite compre_scale; [exact: integrablerM|by []].
-  - rewrite compre_scale; last by [].
-    apply: integrablerM; first exact: measurableT.
-    exact: finite_measure_integrable_cst.
-rewrite expectationB/=; [|by []|]; last first.
-  by rewrite compre_scale; [exact: integrablerM|by []].
-rewrite expectationM// expectationM; last exact: finite_measure_integrable_cst.
-rewrite expectation_cst mule1 EFinM fineK// fineK ?fin_numM// -muleA -expe2.
-rewrite mule_natl mule2n oppeD; last by rewrite fin_num_adde_defl// fin_numX.
-by rewrite addeA subeK// fin_numX.
-Qed.
+Proof. by move=> X1 X2; rewrite /variance covarianceE. Qed.
+
+Lemma variance_fin_num (X : {RV P >-> R}) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o X ^+ 2)%R ->
+  'V_P[X] \is a fin_num.
+Proof. by move=> /[dup]; apply: covariance_fin_num. Qed.
 
 Lemma variance_ge0 (X : {RV P >-> R}) : (0 <= 'V_P[X])%E.
 Proof. by apply: expectation_ge0 => x; apply: sqr_ge0. Qed.
 
 Lemma variance_cst r : 'V_P[cst r] = 0%E.
 Proof.
-rewrite /variance expectation_cst/=.
+rewrite /variance /covariance expectation_cst/=.
 rewrite [X in 'E_P[X]](_ : _ = cst 0%R) ?expectation_cst//.
 by apply/funext => x; rewrite /GRing.exp/GRing.mul/= subrr mulr0.
+Qed.
+
+Lemma varianceZ a (X : {RV P >-> R}) :
+  P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+  'V_P[(a \o* X)%R] = (a ^+ 2)%:E * 'V_P[X].
+Proof.
+move=> X1 X2; rewrite /variance covarianceZl/=.
+- by rewrite covarianceZr// muleA.
+- by [].
+- by rewrite compre_scale; [exact: integrablerM|].
+- rewrite [ X in EFin \o X](_ : _ = (a \o* X ^+ 2)%R); last first.
+    by apply/funeqP => x; rewrite mulrA.
+  by rewrite compre_scale; [exact: integrablerM|].
+Qed.
+
+Lemma varianceN (X : {RV P >-> R}) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+  'V_P[(\- X)%R] = 'V_P[X].
+Proof. by move=> X1 X2; rewrite /variance covarianceNN. Qed.
+
+Lemma varianceD (X Y : {RV P >-> R}) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+    P.-integrable setT (EFin \o Y) -> P.-integrable setT (EFin \o (Y ^+ 2)%R) ->
+    P.-integrable setT (EFin \o (X * Y)%R) ->
+  'V_P[X \+ Y]%R = 'V_P[X] + 'V_P[Y] + 2%:E * covariance P X Y.
+Proof.
+move=> X1 X2 Y1 Y2 XY1.
+rewrite -['V_P[_]]/(covariance P (X \+ Y)%R (X \+ Y)%R).
+have XY : P.-integrable [set: T] (EFin \o (X \+ Y)%R).
+  by rewrite compreDr; [apply: integrableD X1 Y1|].
+rewrite covarianceDl/=; [|by []..| | |]; last 3 first.
+- rewrite -expr2 sqrrD compreDr; [apply: integrableD Y2 => [//|]|by []].
+  rewrite compreDr; [apply: integrableD X2 _ => [//|]|by []].
+  rewrite -mulr_natr -[(_ * 2)%R]/(2 \o* (X * Y))%R compre_scale; [|by []].
+  exact: integrablerM.
+- by rewrite mulrDr compreDr; [apply: integrableD X2 XY1|].
+- by rewrite mulrDr mulrC compreDr; [apply: integrableD XY1 Y2|].
+rewrite covarianceDr; [|by []..].
+rewrite covarianceDr ?(mulrC Y X); [|by []..].
+rewrite (covarianceC P Y X) [LHS]addeA [LHS](ACl (1*4*(2*3)))/=.
+by rewrite -[2%R]/(1 + 1)%R EFinD muleDl ?mul1e// covariance_fin_num.
+Qed.
+
+Lemma varianceB (X Y : {RV P >-> R}) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+    P.-integrable setT (EFin \o Y) -> P.-integrable setT (EFin \o (Y ^+ 2)%R) ->
+    P.-integrable setT (EFin \o (X * Y)%R) ->
+  'V_P[(X \- Y)%R] = 'V_P[X] + 'V_P[Y] - 2%:E * covariance P X Y.
+Proof.
+move=> X1 X2 Y1 Y2 XY1.
+rewrite -[(X \- Y)%R]/(X \+ (\- Y))%R.
+rewrite varianceD/= ?varianceN ?covarianceNr ?muleN; [by []..|exact: X2| | |].
+- by rewrite compreN; [apply: integrableN Y1|].
+- by rewrite mulrNN; apply: Y2.
+- by rewrite mulrN compreN; [apply: integrableN XY1|].
+Qed.
+
+Lemma varianceD_cst_l c (X : {RV P >-> R}) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+  'V_P[(cst c \+ X)%R] = 'V_P[X].
+Proof.
+move=> X1 X2.
+rewrite varianceD/=; [| | |by []..|]; last 3 first.
+- exact: finite_measure_integrable_cst.
+- rewrite compre_scale; [|by []].
+  exact: integrablerM (finite_measure_integrable_cst _ _).
+- by rewrite mulrC compre_scale; [apply: integrablerM X1|].
+by rewrite variance_cst add0e covariance_cst_l mule0 adde0.
+Qed.
+
+Lemma varianceD_cst_r (X : {RV P >-> R}) c :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+  'V_P[(X \+ cst c)%R] = 'V_P[X].
+Proof.
+move=> X1 X2.
+have -> : (X \+ cst c = cst c \+ X)%R by apply/funeqP => x /=; rewrite addrC.
+exact: varianceD_cst_l.
+Qed.
+
+Lemma varianceB_cst_l c (X : {RV P >-> R}) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+  'V_P[(cst c \- X)%R] = 'V_P[X].
+Proof.
+move=> X1 X2.
+rewrite -[(cst c \- X)%R]/(cst c \+ (\- X))%R varianceD_cst_l/=; last 2 first.
+- by rewrite compreN; [apply: integrableN X1|].
+- by rewrite mulrNN; apply: X2.
+by rewrite varianceN.
+Qed.
+
+Lemma varianceB_cst_r (X : {RV P >-> R}) c :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+  'V_P[(X \- cst c)%R] = 'V_P[X].
+Proof.
+by move=> X1 X2; rewrite -[(X \- cst c)%R]/(X \+ (cst (- c)))%R varianceD_cst_r.
 Qed.
 
 End variance.

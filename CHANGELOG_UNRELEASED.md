@@ -54,7 +54,9 @@
     `covariance_fin_num`, `covariance_cst_l`, `covariance_cst_r`,
     `covarianceZl`, `covarianceZr`, `covarianceNl`, `covarianceNr`,
     `covarianceNN`, `covarianceDl`, `covarianceDr`, `covarianceBl`,
-    `covarianceBr`
+    `covarianceBr`, `variance_fin_num`, `varianceZ`, `varianceN`,
+    `varianceD`, `varianceB`, `varianceD_cst_l`, `varianceD_cst_r`,
+    `varianceB_cst_l`, `varianceB_cst_r`
 - in `functions.v`:
   + lemma `sumrfctE`
 - in `lebesgue_integral.v`:
@@ -66,6 +68,8 @@
   + `measurable_funrM`, `measurable_funN`, `measurable_fun_exprn`
 - in `lebesgue_integral.v`:
   + lemma `xsection_ndseq_closed` generalized from a measure to a family of measures
+- in `probability.v`
+  + `variance` is now defined based on `covariance` 
 
 ### Renamed
 
