@@ -43,6 +43,8 @@
     `measurable_fun_mkcomp_sfinite`, `measurable_fun_preimage_integral`,
     `measurable_fun_integral_kernel`, and `integral_kcomp`.
   + lemma `measurable_fun_mnormalize`
+- in `ereal.v`:
+  + lemmas `compreDr`, `compreN`
 
 ### Changed
 
