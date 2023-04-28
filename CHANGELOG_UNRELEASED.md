@@ -49,7 +49,12 @@
   + lemmas `lee_sqr`, `lte_sqr`, `lee_sqrE`, `lte_sqrE`, `sqre_ge0`,
     `EFin_expe`, `sqreD`, `sqredD`
 - in `probability.v`
-  + lemma `expectation_sum`
+  + definition of `covariance`
+  + lemmas `expectation_sum`, `covarianceE`, `covarianceC`,
+    `covariance_fin_num`, `covariance_cst_l`, `covariance_cst_r`,
+    `covarianceZl`, `covarianceZr`, `covarianceNl`, `covarianceNr`,
+    `covarianceNN`, `covarianceDl`, `covarianceDr`, `covarianceBl`,
+    `covarianceBr`
 - in `functions.v`:
   + lemma `sumrfctE`
 - in `lebesgue_integral.v`:
