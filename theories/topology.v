@@ -229,6 +229,8 @@ Require Import reals signed.
 (*                                     (and closed) neighborhood              *)
 (*               hausdorff_space T <-> T is a Hausdorff space (T_2).          *)
 (*                discrete_space T <-> every nbhs is a principal filter       *)
+(*           discrete_topology dscT == the discrete topology on T, provided   *)
+(*                                     dscT : discrete space T                *)
 (*        finite_subset_cover D F A == the family of sets F is a cover of A   *)
 (*                                     for a finite number of indices in D    *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
@@ -305,6 +307,7 @@ Require Import reals signed.
 (*                                   space with a countable uniformity        *)
 (*       gauge_psuedoMetricType E == the pseudoMetricType associated with the *)
 (*                                   `gauge E`                                *)
+(*                   discrete_ent == entourages for the discrete topology     *)
 (*                                                                            *)
 (* * PseudoMetric spaces :                                                    *)
 (*                entourage_ ball == entourages defined using balls           *)
@@ -331,6 +334,10 @@ Require Import reals signed.
 (*                     close x y <-> x and y are arbitrarily close w.r.t. to  *)
 (*                                   balls.                                   *)
 (*          weak_pseudoMetricType == the metric space for weak topologies     *)
+(*            quotient_topology Q == the quotient topology corresponding to   *)
+(*                                   quotient Q : quotType T. where T has     *)
+(*                                   type topologicalType                     *)
+(*                  discrete_ball == singleton balls for thediscrete topology *)
 (*                                                                            *)
 (* * Complete uniform spaces :                                                *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
@@ -3279,6 +3286,14 @@ Qed.
 
 End Covers.
 
+Lemma finite_compact {X : topologicalType} (A : set X) :
+  finite_set A -> compact A.
+Proof.
+case/finite_setP=> n; elim: n A => [A|n ih A /eq_cardSP[x Ax /ih ?]].
+  by rewrite II0 card_eq0 => /eqP ->; exact: compact0.
+by rewrite -(setD1K Ax); apply: compactU => //; exact: compact_set1.
+Qed.
+
 Section separated_topologicalType.
 Variable (T : topologicalType).
 Implicit Types x y : T.
@@ -3669,8 +3684,7 @@ Proof. by move=> ?; exact/principal_filterP. Qed.
 
 End DiscreteMixin.
 
-Definition discrete_space (X : topologicalType) :=
-  @nbhs X _ = @principal_filter X.
+Definition discrete_space (X : nbhsType) := @nbhs X _ = @principal_filter X.
 
 Context {X : topologicalType} {dsc: discrete_space X}.
 
@@ -4559,6 +4573,34 @@ HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M of Uniform M := {
 HB.structure Definition PseudoMetric (R : numDomainType) :=
   {T of Uniform T & Uniform_isPseudoMetric R T}.
 
+Definition discrete_topology T (dsc : discrete_space T) : Type := T.
+
+Section discrete_uniform.
+
+Context {T : nbhsType} {dsc: discrete_space T}.
+
+Definition discrete_ent : set (set (T * T)) :=
+  globally (range (fun x => (x, x))).
+
+Program Definition discrete_uniform_mixin :=
+  @isUniform.Build (discrete_topology dsc) discrete_ent _ _ _ _.
+Next Obligation.
+by move=> ? + x x12; apply; exists x.1; rewrite // {2}x12 -surjective_pairing.
+Qed.
+Next Obligation.
+by move=> ? dA x [i _ <-]; apply: dA; exists i.
+Qed.
+Next Obligation.
+move=> ? dA; exists (range (fun x => (x, x))) => //.
+by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
+Qed.
+
+HB.instance Definition _ := Choice.on (discrete_topology dsc).
+HB.instance Definition _ := Pointed.on (discrete_topology dsc).
+HB.instance Definition _ := discrete_uniform_mixin.
+
+End discrete_uniform.
+
 (* was uniformityOfBallMixin *)
 HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
   ent : set_system (M * M);
@@ -4996,6 +5038,34 @@ Qed.
 
 End quotients.
 
+Section discrete_pseudoMetric.
+Context {R : numDomainType} {T : nbhsType} {dsc : discrete_space T}.
+
+Definition discrete_ball (x : T) (eps : R) y : Prop := x = y.
+
+Lemma discrete_ball_center x (eps : R) : 0 < eps -> discrete_ball x eps x.
+Proof. by []. Qed.
+
+Program Definition discrete_pseudometric_mixin :=
+  @Uniform_isPseudoMetric.Build R (discrete_topology dsc) discrete_ball
+    _ _ _ _.
+Next Obligation. by done. Qed.
+Next Obligation. by move=> ? ? ? ->. Qed.
+Next Obligation. by move=> ? ? ? ? ? -> ->. Qed.
+Next Obligation.
+rewrite predeqE => P; split; last first.
+  by case=> e _ leP; move=> [a b] [i _] [-> ->]; apply: leP.
+move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //.
+by rewrite {2}z12 -surjective_pairing.
+Qed.
+
+HB.instance Definition _ := discrete_pseudometric_mixin.
+
+End discrete_pseudoMetric.
+
+Definition pseudoMetric_bool {R : realType} :=
+  [the pseudoMetricType R of discrete_topology discrete_bool : Type].
+
 (** ** Complete uniform spaces *)
 
 Definition cauchy {T : uniformType} (F : set_system T) := (F, F) --> entourage.
@@ -5179,6 +5249,18 @@ HB.instance Definition _ (T : choiceType) (R : numFieldType)
   Uniform_isComplete.Build (T -> U) complete_ax.
 
 HB.instance Definition _ (R : zmodType) := isPointed.Build R 0.
+
+Lemma compact_cauchy_cvg {T : uniformType} (U : set T) (F : set_system T) :
+  ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
+Proof.
+move=> PF cf FU /(_ F PF FU) [x [_ clFx]]; apply: (cvgP x).
+apply/cvg_entourageP => E entE.
+have : nbhs entourage (split_ent E) by rewrite nbhs_filterE.
+move=> /(cf (split_ent E))[] [D1 D2]/= /[!nbhs_simpl] -[FD1 FD2 D1D2E].
+have : nbhs x to_set (split_ent E) x by exact: nbhs_entourage.
+move=> /(clFx _ (to_set (split_ent E) x) FD1)[z [Dz Exz]].
+by near=> t; apply/(entourage_split z entE Exz)/D1D2E; split => //; near: t.
+Unshelve. all: by end_near. Qed.
 
 Definition ball_
   (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V) (e : R) :=
