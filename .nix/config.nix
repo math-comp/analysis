@@ -39,9 +39,12 @@
   ## will be created per bundle
   bundles."8.14".coqPackages.coq.override.version = "8.14";
   bundles."8.15".coqPackages.coq.override.version = "8.15";
+  bundles."8.16".push-branches = [ "master" "hierarchy-builder" ];
   bundles."8.16".coqPackages.coq.override.version = "8.16";
+  bundles."8.17".push-branches = [ "master" "hierarchy-builder" ];
   bundles."8.17".coqPackages.coq.override.version = "8.17";
 
+  bundles."master".push-branches = [ "master" "hierarchy-builder" ];
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
