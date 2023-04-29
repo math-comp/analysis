@@ -3,13 +3,24 @@ jobs:
     needs: []
     runs-on: ubuntu-latest
     steps:
+    - name: Determine which commit to initially checkout
+      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{\
+        \ github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha\
+        \ }}\" >> $GITHUB_ENV\nfi\n"
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ env.target_commit }}
     - name: Determine which commit to test
       run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{\
         \ github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{\
         \ github.event.repository.html_url }} refs/pull/${{ github.event.number }}/merge\
-        \ | cut -f1)\n  if [ -z \"$merge_commit\" ]; then\n    echo \"tested_commit=${{\
-        \ github.event.pull_request.head.sha }}\" >> $GITHUB_ENV\n  else\n    echo\
-        \ \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n  fi\nfi\n"
+        \ | cut -f1)\n  mergeable=$(git merge --no-commit --no-ff ${{ github.event.pull_request.base.sha\
+        \ }} > /dev/null 2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n\
+        \  if [ -z \"$merge_commit\" -o \"x$mergeable\" != \"x0\" ]; then\n    echo\
+        \ \"tested_commit=${{ github.event.pull_request.head.sha }}\" >> $GITHUB_ENV\n\
+        \  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n  fi\nfi\n"
     - name: Git checkout
       uses: actions/checkout@v3
       with:
@@ -40,13 +51,24 @@ jobs:
     - coq
     runs-on: ubuntu-latest
     steps:
+    - name: Determine which commit to initially checkout
+      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{\
+        \ github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha\
+        \ }}\" >> $GITHUB_ENV\nfi\n"
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ env.target_commit }}
     - name: Determine which commit to test
       run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{\
         \ github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{\
         \ github.event.repository.html_url }} refs/pull/${{ github.event.number }}/merge\
-        \ | cut -f1)\n  if [ -z \"$merge_commit\" ]; then\n    echo \"tested_commit=${{\
-        \ github.event.pull_request.head.sha }}\" >> $GITHUB_ENV\n  else\n    echo\
-        \ \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n  fi\nfi\n"
+        \ | cut -f1)\n  mergeable=$(git merge --no-commit --no-ff ${{ github.event.pull_request.base.sha\
+        \ }} > /dev/null 2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n\
+        \  if [ -z \"$merge_commit\" -o \"x$mergeable\" != \"x0\" ]; then\n    echo\
+        \ \"tested_commit=${{ github.event.pull_request.head.sha }}\" >> $GITHUB_ENV\n\
+        \  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n  fi\nfi\n"
     - name: Git checkout
       uses: actions/checkout@v3
       with:
@@ -97,13 +119,24 @@ jobs:
     - coq
     runs-on: ubuntu-latest
     steps:
+    - name: Determine which commit to initially checkout
+      run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"target_commit=${{\
+        \ github.sha }}\" >> $GITHUB_ENV\nelse\n  echo \"target_commit=${{ github.event.pull_request.head.sha\
+        \ }}\" >> $GITHUB_ENV\nfi\n"
+    - name: Git checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ env.target_commit }}
     - name: Determine which commit to test
       run: "if [ ${{ github.event_name }} = \"push\" ]; then\n  echo \"tested_commit=${{\
         \ github.sha }}\" >> $GITHUB_ENV\nelse\n  merge_commit=$(git ls-remote ${{\
         \ github.event.repository.html_url }} refs/pull/${{ github.event.number }}/merge\
-        \ | cut -f1)\n  if [ -z \"$merge_commit\" ]; then\n    echo \"tested_commit=${{\
-        \ github.event.pull_request.head.sha }}\" >> $GITHUB_ENV\n  else\n    echo\
-        \ \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n  fi\nfi\n"
+        \ | cut -f1)\n  mergeable=$(git merge --no-commit --no-ff ${{ github.event.pull_request.base.sha\
+        \ }} > /dev/null 2>&1; echo $?; git merge --abort > /dev/null 2>&1 || true)\n\
+        \  if [ -z \"$merge_commit\" -o \"x$mergeable\" != \"x0\" ]; then\n    echo\
+        \ \"tested_commit=${{ github.event.pull_request.head.sha }}\" >> $GITHUB_ENV\n\
+        \  else\n    echo \"tested_commit=$merge_commit\" >> $GITHUB_ENV\n  fi\nfi\n"
     - name: Git checkout
       uses: actions/checkout@v3
       with:
@@ -170,3 +203,4 @@ name: Nix CI for bundle 8.16
   push:
     branches:
     - master
+    - hierarchy-builder
