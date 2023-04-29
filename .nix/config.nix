@@ -37,6 +37,7 @@
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
+  bundles."8.17".push-branches = [ "master" "hierarchy-builder" ];
   bundles."8.17".coqPackages = {
     coq.override.version = "8.17";
     mathcomp.override.version = "hierarchy-builder";
@@ -44,6 +45,7 @@
     mathcomp-finmap.override.version = "proux01:hierarchy-builder";
   };
 
+  bundles."8.16".push-branches = [ "master" "hierarchy-builder" ];
   bundles."8.16".coqPackages = {
     coq.override.version = "8.16";
     mathcomp.override.version = "hierarchy-builder";
@@ -51,6 +53,7 @@
     mathcomp-finmap.override.version = "proux01:hierarchy-builder";
   };
 
+  bundles."master".push-branches = [ "master" "hierarchy-builder" ];
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
