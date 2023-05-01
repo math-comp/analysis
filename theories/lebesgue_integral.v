@@ -2114,7 +2114,7 @@ Proof.
 under [LHS]eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite [LHS]ge0_integral_fsum//; last 2 first.
   - move=> r.
-    exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
+  apply/EFin_measurable_fun/measurable_funT_comp => /=. apply: measurable_funrM'. by apply: measurable_fun_indic.
   - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
 rewrite -[RHS]ge0_integralM//; last 2 first.
   - exact/EFin_measurable_fun/measurable_funTS.
@@ -2124,12 +2124,13 @@ under [RHS]eq_integral.
     by move=> r; rewrite EFinM nnfun_muleindic_ge0.
   over.
 rewrite [RHS]ge0_integral_fsum//; last 2 first.
-  - move=> r; apply/EFin_measurable_fun/measurable_funrM/measurable_funrM.
+  - move=> r; apply/EFin_measurable_fun/measurable_funT_comp => /=. apply: measurable_funrM'. 
+   apply: measurable_funT_comp => /=. by apply measurable_funrM'.
     exact/measurable_fun_indic.
   - by move=> n x _; rewrite EFinM mule_ge0// nnfun_muleindic_ge0.
 apply: eq_fsbigr => r _; rewrite ge0_integralM//.
 - by rewrite !integralM_indic_nnsfun//= integral_mscale_indic// muleCA.
-- exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
+- apply/EFin_measurable_fun/measurable_funT_comp. by apply measurable_funrM' . exact/measurable_fun_indic.
 - by move=> t _; rewrite nnfun_muleindic_ge0.
 Qed.
 
@@ -2371,7 +2372,7 @@ rewrite ge0_integral_fsum//.
   rewrite fsbig1 ?adde0// => r /= [_ rfna].
   rewrite integral_indic//= diracE memNset ?mule0//=.
   by apply/not_andP; left; exact/nesym.
-- by move=> r; exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
+-  move=> r; apply/EFin_measurable_fun/measurable_funT_comp. apply: measurable_funrM'. exact / measurable_fun_indic.
 - by move=> r x _; rewrite nnfun_muleindic_ge0.
 Qed.
 
@@ -2409,7 +2410,8 @@ Proof.
 under eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite ge0_integral_fsum//; last 2 first.
   - move=> r /=; apply: measurable_funT_comp => //.
-    exact/measurable_funrM/measurable_fun_indic.
+  apply: measurable_funT_comp => //. apply: measurable_funrM'.
+    exact/measurable_fun_indic.
   - by move=> r t _; rewrite EFinM nnfun_muleindic_ge0.
 transitivity (\sum_(i \in range f)
     (\sum_(n < N) i%:E * \int[m_ n]_x (\1_(f @^-1` [set i]) x)%:E)).
@@ -2519,7 +2521,8 @@ Proof.
 under eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite ge0_integral_fsum//; last 2 first.
   - move=> r /=; apply: measurable_funT_comp => //.
-    exact/measurable_funrM/measurable_fun_indic.
+  apply: measurable_funT_comp => //. apply: measurable_funrM'.
+    exact/measurable_fun_indic.
   - by move=> r t _; rewrite EFinM nnfun_muleindic_ge0.
 transitivity (\sum_(i \in range f)
     (\sum_(n <oo) i%:E * \int[m_ n]_x (\1_(f @^-1` [set i]) x)%:E)).
@@ -3013,7 +3016,8 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
     by case: fint => _ foo; rewrite ge0_fin_numE//; exact: integral_ge0.
   apply: ge0_le_integral => //.
   - by move=> *; rewrite lee_fin /indic.
-  - exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
+  - apply/EFin_measurable_fun/measurable_funT_comp. 
+    apply: measurable_funrM'. by apply  measurable_fun_indic.
   - by apply: measurable_funT_comp => //; case: fint.
   - move=> x Dx; rewrite /= indicE.
     have [|xE] := boolP (x \in E); last by rewrite mule0.
@@ -4522,7 +4526,7 @@ Proof.
 rewrite funeqE => x; rewrite /F /fubini_F [in LHS]/=.
 under eq_fun do rewrite fimfunE -fsumEFin//.
 rewrite ge0_integral_fsum //; last 2 first.
-  - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funrM => //.
+  - move=> i; apply/EFin_measurable_fun => // .  apply: measurable_funT_comp. apply: measurable_funrM' => //.
     exact/measurable_fun_prod1/measurable_fun_indic.
   - by move=> r y _; rewrite EFinM nnfun_muleindic_ge0.
 apply: eq_fsbigr => i; rewrite inE => -[/= t _ <-{i}].
@@ -4545,7 +4549,7 @@ Proof.
 rewrite funeqE => y; rewrite /G /fubini_G [in LHS]/=.
 under eq_fun do rewrite fimfunE -fsumEFin//.
 rewrite ge0_integral_fsum //; last 2 first.
-  - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funrM => //.
+  - move=> i; apply/EFin_measurable_fun => //; apply: measurable_funT_comp.  apply: measurable_funrM' => //.
     exact/measurable_fun_prod2/measurable_fun_indic.
   - by move=> r x _; rewrite EFinM nnfun_muleindic_ge0.
 apply: eq_fsbigr => i; rewrite inE => -[/= t _ <-{i}].
@@ -4571,7 +4575,7 @@ Proof.
 under [LHS]eq_integral
   do rewrite EFinf; rewrite ge0_integral_fsum //; last 2 first.
   - move=> r.
-    exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
+    apply/EFin_measurable_fun/measurable_funT_comp. apply: measurable_funrM'. by apply: measurable_fun_indic.
   - by move=> r /= z _; exact: nnfun_muleindic_ge0.
 transitivity (\sum_(k \in range f)
   \int[m1]_x (k%:E * (fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x))).
@@ -4598,7 +4602,7 @@ Proof.
 under [LHS]eq_integral
   do rewrite EFinf; rewrite ge0_integral_fsum //; last 2 first.
   - move=> i.
-    exact/EFin_measurable_fun/measurable_funrM/measurable_fun_indic.
+  apply/EFin_measurable_fun/measurable_funT_comp. apply: measurable_funrM'. by apply: measurable_fun_indic.
   - by move=> r /= z _; exact: nnfun_muleindic_ge0.
 transitivity (\sum_(k \in range f)
   \int[m2]_x (k%:E * (fubini_G m1 (EFin \o \1_(f @^-1` [set k])) x))).
