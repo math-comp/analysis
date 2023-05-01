@@ -766,6 +766,37 @@ HB.instance Definition _ x :=
 
 End mnormalize.
 
+Lemma measurable_fun_mnormalize d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : R.-sfker X ~> Y) :
+  measurable_fun setT (fun x => mnormalize k point x : pprobability Y R).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+  (@pset _ _ _ : set (set (pprobability Y R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-.
+rewrite /mnormalize /mset /preimage/=.
+apply: emeasurable_fun_infty_o => //.
+rewrite /mnormalize/=.
+rewrite (_ : (fun x => _) = (fun x => if (k x setT == 0) || (k x setT == +oo)
+    then \d_point Ys else k x Ys * ((fine (k x setT))^-1)%:E)); last first.
+  by apply/funext => x/=; case: ifPn.
+apply: measurable_fun_if => //.
+- apply: (measurable_fun_bool true) => //.
+  rewrite (_ : _ @^-1` _ = [set t | k t setT == 0] `|`
+                           [set t | k t setT == +oo]); last first.
+    by apply/seteqP; split=> x /= /orP//.
+  by apply: measurableU; exact: kernel_measurable_eq_cst.
+- exact: measurable_fun_cst.
+- apply/emeasurable_funM; first exact/measurable_funTS/measurable_kernel.
+  apply/EFin_measurable_fun; rewrite setTI.
+  apply: (@measurable_fun_comp _ _ _ _ _ _ [set r : R | r != 0%R]).
+  + exact: open_measurable.
+  + by move=> /= _ [x /norP[s0 soo]] <-; rewrite -eqe fineK ?ge0_fin_numE ?ltey.
+  + apply: open_continuous_measurable_fun => //; apply/in_setP => x /= x0.
+    exact: inv_continuous.
+  + apply: measurable_funT_comp; last exact/measurable_funS/measurable_kernel.
+    exact: measurable_fun_fine.
+Qed.
+
 Section knormalize.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variable f : R.-ker X ~> Y.
