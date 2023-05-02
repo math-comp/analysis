@@ -1591,12 +1591,6 @@ Unshelve. all: by end_near. Qed.
 
 End semi_linearity.
 
-Lemma emeasurable_funN d (T : measurableType d) (R : realType) D (f : T -> \bar R) :
-  measurable D -> measurable_fun D f -> measurable_fun D (fun x => - f x)%E.
-Proof.
-by move=> mD mf; apply: measurable_funT_comp => //; exact: emeasurable_fun_minus.
-Qed.
-
 Section approximation_sfun.
 Context d (T : measurableType d) (R : realType) (f : T -> \bar R).
 Variables (D : set T) (mD : measurable D) (mf : measurable_fun D f).
