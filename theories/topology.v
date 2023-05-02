@@ -2128,35 +2128,35 @@ Qed.
 
 Fixpoint smallest_filter_stage {T : Type} (F : set (set T)) (n : nat) :=
   if n is S m 
-  then [set PQ.1 `&` PQ.2 | 
-    PQ in (smallest_filter_stage F m) `*` (smallest_filter_stage F m)]
-  else F.
+  then [set P `&` Q | 
+    P in smallest_filter_stage F m & Q in smallest_filter_stage F m]
+  else setT |` F.
 
-Lemma smallest_filter_stage_sub {T : Type} (F : set (set T)) (i j : nat) :
-  (i <= j)%N -> smallest_filter_stage F i `<=` smallest_filter_stage F j.
-Proof.
-elim: j i => //; first by move=> i; rewrite leqn0 => /eqP ->.
+Lemma smallest_filter_stage_sub {T : Type} (F : set (set T)) :
+  {homo smallest_filter_stage F : i j / (i <= j)%N >-> i `<=` j}.
+Proof. 
+move=> i j; elim: j i => //; first by move=> i; rewrite leqn0 => /eqP ->.
 move=> j IH i; rewrite leq_eqVlt => /orP; case; first by move/eqP => ->.
-by move=> /IH/subset_trans; apply=> A ?; exists (A,A) => //; rewrite setIid.
+by move=> /IH/subset_trans; apply=> A ?; do 2 exists A => //; rewrite setIid.
 Qed.
 
-Lemma smallest_filter_stageP {T : Type} (F : set (set T)) : F!=set0 -> 
+Lemma smallest_filter_stageE {T : Type} (F : set (set T)):
   smallest Filter F = filter_from (\bigcup_n (smallest_filter_stage F n)) id.
 Proof.
-case=> W FW; rewrite eqEsubset; split.
+rewrite eqEsubset; split.
   apply: smallest_sub => //; first last.
-    by move=> A FA; exists A => //; exists O.
-  apply: filter_from_filter; first by exists W; exists O.
+    by move=> A FA; exists A => //; exists O => //; right.
+  apply: filter_from_filter; first by exists setT; exists O => //; left.
   move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.
-  exists (S (maxn i j)) => //=; exists (P,Q) => //=; split.
+  exists (S (maxn i j)) => //=; exists P => //.
     by apply: smallest_filter_stage_sub; first exact: leq_maxl.
-  by apply: smallest_filter_stage_sub; first exact: leq_maxr.
+  by exists Q => //; apply: smallest_filter_stage_sub; first exact: leq_maxr.
 move=> A [B [n _]]; elim: n B A.
-  by move=> B A FB /filterS; apply; exact: sub_gen_smallest.
+  move=> B A [-> /[!(@subTset T)] ->|]; first exact: filterT.
+  by move=> FB /filterS; apply; apply: sub_gen_smallest.
 move=> n IH /= B A [].
-case=> P Q /= [sFP sFQ] PQB /filterS; apply.
-rewrite -PQB; apply: (filterI _ _); first exact: (IH _ _ sFP).
-exact: (IH _ _ sFQ).
+move=> P sFP [Q sFQ] PQB /filterS; apply; rewrite -PQB. 
+by apply: (filterI _ _); first exact: (IH _ _ sFP); exact: (IH _ _ sFQ).
 Qed.
 
 (** ** Topology defined by a subbase of open sets *)
@@ -2188,23 +2188,43 @@ move=> ?; apply: (card_le_trans (card_image_le _ _)).
 exact: fset_subset_countable.
 Qed.
 
-Lemma smallest_filter_finI {T : choiceType} (D : set T) f : 
-  D!=set0 -> filter_from (finI_from D f) id = smallest (@Filter T) (f @` D).
+Lemma finI_fromI {I : choiceType} T D (f : I -> set T) A B : 
+  finI_from D f A -> finI_from D f B -> finI_from D f (A `&` B) .
 Proof.
-move=> Dn0; rewrite eqEsubset; split=> A.
-  case=> ? [C /=] CD <- CA; apply (filterS CA).
-  move=> G /= [FG DG]; apply: filter_bigI=> t tC; apply: DG; exists t => //.
-  by rewrite -inE; exact: CD.
-apply; split; first apply: filter_from_filter. 
-- by case: Dn0=> d ?; exists (f d); apply: finI_from1.
-- move=> i j [P /= PD <-] [Q /= QD <-]; rewrite -bigcap_setU.
-  exists (\bigcap_(z in [set` P] `|` [set` Q]) f z) => //; exists (fsetU P Q).
-    by move=> t; rewrite ?inE => /orP [/PD|/QD]; rewrite inE.
-  apply: eq_bigcap => //; split => z /=; rewrite ?inE.
-    by case/orP => ?; [left | right].
-  by case => ?; apply/orP; [left | right].
-- by move=> ? [t Dt <-]; exists (f t) => //; apply: finI_from1.
+case=> N ND <- [M MD <-]; exists (N `|` M)%fset.
+  by move=> ?; rewrite inE => /orP; case=> [/ND | /MD].
+by rewrite -bigcap_setU set_fsetU.
 Qed.
+
+Lemma smallest_filter_stage_finI {I : choiceType} T D (f : I -> set T) :
+  finI_from D f = \bigcup_n (smallest_filter_stage (f @` D) n).
+Proof.
+rewrite eqEsubset; split.
+  move=> A [N /= + <-]; have /finite_setP [n ] := finite_fset N; elim: n N.
+    move=> ?; rewrite II0 card_eq0 => /eqP -> _; rewrite bigcap_set0.
+    by exists O => //; left.
+  move=> n IH N /eq_cardSP[x Ax + ND]; rewrite -set_fsetD1 => Nxn.
+  have NxD : {subset (N `\ x)%fset <= D}.
+    by move=> ?; rewrite ?inE => /andP [_ /ND /set_mem].
+  have [r _ xr] := IH _ Nxn NxD; exists r.+1 => //; exists (f x). 
+    apply: (@smallest_filter_stage_sub _ _ O) => //; right; exists x => //.
+    by rewrite -inE; apply: ND.
+  exists (\bigcap_(i in [set` (N `\ x)%fset]) f i) => //.
+  by rewrite -bigcap_setU1 set_fsetD1 setD1K.
+move=> A [n _]; elim: n A.
+  move=> a [-> |[i Di <-]]; [exists fset0 | exists [fset i]%fset] => //.
+  - by rewrite set_fset0 bigcap_set0.
+  - by move=> ?; rewrite ?inE => /eqP ->.
+  - by rewrite set_fset1 bigcap_set1. 
+by move=> n IH A /= [B snB [C snC <-]]; apply: finI_fromI; apply: IH.
+Qed.
+
+Lemma smallest_filter_finI {T : choiceType} (D : set T) f : 
+  filter_from (finI_from D f) id = smallest (@Filter T) (f @` D).
+Proof.
+by rewrite smallest_filter_stage_finI smallest_filter_stageE.
+Qed.
+
 End filter_supremums.
 
 Section TopologyOfSubbase.
@@ -3799,7 +3819,6 @@ Qed.
 End connected_sets.
 Arguments connected {T}.
 Arguments connected_component {T}.
-
 Section DiscreteTopology.
 Section DiscreteMixin.
 Context {X : Type}.
@@ -4005,7 +4024,6 @@ exists (\bigcup_(x in A) (projT1 (cid (Ux x)))); split.
 Qed.
 
 End set_nbhs.
-
 
 (** * Uniform spaces *)
 
