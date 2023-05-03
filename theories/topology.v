@@ -3943,6 +3943,20 @@ rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
 by move=> ->; have := projT2 (sigW (npts N)).
 Qed.
 
+Lemma perfect_set2 {T} : perfect_set [set: T] <->
+  forall (U : set T), open U -> U !=set0 -> 
+  exists x y, [/\ U x, U y & x != y] .
+Proof.
+apply: iff_trans; first exact: perfectTP; split.
+  move=> nx1 U oU [] x Ux; exists x.
+  have : U <> [set x] by move=> Ux1; apply: (nx1 x); rewrite -Ux1.
+  apply: contra_notP; move/not_existsP/contrapT=> Uyx; rewrite eqEsubset.
+  (split => //; last by move=> ? ->); move=> y Uy; have  /not_and3P := Uyx y.
+  by case => // /negP; rewrite negbK => /eqP ->.
+move=> Unxy x Ox; have [] := Unxy _ Ox; first by exists x.
+by move=> y [] ? [->] -> /eqP.
+Qed.
+
 End perfect_sets.
 
 Section totally_disconnected.
@@ -4354,6 +4368,14 @@ Qed.
 
 End uniform_closeness.
 
+Lemma ent_closure {X : uniformType} (x : X) E : entourage E ->
+  closure (to_set (split_ent E) x) `<=` to_set E x.
+Proof.
+pose E' := ((split_ent E) `&` ((split_ent E)^-1)%classic).
+move=> entE z /(_ [set y | E' (z, y)]) [].
+  by rewrite -nbhs_entourageE; exists E' => //; apply: filterI.
+by move=> y [/=] + [_]; apply: entourage_split.
+Qed.
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
 
