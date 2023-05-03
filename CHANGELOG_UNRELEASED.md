@@ -13,6 +13,10 @@
 - in `sequences.v`:
   + lemma `eq_eseriesl`
 
+- in file `topology.v`,
+  + new definitions `basis`, and `second_countable`.
+  + new lemmas `clopen_countable` and `compact_countable_base`.
+
 ### Changed
 
 ### Renamed
