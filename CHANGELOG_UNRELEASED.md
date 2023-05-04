@@ -42,6 +42,8 @@
 - in `measure.v`:
   + instances `ae_filter_algebraOfSetsType`, `ae_filter_measurableType`,
   `ae_properfilter_measurableType`
+- in `lebesgue_integral.v`
+  + lemma `emeasurable_funN` (already in `lebesgue_measure.v`)
 
 ### Infrastructure
 
