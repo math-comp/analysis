@@ -1017,6 +1017,19 @@ Notation setvI := setICl.
 #[deprecated(since="mathcomp-analysis 0.6", note="Use setICr instead.")]
 Notation setIv := setICr.
 
+Section set_order.
+Import Order.TTheory.
+
+Lemma set_eq_le d (rT : porderType d) T (f g : T -> rT) :
+  [set x | f x = g x] = [set x | (f x <= g x)%O] `&` [set x | (f x >= g x)%O].
+Proof. by apply/seteqP; split => [x/= ->//|x /andP]; rewrite -eq_le =>/eqP. Qed.
+
+Lemma set_neq_lt d (rT : orderType d) T (f g : T -> rT) :
+  [set x | f x != g x ] = [set x | (f x < g x)%O] `|` [set x | (f x > g x)%O].
+Proof. by apply/seteqP; split => [x/=|x /=]; rewrite neq_lt => /orP. Qed.
+
+End set_order.
+
 Lemma image2E {TA TB rT : Type} (A : set TA) (B : set TB) (f : TA -> TB -> rT) :
   [set f x y | x in A & y in B] = uncurry f @` (A `*` B).
 Proof.

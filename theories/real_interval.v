@@ -275,7 +275,7 @@ Coercion ereal_of_itv_bound T (b : itv_bound T) : \bar T :=
   match b with BSide _ y => y%:E | +oo%O => +oo%E | -oo%O => -oo%E end.
 Arguments ereal_of_itv_bound T !b.
 
-Section erealDomainType.
+Section itv_realDomainType.
 Context (R : realDomainType).
 
 Lemma le_bnd_ereal (a b : itv_bound R) : (a <= b)%O -> (a <= b)%E.
@@ -325,7 +325,32 @@ rewrite set_itvE predeqE => x; split => /=.
 - by move: x => [x h|//|/(_ erefl)]; rewrite ?ltNyr.
 Qed.
 
-End erealDomainType.
+End itv_realDomainType.
+
+Section set_ereal.
+Context (R : realType) T (f g : T -> \bar R).
+Local Open Scope ereal_scope.
+
+Let E j := [set x | f x - g x >= j.+1%:R^-1%:E].
+
+Lemma set_lte_bigcup : [set x | f x > g x] = \bigcup_j E j.
+Proof.
+apply/seteqP; split => [x/=|x [n _]]; last first.
+  by rewrite /E/= -sube_gt0; apply: lt_le_trans.
+move gxE : (g x) => gx; case: gx gxE => [gx| |gxoo fxoo]; last 2 first.
+  - by case: (f x).
+  - by exists 0%N => //; rewrite /E/= gxoo addey// ?leey// -ltNye.
+move fxE : (f x) => fx; case: fx fxE => [fx fxE gxE|fxoo gxE _|//]; last first.
+  by exists 0%N => //; rewrite /E/= fxoo gxE// addye// leey.
+rewrite lte_fin -subr_gt0 => fgx; exists `|floor (fx - gx)^-1%R|%N => //.
+rewrite /E/= -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0; last exact/ltW.
+rewrite fxE gxE lee_fin -[leRHS]invrK lef_pinv//.
+- by apply/ltW; rewrite lt_succ_floor.
+- by rewrite posrE// ltr_spaddr// ler0z floor_ge0 invr_ge0 ltW.
+- by rewrite posrE invr_gt0.
+Qed.
+
+End set_ereal.
 
 Lemma disj_itv_Rhull {R : realType} (A B : set R) : A `&` B = set0 ->
   is_interval A -> is_interval B -> disjoint_itv (Rhull A) (Rhull B).
