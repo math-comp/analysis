@@ -4205,7 +4205,7 @@ have nd_E : {homo E : n0 m / (n0 <= m)%N >-> (n0 <= m)%O}.
   move=> i j ij; apply/subsetPset => x [Dx /= ifg]; split => //.
   by move: ifg; apply: le_trans; rewrite lee_fin lef_pinv// ?posrE// ler_nat.
 rewrite set_lte_bigcup.
-have /cvg_lim h1 : mu \o E --> 0 by apply: cvg_near_cst; exact: nearW.
+have /cvg_lim h1 : (mu \o E) x @[x --> \oo]--> 0 by apply: cvg_near_cst; exact: nearW.
 have := @nondecreasing_cvg_mu _ _ _ mu E mE (bigcupT_measurable E mE) nd_E.
 by move/cvg_lim => h2; rewrite setI_bigcupr -h2// h1.
 Qed.
