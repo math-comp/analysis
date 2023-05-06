@@ -722,7 +722,7 @@ by rewrite (le_trans (fg x)).
 Qed.
 
 #[export]
-HB.instance Definition _ := @Order.isPOrdered.Build
+HB.instance Definition _ := @Order.isPOrder.Build
   fun_display (aT -> T) lef ltf ltf_def lef_refl lef_anti lef_trans.
 
 End FunOrder.

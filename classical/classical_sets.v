@@ -2883,10 +2883,11 @@ Lemma joinIB A B : (A `&` B) `|` A `\` B = A.
 Proof. by rewrite setUC -setDDr setDv setD0. Qed.
 
 #[export]
-HB.instance Definition _ := Order.hasSub.Build set_display (set T) subKI joinIB.
+HB.instance Definition _ :=
+  Order.hasRelativeComplement.Build set_display (set T) subKI joinIB.
 
 #[export]
-HB.instance Definition _ := Order.hasCompl.Build set_display (set T)
+HB.instance Definition _ := Order.hasComplement.Build set_display (set T)
   (fun x => esym (setTD x)).
 
 End SetOrder.

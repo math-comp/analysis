@@ -317,7 +317,9 @@ Section POrder.
 Variables (d : unit) (T : porderType d) (x0 : T) (nz : nullity) (cond : reality).
 Local Notation sT := {compare x0 & nz & cond}.
 HB.instance Definition _ := [isSub for @Signed.r d T x0 nz cond].
-HB.instance Definition _ := [POrder of sT by <:].
+HB.instance Definition _ := [Choice of sT by <:].
+HB.instance Definition _ : Order.isPOrder d sT :=
+  Order.CancelPartial.Pcan d valK.
 End POrder.
 
 Lemma top_typ_subproof d (T : porderType d) (x0 x : T) :

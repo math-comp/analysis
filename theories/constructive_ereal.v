@@ -223,7 +223,7 @@ Qed.
 
 Fact ereal_display : unit. Proof. by []. Qed.
 
-HB.instance Definition _ := Order.isPOrdered.Build ereal_display (\bar R)
+HB.instance Definition _ := Order.isPOrder.Build ereal_display (\bar R)
   lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
 
 Lemma leEereal x y : (x <= y)%O = le_ereal x y. Proof. by []. Qed.
@@ -280,7 +280,7 @@ Notation "x <= y :> T" := ((x : T) <= (y : T)) (only parsing) : ereal_scope.
 Notation "x < y :> T" := ((x : T) < (y : T)) (only parsing) : ereal_scope.
 
 Section ERealZsemimodule.
-Context {R : zsemimodType}.
+Context {R : nmodType}.
 Implicit Types x y z : \bar R.
 
 Definition adde_subdef x y :=
@@ -314,7 +314,7 @@ Proof. by case=> [x||] [y||] //; rewrite /adde /= addrC. Qed.
 Lemma add0e_subproof : left_id (0%:E : \bar R) adde.
 Proof. by case=> // r; rewrite /adde /= add0r. Qed.
 
-HB.instance Definition _ := GRing.isZsemimodule.Build (\bar R)
+HB.instance Definition _ := GRing.isNmodule.Build (\bar R)
   addeA_subproof addeC_subproof add0e_subproof.
 
 Lemma daddeA_subproof : associative (S := \bar^d R) dual_adde.
@@ -327,7 +327,7 @@ Lemma dadd0e_subproof : left_id (0%:dE%dE : \bar^d R) dual_adde.
 Proof. by case=> // r; rewrite /dual_adde /= add0r. Qed.
 
 HB.instance Definition _ := Choice.on (\bar^d R).
-HB.instance Definition _ := GRing.isZsemimodule.Build (\bar^d R)
+HB.instance Definition _ := GRing.isNmodule.Build (\bar^d R)
   daddeA_subproof daddeC_subproof dadd0e_subproof.
 
 Definition enatmul x n : \bar R := iterop n +%R x 0.
