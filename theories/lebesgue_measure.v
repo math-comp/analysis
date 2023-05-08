@@ -1593,12 +1593,11 @@ apply: mulrl_continuous.
 Qed.
 
 
-(* i think this lemma already exists: *)
-(* Lemma measurable_fun_opp *)
+
 Lemma measurable_funN (D: set R) f : measurable_fun D (-%R ).
 Proof.
-(**)apply: measurable_funTS => /=.
-(**)apply: continuous_measurable_fun.
+apply: measurable_funTS => /=.
+apply: continuous_measurable_fun.
 by have := @opp_continuous R [the normedModType R of R^o].
 Qed.
 
