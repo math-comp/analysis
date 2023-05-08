@@ -2114,7 +2114,8 @@ Proof.
 under [LHS]eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite [LHS]ge0_integral_fsum//; last 2 first.
   - move=> r.
-  apply/EFin_measurable_fun/measurable_funT_comp => /=. apply: measurable_funrM. by apply: measurable_fun_indic.
+  apply/EFin_measurable_fun/measurable_funT_comp => /=. 
+  apply: measurable_funrM. by apply: measurable_fun_indic.
   - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
 rewrite -[RHS]ge0_integralM//; last 2 first.
   - exact/EFin_measurable_fun/measurable_funTS.
@@ -2124,9 +2125,10 @@ under [RHS]eq_integral.
     by move=> r; rewrite EFinM nnfun_muleindic_ge0.
   over.
 rewrite [RHS]ge0_integral_fsum//; last 2 first.
-  - move=> r; apply/EFin_measurable_fun/measurable_funT_comp => /=. apply: measurable_funrM. 
-   apply: measurable_funT_comp => /=. by apply measurable_funrM.
-    exact/measurable_fun_indic.
+  - move=> r; apply/EFin_measurable_fun/measurable_funT_comp => /=.
+   apply: measurable_funrM.  
+   apply: measurable_funT_comp. by apply measurable_funrM.
+   exact/measurable_fun_indic.
   - by move=> n x _; rewrite EFinM mule_ge0// nnfun_muleindic_ge0.
 apply: eq_fsbigr => r _; rewrite ge0_integralM//.
 - by rewrite !integralM_indic_nnsfun//= integral_mscale_indic// muleCA.

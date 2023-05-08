@@ -1583,32 +1583,15 @@ rewrite predeqE => x; split => [|[r _] []/= [Dx rfx]] /= => [[Dx]|[_]].
 by rewrite ltr_subl_addr=> afg; rewrite (lt_le_trans afg)// addrC ler_add2r ltW.
 Qed.
 
-(* Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
-  measurable_fun D (fun x => k * f x).
+
+
+Lemma measurable_funrM (D: set R) (k: R) : measurable_fun D ( *%R  k).
 Proof.
-apply: (@measurable_funT_comp _ _ _ _ _ _ ( *%R k)).
-by apply: continuous_measurable_fun; apply: mulrl_continuous.
+apply: measurable_funTS => /=.
+apply: continuous_measurable_fun. 
+apply: mulrl_continuous.
 Qed.
- *)
 
-
-(* is this correct?*)
-(* CHECK *)
-(**)Lemma measurable_funrM (D: set R) (k: R) : measurable_fun D ( *%R  k).
-(**)Proof.
-(**)apply: measurable_funTS => /=.
-(**)apply: continuous_measurable_fun. 
-(**)apply: mulrl_continuous.
-(**)Qed.
-
-
-
-(* Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (-%R \o f).
-Proof.
-move=> mf mD; rewrite (_ : _ \o _ = (fun x => - 1 * f x)).
-  exact: measurable_funrM.
-by under eq_fun do rewrite mulN1r.
-Qed. *)
 
 (* i think this lemma already exists: *)
 (* Lemma measurable_fun_opp *)
@@ -1619,12 +1602,6 @@ Proof.
 by have := @opp_continuous R [the normedModType R of R^o].
 Qed.
 
-(* Lemma measurable_funB D f g : measurable_fun D f ->
-  measurable_fun D g -> measurable_fun D (f \- g).
-Proof.
-by move=> ? ? ?; apply: measurable_funD => //; exact: measurable_funN.
-Qed. *)
-
 Lemma measurable_funB D f g : measurable_fun D f ->
   measurable_fun D g -> measurable_fun D (f \- g).
 Proof.
@@ -1632,74 +1609,43 @@ move=> ? ? ?. apply: measurable_funD => //. apply measurable_funT_comp => //. by
 Qed.
 
 
-(* Lemma measurable_fun_exprn D n f :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
+Lemma measurable_fun_exprn (D:set R) n  :  measurable_fun D ( (@GRing.exp R)^~ n)  .
 Proof.
-apply: measurable_funT_comp ((@GRing.exp R)^~ n) _ _ _.
-by apply: continuous_measurable_fun; apply: exprn_continuous.
-Qed. *)
+  apply measurable_funTS => /=.
+  apply continuous_measurable_fun .
+  apply: exprn_continuous.  
+Qed.
 
-(*CHECK*)
-(**)Lemma measurable_fun_exprn (D:set R) n  :  measurable_fun D ( (@GRing.exp R)^~ n)  .
-(**)Proof.
-(**)  apply measurable_funTS => /=.
-(**)  apply continuous_measurable_fun .
-(**)  apply: exprn_continuous.  
-(**)Qed.
 
-(* Lemma measurable_fun_sqr D f :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ 2).
-Proof. exact: measurable_fun_exprn. Qed. *)
+Lemma measurable_fun_sqr (D: set R) f : measurable_fun D ( ( (@GRing.exp R)^~ 2%N)).
+Proof. exact: measurable_fun_exprn. Qed.
 
-(*CHECK*)
-(**)Lemma measurable_fun_sqr (D: set R) f : measurable_fun D ( ( (@GRing.exp R)^~ 2%N)).
-(**)Proof. exact: measurable_fun_exprn. Qed.
 
-(* Lemma measurable_funM D f g : *)
-  (* measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
+
+Lemma measurable_funM D f g :
+  measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
-move=> mf mg mD; rewrite (_ : (_ \* _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
-  \- (fun x => 2%:R^-1 * (f x ^+ 2)) \- (fun x => 2%:R^-1 * ( g x ^+ 2))).
+move=> mf mg mD; rewrite (_ : (_ \* _) =    ( ( *%R (2%R^-1) \o  (@GRing.exp R)^~ 2%N)) \o ((f \+ g)) 
+  \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (f)  ) \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (g)  )) => /=.
   apply: measurable_funB => //; last first.
-    by apply: measurable_funrM => //; exact: measurable_fun_sqr.
-  apply: measurable_funB => //; last first.
-    by apply: measurable_funrM => //; exact: measurable_fun_sqr.
-  apply: measurable_funrM => //.
-  by apply: measurable_fun_sqr => //; exact: measurable_funD.
-rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
-rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
-by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
-Qed. *)
+    apply/ measurable_funT_comp. apply measurable_funT_comp => /=.
+    apply measurable_funrM.
+    by apply measurable_fun_sqr => // . by []. 
 
-(*The formulation of the lemma is the same, the proof is different.*)
-(**)Lemma measurable_funM D f g :
-(**)  measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
-(**)Proof.
-(**)  (*problems: 
-(**)  - this is ugly -> try to use more notation
-(**)  - first and second block are the same, can they be merged? 
-(**)   *)
-(**)move=> mf mg mD; rewrite (_ : (_ \* _) =    ( ( *%R (2%R^-1) \o  (@GRing.exp R)^~ 2%N)) \o ((f \+ g)) 
-(**)  \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (f)  ) \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (g)  )) => /=.
-(**)  apply: measurable_funB => //; last first.
-(**)    apply/ measurable_funT_comp. apply measurable_funT_comp => /=.
-(**)    apply measurable_funrM.
-(**)    by apply measurable_fun_sqr => // . by []. 
-(**)
-(**)  apply: measurable_funB => //; last first.
-(**)    apply/ measurable_funT_comp. apply measurable_funT_comp => /=.
-(**)    apply measurable_funrM.
-(**)    by apply measurable_fun_sqr => // . by [].
-(**)    
-(**)  apply measurable_funT_comp.   apply measurable_funT_comp.
-(**)  apply measurable_funrM => // .
-(**)  apply measurable_fun_sqr => // .
-(**)  by apply measurable_funD. 
-(**)
-(**)  rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
-(**)  rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
-(**)  by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
-(**)Qed.
+  apply: measurable_funB => //; last first.
+    apply/ measurable_funT_comp. apply measurable_funT_comp => /=.
+    apply measurable_funrM.
+    by apply measurable_fun_sqr => // . by [].
+    
+  apply measurable_funT_comp.   apply measurable_funT_comp.
+  apply measurable_funrM => // .
+  apply measurable_fun_sqr => // .
+  by apply measurable_funD. 
+
+  rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
+  rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
+  by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
+Qed.
 
 
 
