@@ -160,17 +160,15 @@ End measure_fam_uub.
 HB.mixin Record Kernel_isSFinite_subdef d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
     (k : X -> {measure set Y -> \bar R}) := {
-  sfinite_subdef : exists2 s : (R.-ker X ~> Y)^nat,
+  sfinite_kernel_subdef : exists2 s : (R.-ker X ~> Y)^nat,
     forall n, measure_fam_uub (s n) &
     forall x U, measurable U -> k x U = kseries s x U }.
 
-#[short(type=sfinite_kernel)]
 HB.structure Definition SFiniteKernel d d'
     (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k of @Kernel _ _ _ _ R k & Kernel_isSFinite_subdef _ _ X Y R k }.
-Notation "R .-sfker X ~> Y" := (sfinite_kernel X Y R).
-
-Arguments sfinite_subdef {_ _ _ _ _} _.
+Notation "R .-sfker X ~> Y" := (SFiniteKernel.type X Y R).
+Arguments sfinite_kernel_subdef {_ _ _ _ _} _.
 
 Lemma eq_sfkernel d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (k1 k2 : R.-sfker T ~> T') :
@@ -221,7 +219,7 @@ End kzero.
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
   (R : realType) k of Kernel_isFinite d d' X Y R k.
 
-Lemma sfinite_finite :
+Let sfinite_finite :
   exists2 k_ : (R.-ker _ ~> _)^nat, forall n, measure_fam_uub (k_ n) &
     forall x U, measurable U -> k x U = mseries (k_ ^~ x) 0 U.
 Proof.
@@ -247,7 +245,7 @@ Context d d' (X : measurableType d) (Y : measurableType d').
 Variables (R : realType) (k : R.-sfker X ~> Y).
 
 Let s : (X -> {measure set Y -> \bar R})^nat :=
-  let: exist2 x _ _ := cid2 (sfinite_subdef k) in x.
+  let: exist2 x _ _ := cid2 (sfinite_kernel_subdef k) in x.
 
 Let ms n : @isKernel d d' X Y R (s n).
 Proof.
@@ -262,7 +260,7 @@ Proof. by rewrite /s; case: cid2. Qed.
 
 HB.instance Definition _ n := @Kernel_isFinite.Build d d' X Y R (s n) (s_uub n).
 
-Lemma sfinite : exists s : (R.-fker X ~> Y)^nat,
+Lemma sfinite_kernel : exists s : (R.-fker X ~> Y)^nat,
   forall x U, measurable U -> k x U = kseries s x U.
 Proof.
 exists (fun n => [the _.-fker _ ~> _ of s n]) => x U mU.
@@ -275,7 +273,7 @@ Lemma sfinite_kernel_measure d d' (Z : measurableType d) (X : measurableType d')
     (R : realType) (k : R.-sfker Z ~> X) (z : Z) :
   sfinite_measure (k z).
 Proof.
-have [s ks] := sfinite k.
+have [s ks] := sfinite_kernel k.
 exists (s ^~ z).
   move=> n; have [r snr] := measure_uub (s n).
   by apply: lty_fin_num_fun; rewrite (lt_le_trans (snr _))// leey.
@@ -545,7 +543,7 @@ Lemma measurable_fun_integral_sfinite_kernel (l : R.-sfker X ~> Y)
 Proof.
 have [k_ [ndk_ k_k]] := approximation measurableT mk (fun xy _ => k0 xy).
 apply: (measurable_fun_xsection_integral ndk_ (k_k ^~ Logic.I)) => n r.
-have [l_ hl_] := sfinite l.
+have [l_ hl_] := sfinite_kernel l.
 rewrite (_ : (fun x => _) = (fun x =>
     mseries (l_ ^~ x) 0 (xsection (k_ n @^-1` [set r]) x))); last first.
   by apply/funext => x; rewrite hl_//; exact/measurable_xsection.
@@ -683,7 +681,7 @@ Let sfinite_kadd : exists2 k_ : (R.-ker _ ~> _)^nat,
   forall x U, measurable U ->
     kadd k1 k2 x U = mseries (k_ ^~ x) 0 U.
 Proof.
-have [f1 hk1] := sfinite k1; have [f2 hk2] := sfinite k2.
+have [f1 hk1] := sfinite_kernel k1; have [f2 hk2] := sfinite_kernel k2.
 exists (fun n => [the _.-ker _ ~> _ of kadd (f1 n) (f2 n)]).
   move=> n.
   have [r1 f1r1] := measure_uub (f1 n).
@@ -954,7 +952,7 @@ Import KCOMP_FINITE_KERNEL.
 Lemma mkcomp_sfinite : exists k_ : (R.-fker X ~> Z)^nat,
   forall x U, measurable U -> (l \; k) x U = kseries k_ x U.
 Proof.
-have [k_ hk_] := sfinite k; have [l_ hl_] := sfinite l.
+have [k_ hk_] := sfinite_kernel k; have [l_ hl_] := sfinite_kernel l.
 have [kl hkl] : exists kl : (R.-fker X ~> Z) ^nat, forall x U,
     \esum_(i in setT) (l_ i.2 \; k_ i.1) x U = \sum_(i <oo) kl i x U.
   have /ppcard_eqP[f] : ([set: nat] #= [set: nat * nat])%card.

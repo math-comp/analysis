@@ -29,8 +29,8 @@
     `prob_pointed`, `mset`, `pset`, `pprobability`, `kprobability`, `kadd`,
     `mnormalize`, `knormalize`, `kcomp`, and `mkcomp`.
   + new lemmas `eq_kernel`, `measurable_fun_kseries`, `integral_kseries`,
-    `measure_fam_uubP`, `eq_sfkernel`, `kzero_uub`, `sfinite_finite`,
-    `sfinite`, `sfinite_kernel_measure`, `finite_kernel_measure`,
+    `measure_fam_uubP`, `eq_sfkernel`, `kzero_uub`,
+    `sfinite_kernel`, `sfinite_kernel_measure`, `finite_kernel_measure`,
     `measurable_prod_subset_xsection_kernel`,
     `measurable_fun_xsection_finite_kernel`,
     `measurable_fun_xsection_integral`,
