@@ -1588,7 +1588,7 @@ Qed.
 Lemma measurable_funrM (D: set R) (k: R) : measurable_fun D ( *%R  k).
 Proof.
 apply: measurable_funTS => /=.
-apply: continuous_measurable_fun. 
+apply: continuous_measurable_fun.
 apply: mulrl_continuous.
 Qed.
 
@@ -1625,9 +1625,9 @@ Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
 move=> mf mg mD; rewrite (_ : (_ \* _) =    ( ( *%R (2%R^-1) \o  (@GRing.exp R)^~ 2%N)) \o ((f \+ g)) 
-  \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (f)  ) \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (g)  )) => /=.
+  \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (f)  ) \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (g)  )) => //=.
   apply: measurable_funB => //; last first.
-    apply/ measurable_funT_comp. apply measurable_funT_comp => /=.
+    apply/ measurable_funT_comp. apply measurable_funT_comp => //=.
     apply measurable_funrM.
     by apply measurable_fun_sqr => // . by []. 
 
@@ -1718,6 +1718,21 @@ Qed.
 
 End measurable_fun_realType.
 
+#[global] Hint Extern 0 (measurable_fun _ ( *%R _ )) =>
+  (apply: measurable_funrM) : core.
+#[global] Hint Extern 0 (measurable_fun _ (_ + _)%R) =>
+  (apply: measurable_funD) : core.
+#[global] Hint Extern 0 (measurable_fun _ (_ - _)%R) =>
+  (apply: measurable_funB) : core.
+#[global] Hint Extern 0 (measurable_fun _ (_ * _)%R) =>
+  (apply: measurable_funM) : core.
+#[global] Hint Extern 0 (measurable_fun _ (_ \max _)%R) =>
+  (apply: measurable_fun_max) : core.
+#[global] Hint Extern 0 (measurable_fun _ (_ ^~ _)%R) =>
+  (apply: measurable_fun_exprn):core.
+#[global] Hint Extern 0 (measurable_fun _ (_ \max _)%R) =>
+  (apply: measurable_fun_max) : core.
+
 Lemma measurable_fun_ln (R : realType) : measurable_fun [set~ (0:R)] (@ln R).
 Proof.
 rewrite (_ : [set~ 0] = `]-oo, 0[ `|` `]0, +oo[); last first.
@@ -1745,7 +1760,7 @@ apply: measurable_fun_if => //.
     by apply: continuous_measurable_fun; exact: continuous_expR.
   rewrite (_ : _ @^-1` _ = [set~ 0]); last first.
     by apply/seteqP; split => [x /negP/negP/eqP|x x0]//=; exact/negbTE/eqP.
-  apply measurable_funT_comp => /=. apply measurable_funrM. exact: measurable_fun_ln.
+  apply: measurable_funT_comp => //=.  exact: measurable_fun_ln.
 Qed.
 
 Section standard_emeasurable_fun.
