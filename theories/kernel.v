@@ -166,7 +166,8 @@ HB.mixin Record Kernel_isSFinite_subdef d d'
 
 HB.structure Definition SFiniteKernel d d'
     (X : measurableType d) (Y : measurableType d') (R : realType) :=
-  { k of @Kernel _ _ _ _ R k & Kernel_isSFinite_subdef _ _ X Y R k }.
+  { k of @Kernel _ _ _ _ R k &
+         Kernel_isSFinite_subdef _ _ X Y R k }.
 Notation "R .-sfker X ~> Y" := (SFiniteKernel.type X Y R).
 Arguments sfinite_kernel_subdef {_ _ _ _ _} _.
 
