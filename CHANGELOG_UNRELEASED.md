@@ -12,8 +12,13 @@
   + lemma `measurable_fun_bigcup`
 - in `sequences.v`:
   + lemma `eq_eseriesl`
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_expR`
 
 ### Changed
+
+- in `lebesgue_measure.v`
+  + `measurable_funrM`, `measurable_funN`, `measurable_fun_exprn`
 
 ### Renamed
 
@@ -38,6 +43,9 @@
 - in `measure.v`:
   + instances `ae_filter_algebraOfSetsType`, `ae_filter_measurableType`,
   `ae_properfilter_measurableType`
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_sqr` (use `measurable_fin_exprn` instead)
+  + lemma `measurable_fun_opp` (use `measurable_funN` instead)
 
 ### Infrastructure
 

@@ -1529,15 +1529,16 @@ Qed.
 End coutinuous_measurable.
 
 Section standard_measurable_fun.
+Variable R : realType.
+Implicit Types D : set R.
 
-Lemma measurable_fun_opp (R : realType) : measurable_fun [set: R] -%R.
+Lemma measurable_funN D : measurable_fun D (-%R).
 Proof.
-apply: continuous_measurable_fun.
-by have := @opp_continuous R [the normedModType R of R^o].
+apply: measurable_funTS => /=; apply: continuous_measurable_fun.
+exact: (@opp_continuous R [the normedModType R of R^o]).
 Qed.
 
-Lemma measurable_fun_normr (R : realType) (D : set R) :
-  measurable_fun D (@normr _ R).
+Lemma measurable_fun_normr D : measurable_fun D (@normr _ R).
 Proof.
 move=> mD; apply: (measurability (RGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->] <-]; apply: measurableI => //.
@@ -1556,10 +1557,27 @@ rewrite [X in measurable X](_ : _ = setT)// predeqE => r.
 by split => // _; rewrite /= in_itv /= andbT (lt_le_trans x0).
 Qed.
 
-End standard_measurable_fun.
+Lemma measurable_funrM D (k : R) : measurable_fun D ( *%R k).
+Proof.
+apply: measurable_funTS => /=.
+by apply: continuous_measurable_fun; exact: mulrl_continuous.
+Qed.
 
+Lemma measurable_fun_exprn D n : measurable_fun D (fun x => x ^+ n).
+Proof.
+apply measurable_funTS => /=.
+by apply continuous_measurable_fun; exact: exprn_continuous.
+Qed.
+
+End standard_measurable_fun.
+#[global] Hint Extern 0 (measurable_fun _ (-%R)) =>
+  solve [exact: measurable_funN] : core.
 #[global] Hint Extern 0 (measurable_fun _ normr) =>
   solve [exact: measurable_fun_normr] : core.
+#[global] Hint Extern 0 (measurable_fun _ ( *%R _)) =>
+  solve [exact: measurable_funrM] : core.
+#[global] Hint Extern 0 (measurable_fun _ (fun x => x ^+ _)) =>
+  solve [exact: measurable_fun_exprn] : core.
 
 Section measurable_fun_realType.
 Context d (T : measurableType d) (R : realType).
@@ -1583,82 +1601,29 @@ rewrite predeqE => x; split => [|[r _] []/= [Dx rfx]] /= => [[Dx]|[_]].
 by rewrite ltr_subl_addr=> afg; rewrite (lt_le_trans afg)// addrC ler_add2r ltW.
 Qed.
 
-Lemma measurable_funrM D f (k : R) : measurable_fun D f ->
-  measurable_fun D (fun x => k * f x).
-Proof.
-  apply: (@measurable_funT_comp _ _ _ _ _ _ ( *%R k)).
-  by apply: continuous_measurable_fun; apply: mulrl_continuous.
-Qed.
-
-Lemma measurable_funrM_comp (D: set R) (k: R) : measurable_fun D ( *%R  k).
-Proof.
-apply: measurable_funTS => /=.
-apply: continuous_measurable_fun.
-apply: mulrl_continuous.
-Qed.
-
-
-Lemma measurable_funN D f : measurable_fun D f -> measurable_fun D (-%R \o f).
-Proof.
-  move=> mf mD; rewrite (_ : _ \o _ = (fun x => - 1 * f x)).
-  exact: measurable_funrM.
-by under eq_fun do rewrite mulN1r.
-Qed.
-
-
-Lemma measurable_funN_comp (D: set R) f : measurable_fun D (-%R ).
-Proof.
-apply: measurable_funTS => /=.
-apply: continuous_measurable_fun.
-by have := @opp_continuous R [the normedModType R of R^o].
-Qed.
-
 Lemma measurable_funB D f g : measurable_fun D f ->
   measurable_fun D g -> measurable_fun D (f \- g).
 Proof.
-move=> ? ? ?. apply: measurable_funD => //. apply measurable_funT_comp => //. by exact: measurable_funN_comp.
+by move=> mf mg; apply: measurable_funD => //; exact: measurable_funT_comp.
 Qed.
-
-Lemma measurable_fun_exprn D n f :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
-Proof.
-  apply: measurable_funT_comp ((@GRing.exp R)^~ n) _ _ _.
-  by apply: continuous_measurable_fun; apply: exprn_continuous.
-Qed.
-
-Lemma measurable_fun_exprn_comp (D:set R) n  :  measurable_fun D ( (@GRing.exp R)^~ n)  .
-Proof.
-  apply measurable_funTS => /=.
-  apply continuous_measurable_fun .
-  by apply: exprn_continuous.  
-Qed.
-
-Lemma measurable_fun_sqr D f :
-  measurable_fun D f -> measurable_fun D (fun x => f x ^+ 2).
-Proof. exact: measurable_fun_exprn. Qed.
-
-Lemma measurable_fun_sqr_comp (D: set R) f : measurable_fun D ( ( (@GRing.exp R)^~ 2%N)).
-Proof. exact: measurable_fun_exprn_comp. Qed.
-
-
 
 Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
 Proof.
-move=> mf mg mD; rewrite (_ : (_ \* _) =    ( ( *%R (2%R^-1) \o  (@GRing.exp R)^~ 2%N)) \o ((f \+ g)) 
-  \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (f)  ) \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (g)  )) => //=.
-  
-  apply: measurable_funB => //; first apply: measurable_funB;
-    apply: measurable_funT_comp => //; [|by apply: measurable_funD| | ];
-    by apply: measurable_funT_comp;
-      [exact: measurable_funrM_comp|exact: measurable_fun_sqr_comp].
-
-  rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
-  rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
-  by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
+move=> mf mg; rewrite (_ : (_ \* _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
+  \- (fun x => 2%:R^-1 * (f x ^+ 2)) \- (fun x => 2%:R^-1 * (g x ^+ 2))).
+  apply: measurable_funB; first apply: measurable_funB.
+  - apply: measurable_funT_comp => //.
+    apply: measurable_funT_comp (measurable_fun_exprn _) _.
+    exact: measurable_funD.
+  - apply: measurable_funT_comp => //.
+    exact: measurable_funT_comp (measurable_fun_exprn _) _.
+  - apply: measurable_funT_comp => //.
+    exact: measurable_funT_comp (measurable_fun_exprn _) _.
+rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
+rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
+by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
 Qed.
-
-
 
 Lemma measurable_fun_max D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \max g).
@@ -1730,21 +1695,6 @@ Qed.
 
 End measurable_fun_realType.
 
-#[global] Hint Extern 0 (measurable_fun _ ( _ \o _ )) =>
-  (apply: measurable_funT_comp) : core.
-#[global] Hint Extern 0 (measurable_fun _ ( *%R _ )) =>
-  (apply: measurable_funrM_comp) : core.
-#[global] Hint Extern 0 (measurable_fun _ (_ + _)%R) =>
-  (apply: measurable_funD) : core.
-#[global] Hint Extern 0 (measurable_fun _ (_ - _)%R) =>
-  (apply: measurable_funB) : core.
-#[global] Hint Extern 0 (measurable_fun _ (_ * _)%R) =>
-  (apply: measurable_funM) : core.
-#[global] Hint Extern 0 (measurable_fun _ (_ \max _)%R) =>
-  (apply: measurable_fun_max) : core.
-#[global] Hint Extern 0 (measurable_fun _ (_ ^~ _)%R) =>
-  (apply: measurable_fun_exprn_comp):core.
-
 Lemma measurable_fun_ln (R : realType) : measurable_fun [set~ (0:R)] (@ln R).
 Proof.
 rewrite (_ : [set~ 0] = `]-oo, 0[ `|` `]0, +oo[); last first.
@@ -1760,6 +1710,13 @@ apply/measurable_funU; [exact: measurable_itv|exact: measurable_itv|split].
   rewrite -continuous_open_subspace; last exact: interval_open.
   by move/subspace_continuous_measurable_fun; apply; exact: measurable_itv.
 Qed.
+#[global] Hint Extern 0 (measurable_fun _ (@ln _)) =>
+  solve [apply: measurable_fun_ln] : core.
+
+Lemma measurable_fun_expR (R : realType) : measurable_fun [set: R] expR.
+Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
+#[global] Hint Extern 0 (measurable_fun _ expR) =>
+  solve [apply: measurable_fun_expR] : core.
 
 Lemma measurable_fun_power_pos (R : realType) p :
   measurable_fun [set: R] (@power_pos R ^~ p).
@@ -1768,12 +1725,13 @@ apply: measurable_fun_if => //.
 - apply: (measurable_fun_bool true); rewrite (_ : _ @^-1` _ = [set 0])//.
   by apply/seteqP; split => [_ /eqP ->//|_ -> /=]; rewrite eqxx.
 - exact: measurable_fun_cst.
-- rewrite setTI; apply: (@measurable_fun_comp _ _ _ _ _ _ setT) => //.
-    by apply: continuous_measurable_fun; exact: continuous_expR.
+- rewrite setTI; apply: measurable_funT_comp => //.
   rewrite (_ : _ @^-1` _ = [set~ 0]); last first.
     by apply/seteqP; split => [x /negP/negP/eqP|x x0]//=; exact/negbTE/eqP.
-  apply: measurable_funT_comp => //=.  exact: measurable_fun_ln.
+  exact: measurable_funT_comp.
 Qed.
+#[global] Hint Extern 0 (measurable_fun _ (@power_pos _ ^~ _)) =>
+  solve [apply: measurable_fun_power_pos] : core.
 
 Section standard_emeasurable_fun.
 Variable R : realType.
@@ -1816,6 +1774,8 @@ End standard_emeasurable_fun.
   solve [exact: measurable_fun_abse] : core.
 #[global] Hint Extern 0 (measurable_fun _ EFin) =>
   solve [exact: measurable_fun_EFin] : core.
+#[global] Hint Extern 0 (measurable_fun _ (-%E)) =>
+  solve [exact: emeasurable_fun_minus] : core.
 
 (* NB: real-valued function *)
 Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
@@ -1868,7 +1828,6 @@ move=> _ [_ [x ->] <-];rewrite esups_preimage setI_bigcupr.
 by apply: bigcup_measurable => ? ?; exact/mf/emeasurable_itv.
 Qed.
 
-(*can this be changed?*)
 Lemma emeasurable_fun_max D (f g : T -> \bar R) :
   measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (fun x => maxe (f x) (g x)).

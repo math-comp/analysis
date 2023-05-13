@@ -254,7 +254,7 @@ have h (Y : {RV P >-> R}) :
     - move=> x y; rewrite !inE !mksetE !in_itv/= !andbT => x0 y0.
       by rewrite ler_sqr.
   apply: expectation_le => //.
-  - apply: measurable_funT_comp => //; apply: measurable_funT_comp => //=.
+  - by apply: measurable_funT_comp => //; exact: measurable_funT_comp.
   - by move=> x /=; apply: sqr_ge0.
   - by move=> x /=; apply: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.
