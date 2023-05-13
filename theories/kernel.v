@@ -468,7 +468,7 @@ Lemma measurable_fun_xsection_integral
     (l : X -> {measure set Y -> \bar R})
     (k_ : ({nnsfun [the measurableType _ of (X * Y)%type] >-> R})^nat)
     (ndk_ : nondecreasing_seq (k_ : (X * Y -> R)^nat))
-    (k_k : forall z, EFin \o (k_ ^~ z) --> k z) :
+    (k_k : forall z, (k_ n z)%:E @[n --> \oo] --> k z) :
   (forall n r,
     measurable_fun [set: X] (fun x => l x (xsection (k_ n @^-1` [set r]) x))) ->
   measurable_fun [set: X] (fun x => \int[l x]_y k (x, y)).
@@ -477,7 +477,7 @@ move=> h.
 rewrite (_ : (fun x => _) =
     (fun x => lim_esup (fun n => \int[l x]_y (k_ n (x, y))%:E))); last first.
   apply/funext => x.
-  transitivity (lim (fun n => \int[l x]_y (k_ n (x, y))%:E)); last first.
+  transitivity (lim (\int[l x]_y (k_ n (x, y))%:E @[n --> \oo])); last first.
     rewrite is_cvg_lim_esupE//.
     apply: ereal_nondecreasing_is_cvg => m n mn.
     apply: ge0_le_integral => //.
@@ -591,12 +591,9 @@ Context d (T : measurableType d) (R : realType).
 
 Let p0 : probability T R := [the probability _ _ of dirac point].
 
-Definition prob_pointed := Pointed.Class
-  (Choice.Class gen_eqMixin (Choice.Class gen_eqMixin gen_choiceMixin)) p0.
-
-Canonical probability_eqType := EqType (probability T R) prob_pointed.
-Canonical probability_choiceType := ChoiceType (probability T R) prob_pointed.
-Canonical probability_ptType := PointedType (probability T R) prob_pointed.
+HB.instance Definition _ := gen_eqMixin (probability T R).
+HB.instance Definition _ := gen_choiceMixin (probability T R).
+HB.instance Definition _ := isPointed.Build (probability T R) p0.
 
 Definition mset (U : set T) (r : R) := [set mu : probability T R | mu U < r%:E].
 
@@ -1011,7 +1008,7 @@ Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variables (k : Y -> \bar R)
   (k_ : ({nnsfun Y >-> R}) ^nat)
   (ndk_ : nondecreasing_seq (k_ : (Y -> R)^nat))
-  (k_k : forall z, [set: Y] z -> EFin \o (k_ ^~ z) --> k z).
+  (k_k : forall z, [set: Y] z -> (k_ n z)%:E @[n --> \oo] --> k z).
 
 Let k_2 : (X * Y -> R)^nat := fun n => k_ n \o snd.
 
@@ -1130,7 +1127,7 @@ Lemma integral_kcomp x f : (forall z, 0 <= f z) -> measurable_fun [set: Z] f ->
 Proof.
 move=> f0 mf.
 have [f_ [ndf_ f_f]] := approximation measurableT mf (fun z _ => f0 z).
-transitivity (\int[(l \; k) x]_z (lim (EFin \o f_^~ z))).
+transitivity (\int[(l \; k) x]_z (lim ((f_ n z)%:E @[n --> \oo]))).
   by apply/eq_integral => z _; apply/esym/cvg_lim => //=; exact: f_f.
 rewrite monotone_convergence//; last 3 first.
   by move=> n; exact/EFin_measurable_fun.
@@ -1139,7 +1136,7 @@ rewrite monotone_convergence//; last 3 first.
 rewrite (_ : (fun _ => _) =
     (fun n => \int[l x]_y (\int[k (x, y)]_z (f_ n z)%:E)))//; last first.
   by apply/funext => n; rewrite integral_kcomp_nnsfun.
-transitivity (\int[l x]_y lim (fun n => \int[k (x, y)]_z (f_ n z)%:E)).
+transitivity (\int[l x]_y lim ((\int[k (x, y)]_z (f_ n z)%:E) @[n --> \oo])).
   rewrite -monotone_convergence//; last 3 first.
   - move=> n; apply: measurable_fun_integral_kernel => //.
     + move=> U mU; have := measurable_kernel k _ mU.

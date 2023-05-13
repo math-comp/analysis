@@ -1541,7 +1541,7 @@ Proof. by move=> Am Atriv /measure_semi_sigma_additive/cvg_lim<-//. Qed.
 End measure_lemmas.
 
 #[global] Hint Extern 0 (_ set0 = 0%R) => solve [apply: measure0] : core.
-#[global] Hint Extern 0 (is_true (0%R <= _)) => solve [apply: measure_ge0] : core.
+#[global] Hint Extern 0 (is_true (0%:E <= _)) => solve [apply: measure_ge0] : core.
 
 Section measure_lemmas.
 Context d (R : realFieldType) (T : measurableType d).
