@@ -1648,20 +1648,10 @@ Proof.
 move=> mf mg mD; rewrite (_ : (_ \* _) =    ( ( *%R (2%R^-1) \o  (@GRing.exp R)^~ 2%N)) \o ((f \+ g)) 
   \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (f)  ) \- ( ( *%R 2%:R^-1) \o (( (@GRing.exp R)^~ 2%N)) \o (g)  )) => //=.
   
-  apply: measurable_funB => //; last first.
-    apply: measurable_funT_comp => //=. apply measurable_funT_comp => //=.
-    apply: measurable_funrM_comp.
-    by apply measurable_fun_sqr_comp => //.  
-
-  apply: measurable_funB => //; last first.
-    apply: measurable_funT_comp => //. apply measurable_funT_comp => //=.
-    apply measurable_funrM_comp.
-    by apply: measurable_fun_sqr_comp => //.
-    
-  apply measurable_funT_comp.   apply measurable_funT_comp.
-  apply measurable_funrM_comp => // .
-  apply measurable_fun_sqr_comp => //.
-  by apply measurable_funD. 
+  apply: measurable_funB => //; first apply: measurable_funB;
+    apply: measurable_funT_comp => //; [|by apply: measurable_funD| | ];
+    by apply: measurable_funT_comp;
+      [exact: measurable_funrM_comp|exact: measurable_fun_sqr_comp].
 
   rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
   rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
