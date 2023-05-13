@@ -30,8 +30,28 @@
   + lemmas `emeasurable_fun_lt`, `emeasurable_fun_le`, `emeasurable_fun_eq`,
     `emeasurable_fun_neq`
   + lemma `integral_ae_eq`
+- in file `kernel.v`,
+  + new definitions `kseries`, `measure_fam_uub`, `kzero`, `kdirac`,
+    `prob_pointed`, `mset`, `pset`, `pprobability`, `kprobability`, `kadd`,
+    `mnormalize`, `knormalize`, `kcomp`, and `mkcomp`.
+  + new lemmas `eq_kernel`, `measurable_fun_kseries`, `integral_kseries`,
+    `measure_fam_uubP`, `eq_sfkernel`, `kzero_uub`,
+    `sfinite_kernel`, `sfinite_kernel_measure`, `finite_kernel_measure`,
+    `measurable_prod_subset_xsection_kernel`,
+    `measurable_fun_xsection_finite_kernel`,
+    `measurable_fun_xsection_integral`,
+    `measurable_fun_integral_finite_kernel`,
+    `measurable_fun_integral_sfinite_kernel`, `lt0_mset`, `gt1_mset`,
+    `kernel_measurable_eq_cst`, `kernel_measurable_neq_cst`, `kernel_measurable_fun_eq_cst`,
+    `measurable_fun_kcomp_finite`, `mkcomp_sfinite`,
+    `measurable_fun_mkcomp_sfinite`, `measurable_fun_preimage_integral`,
+    `measurable_fun_integral_kernel`, and `integral_kcomp`.
+  + lemma `measurable_fun_mnormalize`
 
 ### Changed
+
+- in `lebesgue_integral.v`:
+  + lemma `xsection_ndseq_closed` generalized from a measure to a family of measures
 
 ### Renamed
 
