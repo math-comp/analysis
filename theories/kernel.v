@@ -197,7 +197,7 @@ Arguments measure_uub {_ _ _ _ _} _.
 HB.factory Record Kernel_isFinite d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
     (k : X -> {measure set Y -> \bar R}) of isKernel _ _ _ _ _ k := {
-  __factory__measure_uub : measure_fam_uub k }.
+  measure_uub : measure_fam_uub k }.
 
 Section kzero.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
@@ -226,7 +226,7 @@ Let sfinite_finite :
 Proof.
 exists (fun n => if n is O then [the _.-ker _ ~> _ of k] else
   [the _.-ker _ ~> _ of @kzero _ _ X Y R]).
-  by case => [|_]; [exact: __factory__measure_uub|exact: kzero_uub].
+  by case => [|_]; [exact: measure_uub|exact: kzero_uub].
 move=> t U mU/=; rewrite /mseries.
 rewrite (nneseries_split 1%N)// big_ord_recl/= big_ord0 adde0.
 rewrite ereal_series (@eq_eseriesr _ _ (fun=> 0%E)); last by case.
@@ -237,7 +237,7 @@ HB.instance Definition _ :=
   @Kernel_isSFinite_subdef.Build d d' X Y R k sfinite_finite.
 
 HB.instance Definition _ :=
-  @SFiniteKernel_isFinite.Build  d d' X Y R k __factory__measure_uub.
+  @SFiniteKernel_isFinite.Build  d d' X Y R k measure_uub.
 
 HB.end.
 
@@ -289,7 +289,7 @@ HB.instance Definition _
 HB.factory Record Kernel_isSFinite d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
     (k : X -> {measure set Y -> \bar R}) of isKernel _ _ _ _ _ k := {
-  __factory__sfinite : exists s : (R.-fker X ~> Y)^nat,
+  sfinite : exists s : (R.-fker X ~> Y)^nat,
     forall x U, measurable U -> k x U = kseries s x U }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
@@ -297,7 +297,7 @@ HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
 
 Lemma sfinite_subdef : Kernel_isSFinite_subdef d d' X Y R k.
 Proof.
-split; have [s sE] := __factory__sfinite; exists s => //.
+split; have [s sE] := sfinite; exists s => //.
 by move=> n; exact: measure_uub.
 Qed.
 
@@ -320,7 +320,7 @@ Notation "R .-spker X ~> Y" := (sprobability_kernel X Y R).
 HB.factory Record Kernel_isSubProbability d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
     (k : X -> {measure set Y -> \bar R}) of isKernel _ _ X Y R k := {
-  __factory__sprob_kernel : ereal_sup [set k x [set: Y] | x in [set: X]] <= 1 }.
+  sprob_kernel : ereal_sup [set k x [set: Y] | x in [set: X]] <= 1 }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
   (R : realType) k of Kernel_isSubProbability d d' X Y R k.
@@ -328,13 +328,13 @@ HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
 Let finite : @Kernel_isFinite d d' X Y R k.
 Proof.
 split; exists 2%R => /= ?; rewrite (@le_lt_trans _ _ 1%:E) ?lte_fin ?ltr1n//.
-by rewrite (le_trans _ __factory__sprob_kernel)//; exact: ereal_sup_ub.
+by rewrite (le_trans _ sprob_kernel)//; exact: ereal_sup_ub.
 Qed.
 
 HB.instance Definition _ := finite.
 
 HB.instance Definition _ :=
-  @FiniteKernel_isSubProbability.Build _ _ _ _ _ k __factory__sprob_kernel.
+  @FiniteKernel_isSubProbability.Build _ _ _ _ _ k sprob_kernel.
 
 HB.end.
 
@@ -353,20 +353,20 @@ Notation "R .-pker X ~> Y" := (probability_kernel X Y R).
 HB.factory Record Kernel_isProbability d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
     (k : X -> {measure set Y -> \bar R}) of isKernel _ _ X Y R k := {
-  __factory__prob_kernel : forall x, k x [set: Y] = 1 }.
+  prob_kernel : forall x, k x [set: Y] = 1 }.
 
 HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
   (R : realType) k of Kernel_isProbability d d' X Y R k.
 
 Let sprob_kernel : @Kernel_isSubProbability d d' X Y R k.
 Proof.
-by split; apply: ub_ereal_sup => x [y _ <-{x}]; rewrite __factory__prob_kernel.
+by split; apply: ub_ereal_sup => x [y _ <-{x}]; rewrite prob_kernel.
 Qed.
 
 HB.instance Definition _ := sprob_kernel.
 
 HB.instance Definition _ :=
-  @SubProbability_isProbability.Build _ _ _ _ _ k __factory__prob_kernel.
+  @SubProbability_isProbability.Build _ _ _ _ _ k prob_kernel.
 
 HB.end.
 
