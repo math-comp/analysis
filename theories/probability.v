@@ -399,7 +399,7 @@ transitivity (\sum_(i <oo) (dRV_enum X i)%:E *
     1).
   apply: eq_eseriesr => i _; rewrite -integralM//; last 2 first.
     - by case: ifPn.
-    - split; first exact: measurable_fun_cst.
+    - split => //.
       rewrite (eq_integral (cst 1%E)); last by move=> x _; rewrite abse1.
       rewrite integral_cst//; last by case: ifPn.
       rewrite mul1e (@le_lt_trans _ _ 1%E) ?ltey//.

@@ -859,6 +859,8 @@ move=> mD _ /= B mB; rewrite [X in measurable X](_ : _ `&` _ = if 0%R \in B then
 case: ifPn => B0; apply/measurableI => //; last exact: measurable_EFin.
 by apply: measurableU; [exact: measurable_EFin|exact: measurableU].
 Qed.
+#[global] Hint Extern 0 (measurable_fun _ fine) =>
+  solve [exact: measurable_fun_fine] : core.
 
 Section lebesgue_measure_itv.
 Variable R : realType.
@@ -1578,6 +1580,12 @@ End standard_measurable_fun.
   solve [exact: measurable_funrM] : core.
 #[global] Hint Extern 0 (measurable_fun _ (fun x => x ^+ _)) =>
   solve [exact: measurable_fun_exprn] : core.
+#[deprecated(since="mathcomp-analysis 0.6.3",
+  note="use `measurable_fun_exprn` instead")]
+Notation measurable_fun_sqr := measurable_fun_exprn.
+#[deprecated(since="mathcomp-analysis 0.6.3",
+  note="use `measurable_funN` instead")]
+Notation measurable_fun_opp := measurable_funN.
 
 Section measurable_fun_realType.
 Context d (T : measurableType d) (R : realType).
@@ -1702,8 +1710,7 @@ rewrite (_ : [set~ 0] = `]-oo, 0[ `|` `]0, +oo[); last first.
     rewrite in_itv/= -eq_le eq_sym; [move/eqP/negbTE => ->|move/negP/eqP].
 apply/measurable_funU; [exact: measurable_itv|exact: measurable_itv|split].
 - apply/(@measurable_restrict _ _ _ _ _ setT)=> //; first exact: measurable_itv.
-  rewrite (_ : _ \_ _ = cst (0:R)); first exact: measurable_fun_cst.
-  apply/funext => y; rewrite patchE.
+  rewrite (_ : _ \_ _ = cst (0:R))//; apply/funext => y; rewrite patchE.
   by case: ifPn => //; rewrite inE/= in_itv/= => y0; rewrite ln0// ltW.
 - have : {in `]0, +oo[%classic, continuous (@ln R)}.
     by move=> x; rewrite inE/= in_itv/= andbT => x0; exact: continuous_ln.
@@ -1724,7 +1731,6 @@ Proof.
 apply: measurable_fun_if => //.
 - apply: (measurable_fun_bool true); rewrite (_ : _ @^-1` _ = [set 0])//.
   by apply/seteqP; split => [_ /eqP ->//|_ -> /=]; rewrite eqxx.
-- exact: measurable_fun_cst.
 - rewrite setTI; apply: measurable_funT_comp => //.
   rewrite (_ : _ @^-1` _ = [set~ 0]); last first.
     by apply/seteqP; split => [x /negP/negP/eqP|x x0]//=; exact/negbTE/eqP.
@@ -1795,13 +1801,11 @@ Proof.
 move=> mf;rewrite (_ : er_map _ =
   fun x => if x \is a fin_num then (f (fine x))%:E else x); last first.
   by apply: funext=> -[].
-apply: measurable_fun_ifT => /=.
+apply: measurable_fun_ifT => //=.
 + apply: (measurable_fun_bool true).
   rewrite /preimage/= -[X in measurable X]setTI.
-  by apply/emeasurable_fin_num => //; exact: measurable_fun_id.
-+ apply/EFin_measurable_fun/measurable_funT_comp => //.
-  exact/measurable_fun_fine.
-+ exact: measurable_fun_id.
+  exact/emeasurable_fin_num.
++ exact/EFin_measurable_fun/measurable_funT_comp.
 Qed.
 
 Section emeasurable_fun.
@@ -1843,30 +1847,24 @@ move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
 by apply: measurableU; [exact/mf/emeasurable_itv| exact/mg/emeasurable_itv].
 Qed.
 
-Lemma emeasurable_funN D (f : T -> \bar R) :
-  measurable_fun D f -> measurable_fun D (\- f).
-Proof. by apply: measurable_funT_comp => //; exact: emeasurable_fun_minus. Qed.
-
 Lemma emeasurable_fun_funepos D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\+.
-Proof.
-by move=> mf; apply: emeasurable_fun_max => //; exact: measurable_fun_cst.
-Qed.
+Proof. by move=> mf; apply: emeasurable_fun_max. Qed.
 
 Lemma emeasurable_fun_funeneg D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\-.
 Proof.
-by move=> mf; apply: emeasurable_fun_max => //;
-  [exact: emeasurable_funN|exact: measurable_fun_cst].
+by move=> mf; apply: emeasurable_fun_max => //; exact: measurable_funT_comp.
 Qed.
 
 Lemma emeasurable_fun_min D (f g : T -> \bar R) :
   measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (fun x => mine (f x) (g x)).
 Proof.
-move=> /emeasurable_funN mf /emeasurable_funN mg.
-have /emeasurable_funN := emeasurable_fun_max mf mg.
-by apply eq_measurable_fun => i Di; rewrite -oppe_min oppeK.
+move=> mf mg; rewrite (_ : (fun _ => _) = (fun x => - maxe (- f x) (- g x))).
+  apply: measurable_funT_comp => //.
+  by apply: emeasurable_fun_max; exact: measurable_funT_comp.
+by rewrite funeqE => x; rewrite oppe_max !oppeK.
 Qed.
 
 Lemma measurable_fun_lim_esup D (f : (T -> \bar R)^nat) :
@@ -1899,3 +1897,7 @@ Qed.
 
 End emeasurable_fun.
 Arguments emeasurable_fun_cvg {d T R D} f_.
+
+#[deprecated(since="mathcomp-analysis 0.6.3",
+  note="use `measurable_funT_comp` instead")]
+Notation emeasurable_funN := measurable_funT_comp.

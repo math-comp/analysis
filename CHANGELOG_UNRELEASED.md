@@ -36,6 +36,10 @@
 
 ### Deprecated
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_sqr` (use `measurable_fun_exprn` instead)
+  + lemma `measurable_fun_opp` (use `measurable_funN` instead)
+
 ### Removed
 
 - in `normedtype.v`:
@@ -44,8 +48,7 @@
   + instances `ae_filter_algebraOfSetsType`, `ae_filter_measurableType`,
   `ae_properfilter_measurableType`
 - in `lebesgue_measure.v`:
-  + lemma `measurable_fun_sqr` (use `measurable_fin_exprn` instead)
-  + lemma `measurable_fun_opp` (use `measurable_funN` instead)
+  + lemma `emeasurable_funN` (use `measurable_funT_comp`) instead
 
 ### Infrastructure
 
