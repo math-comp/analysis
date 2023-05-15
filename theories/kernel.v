@@ -501,7 +501,8 @@ rewrite [X in measurable_fun _ X](_ : _ = (fun x => \sum_(r \in range (k_ n))
   apply/funext => x; rewrite -ge0_integral_fsum//.
   - by apply: eq_integral => y _; rewrite -fsumEFin.
   - move=> r.
-    apply/EFin_measurable_fun/measurable_funrM/measurable_fun_prod1 => /=.
+    apply/EFin_measurable_fun/measurable_funT_comp => [//|].
+    apply/measurable_fun_prod1 => /=.
     rewrite (_ : \1_ _ = mindic R (measurable_sfunP (k_ n) (measurable_set1 r)))//.
     exact/measurable_funP.
   - by move=> m y _; rewrite nnfun_muleindic_ge0.
@@ -779,7 +780,6 @@ apply: measurable_fun_if => //.
                            [set t | k t setT == +oo]); last first.
     by apply/seteqP; split=> x /= /orP//.
   by apply: measurableU; exact: kernel_measurable_eq_cst.
-- exact: measurable_fun_cst.
 - apply/emeasurable_funM; first exact/measurable_funTS/measurable_kernel.
   apply/EFin_measurable_fun; rewrite setTI.
   apply: (@measurable_fun_comp _ _ _ _ _ _ [set r : R | r != 0%R]).
@@ -809,15 +809,13 @@ rewrite (_ : (fun _ => _) = (fun x =>
      else f x U * (fine (f x setT))^-1%:E)); last first.
   apply/funext => x; case: ifPn => [/orP[->//|->]|]; first by case: ifPn.
   by rewrite negb_or=> /andP[/negbTE -> /negbTE ->].
-apply: measurable_fun_if => //;
-  [exact: kernel_measurable_fun_eq_cst|exact: measurable_fun_cst|].
+apply: measurable_fun_if => //; [exact: kernel_measurable_fun_eq_cst|].
 apply: measurable_fun_if => //.
 - rewrite setTI [X in measurable X](_ : _ = [set t | f t setT != 0]).
     exact: kernel_measurable_neq_cst.
   by apply/seteqP; split => [x /negbT//|x /negbTE].
 - apply: (@measurable_funS _ _ _ _ setT) => //.
   exact: kernel_measurable_fun_eq_cst.
-- exact: measurable_fun_cst.
 - apply: emeasurable_funM.
     by have := measurable_kernel f U mU; exact: measurable_funS.
   apply/EFin_measurable_fun.
@@ -931,7 +929,6 @@ apply: (@le_lt_trans _ _ (\int[l x]__ r%:num%:E)).
   apply: ge0_le_integral => //.
   - have /measurable_fun_prod1 := measurable_kernel k _ measurableT.
     exact.
-  - exact/measurable_fun_cst.
   - by move=> y _; exact/ltW/hr.
 by rewrite integral_cst//= EFinM lte_pmul2l.
 Qed.
@@ -1081,7 +1078,7 @@ Let integral_kcomp_nnsfun x (f : {nnsfun Z >-> R}) :
 Proof.
 under [in LHS]eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite ge0_integral_fsum//; last 2 first.
-  - move=> r; apply/EFin_measurable_fun/measurable_funrM.
+  - move=> r; apply/EFin_measurable_fun/measurable_funT_comp => [//|].
     have fr : measurable (f @^-1` [set r]) by exact/measurable_sfunP.
     by rewrite (_ : \1__ = mindic R fr).
   - by move=> r z _; rewrite EFinM nnfun_muleindic_ge0.
@@ -1090,7 +1087,7 @@ under [in RHS]eq_integral.
   under eq_integral.
     by move=> z _; rewrite fimfunE -fsumEFin//; over.
   rewrite /= ge0_integral_fsum//; last 2 first.
-    - move=> r; apply/EFin_measurable_fun/measurable_funrM.
+    - move=> r; apply/EFin_measurable_fun/measurable_funT_comp => [//|].
       have fr : measurable (f @^-1` [set r]) by exact/measurable_sfunP.
       by rewrite (_ : \1__ = mindic R fr).
     - by move=> r z _; rewrite EFinM nnfun_muleindic_ge0.
