@@ -1108,6 +1108,13 @@ Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Notation measurable_fun_ext := eq_measurable_fun.
 Arguments measurable_fun_bool {d1 T1 D f} b.
 
+#[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
+  solve [apply: measurable_fun_cst] : core.
+#[global] Hint Extern 0 (measurable_fun _ (cst _)) =>
+  solve [apply: measurable_fun_cst] : core.
+#[global] Hint Extern 0 (measurable_fun _ id) =>
+  solve [apply: measurable_fun_id] : core.
+
 Section measurability.
 
 Definition preimage_class (aT rT : Type) (D : set aT) (f : aT -> rT)

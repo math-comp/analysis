@@ -18,6 +18,8 @@
   + lemma `measurable_fun_bigcup`
 - in `sequences.v`:
   + lemma `eq_eseriesl`
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_expR`
 
 - in file `topology.v`,
   + new definitions `basis`, and `second_countable`.
@@ -50,6 +52,8 @@
 
 ### Changed
 
+- in `lebesgue_measure.v`
+  + `measurable_funrM`, `measurable_funN`, `measurable_fun_exprn`
 - in `lebesgue_integral.v`:
   + lemma `xsection_ndseq_closed` generalized from a measure to a family of measures
 
@@ -69,6 +73,10 @@
 
 ### Deprecated
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_sqr` (use `measurable_fun_exprn` instead)
+  + lemma `measurable_fun_opp` (use `measurable_funN` instead)
+
 ### Removed
 
 - in `normedtype.v`:
@@ -76,6 +84,8 @@
 - in `measure.v`:
   + instances `ae_filter_algebraOfSetsType`, `ae_filter_measurableType`,
   `ae_properfilter_measurableType`
+- in `lebesgue_measure.v`:
+  + lemma `emeasurable_funN` (use `measurable_funT_comp`) instead
 - in `lebesgue_integral.v`
   + lemma `emeasurable_funN` (already in `lebesgue_measure.v`)
 
