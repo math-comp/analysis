@@ -3,8 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import cardinality fsbigop mathcomp_extra.
-Require Import signed reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun.
+Require Import signed reals ereal topology normedtype sequences real_interval.
+Require Import esum measure lebesgue_measure numfun.
 
 (******************************************************************************)
 (*                            Lebesgue Integral                               *)
@@ -1761,6 +1761,42 @@ Lemma measurable_funeM D (f : T -> \bar R) (k : \bar R) :
 Proof. by move=> mf; exact/(emeasurable_funM _ mf). Qed.
 
 End emeasurable_fun.
+
+Section measurable_fun_measurable2.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variables (D : set T) (mD : measurable D).
+Implicit Types f g : T -> \bar R.
+
+Lemma emeasurable_fun_lt f g : measurable_fun D f -> measurable_fun D g ->
+  measurable (D `&` [set x | f x < g x]).
+Proof.
+move=> mf mg; under eq_set do rewrite -sube_gt0.
+by apply: emeasurable_fun_o_infty => //; exact: emeasurable_funB.
+Qed.
+
+Lemma emeasurable_fun_le f g : measurable_fun D f -> measurable_fun D g ->
+  measurable (D `&` [set x | f x <= g x]).
+Proof.
+move=> mf mg; under eq_set do rewrite -sube_le0.
+by apply: emeasurable_fun_infty_c => //; exact: emeasurable_funB.
+Qed.
+
+Lemma emeasurable_fun_eq f g : measurable_fun D f -> measurable_fun D g ->
+  measurable (D `&` [set x | f x = g x]).
+Proof.
+move=> mf mg; rewrite set_eq_le setIIr.
+by apply: measurableI; apply: emeasurable_fun_le.
+Qed.
+
+Lemma emeasurable_fun_neq f g : measurable_fun D f -> measurable_fun D g ->
+  measurable (D `&` [set x | f x != g x]).
+Proof.
+move=> mf mg; rewrite set_neq_lt setIUr.
+by apply: measurableU; exact: emeasurable_fun_lt.
+Qed.
+
+End measurable_fun_measurable2.
 
 Section ge0_integral_sum.
 Local Open Scope ereal_scope.
@@ -4024,6 +4060,72 @@ Qed.
 
 End ae_ge0_le_integral.
 
+Section integral_ae_eq.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
+
+Let integral_measure_lt (D : set T) (mD : measurable D) (g f : T -> \bar R) :
+  mu.-integrable D f -> mu.-integrable D g ->
+  (forall E, measurable E -> \int[mu]_(x in E) f x = \int[mu]_(x in E) g x) ->
+  mu (D `&` [set x | g x < f x]) = 0.
+Proof.
+move=> mf mg fg; pose E j := D `&` [set x | f x - g x >= j.+1%:R^-1%:E].
+have mE j : measurable (E j).
+  rewrite /E; apply: emeasurable_fun_le => //; first exact: measurable_fun_cst.
+  by apply/(emeasurable_funD mf.1)/emeasurable_funN; case: mg.
+have muE j : mu (E j) = 0.
+  apply/eqP; rewrite eq_le measure_ge0// andbT.
+  have fg0 : \int[mu]_(x in E j) (f \- g) x = 0.
+    rewrite integralB//; last 2 first.
+      by apply: integrableS mf => //; exact: subIsetl.
+      by apply: integrableS mg => //; exact: subIsetl.
+    rewrite fg// subee// fin_num_abs (le_lt_trans (le_abse_integral _ _ _))//.
+      by apply: measurable_funS mg.1 => //; first exact: subIsetl.
+    apply: le_lt_trans mg.2; apply: subset_integral => //; last exact: subIsetl.
+    exact: measurable_funT_comp mg.1.
+  suff : mu (E j) <= j.+1%:R%:E * \int[mu]_(x in E j) (f \- g) x.
+    by rewrite fg0 mule0.
+  apply: (@le_trans _ _ (j.+1%:R%:E * \int[mu]_(x in E j) j.+1%:R^-1%:E)).
+    by rewrite integral_cst// muleA -EFinM divrr ?unitfE// mul1e.
+  rewrite lee_pmul//; first exact: integral_ge0.
+  apply: ge0_le_integral => //; [exact: measurable_fun_cst| | |by move=> x []].
+  - by move=> x [_/=]; exact: le_trans.
+  - apply: emeasurable_funB.
+    + by apply: measurable_funS mf.1 => //; exact: subIsetl.
+    + by apply: measurable_funS mg.1 => //; exact: subIsetl.
+have nd_E : {homo E : n0 m / (n0 <= m)%N >-> (n0 <= m)%O}.
+  move=> i j ij; apply/subsetPset => x [Dx /= ifg]; split => //.
+  by move: ifg; apply: le_trans; rewrite lee_fin lef_pinv// ?posrE// ler_nat.
+rewrite set_lte_bigcup.
+have /cvg_lim h1 : mu \o E --> 0 by apply: cvg_near_cst; exact: nearW.
+have := @nondecreasing_cvg_mu _ _ _ mu E mE (bigcupT_measurable E mE) nd_E.
+by move/cvg_lim => h2; rewrite setI_bigcupr -h2// h1.
+Qed.
+
+Lemma integral_ae_eq (D : set T) (mD : measurable D) (g f : T -> \bar R) :
+  mu.-integrable D f -> mu.-integrable D g ->
+  (forall E, measurable E -> \int[mu]_(x in E) f x = \int[mu]_(x in E) g x) ->
+  ae_eq mu D f g.
+Proof.
+move=> mf mg fg.
+have mugf : mu (D `&` [set x | g x < f x]) = 0 by exact: integral_measure_lt.
+have mufg : mu (D `&` [set x | f x < g x]) = 0.
+  by apply: integral_measure_lt => // E mE; rewrite fg.
+have h : ~` [set x | D x -> f x = g x] = D `&` [set x | f x != g x].
+  apply/seteqP; split => [x/= /not_implyP[? /eqP]//|x/= [Dx fgx]].
+  by apply/not_implyP; split => //; exact/eqP.
+apply/negligibleP.
+  by rewrite h; apply: emeasurable_fun_neq => //; [case: mf|case: mg].
+rewrite h set_neq_lt setIUr measureU//.
+- by rewrite [X in X + _]mufg add0e [LHS]mugf.
+- by apply: emeasurable_fun_lt => //; [case: mf|case: mg].
+- by apply: emeasurable_fun_lt => //; [case: mg|case: mf].
+- apply/seteqP; split => [x [[Dx/= + [_]]]|//].
+  by move=> /lt_trans => /[apply]; rewrite ltxx.
+Qed.
+
+End integral_ae_eq.
+
 (******************************************************************************)
 (* * product measure                                                          *)
 (******************************************************************************)
@@ -4051,8 +4153,12 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
 
 Section xsection.
-Variables (pt2 : T2) (m2 : {measure set T2 -> \bar R}).
-Let phi A := m2 \o xsection A.
+Variables (pt2 : T2) (m2 : T1 -> {measure set T2 -> \bar R}).
+(* the generalization from m2 : {measure set T2 -> \bar R}t to
+   T1 -> {measure set T2 -> \bar R} is needed to develop the theory
+   of kernels; the original type was sufficient for the development
+   of the theory of integration  *)
+Let phi A x := m2 x (xsection A x).
 Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 
 Lemma xsection_ndseq_closed : ndseq_closed B.

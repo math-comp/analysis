@@ -33,6 +33,7 @@ signed.v
 itv.v
 convex.v
 charge.v
+kernel.v
 altreals/xfinmap.v
 altreals/discrete.v
 altreals/realseq.v
