@@ -4071,7 +4071,7 @@ Let integral_measure_lt (D : set T) (mD : measurable D) (g f : T -> \bar R) :
 Proof.
 move=> mf mg fg; pose E j := D `&` [set x | f x - g x >= j.+1%:R^-1%:E].
 have mE j : measurable (E j).
-  rewrite /E; apply: emeasurable_fun_le => //; first exact: measurable_fun_cst.
+  rewrite /E; apply: emeasurable_fun_le => //.
   by apply/(emeasurable_funD mf.1)/emeasurable_funN; case: mg.
 have muE j : mu (E j) = 0.
   apply/eqP; rewrite eq_le measure_ge0// andbT.
@@ -4088,7 +4088,7 @@ have muE j : mu (E j) = 0.
   apply: (@le_trans _ _ (j.+1%:R%:E * \int[mu]_(x in E j) j.+1%:R^-1%:E)).
     by rewrite integral_cst// muleA -EFinM divrr ?unitfE// mul1e.
   rewrite lee_pmul//; first exact: integral_ge0.
-  apply: ge0_le_integral => //; [exact: measurable_fun_cst| | |by move=> x []].
+  apply: ge0_le_integral => //; [| |by move=> x []].
   - by move=> x [_/=]; exact: le_trans.
   - apply: emeasurable_funB.
     + by apply: measurable_funS mf.1 => //; exact: subIsetl.
