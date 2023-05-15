@@ -250,13 +250,11 @@ have h (Y : {RV P >-> R}) :
   rewrite exprnN expfV exprz_inv opprK -exprnP.
   apply: (@le_trans _ _ ('E_P[(@GRing.exp R ^~ 2%N \o normr) \o Y])).
     apply: (@markov Y (@GRing.exp R ^~ 2%N)) => //.
-    - exact/measurable_fun_exprn/measurable_fun_id.
     - by move=> r; apply: sqr_ge0.
     - move=> x y; rewrite !inE !mksetE !in_itv/= !andbT => x0 y0.
       by rewrite ler_sqr.
   apply: expectation_le => //.
-  - apply: measurable_funT_comp => //; apply: measurable_funT_comp => //.
-    exact/measurable_fun_exprn/measurable_fun_id.
+  - by apply: measurable_funT_comp => //; exact: measurable_funT_comp.
   - by move=> x /=; apply: sqr_ge0.
   - by move=> x /=; apply: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.
@@ -401,7 +399,7 @@ transitivity (\sum_(i <oo) (dRV_enum X i)%:E *
     1).
   apply: eq_eseriesr => i _; rewrite -integralM//; last 2 first.
     - by case: ifPn.
-    - split; first exact: measurable_fun_cst.
+    - split => //.
       rewrite (eq_integral (cst 1%E)); last by move=> x _; rewrite abse1.
       rewrite integral_cst//; last by case: ifPn.
       rewrite mul1e (@le_lt_trans _ _ 1%E) ?ltey//.
