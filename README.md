@@ -108,7 +108,7 @@ when one imports `numFieldNormedType.Exports`.
 
 [Detailed requirements and installation procedure](INSTALL.md)
 
-[Developping with nix](NIX.md)
+[Developping with nix](https://github.com/math-comp/math-comp/wiki/Using-nix)
 
 [Contributing](CONTRIBUTING.md)
 
