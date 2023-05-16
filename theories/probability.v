@@ -513,7 +513,7 @@ Proof.
 move=> e0 mf f0 f_nd; rewrite -(setTI [set _ | _]).
 apply: (le_trans (@le_integral_comp_abse d T R P setT measurableT (EFin \o X)
   eps (er_map f) _ _ _ _ e0)) => //=.
-- exact: measurable_fun_er_map.
+- exact: measurable_er_map.
 - by case => //= r _; exact: f0.
 - by move=> [x| |] [y| |] xP yP xy//=; rewrite ?leey ?leNye// lee_fin f_nd.
 - exact/EFin_measurable_fun.
@@ -535,7 +535,7 @@ have h (Y : {RV P >-> R}) :
     - move=> x y; rewrite !inE !mksetE !in_itv/= !andbT => x0 y0.
       by rewrite ler_sqr.
   apply: expectation_le => //.
-  - by apply: measurable_funT_comp => //; exact: measurable_funT_comp.
+    - by apply: measurableT_comp => //; exact: measurableT_comp.
   - by move=> x /=; apply: sqr_ge0.
   - by move=> x /=; apply: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.
