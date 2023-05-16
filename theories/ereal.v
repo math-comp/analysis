@@ -99,6 +99,16 @@ rewrite predeqE => t; split => //=; apply/eqP.
 by rewrite gt_eqF// (lt_le_trans _ (abse_ge0 t)).
 Qed.
 
+Lemma compreDr T (h : R -> \bar R) (f g : T -> R) :
+  {morph h : x y / (x + y)%R >-> (x + y)%E} ->
+  h \o (f \+ g)%R = ((h \o f) \+ (h \o g))%E.
+Proof. by move=> mh; apply/funext => t /=; rewrite mh. Qed.
+
+Lemma compreN T (h : R -> \bar R) (f : T -> R) :
+  {morph h : x / (- x)%R >-> (- x)%E} ->
+  h \o (\- f)%R = \- (h \o f)%E.
+Proof. by move=> mh; apply/funext => t /=; rewrite mh. Qed.
+
 Lemma compreBr T (h : R -> \bar R) (f g : T -> R) :
   {morph h : x y / (x - y)%R >-> (x - y)%E} ->
   h \o (f \- g)%R = ((h \o f) \- (h \o g))%E.

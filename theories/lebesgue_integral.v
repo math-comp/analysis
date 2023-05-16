@@ -2869,6 +2869,16 @@ by rewrite ge0_integralD //; [exact: lte_add_pinfty|
   exact: measurable_funT_comp|exact: measurable_funT_comp].
 Qed.
 
+Lemma integrable_sum (s : seq (T -> \bar R)) :
+  (forall h, h \in s -> mu_int h) -> mu_int (fun x => \sum_(h <- s) h x).
+Proof.
+elim: s => [_|h s ih hs].
+  by under eq_fun do rewrite big_nil; exact: integrable0.
+under eq_fun do rewrite big_cons; apply: integrableD => //.
+- by apply: hs; rewrite in_cons eqxx.
+- by apply: ih => k ks; apply: hs; rewrite in_cons ks orbT.
+Qed.
+
 Lemma integrableB f g : mu_int f -> mu_int g -> mu_int (f \- g).
 Proof. by move=> fi gi; exact/(integrableD fi)/integrableN. Qed.
 
