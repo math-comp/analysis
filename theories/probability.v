@@ -194,7 +194,7 @@ HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
 Canonical covariance_unlockable := Unlockable covariance.unlock.
 Arguments covariance {d T R} P _%R _%R.
 
-Section covariance.
+Section covariance_lemmas.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
@@ -370,7 +370,7 @@ move=> X1 X2 Y1 Y2 Z1 Z2 XY1 XZ1.
 by rewrite !(covarianceC X) covarianceBl 1?(mulrC _ X).
 Qed.
 
-End covariance.
+End covariance_lemmas.
 
 Section variance.
 Local Open Scope ereal_scope.
