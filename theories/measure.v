@@ -1002,10 +1002,10 @@ Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
         (T3 : measurableType d3).
 Implicit Type D E : set T1.
 
-Lemma measurable_fun_id D : measurable_fun D id.
+Lemma measurable_id D : measurable_fun D id.
 Proof. by move=> mD A mA; apply: measurableI. Qed.
 
-Lemma measurable_fun_comp F (f : T2 -> T3) E (g : T1 -> T2) :
+Lemma measurable_comp F (f : T2 -> T3) E (g : T1 -> T2) :
   measurable F -> g @` E `<=` F ->
   measurable_fun F f -> measurable_fun E g -> measurable_fun E (f \o g).
 Proof.
@@ -1017,9 +1017,9 @@ rewrite (_ : _ `&` _ = E `&` g @^-1` (F `&` f @^-1` A)); last first.
 by apply/mg => //; exact: mf.
 Qed.
 
-Lemma measurable_funT_comp (f : T2 -> T3) E (g : T1 -> T2) :
+Lemma measurableT_comp (f : T2 -> T3) E (g : T1 -> T2) :
   measurable_fun setT f -> measurable_fun E g -> measurable_fun E (f \o g).
-Proof. exact: measurable_fun_comp. Qed.
+Proof. exact: measurable_comp. Qed.
 
 Lemma eq_measurable_fun D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
@@ -1028,7 +1028,7 @@ by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
   [exact: mf|exact/esym/eq_preimage].
 Qed.
 
-Lemma measurable_fun_cst D (r : T2) : measurable_fun D (cst r : T1 -> _).
+Lemma measurable_cst D (r : T2) : measurable_fun D (cst r : T1 -> _).
 Proof.
 by move=> mD /= Y mY; rewrite preimage_cst; case: ifPn; rewrite ?setIT ?setI0.
 Qed.
@@ -1126,17 +1126,24 @@ have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
 Qed.
 
 End measurable_fun.
+#[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
+  solve [apply: measurable_cst] : core.
+#[global] Hint Extern 0 (measurable_fun _ (cst _)) =>
+  solve [apply: measurable_cst] : core.
+#[global] Hint Extern 0 (measurable_fun _ id) =>
+  solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
+Arguments measurable_fun_bool {d1 T1 D f} b.
 #[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
 Notation measurable_fun_ext := eq_measurable_fun.
-Arguments measurable_fun_bool {d1 T1 D f} b.
-
-#[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
-  solve [apply: measurable_fun_cst] : core.
-#[global] Hint Extern 0 (measurable_fun _ (cst _)) =>
-  solve [apply: measurable_fun_cst] : core.
-#[global] Hint Extern 0 (measurable_fun _ id) =>
-  solve [apply: measurable_fun_id] : core.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_id`")]
+Notation measurable_fun_id := measurable_id.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_cst`")]
+Notation measurable_fun_cst := measurable_cst.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_comp`")]
+Notation measurable_fun_comp := measurable_comp.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurableT_comp`")]
+Notation measurable_funT_comp := measurableT_comp.
 
 Section measurability.
 
@@ -4060,47 +4067,53 @@ apply: (@iff_trans _ (preimage_classes (fst \o h) (snd \o h) `<=` measurable)).
   by rewrite subUset; split=> [|] A [C mC <-]; [exact: mf1|exact: mf2].
 Qed.
 
-Lemma measurable_fun_pair (f : T -> T1) (g : T -> T2) :
+Lemma measurable_fun_prod (f : T -> T1) (g : T -> T2) :
   measurable_fun setT f -> measurable_fun setT g ->
   measurable_fun setT (fun x => (f x, g x)).
-Proof. by move=> mf mg; apply/prod_measurable_funP. Qed.
+Proof. by move=> mf mg; exact/prod_measurable_funP. Qed.
 
 End prod_measurable_fun.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_fun_prod`")]
+Notation measurable_fun_pair := measurable_fun_prod.
 
 Section prod_measurable_proj.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
 
-Lemma measurable_fun_fst : measurable_fun setT (@fst T1 T2).
+Lemma measurable_fst : measurable_fun [set: T1 * T2] fst.
 Proof.
 by have /prod_measurable_funP[] :=
-  @measurable_fun_id _ [the measurableType _ of (T1 * T2)%type] setT.
+  @measurable_id _ [the measurableType _ of (T1 * T2)%type] setT.
 Qed.
+#[local] Hint Resolve measurable_fst : core.
 
-Lemma measurable_fun_snd : measurable_fun setT (@snd T1 T2).
+Lemma measurable_snd : measurable_fun [set: T1 * T2] snd.
 Proof.
 by have /prod_measurable_funP[] :=
-  @measurable_fun_id _ [the measurableType _ of (T1 * T2)%type] setT.
+  @measurable_id _ [the measurableType _ of (T1 * T2)%type] setT.
 Qed.
+#[local] Hint Resolve measurable_snd : core.
 
-Lemma measurable_fun_swap : measurable_fun [set: T1 * T2] (@swap T1 T2).
-Proof.
-by apply/prod_measurable_funP => /=; split;
-  [exact: measurable_fun_snd|exact: measurable_fun_fst].
-Qed.
+Lemma measurable_swap : measurable_fun [set: _] (@swap T1 T2).
+Proof. exact: measurable_fun_prod. Qed.
 
 End prod_measurable_proj.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_fst`")]
+Notation measurable_fun_fst := measurable_fst.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_snd`")]
+Notation measurable_fun_snd := measurable_snd.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_swap`")]
+Notation measurable_fun_swap := measurable_swap.
+#[global] Hint Extern 0 (measurable_fun _ fst) =>
+  solve [apply: measurable_fst] : core.
+#[global] Hint Extern 0 (measurable_fun _ snd) =>
+  solve [apply: measurable_snd] : core.
 
 Lemma measurable_fun_if_pair d d' (X : measurableType d)
     (Y : measurableType d') (x y : X -> Y) :
   measurable_fun setT x -> measurable_fun setT y ->
   measurable_fun setT (fun tb => if tb.2 then x tb.1 else y tb.1).
 Proof.
-move=> mx my.
-have {}mx : measurable_fun [set: X * bool] (x \o fst).
-  by apply: measurable_funT_comp => //; exact: measurable_fun_fst.
-have {}my : measurable_fun [set: X * bool] (y \o fst).
-  by apply: measurable_funT_comp => //; exact: measurable_fun_fst.
-by apply: measurable_fun_ifT => //=; exact: measurable_fun_snd.
+by move=> mx my; apply: measurable_fun_ifT => //=; exact: measurableT_comp.
 Qed.
 
 Section partial_measurable_fun.
@@ -4108,24 +4121,22 @@ Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
   (T2 : measurableType d2).
 Variable f : T1 * T2 -> T.
 
-Lemma measurable_fun_prod1 x :
-  measurable_fun setT f -> measurable_fun setT (fun y => f (x, y)).
+Lemma measurable_pair1 (x : T1) : measurable_fun [set: T2] (pair x).
 Proof.
-move=> mf; pose pairx := fun y : T2 => (x, y).
-have m1pairx : measurable_fun setT (fst \o pairx) by exact/measurable_fun_cst.
-have m2pairx : measurable_fun setT (snd \o pairx) by exact/measurable_fun_id.
-have ? : measurable_fun setT pairx by exact/(proj2 (prod_measurable_funP _)).
-exact: (measurable_fun_comp _ _ mf).
+have m1pairx : measurable_fun [set: T2] (fst \o pair x) by exact/measurable_cst.
+have m2pairx : measurable_fun [set: T2] (snd \o pair x) by exact/measurable_id.
+exact/(prod_measurable_funP _).
 Qed.
 
-Lemma measurable_fun_prod2 y :
-  measurable_fun setT f -> measurable_fun setT (fun x => f (x, y)).
+Lemma measurable_pair2 (y : T2) : measurable_fun [set: T1] (pair^~ y).
 Proof.
-move=> mf; pose pairy := fun x : T1 => (x, y).
-have m1pairy : measurable_fun setT (fst \o pairy) by exact/measurable_fun_id.
-have m2pairy : measurable_fun setT (snd \o pairy) by exact/measurable_fun_cst.
-have : measurable_fun setT pairy by exact/(proj2 (prod_measurable_funP _)).
-exact: (measurable_fun_comp _ _ mf).
+have m1pairy : measurable_fun [set: T1] (fst \o pair^~ y) by exact/measurable_id.
+have m2pairy: measurable_fun [set: T1] (snd \o pair^~ y) by exact/measurable_cst.
+exact/(prod_measurable_funP _).
 Qed.
 
 End partial_measurable_fun.
+#[global] Hint Extern 0 (measurable_fun _ (pair _)) =>
+  solve [apply: measurable_pair1] : core.
+#[global] Hint Extern 0 (measurable_fun _ (pair^~ _)) =>
+  solve [apply: measurable_pair2] : core.
