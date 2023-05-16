@@ -555,8 +555,7 @@ Qed.
 Lemma differentiable_sum n (f : 'I_n -> V -> W) (x : V) :
   (forall i, differentiable (f i) x) -> differentiable (\sum_(i < n) f i) x.
 Proof.
-elim: n f => [f _| n IH f H]; first by rewrite big_ord0.
-rewrite big_ord_recr /=; apply/differentiableD; [apply/IH => ? |]; exact: H.
+by elim/big_ind : _ => // ? ? g h ?; apply: differentiableD; [exact:g|exact:h].
 Qed.
 
 Lemma diffN (f : V -> W) x :
@@ -1121,9 +1120,7 @@ Global Instance is_derive_sum n (h : 'I_n -> V -> W) (x v : V)
   (dh : 'I_n -> W) : (forall i, is_derive x v (h i) (dh i)) ->
   is_derive x v (\sum_(i < n) h i) (\sum_(i < n) dh i).
 Proof.
-elim: n h dh => [h dh dhx|h dh dhx n ihn].
-  by rewrite !big_ord0; exact: is_derive_cst.
-by rewrite !big_ord_recr; exact: is_deriveD.
+by elim/big_ind2 : _ => // [|] *; [exact: is_derive_cst|exact: is_deriveD].
 Qed.
 
 Lemma derivable_sum n (h : 'I_n -> V -> W) (x v : V) :

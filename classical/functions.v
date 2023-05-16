@@ -2662,6 +2662,10 @@ Lemma addrfctE (T : Type) (K : zmodType) (f g : T -> K) :
   f + g = (fun x => f x + g x).
 Proof. by []. Qed.
 
+Lemma sumrfctE (T : Type) (K : zmodType) (s : seq (T -> K)) :
+  \sum_(f <- s) f = (fun x => \sum_(f <- s) f x).
+Proof. by apply/funext => x;elim/big_ind2 : _ => // _ a _ b <- <-. Qed.
+
 Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
 
