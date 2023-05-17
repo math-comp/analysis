@@ -605,14 +605,12 @@ have le (u : R) : (0 <= u)%R ->
     - by rewrite ler_add2r -lee_fin EFinB finEK.
   apply: (le_trans (le_measure _ _ _ le)).
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
-    by apply: emeasurable_funB; [apply: (proj1 X1)|apply: measurable_fun_cst].
+    by apply: emeasurable_funB => //; exact: (proj1 X1).
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
     rewrite EFin_measurable_fun [X in measurable_fun _ X](_ : _ =
       (fun x => x ^+ 2) \o (fun x => Y x + u))%R//.
-    apply/measurable_funT_comp; first exact: measurable_fun_exprn.
-    apply/measurable_funD.
-    - by rewrite -EFin_measurable_fun; apply: (proj1 Y1).
-    - exact: measurable_fun_cst.
+    apply/measurableT_comp => //; apply/measurable_funD => //.
+    by rewrite -EFin_measurable_fun; apply: (proj1 Y1).
   set eps := ((lambda + u) ^ 2)%R.
   have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_paddr.
   rewrite (lee_pdivl_mulr _ _ peps) muleC.
@@ -620,9 +618,8 @@ have le (u : R) : (0 <= u)%R ->
     rewrite -[leRHS]gee0_abs ?lee_fin ?sqr_ge0 -?lee_fin => [|//].
     rewrite -[(_ ^+ 2)%R]/(((Y \+ cst u) ^+ 2) x)%R; over.
   rewrite -[X in X%:E * _]gtr0_norm => [|//].
-  apply: (le_trans (markov _ peps (@measurable_fun_normr _ _) _ _)) => //=.
-    move=> x y /[!inE]/= /[!interval.in_itv]/= /andP[xge0 _] /andP[yge0 _] xley.
-    by rewrite ler_normr ler_norml xley andbT (le_trans _ xge0) ?oppr_le0.
+  apply: (le_trans (markov _ peps _ _ _)) => //=.
+    by move=> x y /[!inE]/= /[!in_itv]/= /[!andbT] /ger0_norm-> /ger0_norm->.
   rewrite -/Y le_eqVlt; apply/orP; left; apply/eqP; congr expectation.
   by apply/funeqP => x /=; rewrite -expr2 normr_id ger0_norm ?sqr_ge0.
 pose u0 := (fine 'V_P[X] / lambda)%R.
