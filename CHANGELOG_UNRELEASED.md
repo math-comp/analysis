@@ -61,6 +61,8 @@
   + lemma `sumrfctE`
 - in `lebesgue_integral.v`:
   + lemma `integrable_sum`
+- in `probability.v`
+  + lemma `cantelli`
 
 - in `measure.v`:
   + lemmas `measurable_pair1`, `measurable_pair2`
