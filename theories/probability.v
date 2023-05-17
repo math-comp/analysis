@@ -499,7 +499,7 @@ Qed.
 End variance.
 Notation "'V_ P [ X ]" := (variance P X).
 
-Section markov_chebyshev.
+Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
@@ -543,7 +543,98 @@ have := h [the {mfun T >-> R} of (X \- cst (fine ('E_P[X])))%R].
 by move=> /le_trans; apply; rewrite /variance [in leRHS]unlock.
 Qed.
 
-End markov_chebyshev.
+Lemma cantelli (X : {RV P >-> R}) (lambda : R) :
+    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
+    (0 < lambda)%R ->
+  P [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
+  <= (fine 'V_P[X] / (fine 'V_P[X] + lambda^2))%:E.
+Proof.
+move=> X1 X2 lambda_gt0.
+have finEK : (fine 'E_P[X])%:E = 'E_P[X].
+  by rewrite fineK ?unlock; [|apply: integral_fune_fin_num X1].
+have finVK : (fine 'V_P[X])%:E = 'V_P[X] by rewrite fineK ?variance_fin_num.
+pose Y := (X \- cst (fine 'E_P[X]))%R.
+have Y1 : P.-integrable [set: T] (EFin \o Y).
+  rewrite compreBr => [|//]; apply: integrableB X1 _ => [//|].
+  exact: finite_measure_integrable_cst.
+have Y2 : P.-integrable [set: T] (EFin \o (Y ^+ 2)%R).
+  rewrite sqrrD/= compreDr => [|//].
+  apply: integrableD => [//||]; last first.
+    rewrite -[(_ ^+ 2)%R]/(cst ((- fine 'E_P[X]) ^+ 2)%R).
+    exact: finite_measure_integrable_cst.
+  rewrite compreDr => [|//]; apply: integrableD X2 _ => [//|].
+  rewrite [X in EFin \o X](_ : _ = (- fine 'E_P[X] * 2) \o* X)%R; last first.
+    by apply/funeqP => x /=; rewrite -mulr_natl mulrC mulrA.
+  by rewrite compre_scale => [|//]; apply: integrablerM X1.
+have EY : 'E_P[Y] = 0.
+  rewrite expectationB/=; [|exact: X1|exact: finite_measure_integrable_cst].
+  rewrite expectation_cst finEK subee//.
+  by rewrite unlock; apply: integral_fune_fin_num X1.
+have VY : 'V_P[Y] = 'V_P[X] by rewrite varianceB_cst_r.
+have le (u : R) : (0 <= u)%R ->
+    P [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
+    <= ((fine 'V_P[X] + u^2) / (lambda + u)^2)%:E.
+  move=> uge0; rewrite EFinM.
+  have YU1 : P.-integrable [set: T] (EFin \o (Y \+ cst u)%R).
+    rewrite compreDr => [|//]; apply: integrableD Y1 _ => [//|].
+    exact: finite_measure_integrable_cst.
+  have YU2 : P.-integrable [set: T] (EFin \o ((Y \+ cst u) ^+ 2)%R).
+    rewrite sqrrD/= compreDr => [|//].
+    apply: integrableD => [//||]; last first.
+      rewrite -[(_ ^+ 2)%R]/(cst (u ^+ 2))%R.
+      exact: finite_measure_integrable_cst.
+    rewrite compreDr => [|//]; apply: integrableD Y2 _ => [//|].
+    rewrite [X in EFin \o X](_ : _ = (2 * u) \o* Y)%R; last first.
+      by apply/funeqP => x /=; rewrite -mulr_natl mulrCA.
+    by rewrite compre_scale => [|//]; apply: integrablerM Y1.
+  have -> : (fine 'V_P[X] + u^2)%:E = 'E_P[(Y \+ cst u)^+2]%R.
+    rewrite -VY -[RHS](@subeK _ _ (('E_P[(Y \+ cst u)%R])^+2)); last first.
+      by rewrite fin_numX ?unlock ?integral_fune_fin_num.
+    rewrite -varianceE/= -/Y -?expe2; [|by []..].
+    rewrite expectationD/= ?EY ?add0e ?expectation_cst -?EFinM; last 2 first.
+    - rewrite compreBr => [|//]; apply: integrableB X1 _ => [//|].
+      exact: finite_measure_integrable_cst.
+    - exact: finite_measure_integrable_cst.
+    by rewrite (varianceD_cst_r _ Y1 Y2) EFinD fineK ?(variance_fin_num Y1 Y2).
+  have le : [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
+      `<=` [set x | ((lambda + u)^2)%:E <= ((Y x + u)^+2)%:E].
+    move=> x /= le; rewrite lee_fin; apply: ler_expn2r.
+    - exact: addr_ge0 (ltW lambda_gt0) _.
+    - apply/(addr_ge0 _ uge0)/(le_trans (ltW lambda_gt0) _).
+      by rewrite -lee_fin EFinB finEK.
+    - by rewrite ler_add2r -lee_fin EFinB finEK.
+  apply: (le_trans (le_measure _ _ _ le)).
+  - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
+    by apply: emeasurable_funB => //; exact: (proj1 X1).
+  - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
+    rewrite EFin_measurable_fun [X in measurable_fun _ X](_ : _ =
+      (fun x => x ^+ 2) \o (fun x => Y x + u))%R//.
+    apply/measurableT_comp => //; apply/measurable_funD => //.
+    by rewrite -EFin_measurable_fun; apply: (proj1 Y1).
+  set eps := ((lambda + u) ^ 2)%R.
+  have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_paddr.
+  rewrite (lee_pdivl_mulr _ _ peps) muleC.
+  under eq_set => x.
+    rewrite -[leRHS]gee0_abs ?lee_fin ?sqr_ge0 -?lee_fin => [|//].
+    rewrite -[(_ ^+ 2)%R]/(((Y \+ cst u) ^+ 2) x)%R; over.
+  rewrite -[X in X%:E * _]gtr0_norm => [|//].
+  apply: (le_trans (markov _ peps _ _ _)) => //=.
+    by move=> x y /[!inE]/= /[!in_itv]/= /[!andbT] /ger0_norm-> /ger0_norm->.
+  rewrite -/Y le_eqVlt; apply/orP; left; apply/eqP; congr expectation.
+  by apply/funeqP => x /=; rewrite -expr2 normr_id ger0_norm ?sqr_ge0.
+pose u0 := (fine 'V_P[X] / lambda)%R.
+have u0ge0 : (0 <= u0)%R.
+  by apply: divr_ge0 (ltW lambda_gt0); rewrite -lee_fin finVK variance_ge0.
+apply: le_trans (le _ u0ge0) _; rewrite lee_fin le_eqVlt; apply/orP; left.
+rewrite eqr_div; [|apply: lt0r_neq0..]; last 2 first.
+- by rewrite exprz_gt0 -1?[ltLHS]addr0 ?ltr_le_add.
+- by rewrite ltr_paddl ?fine_ge0 ?variance_ge0 ?exprz_gt0.
+apply/eqP; have -> : fine 'V_P[X] = (u0 * lambda)%R.
+  by rewrite /u0 -mulrA mulVr ?mulr1 ?unitfE ?gt_eqF.
+by rewrite -mulrDl -mulrDr (addrC u0) [in RHS](mulrAC u0) -exprnP expr2 !mulrA.
+Qed.
+
+End markov_chebyshev_cantelli.
 
 HB.mixin Record MeasurableFun_isDiscrete d (T : measurableType d) (R : realType)
     (X : T -> R) of @MeasurableFun d T R X := {
