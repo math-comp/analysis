@@ -852,41 +852,6 @@ Qed.
 
 End jordan_decomposition.
 
-Section PR_in_progress.
-
-Lemma set_eq_le d (rT : porderType d) T (f g : T -> rT) :
-  [set x | f x = g x] = [set x | (f x <= g x)%O] `&` [set x | (f x >= g x)%O].
-Proof. by apply/seteqP; split => [x/= ->//|x /andP]; rewrite -eq_le =>/eqP. Qed.
-
-Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-
-Lemma emeasurable_fun_lt (D : set T) (mD : measurable D) (f g : T -> \bar R) :
-  measurable_fun D f -> measurable_fun D g ->
-  measurable (D `&` [set x | f x < g x]).
-Proof.
-move=> mf mg; under eq_set do rewrite -sube_gt0.
-by apply: emeasurable_fun_o_infty => //; exact: emeasurable_funB.
-Qed.
-
-Lemma emeasurable_fun_le (D : set T) (mD : measurable D) (f g : T -> \bar R) :
-  measurable_fun D f -> measurable_fun D g ->
-  measurable (D `&` [set x | f x <= g x]).
-Proof.
-move=> mf mg; under eq_set do rewrite -sube_le0.
-by apply: emeasurable_fun_infty_c => //; exact: emeasurable_funB.
-Qed.
-
-Lemma emeasurable_fun_eq (D : set T) (mD : measurable D) (f g : T -> \bar R) :
-  measurable_fun D f -> measurable_fun D g ->
-  measurable (D `&` [set x | f x = g x]).
-Proof.
-move=> mf mg; rewrite set_eq_le setIIr.
-by apply: measurableI; apply: emeasurable_fun_le.
-Qed.
-
-End PR_in_progress.
-
 (* We put definitions and lemmas used only in the proof of the Radon-Nikodym
    theorem as Definition's and Lemma's in the following modules. See
    https://staff.aist.go.jp/reynald.affeldt/documents/measure-ppl2023.pdf
