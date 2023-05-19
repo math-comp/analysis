@@ -130,7 +130,7 @@ Proof. by rewrite unlock integral_indic// setIT. Qed.
 Lemma integrable_expectation (X : {RV P >-> R})
   (iX : P.-integrable [set: T] (EFin \o X)) : `| 'E_P[X] | < +oo.
 Proof.
-move: iX => [? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
+move: iX => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
 exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
@@ -605,12 +605,12 @@ have le (u : R) : (0 <= u)%R ->
     - by rewrite ler_add2r -lee_fin EFinB finEK.
   apply: (le_trans (le_measure _ _ _ le)).
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
-    by apply: emeasurable_funB => //; exact: (proj1 X1).
+    by apply: emeasurable_funB => //; exact: measurable_int X1.
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
     rewrite EFin_measurable_fun [X in measurable_fun _ X](_ : _ =
       (fun x => x ^+ 2) \o (fun x => Y x + u))%R//.
     apply/measurableT_comp => //; apply/measurable_funD => //.
-    by rewrite -EFin_measurable_fun; apply: (proj1 Y1).
+    by rewrite -EFin_measurable_fun; apply: measurable_int Y1.
   set eps := ((lambda + u) ^ 2)%R.
   have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_paddr.
   rewrite (lee_pdivl_mulr _ _ peps) muleC.
@@ -771,7 +771,7 @@ transitivity (\sum_(i <oo) (dRV_enum X i)%:E *
     1).
   apply: eq_eseriesr => i _; rewrite -integralM//; last 2 first.
     - by case: ifPn.
-    - split => //.
+    - apply/integrableP; split => //.
       rewrite (eq_integral (cst 1%E)); last by move=> x _; rewrite abse1.
       rewrite integral_cst//; last by case: ifPn.
       rewrite mul1e (@le_lt_trans _ _ 1%E) ?ltey//.
