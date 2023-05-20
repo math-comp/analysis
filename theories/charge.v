@@ -151,7 +151,7 @@ Qed.
 
 Lemma charge_partition nu S P N :
   measurable S -> measurable P -> measurable N ->
-  P `|` N = setT -> P `&` N = set0 -> nu S = nu (S `&` P) + nu (S `&` N).
+  P `|` N = [set: T] -> P `&` N = set0 -> nu S = nu (S `&` P) + nu (S `&` N).
 Proof.
 move=> mS mP mN PNT PN0; rewrite -{1}(setIT S) -PNT setIUr chargeU//.
 - exact: measurableI.
@@ -601,7 +601,7 @@ End hahn_decomposition_lemma.
 
 Definition hahn_decomposition d (T : measurableType d) (R : realType)
     (nu : {charge set T -> \bar R}) P N :=
-  [/\ positive_set nu P, negative_set nu N, P `|` N = setT & P `&` N = set0].
+  [/\ positive_set nu P, negative_set nu N, P `|` N = [set: T] & P `&` N = set0].
 
 Section hahn_decomposition_theorem.
 Context d (T : measurableType d) (R : realType).
@@ -768,15 +768,15 @@ Qed.
 End hahn_decomposition_theorem.
 
 Section jordan_decomposition.
-Context d (X : measurableType d) (R : realType).
-Variable nu : {charge set X -> \bar R}.
-Variables (P N : set X) (nuPN : hahn_decomposition nu P N).
+Context d (T : measurableType d) (R : realType).
+Variable nu : {charge set T -> \bar R}.
+Variables (P N : set T) (nuPN : hahn_decomposition nu P N).
 
 Let mP : measurable P. Proof. by have [[mP _] _ _ _] := nuPN. Qed.
 
 Let mN : measurable N. Proof. by have [_ [mN _] _ _] := nuPN. Qed.
 
-Let cjordan_pos : {charge set X -> \bar R} :=
+Let cjordan_pos : {charge set T -> \bar R} :=
   [the charge _ _ of crestr0 nu mP].
 
 Let positive_set_cjordan_pos E : 0 <= cjordan_pos E.
@@ -796,7 +796,7 @@ Proof. by move=> U mU; rewrite fin_num_measure. Qed.
 HB.instance Definition _ := @Measure_isFinite.Build _ _ _
   jordan_pos finite_jordan_pos.
 
-Let cjordan_neg : {charge set X -> \bar R} :=
+Let cjordan_neg : {charge set T -> \bar R} :=
   [the charge _ _ of cscale (-1) [the charge _ _ of crestr0 nu mN]].
 
 Let positive_set_cjordan_neg E : 0 <= cjordan_neg E.
@@ -827,7 +827,7 @@ case: nuPN => _ _ <- PN0; rewrite setIUr chargeU//.
 - by rewrite setIACA PN0 setI0.
 Qed.
 
-Lemma jordan_pos_dominates (mu : {measure set X -> \bar R}) :
+Lemma jordan_pos_dominates (mu : {measure set T -> \bar R}) :
   nu `<< mu -> jordan_pos `<< mu.
 Proof.
 move=> nu_mu A mA muA0; have := nu_mu A mA muA0.
@@ -838,7 +838,7 @@ suff : mu (A `&` P) = 0 by move/(nu_mu _ mAP); rewrite /crestr => ->.
 by apply/eqP; rewrite eq_le measure_ge0// andbT -muA0 le_measure// inE.
 Qed.
 
-Lemma jordan_neg_dominates (mu : {measure set X -> \bar R}) :
+Lemma jordan_neg_dominates (mu : {measure set T -> \bar R}) :
   nu `<< mu -> jordan_neg `<< mu.
 Proof.
 move=> nu_mu A mA muA0; have := nu_mu A mA muA0.
@@ -858,11 +858,11 @@ End jordan_decomposition.
    for an overview. *)
 Module approxRN.
 Section approxRN.
-Context d (X : measurableType d) (R : realType).
-Variables mu nu : {measure set X -> \bar R}.
+Context d (T : measurableType d) (R : realType).
+Variables mu nu : {measure set T -> \bar R}.
 
-Definition approxRN := [set g : X -> \bar R | [/\
-  forall x, 0 <= g x, mu.-integrable setT g &
+Definition approxRN := [set g : T -> \bar R | [/\
+  forall x, 0 <= g x, mu.-integrable [set: T] g &
   forall E, measurable E -> \int[mu]_(x in E) g x <= nu E] ].
 
 Let approxRN_neq0 : approxRN !=set0.
@@ -887,9 +887,9 @@ End approxRN.
 
 Module approxRN_seq.
 Section approxRN_seq.
-Context d (X : measurableType d) (R : realType).
-Variable mu : {measure set X -> \bar R}.
-Variable nu : {finite_measure set X -> \bar R}.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+Variable nu : {finite_measure set T -> \bar R}.
 
 Import approxRN.
 
@@ -916,11 +916,11 @@ rewrite ge0_fin_numE//; first exact: sup_int_approxRN_lty.
 exact: sup_int_approxRN_ge0.
 Qed.
 
-Lemma approxRN_seq_ex : { g : (X -> \bar R)^nat |
+Lemma approxRN_seq_ex : { g : (T -> \bar R)^nat |
   forall k, g k \in approxRN /\ \int[mu]_x g k x > M - k.+1%:R^-1%:E }.
 Proof.
 pose P m g := g \in approxRN /\ M - m.+1%:R^-1%:E < \int[mu]_x g x.
-suff : { g : (X -> \bar R) ^nat & forall m, P m (g m)} by case => g ?; exists g.
+suff : { g : (T -> \bar R) ^nat & forall m, P m (g m)} by case => g ?; exists g.
 apply: (@choice _ _ P) => m.
 rewrite /P.
 have /(@ub_ereal_sup_adherent _ int_approxRN) : (0 < m.+1%:R^-1 :> R)%R.
@@ -929,7 +929,7 @@ move/(_ sup_int_approxRN_fin_num) => [_ [h Gh <-]].
 by exists h; rewrite inE; split => //; rewrite -/M in q.
 Qed.
 
-Definition approxRN_seq : (X -> \bar R)^nat := sval approxRN_seq_ex.
+Definition approxRN_seq : (T -> \bar R)^nat := sval approxRN_seq_ex.
 
 Let g_ := approxRN_seq.
 
@@ -947,7 +947,7 @@ Definition max_approxRN_seq n x := \big[maxe/-oo]_(j < n.+1) g_ j x.
 
 Let F_ := max_approxRN_seq.
 
-Lemma measurable_max_approxRN_seq n : measurable_fun setT (F_ n).
+Lemma measurable_max_approxRN_seq n : measurable_fun [set: T] (F_ n).
 Proof.
 elim: n => [|n ih].
   rewrite /F_ /max_approxRN_seq.
@@ -996,7 +996,7 @@ Lemma is_max_approxRNE m j : E m j = [set x| F_ m x = g_ j x] `&`
     [set x |forall k, (k < j)%nat -> g_ k x < g_ j x].
 Proof. by apply/seteqP; split. Qed.
 
-Lemma trivIset_is_max_approxRN n : trivIset setT (E n).
+Lemma trivIset_is_max_approxRN n : trivIset [set: nat] (E n).
 Proof.
 apply/trivIsetP => /= i j _ _ ij.
 apply/seteqP; split => // x []; rewrite /E/= => -[+ + [+ +]].
@@ -1007,7 +1007,7 @@ wlog : i j ij / (i < j)%N.
 by move=> {}ij Fmgi h Fmgj  => /(_ _ ij); rewrite -Fmgi -Fmgj ltxx.
 Qed.
 
-Lemma bigsetU_is_max_approxRN m : \big[setU/set0]_(j < m.+1) E m j = [set: X].
+Lemma bigsetU_is_max_approxRN m : \big[setU/set0]_(j < m.+1) E m j = [set: T].
 Proof.
 apply/seteqP; split => // x _; rewrite -bigcup_mkord.
 pose j := [arg max_(j > @ord0 m) g_ j x]%O.
@@ -1048,8 +1048,8 @@ End approxRN_seq.
 
 Module lim_max_approxRN_seq.
 Section lim_max_approxRN_seq.
-Context d (X : measurableType d) (R : realType).
-Variables mu nu : {finite_measure set X -> \bar R}.
+Context d (T : measurableType d) (R : realType).
+Variables mu nu : {finite_measure set T -> \bar R}.
 
 Import approxRN.
 
@@ -1063,7 +1063,7 @@ Let F := max_approxRN_seq mu nu.
 
 Definition fRN := fun x => lim (F ^~ x).
 
-Lemma measurable_fun_fRN : measurable_fun setT fRN.
+Lemma measurable_fun_fRN : measurable_fun [set: T] fRN.
 Proof.
 rewrite (_ : fRN = fun x => lim_esup (F ^~ x)).
   by apply: measurable_fun_lim_esup => // n; exact: measurable_max_approxRN_seq.
@@ -1318,8 +1318,8 @@ End lim_max_approxRN_seq.
 End lim_max_approxRN_seq.
 
 Section radon_nikodym_finite.
-Context d (X : measurableType d) (R : realType).
-Variables mu nu : {finite_measure set X -> \bar R}.
+Context d (T : measurableType d) (R : realType).
+Variables mu nu : {finite_measure set T -> \bar R}.
 
 Import approxRN.
 
@@ -1332,8 +1332,8 @@ Let f := fRN mu nu.
 Let mf := measurable_fun_fRN.
 Let f_ge0 := fRN_ge0.
 
-Lemma radon_nikodym_finite : nu `<< mu -> exists f : X -> \bar R,
-  [/\ forall x, f x >= 0, mu.-integrable setT f &
+Lemma radon_nikodym_finite : nu `<< mu -> exists f : T -> \bar R,
+  [/\ forall x, f x >= 0, mu.-integrable [set: T] f &
       forall E, measurable E -> nu E = \int[mu]_(x in E) f x].
 Proof.
 move=> nu_mu; exists f; split.
@@ -1341,8 +1341,8 @@ move=> nu_mu; exists f; split.
   - by apply/integrableP; split; [exact: mf|exact: int_fRN_lty].
 move=> // A mA.
 apply/eqP; rewrite eq_le int_fRN_ub// andbT leNgt; apply/negP => abs.
-pose sigma : {charge set X -> \bar R} :=
-  [the {charge set X -> \bar R} of sigmaRN mA abs].
+pose sigma : {charge set T -> \bar R} :=
+  [the {charge set T -> \bar R} of sigmaRN mA abs].
 have [P [N [[mP posP] [mN negN] PNX PN0]]] := Hahn_decomposition sigma.
 pose AP := A `&` P.
 have mAP : measurable AP by exact: measurableI.
@@ -1423,13 +1423,13 @@ Qed.
 End radon_nikodym_finite.
 
 Section radon_nikodym.
-Context d (X : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType).
 
 Let radon_nikodym_sigma_finite
-    (mu : {sigma_finite_measure set X -> \bar R})
-    (nu : {finite_measure set X -> \bar R}) :
+    (mu : {sigma_finite_measure set T -> \bar R})
+    (nu : {finite_measure set T -> \bar R}) :
   nu `<< mu ->
-  exists2 f : X -> \bar R, mu.-integrable setT f &
+  exists2 f : T -> \bar R, mu.-integrable [set: T] f &
     forall E, E \in measurable -> nu E = integral mu E f.
 Proof.
 move=> nu_mu.
@@ -1442,10 +1442,10 @@ have Efin k : mu (E k) < +oo.
   by rewrite (le_lt_trans _ (Ffin k))// le_measure ?inE//; exact: subDsetl.
 have bigcupE : \bigcup_i E i = setT by rewrite TF [RHS]seqDU_bigcup_eq.
 have tE := @trivIset_seqDU _ F.
-pose mu_ j : {finite_measure set X -> \bar R} :=
+pose mu_ j : {finite_measure set T -> \bar R} :=
   [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (Efin j)].
 have H1 i : nu (E i) < +oo by rewrite ltey_eq fin_num_measure.
-pose nu_ j : {finite_measure set X -> \bar R} :=
+pose nu_ j : {finite_measure set T -> \bar R} :=
   [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (H1 j)].
 have nu_mu_ k : nu_ k `<< mu_ k.
   by move=> S mS mu_kS0; apply: nu_mu => //; exact: measurableI.
@@ -1457,9 +1457,9 @@ have mf_ k : measurable_fun setT (f_ k).
   apply: measurable_fun_if => //.
   - by apply: (measurable_fun_bool true); rewrite preimage_mem_true.
   - rewrite preimage_mem_true.
-    by apply: measurable_funTS => //; exact/(measurable_int (integrable_g k)).
+    by apply: measurable_funTS => //; have /integrableP[] := integrable_g k.
 have int_f_T k : integrable mu setT (f_ k).
-  apply/integrableP; split=> //.
+  apply/integrableP; split => //.
   under eq_integral do rewrite gee0_abs//.
   rewrite -(setUv (E k)) integral_setU //; last 3 first.
     - exact: measurableC.
@@ -1517,9 +1517,9 @@ rewrite -measure_bigcup//.
 Qed.
 
 Theorem Radon_Nikodym
-  (mu : {sigma_finite_measure set X -> \bar R}) (nu : {charge set X -> \bar R}) :
+  (mu : {sigma_finite_measure set T -> \bar R}) (nu : {charge set T -> \bar R}) :
   nu `<< mu ->
-  exists2 f : X -> \bar R, mu.-integrable setT f &
+  exists2 f : T -> \bar R, mu.-integrable [set: T] f &
     forall E, measurable E -> nu E = \int[mu]_(x in E) f x.
 Proof.
 move=> nu_mu; have [P [N nuPN]] := Hahn_decomposition nu.
