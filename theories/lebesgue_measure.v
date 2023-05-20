@@ -388,17 +388,19 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 
-Definition lebesgue_measure := Hahn_ext
+Definition lebesgue_measure := measure_extension
   [the content _ _ of hlength : set ocitv_type -> _].
 
 Let lebesgue_measure0 : lebesgue_measure set0 = 0%E.
 Proof. by []. Qed.
 
 Let lebesgue_measure_ge0 : forall x, (0 <= lebesgue_measure x)%E.
-Proof. exact: measure.Hahn_ext_ge0. Qed.
+Proof. exact: measure.measure_extension_ge0. Qed.
 
 Let lebesgue_measure_semi_sigma_additive : semi_sigma_additive lebesgue_measure.
-Proof. exact/measure.Hahn_ext_sigma_additive/hlength_sigma_sub_additive. Qed.
+Proof.
+exact/measure.measure_extension_semi_sigma_additive/hlength_sigma_sub_additive.
+Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ lebesgue_measure
   lebesgue_measure0 lebesgue_measure_ge0 lebesgue_measure_semi_sigma_additive.
@@ -418,7 +420,7 @@ Lemma lebesgue_measure_unique (mu : {measure set gitvs -> \bar R}) :
   (forall X, ocitv X -> hlength X = mu X) ->
   forall X, measurable X -> lebesgue_measure X = mu X.
 Proof.
-move=> muE X mX; apply: Hahn_ext_unique => //=.
+move=> muE X mX; apply: measure_extension_unique => //=.
 - exact: hlength_sigma_sub_additive.
 - exact: hlength_sigma_finite.
 Qed.
@@ -868,7 +870,7 @@ Variable R : realType.
 Let lebesgue_measure_itvoc (a b : R) :
   (lebesgue_measure (`]a, b] : set R) = hlength `]a, b])%classic.
 Proof.
-rewrite /lebesgue_measure/= /Hahn_ext measurable_mu_extE//; last first.
+rewrite /lebesgue_measure/= /measure_extension measurable_mu_extE//; last first.
   by exists (a, b).
 exact: hlength_sigma_sub_additive.
 Qed.

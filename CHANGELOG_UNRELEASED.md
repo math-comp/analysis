@@ -119,6 +119,14 @@
   + `measurable_fun_pair` -> `measurable_fun_prod`
 - in `lebesgue_integral.v`:
   + `measurable_fun_indic` -> `measurable_indic`
+- in `measure.v`:
+  + `Hahn_ext` -> `measure_extension`
+  + `Hahn_ext_ge0` -> `measure_extension_ge0`
+  + `Hahn_ext_sigma_additive` -> `measure_extension_semi_sigma_additive`
+  + `Hahn_ext_unique` -> `measure_extension_unique`
+  + `RingOfSets_from_semiRingOfSets` -> `SemiRingOfSets_isRingOfSets`
+  + `AlgebraOfSets_from_RingOfSets` -> `RingOfSets_isAlgebraOfSets`
+  + `Measurable_from_algebraOfSets` -> `AlgebraOfSets_isMeasurable`
 
 ### Generalized
 
