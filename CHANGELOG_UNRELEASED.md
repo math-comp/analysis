@@ -73,12 +73,16 @@
 - in `measure.v`:
   + lemmas `measurable_pair1`, `measurable_pair2`
 
+- in `lebesgue_integral.v`:
+  + lemmas `integrableP`, `measurable_int`
+
 ### Changed
 
 - in `lebesgue_measure.v`
   + `measurable_funrM`, `measurable_funN`, `measurable_fun_exprn`
 - in `lebesgue_integral.v`:
   + lemma `xsection_ndseq_closed` generalized from a measure to a family of measures
+  + locked `integrable` and put it in bool rather than Prop
 - in `probability.v`
   + `variance` is now defined based on `covariance` 
 
