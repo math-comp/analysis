@@ -1102,8 +1102,7 @@ case: a => [a r _|[_|//]].
 by rewrite -setCitvr; apply: measurableC; apply: measurable_itv_bnd_infty.
 Qed.
 
-Lemma measurableE :
-  (R.-ocitv.-measurable).-sigma.-measurable = G.-sigma.-measurable.
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
 Proof.
 rewrite eqEsubset; split => A.
   apply: smallest_sub; first exact: smallest_sigma_algebra.
@@ -1140,8 +1139,7 @@ case: a => [a r _|[//|_]].
 by rewrite -setCitvl; apply: measurableC; apply: measurable_itv_bnd_infty.
 Qed.
 
-Lemma measurableE :
-  (R.-ocitv.-measurable).-sigma.-measurable = G.-sigma.-measurable.
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
 Proof.
 rewrite eqEsubset; split => A.
   apply: smallest_sub; first exact: smallest_sigma_algebra.
@@ -1177,8 +1175,7 @@ case: a => [a r _|[_|//]].
 by rewrite -setCitvr; apply: measurableC; apply: measurable_itv_bnd_infty.
 Qed.
 
-Lemma measurableE :
-  (R.-ocitv.-measurable).-sigma.-measurable = G.-sigma.-measurable.
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
 Proof.
 rewrite eqEsubset; split => A.
   apply: smallest_sub; first exact: smallest_sigma_algebra.
@@ -1228,8 +1225,7 @@ move: a b => [] []; rewrite -[X in measurable X]setCK setCitv;
     exact: measurable_itv_infty_bnd|exact: measurable_itv_bnd_infty].
 Qed.
 
-Lemma measurableE :
-  (R.-ocitv.-measurable).-sigma.-measurable = G.-sigma.-measurable.
+Lemma measurableE : (@ocitv R).-sigma.-measurable = G.-sigma.-measurable.
 Proof.
 rewrite eqEsubset; split => A.
   apply: smallest_sub; first exact: smallest_sigma_algebra.
@@ -1351,7 +1347,7 @@ rewrite eset1y; apply: bigcapT_measurable => i.
 by apply: sub_sigma_algebra; exists i%:R.
 Qed.
 
-Lemma measurableE : emeasurable (R.-ocitv.-measurable) = G.-sigma.-measurable.
+Lemma measurableE : emeasurable (@ocitv R) = G.-sigma.-measurable.
 Proof.
 apply/seteqP; split; last first.
   apply: smallest_sub.
@@ -1404,7 +1400,7 @@ apply: bigcap_measurable => j _; rewrite -setCitvr; apply: measurableC.
 by apply: sub_sigma_algebra; exists (i%:R + j.+1%:R^-1)%R.
 Qed.
 
-Lemma measurableE : emeasurable (R.-ocitv.-measurable) = G.-sigma.-measurable.
+Lemma measurableE : emeasurable (@ocitv R) = G.-sigma.-measurable.
 Proof.
 apply/seteqP; split; last first.
   apply: smallest_sub.
@@ -1440,7 +1436,7 @@ Variable R : realType.
 
 Definition G := [set A : set \bar R | exists r, A = `]-oo, r%:E[%classic].
 
-Lemma measurableE : emeasurable (R.-ocitv.-measurable) = G.-sigma.-measurable.
+Lemma measurableE : emeasurable (@ocitv R) = G.-sigma.-measurable.
 Proof.
 rewrite ErealGenCInfty.measurableE eqEsubset; split => A.
   apply: smallest_sub; first exact: smallest_sigma_algebra.
