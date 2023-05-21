@@ -1348,7 +1348,7 @@ pose AP := A `&` P.
 have mAP : measurable AP by exact: measurableI.
 have muAP_gt0 : 0 < mu AP.
   rewrite lt_neqAle measure_ge0// andbT eq_sym.
-  apply/eqP/(contra_not (nu_mu _ mAP))/eqP; rewrite gt_eqF //.
+  apply/eqP/(@contra_not _ _ (nu_mu _ mAP))/eqP; rewrite gt_eqF //.
   rewrite (@lt_le_trans _ _ (sigma AP))//.
     rewrite (@lt_le_trans _ _ (sigma A))//; last first.
       rewrite (charge_partition _ _ mP mN)// gee_addl//.
@@ -1363,13 +1363,11 @@ have mh : measurable_fun setT h.
   - by apply: measurable_funTS; apply: emeasurable_funD => //; exact: mf.
   - by apply: measurable_funTS; exact: mf.
 have hge0 x : 0 <= h x.
-  rewrite /h; case: ifPn; last by move=> ?; exact: f_ge0.
-  by move=> _; rewrite adde_ge0//; exact: f_ge0.
+  by rewrite /h; case: ifPn => [_|?]; [rewrite adde_ge0// f_ge0|exact: f_ge0].
 have hnuP S : measurable S -> S `<=` AP -> \int[mu]_(x in S) h x <= nu S.
   move=> mS SAP.
   have : 0 <= sigma S.
-    apply: posP => //.
-    by apply: (subset_trans SAP); exact: subIsetr.
+    by apply: posP => //; apply: (subset_trans SAP); exact: subIsetr.
   rewrite sube_ge0; last by rewrite fin_num_measure// orbT.
   apply: le_trans; rewrite le_eqVlt; apply/orP; left; apply/eqP.
   rewrite -{1}(setIid S) integral_mkcondr; apply/eq_integral => x /[!inE] Sx.
