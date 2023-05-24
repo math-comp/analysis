@@ -2445,7 +2445,7 @@ rewrite -measure_fin_bigcup//=.
 - by move=> X /= XD; apply: sub_gen_smallest; apply: mfD; rewrite inE.
 Unshelve. all: by end_near. Qed.
 
-Lemma ring_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive Rmu.
+Lemma ring_semi_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive Rmu.
 Proof.
 move=> mu_sub; apply: content_ring_sigma_additive.
 by apply: ring_sigma_sub_additive.
@@ -2547,7 +2547,7 @@ Local Notation Rmu := (SetRing.measure mu).
 Import SetRing.
 
 Let ring_sigma_content : semi_sigma_additive Rmu.
-Proof. exact/ring_sigma_additive/measure_sigma_sub_additive. Qed.
+Proof. exact/ring_semi_sigma_additive/measure_sigma_sub_additive. Qed.
 
 HB.instance Definition _ := isMeasure0.Build _ _ _ Rmu
   ring_sigma_content.

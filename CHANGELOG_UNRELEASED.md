@@ -127,6 +127,7 @@
   + `RingOfSets_from_semiRingOfSets` -> `SemiRingOfSets_isRingOfSets`
   + `AlgebraOfSets_from_RingOfSets` -> `RingOfSets_isAlgebraOfSets`
   + `Measurable_from_algebraOfSets` -> `AlgebraOfSets_isMeasurable`
+  + `ring_sigma_additive` -> `ring_semi_sigma_additive`
 
 ### Generalized
 
