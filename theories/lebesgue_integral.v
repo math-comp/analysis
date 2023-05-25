@@ -3106,7 +3106,7 @@ have [r0|r0|->] := ltgtP r 0%R; last first.
   rewrite (ge0_integralM_EFin _ _ _ _ (ltW r0)) //; last first.
     exact: measurable_funeneg.
   rewrite -muleBr 1?[in RHS]integralE//.
-  by apply: integrable_add_def; case: intf.
+  exact: integrable_add_def.
 - rewrite [in LHS]integralE// lt0_funeposM// lt0_funenegM//.
   rewrite ge0_integralM_EFin //; last 2 first.
     + exact: measurable_funeneg.
@@ -3115,7 +3115,7 @@ have [r0|r0|->] := ltgtP r 0%R; last first.
     + exact: measurable_funepos.
     + by rewrite -ler_oppr oppr0 ltW.
   rewrite -mulNe -EFinN opprK addeC EFinN mulNe -muleBr //; last first.
-    by apply: integrable_add_def; case: intf.
+    exact: integrable_add_def.
   by rewrite [in RHS]integralE.
 Qed.
 
@@ -3969,7 +3969,7 @@ have h n : `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |
 suff: (fun n => `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |) --> 0.
    move/cvg_abse0P/cvge_sub0; apply.
    rewrite fin_numElt (_ : -oo = - +oo)// -lte_absl.
-   case: dominated_integrable => /integrableP[?]; apply: le_lt_trans.
+   move: dominated_integrable => /integrableP[?]; apply: le_lt_trans.
    by apply: (le_trans _ (@le_abse_integral _ _ _ mu D f mD _)).
 apply: (@squeeze_cvge _ _ _ _ (cst 0) _ (fun n => \int[mu]_(x in D) g_ n x)).
 - by apply: nearW => n; rewrite abse_ge0//=; exact: h.
