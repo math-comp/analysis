@@ -69,8 +69,11 @@ From HB Require Import structures.
 (*                            T is expected to be a semiring of sets and R a  *)
 (*                            numFieldType.                                   *)
 (*                            The HB class is Measure.                        *)
-(*                isMeasure0 == mixin that extends a content to a measure     *)
-(*                            with the proof that it is semi_sigma_additive   *)
+(* Content_SubSigmaAdditive_isMeasure ==                                      *)
+(*                      mixin that extends a content to a measure with the    *)
+(*                      proof that it is semi_sigma_additive                  *)
+(* Content_isMeasure == factory that extends a content to a measure with      *)
+(*                      the proof that it is sub_sigma_additive               *)
 (*                 isMeasure == factory corresponding to the "textbook        *)
 (*                            definition" of measures                         *)
 (*           sfinite_measure == predicate for s-finite measure functions      *)
@@ -1506,14 +1509,14 @@ End content_on_ring_of_sets.
 #[global]
 Hint Resolve measureU measure_bigsetU : core.
 
-HB.mixin Record isMeasure0 d (T : semiRingOfSetsType d) (R : numFieldType)
-    mu of isContent d T R mu := {
+HB.mixin Record Content_isMeasure d (T : semiRingOfSetsType d)
+    (R : numFieldType) (mu : set T -> \bar R) of Content d mu := {
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=measure)]
 HB.structure Definition Measure d (T : semiRingOfSetsType d)
     (R : numFieldType) :=
-  {mu of isMeasure0 d T R mu & Content d mu}.
+  {mu of Content_isMeasure d T R mu & Content d mu}.
 
 Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure T R)
   (at level 36, T, R at next level,
@@ -1549,7 +1552,8 @@ Qed.
 
 HB.instance Definition _ := isContent.Build d T R mu
   measure_ge0 semi_additive_mu.
-HB.instance Definition _ := isMeasure0.Build d T R mu measure_semi_sigma_additive.
+HB.instance Definition _ := Content_isMeasure.Build d T R mu
+  measure_semi_sigma_additive.
 HB.end.
 
 Lemma eq_measure d (T : measurableType d) (R : realFieldType)
@@ -2109,6 +2113,9 @@ rewrite -bigcup2inE; apply: mdU => //; last by move=> [|[]]// _; apply: mdDI.
 by move=> [|[]]// [|[]]//= _ _ []; rewrite setDE ?setIA => X [] []//.
 Qed.
 
+Lemma measurable_subring : (d.-measurable : set (set T)) `<=` d.-ring.-measurable.
+Proof. by rewrite /measurable => X Xmeas /= M /= [_]; apply. Qed.
+
 Lemma ring_finite_set (A : set rT) : measurable A -> exists B : set (set T),
   [/\ finite_set B,
       (forall X, B X -> X !=set0),
@@ -2451,7 +2458,27 @@ move=> mu_sub; apply: content_ring_sigma_additive.
 by apply: ring_sigma_sub_additive.
 Qed.
 
+Lemma semiring_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive mu.
+Proof.
+move=> /ring_semi_sigma_additive Rmu_sigmadd F Fmeas Ftriv cupFmeas.
+have Fringmeas i : d.-ring.-measurable (F i) by apply: measurable_subring.
+have := Rmu_sigmadd F Fringmeas Ftriv (measurable_subring cupFmeas).
+rewrite SetRing.RmuE//.
+by under eq_fun do under eq_bigr do rewrite SetRing.RmuE//=.
+Qed.
+
 End ring_sigma_sub_additive_content.
+
+#[key="mu"]
+HB.factory Record Content_SubSigmaAdditive_isMeasure d
+    (R : realType) (T : semiRingOfSetsType d) (mu : set T -> \bar R) of Content d mu := {
+  measure_sigma_sub_additive : sigma_sub_additive mu }.
+
+HB.builders Context d (R : realType) (T : semiRingOfSetsType d)
+  (mu : set T -> \bar R) of Content_SubSigmaAdditive_isMeasure d R T mu.
+  HB.instance Definition _ := Content_isMeasure.Build d T R mu
+    (semiring_sigma_additive (measure_sigma_sub_additive)).
+HB.end.
 
 Section more_premeasure_ring_lemmas.
 Context d (R : realType) (T : semiRingOfSetsType d).
@@ -2549,7 +2576,7 @@ Import SetRing.
 Let ring_sigma_content : semi_sigma_additive Rmu.
 Proof. exact/ring_semi_sigma_additive/measure_sigma_sub_additive. Qed.
 
-HB.instance Definition _ := isMeasure0.Build _ _ _ Rmu
+HB.instance Definition _ := Content_isMeasure.Build _ _ _ Rmu
   ring_sigma_content.
 
 End ring_sigma_content.
@@ -3735,11 +3762,10 @@ End measure_unique.
 Arguments measure_unique {d R T} G g.
 
 Lemma measurable_mu_extE d (R : realType) (T : semiRingOfSetsType d)
-    (mu : {content set T -> \bar R}) X :
-  sigma_sub_additive mu ->
+    (mu : {measure set T -> \bar R}) X :
   measurable X -> mu^* X = mu X.
 Proof.
-move=> muS mX; apply/eqP; rewrite eq_le; apply/andP; split.
+move=> mX; apply/eqP; rewrite eq_le; apply/andP; split.
   apply: ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
     by split=> [[]// _|t Xt]; exists 0%N.
   apply/cvg_lim => //; rewrite -cvg_shiftS.
@@ -3750,7 +3776,7 @@ have XUA : X = \bigcup_n (X `&` A n).
   rewrite predeqE => t; split => [Xt|[i _ []//]].
   by have [i _ Ait] := XA _ Xt; exists i.
 apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))).
-  by rewrite muS//= -?XUA => // i; exact: measurableI.
+  by rewrite measure_sigma_sub_additive//= -?XUA => // i; apply: measurableI.
 apply: lee_lim; [exact: is_cvg_nneseries|exact: is_cvg_nneseries|].
 by apply: nearW => n; apply: lee_sum => i  _; exact: measureIr.
 Qed.
@@ -3787,18 +3813,13 @@ Qed.
 End Rmu_ext.
 
 Lemma measurable_Rmu_extE d (R : realType) (T : semiRingOfSetsType d)
-    (mu : {content set T -> \bar R}) X :
-  sigma_sub_additive mu ->
+    (mu : {measure set T -> \bar R}) X :
   d.-ring.-measurable X -> mu^* X = SetRing.measure mu X.
-Proof.
-move=> mu_sub Xm/=; rewrite -Rmu_ext/= measurable_mu_extE//.
-exact: ring_sigma_sub_additive.
-Qed.
+Proof. by move=> Xm/=; rewrite -Rmu_ext/= measurable_mu_extE. Qed.
 
 Section measure_extension.
 Context d (T : semiRingOfSetsType d) (R : realType).
-Variable mu : {content set T -> \bar R}.
-Hypothesis mu_sub : sigma_sub_additive mu.
+Variable mu : {measure set T -> \bar R}.
 Let Rmu := SetRing.measure mu.
 Notation rT := (SetRing.type T).
 
@@ -3906,8 +3927,7 @@ Lemma caratheodory_measurable_mu_ext d (R : realType) (T : measurableType d)
     (mu : {measure set T -> \bar R}) A :
   d.-measurable A -> mu^*.-cara.-measurable A.
 Proof.
-by move=> Am; apply: sub_caratheodory => //;
-  [exact: measure_sigma_sub_additive|exact: sub_sigma_algebra].
+by move=> Am; apply: sub_caratheodory => //; apply: sub_sigma_algebra.
 Qed.
 
 Definition preimage_classes d1 d2

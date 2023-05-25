@@ -3105,7 +3105,8 @@ have [r0|r0|->] := ltgtP r 0%R; last first.
     exact: measurable_funepos.
   rewrite (ge0_integralM_EFin _ _ _ _ (ltW r0)) //; last first.
     exact: measurable_funeneg.
-  by rewrite -muleBr 1?[in RHS]integralE//; exact: integrable_add_def.
+  rewrite -muleBr 1?[in RHS]integralE//.
+  exact: integrable_add_def.
 - rewrite [in LHS]integralE// lt0_funeposM// lt0_funenegM//.
   rewrite ge0_integralM_EFin //; last 2 first.
     + exact: measurable_funeneg.

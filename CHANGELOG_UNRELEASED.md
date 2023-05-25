@@ -19,7 +19,8 @@
   + new definitions `basis`, and `second_countable`.
   + new lemmas `clopen_countable` and `compact_countable_base`.
 - in `classical_sets.v`:
-  + lemmas `set_eq_le`, `set_neq_lt`
+  + lemmas `set_eq_le`, `set_neq_lt`,
+  + new lemma `trivIset1`.
 - in `set_interval.v`:
   + lemma `set_lte_bigcup`
 - in `lebesgue_integral.v`:
@@ -66,6 +67,16 @@
 
 - in `measure.v`:
   + lemmas `measurable_pair1`, `measurable_pair2`
+  + lemma `covariance_le`
+- in `mathcomp_extra.v`
+  + definition `coefE` (will be in MC 2.1/1.18)
+  + lemmas `deg2_poly_canonical`, `deg2_poly_factor`, `deg2_poly_min`,
+    `deg2_poly_minE`, `deg2_poly_ge0`, `Real.deg2_poly_factor`,
+    `deg_le2_poly_delta_ge0`, `deg_le2_poly_ge0`
+    (will be in MC 2.1/1.18)
+  + lemma `deg_le2_ge0`
+  + new lemmas `measurable_subring`, and `semiring_sigma_additive`.
+  + added factory `Content_SubSigmaAdditive_isMeasure`
 
 - in `lebesgue_integral.v`:
   + lemmas `integrableP`, `measurable_int`
@@ -117,6 +128,7 @@
   + `measurable_fun_snd` -> `measurable_snd`
   + `measurable_fun_swap` -> `measurable_swap`
   + `measurable_fun_pair` -> `measurable_fun_prod`
+  + `isMeasure0` -> ``Content_isMeasure`
 - in `lebesgue_integral.v`:
   + `measurable_fun_indic` -> `measurable_indic`
 - in `measure.v`:

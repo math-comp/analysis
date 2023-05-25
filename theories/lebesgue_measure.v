@@ -378,6 +378,9 @@ do !case: ifPn => //= ?; do ?by rewrite ?adde_ge0 ?lee_fin// ?subr_ge0// ?ltW.
 by rewrite addrAC lee_fin ler_add// subr_le0 leNgt.
 Qed.
 
+HB.instance Definition _ := Content_SubSigmaAdditive_isMeasure.Build _ _ _
+  (hlength : set ocitv_type -> _) hlength_sigma_sub_additive.
+
 Lemma hlength_sigma_finite : sigma_finite setT (hlength : set ocitv_type -> _).
 Proof.
 exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
@@ -389,21 +392,8 @@ by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 
 Definition lebesgue_measure := measure_extension
-  [the content _ _ of hlength : set ocitv_type -> _].
-
-Let lebesgue_measure0 : lebesgue_measure set0 = 0%E.
-Proof. by []. Qed.
-
-Let lebesgue_measure_ge0 : forall x, (0 <= lebesgue_measure x)%E.
-Proof. exact: measure.measure_extension_ge0. Qed.
-
-Let lebesgue_measure_semi_sigma_additive : semi_sigma_additive lebesgue_measure.
-Proof.
-exact/measure.measure_extension_semi_sigma_additive/hlength_sigma_sub_additive.
-Qed.
-
-HB.instance Definition _ := isMeasure.Build _ _ _ lebesgue_measure
-  lebesgue_measure0 lebesgue_measure_ge0 lebesgue_measure_semi_sigma_additive.
+  [the measure _ _ of hlength : set ocitv_type -> _].
+HB.instance Definition _ := Measure.on lebesgue_measure.
 
 End itv_semiRingOfSets.
 Arguments lebesgue_measure {R}.
@@ -420,9 +410,8 @@ Lemma lebesgue_measure_unique (mu : {measure set gitvs -> \bar R}) :
   (forall X, ocitv X -> hlength X = mu X) ->
   forall X, measurable X -> lebesgue_measure X = mu X.
 Proof.
-move=> muE X mX; apply: measure_extension_unique => //=.
-- exact: hlength_sigma_sub_additive.
-- exact: hlength_sigma_finite.
+move=> muE X mX; apply: measure_extension_unique => //.
+exact: hlength_sigma_finite.
 Qed.
 
 End lebesgue_measure.
@@ -870,9 +859,8 @@ Variable R : realType.
 Let lebesgue_measure_itvoc (a b : R) :
   (lebesgue_measure (`]a, b] : set R) = hlength `]a, b])%classic.
 Proof.
-rewrite /lebesgue_measure/= /measure_extension measurable_mu_extE//; last first.
-  by exists (a, b).
-exact: hlength_sigma_sub_additive.
+rewrite /lebesgue_measure/= /measure_extension measurable_mu_extE//.
+by exists (a, b).
 Qed.
 
 Let lebesgue_measure_itvoo_subr1 (a : R) :
