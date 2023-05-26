@@ -472,26 +472,12 @@ Qed.
 
 Let gitvs := [the measurableType _ of salgebraType ocitv].
 
-Definition lebesgue_stieltjes_measure (f : cumulative R) :=
-  Hahn_ext [the content _ _ of hlength f : set ocitv_type -> _ ].
+HB.instance Definition _ (f : cumulative R) := Content_SubSigmaAdditive_isMeasure.Build _ _ _
+  (hlength f : set ocitv_type -> _) (hlength_sigma_sub_additive f).
 
-Let lebesgue_stieltjes_measure0 (f : cumulative R) :
-  lebesgue_stieltjes_measure f set0 = 0%E.
-Proof. by []. Qed.
-
-Let lebesgue_stieltjes_measure_ge0 (f : cumulative R) :
-  forall x, (0 <= lebesgue_stieltjes_measure f x)%E.
-Proof. exact: measure.Hahn_ext_ge0. Qed.
-
-Let lebesgue_stietjes_measure_semi_sigma_additive (f : cumulative R) :
-  semi_sigma_additive (lebesgue_stieltjes_measure f).
-Proof. exact/measure.Hahn_ext_sigma_additive/hlength_sigma_sub_additive. Qed.
-
-HB.instance Definition _ (f : cumulative R) := isMeasure.Build _ _ _
-  (lebesgue_stieltjes_measure f)
-  (lebesgue_stieltjes_measure0 f)
-  (lebesgue_stieltjes_measure_ge0 f)
-  (@lebesgue_stietjes_measure_semi_sigma_additive f).
+Definition lebesgue_stieltjes_measure (f : cumulative R) := measure_extension
+  [the measure _ _ of hlength f : set ocitv_type -> _ ].
+HB.instance Definition _ (f : cumulative R) := Measure.on (lebesgue_stieltjes_measure f).
 
 End itv_semiRingOfSets.
 Arguments lebesgue_stieltjes_measure {R}.
@@ -506,8 +492,7 @@ Let g : \bar R -> \bar R := er_map f.
 Let lebesgue_stieltjes_measure_itvoc (a b : R) :
   (m `]a, b] = hlength f `]a, b])%classic.
 Proof.
-rewrite /m/= /lebesgue_stieltjes_measure /= /Hahn_ext measurable_mu_extE//.
-  exact: hlength_sigma_sub_additive.
+rewrite /m/= /lebesgue_stieltjes_measure /= /measure_extension measurable_mu_extE//.
 by exists (a, b).
 Qed.
 
