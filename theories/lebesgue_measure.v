@@ -53,118 +53,6 @@ Reserved Notation "R .-ocitv" (at level 1, format "R .-ocitv").
 Reserved Notation "R .-ocitv.-measurable"
  (at level 2, format "R .-ocitv.-measurable").
 
-Section hlength.
-Local Open Scope ereal_scope.
-Variable R : realType.
-Implicit Types i j : interval R.
-
-Definition hlength (A : set R) : \bar R := let i := Rhull A in i.2 - i.1.
-
-Lemma hlength0 : hlength (set0 : set R) = 0.
-Proof. by rewrite /hlength Rhull0 /= subee. Qed.
-
-Lemma hlength_singleton (r : R) : hlength `[r, r] = 0.
-Proof.
-rewrite /hlength /= asboolT// sup_itvcc//= asboolT//.
-by rewrite asboolT inf_itvcc//= ?subee// inE.
-Qed.
-
-Lemma hlength_setT : hlength setT = +oo%E :> \bar R.
-Proof. by rewrite /hlength RhullT. Qed.
-
-Lemma hlength_itv i : hlength [set` i] = if i.2 > i.1 then i.2 - i.1 else 0.
-Proof.
-case: ltP => [/lt_ereal_bnd/neitvP i12|]; first by rewrite /hlength set_itvK.
-rewrite le_eqVlt => /orP[|/lt_ereal_bnd i12]; last first.
-  rewrite (_ : [set` i] = set0) ?hlength0//.
-  by apply/eqP/negPn; rewrite -/(neitv _) neitvE -leNgt (ltW i12).
-case: i => -[ba a|[|]] [bb b|[|]] //=.
-- rewrite /= => /eqP[->{b}]; move: ba bb => -[] []; try
-    by rewrite set_itvE hlength0.
-  by rewrite hlength_singleton.
-- by move=> _; rewrite set_itvE hlength0.
-- by move=> _; rewrite set_itvE hlength0.
-Qed.
-
-Lemma hlength_finite_fin_num i : neitv i -> hlength [set` i] < +oo ->
-  ((i.1 : \bar R) \is a fin_num) /\ ((i.2 : \bar R) \is a fin_num).
-Proof.
-move: i => [[ba a|[]] [bb b|[]]] /neitvP //=; do ?by rewrite ?set_itvE ?eqxx.
-by move=> _; rewrite hlength_itv /= ltry.
-by move=> _; rewrite hlength_itv /= ltNyr.
-by move=> _; rewrite hlength_itv.
-Qed.
-
-Lemma finite_hlengthE i : neitv i -> hlength [set` i] < +oo ->
-  hlength [set` i] = (fine i.2)%:E - (fine i.1)%:E.
-Proof.
-move=> i0 ioo; have [ri1 ri2] := hlength_finite_fin_num i0 ioo.
-rewrite !fineK// hlength_itv; case: ifPn => //.
-rewrite -leNgt le_eqVlt => /predU1P[->|]; first by rewrite subee.
-by move/lt_ereal_bnd/ltW; rewrite leNgt; move: i0 => /neitvP => ->.
-Qed.
-
-Lemma hlength_infty_bnd b r :
-  hlength [set` Interval -oo%O (BSide b r)] = +oo :> \bar R.
-Proof. by rewrite hlength_itv /= ltNyr. Qed.
-
-Lemma hlength_bnd_infty b r :
-  hlength [set` Interval (BSide b r) +oo%O] = +oo :> \bar R.
-Proof. by rewrite hlength_itv /= ltry. Qed.
-
-Lemma pinfty_hlength i : hlength [set` i] = +oo ->
-  (exists s r, i = Interval -oo%O (BSide s r) \/ i = Interval (BSide s r) +oo%O)
-  \/ i = `]-oo, +oo[.
-Proof.
-rewrite hlength_itv; case: i => -[ba a|[]] [bb b|[]] //= => [|_|_|].
-- by case: ifPn.
-- by left; exists ba, a; right.
-- by left; exists bb, b; left.
-- by right.
-Qed.
-
-Lemma hlength_ge0 i : 0 <= hlength [set` i].
-Proof.
-rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
-- by rewrite suber_ge0//; exact: ltW.
-- by rewrite ltNge leey.
-- by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
-Qed.
-Local Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
-
-Lemma hlength_Rhull (A : set R) : hlength [set` Rhull A] = hlength A.
-Proof. by rewrite /hlength Rhull_involutive. Qed.
-
-Lemma le_hlength_itv i j : {subset i <= j} -> hlength [set` i] <= hlength [set` j].
-Proof.
-set I := [set` i]; set J := [set` j].
-have [->|/set0P I0] := eqVneq I set0; first by rewrite hlength0 hlength_ge0.
-have [J0|/set0P J0] := eqVneq J set0.
-  by move/subset_itvP; rewrite -/J J0 subset0 -/I => ->.
-move=> /subset_itvP ij; apply: lee_sub => /=.
-  have [ui|ui] := asboolP (has_ubound I).
-    have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
-    by rewrite lee_fin le_sup // => r Ir; exists r; split => //; apply: ij.
-  have [uj /=|//] := asboolP (has_ubound J).
-  by move: ui; have := subset_has_ubound ij uj.
-have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
-have [li /=|li] := asboolP (has_lbound I); last first.
-  by move: li; have := subset_has_lbound ij lj.
-rewrite lee_fin ler_oppl opprK le_sup// ?has_inf_supN//; last exact/nonemptyN.
-move=> r [r' Ir' <-{r}]; exists (- r')%R.
-by split => //; exists r' => //; apply: ij.
-Qed.
-
-Lemma le_hlength : {homo hlength : A B / (A `<=` B) >-> A <= B}.
-Proof.
-move=> a b /le_Rhull /le_hlength_itv.
-by rewrite (hlength_Rhull a) (hlength_Rhull b).
-Qed.
-
-End hlength.
-Arguments hlength {R}.
-#[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
-
 Section itv_semiRingOfSets.
 Variable R : realType.
 Implicit Types (I J K : set R).
@@ -232,8 +120,117 @@ Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
 Notation "R .-ocitv.-measurable" := (measurable : set (set (ocitv_type))) :
   classical_set_scope.
 
-Lemma hlength_ge0' (I : set ocitv_type) : (0 <= hlength I)%E.
+Section hlength.
+Local Open Scope ereal_scope.
+Implicit Types i j : interval R.
+
+Definition hlength (A : set ocitv_type) : \bar R := let i := Rhull A in i.2 - i.1.
+
+Lemma hlength0 : hlength (set0 : set R) = 0.
+Proof. by rewrite /hlength Rhull0 /= subee. Qed.
+
+Lemma hlength_singleton (r : R) : hlength `[r, r] = 0.
+Proof.
+rewrite /hlength /= asboolT// sup_itvcc//= asboolT//.
+by rewrite asboolT inf_itvcc//= ?subee// inE.
+Qed.
+
+Lemma hlength_setT : hlength setT = +oo%E :> \bar R.
+Proof. by rewrite /hlength RhullT. Qed.
+
+Lemma hlength_itv i : hlength [set` i] = if i.2 > i.1 then i.2 - i.1 else 0.
+Proof.
+case: ltP => [/lt_ereal_bnd/neitvP i12|]; first by rewrite /hlength set_itvK.
+rewrite le_eqVlt => /orP[|/lt_ereal_bnd i12]; last first.
+  rewrite (_ : [set` i] = set0) ?hlength0//.
+  by apply/eqP/negPn; rewrite -/(neitv _) neitvE -leNgt (ltW i12).
+case: i => -[ba a|[|]] [bb b|[|]] //=.
+- rewrite /= => /eqP[->{b}]; move: ba bb => -[] []; try
+    by rewrite set_itvE hlength0.
+  by rewrite hlength_singleton.
+- by move=> _; rewrite set_itvE hlength0.
+- by move=> _; rewrite set_itvE hlength0.
+Qed.
+
+Lemma hlength_finite_fin_num i : neitv i -> hlength [set` i] < +oo ->
+  ((i.1 : \bar R) \is a fin_num) /\ ((i.2 : \bar R) \is a fin_num).
+Proof.
+move: i => [[ba a|[]] [bb b|[]]] /neitvP //=; do ?by rewrite ?set_itvE ?eqxx.
+by move=> _; rewrite hlength_itv /= ltry.
+by move=> _; rewrite hlength_itv /= ltNyr.
+by move=> _; rewrite hlength_itv.
+Qed.
+
+Lemma finite_hlengthE i : neitv i -> hlength [set` i] < +oo ->
+  hlength [set` i] = (fine i.2)%:E - (fine i.1)%:E.
+Proof.
+move=> i0 ioo; have [ri1 ri2] := hlength_finite_fin_num i0 ioo.
+rewrite !fineK// hlength_itv; case: ifPn => //.
+rewrite -leNgt le_eqVlt => /predU1P[->|]; first by rewrite subee.
+by move/lt_ereal_bnd/ltW; rewrite leNgt; move: i0 => /neitvP => ->.
+Qed.
+
+Lemma hlength_infty_bnd b r :
+  hlength [set` Interval -oo%O (BSide b r)] = +oo :> \bar R.
+Proof. by rewrite hlength_itv /= ltNyr. Qed.
+
+Lemma hlength_bnd_infty b r :
+  hlength [set` Interval (BSide b r) +oo%O] = +oo :> \bar R.
+Proof. by rewrite hlength_itv /= ltry. Qed.
+
+Lemma pinfty_hlength i : hlength [set` i] = +oo ->
+  (exists s r, i = Interval -oo%O (BSide s r) \/ i = Interval (BSide s r) +oo%O)
+  \/ i = `]-oo, +oo[.
+Proof.
+rewrite hlength_itv; case: i => -[ba a|[]] [bb b|[]] //= => [|_|_|].
+- by case: ifPn.
+- by left; exists ba, a; right.
+- by left; exists bb, b; left.
+- by right.
+Qed.
+
+Lemma hlength_itv_ge0 i : 0 <= hlength [set` i].
+Proof.
+rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
+- by rewrite suber_ge0//; exact: ltW.
+- by rewrite ltNge leey.
+- by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
+Qed.
+
+Lemma hlength_Rhull (A : set R) : hlength [set` Rhull A] = hlength A.
+Proof. by rewrite /hlength Rhull_involutive. Qed.
+
+Lemma le_hlength_itv i j : {subset i <= j} -> hlength [set` i] <= hlength [set` j].
+Proof.
+set I := [set` i]; set J := [set` j].
+have [->|/set0P I0] := eqVneq I set0; first by rewrite hlength0 hlength_itv_ge0.
+have [J0|/set0P J0] := eqVneq J set0.
+  by move/subset_itvP; rewrite -/J J0 subset0 -/I => ->.
+move=> /subset_itvP ij; apply: lee_sub => /=.
+  have [ui|ui] := asboolP (has_ubound I).
+    have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
+    by rewrite lee_fin le_sup // => r Ir; exists r; split => //; apply: ij.
+  have [uj /=|//] := asboolP (has_ubound J).
+  by move: ui; have := subset_has_ubound ij uj.
+have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
+have [li /=|li] := asboolP (has_lbound I); last first.
+  by move: li; have := subset_has_lbound ij lj.
+rewrite lee_fin ler_oppl opprK le_sup// ?has_inf_supN//; last exact/nonemptyN.
+move=> r [r' Ir' <-{r}]; exists (- r')%R.
+by split => //; exists r' => //; apply: ij.
+Qed.
+
+Lemma le_hlength : {homo hlength : A B / (A `<=` B) >-> A <= B}.
+Proof.
+move=> a b /le_Rhull /le_hlength_itv.
+by rewrite (hlength_Rhull a) (hlength_Rhull b).
+Qed.
+
+Lemma hlength_ge0 I : (0 <= hlength I)%E.
 Proof. by rewrite -hlength0 le_hlength. Qed.
+
+End hlength.
+#[local] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 
 (* Unused *)
 (* Lemma hlength_semi_additive2 : semi_additive2 hlength. *)
@@ -266,7 +263,7 @@ Proof. by rewrite -hlength0 le_hlength. Qed.
 (* by rewrite lt_geF ?midf_lt//= andbF le_gtF ?midf_le//= ltW. *)
 (* Qed. *)
 
-Lemma hlength_semi_additive : semi_additive (hlength : set ocitv_type -> _).
+Lemma hlength_semi_additive : semi_additive hlength.
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
@@ -332,7 +329,7 @@ by rewrite in_itv/= le_gtF// (itvP xabi).
 Qed.
 
 HB.instance Definition _ := isContent.Build _ _ R
-  (hlength : set ocitv_type -> _) (@hlength_ge0') hlength_semi_additive.
+  hlength hlength_ge0 hlength_semi_additive.
 
 Hint Extern 0 ((_ .-ocitv).-measurable _) => solve [apply: is_ocitv] : core.
 
@@ -379,7 +376,7 @@ by rewrite addrAC lee_fin ler_add// subr_le0 leNgt.
 Qed.
 
 HB.instance Definition _ := Content_SubSigmaAdditive_isMeasure.Build _ _ _
-  (hlength : set ocitv_type -> _) hlength_sigma_sub_additive.
+  hlength hlength_sigma_sub_additive.
 
 Lemma hlength_sigma_finite : sigma_finite setT (hlength : set ocitv_type -> _).
 Proof.
@@ -391,11 +388,12 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 
-Definition lebesgue_measure := measure_extension
-  [the measure _ _ of hlength : set ocitv_type -> _].
+Definition lebesgue_measure := measure_extension [the measure _ _ of hlength].
 HB.instance Definition _ := Measure.on lebesgue_measure.
 
 End itv_semiRingOfSets.
+Arguments hlength {R}.
+#[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 Arguments lebesgue_measure {R}.
 
 Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
