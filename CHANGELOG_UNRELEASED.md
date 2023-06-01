@@ -80,6 +80,8 @@
 
 - in `lebesgue_integral.v`:
   + lemmas `integrableP`, `measurable_int`
+- in `exp.v`:
+  + lemmas `power_posrM`
 
 ### Changed
 
@@ -140,6 +142,8 @@
   + `AlgebraOfSets_from_RingOfSets` -> `RingOfSets_isAlgebraOfSets`
   + `Measurable_from_algebraOfSets` -> `AlgebraOfSets_isMeasurable`
   + `ring_sigma_additive` -> `ring_semi_sigma_additive`
+- in `exp.v`:
+  + `expK` -> `expRK`
 
 ### Generalized
 
