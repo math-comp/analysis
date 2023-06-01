@@ -640,6 +640,17 @@ move=> a1 x y xy.
 by rewrite /power_pos gt_eqF ?(lt_le_trans _ a1)// ler_expR ler_wpmul2r ?ln_ge0.
 Qed.
 
+Lemma gt0_ler_power_pos (a : R) : 0 < a ->
+  {in `[0, +oo[ &, {homo power_pos ^~ a : x y / x <= y >-> x <= y}}.
+Proof.
+move=> a0 x y; rewrite !in_itv/= !andbT !le_eqVlt => /predU1P[<-|x0].
+  move=> /predU1P[<- _|y0 _]; first by rewrite eqxx.
+  by rewrite !power_pos0 (gt_eqF a0) power_pos_gt0 ?orbT.
+move=> /orP[/eqP<-|y0]; first by rewrite gt_eqF//= ltNge (ltW x0).
+move=> /predU1P[->//|xy]; first by rewrite eqxx.
+by apply/orP; right; rewrite /power_pos !gt_eqF// ltr_expR ltr_pmul2l// ltr_ln.
+Qed.
+
 Lemma power_posM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
 Proof.
 rewrite 2!le_eqVlt.
