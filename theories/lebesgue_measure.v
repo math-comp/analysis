@@ -1650,7 +1650,7 @@ rewrite (_ : [set~ 0] = `]-oo, 0[ `|` `]0, +oo[); last first.
   by rewrite -(setCitv `[0, 0]); apply/seteqP; split => [|]x/=;
     rewrite in_itv/= -eq_le eq_sym; [move/eqP/negbTE => ->|move/negP/eqP].
 apply/measurable_funU => //; split.
-- apply/(@measurable_restrict _ _ _ _ _ setT) => //. 
+- apply/(@measurable_restrict _ _ _ _ _ setT) => //.
   rewrite (_ : _ \_ _ = cst (0:R))//; apply/funext => y; rewrite patchE.
   by case: ifPn => //; rewrite inE/= in_itv/= => y0; rewrite ln0// ltW.
 - have : {in `]0, +oo[%classic, continuous (@ln R)}.
@@ -1668,8 +1668,8 @@ Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
 #[global] Hint Extern 0 (measurable_fun _ expR) =>
   solve [apply: measurable_expR] : core.
 
-Lemma measurable_power_pos (R : realType) p :
-  measurable_fun [set: R] (@power_pos R ^~ p).
+Lemma measurable_powR (R : realType) p :
+  measurable_fun [set: R] (@powR R ^~ p).
 Proof.
 apply: measurable_fun_if => //.
 - apply: (measurable_fun_bool true); rewrite (_ : _ @^-1` _ = [set 0])//.
@@ -1678,10 +1678,12 @@ apply: measurable_fun_if => //.
   rewrite (_ : _ @^-1` _ = [set~ 0]); first exact: measurableT_comp.
   by apply/seteqP; split => [x /negP/negP/eqP|x x0]//=; exact/negbTE/eqP.
 Qed.
-#[global] Hint Extern 0 (measurable_fun _ (@power_pos _ ^~ _)) =>
-  solve [apply: measurable_power_pos] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_power_pos` instead")]
-Notation measurable_fun_power_pos := measurable_power_pos.
+#[global] Hint Extern 0 (measurable_fun _ (@powR _ ^~ _)) =>
+  solve [apply: measurable_powR] : core.
+#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_powR` instead")]
+Notation measurable_fun_power_pos := measurable_powR.
+#[deprecated(since="mathcomp-analysis 0.6.4", note="use `measurable_powR` instead")]
+Notation measurable_power_pos := measurable_powR.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxr` instead")]
 Notation measurable_fun_max := measurable_maxr.
 
@@ -1870,7 +1872,7 @@ Lemma lebesgue_regularity_outer (D : set R) (eps : R) :
 Proof.
 move=> mD muDpos epspos.
 have /ereal_inf_lt[z [/= M' covDM sMz zDe]] : mu D < mu D + (eps / 2)%:E.
-  by rewrite lte_spaddr ?lte_fin ?divr_gt0// ge0_fin_numE.
+  by rewrite lte_spaddre ?lte_fin ?divr_gt0// ge0_fin_numE.
 pose e2 n := (eps / 2) / (2 ^ n.+1)%:R.
 have e2pos n : (0 < e2 n)%R by rewrite ?divr_gt0.
 pose M n := if pselect (M' n = set0) then set0 else
@@ -2013,23 +2015,23 @@ Context (mu : {measure set T -> \bar R}).
 Local Open Scope ereal_scope.
 
 (*TODO : this generalizes to any metric space with a borel measure*)
-Lemma pointwise_almost_uniform 
+Lemma pointwise_almost_uniform
     (f_ : (T -> R)^nat) (g : T -> R) (A : set T) (eps : R):
   (forall n, measurable_fun A (f_ n)) -> measurable_fun A g ->
   measurable A -> mu A < +oo -> (forall x, A x -> f_ ^~ x --> g x) ->
-  (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E & 
+  (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E &
     {uniform A `\` B, f_ --> g}].
 Proof.
 move=> mf mg mA finA fptwsg epspos; pose h q (z : T) : R := `|f_ q z - g z|%R.
 have mfunh q : measurable_fun A (h q).
   by apply: measurableT_comp; [exact: measurable_normr |exact: measurable_funB].
-pose E k n := \bigcup_(i in [set j : nat | (n <= j)%N ]) 
+pose E k n := \bigcup_(i in [set j : nat | (n <= j)%N ])
   (A `&` [set x | (h i x >= k.+1%:R^-1)%R]).
-have Einc k : nonincreasing_seq (E k). 
-  move=> n m nm; apply/asboolP => z [i] /= /(leq_trans _) mi [? ?]. 
+have Einc k : nonincreasing_seq (E k).
+  move=> n m nm; apply/asboolP => z [i] /= /(leq_trans _) mi [? ?].
   by exists i => //; apply: mi.
-have mE k n : measurable (E k n). 
-  apply: bigcup_measurable => q /= ?. 
+have mE k n : measurable (E k n).
+  apply: bigcup_measurable => q /= ?.
   have -> : [set x | h q x >= k.+1%:R^-1]%R = (h q)@^-1` (`[k.+1%:R^-1, +oo[).
     by rewrite eqEsubset; split => z; rewrite /= in_itv /= Bool.andb_true_r.
   exact: mfunh.
@@ -2040,8 +2042,8 @@ have nEcvg x k : exists n, A x -> (~` (E k n)) x.
     have ki0 : ((0:R) < k.+1%:R^-1)%R by rewrite invr_gt0.
     rewrite (_ : k.+1%:R^-1 = (PosNum ki0)%:num ) //; exact: nbhsx_ballx.
   move=> N _ Nk; exists N.+1 => _; rewrite /E setC_bigcup => i /= /ltnW Ni.
-  apply/not_andP; right; apply/negP; rewrite /h -real_ltNge // distrC. 
-  case: (Nk _ Ni) => _/posnumP[?]; apply; exact: ball_norm_center.
+  apply/not_andP; right; apply/negP; rewrite /h -real_ltNge // distrC.
+  by case: (Nk _ Ni) => _/posnumP[?]; apply; exact: ball_norm_center.
 have Ek0 k : (\bigcap_n (E k n)) = set0.
   rewrite eqEsubset; split => // z /=; suff : (~` \bigcap_n E k n) z by done.
   rewrite setC_bigcap; case : (pselect (A z)) => [Az | nAz].
@@ -2050,24 +2052,24 @@ have Ek0 k : (\bigcap_n (E k n)) = set0.
 have badn' : forall k, exists n, mu (E k n) < ((eps/2) / (2 ^ k.+1)%:R)%:E.
   move=> k; pose ek :R := eps/2 / (2 ^ k.+1)%:R; have : mu \o E k --> (0%R)%:E.
     rewrite -(measure0 mu) -(Ek0 k); apply: nonincreasing_cvg_mu => //.
-    - apply: (le_lt_trans _ finA); apply: le_measure; rewrite ?inE //. 
+    - apply: (le_lt_trans _ finA); apply: le_measure; rewrite ?inE //.
       by move=> ? [? _ []].
     - by apply: bigcap_measurable => ?.
   case/fine_cvg/(_ (interior (ball (0:R) ek))%R).
     apply: open_nbhs_nbhs; split; first exact: open_interior.
     have ekpos : (0 < ek)%R by rewrite divr_gt0 // divr_gt0.
     by move: ek ekpos => _/posnumP[ek]; exact: nbhsx_ballx.
-  move=> N _ /(_ N (leqnn _))/interior_subset muEN; exists N; move: muEN. 
+  move=> N _ /(_ N (leqnn _))/interior_subset muEN; exists N; move: muEN.
   rewrite /ball /= distrC subr0 ger0_norm // -[x in x < _]fineK ?ge0_fin_numE//.
   by apply:(le_lt_trans _ finA); apply le_measure; rewrite ?inE// => ? [? _ []].
 pose badn k := projT1 (cid (badn' k)); exists (\bigcup_k (E k (badn k))); split.
 - exact: bigcup_measurable.
 - apply: (@le_lt_trans _ _ (eps/2)%R%:E); first last.
     by rewrite lte_fin ltr_pdivr_mulr // ltr_pmulr // Rint_ltr_addr1 // ?Rint1.
-  apply: le_trans. 
+  apply: le_trans.
     apply: (measure_sigma_sub_additive _ (fun k => mE k (badn k)) _ _) => //.
     exact: bigcup_measurable.
-  apply: le_trans; first last. 
+  apply: le_trans; first last.
     by apply: (@epsilon_trick0 R _ xpredT); rewrite divr_ge0 //; exact: ltW.
   by rewrite lee_nneseries // => n _; exact/ltW/(projT2 (cid (badn' _))).
 apply/uniform_restrict_cvg => /= U /=; rewrite ?uniform_nbhsT.
@@ -2080,15 +2082,15 @@ rewrite /E setC_bigcup => /(_ (r)) /=; rewrite /h => /(_ badNr) /not_andP [] //.
 by move/negP; rewrite real_ltNge // distrC.
 Qed.
 
-Lemma ae_pointwise_almost_uniform 
+Lemma ae_pointwise_almost_uniform
     (f_ : (T -> R)^nat) (g : T -> R) (A : set T) (eps : R):
   (forall n, measurable_fun A (f_ n)) -> measurable_fun A g ->
   measurable A -> mu A < +oo -> {ae mu, (forall x, A x -> f_ ^~ x --> g x)} ->
-  (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E & 
+  (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E &
     {uniform A `\` B, (fun n => (f_ n : T -> R)) --> g}].
 Proof.
 move=> mf mg mA Afin [C [mC C0 nC] epspos].
-have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E & 
+have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E &
     {uniform (A `\` C) `\` B,  f_ --> g}].
   apply: pointwise_almost_uniform => //.
   - by move=> n; apply : (measurable_funS mA _ (mf n)) => ? [].
@@ -2100,7 +2102,7 @@ have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E &
 exists (B `|` C); split.
 - exact: measurableU.
 - by apply: (le_lt_trans _ Beps); rewrite measureU0.
-- by rewrite setUC -setDDl. 
+- by rewrite setUC -setDDl.
 Qed.
 
 End egorov.
