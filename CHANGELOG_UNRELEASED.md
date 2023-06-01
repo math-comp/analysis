@@ -42,7 +42,7 @@
 - in `lebesgue_integral.v`:
   + lemmas `integrableP`, `measurable_int`
 - in `exp.v`:
-  + lemmas `power_posrM`
+  + lemmas `power_posrM`, `gt0_ler_power_pos`
 
 - in `mathcomp_extra.v`:
   + definition `min_fun`, notation `\min`
