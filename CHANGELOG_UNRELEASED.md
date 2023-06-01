@@ -148,6 +148,8 @@
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_sqr` (use `measurable_exprn` instead)
   + lemma `measurable_fun_opp` (use `measurable_oppr` instead)
+- in `exp.v`:
+  + lemmas `convex_expR`, `ler_power_pos`
 
 ### Removed
 

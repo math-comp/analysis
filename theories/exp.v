@@ -469,14 +469,20 @@ by exists (-y); rewrite expRN H3y invrK.
 Qed.
 
 Local Open Scope convex_scope.
-Lemma convex_expR (t : {i01 R}) (a b : R^o) : a <= b ->
+Lemma convex_expR (t : {i01 R}) (a b : R^o) :
   expR (a <| t |> b) <= (expR a : R^o) <| t |> (expR b : R^o).
 Proof.
-move=> ab; apply: second_derivative_convex => //.
-- by move=> x axb; rewrite derive_expR derive_val expR_ge0.
-- exact/cvg_at_left_filter/continuous_expR.
-- exact/cvg_at_right_filter/continuous_expR.
-- by move=> z zab; rewrite derive_expR; exact: derivable_expR.
+have [ab|/ltW ba] := leP a b.
+- apply: second_derivative_convex => //.
+  + by move=> x axb; rewrite derive_expR derive_val expR_ge0.
+  + exact/cvg_at_left_filter/continuous_expR.
+  + exact/cvg_at_right_filter/continuous_expR.
+  + by move=> z zab; rewrite derive_expR; exact: derivable_expR.
+- rewrite convC [leRHS]convC; apply: second_derivative_convex => //.
+  + by move=> x axb; rewrite derive_expR derive_val expR_ge0.
+  + exact/cvg_at_left_filter/continuous_expR.
+  + exact/cvg_at_right_filter/continuous_expR.
+  + by move=> z zab; rewrite derive_expR; exact: derivable_expR.
 Qed.
 Local Close Scope convex_scope.
 
@@ -628,10 +634,10 @@ rewrite /power_pos. have [->|_] := eqVneq x 0 => //.
 by move: (expR_gt0 (p * ln x)) => /gt_eqF /eqP.
 Qed.
 
-Lemma ler_power_pos a : 1 < a -> {homo power_pos a : x y / x <= y}.
+Lemma ler_power_pos a : 1 <= a -> {homo power_pos a : x y / x <= y}.
 Proof.
 move=> a1 x y xy.
-by rewrite /power_pos gt_eqF ?(le_lt_trans _ a1)// ler_expR ler_pmul2r// ln_gt0.
+by rewrite /power_pos gt_eqF ?(lt_le_trans _ a1)// ler_expR ler_wpmul2r ?ln_ge0.
 Qed.
 
 Lemma power_posM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
@@ -823,13 +829,11 @@ Proof. by move=> ?; rewrite /riemannR invr_gt0 power_pos_gt0. Qed.
 
 Lemma dvg_riemannR a : 0 <= a <= 1 -> ~ cvg (series (riemannR a)).
 Proof.
-case/andP => a0; rewrite le_eqVlt => /predU1P[->|a1].
-  rewrite (_ : riemannR 1 = harmonic); first exact: dvg_harmonic.
-  by rewrite funeqE => i /=; rewrite power_posr1.
+move=> /andP[a0 a1].
 have : forall n, harmonic n <= riemannR a n.
-  case=> /= [|n]; first by rewrite power_pos1 invr1.
-  rewrite -[leRHS]div1r ler_pdivl_mulr ?power_pos_gt0 // mulrC ler_pdivr_mulr //.
-  by rewrite mul1r -[leRHS]power_posr1 // (ler_power_pos) // ?ltr1n // ltW.
+  move=> [/=|n]; first by rewrite power_pos1 invr1.
+  rewrite -[leRHS]div1r ler_pdivl_mulr ?power_pos_gt0// mulrC ler_pdivr_mulr//.
+  by rewrite mul1r -[leRHS]power_posr1// (ler_power_pos)// ler1n.
 move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
 by move/contra_not; apply; exact: dvg_harmonic.
 Qed.
