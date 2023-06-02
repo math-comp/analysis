@@ -55,18 +55,62 @@ Qed.
 
 End derivable_oo_continuous_bnd.
 
+Section derivable_left_right.
+Context {R : numFieldType} {V W : normedModType R}.
+
+Definition derivable_left (f : V -> W) a v :=
+  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^'-).
+
+Definition derivable_right (f : V -> W) a v :=
+  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^'+).
+
+End derivable_left_right.
+
 Section C1.
 Context {R : realType}.
 
 Definition C1 (a b : R) (f : R^o -> R^o) :=
-  derivable_oo_continuous_bnd f a b /\
-  {within `[a, b], continuous f^`()}.
+  [/\ {in `]a, b[, forall x, derivable f x 1},
+      derivable_right f a 1 /\ derivable_left f a 1,
+      f^`() @ a^'+ --> f^`() a /\ f^`() @ b^'- --> f^`() b &
+      {within `[a, b], continuous f^`()} ].
+
+Lemma derivable_right_continuous (a : R) (f : R^o -> R^o) :
+  derivable_right f a 1 -> f^`() @ a^'+ --> f^`() a ->
+  f x @[x --> a^'+] --> f a.
+Proof.
+move=> dfa fa.
+have : f x - f a @[x --> a^'+] --> 0.
+  suff H1 : ((f x - f a) / (x - a)) * (x - a) @[x --> a^'+] --> 0.
+    apply: cvg_trans H1.
+    apply: near_eq_cvg.
+    rewrite near_withinE.
+    near=> t; move=> ta.
+    by rewrite -mulrA mulVf ?mulr1// subr_eq0 gt_eqF.
+  rewrite -[in X in _ --> X](mulr0 (f^`() a)).
+  apply: cvgM.
+    admit. (* ??? *)
+  rewrite -(subrr a).
+  apply: cvg_at_right_filter.
+  apply: cvgB.
+  exact: cvg_id.
+  exact: cvg_cst.
+move/cvg_sub0; apply.
+exact: cvg_cst.
+Admitted.
+
+Lemma derivable_left_continuous (b : R) (f : R^o -> R^o) :
+  derivable_left f b 1 -> f^`() @ b^'- --> f^`() b ->
+  f x @[x --> b^'-] --> f b.
+Proof.
+(* same as above *)
+Admitted.
 
 Lemma C1_lipschitz (a b : R) (f : R^o -> R^o) :
   C1 a b f -> [lipschitz f x | x in `[a, b]].
 Proof.
-move=> [df cf]; have [|ab] := leP b a.
-  rewrite le_eqVlt => /predU1P [->|ba].
+move=> [df [dfa dfb] [cf'a cf'b] cf]; have [|ab] := leP b a.
+  rewrite le_eqVlt => /predU1P[->|ba].
     by rewrite set_itvE; exact: lipschitz_set1.
   by rewrite set_itv_ge ?bnd_simp -?ltNge//; exact: lipschitz_set0.
 have : {within `[a, b], continuous (fun x => `|f^`() x|)}.
@@ -81,25 +125,39 @@ wlog : x y xab yab / x < y.
   rewrite le_eqVlt => /predU1P[->|]; first by rewrite !subrr !normr0 mulr0.
   by rewrite distrC (distrC x); exact: (h y x yab xab).
 move=> xy.
+have xyabo : `]x, y[ `<=` `]a, b[.
+  move=> d /= dxy; move: dxy xab yab; rewrite !in_itv/=.
+  move=> /andP[xz zy]/andP[ax xb] /andP[ay yb].
+  by rewrite (le_lt_trans ax xz)//= (lt_le_trans zy yb).
 have xydf (z : R) : z \in `]x, y[ -> differentiable f z.
-  move=> zxy; apply/derivable1_diffP.
-  move: df => [+ _ _]; apply.
-  have xyabo : `]x, y[ `<=` `]a, b[.
-    move=> d /= dxy; move: dxy xab yab; rewrite !in_itv/=.
-    move=> /andP[xz zy]/andP[ax xb] /andP[ay yb].
-    by rewrite (le_lt_trans ax xz)//= (lt_le_trans zy yb).
+  move=> zxy; apply/derivable1_diffP/df.
   exact: xyabo.
 have xyab : `[x, y] `<=` `[a, b].
   move=> d /= dxy; move: dxy xab yab; rewrite !in_itv/=.
   move=> /andP[xd dy]/andP[ax xb] /andP[ay yb].
   by rewrite (le_trans ax xd)//= (le_trans dy yb).
 have: {within `[x, y], continuous f}.
-  have /continuous_subspaceW := derivable_oo_continuous_bnd_within df.
+  have dfxy : {in `]x, y[, forall z : R, derivable f z 1}.
+    by move=> z zxy; apply: df; exact: xyabo.
+  have fx : f @ x^'+ --> f x.
+    move: xab; rewrite in_itv/= 2!le_eqVlt => /andP[/predU1P[ax _|ax]].
+      rewrite -ax.
+      exact: derivable_right_continuous.
+    move=> /predU1P[xb|xb].
+      admit. (* same as above *)
+    apply: cvg_at_right_filter.
+    apply: differentiable_continuous.
+    apply/derivable1_diffP.
+    apply: df.
+    by rewrite in_itv/= ax.
+  have fy : f @ y^'- --> f y.
+    admit. (* same as above *)
+  have /continuous_subspaceW := derivable_oo_continuous_bnd_within (And3 dfxy fx fy).
   exact.
 move=> /(MVT xy (fun z h => derivableP (diff_derivable (xydf z h))))[d dxy mvt].
 rewrite distrC {}mvt -derive1E normrM (distrC y) ler_pmul//.
 exact/dfmax/xyab/subset_itv_oo_cc.
-Qed.
+Admitted.
 
 End C1.
 
