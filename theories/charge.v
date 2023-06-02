@@ -1283,29 +1283,11 @@ apply: cvgeB.
       apply: is_cvg_ereal_nneg_natsum => n _.
       by apply: integral_ge0 => x _; rewrite adde_ge0//; exact: fRN_ge0.
     by rewrite (@cvg_lim _ _ _ _ _ _ l).
-  + apply/integrableP; split.
-      suff: measurable_fun setT (fun x => fRN x + epsRN%:num%:E).
-        exact: measurable_funS.
-      by apply: emeasurable_funD => //; exact: measurable_fun_fRN.
-    apply: (@le_lt_trans _ _ (\int[mu]_(x in \bigcup_k H k) `|fRN x| +
-       \int[mu]_(x in \bigcup_k H k)`| epsRN%:num%:E |)).
-      rewrite -(integralD mUH); last 2 first.
-        * apply/integrable_abse/integrableP; split.
-            exact: measurable_funS measurable_fun_fRN.
-          rewrite (le_lt_trans _ int_fRN_lty)// subset_integral//.
-          by apply: measurableT_comp => //; exact: measurable_fun_fRN.
-        * apply/integrable_abse/integrableP; split => //.
-          by rewrite integral_cst//= lte_mul_pinfty// ltey_eq fin_num_measure.
-      apply: ge0_le_integral => //.
-      * apply: measurableT_comp => //; apply: emeasurable_funD => //.
-        exact: measurable_funS measurable_fun_fRN.
-      * apply: emeasurable_funD => //; apply: measurableT_comp => //.
-        exact: measurable_funS measurable_fun_fRN.
-      * by move=> x _; exact: lee_abs_add.
-    apply: lte_add_pinfty.
-      rewrite (le_lt_trans _ int_fRN_lty)// subset_integral//.
-      by apply: measurableT_comp => //; exact: measurable_fun_fRN.
-    by rewrite integral_cst//= lte_mul_pinfty// ltey_eq fin_num_measure.
+  + apply: integrableD => //=.
+    * apply: (integrableS measurableT) => //.
+      by apply/integrableP; split; [exact: measurable_fun_fRN|exact: int_fRN_lty].
+    * apply/integrableP; split => //.
+      by rewrite integral_cst// lte_mul_pinfty// ltey_eq fin_num_measure.
   + by move=> x _; rewrite adde_ge0//; exact: fRN_ge0.
 Qed.
 
