@@ -120,6 +120,9 @@
 
 ### Generalized
 
+- in `exp.v`:
+  + lemma `ln_power_pos`
+
 ### Deprecated
 
 - in `lebesgue_measure.v`:
