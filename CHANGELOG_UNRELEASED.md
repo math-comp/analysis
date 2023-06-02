@@ -81,6 +81,10 @@
 - in `lebesgue_integral.v`:
   + lemmas `integrableP`, `measurable_int`
 
+- in `realfun.v`:
+  + definition `C1`
+  + lemma `C1_lipschitz`
+
 ### Changed
 
 - in `lebesgue_measure.v`
