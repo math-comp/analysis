@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From HB Require Import structures.
-Require Import mathcomp_extra boolp classical_sets.
+From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
 Add Search Blacklist "__canonical__".
 Add Search Blacklist "__functions_".
 Add Search Blacklist "_factory_".
