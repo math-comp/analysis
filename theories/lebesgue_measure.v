@@ -1503,6 +1503,12 @@ apply: measurable_funTS => /=.
 by apply: continuous_measurable_fun; exact: mulrl_continuous.
 Qed.
 
+Lemma measurable_mulrr D (k : R) : measurable_fun D (fun x => x * k).
+Proof.
+apply: measurable_funTS => /=.
+by apply: continuous_measurable_fun; exact: mulrr_continuous.
+Qed.
+
 Lemma measurable_exprn D n : measurable_fun D (fun x => x ^+ n).
 Proof.
 apply measurable_funTS => /=.
