@@ -87,6 +87,9 @@
   + lemmas `powere_posrM`, `powere_posAC`, `gt0_powere_pos`,
     `powere_pos_eqy`, `eqy_powere_pos`, `powere_posD`, `powere_posB`
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_mulrr`
+
 ### Changed
 
 - in `lebesgue_measure.v`
