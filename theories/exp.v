@@ -586,6 +586,12 @@ Proof.
 by move=> x_gt1; rewrite -ltr_expR expR0 lnK // qualifE (lt_trans _ x_gt1).
 Qed.
 
+Lemma ln_le0 (x : R) : x <= 1 -> ln x <= 0.
+Proof.
+have [x0|x0 x1] := leP x 0; first by rewrite ln0.
+by rewrite -ler_expR expR0 lnK.
+Qed.
+
 Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.
 Proof.
 move=> x_gt0; rewrite -[x]lnK//.
@@ -658,6 +664,12 @@ Qed.
 Lemma powR_eq0_eq0 x p : x `^ p = 0 -> x = 0.
 Proof. by move=> /eqP; rewrite powR_eq0 => /andP[/eqP]. Qed.
 
+Lemma ger_powR a : 0 < a <= 1 -> {homo powR a : x y /~ y <= x}.
+Proof.
+move=> /andP [a0 a1] x y xy.
+rewrite /powR gt_eqF// ler_expR ler_wnmul2r// ln_le0//.
+Qed.
+
 Lemma ler_powR a : 1 <= a -> {homo powR a : x y / x <= y}.
 Proof.
 move=> a1 x y xy.
@@ -671,6 +683,34 @@ move=> r0 x y x0 y0; rewrite /powR; case: ifPn => [/eqP ->|xneq0].
 case: ifPn => [/eqP -> /eqP|yneq0]; first by rewrite (gt_eqF r0) expR_eq0.
 by move/expR_inj/mulfI => /(_ (negbT (gt_eqF r0))); apply: ln_inj;
   rewrite posrE lt_neqAle eq_sym (xneq0,yneq0).
+Qed.
+
+Lemma ler1_powR a r : 1 <= a -> r <= 1 -> a >= a `^ r.
+Proof.
+move=> a1 r1.
+rewrite -[in leRHS](@powRr1 a)//; last exact: (le_trans _ a1).
+by rewrite ler_powR.
+Qed.
+
+Lemma le1r_powR a r : 1 <= a -> 1 <= r -> a <= a `^ r.
+Proof.
+move=> a1 r1.
+rewrite -[in leLHS](@powRr1 a)//; last exact: (le_trans _ a1).
+by rewrite ler_powR.
+Qed.
+
+Lemma ger1_powR a r : 0 < a <= 1 -> r <= 1 -> a <= a `^ r.
+Proof.
+move=> /andP [a0 a1] r1.
+rewrite -[in leLHS](@powRr1 a)//; last by rewrite ltW.
+by rewrite ger_powR// a0.
+Qed.
+
+Lemma ge1r_powR a r : 0 < a <= 1 -> 1 <= r -> a >= a `^ r.
+Proof.
+move=> /andP [a0 a1] r1.
+rewrite -[in leRHS](@powRr1 a)//; last by rewrite ltW.
+by rewrite ger_powR// a0.
 Qed.
 
 Lemma ge0_ler_powR (r : R) : 0 <= r ->
@@ -699,6 +739,24 @@ rewrite /powR mulf_eq0.
 case: (ltgtP x 0) => // x0 _; case: (ltgtP y 0) => //= y0 _; do ?
   by case: eqVneq => [r0|]; rewrite ?r0 ?mul0r ?expR0 ?mulr0 ?mul1r.
 by rewrite lnM// mulrDr expRD.
+Qed.
+
+Lemma ge1r_powRZ x y r : 0 < x <= 1 -> 0 <= y -> 1 <= r ->
+  (x * y) `^ r <= x * (y `^ r).
+Proof.
+move=> /andP [x0 x1] y0 r1.
+rewrite powRM//; last exact: ltW.
+rewrite ler_wpmul2r// ?powR_ge0//.
+by rewrite ge1r_powR// x0.
+Qed.
+
+Lemma le1r_powRZ x y r : x >= 1 -> 0 <= y -> 1 <= r ->
+  (x * y) `^ r >= x * (y `^ r).
+Proof.
+move=> x1 y0 r1.
+rewrite powRM//; last by rewrite (le_trans _ x1).
+rewrite ler_wpmul2r// ?powR_ge0//.
+rewrite le1r_powR//.
 Qed.
 
 Lemma powRrM (x y z : R) : x `^ (y * z) = (x `^ y) `^ z.
