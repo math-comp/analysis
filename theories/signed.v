@@ -231,7 +231,7 @@ Definition reality_cond (n : reality) (x : T) :=
   | Real (Sign NonNeg) => x >= x0
   | Real (Sign NonPos) => x <= x0
   | Real AnySign       => (x0 <= x) || (x <= x0)
-  | Arbitary           => true
+  | Arbitrary          => true
   end.
 
 Record def (nz : nullity) (cond : reality) := Def {
