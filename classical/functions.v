@@ -1275,7 +1275,7 @@ Lemma val_bij_subproof : OInv_Can2 sT T setT [set` P] val.
 Proof.
 apply: (OInv_Can2.Build _ _ _ _ val (fun x  _ => valP x)
         _ (in1W valK) (in1W (insubK _))).
-by move=> x Px /=; exists (sub x Px) => //; rewrite oinv_val insubT.
+by move=> x Px /=; exists (Sub x Px) => //; rewrite oinv_val insubT.
 Qed.
 HB.instance Definition _ := val_bij_subproof.
 

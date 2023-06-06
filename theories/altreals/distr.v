@@ -175,7 +175,7 @@ Lemma isdistr_finP {R : realType} {I : finType} (mu : I -> R) :
 Proof. split=> -[ ge0_mu le1]; split=> //.
 + by apply/le1; rewrite /index_enum -enumT enum_uniq.
 + move=> J uqJ; rewrite big_uniq 1?(le_trans _ le1) //=.
-  by rewrite [X in _<=X](bigID (mem J)) /= ler_addl sumr_ge0.
+  by rewrite [X in _<=X](bigID (mem J)) /= lerDl sumr_ge0.
 Qed.
 
 Lemma le1_mu1
@@ -268,7 +268,7 @@ Local Lemma has_sup_mrat s J : uniq J -> \sum_(i <- J) mrat s i <= 1.
 Proof.
 move=> uqJ; rewrite -mulr_suml /= -natr_sum; case: (size s =P 0%N).
   by move=> ->; rewrite invr0 mulr0 ler01.
-move=> /eqP nz_s; rewrite ler_pdivr_mulr ?ltr0n ?lt0n // mul1r.
+move=> /eqP nz_s; rewrite ler_pdivrMr ?ltr0n ?lt0n // mul1r.
 rewrite ler_nat (bigID (mem s)) /= [X in (_+X)%N]big1 ?addn0.
    by move=> i /count_memPn.
 have ->: (size s = \sum_(i <- undup s) count_mem i s)%N.
@@ -363,10 +363,10 @@ Proof.
 split=> [x|J uqJ]; first by apply/ge0_psum.
 rewrite /mlet psum_bigop; first by move=> y x; rewrite mulr_ge0.
   move=> u; apply/(le_summable (F2 := mu)) => //.
-  by move=> x; rewrite mulr_ge0 //= ler_pimulr ?le1_mu1.
+  by move=> x; rewrite mulr_ge0 //= ler_piMr ?le1_mu1.
 apply/(le_trans _ (le1_mu mu))/le_psum => //.
 move=> x; rewrite sumr_ge0 /= => [y _|]; first by rewrite mulr_ge0.
-rewrite -mulr_sumr ler_pimulr //; apply/(le_trans _ (le1_mu (f x))).
+rewrite -mulr_sumr ler_piMr //; apply/(le_trans _ (le1_mu (f x))).
 have := summable_mu (f x) => /gerfinseq_psum => /(_ _ uqJ).
 by apply/(le_trans _)/ler_sum=> y _; apply/ler_norm.
 Qed.
@@ -438,7 +438,7 @@ Proof.                          (* summable -> refactor *)
 move=> le_f; unlock dlet=> y /=; apply/le_psum/summable_mlet.
 move=> x; rewrite mulr_ge0 //=; case: (mu x =P 0).
   by move=> ->; rewrite !mul0r.
-by move/dinsuppPn/le_f/(_ y) => h; rewrite ler_pmul.
+by move/dinsuppPn/le_f/(_ y) => h; rewrite ler_pM.
 Qed.
 
 Lemma le_mu_dlet f mu nu : mu <=1 nu -> dlet f mu <=1 dlet f nu.
@@ -446,7 +446,7 @@ Proof.
 move=> le_mu x; unlock dlet; rewrite /= /mlet.
 apply/le_psum/summable_mlet => y; rewrite mulr_ge0 //=.
 case: (mu y =P 0) => [->|]; first by rewrite mul0r mulr_ge0.
-by move=>/dinsuppPn=> h; rewrite ler_pmul.
+by move=>/dinsuppPn=> h; rewrite ler_pM.
 Qed.
 
 Lemma le_dlet f g mu nu :
@@ -496,7 +496,7 @@ Proof.
 unlock dlet; rewrite /= /mlet => /eq0_psum h x /dinsuppP /eqP mu_x.
 have {}/h: summable (fun x => mu x * F x y).
   apply/(le_summable (F2 := mu)) => // z.
-  by rewrite mulr_ge0 //= ler_pimulr // le1_mu1.
+  by rewrite mulr_ge0 //= ler_piMr // le1_mu1.
 by move/(_ x)/eqP; rewrite mulf_eq0 (negbTE mu_x) /= => /eqP.
 Qed.
 End BindTheory.
@@ -516,9 +516,9 @@ rewrite (eq_psum (F2 := fun y => psum (S^~ y))) => [x|].
 rewrite __admitted__interchange_psum.
 + by move=> x; apply/summableZ/summable_mlet.
 + rewrite {}/S; apply/(le_summable (F2 := mu)) => //.
-  move=> x; rewrite ge0_psum /= psumZ ?ler_pimulr //.
+  move=> x; rewrite ge0_psum /= psumZ ?ler_piMr //.
   apply/(le_trans _ (le1_mu (f1 x)))/le_psum => //.
-  by move=> y; rewrite mulr_ge0 //= ler_pimulr ?le1_mu1.
+  by move=> y; rewrite mulr_ge0 //= ler_piMr ?le1_mu1.
 apply/eq_psum=> y /=; rewrite -psumZr //.
 by apply/eq_psum=> x /=; rewrite {}/S mulrA.
 Qed.
@@ -861,7 +861,7 @@ Implicit Types (mu : {distr T / R}) (A B E : pred T).
 Lemma summable_pr E mu : summable (fun x => (E x)%:R * mu x).
 Proof.
 apply/(le_summable (F2 := mu)) => [x|]; last by apply/summable_mu.
-  by rewrite mulr_ge0 ?ler0n //= ler_pimull // lern1 leq_b1.
+  by rewrite mulr_ge0 ?ler0n //= ler_piMl // lern1 leq_b1.
 Qed.
 
 Lemma pr_pred0 mu : \P_[mu] pred0 = 0.
@@ -1000,7 +1000,7 @@ Proof.
 move=> le_BA; apply/le_psum; last first.
   apply/summableMl => //; exists 1=> // x.
   by rewrite ger0_norm ?(ler0n, lern1) ?leq_b1.
-move=> x; rewrite mulr_ge0 ?ler0n ?ler_wpmul2r //.
+move=> x; rewrite mulr_ge0 ?ler0n ?ler_wpM2r //.
 rewrite ler_nat; have := le_BA x; rewrite -!topredE /=.
 by case: (B x) => // ->.
 Qed.
@@ -1015,7 +1015,7 @@ Lemma le_exp mu f1 f2: \E?_[mu] f1 -> \E?_[mu] f2 ->
   f1 <=1 f2 -> \E_[mu] f1 <= \E_[mu] f2.
 Proof.
 move=> sm1 sm2 le_f; apply/le_sum => //.
-by move=> x; rewrite ler_wpmul2r.
+by move=> x; rewrite ler_wpM2r.
 Qed.
 
 Lemma le_in_pr E1 E2 mu :
@@ -1024,7 +1024,7 @@ Lemma le_in_pr E1 E2 mu :
 Proof.
 move=> le; rewrite /pr; apply/le_psum; last by apply/summable_pr.
 move=> x; rewrite mulr_ge0 ?ler0n //=; case/boolP: (x \in dinsupp mu).
-  move/le; rewrite -!topredE /= => E12; rewrite ler_wpmul2r //.
+  move/le; rewrite -!topredE /= => E12; rewrite ler_wpM2r //.
   by rewrite ler_nat; case: (E1 x) E12 => // ->.
 by move/dinsuppPn=> ->; rewrite !mulr0.
 Qed.
@@ -1044,7 +1044,7 @@ Lemma le1_prc A B mu : \P_[mu, B] A <= 1.
 Proof.
 have := ge0_pr B mu; rewrite /prc le_eqVlt.
 case/orP=> [/eqP<-|]; first by rewrite invr0 mulr0 ler01.
-by move/ler_pdivr_mulr=> ->; rewrite mul1r le_in_pr // => x _ /andP[].
+by move/ler_pdivrMr=> ->; rewrite mul1r le_in_pr // => x _ /andP[].
 Qed.
 
 Lemma prc_sum A mu : 0 < \P_[mu] A ->
@@ -1137,11 +1137,11 @@ Proof. by rewrite pr_or opprB addrCA subrr addr0. Qed.
 
 Lemma ler_pr_or A B mu :
   \P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B.
-Proof. by rewrite pr_or ler_subl_addr ler_addl ge0_pr. Qed.
+Proof. by rewrite pr_or lerBlDr lerDl ge0_pr. Qed.
 
 Lemma ler_pr_and A B mu :
   \P_[mu] [predI A & B] <= \P_[mu] A + \P_[mu] B.
-Proof. by rewrite pr_and ler_subl_addr ler_addl ge0_pr. Qed.
+Proof. by rewrite pr_and lerBlDr lerDl ge0_pr. Qed.
 
 Lemma pr_predC E mu: \P_[mu](predC E) = \P_[mu] predT - \P_[mu] E.
 Proof.
@@ -1174,11 +1174,11 @@ case=> M ltM; rewrite /has_esp; apply/summable_seqP.
 exists (Num.max M 0); first by rewrite le_maxr lexx orbT.
 move=> J uqJ; apply/(@le_trans _ _ (\sum_(j <- J) M * mu j)).
   apply/ler_sum=> j _; rewrite normrM [X in _*X]ger0_norm //.
-  by apply/ler_wpmul2r=> //; apply/ltW.
+  by apply/ler_wpM2r=> //; apply/ltW.
 case: (ltrP M 0) => [lt0_M|ge0_M].
   rewrite ?(ltW lt0_M) // -mulr_sumr.
   by rewrite nmulr_rle0 //; apply/sumr_ge0.
-by rewrite -mulr_sumr ler_pimulr // -pr_mem ?le1_pr.
+by rewrite -mulr_sumr ler_piMr // -pr_mem ?le1_pr.
 Qed.
 
 Lemma bounded_has_exp mu F :
@@ -1199,7 +1199,7 @@ move=> ge0M bd; apply/(@le_trans _ _ (\E_[mu] (fun _ => M))).
   + by apply/bounded_has_exp; exists M.
   + by apply/has_expC.
   + by move=> x; apply/(le_trans _ (bd x))/ler_norm.
-by rewrite exp_cst ler_pimull // le1_pr.
+by rewrite exp_cst ler_piMl // le1_pr.
 Qed.
 
 Lemma __admitted__exp_dlet mu (nu : T -> {distr U / R}) F :
@@ -1246,19 +1246,19 @@ rewrite !big_cons; have := ge0_l j; rewrite le_eqVlt.
 case/orP => [/eqP<-|gt0_lj].
   by rewrite !Monoid.simpm /= !Monoid.simpm; apply/ih.
 rewrite !addrA => eq1; pose z := (li * xi + l j * x j) / (li + l j).
-have nz_lij: li + l j != 0 by rewrite gt_eqF ?ltr_paddl.
+have nz_lij: li + l j != 0 by rewrite gt_eqF ?ltr_wpDl.
 have/ih := eq1 => -/(_ _ z); rewrite [_ * (_ / _)]mulrC.
 rewrite mulfVK // => {}ih; apply/(le_trans (ih _)).
   by rewrite addr_ge0 ?ge0_l.
-rewrite ler_add2r {ih}/z [_ / _]mulrDl ![_*_/_]mulrAC.
+rewrite lerD2r {ih}/z [_ / _]mulrDl ![_*_/_]mulrAC.
 set c1 : R := _ / _; set c2 : R := _ / _; have eqc2: c2 = 1 - c1.
   apply/(mulfI nz_lij); rewrite mulrBr mulr1 ![(li + l j)*_]mulrC.
   by apply/eqP; rewrite !mulfVK // eq_sym subr_eq addrC.
 set c := (li + l j); pose z := (c * c1 * f xi + c * c2 * f (x j)).
 apply/(@le_trans _ _ z); last by rewrite /z ![_*(_/_)]mulrC !mulfVK.
-rewrite {}/z -![c * _ * _]mulrA -mulrDr ler_wpmul2l ?addr_ge0 //.
+rewrite {}/z -![c * _ * _]mulrA -mulrDr ler_wpM2l ?addr_ge0 //.
 rewrite eqc2 cvx_f // ?leNye ?leey // divr_ge0 ?addr_ge0 //=.
-by rewrite ler_pdivr_mulr ?mul1r ?ler_addl ?ltr_paddl.
+by rewrite ler_pdivrMr ?mul1r ?lerDl ?ltr_wpDl.
 Qed.
 End Jensen.
 End Jensen.

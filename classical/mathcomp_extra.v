@@ -195,8 +195,8 @@ Implicit Types i : interval R.
 Lemma mem_miditv i : (i.1 < i.2)%O -> miditv i \in i.
 Proof.
 move: i => [[ba a|[]] [bb b|[]]] //= ab; first exact: mid_in_itv.
-  by rewrite !in_itv -lteif_subl_addl subrr lteif01.
-by rewrite !in_itv lteif_subl_addr -lteif_subl_addl subrr lteif01.
+  by rewrite !in_itv -lteifBlDl subrr lteif01.
+by rewrite !in_itv lteifBlDr -lteifBlDl subrr lteif01.
 Qed.
 
 Lemma miditv_le_left i b : (i.1 < i.2)%O -> (BSide b (miditv i) <= i.2)%O.
@@ -236,7 +236,7 @@ End itv_porderType.
 
 Lemma sumr_le0 (R : numDomainType) I (r : seq I) (P : pred I) (F : I -> R) :
   (forall i, P i -> F i <= 0)%R -> (\sum_(i <- r | P i) F i <= 0)%R.
-Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_naddl/F0. Qed.
+Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_wnDl/F0. Qed.
 
 Lemma enum_ord0 : enum 'I_0 = [::].
 Proof. by apply/eqP; rewrite -size_eq0 size_enum_ord. Qed.
@@ -372,10 +372,10 @@ Proof. by rewrite -mulr2n -mulr_natr mulfVK //= pnatr_eq0. Qed.
 
 Lemma ler_addgt0Pr x y : reflect (forall e, e > 0 -> x <= y + e) (x <= y).
 Proof.
-apply/(iffP idP)=> [lexy e e_gt0 | lexye]; first by rewrite ler_paddr// ltW.
+apply/(iffP idP)=> [lexy e e_gt0 | lexye]; first by rewrite ler_wpDr// ltW.
 have [||ltyx]// := comparable_leP.
   rewrite (@comparabler_trans _ (y + 1))// /Order.comparable ?lexye ?ltr01//.
-  by rewrite ler_addl ler01 orbT.
+  by rewrite lerDl ler01 orbT.
 have /midf_lt [_] := ltyx; rewrite le_gtF//.
 rewrite -(subrKA y) addrACA 2!mulrDl -splitr lexye//.
 by rewrite addrC divr_gt0// ?ltr0n// subr_gt0.
@@ -390,9 +390,9 @@ Lemma in_segment_addgt0Pr x y z :
   reflect (forall e, e > 0 -> y \in `[x - e, z + e]) (y \in `[x, z]).
 Proof.
 apply/(iffP idP)=> [xyz e /[dup] e_gt0 /ltW e_ge0 | xyz_e].
-  by rewrite in_itv /= ler_subl_addr !ler_paddr// (itvP xyz).
+  by rewrite in_itv /= lerBlDr !ler_wpDr// (itvP xyz).
 by rewrite in_itv /= ; apply/andP; split; apply/ler_addgt0Pr => ? /xyz_e;
-   rewrite in_itv /= ler_subl_addr => /andP [].
+   rewrite in_itv /= lerBlDr => /andP [].
 Qed.
 
 Lemma in_segment_addgt0Pl x y z :
@@ -404,14 +404,14 @@ Qed.
 
 Lemma lt_le a b : (forall x, x < a -> x < b) -> a <= b.
 Proof.
-move=> ab; apply/ler_addgt0Pr => e e_gt0; rewrite -ler_subl_addr ltW//.
-by rewrite ab // ltr_subl_addr -ltr_subl_addl subrr.
+move=> ab; apply/ler_addgt0Pr => e e_gt0; rewrite -lerBlDr ltW//.
+by rewrite ab // ltrBlDr -ltrBlDl subrr.
 Qed.
 
 Lemma gt_ge a b : (forall x, b < x -> a < x) -> a <= b.
 Proof.
 move=> ab; apply/ler_addgt0Pr => e e_gt0.
-by rewrite ltW// ab// -ltr_subl_addl subrr.
+by rewrite ltW// ab// -ltrBlDl subrr.
 Qed.
 
 End lt_le_gt_ge.
@@ -491,10 +491,10 @@ Lemma onem_ge0 r : r <= 1 -> 0 <= `1-r.
 Proof. by rewrite le_eqVlt => /predU1P[->|/onem_gt0/ltW]; rewrite ?onem1. Qed.
 
 Lemma onem_le1 r : 0 <= r -> `1-r <= 1.
-Proof. by rewrite ler_subl_addr ler_addl. Qed.
+Proof. by rewrite lerBlDr lerDl. Qed.
 
 Lemma onem_lt1 r : 0 < r -> `1-r < 1.
-Proof. by rewrite ltr_subl_addr ltr_addl. Qed.
+Proof. by rewrite ltrBlDr ltrDl. Qed.
 
 Lemma onemX_ge0 r n : 0 <= r -> r <= 1 -> 0 <= `1-(r ^+ n).
 Proof. by move=> ? ?; rewrite subr_ge0 exprn_ile1. Qed.
@@ -525,15 +525,15 @@ Lemma ler_gtP (R : numFieldType) (x y : R) :
 Proof.
 apply: (equivP (ler_addgt0Pr _ _)); split=> [xy z|xz e e_gt0].
   by rewrite -subr_gt0 => /xy; rewrite addrC addrNK.
-by apply: xz; rewrite -[ltLHS]addr0 ler_lt_add.
+by apply: xz; rewrite -[ltLHS]addr0 ler_ltD.
 Qed.
 
 Lemma ler_ltP (R : numFieldType) (x y : R) :
   reflect (forall z, z < x -> z <= y) (x <= y).
 Proof.
 apply: (equivP (ler_addgt0Pr _ _)); split=> [xy z|xz e e_gt0].
-  by rewrite -subr_gt0 => /xy; rewrite addrCA -[leLHS]addr0 ler_add2l subr_ge0.
-by rewrite -ler_subl_addr xz// -[ltRHS]subr0 ler_lt_sub.
+  by rewrite -subr_gt0 => /xy; rewrite addrCA -[leLHS]addr0 lerD2l subr_ge0.
+by rewrite -lerBlDr xz// -[ltRHS]subr0 ler_ltB.
 Qed.
 
 Definition inv_fun T (R : unitRingType) (f : T -> R) x := (f x)^-1%R.
@@ -709,7 +709,7 @@ Let a4gt0 : 0 < 4%:R * a. Proof. by rewrite mulr_gt0 ?ltr0n. Qed.
 Lemma deg2_poly_min x : p.[- b / (2%:R * a)] <= p.[x].
 Proof.
 rewrite [p]deg2_poly_canonical ?pnatr_eq0// -/a -/b -/c /delta !hornerE/=.
-by rewrite ler_pmul2l// ler_add2r addrC mulNr subrr ?mulr0 ?expr0n sqr_ge0.
+by rewrite ler_pM2l// lerD2r addrC mulNr subrr ?mulr0 ?expr0n sqr_ge0.
 Qed.
 
 Lemma deg2_poly_minE : p.[- b / (2%:R * a)] = - delta / (4%:R * a).
@@ -722,9 +722,9 @@ Qed.
 Lemma deg2_poly_ge0 : reflect (forall x, 0 <= p.[x]) (delta <= 0).
 Proof.
 apply/(iffP idP) => [dlt0 x | /(_ (- b / (2%:R * a)))]; last first.
-  by rewrite deg2_poly_minE ler_pdivl_mulr// mul0r oppr_ge0.
+  by rewrite deg2_poly_minE ler_pdivlMr// mul0r oppr_ge0.
 apply: le_trans (deg2_poly_min _).
-by rewrite deg2_poly_minE ler_pdivl_mulr// mul0r oppr_ge0.
+by rewrite deg2_poly_minE ler_pdivlMr// mul0r oppr_ge0.
 Qed.
 
 End Pdeg2RealConvex.
@@ -809,7 +809,7 @@ pose r2 := (- b + Num.sqrt delta) / (2%:R * a).
 pose x0 := Num.max (r1 + 1) (r2 + 1).
 move: (pge0 x0); rewrite (Real.deg2_poly_factor degp' (ltW dge0)).
 rewrite !hornerE/= -mulrA nmulr_rge0// leNgt => /negbTE<-.
-by apply: mulr_gt0; rewrite subr_gt0 lt_maxr ltr_addl ltr01 ?orbT.
+by apply: mulr_gt0; rewrite subr_gt0 lt_maxr ltrDl ltr01 ?orbT.
 Qed.
 
 End Degle2PolyRealClosedConvex.

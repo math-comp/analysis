@@ -4905,7 +4905,7 @@ exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
   by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
 move=> E; rewrite -entourage_ballE => -[e e0 subE].
 exists `|floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
-rewrite /= -[leRHS]invrK lef_pinv ?posrE ?invr_gt0// -natr1.
+rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// -natr1.
 by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// lt_succ_floor.
 Qed.
 
@@ -5316,7 +5316,7 @@ Lemma subset_ball_prop_in_itvcc (R : realDomainType) (x : R) e P : 0 < e ->
   {in `[(x - e), (x + e)], forall y, P y}.
 Proof.
 move=> e_gt0 PP y; rewrite in_itv/= -ler_distlC => ye; apply: PP => /=.
-by rewrite (le_lt_trans ye)// ltr_pmull// ltr1n.
+by rewrite (le_lt_trans ye)// ltr_pMl// ltr1n.
 Qed.
 
 Global Instance ball_filter (R : realFieldType) (t : R) : Filter
@@ -5341,7 +5341,7 @@ Lemma ball_norm_triangle (x y z : R) (e1 e2 : K) :
   ball_ Num.norm x e1 y -> ball_ Num.norm y e2 z -> ball_ Num.norm x (e1 + e2) z.
 Proof.
 move=> /= ? ?; rewrite -(subr0 x) -(subrr y) opprD opprK addrA -(addrA _ y).
-by rewrite (le_lt_trans (ler_norm_add _ _)) // ltr_add.
+by rewrite (le_lt_trans (ler_normD _ _)) // ltrD.
 Qed.
 
 Lemma nbhs_ball_normE :
@@ -5395,7 +5395,7 @@ apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2)%R; apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
 rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
-by rewrite {2}(splitr e%:num) ltr_spaddl.
+by rewrite {2}(splitr e%:num) ltr_pwDl.
 Qed.
 
 Definition uniform_fun {U : Type} (A : set U) (V : Type) := U -> V.
@@ -5687,7 +5687,7 @@ apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2)%R; apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
 rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
-by rewrite {2}(splitr e%:num) ltr_spaddl.
+by rewrite {2}(splitr e%:num) ltr_pwDl.
 Qed.
 
 Definition dense (T : topologicalType) (S : set T) :=
@@ -5704,10 +5704,10 @@ Qed.
 Lemma dense_rat (R : realType) : dense (@ratr R @` setT).
 Proof.
 move=> A [r Ar]; rewrite openE => /(_ _ Ar)/nbhs_ballP[_/posnumP[e] reA].
-have /rat_in_itvoo[q /itvP qre] : r < r + e%:num by rewrite ltr_addl.
+have /rat_in_itvoo[q /itvP qre] : r < r + e%:num by rewrite ltrDl.
 exists (ratr q) => //; split; last by exists q.
 apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
-by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
+by rewrite (@le_lt_trans _ _ r)// ?qre// lerBlDl lerDr ltW.
 Qed.
 
 Section weak_pseudoMetric.
@@ -5890,7 +5890,7 @@ Local Lemma distN_le e1 e2 : e1 > 0 -> e1 <= e2 -> (distN e2 <= distN e1)%N.
 Proof.
 move=> e1pos e1e2; rewrite /distN; apply: lez_abs2.
   by rewrite floor_ge0 ltW// invr_gt0 (lt_le_trans _ e1e2).
-by rewrite le_floor// lef_pinv ?invrK ?invr_gt0//; exact: (lt_le_trans _ e1e2).
+by rewrite le_floor// lef_pV2 ?invrK ?invr_gt0//; exact: (lt_le_trans _ e1e2).
 Qed.
 
 Local Fixpoint n_step_ball n x e z :=
@@ -5981,7 +5981,7 @@ move: x e1 e2; elim: n.
   by apply: descendG; last (exact: gxy); exact: distN_le.
 move=> n IH x e1 e2 e1e2 z [y] [d1] [d2] [] /IH P d1pos d2pos gyz d1d2e1.
 have d1e1d2 : d1 = e1 - d2 by rewrite -d1d2e1 -addrA subrr addr0.
-have e2d2le : e1 - d2 <= e2 - d2 by exact: ler_sub.
+have e2d2le : e1 - d2 <= e2 - d2 by exact: lerB.
 exists y, (e2 - d2), d2; split => //.
 - by apply: P; apply: le_trans e2d2le; rewrite d1e1d2.
 - by apply: lt_le_trans e2d2le; rewrite -d1e1d2.
@@ -5995,7 +5995,7 @@ Proof. by move=> e1e2 ? [n P]; exists n; exact: (n_step_ball_le e1e2). Qed.
 Local Lemma distN_half (n : nat) : n.+1%:R^-1 / (2:R) <= n.+2%:R^-1.
 Proof.
 rewrite -invrM //; [|exact: unitf_gt0 |exact: unitf_gt0].
-rewrite lef_pinv ?posrE // -?natrM ?ler_nat -addn1 -addn1 -addnA mulnDr.
+rewrite lef_pV2 ?posrE // -?natrM ?ler_nat -addn1 -addn1 -addnA mulnDr.
 by rewrite muln1 leq_add2r leq_pmull.
 Qed.
 
@@ -6015,25 +6015,25 @@ move: e1 e2 x z; elim: n.
     move=> e1d1; exists x, y, 0%N, 0%N; split.
     - exact: n_step_ball_center.
     - apply: n_step_ball_le; last exact: Oxy.
-      by rewrite -deE ler_addl; apply: ltW.
+      by rewrite -deE lerDl; apply: ltW.
     - apply: (@n_step_ball_le _ _ d2); last by split.
-      rewrite -[e2]addr0 -(subrr e1) addrA -ler_subl_addr opprK addrC.
-      by rewrite [e2 + _]addrC -deE; exact: ler_add.
+      rewrite -[e2]addr0 -(subrr e1) addrA -lerBlDr opprK addrC.
+      by rewrite [e2 + _]addrC -deE; exact: lerD.
     - by rewrite addn0.
   move=> /negP; rewrite -real_ltNge ?num_real //.
   move=> e1d1; exists y, z, 0%N, 0%N; split.
   - by apply: n_step_ball_le; last (exact: Oxy); exact: ltW.
   - rewrite -deE; apply: (@n_step_ball_le _ _ d2) => //.
-    by rewrite ler_addr; apply: ltW.
+    by rewrite lerDr; apply: ltW.
   - exact: n_step_ball_center.
   - by rewrite addn0.
 move=> n IH e1 e2 x z e1pos e2pos [y] [d1] [d2] [] Od1xy d1pos d2pos gd2yz deE.
 case: (pselect (e2 <= d2)).
   move=> e2d2; exists y, z, n.+1, 0%N; split.
   - apply: (@n_step_ball_le _ _ d1); rewrite // -[e1]addr0 -(subrr e2) addrA.
-    by rewrite -deE -ler_subl_addr opprK ler_add.
+    by rewrite -deE -lerBlDr opprK lerD.
   - apply: (@n_step_ball_le _ _ d2); last by split.
-    by rewrite -deE ler_addr; exact: ltW.
+    by rewrite -deE lerDr; exact: ltW.
   - exact: n_step_ball_center.
   - by rewrite addn0.
 have d1E' : d1 = e1 + (e2 - d2).
@@ -6042,7 +6042,7 @@ move=> /negP; rewrite -?real_ltNge // ?num_real // => d2lee2.
   case: (IH e1 (e2 - d2) x y); rewrite ?subr_gt0 // -d1E' //.
   move=> t1 [t2] [c1] [c2] [] Oxy1 gt1t2 t2y <-.
   exists t1, t2, c1, c2.+1; split => //.
-  - by apply: (@n_step_ball_le _ _ d1); rewrite -?deE // ?ler_addl; exact: ltW.
+  - by apply: (@n_step_ball_le _ _ d1); rewrite -?deE // ?lerDl; exact: ltW.
   - exists y, (e2 - d2), d2; split; rewrite // ?subr_gt0//.
     by rewrite -addrA [-_ + _]addrC subrr addr0.
   - by rewrite addnS.

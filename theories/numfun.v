@@ -187,14 +187,14 @@ Lemma lt0_funeposM r f : (r < 0)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => - r%:E * (f^\- x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funeposN gt0_funenegM -1?ltr_oppr ?oppr0.
+by rewrite funeposN gt0_funenegM -1?ltrNr ?oppr0.
 Qed.
 
 Lemma lt0_funenegM r f : (r < 0)%R ->
   (fun x => r%:E * f x)^\- = (fun x => - r%:E * (f^\+ x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funenegN gt0_funeposM -1?ltr_oppr ?oppr0.
+by rewrite funenegN gt0_funeposM -1?ltrNr ?oppr0.
 Qed.
 
 Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.

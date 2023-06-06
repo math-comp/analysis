@@ -112,17 +112,17 @@ case: l1 l2 => [l1||] [l2||] //= lt_l12; last first.
 + exists (NNInf 0), (NPInf 1) => x y; rewrite !inE => lt1 lt2.
   by apply/(lt_trans lt1)/(lt_trans ltr01).
 + exists (NNInf (l2-1)), (B1 l2) => x y; rewrite !inE.
-  rewrite ltr_norml [-1 < _]ltr_subr_addl.
+  rewrite ltr_norml [-1 < _]ltrBrDl.
   by move => lt1 /andP[lt2 _]; apply/(lt_trans lt1).
 + exists (B1 l1), (NPInf (l1+1)) => x y; rewrite !inE.
-  rewrite ltr_norml ltr_subl_addr [1+_]addrC => /andP[_].
+  rewrite ltr_norml ltrBlDr [1+_]addrC => /andP[_].
   by move=> lt1 lt2; apply/(lt_trans lt1).
 pose e := l2 - l1; exists (B l1 (e/2%:R)), (B l2 (e/2%:R)).
 have gt0_e: 0 < e by rewrite subr_gt0.
 move=> x y; rewrite !inE/= /eclamp pmulr_rle0 // invr_le0.
 rewrite lern0 /= !ltr_distl => /andP[_ lt1] /andP[lt2 _].
 apply/(lt_trans lt1)/(le_lt_trans _ lt2).
-by rewrite ler_subr_addl addrCA -splitr /e addrCA subrr addr0.
+by rewrite lerBrDl addrCA -splitr /e addrCA subrr addr0.
 Qed.
 
 Lemma separable {R : realType} (l1 l2 : \bar R) :
@@ -209,14 +209,14 @@ Lemma ncvg_nbounded u x : ncvg u x%:E -> nbounded u.
 Proof.                   (* FIXME: factor out `sup` of a finite set *)
 case/(_ (B x 1)) => K cu; pose S := [seq `|u n| | n <- iota 0 K].
 pose M : R := sup [set x : R | x \in S]; pose e := Num.max (`|x| + 1) (M + 1).
-apply/asboolP/nboundedP; exists e => [|n]; first by rewrite lt_maxr ltr_paddl.
+apply/asboolP/nboundedP; exists e => [|n]; first by rewrite lt_maxr ltr_wpDl.
 case: (ltnP n K); last first.
   move/cu; rewrite inE eclamp_id ?ltr01 // => ltunBx1.
   rewrite lt_maxr; apply/orP; left; rewrite -[u n](addrK x) addrAC.
-  by apply/(le_lt_trans (ler_norm_add _ _)); rewrite addrC ltr_add2l.
+  by apply/(le_lt_trans (ler_normD _ _)); rewrite addrC ltrD2l.
 move=> lt_nK; have: `|u n| \in S; first by apply/map_f; rewrite mem_iota.
 move=> un_S; rewrite lt_maxr; apply/orP; right.
-case E: {+}K lt_nK => [|k] // lt_nSk; apply/ltr_spaddr; first apply/ltr01.
+case E: {+}K lt_nK => [|k] // lt_nSk; apply/ltr_pwDr; first apply/ltr01.
 suff : has_sup (fun x : R => x \in S) by move/sup_upper_bound/ubP => ->.
 split; first by exists `|u 0%N|; rewrite /S E inE eqxx.
 elim: {+}S => [|v s [ux /ubP hux]]; first by exists 0; apply/ubP.
@@ -228,7 +228,7 @@ Qed.
 Lemma nboundedC c : nbounded c%:S.
 Proof.
 apply/asboolP/nboundedP; exists (`|c| + 1).
-  by rewrite ltr_spaddr. by move=> _; rewrite ltr_addl.
+  by rewrite ltr_pwDr. by move=> _; rewrite ltrDl.
 Qed.
 
 Lemma ncvgC c : ncvg c%:S c%:E.
@@ -243,10 +243,10 @@ Proof.
 move=> cu cv; elim/nbh_finW => e /= gt0_e; pose z := e / 2%:R.
 case: (cu (B lu z)) (cv (B lv z)) => [ku {}cu] [kv {}cv].
 exists (maxn ku kv) => n; rewrite geq_max => /andP[leu lev].
-rewrite inE opprD addrACA (le_lt_trans (ler_norm_add _ _)) //.
+rewrite inE opprD addrACA (le_lt_trans (ler_normD _ _)) //.
 move: (cu _ leu) (cv _ lev); rewrite !inE eclamp_id.
   by rewrite mulr_gt0 // invr_gt0 ltr0Sn.
-move=> cu' cv'; suff ->: e = z + z by rewrite ltr_add.
+move=> cu' cv'; suff ->: e = z + z by rewrite ltrD.
 exact: splitr.
 Qed.
 
@@ -254,9 +254,9 @@ Lemma ncvgN u lu : ncvg u lu -> ncvg (- u) (- lu).
 Proof.
 case: lu => [lu||] cu /=; first last.
 + elim/nbh_pinfW=> M; case: (cu (NNInf (-M))) => K {}cu.
-  by exists K => n /cu; rewrite !inE ltr_oppr.
+  by exists K => n /cu; rewrite !inE ltrNr.
 + elim/nbh_ninfW=> M; case: (cu (NPInf (-M))) => K {}cu.
-  by exists K => n /cu; rewrite !inE ltr_oppl.
+  by exists K => n /cu; rewrite !inE ltrNl.
 elim/nbh_finW => e /= gt0_e; case: (cu (B lu e)).
 by move=> K {}cu; exists K=> n /cu; rewrite !inE -opprD normrN eclamp_id.
 Qed.
@@ -285,10 +285,10 @@ Lemma ncvgMl u v : ncvg u 0%:E -> nbounded v -> ncvg (u \* v) 0%:E.
 move=> cu /asboolP/nboundedP [M gt0_M ltM]; elim/nbh_finW => e /= gt0_e.
 case: (cu (B 0 (e / (M + 1)))) => K {}cu; exists K => n le_Kn.
 rewrite inE subr0 normrM; apply/(@lt_trans _ _ (e / (M + 1) * M)).
-  apply/ltr_pmul => //; have /cu := le_Kn; rewrite inE subr0 eclamp_id //.
+  apply/ltr_pM => //; have /cu := le_Kn; rewrite inE subr0 eclamp_id //.
   by rewrite mulr_gt0 // invr_gt0 addr_gt0.
-rewrite -mulrAC -mulrA gtr_pmulr // ltr_pdivr_mulr ?addr_gt0 //.
-by rewrite mul1r ltr_addl.
+rewrite -mulrAC -mulrA gtr_pMr // ltr_pdivrMr ?addr_gt0 //.
+by rewrite mul1r ltrDl.
 Qed.
 
 Lemma ncvgMr u v : ncvg v 0%:E -> nbounded u -> ncvg (u \* v) 0%:E.
@@ -541,7 +541,7 @@ elim/nbh_finW=> /= e gt0_e; have sS: has_sup S.
 have /sup_adherent := sS => /(_ _ gt0_e) [r] [N ->] lt_uN.
 exists N => n le_Nn; rewrite !inE distrC ger0_norm ?subr_ge0.
   by move/ubP : (sup_upper_bound sS) => -> //; exists n.
-by rewrite ltr_subl_addr -ltr_subl_addl (lt_le_trans lt_uN) ?mn_u.
+by rewrite ltrBlDr -ltrBlDl (lt_le_trans lt_uN) ?mn_u.
 Qed.
 
 End LimOp.

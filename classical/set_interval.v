@@ -191,8 +191,8 @@ Qed.
 Lemma lb_ubN E x : lbound E x <-> ubound (-%R @` E) (- x).
 Proof.
 split=> [/lbP xlbE|/ubP xlbE].
-by move=> _ [z Ez <-]; rewrite ler_oppr opprK; apply xlbE.
-by move=> y Ey; rewrite -(opprK x) ler_oppl; apply xlbE; exists y.
+by move=> _ [z Ez <-]; rewrite lerNr opprK; apply xlbE.
+by move=> y Ey; rewrite -(opprK x) lerNl; apply xlbE; exists y.
 Qed.
 
 Lemma ub_lbN E x : ubound E x <-> lbound (-%R @` E) (- x).
@@ -238,10 +238,10 @@ Qed.
 Lemma has_lbPn E : ~ has_lbound E <-> (forall x, exists2 y, E y & y < x).
 Proof.
 split=> [/has_lb_ubN /has_ubPn NEnub x|Enlb /has_lb_ubN].
-  have [y ENy ltxy] := NEnub (- x); exists (- y); rewrite 1?ltr_oppl //.
+  have [y ENy ltxy] := NEnub (- x); exists (- y); rewrite 1?ltrNl //.
   by case: ENy => z Ez <-; rewrite opprK.
 apply/has_ubPn => x; have [y Ey ltyx] := Enlb (- x).
-exists (- y); last by rewrite ltr_oppr.
+exists (- y); last by rewrite ltrNr.
 by exists y => //; rewrite opprK.
 Qed.
 
@@ -252,10 +252,10 @@ move: a => [b r|[|]] _ //.
   suff: ~ has_lbound `]-oo, r[%classic.
     by case: b => //; apply/contra_not/subset_has_lbound => x /ltW.
   apply/has_lbPn => x; exists (minr (r - 1) (x - 1)).
-    by rewrite !set_itvE/= lt_minl ltr_subl_addr ltr_addl ltr01.
-  by rewrite lt_minl orbC ltr_subl_addr ltr_addl ltr01.
+    by rewrite !set_itvE/= lt_minl ltrBlDr ltrDl ltr01.
+  by rewrite lt_minl orbC ltrBlDr ltrDl ltr01.
 case=> r /(_ (r - 1)) /=; rewrite in_itv /= => /(_ erefl).
-by apply/negP; rewrite -ltNge ltr_subl_addr ltr_addl.
+by apply/negP; rewrite -ltNge ltrBlDr ltrDl.
 Qed.
 
 Lemma hasNubound_itv (a : itv_bound R) : a != +oo%O ->
@@ -266,9 +266,9 @@ move: a => [b r|[|]] _ //.
     case: b => //; apply/contra_not/subset_has_ubound => x.
     by rewrite !set_itvE => /ltW.
   apply/has_ubPn => x; rewrite !set_itvE; exists (maxr (r + 1) (x + 1));
-  by rewrite ?in_itv /= ?andbT lt_maxr ltr_addl ltr01 // orbT.
+  by rewrite ?in_itv /= ?andbT lt_maxr ltrDl ltr01 // orbT.
 case=> r /(_ (r + 1)) /=; rewrite in_itv /= => /(_ erefl).
-by apply/negP; rewrite -ltNge ltr_addl.
+by apply/negP; rewrite -ltNge ltrDl.
 Qed.
 
 End interval_hasNbound.
@@ -285,9 +285,9 @@ Lemma opp_itv_bnd_infty (R : numDomainType) (x : R) b :
   [set` Interval -oo%O (BSide (negb b) (- x))].
 Proof.
 rewrite predeqE => /= r; split=> [[y xy <-]|xr].
-  by case: b xy; rewrite !in_itv/= andbT (ler_opp2, ltr_opp2).
+  by case: b xy; rewrite !in_itv/= andbT (lerN2, ltrN2).
 exists (- r); rewrite ?opprK //.
-by case: b xr; rewrite !in_itv/= andbT (ler_oppr, ltr_oppr).
+by case: b xr; rewrite !in_itv/= andbT (lerNr, ltrNr).
 Qed.
 
 Lemma opp_itv_infty_bnd (R : numDomainType) (x : R) b :
@@ -295,9 +295,9 @@ Lemma opp_itv_infty_bnd (R : numDomainType) (x : R) b :
   [set` Interval (BSide (negb b) (- x)) +oo%O].
 Proof.
 rewrite predeqE => /= r; split=> [[y xy <-]|xr].
-  by case: b xy; rewrite !in_itv/= andbT (ler_opp2, ltr_opp2).
+  by case: b xy; rewrite !in_itv/= andbT (lerN2, ltrN2).
 exists (- r); rewrite ?opprK //.
-by case: b xr; rewrite !in_itv/= andbT (ler_oppl, ltr_oppl).
+by case: b xr; rewrite !in_itv/= andbT (lerNl, ltrNl).
 Qed.
 
 Lemma opp_itv_bnd_bnd (R : numDomainType) a b (x y : R) :
@@ -305,17 +305,17 @@ Lemma opp_itv_bnd_bnd (R : numDomainType) a b (x y : R) :
   [set` Interval (BSide (~~ b) (- y)) (BSide (~~ a) (- x))].
 Proof.
 rewrite predeqE => /= r; split => [[{}r + <-]|].
-  by rewrite !in_itv/= 2!lteif_opp2 negbK andbC.
+  by rewrite !in_itv/= 2!lteifN2 negbK andbC.
 rewrite in_itv/= negbK => yrab.
-by exists (- r); rewrite ?opprK// !in_itv lteif_oppr andbC lteif_oppl.
+by exists (- r); rewrite ?opprK// !in_itv lteifNr andbC lteifNl.
 Qed.
 
 Lemma opp_itvoo (R : numDomainType) (x y : R) :
   -%R @` `]x, y[%classic = `](- y), (- x)[%classic.
 Proof.
 rewrite predeqE => /= r; split => [[{}r + <-]|].
-  by rewrite !in_itv/= !ltr_opp2 andbC.
-by exists (- r); rewrite ?opprK// !in_itv/= ltr_oppl ltr_oppr andbC.
+  by rewrite !in_itv/= !ltrN2 andbC.
+by exists (- r); rewrite ?opprK// !in_itv/= ltrNl ltrNr andbC.
 Qed.
 
 (* lemmas between itv and set-theoretic operations *)
@@ -352,7 +352,7 @@ Variable R : numDomainType.
 Implicit Types (a b t r : R) (A : set R).
 
 Lemma mem_1B_itvcc t : (1 - t \in `[0, 1]) = (t \in `[0, 1]).
-Proof. by rewrite !in_itv/= subr_ge0 ger_addl oppr_le0 andbC. Qed.
+Proof. by rewrite !in_itv/= subr_ge0 gerDl oppr_le0 andbC. Qed.
 
 Definition line_path a b t : R := (1 - t) * a + t * b.
 
@@ -385,14 +385,14 @@ Proof. by apply/funext => t; rewrite line_pathEl subrr mulr0 add0r. Qed.
 
 Lemma leW_line_path a b : a <= b -> {homo line_path a b : x y / x <= y}.
 Proof.
-by move=> ? ? ? ?; rewrite !line_pathEl ler_add ?ler_wpmul2r// subr_ge0.
+by move=> ? ? ? ?; rewrite !line_pathEl lerD ?ler_wpM2r// subr_ge0.
 Qed.
 
 Definition factor a b x := (x - a) / (b - a).
 
 Lemma leW_factor a b : a <= b -> {homo factor a b : x y / x <= y}.
 Proof.
-by move=> ? ? ? ?; rewrite /factor ler_wpmul2r ?ler_add// invr_ge0 subr_ge0.
+by move=> ? ? ? ?; rewrite /factor ler_wpM2r ?lerD// invr_ge0 subr_ge0.
 Qed.
 
 Lemma factor_flat a : factor a a = cst 0.
@@ -469,9 +469,9 @@ Proof.
 move=> ltab; rewrite -ndline_pathE.
 apply: bij_subr => //=; rewrite setTI ?ndline_pathE.
 apply/predeqP => t /=; rewrite !in_itv/= {1}line_pathEl line_pathEr.
-rewrite -lteif_subl_addr subrr -lteif_pdivr_mulr ?subr_gt0// mul0r.
-rewrite -lteif_subr_addr subrr -lteif_ndivr_mulr ?subr_lt0// mul0r.
-by rewrite lteif_subr_addl addr0.
+rewrite -lteifBlDr subrr -lteif_pdivrMr ?subr_gt0// mul0r.
+rewrite -lteifBrDr subrr -lteif_ndivrMr ?subr_lt0// mul0r.
+by rewrite lteifBrDl addr0.
 Qed.
 
 Lemma factor_itv_bij ba bb a b : a < b ->
