@@ -362,14 +362,11 @@ Proof. by move=> + G Gs x => /(_ x)/cid[x' <-]. Qed.
 Arguments canon {T U sort} x.
 
 Lemma Peq : canonical Type eqType.
-Proof. by apply: canon => T; exists  [eqType of {classic T}]. Qed.
+Proof. by apply: canon => T; exists {classic T}. Qed.
 Lemma Pchoice : canonical Type choiceType.
-Proof. by apply: canon => T; exists [choiceType of {classic T}]. Qed.
+Proof. by apply: canon => T; exists {classic T}. Qed.
 Lemma eqPchoice : canonical eqType choiceType.
-Proof.
-apply: canon => T; exists [choiceType of {eclassic T}].
-by case: T => //= T [?]//.
-Qed.
+Proof. by apply: canon => T; exists {eclassic T}; case: T => //= T [?]//. Qed.
 
 Lemma not_True : (~ True) = False. Proof. exact/propext. Qed.
 Lemma not_False : (~ False) = True. Proof. by apply/propext; split=> _. Qed.
