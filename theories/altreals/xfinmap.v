@@ -125,7 +125,7 @@ Lemma big_fset_subset (I J : {fset T}) (F : T -> R) :
 Proof.
 move=> ge0_F le_IJ; rewrite !big_fset_seq /=.
 rewrite [X in _<=X](bigID [pred j : T | j \in I]) /=.
-rewrite ler_paddr ?sumr_ge0 // -[X in _<=X]big_filter.
+rewrite ler_wpDr ?sumr_ge0 // -[X in _<=X]big_filter.
 rewrite le_eqVlt; apply/orP; left; apply/eqP/perm_big.
 apply/uniq_perm; rewrite ?filter_uniq //; last move=> i.
 rewrite mem_filter; case/boolP: (_ \in _) => //=.

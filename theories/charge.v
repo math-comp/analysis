@@ -407,7 +407,7 @@ have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < t_ A.
   rewrite -(@fineK _ (t_ A)); last first.
     by rewrite ge0_fin_numE// ?(ltW d_gt0)// lt_neqAle dn1oo leey.
   rewrite -EFinM -fine_min// lte_fin lt_minl; apply/orP; left.
-  by rewrite ltr_pdivr_mulr// ltr_pmulr ?ltr1n// fine_gt0// d_gt0/= ltey.
+  by rewrite ltr_pdivrMr// ltr_pMr ?ltr1n// fine_gt0// d_gt0/= ltey.
 by exists B; split => //; rewrite (le_trans _ (ltW mnuB)).
 Qed.
 
@@ -421,9 +421,9 @@ move/cvgrPdist_lt : minr_cvg => /[apply] -[M _ hM].
 near=> n; rewrite sub0r normrN.
 have /hM : (M <= n)%N by near: n; exists M.
 rewrite sub0r normrN !ger0_norm// ?le_minr ?divr_ge0//=.
-rewrite -[X in minr _ X](@divrr _ 2) ?unitfE -?minr_pmull//.
-rewrite -[X in (_ < minr _ X)%R](@divrr _ 2) ?unitfE -?minr_pmull//.
-by rewrite ltr_pmul2r//; exact: lt_min_lt.
+rewrite -[X in minr _ X](@divrr _ 2) ?unitfE -?minr_pMl//.
+rewrite -[X in (_ < minr _ X)%R](@divrr _ 2) ?unitfE -?minr_pMl//.
+by rewrite ltr_pM2r//; exact: lt_min_lt.
 Unshelve. all: by end_near. Qed.
 
 Let mine_cvg_0_cvg_fin_num (x : (\bar R)^nat) : (forall k, 0 <= x k) ->
@@ -581,7 +581,7 @@ have /ereal_inf_lt/cid2[_ [B/= [mB BU] <-] nuBm] : s_ U < m.
   rewrite -(@fineK _ (s_ U)); last first.
     by rewrite le0_fin_numE// ?(ltW s_lt0)// lt_neqAle leNye eq_sym s0oo.
   rewrite -EFinM -fine_max// lte_fin lt_maxr; apply/orP; left.
-  by rewrite ltr_pdivl_mulr// gtr_nmulr ?ltr1n// fine_lt0// s_lt0/= ltNye andbT.
+  by rewrite ltr_pdivlMr// gtr_nMr ?ltr1n// fine_lt0// s_lt0/= ltNye andbT.
 have [C [CB nsC nuCB]] := hahn_decomposition_lemma nu mB.
 exists C; split => //; first exact: (subset_trans CB).
 by rewrite (le_trans nuCB)// (le_trans (ltW nuBm)).
@@ -627,7 +627,7 @@ have not_s_cvg_0 : ~ (z_ \o v) n @[n --> \oo]  --> 0.
   have /hM : (M <= n)%N by near: n; exists M.
   rewrite sub0r normrN /= ler0_norm ?fine_le0// ltr0_norm//; last first.
     by rewrite fine_lt0// nuD0 andbT ltNye_eq fin_num_measure.
-  rewrite ltr_opp2; apply/negP; rewrite -leNgt fine_le ?fin_num_measure//.
+  rewrite ltrN2; apply/negP; rewrite -leNgt fine_le ?fin_num_measure//.
   by near: n; exact.
 have nuN : nu N = \sum_(n <oo) nu (A_ (v n)).
   apply/esym/cvg_lim => //.

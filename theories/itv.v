@@ -345,7 +345,7 @@ Lemma opp_itv_boundr_subproof (x : R) b :
   (BRight (- x)%R <= Itv.map_itv_bound intr (opp_itv_bound_subdef b))%O
   = (Itv.map_itv_bound intr b <= BLeft x)%O.
 Proof.
-by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz ?ler_opp2 // ltr_opp2.
+by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz ?lerN2 // ltrN2.
 Qed.
 
 Lemma opp_itv_le0_subproof b :
@@ -362,7 +362,7 @@ Lemma opp_itv_boundl_subproof (x : R) b :
   (Itv.map_itv_bound intr (opp_itv_bound_subdef b) <= BLeft (- x)%R)%O
   = (BRight x <= Itv.map_itv_bound intr b)%O.
 Proof.
-by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz ?ler_opp2 // ltr_opp2.
+by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz ?lerN2 // ltrN2.
 Qed.
 
 Definition opp_itv_subdef (i : interval int) : interval int :=
@@ -376,9 +376,9 @@ Lemma opp_inum_subproof (i : interval int)
 Proof.
 rewrite {}/r; move: i x => [l u] [x /= /andP[xl xu]]; apply/andP; split.
 - by case: u xu => [[] b i | [] //] /=; rewrite /Order.le/= mulrNz;
-    do ?[by rewrite ler_oppl opprK|by rewrite ltr_oppl opprK].
+    do ?[by rewrite lerNl opprK|by rewrite ltrNl opprK].
 - by case: l xl => [[] b i | [] //] /=; rewrite /Order.le/= mulrNz;
-    do ?[by rewrite ltr_oppl opprK|by rewrite ler_oppl opprK].
+    do ?[by rewrite ltrNl opprK|by rewrite lerNl opprK].
 Qed.
 
 Canonical opp_inum (i : interval int) (x : {itv R & i}) :=
@@ -414,10 +414,10 @@ move: xi x yi y => [lx ux] [x /= /andP[xl xu]] [ly uy] [y /= /andP[yl yu]].
 rewrite /Itv.itv_cond in_itv; apply/andP; split.
 - move: lx ly xl yl => [xb lx | //] [yb ly | //].
   by move: xb yb => [] []; rewrite /Order.le/= rmorphD/=;
-    do ?[exact: ler_add|exact: ler_lt_add|exact: ltr_le_add|exact: ltr_add].
+    do ?[exact: lerD|exact: ler_ltD|exact: ltr_leD|exact: ltrD].
 - move: ux uy xu yu => [xb ux | //] [yb uy | //].
   by move: xb yb => [] []; rewrite /Order.le/= rmorphD/=;
-    do ?[exact: ler_add|exact: ler_lt_add|exact: ltr_le_add|exact: ltr_add].
+    do ?[exact: lerD|exact: ler_ltD|exact: ltr_leD|exact: ltrD].
 Qed.
 
 Canonical add_inum (xi yi : interval int)
@@ -511,19 +511,19 @@ move: b1 b2 => [[] b1 | []//] [[] b2 | []//] /=; rewrite 4!bnd_simp.
   have -> : bl = BLeft (b1 * b2).
     rewrite {}/bl; move: b1 b2 => [[|p1]|p1] [[|p2]|p2]; congr BLeft.
     by rewrite mulr0.
-  rewrite -2!(ler0z R) bnd_simp intrM; exact: ler_pmul.
+  rewrite -2!(ler0z R) bnd_simp intrM; exact: ler_pM.
 - case: b1 => [[|p1]|//]; rewrite -2!(ler0z R) !bnd_simp ?intrM.
     by move=> _ geb2 ? ?; apply: mulr_ge0 => //; apply/(le_trans geb2)/ltW.
   move=> p1gt0 b2ge0 lep1x1 ltb2x2.
   have: (Posz p1.+1)%:~R * x2 <= x1 * x2.
-    by rewrite ler_pmul2r //; apply: le_lt_trans ltb2x2.
-  by apply: lt_le_trans; rewrite ltr_pmul2l // ltr0z.
+    by rewrite ler_pM2r //; apply: le_lt_trans ltb2x2.
+  by apply: lt_le_trans; rewrite ltr_pM2l // ltr0z.
 - case: b2 => [[|p2]|//]; rewrite -2!(ler0z R) !bnd_simp ?intrM.
     by move=> geb1 _ ? ?; apply: mulr_ge0 => //; apply/(le_trans geb1)/ltW.
   move=> b1ge0 p2gt0 ltb1x1 lep2x2.
-  have: b1%:~R * x2 < x1 * x2; last exact/le_lt_trans/ler_pmul.
-  by rewrite ltr_pmul2r //; apply: lt_le_trans lep2x2; rewrite ltr0z.
-- rewrite -2!(ler0z R) bnd_simp intrM; exact: ltr_pmul.
+  have: b1%:~R * x2 < x1 * x2; last exact/le_lt_trans/ler_pM.
+  by rewrite ltr_pM2r //; apply: lt_le_trans lep2x2; rewrite ltr0z.
+- rewrite -2!(ler0z R) bnd_simp intrM; exact: ltr_pM.
 Qed.
 
 Lemma mul_itv_boundrC_subproof b1 b2 :
@@ -558,16 +558,16 @@ case: b1 => [[|p1]|p1].
     by move: (conj l l') => /andP/le_anti <-; rewrite mulr0.
   + move: b1b b2b => [] []; rewrite !bnd_simp;
       rewrite -[intRing.mulz ?[a] ?[b]]/((Posz ?[a]) * ?[b])%R intrM.
-    * exact: ltr_pmul.
+    * exact: ltr_pM.
     * move=> x1ge0 x2ge0 ltx1p1 lex2p2.
       have: x1 * p2.+1%:~R < p1.+1%:~R * p2.+1%:~R.
-        by rewrite ltr_pmul2r // ltr0z.
-      exact/le_lt_trans/ler_pmul.
+        by rewrite ltr_pM2r // ltr0z.
+      exact/le_lt_trans/ler_pM.
     * move=> x1ge0 x2ge0 lex1p1 ltx2p2.
       have: p1.+1%:~R * x2 < p1.+1%:~R * p2.+1%:~R.
-        by rewrite ltr_pmul2l // ltr0z.
-      exact/le_lt_trans/ler_pmul.
-    * exact: ler_pmul.
+        by rewrite ltr_pM2l // ltr0z.
+      exact/le_lt_trans/ler_pM.
+    * exact: ler_pM.
   + case: b2b => _ + _; rewrite 2!bnd_simp => l l'.
       by move: (le_lt_trans l l'); rewrite ltr0z.
     by move: (le_trans l l'); rewrite ler0z.

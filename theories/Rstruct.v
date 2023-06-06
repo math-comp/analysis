@@ -461,7 +461,7 @@ Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
 Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
-rewrite eq_sym -(eqr_expn2 (_: 0 < 2)%N t1) //; last by apply /RleP.
+rewrite eq_sym -(eqrXn2 (_: 0 < 2)%N t1) //; last by apply /RleP.
 rewrite sqr_sqrtr // !exprS expr0 mulr1 -RmultE ?sqrt_sqrt //; by apply/RleP.
 Qed.
 
@@ -558,7 +558,7 @@ Proof.
 move=> k0; elim: s => /= [|h [/=|h' t ih]].
 by rewrite bigmaxr_nil mulr0.
 by rewrite !bigmaxr_un.
-by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pmulr.
+by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pMr.
 Qed.
 
 #[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
