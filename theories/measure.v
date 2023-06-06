@@ -1864,7 +1864,7 @@ Section measure_count.
 Context d (T : measurableType d) (R : realType).
 Variables (D : set T) (mD : measurable D).
 
-Local Notation counting := (@counting [choiceType of T] R).
+Local Notation counting := (@counting T R).
 
 Let counting0 : counting set0 = 0.
 Proof. by rewrite /counting asboolT// fset_set0. Qed.

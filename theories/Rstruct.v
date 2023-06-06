@@ -142,9 +142,7 @@ Proof. by move=> /Rmult_integral []->; rewrite eqxx ?orbT. Qed.
 HB.instance Definition _ := GRing.ComUnitRing_isIntegral.Build R
   R_idomainMixin.
 
-Lemma R_fieldMixin : GRing.field_axiom [unitRingType of R].
-Proof. by done. Qed.
-
+Lemma R_fieldMixin : GRing.field_axiom R. Proof. by []. Qed.
 HB.instance Definition _ := GRing.UnitRing_isField.Build R R_fieldMixin.
 
 (** Reflect the order on the reals to bool *)

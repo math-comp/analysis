@@ -644,7 +644,7 @@ Proof. exact/card_le_finite/card_le_setD. Qed.
 Lemma finite_setU T (A B : set T) :
   finite_set (A `|` B) = (finite_set A /\ finite_set B).
 Proof.
-pose fP := @finite_fsetP [choiceType of {classic T}]; rewrite propeqE; split.
+pose fP := @finite_fsetP {classic T}; rewrite propeqE; split.
   by move=> finAUB; split; apply: sub_finite_set finAUB.
 by case=> /fP[X->]/fP[Y->]; apply/fP; exists (X `|` Y)%fset; rewrite set_fsetU.
 Qed.
@@ -1103,7 +1103,7 @@ Lemma choicePcountable {T : choiceType} : countable [set: T] ->
   {T' : countType | T = T' :> Type}.
 Proof.
 move=> /pcard_leP/unsquash f.
-pose TcM := PcanCountMixin (in1TT 'funoK_f).
+pose TcM := PCanIsCountable (in1TT 'funoK_f).
 pose TC : countType := HB.pack T TcM.
 by exists TC.
 Qed.
@@ -1316,7 +1316,7 @@ split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
 by move=> fA gA; apply: (finite_image11 (fun x y => x - y)).
 Qed.
 HB.instance Definition _ :=
-  GRing.isZmodClosed.Build [zmodType of aT -> rT] fimfun fimfun_zmod_closed.
+  GRing.isZmodClosed.Build (aT -> rT) fimfun fimfun_zmod_closed.
 HB.instance Definition _ :=
   [SubChoice_isSubZmodule of {fimfun aT >-> rT} by <:].
 

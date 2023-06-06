@@ -25,11 +25,11 @@ Proof. by case: J => J /= /canonical_uniq. Qed.
 
 (* -------------------------------------------------------------------- *)
 Lemma enum_fset0 (T : choiceType) :
-  enum [finType of fset0] = [::] :> seq (@fset0 T).
+  enum (fset0 : finType) = [::] :> seq (@fset0 T).
 Proof. by rewrite enumT unlock. Qed.
 
 Lemma enum_fset1 (T : choiceType) (x : T) :
-  enum [finType of [fset x]] = [:: [`fset11 x]].
+  enum ([fset x] : finType) = [:: [`fset11 x]].
 Proof.
 apply/perm_small_eq=> //; apply/uniq_perm => //.
   by apply/enum_uniq.

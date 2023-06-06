@@ -1586,7 +1586,7 @@ Lemma small_set_sub (E : set Y) : F E ->
 Proof.
 move=> entE; exists [set E' | F E' /\ E' `<=` E]; last by move=> ? [].
 split; [by move=> E' [] | | by exists E; split].
-by move=> E1 E2 [] ? sub ? ?; split => //; exact: subset_trans sub.
+by move=> E1 E2 [] ? subE ? ?; split => //; exact: subset_trans subE.
 Qed.
 
 Lemma near_powerset_filter_fromP (P : set Y -> Prop) :
@@ -4442,12 +4442,12 @@ Section sup_uniform.
 
 Variable (T : pointedType) (Ii : Type) (Tc : Ii -> Uniform T).
 
-Let I : choiceType := [choiceType of {classic Ii}].
+Let I : choiceType := {classic Ii}.
 Let TS := fun i => Uniform.Pack (Tc i).
 Notation Tt := (sup_topology Tc).
 Let ent_of (p : I * set (T * T)) := `[< @entourage (TS p.1) p.2>].
 Let IEntType := {p : (I * set (T * T)) | ent_of p}.
-Let IEnt := [choiceType of IEntType].
+Let IEnt : choiceType := IEntType.
 
 Local Lemma IEnt_pointT (i : I) : ent_of (i, setT).
 Proof. by apply/asboolP; exact: entourageT. Qed.

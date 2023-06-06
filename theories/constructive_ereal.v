@@ -180,7 +180,7 @@ End ERealChoice.
 Section ERealCount.
 Variable (R : countType).
 
-HB.instance Definition _ := PcanCountMixin (@codeK R).
+HB.instance Definition _ := PCanIsCountable (@codeK R).
 
 End ERealCount.
 

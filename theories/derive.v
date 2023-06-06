@@ -642,8 +642,8 @@ Qed.
 Global Instance is_diff_id (x : V) : is_diff x id id.
 Proof.
 apply: DiffDef.
-  by apply: (@linear_differentiable _ _ [linear of idfun]) => ? //.
-by rewrite (@diff_lin _ _ [linear of idfun]) // => ? //.
+  by apply: (@linear_differentiable _ _ idfun) => ? //.
+by rewrite (@diff_lin _ _ idfun) // => ? //.
 Qed.
 
 Global Instance is_diff_scaler (k : R) (x : V) : is_diff x ( *:%R k) ( *:%R k).
@@ -821,35 +821,29 @@ by move=> fc; apply/diff_locallyP; rewrite diff_bilin //; apply: dbilin p fc.
 Qed.
 
 Definition mulr_rev (y x : R) := x * y.
-Canonical rev_mulr := @RevOp _ _ _ mulr_rev (@GRing.mul [ringType of R])
-  (fun _ _ => erefl).
+Canonical rev_mulr := @RevOp _ _ _ mulr_rev (@GRing.mul R) (fun _ _ => erefl).
 
-Lemma mulr_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
+Lemma mulr_is_linear x : linear (@GRing.mul R x : R -> R).
 Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
-HB.instance Definition _ x :=
-  GRing.isLinear.Build R
-    [the lalgType R of R : Type] [ringType of R] _ ( *%R x) (mulr_is_linear x).
+HB.instance Definition _ x := GRing.isLinear.Build R R R _ ( *%R x)
+  (mulr_is_linear x).
 
 Lemma mulr_rev_is_linear y : linear (mulr_rev y : R -> R).
 Proof. by move=> ???; rewrite /mulr_rev mulrDl scalerAl. Qed.
-HB.instance Definition _ y :=
-  GRing.isLinear.Build R
-    [the lmodType R of R : Type] [the lalgType R of R : Type] _ (mulr_rev y)
-    (mulr_rev_is_linear y).
+HB.instance Definition _ y := GRing.isLinear.Build R R R _ (mulr_rev y)
+  (mulr_rev_is_linear y).
 
 Lemma mulr_is_bilinear :
   bilinear_for
     (GRing.Scale.Law.clone _ _ *:%R _) (GRing.Scale.Law.clone _ _ *:%R _)
-    (@GRing.mul [ringType of R]).
+    (@GRing.mul R).
 Proof.
 split=> [u'|u] a x y /=.
 - by rewrite mulrDl scalerAl.
 - by rewrite mulrDr scalerAr.
 Qed.
-HB.instance Definition _ :=
-  bilinear_isBilinear.Build R
-    [the lmodType R of R : Type]  [the lmodType R of R : Type] R _ _
-    (@GRing.mul R) mulr_is_bilinear.
+HB.instance Definition _ := bilinear_isBilinear.Build R R R R _ _ (@GRing.mul R)
+  mulr_is_bilinear.
 
 Global Instance is_diff_mulr (p : R * R) :
   is_diff p (fun q => q.1 * q.2) (fun q => p.1 * q.2 + q.1 * p.2).
@@ -983,8 +977,7 @@ Unshelve. all: by end_near. Qed.
 Lemma diff_Rinv (x : R) : x != 0 ->
   'd GRing.inv x = (fun h : R => - x ^- 2 *: h) :> (R -> R).
 Proof.
-move=> xn0; have -> : (fun h : R => - x ^- 2 *: h) =
-  [linear of *:%R (- x ^- 2)] by [].
+move=> xn0; have -> : (fun h : R => - x ^- 2 *: h) = ( *:%R (- x ^- 2)) by [].
 by apply: diff_unique; have [] := dinv xn0.
 Qed.
 
@@ -1603,7 +1596,7 @@ Proof. exact/diff_derivable. Qed.
 Global Instance is_derive_id (x v : V) : is_derive x v id v.
 Proof.
 apply: (DeriveDef (@derivable_id _ _)).
-rewrite deriveE// (@diff_lin _ _ _ [linear of idfun])//=.
+rewrite deriveE// (@diff_lin _ _ _ idfun)//=.
 by rewrite /continuous_at.
 Qed.
 
