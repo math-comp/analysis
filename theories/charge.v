@@ -50,7 +50,7 @@ Reserved Notation "{ 'additive_charge' 'set' T '->' '\bar' R }"
 Reserved Notation "{ 'charge' 'set' T '->' '\bar' R }"
   (at level 36, T, R at next level,
     format "{ 'charge'  'set'  T  '->'  '\bar'  R }").
-Reserved Notation "'d nu /d mu" (at level 10, format "''d'  nu /d  mu").
+Reserved Notation "'d nu /d mu" (at level 10, format "''d'  nu  /d  mu").
 
 Declare Scope charge_scope.
 
