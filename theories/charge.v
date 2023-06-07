@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat.
 From mathcomp.classical Require Import boolp classical_sets cardinality.
@@ -9,30 +9,38 @@ Require Import reals ereal signed topology numfun normedtype sequences.
 Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 
 (******************************************************************************)
-(* This file contains a formalization of charges (a.k.a. signed measures) and *)
-(* a proof of the Hahn decomposition theorem.                                 *)
+(*                               Charges                                      *)
 (*                                                                            *)
-(*          isAdditiveCharge == mixin for additive charges                    *)
-(*            AdditiveCharge == structure of additive charges                 *)
-(*  {additive_charge set T -> \bar R} == additive charge over T, a semiring   *)
-(*                            of sets                                         *)
-(*       additive_charge T R == type of additive charges                      *)
-(*                  isCharge == mixin for charges                             *)
-(*                    Charge == structure of charges                          *)
-(*                charge T R == type of charges                               *)
-(*  {charge set T -> \bar R} == charge over T, a semiring of sets             *)
+(* NB: See CONTRIBUTING.md for an introduction to HB concepts and commands.   *)
+(*                                                                            *)
+(* This file contains a formalization of charges (a.k.a. signed measures) and *)
+(* their theory (Hahn decomposition theorem, etc.).                           *)
+(*                                                                            *)
+(* * Mathematical structures                                                  *)
+(*       additive_charge T R == type of additive charges over T a semiring    *)
+(*                              of sets                                       *)
+(*                              The HB class is AdditiveCharge.               *)
+(* {additive_charge set T -> \bar R} == notation for additive_charge T R      *)
+(*                charge T R == type of charges over T a semiring of sets     *)
+(*                              The HB class is Charge.                       *)
+(*  {charge set T -> \bar R} == notation for charge T R                       *)
 (*  measure_of_charge nu nu0 == measure corresponding to the charge nu, nu0   *)
 (*                              is a proof that nu is non-negative            *)
+(*                                                                            *)
+(* * Instances of mathematical structures                                     *)
 (*              crestr nu mD == restriction of the charge nu to the domain D  *)
 (*                              where mD is a proof that D is measurable      *)
 (*             crestr0 nu mD == csrestr nu mD that returns 0 for              *)
 (*                              non-measurable sets                           *)
 (*                     czero == zero charge                                   *)
-(*               cscale r nu == charge nu scaled by a factor r                *)
-(*         positive_set nu P == P is a positive set                           *)
-(*         negative_set nu N == N is a negative set                           *)
-(* hahn_decomposition nu P N == the charge nu is decomposed into the positive *)
-(*                              set P and the negative set N                  *)
+(*               cscale r nu == charge nu scaled by a factor r : R            *)
+(*                                                                            *)
+(* * Theory                                                                   *)
+(*         positive_set nu P == P is a positive set with nu a charge          *)
+(*         negative_set nu N == N is a negative set with nu a charge          *)
+(* hahn_decomposition nu P N == the full set can be decomposed in P and N,    *)
+(*                              a positive set and a negative set for the     *)
+(*                              charge nu                                     *)
 (*        jordan_pos nu nuPN == the charge obtained by restricting the charge *)
 (*                              nu to the positive set P of the Hahn          *)
 (*                              decomposition nuPN: hahn_decomposition nu P N *)
@@ -98,7 +106,7 @@ HB.mixin Record isCharge d (T : semiRingOfSetsType d) (R : numFieldType)
   charge_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=charge)]
-HB.structure Definition Charge d (T : algebraOfSetsType d) (R : numFieldType)
+HB.structure Definition Charge d (T : semiRingOfSetsType d) (R : numFieldType)
   := { mu of isCharge d T R mu & AdditiveCharge d mu }.
 
 Notation "{ 'charge' 'set' T '->' '\bar' R }" := (charge T R) : ring_scope.
@@ -371,10 +379,10 @@ Context d (R : numDomainType) (T : measurableType d).
 Implicit Types nu : set T -> \bar R.
 
 Definition positive_set nu (P : set T) :=
-  measurable P /\ forall E, measurable E -> E `<=` P -> nu E >= 0.
+  measurable P /\ forall A, measurable A -> A `<=` P -> nu A >= 0.
 
 Definition negative_set nu (N : set T) :=
-  measurable N /\ forall E, measurable E -> E `<=` N -> nu E <= 0.
+  measurable N /\ forall A, measurable A -> A `<=` N -> nu A <= 0.
 
 End positive_negative_set.
 
@@ -386,7 +394,7 @@ Lemma negative_set_charge_le0 nu N : negative_set nu N -> nu N <= 0.
 Proof. by move=> [mN]; exact. Qed.
 
 Lemma negative_set0 nu : negative_set nu set0.
-Proof. by split => // E _; rewrite subset0 => ->; rewrite charge0. Qed.
+Proof. by split => // A _; rewrite subset0 => ->; rewrite charge0. Qed.
 
 Lemma positive_negative0 nu P N : positive_set nu P -> negative_set nu N ->
   forall S, measurable S -> nu (S `&` P `&` N) = 0.
@@ -448,38 +456,38 @@ Let elt_prop (x : set T * \bar R) := [/\ measurable x.1,
 Let elt_type := {x : set T * \bar R * set T | elt_prop x.1}.
 
 Let A_ (x : elt_type) := (proj1_sig x).1.1.
-Let d_ (x : elt_type) := (proj1_sig x).1.2.
+Let g_ (x : elt_type) := (proj1_sig x).1.2.
 Let U_ (x : elt_type) := (proj1_sig x).2.
 
 Let mA_ x : measurable (A_ x). Proof. by move: x => [[[? ?] ?]] []. Qed.
 Let A_D x : A_ x `<=` D. Proof. by move: x => [[[? ?] ?]] []. Qed.
-Let d_ge0 x : 0 <= d_ x. Proof. by move: x => [[[? ?] ?]] []. Qed.
-Let nuA_d_ x : nu (A_ x) >= mine (d_ x * 2^-1%:E) 1.
+Let g_ge0 x : 0 <= g_ x. Proof. by move: x => [[[? ?] ?]] []. Qed.
+Let nuA_g_ x : nu (A_ x) >= mine (g_ x * 2^-1%:E) 1.
 Proof. by move: x => [[[? ?] ?]] []. Qed.
 
 Let nuA_ge0 x : 0 <= nu (A_ x).
-Proof. by rewrite (le_trans _ (nuA_d_ _))// le_minr lee01 andbT mule_ge0. Qed.
+Proof. by rewrite (le_trans _ (nuA_g_ _))// le_minr lee01 andbT mule_ge0. Qed.
 
 Let subDD A := [set nu E | E in [set E | measurable E /\ E `<=` D `\` A] ].
 
-Let t_ A := ereal_sup (subDD A).
+Let d_ A := ereal_sup (subDD A).
 
-Lemma t_ge0 X : 0 <= t_ X.
+Lemma d_ge0 X : 0 <= d_ X.
 Proof. by apply: ereal_sup_ub => /=; exists set0; rewrite ?charge0. Qed.
 
 Let elt_rel i j :=
-  [/\ d_ j = t_ (U_ i),  A_ j `<=` D `\` U_ i & U_ j = U_ i `|` A_ j ].
+  [/\ g_ j = d_ (U_ i),  A_ j `<=` D `\` U_ i & U_ j = U_ i `|` A_ j ].
 
-Let next_elt A : 0 <= t_ A ->
-  { B | [/\ measurable B, B `<=` D `\` A & nu B >= mine (t_ A * 2^-1%:E) 1] }.
+Let next_elt A : 0 <= d_ A ->
+  { B | [/\ measurable B, B `<=` D `\` A & nu B >= mine (d_ A * 2^-1%:E) 1] }.
 Proof.
-move=> tA0; pose m := mine (t_ A * 2^-1%R%:E) 1; apply/cid.
-move: tA0; rewrite le_eqVlt => /predU1P[<-|d_gt0].
+move=> dA0; pose m := mine (d_ A * 2^-1%R%:E) 1; apply/cid.
+move: dA0; rewrite le_eqVlt => /predU1P[<-|d_gt0].
   by exists set0; split => //; rewrite charge0 mul0e minEle lee01.
-have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < t_ A.
-  rewrite /m; have [->|dn1oo] := eqVneq (t_ A) +oo.
+have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < d_ A.
+  rewrite /m; have [->|dn1oo] := eqVneq (d_ A) +oo.
     by rewrite min_r ?ltey ?gt0_mulye ?leey.
-  rewrite -(@fineK _ (t_ A)); last first.
+  rewrite -(@fineK _ (d_ A)); last first.
     by rewrite ge0_fin_numE// ?(ltW d_gt0)// lt_neqAle dn1oo leey.
   rewrite -EFinM -fine_min// lte_fin lt_minl; apply/orP; left.
   by rewrite ltr_pdivrMr// ltr_pMr ?ltr1n// fine_gt0// d_gt0/= ltey.
@@ -537,15 +545,15 @@ Qed.
 Lemma hahn_decomposition_lemma : measurable D ->
   {A | [/\ A `<=` D, negative_set nu A & nu A <= nu D]}.
 Proof.
-move=> mD; have [A0 [mA0 + A0t0]] := next_elt (t_ge0 set0).
+move=> mD; have [A0 [mA0 + A0d0]] := next_elt (d_ge0 set0).
 rewrite setD0 => A0D.
 have [v [v0 Pv]] : {v : nat -> elt_type |
-    v 0%N = exist _ (A0, t_ set0, A0) (And4 mA0 A0D (t_ge0 set0) A0t0) /\
+    v 0%N = exist _ (A0, d_ set0, A0) (And4 mA0 A0D (d_ge0 set0) A0d0) /\
     forall n, elt_rel (v n) (v n.+1)}.
   apply dependent_choice_Type => -[[[A' ?] U] [/= mA' A'D]].
-  have [A1 [mA1 A1DU A1t1] ] := next_elt (t_ge0 U).
+  have [A1 [mA1 A1DU A1t1] ] := next_elt (d_ge0 U).
   have A1D : A1 `<=` D by apply: (subset_trans A1DU); apply: subDsetl.
-  by exists (exist _ (A1, t_ U, U `|` A1) (And4 mA1 A1D (t_ge0 U) A1t1)).
+  by exists (exist _ (A1, d_ U, U `|` A1) (And4 mA1 A1D (d_ge0 U) A1t1)).
 have Ubig n : U_ (v n) = \big[setU/set0]_(i < n.+1) A_ (v i).
   elim: n => [|n ih]; first by rewrite v0/= big_ord_recr/= big_ord0 set0U v0.
   by have [_ _ ->] := Pv n; rewrite big_ord_recr/= -ih.
@@ -570,11 +578,11 @@ have A_cvg_0 : nu (A_ (v n)) @[n --> \oo] --> 0.
     by rewrite /series/= sum_fine//= => i _; rewrite fin_num_measure.
   move: cvg_nuA; rewrite -(@fineK _ (nu Aoo)) ?fin_num_measure//.
   by move=> /fine_cvgP[_ ?]; apply/cvg_ex; exists (fine (nu Aoo)).
-have mine_cvg_0 : (mine (d_ (v n) * 2^-1%:E) 1) @[n --> \oo] --> 0.
+have mine_cvg_0 : (mine (g_ (v n) * 2^-1%:E) 1) @[n --> \oo] --> 0.
   apply: (@squeeze_cvge _ _ _ _ _ _ (fun n => nu (A_ (v n))));
     [|exact: cvg_cst|by []].
-  by apply: nearW => n /=; rewrite nuA_d_ andbT le_minr lee01 andbT mule_ge0.
-have d_cvg_0 : (d_ \o v) n @[n --> \oo] --> 0 by apply: mine_cvg_0_cvg_0 => //=.
+  by apply: nearW => n /=; rewrite nuA_g_ andbT le_minr lee01 andbT mule_ge0.
+have g_cvg_0 : (g_ \o v) n @[n --> \oo] --> 0 by apply: mine_cvg_0_cvg_0 => //=.
 have nuDAoo : nu D >= nu (D `\` Aoo).
   rewrite -[in leRHS](@setDUK _ Aoo D); last first.
     by apply: bigcup_sub => i _; exact: A_D.
@@ -586,16 +594,16 @@ have EH n : [set nu E] `<=` H n.
   rewrite -sub1set => /subset_trans; apply => x/= [F [mF FDAoo ?]].
   exists F => //; split => //.
   by apply: (subset_trans FDAoo); apply: setDS; exact: bigsetU_bigcup.
-have nudelta n : nu E <= d_ (v n).
+have nudelta n : nu E <= g_ (v n).
   move: n => [|n].
     rewrite v0/=; apply: ereal_sup_ub => /=; exists E; split => //.
     by apply: (subset_trans EDAoo); exact: setDS.
-  suff : nu E <= t_ (U_ (v n)) by have [<- _] := Pv n.
+  suff : nu E <= d_ (U_ (v n)) by have [<- _] := Pv n.
   have /le_ereal_sup := EH n.+1; rewrite ereal_sup1 => /le_trans; apply.
   apply/le_ereal_sup => x/= [A' [mA' A'D ?]].
   exists A' => //; split => //.
   by apply: (subset_trans A'D); apply: setDS; rewrite Ubig.
-apply: (@closed_cvg _ _ _ _ _ (fun v => nu E <= v) _ _ _ d_cvg_0) => //.
+apply: (@closed_cvg _ _ _ _ _ (fun v => nu E <= v) _ _ _ g_cvg_0) => //.
   exact: closed_ereal_le_ereal.
 exact: nearW.
 Unshelve. all: by end_near. Qed.
@@ -613,7 +621,7 @@ Variable nu : {charge set T -> \bar R}.
 Let elt_prop (x : set T * \bar R) := [/\ x.2 <= 0,
   negative_set nu x.1 & nu x.1 <= maxe (x.2 * 2^-1%:E) (- 1%E) ].
 
-Let elt_type := {AsU : set T * \bar R * set T | elt_prop AsU.1}.
+Let elt_type := {AzU : set T * \bar R * set T | elt_prop AzU.1}.
 
 Let A_ (x : elt_type) := (proj1_sig x).1.1.
 Let z_ (x : elt_type) := (proj1_sig x).1.2.
@@ -1219,7 +1227,7 @@ rewrite -EFinM -mulrA mulVr ?mulr1; last first.
   by rewrite unitfE gt_eqF// fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
 rewrite lte_subr_addl// addeC -lte_subr_addl//; last first.
 rewrite -(@fineK _ (nu A))// ?fin_num_measure// -[X in _ - X](@fineK _)//.
-rewrite -EFinB lte_fin /mid ltr_pdivrMr// ltr_pmulr// ?ltr1n// subr_gt0.
+rewrite -EFinB lte_fin /mid ltr_pdivrMr// ltr_pMr// ?ltr1n// subr_gt0.
 by rewrite fine_lt// fin_num_measure.
 Qed.
 
