@@ -39,6 +39,8 @@ Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 (*        jordan_neg nu nuPN == the charge obtained by restricting the charge *)
 (*                              nu to the positive set N of the Hahn          *)
 (*                              decomposition nuPN: hahn_decomposition nu P N *)
+(*               'd nu /d mu == Radon-Nikodym derivative of nu w.r.t. mu      *)
+(*                              (the scope is charge_scope)                   *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -48,10 +50,14 @@ Reserved Notation "{ 'additive_charge' 'set' T '->' '\bar' R }"
 Reserved Notation "{ 'charge' 'set' T '->' '\bar' R }"
   (at level 36, T, R at next level,
     format "{ 'charge'  'set'  T  '->'  '\bar'  R }").
+Reserved Notation "'d nu /d mu" (at level 10, format "''d'  nu /d  mu").
+
+Declare Scope charge_scope.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports.
 
@@ -82,7 +88,7 @@ HB.structure Definition AdditiveCharge d (T : semiRingOfSetsType d)
   (R : numFieldType) := { mu of isAdditiveCharge d T R mu & FinNumFun d mu }.
 
 Notation "{ 'additive_charge' 'set' T '->' '\bar' R }" :=
-  (additive_charge T R)  : ring_scope.
+  (additive_charge T R) : ring_scope.
 
 #[export] Hint Resolve charge_semi_additive : core.
 
@@ -1496,11 +1502,11 @@ rewrite -measure_bigcup//.
 - exact: trivIset_setIl.
 Qed.
 
-Theorem Radon_Nikodym
+Let Radon_Nikodym0
   (mu : {sigma_finite_measure set T -> \bar R}) (nu : {charge set T -> \bar R}) :
   nu `<< mu ->
   exists2 f : T -> \bar R, mu.-integrable [set: T] f &
-    forall E, measurable E -> nu E = \int[mu]_(x in E) f x.
+    forall A, measurable A -> nu A = \int[mu]_(x in A) f x.
 Proof.
 move=> nu_mu; have [P [N nuPN]] := Hahn_decomposition nu.
 have [fp intfp fpE] := @radon_nikodym_sigma_finite mu
@@ -1516,4 +1522,35 @@ move=> E mE; rewrite [LHS](jordan_decomp nuPN mE)// integralB//.
 - exact: (integrableS measurableT).
 Qed.
 
+Definition Radon_Nikodym
+    (mu : {sigma_finite_measure set T -> \bar R})
+    (nu : {charge set T -> \bar R}) : T -> \bar R :=
+  match pselect (nu `<< mu) with
+  | left nu_mu => sval (cid2 (Radon_Nikodym0 nu_mu))
+  | right _ => cst -oo
+  end.
+
+Local Notation "'d nu /d mu" := (Radon_Nikodym mu nu).
+
+Theorem Radon_Nikodym_integrable
+    (mu : {sigma_finite_measure set T -> \bar R})
+    (nu : {charge set T -> \bar R}) :
+    nu `<< mu ->
+  mu.-integrable [set: T] ('d nu /d mu).
+Proof.
+move=> numu; rewrite /Radon_Nikodym; case: pselect => // {}numu.
+by case: cid2.
+Qed.
+
+Theorem Radon_Nikodym_integral
+    (mu : {sigma_finite_measure set T -> \bar R})
+    (nu : {charge set T -> \bar R}) :
+    nu `<< mu ->
+  forall A, measurable A -> nu A = \int[mu]_(x in A) ('d nu /d mu) x.
+Proof.
+move=> numu; rewrite /Radon_Nikodym; case: pselect => // {}numu.
+by case: cid2.
+Qed.
+
 End radon_nikodym.
+Notation "'d nu /d mu" := (Radon_Nikodym mu nu) : charge_scope.

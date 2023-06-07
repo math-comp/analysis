@@ -76,7 +76,9 @@
   + definition `crestr0`
   + definitions `jordan_neg`, `jordan_pos`
   + lemmas `jordan_decomp`, `jordan_pos_dominates`, `jordan_neg_dominates`
-  + lemma `radon_nikodym_finite`, theorem `Radon_Nikodym`
+  + lemma `radon_nikodym_finite`
+  + definition `Radon_Nikodym`, notation `'d nu /d mu`
+  + theorems `Radon_Nikodym_integrable`, `Radon_Nikodym_integral`
 
 - in `measure.v`:
   + lemmas `measurable_pair1`, `measurable_pair2`
