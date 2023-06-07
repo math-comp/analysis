@@ -4216,13 +4216,13 @@ Section absolute_continuity.
 Context d (T : measurableType d) (R : realType).
 Implicit Types m : set T -> \bar R.
 
-Definition dominates m1 m2 :=
+Definition measure_dominates m1 m2 :=
   forall A, measurable A -> m2 A = 0 -> m1 A = 0.
 
-Local Notation "m1 `<< m2" := (dominates m1 m2).
+Local Notation "m1 `<< m2" := (measure_dominates m1 m2).
 
-Lemma dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
+Lemma measure_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
 Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
 
 End absolute_continuity.
-Notation "m1 `<< m2" := (dominates m1 m2).
+Notation "m1 `<< m2" := (measure_dominates m1 m2).

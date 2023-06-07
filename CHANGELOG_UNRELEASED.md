@@ -67,8 +67,8 @@
 - in `classical_sets.v`:
   + lemmas `preimage_mem_true`, `preimage_mem_false`
 - in `measure.v`:
-  + definition `dominates`, notation `` `<< ``
-  + lemma `dominates_trans`
+  + definition `measure_dominates`, notation `` `<< ``
+  + lemma `measure_dominates_trans`
 - in `measure.v`:
   + defintion `mfrestr`
 - in `charge.v`:
