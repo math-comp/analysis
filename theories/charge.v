@@ -273,7 +273,7 @@ Proof. by move=> U mU; rewrite /crestr0 mem_set// fin_num_measure. Qed.
 HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
   restr crestr0_fin_num_fun.
 
-Let crestr0_additive : semi_additive restr.
+Let crestr0_additive : measure.semi_additive restr.
 Proof.
 move=> F n mF tF mU; rewrite /crestr0 mem_set// charge_semi_additive//=.
 by apply: eq_bigr => i _; rewrite mem_set.
@@ -284,7 +284,7 @@ HB.instance Definition _ := isAdditiveCharge.Build _ _ _ restr crestr0_additive.
 Let crestr0_sigma_additive : semi_sigma_additive restr.
 Proof.
 move=> F mF tF mU; rewrite /crestr0 mem_set//.
-rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) crestr nu mD (F i))).
+rewrite [X in X @ _ --> _](_ : _ = (fun n => \sum_(0 <= i < n) crestr nu mD (F i))).
   exact: charge_semi_sigma_additive.
 by apply/funext => n; apply: eq_bigr => i _; rewrite mem_set.
 Qed.
@@ -976,11 +976,11 @@ Proof. by apply/bigmax_geP; right => /=; exists ord_max. Qed.
 Lemma max_approxRN_seq_nd x : nondecreasing_seq (F_ ^~ x).
 Proof. by move=> a b ab; rewrite (le_bigmax_ord xpredT (g_ ^~ x)). Qed.
 
-Lemma is_cvg_max_approxRN_seq n : cvg (F_ ^~ n).
+Lemma is_cvg_max_approxRN_seq n : cvg (F_ ^~ n @ \oo).
 Proof. by apply: ereal_nondecreasing_is_cvg; exact: max_approxRN_seq_nd. Qed.
 
 Lemma is_cvg_int_max_approxRN_seq A :
-  measurable A -> cvg (fun n => \int[mu]_(x in A) F_ n x).
+  measurable A -> cvg ((fun n => \int[mu]_(x in A) F_ n x) @ \oo).
 Proof.
 move=> mA; apply: ereal_nondecreasing_is_cvg => a b ab.
 apply: ge0_le_integral => //.
@@ -1065,7 +1065,7 @@ Import approxRN_seq.
 Let g := approxRN_seq mu nu.
 Let F := max_approxRN_seq mu nu.
 
-Definition fRN := fun x => lim (F ^~ x).
+Definition fRN := fun x => lim (F ^~ x @ \oo).
 
 Lemma measurable_fun_fRN : measurable_fun [set: T] fRN.
 Proof.
@@ -1081,7 +1081,7 @@ by apply: nearW => ?; exact: max_approxRN_seq_ge0.
 Qed.
 
 Let int_fRN_lim A : measurable A ->
-  \int[mu]_(x in A) fRN x = lim (fun n => \int[mu]_(x in A) F n x).
+  \int[mu]_(x in A) fRN x = lim (\int[mu]_(x in A) F n x @[n --> \oo]).
 Proof.
 move=> mA; rewrite monotone_convergence// => n.
 - exact: measurable_funS (measurable_max_approxRN_seq mu nu n).
@@ -1167,7 +1167,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite int_fRN_lim// lime_le//; first exact: is_cvg_int_max_approxRN_seq.
   by apply: nearW => n; have [_ /andP[_]] := M_g_F n.
 rewrite int_fRN_lim//.
-have cvgM : (fun m => M - m.+1%:R^-1%:E) --> M.
+have cvgM : (M - m.+1%:R^-1%:E) @[m --> \oo] --> M.
   rewrite -[X in _ --> X]sube0; apply: cvgeB.
   + by rewrite fin_num_adde_defl.
   + exact: cvg_cst.
@@ -1177,7 +1177,7 @@ have cvgM : (fun m => M - m.+1%:R^-1%:E) --> M.
     apply/cvgrnyP.
     rewrite [X in X @ _](_ : _ = fun n => n + 1)%N; first exact: cvg_addnr.
     by apply/funext => n; rewrite addn1.
-apply: (@le_trans _ _ (lim (fun m => M - m.+1%:R^-1%:E))).
+apply: (@le_trans _ _ (lim (M - m.+1%:R^-1%:E @[m --> \oo]))).
   by move/cvg_lim : cvgM => ->.
 apply: lee_lim; [by apply/cvg_ex; exists M|exact: is_cvg_int_max_approxRN_seq|].
 apply: nearW => m.
@@ -1219,7 +1219,7 @@ rewrite -EFinM -mulrA mulVr ?mulr1; last first.
   by rewrite unitfE gt_eqF// fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
 rewrite lte_subr_addl// addeC -lte_subr_addl//; last first.
 rewrite -(@fineK _ (nu A))// ?fin_num_measure// -[X in _ - X](@fineK _)//.
-rewrite -EFinB lte_fin /mid ltr_pdivr_mulr// ltr_pmulr// ?ltr1n// subr_gt0.
+rewrite -EFinB lte_fin /mid ltr_pdivrMr// ltr_pmulr// ?ltr1n// subr_gt0.
 by rewrite fine_lt// fin_num_measure.
 Qed.
 
@@ -1254,7 +1254,7 @@ Qed.
 HB.instance Definition _ :=
   @SigmaFinite_isFinite.Build _ _ _ sigmaRN fin_num_sigmaRN.
 
-Let sigmaRN_semi_additive : semi_additive sigmaRN.
+Let sigmaRN_semi_additive : measure.semi_additive sigmaRN.
 Proof.
 move=> H n mH tH mUH.
 rewrite /sigmaRN measure_semi_additive// big_split/= fin_num_sumeN; last first.
@@ -1274,7 +1274,7 @@ HB.instance Definition _ :=
 Let sigmaRN_semi_sigma_additive : semi_sigma_additive sigmaRN.
 Proof.
 move=> H mH tH mUH.
-rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) nu (H i) -
+rewrite [X in X @ _ --> _](_ : _ = (fun n => \sum_(0 <= i < n) nu (H i) -
   \sum_(0 <= i < n) \int[mu]_(x in H i) (fRN x + epsRN%:num%:E))); last first.
   apply/funext => n; rewrite big_split/= fin_num_sumeN// => i _.
   by rewrite fin_num_int_fRN_eps.
@@ -1282,14 +1282,14 @@ apply: cvgeB.
 - by rewrite adde_defC fin_num_adde_defl// fin_num_measure.
 - exact: measure_semi_sigma_additive.
 - rewrite (ge0_integral_bigcup mH _ _ tH).
-  + have /cvg_ex[/= l hl] : cvg (fun x =>
-        \sum_(0 <= i < x) \int[mu]_(y in H i) (fRN y + epsRN%:num%:E)).
+  + have /cvg_ex[/= l hl] : cvg ((fun n =>
+        \sum_(0 <= i < n) \int[mu]_(y in H i) (fRN y + epsRN%:num%:E)) @ \oo).
       apply: is_cvg_ereal_nneg_natsum => n _.
       by apply: integral_ge0 => x _; rewrite adde_ge0//; exact: fRN_ge0.
     by rewrite (@cvg_lim _ _ _ _ _ _ l).
   + apply: integrableD => //=.
     * apply: (integrableS measurableT) => //.
-      by apply/integrableP; split; [exact: measurable_fun_fRN|exact: int_fRN_lty].
+      by apply/integrableP; split; [exact:measurable_fun_fRN|exact:int_fRN_lty].
     * apply/integrableP; split => //.
       by rewrite integral_cst// lte_mul_pinfty// ltey_eq fin_num_measure.
   + by move=> x _; rewrite adde_ge0//; exact: fRN_ge0.

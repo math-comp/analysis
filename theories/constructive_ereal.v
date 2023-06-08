@@ -2362,6 +2362,8 @@ Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge leNye. Qed.
 Lemma maxeNy : right_id (-oo : \bar R) maxe.
 Proof. by move=> x; rewrite maxC maxNye. Qed.
 
+HB.instance Definition _ :=
+  Monoid.isLaw.Build (\bar R) -oo maxe maxA maxNye maxeNy.
 
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
