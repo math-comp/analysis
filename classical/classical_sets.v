@@ -1386,6 +1386,15 @@ Qed.
 Lemma preimage10 {T R} {f : T -> R} {x} : ~ range f x -> f @^-1` [set x] = set0.
 Proof. by move/preimage10P. Qed.
 
+Lemma preimage_mem_true {T} (A : set T) : mem A @^-1` [set true] = A.
+Proof. by apply/seteqP; split => [x/= /set_mem//|x /mem_set]. Qed.
+
+Lemma preimage_mem_false {T} (A : set T) : mem A @^-1` [set false] = ~` A.
+Proof.
+apply/seteqP; split => [x/=|x/=]; last exact: memNset.
+by apply: contraFnot; exact/mem_set.
+Qed.
+
 End image_lemmas.
 Arguments sub_image_setI {aT rT f A B} t _.
 
