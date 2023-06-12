@@ -6,6 +6,7 @@ From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology numfun normedtype.
 From HB Require Import structures.
 Require Import sequences esum measure real_interval realfun exp.
+Require Import lebesgue_stieltjes_measure.
 
 (******************************************************************************)
 (*                            Lebesgue Measure                                *)
@@ -49,82 +50,16 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Reserved Notation "R .-ocitv" (at level 1, format "R .-ocitv").
-Reserved Notation "R .-ocitv.-measurable"
- (at level 2, format "R .-ocitv.-measurable").
-
-Section itv_semiRingOfSets.
-Variable R : realType.
-Implicit Types (I J K : set R).
-Definition ocitv_type : Type := R.
-
-Definition ocitv := [set `]x.1, x.2]%classic | x in [set: R * R]].
-
-Lemma is_ocitv a b : ocitv `]a, b]%classic.
-Proof. by exists (a, b); split => //=; rewrite in_itv/= andbT. Qed.
-Hint Extern 0 (ocitv _) => solve [apply: is_ocitv] : core.
-
-Lemma ocitv0 : ocitv set0.
-Proof. by exists (1, 0); rewrite //= set_itv_ge ?bnd_simp//= ltr10. Qed.
-Hint Resolve ocitv0 : core.
-
-Lemma ocitvP X : ocitv X <-> X = set0 \/ exists2 x, x.1 < x.2 & X = `]x.1, x.2]%classic.
-Proof.
-split=> [[x _ <-]|[->//|[x xlt ->]]]//.
-case: (boolP (x.1 < x.2)) => x12; first by right; exists x.
-by left; rewrite set_itv_ge.
-Qed.
-
-Lemma ocitvD : semi_setD_closed ocitv.
-Proof.
-move=> _ _ [a _ <-] /ocitvP[|[b ltb]] ->.
-  rewrite setD0; exists [set `]a.1, a.2]%classic].
-  by split=> [//|? ->//||? ? -> ->//]; rewrite bigcup_set1.
-rewrite setDE setCitv/= setIUr -!set_itvI.
-rewrite /Order.meet/= /Order.meet/= /Order.join/=
-         ?(andbF, orbF)/= ?(meetEtotal, joinEtotal).
-rewrite -negb_or le_total/=; set c := minr _ _; set d := maxr _ _.
-have inside : a.1 < c -> d < a.2 -> `]a.1, c] `&` `]d, a.2] = set0.
-  rewrite -subset0 lt_minr lt_maxl => /andP[a12 ab1] /andP[_ ba2] x /= [].
-  have b1a2 : b.1 <= a.2 by rewrite ltW// (lt_trans ltb).
-  have a1b2 : a.1 <= b.2 by rewrite ltW// (lt_trans _ ltb).
-  rewrite /c /d (min_idPr _)// (max_idPr _)// !in_itv /=.
-  move=> /andP[a1x xb1] /andP[b2x xa2].
-  by have := lt_le_trans b2x xb1; case: ltgtP ltb.
-exists ((if a.1 < c then [set `]a.1, c]%classic] else set0) `|`
-        (if d < a.2 then [set `]d, a.2]%classic] else set0)); split.
-- by rewrite finite_setU; do! case: ifP.
-- by move=> ? []; case: ifP => ? // ->//=.
-- by rewrite bigcup_setU; congr (_ `|` _);
-     case: ifPn => ?; rewrite ?bigcup_set1 ?bigcup_set0// set_itv_ge.
-- move=> I J/=; case: ifP => //= ac; case: ifP => //= da [] // -> []// ->.
-    by rewrite inside// => -[].
-  by rewrite setIC inside// => -[].
-Qed.
-
-Lemma ocitvI : setI_closed ocitv.
-Proof.
-move=> _ _ [a _ <-] [b _ <-]; rewrite -set_itvI/=.
-rewrite /Order.meet/= /Order.meet /Order.join/=
-        ?(andbF, orbF)/= ?(meetEtotal, joinEtotal).
-by rewrite -negb_or le_total/=.
-Qed.
-
-Definition ocitv_display : Type -> measure_display. Proof. exact. Qed.
-
-HB.instance Definition _ :=
-  @isSemiRingOfSets.Build (ocitv_display R)
-    ocitv_type (Pointed.class R) ocitv ocitv0 ocitvI ocitvD.
-
-Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
-Notation "R .-ocitv.-measurable" := (measurable : set (set (ocitv_type))) :
-  classical_set_scope.
+(* direct construction of the Lebesgue measure *)
+Module LebesgueMeasure.
 
 Section hlength.
+Context {R : realType}.
 Local Open Scope ereal_scope.
 Implicit Types i j : interval R.
 
-Definition hlength (A : set ocitv_type) : \bar R := let i := Rhull A in i.2 - i.1.
+Definition hlength (A : set (ocitv_type R)) : \bar R :=
+  let i := Rhull A in i.2 - i.1.
 
 Lemma hlength0 : hlength (set0 : set R) = 0.
 Proof. by rewrite /hlength Rhull0 /= subee. Qed.
@@ -230,7 +165,7 @@ Lemma hlength_ge0 I : (0 <= hlength I)%E.
 Proof. by rewrite -hlength0 le_hlength. Qed.
 
 End hlength.
-#[local] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
+#[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 
 (* Unused *)
 (* Lemma hlength_semi_additive2 : semi_additive2 hlength. *)
@@ -262,6 +197,11 @@ End hlength.
 (* apply/not_orP; rewrite /= !in_itv/=. *)
 (* by rewrite lt_geF ?midf_lt//= andbF le_gtF ?midf_le//= ltW. *)
 (* Qed. *)
+
+Section hlength_extension.
+Context {R : realType}.
+
+Notation hlength := (@hlength R).
 
 Lemma hlength_semi_additive : semi_additive hlength.
 Proof.
@@ -334,7 +274,7 @@ HB.instance Definition _ := isContent.Build _ _ R
 Hint Extern 0 ((_ .-ocitv).-measurable _) => solve [apply: is_ocitv] : core.
 
 Lemma hlength_sigma_sub_additive :
-  sigma_sub_additive (hlength : set ocitv_type -> _).
+  sigma_sub_additive (hlength : set (ocitv_type R) -> _).
 Proof.
 move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE.
 move=> [a _ <-]; rewrite hlength_itv ?lte_fin/= -EFinB => lebig.
@@ -345,9 +285,9 @@ apply: le_trans (epsilon_trick _ _ _) => //=.
 have eVn_gt0 n : 0 < e%:num / 2 / (2 ^ n.+1)%:R.
   by rewrite divr_gt0// ltr0n// expn_gt0.
 have eVn_ge0 n := ltW (eVn_gt0 n).
-pose Aoo i : set ocitv_type :=
+pose Aoo i : set (ocitv_type R) :=
   `](b i).1, (b i).2 + e%:num / 2 / (2 ^ i.+1)%:R[%classic.
-pose Aoc i : set ocitv_type :=
+pose Aoc i : set (ocitv_type R) :=
   `](b i).1, (b i).2 + e%:num / 2 / (2 ^ i.+1)%:R]%classic.
 have: `[a.1 + e%:num / 2, a.2] `<=` \bigcup_i Aoo i.
   apply: (@subset_trans _ `]a.1, a.2]).
@@ -362,7 +302,7 @@ have: `](a.1 + e%:num / 2), a.2] `<=` \bigcup_(i in [set` X]) Aoc i.
   move=> x /subset_itv_oc_cc /Xc [i /= Xi] Aooix.
   by exists i => //; apply: subset_itv_oo_oc Aooix.
 have /[apply] := @content_sub_fsum _ _ _
-  [the content _ _ of hlength : set ocitv_type -> _] _ [set` X].
+  [the content _ _ of hlength : set (ocitv_type R) -> _] _ [set` X].
 move=> /(_ _ _ _)/Box[]//=; apply: le_le_trans.
   rewrite hlength_itv ?lte_fin -?EFinD/= -addrA -opprD.
   by case: ltP => //; rewrite lee_fin subr_le0.
@@ -378,7 +318,7 @@ Qed.
 HB.instance Definition _ := Content_SubSigmaAdditive_isMeasure.Build _ _ _
   hlength hlength_sigma_sub_additive.
 
-Lemma hlength_sigma_finite : sigma_finite setT (hlength : set ocitv_type -> _).
+Lemma hlength_sigma_finite : sigma_finite setT (hlength : set (ocitv_type R) -> _).
 Proof.
 exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic); first by rewrite bigcup_itvT.
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
@@ -400,16 +340,20 @@ Arguments hlength {R}.
 #[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 Arguments lebesgue_measure {R}.
 
-Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
-Notation "R .-ocitv.-measurable" := (measurable : set (set (ocitv_type R))) :
-  classical_set_scope.
+End LebesgueMeasure.
+
+Definition lebesgue_measure {R : realType} :
+  set [the measurableType _.-sigma of
+       salgebraType R.-ocitv.-measurable] -> \bar R :=
+  [the measure _ _ of lebesgue_stieltjes_measure [the cumulative _ of idfun]].
+HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 
 Section lebesgue_measure.
 Variable R : realType.
 Let gitvs := [the measurableType _ of salgebraType (@ocitv R)].
 
 Lemma lebesgue_measure_unique (mu : {measure set gitvs -> \bar R}) :
-  (forall X, ocitv X -> hlength X = mu X) ->
+  (forall X, ocitv X -> hlength [the cumulative _ of idfun] X = mu X) ->
   forall X, measurable X -> lebesgue_measure X = mu X.
 Proof.
 move=> muE X mX; apply: measure_extension_unique => //.
@@ -861,10 +805,11 @@ Section lebesgue_measure_itv.
 Variable R : realType.
 
 Let lebesgue_measure_itvoc (a b : R) :
-  (lebesgue_measure (`]a, b] : set R) = hlength `]a, b])%classic.
+  (lebesgue_measure (`]a, b] : set R) =
+  hlength [the cumulative _ of idfun] `]a, b])%classic.
 Proof.
-rewrite /lebesgue_measure/= /measure_extension measurable_mu_extE//.
-by exists (a, b).
+rewrite /lebesgue_measure/= /lebesgue_stieltjes_measure/= /measure_extension/=.
+by rewrite measurable_mu_extE//; exact: is_ocitv.
 Qed.
 
 Let lebesgue_measure_itvoo_subr1 (a : R) :
@@ -905,7 +850,8 @@ by rewrite in_itv/= => + xa; rewrite xa ltxx andbF.
 Qed.
 
 Let lebesgue_measure_itvoo (a b : R) :
-  (lebesgue_measure (`]a, b[ : set R) = hlength `]a, b[)%classic.
+  (lebesgue_measure (`]a, b[ : set R) =
+   hlength [the cumulative _ of idfun] `]a, b[)%classic.
 Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
@@ -915,7 +861,8 @@ rewrite 2!hlength_itv => <-; rewrite -setUitv1// measureU//.
 Qed.
 
 Let lebesgue_measure_itvcc (a b : R) :
-  (lebesgue_measure (`[a, b] : set R) = hlength `[a, b])%classic.
+  (lebesgue_measure (`[a, b] : set R) =
+   hlength [the cumulative _ of idfun] `[a, b])%classic.
 Proof.
 have [ab|ba] := leP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoc a b.
@@ -925,7 +872,8 @@ rewrite 2!hlength_itv => <-; rewrite -setU1itv// measureU//.
 Qed.
 
 Let lebesgue_measure_itvco (a b : R) :
-  (lebesgue_measure (`[a, b[ : set R) = hlength `[a, b[)%classic.
+  (lebesgue_measure (`[a, b[ : set R) =
+   hlength [the cumulative _ of idfun] `[a, b[)%classic.
 Proof.
 have [ab|ba] := ltP a b; last by rewrite set_itv_ge ?measure0// -leNgt.
 have := lebesgue_measure_itvoo a b.
@@ -936,7 +884,7 @@ Qed.
 
 Let lebesgue_measure_itv_bnd (x y : bool) (a b : R) :
   lebesgue_measure ([set` Interval (BSide x a) (BSide y b)] : set R) =
-  hlength [set` Interval (BSide x a) (BSide y b)].
+  hlength [the cumulative _ of idfun] [set` Interval (BSide x a) (BSide y b)].
 Proof.
 by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
   exact: lebesgue_measure_itvcc | exact: lebesgue_measure_itvoo |
@@ -980,7 +928,8 @@ by rewrite subee// add0e.
 Qed.
 
 Lemma lebesgue_measure_itv (i : interval R) :
-  lebesgue_measure ([set` i] : set R) = hlength [set` i].
+  lebesgue_measure ([set` i] : set R) =
+  hlength [the cumulative _ of idfun] [set` i].
 Proof.
 move: i => [[x a|[|]]] [y b|[|]]; first exact: lebesgue_measure_itv_bnd.
 - by rewrite set_itvE ?measure0.
