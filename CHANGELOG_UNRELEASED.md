@@ -12,76 +12,6 @@
   + lemma `globally0`
 - in `normedtype.v`:
   + lemma `lipschitz_set0`, `lipschitz_set1`
-- in `contructive_ereal.v`:
-  + lemmas `ereal_blatticeMixin`, `ereal_tblatticeMixin`
-  + canonicals `ereal_blatticeType`, `ereal_tblatticeType`
-- in `lebesgue_measure.v`:
-  + lemma `emeasurable_itv`
-- in `lebesgue_integral.v`:
-  + lemma `sfinite_Fubini`
-
-- file `itv.v`:
-  + definition `wider_itv`
-  + module `Itv`:
-    * definitions `map_itv_bound`, `map_itv`
-    * lemmas `le_map_itv_bound`, `subitv_map_itv`
-    * definition `itv_cond`
-    * record `def`
-    * notation `spec`
-    * record `typ`
-    * definitions `mk`, `from`, `fromP`
-  + notations `{itv R & i}`, `{i01 R}`, `%:itv`, `[itv of _]`, `inum`, `%:inum`
-  + definitions `itv_eqMixin`, `itv_choiceMixin`, `itv_porderMixin`
-  + canonical `itv_subType`, `itv_eqType`, `itv_choiceType`, `itv_porderType`
-  + lemma `itv_top_typ_subproof`
-  + canonical `itv_top_typ`
-  + lemma `typ_inum_subproof`
-  + canonical `typ_inum`
-  + notation `unify_itv`
-  + lemma `itv_intro`
-  + definition `empty_itv`
-  + lemmas `itv_bottom`, `itv_gt0`, `itv_le0F`, `itv_lt0`, `itv_ge0F`, `itv_ge0`, `lt0F`, `le0`, `gt0F`, `lt1`,
-    `ge1F`, `le1`, `gt1F`
-  + lemma `widen_itv_subproof`
-  + definition `widen_itv`
-  + lemma `widen_itvE`
-  + notation `%:i01`
-  + lemma `zero_inum_subproof`
-  + canonical `zero_inum`
-  + lemma `one_inum_subproof`
-  + canonical `one_inum`
-  + definition `opp_itv_bound_subdef`
-  + lemmas `opp_itv_ge0_subproof`, `opp_itv_gt0_subproof`, `opp_itv_boundr_subproof`,
-    `opp_itv_le0_subproof`, `opp_itv_lt0_subproof`, `opp_itv_boundl_subproof`
-  + definition `opp_itv_subdef`
-  + lemma `opp_inum_subproof `
-  + canonical `opp_inum`
-  + definitions `add_itv_boundl_subdef`, `add_itv_boundr_subdef`, `add_itv_subdef`
-  + lemma `add_inum_subproof`
-  + canonical `add_inum`
-  + definitions `itv_bound_signl`, `itv_bound_signr`, `interval_sign`
-  + variant `interval_sign_spec`
-  + lemma `interval_signP`
-  + definitions `mul_itv_boundl_subdef`, `mul_itv_boundr_subdef`
-  + lemmas `mul_itv_boundl_subproof`, `mul_itv_boundrC_subproof`, `mul_itv_boundr_subproof`,
-    `mul_itv_boundr'_subproof`
-  + definition `mul_itv_subdef`
-  + lemmas `map_itv_bound_min`, `map_itv_bound_max`, `mul_inum_subproof`
-  + canonical `mul_inum`
-  + lemmas `inum_eq`, `inum_le`, `inum_lt`
-- in `mathcomp_extra.v`
-  + lemma `ler_sqrt`
-- in `constructive_ereal.v`
-  + definition `sqrte`
-  + lemmas `sqrte0`, `sqrte_ge0`, `lee_sqrt`, `sqrteM`, `sqr_sqrte`,
-    `sqrte_sqr`, `sqrte_fin_num`
-- in `exp.v`:
-  + lemma `ln_power_pos`
-  + definition `powere_pos`, notation ``` _ `^ _ ``` in `ereal_scope`
-  + lemmas `powere_pos_EFin`, `powere_posyr`, `powere_pose0`,
-    `powere_pose1`, `powere_posNyr` `powere_pos0r`, `powere_pos1r`,
-    `powere_posNyr`, `fine_powere_pos`, `powere_pos_ge0`,
-    `powere_pos_gt0`, `powere_pos_eq0`, `powere_posM`, `powere12_sqrt`
 - in `measure.v`:
   + lemma `measurable_fun_bigcup`
 - in `sequences.v`:
@@ -178,51 +108,17 @@
 
 - in `lebesgue_integral.v`:
   + lemmas `integrableP`, `measurable_int`
-  + new definitions `split_sym`, `gauge`, `gauge_uniformType_mixin`, 
-    `gauge_topologicalTypeMixin`, `gauge_filtered`, `gauge_topologicalType`, 
-    `gauge_uniformType`, `gauge_psuedoMetric_mixin`, and 
-    `gauge_psuedoMetricType`.
-  + new lemmas `iter_split_ent`, `gauge_ent`, `gauge_filter`, 
-    `gauge_refl`, `gauge_inv`, `gauge_split`, `gauge_countable_uniformity`, and 
-    `uniform_pseudometric_sup`.
-  + new definitions `discrete_ent`, `discrete_uniformType`, `discrete_ball`, 
-    `discrete_pseudoMetricType`, and `pseudoMetric_bool`.
-  + new lemmas `finite_compact`, `discrete_ball_center`, `compact_cauchy_cvg`
 
 - in file `cantor.v`,
-  + new definitions `countable_nat`, `totally_disconnected`, `countable_basis`, 
-    `cantor_like`, `pointedDiscrete`, and `tree_of`.
-  + new lemmas `bool2E`, `bool_predE`, `cantor_space_compact`, 
-    `cantor_space_hausdorff`, `perfect_set2`, `totally_disconnected_prod`, 
-    `totally_disconnected_discrete`, `cantor_totally_disconnected`, 
-    `cantor_perfect`, `cantor_like_cantor_space`, `totally_disconnected_cvg`, 
-    `clopen_countable`, `compact_countable_base`, `tree_map_props`, 
-    `homeomorphism_cantor_like`, `cantor_like_finite_prod`, `ent_closure`, and 
-    `cantor_surj`.
+  + new definitions `cantor_space`, `cantor_like`, `pointedDiscrete`, and 
+    `tree_of`.
+  + new lemmas `cantor_space_compact`, `cantor_space_hausdorff`, 
+    `cantor_zero_dimensional`, `cantor_perfect`, `cantor_like_cantor_space`, 
+    `tree_map_props`, `homeomorphism_cantor_like`, and 
+    `cantor_like_finite_prod`.
+  + new theorem `cantor_surj`.
 - in file `topology.v`,
-  + new definitions `discrete_ent`, `discrete_ent_filter`, 
-    `discrete_uniform_mixin`, `discrete_uniformType`, `discrete_ball`, 
-    `discrete_pseudoMetricType_mixin`, `discrete_pseudoMetricType`, and 
-    `pseudoMetric_bool`.
-  + new lemmas `finite_compact`, `discrete_ent_refl`, `discrete_ent_inv`, 
-    `discrete_ent_split`, `discrete_ent_nbhs`, `discrete_ball_center`, 
-    `discrete_ball_sym`, `discrete_ball_triangle`, `discrete_entourage`, and 
-    `compact_cauchy_cvg`.
-
-### Changed
-
-- in `mathcomp_extra.v`
-  + lemmas `eq_bigmax`, `eq_bigmin` changed to respect `P` in the returned type.
-- in `measure.v`:
-  + generalize `negligible` to `semiRingOfSetsType`
-- in `exp.v`:
-  + new lemmas `power_pos_ge0`, `power_pos0`, `power_pos_eq0`,
-    `power_posM`, `power_posAC`, `power12_sqrt`, `power_pos_inv1`,
-    `power_pos_inv`, `power_pos_intmul`
-- in `lebesgue_measure.v`:
-  + lemmas `measurable_fun_ln`, `measurable_fun_power_pos`
-- in `measure.v`:
-  + definition `almost_everywhere`
+  + new lemmas `perfect_set2`, and `ent_closure`.
 
 ### Changed
   
