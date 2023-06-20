@@ -81,7 +81,7 @@ Proof.
 move=> h x0.
 set (f := fix f n := if n is n'.+1 then proj1_sig (h (f n')) else x0).
 exists f; split => //.
-intro n; induction n; simpl; apply proj2_sig.
+intro n; induction n; simpl; apply: proj2_sig.
 Qed.
 End dependent_choice_Type.
 
@@ -400,11 +400,11 @@ Lemma positive_negative0 nu P N : positive_set nu P -> negative_set nu N ->
   forall S, measurable S -> nu (S `&` P `&` N) = 0.
 Proof.
 move=> [mP posP] [mN negN] S mS; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply negN; first by apply measurableI => //; exact: measurableI.
-  by apply setIidPl; rewrite -setIA setIid.
+  apply: negN; first by apply: measurableI => //; exact: measurableI.
+  by apply/setIidPl; rewrite -setIA setIid.
 rewrite -setIAC.
-apply posP; first by apply measurableI => //; exact: measurableI.
-by apply setIidPl; rewrite -setIA setIid.
+apply: posP; first by apply: measurableI => //; exact: measurableI.
+by apply/setIidPl; rewrite -setIA setIid.
 Qed.
 
 End positive_negative_set_lemmas.
@@ -472,17 +472,17 @@ Let subDD A := [set nu E | E in [set E | measurable E /\ E `<=` D `\` A] ].
 
 Let d_ A := ereal_sup (subDD A).
 
-Lemma d_ge0 X : 0 <= d_ X.
+Let d_ge0 X : 0 <= d_ X.
 Proof. by apply: ereal_sup_ub => /=; exists set0; rewrite ?charge0. Qed.
 
 Let elt_rel i j :=
   [/\ g_ j = d_ (U_ i),  A_ j `<=` D `\` U_ i & U_ j = U_ i `|` A_ j ].
 
-Let next_elt A : 0 <= d_ A ->
+Let next_elt A :
   { B | [/\ measurable B, B `<=` D `\` A & nu B >= mine (d_ A * 2^-1%:E) 1] }.
 Proof.
-move=> dA0; pose m := mine (d_ A * 2^-1%R%:E) 1; apply/cid.
-move: dA0; rewrite le_eqVlt => /predU1P[<-|d_gt0].
+pose m := mine (d_ A * 2^-1%R%:E) 1; apply/cid.
+have := d_ge0 A; rewrite le_eqVlt => /predU1P[<-|d_gt0].
   by exists set0; split => //; rewrite charge0.
 have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < d_ A.
   rewrite /m; have [->|dn1oo] := eqVneq (d_ A) +oo.
@@ -548,13 +548,13 @@ Qed.
 Lemma hahn_decomposition_lemma : measurable D ->
   {A | [/\ A `<=` D, negative_set nu A & nu A <= nu D]}.
 Proof.
-move=> mD; have [A0 [mA0 + A0d0]] := next_elt (d_ge0 set0).
+move=> mD; have [A0 [mA0 + A0d0]] := next_elt set0.
 rewrite setD0 => A0D.
 have [v [v0 Pv]] : {v : nat -> elt_type |
     v 0%N = exist _ (A0, d_ set0, A0) (And4 mA0 A0D (d_ge0 set0) A0d0) /\
     forall n, elt_rel (v n) (v n.+1)}.
-  apply dependent_choice_Type => -[[[A' ?] U] [/= mA' A'D]].
-  have [A1 [mA1 A1DU A1t1] ] := next_elt (d_ge0 U).
+  apply: dependent_choice_Type => -[[[A' ?] U] [/= mA' A'D]].
+  have [A1 [mA1 A1DU A1t1] ] := next_elt U.
   have A1D : A1 `<=` D by apply: (subset_trans A1DU); apply: subDsetl.
   by exists (exist _ (A1, d_ U, U `|` A1) (And4 mA1 A1D (d_ge0 U) A1t1)).
 have Ubig n : U_ (v n) = \big[setU/set0]_(i < n.+1) A_ (v i).
@@ -648,7 +648,7 @@ Let subC A := [set nu E | E in [set E | measurable E /\ E `<=` ~` A] ].
 
 Let s_ A := ereal_inf (subC A).
 
-Lemma s_le0 X : s_ X <= 0.
+Let s_le0 X : s_ X <= 0.
 Proof.
 by apply: ereal_inf_lb => /=; exists set0; rewrite ?charge0//=; split.
 Qed.
@@ -656,11 +656,11 @@ Qed.
 Let elt_rel i j :=
   [/\ z_ j = s_ (U_ i), A_ j `<=` ~` U_ i & U_ j = U_ i `|` A_ j].
 
-Let next_elt U : s_ U <= 0 -> { A | [/\ A `<=` ~` U,
+Let next_elt U : { A | [/\ A `<=` ~` U,
   negative_set nu A & nu A <= maxe (s_ U * 2^-1%R%:E) (- 1%E)] }.
 Proof.
-move=> sU0; pose m := maxe (s_ U * 2^-1%R%:E) (- 1%E); apply/cid.
-move: sU0; rewrite le_eqVlt => /predU1P[->|s_lt0].
+pose m := maxe (s_ U * 2^-1%R%:E) (- 1%E); apply/cid.
+have := s_le0 U; rewrite le_eqVlt => /predU1P[->|s_lt0].
   by exists set0; split => //; rewrite ?charge0//; exact: negative_set0.
 have /ereal_inf_lt/cid2[_ [B/= [mB BU] <-] nuBm] : s_ U < m.
   rewrite /m; have [->|s0oo] := eqVneq (s_ U) -oo.
@@ -676,12 +676,12 @@ Qed.
 
 Theorem Hahn_decomposition : exists P N, hahn_decomposition nu P N.
 Proof.
-have [A0 [_ negA0 A0s0]] := next_elt (s_le0 set0).
+have [A0 [_ negA0 A0s0]] := next_elt set0.
 have [v [v0 Pv]] : {v |
     v 0%N = exist _ (A0, s_ set0, A0) (And3 (s_le0 set0) negA0 A0s0) /\
     forall n, elt_rel (v n) (v n.+1)}.
   apply: dependent_choice_Type => -[[[A s] U] [/= s_le0' nsA]].
-  have [A' [? nsA' A's'] ] := next_elt (s_le0 U).
+  have [A' [? nsA' A's'] ] := next_elt U.
   by exists (exist _ (A', s_ U, U `|` A') (And3 (s_le0 U) nsA' A's')).
 have Ubig n : U_ (v n) = \big[setU/set0]_(i < n.+1) A_ (v i).
   elim: n => [|n ih]; first by rewrite v0/= big_ord_recr/= big_ord0 set0U v0.
