@@ -13,8 +13,6 @@ Lastest releases: [[0.6.3] - 2023-06-21](#063---2023-06-21) and [[0.6.2] - 2023-
     `deg_le2_poly_delta_ge0`, `deg_le2_poly_ge0`
     (will be in MC 2.1/1.18)
   + lemma `deg_le2_ge0`
-  + new lemmas `measurable_subring`, and `semiring_sigma_additive`.
-  + added factory `Content_SubSigmaAdditive_isMeasure`
 - in `classical_sets.v`:
   + lemmas `set_eq_le`, `set_neq_lt`,
   + new lemma `trivIset1`.
@@ -37,6 +35,8 @@ Lastest releases: [[0.6.3] - 2023-06-21](#063---2023-06-21) and [[0.6.2] - 2023-
 - in `sequences.v`:
   + lemma `eq_eseriesl`
 - in `measure.v`:
+  + new lemmas `measurable_subring`, and `semiring_sigma_additive`.
+  + added factory `Content_SubSigmaAdditive_isMeasure`
   + lemma `measurable_fun_bigcup`
   + definition `measure_dominates`, notation `` `<< ``
   + lemma `measure_dominates_trans`
