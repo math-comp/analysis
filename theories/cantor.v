@@ -5,6 +5,20 @@ Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
 Require Import reals topology.
 From HB Require Import structures.
 
+(******************************************************************************)
+(*                      The Cantor Space and Applications                     *)
+(*                                                                            *)
+(* This file develops the theory of the Cantor space, that is bool^nat with   *)
+(* the product topology. The two main theorems proved here are                *)
+(* homeomorphism_cantor_like, and cantor_surj, aka Alexandroff-Hausdorff,.    *)
+(*                                                                            *)
+(*         cantor_space == the cantor space, with its canonical metric        *)
+(*         cantor_like T == perfect + compact + hausdroff + zero dimensional  *)
+(*         pointed_discrete T == equips T with the discrete topology          *)
+(*         tree_of T == builds a topological tree with levels (T n)           *)
+(*                                                                            *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -336,7 +350,7 @@ End TreeStructure.
 (* Part 3: Finitely Branching trees are cantor-like *)
 Section FinitelyBranchingTrees.
 Context {R : realType}.
-Definition pointedDiscrete (P : pointedType) : pseudoMetricType R :=
+Definition pointed_discrete (P : pointedType) : pseudoMetricType R :=
   @discrete_pseudoMetricType R
     (@discrete_uniformType (TopologicalType
       (FilteredType P P principal_filter)
@@ -345,20 +359,20 @@ Definition pointedDiscrete (P : pointedType) : pseudoMetricType R :=
 
 Definition tree_of (T : nat -> pointedType) : pseudoMetricType R :=
   @product_pseudoMetricType R _
-    (fun n => pointedDiscrete (T n))
+    (fun n => pointed_discrete (T n))
     (countableP _).
 
 Lemma cantor_like_finite_prod (T : nat -> topologicalType) :
-  (forall n, finite_set [set: pointedDiscrete (T n)]) ->
+  (forall n, finite_set [set: pointed_discrete (T n)]) ->
   (forall n, (exists xy : T n * T n, xy.1 != xy.2)) ->
   cantor_like (tree_of T).
 Proof.
 move=> finiteT twoElems; split.
-- apply: (@perfect_diagonal (fun n => pointedDiscrete (T n))). 
+- apply: (@perfect_diagonal (fun n => pointed_discrete (T n))). 
   exact: twoElems.
 - have := tychonoff (fun n => finite_compact (finiteT n)).
   by congr (compact _) => //=; rewrite eqEsubset; split => b.
-- apply (@hausdorff_product _ (fun n => pointedDiscrete (T n))).
+- apply (@hausdorff_product _ (fun n => pointed_discrete (T n))).
   by move=> n; exact: discrete_hausdorff.
 - by apply zero_dimension_prod => ?; exact: discrete_zero_dimension.
 Qed.
@@ -468,7 +482,7 @@ Local Lemma cantor_surj_pt1 : exists (f : Tree -> T),
   continuous f /\ set_surj [set: Tree] [set: T] f.
 Proof.
 pose entn n := projT2 (cid (ent_balls' (count_unif n))).
-have [] := (@tree_map_props (fun (n : nat) => @pointedDiscrete R (K n))
+have [] := (@tree_map_props (fun (n : nat) => @pointed_discrete R (K n))
   T (embed_refine) (embed_invar) cptT hsdfT).
 - done.
 - move=> n U; rewrite eqEsubset; split; last by move => t [? ? []].
@@ -513,7 +527,7 @@ Local Lemma cantor_surj_pt2 :
 Proof.
 have [] := @homeomorphism_cantor_like R Tree; first last.
   by move=> f [ctsf _]; exists f.
-apply: (@cantor_like_finite_prod _ (fun n => @pointedDiscrete R (K n))).
+apply: (@cantor_like_finite_prod _ (fun n => @pointed_discrete R (K n))).
   move=> n /=; have [// | fs _ _ _ _] := projT2 (cid (ent_balls' (count_unif n))).
   suff -> : [set: {classic K' n}] =
       (@projT1 (set T) _) @^-1` (projT1 (cid (ent_balls' (count_unif n)))).
