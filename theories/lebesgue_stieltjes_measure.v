@@ -12,7 +12,25 @@ Require Import real_interval measure realfun.
 (*                       Lebesgue Stieltjes Measure                           *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue-Stieltjes measure using *)
-(* the Extension theorem available in measure.v.                              *)
+(* the Measure Extension theorem from measure.v.                              *)
+(*                                                                            *)
+(* Reference:                                                                 *)
+(* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
+(*                                                                            *)
+(*    right_continuous f == the function f is right-continuous                *)
+(*          cumulative R == type of non-decreasing, right-continuous          *)
+(*                          functions (with R : numFieldType)                 *)
+(*                          The HB class is Cumulative.                       *)
+(*                          instance: idfun                                   *)
+(*          ocitv_type R == alias for R : realType                            *)
+(*                 ocitv == set of open-closed intervals ]x, y] where         *)
+(*                          x and y are real numbers                          *)
+(*              R.-ocitv == display for ocitv_type R                          *)
+(*  R.-ocitv.-measurable == semiring of sets of open-closed intervals         *)
+(*           hlength f A := f b - f a with the hull of the set of real        *)
+(*                          numbers A being delimited by a and b              *)
+(* lebesgue_stieltjes_measure f == Lebesgue-Stieltjes measure for f           *)
+(*                          f is a cumulative function.                       *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -28,6 +46,55 @@ Local Open Scope ring_scope.
 Reserved Notation "R .-ocitv" (at level 1, format "R .-ocitv").
 Reserved Notation "R .-ocitv.-measurable"
  (at level 2, format "R .-ocitv.-measurable").
+
+(* TODO: move? *)
+Notation right_continuous f :=
+  (forall x, f%function @ at_right x --> f%function x).
+
+Lemma right_continuousW (R : numFieldType) (f : R -> R) :
+  continuous f -> right_continuous f.
+Proof. by move=> cf x; apply: cvg_within_filter; exact/cf. Qed.
+
+HB.mixin Record isCumulative (R : numFieldType) (f : R -> R) := {
+  cumulative_is_nondecreasing : {homo f : x y / x <= y} ;
+  cumulative_is_right_continuous : right_continuous f }.
+
+#[short(type=cumulative)]
+HB.structure Definition Cumulative (R : numFieldType) :=
+  { f of isCumulative R f }.
+
+Arguments cumulative_is_nondecreasing {R} _.
+Arguments cumulative_is_right_continuous {R} _.
+
+Lemma nondecreasing_right_continuousP (R : numFieldType) (a : R) (e : R)
+    (f : cumulative R) :
+  e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
+Proof.
+move=> e0; move: (cumulative_is_right_continuous f).
+move=> /(_ a)/(@cvgr_dist_lt _ [normedModType R of R^o]).
+move=> /(_ _ e0)[] _ /posnumP[d] => h.
+exists (PosNum [gt0 of (d%:num / 2)]) => //=.
+move: h => /(_ (a + d%:num / 2)) /=.
+rewrite opprD addrA subrr distrC subr0 ger0_norm //.
+rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n => /(_ erefl).
+rewrite ltr_addl divr_gt0// => /(_ erefl).
+rewrite ler0_norm; last first.
+  by rewrite subr_le0 (cumulative_is_nondecreasing f)// ler_addl.
+by rewrite opprB ltr_subl_addl => fa; exact: ltW.
+Qed.
+
+Section id_is_cumulative.
+Variable R : realType.
+
+Let id_nd : {homo @idfun R : x y / x <= y}.
+Proof. by []. Qed.
+
+Let id_rc : right_continuous (@idfun R).
+Proof. by apply/right_continuousW => x; exact: cvg_id. Qed.
+
+HB.instance Definition _ := isCumulative.Build R idfun id_nd id_rc.
+End id_is_cumulative.
+(* /TODO: move? *)
 
 Section itv_semiRingOfSets.
 Variable R : realType.
@@ -97,70 +164,6 @@ End itv_semiRingOfSets.
 Notation "R .-ocitv" := (ocitv_display R) : measure_display_scope.
 Notation "R .-ocitv.-measurable" := (measurable : set (set (ocitv_type R))) :
   classical_set_scope.
-
-(* TODO: move *)
-Notation right_continuous f :=
-  (forall x, f%function @ at_right x --> f%function x).
-
-Lemma right_continuousW (R : numFieldType) (f : R -> R) :
-  continuous f -> right_continuous f.
-Proof. by move=> cf x; apply: cvg_within_filter; exact/cf. Qed.
-
-HB.mixin Record isCumulative (R : numFieldType) (f : R -> R) := {
-  cumulative_is_nondecreasing : {homo f : x y / x <= y} ;
-  cumulative_is_right_continuous : right_continuous f }.
-
-#[short(type=cumulative)]
-HB.structure Definition Cumulative (R : numFieldType) :=
-  { f of isCumulative R f }.
-
-Arguments cumulative_is_nondecreasing {R} _.
-Arguments cumulative_is_right_continuous {R} _.
-
-Lemma nondecreasing_right_continuousP (R : numFieldType) (a : R) (e : R)
-    (f : cumulative R) :
-  e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
-Proof.
-move=> e0; move: (cumulative_is_right_continuous f).
-move=> /(_ a)/(@cvgr_dist_lt _ [normedModType R of R^o]).
-move=> /(_ _ e0)[] _ /posnumP[d] => h.
-exists (PosNum [gt0 of (d%:num / 2)]) => //=.
-move: h => /(_ (a + d%:num / 2)) /=.
-rewrite opprD addrA subrr distrC subr0 ger0_norm //.
-rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n => /(_ erefl).
-rewrite ltr_addl divr_gt0// => /(_ erefl).
-rewrite ler0_norm; last first.
-  by rewrite subr_le0 (cumulative_is_nondecreasing f)// ler_addl.
-by rewrite opprB ltr_subl_addl => fa; exact: ltW.
-Qed.
-
-Section id_is_cumulative.
-Variable R : realType.
-
-Let id_nd : {homo @idfun R : x y / x <= y}.
-Proof. by []. Qed.
-
-Let id_rc : right_continuous (@idfun R).
-Proof. by apply/right_continuousW => x; exact: cvg_id. Qed.
-
-HB.instance Definition _ := isCumulative.Build R idfun id_nd id_rc.
-End id_is_cumulative.
-
-(* TODO: move and use in lebesgue_measure.v? *)
-Lemma le_inf (R : realType) (S1 S2 : set R) :
-  -%R @` S2 `<=` down (-%R @` S1) -> nonempty S2 -> has_inf S1
-    -> (inf S1 <= inf S2)%R.
-Proof.
-move=> S21 S12 S1i; rewrite ler_oppl opprK le_sup// ?has_inf_supN//.
-exact/nonemptyN.
-Qed.
-
-Lemma nondecreasing_er_map (R : realDomainType) (f : R -> R) :
-  {homo f : x y / (x <= y)%R} -> {homo er_map f : x y / (x <= y)%E}.
-Proof.
-move=> ndf.
-by move=> [r| |] [l| |]//=; rewrite ?leey ?leNye// !lee_fin; exact: ndf.
-Qed.
 
 Section hlength.
 Context {R : realType}.
@@ -251,7 +254,7 @@ Lemma hlength_itv_ge0 (ndf : {homo f : x y / (x <= y)%R}) i :
   0 <= hlength [set` i].
 Proof.
 rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
-- by rewrite suber_ge0// => /ltW /(nondecreasing_er_map ndf).
+- by rewrite suber_ge0// => /ltW /(le_er_map ndf).
 - by rewrite ltNge leey.
 - by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
 Qed.
@@ -415,7 +418,7 @@ wlog wlogh : b A AE lebig / forall n, (b n).1 <= (b n).2.
     rewrite /A' AE; case: ifPn => bk //.
     by rewrite subset0 set_itv_ge//= bnd_simp -leNgt.
   - by move=> k; rewrite /b'; case: ifPn => //; rewrite -ltNge => /ltW.
-apply: lee_adde => e.
+apply/lee_addgt0Pr => _/posnumP[e].
 rewrite [e%:num]splitr [in leRHS]EFinD addeA -lee_subl_addr//.
 apply: le_trans (epsilon_trick _ _ _) => //=.
 have [c ce] := nondecreasing_right_continuousP a.1 f [gt0 of e%:num / 2].
@@ -487,6 +490,15 @@ Definition lebesgue_stieltjes_measure (f : cumulative R) :=
   measure_extension [the measure _ _ of hlength f].
 HB.instance Definition _ (f : cumulative R) :=
   Measure.on (lebesgue_stieltjes_measure f).
+
+(* TODO: this ought to be turned into a Let but older version of mathcomp/coq
+   does not seem to allow, try to change asap *)
+Local Lemma sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R) :
+  sigma_finite setT (lebesgue_stieltjes_measure f).
+Proof. exact/measure_extension_sigma_finite/hlength_sigma_finite. Qed.
+
+HB.instance Definition _ (f : cumulative R) := @isSigmaFinite.Build _ _ _
+  (lebesgue_stieltjes_measure f) (sigmaT_finite_lebesgue_stieltjes_measure f).
 
 End hlength_extension.
 Arguments lebesgue_stieltjes_measure {R}.

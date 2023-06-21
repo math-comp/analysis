@@ -12,18 +12,14 @@ Require Import lebesgue_stieltjes_measure.
 (*                            Lebesgue Measure                                *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue measure using the       *)
-(* Caratheodory's theorem available in measure.v and further develops the     *)
-(* theory of measurable functions.                                            *)
+(* Measure Extension theorem from measure.v and further develops the theory   *)
+(* of measurable functions.                                                   *)
 (*                                                                            *)
 (* Main reference:                                                            *)
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
 (*                                                                            *)
-(*             hlength A == length of the hull of the set of real numbers A   *)
-(*                 ocitv == set of open-closed intervals ]x, y] where         *)
-(*                            x and y are real numbers                        *)
 (*      lebesgue_measure == the Lebesgue measure                              *)
-(*                                                                            *)
 (*              ps_infty == inductive definition of the powerset              *)
 (*                          {0, {-oo}, {+oo}, {-oo,+oo}}                      *)
 (*         emeasurable G == sigma-algebra over \bar R built out of the        *)
@@ -50,9 +46,10 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* direct construction of the Lebesgue measure *)
+(* This module contains a direct construction of the Lebesgue measure this is
+   kept here for archival purpose. The Lebesgue measure is actually defined as
+   an instance of the Lebesgue-Stieltjes measure. *)
 Module LebesgueMeasure.
-
 Section hlength.
 Context {R : realType}.
 Local Open Scope ereal_scope.
@@ -335,7 +332,7 @@ Proof. exact/measure_extension_sigma_finite/hlength_sigma_finite. Qed.
 HB.instance Definition _ := @isSigmaFinite.Build _ _ _
   lebesgue_measure sigmaT_finite_lebesgue_measure.
 
-End itv_semiRingOfSets.
+End hlength_extension.
 Arguments hlength {R}.
 #[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 Arguments lebesgue_measure {R}.
@@ -845,7 +842,7 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
   rewrite [in X in X == _]/= EFinN EFinB fin_num_oppeB// addeA subee// add0e.
   by rewrite addeC -sube_eq ?fin_num_adde_defl// subee// => /eqP.
 rewrite -setUitv1// ?bnd_simp; last by rewrite ltr_subl_addr ltr_addl.
-rewrite measureU //; apply/seteqP; split => // x []/=. 
+rewrite measureU //; apply/seteqP; split => // x []/=.
 by rewrite in_itv/= => + xa; rewrite xa ltxx andbF.
 Qed.
 
@@ -2056,7 +2053,7 @@ Lemma lebesgue_regularity_inner_sup (D : set R) (eps : R) : measurable D ->
 Proof.
 move=> mD; have [?|] := ltP (mu D) +oo.
   exact: lebesgue_regularity_innerE_bounded.
-have /sigma_finiteP [/= F RFU [Fsub ffin]] := sigmaT_finite_lebesgue_measure R (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *).
+have /sigma_finiteP [F RFU [Fsub ffin]] := sigma_finiteT mu (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *).
 rewrite leye_eq => /eqP /[dup] + ->.
 have {1}-> : D = \bigcup_n (F n `&` D) by rewrite -setI_bigcupl -RFU setTI.
 move=> FDp; apply/esym/eq_infty => M.
@@ -2069,7 +2066,7 @@ move/cvgey_ge => /(_ (M + 1)%R) [N _ /(_ _ (lexx N))].
 have [mFN FNoo] := ffin N.
 have [] := @lebesgue_regularity_inner (F N `&` D) _ _ _ ltr01.
 - exact: measurableI.
-- by rewrite (le_lt_trans _ (ffin N).2)// measureIl.
+- by rewrite (le_lt_trans _ (ffin N).2)//= measureIl.
 move=> V [/[dup] /compact_measurable mV cptV VFND] FDV1 M1FD.
 rewrite (@le_trans _ _ (mu V))//; last first.
   apply: ereal_sup_ub; exists V => //=; split => //.
