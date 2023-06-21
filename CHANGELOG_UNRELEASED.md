@@ -119,6 +119,15 @@
 - moved from `lebesgue_measure.v` to `real_interval.v`:
   + lemmas `set1_bigcap_oc`, `itv_bnd_open_bigcup`, `itv_open_bnd_bigcup`,
     `itv_bnd_infty_bigcup`, `itv_infty_bnd_bigcup`
+- in `lebesgue_measure.v`
+  + `measurable_funrM`, `measurable_funN`, `measurable_fun_exprn`
+- in `lebesgue_integral.v`:
+  + lemma `xsection_ndseq_closed` generalized from a measure to a family of measures
+  + locked `integrable` and put it in bool rather than Prop
+- in `probability.v`
+  + `variance` is now defined based on `covariance` 
+
+- moved `subsetP` from `functions.v` to `classical_sets.v`
 
 ### Renamed
 
