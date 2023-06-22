@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- in `measure.v`:
+  + lemma `lebesgue_regularity_outer`
 
 ### Changed
 
