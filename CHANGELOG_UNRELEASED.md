@@ -18,17 +18,6 @@
 - in file `topology.v`,
   + new lemma `uniform_nbhsT`.
 
-- in `topology.v`:
-  + lemma `globally0`
-- in `normedtype.v`:
-  + lemma `lipschitz_set0`, `lipschitz_set1`
-- in `measure.v`:
-  + lemma `measurable_fun_bigcup`
-- in `sequences.v`:
-  + lemma `eq_eseriesl`
-- in `lebesgue_measure.v`:
-  + lemma `measurable_expR`
-
 - in file `topology.v`,
   + new definitions `basis`, and `second_countable`.
   + new lemmas `clopen_countable` and `compact_countable_base`.
@@ -128,6 +117,10 @@
   + `variance` is now defined based on `covariance` 
 
 - moved `subsetP` from `functions.v` to `classical_sets.v`
+  + new definition `set_nbhs`.
+  + new lemmas `smallest_filter_stage_sub`, `smallest_filter_stageE`, 
+    `finI_fromI`, `smallest_filter_stage_finI`, `smallest_filter_finI`, and 
+    `set_nbhsP`.
 
 ### Renamed
 
