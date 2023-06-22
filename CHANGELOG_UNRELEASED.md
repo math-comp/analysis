@@ -122,6 +122,8 @@
     `finI_fromI`, `smallest_filter_stage_finI`, `smallest_filter_finI`, and 
     `set_nbhsP`.
 
+### Changed
+
 ### Renamed
 
 ### Generalized
