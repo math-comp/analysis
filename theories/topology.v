@@ -8130,7 +8130,12 @@ split=> // x y Ax By bxy; have divxy := epsdiv (x,y) bxy.
 by have [?] := projT2 (cid2 divideAB); apply/eqP/set0P; exists (x, y).
 Qed.
 
-(* TODO : finish urysohn's lemma with distinace function *)
+(* TODO : This section has only local definitions due to a missing structure.
+   It will be finished on the hierarchy builder branch. The current
+   pseudo-metric definition does not guarantee a distance function, but adding
+   a new structure is prohibitively hard without HB. But the distance function
+   for T''', once defined, will satisfy urysohn's lemma.
+*)
 
 End urysohn_real.
 
