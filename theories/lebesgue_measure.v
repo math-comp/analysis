@@ -873,6 +873,38 @@ Qed.
 
 End lebesgue_measure_itv.
 
+Section measurable_ball.
+Variable R : realType.
+
+Lemma measurable_ball (x : R) e : measurable (ball x e).
+Proof. by rewrite ball_itv; exact: measurable_itv. Qed.
+
+Lemma lebesgue_measure_ball (x r : R) : (0 <= r)%R ->
+  lebesgue_measure (ball x r) = (r *+ 2)%:E.
+Proof.
+rewrite le_eqVlt => /orP[/eqP <-|r0].
+  by rewrite (ball0 _ _).2// measure0 mul0rn.
+rewrite ball_itv lebesgue_measure_itv/= lte_fin ltr_subl_addr -addrA ltr_addl.
+by rewrite addr_gt0 // -EFinD addrAC opprD opprK addrA subrr add0r -mulr2n.
+Qed.
+
+Lemma measurable_closed_ball (x : R) r : measurable (closed_ball x r).
+Proof.
+have [r0|r0] := leP r 0; first by rewrite closed_ball0.
+by rewrite closed_ball_itv.
+Qed.
+
+Lemma lebesgue_measure_closed_ball (x r : R) : 0 <= r ->
+  lebesgue_measure (closed_ball x r) = (r *+ 2)%:E.
+Proof.
+rewrite le_eqVlt => /predU1P[<-|r0]; first by rewrite mul0rn closed_ball0.
+rewrite closed_ball_itv// lebesgue_measure_itv/= lte_fin -ltr_subl_addl addrAC.
+rewrite subrr add0r gtr_opp// ?mulr_gt0// -EFinD; congr (_%:E).
+by rewrite opprB addrAC addrCA subrr addr0 -mulr2n.
+Qed.
+
+End measurable_ball.
+
 Lemma lebesgue_measure_rat (R : realType) :
   lebesgue_measure (range ratr : set R) = 0%E.
 Proof.
@@ -1356,12 +1388,6 @@ Proof.
 move=> /open_bigcup_rat ->; rewrite bigcup_mkcond; apply: bigcupT_measurable_rat.
 move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
 exact: is_interval_bigcup_ointsub.
-Qed.
-
-Lemma measurable_ball (r x : R) : 0 < r -> measurable (ball x r).
-Proof.
-move=> ?; apply: open_measurable.
-exact: (@ball_open _ [normedModType R of R^o]).
 Qed.
 
 Lemma open_measurable_subspace (D : set R) (U : set (subspace D)) :
