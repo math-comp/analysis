@@ -188,7 +188,7 @@ Require Import reals signed.
 (*                                     a pointedType, as well as the carrier. *)
 (*                                     nbhs_of_open \o open_from must be      *)
 (*                                     used to declare a filterType           *)
-(*        smallest_filter_stage F n == nth stage of recursively building the  *)
+(*                 filterI_iter F n == nth stage of recursively building the  *)
 (*                                     filter of finite intersections of F    *)
 (*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
 (*                                     a finite subset of D                   *)
@@ -2126,22 +2126,22 @@ split.
 - by move=> ? ? /filterS + sFP ? [? ?]; apply; apply: sFP.
 Qed.
 
-Fixpoint smallest_filter_stage {T : Type} (F : set (set T)) (n : nat) :=
+Fixpoint filterI_iter {T : Type} (F : set (set T)) (n : nat) :=
   if n is m.+1
   then [set P `&` Q |
-    P in smallest_filter_stage F m & Q in smallest_filter_stage F m]
+    P in filterI_iter F m & Q in filterI_iter F m]
   else setT |` F.
 
-Lemma smallest_filter_stage_sub {T : Type} (F : set (set T)) :
-  {homo smallest_filter_stage F : i j / (i <= j)%N >-> i `<=` j}.
+Lemma filterI_iter_sub {T : Type} (F : set (set T)) :
+  {homo filterI_iter F : i j / (i <= j)%N >-> i `<=` j}.
 Proof.
 move=> + j; elim: j; first by move=> i; rewrite leqn0 => /eqP ->.
 move=> j IH i; rewrite leq_eqVlt => /predU1P[->//|].
 by move=> /IH/subset_trans; apply=> A ?; do 2 exists A => //; rewrite setIid.
 Qed.
 
-Lemma smallest_filter_stageE {T : Type} (F : set (set T)) :
-  smallest Filter F = filter_from (\bigcup_n (smallest_filter_stage F n)) id.
+Lemma filterI_iterE {T : Type} (F : set (set T)) :
+  smallest Filter F = filter_from (\bigcup_n (filterI_iter F n)) id.
 Proof.
 rewrite eqEsubset; split.
   apply: smallest_sub => //; first last.
@@ -2149,8 +2149,8 @@ rewrite eqEsubset; split.
   apply: filter_from_filter; first by exists setT; exists O => //; left.
   move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.
   exists (maxn i j).+1 => //=; exists P.
-    by apply: smallest_filter_stage_sub; first exact: leq_maxl.
-  by exists Q => //; apply: smallest_filter_stage_sub; first exact: leq_maxr.
+    by apply: filterI_iter_sub; first exact: leq_maxl.
+  by exists Q => //; apply: filterI_iter_sub; first exact: leq_maxr.
 move=> + [+ [n _]]; elim: n => [A B|n IH/= A B].
   move=> [-> /[!(@subTset T)] ->|]; first exact: filterT.
   by move=> FB /filterS; apply; apply: sub_gen_smallest.
@@ -2193,8 +2193,8 @@ case=> N ND <- [M MD <-]; exists (N `|` M)%fset.
 by rewrite -bigcap_setU set_fsetU.
 Qed.
 
-Lemma smallest_filter_stage_finI {I : choiceType} T D (f : I -> set T) :
-  finI_from D f = \bigcup_n (smallest_filter_stage (f @` D) n).
+Lemma filterI_iter_finI {I : choiceType} T D (f : I -> set T) :
+  finI_from D f = \bigcup_n (filterI_iter (f @` D) n).
 Proof.
 rewrite eqEsubset; split.
   move=> A [N /= + <-]; have /finite_setP[n] := finite_fset N; elim: n N.
@@ -2204,7 +2204,7 @@ rewrite eqEsubset; split.
   have NxD : {subset (N `\ x)%fset <= D}.
     by move=> ?; rewrite ?inE => /andP [_ /ND /set_mem].
   have [r _ xr] := IH _ Nxn NxD; exists r.+1 => //; exists (f x).
-    apply: (@smallest_filter_stage_sub _ _ O) => //; right; exists x => //.
+    apply: (@filterI_iter_sub _ _ O) => //; right; exists x => //.
     by rewrite -inE; apply: ND.
   exists (\bigcap_(i in [set` (N `\ x)%fset]) f i) => //.
   by rewrite -bigcap_setU1 set_fsetD1 setD1K.
@@ -2218,7 +2218,7 @@ Qed.
 
 Lemma smallest_filter_finI {T : choiceType} (D : set T) f :
   filter_from (finI_from D f) id = smallest (@Filter T) (f @` D).
-Proof. by rewrite smallest_filter_stage_finI smallest_filter_stageE. Qed.
+Proof. by rewrite filterI_iter_finI filterI_iterE. Qed.
 
 End filter_supremums.
 
