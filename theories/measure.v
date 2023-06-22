@@ -2620,6 +2620,21 @@ Qed.
 
 End more_premeasure_ring_lemmas.
 
+Lemma measure_sigma_sub_additive_tail d (R : realType) (T : semiRingOfSetsType d)
+  (mu : {measure set T -> \bar R}) (A : set T) (F : nat -> set T) N :
+    (forall n, measurable (F n)) -> measurable A ->
+    A `<=` \bigcup_(n in ~` `I_N) F n ->
+  (mu A <= \sum_(N <= n <oo) mu (F n))%E.
+Proof.
+move=> mF mA AF; rewrite eseries_cond eseries_mkcondr.
+rewrite (@eq_eseriesr _ _ (fun n => mu (if (N <= n)%N then F n else set0))).
+- apply: measure_sigma_sub_additive => //.
+  + by move=> n; case: ifPn.
+  + move: AF; rewrite bigcup_mkcond.
+    by under eq_bigcupr do rewrite mem_not_I.
+- by move=> o _; rewrite (fun_if mu) measure0.
+Qed.
+
 Section ring_sigma_content.
 Context d (R : realType) (T : semiRingOfSetsType d)
         (mu : {measure set T -> \bar R}).
@@ -3402,6 +3417,20 @@ Arguments outer_measure0 {R T} _.
 Arguments outer_measure_ge0 {R T} _.
 Arguments le_outer_measure {R T} _.
 Arguments outer_measure_sigma_subadditive {R T} _.
+
+Lemma outer_measure_sigma_subadditive_tail (T : Type) (R : realType)
+    (mu : {outer_measure set T -> \bar R}) N (F : (set T) ^nat) :
+  (mu (\bigcup_(n in ~` `I_N) (F n)) <= \sum_(N <= i <oo) mu (F i))%E.
+Proof.
+rewrite bigcup_mkcond.
+have := outer_measure_sigma_subadditive mu
+  (fun n => if n \in ~` `I_N then F n else set0).
+move/le_trans; apply.
+rewrite [in leRHS]eseries_cond [in leRHS]eseries_mkcondr; apply: lee_nneseries.
+- by move=> k _; exact: outer_measure_ge0.
+- move=> k _; rewrite fun_if; case: ifPn => Nk; first by rewrite mem_not_I Nk.
+  by rewrite mem_not_I (negbTE Nk) outer_measure0.
+Qed.
 
 Section outer_measureU.
 Context d (T : semiRingOfSetsType d) (R : realType).

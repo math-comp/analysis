@@ -35,6 +35,9 @@ Require Export lebesgue_stieltjes_measure.
 (* of equivalence between emeasurable and the sigma-algebras generated open   *)
 (* rays and closed rays.                                                      *)
 (*                                                                            *)
+(*     vitali_cover A B V == V is a Vitali cover of A, here B is a            *)
+(*                           collection of non-empty closed balls             *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -2137,3 +2140,299 @@ exists (B `|` C); split.
 Qed.
 
 End egorov.
+
+Definition vitali_cover {R : realType} (E : set R) I
+    (B : I -> set R) (D : set I) :=
+  forall x, E x -> forall e : R, 0 < e -> exists i,
+    [/\ D i, B i x & (radius (B i))%:num < e].
+
+Section vitali_theorem.
+Context {R : realType} (A : set R) (B : nat -> set R).
+Hypothesis is_ballB : forall i, is_ball (B i).
+Hypothesis B0 : forall i, (0 < (radius (B i))%:num)%R.
+Notation mu := (@lebesgue_measure R).
+Local Open Scope ereal_scope.
+
+Lemma vitali_theorem (V : set nat) : vitali_cover A B V ->
+  exists D, [/\ countable D, D `<=` V, trivIset D (closure \o B) &
+    mu (A `\` \bigcup_(k in D) closure (B k)) = 0].
+Proof.
+move=> ABV.
+wlog VB1 : V ABV / forall i, V i -> ((radius (B i))%:num <= 1)%R.
+  move=> wlg.
+  pose V' := V `\` [set i | (radius (B i))%:num > 1]%R.
+  have : vitali_cover A B V'.
+    move=> x Ax e e0.
+    have : (0 < minr e 1)%R by rewrite lt_minr// e0/=.
+    move/(ABV x Ax) => [i [Vi ix ie]].
+    exists i; split => //.
+    - split => //=; rewrite ltNge; apply/negP/negPn.
+      by rewrite (le_trans (ltW ie))// le_minl lexx orbT.
+    - by rewrite (lt_le_trans ie)// le_minl lexx.
+  move/wlg.
+  have V'B1 i : V' i -> ((radius (B i))%:num <= 1)%R.
+    by move=> [Vi /=]; rewrite ltNge => /negP/negPn.
+  move/(_ V'B1) => [D [cD DV' tD h]].
+  by exists D; split => //; apply: (subset_trans DV') => ? [].
+have [D [cD DV tDB Dintersect]] := vitali_lemma_infinite is_ballB B0 VB1.
+exists D; split => //.
+pose Z r := (A `\` \bigcup_(k in D) closure (B k)) `&` ball (0%R : R^o) r.
+suff: forall r : {posnum R}, mu (Z r%:num) = 0.
+  move=> Zr; have {}Zr n : mu (Z n%:R) = 0.
+    move: n => [|n]; first by rewrite /Z (ball0 _ _).2// setI0 measure0.
+    by rewrite (Zr (PosNum (ltr0Sn _ n))).
+  set F := fun n => Z n%:R.
+  have : mu (\bigcup_n F n) <= \sum_(i <oo) mu (F i).
+    exact: outer_measure_sigma_subadditive.
+  rewrite eseries0; last by move=> n _; rewrite /F Zr.
+  rewrite /F -setI_bigcupr (_ : \bigcup__ _ = setT) ?setIT//.
+    by rewrite le_eqVlt ltNge measure_ge0 orbF => /eqP.
+  apply/seteqP; split => // x _.
+  have [x0|x0] := ltP 0%R x.
+    exists `|ceil x|.+1 => //.
+    rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
+    by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_spaddr.
+  exists `|ceil (- x)|.+1 => //.
+  rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
+  rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?ler_oppr ?oppr0//.
+  by rewrite ltr_spaddr.
+move=> r.
+pose E := [set i | D i /\ closure (B i) `&` ball (0%R : R^o) r%:num !=set0].
+pose F := vitali_collection_partition B E 1.
+have E_partition : E = \bigcup_n (F n).
+  by rewrite -cover_vitali_collection_partition// => i [] /DV /VB1.
+have EBr2 n : E n -> closure (B n) `<=` (ball (0 : R^o) (r%:num + 2))%R.
+  move=> [Dn] [x] => -[Bnx rx] y /= Bny.
+  move: rx; rewrite /ball /= !sub0r !normrN => rx.
+  rewrite -(subrK x y) (le_lt_trans (ler_norm_add _ _))//.
+  rewrite addrC ltr_le_add// -(subrK (cpoint (B n)) y) -(addrA (y - _)%R).
+  rewrite (le_trans (ler_norm_add _ _))// (_ : 2 = 1 + 1)%R// ler_add//.
+    rewrite distrC; have := is_ball_closureP (is_ballB n) Bny.
+    by move=> /le_trans; apply; rewrite VB1//; exact: DV.
+  have := is_ball_closureP (is_ballB n) Bnx.
+  by move=> /le_trans; apply; rewrite VB1//; exact: DV.
+have {}EBr2 : \esum_(i in E) mu (closure (B i)) <=
+              mu (ball (0 : R^o) (r%:num + 2))%R.
+  rewrite -(set_mem_set E) -nneseries_esum// -measure_bigcup//; last 2 first.
+    by move=> *; rewrite is_ball_closure//; exact: measurable_closed_ball.
+    by apply: sub_trivIset tDB => ? [].
+  apply/le_measure; rewrite ?inE; [|exact: measurable_ball|exact: bigcup_sub].
+  apply: bigcup_measurable => *.
+  by rewrite is_ball_closure//; exact: measurable_closed_ball.
+have finite_set_F i : finite_set (F i).
+  apply: contrapT.
+  pose M := `|ceil ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))|.+1.
+  move/(infinite_set_fset M) => [/= C] CsubFi McardC.
+  have MC : (M%:R * (1 / (2 ^ i.+1)%:R))%:E <=
+            mu (\bigcup_(j in [set` C]) closure (B j)).
+    rewrite (measure_bigcup [the measure _ _ of mu] [set` C])//; last 2 first.
+      by move=> ? _; rewrite is_ball_closure//; exact: measurable_closed_ball.
+      by apply: sub_trivIset tDB; by apply: (subset_trans CsubFi) => x [[]].
+    rewrite /= nneseries_esum//= set_mem_set// esum_fset// fsbig_finite//=.
+    rewrite set_fsetK.
+    apply: (@le_trans _ _ (\sum_(i0 <- C) (1 / (2 ^ i.+1)%:R)%:E)).
+      under eq_bigr do rewrite -(mul1r (_ / _)) EFinM.
+      rewrite -ge0_sume_distrl// EFinM lee_wpmul2r// sumEFin lee_fin.
+      by rewrite -(natr_sum _ _ _ (cst 1%N)) ler_nat -card_fset_sum1.
+    rewrite big_seq_cond [in leRHS]big_seq_cond; apply: lee_sum => // j.
+    rewrite andbT => /CsubFi[_ /andP[+ _]].
+    rewrite -lte_fin => /ltW/le_trans; apply.
+    rewrite is_ball_closure// lebesgue_measure_closed_ball// lee_fin mulr2n.
+    by rewrite ler_addr.
+  have CFi : mu (\bigcup_(j in [set` C]) closure (B j)) <=
+             mu (\bigcup_(j in F i) closure (B j)).
+    apply: le_measure => //; rewrite ?inE.
+    - rewrite bigcup_fset; apply: bigsetU_measurable => *.
+      by rewrite is_ball_closure//; exact: measurable_closed_ball.
+    - apply: bigcup_measurable => *.
+      by rewrite is_ball_closure//; exact: measurable_closed_ball.
+    - apply: bigcup_sub => j Cj.
+      exact/(@bigcup_sup _ _ _ _ (closure \o B))/CsubFi.
+  have Fir2 : mu (\bigcup_(j in F i) closure (B j)) <=
+              mu (ball (0 : R^o) (r%:num + 2))%R.
+    rewrite (le_trans _ EBr2)// -(set_mem_set E) -nneseries_esum //.
+    rewrite E_partition -measure_bigcup//=; last 2 first.
+      by move=> *; rewrite is_ball_closure//; exact: measurable_closed_ball.
+      apply: trivIset_bigcup => //.
+        by move=> n; apply: sub_trivIset tDB => ? [[]].
+      by move=> n m i0 j nm [[Di0 _] _] [[Dj _] _]; exact: tDB.
+    apply: le_measure; rewrite ?inE.
+    - apply: bigcup_measurable => *; rewrite is_ball_closure//.
+      exact: measurable_closed_ball.
+    - apply: bigcup_measurable => *; rewrite is_ball_closure//.
+      exact: measurable_closed_ball.
+    - by move=> /= x [n Fni Bnx]; exists n => //; exists i.
+  have {CFi Fir2} := le_trans MC (le_trans CFi Fir2).
+  apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
+  rewrite -(natr1 _ `| _ |%N) natr_absz ger0_norm ?ceil_ge0// -ltr_pdivr_mulr//.
+  by rewrite -ltr_subl_addr (lt_le_trans _ (ceil_ge _))// ltr_subl_addr ltr_addl.
+have mur2_fin_num_ : mu (ball (0 : R^o) (r%:num + 2))%R < +oo.
+  by rewrite lebesgue_measure_ball// ltry.
+have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =
+          mu (\bigcup_(i in E) closure (B i)).
+  rewrite E_partition bigcup_bigcup; apply/esym.
+  transitivity (\sum_(n <oo) mu (\bigcup_(i in F n) closure (B i))).
+    apply: measure_semi_bigcup => //.
+    - move=> i; apply: bigcup_measurable => *.
+      by rewrite is_ball_closure//; exact: measurable_closed_ball.
+    - apply: trivIsetT_bigcup => //.
+        apply/trivIsetP => i j _ _ ij.
+        by apply: disjoint_vitali_collection_partition => // k -[] /DV /VB1.
+      by rewrite -E_partition; apply: sub_trivIset tDB => x [].
+    - rewrite -bigcup_bigcup; apply: bigcup_measurable => k _.
+      by rewrite is_ball_closure//; exact: measurable_closed_ball.
+  apply: (@eq_eseriesr _ (fun n => mu (\bigcup_(i in F n) closure (B i)))).
+  move=> i _; rewrite bigcup_mkcond measure_semi_bigcup//; last 3 first.
+    move=> j; case: ifPn => // _.
+    by rewrite is_ball_closure//; exact: measurable_closed_ball.
+    by apply/(trivIset_mkcond _ _).1; apply: sub_trivIset tDB => x [[]].
+    rewrite -bigcup_mkcond; apply: bigcup_measurable => k _.
+    by rewrite is_ball_closure//; exact: measurable_closed_ball.
+  rewrite esum_mkcond//= nneseries_esum// -fun_true//=.
+  by under eq_esum do rewrite (fun_if mu) (measure0 [the measure _ _ of mu]).
+apply/eqP; rewrite eq_le measure_ge0 andbT.
+apply/lee_addgt0Pr => _ /posnumP[e]; rewrite add0e.
+have [N F5e] : exists N,
+    \sum_(N <= n <oo) \esum_(i in F n) mu (closure (B i)) <
+    5%:R^-1%:E * e%:num%:E.
+  pose f n := \bigcup_(i in F n) closure (B i).
+  have foo : \sum_(k <oo) (mu \o f) k < +oo.
+    rewrite /f /= [ltLHS](_ : _ =
+      \sum_(n <oo) \esum_(i in F n) mu (closure (B i))); last first.
+    apply: (@eq_eseriesr _
+        (fun k => mu (\bigcup_(i in F k) closure (B i)))) => i _.
+      rewrite measure_bigcup//=.
+      - by rewrite nneseries_esum// set_mem_set.
+      - move=> j D'ij; rewrite is_ball_closure//.
+        exact: measurable_closed_ball.
+      - by apply: sub_trivIset tDB => // x [[]].
+    rewrite FE (@le_lt_trans _ _ (mu (ball (0 : R^o) (r%:num + 2))%R))//.
+    rewrite (le_trans _ EBr2)// measure_bigcup//=.
+    + by rewrite nneseries_esum// set_mem_set.
+    + by move=> i _; rewrite is_ball_closure//; exact: measurable_closed_ball.
+    + by apply: sub_trivIset tDB => // x [].
+  have : \sum_(N <= k <oo) (mu \o f) k @[N --> \oo] --> 0.
+    exact: nneseries_tail_cvg.
+  rewrite /f /=.
+  move/fine_fcvg => /=.
+  move/(@cvgrPdist_lt _ [pseudoMetricNormedZmodType R of R^o]).
+  have : (0 < 5%:R^-1 * e%:num)%R  by rewrite mulr_gt0// invr_gt0// ltr0n.
+  move=> /[swap] /[apply].
+  rewrite near_map => -[N _]/(_ _ (leqnn N)) h; exists N; move: h.
+  rewrite sub0r normrN ger0_norm//; last first.
+    by rewrite fine_ge0//; exact: nneseries_ge0.
+  rewrite -lte_fin; apply: le_lt_trans.
+  set X : \bar R := (X in fine X).
+  have Xoo : X < +oo.
+    apply: le_lt_trans foo.
+    by rewrite (nneseries_split N)// lee_addr//; exact: sume_ge0.
+  rewrite fineK ?ge0_fin_numE//; last exact: nneseries_ge0.
+  apply: lee_nneseries => //; first by move=> i _; exact: esum_ge0.
+  move=> n Nn; rewrite measure_bigcup//=.
+  - by rewrite nneseries_esum// set_mem_set.
+  - by move=> i _; rewrite is_ball_closure//; exact: measurable_closed_ball.
+  - by apply: sub_trivIset tDB => x [[]].
+pose K := \bigcup_(i in `I_N) \bigcup_(j in F i) closure (B j).
+have closedK : closed K.
+  apply: closed_bigcup => //= i iN; apply: closed_bigcup => //.
+  by move=> j Fij; exact: closed_closure.
+have ZNF5 : Z r%:num `<=`
+    \bigcup_(i in ~` `I_N) \bigcup_(j in F i) closure (5%:R *` B j).
+  move=> z Zz.
+  have Kz : ~ K z.
+    rewrite /K => -[n /= nN [m] [[Dm _] _] Bmz].
+    by case: Zz => -[_ + _]; apply; exists m.
+  have [i [Vi Biz Bir BiK0]] : exists i, [/\ V i, (closure (B i)) z,
+      (closure (B i)) `<=` ball (0%R : R^o) r%:num &
+      closure (B i) `&` K = set0].
+    case: Zz => -[Az notDBz]; rewrite /ball/= sub0r normrN => rz.
+    have [d dzr zdK0] : exists2 d : {posnum R},
+        (d%:num < r%:num - `|z|)%R & closed_ball z d%:num `&` K = set0.
+      move: rz; rewrite -subr_gt0.
+      move=> /(@closed_disjoint_closed_ball _ [normedModType R of R^o]
+                                            _ _ _ closedK Kz).
+      by case=> d drz zdK; exists d.
+    have N0_gt0 : (0 < d%:num / 2 :> R)%R by rewrite divr_gt0.
+    have [i [Vi Biz BiN0]] := ABV _ Az _ N0_gt0.
+    exists i; split => //.
+      exact: subset_closure.
+      move=> y Biy; rewrite /ball/= sub0r normrN -(@subrK _ (cpoint (B i)) y).
+      rewrite (le_lt_trans (ler_norm_add _ _))//.
+      rewrite (@le_lt_trans _ _ (d%:num/2 + `|cpoint (B i)|)%R)//.
+        rewrite ler_add2r// distrC.
+        have /le_trans := is_ball_closureP (is_ballB i) Biy.
+        by apply; exact: ltW.
+      rewrite -(@subrK _ z (cpoint (B i))).
+      rewrite (@le_lt_trans _ _ (d%:num / 2 + `|cpoint (B i) - z| + `|z|)%R)//.
+        by rewrite -[leRHS]addrA ler_add2l//; exact: ler_norm_add.
+      rewrite (@le_lt_trans _ _ (d%:num + `|z|)%R)//.
+        rewrite [in leRHS](splitr d%:num) -!addrA ler_add2l// ler_add2r//.
+        have /ltW/le_trans := is_ballP (is_ballB i) Biz.
+        by apply; exact: ltW.
+      by move: dzr; rewrite -ltr_subr_addr.
+    apply: subsetI_eq0 zdK0 => // y Biy.
+    rewrite (@closed_ballE _ [normedModType R of R^o])//= /closed_ball_/=.
+    rewrite -(@subrK _ (cpoint (B i)) z) -(addrA (z - _)%R).
+    rewrite (le_trans (ler_norm_add _ _))// [in leRHS](splitr d%:num) ler_add//.
+      rewrite distrC.
+      have /ltW/le_trans := is_ballP (is_ballB i) Biz.
+      by apply; exact: ltW.
+    have /le_trans := is_ball_closureP (is_ballB i) Biy.
+    by apply; exact: ltW.
+  have [j [Ej Bij0 Bij5]] : exists j, [/\ E j,
+      closure (B i) `&` closure (B j) !=set0 &
+      closure (B i) `<=` closure (5%:R *` B j)].
+    have [j [Dj Bij0 Bij2 Bij5]] := Dintersect _ Vi.
+    exists j; split => //; split => //.
+    by move: Bij0; rewrite setIC; exact: subsetI_neq0.
+  have BjK : ~ (closure (B j) `<=` K).
+    move=> BjK; move/eqP : BiK0.
+    by apply/negP/set0P; move: Bij0; exact: subsetI_neq0.
+  have [k NK Fkj] : (\bigcup_(i in ~` `I_N) F i) j.
+    move: Ej; rewrite E_partition => -[k _ Fkj].
+    exists k => //= kN.
+    by apply: BjK => x Bjx; exists k => //; exists j.
+  by exists k => //; exists j => //; exact: Bij5.
+have {}ZNF5 : mu (Z r%:num) <=
+    \sum_(N <= m <oo) \esum_(i in F m) mu (closure (5%:R *` B i)).
+  apply: (@le_trans _ _ (mu (\bigcup_(i in ~` `I_N)
+      \bigcup_(j in F i) closure (5%:R *` B j)))).
+    exact: le_outer_measure.
+  apply: (@le_trans _ _ (\sum_(N <= i <oo) mu
+                           (\bigcup_(j in F i) closure (5%:R *` B j)))).
+    apply: measure_sigma_sub_additive_tail => //.
+      move=> n; apply: bigcup_measurable => k _.
+      rewrite is_ball_closure//; first exact: measurable_closed_ball.
+      exact: is_scale_ball.
+    apply: bigcup_measurable => k _; apply: bigcup_measurable => k' _.
+    rewrite is_ball_closure//; first exact: measurable_closed_ball.
+    exact: is_scale_ball.
+  apply: lee_nneseries => // n _.
+  rewrite -[in leRHS](set_mem_set (F n)) -nneseries_esum//.
+  rewrite bigcup_mkcond eseries_mkcond.
+  rewrite [leRHS](_ : _ = \sum_(i <oo) mu
+      (if i \in F n then closure (5%:R *` B i) else set0)); last first.
+    congr (lim _); apply/funext => x.
+    by under [RHS]eq_bigr do rewrite (fun_if mu) measure0.
+  apply: measure_sigma_sub_additive => //.
+  + move=> m; case: ifPn => // _.
+    rewrite is_ball_closure//; first exact: measurable_closed_ball.
+    exact: is_scale_ball.
+  + apply: bigcup_measurable => k _; case: ifPn => // _.
+    rewrite is_ball_closure//; first exact: measurable_closed_ball.
+    exact: is_scale_ball.
+apply/(le_trans ZNF5)/ltW.
+move: F5e.
+rewrite [in X in X -> _](@lte_pdivl_mull R 5%:R e%:num%:E) ?ltr0n//.
+rewrite -nneseriesZl//; last by move=> *; exact: esum_ge0.
+move/le_lt_trans; apply.
+apply: lee_nneseries => //; first by move=> *; exact: esum_ge0.
+move=> n _.
+rewrite -(set_mem_set (F n)) -nneseries_esum// -nneseries_esum// -nneseriesZl//.
+apply: lee_nneseries => // m mFn.
+rewrite is_ball_closure//; last exact: is_scale_ball.
+rewrite lebesgue_measure_closed_ball// [in leRHS](ballE (is_ballB m)).
+by rewrite lebesgue_measure_closed_ball// -EFinM mulrnAr radius_scale_ball.
+Qed.
+
+End vitali_theorem.

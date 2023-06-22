@@ -5847,7 +5847,7 @@ move=> /ball0 r0; apply/seteqP; split => // y.
 by rewrite /closed_ball r0 closure0.
 Qed.
 
-Lemma closed_ballxx (R: numDomainType) (V : pseudoMetricType R) (x : V)
+Lemma closed_ballxx (R : numDomainType) (V : pseudoMetricType R) (x : V)
   (e : R) : 0 < e -> closed_ball x e x.
 Proof. by move=> ?; exact/subset_closure/ballxx. Qed.
 
@@ -5915,6 +5915,39 @@ Qed.
 Lemma subset_closed_ball (R : realFieldType) (V : pseudoMetricType R) (x : V)
   (r : R) : ball x r `<=` closed_ball x r.
 Proof. exact: subset_closure. Qed.
+
+Lemma open_subball {R : realFieldType} {M : normedModType R} (A : set M) (x : M)
+    k : open A -> A x -> 0 < k ->
+  exists2 e : {posnum R}, e%:num < k & ball x e%:num `<=` A.
+Proof.
+move=> aA Ax k0; have : nbhs x A by rewrite nbhsE/=; exists A.
+move/(@nbhs_closedballP R M _ x) => [r xrA].
+have r2k20 : 0 < minr (r%:num / 2) (k / 2) by rewrite lt_minr// !divr_gt0.
+exists (PosNum r2k20) => /=.
+  by rewrite lt_minl orbC ltr_pdivr_mulr// ltr_pmulr// ltr1n.
+apply/(subset_trans _ xrA)/(subset_trans _ (@subset_closed_ball _ _ _ _)) => //.
+by apply: le_ball; rewrite le_minl; rewrite ler_pdivr_mulr// ler_pmulr// ler1n.
+Qed.
+
+Lemma closed_disjoint_closed_ball {R : realFieldType} {M : normedModType R}
+    (K : set M) z (k : R) : closed K -> ~ K z -> 0 < k ->
+  exists2 d : {posnum R}, d%:num < k & closed_ball z d%:num `&` K = set0.
+Proof.
+move=> cK Kz k0.
+have [e ek zeK] : exists2 e : {posnum R}, e%:num < k & ball z e%:num `<=` ~` K.
+  by apply: open_subball => //; rewrite openC.
+have e20 : 0 < e%:num / 2 by rewrite divr_gt0.
+have e2e : e%:num / 2 < e%:num by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
+exists (e%:num / 2)%:pos; first by rewrite /= (lt_trans _ ek).
+move/subsets_disjoint : zeK; rewrite setCK.
+apply: subsetI_eq0 => //=.
+have := @closed_ball_subset _ M z _ _ e20 e2e.
+by rewrite closed_ballE.
+Qed.
+(*NB: make it a near lemma?
+  Lemma near_closed_disjoint_closed_ball {R : realType} {X : pseudoMetricType R}
+    (K : set X) z : closed K -> ~ K z ->
+  \forall d \near 0^'+, closed_ball z d `&` K = set0.*)
 
 Lemma locally_compactR (R : realType) : locally_compact [set: R].
 Proof.
@@ -6320,6 +6353,16 @@ Lemma radius_scale_ball (A : set R) (k : R) : 0 <= k -> is_ball A ->
 Proof.
 move=> k0 ballA.
 by rewrite [in LHS](ballE ballA) (scale_ballE _ _ k0)// radius_ball// mulr_ge0.
+Qed.
+
+Lemma is_scale_ball (A : set R) (k : R) : is_ball A -> is_ball (k *` A).
+Proof.
+move=> Aball.
+have [k0|k0] := leP 0 k.
+  by rewrite (ballE Aball) (scale_ballE _ _ k0); exact: is_ball_ball.
+rewrite (_ : _ *` _ = set0); first exact: is_ball0.
+apply/seteqP; split => // x.
+by rewrite /scale_ball Aball (ball0 _ _).2// nmulr_rle0.
 Qed.
 
 End center_radius_realFieldType.

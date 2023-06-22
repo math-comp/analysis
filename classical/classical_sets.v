@@ -1124,6 +1124,9 @@ Proof. by move=> k; apply/val_inj. Qed.
 Lemma IIordK {n} : cancel (@IIord n) ordII.
 Proof. by move=> k; apply/val_inj. Qed.
 
+Lemma mem_not_I N n : (n \in ~` `I_N) = (N <= n).
+Proof. by rewrite in_setC /mkset /in_mem /mem /= /in_set asboolb -leqNgt. Qed.
+
 End InitialSegment.
 
 Lemma setT_unit : [set: unit] = [set tt].
@@ -2565,6 +2568,17 @@ Proof.
 move=> tB H; move=> i j [n _ Dni] [m _ Dmi] ij.
 have [nm|nm] := eqVneq n m; first by apply: (tB m) => //; rewrite -nm.
 exact: (H _ _ _ _ nm).
+Qed.
+
+Lemma trivIsetT_bigcup T1 T2 (I : eqType) (D : I -> set T1) (F : T1 -> set T2) :
+  trivIset setT D ->
+  trivIset (\bigcup_i D i) F ->
+  trivIset setT (fun i => \bigcup_(t in D i) F t).
+Proof.
+move=> D0 h i j _ _ [t [[m Dim Fmt] [n Djn Fnt]]].
+have mn : m = n by apply: h => //; [exists i|exists j|exists t].
+rewrite {}mn {m} in Dim Fmt *.
+by apply: D0 => //; exists n.
 Qed.
 
 Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.

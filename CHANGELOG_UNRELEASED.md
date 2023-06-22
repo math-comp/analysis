@@ -100,6 +100,27 @@
 
 - in `measure.v`:
   + lemma `probability_setC`
+- in `classical_sets.v`:
+  + lemmas `mem_not_I`, `trivIsetT_bigcup`
+
+- in `lebesgue_measure.v`:
+  + definition `vitali_cover`
+  + lemma `vitali_theorem`
+
+- in `measure.v`:
+  + lemma `measure_sigma_sub_additive_tail`
+  + lemma `outer_measure_sigma_subadditive_tail`
+
+- in `normedtype.v`:
+  + lemma `open_subball`
+  + lemma `closed_disjoint_closed_ball`
+  + lemma `is_scale_ball`
+
+- in `reals.v`:
+  + lemmas `ceilN`, `floorN`
+
+- in `sequences.v`:
+  + lemma `nneseries_tail_cvg`
 
 ### Changed
 
