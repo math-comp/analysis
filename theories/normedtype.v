@@ -19,6 +19,11 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                   balls; the carrier type must have a      *)
 (*                                   normed Zmodule over a numDomainType.     *)
 (*                                                                            *)
+(*         lower_semicontinuous f == the extented real-valued function f is   *)
+(*                                   lower-semicontinuous. The type of f is   *)
+(*                                   X -> \bar R with X : topologicalType and *)
+(*                                   R : realType                             *)
+(*                                                                            *)
 (* * Normed modules :                                                         *)
 (*                normedModType K == interface type for a normed module       *)
 (*                                   structure over the numDomainType K.      *)
@@ -350,6 +355,27 @@ rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
 rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?ler_oppr ?oppr0//.
 by rewrite ltr_spaddr.
 Qed.
+
+Section lower_semicontinuous.
+Context {X : topologicalType} {R : realType}.
+Implicit Types f : X -> \bar R.
+Local Open Scope ereal_scope.
+
+Definition lower_semicontinuous f := forall x a, a%:E < f x ->
+  exists2 V, nbhs x V & forall y, V y -> a%:E < f y.
+
+Lemma lower_semicontinuousP f :
+  lower_semicontinuous f <-> forall a, open [set x | f x > a%:E].
+Proof.
+split=> [sci a|openf x a afx].
+  rewrite openE /= => x /= /sci[A + Aaf]; rewrite nbhsE /= => -[B xB BA].
+  apply: nbhs_singleton; apply: nbhs_interior.
+  by rewrite nbhsE /=; exists B => // y /BA /=; exact: Aaf.
+exists [set x | a%:E < f x] => //.
+by rewrite nbhsE/=; exists [set x | a%:E < f x].
+Qed.
+
+End lower_semicontinuous.
 
 (** neighborhoods *)
 
