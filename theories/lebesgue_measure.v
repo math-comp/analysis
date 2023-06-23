@@ -1897,84 +1897,6 @@ Qed.
 End emeasurable_fun.
 Arguments emeasurable_fun_cvg {d T R D} f_.
 
-Section lebesgue_regularity.
-
-Context {d : measure_display} {R : realType}.
-Let mu := [the measure _ _ of @lebesgue_measure R].
-
-Local Open Scope ereal_scope.
-
-Lemma lebesgue_regularity_outer (D : set R) (eps : R) : 
-  measurable D -> mu D < +oo -> (0 < eps)%R -> exists (U : set R),
-  [/\ @open R U , D `<=` U & mu(U `\` D) < eps%:E].
-Proof.
-move=> mD muDpos epspos.
-have /ereal_inf_lt [z [/= M' covDM sMz zDe]] : mu D < mu D + (eps/2)%:E.
-  by rewrite lte_addl // ?fin_num_abs ?gee0_abs // lte_fin divr_gt0.
-pose e2 n := (eps/2)/(2^(n.+1))%:R; have e2pos : forall n, (0 < e2 n)%R.
-  by move=> n; rewrite divr_gt0 // ?divr_gt0 // exprz_gt0.
-pose M n := if (pselect (M' n = set0)) then set0 else 
-           (`] inf (M' n), sup (M' n) + e2 n [%classic)%R.
-have muM : forall n, mu (M n) <= mu (M' n) + (e2 n)%:E.
-  rewrite /M => n; case: (pselect _) => /= [-> |]. 
-    by rewrite measure0 add0e lee_fin; apply: ltW; exact: e2pos.
-  have /ocitvP [-> //| [[a b /= alb -> ab0]]] : ocitv (M' n). 
-    by case: covDM => /(_ n).
-  rewrite ?inf_itv ?sup_itv //.
-  have -> : (`]a, (b+e2 n)%R[ = `]a, b] `|` `]b, (b+e2 n)%R[ )%classic.
-    apply: funext=> r /=; rewrite (@itv_splitU _ _ (BSide false b)).
-      by rewrite propeqE; split=> /orP.
-    by apply/andP; split => //; rewrite /Order.le /= ?ltr_spaddr //; exact: ltW.
-  rewrite measureU.
-  - rewrite /mu /= ?lebesgue_measure_itv ?hlength_itv /=.
-    have -> : b%:E < (b+e2 n)%:E by rewrite lte_fin ltr_spaddr.
-    by rewrite -?EFinD addrAC subrr add0r.
-  - by apply: sub_sigma_algebra; exact: is_ocitv.
-  - by apply: open_measurable; apply: interval_open.
-  - rewrite eqEsubset; split => // r []/andP [_ br] /andP [rb _] /=. 
-    suff : (b < b)%O by rewrite ltxx. 
-    by apply: lt_le_trans; first exact: rb.
-pose U := \bigcup_n M n.
-exists U; have DU : D `<=` U. 
-  case: (covDM) => _ /subset_trans; apply; apply: subset_bigcup.
-  rewrite /M => n _ x; case: (pselect _); first by move => /= ->.
-  have /ocitvP [-> //| [[/= a b alb -> mn]] abx] : ocitv (M' n). 
-    by case: covDM => /(_ n).
-  rewrite inE subitvE; apply/andP; split; rewrite ?inf_itv ?sup_itv //.
-    by case/andP: abx.
-  by case/andP: abx => ? ? //; apply: ltr_spaddr => //=; rewrite e2pos. 
-have mM : forall n, measurable (M n).
-  move=> n; rewrite /M; case: pselect; first by move=> /= _; exact: measurable0.
-  by move=> /= _; apply: open_measurable; apply: interval_open.
-have muU : mu U < mu D + eps%:E.
-  apply: (@le_lt_trans _ _ (\sum_(n <oo) (mu (M n)))). 
-    by apply: measure_sigma_sub_additive => //; apply: bigcup_measurable => + _.
-  apply: (@le_lt_trans _ _ (\sum_(n <oo) (mu (M' n) + (e2 n)%:E))). 
-  rewrite ?nneseries_esum //; first by apply: le_esum => + _; exact muM.
-    by move=> n _; apply: adde_ge0; rewrite // lee_fin; apply/ltW/ e2pos.
-  apply: le_lt_trans.
-    by apply: epsilon_trick; rewrite ?divr_ge0 //; first exact: ltW.
-  rewrite {2}[eps]splitr EFinD addeA; apply: lte_le_add => //.
-  apply: (le_lt_trans _ zDe); rewrite -sMz ?nneseries_esum //. 
-  apply: le_esum => i _; rewrite -hlength_Rhull -lebesgue_measure_itv.
-  apply: le_measure => //=; rewrite ?inE.
-  - by case: covDM => /(_ i) + _; exact: sub_sigma_algebra.
-  - exact: measurable_itv.
-  - exact: sub_Rhull.
-split => //.
-  apply: bigcup_open => n _; rewrite/M; case: pselect=>/= _; first exact: open0.
-  by apply: interval_open.
-rewrite measureD => //=.
-- rewrite [U`&` D]setIidr // lte_subel_addl // ge0_fin_numE //.
-  by apply: (lt_le_trans muU); apply: leey.
-- apply: bigcup_measurable => k _; rewrite /M. 
-  case: pselect => //= _; apply: open_measurable.
-    exact: interval_open.
-- by apply: (lt_le_trans muU); apply: leey.
-Qed.
-
-End lebesgue_regularity.
-
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `measurable_fun_lim_esup`")]
 Notation measurable_fun_elim_sup := measurable_fun_lim_esup.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurableT_comp` instead")]
@@ -1987,3 +1909,72 @@ Notation emeasurable_fun_min := measurable_mine.
 Notation emeasurable_fun_funepos := measurable_funepos.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_funeneg` instead")]
 Notation emeasurable_fun_funeneg := measurable_funeneg.
+
+Section lebesgue_regularity.
+Context {d : measure_display} {R : realType}.
+Let mu := [the measure _ _ of @lebesgue_measure R].
+
+Local Open Scope ereal_scope.
+
+Lemma lebesgue_regularity_outer (D : set R) (eps : R) :
+  measurable D -> mu D < +oo -> (0 < eps)%R -> exists (U : set R),
+  [/\ @open R U , D `<=` U & mu(U `\` D) < eps%:E].
+Proof.
+move=> mD muDpos epspos.
+have /ereal_inf_lt[z [/= M' covDM sMz zDe]] : mu D < mu D + (eps / 2)%:E.
+  by rewrite lte_spaddr ?lte_fin ?divr_gt0// ge0_fin_numE.
+pose e2 n := (eps / 2) / (2 ^ n.+1)%:R; have e2pos n : (0 < e2 n)%R.
+  by rewrite divr_gt0// divr_gt0.
+pose M n := if pselect (M' n = set0) then set0 else
+            (`] inf (M' n), sup (M' n) + e2 n [%classic)%R.
+have muM n : mu (M n) <= mu (M' n) + (e2 n)%:E.
+  rewrite /M; case: pselect => /= [-> |].
+    by rewrite measure0 add0e lee_fin ltW.
+  have /ocitvP[-> //| [[a b /= alb -> ab0]]] : ocitv (M' n).
+    by case: covDM => /(_ n).
+  rewrite ?inf_itv ?sup_itv //.
+  have -> : (`]a, (b + e2 n)%R[ = `]a, b] `|` `]b, (b + e2 n)%R[ )%classic.
+    apply: funext=> r /=; rewrite (@itv_splitU _ _ (BSide false b)).
+      by rewrite propeqE; split=> /orP.
+    by rewrite !bnd_simp (ltW alb)/= ltr_spaddr.
+  rewrite measureU/=.
+  - rewrite !lebesgue_measure_itv !hlength_itv/= !lte_fin alb ltr_spaddr//=.
+    by rewrite -(EFinD (b + e2 n)) (addrC b) addrK.
+  - by apply: sub_sigma_algebra; exact: is_ocitv.
+  - by apply: open_measurable; exact: interval_open.
+  - rewrite eqEsubset; split => // r []/andP [_ +] /andP[+ _] /=.
+    by rewrite !bnd_simp => /le_lt_trans /[apply]; rewrite ltxx.
+pose U := \bigcup_n M n.
+exists U; have DU : D `<=` U.
+  case: (covDM) => _ /subset_trans; apply; apply: subset_bigcup.
+  rewrite /M => n _ x; case: pselect => [/= -> //|].
+  have /ocitvP [-> //| [[/= a b alb -> mn]]] : ocitv (M' n).
+    by case: covDM => /(_ n).
+  rewrite /= !in_itv/= => /andP[ax xb]; rewrite ?inf_itv ?sup_itv//.
+  by rewrite ax/= (le_lt_trans xb)// ltr_spaddr.
+have mM n : measurable (M n).
+  rewrite /M; case: pselect; first by move=> /= _; exact: measurable0.
+  by move=> /= _; apply: open_measurable; apply: interval_open.
+have muU : mu U < mu D + eps%:E.
+  apply: (@le_lt_trans _ _ (\sum_(n <oo) mu (M n))).
+    exact: outer_measure_sigma_subadditive.
+  apply: (@le_lt_trans _ _ (\sum_(n <oo) (mu (M' n) + (e2 n)%:E))).
+    by rewrite lee_nneseries.
+  apply: le_lt_trans.
+    by apply: epsilon_trick => //; rewrite divr_ge0// ltW.
+  rewrite {2}[eps]splitr EFinD addeA lte_le_add//.
+  rewrite (le_lt_trans _ zDe)// -sMz lee_nneseries// => i _.
+  rewrite -hlength_Rhull -lebesgue_measure_itv le_measure//= ?inE.
+  - by case: covDM => /(_ i) + _; exact: sub_sigma_algebra.
+  - exact: measurable_itv.
+  - exact: sub_Rhull.
+split => //.
+  apply: bigcup_open => n _.
+  by rewrite /M; case: pselect => /= _; [exact: open0|exact: interval_open].
+rewrite measureD//=.
+- by rewrite setIidr// lte_subel_addl// ge0_fin_numE// (lt_le_trans muU)// leey.
+- by apply: bigcup_measurable => k _; exact: mM.
+- by rewrite (lt_le_trans muU)// leey.
+Qed.
+
+End lebesgue_regularity.
