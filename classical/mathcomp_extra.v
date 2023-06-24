@@ -426,7 +426,7 @@ Proof. by apply: subitvP; rewrite subitvE !bound_lexx. Qed.
 (**********************************)
 
 Reserved Notation "`1- r" (format "`1- r", at level 2).
-Reserved Notation "f \^-1" (at level 3, format "f \^-1").
+Reserved Notation "f \^-1" (at level 3, format "f \^-1", left associativity).
 
 Lemma natr1 (R : ringType) (n : nat) : (n%:R + 1 = n.+1%:R :> R)%R.
 Proof. by rewrite GRing.mulrSr. Qed.
