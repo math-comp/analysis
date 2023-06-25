@@ -8,6 +8,10 @@
 
 ### Renamed
 
+- in `boolp.v`:
+  + `mextentionality` -> `mextensionality`
+  + `extentionality` -> `extensionality`
+
 ### Generalized
 
 ### Deprecated
