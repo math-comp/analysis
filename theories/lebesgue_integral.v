@@ -569,6 +569,124 @@ by apply: (mulemu_ge0 (fun x => f @^-1` [set x])); exact: preimage_nnfun0.
 Qed.
 End mulem_ge0.
 
+Section foo.
+Local Open Scope ereal_scope.
+
+Lemma nonincreasing_cvg_mu d (R : realFieldType) (T : algebraOfSetsType d)
+  (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
+  (mu (F O) < +oo) ->
+  (forall i, measurable (F i)) -> measurable (\bigcap_n F n) -> 
+  nonincreasing_seq F -> mu \o F --> mu (\bigcap_n F n).
+Proof.
+move=> F0pos mF mbigcapF niF; pose G n := F O `\` F n. 
+have ? : mu (F 0%N) \is a fin_num by rewrite ge0_fin_numE.
+have F0E r : mu (F O) - (mu (F O) - r) = r.
+  by rewrite oppeB ?addeA ?subee ?add0e // ?fin_num_adde_defr.
+rewrite -[x in _ --> x] F0E /comp.
+have -> : (fun n => mu (F n)) = fun n => mu (F 0%N) - (mu (F 0%N) - mu (F n)).
+  by apply:funext => n; rewrite F0E.
+apply: cvgeB; rewrite ?fin_num_adde_defr //; first exact: cvg_cst.
+have -> : \bigcap_n F n = F 0%N `&` \bigcap_n F n.
+  by rewrite eqEsubset; split => // z cz; split => //; apply: cz.
+rewrite -measureD // setDE setC_bigcap setI_bigcupr -[x in bigcup _ x]/G.
+have -> : (fun n => mu (F 0%N) - mu (F n)) = mu \o G.
+  apply: funext => n /=; rewrite measureD //; congr (_ _); congr (_ _).
+  by rewrite setIidr //; apply/asboolP; apply: niF.
+apply: nondecreasing_cvg_mu.
+- move=> ?; apply: measurableD; exact: mF.
+- rewrite -setI_bigcupr; apply: measurableI; first exact: mF. 
+  by rewrite -@setC_bigcap; apply: measurableC.
+- move=> n m NM; apply/asboolP => z [? nFz]; split => //.
+  move: nFz; apply/subsetC; apply/asboolP; exact: niF.
+Qed.
+End foo.
+
+Section egoroff.
+
+
+Context d (T : measurableType d) (R : realType).
+Context (mu : {measure set T -> \bar R}) .
+
+Local Open Scope ereal_scope.
+
+Lemma epsilon_trick0 (eps : R) (P : pred nat) :
+  (0 <= eps)%R -> \sum_(i <oo | P i) (eps / (2 ^ i.+1)%:R)%:E <= eps%:E.
+Proof.
+move=> epspos; have := (@epsilon_trick R (fun=> 0) eps P (fun=> (lexx _)) epspos).
+rewrite [x in x + eps%:E]eseries0 // add0e => /(le_trans _); apply.
+rewrite (@eq_eseriesr R (fun n => 0 + _) (fun n => (eps/(2^n.+1)%:R)%:E)) //.
+by move=> ? ?; rewrite add0e.
+Qed.
+
+Lemma pointwise_almost_uniform 
+    (f_ : {mfun T >-> R }^nat) (g : {mfun T >-> R}) (A : set T) (eps : R):
+  measurable A -> mu A < +oo -> (forall x, A x -> f_ ^~ x --> g x) ->
+  (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E & 
+    {uniform A `\` B, (fun n => (f_ n : T -> R)) --> g}].
+Proof.
+move=> mA finA fptwsg epspos.
+pose h q (z : T) : R := `|f_ q z - g z|%R.
+have mfunh q : measurable_fun setT (h q).
+  apply: measurableT_comp; first exact: measurable_normr.
+  exact: measurable_funB.
+pose E k n := \bigcup_(i in [set j : nat | (n <= j)%N ]) 
+  (A `&` [set x | (h i x >= k.+1%:R^-1)%R]).
+have Einc k : nonincreasing_seq (E k). 
+  move=> n m nm; apply/asboolP => z [i] /= mi [? ?]. 
+  by exists i => //; apply: (leq_trans _ mi).
+have mE k n : measurable (E k n). 
+  apply: bigcup_measurable => q /= nq; apply: measurableI => //.
+  have -> : [set x | (h q x >= k.+1%:R^-1)%R] = (h q)@^-1` (`[k.+1%:R^-1, +oo[).
+    by rewrite eqEsubset; split => z; rewrite /= in_itv /= Bool.andb_true_r.
+  rewrite -[preimage _ _]setTI; apply: mfunh => //; exact: measurable_itv.
+have nEcvg x k : exists n, A x -> (~` (E k n)) x.
+  case : (pselect (A x)); last by move => ?; exists point.
+  move=> Ax; have [] := fptwsg _ Ax (interior (ball (g x) (k.+1%:R^-1))).
+    apply: open_nbhs_nbhs; split; first exact: open_interior.
+    have ki0 : ((0:R) < k.+1%:R^-1)%R by rewrite invr_gt0.
+    rewrite (_ : k.+1%:R^-1 = (PosNum ki0)%:num ) //.
+    exact: nbhsx_ballx.
+  move=> N _ Nk. 
+  exists N.+1 => _; rewrite /E setC_bigcup => i /= /ltnW Ni.
+  apply/not_andP; right; apply/negP; rewrite /h -real_ltNge //.
+  rewrite distrC; case: (Nk _ Ni) => _/posnumP[del]; apply.
+  exact: ball_norm_center.
+have Ek0 k : (\bigcap_n (E k n)) = set0.
+  rewrite eqEsubset; split => // z /=.
+  suff : (~` \bigcap_n E k n) z by done.
+  rewrite setC_bigcap; case : (pselect (A z)) => [Az | nAz].
+    by have [N /(_ Az) ?] := nEcvg z k; exists N.
+  by exists O; rewrite // /E setC_bigcup => n ? [].
+have badn' : forall k, exists n, mu (E k n) < ((eps/2) / (2 ^ k.+1)%:R)%:E.
+  move=> k; pose ek :R := ((eps/2) / (2 ^ k.+1)%:R); have : mu \o E k --> (0%R)%:E. 
+    rewrite -(measure0 mu) -(Ek0 k); apply: nonincreasing_cvg_mu => //.
+    - apply: (le_lt_trans _ finA); apply: le_measure; rewrite ?inE //. 
+      by move=> ? [? _ []].
+    - by apply: bigcap_measurable => ? //.
+  case/fine_cvg/(_ (interior (ball (0:R) ek))%R).
+    apply: open_nbhs_nbhs; split; first exact: open_interior.
+    have ekpos : (0 < ek)%R by rewrite divr_gt0 // divr_gt0.
+    by move: ek ekpos => _/posnumP[ek]; exact: nbhsx_ballx.
+  move=> N _ /(_ N (leqnn _))/interior_subset muEN.
+  exists N; move: muEN; rewrite /ball /= distrC subr0 ger0_norm //.
+  rewrite -[x in x < _%:E]fineK ?ge0_fin_numE // ?lte_fin.
+  apply: (le_lt_trans _ finA); apply: le_measure; rewrite ?inE //. 
+  by move=> ? [? _ []].
+pose badn k := projT1 (cid (badn' k)).
+pose B := \bigcup_k (E k (badn k)); exists B; split.
+- exact: bigcup_measurable.
+- apply: (@le_lt_trans _ _ (eps/2)%R%:E); first last.
+    by rewrite lte_fin ltr_pdivr_mulr // ltr_pmulr // Rint_ltr_addr1 // ?Rint1.
+  apply: le_trans. 
+  apply: (@measure_sigma_sub_additive _ R _ mu _ (fun k => E k (badn k))) => //.
+    exact: bigcup_measurable.
+  apply: le_trans; first last. 
+    apply: (@epsilon_trick0 (eps/2) (fun=> true)); rewrite divr_ge0 //. 
+    exact: ltW.
+  rewrite (@lee_nneseries R _ _ xpredT) // => n _. 
+  by have /ltW := projT2 (cid (badn' n)).
+  
+
 (**********************************)
 (* Definition of Simple Integrals *)
 (**********************************)

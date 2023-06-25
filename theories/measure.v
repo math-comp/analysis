@@ -3056,6 +3056,8 @@ under eq_fun do rewrite -(big_mkord predT (mu \o seqD F)).
 exact/(nS m.+1)/(leq_trans nm).
 Qed.
 
+
+
 Section boole_inequality.
 Context d (R : realFieldType) (T : ringOfSetsType d).
 Variable mu : {content set T -> \bar R}.
