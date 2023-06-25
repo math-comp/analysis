@@ -569,14 +569,6 @@ by apply: (mulemu_ge0 (fun x => f @^-1` [set x])); exact: preimage_nnfun0.
 Qed.
 End mulem_ge0.
 
-Section egoroff.
-
-Context d (T : measurableType d) (R : realType).
-Context (mu : {measure set T -> \bar R}) .
-
-Local Open Scope ereal_scope.
-
-
 (* Definition of Simple Integrals *)
 (**********************************)
 

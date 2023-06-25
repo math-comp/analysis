@@ -3605,7 +3605,7 @@ Unshelve. all: by end_near. Qed.
 Lemma epsilon_trick0 (R : realType) (eps : R) (P : pred nat) :
   (0 <= eps)%R -> \sum_(i <oo | P i) (eps / (2 ^ i.+1)%:R)%:E <= eps%:E.
 Proof.
-move=> epspos; have := (@epsilon_trick R (fun=> 0) eps P (fun=> (lexx _)) epspos).
+move=> epspos; have := (@epsilon_trick R (fun=> 0) _ P (fun=> (lexx _)) epspos).
 rewrite [x in x + eps%:E]eseries0 // add0e => /(le_trans _); apply.
 rewrite (@eq_eseriesr R (fun n => 0 + _) (fun n => (eps/(2^n.+1)%:R)%:E)) //.
 by move=> ? ?; rewrite add0e.

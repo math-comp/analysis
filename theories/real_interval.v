@@ -357,3 +357,18 @@ Lemma disj_itv_Rhull {R : realType} (A B : set R) : A `&` B = set0 ->
 Proof.
 by move=> AB0 iA iB; rewrite /disjoint_itv RhullK ?inE// RhullK ?inE.
 Qed.
+
+Lemma bigcup_itvT {R : realType} : \bigcup_i `[1 *- i, i%:R]%classic = [set: R].
+Proof.
+rewrite eqEsubset; split => z // _; wlog zpos : z / (0 < z)%R.
+  case: (@real_ltgt0P _ z); first exact: num_real.
+  - by move=> z0; exact.
+  - rewrite -[p in (z < p)%R]oppr0 ltr_oppr => zn0 /(_ _ zn0) [] N _ ?.
+    by exists N; rewrite //= -[z]opprK oppr_itvcc opprK.
+  - by move=> -> _; exists O; rewrite // set_itvE /= oppr0; apply/andP.
+exists (Num.bound z); rewrite // set_itvE; apply/andP. 
+have zbd : (z <= (Num.bound z)%:R)%R.
+  by apply: ltW; apply: archi_boundP; exact: ltW.
+split; rewrite // ler_oppl; apply: (le_trans _ zbd); apply: ltW. 
+by apply: (le_lt_trans _ zpos); rewrite ler_oppl oppr0; apply: ltW.
+Qed.
