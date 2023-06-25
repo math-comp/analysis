@@ -618,7 +618,6 @@ End cvgT.
 
 Section egoroff.
 
-
 Context d (T : measurableType d) (R : realType).
 Context (mu : {measure set T -> \bar R}) .
 
@@ -634,14 +633,15 @@ by move=> ? ?; rewrite add0e.
 Qed.
 
 Lemma pointwise_almost_uniform 
-    (f_ : {mfun T >-> R }^nat) (g : {mfun T >-> R}) (A : set T) (eps : R):
+    (f_ : (T -> R)^nat) (g : T -> R) (A : set T) (eps : R):
+  (forall n, measurable_fun A (f_ n)) -> measurable_fun A g ->
   measurable A -> mu A < +oo -> (forall x, A x -> f_ ^~ x --> g x) ->
   (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E & 
-    {uniform A `\` B, (fun n => (f_ n : T -> R)) --> g}].
+    {uniform A `\` B, f_ --> g}].
 Proof.
-move=> mA finA fptwsg epspos.
+move=> mf mg mA finA fptwsg epspos.
 pose h q (z : T) : R := `|f_ q z - g z|%R.
-have mfunh q : measurable_fun setT (h q).
+have mfunh q : measurable_fun A (h q).
   apply: measurableT_comp; first exact: measurable_normr.
   exact: measurable_funB.
 pose E k n := \bigcup_(i in [set j : nat | (n <= j)%N ]) 
@@ -650,10 +650,10 @@ have Einc k : nonincreasing_seq (E k).
   move=> n m nm; apply/asboolP => z [i] /= mi [? ?]. 
   by exists i => //; apply: (leq_trans _ mi).
 have mE k n : measurable (E k n). 
-  apply: bigcup_measurable => q /= nq; apply: measurableI => //.
+  apply: bigcup_measurable => q /= nq. 
   have -> : [set x | (h q x >= k.+1%:R^-1)%R] = (h q)@^-1` (`[k.+1%:R^-1, +oo[).
     by rewrite eqEsubset; split => z; rewrite /= in_itv /= Bool.andb_true_r.
-  rewrite -[preimage _ _]setTI; apply: mfunh => //; exact: measurable_itv.
+  by apply: mfunh => //; exact: measurable_itv.
 have nEcvg x k : exists n, A x -> (~` (E k n)) x.
   case : (pselect (A x)); last by move => ?; exists point.
   move=> Ax; have [] := fptwsg _ Ax (interior (ball (g x) (k.+1%:R^-1))).
@@ -709,6 +709,38 @@ apply: (lt_trans _ Ndel).
 move/set_mem: xAB; rewrite setDE; case => Ax; rewrite setC_bigcup => /(_ N I).
 rewrite /E setC_bigcup => /(_ (r)) /=; rewrite /h => /(_ badNr) /not_andP [] //.
 by move/negP; rewrite real_ltNge // distrC.
+Qed.
+
+Lemma measureU0 (A B : set T) :
+  measurable A -> measurable B -> mu B = 0 -> mu (A `|` B) = mu A.
+Proof.
+move=> mA mB B0.
+rewrite measureUfinr // ?B0 // (@subset_measure0 _ _ _ mu (A `&` B) B) //.
+  by rewrite adde0 sube0.
+exact: measurableI.
+Qed.
+
+Lemma ae_pointwise_almost_uniform 
+    (f_ : (T -> R)^nat) (g : T -> R) (A : set T) (eps : R):
+  (forall n, measurable_fun A (f_ n)) -> measurable_fun A g ->
+  measurable A -> mu A < +oo -> {ae mu, (forall x, A x -> f_ ^~ x --> g x)} ->
+  (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E & 
+    {uniform A `\` B, (fun n => (f_ n : T -> R)) --> g}].
+Proof.
+move=> mf mg mA Afin [C [mC C0 nC] epspos].
+have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E & 
+  {uniform (A `\` C) `\` B,  f_ --> g}].
+  apply: pointwise_almost_uniform => //.
+  - by move=> n; apply : (measurable_funS mA _ (mf n)) => ? [].
+  - by apply : (measurable_funS mA _ (mg)) => ? [].
+  - by apply: measurableI => //; apply: measurableC.
+  - apply: (le_lt_trans _ Afin); apply: le_measure; rewrite ?inE //.
+    by apply: measurableI => //; apply: measurableC.
+  - by move=> x; rewrite setDE; case => Ax /(subsetC nC); rewrite setCK; exact.
+exists (B `|` C); split.
+- exact: measurableU.
+- by apply: (le_lt_trans _ Beps); rewrite measureU0.
+- by rewrite setUC -setDDl. 
 Qed.
 
 (* Definition of Simple Integrals *)
