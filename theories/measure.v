@@ -3034,6 +3034,19 @@ apply/eqP; rewrite oppe_eq0 -measure_le0/=; do ?exact: measurableI.
 by rewrite -A0 measureIl.
 Qed.
 
+Lemma measureU0 d (R : realType) (T : ringOfSetsType d)
+  (mu : {measure set T -> \bar R}) (A B : set T) :
+  measurable A -> measurable B -> mu B = 0 -> mu (A `|` B) = mu A.
+Proof.
+move=> mA mB B0; rewrite measureUfinr // ?B0 //.
+rewrite (@subset_measure0 _ _ _ _ (A `&` B) B) ?adde0 ?sube0 //.
+exact: measurableI.
+Qed.
+
+Section measure_continuity.
+
+Local Open Scope ereal_scope.
+
 Lemma nondecreasing_cvg_mu d (R : realFieldType) (T : ringOfSetsType d)
   (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
   (forall i, measurable (F i)) -> measurable (\bigcup_n F n) ->
@@ -3056,7 +3069,35 @@ under eq_fun do rewrite -(big_mkord predT (mu \o seqD F)).
 exact/(nS m.+1)/(leq_trans nm).
 Qed.
 
+Lemma nonincreasing_cvg_mu d (R : realFieldType) (T : algebraOfSetsType d)
+  (mu : {measure set T -> \bar R}) (F : (set T) ^nat) :
+  (mu (F O) < +oo) ->
+  (forall i, measurable (F i)) -> measurable (\bigcap_n F n) -> 
+  nonincreasing_seq F -> mu \o F --> mu (\bigcap_n F n).
+Proof.
+move=> F0pos mF mbigcapF niF; pose G n := F O `\` F n. 
+have ? : mu (F 0%N) \is a fin_num by rewrite ge0_fin_numE.
+have F0E r : mu (F O) - (mu (F O) - r) = r.
+  by rewrite oppeB ?addeA ?subee ?add0e // ?fin_num_adde_defr.
+rewrite -[x in _ --> x] F0E /comp.
+have -> : (fun n => mu (F n)) = fun n => mu (F 0%N) - (mu (F 0%N) - mu (F n)).
+  by apply:funext => n; rewrite F0E.
+apply: cvgeB; rewrite ?fin_num_adde_defr //; first exact: cvg_cst.
+have -> : \bigcap_n F n = F 0%N `&` \bigcap_n F n.
+  by rewrite eqEsubset; split => // z cz; split => //; apply: cz.
+rewrite -measureD // setDE setC_bigcap setI_bigcupr -[x in bigcup _ x]/G.
+have -> : (fun n => mu (F 0%N) - mu (F n)) = mu \o G.
+  apply: funext => n /=; rewrite measureD //; congr (_ _); congr (_ _).
+  by rewrite setIidr //; apply/asboolP; apply: niF.
+apply: nondecreasing_cvg_mu.
+- move=> ?; apply: measurableD; exact: mF.
+- rewrite -setI_bigcupr; apply: measurableI; first exact: mF. 
+  by rewrite -@setC_bigcap; apply: measurableC.
+- move=> n m NM; apply/asboolP => z [? nFz]; split => //.
+  move: nFz; apply/subsetC; apply/asboolP; exact: niF.
+Qed.
 
+End measure_continuity.
 
 Section boole_inequality.
 Context d (R : realFieldType) (T : ringOfSetsType d).
@@ -3560,6 +3601,15 @@ apply: cvg_comp; last by apply cvg_refl.
 have := cvg_geometric_series_half e%:num O.
 by rewrite expr0 divr1; apply: cvg_trans.
 Unshelve. all: by end_near. Qed.
+
+Lemma epsilon_trick0 (R : realType) (eps : R) (P : pred nat) :
+  (0 <= eps)%R -> \sum_(i <oo | P i) (eps / (2 ^ i.+1)%:R)%:E <= eps%:E.
+Proof.
+move=> epspos; have := (@epsilon_trick R (fun=> 0) eps P (fun=> (lexx _)) epspos).
+rewrite [x in x + eps%:E]eseries0 // add0e => /(le_trans _); apply.
+rewrite (@eq_eseriesr R (fun n => 0 + _) (fun n => (eps/(2^n.+1)%:R)%:E)) //.
+by move=> ? ?; rewrite add0e.
+Qed.
 
 Section measurable_cover.
 Context d (T : semiRingOfSetsType d).

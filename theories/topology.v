@@ -6173,6 +6173,17 @@ move=> FF; rewrite cvg_sigL; split.
   by have := R u I; rewrite /patch Au.
 Qed.
 
+Lemma uniform_nbhsT (f : U -> V) :
+  (nbhs (f : {uniform U -> V})) = nbhs (f : fct_topologicalType U V).
+Proof.
+rewrite eqEsubset; split=> ?.
+  case/uniform_nbhs => E [entE] /filterS; apply.
+  exists [set fh | forall y, E (fh.1 y, fh.2 y)]; first by exists E.
+  by move=> ? /=.
+case => J [E entE EJ] /filterS; apply; apply/uniform_nbhs; exists E.
+by split => // z /= Efz; apply: EJ => t /=; exact: Efz.
+Qed.
+
 Lemma cvg_uniformU (f : U -> V) (F : set (set (U -> V))) A B : Filter F ->
   {uniform A, F --> f} -> {uniform B, F --> f} ->
   {uniform (A `|` B), F --> f}.
