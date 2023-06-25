@@ -117,7 +117,7 @@ doc: __always__ Makefile.coq
 #	cd _build_doc && grep -v vio: .Makefile.coq.d > depend
 #	cd _build_doc && cat depend | $(MATHCOMP)etc/buildlibgraph $(COQFILES) > htmldoc/depend.js
 	cd _build_doc && $(COQBIN)coqdoc -t "MathComp Analysis" \
-		-g --utf8 -R theories mathcomp.analysis \
+		-g --utf8 -R classical mathcomp.classical -R theories mathcomp.analysis \
 		--parse-comments \
 		--multi-index $(COQFILES) -d htmldoc
 	cp $(MATHCOMP)etc/artwork/coqdoc.css _build_doc/htmldoc
