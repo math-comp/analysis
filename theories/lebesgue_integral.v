@@ -601,6 +601,21 @@ apply: nondecreasing_cvg_mu.
 Qed.
 End foo.
 
+Section cvgT.
+
+Lemma uniform_nbhsT {U : choiceType} {V : uniformType} (f : U -> V) :
+  (nbhs (f : {uniform U -> V})) = nbhs (f : fct_topologicalType U V).
+Proof.
+rewrite eqEsubset; split=> ?.
+  case/uniform_nbhs => E [entE] /filterS; apply.
+  exists [set fh | forall y, E (fh.1 y, fh.2 y)]; first by exists E.
+  by move=> ? /=.
+case => J [E entE EJ] /filterS; apply; apply/uniform_nbhs; exists E.
+by split => // z /= Efz; apply: EJ => t /=; exact: Efz.
+Qed.
+
+End cvgT.
+
 Section egoroff.
 
 
@@ -685,9 +700,17 @@ pose B := \bigcup_k (E k (badn k)); exists B; split.
     exact: ltW.
   rewrite (@lee_nneseries R _ _ xpredT) // => n _. 
   by have /ltW := projT2 (cid (badn' n)).
-  
+apply/uniform_restrict_cvg => /= U /=; rewrite ?uniform_nbhsT.
+case/nbhs_ex => del /filterS; apply.
+have [N _ /(_ N)/(_ (leqnn _)) Ndel] := near_infty_natSinv_lt del.
+exists (badn N) => // r /= badNr x.
+rewrite /patch; case xAB: (x \in A`\`B) => //.
+apply: (lt_trans _ Ndel).
+move/set_mem: xAB; rewrite setDE; case => Ax; rewrite setC_bigcup => /(_ N I).
+rewrite /E setC_bigcup => /(_ (r)) /=; rewrite /h => /(_ badNr) /not_andP [] //.
+by move/negP; rewrite real_ltNge // distrC.
+Qed.
 
-(**********************************)
 (* Definition of Simple Integrals *)
 (**********************************)
 
