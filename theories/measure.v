@@ -3604,8 +3604,10 @@ Lemma epsilon_trick0 (R : realType) (eps : R) (P : pred nat) :
 Proof.
 move=> epspos; have := epsilon_trick P (fun=> lexx 0) epspos.
 rewrite [x in x + _]eseries0 // add0e => /(le_trans _); apply.
-(under [x in _ <= x]eq_eseriesr do rewrite add0e).
-exact: lexx.
+by rewrite (@eq_eseriesr _ (fun n => (eps/(2^n.+1)%:R)%:E) 
+ (fun n => 0 + (eps/(2^n.+1)%:R)%:E)) // => ? _; rewrite add0e.
+(* this breaks coq 8.15 and below *)
+(* (under [x in _ <= x]eq_eseriesr do rewrite add0e). *)
 Qed.
 
 Section measurable_cover.
