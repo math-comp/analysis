@@ -17,7 +17,12 @@
   + new lemma `bigcup_itvT`.
 - in file `topology.v`,
   + new lemma `uniform_nbhsT`.
+
 ### Changed
+
+- moved from `lebesgue_measure.v` to `real_interval.v`:
+  + lemmas `set1_bigcap_oc`, `itv_bnd_open_bigcup`, `itv_open_bnd_bigcup`,
+    `itv_bnd_infty_bigcup`, `itv_infty_bnd_bigcup`
 
 ### Renamed
 

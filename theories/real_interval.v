@@ -358,17 +358,76 @@ Proof.
 by move=> AB0 iA iB; rewrite /disjoint_itv RhullK ?inE// RhullK ?inE.
 Qed.
 
-Lemma bigcup_itvT {R : realType} : \bigcup_i `[1 *- i, i%:R]%classic = [set: R].
+Lemma set1_bigcap_oc (R : realType) (r : R) :
+  [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
 Proof.
-rewrite eqEsubset; split => z // _; wlog zpos : z / (0 < z)%R.
-  case: (@real_ltgt0P _ z); first exact: num_real.
-  - by move=> z0; exact.
-  - rewrite -[p in (z < p)%R]oppr0 ltr_oppr => zn0 /(_ _ zn0) [] N _ ?.
-    by exists N; rewrite //= -[z]opprK oppr_itvcc opprK.
-  - by move=> -> _; exists O; rewrite // set_itvE /= oppr0; apply/andP.
-exists (Num.bound z); rewrite // set_itvE; apply/andP. 
-have zbd : (z <= (Num.bound z)%:R)%R.
-  by apply: ltW; apply: archi_boundP; exact: ltW.
-split; rewrite // ler_oppl; apply: (le_trans _ zbd); apply: ltW. 
-by apply: (le_lt_trans _ zpos); rewrite ler_oppl oppr0; apply: ltW.
+apply/seteqP; split=> [x ->|].
+  by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
+move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
+apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
+have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
+rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
+by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
+Qed.
+
+Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
+  [set` Interval (BSide b r) (BLeft s)] =
+  \bigcup_n [set` Interval (BSide b r) (BRight (s - n.+1%:R^-1))].
+Proof.
+apply/seteqP; split => [x/=|]; last first.
+  move=> x [n _ /=] /[!in_itv] /andP[-> /le_lt_trans]; apply.
+  by rewrite ltr_subl_addr ltr_addl invr_gt0 ltr0n.
+rewrite in_itv/= => /andP[sx xs]; exists `|ceil ((s - x)^-1)|%N => //=.
+rewrite in_itv/= sx/= ler_subr_addl addrC -ler_subr_addl.
+rewrite -[in X in _ <= X](invrK (s - x)) ler_pinv.
+- rewrite -natr1 natr_absz ger0_norm; last first.
+    by rewrite ceil_ge0// invr_ge0 subr_ge0 ltW.
+  by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?ler_addl// ceil_ge.
+- by rewrite inE unitfE ltr0n andbT pnatr_eq0.
+- by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
+Qed.
+
+Lemma itv_open_bnd_bigcup (R : realType) b (r s : R) :
+  [set` Interval (BRight s) (BSide b r)] =
+  \bigcup_n [set` Interval (BLeft (s + n.+1%:R^-1)) (BSide b r)].
+Proof.
+have /(congr1 (fun x => -%R @` x)) := itv_bnd_open_bigcup (~~ b) (- r) (- s).
+rewrite opp_itv_bnd_bnd/= !opprK negbK => ->; rewrite image_bigcup.
+apply eq_bigcupr => k _; apply/seteqP; split=> [_/= [y ysr] <-|x/= xsr].
+  by rewrite oppr_itv/= opprD.
+by exists (- x); rewrite ?oppr_itv//= opprK// negbK opprB opprK addrC.
+Qed.
+
+Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
+  [set` Interval (BSide b x) +oo%O] =
+  \bigcup_i [set` Interval (BSide b x) (BRight (x + i%:R))].
+Proof.
+apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
+  by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
+move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
+rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
+by case: b xy => //= /ltW.
+Qed.
+
+Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
+  [set` Interval -oo%O (BSide b x)] =
+  \bigcup_i [set` Interval (BLeft (x - i%:R)) (BSide b x)].
+Proof.
+have /(congr1 (fun x => -%R @` x)) := itv_bnd_infty_bigcup (~~ b) (- x).
+rewrite opp_itv_bnd_infty negbK opprK => ->; rewrite image_bigcup.
+apply eq_bigcupr => k _; apply/seteqP; split=> [_ /= -[r rbxk <-]|y/= yxkb].
+   by rewrite oppr_itv/= opprB addrC.
+by exists (- y); [rewrite oppr_itv/= negbK opprD opprK|rewrite opprK].
+Qed.
+
+Lemma bigcup_itvT {R : realType} b :
+  \bigcup_i [set` Interval (BSide b (- i%:R)) (BRight i%:R)] = [set: R].
+Proof.
+rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
+rewrite in_itv/= !natr_absz intr_norm intrD.
+have : `|x| < `|(floor `|x|)%:~R + 1|.
+  by rewrite [ltRHS]ger0_norm ?lt_succ_floor// addr_ge0// ler0z floor_ge0.
+case: b => /=.
+- by move/ltW; rewrite ler_norml => /andP[-> ->].
+- by rewrite ltr_norml => /andP[-> /ltW->].
 Qed.

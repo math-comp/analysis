@@ -380,11 +380,7 @@ HB.instance Definition _ := Content_SubSigmaAdditive_isMeasure.Build _ _ _
 
 Lemma hlength_sigma_finite : sigma_finite setT (hlength : set ocitv_type -> _).
 Proof.
-exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic).
-  apply/esym; rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
-  rewrite in_itv/= !natr_absz intr_norm intrD.
-  suff: `|x| < `|(floor `|x|)%:~R + 1| by rewrite ltr_norml => /andP[-> /ltW->].
-  by rewrite ger0_norm ?addr_ge0 ?ler0z ?floor_ge0// lt_succ_floor.
+exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic); first by rewrite bigcup_itvT.
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 
@@ -538,68 +534,6 @@ by move=> [x| |] //= _; [left; exists x|right].
 Qed.
 
 End puncture_ereal_itv.
-
-Lemma set1_bigcap_oc (R : realType) (r : R) :
-   [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
-Proof.
-apply/seteqP; split=> [x ->|].
-  by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
-move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
-apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
-have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
-by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
-Qed.
-
-Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
-  [set` Interval (BSide b r) (BLeft s)] =
-  \bigcup_n [set` Interval (BSide b r) (BRight (s - n.+1%:R^-1))].
-Proof.
-apply/seteqP; split => [x/=|]; last first.
-  move=> x [n _ /=] /[!in_itv] /andP[-> /le_lt_trans]; apply.
-  by rewrite ltr_subl_addr ltr_addl invr_gt0 ltr0n.
-rewrite in_itv/= => /andP[sx xs]; exists `|ceil ((s - x)^-1)|%N => //=.
-rewrite in_itv/= sx/= ler_subr_addl addrC -ler_subr_addl.
-rewrite -[in X in _ <= X](invrK (s - x)) ler_pinv.
-- rewrite -natr1 natr_absz ger0_norm; last first.
-    by rewrite ceil_ge0// invr_ge0 subr_ge0 ltW.
-  by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?ler_addl// ceil_ge.
-- by rewrite inE unitfE ltr0n andbT pnatr_eq0.
-- by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
-Qed.
-
-Lemma itv_open_bnd_bigcup (R : realType) b (r s : R) :
-  [set` Interval (BRight s) (BSide b r)] =
-  \bigcup_n [set` Interval (BLeft (s + n.+1%:R^-1)) (BSide b r)].
-Proof.
-have /(congr1 (fun x => -%R @` x)) := itv_bnd_open_bigcup (~~ b) (- r) (- s).
-rewrite opp_itv_bnd_bnd/= !opprK negbK => ->; rewrite image_bigcup.
-apply eq_bigcupr => k _; apply/seteqP; split=> [_/= [y ysr] <-|x/= xsr].
-  by rewrite oppr_itv/= opprD.
-by exists (- x); rewrite ?oppr_itv//= opprK// negbK opprB opprK addrC.
-Qed.
-
-Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
-  [set` Interval (BSide b x) +oo%O] =
-  \bigcup_i [set` Interval (BSide b x) (BRight (x + i%:R))].
-Proof.
-apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
-  by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
-rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
-by case: b xy => //= /ltW.
-Qed.
-
-Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
-  [set` Interval -oo%O (BSide b x)] =
-  \bigcup_i [set` Interval (BLeft (x - i%:R)) (BSide b x)].
-Proof.
-have /(congr1 (fun x => -%R @` x)) := itv_bnd_infty_bigcup (~~ b) (- x).
-rewrite opp_itv_bnd_infty negbK opprK => ->; rewrite image_bigcup.
-apply eq_bigcupr => k _; apply/seteqP; split=> [_ /= -[r rbxk <-]|y/= yxkb].
-   by rewrite oppr_itv/= opprB addrC.
-by exists (- y); [rewrite oppr_itv/= negbK opprD opprK|rewrite opprK].
-Qed.
 
 Section salgebra_R_ssets.
 Variable R : realType.
@@ -2047,7 +1981,10 @@ wlog : eps epspos D mD finD / exists (ab : R*R), D `<=` [set` `[ab.1,ab.2]].
     exact: interval_closed.
   - by move=> ? [/VDab []].
   have -> :  D `\` (V `&` `[a,b]) = (D `&` `[a,b]) `\` V `|` D `\` `[a,b].
-    by rewrite setDIr eqEsubset; split => z /=; case: (z \in `[a,b]); tauto. 
+    rewrite setDIr.
+    rewrite eqEsubset; split => z /=; case: (z \in `[a,b]); try tauto.
+    by case; case; left.
+    by case; case; right.
   have mV : measurable V. 
     by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
   rewrite [eps]splitr EFinD (measureU mu) // ?lte_add //.
