@@ -22,6 +22,9 @@
   + new definition `set_nbhs`.
   + new lemmas `filterI_iter_sub`, `filterI_iterE`, `finI_fromI`, 
     `filterI_iter_finI`, `smallest_filter_finI`, and `set_nbhsP`.
+- in file `lebesgue_measure.v`,
+  + new lemmas `pointwise_almost_uniform`, and 
+    `ae_pointwise_almost_uniform`.
 
 ### Changed
 
