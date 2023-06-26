@@ -1930,85 +1930,80 @@ rewrite measureD//=.
 Qed.
 
 Lemma lebesgue_nearly_bounded (D : set R) (eps : R) :
-  measurable D -> mu D < +oo -> (0 < eps)%R -> exists (ab : R*R),
-  mu (D `\` [set` `[ab.1,ab.2]]) < eps%:E.
+    measurable D -> mu D < +oo -> (0 < eps)%R ->
+  exists ab : R * R, mu (D `\` [set` `[ab.1,ab.2]]) < eps%:E.
 Proof.
-move=> mD Dfin epspos; pose Dn (n:nat) := D `&` [set` `[-(n%:R), n%:R]]%R.
+move=> mD Dfin epspos; pose Dn n := D `&` [set` `[-(n%:R), n%:R]]%R.
 have mDn n : measurable (Dn n) by exact: measurableI.
 have : mu \o Dn --> mu (\bigcup_n Dn n).
   apply: nondecreasing_cvg_mu => //.
-  - apply: bigcup_measurable => // ? _; exact: mDn.
-  - move=> n m nm; apply/asboolP; apply: setIS => z; rewrite ?set_itvE /=.
-    case/andP=> nz zn; apply/andP; split => //.
-      by apply: (le_trans _ nz); rewrite ler_oppl opprK ler_pmuln2l.
-    by apply: (le_trans zn); rewrite ler_pmuln2l.
-have -> : \bigcup_n Dn n = D.
-  by rewrite -setI_bigcupr; rewrite bigcup_itvT setIT.
+  - by apply: bigcup_measurable => // ? _; exact: mDn.
+  - move=> n m nm; apply/subsetPset; apply: setIS => z /=; rewrite !in_itv/=.
+    move=> /andP[nz zn]; rewrite (le_trans _ nz)/= ?(le_trans zn) ?ler_nat//.
+    by rewrite ler_oppl opprK ler_nat.
+rewrite -setI_bigcupr; rewrite bigcup_itvT setIT.
+have finDn n : mu (Dn n) \is a fin_num.
+  rewrite ge0_fin_numE// (le_lt_trans _ Dfin)//.
+  by rewrite le_measure// ?inE//=; [exact: mDn|exact: subIsetl].
 have finD : mu D \is a fin_num by rewrite fin_num_abs gee0_abs.
-have finDn n : mu (Dn n) \is a fin_num. 
-  rewrite ge0_fin_numE //; apply: (le_lt_trans _ Dfin). 
-  by apply: le_measure; rewrite ?inE //; [exact: mDn | move=> z []].
-rewrite -[mu D]fineK //; case/fine_cvg/(_ (interior (ball (fine (mu D)) eps))).
-  apply: open_nbhs_nbhs; split=> //; first exact: open_interior. 
-  by move: eps epspos => _/posnumP[eps]; apply: nbhsx_ballx.
+rewrite -[mu D]fineK// => /fine_cvg/(_ (interior (ball (fine (mu D)) eps)))[].
+  exact/nbhs_interior/(nbhsx_ballx _ (PosNum epspos)).
 move=> n _ /(_ _ (leqnn n))/interior_subset muDN.
-exists (-n%:R, n%:R)%R; rewrite measureD => //. 
-move: muDN; rewrite /ball /=/ereal_ball /= -fineB //=; last exact: finDn.
-have finDDn : mu D - mu (Dn n) \is a fin_num.
-  by rewrite ?fin_numB ?finD /= ?(finDn n). 
+exists (-n%:R, n%:R)%R; rewrite measureD//=.
+move: muDN; rewrite /ball/= /ereal_ball/= -fineB//=; last exact: finDn.
+rewrite -lte_fin; apply: le_lt_trans.
+have finDDn : mu D - mu (Dn n) \is a fin_num
+  by rewrite ?fin_numB ?finD /= ?(finDn n).
 rewrite -fine_abse // gee0_abs ?sube_ge0 ?finD ?(finDn _) //.
   by rewrite -[_ - _]fineK // lte_fin fine.
-by apply: le_measure; rewrite ?inE //; [exact: measurableI | move=> ? []].
+by rewrite le_measure// ?inE//; [exact: measurableI |exact: subIsetl].
 Qed.
 
 Lemma lebesgue_regularity_inner (D : set R) (eps : R) :
-  measurable D -> mu D < +oo -> (0 < eps)%R -> exists (V : set R),
-  [/\ compact V , V `<=` D & mu(D `\` V) < eps%:E].
+  measurable D -> mu D < +oo -> (0 < eps)%R ->
+  exists V : set R, [/\ compact V , V `<=` D & mu (D `\` V) < eps%:E].
 Proof.
-move=> mD finD epspos .
-wlog : eps epspos D mD finD / exists (ab : R*R), D `<=` [set` `[ab.1,ab.2]].
-  move=> WL; have [] := @lebesgue_nearly_bounded _ (eps/2)%R mD finD.
+move=> mD finD epspos.
+wlog : eps epspos D mD finD / exists ab : R * R, D `<=` `[ab.1, ab.2]%classic.
+  move=> WL; have [] := @lebesgue_nearly_bounded _ (eps / 2)%R mD finD.
     by rewrite divr_gt0.
-  case=> a b /= muDabe; have [] := WL (eps/2) _ (D `&` `[a,b]).
+  case=> a b /= muDabe; have [] := WL (eps / 2) _ (D `&` `[a,b]).
   - by rewrite divr_gt0.
-  - exact: measurableI => //. 
-  - apply: (le_lt_trans _ finD); apply: le_measure => //; rewrite inE //.
-    exact: measurableI => //.
-  - by exists (a,b) => ? [].
-  move=> V [/= cptV VDab Dabeps2]; exists (V `&` `[a,b]); split => //.
-  - apply: (subclosed_compact _ cptV) => //; apply: closedI. 
+  - exact: measurableI.
+  - by rewrite (le_lt_trans _ finD)// le_measure// inE//; exact: measurableI.
+  - by exists (a, b).
+  move=> V [/= cptV VDab Dabeps2]; exists (V `&` `[a, b]); split.
+  - apply: (subclosed_compact _ cptV) => //; apply: closedI.
       by apply: compact_closed => //; exact: Rhausdorff.
     exact: interval_closed.
   - by move=> ? [/VDab []].
-  have -> :  D `\` (V `&` `[a,b]) = (D `&` `[a,b]) `\` V `|` D `\` `[a,b].
-    rewrite setDIr.
-    rewrite eqEsubset; split => z /=; case: (z \in `[a,b]); try tauto.
+  have -> :  D `\` (V `&` `[a, b]) = (D `&` `[a, b]) `\` V `|` D `\` `[a, b].
+    rewrite setDIr eqEsubset; split => z /=; case: (z \in `[a, b]); try tauto.
     by case; case; left.
     by case; case; right.
-  have mV : measurable V. 
+  have mV : measurable V.
     by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
   rewrite [eps]splitr EFinD (measureU mu) // ?lte_add //.
-  - by apply: measurableD => //; apply: measurableI. 
-  - exact: measurableD. 
+  - by apply: measurableD => //; exact: measurableI.
+  - exact: measurableD.
   - by rewrite eqEsubset; split => z // [[[_ + _] [_]]].
-case;case=> a b /= Dab; pose D' := `[a,b] `\` D.
+case=> -[a b] /= Dab; pose D' := `[a,b] `\` D.
 have mD' : measurable D' by exact: measurableD.
-have [] // := @lebesgue_regularity_outer D' eps.
-  apply: (@le_lt_trans _ _ (mu `[a,b]%classic)). 
-    by apply: le_measure; rewrite ?inE // => ? [].
-  rewrite /= lebesgue_measure_itv /= hlength_itv //=.
-  by case: (a%:E < _) => //; rewrite -EFinB // ltry.
+have [] := lebesgue_regularity_outer mD' _ epspos.
+  rewrite (@le_lt_trans _ _ (mu `[a,b]%classic))//.
+    by rewrite le_measure ?inE//; exact: subIsetl.
+  by rewrite /= lebesgue_measure_itv /= hlength_itv //= -EFinD -fun_if ltry.
 move=> U [oU /subsetC + mDeps]; rewrite setCI setCK => nCD'.
-exists (`[a,b] `&` ~`U); split => //.
+exists (`[a, b] `&` ~` U); split.
 - apply: (subclosed_compact _ (@segment_compact _ a b)) => //.
   by apply: closedI; [exact: interval_closed | exact: open_closedC].
-- by move=> z [abz] /nCD' [] //.
+- by move=> z [abz] /nCD'[].
 - rewrite setDE setCI setIUr setCK.
-  rewrite [_ `&` ~` _ ](iffRL (disjoints_subset _ _)) ?setCK // set0U. 
+  rewrite [_ `&` ~` _ ](iffRL (disjoints_subset _ _)) ?setCK // set0U.
   move: mDeps; rewrite /D' ?setDE setCI setIUr setCK [U `&` D]setIC.
   move => /(le_lt_trans _); apply; apply: le_measure; last by move => ?; right.
     by rewrite inE; apply: measurableI => //; apply: open_measurable.
-  rewrite inE; apply: measurableU. 
+  rewrite inE; apply: measurableU.
     by (apply: measurableI; first exact: open_measurable); exact: measurableC.
   by apply: measurableI => //; apply: open_measurable.
 Qed.
