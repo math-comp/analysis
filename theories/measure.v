@@ -3604,7 +3604,7 @@ Lemma epsilon_trick0 (R : realType) (eps : R) (P : pred nat) :
 Proof.
 move=> epspos; have := epsilon_trick P (fun=> lexx 0) epspos.
 rewrite [x in x + _]eseries0 // add0e => /(le_trans _); apply.
-(under [x in _ <= x]eq_eseriesr do rewrite add0e). 
+(under [x in _ <= x]eq_eseriesr do rewrite add0e).
 exact: lexx.
 Qed.
 
