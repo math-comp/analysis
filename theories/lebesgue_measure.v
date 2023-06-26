@@ -1917,24 +1917,24 @@ Let mu := [the measure _ _ of @lebesgue_measure R].
 Local Open Scope ereal_scope.
 
 Lemma lebesgue_regularity_outer (D : set R) (eps : R) :
-  measurable D -> mu D < +oo -> (0 < eps)%R -> exists (U : set R),
-  [/\ @open R U , D `<=` U & mu(U `\` D) < eps%:E].
+  measurable D -> mu D < +oo -> (0 < eps)%R ->
+  exists U : set R, [/\ open U , D `<=` U & mu (U `\` D) < eps%:E].
 Proof.
 move=> mD muDpos epspos.
 have /ereal_inf_lt[z [/= M' covDM sMz zDe]] : mu D < mu D + (eps / 2)%:E.
   by rewrite lte_spaddr ?lte_fin ?divr_gt0// ge0_fin_numE.
-pose e2 n := (eps / 2) / (2 ^ n.+1)%:R; have e2pos n : (0 < e2 n)%R.
-  by rewrite divr_gt0// divr_gt0.
+pose e2 n := (eps / 2) / (2 ^ n.+1)%:R.
+have e2pos n : (0 < e2 n)%R by rewrite ?divr_gt0.
 pose M n := if pselect (M' n = set0) then set0 else
             (`] inf (M' n), sup (M' n) + e2 n [%classic)%R.
 have muM n : mu (M n) <= mu (M' n) + (e2 n)%:E.
-  rewrite /M; case: pselect => /= [-> |].
+  rewrite /M; case: pselect => /= [->|].
     by rewrite measure0 add0e lee_fin ltW.
   have /ocitvP[-> //| [[a b /= alb -> ab0]]] : ocitv (M' n).
-    by case: covDM => /(_ n).
-  rewrite ?inf_itv ?sup_itv //.
+    by case: covDM  => /(_ n).
+  rewrite inf_itv// sup_itv//.
   have -> : (`]a, (b + e2 n)%R[ = `]a, b] `|` `]b, (b + e2 n)%R[ )%classic.
-    apply: funext=> r /=; rewrite (@itv_splitU _ _ (BSide false b)).
+    apply: funext=> r /=; rewrite (@itv_splitU _ _ (BRight b)).
       by rewrite propeqE; split=> /orP.
     by rewrite !bnd_simp (ltW alb)/= ltr_spaddr.
   rewrite measureU/=.
