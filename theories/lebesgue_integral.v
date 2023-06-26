@@ -569,7 +569,6 @@ by apply: (mulemu_ge0 (fun x => f @^-1` [set x])); exact: preimage_nnfun0.
 Qed.
 End mulem_ge0.
 
-(**********************************)
 (* Definition of Simple Integrals *)
 (**********************************)
 
