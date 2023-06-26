@@ -1958,9 +1958,8 @@ wlog : eps epspos D mD finD / exists ab : R * R, D `<=` `[ab.1, ab.2]%classic.
     exact: interval_closed.
   - by move=> ? [/VDab []].
   have -> :  D `\` (V `&` `[a, b]) = (D `&` `[a, b]) `\` V `|` D `\` `[a, b].
-    rewrite setDIr eqEsubset; split => z /=; case: (z \in `[a, b]); try tauto.
-    by case; case; left.
-    by case; case; right.
+    by rewrite setDIr eqEsubset; split => z /=; case: (z \in `[a, b]); 
+      (try tauto); try (by case; case; left); try (by case; case; right).
   have mV : measurable V.
     by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
   rewrite [eps]splitr EFinD (measureU mu) // ?lte_add //.
