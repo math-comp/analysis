@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Added
+- in `measure.v`:
+  + lemma `lebesgue_regularity_outer`
+
+- in `lebesgue_measure.v`:
+  + lemma `closed_measurable`
 
 ### Changed
 
