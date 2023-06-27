@@ -117,9 +117,6 @@ Require Import reals signed.
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true.                       *)
 (*                         clopen U == U is both open and closed              *)
-(*                       set_nbhs A == the filter of open sets containing A   *)
-(*            smallest_filter_aux F == recursively builds the smallest filter *)
-(*                                     containing F.                          *)
 (*    separate_points_from_closed f == For a closed set U and point x outside *)
 (*                                     some member of the family f sends      *)
 (*                                     f_i(x) outside (closure (f_i @` U)).   *)
@@ -2003,86 +2000,9 @@ Unshelve. all: by end_near. Qed.
 
 End within_topologicalType.
 
-Section set_nbhs.
-
-Context {T : topologicalType} (A : set T).
-Definition set_nbhs := \bigcap_(x in A) (nbhs x).
-
-Global Instance set_nbhs_filter : Filter set_nbhs.
-Proof.
-split => P Q; first by exact: filterT.
-  by move=> Px Qx x Ax; apply: filterI; [exact: Px | exact: Qx].
-by move=> PQ + x Ax => /(_ _ Ax)/filterS; exact. 
-Qed.
-
-Global Instance set_nbhs_pfilter : A!=set0 -> ProperFilter set_nbhs.
-Proof.
-case=> x Ax; split; last exact: set_nbhs_filter.
-by move/(_ x Ax)/nbhs_singleton.
-Qed.
-
-Lemma set_nbhsP (B : set T) :
-   set_nbhs B <-> (exists C, [/\ open C, A `<=` C & C `<=` B]).
-Proof.
-split; first last.
-  by case=> V [? AV /filterS +] x /AV ?; apply; apply: open_nbhs_nbhs; split.
-move=> snB; have Ux : forall x, exists U, A x -> U x /\ open U /\ U `<=` B.
-  move=> x; case: (pselect (A x)); last by move => ?; exists point.
-  by move/snB; rewrite nbhsE; case=> V [? ? ?]; exists V.
-exists (\bigcup_(x in A) (projT1 (cid (Ux x)))); split.
-- by apply: bigcup_open => x Ax; have := projT2 (cid (Ux x)); firstorder.
-- by move=> x Ax; exists x => //; have := projT2 (cid (Ux x)); firstorder.
-- by move=> x [y Ay]; have [//|_ [_]] := projT2 (cid (Ux y)); apply.
-Qed.
-
-End set_nbhs.
-
-Global Instance smallest_filter_filter {T : Type} (F : set (set T)) :
-  Filter (smallest Filter F).
-Proof.
-split. 
-- by move=> G [? _]; apply: filterT.
-- by move=> ? ? sFP sFQ ? [? ?]; apply: filterI; [apply: sFP | apply: sFQ].
-- by move=> ? ? /filterS + sFP ? [? ?]; apply; apply: sFP.
-Qed.
-
-Fixpoint smallest_filter_aux {T : Type} (F : set (set T)) (n : nat) :=
-  if n is S m 
-  then (smallest_filter_aux F m) `|` 
-    ([set PQ.1 `&` PQ.2 | 
-       PQ in (smallest_filter_aux F m) `*` (smallest_filter_aux F m)])
-  else F.
-
-Lemma smallest_filter_aux_sub {T : Type} (F : set (set T)) (i j : nat) :
-  (i <= j)%N -> smallest_filter_aux F i `<=` smallest_filter_aux F j.
-Proof.
-elim: j i => //; first by move=> i; rewrite leqn0 => /eqP ->.
-move=> j IH i; rewrite leq_eqVlt => /orP; case; first by move/eqP => ->.
-by move=> /IH/subset_trans; apply=> A ?; left.
-Qed.
-
-Lemma smallest_filterP {T : Type} (F : set (set T)) : F!=set0 -> 
-  smallest Filter F = filter_from (\bigcup_n (smallest_filter_aux F n)) id.
-Proof.
-case=> W FW; rewrite eqEsubset; split.
-  apply: smallest_sub => //; first last.
-    by move=> A FA; exists A => //; exists O.
-  apply: filter_from_filter; first by exists W; exists O.
-  move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.
-  exists (S (maxn i j)) => //=; simpl; right; exists (P,Q) => //=; split.
-    by apply: smallest_filter_aux_sub; first exact: leq_maxl.
-  by apply: smallest_filter_aux_sub; first exact: leq_maxr.
-move=> A [B [n _]]; elim: n B A.
-  by move=> B A FB /filterS; apply; exact: sub_gen_smallest.
-move=> n IH /= B A []; first by move=> FnB BA; apply: (IH B A).
-case; case=> P Q /= [sFP sFQ] PQB /filterS; apply.
-rewrite -PQB; apply: (filterI _ _); first exact: (IH _ _ sFP).
-exact: (IH _ _ sFQ).
-Qed.
+Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 
 (** ** Topology defined by a filter *)
-
-Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 
 Section TopologyOfFilter.
 
@@ -4422,14 +4342,6 @@ End uniform_closeness.
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
 
-Lemma unif_continuousW (U V : uniformType) (f : U -> V) :
-  unif_continuous f -> continuous f.
-Proof.
-move=> ucf x P; rewrite /= -nbhs_entourageE; case => E entE /filterS; apply.
-rewrite nbhs_simpl /= -nbhs_entourageE. 
-by exists ((fun xy => (f xy.1, f xy.2))@^-1` E); first exact: ucf.
-Qed.
-
 (** product of two uniform spaces *)
 
 Section prod_Uniform.
@@ -5245,7 +5157,6 @@ split; do ?by apply: open_interior.
 by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
 Qed.
 End ball_hausdorff.
-
 
 Section entourages.
 Variable R : numDomainType.
@@ -7907,7 +7818,7 @@ Hypothesis normalT : normal T.
                          (---------------  ~`closure U 
                  A----------------) V 
                               (---------  ~` closure V'
-   and (U,V') + (V', V) does what we need. This uniform space is not
+   and (U,V') + (V', V) splits the entourage of (U,V). This uniform space is not
    neccesarily a pseudometric. So we find an entourage which divides A and B,
    then the gauge pseudometric gives us what we want.
 *)
@@ -7920,7 +7831,7 @@ Let nested (UV : (set T) * (set T)) : Prop :=
 
 Let ury_base := [set apxU UV | UV in nested].
 
-Let ury_base_refl E : 
+Local Lemma ury_base_refl E : 
   ury_base E -> [set fg | fg.1 = fg.2] `<=` E.
 Proof.
 case; case=> L R [_ _ _ /= LR] <- [? x /= ->].
@@ -7928,13 +7839,13 @@ case: (pselect (R x)); first by left; split.
 by move/subsetC:LR => /[apply] => ?; right; split.
 Qed.
 
-Let ury_base_inv E : ury_base E -> ury_base (E^-1)%classic.
+Local Lemma ury_base_inv E : ury_base E -> ury_base (E^-1)%classic.
 Proof.
 case; case=> L R ? <-; exists (L,R) => //.
 by rewrite eqEsubset; split => //; (case=> x y [] [? ?]; [left| right]).
 Qed.
 
-Let ury_base_split E : 
+Local Lemma ury_base_split E : 
   ury_base E -> exists E1 E2, [/\ ury_base E1, ury_base E2 &
     (E1 `&` E2) \; (E1 `&` E2) `<=` E].
 Proof.
@@ -7961,14 +7872,14 @@ Let ury_unif := smallest Filter ury_base.
 Instance ury_unif_filter : Filter ury_unif.
 Proof. exact: smallest_filter_filter. Qed.
 
-Let ury_unif_refl E : ury_unif E -> [set fg | fg.1 = fg.2] `<=` E.
+Local Lemma ury_unif_refl E : ury_unif E -> [set fg | fg.1 = fg.2] `<=` E.
 Proof.
 move/(_ (globally [set fg | fg.1 = fg.2])); apply; split. 
   exact: globally_filter.
 exact: ury_base_refl.
 Qed.
 
-Let ury_unif_inv E : ury_unif E -> ury_unif (E^-1)%classic.
+Local Lemma ury_unif_inv E : ury_unif E -> ury_unif (E^-1)%classic.
 Proof.
 move=> ufE F [/filter_inv FF urF]; have [] := ufE [set (V^-1)%classic | V in F].
   split => // K /ury_base_inv/urF /= ?; exists (K^-1)%classic => //.
@@ -7977,7 +7888,7 @@ move=> R FR <-; rewrite (_ : (R^-1^-1)%classic = R) => //.
 by rewrite eqEsubset; split; case.
 Qed.
 
-Let divideAB : exists2 E, ury_base E & (A `*` B) `&` E = set0.
+Local Lemma divideAB : exists2 E, ury_base E & (A `*` B) `&` E = set0.
 Proof.
 have := normalT closedA; rewrite eqEsubset; case=> + _; case/(_ (~`B)).
   move=> x Ax; apply: open_nbhs_nbhs; split => //; first exact/closed_openC.
@@ -7989,45 +7900,38 @@ rewrite eqEsubset; split; case=> // a b [/=[Aa Bb] [[//]|]].
 by have /subset_closure ? := AU _ Aa; case.
 Qed.
 
-Let ury_unif_split_aux E n :
-  smallest_filter_aux ury_base n E -> exists2 K : set (T*T), 
-    smallest_filter_aux ury_base n.+1 K & K\;K `<=` E.
+Local Lemma ury_unif_split_iter E n :
+  filterI_iter ury_base n E -> exists2 K : set (T*T), 
+    filterI_iter ury_base n.+1 K & K\;K `<=` E.
 Proof.
-elim: n E.
-  move=> E /ury_base_split [E1 [E2] [ub1 ub2 e12E]]; exists (E1 `&` E2) => //.
-  by right; exists (E1, E2).
-move=> n IH E []; first by move=> /IH [K ? ?]; exists K => //; left.
-case; case=> E1 E2 [/IH [K1 SnK1 K1E1] /IH [K2 SnK2 K2E2]] <-. 
-exists (K1 `&` K2); first by right ;exists (K1, K2).
-move=> /= [x z ] [y /= [K1xy K2xy] [K1yz K2yz]]; split.
-  by apply: K1E1; exists y.
-by apply: K2E2; exists y.
+elim: n E; first move=> E [].
+- move=> ->; exists setT => //; exists setT; first by left.
+  by exists setT; rewrite ?setIT; first by left.
+- move=> /[dup] /ury_base_split [E1 [E2] [? ? ? ?]]; exists (E1 `&` E2) => //.
+  by (exists E1; first by right); exists E2; first by right.
+move=> n IH E /= [E1 /IH [F1 F1n1 F1E1]] [E2 /IH [F2 F2n1 F2E2]] E12E.
+exists (F1 `&` F2); first by exists F1 => //; exists F2 => //.
+move=> /= [x z ] [y /= [K1xy K2xy] [K1yz K2yz]]; rewrite -E12E; split.
+  by apply: F1E1; exists y.
+by apply: F2E2; exists y.
 Qed.
 
-Let ury_unif_split E : ury_unif E -> 
+Local Lemma ury_unif_split E : ury_unif E -> 
   exists2 K, ury_unif K & K \; K `<=` E.
 Proof.
-rewrite /ury_unif (@smallest_filterP _ ury_base); first last. 
-  by case: divideAB => K ? _; exists K.
-case=> G [n _] /ury_unif_split_aux [K SnK KG GE]; exists K.
-  by exists K => //; exists n.+1.
+rewrite /ury_unif filterI_iterE; case=> G [n _] /ury_unif_split_iter [].
+move=> K SnK KG GE; exists K; first by exists K => //; exists n.+1.
 exact: (subset_trans _ GE).
 Qed.
 
-Let ury_unif_covA E : ury_unif E -> A `*` A `<=` E.
+Local Lemma ury_unif_covA E : ury_unif E -> A `*` A `<=` E.
 Proof.
-rewrite /ury_unif (@smallest_filterP _ ury_base); first last. 
-  by case: divideAB => K ? _; exists K.
-case=> G [n _] sG /(subset_trans _); apply.
-elim: n G sG.
-  move=> G [[P Q]] [/= _ _ AP cPQ] <- [x y] [/= /AP ? ?].
-  left; split => //=; first exact/cPQ/subset_closure.
-  exact/cPQ/subset_closure/AP.
-move=> n IH G []; first by move/IH.
-case; case=> P Q [/IH unP /IH unQ] <- [x y /= [Ax Ay]]. 
-by split; [exact: unP | exact: unQ].
+rewrite /ury_unif filterI_iterE; case=> G [n _] sG /(subset_trans _); apply.
+elim: n G sG. 
+  move=> g [-> //| [[P Q]]] [/= _ _ AP cPQ <-] [x y] [/= /AP ? ?].
+  by left; split => //=; apply/cPQ/subset_closure => //; exact: AP.
+by move=> n IH G [R] /IH AAR [M] /IH AAM <- z; split;[exact: AAR | exact: AAM].
 Qed.
-
 
 Let urysohn_uniformType_mixin :=
  UniformMixin ury_unif_filter ury_unif_refl ury_unif_inv ury_unif_split erefl.
@@ -8047,13 +7951,13 @@ Let ury_base_ent E : ury_base E -> @entourage T' E.
 Proof. by move=> ?; exact: sub_gen_smallest. Qed.
 
 Let divider : set (T' * T') := projT1 (cid2 divideAB).
-Lemma divider_ent : @entourage urysohn_uniformType divider.
+Local Lemma divider_ent : @entourage urysohn_uniformType divider.
 Proof. by apply: ury_base_ent; have [] := projT2 (cid2 divideAB). Qed.
 
 Let ury_gauge := @gauge_uniformType T' _ divider_ent.
 Local Notation T'' := ury_gauge.
 
-Let ury_gauge_unif E : gauge divider E -> ury_unif E.
+Local Lemma ury_gauge_unif E : gauge divider E -> ury_unif E.
 Proof.
 case=> n _ dE; apply: (@filterS _ _ ury_unif_filter _ _ dE).
 elim: n {E dE} => /=.
@@ -8064,17 +7968,14 @@ move=> n IH; apply: (@filterI _ _ ury_unif_filter).
 by apply: (@entourage_inv T'); exact : (@entourage_split_ent T').
 Qed.
 
-Let ury_gauge_nbhs x U : nbhs (x : T'') U -> nbhs (x : T) (U : set T).
+Local Lemma ury_gauge_nbhs x U : nbhs (x : T'') U -> nbhs (x : T) (U : set T).
 Proof.
 case => E gE /(@filterS T); apply; move/ury_gauge_unif:gE.
-rewrite /ury_unif (@smallest_filterP _ ury_base); first last. 
-  by case: divideAB => K ? _; exists K.
-case => K /= [i _] /= uiK KE; suff : @nbhs T T x to_set K (x). 
-  by apply: filterS => y /KE.
-elim: i K uiK {E KE}; first last.
-  move=> n IH K []; first by move/IH.
-  by case; case=> K1 K2 [/IH uK1 /IH uK2] <-; apply: filterI. 
-move=> K; case; case => P Q [/= oP oQ AP cPQ <-];  rewrite /apxU /=. 
+rewrite /ury_unif filterI_iterE; case => K /= [i _] /= uiK KE. 
+suff : @nbhs T T x to_set K (x) by apply: filterS => y /KE.
+elim: i K uiK {E KE}; last by move=> ? H ? [N] /H ? [M] /H ? <-; apply: filterI.
+move=> K; case; first by move ->; exact: filterT.
+case; case => P Q [/= oP oQ AP cPQ <-];  rewrite /apxU /=. 
 set M := [set y | _ \/ _]; case (pselect (Q x)); first last.
   move=> nQx; suff -> : M = ~` closure P.
     apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
@@ -8091,14 +7992,14 @@ rewrite eqEsubset; split => // z _; case: (pselect (Q z)).
 by move/subsetC: cPQ => /[apply] ?; right.
 Qed.
 
-Let ury_gauge_closeA (x y : T'') : A x -> A y -> close x y.
+Local Lemma ury_gauge_closeA (x y : T'') : A x -> A y -> close x y.
 Proof.
 move=> Ax Ay U [oU Uy] V; rewrite -nbhs_entourageE; case=> E + EV.
 move/ury_gauge_unif/ury_unif_covA=> AAE; exists y; split => //.
 exact/EV/AAE.
 Qed.
 
-Let cts_fun_urysohn {V : topologicalType} (f : T'' -> V) :
+Local Lemma cts_fun_urysohn {V : topologicalType} (f : T'' -> V) :
   hausdorff_space V -> continuous f ->
   (continuous (f : T -> V)) /\ (forall (x y : T''), A x -> A y -> f x = f y).
 Proof.
