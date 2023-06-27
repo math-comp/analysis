@@ -302,6 +302,9 @@ Definition bigcup T I (P : set I) (F : I -> set T) :=
 Definition subset A B := forall t, A t -> B t.
 Local Notation "A `<=` B" := (subset A B).
 
+Lemma subsetP A B : {subset A <= B} <-> (A `<=` B).
+Proof. by split => + x => /(_ x); rewrite ?inE. Qed.
+
 Definition disj_set A B := setI A B == set0.
 
 Definition proper A B := A `<=` B /\ ~ (B `<=` A).
@@ -320,6 +323,7 @@ Arguments setMR _ _ _ _ _ /.
 Arguments setML _ _ _ _ _ /.
 Arguments fst_set _ _ _ _ /.
 Arguments snd_set _ _ _ _ /.
+Arguments subsetP {T A B}.
 
 Notation range F := [set F i | i in setT].
 Notation "[ 'set' a ]" := (set1 a) : classical_set_scope.

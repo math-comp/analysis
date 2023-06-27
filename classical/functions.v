@@ -258,13 +258,16 @@ HB.end.
 HB.structure Definition Inversible aT rT := {f of Inv aT rT f}.
 Notation "{ 'inv' aT >->  rT }" := (@Inversible.type aT rT) : type_scope.
 Notation "[ 'inv'  'of'  f ]" := [the {inv _ >-> _} of f : _ -> _] : form_scope.
-Definition phant_inv aT rT (f : {inv aT >-> rT}) of phantom (_ -> _) f := @inv _ _ f.
+Definition phant_inv aT rT (f : {inv aT >-> rT}) of phantom (_ -> _) f :=
+  @inv _ _ f.
 Notation "f ^-1" := (@inv _ _ f%FUN) (only printing) : fun_scope.
 Notation "f ^-1" := (@inv _ _ f%function) (only printing) : function_scope.
 Notation "f ^-1" := (@phant_inv _ _ _ (Phantom (_ -> _) f%FUN)) : fun_scope.
-Notation "f ^-1" := (@phant_inv _ _ _ (Phantom (_ -> _) f%function)) : function_scope.
+Notation "f ^-1" :=
+  (@phant_inv _ _ _ (Phantom (_ -> _) f%function)) : function_scope.
 
-HB.structure Definition InvFun aT rT A B := {f of Inv aT rT f & isFun aT rT A B f}.
+HB.structure Definition InvFun aT rT A B :=
+  {f of Inv aT rT f & isFun aT rT A B f}.
 Notation "{ 'invfun' A >-> B }" := (@InvFun.type _ _ A B) : type_scope.
 Notation "[ 'invfun'  'of'  f ]" :=
   [the {invfun _ >-> _} of f : _ -> _] : form_scope.
@@ -304,7 +307,8 @@ Notation "[ 'splitsurj'  'of'  f ]" :=
 
 HB.structure Definition SplitSurjFun aT rT A B :=
    {f of @SplitSurj aT rT A B f & @Fun _ _ A B f}.
-Notation "{ 'splitsurjfun' A >-> B }" := (@SplitSurjFun.type _ _ A B) : type_scope.
+Notation "{ 'splitsurjfun' A >-> B }" :=
+  (@SplitSurjFun.type _ _ A B) : type_scope.
 Notation "[ 'splitsurjfun'  'of'  f ]" :=
   [the {splitsurjfun _ >-> _} of f : _ -> _] : form_scope.
 
@@ -2355,9 +2359,6 @@ Lemma valLR_bijP f : set_bij A B (valLR f) <-> bijective f.
 Proof. by rewrite -sigLRfun_bijP valLRK. Qed.
 
 End Restrictions2.
-
-Lemma subsetP {T} {A B : set T} : {subset A <= B} <-> (A `<=` B).
-Proof. by split => + x => /(_ x); rewrite ?inE. Qed.
 
 Section set_bij_basic_lemmas.
 Context {aT rT : Type}.

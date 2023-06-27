@@ -189,6 +189,8 @@ Require Import reals signed.
 (*                                     a pointedType, as well as the carrier. *)
 (*                                     nbhs_of_open \o open_from must be      *)
 (*                                     used to declare a filterType           *)
+(*                 filterI_iter F n == nth stage of recursively building the  *)
+(*                                     filter of finite intersections of F    *)
 (*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
 (*                                     a finite subset of D                   *)
 (*       topologyOfSubbaseMixin D b == builds the mixin for a topological     *)
@@ -251,6 +253,7 @@ Require Import reals signed.
 (*           totally_disconnected A == The only connected subsets of A are    *)
 (*                                     empty or singletons.                   *)
 (*               zero_dimensional T == Points are separable by a clopen set.  *)
+(*                       set_nbhs A == filter from open sets containing A     *)
 (*                                                                            *)
 (*                                                                            *)
 (*                      [locally P] := forall a, A a -> G (within A (nbhs x)) *)
@@ -2080,19 +2083,67 @@ HB.instance Definition _ := Pointed_isOpenTopological.Build T
 
 HB.end.
 
+Section filter_supremums.
+
+Global Instance smallest_filter_filter {T : Type} (F : set (set T)) :
+  Filter (smallest Filter F).
+Proof.
+split.
+- by move=> G [? _]; apply: filterT.
+- by move=> ? ? sFP sFQ ? [? ?]; apply: filterI; [apply: sFP | apply: sFQ].
+- by move=> ? ? /filterS + sFP ? [? ?]; apply; apply: sFP.
+Qed.
+
+Fixpoint filterI_iter {T : Type} (F : set (set T)) (n : nat) :=
+  if n is m.+1
+  then [set P `&` Q |
+    P in filterI_iter F m & Q in filterI_iter F m]
+  else setT |` F.
+
+Lemma filterI_iter_sub {T : Type} (F : set (set T)) :
+  {homo filterI_iter F : i j / (i <= j)%N >-> i `<=` j}.
+Proof.
+move=> + j; elim: j; first by move=> i; rewrite leqn0 => /eqP ->.
+move=> j IH i; rewrite leq_eqVlt => /predU1P[->//|].
+by move=> /IH/subset_trans; apply=> A ?; do 2 exists A => //; rewrite setIid.
+Qed.
+
+Lemma filterI_iterE {T : Type} (F : set (set T)) :
+  smallest Filter F = filter_from (\bigcup_n (filterI_iter F n)) id.
+Proof.
+rewrite eqEsubset; split.
+  apply: smallest_sub => //; first last.
+    by move=> A FA; exists A => //; exists O => //; right.
+  apply: filter_from_filter; first by exists setT; exists O => //; left.
+  move=> P Q [i _ sFP] [j _ sFQ]; exists (P `&` Q) => //.
+  exists (maxn i j).+1 => //=; exists P.
+    by apply: filterI_iter_sub; first exact: leq_maxl.
+  by exists Q => //; apply: filterI_iter_sub; first exact: leq_maxr.
+move=> + [+ [n _]]; elim: n => [A B|n IH/= A B].
+  move=> [-> /[!(@subTset T)] ->|]; first exact: filterT.
+  by move=> FB /filterS; apply; apply: sub_gen_smallest.
+move=> [P sFP] [Q sFQ] PQB /filterS; apply; rewrite -PQB.
+by apply: (filterI _ _); [exact: (IH _ _ sFP)|exact: (IH _ _ sFQ)].
+Qed.
+
 (** ** Topology defined by a subbase of open sets *)
 
 Definition finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
   [set \bigcap_(i in [set` D']) f i |
     D' in [set A : {fset I} | {subset A <= D}]].
 
+Lemma finI_from_cover (I : choiceType) T (D : set I) (f : I -> set T) :
+  \bigcup_(A in finI_from D f) A = setT.
+Proof.
+rewrite predeqE => t; split=> // _; exists setT => //.
+by exists fset0 => //; rewrite set_fset0 bigcap_set0.
+Qed.
+
 Lemma finI_from1 (I : choiceType) T (D : set I) (f : I -> set T) i :
   D i -> finI_from D f (f i).
 Proof.
-move=> Di; exists [fset i]%fset.
-  by move=> ?; rewrite !inE => /eqP->.
-rewrite predeqE => t; split=> [|fit]; first by apply; rewrite /= inE.
-by move=> ?; rewrite /= inE => /eqP->.
+move=> Di; exists [fset i]%fset; first by move=> ?; rewrite !inE => /eqP ->.
+by rewrite bigcap_fset big_seq_fset1.
 Qed.
 
 Lemma finI_from_countable (I : pointedType) T (D : set I) (f : I -> set T) :
@@ -2101,6 +2152,43 @@ Proof.
 move=> ?; apply: (card_le_trans (card_image_le _ _)).
 exact: fset_subset_countable.
 Qed.
+
+Lemma finI_fromI {I : choiceType} T D (f : I -> set T) A B :
+  finI_from D f A -> finI_from D f B -> finI_from D f (A `&` B) .
+Proof.
+case=> N ND <- [M MD <-]; exists (N `|` M)%fset.
+  by move=> ?; rewrite inE => /orP[/ND | /MD].
+by rewrite -bigcap_setU set_fsetU.
+Qed.
+
+Lemma filterI_iter_finI {I : choiceType} T D (f : I -> set T) :
+  finI_from D f = \bigcup_n (filterI_iter (f @` D) n).
+Proof.
+rewrite eqEsubset; split.
+  move=> A [N /= + <-]; have /finite_setP[n] := finite_fset N; elim: n N.
+    move=> ?; rewrite II0 card_eq0 => /eqP -> _; rewrite bigcap_set0.
+    by exists O => //; left.
+  move=> n IH N /eq_cardSP[x Ax + ND]; rewrite -set_fsetD1 => Nxn.
+  have NxD : {subset (N `\ x)%fset <= D}.
+    by move=> ?; rewrite ?inE => /andP [_ /ND /set_mem].
+  have [r _ xr] := IH _ Nxn NxD; exists r.+1 => //; exists (f x).
+    apply: (@filterI_iter_sub _ _ O) => //; right; exists x => //.
+    by rewrite -inE; apply: ND.
+  exists (\bigcap_(i in [set` (N `\ x)%fset]) f i) => //.
+  by rewrite -bigcap_setU1 set_fsetD1 setD1K.
+move=> A [n _]; elim: n A.
+  move=> a [-> |[i Di <-]]; [exists fset0 | exists [fset i]%fset] => //.
+  - by rewrite set_fset0 bigcap_set0.
+  - by move=> ?; rewrite !inE => /eqP ->.
+  - by rewrite set_fset1 bigcap_set1.
+by move=> n IH A /= [B snB [C snC <-]]; apply: finI_fromI; apply: IH.
+Qed.
+
+Lemma smallest_filter_finI {T : choiceType} (D : set T) f :
+  filter_from (finI_from D f) id = smallest (@Filter T) (f @` D).
+Proof. by rewrite filterI_iter_finI filterI_iterE. Qed.
+
+End filter_supremums.
 
 (* was TopologyOfSubbase *)
 HB.factory Record Pointed_isSubBaseTopological T of Pointed T := {
@@ -3707,7 +3795,6 @@ Qed.
 End connected_sets.
 Arguments connected {T}.
 Arguments connected_component {T}.
-
 Section DiscreteTopology.
 Section DiscreteMixin.
 Context {X : Type}.
@@ -3875,6 +3962,40 @@ by move=> D [DF _ [C DC]]/(_ _ DC)/subsetC2/filterS; apply; exact: DF.
 Qed.
 
 End totally_disconnected.
+
+Section set_nbhs.
+
+Context {T : topologicalType} (A : set T).
+Definition set_nbhs := \bigcap_(x in A) (nbhs x).
+
+Global Instance set_nbhs_filter : Filter set_nbhs.
+Proof.
+split => P Q; first by exact: filterT.
+  by move=> Px Qx x Ax; apply: filterI; [exact: Px | exact: Qx].
+by move=> PQ + x Ax => /(_ _ Ax)/filterS; exact.
+Qed.
+
+Global Instance set_nbhs_pfilter : A!=set0 -> ProperFilter set_nbhs.
+Proof.
+case=> x Ax; split; last exact: set_nbhs_filter.
+by move/(_ x Ax)/nbhs_singleton.
+Qed.
+
+Lemma set_nbhsP (B : set T) :
+   set_nbhs B <-> (exists C, [/\ open C, A `<=` C & C `<=` B]).
+Proof.
+split; first last.
+  by case=> V [? AV /filterS +] x /AV ?; apply; apply: open_nbhs_nbhs.
+move=> snB; have Ux x : exists U, A x -> [/\ U x, open U & U `<=` B].
+  have [/snB|?] := pselect (A x); last by exists point.
+  by rewrite nbhsE => -[V [? ? ?]]; exists V.
+exists (\bigcup_(x in A) (projT1 (cid (Ux x)))); split.
+- by apply: bigcup_open => x Ax; have [] := projT2 (cid (Ux x)).
+- by move=> x Ax; exists x => //; have [] := projT2 (cid (Ux x)).
+- by move=> x [y Ay]; have [//| _ _] := projT2 (cid (Ux y)); exact.
+Qed.
+
+End set_nbhs.
 
 (** * Uniform spaces *)
 
