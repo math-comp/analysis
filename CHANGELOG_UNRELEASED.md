@@ -35,8 +35,6 @@
   
 - moved from `functions.v` to `classical_sets.v`: `subsetP`.
 
-- moved from `normedtype.v` to `topology.v`: `Rhausdorff`.
-
 ### Renamed
 
 ### Generalized
