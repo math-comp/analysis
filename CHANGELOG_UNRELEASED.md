@@ -22,6 +22,11 @@
   + new definition `set_nbhs`.
   + new lemmas `filterI_iter_sub`, `filterI_iterE`, `finI_fromI`, 
     `filterI_iter_finI`, `smallest_filter_finI`, and `set_nbhsP`.
+
+- in file `topology.v`,
+  + new definition `normal`.
+  + new lemma `filter_inv`.
+
 - in file `lebesgue_measure.v`,
   + new lemmas `pointwise_almost_uniform`, and 
     `ae_pointwise_almost_uniform`.
@@ -33,6 +38,8 @@
     `itv_bnd_infty_bigcup`, `itv_infty_bnd_bigcup`
   
 - moved from `functions.v` to `classical_sets.v`: `subsetP`.
+
+- moved from `normedtype.v` to `topology.v`: `Rhausdorff`.
 
 ### Renamed
 
