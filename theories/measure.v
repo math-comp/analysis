@@ -1731,6 +1731,13 @@ Section dirac_lemmas.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 
+Lemma finite_card_sum (A : set T) : finite_set A ->
+  \esum_(i in A) 1 = (#|` fset_set A|%:R)%:E :> \bar R.
+Proof.
+move=> finA; rewrite esum_fset// (eq_fsbigr (cst 1))//.
+by rewrite card_fset_sum1// natr_sum -sumEFin fsbig_finite.
+Qed.
+
 Lemma finite_card_dirac (A : set T) : finite_set A ->
   \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
 Proof.
@@ -3011,6 +3018,17 @@ Lemma measureUfinl d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
     measurable A -> measurable B -> (mu A < +oo)%E ->
   mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
 Proof. by move=> *; rewrite setUC measureUfinr// setIC [(mu B + _)%E]addeC. Qed.
+
+Lemma measureU2 d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
+   (mu : {measure set T -> \bar R}):
+    measurable A -> measurable B -> mu (A `|` B) <= mu A + mu B%E.
+Proof.
+move=> ? ?; rewrite (@measureDI d R T mu (A`|`B) B) //; last exact: measurableU.
+apply: lee_add; apply: le_measure; rewrite ?inE //.
+- by apply: measurableD => //; exact: measurableU.
+- by rewrite setDUl setDv setU0.
+- by apply: measurableI => //; exact: measurableU.
+Qed.
 
 Lemma eq_measureU d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
    (mu mu' : {measure set T -> \bar R}):
