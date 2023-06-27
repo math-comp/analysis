@@ -22,6 +22,9 @@
   + new definition `set_nbhs`.
   + new lemmas `filterI_iter_sub`, `filterI_iterE`, `finI_fromI`, 
     `filterI_iter_finI`, `smallest_filter_finI`, and `set_nbhsP`.
+- in file `topology.v`,
+  + new definition `normal`.
+  + new lemma `filter_inv`.
 
 - in file `lebesgue_measure.v`,
   + new lemmas `pointwise_almost_uniform`, and 
@@ -110,6 +113,7 @@
 
 - in `exp.v`:
   + lemmas `power_posD` (now `powRD`), `power_posB` (now `powRB`)
+- moved from `normedtype.v` to `topology.v`: `Rhausdorff`.
 
 - in `sequences.v`:
   + lemma `nneseriesrM` generalized and renamed to `nneseriesZl`
