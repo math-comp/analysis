@@ -117,6 +117,7 @@ Require Import reals signed.
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true.                       *)
 (*                         clopen U == U is both open and closed              *)
+(*                         normal X == X is normal, sometimes called T4       *)
 (*    separate_points_from_closed f == For a closed set U and point x outside *)
 (*                                     some member of the family f sends      *)
 (*                                     f_i(x) outside (closure (f_i @` U)).   *)
