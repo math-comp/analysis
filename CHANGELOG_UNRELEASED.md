@@ -115,11 +115,18 @@
 - in file `topology.v`,
   + new lemma `uniform_nbhsT`.
 
+- in file `topology.v`,
+  + new definition `set_nbhs`.
+  + new lemmas `filterI_iter_sub`, `filterI_iterE`, `finI_fromI`, 
+    `filterI_iter_finI`, `smallest_filter_finI`, and `set_nbhsP`.
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
   + lemmas `set1_bigcap_oc`, `itv_bnd_open_bigcup`, `itv_open_bnd_bigcup`,
     `itv_bnd_infty_bigcup`, `itv_infty_bnd_bigcup`
+  
+- moved from `functions.v` to `classical_sets.v`: `subsetP`.
 
 ### Renamed
 
