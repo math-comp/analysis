@@ -60,12 +60,11 @@
 ### Generalized
 
 - in `exp.v`:
+  + lemmas `convex_expR`, `ler_power_pos`
+- in `exp.v`:
   + lemma `ln_power_pos`
 
 ### Deprecated
-
-- in `exp.v`:
-  + lemmas `convex_expR`, `ler_power_pos`
 
 ### Removed
 

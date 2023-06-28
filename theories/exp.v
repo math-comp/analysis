@@ -617,12 +617,12 @@ move=> x0 a0; rewrite /power_pos; case: ifPn => [_|a_neq0 _].
 by rewrite lt_neqAle a0 andbT eq_sym.
 Qed.
 
-Lemma power_pos0 x : 0 `^ x = (x == 0)%:R.
-Proof. by rewrite /power_pos eqxx. Qed.
+Lemma power_pos0 x : x != 0 -> 0 `^ x = 0.
+Proof. by move=> x0; rewrite /power_pos eqxx (negbTE x0). Qed.
 
 Lemma power_posr1 a : 0 <= a -> a `^ 1 = a.
 Proof.
-rewrite le_eqVlt => /predU1P[<-|a0]; first by rewrite power_pos0 oner_eq0.
+rewrite le_eqVlt => /predU1P[<-|a0]; first by rewrite power_pos0// oner_eq0.
 by rewrite /power_pos gt_eqF// mul1r lnK// posrE.
 Qed.
 
@@ -650,7 +650,7 @@ Proof.
 rewrite le_eqVlt => /predU1P[<- x y _ _ _|]; first by rewrite !power_posr0.
 move=> a0 x y; rewrite !in_itv/= !andbT !le_eqVlt => /predU1P[<-|x0].
   move=> /predU1P[<- _|y0 _]; first by rewrite eqxx.
-  by rewrite !power_pos0 (gt_eqF a0) power_pos_gt0 ?orbT.
+  by rewrite !power_pos0 ?(gt_eqF a0)// power_pos_gt0 ?orbT.
 move=> /predU1P[<-|y0]; first by rewrite gt_eqF//= ltNge (ltW x0).
 move=> /predU1P[->//|xy]; first by rewrite eqxx.
 by apply/orP; right; rewrite /power_pos !gt_eqF// ltr_expR ltr_pmul2l// ltr_ln.
@@ -658,11 +658,9 @@ Qed.
 
 Lemma power_posM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
 Proof.
+have [->|r0] := eqVneq r 0; first by rewrite !power_posr0 mulr1.
 rewrite 2!le_eqVlt.
-move=> /predU1P[<-|x0] /predU1P[<-|y0]; rewrite ?(mulr0, mul0r,power_pos0).
-- by rewrite -natrM; case: eqP.
-- by case: eqP => [->|]/=; rewrite ?mul0r ?power_posr0 ?mulr1.
-- by case: eqP => [->|]/=; rewrite ?mulr0 ?power_posr0 ?mulr1.
+move=> /predU1P[<-|x0] /predU1P[<-|y0]; rewrite ?(mulr0, mul0r, power_pos0)//.
 - rewrite /power_pos mulf_eq0; case: eqP => [->|x0']/=.
     rewrite (@gt_eqF _ _ y)//.
     by case: eqP => /=; rewrite ?mul0r ?mul1r// => ->; rewrite mul0r expR0.
@@ -703,7 +701,7 @@ have [->|s0] := eqVneq s 0%R; first by rewrite subr0 oppr0 power_posr0 mulr1.
 have [x0|x0|<-] := ltgtP 0 x.
 - by rewrite /power_pos gt_eqF// mulrDl expRD.
 - by rewrite /power_pos lt_eqF// -expRD -mulrDl.
-- by rewrite !power_pos0 subr_eq0 (negbTE rs) (negbTE r0) mul0r.
+- by rewrite !power_pos0 ?mulr0// ?subr_eq0// oppr_eq0.
 Qed.
 
 Lemma power_pos_mulrn a n : 0 <= a -> a `^ n%:R = a ^+ n.
@@ -711,14 +709,13 @@ Proof.
 move=> a0; elim: n => [|n ih].
   by rewrite mulr0n expr0 power_posr0//; apply: lt0r_neq0.
 move: a0; rewrite le_eqVlt => /predU1P[<-|a0].
-  by rewrite !power_pos0 mulrn_eq0/= oner_eq0/= expr0n.
+  by rewrite !power_pos0 ?mulrn_eq0//= expr0n.
 by rewrite -natr1 power_posD// ih power_posr1// ?exprS 1?mulrC// ltW.
 Qed.
 
 Lemma power_pos_inv1 a : 0 <= a -> a `^ (-1) = a ^-1.
 Proof.
-rewrite le_eqVlt => /predU1P[<-|a0].
-  by rewrite power_pos0 invr0 oppr_eq0 oner_eq0.
+rewrite le_eqVlt => /predU1P[<-|a0]; first by rewrite power_pos0// invr0.
 apply/(@mulrI _ a); first by rewrite unitfE gt_eqF.
 rewrite -[X in X * _ = _](power_posr1 (ltW a0)) -power_posD// subrr.
 by rewrite power_posr0 divff// gt_eqF.
@@ -729,7 +726,7 @@ Proof.
 move=> a0; elim: n => [|n ih].
   by rewrite -mulNrn mulr0n power_posr0 -exprVn expr0.
 move: a0; rewrite le_eqVlt => /predU1P[<-|a0].
-  by rewrite power_pos0 oppr_eq0 mulrn_eq0 oner_eq0 orbF exprnN exp0rz oppr_eq0.
+  by rewrite power_pos0 ?mulrn_eq0// exprnN exp0rz oppr_eq0.
 rewrite -natr1 opprD power_posD// (power_pos_inv1 (ltW a0)) ih.
 by rewrite -[in RHS]exprVn exprS [in RHS]mulrC exprVn.
 Qed.
@@ -746,14 +743,14 @@ Qed.
 Lemma ln_power_pos a x : ln (a `^ x) = x * ln a.
 Proof.
 have [->|x0] := eqVneq x 0; first by rewrite power_posr0 ln1// mul0r.
-have [->|a0] := eqVneq a 0; first by rewrite power_pos0 (negbTE x0) ln0// mulr0.
+have [->|a0] := eqVneq a 0; first by rewrite power_pos0// ln0// mulr0.
 by rewrite /power_pos (negbTE a0) expRK.
 Qed.
 
 Lemma power12_sqrt a : 0 <= a -> a `^ (2^-1) = Num.sqrt a.
 Proof.
 rewrite le_eqVlt => /predU1P[<-|a0].
-  by rewrite power_pos0 sqrtr0 invr_eq0 pnatr_eq0.
+  by rewrite power_pos0 ?invr_eq0 ?pnatr_eq0// sqrtr0.
 have /eqP : (a `^ (2^-1)) ^+ 2 = (Num.sqrt a) ^+ 2.
   rewrite sqr_sqrtr; last exact: ltW.
   by rewrite /power_pos gt_eqF// -expRMm mulrA divrr ?mul1r ?unitfE// lnK.
@@ -816,14 +813,17 @@ Proof. by case: x => [x| |] //=; case: ifP. Qed.
 Lemma eqy_powere_pos x r : (0 < r)%R -> x = +oo -> x `^ r = +oo.
 Proof. by move: x => [| |]//= r0 _; rewrite gt_eqF. Qed.
 
-Lemma powere_pos0r r : 0 `^ r = (r == 0)%:R%:E.
-Proof. by rewrite powere_pos_EFin power_pos0. Qed.
+Lemma powere_pos0r r : r != 0%R -> 0 `^ r = 0.
+Proof. by move=> r0; rewrite powere_pos_EFin power_pos0. Qed.
 
 Lemma powere_pos1r r : 1 `^ r = 1.
 Proof. by rewrite powere_pos_EFin power_pos1. Qed.
 
 Lemma fine_powere_pos x r : fine (x `^ r) = ((fine x) `^ r)%R.
-Proof. by move: x => [x| |]//=; rewrite power_pos0; case: ifPn. Qed.
+Proof.
+by move: x => [x| |]//=; case: ifPn => [/eqP ->|?];
+  rewrite ?power_posr0 ?power_pos0.
+Qed.
 
 Lemma powere_pos_ge0 x r : 0 <= x `^ r.
 Proof.
@@ -854,12 +854,12 @@ move: x y => [x| |] [y| |]//=; first by move=> x0 y0; rewrite -EFinM power_posM.
 - move=> x0 _; case: ifPn => /= [/eqP ->|r0].
   + by rewrite mule1 power_posr0 powere_pose0.
   + move: x0; rewrite le_eqVlt => /predU1P[[]<-|/[1!(@lte_fin R)] x0].
-    * by rewrite mul0e powere_pos0r power_pos0 (negbTE r0)/= mul0e.
+    * by rewrite mul0e powere_pos0r// power_pos0// mul0e.
     * by rewrite mulry [RHS]mulry !gtr0_sg ?power_pos_gt0// !mul1e powere_posyr.
 - move=> _ y0; case: ifPn => /= [/eqP ->|r0].
   + by rewrite power_posr0 powere_pose0 mule1.
   + move: y0; rewrite le_eqVlt => /predU1P[[]<-|/[1!(@lte_fin R)] u0].
-    by rewrite mule0 powere_pos0r power_pos0 (negbTE r0) mule0.
+    by rewrite mule0 powere_pos0r// power_pos0// mule0.
   + by rewrite 2!mulyr !gtr0_sg ?power_pos_gt0// mul1e powere_posyr.
 - move=> _ _; case: ifPn => /= [/eqP ->|r0].
   + by rewrite powere_pose0 mule1.
@@ -874,7 +874,7 @@ case: x => [x| |]/=; first by rewrite power_posrM.
   by rewrite mulf_eq0 (negbTE s0) orbF (negbTE r0) ?powere_posyr.
 - have [->|r0] := eqVneq r 0%R; first by rewrite mul0r eqxx powere_pos1r.
   have [->|s0] := eqVneq s 0%R; first by rewrite mulr0 eqxx powere_pose0.
-  by rewrite mulf_eq0 (negbTE s0) orbF (negbTE r0) powere_pos0r (negbTE s0).
+  by rewrite mulf_eq0 (negbTE s0) orbF (negbTE r0) powere_pos0r.
 Qed.
 
 Lemma powere_posAC x r s : (x `^ r) `^ s = (x `^ s) `^ r.
@@ -883,8 +883,8 @@ case: x => [x| |]/=; first by rewrite power_posAC.
 - case: ifPn => [/eqP ->|r0] /=; first by rewrite powere_pose0 power_pos1.
   by case: ifPn => //; rewrite ?powere_pos1r// powere_posyr.
 case: ifPn => [/eqP ->|r0] /=; first by rewrite power_pos1 powere_pose0.
-rewrite power_pos0; case: ifPn; rewrite ?powere_pos1r//=.
-by rewrite power_pos0 (negbTE r0).
+case: ifPn => [/eqP ->|s0]; first by rewrite power_posr0 powere_pos1r.
+by rewrite power_pos0// powere_pos0r.
 Qed.
 
 Lemma powere_posD x r s : 0 < x -> (0 <= r)%R -> (0 <= s)%R ->
