@@ -56,8 +56,6 @@ Unset Printing Implicit Defensive.
 Declare Scope box_scope.
 Declare Scope quant_scope.
 
-(* -------------------------------------------------------------------- *)
-
 Axiom functional_extensionality_dep :
        forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
        (forall x : A, f x = g x) -> f = g.
@@ -76,14 +74,13 @@ move=> PQA; suff: {x | P x /\ Q x} by move=> [a [*]]; exists a.
 by apply: cid; case: PQA => x; exists x.
 Qed.
 
-(* -------------------------------------------------------------------- *)
-Record mextentionality := {
+Record mextensionality := {
   _ : forall (P Q : Prop), (P <-> Q) -> (P = Q);
   _ : forall {T U : Type} (f g : T -> U),
         (forall x, f x = g x) -> f = g;
 }.
 
-Fact extentionality : mextentionality.
+Fact extensionality : mextensionality.
 Proof.
 split.
 - exact: propositional_extensionality.
@@ -91,10 +88,10 @@ split.
 Qed.
 
 Lemma propext (P Q : Prop) : (P <-> Q) -> (P = Q).
-Proof. by have [propext _] := extentionality; apply: propext. Qed.
+Proof. by have [propext _] := extensionality; apply: propext. Qed.
 
 Lemma funext {T U : Type} (f g : T -> U) : (f =1 g) -> f = g.
-Proof. by case: extentionality=> _; apply. Qed.
+Proof. by case: extensionality=> _; apply. Qed.
 
 Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
 Proof. by apply: propext; split=> [->|/propext]. Qed.
@@ -161,7 +158,6 @@ Lemma Prop_irrelevance (P : Prop) (x y : P) : x = y.
 Proof. by move: x (x) y => /propT-> [] []. Qed.
 #[global] Hint Resolve Prop_irrelevance : core.
 
-(* -------------------------------------------------------------------- *)
 Record mclassic := {
   _ : forall (P : Prop), {P} + {~P};
   _ : forall T, hasChoice T
@@ -220,7 +216,6 @@ Proof. by have [p|Np] := pselect P; [left|right]; rewrite propeqE. Qed.
 Lemma lem (P : Prop): P \/ ~P.
 Proof. by case: (pselect P); tauto. Qed.
 
-(* -------------------------------------------------------------------- *)
 Lemma trueE : true = True :> Prop.
 Proof. by rewrite propeqE; split. Qed.
 
@@ -371,7 +366,6 @@ Proof. by apply: canon => T; exists {eclassic T}; case: T => //= T [?]//. Qed.
 Lemma not_True : (~ True) = False. Proof. exact/propext. Qed.
 Lemma not_False : (~ False) = True. Proof. by apply/propext; split=> _. Qed.
 
-(* -------------------------------------------------------------------- *)
 Lemma asbool_equiv_eq {P Q : Prop} : (P <-> Q) -> `[<P>] = `[<Q>].
 Proof. by rewrite -propeqE => ->. Qed.
 
@@ -384,7 +378,6 @@ Proof. by move/asbool_equiv_eq->. Qed.
 Lemma asbool_eq_equiv {P Q : Prop} : `[<P>] = `[<Q>] -> (P <-> Q).
 Proof. by move=> eq; split=> /asboolP; rewrite (eq, =^~ eq) => /asboolP. Qed.
 
-(* -------------------------------------------------------------------- *)
 Lemma and_asboolP (P Q : Prop) : reflect (P /\ Q) (`[< P >] && `[< Q >]).
 Proof.
 apply: (iffP idP); first by case/andP => /asboolP p /asboolP q.
@@ -420,7 +413,6 @@ Proof. exact: (asbool_equiv_eqP (or_asboolP _ _)). Qed.
 Lemma asbool_and {P Q : Prop} : `[<P /\ Q>] = `[<P>] && `[<Q>].
 Proof. exact: (asbool_equiv_eqP (and_asboolP _ _)). Qed.
 
-(* -------------------------------------------------------------------- *)
 Lemma imply_asboolP {P Q : Prop} : reflect (P -> Q) (`[<P>] ==> `[<Q>]).
 Proof.
 apply: (iffP implyP)=> [PQb /asboolP/PQb/asboolW //|].
@@ -437,7 +429,6 @@ by rewrite asbool_imply negb_imply -asbool_neg => /and_asboolP.
 by move/and_asboolP; rewrite asbool_neg -negb_imply asbool_imply.
 Qed.
 
-(* -------------------------------------------------------------------- *)
 Lemma forall_asboolP {T : Type} (P : T -> Prop) :
   reflect (forall x, `[<P x>]) (`[<forall x, P x>]).
 Proof.
@@ -451,8 +442,6 @@ Proof.
 apply: (iffP idP); first by case/asboolP=> x Px; exists x; apply/asboolP.
 by case=> x bPx; apply/asboolP; exists x; apply/asboolP.
 Qed.
-
-(* -------------------------------------------------------------------- *)
 
 Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
 
@@ -517,7 +506,6 @@ Proof. by split=> [/propext ->|/propext <-]; rewrite notK. Qed.
 Lemma iff_not2 (P Q : Prop) : (~ P <-> ~ Q) <-> (P <-> Q).
 Proof. by split=> [/iff_notr|PQ]; [|apply/iff_notr]; rewrite notK. Qed.
 
-(* -------------------------------------------------------------------- *)
 (* assia : let's see if we need the simplpred machinery. In any case, we sould
    first try definitions + appropriate Arguments setting to see whether these
    can replace the canonical structures machinery. *)
@@ -539,14 +527,12 @@ Notation xpredpD := (fun (p1 p2 : predp _) x => ~ p2 x /\ p1 x).
 Notation xpreimp := (fun f (p : predp _) x => p (f x)).
 Notation xrelpU := (fun (r1 r2 : relp _) x y => r1 x y \/ r2 x y).
 
-(* -------------------------------------------------------------------- *)
 Definition pred0p (T : Type) (P : predp T) : bool := `[<P =1 xpredp0>].
 Prenex Implicits pred0p.
 
 Lemma pred0pP  (T : Type) (P : predp T) : reflect (P =1 xpredp0) (pred0p P).
 Proof. by apply: (iffP (asboolP _)). Qed.
 
-(* -------------------------------------------------------------------- *)
 Lemma forallp_asboolPn {T} {P : T -> Prop} :
   reflect (forall x : T, ~ P x) (~~ `[<exists x : T, P x>]).
 Proof.
