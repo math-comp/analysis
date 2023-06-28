@@ -1558,16 +1558,32 @@ rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
 Qed.
 
+Lemma measurable_fun_ltr D f g : measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x < g x).
+Proof.
+move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
+- under eq_fun do rewrite -subr_gt0.
+  rewrite preimage_true -preimage_itv_o_infty.
+  by apply: (measurable_funB mg mf) => //; exact: measurable_itv.
+- under eq_fun do rewrite ltNge -subr_ge0.
+  rewrite preimage_false set_predC setCK -preimage_itv_c_infty.
+  by apply: (measurable_funB mf mg) => //; exact: measurable_itv.
+- by rewrite preimage_set0 setI0.
+- by rewrite preimage_setT setIT.
+Qed.
+
 Lemma measurable_maxr D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \max g).
 Proof.
-move=> mf mg mD; apply (measurability (RGenCInfty.measurableE R)) => //.
-move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
-    (D `&` f @^-1` `[x, +oo[) `|` (D `&` g @^-1` `[x, +oo[)); last first.
-  rewrite predeqE => t /=; split.
-    by rewrite /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]]; tauto.
-  by move=> [|]; rewrite !in_itv/= !andbT le_maxr => -[Dx ->]//; rewrite orbT.
-by apply: measurableU; [apply: mf|apply: mg] =>//; apply: measurable_itv.
+by move=> mf mg mD; move: (mD); apply: measurable_fun_if => //;
+  [exact: measurable_fun_ltr|exact: measurable_funS mg|exact: measurable_funS mf].
+Qed.
+
+Lemma measurable_minr D f g :
+  measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \min g).
+Proof.
+by move=> mf mg mD; move: (mD); apply: measurable_fun_if => //;
+ [exact: measurable_fun_ltr|exact: measurable_funS mf|exact: measurable_funS mg].
 Qed.
 
 Lemma measurable_fun_sups D (h : (T -> R)^nat) n :
