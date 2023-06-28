@@ -503,6 +503,9 @@ Proof. by apply/seteqP; split. Qed.
 Lemma set_false : [set` pred0] = set0 :> set T.
 Proof. by apply/seteqP; split. Qed.
 
+Lemma set_predC (P : {pred T}) : [set` predC P] = ~` [set` P].
+Proof. by apply/seteqP; split => t /negP. Qed.
+
 Lemma set_andb (P Q : {pred T}) : [set` predI P Q] = [set` P] `&` [set` Q].
 Proof. by apply/predeqP => x; split; rewrite /= inE => /andP. Qed.
 
@@ -1390,14 +1393,17 @@ Qed.
 Lemma preimage10 {T R} {f : T -> R} {x} : ~ range f x -> f @^-1` [set x] = set0.
 Proof. by move/preimage10P. Qed.
 
+Lemma preimage_true {T} (P : {pred T}) : P @^-1` [set true] = [set` P].
+Proof. by apply/seteqP; split => [x/=//|x]. Qed.
+
+Lemma preimage_false {T} (P : {pred T}) : P @^-1` [set false] = ~` [set` P].
+Proof. by apply/seteqP; split => [t/= /negbT/negP|t /= /negP/negbTE]. Qed.
+
 Lemma preimage_mem_true {T} (A : set T) : mem A @^-1` [set true] = A.
-Proof. by apply/seteqP; split => [x/= /set_mem//|x /mem_set]. Qed.
+Proof. by rewrite preimage_true; under eq_fun do rewrite inE. Qed.
 
 Lemma preimage_mem_false {T} (A : set T) : mem A @^-1` [set false] = ~` A.
-Proof.
-apply/seteqP; split => [x/=|x/=]; last exact: memNset.
-by apply: contraFnot; exact/mem_set.
-Qed.
+Proof. by rewrite preimage_false; under eq_fun do rewrite inE. Qed.
 
 End image_lemmas.
 Arguments sub_image_setI {aT rT f A B} t _.

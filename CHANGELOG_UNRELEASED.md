@@ -27,6 +27,13 @@
   + new lemmas `pointwise_almost_uniform`, and 
     `ae_pointwise_almost_uniform`.
 
+- in `mathcomp_extra.v`:
+  + definition `min_fun`, notation `\min`
+- in `classical_sets.v`:
+  + lemmas `set_predC`, `preimage_true`, `preimage_false`
+- in `lebesgue_measure.v`:
+  + lemmas `measurable_fun_ltr`, `measurable_minr`
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
