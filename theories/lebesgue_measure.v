@@ -1926,7 +1926,7 @@ Lemma lebesgue_regularity_outer (D : set R) (eps : R) :
 Proof.
 move=> mD muDpos epspos.
 have /ereal_inf_lt[z [/= M' covDM sMz zDe]] : mu D < mu D + (eps / 2)%:E.
-  by rewrite lte_spaddr ?lte_fin ?divr_gt0// ge0_fin_numE.
+  by rewrite lte_spaddre ?lte_fin ?divr_gt0// ge0_fin_numE.
 pose e2 n := (eps / 2) / (2 ^ n.+1)%:R.
 have e2pos n : (0 < e2 n)%R by rewrite ?divr_gt0.
 pose M n := if pselect (M' n = set0) then set0 else
@@ -1940,9 +1940,9 @@ have muM n : mu (M n) <= mu (M' n) + (e2 n)%:E.
   have -> : (`]a, (b + e2 n)%R[ = `]a, b] `|` `]b, (b + e2 n)%R[ )%classic.
     apply: funext=> r /=; rewrite (@itv_splitU _ _ (BRight b)).
       by rewrite propeqE; split=> /orP.
-    by rewrite !bnd_simp (ltW alb)/= ltr_spaddr.
+    by rewrite !bnd_simp (ltW alb)/= ltr_pwDr.
   rewrite measureU/=.
-  - rewrite !lebesgue_measure_itv !hlength_itv/= !lte_fin alb ltr_spaddr//=.
+  - rewrite !lebesgue_measure_itv !hlength_itv/= !lte_fin alb ltr_pwDr//=.
     by rewrite -(EFinD (b + e2 n)) (addrC b) addrK.
   - by apply: sub_sigma_algebra; exact: is_ocitv.
   - by apply: open_measurable; exact: interval_open.
@@ -1955,7 +1955,7 @@ exists U; have DU : D `<=` U.
   have /ocitvP [-> //| [[/= a b alb -> mn]]] : ocitv (M' n).
     by case: covDM => /(_ n).
   rewrite /= !in_itv/= => /andP[ax xb]; rewrite ?inf_itv ?sup_itv//.
-  by rewrite ax/= (le_lt_trans xb)// ltr_spaddr.
+  by rewrite ax/= (le_lt_trans xb)// ltr_pwDr.
 have mM n : measurable (M n).
   rewrite /M; case: pselect; first by move=> /= _; exact: measurable0.
   by move=> /= _; apply: open_measurable; apply: interval_open.
