@@ -16,6 +16,7 @@ From mathcomp Require Import finset interval.
 (* This files contains lemmas and definitions missing from MathComp.          *)
 (*                                                                            *)
 (*               f \max g := fun x => Num.max (f x) (g x)                     *)
+(*               f \min g := fun x => Num.min (f x) (g x)                     *)
 (*                oflit f := Some \o f                                        *)
 (*          pred_oapp T D := [pred x | oapp (mem D) false x]                  *)
 (*                 f \* g := fun x => f x * g x                               *)
@@ -823,3 +824,9 @@ have := @deg_le2_poly_ge0 _ p (size_poly _ _); rewrite !coef_poly/=; apply=> r.
 rewrite horner_poly !big_ord_recr !big_ord0/= !Monoid.simpm/= expr1.
 by rewrite -mulrA -expr2 addrC addrA addrAC.
 Qed.
+
+Reserved Notation "f \min g" (at level 50, left associativity).
+
+Definition min_fun T (R : numDomainType) (f g : T -> R) x := Num.min (f x) (g x).
+Notation "f \min g" := (min_fun f g) : ring_scope.
+Arguments min_fun {T R} _ _ _ /.
