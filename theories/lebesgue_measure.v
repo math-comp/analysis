@@ -834,7 +834,7 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
   rewrite hlength_itv lte_fin ltrBlDr ltrDl ltr01.
   rewrite [in X in X == _]/= EFinN EFinB fin_num_oppeB// addeA subee// add0e.
   by rewrite addeC -sube_eq ?fin_num_adde_defl// subee// => /eqP.
-rewrite -setUitv1// ?bnd_simp; last by rewrite ltr_subl_addr ltr_addl.
+rewrite -setUitv1// ?bnd_simp; last by rewrite ltrBlDr ltrDl.
 rewrite measureU //; apply/seteqP; split => // x []/=.
 by rewrite in_itv/= => + xa; rewrite xa ltxx andbF.
 Qed.
@@ -1922,7 +1922,7 @@ have : mu \o Dn @ \oo --> mu (\bigcup_n Dn n).
   - by apply: bigcup_measurable => // ? _; exact: mDn.
   - move=> n m nm; apply/subsetPset; apply: setIS => z /=; rewrite !in_itv/=.
     move=> /andP[nz zn]; rewrite (le_trans _ nz)/= ?(le_trans zn) ?ler_nat//.
-    by rewrite ler_oppl opprK ler_nat.
+    by rewrite lerNl opprK ler_nat.
 rewrite -setI_bigcupr; rewrite bigcup_itvT setIT.
 have finDn n : mu (Dn n) \is a fin_num.
   rewrite ge0_fin_numE// (le_lt_trans _ Dfin)//.

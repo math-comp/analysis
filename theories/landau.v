@@ -1119,7 +1119,7 @@ have ky0 : 0 <= k0%:num / (k * `|y|).
 rewrite -[leRHS]mulr1 -ler_pdivrMl ?pmulr_rgt0 //.
 rewrite -(ler_pM2l [gt0 of k0%:num]) mulr1 mulrA -[_ / _]ger0_norm //.
 rewrite -normm_s.
-rewrite -linearZ fk //= /= distrC subr0 normmZ ger0_norm //.
+rewrite -linearZ fk //= /= distrC subr0 normrZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivrMr //.
 by rewrite -ltr_pdivrMl//.
 Unshelve. all: by end_near. Qed.
