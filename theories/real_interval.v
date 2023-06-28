@@ -362,11 +362,11 @@ Lemma set1_bigcap_oc (R : realType) (r : R) :
   [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
 Proof.
 apply/seteqP; split=> [x ->|].
-  by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
+  by move=> i _/=; rewrite in_itv/= lexx ltrBlDr ltrDl invr_gt0 ltr0n.
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
-apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
+apply/ler_addgt0Pl => e e_gt0; rewrite -lerBlDl ltW//.
 have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite posrE.
+rewrite lerD2l lerN2 -lef_pV2 ?invrK//; last by rewrite posrE.
 by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
 Qed.
 
@@ -376,13 +376,13 @@ Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
 Proof.
 apply/seteqP; split => [x/=|]; last first.
   move=> x [n _ /=] /[!in_itv] /andP[-> /le_lt_trans]; apply.
-  by rewrite ltr_subl_addr ltr_addl invr_gt0 ltr0n.
+  by rewrite ltrBlDr ltrDl invr_gt0 ltr0n.
 rewrite in_itv/= => /andP[sx xs]; exists `|ceil ((s - x)^-1)|%N => //=.
-rewrite in_itv/= sx/= ler_subr_addl addrC -ler_subr_addl.
-rewrite -[in X in _ <= X](invrK (s - x)) ler_pinv.
+rewrite in_itv/= sx/= lerBrDl addrC -lerBrDl.
+rewrite -[in X in _ <= X](invrK (s - x)) ler_pV2.
 - rewrite -natr1 natr_absz ger0_norm; last first.
     by rewrite ceil_ge0// invr_ge0 subr_ge0 ltW.
-  by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?ler_addl// ceil_ge.
+  by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?lerDl// ceil_ge.
 - by rewrite inE unitfE ltr0n andbT pnatr_eq0.
 - by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
 Qed.
@@ -404,7 +404,7 @@ Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
 Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
+move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -lerBlDl.
 rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
 by case: b xy => //= /ltW.
 Qed.

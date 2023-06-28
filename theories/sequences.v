@@ -1703,14 +1703,14 @@ Lemma nneseriesrM (R : realType) (f : nat -> \bar R) (P : pred nat) x :
   (forall i, P i -> 0 <= f i)%E ->
   (\sum_(i <oo | P i) (x%:E * f i) = x%:E * \sum_(i <oo | P i) f i)%E.
 Proof.
-move=> f0; rewrite -ereal_limrM//; last exact: is_cvg_nneseries.
+move=> f0; rewrite -limeMl//; last exact: is_cvg_nneseries.
 by apply/congr_lim/funext => /= n; rewrite ge0_sume_distrr.
 Qed.
 
 Lemma nneseries_ge0 (R : realType) (u_ : (\bar R)^nat) (P : pred nat) :
   (forall n, P n -> 0 <= u_ n) -> 0 <= \sum_(i <oo | P i) u_ i.
 Proof.
-move=> u0; apply: (ereal_lim_ge (is_cvg_nneseries _ _ u0)).
+move=> u0; apply: (lime_ge (is_cvg_nneseries _ _ u0)).
 by near=> k; rewrite sume_ge0 // => i; apply: u0.
 Unshelve. all: by end_near. Qed.
 
