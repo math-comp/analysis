@@ -35,7 +35,7 @@ Definition cantor_like (T : topologicalType) :=
       hausdorff_space T &
       zero_dimensional T].
 
-Canonical cantor_psuedoMetric {R} :=
+Canonical cantor_pseudoMetric {R} :=
   @product_pseudoMetricType R _ (fun (_ : nat) =>
     @discrete_pseudoMetricType R _ discrete_bool) (countableP _).
 
