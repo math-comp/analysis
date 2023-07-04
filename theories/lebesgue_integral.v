@@ -1617,16 +1617,15 @@ Qed.
 End approximation_sfun.
 
 Section lusin.
-Hint Extern 0  (hausdorff_space _) =>
-  (exact: Rhausdorff ) : core.
+Hint Extern 0  (hausdorff_space _) => (exact: Rhausdorff ) : core.
 Local Open Scope ereal_scope.
 Context  (rT : realType) (A : set rT).
-Let mu := @lebesgue_measure rT.
+Let mu := [the measure _ _ of @lebesgue_measure rT].
 Let R  := [the measurableType _ of measurableTypeR rT].
 Hypothesis mA : measurable A.
 Hypothesis finA : (mu A < +oo).
 
-Lemma lusin_simple (f : {sfun R >-> rT}) (eps : rT) : (0 < eps)%R -> 
+Let lusin_simple (f : {sfun R >-> rT}) (eps : rT) : (0 < eps)%R -> 
   exists K, [/\ compact K, K `<=` A, mu (A `\` K) < eps%:E & 
   {within K, continuous f}].
 Proof.
