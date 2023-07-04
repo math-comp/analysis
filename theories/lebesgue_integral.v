@@ -1660,7 +1660,7 @@ exists (\bigcup_(i in range f) (dK i)); split.
     apply: (@lee_fsum _ _ _ _ (fun=>((eps%:num / N.+1%:R)%:E * 1%:E))) => //.
     by move=> i ?; rewrite mule1; apply: ltW; have [_ _] := dkP i.
   rewrite /=-ge0_mule_fsumr // -esum_fset // finite_card_sum // -EFinM lte_fin.
-  by rewrite rfN -mulrA gtr_pMr // mulrC ltr_pdivrMr // mul1r ltr_nat.
+  by rewrite rfN -mulrA gtr_pmulr // mulrC ltr_pdivr_mulr // mul1r ltr_nat.
 - suff : closed (\bigcup_(i in range f) dK i) /\ 
     {within \bigcup_(i in range f) dK i, continuous f} by case.
   rewrite -bigsetU_fset_set //.
