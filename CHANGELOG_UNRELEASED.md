@@ -45,6 +45,9 @@
 - in file `measure.v`,
   + new lemmas `finite_card_sum`, and `measureU2`.
 
+- in `topology.v`:
+  + lemma `bigsetU_compact`
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
