@@ -2975,7 +2975,7 @@ by apply: le_measure; rewrite ?inE.
 Qed.
 
 Section measureD.
-Context d (R : realFieldType) (T : ringOfSetsType d).
+Context d (T : ringOfSetsType d) (R : realFieldType).
 Variable mu : {measure set T -> \bar R}.
 
 Lemma measureDI A B : measurable A -> measurable B ->
@@ -3000,35 +3000,35 @@ Qed.
 
 End measureD.
 
-Lemma measureUfinr d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu B < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
+Section measureU.
+Context d (T : ringOfSetsType d) (R : realFieldType).
+Variable mu : {measure set T -> \bar R}.
+
+Lemma measureU2 A B : measurable A -> measurable B ->
+  mu (A `|` B) <= mu A + mu B.
+Proof.
+move=> ? ?; rewrite -bigcup2inE bigcup_mkord.
+rewrite (le_trans (@content_sub_additive _ _ _ mu _ (bigcup2 A B) 2%N _ _ _))//.
+by move=> -[//|[//|[|]]].
+by apply: bigsetU_measurable => -[] [//|[//|[|]]].
+by rewrite big_ord_recr/= big_ord_recr/= big_ord0 add0e.
+Qed.
+
+Lemma measureUfinr A B : measurable A -> measurable B -> mu B < +oo ->
+  mu (A `|` B) = mu A + mu B - mu (A `&` B).
 Proof.
 move=> Am Bm mBfin; rewrite -[B in LHS](setDUK (@subIsetl _ _ A)) setUA.
 rewrite [A `|` _]setUidl; last exact: subIsetr.
-rewrite measureU//=; do ?by apply:measurableD; do ?apply: measurableI.
-  rewrite measureD//; do ?exact: measurableI.
-  by rewrite addeA setIA setIid setIC.
-by rewrite setDE setCI setIUr -!setDE setDv set0U setDIK.
+rewrite measureU//=; [|rewrite setDIr setDv set0U ?setDIK//..].
+- by rewrite measureD// ?setIA ?setIid 1?setIC ?addeA//; exact: measurableI.
+- exact: measurableD.
 Qed.
 
-Lemma measureUfinl d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu A < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
-Proof. by move=> *; rewrite setUC measureUfinr// setIC [(mu B + _)%E]addeC. Qed.
+Lemma measureUfinl A B : measurable A -> measurable B -> mu A < +oo ->
+  mu (A `|` B) = mu A + mu B - mu (A `&` B).
+Proof. by move=> *; rewrite setUC measureUfinr// setIC [mu B + _]addeC. Qed.
 
-Lemma measureU2 d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> mu (A `|` B) <= mu A + mu B%E.
-Proof.
-move=> ? ?; rewrite (@measureDI d R T mu (A`|`B) B) //; last exact: measurableU.
-apply: lee_add; apply: le_measure; rewrite ?inE //.
-- by apply: measurableD => //; exact: measurableU.
-- by rewrite setDUl setDv setU0.
-- by apply: measurableI => //; exact: measurableU.
-Qed.
+End measureU.
 
 Lemma eq_measureU d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
    (mu mu' : {measure set T -> \bar R}):
