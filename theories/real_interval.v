@@ -430,3 +430,84 @@ case: b => /=.
 - by move/ltW; rewrite ler_norml => /andP[-> ->].
 - by rewrite ltr_norml => /andP[-> /ltW->].
 Qed.
+
+Require Import nsatz_realtype.
+Section Tietze.
+
+Context {X : topologicalType} {R : realType}.
+Hypothesis urysohn_ext : forall A B x y,
+  closed A -> closed B -> A `&` B = set0 -> x <= y ->
+  exists (f : X -> R^o), 
+    [/\ continuous f, f @` A = [set x], f @` B = [set y] & range f `<=` `[x,y]].
+
+Let three0 : 0 < 3 :> R.
+Proof. by rewrite (_ : 0 = 0%:R) // ltr_nat. Qed.
+
+Let threen0 : 3 != 0 :> R.
+Proof. exact: lt0r_neq0. Qed.
+
+Let thirds : (-1/3:R) < (1/3 :R).
+Proof.
+by rewrite ltr_pdivr_mulr // div1r mulVf // ?gtr_opp.
+Qed.
+
+Local Lemma tietze_partial (A : set X) (f : X -> R^o) :
+  {within A, continuous f} -> closed A ->
+  (forall x, A x -> `|f x| <= 1) ->
+  exists (g : X -> R^o), [/\ continuous g, 
+     (forall x, A x -> `|f x - g x| <= 2/3 :>R)
+     & (forall x, `|g x| <= 1/3)].
+Proof.
+move=> ctsf clA fA1.
+have [] := @urysohn_ext (A `&` f@^-1` `]-oo,-1/3]) ( A `&` f@^-1` `[1/3,+oo[) (-1/3) (1/3).
+- by rewrite closed_setSI; apply: closed_comp => //.
+- by rewrite closed_setSI; apply: closed_comp => //; exact: interval_closed.
+- rewrite setIACA -preimage_setI eqEsubset; split => z //.
+  case=> _ []; rewrite ?set_itvE /= => /[swap] /le_trans /[apply].
+  by move=> W; move: thirds => /=; rewrite real_ltNge ?num_real // W.
+- exact: ltW.
+move=> g [ctsg gL3 gR3 grng]; exists g; split => //; first last.
+  by move=> x; rewrite ler_norml -mulNr; apply: grng; exists x.
+move=> x Ax; move: (fA1 _ Ax); rewrite ?ler_norml /= => /andP [? ?].
+case xL : (f x <= -1/3).
+  have : [set g x | x in A `&` f@^-1` `]-oo, -1/3]] (g x) by exists x.
+  rewrite gL3 => ->; rewrite mulNr opprK; apply/andP; split.
+    by rewrite -ler_subl_addr -opprD -mulrDl (_ : 2+1 = 3) ?divrr ?unitfE // addrC.
+  rewrite -ler_subr_addr -mulNr -mulrDl (_ : 2-1 = 1).
+    by apply: (le_trans _ (ltW thirds)).
+  by rewrite (_ : 2 = (1+1)) // -addrA subrr addr0.
+case xR : (1/3 <= f x).
+  have : [set g x | x in A `&` f@^-1` `[1/3, +oo[] (g x).
+    by exists x => //; split => //; rewrite /= in_itv //= xR.
+  rewrite gR3 => ->; apply/andP; split.
+    rewrite -ler_subl_addr opprK -?mulNr // -mulrDl.
+    rewrite (_ : 1*-2 = -(1 + 1)) // opprD -addrA [-_ + _]addrC -addrA subrr addr0. 
+    by apply: (le_trans (ltW thirds)).
+  rewrite -ler_subr_addr opprK -mulrDl addrC divrr // ?unitfE; exact: threen0.
+have /andP [/ltW nf3 /ltW pf3] : -1/3 < f x < 1/3.
+  by apply/andP; split; rewrite real_ltNge ?num_real //= ?xL ?xR.
+have /andP [ng3 pg3] : -1/3 <= g x <= 1/3 by apply: grng; exists x.
+apply/andP; split.
+  by rewrite (_ : 2 = 1 + 1) // mulrDl opprD; apply: ler_sub; rewrite // -mulNr.
+by rewrite (_ : 2 = 1 + 1) // mulrDl; apply: ler_add; rewrite // ler_oppl -mulNr.
+Qed.
+
+  
+
+
+  
+
+Lemma tietze (A : set X) (f : X -> R) :
+  {within A, continuous f} -> closed A ->
+  f @` A `<=` `[0,1] ->
+  exists g, [/\ {in A, f =1 g}, continuous g & range g `<=` `[0,1]].
+Proof.
+move=> ctsf clA fA01.
+
+
+
+
+
+
+
+
