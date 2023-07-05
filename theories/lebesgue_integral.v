@@ -1390,7 +1390,7 @@ rewrite (@le_lt_trans _ _ (1 / 2 ^+ n)) //.
 by near: n; exact: near_infty_natSinv_expn_lt.
 Unshelve. all: by end_near. Qed.
 
-Lemma le_approx k x (f0 : forall x, (0 <= f x)%E) : D x ->
+Lemma le_approx k x (f0 : forall x, D x -> (0 <= f x)%E) : D x ->
   ((approx k x)%:E <= f x)%E.
 Proof.
 move=> Dx; have [fixoo|] := ltP (f x) (+oo%E); last first.
@@ -1402,7 +1402,7 @@ have cvg_af := cvg_approx fi0 Dx fixoo.
 have is_cvg_af : cvg (approx ^~ x) by apply/cvg_ex; eexists; exact: cvg_af.
 have {is_cvg_af} := nondecreasing_cvg_le nd_ag is_cvg_af k.
 rewrite -lee_fin => /le_trans; apply.
-rewrite -(@fineK _ (f x)); last by rewrite ge0_fin_numE.
+rewrite -(@fineK _ (f x)); last by rewrite ge0_fin_numE //; apply: f0.
 by move/(cvg_lim (@Rhausdorff R)) : cvg_af => ->.
 Qed.
 
@@ -4556,6 +4556,89 @@ by rewrite mule0 /= notin_ysectionM.
 Qed.
 
 End product_measure2E.
+
+Section integral_small_domain.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (E : set T) (mE : measurable E).
+
+Local Open Scope ereal_scope.
+
+Let sfun_dense_L1_pos (f : T -> \bar R) : 
+  mu.-integrable E f -> (forall x, E x -> 0 <= f x) -> 
+  exists2 g_ : {sfun T >-> R}^nat, 
+    (forall x, E x -> EFin \o g_^~ x @ \oo --> f x) &
+    (fun n => \int[mu]_(z in E) `|f z - (g_ n z)%:E|) --> 0.
+Proof.
+move=> intf fpos; case/integrableP:(intf) => mfE _.
+pose g_ n := (nnsfun_approx mE mfE n). 
+have []// := @dominated_convergence d T R mu E mE (fun n => EFin \o (g_ n)) f f.
+- move=> ?; apply/EFin_measurable_fun.
+  by (apply: measurable_funS; last exact: measurable_funP).
+- exists set0; split=> // n /not_implyP [?]; apply.
+  under eq_fun => ? do rewrite /g_ nnsfun_approxE.
+  exact: ecvg_approx.
+- exists set0; split=> //= z; apply => /= ? ?.
+  by rewrite ger0_norm //; rewrite /g_ nnsfun_approxE; apply: le_approx.
+move=> _ /= fg0 gfcvg; exists g_; first exact: cvg_nnsfun_approx.
+by apply: (cvg_trans _ fg0); under eq_fun => ? do under eq_fun => t do
+  rewrite EFinN -[_ - _]oppeK fin_num_oppeB // abseN addeC.
+Qed.
+
+(* A stronger version of sfun_approximation where the approximation 
+   converges in the L1 norm
+*)
+Lemma sfun_dense_L1 (eps : R) (f : T -> \bar R):
+  mu.-integrable E f ->
+  exists2 g_ : {sfun T >-> R}^nat,
+    (forall x, E x -> EFin \o g_^~ x @ \oo --> f x) &
+    (fun n => \int[mu]_(z in E) `|f z - (g_ n z)%:E|) --> 0.
+Proof.
+move=> intf.
+have [//|p_ pptws pl1] := sfun_dense_L1_pos (integrable_funepos mE intf). 
+have [//|n_ nptws nl1] := sfun_dense_L1_pos (integrable_funeneg mE intf). 
+exists (fun (n : nat) => (p_ n - n_ n)%R).
+move=> ? ?; rewrite /comp; under eq_fun => ? do rewrite sfunB /= EFinB.
+rewrite [f]funeposneg; apply: cvgeB => //; first exact: add_def_funeposneg.
+  exact: pptws.
+exact: nptws.
+
+exists (g - h)%R; rewrite [_%:num]splitr EFinD.
+  rewrite [f]funeposneg.
+under eq_fun.
+  move=> x; rewrite sfunB EFinB fin_num_oppeB // -addeACA.
+over.
+case/integrableP: (intf) => ? _.
+have intfp : mu.-integrable E (fun x => `|f^\+ x - (g x)%:E|).
+  apply/integrable_abse/integrableP. 
+  split; last by apply: (lt_trans ge2); rewrite -ge0_fin_numE.
+  apply: emeasurable_funB; first exact: measurable_funepos.
+  apply: (measurable_funS measurableT) => //; apply/EFin_measurable_fun. 
+  apply: measurable_funP.
+case/integrableP: (intfp) => ? _.
+have intfn : mu.-integrable E (fun x => `|f^\- x - (h x)%:E|).
+  apply/integrable_abse/integrableP. 
+  split; last by apply: (lt_trans he2); rewrite -ge0_fin_numE.
+  apply: emeasurable_funB; first exact: measurable_funeneg.
+  apply: (measurable_funS measurableT) => //; apply/EFin_measurable_fun. 
+  apply: measurable_funP.
+case/integrableP: (intfn) => ? _.
+apply: le_lt_trans; last by apply: lte_add; [exact: ge2 | exact: he2].
+rewrite -integralD // ?ge0_le_integral //.
+- admit.
+- by apply: emeasurable_funD.
+move=> ? ?; rewrite -[_ - (h _)%:E]oppeK fin_num_oppeB // abseN // .
+exact: lee_abs_add.
+Qed.
+
+
+
+Let integralable_domain_lt_posfun (eps : R) : 
+  (0 < eps)%R -> (forall x, E x -> 0 <= f x) -> 
+  exists (del : {posnum R}), forall (D : set T), 
+    measurable D -> mu D < del%:num%:E -> D `<=` E -> 
+    \int[mu]_(z in D) `|f z| < eps%:E.
+
+
 
 Section fubini_functions.
 Local Open Scope ereal_scope.
