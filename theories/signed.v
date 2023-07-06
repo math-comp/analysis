@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
-From mathcomp.classical Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra.
 
 (******************************************************************************)
 (* This file develops tools to make the manipulation of numbers with a known  *)

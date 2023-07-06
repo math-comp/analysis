@@ -11,7 +11,7 @@
    bounds of intervals*)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp.classical Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra.
 Require Import signed.
 
 (******************************************************************************)

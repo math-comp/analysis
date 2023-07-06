@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality.
 From HB Require Import structures.
 Require Import reals ereal signed topology normedtype sequences esum measure.
 Require Import exp numfun lebesgue_measure lebesgue_integral.

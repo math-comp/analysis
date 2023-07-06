@@ -1,6 +1,6 @@
 Require Import Nsatz.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
-From mathcomp.classical Require Import boolp.
+From mathcomp Require Import boolp.
 Require Import reals ereal.
 
 (******************************************************************************)
