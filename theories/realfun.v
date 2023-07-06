@@ -1,10 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
-From mathcomp.classical Require Import boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality mathcomp_extra.
-Require Import ereal reals signed topology prodnormedzmodule.
-Require Import normedtype derive real_interval.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality.
+Require Import ereal reals signed topology prodnormedzmodule normedtype derive.
+Require Import real_interval.
 From HB Require Import structures.
 
 (******************************************************************************)

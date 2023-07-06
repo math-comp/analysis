@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
 From mathcomp Require Import interval.
-From mathcomp.classical Require Import boolp mathcomp_extra.
+From mathcomp Require Import mathcomp_extra boolp.
 Require Import signed.
 
 (******************************************************************************)

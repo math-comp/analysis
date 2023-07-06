@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg matrix finmap ssrnum.
 From mathcomp Require Import ssrint interval.
-From mathcomp.classical Require Import mathcomp_extra boolp.
+From mathcomp Require Import mathcomp_extra boolp.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
