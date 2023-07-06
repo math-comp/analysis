@@ -432,6 +432,27 @@ case: b => /=.
 Qed.
 
 Require Import nsatz_realtype.
+
+Lemma geo_partial_tail {R : fieldType} (n m : nat) (x : R) : 
+  \sum_(m <= i < m + n) x^+i = series (geometric (x^+m) x) n.
+Proof.
+elim: n; first by rewrite ?big_geq /series /= ?addn0 // big_geq.
+move=> n IH; rewrite /series/geometric /= addnS ?big_nat_recl ?leq_addr //.
+rewrite expr0 mulr1 -mulr_sumr ; under eq_fun => ? do rewrite exprS.
+rewrite -?mulr_sumr IH /series/geometric/= -?mulr_sumr.
+by rewrite mulrC -mulrA [_ * x]mulrC mulr_sumr.
+Qed.
+
+Lemma geometric_le_lim {R : realType} (n : nat) (a x : R) :
+  (0 <= a) -> 0 < x -> `|x| < 1 -> series (geometric a x) n <= (a * (1 - x)^-1).
+Proof.
+move=> a0 x0 x1.
+have /(@cvg_unique _ (@Rhausdorff R)) := @cvg_geometric_series _ a _ x1.
+move/(_ _ (@is_cvg_geometric_series _ a _ x1)) => ->.
+apply: nondecreasing_cvg_le; last exact: is_cvg_geometric_series.
+by apply: nondecreasing_series => ? _ /=; rewrite pmulr_lge0 // exprn_gt0 //. 
+Qed. 
+
 Section Tietze.
 
 Context {X : topologicalType} {R : realType} (A : set X).
@@ -509,6 +530,7 @@ case : (pselect (forall x, A x -> `|f x| <=M)); last by move => ?; exists point.
 by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
 Qed.
 
+
 Lemma tietze (f : X -> R^o) M :
   (0 < M) -> {within A, continuous f} -> (forall x, A x -> `|f x| <= M) ->
   exists g, [/\ {in A, f =1 g}, continuous g & forall x, `|g x| <= M].
@@ -534,14 +556,36 @@ have g_cts n : continuous (g_ n).
 have g_bd n : forall x, `|g_ n x| <= (1/3 * M) * (2/3)^+n.
   have [ctsN bdfN] := f_geo n; rewrite -[1/3 * M * _]mulrA.
   by have [] := projT2 (tietze_step (f_ n) (M * (2/3)^+n)) ctsN (MN0 n) bdfN.
-pose h_ : nat -> [completeType of {uniform X -> _}] := series g_. 
+pose h_ : nat -> [completeType of {uniform X -> _}] := 
+  @series [zmodType of {uniform X -> _}] g_.
 have cvgh : cvg (h_ @ \oo).
-  apply/cauchy_cvgP/cauchy_ballP => _/posnumP[eps]; near_simpl.
+  apply/cauchy_cvgP/cauchy_ballP => eps epos; near_simpl.
+  near=> n m; move=> t; rewrite /ball /= /h_ -/((_ \- _) t). 
+  have -> : (series g_ n \- series g_ m  = series g_ n - series g_ m) by done.
+  rewrite sub_series; case MN : (m <= n)%N; last admit.
+  rewrite fct_sumE; (apply: le_lt_trans; first exact: ler_norm_sum) => /=.
+  apply: le_lt_trans; first exact: (ler_sum _ (fun i _ => g_bd i t)).
+  rewrite -mulr_sumr -(subnKC MN) geo_partial_tail.
+  apply: (@le_lt_trans _ _ (1/3 * M * ((2/3)^+m / (1-2/3)))).
+    rewrite ler_pmul2l //; last admit.
+    apply geometric_le_lim; admit.
+  rewrite [_^+_ * _^-1]mulrC mulrA -[x in x < _]ger0_norm; last admit.
+  near: m; near_simpl; move: eps epos; 
+  apply: (@cvgr0_norm_lt _ _ _ _ _ (fun m => ( _ * _^+m):R^o)).
+  apply: cvg_geometric.
   admit.
+
+  apply: 
+  Search (\forall _ \near  _, _ < _) (_ --> 0).
+  move: 
+  apply/cvgryPgty
+  near_simpl.
+
 exists (lim (h_ @ \oo)); split.
 - admit.
 - admit.
 - move=> x.
+
 
   Search "unif" "continuous".
 
