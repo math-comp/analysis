@@ -10,7 +10,7 @@
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp.classical Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra.
 Require Import signed.
 
 (******************************************************************************)

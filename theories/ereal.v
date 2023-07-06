@@ -6,8 +6,8 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp.classical Require Import boolp classical_sets functions fsbigop.
-From mathcomp.classical Require Import cardinality set_interval mathcomp_extra.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import fsbigop cardinality set_interval.
 Require Import reals signed topology.
 Require Export constructive_ereal.
 
