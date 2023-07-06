@@ -1376,7 +1376,7 @@ Qed.
 
 HB.mixin Record isContent d
     (T : semiRingOfSetsType d) (R : numFieldType) (mu : set T -> \bar R) := {
-  measure_ge0 : forall x, 0 <= mu x ;
+  measure_ge0 : forall x, (@GRing.zero [the nmodType of \bar R]) <= mu x ;
   measure_semi_additive : semi_additive mu }.
 
 HB.structure Definition Content d
@@ -1558,8 +1558,8 @@ End measure_signed.
 
 HB.factory Record isMeasure d
     (R : realFieldType) (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
-  measure0 : mu set0 = 0 ;
-  measure_ge0 : forall x, 0 <= mu x ;
+  measure0 : mu set0 = @GRing.zero [the nmodType of \bar R] ;
+  measure_ge0 : forall x, (@GRing.zero [the nmodType of \bar R]) <= mu x ;
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
 HB.builders Context d (R : realFieldType) (T : semiRingOfSetsType d)
@@ -3209,8 +3209,8 @@ Definition sigma_subadditive {T} {R : numFieldType}
 
 HB.mixin Record isOuterMeasure
     (R : numFieldType) (T : Type) (mu : set T -> \bar R) := {
-  outer_measure0 : mu set0 = 0 ;
-  outer_measure_ge0 : forall x, 0 <= mu x ;
+  outer_measure0 : mu set0 = @GRing.zero [the nmodType of \bar R] ;
+  outer_measure_ge0 : forall x, @GRing.zero [the nmodType of \bar R] <= mu x ;
   le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B} ;
   outer_measure_sigma_subadditive : sigma_subadditive mu }.
 

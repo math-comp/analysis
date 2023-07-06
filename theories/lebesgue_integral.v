@@ -2337,8 +2337,8 @@ rewrite fin_numE negb_and 2!negbK => /orP[nfoo|/eqP nfoo].
   exfalso; move/negP : nfoo; apply; rewrite -leeNy_eq; apply/negP.
   by rewrite -ltNge (lt_le_trans _ (integral_ge0 _ _)).
 rewrite nfoo adde_defEninfty -leye_eq -ltNge ltey_eq => /orP[f_fin|/eqP pfoo].
-  rewrite integralE// [in RHS]integralE// nfoo [in RHS]addeC fin_num_oppeD//.
-  by rewrite funenegN.
+  rewrite integralE [in RHS]integralE nfoo [in RHS]addeC/= funenegN.
+  by rewrite addye// eqe_oppLR/= (andP (eqbLR (fin_numE _) f_fin)).2.
 by rewrite integralE// [in RHS]integralE// funeposN funenegN nfoo pfoo.
 Qed.
 
@@ -3262,7 +3262,7 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
     - by rewrite fin_num_adde_defr.
   rewrite -(addeA (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
   rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
-  rewrite -addeA (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
+  rewrite -[eqbLHS]addeA (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
   rewrite eq_sym -(sube_eq g12pos) ?fin_num_adde_defl// => /eqP <-.
   rewrite fin_num_oppeD; last first.
     rewrite ge0_fin_numE; first exact: integral_funeneg_lt_pinfty if2.

@@ -4447,7 +4447,7 @@ Let TS := fun i => Uniform.Pack (Tc i).
 Notation Tt := (sup_topology Tc).
 Let ent_of (p : I * set (T * T)) := `[< @entourage (TS p.1) p.2>].
 Let IEntType := {p : (I * set (T * T)) | ent_of p}.
-Let IEnt : choiceType := IEntType.
+Let IEnt := [the choiceType of IEntType].
 
 Local Lemma IEnt_pointT (i : I) : ent_of (i, setT).
 Proof. by apply/asboolP; exact: entourageT. Qed.
