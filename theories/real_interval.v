@@ -434,7 +434,8 @@ Qed.
 Require Import nsatz_realtype.
 Section Tietze.
 
-Context {X : topologicalType} {R : realType}.
+Context {X : topologicalType} {R : realType} (A : set X).
+Hypothesis clA : closed A.
 Hypothesis urysohn_ext : forall A B x y,
   closed A -> closed B -> A `&` B = set0 -> x <= y ->
   exists (f : X -> R^o), 
@@ -446,63 +447,113 @@ Proof. by rewrite (_ : 0 = 0%:R) // ltr_nat. Qed.
 Let threen0 : 3 != 0 :> R.
 Proof. exact: lt0r_neq0. Qed.
 
-Let thirds : (-1/3:R) < (1/3 :R).
+Let thirds : -1/3 < 1/3 :>R.
 Proof.
 by rewrite ltr_pdivr_mulr // div1r mulVf // ?gtr_opp.
 Qed.
 
-Local Lemma tietze_partial (A : set X) (f : X -> R^o) :
-  {within A, continuous f} -> closed A ->
-  (forall x, A x -> `|f x| <= 1) ->
+Local Lemma tietze_step' (f : X -> R^o) (M : R) :
+  0 < M -> {within A, continuous f} ->
+  (forall x, A x -> `|f x| <= M) ->
   exists (g : X -> R^o), [/\ continuous g, 
-     (forall x, A x -> `|f x - g x| <= 2/3 :>R)
-     & (forall x, `|g x| <= 1/3)].
+     (forall x, A x -> `|f x - g x| <= 2/3*M :>R)
+     & (forall x, `|g x| <= 1/3*M)].
 Proof.
-move=> ctsf clA fA1.
-have [] := @urysohn_ext (A `&` f@^-1` `]-oo,-1/3]) ( A `&` f@^-1` `[1/3,+oo[) (-1/3) (1/3).
+move=> mpos ctsf fA1.
+have [] := @urysohn_ext (A `&` f@^-1` `]-oo,-1/3 *M]) ( A `&` f@^-1` `[1/3 * M,+oo[) (-1/3 * M) (1/3 * M).
 - by rewrite closed_setSI; apply: closed_comp => //.
 - by rewrite closed_setSI; apply: closed_comp => //; exact: interval_closed.
 - rewrite setIACA -preimage_setI eqEsubset; split => z //.
   case=> _ []; rewrite ?set_itvE /= => /[swap] /le_trans /[apply].
+  rewrite ler_pmul2r //.
   by move=> W; move: thirds => /=; rewrite real_ltNge ?num_real // W.
-- exact: ltW.
+- by rewrite ler_pmul2r //; exact: ltW.
 move=> g [ctsg gL3 gR3 grng]; exists g; split => //; first last.
-  by move=> x; rewrite ler_norml -mulNr; apply: grng; exists x.
+  by move=> x; rewrite ler_norml -?mulNr; apply: grng; exists x.
 move=> x Ax; move: (fA1 _ Ax); rewrite ?ler_norml /= => /andP [? ?].
-case xL : (f x <= -1/3).
-  have : [set g x | x in A `&` f@^-1` `]-oo, -1/3]] (g x) by exists x.
-  rewrite gL3 => ->; rewrite mulNr opprK; apply/andP; split.
-    by rewrite -ler_subl_addr -opprD -mulrDl (_ : 2+1 = 3) ?divrr ?unitfE // addrC.
-  rewrite -ler_subr_addr -mulNr -mulrDl (_ : 2-1 = 1).
-    by apply: (le_trans _ (ltW thirds)).
+case xL : (f x <= -1/3 * M).
+  have : [set g x | x in A `&` f@^-1` `]-oo, -1/3 * M]] (g x) by exists x.
+  rewrite gL3 => ->; rewrite ?mulNr opprK; apply/andP; split.
+    by rewrite -ler_subl_addr -opprD -?mulrDl (_ : 2+1 = 3) ?divrr ?unitfE ?mul1r // addrC. 
+  rewrite -ler_subr_addr -?mulNr -?mulrDl (_ : 2-1 = 1).
+    by apply: (le_trans xL); rewrite ler_pmul2r //; apply: ltW.
   by rewrite (_ : 2 = (1+1)) // -addrA subrr addr0.
-case xR : (1/3 <= f x).
-  have : [set g x | x in A `&` f@^-1` `[1/3, +oo[] (g x).
+case xR : (1/3 *M <= f x).
+  have : [set g x | x in A `&` f@^-1` `[1/3 *M, +oo[] (g x).
     by exists x => //; split => //; rewrite /= in_itv //= xR.
   rewrite gR3 => ->; apply/andP; split.
-    rewrite -ler_subl_addr opprK -?mulNr // -mulrDl.
+    rewrite -ler_subl_addr opprK -?mulNr // -?mulrDl.
     rewrite (_ : 1*-2 = -(1 + 1)) // opprD -addrA [-_ + _]addrC -addrA subrr addr0. 
-    by apply: (le_trans (ltW thirds)).
-  rewrite -ler_subr_addr opprK -mulrDl addrC divrr // ?unitfE; exact: threen0.
-have /andP [/ltW nf3 /ltW pf3] : -1/3 < f x < 1/3.
+    by apply: (le_trans _ xR); rewrite ler_pmul2r //; apply: ltW.
+  by rewrite -ler_subr_addr opprK -?mulrDl addrC divrr ?mul1r ?unitfE //; exact: threen0.
+have /andP [/ltW nf3 /ltW pf3] : -1/3 *M < f x < 1/3 *M.
   by apply/andP; split; rewrite real_ltNge ?num_real //= ?xL ?xR.
-have /andP [ng3 pg3] : -1/3 <= g x <= 1/3 by apply: grng; exists x.
+have /andP [ng3 pg3] : -1/3 * M <= g x <= 1/3 * M by apply: grng; exists x.
 apply/andP; split.
-  by rewrite (_ : 2 = 1 + 1) // mulrDl opprD; apply: ler_sub; rewrite // -mulNr.
-by rewrite (_ : 2 = 1 + 1) // mulrDl; apply: ler_add; rewrite // ler_oppl -mulNr.
+  by rewrite (_ : 2 = 1 + 1) // ?mulrDl ?opprD; apply: ler_sub; rewrite // -?mulNr.
+by rewrite (_ : 2 = 1 + 1) // ?mulrDl; apply: ler_add; rewrite // ler_oppl -?mulNr.
 Qed.
 
-  
-
-
-  
-
-Lemma tietze (A : set X) (f : X -> R) :
-  {within A, continuous f} -> closed A ->
-  f @` A `<=` `[0,1] ->
-  exists g, [/\ {in A, f =1 g}, continuous g & range g `<=` `[0,1]].
+Let tietze_step (f : X -> R^o) M : 
+  {g : X -> R^o | 
+  {within A, continuous f} -> 0 < M -> 
+  (forall x, A x -> `|f x| <= M) ->
+   [/\ continuous g, 
+     (forall x, A x -> `|f x - g x| <= 2/3*M :>R)
+     & (forall x, `|g x| <= 1/3*M)]}.
 Proof.
-move=> ctsf clA fA01.
+apply: cid.
+case : (pselect ({within A, continuous f})); last by move => ?; exists point.
+case : (pselect (0 < M)); last by move => ?; exists point.
+case : (pselect (forall x, A x -> `|f x| <=M)); last by move => ?; exists point.
+by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
+Qed.
+
+Lemma tietze (f : X -> R^o) M :
+  (0 < M) -> {within A, continuous f} -> (forall x, A x -> `|f x| <= M) ->
+  exists g, [/\ {in A, f =1 g}, continuous g & forall x, `|g x| <= M].
+Proof.
+move=> mpos ctsf fbd.
+pose f_ := fix F n := 
+  if n is n.+1 
+  then (F n \- projT1 (tietze_step (F n) (M*(2/3)^+n)))
+  else f.
+pose g_ n := projT1 (tietze_step (f_ n) (M*(2/3)^+n)).
+have MN0 n : 0 < M * (2/3)^+n by rewrite mulr_gt0 // exprn_gt0 // divr_gt0 //.
+have f_geo n :
+  {within A, continuous f_ n} /\
+  (forall x, A x -> `|f_ n x| <= (M * (2/3)^+ n)).
+  elim: n; first by split => // ? ?; rewrite /= expr0 mulr1; exact: fbd.
+  move=> n [ctsN bdN].
+  have [cg bdNS bd2] := projT2 (tietze_step (f_ n) (M * (2/3)^+n)) ctsN (MN0 n) bdN.
+  split; last by rewrite exprS mulrA [M * (_/_)] mulrC -[_ * M * _]mulrA //.
+  by move=> x; apply: cvgB; [exact: ctsN | exact/continuous_subspaceT/cg].
+have g_cts n : continuous (g_ n).
+  have [ctsN bdfN] := f_geo n.
+  by have [] := projT2 (tietze_step (f_ n) (M * (2/3)^+n)) ctsN (MN0 n) bdfN.
+have g_bd n : forall x, `|g_ n x| <= (1/3 * M) * (2/3)^+n.
+  have [ctsN bdfN] := f_geo n; rewrite -[1/3 * M * _]mulrA.
+  by have [] := projT2 (tietze_step (f_ n) (M * (2/3)^+n)) ctsN (MN0 n) bdfN.
+pose h_ : nat -> [completeType of {uniform X -> _}] := series g_. 
+have cvgh : cvg (h_ @ \oo).
+  apply/cauchy_cvgP/cauchy_ballP => _/posnumP[eps]; near_simpl.
+  admit.
+exists (lim (h_ @ \oo)); split.
+- admit.
+- admit.
+- move=> x.
+
+  Search "unif" "continuous".
+
+
+  apply: 
+
+exists (lim h_).
+  
+
+fix C n := if n is n.+1 then u @` C n else A `\` B.
+
+
 
 
 
