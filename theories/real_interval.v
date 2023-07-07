@@ -588,7 +588,13 @@ have cvgh : cvg (h_ @ \oo).
   by rewrite // ger0_norm // /= ltr_pdivr_mulr // mul1r (_ : 3 = 1 + 2) // ltr_addr. 
 exists (lim (h_ @ \oo)); split.
 - admit.
-- admit.
+- apply: (@uniform_limit_continuous X _ (h_ @\oo) (lim (h_ @ \oo))).
+    near_simpl; apply: nearW; elim.
+      by rewrite /h_ /=/series /= ?big_geq // => ?; exact: cvg_cst.
+    move=> n; rewrite /h_ /series /= big_nat_recr /= // => IH t.
+    rewrite [_ + g_ _]/GRing.add /=; apply: cvgD; first exact: (IH t).
+    exact: g_cts.
+  by move=> ?; rewrite /= ?uniform_nbhsT; apply: cvgh.
 - move=> x.
 
 
