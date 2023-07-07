@@ -530,57 +530,62 @@ case : (pselect (forall x, A x -> `|f x| <=M)); last by move => ?; exists point.
 by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
 Qed.
 
+Let twothirds_pos : 0 < 2/3 :>R.
+Proof. exact: divr_gt0 => //. Qed.
+
+Let onethird_pos : 0 < 1/3 :>R.
+Proof. exact: divr_gt0 => //. Qed.
+
+Let twothirds := PosNum twothirds_pos.
+Let onethird := PosNum onethird_pos.
 
 Lemma tietze (f : X -> R^o) M :
   (0 < M) -> {within A, continuous f} -> (forall x, A x -> `|f x| <= M) ->
   exists g, [/\ {in A, f =1 g}, continuous g & forall x, `|g x| <= M].
 Proof.
-move=> mpos ctsf fbd.
+move: M => _/posnumP[M] ctsf fbd; pose M2d3 n := M%:num*(twothirds%:num)^+n.
+have MN0 n : 0 < M2d3 n by rewrite /M2d3.
 pose f_ := fix F n := 
-  if n is n.+1 
-  then (F n \- projT1 (tietze_step (F n) (M*(2/3)^+n)))
-  else f.
-pose g_ n := projT1 (tietze_step (f_ n) (M*(2/3)^+n)).
-have MN0 n : 0 < M * (2/3)^+n by rewrite mulr_gt0 // exprn_gt0 // divr_gt0 //.
+  if n is n.+1 then (F n \- projT1 (tietze_step (F n) (M2d3 n))) else f.
+pose g_ n := projT1 (tietze_step (f_ n) (M2d3 n)).
 have f_geo n :
   {within A, continuous f_ n} /\
-  (forall x, A x -> `|f_ n x| <= (M * (2/3)^+ n)).
+  (forall x, A x -> `|f_ n x| <= (M%:num * (twothirds%:num)^+ n)).
   elim: n; first by split => // ? ?; rewrite /= expr0 mulr1; exact: fbd.
   move=> n [ctsN bdN].
-  have [cg bdNS bd2] := projT2 (tietze_step (f_ n) (M * (2/3)^+n)) ctsN (MN0 n) bdN.
-  split; last by rewrite exprS mulrA [M * (_/_)] mulrC -[_ * M * _]mulrA //.
+  have [cg bdNS bd2] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdN.
+  split; last by rewrite exprS mulrA [M%:num * (_/_)] mulrC -[_ * M%:num * _]mulrA //.
   by move=> x; apply: cvgB; [exact: ctsN | exact/continuous_subspaceT/cg].
 have g_cts n : continuous (g_ n).
   have [ctsN bdfN] := f_geo n.
-  by have [] := projT2 (tietze_step (f_ n) (M * (2/3)^+n)) ctsN (MN0 n) bdfN.
-have g_bd n : forall x, `|g_ n x| <= (1/3 * M) * (2/3)^+n.
-  have [ctsN bdfN] := f_geo n; rewrite -[1/3 * M * _]mulrA.
-  by have [] := projT2 (tietze_step (f_ n) (M * (2/3)^+n)) ctsN (MN0 n) bdfN.
+  by have [] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdfN.
+have g_bd n : forall x, `|g_ n x| <= (onethird%:num * M%:num) * (twothirds%:num)^+n.
+  have [ctsN bdfN] := f_geo n; rewrite -[_ * M%:num * _]mulrA.
+  by have [] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdfN.
 pose h_ : nat -> [completeType of {uniform X -> _}] := 
   @series [zmodType of {uniform X -> _}] g_.
 have cvgh : cvg (h_ @ \oo).
   apply/cauchy_cvgP/cauchy_ballP => eps epos; near_simpl.
-  near=> n m; move=> t; rewrite /ball /= /h_ -/((_ \- _) t). 
-  have -> : (series g_ n \- series g_ m  = series g_ n - series g_ m) by done.
-  rewrite sub_series; case MN : (m <= n)%N; last admit.
+  suff : \forall x & x' \near \oo, (x' <= x)%N -> ball (h_ x) eps (h_ x').
+    move=>/[dup]; rewrite {1}near_swap; apply: filter_app2; near=> n m => /=.
+    by have /orP [mn /(_ mn)/ball_sym + _| ? _] := leq_total n m; apply. 
+  near=> n m; move=> /= MN; rewrite /ball /= /ball /= /h_ => t; rewrite /ball /=. 
+  have -> : (series g_ n t - series g_ m t  = (series g_ n - series g_ m) t) by done.
+  rewrite sub_series MN. 
   rewrite fct_sumE; (apply: le_lt_trans; first exact: ler_norm_sum) => /=.
   apply: le_lt_trans; first exact: (ler_sum _ (fun i _ => g_bd i t)).
   rewrite -mulr_sumr -(subnKC MN) geo_partial_tail.
-  apply: (@le_lt_trans _ _ (1/3 * M * ((2/3)^+m / (1-2/3)))).
-    rewrite ler_pmul2l //; last admit.
-    apply geometric_le_lim; admit.
-  rewrite [_^+_ * _^-1]mulrC mulrA -[x in x < _]ger0_norm; last admit.
+  apply: (@le_lt_trans _ _ (onethird%:num * M%:num * ((twothirds%:num)^+m / (1-twothirds%:num)))).
+    rewrite ler_pmul2l //; apply geometric_le_lim; rewrite // ger0_norm // /=. 
+    by rewrite ltr_pdivr_mulr // mul1r (_ : 3 = 1 + 2) // ltr_addr. 
+  have -> : (1-twothirds%:num = onethird%:num).
+    rewrite -(@divrr _ 3) /= ?unitfE // -mulrBl; congr(_ _ _); apply/eqP.
+    by rewrite subr_eq.
+  rewrite [_^+_ * _^-1]mulrC mulrA -[x in x < _]ger0_norm; last done.
   near: m; near_simpl; move: eps epos; 
   apply: (@cvgr0_norm_lt _ _ _ _ _ (fun m => ( _ * _^+m):R^o)).
   apply: cvg_geometric.
-  admit.
-
-  apply: 
-  Search (\forall _ \near  _, _ < _) (_ --> 0).
-  move: 
-  apply/cvgryPgty
-  near_simpl.
-
+  by rewrite // ger0_norm // /= ltr_pdivr_mulr // mul1r (_ : 3 = 1 + 2) // ltr_addr. 
 exists (lim (h_ @ \oo)); split.
 - admit.
 - admit.
