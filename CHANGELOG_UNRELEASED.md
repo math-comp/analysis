@@ -49,6 +49,13 @@
     `add_neq0_poweRB_def`, `nneg_neq0_poweRD_def`, `nneg_neq0_poweRB_def`
   + lemmas `powR_eq0`, `poweR_eq0`
 
+- in file `numfun.v`,
+  + new lemma `continuous_bounded_extension`.
+- in file `sequences.v`,
+  + new lemmas `geometric_partial_tail`, and `geometric_le_lim`.
+- in file `topology.v`,
+  + new lemma `pointwise_cvgP`.
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
