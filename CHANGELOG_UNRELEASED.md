@@ -48,6 +48,8 @@
   + lemmas `poweRD_defE`, `poweRB_defE`, `add_neq0_poweRD_def`,
     `add_neq0_poweRB_def`, `nneg_neq0_poweRD_def`, `nneg_neq0_poweRB_def`
   + lemmas `powR_eq0`, `poweR_eq0`
+- in file `lebesgue_integral.v`,
+  + new lemma `approximation_sfun_integrable`.
 
 ### Changed
 
@@ -123,6 +125,8 @@
   + lemmas `convex_expR`, `ler_power_pos` (now `ler_powR`)
 - in `exp.v`:
   + lemma `ln_power_pos` (now `ln_powR`)
+  + lemma `ln_power_pos`
+- in file `lebesgue_integral.v`, updated `le_approx`.
 
 ### Deprecated
 
