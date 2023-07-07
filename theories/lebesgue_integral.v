@@ -1390,7 +1390,7 @@ rewrite (@le_lt_trans _ _ (1 / 2 ^+ n)) //.
 by near: n; exact: near_infty_natSinv_expn_lt.
 Unshelve. all: by end_near. Qed.
 
-Lemma le_approx k x (f0 : forall x, (0 <= f x)%E) : D x ->
+Lemma le_approx k x (f0 : forall x, D x -> (0 <= f x)%E) : D x ->
   ((approx k x)%:E <= f x)%E.
 Proof.
 move=> Dx; have [fixoo|] := ltP (f x) (+oo%E); last first.
@@ -1402,7 +1402,7 @@ have cvg_af := cvg_approx fi0 Dx fixoo.
 have is_cvg_af : cvg (approx ^~ x) by apply/cvg_ex; eexists; exact: cvg_af.
 have {is_cvg_af} := nondecreasing_cvg_le nd_ag is_cvg_af k.
 rewrite -lee_fin => /le_trans; apply.
-rewrite -(@fineK _ (f x)); last by rewrite ge0_fin_numE.
+rewrite -(@fineK _ (f x)); last by rewrite ge0_fin_numE //; apply: f0.
 by move/(cvg_lim (@Rhausdorff R)) : cvg_af => ->.
 Qed.
 
@@ -4556,6 +4556,91 @@ by rewrite mule0 /= notin_ysectionM.
 Qed.
 
 End product_measure2E.
+
+Section simple_density_L1.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (E : set T) (mE : measurable E).
+
+Local Open Scope ereal_scope.
+
+Let sfun_dense_L1_pos (f : T -> \bar R) :
+  mu.-integrable E f -> (forall x, E x -> 0 <= f x) ->
+  exists g_ : {sfun T >-> R}^nat,
+    [/\ forall n, mu.-integrable E (EFin \o g_ n),
+        forall x, E x -> EFin \o g_^~ x @ \oo --> f x &
+        (fun n => \int[mu]_(z in E) `|f z - (g_ n z)%:E|) --> 0].
+Proof.
+move=> intf fpos; case/integrableP: (intf) => mfE _.
+pose g_ n := nnsfun_approx mE mfE n.
+have [] // := @dominated_convergence _ _ _ mu _ mE (fun n => EFin \o g_ n) f f.
+- by move=> ?; apply/EFin_measurable_fun/measurable_funTS.
+- apply: aeW => ? ?; under eq_fun => ? do rewrite /g_ nnsfun_approxE.
+  exact: ecvg_approx.
+- apply: aeW => /= ? ? ?; rewrite ger0_norm // /g_ nnsfun_approxE.
+  exact: le_approx.
+move=> _ /= fg0 gfcvg; exists g_; split.
+- move=> n; apply: (le_integrable mE _ _ intf).
+    exact/EFin_measurable_fun/measurable_funTS.
+  move=> ? ?; rewrite /g_ !gee0_abs ?lee_fin//; last exact: fpos.
+  by rewrite /= nnsfun_approxE le_approx.
+- exact: cvg_nnsfun_approx.
+- by apply: cvg_trans fg0; under eq_fun => ? do under eq_fun => t do
+     rewrite EFinN -[_ - _]oppeK fin_num_oppeB // abseN addeC.
+Qed.
+
+Lemma approximation_sfun_integrable (f : T -> \bar R):
+  mu.-integrable E f ->
+  exists g_ : {sfun T >-> R}^nat,
+    [/\ forall n, mu.-integrable E (EFin \o g_ n),
+        forall x, E x -> EFin \o g_^~ x @ \oo --> f x &
+        (fun n => \int[mu]_(z in E) `|f z - (g_ n z)%:E|) --> 0].
+Proof.
+move=> intf.
+have [//|p_ [intp pf pl1]] := sfun_dense_L1_pos (integrable_funepos mE intf).
+have [//|n_ [intn nf nl1]] := sfun_dense_L1_pos (integrable_funeneg mE intf).
+exists (fun n => p_ n - n_ n)%R; split.
+- move=> n; rewrite /comp; under eq_fun => ? do rewrite sfunB /= EFinB.
+  by apply: integrableB => //; [exact: intp | exact: intn].
+- move=> ? ?; rewrite /comp; under eq_fun => ? do rewrite sfunB /= EFinB.
+  rewrite [f]funeposneg; apply: cvgeB => //;[|exact: pf|exact:nf].
+  exact: add_def_funeposneg.
+have fpn z n : f z - ((p_ n - n_ n) z)%:E =
+    (f^\+ z - (p_ n z)%:E) - (f^\- z - (n_ n z)%:E).
+  rewrite sfunB EFinB fin_num_oppeB // {1}[f]funeposneg -addeACA.
+  by congr (_ _); rewrite fin_num_oppeB.
+case/integrableP: (intf) => mf _.
+have mfpn n : mu.-integrable E (fun z => f z - ((p_ n - n_ n) z)%:E).
+  under eq_fun => ? do rewrite fpn; apply: integrableB => //.
+    by apply: integrableB => //; [exact: integrable_funepos | exact: intp].
+  by apply: integrableB => //; [exact: integrable_funeneg | exact: intn].
+apply/fine_cvgP; split => //.
+  near=> N; case/integrableP: (mfpn N) => _; rewrite ge0_fin_numE //.
+  exact: integral_ge0.
+apply/cvg_ballP=> _/posnumP[eps]; have e2p : (0 < eps%:num/2)%R by [].
+case/fine_cvgP: pl1 => + /cvg_ballP/(_ _ e2p); apply: filter_app2.
+case/fine_cvgP: nl1 => + /cvg_ballP/(_ _ e2p); apply: filter_app2.
+near=> n; rewrite /ball /=; do 3 rewrite distrC subr0.
+move=> finfn ne2 finfp pe2; rewrite [_%:num]splitr.
+rewrite (le_lt_trans _ (ltr_add pe2 ne2))// (le_trans _ (ler_norm_add _ _))//.
+under [fun z => _ (f^\+ z + _)]eq_fun => ? do rewrite EFinN.
+under [fun z => _ (f^\- z + _)]eq_fun => ? do rewrite EFinN.
+have mfp : mu.-integrable E (fun z => `|f^\+ z - (p_ n z)%:E|).
+  apply/integrable_abse/integrableB => //; first exact: integrable_funepos.
+  exact: intp.
+have mfn : mu.-integrable E (fun z => `|f^\- z - (n_ n z)%:E|).
+  apply/integrable_abse/integrableB => //; first exact: integrable_funeneg.
+  exact: intn.
+rewrite -[x in (_ <= `|x|)%R]fineD // -integralD //.
+rewrite !ger0_norm ?fine_ge0 ?integral_ge0 ?fine_le//.
+- by apply: integral_fune_fin_num => //; exact/integrable_abse/mfpn.
+- by apply: integral_fune_fin_num => //; exact: integrableD.
+- apply: ge0_le_integral => //.
+  + by apply: measurableT_comp => //; case/integrableP: (mfpn n).
+  + by apply: emeasurable_funD; [move: mfp | move: mfn]; case/integrableP.
+  + by move=> ? ?; rewrite fpn; exact: lee_abs_sub.
+Unshelve. all: by end_near. Qed.
+
+End simple_density_L1.
 
 Section fubini_functions.
 Local Open Scope ereal_scope.
