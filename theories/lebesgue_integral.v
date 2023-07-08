@@ -5345,3 +5345,114 @@ Qed.
 
 End sfinite_fubini.
 Arguments sfinite_Fubini {d d' X Y R} m1 m2 f.
+
+Section integral_bounded.
+
+Lemma integral_le_bound d (R : realType) (T : measurableType d)
+  (mu : {measure set T -> \bar R}) (D : set T) (f : T -> \bar R)
+  (mD : measurable D) (M : \bar R) : mu.-integrable D f ->
+  (0 <= M)%E -> ({ae mu, forall x, D x -> `|f x| <= M})%E ->
+  (\int[mu]_(x in D) `|f x| <= M * mu D)%E.
+Proof.
+move=> intf M0 dfx; rewrite -integral_cst => //.
+apply: ae_ge0_le_integral => //.
+by apply: measurableT_comp => //; case/integrableP:intf.
+Qed.
+
+Lemma open_itvoo_subset {R : realType} (A : set R) (x : R) :
+  open A -> A x -> \forall r \near 0^'+, `]x-r, x+r[ `<=` A.
+Proof.
+move=> oA Ax; case/(_ _ Ax): oA => _/posnumP[r] /subset_ball_prop_in_itv xrA. 
+exists r%:num => //= k; rewrite /= distrC subr0 set_itvoo => /ltr_normlW kr k0.
+apply: (subset_trans _ xrA); apply: subset_itvW.
+  by apply: ler_sub => //; apply: ltW.
+by apply: ler_add => //; apply: ltW.
+Qed.
+
+Lemma open_itvcc_subset {R : realType} (A : set R) (x : R) :
+  open A -> A x -> \forall r \near 0^'+, `[x-r, x+r] `<=` A.
+Proof.
+move=> oA Ax; case/(_ _ Ax): oA => _/posnumP[r].
+have -> : (r%:num = 2 * (r%:num/2)) by rewrite mulrC -mulrA mulVf // mulr1. 
+move/subset_ball_prop_in_itvcc => xrA; exists (r%:num/2) => //= k.
+rewrite /= distrC subr0 set_itvcc => /ltr_normlW kr k0.
+move=> z /andP [xkz zxk]; apply: xrA => //; rewrite in_itv /=. 
+apply/andP; split. 
+  by apply: (le_trans _ xkz); apply: ler_sub => //; exact: ltW.
+by apply: (le_trans zxk); apply: ler_add => //; exact: ltW.
+Qed.
+
+Section lebesgue_differentiation.
+Context (rT : realType).
+Let mu := [the measure _ _ of @lebesgue_measure rT].
+Let R  := [the measurableType _ of measurableTypeR rT].
+
+Lemma lebesgue_differentiation_continuous (f : R -> rT^o) (A : set R) (x : R) :
+  open A -> {in A, continuous f} -> A x -> 
+  (fun r => 1/(2*r) * \int[mu]_(z in `[x-r,x+r]) f z) @ 0^'+ --> (f x:R^o).
+Proof. 
+have ritv r : 0 < r -> mu (`[x-r,x+r]%classic) = (2*r)%:E.
+  move=> /gt0_cp rE; rewrite /= lebesgue_measure_itv hlength_itv /= lte_fin.
+  rewrite ler_lt_add // ?rE // -EFinD; (congr (_ _)).
+  by rewrite opprB addrAC [_ - _]addrC addrA subrr add0r mulr2n mulrDl ?mul1r.
+move=> oA ctsf Ax; apply: (@cvg_zero rT [pseudoMetricNormedZmodType R of rT^o]).
+apply/cvgrPdist_le => eps epos; have := @nbhs_right_gt rT 0; apply: filter_app.
+have /cvgrPdist_le/(_ eps epos)/at_right_in_segment := (ctsf _ (mem_set Ax)).
+have ? : Filter (nbhs (0:R)^'+) by exact: at_right_proper_filter.
+apply: filter_app; have : \forall r \near 0^'+, `[x-r, x+r] `<=` A.
+  Search "int" open.
+  case/(_ _ Ax): oA => _/posnumP[r] xrA; exists (r%:num/2) => //=.
+  move=> + /[swap] => _/posnumP[k] /=. 
+  rewrite distrC subr0 set_itvcc /= => kr2 z /= xkz; apply: xrA => /=. 
+  
+  rewrite ltr_distlC.
+
+near=> r => fL; rewrite addrfctE opprfctE => rp.
+rewrite distrC subr0; have r20 : 0 <= 1/(2*r) by rewrite ?divr_ge0 // ?mulr_ge0.
+have -> : f x = 1/(2*r) * \int[mu]_(z in `[x-r,x+r]) cst (f x) z.
+  rewrite /Rintegral /= integral_cst //= ritv //= [f x * _]mulrC mulrA.
+  by rewrite div1r mulVr ?mul1r ?unitfE ?mulf_neq0.
+rewrite /= -mulrBr -fineB; first last.
+  apply: integral_fune_fin_num => //; admit.
+  apply: integral_fune_fin_num => //=. admit.
+  admit.
+rewrite -integralB_EFin //; first last.
+  admit.
+  admit.
+under [fun _ => adde _ _ ]eq_fun => ? do rewrite -EFinD.
+rewrite normrM [ `|_/_| ]ger0_norm // -fine_abse; first last.
+  admit.
+apply: le_trans.
+  apply: ((ler_pmul r20 _ (le_refl _))); first exact: fine_ge0.
+  apply: fine_le; [admit| admit|].
+  apply: le_abse_integral => //.
+  admit.
+apply: le_trans.
+  apply: ((ler_pmul r20 _ (le_refl _))); first exact/fine_ge0/integral_ge0.
+  apply: fine_le; [admit| admit|].
+  apply: integral_le_bound.
+  - done.
+  - admit.
+  - by apply: ltW; move:(epos) => /=; rewrite -lte_fin; exact. 
+  - by apply: aeW => ? ?; rewrite /= lee_fin distrC; exact: feps.
+rewrite fineM => //; last admit.
+rewrite ritv //= mulrC div1r -[eps * _ / _]mulrA divrr ?mulr1 //.
+by rewrite unitfE // ?mulf_neq0.
+Unshelve. all: by end_near. Qed.
+
+    
+
+have := integralB.
+rewrite [_ - _]/GRing.add /= /GRing.add_fun.
+rewrite [_ \+ _]/GRing.add /=.
+under [fun (_:rT) => _ - _]eq_fun => t.
+
+  Search cst (_ --> 0)%R.
+  Search ((_ - _)%R --> _%R)%R.
+  apply: .
+Search (_ --> _)
+`|1/2r * \int[mu]_(z in `[x-r,x+r]) f z - f x| <= 
+1/2r * \int[mu]_(z in `[x-r,x+r]) |f z - f x| <= 
+1/2r * mu `[x-r, x +r] * sup_(z in x-r,x+r) (f z - f x) <=
+sup_(z in x-r,x+r) `|f z - f x|.
+choose r small enough, `|f z - f x| < eps
