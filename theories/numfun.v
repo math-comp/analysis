@@ -524,9 +524,8 @@ have cvgh' : cvg (h_ @ \oo).
   pose L := onethird%:num * M%:num * ((twothirds%:num)^+m / (1-twothirds%:num)).
   apply: (@le_lt_trans _ _ L).
     by rewrite ler_pmul2l //; apply: geometric_le_lim. 
-  rewrite /L; have -> : (1-twothirds%:num = onethird%:num).
-    rewrite -(@divrr _ 3) /= ?unitfE // -mulrBl; congr(_ _ _); apply/eqP.
-    by rewrite subr_eq.
+  rewrite /L; have /eqP -> : 1 - twothirds%:num == onethird%:num.
+    by rewrite subr_eq -mulrDl divrr// unitfE.
   rewrite [_^+_ * _^-1]mulrC mulrA -[x in x < _]ger0_norm; last done.
   near: m; near_simpl; move: eps epos. 
   apply: (@cvgr0_norm_lt _ _ _ _ _ (fun m => _:R^o)); exact: cvg_geometric.
