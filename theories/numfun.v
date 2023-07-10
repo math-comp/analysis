@@ -407,7 +407,7 @@ Hypothesis urysohn_ext : forall A B x y,
     f @` A = [set x], f @` B = [set y] & range f `<=` `[x,y]].
 
 Let three0 : 0 < 3 :> R.
-Proof. by rewrite (_ : 0 = 0%:R) // ltr_nat. Qed.
+Proof. by rewrite ltr0n. Qed.
 
 Let threen0 : 3 != 0 :> R.
 Proof. exact: lt0r_neq0. Qed.
