@@ -413,9 +413,7 @@ Let threen0 : 3 != 0 :> R.
 Proof. exact: lt0r_neq0. Qed.
 
 Let thirds : -1/3 < 1/3 :>R.
-Proof.
-by rewrite ltr_pdivr_mulr // div1r mulVf // ?gtr_opp.
-Qed.
+Proof. by rewrite ltr_pmul2r ?gtr_opp// invr_gt0. Qed.
 
 Local Lemma tietze_step' (f : X -> R^o) (M : R) :
   0 < M -> {within A, continuous f} ->
