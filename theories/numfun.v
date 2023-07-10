@@ -399,21 +399,46 @@ HB.builders Context T R f of @FiniteDecomp T R f.
 HB.end.
 
 Section Tietze.
-Context {X : topologicalType} {R : realType} (A : set X).
-Hypothesis clA : closed A.
-Hypothesis urysohn_ext : forall A B x y,
-  closed A -> closed B -> A `&` B = set0 -> x <= y ->
+Context {X : topologicalType} {R : realType} .
+
+Hypothesis urysohn_ext : forall A B,
+  closed A -> closed B -> A `&` B = set0 -> 
+  exists (f : X -> R^o), [/\ continuous f, 
+    f @` A = [set 0], f @` B = [set 1] & range f `<=` `[0,1]].
+
+Lemma urysohn_ext_itv A B x y :
+  closed A -> closed B -> A `&` B = set0 -> x < y ->
   exists (f : X -> R^o), [/\ continuous f, 
     f @` A = [set x], f @` B = [set y] & range f `<=` `[x,y]].
+Proof.
+move=> clA clB ab0 xy; have [f [ctsf f0 f1 f01]] := urysohn_ext clA clB ab0.
+pose g : X -> R^o := line_path x y \o f; exists g.
+split; rewrite /g /=.
+- move=> t; apply: continuous_comp; first exact: ctsf.
+  apply: (@continuousD R [normedModType R of R^o]). 
+    apply: continuousM; last exact: cvg_cst. 
+    apply: (@continuousB R [normedModType R of R^o]) => //.
+    exact: cvg_cst.
+  by apply: continuousM; last exact: cvg_cst; exact: cvg_id.
+- by rewrite -image_comp f0 image_set1 line_path0.
+- by rewrite -image_comp f1 image_set1 line_path1.
+- rewrite -image_comp; apply: (subset_trans (image_subset _ f01)).
+  by rewrite range_line_path.
+Qed.
+
+Context (A : set X).
+Hypothesis clA : closed A.
 
 Let three0 : 0 < 3 :> R.
-Proof. by rewrite ltr0n. Qed.
+Proof. by rewrite (_ : 0 = 0%:R) // ltr_nat. Qed.
 
 Let threen0 : 3 != 0 :> R.
 Proof. exact: lt0r_neq0. Qed.
 
 Let thirds : -1/3 < 1/3 :>R.
-Proof. by rewrite ltr_pmul2r ?gtr_opp// invr_gt0. Qed.
+Proof.
+by rewrite ltr_pdivr_mulr // div1r mulVf // ?gtr_opp.
+Qed.
 
 Local Lemma tietze_step' (f : X -> R^o) (M : R) :
   0 < M -> {within A, continuous f} ->
@@ -423,7 +448,7 @@ Local Lemma tietze_step' (f : X -> R^o) (M : R) :
      (forall x, `|g x| <= 1/3*M)].
 Proof.
 move=> mpos ctsf fA1.
-have [] := @urysohn_ext 
+have [] := @urysohn_ext_itv 
     (A `&` f@^-1` `]-oo,-1/3 *M]) (A `&` f@^-1` `[1/3 * M,+oo[) 
     (-1/3 * M) (1/3 * M).
 - by rewrite closed_setSI; apply: closed_comp => //.
@@ -431,7 +456,7 @@ have [] := @urysohn_ext
 - rewrite setIACA -preimage_setI eqEsubset; split => z // [_ []]. 
   rewrite ?set_itvE => /[swap] /le_trans /[apply]; rewrite ler_pmul2r //.
   by move=> W; move: thirds => /=; rewrite real_ltNge ?num_real // W.
-- by rewrite ler_pmul2r //; exact: ltW.
+- by rewrite ltr_pmul2r //. 
 move=> g [ctsg gL3 gR3 grng]; exists g; split => //; first last.
   by move=> x; rewrite ler_norml -?mulNr; apply: grng; exists x.
 move=> x Ax; move: (fA1 _ Ax); rewrite ?ler_norml => /andP [? ?].
@@ -524,8 +549,9 @@ have cvgh' : cvg (h_ @ \oo).
   pose L := onethird%:num * M%:num * ((twothirds%:num)^+m / (1-twothirds%:num)).
   apply: (@le_lt_trans _ _ L).
     by rewrite ler_pmul2l //; apply: geometric_le_lim. 
-  rewrite /L; have /eqP -> : 1 - twothirds%:num == onethird%:num.
-    by rewrite subr_eq -mulrDl divrr// unitfE.
+  rewrite /L; have -> : (1-twothirds%:num = onethird%:num).
+    rewrite -(@divrr _ 3) /= ?unitfE // -mulrBl; congr(_ _ _); apply/eqP.
+    by rewrite subr_eq.
   rewrite [_^+_ * _^-1]mulrC mulrA -[x in x < _]ger0_norm; last done.
   near: m; near_simpl; move: eps epos. 
   apply: (@cvgr0_norm_lt _ _ _ _ _ (fun m => _:R^o)); exact: cvg_geometric.
@@ -566,8 +592,9 @@ exists (lim (h_ @ \oo)); split.
   apply: le_trans; first apply: (lim_series_le _ _ (fun n => g_bd n t)) => //.
     exact: is_cvg_geometric_series.
   rewrite (cvg_lim _ (cvg_geometric_series _)) => //.
-  have /eqP -> : 1 - twothirds%:num == onethird%:num.
-    by rewrite subr_eq -mulrDl divrr// unitfE.
+  have -> : (1-twothirds%:num = onethird%:num).
+    rewrite -(@divrr _ 3) /= ?unitfE // -mulrBl; congr(_ _ _); apply/eqP.
+    by rewrite subr_eq.
   rewrite mulrAC divrr ?mul1r // unitfE //.
 Unshelve. all: by end_near. Qed.
 
