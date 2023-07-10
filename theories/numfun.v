@@ -569,9 +569,8 @@ exists (lim (h_ @ \oo)); split.
   apply: le_trans; first apply: (lim_series_le _ _ (fun n => g_bd n t)) => //.
     exact: is_cvg_geometric_series.
   rewrite (cvg_lim _ (cvg_geometric_series _)) => //.
-  have -> : (1-twothirds%:num = onethird%:num).
-    rewrite -(@divrr _ 3) /= ?unitfE // -mulrBl; congr(_ _ _); apply/eqP.
-    by rewrite subr_eq.
+  have /eqP -> : 1 - twothirds%:num == onethird%:num.
+    by rewrite subr_eq -mulrDl divrr// unitfE.
   rewrite mulrAC divrr ?mul1r // unitfE //.
 Unshelve. all: by end_near. Qed.
 
