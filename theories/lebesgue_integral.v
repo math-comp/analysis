@@ -5350,7 +5350,7 @@ Section integral_bounded.
 
 Lemma integral_le_bound d (R : realType) (T : measurableType d)
   (mu : {measure set T -> \bar R}) (D : set T) (f : T -> \bar R) (M : R) : 
-  measurable D -> mu.-integrable D f ->
+  measurable D -> measurable_fun D f ->
   (0 <= M%:E)%E -> ({ae mu, forall x, D x -> `|f x| <= M%:E})%E ->
   (\int[mu]_(x in D) `|f x| <= M%:E * mu D)%E.
 Proof.
@@ -5390,7 +5390,29 @@ Let R  := [the measurableType _ of measurableTypeR rT].
 Lemma continuous_compact_integrable (f : R -> R) (A : set R): 
   compact A -> {within A, continuous f} -> mu.-integrable A (EFin \o f).
 Proof.
-Admitted.
+move=> cptA ctsfA; apply/integrableP. 
+have mA : measurable A.
+  by apply:closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
+split.
+  by apply: measurableT_comp => //; apply: subspace_continuous_measurable_fun.
+have := continuous_compact ctsfA cptA.
+case/(@compact_bounded rT [normedModType rT of R^o]) => M [_ mrt].
+apply: le_lt_trans.
+  apply (@integral_le_bound _ _ _ _ _ _ (`|M| + 1)) => //.
+    by apply: measurableT_comp => //; apply: subspace_continuous_measurable_fun.
+  apply: aeW => /= z Az; rewrite lee_fin; apply: mrt => //.
+  apply: (@lt_le_trans _ _ (M + 1)); first by rewrite ltr_addl.
+  by rewrite ler_add // ler_norm.
+case/(@compact_bounded rT [normedModType rT of R^o]) : cptA => N [_ N1x]. 
+have AN1: A `<=` `[- (`|N|+1), `|N|+1].
+  move=> z Az; rewrite set_itvcc /= -ler_norml; apply: N1x => //.
+  apply: (@lt_le_trans _ _ (N + 1)); first by rewrite ltr_addl.
+  by rewrite ler_add // ler_norm.
+apply: (@le_lt_trans _ _ (_ * _)%E).
+  rewrite lee_pmul => [//|//| // |// |].
+  by apply: (le_measure _ _ _ AN1); rewrite inE.
+by rewrite /= lebesgue_measure_itv hlength_itv /= -fun_if -EFinM ltry. 
+Qed.
 
 Lemma lebesgue_differentiation_continuous (f : R -> rT^o) (A : set R) (x : R) :
   open A -> {within A, continuous f} -> A x -> 
@@ -5421,41 +5443,28 @@ rewrite -integralB_EFin //; first last.
   by apply: continuous_compact_integrable => // ?; exact: cvg_cst.
   by apply: continuous_compact_integrable => //; exact: (continuous_subspaceW _ ctsf).
 under [fun _ => adde _ _ ]eq_fun => ? do rewrite -EFinD.
-rewrite normrM [ `|_/_| ]ger0_norm // -fine_abse; first last.
-  apply: integral_fune_fin_num => //; apply: continuous_compact_integrable =>//.
-  move=> ?; apply: .
+have int_fx : mu.-integrable `[(x - r)%R, (x + r)%R] (fun z => (f z - f x)%:E).
+  apply: continuous_compact_integrable =>//.
+  apply: (continuous_subspaceW xrA); rewrite continuous_open_subspace //.
+  move=> z zA; apply: (@continuousB rT [normedModType rT of R^o]).
+    by move: ctsf; rewrite continuous_open_subspace //; apply.
+  exact: cvg_cst.
+rewrite normrM [ `|_/_| ]ger0_norm // -fine_abse //; first last.
+  by rewrite integral_fune_fin_num.
 suff : (\int[mu]_(z in `[(x-r)%R,(x+r)%R]) `|(f z - f x)|%:E <= ((2 * r) * eps)%:E)%E. 
   move=> intfeps; apply: le_trans.
-  apply: ((ler_pmul r20 _ (le_refl _))); first exact: fine_ge0.
-  apply: fine_le; last apply: le_abse_integral => //.
-  - admit.
-  - admit.
-  - admit.
+    apply: ((ler_pmul r20 _ (le_refl _))); first exact: fine_ge0.
+    apply: fine_le; last apply: le_abse_integral => //.
+    - rewrite abse_fin_num; exact: integral_fune_fin_num.
+    - by apply: integral_fune_fin_num => //; exact: integrable_abse.
+    - by case/integrableP:int_fx.
   rewrite div1r ler_pdivr_mull -[_ * _]/(fine (_%:E)); last exact: mulr_gt0.
   apply: fine_le => //.
-  admit.
+  by apply: integral_fune_fin_num => //; exact: integrable_abse.
 apply: le_trans.
-  apply:(@integral_le_bound _ _ _ _ _ (fun z => (f z - f x)%:E) (eps)).
-  - done.
-  - admit.
+  apply:(@integral_le_bound _ _ _ _ _ (fun z => (f z - f x)%:E) (eps)) => //.
+  - by case/integrableP: int_fx.
   - exact: ltW.
   - by apply: aeW => ? ?; rewrite /= lee_fin distrC; apply: feps.
 by rewrite ritv //= -EFinM lee_fin mulrC.
 Unshelve. all: by end_near. Qed.
-
-    
-
-have := integralB.
-rewrite [_ - _]/GRing.add /= /GRing.add_fun.
-rewrite [_ \+ _]/GRing.add /=.
-under [fun (_:rT) => _ - _]eq_fun => t.
-
-  Search cst (_ --> 0)%R.
-  Search ((_ - _)%R --> _%R)%R.
-  apply: .
-Search (_ --> _)
-`|1/2r * \int[mu]_(z in `[x-r,x+r]) f z - f x| <= 
-1/2r * \int[mu]_(z in `[x-r,x+r]) |f z - f x| <= 
-1/2r * mu `[x-r, x +r] * sup_(z in x-r,x+r) (f z - f x) <=
-sup_(z in x-r,x+r) `|f z - f x|.
-choose r small enough, `|f z - f x| < eps
