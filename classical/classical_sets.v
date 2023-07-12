@@ -59,6 +59,7 @@ From mathcomp Require Import mathcomp_extra boolp.
 (*                 \bigcap_i F == same as before with T left implicit.        *)
 (*                smallest C G := \bigcap_(A in [set M | C M /\ G `<=` M]) A  *)
 (*                   A `<=` B <-> A is included in B.                         *)
+(*                    A `<` B := A `<=` B /\ ~ (B `<=` A)                     *)
 (*                  A `<=>` B <-> double inclusion A `<=` B and B `<=` A.     *)
 (*                   f @^-1` A == preimage of A by f.                         *)
 (*                      f @` A == image of A by f. Notation for `image A f`.  *)
@@ -529,6 +530,10 @@ Lemma subset_trans B A C : A `<=` B -> B `<=` C -> A `<=` C.
 Proof. by move=> sAB sBC ? ?; apply/sBC/sAB. Qed.
 
 Lemma sub0set A : set0 `<=` A. Proof. by []. Qed.
+
+Lemma properW A B : A `<` B -> A `<=` B. Proof. by case. Qed.
+
+Lemma properxx A : ~ A `<` A. Proof. by move=> [?]; apply. Qed.
 
 Lemma setC0 : ~` set0 = setT :> set T.
 Proof. by rewrite predeqE; split => ?. Qed.

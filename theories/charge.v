@@ -69,21 +69,6 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports.
 
-(* NB: in the next releases of Coq, dependent_choice will be
-   generalized from Set to Type making the following lemma redundant *)
-Section dependent_choice_Type.
-Context X (R : X -> X -> Prop).
-
-Lemma dependent_choice_Type : (forall x, {y | R x y}) ->
-  forall x0, {f | f 0 = x0 /\ forall n, R (f n) (f n.+1)}.
-Proof.
-move=> h x0.
-set (f := fix f n := if n is n'.+1 then proj1_sig (h (f n')) else x0).
-exists f; split => //.
-intro n; induction n; simpl; apply: proj2_sig.
-Qed.
-End dependent_choice_Type.
-
 Local Open Scope ring_scope.
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
@@ -727,7 +712,7 @@ move=> /cvg_ex[[l| |]]; first last.
     have : nu N <= -oo by rewrite -limNoo// nuN.
     by rewrite leNgt => /negP; apply; rewrite ltNye_eq fin_num_measure.
   - move/cvg_lim => limoo.
-    have := @npeseries_le0 _ (fun n => maxe (z_ (v n) * 2^-1%:E) (- 1%E)) xpredT.
+    have := @npeseries_le0 _ (fun n => maxe (z_ (v n) * 2^-1%:E) (- 1%E)) xpredT 0.
     by rewrite limoo// leNgt => /(_ (fun n _ => max_le0 n))/negP; apply.
 move/fine_cvgP => [Hfin cvgl].
 have : cvg (series (fun n => fine (maxe (z_ (v n) * 2^-1%:E) (- 1%E)))).
