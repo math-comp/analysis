@@ -3260,8 +3260,8 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
       by apply: adde_ge0; exact: integral_ge0.
     - by rewrite fin_num_adde_defr.
   rewrite -(addeA (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
-  rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
-  rewrite -[eqbLHS]addeA (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
+  rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)) -[eqbLHS]addeA.
+  rewrite (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
   rewrite eq_sym -(sube_eq g12pos) ?fin_num_adde_defl// => /eqP <-.
   rewrite fin_num_oppeD; last first.
     rewrite ge0_fin_numE; first exact: integral_funeneg_lt_pinfty if2.
