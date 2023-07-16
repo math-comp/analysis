@@ -3566,22 +3566,22 @@ End ecvg_realFieldType.
 Section sup_sum.
 Context {R : realType}.
 
-Lemma sup_sumE (A B : set R) : 
+Lemma sup_sumE (A B : set R) :
   has_sup A -> has_sup B -> sup [set x + y | x in A & y in B] = sup A + sup B.
 Proof.
-move=> /[dup] supA [[a Aa] ubA] /[dup] supB [[b Bb] ubB]. 
+move=> /[dup] supA [[a Aa] ubA] /[dup] supB [[b Bb] ubB].
 have ABsup : has_sup [set x + y | x in A & y in B].
   split; first by exists (a + b); exists a => //; exists b.
   case: ubA ubB => p up [q uq]; exists (p + q) => ? [r Ar [s Bs] <-].
   apply: ler_add;[exact: up | exact: uq].
-apply: le_anti; apply/andP; split. 
+apply: le_anti; apply/andP; split.
   apply: sup_le_ub; first by case: ABsup.
   by move=> ? [p Ap [q Bq] <-]; apply: ler_add; exact: sup_ub.
 rewrite real_leNgt ? num_real //; apply/negP.
 rewrite -subr_gt0 => epos; pose eps := PosNum epos.
 have e2pos : 0 < eps%:num/2 by done.
-have [r Ar supBr] := sup_adherent e2pos supA. 
-have [s Bs supAs] := sup_adherent e2pos supB. 
+have [r Ar supBr] := sup_adherent e2pos supA.
+have [s Bs supAs] := sup_adherent e2pos supB.
 have := ltr_add supBr supAs.
 rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
 rewrite subrr add0r; apply/negP; rewrite -real_leNgt ?num_real //.
@@ -3592,8 +3592,8 @@ Lemma inf_sumE (A B : set R) :
   has_inf A -> has_inf B -> 
   inf [set x + y | x in A & y in B] = inf A + inf B.
 Proof.
-move/has_inf_supN => ? /has_inf_supN ?; rewrite /inf. 
-have -> : [set - x | x in [set x + y | x in A & y in B]] = 
+move/has_inf_supN => ? /has_inf_supN ?; rewrite /inf.
+have -> : [set - x | x in [set x + y | x in A & y in B]] =
     [set x + y | x in [set -x | x in A ] & y in [set -x | x in B]].
   rewrite eqEsubset; split => /= ? [] /= ? []a Aa.
     case => b Bb <- <-; exists (-a); first by exists (a).
@@ -3630,7 +3630,7 @@ rewrite ger0_norm ?subr_ge0; last by move:E; rewrite ltNge => /negbFE.
 by rewrite opprD opprK addrACA subrr add0r mulrC mulrDl div1r -splitr.
 Qed.
 
-Lemma continuous_min (f g : T -> R^o) x : 
+Lemma continuous_min (f g : T -> R^o) x :
   {for x, continuous f} -> {for x, continuous g} -> 
   {for x, continuous (f \min g)}.
 Proof.
@@ -3640,7 +3640,7 @@ apply: cvgM; [exact: cvg_cst|]; apply:cvgD; first exact: cvgD.
 by apply: cvgN; apply: cvg_norm; apply: cvgB.
 Qed.
 
-Lemma continuous_max (f g : T -> R^o) x : 
+Lemma continuous_max (f g : T -> R^o) x :
   {for x, continuous f} -> {for x, continuous g} -> 
   {for x, continuous (f \max g)}.
 Proof.
@@ -4078,7 +4078,7 @@ split=> // x y Ax By bxy; have divxy := epsdiv (x, y) bxy.
 by have [?] := projT2 (cid2 divideAB); apply/eqP/set0P; exists (x, y).
 Qed.
 
-Lemma normal_extensions : 
+Lemma urysohn_seperation:
   exists (f : T -> R), [/\ continuous f, 
     f @` A = [set 0], f @` B = [set 1] & range f `<=` `[0,1]].
 Proof.
@@ -5809,18 +5809,6 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball.
-
-Lemma pseudoMetricNormal {R : realType} {X : pseudoMetricType R} : normal X.
-Proof.
-move=> A clA; rewrite eqEsubset; split => // => U; first last.
-  case=> V sAV /filterS + x Ax; apply; move/(_ _ Ax)/filterS: sAV; apply.
-  exact: subset_closure.
-case/set_nbhsP => V [oV AV VU]. 
-  Search set_nbhs.
-  Search closure setI.
-  exists (closure U).
-  move=> sAU. exists (closure U).
-
 
 (* multi-rule bound_in_itv already exists in interval.v, but we
   advocate that it should actually have the following statement.
