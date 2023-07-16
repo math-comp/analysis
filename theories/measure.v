@@ -3515,7 +3515,7 @@ suff : forall X, mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B).
     rewrite funeqE => n; rewrite big_mkord; apply: eq_bigr => i _; congr (mu _).
     by rewrite setIC; apply/setIidPl; exact: bigcup_sup.
   move=> ->; have := fun n (_ : xpredT n) => outer_measure_ge0 mu (A n).
-  move/is_cvg_nneseries => /cvg_ex[l] hl.
+  move/(@is_cvg_nneseries _ _ _ 0) => /cvg_ex[l] hl.
   under [in X in _ --> X]eq_fun do rewrite -(big_mkord xpredT (mu \o A)).
   by move/cvg_lim : (hl) => ->.
 move=> X.
