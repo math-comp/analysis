@@ -3563,6 +3563,95 @@ Unshelve. all: end_near. Qed.
 
 End ecvg_realFieldType.
 
+Section sup_sum.
+Context {R : realType}.
+
+Lemma sup_sumE (A B : set R) : 
+  has_sup A -> has_sup B -> sup [set x + y | x in A & y in B] = sup A + sup B.
+Proof.
+move=> /[dup] supA [[a Aa] ubA] /[dup] supB [[b Bb] ubB]. 
+have ABsup : has_sup [set x + y | x in A & y in B].
+  split; first by exists (a + b); exists a => //; exists b.
+  case: ubA ubB => p up [q uq]; exists (p + q) => ? [r Ar [s Bs] <-].
+  apply: ler_add;[exact: up | exact: uq].
+apply: le_anti; apply/andP; split. 
+  apply: sup_le_ub; first by case: ABsup.
+  by move=> ? [p Ap [q Bq] <-]; apply: ler_add; exact: sup_ub.
+rewrite real_leNgt ? num_real //; apply/negP.
+rewrite -subr_gt0 => epos; pose eps := PosNum epos.
+have e2pos : 0 < eps%:num/2 by done.
+have [r Ar supBr] := sup_adherent e2pos supA. 
+have [s Bs supAs] := sup_adherent e2pos supB. 
+have := ltr_add supBr supAs.
+rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
+rewrite subrr add0r; apply/negP; rewrite -real_leNgt ?num_real //.
+by apply: sup_upper_bound => //; exists r => //; exists s.
+Qed.
+
+Lemma inf_sumE (A B : set R) : 
+  has_inf A -> has_inf B -> 
+  inf [set x + y | x in A & y in B] = inf A + inf B.
+Proof.
+move/has_inf_supN => ? /has_inf_supN ?; rewrite /inf. 
+have -> : [set - x | x in [set x + y | x in A & y in B]] = 
+    [set x + y | x in [set -x | x in A ] & y in [set -x | x in B]].
+  rewrite eqEsubset; split => /= ? [] /= ? []a Aa.
+    case => b Bb <- <-; exists (-a); first by exists (a).
+    by (exists (-b); first by exists b); rewrite opprD.
+  move=> <- [?] [b Bb] <- <-; exists (a+b); last by rewrite opprD.
+  by exists a => // ; exists b.
+by rewrite sup_sumE // -opprD.
+Qed.
+
+End sup_sum.
+
+Section max_cts.
+Context {R : realType} {T : topologicalType}.
+
+Lemma maxr_absE (x y : R) :
+  maxr x y = 1/2 * (x + y + `|x-y|).
+Proof.
+rewrite /maxr; case E: (x < y).
+  rewrite distrC ger0_norm ?subr_ge0; last exact: ltW.
+  rewrite addrC -addrA [- _ + _]addrA [-_ + _]addrC subrr add0r mulrC.
+  by rewrite mulrDl div1r -splitr.
+rewrite ger0_norm ?subr_ge0; last by move:E; rewrite ltNge => /negbFE.
+by rewrite -addrA [_ + (_ - _)]addrC subrK mulrC mulrDl div1r -splitr.
+Qed.
+
+Lemma minr_absE (x y : R) :
+  minr x y = 1/2 * (x + y - `|x-y|).
+Proof.
+rewrite /minr; case E: (x < y).
+  rewrite distrC ger0_norm ?subr_ge0; last exact: ltW.
+  rewrite opprD opprK -addrA [_ + (-_ + _)]addrA subrr add0r mulrC.
+  by rewrite mulrDl div1r -splitr.
+rewrite ger0_norm ?subr_ge0; last by move:E; rewrite ltNge => /negbFE.
+by rewrite opprD opprK addrACA subrr add0r mulrC mulrDl div1r -splitr.
+Qed.
+
+Lemma continuous_min (f g : T -> R^o) x : 
+  {for x, continuous f} -> {for x, continuous g} -> 
+  {for x, continuous (f \min g)}.
+Proof.
+move=> ctsf ctsg.
+under [_ \min _]eq_fun => ? do rewrite minr_absE.
+apply: cvgM; [exact: cvg_cst|]; apply:cvgD; first exact: cvgD.
+by apply: cvgN; apply: cvg_norm; apply: cvgB.
+Qed.
+
+Lemma continuous_max (f g : T -> R^o) x : 
+  {for x, continuous f} -> {for x, continuous g} -> 
+  {for x, continuous (f \max g)}.
+Proof.
+move=> ctsf ctsg.
+under [_ \max _]eq_fun => ? do rewrite maxr_absE.
+apply: cvgM; [exact: cvg_cst|]; apply:cvgD; first exact: cvgD.
+by apply: cvg_norm; apply: cvgB.
+Qed.
+
+End max_cts.
+
 Section pseudoMetricDist.
 Context {R : realType} {X : pseudoMetricType R}.
 
@@ -3594,16 +3683,9 @@ Proof.
 split.
   move/ereal_inf_pinfty => xrb r rpos rb; move: (ltry r); rewrite ltey => /eqP.
   by apply; apply: xrb; exists r.
-rewrite /edist=> nrb. 
-suff -> : EFin @` [set r | 0 < r /\ ball xy.1 r xy.2] = set0. 
-  by rewrite ereal_inf0.
-by rewrite -subset0 => ? [r [?]] rb <-; apply: nrb; last exact: rb.
-Qed.
-
-Lemma imply_orE (P Q : Prop) : (P -> Q) = (~ P \/ Q).
-Proof.
-apply/propext; split; last by case.
-by move=> PQ; case: (pselect P); [move=> ?; right; exact: PQ | by left].
+rewrite /edist=> nrb; suff -> : [set r | 0 < r /\ ball xy.1 r xy.2] = set0.
+  by rewrite image_set0 ereal_inf0.
+by rewrite -subset0 => r [?] rb; apply: nrb; last exact: rb.
 Qed.
 
 Lemma edist_finP (xy : X * X) : 
@@ -3620,8 +3702,8 @@ Qed.
 Lemma edist_fin_open : open [set xy : X * X | edist xy \is a fin_num].
 Proof.
 move=> z /= /edist_finP [] _/posnumP[r] bzr. 
-exists (ball z.1 r%:num, ball z.2 r%:num); first by split; apply: nbhsx_ballx.
-case=> a b [bza bzb]; apply/edist_finP; exists (r%:num + r%:num + r%:num) =>//.
+exists (ball z.1 r%:num, ball z.2 r%:num); first by split; exact: nbhsx_ballx.
+case=> a b [bza bzb]; apply/edist_finP; exists (r%:num + r%:num + r%:num) => //.
 by apply: (ball_triangle _ bzb); apply: (ball_triangle _ bzr); exact: ball_sym.
 Qed.
 
@@ -3630,59 +3712,21 @@ Proof.
 move=> z /= /(_ (ball z 1)) []; first exact: nbhsx_ballx.
 move=> w [/edist_finP [] _/posnumP[r] babr [bz1w1 bz2w2]]; apply/edist_finP.
 exists (1 + (r%:num + 1)) => //.
-by apply: (ball_triangle bz1w1); apply: (ball_triangle babr); apply: ball_sym.
+by apply: (ball_triangle bz1w1); apply: (ball_triangle babr); exact: ball_sym.
 Qed.
 
 Lemma edist_pinfty_open : open [set xy : X * X | edist xy = +oo]%E.
 Proof.
 rewrite -closedC; have := edist_fin_closed; congr (_ _).
-by rewrite eqEsubset; split => z /=; rewrite ?ge0_fin_numE // ltey; move/eqP.
+by rewrite eqEsubset; split => z; rewrite /= ?ge0_fin_numE // ltey; move/eqP.
 Qed.
 
 Lemma edist_sym (x y : X) : edist (x,y) = edist (y, x).
 Proof.
-rewrite /edist /=; under eq_fun => r. 
+rewrite /edist /=; under eq_fun => r.
   have -> : ball x r y = ball y r x by apply: propext; split; apply: ball_sym.
 over.
 done.
-Qed.
-
-Lemma sup_sumE (A B : set R) : 
-  has_sup A -> has_sup B -> 
-  sup [set x + y | x in A & y in B] = sup A + sup B.
-Proof.
-move=> /[dup] supA [[a Aa] ubA] /[dup] supB [[b Bb] ubB]. 
-have ABsup : has_sup [set x + y | x in A & y in B].
-  split; first by exists (a + b); exists a => //; exists b.
-  case: ubA ubB => p up [q uq]; exists (p + q) => ? /= [r Ar [s Bs] <-].
-  apply: ler_add;[exact: up | exact: uq].
-apply: le_anti; apply/andP; split. 
-  apply: sup_le_ub; first by case: ABsup.
-  move=> ? /= [p Ap [q Bq] <-]; apply: ler_add; exact: sup_ub.
-rewrite real_leNgt ? num_real //; apply/negP.
-rewrite -subr_gt0 => epos; pose eps := PosNum epos.
-have e2pos : 0 < eps%:num/2 by done.
-have [r Ar supBr] := sup_adherent e2pos supA. 
-have [s Bs supAs] := sup_adherent e2pos supB. 
-have := ltr_add supBr supAs.
-rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
-rewrite subrr add0r; apply/negP; rewrite -real_leNgt ?num_real //.
-by apply: sup_upper_bound => //; exists r => //; exists s.
-Qed.
-
-Lemma inf_sumE (A B : set R) : 
-  has_inf A -> has_inf B -> 
-  inf [set x + y | x in A & y in B] = inf A + inf B.
-Proof.
-move/has_inf_supN => ? /has_inf_supN ?; rewrite /inf. 
-have -> : [set - x | x in [set x + y | x in A & y in B]] = 
-    [set x + y | x in [set -x | x in A ] & y in [set -x | x in B]].
-  rewrite eqEsubset; split => /= ? [] /= ? []a Aa.
-    case => b Bb <- <-; exists (-a); first by exists (a).
-    by (exists (-b); first by exists b); rewrite opprD.
-  move=> <- [?] [b Bb] <- <-; exists (a+b); last by rewrite opprD.
-  by exists a => // ; exists b.
-by rewrite sup_sumE // -opprD.
 Qed.
 
 Lemma edist_triangle (x y z : X) :
@@ -3738,20 +3782,18 @@ rewrite -[edist (x,y)]fineK //; apply: cvg_EFin.
   by have := edist_fin_open efin; apply: filter_app; near=> w.
 move=> U /=; rewrite nbhs_simpl /=.
 rewrite -nbhs_ballE; case => _/posnumP[r] distrU; rewrite nbhs_simpl /=.
-have r2p : 0 < (r%:num/4). 
-  apply:divr_gt0 => //; rewrite (_ : 4 = 4%:R)%R //.
-exists (ball x ((r%:num/4)), ball y ((r%:num/4))) => /=.
+have r2p : 0 < (r%:num/4) by apply:divr_gt0 => //; rewrite (_ : 4 = 4%:R)%R.
+exists (ball x ((r%:num/4)), ball y ((r%:num/4))).
   split => //=; rewrite nbhs_ballE;
-  apply (@nbhsx_ballx _ _ _ (!!@PosNum _ ((r%:num/4)) r2p)).
+  apply (@nbhsx_ballx _ _ _ (@PosNum _ ((r%:num/4)) r2p)).
 case => a b /= [] /ball_sym xar yar; apply: distrU => /=. 
 have abxy : (edist (a,b) <= edist (a,x) + edist (x,y) + edist (y, b))%E.
   apply: le_trans; first exact: (@edist_triangle _ x).
   by rewrite -addeA lee_add => //; exact: edist_triangle.
 have abfin : edist (a,b) \is a fin_num.
   rewrite ge0_fin_numE //; apply: (le_lt_trans abxy).
-  apply: lte_add_pinfty; last by rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num/4).
-  apply: lte_add_pinfty; first by rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num/4).
-  by rewrite -ge0_fin_numE //.
+  apply: lte_add_pinfty; [apply: lte_add_pinfty|]; 
+    by rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num/4).
 have xyabfin : `|(edist (x,y) - edist (a,b))|%E \is a fin_num.
   by rewrite abse_fin_num fin_numB abfin efin.
 have daxr : edist (a,x) \is a fin_num. 
@@ -3802,23 +3844,288 @@ Qed.
 Lemma edist_refl x : edist (x,x) = 0%E.
 Proof. exact/edist_closeP. Qed.
 
-Definition dist_bd (xy : X*X) : R := fine (mine (edist xy) (1%:E)).
+End pseudoMetricDist.
+#[global]
+Hint Resolve edist_ge0 : core.
 
-Lemma dist_bd_sym (x y : X) : dist_bd (x,y) = dist_bd (y,x).
-Proof. by rewrite /dist_bd edist_sym. Qed.
+Section urysohn.
+Context {T : topologicalType} (A B : set T).
+Hypothesis An0 : A !=set0.
+Hypothesis Bn0 : B !=set0.
+Hypothesis closedA : closed A.
+Hypothesis closedB : closed B.
+Hypothesis AB0 : A `&` B = set0.
+Hypothesis normalT : normal T.
 
-Lemma dist_bd_close (x y : X) : dist_bd (x,y) = 0 <-> close x y. 
-Proof. 
-split; rewrite /dist_bd /mine.
-  case E: (edist (x,y) < 1)%E; last by move/eqP; rewrite oner_eq0. 
-  have dfin : edist (x,y) \is a fin_num.
-    by rewrite ge0_fin_numE //; apply: (lt_trans E); rewrite ltey. 
-  by move/eqP; rewrite fine_eq0 //; move/eqP/edist_closeP.
-by move=> /edist_closeP ->; rewrite /= lte01.
+Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
+
+Local Notation "'to_set' A x" := ([set y | A (x, y)])
+  (at level 0, A at level 0) : classical_set_scope.
+
+(* Urysohn's lemma guarantees a continuous function : T -> R
+   where "f @` A = [set 0]" and "f @` B = [set 1]".
+   The idea is to leverage countable_uniformity to build that function
+   rather than construct it directly.
+
+   The bulk of the work is building a uniformity to measure "distance from A".
+   Each pair of "nested" U,V induces an approxmiantion "apxU".
+                 A-------)] U
+                 A----------------) V (points near A)
+                          (------------  ~`closure U (points far from A)
+   These make the sub-basis for a filter. That filter is a uniformity
+   because normality lets us split
+
+                 A------)] U
+                 A-----------)]  V'
+                         (---------------  ~`closure U
+                 A----------------) V
+                              (---------  ~` closure V'
+   and (U,V') + (V', V) splits the entourage of (U,V). This uniform space is not
+   neccesarily a pseudometric. So we find an entourage which divides A and B,
+   then the gauge pseudometric gives us what we want.
+*)
+
+Let apxU (UV : set T * set T) : set (T * T) :=
+  (UV.2 `*` UV.2) `|` (~` closure UV.1 `*` ~` closure UV.1).
+
+Let nested (UV : set T * set T) :=
+  [/\ open UV.1, open UV.2, A `<=` UV.1 & closure UV.1 `<=`UV.2].
+
+Let ury_base := [set apxU UV | UV in nested].
+
+Local Lemma ury_base_refl E :
+  ury_base E -> [set fg | fg.1 = fg.2] `<=` E.
+Proof.
+case; case=> L R [_ _ _ /= LR] <- [? x /= ->].
+case: (pselect (R x)); first by left.
+by move/subsetC: LR => /[apply] => ?; right.
 Qed.
 
-End pseudoMetricDist.
+Local Lemma ury_base_inv E : ury_base E -> ury_base (E^-1)%classic.
+Proof.
+case; case=> L R ? <-; exists (L,R) => //.
+by rewrite eqEsubset; split => //; (case=> x y [] [? ?]; [left| right]).
+Qed.
 
+Local Lemma ury_base_split E :
+  ury_base E -> exists E1 E2, [/\ ury_base E1, ury_base E2 &
+    (E1 `&` E2) \; (E1 `&` E2) `<=` E].
+Proof.
+case; case => L R [/= oL oR AL cLR <-].
+have [R' []] : exists R', [/\ open R', closure L `<=` R' & closure R' `<=` R].
+  have := @normalT (closure L) (@closed_closure T L).
+  rewrite eqEsubset; case=> /(_ R) + _; case.
+    by move=> x /cLR ?; apply: open_nbhs_nbhs.
+  move=> V /set_nbhsP [U] [? ? ? cVR]; exists U; split => //.
+  by apply: (subset_trans _ cVR); exact: closure_subset.
+move=> oR' cLR' cR'R; exists (apxU (L, R')), (apxU (R', R)).
+split; first by exists (L, R').
+  exists (R', R) => //; split => //; apply: (subset_trans AL).
+  by apply: (subset_trans _ cLR'); exact: subset_closure.
+case=> x z /= [y [+ +] []].
+(do 4 (case; case=> /= ? ?)); try (by left); try (by right);
+  match goal with nG : (~ closure ?S ?y), G : ?S ?y |- _ =>
+    by move/subset_closure: G
+  end.
+Qed.
+
+Let ury_unif := smallest Filter ury_base.
+
+Instance ury_unif_filter : Filter ury_unif.
+Proof. exact: smallest_filter_filter. Qed.
+
+Local Lemma ury_unif_refl E : ury_unif E -> [set fg | fg.1 = fg.2] `<=` E.
+Proof.
+move/(_ (globally [set fg | fg.1 = fg.2])); apply; split.
+  exact: globally_filter.
+exact: ury_base_refl.
+Qed.
+
+Local Lemma set_prod_invK (K : set (T * T)) : (K^-1^-1)%classic = K.
+Proof. by rewrite eqEsubset; split; case. Qed.
+
+Local Lemma ury_unif_inv E : ury_unif E -> ury_unif (E^-1)%classic.
+Proof.
+move=> ufE F [/filter_inv FF urF]; have [] := ufE [set (V^-1)%classic | V in F].
+  split => // K /ury_base_inv/urF /= ?; exists (K^-1)%classic => //.
+  by rewrite set_prod_invK.
+by move=> R FR <-; rewrite set_prod_invK.
+Qed.
+
+Local Lemma divideAB : exists2 E, ury_base E & (A `*` B) `&` E = set0.
+Proof.
+have := normalT closedA; rewrite eqEsubset; case=> + _; case/(_ (~`B)).
+  move=> x Ax; apply: open_nbhs_nbhs; split => //; first exact/closed_openC.
+  by move: x Ax; apply/ disjoints_subset.
+move=> V /set_nbhsP [U [oU AU UV]] cVcb; exists (apxU (U, ~`B)).
+  exists (U, ~`B) => //; split => //=; first exact/closed_openC.
+  by move/closure_subset/subset_trans: UV; exact.
+rewrite eqEsubset; split; case=> // a b [/=[Aa Bb] [[//]|]].
+by have /subset_closure ? := AU _ Aa; case.
+Qed.
+
+Local Lemma ury_unif_split_iter E n :
+  filterI_iter ury_base n E -> exists2 K : set (T*T),
+    filterI_iter ury_base n.+1 K & K\;K `<=` E.
+Proof.
+elim: n E; first move=> E [].
+- move=> ->; exists setT => //; exists setT; first by left.
+  by exists setT; rewrite ?setIT; first by left.
+- move=> /[dup] /ury_base_split [E1 [E2] [? ? ? ?]]; exists (E1 `&` E2) => //.
+  by (exists E1; first by right); exists E2; first by right.
+move=> n IH E /= [E1 /IH [F1 F1n1 F1E1]] [E2 /IH [F2 F2n1 F2E2]] E12E.
+exists (F1 `&` F2); first by exists F1 => //; exists F2.
+move=> /= [x z ] [y /= [K1xy K2xy] [K1yz K2yz]]; rewrite -E12E; split.
+  by apply: F1E1; exists y.
+by apply: F2E2; exists y.
+Qed.
+
+Local Lemma ury_unif_split E : ury_unif E ->
+  exists2 K, ury_unif K & K \; K `<=` E.
+Proof.
+rewrite /ury_unif filterI_iterE; case=> G [n _] /ury_unif_split_iter [].
+move=> K SnK KG GE; exists K; first by exists K => //; exists n.+1.
+exact: (subset_trans _ GE).
+Qed.
+
+Local Lemma ury_unif_covA E : ury_unif E -> A `*` A `<=` E.
+Proof.
+rewrite /ury_unif filterI_iterE; case=> G [n _] sG /(subset_trans _); apply.
+elim: n G sG.
+  move=> g [-> //| [[P Q]]] [/= _ _ AP cPQ <-] [x y] [/= /AP ? ?].
+  by left; split => //=; apply/cPQ/subset_closure => //; exact: AP.
+by move=> n IH G [R] /IH AAR [M] /IH AAM <- z; split; [exact: AAR | exact: AAM].
+Qed.
+
+Let urysohn_uniformType_mixin :=
+  UniformMixin ury_unif_filter ury_unif_refl ury_unif_inv ury_unif_split erefl.
+
+Let urysohn_topologicalTypeMixin :=
+  topologyOfEntourageMixin urysohn_uniformType_mixin.
+
+Let urysohn_filtered := FilteredType T T (nbhs_ ury_unif).
+Let urysohn_topologicalType :=
+  TopologicalType urysohn_filtered urysohn_topologicalTypeMixin.
+Let urysohn_uniformType := UniformType
+  urysohn_topologicalType urysohn_uniformType_mixin.
+
+Local Notation T1 := urysohn_uniformType.
+
+Let ury_base_ent E : ury_base E -> @entourage T1 E.
+Proof. by move=> ?; exact: sub_gen_smallest. Qed.
+
+Let divider : set (T1 * T1) := projT1 (cid2 divideAB).
+
+Local Lemma divider_ent : @entourage urysohn_uniformType divider.
+Proof. by apply: ury_base_ent; have [] := projT2 (cid2 divideAB). Qed.
+
+Let ury_gauge := @gauge_uniformType T1 _ divider_ent.
+Local Notation T2 := ury_gauge.
+
+Local Lemma ury_gauge_unif E : gauge divider E -> ury_unif E.
+Proof.
+case=> n _ dE; apply: (@filterS _ _ ury_unif_filter _ _ dE).
+elim: n {E dE} => /=.
+  apply: (@filterI _ _ ury_unif_filter); first exact: divider_ent.
+  by apply: (@entourage_inv T1); exact: divider_ent.
+move=> n IH; apply: (@filterI _ _ ury_unif_filter).
+  exact: (@entourage_split_ent T1).
+by apply: (@entourage_inv T1); exact: (@entourage_split_ent T1).
+Qed.
+
+Local Lemma ury_gauge_nbhs x U : nbhs (x : T2) U -> nbhs (x : T) (U : set T).
+Proof.
+case => E gE /(@filterS T); apply; move/ury_gauge_unif: gE.
+rewrite /ury_unif filterI_iterE; case => K /= [i _] /= uiK KE.
+suff : @nbhs T T x to_set K (x) by apply: filterS => y /KE.
+elim: i K uiK {E KE}; last by move=> ? H ? [N] /H ? [M] /H ? <-; apply: filterI.
+move=> K; case; first by move ->; exact: filterT.
+case; case => P Q [/= oP oQ AP cPQ <-];  rewrite /apxU /=.
+set M := [set y | _ \/ _]; case: (pselect (Q x)); first last.
+  move=> nQx; suff -> : M = ~` closure P.
+    apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
+    by move/cPQ.
+  rewrite eqEsubset /M; split => z; first by case; case.
+  by move=> ?; right; split => // /cPQ.
+case: (pselect (~ closure P x)); first last.
+  move=> nPx ?; suff -> : M = Q by apply: open_nbhs_nbhs; split.
+  rewrite eqEsubset /M; split => z; first by case; case.
+  by move=> ?; left; split.
+move=> cPx Qx; suff -> : M = setT by exact: filterT.
+rewrite eqEsubset; split => // z _; case: (pselect (Q z)).
+  by move=> ?; left.
+by move/subsetC: cPQ => /[apply] ?; right.
+Qed.
+
+Local Lemma ury_gauge_closeA (x y : T2) : A x -> A y -> close x y.
+Proof.
+move=> Ax Ay U [oU Uy] V; rewrite -nbhs_entourageE; case=> E + EV.
+move/ury_gauge_unif/ury_unif_covA=> AAE; exists y; split => //.
+exact/EV/AAE.
+Qed.
+
+Section urysohn_real.
+Context {R : realType}.
+
+Local Notation T3 := (@gauge_pseudoMetricType _ _ divider_ent R).
+
+Let divide_eps : exists (eps : R), 0 < eps /\
+  forall (x y : T3), A x -> B y -> ~ ball x eps y.
+Proof.
+have : @entourage T3 divider by exists O => /=.
+rewrite -entourage_ballE; case=> _/posnumP[eps] epsdiv; exists eps%:num.
+split=> // x y Ax By bxy; have divxy := epsdiv (x, y) bxy.
+by have [?] := projT2 (cid2 divideAB); apply/eqP/set0P; exists (x, y).
+Qed.
+
+Lemma normal_extensions : 
+  exists (f : T -> R), [/\ continuous f, 
+    f @` A = [set 0], f @` B = [set 1] & range f `<=` `[0,1]].
+Proof.
+case: An0 => a Aa; pose eps' := projT1 (cid divide_eps).
+have epos : 0 < eps' by case : (projT2 (cid divide_eps)). 
+pose eps := PosNum epos. 
+have dfin x y : @edist R T3 (x,y) \is a fin_num.
+  apply/edist_finP => /=; exists 2 => //.
+  exact: countable_uniform_bounded.
+pose f' := (fun z => (fine ((@edist _ T3) (a,z)))) \min (fun=> eps%:num).
+pose f z := (f' z)/eps%:num; exists f; split.
+- move=> x; rewrite /f; apply: cvgM; last exact: cvg_cst.
+  suff : {for x, continuous (f' : T2 -> R)}.
+    by move=> Q U; rewrite nbhs_simpl /= => ?; apply: ury_gauge_nbhs; exact: Q.
+  apply: continuous_min; last by apply: cvg_cst; exact: nbhs_filter.
+  apply: fine_cvg; first exact: nbhs_filter.
+  rewrite fineK //; apply: (@cvg_comp _ _ _ (pair (a:T3)) (@edist R T3)).
+    by apply: (cvg_pair (cvg_cst _) (cvg_id)); exact: nbhs_filter.
+  exact: edist_continuous.
+- rewrite eqEsubset /f /f' /=; split => ?; first last.
+    by move=> ->; exists a => //; rewrite /f /f' edist_refl /= /minr epos mul0r.
+  case => x Ax <-.
+  have /edist_closeP -> : @close T3 a x by exact: ury_gauge_closeA.
+  by rewrite /= /minr epos mul0r.
+- rewrite eqEsubset /f /f' /=; split => ?; first last.
+    move=> ->; case: Bn0 => b Bb; exists b => //; rewrite /minr.
+    case E: (fine (edist _) < eps'); rewrite ?divrr // ?unitf_gt0 //. 
+    move: E; rewrite ltNge => /negP; apply: absurd.
+    rewrite -lee_fin fineK // leNgt; apply/negP => de.
+    have [_ /(_ _ _ Aa Bb)] := projT2 (cid divide_eps); apply.
+    by apply: (@edist_lt_ball R T3 _ (a:T3,b:T3)).
+  case=> b Bb; rewrite /minr.
+  case E: (fine (edist _) < eps'); rewrite ?divrr // ?unitf_gt0 //. 
+  move: E; rewrite ltNge => /negP; apply: absurd.
+  rewrite -lee_fin fineK // leNgt; apply/negP => de.
+  have [_ /(_ _ _ Aa Bb)] := projT2 (cid divide_eps); apply.
+  by apply: (@edist_lt_ball R T3 _ (a:T3,b:T3)).
+- move=> ? [x _ <-]; rewrite set_itvE /=; apply/andP; split.
+    rewrite /f divr_ge0 // /f' /= /minr; case :(_ < _); last exact:ltW.
+    apply: fine_ge0; exact: edist_ge0.
+  rewrite /f ler_pdivr_mulr // mul1r /f' /= /minr; case E : (_ < _) => //.
+  exact:ltW.
+Qed.
+
+End urysohn_real.
+
+End urysohn.
 
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
@@ -5427,9 +5734,9 @@ rewrite normfZV ?subr_eq0// mulr1 normrM (gtr0_norm s0) gtr0_norm //.
 by rewrite ltr_pdivr_mulr // ltr_pmulr // ltr1n.
 Qed.
 
-Lemma closed_ball_closed (R : realFieldType) (V : normedModType R) (x : V)
-  (r : R) : 0 < r -> closed (closed_ball x r).
-Proof. by move => r0; rewrite closed_ballE //; exact: closed_closed_ball_. Qed.
+Lemma closed_ball_closed (R : realFieldType) (V : pseudoMetricType R) (x : V)
+  (r : R) : closed (closed_ball x r).
+Proof. exact: closed_closure. Qed. 
 
 Lemma closed_ballR_compact (R : realType) (x e : R) : 0 < e ->
   compact (closed_ball x e).
@@ -5456,15 +5763,23 @@ apply: (subset_trans (closed_ball_subset _ _) xrB) => //=.
 by rewrite lter_pdivr_mulr // ltr_pmulr // ltr1n.
 Qed.
 
-Lemma subset_closed_ball (R : realFieldType) (V : normedModType R) (x : V)
-  (r : R) : 0 < r -> ball x r `<=` closed_ball x r.
-Proof. move=> r0; rewrite /closed_ball; apply: subset_closure. Qed.
+Lemma subset_closed_ball (R : realFieldType) (V : pseudoMetricType R) (x : V)
+  (r : R) : ball x r `<=` closed_ball x r.
+Proof. exact: subset_closure. Qed.
 
 Lemma locally_compactR (R : realType) : locally_compact [set: R].
 Proof.
 move=> x _; rewrite withinET; exists (closed_ball x 1).
   by apply/nbhs_closedballP; exists 1%:pos.
 by split; [apply: closed_ballR_compact | apply: closed_ball_closed].
+Qed.
+
+Lemma subset_closure_half (R : realFieldType) (V : pseudoMetricType R) (x : V)
+  (r : R) : 0 < r -> closed_ball x (r/2) `<=` ball x r.
+Proof.
+move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) []. 
+  exact: nbhsx_ballx.
+by move=> y [+/ball_sym]; rewrite [t in ball x t z]splitr; apply: ball_triangle.
 Qed.
 
 (*TBA topology.v once ball_normE is there*)
@@ -5494,6 +5809,18 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball.
+
+Lemma pseudoMetricNormal {R : realType} {X : pseudoMetricType R} : normal X.
+Proof.
+move=> A clA; rewrite eqEsubset; split => // => U; first last.
+  case=> V sAV /filterS + x Ax; apply; move/(_ _ Ax)/filterS: sAV; apply.
+  exact: subset_closure.
+case/set_nbhsP => V [oV AV VU]. 
+  Search set_nbhs.
+  Search closure setI.
+  exists (closure U).
+  move=> sAU. exists (closure U).
+
 
 (* multi-rule bound_in_itv already exists in interval.v, but we
   advocate that it should actually have the following statement.
