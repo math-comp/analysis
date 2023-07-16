@@ -3738,52 +3738,87 @@ rewrite -[edist (x,y)]fineK //; apply: cvg_EFin.
   by have := edist_fin_open efin; apply: filter_app; near=> w.
 move=> U /=; rewrite nbhs_simpl /=.
 rewrite -nbhs_ballE; case => _/posnumP[r] distrU; rewrite nbhs_simpl /=.
-have r2p : 0 < (r%:num/2) by done.
-exists (ball x ((r%:num/2)), ball y ((r%:num/2))) => /=.
+have r2p : 0 < (r%:num/4). 
+  apply:divr_gt0 => //; rewrite (_ : 4 = 4%:R)%R //.
+exists (ball x ((r%:num/4)), ball y ((r%:num/4))) => /=.
   split => //=; rewrite nbhs_ballE;
-  apply (@nbhsx_ballx _ _ _ (!!@PosNum _ ((r%:num/2)) r2p)).
+  apply (@nbhsx_ballx _ _ _ (!!@PosNum _ ((r%:num/4)) r2p)).
 case => a b /= [] /ball_sym xar yar; apply: distrU => /=. 
 have abxy : (edist (a,b) <= edist (a,x) + edist (x,y) + edist (y, b))%E.
   apply: le_trans; first exact: (@edist_triangle _ x).
   by rewrite -addeA lee_add => //; exact: edist_triangle.
 have abfin : edist (a,b) \is a fin_num.
   rewrite ge0_fin_numE //; apply: (le_lt_trans abxy).
-  apply: lte_add_pinfty; last by rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num/2).
-  apply: lte_add_pinfty; first by rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num/2).
+  apply: lte_add_pinfty; last by rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num/4).
+  apply: lte_add_pinfty; first by rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num/4).
   by rewrite -ge0_fin_numE //.
 have xyabfin : `|(edist (x,y) - edist (a,b))|%E \is a fin_num.
   by rewrite abse_fin_num fin_numB abfin efin.
 have daxr : edist (a,x) \is a fin_num. 
-  by apply/ edist_finP; exists (r%:num/2).
+  by apply/ edist_finP; exists (r%:num/4).
 have dybr : edist (y,b) \is a fin_num. 
-  by apply/ edist_finP; exists (r%:num/2).
+  by apply/ edist_finP; exists (r%:num/4).
 rewrite -fineB // -fine_abse ?fin_numB ?abfin ?efin //.
 apply (@le_lt_trans _ _ (fine (edist (a, x) + edist (y, b)))).
   rewrite fine_le // ?fin_numD ?abfin ?efin // ?daxr ?dybr //.
-  
+  case: (pselect (0 <= edist (a,b) - edist (x,y))%E).
+    rewrite -abseN oppeD ?fin_num_adde_defr // oppeK [x in `|x|%E]addeC.
+    move=> dpos; rewrite gee0_abs // lee_subl_addr //.
+    by rewrite -addeA [(_ (y,b) + _)%E]addeC addeA. 
+  move/negP; rewrite leNgt negbK -lte_opp oppe0 oppeD ?fin_num_adde_defr //.
+  rewrite addeC oppeK => /ltW dpos; rewrite gee0_abs // lee_subl_addr //.
+  rewrite -addeA [(_ (y,b) + _)%E]addeC addeA [_ (a,x)]edist_sym.
+  rewrite [_ (y,b)]edist_sym -addeA; apply: (le_trans (@edist_triangle _ a _)).
+  by rewrite lee_add //; exact: edist_triangle.
+rewrite fineD // [_%:num]splitr. 
+have r42 : r%:num/4 < r%:num/2.
+  rewrite -ltr_pdivl_mulr // ?invr_gt0 (_ : 4 = 4%:R)%R // invrK -div1r.
+  by rewrite -mulrA ltr_pmulr // mulrC div1r ltr_pdivl_mulr // mul1r ltr_nat. 
+apply: ltr_add; apply: (le_lt_trans _ r42); rewrite -lee_fin fineK //.
+  by apply/edist_fin.
+by apply/edist_fin.
+Unshelve. end_near. Qed.
 
-  rewrite [_%:num]splitr; apply: (@ltr_add.
-  
+Lemma edist_closeP x y : close x y <-> edist (x,y) = 0%E.
+Proof.
+rewrite ball_close; split; first last.
+  by move=> edist0 eps; apply: (@edist_lt_ball _ (x,y)); rewrite edist0.
+move=> bxy; apply: le_anti; apply/andP. 
+split => //; rewrite leNgt; apply/negP => dpos.
+have xxfin : edist (x,y) \is a fin_num.
+  rewrite ge0_fin_numE //; apply: (@le_lt_trans _ _ 1%:E); rewrite ?ltey //.
+  exact/edist_fin.
+move: (dpos); rewrite -[edist _]fineK // lte_fin => dpose.
+pose eps := PosNum dpose.
+have : (edist (x,y) <= (eps%:num/2)%:E)%E.
+  apply: ereal_inf_lb; exists (eps%:num/2) => //; split => //. 
+  by (have e2p : 0 < (eps%:num/2) by done); exact: (bxy (@PosNum R _ e2p)).
+rewrite leNgt; move/negP; apply. 
+rewrite /eps /= EFinM /= fineK // -lte_pdivl_mulr // invrK.
+rewrite -[x in (x < _)%E]mule1 lte_pmul2l //.
+by rewrite lte_fin [x in x < _](_ : 1 = 1%:R) // ltr_nat.
+Qed.
 
-rewrite /= -fineB //.
-dist a b < dist a x + dist x y + dist + dist y b
-rewrite {3}/ball /=.
+Lemma edist_refl x : edist (x,x) = 0%E.
+Proof. exact/edist_closeP. Qed.
 
-case => a b [/=]. /ball_triangle + /ball_sym. => /[apply].
+Definition dist_bd (xy : X*X) : R := fine (mine (edist xy) (1%:E)).
 
+Lemma dist_bd_sym (x y : X) : dist_bd (x,y) = dist_bd (y,x).
+Proof. by rewrite /dist_bd edist_sym. Qed.
 
-exists ([]
+Lemma dist_bd_close (x y : X) : dist_bd (x,y) = 0 <-> close x y. 
+Proof. 
+split; rewrite /dist_bd /mine.
+  case E: (edist (x,y) < 1)%E; last by move/eqP; rewrite oner_eq0. 
+  have dfin : edist (x,y) \is a fin_num.
+    by rewrite ge0_fin_numE //; apply: (lt_trans E); rewrite ltey. 
+  by move/eqP; rewrite fine_eq0 //; move/eqP/edist_closeP.
+by move=> /edist_closeP ->; rewrite /= lte01.
+Qed.
 
+End pseudoMetricDist.
 
-preimage_bigcup
-
-  case => r rpos.
-  exists .
-   exists ).
-  
-  move/edist_pinfinityP.
-
-case=> x y.
 
 
 #[deprecated(since="mathcomp-analysis 0.6.0",
