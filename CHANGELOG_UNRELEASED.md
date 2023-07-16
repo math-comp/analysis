@@ -51,6 +51,9 @@
 - in file `lebesgue_integral.v`,
   + new lemma `approximation_sfun_integrable`.
 
+- in `classical_sets.v`:
+  + lemmas `properW`, `properxx`
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
@@ -119,6 +122,15 @@
   + `powere_posM` -> `poweRM`
   + `powere12_sqrt` -> `poweR12_sqrt`
 
+- in `lebesgue_integral.v`:
+  + `ge0_integralM_EFin` -> `ge0_integralZl_EFin`
+  + `ge0_integralM` -> `ge0_integralZl`
+  + `integralM_indic` -> `integralZl_indic`
+  + `integralM_indic_nnsfun` -> `integralZl_indic_nnsfun`
+  + `integrablerM` -> `integrableZl`
+  + `integrableMr` -> `integrableZr`
+  + `integralM` -> `integralZl`
+
 ### Generalized
 
 - in `exp.v`:
@@ -127,6 +139,11 @@
   + lemma `ln_power_pos` (now `ln_powR`)
   + lemma `ln_power_pos`
 - in file `lebesgue_integral.v`, updated `le_approx`.
+
+- in `sequences.v`:
+  + lemmas `is_cvg_nneseries_cond`, `is_cvg_npeseries_cond`
+  + lemmas `is_cvg_nneseries`, `is_cvg_npeseries`
+  + lemmas `nneseries_ge0`, `npeseries_le0`
 
 ### Deprecated
 

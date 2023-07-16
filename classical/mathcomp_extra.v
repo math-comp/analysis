@@ -830,3 +830,18 @@ Reserved Notation "f \min g" (at level 50, left associativity).
 Definition min_fun T (R : numDomainType) (f g : T -> R) x := Num.min (f x) (g x).
 Notation "f \min g" := (min_fun f g) : ring_scope.
 Arguments min_fun {T R} _ _ _ /.
+
+(* NB: Coq 8.17.0 generalizes dependent_choice from Set to Type
+   making the following lemma redundant *)
+Section dependent_choice_Type.
+Context X (R : X -> X -> Prop).
+
+Lemma dependent_choice_Type : (forall x, {y | R x y}) ->
+  forall x0, {f | f 0%N = x0 /\ forall n, R (f n) (f n.+1)}.
+Proof.
+move=> h x0.
+set (f := fix f n := if n is n'.+1 then proj1_sig (h (f n')) else x0).
+exists f; split => //.
+intro n; induction n; simpl; apply: proj2_sig.
+Qed.
+End dependent_choice_Type.
