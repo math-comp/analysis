@@ -1712,6 +1712,13 @@ Section dirac_lemmas.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 
+Lemma finite_card_sum (A : set T) : finite_set A ->
+  \esum_(i in A) 1 = (#|` fset_set A|%:R)%:E :> \bar R.
+Proof.
+move=> finA; rewrite esum_fset// (eq_fsbigr (cst 1))//.
+by rewrite card_fset_sum1// natr_sum -sumEFin fsbig_finite.
+Qed.
+
 Lemma finite_card_dirac (A : set T) : finite_set A ->
   \esum_(i in A) \d_ i A = (#|` fset_set A|%:R)%:E :> \bar R.
 Proof.
@@ -2946,8 +2953,8 @@ by apply: le_measure; rewrite ?inE.
 Qed.
 
 Section measureD.
-Context d (R : realFieldType) (T : ringOfSetsType d).
-Variable mu : {measure set T -> \bar R}.
+Context d (T : ringOfSetsType d) (R : realFieldType).
+Variable mu : {content set T -> \bar R}.
 
 Lemma measureDI A B : measurable A -> measurable B ->
   mu A = mu (A `\` B) + mu (A `&` B).
@@ -2971,24 +2978,41 @@ Qed.
 
 End measureD.
 
-Lemma measureUfinr d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu B < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
+Section measureU2.
+Context d (T : ringOfSetsType d) (R : realFieldType).
+Variable mu : {content set T -> \bar R}.
+
+Lemma measureU2 A B : measurable A -> measurable B ->
+  mu (A `|` B) <= mu A + mu B.
+Proof.
+move=> ? ?; rewrite -bigcup2inE bigcup_mkord.
+rewrite (le_trans (@content_sub_additive _ _ _ mu _ (bigcup2 A B) 2%N _ _ _))//.
+by move=> -[//|[//|[|]]].
+by apply: bigsetU_measurable => -[] [//|[//|[|]]].
+by rewrite big_ord_recr/= big_ord_recr/= big_ord0 add0e.
+Qed.
+
+End measureU2.
+
+Section measureU.
+Context d (T : ringOfSetsType d) (R : realFieldType).
+Variable mu : {measure set T -> \bar R}.
+
+Lemma measureUfinr A B : measurable A -> measurable B -> mu B < +oo ->
+  mu (A `|` B) = mu A + mu B - mu (A `&` B).
 Proof.
 move=> Am Bm mBfin; rewrite -[B in LHS](setDUK (@subIsetl _ _ A)) setUA.
 rewrite [A `|` _]setUidl; last exact: subIsetr.
-rewrite measureU//=; do ?by apply:measurableD; do ?apply: measurableI.
-  rewrite measureD//; do ?exact: measurableI.
-  by rewrite addeA setIA setIid setIC.
-by rewrite setDE setCI setIUr -!setDE setDv set0U setDIK.
+rewrite measureU//=; [|rewrite setDIr setDv set0U ?setDIK//..].
+- by rewrite measureD// ?setIA ?setIid 1?setIC ?addeA//; exact: measurableI.
+- exact: measurableD.
 Qed.
 
-Lemma measureUfinl d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
-   (mu : {measure set T -> \bar R}):
-    measurable A -> measurable B -> (mu A < +oo)%E ->
-  mu (A `|` B) = (mu A + mu B - mu (A `&` B))%E.
-Proof. by move=> *; rewrite setUC measureUfinr// setIC [(mu B + _)%E]addeC. Qed.
+Lemma measureUfinl A B : measurable A -> measurable B -> mu A < +oo ->
+  mu (A `|` B) = mu A + mu B - mu (A `&` B).
+Proof. by move=> *; rewrite setUC measureUfinr// setIC [mu B + _]addeC. Qed.
+
+End measureU.
 
 Lemma eq_measureU d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
    (mu mu' : {measure set T -> \bar R}):
@@ -3734,8 +3758,8 @@ have setDE : setD_closed E.
   move=> A B BA [mA m1m2A AD] [mB m1m2B BD]; split; first exact: measurableD.
   - rewrite measureD//; last first.
       by rewrite (le_lt_trans _ m1oo)//; apply: le_measure => // /[!inE].
-    rewrite setIidr// m1m2A m1m2B measureD// ?setIidr//.
-    by rewrite (le_lt_trans _ m1oo)// -m1m2A; apply: le_measure => // /[!inE].
+    rewrite setIidr//= m1m2A m1m2B measureD// ?setIidr//.
+    by rewrite (le_lt_trans _ m1oo)//= -m1m2A; apply: le_measure => // /[!inE].
   - by rewrite setDE; apply: subIset; left.
 have ndE : ndseq_closed E.
   move=> A ndA EA; split; have mA n : measurable (A n) by have [] := EA n.
