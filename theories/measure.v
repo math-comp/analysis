@@ -2976,7 +2976,7 @@ Qed.
 
 Section measureD.
 Context d (T : ringOfSetsType d) (R : realFieldType).
-Variable mu : {measure set T -> \bar R}.
+Variable mu : {content set T -> \bar R}.
 
 Lemma measureDI A B : measurable A -> measurable B ->
   mu A = mu (A `\` B) + mu (A `&` B).
@@ -3000,9 +3000,9 @@ Qed.
 
 End measureD.
 
-Section measureU.
+Section measureU2.
 Context d (T : ringOfSetsType d) (R : realFieldType).
-Variable mu : {measure set T -> \bar R}.
+Variable mu : {content set T -> \bar R}.
 
 Lemma measureU2 A B : measurable A -> measurable B ->
   mu (A `|` B) <= mu A + mu B.
@@ -3013,6 +3013,12 @@ by move=> -[//|[//|[|]]].
 by apply: bigsetU_measurable => -[] [//|[//|[|]]].
 by rewrite big_ord_recr/= big_ord_recr/= big_ord0 add0e.
 Qed.
+
+End measureU2.
+
+Section measureU.
+Context d (T : ringOfSetsType d) (R : realFieldType).
+Variable mu : {measure set T -> \bar R}.
 
 Lemma measureUfinr A B : measurable A -> measurable B -> mu B < +oo ->
   mu (A `|` B) = mu A + mu B - mu (A `&` B).
@@ -3773,8 +3779,8 @@ have setDE : setD_closed E.
   move=> A B BA [mA m1m2A AD] [mB m1m2B BD]; split; first exact: measurableD.
   - rewrite measureD//; last first.
       by rewrite (le_lt_trans _ m1oo)//; apply: le_measure => // /[!inE].
-    rewrite setIidr// m1m2A m1m2B measureD// ?setIidr//.
-    by rewrite (le_lt_trans _ m1oo)// -m1m2A; apply: le_measure => // /[!inE].
+    rewrite setIidr//= m1m2A m1m2B measureD// ?setIidr//.
+    by rewrite (le_lt_trans _ m1oo)//= -m1m2A; apply: le_measure => // /[!inE].
   - by rewrite setDE; apply: subIset; left.
 have ndE : ndseq_closed E.
   move=> A ndA EA; split; have mA n : measurable (A n) by have [] := EA n.
