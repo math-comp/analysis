@@ -3173,6 +3173,11 @@ have /cptB[x BFx] : F B by apply: filterS FBA; exact: subIsetr.
 by exists x; right.
 Qed.
 
+Lemma bigsetU_compact I (F : I -> set X) (s : seq I) (P : pred I) :
+    (forall i, P i -> compact (F i)) ->
+  compact (\big[setU/set0]_(i <- s | P i) F i).
+Proof. by move=> ?; elim/big_ind : _ =>//; [exact:compact0|exact:compactU]. Qed.
+
 (* The closed condition here is neccessary to make this definition work in a  *)
 (* non-hausdorff setting.                                                     *)
 Definition compact_near (F : set (set X)) :=

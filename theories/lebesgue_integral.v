@@ -1483,6 +1483,7 @@ Qed.
 
 End approximation.
 
+
 Section semi_linearity0.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
@@ -1616,6 +1617,128 @@ by move=> Dx; rewrite (funeposneg f); apply: cvgeD;
 Qed.
 
 End approximation_sfun.
+
+Section lusin.
+Hint Extern 0  (hausdorff_space _) => (exact: Rhausdorff ) : core.
+Local Open Scope ereal_scope.
+Context (rT : realType) (A : set rT).
+Let mu := [the measure _ _ of @lebesgue_measure rT].
+Let R  := [the measurableType _ of measurableTypeR rT].
+Hypothesis mA : measurable A.
+Hypothesis finA : mu A < +oo.
+
+Let lusin_simple (f : {sfun R >-> rT}) (eps : rT) : (0 < eps)%R ->
+  exists K, [/\ compact K, K `<=` A, mu (A `\` K) < eps%:E &
+  {within K, continuous f}].
+Proof.
+move: eps=> _/posnumP[eps]; have [N /card_fset_set rfN] := @fimfunP _ _ f.
+pose Af x : set R := A `&` f @^-1` [set x].
+have mAf x : measurable (Af x) by exact: measurableI.
+have finAf x : mu (Af x) < +oo.
+  by rewrite (le_lt_trans _ finA)// le_measure// ?inE//; exact: subIsetl.
+have eNpos : (0 < eps%:num/N.+1%:R)%R by [].
+have dK' x := lebesgue_regularity_inner (mAf x) (finAf x) eNpos.
+pose dK x : set R := projT1 (cid (dK' x)); pose J i : set R := Af i `\` dK i.
+have dkP x := projT2 (cid (dK' x)).
+have mdK i : measurable (dK i).
+  by apply: closed_measurable; apply: compact_closed => //; case: (dkP i).
+have mJ i : measurable (J i) by apply: measurableD => //; exact: measurableI.
+have dKsub z : dK z `<=` f @^-1` [set z].
+  by case: (dkP z) => _ /subset_trans + _; apply => ? [].
+exists (\bigcup_(i in range f) dK i); split.
+- by rewrite -bigsetU_fset_set//; apply: bigsetU_compact=>// i _; case: (dkP i).
+- by move=> z [y _ dy]; have [_ /(_ _ dy) []] := dkP y.
+- have -> : A `\` \bigcup_(i in range f) dK i = \bigcup_(i in range f) J i.
+    rewrite -bigcupDr /= ?eqEsubset; last by exists (f point), point.
+    split => z; first by move=> /(_ (f z)) [//| ? ?]; exists (f z).
+    case => ? [? _ <-] [[zab /= <- nfz]] ? [r _ <-]; split => //.
+    by move: nfz; apply: contra_not => /[dup] /dKsub ->.
+  apply: (@le_lt_trans _ _ (\sum_(i \in range f) mu (J i))).
+    by apply: content_sub_fsum => //; exact: fin_bigcup_measurable.
+  apply: le_lt_trans.
+    apply: (@lee_fsum _ _ _ _ (fun=> (eps%:num / N.+1%:R)%:E * 1%:E)) => //.
+    by move=> i ?; rewrite mule1; apply: ltW; have [_ _] := dkP i.
+  rewrite /=-ge0_mule_fsumr // -esum_fset // finite_card_sum // -EFinM lte_fin.
+  by rewrite rfN -mulrA gtr_pmulr // mulrC ltr_pdivr_mulr // mul1r ltr_nat.
+- suff : closed (\bigcup_(i in range f) dK i) /\
+    {within \bigcup_(i in range f) dK i, continuous f} by case.
+  rewrite -bigsetU_fset_set //.
+  apply: (@big_ind _ (fun U => closed U /\ {within U, continuous f})).
+  + by split; [exact: closed0 | exact: continuous_subspace0].
+  + by move=> ? ? [? ?][? ?]; split; [exact: closedU|exact: withinU_continuous].
+  + move=> i _; split; first by apply: compact_closed; have [] := dkP i.
+    apply: (continuous_subspaceW (dKsub i)).
+    apply: (@subspace_eq_continuous _ _ _ (fun=> i)).
+      by move=> ? /set_mem ->.
+    by apply: continuous_subspaceT => ?; exact: cvg_cst.
+Qed.
+
+Let measurable_almost_continuous' (f : R -> R) (eps : rT) :
+  (0 < eps)%R -> measurable_fun A f -> exists K,
+  [/\ measurable K, K `<=` A, mu (A `\` K) < eps%:E &
+  {within K, continuous f}].
+Proof.
+move: eps=> _/posnumP[eps] mf; pose f' := EFin \o f.
+have mf' : measurable_fun A f' by exact/EFin_measurable_fun.
+have [/= g_ gf'] := @approximation_sfun _ R rT _ _ mA mf'.
+pose e2n n := (eps%:num / 2) / (2 ^ n.+1)%:R.
+have e2npos n : (0 < e2n n)%R by rewrite divr_gt0.
+have gK' n := @lusin_simple (g_ n) (e2n n) (e2npos n).
+pose gK n := projT1 (cid (gK' n)); have gKP n := projT2 (cid (gK' n)).
+pose K := \bigcap_i gK i; have mgK n : measurable (gK n).
+  by apply: closed_measurable; apply: compact_closed => //; have [] := gKP n.
+have mK : measurable K by exact: bigcap_measurable.
+have Kab : K `<=` A by move=> z /(_ O I); have [_ + _ _] := gKP O; apply.
+have []// := @pointwise_almost_uniform _ rT R mu g_ f K (eps%:num / 2).
+- by move=> n; exact: measurable_funTS.
+- exact: (measurable_funS _ Kab).
+- by rewrite (@le_lt_trans _ _ (mu A))// le_measure// ?inE.
+- by move=> z Kz; have /fine_fcvg := gf' z (Kab _ Kz); rewrite -fmap_comp compA.
+move=> D [/= mD Deps KDf]; exists (K `\` D); split => //.
+- exact: measurableD.
+- exact: subset_trans Kab.
+- rewrite setDDr; apply: le_lt_trans => /=.
+    by apply: measureU2 => //; apply: measurableI => //; apply: measurableC.
+  rewrite [_%:num]splitr EFinD; apply: lee_lt_add => //=; first 2 last.
+  + by rewrite (@le_lt_trans _ _ (mu D)) ?le_measure ?inE//; exact: measurableI.
+  + rewrite ge0_fin_numE// (@le_lt_trans _ _ (mu A))// le_measure// ?inE//.
+    exact: measurableD.
+  rewrite setDE setC_bigcap setI_bigcupr.
+  apply: (@le_trans _ _(\sum_(k <oo) mu (A `\` gK k))).
+    apply: measure_sigma_sub_additive => //; [|apply: bigcup_measurable => + _].
+      by move=> k /=; apply: measurableD => //; apply: mgK.
+    by move=> k /=; apply: measurableD => //; apply: mgK.
+  apply: (@le_trans _ _(\sum_(k <oo) (e2n k)%:E)); last exact: epsilon_trick0.
+  by apply: lee_nneseries => // k _; apply: ltW; have [] := gKP k.
+apply: (@uniform_limit_continuous_subspace _ _ _ (g_ @ \oo)) => //.
+near_simpl; apply: nearW => // n; apply: (@continuous_subspaceW _ _ _ (gK n)).
+  by move=> z [+ _]; apply.
+by have [] := projT2 (cid (gK' n)).
+Qed.
+
+Lemma measurable_almost_continuous (f : R -> R) (eps : rT) :
+  (0 < eps)%R -> measurable_fun A f -> exists K,
+  [/\ compact K, K `<=` A, mu (A `\` K) < eps%:E &
+  {within K, continuous f}].
+Proof.
+move: eps=> _/posnumP[eps] mf; have e2pos : (0 < eps%:num/2)%R by [].
+have [K [mK KA ? ?]] := measurable_almost_continuous' e2pos mf.
+have Kfin : mu K < +oo by rewrite (le_lt_trans _ finA)// le_measure ?inE.
+have [D /= [cD DK KDe]] := lebesgue_regularity_inner mK Kfin e2pos.
+exists D; split => //; last exact: (continuous_subspaceW DK).
+  exact: (subset_trans DK).
+have -> : A `\` D = (A `\` K) `|` (K `\` D).
+  rewrite eqEsubset; split => z.
+    by case: (pselect (K z)) => // ? [? ?]; [right | left].
+  case; case=> az nz; split => //; [by move: z nz {az}; apply/subsetC|].
+  exact: KA.
+apply: le_lt_trans.
+  apply: measureU2; apply: measurableD => //; apply: closed_measurable.
+  by apply: compact_closed; first exact: Rhausdorff.
+by rewrite [_ eps]splitr EFinD lte_add.
+Qed.
+
+End lusin.
 
 Section emeasurable_fun.
 Local Open Scope ereal_scope.

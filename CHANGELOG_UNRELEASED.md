@@ -40,6 +40,13 @@
   + lemmas `set_predC`, `preimage_true`, `preimage_false`
 - in `lebesgue_measure.v`:
   + lemmas `measurable_fun_ltr`, `measurable_minr`
+- in file `lebesgue_integral.v`,
+  + new lemmas `lusin_simple`, and `measurable_almost_continuous`.
+- in file `measure.v`,
+  + new lemmas `finite_card_sum`, and `measureU2`.
+
+- in `topology.v`:
+  + lemma `bigsetU_compact`
 
 - in `exp.v`:
   + notation `` e `^?(r +? s) ``
