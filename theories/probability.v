@@ -138,7 +138,7 @@ Lemma expectationM (X : {RV P >-> R}) (iX : P.-integrable [set: T] (EFin \o X))
   (k : R) : 'E_P[k \o* X] = k%:E * 'E_P [X].
 Proof.
 rewrite unlock; under eq_integral do rewrite EFinM.
-by rewrite -integralM//; under eq_integral do rewrite muleC.
+by rewrite -integralZl//; under eq_integral do rewrite muleC.
 Qed.
 
 Lemma expectation_ge0 (X : {RV P >-> R}) :
@@ -212,11 +212,11 @@ rewrite unlock [X in 'E_P[X]](_ : _ = (X \* Y \- fine 'E_P[X] \o* Y
   apply/funeqP => x /=; rewrite mulrDr !mulrDl/= mul1r fineM// mulrNN addrA.
   by rewrite mulrN mulNr [Z in (X x * Y x - Z)%R]mulrC.
 have ? : P.-integrable [set: T] (EFin \o (X \* Y \- fine 'E_P[X] \o* Y)%R).
-  by rewrite compreBr ?integrableB// compre_scale ?integrablerM.
+  by rewrite compreBr ?integrableB// compre_scale ?integrableZl.
 rewrite expectationD/=; last 2 first.
-  - by rewrite compreBr// integrableB// compre_scale ?integrablerM.
-  - by rewrite compre_scale// integrablerM// finite_measure_integrable_cst.
-rewrite 2?expectationB//= ?compre_scale// ?integrablerM//.
+  - by rewrite compreBr// integrableB// compre_scale ?integrableZl.
+  - by rewrite compre_scale// integrableZl// finite_measure_integrable_cst.
+rewrite 2?expectationB//= ?compre_scale// ?integrableZl//.
 rewrite 3?expectationM//= ?finite_measure_integrable_cst//.
 by rewrite expectation_cst mule1 fineM// EFinM !fineK// muleC subeK ?fin_numM.
 Qed.
@@ -255,8 +255,8 @@ move=> X1 Y1 XY1.
 have aXY : (a \o* X * Y = a \o* (X * Y))%R.
   by apply/funeqP => x; rewrite mulrAC.
 rewrite [LHS]covarianceE => [||//|] /=; last 2 first.
-- by rewrite compre_scale ?integrablerM.
-- by rewrite aXY compre_scale ?integrablerM.
+- by rewrite compre_scale ?integrableZl.
+- by rewrite aXY compre_scale ?integrableZl.
 rewrite covarianceE// aXY !expectationM//.
 by rewrite -muleA -muleBr// fin_num_adde_defr// expectation_fin_num.
 Qed.
@@ -392,10 +392,10 @@ Lemma varianceZ a (X : {RV P >-> R}) :
 Proof.
 move=> X1 X2; rewrite /variance covarianceZl//=.
 - by rewrite covarianceZr// muleA.
-- by rewrite compre_scale// integrablerM.
+- by rewrite compre_scale// integrableZl.
 - rewrite [X in EFin \o X](_ : _ = (a \o* X ^+ 2)%R); last first.
     by apply/funeqP => x; rewrite mulrA.
-  by rewrite compre_scale// integrablerM.
+  by rewrite compre_scale// integrableZl.
 Qed.
 
 Lemma varianceN (X : {RV P >-> R}) :
@@ -416,7 +416,7 @@ have XY : P.-integrable [set: T] (EFin \o (X \+ Y)%R).
 rewrite covarianceDl//=; last 3 first.
 - rewrite -expr2 sqrrD compreDr ?integrableD// compreDr// integrableD//.
   rewrite -mulr_natr -[(_ * 2)%R]/(2 \o* (X * Y))%R compre_scale//.
-  exact: integrablerM.
+  exact: integrableZl.
 - by rewrite mulrDr compreDr ?integrableD.
 - by rewrite mulrDr mulrC compreDr ?integrableD.
 rewrite covarianceDr// covarianceDr ?(mulrC Y X)//.
@@ -445,8 +445,8 @@ Proof.
 move=> X1 X2.
 rewrite varianceD//=; last 3 first.
 - exact: finite_measure_integrable_cst.
-- by rewrite compre_scale// integrablerM// finite_measure_integrable_cst.
-- by rewrite mulrC compre_scale ?integrablerM.
+- by rewrite compre_scale// integrableZl// finite_measure_integrable_cst.
+- by rewrite mulrC compre_scale ?integrableZl.
 by rewrite variance_cst add0e covariance_cst_l mule0 adde0.
 Qed.
 
@@ -494,10 +494,10 @@ apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
 rewrite EFinM fineK ?variance_fin_num// muleC -varianceZ//.
 rewrite -mulrA EFinM mulrC EFinM ?fineK ?covariance_fin_num// -covarianceZl//.
 rewrite addeAC -varianceD ?variance_ge0//=.
-- by rewrite compre_scale ?integrablerM.
+- by rewrite compre_scale ?integrableZl.
 - rewrite [X in EFin \o X](_ : _ = r ^+2 \o* X ^+ 2)%R 1?mulrACA//.
-  by rewrite compre_scale ?integrablerM.
-- by rewrite -mulrAC compre_scale// integrablerM.
+  by rewrite compre_scale ?integrableZl.
+- by rewrite -mulrAC compre_scale// integrableZl.
 Qed.
 
 End variance.
@@ -569,7 +569,7 @@ have Y2 : P.-integrable [set: T] (EFin \o (Y ^+ 2)%R).
   rewrite compreDr => [|//]; apply: integrableD X2 _ => [//|].
   rewrite [X in EFin \o X](_ : _ = (- fine 'E_P[X] * 2) \o* X)%R; last first.
     by apply/funeqP => x /=; rewrite -mulr_natl mulrC mulrA.
-  by rewrite compre_scale => [|//]; apply: integrablerM X1.
+  by rewrite compre_scale => [|//]; apply: integrableZl X1.
 have EY : 'E_P[Y] = 0.
   rewrite expectationB/= ?finite_measure_integrable_cst//.
   rewrite expectation_cst finEK subee//.
@@ -590,7 +590,7 @@ have le (u : R) : (0 <= u)%R ->
     rewrite compreDr => [|//]; apply: integrableD Y2 _ => [//|].
     rewrite [X in EFin \o X](_ : _ = (2 * u) \o* Y)%R; last first.
       by apply/funeqP => x /=; rewrite -mulr_natl mulrCA.
-    by rewrite compre_scale => [|//]; apply: integrablerM Y1.
+    by rewrite compre_scale => [|//]; apply: integrableZl Y1.
   have -> : (fine 'V_P[X] + u^2)%:E = 'E_P[(Y \+ cst u)^+2]%R.
     rewrite -VY -[RHS](@subeK _ _ (('E_P[(Y \+ cst u)%R])^+2)); last first.
       by rewrite fin_numX ?unlock ?integral_fune_fin_num.
@@ -773,7 +773,7 @@ transitivity (\sum_(i <oo)
 transitivity (\sum_(i <oo) (dRV_enum X i)%:E *
   \int[P]_(x in (if i \in dRV_dom X then X @^-1` [set dRV_enum X i] else set0))
     1).
-  apply: eq_eseriesr => i _; rewrite -integralM//; last 2 first.
+  apply: eq_eseriesr => i _; rewrite -integralZl//; last 2 first.
     - by case: ifPn.
     - apply/integrableP; split => //.
       rewrite (eq_integral (cst 1%E)); last by move=> x _; rewrite abse1.
