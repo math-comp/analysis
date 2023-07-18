@@ -152,6 +152,12 @@
   + lemmas `is_cvg_nneseries`, `is_cvg_npeseries`
   + lemmas `nneseries_ge0`, `npeseries_le0`
 
+- in `measure.v`:
+  + lemmas `measureDI`, `measureD`, `measureUfinl`, `measureUfinr`,
+    `null_set_setU`, `measureU0`
+    (from measure to content)
+  + lemma `subset_measure0` (from `realType` to `realFieldType`)
+
 ### Deprecated
 
 ### Removed
