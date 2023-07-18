@@ -4778,7 +4778,7 @@ HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
 
 HB.builders Context R M of Nbhs_isPseudoMetric R M.
 
-Lemma my_ball_le x : {homo ball x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
+Lemma ball_le x : {homo ball x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
 move=> e1 e2 le12 y xe1_y.
 move: le12; rewrite le_eqVlt => /orP [/eqP <- //|].
@@ -4792,7 +4792,7 @@ Lemma entourage_filter_subproof : Filter ent.
 Proof.
 rewrite entourageE; apply: filter_from_filter; first by exists 1 => /=.
 move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //=.
-by rewrite subsetI; split=> ?; apply: my_ball_le;
+by rewrite subsetI; split=> ?; apply: ball_le;
    rewrite num_le// le_minl lexx ?orbT.
 Qed.
 
