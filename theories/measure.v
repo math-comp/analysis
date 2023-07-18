@@ -2955,28 +2955,28 @@ Qed.
 HB.instance Definition _ R :=
   @isSigmaFinite.Build _ _ _ (@counting _ R) (sigma_finite_counting R).
 
-Lemma measureIl d (R : realFieldType) (T : semiRingOfSetsType d)
-    (mu : {content set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> (mu (A `&` B) <= mu A)%E.
-Proof. by move=> mA mB; rewrite le_measure ?inE//; apply: measurableI. Qed.
+Section content_semiRingOfSetsType.
+Context d (T : semiRingOfSetsType d) (R : realFieldType).
+Variables (mu : {content set T -> \bar R}) (A B : set T).
+Hypotheses (mA : measurable A) (mB : measurable B).
 
-Lemma measureIr d (R : realFieldType) (T : semiRingOfSetsType d)
-    (mu : {content set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> (mu (A `&` B) <= mu B)%E.
-Proof. by move=> mA mB; rewrite le_measure ?inE//; apply: measurableI. Qed.
+Lemma measureIl : mu (A `&` B) <= mu A.
+Proof. by rewrite le_measure ?inE//; apply: measurableI. Qed.
 
-Lemma subset_measure0 d (T : semiRingOfSetsType d) (R : realType)
-  (mu : {content set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> A `<=` B ->
-  mu B = 0%E -> mu A = 0%E.
+Lemma measureIr : mu (A `&` B) <= mu B.
+Proof. by rewrite le_measure ?inE//; apply: measurableI. Qed.
+
+Lemma subset_measure0 : A `<=` B -> mu B = 0 -> mu A = 0.
 Proof.
-move=> mA mB AB B0; apply/eqP; rewrite eq_le measure_ge0// ?andbT -?B0.
-by apply: le_measure; rewrite ?inE.
+by move=> AB B0; apply/eqP; rewrite eq_le measure_ge0// -B0 le_measure// inE.
 Qed.
 
-Section measureD.
+End content_semiRingOfSetsType.
+
+Section content_ringOfSetsType.
 Context d (T : ringOfSetsType d) (R : realFieldType).
 Variable mu : {content set T -> \bar R}.
+Implicit Types A B : set T.
 
 Lemma measureDI A B : measurable A -> measurable B ->
   mu A = mu (A `\` B) + mu (A `&` B).
@@ -2998,12 +2998,6 @@ rewrite (measureDI mA mB) addeK// fin_numE 1?gt_eqF 1?lt_eqF//.
 - by rewrite (lt_le_trans _ (measure_ge0 _ _)).
 Qed.
 
-End measureD.
-
-Section measureU2.
-Context d (T : ringOfSetsType d) (R : realFieldType).
-Variable mu : {content set T -> \bar R}.
-
 Lemma measureU2 A B : measurable A -> measurable B ->
   mu (A `|` B) <= mu A + mu B.
 Proof.
@@ -3014,7 +3008,7 @@ by apply: bigsetU_measurable => -[] [//|[//|[|]]].
 by rewrite big_ord_recr/= big_ord_recr/= big_ord0 add0e.
 Qed.
 
-End measureU2.
+End content_ringOfSetsType.
 
 Section measureU.
 Context d (T : ringOfSetsType d) (R : realFieldType).
@@ -3034,6 +3028,20 @@ Lemma measureUfinl A B : measurable A -> measurable B -> mu A < +oo ->
   mu (A `|` B) = mu A + mu B - mu (A `&` B).
 Proof. by move=> *; rewrite setUC measureUfinr// setIC [mu B + _]addeC. Qed.
 
+Lemma null_set_setU A B : measurable A -> measurable B ->
+  mu A = 0 -> mu B = 0 -> mu (A `|` B) = 0.
+Proof.
+move=> mA mB A0 B0; rewrite measureUfinl/= ?A0//= ?B0 ?add0e.
+by apply/eqP; rewrite oppe_eq0 -measure_le0/= -A0 measureIl.
+Qed.
+
+Lemma measureU0 A B : measurable A -> measurable B -> mu B = 0 ->
+  mu (A `|` B) = mu A.
+Proof.
+move=> mA mB B0; rewrite measureUfinr/= ?B0// adde0.
+by rewrite (@subset_measure0 _ _ _ _ (A `&` B) B) ?sube0//; exact: measurableI.
+Qed.
+
 End measureU.
 
 Lemma eq_measureU d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
@@ -3043,27 +3051,10 @@ Lemma eq_measureU d (T : ringOfSetsType d) (R : realFieldType) (A B : set T)
   mu (A `|` B) = mu' (A `|` B).
 Proof.
 move=> mA mB muA muB muAB; have [mu'ANoo|] := ltP (mu' A) +oo.
-  by rewrite !measureUfinl ?muA ?muB ?muAB.
+  by rewrite !measureUfinl/= ?muA ?muB ?muAB.
 rewrite leye_eq => /eqP mu'A; transitivity (+oo : \bar R); apply/eqP.
   by rewrite -leye_eq -mu'A -muA le_measure ?inE//=; apply: measurableU.
 by rewrite eq_sym -leye_eq -mu'A le_measure ?inE//=; apply: measurableU.
-Qed.
-
-Lemma null_set_setU d (R : realFieldType) (T : ringOfSetsType d)
-  (mu : {measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> mu A = 0%E -> mu B = 0%E -> mu (A `|` B) = 0%E.
-Proof.
-move=> mA mB A0 B0; rewrite measureUfinl ?A0//= ?B0 ?add0e.
-apply/eqP; rewrite oppe_eq0 -measure_le0/=; do ?exact: measurableI.
-by rewrite -A0 measureIl.
-Qed.
-
-Lemma measureU0 d (R : realType) (T : ringOfSetsType d)
-  (mu : {measure set T -> \bar R}) (A B : set T) :
-  measurable A -> measurable B -> mu B = 0 -> mu (A `|` B) = mu A.
-Proof.
-move=> mA mB B0; rewrite measureUfinr ?B0// adde0.
-by rewrite (@subset_measure0 _ _ _ _ (A `&` B) B) ?sube0//; exact: measurableI.
 Qed.
 
 Section measure_continuity.
@@ -4276,8 +4267,8 @@ Qed.
 
 Lemma measurable_pair2 (y : T2) : measurable_fun [set: T1] (pair^~ y).
 Proof.
-have m1pairy : measurable_fun [set: T1] (fst \o pair^~ y) by exact/measurable_id.
-have m2pairy: measurable_fun [set: T1] (snd \o pair^~ y) by exact/measurable_cst.
+have m1pairy : measurable_fun [set: T1] (fst \o pair^~y) by exact/measurable_id.
+have m2pairy : measurable_fun [set: T1] (snd \o pair^~y) by exact/measurable_cst.
 exact/(prod_measurable_funP _).
 Qed.
 
