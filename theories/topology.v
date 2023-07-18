@@ -4902,13 +4902,12 @@ Export PseudoMetric.Exports.
 
 Section PseudoMetricUniformity.
 
-Lemma my_ball_le (R : numDomainType) (M : Type) (ent : set (set (M * M)))
+Let ball_le (R : numDomainType) (M : Type) (ent : set (set (M * M)))
     (m : PseudoMetric.mixin_of R ent) :
   forall (x : M), {homo PseudoMetric.ball m x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
-move=> x e1 e2 le12 y xe1_y.
-move: le12; rewrite le_eqVlt => /orP [/eqP <- //|].
-rewrite -subr_gt0 => lt12.
+move=> x e1 e2 + y xe1_y.
+rewrite le_eqVlt => /predU1P[<- //|]; rewrite -subr_gt0 => lt12.
 rewrite -[e2](subrK e1); apply: PseudoMetric.ball_triangle xe1_y.
 suff : PseudoMetric.ball m x (PosNum lt12)%:num x by [].
 exact: PseudoMetric.ball_center.
@@ -4922,7 +4921,7 @@ Next Obligation.
 move=> R T ent nbhs nbhsE m; rewrite (PseudoMetric.entourageE m).
 apply: filter_from_filter; first by exists 1 => /=.
 move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //=.
-by rewrite subsetI; split=> ?; apply: my_ball_le;
+by rewrite subsetI; split=> ?; apply: ball_le;
    rewrite -leEsub// le_minl lexx ?orbT.
 Qed.
 Next Obligation.

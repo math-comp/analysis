@@ -162,6 +162,9 @@
 
 ### Removed
 
+- in `topology.v`:
+  + lemma `my_ball_le` (use `ball_le` instead)
+
 ### Infrastructure
 
 ### Misc
