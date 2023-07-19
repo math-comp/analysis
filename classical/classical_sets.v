@@ -2720,23 +2720,27 @@ by have /sBAs [|ser] // := Br; rewrite ser in Br.
 Qed.
 
 Section Zorn_subset.
-Variables (T : Type) (P : set T -> Prop).
-Let sigP := {x | P x}.
-Let R (sA sB : sigP) := sval sA `<=` sval sB.
+Variables (T : Type) (P : set (set T)).
 
 Lemma Zorn_bigcup :
-    (forall F, total_on F R -> P (\bigcup_(x in F) sval x)) ->
+    (forall F : set (set T), F `<=` P -> total_on F subset ->
+      P (\bigcup_(X in F) X)) ->
   exists A, P A /\ forall B, A `<` B -> ~ P B.
 Proof.
-move=> totR.
-have {}totR F : total_on F R -> exists sB, forall sA, F sA -> R sA sB.
-  by move=> FR; exists (exist _ _ (totR _ FR)) => sA FsA; exact: bigcup_sup.
+move=> totP; pose R (sA sB : P) := sval sA `<=` sval sB.
+have {}totR F (FR : total_on F R) : exists sB, forall sA, F sA -> R sA sB.
+   have FP : [set val x | x in F] `<=` P.
+     by move=> _ [X FX <-]; apply: set_mem; apply: valP.
+   have totF : total_on [set val x | x in F] subset.
+     by move=> _ _ [X FX <-] [Y FY <-]; apply: FR.
+   exists (SigSub (mem_set (totP _ FP totF))) => A FA; rewrite /R/=.
+   exact: (bigcup_sup (imageP val _)).
 have [| | |sA sAmax] := Zorn _ _ _ totR.
 - by move=> ?; exact: subset_refl.
 - by move=> ? ? ?; exact: subset_trans.
 - by move=> [A PA] [B PB]; rewrite /R /= => AB BA; exact/eq_exist/seteqP.
-- exists (sval sA); case: sA => A PA in sAmax *; split => //= B AB PB.
-  have [BA] := sAmax (exist _ B PB) (properW AB).
+- exists (val sA); case: sA => A PA /= in sAmax *; split; first exact: set_mem.
+  move=> B AB PB; have [BA] := sAmax (SigSub (mem_set PB)) (properW AB).
   by move: AB; rewrite BA; exact: properxx.
 Qed.
 
