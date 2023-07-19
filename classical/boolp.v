@@ -595,6 +595,12 @@ Qed.
 Lemma not_implyE (P Q : Prop) : (~ (P -> Q)) = (P /\ ~ Q).
 Proof. by rewrite propeqE not_implyP. Qed.
 
+Lemma imply_orE (P Q : Prop) : (P -> Q) = (~ P \/ Q).
+Proof.
+apply/propext; split; last by case.
+by move=> PQ; case: (pselect P); [move=> ?; right; exact: PQ | by left].
+Qed.
+
 Lemma orC (P Q : Prop) : (P \/ Q) = (Q \/ P).
 Proof. by rewrite propeqE; split=> [[]|[]]; [right|left|right|left]. Qed.
 

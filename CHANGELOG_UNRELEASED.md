@@ -63,6 +63,14 @@
 
 - in `classical_sets.v`:
   + lemma `Zorn_bigcup`
+- in file `boolp.v`,
+  + new lemma `imply_orE`.
+- in file `normedtype.v`,
+  + new definition `edist`.
+  + new lemmas `sup_sumE`, `inf_sumE`, `edist_ge0`, `edist_lt_ball`, 
+    `edist_fin`, `edist_pinftyP`, `edist_finP`, `edist_fin_open`, 
+    `edist_fin_closed`, `edist_pinfty_open`, `edist_sym`, `edist_triangle`, 
+    `edist_continuous`, `edist_closeP`, and `edist_refl`.
 
 ### Changed
 
