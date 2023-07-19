@@ -36,6 +36,8 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                   structure on T.                          *)
 (*                           `|x| == the norm of x (notation from ssrnum).    *)
 (*                      ball_norm == balls defined by the norm.               *)
+(*                          edist == the extended distance function for a     *)
+(*                                   pseudometric X, from X*X -> \bar R       *)
 (*                      nbhs_norm == neighborhoods defined by the norm.       *)
 (*                    closed_ball == closure of a ball.                       *)
 (*   f @`[ a , b ], f @`] a , b [ == notations for images of intervals,       *)
