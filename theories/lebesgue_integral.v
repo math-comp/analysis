@@ -5359,6 +5359,8 @@ apply: ae_ge0_le_integral => //.
 by apply: measurableT_comp => //; case/integrableP:intf.
 Qed.
 
+End integral_bounded.
+
 Lemma open_itvoo_subset {R : realType} (A : set R) (x : R) :
   open A -> A x -> \forall r \near 0^'+, `]x-r, x+r[ `<=` A.
 Proof.
