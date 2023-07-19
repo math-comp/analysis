@@ -1572,21 +1572,16 @@ Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : (\bar R)^nat)
 Proof. by move=> u_ge0 n m nm; rewrite lee_sum_nneg_natr// => k _ /u_ge0. Qed.
 
 Lemma eseries_cond {R : numFieldType} (f : nat -> \bar R) P N :
-  \sum_(N <= i <oo | P i) f i = \sum_(i <oo | P i) if (N <= i)%N then f i else 0.
-Proof.
-congr (lim _); apply: eq_fun => n /=; have [Nn|nN] := leqP N n; last first.
-  rewrite [in LHS]/index_iota (@size0nil _ (iota _ _)) ?big_nil; last first.
-    by apply/eqP; rewrite size_iota subn_eq0 ltnW.
-  rewrite /index_iota subn0 big_seq_cond big1// => /= k.
-  rewrite mem_iota add0n leq0n/= => /andP[+ _].
-  by move/ltn_trans/(_ nN); rewrite ltnNge => /negbTE ->.
-rewrite {2}/index_iota subn0 -[in RHS](@subnKC N n)// iotaD big_cat/= add0n.
-rewrite [X in _ = X + _]big_seq_cond [X in _ = X + _]big1 ?adde0 /=; last first.
-  move=> i; rewrite mem_iota add0n leq0n/= => /andP[+ _].
-  by rewrite ltnNge => /negbTE ->.
-rewrite add0e [LHS]big_seq_cond [RHS]big_seq_cond; apply: eq_bigr => /= k.
-by rewrite mem_iota subnKC// => /andP[/andP[-> _]].
-Qed.
+  \sum_(N <= i <oo | P i) f i = \sum_(i <oo | P i && (N <= i)%N) f i.
+Proof. by congr (lim _); apply: eq_fun => n /=; apply: big_nat_widenl. Qed.
+
+Lemma eseries_mkcondl {R : numFieldType} (f : nat -> \bar R) P Q :
+  \sum_(i <oo | P i && Q i) f i = \sum_(i <oo | Q i) if P i then f i else 0.
+Proof. by congr (lim _); apply/funext => n; rewrite big_mkcondl. Qed.
+
+Lemma eseries_mkcondr {R : numFieldType} (f : nat -> \bar R) P Q :
+  \sum_(i <oo | P i && Q i) f i = \sum_(i <oo | P i) if Q i then f i else 0.
+Proof. by congr (lim _); apply/funext => n; rewrite big_mkcondr. Qed.
 
 Lemma eq_eseriesr (R : numFieldType) (f g : (\bar R)^nat) (P : pred nat) {N} :
   (forall i, P i -> f i = g i) ->
