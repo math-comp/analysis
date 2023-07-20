@@ -61,6 +61,9 @@
 - in `classical_sets.v`:
   + lemmas `properW`, `properxx`
 
+- in `classical_sets.v`:
+  + lemma `Zorn_bigcup`
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:

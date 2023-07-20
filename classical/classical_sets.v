@@ -2578,12 +2578,12 @@ Lemma Zorn T (R : T -> T -> Prop) :
   exists t, forall s, R t s -> s = t.
 Proof.
 move=> Rrefl Rtrans Rantisym Rtot_max.
-set totR := ({A : set T | total_on A R}).
+pose totR := {A : set T | total_on A R}.
 set R' := fun A B : totR => sval A `<=` sval B.
 have R'refl A : R' A A by [].
 have R'trans A B C : R' A B -> R' B C -> R' A C by apply: subset_trans.
 have R'antisym A B : R' A B -> R' B A -> A = B.
-  rewrite /R'; case: A; case: B => /= B totB A totA sAB sBA.
+  rewrite /R'; move: A B => [/= A totA] [/= B totB] sAB sBA.
   by apply: eq_exist; rewrite predeqE=> ?; split=> [/sAB|/sBA].
 have R'tot_lub A : total_on A R' -> exists t, (forall s, A s -> R' s t) /\
     forall r, (forall s, A s -> R' s r) -> R' t r.
@@ -2594,7 +2594,7 @@ have R'tot_lub A : total_on A R' -> exists t, (forall s, A s -> R' s t) /\
       by have /(_ _ _ Cs Ct) := svalP C.
     by have /(_ _ _ Bs Bt) := svalP B.
   exists (exist _ (\bigcup_(B in A) sval B) AUtot); split.
-    by move=> B ???; exists B.
+    by move=> B ? ? ?; exists B.
   by move=> B Bub ? /= [? /Bub]; apply.
 apply: contrapT => nomax.
 have {}nomax t : exists s, R t s /\ s <> t.
@@ -2609,9 +2609,9 @@ have Astot : total_on (sval A `|` [set s]) R.
     by move=> [/tub Rvt|->]; right=> //; apply: Rtrans Rts.
   move=> [Av|->]; [apply: (svalP A)|left] => //.
   by apply: Rtrans Rts; apply: tub.
-exists (exist _ (sval A `|` [set s]) Astot); split; first by move=> ??; left.
+exists (exist _ (sval A `|` [set s]) Astot); split; first by move=> ? ?; left.
 split=> [AeAs|[B Btot] sAB sBAs].
-  have [/tub Rst|] := (pselect (sval A s)); first exact/snet/Rantisym.
+  have [/tub Rst|] := pselect (sval A s); first exact/snet/Rantisym.
   by rewrite AeAs /=; apply; right.
 have [Bs|nBs] := pselect (B s).
   by right; apply: eq_exist; rewrite predeqE => r; split=> [/sBAs|[/sAB|->]].
@@ -2619,6 +2619,33 @@ left; case: A tub Astot sBAs sAB => A Atot /= tub Astot sBAs sAB.
 apply: eq_exist; rewrite predeqE => r; split=> [Br|/sAB] //.
 by have /sBAs [|ser] // := Br; rewrite ser in Br.
 Qed.
+
+Section Zorn_subset.
+Variables (T : Type) (P : set (set T)).
+
+Lemma Zorn_bigcup :
+    (forall F : set (set T), F `<=` P -> total_on F subset ->
+      P (\bigcup_(X in F) X)) ->
+  exists A, P A /\ forall B, A `<` B -> ~ P B.
+Proof.
+move=> totP; pose R (sA sB : P) := sval sA `<=` sval sB.
+have {}totR F (FR : total_on F R) : exists sB, forall sA, F sA -> R sA sB.
+   have FP : [set val x | x in F] `<=` P.
+     by move=> _ [X FX <-]; apply: set_mem; apply: valP.
+   have totF : total_on [set val x | x in F] subset.
+     by move=> _ _ [X FX <-] [Y FY <-]; apply: FR.
+   exists (SigSub (mem_set (totP _ FP totF))) => A FA; rewrite /R/=.
+   exact: (bigcup_sup (imageP val _)).
+have [| | |sA sAmax] := Zorn _ _ _ totR.
+- by move=> ?; exact: subset_refl.
+- by move=> ? ? ?; exact: subset_trans.
+- by move=> [A PA] [B PB]; rewrite /R /= => AB BA; exact/eq_exist/seteqP.
+- exists (val sA); case: sA => A PA /= in sAmax *; split; first exact: set_mem.
+  move=> B AB PB; have [BA] := sAmax (SigSub (mem_set PB)) (properW AB).
+  by move: AB; rewrite BA; exact: properxx.
+Qed.
+
+End Zorn_subset.
 
 Definition premaximal T (R : T -> T -> Prop) (t : T) :=
   forall s, R t s -> R s t.
