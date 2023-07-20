@@ -81,6 +81,7 @@
   + lemmas `lte0n`, `lee0n`, `lte1n`, `lee1n`
 - in `sequences.v`:
   + lemma `eseries_cond`
+  + lemmas `eseries_mkcondl`, `eseries_mkcondr`
 
 ### Changed
 
