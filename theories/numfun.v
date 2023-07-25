@@ -399,27 +399,25 @@ HB.builders Context T R f of @FiniteDecomp T R f.
 HB.end.
 
 Section Tietze.
-Context {X : topologicalType} {R : realType} .
+Context {X : topologicalType} {R : realType}.
 
 Hypothesis urysohn_ext : forall A B,
-  closed A -> closed B -> A `&` B = set0 -> 
-  exists (f : X -> R^o), [/\ continuous f, 
-    f @` A = [set 0], f @` B = [set 1] & range f `<=` `[0,1]].
+  closed A -> closed B -> A `&` B = set0 ->
+  exists f : X -> R, [/\ continuous f,
+    f @` A = [set 0], f @` B = [set 1] & range f `<=` `[0, 1]].
 
 Lemma urysohn_ext_itv A B x y :
   closed A -> closed B -> A `&` B = set0 -> x < y ->
-  exists (f : X -> R^o), [/\ continuous f, 
-    f @` A = [set x], f @` B = [set y] & range f `<=` `[x,y]].
+  exists f : X -> R, [/\ continuous f,
+    f @` A = [set x], f @` B = [set y] & range f `<=` `[x, y]].
 Proof.
-move=> clA clB ab0 xy; have [f [ctsf f0 f1 f01]] := urysohn_ext clA clB ab0.
-pose g : X -> R^o := line_path x y \o f; exists g.
-split; rewrite /g /=.
+move=> clA clB AB0 xy; have [f [ctsf f0 f1 f01]] := urysohn_ext clA clB AB0.
+pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
 - move=> t; apply: continuous_comp; first exact: ctsf.
-  apply: (@continuousD R [normedModType R of R^o]). 
-    apply: continuousM; last exact: cvg_cst. 
-    apply: (@continuousB R [normedModType R of R^o]) => //.
-    exact: cvg_cst.
-  by apply: continuousM; last exact: cvg_cst; exact: cvg_id.
+  apply: (@continuousD R [normedModType R of R^o]).
+    apply: continuousM; last exact: cvg_cst.
+    by apply: (@continuousB R [normedModType R of R^o]) => //; exact: cvg_cst.
+  by apply: continuousM; [exact: cvg_id|exact: cvg_cst].
 - by rewrite -image_comp f0 image_set1 line_path0.
 - by rewrite -image_comp f1 image_set1 line_path1.
 - rewrite -image_comp; apply: (subset_trans (image_subset _ f01)).
@@ -429,173 +427,152 @@ Qed.
 Context (A : set X).
 Hypothesis clA : closed A.
 
-Let three0 : 0 < 3 :> R.
-Proof. by rewrite (_ : 0 = 0%:R) // ltr_nat. Qed.
+Let three0 : 0 < 3 :> R. Proof. exact: ltr0n. Qed.
 
-Let threen0 : 3 != 0 :> R.
-Proof. exact: lt0r_neq0. Qed.
+Let threen0 : 3 != 0 :> R. Proof. exact: lt0r_neq0. Qed.
 
-Let thirds : -1/3 < 1/3 :>R.
-Proof.
-by rewrite ltr_pdivr_mulr // div1r mulVf // ?gtr_opp.
-Qed.
-
-Local Lemma tietze_step' (f : X -> R^o) (M : R) :
+Local Lemma tietze_step' (f : X -> R) (M : R) :
   0 < M -> {within A, continuous f} ->
   (forall x, A x -> `|f x| <= M) ->
-  exists (g : X -> R^o), [/\ continuous g, 
-     (forall x, A x -> `|f x - g x| <= 2/3*M :>R) & 
-     (forall x, `|g x| <= 1/3*M)].
+  exists g : X -> R, [/\ continuous g,
+     (forall x, A x -> `|f x - g x| <= 2/3 * M :> R) &
+     (forall x, `|g x| <= 1/3 * M)].
 Proof.
 move=> mpos ctsf fA1.
-have [] := @urysohn_ext_itv 
-    (A `&` f@^-1` `]-oo,-1/3 *M]) (A `&` f@^-1` `[1/3 * M,+oo[) 
-    (-1/3 * M) (1/3 * M).
-- by rewrite closed_setSI; apply: closed_comp => //.
+have [] := @urysohn_ext_itv
+    (A `&` f @^-1` `]-oo, -(1/3) * M]) (A `&` f @^-1` `[1/3 * M,+oo[)
+    (-(1/3) * M) (1/3 * M).
+- by rewrite closed_setSI; exact: closed_comp.
 - by rewrite closed_setSI; apply: closed_comp => //; exact: interval_closed.
-- rewrite setIACA -preimage_setI eqEsubset; split => z // [_ []]. 
-  rewrite ?set_itvE => /[swap] /le_trans /[apply]; rewrite ler_pmul2r //.
-  by move=> W; move: thirds => /=; rewrite real_ltNge ?num_real // W.
-- by rewrite ltr_pmul2r //. 
+- rewrite setIACA -preimage_setI eqEsubset; split => z // [_ []].
+  rewrite !set_itvE/= => /[swap] /le_trans /[apply].
+  by rewrite leNgt mulNr gtr_opp// mulr_gt0// divr_gt0.
+- by rewrite mulNr gtr_opp// mulr_gt0// divr_gt0.
 move=> g [ctsg gL3 gR3 grng]; exists g; split => //; first last.
-  by move=> x; rewrite ler_norml -?mulNr; apply: grng; exists x.
-move=> x Ax; move: (fA1 _ Ax); rewrite ?ler_norml => /andP [? ?].
-case xL : (f x <= -1/3 * M).
-  have : [set g x | x in A `&` f@^-1` `]-oo, -1/3 * M]] (g x) by exists x.
-  rewrite gL3 => ->; rewrite ?mulNr opprK; apply/andP; split.
-    rewrite -ler_subl_addr -opprD -?mulrDl.
-    by rewrite (_ : 2+1 = 3) ?divrr ?unitfE ?mul1r // addrC.
-  rewrite -ler_subr_addr -?mulNr -?mulrDl (_ : 2-1 = 1).
-    by apply: (le_trans xL); rewrite ler_pmul2r //; apply: ltW.
-  by rewrite (_ : 2 = (1+1)) // -addrA subrr addr0.
-case xR : (1/3 *M <= f x).
-  have : [set g x | x in A `&` f@^-1` `[1/3 *M, +oo[] (g x).
+  by move=> x; rewrite ler_norml -mulNr; apply: grng; exists x.
+move=> x Ax; have := fA1 _ Ax; rewrite 2!ler_norml => /andP[Mfx fxM].
+have [xL|xL] := lerP (f x) (-(1/3) * M).
+  have : [set g x | x in A `&` f@^-1` `]-oo, -(1/3) * M]] (g x) by exists x.
+  rewrite gL3 => ->; rewrite !mulNr opprK; apply/andP; split.
+    by rewrite -ler_subl_addr -opprD -2!mulrDl natr1 divrr ?unitfE// mul1r.
+  rewrite -ler_subr_addr -2!mulrBl -(@natrB _ 2 1)// (le_trans xL)//.
+  by rewrite ler_pmul2r// ltW// gtr_opp// divr_gt0.
+have [xR|xR] := lerP (1/3 * M) (f x).
+  have : [set g x | x in A `&` f@^-1` `[1/3 * M, +oo[] (g x).
     by exists x => //; split => //; rewrite /= in_itv //= xR.
   rewrite gR3 => ->; apply/andP; split.
-    rewrite -ler_subl_addr opprK -?mulNr // -?mulrDl.
-    rewrite (_ : 1*-2 = -(1 + 1)) // opprD -addrA.
-    rewrite [-_ + _]addrC -addrA subrr addr0.
-    by apply: (le_trans _ xR); rewrite ler_pmul2r //; apply: ltW.
-  by rewrite -ler_subr_addr opprK -?mulrDl addrC divrr ?mul1r ?unitfE //.
-have /andP [/ltW nf3 /ltW pf3] : -1/3 *M < f x < 1/3 *M.
-  by apply/andP; split; rewrite real_ltNge ?num_real //= ?xL ?xR.
-have /andP [ng3 pg3] : -1/3 * M <= g x <= 1/3 * M by apply: grng; exists x.
-apply/andP; split; rewrite (_ : 2 = 1 + 1) // ?mulrDl.
-  by rewrite ?opprD; apply: ler_sub; rewrite // -?mulNr.
-by apply: ler_add; rewrite // ler_oppl -?mulNr.
+    rewrite ler_subr_addl -2!mulrBl (le_trans _ xR)// ler_pmul2r//.
+    by rewrite ler_wpmul2r ?invr_ge0 ?ler0n// ler_subl_addl natr1 ler1n.
+  by rewrite ler_subl_addl -2!mulrDl nat1r divrr ?mul1r// unitfE.
+have /andP[ng3 pg3] : -(1/3) * M <= g x <= 1/3 * M by apply: grng; exists x.
+rewrite (natrD _ 1 1) !mulrDl; apply/andP; split.
+  by rewrite opprD ler_sub// -mulNr ltW.
+by rewrite (ler_add (ltW _))// ler_oppl -mulNr.
 Qed.
 
-Let tietze_step (f : X -> R^o) M : 
-  {g : X -> R^o | {within A, continuous f} -> 0 < M -> 
-    (forall x, A x -> `|f x| <= M) -> [/\ continuous g, 
-      (forall x, A x -> `|f x - g x| <= 2/3*M :>R)
-      & (forall x, `|g x| <= 1/3*M)]}.
+Let tietze_step (f : X -> R) M :
+  {g : X -> R^o | {within A, continuous f} -> 0 < M ->
+    (forall x, A x -> `|f x| <= M) -> [/\ continuous g,
+      forall x, A x -> `|f x - g x| <= 2/3 * M :>R
+      & forall x, `|g x| <= 1/3 * M ]}.
 Proof.
 apply: cid.
 case : (pselect ({within A, continuous f})); last by move => ?; exists point.
 case : (pselect (0 < M)); last by move => ?; exists point.
-case : (pselect (forall x, A x -> `|f x| <=M)); last by move => ?; exists point.
+case : (pselect (forall x, A x -> `|f x| <= M)); last by move => ?; exists point.
 by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
 Qed.
 
-Let twothirds_pos : 0 < 2/3 :>R.
-Proof. exact: divr_gt0 => //. Qed.
-
-Let onethird_pos : 0 < 1/3 :>R.
-Proof. exact: divr_gt0 => //. Qed.
-
+Let twothirds_pos : 0 < 2/3 :> R. Proof. exact: divr_gt0. Qed.
 Let twothirds := PosNum twothirds_pos.
+
+Let onethird_pos : 0 < 1/3 :> R. Proof. exact: divr_gt0. Qed.
 Let onethird := PosNum onethird_pos.
 
+Let onem_twothirds : 1 - twothirds%:num = onethird%:num.
+Proof. by apply/eqP; rewrite subr_eq/= -mulrDl nat1r divrr// unitfE. Qed.
+
 Lemma continuous_bounded_extension (f : X -> R^o) M :
-  (0 < M) -> {within A, continuous f} -> (forall x, A x -> `|f x| <= M) ->
+  0 < M -> {within A, continuous f} -> (forall x, A x -> `|f x| <= M) ->
   exists g, [/\ {in A, f =1 g}, continuous g & forall x, `|g x| <= M].
 Proof.
-move: M => _/posnumP[M] ? fbd; pose M2d3 n := geometric M%:num twothirds%:num n.
-have MN0 n : 0 < M2d3 n by rewrite /M2d3/geometric/mk_sequence.
-pose f_ := fix F n := 
-  if n is n.+1 then (F n - projT1 (tietze_step (F n) (M2d3 n))) else f.
+move: M => _/posnumP[M] Af fbd; pose M2d3 n := geometric M%:num twothirds%:num n.
+have MN0 n : 0 < M2d3 n by rewrite /M2d3 /geometric /mk_sequence.
+pose f_ := fix F n :=
+  if n is n.+1 then F n - projT1 (tietze_step (F n) (M2d3 n)) else f.
 pose g_ n := projT1 (tietze_step (f_ n) (M2d3 n)).
-have fgE n : f_ n - f_ n.+1 = g_ n.
-  by rewrite /= opprB addrC -addrA [-_ + _] addrC subrr addr0.
+have fgE n : f_ n - f_ n.+1 = g_ n by rewrite /= opprB addrC subrK.
 have twothirds1 : `|twothirds%:num| < 1 :> R.
- by rewrite ger0_norm // ltr_pdivr_mulr // mul1r (_ : 3 = 1 + 2) // ltr_addr.
+ by rewrite ger0_norm//= ?divr_ge0 ?ler0n// ltr_pdivr_mulr ?ltr0n// mul1r ltr_nat.
 have f_geo n : {within A, continuous f_ n} /\
     (forall x, A x -> `|f_ n x| <= geometric M%:num twothirds%:num n).
   elim: n; first by split => // ? ?; rewrite /= expr0 mulr1; exact: fbd.
   move=> n [ctsN bdN].
   have [cg bdNS bd2] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdN; split.
     by move=> x; apply: cvgB; [exact: ctsN | exact/continuous_subspaceT/cg].
-  rewrite /geometric /= exprS mulrA [M%:num * (_/_)] mulrC.
+  rewrite /geometric /= exprS mulrA [M%:num * (_/_)]mulrC.
   by rewrite  -[_ * M%:num * _]mulrA; exact: bdNS.
 have g_cts n : continuous (g_ n).
   by have [? ?] := f_geo n; case: (projT2 (tietze_step (f_ n) _) _ (MN0 n)).
-have g_bd n : forall x, 
+have g_bd n : forall x,
     `|g_ n x| <= geometric (onethird%:num * M%:num) (twothirds%:num) n.
   have [ctsN bdfN] := f_geo n; rewrite /geometric /= -[_ * M%:num * _]mulrA.
   by have [] := projT2 (tietze_step (f_ n) _) _ (MN0 n) _.
-pose h_ : nat -> [completeType of {uniform X -> _}] := 
+pose h_ : nat -> [completeType of {uniform X -> _}] :=
   @series [zmodType of {uniform X -> _}] g_.
 have cvgh' : cvg (h_ @ \oo).
   apply/cauchy_cvgP/cauchy_ballP => eps epos; near_simpl.
   suff : \forall x & x' \near \oo, (x' <= x)%N -> ball (h_ x) eps (h_ x').
     move=>/[dup]; rewrite {1}near_swap; apply: filter_app2; near=> n m.
-    by have /orP [mn /(_ mn)/ball_sym + _| ? _] := leq_total n m; apply. 
-  near=> n m; move=> /= MN; rewrite /ball /= /ball /= /h_ => t; rewrite /ball /=. 
-  rewrite (_: series g_ n t - series g_ m t = (series g_ n - series g_ m) t) //.
-  rewrite /= sub_series MN fct_sumE; apply: (le_lt_trans (ler_norm_sum _ _ _)).
-  apply: (le_lt_trans (ler_sum _ (fun i _ => g_bd i t))); rewrite -mulr_sumr.
+    by have /orP [mn /(_ mn)/ball_sym + _| ? _] := leq_total n m; apply.
+  near=> n m; move=> /= MN; rewrite /ball /= /h_ => t; rewrite /ball /=.
+  rewrite -[X in `|X|]/((_ - _) t) sub_series MN fct_sumE.
+  rewrite (le_lt_trans (ler_norm_sum _ _ _))//.
+  rewrite (le_lt_trans (ler_sum _ (fun i _ => g_bd i t)))// -mulr_sumr.
   rewrite -(subnKC MN) geometric_partial_tail.
-  pose L := onethird%:num * M%:num * ((twothirds%:num)^+m / (1-twothirds%:num)).
+  pose L :=
+    onethird%:num * M%:num * (twothirds%:num ^+ m / (1 - twothirds%:num)).
   apply: (@le_lt_trans _ _ L).
-    by rewrite ler_pmul2l //; apply: geometric_le_lim. 
-  rewrite /L; have -> : (1-twothirds%:num = onethird%:num).
-    rewrite -(@divrr _ 3) /= ?unitfE // -mulrBl; congr(_ _ _); apply/eqP.
-    by rewrite subr_eq.
-  rewrite [_^+_ * _^-1]mulrC mulrA -[x in x < _]ger0_norm; last done.
-  near: m; near_simpl; move: eps epos. 
-  apply: (@cvgr0_norm_lt _ _ _ _ _ (fun m => _:R^o)); exact: cvg_geometric.
-have cvgh : {uniform, h_ @ \oo --> lim (h_ @ \oo)}. 
-  by move=> ?; rewrite /= ?uniform_nbhsT; apply: cvgh'.
+    by rewrite ler_pmul2l //; exact: geometric_le_lim.
+  rewrite /L onem_twothirds.
+  rewrite [_ ^+ _ * _ ^-1]mulrC mulrA -[x in x < _]ger0_norm; last by [].
+  near: m; near_simpl; move: eps epos.
+  by apply: (@cvgr0_norm_lt _ _ _ _ _ (fun m => _ : R^o)); exact: cvg_geometric.
+have cvgh : {uniform, h_ @ \oo --> lim (h_ @ \oo)}.
+  by move=> ?; rewrite /= uniform_nbhsT; exact: cvgh'.
 exists (lim (h_ @ \oo)); split.
 - move=> t /set_mem At; have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
     !! pointwise_uniform_cvg _ cvgh.
-  rewrite -fmap_comp /comp /h_ => <-; apply: esym. 
-  apply: (@cvg_lim _ (@Rhausdorff R)). 
-  apply: (@cvg_zero R [pseudoMetricNormedZmodType R of R^o]). 
-  apply: norm_cvg0; under eq_fun => n. 
+  rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ (@Rhausdorff R)).
+  apply: (@cvg_zero R [pseudoMetricNormedZmodType R of R^o]).
+  apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
-    under [fun (_ : nat) => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
+    under [fun _ : nat => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
     rewrite telescope_sumr //= addrC -addrA [-_ + _]addrC subrr addr0.
     over.
   apply/norm_cvg0P/cvgr0Pnorm_lt => eps epos.
   have /(_ _ epos)  := @cvgr0_norm_lt R _ _ _ eventually_filter (_ : nat -> R^o)
-    (cvg_geometric (M%:num :R^o) twothirds1).
+    (cvg_geometric M%:num twothirds1).
   apply: filter_app; near_simpl; apply: nearW => n /le_lt_trans; apply.
-  (apply: le_trans; first by case: (f_geo n) => _; apply); exact: ler_norm.
-- apply: (@uniform_limit_continuous X _ (h_ @\oo) (lim (h_ @ \oo))) =>//.
+  by rewrite (le_trans ((f_geo n).2 _ _)) // ler_norm.
+- apply: (@uniform_limit_continuous X _ (h_ @ \oo) (lim (h_ @ \oo))) =>//.
   near_simpl; apply: nearW; elim.
     by rewrite /h_ /=/series /= ?big_geq // => ?; exact: cvg_cst.
   move=> n; rewrite /h_ /series /= big_nat_recr /= // => IH t.
-  rewrite [_ + g_ _]/GRing.add /=; apply: cvgD; first exact: (IH t).
-  exact: g_cts.
+  by rewrite [_ + g_ _]/GRing.add /=; apply: cvgD; [exact: IH|exact: g_cts].
 - move=> t.
-  have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) := !! pointwise_uniform_cvg _ cvgh.
+  have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
+    !! pointwise_uniform_cvg _ cvgh.
   rewrite -fmap_comp /comp /h_ => <-.
-  under [fun (_:nat) => _]eq_fun => ? do rewrite /series /= fct_sumE.
-  have ? : cvg ([normed series (g_^~ t)] : nat -> R^o).
-    apply: (series_le_cvg _ _ (fun n => g_bd n t) ).
-    - by move=> ?; done.
-    - by move=> ?; rewrite /geometric /mk_sequence //.
-    - exact: is_cvg_geometric_series.
-  apply: le_trans; first exact: lim_series_norm. 
-  apply: le_trans; first apply: (lim_series_le _ _ (fun n => g_bd n t)) => //.
-    exact: is_cvg_geometric_series.
-  rewrite (cvg_lim _ (cvg_geometric_series _)) => //.
-  have -> : (1-twothirds%:num = onethird%:num).
-    rewrite -(@divrr _ 3) /= ?unitfE // -mulrBl; congr(_ _ _); apply/eqP.
-    by rewrite subr_eq.
-  rewrite mulrAC divrr ?mul1r // unitfE //.
+  under [fun _ : nat => _]eq_fun => ? do rewrite /series /= fct_sumE.
+  have cvg_gt : cvg [normed series (g_^~ t)].
+    apply: (series_le_cvg _ _ (g_bd ^~ t) (is_cvg_geometric_series _)) => //.
+    by move=> ?; rewrite /geometric /mk_sequence.
+  apply: le_trans; first exact: lim_series_norm.
+  apply: le_trans.
+    exact/(lim_series_le cvg_gt _ (g_bd ^~ t))/is_cvg_geometric_series.
+  rewrite (cvg_lim _ (cvg_geometric_series _))//.
+  by rewrite onem_twothirds mulrAC divrr ?mul1r// unitfE.
 Unshelve. all: by end_near. Qed.
 
 End Tietze.
