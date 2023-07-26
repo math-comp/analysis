@@ -319,6 +319,47 @@ Qed.
 
 End RealLemmas.
 
+Section sup_sum.
+Context {R : realType}.
+
+Lemma sup_sumE (A B : set R) :
+  has_sup A -> has_sup B -> sup [set x + y | x in A & y in B] = sup A + sup B.
+Proof.
+move=> /[dup] supA [[a Aa] ubA] /[dup] supB [[b Bb] ubB].
+have ABsup : has_sup [set x + y | x in A & y in B].
+  split; first by exists (a + b), a => //; exists b.
+  case: ubA ubB => p up [q uq]; exists (p + q) => ? [r Ar [s Bs] <-].
+  by apply: ler_add; [exact: up | exact: uq].
+apply: le_anti; apply/andP; split.
+  apply: sup_le_ub; first by case: ABsup.
+  by move=> ? [p Ap [q Bq] <-]; apply: ler_add; exact: sup_ub.
+rewrite real_leNgt ?num_real// -subr_gt0; apply/negP.
+set eps := (_ + _ - _) => epos.
+have e2pos : 0 < eps / 2 by rewrite divr_gt0// ltr0n.
+have [r Ar supBr] := sup_adherent e2pos supA.
+have [s Bs supAs] := sup_adherent e2pos supB.
+have := ltr_add supBr supAs.
+rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
+rewrite subrr add0r; apply/negP; rewrite -real_leNgt ?num_real//.
+by apply: sup_upper_bound => //; exists r => //; exists s.
+Qed.
+
+Lemma inf_sumE (A B : set R) :
+  has_inf A -> has_inf B -> inf [set x + y | x in A & y in B] = inf A + inf B.
+Proof.
+move/has_inf_supN => ? /has_inf_supN ?; rewrite /inf.
+rewrite [X in - sup X = _](_ : _ =
+    [set x + y | x in [set - x | x in A ] & y in [set - x | x in B]]).
+  rewrite eqEsubset; split => /= t [] /= x []a Aa.
+    case => b Bb <- <-; exists (- a); first by exists a.
+    by exists (- b); [exists b|rewrite opprD].
+  move=> <- [y] [b Bb] <- <-; exists (a + b); last by rewrite opprD.
+  by exists a => //; exists b.
+by rewrite sup_sumE // -opprD.
+Qed.
+
+End sup_sum.
+
 (* -------------------------------------------------------------------- *)
 Section InfTheory.
 

@@ -37,6 +37,8 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                   structure on T.                          *)
 (*                           `|x| == the norm of x (notation from ssrnum).    *)
 (*                      ball_norm == balls defined by the norm.               *)
+(*                          edist == the extended distance function for a     *)
+(*                                   pseudometric X, from X*X -> \bar R       *)
 (*                      nbhs_norm == neighborhoods defined by the norm.       *)
 (*                    closed_ball == closure of a ball.                       *)
 (*   f @`[ a , b ], f @`] a , b [ == notations for images of intervals,       *)
@@ -2754,6 +2756,177 @@ Notation ereal_is_cvgMr := is_cvgeMr.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to cvgeM, and generalized to a realFieldType")]
 Notation ereal_cvgM := cvgeM.
+
+Section pseudoMetricDist.
+Context {R : realType} {X : pseudoMetricType R}.
+Implicit Types r : R.
+
+Definition edist (xy : X * X) : \bar R :=
+  ereal_inf (EFin @` [set r | 0 < r /\ ball xy.1 r xy.2]).
+
+Lemma edist_ge0 (xy : X * X) : (0 <= edist xy)%E.
+Proof.
+by apply: lb_ereal_inf => z [+ []] => _/posnumP[r] _ <-; rewrite lee_fin.
+Qed.
+Hint Resolve edist_ge0 : core.
+
+Lemma edist_lt_ball r (xy : X * X) : (edist xy < r%:E)%E -> ball xy.1 r xy.2.
+Proof.
+case/ereal_inf_lt => ? [+ []] => _/posnumP[eps] bxye <-; rewrite lte_fin.
+by move/ltW/le_ball; exact.
+Qed.
+
+Lemma edist_fin r (xy : X * X) :
+  0 < r -> ball xy.1 r xy.2 -> (edist xy <= r%:E)%E.
+Proof.
+move: r => _/posnumP[r] => ?; rewrite -(ereal_inf1 r%:num%:E) le_ereal_inf //.
+by move=> ? -> /=; exists r%:num; split.
+Qed.
+
+Lemma edist_pinftyP (xy : X * X) :
+  (edist xy = +oo)%E <-> (forall r, 0 < r -> ~ ball xy.1 r xy.2).
+Proof.
+split.
+  move/ereal_inf_pinfty => xrb r rpos rb; move: (ltry r); rewrite ltey => /eqP.
+  by apply; apply: xrb; exists r.
+rewrite /edist=> nrb; suff -> : [set r | 0 < r /\ ball xy.1 r xy.2] = set0.
+  by rewrite image_set0 ereal_inf0.
+by rewrite -subset0 => r [?] rb; apply: nrb; last exact: rb.
+Qed.
+
+Lemma edist_finP (xy : X * X) :
+  (edist xy \is a fin_num)%E <-> exists2 r, 0 < r & ball xy.1 r xy.2.
+Proof.
+rewrite ge0_fin_numE ?edist_ge0// ltey.
+rewrite -(rwP (negPP eqP)); apply/iff_not2; rewrite notE.
+apply: (iff_trans (edist_pinftyP _)); apply: (iff_trans _ (forall2NP _ _)).
+by under eq_forall => ? do rewrite implyE.
+Qed.
+
+Lemma edist_fin_open : open [set xy : X * X | edist xy \is a fin_num].
+Proof.
+move=> z /= /edist_finP [] _/posnumP[r] bzr.
+exists (ball z.1 r%:num, ball z.2 r%:num); first by split; exact: nbhsx_ballx.
+case=> a b [bza bzb]; apply/edist_finP; exists (r%:num + r%:num + r%:num) => //.
+exact/(ball_triangle _ bzb)/(ball_triangle _ bzr)/ball_sym.
+Qed.
+
+Lemma edist_fin_closed : closed [set xy : X * X | edist xy \is a fin_num].
+Proof.
+move=> z /= /(_ (ball z 1)) []; first exact: nbhsx_ballx.
+move=> w [/edist_finP [] _/posnumP[r] babr [bz1w1 bz2w2]]; apply/edist_finP.
+exists (1 + (r%:num + 1)) => //.
+exact/(ball_triangle bz1w1)/(ball_triangle babr)/ball_sym.
+Qed.
+
+Lemma edist_pinfty_open : open [set xy : X * X | edist xy = +oo]%E.
+Proof.
+rewrite -closedC; have := edist_fin_closed; congr (_ _).
+by rewrite eqEsubset; split => z; rewrite /= ?ge0_fin_numE // ltey; move/eqP.
+Qed.
+
+Lemma edist_sym (x y : X) : edist (x, y) = edist (y, x).
+Proof. by rewrite /edist /=; under eq_fun do rewrite ball_symE. Qed.
+
+Lemma edist_triangle (x y z : X) :
+  (edist (x, z) <= edist (x, y) + edist (y, z))%E.
+Proof.
+have [|] := eqVneq (edist (x, z)) +oo%E.
+  have [-> ->|] := eqVneq (edist (x, y)) +oo%E.
+    by rewrite addye ?lexx// -lteNye (lt_le_trans _ (edist_ge0 _)).
+  have [-> ? ->|] := eqVneq  (edist (y, z)) +oo%E.
+    by rewrite addey ?lexx// -lteNye (lt_le_trans _ (edist_ge0 _)).
+  rewrite -?ltey -?ge0_fin_numE//.
+  move=> /edist_finP [_/posnumP[r2] /= yz] /edist_finP [_/posnumP[r1] /= xy].
+  move/edist_pinftyP /(_ (r1%:num + r2%:num) _) => -[//|].
+  exact: (ball_triangle xy).
+rewrite -ltey -ge0_fin_numE// => /[dup] xzfin.
+move/edist_finP => [_/posnumP[del] /= xz].
+have [->|] := eqVneq (edist (x, y)) +oo%E.
+  by rewrite addye ?leey// -lteNye (lt_le_trans _ (edist_ge0 _)).
+have [->|] := eqVneq (edist (y, z)) +oo%E.
+  by rewrite addey ?leey// -lteNye (lt_le_trans _ (edist_ge0 _)).
+rewrite -?ltey -?ge0_fin_numE //.
+move=> /edist_finP [_/posnumP[r2] /= yz] /edist_finP [_/posnumP[r1] /= xy].
+rewrite /edist /= ?ereal_inf_EFin; first last.
+- by exists (r1%:num + r2%:num); split => //; apply: (ball_triangle xy).
+- by exists 0 => ? /= [/ltW].
+- by exists r1%:num; split.
+- by exists 0 => ? /= [/ltW].
+- by exists r2%:num; split.
+- by exists 0 => ? /= [/ltW].
+rewrite -EFinD lee_fin -inf_sumE //; first last.
+- by split; [exists r2%:num; split| exists 0 => ? /= [/ltW]].
+- by split; [exists r1%:num; split| exists 0 => ? /= [/ltW]].
+apply: lb_le_inf.
+  by exists (r1%:num + r2%:num); exists r1%:num => //; exists r2%:num.
+move=> ? [+ []] => _/posnumP[p] xpy [+ []] => _/posnumP[q] yqz <-.
+apply: inf_lb; first by exists 0 => ? /= [/ltW].
+by split => //; apply: (ball_triangle xpy).
+Qed.
+
+Lemma edist_continuous : continuous edist.
+Proof.
+case=> x y; have [pE U /= Upinf|] := eqVneq (edist (x, y)) +oo%E.
+  rewrite nbhs_simpl /=; apply (@filterS _ _ _ [set xy | edist xy = +oo]%E).
+    by move=> z /= ->; apply: nbhs_singleton; move: pE Upinf => ->.
+  by apply: open_nbhs_nbhs; split => //; exact: edist_pinfty_open.
+rewrite -ltey -ge0_fin_numE// => efin.
+rewrite -[edist (x, y)]fineK//; apply: cvg_EFin.
+  by have := edist_fin_open efin; apply: filter_app; near=> w.
+move=> U /=; rewrite nbhs_simpl/= -nbhs_ballE.
+move=> [] _/posnumP[r] distrU; rewrite nbhs_simpl /=.
+have r2p : 0 < r%:num / 4 by rewrite divr_gt0// ltr0n.
+exists (ball x (r%:num / 4), ball y (r%:num / 4)).
+  by split => //=; rewrite nbhs_ballE;
+    exact: (@nbhsx_ballx _ _ _ (@PosNum _ _ r2p)).
+case => a b /= [/ball_sym xar yar]; apply: distrU => /=.
+have abxy : (edist (a, b) <= edist (a, x) + edist (x, y) + edist (y, b))%E.
+  by rewrite -addeA (le_trans (@edist_triangle _ x _)) ?lee_add ?edist_triangle.
+have abfin : edist (a, b) \is a fin_num.
+  rewrite ge0_fin_numE// (le_lt_trans abxy)//.
+  by apply: lte_add_pinfty; [apply: lte_add_pinfty|];
+    rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num / 4).
+have xyabfin : `|edist (x, y) - edist (a, b)|%E \is a fin_num.
+  by rewrite abse_fin_num fin_numB abfin efin.
+have daxr : edist (a, x) \is a fin_num by apply/edist_finP; exists (r%:num / 4).
+have dybr : edist (y, b) \is a fin_num by apply/edist_finP; exists (r%:num / 4).
+rewrite -fineB// -fine_abse ?fin_numB ?abfin ?efin//.
+rewrite (@le_lt_trans _ _ (fine (edist (a, x) + edist (y, b))))//.
+  rewrite fine_le// ?fin_numD ?daxr ?dybr//.
+  have [xyab|xyab] := leP (edist (a, b)) (edist (x, y)).
+    rewrite gee0_abs ?subre_ge0// lee_subl_addr//.
+    rewrite (le_trans (@edist_triangle _ a _))// (edist_sym a x) -addeA.
+    by rewrite lee_add// addeC (edist_sym y) edist_triangle.
+  rewrite lte0_abs ?subre_lt0// oppeB ?fin_num_adde_defr// addeC.
+  by rewrite lee_subl_addr// addeAC.
+rewrite fineD // [_%:num]splitr.
+have r42 : r%:num / 4 < r%:num / 2.
+  by rewrite ltr_pmul2l// ltf_pinv ?posrE ?ltr0n// ltr_nat.
+by apply: ltr_add; rewrite (le_lt_trans _ r42)// -lee_fin fineK // edist_fin.
+Unshelve. end_near. Qed.
+
+Lemma edist_closeP x y : close x y <-> edist (x, y) = 0%E.
+Proof.
+rewrite ball_close; split; first last.
+  by move=> edist0 eps; apply: (@edist_lt_ball _ (x, y)); rewrite edist0.
+move=> bxy; apply: le_anti; rewrite edist_ge0 andbT leNgt; apply/negP => dpos.
+have xxfin : edist (x, y) \is a fin_num.
+  by rewrite ge0_fin_numE// (@le_lt_trans _ _ 1%:E) ?ltey// edist_fin.
+move: (dpos); rewrite -[edist _]fineK // lte_fin => dpose.
+pose eps := PosNum dpose.
+have : (edist (x, y) <= (eps%:num / 2)%:E)%E.
+  apply: ereal_inf_lb; exists (eps%:num / 2) => //; split => //.
+  exact: (bxy (@PosNum R (eps%:num / 2) ltac:(done))).
+rewrite leNgt; move/negP; apply.
+by rewrite /= EFinM fineK// lte_pdivr_mulr// lte_pmulr// lte1n.
+Qed.
+
+Lemma edist_refl x : edist (x, x) = 0%E. Proof. exact/edist_closeP. Qed.
+
+End pseudoMetricDist.
+#[global]
+Hint Resolve edist_ge0 : core.
 
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
