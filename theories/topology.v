@@ -7793,9 +7793,9 @@ Qed.
 
 End gauges.
 
-Definition normal (T : topologicalType) :=
+Definition normal_space (T : topologicalType) :=
   forall (A : set T), closed A ->
-    set_nbhs A = filter_from (set_nbhs A) closure.
+    set_nbhs A `<=` filter_from (set_nbhs A) closure.
 
 
 Section ArzelaAscoli.
