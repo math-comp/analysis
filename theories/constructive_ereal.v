@@ -529,6 +529,18 @@ Proof. by rewrite lte_fin ltrN10. Qed.
 Lemma leeN10 : - 1%E <= 0 :> \bar R.
 Proof. by rewrite lee_fin lerN10. Qed.
 
+Lemma lte0n n : (0 < n%:R%:E :> \bar R) = (0 < n)%N.
+Proof. by rewrite lte_fin ltr0n. Qed.
+
+Lemma lee0n n : (0 <= n%:R%:E :> \bar R) = (0 <= n)%N.
+Proof. by rewrite lee_fin ler0n. Qed.
+
+Lemma lte1n n : (1 < n%:R%:E :> \bar R) = (1 < n)%N.
+Proof. by rewrite lte_fin ltr1n. Qed.
+
+Lemma lee1n n : (1 <= n%:R%:E :> \bar R) = (1 <= n)%N.
+Proof. by rewrite lee_fin ler1n. Qed.
+
 Lemma fine_ge0 x : 0 <= x -> (0 <= fine x)%R.
 Proof. by case: x. Qed.
 
@@ -1789,6 +1801,18 @@ Qed.
 
 Lemma lte_nmul2r z : z \is a fin_num -> z < 0 -> {mono *%E^~ z : x y /~ x < y}.
 Proof. by move=> zfin z0 x y; rewrite -!(muleC z) lte_nmul2l. Qed.
+
+Lemma lte_pmulr x y : y \is a fin_num -> 0 < y -> (y < y * x) = (1 < x).
+Proof. by move=> yfin y0; rewrite -[X in X < _ = _]mule1 lte_pmul2l. Qed.
+
+Lemma lte_pmull x y : y \is a fin_num -> 0 < y -> (y < x * y) = (1 < x).
+Proof. by move=> yfin y0; rewrite muleC lte_pmulr. Qed.
+
+Lemma lte_nmulr x y : y \is a fin_num -> y < 0 -> (y < y * x) = (x < 1).
+Proof. by move=> yfin y0; rewrite -[X in X < _ = _]mule1 lte_nmul2l. Qed.
+
+Lemma lte_nmull x y : y \is a fin_num -> y < 0 -> (y < x * y) = (x < 1).
+Proof. by move=> yfin y0; rewrite muleC lte_nmulr. Qed.
 
 Lemma lee_sum I (f g : I -> \bar R) s (P : pred I) :
   (forall i, P i -> f i <= g i) ->
