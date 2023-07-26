@@ -581,14 +581,19 @@ by rewrite 2!negb_and -3!asbool_neg => /or3_asboolP.
 by rewrite 3!asbool_neg -2!negb_and => /and3_asboolP.
 Qed.
 
+Lemma notP (P : Prop) : ~ ~ P <-> P.
+Proof. by split => [|p]; [exact: contrapT|exact]. Qed.
+
+Lemma notE (P : Prop) : (~ ~ P) = P. Proof. by rewrite propeqE notP. Qed.
+
 Lemma not_orP (P Q : Prop) : ~ (P \/ Q) <-> ~ P /\ ~ Q.
-Proof.
-split; [apply: contra_notP => /not_andP|apply: contraPnot => AB; apply/not_andP];
-  by rewrite 2!notK.
-Qed.
+Proof. by rewrite -(notP (_ /\ _)) not_andP 2!notE. Qed.
 
 Lemma not_implyE (P Q : Prop) : (~ (P -> Q)) = (P /\ ~ Q).
 Proof. by rewrite propeqE not_implyP. Qed.
+
+Lemma implyE (P Q : Prop) : (P -> Q) = (~ P \/ Q).
+Proof. by rewrite -[LHS]notE not_implyE propeqE not_andP notE. Qed.
 
 Lemma orC (P Q : Prop) : (P \/ Q) = (Q \/ P).
 Proof. by rewrite propeqE; split=> [[]|[]]; [right|left|right|left]. Qed.
