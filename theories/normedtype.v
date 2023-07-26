@@ -4081,14 +4081,12 @@ Qed.
 End urysohn_real.
 End urysohn.
 
-Definition continuously_separates_closed_sets {T : topologicalType} 
-    {R : realType} :=
-  forall A B, closed A -> closed B -> A `&` B = set0 ->
-    exists (f : T -> R), [/\ continuous f, 
-    f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]].
-
 Lemma normal_separatorsP {T : topologicalType} {R : realType} : 
-  normal_space T <-> @continuously_separates_closed_sets T R.
+  normal_space T <-> 
+  (forall A B, closed A -> closed B -> A `&` B = set0 ->
+    exists (f : T -> R), [/\ continuous f, 
+    f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]]).
+.
 Proof.
 split. 
   move/urysohn_seperation => + A B clA clB AB0.

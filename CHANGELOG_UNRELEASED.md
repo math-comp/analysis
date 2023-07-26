@@ -22,9 +22,6 @@
   + new definition `set_nbhs`.
   + new lemmas `filterI_iter_sub`, `filterI_iterE`, `finI_fromI`, 
     `filterI_iter_finI`, `smallest_filter_finI`, and `set_nbhsP`.
-- in file `topology.v`,
-  + new definition `normal`.
-  + new lemma `filter_inv`.
 
 - in file `lebesgue_measure.v`,
   + new lemmas `pointwise_almost_uniform`, and 
@@ -102,6 +99,12 @@
 - in `signed.v`:
   + lemmas `Posz_snum_subproof` and `Negz_snum_subproof`
   + canonical instances `Posz_snum` and `Negz_snum`
+- in file `topology.v`,
+  + new definition `normal_space`.
+  + new lemma `filter_inv`.
+
+- in file `normedtype.v`,
+  + lemmas `normal_separatorsP`, `urysohn_seperation`
 
 ### Changed
 
