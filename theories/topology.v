@@ -5001,6 +5001,9 @@ Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
 Lemma ball_sym (x y : M) (e : R) : ball x e y -> ball y e x.
 Proof. exact: PseudoMetric.ball_sym. Qed.
 
+Lemma ball_symE (x y : M) (e : R) : ball x e y = ball y e x.
+Proof. by rewrite propeqE; split; exact/ball_sym. Qed.
+
 Lemma ball_triangle (y x z : M) (e1 e2 : R) :
   ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
 Proof. exact: PseudoMetric.ball_triangle. Qed.
