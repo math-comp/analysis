@@ -99,12 +99,15 @@
 - in `signed.v`:
   + lemmas `Posz_snum_subproof` and `Negz_snum_subproof`
   + canonical instances `Posz_snum` and `Negz_snum`
+- in file `normedtype.v`,
+  + new lemmas `maxr_absE`, `minr_absE`, `continuous_min`, 
+    `continuous_max`, `urysohn_seperation`, `normal_separatorsP`, and 
+    `subset_closure_half`.
+
 - in file `topology.v`,
   + new definition `normal_space`.
-  + new lemma `filter_inv`.
+  + new lemmas `filter_inv`, and `countable_uniform_bounded`.
 
-- in file `normedtype.v`,
-  + lemmas `normal_separatorsP`, `urysohn_seperation`
 
 ### Changed
 
