@@ -925,11 +925,6 @@ Section NatStability.
 Local Open Scope nat_scope.
 Implicit Type (n : nat).
 
-Lemma nat_snum_subproof n : Signed.spec 0 ?=0 >=0 n.
-Proof. by []. Qed.
-
-Canonical nat_snum n := Signed.mk (nat_snum_subproof n).
-
 Lemma zeron_snum_subproof : Signed.spec 0 ?=0 =0 0.
 Proof. by []. Qed.
 

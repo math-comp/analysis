@@ -168,6 +168,11 @@
 - in `topology.v`:
   + lemma `my_ball_le` (use `ball_le` instead)
 
+- in `signed.v`:
+  + lemma `nat_snum_subproof`
+  + canonical instance `nat_snum` (useless, there is already a default instance
+    pointing to the typ_snum mechanism (then identifying nats as >= 0))
+
 ### Infrastructure
 
 ### Misc
