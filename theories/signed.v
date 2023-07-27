@@ -1020,6 +1020,26 @@ Canonical maxn_snum (xnz ynz : nullity) (xr yr : reality)
 
 End NatStability.
 
+Section IntStability.
+
+Lemma Posz_snum_subproof (xnz : nullity) (xr : reality)
+    (x : {compare 0%N & xnz & xr}) :
+  Signed.spec 0%Z xnz xr (Posz x%:num).
+Proof.
+by apply/andP; split; move: xr xnz x => [[[]|]|] []//=; move=> [[|x]//= _].
+Qed.
+
+Canonical Posz_snum (xnz : nullity) (xr : reality)
+    (x : {compare 0%N & xnz & xr}) :=
+  Signed.mk (Posz_snum_subproof x).
+
+Lemma Negz_snum_subproof (n : nat) : Signed.spec 0%Z !=0 <=0 (Negz n).
+Proof. by []. Qed.
+
+Canonical Negz_snum n := Signed.mk (Negz_snum_subproof n).
+
+End IntStability.
+
 Section Morph0.
 Context {R : numDomainType} {cond : reality}.
 Local Notation nR := {num R & ?=0 & cond}.

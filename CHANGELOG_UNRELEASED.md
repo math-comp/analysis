@@ -64,6 +64,10 @@
 - in `classical_sets.v`:
   + lemma `Zorn_bigcup`
 
+- in `signed.v`:
+  + lemmas `Posz_snum_subproof` and `Negz_snum_subproof`
+  + canonical instances `Posz_snum` and `Negz_snum`
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
