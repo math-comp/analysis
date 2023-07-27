@@ -7643,7 +7643,7 @@ Proof.
 move=> Ff; rewrite pointwise_cvg_family_singleton; split.
   move/fam_cvgP => + t A At => /(_ [set t]); rewrite uniform_set1; apply => //.
   by exists t.
-move=> pf; apply/fam_cvgP => ? [t _ <-]; rewrite uniform_set1; apply: pf.
+by move=> pf; apply/fam_cvgP => ? [t _ <-]; rewrite uniform_set1; exact: pf.
 Qed.
 
 End UniformPointwise.
