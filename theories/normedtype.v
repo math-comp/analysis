@@ -3809,7 +3809,7 @@ have [fyn|] := boolP (edist_inf y \is a fin_num); first last.
   by rewrite ge0_fin_numE// ?ltey// negbK => /eqP->; rewrite addey ?leey.
 have [xyfin|] := boolP (edist (x, y) \is a fin_num); first last.
   by rewrite ge0_fin_numE// ?ltey // negbK => /eqP->; rewrite addye ?leey.
-apply: lee_adde => eps.
+apply/lee_addgt0Pr => _/posnumP[eps].
 have [//|? [a Aa <-] yaeps] := @lb_ereal_inf_adherent R _ eps%:num _ fyn.
 apply: le_trans; first by apply: (@ereal_inf_lb _ _ (edist (x, a))); exists a.
 apply: le_trans; first exact: (@edist_triangle _ _ _ y).

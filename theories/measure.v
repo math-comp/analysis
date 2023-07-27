@@ -3727,7 +3727,7 @@ move=> A; have [[i ioo]|] := pselect (exists i, mu^* (A i) = +oo).
 rewrite -forallNE => Aoo.
 suff add2e (e : {posnum R}) :
     mu^* (\bigcup_n A n) <= \sum_(i <oo) mu^* (A i) + e%:num%:E.
-  exact: lee_adde.
+  by apply/lee_addgt0Pr => _/posnumP[].
 rewrite (le_trans _ (epsilon_trick _ _ _))//; last first.
   by move=> n; exact: mu_ext_ge0.
 pose P n (B : (set T)^nat) := measurable_cover (A n) B /\
