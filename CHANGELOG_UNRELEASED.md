@@ -17,6 +17,11 @@
 - in `lebesgue_measure.v`:
   + declare `lebesgue_measure` as a `SigmaFinite` instance
   + lemma `lebesgue_regularity_inner_sup`
+- in `convex.v`:
+  + lemmas `conv_gt0`, `convRE`
+
+- in `exp.v`:
+  + lemmas `concave_ln`, `conjugate_powR`
 
 ### Changed
 
