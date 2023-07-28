@@ -316,7 +316,7 @@ Lemma eq_bigcup_seqD_bigsetU F :
 Proof.
 rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
 rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
-  by rewrite -bigcup_set_cond => -[/= j _ Fjt]; exists j.
+  by rewrite -bigcup_seq_cond => -[/= j _ Fjt]; exists j.
 by exists i => //; rewrite big_ord_recr /=; right.
 Qed.
 

@@ -756,8 +756,8 @@ rewrite /fleg [X in _ X](_ : _ = \big[setU/set0]_(y <- fset_set (range f))
   apply: bigsetU_measurable => r _; apply: bigsetU_measurable => r' crr'.
   exact/measurableI/measurable_sfunP.
 rewrite predeqE => t; split => [/= cfgn|].
-- rewrite -bigcup_set; exists (f t); first by rewrite /= in_fset_set//= mem_set.
-  rewrite -bigcup_set_cond; exists (g n t) => //=.
+- rewrite -bigcup_seq; exists (f t); first by rewrite /= in_fset_set//= mem_set.
+  rewrite -bigcup_seq_cond; exists (g n t) => //=.
   by rewrite in_fset_set// mem_set.
 - rewrite bigsetU_fset_set// => -[r [x _ fxr]].
   rewrite bigsetU_fset_set_cond// => -[r' [[x' _ gnx'r'] crr']].
@@ -1125,7 +1125,7 @@ Lemma bigsetU_dyadic_itv n : `[n%:R, n.+1%:R[%classic =
   \big[setU/set0]_(n * 2 ^ n.+1 <= k < n.+1 * 2 ^ n.+1) [set` I n.+1 k].
 Proof.
 rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
-- rewrite -bigcup_set /=; exists `|floor (r * 2 ^+ n.+1)|%N.
+- rewrite -bigcup_seq /=; exists `|floor (r * 2 ^+ n.+1)|%N.
     rewrite /= mem_index_iota; apply/andP; split.
       rewrite -ltez_nat gez0_abs ?floor_ge0; last first.
         by rewrite mulr_ge0// (le_trans _ nr).
@@ -1142,7 +1142,7 @@ rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
   rewrite ltr_pdivl_mulr// (lt_le_trans (lt_succ_floor _))//.
   rewrite -[in leRHS]natr1 ler_add2r// -(@gez0_abs (floor _))// floor_ge0.
   by rewrite mulr_ge0// (le_trans _ nr).
-- rewrite -bigcup_set => -[/= k] /[!mem_index_iota] /andP[nk kn].
+- rewrite -bigcup_seq => -[/= k] /[!mem_index_iota] /andP[nk kn].
   rewrite in_itv /= => /andP[knr rkn]; rewrite in_itv /=; apply/andP; split.
     by rewrite (le_trans _ knr)// ler_pdivl_mulr// -natrX -natrM ler_nat.
   by rewrite (lt_le_trans rkn)// ler_pdivr_mulr// -natrX -natrM ler_nat.
@@ -1158,7 +1158,7 @@ move=> fxn; have fxfin : f x \is a fin_num.
 have : f x \in EFin @` `[n%:R, n.+1%:R[%classic.
   rewrite inE /=; exists (fine (f x)); last by rewrite fineK.
   by rewrite in_itv /= -lee_fin -lte_fin (fineK fxfin).
-rewrite (bigsetU_dyadic_itv n) inE /= => -[r]; rewrite -bigcup_set => -[k /=].
+rewrite (bigsetU_dyadic_itv n) inE /= => -[r]; rewrite -bigcup_seq => -[k /=].
 rewrite mem_index_iota => nk Ir rfx.
 by exists k; split; [rewrite !(mulnC (2 ^ n.+1)%N)|rewrite !inE /=; exists r].
 Qed.

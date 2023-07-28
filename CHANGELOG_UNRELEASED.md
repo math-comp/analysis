@@ -170,6 +170,12 @@
   + `integrableMr` -> `integrableZr`
   + `integralM` -> `integralZl`
 
+- in `classical_sets.v`:
+  + `bigcup_set_cond` -> `bigcup_seq_cond`
+  + `bigcup_set` -> `bigcup_seq`
+  + `bigcap_set_cond` -> `bigcap_seq_cond`
+  + `bigcap_set` -> `bigcap_seq`
+
 ### Generalized
 
 - in `exp.v`:
