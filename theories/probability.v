@@ -488,8 +488,8 @@ rewrite -sqrteM ?variance_ge0//.
 rewrite lee_sqrE ?sqrte_ge0// sqr_sqrte ?mule_ge0 ?variance_ge0//.
 rewrite -(fineK (variance_fin_num X1 X2)) -(fineK (variance_fin_num Y1 Y2)).
 rewrite -(fineK (covariance_fin_num X1 Y1 XY1)).
-rewrite -EFin_expe -EFinM lee_fin -(@ler_pmul2l _ 4) ?ltr0n// [leRHS]mulrA.
-rewrite [in leLHS](_ : 4 = 2 * 2)%R -natrM// natrM mulrACA -expr2 -subr_le0.
+rewrite -EFin_expe -EFinM lee_fin -(@ler_pmul2l _ 4%:R) ?ltr0n// [leRHS]mulrA.
+rewrite [in leLHS](natrM _ 2 2) mulrACA -expr2 -subr_le0.
 apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
 rewrite EFinM fineK ?variance_fin_num// muleC -varianceZ//.
 rewrite -mulrA EFinM mulrC EFinM ?fineK ?covariance_fin_num// -covarianceZl//.
@@ -630,7 +630,7 @@ pose u0 := (fine 'V_P[X] / lambda)%R.
 have u0ge0 : (0 <= u0)%R.
   by apply: divr_ge0 (ltW lambda_gt0); rewrite -lee_fin finVK variance_ge0.
 apply: le_trans (le _ u0ge0) _; rewrite lee_fin le_eqVlt; apply/orP; left.
-rewrite eqr_div; [|apply: lt0r_neq0..]; last 2 first.
+rewrite GRing.eqr_div; [|apply: lt0r_neq0..]; last 2 first.
 - by rewrite exprz_gt0 -1?[ltLHS]addr0 ?ltr_le_add.
 - by rewrite ltr_paddl ?fine_ge0 ?variance_ge0 ?exprz_gt0.
 apply/eqP; have -> : fine 'V_P[X] = (u0 * lambda)%R.
