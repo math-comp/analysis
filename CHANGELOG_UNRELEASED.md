@@ -79,6 +79,9 @@
 - in `constructive_ereal.v`:
   + lemmas `lte_pmulr`, `lte_pmull`, `lte_nmulr`, `lte_nmull`
   + lemmas `lte0n`, `lee0n`, `lte1n`, `lee1n`
+- in `sequences.v`:
+  + lemma `eseries_cond`
+  + lemmas `eseries_mkcondl`, `eseries_mkcondr`
 
 - in file `numfun.v`,
   + new lemma `continuous_bounded_extension`.
@@ -97,6 +100,9 @@
 
 - in `exp.v`:
   + lemmas `power_posD` (now `powRD`), `power_posB` (now `powRB`)
+
+- in `sequences.v`:
+  + lemma `nneseriesrM` generalized and renamed to `nneseriesZl`
 
 ### Renamed
 
@@ -183,6 +189,9 @@
     `null_set_setU`, `measureU0`
     (from measure to content)
   + lemma `subset_measure0` (from `realType` to `realFieldType`)
+
+- in `sequences.v`:
+  + lemmas `eq_eseriesr`, `lee_nneseries`
 
 ### Deprecated
 

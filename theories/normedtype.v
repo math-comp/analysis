@@ -2876,8 +2876,8 @@ rewrite /continuous_at -[edist (x, y)]fineK//; apply: cvg_EFin.
   by have := edist_fin_open efin; apply: filter_app; near=> w.
 move=> U /=; rewrite nbhs_simpl/= -nbhs_ballE.
 move=> [] _/posnumP[r] distrU; rewrite nbhs_simpl /=.
-have r2p : 0 < r%:num / 4 by rewrite divr_gt0// ltr0n.
-exists (ball x (r%:num / 4), ball y (r%:num / 4)).
+have r2p : 0 < r%:num / 4%:R by rewrite divr_gt0// ltr0n.
+exists (ball x (r%:num / 4%:R), ball y (r%:num / 4%:R)).
   by split => //=; exact: (@nbhsx_ballx _ _ _ (@PosNum _ _ r2p)).
 case => a b /= [/ball_sym xar yar]; apply: distrU => /=.
 have abxy : (edist (a, b) <= edist (a, x) + edist (x, y) + edist (y, b))%E.
@@ -2885,7 +2885,7 @@ have abxy : (edist (a, b) <= edist (a, x) + edist (x, y) + edist (y, b))%E.
 have abfin : edist (a, b) \is a fin_num.
   rewrite ge0_fin_numE// (le_lt_trans abxy)//.
   by apply: lte_add_pinfty; [apply: lte_add_pinfty|];
-    rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num / 4).
+    rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num / 4%:R).
 have xyabfin : `|edist (x, y) - edist (a, b)|%E \is a fin_num.
   by rewrite abse_fin_num fin_numB abfin efin.
 have daxr : edist (a, x) \is a fin_num by apply/edist_finP; exists (r%:num / 4).
