@@ -2673,7 +2673,7 @@ rewrite ge0_integral_fsum//; last 2 first.
 transitivity (\sum_(i \in range f)
     (\sum_(n <oo) i%:E * \int[m_ n]_x (\1_(f @^-1` [set i]) x)%:E)).
   apply: eq_fsbigr => r _.
-  rewrite integralZl_indic_nnsfun// integral_measure_series_indic// nneseriesrM//.
+  rewrite integralZl_indic_nnsfun// integral_measure_series_indic// nneseriesZl//.
   by move=> n _; apply: integral_ge0 => t _; rewrite lee_fin.
 rewrite fsbig_finite//= -nneseries_sum; last first.
   move=> r j _.

@@ -2076,9 +2076,9 @@ apply/uniform_restrict_cvg => /= U /=; rewrite ?uniform_nbhsT.
 case/nbhs_ex => del /filterS; apply.
 have [N _ /(_ N)/(_ (leqnn _)) Ndel] := near_infty_natSinv_lt del.
 exists (badn N) => // r badNr x.
-rewrite /patch; case xAB: (x \in A`\`_) => //; apply: (lt_trans _ Ndel).
+rewrite /patch; case xAB: (x \in A `\` _) => //; apply: (lt_trans _ Ndel).
 move/set_mem: xAB; rewrite setDE; case => Ax; rewrite setC_bigcup => /(_ N I).
-rewrite /E setC_bigcup => /(_ (r)) /=; rewrite /h => /(_ badNr) /not_andP [] //.
+rewrite /E setC_bigcup => /(_ r) /=; rewrite /h => /(_ badNr) /not_andP [] //.
 by move/negP; rewrite real_ltNge // distrC.
 Qed.
 

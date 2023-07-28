@@ -460,7 +460,7 @@ apply: le_anti; apply/andP; split.
   by move=> ? [p Ap [q Bq] <-]; apply: ler_add; exact: sup_ub.
 rewrite real_leNgt ?num_real// -subr_gt0; apply/negP.
 set eps := (_ + _ - _) => epos.
-have e2pos : 0 < eps / 2 by rewrite divr_gt0// ltr0n.
+have e2pos : 0 < eps / 2%:R by rewrite divr_gt0// ltr0n.
 have [r Ar supBr] := sup_adherent e2pos supA.
 have [s Bs supAs] := sup_adherent e2pos supB.
 have := ltr_add supBr supAs.
