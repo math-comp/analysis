@@ -1017,6 +1017,12 @@ by rewrite -mulrA -invfM expnSr natrM -mulrA divff// mulr1 natrX.
 Qed.
 Arguments cvg_geometric_series_half {R} _ _.
 
+Lemma geometric_partial_tail {R : fieldType} (n m : nat) (x : R) :
+  \sum_(m <= i < m + n) x ^+ i = series (geometric (x ^+ m) x) n.
+Proof.
+by rewrite (big_addn 0 _ m) addnC addnK; under eq_bigr do rewrite exprD mulrC.
+Qed.
+
 Lemma cvg_geometric (R : archiFieldType) (a z : R) : `|z| < 1 ->
   geometric a z --> (0 : R).
 Proof. by move=> /cvg_geometric_series/cvgP/cvg_series_cvg_0. Qed.
@@ -2562,6 +2568,16 @@ Notation cvg_elim_inf_sup := cvg_lim_einf_sup.
 Notation is_cvg_elim_infE := is_cvg_lim_einfE.
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `is_cvg_lim_esupE`")]
 Notation is_cvg_elim_supE := is_cvg_lim_esupE.
+
+Lemma geometric_le_lim {R : realType} (n : nat) (a x : R) :
+  0 <= a -> 0 < x -> `|x| < 1 -> series (geometric a x) n <= a * (1 - x)^-1.
+Proof.
+move=> a0 x0 x1.
+have /(@cvg_unique _ (@Rhausdorff R)) := @cvg_geometric_series _ a _ x1.
+move/(_ _ (@is_cvg_geometric_series _ a _ x1)) => ->.
+apply: nondecreasing_cvg_le; last exact: is_cvg_geometric_series.
+by apply: nondecreasing_series => ? _ /=; rewrite pmulr_lge0 // exprn_gt0.
+Qed.
 
 Section banach_contraction.
 

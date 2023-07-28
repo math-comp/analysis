@@ -7644,6 +7644,15 @@ move=> PF; rewrite pointwise_cvg_family_singleton; apply: family_cvg_subset.
 by move=> A [x _ <-]; exact: compact_set1.
 Qed.
 
+Lemma pointwise_cvgP F (f: U -> V):
+  Filter F -> {ptws, F --> f} <-> forall (t : U), (fun g => g t) @ F --> f t.
+Proof.
+move=> Ff; rewrite pointwise_cvg_family_singleton; split.
+  move/fam_cvgP => + t A At => /(_ [set t]); rewrite uniform_set1; apply => //.
+  by exists t.
+by move=> pf; apply/fam_cvgP => ? [t _ <-]; rewrite uniform_set1; exact: pf.
+Qed.
+
 End UniformPointwise.
 
 Section gauges.

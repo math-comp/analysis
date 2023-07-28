@@ -80,6 +80,13 @@
   + lemmas `lte_pmulr`, `lte_pmull`, `lte_nmulr`, `lte_nmull`
   + lemmas `lte0n`, `lee0n`, `lte1n`, `lee1n`
 
+- in file `numfun.v`,
+  + new lemma `continuous_bounded_extension`.
+- in file `sequences.v`,
+  + new lemmas `geometric_partial_tail`, and `geometric_le_lim`.
+- in file `topology.v`,
+  + new lemma `pointwise_cvgP`.
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
