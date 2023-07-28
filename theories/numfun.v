@@ -401,15 +401,17 @@ HB.end.
 Section Tietze.
 Context {X : topologicalType} {R : realType}.
 
+Local Notation "3" := 3%:R : ring_scope.
+
 Hypothesis urysohn_ext : forall A B,
   closed A -> closed B -> A `&` B = set0 ->
   exists f : X -> R, [/\ continuous f,
-    f @` A = [set 0], f @` B = [set 1] & range f `<=` `[0, 1]].
+    f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0, 1]].
 
 Lemma urysohn_ext_itv A B x y :
   closed A -> closed B -> A `&` B = set0 -> x < y ->
   exists f : X -> R, [/\ continuous f,
-    f @` A = [set x], f @` B = [set y] & range f `<=` `[x, y]].
+    f @` A `<=` [set x], f @` B `<=` [set y] & range f `<=` `[x, y]].
 Proof.
 move=> clA clB AB0 xy; have [f [ctsf f0 f1 f01]] := urysohn_ext clA clB AB0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
@@ -418,8 +420,10 @@ pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
     apply: continuousM; last exact: cvg_cst.
     by apply: (@continuousB R [normedModType R of R^o]) => //; exact: cvg_cst.
   by apply: continuousM; [exact: cvg_id|exact: cvg_cst].
-- by rewrite -image_comp f0 image_set1 line_path0.
-- by rewrite -image_comp f1 image_set1 line_path1.
+- rewrite -image_comp; apply: (subset_trans (image_subset _  f0)).
+  by rewrite image_set1 line_path0.
+- rewrite -image_comp; apply: (subset_trans (image_subset _  f1)).
+  by rewrite image_set1 line_path1.
 - rewrite -image_comp; apply: (subset_trans (image_subset _ f01)).
   by rewrite range_line_path.
 Qed.
@@ -427,44 +431,42 @@ Qed.
 Context (A : set X).
 Hypothesis clA : closed A.
 
-Let three0 : 0 < 3 :> R. Proof. exact: ltr0n. Qed.
-
-Let threen0 : 3 != 0 :> R. Proof. exact: lt0r_neq0. Qed.
+Local Notation "3" := 3%:R.
 
 Local Lemma tietze_step' (f : X -> R) (M : R) :
   0 < M -> {within A, continuous f} ->
   (forall x, A x -> `|f x| <= M) ->
   exists g : X -> R, [/\ continuous g,
-     (forall x, A x -> `|f x - g x| <= 2/3 * M :> R) &
+     (forall x, A x -> `|f x - g x| <= 2/3 * M) &
      (forall x, `|g x| <= 1/3 * M)].
 Proof.
-move=> mpos ctsf fA1.
-have [] := @urysohn_ext_itv
-    (A `&` f @^-1` `]-oo, -(1/3) * M]) (A `&` f @^-1` `[1/3 * M,+oo[)
-    (-(1/3) * M) (1/3 * M).
+move: M => _/posnumP[M] ctsf fA1.
+have [] := @urysohn_ext_itv (A `&` f @^-1` `]-oo, -(1/3) * M%:num]) 
+    (A `&` f @^-1` `[1/3 * M%:num,+oo[) (-(1/3) * M%:num) (1/3 * M%:num).
 - by rewrite closed_setSI; exact: closed_comp.
 - by rewrite closed_setSI; apply: closed_comp => //; exact: interval_closed.
 - rewrite setIACA -preimage_setI eqEsubset; split => z // [_ []].
   rewrite !set_itvE/= => /[swap] /le_trans /[apply].
   by rewrite leNgt mulNr gtr_opp// mulr_gt0// divr_gt0.
-- by rewrite mulNr gtr_opp// mulr_gt0// divr_gt0.
+- by rewrite mulNr gtr_opp// mulr_gt0//.
 move=> g [ctsg gL3 gR3 grng]; exists g; split => //; first last.
   by move=> x; rewrite ler_norml -mulNr; apply: grng; exists x.
 move=> x Ax; have := fA1 _ Ax; rewrite 2!ler_norml => /andP[Mfx fxM].
-have [xL|xL] := lerP (f x) (-(1/3) * M).
-  have : [set g x | x in A `&` f@^-1` `]-oo, -(1/3) * M]] (g x) by exists x.
-  rewrite gL3 => ->; rewrite !mulNr opprK; apply/andP; split.
+have [xL|xL] := lerP (f x) (-(1/3) * M%:num).
+  have: [set g x | x in A `&` f@^-1` `]-oo, -(1/3) * M%:num]] (g x) by exists x.
+  move/gL3=> ->; rewrite !mulNr opprK; apply/andP; split.
     by rewrite -ler_subl_addr -opprD -2!mulrDl natr1 divrr ?unitfE// mul1r.
   rewrite -ler_subr_addr -2!mulrBl -(@natrB _ 2 1)// (le_trans xL)//.
   by rewrite ler_pmul2r// ltW// gtr_opp// divr_gt0.
-have [xR|xR] := lerP (1/3 * M) (f x).
-  have : [set g x | x in A `&` f@^-1` `[1/3 * M, +oo[] (g x).
+have [xR|xR] := lerP (1/3 * M%:num) (f x).
+  have : [set g x | x in A `&` f@^-1` `[1/3 * M%:num, +oo[] (g x).
     by exists x => //; split => //; rewrite /= in_itv //= xR.
-  rewrite gR3 => ->; apply/andP; split.
+  move/gR3 => ->; apply/andP; split.
     rewrite ler_subr_addl -2!mulrBl (le_trans _ xR)// ler_pmul2r//.
     by rewrite ler_wpmul2r ?invr_ge0 ?ler0n// ler_subl_addl natr1 ler1n.
   by rewrite ler_subl_addl -2!mulrDl nat1r divrr ?mul1r// unitfE.
-have /andP[ng3 pg3] : -(1/3) * M <= g x <= 1/3 * M by apply: grng; exists x.
+have /andP[ng3 pg3] : -(1/3) * M%:num <= g x <= 1/3 * M%:num.
+  by apply: grng; exists x.
 rewrite (natrD _ 1 1) !mulrDl; apply/andP; split.
   by rewrite opprD ler_sub// -mulNr ltW.
 by rewrite (ler_add (ltW _))// ler_oppl -mulNr.
@@ -483,37 +485,30 @@ case : (pselect (forall x, A x -> `|f x| <= M)); last by move => ?; exists point
 by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
 Qed.
 
-Let twothirds_pos : 0 < 2/3 :> R. Proof. exact: divr_gt0. Qed.
-Let twothirds := PosNum twothirds_pos.
-
-Let onethird_pos : 0 < 1/3 :> R. Proof. exact: divr_gt0. Qed.
-Let onethird := PosNum onethird_pos.
-
-Let onem_twothirds : 1 - twothirds%:num = onethird%:num.
+Let onem_twothirds : 1 - 2/3%:R = 1/3%:R :> R.
 Proof. by apply/eqP; rewrite subr_eq/= -mulrDl nat1r divrr// unitfE. Qed.
 
 Lemma continuous_bounded_extension (f : X -> R^o) M :
   0 < M -> {within A, continuous f} -> (forall x, A x -> `|f x| <= M) ->
   exists g, [/\ {in A, f =1 g}, continuous g & forall x, `|g x| <= M].
 Proof.
-move: M => _/posnumP[M] Af fbd; pose M2d3 n := geometric M%:num twothirds%:num n.
+move: M => _/posnumP[M] Af fbd; pose M2d3 n := geometric M%:num (2/3) n.
 have MN0 n : 0 < M2d3 n by rewrite /M2d3 /geometric /mk_sequence.
 pose f_ := fix F n :=
   if n is n.+1 then F n - projT1 (tietze_step (F n) (M2d3 n)) else f.
 pose g_ n := projT1 (tietze_step (f_ n) (M2d3 n)).
 have fgE n : f_ n - f_ n.+1 = g_ n by rewrite /= opprB addrC subrK.
-have twothirds1 : `|twothirds%:num| < 1 :> R.
-  by rewrite gtr0_norm//= ltr_pdivr_mulr// mul1r ltr_nat.
+have twothirds1 : `|2/3| < 1 :> R.
+  by rewrite gtr0_norm //= ltr_pdivr_mulr// mul1r ltr_nat.
 have f_geo n : {within A, continuous f_ n} /\
-    (forall x, A x -> `|f_ n x| <= geometric M%:num twothirds%:num n).
+    (forall x, A x -> `|f_ n x| <= geometric M%:num (2/3) n).
   elim: n => [|n [ctsN bdN]]; first by split=> //= x ?; rewrite expr0 mulr1 fbd.
   have [cg bdNS bd2] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdN.
   split=> [x|]; first by apply: cvgB; [exact:ctsN|exact/continuous_subspaceT/cg].
   by move=> x Ax; rewrite (le_trans (bdNS _ Ax))// /M2d3/= mulrCA -exprS.
 have g_cts n : continuous (g_ n).
   by have [? ?] := f_geo n; case: (projT2 (tietze_step (f_ n) _) _ (MN0 n)).
-have g_bd n : forall x,
-    `|g_ n x| <= geometric (onethird%:num * M%:num) twothirds%:num n.
+have g_bd n : forall x, `|g_ n x| <= geometric ((1/3) * M%:num) (2/3) n.
   have [ctsN bdfN] := f_geo n; rewrite /geometric /= -[_ * M%:num * _]mulrA.
   by have [_ _] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdfN.
 pose h_ : nat -> [completeType of {uniform X -> _}] :=
@@ -524,17 +519,17 @@ have cvgh' : cvg (h_ @ \oo).
     move=>/[dup]; rewrite {1}near_swap; apply: filter_app2; near=> n m.
     by have /orP[mn /(_ mn)/ball_sym + _| ? _] := leq_total n m; apply.
   near=> n m; move=> /= MN; rewrite /ball /= /h_ => t; rewrite /ball /=.
-  rewrite -[X in `|X|]/((_ - _) t) sub_series MN fct_sumE.
+  rewrite -[X in `|X|]/((series g_ n - series g_ m) t) sub_series MN fct_sumE.
   rewrite (le_lt_trans (ler_norm_sum _ _ _))//.
   rewrite (le_lt_trans (ler_sum _ (fun i _ => g_bd i t)))// -mulr_sumr.
   rewrite -(subnKC MN) geometric_partial_tail.
   pose L :=
-    onethird%:num * M%:num * (twothirds%:num ^+ m / (1 - twothirds%:num)).
+    (1/3) * M%:num * ((2/3) ^+ m / (1 - (2/3))).
   apply: (@le_lt_trans _ _ L); first by rewrite ler_pmul2l // geometric_le_lim.
   rewrite /L onem_twothirds.
   rewrite [_ ^+ _ * _ ^-1]mulrC mulrA -[x in x < _]ger0_norm; last by [].
   near: m; near_simpl; move: eps epos.
-  exact/(cvgr0_norm_lt (fun _ => _ : R^o))/cvg_geometric.
+  by apply: (cvgr0_norm_lt (fun _ => _ : R^o)); apply: cvg_geometric.
 have cvgh : {uniform, h_ @ \oo --> lim (h_ @ \oo)}.
   by move=> ?; rewrite /= uniform_nbhsT; exact: cvgh'.
 exists (lim (h_ @ \oo)); split.
