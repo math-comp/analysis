@@ -463,7 +463,7 @@ have [xR|xR] := lerP (1/3 * M%:num) (f x).
   by rewrite ler_subl_addl -2!mulrDl nat1r divrr ?mul1r// unitfE.
 have /andP[ng3 pg3] : -(1/3) * M%:num <= g x <= 1/3 * M%:num.
   by apply: grng; exists x.
-rewrite (natrD _ 1 1) !mulrDl; apply/andP; split.
+rewrite (intrD _ 1 1) !mulrDl; apply/andP; split.
   by rewrite opprD ler_sub// -mulNr ltW.
 by rewrite (ler_add (ltW _))// ler_oppl -mulNr.
 Qed.

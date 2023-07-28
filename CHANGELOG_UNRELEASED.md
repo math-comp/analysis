@@ -100,6 +100,12 @@
 
 ### Removed
 
+- in `signed.v`:
+  + specific notation for `2%:R`,
+    now subsumed by number notations in MC >= 1.15
+    Note that when importing ssrint, `2` now denotes `2%:~R` rather than `2%:R`,
+    which are convertible but don't have the same head constant.
+
 ### Infrastructure
 
 ### Misc

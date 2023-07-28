@@ -98,7 +98,6 @@ From mathcomp Require Import mathcomp_extra.
 (*                  main use case is to trigger typeclass inference in the    *)
 (*                  body of a ssreflect have := !! body.                      *)
 (*                  Credits: Enrico Tassi.                                    *)
-(*             2 == notation for 2%:R.                                        *)
 (*                                                                            *)
 (* --> A number of canonical instances are provided for common operations, if *)
 (* your favorite operator is missing, look below for examples on how to add   *)
@@ -306,7 +305,6 @@ Notation "x %:posnum" := (@num _ _ 0%R !=0 >=0 x) : ring_scope.
 Definition nonneg (R : numDomainType) of phant R := {>= 0%R : R}.
 Notation "{ 'nonneg' R }" := (@nonneg _ (Phant R))  : ring_scope.
 Notation "x %:nngnum" := (@num _ _ 0%R ?=0 >=0 x) : ring_scope.
-Notation "2" := 2%:R : ring_scope.
 Arguments r {disp T x0 nz cond}.
 End Exports.
 End Signed.
