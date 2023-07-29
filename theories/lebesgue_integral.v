@@ -1756,7 +1756,7 @@ exists (\bigcup_(i in range f) dK i); split.
     apply: (@lee_fsum _ _ _ _ (fun=> (eps%:num / N.+1%:R)%:E * 1%:E)) => //.
     by move=> i ?; rewrite mule1; apply: ltW; have [_ _] := dkP i.
   rewrite /=-ge0_mule_fsumr // -esum_fset // finite_card_sum // -EFinM lte_fin.
-  by rewrite rfN -mulrA gtr_pmulr // mulrC ltr_pdivr_mulr // mul1r ltr_nat.
+  by rewrite rfN -mulrA gtr_pMr // mulrC ltr_pdivrMr // mul1r ltr_nat.
 - suff : closed (\bigcup_(i in range f) dK i) /\
     {within \bigcup_(i in range f) dK i, continuous f} by case.
   rewrite -bigsetU_fset_set //.
@@ -3342,7 +3342,7 @@ have [r0|r0|->] := ltgtP r 0%R; last first.
   rewrite ge0_integralZl_EFin //; last 2 first.
     + exact: measurable_funeneg.
     + by rewrite -lerNr oppr0 ltW.
-  rewrite ge0_integralM_EFin //; last 2 first.
+  rewrite ge0_integralZl_EFin //; last 2 first.
     + exact: measurable_funepos.
     + by rewrite -lerNr oppr0 ltW.
   rewrite -mulNe -EFinN opprK addeC EFinN mulNe -muleBr //; last first.
@@ -4857,7 +4857,7 @@ case/fine_cvgP: pl1 => + /cvg_ballP/(_ _ e2p); apply: filter_app2.
 case/fine_cvgP: nl1 => + /cvg_ballP/(_ _ e2p); apply: filter_app2.
 near=> n; rewrite /ball /=; do 3 rewrite distrC subr0.
 move=> finfn ne2 finfp pe2; rewrite [_%:num]splitr.
-rewrite (le_lt_trans _ (ltr_add pe2 ne2))// (le_trans _ (ler_norm_add _ _))//.
+rewrite (le_lt_trans _ (ltrD pe2 ne2))// (le_trans _ (ler_normD _ _))//.
 under [fun z => _ (f^\+ z + _)]eq_fun => ? do rewrite EFinN.
 under [fun z => _ (f^\- z + _)]eq_fun => ? do rewrite EFinN.
 have mfp : mu.-integrable E (fun z => `|f^\+ z - (p_ n z)%:E|).
