@@ -1921,10 +1921,10 @@ Lemma bigcap_fsetD1 {T U : choiceType} (x : T) (F : T -> set U) (X : {fset T}) :
 Proof. by move=> Xx; rewrite (bigcap_setD1 x)// set_fsetD1. Qed.
 Arguments bigcup_fsetD1 {T U} x.
 
-Section bigcup_set.
+Section bigcup_seq.
 Variables (T : choiceType) (U : Type).
 
-Lemma bigcup_set_cond (s : seq T) (f : T -> set U) (P : pred T) :
+Lemma bigcup_seq_cond (s : seq T) (f : T -> set U) (P : pred T) :
   \bigcup_(t in [set x | (x \in s) && P x]) (f t) =
   \big[setU/set0]_(t <- s | P t) (f t).
 Proof.
@@ -1939,23 +1939,31 @@ rewrite big_cons -ih predeqE => u; split=> [[t /andP[]]|].
   + by exists t => //; apply/andP; split => //; rewrite inE orbC ts.
 Qed.
 
-Lemma bigcup_set (s : seq T) (f : T -> set U) :
+Lemma bigcup_seq (s : seq T) (f : T -> set U) :
   \bigcup_(t in [set` s]) (f t) = \big[setU/set0]_(t <- s) (f t).
 Proof.
-rewrite -(bigcup_set_cond s f xpredT); congr (\bigcup_(t in mkset _) _).
+rewrite -(bigcup_seq_cond s f xpredT); congr (\bigcup_(t in mkset _) _).
 by rewrite funeqE => t; rewrite andbT.
 Qed.
 
-Lemma bigcap_set_cond (s : seq T) (f : T -> set U) (P : pred T) :
+Lemma bigcap_seq_cond (s : seq T) (f : T -> set U) (P : pred T) :
   \bigcap_(t in [set x | (x \in s) && P x]) (f t) =
   \big[setI/setT]_(t <- s | P t) (f t).
-Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_set_cond. Qed.
+Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_seq_cond. Qed.
 
-Lemma bigcap_set (s : seq T) (f : T -> set U) :
+Lemma bigcap_seq (s : seq T) (f : T -> set U) :
   \bigcap_(t in [set` s]) (f t) = \big[setI/setT]_(t <- s) (f t).
-Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_set. Qed.
+Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_seq. Qed.
 
-End bigcup_set.
+End bigcup_seq.
+#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcup_seq instead")]
+Notation bigcup_set := bigcup_seq.
+#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcup_seq_cond instead")]
+Notation bigcup_set_cond := bigcup_seq_cond.
+#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcap_seq instead")]
+Notation bigcap_set := bigcap_seq.
+#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcap_seq_cond instead")]
+Notation bigcap_set_cond := bigcap_seq_cond.
 
 Lemma bigcup_pred [T : finType] [U : Type] (P : {pred T}) (f : T -> set U) :
   \bigcup_(t in [set` P]) f t = \big[setU/set0]_(t in P) f t.
@@ -2003,7 +2011,7 @@ Implicit Types (A : set T) (F : nat -> set T).
 
 Lemma bigcup_mkord n F : \bigcup_(i < n) F i = \big[setU/set0]_(i < n) F i.
 Proof.
-rewrite -(big_mkord xpredT F) -bigcup_set.
+rewrite -(big_mkord xpredT F) -bigcup_seq.
 by apply: eq_bigcupl; split=> i; rewrite /= mem_index_iota leq0n.
 Qed.
 
