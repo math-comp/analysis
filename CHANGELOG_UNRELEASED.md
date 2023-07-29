@@ -176,6 +176,9 @@
   + `bigcap_set_cond` -> `bigcap_seq_cond`
   + `bigcap_set` -> `bigcap_seq`
 
+- in `normedtype.v`:
+  + `nbhs_closedballP` -> `nbhs_closed_ballP`
+
 ### Generalized
 
 - in `exp.v`:
