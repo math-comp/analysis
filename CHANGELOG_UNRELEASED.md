@@ -90,6 +90,9 @@
 - in file `topology.v`,
   + new lemma `pointwise_cvgP`.
 
+- in `classical_sets.v`:
+  + lemma `bigcup_bigcup`
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:
@@ -103,6 +106,11 @@
 
 - in `sequences.v`:
   + lemma `nneseriesrM` generalized and renamed to `nneseriesZl`
+- in `classical_sets.v`:
+  + `bigcup_bigcup_dep` renamed to `bigcup_setM_dep` and
+    equality in the statement reversed
+  + `bigcup_bigcup` renamed to `bigcup_setM` and
+    equality in the statement reversed
 
 ### Renamed
 

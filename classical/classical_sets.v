@@ -1774,7 +1774,8 @@ Lemma setC_bigsetU U (s : seq T) (f : T -> set U) (P : pred T) :
 Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setC0 ?setCU. Qed.
 
 Lemma setC_bigsetI U (s : seq T) (f : T -> set U) (P : pred T) :
-   (~` \big[setI/setT]_(t <- s | P t) f t) = \big[setU/set0]_(t <- s | P t) ~` f t.
+  (~` \big[setI/setT]_(t <- s | P t) f t) =
+  \big[setU/set0]_(t <- s | P t) ~` f t.
 Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setCT ?setCI. Qed.
 
 Lemma bigcupDr (F : I -> set T) (P : set I) (A : set T) : P !=set0 ->
@@ -1785,18 +1786,25 @@ Lemma setD_bigcupl (F : I -> set T) (P : set I) (A : set T) :
   \bigcup_(i in P) F i `\` A = \bigcup_(i in P) (F i `\` A).
 Proof. by rewrite setDE setI_bigcupl; under eq_bigcupr do rewrite -setDE. Qed.
 
-Lemma bigcup_bigcup_dep {J : Type} (F : I -> J -> set T) (P : set I) (Q : I -> set J) :
-  \bigcup_(i in P) \bigcup_(j in Q i) F i j =
-  \bigcup_(k in P `*`` Q) F k.1 k.2.
+Lemma bigcup_setM_dep {J : Type} (F : I -> J -> set T)
+    (P : set I) (Q : I -> set J) :
+  \bigcup_(k in P `*`` Q) F k.1 k.2 = \bigcup_(i in P) \bigcup_(j in Q i) F i j.
 Proof.
-apply/predeqP => x; split=> [[i Pi [j Pj Fijx]]|]; first by exists (i, j).
+apply/predeqP => x; split=> [|[i Pi [j Pj Fijx]]]; last by exists (i, j).
 by move=> [[/= i j] [Pi Qj] Fijx]; exists i => //; exists j.
 Qed.
 
-Lemma bigcup_bigcup {J : Type} (F : I -> J -> set T) (P : set I) (Q : set J) :
-  \bigcup_(i in P) \bigcup_(j in Q) F i j =
-  \bigcup_(k in P `*` Q) F k.1 k.2.
-Proof. exact: bigcup_bigcup_dep. Qed.
+Lemma bigcup_setM {J : Type} (F : I -> J -> set T) (P : set I) (Q : set J) :
+  \bigcup_(k in P `*` Q) F k.1 k.2 = \bigcup_(i in P) \bigcup_(j in Q) F i j.
+Proof. exact: bigcup_setM_dep. Qed.
+
+Lemma bigcup_bigcup T' (F : I -> set T) (P : set I) (G : T -> set T') :
+  \bigcup_(i in \bigcup_(n in P) F n) G i =
+  \bigcup_(n in P) \bigcup_(i in F n) G i.
+Proof.
+apply/seteqP; split; first by move=> x [n [m ? ?] h]; exists m => //; exists n.
+by move=> x [n ? [m ?]] h; exists m => //; exists n.
+Qed.
 
 Lemma bigcupID (Q : set I) (F : I -> set T) (P : set I) :
   \bigcup_(i in P) F i =
