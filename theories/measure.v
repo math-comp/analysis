@@ -2099,7 +2099,7 @@ have mdW A : measurable A -> measurable_fin_trivIset A.
 have mdI : setI_closed measurable_fin_trivIset.
   move=> _ _ [A [-> Am Afin Atriv]] [B [-> Bm Bfin Btriv]].
   rewrite setI_bigcupl; under eq_bigcupr do rewrite setI_bigcupr.
-  rewrite bigcup_bigcup -(bigcup_image _ _ id).
+  rewrite -bigcup_setM -(bigcup_image _ _ id).
   eexists; split; [reflexivity | | exact/finite_image/finite_setM |].
     by move=> _ [X [? ?] <-]; apply: measurableI; [apply: Am|apply: Bm].
   apply: trivIset_sets => -[a b] [a' b']/= [Xa Xb] [Xa' Xb']; rewrite setIACA.
@@ -2118,7 +2118,7 @@ have mdU : fin_trivIset_closed measurable_fin_trivIset.
   have /(_ _ (set_mem _))/cid-/(all_sig_cond_dep (fun=> set0))
        [G /(_ _ (mem_set _))GP] := Fm _ _.
   under eq_bigcupr => i Di do case: (GP i Di) => ->.
-  rewrite bigcup_bigcup_dep -(bigcup_image _ _ id); eexists; split=> //.
+  rewrite -bigcup_setM_dep -(bigcup_image _ _ id); eexists; split=> //.
   - by move=> _ [i [Di Gi] <-]; have [_ + _ _] := GP i.1 Di; apply.
   - by apply: finite_image; apply: finite_setMR=> // i Di; have [] := GP i Di.
   apply: trivIset_sets => -[i X] [j Y] /= [Di Gi] [Dj Gj] XYN0.
@@ -2523,7 +2523,7 @@ have DUBm i : measurable (seqDU B i : set (SetRing.type T)).
      do 1?apply: bigsetU_measurable => *; apply: sub_gen_smallest.
 rewrite XE; move: (XE); rewrite seqDU_bigcup_eq.
 under eq_bigcupr do rewrite -[seqDU B _]cover_decomp//.
-rewrite bigcup_bigcup_dep; set K := _ `*`` _.
+rewrite -bigcup_setM_dep; set K := _ `*`` _.
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
   apply: cardMR_eq_nat=> // i; split; last by apply/set0P; rewrite decompN0.
   exact/finite_set_countable/decomp_finite_set.
