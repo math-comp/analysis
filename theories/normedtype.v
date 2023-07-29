@@ -2872,14 +2872,13 @@ case=> x y; have [pE U /= Upinf|] := eqVneq (edist (x, y)) +oo%E.
     by move=> z /= ->; apply: nbhs_singleton; move: pE Upinf => ->.
   by apply: open_nbhs_nbhs; split => //; exact: edist_pinfty_open.
 rewrite -ltey -ge0_fin_numE// => efin.
-rewrite -[edist (x, y)]fineK//; apply: cvg_EFin.
+rewrite /continuous_at -[edist (x, y)]fineK//; apply: cvg_EFin.
   by have := edist_fin_open efin; apply: filter_app; near=> w.
 move=> U /=; rewrite nbhs_simpl/= -nbhs_ballE.
 move=> [] _/posnumP[r] distrU; rewrite nbhs_simpl /=.
 have r2p : 0 < r%:num / 4 by rewrite divr_gt0// ltr0n.
 exists (ball x (r%:num / 4), ball y (r%:num / 4)).
-  by split => //=; rewrite nbhs_ballE;
-    exact: (@nbhsx_ballx _ _ _ (@PosNum _ _ r2p)).
+  by split => //=; exact: (@nbhsx_ballx _ _ _ (@PosNum _ _ r2p)).
 case => a b /= [/ball_sym xar yar]; apply: distrU => /=.
 have abxy : (edist (a, b) <= edist (a, x) + edist (x, y) + edist (y, b))%E.
   by rewrite -addeA (le_trans (@edist_triangle _ x _)) ?lee_add ?edist_triangle.
@@ -2891,7 +2890,7 @@ have xyabfin : `|edist (x, y) - edist (a, b)|%E \is a fin_num.
   by rewrite abse_fin_num fin_numB abfin efin.
 have daxr : edist (a, x) \is a fin_num by apply/edist_finP; exists (r%:num / 4).
 have dybr : edist (y, b) \is a fin_num by apply/edist_finP; exists (r%:num / 4).
-rewrite -fineB// -fine_abse ?fin_numB ?abfin ?efin//.
+rewrite /ball/= -fineB// -fine_abse ?fin_numB ?abfin ?efin//.
 rewrite (@le_lt_trans _ _ (fine (edist (a, x) + edist (y, b))))//.
   rewrite fine_le// ?fin_numD ?daxr ?dybr//.
   have [xyab|xyab] := leP (edist (a, b)) (edist (x, y)).
@@ -2902,8 +2901,8 @@ rewrite (@le_lt_trans _ _ (fine (edist (a, x) + edist (y, b))))//.
   by rewrite lee_subl_addr// addeAC.
 rewrite fineD // [_%:num]splitr.
 have r42 : r%:num / 4 < r%:num / 2.
-  by rewrite ltr_pmul2l// ltf_pinv ?posrE ?ltr0n// ltr_nat.
-by apply: ltr_add; rewrite (le_lt_trans _ r42)// -lee_fin fineK // edist_fin.
+  by rewrite ltr_pM2l// ltf_pV2 ?posrE ?ltr0n// ltr_nat.
+by apply: ltrD; rewrite (le_lt_trans _ r42)// -lee_fin fineK // edist_fin.
 Unshelve. end_near. Qed.
 
 Lemma edist_closeP x y : close x y <-> edist (x, y) = 0%E.
