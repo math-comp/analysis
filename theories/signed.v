@@ -925,11 +925,6 @@ Section NatStability.
 Local Open Scope nat_scope.
 Implicit Type (n : nat).
 
-Lemma nat_snum_subproof n : Signed.spec 0 ?=0 >=0 n.
-Proof. by []. Qed.
-
-Canonical nat_snum n := Signed.mk (nat_snum_subproof n).
-
 Lemma zeron_snum_subproof : Signed.spec 0 ?=0 =0 0.
 Proof. by []. Qed.
 
@@ -1024,6 +1019,26 @@ Canonical maxn_snum (xnz ynz : nullity) (xr yr : reality)
   Signed.mk (maxn_snum_subproof x y).
 
 End NatStability.
+
+Section IntStability.
+
+Lemma Posz_snum_subproof (xnz : nullity) (xr : reality)
+    (x : {compare 0%N & xnz & xr}) :
+  Signed.spec 0%Z xnz xr (Posz x%:num).
+Proof.
+by apply/andP; split; move: xr xnz x => [[[]|]|] []//=; move=> [[|x]//= _].
+Qed.
+
+Canonical Posz_snum (xnz : nullity) (xr : reality)
+    (x : {compare 0%N & xnz & xr}) :=
+  Signed.mk (Posz_snum_subproof x).
+
+Lemma Negz_snum_subproof (n : nat) : Signed.spec 0%Z !=0 <=0 (Negz n).
+Proof. by []. Qed.
+
+Canonical Negz_snum n := Signed.mk (Negz_snum_subproof n).
+
+End IntStability.
 
 Section Morph0.
 Context {R : numDomainType} {cond : reality}.
