@@ -93,6 +93,9 @@
 - in `classical_sets.v`:
   + lemma `bigcup_bigcup`
 
+- in `topology.v`:
+  + lemma `closed_bigcup`
+
 ### Changed
 
 - moved from `lebesgue_measure.v` to `real_interval.v`:

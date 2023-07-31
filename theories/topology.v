@@ -2761,6 +2761,15 @@ move=> scF; rewrite big_seq.
 by elim/big_ind : _ => //; [exact: closed0|exact: closedU].
 Qed.
 
+Lemma closed_bigcup (T : topologicalType) (I : choiceType) (A : set I)
+    (F : I -> set T) :
+    finite_set A -> (forall i, A i -> closed (F i)) ->
+  closed (\bigcup_(i in A) F i).
+Proof.
+move=> finA cF; rewrite -bigsetU_fset_set//; apply: closed_bigsetU => i.
+by rewrite in_fset_set// inE; exact: cF.
+Qed.
+
 Section closure_lemmas.
 Variable T : topologicalType.
 Implicit Types E A B U : set T.
