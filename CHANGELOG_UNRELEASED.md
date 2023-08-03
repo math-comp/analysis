@@ -99,15 +99,15 @@
 - in `signed.v`:
   + lemmas `Posz_snum_subproof` and `Negz_snum_subproof`
   + canonical instances `Posz_snum` and `Negz_snum`
+
 - in file `normedtype.v`,
-+ new definitions `edist_inf`, `Urysohn`, and `Urysohn_normal`.
+  + new definitions `edist_inf`, `uniform_separator`, and `Urysohn`.
   + new lemmas `maxr_absE`, `minr_absE`, `continuous_min`, 
     `continuous_max`, `edist_closel`, `edist_inf_ge0`, `edist_inf_triangle`, 
     `edist_inf_continuous`, `edist_inf0`, `Urysohn_continuous`, 
     `Urysohn_range`, `Urysohn_sub0`, `Urysohn_sub1`, `Urysohn_eq0`, 
-    `Urysohn_eq1`, `Urysohn_normal_continuous`, `Urysohn_normal_range`, 
-    `Urysohn_normal_sub0`, `Urysohn_normal_sub1`, `Urysohn_normal_eq0`, 
-    `Urysohn_normal_eq1`, `normal_urysohnP`, and `subset_closure_half`.
+    `Urysohn_eq1`, `uniform_separatorW`, `normal_uniform_separator`, 
+    `normal_urysohnP`, and `subset_closure_half`.
 
 - in file `topology.v`,
   + new definition `normal_space`.
