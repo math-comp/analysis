@@ -4203,6 +4203,27 @@ Qed.
 End normal_uniform_separators.
 End Urysohn.
 
+Lemma uniform_separatorP {T : topologicalType} {R : realType} (A B : set T) :
+uniform_separator A B <-> exists (f : T -> R), [/\ continuous f,
+  f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]].
+Proof.
+split; first (move=> ?; exists (Urysohn A B); split).
+- exact: Urysohn_continuous.
+- exact: Urysohn_sub0.
+- exact: Urysohn_sub1.
+- exact: Urysohn_range.
+case=> f [ctsf fA0 fB1 f01]; pose T' := weak_pseudoMetricType f.
+exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
+- exists [set xy | ball xy.1 1 xy.2]; last by case.
+  by rewrite -entourage_ballE; exists 1 => //=.
+- rewrite -subset0; case=> a b [[/= Aa Bb]].
+  have -> : f a = 0 by move: (fA0 (f a)) => ->.
+  have -> : f b = 1 by move: (fB1 (f b)) => ->.
+  by rewrite ball_symE /ball /= subr0 ger0_norm // ltNge => /negP; apply. 
+- move=> x U [V [[W oW <- /=]]] ? /filterS; apply; apply:ctsf.
+  exact: open_nbhs_nbhs.
+Qed.
+
 Lemma normal_urysohnP {T : topologicalType} {R : realType} :
   normal_space T <->
   (forall A B, closed A -> closed B -> A `&` B = set0 ->
@@ -4210,11 +4231,7 @@ Lemma normal_urysohnP {T : topologicalType} {R : realType} :
     f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]]).
 Proof.
 split.
-  move=> nT A B AB0; exists (Urysohn A B); split => //.
-  - exact: Urysohn_continuous.
-  - by apply: Urysohn_sub0; exact: normal_uniform_separator.
-  - by apply: Urysohn_sub1; exact: normal_uniform_separator.
-  - exact: Urysohn_range.
+  by move=> ??????; apply/uniform_separatorP; exact: normal_uniform_separator.
 move=> + A clA B /set_nbhsP [C [oC AC CB]] => /(_ _ _ clA (open_closedC oC)) [].
   by apply/disjoints_subset; rewrite setCK.
 move=> f [cf fa0 fc1 f01]; exists (f@^-1` `]-1,1/2]).
@@ -4239,27 +4256,6 @@ rewrite preimage_setC set_itvcc.
 move=> x nCx => /=; move: (fc1 (f x)) => -> /=; last by exists x.
 apply/negP; rewrite negb_and; apply/orP; right; rewrite -ltNge.
 by rewrite ltr_pdivr_mulr ?mul1r // ltr_addl.
-Qed.
-
-Lemma uniform_separatorP {T : topologicalType} {R : realType} (A B : set T) :
-uniform_separator A B <-> exists (f : T -> R), [/\ continuous f,
-  f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]].
-Proof.
-split; first (move=> ?; exists (Urysohn A B); split).
-- exact: Urysohn_continuous.
-- exact: Urysohn_sub0.
-- exact: Urysohn_sub1.
-- exact: Urysohn_range.
-case=> f [ctsf fA0 fB1 f01]; pose T' := weak_pseudoMetricType f.
-exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
-- exists [set xy | ball xy.1 1 xy.2]; last by case.
-  by rewrite -entourage_ballE; exists 1 => //=.
-- rewrite -subset0; case=> a b [[/= Aa Bb]].
-  have -> : f a = 0 by move: (fA0 (f a)) => ->.
-  have -> : f b = 1 by move: (fB1 (f b)) => ->.
-  by rewrite ball_symE /ball /= subr0 ger0_norm // ltNge => /negP; apply. 
-- move=> x U [V [[W oW <- /=]]] ? /filterS; apply; apply:ctsf.
-  exact: open_nbhs_nbhs.
 Qed.
 
 Section open_closed_sets_ereal.
