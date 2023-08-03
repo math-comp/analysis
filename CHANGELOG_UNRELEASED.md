@@ -107,7 +107,7 @@
     `edist_inf_continuous`, `edist_inf0`, `Urysohn_continuous`, 
     `Urysohn_range`, `Urysohn_sub0`, `Urysohn_sub1`, `Urysohn_eq0`, 
     `Urysohn_eq1`, `uniform_separatorW`, `normal_uniform_separator`, 
-    `normal_urysohnP`, and `subset_closure_half`.
+    `uniform_separatorP`, `normal_urysohnP`, and `subset_closure_half`.
 
 - in file `topology.v`,
   + new definition `normal_space`.

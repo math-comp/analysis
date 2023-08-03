@@ -4241,6 +4241,27 @@ apply/negP; rewrite negb_and; apply/orP; right; rewrite -ltNge.
 by rewrite ltr_pdivr_mulr ?mul1r // ltr_addl.
 Qed.
 
+Lemma uniform_separatorP {T : topologicalType} {R : realType} (A B : set T) :
+uniform_separator A B <-> exists (f : T -> R), [/\ continuous f,
+  f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]].
+Proof.
+split; first (move=> ?; exists (Urysohn A B); split).
+- exact: Urysohn_continuous.
+- exact: Urysohn_sub0.
+- exact: Urysohn_sub1.
+- exact: Urysohn_range.
+case=> f [ctsf fA0 fB1 f01]; pose T' := weak_pseudoMetricType f.
+exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
+- exists [set xy | ball xy.1 1 xy.2]; last by case.
+  by rewrite -entourage_ballE; exists 1 => //=.
+- rewrite -subset0; case=> a b [[/= Aa Bb]].
+  have -> : f a = 0 by move: (fA0 (f a)) => ->.
+  have -> : f b = 1 by move: (fB1 (f b)) => ->.
+  by rewrite ball_symE /ball /= subr0 ger0_norm // ltNge => /negP; apply. 
+- move=> x U [V [[W oW <- /=]]] ? /filterS; apply; apply:ctsf.
+  exact: open_nbhs_nbhs.
+Qed.
+
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
 Local Open Scope ereal_scope.
