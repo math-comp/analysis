@@ -4225,16 +4225,14 @@ exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 Qed.
 
 Lemma normal_urysohnP {T : topologicalType} {R : realType} :
-  normal_space T <->
-  (forall A B, closed A -> closed B -> A `&` B = set0 ->
-    exists (f : T -> R), [/\ continuous f,
-    f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]]).
+  normal_space T <-> (forall (A B : set T), closed A -> closed B ->
+    A `&` B = set0 -> uniform_separator A B).
 Proof.
-split.
-  by move=> ??????; apply/uniform_separatorP; exact: normal_uniform_separator.
-move=> + A clA B /set_nbhsP [C [oC AC CB]] => /(_ _ _ clA (open_closedC oC)) [].
-  by apply/disjoints_subset; rewrite setCK.
-move=> f [cf fa0 fc1 f01]; exists (f@^-1` `]-1,1/2]).
+split; first by move=> ??????; exact: normal_uniform_separator.
+move=> + A clA B /set_nbhsP [C [oC AC CB]] => /(_ _ _ clA (open_closedC oC)).
+have AC0 : A `&` ~` C = set0 by apply/disjoints_subset; rewrite setCK.
+case/(_ AC0)/(@uniform_separatorP _ R) => f [cf fa0 fc1 f01].
+exists (f@^-1` `]-1,1/2]).
   apply (@filterS _ _ _ (f@^-1` (`]-1,1/2[))).
     by apply: preimage_subset; first exact: subset_itvW.
   apply/set_nbhsP; exists (f@^-1` `]-1,1/2[); split => //.
