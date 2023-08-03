@@ -3899,7 +3899,6 @@ End edist_inf.
 
 Section urysohn_separator.
 Context {T : uniformType} {R : realType}.
-Section urysohn_separator_full.
 Context (A B : set T) (E : set (T * T)).
 Hypothesis entE : entourage E.
 Hypothesis AB0 : A `*` B `&` E = set0.
@@ -3955,17 +3954,27 @@ pose f z := (f' z)/eps%:num; exists f; split.
   exact:ltW.
 Qed.
 
-End urysohn_separator_full.
+End urysohn_separator.
 
-Local Lemma Urysohn' (A B : set T):
-  exists (f : T -> R), [/\ continuous f,
+Section topological_urysohn_separator.
+Context {T : topologicalType} {R : realType}.
+Definition uniform_separator (A B : set T) :=
+  exists (uT : @Uniform.class_of T^o) (E : set (T * T)), 
+    let UT := Uniform.Pack uT in [/\ 
+      @entourage UT E, A `*` B `&` E = set0 &
+      (forall x, @nbhs UT UT x `<=` @nbhs T T x)].
+    
+Local Lemma Urysohn'  (A B : set T):
+  exists (f : T -> R), 
+    [/\ continuous f,
     range f `<=` `[0,1]
-    & (exists2 E, entourage E & A `*` B `&` E = set0) ->
+    & uniform_separator A B ->
     f @` A `<=` [set 0] /\ f @` B `<=` [set 1]].
 Proof.
-case: (pselect (exists2 E, entourage E & A `*` B `&` E = set0)).
-  case => E entE ABE0; have [f] := urysohn_separation entE ABE0.
-  by case=> ? fA fB ?; exists f; split => // _; split; rewrite ?fA ?fB.
+case: (pselect (uniform_separator A B)).
+  case=> ? [E [entE ABE0 coarseT]].
+  have [f] := @urysohn_separation _ R _ _ _ entE ABE0.
+  by case=> ctsf fA fB ?; exists f; split => // ? ? /= ?; apply/coarseT/ctsf.
 move=> nP; exists (fun=>1); split => //; first by move=> ?; exact: cvg_cst.
 by move=> ? [? _ <-]; rewrite /= in_itv /=; apply/andP; split => //.
 Qed.
@@ -3980,18 +3989,15 @@ Lemma Urysohn_range (A B : set T) : range (Urysohn A B) `<=` `[0,1].
 Proof. by have [] := projT2 (cid (@Urysohn' A B)). Qed.
 
 Lemma Urysohn_sub0 (A B : set T) :
-  (exists2 E, entourage E & A `*` B `&` E = set0) ->
-  (Urysohn A B) @` A `<=` [set 0].
+  uniform_separator A B -> Urysohn A B @` A `<=` [set 0].
 Proof. by move=> eE; have [_ _ /(_ eE)[]] := projT2 (cid (@Urysohn' A B)). Qed.
 
 Lemma Urysohn_sub1 (A B : set T) :
-  (exists2 E, entourage E & A `*` B `&` E = set0) ->
-  (Urysohn A B) @` B `<=` [set 1].
+  uniform_separator A B -> Urysohn A B @` B `<=` [set 1].
 Proof. by move=> eE; have [_ _ /(_ eE)[]] := projT2 (cid (@Urysohn' A B)). Qed.
 
 Lemma Urysohn_eq0 (A B : set T) :
-  (exists2 E, entourage E & A `*` B `&` E = set0) ->
-  (A !=set0) -> (Urysohn A B) @` A = [set 0].
+  uniform_separator A B -> A !=set0 -> Urysohn A B @` A = [set 0].
 Proof.
 move=> eE Aa; have [_ _ /(_ eE)[As0 _]] := projT2 (cid (@Urysohn' A B)).
 rewrite eqEsubset; split => // ? ->; case: Aa => a ?; exists a => //.
@@ -3999,8 +4005,7 @@ by apply: As0; exists a.
 Qed.
 
 Lemma Urysohn_eq1 (A B : set T) :
-  (exists2 E, entourage E & A `*` B `&` E = set0) ->
-  (B !=set0) -> (Urysohn A B) @` B = [set 1].
+  uniform_separator A B -> (B !=set0) -> (Urysohn A B) @` B = [set 1].
 Proof.
 move=> eE Bb; have [_ _ /(_ eE)[_ Bs0]] := projT2 (cid (@Urysohn' A B)).
 rewrite eqEsubset; split => // ? ->; case: Bb => b ?; exists b => //.
@@ -4008,7 +4013,12 @@ by apply: Bs0; exists b.
 Qed.
 
 End urysohn_facts.
-End urysohn_separator.
+End topological_urysohn_separator.
+
+Lemma uniform_separatorW {T : uniformType} (A B : set T) : 
+  (exists2 E, entourage E & A `*` B `&` E = set0) -> 
+  uniform_separator A B.
+Proof. by case=> E entE AB0; exists (Uniform.class T), E; split => // ?. Qed.
 
 Section Urysohn.
 Context {T : topologicalType} .
@@ -4044,13 +4054,13 @@ Local Notation "'to_set' A x" := ([set y | A (x, y)])
    then the gauge pseudometric gives us what we want.
 *)
 
-Local Definition apxU (UV : set T * set T) : set (T * T) :=
+Let apxU (UV : set T * set T) : set (T * T) :=
   (UV.2 `*` UV.2) `|` (~` closure UV.1 `*` ~` closure UV.1).
 
-Local Definition nested (UV : set T * set T) :=
+Let nested (UV : set T * set T) :=
   [/\ open UV.1, open UV.2, A `<=` UV.1 & closure UV.1 `<=`UV.2].
 
-Local Definition ury_base := [set apxU UV | UV in nested].
+Let ury_base := [set apxU UV | UV in nested].
 
 Local Lemma ury_base_refl E :
   ury_base E -> [set fg | fg.1 = fg.2] `<=` E.
@@ -4087,7 +4097,7 @@ case=> x z /= [y [+ +] []].
   end.
 Qed.
 
-Local Definition ury_unif := smallest Filter ury_base.
+Let ury_unif := smallest Filter ury_base.
 
 Instance ury_unif_filter : Filter ury_unif.
 Proof. exact: smallest_filter_filter. Qed.
@@ -4152,12 +4162,24 @@ Let urysohn_topologicalTypeMixin :=
 Let urysohn_filtered := FilteredType T T (nbhs_ ury_unif).
 Let urysohn_topologicalType :=
   TopologicalType urysohn_filtered urysohn_topologicalTypeMixin.
-Local Definition urysohn_uniformType := UniformType
+Let urysohn_uniformType := UniformType
   urysohn_topologicalType urysohn_uniformType_mixin.
 
-Local Lemma ury_gauge_nbhs x U : nbhs (x : urysohn_uniformType) U -> nbhs (x : T) (U : set T).
+Lemma normal_uniform_separator (B : set T) :
+  closed A -> closed B -> A `&` B = set0 -> uniform_separator A B.
 Proof.
-case => E gE /(@filterS T); apply; move: gE.
+move=> clA clB AB0; have := normalT clA; case/(_ (~`B)).
+move=> x Ax; apply: open_nbhs_nbhs; split => //.
+- exact/closed_openC.
+- by move: x Ax; apply/ disjoints_subset.
+move=> V /set_nbhsP [U [oU AU UV]] cVcb. 
+exists (Uniform.class urysohn_uniformType), (apxU (U, ~` B)); split => //.
+- move=> ?; apply:sub_gen_smallest; exists (U, ~`B) => //; split => //=.
+    exact/closed_openC.
+  move/closure_subset/subset_trans: UV; exact.
+- rewrite eqEsubset; split; case=> // a b [/=[Aa Bb] [[//]|]].
+  by have /subset_closure ? := AU _ Aa; case.
+move=> x ? [E gE] /(@filterS T); apply; move: gE.
 rewrite /ury_unif filterI_iterE; case => K /= [i _] /= uiK KE.
 suff : @nbhs T T x to_set K (x) by apply: filterS => y /KE.
 elim: i K uiK {E KE}; last by move=> ? H ? [N] /H ? [M] /H ? <-; apply: filterI.
@@ -4179,73 +4201,7 @@ rewrite eqEsubset; split => // z _; case: (pselect (Q z)).
 by move/subsetC: cPQ => /[apply] ?; right.
 Qed.
 
-Local Lemma ury_base_ent E : ury_base E -> @entourage urysohn_uniformType E.
-Proof. by move=> ?; exact: sub_gen_smallest. Qed.
-  
-Local Lemma normal_entourage_separator (B : set T) :
-  closed A -> closed B -> A `&` B = set0 -> exists2 E, 
-    @entourage urysohn_uniformType E & (A `*` B) `&` E = set0.
-Proof.
-move=> clA clB AB0; have := normalT clA; case/(_ (~`B)).
-move=> x Ax; apply: open_nbhs_nbhs; split => //. 
-- exact/closed_openC.
-- by move: x Ax; apply/ disjoints_subset.
-move=> V /set_nbhsP [U [oU AU UV]] cVcb; exists (apxU (U, ~`B)).
-  apply: ury_base_ent; exists (U, ~`B) => //; split => //=.
-    exact/closed_openC.
-  move/closure_subset/subset_trans: UV; exact.
-rewrite eqEsubset; split; case=> // a b [/=[Aa Bb] [[//]|]].
-by have /subset_closure ? := AU _ Aa; case.
-Qed.
-
 End normal_uniform_separators.
-Context {R : realType}.
-
-Definition Urysohn_normal (A B : set T) : T -> R :=
-  @Urysohn (urysohn_uniformType (closure A)) R (closure A) (closure B).
-
-Section urysohn_normal_facts.
-Lemma Urysohn_normal_continuous (A B : set T) : continuous (Urysohn_normal A B).
-Proof. by move=> x U nU; apply: ury_gauge_nbhs; apply Urysohn_continuous. Qed.
-
-Lemma Urysohn_normal_range (A B : set T) :
-  range (Urysohn_normal A B) `<=` `[0,1].
-Proof. exact: (@Urysohn_range (urysohn_uniformType (closure A))). Qed.
-
-Lemma Urysohn_normal_sub0 (A B : set T) :
-  closure A `&` closure B = set0 ->
-  (Urysohn_normal A B) @` closure A `<=` [set 0].
-Proof. 
-move=> clAB; apply: (@Urysohn_sub0 (urysohn_uniformType (closure A))).
-apply: normal_entourage_separator => //; exact: closed_closure.
-Qed.
-
-Lemma Urysohn_normal_sub1 (A B : set T) :
-  closure A `&` closure B = set0 ->
-  (Urysohn_normal A B) @` closure B `<=` [set 1].
-Proof. 
-move=> clAB; apply: (@Urysohn_sub1 (urysohn_uniformType (closure A))).
-apply: normal_entourage_separator => //; exact: closed_closure.
-Qed.
-
-Lemma Urysohn_normal_eq0 (A B : set T) :
-  closure A `&` closure B = set0 ->
-  (A !=set0) -> (Urysohn_normal A B) @` closure A = [set 0].
-Proof.
-move=> clAB A0; apply: (@Urysohn_eq0 (urysohn_uniformType (closure A))).
-  by apply: normal_entourage_separator => //; exact: closed_closure.
-by apply: (subset_nonempty _ A0); exact: subset_closure.
-Qed.
-
-Lemma Urysohn_normal_eq1 (A B : set T) :
-  closure A `&` closure B = set0 ->
-  (B !=set0) -> (Urysohn_normal A B) @` closure B = [set 1].
-Proof.
-move=> clAB B0; apply: (@Urysohn_eq1 (urysohn_uniformType (closure A))).
-  by apply: normal_entourage_separator => //; exact: closed_closure.
-by apply: (subset_nonempty _ B0); exact: subset_closure.
-Qed.
-End urysohn_normal_facts.
 End Urysohn.
 
 Lemma normal_urysohnP {T : topologicalType} {R : realType} :
@@ -4255,12 +4211,11 @@ Lemma normal_urysohnP {T : topologicalType} {R : realType} :
     f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0,1]]).
 Proof.
 split.
-  move=> nT A B /closure_id -> /closure_id -> AB0.
-  exists (Urysohn_normal nT A B); split => //.
-  - exact: Urysohn_normal_continuous.
-  - exact: Urysohn_normal_sub0.
-  - exact: Urysohn_normal_sub1.
-  - exact: Urysohn_normal_range.
+  move=> nT A B AB0; exists (Urysohn A B); split => //.
+  - exact: Urysohn_continuous.
+  - by apply: Urysohn_sub0; exact: normal_uniform_separator.
+  - by apply: Urysohn_sub1; exact: normal_uniform_separator.
+  - exact: Urysohn_range.
 move=> + A clA B /set_nbhsP [C [oC AC CB]] => /(_ _ _ clA (open_closedC oC)) [].
   by apply/disjoints_subset; rewrite setCK.
 move=> f [cf fa0 fc1 f01]; exists (f@^-1` `]-1,1/2]).
