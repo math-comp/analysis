@@ -327,6 +327,9 @@ split=> [|[->|[r r0 ->//]]]; last by rewrite real_leey/=.
 by case: x => [r r0 | _ |//]; [right; exists r|left].
 Qed.
 
+Lemma fine0 : fine 0 = 0%R :> R. Proof. by []. Qed.
+Lemma fine1 : fine 1 = 1%R :> R. Proof. by []. Qed.
+
 End ERealOrder_numDomainType.
 
 #[global] Hint Resolve lee01 lte01 : core.

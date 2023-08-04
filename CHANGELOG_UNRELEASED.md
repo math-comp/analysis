@@ -36,6 +36,7 @@
 
 - in `mathcomp_extra.v`:
   + definition `min_fun`, notation `\min`
+  + new lemmas `maxr_absE`, `minr_absE`
 - in `classical_sets.v`:
   + lemmas `set_predC`, `preimage_true`, `preimage_false`
 - in `lebesgue_measure.v`:
@@ -63,22 +64,27 @@
 
 - in `classical_sets.v`:
   + lemma `Zorn_bigcup`
+  + lemmas `imsub1` and `imsub1P`
+
 - in file `boolp.v`,
   + lemmas `notP`, `notE`
   + new lemma `implyE`.
+  + new lemmas `contra_leP` and `contra_ltP`
+
 - in file `reals.v`:
   + lemmas `sup_sumE`, `inf_sumE`
 - in file `topology.v`:
   + lemma `ball_symE`
 - in file `normedtype.v`,
   + new definition `edist`.
-  + new lemmas `edist_ge0`, `edist_lt_ball`,
+  + new lemmas `edist_ge0`, `edist_neqNy`, `edist_lt_ball`,
     `edist_fin`, `edist_pinftyP`, `edist_finP`, `edist_fin_open`, 
     `edist_fin_closed`, `edist_pinfty_open`, `edist_sym`, `edist_triangle`, 
     `edist_continuous`, `edist_closeP`, and `edist_refl`.
 - in `constructive_ereal.v`:
   + lemmas `lte_pmulr`, `lte_pmull`, `lte_nmulr`, `lte_nmull`
   + lemmas `lte0n`, `lee0n`, `lte1n`, `lee1n`
+  + lemmas `fine0` and `fine1`
 - in `sequences.v`:
   + lemma `eseries_cond`
   + lemmas `eseries_mkcondl`, `eseries_mkcondr`
@@ -102,12 +108,13 @@
 
 - in file `normedtype.v`,
   + new definitions `edist_inf`, `uniform_separator`, and `Urysohn`.
-  + new lemmas `maxr_absE`, `minr_absE`, `continuous_min`, 
-    `continuous_max`, `edist_closel`, `edist_inf_ge0`, `edist_inf_triangle`, 
-    `edist_inf_continuous`, `edist_inf0`, `Urysohn_continuous`, 
-    `Urysohn_range`, `Urysohn_sub0`, `Urysohn_sub1`, `Urysohn_eq0`, 
-    `Urysohn_eq1`, `uniform_separatorW`, `normal_uniform_separator`, 
-    `uniform_separatorP`, `normal_urysohnP`, and `subset_closure_half`.
+  + new lemmas `continuous_min`, `continuous_max`, `edist_closel`,
+    `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
+    `edist_inf_continuous`, `edist_inf0`, `Urysohn_continuous`,
+    `Urysohn_range`, `Urysohn_sub0`, `Urysohn_sub1`, `Urysohn_eq0`,
+    `Urysohn_eq1`, `uniform_separatorW`, `normal_uniform_separator`,
+    `uniform_separatorP`, `normal_urysohnP`, and
+    `subset_closure_half`.
 
 - in file `topology.v`,
   + new definition `normal_space`.
