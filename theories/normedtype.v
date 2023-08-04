@@ -4167,7 +4167,6 @@ Qed.
 
 End normal_uniform_separators.
 End Urysohn.
-
 Lemma uniform_separatorP {T : topologicalType} {R : realType} (A B : set T) :
   uniform_separator A B <->
   exists (f : T -> R), [/\ continuous f, range f `<=` `[0, 1],
@@ -4188,33 +4187,54 @@ exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
   exact: open_nbhs_nbhs.
 Qed.
 
-Lemma normal_urysohnP {T : topologicalType} {R : realType} :
-  normal_space T <->
-  forall (A B : set T), closed A -> closed B ->
-    A `&` B = set0 -> uniform_separator A B.
+Section normalP.
+Context {T : topologicalType} {R : realType}.
+Let normal_spaceP : [<->
+(* 0 *) normal_space T;
+(* 1 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 -> 
+  uniform_separator A B;
+(* 2 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
+  exists U V, [/\ open U, open V, A `<=` U, B `<=` V & U `&` V = set0]
+].
 Proof.
-split; first by move=> *; exact: normal_uniform_separator.
+tfae; first by move=> *; exact: normal_uniform_separator.
+- move=> + A B clA clB AB0 => /(_ _ _ clA clB AB0) /(@uniform_separatorP _ R). 
+  case=> f [cf f01 /imsub1P/subset_trans fa0 /imsub1P/subset_trans fb1]. 
+  exists (f@^-1` `]-1, 1/2[), (f@^-1` `]1/2, 2[); split.
+  + by apply: open_comp; [|exact: interval_open] => + _ .
+  + by apply: open_comp; [|exact: interval_open] => + _ .
+  + by apply: fa0; rewrite set_itvoo => x /= ->; apply/andP; split.
+  + apply: fb1; rewrite set_itvoo => x /= ->. 
+    by rewrite ltr_pdivr_mulr // mul1r Bool.andb_diag ltr_addl. 
+  + rewrite -preimage_setI ?set_itvoo -subset0 => ? [] /andP [_ +] /andP [+ _].
+    by rewrite [_ < f _]real_ltNge ?num_real // => ? /negP; apply; apply: ltW.
 move=> + A clA B /set_nbhsP [C [oC AC CB]].
 have AC0 : A `&` ~` C = set0 by apply/disjoints_subset; rewrite setCK.
-move=> /(_ _ _ clA (open_closedC oC) AC0).
-move=> /(@uniform_separatorP _ R) [f [cf f01 fa0 fc1]].
-exists (f@^-1` `]-1, 1/2]).
-  apply (@filterS _ _ _ (f @^-1` (`]-1, 1/2[))).
-    by apply: preimage_subset; first exact: subset_itvW.
-  apply/set_nbhsP; exists (f @^-1` `]-1, 1/2[); split => //.
-    by apply: open_comp => //; exact: interval_open.
-  by rewrite set_itvoo=> x Ax /=; rewrite (imsub1 fa0)//; apply/andP; split.
-have -> : f @^-1` `]-1, 1/2] = f @^-1` `[0, 1/2].
-  rewrite eqEsubset set_itvcc set_itvoc; split.
-    by move=> x /= /andP [_ ->]; rewrite (itvP (f01 _ _)).
-  by apply: preimage_subset => z /= /andP[z0 ->]; rewrite (lt_le_trans _ z0).
-have: closed (f @^-1` `[0, 1/2])
-  by apply: closed_comp => //; apply: interval_closed.
-rewrite closure_id => <-.
-apply: (subset_trans _ CB); apply/subsetCP.
-rewrite preimage_setC set_itvcc => x nCx /=; apply/negP.
-by rewrite (imsub1 fc1)// ler01/= -ltNge [ltRHS]splitr ltr_addr.
+case/(_ _ _ clA (open_closedC oC) AC0)=> U [V] [oU oV AU nCV UV0].
+exists (~` (closure V)).
+  apply/set_nbhsP; exists (U); split => //. 
+  apply/subsetCr; have := (open_closedC oU); rewrite closure_id => ->. 
+  by apply: closure_subset; apply/disjoints_subset; rewrite setIC.
+apply: (subset_trans _ CB); apply/subsetCP; apply: (subset_trans nCV).
+apply/subsetCr; have := (open_closedC oV); rewrite closure_id => ->. 
+by apply: closure_subset; apply/subsetC; exact: subset_closure.
 Qed.
+
+Lemma normal_openP : normal_space T <-> 
+  forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
+  exists U V, [/\ open U, open V, A `<=` U, B `<=` V & U `&` V = set0].
+Proof. exact: (normal_spaceP 0%N 2%N). Qed.
+
+Lemma normal_separatorP : normal_space T <-> 
+  forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
+  uniform_separator A B.
+Proof. exact: (normal_spaceP 0%N 1%N). Qed.
+End normalP.
+
+Lemma pseudometric_normal {R : realType} {T : pseudoMetricType R} : 
+  normal_space T.
+Proof.
+apply/(@normal_openP _ R) => A B clA clB AB0.
 
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
