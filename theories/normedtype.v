@@ -4231,10 +4231,89 @@ Lemma normal_separatorP : normal_space T <->
 Proof. exact: (normal_spaceP 0%N 1%N). Qed.
 End normalP.
 
-Lemma pseudometric_normal {R : realType} {T : pseudoMetricType R} : 
-  normal_space T.
+Section normal_separations.
+
+Local Notation "'to_set' A x" := [set y | A (x, y)]
+  (at level 0, A at level 0) : classical_set_scope.
+Local Notation "A ^-1" := [set xy | A (xy.2, xy.1)] : classical_set_scope.
+
+Lemma ent_closure {X : uniformType} (x : X) E : entourage E ->
+  closure (to_set (split_ent E) x) `<=` to_set E x.
+Proof.
+pose E' := ((split_ent E) `&` ((split_ent E)^-1)%classic).
+move=> entE z /(_ [set y | E' (z, y)]) [].
+  by rewrite -nbhs_entourageE; exists E' => //; apply: filterI.
+by move=> y [/=] + [_]; apply: entourage_split.
+Qed.
+
+Definition regular_space (T : topologicalType) :=
+  forall (a : T), nbhs a `<=` filter_from (nbhs a) closure.
+
+Lemma uniform_regular {X : uniformType} (x : X) : {for x, @regular_space X}.
+Proof.
+move=> A /=.
+rewrite -nbhs_entourageE; case => E entE /(subset_trans (ent_closure entE)) ?.
+by exists (to_set (split_ent E) x); first by exists (split_ent E).
+Qed.
+
+Lemma regularP {T : topologicalType} (x : T) : 
+  {for x, @regular_space T} <-> (forall A, closed A -> ~ A x -> exists (U V : set T),
+    [/\ open U, open V, U x, A `<=` V & U `&` V = set0]).
+Proof.
+split.
+  move=> + A clA nAx => /(_ (~` A)) [].
+    by apply: open_nbhs_nbhs; split => //; apply: closed_openC.
+  move=> U Ux /subsetC; rewrite setCK => AclU; exists (interior U). 
+  exists (~` (closure U)); split => //.
+  - by apply: open_interior.
+  - by apply: closed_openC; exact: closed_closure.
+  - apply/disjoints_subset; rewrite setCK; apply: (@subset_trans _ U).
+      exact: interior_subset.
+    exact: subset_closure.
+move=> + A Ax => /(_ (~` (interior A))) []; [|exact|].
+  by apply: open_closedC; exact: open_interior.
+move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
+  by apply: open_nbhs_nbhs; split.
+apply: subset_trans; first exact: (closure_subset UV).
+move/open_closedC/closure_id:oV => <-.
+apply: (subset_trans cAV); rewrite setCK; exact: interior_subset.
+Qed.
+
+Lemma pseudometric_normal {R : realType} {X : pseudoMetricType R} : 
+  normal_space X.
 Proof.
 apply/(@normal_openP _ R) => A B clA clB AB0.
+have eps' D : closed D -> forall (x:X), exists (eps : {posnum R}), ~ D x ->
+    ball x eps%:num `&` D = set0.
+  move=> clD x; case: (pselect (~ D x)); last by move => ?; exists 1%:pos.
+  move=> ndx; have /regularP/(_ _ clD) [//|] := @uniform_regular X x.
+  move=> U [V] [+ oV] Ux /subsetC BV /disjoints_subset UV0.
+  rewrite openE /interior => /(_ _ Ux); rewrite -nbhs_ballE; case.
+  move => _/posnumP[eps] beU; exists eps => _; apply/disjoints_subset.
+  by apply: (subset_trans beU); apply: (subset_trans UV0).
+pose epsA x := projT1 (cid (eps' _ clB x)).
+pose epsB x := projT1 (cid (eps' _ clA x)).
+exists (\bigcup_(x in A) interior (ball x ((epsA x)%:num/2)%:pos%:num)).
+exists (\bigcup_(x in B) interior (ball x ((epsB x)%:num/2)%:pos%:num)). 
+split.
+- by apply: bigcup_open => ? ?; exact: open_interior.
+- by apply: bigcup_open => ? ?; exact: open_interior.
+- move=> x ?; exists x => //; apply: nbhsx_ballx.
+- move=> y ?; exists y => //; apply: nbhsx_ballx.
+- apply:contrapT=> /eqP/set0P; case => z [[x Ax /interior_subset Axe]].
+case=> y By /interior_subset Bye; have nAy : ~ A y.
+  by move: AB0; rewrite setIC => /disjoints_subset; apply.
+have nBx : ~ B x by move/disjoints_subset: AB0; apply.
+case: (pselect ((epsA x)%:num/2 <= (epsB y)%:num/2)).
+  move/ball_sym:Axe =>/[swap] /le_ball /[apply] /(ball_triangle Bye). 
+  rewrite -splitr => byx; have := projT2 (cid (eps' _ clA y)) nAy.
+  by rewrite -subset0; apply; split; first exact: byx.
+move/negP; rewrite leNgt negbK => /ltW. 
+move/ball_sym:Bye =>/[swap] /le_ball /[apply] /(ball_triangle Axe). 
+rewrite -splitr => byx; have := projT2 (cid (eps' _ clB x)) nBx.
+by rewrite -subset0; apply; split; first exact: byx.
+Qed.
+End normal_separations.
 
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).

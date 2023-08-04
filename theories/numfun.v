@@ -403,27 +403,23 @@ Context {X : topologicalType} {R : realType}.
 
 Local Notation "3" := 3%:R : ring_scope.
 
-Hypothesis urysohn_ext : forall A B,
-  closed A -> closed B -> A `&` B = set0 ->
-  exists f : X -> R, [/\ continuous f,
-    f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0, 1]].
+Hypothesis normalX : normal_space X. 
 
 Lemma urysohn_ext_itv A B x y :
   closed A -> closed B -> A `&` B = set0 -> x < y ->
   exists f : X -> R, [/\ continuous f,
     f @` A `<=` [set x], f @` B `<=` [set y] & range f `<=` `[x, y]].
 Proof.
-move=> clA clB AB0 xy; have [f [ctsf f0 f1 f01]] := urysohn_ext clA clB AB0.
+move=> cA cB A0 xy; move/(@normal_separatorP _ R):normalX => urysohn_ext. 
+have /(@uniform_separatorP _ R) [f [cf f01 f0 f1]] := urysohn_ext _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
-- move=> t; apply: continuous_comp; first exact: ctsf.
+- move=> t; apply: continuous_comp; first exact: cf.
   apply: (@continuousD R [normedModType R of R^o]).
     apply: continuousM; last exact: cvg_cst.
     by apply: (@continuousB R [normedModType R of R^o]) => //; exact: cvg_cst.
   by apply: continuousM; [exact: cvg_id|exact: cvg_cst].
-- rewrite -image_comp; apply: (subset_trans (image_subset _  f0)).
-  by rewrite image_set1 line_path0.
-- rewrite -image_comp; apply: (subset_trans (image_subset _  f1)).
-  by rewrite image_set1 line_path1.
+- by rewrite -image_comp => z /= [? /f0 -> <-]; rewrite line_path0.
+- by rewrite -image_comp => z /= [? /f1 -> <-]; rewrite line_path1.
 - rewrite -image_comp; apply: (subset_trans (image_subset _ f01)).
   by rewrite range_line_path.
 Qed.
