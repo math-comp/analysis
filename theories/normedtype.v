@@ -4198,7 +4198,7 @@ Let normal_spaceP : [<->
 ].
 Proof.
 tfae; first by move=> *; exact: normal_uniform_separator.
-- move=> + A B clA clB AB0 => /(_ _ _ clA clB AB0) /(@uniform_separatorP _ R). 
+- move=> + A B clA clB AB0 => /(_ _ _ clA clB AB0) /(@uniform_separatorP _ R).
   case=> f [cf f01 /imsub1P/subset_trans fa0 /imsub1P/subset_trans fb1]. 
   exists (f@^-1` `]-1, 1/2[), (f@^-1` `]1/2, 2[); split.
   + by apply: open_comp; [|exact: interval_open] => + _ .
@@ -4231,32 +4231,15 @@ Lemma normal_separatorP : normal_space T <->
 Proof. exact: (normal_spaceP 0%N 1%N). Qed.
 End normalP.
 
-Section normal_separations.
-
-Local Notation "'to_set' A x" := [set y | A (x, y)]
-  (at level 0, A at level 0) : classical_set_scope.
-Local Notation "A ^-1" := [set xy | A (xy.2, xy.1)] : classical_set_scope.
-
-Lemma ent_closure {X : uniformType} (x : X) E : entourage E ->
-  closure (to_set (split_ent E) x) `<=` to_set E x.
+Section pseudometric_normal.
+Lemma uniform_regular {X : uniformType} : @regular_space X.
 Proof.
-pose E' := ((split_ent E) `&` ((split_ent E)^-1)%classic).
-move=> entE z /(_ [set y | E' (z, y)]) [].
-  by rewrite -nbhs_entourageE; exists E' => //; apply: filterI.
-by move=> y [/=] + [_]; apply: entourage_split.
+move=> x A; rewrite /= -nbhs_entourageE; case => E entE.
+move/(subset_trans (ent_closure entE)) => ?.
+by exists [set y | (split_ent E) (x, y)]; first by exists (split_ent E).
 Qed.
 
-Definition regular_space (T : topologicalType) :=
-  forall (a : T), nbhs a `<=` filter_from (nbhs a) closure.
-
-Lemma uniform_regular {X : uniformType} (x : X) : {for x, @regular_space X}.
-Proof.
-move=> A /=.
-rewrite -nbhs_entourageE; case => E entE /(subset_trans (ent_closure entE)) ?.
-by exists (to_set (split_ent E) x); first by exists (split_ent E).
-Qed.
-
-Lemma regularP {T : topologicalType} (x : T) : 
+Lemma regular_openP {T : topologicalType} (x : T) : 
   {for x, @regular_space T} <-> (forall A, closed A -> ~ A x -> exists (U V : set T),
     [/\ open U, open V, U x, A `<=` V & U `&` V = set0]).
 Proof.
@@ -4264,12 +4247,11 @@ split.
   move=> + A clA nAx => /(_ (~` A)) [].
     by apply: open_nbhs_nbhs; split => //; apply: closed_openC.
   move=> U Ux /subsetC; rewrite setCK => AclU; exists (interior U). 
-  exists (~` (closure U)); split => //.
-  - by apply: open_interior.
-  - by apply: closed_openC; exact: closed_closure.
-  - apply/disjoints_subset; rewrite setCK; apply: (@subset_trans _ U).
-      exact: interior_subset.
-    exact: subset_closure.
+  exists (~` (closure U)); split => //; first exact: open_interior.
+    by apply: closed_openC; exact: closed_closure.
+  apply/disjoints_subset; rewrite setCK; apply: (@subset_trans _ U).
+    exact: interior_subset.
+  exact: subset_closure.
 move=> + A Ax => /(_ (~` (interior A))) []; [|exact|].
   by apply: open_closedC; exact: open_interior.
 move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
@@ -4286,7 +4268,7 @@ apply/(@normal_openP _ R) => A B clA clB AB0.
 have eps' D : closed D -> forall (x:X), exists (eps : {posnum R}), ~ D x ->
     ball x eps%:num `&` D = set0.
   move=> clD x; case: (pselect (~ D x)); last by move => ?; exists 1%:pos.
-  move=> ndx; have /regularP/(_ _ clD) [//|] := @uniform_regular X x.
+  move=> ndx; have /regular_openP/(_ _ clD) [//|] := @uniform_regular X x.
   move=> U [V] [+ oV] Ux /subsetC BV /disjoints_subset UV0.
   rewrite openE /interior => /(_ _ Ux); rewrite -nbhs_ballE; case.
   move => _/posnumP[eps] beU; exists eps => _; apply/disjoints_subset.
@@ -4313,7 +4295,7 @@ move/ball_sym:Bye =>/[swap] /le_ball /[apply] /(ball_triangle Axe).
 rewrite -splitr => byx; have := projT2 (cid (eps' _ clB x)) nBx.
 by rewrite -subset0; apply; split; first exact: byx.
 Qed.
-End normal_separations.
+End pseudometric_normal.
 
 Section open_closed_sets_ereal.
 Variable R : realFieldType (* TODO: generalize to numFieldType? *).
