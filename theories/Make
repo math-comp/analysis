@@ -28,6 +28,7 @@ derive.v
 measure.v
 numfun.v
 lebesgue_integral.v
+probability.v
 summability.v
 signed.v
 itv.v
