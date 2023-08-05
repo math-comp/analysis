@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+
+- in `theories/Make`
+  + file `probability.v` (wasn't compiled in OPAM packages up to now)
+
 - in `measure.v`:
   + lemma `lebesgue_regularity_outer`
 
