@@ -1397,7 +1397,7 @@ Section max_min.
 Variable R : realFieldType.
 Import Num.Theory.
 
-Let nz2 : 2 != 0 :> R. Proof. by rewrite pnatr_eq0. Qed.
+Let nz2 : 2%:R != 0 :> R. Proof. by rewrite pnatr_eq0. Qed.
 
 Lemma maxr_absE (x y : R) : Num.max x y = (x + y + `|x - y|) / 2.
 Proof.
