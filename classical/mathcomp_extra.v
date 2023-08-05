@@ -850,17 +850,17 @@ Section max_min.
 Variable R : realFieldType.
 Import Num.Theory.
 
-Let nz2 : 2 != 0 :> R. Proof. by rewrite pnatr_eq0. Qed.
+Let nz2 : 2%:R != 0 :> R. Proof. by rewrite pnatr_eq0. Qed.
 
-Lemma maxr_absE (x y : R) : Num.max x y = (x + y + `|x - y|) / 2.
+Lemma maxr_absE (x y : R) : Num.max x y = (x + y + `|x - y|) / 2%:R.
 Proof.
 apply: canRL (mulfK _) _ => //; rewrite ?pnatr_eq0//.
-case: lerP => _; (* TODO: ring *) rewrite [2]mulr2n mulrDr mulr1.
+case: lerP => _; (* TODO: ring *) rewrite [2%:R]mulr2n mulrDr mulr1.
   by rewrite addrACA subrr addr0.
 by rewrite addrCA addrAC subrr add0r.
 Qed.
 
-Lemma minr_absE (x y : R) : Num.min x y = (x + y - `|x - y|) / 2.
+Lemma minr_absE (x y : R) : Num.min x y = (x + y - `|x - y|) / 2%:R.
 Proof.
 apply: (addrI (Num.max x y)); rewrite addr_max_min maxr_absE. (* TODO: ring *)
 by rewrite -mulrDl addrACA subrr addr0 mulrDl -splitr.
