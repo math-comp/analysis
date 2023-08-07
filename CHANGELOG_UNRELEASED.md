@@ -9,6 +9,8 @@
 
 ### Changed
 
+- `mnormalize` moved from `kernel.v` to `measure.v` and generalized
+
 ### Renamed
 
 ### Generalized

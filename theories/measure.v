@@ -108,6 +108,7 @@ From HB Require Import structures.
 (*               probability == type of probability measures                  *)
 (*                            The HB class is Probability.                    *)
 (*     Measure_isProbability == factor for probability measures               *)
+(*              mnormalize mu == normalization of a measure to a probability  *)
 (* {outer_measure set T -> \bar R} == type of an outer measure over sets      *)
 (*                            of elements of type T : Type where R is         *)
 (*                            expected to be a numFieldType                   *)
@@ -2937,6 +2938,49 @@ HB.instance Definition _ := subprobability.
 HB.instance Definition _ := @isProbability.Build _ _ _ P probability_setT.
 
 HB.end.
+
+Section mnormalize.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (P : probability T R).
+
+Definition mnormalize :=
+  let evidence := mu [set: T] in
+  if (evidence == 0) || (evidence == +oo) then fun U => P U
+  else fun U => mu U * (fine evidence)^-1%:E.
+
+Let mnormalize0 : mnormalize set0 = 0.
+Proof.
+by rewrite /mnormalize; case: ifPn => // _; rewrite measure0 mul0e.
+Qed.
+
+Let mnormalize_ge0 U : 0 <= mnormalize U.
+Proof. by rewrite /mnormalize; case: ifPn => //; case: ifPn. Qed.
+
+Let mnormalize_sigma_additive : semi_sigma_additive mnormalize.
+Proof.
+move=> F mF tF mUF; rewrite /mnormalize/=.
+case: ifPn => [_|_]; first exact: measure_semi_sigma_additive.
+rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) mu (F i)) \*
+                               cst (fine (mu setT))^-1%:E); last first.
+  by apply/funext => n; rewrite -ge0_sume_distrl.
+by apply: cvgeMr => //; exact: measure_semi_sigma_additive.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ mnormalize
+  mnormalize0 mnormalize_ge0 mnormalize_sigma_additive.
+
+Let mnormalize1 : mnormalize [set: T] = 1.
+Proof.
+rewrite /mnormalize; case: ifPn; first by rewrite probability_setT.
+rewrite negb_or => /andP[ft0 ftoo].
+have ? : mu setT \is a fin_num by rewrite ge0_fin_numE// lt_neqAle ftoo/= leey.
+by rewrite -{1}(@fineK _ (mu setT))// -EFinM divrr// ?unitfE fine_eq0.
+Qed.
+
+HB.instance Definition _ :=
+  Measure_isProbability.Build _ _ _ mnormalize mnormalize1.
+
+End mnormalize.
 
 Section pdirac.
 Context d (T : measurableType d) (R : realType).
