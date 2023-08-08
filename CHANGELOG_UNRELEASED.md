@@ -6,6 +6,17 @@
 
 - in `kernel.v`:
   + `kseries` is now an instance of `Kernel_isSFinite_subdef`
+- in `classical_sets.v`:
+  + lemma `setU_id2r`
+- in `lebesgue_measure.v`:
+  + lemma `compact_measurable`
+
+- in `measure.v`:
+  + lemmas `outer_measure_subadditive`, `outer_measureU2`
+
+- in `lebesgue_measure.v`:
+  + declare `lebesgue_measure` as a `SigmaFinite` instance
+  + lemma `lebesgue_regularity_inner_sup`
 
 ### Changed
 

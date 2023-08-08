@@ -651,6 +651,14 @@ Proof. by rewrite setUA !(setUAC _ C) -(setUA _ C) setUid. Qed.
 Lemma setUUr A B C : A `|` (B `|` C) = (A `|` B) `|` (A `|` C).
 Proof. by rewrite !(setUC A) setUUl. Qed.
 
+Lemma setU_id2r C A B :
+  (forall x, (~` B) x -> A x = C x) -> (A `|` B) = (C `|` B).
+Proof.
+move=> h; apply/seteqP; split => [x [Ax|Bx]|x [Cx|Bx]]; [|by right| |by right].
+- by have [|/h {}h] := pselect (B x); [by right|left; rewrite -h].
+- by have [|/h {}h] := pselect (B x); [by right|left; rewrite h].
+Qed.
+
 Lemma setDE A B : A `\` B = A `&` ~` B. Proof. by []. Qed.
 
 Lemma setDUK A B : A `<=` B -> A `|` (B `\` A) = B.
@@ -1029,6 +1037,7 @@ Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
 Notation setvI := setICl.
 #[deprecated(since="mathcomp-analysis 0.6", note="Use setICr instead.")]
 Notation setIv := setICr.
+Arguments setU_id2r {T} C {A B}.
 
 Section set_order.
 Import Order.TTheory.

@@ -3330,6 +3330,37 @@ Arguments outer_measure_ge0 {R T} _.
 Arguments le_outer_measure {R T} _.
 Arguments outer_measure_sigma_subadditive {R T} _.
 
+Section outer_measureU.
+Context d (T : semiRingOfSetsType d) (R : realType).
+Variable mu : {outer_measure set T -> \bar R}.
+Local Open Scope ereal_scope.
+
+Lemma outer_measure_subadditive (F : nat -> set T) n :
+  mu (\big[setU/set0]_(i < n) F i) <= \sum_(i < n) mu (F i).
+Proof.
+pose F' := fun k => if (k < n)%N then F k else set0.
+rewrite -(big_mkord xpredT F) big_nat (eq_bigr F')//; last first.
+  by move=> k /= kn; rewrite /F' kn.
+rewrite -big_nat big_mkord.
+have := outer_measure_sigma_subadditive mu F'.
+rewrite (bigcup_splitn n) (_ : bigcup _ _ = set0) ?setU0; last first.
+  by rewrite bigcup0 // => k _; rewrite /F' /= ltnNge leq_addr.
+move/le_trans; apply.
+rewrite (nneseries_split n); last by move=> ?; exact: outer_measure_ge0.
+rewrite [X in _ + X](_ : _ = 0) ?adde0//; last first.
+  rewrite eseries_cond/= eseries_mkcond eseries0//.
+  by move=> k _; case: ifPn => //; rewrite /F' leqNgt => /negbTE ->.
+by apply: lee_sum => i _; rewrite /F' ltn_ord.
+Qed.
+
+Lemma outer_measureU2 A B : mu (A `|` B) <= mu A + mu B.
+Proof.
+have := outer_measure_subadditive (bigcup2 A B) 2.
+by rewrite !big_ord_recl/= !big_ord0 setU0 adde0.
+Qed.
+
+End outer_measureU.
+
 Lemma le_outer_measureIC (R : realFieldType) T
   (mu : {outer_measure set T -> \bar R}) (A X : set T) :
   mu X <= mu (X `&` A) + mu (X `&` ~` A).
@@ -3555,7 +3586,7 @@ Notation "mu .-cara.-measurable" :=
 
 Section caratheodory_measure.
 Variables (R : realType) (T : pointedType).
-Variable (mu : {outer_measure set T -> \bar R}).
+Variable mu : {outer_measure set T -> \bar R}.
 Let U := caratheodory_type mu.
 
 Lemma caratheodory_measure0 : mu (set0 : set U) = 0.
