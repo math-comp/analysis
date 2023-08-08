@@ -387,6 +387,14 @@ Qed.
 Definition lebesgue_measure := measure_extension [the measure _ _ of hlength].
 HB.instance Definition _ := Measure.on lebesgue_measure.
 
+(* TODO: this ought to be turned into a Let but older version of mathcomp/coq
+   does not seem to allow, try to change asap *)
+Local Lemma sigmaT_finite_lebesgue_measure : sigma_finite setT lebesgue_measure.
+Proof. exact/measure_extension_sigma_finite/hlength_sigma_finite. Qed.
+
+HB.instance Definition _ := @isSigmaFinite.Build _ _ _
+  lebesgue_measure sigmaT_finite_lebesgue_measure.
+
 End itv_semiRingOfSets.
 Arguments hlength {R}.
 #[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
@@ -1424,9 +1432,11 @@ by apply: measurableI => //; exact: open_measurable.
 Qed.
 
 Lemma closed_measurable (U : set R) : closed U -> measurable U.
+Proof. by move/closed_openC/open_measurable/measurableC; rewrite setCK. Qed.
+
+Lemma compact_measurable (A : set R) : compact A -> measurable A.
 Proof.
-move/closed_openC=> ?; rewrite -[U]setCK; apply: measurableC.
-exact: open_measurable.
+by move/compact_closed => /(_ (@Rhausdorff R)); exact: closed_measurable.
 Qed.
 
 Lemma subspace_continuous_measurable_fun (D : set R) (f : subspace D -> R) :
@@ -1434,7 +1444,7 @@ Lemma subspace_continuous_measurable_fun (D : set R) (f : subspace D -> R) :
 Proof.
 move=> mD /continuousP cf; apply: (measurability (RGenOpens.measurableE R)).
 move=> _ [_ [a [b ->] <-]]; apply: open_measurable_subspace => //.
-by exact/cf/interval_open.
+exact/cf/interval_open.
 Qed.
 
 Corollary open_continuous_measurable_fun (D : set R) (f : R -> R) :
@@ -1975,9 +1985,9 @@ wlog : eps epspos D mD finD / exists ab : R * R, D `<=` `[ab.1, ab.2]%classic.
       by apply: compact_closed => //; exact: Rhausdorff.
     exact: interval_closed.
   - by move=> ? [/VDab []].
-  have -> :  D `\` (V `&` `[a, b]) = (D `&` `[a, b]) `\` V `|` D `\` `[a, b].
-    by rewrite setDIr eqEsubset; split => z /=; case: (z \in `[a, b]); 
-      (try tauto); try (by case; case; left); try (by case; case; right).
+  rewrite setDIr (setU_id2r ((D `&` `[a, b]) `\` V)); last first.
+    move=> z ; rewrite setDE setCI setCK => -[?|?];
+    by apply/propext; split => [[]|[[]]].
   have mV : measurable V.
     by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
   rewrite [eps]splitr EFinD (measureU mu) // ?lte_add //.
@@ -1999,10 +2009,53 @@ exists (`[a, b] `&` ~` U); split.
   rewrite [_ `&` ~` _ ](iffRL (disjoints_subset _ _)) ?setCK // set0U.
   move: mDeps; rewrite /D' ?setDE setCI setIUr setCK [U `&` D]setIC.
   move => /(le_lt_trans _); apply; apply: le_measure; last by move => ?; right.
-    by rewrite inE; apply: measurableI => //; apply: open_measurable.
+    by rewrite inE; apply: measurableI => //; exact: open_measurable.
   rewrite inE; apply: measurableU.
-    by (apply: measurableI; first exact: open_measurable); exact: measurableC.
-  by apply: measurableI => //; apply: open_measurable.
+    by apply: measurableI; [exact: open_measurable|exact: measurableC].
+  by apply: measurableI => //; exact: open_measurable.
+Qed.
+
+Let lebesgue_regularity_innerE_bounded (A : set R) : measurable A ->
+  mu A < +oo ->
+  mu A = ereal_sup [set mu K | K in [set K | compact K /\ K `<=` A]].
+Proof.
+move=> mA muA; apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  by apply: ub_ereal_sup => /= x [B /= [cB BA <-{x}]]; exact: le_outer_measure.
+apply/lee_addgt0Pr => e e0.
+have [B [cB BA /= ABe]] := lebesgue_regularity_inner mA muA e0.
+rewrite -{1}(setDKU BA) (@le_trans _ _ (mu B + mu (A `\` B)))//.
+  by rewrite setUC outer_measureU2.
+by rewrite lee_add//; [apply: ereal_sup_ub => /=; exists B|exact/ltW].
+Qed.
+
+Lemma lebesgue_regularity_inner_sup (D : set R) (eps : R) : measurable D ->
+  mu D = ereal_sup [set mu K | K in [set K | compact K /\ K `<=` D]].
+Proof.
+move=> mD; have [?|] := ltP (mu D) +oo.
+  exact: lebesgue_regularity_innerE_bounded.
+have /sigma_finiteP [/= F RFU [Fsub ffin]] := sigmaT_finite_lebesgue_measure R (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *).
+rewrite leye_eq => /eqP /[dup] + ->.
+have {1}-> : D = \bigcup_n (F n `&` D) by rewrite -setI_bigcupl -RFU setTI.
+move=> FDp; apply/esym/eq_infty => M.
+have : (fun n => mu (F n `&` D)) @ \oo --> +oo.
+  rewrite -FDp; apply: nondecreasing_cvg_mu.
+  - by move=> i; apply: measurableI => //; exact: (ffin i).1.
+  - by apply: bigcup_measurable => i _; exact: (measurableI _ _ (ffin i).1).
+  - by move=> n m nm; apply/subsetPset; apply: setSI; exact/subsetPset/Fsub.
+move/cvgey_ge => /(_ (M + 1)%R) [N _ /(_ _ (lexx N))].
+have [mFN FNoo] := ffin N.
+have [] := @lebesgue_regularity_inner (F N `&` D) _ _ _ ltr01.
+- exact: measurableI.
+- by rewrite (le_lt_trans _ (ffin N).2)// measureIl.
+move=> V [/[dup] /compact_measurable mV cptV VFND] FDV1 M1FD.
+rewrite (@le_trans _ _ (mu V))//; last first.
+  apply: ereal_sup_ub; exists V => //=; split => //.
+  exact: (subset_trans VFND (@subIsetr _ _ _)).
+rewrite -(@lee_add2lE _ 1)// {1}addeC -EFinD (le_trans M1FD)//.
+rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; last exact: measurableI.
+rewrite ltW// lte_le_add // ?ge0_fin_numE //; last first.
+  by rewrite measureIr//; apply: measurableI.
+by rewrite -setIA (le_lt_trans _ (ffin N).2)// measureIl//; exact: measurableI.
 Qed.
 
 End lebesgue_regularity.
