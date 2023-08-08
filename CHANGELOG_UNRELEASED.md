@@ -71,9 +71,11 @@
 - in `classical_sets.v`:
   + lemmas `properW`, `properxx`
 - in file `lebesgue_integral.v`,
-  + new lemmas `integral_le_bound`, `open_itvoo_subset`, 
-    `open_itvcc_subset`, `continuous_compact_integrable`, and 
+  + new lemmas `integral_le_bound`, `continuous_compact_integrable`, and 
     `lebesgue_differentiation_continuous`.
+
+- in `normedtype.v`:
+  + lemmas `open_itvoo_subset`, `open_itvcc_subset`
 
 ### Changed
 

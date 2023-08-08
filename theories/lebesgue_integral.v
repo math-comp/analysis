@@ -4223,6 +4223,22 @@ Qed.
 
 End ae_ge0_le_integral.
 
+Section integral_bounded.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Local Open Scope ereal_scope.
+
+Lemma integral_le_bound (D : set T) (f : T -> \bar R) (M : \bar R) :
+  measurable D -> measurable_fun D f -> 0 <= M ->
+  {ae mu, forall x, D x -> `|f x| <= M} ->
+  \int[mu]_(x in D) `|f x| <= M * mu D.
+Proof.
+move=> mD mf M0 dfx; rewrite -integral_cst => //.
+by apply: ae_ge0_le_integral => //; exact: measurableT_comp.
+Qed.
+
+End integral_bounded.
+
 Section integral_ae_eq.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}).
@@ -5346,117 +5362,79 @@ Qed.
 End sfinite_fubini.
 Arguments sfinite_Fubini {d d' X Y R} m1 m2 f.
 
-Section integral_bounded.
-
-Lemma integral_le_bound d (R : realType) (T : measurableType d)
-  (mu : {measure set T -> \bar R}) (D : set T) (f : T -> \bar R) (M : R) : 
-  measurable D -> measurable_fun D f ->
-  (0 <= M%:E)%E -> ({ae mu, forall x, D x -> `|f x| <= M%:E})%E ->
-  (\int[mu]_(x in D) `|f x| <= M%:E * mu D)%E.
-Proof.
-move=> mD intf M0 dfx; rewrite -integral_cst => //.
-apply: ae_ge0_le_integral => //.
-by apply: measurableT_comp => //; case/integrableP:intf.
-Qed.
-
-End integral_bounded.
-
-Lemma open_itvoo_subset {R : realType} (A : set R) (x : R) :
-  open A -> A x -> \forall r \near 0^'+, `]x-r, x+r[ `<=` A.
-Proof.
-move=> oA Ax; case/(_ _ Ax): oA => _/posnumP[r] /subset_ball_prop_in_itv xrA. 
-exists r%:num => //= k; rewrite /= distrC subr0 set_itvoo => /ltr_normlW kr k0.
-apply: (subset_trans _ xrA); apply: subset_itvW.
-  by apply: ler_sub => //; apply: ltW.
-by apply: ler_add => //; apply: ltW.
-Qed.
-
-Lemma open_itvcc_subset {R : realType} (A : set R) (x : R) :
-  open A -> A x -> \forall r \near 0^'+, `[x-r, x+r] `<=` A.
-Proof.
-move=> oA Ax; case/(_ _ Ax): oA => _/posnumP[r].
-have -> : (r%:num = 2 * (r%:num/2)) by rewrite mulrC -mulrA mulVf // mulr1. 
-move/subset_ball_prop_in_itvcc => xrA; exists (r%:num/2) => //= k.
-rewrite /= distrC subr0 set_itvcc => /ltr_normlW kr k0.
-move=> z /andP [xkz zxk]; apply: xrA => //; rewrite in_itv /=. 
-apply/andP; split. 
-  by apply: (le_trans _ xkz); apply: ler_sub => //; exact: ltW.
-by apply: (le_trans zxk); apply: ler_add => //; exact: ltW.
-Qed.
-
 Section lebesgue_differentiation.
 Context (rT : realType).
 Let mu := [the measure _ _ of @lebesgue_measure rT].
 Let R  := [the measurableType _ of measurableTypeR rT].
 
-Lemma continuous_compact_integrable (f : R -> R^o) (A : set R^o): 
+Lemma continuous_compact_integrable (f : R -> R^o) (A : set R^o) :
   compact A -> {within A, continuous f} -> mu.-integrable A (EFin \o f).
 Proof.
-move=> cptA ctsfA; apply/integrableP; have mA : measurable A.
-  by apply:closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
-split.
-  by apply: measurableT_comp => //; apply: subspace_continuous_measurable_fun.
+move=> cptA ctsfA; have mA := compact_measurable cptA; apply/integrableP; split.
+  by apply: measurableT_comp => //; exact: subspace_continuous_measurable_fun.
 have /compact_bounded [M [_ mrt]] := continuous_compact ctsfA cptA.
 apply: le_lt_trans.
-  apply (@integral_le_bound _ _ _ _ _ _ (`|M| + 1)) => //.
-    by apply: measurableT_comp => //; apply: subspace_continuous_measurable_fun.
-  apply: aeW => /= z Az; rewrite lee_fin; apply: mrt => //.
-  apply: (@lt_le_trans _ _ (M + 1)); by rewrite ?ltr_addl // ler_add// ler_norm.
-case/compact_bounded: cptA => N [_ N1x]; have AN1: A `<=` `[- (`|N|+1), `|N|+1].
-  move=> z Az; rewrite set_itvcc /= -ler_norml; apply: N1x => //.
-  by apply: (@lt_le_trans _ _ (N + 1)); rewrite ?ltr_addl // ler_add// ler_norm.
+  apply (@integral_le_bound _ _ _ _ _ _ (`|M| + 1)%:E) => //.
+    by apply: measurableT_comp => //; exact: subspace_continuous_measurable_fun.
+  by apply: aeW => /= z Az; rewrite lee_fin mrt // ltr_spaddr// ler_norm.
+case/compact_bounded : cptA => N [_ N1x].
+have AN1 : A `<=` `[- (`|N| + 1), `|N| + 1].
+  by move=> z Az; rewrite set_itvcc /= -ler_norml N1x// ltr_spaddr// ler_norm.
 apply: (@le_lt_trans _ _ (_ * _)%E).
   by rewrite lee_pmul; last by apply: (le_measure _ _ _ AN1); rewrite inE.
-by rewrite /= lebesgue_measure_itv hlength_itv /= -fun_if -EFinM ltry. 
+by rewrite /= lebesgue_measure_itv hlength_itv /= -fun_if -EFinM ltry.
 Qed.
 
 Lemma lebesgue_differentiation_continuous (f : R -> rT^o) (A : set R) (x : R) :
-  open A -> mu.-integrable A (EFin \o f) -> {for x, continuous f} -> A x -> 
-  (fun r => 1/(2*r) * \int[mu]_(z in `[x-r,x+r]) f z) @ 0^'+ --> (f x:R^o).
-Proof. 
-have ritv r : 0 < r -> mu (`[x-r,x+r]%classic) = (2*r)%:E.
+  open A -> mu.-integrable A (EFin \o f) -> {for x, continuous f} -> A x ->
+  (fun r => 1 / (2 * r) * \int[mu]_(z in `[x - r, x + r]) f z) @ 0^'+ -->
+  (f x : R^o).
+Proof.
+have ritv r : 0 < r -> mu (`[x - r, x + r]%classic) = (2 * r)%:E.
   move=> /gt0_cp rE; rewrite /= lebesgue_measure_itv hlength_itv /= lte_fin.
   rewrite ler_lt_add // ?rE // -EFinD; congr (_ _).
   by rewrite opprB addrAC [_ - _]addrC addrA subrr add0r mulr2n mulrDl ?mul1r.
-move=> oA intf ctsfx Ax; apply: (@cvg_zero rT [pseudoMetricNormedZmodType R of rT^o]).
-apply/cvgrPdist_le => eps epos; have := @nbhs_right_gt rT 0; apply: filter_app.
-have ? : Filter (nbhs (0:R)^'+) by exact: at_right_proper_filter.
-move/cvgrPdist_le/(_ eps epos)/at_right_in_segment : ctsfx; apply: filter_app. 
-apply: (filter_app _ _ (open_itvcc_subset oA Ax)).
-have mA : measurable A by exact: open_measurable.
+move=> oA intf ctsfx Ax.
+apply: (@cvg_zero rT [pseudoMetricNormedZmodType R of rT^o]).
+apply/cvgrPdist_le => eps epos; apply: filter_app (@nbhs_right_gt rT 0).
+have ? : Filter (nbhs (0 : R)^'+) := at_right_proper_filter 0.
+move/cvgrPdist_le/(_ eps epos)/at_right_in_segment : ctsfx; apply: filter_app.
+apply: filter_app (open_itvcc_subset oA Ax).
+have mA : measurable A := open_measurable oA.
 near=> r => xrA; rewrite addrfctE opprfctE => feps rp.
-have cptxr : compact `[x-r, x + r] by exact: segment_compact.
-rewrite distrC subr0; have r20 : 0 <= 1/(2*r) by rewrite ?divr_ge0 // ?mulr_ge0.
-have -> : f x = 1/(2*r) * \int[mu]_(z in `[x-r,x+r]) cst (f x) z.
-  rewrite /Rintegral /= integral_cst // ritv //= [f x * _]mulrC mulrA.
-  by rewrite div1r mulVr ?mul1r ?unitfE ?mulf_neq0.
-have intRf : mu.-integrable `[x-r, x+r] (EFin \o f).
+have cptxr : compact `[x - r, x + r] := @segment_compact _ _ _.
+rewrite distrC subr0.
+have r20 : 0 <= 1 / (2 * r) by rewrite ?divr_ge0 // ?mulr_ge0.
+have -> : f x = 1 / (2 * r) * \int[mu]_(z in `[x - r, x + r]) cst (f x) z.
+  rewrite /Rintegral /= integral_cst // ritv //=.
+  by rewrite mulrC mul1r -mulrA divff ?mulr1// mulf_neq0.
+have intRf : mu.-integrable `[x - r, x + r] (EFin \o f).
   exact: (@integrableS _ _ _ mu _ _ _ _ _ xrA intf).
 rewrite /= -mulrBr -fineB; first last.
-- rewrite integral_fune_fin_num // continuous_compact_integrable //.
-  by move=> ?; exact: cvg_cst.
-- by rewrite integral_fune_fin_num //.
+- rewrite integral_fune_fin_num// continuous_compact_integrable// => ?.
+  exact: cvg_cst.
+- by rewrite integral_fune_fin_num.
 rewrite -integralB_EFin //; first last.
-- by apply: continuous_compact_integrable => // ?; exact: cvg_cst.
+  by apply: continuous_compact_integrable => // ?; exact: cvg_cst.
 under [fun _ => adde _ _ ]eq_fun => ? do rewrite -EFinD.
-have int_fx : mu.-integrable `[(x - r)%R, (x + r)%R] (fun z => (f z - f x)%:E).
+have int_fx : mu.-integrable `[x - r, x + r] (fun z => (f z - f x)%:E).
   under [fun z => (f z - _)%:E]eq_fun => ? do rewrite EFinB.
-  apply: integrableB => //; apply: continuous_compact_integrable =>//.
-  by move=> ?; exact: cvg_cst.
+  rewrite integrableB// continuous_compact_integrable// => ?.
+  exact: cvg_cst.
 rewrite normrM [ `|_/_| ]ger0_norm // -fine_abse //; first last.
   by rewrite integral_fune_fin_num.
-suff : (\int[mu]_(z in `[(x-r)%R,(x+r)%R]) `|(f z - f x)|%:E <= 
+suff : (\int[mu]_(z in `[(x - r)%R, (x + r)%R]) `|(f z - f x)|%:E <=
     (2 * r * eps)%:E)%E.
   move=> intfeps; apply: le_trans.
     apply: (ler_pmul r20 _ (le_refl _)); first exact: fine_ge0.
     apply: fine_le; last apply: le_abse_integral => //.
     - by rewrite abse_fin_num; exact: integral_fune_fin_num.
     - by apply: integral_fune_fin_num => //; exact: integrable_abse.
-    - by case/integrableP:int_fx.
+    - by case/integrableP: int_fx.
   rewrite div1r ler_pdivr_mull -[_ * _]/(fine (_%:E)); last exact: mulr_gt0.
   by rewrite fine_le // integral_fune_fin_num // integrable_abse.
 apply: le_trans.
-  apply:(@integral_le_bound _ _ _ _ _ (fun z => (f z - f x)%:E) eps) => //.
+  apply: (@integral_le_bound _ _ _ _ _ (fun z => (f z - f x)%:E) eps%:E) => //.
   - by case/integrableP: int_fx.
   - exact: ltW.
   - by apply: aeW => ? ?; rewrite /= lee_fin distrC; apply: feps.
