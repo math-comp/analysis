@@ -343,7 +343,7 @@ Proof.
 move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE.
 move=> [a _ <-]; rewrite hlength_itv ?lte_fin/= -EFinB => lebig.
 case: ifPn => a12; last by rewrite nneseries_esum// esum_ge0.
-apply: lee_adde => e.
+apply/lee_addgt0Pr => _ /posnumP[e].
 rewrite [e%:num]splitr [in leRHS]EFinD addeA -lee_subl_addr//.
 apply: le_trans (epsilon_trick _ _ _) => //=.
 have eVn_gt0 n : 0 < e%:num / 2 / (2 ^ n.+1)%:R.

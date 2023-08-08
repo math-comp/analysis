@@ -10,6 +10,9 @@
 ### Changed
 
 - `mnormalize` moved from `kernel.v` to `measure.v` and generalized
+- in `constructive_ereal.v`:
+  + `lee_adde` renamed to `lee_addgt0Pr` and turned into a reflect
+  + `lee_dadde` renamed to `lee_daddgt0Pr` and turned into a reflect
 
 ### Renamed
 

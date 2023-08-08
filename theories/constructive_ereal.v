@@ -3033,17 +3033,16 @@ Variable R : realFieldType.
 Implicit Types x y : \bar R.
 Implicit Types r : R.
 
-Lemma lee_adde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
+Lemma lee_addgt0Pr x y :
+  reflect (forall e, (0 < e)%R -> x <= y + e%:E) (x <= y).
 Proof.
-move: x y => [x||] [y||] // xleye; rewrite ?leNye ?leey//; last first.
-- exact: (le_trans (xleye 1%:pos%R)).
-- by move: (!! xleye 1%:pos%R).
-- by move: (!! xleye 1%:pos%R).
-rewrite leNgt; apply/negP => yltx.
-have xmy_gt0 : (0 < (x - y) / 2)%R by rewrite ltr_pdivlMr// mul0r subr_gt0.
-move: (xleye (PosNum xmy_gt0)); apply/negP; rewrite -ltNge /= -EFinD lte_fin.
-rewrite [Y in (Y + _)%R]splitr [X in (_ < X)%R]splitr.
-by rewrite -!mulrDl ltr_pM2r// addrCA addrK ltrD2l.
+apply/(iffP idP) => [|].
+- move: x y => [x| |] [y| |]//.
+  + by rewrite lee_fin => xy e e0; rewrite -EFinD lee_fin ler_wpDr// ltW.
+  + by move=> _ e e0; rewrite leNye.
+- move: x y => [x| |] [y| |]// xy; rewrite ?leey ?leNye//;
+    [|by move: xy => /(_ _ lte01)..].
+  by rewrite lee_fin; apply/ler_addgt0Pr => e e0; rewrite -lee_fin EFinD xy.
 Qed.
 
 Lemma lee_mul01Pr x y : 0 <= x ->
@@ -3175,8 +3174,9 @@ Local Open Scope ereal_dual_scope.
 Variable R : realFieldType.
 Implicit Types x y : \bar^d R.
 
-Lemma lee_dadde x y : (forall e : {posnum R}, x <= y + e%:num%:E) -> x <= y.
-Proof. by move=> xye; apply: lee_adde => e; case: x {xye} (xye e). Qed.
+Lemma lee_daddgt0Pr x y :
+  reflect (forall e, (0 < e)%R -> x <= y + e%:E) (x <= y).
+Proof. exact: lee_addgt0Pr. Qed.
 
 End DualRealFieldType_lemmas.
 
