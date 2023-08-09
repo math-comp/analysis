@@ -17,7 +17,6 @@
 - in `lebesgue_measure.v`:
   + declare `lebesgue_measure` as a `SigmaFinite` instance
   + lemma `lebesgue_regularity_inner_sup`
-  + lemma `closed_measurable`
 
 - in file `normedtype.v`,
   + new lemmas `normal_openP`, `uniform_regular`,
