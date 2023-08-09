@@ -602,7 +602,7 @@ by rewrite lnK // lt0r_neq0.
 Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
-Lemma concave_ln (t : {i01 R}) (a b : R^o) : a \is Num.pos -> b \is Num.pos ->
+Lemma concave_ln (t : {i01 R}) (a b : R^o) : 0 < a -> 0 < b ->
   (ln a : R^o) <| t |> (ln b : R^o) <= ln (a <| t |> b).
 Proof.
 move=> a0 b0; have := convex_expR t (ln a) (ln b).
