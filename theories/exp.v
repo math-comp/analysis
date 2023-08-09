@@ -928,7 +928,7 @@ Proof.
 move=> /andP[a0 a1].
 have : forall n, harmonic n <= riemannR a n.
   move=> [/=|n]; first by rewrite powR1 invr1.
-  rewrite -[leRHS]div1r ler_pdivl_mulr ?powR_gt0// mulrC ler_pdivrMr//.
+  rewrite -[leRHS]div1r ler_pdivlMr ?powR_gt0// mulrC ler_pdivrMr//.
   by rewrite mul1r -[leRHS]powRr1// (ler_powR)// ler1n.
 move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
 by move/contra_not; apply; exact: dvg_harmonic.

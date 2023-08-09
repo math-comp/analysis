@@ -2938,7 +2938,7 @@ Let mnormalize_sigma_additive : semi_sigma_additive mnormalize.
 Proof.
 move=> F mF tF mUF; rewrite /mnormalize/=.
 case: ifPn => [_|_]; first exact: measure_semi_sigma_additive.
-rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) mu (F i)) \*
+rewrite [X in X @ _ --> _](_ : _ = (fun n => \sum_(0 <= i < n) mu (F i)) \*
                                cst (fine (mu setT))^-1%:E); last first.
   by apply/funext => n; rewrite -ge0_sume_distrl.
 by apply: cvgeMr => //; exact: measure_semi_sigma_additive.
