@@ -95,6 +95,40 @@ HB.structure Definition Charge d (T : semiRingOfSetsType d) (R : numFieldType)
 
 Notation "{ 'charge' 'set' T '->' '\bar' R }" := (charge T R) : ring_scope.
 
+HB.factory Record isCharge0 d (T : measurableType d)
+ (R : realFieldType) (mu : set T -> \bar R) := {
+    charge0 : mu set0 = 0 ;
+    charge_finite : forall x, d.-measurable x -> mu x \is a fin_num ;
+    charge_sigma_additive : sigma_additive mu
+}.
+
+HB.builders Context d (T : measurableType d) (R : realFieldType)
+  mu of isCharge0 d T R mu.
+
+Let finite : fin_num_fun mu. Proof. exact: charge_finite. Qed.
+
+HB.instance Definition _ := SigmaFinite_isFinite.Build d T R mu finite.
+
+Let semi_additive : semi_additive mu.
+Proof.
+move=> I n mI trivI mUI.
+rewrite (@sigma_additive_is_additive R d _ mu charge0) //.
+exact: charge_sigma_additive.
+Qed.
+
+HB.instance Definition _ := isAdditiveCharge.Build d T R mu semi_additive.
+
+Let semi_sigma_additive : semi_sigma_additive mu.
+Proof.
+rewrite semi_sigma_additiveE.
+exact: charge_sigma_additive.
+Qed.
+
+HB.instance Definition _ := isCharge.Build d T R mu semi_sigma_additive.
+
+HB.end.
+
+
 Section charge_lemmas.
 Context d (T : measurableType d) (R : numFieldType).
 Implicit Type nu : {charge set T -> \bar R}.
