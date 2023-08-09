@@ -22,9 +22,6 @@
 
 - in `exp.v`:
   + lemmas `concave_ln`, `conjugate_powR`
-  + lemma `concave_ln`
-- in `lebesgue_measure.v`:
-  + lemma `closed_measurable`
 
 
 - in `lebesgue_measure.v`:
@@ -35,7 +32,7 @@
 
 - in `lebesgue_integral.v`:
   + definition `Lnorm`, notations `'N[mu]_p[f]`, `` `| f |_p ``
-  + lemmas `Lnorm_ge0`, `eq_Lnorm`, `Lnorm_eq0_eq0`
+  + lemmas `Lnorm1`, `Lnorm_ge0`, `eq_Lnorm`, `Lnorm_eq0_eq0`
   + lemma `hoelder`
 
 - in file `lebesgue_integral.v`,
