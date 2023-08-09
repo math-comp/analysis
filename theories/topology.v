@@ -4263,10 +4263,10 @@ Hint Extern 0 (nbhs _ (to_set _ _)) => exact: nbhs_entourage : core.
 Lemma ent_closure {M : uniformType} (x : M) E : entourage E ->
   closure (to_set (split_ent E) x) `<=` to_set E x.
 Proof.
-pose E' := ((split_ent E) `&` ((split_ent E)^-1)%classic).
-move=> entE z /(_ [set y | E' (z, y)]) [].
-  by rewrite -nbhs_entourageE; exists E' => //; apply: filterI.
-by move=> y [/=] + [_]; apply: entourage_split.
+pose E' := (split_ent E) `&` ((split_ent E)^-1)%classic.
+move=> entE z /(_ [set y | E' (z, y)])[].
+  by rewrite -nbhs_entourageE; exists E' => //; exact: filterI.
+by move=> y [/=] + [_]; exact: entourage_split.
 Qed.
 
 Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
@@ -7804,11 +7804,11 @@ Qed.
 End gauges.
 
 Definition normal_space (T : topologicalType) :=
-  forall (A : set T), closed A ->
+  forall A : set T, closed A ->
     set_nbhs A `<=` filter_from (set_nbhs A) closure.
 
 Definition regular_space (T : topologicalType) :=
-  forall (a : T), nbhs a `<=` filter_from (nbhs a) closure.
+  forall a : T, nbhs a `<=` filter_from (nbhs a) closure.
 
 Section ArzelaAscoli.
 Context {X : topologicalType}.
