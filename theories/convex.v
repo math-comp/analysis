@@ -137,6 +137,23 @@ HB.instance Definition _ := @isConvexSpace.Build R R^o
 
 End realDomainType_convex_space.
 
+Section conv_realDomainType.
+Context {R : realDomainType}.
+
+Lemma conv_gt0 (a b : R^o) (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
+Proof.
+move=> a0 b0.
+have [->|t0] := eqVneq t 0%:i01; first by rewrite conv0.
+have [->|t1] := eqVneq t 1%:i01; first by rewrite conv1.
+rewrite addr_gt0// mulr_gt0//; last by rewrite lt_neqAle eq_sym t0/=.
+by rewrite onem_gt0// lt_neqAle t1/=.
+Qed.
+
+Lemma convRE (a b : R^o) (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * a + t%:inum * b.
+Proof. by []. Qed.
+
+End conv_realDomainType.
+
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
 Section twice_derivable_convex.
 Context {R : realType}.
