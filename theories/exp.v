@@ -601,6 +601,15 @@ apply: (@is_derive_inverse R expR); first by near=> z; apply: expRK.
 by rewrite lnK // lt0r_neq0.
 Unshelve. all: by end_near. Qed.
 
+Local Open Scope convex_scope.
+Lemma concave_ln (t : {i01 R}) (a b : R^o) : 0 < a -> 0 < b ->
+  (ln a : R^o) <| t |> (ln b : R^o) <= ln (a <| t |> b).
+Proof.
+move=> a0 b0; have := convex_expR t (ln a) (ln b).
+by rewrite !lnK// -(@ler_ln) ?posrE ?expR_gt0 ?conv_gt0// expRK.
+Qed.
+Local Close Scope convex_scope.
+
 End Ln.
 
 Section PowR.
@@ -750,6 +759,28 @@ Lemma lt0_norm_powR a x : a < 0 -> `|a `^ x| = 1.
 Proof.
 move=> a0; rewrite /powR lt_eqF// gtr0_norm ?expR_gt0//.
 by rewrite ln0 ?mulr0 ?expR0// ltW.
+Qed.
+
+Lemma conjugate_powR a b p q : 0 <= a -> 0 <= b ->
+  0 < p -> 0 < q -> p^-1 + q^-1 = 1 ->
+  a * b <= a `^ p / p + b `^ q / q.
+Proof.
+rewrite le_eqVlt => /predU1P[<- b0 p0 q0 _|a0].
+  by rewrite mul0r powR0 ?gt_eqF// mul0r add0r divr_ge0 ?powR_ge0 ?ltW.
+rewrite le_eqVlt => /predU1P[<-|b0] p0 q0 pq.
+  by rewrite mulr0 powR0 ?gt_eqF// mul0r addr0 divr_ge0 ?powR_ge0 ?ltW.
+have q01 : (q^-1 \in `[0, 1])%R.
+  by rewrite in_itv/= invr_ge0 (ltW q0)/= -pq ler_paddl// invr_ge0 ltW.
+have ap0 : (0 < a `^ p)%R by rewrite powR_gt0.
+have bq0 : (0 < b `^ q)%R by rewrite powR_gt0.
+have := @concave_ln _ (@Itv.mk _ `[0, 1] _ q01)%R _ _ ap0 bq0.
+have pq' : (p^-1 = 1 - q^-1)%R by rewrite -pq addrK.
+rewrite !convRE/= /onem -pq' -ler_expR expRD (mulrC p^-1).
+rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF// (mulrC q^-1).
+rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF//.
+rewrite lnK ?posrE// lnK ?posrE// => /le_trans; apply.
+rewrite lnK//; last by rewrite posrE addr_gt0// mulr_gt0// ?invr_gt0.
+by rewrite (mulrC _ p^-1) (mulrC _ q^-1).
 Qed.
 
 End PowR.
