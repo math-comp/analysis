@@ -139,10 +139,18 @@ HB.instance Definition _ := @isConvexSpace.Build R R^o
 
 End realDomainType_convex_space.
 
+HB.instance Definition _ (R : realDomainType) :=
+  ConvexSpace.copy R [the lmodType R of R^o].
+HB.instance Definition _ (R : realFieldType) :=
+  ConvexSpace.copy R [the lmodType R of R^o].
+HB.instance Definition _ (R : realType) :=
+  ConvexSpace.copy R [the lmodType R of R^o].
+
 Section conv_realDomainType.
 Context {R : realDomainType}.
+Implicit Types a b : R.
 
-Lemma conv_gt0 (a b : R^o) (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
+Lemma conv_gt0 a b (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
 Proof.
 move=> a0 b0.
 have [->|t0] := eqVneq t 0%:i01; first by rewrite conv0.
@@ -151,7 +159,7 @@ rewrite addr_gt0// mulr_gt0//; last by rewrite lt_neqAle eq_sym t0/=.
 by rewrite onem_gt0// lt_neqAle t1/=.
 Qed.
 
-Lemma convRE (a b : R^o) (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * a + t%:inum * b.
+Lemma convRE a b (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * a + t%:inum * b.
 Proof. by []. Qed.
 
 End conv_realDomainType.
@@ -163,7 +171,7 @@ Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
 Section twice_derivable_convex.
 Context {R : realType}.
-Variables (f : R -> R^o) (a b : R^o).
+Variables (f : R -> R) (a b : R).
 
 Let Df := 'D_1 f.
 Let DDf := 'D_1 Df.
