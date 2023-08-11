@@ -15,7 +15,7 @@ From HB Require Import structures.
 (*                                                                            *)
 (* ```                                                                        *)
 (*   isConvexSpace R T == interface for convex spaces                         *)
-(*       ConvexSpace R == structure of convex space                           *)
+(*                        The HB class is ConvexSpace.                        *)
 (*         a <| t |> b == convexity operator                                  *)
 (* ```                                                                        *)
 (*                                                                            *)
