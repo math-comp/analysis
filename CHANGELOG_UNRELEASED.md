@@ -8,7 +8,7 @@
   + lemmas `gt0_fin_numE`, `lt0_fin_numE`
 
 - in `charge.v`:
-  + factory `isCharge0`
+  + factory `isCharge`
 
 ### Changed
 
@@ -16,6 +16,10 @@
   + definition `Lnorm` now `HB.lock`ed
 
 ### Renamed
+
+- in `charge.v`
+  + `isCharge` renamed to `isSemiSigmaAdditive`
+  + `Charge` renamed to `AdditiveCharge_SemiSigmaAdditive_isCharge`
 
 ### Generalized
 

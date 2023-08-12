@@ -89,17 +89,17 @@ Notation "{ 'additive_charge' 'set' T '->' '\bar' R }" :=
 
 #[export] Hint Resolve charge_semi_additive : core.
 
-HB.mixin Record isCharge d (T : semiRingOfSetsType d) (R : numFieldType)
+HB.mixin Record isSemiSigmaAdditive d (T : semiRingOfSetsType d) (R : numFieldType)
     (mu : set T -> \bar R) := {
   charge_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=charge)]
-HB.structure Definition Charge d (T : semiRingOfSetsType d) (R : numFieldType)
-  := { mu of isCharge d T R mu & AdditiveCharge d mu }.
+HB.structure Definition AdditiveCharge_SemiSigmaAdditive_isCharge d (T : semiRingOfSetsType d) (R : numFieldType)
+  := { mu of isSemiSigmaAdditive d T R mu & AdditiveCharge d mu }.
 
 Notation "{ 'charge' 'set' T '->' '\bar' R }" := (charge T R) : ring_scope.
 
-HB.factory Record isCharge0 d (T : measurableType d)
+HB.factory Record isCharge d (T : measurableType d)
  (R : realFieldType) (mu : set T -> \bar R) := {
     charge0 : mu set0 = 0 ;
     charge_finite : forall x, d.-measurable x -> mu x \is a fin_num ;
@@ -107,7 +107,7 @@ HB.factory Record isCharge0 d (T : measurableType d)
 }.
 
 HB.builders Context d (T : measurableType d) (R : realFieldType)
-  mu of isCharge0 d T R mu.
+  mu of isCharge d T R mu.
 
 Let finite : fin_num_fun mu. Proof. exact: charge_finite. Qed.
 
@@ -128,7 +128,7 @@ rewrite semi_sigma_additiveE.
 exact: charge_sigma_additive.
 Qed.
 
-HB.instance Definition _ := isCharge.Build d T R mu semi_sigma_additive.
+HB.instance Definition _ := isSemiSigmaAdditive.Build d T R mu semi_sigma_additive.
 
 HB.end.
 
