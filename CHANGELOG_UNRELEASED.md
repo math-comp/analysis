@@ -32,11 +32,8 @@
   + `lee_adde` renamed to `lee_addgt0Pr` and turned into a reflect
   + `lee_dadde` renamed to `lee_daddgt0Pr` and turned into a reflect
 
-- moved from `Rstruct.v` to `normedtype.v`:
-  + canonicals `R_pointedType`, `R_filteredType`, `R_topologicalType`,
-    `R_uniformType`, `R_pseudoMetricType`
-  + lemmas `continuity_pt_nbhs`, `continuity_pt_cvg`, `continuity_ptE`,
-    `continuity_pt_cvg'`, `continuity_pt_dnbhs`, `nbhs_pt_comp`
+- removed dependency in `Rstruct.v` on `normedtype.v`:
+- added dependency in `normedtype.v` on `Rstruct.v`:
 
 ### Renamed
 
