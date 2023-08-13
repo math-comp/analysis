@@ -15,11 +15,15 @@
 - in `hoelder.v`:
   + definition `Lnorm` now `HB.lock`ed
 
+- in `charge.v`
+  + replace old isCharge.Build to isSemiSigmaAdditive.Build in section `charge_restriction`
+  + replace to new isCharge.Build in the others
+
 ### Renamed
 
 - in `charge.v`
-  + `isCharge` renamed to `isSemiSigmaAdditive`
-  + `Charge` renamed to `AdditiveCharge_SemiSigmaAdditive_isCharge`
+  + old `isCharge` renamed to `isSemiSigmaAdditive`
+  + old `Charge` renamed to `AdditiveCharge_SemiSigmaAdditive_isCharge`
 
 ### Generalized
 

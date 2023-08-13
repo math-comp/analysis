@@ -132,7 +132,6 @@ HB.instance Definition _ := isSemiSigmaAdditive.Build d T R mu semi_sigma_additi
 
 HB.end.
 
-
 Section charge_lemmas.
 Context d (T : measurableType d) (R : numFieldType).
 Implicit Type nu : {charge set T -> \bar R}.
@@ -283,7 +282,7 @@ by apply: bigcup_measurable => k _; exact: measurableI.
 Qed.
 
 HB.instance Definition _ :=
-  isCharge.Build _ _ _ restr crestr_semi_sigma_additive.
+  isSemiSigmaAdditive.Build _ _ _ restr crestr_semi_sigma_additive.
 
 End charge_restriction.
 
@@ -297,29 +296,26 @@ Variables (nu : {charge set T -> \bar R}) (D : set T) (mD : measurable D).
 
 Local Notation restr := (crestr0 nu mD).
 
+Let crestr00 : restr set0 = 0.
+Proof.
+rewrite/crestr0 ifT ?inE // /crestr set0I.
+exact:charge0.
+Qed.
+
 Let crestr0_fin_num_fun : fin_num_fun restr.
 Proof. by move=> U mU; rewrite /crestr0 mem_set// fin_num_measure. Qed.
 
-HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
-  restr crestr0_fin_num_fun.
-
-Let crestr0_additive : semi_additive restr.
+Let crestr0_sigma_additive : sigma_additive restr.
 Proof.
-move=> F n mF tF mU; rewrite /crestr0 mem_set// charge_semi_additive//=.
-by apply: eq_bigr => i _; rewrite mem_set.
-Qed.
-
-HB.instance Definition _ := isAdditiveCharge.Build _ _ _ restr crestr0_additive.
-
-Let crestr0_sigma_additive : semi_sigma_additive restr.
-Proof.
+rewrite -semi_sigma_additiveE.
 move=> F mF tF mU; rewrite /crestr0 mem_set//.
 rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) crestr nu mD (F i))).
   exact: charge_semi_sigma_additive.
 by apply/funext => n; apply: eq_bigr => i _; rewrite mem_set.
 Qed.
 
-HB.instance Definition _ := isCharge.Build _ _ _ restr crestr0_sigma_additive.
+HB.instance Definition _ := isCharge.Build _ _ _
+    restr crestr00 crestr0_fin_num_fun crestr0_sigma_additive.
 
 End charge_restriction0.
 
@@ -334,22 +330,15 @@ Let czero0 : czero set0 = 0. Proof. by []. Qed.
 Let czero_finite_measure_function B : measurable B -> czero B \is a fin_num.
 Proof. by []. Qed.
 
-HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
-  czero czero_finite_measure_function.
-
-Let czero_semi_additive : semi_additive czero.
-Proof. by move=> F n mF tF mUF; rewrite /czero big1. Qed.
-
-HB.instance Definition _ :=
-  isAdditiveCharge.Build _ _ _ czero czero_semi_additive.
-
-Let czero_sigma_additive : semi_sigma_additive czero.
+Let czero_sigma_additive : sigma_additive czero.
 Proof.
+rewrite -semi_sigma_additiveE.
 move=> F mF tF mUF; rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
 by apply/funext => n; rewrite big1.
 Qed.
 
-HB.instance Definition _ := isCharge.Build _ _ _ czero czero_sigma_additive.
+HB.instance Definition _ := isCharge.Build _ _ _ czero
+     czero0 czero_finite_measure_function czero_sigma_additive.
 
 End charge_zero.
 Arguments czero {d T R}.
@@ -366,21 +355,9 @@ Let cscale0 : cscale set0 = 0. Proof. by rewrite /cscale charge0 mule0. Qed.
 Let cscale_finite_measure_function U : measurable U -> cscale U \is a fin_num.
 Proof. by move=> mU; apply: fin_numM => //; exact: fin_num_measure. Qed.
 
-HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
-  cscale cscale_finite_measure_function.
-
-Let cscale_semi_additive : semi_additive cscale.
+Let cscale_sigma_additive : sigma_additive cscale.
 Proof.
-move=> F n mF tF mU; rewrite /cscale charge_semi_additive//.
-rewrite fin_num_sume_distrr// => i j _ _.
-by rewrite fin_num_adde_defl// fin_num_measure.
-Qed.
-
-HB.instance Definition _ :=
-  isAdditiveCharge.Build _ _ _ cscale cscale_semi_additive.
-
-Let cscale_sigma_additive : semi_sigma_additive cscale.
-Proof.
+rewrite -semi_sigma_additiveE.
 move=> F mF tF mUF; rewrite /cscale; rewrite [X in X --> _](_ : _ =
     (fun n => r%:E * \sum_(0 <= i < n) nu (F i))); last first.
   apply/funext => k; rewrite fin_num_sume_distrr// => i j _ _.
@@ -392,7 +369,7 @@ by apply: cvgeMl => //; apply: charge_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isCharge.Build _ _ _ cscale
-  cscale_sigma_additive.
+  cscale0 cscale_finite_measure_function cscale_sigma_additive.
 
 End charge_scale.
 
@@ -1259,6 +1236,11 @@ Definition epsRN := sval epsRN_ex.
 
 Definition sigmaRN B := nu B - \int[mu]_(x in B) (fRN x + epsRN%:num%:E).
 
+Let sigmaRN0 : sigmaRN set0 = 0.
+Proof.
+by rewrite /sigmaRN measure0 integral_set0 subee.
+Qed.
+
 Let fin_num_int_fRN_eps B : measurable B ->
   \int[mu]_(x in B) (fRN x + epsRN%:num%:E) \is a fin_num.
 Proof.
@@ -1283,28 +1265,9 @@ move=> mB; rewrite /sigmaRN fin_numB fin_num_measure//=.
 exact: fin_num_int_fRN_eps.
 Qed.
 
-HB.instance Definition _ :=
-  @SigmaFinite_isFinite.Build _ _ _ sigmaRN fin_num_sigmaRN.
-
-Let sigmaRN_semi_additive : semi_additive sigmaRN.
+Let sigmaRN_sigma_additive : sigma_additive sigmaRN.
 Proof.
-move=> H n mH tH mUH.
-rewrite /sigmaRN measure_semi_additive// big_split/= fin_num_sumeN; last first.
-  by move=> i _; rewrite fin_num_int_fRN_eps.
-congr (_ - _); rewrite ge0_integral_bigsetU//.
-- rewrite -bigcup_mkord.
-  have : measurable_fun setT (fun x => fRN x + epsRN%:num%:E).
-    by apply: emeasurable_funD => //; exact: measurable_fun_fRN.
-  exact: measurable_funS.
-- by move=> x _; rewrite adde_ge0//; exact: fRN_ge0.
-- exact: sub_trivIset tH.
-Qed.
-
-HB.instance Definition _ :=
-  @isAdditiveCharge.Build _ _ _ sigmaRN sigmaRN_semi_additive.
-
-Let sigmaRN_semi_sigma_additive : semi_sigma_additive sigmaRN.
-Proof.
+rewrite -semi_sigma_additiveE.
 move=> H mH tH mUH.
 rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) nu (H i) -
   \sum_(0 <= i < n) \int[mu]_(x in H i) (fRN x + epsRN%:num%:E))); last first.
@@ -1328,7 +1291,7 @@ apply: cvgeB.
 Qed.
 
 HB.instance Definition _ := @isCharge.Build _ _ _ sigmaRN
-  sigmaRN_semi_sigma_additive.
+  sigmaRN0 fin_num_sigmaRN sigmaRN_sigma_additive.
 
 End ab_absurdo.
 
