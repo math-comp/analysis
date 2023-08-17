@@ -30,8 +30,8 @@
 - in `constructive_ereal.v`:
   + lemma `eqe_pdivr_mull`
 
-- in `lebesgue_integral.v`:
-  + definition `Lnorm`, notations `'N[mu]_p[f]`, `` `|| f ||_p ``
+- new file `hoelder.v`:
+  + definition `Lnorm`, notations `'N[mu]_p[f]`, `'N_p[f]`
   + lemmas `Lnorm1`, `Lnorm_ge0`, `eq_Lnorm`, `Lnorm_eq0_eq0`
   + lemma `hoelder`
 
