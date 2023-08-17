@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop .
 Require Import signed reals ereal topology normedtype sequences real_interval.
-Require Import esum measure lebesgue_measure numfun exp itv.
+Require Import esum measure lebesgue_measure numfun.
 
 (******************************************************************************)
 (*                            Lebesgue Integral                               *)
@@ -45,8 +45,6 @@ Require Import esum measure lebesgue_measure numfun exp itv.
 (*              m1 \x^ m2 == product measure over T1 * T2, m2 is a measure    *)
 (*                           measure over T1, and m1 is a sigma finite        *)
 (*                           measure over T2                                  *)
-(*           'N[mu]_p[f] := (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1             *)
-(*                          The corresponding definition is Lnorm.            *)
 (*                                                                            *)
 (******************************************************************************)
 

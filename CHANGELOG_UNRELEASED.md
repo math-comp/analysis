@@ -51,6 +51,8 @@
 - in file `topology.v`,
   + new definition `regular_space`.
   + new lemma `ent_closure`.
+- new file `hoelder.v`:
+  + 
 
 - in file `lebesgue_integral.v`,
   + new lemmas `simple_bounded`, `measurable_bounded_integrable`, 
