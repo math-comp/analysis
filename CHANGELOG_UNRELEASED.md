@@ -23,18 +23,6 @@
 - in `exp.v`:
   + lemmas `concave_ln`, `conjugate_powR`
 
-
-- in `lebesgue_measure.v`:
-  + lemma `measurable_mulrr`
-
-- in `constructive_ereal.v`:
-  + lemma `eqe_pdivr_mull`
-
-- new file `hoelder.v`:
-  + definition `Lnorm`, notations `'N[mu]_p[f]`, `'N_p[f]`
-  + lemmas `Lnorm1`, `Lnorm_ge0`, `eq_Lnorm`, `Lnorm_eq0_eq0`
-  + lemma `hoelder`
-
 - in file `lebesgue_integral.v`,
   + new lemmas `integral_le_bound`, `continuous_compact_integrable`, and 
     `lebesgue_differentiation_continuous`.
@@ -51,8 +39,17 @@
 - in file `topology.v`,
   + new definition `regular_space`.
   + new lemma `ent_closure`.
+
+- in `lebesgue_measure.v`:
+  + lemma `measurable_mulrr`
+
+- in `constructive_ereal.v`:
+  + lemma `eqe_pdivr_mull`
+
 - new file `hoelder.v`:
-  + 
+  + definition `Lnorm`, notations `'N[mu]_p[f]`, `'N_p[f]`
+  + lemmas `Lnorm1`, `Lnorm_ge0`, `eq_Lnorm`, `Lnorm_eq0_eq0`
+  + lemma `hoelder`
 
 - in file `lebesgue_integral.v`,
   + new lemmas `simple_bounded`, `measurable_bounded_integrable`, 

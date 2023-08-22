@@ -67,13 +67,6 @@ Reserved Notation "mu .-integrable" (at level 2, format "mu .-integrable").
 Reserved Notation "m1 '\x' m2" (at level 40, m2 at next level).
 Reserved Notation "m1 '\x^' m2" (at level 40, m2 at next level).
 
-Reserved Notation "'N[ mu ]_  p [ F ]"
-  (at level 5, F at level 36, mu at level 10,
-  format "'[' ''N[' mu ]_ p '/  ' [ F ] ']'").
-Reserved Notation "''N_' p [ F ]" (* for use as a local notation *)
-  (at level 5, F at level 36,
-  format "'[' ''N_' p '/  ' [ F ] ']'").
-
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
