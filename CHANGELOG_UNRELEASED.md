@@ -23,12 +23,25 @@
 - in `exp.v`:
   + lemmas `concave_ln`, `conjugate_powR`
 
+- in file `lebesgue_integral.v`,
+  + new lemmas `integral_le_bound`, `continuous_compact_integrable`, and 
+    `lebesgue_differentiation_continuous`.
+
+- in `normedtype.v`:
+  + lemmas `open_itvoo_subset`, `open_itvcc_subset`
+
+- in `lebesgue_measure.v`:
+  + lemma `measurable_ball`
+
 ### Changed
 
 - `mnormalize` moved from `kernel.v` to `measure.v` and generalized
 - in `constructive_ereal.v`:
   + `lee_adde` renamed to `lee_addgt0Pr` and turned into a reflect
   + `lee_dadde` renamed to `lee_daddgt0Pr` and turned into a reflect
+- in `lebesgue_integral.v`
+  + rewrote `negligible_integral` to replace the positivity condition
+    with an integrability condition, and added `ge0_negligible_integral`.
 
 ### Renamed
 

@@ -1429,6 +1429,12 @@ move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
 exact: is_interval_bigcup_ointsub.
 Qed.
 
+Lemma measurable_ball (r x : R) : 0 < r -> measurable (ball x r).
+Proof.
+move=> ?; apply: open_measurable.
+exact: (@ball_open _ [normedModType R of R^o]).
+Qed.
+
 Lemma open_measurable_subspace (D : set R) (U : set (subspace D)) :
   measurable D -> open U -> measurable (D `&` U).
 Proof.
