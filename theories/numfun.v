@@ -403,27 +403,23 @@ Context {X : topologicalType} {R : realType}.
 
 Local Notation "3" := 3%:R : ring_scope.
 
-Hypothesis urysohn_ext : forall A B,
-  closed A -> closed B -> A `&` B = set0 ->
-  exists f : X -> R, [/\ continuous f,
-    f @` A `<=` [set 0], f @` B `<=` [set 1] & range f `<=` `[0, 1]].
+Hypothesis normalX : normal_space X.
 
 Lemma urysohn_ext_itv A B x y :
   closed A -> closed B -> A `&` B = set0 -> x < y ->
   exists f : X -> R, [/\ continuous f,
     f @` A `<=` [set x], f @` B `<=` [set y] & range f `<=` `[x, y]].
 Proof.
-move=> clA clB AB0 xy; have [f [ctsf f0 f1 f01]] := urysohn_ext clA clB AB0.
+move=> cA cB A0 xy; move/normal_separatorP : normalX => urysohn_ext.
+have /(@uniform_separatorP _ R)[f [cf f01 f0 f1]] := urysohn_ext _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
-- move=> t; apply: continuous_comp; first exact: ctsf.
+- move=> t; apply: continuous_comp; first exact: cf.
   apply: (@continuousD R [normedModType R of R^o]).
     apply: continuousM; last exact: cvg_cst.
     by apply: (@continuousB R [normedModType R of R^o]) => //; exact: cvg_cst.
   by apply: continuousM; [exact: cvg_id|exact: cvg_cst].
-- rewrite -image_comp; apply: (subset_trans (image_subset _  f0)).
-  by rewrite image_set1 line_path0.
-- rewrite -image_comp; apply: (subset_trans (image_subset _  f1)).
-  by rewrite image_set1 line_path1.
+- by rewrite -image_comp => z /= [? /f0 -> <-]; rewrite line_path0.
+- by rewrite -image_comp => z /= [? /f1 -> <-]; rewrite line_path1.
 - rewrite -image_comp; apply: (subset_trans (image_subset _ f01)).
   by rewrite range_line_path.
 Qed.
@@ -441,18 +437,18 @@ Local Lemma tietze_step' (f : X -> R) (M : R) :
      (forall x, `|g x| <= 1/3 * M)].
 Proof.
 move: M => _/posnumP[M] ctsf fA1.
-have [] := @urysohn_ext_itv (A `&` f @^-1` `]-oo, -(1/3) * M%:num]) 
+have [] := @urysohn_ext_itv (A `&` f @^-1` `]-oo, -(1/3) * M%:num])
     (A `&` f @^-1` `[1/3 * M%:num,+oo[) (-(1/3) * M%:num) (1/3 * M%:num).
 - by rewrite closed_setSI; exact: closed_comp.
 - by rewrite closed_setSI; apply: closed_comp => //; exact: interval_closed.
 - rewrite setIACA -preimage_setI eqEsubset; split => z // [_ []].
   rewrite !set_itvE/= => /[swap] /le_trans /[apply].
   by rewrite leNgt mulNr gtr_opp// mulr_gt0// divr_gt0.
-- by rewrite mulNr gtr_opp// mulr_gt0//.
+- by rewrite mulNr gtr_opp// mulr_gt0.
 move=> g [ctsg gL3 gR3 grng]; exists g; split => //; first last.
   by move=> x; rewrite ler_norml -mulNr; apply: grng; exists x.
 move=> x Ax; have := fA1 _ Ax; rewrite 2!ler_norml => /andP[Mfx fxM].
-have [xL|xL] := lerP (f x) (-(1/3) * M%:num).
+have [xL|xL] := leP (f x) (-(1/3) * M%:num).
   have: [set g x | x in A `&` f@^-1` `]-oo, -(1/3) * M%:num]] (g x) by exists x.
   move/gL3=> ->; rewrite !mulNr opprK; apply/andP; split.
     by rewrite -ler_subl_addr -opprD -2!mulrDl natr1 divrr ?unitfE// mul1r.
@@ -479,9 +475,9 @@ Let tietze_step (f : X -> R) M :
       & forall x, `|g x| <= 1/3 * M ]}.
 Proof.
 apply: cid.
-case : (pselect ({within A, continuous f})); last by move => ?; exists point.
-case : (pselect (0 < M)); last by move => ?; exists point.
-case : (pselect (forall x, A x -> `|f x| <= M)); last by move => ?; exists point.
+have [|?] := pselect ({within A, continuous f}); last by exists point.
+have [|?] := ltP 0 M; last by exists point.
+have [|?] := pselect (forall x, A x -> `|f x| <= M); last by exists point.
 by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
 Qed.
 
@@ -523,13 +519,12 @@ have cvgh' : cvg (h_ @ \oo).
   rewrite (le_lt_trans (ler_norm_sum _ _ _))//.
   rewrite (le_lt_trans (ler_sum _ (fun i _ => g_bd i t)))// -mulr_sumr.
   rewrite -(subnKC MN) geometric_partial_tail.
-  pose L :=
-    (1/3) * M%:num * ((2/3) ^+ m / (1 - (2/3))).
+  pose L := (1/3) * M%:num * ((2/3) ^+ m / (1 - (2/3))).
   apply: (@le_lt_trans _ _ L); first by rewrite ler_pmul2l // geometric_le_lim.
   rewrite /L onem_twothirds.
   rewrite [_ ^+ _ * _ ^-1]mulrC mulrA -[x in x < _]ger0_norm; last by [].
   near: m; near_simpl; move: eps epos.
-  by apply: (cvgr0_norm_lt (fun _ => _ : R^o)); apply: cvg_geometric.
+  by apply: (cvgr0_norm_lt (fun _ => _ : R^o)); exact: cvg_geometric.
 have cvgh : {uniform, h_ @ \oo --> lim (h_ @ \oo)}.
   by move=> ?; rewrite /= uniform_nbhsT; exact: cvgh'.
 exists (lim (h_ @ \oo)); split.

@@ -695,7 +695,7 @@ End bigmaxr.
 
 End ssreal_struct_contd.
 
-Require Import signed topology normedtype.
+Require Import signed topology.
 
 Section analysis_struct.
 
@@ -764,8 +764,7 @@ Lemma continuity_pt_dnbhs f x :
   continuity_pt f x <->
   forall eps, 0 < eps -> x^' (fun u => `|f x - f u| < eps).
 Proof.
-rewrite continuity_pt_cvg' (@cvgrPdist_lt _ [normedModType _ of R^o]).
-exact.
+by rewrite continuity_pt_cvg' -filter_fromP cvg_ballP -filter_fromP.
 Qed.
 
 Lemma nbhs_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
