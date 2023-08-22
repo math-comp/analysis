@@ -119,6 +119,7 @@ Require Import reals signed.
 (*                                     eventually true.                       *)
 (*                         clopen U == U is both open and closed              *)
 (*                   normal_space X == X is normal, sometimes called T4       *)
+(*                  regular_space X == X is regular, sometimes called T3      *)
 (*    separate_points_from_closed f == For a closed set U and point x outside *)
 (*                                     some member of the family f sends      *)
 (*                                     f_i(x) outside (closure (f_i @` U)).   *)
@@ -4209,6 +4210,15 @@ Arguments entourage_split {M} z {x y A}.
 #[global]
 Hint Extern 0 (nbhs _ (to_set _ _)) => exact: nbhs_entourage : core.
 
+Lemma ent_closure {M : uniformType} (x : M) E : entourage E ->
+  closure (to_set (split_ent E) x) `<=` to_set E x.
+Proof.
+pose E' := (split_ent E) `&` ((split_ent E)^-1)%classic.
+move=> entE z /(_ [set y | E' (z, y)])[].
+  by rewrite -nbhs_entourageE; exists E' => //; exact: filterI.
+by move=> y [/=] + [_]; exact: entourage_split.
+Qed.
+
 Lemma continuous_withinNx {U V : uniformType} (f : U -> V) x :
   {for x, continuous f} <-> f @ x^' --> f x.
 Proof.
@@ -7216,8 +7226,11 @@ exact: gauge.iter_split_ent.
 Qed.
 
 Definition normal_space (T : topologicalType) :=
-  forall (A : set T), closed A ->
+  forall A : set T, closed A ->
     set_nbhs A `<=` filter_from (set_nbhs A) closure.
+
+Definition regular_space (T : topologicalType) :=
+  forall a : T, nbhs a `<=` filter_from (nbhs a) closure.
 
 Section ArzelaAscoli.
 Context {X : topologicalType}.
