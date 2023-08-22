@@ -31,6 +31,9 @@
 - in `constructive_ereal.v`:
   + `lee_adde` renamed to `lee_addgt0Pr` and turned into a reflect
   + `lee_dadde` renamed to `lee_daddgt0Pr` and turned into a reflect
+- in `lebesgue_integral.v`
+  + rewrote `negligible_integral` to remove the positivity condition,
+    and added `negligible_integral_ge0`.
 
 ### Renamed
 
