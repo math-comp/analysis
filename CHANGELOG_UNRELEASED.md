@@ -25,6 +25,9 @@
 - in `normedtype.v`:
   + lemmas `open_itvoo_subset`, `open_itvcc_subset`
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_ball`
+
 ### Changed
 
 - `mnormalize` moved from `kernel.v` to `measure.v` and generalized
