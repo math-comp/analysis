@@ -5418,7 +5418,7 @@ Qed.
 
 Lemma lebesgue_differentiation_continuous (f : R -> rT^o) (A : set R) (x : R) :
   open A -> mu.-integrable A (EFin \o f) -> {for x, continuous f} -> A x ->
-  (fun r => 1 / (2 * r) * \int[mu]_(z in ball x r) f z) @ 0^'+ -->
+  (fun r => 1 / (r *+ 2) * \int[mu]_(z in ball x r) f z) @ 0^'+ -->
   (f x : R^o).
 Proof.
 have ball_itvr r : 0 < r -> `[x-r, x+r] `\` ball x r  = [set x+r;x-r].
@@ -5434,10 +5434,10 @@ have ball_itv2 r : 0 < r -> ball x r = `[x-r, x+r] `\` [set x+r; x-r].
   move=> r0; rewrite -ball_itvr // setDD setIC; apply/sym_equal/setIidPl.
   rewrite -(@ball_normE rT [normedModType rT of R^o]) /ball_ set_itvcc => ? /=.
   by rewrite ltr_distlC=> /andP [/ltW -> /ltW ->].
-have ritv r : 0 < r -> mu (`[x - r, x + r]%classic) = (2 * r)%:E.
+have ritv r : 0 < r -> mu (`[x - r, x + r]%classic) = (r *+ 2)%:E.
   move=> /gt0_cp rE; rewrite /= lebesgue_measure_itv hlength_itv /= lte_fin.
   rewrite ler_lt_add // ?rE // -EFinD; congr (_ _).
-  by rewrite opprB addrAC [_ - _]addrC addrA subrr add0r mulr2n mulrDl ?mul1r.
+  by rewrite opprB addrAC [_ - _]addrC addrA subrr add0r.
 move=> oA intf ctsfx Ax.
 apply: (@cvg_zero rT [normedModType R of rT^o]).
 apply/cvgrPdist_le => eps epos; apply: filter_app (@nbhs_right_gt rT 0).
@@ -5452,12 +5452,12 @@ have -> : \int[mu]_(z in ball x r) f z = \int[mu]_(z in `[x-r,x+r]) f z.
   rewrite ball_itv2 //; congr (fine _); rewrite -negligible_integral //.
   - by apply/measurableU; exact: measurable_set1.
   - exact: (integrableS mA).
-  - by (apply: eq_trans; first apply: measureU0) => //; 
+  - by (apply: eq_trans; first apply: measureU0) => //;
       exact: lebesgue_measure_set1.
-have r20 : 0 <= 1 / (2 * r) by rewrite ?divr_ge0 // ?mulr_ge0.
-have -> : f x = 1 / (2 * r) * \int[mu]_(z in `[x-r,x+r]) cst (f x) z.
-  rewrite /Rintegral /= integral_cst /= ?ritv //.
-  by rewrite mulrC mul1r -mulrA divff ?mulr1// mulf_neq0.
+have r20 : 0 <= 1 / (r *+ 2) by rewrite ?divr_ge0 // mulrn_wge0.
+have -> : f x = 1 / (r *+ 2) * \int[mu]_(z in `[x-r,x+r]) cst (f x) z.
+  rewrite /Rintegral /= integral_cst /= ?ritv // mulrC mul1r.
+  by rewrite -mulrA divff ?mulr1//; apply: lt0r_neq0; rewrite mulrn_wgt0.
 have intRf : mu.-integrable `[x - r, x + r] (EFin \o f).
   exact: (@integrableS _ _ _ mu _ _ _ _ _ xrA intf).
 rewrite /= -mulrBr -fineB; first last.
@@ -5474,15 +5474,15 @@ have int_fx : mu.-integrable `[x - r, x + r] (fun z => (f z - f x)%:E).
 rewrite normrM [ `|_/_| ]ger0_norm // -fine_abse //; first last.
   by rewrite integral_fune_fin_num.
 suff : (\int[mu]_(z in `[(x - r)%R, (x + r)%R]) `|(f z - f x)|%:E <=
-    (2 * r * eps)%:E)%E.
+    (r *+ 2 * eps)%:E)%E.
   move=> intfeps; apply: le_trans.
     apply: (ler_pmul r20 _ (le_refl _)); first exact: fine_ge0.
     apply: fine_le; last apply: le_abse_integral => //.
     - by rewrite abse_fin_num; exact: integral_fune_fin_num.
     - by apply: integral_fune_fin_num => //; exact: integrable_abse.
     - by case/integrableP: int_fx.
-  rewrite div1r ler_pdivr_mull -[_ * _]/(fine (_%:E)); last exact: mulr_gt0.
-  by rewrite fine_le // integral_fune_fin_num // integrable_abse.
+  rewrite div1r ler_pdivr_mull ?mulrn_wgt0 // -[_ * _]/(fine (_%:E)). 
+  rewrite fine_le // ?integral_fune_fin_num // ?integrable_abse //.
 apply: le_trans.
   apply: (@integral_le_bound _ _ _ _ _ (fun z => (f z - f x)%:E) eps%:E) => //.
   - by case/integrableP: int_fx.
