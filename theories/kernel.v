@@ -74,7 +74,7 @@ HB.mixin Record isKernel d d' (X : measurableType d) (Y : measurableType d')
 HB.structure Definition Kernel d d'
     (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k & isKernel _ _ X Y R k }.
-Notation "R .-ker X ~> Y" := (kernel X Y R).
+Notation "R .-ker X ~> Y" := (kernel X%type Y R).
 
 Arguments measurable_kernel {_ _ _ _ _} _.
 
@@ -177,7 +177,7 @@ HB.structure Definition SFiniteKernel d d'
     (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k of @Kernel _ _ _ _ R k &
          Kernel_isSFinite_subdef _ _ X Y R k }.
-Notation "R .-sfker X ~> Y" := (SFiniteKernel.type X Y R).
+Notation "R .-sfker X ~> Y" := (SFiniteKernel.type X%type Y R).
 Arguments sfinite_kernel_subdef {_ _ _ _ _} _.
 
 Lemma eq_sfkernel d d' (T : measurableType d) (T' : measurableType d')
@@ -200,7 +200,7 @@ HB.structure Definition FiniteKernel d d'
     (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k of @SFiniteKernel _ _ _ _ _ k &
          SFiniteKernel_isFinite _ _ X Y R k }.
-Notation "R .-fker X ~> Y" := (finite_kernel X Y R).
+Notation "R .-fker X ~> Y" := (finite_kernel X%type Y R).
 Arguments measure_uub {_ _ _ _ _} _.
 
 HB.factory Record Kernel_isFinite d d'
@@ -356,7 +356,7 @@ HB.structure Definition SubProbabilityKernel
     d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k of @FiniteKernel _ _ _ _ _ k &
          FiniteKernel_isSubProbability _ _ X Y R k }.
-Notation "R .-spker X ~> Y" := (sprobability_kernel X Y R).
+Notation "R .-spker X ~> Y" := (sprobability_kernel X%type Y R).
 
 HB.factory Record Kernel_isSubProbability d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
@@ -389,7 +389,7 @@ HB.structure Definition ProbabilityKernel d d'
     (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k of @SubProbabilityKernel _ _ _ _ _ k &
          SubProbability_isProbability _ _ X Y R k }.
-Notation "R .-pker X ~> Y" := (probability_kernel X Y R).
+Notation "R .-pker X ~> Y" := (probability_kernel X%type Y R).
 
 HB.factory Record Kernel_isProbability d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
@@ -507,7 +507,7 @@ Variable k : X * Y -> \bar R.
 
 Lemma measurable_fun_xsection_integral
     (l : X -> {measure set Y -> \bar R})
-    (k_ : ({nnsfun [the measurableType _ of (X * Y)%type] >-> R})^nat)
+    (k_ : ({nnsfun [the measurableType _ of X * Y] >-> R})^nat)
     (ndk_ : nondecreasing_seq (k_ : (X * Y -> R)^nat))
     (k_k : forall z, EFin \o (k_ ^~ z) --> k z) :
   (forall n r,
@@ -847,7 +847,7 @@ Section kcomp_is_measure.
 Context d1 d2 d3 (X : measurableType d1) (Y : measurableType d2)
  (Z : measurableType d3) (R : realType).
 Variable l : R.-ker X ~> Y.
-Variable k : R.-ker [the measurableType _ of (X * Y)%type] ~> Z.
+Variable k : R.-ker [the measurableType _ of X * Y] ~> Z.
 
 Local Notation "l \; k" := (kcomp l k).
 
@@ -885,7 +885,7 @@ Module KCOMP_FINITE_KERNEL.
 Section kcomp_finite_kernel_kernel.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType) (l : R.-fker X ~> Y)
-  (k : R.-ker [the measurableType _ of (X * Y)%type] ~> Z).
+  (k : R.-ker [the measurableType _ of X * Y] ~> Z).
 
 Lemma measurable_fun_kcomp_finite U :
   measurable U -> measurable_fun [set: X] ((l \; k) ^~ U).
@@ -903,7 +903,7 @@ Section kcomp_finite_kernel_finite.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
 Variable l : R.-fker X ~> Y.
-Variable k : R.-fker [the measurableType _ of (X * Y)%type] ~> Z.
+Variable k : R.-fker [the measurableType _ of X * Y] ~> Z.
 
 Let mkcomp_finite : measure_fam_uub (l \; k).
 Proof.
@@ -927,7 +927,7 @@ Section kcomp_sfinite_kernel.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
 Variable l : R.-sfker X ~> Y.
-Variable k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z.
+Variable k : R.-sfker [the measurableType _ of X * Y] ~> Z.
 
 Import KCOMP_FINITE_KERNEL.
 
@@ -973,7 +973,7 @@ Section kcomp_sfinite_kernel.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
 Variable l : R.-sfker X ~> Y.
-Variable k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z.
+Variable k : R.-sfker [the measurableType _ of X * Y] ~> Z.
 
 HB.instance Definition _ :=
   isKernel.Build _ _ X Z R (l \; k) (measurable_fun_mkcomp_sfinite l k).
@@ -1047,7 +1047,7 @@ Section integral_kcomp.
 Context d d2 d3 (X : measurableType d) (Y : measurableType d2)
   (Z : measurableType d3) (R : realType).
 Variables (l : R.-sfker X ~> Y)
-          (k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z).
+          (k : R.-sfker [the measurableType _ of X * Y] ~> Z).
 
 Let integral_kcomp_indic x E (mE : measurable E) :
   \int[(l \; k) x]_z (\1_E z)%:E = \int[l x]_y (\int[k (x, y)]_z (\1_E z)%:E).
