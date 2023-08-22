@@ -127,7 +127,7 @@ Reserved Notation "{ 'nnsfun' aT >-> T }"
   (at level 0, format "{ 'nnsfun'  aT  >->  T }").
 Reserved Notation "[ 'nnsfun' 'of' f ]"
   (at level 0, format "[ 'nnsfun'  'of'  f ]").
-Notation "{ 'nnsfun' aT >-> T }" := (@NonNegSimpleFun.type _ aT T) : form_scope.
+Notation "{ 'nnsfun' aT >-> T }" := (@NonNegSimpleFun.type _ aT%type T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section ring.
@@ -4756,7 +4756,7 @@ Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
 Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
 
 Lemma product_measure_unique
-    (m' : {measure set [the semiRingOfSetsType _ of (T1 * T2)%type] -> \bar R}) :
+    (m' : {measure set [the semiRingOfSetsType _ of T1 * T2] -> \bar R}) :
     (forall A1 A2, measurable A1 -> measurable A2 ->
       m' (A1 `*` A2) = m1 A1 * m2 A2) ->
   forall X : set (T1 * T2), measurable X -> (m1 \x m2) X = m' X.
