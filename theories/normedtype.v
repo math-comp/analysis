@@ -1951,6 +1951,33 @@ End at_left_right.
 Notation "x ^'-" := (at_left x) : classical_set_scope.
 Notation "x ^'+" := (at_right x) : classical_set_scope.
 
+Section open_itv_subset.
+Context {R : realType}.
+Variables (A : set R) (x : R).
+
+Lemma open_itvoo_subset :
+  open A -> A x -> \forall r \near 0^'+, `]x - r, x + r[ `<=` A.
+Proof.
+move=> /[apply] -[] _/posnumP[r] /subset_ball_prop_in_itv xrA.
+exists r%:num => //= k; rewrite /= distrC subr0 set_itvoo => /ltr_normlW kr k0.
+by apply/(subset_trans _ xrA)/subset_itvW;
+  [rewrite ler_sub//; exact: ltW | rewrite ler_add//; exact: ltW].
+Qed.
+
+Lemma open_itvcc_subset :
+  open A -> A x -> \forall r \near 0^'+, `[x - r, x + r] `<=` A.
+Proof.
+move=> /[apply] -[] _/posnumP[r].
+have -> : r%:num = 2 * (r%:num / 2) by rewrite mulrCA divff// mulr1.
+move/subset_ball_prop_in_itvcc => /= xrA; exists (r%:num / 2) => //= k.
+rewrite /= distrC subr0 set_itvcc => /ltr_normlW kr k0.
+move=> z /andP [xkz zxk]; apply: xrA => //; rewrite in_itv/=; apply/andP; split.
+  by rewrite (le_trans _ xkz)// ler_sub// ltW.
+by rewrite (le_trans zxk)// ler_add// ltW.
+Qed.
+
+End open_itv_subset.
+
 Section at_left_right_topologicalType.
 Variables (R : numFieldType) (V : topologicalType) (f : R -> V) (x : R).
 
