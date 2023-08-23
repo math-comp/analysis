@@ -767,6 +767,16 @@ have [->|] := eqVneq r 0; first by rewrite mul1r add0r.
 by rewrite implybF mul0r => _ /negPf ->.
 Qed.
 
+Lemma powRDm1 (x p : R) : 0 <= x -> 0 < p -> x * x `^ (p - 1) = x `^ p.
+Proof.
+move=> x0 p0.
+have [->|xneq0] := eqVneq x 0.
+  by rewrite mul0r powR0// gt_eqF.
+rewrite -{1}(@powRr1 x)// -powRD.
+  by rewrite addrCA subrr addr0.
+by rewrite xneq0 implybT.
+Qed.
+
 Lemma powRN x r : x `^ (- r) = (x `^ r)^-1.
 Proof.
 have [r0|r0] := eqVneq r 0%R; first by rewrite r0 oppr0 powRr0 invr1.
@@ -882,6 +892,9 @@ Proof.
 by move: x => [x'| |]//= x0; rewrite ?powRr1// (negbTE (oner_neq0 _)).
 Qed.
 
+Lemma poweRN (x : \bar R) r : x \is a fin_num -> x `^ (- r) = (((fine x) `^ r)^-1)%:E.
+Proof. case: x => // x xf. by rewrite poweR_EFin powRN. Qed.
+
 Lemma poweRNyr r : r != 0%R -> -oo `^ r = 0.
 Proof. by move=> r0 /=; rewrite (negbTE r0). Qed.
 
@@ -890,6 +903,16 @@ Proof. by case: x => [x| |] //=; case: ifP. Qed.
 
 Lemma eqy_poweR x r : (0 < r)%R -> x = +oo -> x `^ r = +oo.
 Proof. by move: x => [| |]//= r0 _; rewrite gt_eqF. Qed.
+
+Lemma poweR_lty (a : \bar R) (r : R) : a < +oo -> a `^ r < +oo.
+Proof.
+by move: a => [a| | _]//=; rewrite ?ltry//; case: ifPn => // _; rewrite ltry.
+Qed.
+
+Lemma lty_poweRy (a : \bar R) (r : R) : r != 0%R -> a `^ r < +oo -> a < +oo.
+Proof.
+by move=> r0; move: a => [a| | _]//=; rewrite ?ltry// (negbTE r0).
+Qed.
 
 Lemma poweR0r r : r != 0%R -> 0 `^ r = 0.
 Proof. by move=> r0; rewrite poweR_EFin powR0. Qed.
@@ -923,6 +946,17 @@ Qed.
 
 Lemma poweR_eq0_eq0 x r : 0 <= x -> x `^ r = 0 -> x = 0.
 Proof. by move=> + /eqP => /poweR_eq0-> /andP[/eqP]. Qed.
+
+Lemma gt0_ler_poweR (r : R) : (0 <= r)%R ->
+  {in `[0, +oo] &, {homo poweR ^~ r : x y / x <= y >-> x <= y}}.
+Proof.
+move=> r0 x y.
+case: x => //= [x /[1!in_itv]/= /andP[xint _]| _ _].
+- case: y => //= [y /[1!in_itv]/= /andP[yint _] xy| _ _].
+  - rewrite !lee_fin ge0_ler_powR//.
+  - by case: eqP => [->|]; rewrite ?powRr0 ?leey.
+- by rewrite leye_eq => /eqP ->.
+Qed.
 
 Lemma poweRM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
 Proof.

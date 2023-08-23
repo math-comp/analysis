@@ -111,6 +111,12 @@
 - in `lebesgue_integral.v`:
   + lemma `ge0_integral_count`
 
+- in `exp.v`:
+  + lemmas `powRDm1`, `poweRN`, `poweR_lty`, `lty_powerRy`, `gt0_ler_poweR`
+
+- in `hoelder.v`:
+  + lemmas `Lnorm_powR_K`, `oneminvp`, `minkowski`
+
 ### Changed
 
 - in `hoelder.v`:
