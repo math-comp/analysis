@@ -966,21 +966,6 @@ Section analysis_struct.
 Import Rdefinitions.
 Import Rstruct.
 
-Canonical R_pointedType := [pointedType of R for pointed_of_zmodule R_ringType].
-Canonical R_filteredType :=
-  [filteredType R of R for filtered_of_normedZmod R_normedZmodType].
-Canonical R_topologicalType : topologicalType := TopologicalType R
-  (topologyOfEntourageMixin
-    (uniformityOfBallMixin
-      (@nbhs_ball_normE _ R_normedZmodType)
-      (pseudoMetric_of_normedDomain R_normedZmodType))).
-Canonical R_uniformType : uniformType :=
-  UniformType R
-  (uniformityOfBallMixin (@nbhs_ball_normE _ R_normedZmodType)
-    (pseudoMetric_of_normedDomain R_normedZmodType)).
-Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
-  PseudoMetricType R (pseudoMetric_of_normedDomain R_normedZmodType).
-
 (* TODO: express using ball?*)
 Lemma continuity_pt_nbhs (f : R -> R) x :
   Ranalysis1.continuity_pt f x <->
@@ -1031,7 +1016,7 @@ Lemma continuity_pt_dnbhs f x :
   Ranalysis1.continuity_pt f x <->
   forall eps, 0 < eps -> x^' (fun u => `|f x - f u| < eps).
 Proof.
-rewrite continuity_pt_cvg' (@cvgrPdist_lt _ [normedModType _ of R^o]).
+rewrite continuity_pt_cvg' (@cvgrPdist_lt _ [the normedModType _ of R^o]).
 exact.
 Qed.
 
@@ -3469,7 +3454,7 @@ Let normal_spaceP : [<->
   (* 2 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
     exists U V, [/\ open U, open V, A `<=` U, B `<=` V & U `&` V = set0] ].
 Proof.
-pose R := Rstruct.real_realType.
+pose R := Rdefinitions.R.
 tfae; first by move=> ?; exact: normal_uniform_separator.
 - move=> + A B clA clB AB0 => /(_ _ _ clA clB AB0) /(@uniform_separatorP _ R).
   case=> f [cf f01 /imsub1P/subset_trans fa0 /imsub1P/subset_trans fb1].
@@ -3477,7 +3462,7 @@ tfae; first by move=> ?; exact: normal_uniform_separator.
   + by apply: open_comp; [|exact: interval_open].
   + by apply: open_comp; [|exact: interval_open].
   + by apply: fa0 => x/= ->; rewrite (@in_itv _ R)/=; apply/andP; split.
-  + apply: fb1 => x/= ->; rewrite (@in_itv _ R)/= ltr_pdivr_mulr// mul1r.
+  + apply: fb1 => x/= ->; rewrite (@in_itv _ R)/= ltr_pdivrMr// mul1r.
     by rewrite ltr1n.
   + rewrite -preimage_setI ?set_itvoo -subset0 => t [] /andP [_ +] /andP [+ _].
     by move=> /lt_trans /[apply]; rewrite ltxx.
