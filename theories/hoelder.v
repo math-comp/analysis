@@ -407,11 +407,6 @@ rewrite lte_add_pinfty//.
   by rewrite invr_neq0// gt_eqF// (le_lt_trans _ p1).
 Qed.
 
-Lemma oneminvp (p : R) : (p != 0 -> 1 - p^-1 = (p-1)/p)%R. (* conjugate lemma? *)
-Proof.
-by move=> p0; rewrite mulrDl divff// mulN1r.
-Qed.
-
 Lemma minkowski (f g : T -> R) (p : R) :
   measurable_fun setT f -> measurable_fun setT g ->
   (1 < p)%R ->
@@ -460,7 +455,7 @@ have : 'N_p[(f \+ g)%R] `^ p <=
       apply: (measurableT_comp (f:=@powR R^~ (p-1)%R)) => //.
       by apply: measurableT_comp => //; exact: measurable_funD.
   apply: (@le_trans _ _ (('N_p[f] + 'N_p[g]) *
-      (\int[mu]_x (`|f x + g x| `^ p)%:E) `^ (1 - p^-1))).
+      (\int[mu]_x (`|f x + g x| `^ p)%:E) `^ (`1- (p^-1)))).
     rewrite muleDl; last 2 first.
     - rewrite fin_numElt (@lt_le_trans _ _ 0) ?poweR_ge0// andTb poweR_lty//.
       by rewrite (@lty_poweRy _ _ (p^-1))// invr_neq0// eq_sym neq_lt (@lt_trans _ _ 1)%R.
@@ -476,23 +471,23 @@ have : 'N_p[(f \+ g)%R] `^ p <=
         apply: (@hoelder _ _ _ _ _ _ p (p / (p - 1))) => //.
         - by apply: (measurableT_comp (measurableT_comp _ _) (measurable_funD _ _)).
         - by rewrite divr_gt0// subr_gt0.
-        - by rewrite invf_div -(oneminvp pneq0) addrCA subrr addr0.
+        - by rewrite invf_div -(oneminv pneq0) addrCA subrr addr0.
       rewrite le_eqVlt; apply/orP; left; apply/eqP; apply: congr2=>[//|].
-      rewrite (oneminvp pneq0) -[in RHS]invf_div /Lnorm; apply: congr2 => [|//].
+      rewrite (oneminv pneq0) -[in RHS]invf_div /Lnorm; apply: congr2 => [|//].
       by apply: eq_integral => x _;
         rewrite norm_powR// normr_id -powRrM mulrC -mulrA (mulrC (_^-1)) divff ?mulr1.
     - rewrite [leLHS](_ : _ = 'N_1[(g \* (fun x => `|f x + g x| `^ (p - 1)))%R]); last first.
         under eq_integral=> x _ do rewrite -(normr_id (f x + g x))%R -norm_powR// -normrM.
         by rewrite -(Lnorm1).
       apply: le_trans.
-        apply: (@hoelder _ _ _ _ _ _ p ((1-p^-1)^-1)) => //.
+        apply: (@hoelder _ _ _ _ _ _ p ((`1-(p^-1))^-1)) => //.
         - by apply: measurableT_comp_powR; apply: measurableT_comp => //; apply: measurable_funD => //.
         - by rewrite invr_gt0 onem_gt0// invf_lt1.
-        - by rewrite invrK (addrC 1%R) addrA subrr add0r.
+        - by rewrite invrK /onem (addrC 1%R) addrA subrr add0r.
       rewrite le_eqVlt; apply/orP; left; apply/eqP.
       apply: congr1; rewrite /Lnorm invrK; apply: congr2=>[|//].
       by apply: eq_integral => x _;
-         rewrite ger0_norm ?powR_ge0// -powRrM oneminvp// invf_div mulrCA divff ?mulr1.
+         rewrite ger0_norm ?powR_ge0// -powRrM oneminv// invf_div mulrCA divff ?mulr1.
   rewrite le_eqVlt; apply/orP; left; apply/eqP; rewrite -muleA; congr (_ * _).
   under [X in X * _]eq_integral=> x _ do rewrite powRDm1 ?subr_gt0//.
   rewrite poweRD; last by rewrite poweRD_defE gt_eqF ?implyFb// subr_gt0 invf_lt1//.

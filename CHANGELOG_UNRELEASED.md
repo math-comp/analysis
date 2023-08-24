@@ -114,8 +114,11 @@
 - in `exp.v`:
   + lemmas `powRDm1`, `poweRN`, `poweR_lty`, `lty_powerRy`, `gt0_ler_poweR`
 
+- in `mathcomp_extra.v`:
+  + lemma `oneminv`
+
 - in `hoelder.v`:
-  + lemmas `Lnorm_powR_K`, `oneminvp`, `minkowski`
+  + lemmas `Lnorm_powR_K`, `minkowski`
 
 ### Changed
 
