@@ -1761,6 +1761,7 @@ apply: le_lt_trans.
 by rewrite [_ eps]splitr EFinD lte_add.
 Qed.
 
+
 End lusin.
 
 Section emeasurable_fun.
@@ -4888,71 +4889,104 @@ Lemma cvge_harmonic : (EFin \o (@harmonic rT)) @ \oo --> 0%E.
 Proof. by apply: cvg_EFin; [exact: nearW | exact: cvg_harmonic]. Qed.
 
 Local Open Scope ereal_scope.
-Local Lemma approximation_continuous_sfun (E : set R) (f : {sfun R >-> rT}):
-  measurable E -> mu E < +oo -> exists g_ : (rT -> rT)^nat,
+Local Lemma approximation_continuous_bounded (E : set R) (f : R -> R^o):
+  measurable E -> mu E < +oo -> mu.-integrable E (EFin \o f) ->
+  exists g_ : (rT -> rT)^nat,
     [/\ forall n, continuous (g_ n : R -> R),
         forall n, mu.-integrable E (EFin \o g_ n) &
         (fun n => \int[mu]_(z in E) `|(f z - g_ n z)%:E|) --> 0].
 Proof.
-move=> mE Efin; have : (exists M, 0 < M /\ forall x, `|f x| <= M)%R.
-  case: (@simple_bounded _ _ _ f) => M [_ /= bdM].
+move=> mE Efin intf.
+have mf : measurable_fun E f by case/integrableP:intf => /EFin_measurable_fun.
+suff apxf eps : exists (h : rT -> rT), (eps > 0)%R ->
+    [/\ continuous h,
+        mu.-integrable E (EFin \o h) &
+        \int[mu]_(z in E) `|(f z - h z)%:E| < eps%:E].
+  pose g_ (n : nat) := projT1 (cid (apxf (n.+1%:R^-1))); exists g_; split.
+  - by move=> n; have [] := projT2 (cid (apxf (n.+1%:R^-1))) => //.
+  - by move=> n; have [] := projT2 (cid (apxf (n.+1%:R^-1))) => //.
+  apply/cvg_ballP => eps epspos.
+  have /cvg_ballP/(_ eps epspos) [N _ Nball] := cvge_harmonic.
+  exists N => //; apply: (subset_trans Nball) => n.
+  rewrite /ball /= /ereal_ball contract0 ?mul0r ?sub0r ?normrN.
+  move/(lt_trans _); apply; rewrite ?ger0_norm; first last. 
+  - by rewrite -le_expandLR //; rewrite ?inE ?normr0 // expand0 integral_ge0.
+  - by rewrite -le_expandLR //; rewrite ?inE ?normr0 // expand0. 
+  have [] := projT2 (cid (apxf (n.+1%:R^-1))) => // ? ? ?.
+  by rewrite -lt_expandRL // ?contractK // inE contract_le1. 
+case epspos: (0 < eps)%R; last by exists point.
+move: eps epspos => _/posnumP[eps].
+have [g [gfe2 ?]] : exists (g : {sfun R >-> rT}), 
+    \int[mu]_(z in E) `|(f z - g z)%:E| < (eps%:num/2)%:E /\
+    mu.-integrable E (EFin \o g).
+  have [g_ [intG ?]] := approximation_sfun_integrable mE intf.
+  case/fine_fcvg/cvg_ballP/(_ (eps%:num/2)) => // n _ Nb; exists (g_ n).
+  have ? : \int[mu]_(z in E) `|(f z - g_ n z)%:E| \is a fin_num. 
+    apply: integral_fune_fin_num => //; apply: integrable_abse.
+    under eq_fun => ? do rewrite ?EFinB; apply: integrableB => //.
+    exact: intG.
+  split; last by exact: intG.
+  have /= := Nb _ (leqnn n); rewrite /ball /= sub0r normrN -fine_abse //.
+  rewrite -?lte_fin fineK ?abse_fin_num // => /(le_lt_trans _); apply.
+  by rewrite lee_abs.
+have mg : measurable_fun E g by exact: (measurable_funS measurableT).
+have [M [Mpos Mbd]] : (exists M, 0 < M /\ forall x, `|g x| <= M)%R.
+  case: (@simple_bounded _ _ _ g) => M [_ /= bdM].
   exists (`|M| + 1)%R; split; first exact: ltr_wpDl.
   by move=> x; apply: bdM => //; apply: ltr_pwDr; rewrite // ler_norm.
-have mf : measurable_fun E f.
-  apply: (measurable_funS measurableT) => // ? /= ?; rewrite setTI.
-case=> M [Mpos Mbd].
-have apxf eps : exists (g : rT -> rT), (eps > 0)%R -> 
-    [/\ continuous g,
-        mu.-integrable E (EFin \o g) &
-        \int[mu]_(z in E) `|(f z - g z)%:E| < eps%:E].
-  case epspos: (0 < eps)%R; last by exists point.
-  move: eps epspos => _/posnumP[eps].
-  have [] // := @measurable_almost_continuous rT E mE _ f (eps%:num/(M *+ 2)).
-    by apply: divr_gt0 => //; apply: mulrn_wgt0.
-  move=> A [cptA AE /= muAE ctsAF].
-  have [] := continuous_bounded_extension _ _ Mpos ctsAF.
-  - exact: pseudometric_normal.
-  - by apply: compact_closed => //; exact: Rhausdorff .
-  - by move=> ? ?; exact: Mbd.
-  have mA : measurable A by exact: compact_measurable.
-  move=> g [fg ctsg gbdM]; have mg : measurable_fun E g.
-    apply: subspace_continuous_measurable_fun => //.
-    exact: continuous_subspaceT.
-  have intg : mu.-integrable E (EFin \o g).
-    apply: measurable_bounded_integrable => //.
-    exists M; split; rewrite ?num_real // => ? sx ? ? /=. 
-    by apply: ltW; apply: (le_lt_trans _ sx); apply: gbdM.
-  exists g; split => //; rewrite -(setDKU AE) integral_setU => //; first last.
-  - by rewrite /disj_set setDKI.
-  - rewrite setDKU //; (do 2 (apply: measurableT_comp => //)).
-    exact: measurable_funB.
-  - exact: measurableD.
-  rewrite (@ae_eq_integral _ _ _ mu A (fun=> 0)) //; first last.
-  - by apply: aeW => z Az; rewrite (fg z) ?inE // subrr normr0.
+have [] // := @measurable_almost_continuous rT E mE _ g (eps%:num/2/(M *+ 2)).
+  by apply: divr_gt0 => //; apply: mulrn_wgt0.
+move=> A [cptA AE /= muAE ctsAF].
+have [] := continuous_bounded_extension _ _ Mpos ctsAF.
+- exact: pseudometric_normal.
+- by apply: compact_closed => //; exact: Rhausdorff .
+- by move=> ? ?; exact: Mbd.
+have mA : measurable A by exact: compact_measurable.
+move=> h [gh ctsh hbdM]; have mh : measurable_fun E h.
+  apply: subspace_continuous_measurable_fun => //.
+  exact: continuous_subspaceT.
+have intg : mu.-integrable E (EFin \o h).
+  apply: measurable_bounded_integrable => //.
+  exists M; split; rewrite ?num_real // => ? sx ? ? /=.
+  by apply: ltW; apply: (le_lt_trans _ sx); apply: hbdM.
+exists h; split => //; rewrite [eps%:num]splitr; apply: le_lt_trans.
+pose fgh x := (`|(f x - g x)%:E| + `|(g x - h x)%:E|).
+  apply (@ge0_le_integral _ _ _ mu _ mE _ fgh) => //.
   - apply: (measurable_funS mE) => //; (do 2 (apply: measurableT_comp => //)).
     exact: measurable_funB.
-  rewrite integral0 adde0; under eq_fun => ? do rewrite -[EFin _]gee0_abs //.
-  apply: le_lt_trans; first apply: (@integral_le_bound _ _ _ _ _ _ (M *+ 2)%:E).
-  - exact: measurableD.
-  - apply: (measurable_funS mE) => //; (do 2 (apply: measurableT_comp => //)).
-    exact: measurable_funB.
-  - by rewrite lee_fin mulrn_wge0 //; apply: ltW.
-  - apply: aeW => z [Ez _]; rewrite /= normr_id lee_fin mulr2n.
-    apply: le_trans; first exact: ler_normB.
-    by apply: lerD; [exact: Mbd | exact: gbdM].
-  by rewrite -lte_pdivl_mull ? mulrn_wgt0 // muleC -EFinM.
-pose g_ (n : nat) := projT1 (cid (apxf (n.+1%:R^-1))); exists g_; split.
-- by move=> n; have [] := projT2 (cid (apxf (n.+1%:R^-1))) => //.
-- by move=> n; have [] := projT2 (cid (apxf (n.+1%:R^-1))) => //.
-apply/cvg_ballP => eps epspos.
-have /cvg_ballP/(_ eps epspos) [N _ Nball] := cvge_harmonic.
-exists N => //; apply: (subset_trans Nball) => n.
-rewrite /ball /= /ereal_ball contract0 ?mul0r ?sub0r ?normrN.
-move/(lt_trans _); apply; rewrite ?ger0_norm; first last. 
-- by rewrite -le_expandLR //; rewrite ?inE ?normr0 // expand0 integral_ge0.
-- by rewrite -le_expandLR //; rewrite ?inE ?normr0 // expand0. 
-have [] := projT2 (cid (apxf (n.+1%:R^-1))) => // ? ? ?.
-by rewrite -lt_expandRL // ?contractK // inE contract_le1. 
+  - by move=> z _; rewrite /fgh.
+  - rewrite /fgh; apply: measurableT_comp => //. 
+    by apply: measurable_funD => //;
+      apply: (measurable_funS mE) => //; (apply: measurableT_comp => //);
+      exact: measurable_funB.
+  - move=> x _; rewrite (_ : f x - h x = (f x - g x) + (g x - h x))%R. 
+      rewrite lee_fin ler_normD //.
+    by rewrite -addrA [(- _ + _)%R]addrA [(-_ + _)%R]addrC subrr sub0r.
+rewrite integralD //; first last.
+- apply: integrable_abse.
+  by under eq_fun => ? do rewrite ?EFinB; apply: integrableB => //.
+- apply: integrable_abse.
+  by under eq_fun => ? do rewrite ?EFinB; apply: integrableB => //.
+rewrite EFinD; apply: lte_add => //.
+rewrite -(setDKU AE) integral_setU => //; first last.
+- by rewrite /disj_set setDKI.
+- rewrite setDKU //; (do 2 (apply: measurableT_comp => //)).
+  exact: measurable_funB.
+- exact: measurableD.
+rewrite (@ae_eq_integral _ _ _ mu A (fun=> 0)) //; first last.
+- by apply: aeW => z Az; rewrite (gh z) ?inE // subrr abse0.
+- apply: (measurable_funS mE) => //; (do 2 (apply: measurableT_comp => //)).
+  exact: measurable_funB.
+rewrite integral0 adde0. 
+apply: le_lt_trans; first apply: (@integral_le_bound _ _ _ _ _ _ (M *+ 2)%:E).
+- exact: measurableD.
+- apply: (measurable_funS mE) => //; (apply: measurableT_comp => //).
+  exact: measurable_funB.
+- by rewrite lee_fin mulrn_wge0 //; apply: ltW.
+- apply: aeW => z [Ez _]; rewrite /= lee_fin mulr2n.
+  apply: le_trans; first exact: ler_normB.
+  by apply: lerD; [exact: Mbd | exact: hbdM].
+by rewrite -lte_pdivl_mull ? mulrn_wgt0 // muleC -EFinM.
 Qed.
 Section continuous_density_L1.
 
