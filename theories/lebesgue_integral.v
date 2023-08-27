@@ -400,6 +400,27 @@ rewrite /preimage /= => [fxfy gzf].
 by rewrite gzf -fxfy addrC subrK.
 Qed.
 
+Section simple_bounded.
+Context d (T : measurableType d) (R : realType).
+
+Lemma simple_bounded {f : {sfun T >-> R}} : 
+  bounded_fun (f : T -> [normedModType R of R^o]).
+Proof.
+case/finite_seqP:(@fimfunP _ _ f) => r fr.
+exists (fine (\big[maxe/-oo%E]_(i <- r) (`|i|)%:E)). 
+split; rewrite ?num_real // => x mx z _; apply: ltW; apply: (le_lt_trans _ mx).
+rewrite (_ : normr (f z) = fine (EFin (normr (f z)))) // fine_le //; first last.
+have fzr : (f z \in r) by (have : (range f) (f z) by exists z); rewrite fr.
+  by rewrite (big_rem _ fzr) /= le_maxr; apply/orP; left.
+have fpr : (exists p, p \in r). 
+  by exists (f point); (have : (range f) (f point) by exists point); rewrite fr.
+elim: r fpr {fr mx}; first by case => ?.
+move=> a l IH _; case: (pselect (exists p, p \in l)).
+  by move/IH => bfin; rewrite big_cons /maxe; case: (_ < _)%E; rewrite ?bfin.
+move=> npl; suff : l == [::] by move/eqP ->; rewrite big_seq1.
+rewrite -set_seq_eq0; apply/eqP; rewrite -subset0; move/forallNP: npl; apply.
+Qed.
+
 Section nnsfun_functions.
 Context d (T : measurableType d) (R : realType).
 
@@ -4819,8 +4840,32 @@ rewrite !ger0_norm ?fine_ge0 ?integral_ge0 ?fine_le//.
   + by apply: emeasurable_funD; [move: mfp | move: mfn]; case/integrableP.
   + by move=> ? ?; rewrite fpn; exact: lee_abs_sub.
 Unshelve. all: by end_near. Qed.
-
 End simple_density_L1.
+
+Section continuous_density_L1.
+Local Open Scope ereal_scope.
+Context (rT : realType).
+Let mu := [the measure _ _ of @lebesgue_measure rT].
+Let R  := [the measurableType _ of measurableTypeR rT].
+Lemma approximation_continuous_sfun (E : set R) (f : {sfun R >-> rT}):
+  measurable E -> mu E < +oo -> exists g_ : (rT -> rT)^nat,
+    [/\ forall n, continuous (g_ n : R -> R),
+        forall n, mu.-integrable E (EFin \o g_ n) &
+        (fun n => \int[mu]_(z in E) `|(f z - g_ n z)%:E|) --> 0].
+Proof.
+move=> mE Efin.
+have : (exists M, 0 < M /\ forall x, `|f x| <= M)%R.
+  
+ 
+  Search FImFun.type.
+have : forall n, exists (g : rT -> rT), 
+    continuous g /\ \int[mu]_(z in E) `|(f z - g z)%:E| < ((1/n)%R%:E).
+  move=> n.
+Search (exists (_ : (_  -> _)), _) "choice".
+
+
+
+
 
 Section fubini_functions.
 Local Open Scope ereal_scope.
