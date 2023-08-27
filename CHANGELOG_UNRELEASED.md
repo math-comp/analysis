@@ -42,7 +42,8 @@
 
 - in file `lebesgue_integral.v`,
   + new lemmas `simple_bounded`, `measurable_bounded_integrable`, 
-    `compact_finite_measure`, and `cvge_harmonic`.
+    `compact_finite_measure`, `approximation_continuous_integrable`, and
+    `cvge_harmonic`.
 
 ### Changed
 

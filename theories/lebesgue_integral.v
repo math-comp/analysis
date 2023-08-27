@@ -4889,7 +4889,7 @@ Lemma cvge_harmonic : (EFin \o (@harmonic rT)) @ \oo --> 0%E.
 Proof. by apply: cvg_EFin; [exact: nearW | exact: cvg_harmonic]. Qed.
 
 Local Open Scope ereal_scope.
-Local Lemma approximation_continuous_bounded (E : set R) (f : R -> R^o):
+Local Lemma approximation_continuous_integrable (E : set R) (f : R -> R^o):
   measurable E -> mu E < +oo -> mu.-integrable E (EFin \o f) ->
   exists g_ : (rT -> rT)^nat,
     [/\ forall n, continuous (g_ n : R -> R),
