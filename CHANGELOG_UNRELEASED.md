@@ -40,6 +40,10 @@
   + new definition `regular_space`.
   + new lemma `ent_closure`.
 
+- in file `lebesgue_integral.v`,
+  + new lemmas `simple_bounded`, `measurable_bounded_integrable`, 
+    `compact_finite_measure`, and `cvge_harmonic`.
+
 ### Changed
 
 - `mnormalize` moved from `kernel.v` to `measure.v` and generalized
