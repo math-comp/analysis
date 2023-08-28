@@ -42,8 +42,10 @@
 
 - in file `lebesgue_integral.v`,
   + new lemmas `simple_bounded`, `measurable_bounded_integrable`, 
-    `compact_finite_measure`, `approximation_continuous_integrable`, and
-    `cvge_harmonic`.
+    `compact_finite_measure`, `approximation_continuous_integrable`
+
+- in `sequences.v`:
+  + lemma `cvge_harmonic`
 
 - in `mathcomp_extra.v`:
   + lemmas `le_bigmax_seq`, `bigmax_sup_seq`
@@ -64,8 +66,11 @@
 - removed dependency in `Rstruct.v` on `normedtype.v`:
 - added dependency in `normedtype.v` on `Rstruct.v`:
 
-- in `cardinality.f`:
+- in `cardinality.v`:
   + implicits of `fimfunP`
+
+- in `lebesgue_integral.v`:
+  + implicits of `integral_le_bound`
 
 ### Renamed
 
