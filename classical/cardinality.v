@@ -1235,13 +1235,15 @@ HB.mixin Record FiniteImage aT rT (f : aT -> rT) := {
 }.
 HB.structure Definition FImFun aT rT := {f of @FiniteImage aT rT f}.
 
+Arguments fimfunP {aT rT} _.
+#[global] Hint Resolve fimfunP : core.
+
 Reserved Notation "{ 'fimfun' aT >-> T }"
   (at level 0, format "{ 'fimfun'  aT  >->  T }").
 Reserved Notation "[ 'fimfun' 'of' f ]"
   (at level 0, format "[ 'fimfun'  'of'  f ]").
 Notation "{ 'fimfun' aT >-> T }" := (@FImFun.type aT T) : form_scope.
 Notation "[ 'fimfun' 'of' f ]" := [the {fimfun _ >-> _} of f] : form_scope.
-#[global] Hint Resolve fimfunP : core.
 
 Lemma fimfun_inP {aT rT} (f : {fimfun aT >-> rT}) (D : set aT) :
   finite_set (f @` D).

@@ -45,6 +45,12 @@
     `compact_finite_measure`, `approximation_continuous_integrable`, and
     `cvge_harmonic`.
 
+- in `mathcomp_extra.v`:
+  + lemmas `le_bigmax_seq`, `bigmax_sup_seq`
+
+- in `constructive_ereal.v`:
+  + lemma `bigmaxe_fin_num`
+
 ### Changed
 
 - `mnormalize` moved from `kernel.v` to `measure.v` and generalized
@@ -57,6 +63,9 @@
 
 - removed dependency in `Rstruct.v` on `normedtype.v`:
 - added dependency in `normedtype.v` on `Rstruct.v`:
+
+- in `cardinality.f`:
+  + implicits of `fimfunP`
 
 ### Renamed
 
