@@ -1003,7 +1003,7 @@ HB.instance Definition _ n := @isMeasurableFun.Build _ _ _ _ (mk_2 n).
 
 Let fk_2 n : finite_set (range (k_2 n)).
 Proof.
-have := @fimfunP _ _ (k_ n).
+have := fimfunP (k_ n).
 suff : range (k_ n) = range (k_2 n) by move=> <-.
 by apply/seteqP; split => r [y ?] <-; [exists (point, y)|exists y.2].
 Qed.
