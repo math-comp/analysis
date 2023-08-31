@@ -771,6 +771,9 @@ rewrite (le_trans (ltW (archi_boundP _)))// ler_nat -add1n -leq_subLR.
 by near: i; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
 
+Lemma cvge_harmonic {R : archiFieldType} : (EFin \o @harmonic R) @ \oo --> 0%E.
+Proof. by apply: cvg_EFin; [exact: nearW | exact: cvg_harmonic]. Qed.
+
 Lemma dvg_harmonic (R : numFieldType) : ~ cvg (series (@harmonic R)).
 Proof.
 have ge_half n : (0 < n)%N -> 2^-1 <= \sum_(n <= i < n.*2) harmonic i.

@@ -1416,3 +1416,25 @@ Qed.
 End max_min.
 
 Notation trivial := (ltac:(done)).
+
+Section bigmax_seq.
+Context d {T : orderType d} {x : T} {I : eqType}.
+Variables (r : seq I) (i0 : I) (P : pred I).
+
+(* NB: as of [2023-08-28], bigop.leq_bigmax_seq already exists for nat *)
+Lemma le_bigmax_seq F :
+  i0 \in r -> P i0 -> (F i0 <= \big[Order.max/x]_(i <- r | P i) F i)%O.
+Proof.
+move=> + Pi0; elim: r => // h t ih; rewrite inE big_cons.
+move=> /predU1P[<-|i0t]; first by rewrite Pi0 le_maxr// lexx.
+by case: ifPn => Ph; [rewrite le_maxr ih// orbT|rewrite ih].
+Qed.
+
+(* NB: as of [2023-08-28], bigop.bigmax_sup_seq already exists for nat *)
+Lemma bigmax_sup_seq (m : T) (F : I -> T) :
+  i0 \in r -> P i0 -> (m <= F i0)%O ->
+  (m <= \big[Order.max/x]_(i <- r | P i) F i)%O.
+Proof. by move=> i0r Pi0 ?; apply: le_trans (le_bigmax_seq _ _ _). Qed.
+
+End bigmax_seq.
+Arguments le_bigmax_seq {d T} x {I r} i0 P.
