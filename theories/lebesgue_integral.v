@@ -4877,7 +4877,7 @@ move=> cptA ctsfA; apply: measurable_bounded_integrable.
   by exists M; split; rewrite ?num_real // => ? ? ? ?; exact: mrt.
 Qed.
 
-Local Lemma approximation_continuous_integrable (E : set R) (f : R -> R^o):
+Lemma approximation_continuous_integrable (E : set R) (f : R -> R^o):
   measurable E -> mu E < +oo -> mu.-integrable E (EFin \o f) ->
   exists g_ : (rT -> rT)^nat,
     [/\ forall n, continuous (g_ n),
