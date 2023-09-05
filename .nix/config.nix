@@ -43,13 +43,15 @@
   bundles."8.16".coqPackages.coq.override.version = "8.16";
   bundles."8.17".push-branches = [ "master" "hierarchy-builder" ];
   bundles."8.17".coqPackages.coq.override.version = "8.17";
+  bundles."8.18".push-branches = [ "master" "hierarchy-builder" ];
+  bundles."8.18".coqPackages.coq.override.version = "8.18";
 
   bundles."master".push-branches = [ "master" "hierarchy-builder" ];
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
-    hierarchy-builder.override.version = "coq-master";
-    mathcomp.override.version = "master";
+    hierarchy-builder.override.version = "master";
+    mathcomp.override.version = "1.17.0";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "1.5.2";
   };
