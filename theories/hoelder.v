@@ -365,17 +365,17 @@ Proof. exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)). Qed.
 
 Let minkowski_lty (f g : T -> R) (p : R) :
   measurable_fun setT f -> measurable_fun setT g ->
-  (1 < p)%R -> 'N_p[f] < +oo -> 'N_p[g] < +oo -> 'N_p[(f \+ g)%R] < +oo.
+  (1 < p)%R -> 'N_p%:E[f] < +oo -> 'N_p%:E[g] < +oo -> 'N_p%:E[(f \+ g)%R] < +oo.
 Proof.
 move=> mf mg p1 Nfoo Ngoo.
 have h x : (`| f x + g x | `^ p <= 2 `^ (p - 1) * (`| f x | `^ p  + `| g x | `^ p))%R.
-  have := minkowski_half (fun x => 2 * f x)%R (fun x => 2 * g x)%R x p1.
+  have := minkowski_half (fun x => 2 * f x)%R (fun x => 2 * g x)%R x (ltW p1).
   rewrite mulrA mulVf// mul1r mulrA mulVf// mul1r !normrM (@ger0_norm _ 2)//.
   move=> /le_trans; apply.
   rewrite !powRM// !mulrA -powR_inv1//.
   rewrite -powRD; last by apply /implyP => _.
   by rewrite (addrC _ p) -mulrDr.
-rewrite /Lnorm poweR_lty//.
+rewrite unlock gt_eqF ?(lt_trans _ p1)// poweR_lty//.
 apply: (@le_lt_trans _ _ (\int[mu]_x (2 `^ (p - 1) * (`|f x| `^ p + `|g x| `^ p)%R)%:E)).
   apply: ge0_le_integral => //=.
   - by move=> t _; rewrite lee_fin// powR_ge0.
@@ -401,23 +401,23 @@ rewrite ge0_integralD//; last 4 first.
   - by apply/EFin_measurable_fun;
       apply: measurableT_comp_powR => //; apply: measurableT_comp.
 rewrite lte_add_pinfty//.
-- apply: lty_poweRy Nfoo.
-  by rewrite invr_neq0// gt_eqF// (le_lt_trans _ p1).
-- apply: lty_poweRy Ngoo.
-  by rewrite invr_neq0// gt_eqF// (le_lt_trans _ p1).
+- rewrite -Lnorm_powR_K ?(gt_eqF (lt_trans _ p1))//.
+  exact: poweR_lty.
+- rewrite -Lnorm_powR_K ?(gt_eqF (lt_trans _ p1))//.
+  exact: poweR_lty.
 Qed.
 
 Lemma minkowski (f g : T -> R) (p : R) :
   measurable_fun setT f -> measurable_fun setT g ->
   (1 < p)%R ->
-  'N_p[(f \+ g)%R] <= 'N_p[f] + 'N_p[g].
+  'N_p%:E[(f \+ g)%R] <= 'N_p%:E[f] + 'N_p%:E[g].
 Proof.
 move=> mf mg p1.
-have [->|Nfoo] := eqVneq 'N_p[f] +oo.
+have [->|Nfoo] := eqVneq 'N_p%:E[f] +oo.
   by rewrite addye ?leey// -ltNye (lt_le_trans _ (Lnorm_ge0 _ _ _)).
-have [->|Ngoo] := eqVneq 'N_p[g] +oo.
+have [->|Ngoo] := eqVneq 'N_p%:E[g] +oo.
   by rewrite addey ?leey// -ltNye (lt_le_trans _ (Lnorm_ge0 _ _ _)).
-have Nfgoo : 'N_p[(f \+ g)%R] < +oo.
+have Nfgoo : 'N_p%:E[(f \+ g)%R] < +oo.
   by apply: minkowski_lty => //; rewrite ltey; [exact: Nfoo|exact: Ngoo].
 have pm10 : (p - 1 != 0)%R.
   by rewrite gt_eqF// subr_gt0.
@@ -425,8 +425,8 @@ have p0 : (0 < p)%R.
   by apply: (lt_trans _ p1).
 have pneq0 : (p != 0)%R.
   by rewrite neq_lt p0 orbT.
-have : 'N_p[(f \+ g)%R] `^ p <=
-    ('N_p[f] + 'N_p[g]) * 'N_p[(f \+ g)%R] `^ p * ((fine 'N_p[(f \+ g)%R])^-1)%:E.
+have : 'N_p%:E[(f \+ g)%R] `^ p <=
+    ('N_p%:E[f] + 'N_p%:E[g]) * 'N_p%:E[(f \+ g)%R] `^ p * ((fine 'N_p%:E[(f \+ g)%R])^-1)%:E.
   rewrite Lnorm_powR_K//.
   under eq_integral => x _ do rewrite -powRDm1//.
   apply: (@le_trans _ _ (\int[mu]_x ((`|f x| + `|g x|) * `|f x + g x| `^ (p - 1))%:E)).
@@ -454,15 +454,16 @@ have : 'N_p[(f \+ g)%R] `^ p <=
         exact: measurableT_comp.
       apply: (measurableT_comp (f:=@powR R^~ (p-1)%R)) => //.
       by apply: measurableT_comp => //; exact: measurable_funD.
-  apply: (@le_trans _ _ (('N_p[f] + 'N_p[g]) *
+  apply: (@le_trans _ _ (('N_p%:E[f] + 'N_p%:E[g]) *
       (\int[mu]_x (`|f x + g x| `^ p)%:E) `^ (`1- (p^-1)))).
     rewrite muleDl; last 2 first.
     - rewrite fin_numElt (@lt_le_trans _ _ 0) ?poweR_ge0// andTb poweR_lty//.
+      rewrite /= gt_eqF// in Nfgoo.
       by rewrite (@lty_poweRy _ _ (p^-1))// invr_neq0// eq_sym neq_lt (@lt_trans _ _ 1)%R.
-    - by rewrite ge0_adde_def//= inE Lnorm_ge0.
+    - by rewrite ge0_adde_def// inE Lnorm_ge0.
     rewrite lee_add//.
     - apply: (@le_trans _ _ ('N_1[(f \* (@powR R ^~ (p - 1) \o normr \o (f \+ g)))%R])).
-        rewrite /Lnorm invr1 [leRHS]poweRe1/=; last first.
+        rewrite /Lnorm gt_eqF// invr1 [leRHS]poweRe1/=; last first.
           by apply: integral_ge0 => x _; rewrite lee_fin powRr1.
         rewrite le_eqVlt; apply/orP; left; apply/eqP.
         apply: eq_integral => x _; congr EFin.
@@ -473,7 +474,9 @@ have : 'N_p[(f \+ g)%R] `^ p <=
         - by rewrite divr_gt0// subr_gt0.
         - by rewrite invf_div -(oneminv pneq0) addrCA subrr addr0.
       rewrite le_eqVlt; apply/orP; left; apply/eqP; apply: congr2=>[//|].
-      rewrite (oneminv pneq0) -[in RHS]invf_div /Lnorm; apply: congr2 => [|//].
+      rewrite (oneminv pneq0) -[in RHS]invf_div /Lnorm gt_eqF; last first.
+        rewrite divr_gt0// subr_gt0//.
+       apply: congr2 => [|//].
       by apply: eq_integral => x _;
         rewrite norm_powR// normr_id -powRrM mulrC -mulrA (mulrC (_^-1)) divff ?mulr1.
     - rewrite [leLHS](_ : _ = 'N_1[(g \* (fun x => `|f x + g x| `^ (p - 1)))%R]); last first.
@@ -485,26 +488,29 @@ have : 'N_p[(f \+ g)%R] `^ p <=
         - by rewrite invr_gt0 onem_gt0// invf_lt1.
         - by rewrite invrK /onem (addrC 1%R) addrA subrr add0r.
       rewrite le_eqVlt; apply/orP; left; apply/eqP.
-      apply: congr1; rewrite /Lnorm invrK; apply: congr2=>[|//].
+      apply: congr1; rewrite /Lnorm gt_eqF; last first.
+        rewrite invr_gt0 onem_gt0// invf_lt1//.
+      rewrite invrK; apply: congr2=>[|//].
       by apply: eq_integral => x _;
          rewrite ger0_norm ?powR_ge0// -powRrM oneminv// invf_div mulrCA divff ?mulr1.
   rewrite le_eqVlt; apply/orP; left; apply/eqP; rewrite -muleA; congr (_ * _).
   under [X in X * _]eq_integral=> x _ do rewrite powRDm1 ?subr_gt0//.
   rewrite poweRD; last by rewrite poweRD_defE gt_eqF ?implyFb// subr_gt0 invf_lt1//.
   rewrite poweRe1; last by apply: integral_ge0 => x _; rewrite lee_fin powR_ge0.
-  congr (_ * _); rewrite poweRN /Lnorm ?fine_poweR// fin_numElt (@lt_le_trans _ _ 0)// ?andTb.
-    by rewrite (lty_poweRy (invr_neq0 pneq0) Nfgoo)//.
+  congr (_ * _); rewrite poweRN; first
+      by rewrite /Lnorm gt_eqF// ?fine_poweR.
+  rewrite /= gt_eqF// in Nfgoo.
+  rewrite ge0_fin_numE ?(lty_poweRy (invr_neq0 _) Nfgoo)//.
   by apply: integral_ge0=> x _; rewrite lee_fin powR_ge0.
-have [-> _|Nfg0] := (eqVneq 'N_p[(f \+ g)%R] 0).
+have [-> _|Nfg0] := (eqVneq 'N_p%:E[(f \+ g)%R] 0).
   by rewrite adde_ge0 ?Lnorm_ge0.
 rewrite lee_pdivl_mulr ?fine_gt0// ?Nfgoo ?andbT; last by
   rewrite lt_neqAle Lnorm_ge0 andbT eq_sym.
-rewrite -{1}(@fineK _ ('N_p[(f \+ g)%R] `^ p)); last by
+rewrite -{1}(@fineK _ ('N_p%:E[(f \+ g)%R] `^ p)); last by
   rewrite fin_numElt (@lt_le_trans _ _ 0 -oo _ _ (poweR_ge0 _ _))// andTb poweR_lty.
 rewrite -(invrK (fine _)) lee_pdivr_mull; last by
-  rewrite invr_gt0 fine_gt0// poweR_lty// andbT lt_neqAle eq_sym poweR_eq0 poweR_ge0// andbT;
-  rewrite neq_lt (lt_trans _ p1)// orbT andbT.
-rewrite muleC -muleA -{1}(@fineK _ ('N_p[(f \+ g)%R] `^ p)); last by
+  rewrite invr_gt0 fine_gt0// poweR_lty// lt_neqAle eq_sym poweR_eq0 ?Lnorm_ge0// pneq0 poweR_ge0 !andbT Nfg0.
+rewrite muleC -muleA -{1}(@fineK _ ('N_p%:E[(f \+ g)%R] `^ p)); last by
   rewrite fin_numElt (@lt_le_trans _ _ 0 -oo _ _ (poweR_ge0 _ _))// andTb poweR_lty.
 rewrite -EFinM divff ?mule1; last by
   rewrite neq_lt fine_gt0 ?orbT// lt_neqAle poweR_ge0 andbT eq_sym poweR_eq0 ?Lnorm_ge0// neq_lt (lt_trans _ p1)// orbT andbT Nfg0 andTb poweR_lty.
