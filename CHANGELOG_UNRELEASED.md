@@ -63,6 +63,12 @@
 
 - in `constructive_ereal.v`:
   + lemma `bigmaxe_fin_num`
+- in `ereal.v`:
+  + lemmas `uboundT`, `supremumsT`, `supremumT`, `ereal_supT`, `range_oppe`,
+    `ereal_infT`
+
+- in `measure.v`:
+  + definition `ess_sup`, lemma `ess_sup_ge0`
 
 ### Changed
 

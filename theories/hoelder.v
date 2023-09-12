@@ -36,61 +36,11 @@ Declare Scope Lnorm_scope.
 
 Local Open Scope ereal_scope.
 
-(* TODO: move this elsewhere *)
-Lemma ubound_setT {R : realFieldType} : ubound [set: \bar R] = [set +oo].
-Proof.
-apply/seteqP; split => /= [x Tx|x -> ?]; last by rewrite leey.
-by apply/eqP; rewrite eq_le leey /= Tx.
-Qed.
-
-Lemma supremums_setT {R : realFieldType} : supremums [set: \bar R] = [set +oo].
-Proof.
-rewrite /supremums ubound_setT.
-by apply/seteqP; split=> [x []//|x -> /=]; split => // y ->.
-Qed.
-
-Lemma supremum_setT {R : realFieldType} : supremum -oo [set: \bar R] = +oo.
-Proof.
-rewrite /supremum (negbTE setT0) supremums_setT.
-by case: xgetP => // /(_ +oo)/= /eqP; rewrite eqxx.
-Qed.
-
-Lemma ereal_sup_setT {R : realFieldType} : ereal_sup [set: \bar R] = +oo.
-Proof. by rewrite /ereal_sup/= supremum_setT. Qed.
-
-Lemma range_oppe {R : realFieldType} : range -%E = [set: \bar R].
-Proof.
-by apply/seteqP; split => [//|x] _; exists (- x) => //; rewrite oppeK.
-Qed.
-
-Lemma ereal_inf_setT {R : realFieldType} : ereal_inf [set: \bar R] = -oo.
-Proof. by rewrite /ereal_inf range_oppe/= ereal_sup_setT. Qed.
-
-Section essential_supremum.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Implicit Types f : T -> R.
-
-Definition ess_sup f :=
-  ereal_inf (EFin @` [set r | mu [set t | f t > r]%R = 0]).
-
-Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
-  0 <= ess_sup f.
-Proof.
-move=> muT f0; apply: lb_ereal_inf => _ /= [r rf <-].
-rewrite leNgt; apply/negP => r0.
-move/eqP: rf; apply/negP; rewrite gt_eqF//.
-rewrite [X in mu X](_ : _ = setT) //.
-by apply/seteqP; split => // x _ /=; rewrite (lt_le_trans _ (f0 x)).
-Qed.
-
-End essential_supremum.
-
 Section Lnorm.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Local Open Scope ereal_scope.
-Implicit Types (p : \bar R) (f g : T -> R).
+Implicit Types (p : \bar R) (f g : T -> R) (r : R).
 
 Definition Lnorm p f :=
   match p with
@@ -117,13 +67,12 @@ Qed.
 Lemma eq_Lnorm p f g : f =1 g -> 'N_p[f] = 'N_p[g].
 Proof. by move=> fg; congr Lnorm; exact/funext. Qed.
 
-(* TODO: generalize p *)
-Lemma Lnorm_eq0_eq0 (p : R) f : measurable_fun setT f -> 'N_p%:E[f] = 0 ->
-  ae_eq mu [set: T] (fun t => (`|f t| `^ p)%:E) (cst 0).
+Lemma Lnorm_eq0_eq0 r f : measurable_fun setT f -> 'N_r%:E[f] = 0 ->
+  ae_eq mu [set: T] (fun t => (`|f t| `^ r)%:E) (cst 0).
 Proof.
 move=> mf /poweR_eq0_eq0 fp; apply/ae_eq_integral_abs => //=.
   apply: measurableT_comp => //.
-  apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)) => //.
+  apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)) => //.
   exact: measurableT_comp.
 under eq_integral => x _ do rewrite ger0_norm ?powR_ge0//.
 by rewrite fp//; apply: integral_ge0 => t _; rewrite lee_fin powR_ge0.
