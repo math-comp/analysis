@@ -3173,6 +3173,14 @@ Qed.
 Lemma lee_ndivr_mulr r x y : (r < 0)%R -> (y * r^-1%:E <= x) = (x * r%:E <= y).
 Proof. by move=> r0; rewrite muleC lee_ndivr_mull// muleC. Qed.
 
+Lemma eqe_pdivr_mull r x y : (r != 0)%R ->
+  ((r^-1)%:E * y == x) = (y == r%:E * x).
+Proof.
+rewrite neq_lt => /orP[|] r0.
+- by rewrite eq_le lee_ndivr_mull// lee_ndivl_mull// -eq_le.
+- by rewrite eq_le lee_pdivr_mull// lee_pdivl_mull// -eq_le.
+Qed.
+
 End realFieldType_lemmas.
 
 Module DualAddTheoryRealField.

@@ -228,6 +228,8 @@ From HB Require Import structures.
 (*                             measurableType's with resp. display d1 and d2  *)
 (*                                                                            *)
 (*  m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or m2 dominates m1     *)
+(*  ess_sup f == essential supremum of the function f : T -> R where T is a   *)
+(*               measurableType and R is a realType                           *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -4347,3 +4349,21 @@ Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
 
 End absolute_continuity.
 Notation "m1 `<< m2" := (measure_dominates m1 m2).
+
+Section essential_supremum.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types f : T -> R.
+
+Definition ess_sup f :=
+  ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
+
+Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
+  0 <= ess_sup f.
+Proof.
+move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP rf <-]; rewrite leNgt.
+apply/negP => r0; apply/negP : rf; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
+by apply/seteqP; split => // x _ /=; rewrite in_itv/= (lt_le_trans _ (f0 x)).
+Qed.
+
+End essential_supremum.

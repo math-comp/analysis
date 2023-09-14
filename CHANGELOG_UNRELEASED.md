@@ -40,6 +40,17 @@
   + new definition `regular_space`.
   + new lemma `ent_closure`.
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_mulrr`
+
+- in `constructive_ereal.v`:
+  + lemma `eqe_pdivr_mull`
+
+- new file `hoelder.v`:
+  + definition `Lnorm`, notations `'N[mu]_p[f]`, `'N_p[f]`
+  + lemmas `Lnorm1`, `Lnorm_ge0`, `eq_Lnorm`, `Lnorm_eq0_eq0`
+  + lemma `hoelder`
+
 - in file `lebesgue_integral.v`,
   + new lemmas `simple_bounded`, `measurable_bounded_integrable`, 
     `compact_finite_measure`, `approximation_continuous_integrable`
@@ -52,6 +63,12 @@
 
 - in `constructive_ereal.v`:
   + lemma `bigmaxe_fin_num`
+- in `ereal.v`:
+  + lemmas `uboundT`, `supremumsT`, `supremumT`, `ereal_supT`, `range_oppe`,
+    `ereal_infT`
+
+- in `measure.v`:
+  + definition `ess_sup`, lemma `ess_sup_ge0`
 
 ### Changed
 
