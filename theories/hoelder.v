@@ -47,7 +47,7 @@ Definition Lnorm p f :=
   | p%:E => if p == 0%R then
               mu (f @^-1` (setT `\ 0%R))
             else
-              ((\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1)
+              (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1
   | +oo => if mu [set: T] > 0 then ess_sup mu (normr \o f) else 0
   | -oo => 0
   end.
