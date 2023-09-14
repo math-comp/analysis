@@ -127,6 +127,9 @@ Section ERealArithTh_numDomainType.
 Context {R : numDomainType}.
 Implicit Types (x y z : \bar R) (r : R).
 
+Lemma range_oppe : range -%E = [set: \bar R]%classic.
+Proof. by apply/seteqP; split => [//|x] _; exists (- x); rewrite ?oppeK. Qed.
+
 Lemma oppe_subset (A B : set (\bar R)) :
   ((A `<=` B) <-> (-%E @` A `<=` -%E @` B))%classic.
 Proof.
@@ -336,10 +339,18 @@ Export ConstructiveDualAddTheory.
 Export DualAddTheoryNumDomain.
 End DualAddTheory.
 
+HB.instance Definition _ (R : numDomainType) := isPointed.Build (\bar R) 0%E.
+
 Section ereal_supremum.
 Variable R : realFieldType.
 Local Open Scope classical_set_scope.
 Implicit Types (S : set (\bar R)) (x y : \bar R).
+
+Lemma uboundT : ubound [set: \bar R] = [set +oo].
+Proof.
+apply/seteqP; split => /= [x Tx|x -> ?]; last by rewrite leey.
+by apply/eqP; rewrite eq_le leey /= Tx.
+Qed.
 
 Lemma ereal_ub_pinfty S : ubound S +oo.
 Proof. by apply/ubP=> x _; rewrite leey. Qed.
@@ -352,8 +363,20 @@ right; rewrite predeqE => y; split => [/Snoo|->{y}].
 by have := Snoo _ Sx; rewrite leeNy_eq => /eqP <-.
 Qed.
 
+Lemma supremumsT : supremums [set: \bar R] = [set +oo].
+Proof.
+rewrite /supremums uboundT.
+by apply/seteqP; split=> [x []//|x -> /=]; split => // y ->.
+Qed.
+
 Lemma ereal_supremums_set0_ninfty : supremums (@set0 (\bar R)) -oo.
 Proof. by split; [exact/ubP | apply/lbP=> y _; rewrite leNye]. Qed.
+
+Lemma supremumT : supremum -oo [set: \bar R] = +oo.
+Proof.
+rewrite /supremum (negbTE setT0) supremumsT.
+by case: xgetP => // /(_ +oo)/= /eqP; rewrite eqxx.
+Qed.
 
 Lemma supremum_pinfty S x0 : S +oo -> supremum x0 S = +oo.
 Proof.
@@ -372,10 +395,16 @@ Definition ereal_inf S := - ereal_sup (-%E @` S).
 
 Lemma ereal_sup0 : ereal_sup set0 = -oo. Proof. exact: supremum0. Qed.
 
+Lemma ereal_supT : ereal_sup [set: \bar R] = +oo.
+Proof. by rewrite /ereal_sup/= supremumT. Qed.
+
 Lemma ereal_sup1 x : ereal_sup [set x] = x. Proof. exact: supremum1. Qed.
 
 Lemma ereal_inf0 : ereal_inf set0 = +oo.
 Proof. by rewrite /ereal_inf image_set0 ereal_sup0. Qed.
+
+Lemma ereal_infT : ereal_inf [set: \bar R] = -oo.
+Proof. by rewrite /ereal_inf range_oppe/= ereal_supT. Qed.
 
 Lemma ereal_inf1 x : ereal_inf [set x] = x.
 Proof. by rewrite /ereal_inf image_set1 ereal_sup1 oppeK. Qed.
@@ -532,8 +561,6 @@ by rewrite !image_comp.
 Qed.
 
 End ereal_supremum_realType.
-
-HB.instance Definition _ (R : numDomainType) := isPointed.Build (\bar R) 0%E.
 
 Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
   (abse \o f) \_ D = abse \o (f \_ D).
