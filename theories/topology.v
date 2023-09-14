@@ -4112,7 +4112,7 @@ Canonical topologicalType.
 Notation uniformType := type.
 Notation UniformType T m := (@pack T _ m _ _ idfun _ idfun).
 Notation UniformMixin := Mixin.
-Notation "[ 'uniformType' 'of' T 'for' cT ]" :=  (@clone T cT _ idfun)
+Notation "[ 'uniformType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
   (at level 0, format "[ 'uniformType'  'of'  T  'for'  cT ]") : form_scope.
 Notation "[ 'uniformType' 'of' T ]" := (@clone T _ _ id)
   (at level 0, format "[ 'uniformType'  'of'  T ]") : form_scope.
