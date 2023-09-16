@@ -765,6 +765,7 @@ HB.instance Definition _ (P : probability Y R):=
 
 End knormalize.
 
+<<<<<<< HEAD
 (* TODO: useful? *)
 Lemma measurable_fun_mnormalize d d' (X : measurableType d)
     (Y : measurableType d') (R : realType) (k : R.-ker X ~> Y) :
@@ -796,6 +797,8 @@ apply: measurable_fun_if => //.
   + by apply: measurableT_comp => //; exact/measurable_funS/measurable_kernel.
 Qed.
 
+=======
+>>>>>>> ea7f1064 (rm duplicate, more uniform naming)
 Section kcomp_def.
 Context d1 d2 d3 (X : measurableType d1) (Y : measurableType d2)
   (Z : measurableType d3) (R : realType).
