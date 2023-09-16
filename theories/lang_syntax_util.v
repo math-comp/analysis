@@ -2,14 +2,13 @@ Require Import String.
 From HB Require Import structures.
 Require Import Classical_Prop. (* NB: to compile with Coq 8.17 *)
 From mathcomp Require Import all_ssreflect.
-Require Import signed.
+From mathcomp Require Import signed.
 
 (******************************************************************************)
 (*                  Shared by lang_syntax_*.v files                           *)
 (******************************************************************************)
 
-Definition string_eqMixin := @EqMixin string String.eqb eqb_spec.
-Canonical string_eqType := EqType string string_eqMixin.
+HB.instance Definition _ := hasDecEq.Build string eqb_spec.
 
 Ltac inj_ex H := revert H;
   match goal with
