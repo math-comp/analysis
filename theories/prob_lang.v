@@ -13,7 +13,8 @@ Require Import lebesgue_measure  numfun lebesgue_integral exp kernel.
 (*       bernoulli r1 == Bernoulli probability with r1 a proof that           *)
 (*                       r : {nonneg R} is smaller than 1                     *)
 (* uniform_probability a b ab0 == uniform probability over the interval [a,b] *)
-(*       sample_cst P == sample according to the probability P                *)
+(*          sample mP == sample according to the probability P where mP is a  *)
+(*                       proof that P is a measurable function                *)
 (*          letin l k == execute l, augment the context, and execute k        *)
 (*             ret mf == access the context with f and return the result      *)
 (*           score mf == observe t from d, where f is the density of d and    *)
@@ -469,14 +470,28 @@ Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Definition ret (f : X -> Y) (mf : measurable_fun setT f)
   : R.-pker X ~> Y := [the R.-pker _ ~> _ of kdirac mf].
 
-Definition sample_cst (P : pprobability Y R) : R.-pker X ~> Y :=
-  [the R.-pker _ ~> _ of kprobability (measurable_cst P)].
-
-Definition sample (P : X -> pprobability Y R) (mP : measurable_fun setT P) : R.-pker X ~> Y :=
+Definition sample (P : X -> pprobability Y R) (mP : measurable_fun setT P)
+    : R.-pker X ~> Y :=
   [the R.-pker _ ~> _ of kprobability mP].
 
-Definition normalize (k : R.-sfker X ~> Y) P : X -> probability Y R :=
-  fun x => [the probability _ _ of mnormalize (k x) P].
+Definition sample_cst (P : pprobability Y R) : R.-pker X ~> Y :=
+  sample (measurable_cst P).
+
+Definition normalize (k : R.-ker X ~> Y) P : X -> probability Y R :=
+  knormalize k P.
+
+Definition normalize_pt (k : R.-ker X ~> Y) : X -> probability Y R :=
+  normalize k point.
+
+Lemma measurable_normalize_pt (f : R.-ker X ~> Y) :
+  measurable_fun [set: X] (normalize_pt f : X -> pprobability Y R).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+  (@pset _ _ _ : set (set (pprobability Y R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-.
+apply: emeasurable_fun_infty_o => //.
+exact: (measurable_kernel (knormalize f point) Ys).
+Qed.
 
 Definition ite (f : X -> bool) (mf : measurable_fun setT f)
     (k1 k2 : R.-sfker X ~> Y) : R.-sfker X ~> Y :=
