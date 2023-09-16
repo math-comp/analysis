@@ -3,9 +3,9 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat.
 From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
 From mathcomp.classical Require Import functions cardinality fsbigop.
-Require Import signed reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure  numfun lebesgue_integral exp kernel trigo.
-Require Import prob_lang.
+From mathcomp Require Import signed reals ereal topology normedtype sequences.
+From mathcomp Require Import esum measure lebesgue_measure numfun.
+From mathcomp Require Import lebesgue_integral exp kernel trigo prob_lang.
 
 (******************************************************************************)
 (*  Semantics of a probabilistic programming language using s-finite kernels  *)
@@ -58,7 +58,7 @@ apply: measurable_funM => //=.
 apply: measurableT_comp => //=.
 apply: measurable_funM => //=.
 apply: measurableT_comp => //=.
-apply: measurableT_comp (measurable_exprn _) _ => /=.
+apply: measurableT_comp (exprn_measurable _) _ => /=.
 apply: measurable_funM => //=.
 exact: measurable_funD.
 Qed.
@@ -76,13 +76,13 @@ Proof.
 move=> /= F mF tF mUF.
 rewrite /mgauss01/= integral_bigcup//=; last first.
   apply/integrableP; split.
-    apply/EFin_measurable_fun.
+    apply/measurable_EFinP.
     exact: measurable_funS (measurable_fun_gauss_density 0 1).
   rewrite (_ : (fun x => _) = (EFin \o gauss01_density)); last first.
     by apply/funext => x; rewrite gee0_abs// lee_fin gauss_density_ge0.
   apply: le_lt_trans.
-    apply: (@subset_integral _ _ _ _ _ setT) => //=.
-      apply/EFin_measurable_fun.
+    apply: (@ge0_subset_integral _ _ _ _ _ setT) => //=.
+      apply/measurable_EFinP.
       exact: measurable_fun_gauss_density.
     by move=> ? _; rewrite lee_fin gauss_density_ge0.
   by rewrite integral_gauss01_density// ltey.
@@ -138,11 +138,12 @@ Proof.
 move=> mU; rewrite [in LHS]/staton_lebesgue/=.
 rewrite [in LHS]letinE /=.
 transitivity (\int[@mgauss01 R]_(y in U) (f1 y)%:E).
-  rewrite -[in RHS](setTI U) integral_setI_indic//=.
-  apply: eq_integral => //= r.
+  rewrite -[in RHS](setTI U) integral_mkcondr/=.
+  apply: eq_integral => //= r _.
   rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
     by rewrite invr_ge0// gauss_density_ge0.
-  by rewrite integral_dirac// indicT mul1e diracE indicE.
+  rewrite integral_dirac// diracT mul1e/= diracE epatch_indic/=.
+  by rewrite indicE.
 rewrite integral_mgauss01//.
 transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
   apply: eq_integral => /= y yU.
@@ -191,13 +192,13 @@ Proof.
 move=> /= F mF tF mUF.
 rewrite /mpoisson1/= integral_bigcup//=; last first.
   apply/integrableP; split.
-    apply/EFin_measurable_fun.
+    apply/measurable_EFinP.
     exact: measurable_funS (measurable_poisson _).
   rewrite (_ : (fun x => _) = (EFin \o poisson1)); last first.
     by apply/funext => x; rewrite gee0_abs// lee_fin poisson1_ge0//.
   apply: le_lt_trans.
-    apply: (@subset_integral _ _ _ _ _ setT) => //=.
-      by apply/EFin_measurable_fun; exact: measurable_poisson.
+    apply: (@ge0_subset_integral _ _ _ _ _ setT) => //=.
+      by apply/measurable_EFinP; exact: measurable_poisson.
     by move=> ? _; rewrite lee_fin poisson1_ge0//.
   by rewrite /= integral_poisson_density// ltry.
 apply: is_cvg_ereal_nneg_natsum_cond => n _ _.

@@ -2,8 +2,8 @@ Require Import String Classical.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
 From mathcomp.classical Require Import mathcomp_extra boolp.
-Require Import signed reals topology normedtype.
-Require Import lang_syntax_util.
+From mathcomp Require Import signed reals topology normedtype.
+From mathcomp Require Import lang_syntax_util.
 
 (******************************************************************************)
 (*           Intrinsically-typed concrete syntax for a toy language           *)
@@ -36,7 +36,7 @@ Variables (R : realType).
 
 Inductive typ := Real | Unit.
 
-Canonical typ_eqType := Equality.Pack (@gen_eqMixin typ).
+HB.instance Definition _ := gen_eqMixin typ.
 
 Definition iter_pair (l : list Type) : Type :=
   foldr (fun x y => (x * y)%type) unit l.
@@ -169,7 +169,7 @@ Implicit Types str : string.
 
 Inductive typ := Real | Unit | Pair : typ -> typ -> typ.
 
-Canonical typ_eqType := Equality.Pack (@gen_eqMixin typ).
+HB.instance Definition _ := gen_eqMixin typ.
 
 Fixpoint mtyp (t : typ) : Type :=
   match t with

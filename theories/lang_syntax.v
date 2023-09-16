@@ -3,9 +3,10 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
 From mathcomp.classical Require Import functions cardinality fsbigop.
-Require Import signed reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun lebesgue_integral kernel prob_lang.
-Require Import lang_syntax_util.
+From mathcomp Require Import signed reals ereal topology normedtype sequences.
+From mathcomp Require Import esum measure lebesgue_measure numfun.
+From mathcomp Require Import lebesgue_integral kernel prob_lang.
+From mathcomp Require Import lang_syntax_util.
 From mathcomp Require Import ring lra.
 
 (******************************************************************************)
@@ -89,7 +90,7 @@ Proof. done. Qed.
 Let mswap_sigma_additive x : semi_sigma_additive (mswap x).
 Proof. exact: measure_semi_sigma_additive. Qed.
 
-HB.instance Definition _ x := isMeasure.Build _ R _
+HB.instance Definition _ x := isMeasure.Build _ _ R
   (mswap x) (mswap0 x) (mswap_ge0 x) (@mswap_sigma_additive x).
 
 Definition mkswap : _ -> {measure set Z -> \bar R} :=
@@ -129,7 +130,7 @@ by rewrite /mswap/= kE.
 Qed.
 
 HB.instance Definition _ :=
-  Kernel_isSFinite_subdef.Build _ _ _ Z R (mkswap k) mkswap_sfinite.
+  isSFiniteKernel_subdef.Build _ _ _ Z R (mkswap k) mkswap_sfinite.
 
 End mswap_sfinite_kernel.
 
@@ -185,11 +186,11 @@ Let T0 z : (T' z) set0 = 0. Proof. by []. Qed.
 Let T_ge0 z x : 0 <= (T' z) x. Proof. by []. Qed.
 Let T_semi_sigma_additive z : semi_sigma_additive (T' z).
 Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ R X (T' z) (T0 z) (T_ge0 z)
+HB.instance Definition _ z := @isMeasure.Build _ X R (T' z) (T0 z) (T_ge0 z)
   (@T_semi_sigma_additive z).
 
 Let sfinT z : sfinite_measure (T' z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ X R
+HB.instance Definition _ z := @isSFinite.Build _ X R
   (T' z) (sfinT z).
 
 Definition U' z : set Y -> \bar R := u z.
@@ -197,11 +198,11 @@ Let U0 z : (U' z) set0 = 0. Proof. by []. Qed.
 Let U_ge0 z x : 0 <= (U' z) x. Proof. by []. Qed.
 Let U_semi_sigma_additive z : semi_sigma_additive (U' z).
 Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ R Y (U' z) (U0 z) (U_ge0 z)
+HB.instance Definition _ z := @isMeasure.Build _ Y R (U' z) (U0 z) (U_ge0 z)
   (@U_semi_sigma_additive z).
 
 Let sfinU z : sfinite_measure (U' z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ Y R
+HB.instance Definition _ z := @isSFinite.Build _ Y R
   (U' z) (sfinU z).
 
 Lemma letin'C z A : measurable A ->
@@ -220,7 +221,7 @@ under eq_integral.
   under eq_integral do rewrite retE /=.
   over.
 rewrite (sfinite_Fubini (T' z) (U' z) (fun x => \d_(x.1, x.2) A ))//; last first.
-  apply/EFin_measurable_fun => /=; rewrite (_ : (fun x => _) = mindic R mA)//.
+  apply/measurable_EFinP => /=; rewrite (_ : (fun x => _) = mindic R mA)//.
   by apply/funext => -[].
 rewrite /=.
 apply: eq_integral => y _.
@@ -271,7 +272,7 @@ Inductive typ :=
 | Pair : typ -> typ -> typ
 | Prob : typ -> typ.
 
-Canonical stype_eqType := Equality.Pack (@gen_eqMixin typ).
+HB.instance Definition _ := gen_eqMixin typ.
 
 Fixpoint measurable_of_typ (t : typ) : {d & measurableType d} :=
   match t with
@@ -449,12 +450,6 @@ Notation "'Normalize' e" := (exp_normalize e)
 Notation "'if' e1 'then' e2 'else' e3" := (exp_if e1 e2 e3)
   (in custom expr at level 1) : lang_scope.
 
-Local Open Scope lang_scope.
-Example three_letin {R : realType} x y z : @exp R P [::] _ :=
-  [let x := return {1}:R in
-   let y := return #x in
-   let z := return #y in return #z].
-
 Section free_vars.
 Context {R : realType}.
 
@@ -548,7 +543,7 @@ by move=> z U mU; by rewrite /kweak/= hs.
 Qed.
 
 HB.instance Definition _ :=
-  Kernel_isSFinite_subdef.Build _ _ _ _ _ (@kweak g h x t f) sf.
+  isSFiniteKernel_subdef.Build _ _ _ _ _ (@kweak g h x t f) sf.
 
 End sfkernel_weak.
 
@@ -609,7 +604,7 @@ Inductive evalD : forall g t, exp D g t ->
 
 | eval_normalize g t (e : exp P g t) k :
   e -P> k ->
-  [Normalize e] -D> normalize k point ; measurable_fun_mnormalize k
+  [Normalize e] -D> normalize_pt k ; measurable_normalize_pt k
 
 | evalD_if g t e f mf (e1 : exp D g t) f1 mf1 e2 f2 mf2 :
   e -D> f ; mf -> e1 -D> f1 ; mf1 -> e2 -D> f2 ; mf2 ->
@@ -630,8 +625,8 @@ with evalP : forall g t, exp P g t -> pval R g t -> Prop :=
   [let str := e1 in e2] -P> letin' k1 k2
 
 | eval_sample g t (e : exp _ _ (Prob t))
-    (p : mctx g -> pprobability (mtyp t) R) mp :
-  e -D> p ; mp -> [Sample e] -P> sample p mp
+    (f : mctx g -> probability (mtyp t) R) mf :
+  e -D> f ; mf -> [Sample e] -P> sample f mf
 
 | eval_score g (e : exp _ g _) f mf :
   e -D> f ; mf -> [Score e] -P> kscore mf
@@ -750,13 +745,13 @@ all: (rewrite {g t e u v mu mv hu}).
   inj_ex H6; subst e5.
   inj_ex H5; subst e4.
   by rewrite (IH1 _ H4) (IH2 _ H8).
-- move=> g t e p mp ev IH k.
+- move=> g t e f mf ev IH k.
   inversion 1; subst g0.
   inj_ex H5; subst t0.
   inj_ex H5; subst e1.
   inj_ex H7; subst k.
-  have ? := IH _ _ H3; subst p1.
-  by have -> : mp = mp1 by [].
+  have ? := IH _ _ H3; subst f1.
+  by have -> : mf = mf1 by [].
 - move=> g e f mf ev IH k.
   inversion 1; subst g0.
   inj_ex H0; subst e0.
@@ -875,12 +870,12 @@ all: rewrite {g t e u v eu}.
   inj_ex H5; subst e4.
   inj_ex H6; subst e5.
   by rewrite (IH1 _ H4) (IH2 _ H8).
-- move=> g t e p mp ep IH v.
+- move=> g t e f mf ep IH v.
   inversion 1; subst g0 t0.
   inj_ex H7; subst v.
   inj_ex H5; subst e1.
-  have ? := IH _ _ H3; subst p1.
-  by have -> : mp = mp1 by [].
+  have ? := IH _ _ H3; subst f1.
+  by have -> : mf = mf1 by [].
 - move=> g e f mf ev IH k.
   inversion 1; subst g0.
   inj_ex H0; subst e0.
@@ -931,7 +926,7 @@ all: rewrite {z g t}.
 - move=> g h e [f [mf H]].
   by exists (poisson h \o f); eexists; exact: eval_poisson.
 - move=> g t e [k ek].
-  by exists (normalize k point); eexists; exact: eval_normalize.
+  by exists (normalize_pt k); eexists; exact: eval_normalize.
 - move=> g t1 t2 x e1 [k1 ev1] e2 [k2 ev2].
   by exists (letin' k1 k2); exact: eval_letin.
 - move=> g t e [f [/= mf ef]].
@@ -1072,10 +1067,10 @@ Lemma execD_bernoulli g r (r1 : (r%:num <= 1)%R) :
     existT _ (cst [the probability _ _ of bernoulli r1]) (measurable_cst _).
 Proof. exact/execD_evalD/eval_bernoulli. Qed.
 
-Lemma execD_normalize g t (e : exp P g t) :
+Lemma execD_normalize_pt g t (e : exp P g t) :
   @execD g _ [Normalize e] =
-  existT _ (normalize (execP e) point : _ -> pprobability _ _)
-           (measurable_fun_mnormalize (execP e)).
+  existT _ (normalize_pt (execP e) : _ -> pprobability _ _)
+           (measurable_normalize_pt (execP e)).
 Proof. exact/execD_evalD/eval_normalize/evalP_execP. Qed.
 
 Lemma execD_poisson g n (e : exp D g Real) :
