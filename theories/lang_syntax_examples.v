@@ -5,7 +5,7 @@ From mathcomp Require Import interval_inference.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences esum.
-From mathcomp Require Import  measure lebesgue_measure numfun lebesgue_integral.
+From mathcomp Require Import measure lebesgue_measure numfun lebesgue_integral.
 From mathcomp Require Import kernel prob_lang lang_syntax_util lang_syntax.
 From mathcomp Require Import ring lra.
 
@@ -139,19 +139,19 @@ Qed.
 Local Close Scope lang_scope.
 
 (* simple tests to check bidirectional hints *)
-Module tests_bidi.
-Section tests_bidi.
+Module bidi_tests.
+Section bidi_tests.
 Local Open Scope lang_scope.
 Import Notations.
 Context (R : realType).
 
-Definition v1 x : @exp R P [::] _ := [
+Definition bidi_test1 x : @exp R P [::] _ := [
   let x := return {1}:R in
   return #x].
 
-Definition v2 (a b : string)
+Definition bidi_test2 (a b : string)
   (a := "a") (b := "b")
-  (* (H : infer (b != a)) *)
+  (* (ba : infer (b != a)) *)
   : @exp R P [::] _ := [
   let a := return {1}:R in
   let b := return {true}:B in
@@ -159,17 +159,28 @@ Definition v2 (a b : string)
   let d := return {4}:R in *)
   return (#a, #b)].
 
-Definition v3 (a b c d : string) (H1 : infer (b != a)) (H2 : infer (c != a))
-  (H3 : infer (c != b)) (H4 : infer (a != b)) (H5 : infer (a != c))
-  (H6 : infer (b != c)) : @exp R P [::] _ := [
+Definition bidi_test3 (a b c d : string)
+    (ba : infer (b != a)) (ca : infer (c != a))
+    (cb : infer (c != b)) (ab : infer (a != b))
+    (ac : infer (a != c)) (bc : infer (b != c)) : @exp R P [::] _ := [
   let a := return {1}:R in
   let b := return {2}:R in
   let c := return {3}:R in
   (* let d := return {4}:R in *)
   return (#b, #a)].
 
-End tests_bidi.
-End tests_bidi.
+Definition bidi_test4 (a b c d : string)
+    (ba : infer (b != a)) (ca : infer (c != a))
+    (cb : infer (c != b)) (ab : infer (a != b))
+    (ac : infer (a != c)) (bc : infer (b != c)) : @exp R P [::] _ := [
+  let a := return {1}:R in
+  let b := return {2}:R in
+  let c := return {3}:R in
+  (* let d := return {4}:R in *)
+  return {exp_poisson O [#c(*{exp_var c erefl}*)]}].
+
+End bidi_tests.
+End bidi_tests.
 
 Section trivial_example.
 Local Open Scope lang_scope.
@@ -181,7 +192,8 @@ Lemma exec_normalize_return g x r :
   @dirac _ (measurableTypeR R) r _ :> probability _ R.
   (* NB: \d_r notation? *)
 Proof.
-by rewrite execD_normalize execP_return execD_real//=; exact: normalize_kdirac.
+rewrite execD_normalize_pt execP_return execD_real/=.
+exact: normalize_kdirac.
 Qed.
 
 End trivial_example.
@@ -241,7 +253,7 @@ Qed.
 Lemma exec_sample_pair_TorT :
   (projT1 (execD sample_pair_syntax)) tt [set p | p.1 || p.2] = (2 / 3)%:E.
 Proof.
-rewrite execD_normalize normalizeE/= exec_sample_pair0.
+rewrite execD_normalize_pt normalizeE/= exec_sample_pair0.
 do 4 rewrite mem_set//=.
 rewrite eqe ifF; last by apply/negbTE/negP => /orP[/eqP|//]; lra.
 rewrite exec_sample_pair0; do 3 rewrite mem_set//; rewrite memNset//=.
@@ -265,7 +277,7 @@ Lemma exec_bernoulli13_score :
   execD bernoulli13_score = execD (exp_bernoulli (1 / 5%:R)%:nng (p1S 4)).
 Proof.
 apply: eq_execD.
-rewrite execD_bernoulli/= /bernoulli13_score execD_normalize 2!execP_letin.
+rewrite execD_bernoulli/= /bernoulli13_score execD_normalize_pt 2!execP_letin.
 rewrite execP_sample/= execD_bernoulli/= execP_if /= exp_var'E.
 rewrite (execD_var_erefl "x")/= !execP_return/= 2!execP_score 2!execD_real/=.
 apply: funext=> g; apply: eq_probability => U.
@@ -290,14 +302,12 @@ rewrite -EFinD/= eqe ifF; last first.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
-rewrite !integral_dirac//= !diracT/= !mul1e ger0_norm//.
+rewrite !integral_dirac//= !diracT /= !mul1e ger0_norm// !indicT.
 rewrite exp_var'E (execD_var_erefl "x")/=.
 rewrite /bernoulli/= measure_addE/= /mscale/= !mul1r.
-rewrite indicT/= !mulr1.
 by rewrite muleDl//; congr (_ + _)%E;
-  rewrite -!EFinM;
-  congr (_%:E);
-  rewrite indicE /onem; case: (_ \in _); field.
+  rewrite -!EFinM; congr (_%:E);
+  rewrite !indicE /onem /=; case: (_ \in _); field.
 Qed.
 
 Definition bernoulli12_score := [Normalize
@@ -309,7 +319,7 @@ Lemma exec_bernoulli12_score :
   execD bernoulli12_score = execD (exp_bernoulli (1 / 3%:R)%:nng (p1S 2)).
 Proof.
 apply: eq_execD.
-rewrite execD_bernoulli/= /bernoulli12_score execD_normalize 2!execP_letin.
+rewrite execD_bernoulli/= /bernoulli12_score execD_normalize_pt 2!execP_letin.
 rewrite execP_sample/= execD_bernoulli/= execP_if /= exp_var'E.
 rewrite (execD_var_erefl "x")/= !execP_return/= 2!execP_score 2!execD_real/=.
 apply: funext=> g; apply: eq_probability => U.
@@ -327,7 +337,7 @@ rewrite !integral_dirac// !diracT !mul1e.
 rewrite iteE/= !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_indic//= !iteE/= /mscale/=.
-rewrite setTI diracE !in_setT !mule1.
+rewrite setTI !diracT !mule1.
 rewrite ger0_norm//.
 rewrite -EFinD/= eqe ifF; last first.
   apply/negbTE/negP => /orP[/eqP|//].
@@ -335,8 +345,7 @@ rewrite -EFinD/= eqe ifF; last first.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
-rewrite !integral_dirac//= !diracT /= !mul1e ger0_norm//.
-rewrite !indicT/= mulr1.
+rewrite !integral_dirac//= !diracT /= !mul1e ger0_norm// !indicT.
 rewrite exp_var'E (execD_var_erefl "x")/=.
 rewrite /bernoulli/= measure_addE/= /mscale/= !mul1r.
 by rewrite muleDl//; congr (_ + _)%E;
@@ -358,9 +367,9 @@ Lemma exec_bernoulli14_score :
   execD bernoulli14_score = execD (exp_bernoulli (5%:R / 11%:R)%:nng p511).
 Proof.
 apply: eq_execD.
-rewrite execD_bernoulli/= execD_normalize 2!execP_letin.
+rewrite execD_bernoulli/= execD_normalize_pt 2!execP_letin.
 rewrite execP_sample/= execD_bernoulli/= execP_if /= !exp_var'E.
-rewrite !execP_return/= 2!execP_score 2!execD_real/=.
+rewrite !execP_return/= 2!execP_score !execD_real/=.
 rewrite !(execD_var_erefl "x")/=.
 apply: funext=> g; apply: eq_probability => U.
 rewrite normalizeE !letin'E/=.
@@ -516,11 +525,42 @@ Local Open Scope lang_scope.
 Import Notations.
 Context {R : realType}.
 
+Section tests.
+
+Local Notation "$ str" := (@exp_var _ _ str%string _ erefl)
+  (in custom expr at level 1, format "$ str").
+
+Definition staton_bus_syntax0_generic (x r u : string)
+    (rx : infer (r != x)) (Rx : infer (u != x))
+    (ur : infer (u != r)) (xr : infer (x != r))
+    (xu : infer (x != u)) (ru : infer (r != u)) : @exp R P [::] _ :=
+  [let x := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
+   let r := if #x then return {3}:R else return {10}:R in
+   let u := Score {exp_poisson 4 [#r]} in
+   return #x].
+
+Fail Definition staton_bus_syntax0_generic' (x r u : string)
+    (rx : infer (r != x)) (Rx : infer (u != x))
+    (ur : infer (u != r)) (xr : infer (x != r))
+    (xu : infer (x != u)) (ru : infer (r != u)) : @exp R P [::] _ :=
+  [let x := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
+   let r := if $x then return {3}:R else return {10}:R in
+   let u := Score {exp_poisson 4 [$r]} in
+   return $x].
+
+Fail Definition staton_bus_syntax0' : @exp R _ [::] _ :=
+  [let "x" := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
+   let "r" := if ${"x"} then return {3}:R else return {10}:R in
+   let "_" := Score {exp_poisson 4 [${"r"}]} in
+   return ${"x"}].
+
 Definition staton_bus_syntax0 : @exp R _ [::] _ :=
   [let "x" := Sample {exp_bernoulli (2 / 7%:R)%:nng p27} in
    let "r" := if #{"x"} then return {3}:R else return {10}:R in
    let "_" := Score {exp_poisson 4 [#{"r"}]} in
    return #{"x"}].
+
+End tests.
 
 Definition staton_bus_syntax := [Normalize {staton_bus_syntax0}].
 
@@ -568,8 +608,8 @@ by rewrite exp_var'E (execD_var_erefl "x") /=; congr ret.
 Qed.
 
 Lemma exec_staton_bus : execD staton_bus_syntax =
-  existT _ (normalize kstaton_bus' point) (measurable_fun_mnormalize _).
-Proof. by rewrite execD_normalize exec_staton_bus0'. Qed.
+  existT _ (normalize_pt kstaton_bus') (measurable_normalize_pt _).
+Proof. by rewrite execD_normalize_pt exec_staton_bus0'. Qed.
 
 Let poisson4 := @poisson R 4%N.
 
@@ -672,8 +712,8 @@ by rewrite exp_var'E (execD_var_erefl "x") /=; congr ret.
 Qed.
 
 Lemma exec_statonA_bus : execD staton_busA_syntax =
-  existT _ (normalize kstaton_busA' point) (measurable_fun_mnormalize _).
-Proof. by rewrite execD_normalize exec_staton_busA0'. Qed.
+  existT _ (normalize_pt kstaton_busA') (measurable_normalize_pt _).
+Proof. by rewrite execD_normalize_pt exec_staton_busA0'. Qed.
 
 (* equivalence between staton_bus and staton_busA *)
 Lemma staton_bus_staton_busA :
@@ -718,8 +758,6 @@ End staton_busA.
 Section letinC.
 Local Open Scope lang_scope.
 Variable (R : realType).
-
-Require Import Classical_Prop.
 
 Lemma letinC g t1 t2 (e1 : @exp R P g t1) (e2 : exp P g t2)
   (x y : string)
