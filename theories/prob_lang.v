@@ -1,14 +1,14 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import interval_inference archimedean rat.
+From mathcomp Require Import interval_inference archimedean rat lra.
 #[warning="-warn-library-file-internal-analysis"]
 From mathcomp Require Import unstable.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
-From mathcomp Require Import reals ereal topology normedtype sequences esum.
-From mathcomp Require Import numfun measure measurable_realfun.
-From mathcomp Require Import lebesgue_measure lebesgue_integral exp kernel.
+From mathcomp Require Import reals ereal topology normedtype sequences.
+From mathcomp Require Import esum measure lebesgue_measure numfun.
+From mathcomp Require Import measurable_realfun lebesgue_integral exp kernel.
 
 (******************************************************************************)
 (*  Semantics of a probabilistic programming language using s-finite kernels  *)
@@ -16,7 +16,8 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral exp kernel.
 (*       bernoulli r1 == Bernoulli probability with r1 a proof that           *)
 (*                       r : {nonneg R} is smaller than 1                     *)
 (* uniform_probability a b ab0 == uniform probability over the interval [a,b] *)
-(*       sample_cst P == sample according to the probability P                *)
+(*          sample mP == sample according to the probability P where mP is a  *)
+(*                       proof that P is a measurable function                *)
 (*          letin l k == execute l, augment the context, and execute k        *)
 (*             ret mf == access the context with f and return the result      *)
 (*           score mf == observe t from d, where f is the density of d and    *)
@@ -118,7 +119,7 @@ Lemma integral_bernoulli {R : realType}
 Proof.
 move=> f0.
 rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
-by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT !mul1e.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT 2!mul1e.
 Qed.
 
 Section uniform_probability.
@@ -472,14 +473,28 @@ Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Definition ret (f : X -> Y) (mf : measurable_fun setT f)
   : R.-pker X ~> Y := [the R.-pker _ ~> _ of kdirac mf].
 
-Definition sample_cst (P : pprobability Y R) : R.-pker X ~> Y :=
-  [the R.-pker _ ~> _ of kprobability (measurable_cst P)].
-
-Definition sample (P : X -> pprobability Y R) (mP : measurable_fun setT P) : R.-pker X ~> Y :=
+Definition sample (P : X -> pprobability Y R) (mP : measurable_fun setT P)
+    : R.-pker X ~> Y :=
   [the R.-pker _ ~> _ of kprobability mP].
 
-Definition normalize (k : R.-sfker X ~> Y) P : X -> probability Y R :=
-  fun x => [the probability _ _ of mnormalize (k x) P].
+Definition sample_cst (P : pprobability Y R) : R.-pker X ~> Y :=
+  sample (measurable_cst P).
+
+Definition normalize (k : R.-ker X ~> Y) P : X -> probability Y R :=
+  knormalize k P.
+
+Definition normalize_pt (k : R.-ker X ~> Y) : X -> probability Y R :=
+  normalize k point.
+
+Lemma measurable_normalize_pt (f : R.-ker X ~> Y) :
+  measurable_fun [set: X] (normalize_pt f : X -> pprobability Y R).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+  (@pset _ _ _ : set (set (pprobability Y R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-.
+apply: emeasurable_fun_infty_o => //.
+exact: (measurable_kernel (knormalize f point) Ys).
+Qed.
 
 Definition ite (f : X -> bool) (mf : measurable_fun setT f)
     (k1 k2 : R.-sfker X ~> Y) : R.-sfker X ~> Y :=
@@ -570,10 +585,9 @@ rewrite integral_indic ?setIT// -[X in measurable X]setTI.
 exact: (measurableT_comp mf).
 Qed.
 
-Lemma letin_retk
-  (f : X -> Y) (mf : measurable_fun setT f)
-  (k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z)
-  x U : measurable U ->
+Lemma letin_retk (f : X -> Y)
+  (mf : measurable_fun [set: X] f) (k : R.-sfker X * Y ~> Z) x U :
+  measurable U ->
   letin (ret mf) k x U = k (x, f x) U.
 Proof.
 move=> mU; rewrite letinE retE integral_dirac ?diracT ?mul1e//.
@@ -913,7 +927,7 @@ Lemma score_fail (r : {nonneg R}) (r1 : (r%:num <= 1)%R) :
 Proof.
 apply/eq_sfkernel => x U.
 rewrite letinE/= /sample; unlock.
-rewrite ge0_integral_measure_add//= ge0_integral_mscale//= ge0_integral_mscale//=.
+rewrite ge0_integral_measure_add// ge0_integral_mscale//= ge0_integral_mscale//=.
 rewrite integral_dirac//= integral_dirac//= !diracT/= !mul1e.
 by rewrite /mscale/= iteE//= iteE//= failE mule0 adde0 ger0_norm.
 Qed.
@@ -996,8 +1010,7 @@ HB.instance Definition _ z := @isMeasure.Build _ X R (T z) (T0 z) (T_ge0 z)
   (@T_semi_sigma_additive z).
 
 Let sfinT z : sfinite_measure (T z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @isSFinite.Build _ X R
-  (T z) (sfinT z).
+HB.instance Definition _ z := @isSFinite.Build _ X R (T z) (sfinT z).
 
 Definition U z : set Y -> \bar R := u z.
 Let U0 z : (U z) set0 = 0. Proof. by []. Qed.
@@ -1092,9 +1105,7 @@ Qed.
 Lemma measurable_poisson k : measurable_fun setT (poisson k).
 Proof.
 rewrite /poisson; apply: measurable_fun_if => //.
-  apply: (measurable_fun_bool true) => /=.
-  rewrite setTI (_ : _ @^-1` _ = `]0, +oo[%classic)//.
-  by apply/seteqP; split => x /=; rewrite in_itv/= andbT.
+  exact: measurable_fun_ltr.
 by apply: measurable_funM => /=;
   [exact: measurable_funM|exact: measurableT_comp].
 Qed.
@@ -1171,7 +1182,7 @@ Lemma sample_and_branchE t U : sample_and_branch t U =
   (2 / 7%:R)%:E * \d_(3%:R : R) U +
   (5%:R / 7%:R)%:E * \d_(10%:R : R) U.
 Proof.
-by rewrite /sample_and_branch letin_sample_bernoulli/= !iteE !retE// onem27.
+by rewrite /sample_and_branch letin_sample_bernoulli//= !iteE/= onem27.
 Qed.
 
 End sample_and_branch.
@@ -1180,32 +1191,16 @@ Section bernoulli_and.
 Context d (T : measurableType d) (R : realType).
 Import Notations.
 
-Definition mand (x y : T * mbool * mbool -> mbool)
-  (t : T * mbool * mbool) : mbool := x t && y t.
-
-Lemma measurable_fun_mand (x y : T * mbool * mbool -> mbool) :
-  measurable_fun setT x -> measurable_fun setT y ->
-  measurable_fun setT (mand x y).
-Proof.
-move=> /= mx my; apply: (measurable_fun_bool true) => /=.
-rewrite setTI [X in measurable X](_ : _ =
-    (x @^-1` [set true]) `&` (y @^-1` [set true])); last first.
-  by rewrite /mand; apply/seteqP; split => z/= /andP.
-apply: measurableI.
-- by rewrite -[X in measurable X]setTI; exact: mx.
-- by rewrite -[X in measurable X]setTI; exact: my.
-Qed.
-
 Definition bernoulli_and : R.-sfker T ~> mbool :=
     (letin (sample_cst [the probability _ _ of bernoulli p12])
      (letin (sample_cst [the probability _ _ of bernoulli p12])
-        (ret (measurable_fun_mand macc1of3 macc2of3)))).
+        (ret (measurable_and macc1of3 macc2of3)))).
 
 Lemma bernoulli_andE t U :
   bernoulli_and t U =
   sample_cst (bernoulli p14) t U.
 Proof.
-rewrite /bernoulli_and 3!letin_sample_bernoulli/= /mand/= muleDr//= -muleDl//.
+rewrite /bernoulli_and 3!letin_sample_bernoulli/= muleDr//= -muleDl//.
 rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
 have -> : (1 / 2 * (1 / 2) = 1 / 4%:R :> R)%R by rewrite mulf_div mulr1// -natrM.
 rewrite /bernoulli/= measure_addE/= /mscale/= -!EFinM; congr( _ + (_ * _)%:E).
@@ -1490,7 +1485,7 @@ Proof. exact: sigma_algebra_bigcup. Qed.
 HB.instance Definition sum_salgebra_mixin :=
   @isMeasurable.Build (measure_sum_display (d1, d2))
     (T1 + T2)%type (image_classes f1 f2)
-    (sum_salgebra_set0) (sum_salgebra_setC) (sum_salgebra_bigcup).
+    sum_salgebra_set0 sum_salgebra_setC sum_salgebra_bigcup.
 
 End sum_salgebra_instance.
 Reserved Notation "p .-sum" (at level 1, format "p .-sum").
@@ -1763,7 +1758,7 @@ Qed.
 
 #[export]
 HB.instance Definition _ := @isSFiniteKernel_subdef.Build _ _ _ _ _
-  (case_sum' k) (sfinite_case_sum').
+  (case_sum' k) sfinite_case_sum'.
 End sfkcase_sum'.
 
 End case_sum'.
@@ -1805,7 +1800,7 @@ by move=> g U mU; rewrite /kcounting/= counting_dirac.
 Qed.
 
 HB.instance Definition _ :=
-  Kernel_isSFinite_subdef.Build _ _ _ _ R kcounting sfkcounting.
+  isSFiniteKernel_subdef.Build _ _ _ _ R kcounting sfkcounting.
 
 End kcounting.
 
@@ -1854,8 +1849,9 @@ Hypotheses (mf : measurable_fun setT f) (mg : measurable_fun setT g).
 (* see also emeasurable_fun_neq *)
 Lemma measurable_fun_flift_neq : measurable_fun setT flift_neq.
 Proof.
-apply: (measurable_fun_bool true).
-rewrite setTI /flift_neq /= (_ : _ @^-1` _ = ([set x | f x] `&` [set x | ~~ g x]) `|`
+apply: (@measurable_fun_bool _ _ _ _ true).
+rewrite setTI.
+rewrite /flift_neq /= (_ : _ @^-1` _ = ([set x | f x] `&` [set x | ~~ g x]) `|`
                                        ([set x | ~~ f x] `&` [set x | g x])).
   apply: measurableU; apply: measurableI.
   - by rewrite -[X in measurable X]setTI; exact: mf.

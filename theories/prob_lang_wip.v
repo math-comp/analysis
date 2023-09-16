@@ -3,10 +3,10 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat interval_inference.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
-From mathcomp Require Import reals ereal topology normedtype sequences esum.
-From mathcomp Require Import measure measurable_realfun lebesgue_measure.
-From mathcomp Require Import numfun lebesgue_integral exp kernel trigo.
-From mathcomp Require Import prob_lang.
+From mathcomp Require Import reals ereal topology normedtype sequences.
+From mathcomp Require Import esum measure lebesgue_measure numfun.
+From mathcomp Require Import measurable_realfun.
+From mathcomp Require Import lebesgue_integral exp kernel trigo prob_lang.
 
 (******************************************************************************)
 (*  Semantics of a probabilistic programming language using s-finite kernels  *)
@@ -139,11 +139,12 @@ Proof.
 move=> mU; rewrite [in LHS]/staton_lebesgue/=.
 rewrite [in LHS]letinE /=.
 transitivity (\int[@mgauss01 R]_(y in U) (f1 y)%:E).
-  rewrite -[in RHS](setTI U) __deprecated__integral_setI_indic//=.
-  apply: eq_integral => //= r.
+  rewrite -[in RHS](setTI U) integral_mkcondr/=.
+  apply: eq_integral => //= r _.
   rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
     by rewrite invr_ge0// gauss_density_ge0.
-  by rewrite integral_dirac// diracT mul1e diracE indicE.
+ rewrite integral_dirac// diracT mul1e/= diracE epatch_indic/=.
+  by rewrite indicE.
 rewrite integral_mgauss01//.
 transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
   apply: eq_integral => /= y yU.
