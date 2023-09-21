@@ -254,7 +254,8 @@ Local Open Scope ring_scope.
 Lemma hoelder2 (a1 a2 b1 b2 : R) (p q : R) :
   0 <= a1 -> 0 <= a2 -> 0 <= b1 -> 0 <= b2 ->
   0 < p -> 0 < q -> p^-1 + q^-1 = 1 ->
-  a1 * b1 + a2 * b2 <= (a1`^p + a2`^p) `^ (p^-1) * (b1`^q + b2`^q)`^(q^-1).
+  a1 * b1 + a2 * b2 <= (a1 `^ p + a2 `^ p) `^ p^-1 *
+                       (b1 `^ q + b2 `^ q) `^ q^-1.
 Proof.
 move=> a10 a20 b10 b20 p0 q0 pq.
 pose f a b n : R := match n with 0%nat => a | 1%nat => b | _ => 0 end.
