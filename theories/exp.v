@@ -666,8 +666,8 @@ Proof. by move=> /eqP; rewrite powR_eq0 => /andP[/eqP]. Qed.
 
 Lemma ger_powR a : 0 < a <= 1 -> {homo powR a : x y /~ y <= x}.
 Proof.
-move=> /andP [a0 a1] x y xy.
-rewrite /powR gt_eqF// ler_expR ler_wnmul2r// ln_le0//.
+move=> /andP[a0 a1] x y xy.
+by rewrite /powR gt_eqF// ler_expR ler_wnmul2r// ln_le0.
 Qed.
 
 Lemma ler_powR a : 1 <= a -> {homo powR a : x y / x <= y}.
@@ -687,30 +687,24 @@ Qed.
 
 Lemma ler1_powR a r : 1 <= a -> r <= 1 -> a >= a `^ r.
 Proof.
-move=> a1 r1.
-rewrite -[in leRHS](@powRr1 a)//; last exact: (le_trans _ a1).
-by rewrite ler_powR.
+by move=> a1 r1; rewrite (le_trans (ler_powR _ r1)) ?powRr1// (le_trans _ a1).
 Qed.
 
 Lemma le1r_powR a r : 1 <= a -> 1 <= r -> a <= a `^ r.
 Proof.
-move=> a1 r1.
-rewrite -[in leLHS](@powRr1 a)//; last exact: (le_trans _ a1).
-by rewrite ler_powR.
+by move=> a1 r1; rewrite (le_trans _ (ler_powR _ r1)) ?powRr1// (le_trans _ a1).
 Qed.
 
 Lemma ger1_powR a r : 0 < a <= 1 -> r <= 1 -> a <= a `^ r.
 Proof.
-move=> /andP [a0 a1] r1.
-rewrite -[in leLHS](@powRr1 a)//; last by rewrite ltW.
-by rewrite ger_powR// a0.
+move=> /andP[a0 _a1] r1.
+by rewrite (le_trans _ (ger_powR _ r1)) ?powRr1 ?a0// ltW.
 Qed.
 
 Lemma ge1r_powR a r : 0 < a <= 1 -> 1 <= r -> a >= a `^ r.
 Proof.
-move=> /andP [a0 a1] r1.
-rewrite -[in leRHS](@powRr1 a)//; last by rewrite ltW.
-by rewrite ger_powR// a0.
+move=> /andP[a0 a1] r1.
+by rewrite (le_trans (ger_powR _ r1)) ?powRr1 ?a0// ltW.
 Qed.
 
 Lemma ge0_ler_powR (r : R) : 0 <= r ->
@@ -744,19 +738,15 @@ Qed.
 Lemma ge1r_powRZ x y r : 0 < x <= 1 -> 0 <= y -> 1 <= r ->
   (x * y) `^ r <= x * (y `^ r).
 Proof.
-move=> /andP [x0 x1] y0 r1.
-rewrite powRM//; last exact: ltW.
-rewrite ler_wpmul2r// ?powR_ge0//.
-by rewrite ge1r_powR// x0.
+move=> /andP[x0 x1] y0 r1.
+by rewrite (powRM _ (ltW _))// ler_wpmul2r ?powR_ge0// ge1r_powR// x0.
 Qed.
 
 Lemma le1r_powRZ x y r : x >= 1 -> 0 <= y -> 1 <= r ->
   (x * y) `^ r >= x * (y `^ r).
 Proof.
 move=> x1 y0 r1.
-rewrite powRM//; last by rewrite (le_trans _ x1).
-rewrite ler_wpmul2r// ?powR_ge0//.
-rewrite le1r_powR//.
+by rewrite (powRM _ (le_trans _ x1))// ler_wpmul2r ?powR_ge0// le1r_powR// x0.
 Qed.
 
 Lemma powRrM (x y z : R) : x `^ (y * z) = (x `^ y) `^ z.

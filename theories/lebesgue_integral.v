@@ -3945,7 +3945,7 @@ transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
 rewrite (@integral_measure_series _ _ R (fun n => [the measure _ _ of \d_ n]) setT)//=.
 - by apply: eq_eseriesr=> i _; rewrite integral_dirac//= indicE mem_set// mul1e.
 - move=> n; apply/integrableP; split=> [//|].
-  by rewrite integral_dirac//= indicE mem_set// mul1e; exact: (summable_pinfty sa).
+  by rewrite integral_dirac//= indicE mem_set// mul1e (summable_pinfty sa).
 - by apply: summable_integral_dirac => //; exact: summable_funeneg.
 - by apply: summable_integral_dirac => //; exact: summable_funepos.
 Qed.

@@ -77,7 +77,7 @@
     `ge1r_powR`, `ge1r_powRZ`, `le1r_powRZ`
 
 - in `hoelder.v`:
-  + lemmas `lnormE`, `hoelder2`, `convex_powR`
+  + lemmas `Lnorm_counting`, `hoelder2`, `convex_powR`
 
 - in `lebesgue_integral.v`:
   + lemma `ge0_integral_count`
@@ -85,6 +85,8 @@
 - in `exp.v`:
   + lemma `gt0_ltr_powR`
   + lemma `powR_injective`
+- in `mathcomp_extra.v`:
+  + lemma `lerBr`
 
 ### Changed
 

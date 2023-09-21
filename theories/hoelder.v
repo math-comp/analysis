@@ -4,7 +4,8 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop .
 Require Import signed reals ereal topology normedtype sequences real_interval.
-Require Import esum measure lebesgue_measure lebesgue_integral numfun exp convex itv.
+Require Import esum measure lebesgue_measure lebesgue_integral numfun exp.
+Require Import convex itv.
 
 (******************************************************************************)
 (*                         Hoelder's Inequality                               *)
@@ -71,8 +72,8 @@ Qed.
 Lemma eq_Lnorm p f g : f =1 g -> 'N_p[f] = 'N_p[g].
 Proof. by move=> fg; congr Lnorm; exact/funext. Qed.
 
-Lemma Lnorm_eq0_eq0 r f : (0 < r)%R -> measurable_fun setT f -> 'N_r%:E[f] = 0 ->
-  ae_eq mu [set: T] (fun t => (`|f t| `^ r)%:E) (cst 0).
+Lemma Lnorm_eq0_eq0 r f : (0 < r)%R -> measurable_fun setT f ->
+  'N_r%:E[f] = 0 -> ae_eq mu [set: T] (fun t => (`|f t| `^ r)%:E) (cst 0).
 Proof.
 move=> r0 mf/=; rewrite (gt_eqF r0) => /poweR_eq0_eq0 fp.
 apply/ae_eq_integral_abs => //=.
@@ -95,7 +96,8 @@ Context d {T : measurableType d} {R : realType}.
 
 Local Notation "'N_ p [ f ]" := (Lnorm counting p f).
 
-Lemma lnormE p (f : R^nat) : (0 < p)%R -> 'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
+Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
+  'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
 Proof.
 move=> p0 /=; rewrite gt_eqF// ge0_integral_count// => k.
 by rewrite lee_fin powR_ge0.
@@ -246,32 +248,32 @@ Qed.
 End hoelder.
 
 Section hoelder2.
-Context (R : realType).
+Context {R : realType}.
 Local Open Scope ring_scope.
 
-Lemma hoelder2 (a1 a2 b1 b2 : R) (p q : R) : 0 <= a1 -> 0 <= a2 -> 0 <= b1 -> 0 <= b2 ->
+Lemma hoelder2 (a1 a2 b1 b2 : R) (p q : R) :
+  0 <= a1 -> 0 <= a2 -> 0 <= b1 -> 0 <= b2 ->
   0 < p -> 0 < q -> p^-1 + q^-1 = 1 ->
   a1 * b1 + a2 * b2 <= (a1`^p + a2`^p) `^ (p^-1) * (b1`^q + b2`^q)`^(q^-1).
 Proof.
 move=> a10 a20 b10 b20 p0 q0 pq.
-pose f := fun a b n => match n with 0%nat => a | 1%nat => b | _ => 0:R end.
-have mf a b : measurable_fun setT (f a b). done.
-have := @hoelder _ _ _ counting (f a1 a2) (f b1 b2) p q (mf a1 a2) (mf b1 b2) p0 q0 pq.
-rewrite !lnormE//.
+pose f a b n : R := match n with 0%nat => a | 1%nat => b | _ => 0 end.
+have mf a b : measurable_fun setT (f a b) by [].
+have := hoelder counting (mf a1 a2) (mf b1 b2) p0 q0 pq.
+rewrite !Lnorm_counting//.
 rewrite (nneseries_split 2); last by move=> k; rewrite lee_fin powR_ge0.
 rewrite ereal_series_cond eseries0 ?adde0; last first.
   by move=> [//|] [//|n _]; rewrite /f /= mulr0 normr0 powR0.
-rewrite 2!big_ord_recr /= big_ord0 add0e powRr1 ?normr_ge0// powRr1 ?normr_ge0//.
+rewrite 2!big_ord_recr /= big_ord0 add0e powRr1 ?normr_ge0 ?powRr1 ?normr_ge0//.
 rewrite (nneseries_split 2); last by move=> k; rewrite lee_fin powR_ge0.
-rewrite ereal_series_cond eseries0 ?adde0; last
+rewrite ereal_series_cond eseries0 ?adde0; last first.
   by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
 rewrite 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
 rewrite (nneseries_split 2); last by move=> k; rewrite lee_fin powR_ge0.
-rewrite ereal_series_cond eseries0 ?adde0; last
+rewrite ereal_series_cond eseries0 ?adde0; last first.
   by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
 rewrite 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
 rewrite -EFinM invr1 powRr1; last by rewrite addr_ge0.
-rewrite lee_fin.
 do 2 (rewrite ger0_norm; last by rewrite mulr_ge0).
 by do 4 (rewrite ger0_norm; last by []).
 Qed.
@@ -279,77 +281,58 @@ Qed.
 End hoelder2.
 
 Section convex_powR.
-Context (R : realType).
+Context {R : realType}.
 Local Open Scope ring_scope.
-
-Lemma lerBr (x y : R) : (0 <= y -> x - y <= x)%R.
-Proof.
-by move=> x0; rewrite ler_subl_addl ler_addr.
-Qed.
 
 Lemma convex_powR p : 1 <= p ->
   convex_function `[0, +oo[%classic (@powR R ^~ p).
 Proof.
-move=> p1 t x y.
-rewrite !inE /= !in_itv /= !andbT=> x_ge0 y_ge0.
-pose w1 := `1-(t%:inum).
-pose w2 := t%:inum.
-suff: (w1 *: (x : R^o) + w2 *: (y : R^o)) `^ p<=
-       (w1 *: (x `^ p : R^o) + w2 *: (y `^ p : R^o)) by [].
+move=> p1 t x y /[!inE] /= /[!in_itv] /= /[!andbT] x_ge0 y_ge0.
+have p0 : 0 < p by rewrite (lt_le_trans _ p1).
+rewrite !convRE; set w1 := `1-(t%:inum); set w2 := t%:inum.
 have [->|w10] := eqVneq w1 0.
-  rewrite scale0r add0r scale0r add0r.
-  have [->|w20] := eqVneq w2 0.
-    by rewrite !scale0r powR0// gt_eqF ?(lt_le_trans _ p1).
-  by rewrite ge1r_powRZ// /w2 lt_neqAle eq_sym w20 andTb; apply/andP.
+  rewrite !mul0r !add0r; have [->|w20] := eqVneq w2 0.
+    by rewrite !mul0r powR0// gt_eqF.
+  by rewrite ge1r_powRZ// /w2 lt_neqAle eq_sym w20/=; apply/andP.
 have [->|w20] := eqVneq w2 0.
-  rewrite scale0r addr0 scale0r addr0.
-  by rewrite ge1r_powRZ// ?onem_le1// andbT lt_neqAle eq_sym onem_ge0// andbT.
-have [->|pn1] := eqVneq p 1.
-  rewrite !powRr1// addr_ge0// mulr_ge0 /w1 /w2//onem_ge0//.
+  rewrite !mul0r !addr0 ge1r_powRZ// onem_le1// andbT.
+  by rewrite lt_neqAle eq_sym onem_ge0// andbT.
+have [->|p_neq1] := eqVneq p 1.
+  by rewrite !powRr1// addr_ge0// mulr_ge0// /w2 ?onem_ge0.
+have {p1 p_neq1}p1 : 1 < p by rewrite lt_neqAle eq_sym p_neq1.
 pose q := p / (p - 1).
-have q1 : 1 <= q.
- by rewrite /q ler_pdivl_mulr// ?mul1r ?lerBr// subr_gt0 lt_neqAle eq_sym pn1.
-rewrite -(@powRr1 _ (w1 *: (x `^ p : R^o) + w2 *: (y `^ p : R^o))); last first.
-  by rewrite addr_ge0// mulr_ge0// ?powR_ge0// /w2 ?onem_ge0// ?itv_ge0.
-have -> : 1 = p^-1 * p by rewrite mulVf// lt0r_neq0// (lt_le_trans _ p1).
-rewrite powRrM gt0_ler_powR//.
-- by rewrite (le_trans _ p1).
-- by rewrite nnegrE addr_ge0// mulr_ge0/w2/w1 ?onem_ge0.
+have q1 : 1 <= q by rewrite /q ler_pdivl_mulr// ?mul1r ?lerBr// subr_gt0.
+have q0 : 0 < q by rewrite (lt_le_trans _ q1).
+have pq1 : p^-1 + q^-1 = 1.
+  rewrite /q invf_div -{1}(div1r p) -mulrDl addrCA subrr addr0.
+  by rewrite mulfV// gt_eqF.
+rewrite -(@powRr1 _ (w1 * x `^ p + w2 * y `^ p)); last first.
+  by rewrite addr_ge0// mulr_ge0// ?powR_ge0// /w2 ?onem_ge0// itv_ge0.
+have -> : 1 = p^-1 * p by rewrite mulVf ?gt_eqF.
+rewrite powRrM (gt0_ler_powR (le_trans _ (ltW p1)))//.
+- by rewrite nnegrE addr_ge0// mulr_ge0 /w2 ?onem_ge0.
 - by rewrite nnegrE powR_ge0.
-have -> : (w1 *: (x : R^o) + w2 *: (y : R^o) =
-    w1 `^ (p^-1) * w1 `^ (q^-1) *: (x : R^o) +
-    w2 `^ (p^-1) * w2 `^ (q^-1) *: (y : R^o))%R.
-  rewrite -!powRD; [|exact/implyP..].
-  have -> : p^-1 + q^-1 = 1.
-    rewrite /q invf_div -{1}(mul1r (p^-1)) -mulrDl (addrC p) addrA subrr add0r mulfV//.
-    by rewrite lt0r_neq0// (lt_le_trans _ p1).
-  by rewrite /w2 !powRr1// onem_ge0.
-apply: (@le_trans _ _ ((w1 *: (x `^ p : R^o) + w2 *: (y `^ p : R^o)) `^ (p^-1) * (w1+w2) `^ (q^-1)))%R.
-  pose a1 := w1 `^ (p^-1) * x.
-  pose a2 := w2 `^ (p^-1) * y.
-  pose b1 := w1 `^ (q^-1).
-  pose b2 := w2 `^ (q^-1).
-  have : a1 * b1 + a2 * b2 <= (a1 `^ p + a2 `^ p)`^(p^-1) * (b1 `^ q + b2 `^ q)`^(q^-1).
+have -> : w1 * x + w2 * y = w1 `^ (p^-1) * w1 `^ (q^-1) * x +
+                            w2 `^ (p^-1) * w2 `^ (q^-1) * y.
+  rewrite -!powRD pq1; [|exact/implyP..].
+  by rewrite !powRr1// /w2 ?onem_ge0.
+apply: (@le_trans _ _ ((w1 * x `^ p + w2 * y `^ p) `^ (p^-1) *
+                       (w1 + w2) `^ q^-1)).
+  pose a1 := w1 `^ p^-1 * x. pose a2 := w2 `^ p^-1 * y.
+  pose b1 := w1 `^ q^-1. pose b2 := w2 `^ q^-1.
+  have : a1 * b1 + a2 * b2 <= (a1 `^ p + a2 `^ p) `^ p^-1 *
+                              (b1 `^ q + b2 `^ q) `^ q^-1.
     apply: hoelder2 => //.
-    - by rewrite /a1 mulr_ge0// powR_ge0.
-    - by rewrite /a2 mulr_ge0// powR_ge0.
-    - by rewrite /b1 powR_ge0.
-    - by rewrite /b2 powR_ge0.
-    - by rewrite (lt_le_trans _ p1).
-    - by rewrite (lt_le_trans _ q1).
-    - rewrite /q invf_div -{1}div1r -mulrDl addrC -addrA (addrC _ 1) subrr addr0 divff// gt_eqF//.
-      by rewrite (lt_le_trans _ p1)// orbT.
-  rewrite /a1/a2/b1/b2.
-  rewrite powRM ?powR_ge0// -powRrM mulVf; last by rewrite gt_eqF// (lt_le_trans _ p1).
-  rewrite powRr1 ?onem_ge0//.
-  rewrite powRM ?powR_ge0// -powRrM mulVf; last by rewrite gt_eqF// (lt_le_trans _ p1).
+    - by rewrite mulr_ge0// powR_ge0.
+    - by rewrite mulr_ge0// powR_ge0.
+    - by rewrite powR_ge0.
+    - by rewrite powR_ge0.
+  rewrite /a1 /a2 /b1 /b2 powRM ?powR_ge0// -powRrM mulVf ?gt_eqF//.
+  rewrite powRr1 ?onem_ge0// powRM ?powR_ge0// -powRrM mulVf ?gt_eqF//.
   rewrite powRr1; last by rewrite /w2.
-  rewrite -(@powRrM _ _ _ q) mulVf ?powRr1 ?onem_ge0//; last first.
-    by rewrite gt_eqF// (lt_le_trans _ q1).
-  rewrite -(@powRrM _ _ _ q) mulVf ?powRr1 ?onem_ge0 /w2//; last first.
-    by rewrite gt_eqF// (lt_le_trans _ q1).
+  rewrite -(@powRrM _ _ _ q) mulVf ?gt_eqF// powRr1 ?onem_ge0//.
+  rewrite -(@powRrM _ _ _ q) mulVf ?gt_eqF// powRr1; last by rewrite /w2.
   by rewrite mulrAC (mulrAC _ y) => /le_trans; exact.
-rewrite le_eqVlt; apply/orP; left; apply/eqP.
 by rewrite {2}/w1 {2}/w2 subrK powR1 mulr1.
 Qed.
 
