@@ -94,6 +94,10 @@
 - in `normedtype.v`: 
   + `normal_urysohnP` -> `normal_separatorP`.
 
+- in `constructive_ereal.v`:
+  + `lee_opp` -> `leeN2`
+  + `lte_opp` -> `lteN2`
+
 ### Generalized
 
 ### Deprecated

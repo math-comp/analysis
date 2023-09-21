@@ -3602,7 +3602,7 @@ Let cvgeM_lt0_pinfty  f g b :
 Proof.
 move=> b0 /cvgeyPge foo /fine_cvgP -[gfin gb]; apply/cvgeNyPleNy.
 near (0%R : R)^'+ => e; near=> A; near=> n.
-rewrite -lee_opp -muleN (@le_trans _ _ (f n * e%:E))//.
+rewrite -leeN2 -muleN (@le_trans _ _ (f n * e%:E))//.
   by rewrite -lee_pdivr_mulr ?mulr_gt0 ?oppr_gt0//; near: n; apply: foo.
 rewrite lee_pmul ?lee_fin//.
   by rewrite (@le_trans _ _ 1) ?lee_fin//; near: n; apply: foo.
