@@ -4311,6 +4311,8 @@ Lemma measurable_swap : measurable_fun [set: _] (@swap T1 T2).
 Proof. exact: measurable_fun_prod. Qed.
 
 End prod_measurable_proj.
+Arguments measurable_fst {d1 d2 T1 T2}.
+Arguments measurable_snd {d1 d2 T1 T2}.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_fst`")]
 Notation measurable_fun_fst := measurable_fst.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_snd`")]

@@ -89,6 +89,9 @@
 - in `lebesgue_integral.v`:
   + implicits of `integral_le_bound`
 
+- in `measure.v`:
+  + implicits of `measurable_fst` and `measurable_snd`
+
 ### Renamed
 
 - in `normedtype.v`: 
