@@ -40,8 +40,8 @@ jobs:
       name: Checking presence of CI target coq
       run: "nb_dry_run=$(NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr\
         \ bundle \"8.16\" --argstr job \"coq\" \\\n   --dry-run 2>&1 > /dev/null)\n\
-        echo $nb_dry_run\necho name=status::$(echo $nb_dry_run | grep \"built:\" |\
-        \ sed \"s/.*/built/\") >> $GITHUB_OUTPUT\n"
+        echo $nb_dry_run\necho status=$(echo $nb_dry_run | grep \"built:\" | sed \"\
+        s/.*/built/\") >> $GITHUB_OUTPUT\n"
     - if: steps.stepCheck.outputs.status == 'built'
       name: Building/fetching current CI target
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "8.16" --argstr
@@ -88,8 +88,8 @@ jobs:
       name: Checking presence of CI target mathcomp-analysis
       run: "nb_dry_run=$(NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr\
         \ bundle \"8.16\" --argstr job \"mathcomp-analysis\" \\\n   --dry-run 2>&1\
-        \ > /dev/null)\necho $nb_dry_run\necho name=status::$(echo $nb_dry_run | grep\
-        \ \"built:\" | sed \"s/.*/built/\") >> $GITHUB_OUTPUT\n"
+        \ > /dev/null)\necho $nb_dry_run\necho status=$(echo $nb_dry_run | grep \"\
+        built:\" | sed \"s/.*/built/\") >> $GITHUB_OUTPUT\n"
     - if: steps.stepCheck.outputs.status == 'built'
       name: 'Building/fetching previous CI target: coq'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "8.16" --argstr
@@ -156,8 +156,8 @@ jobs:
       name: Checking presence of CI target mathcomp-analysis-single
       run: "nb_dry_run=$(NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr\
         \ bundle \"8.16\" --argstr job \"mathcomp-analysis-single\" \\\n   --dry-run\
-        \ 2>&1 > /dev/null)\necho $nb_dry_run\necho name=status::$(echo $nb_dry_run\
-        \ | grep \"built:\" | sed \"s/.*/built/\") >> $GITHUB_OUTPUT\n"
+        \ 2>&1 > /dev/null)\necho $nb_dry_run\necho status=$(echo $nb_dry_run | grep\
+        \ \"built:\" | sed \"s/.*/built/\") >> $GITHUB_OUTPUT\n"
     - if: steps.stepCheck.outputs.status == 'built'
       name: 'Building/fetching previous CI target: coq'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "8.16" --argstr
