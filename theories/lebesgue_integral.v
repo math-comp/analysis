@@ -1435,7 +1435,7 @@ have [fxn|fxn] := ltP (f x) n%:R%:E.
       by rewrite /A /= k2n inE; split => //=; rewrite inE/=; exists r.
     rewrite xAn1k mulr1 big1 ?addr0; last first.
       by move=> i ik2n; rewrite (disj_A0 (Ordinal k2n)) // mulr0.
-    rewrite -(natr1 _ k.*2) mulrDl exprS -mul2n natrM -mulf_div divrr ?unitfE//.
+    rewrite -(@natr1 _ k.*2) mulrDl exprS -mul2n natrM -mulf_div divrr ?unitfE//.
     by rewrite !mul1r lerDl.
 have /orP[{}fxn|{}fxn] :
     ((n%:R%:E <= f x < n.+1%:R%:E) || (n.+1%:R%:E <= f x))%E.
