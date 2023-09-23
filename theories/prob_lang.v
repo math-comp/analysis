@@ -1192,32 +1192,16 @@ Section bernoulli_and.
 Context d (T : measurableType d) (R : realType).
 Import Notations.
 
-Definition mand (x y : T * mbool * mbool -> mbool)
-  (t : T * mbool * mbool) : mbool := x t && y t.
-
-Lemma measurable_fun_mand (x y : T * mbool * mbool -> mbool) :
-  measurable_fun setT x -> measurable_fun setT y ->
-  measurable_fun setT (mand x y).
-Proof.
-move=> /= mx my; apply: (measurable_fun_bool true).
-rewrite [X in measurable X](_ : _ =
-    (x @^-1` [set true]) `&` (y @^-1` [set true])); last first.
-  by rewrite /mand; apply/seteqP; split => z/= /andP.
-apply: measurableI.
-- by rewrite -[X in measurable X]setTI; exact: mx.
-- by rewrite -[X in measurable X]setTI; exact: my.
-Qed.
-
 Definition bernoulli_and : R.-sfker T ~> mbool :=
     (letin (sample_cst [the probability _ _ of bernoulli p12])
      (letin (sample_cst [the probability _ _ of bernoulli p12])
-        (ret (measurable_fun_mand macc1of3 macc2of3)))).
+        (ret (measurable_and macc1of3 macc2of3)))).
 
 Lemma bernoulli_andE t U :
   bernoulli_and t U =
   sample_cst (bernoulli p14) t U.
 Proof.
-rewrite /bernoulli_and 3!letin_sample_bernoulli/= /mand/= muleDr//= -muleDl//.
+rewrite /bernoulli_and 3!letin_sample_bernoulli/= muleDr//= -muleDl//.
 rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
 have -> : (1 / 2 * (1 / 2) = 1 / 4%:R :> R)%R by rewrite mulf_div mulr1// -natrM.
 rewrite /bernoulli/= measure_addE/= /mscale/= -!EFinM; congr( _ + (_ * _)%:E).
