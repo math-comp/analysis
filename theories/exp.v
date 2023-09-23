@@ -676,6 +676,16 @@ move=> /predU1P[->//|xy]; first by rewrite eqxx.
 by apply/orP; right; rewrite /powR !gt_eqF// ltr_expR ltr_pmul2l// ltr_ln.
 Qed.
 
+Lemma gt0_ltr_powR (r : R) : 0 < r ->
+  {in `[0, +oo[ &, {homo powR ^~ r : x y / x < y >-> x < y}}.
+Proof.
+move=> r0 x y; rewrite !in_itv/= !andbT !le_eqVlt => /predU1P[<-|x0].
+  move=> /predU1P[<-|y0 _]; first by rewrite ltxx//.
+  by rewrite powR0 ?(gt_eqF r0)// powR_gt0.
+move=> /predU1P[<-|y0]; first rewrite ltNge ltW//.
+by rewrite /powR !gt_eqF// ltr_expR ltr_pmul2l// ltr_ln.
+Qed.
+
 Lemma powRM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
 Proof.
 rewrite /powR mulf_eq0.

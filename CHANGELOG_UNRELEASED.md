@@ -70,6 +70,9 @@
 - in `measure.v`:
   + definition `ess_sup`, lemma `ess_sup_ge0`
 
+- in `exp.v`:
+  + lemma `gt0_ltr_powR`
+
 ### Changed
 
 - `mnormalize` moved from `kernel.v` to `measure.v` and generalized
