@@ -361,10 +361,52 @@ Context {R : realType}.
 
 Inductive flag := D | P.
 
+Section binop.
+
+Inductive binop :=
+| binop_and | binop_or
+| binop_add | binop_minus | binop_mult.
+
+Definition type_of_binop (b : binop) : typ :=
+match b with
+| binop_and => Bool
+| binop_or => Bool
+| binop_add => Real
+| binop_minus => Real
+| binop_mult => Real
+end.
+
+(* Import Notations. *)
+
+Definition fun_of_binop g (b : binop) : (mctx g -> mtyp (type_of_binop b)) ->
+  (mctx g -> mtyp (type_of_binop b)) -> @mctx R g -> @mtyp R (type_of_binop b) := 
+match b with
+| binop_and => (fun f1 f2 x => f1 x && f2 x : mtyp Bool)
+| binop_or => (fun f1 f2 x => f1 x || f2 x : mtyp Bool)
+| binop_add => (fun f1 f2 => (f1 \+ f2)%R)
+| binop_minus => (fun f1 f2 => (f1 \- f2)%R)
+| binop_mult => (fun f1 f2 => (f1 \* f2)%R)
+end.
+
+Definition mfun_of_binop g b 
+  (f1 : @mctx R g -> @mtyp R (type_of_binop b)) (mf1 : measurable_fun setT f1) 
+  (f2 : @mctx R g -> @mtyp R (type_of_binop b)) (mf2 : measurable_fun setT f2) :
+  measurable_fun [set: @mctx R g] (fun_of_binop f1 f2).
+destruct b.
+exact: measurable_and mf1 mf2.
+exact: measurable_or mf1 mf2.
+exact: measurable_funD.
+exact: measurable_funB.
+exact: measurable_funM.
+Defined.
+
+End binop.
+
 Inductive exp : flag -> ctx -> typ -> Type :=
 | exp_unit g : exp D g Unit
 | exp_bool g : bool -> exp D g Bool
 | exp_real g : R -> exp D g Real
+| exp_bin g (b : binop) : exp D g (type_of_binop b) -> exp D g (type_of_binop b) -> exp D g (type_of_binop b)
 | exp_pair g t1 t2 : exp D g t1 -> exp D g t2 -> exp D g (Pair t1 t2)
 | exp_proj1 g t1 t2 : exp D g (Pair t1 t2) -> exp D g t1
 | exp_proj2 g t1 t2 : exp D g (Pair t1 t2) -> exp D g t2
@@ -396,6 +438,7 @@ Arguments exp {R}.
 Arguments exp_unit {R g}.
 Arguments exp_bool {R g}.
 Arguments exp_real {R g}.
+Arguments exp_bin {R g} &.
 Arguments exp_pair {R g} & {t1 t2}.
 Arguments exp_var {R g} _ {t} H.
 Arguments exp_bernoulli {R g}.
@@ -416,6 +459,16 @@ Notation "b ':B'" := (@exp_bool _ _ b%bool)
   (in custom expr at level 1) : lang_scope.
 Notation "r ':R'" := (@exp_real _ _ r%R)
   (in custom expr at level 1, format "r :R") : lang_scope.
+Notation "e1 && e2" := (exp_bin binop_and e1 e2)
+  (in custom expr at level 1) : lang_scope.
+Notation "e1 || e2" := (exp_bin binop_or e1 e2)
+  (in custom expr at level 1) : lang_scope.
+Notation "e1 + e2" := (exp_bin binop_add e1 e2)
+  (in custom expr at level 1) : lang_scope.
+Notation "e1 - e2" := (exp_bin binop_minus e1 e2)
+  (in custom expr at level 1) : lang_scope.
+Notation "e1 * e2" := (exp_bin binop_mult e1 e2)
+  (in custom expr at level 1) : lang_scope.
 Notation "'return' e" := (@exp_return _ _ _ e)
   (in custom expr at level 2) : lang_scope.
 (*Notation "% str" := (@exp_var _ _ str%string _ erefl)
@@ -457,6 +510,7 @@ Fixpoint free_vars k g t (e : @exp R k g t) : seq string :=
   | exp_unit _              => [::]
   | exp_bool _ _            => [::]
   | exp_real _ _            => [::]
+  | exp_bin _ _ e1 e2    => free_vars e1 ++ free_vars e2
   | exp_pair _ _ _ e1 e2    => free_vars e1 ++ free_vars e2
   | exp_proj1 _ _ _ e       => free_vars e
   | exp_proj2 _ _ _ e       => free_vars e
@@ -574,6 +628,10 @@ Inductive evalD : forall g t, exp D g t ->
 
 | eval_real g r : ([r:R] : exp D g _) -D> cst r ; kr r
 
+| eval_bin g bop (e1 : exp D g _) f1 mf1 e2 f2 mf2 :
+  e1 -D> f1 ; mf1 -> e2 -D> f2 ; mf2 ->
+  exp_bin bop e1 e2 -D> fun_of_binop f1 f2 ; mfun_of_binop mf1 mf2
+
 | eval_pair g t1 (e1 : exp D g t1) f1 mf1 t2 (e2 : exp D g t2) f2 mf2 :
   e1 -D> f1 ; mf1 -> e2 -D> f2 ; mf2 ->
   [(e1, e2)] -D> fun x => (f1 x, f2 x) ; measurable_fun_prod mf1 mf2
@@ -676,6 +734,12 @@ all: (rewrite {g t e u v mu mv hu}).
 - move=> g r {}v {}mv.
   inversion 1; subst g0 r0.
   by inj_ex H3.
+- move=> g bop e1 f1 mf1 e2 f2 mf2 ev1 IH1 ev2 IH2 {}v {}mv.
+  inversion 1; subst g0 bop0.
+  inj_ex H10; subst v.
+  inj_ex H5; subst e1.
+  inj_ex H6; subst e5.
+  by move: H4 H11 => /IH1 <- /IH2 <-.
 - move=> g t1 e1 f1 mf1 t2 e2 f2 mf2 ev1 IH1 ev2 IH2 {}v {}mv.
   simple inversion 1 => //; subst g0.
   case: H3 => ? ?; subst t0 t3.
@@ -798,6 +862,12 @@ all: rewrite {g t e u v eu}.
 - move=> g r {}v {}mv.
   inversion 1; subst g0 r0.
   by inj_ex H3.
+- move=> g bop e1 f1 mf1 e2 f2 mf2 ev1 IH1 ev2 IH2 {}v {}mv.
+  inversion 1; subst g0 bop0.
+  inj_ex H10; subst v.
+  inj_ex H5; subst e1.
+  inj_ex H6; subst e5.
+  by move: H4 H11 => /IH1 <- /IH2 <-.
 - move=> g t1 e1 f1 mf1 t2 e2 f2 mf2 ev1 IH1 ev2 IH2 {}v {}mv.
   simple inversion 1 => //; subst g0.
   case: H3 => ? ?; subst t0 t3.
@@ -914,6 +984,8 @@ all: rewrite {z g t}.
 - by do 2 eexists; exact: eval_unit.
 - by do 2 eexists; exact: eval_bool.
 - by do 2 eexists; exact: eval_real.
+- move=> g b e1 [f1 [mf1 H1]] e2 [f2 [mf2 H2]].
+  by exists (fun_of_binop f1 f2); eexists; exact: eval_bin.
 - move=> g t1 t2 e1 [f1 [mf1 H1]] e2 [f2 [mf2 H2]].
   by exists (fun x => (f1 x, f2 x)); eexists; exact: eval_pair.
 - move=> g t1 t2 e [f [mf H]].
@@ -1021,6 +1093,15 @@ Proof. exact/execD_evalD/eval_bool. Qed.
 
 Lemma execD_real g r : @execD g _ [r:R] = existT _ (cst r) (kr r).
 Proof. exact/execD_evalD/eval_real. Qed.
+
+Lemma execD_bin g bop (e1 : exp D g _) (e2 : exp D g _) :
+  let f1 := projT1 (execD e1) in let f2 := projT1 (execD e2) in
+  let mf1 := projT2 (execD e1) in let mf2 := projT2 (execD e2) in
+  execD (exp_bin bop e1 e2) =
+  @existT _ _ (fun_of_binop f1 f2) (mfun_of_binop mf1 mf2).
+Proof.
+by move=> f1 f2 mf1 mf2; apply/execD_evalD/eval_bin; exact: evalD_execD.
+Qed.
 
 Lemma execD_pair g t1 t2 (e1 : exp D g t1) (e2 : exp D g t2) :
   let f1 := projT1 (execD e1) in let f2 := projT1 (execD e2) in
