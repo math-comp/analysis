@@ -618,7 +618,7 @@ Proof.
 move=> df; set g := RHS; have glin : linear g.
   by move=> a u v; rewrite /g linearP /= scalerDl -scalerA.
 pose glM := GRing.isLinear.Build _ _ _ _ _ glin.
-pose gL : GRing.Linear.type _ _ _ _ := HB.pack g glM.
+pose gL : {linear _ -> _} := HB.pack g glM.
 by apply:(@diff_unique _ _ _ gL); have [] := dscalel f df.
 Qed.
 
@@ -657,7 +657,7 @@ Proof.
 have sx_lin : linear ( *:%R ^~ x : [the lmodType R of R : Type] -> _).
   by move=> u y z; rewrite scalerDl scalerA.
 pose sxlM := GRing.isLinear.Build _ _ _ _ _ sx_lin.
-pose sxL : GRing.Linear.type _ _ _ _ := HB.pack ( *:%R ^~ x) sxlM.
+pose sxL : {linear _ -> _} := HB.pack ( *:%R ^~ x) sxlM.
 have -> : *:%R ^~ x = sxL by rewrite funeqE.
 apply: DiffDef; first exact/linear_differentiable/scalel_continuous.
 by rewrite diff_lin //; apply: scalel_continuous.
@@ -807,7 +807,7 @@ pose d q := f p.1 q.2 + f q.1 p.2.
 move=> fc; have lind : linear d.
   by move=> ???; rewrite /d linearPr linearPl scalerDr addrACA.
 pose dlM := GRing.isLinear.Build _ _ _ _ _ lind.
-pose dL : GRing.Linear.type _ _ _ _ := HB.pack d dlM.
+pose dL : {linear _ -> _} := HB.pack d dlM.
 rewrite -/d -[d]/(dL : _ -> _).
 by apply/diff_unique; have [] := dbilin p fc.
 Qed.
@@ -884,7 +884,7 @@ move=> df dg.
 pose d y := ('d f x y, 'd g x y).
 have lin_pair : linear d by move=> ???; rewrite /d !linearPZ.
 pose pairlM := GRing.isLinear.Build _ _ _ _ _ lin_pair.
-pose pairL : GRing.Linear.type _ _ _ _ := HB.pack d pairlM.
+pose pairL : {linear _ -> _} := HB.pack d pairlM.
 rewrite -/d -[d]/(pairL : _ -> _).
 by apply: diff_unique; have [] := dpair df dg.
 Qed.
@@ -1037,7 +1037,7 @@ Proof.
 pose d (h : R) := h *: f^`() x.
 move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
-pose scalL : GRing.Linear.type _ _ _ _ := HB.pack d scallM.
+pose scalL : {linear _ -> _} := HB.pack d scallM.
 rewrite -/d -[d]/(scalL : _ -> _).
 by apply: diff_unique; [apply: scalel_continuous|apply: der1].
 Qed.
@@ -1048,7 +1048,7 @@ Proof.
 pose d (h : R) := h *: 'd f x 1.
 move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
-pose scalL : GRing.Linear.type _ _ _ _ := HB.pack d scallM.
+pose scalL : {linear _ -> _} := HB.pack d scallM.
 have -> : (fun h => h *: f^`() x) = scalL by rewrite derive1E'.
 apply: diff_unique; first exact: scalel_continuous.
 apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
