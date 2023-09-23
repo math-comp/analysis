@@ -489,10 +489,11 @@ rewrite lee_sqrE ?sqrte_ge0// sqr_sqrte ?mule_ge0 ?variance_ge0//.
 rewrite -(fineK (variance_fin_num X1 X2)) -(fineK (variance_fin_num Y1 Y2)).
 rewrite -(fineK (covariance_fin_num X1 Y1 XY1)).
 rewrite -EFin_expe -EFinM lee_fin -(@ler_pM2l _ 4) ?ltr0n// [leRHS]mulrA.
-rewrite [in leLHS](_ : 4 = 2 * 2)%R -natrM// natrM mulrACA -expr2 -subr_le0.
-apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
+rewrite [in leLHS](_ : 4 = 2 * 2)%R -natrM// [in leLHS]natrM mulrACA -expr2.
+rewrite -subr_le0; apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
 rewrite EFinM fineK ?variance_fin_num// muleC -varianceZ//.
-rewrite -mulrA EFinM mulrC EFinM ?fineK ?covariance_fin_num// -covarianceZl//.
+rewrite 2!EFinM ?fineK ?variance_fin_num// ?covariance_fin_num//.
+rewrite -muleA [_ * r%:E]muleC -covarianceZl//.
 rewrite addeAC -varianceD ?variance_ge0//=.
 - by rewrite compre_scale ?integrableZl.
 - rewrite [X in EFin \o X](_ : _ = r ^+2 \o* X ^+ 2)%R 1?mulrACA//.
