@@ -1155,7 +1155,7 @@ have [|reN1] := boolP (contract r%:E - e%:num == -1)%R.
     by apply (@nbhs_fin_out_below _ e) => //; rewrite reN1 addrAC subrr sub0r.
   have e1 : (1 < e%:num)%R.
     move: re1; rewrite reN1 addrAC ltrBrDl -!mulr2n -(mulr_natl e%:num).
-    by rewrite -{1}(mulr1 2) => ?; rewrite -(@ltr_pM2l _ 2).
+    by rewrite -{1}(mulr1 2%:R) => ?; rewrite -(@ltr_pM2l _ 2).
   have Aoo : setT `\ -oo `<=` A.
     move=> x [_]; rewrite /set1 /= => xnoo; apply reA.
     case: x xnoo => [r' _ | _ |//].
@@ -1208,7 +1208,7 @@ move: re1; rewrite le_eqVlt => /orP[re1|re1].
   have e1 : (1 < e%:num)%R.
     move: reN1.
     rewrite re1 -addrA -opprD ltrBlDl ltrBrDl -!mulr2n.
-    rewrite -(mulr_natl e%:num) -{1}(mulr1 2) => ?.
+    rewrite -(mulr_natl e%:num) -{1}(mulr1 2%:R) => ?.
     by rewrite -(@ltr_pM2l _ 2).
   have Aoo : (setT `\ +oo `<=` A).
     move=> x [_]; rewrite /set1 /= => xpoo; apply reA.
