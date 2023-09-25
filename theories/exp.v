@@ -215,7 +215,7 @@ suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> limn (series s).
     apply: is_cvg_pseries_inside Ck _.
     rewrite (le_lt_trans (ler_normD _ _))// -(subrK  `|x| `|K|) ltrD2r.
     near: h.
-    apply/nbhs_ballP => /=; exists ((`|K| - `|x|) /2) => /=.
+    apply/nbhs_ballP => /=; exists ((`|K| - `|x|) /2%:R) => /=.
       by rewrite divr_gt0 // subr_gt0.
     move=> t; rewrite /ball /= sub0r normrN => H tNZ.
     rewrite (lt_le_trans H)// ler_pdivrMr // mulr2n mulrDr mulr1.
@@ -238,7 +238,7 @@ suff Cc : limn
     apply: is_cvg_pseries_inside Ck _.
     rewrite (le_lt_trans (ler_normD _ _))// -(subrK  `|x| `|K|) ltrD2r.
     near: h.
-    apply/nbhs_ballP => /=; exists ((`|K| - `|x|) /2) => /=.
+    apply/nbhs_ballP => /=; exists ((`|K| - `|x|) / 2%:R) => /=.
       by rewrite divr_gt0 // subr_gt0.
     move=> t; rewrite /ball /= sub0r normrN => H tNZ.
     rewrite (lt_le_trans H)// ler_pdivrMr // mulr2n mulrDr mulr1.
@@ -262,8 +262,8 @@ suff Cc : limn
     by apply/funext => i; rewrite /series /= -scaler_sumr.
   exact/esym/cvg_lim.
 pose r := (`|x| + `|K|) / 2.
-have xLr : `|x| < r by rewrite ltr_pdivlMr // mulr2n mulrDr mulr1 ltrD2l.
-have rLx : r < `|K| by rewrite ltr_pdivrMr // mulr2n mulrDr mulr1 ltrD2r.
+have xLr : `|x| < r by rewrite ltr_pdivlMr // mulrDr mulr1 ltrD2l.
+have rLx : r < `|K| by rewrite ltr_pdivrMr // mulrDr mulr1 ltrD2r.
 have r_gt0 : 0 < r by apply: le_lt_trans xLr.
 have rNZ : r != 0by case: ltrgt0P r_gt0.
 apply: (@lim_cvg_to_0_linear _
