@@ -300,9 +300,9 @@ have [->|w20] := eqVneq w2 0.
   by rewrite lt_neqAle eq_sym onem_ge0// andbT.
 have [->|p_neq1] := eqVneq p 1.
   by rewrite !powRr1// addr_ge0// mulr_ge0// /w2 ?onem_ge0.
-have {p1 p_neq1}p1 : 1 < p by rewrite lt_neqAle eq_sym p_neq1.
+have {p_neq1} {}p1 : 1 < p by rewrite lt_neqAle eq_sym p_neq1.
 pose q := p / (p - 1).
-have q1 : 1 <= q by rewrite /q ler_pdivl_mulr// ?mul1r ?lerBr// subr_gt0.
+have q1 : 1 <= q by rewrite /q ler_pdivl_mulr// ?mul1r ?gerBl// subr_gt0.
 have q0 : 0 < q by rewrite (lt_le_trans _ q1).
 have pq1 : p^-1 + q^-1 = 1.
   rewrite /q invf_div -{1}(div1r p) -mulrDl addrCA subrr addr0.

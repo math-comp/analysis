@@ -86,7 +86,7 @@
   + lemma `gt0_ltr_powR`
   + lemma `powR_injective`
 - in `mathcomp_extra.v`:
-  + lemma `lerBr`
+  + lemma `gerBl`
 
 ### Changed
 
