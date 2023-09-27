@@ -94,7 +94,7 @@ Section lnorm.
 (* lnorm is just Lnorm applied to counting *)
 Context d {T : measurableType d} {R : realType}.
 
-Local Notation "'N_ p [ f ]" := (Lnorm counting p f).
+Local Notation "'N_ p [ f ]" := (Lnorm [the measure _ _ of counting] p f).
 
 Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
   'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
@@ -260,7 +260,7 @@ Proof.
 move=> a10 a20 b10 b20 p0 q0 pq.
 pose f a b n : R := match n with 0%nat => a | 1%nat => b | _ => 0 end.
 have mf a b : measurable_fun setT (f a b) by [].
-have := hoelder counting (mf a1 a2) (mf b1 b2) p0 q0 pq.
+have := hoelder [the measure _ _ of counting] (mf a1 a2) (mf b1 b2) p0 q0 pq.
 rewrite !Lnorm_counting//.
 rewrite (nneseries_split 2); last by move=> k; rewrite lee_fin powR_ge0.
 rewrite ereal_series_cond eseries0 ?adde0; last first.
