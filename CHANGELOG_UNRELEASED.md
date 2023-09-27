@@ -89,10 +89,17 @@
 - in `lebesgue_integral.v`:
   + implicits of `integral_le_bound`
 
+- in `measure.v`:
+  + implicits of `measurable_fst` and `measurable_snd`
+
 ### Renamed
 
 - in `normedtype.v`: 
   + `normal_urysohnP` -> `normal_separatorP`.
+
+- in `constructive_ereal.v`:
+  + `lee_opp` -> `leeN2`
+  + `lte_opp` -> `lteN2`
 
 ### Generalized
 

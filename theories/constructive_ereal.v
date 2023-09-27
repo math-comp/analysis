@@ -1678,7 +1678,7 @@ have := mule_eq_pinfty x (- y); rewrite muleN eqe_oppLR => ->.
 by rewrite !eqe_oppLR lte_oppr lte_oppl oppe0 (orbC _ ((x == -oo) && _)).
 Qed.
 
-Lemma lte_opp x y : (- x < - y) = (y < x).
+Lemma lteN2 x y : (- x < - y) = (y < x).
 Proof. by rewrite lte_oppl oppeK. Qed.
 
 Lemma lte_add a b x y : a < b -> x < y -> a + x < b + y.
@@ -2261,7 +2261,7 @@ move=> *; apply: (can_inj oppeK); apply: eq_infty => r.
 by rewrite lee_oppr -EFinN.
 Qed.
 
-Lemma lee_opp x y : (- x <= - y) = (y <= x).
+Lemma leeN2 x y : (- x <= - y) = (y <= x).
 Proof. by rewrite lee_oppl oppeK. Qed.
 
 Lemma lee_abs x : x <= `|x|.
@@ -2418,7 +2418,7 @@ Lemma bigmaxe_fin_num (s : seq R) r : r \in s ->
 Proof.
 move=> rs; have {rs} : s != [::].
   by rewrite -size_eq0 -lt0n -has_predT; apply/hasP; exists r.
-elim: s => [[]//|a l]; have [-> _ _|_ /(_ isT) ih _] := eqVneq l [::].
+elim: s => [//|a l]; have [-> _ _|_ /(_ isT) ih _] := eqVneq l [::].
   by rewrite big_seq1.
 by rewrite big_cons {1}/maxe;  case: (_ < _)%E.
 Qed.
@@ -2582,6 +2582,10 @@ Arguments lee_sum_npos_natl {R}.
 
 #[deprecated(since="mathcomp-analysis 0.6", note="Use lte_spaddre instead.")]
 Notation lte_spaddr := lte_spaddre.
+#[deprecated(since="mathcomp-analysis 0.6.5", note="Use leeN2 instead.")]
+Notation lee_opp := leeN2.
+#[deprecated(since="mathcomp-analysis 0.6.5", note="Use lteN2 instead.")]
+Notation lte_opp := lteN2.
 
 Module DualAddTheoryRealDomain.
 
@@ -2595,19 +2599,19 @@ Context {R : realDomainType}.
 Implicit Types x y z a b : \bar R.
 
 Lemma dsube_lt0 x y : (x - y < 0) = (x < y).
-Proof. by rewrite dual_addeE oppe_lt0 sube_gt0 lte_opp. Qed.
+Proof. by rewrite dual_addeE oppe_lt0 sube_gt0 lteN2. Qed.
 
 Lemma dsube_ge0 x y : (0 <= y - x) = (x <= y).
-Proof. by rewrite dual_addeE oppe_ge0 sube_le0 lee_opp. Qed.
+Proof. by rewrite dual_addeE oppe_ge0 sube_le0 leeN2. Qed.
 
 Lemma dsuber_le0 x y : y \is a fin_num -> (x - y <= 0) = (x <= y).
 Proof.
-by move=> ?; rewrite dual_addeE oppe_le0 suber_ge0 ?fin_numN// lee_opp.
+by move=> ?; rewrite dual_addeE oppe_le0 suber_ge0 ?fin_numN// leeN2.
 Qed.
 
 Lemma dsubre_le0 y x : y \is a fin_num -> (y - x <= 0) = (y <= x).
 Proof.
-by move=> ?; rewrite dual_addeE oppe_le0 subre_ge0 ?fin_numN// lee_opp.
+by move=> ?; rewrite dual_addeE oppe_le0 subre_ge0 ?fin_numN// leeN2.
 Qed.
 
 Lemma dsube_le0 x y : (x \is a fin_num) || (y \is a fin_num) ->
@@ -2615,7 +2619,7 @@ Lemma dsube_le0 x y : (x \is a fin_num) || (y \is a fin_num) ->
 Proof. by move=> /orP[?|?]; [rewrite dsuber_le0|rewrite dsubre_le0]. Qed.
 
 Lemma lte_dadd a b x y : a < b -> x < y -> a + x < b + y.
-Proof. rewrite !dual_addeE lte_opp -lte_opp -(lte_opp y); exact: lte_add. Qed.
+Proof. rewrite !dual_addeE lteN2 -lteN2 -(lteN2 y); exact: lte_add. Qed.
 
 Lemma lee_daddl x y : 0 <= y -> x <= x + y.
 Proof. rewrite dual_addeE lee_oppr -oppe_le0; exact: gee_addl. Qed.
@@ -2650,51 +2654,45 @@ Lemma gte_daddr x y : x \is a fin_num -> (y + x < x) = (y < 0).
 Proof. by rewrite daddeC; exact: gte_daddl. Qed.
 
 Lemma lte_dadd2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
-Proof.
-by move=> ?; rewrite !dual_addeE lte_opp lte_add2lE ?fin_numN// lte_opp.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE lteN2 lte_add2lE ?fin_numN// lteN2. Qed.
 
 Lemma lee_dadd2l x a b : a <= b -> x + a <= x + b.
-Proof. rewrite !dual_addeE lee_opp -lee_opp; exact: lee_add2l. Qed.
+Proof. rewrite !dual_addeE leeN2 -leeN2; exact: lee_add2l. Qed.
 
 Lemma lee_dadd2lE x a b : x \is a fin_num -> (x + a <= x + b) = (a <= b).
-Proof.
-by move=> ?; rewrite !dual_addeE lee_opp lee_add2lE ?fin_numN// lee_opp.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE leeN2 lee_add2lE ?fin_numN// leeN2. Qed.
 
 Lemma lee_dadd2r x a b : a <= b -> a + x <= b + x.
-Proof. rewrite !dual_addeE lee_opp -lee_opp; exact: lee_add2r. Qed.
+Proof. rewrite !dual_addeE leeN2 -leeN2; exact: lee_add2r. Qed.
 
 Lemma lee_dadd a b x y : a <= b -> x <= y -> a + x <= b + y.
-Proof. rewrite !dual_addeE lee_opp -lee_opp -(lee_opp y); exact: lee_add. Qed.
+Proof. rewrite !dual_addeE leeN2 -leeN2 -(leeN2 y); exact: lee_add. Qed.
 
 Lemma lte_le_dadd a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
-Proof. rewrite !dual_addeE lte_opp -lte_opp; exact: lte_le_sub. Qed.
+Proof. rewrite !dual_addeE lteN2 -lteN2; exact: lte_le_sub. Qed.
 
 Lemma lee_lt_dadd a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
 Proof. by move=> afin xa yb; rewrite (daddeC a) (daddeC x) lte_le_dadd. Qed.
 
 Lemma lee_dsub x y z t : x <= y -> t <= z -> x - z <= y - t.
-Proof. rewrite !dual_addeE lee_oppl oppeK -lee_opp !oppeK; exact: lee_add. Qed.
+Proof. rewrite !dual_addeE lee_oppl oppeK -leeN2 !oppeK; exact: lee_add. Qed.
 
 Lemma lte_le_dsub z u x y : u \is a fin_num -> x < z -> u <= y -> x - y < z - u.
-Proof.
-rewrite !dual_addeE lte_opp !oppeK -lte_opp; exact: lte_le_add.
-Qed.
+Proof. by rewrite !dual_addeE lteN2 !oppeK -lteN2; exact: lte_le_add. Qed.
 
 Lemma lee_dsum I (f g : I -> \bar R) s (P : pred I) :
   (forall i, P i -> f i <= g i) ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
 Proof.
-move=> Pfg; rewrite !dual_sumeE lee_opp.
-apply: lee_sum => i Pi; rewrite lee_opp; exact: Pfg.
+move=> Pfg; rewrite !dual_sumeE leeN2.
+apply: lee_sum => i Pi; rewrite leeN2; exact: Pfg.
 Qed.
 
 Lemma lee_dsum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
   {subset Q <= P} -> {in [predD P & Q], forall i, 0 <= f i} ->
   \sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i.
 Proof.
-move=> QP PQf; rewrite !dual_sumeE lee_opp.
+move=> QP PQf; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos_subset => [//|i iPQ]; rewrite oppe_le0; exact: PQf.
 Qed.
 
@@ -2702,7 +2700,7 @@ Lemma lee_dsum_npos_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
   {subset Q <= P} -> {in [predD P & Q], forall i, f i <= 0} ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | Q i) f i.
 Proof.
-move=> QP PQf; rewrite !dual_sumeE lee_opp.
+move=> QP PQf; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg_subset => [//|i iPQ]; rewrite oppe_ge0; exact: PQf.
 Qed.
 
@@ -2710,7 +2708,7 @@ Lemma lee_dsum_nneg (I : eqType) (s : seq I) (P Q : pred I)
   (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> 0 <= f i) ->
   \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
 Proof.
-move=> PQf; rewrite !dual_sumeE lee_opp.
+move=> PQf; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos => i Pi nQi; rewrite oppe_le0; exact: PQf.
 Qed.
 
@@ -2718,7 +2716,7 @@ Lemma lee_dsum_npos (I : eqType) (s : seq I) (P Q : pred I)
   (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> f i <= 0) ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i && Q i) f i.
 Proof.
-move=> PQf; rewrite !dual_sumeE lee_opp.
+move=> PQf; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg => i Pi nQi; rewrite oppe_ge0; exact: PQf.
 Qed.
 
@@ -2726,7 +2724,7 @@ Lemma lee_dsum_nneg_ord (f : nat -> \bar R) (P : pred nat) :
   (forall n, P n -> 0 <= f n)%E ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
-move=> f0 m n mlen; rewrite !dual_sumeE lee_opp.
+move=> f0 m n mlen; rewrite !dual_sumeE leeN2.
 apply: (lee_sum_npos_ord (fun i => - f i)%E) => [i Pi|//].
 rewrite oppe_le0; exact: f0.
 Qed.
@@ -2735,7 +2733,7 @@ Lemma lee_dsum_npos_ord (f : nat -> \bar R) (P : pred nat) :
   (forall n, P n -> f n <= 0)%E ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
-move=> f0 m n mlen; rewrite !dual_sumeE lee_opp.
+move=> f0 m n mlen; rewrite !dual_sumeE leeN2.
 apply: (lee_sum_nneg_ord (fun i => - f i)%E) => [i Pi|//].
 rewrite oppe_ge0; exact: f0.
 Qed.
@@ -2744,7 +2742,7 @@ Lemma lee_dsum_nneg_natr (f : nat -> \bar R) (P : pred nat) m :
   (forall n, (m <= n)%N -> P n -> 0 <= f n) ->
   {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
-move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+move=> f0 i j le_ij; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos_natr => [n ? ?|//]; rewrite oppe_le0; exact: f0.
 Qed.
 
@@ -2752,7 +2750,7 @@ Lemma lee_dsum_npos_natr (f : nat -> \bar R) (P : pred nat) m :
   (forall n, (m <= n)%N -> P n -> f n <= 0) ->
   {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
-move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+move=> f0 i j le_ij; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg_natr => [n ? ?|//]; rewrite oppe_ge0; exact: f0.
 Qed.
 
@@ -2760,7 +2758,7 @@ Lemma lee_dsum_nneg_natl (f : nat -> \bar R) (P : pred nat) n :
   (forall m, (m < n)%N -> P m -> 0 <= f m) ->
   {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
-move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+move=> f0 i j le_ij; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos_natl => [m ? ?|//]; rewrite oppe_le0; exact: f0.
 Qed.
 
@@ -2768,7 +2766,7 @@ Lemma lee_dsum_npos_natl (f : nat -> \bar R) (P : pred nat) n :
   (forall m, (m < n)%N -> P m -> f m <= 0) ->
   {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
-move=> f0 i j le_ij; rewrite !dual_sumeE lee_opp.
+move=> f0 i j le_ij; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg_natl => [m ? ?|//]; rewrite oppe_ge0; exact: f0.
 Qed.
 
@@ -2777,7 +2775,7 @@ Lemma lee_dsum_nneg_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
   {in [predD B & A], forall t, P t -> 0 <= f t} ->
   \sum_(t <- A | P t) f t <= \sum_(t <- B | P t) f t.
 Proof.
-move=> AB f0; rewrite !dual_sumeE lee_opp.
+move=> AB f0; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos_subfset => [//|? ? ?]; rewrite oppe_le0; exact: f0.
 Qed.
 
@@ -2786,7 +2784,7 @@ Lemma lee_dsum_npos_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
   {in [predD B & A], forall t, P t -> f t <= 0} ->
   \sum_(t <- B | P t) f t <= \sum_(t <- A | P t) f t.
 Proof.
-move=> AB f0; rewrite !dual_sumeE lee_opp.
+move=> AB f0; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg_subfset => [//|? ? ?]; rewrite oppe_ge0; exact: f0.
 Qed.
 
