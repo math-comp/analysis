@@ -365,22 +365,22 @@ Proof. exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)). Qed.
 
 Let minkowski_lty (f g : T -> R) (p : R) :
   measurable_fun setT f -> measurable_fun setT g ->
-  (1 < p)%R -> 'N_p%:E[f] < +oo -> 'N_p%:E[g] < +oo -> 'N_p%:E[(f \+ g)%R] < +oo.
+  (1 <= p)%R -> 'N_p%:E[f] < +oo -> 'N_p%:E[g] < +oo -> 'N_p%:E[(f \+ g)%R] < +oo.
 Proof.
 move=> mf mg p1 Nfoo Ngoo.
 have h x : (`| f x + g x | `^ p <= 2 `^ (p - 1) * (`| f x | `^ p  + `| g x | `^ p))%R.
-  have := minkowski_half (fun x => 2 * f x)%R (fun x => 2 * g x)%R x (ltW p1).
+  have := minkowski_half (fun x => 2 * f x)%R (fun x => 2 * g x)%R x p1.
   rewrite mulrA mulVf// mul1r mulrA mulVf// mul1r !normrM (@ger0_norm _ 2)//.
   move=> /le_trans; apply.
   rewrite !powRM// !mulrA -powR_inv1//.
   rewrite -powRD; last by apply /implyP => _.
   by rewrite (addrC _ p) -mulrDr.
-rewrite unlock gt_eqF ?(lt_trans _ p1)// poweR_lty//.
+rewrite unlock gt_eqF ?(lt_le_trans _ p1)// poweR_lty//.
 apply: (@le_lt_trans _ _ (\int[mu]_x (2 `^ (p - 1) * (`|f x| `^ p + `|g x| `^ p)%R)%:E)).
   apply: ge0_le_integral => //=.
-  - by move=> t _; rewrite lee_fin// powR_ge0.
-  - apply/EFin_measurable_fun/measurableT_comp_powR.
-    by apply: measurableT_comp => //; exact: measurable_funD.
+  - by move=> t _; rewrite lee_fin powR_ge0.
+  - by apply/EFin_measurable_fun/measurableT_comp_powR;
+      apply: measurableT_comp => //; exact: measurable_funD.
   - by move=> t _; rewrite lee_fin// mulr_ge0// ?addr_ge0 ?powR_ge0.
   - by apply/EFin_measurable_fun/measurable_funM => //; apply/measurable_funD => //;
       apply: measurableT_comp_powR => //; apply: measurableT_comp.
@@ -402,23 +402,34 @@ rewrite ge0_integralD//; last 4 first.
       apply: measurableT_comp_powR => //; apply: measurableT_comp.
 rewrite lte_add_pinfty//.
 - rewrite -Lnorm_powR_K ?(gt_eqF (lt_trans _ p1))//.
-  exact: poweR_lty.
+    exact: poweR_lty.
+  by rewrite gt_eqF// (lt_le_trans _ p1).
 - rewrite -Lnorm_powR_K ?(gt_eqF (lt_trans _ p1))//.
-  exact: poweR_lty.
+    exact: poweR_lty.
+  by rewrite gt_eqF// (lt_le_trans _ p1).
 Qed.
 
 Lemma minkowski (f g : T -> R) (p : R) :
   measurable_fun setT f -> measurable_fun setT g ->
-  (1 < p)%R ->
+  (1 <= p)%R ->
   'N_p%:E[(f \+ g)%R] <= 'N_p%:E[f] + 'N_p%:E[g].
 Proof.
-move=> mf mg p1.
+move=> mf mg.
+rewrite le_eqVlt => /orP [/eqP <-|p1].
+  rewrite !Lnorm1.
+  apply: (le_trans (y:=\int[mu]_x ((`|f x|)%:E + (`|g x|)%:E))).
+  apply: ge0_le_integral => //.
+  - by repeat apply: measurableT_comp => //; apply: measurable_funD.
+  - apply: measurableT_comp => //.
+    by apply: measurable_funD; apply: measurableT_comp.
+  - by move=> x _; rewrite lee_fin ler_norm_add.
+  by rewrite le_eqVlt ge0_integralD ?eqxx//; repeat apply: measurableT_comp => //.  
 have [->|Nfoo] := eqVneq 'N_p%:E[f] +oo.
   by rewrite addye ?leey// -ltNye (lt_le_trans _ (Lnorm_ge0 _ _ _)).
 have [->|Ngoo] := eqVneq 'N_p%:E[g] +oo.
   by rewrite addey ?leey// -ltNye (lt_le_trans _ (Lnorm_ge0 _ _ _)).
 have Nfgoo : 'N_p%:E[(f \+ g)%R] < +oo.
-  by apply: minkowski_lty => //; rewrite ltey; [exact: Nfoo|exact: Ngoo].
+  by apply: minkowski_lty => //; rewrite ?ltW// ltey; [exact: Nfoo|exact: Ngoo].
 have pm10 : (p - 1 != 0)%R.
   by rewrite gt_eqF// subr_gt0.
 have p0 : (0 < p)%R.
