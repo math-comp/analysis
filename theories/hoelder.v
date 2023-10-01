@@ -323,16 +323,8 @@ apply: (@le_trans _ _ ((w1 * x `^ p + w2 * y `^ p) `^ (p^-1) *
   pose b1 := w1 `^ q^-1. pose b2 := w2 `^ q^-1.
   have : a1 * b1 + a2 * b2 <= (a1 `^ p + a2 `^ p) `^ p^-1 *
                               (b1 `^ q + b2 `^ q) `^ q^-1.
-    apply: hoelder2 => //.
-    - by rewrite mulr_ge0// powR_ge0.
-    - by rewrite mulr_ge0// powR_ge0.
-    - by rewrite powR_ge0.
-    - by rewrite powR_ge0.
-  rewrite /a1 /a2 /b1 /b2 powRM ?powR_ge0// -powRrM mulVf ?gt_eqF//.
-  rewrite powRr1 ?onem_ge0// powRM ?powR_ge0// -powRrM mulVf ?gt_eqF//.
-  rewrite powRr1; last by rewrite /w2.
-  rewrite -(@powRrM _ _ _ q) mulVf ?gt_eqF// powRr1 ?onem_ge0//.
-  rewrite -(@powRrM _ _ _ q) mulVf ?gt_eqF// powRr1; last by rewrite /w2.
+    by apply: hoelder2 => //; rewrite ?mulr_ge0 ?powR_ge0.
+  rewrite ?powRM ?powR_ge0 -?powRrM ?mulVf ?powRr1 ?gt_eqF ?onem_ge0/w2//.
   by rewrite mulrAC (mulrAC _ y) => /le_trans; exact.
 by rewrite {2}/w1 {2}/w2 subrK powR1 mulr1.
 Qed.
