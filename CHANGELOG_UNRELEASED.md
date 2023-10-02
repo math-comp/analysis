@@ -69,10 +69,24 @@
 
 - in `measure.v`:
   + definition `ess_sup`, lemma `ess_sup_ge0`
+- in `convex.v`:
+  + definition `convex_function`
+
+- in `exp.v`:
+  + lemmas `ln_le0`, `ger_powR`, `ler1_powR`, `le1r_powR`, `ger1_powR`,
+    `ge1r_powR`, `ge1r_powRZ`, `le1r_powRZ`
+
+- in `hoelder.v`:
+  + lemmas `Lnorm_counting`, `hoelder2`, `convex_powR`
+
+- in `lebesgue_integral.v`:
+  + lemma `ge0_integral_count`
 
 - in `exp.v`:
   + lemma `gt0_ltr_powR`
   + lemma `powR_injective`
+- in `mathcomp_extra.v`:
+  + lemma `gerBl`
 
 ### Changed
 
