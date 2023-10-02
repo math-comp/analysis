@@ -310,7 +310,7 @@ have pq1 : p^-1 + q^-1 = 1.
 rewrite -(@powRr1 _ (w1 * x `^ p + w2 * y `^ p)); last first.
   by rewrite addr_ge0// mulr_ge0// ?powR_ge0// /w2 ?onem_ge0// itv_ge0.
 have -> : 1 = p^-1 * p by rewrite mulVf ?gt_eqF.
-rewrite powRrM (gt0_ler_powR (le_trans _ (ltW p1)))//.
+rewrite powRrM (ge0_ler_powR (le_trans _ (ltW p1)))//.
 - by rewrite nnegrE addr_ge0// mulr_ge0 /w2 ?onem_ge0.
 - by rewrite nnegrE powR_ge0.
 have -> : w1 * x + w2 * y = w1 `^ (p^-1) * w1 `^ (q^-1) * x +
