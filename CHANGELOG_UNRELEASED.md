@@ -70,6 +70,10 @@
 - in `measure.v`:
   + definition `ess_sup`, lemma `ess_sup_ge0`
 
+- in `exp.v`:
+  + lemma `gt0_ltr_powR`
+  + lemma `powR_injective`
+
 ### Changed
 
 - `mnormalize` moved from `kernel.v` to `measure.v` and generalized
@@ -91,6 +95,8 @@
 
 - in `measure.v`:
   + implicits of `measurable_fst` and `measurable_snd`
+- in `exp.v`:
+  + `gt0_ler_powR` now uses `Num.nneg`
 
 ### Renamed
 
@@ -100,6 +106,9 @@
 - in `constructive_ereal.v`:
   + `lee_opp` -> `leeN2`
   + `lte_opp` -> `lteN2`
+
+- in `exp.v`:
+  + `gt0_ler_powR` -> `ge0_ler_powR`
 
 ### Generalized
 
