@@ -664,16 +664,33 @@ move=> a1 x y xy.
 by rewrite /powR gt_eqF ?(lt_le_trans _ a1)// ler_expR ler_wpmul2r ?ln_ge0.
 Qed.
 
-Lemma gt0_ler_powR (r : R) : 0 <= r ->
-  {in `[0, +oo[ &, {homo powR ^~ r : x y / x <= y >-> x <= y}}.
+Lemma powR_injective r : 0 < r -> {in Num.nneg &, injective (powR ^~ r)}.
+Proof.
+move=> r0 x y x0 y0; rewrite /powR; case: ifPn => [/eqP ->|xneq0].
+  by case: ifPn => [/eqP ->//|_ /eqP]; rewrite (gt_eqF r0) eq_sym expR_eq0.
+case: ifPn => [/eqP -> /eqP|yneq0]; first by rewrite (gt_eqF r0) expR_eq0.
+by move/expR_inj/mulfI => /(_ (negbT (gt_eqF r0))); apply: ln_inj;
+  rewrite posrE lt_neqAle eq_sym (xneq0,yneq0).
+Qed.
+
+Lemma ge0_ler_powR (r : R) : 0 <= r ->
+  {in Num.nneg &, {homo powR ^~ r : x y / x <= y >-> x <= y}}.
 Proof.
 rewrite le_eqVlt => /predU1P[<- x y _ _ _|]; first by rewrite !powRr0.
-move=> a0 x y; rewrite !in_itv/= !andbT !le_eqVlt => /predU1P[<-|x0].
+move=> a0 x y; rewrite 2!nnegrE !le_eqVlt => /predU1P[<-|x0].
   move=> /predU1P[<- _|y0 _]; first by rewrite eqxx.
   by rewrite !powR0 ?(gt_eqF a0)// powR_gt0 ?orbT.
 move=> /predU1P[<-|y0]; first by rewrite gt_eqF//= ltNge (ltW x0).
 move=> /predU1P[->//|xy]; first by rewrite eqxx.
 by apply/orP; right; rewrite /powR !gt_eqF// ltr_expR ltr_pmul2l// ltr_ln.
+Qed.
+
+Lemma gt0_ltr_powR (r : R) : 0 < r ->
+  {in Num.nneg &, {homo powR ^~ r : x y / x < y >-> x < y}}.
+Proof.
+move=> r0 x y x0 y0 xy; have := ge0_ler_powR (ltW r0) x0 y0 (ltW xy).
+rewrite le_eqVlt => /orP[/eqP/(powR_injective r0 x0 y0)/eqP|//].
+by rewrite lt_eqF.
 Qed.
 
 Lemma powRM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
@@ -785,6 +802,9 @@ Qed.
 
 End PowR.
 Notation "a `^ x" := (powR a x) : ring_scope.
+
+#[deprecated(since="mathcomp-analysis 0.6.5", note="renamed `ge0_ler_powR`")]
+Notation gt0_ler_powR := ge0_ler_powR.
 
 Section poweR.
 Local Open Scope ereal_scope.
