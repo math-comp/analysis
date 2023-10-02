@@ -31,7 +31,7 @@
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.15";
+  default-bundle = "8.18";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
