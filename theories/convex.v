@@ -154,6 +154,10 @@ Proof. by []. Qed.
 
 End conv_realDomainType.
 
+Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
+  forall (t : {i01 R}), {in D &, forall (x y : R^o), (f (x <| t |> y) <= f x <| t |> f y)%R}.
+(* TODO: generalize to convTypes once we have ordered convTypes (mathcomp 2) *)
+
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
 Section twice_derivable_convex.
 Context {R : realType}.
