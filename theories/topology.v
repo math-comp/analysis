@@ -5717,16 +5717,19 @@ move=> e_gt0 PP y; rewrite in_itv/= -ler_distlC => ye; apply: PP => /=.
 by rewrite (le_lt_trans ye)// ltr_pmull// ltr1n.
 Qed.
 
-Global Instance ball_filter (R : realFieldType) (t : R) : Filter
+Global Instance ball_filter (R : realDomainType) (t : R) : Filter
   [set P | exists2 i : R, 0 < i & ball_ Num.norm t i `<=` P].
 Proof.
 apply: Build_Filter; [by exists 1 | move=> P Q | move=> P Q PQ]; rewrite /mkset.
 - move=> -[x x0 xP] [y ? yQ]; exists (Num.min x y); first by rewrite lt_minr x0.
   move=> z tz; split.
-  by apply: xP; rewrite /= (lt_le_trans tz) // le_minl lexx.
+    by apply: xP; rewrite /= (lt_le_trans tz) // le_minl lexx.
   by apply: yQ; rewrite /= (lt_le_trans tz) // le_minl lexx orbT.
 - by move=> -[x ? xP]; exists x => //; apply: (subset_trans xP).
 Qed.
+
+#[global] Hint Extern 0 (Filter [set P | exists2 i, _ & ball_ _ _ i `<=` P]) =>
+  (apply: ball_filter) : typeclass_instances.
 
 Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
   : filteredType R := Filtered.Pack (Filtered.Class
