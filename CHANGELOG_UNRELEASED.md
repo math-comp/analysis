@@ -6,6 +6,9 @@
 
 ### Changed
 
+- in `hoelder.v`:
+  + definition `Lnorm` now `HB.lock`ed
+
 ### Renamed
 
 ### Generalized
