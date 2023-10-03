@@ -51,7 +51,7 @@
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
     hierarchy-builder.override.version = "master";
-    mathcomp.override.version = "1.17.0";
+    mathcomp.override.version = "mathcomp-1";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "1.5.2";
   };
