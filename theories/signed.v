@@ -105,6 +105,7 @@ From mathcomp Require Import mathcomp_extra.
 (* --> Canonical instances are also provided according to types, as a         *)
 (* fallback when no known operator appears in the expression. Look to         *)
 (* nat_snum below for an example on how to add your favorite type.            *)
+(*                                                                            *)
 (******************************************************************************)
 
 Reserved Notation "{ 'compare' x0 & nz & cond }"
