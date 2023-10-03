@@ -752,54 +752,148 @@ Qed.
 
 End ereal_nbhs_infty.
 
-Section ereal_topologicalType.
-Variable R : realFieldType.
+#[global] Hint Extern 0 (is_true (_ < ?x)%E) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_gt end : core.
+#[global] Hint Extern 0 (is_true (_ <= ?x)%E) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_ge end : core.
+#[global] Hint Extern 0 (is_true (_ > ?x)%E) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_lt end : core.
+#[global] Hint Extern 0 (is_true (_ >= ?x)%E) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_le end : core.
+#[global] Hint Extern 0 (is_true (fine ?x \is Num.real)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_real end : core.
+#[global] Hint Extern 0 (is_true (fine ?x \is Num.real)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_real end : core.
 
-Lemma ereal_nbhs_singleton (p : \bar R) (A : set (\bar R)) :
+Section ereal_to_real_nbhs.
+Context (R : numFieldType).
+Implicit Type (r : R).
+
+Lemma ereal_nbhs_pinftyE (A : set (\bar R)) :
+   (\forall k \near +oo, A k) = (A +oo /\ \forall k \near +oo%R, A k%:E).
+Proof.
+apply/propeqP; split; last first.
+  by move=> [Ay [M [Mreal AM]]]; exists M; split=> // -[r | |]//; apply: AM.
+move=> [M [Mreal AM]]; split; first exact: AM.
+by exists M; split=> // y My; apply: AM.
+Qed.
+
+Lemma ereal_nbhs_ninftyE (A : set (\bar R)) :
+   (\forall k \near -oo, A k) = (A -oo /\ \forall k \near -oo%R, A k%:E).
+Proof.
+apply/propeqP; split; last first.
+  by move=> [Ay [M [Mreal AM]]]; exists M; split=> // -[r | |]//; apply: AM.
+move=> [M [Mreal AM]]; split; first exact: AM.
+by exists M; split=> // y My; apply: AM.
+Qed.
+
+Lemma ereal_nbhs_FinE x (A : set (\bar R)) :
+  (\forall k \near x%:E, A k) = \forall k \near x, A k%:E.
+Proof. by []. Qed.
+
+Lemma ereal_nbhs_pinfty_pinfty (A : set (\bar R)) :
+  (\forall k \near +oo, A k) -> A +oo.
+Proof. by rewrite ereal_nbhs_pinftyE => -[]. Qed.
+
+Lemma ereal_nbhs_ninfty_ninfty (A : set (\bar R)) :
+  (\forall k \near -oo, A k) -> A -oo.
+Proof. by rewrite ereal_nbhs_ninftyE => -[]. Qed.
+
+Lemma ereal_pinfty_ex_gt (m : R) (A : set (\bar R)) : m \is Num.real ->
+  (\forall k \near +oo, A k) -> exists2 M, (m < M)%R & A M%:E.
+Proof.
+move=> m_real; rewrite ereal_nbhs_pinftyE => -[Ay /(pinfty_ex_gt m_real)].
+by move=> [M ltmM AM]; exists M.
+Qed.
+
+Lemma ereal_pinfty_ex_ge (m : R) (A : set (\bar R)) : m \is Num.real ->
+  (\forall k \near +oo, A k) -> exists2 M, (m <= M)%R & A M%:E.
+Proof.
+move=> m_real; rewrite ereal_nbhs_pinftyE => -[Ay /(pinfty_ex_ge m_real)].
+by move=> [M ltmM AM]; exists M.
+Unshelve. all: by end_near. Qed.
+
+Lemma pinfty_ex_gt0 (A : set (\bar R)) :
+  (\forall k \near +oo, A k) -> exists2 M, (M > 0)%R & A M%:E.
+Proof. exact: ereal_pinfty_ex_gt. Qed.
+
+End ereal_to_real_nbhs.
+
+Lemma ereal_nbhs_singleton (R : numFieldType) (p : \bar R) (A : set (\bar R)) :
   ereal_nbhs p A -> A p.
 Proof.
 move: p => -[p | [M [Mreal MA]] | [M [Mreal MA]]] /=; [|exact: MA | exact: MA].
-move=> /nbhs_ballP[_/posnumP[e]]; apply; exact/ballxx.
+exact: nbhs_singleton.
 Qed.
+
+(* Counter example for ereal_nbhs_nbhs in a numFieldType *)
+Remark not_ereal_num_nbhs_nbhs (R : numFieldType) :
+ (exists2 i : R, (`|i| = 1)%R & i \isn't Num.real) ->
+  ereal_nbhs +oo (`](0 : \bar R), +oo]%classic) /\
+  ~ ereal_nbhs +oo (ereal_nbhs^~ `](0 : \bar R), +oo]%classic).
+Proof.
+move=> [i Ni_eq1 iNreal].
+have NiV2_lt1 : (`|i / 2| < 1)%R.
+  by rewrite normf_div Ni_eq1 gtr0_norm// mul1r invf_lt1// ltr_addl.
+rewrite ![ereal_nbhs _ _]ereal_nbhs_pinftyE.
+split.
+  split=> //=; first by rewrite in_itv/= lt0y lexx.
+  exists 0%R; split=> // x x_gt0; rewrite in_itv//= lte_fin x_gt0//=.
+  by rewrite real_leey/= gtr0_real.
+move=> [_ [M [Mreal]]]/(_ (M + 1)%R _)[]; first by rewrite ltr_addl.
+move=> x /= x_gt0/=.
+have x_neq0 : x != 0%R by rewrite gt_eqF.
+have x_real: x \is Num.real by rewrite gtr0_real.
+move=> /(_ (M + 1 + x * (i / 2))%R) /=.
+rewrite opprD addNKr normrN normrM gtr0_norm//.
+rewrite -ltr_pdivl_mull// mulVf ?gt_eqF// => /(_ NiV2_lt1).
+suff: (M + 1 + x * (i / 2))%R \isn't Num.real.
+  apply: contraNnot; move: (_ + _)%R => y.
+  by rewrite in_itv/= => /andP[/gtr0_real].
+rewrite rpredDl/=; last by rewrite rpredD// rpred1.
+by rewrite fpredMl//= fpred_divr// rpred_nat.
+Qed.
+
+Section ereal_topologicalType.
+Variable R : realFieldType.
+
+Lemma neary_join (A : set R) :
+  (\forall k \near +oo%R, \near k, A k) = (\forall k \near +oo%R, A k).
+Proof.
+apply/propeqP; split; first by apply: filterS => ?; apply: nbhs_singleton.
+move=> [M [Mreal AM]]; near=> k; near=> x; apply: AM.
+apply: (@lt_trans _ _ (k - 1)%R).
+  by rewrite ltrBrDl; near: k; apply: nbhs_pinfty_gt; rewrite realD.
+have kreal : k \is Num.real by near: k; apply: nbhs_pinfty_real.
+by apply: ltr_distlBl; near: x; apply: nbhsx_ballx.
+Unshelve. all: by end_near. Qed.
+
+Lemma nearNy_join (A : set R) :
+  (\forall k \near -oo%R, \near k, A k) = (\forall k \near -oo%R, A k).
+Proof.
+apply/propeqP; split; first by apply: filterS => ?; apply: nbhs_singleton.
+move=> [M [Mreal AM]]; near=> k; near=> x; apply: AM.
+apply: (@lt_trans _ _ (k + 1)%R); last first.
+  by rewrite -ltrBrDr; near: k; apply: nbhs_ninfty_lt; rewrite realB.
+have kreal : k \is Num.real by near: k; apply: nbhs_ninfty_real.
+by rewrite ltr_distlDr// distrC; near: x; apply: nbhsx_ballx.
+Unshelve. all: by end_near. Qed.
 
 Lemma ereal_nbhs_nbhs (p : \bar R) (A : set (\bar R)) :
   ereal_nbhs p A -> ereal_nbhs p (ereal_nbhs^~ A).
 Proof.
-move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
-- move=> /nbhs_ballP[_/posnumP[e]] ballA.
-  apply/nbhs_ballP; exists (e%:num / 2) => //= r per.
-  apply/nbhs_ballP; exists (e%:num / 2) => //= x rex.
-  apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
-- exists (M + 1)%R; split; first by rewrite realD.
-  move=> -[x| _ |_] //=; last by exists M.
-  rewrite lte_fin => M'x /=.
-  apply/nbhs_ballP; exists 1%R => //= y x1y.
-  apply MA; rewrite lte_fin.
-  rewrite addrC -ltr_subr_addl in M'x.
-  rewrite (lt_le_trans M'x) // ler_subl_addl addrC -ler_subl_addl.
-  rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
-    rewrite ltr_subr_addr in M'x.
-    rewrite -comparabler0 (@comparabler_trans _ (M + 1)%R) //.
-      by rewrite /Order.comparable (ltW M'x) orbT.
-    by rewrite comparabler0 realD.
-  by rewrite num_real. (* where we really use realFieldType *)
-- exists (M - 1)%R; split; first by rewrite realB.
-  move=> -[x| _ |_] //=; last by exists M.
-  rewrite lte_fin => M'x /=.
-  apply/nbhs_ballP; exists 1%R => //= y x1y.
-  apply MA; rewrite lte_fin.
-  rewrite ltr_subr_addl in M'x.
-  rewrite (le_lt_trans _ M'x) // addrC -ler_subl_addl.
-  rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
-    by rewrite num_real. (* where we really use realFieldType *)
-  rewrite addrC -ltr_subr_addr in M'x.
-  rewrite -comparabler0 (@comparabler_trans _ (M - 1)%R) //.
-    by rewrite /Order.comparable (ltW M'x).
-  by rewrite comparabler0 realB.
-Qed.
+move: p => -[p| Ay | ANy] //=.
+- exact: nbhs_interior.
+- rewrite [exists _, _]ereal_nbhs_pinftyE; split=> //.
+  move: Ay; rewrite [ereal_nbhs _ _]ereal_nbhs_pinftyE => -[Ay Aneary].
+  by near do rewrite [ereal_nbhs _ _]ereal_nbhs_FinE; rewrite neary_join.
+- rewrite [exists _, _]ereal_nbhs_ninftyE; split=> //.
+  move: ANy; rewrite [ereal_nbhs _ _]ereal_nbhs_ninftyE => -[ANy AnearNy].
+  by near do rewrite [ereal_nbhs _ _]ereal_nbhs_FinE; rewrite nearNy_join.
+Unshelve. all: by end_near. Qed.
 
 Definition ereal_topologicalMixin : Topological.mixin_of (@ereal_nbhs R) :=
-  topologyOfFilterMixin _ ereal_nbhs_singleton ereal_nbhs_nbhs.
+  topologyOfFilterMixin _ (@ereal_nbhs_singleton R) ereal_nbhs_nbhs.
 Canonical ereal_topologicalType := TopologicalType _ ereal_topologicalMixin.
 
 End ereal_topologicalType.
@@ -1415,3 +1509,164 @@ rewrite /= opprD addrA subrr distrC subr0 gtr0_norm; last by rewrite invr_gt0.
 rewrite -[ltLHS]mulr1 ltr_pdivr_mull // -ltr_pdivr_mulr // div1r.
 by rewrite (lt_le_trans (lt_succ_floor _))// Nfloor ler_add// ler_nat.
 Qed.
+
+
+Section ecvg_infty_numField.
+
+Local Open Scope classical_set_scope.
+Local Open Scope ereal_scope.
+
+Context {R : numFieldType}.
+
+Let cvgeyPnum {F : set (set \bar R)} {FF : Filter F} : [<->
+(* 0 *) F --> +oo;
+(* 1 *) forall A, A \is Num.real -> \forall x \near F, A%:E <= x;
+(* 2 *) forall A, A \is Num.real -> \forall x \near F, A%:E < x;
+(* 3 *) \forall A \near +oo%R, \forall x \near F, A%:E < x;
+(* 4 *) \forall A \near +oo%R, \forall x \near F, A%:E <= x ].
+Proof.
+tfae; first by move=> Foo A Areal; apply: Foo; apply: ereal_nbhs_pinfty_ge.
+- move=> AF A Areal; near +oo_R => B.
+  by near do rewrite (@lt_le_trans _ _ B%:E) ?lte_fin//; apply: AF.
+- by move=> Foo; near do apply: Foo => //.
+- by apply: filterS => ?; apply: filterS => ?; apply: ltW.
+case=> [A [AR AF]] P [x [xR Px]]; near +oo_R => B.
+by near do [apply: Px; rewrite (@lt_le_trans _ _ B%:E) ?lte_fin//]; apply: AF.
+Unshelve. all: end_near. Qed.
+
+Let cvgeNyPnum {F : set (set \bar R)} {FF : Filter F} : [<->
+(* 0 *) F --> -oo;
+(* 1 *) forall A, A \is Num.real -> \forall x \near F, A%:E >= x;
+(* 2 *) forall A, A \is Num.real -> \forall x \near F, A%:E > x;
+(* 3 *) \forall A \near -oo%R, \forall x \near F, A%:E > x;
+(* 4 *) \forall A \near -oo%R, \forall x \near F, A%:E >= x ].
+Proof.
+tfae; first by move=> Foo A Areal; apply: Foo; apply: ereal_nbhs_ninfty_le.
+- move=> AF A Areal; near -oo_R => B.
+  by near do rewrite (@le_lt_trans _ _ B%:E) ?lte_fin//; apply: AF.
+- by move=> Foo; near do apply: Foo => //.
+- by apply: filterS => ?; apply: filterS => ?; apply: ltW.
+case=> [A [AR AF]] P [x [xR Px]]; near -oo_R => B.
+by near do [apply: Px; rewrite (@le_lt_trans _ _ B%:E) ?lte_fin//]; apply: AF.
+Unshelve. all: end_near. Qed.
+
+Context {T} {F : set (set T)} {FF : Filter F}.
+Implicit Types (f : T -> \bar R) (u : T -> R).
+
+Lemma cvgeyPger f :
+  f @ F --> +oo <-> forall A, A \is Num.real -> \forall x \near F, A%:E <= f x.
+Proof. exact: (cvgeyPnum 0%N 1%N). Qed.
+
+Lemma cvgeyPgtr f :
+  f @ F --> +oo <-> forall A, A \is Num.real -> \forall x \near F, A%:E < f x.
+Proof. exact: (cvgeyPnum 0%N 2%N). Qed.
+
+Lemma cvgeyPgty f :
+  f @ F --> +oo <-> \forall A \near +oo%R, \forall x \near F, A%:E < f x.
+Proof. exact: (cvgeyPnum 0%N 3%N). Qed.
+
+Lemma cvgeyPgey f :
+  f @ F --> +oo <-> \forall A \near +oo%R, \forall x \near F, A%:E <= f x.
+Proof. exact: (cvgeyPnum 0%N 4%N). Qed.
+
+Lemma cvgeNyPler f :
+  f @ F --> -oo <-> forall A, A \is Num.real -> \forall x \near F, A%:E >= f x.
+Proof. exact: (cvgeNyPnum 0%N 1%N). Qed.
+
+Lemma cvgeNyPltr f :
+  f @ F --> -oo <-> forall A, A \is Num.real -> \forall x \near F, A%:E > f x.
+Proof. exact: (cvgeNyPnum 0%N 2%N). Qed.
+
+Lemma cvgeNyPltNy f :
+  f @ F --> -oo <-> \forall A \near -oo%R, \forall x \near F, A%:E > f x.
+Proof. exact: (cvgeNyPnum 0%N 3%N). Qed.
+
+Lemma cvgeNyPleNy f :
+  f @ F --> -oo <-> \forall A \near -oo%R, \forall x \near F, A%:E >= f x.
+Proof. exact: (cvgeNyPnum 0%N 4%N). Qed.
+
+Lemma cvgey_ger f :
+  f @ F --> +oo -> forall A, A \is Num.real -> \forall x \near F, A%:E <= f x.
+Proof. by rewrite cvgeyPger. Qed.
+
+Lemma cvgey_gtr f :
+  f @ F --> +oo -> forall A, A \is Num.real -> \forall x \near F, A%:E < f x.
+Proof. by rewrite cvgeyPgtr. Qed.
+
+Lemma cvgeNy_ler f :
+  f @ F --> -oo -> forall A, A \is Num.real -> \forall x \near F, A%:E >= f x.
+Proof. by rewrite cvgeNyPler. Qed.
+
+Lemma cvgeNy_ltr f :
+  f @ F --> -oo -> forall A, A \is Num.real -> \forall x \near F, A%:E > f x.
+Proof. by rewrite cvgeNyPltr. Qed.
+
+Lemma cvgNey f : (\- f @ F --> +oo) <-> (f @ F --> -oo).
+Proof.
+rewrite cvgeNyPler cvgeyPger; split=> Foo A Areal;
+by near do rewrite -lee_opp2 ?oppeK; apply: Foo; rewrite rpredN.
+Unshelve. all: end_near. Qed.
+
+Lemma cvgNeNy f : (\- f @ F --> -oo) <-> (f @ F --> +oo).
+Proof.
+by rewrite -cvgNey (_ : \- \- f = f)//; apply/funeqP => x /=; rewrite oppeK.
+Qed.
+
+Lemma cvgeryP u : ((u x)%:E @[x --> F] --> +oo) <-> (u @ F --> +oo%R).
+Proof.
+split=> [/cvgeyPger|/cvgryPger] Foo.
+  by apply/cvgryPger => A Ar; near do rewrite -lee_fin; apply: Foo.
+by apply/cvgeyPger => A Ar; near do rewrite lee_fin; apply: Foo.
+Unshelve. all: end_near. Qed.
+
+Lemma cvgerNyP u : ((u x)%:E @[x --> F] --> -oo) <-> (u @ F --> -oo%R).
+Proof.
+split=> [/cvgeNyPler|/cvgrNyPler] Foo.
+  by apply/cvgrNyPler => A Ar; near do rewrite -lee_fin; apply: Foo.
+by apply/cvgeNyPler => A Ar; near do rewrite lee_fin; apply: Foo.
+Unshelve. all: end_near. Qed.
+
+End ecvg_infty_numField.
+
+Section ecvg_infty_realField.
+Local Open Scope ereal_scope.
+Context {R : realFieldType}.
+Context {T} {F : set (set T)} {FF : Filter F} (f : T -> \bar R).
+
+Lemma cvgeyPge : f @ F --> +oo <-> forall A, \forall x \near F, A%:E <= f x.
+Proof.
+by rewrite cvgeyPger; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgeyPgt : f @ F --> +oo <-> forall A, \forall x \near F, A%:E < f x.
+Proof.
+by rewrite cvgeyPgtr; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgeNyPle : f @ F --> -oo <-> forall A, \forall x \near F, A%:E >= f x.
+Proof.
+by rewrite cvgeNyPler; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgeNyPlt : f @ F --> -oo <-> forall A, \forall x \near F, A%:E > f x.
+Proof.
+by rewrite cvgeNyPltr; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgey_ge : f @ F --> +oo -> forall A, \forall x \near F, A%:E <= f x.
+Proof. by rewrite cvgeyPge. Qed.
+
+Lemma cvgey_gt : f @ F --> +oo -> forall A, \forall x \near F, A%:E < f x.
+Proof. by rewrite cvgeyPgt. Qed.
+
+Lemma cvgeNy_le : f @ F --> -oo -> forall A, \forall x \near F, A%:E >= f x.
+Proof. by rewrite cvgeNyPle. Qed.
+
+Lemma cvgeNy_lt : f @ F --> -oo -> forall A, \forall x \near F, A%:E > f x.
+Proof. by rewrite cvgeNyPlt. Qed.
+
+End ecvg_infty_realField.
+
+Lemma cvgenyP {R : realType} {T} {F : set (set T)} {FF : Filter F} (f : T -> nat) :
+   (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
+Proof. by rewrite cvgeryP cvgrnyP. Qed.
