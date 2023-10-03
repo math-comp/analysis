@@ -10,6 +10,9 @@
 
 ### Generalized
 
+- in `topology.v`:
+  + `ball_filter` generalized to `realDomainType`
+
 ### Deprecated
 
 ### Removed
