@@ -37,13 +37,8 @@ Declare Scope Lnorm_scope.
 
 Local Open Scope ereal_scope.
 
-Section Lnorm.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Local Open Scope ereal_scope.
-Implicit Types (p : \bar R) (f g : T -> R) (r : R).
-
-Definition Lnorm p f :=
+HB.lock Definition Lnorm {d} {T : measurableType d} {R : realType}
+    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
   match p with
   | p%:E => if p == 0%R then
               mu (f @^-1` (setT `\ 0%R))
@@ -52,19 +47,27 @@ Definition Lnorm p f :=
   | +oo => if mu [set: T] > 0 then ess_sup mu (normr \o f) else 0
   | -oo => 0
   end.
+Canonical locked_Lnorm := Unlockable Lnorm.unlock.
+Arguments Lnorm {d T R} mu p f.
 
-Local Notation "'N_ p [ f ]" := (Lnorm p f).
+Section Lnorm_properties.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Local Open Scope ereal_scope.
+Implicit Types (p : \bar R) (f g : T -> R) (r : R).
+
+Local Notation "'N_ p [ f ]" := (Lnorm mu p f).
 
 Lemma Lnorm1 f : 'N_1[f] = \int[mu]_x `|f x|%:E.
 Proof.
-rewrite /Lnorm oner_eq0 invr1// poweRe1//.
+rewrite unlock oner_eq0 invr1// poweRe1//.
   by apply: eq_integral => t _; rewrite powRr1.
 by apply: integral_ge0 => t _; rewrite powRr1.
 Qed.
 
 Lemma Lnorm_ge0 p f : 0 <= 'N_p[f].
 Proof.
-move: p => [r/=|/=|//].
+rewrite unlock; move: p => [r/=|/=|//].
   by case: ifPn => // r0; exact: poweR_ge0.
 by case: ifPn => // /ess_sup_ge0; apply => t/=.
 Qed.
@@ -75,7 +78,7 @@ Proof. by move=> fg; congr Lnorm; exact/funext. Qed.
 Lemma Lnorm_eq0_eq0 r f : (0 < r)%R -> measurable_fun setT f ->
   'N_r%:E[f] = 0 -> ae_eq mu [set: T] (fun t => (`|f t| `^ r)%:E) (cst 0).
 Proof.
-move=> r0 mf/=; rewrite (gt_eqF r0) => /poweR_eq0_eq0 fp.
+move=> r0 mf; rewrite unlock (gt_eqF r0) => /poweR_eq0_eq0 fp.
 apply/ae_eq_integral_abs => //=.
   apply: measurableT_comp => //.
   apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)) => //.
@@ -84,14 +87,14 @@ under eq_integral => x _ do rewrite ger0_norm ?powR_ge0//.
 by rewrite fp//; apply: integral_ge0 => t _; rewrite lee_fin powR_ge0.
 Qed.
 
-End Lnorm.
+End Lnorm_properties.
 #[global]
 Hint Extern 0 (0 <= Lnorm _ _ _) => solve [apply: Lnorm_ge0] : core.
 
 Notation "'N[ mu ]_ p [ f ]" := (Lnorm mu p f).
 
 Section lnorm.
-(* lnorm is just Lnorm applied to counting *)
+(* l-norm is just L-norm applied to counting *)
 Context d {T : measurableType d} {R : realType}.
 
 Local Notation "'N_ p [ f ]" := (Lnorm [the measure _ _ of counting] p f).
@@ -99,7 +102,7 @@ Local Notation "'N_ p [ f ]" := (Lnorm [the measure _ _ of counting] p f).
 Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
   'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
 Proof.
-move=> p0 /=; rewrite gt_eqF// ge0_integral_count// => k.
+move=> p0; rewrite unlock gt_eqF// ge0_integral_count// => k.
 by rewrite lee_fin powR_ge0.
 Qed.
 
@@ -118,7 +121,7 @@ Proof. exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)). Qed.
 Local Notation "'N_ p [ f ]" := (Lnorm mu p f).
 
 Let integrable_powR f p : (0 < p)%R ->
-  measurable_fun [set: T] f -> 'N_p%:E[f] != +oo ->
+    measurable_fun [set: T] f -> 'N_p%:E[f] != +oo ->
   mu.-integrable [set: T] (fun x => (`|f x| `^ p)%:E).
 Proof.
 move=> p0 mf foo; apply/integrableP; split.
@@ -126,20 +129,18 @@ move=> p0 mf foo; apply/integrableP; split.
   exact: measurableT_comp.
 rewrite ltey; apply: contra foo.
 move=> /eqP/(@eqy_poweR _ _ p^-1); rewrite invr_gt0 => /(_ p0) <-.
-rewrite /= (gt_eqF p0); apply/eqP; congr (_ `^ _).
-by apply/eq_integral => t _; rewrite ger0_norm// powR_ge0.
+rewrite unlock (gt_eqF p0); apply/eqP; congr (_ `^ _).
+by apply/eq_integral => t _; rewrite [RHS]gee0_abs// lee_fin powR_ge0.
 Qed.
 
 Let hoelder0 f g p q : measurable_fun setT f -> measurable_fun setT g ->
-  (0 < p)%R -> (0 < q)%R -> (p^-1 + q^-1 = 1)%R ->
+    (0 < p)%R -> (0 < q)%R -> (p^-1 + q^-1 = 1)%R ->
   'N_p%:E[f] = 0 -> 'N_1[(f \* g)%R]  <= 'N_p%:E[f] * 'N_q%:E[g].
 Proof.
 move=> mf mg p0 q0 pq f0; rewrite f0 mul0e Lnorm1 [leLHS](_ : _ = 0)//.
 rewrite (ae_eq_integral (cst 0)) => [|//||//|]; first by rewrite integral0.
-- apply: measurableT_comp => //; apply: measurableT_comp => //.
-  exact: measurable_funM.
-- have := Lnorm_eq0_eq0 p0 mf f0.
-  apply: filterS => x /(_ I) /= [] /powR_eq0_eq0 + _.
+- by do 2 apply: measurableT_comp => //; exact: measurable_funM.
+- apply: filterS (Lnorm_eq0_eq0 p0 mf f0) => x /(_ I)[] /powR_eq0_eq0 + _.
   by rewrite normrM => ->; rewrite mul0r.
 Qed.
 
@@ -153,7 +154,7 @@ Let measurable_normalized p f : measurable_fun [set: T] f ->
 Proof. by move=> mf; apply: measurable_funM => //; exact: measurableT_comp. Qed.
 
 Let integral_normalized f p : (0 < p)%R -> 0 < 'N_p%:E[f] ->
-  mu.-integrable [set: T] (fun x => (`|f x| `^ p)%:E) ->
+    mu.-integrable [set: T] (fun x => (`|f x| `^ p)%:E) ->
   \int[mu]_x (normalized p f x `^ p)%:E = 1.
 Proof.
 move=> p0 fpos ifp.
@@ -163,10 +164,10 @@ transitivity (\int[mu]_x (`|f x| `^ p / fine ('N_p%:E[f] `^ p))%:E).
   rewrite -[in LHS]powR_inv1; last by rewrite fine_ge0 // Lnorm_ge0.
   by rewrite fine_poweR powRAC -powR_inv1 // powR_ge0.
 have fp0 : 0 < \int[mu]_x (`|f x| `^ p)%:E.
-  rewrite /= (gt_eqF p0) in fpos.
+  rewrite unlock (gt_eqF p0) in fpos.
   apply: gt0_poweR fpos; rewrite ?invr_gt0//.
   by apply integral_ge0 => x _; rewrite lee_fin; exact: powR_ge0.
-rewrite /Lnorm (gt_eqF p0) -poweRrM mulVf ?lt0r_neq0// poweRe1//; last exact: ltW.
+rewrite unlock (gt_eqF p0) -poweRrM mulVf ?(gt_eqF p0)// (poweRe1 (ltW fp0))//.
 under eq_integral do rewrite EFinM muleC.
 have foo : \int[mu]_x (`|f x| `^ p)%:E < +oo.
   move/integrableP: ifp => -[_].
@@ -177,7 +178,7 @@ rewrite integralZl//; apply/eqP; rewrite eqe_pdivr_mull ?mule1.
 Qed.
 
 Lemma hoelder f g p q : measurable_fun setT f -> measurable_fun setT g ->
-  (0 < p)%R -> (0 < q)%R -> (p^-1 + q^-1 = 1)%R ->
+    (0 < p)%R -> (0 < q)%R -> (p^-1 + q^-1 = 1)%R ->
  'N_1[(f \* g)%R] <= 'N_p%:E[f] * 'N_q%:E[g].
 Proof.
 move=> mf mg p0 q0 pq.
@@ -199,9 +200,8 @@ rewrite [leLHS](_ : _ = 'N_1[(F \* G)%R] * 'N_p%:E[f] * 'N_q%:E[g]); last first.
       by rewrite mulr_ge0// divr_ge0 ?(fine_ge0, Lnorm_ge0, invr_ge0).
     by rewrite mulrC -normrM EFinM; over.
   rewrite ge0_integralZl//; last 2 first.
-    - apply: measurableT_comp => //; apply: measurableT_comp => //.
-      exact: measurable_funM.
-    - by rewrite lee_fin mulr_ge0// invr_ge0 fine_ge0//Lnorm_ge0.
+    - by do 2 apply: measurableT_comp => //; exact: measurable_funM.
+    - by rewrite lee_fin mulr_ge0// invr_ge0 fine_ge0// Lnorm_ge0.
   rewrite -muleA muleC muleA EFinM muleCA 2!muleA.
   rewrite (_ : _ * 'N_p%:E[f] = 1) ?mul1e; last first.
     rewrite -[X in _ * X]fineK; last by rewrite ge0_fin_numE ?ltey// Lnorm_ge0.
@@ -212,7 +212,7 @@ rewrite [leLHS](_ : _ = 'N_1[(F \* G)%R] * 'N_p%:E[f] * 'N_q%:E[g]); last first.
 rewrite -(mul1e ('N_p%:E[f] * _)) -muleA lee_pmul ?mule_ge0 ?Lnorm_ge0//.
 rewrite [leRHS](_ : _ = \int[mu]_x (F x `^ p / p + G x `^ q / q)%:E).
   rewrite Lnorm1 ae_ge0_le_integral //.
-  - apply: measurableT_comp => //; apply: measurableT_comp => //.
+  - do 2 apply: measurableT_comp => //.
     by apply: measurable_funM => //; exact: measurable_normalized.
   - by move=> x _; rewrite lee_fin addr_ge0// divr_ge0// ?powR_ge0// ltW.
   - by apply: measurableT_comp => //; apply: measurable_funD => //;
@@ -223,10 +223,10 @@ rewrite [leRHS](_ : _ = \int[mu]_x (F x `^ p / p + G x `^ q / q)%:E).
 under eq_integral do rewrite EFinD mulrC (mulrC _ (_^-1)).
 rewrite ge0_integralD//; last 4 first.
 - by move=> x _; rewrite lee_fin mulr_ge0// ?invr_ge0 ?powR_ge0// ltW.
-- apply: measurableT_comp => //; apply: measurableT_comp => //.
+- do 2 apply: measurableT_comp => //.
   by apply: measurableT_comp_powR => //; exact: measurable_normalized.
 - by move=> x _; rewrite lee_fin mulr_ge0// ?invr_ge0 ?powR_ge0// ltW.
-- apply: measurableT_comp => //; apply: measurableT_comp => //.
+- do 2 apply: measurableT_comp => //.
   by apply: measurableT_comp_powR => //; exact: measurable_normalized.
 under eq_integral do rewrite EFinM.
 rewrite {1}ge0_integralZl//; last 3 first.
