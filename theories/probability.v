@@ -4,9 +4,9 @@ From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality.
 From HB Require Import structures.
-From mathcomp.classical Require Import functions cardinality.
-Require Import reals ereal signed topology normedtype sequences exp esum.
-Require Import measure numfun lebesgue_measure lebesgue_integral.
+Require Import exp numfun lebesgue_measure lebesgue_integral.
+Require Import reals ereal signed topology normedtype sequences esum measure.
+Require Import exp numfun lebesgue_measure lebesgue_integral.
 
 (******************************************************************************)
 (*                       Probability (experimental)                           *)

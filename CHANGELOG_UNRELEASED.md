@@ -56,7 +56,7 @@
       `hlength_finite_fin_num`, `finite_hlengthE`, `hlength_infty_bnd`,
       `hlength_bnd_infty`, `pinfty_hlength`, `hlength_itv_ge0`, `hlength_Rhull`,
       `le_hlength_itv`, `le_hlength`, `hlength_ge0`, `hlength_semi_additive`,
-      `hlength_sigma_sub_additive`, `hlength_sigma_finite`
+      `hlength_sigma_sub_additive`, `hlength_sigma_finite`, `lebesgue_measure`
   + `lebesgue_measure` now defined with `lebesgue_stieltjes_measure`
 - moved from `lebesgue_measure.v` to `lebesgue_stieltjes_measure.v`
   + notations `_.-ocitv`, `_.-ocitv.-measurable`

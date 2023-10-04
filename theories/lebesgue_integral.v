@@ -4869,7 +4869,7 @@ move=> /[dup]/compact_measurable => mA /compact_bounded[N [_ N1x]].
 have AN1 : (A `<=` `[- (`|N| + 1), `|N| + 1])%R.
   by move=> z Az; rewrite set_itvcc /= -ler_norml N1x// ltr_spaddr// ler_norm.
 rewrite (le_lt_trans (le_measure _ _ _ AN1)) ?inE//=.
-by rewrite lebesgue_measure_itv/= hlength_itv/= lte_fin gtr_opp// EFinD ltry.
+by rewrite lebesgue_measure_itv hlength_itv/= lte_fin gtr_opp// EFinD ltry.
 Qed.
 
 Lemma continuous_compact_integrable (f : R -> R^o) (A : set R^o) :
