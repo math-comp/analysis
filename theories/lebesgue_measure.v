@@ -2049,7 +2049,7 @@ Lemma lebesgue_regularity_inner_sup (D : set R) (eps : R) : measurable D ->
 Proof.
 move=> mD; have [?|] := ltP (mu D) +oo.
   exact: lebesgue_regularity_innerE_bounded.
-have /sigma_finiteP [F RFU [Fsub ffin]] := sigma_finiteT [the {measure set _ -> \bar R} of mu] (*lebesgue_stieltjes_measure.sigmaT_finite_lebesgue_stieltjes_measure [the @cumulative R of idfun] (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *) *).
+have /sigma_finiteP [F RFU [Fsub ffin]] := lebesgue_stieltjes_measure.sigmaT_finite_lebesgue_stieltjes_measure [the @cumulative R of idfun] (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *).
 rewrite leye_eq => /eqP /[dup] + ->.
 have {1}-> : D = \bigcup_n (F n `&` D) by rewrite -setI_bigcupl -RFU setTI.
 move=> FDp; apply/esym/eq_infty => M.

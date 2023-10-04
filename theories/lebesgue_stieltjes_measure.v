@@ -493,7 +493,7 @@ HB.instance Definition _ (f : cumulative R) :=
 
 (* TODO: this ought to be turned into a Let but older version of mathcomp/coq
    does not seem to allow, try to change asap *)
-Let sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R) :
+Lemma sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R) :
   sigma_finite setT (lebesgue_stieltjes_measure f).
 Proof. exact/measure_extension_sigma_finite/hlength_sigma_finite. Qed.
 
