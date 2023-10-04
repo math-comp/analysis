@@ -6,7 +6,7 @@ From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology numfun normedtype.
 From HB Require Import structures.
 Require Import sequences esum measure real_interval realfun exp.
-Require Import lebesgue_stieltjes_measure.
+Require Export lebesgue_stieltjes_measure.
 
 (******************************************************************************)
 (*                            Lebesgue Measure                                *)
@@ -46,7 +46,7 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* This module contains a direct construction of the Lebesgue measure this is
+(* This module contains a direct construction of the Lebesgue measure that is
    kept here for archival purpose. The Lebesgue measure is actually defined as
    an instance of the Lebesgue-Stieltjes measure. *)
 Module LebesgueMeasure.
@@ -162,7 +162,7 @@ Lemma hlength_ge0 I : (0 <= hlength I)%E.
 Proof. by rewrite -hlength0 le_hlength. Qed.
 
 End hlength.
-#[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
+#[local] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
 
 (* Unused *)
 (* Lemma hlength_semi_additive2 : semi_additive2 hlength. *)
@@ -339,7 +339,8 @@ Definition lebesgue_measure {R : realType} :
        salgebraType R.-ocitv.-measurable] -> \bar R :=
   [the measure _ _ of lebesgue_stieltjes_measure [the cumulative _ of idfun]].
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
-HB.instance Definition _ (R : realType) := SigmaFiniteContent.on (@lebesgue_measure R).
+HB.instance Definition _ (R : realType) :=
+  SigmaFiniteContent.on (@lebesgue_measure R).
 
 Section lebesgue_measure.
 Variable R : realType.
@@ -479,68 +480,6 @@ by move=> [x| |] //= _; [left; exists x|right].
 Qed.
 
 End puncture_ereal_itv.
-
-Lemma set1_bigcap_oc (R : realType) (r : R) :
-  [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
-Proof.
-apply/seteqP; split=> [x ->|].
-  by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
-move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
-apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
-have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
-by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
-Qed.
-
-Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
-  [set` Interval (BSide b r) (BLeft s)] =
-  \bigcup_n [set` Interval (BSide b r) (BRight (s - n.+1%:R^-1))].
-Proof.
-apply/seteqP; split => [x/=|]; last first.
-  move=> x [n _ /=] /[!in_itv] /andP[-> /le_lt_trans]; apply.
-  by rewrite ltr_subl_addr ltr_addl invr_gt0 ltr0n.
-rewrite in_itv/= => /andP[sx xs]; exists `|ceil ((s - x)^-1)|%N => //=.
-rewrite in_itv/= sx/= ler_subr_addl addrC -ler_subr_addl.
-rewrite -[in X in _ <= X](invrK (s - x)) ler_pinv.
-- rewrite -natr1 natr_absz ger0_norm; last first.
-    by rewrite ceil_ge0// invr_ge0 subr_ge0 ltW.
-  by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?ler_addl// ceil_ge.
-- by rewrite inE unitfE ltr0n andbT pnatr_eq0.
-- by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
-Qed.
-
-Lemma itv_open_bnd_bigcup (R : realType) b (r s : R) :
-  [set` Interval (BRight s) (BSide b r)] =
-  \bigcup_n [set` Interval (BLeft (s + n.+1%:R^-1)) (BSide b r)].
-Proof.
-have /(congr1 (fun x => -%R @` x)) := itv_bnd_open_bigcup (~~ b) (- r) (- s).
-rewrite opp_itv_bnd_bnd/= !opprK negbK => ->; rewrite image_bigcup.
-apply eq_bigcupr => k _; apply/seteqP; split=> [_/= [y ysr] <-|x/= xsr].
-  by rewrite oppr_itv/= opprD.
-by exists (- x); rewrite ?oppr_itv//= opprK// negbK opprB opprK addrC.
-Qed.
-
-Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
-  [set` Interval (BSide b x) +oo%O] =
-  \bigcup_i [set` Interval (BSide b x) (BRight (x + i%:R))].
-Proof.
-apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
-  by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
-rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
-by case: b xy => //= /ltW.
-Qed.
-
-Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
-  [set` Interval -oo%O (BSide b x)] =
-  \bigcup_i [set` Interval (BLeft (x - i%:R)) (BSide b x)].
-Proof.
-have /(congr1 (fun x => -%R @` x)) := itv_bnd_infty_bigcup (~~ b) (- x).
-rewrite opp_itv_bnd_infty negbK opprK => ->; rewrite image_bigcup.
-apply eq_bigcupr => k _; apply/seteqP; split=> [_ /= -[r rbxk <-]|y/= yxkb].
-   by rewrite oppr_itv/= opprB addrC.
-by exists (- y); [rewrite oppr_itv/= negbK opprD opprK|rewrite opprK].
-Qed.
 
 Section salgebra_R_ssets.
 Variable R : realType.
@@ -2049,7 +1988,10 @@ Lemma lebesgue_regularity_inner_sup (D : set R) (eps : R) : measurable D ->
 Proof.
 move=> mD; have [?|] := ltP (mu D) +oo.
   exact: lebesgue_regularity_innerE_bounded.
-have /sigma_finiteP [F RFU [Fsub ffin]] := lebesgue_stieltjes_measure.sigmaT_finite_lebesgue_stieltjes_measure [the @cumulative R of idfun] (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *).
+have /sigma_finiteP [F RFU [Fsub ffin]] :=
+  sigmaT_finite_lebesgue_stieltjes_measure [the @cumulative R of idfun]
+  (*TODO: sigma_finiteT mu should be enough but does not seem to work with older
+    versions of MathComp/Coq (Coq <= 8.15?) *).
 rewrite leye_eq => /eqP /[dup] + ->.
 have {1}-> : D = \bigcup_n (F n `&` D) by rewrite -setI_bigcupl -RFU setTI.
 move=> FDp; apply/esym/eq_infty => M.
