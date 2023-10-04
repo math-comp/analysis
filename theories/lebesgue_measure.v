@@ -324,18 +324,13 @@ Qed.
 Definition lebesgue_measure := measure_extension [the measure _ _ of hlength].
 HB.instance Definition _ := Measure.on lebesgue_measure.
 
-(* TODO: this ought to be turned into a Let but older version of mathcomp/coq
-   does not seem to allow, try to change asap *)
-Local Lemma sigmaT_finite_lebesgue_measure : sigma_finite setT lebesgue_measure.
+Let sigmaT_finite_lebesgue_measure : sigma_finite setT lebesgue_measure.
 Proof. exact/measure_extension_sigma_finite/hlength_sigma_finite. Qed.
 
 HB.instance Definition _ := @isSigmaFinite.Build _ _ _
   lebesgue_measure sigmaT_finite_lebesgue_measure.
 
 End hlength_extension.
-Arguments hlength {R}.
-#[global] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
-Arguments lebesgue_measure {R}.
 
 End LebesgueMeasure.
 
@@ -344,6 +339,7 @@ Definition lebesgue_measure {R : realType} :
        salgebraType R.-ocitv.-measurable] -> \bar R :=
   [the measure _ _ of lebesgue_stieltjes_measure [the cumulative _ of idfun]].
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
+HB.instance Definition _ (R : realType) := SigmaFiniteContent.on (@lebesgue_measure R).
 
 Section lebesgue_measure.
 Variable R : realType.
@@ -2053,7 +2049,7 @@ Lemma lebesgue_regularity_inner_sup (D : set R) (eps : R) : measurable D ->
 Proof.
 move=> mD; have [?|] := ltP (mu D) +oo.
   exact: lebesgue_regularity_innerE_bounded.
-have /sigma_finiteP [F RFU [Fsub ffin]] := sigma_finiteT mu (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *).
+have /sigma_finiteP [F RFU [Fsub ffin]] := sigma_finiteT mu (*lebesgue_stieltjes_measure.sigmaT_finite_lebesgue_stieltjes_measure [the @cumulative R of idfun] (*TODO: sigma_finiteT mu should be enough but does not seem to work with holder version of mathcomp/coq *) *).
 rewrite leye_eq => /eqP /[dup] + ->.
 have {1}-> : D = \bigcup_n (F n `&` D) by rewrite -setI_bigcupl -RFU setTI.
 move=> FDp; apply/esym/eq_infty => M.
