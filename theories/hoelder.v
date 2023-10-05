@@ -173,7 +173,7 @@ have foo : \int[mu]_x (`|f x| `^ p)%:E < +oo.
   move/integrableP: ifp => -[_].
   by under eq_integral do rewrite gee0_abs// ?lee_fin ?powR_ge0//.
 rewrite integralZl//; apply/eqP; rewrite eqe_pdivr_mull ?mule1.
-- by rewrite fineK// ge0_fin_numE// ltW.
+- by rewrite fineK// gt0_fin_numE.
 - by rewrite gt_eqF// fine_gt0// foo andbT.
 Qed.
 
