@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `constructive_ereal.v`:
+  + lemmas `gt0_fin_numE`, `lt0_fin_numE`
+
 ### Changed
 
 - in `hoelder.v`:

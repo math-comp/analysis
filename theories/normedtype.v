@@ -3795,7 +3795,7 @@ Qed.
 Lemma edist_pinfty_open : open [set xy : X * X | edist xy = +oo]%E.
 Proof.
 rewrite -closedC; have := edist_fin_closed; congr (_ _).
-by rewrite eqEsubset; split => z; rewrite /= ?ge0_fin_numE // ltey; move/eqP.
+by rewrite eqEsubset; split => z; rewrite /= ?ge0_fin_numE// ltey => /eqP.
 Qed.
 
 Lemma edist_sym (x y : X) : edist (x, y) = edist (y, x).
@@ -4034,11 +4034,11 @@ Section topological_urysohn_separator.
 Context {T : topologicalType} {R : realType}.
 
 Definition uniform_separator (A B : set T) :=
-  exists (uT : @Uniform.class_of T^o) (E : set (T * T)), 
-    let UT := Uniform.Pack uT in [/\ 
+  exists (uT : @Uniform.class_of T^o) (E : set (T * T)),
+    let UT := Uniform.Pack uT in [/\
       @entourage UT E, A `*` B `&` E = set0 &
       (forall x, @nbhs UT UT x `<=` @nbhs T T x)].
-    
+
 Local Lemma Urysohn' (A B : set T) : exists (f : T -> R),
     [/\ continuous f,
     range f `<=` `[0, 1]
