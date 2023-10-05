@@ -2255,7 +2255,6 @@ Arguments cvgr_neq0 {R V T F FF f}.
 #[global] Hint Extern 0 (ProperFilter _^'+) =>
   (apply: at_right_proper_filter) : typeclass_instances.
 
-
 Section at_left_rightR.
 Variable (R : numFieldType).
 
