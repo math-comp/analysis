@@ -2941,7 +2941,7 @@ Qed.
 Lemma edist_pinfty_open : open [set xy : X * X | edist xy = +oo]%E.
 Proof.
 rewrite -closedC; have := edist_fin_closed; congr (_ _).
-by rewrite eqEsubset; split => z; rewrite /= ?ge0_fin_numE // ltey; move/eqP.
+by rewrite eqEsubset; split => z; rewrite /= ?ge0_fin_numE// ltey => /eqP.
 Qed.
 
 Lemma edist_sym (x y : X) : edist (x, y) = edist (y, x).

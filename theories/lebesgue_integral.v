@@ -1183,8 +1183,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by move/cvg_lim => -> //; apply: ereal_sup_ub; exists n.
 have := leey (\int[mu]_x (f x)).
 rewrite le_eqVlt => /predU1P[|] mufoo; last first.
-  have : \int[mu]_x (f x) \is a fin_num.
-    by rewrite ge0_fin_numE//; exact: integral_ge0.
+  have : \int[mu]_x (f x) \is a fin_num by rewrite ge0_fin_numE// integral_ge0.
   rewrite ge0_integralTE// => /ub_ereal_sup_adherent h.
   apply/lee_addgt0Pr => _/posnumP[e].
   have {h} [/= _ [G Gf <-]] := h _ [gt0 of e%:num].
@@ -1368,7 +1367,7 @@ Let fpos_approx_neq0 x : D x -> (0%E < f x < +oo)%E ->
   \forall n \near \oo, approx n x != 0.
 Proof.
 move=> Dx /andP[fx_gt0 fxoo].
-have fxfin : f x \is a fin_num by rewrite ge0_fin_numE// ltW.
+have fxfin : f x \is a fin_num by rewrite gt0_fin_numE.
 rewrite -(fineK fxfin) lte_fin in fx_gt0; near=> n.
 rewrite /approx paddr_eq0//; last 2 first.
   by apply: sumr_ge0 => i _; rewrite mulr_ge0.
@@ -1517,7 +1516,7 @@ have cvg_af := cvg_approx fi0 Dx fixoo.
 have is_cvg_af : cvgn (approx ^~ x) by apply/cvg_ex; eexists; exact: cvg_af.
 have {is_cvg_af} := nondecreasing_cvg_le nd_ag is_cvg_af k.
 rewrite -lee_fin => /le_trans; apply.
-rewrite -(@fineK _ (f x)); last by rewrite ge0_fin_numE //; apply: f0.
+rewrite -(@fineK _ (f x)); last by rewrite ge0_fin_numE// f0.
 by move/(cvg_lim (@Rhausdorff R)) : cvg_af => ->.
 Qed.
 
@@ -1816,7 +1815,7 @@ move=> D [/= mD Deps KDf]; exists (K `\` D); split => //.
     by apply: measureU2 => //; apply: measurableI => //; apply: measurableC.
   rewrite [_%:num]splitr EFinD; apply: lee_lt_add => //=; first 2 last.
   + by rewrite (@le_lt_trans _ _ (mu D)) ?le_measure ?inE//; exact: measurableI.
-  + rewrite ge0_fin_numE// (@le_lt_trans _ _ (mu A))// le_measure// ?inE//.
+  + rewrite ge0_fin_numE// (@le_lt_trans _ _ (mu A))// le_measure ?inE//.
     exact: measurableD.
   rewrite setDE setC_bigcap setI_bigcupr.
   apply: (@le_trans _ _(\sum_(k <oo) mu (A `\` gK k))).
@@ -2544,10 +2543,9 @@ rewrite monotone_convergence //.
     exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
   exists `|ceil (M / fine (mu D))|%N => // m /=.
-  rewrite -(ler_nat R) => MDm.
-  rewrite -(@fineK _ (mu D)); last by rewrite ge0_fin_numE.
+  rewrite -(ler_nat R) => MDm; rewrite -(@fineK _ (mu D)) ?ge0_fin_numE//.
   rewrite -lee_pdivr_mulr; last by rewrite fine_gt0// lt0e muD0 measure_ge0.
-  rewrite lee_fin; apply: le_trans MDm.
+  rewrite lee_fin (le_trans _ MDm)//.
   by rewrite natr_absz (le_trans (ceil_ge _))// ler_int ler_norm.
 - by move=> n; exact: measurable_cst.
 - by move=> n x Dx; rewrite lee_fin.
@@ -3307,7 +3305,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
     - by move=> *; rewrite lee_fin.
   rewrite fineK//; last first.
     case: (integrableP _ _ _ fint) => _ foo.
-    by rewrite ge0_fin_numE//; exact: integral_ge0.
+    by rewrite ge0_fin_numE// integral_ge0.
   apply: ge0_le_integral => //.
   - by move=> *; rewrite lee_fin /indic.
   - exact/EFin_measurable_fun/measurableT_comp.
@@ -3399,7 +3397,7 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
       \int[mu]_(x in D) (g1^\+ x) + \int[mu]_(x in D) (g2^\+ x) \is a fin_num.
     rewrite ge0_fin_numE//.
       by rewrite lte_add_pinfty//; exact: integral_funepos_lt_pinfty.
-    by apply: adde_ge0; exact: integral_ge0.
+    by rewrite adde_ge0// integral_ge0.
   have g12neg :
       \int[mu]_(x in D) (g1^\- x) + \int[mu]_(x in D) (g2^\- x) \is a fin_num.
     rewrite ge0_fin_numE//.
@@ -3409,9 +3407,8 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
     - rewrite ge0_fin_numE.
         apply: lte_add_pinfty; last exact: integral_funeneg_lt_pinfty.
         apply: lte_add_pinfty; last exact: integral_funeneg_lt_pinfty.
-        have : mu.-integrable D (g1 \+ g2) by apply: integrableD.
-        exact: integral_funepos_lt_pinfty.
-      apply: adde_ge0; last exact: integral_ge0.
+        exact: integral_funepos_lt_pinfty (integrableD _ _ _).
+      rewrite adde_ge0//; last exact: integral_ge0.
       by apply: adde_ge0; exact: integral_ge0.
     - by rewrite fin_num_adde_defr.
   rewrite -(addeA (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
@@ -4646,8 +4643,7 @@ have m2Fn_bounded : exists M, forall X, measurable X -> (m2Fn X < M%:E)%E.
   exists (fine (m2Fn (F n)) + 1) => Y mY.
   rewrite [in ltRHS]EFinD lte_spadder// fineK; last first.
     by rewrite ge0_fin_numE ?measure_ge0//= /mrestr/= setIid.
-  rewrite /= /mrestr/= setIid; apply: le_measure => //; rewrite inE//.
-  exact: measurableI.
+  by rewrite /= /mrestr/= setIid le_measure// inE//; exact: measurableI.
 pose phi' A := m2Fn \o xsection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (phi' A)].
 have subset_B' : measurable `<=` B' by exact: measurable_prod_subset_xsection.
@@ -4682,8 +4678,7 @@ have m1Fn_bounded : exists M, forall X, measurable X -> (m1Fn X < M%:E)%E.
   exists (fine (m1Fn (F n)) + 1) => Y mY.
   rewrite [in ltRHS]EFinD lte_spadder// fineK; last first.
     by rewrite ge0_fin_numE ?measure_ge0// /m1Fn/= /mrestr setIid.
-  rewrite /m1Fn/= /mrestr setIid; apply: le_measure => //; rewrite inE//=.
-  exact: measurableI.
+  by rewrite /m1Fn/= /mrestr setIid le_measure// inE//=; exact: measurableI.
 pose psi' A := m1Fn \o ysection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (psi' A)].
 have subset_B' : measurable `<=` B' by exact: measurable_prod_subset_ysection.
