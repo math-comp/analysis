@@ -471,8 +471,7 @@ have := d_ge0 A; rewrite le_eqVlt => /predU1P[<-|d_gt0].
 have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < d_ A.
   rewrite /m; have [->|dn1oo] := eqVneq (d_ A) +oo.
     by rewrite min_r ?ltey ?gt0_mulye ?leey.
-  rewrite -(@fineK _ (d_ A)); last first.
-    by rewrite ge0_fin_numE// ?(ltW d_gt0)// lt_neqAle dn1oo leey.
+  rewrite -(@fineK _ (d_ A)); last by rewrite gt0_fin_numE// ltey.
   rewrite -EFinM -fine_min// lte_fin lt_minl; apply/orP; left.
   by rewrite ltr_pdivr_mulr// ltr_pmulr ?ltr1n// fine_gt0// d_gt0/= ltey.
 by exists B; split => //; rewrite (le_trans _ (ltW mnuB)).
@@ -649,8 +648,7 @@ have := s_le0 U; rewrite le_eqVlt => /predU1P[->|s_lt0].
 have /ereal_inf_lt/cid2[_ [B/= [mB BU] <-] nuBm] : s_ U < m.
   rewrite /m; have [->|s0oo] := eqVneq (s_ U) -oo.
     by rewrite max_r ?ltNye// gt0_mulNye// leNye.
-  rewrite -(@fineK _ (s_ U)); last first.
-    by rewrite le0_fin_numE// ?(ltW s_lt0)// lt_neqAle leNye eq_sym s0oo.
+  rewrite -(@fineK _ (s_ U)); last by rewrite lt0_fin_numE// ltNye.
   rewrite -EFinM -fine_max// lte_fin lt_maxr; apply/orP; left.
   by rewrite ltr_pdivl_mulr// gtr_nmulr ?ltr1n// fine_lt0// s_lt0/= ltNye andbT.
 have [C [CB nsC nuCB]] := hahn_decomposition_lemma nu mB.

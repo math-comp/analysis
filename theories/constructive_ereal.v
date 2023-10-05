@@ -1468,8 +1468,14 @@ Proof. by case: x => // x //=; exact: ltNyr. Qed.
 Lemma ge0_fin_numE x : 0 <= x -> (x \is a fin_num) = (x < +oo).
 Proof. by move: x => [x| |] => // x0; rewrite fin_numElt ltNyr. Qed.
 
+Lemma gt0_fin_numE x : 0 < x -> (x \is a fin_num) = (x < +oo).
+Proof. by move/ltW; exact: ge0_fin_numE. Qed.
+
 Lemma le0_fin_numE x : x <= 0 -> (x \is a fin_num) = (-oo < x).
 Proof. by move: x => [x| |]//=; rewrite lee_fin => x0; rewrite ltNyr. Qed.
+
+Lemma lt0_fin_numE x : x < 0 -> (x \is a fin_num) = (-oo < x).
+Proof. by move/ltW; exact: le0_fin_numE. Qed.
 
 Lemma eqyP x : x = +oo <-> (forall A, (0 < A)%R -> A%:E <= x).
 Proof.
