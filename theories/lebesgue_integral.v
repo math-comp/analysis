@@ -5548,7 +5548,7 @@ Qed.
 End sfinite_fubini.
 Arguments sfinite_Fubini {d d' X Y R} m1 m2 f.
 
-Section lebesgue_differentiation.
+Section lebesgue_differentiation_continuous.
 Context (rT : realType).
 Let mu := [the measure _ _ of @lebesgue_measure rT].
 Let R  := [the measurableType _ of measurableTypeR rT].
@@ -5631,4 +5631,4 @@ apply: le_trans.
 by rewrite ritv //= -EFinM lee_fin mulrC.
 Unshelve. all: by end_near. Qed.
 
-End lebesgue_differentiation.
+End lebesgue_differentiation_continuous.
