@@ -496,6 +496,52 @@ Local Close Scope convex_scope.
 
 End expR.
 
+Section expeR.
+
+Variable R : realType.
+Implicit Types x y : \bar R.
+Implicit Types r s : R.
+
+Local Open Scope ereal_scope.
+
+Definition expeR x :=
+  match x with
+  | r%:E => (expR r)%:E
+  | +oo => +oo
+  | -oo => 0
+  end.
+
+Lemma expeR0 : expeR 0 = 1.
+Proof. by rewrite /= expR0. Qed.
+
+Lemma expeR_ge0 x : 0 <= expeR x.
+Proof. by case: x => //= r; rewrite ltW// lte_fin expR_gt0. Qed.
+
+Lemma expeR_gt0 x : -oo < x -> 0 < expeR x.
+Proof. by case: x => //= r; rewrite lte_fin expR_gt0. Qed.
+
+Lemma expeR_eq0 x : (expeR x == 0) = (x == -oo).
+Proof. case: x => //= [r|]; rewrite ?eq_refl// eqe expR_eq0 gt_eqF// ltNyr//. Qed.
+
+Lemma expeRD x y : expeR (x + y) = expeR x * expeR y.
+Proof. 
+case: x => /= [r||].
+- case: y => /= [s||].
+  by rewrite -?EFinM ?expRD. 
+  by rewrite ?mule0// mulry /Num.sg expR_eq0 le_gtF ?mul1e ?expR_ge0// mule0.
+  by rewrite mule0.
+- case: y => //= [s||].
+  by rewrite mulyr /Num.sg expR_eq0 le_gtF ?mul1e ?expR_ge0.
+  by rewrite mulyy.
+by rewrite mule0.
+by rewrite mul0e.
+Qed.
+
+Lemma expeR_ge1Dx x : 0 <= x -> 1 + x <= expeR x.
+Proof. case: x => //= r; rewrite -EFinD !lee_fin; exact: expR_ge1Dx. Qed.
+
+End expeR.
+
 Section Ln.
 Variable R : realType.
 Implicit Types x : R.
