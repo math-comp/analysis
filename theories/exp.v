@@ -540,6 +540,41 @@ Qed.
 Lemma expeR_ge1Dx x : 0 <= x -> 1 + x <= expeR x.
 Proof. case: x => //= r; rewrite -EFinD !lee_fin; exact: expR_ge1Dx. Qed.
 
+Lemma ltr_expeR : {mono expeR : x y / x < y}.
+Proof.
+move=> x y.
+case: x => /= [r||].
+- by case: y => /= [s||]; rewrite ?lte_fin ?ltr_expR// ?ltry ?le_gtF ?leNye ?expR_ge0.
+- by rewrite !le_gtF ?lteey.
+- by case: y => //= [s|]; rewrite ?lte_fin ?expR_gt0 ?ltNyr ?ltry ?ltNye. 
+Qed.
+
+Lemma ler_expeR : {mono expeR : x y / x <= y}.
+Proof.
+move=> x y.
+case: x => [r||].
+- by case: y => [s||]; rewrite ?lee_fin ?ler_expR ?leey// le_eqVlt expR_eq0 le_gtF ?expR_ge0.
+- by case: y.
+- by case: y => /= [s||]; rewrite ?lee_fin ?leNye ?expR_ge0 ?leey ?le_refl.
+Qed.
+
+Lemma expeR_inj : injective expeR.
+Proof.
+case => [r||]; case => //=.
+- by move=> s; case=> ?; apply: congr1; exact: expR_inj.
+- by move/eqP; rewrite eqe expR_eq0.
+- by move=> r /eqP; rewrite eqe eq_sym expR_eq0.
+Qed.
+
+Lemma expeR_total x : 0 <= x -> exists y, expeR y = x.
+Proof.
+case: x => // [r|_].
+  rewrite le_eqVlt => /orP [/eqP <-|r0].
+  - by exists -oo.
+  - by have := expR_total r0; case=> s <-; exists s%:E.
+by exists +oo.
+Qed.
+
 End expeR.
 
 Section Ln.
