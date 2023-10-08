@@ -525,6 +525,23 @@ apply: (le_trans (@le_integral_comp_abse d T R P setT measurableT (EFin \o X)
 - by rewrite unlock.
 Qed.
 
+Definition moment (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X]. 
+
+Lemma chernoff (X : {RV P >-> R}) (t a : R) : (0 < t)%R ->
+  P [set x | X x >= a]%R <= moment X t.
+Proof.
+move=> t0.
+under eq_set => x.
+  rewrite -ler_expR -(@ler_pmul2r _ t)// -lee_fin.
+  rewrite -(@gee0_abs _ (_%:E)) -[leRHS](@gee0_abs _ (_%:E));
+  rewrite ?(@lee_fin _ 0) ?mulr_ge0 ?expR_ge0 ?(ltW t0)//.
+  over.
+rewrite /= /moment.
+have h : (0 < `| expR a * t |)%R by rewrite normr_gt0 mulf_neq0// ?gt_eqF// ?expR_gt0//.
+pose Y := [the {mfun _ >-> _} of expR \o t \o* X].
+have := @markov  id (`| expR a * t|)%R h.
+Admitted.
+
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
   P [set x | (eps <= `| X x - fine ('E_P[X])|)%R ] <= (eps ^- 2)%:E * 'V_P[X].
 Proof.
