@@ -16,14 +16,16 @@
   + definition `Lnorm` now `HB.lock`ed
 
 - in `charge.v`
-  + replace old isCharge.Build to isSemiSigmaAdditive.Build in section `charge_restriction`
   + replace to new isCharge.Build in the others
+
+- in `measure.v`:
+  + order of parameters changed in `semi_sigma_additive_is_additive`,
+    `isMeasure`
 
 ### Renamed
 
 - in `charge.v`
-  + old `isCharge` renamed to `isSemiSigmaAdditive`
-  + old `Charge` renamed to `AdditiveCharge_SemiSigmaAdditive_isCharge`
+  + `isCharge` -> `isSemiSigmaAdditive`
 
 ### Generalized
 

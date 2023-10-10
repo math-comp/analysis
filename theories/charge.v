@@ -15,22 +15,20 @@ Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 (* This file contains a formalization of charges (a.k.a. signed measures) and *)
 (* their theory (Hahn decomposition theorem, etc.).                           *)
 (*                                                                            *)
-(* * Mathematical structures                                                  *)
-(*       additive_charge T R == type of additive charges over T a semiring    *)
-(*                              of sets                                       *)
-(*                              The HB class is AdditiveCharge.               *)
-(* {additive_charge set T -> \bar R} == notation for additive_charge T R      *)
-(*                charge T R == type of charges over T a semiring of sets     *)
-(*                              The HB class is Charge.                       *)
-(*  {charge set T -> \bar R} == notation for charge T R                       *)
-(*  measure_of_charge nu nu0 == measure corresponding to the charge nu, nu0   *)
-(*                              is a proof that nu is non-negative            *)
-(*                                                                            *)
 (* * Structures for functions on classes of sets                              *)
-(*                 isCharge0 == factory corresponding to the "textbook        *)
+(* {additive_charge set T -> \bar R} == notation for additive charges where   *)
+(*                              T is a semiring of sets and R is a            *)
+(*                              numFieldType                                  *)
+(*                              The HB class is AdditiveCharge.               *)
+(*  {charge set T -> \bar R} == type of charges over T a semiring of sets     *)
+(*                              where R is a numFieldType                     *)
+(*                              The HB class is Charge.                       *)
+(*                  isCharge == factory corresponding to the "textbook        *)
 (*                              definition" of charges                        *)
 (*                                                                            *)
 (* * Instances of mathematical structures                                     *)
+(*  measure_of_charge nu nu0 == measure corresponding to the charge nu, nu0   *)
+(*                              is a proof that nu is non-negative            *)
 (*              crestr nu mD == restriction of the charge nu to the domain D  *)
 (*                              where mD is a proof that D is measurable      *)
 (*             crestr0 nu mD == csrestr nu mD that returns 0 for              *)
@@ -94,19 +92,19 @@ HB.mixin Record isSemiSigmaAdditive d (T : semiRingOfSetsType d) (R : numFieldTy
   charge_semi_sigma_additive : semi_sigma_additive mu }.
 
 #[short(type=charge)]
-HB.structure Definition AdditiveCharge_SemiSigmaAdditive_isCharge d (T : semiRingOfSetsType d) (R : numFieldType)
+HB.structure Definition Charge d (T : semiRingOfSetsType d) (R : numFieldType)
   := { mu of isSemiSigmaAdditive d T R mu & AdditiveCharge d mu }.
 
 Notation "{ 'charge' 'set' T '->' '\bar' R }" := (charge T R) : ring_scope.
 
-HB.factory Record isCharge d (T : measurableType d)
- (R : realFieldType) (mu : set T -> \bar R) := {
-    charge0 : mu set0 = 0 ;
-    charge_finite : forall x, d.-measurable x -> mu x \is a fin_num ;
-    charge_sigma_additive : sigma_additive mu
+HB.factory Record isCharge d (T : semiRingOfSetsType d) (R : realFieldType)
+    (mu : set T -> \bar R) := {
+  charge0 : mu set0 = 0 ;
+  charge_finite : forall x, d.-measurable x -> mu x \is a fin_num ;
+  charge_sigma_additive : semi_sigma_additive mu
 }.
 
-HB.builders Context d (T : measurableType d) (R : realFieldType)
+HB.builders Context d (T : semiRingOfSetsType d) (R : realFieldType)
   mu of isCharge d T R mu.
 
 Let finite : fin_num_fun mu. Proof. exact: charge_finite. Qed.
@@ -116,24 +114,22 @@ HB.instance Definition _ := SigmaFinite_isFinite.Build d T R mu finite.
 Let semi_additive : semi_additive mu.
 Proof.
 move=> I n mI trivI mUI.
-rewrite (@sigma_additive_is_additive R d _ mu charge0) //.
+rewrite (semi_sigma_additive_is_additive charge0)//.
 exact: charge_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isAdditiveCharge.Build d T R mu semi_additive.
 
 Let semi_sigma_additive : semi_sigma_additive mu.
-Proof.
-rewrite semi_sigma_additiveE.
-exact: charge_sigma_additive.
-Qed.
+Proof. exact: charge_sigma_additive. Qed.
 
-HB.instance Definition _ := isSemiSigmaAdditive.Build d T R mu semi_sigma_additive.
+HB.instance Definition _ :=
+  isSemiSigmaAdditive.Build d T R mu semi_sigma_additive.
 
 HB.end.
 
 Section charge_lemmas.
-Context d (T : measurableType d) (R : numFieldType).
+Context d (T : ringOfSetsType d) (R : numFieldType).
 Implicit Type nu : {charge set T -> \bar R}.
 
 Lemma charge0 nu : nu set0 = 0.
@@ -199,11 +195,11 @@ End charge_lemmas.
 #[export] Hint Resolve charge0 : core.
 #[export] Hint Resolve charge_semi_additive2 : core.
 
-Definition measure_of_charge d (T : measurableType d) (R : realType)
+Definition measure_of_charge d (T : semiRingOfSetsType d) (R : numFieldType)
   (nu : set T -> \bar R) of (forall E, 0 <= nu E) := nu.
 
 Section measure_of_charge.
-Context d (T : measurableType d) (R : realType).
+Context d (T : ringOfSetsType d) (R : realFieldType).
 Variables (nu : {charge set T -> \bar R}) (nupos : forall E, 0 <= nu E).
 
 Local Notation mu := (measure_of_charge nupos).
@@ -215,14 +211,14 @@ Let mu_ge0 S : 0 <= mu S. Proof. by rewrite nupos. Qed.
 Let mu_sigma_additive : semi_sigma_additive mu.
 Proof. exact: charge_semi_sigma_additive. Qed.
 
-HB.instance Definition _ := isMeasure.Build d R T (measure_of_charge nupos)
+HB.instance Definition _ := isMeasure.Build _ T R (measure_of_charge nupos)
   mu0 mu_ge0 mu_sigma_additive.
 
 End measure_of_charge.
 Arguments measure_of_charge {d T R}.
 
 Section charge_lemmas_realFieldType.
-Context d (T : measurableType d) (R : realFieldType).
+Context d (T : ringOfSetsType d) (R : realFieldType).
 Implicit Type nu : {charge set T -> \bar R}.
 
 Lemma chargeD nu (A B : set T) : measurable A -> measurable B ->
@@ -236,7 +232,7 @@ Qed.
 
 End charge_lemmas_realFieldType.
 
-Definition crestr d (T : measurableType d) (R : numDomainType) (D : set T)
+Definition crestr d (T : semiRingOfSetsType d) (R : numDomainType) (D : set T)
   (f : set T -> \bar R) of measurable D := fun X => f (X `&` D).
 
 Section charge_restriction.
@@ -286,7 +282,7 @@ HB.instance Definition _ :=
 
 End charge_restriction.
 
-Definition crestr0 d (T : measurableType d) (R : realFieldType) (D : set T)
+Definition crestr0 d (T : semiRingOfSetsType d) (R : numFieldType) (D : set T)
   (f : set T -> \bar R) (mD : measurable D) :=
     fun X => if X \in measurable then crestr f mD X else 0.
 
@@ -299,15 +295,16 @@ Local Notation restr := (crestr0 nu mD).
 Let crestr00 : restr set0 = 0.
 Proof.
 rewrite/crestr0 ifT ?inE // /crestr set0I.
-exact:charge0.
+exact: charge0.
 Qed.
 
 Let crestr0_fin_num_fun : fin_num_fun restr.
-Proof. by move=> U mU; rewrite /crestr0 mem_set// fin_num_measure. Qed.
-
-Let crestr0_sigma_additive : sigma_additive restr.
 Proof.
-rewrite -semi_sigma_additiveE.
+by move=> U mU; rewrite /crestr0 mem_set// fin_num_measure.
+Qed.
+
+Let crestr0_sigma_additive : semi_sigma_additive restr.
+Proof.
 move=> F mF tF mU; rewrite /crestr0 mem_set//.
 rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) crestr nu mD (F i))).
   exact: charge_semi_sigma_additive.
@@ -320,7 +317,7 @@ HB.instance Definition _ := isCharge.Build _ _ _
 End charge_restriction0.
 
 Section charge_zero.
-Context d (T : measurableType d) (R : realFieldType).
+Context d (T : semiRingOfSetsType d) (R : realFieldType).
 Local Open Scope ereal_scope.
 
 Definition czero (A : set T) : \bar R := 0.
@@ -330,9 +327,8 @@ Let czero0 : czero set0 = 0. Proof. by []. Qed.
 Let czero_finite_measure_function B : measurable B -> czero B \is a fin_num.
 Proof. by []. Qed.
 
-Let czero_sigma_additive : sigma_additive czero.
+Let czero_sigma_additive : semi_sigma_additive czero.
 Proof.
-rewrite -semi_sigma_additiveE.
 move=> F mF tF mUF; rewrite [X in X --> _](_ : _ = cst 0); first exact: cvg_cst.
 by apply/funext => n; rewrite big1.
 Qed.
@@ -345,7 +341,7 @@ Arguments czero {d T R}.
 
 Section charge_scale.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realFieldType).
+Context d (T : ringOfSetsType d) (R : realFieldType).
 Variables (r : R) (nu : {charge set T -> \bar R}).
 
 Definition cscale (A : set T) : \bar R := r%:E * nu A.
@@ -355,9 +351,8 @@ Let cscale0 : cscale set0 = 0. Proof. by rewrite /cscale charge0 mule0. Qed.
 Let cscale_finite_measure_function U : measurable U -> cscale U \is a fin_num.
 Proof. by move=> mU; apply: fin_numM => //; exact: fin_num_measure. Qed.
 
-Let cscale_sigma_additive : sigma_additive cscale.
+Let cscale_sigma_additive : semi_sigma_additive cscale.
 Proof.
-rewrite -semi_sigma_additiveE.
 move=> F mF tF mUF; rewrite /cscale; rewrite [X in X --> _](_ : _ =
     (fun n => r%:E * \sum_(0 <= i < n) nu (F i))); last first.
   apply/funext => k; rewrite fin_num_sume_distrr// => i j _ _.
@@ -374,7 +369,7 @@ HB.instance Definition _ := isCharge.Build _ _ _ cscale
 End charge_scale.
 
 Section positive_negative_set.
-Context d (R : numDomainType) (T : measurableType d).
+Context d (T : semiRingOfSetsType d) (R : numDomainType).
 Implicit Types nu : set T -> \bar R.
 
 Definition positive_set nu (P : set T) :=
@@ -613,7 +608,7 @@ Unshelve. all: by end_near. Qed.
 
 End hahn_decomposition_lemma.
 
-Definition hahn_decomposition d (T : measurableType d) (R : realType)
+Definition hahn_decomposition d (T : semiRingOfSetsType d) (R : numFieldType)
     (nu : {charge set T -> \bar R}) P N :=
   [/\ positive_set nu P, negative_set nu N, P `|` N = [set: T] & P `&` N = set0].
 
@@ -789,8 +784,7 @@ Let mP : measurable P. Proof. by have [[mP _] _ _ _] := nuPN. Qed.
 
 Let mN : measurable N. Proof. by have [_ [mN _] _ _] := nuPN. Qed.
 
-Let cjordan_pos : {charge set T -> \bar R} :=
-  [the charge _ _ of crestr0 nu mP].
+Let cjordan_pos : {charge set T -> \bar R} := [the charge _ _ of crestr0 nu mP].
 
 Let positive_set_cjordan_pos E : 0 <= cjordan_pos E.
 Proof.
@@ -1265,9 +1259,8 @@ move=> mB; rewrite /sigmaRN fin_numB fin_num_measure//=.
 exact: fin_num_int_fRN_eps.
 Qed.
 
-Let sigmaRN_sigma_additive : sigma_additive sigmaRN.
+Let sigmaRN_sigma_additive : semi_sigma_additive sigmaRN.
 Proof.
-rewrite -semi_sigma_additiveE.
 move=> H mH tH mUH.
 rewrite [X in X --> _](_ : _ = (fun n => \sum_(0 <= i < n) nu (H i) -
   \sum_(0 <= i < n) \int[mu]_(x in H i) (fRN x + epsRN%:num%:E))); last first.
