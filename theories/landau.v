@@ -788,11 +788,16 @@ Notation "fx == gx '+O_(' x \near F ')' hx" :=
 Notation "fx '==O_(' x \near F ')' hx" :=
   (fx == (mkbigO the_tag F (fun x => fx) (fun x => hx) x)).
 
-#[global] Hint Extern 0 (_ = 'o__ _) => apply: eqoE; reflexivity : core.
-#[global] Hint Extern 0 (_ = 'O__ _) => apply: eqOE; reflexivity : core.
-#[global] Hint Extern 0 (_ = 'O__ _) => apply: eqoO; reflexivity : core.
-#[global] Hint Extern 0 (_ = _ + 'o__ _) => apply: eqaddoE; reflexivity : core.
-#[global] Hint Extern 0 (_ = _ + 'O__ _) => apply: eqaddOE; reflexivity : core.
+#[global] Hint Extern 0 (_ = the_littleo the_tag _ _ _ _) =>
+  apply: eqoE; reflexivity : core.
+#[global] Hint Extern 0 (_ = the_bigO the_tag _ _ _ _) =>
+  apply: eqOE; reflexivity : core.
+#[global] Hint Extern 0 (_ = the_bigO the_tag _ _ _ _) =>
+  apply: eqoO; reflexivity : core.
+#[global] Hint Extern 0 (_ = _ + the_littleo the_tag _ _ _ _) =>
+  apply: eqaddoE; reflexivity : core.
+#[global] Hint Extern 0 (_ = _ + the_bigO the_tag _ _ _ _) =>
+  apply: eqaddOE; reflexivity : core.
 #[global] Hint Extern 0 (\forall k \near +oo, \forall x \near _,
   is_true (`|_ x| <= k * `|_ x|)) => solve[apply: bigOP] : core.
 #[global] Hint Extern 0 (nbhs _ _) => solve[apply: bigOP] : core.
