@@ -59,7 +59,7 @@ Lemma letin'_sample_bernoulli d d' (T : measurableType d)
 Proof.
 rewrite letin'E/=.
 rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
-by rewrite !ge0_integral_mscale//= !integral_dirac//= indicT 2!mul1e.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT 2!mul1e.
 Qed.
 
 Section letin'_return.
@@ -81,7 +81,7 @@ Lemma letin'_retk (f : X -> Y) (mf : measurable_fun setT f)
     (k : R.-sfker Y * X ~> Z) x U :
   measurable U -> letin' (ret mf) k x U = k (f x, x) U.
 Proof.
-move=> mU; rewrite letin'E retE integral_dirac ?indicT ?mul1e//.
+move=> mU; rewrite letin'E retE integral_dirac ?diracT ?mul1e//.
 exact: (measurableT_comp (measurable_kernel k _ mU)).
 Qed.
 
@@ -209,38 +209,38 @@ Definition sample_pair_syntax : exp _ [::] _ :=
 Lemma exec_sample_pair0 (A : set (bool * bool)) :
   @execP R [::] _ sample_pair_syntax0 tt A =
   ((1 / 2)%:E *
-   ((1 / 3)%:E * ((true, true) \in A)%:R%:E +
-    (1 - 1 / 3)%:E * ((true, false) \in A)%:R%:E) +
+   ((1 / 3)%:E * \d_(true, true) A +
+    (1 - 1 / 3)%:E * \d_(true, false) A) +
    (1 - 1 / 2)%:E *
-   ((1 / 3)%:E * ((false, true) \in A)%:R%:E +
-    (1 - 1 / 3)%:E * ((false, false) \in A)%:R%:E))%E.
+   ((1 / 3)%:E * \d_(false, true) A +
+    (1 - 1 / 3)%:E * \d_(false, false) A))%E.
 Proof.
 rewrite !execP_letin !execP_sample !execD_bernoulli execP_return /=.
 rewrite execD_pair !exp_var'E (execD_var_erefl "x") (execD_var_erefl "y") /=.
 rewrite letin'E integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e.
+rewrite !integral_dirac//= !diracT !mul1e.
 rewrite !letin'E !integral_measure_add//= !ge0_integral_mscale//= /onem.
-by rewrite !integral_dirac//= !indicE !in_setT/= !mul1e !diracE.
+by rewrite !integral_dirac//= !diracT !mul1e.
 Qed.
 
 Lemma exec_sample_pair0_TandT :
   @execP R [::] _ sample_pair_syntax0 tt [set (true, true)] = (1 / 6)%:E.
 Proof.
-rewrite exec_sample_pair0 mem_set//; do 3 rewrite memNset//=.
+rewrite exec_sample_pair0 !diracE mem_set//; do 3 rewrite memNset//=.
 by rewrite /= !mule0 mule1 !add0e mule0 adde0; congr (_%:E); lra.
 Qed.
 
 Lemma exec_sample_pair0_TandF :
   @execP R [::] _ sample_pair_syntax0 tt [set (true, false)] = (1 / 3)%:E.
 Proof.
-rewrite exec_sample_pair0 memNset// mem_set//; do 2 rewrite memNset//.
+rewrite exec_sample_pair0 !diracE memNset// mem_set//; do 2 rewrite memNset//.
 by rewrite /= !mule0 mule1 !add0e mule0 adde0; congr (_%:E); lra.
 Qed.
 
 Lemma exec_sample_pair0_TandT' :
   @execP R [::] _ sample_pair_syntax0 tt [set p | p.1 && p.2] = (1 / 6)%:E.
 Proof.
-rewrite exec_sample_pair0 mem_set//; do 3 rewrite memNset//=.
+rewrite exec_sample_pair0 !diracE mem_set//; do 3 rewrite memNset//=.
 by rewrite /= !mule0 mule1 !add0e mule0 adde0; congr (_%:E); lra.
 Qed.
 
@@ -248,9 +248,9 @@ Lemma exec_sample_pair_TorT :
   (projT1 (execD sample_pair_syntax)) tt [set p | p.1 || p.2] = (2 / 3)%:E.
 Proof.
 rewrite execD_normalize_pt normalizeE/= exec_sample_pair0.
-do 4 rewrite mem_set//=.
+rewrite !diracE; do 4 rewrite mem_set//=.
 rewrite eqe ifF; last by apply/negbTE/negP => /orP[/eqP|//]; lra.
-rewrite exec_sample_pair0; do 3 rewrite mem_set//; rewrite memNset//=.
+rewrite exec_sample_pair0 !diracE; do 3 rewrite mem_set//; rewrite memNset//=.
 by rewrite !mule1; congr (_%:E); field.
 Qed.
 
@@ -260,18 +260,17 @@ Definition sample_and_syntax0 : @exp R _ [::] _ :=
    return #{"x"} && #{"y"}].
 
 Lemma exec_sample_and0 (A : set bool) :
-  @execP R [::] _ sample_and_syntax0 tt A =
-  ((1 / 6)%:E * (true \in A)%:R%:E +
-  (1 - 1 / 6)%:E * (false \in A)%:R%:E)%E.
+  @execP R [::] _ sample_and_syntax0 tt A = ((1 / 6)%:E * \d_true A +
+                                             (1 - 1 / 6)%:E * \d_false A)%E.
 Proof.
 rewrite !execP_letin !execP_sample !execD_bernoulli execP_return /=.
 rewrite (@execD_bin _ _ binop_and) !exp_var'E (execD_var_erefl "x") (execD_var_erefl "y") /=.
 rewrite letin'E integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e.
+rewrite !integral_dirac//= !diracT !mul1e.
 rewrite !letin'E !integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e !diracE.
+rewrite !integral_dirac//= !diracT !mul1e.
 rewrite muleDr// -addeA; congr (_ + _)%E.
-by rewrite !muleA; congr (_%:E); congr (_ * _); field.
+  by rewrite !muleA; congr (_%:E); congr (_ * _); field.
 rewrite -muleDl// !muleA -muleDl//.
 by congr (_%:E); congr (_ * _); field.
 Qed.
@@ -283,19 +282,18 @@ Definition sample_bernoulli_and3 : @exp R _ [::] _ :=
    return #{"x"} && #{"y"} && #{"z"}].
 
 Lemma exec_sample_bernoulli_and3 t U :
-  execP sample_bernoulli_and3 t U =
-  ((1 / 8)%:E * (true \in U)%:R%:E +
-  (1 - 1 / 8)%:E * (false \in U)%:R%:E)%E.
+  execP sample_bernoulli_and3 t U = ((1 / 8)%:E * \d_true U +
+                                     (1 - 1 / 8)%:E * \d_false U)%E.
 Proof.
 rewrite !execP_letin !execP_sample !execD_bernoulli execP_return /=.
 rewrite !(@execD_bin _ _ binop_and) !exp_var'E.
 rewrite (execD_var_erefl "x") (execD_var_erefl "y") (execD_var_erefl "z") /=.
 rewrite letin'E integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e.
+rewrite !integral_dirac//= !diracT !mul1e.
 rewrite !letin'E !integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e.
+rewrite !integral_dirac//= !diracT !mul1e.
 rewrite !letin'E !integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e !diracE.
+rewrite !integral_dirac//= !diracT !mul1e.
 rewrite !muleDr// -!addeA.
 by congr (_ + _)%E; rewrite ?addeA !muleA -?muleDl//;
 congr (_ * _)%E; congr (_%:E); field.
@@ -306,25 +304,6 @@ Definition sample_add_syntax0 : @exp R _ [::] _ :=
    let "y" := Sample {exp_bernoulli (1 / 2)%:nng (p1S 1)} in
    let "z" := Sample {exp_bernoulli (1 / 2)%:nng (p1S 1)} in
    return #{"x"} && #{"y"} && #{"z"}].
-
-Lemma exec_sample_bernoulli_and3 t U :
-  execP sample_bernoulli_and3 t U =
-  ((1 / 8)%:E * (true \in U)%:R%:E +
-  (1 - 1 / 8)%:E * (false \in U)%:R%:E)%E.
-Proof.
-rewrite !execP_letin !execP_sample !execD_bernoulli execP_return /=.
-rewrite !(@execD_bin _ _ binop_and) !exp_var'E.
-rewrite (execD_var_erefl "x") (execD_var_erefl "y") (execD_var_erefl "z") /=.
-rewrite letin'E integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e.
-rewrite !letin'E !integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e.
-rewrite !letin'E !integral_measure_add//= !ge0_integral_mscale//= /onem.
-rewrite !integral_dirac//= !indicE !in_setT/= !mul1e !diracE.
-rewrite !muleDr// -!addeA.
-by congr (_ + _)%E; rewrite ?addeA !muleA -?muleDl//;
-congr (_ * _)%E; congr (_%:E); field.
-Qed.
 
 End sample_pair.
 
@@ -357,24 +336,23 @@ rewrite !integral_measure_add //=; last by move=> b _; rewrite integral_ge0.
 rewrite !ge0_integral_mscale //=; last 2 first.
   by move=> b _; rewrite integral_ge0.
   by move=> b _; rewrite integral_ge0.
-rewrite !integral_dirac// !indicE !in_setT !mul1e.
+rewrite !integral_dirac// !diracT !mul1e.
 rewrite iteE/= !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_indic//= !iteE/= /mscale/=.
-rewrite setTI diracE !in_setT !mule1.
+rewrite setTI !diracT !mule1.
 rewrite ger0_norm//.
 rewrite -EFinD/= eqe ifF; last first.
   by apply/negbTE/negP => /orP[/eqP|//]; rewrite /onem; lra.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
-rewrite !integral_dirac//= !indicE !in_setT /= !mul1e ger0_norm//.
+rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
 rewrite exp_var'E (execD_var_erefl "x")/=.
 rewrite /bernoulli/= measure_addE/= /mscale/= !mul1r.
-rewrite muleDl//; congr (_ + _)%E;
-  rewrite -!EFinM;
-  congr (_%:E);
-  by rewrite indicE /onem; case: (_ \in _); field.
+by rewrite muleDl//; congr (_ + _)%E;
+  rewrite -!EFinM; congr (_%:E);
+  rewrite !indicT !indicE /onem /=; case: (_ \in _); field.
 Qed.
 
 Definition bernoulli12_score := [Normalize
@@ -400,11 +378,11 @@ rewrite !integral_measure_add //=; last by move=> b _; rewrite integral_ge0.
 rewrite !ge0_integral_mscale //=; last 2 first.
   by move=> b _; rewrite integral_ge0.
   by move=> b _; rewrite integral_ge0.
-rewrite !integral_dirac// !indicE !in_setT !mul1e.
+rewrite !integral_dirac// !diracT !mul1e.
 rewrite iteE/= !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_indic//= !iteE/= /mscale/=.
-rewrite setTI diracE !in_setT !mule1.
+rewrite setTI !diracT !mule1.
 rewrite ger0_norm//.
 rewrite -EFinD/= eqe ifF; last first.
   apply/negbTE/negP => /orP[/eqP|//].
@@ -412,13 +390,13 @@ rewrite -EFinD/= eqe ifF; last first.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
-rewrite !integral_dirac//= !indicE !in_setT /= !mul1e ger0_norm//.
+rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
 rewrite exp_var'E (execD_var_erefl "x")/=.
 rewrite /bernoulli/= measure_addE/= /mscale/= !mul1r.
 rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM;
   congr (_%:E);
-  by rewrite indicE /onem; case: (_ \in _); field.
+  by rewrite !indicT !indicE /onem /=; case: (_ \in _); field.
 Qed.
 
 (* https://dl.acm.org/doi/pdf/10.1145/2933575.2935313 (Sect. 4) *)
@@ -447,13 +425,13 @@ under eq_integral.
   over.
 rewrite !integral_measure_add //=; last by move=> b _; rewrite integral_ge0.
 rewrite !ge0_integral_mscale //=; last 2 first.
-  by move=> b _; rewrite integral_ge0.
-  by move=> b _; rewrite integral_ge0.
-rewrite !integral_dirac// !indicE !in_setT !mul1e.
+  by move=> b _; exact: integral_ge0.
+  by move=> b _; exact: integral_ge0.
+rewrite !integral_dirac// !diracT !mul1e.
 rewrite iteE/= !ge0_integral_mscale//=.
 rewrite ger0_norm//.
-rewrite !integral_indic//= !iteE/= /mscale/=.
-rewrite setTI diracE !in_setT !mule1.
+rewrite !integral_cst//= !diracT !(mule1,mul1e).
+rewrite !iteE/= /mscale/= !diracT !mule1.
 rewrite ger0_norm//.
 rewrite -EFinD/= eqe ifF; last first.
   apply/negbTE/negP => /orP[/eqP|//].
@@ -461,12 +439,12 @@ rewrite -EFinD/= eqe ifF; last first.
 rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
-rewrite !integral_dirac//= !indicE !in_setT /= !mul1e ger0_norm//.
+rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
 rewrite /bernoulli/= measure_addE/= /mscale/= !mul1r.
 rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM;
   congr (_%:E);
-  by rewrite indicE /onem; case: (_ \in _); field.
+  by rewrite !indicT !indicE /onem /=; case: (_ \in _); field.
 Qed.
 
 End bernoulli_examples.
@@ -494,7 +472,7 @@ Proof.
 apply/eq_sfkernel => x U.
 rewrite letin'E/= /sample; unlock.
 rewrite integral_measure_add//= ge0_integral_mscale//= ge0_integral_mscale//=.
-rewrite integral_dirac//= integral_dirac//= !indicT/= !mul1e.
+rewrite !integral_dirac//= !diracT/= !mul1e.
 by rewrite /mscale/= iteE//= iteE//= fail'E mule0 adde0 ger0_norm.
 Qed.
 

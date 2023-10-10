@@ -2,10 +2,10 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality fsbigop.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop.
 Require Import reals ereal signed topology normedtype sequences esum measure.
-Require Import lebesgue_measure  numfun lebesgue_integral exp kernel.
+Require Import lebesgue_measure numfun lebesgue_integral exp kernel.
 
 (******************************************************************************)
 (*  Semantics of a probabilistic programming language using s-finite kernels  *)
@@ -86,7 +86,6 @@ Qed.
 
 Section bernoulli.
 Variables (R : realType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
-Local Open Scope ring_scope.
 
 Definition bernoulli : set _ -> \bar R :=
   measure_add
@@ -94,8 +93,6 @@ Definition bernoulli : set _ -> \bar R :=
     [the measure _ _ of mscale (onem_nonneg p1) [the measure _ _ of dirac false]].
 
 HB.instance Definition _ := Measure.on bernoulli.
-
-Local Close Scope ring_scope.
 
 Let bernoulli_setT : bernoulli [set: _] = 1.
 Proof.
@@ -116,7 +113,7 @@ Lemma integral_bernoulli {R : realType}
 Proof.
 move=> f0.
 rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
-by rewrite !ge0_integral_mscale//= !integral_dirac//= indicT 2!mul1e.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT !mul1e.
 Qed.
 
 Section uniform_probability.
@@ -131,7 +128,7 @@ HB.instance Definition _ := Measure.on uniform_probability.
 Let uniform_probability_setT : uniform_probability [set: _] = 1.
 Proof.
 rewrite /uniform_probability /mscale/= /mrestr/=.
-rewrite setTI lebesgue_measure_itv hlength_itv/= lte_fin.
+rewrite setTI lebesgue_measure_itv/= lte_fin.
 by rewrite -subr_gt0 ab0 -EFinD -EFinM mulVf// gt_eqF// subr_gt0.
 Qed.
 
@@ -528,7 +525,7 @@ Proof.
 apply/eq_measure/funext => U.
 rewrite /ite; unlock => /=.
 rewrite /kcomp/= integral_dirac//=.
-rewrite indicT mul1e.
+rewrite diracT mul1e.
 rewrite -/(measure_add (ITE.kiteT k1 (x, f x)) (ITE.kiteF k2 (x, f x))).
 rewrite measure_addE.
 rewrite /ITE.kiteT /ITE.kiteF/=.
@@ -588,7 +585,7 @@ Lemma letin_retk
   x U : measurable U ->
   letin (ret mf) k x U = k (x, f x) U.
 Proof.
-move=> mU; rewrite letinE retE integral_dirac ?indicT ?mul1e//.
+move=> mU; rewrite letinE retE integral_dirac ?diracT ?mul1e//.
 exact: (measurableT_comp (measurable_kernel k _ mU)).
 Qed.
 
@@ -893,7 +890,7 @@ Let kcomp_scoreE d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
   (score mf \; g) r U = `|f r|%:E * g (r, tt) U.
 Proof.
 rewrite /= /kcomp /kscore /= ge0_integral_mscale//=.
-by rewrite integral_dirac// indicT mul1e.
+by rewrite integral_dirac// diracT mul1e.
 Qed.
 
 Lemma scoreE d' (T' : measurableType d') (x : T * T') (U : set T') (f : R -> R)
@@ -926,7 +923,7 @@ Proof.
 apply/eq_sfkernel => x U.
 rewrite letinE/= /sample; unlock.
 rewrite integral_measure_add//= ge0_integral_mscale//= ge0_integral_mscale//=.
-rewrite integral_dirac//= integral_dirac//= !indicT/= !mul1e.
+rewrite integral_dirac//= integral_dirac//= !diracT/= !mul1e.
 by rewrite /mscale/= iteE//= iteE//= failE mule0 adde0 ger0_norm.
 Qed.
 
@@ -1004,24 +1001,23 @@ Let T0 z : (T z) set0 = 0. Proof. by []. Qed.
 Let T_ge0 z x : 0 <= (T z) x. Proof. by []. Qed.
 Let T_semi_sigma_additive z : semi_sigma_additive (T z).
 Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ R X (T z) (T0 z) (T_ge0 z)
+HB.instance Definition _ z := @isMeasure.Build _ X R (T z) (T0 z) (T_ge0 z)
   (@T_semi_sigma_additive z).
 
 Let sfinT z : sfinite_measure (T z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ X R
-  (T z) (sfinT z).
+
+HB.instance Definition _ z := @isSFinite.Build _ X R (T z) (sfinT z).
 
 Definition U z : set Y -> \bar R := u z.
 Let U0 z : (U z) set0 = 0. Proof. by []. Qed.
 Let U_ge0 z x : 0 <= (U z) x. Proof. by []. Qed.
 Let U_semi_sigma_additive z : semi_sigma_additive (U z).
 Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ R Y (U z) (U0 z) (U_ge0 z)
+HB.instance Definition _ z := @isMeasure.Build _ Y R (U z) (U0 z) (U_ge0 z)
   (@U_semi_sigma_additive z).
 
 Let sfinU z : sfinite_measure (U z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ Y R
-  (U z) (sfinU z).
+HB.instance Definition _ z := @isSFinite.Build _ Y R (U z) (sfinU z).
 
 Lemma letinC z A : measurable A ->
   letin t
@@ -1055,7 +1051,7 @@ End letinC.
 
 Section constants.
 Variable R : realType.
-Local Open Scope ring_scope.
+Local Close Scope ereal_scope.
 
 Lemma onem1S n : `1- (1 / n.+1%:R) = (n%:R / n.+1%:R)%:nng%:num :> R.
 Proof.
@@ -1063,7 +1059,7 @@ by rewrite /onem/= -{1}(@divrr _ n.+1%:R) ?unitfE// -mulrBl -natr1 addrK.
 Qed.
 
 Lemma p1S n : (1 / n.+1%:R)%:nng%:num <= 1 :> R.
-Proof. by rewrite ler_pdivr_mulr//= mul1r ler1n. Qed.
+Proof. by rewrite ler_pdivrMr//= mul1r ler1n. Qed.
 
 Lemma p12 : (1 / 2%:R)%:nng%:num <= 1 :> R. Proof. by rewrite p1S. Qed.
 
@@ -1073,7 +1069,7 @@ Lemma onem27 : `1- (2 / 7%:R) = (5%:R / 7%:R)%:nng%:num :> R.
 Proof. by apply/eqP; rewrite subr_eq/= -mulrDl -natrD divrr// unitfE. Qed.
 
 Lemma p27 : (2 / 7%:R)%:nng%:num <= 1 :> R.
-Proof. by rewrite /= lter_pdivr_mulr// mul1r ler_nat. Qed.
+Proof. by rewrite /= lter_pdivrMr// mul1r ler_nat. Qed.
 
 End constants.
 Arguments p12 {R}.
@@ -1145,7 +1141,7 @@ Lemma letin_sample_bernoulli d d' (T : measurableType d)
 Proof.
 rewrite letinE/=.
 rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
-by rewrite !ge0_integral_mscale//= !integral_dirac//= indicT 2!mul1e.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT 2!mul1e.
 Qed.
 
 Section sample_and_return.
@@ -1327,8 +1323,8 @@ Qed.
 End staton_bus_exponential.
 
 (* X + Y is a measurableType if X and Y are *)
-Canonical sum_pointedType (X Y : pointedType) :=
-  PointedType (X + Y) (@inl X Y point).
+HB.instance Definition _ (X Y : pointedType) :=
+  isPointed.Build (X + Y)%type (@inl X Y point).
 
 Section measurable_sum.
 Context d d' (X : measurableType d) (Y : measurableType d').
@@ -1344,7 +1340,7 @@ Let sumU (F : (set (X + Y))^nat) : (forall i, measurable_sum (F i)) ->
 Proof. by []. Qed.
 
 HB.instance Definition _ := @isMeasurable.Build default_measure_display (X + Y)%type
-  (Pointed.class _) measurable_sum sum0 sumC sumU.
+  measurable_sum sum0 sumC sumU.
 
 End measurable_sum.
 
@@ -1485,7 +1481,7 @@ Proof. exact: sigma_algebra_bigcup. Qed.
 
 HB.instance Definition sum_salgebra_mixin :=
   @isMeasurable.Build (measure_sum_display (d1, d2))
-    (T1 + T2)%type (Pointed.class _) (image_classes f1 f2)
+    (T1 + T2)%type (image_classes f1 f2)
     (sum_salgebra_set0) (sum_salgebra_setC) (sum_salgebra_bigcup).
 
 End sum_salgebra_instance.
@@ -1748,9 +1744,9 @@ exists (fun n => [the R.-ker _ ~> _ of case_sum' (fun ab => [the R.-fker _ ~> _ 
   have [rfalse Hrfalse] := measure_uub (f (inr false) n).
   have [rtrue Hrtrue] := measure_uub (f (inr true) n).
   exists (maxr rtt (maxr rfalse rtrue)) => //= -[x [[]|[|]]] /=.
-  by rewrite 2!EFin_max lt_maxr Hrtt.
-  by rewrite /CASE_SUM.case_sumr /= 2!EFin_max 2!lt_maxr Hrtrue 2!orbT.
-  by rewrite /CASE_SUM.case_sumr /= 2!EFin_max 2!lt_maxr Hrfalse orbT.
+  by rewrite 2!EFin_max lt_max Hrtt.
+  by rewrite /CASE_SUM.case_sumr /= 2!EFin_max 2!lt_max Hrtrue 2!orbT.
+  by rewrite /CASE_SUM.case_sumr /= 2!EFin_max 2!lt_max Hrfalse orbT.
 move=> [x [[]|[|]]] U mU/=-.
 by rewrite (Hf (inl tt) x _ mU).
 by rewrite (Hf (inr true) x _ mU).
