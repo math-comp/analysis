@@ -15,9 +15,6 @@
 - in `hoelder.v`:
   + definition `Lnorm` now `HB.lock`ed
 
-- in `charge.v`
-  + replace to new isCharge.Build in the others
-
 - in `measure.v`:
   + order of parameters changed in `semi_sigma_additive_is_additive`,
     `isMeasure`
