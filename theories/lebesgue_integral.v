@@ -5680,7 +5680,6 @@ have ritv r : 0 < r -> mu `[x - r, x + r]%classic = (r *+ 2)%:E.
 move=> oA intf ctsfx Ax.
 apply: cvg_zero.
 apply/cvgrPdist_le => eps epos; apply: filter_app (@nbhs_right_gt rT 0).
-have ? : Filter (nbhs (0 : R)^'+) := at_right_proper_filter 0.
 move/cvgrPdist_le/(_ eps epos)/at_right_in_segment : ctsfx; apply: filter_app.
 apply: filter_app (open_itvcc_subset oA Ax).
 have mA : measurable A := open_measurable oA.
