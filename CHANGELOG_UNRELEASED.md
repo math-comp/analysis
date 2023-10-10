@@ -11,6 +11,8 @@
 
 - in `hoelder.v`:
   + definition `Lnorm` now `HB.lock`ed
+- in `lebesgue_integral.v`:
+  + `integral_dirac` now uses the `\d_` notation
 
 ### Renamed
 

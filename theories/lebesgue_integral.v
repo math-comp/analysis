@@ -2544,15 +2544,15 @@ rewrite ge0_integral_fsum//.
 Qed.
 
 Lemma integral_dirac (f : T -> \bar R) (mf : measurable_fun D f) :
-  \int[\d_ a]_(x in D) f x = (\1_D a)%:E * f a.
+  \int[\d_ a]_(x in D) f x = \d_a D * f a.
 Proof.
 have [/[!inE] aD|aD] := boolP (a \in D).
   rewrite integralE ge0_integral_dirac//; last exact/measurable_funepos.
   rewrite ge0_integral_dirac//; last exact/measurable_funeneg.
-  by rewrite [in RHS](funeposneg f) indicE mem_set// mul1e.
-rewrite indicE (negbTE aD) mul0e -(integral_measure_zero D f)//.
-apply: eq_measure_integral => //= S mS DS; rewrite /dirac indicE memNset// => /DS.
-by rewrite notin_set in aD.
+  by rewrite [in RHS](funeposneg f) diracE mem_set// mul1e.
+rewrite diracE (negbTE aD) mul0e -(integral_measure_zero D f)//.
+apply: eq_measure_integral => //= S mS DS; rewrite /dirac indicE memNset//.
+by move=> /DS/mem_set; exact/negP.
 Qed.
 
 End integral_dirac.
@@ -3940,9 +3940,9 @@ transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
   congr (integral _ _ _); apply/funext => A.
   by rewrite /= counting_dirac.
 rewrite (@integral_measure_series _ _ R (fun n => [the measure _ _ of \d_ n]) setT)//=.
-- by apply: eq_eseriesr=> i _; rewrite integral_dirac//= indicE mem_set// mul1e.
+- by apply: eq_eseriesr=> i _; rewrite integral_dirac//= diracT mul1e.
 - move=> n; apply/integrableP; split=> [//|].
-  by rewrite integral_dirac//= indicE mem_set// mul1e (summable_pinfty sa).
+  by rewrite integral_dirac//= diracT mul1e (summable_pinfty sa).
 - by apply: summable_integral_dirac => //; exact: summable_funeneg.
 - by apply: summable_integral_dirac => //; exact: summable_funepos.
 Qed.
@@ -3955,7 +3955,7 @@ transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
   congr (integral _ _ _); apply/funext => A.
   by rewrite /= counting_dirac.
 rewrite (@ge0_integral_measure_series _ _ R (fun n => [the measure _ _ of \d_ n]) setT)//=.
-by apply: eq_eseriesr=> i _; rewrite integral_dirac//= indicE mem_set// mul1e.
+by apply: eq_eseriesr=> i _; rewrite integral_dirac//= diracT mul1e.
 Qed.
 
 End integral_counting.
