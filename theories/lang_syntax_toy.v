@@ -1,7 +1,7 @@
 Require Import String Classical.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
-From mathcomp.classical Require Import mathcomp_extra boolp.
+From mathcomp Require Import mathcomp_extra boolp.
 From mathcomp Require Import signed reals topology normedtype.
 From mathcomp Require Import lang_syntax_util.
 

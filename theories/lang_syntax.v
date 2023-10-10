@@ -1,8 +1,8 @@
 Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality fsbigop.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import signed reals ereal topology normedtype sequences.
 From mathcomp Require Import esum measure lebesgue_measure numfun.
 From mathcomp Require Import lebesgue_integral kernel prob_lang.
@@ -190,8 +190,7 @@ HB.instance Definition _ z := @isMeasure.Build _ X R (T' z) (T0 z) (T_ge0 z)
   (@T_semi_sigma_additive z).
 
 Let sfinT z : sfinite_measure (T' z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @isSFinite.Build _ X R
-  (T' z) (sfinT z).
+HB.instance Definition _ z := @isSFinite.Build _ X R (T' z) (sfinT z).
 
 Definition U' z : set Y -> \bar R := u z.
 Let U0 z : (U' z) set0 = 0. Proof. by []. Qed.
@@ -202,8 +201,7 @@ HB.instance Definition _ z := @isMeasure.Build _ Y R (U' z) (U0 z) (U_ge0 z)
   (@U_semi_sigma_additive z).
 
 Let sfinU z : sfinite_measure (U' z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @isSFinite.Build _ Y R
-  (U' z) (sfinU z).
+HB.instance Definition _ z := @isSFinite.Build _ Y R (U' z) (sfinU z).
 
 Lemma letin'C z A : measurable A ->
   letin' t
