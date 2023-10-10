@@ -89,7 +89,6 @@ Qed.
 
 Section bernoulli.
 Variables (R : realType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
-Local Open Scope ring_scope.
 
 Definition bernoulli : set _ -> \bar R :=
   measure_add
@@ -97,8 +96,6 @@ Definition bernoulli : set _ -> \bar R :=
     [the measure _ _ of mscale (onem_nonneg p1) [the measure _ _ of dirac false]].
 
 HB.instance Definition _ := Measure.on bernoulli.
-
-Local Close Scope ring_scope.
 
 Let bernoulli_setT : bernoulli [set: _] = 1.
 Proof.
@@ -1021,8 +1018,7 @@ HB.instance Definition _ z := @isMeasure.Build _ Y R (U z) (U0 z) (U_ge0 z)
   (@U_semi_sigma_additive z).
 
 Let sfinU z : sfinite_measure (U z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @isSFinite.Build _ Y R
-  (U z) (sfinU z).
+HB.instance Definition _ z := @isSFinite.Build _ Y R (U z) (sfinU z).
 
 Lemma letinC z A : measurable A ->
   letin t
@@ -1056,7 +1052,7 @@ End letinC.
 
 Section constants.
 Variable R : realType.
-Local Open Scope ring_scope.
+Local Close Scope ereal_scope.
 
 Lemma onem1S n : (1 / n.+1%:R).~ = (n%:R / n.+1%:R)%:nng%:num :> R.
 Proof.
