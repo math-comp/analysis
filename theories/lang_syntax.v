@@ -190,8 +190,7 @@ HB.instance Definition _ z := @isMeasure.Build _ X R (T' z) (T0 z) (T_ge0 z)
   (@T_semi_sigma_additive z).
 
 Let sfinT z : sfinite_measure (T' z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @isSFinite.Build _ X R
-  (T' z) (sfinT z).
+HB.instance Definition _ z := @isSFinite.Build _ X R (T' z) (sfinT z).
 
 Definition U' z : set Y -> \bar R := u z.
 Let U0 z : (U' z) set0 = 0. Proof. by []. Qed.
