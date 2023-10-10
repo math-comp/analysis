@@ -329,16 +329,16 @@ move=> /[dup] supA [[a Aa] ubA] /[dup] supB [[b Bb] ubB].
 have ABsup : has_sup [set x + y | x in A & y in B].
   split; first by exists (a + b), a => //; exists b.
   case: ubA ubB => p up [q uq]; exists (p + q) => ? [r Ar [s Bs] <-].
-  by apply: ler_add; [exact: up | exact: uq].
+  by apply: lerD; [exact: up | exact: uq].
 apply: le_anti; apply/andP; split.
   apply: sup_le_ub; first by case: ABsup.
-  by move=> ? [p Ap [q Bq] <-]; apply: ler_add; exact: sup_ub.
+  by move=> ? [p Ap [q Bq] <-]; apply: lerD; exact: sup_ub.
 rewrite real_leNgt ?num_real// -subr_gt0; apply/negP.
 set eps := (_ + _ - _) => epos.
 have e2pos : 0 < eps / 2%:R by rewrite divr_gt0// ltr0n.
 have [r Ar supBr] := sup_adherent e2pos supA.
 have [s Bs supAs] := sup_adherent e2pos supB.
-have := ltr_add supBr supAs.
+have := ltrD supBr supAs.
 rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
 rewrite subrr add0r; apply/negP; rewrite -real_leNgt ?num_real//.
 by apply: sup_upper_bound => //; exists r => //; exists s.

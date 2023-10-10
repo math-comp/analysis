@@ -673,7 +673,7 @@ Proof. by move=> /eqP; rewrite powR_eq0 => /andP[/eqP]. Qed.
 Lemma ger_powR a : 0 < a <= 1 -> {homo powR a : x y /~ y <= x}.
 Proof.
 move=> /andP[a0 a1] x y xy.
-by rewrite /powR gt_eqF// ler_expR ler_wnmul2r// ln_le0.
+by rewrite /powR gt_eqF// ler_expR ler_wnM2r// ln_le0.
 Qed.
 
 Lemma ler_powR a : 1 <= a -> {homo powR a : x y / x <= y}.
@@ -745,14 +745,14 @@ Lemma ge1r_powRZ x y r : 0 < x <= 1 -> 0 <= y -> 1 <= r ->
   (x * y) `^ r <= x * (y `^ r).
 Proof.
 move=> /andP[x0 x1] y0 r1.
-by rewrite (powRM _ (ltW _))// ler_wpmul2r ?powR_ge0// ge1r_powR// x0.
+by rewrite (powRM _ (ltW _))// ler_wpM2r ?powR_ge0// ge1r_powR// x0.
 Qed.
 
 Lemma le1r_powRZ x y r : x >= 1 -> 0 <= y -> 1 <= r ->
   (x * y) `^ r >= x * (y `^ r).
 Proof.
 move=> x1 y0 r1.
-by rewrite (powRM _ (le_trans _ x1))// ler_wpmul2r ?powR_ge0// le1r_powR// x0.
+by rewrite (powRM _ (le_trans _ x1))// ler_wpM2r ?powR_ge0// le1r_powR// x0.
 Qed.
 
 Lemma powRrM (x y z : R) : x `^ (y * z) = (x `^ y) `^ z.
@@ -841,7 +841,7 @@ rewrite le_eqVlt => /predU1P[<- b0 p0 q0 _|a0].
 rewrite le_eqVlt => /predU1P[<-|b0] p0 q0 pq.
   by rewrite mulr0 powR0 ?gt_eqF// mul0r addr0 divr_ge0 ?powR_ge0 ?ltW.
 have q01 : (q^-1 \in `[0, 1])%R.
-  by rewrite in_itv/= invr_ge0 (ltW q0)/= -pq ler_paddl// invr_ge0 ltW.
+  by rewrite in_itv/= invr_ge0 (ltW q0)/= -pq ler_wpDl// invr_ge0 ltW.
 have ap0 : (0 < a `^ p)%R by rewrite powR_gt0.
 have bq0 : (0 < b `^ q)%R by rewrite powR_gt0.
 have := @concave_ln _ (@Itv.mk _ `[0, 1] _ q01)%R _ _ ap0 bq0.
