@@ -1,8 +1,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality fsbigop.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences esum measure.
 Require Import lebesgue_measure  numfun lebesgue_integral exp kernel trigo.
 Require Import prob_lang.
@@ -81,7 +81,7 @@ rewrite /mgauss01/= integral_bigcup//=; last first.
   rewrite (_ : (fun x => _) = (EFin \o gauss01_density)); last first.
     by apply/funext => x; rewrite gee0_abs// lee_fin gauss_density_ge0.
   apply: le_lt_trans.
-    apply: (@subset_integral _ _ _ _ _ setT) => //=.
+    apply: (@ge0_subset_integral _ _ _ _ _ setT) => //=.
       apply/EFin_measurable_fun.
       exact: measurable_fun_gauss_density.
     by move=> ? _; rewrite lee_fin gauss_density_ge0.
@@ -142,7 +142,7 @@ transitivity (\int[@mgauss01 R]_(y in U) (f1 y)%:E).
   apply: eq_integral => //= r.
   rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
     by rewrite invr_ge0// gauss_density_ge0.
-  by rewrite integral_dirac// indicT mul1e diracE indicE.
+  by rewrite integral_dirac// diracT mul1e diracE indicE.
 rewrite integral_mgauss01//.
 transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
   apply: eq_integral => /= y yU.
@@ -196,7 +196,7 @@ rewrite /mpoisson1/= integral_bigcup//=; last first.
   rewrite (_ : (fun x => _) = (EFin \o poisson1)); last first.
     by apply/funext => x; rewrite gee0_abs// lee_fin poisson1_ge0//.
   apply: le_lt_trans.
-    apply: (@subset_integral _ _ _ _ _ setT) => //=.
+    apply: (@ge0_subset_integral _ _ _ _ _ setT) => //=.
       by apply/EFin_measurable_fun; exact: measurable_poisson.
     by move=> ? _; rewrite lee_fin poisson1_ge0//.
   by rewrite /= integral_poisson_density// ltry.

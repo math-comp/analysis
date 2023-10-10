@@ -1,8 +1,8 @@
 Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality fsbigop.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences esum measure.
 Require Import lebesgue_measure numfun lebesgue_integral kernel prob_lang.
 Require Import lang_syntax_util.
@@ -89,7 +89,7 @@ Proof. done. Qed.
 Let mswap_sigma_additive x : semi_sigma_additive (mswap x).
 Proof. exact: measure_semi_sigma_additive. Qed.
 
-HB.instance Definition _ x := isMeasure.Build _ R _
+HB.instance Definition _ x := isMeasure.Build _ _ R
   (mswap x) (mswap0 x) (mswap_ge0 x) (@mswap_sigma_additive x).
 
 Definition mkswap : _ -> {measure set Z -> \bar R} :=
@@ -185,24 +185,22 @@ Let T0 z : (T' z) set0 = 0. Proof. by []. Qed.
 Let T_ge0 z x : 0 <= (T' z) x. Proof. by []. Qed.
 Let T_semi_sigma_additive z : semi_sigma_additive (T' z).
 Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ R X (T' z) (T0 z) (T_ge0 z)
+HB.instance Definition _ z := @isMeasure.Build _ X R (T' z) (T0 z) (T_ge0 z)
   (@T_semi_sigma_additive z).
 
 Let sfinT z : sfinite_measure (T' z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ X R
-  (T' z) (sfinT z).
+HB.instance Definition _ z := @isSFinite.Build _ X R (T' z) (sfinT z).
 
 Definition U' z : set Y -> \bar R := u z.
 Let U0 z : (U' z) set0 = 0. Proof. by []. Qed.
 Let U_ge0 z x : 0 <= (U' z) x. Proof. by []. Qed.
 Let U_semi_sigma_additive z : semi_sigma_additive (U' z).
 Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ R Y (U' z) (U0 z) (U_ge0 z)
+HB.instance Definition _ z := @isMeasure.Build _ Y R (U' z) (U0 z) (U_ge0 z)
   (@U_semi_sigma_additive z).
 
 Let sfinU z : sfinite_measure (U' z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @Measure_isSFinite_subdef.Build _ Y R
-  (U' z) (sfinU z).
+HB.instance Definition _ z := @isSFinite.Build _ Y R (U' z) (sfinU z).
 
 Lemma letin'C z A : measurable A ->
   letin' t
@@ -271,7 +269,7 @@ Inductive typ :=
 | Pair : typ -> typ -> typ
 | Prob : typ -> typ.
 
-Canonical stype_eqType := Equality.Pack (@gen_eqMixin typ).
+HB.instance Definition _ := gen_eqMixin typ.
 
 Fixpoint measurable_of_typ (t : typ) : {d & measurableType d} :=
   match t with
