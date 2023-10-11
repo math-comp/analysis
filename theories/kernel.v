@@ -867,7 +867,7 @@ rewrite closeE// integral_nneseries// => n.
 exact: measurableT_comp (measurable_kernel k _ (mU n)) _.
 Qed.
 
-HB.instance Definition _ x := isMeasure.Build _ R _
+HB.instance Definition _ x := isMeasure.Build _ _ R
   ((l \; k) x) (kcomp0 x) (kcomp_ge0 x) (@kcomp_sigma_additive x).
 
 Definition mkcomp : X -> {measure set Z -> \bar R} := fun x =>

@@ -79,7 +79,7 @@ Proof. exact: measure_ge0. Qed.
 Let distribution_sigma_additive : semi_sigma_additive (distribution P X).
 Proof. exact: measure_semi_sigma_additive. Qed.
 
-HB.instance Definition _ := isMeasure.Build _ R _ (distribution P X)
+HB.instance Definition _ := isMeasure.Build _ _ R (distribution P X)
   distribution0 distribution_ge0 distribution_sigma_additive.
 
 Let distribution_is_probability : distribution P X [set: _] = 1%:E.

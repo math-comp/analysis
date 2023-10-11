@@ -1339,9 +1339,11 @@ Qed.
 
 End ring_additivity.
 
-Lemma semi_sigma_additive_is_additive d
-  (R : realFieldType (*TODO: numFieldType if possible?*))
-  (T : semiRingOfSetsType d) (mu : set T -> \bar R) :
+(* NB: realFieldType cannot be weakened to numFieldType in the current
+   state because cvg_lim requires a topology for \bar R which is
+   defined for at least realFieldType *)
+Lemma semi_sigma_additive_is_additive d (T : semiRingOfSetsType d)
+    (R : realFieldType) (mu : set T -> \bar R) :
   mu set0 = 0 -> semi_sigma_additive mu -> semi_additive mu.
 Proof.
 move=> mu0 samu A n Am Atriv UAm.
@@ -1559,14 +1561,14 @@ Canonical measure_snum S := Signed.mk (measure_snum_subproof S).
 
 End measure_signed.
 
-HB.factory Record isMeasure d
-    (R : realFieldType) (T : semiRingOfSetsType d) (mu : set T -> \bar R) := {
+HB.factory Record isMeasure d (T : semiRingOfSetsType d) (R : realFieldType)
+    (mu : set T -> \bar R) := {
   measure0 : mu set0 = 0 ;
   measure_ge0 : forall x, 0 <= mu x ;
   measure_semi_sigma_additive : semi_sigma_additive mu }.
 
-HB.builders Context d (R : realFieldType) (T : semiRingOfSetsType d)
-  (mu : set T -> \bar R) of isMeasure d R T mu.
+HB.builders Context d (T : semiRingOfSetsType d) (R : realFieldType)
+  (mu : set T -> \bar R) of isMeasure _ T R mu.
 
 Let semi_additive_mu : semi_additive mu.
 Proof.
