@@ -566,6 +566,23 @@ rewrite [X in _ <= P X](_ : _ = [set x | a <= X x]%R)//; apply: eq_set => t/=.
 by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pM2r.
 Qed.
 
+HB.instance Definition _ := isMeasurableFun.Build _ _ _ (@expR R) (@measurable_expR R).
+
+Lemma measurableT_comp_subproof d1 (T1 : measurableType d1) (f : {mfun R >-> R}) (g : {mfun T1 >-> R}) :
+  measurable_fun setT (f \o g).
+Proof. apply: measurableT_comp. exact. apply: @measurable_funP _ _ _ g. Qed.
+
+HB.instance Definition _ (d1 : measure_display) (T1 : measurableType d1)
+  (f : {mfun R >-> R}) (g : {mfun T1 >-> R}) := isMeasurableFun.Build _ _ _ (f \o g) (@measurableT_comp_subproof _ _ _ _).
+
+Lemma ge0_ler_normr :
+  {in Num.nneg &, {mono (@normr _ R) : x y / x <= y}}%R.
+Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
+
+Lemma lt0_ger_normr :
+  {in Num.neg &, {mono (@normr _ R) : x y / x <= y >-> x >= y}}%R.
+Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
+
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
   P [set x | (eps <= `| X x - fine ('E_P[X])|)%R ] <= (eps ^- 2)%:E * 'V_P[X].
 Proof.
