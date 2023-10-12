@@ -511,7 +511,7 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) :
     (0 < eps)%R ->
     measurable_fun [set: R] f -> (forall r, 0 <= f r)%R ->
-    {in `[0, +oo[%classic &, {homo f : x y / x <= y}}%R ->
+    {in Num.nneg &, {homo f : x y / x <= y}}%R ->
   (f eps)%:E * P [set x | eps%:E <= `| (X x)%:E | ] <=
     'E_P[f \o (fun x => `| x |%R) \o X].
 Proof.
@@ -520,27 +520,47 @@ apply: (le_trans (@le_integral_comp_abse d T R P setT measurableT (EFin \o X)
   eps (er_map f) _ _ _ _ e0)) => //=.
 - exact: measurable_er_map.
 - by case => //= r _; exact: f0.
-- by move=> [x| |] [y| |] xP yP xy//=; rewrite ?leey ?leNye// lee_fin f_nd.
+- by move=> [x| |] [y| |]; rewrite !set_interval.set_itvE !inE ?lee_fin => //= x0 y0 xy; rewrite ?f_nd ?leey.
 - exact/EFin_measurable_fun.
 - by rewrite unlock.
 Qed.
 
-Definition moment (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X]. 
+Definition moment (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
+
+HB.instance Definition _ := isMeasurableFun.Build _ _ _ (@expR R) (@measurable_expR R).
+
+Lemma measurableT_comp_subproof d1 (T1 : measurableType d1) (f : {mfun R >-> R}) (g : {mfun T1 >-> R}) :
+  measurable_fun setT (f \o g).
+Proof. apply: measurableT_comp. exact. apply: @measurable_funP _ _ _ g. Qed.
+
+HB.instance Definition _ (d1 : measure_display) (T1 : measurableType d1)
+  (f : {mfun R >-> R}) (g : {mfun T1 >-> R}) := isMeasurableFun.Build _ _ _ (f \o g) (@measurableT_comp_subproof _ _ _ _).
+
+Lemma ge0_ler_normr :
+  {in Num.nneg &, {mono (@normr _ R) : x y / x <= y}}%R.
+Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
+
+Lemma lt0_ger_normr :
+  {in Num.neg &, {mono (@normr _ R) : x y / x <= y >-> x >= y}}%R.
+Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
 
 Lemma chernoff (X : {RV P >-> R}) (t a : R) : (0 < t)%R ->
-  P [set x | X x >= a]%R <= moment X t.
+  P [set x | X x >= a]%R * (expR (t * a))%:E <= moment X t.
 Proof.
 move=> t0.
-under eq_set => x.
-  rewrite -ler_expR -(@ler_pmul2r _ t)// -lee_fin.
-  rewrite -(@gee0_abs _ (_%:E)) -[leRHS](@gee0_abs _ (_%:E));
-  rewrite ?(@lee_fin _ 0) ?mulr_ge0 ?expR_ge0 ?(ltW t0)//.
-  over.
 rewrite /= /moment.
-have h : (0 < `| expR a * t |)%R by rewrite normr_gt0 mulf_neq0// ?gt_eqF// ?expR_gt0//.
-pose Y := [the {mfun _ >-> _} of expR \o t \o* X].
-have := @markov  id (`| expR a * t|)%R h.
-Admitted.
+have h : (0 < `| expR (t * a) |)%R by rewrite normr_gt0 gt_eqF ?expR_gt0.
+pose Y : {RV P >-> R} := [the {mfun T >-> R} of expR \o (t \o* X)].
+have := @markov Y normr (`| expR (t * a)|)%R h (@measurable_normr _ _) (fun r => normr_ge0 r) (monoW_in ge0_ler_normr).
+rewrite normr_id.
+rewrite ger0_norm ?expR_ge0//.
+under eq_set => x.
+  rewrite /Y /= ger0_norm ?expR_ge0// lee_fin ler_expR.
+  rewrite mulrC (@ler_pmul2r _ t)//. over.
+rewrite /= muleC.
+suff -> : (normr \o [eta normr]) \o (expR \o t \o* X) = (expR \o t \o* X) => //.
+by apply: funext => x /=; rewrite normr_id ger0_norm ?expR_ge0.
+Qed.
 
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
   P [set x | (eps <= `| X x - fine ('E_P[X])|)%R ] <= (eps ^- 2)%:E * 'V_P[X].
@@ -554,7 +574,7 @@ have h (Y : {RV P >-> R}) :
   apply: (@le_trans _ _ ('E_P[(@GRing.exp R ^~ 2%N \o normr) \o Y])).
     apply: (@markov Y (@GRing.exp R ^~ 2%N)) => //.
     - by move=> r; apply: sqr_ge0.
-    - move=> x y; rewrite !inE !mksetE !in_itv/= !andbT => x0 y0.
+    - move=> x y; rewrite !nnegrE => x0 y0.
       by rewrite ler_sqr.
   apply: expectation_le => //.
     - by apply: measurableT_comp => //; exact: measurableT_comp.
@@ -641,7 +661,7 @@ have le (u : R) : (0 <= u)%R ->
     rewrite -[(_ ^+ 2)%R]/(((Y \+ cst u) ^+ 2) x)%R; over.
   rewrite -[X in X%:E * _]gtr0_norm => [|//].
   apply: (le_trans (markov _ peps _ _ _)) => //=.
-    by move=> x y /[!inE]/= /[!in_itv]/= /[!andbT] /ger0_norm-> /ger0_norm->.
+    by move=> x y /[!nnegrE] /ger0_norm-> /ger0_norm->.
   rewrite -/Y le_eqVlt; apply/orP; left; apply/eqP; congr expectation.
   by apply/funeqP => x /=; rewrite -expr2 normr_id ger0_norm ?sqr_ge0.
 pose u0 := (fine 'V_P[X] / lambda)%R.
