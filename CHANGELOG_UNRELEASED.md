@@ -10,6 +10,9 @@
 - in `charge.v`:
   + factory `isCharge`
 
+- in `measure.v`:
+  + lemmas `negligibleI`, `negligible_bigsetU`, `negligible_bigcup`
+
 ### Changed
 
 - in `hoelder.v`:
