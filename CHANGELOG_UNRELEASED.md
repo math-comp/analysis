@@ -17,6 +17,8 @@
 
 - in `hoelder.v`:
   + definition `Lnorm` now `HB.lock`ed
+- in `lebesgue_integral.v`:
+  + `integral_dirac` now uses the `\d_` notation
 
 - in `measure.v`:
   + order of parameters changed in `semi_sigma_additive_is_additive`,
