@@ -3216,6 +3216,16 @@ Proof.
 by move=> BA [N [mN N0 AN]]; exists N; split => //; exact: subset_trans AN.
 Qed.
 
+Lemma negligibleI A B :
+  mu.-negligible A -> mu.-negligible B -> mu.-negligible (A `&` B).
+Proof.
+move=> [N [mN N0 AN]] [M [mM M0 BM]]; exists (N `&` M); split => //.
+- exact: measurableI.
+- apply/eqP; rewrite eq_le measure_ge0 andbT -N0 le_measure// inE//.
+  exact: measurableI.
+- exact: setISS.
+Qed.
+
 End negligible.
 Notation "mu .-negligible" := (negligible mu) : type_scope.
 
@@ -3242,7 +3252,36 @@ move=> [N [mN N0 AN]] [M [mM M0 BM]]; exists (N `|` M); split => //.
 - exact: setUSS.
 Qed.
 
+Lemma negligible_bigsetU (F : (set T)^nat) s (P : pred nat) :
+  (forall k, P k -> mu.-negligible (F k)) ->
+  mu.-negligible (\big[setU/set0]_(k <- s | P k) F k).
+Proof.
+by move=> PF; elim/big_ind : _ => //;
+  [exact: negligible_set0|exact: negligibleU].
+Qed.
+
 End negligible_ringOfSetsType.
+
+Lemma negligible_bigcup d (T : measurableType d) (R : realFieldType)
+    (mu : {measure set T -> \bar R}) (F : (set T)^nat) :
+  (forall k, mu.-negligible (F k)) -> mu.-negligible (\bigcup_k F k).
+Proof.
+move=> mF; exists (\bigcup_k sval (cid (mF k))); split.
+- by apply: bigcupT_measurable => // k; have [] := svalP (cid (mF k)).
+- rewrite seqDU_bigcup_eq measure_bigcup//; last first.
+    move=> k _; apply: measurableD; first by case: cid => //= A [].
+    by apply: bigsetU_measurable => i _; case: cid => //= A [].
+  rewrite eseries0// => k _.
+  have [mFk mFk0 ?] := svalP (cid (mF k)).
+  rewrite measureD//=.
+  + rewrite mFk0 sub0e eqe_oppLRP oppe0.
+    apply/eqP; rewrite eq_le measure_ge0 andbT.
+    rewrite -[leRHS]mFk0 le_measure//= ?inE//; apply: measurableI => //.
+    by apply: bigsetU_measurable => i _; case: cid => // A [].
+  + by apply: bigsetU_measurable => i _; case: cid => // A [].
+  + by rewrite mFk0.
+- by apply: subset_bigcup => k _; rewrite /sval/=; by case: cid => //= A [].
+Qed.
 
 Section ae.
 
