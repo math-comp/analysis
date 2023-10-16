@@ -158,11 +158,11 @@ HB.instance Definition _ := @isMeasurableFun.Build _ _ rT
 HB.instance Definition _ := isMeasurableFun.Build _ _ rT
   (@expR rT) (@measurable_expR rT).
 
-Let measurableT_comp_subproof (f : {mfun rT >-> rT}) (g : {mfun aT >-> rT}) :
+Let measurableT_comp_subproof {rT' : realType} (f : {mfun rT >-> rT'}) (g : {mfun aT >-> rT}) :
   measurable_fun setT (f \o g).
 Proof. by apply: measurableT_comp; last apply: @measurable_funP _ _ _ g. Qed.
 
-HB.instance Definition _ (f : {mfun rT >-> rT}) (g : {mfun aT >-> rT}) := isMeasurableFun.Build _ _ _ (f \o g) (@measurableT_comp_subproof _ _).
+HB.instance Definition _ {rT' : realType} (f : {mfun rT >-> rT'}) (g : {mfun aT >-> rT}) := isMeasurableFun.Build _ _ _ (f \o g) (@measurableT_comp_subproof _ _ _).
 
 End mfun.
 
