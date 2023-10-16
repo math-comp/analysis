@@ -1442,3 +1442,17 @@ Arguments le_bigmax_seq {d T} x {I r} i0 P.
 (* NB: PR 1079 to MathComp in progress *)
 Lemma gerBl {R : numDomainType} (x y : R) : 0 <= y -> x - y <= x.
 Proof. by move=> y0; rewrite ler_subl_addl ler_addr. Qed.
+
+
+Section normr.
+Variable R : realDomainType.
+
+Lemma ge0_ler_normr :
+  {in Num.nneg &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
+Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
+
+Lemma lt0_ger_normr :
+  {in Num.neg &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
+Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
+
+End normr.
