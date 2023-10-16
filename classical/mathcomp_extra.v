@@ -1447,12 +1447,15 @@ Proof. by move=> y0; rewrite ler_subl_addl ler_addr. Qed.
 Section normr.
 Variable R : realDomainType.
 
+Definition Rnpos : qualifier 0 R := [qualify x : R | x <= 0].
+Lemma nposrE x : (x \is Rnpos) = (x <= 0). Proof. by []. Qed.
+
 Lemma ge0_ler_normr :
   {in Num.nneg &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
 Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
 
-Lemma lt0_ger_normr :
-  {in Num.neg &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
-Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
+Lemma le0_ger_normr :
+  {in Rnpos &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
+Proof. by move=> x y; rewrite !nposrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
 
 End normr.
