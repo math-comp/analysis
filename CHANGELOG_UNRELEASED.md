@@ -34,7 +34,7 @@
   + measure instance of `hlength`
   + definition `lebesgue_stieltjes_measure`
 - in `mathcomp_extras.v`
-  + lemmas `ge0_ler_normr` and `lt0_ger_normr`
+  + lemmas `ge0_ler_normr`, `gt0_ler_normr`, `le0_ger_normr` and `lt0_ger_normr`
 
 ### Changed
 
