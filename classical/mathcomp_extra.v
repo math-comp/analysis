@@ -1454,8 +1454,16 @@ Lemma ge0_ler_normr :
   {in Num.nneg &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
 Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
 
+Lemma gt0_ler_normr :
+  {in Num.pos &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
+Proof. by move=> x y; rewrite !posrE => x0 y0; rewrite !gtr0_norm. Qed.
+
 Lemma le0_ger_normr :
   {in Rnpos &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
-Proof. by move=> x y; rewrite !nposrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
+Proof. by move=> x y; rewrite !nposrE => x0 y0; rewrite !ler0_norm ?lter_oppE. Qed.
+
+Lemma lt0_ger_normr :
+  {in Num.neg &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
+Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
 
 End normr.
