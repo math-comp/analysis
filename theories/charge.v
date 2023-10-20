@@ -37,8 +37,8 @@ Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 (*               cscale r nu == charge nu scaled by a factor r : R            *)
 (*                                                                            *)
 (* * Theory                                                                   *)
-(*         positive_set nu P == P is a positive set with nu a charge          *)
-(*         negative_set nu N == N is a negative set with nu a charge          *)
+(*         nu.-positive_set P == P is a positive set with nu a charge         *)
+(*         nu.-negative_set N == N is a negative set with nu a charge         *)
 (* hahn_decomposition nu P N == the full set can be decomposed in P and N,    *)
 (*                              a positive set and a negative set for the     *)
 (*                              charge nu                                     *)
@@ -61,6 +61,8 @@ Reserved Notation "{ 'charge' 'set' T '->' '\bar' R }"
     format "{ 'charge'  'set'  T  '->'  '\bar'  R }").
 Reserved Notation "'d nu '/d mu" (at level 10, nu, mu at next level,
   format "''d'  nu  ''/d'  mu").
+Reserved Notation "nu .-negative_set" (at level 2, format "nu .-negative_set").
+Reserved Notation "nu .-positive_set" (at level 2, format "nu .-positive_set").
 
 Declare Scope charge_scope.
 
@@ -393,17 +395,21 @@ Definition negative_set nu (N : set T) :=
 
 End positive_negative_set.
 
+Notation "nu .-negative_set" := (negative_set nu) : charge_scope.
+Notation "nu .-positive_set" := (positive_set nu) : charge_scope.
+Local Open Scope charge_scope.
+
 Section positive_negative_set_lemmas.
 Context d (T : measurableType d) (R : numFieldType).
 Implicit Types nu : {charge set T -> \bar R}.
 
-Lemma negative_set_charge_le0 nu N : negative_set nu N -> nu N <= 0.
+Lemma negative_set_charge_le0 nu N : nu.-negative_set N -> nu N <= 0.
 Proof. by move=> [mN]; exact. Qed.
 
-Lemma negative_set0 nu : negative_set nu set0.
+Lemma negative_set0 nu : nu.-negative_set set0.
 Proof. by split => // A _; rewrite subset0 => ->; rewrite charge0. Qed.
 
-Lemma positive_negative0 nu P N : positive_set nu P -> negative_set nu N ->
+Lemma positive_negative0 nu P N : nu.-positive_set P -> nu.-negative_set N ->
   forall S, measurable S -> nu (S `&` P `&` N) = 0.
 Proof.
 move=> [mP posP] [mN negN] S mS; apply/eqP; rewrite eq_le; apply/andP; split.
@@ -421,8 +427,8 @@ Context d (T : measurableType d) (R : realFieldType).
 Implicit Types nu : {charge set T -> \bar R}.
 
 Lemma bigcup_negative_set nu (F : (set T)^nat) :
-    (forall i, negative_set nu (F i)) ->
-  negative_set nu (\bigcup_i F i).
+    (forall i, nu.-negative_set (F i)) ->
+  nu.-negative_set (\bigcup_i F i).
 Proof.
 move=> hF; have mUF : measurable (\bigcup_k F k).
   by apply: bigcup_measurable => n _; have [] := hF n.
@@ -445,7 +451,7 @@ by apply: nearW => n; exact: sume_le0.
 Qed.
 
 Lemma negative_setU nu N M :
-  negative_set nu N -> negative_set nu M -> negative_set nu (N `|` M).
+  nu.-negative_set N -> nu.-negative_set M -> nu.-negative_set (N `|` M).
 Proof.
 move=> nN nM; rewrite -bigcup2E; apply: bigcup_negative_set => -[//|[//|/= _]].
 exact: negative_set0.
@@ -549,7 +555,7 @@ by move=> k /=; rewrite fine_ge0.
 Qed.
 
 Lemma hahn_decomposition_lemma : measurable D ->
-  {A | [/\ A `<=` D, negative_set nu A & nu A <= nu D]}.
+  {A | [/\ A `<=` D, nu.-negative_set A & nu A <= nu D]}.
 Proof.
 move=> mD; have [A0 [mA0 + A0d0]] := next_elt set0.
 rewrite setD0 => A0D.
@@ -618,14 +624,14 @@ End hahn_decomposition_lemma.
 
 Definition hahn_decomposition d (T : semiRingOfSetsType d) (R : numFieldType)
     (nu : {charge set T -> \bar R}) P N :=
-  [/\ positive_set nu P, negative_set nu N, P `|` N = [set: T] & P `&` N = set0].
+  [/\ nu.-positive_set P, nu.-negative_set N, P `|` N = [set: T] & P `&` N = set0].
 
 Section hahn_decomposition_theorem.
 Context d (T : measurableType d) (R : realType).
 Variable nu : {charge set T -> \bar R}.
 
 Let elt_prop (x : set T * \bar R) := [/\ x.2 <= 0,
-  negative_set nu x.1 & nu x.1 <= maxe (x.2 * 2^-1%:E) (- 1%E) ].
+  nu.-negative_set x.1 & nu x.1 <= maxe (x.2 * 2^-1%:E) (- 1%E) ].
 
 Let elt_type := {AzU : set T * \bar R * set T | elt_prop AzU.1}.
 
@@ -634,7 +640,7 @@ Let z_ (x : elt_type) := (proj1_sig x).1.2.
 Let U_ (x : elt_type) := (proj1_sig x).2.
 
 Let mA_ x : measurable (A_ x). Proof. by move: x => [[[? ?] ?] [/= ? []]]. Qed.
-Let negative_set_A_ x : negative_set nu (A_ x).
+Let negative_set_A_ x : nu.-negative_set (A_ x).
 Proof. by move: x => [[[? ?] ?]] -[]. Qed.
 Let nuA_z_ x : nu (A_ x) <= maxe (z_ x * 2^-1%:E) (- 1%E).
 Proof. by move: x => [[[? ?] ?]] -[]. Qed.
