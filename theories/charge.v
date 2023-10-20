@@ -382,8 +382,9 @@ Definition negative_set nu (N : set T) :=
 
 End positive_negative_set.
 
-Notation "nu .-negative_set" := (negative_set nu).
-Notation "nu .-positive_set" := (positive_set nu).
+Notation "nu .-negative_set" := (negative_set nu) : charge_scope.
+Notation "nu .-positive_set" := (positive_set nu) : charge_scope.
+Local Open Scope charge_scope.
 
 Section positive_negative_set_lemmas.
 Context d (T : measurableType d) (R : numFieldType).
