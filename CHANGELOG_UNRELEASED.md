@@ -9,6 +9,7 @@
 
 - in `charge.v`:
   + factory `isCharge`
+  + Notations `.-negative_set`, `.-positive_set`
 
 - in `measure.v`:
   + lemmas `negligibleI`, `negligible_bigsetU`, `negligible_bigcup`
