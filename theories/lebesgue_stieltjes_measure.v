@@ -26,7 +26,7 @@ Require Import real_interval measure realfun.
 (*                          x and y are real numbers                          *)
 (*              R.-ocitv == display for ocitv_type R                          *)
 (*  R.-ocitv.-measurable == semiring of sets of open-closed intervals         *)
-(*           hlength f A := f b - f a with the hull of the set of real        *)
+(*           wlength f A := f b - f a with the hull of the set of real        *)
 (*                          numbers A being delimited by a and b              *)
 (* lebesgue_stieltjes_measure f == Lebesgue-Stieltjes measure for f           *)
 (*                          f is a cumulative function.                       *)
