@@ -1832,10 +1832,10 @@ Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) :
   measurable_fun D (fun x => \sum_(i <oo) h i x).
 Proof.
 move=> h0 mh; rewrite [X in measurable_fun _ X](_ : _ =
-    (fun x => lim_esup (fun n => \sum_(0 <= i < n) h i x))); last first.
-  apply/funext=> x; rewrite is_cvg_lim_esupE//.
+    (fun x => limn_esup (fun n => \sum_(0 <= i < n) h i x))); last first.
+  apply/funext=> x; rewrite is_cvg_limn_esupE//.
   exact: is_cvg_ereal_nneg_natsum.
-by apply: measurable_fun_lim_esup => k; exact: emeasurable_fun_sum.
+by apply: measurable_fun_limn_esup => k; exact: emeasurable_fun_sum.
 Qed.
 
 Lemma emeasurable_funB D f g :
@@ -2345,8 +2345,8 @@ Variable (f : (T -> \bar R)^nat).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 
-Lemma fatou : \int[mu]_(x in D) lim_einf (f^~ x) <=
-              lim_einf (fun n => \int[mu]_(x in D) f n x).
+Lemma fatou : \int[mu]_(x in D) limn_einf (f^~ x) <=
+              limn_einf (fun n => \int[mu]_(x in D) f n x).
 Proof.
 pose g n := fun x => einfs (f ^~ x) n.
 have mg := measurable_fun_einfs mf.
@@ -4111,8 +4111,8 @@ Proof.
 have := fatou mu mD mgg gg_ge0.
 rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x) ); last first.
   apply: eq_integral => t; rewrite inE => Dt.
-  rewrite lim_einf_shift//; last by rewrite fin_numM// fing.
-  rewrite is_cvg_lim_einfE//; last first.
+  rewrite limn_einf_shift//; last by rewrite fin_numM// fing.
+  rewrite is_cvg_limn_einfE//; last first.
     by apply: is_cvgeN; apply/cvg_ex; eexists; exact: cvg_g_.
   rewrite [X in _ + X](_ : _ = 0) ?adde0//; apply/cvg_lim => //.
   by rewrite -(oppe0); apply: cvgeN; exact: cvg_g_.
@@ -4123,7 +4123,7 @@ rewrite integralZl// lte_mul_pinfty// ?lee_fin//; case: (integrableP _ _ _ ig) =
 have ? : \int[mu]_(x in D) (2%:E * g x)  \is a fin_num.
   by rewrite ge0_fin_numE// integral_ge0// => ? ?; rewrite mule_ge0 ?lee_fin ?g0.
 rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
-    lim_esup (fun n => \int[mu]_(x in D) g_ n x)); last first.
+    limn_esup (fun n => \int[mu]_(x in D) g_ n x)); last first.
   rewrite (_ : (fun _ => _) = (fun n => \int[mu]_(x in D) (2%:E * g x)  +
       \int[mu]_(x in D) - g_ n x)); last first.
     rewrite funeqE => n; rewrite integralB//.
@@ -4141,10 +4141,10 @@ rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
       apply: le_integrable dominated_integrable => //.
       - exact: measurableT_comp.
       - by move=> x Dx; rewrite /= abse_id.
-  rewrite lim_einf_shift // -lim_einfN; congr (_ + lim_einf _).
+  rewrite limn_einf_shift // -limn_einfN; congr (_ + limn_einf _).
   by rewrite funeqE => n /=; rewrite -integral_ge0N// => x Dx; rewrite /g_.
 rewrite addeC -lee_subl_addr// subee// lee_oppr oppe0 => lim_ge0.
-by apply/lim_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
+by apply/limn_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
 Qed.
 
 Local Lemma dominated_cvg :

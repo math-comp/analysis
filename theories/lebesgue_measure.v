@@ -1562,15 +1562,15 @@ move=> _ [_ [x ->] <-]; rewrite infs_preimage // setI_bigcupr.
 by apply: bigcup_measurable => k /= nk; apply: mf => //; exact: measurable_itv.
 Qed.
 
-Lemma measurable_fun_lim_sup D (h : (T -> R)^nat) :
+Lemma measurable_fun_limn_sup D (h : (T -> R)^nat) :
   (forall t, D t -> has_ubound (range (h ^~ t))) ->
   (forall t, D t -> has_lbound (range (h ^~ t))) ->
   (forall n, measurable_fun D (h n)) ->
-  measurable_fun D (fun x => lim_sup (h ^~ x)).
+  measurable_fun D (fun x => limn_sup (h ^~ x)).
 Proof.
 move=> f_ub f_lb mf.
 have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
-              =1 (fun x => lim_sup (h^~ x))}.
+              =1 (fun x => limn_sup (h^~ x))}.
   move=> t; rewrite inE => Dt; apply/esym/cvg_lim; first exact: Rhausdorff.
   rewrite [X in _ --> X](_ : _ = inf (range (sups (h^~t)))).
     by apply: cvg_sups_inf; [exact: f_ub|exact: f_lb].
@@ -1586,12 +1586,12 @@ Lemma measurable_fun_cvg D (h : (T -> R)^nat) f :
   (forall m, measurable_fun D (h m)) -> (forall x, D x -> h ^~ x --> f x) ->
   measurable_fun D f.
 Proof.
-move=> mf_ f_f; have fE x : D x -> f x = lim_sup (h ^~ x).
+move=> mf_ f_f; have fE x : D x -> f x = limn_sup (h ^~ x).
   move=> Dx; have /cvg_lim  <-// := @cvg_sups _ (h ^~ x) (f x) (f_f _ Dx).
   exact: Rhausdorff.
-apply: (@eq_measurable_fun _ _ _ _ D (fun x => lim_sup (h ^~ x))).
+apply: (@eq_measurable_fun _ _ _ _ D (fun x => limn_sup (h ^~ x))).
   by move=> x; rewrite inE => Dx; rewrite -fE.
-apply: (@measurable_fun_lim_sup _ h) => // t Dt.
+apply: (@measurable_fun_limn_sup _ h) => // t Dt.
 - apply/bounded_fun_has_ubound/(@cvg_seq_bounded _ [normedModType R of R^o]).
   by apply/cvg_ex; eexists; exact: f_f.
 - apply/bounded_fun_has_lbound/(@cvg_seq_bounded _ [normedModType R of R^o]).
@@ -1599,6 +1599,8 @@ apply: (@measurable_fun_lim_sup _ h) => // t Dt.
 Qed.
 
 End measurable_fun_realType.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_sup`")]
+Notation measurable_fun_lim_sup := measurable_fun_limn_sup.
 
 Lemma measurable_ln (R : realType) : measurable_fun [set~ (0:R)] (@ln R).
 Proof.
@@ -1777,9 +1779,9 @@ move=> mf mg; rewrite (_ : (fun _ => _) = (fun x => - maxe (- f x) (- g x))).
 by rewrite funeqE => x; rewrite oppe_max !oppeK.
 Qed.
 
-Lemma measurable_fun_lim_esup D (f : (T -> \bar R)^nat) :
+Lemma measurable_fun_limn_esup D (f : (T -> \bar R)^nat) :
   (forall n, measurable_fun D (f n)) ->
-  measurable_fun D (fun x => lim_esup (f ^~ x)).
+  measurable_fun D (fun x => limn_esup (f ^~ x)).
 Proof.
 move=> mf mD; rewrite (_ :  (fun _ => _) =
     (fun x => ereal_inf [set esups (f^~ x) n | n in [set n | n >= 0]%N])).
@@ -1794,17 +1796,15 @@ Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall m, measurable_fun D (f_ m)) ->
   (forall x, D x -> f_ ^~ x --> f x) -> measurable_fun D f.
 Proof.
-move=> mf_ f_f; have fE x : D x -> f x = lim_esup (f_^~ x).
+move=> mf_ f_f; have fE x : D x -> f x = limn_esup (f_^~ x).
   by move=> Dx; have /cvg_lim  <-// := @cvg_esups _ (f_^~x) (f x) (f_f x Dx).
-apply: (eq_measurable_fun (fun x => lim_esup (f_ ^~ x))) => //.
+apply: (eq_measurable_fun (fun x => limn_esup (f_ ^~ x))) => //.
   by move=> x; rewrite inE => Dx; rewrite fE.
-exact: measurable_fun_lim_esup.
+exact: measurable_fun_limn_esup.
 Qed.
 End emeasurable_fun.
 Arguments emeasurable_fun_cvg {d T R D} f_.
 
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `measurable_fun_lim_esup`")]
-Notation measurable_fun_elim_sup := measurable_fun_lim_esup.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurableT_comp` instead")]
 Notation emeasurable_funN := measurableT_comp.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxe` instead")]
@@ -1815,6 +1815,8 @@ Notation emeasurable_fun_min := measurable_mine.
 Notation emeasurable_fun_funepos := measurable_funepos.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_funeneg` instead")]
 Notation emeasurable_fun_funeneg := measurable_funeneg.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_esup`")]
+Notation measurable_fun_lim_esup := measurable_fun_limn_esup.
 
 Section lebesgue_regularity.
 Context {d : measure_display} {R : realType}.

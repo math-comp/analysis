@@ -68,10 +68,10 @@ Require Import reals ereal signed topology normedtype landau.
 (*             sdrop u n := {u_k | k >= n}                                    *)
 (*                sups u := [sequence sup (sdrop u n)]_n                      *)
 (*                infs u := [sequence inf (sdrop u n)]_n                      *)
-(*         lim_{inf,sup} == limit inferior/superior for realType              *)
+(*         limn_{inf,sup} == limit inferior/superior for realType             *)
 (*               esups u := [sequence ereal_sup (sdrop u n)]_n                *)
 (*               einfs u := [sequence ereal_inf (sdrop u n)]_n                *)
-(*        lim_e{inf,sup} == limit inferior/superior for \bar R                *)
+(*        limn_e{inf,sup} == limit inferior/superior for \bar R               *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -2145,48 +2145,48 @@ Qed.
 
 End sups_infs.
 
-Section lim_sup_lim_inf.
+Section limn_sup_limn_inf.
 Variable R : realType.
 Implicit Types (r : R) (u v : R^o^nat).
 
-Definition lim_sup u := lim (sups u).
+Definition limn_sup u := lim (sups u).
 
-Definition lim_inf u := lim (infs u).
+Definition limn_inf u := lim (infs u).
 
-Lemma lim_infN u : cvg u -> lim_inf (-%R \o u) = - lim_sup u.
+Lemma limn_infN u : cvg u -> limn_inf (-%R \o u) = - limn_sup u.
 Proof.
-move=> cu_; rewrite /lim_inf infsN.
+move=> cu_; rewrite /limn_inf infsN.
 rewrite (@limN _ [normedModType R of R^o] _ _ _ (sups u)) //.
 exact: is_cvg_sups.
 Qed.
 
-Lemma lim_supE u : bounded_fun u -> lim_sup u = inf (range (sups u)).
+Lemma limn_supE u : bounded_fun u -> limn_sup u = inf (range (sups u)).
 Proof.
 move=> ba; apply/cvg_lim; first exact: Rhausdorff.
 by apply/cvg_sups_inf; [exact/bounded_fun_has_ubound|
                         exact/bounded_fun_has_lbound].
 Qed.
 
-Lemma lim_infE u : bounded_fun u -> lim_inf u = sup (range (infs u)).
+Lemma limn_infE u : bounded_fun u -> limn_inf u = sup (range (infs u)).
 Proof.
 move=> ba; apply/cvg_lim; first exact: Rhausdorff.
-apply/cvg_infs_sup; [exact/bounded_fun_has_ubound|
-                     exact/bounded_fun_has_lbound].
+by apply/cvg_infs_sup; [exact/bounded_fun_has_ubound|
+                        exact/bounded_fun_has_lbound].
 Qed.
 
-Lemma lim_inf_le_lim_sup u : cvg u -> lim_inf u <= lim_sup u.
+Lemma limn_inf_sup u : cvg u -> limn_inf u <= limn_sup u.
 Proof.
 move=> cf_; apply: ler_lim; [exact: is_cvg_infs|exact: is_cvg_sups|].
 by apply: nearW => n; apply: infs_le_sups.
 Qed.
 
-Lemma cvg_lim_inf_sup u l : u --> l -> (lim_inf u = l) * (lim_sup u = l).
+Lemma cvg_limn_inf_sup u l : u --> l -> (limn_inf u = l) * (limn_sup u = l).
 Proof.
 move=> ul.
 have /cvg_seq_bounded [M [Mr Mu]] : cvg u by apply/cvg_ex; eexists; exact: ul.
-suff: lim_sup u <= l <= lim_inf u.
+suff: limn_sup u <= l <= limn_inf u.
   move=> /andP[sul liu].
-  have /lim_inf_le_lim_sup iusu : cvg u by apply/cvg_ex; eexists; exact: ul.
+  have /limn_inf_sup iusu : cvg u by apply/cvg_ex; eexists; exact: ul.
   split; first by apply/eqP; rewrite eq_le liu andbT (le_trans iusu).
   by apply/eqP; rewrite eq_le sul /= (le_trans _ iusu).
 apply/andP; split.
@@ -2206,34 +2206,34 @@ apply/andP; split.
   by apply: (klu m) => /=; rewrite (leq_trans kn).
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_lim_infE u : cvg u -> lim_inf u = lim u.
+Lemma cvg_limn_infE u : cvg u -> limn_inf u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [-> _] := cvg_lim_inf_sup ul.
+move=> /cvg_ex[l ul]; have [-> _] := cvg_limn_inf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-Lemma cvg_lim_supE u : cvg u -> lim_sup u = lim u.
+Lemma cvg_limn_supE u : cvg u -> limn_sup u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [_ ->] := cvg_lim_inf_sup ul.
+move=> /cvg_ex[l ul]; have [_ ->] := cvg_limn_inf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-Lemma cvg_sups u l : u --> l -> (sups u) --> (l : R^o).
+Lemma cvg_sups u l : u --> l -> sups u --> (l : R^o).
 Proof.
-move=> ul; have [iul <-] := cvg_lim_inf_sup ul.
+move=> ul; have [iul <-] := cvg_limn_inf_sup ul.
 apply/cvg_closeP; split => //; apply: is_cvg_sups.
 by apply/cvg_ex; eexists; apply: ul.
 Qed.
 
-Lemma cvg_infs u l : u --> l -> (infs u) --> (l : R^o).
+Lemma cvg_infs u l : u --> l -> infs u --> (l : R^o).
 Proof.
-move=> ul; have [<- iul] := cvg_lim_inf_sup ul.
+move=> ul; have [<- iul] := cvg_limn_inf_sup ul.
 apply/cvg_closeP; split => //; apply: is_cvg_infs.
 by apply/cvg_ex; eexists; apply: ul.
 Qed.
 
-Lemma le_lim_supD u v :
-  bounded_fun u -> bounded_fun v -> lim_sup (u \+ v) <= lim_sup u + lim_sup v.
+Lemma le_limn_supD u v : bounded_fun u -> bounded_fun v ->
+  limn_sup (u \+ v) <= limn_sup u + limn_sup v.
 Proof.
 move=> ba bb; have ab k : sups (u \+ v) k <= sups u k + sups v k.
   apply: sup_le_ub; first by exists ((u \+ v) k); exists k => /=.
@@ -2254,8 +2254,8 @@ rewrite -(@limD _ [normedModType R of R^o] _ _ _ _ _ cu cv); apply: ler_lim.
 - exact: nearW.
 Qed.
 
-Lemma le_lim_infD u v :
-  bounded_fun u -> bounded_fun v -> lim_inf u + lim_inf v <= lim_inf (u \+ v).
+Lemma le_limn_infD u v : bounded_fun u -> bounded_fun v ->
+  limn_inf u + limn_inf v <= limn_inf (u \+ v).
 Proof.
 move=> ba bb; have ab k : infs u k + infs v k <= infs (u \+ v) k.
   apply: lb_le_inf; first by exists ((u \+ v) k); exists k => /=.
@@ -2276,26 +2276,53 @@ rewrite -(@limD _ [normedModType R of R^o] _ _ _ _ _ cu cv); apply: ler_lim.
 - exact: nearW.
 Qed.
 
-Lemma lim_supD u v : cvg u -> cvg v -> lim_sup (u \+ v) = lim_sup u + lim_sup v.
+Lemma limn_supD u v : cvg u -> cvg v ->
+  limn_sup (u \+ v) = limn_sup u + limn_sup v.
 Proof.
 move=> cu cv; have [ba bb] := (cvg_seq_bounded cu, cvg_seq_bounded cv).
-apply/eqP; rewrite eq_le le_lim_supD //=.
-have := @le_lim_supD _ _ (bounded_funD ba bb) (bounded_funN bb).
+apply/eqP; rewrite eq_le le_limn_supD //=.
+have := @le_limn_supD _ _ (bounded_funD ba bb) (bounded_funN bb).
 rewrite -ler_subl_addr; apply: le_trans.
-rewrite -[_ \+ _]/(u + v - v) addrK -lim_infN; last exact: is_cvgN.
+rewrite -[_ \+ _]/(u + v - v) addrK -limn_infN; last exact: is_cvgN.
 rewrite /comp /=; under eq_fun do rewrite opprK.
-by rewrite ler_add// cvg_lim_infE// cvg_lim_supE.
+by rewrite ler_add// cvg_limn_infE// cvg_limn_supE.
 Qed.
 
-Lemma lim_infD u v : cvg u -> cvg v -> lim_inf (u \+ v) = lim_inf u + lim_inf v.
+Lemma limn_infD u v : cvg u -> cvg v ->
+  limn_inf (u \+ v) = limn_inf u + limn_inf v.
 Proof.
-move=> cu cv; rewrite (cvg_lim_infE cu) -(cvg_lim_supE cu).
-rewrite (cvg_lim_infE cv) -(cvg_lim_supE cv) -lim_supD//.
-rewrite cvg_lim_supE; last exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
-by rewrite cvg_lim_infE //; exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
+move=> cu cv; rewrite (cvg_limn_infE cu) -(cvg_limn_supE cu).
+rewrite (cvg_limn_infE cv) -(cvg_limn_supE cv) -limn_supD//.
+rewrite cvg_limn_supE; last exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
+by rewrite cvg_limn_infE //; exact: (@is_cvgD _ _ _ _ _ _ _ cu cv).
 Qed.
 
-End lim_sup_lim_inf.
+End limn_sup_limn_inf.
+
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_sup`")]
+Notation lim_sup := limn_sup.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_inf`")]
+Notation lim_inf := limn_sup.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_infN`")]
+Notation lim_infN := limn_infN.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_supE`")]
+Notation lim_supE := limn_supE.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_infE`")]
+Notation lim_infE := limn_infE.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_inf_sup`")]
+Notation lim_inf_le_lim_sup := limn_inf_sup.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvg_limn_infE`")]
+Notation cvg_lim_infE := cvg_limn_infE.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvg_limn_supE`")]
+Notation cvg_lim_supE := cvg_limn_supE.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `le_limn_supD`")]
+Notation le_lim_supD := le_limn_supD.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `le_limn_infD`")]
+Notation le_lim_infD := le_limn_infD.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_supD`")]
+Notation lim_supD := limn_supD.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_infD`")]
+Notation lim_infD := limn_infD.
 
 Section esups_einfs.
 Variable R : realType.
@@ -2375,26 +2402,16 @@ Qed.
 
 End esups_einfs.
 
-Module LimSup.
-Definition lim_esup (R : realType) (u : (\bar R)^nat) := lim (esups u).
-Definition lim_einf (R : realType) (u : (\bar R)^nat) := lim (einfs u).
-End LimSup.
-
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `lim_esup`")]
-Notation elim_sup := LimSup.lim_esup.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `lim_einf`")]
-Notation elim_inf := LimSup.lim_einf.
-
-Notation lim_esup := LimSup.lim_esup.
-Notation lim_einf := LimSup.lim_einf.
+Definition limn_esup (R : realType) (u : (\bar R)^nat) := lim (esups u).
+Definition limn_einf (R : realType) (u : (\bar R)^nat) := lim (einfs u).
 
 Section lim_esup_inf.
 Local Open Scope ereal_scope.
 Variable R : realType.
 Implicit Types (u v : (\bar R)^nat) (l : \bar R).
 
-Lemma lim_einf_shift u l : l \is a fin_num ->
-  lim_einf (fun x => l + u x) = l + lim_einf u.
+Lemma limn_einf_shift u l : l \is a fin_num ->
+  limn_einf (fun x => l + u x) = l + limn_einf u.
 Proof.
 move=> lfin; apply/cvg_lim => //; apply: cvg_trans; last first.
   by apply: (@cvgeD _ \oo _ _ (cst l) (einfs u) _ (lim (einfs u)));
@@ -2409,7 +2426,8 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   by rewrite lee_add2l//; apply: ereal_inf_lb; exists m => /=.
 Qed.
 
-Lemma lim_esup_le_cvg u l : lim_esup u <= l -> (forall n, l <= u n) -> u --> l.
+Lemma limn_esup_le_cvg u l :
+  limn_esup u <= l -> (forall n, l <= u n) -> u --> l.
 Proof.
 move=> supul ul; have usupu n : l <= u n <= esups u n.
   by rewrite ul /=; apply/ereal_sup_ub; exists n => /=.
@@ -2422,28 +2440,28 @@ have /le_trans : l <= einfs u m by apply: lb_ereal_inf => _ [p /= pm] <-.
 by apply; exact: einfs_le_esups.
 Qed.
 
-Lemma lim_einfN u : lim_einf (-%E \o u) = - lim_esup u.
+Lemma limn_einfN u : limn_einf (-%E \o u) = - limn_esup u.
 Proof.
-by rewrite /lim_einf einfsN /lim_esup limeN //; exact/is_cvg_esups.
+by rewrite /limn_einf einfsN /limn_esup limeN //; exact/is_cvg_esups.
 Qed.
 
-Lemma lim_esupN u : lim_esup (-%E \o u) = - lim_einf u.
+Lemma limn_esupN u : limn_esup (-%E \o u) = - limn_einf u.
 Proof.
-apply/eqP; rewrite -eqe_oppLR -lim_einfN /=.
+apply/eqP; rewrite -eqe_oppLR -limn_einfN /=.
 by rewrite (_ : _ \o _ = u) // funeqE => n /=; rewrite oppeK.
 Qed.
 
-Lemma lim_einf_sup u : lim_einf u <= lim_esup u.
+Lemma limn_einf_sup u : limn_einf u <= limn_esup u.
 Proof.
 apply: lee_lim; [exact/is_cvg_einfs|exact/is_cvg_esups|].
 by apply: nearW; exact: einfs_le_esups.
 Qed.
 
-Lemma cvgNy_lim_einf_sup u : u --> -oo ->
-  (lim_einf u = -oo) * (lim_esup u = -oo).
+Lemma cvgNy_limn_einf_sup u : u --> -oo ->
+  (limn_einf u = -oo) * (limn_esup u = -oo).
 Proof.
-move=> uoo; suff: lim_esup u = -oo.
-  by move=> {}uoo; split => //; apply/eqP; rewrite -leeNy_eq -uoo lim_einf_sup.
+move=> uoo; suff: limn_esup u = -oo.
+  by move=> {}uoo; split => //; apply/eqP; rewrite -leeNy_eq -uoo limn_einf_sup.
 apply: cvg_lim => //=. apply/cvgeNyPle => M.
 have /cvgeNyPle/(_ M)[m _ uM] := uoo.
 near=> n; apply: ub_ereal_sup => _ [k /= nk <-].
@@ -2452,13 +2470,13 @@ Unshelve. all: by end_near. Qed.
 
 Lemma cvgNy_einfs u : u --> -oo -> einfs u --> -oo.
 Proof.
-move=> /cvgNy_lim_einf_sup[uoo _].
+move=> /cvgNy_limn_einf_sup[uoo _].
 by apply/cvg_closeP; split; [exact: is_cvg_einfs|rewrite closeE].
 Qed.
 
 Lemma cvgNy_esups u : u --> -oo -> esups u --> -oo.
 Proof.
-move=> /cvgNy_lim_einf_sup[_ uoo].
+move=> /cvgNy_limn_einf_sup[_ uoo].
 by apply/cvg_closeP; split; [exact: is_cvg_esups|rewrite closeE].
 Qed.
 
@@ -2503,51 +2521,42 @@ move=> /cvgeN/cvg_esups/cvgeN; rewrite oppeK esupsN.
 by under eq_cvg do rewrite /= oppeK.
 Qed.
 
-Lemma cvg_lim_einf_sup u l : u --> l -> (lim_einf u = l) * (lim_esup u = l).
+Lemma cvg_limn_einf_sup u l : u --> l -> (limn_einf u = l) * (limn_esup u = l).
 Proof.
 by move=> ul; split; apply/cvg_lim => //; [apply/cvg_einfs|apply/cvg_esups].
 Qed.
 
-Lemma is_cvg_lim_einfE u : cvg u -> lim_einf u = lim u.
+Lemma is_cvg_limn_einfE u : cvg u -> limn_einf u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [-> _] := cvg_lim_einf_sup ul.
+move=> /cvg_ex[l ul]; have [-> _] := cvg_limn_einf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
-Lemma is_cvg_lim_esupE u : cvg u -> lim_esup u = lim u.
+Lemma is_cvg_limn_esupE u : cvg u -> limn_esup u = lim u.
 Proof.
-move=> /cvg_ex[l ul]; have [_ ->] := cvg_lim_einf_sup ul.
+move=> /cvg_ex[l ul]; have [_ ->] := cvg_limn_einf_sup ul.
 by move/cvg_lim : ul => ->.
 Qed.
 
 End lim_esup_inf.
-
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `lim_einf_shift`")]
-Notation elim_inf_shift := lim_einf_shift.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `lim_esup_le_cvg`")]
-Notation elim_sup_le_cvg := lim_esup_le_cvg.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `lim_einfN`")]
-Notation elim_infN := lim_einfN.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `lim_esupN`")]
-Notation elim_supN := lim_esupN.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `lim_einf_sup`")]
-Notation elim_inf_sup := lim_einf_sup.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgNy_lim_einf_sup`")]
-Notation cvg_ninfty_elim_inf_sup := cvgNy_lim_einf_sup.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgNy_einfs`")]
-Notation cvg_ninfty_einfs := cvgNy_einfs.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgNy_esups`")]
-Notation cvg_ninfty_esups := cvgNy_esups.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgy_einfs`")]
-Notation cvg_pinfty_einfs := cvgy_einfs.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgy_esups`")]
-Notation cvg_pinfty_esups := cvgy_esups.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvg_lim_einf_sup`")]
-Notation cvg_elim_inf_sup := cvg_lim_einf_sup.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `is_cvg_lim_einfE`")]
-Notation is_cvg_elim_infE := is_cvg_lim_einfE.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `is_cvg_lim_esupE`")]
-Notation is_cvg_elim_supE := is_cvg_lim_esupE.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_einf_shift`")]
+Notation lim_einf_shift := limn_einf_shift.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_esup_le_cvg`")]
+Notation lim_esup_le_cvg := limn_esup_le_cvg.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_einfN`")]
+Notation lim_einfN := limn_einfN.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_esupN`")]
+Notation lim_esupN := limn_esupN.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_einf_sup`")]
+Notation lim_einf_sup := limn_einf_sup.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvgNy_limn_einf_sup`")]
+Notation cvgNy_lim_einf_sup := cvgNy_limn_einf_sup.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvg_limn_einf_sup`")]
+Notation cvg_lim_einf_sup := cvg_limn_einf_sup.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `is_cvg_limn_einfE`")]
+Notation is_cvg_lim_einfE := is_cvg_limn_einfE.
+#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `is_cvg_limn_esupE`")]
+Notation is_cvg_lim_esupE := is_cvg_limn_esupE.
 
 Lemma geometric_le_lim {R : realType} (n : nat) (a x : R) :
   0 <= a -> 0 < x -> `|x| < 1 -> series (geometric a x) n <= a * (1 - x)^-1.
