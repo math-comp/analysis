@@ -123,6 +123,9 @@ Definition er_map T T' (f : T -> T') (x : \bar T) : \bar T' :=
   | -oo => -oo
   end.
 
+Lemma er_map_idfun T (x : \bar T) : er_map idfun x = x.
+Proof. by case: x. Qed.
+
 Definition fine {R : zmodType} x : R := if x is EFin v then v else 0.
 
 Section EqEReal.
@@ -355,6 +358,13 @@ Lemma leNye x : -oo <= x. Proof. by case: x => //= r; exact: num_real. Qed.
 Definition lteey := (ltey, leey).
 
 Definition lteNye := (ltNye, leNye).
+
+Lemma le_er_map (f : R -> R) : {homo f : x y / (x <= y)%R} ->
+  {homo er_map f : x y / x <= y}.
+Proof.
+move=> ndf.
+by move=> [r| |] [l| |]//=; rewrite ?leey ?leNye// !lee_fin; exact: ndf.
+Qed.
 
 Lemma le_total_ereal : totalPOrderMixin [porderType of \bar R].
 Proof.

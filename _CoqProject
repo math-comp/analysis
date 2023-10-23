@@ -32,6 +32,7 @@ theories/nsatz_realtype.v
 theories/esum.v
 theories/real_interval.v
 theories/lebesgue_measure.v
+theories/lebesgue_stieltjes_measure.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
