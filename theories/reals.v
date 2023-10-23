@@ -645,53 +645,59 @@ End CeilTheory.
 (* -------------------------------------------------------------------- *)
 Section Sup.
 Context {R : realType}.
+Implicit Types A B : set R.
 
-Lemma le_down (S : set R) : S `<=` down S.
-Proof. by move=> x xS; apply/downP; exists x. Qed.
+Lemma le_down A : A `<=` down A.
+Proof. by move=> x xA; apply/downP; exists x. Qed.
 
-Lemma downK (S : set R) : down (down S) = down S.
+Lemma downK A : down (down A) = down A.
 Proof.
-rewrite predeqE => x; split.
-- case/downP => y /downP[z Sz yz xy].
-  by apply/downP; exists z => //; rewrite (le_trans xy).
-- by move=> Sx; apply/downP; exists x.
+rewrite predeqE => x; split; last by move=> Ax; apply/downP; exists x.
+case/downP => y /downP[z Az yz xy].
+by apply/downP; exists z => //; rewrite (le_trans xy).
 Qed.
 
-Lemma has_sup_down (S : set R) : has_sup (down S) <-> has_sup S.
+Lemma has_sup_down A : has_sup (down A) <-> has_sup A.
 Proof.
-split=> -[nzS nzubS].
-  case: nzS=> x /downP[y yS le_xy]; split; first by exists y.
-  case: nzubS=> u /ubP ubS; exists u; apply/ubP=> z zS.
-  by apply/ubS; apply/downP; exists z.
-case: nzS=> x xS; split; first by exists x; apply/le_down.
-case: nzubS=> u /ubP ubS; exists u; apply/ubP=> y /downP [].
-by move=> z zS /le_trans; apply; apply/ubS.
+split=> -[nzA nzubA].
+  case: nzA => x /downP[y yS le_xy]; split; first by exists y.
+  case: nzubA=> u /ubP ubA; exists u; apply/ubP=> z zS.
+  by apply/ubA; apply/downP; exists z.
+case: nzA => x xA; split; first by exists x; apply/le_down.
+case: nzubA => u /ubP ubA; exists u; apply/ubP=> y /downP [].
+by move=> z zA /le_trans; apply; apply/ubA.
 Qed.
 
-Lemma le_sup (S1 S2 : set R) :
-  S1 `<=` down S2 -> nonempty S1 -> has_sup S2
-    -> sup S1 <= sup S2.
+Lemma le_sup A B : A `<=` down B -> nonempty A -> has_sup B ->
+  sup A <= sup B.
 Proof.
-move=> le_S12 nz_S1 hs_S2; have hs_S1: has_sup S1.
-  split=> //; case: hs_S2=> _ [x ubx].
-  exists x; apply/ubP=> y /le_S12 /downP[z zS2 le_yz].
+move=> le_AB nz_A hs_B; have hs_A: has_sup A.
+  split=> //; case: hs_B => _ [x ubx].
+  exists x; apply/ubP=> y /le_AB /downP[z zB le_yz].
   by apply/(le_trans le_yz); move/ubP: ubx; apply.
 rewrite leNgt -subr_gt0; apply/negP => lt_sup.
-case: (sup_adherent lt_sup hs_S1 )=> x /le_S12 xdS2.
-rewrite subKr => lt_S2x; case/downP: xdS2=> z zS2.
-move/(lt_le_trans lt_S2x); rewrite ltNge.
-by move/ubP: (sup_upper_bound hs_S2) => ->.
+case: (sup_adherent lt_sup hs_A )=> x /le_AB xdB.
+rewrite subKr => lt_Bx; case/downP: xdB => z zB.
+move/(lt_le_trans lt_Bx); rewrite ltNge.
+by move/ubP : (sup_upper_bound hs_B) => ->.
 Qed.
 
-Lemma sup_down (S : set R) : sup (down S) = sup S.
+Lemma le_inf A B : -%R @` B `<=` down (-%R @` A) -> nonempty B -> has_inf A ->
+  inf A <= inf B.
 Proof.
-have [supS|supNS] := pselect (has_sup S); last first.
+move=> SBA AB Ai; rewrite ler_oppl opprK le_sup// ?has_inf_supN//.
+exact/nonemptyN.
+Qed.
+
+Lemma sup_down A : sup (down A) = sup A.
+Proof.
+have [supA|supNA] := pselect (has_sup A); last first.
   by rewrite !sup_out // => /has_sup_down.
-have supDS : has_sup (down S) by apply/has_sup_down.
+have supDA : has_sup (down A) by apply/has_sup_down.
 apply/eqP; rewrite eq_le !le_sup //.
-  by case: supS => -[x xS] _; exists x; apply/le_down.
-  rewrite downK; exact: le_down.
-  by case: supS.
+- by case: supA => -[x xA] _; exists x; apply/le_down.
+- by rewrite downK; exact: le_down.
+- by case: supA.
 Qed.
 
 Lemma lt_sup_imfset {T : Type} (F : T -> R) l :
@@ -710,8 +716,8 @@ Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
   exists2 x, F x < l & inf [set y | exists x, y = F x] <= F x.
 Proof.
 set P := [set y | _]; move=> hs; rewrite -subr_gt0.
-move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrA [_ + l]addrC addrK.
-by move=> ltFxl; exists x=> //; move/lbP : (inf_lower_bound hs) => -> //; exists x.
+move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrCA subrr addr0 => ltFxl.
+by exists x=> //; move/lbP : (inf_lower_bound hs) => -> //; exists x.
 Qed.
 
 End Sup.

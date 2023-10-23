@@ -30,6 +30,7 @@ numfun.v
 lebesgue_integral.v
 hoelder.v
 probability.v
+lebesgue_stieltjes_measure.v
 summability.v
 signed.v
 itv.v

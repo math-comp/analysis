@@ -162,7 +162,7 @@ Section ERealArithTh_realDomainType.
 Context {R : realDomainType}.
 Implicit Types (x y z u a b : \bar R) (r : R).
 
-Lemma le_er_map (A : set R) (f : R -> R) :
+Lemma le_er_map_in (A : set R) (f : R -> R) :
   {in A &, {homo f : x y / (x <= y)%O}} ->
   {in (EFin @` A)%classic &, {homo er_map f : x y / (x <= y)%E}}.
 Proof.
