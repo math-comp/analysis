@@ -1182,15 +1182,15 @@ End measurable_fun.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Arguments measurable_fun_bool {d1 T1 D f} b.
 #[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
-Notation measurable_fun_ext := eq_measurable_fun.
+Notation measurable_fun_ext := eq_measurable_fun (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_id`")]
-Notation measurable_fun_id := measurable_id.
+Notation measurable_fun_id := measurable_id (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_cst`")]
-Notation measurable_fun_cst := measurable_cst.
+Notation measurable_fun_cst := measurable_cst (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_comp`")]
-Notation measurable_fun_comp := measurable_comp.
+Notation measurable_fun_comp := measurable_comp (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurableT_comp`")]
-Notation measurable_funT_comp := measurableT_comp.
+Notation measurable_funT_comp := measurableT_comp (only parsing).
 
 Section measurability.
 
@@ -3605,7 +3605,7 @@ by rewrite caratheodory_additive.
 Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
       note="renamed `caratheodory_lime_le`")]
-Notation caratheodory_lim_lee := caratheodory_lime_le.
+Notation caratheodory_lim_lee := caratheodory_lime_le (only parsing).
 
 Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) :
   (forall n, M (A n)) -> trivIset setT A -> M (\bigcup_k (A k)).
@@ -4329,7 +4329,7 @@ Proof. by move=> mf mg; exact/prod_measurable_funP. Qed.
 
 End prod_measurable_fun.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_fun_prod`")]
-Notation measurable_fun_pair := measurable_fun_prod.
+Notation measurable_fun_pair := measurable_fun_prod (only parsing).
 
 Section prod_measurable_proj.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
@@ -4355,11 +4355,11 @@ End prod_measurable_proj.
 Arguments measurable_fst {d1 d2 T1 T2}.
 Arguments measurable_snd {d1 d2 T1 T2}.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_fst`")]
-Notation measurable_fun_fst := measurable_fst.
+Notation measurable_fun_fst := measurable_fst (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_snd`")]
-Notation measurable_fun_snd := measurable_snd.
+Notation measurable_fun_snd := measurable_snd (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_swap`")]
-Notation measurable_fun_swap := measurable_swap.
+Notation measurable_fun_swap := measurable_swap (only parsing).
 #[global] Hint Extern 0 (measurable_fun _ fst) =>
   solve [apply: measurable_fst] : core.
 #[global] Hint Extern 0 (measurable_fun _ snd) =>

@@ -241,7 +241,7 @@ Qed.
 #[global] Hint Extern 0  (measurable_fun _ (\1__ : _ -> _)) =>
   (exact: measurable_indic ) : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_indic` instead")]
-Notation measurable_fun_indic := measurable_indic.
+Notation measurable_fun_indic := measurable_indic (only parsing).
 
 Section sfun_pred.
 Context {d} {aT : measurableType d} {rT : realType}.
@@ -1536,7 +1536,7 @@ Qed.
 
 End semi_linearity0.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl_EFin` instead")]
-Notation ge0_integralM_EFin := ge0_integralZl_EFin.
+Notation ge0_integralM_EFin := ge0_integralZl_EFin (only parsing).
 
 Section semi_linearity.
 Local Open Scope ereal_scope.
@@ -2224,7 +2224,7 @@ Unshelve. all: by end_near. Qed.
 
 End ge0_integralZl.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl` instead")]
-Notation ge0_integralM := ge0_integralZl.
+Notation ge0_integralM := ge0_integralZl (only parsing).
 
 Section integral_indic.
 Local Open Scope ereal_scope.
@@ -2269,9 +2269,9 @@ Qed.
 End integralZl_indic.
 Arguments integralZl_indic {d T R m D} mD f.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl_indic` instead")]
-Notation integralM_indic := integralZl_indic.
+Notation integralM_indic := integralZl_indic (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl_indic_nnsfun` instead")]
-Notation integralM_indic_nnsfun := integralZl_indic_nnsfun.
+Notation integralM_indic_nnsfun := integralZl_indic_nnsfun (only parsing).
 
 Section integral_mscale.
 Local Open Scope ereal_scope.
@@ -3022,9 +3022,9 @@ End integrable_theory.
 Notation "mu .-integrable" := (integrable mu) : type_scope.
 Arguments eq_integrable {d T R mu D} mD f.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integrableZl` instead")]
-Notation integrablerM := integrableZl.
+Notation integrablerM := integrableZl (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integrableZr` instead")]
-Notation integrableMr := integrableZr.
+Notation integrableMr := integrableZr (only parsing).
 
 Section sequence_measure.
 Local Open Scope ereal_scope.
@@ -3272,7 +3272,7 @@ Qed.
 
 End linearity.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl` instead")]
-Notation integralM := integralZl.
+Notation integralM := integralZl (only parsing).
 
 Section linearity.
 Local Open Scope ereal_scope.
