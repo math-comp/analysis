@@ -548,23 +548,23 @@ Qed.
 Lemma __deprecated__itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
 Proof. by rewrite itv_cyy. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_cyy`")]
-Notation itv_cpinfty_pinfty := __deprecated__itv_cpinfty_pinfty.
+Notation itv_cpinfty_pinfty := __deprecated__itv_cpinfty_pinfty (only parsing).
 
 Lemma __deprecated__itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
 Proof. by rewrite itv_oyy. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_oyy`")]
-Notation itv_opinfty_pinfty := __deprecated__itv_opinfty_pinfty.
+Notation itv_opinfty_pinfty := __deprecated__itv_opinfty_pinfty (only parsing).
 
 Lemma __deprecated__itv_cninfty_pinfty : `[-oo%E, +oo[%classic = setT :> set (\bar R).
 Proof. by rewrite itv_cNyy. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_cNyy`")]
-Notation itv_cninfty_pinfty := __deprecated__itv_cninfty_pinfty.
+Notation itv_cninfty_pinfty := __deprecated__itv_cninfty_pinfty (only parsing).
 
 Lemma __deprecated__itv_oninfty_pinfty :
   `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
 Proof. by rewrite itv_oNyy. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_oNyy`")]
-Notation itv_oninfty_pinfty := __deprecated__itv_oninfty_pinfty.
+Notation itv_oninfty_pinfty := __deprecated__itv_oninfty_pinfty (only parsing).
 
 Let emeasurable_itv_bndy b (y : \bar R) :
   measurable [set` Interval (BSide b y) +oo%O].
@@ -695,9 +695,9 @@ Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1|
 #[global]
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
 #[deprecated(since="mathcomp-analysis 0.6.2", note="use `emeasurable_itv` instead")]
-Notation emeasurable_itv_bnd_pinfty := emeasurable_itv.
+Notation emeasurable_itv_bnd_pinfty := emeasurable_itv (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.2", note="use `emeasurable_itv` instead")]
-Notation emeasurable_itv_ninfty_bnd := emeasurable_itv.
+Notation emeasurable_itv_ninfty_bnd := emeasurable_itv (only parsing).
 
 Lemma measurable_fine (R : realType) (D : set (\bar R)) : measurable D ->
   measurable_fun D fine.
@@ -717,7 +717,7 @@ Qed.
 #[global] Hint Extern 0 (measurable_fun _ fine) =>
   solve [exact: measurable_fine] : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_fine` instead")]
-Notation measurable_fun_fine := measurable_fine.
+Notation measurable_fun_fine := measurable_fine (only parsing).
 
 Section lebesgue_measure_itv.
 Variable R : realType.
@@ -1459,17 +1459,17 @@ End standard_measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ (fun x => x ^+ _)) =>
   solve [exact: measurable_exprn] : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_exprn` instead")]
-Notation measurable_fun_sqr := measurable_exprn.
+Notation measurable_fun_sqr := measurable_exprn (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppr` instead")]
-Notation measurable_fun_opp := measurable_oppr.
+Notation measurable_fun_opp := measurable_oppr (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppr` instead")]
-Notation measurable_funN := measurable_oppr.
+Notation measurable_funN := measurable_oppr (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_normr` instead")]
-Notation measurable_fun_normr := measurable_normr.
+Notation measurable_fun_normr := measurable_normr (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_exprn` instead")]
-Notation measurable_fun_exprn := measurable_exprn.
+Notation measurable_fun_exprn := measurable_exprn (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_mulrl` instead")]
-Notation measurable_funrM := measurable_mulrl.
+Notation measurable_funrM := measurable_mulrl (only parsing).
 
 Section measurable_fun_realType.
 Context d (T : measurableType d) (R : realType).
@@ -1600,7 +1600,7 @@ Qed.
 
 End measurable_fun_realType.
 #[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_sup`")]
-Notation measurable_fun_lim_sup := measurable_fun_limn_sup.
+Notation measurable_fun_lim_sup := measurable_fun_limn_sup (only parsing).
 
 Lemma measurable_ln (R : realType) : measurable_fun [set~ (0:R)] (@ln R).
 Proof.
@@ -1619,7 +1619,7 @@ Qed.
 #[global] Hint Extern 0 (measurable_fun _ (@ln _)) =>
   solve [apply: measurable_ln] : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_ln` instead")]
-Notation measurable_fun_ln := measurable_ln.
+Notation measurable_fun_ln := measurable_ln (only parsing).
 
 Lemma measurable_expR (R : realType) : measurable_fun [set: R] expR.
 Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
@@ -1639,11 +1639,11 @@ Qed.
 #[global] Hint Extern 0 (measurable_fun _ (@powR _ ^~ _)) =>
   solve [apply: measurable_powR] : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_powR` instead")]
-Notation measurable_fun_power_pos := measurable_powR.
+Notation measurable_fun_power_pos := measurable_powR (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `measurable_powR` instead")]
-Notation measurable_power_pos := measurable_powR.
+Notation measurable_power_pos := measurable_powR (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxr` instead")]
-Notation measurable_fun_max := measurable_maxr.
+Notation measurable_fun_max := measurable_maxr (only parsing).
 
 Section standard_emeasurable_fun.
 Variable R : realType.
@@ -1689,11 +1689,11 @@ End standard_emeasurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ (-%E)) =>
   solve [exact: measurable_oppe] : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppe` instead")]
-Notation emeasurable_fun_minus := measurable_oppe.
+Notation emeasurable_fun_minus := measurable_oppe (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_abse` instead")]
-Notation measurable_fun_abse := measurable_abse.
+Notation measurable_fun_abse := measurable_abse (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_EFin` instead")]
-Notation measurable_fun_EFin := measurable_EFin.
+Notation measurable_fun_EFin := measurable_EFin (only parsing).
 
 (* NB: real-valued function *)
 Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
@@ -1720,7 +1720,7 @@ apply: measurable_fun_ifT => //=.
 + exact/EFin_measurable_fun/measurableT_comp.
 Qed.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_er_map`")]
-Notation measurable_fun_er_map := measurable_er_map.
+Notation measurable_fun_er_map := measurable_er_map (only parsing).
 
 Section emeasurable_fun.
 Local Open Scope ereal_scope.
@@ -1806,17 +1806,17 @@ End emeasurable_fun.
 Arguments emeasurable_fun_cvg {d T R D} f_.
 
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurableT_comp` instead")]
-Notation emeasurable_funN := measurableT_comp.
+Notation emeasurable_funN := measurableT_comp (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxe` instead")]
-Notation emeasurable_fun_max := measurable_maxe.
+Notation emeasurable_fun_max := measurable_maxe (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_mine` instead")]
-Notation emeasurable_fun_min := measurable_mine.
+Notation emeasurable_fun_min := measurable_mine (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_funepos` instead")]
-Notation emeasurable_fun_funepos := measurable_funepos.
+Notation emeasurable_fun_funepos := measurable_funepos (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_funeneg` instead")]
-Notation emeasurable_fun_funeneg := measurable_funeneg.
+Notation emeasurable_fun_funeneg := measurable_funeneg (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_esup`")]
-Notation measurable_fun_lim_esup := measurable_fun_limn_esup.
+Notation measurable_fun_lim_esup := measurable_fun_limn_esup (only parsing).
 
 Section lebesgue_regularity.
 Context {d : measure_display} {R : realType}.
