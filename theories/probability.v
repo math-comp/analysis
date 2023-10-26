@@ -813,9 +813,10 @@ Lemma bernoulli_expectation (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'E_P[X
 Proof.
 rewrite /bernoulli.
 move=> [pX1 pX0].
-have ->: \int[P]_i (X i)%:E = (\int[P]_(i in [set i | X i == 1%R]) (X i)%:E) + (\int[P]_(i in [set i | X i == 0%R]) (X i)%:E).
+have split_expectation : \int[P]_i (X i)%:E = (\int[P]_(i in [set i | X i == 1%R]) (X i)%:E) + (\int[P]_(i in [set i | X i == 0%R]) (X i)%:E).
+admit.
+rewrite unlock split_expectation.
+Admitted.
 
-
-
-HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
-  (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
+Lemma bernoulli_variance (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'V_P[X] = (p * (1-p))%:E.
+Admitted.
