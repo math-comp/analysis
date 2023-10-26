@@ -820,3 +820,6 @@ Admitted.
 
 Lemma bernoulli_variance (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'V_P[X] = (p * (1-p))%:E.
 Admitted.
+
+
+(* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
