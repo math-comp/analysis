@@ -131,6 +131,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Section charge_lemmas.
+
 Context d (T : ringOfSetsType d) (R : numFieldType).
 Implicit Type nu : {charge set T -> \bar R}.
 
@@ -218,6 +219,29 @@ HB.instance Definition _ := isMeasure.Build _ T R (measure_of_charge nupos)
 
 End measure_of_charge.
 Arguments measure_of_charge {d T R}.
+
+Definition charge_of_finite_measure d (T : measurableType d) (R : realType)
+  (mu : {finite_measure set T -> \bar R}) : set T -> \bar R := mu.
+
+Section charge_of_finite_measure.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {finite_measure set T -> \bar R}).
+
+Local Notation nu := (charge_of_finite_measure mu).
+
+Let nu0 : nu set0 = 0. Proof. exact: measure0. Qed.
+
+Let nu_finite S : measurable S -> nu S \is a fin_num.
+Proof. by apply: fin_num_measure. Qed.
+
+Let nu_sigma_additive : semi_sigma_additive nu.
+Proof. exact: measure_semi_sigma_additive. Qed.
+
+HB.instance Definition _ := isCharge.Build _ T R (charge_of_finite_measure mu)
+  nu0 nu_finite nu_sigma_additive.
+
+End charge_of_finite_measure.
+Arguments charge_of_finite_measure {d T R}.
 
 Section charge_lemmas_realFieldType.
 Context d (T : ringOfSetsType d) (R : realFieldType).
@@ -368,7 +392,15 @@ Qed.
 HB.instance Definition _ := isCharge.Build _ _ _ cscale
   cscale0 cscale_finite_measure_function cscale_sigma_additive.
 
+Lemma cscaleE A : cscale A = r%:E * nu A. Proof. by []. Qed.
+
 End charge_scale.
+
+Lemma dominates_cscale d (T : measurableType d) (R : realType)
+  (mu : {sigma_finite_measure set T -> \bar R})
+  (nu : {charge set T -> \bar R})
+  (c : R) : nu `<< mu -> cscale c nu `<< mu.
+Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
 
 Section charge_add.
 Local Open Scope ereal_scope.
@@ -400,7 +432,71 @@ Qed.
 HB.instance Definition _ := isCharge.Build _ _ _ cadd
   cadd0 cadd_finite cadd_sigma_additive.
 
+Lemma caddE E : cadd E = m1 E + m2 E. Proof. by []. Qed.
+
 End charge_add.
+
+Lemma dominates_caddl d (T : measurableType d)
+  (R : realType) (mu : {sigma_finite_measure set T -> \bar R})
+  (nu0 nu1 : {charge set T -> \bar R}) :
+  nu0 `<< mu -> nu1 `<< mu ->
+  cadd nu0 nu1 `<< mu.
+Proof.
+by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
+Qed.
+
+Section pushforward_charge.
+Local Open Scope ereal_scope.
+Context d d' (T1 : measurableType d) (T2 : measurableType d') (f : T1 -> T2).
+Variables (R : realFieldType) (nu : {charge set T1 -> \bar R}).
+
+Definition cpushforward (mf : measurable_fun setT f) A := nu (f @^-1` A).
+
+Hypothesis mf : measurable_fun setT f.
+
+Let cpushforward0 : cpushforward mf set0 = 0.
+Proof. by rewrite /cpushforward preimage_set0 charge0. Qed.
+
+Let cpushforward_finite A : measurable A -> cpushforward mf A \is a fin_num.
+Proof.
+move=> mA; apply: fin_num_measure.
+by rewrite -[X in measurable X]setTI; apply: mf.
+Qed.
+
+Let cpushforward_sigma_additive : semi_sigma_additive (cpushforward mf).
+Proof.
+move=> F mF tF mUF; rewrite /cpushforward preimage_bigcup.
+apply: charge_semi_sigma_additive.
+- by move=> n; rewrite -[X in measurable X]setTI; exact: mf.
+- apply/trivIsetP => /= i j _ _ ij; rewrite -preimage_setI.
+  by move/trivIsetP : tF => /(_ _ _ _ _ ij) ->//; rewrite preimage_set0.
+- by rewrite -preimage_bigcup -[X in measurable X]setTI; exact: mf.
+Qed.
+
+HB.instance Definition _ := isCharge.Build _ _ _
+  (cpushforward mf) cpushforward0 cpushforward_finite cpushforward_sigma_additive.
+
+End pushforward_charge.
+
+HB.builders Context d (T : measurableType d) (R : realType)
+  mu of Measure_isFinite d T R mu.
+
+HB.instance Definition _ := isCharge.Build _ _ _
+  mu (measure0 [the content _ _ of mu]) fin_num_measure measure_semi_sigma_additive.
+
+HB.end.
+
+Section dominates_pushforward.
+
+Lemma dominates_pushforward d d' (T : measurableType d) (T' : measurableType d')
+  (R : realType) (mu : {sigma_finite_measure set T -> \bar R})
+  (nu : {charge set T -> \bar R}) (f : T -> T') (mf : measurable_fun setT f) :
+  nu `<< mu -> cpushforward nu mf `<< pushforward mu mf.
+Proof.
+by move=> numu A mA; apply: numu; rewrite -[X in measurable X]setTI; exact: mf.
+Qed.
+
+End dominates_pushforward.
 
 Section positive_negative_set.
 Context d (T : semiRingOfSetsType d) (R : numDomainType).
@@ -822,16 +918,22 @@ Let mP : measurable P. Proof. by have [[mP _] _ _ _] := nuPN. Qed.
 
 Let mN : measurable N. Proof. by have [_ [mN _] _ _] := nuPN. Qed.
 
-Let cjordan_pos : {charge set T -> \bar R} := [the charge _ _ of crestr0 nu mP].
+Local Definition cjordan_pos : {charge set T -> \bar R} := [the charge _ _ of crestr0 nu mP].
+
+Lemma cjordan_posE A : cjordan_pos A = crestr0 nu mP A.
+Proof. by []. Qed.
 
 Let positive_set_cjordan_pos E : 0 <= cjordan_pos E.
 Proof.
 have [posP _ _ _] := nuPN.
-rewrite /cjordan_pos/= /crestr0/=; case: ifPn => // /[1!inE] mE.
+rewrite cjordan_posE /crestr0/=; case: ifPn => // /[1!inE] mE.
 by apply posP; [apply: measurableI|apply: subIsetr].
 Qed.
 
 Definition jordan_pos := measure_of_charge _ positive_set_cjordan_pos.
+
+Lemma jordan_posE A : jordan_pos A = cjordan_pos A.
+Proof. by []. Qed.
 
 HB.instance Definition _ := Measure.on jordan_pos.
 
@@ -841,17 +943,23 @@ Proof. by move=> U mU; rewrite fin_num_measure. Qed.
 HB.instance Definition _ := @Measure_isFinite.Build _ _ _
   jordan_pos finite_jordan_pos.
 
-Let cjordan_neg : {charge set T -> \bar R} :=
+Local Definition cjordan_neg : {charge set T -> \bar R} :=
   [the charge _ _ of cscale (-1) [the charge _ _ of crestr0 nu mN]].
+
+Lemma cjordan_negE A : cjordan_neg A = - crestr0 nu mN A.
+Proof. by rewrite /= cscaleE EFinN mulN1e. Qed.
 
 Let positive_set_cjordan_neg E : 0 <= cjordan_neg E.
 Proof.
-rewrite /cjordan_neg/= /cscale/= /crestr0/= muleC mule_le0//.
-case: ifPn => // /[1!inE] mE.
+rewrite cjordan_negE /crestr0/=; case: ifPn => // /[1!inE] mE.
+rewrite /crestr lee_oppr oppe0.
 by move: nuPN => [_ [_ +] _ _] => -> //; exact: measurableI.
 Qed.
 
 Definition jordan_neg := measure_of_charge _ positive_set_cjordan_neg.
+
+Lemma jordan_negE A : jordan_neg A = cjordan_neg A.
+Proof. by []. Qed.
 
 HB.instance Definition _ := Measure.on jordan_neg.
 
@@ -861,12 +969,12 @@ Proof. by move=> U mU; rewrite fin_num_measure. Qed.
 HB.instance Definition _ := @Measure_isFinite.Build _ _ _
   jordan_neg finite_jordan_neg.
 
-Lemma jordan_decomp A : measurable A -> nu A = jordan_pos A - jordan_neg A.
+Lemma jordan_decomp (A : set T) (mA : measurable A) :
+  nu A = (cadd [the charge _ _ of jordan_pos] [the charge _ _ of (cscale (-1) [the charge _ _ of jordan_neg])]) A.
 Proof.
-move=> mA; rewrite /jordan_pos /jordan_neg/= /measure_of_charge/=.
-rewrite /cscale/= /crestr0/= mem_set// -[in LHS](setIT A).
+rewrite caddE cjordan_posE /= cscaleE EFinN mulN1e cjordan_negE oppeK.
+rewrite /crestr0 mem_set// -[in LHS](setIT A).
 case: nuPN => _ _ <- PN0; rewrite setIUr chargeU//.
-- by rewrite EFinN mulN1e oppeK.
 - exact: measurableI.
 - exact: measurableI.
 - by rewrite setIACA PN0 setI0.
@@ -876,23 +984,20 @@ Lemma jordan_pos_dominates (mu : {measure set T -> \bar R}) :
   nu `<< mu -> jordan_pos `<< mu.
 Proof.
 move=> nu_mu A mA muA0; have := nu_mu A mA muA0.
-rewrite jordan_decomp// /jordan_pos /jordan_neg /measure_of_charge/=.
-rewrite /cscale/= /crestr0/= mem_set// EFinN mulN1e oppeK.
+rewrite jordan_posE// cjordan_posE /crestr0 mem_set// /crestr/=.
 have mAP : measurable (A `&` P) by exact: measurableI.
-suff : mu (A `&` P) = 0 by move/(nu_mu _ mAP); rewrite /crestr => ->.
-by apply/eqP; rewrite -measure_le0 -muA0 le_measure// inE.
+suff : mu (A `&` P) = 0 by move/(nu_mu _ mAP) => ->.
+by apply/eqP; rewrite eq_le measure_ge0// andbT -muA0 le_measure// inE.
 Qed.
 
 Lemma jordan_neg_dominates (mu : {measure set T -> \bar R}) :
   nu `<< mu -> jordan_neg `<< mu.
 Proof.
 move=> nu_mu A mA muA0; have := nu_mu A mA muA0.
-rewrite jordan_decomp// /jordan_pos /jordan_neg /measure_of_charge/=.
-rewrite /cscale/= /crestr0/= mem_set//.
+rewrite jordan_negE// cjordan_negE /crestr0 mem_set// /crestr/=.
 have mAN : measurable (A `&` N) by exact: measurableI.
-suff : mu (A `&` N) = 0.
-  by move=> /(nu_mu _ mAN); rewrite /crestr => ->; rewrite mule0.
-by apply/eqP; rewrite -measure_le0 -muA0 le_measure// inE.
+suff : mu (A `&` N) = 0 by move=> /(nu_mu _ mAN) ->; rewrite oppe0.
+by apply/eqP; rewrite eq_le measure_ge0// andbT -muA0 le_measure// inE.
 Qed.
 
 End jordan_decomposition.
@@ -1436,15 +1541,30 @@ Qed.
 
 End radon_nikodym_finite.
 
-Section radon_nikodym.
-Context d (T : measurableType d) (R : realType).
+(* TODO: move? *)
+Lemma measure_dominates_ae_eq d (T : measurableType d) (R : realType)
+  (mu : {measure set T -> \bar R}) (nu : {measure set T -> \bar R})
+  (f g : T -> \bar R) E : measurable E ->
+    nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
+Proof. by move=> mE munu [A [mA A0 EA]]; exists A; split => //; exact: munu. Qed.
 
-Let radon_nikodym_sigma_finite
-    (mu : {sigma_finite_measure set T -> \bar R})
-    (nu : {finite_measure set T -> \bar R}) :
-  nu `<< mu ->
-  exists2 f : T -> \bar R, mu.-integrable [set: T] f &
-    forall E, E \in measurable -> nu E = integral mu E f.
+(* TODO: move *)
+Lemma ae_eqS d (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}) A B f g :
+  B `<=` A -> ae_eq mu A f g ->  ae_eq mu B f g.
+Proof.
+move=> BA.
+case => N [mN N0 fg]; exists N; split => //.
+by apply: subset_trans fg; apply: subsetC => z /= /[swap] /BA ? ->//.
+Qed.
+
+Section radon_nikodym_sigma_finite.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {sigma_finite_measure set T -> \bar R})
+          (nu : {finite_measure set T -> \bar R}).
+
+Local Lemma radon_nikodym_sigma_finite : nu `<< mu ->
+  exists f : T -> \bar R, [/\ forall x, f x >= 0, mu.-integrable [set: T] f &
+    forall E, E \in measurable -> nu E = integral mu E f].
 Proof.
 move=> nu_mu.
 have [F TF mFAFfin] := sigma_finiteT mu.
@@ -1512,120 +1632,400 @@ have int_f_nuT : \int[mu]_x f x = nu setT.
     by apply: eq_eseriesr => i _; rewrite int_f_E// setTI.
   rewrite -bigcupE measure_bigcup//.
   by apply: eq_eseriesl => // x; rewrite in_setT.
-exists f.
-  apply/integrableP; split; first exact: ge0_emeasurable_fun_sum.
+exists f; split.
+- by move=> t; rewrite /f; exact: nneseries_ge0.
+- apply/integrableP; split; first exact: ge0_emeasurable_fun_sum.
   under eq_integral do (rewrite gee0_abs; last exact: nneseries_ge0).
   by rewrite int_f_nuT ltey_eq fin_num_measure.
-move=> A /[!inE] mA; rewrite integral_nneseries//; last first.
-  by move=> n; exact: measurable_funTS.
-rewrite nneseries_esum; last by move=> m _; rewrite integral_ge0.
-under eq_esum do rewrite int_f_E//.
-rewrite -nneseries_esum; last first.
-  by move=> n; rewrite measure_ge0//; exact: measurableI.
-rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])); last first.
-  by move=> x; rewrite in_setT.
-rewrite -measure_bigcup//.
-- by rewrite -setI_bigcupr bigcupE setIT.
-- by move=> i _; exact: measurableI.
-- exact: trivIset_setIl.
+- move=> A /[!inE] mA; rewrite integral_nneseries//; last first.
+    by move=> n; exact: measurable_funTS.
+  rewrite nneseries_esum; last by move=> m _; rewrite integral_ge0.
+  under eq_esum do rewrite int_f_E//.
+  rewrite -nneseries_esum; last first.
+    by move=> n; rewrite measure_ge0//; exact: measurableI.
+  rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])); last first.
+    by move=> x; rewrite in_setT.
+  rewrite -measure_bigcup//.
+  + by rewrite -setI_bigcupr bigcupE setIT.
+  + by move=> i _; exact: measurableI.
+  + exact: trivIset_setIl.
 Qed.
 
-Let Radon_Nikodym0
-  (mu : {sigma_finite_measure set T -> \bar R}) (nu : {charge set T -> \bar R}) :
-  nu `<< mu ->
-  exists2 f : T -> \bar R, mu.-integrable [set: T] f &
+Lemma radon_nikodym_sigma_finite_fin_num : nu `<< mu ->
+  exists f : T -> \bar R, [/\ forall x, f x >= 0, forall x, f x \is a fin_num,
+    mu.-integrable [set: T] f &
+    forall A, measurable A -> nu A = \int[mu]_(x in A) f x].
+Proof.
+move=> /radon_nikodym_sigma_finite[f [f0 fi nuf]].
+have ae_f := integrable_ae measurableT fi.
+pose g x := if f x \is a fin_num then f x else 0.
+have fg : ae_eq mu setT f g.
+  case: ae_f => N [mN N0 fN]; exists N; split => //.
+  apply: subset_trans fN; apply: subsetC => z/= /(_ I) fz _.
+  by rewrite /g fz.
+move/integrableP : fi => [mf fi].
+have mg : measurable_fun [set: T] g.
+  apply: measurable_fun_ifT => //; apply: (measurable_fun_bool true) => /=.
+  by have := emeasurable_fin_num measurableT mf; rewrite setTI.
+exists g; split => //.
+- by move=> x; rewrite /g; case: ifPn.
+- by move=> x; rewrite /g; case: ifPn.
+- apply/integrableP; split => //; apply/abse_integralP => //.
+  move/ae_eq_integral : (fg) => /(_ measurableT mf) <-//.
+  exact/abse_integralP.
+- move=> A mA; rewrite nuf ?inE//; apply: ae_eq_integral => //.
+  + exact: measurable_funTS.
+  + exact: measurable_funTS.
+  + exact: ae_eqS fg.
+Qed.
+
+End radon_nikodym_sigma_finite.
+
+Module Radon_Nikodym_SigmaFinite.
+Section radon_nikodym_sigma_finite_def.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {finite_measure set T -> \bar R})
+          (mu : {sigma_finite_measure set T -> \bar R}).
+
+Definition f : T -> \bar R :=
+  match pselect (nu `<< mu) with
+  | left nu_mu => sval (cid (radon_nikodym_sigma_finite_fin_num nu_mu))
+  | right _ => cst -oo
+  end.
+
+Theorem f_ge0 : nu `<< mu -> forall x, 0 <= f x.
+Proof.
+by move=> numu; rewrite /f; case: pselect => // {}numu; case: cid => x [].
+Qed.
+
+Theorem f_fin_num : nu `<< mu -> forall x, f x \is a fin_num.
+Proof.
+by move=> numu; rewrite /f; case: pselect => // {}numu; case: cid => x [].
+Qed.
+
+Theorem f_integrable : nu `<< mu -> mu.-integrable [set: T] f.
+Proof.
+by move=> numu; rewrite /f; case: pselect => // {}numu; case: cid => x [].
+Qed.
+
+Theorem f_integral : nu `<< mu -> forall A, measurable A ->
+    nu A = \int[mu]_(x in A) f x.
+Proof.
+by move=> numu; rewrite /f; case: pselect => // {}numu; case: cid => x [].
+Qed.
+
+End radon_nikodym_sigma_finite_def.
+
+Section integrableM.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {finite_measure set T -> \bar R})
+          (mu : {sigma_finite_measure set T -> \bar R}).
+Hypothesis numu : nu `<< mu.
+Implicit Types f : T -> \bar R.
+
+Local Notation "'d nu '/d mu" := (f nu mu).
+
+Lemma change_of_variables f : (forall x, 0 <= f x) ->
+    forall E, measurable E -> measurable_fun E f ->
+  \int[mu]_(x in E) (f x * ('d nu '/d mu) x) = \int[nu]_(x in E) f x.
+Proof.
+move=> f0 E mE mf; set g := 'd nu '/d mu.
+have [h [ndh hf]] := approximation mE mf (fun x _ => f0 x).
+have -> : \int[nu]_(x in E) f x =
+    lim (\int[nu]_(x in E) (EFin \o h n) x @[n --> \oo]).
+  have fE x : E x -> f x = lim ((EFin \o h n) x @[n --> \oo]).
+    by move=> Ex; apply/esym/cvg_lim => //; exact: hf.
+  under eq_integral. by move=> x /[!inE] Ex; rewrite fE //; over.
+  apply: monotone_convergence => //.
+  - move=> n; apply/EFin_measurable_fun.
+    by apply: (measurable_funS measurableT) => //; exact/measurable_funP.
+  - by move=> n x Ex //=; rewrite lee_fin.
+  - by move=> x Ex a b /ndh /=; rewrite lee_fin => /lefP.
+have -> : \int[mu]_(x in E) (f \* g) x =
+    lim (\int[mu]_(x in E) ((EFin \o h n) \* g) x @[n --> \oo]).
+  have fg x :E x -> f x * g x = lim (((EFin \o h n) \* g) x @[n --> \oo]).
+    by move=> Ex; apply/esym/cvg_lim => //; apply: cvgeMr;
+      [exact: f_fin_num|exact: hf].
+  under eq_integral. by move=> x /[!inE] Ex; rewrite fg //; over.
+  apply: monotone_convergence => [//| | |].
+  - move=> n; apply/emeasurable_funM; apply/measurable_funTS.
+      exact/EFin_measurable_fun.
+    exact: measurable_int (f_integrable _).
+  - by move=> n x Ex //=; rewrite mule_ge0 ?lee_fin//=; exact: f_ge0.
+  - by move=> x Ex a b /ndh /= /lefP hahb; rewrite lee_wpmul2r ?lee_fin// f_ge0.
+suff suf n : \int[mu]_(x in E) ((EFin \o h n) x * g x) =
+    \int[nu]_(x in E) (EFin \o h n) x.
+  under eq_fun. by move=> n; rewrite suf; over. by [].
+transitivity (\int[nu]_(x in E)
+   (\sum_(y \in range (h n)) (y * \1_(h n @^-1` [set y]) x)%:E)); last first.
+  by apply: eq_integral => t tE; rewrite /= fimfunE -fsumEFin.
+have indich m r : measurable_fun E (fun x => (r * \1_(h m @^-1` [set r]) x)%:E).
+  by apply: (measurable_comp measurableT) => //; exact: measurable_funM.
+rewrite ge0_integral_fsum//; last by move=> m y Ey; exact: nnfun_muleindic_ge0.
+transitivity (\int[mu]_(x in E) (\sum_(y \in range (h n))
+    (y * \1_(h n @^-1` [set y]) x)%:E * g x)).
+  under [RHS]eq_integral => x xE.
+    rewrite -ge0_mule_fsuml; last first.
+      by move=> y; exact: nnfun_muleindic_ge0.
+    rewrite fsumEFin // -(fimfunE _ x); over.
+  by [].
+rewrite ge0_integral_fsum//; last 2 first.
+  - move=> y; apply: emeasurable_funM => //; apply: measurable_funTS.
+    exact: measurable_int (f_integrable _).
+  - by move=> m y Ey; rewrite mule_ge0//; [exact: nnfun_muleindic_ge0|
+                                           exact: f_ge0].
+apply: eq_fsbigr => r rhn.
+under [RHS]eq_integral do rewrite EFinM.
+rewrite integralZl_indic_nnsfun => //.
+under [LHS]eq_integral do rewrite EFinM -muleA.
+rewrite ge0_integralZl//.
+  suff intE1 F : measurable F -> \int[nu]_(x in E) (EFin \o \1_F) x =
+    \int[mu]_(x in E) ((EFin \o \1_F) x * g x).
+    by rewrite intE1.
+  move=> mF /=.
+  under eq_integral.
+    by move=> x xE; rewrite -[_%:E]mul1e -/(idfun 1); over.
+  rewrite -(integral_setI_indic _ _)//.
+  transitivity (\int[mu]_(x in E `&` F) g x).
+    rewrite -f_integral//=; last exact: measurableI.
+    by rewrite integral_cst ?mul1e//; exact: measurableI.
+  by rewrite integral_setI_indic//; under eq_integral do rewrite muleC.
+- apply: emeasurable_funM; first exact/EFin_measurable_fun.
+  by apply: measurable_funTS => //; exact: measurable_int (f_integrable _).
+- by move=> t Et; rewrite mule_ge0// ?lee_fin//; exact: f_ge0.
+- by move: rhn; rewrite inE => -[t _ <-]; rewrite lee_fin.
+Qed.
+
+Lemma integrableM f : (forall x, 0 <= f x) -> forall E, measurable E ->
+  nu.-integrable E f -> mu.-integrable E (f \* 'd nu '/d mu).
+Proof.
+move=> f0 E mE intEf; apply/integrableP; split.
+  apply: emeasurable_funM; first exact: (@measurable_int _ _ _ nu).
+  by apply: measurable_funTS; exact: measurable_int (f_integrable _).
+under eq_integral.
+  move=> x _; rewrite gee0_abs; last first.
+    by apply: mule_ge0=> //; exact: f_ge0.
+  over.
+rewrite change_of_variables//; last exact: (@measurable_int _ _ _ nu).
+by move/integrableP : intEf=> [mf +]; under eq_integral do rewrite gee0_abs//.
+Qed.
+
+End integrableM.
+
+Section chain_rule.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {finite_measure set T -> \bar R})
+          (la : {sigma_finite_measure set T -> \bar R})
+          (mu : {finite_measure set T -> \bar R}).
+
+Local Notation "'d nu '/d mu" := (f nu mu).
+
+Lemma chain_rule : nu `<< mu -> mu `<< la -> forall E, measurable E ->
+  ae_eq la E ('d nu '/d la) ('d nu '/d mu \* 'd mu '/d la).
+Proof.
+move=> numu mula E mE; have nula := measure_dominates_trans numu mula.
+have mf : measurable_fun E ('d nu '/d mu).
+  by apply: measurable_funTS; exact: measurable_int (f_integrable _).
+have [h [ndh hf]] := approximation mE mf (fun x _ => f_ge0 numu x).
+apply: integral_ae_eq => //.
+- apply: (integrableS measurableT) => //.
+  apply: f_integrable.
+  exact: (measure_dominates_trans numu mula).
+- apply: emeasurable_funM => //; apply: measurable_funTS.
+  exact: measurable_int (f_integrable _).
+- move=> A AE mA; rewrite change_of_variables//.
+  + by rewrite -!f_integral.
+  + exact: f_ge0.
+  + exact: measurable_funS mf.
+Qed.
+
+End chain_rule.
+End Radon_Nikodym_SigmaFinite.
+
+Section radon_nikodym.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {charge set T -> \bar R})
+          (mu : {sigma_finite_measure set T -> \bar R}).
+
+Local Lemma Radon_Nikodym0 : nu `<< mu ->
+  exists2 f : T -> \bar R, (forall x, f x \is a fin_num) &
+    mu.-integrable [set: T] f /\
     forall A, measurable A -> nu A = \int[mu]_(x in A) f x.
 Proof.
 move=> nu_mu; have [P [N nuPN]] := Hahn_decomposition nu.
-have [fp intfp fpE] := @radon_nikodym_sigma_finite mu
+have [fp [fp0 fpfin intfp fpE]] := @radon_nikodym_sigma_finite_fin_num _ _ _ mu
   [the {finite_measure set _ -> \bar _} of jordan_pos nuPN]
   (jordan_pos_dominates nuPN nu_mu).
-have [fn intfn fnE] := @radon_nikodym_sigma_finite mu
+have [fn [fn0 fnfin intfn fnE]] := @radon_nikodym_sigma_finite_fin_num _ _ _ mu
   [the {finite_measure set _ -> \bar _} of jordan_neg nuPN]
   (jordan_neg_dominates nuPN nu_mu).
-exists (fp \- fn); first exact: integrableB.
-move=> E mE; rewrite [LHS](jordan_decomp nuPN mE)// integralB//.
-- by rewrite -fpE ?inE// -fnE ?inE.
-- exact: (integrableS measurableT).
-- exact: (integrableS measurableT).
+exists (fp \- fn); first by move=> x; rewrite fin_numB// fpfin fnfin.
+split; first exact: integrableB.
+move=> E mE; rewrite [LHS](jordan_decomp nuPN mE)// integralB//;
+  [|exact: (integrableS measurableT)..].
+rewrite -fpE ?inE// -fnE ?inE//= caddE jordan_posE jordan_negE.
+by rewrite [X in _ + X]/= cscaleE EFinN mulN1e.
 Qed.
 
-Definition Radon_Nikodym
-    (mu : {sigma_finite_measure set T -> \bar R})
-    (nu : {charge set T -> \bar R}) : T -> \bar R :=
+Definition Radon_Nikodym : T -> \bar R :=
   match pselect (nu `<< mu) with
   | left nu_mu => sval (cid2 (Radon_Nikodym0 nu_mu))
   | right _ => cst -oo
   end.
 
-Local Notation "'d nu '/d mu" := (Radon_Nikodym mu nu).
+Lemma Radon_NikodymE (numu : nu `<< mu) :
+  Radon_Nikodym = sval (cid2 (Radon_Nikodym0 numu)).
+Proof.
+rewrite /= /Radon_Nikodym; case: pselect => //= numu'.
+by congr (sval (cid2 (Radon_Nikodym0 _))); exact: Prop_irrelevance.
+Qed.
 
-Theorem Radon_Nikodym_integrable
-    (mu : {sigma_finite_measure set T -> \bar R})
-    (nu : {charge set T -> \bar R}) :
-    nu `<< mu ->
-  mu.-integrable [set: T] ('d nu '/d mu).
+Theorem Radon_Nikodym_fin_num : nu `<< mu ->
+  forall x, Radon_Nikodym x \is a fin_num.
 Proof.
 move=> numu; rewrite /Radon_Nikodym; case: pselect => // {}numu.
 by case: cid2.
 Qed.
 
-Theorem Radon_Nikodym_integral
-    (mu : {sigma_finite_measure set T -> \bar R})
-    (nu : {charge set T -> \bar R}) :
-    nu `<< mu ->
-  forall A, measurable A -> nu A = \int[mu]_(x in A) ('d nu '/d mu) x.
+Theorem Radon_Nikodym_integrable : nu `<< mu ->
+  mu.-integrable [set: T] Radon_Nikodym.
 Proof.
 move=> numu; rewrite /Radon_Nikodym; case: pselect => // {}numu.
-by case: cid2.
+by case: cid2 => ? ? [].
+Qed.
+
+Theorem Radon_Nikodym_integral : nu `<< mu ->
+  forall A, measurable A -> nu A = \int[mu]_(x in A) Radon_Nikodym x.
+Proof.
+move=> numu; rewrite /Radon_Nikodym; case: pselect => // {}numu.
+by case: cid2 => ? ? [].
 Qed.
 
 End radon_nikodym.
-Notation "'d nu '/d mu" := (Radon_Nikodym mu nu) : charge_scope.
+Notation "'d nu '/d mu" := (Radon_Nikodym nu mu) : charge_scope.
+
+#[global] Hint Extern 0 (_.-integrable setT ('d _ '/d _)) =>
+  solve [apply: Radon_Nikodym_integrable] : core.
+#[global] Hint Extern 0 (measurable_fun setT ('d _ '/d _)) =>
+  solve [apply: measurable_int; exact: Radon_Nikodym_integrable] : core.
+
+Section Radon_Nikodym_charge_of_finite_measure.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {finite_measure set T -> \bar R})
+          (mu : {sigma_finite_measure set T -> \bar R}).
+Hypothesis numu : nu `<< mu.
+
+Lemma ae_eq_Radon_Nikodym_SigmaFinite E : measurable E ->
+  ae_eq mu E (Radon_Nikodym_SigmaFinite.f nu mu)
+             ('d [the charge _ _ of charge_of_finite_measure nu] '/d mu).
+Proof.
+move=> mE; apply: integral_ae_eq => //.
+- apply: (integrableS measurableT) => //.
+  exact: Radon_Nikodym_SigmaFinite.f_integrable.
+- exact: measurable_funTS.
+- move=> A AE mA; rewrite -Radon_Nikodym_integral//.
+  by rewrite -Radon_Nikodym_SigmaFinite.f_integral.
+Qed.
+
+End Radon_Nikodym_charge_of_finite_measure.
+
+Section Radon_Nikodym_change_of_variables.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {finite_measure set T -> \bar R})
+          (mu : {sigma_finite_measure set T -> \bar R}).
+Hypothesis numu : nu `<< mu.
+Implicit Types f : T -> \bar R.
+
+Lemma Radon_Nikodym_change_of_variables f E : measurable E ->
+    nu.-integrable E f ->
+  \int[mu]_(x in E) (f x * ('d [the charge _ _ of charge_of_finite_measure nu] '/d mu) x) =
+  \int[nu]_(x in E) f x.
+Proof.
+move=> mE mf; rewrite [in RHS](funeposneg f) integralB //; last 2 first.
+  - exact: integrable_funepos.
+  - exact: integrable_funeneg.
+transitivity (\int[mu]_(x in E) (f \* (Radon_Nikodym_SigmaFinite.f nu mu)) x).
+  apply: ae_eq_integral => //.
+  - apply: emeasurable_funM => //; last exact: measurable_funTS.
+    exact: measurable_int mf.
+  - apply: emeasurable_funM => //; first exact: measurable_int mf.
+    apply: measurable_funTS.
+    exact: measurable_int (Radon_Nikodym_SigmaFinite.f_integrable _).
+  - exact/ae_eq_mul2l/ae_eq_sym/ae_eq_Radon_Nikodym_SigmaFinite.
+transitivity (\int[mu]_(x in E) (f^\+ \* (Radon_Nikodym_SigmaFinite.f nu mu) \-
+                                f^\- \* (Radon_Nikodym_SigmaFinite.f nu mu)) x).
+  apply: eq_integral => x /[!inE] Ex.
+  rewrite [in LHS](funeposneg f) muleBl//=.
+  - exact: Radon_Nikodym_SigmaFinite.f_fin_num.
+  - exact: add_def_funeposneg.
+rewrite [in LHS]integralB //; last 2 first.
+- apply: Radon_Nikodym_SigmaFinite.integrableM  => //.
+  exact: integrable_funepos.
+- apply: Radon_Nikodym_SigmaFinite.integrableM => //.
+  exact: integrable_funeneg.
+congr (_ - _).
+- rewrite Radon_Nikodym_SigmaFinite.change_of_variables//.
+  by apply: measurable_int; exact: integrable_funepos mf.
+- rewrite Radon_Nikodym_SigmaFinite.change_of_variables//.
+  by apply: measurable_int; exact: integrable_funeneg mf.
+Qed.
+
+End Radon_Nikodym_change_of_variables.
 
 Section radon_nikodym_lemmas.
 Context d (T : measurableType d) (R : realType).
+Implicit Types (nu : {charge set T -> \bar R})
+               (mu : {sigma_finite_measure set T -> \bar R}).
 
-Lemma dominates_cscale (mu : {sigma_finite_measure set T -> \bar R})
-    (nu : {charge set T -> \bar R}) (c : R) :
-  nu `<< mu -> cscale c nu `<< mu.
-Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
-
-Lemma Radon_Nikodym_cscale (mu : {sigma_finite_measure set T -> \bar R})
-    (nu : {charge set T -> \bar R}) (c : R) :
-  nu `<< mu ->
-  ae_eq mu [set: T] ('d [the charge _ _ of cscale c nu] '/d mu)
-                    (fun x => c%:E * 'd nu '/d mu x).
+Lemma Radon_Nikodym_cscale mu nu c E : measurable E -> nu `<< mu ->
+  ae_eq mu E ('d [the charge _ _ of cscale c nu] '/d mu)
+             (fun x => c%:E * 'd nu '/d mu x).
 Proof.
-move=> numu; apply: integral_ae_eq => [//| | |E mE].
-- by apply: Radon_Nikodym_integrable; exact: dominates_cscale.
-  apply: emeasurable_funM => //.
-  exact: measurable_int (Radon_Nikodym_integrable _).
+move=> mE numu; apply: integral_ae_eq => [//| | |A AE mA].
+- apply: (integrableS measurableT) => //.
+  by apply: Radon_Nikodym_integrable => /=; exact: dominates_cscale.
+- by apply: measurable_funTS; exact: emeasurable_funM.
 - rewrite integralZl//; last first.
     by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
   rewrite -Radon_Nikodym_integral => //; last exact: dominates_cscale.
   by rewrite -Radon_Nikodym_integral.
 Qed.
 
-Lemma dominates_caddl (mu : {sigma_finite_measure set T -> \bar R})
-    (nu0 nu1 : {charge set T -> \bar R}) :
-  nu0 `<< mu -> nu1 `<< mu -> cadd nu0 nu1 `<< mu.
-Proof.
-by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
-Qed.
-
-Lemma Radon_Nikodym_cadd (mu : {sigma_finite_measure set T -> \bar R})
-    (nu0 nu1 : {charge set T -> \bar R}) :
+Lemma Radon_Nikodym_cadd mu nu0 nu1 E : measurable E ->
   nu0 `<< mu -> nu1 `<< mu ->
-  ae_eq mu [set: T] ('d [the charge _ _ of cadd nu0 nu1] '/d mu)
-                    ('d nu0 '/d mu \+ 'd nu1 '/d mu).
+  ae_eq mu E ('d [the charge _ _ of cadd nu0 nu1] '/d mu)
+             ('d nu0 '/d mu \+ 'd nu1 '/d mu).
 Proof.
-move=> nu0mu nu1mu; apply: integral_ae_eq => [//| | |E mE].
-- by apply: Radon_Nikodym_integrable => /=; exact: dominates_caddl.
-  by apply: emeasurable_funD; exact: measurable_int (Radon_Nikodym_integrable _).
-- rewrite integralD => //; [|exact: integrableS (Radon_Nikodym_integrable _)..].
+move=> mE nu0mu nu1mu; apply: integral_ae_eq => [//| | |A AE mA].
+- apply: (integrableS measurableT) => //.
+  by apply: Radon_Nikodym_integrable => /=; exact: dominates_caddl.
+- by apply: measurable_funTS => //; exact: emeasurable_funD.
+- rewrite integralD //; [|exact: integrableS (Radon_Nikodym_integrable _)..].
   rewrite -Radon_Nikodym_integral //=; last exact: dominates_caddl.
   by rewrite -Radon_Nikodym_integral // -Radon_Nikodym_integral.
 Qed.
 
 End radon_nikodym_lemmas.
+
+Section Radon_Nikodym_chain_rule.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {charge set T -> \bar R})
+          (la : {sigma_finite_measure set T -> \bar R})
+          (mu : {finite_measure set T -> \bar R}).
+
+Lemma Radon_Nikodym_chain_rule : nu `<< mu -> mu `<< la ->
+  ae_eq la setT ('d nu '/d la)
+                ('d nu '/d mu \* 'd [the charge _ _ of charge_of_finite_measure mu] '/d la).
+Proof.
+have [Pnu [Nnu nuPN]] := Hahn_decomposition nu.
+move=> numu mula; have nula := measure_dominates_trans numu mula.
+apply: integral_ae_eq => //.
+- exact: Radon_Nikodym_integrable.
+- exact: emeasurable_funM.
+- move=> E _ mE.
+  rewrite -Radon_Nikodym_integral// Radon_Nikodym_change_of_variables//.
+  + exact: Radon_Nikodym_integral.
+  + by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
+Qed.
+
+End Radon_Nikodym_chain_rule.
