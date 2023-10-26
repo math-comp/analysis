@@ -838,3 +838,21 @@ by rewrite /pmf fineK// fin_num_measure.
 Qed.
 
 End discrete_distribution.
+
+Section bernoulli.
+
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Definition bernoulli (p : R) (X : {RV P >-> R}) := P [set i | X i == 1%R] == p%:E /\ P [set i | X i == 0%R] == 1-p%:E.
+
+Lemma bernoulli_expectation (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'E_P[X] = p%:E.
+Proof.
+rewrite /bernoulli.
+move=> [pX1 pX0].
+have ->: \int[P]_i (X i)%:E = (\int[P]_(i in [set i | X i == 1%R]) (X i)%:E) + (\int[P]_(i in [set i | X i == 0%R]) (X i)%:E).
+
+
+
+HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
+  (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
