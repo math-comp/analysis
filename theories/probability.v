@@ -824,8 +824,8 @@ Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling p (X : {RV P >-> R}^nat) (n : nat) (theta delta : R) :
-  let X_sum x := \sum_(i < n) (X i x) in
-  let X' := X_sum / n%:R in
+  let X_sum x := \sum_(i < n) (X i x)%:E in
+  let X' x := X_sum x * (n%:R)^-1%:E in
   (forall i, bernoulli p (X i)) ->
-  n > 3 / (theta ^+ 2) * ln (2 / delta) ->
-  P [set i | `| X' i - p | < theta] >= 1 - delta.
+  (n%:R > 3 / (theta ^+ 2) * ln (2 / delta))%R ->
+  P [set i | `| X' i - p%:E | < theta%:E] >= 1 - delta%:E.
