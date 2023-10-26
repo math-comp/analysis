@@ -849,15 +849,40 @@ Definition bernoulli (p : R) (X : {RV P >-> R}) := P [set i | X i == 1%R] == p%:
 Lemma bernoulli_expectation (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'E_P[X] = p%:E.
 Proof.
 rewrite /bernoulli.
-move=> [pX1 pX0].
+move=> [/eqP pX1 _].
 have split_expectation : \int[P]_i (X i)%:E = (\int[P]_(i in [set i | X i == 1%R]) (X i)%:E) + (\int[P]_(i in [set i | X i == 0%R]) (X i)%:E).
 admit.
 rewrite unlock split_expectation.
+rewrite [X in X + _](eq_integral (cst 1)); last admit.
+rewrite [X in _ + X](eq_integral (cst 0)); last admit.
+rewrite !integral_cst; last 2 first. admit. admit.
+by rewrite mul0e adde0 mul1e.
+Admitted.
+
+Lemma bernoulli_sqr (p : R) (X : {RV P >-> R}) : 
+  bernoulli p X -> bernoulli p (X ^+ 2 : {RV P >-> R})%R.
+Proof.
+move=> [/eqP b0 /eqP b1].
+rewrite /bernoulli -b1 -b0; split; apply/eqP.
+  have bn1: P [set i | X i == -1]%R = 0. admit.
+  rewrite -[RHS]adde0 -bn1.
+  rewrite -measureU; last 3 first. admit. admit.
+    rewrite -set_andb; apply: congr1; apply: funext => x/=.
+    admit.
+  apply: congr1.
+  rewrite -set_orb; apply: congr1; apply: funext => x/=.
+  (* use sqrf_eq1 *) admit.
+by apply: congr1; apply: funext => x/=; rewrite mulf_eq0 Bool.orb_diag.
 Admitted.
 
 Lemma bernoulli_variance (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'V_P[X] = (p * (1-p))%:E.
+move=> b.
+rewrite varianceE; last 2 first. admit. admit.
+rewrite (bernoulli_expectation b).
+have b2 := bernoulli_sqr b.
+rewrite (bernoulli_expectation b2) /=.
+by rewrite -EFinD -{1}(mulr1 p) -mulrN mulrDr.
 Admitted.
-
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling p (X : {RV P >-> R}^nat) (n : nat) (theta delta : R) :
@@ -866,3 +891,8 @@ Theorem sampling p (X : {RV P >-> R}^nat) (n : nat) (theta delta : R) :
   (forall i, bernoulli p (X i)) ->
   (n%:R > 3 / (theta ^+ 2) * ln (2 / delta))%R ->
   P [set i | `| X' i - p%:E | < theta%:E] >= 1 - delta%:E.
+Proof.
+move=> X_sum X' b tdn.
+Admitted.
+
+End bernoulli.
