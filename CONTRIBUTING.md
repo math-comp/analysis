@@ -1,4 +1,4 @@
-# Contribution Guide for the mathcomp-analysis	library (WIP)
+# Contribution Guide for the mathcomp-analysis library (WIP)
 
 The purpose of this file is to document coding styles to be
 used when contributing to mathcomp-analysis. It comes as an addition
@@ -65,22 +65,3 @@ short name, and the `{mono ...}` lemma gets the suffix `in`.
 
 - The construction `_ !=set0` corresponds to suffix `nonempty`
 - The construction `_ != set0` corresponds to suffix `neq0`
-
-## Idioms
-
-### How to introduce a positive real number?
-
-When introducing a positive real number, it is best to turn it into a
-`posnum` whose type is equipped with better automation. There is an
-idiomatic way to perform such an introduction. Given a goal of the
-form
-```
-==========================
-forall e : R, 0 < e -> G
-```
-the tactic `move=> _/posnumP[e]` performs the following introduction
-```
-e : {posnum R}
-==========================
-G
-```
