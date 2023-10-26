@@ -549,7 +549,6 @@ apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
 - by rewrite unlock.
 Qed.
 
-<<<<<<< HEAD
 Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
 
 Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
@@ -566,9 +565,6 @@ rewrite ger0_norm ?expR_ge0// muleC lee_pmul2l// ?lte_fin ?expR_gt0//.
 rewrite [X in _ <= P X](_ : _ = [set x | a <= X x]%R)//; apply: eq_set => t/=.
 by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pM2r.
 Qed.
-=======
-Definition mgf (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
->>>>>>> 4ad33acb (moment -> mgf)
 
 HB.instance Definition _ := isMeasurableFun.Build _ _ _ (@expR R) (@measurable_expR R).
 
@@ -587,27 +583,6 @@ Lemma lt0_ger_normr :
   {in Num.neg &, {mono (@normr _ R) : x y / x <= y >-> x >= y}}%R.
 Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
 
-<<<<<<< HEAD
-=======
-Lemma chernoff (X : {RV P >-> R}) (t a : R) : (0 < t)%R ->
-  P [set x | X x >= a]%R * (expR (t * a))%:E <= mgf X t.
-Proof.
-move=> t0.
-rewrite /= /mgf.
-have h : (0 < `| expR (t * a) |)%R by rewrite normr_gt0 gt_eqF ?expR_gt0.
-pose Y : {RV P >-> R} := [the {mfun T >-> R} of expR \o (t \o* X)].
-have := @markov Y normr (`| expR (t * a)|)%R h (@measurable_normr _ _) (fun r => normr_ge0 r) (monoW_in ge0_ler_normr).
-rewrite normr_id.
-rewrite ger0_norm ?expR_ge0//.
-under eq_set => x.
-  rewrite /Y /= ger0_norm ?expR_ge0// lee_fin ler_expR.
-  rewrite mulrC (@ler_pmul2r _ t)//. over.
-rewrite /= muleC.
-suff -> : (normr \o [eta normr]) \o (expR \o t \o* X) = (expR \o t \o* X) => //.
-by apply: funext => x /=; rewrite normr_id ger0_norm ?expR_ge0.
-Qed.
-
->>>>>>> 4ad33acb (moment -> mgf)
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
   P [set x | (eps <= `| X x - fine ('E_P[X])|)%R ] <= (eps ^- 2)%:E * 'V_P[X].
 Proof.
