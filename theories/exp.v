@@ -769,12 +769,8 @@ Qed.
 
 Lemma powRDm1 (x p : R) : 0 <= x -> 0 < p -> x * x `^ (p - 1) = x `^ p.
 Proof.
-move=> x0 p0.
-have [->|xneq0] := eqVneq x 0.
-  by rewrite mul0r powR0// gt_eqF.
-rewrite -{1}(@powRr1 x)// -powRD.
-  by rewrite addrCA subrr addr0.
-by rewrite xneq0 implybT.
+rewrite le_eqVlt => /predU1P[<- p0|x0 p0]; first by rewrite mul0r powR0 ?gt_eqF.
+by rewrite -{1}(powRr1 (ltW x0))// -powRD addrCA subrr addr0// gt_eqF.
 Qed.
 
 Lemma powRN x r : x `^ (- r) = (x `^ r)^-1.
@@ -892,8 +888,8 @@ Proof.
 by move: x => [x'| |]//= x0; rewrite ?powRr1// (negbTE (oner_neq0 _)).
 Qed.
 
-Lemma poweRN (x : \bar R) r : x \is a fin_num -> x `^ (- r) = (((fine x) `^ r)^-1)%:E.
-Proof. case: x => // x xf. by rewrite poweR_EFin powRN. Qed.
+Lemma poweRN x r : x \is a fin_num -> x `^ (- r) = (fine x `^ r)^-1%:E.
+Proof. by case: x => // x xf; rewrite poweR_EFin powRN. Qed.
 
 Lemma poweRNyr r : r != 0%R -> -oo `^ r = 0.
 Proof. by move=> r0 /=; rewrite (negbTE r0). Qed.
@@ -904,14 +900,14 @@ Proof. by case: x => [x| |] //=; case: ifP. Qed.
 Lemma eqy_poweR x r : (0 < r)%R -> x = +oo -> x `^ r = +oo.
 Proof. by move: x => [| |]//= r0 _; rewrite gt_eqF. Qed.
 
-Lemma poweR_lty (a : \bar R) (r : R) : a < +oo -> a `^ r < +oo.
+Lemma poweR_lty x r : x < +oo -> x `^ r < +oo.
 Proof.
-by move: a => [a| | _]//=; rewrite ?ltry//; case: ifPn => // _; rewrite ltry.
+by move: x => [x| |]//=; rewrite ?ltry//; case: ifPn => // _; rewrite ltry.
 Qed.
 
-Lemma lty_poweRy (a : \bar R) (r : R) : r != 0%R -> a `^ r < +oo -> a < +oo.
+Lemma lty_poweRy x r : r != 0%R -> x `^ r < +oo -> x < +oo.
 Proof.
-by move=> r0; move: a => [a| | _]//=; rewrite ?ltry// (negbTE r0).
+by move=> r0; move: x => [x| | _]//=; rewrite ?ltry// (negbTE r0).
 Qed.
 
 Lemma poweR0r r : r != 0%R -> 0 `^ r = 0.
@@ -950,12 +946,16 @@ Proof. by move=> + /eqP => /poweR_eq0-> /andP[/eqP]. Qed.
 Lemma gt0_ler_poweR (r : R) : (0 <= r)%R ->
   {in `[0, +oo] &, {homo poweR ^~ r : x y / x <= y >-> x <= y}}.
 Proof.
-move=> r0 x y.
-case: x => //= [x /[1!in_itv]/= /andP[xint _]| _ _].
+move=> r0 + y; case=> //= [x /[1!in_itv]/= /andP[xint _]| _ _].
 - case: y => //= [y /[1!in_itv]/= /andP[yint _] xy| _ _].
-  - rewrite !lee_fin ge0_ler_powR//.
-  - by case: eqP => [->|]; rewrite ?powRr0 ?leey.
+  + by rewrite !lee_fin ge0_ler_powR.
+  + by case: eqP => [->|]; rewrite ?powRr0 ?leey.
 - by rewrite leye_eq => /eqP ->.
+Qed.
+
+Lemma fin_num_poweR x r : x \is a fin_num -> x `^ r \is a fin_num.
+Proof.
+by move=> xfin; rewrite ge0_fin_numE ?poweR_lty ?ltey_eq ?xfin// poweR_ge0.
 Qed.
 
 Lemma poweRM x y r : 0 <= x -> 0 <= y -> (x * y) `^ r = x `^ r * y `^ r.
