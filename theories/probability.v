@@ -889,11 +889,14 @@ Theorem sampling p (X : seq {RV P >-> R}) (theta delta : R) :
   let n := length X in
   let X_sum := (\sum_(Xi <- X) Xi)%R in
   let X' x := (X_sum x) / (n%:R) in
+  (0 <= theta)%R -> (0 < n)%nat ->
   (forall Xi, Xi \in X -> bernoulli p (Xi)) ->
   (n%:R > 3 / (theta ^+ 2) * ln (2 / delta))%R ->
   P [set i | `| X' i - p | < theta]%R >= 1 - delta%:E.
 Proof.
-move=> n X_sum X' b tdn.
+move=> n X_sum X' n0 theta0 b tdn.
+have [p0|pn0] := eqVneq p 0%R. admit.
+have /andP[p0 p1] : (0 < p <= 1)%R. admit.
 have E_X_sum: 'E_P[X_sum] = (p * n%:R)%:E.
   rewrite expectation_sum.
   under eq_big.
@@ -903,9 +906,16 @@ have E_X_sum: 'E_P[X_sum] = (p * n%:R)%:E.
   - rewrite /=.
   - admit.
   - admit.
-have : forall eps, P [set i | `| X' i - p | >= eps * p]%R <= (2 * expR (-eps^+2 / 3 * p * n%:R))%:E.
+have hp : forall eps, P [set i | `| X' i - p | >= eps * p]%R <= (2 * expR (-eps^+2 / 3 * p * n%:R))%:E.
   move=> eps.
   have -> : ([set i | `|X' i - p| >= eps * p] = [set i | `|X_sum i - p*n%:R| >= eps * p * n%:R])%R. admit.
+  admit. (* use chernoff bound *)
+have :  P [set i | `| X' i - p | >= theta]%R <= (2 * expR (-theta^+2 / 3 * n%:R))%:E.
+  have -> : theta = ((theta / p) * p)%R by rewrite -mulrA mulVf ?mulr1.
+  apply: le_trans; first apply: (hp (theta/p)).
+  rewrite lee_fin ler_wpM2l// ler_expR -(mulrA theta (p^-1) p) mulVf//.
+  rewrite mulr1 !expr2 !mulNr mulrA lerN2 -!mulrA ler_wpM2l// [leRHS]mulrC -mulrA ler_wpM2l//.
+  by rewrite -mulrA (mulrC p^-1) -!mulrA ler_wpM2l// mulrC -mulrA ler_pMr// ?ltr0n// -mulrA mulVf// mulr1 invf_ge1.
 Admitted.
 
 End bernoulli.
