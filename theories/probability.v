@@ -885,14 +885,27 @@ by rewrite -EFinD -{1}(mulr1 p) -mulrN mulrDr.
 Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
-Theorem sampling p (X : {RV P >-> R}^nat) (n : nat) (theta delta : R) :
-  let X_sum x := \sum_(i < n) (X i x)%:E in
-  let X' x := X_sum x * (n%:R)^-1%:E in
-  (forall i, bernoulli p (X i)) ->
+Theorem sampling p (X : seq {RV P >-> R}) (theta delta : R) :
+  let n := length X in
+  let X_sum := (\sum_(Xi <- X) Xi)%R in
+  let X' x := (X_sum x) / (n%:R) in
+  (forall Xi, Xi \in X -> bernoulli p (Xi)) ->
   (n%:R > 3 / (theta ^+ 2) * ln (2 / delta))%R ->
-  P [set i | `| X' i - p%:E | < theta%:E] >= 1 - delta%:E.
+  P [set i | `| X' i - p | < theta]%R >= 1 - delta%:E.
 Proof.
-move=> X_sum X' b tdn.
+move=> n X_sum X' b tdn.
+have E_X_sum: 'E_P[X_sum] = (p * n%:R)%:E.
+  rewrite expectation_sum.
+  under eq_big.
+  - move=> x. over.
+  - move=> Xi ?. rewrite (@bernoulli_expectation p Xi). over.
+  - apply: b. admit.
+  - rewrite /=.
+  - admit.
+  - admit.
+have : forall eps, P [set i | `| X' i - p | >= eps * p]%R <= (2 * expR (-eps^+2 / 3 * p * n%:R))%:E.
+  move=> eps.
+  have -> : ([set i | `|X' i - p| >= eps * p] = [set i | `|X_sum i - p*n%:R| >= eps * p * n%:R])%R. admit.
 Admitted.
 
 End bernoulli.
