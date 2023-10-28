@@ -1067,7 +1067,7 @@ Qed.
 End onem.
 Notation "`1- r" := (onem r) : ring_scope.
 
-Lemma oneminv (F : numFieldType) (x : F) : x != 0 -> `1- (x^-1) = (x - 1) / x.
+Lemma onemV (F : numFieldType) (x : F) : x != 0 -> `1-(x^-1) = (x - 1) / x.
 Proof. by move=> ?; rewrite mulrDl divff// mulN1r. Qed.
 
 Lemma lez_abs2 (a b : int) : 0 <= a -> a <= b -> (`|a| <= `|b|)%N.

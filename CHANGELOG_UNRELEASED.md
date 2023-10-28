@@ -35,13 +35,13 @@
   + definition `lebesgue_stieltjes_measure`
 
 - in `exp.v`:
-  + lemmas `powRDm1`, `fin_num_poweR`, poweRN`, `poweR_lty`, `lty_powerRy`, `gt0_ler_poweR`
+  + lemmas `mulr_powRB1`, `fin_num_poweR`, poweRN`, `poweR_lty`, `lty_poweRy`, `gt0_ler_poweR`
 
 - in `mathcomp_extra.v`:
-  + lemma `oneminv`
+  + lemma `onemV`
 
 - in `hoelder.v`:
-  + lemmas `Lnorm_powR_K`, `minkowski`
+  + lemmas `powR_Lnorm`, `minkowski`
 
 ### Changed
 
