@@ -241,7 +241,7 @@ Qed.
 #[global] Hint Extern 0  (measurable_fun _ (\1__ : _ -> _)) =>
   (exact: measurable_indic ) : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_indic` instead")]
-Notation measurable_fun_indic := measurable_indic.
+Notation measurable_fun_indic := measurable_indic (only parsing).
 
 Section sfun_pred.
 Context {d} {aT : measurableType d} {rT : realType}.
@@ -1536,7 +1536,7 @@ Qed.
 
 End semi_linearity0.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl_EFin` instead")]
-Notation ge0_integralM_EFin := ge0_integralZl_EFin.
+Notation ge0_integralM_EFin := ge0_integralZl_EFin (only parsing).
 
 Section semi_linearity.
 Local Open Scope ereal_scope.
@@ -1832,10 +1832,10 @@ Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) :
   measurable_fun D (fun x => \sum_(i <oo) h i x).
 Proof.
 move=> h0 mh; rewrite [X in measurable_fun _ X](_ : _ =
-    (fun x => lim_esup (fun n => \sum_(0 <= i < n) h i x))); last first.
-  apply/funext=> x; rewrite is_cvg_lim_esupE//.
+    (fun x => limn_esup (fun n => \sum_(0 <= i < n) h i x))); last first.
+  apply/funext=> x; rewrite is_cvg_limn_esupE//.
   exact: is_cvg_ereal_nneg_natsum.
-by apply: measurable_fun_lim_esup => k; exact: emeasurable_fun_sum.
+by apply: measurable_fun_limn_esup => k; exact: emeasurable_fun_sum.
 Qed.
 
 Lemma emeasurable_funB D f g :
@@ -2224,7 +2224,7 @@ Unshelve. all: by end_near. Qed.
 
 End ge0_integralZl.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl` instead")]
-Notation ge0_integralM := ge0_integralZl.
+Notation ge0_integralM := ge0_integralZl (only parsing).
 
 Section integral_indic.
 Local Open Scope ereal_scope.
@@ -2269,9 +2269,9 @@ Qed.
 End integralZl_indic.
 Arguments integralZl_indic {d T R m D} mD f.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl_indic` instead")]
-Notation integralM_indic := integralZl_indic.
+Notation integralM_indic := integralZl_indic (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl_indic_nnsfun` instead")]
-Notation integralM_indic_nnsfun := integralZl_indic_nnsfun.
+Notation integralM_indic_nnsfun := integralZl_indic_nnsfun (only parsing).
 
 Section integral_mscale.
 Local Open Scope ereal_scope.
@@ -2345,8 +2345,8 @@ Variable (f : (T -> \bar R)^nat).
 Hypothesis mf : forall n, measurable_fun D (f n).
 Hypothesis f0 : forall n x, D x -> 0 <= f n x.
 
-Lemma fatou : \int[mu]_(x in D) lim_einf (f^~ x) <=
-              lim_einf (fun n => \int[mu]_(x in D) f n x).
+Lemma fatou : \int[mu]_(x in D) limn_einf (f^~ x) <=
+              limn_einf (fun n => \int[mu]_(x in D) f n x).
 Proof.
 pose g n := fun x => einfs (f ^~ x) n.
 have mg := measurable_fun_einfs mf.
@@ -3022,9 +3022,9 @@ End integrable_theory.
 Notation "mu .-integrable" := (integrable mu) : type_scope.
 Arguments eq_integrable {d T R mu D} mD f.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integrableZl` instead")]
-Notation integrablerM := integrableZl.
+Notation integrablerM := integrableZl (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integrableZr` instead")]
-Notation integrableMr := integrableZr.
+Notation integrableMr := integrableZr (only parsing).
 
 Section sequence_measure.
 Local Open Scope ereal_scope.
@@ -3272,7 +3272,7 @@ Qed.
 
 End linearity.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl` instead")]
-Notation integralM := integralZl.
+Notation integralM := integralZl (only parsing).
 
 Section linearity.
 Local Open Scope ereal_scope.
@@ -4111,8 +4111,8 @@ Proof.
 have := fatou mu mD mgg gg_ge0.
 rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x) ); last first.
   apply: eq_integral => t; rewrite inE => Dt.
-  rewrite lim_einf_shift//; last by rewrite fin_numM// fing.
-  rewrite is_cvg_lim_einfE//; last first.
+  rewrite limn_einf_shift//; last by rewrite fin_numM// fing.
+  rewrite is_cvg_limn_einfE//; last first.
     by apply: is_cvgeN; apply/cvg_ex; eexists; exact: cvg_g_.
   rewrite [X in _ + X](_ : _ = 0) ?adde0//; apply/cvg_lim => //.
   by rewrite -(oppe0); apply: cvgeN; exact: cvg_g_.
@@ -4123,7 +4123,7 @@ rewrite integralZl// lte_mul_pinfty// ?lee_fin//; case: (integrableP _ _ _ ig) =
 have ? : \int[mu]_(x in D) (2%:E * g x)  \is a fin_num.
   by rewrite ge0_fin_numE// integral_ge0// => ? ?; rewrite mule_ge0 ?lee_fin ?g0.
 rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
-    lim_esup (fun n => \int[mu]_(x in D) g_ n x)); last first.
+    limn_esup (fun n => \int[mu]_(x in D) g_ n x)); last first.
   rewrite (_ : (fun _ => _) = (fun n => \int[mu]_(x in D) (2%:E * g x)  +
       \int[mu]_(x in D) - g_ n x)); last first.
     rewrite funeqE => n; rewrite integralB//.
@@ -4141,10 +4141,10 @@ rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
       apply: le_integrable dominated_integrable => //.
       - exact: measurableT_comp.
       - by move=> x Dx; rewrite /= abse_id.
-  rewrite lim_einf_shift // -lim_einfN; congr (_ + lim_einf _).
+  rewrite limn_einf_shift // -limn_einfN; congr (_ + limn_einf _).
   by rewrite funeqE => n /=; rewrite -integral_ge0N// => x Dx; rewrite /g_.
 rewrite addeC -lee_subl_addr// subee// lee_oppr oppe0 => lim_ge0.
-by apply/lim_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
+by apply/limn_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
 Qed.
 
 Local Lemma dominated_cvg :
