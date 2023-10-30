@@ -3597,9 +3597,9 @@ Qed.
 End separated_topologicalType.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvg_lim`")]
-Notation cvg_map_lim := cvg_lim.
+Notation cvg_map_lim := cvg_lim (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgi_lim`")]
-Notation cvgi_map_lim := cvgi_lim.
+Notation cvgi_map_lim := cvgi_lim (only parsing).
 
 Section connected_sets.
 Variable T : topologicalType.
@@ -4954,7 +4954,7 @@ by apply/fcvg_ballP=> _/posnumP[eps] //.
 Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="use a combination of `cvg_ballP` and `posnumP`")]
-Notation cvg_ballPpos := __deprecated__cvg_ballPpos.
+Notation cvg_ballPpos := __deprecated__cvg_ballPpos (only parsing).
 
 Lemma fcvg_ball {F} {FF : Filter F} (y : M) :
   F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
@@ -4991,7 +4991,7 @@ End pseudoMetricType_numDomainType.
 Arguments close_cvg {T} F1 F2 {FF2} _.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `cvg_ball`")]
-Notation app_cvg_locally := cvg_ball.
+Notation app_cvg_locally := cvg_ball (only parsing).
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.

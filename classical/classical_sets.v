@@ -467,7 +467,7 @@ apply: contra_notP => /forallNP h.
 by apply/eqP; rewrite predeqE => t; split => // _; apply: contrapT.
 Qed.
 #[deprecated(note="Use setTPn instead")]
-Notation setTP := setTPn.
+Notation setTP := setTPn (only parsing).
 
 Lemma in_set0 (x : T) : (x \in set0) = false. Proof. by rewrite memNset. Qed.
 Lemma in_setT (x : T) : x \in setT. Proof. by rewrite mem_set. Qed.
@@ -1034,9 +1034,9 @@ End basic_lemmas.
 #[global]
 Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
 #[deprecated(since="mathcomp-analysis 0.6", note="Use setICl instead.")]
-Notation setvI := setICl.
+Notation setvI := setICl (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6", note="Use setICr instead.")]
-Notation setIv := setICr.
+Notation setIv := setICr (only parsing).
 Arguments setU_id2r {T} C {A B}.
 
 Section set_order.
@@ -1980,13 +1980,13 @@ Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_seq. Qed.
 
 End bigcup_seq.
 #[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcup_seq instead")]
-Notation bigcup_set := bigcup_seq.
+Notation bigcup_set := bigcup_seq (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcup_seq_cond instead")]
-Notation bigcup_set_cond := bigcup_seq_cond.
+Notation bigcup_set_cond := bigcup_seq_cond (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcap_seq instead")]
-Notation bigcap_set := bigcap_seq.
+Notation bigcap_set := bigcap_seq (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcap_seq_cond instead")]
-Notation bigcap_set_cond := bigcap_seq_cond.
+Notation bigcap_set_cond := bigcap_seq_cond (only parsing).
 
 Lemma bigcup_pred [T : finType] [U : Type] (P : {pred T}) (f : T -> set U) :
   \bigcup_(t in [set` P]) f t = \big[setU/set0]_(t in P) f t.
@@ -2528,7 +2528,7 @@ Qed.
 End partitions.
 
 #[deprecated(note="Use trivIset_setIl instead")]
-Notation trivIset_setI := trivIset_setIl.
+Notation trivIset_setI := trivIset_setIl (only parsing).
 
 Definition total_on T (A : set T) (R : T -> T -> Prop) :=
   forall s t, A s -> A t -> R s t \/ R t s.
