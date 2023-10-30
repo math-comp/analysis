@@ -516,10 +516,10 @@ Lemma measurable_fun_xsection_integral
 Proof.
 move=> h.
 rewrite (_ : (fun x => _) =
-    (fun x => lim_esup (fun n => \int[l x]_y (k_ n (x, y))%:E))); last first.
+    (fun x => limn_esup (fun n => \int[l x]_y (k_ n (x, y))%:E))); last first.
   apply/funext => x.
   transitivity (lim (\int[l x]_y (k_ n (x, y))%:E @[n --> \oo])); last first.
-    rewrite is_cvg_lim_esupE//.
+    rewrite is_cvg_limn_esupE//.
     apply: ereal_nondecreasing_is_cvg => m n mn.
     apply: ge0_le_integral => //.
     - by move=> y _; rewrite lee_fin.
@@ -532,7 +532,7 @@ rewrite (_ : (fun x => _) =
   - by move=> n; exact/EFin_measurable_fun/measurableT_comp.
   - by move=> n y _; rewrite lee_fin.
   - by move=> y _ m n mn; rewrite lee_fin; exact/lefP/ndk_.
-apply: measurable_fun_lim_esup => n.
+apply: measurable_fun_limn_esup => n.
 rewrite [X in measurable_fun _ X](_ : _ = (fun x => \int[l x]_y
     (\sum_(r \in range (k_ n))
       r * \1_(k_ n @^-1` [set r]) (x, y))%:E)); last first.

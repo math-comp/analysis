@@ -1087,9 +1087,11 @@ Definition fRN := fun x => lim (F ^~ x @ \oo).
 
 Lemma measurable_fun_fRN : measurable_fun [set: T] fRN.
 Proof.
-rewrite (_ : fRN = fun x => lim_esup (F ^~ x)).
-  by apply: measurable_fun_lim_esup => // n; exact: measurable_max_approxRN_seq.
-by apply/funext=> n; rewrite is_cvg_lim_esupE//; exact: is_cvg_max_approxRN_seq.
+rewrite (_ : fRN = fun x => limn_esup (F ^~ x)).
+  apply: measurable_fun_limn_esup => // n.
+  exact: measurable_max_approxRN_seq.
+apply/funext=> n; rewrite is_cvg_limn_esupE//.
+exact: is_cvg_max_approxRN_seq.
 Qed.
 
 Lemma fRN_ge0 x : 0 <= fRN x.

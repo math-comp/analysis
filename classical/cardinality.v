@@ -903,7 +903,7 @@ Lemma __deprecated__bigcup_fset_set T (I : choiceType) (A : set I) (F : I -> set
   finite_set A -> \bigcup_(i in A) F i = \big[setU/set0]_(i <- fset_set A) F i.
 Proof. by move=> /bigsetU_fset_set->. Qed.
 #[deprecated(note="Use -bigsetU_fset_set instead")]
-Notation bigcup_fset_set := __deprecated__bigcup_fset_set.
+Notation bigcup_fset_set := __deprecated__bigcup_fset_set (only parsing).
 
 Lemma bigsetU_fset_set_cond T (I : choiceType) (A : set I) (F : I -> set T)
     (P : pred I) : finite_set A ->
@@ -917,7 +917,7 @@ Lemma __deprecated__bigcup_fset_set_cond T (I : choiceType) (A : set I) (F : I -
   \bigcup_(i in A `&` P) F i = \big[setU/set0]_(i <- fset_set A | P i) F i.
 Proof. by move=> /bigsetU_fset_set_cond->. Qed.
 #[deprecated(note="Use -bigsetU_fset_set_cond instead")]
-Notation bigcup_fset_set_cond := __deprecated__bigcup_fset_set_cond.
+Notation bigcup_fset_set_cond := __deprecated__bigcup_fset_set_cond (only parsing).
 
 Lemma bigsetI_fset_set T (I : choiceType) (A : set I) (F : I -> set T) :
   finite_set A -> \big[setI/setT]_(i <- fset_set A) F i =\bigcap_(i in A) F i.
@@ -929,7 +929,7 @@ Lemma __deprecated__bigcap_fset_set T (I : choiceType) (A : set I) (F : I -> set
   finite_set A -> \bigcap_(i in A) F i = \big[setI/setT]_(i <- fset_set A) F i.
 Proof. by move=> /bigsetI_fset_set->. Qed.
 #[deprecated(note="Use -bigsetI_fset_set instead")]
-Notation bigcap_fset_set := __deprecated__bigcap_fset_set.
+Notation bigcap_fset_set := __deprecated__bigcap_fset_set (only parsing).
 
 Lemma bigsetI_fset_set_cond T (I : choiceType) (A : set I) (F : I -> set T)
     (P : pred I) : finite_set A ->
@@ -1058,7 +1058,7 @@ by under eq_imagel do rewrite /= gE ?inE//; rewrite image_eq.
 Qed.
 
 #[deprecated(note="use countable0 instead")]
-Notation countable_set0 := countable0.
+Notation countable_set0 := countable0 (only parsing).
 
 Lemma countable1 T (x : T) : countable [set x].
 Proof. exact: finite_set_countable. Qed.
