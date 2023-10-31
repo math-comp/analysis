@@ -966,25 +966,26 @@ Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
-  let n := length X in
+  let n := size X in
   let X_sum := (\sum_(Xi <- X) Xi)%R in
   let X' x := (X_sum x) / (n%:R) in
   (0 <= theta)%R -> (0 < n)%nat ->
   (forall Xi, Xi \in X -> bernoulli_RV Xi) ->
-  (n%:R > 3 / (theta ^+ 2) * ln (2 / delta))%R ->
+  (n%:R >= 3 / (theta ^+ 2) * ln (2 / delta))%R ->
   P [set i | `| X' i - (p%:num) | < theta]%R >= 1 - delta%:E.
 Proof.
 move=> n X_sum X' n0 theta0 b tdn.
-have [p0|pn0] := eqVneq (p%:num) 0%R. admit.
+have [p0|pn0] := eqVneq (p%:num) 0%R.
+  admit.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
-  rewrite expectation_sum.
-  under eq_big.
-  - move=> x. over.
-  - move=> Xi ?. rewrite (@bernoulli_expectation Xi). over.
-  - apply: b. admit.
-  - rewrite /=.
-  - admit.
-  - admit.
+  rewrite expectation_sum/=; last first.
+    move=> Xi XiX.
+    admit. (* NB: requires an hypothesis *)
+  rewrite big_seq.
+  under eq_bigr.
+    move=> Xi XiX; rewrite (bernoulli_expectation (b _ XiX)); over.
+  rewrite /= sumEFin big_const_seq iter_addr_0/= mulr_natr; congr ((_ *+ _)%:E).
+  by rewrite /n -count_predT; apply: eq_in_count => x ->.
 have hp : forall eps, P [set i | `| X' i - p%:num | >= eps * p%:num]%R <= (2 * expR (-eps^+2 / 3 * p%:num * n%:R))%:E.
   move=> eps.
   have -> : ([set i | `|X' i - p%:num| >= eps * p%:num] = [set i | `|X_sum i - p%:num*n%:R| >= eps * p%:num * n%:R])%R. admit.
@@ -995,6 +996,7 @@ have :  P [set i | `| X' i - p%:num | >= theta]%R <= (2 * expR (-theta^+2 / 3 * 
   rewrite lee_fin ler_wpmul2l// ler_expR -(mulrA theta (p%:num^-1) (p%:num)) mulVf//.
   rewrite mulr1 !expr2 !mulNr mulrA ler_oppl opprK -!mulrA ler_wpmul2l// [leRHS]mulrC -mulrA ler_wpmul2l//.
   by rewrite -mulrA (mulrC p%:num^-1) -!mulrA ler_wpmul2l// mulrC -mulrA ler_pmulr// ?ltr0n// -mulrA mulVf// mulr1 invf_ge1 ?p1// lt_neqAle eq_sym pn0//=.
+
 Admitted.
 
 End bernoulli.
