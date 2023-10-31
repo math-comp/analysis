@@ -888,7 +888,7 @@ Hypothesis p1 : (p%:num <= 1)%R.
 Definition bernoulli_RV (X : {RV P >-> R}) :=
   distribution P X = bernoulli p1.
 
-Lemma bernoulli_RV1 (X : {dRV P >-> R}) : bernoulli_RV X ->
+Lemma bernoulli_RV1 (X : {RV P >-> R}) : bernoulli_RV X ->
   P [set i | X i == 1%R] == p%:num%:E.
 Proof.
 move=> /(congr1 (fun f => f [set 1%:R])).
@@ -907,7 +907,7 @@ by apply/seteqP; split => [x /eqP H//|x /eqP].
 Qed.
 
 Lemma bernoulli_RV2 (X : {RV P >-> R}) : bernoulli_RV X ->
-  P [set i | X i == 0%R] == (1 - p%:num)%:E.
+  P [set i | X i == 0%R] == (`1-(p%:num))%:E.
 Proof.
 move=> /(congr1 (fun f => f [set 0%:R])).
 rewrite /bernoulli/=.
@@ -941,65 +941,60 @@ rewrite ge0_integral_mscale//=; last first.
 by rewrite !integral_dirac//= !mule0 adde0 mule1 diracT mule1.
 Admitted.
 
-xxx
-
-Lemma bernoulli_sqr (p : R) (X : {RV P >-> R}) : 
-  bernoulli p X -> bernoulli p (X ^+ 2 : {RV P >-> R})%R.
+Lemma bernoulli_sqr (X : {RV P >-> R}) : 
+  bernoulli_RV X -> bernoulli_RV (X ^+ 2 : {RV P >-> R})%R.
 Proof.
-move=> [/eqP b0 /eqP b1].
-rewrite /bernoulli -b1 -b0; split; apply/eqP.
-  have bn1: P [set i | X i == -1]%R = 0. admit.
-  rewrite -[RHS]adde0 -bn1.
-  rewrite -measureU; last 3 first. admit. admit.
-    rewrite -set_andb; apply: congr1; apply: funext => x/=.
-    admit.
-  apply: congr1.
-  rewrite -set_orb; apply: congr1; apply: funext => x/=.
-  (* use sqrf_eq1 *) admit.
-by apply: congr1; apply: funext => x/=; rewrite mulf_eq0 Bool.orb_diag.
+move=> bX. 
+have /eqP pX1 := bernoulli_RV1 bX.
+have /eqP pX0 := bernoulli_RV2 bX.
+rewrite /bernoulli_RV /bernoulli/=.
+apply:funext => A.
+rewrite measure_addE/= /mscale/= !diracE/=.
+rewrite -pX1 -pX0.
+rewrite /distribution/= /pushforward /=.
+rewrite /preimage /=.
 Admitted.
 
-Lemma bernoulli_variance (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'V_P[X] = (p * (1-p))%:E.
+Lemma bernoulli_variance (X : {RV P >-> R}) : bernoulli_RV X -> 'V_P[X] = (p%:num * (`1-(p%:num)))%:E.
 move=> b.
 rewrite varianceE; last 2 first. admit. admit.
 rewrite (bernoulli_expectation b).
 have b2 := bernoulli_sqr b.
 rewrite (bernoulli_expectation b2) /=.
-by rewrite -EFinD -{1}(mulr1 p) -mulrN mulrDr.
+by rewrite -EFinD mulrDr mulr1 mulrN.
 Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
-Theorem sampling p (X : seq {RV P >-> R}) (theta delta : R) :
+Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let n := length X in
   let X_sum := (\sum_(Xi <- X) Xi)%R in
   let X' x := (X_sum x) / (n%:R) in
   (0 <= theta)%R -> (0 < n)%nat ->
-  (forall Xi, Xi \in X -> bernoulli p (Xi)) ->
+  (forall Xi, Xi \in X -> bernoulli_RV Xi) ->
   (n%:R > 3 / (theta ^+ 2) * ln (2 / delta))%R ->
-  P [set i | `| X' i - p | < theta]%R >= 1 - delta%:E.
+  P [set i | `| X' i - (p%:num) | < theta]%R >= 1 - delta%:E.
 Proof.
 move=> n X_sum X' n0 theta0 b tdn.
-have [p0|pn0] := eqVneq p 0%R. admit.
-have /andP[p0 p1] : (0 < p <= 1)%R. admit.
-have E_X_sum: 'E_P[X_sum] = (p * n%:R)%:E.
+have [p0|pn0] := eqVneq (p%:num) 0%R. admit.
+have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum.
   under eq_big.
   - move=> x. over.
-  - move=> Xi ?. rewrite (@bernoulli_expectation p Xi). over.
+  - move=> Xi ?. rewrite (@bernoulli_expectation Xi). over.
   - apply: b. admit.
   - rewrite /=.
   - admit.
   - admit.
-have hp : forall eps, P [set i | `| X' i - p | >= eps * p]%R <= (2 * expR (-eps^+2 / 3 * p * n%:R))%:E.
+have hp : forall eps, P [set i | `| X' i - p%:num | >= eps * p%:num]%R <= (2 * expR (-eps^+2 / 3 * p%:num * n%:R))%:E.
   move=> eps.
-  have -> : ([set i | `|X' i - p| >= eps * p] = [set i | `|X_sum i - p*n%:R| >= eps * p * n%:R])%R. admit.
+  have -> : ([set i | `|X' i - p%:num| >= eps * p%:num] = [set i | `|X_sum i - p%:num*n%:R| >= eps * p%:num * n%:R])%R. admit.
   admit. (* use chernoff bound *)
-have :  P [set i | `| X' i - p | >= theta]%R <= (2 * expR (-theta^+2 / 3 * n%:R))%:E.
-  have -> : theta = ((theta / p) * p)%R by rewrite -mulrA mulVf ?mulr1.
-  apply: le_trans; first apply: (hp (theta/p)).
-  rewrite lee_fin ler_wpM2l// ler_expR -(mulrA theta (p^-1) p) mulVf//.
-  rewrite mulr1 !expr2 !mulNr mulrA lerN2 -!mulrA ler_wpM2l// [leRHS]mulrC -mulrA ler_wpM2l//.
-  by rewrite -mulrA (mulrC p^-1) -!mulrA ler_wpM2l// mulrC -mulrA ler_pMr// ?ltr0n// -mulrA mulVf// mulr1 invf_ge1.
+have :  P [set i | `| X' i - p%:num | >= theta]%R <= (2 * expR (-theta^+2 / 3 * n%:R))%:E.
+  have -> : theta = ((theta / p%:num) * p%:num)%R by rewrite -mulrA mulVf ?mulr1.
+  apply: le_trans; first apply: (hp (theta/p%:num)).
+  rewrite lee_fin ler_wpmul2l// ler_expR -(mulrA theta (p%:num^-1) (p%:num)) mulVf//.
+  rewrite mulr1 !expr2 !mulNr mulrA ler_oppl opprK -!mulrA ler_wpmul2l// [leRHS]mulrC -mulrA ler_wpmul2l//.
+  by rewrite -mulrA (mulrC p%:num^-1) -!mulrA ler_wpmul2l// mulrC -mulrA ler_pmulr// ?ltr0n// -mulrA mulVf// mulr1 invf_ge1 ?p1// lt_neqAle eq_sym pn0//=.
 Admitted.
 
 End bernoulli.
