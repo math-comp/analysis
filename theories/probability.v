@@ -24,7 +24,7 @@ Require Import exp numfun lebesgue_measure lebesgue_integral.
 (*       {dmfun T >-> R} == type of discrete real-valued measurable functions *)
 (*         {dRV P >-> R} == real-valued discrete random variable              *)
 (*             dRV_dom X == domain of the discrete random variable X          *)
-(*            dRV_eunm X == bijection between the domain and the range of X   *)
+(*            dRV_enum X == bijection between the domain and the range of X   *)
 (*               pmf X r := fine (P (X @^-1` [set r]))                        *)
 (*         enum_prob X k == probability of the kth value in the range of X    *)
 (*                                                                            *)
@@ -840,24 +840,108 @@ Qed.
 End discrete_distribution.
 
 Section bernoulli.
+Variables (R : realType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
+Local Open Scope ring_scope.
+
+Definition bernoulli : set _ -> \bar R :=
+  measure_add
+    [the measure _ _ of mscale p [the measure _ _ of dirac (1%R:R)]]
+    [the measure _ _ of mscale (NngNum (onem_ge0 p1)) [the measure _ _ of dirac (0%R:R)]].
+
+HB.instance Definition _ := Measure.on bernoulli.
+
+Local Close Scope ring_scope.
+
+Let bernoulli_setT : bernoulli [set: _] = 1%E.
+Proof.
+rewrite /bernoulli/= /measure_add/= /msum 2!big_ord_recr/= big_ord0 add0e/=.
+by rewrite /mscale/= !diracT !mule1 -EFinD add_onemK.
+Qed.
+
+HB.instance Definition _ :=
+  @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
+
+End bernoulli.
+
+Lemma integral_bernoulli {R : realType}
+    (p : {nonneg R}) (p1 : (p%:num <= 1)%R) (f : R -> \bar R) :
+  measurable_fun setT f ->
+  (forall x, 0 <= f x)%E ->
+  (\int[bernoulli p1]_y (f y) =
+  p%:num%:E * f 1%R + (`1-(p%:num))%:E * f 0%R)%E.
+Proof.
+move=> mf f0.
+rewrite ge0_integral_measure_sum//=.
+rewrite 2!big_ord_recl/= big_ord0 adde0/=.
+rewrite !ge0_integral_mscale//=.
+rewrite !integral_dirac//=.
+by rewrite 2!diracT 2!mul1e.
+Qed.
+
+Section bernoulli.
 
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
+Variable p : {nonneg R}.
+Hypothesis p1 : (p%:num <= 1)%R.
 
-Definition bernoulli (p : R) (X : {RV P >-> R}) := P [set i | X i == 1%R] == p%:E /\ P [set i | X i == 0%R] == 1-p%:E.
+Definition bernoulli_RV (X : {RV P >-> R}) :=
+  distribution P X = bernoulli p1.
 
-Lemma bernoulli_expectation (p : R) (X : {RV P >-> R}) : bernoulli p X -> 'E_P[X] = p%:E.
+Lemma bernoulli_RV1 (X : {dRV P >-> R}) : bernoulli_RV X ->
+  P [set i | X i == 1%R] == p%:num%:E.
 Proof.
-rewrite /bernoulli.
-move=> [/eqP pX1 _].
-have split_expectation : \int[P]_i (X i)%:E = (\int[P]_(i in [set i | X i == 1%R]) (X i)%:E) + (\int[P]_(i in [set i | X i == 0%R]) (X i)%:E).
-admit.
-rewrite unlock split_expectation.
-rewrite [X in X + _](eq_integral (cst 1)); last admit.
-rewrite [X in _ + X](eq_integral (cst 0)); last admit.
-rewrite !integral_cst; last 2 first. admit. admit.
-by rewrite mul0e adde0 mul1e.
+move=> /(congr1 (fun f => f [set 1%:R])).
+rewrite /bernoulli/=.
+rewrite measure_addE/=.
+rewrite /mscale/=.
+rewrite diracE/= mem_set// mule1// diracE/= memNset//; last first.
+  rewrite /=.
+  apply/eqP.
+  by rewrite eq_sym oner_eq0.
+rewrite mule0 adde0.
+rewrite /distribution /= => <-.
+apply/eqP; congr (P _).
+rewrite /preimage/=.
+by apply/seteqP; split => [x /eqP H//|x /eqP].
+Qed.
+
+Lemma bernoulli_RV2 (X : {RV P >-> R}) : bernoulli_RV X ->
+  P [set i | X i == 0%R] == (1 - p%:num)%:E.
+Proof.
+move=> /(congr1 (fun f => f [set 0%:R])).
+rewrite /bernoulli/=.
+rewrite measure_addE/=.
+rewrite /mscale/=.
+rewrite diracE/= memNset//; last first.
+  rewrite /=.
+  apply/eqP.
+  by rewrite oner_eq0.
+rewrite mule0// diracE/= mem_set// add0e mule1.
+rewrite /distribution /= => <-.
+apply/eqP; congr (P _).
+rewrite /preimage/=.
+by apply/seteqP; split => [x /eqP H//|x /eqP].
+Qed.
+
+Lemma bernoulli_expectation (X : {RV P >-> R}) : bernoulli_RV X -> 'E_P[X] = p%:num%:E.
+Proof.
+move=> bX.
+rewrite unlock.
+rewrite -integral_distribution//; last first.
+  admit.
+rewrite bX.
+rewrite /bernoulli/=.
+rewrite integral_measure_add//=; last first.
+  admit.
+rewrite ge0_integral_mscale//=; last first.
+  admit.
+rewrite ge0_integral_mscale//=; last first.
+  admit.
+by rewrite !integral_dirac//= !mule0 adde0 mule1 diracT mule1.
 Admitted.
+
+xxx
 
 Lemma bernoulli_sqr (p : R) (X : {RV P >-> R}) : 
   bernoulli p X -> bernoulli p (X ^+ 2 : {RV P >-> R})%R.
