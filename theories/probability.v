@@ -886,12 +886,12 @@ Variable p : {nonneg R}.
 Hypothesis p1 : (p%:num <= 1)%R.
 
 Definition bernoulli_RV (X : {RV P >-> R}) :=
-  distribution P X = bernoulli p1.
+  (distribution P X = bernoulli p1) /\ (range X = [set 0; 1])%R.
 
 Lemma bernoulli_RV1 (X : {RV P >-> R}) : bernoulli_RV X ->
   P [set i | X i == 1%R] == p%:num%:E.
 Proof.
-move=> /(congr1 (fun f => f [set 1%:R])).
+move=> [[/(congr1 (fun f => f [set 1%:R]))]].
 rewrite /bernoulli/=.
 rewrite measure_addE/=.
 rewrite /mscale/=.
@@ -900,7 +900,7 @@ rewrite diracE/= mem_set// mule1// diracE/= memNset//; last first.
   apply/eqP.
   by rewrite eq_sym oner_eq0.
 rewrite mule0 adde0.
-rewrite /distribution /= => <-.
+rewrite /distribution /= => <- _.
 apply/eqP; congr (P _).
 rewrite /preimage/=.
 by apply/seteqP; split => [x /eqP H//|x /eqP].
@@ -909,7 +909,7 @@ Qed.
 Lemma bernoulli_RV2 (X : {RV P >-> R}) : bernoulli_RV X ->
   P [set i | X i == 0%R] == (`1-(p%:num))%:E.
 Proof.
-move=> /(congr1 (fun f => f [set 0%:R])).
+move=> [[/(congr1 (fun f => f [set 0%:R]))]].
 rewrite /bernoulli/=.
 rewrite measure_addE/=.
 rewrite /mscale/=.
@@ -918,7 +918,7 @@ rewrite diracE/= memNset//; last first.
   apply/eqP.
   by rewrite oner_eq0.
 rewrite mule0// diracE/= mem_set// add0e mule1.
-rewrite /distribution /= => <-.
+rewrite /distribution /= => <- _.
 apply/eqP; congr (P _).
 rewrite /preimage/=.
 by apply/seteqP; split => [x /eqP H//|x /eqP].
@@ -926,7 +926,7 @@ Qed.
 
 Lemma bernoulli_expectation (X : {RV P >-> R}) : bernoulli_RV X -> 'E_P[X] = p%:num%:E.
 Proof.
-move=> bX.
+move=> [bX rX].
 rewrite unlock.
 rewrite -integral_distribution//; last first.
   admit.
@@ -944,12 +944,45 @@ Admitted.
 Lemma bernoulli_sqr (X : {RV P >-> R}) : 
   bernoulli_RV X -> bernoulli_RV (X ^+ 2 : {RV P >-> R})%R.
 Proof.
+have dE A : (forall x, (\1_A x)%:E = ((EFin \o \1_A) x)) by [].
+move=> bX.
+have /eqP pX1 := bernoulli_RV1 bX.
+have /eqP pX0 := bernoulli_RV2 bX.
+rewrite /bernoulli_RV /bernoulli/=; split; last first.
+  move: bX => [_] /seteqP [rX1 rX2].
+  apply/seteqP; split.
+
+xxx
+
+  apply: eq_set.
+  apply/seteqP.
+  rewrite /range.
+rewrite measure_addE/= /mscale/= /dirac.
+congr.
+rewrite !dE.
+rewrite -integral_bernoulli.
+
+rewrite -pX1 -pX0.
+rewrite /distribution/= /pushforward /=.
+rewrite /preimage /=.
+
+
+have dE A : (forall x, (\1_A x)%:E = ((EFin \o \1_A) x)) by [].
+rewrite /bernoulli_RV /bernoulli.
+rewrite measure_addE/= /mscale/= /dirac.
+under eq_fun => x. rewrite dE -integral_bernoulli/=; last 2 first.
+apply: measurableT_comp =>//.
+rewrite /measurable_fun.
+by move=> x0; rewrite indicE.
+
 move=> bX. 
 have /eqP pX1 := bernoulli_RV1 bX.
 have /eqP pX0 := bernoulli_RV2 bX.
 rewrite /bernoulli_RV /bernoulli/=.
-apply:funext => A.
-rewrite measure_addE/= /mscale/= !diracE/=.
+rewrite measure_addE/= /mscale/=. /dirac.
+rewrite !dE.
+rewrite -integral_bernoulli.
+
 rewrite -pX1 -pX0.
 rewrite /distribution/= /pushforward /=.
 rewrite /preimage /=.
@@ -974,8 +1007,12 @@ Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   (n%:R >= 3 / (theta ^+ 2) * ln (2 / delta))%R ->
   P [set i | `| X' i - (p%:num) | < theta]%R >= 1 - delta%:E.
 Proof.
-move=> n X_sum X' n0 theta0 b tdn.
+move=> n X_sum X' theta0 n0 b tdn.
 have [p0|pn0] := eqVneq (p%:num) 0%R.
+  rewrite p0.
+  under eq_set => x. 
+  rewrite subr0.
+  rewrite /X' /X_sum.
   admit.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum/=; last first.
