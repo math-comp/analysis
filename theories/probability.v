@@ -863,20 +863,149 @@ HB.instance Definition _ :=
 
 End bernoulli.
 
+Local Open Scope ereal_scope.
 Lemma integral_bernoulli {R : realType}
     (p : {nonneg R}) (p1 : (p%:num <= 1)%R) (f : R -> \bar R) :
   measurable_fun setT f ->
-  (forall x, 0 <= f x)%E ->
-  (\int[bernoulli p1]_y (f y) =
-  p%:num%:E * f 1%R + (`1-(p%:num))%:E * f 0%R)%E.
+  (forall x, 0 <= f x) ->
+  \int[bernoulli p1]_y (f y) = p%:num%:E * f 1%R + (`1-(p%:num))%:E * f 0%R.
 Proof.
 move=> mf f0.
-rewrite ge0_integral_measure_sum//=.
-rewrite 2!big_ord_recl/= big_ord0 adde0/=.
-rewrite !ge0_integral_mscale//=.
-rewrite !integral_dirac//=.
-by rewrite 2!diracT 2!mul1e.
+rewrite ge0_integral_measure_sum//= 2!big_ord_recl/= big_ord0 adde0/=.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= 2!diracT 2!mul1e.
 Qed.
+
+Section integrable_comp.
+Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
+Variable phi : X -> Y.
+Hypothesis mphi : measurable_fun [set: X] phi.
+Variable mu : {measure set X -> \bar R}.
+Variable f : Y -> \bar R.
+Hypothesis mf : measurable_fun [set: Y] f.
+Hypothesis intf : mu.-integrable [set: X] (f \o phi).
+Local Open Scope ereal_scope.
+
+Lemma integrable_comp_funeneg : (pushforward mu mphi).-integrable [set: Y] f^\-.
+Proof.
+apply/integrableP; split.
+  exact: measurable_funeneg.
+move/integrableP : (intf) => [_].
+apply: le_lt_trans.
+rewrite integral_pushforward//=; last first.
+  apply: measurableT_comp => //=.
+  exact: measurable_funeneg.
+apply: ge0_le_integral => //=.
+apply: measurableT_comp => //=.
+apply: measurableT_comp => //=.
+exact: measurable_funeneg.
+apply: measurableT_comp => //=.
+apply: measurableT_comp => //=.
+move=> x _.
+rewrite -/((abse \o (f \o phi)) x).
+rewrite (fune_abse (f \o phi)) /=.
+rewrite gee0_abs//.
+by rewrite lee_addr//.
+Qed.
+
+Lemma integrable_comp_funepos : (pushforward mu mphi).-integrable [set: Y] f^\+.
+Proof.
+apply/integrableP; split.
+  exact: measurable_funepos.
+move/integrableP : (intf) => [_].
+apply: le_lt_trans.
+rewrite integral_pushforward//=; last first.
+  apply: measurableT_comp => //=.
+  exact: measurable_funepos.
+apply: ge0_le_integral => //=.
+apply: measurableT_comp => //=.
+apply: measurableT_comp => //=.
+exact: measurable_funepos.
+apply: measurableT_comp => //=.
+apply: measurableT_comp => //=.
+move=> x _.
+rewrite -/((abse \o (f \o phi)) x).
+rewrite (fune_abse (f \o phi)) /=.
+rewrite gee0_abs//.
+by rewrite lee_addl//.
+Qed.
+
+End integrable_comp.
+
+Section transfer.
+Local Open Scope ereal_scope.
+Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
+Variables (phi : X -> Y) (mphi : measurable_fun setT phi).
+Variables (mu : {measure set X -> \bar R}).
+
+Lemma integral_pushforward_new (f : Y -> \bar R) :
+  measurable_fun setT f ->
+  mu.-integrable setT (f \o phi) ->
+  \int[pushforward mu mphi]_y f y = \int[mu]_x (f \o phi) x.
+Proof.
+move=> mf intf.
+transitivity (\int[mu]_y ((f^\+ \o phi) \- (f^\- \o phi)) y); last first.
+  by apply: eq_integral => x _; rewrite [in RHS](funeposneg (f \o phi)).
+rewrite integralB//; [|exact: integrable_funepos|exact: integrable_funeneg].
+rewrite -[X in _ = X - _]integral_pushforward//; last first.
+  exact: measurable_funepos.
+rewrite -[X in _ = _ - X]integral_pushforward//; last first.
+  exact: measurable_funeneg.
+rewrite -integralB//=; last first.
+- apply: integrable_comp_funepos => //.
+    exact: measurableT_comp.
+  exact: integrableN.
+- exact: integrable_comp_funepos.
+- apply/eq_integral => x _.
+  by rewrite /= [in LHS](funeposneg f).
+Qed.
+
+End transfer.
+
+Section transfer_probability.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Lemma integral_distribution_new (X : {RV P >-> R}) (f : R -> \bar R) :
+    measurable_fun setT f ->
+    P.-integrable [set: T] (f \o X) ->
+  \int[distribution P X]_y f y = \int[P]_x (f \o X) x.
+Proof. by move=> mf intf; rewrite integral_pushforward_new. Qed.
+
+End transfer_probability.
+
+Section integral_measure_add_new.
+Context d (T : measurableType d) (R : realType)
+  (m1 m2 : {measure set T -> \bar R}) (D : set T).
+Hypothesis mD : measurable D.
+Variable f : T -> \bar R.
+Hypothesis intf1 : m1.-integrable D f.
+Hypothesis intf2 : m2.-integrable D f.
+Hypothesis mf : measurable_fun D f.
+
+Lemma integral_measure_add_new :
+  \int[measure_add m1 m2]_(x in D) f x = \int[m1]_(x in D) f x + \int[m2]_(x in D) f x.
+transitivity (\int[m1]_(x in D) (f^\+ \- f^\-) x +
+              \int[m2]_(x in D) (f^\+ \- f^\-) x); last first.
+  by congr +%E; apply: eq_integral => x _; rewrite [in RHS](funeposneg f).
+rewrite integralB//; last 2 first.
+  exact: integrable_funepos.
+  exact: integrable_funeneg.
+rewrite integralB//; last 2 first.
+  exact: integrable_funepos.
+  exact: integrable_funeneg.
+rewrite addeACA.
+rewrite -integral_measure_add//; last first.
+  apply: measurable_funepos.
+  exact: measurable_int intf1.
+rewrite -oppeD; last first.
+  by rewrite ge0_adde_def// inE integral_ge0.
+rewrite -integral_measure_add//; last first.
+  apply: measurable_funeneg.
+  exact: measurable_int intf1.
+by rewrite integralE.
+Qed.
+
+End integral_measure_add_new.
 
 Section bernoulli.
 
@@ -886,7 +1015,7 @@ Variable p : {nonneg R}.
 Hypothesis p1 : (p%:num <= 1)%R.
 
 Definition bernoulli_RV (X : {RV P >-> R}) :=
-  (distribution P X = bernoulli p1) /\ (range X = [set 0; 1])%R.
+  distribution P X = bernoulli p1 /\ (range X = [set 0; 1])%R.
 
 Lemma bernoulli_RV1 (X : {RV P >-> R}) : bernoulli_RV X ->
   P [set i | X i == 1%R] == p%:num%:E.
@@ -932,22 +1061,30 @@ suff: (range X) (X t) by rewrite bX.2 => -[] ->.
 by exists t.
 Qed.
 
-Lemma bernoulli_expectation (X : {RV P >-> R}) : bernoulli_RV X -> 'E_P[X] = p%:num%:E.
+Lemma bernoulli_expectation (X : {RV P >-> R}) :
+  bernoulli_RV X -> 'E_P[X] = p%:num%:E.
 Proof.
 move=> bX.
 rewrite unlock.
-rewrite -integral_distribution//; last first.
-  admit.
+transitivity (\int[P]_w `|X w|%:E).
+  apply: eq_integral => t _.
+  by rewrite ger0_norm// bernoulli_ge0.
+rewrite -(@integral_distribution _ _ _ _ _ (EFin \o normr))//; last first.
+  by move=> y //=.
+  exact: measurableT_comp.
 rewrite bX.1.
 rewrite /bernoulli/=.
 rewrite integral_measure_add//=; last first.
-  admit.
+  by apply: measurableT_comp.
 rewrite ge0_integral_mscale//=; last first.
-  admit.
+  by apply: measurableT_comp.
 rewrite ge0_integral_mscale//=; last first.
-  admit.
-by rewrite !integral_dirac//= !mule0 adde0 mule1 diracT mule1.
-Admitted.
+  by apply: measurableT_comp.
+rewrite !integral_dirac//=; last 2 first.
+  by apply: measurableT_comp.
+  by apply: measurableT_comp.
+by rewrite normr1 normr0 !mule0 adde0 mule1 diracT mule1.
+Qed.
 
 Lemma bernoulli_sqr (X : {RV P >-> R}) :
   bernoulli_RV X -> bernoulli_RV (X ^+ 2 : {RV P >-> R})%R.
@@ -984,7 +1121,11 @@ have -> : \int[P]_x `|(EFin \o X) x| = 'E_P[X].
 by rewrite bernoulli_expectation// ltry.
 Admitted.
 
-Lemma bernoulli_variance (X : {RV P >-> R}) : bernoulli_RV X -> 'V_P[X] = (p%:num * (`1-(p%:num)))%:E.
+Lemma bernoulli_variance (X : {RV P >-> R}) :
+(* NB(rei): no need for that?
+   P.-integrable setT (EFin \o X) ->
+   P.-integrable [set: T] (EFin \o (X ^+ 2)%R) ->*)
+bernoulli_RV X -> 'V_P[X] = (p%:num * (`1-(p%:num)))%:E.
 move=> b.
 rewrite varianceE; last 2 first.
   rewrite unlock /integrable.
@@ -1012,6 +1153,7 @@ have [p0|pn0] := eqVneq (p%:num) 0%R.
   under eq_set => x. 
   rewrite subr0.
   rewrite /X' /X_sum.
+  admit.
   admit.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum/=; last first.
