@@ -21,10 +21,12 @@ Require Import exp numfun lebesgue_measure lebesgue_integral.
 (*               'E_P[X] == expectation of the real measurable function X     *)
 (*        covariance X Y == covariance between real random variable X and Y   *)
 (*               'V_P[X] == variance of the real random variable X            *)
+(*         mmt_gen_fun X == moment generating function of the random variable *)
+(*                          X *)
 (*       {dmfun T >-> R} == type of discrete real-valued measurable functions *)
 (*         {dRV P >-> R} == real-valued discrete random variable              *)
 (*             dRV_dom X == domain of the discrete random variable X          *)
-(*            dRV_eunm X == bijection between the domain and the range of X   *)
+(*            dRV_enum X == bijection between the domain and the range of X   *)
 (*               pmf X r := fine (P (X @^-1` [set r]))                        *)
 (*         enum_prob X k == probability of the kth value in the range of X    *)
 (*                                                                            *)
@@ -516,50 +518,29 @@ Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) :
     'E_P[f \o (fun x => `| x |%R) \o X].
 Proof.
 move=> e0 mf f0 f_nd; rewrite -(setTI [set _ | _]).
-apply: (le_trans (@le_integral_comp_abse d T R P setT measurableT (EFin \o X)
+apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
   eps (er_map f) _ _ _ _ e0)) => //=.
 - exact: measurable_er_map.
 - by case => //= r _; exact: f0.
-- by move=> [x| |] [y| |]; rewrite !set_interval.set_itvE !inE ?lee_fin => //= x0 y0 xy; rewrite ?f_nd ?leey.
+- move=> [x| |] [y| |]; rewrite !inE/= !in_itv/= ?andbT ?lee_fin ?leey//.
+  by move=> ? ? ?; rewrite f_nd.
 - exact/EFin_measurable_fun.
 - by rewrite unlock.
 Qed.
 
-Definition mgf (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
+Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
 
-HB.instance Definition _ := isMeasurableFun.Build _ _ _ (@expR R) (@measurable_expR R).
-
-Lemma measurableT_comp_subproof d1 (T1 : measurableType d1) (f : {mfun R >-> R}) (g : {mfun T1 >-> R}) :
-  measurable_fun setT (f \o g).
-Proof. apply: measurableT_comp. exact. apply: @measurable_funP _ _ _ g. Qed.
-
-HB.instance Definition _ (d1 : measure_display) (T1 : measurableType d1)
-  (f : {mfun R >-> R}) (g : {mfun T1 >-> R}) := isMeasurableFun.Build _ _ _ (f \o g) (@measurableT_comp_subproof _ _ _ _).
-
-Lemma ge0_ler_normr :
-  {in Num.nneg &, {mono (@normr _ R) : x y / x <= y}}%R.
-Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
-
-Lemma lt0_ger_normr :
-  {in Num.neg &, {mono (@normr _ R) : x y / x <= y >-> x >= y}}%R.
-Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
-
-Lemma chernoff (X : {RV P >-> R}) (t a : R) : (0 < t)%R ->
-  P [set x | X x >= a]%R * (expR (t * a))%:E <= mgf X t.
+Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
+  P [set x | X x >= a]%R * (expR (r * a))%:E <= mmt_gen_fun X r.
 Proof.
-move=> t0.
-rewrite /= /mgf.
-have h : (0 < `| expR (t * a) |)%R by rewrite normr_gt0 gt_eqF ?expR_gt0.
-pose Y : {RV P >-> R} := [the {mfun T >-> R} of expR \o (t \o* X)].
-have := @markov Y normr (`| expR (t * a)|)%R h (@measurable_normr _ _) (fun r => normr_ge0 r) (monoW_in ge0_ler_normr).
-rewrite normr_id.
-rewrite ger0_norm ?expR_ge0//.
-under eq_set => x.
-  rewrite /Y /= ger0_norm ?expR_ge0// lee_fin ler_expR.
-  rewrite mulrC (@ler_pmul2r _ t)//. over.
-rewrite /= muleC.
-suff -> : (normr \o [eta normr]) \o (expR \o t \o* X) = (expR \o t \o* X) => //.
-by apply: funext => x /=; rewrite normr_id ger0_norm ?expR_ge0.
+move=> t0; rewrite /mmt_gen_fun; have -> : expR \o r \o* X =
+    (normr \o normr) \o [the {mfun T >-> R} of expR \o r \o* X].
+  by apply: funext => t /=; rewrite normr_id ger0_norm ?expR_ge0.
+rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
+  exact: (monoW_in (@ger0_le_norm _)).
+rewrite ger0_norm ?expR_ge0// muleC lee_pmul2l// ?lte_fin ?expR_gt0//.
+rewrite [X in _ <= P X](_ : _ = [set x | a <= X x]%R)//; apply: eq_set => t/=.
+by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pmul2r.
 Qed.
 
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
