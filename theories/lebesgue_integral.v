@@ -158,7 +158,6 @@ HB.instance Definition _ := @isMeasurableFun.Build _ _ rT
 HB.instance Definition _ :=
   isMeasurableFun.Build _ _ _ (@expR rT) (@measurable_expR rT).
 
-
 Lemma measurableT_comp_subproof (f : {mfun rT >-> rT}) (g : {mfun aT >-> rT}) :
   measurable_fun setT (f \o g).
 Proof. apply: measurableT_comp. exact. apply: @measurable_funP _ _ _ g. Qed.
