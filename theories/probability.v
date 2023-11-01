@@ -969,9 +969,27 @@ rewrite -X01; apply/seteqP; split => [x|x].
     exists t => //=; rewrite Xt/= ?(mulr0,mulr1).
 Qed.
 
+Lemma integrable_bernoulli (X : {RV P >-> R}) :
+  bernoulli_RV X -> P.-integrable [set: T] (EFin \o X).
+Proof.
+move=> bX.
+apply/integrableP; split; first by apply: measurableT_comp.
+have -> : \int[P]_x `|(EFin \o X) x| = 'E_P[X].
+  rewrite unlock /expectation.
+  apply: eq_integral => x _.
+  rewrite gee0_abs //= lee_fin.
+  move: bX => [_].
+  move/seteqP.
+  admit.
+by rewrite bernoulli_expectation// ltry.
+Admitted.
+
 Lemma bernoulli_variance (X : {RV P >-> R}) : bernoulli_RV X -> 'V_P[X] = (p%:num * (`1-(p%:num)))%:E.
 move=> b.
-rewrite varianceE; last 2 first. admit. admit.
+rewrite varianceE; last 2 first.
+  rewrite unlock /integrable.
+  Search "integrable".
+admit. admit.
 rewrite (bernoulli_expectation b).
 have b2 := bernoulli_sqr b.
 rewrite (bernoulli_expectation b2) /=.
