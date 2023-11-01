@@ -1443,27 +1443,30 @@ Arguments le_bigmax_seq {d T} x {I r} i0 P.
 Lemma gerBl {R : numDomainType} (x y : R) : 0 <= y -> x - y <= x.
 Proof. by move=> y0; rewrite ler_subl_addl ler_addr. Qed.
 
-
+(* the following appears in MathComp 2.1.0 and MathComp 1.18.0 *)
 Section normr.
 Variable R : realDomainType.
 
 Definition Rnpos : qualifier 0 R := [qualify x : R | x <= 0].
 Lemma nposrE x : (x \is Rnpos) = (x <= 0). Proof. by []. Qed.
 
-Lemma ge0_ler_normr :
+Lemma ger0_le_norm :
   {in Num.nneg &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
 Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
 
-Lemma gt0_ler_normr :
+Lemma gtr0_le_norm :
   {in Num.pos &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
-Proof. by move=> x y; rewrite !posrE => x0 y0; rewrite !gtr0_norm. Qed.
+Proof. by move=> x y; rewrite !posrE => /ltW x0 /ltW y0; exact: ger0_le_norm. Qed.
 
-Lemma le0_ger_normr :
+Lemma ler0_ge_norm :
   {in Rnpos &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
-Proof. by move=> x y; rewrite !nposrE => x0 y0; rewrite !ler0_norm ?lter_oppE. Qed.
+Proof.
+move=> x y; rewrite !nposrE => x0 y0.
+by rewrite !ler0_norm// -subr_ge0 opprK addrC subr_ge0.
+Qed.
 
-Lemma lt0_ger_normr :
+Lemma ltr0_ge_norm :
   {in Num.neg &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
-Proof. by move=> x y; rewrite !negrE => x0 y0; rewrite !ler0_norm ?lter_oppE// ?ltW. Qed.
+Proof. by move=> x y; rewrite !negrE => /ltW x0 /ltW y0; exact: ler0_ge_norm. Qed.
 
 End normr.

@@ -33,7 +33,7 @@
     `wlength_sigma_sub_additive`, `wlength_sigma_finite`
   + measure instance of `hlength`
   + definition `lebesgue_stieltjes_measure`
-- in `mathcomp_extras.v`
+- in `mathcomp_extra.v`
   + lemmas `ge0_ler_normr`, `gt0_ler_normr`, `le0_ger_normr` and `lt0_ger_normr`
 
 ### Changed
