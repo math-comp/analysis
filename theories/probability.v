@@ -1144,8 +1144,12 @@ rewrite (bernoulli_expectation b2) /=.
 by rewrite -EFinD mulrDr mulr1 mulrN.
 Qed.
 
-Lemma probability_setC A : P A = 1 - P (~` A).
-Admitted.
+Lemma probability_setC A : d.-measurable A -> P A = 1 - P (~` A).
+Proof.
+move=> mA; rewrite -(@probability_setT _ _ _ P) -(setTI (~` A)) -measureD ?setTD ?setCK//.
+  exact: measurableC.
+by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
+Qed.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
@@ -1188,10 +1192,7 @@ have hp1 :  P [set i | `| X' i - p%:num | >= theta]%R <= (2 * expR (-theta^+2 / 
   rewrite lee_fin ler_wpmul2l// ler_expR -(mulrA theta (p%:num^-1) (p%:num)) mulVf//.
   rewrite mulr1 !expr2 !mulNr mulrA ler_oppl opprK -!mulrA ler_wpmul2l// [leRHS]mulrC -mulrA ler_wpmul2l//.
   by rewrite -mulrA (mulrC p%:num^-1) -!mulrA ler_wpmul2l// mulrC -mulrA ler_pmulr// ?ltr0n// -mulrA mulVf// mulr1 invf_ge1 ?p1// lt_neqAle eq_sym pn0//=.
-rewrite probability_setC.
-rewrite lee_sub//. -set_predC /predC/=.
-under eq_set => x. -real_ltNge.
-Search (~~ (_ <= _))%R.
+rewrite probability_setC /setC/=.
 Admitted.
 
 End bernoulli.
