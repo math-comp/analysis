@@ -42,6 +42,9 @@
 - in `lebesgue_integral.v`:
   + `mfun` instances for `expR` and `comp`
 
+- in `charge.v`:
+  + lemmas `measure_dominates_cscalel`, `RN_deriv_cscalel`
+
 ### Changed
 
 - in `hoelder.v`:
