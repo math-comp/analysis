@@ -35,6 +35,12 @@
   + definition `lebesgue_stieltjes_measure`
 - in `mathcomp_extra.v`
   + lemmas `ge0_ler_normr`, `gt0_ler_normr`, `le0_ger_normr` and `lt0_ger_normr`
+  
+- in `probability.v`:
+  + definition `mmt_gen_fun`, `chernoff`
+  
+- in `lebesgue_integral.v`:
+  + `mfun` instances for `expR` and `comp`
 
 ### Changed
 
@@ -62,6 +68,9 @@
   + notations `_.-ocitv`, `_.-ocitv.-measurable`
   + definitions `ocitv`, `ocitv_display`
   + lemmas `is_ocitv`, `ocitv0`, `ocitvP`, `ocitvD`, `ocitvI`
+  
+- in `probability.v`:
+  + `markov` now uses `Num.nneg`
 
 ### Renamed
 
