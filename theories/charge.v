@@ -1548,3 +1548,40 @@ Qed.
 
 End radon_nikodym.
 Notation "'d nu '/d mu" := (Radon_Nikodym mu nu) : charge_scope.
+
+Section radon_nikodym_lemmas.
+
+Lemma measure_dominates_cscalel d (T : measurableType d) (R : realType)
+  (mu : {sigma_finite_measure set T -> \bar R})
+  (nu : {charge set T -> \bar R})
+  (c : R)
+  (dom : nu `<< mu)
+  : cscale c nu `<< mu.
+Proof.
+move=> E/dom/[apply].
+rewrite/cscale=> ->.
+by rewrite mule0.
+Qed.
+
+Lemma RN_deriv_cscalel d (T : measurableType d) (R : realType)
+  (mu : {sigma_finite_measure set T -> \bar R})
+  (nu : {charge set T -> \bar R})
+  (dom : nu `<< mu)
+  (c : R) :
+  ae_eq mu setT ('d (cscale c nu) '/d mu) (fun x => c%:E * 'd nu '/d mu x).
+Proof.
+apply: integral_ae_eq => //.
+    apply: Radon_Nikodym_integrable.
+    by apply: measure_dominates_cscalel.
+  apply: integrableZl => //.
+  by apply: Radon_Nikodym_integrable.
+move=> E mE.
+rewrite integralZl => //; last first.
+  apply: (integrableS measurableT) => //.
+  by apply: Radon_Nikodym_integrable.
+rewrite -Radon_Nikodym_integral => //; last first.
+  by apply: measure_dominates_cscalel.
+rewrite -Radon_Nikodym_integral => //.
+Qed.
+
+End radon_nikodym_lemmas.
