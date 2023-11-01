@@ -924,13 +924,21 @@ rewrite /preimage/=.
 by apply/seteqP; split => [x /eqP H//|x /eqP].
 Qed.
 
+Lemma bernoulli_ge0 (X : {RV P >-> R}) : bernoulli_RV X ->
+  forall t, (X t >= 0)%R.
+Proof.
+move=> bX t.
+suff: (range X) (X t) by rewrite bX.2 => -[] ->.
+by exists t.
+Qed.
+
 Lemma bernoulli_expectation (X : {RV P >-> R}) : bernoulli_RV X -> 'E_P[X] = p%:num%:E.
 Proof.
-move=> [bX rX].
+move=> bX.
 rewrite unlock.
 rewrite -integral_distribution//; last first.
   admit.
-rewrite bX.
+rewrite bX.1.
 rewrite /bernoulli/=.
 rewrite integral_measure_add//=; last first.
   admit.
@@ -941,52 +949,25 @@ rewrite ge0_integral_mscale//=; last first.
 by rewrite !integral_dirac//= !mule0 adde0 mule1 diracT mule1.
 Admitted.
 
-Lemma bernoulli_sqr (X : {RV P >-> R}) : 
+Lemma bernoulli_sqr (X : {RV P >-> R}) :
   bernoulli_RV X -> bernoulli_RV (X ^+ 2 : {RV P >-> R})%R.
 Proof.
-have dE A : (forall x, (\1_A x)%:E = ((EFin \o \1_A) x)) by [].
-move=> bX.
-have /eqP pX1 := bernoulli_RV1 bX.
-have /eqP pX0 := bernoulli_RV2 bX.
-rewrite /bernoulli_RV /bernoulli/=; split; last first.
-  move: bX => [_] /seteqP [rX1 rX2].
-  apply/seteqP; split.
-
-xxx
-
-  apply: eq_set.
-  apply/seteqP.
-  rewrite /range.
-rewrite measure_addE/= /mscale/= /dirac.
-congr.
-rewrite !dE.
-rewrite -integral_bernoulli.
-
-rewrite -pX1 -pX0.
-rewrite /distribution/= /pushforward /=.
-rewrite /preimage /=.
-
-
-have dE A : (forall x, (\1_A x)%:E = ((EFin \o \1_A) x)) by [].
-rewrite /bernoulli_RV /bernoulli.
-rewrite measure_addE/= /mscale/= /dirac.
-under eq_fun => x. rewrite dE -integral_bernoulli/=; last 2 first.
-apply: measurableT_comp =>//.
-rewrite /measurable_fun.
-by move=> x0; rewrite indicE.
-
-move=> bX. 
-have /eqP pX1 := bernoulli_RV1 bX.
-have /eqP pX0 := bernoulli_RV2 bX.
-rewrite /bernoulli_RV /bernoulli/=.
-rewrite measure_addE/= /mscale/=. /dirac.
-rewrite !dE.
-rewrite -integral_bernoulli.
-
-rewrite -pX1 -pX0.
-rewrite /distribution/= /pushforward /=.
-rewrite /preimage /=.
-Admitted.
+rewrite /bernoulli_RV => -[Xp1 X01]; split.
+  rewrite -Xp1; apply/funext => A.
+  rewrite /distribution /pushforward/=; congr (P _).
+  by apply/seteqP; split => [t|t];
+    (have : (range X) (X t) by exists t);
+    rewrite X01/= /GRing.mul/= => -[] ->; rewrite ?(mul0r,mul1r).
+rewrite -X01; apply/seteqP; split => [x|x].
+- move=> [t _] /=; rewrite /GRing.mul/= -expr2 => <-;
+  (have : (range X) (X t) by exists t);
+  by rewrite X01/= /GRing.mul/= => -[] Xt;
+    exists t => //; rewrite Xt ?(expr0n,expr1n).
+- move=> [t _] /=; rewrite /GRing.mul/= => <-;
+  (have : (range X) (X t) by exists t);
+  by rewrite X01/= => -[] Xt;
+    exists t => //=; rewrite Xt/= ?(mulr0,mulr1).
+Qed.
 
 Lemma bernoulli_variance (X : {RV P >-> R}) : bernoulli_RV X -> 'V_P[X] = (p%:num * (`1-(p%:num)))%:E.
 move=> b.
