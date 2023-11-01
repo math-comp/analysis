@@ -1145,8 +1145,11 @@ move=> n X_sum X' delta0 theta0 n0 b tdn.
 have [p0|pn0] := eqVneq (p%:num) 0%R.
   rewrite p0.
   under eq_set => x.
-    rewrite subr0 /X' /X_sum.
-    rewrite (@le_trans _ _ 0)%R//; last admit.
+    rewrite subr0 /X' /X_sum (@le_trans _ _ 0)%R//; last first.
+    rewrite normr_le0.
+    have -> : (\sum_(Xi <- X) Xi)%R x = 0%R.
+      admit.
+    rewrite mul0r//.
     over.
   by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
@@ -1164,7 +1167,7 @@ have hp : forall eps, P [set i | `| X' i - p%:num | >= eps * p%:num]%R <= (2 * e
     rewrite /X'.
     rewrite -[in RHS](@mulr1 _ (X_sum x)) -{2}[in RHS](@mulVf _ n%:R) ?gt_eqF// ?ltr0n//.
     rewrite mulrA -mulrBl normrM (@ger0_norm _ n%:R)//.
-    admit.
+    by apply/eqP; rewrite ler_pmul2r ?ltr0n.
   admit. (* use chernoff bound *)
 have hp1 :  P [set i | `| X' i - p%:num | >= theta]%R <= (2 * expR (-theta^+2 / 3 * n%:R))%:E.
   have -> : theta = ((theta / p%:num) * p%:num)%R by rewrite -mulrA mulVf ?mulr1.
