@@ -21,10 +21,12 @@ Require Import exp numfun lebesgue_measure lebesgue_integral.
 (*               'E_P[X] == expectation of the real measurable function X     *)
 (*        covariance X Y == covariance between real random variable X and Y   *)
 (*               'V_P[X] == variance of the real random variable X            *)
+(*         mmt_gen_fun X == moment generating function of the random variable *)
+(*                          X *)
 (*       {dmfun T >-> R} == type of discrete real-valued measurable functions *)
 (*         {dRV P >-> R} == real-valued discrete random variable              *)
 (*             dRV_dom X == domain of the discrete random variable X          *)
-(*            dRV_eunm X == bijection between the domain and the range of X   *)
+(*            dRV_enum X == bijection between the domain and the range of X   *)
 (*               pmf X r := fine (P (X @^-1` [set r]))                        *)
 (*         enum_prob X k == probability of the kth value in the range of X    *)
 (*                                                                            *)
@@ -511,18 +513,34 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) :
     (0 < eps)%R ->
     measurable_fun [set: R] f -> (forall r, 0 <= f r)%R ->
-    {in `[0, +oo[%classic &, {homo f : x y / x <= y}}%R ->
+    {in Num.nneg &, {homo f : x y / x <= y}}%R ->
   (f eps)%:E * P [set x | eps%:E <= `| (X x)%:E | ] <=
     'E_P[f \o (fun x => `| x |%R) \o X].
 Proof.
 move=> e0 mf f0 f_nd; rewrite -(setTI [set _ | _]).
-apply: (le_trans (@le_integral_comp_abse d T R P setT measurableT (EFin \o X)
+apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
   eps (er_map f) _ _ _ _ e0)) => //=.
 - exact: measurable_er_map.
 - by case => //= r _; exact: f0.
-- by move=> [x| |] [y| |] xP yP xy//=; rewrite ?leey ?leNye// lee_fin f_nd.
+- move=> [x| |] [y| |]; rewrite !inE/= !in_itv/= ?andbT ?lee_fin ?leey//.
+  by move=> ? ? ?; rewrite f_nd.
 - exact/EFin_measurable_fun.
 - by rewrite unlock.
+Qed.
+
+Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
+
+Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
+  P [set x | X x >= a]%R * (expR (r * a))%:E <= mmt_gen_fun X r.
+Proof.
+move=> t0; rewrite /mmt_gen_fun; have -> : expR \o r \o* X =
+    (normr \o normr) \o [the {mfun T >-> R} of expR \o r \o* X].
+  by apply: funext => t /=; rewrite normr_id ger0_norm ?expR_ge0.
+rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
+  exact: (monoW_in (@ger0_le_norm _)).
+rewrite ger0_norm ?expR_ge0// muleC lee_pmul2l// ?lte_fin ?expR_gt0//.
+rewrite [X in _ <= P X](_ : _ = [set x | a <= X x]%R)//; apply: eq_set => t/=.
+by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pmul2r.
 Qed.
 
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
@@ -537,7 +555,7 @@ have h (Y : {RV P >-> R}) :
   apply: (@le_trans _ _ ('E_P[(@GRing.exp R ^~ 2%N \o normr) \o Y])).
     apply: (@markov Y (@GRing.exp R ^~ 2%N)) => //.
     - by move=> r; apply: sqr_ge0.
-    - move=> x y; rewrite !inE !mksetE !in_itv/= !andbT => x0 y0.
+    - move=> x y; rewrite !nnegrE => x0 y0.
       by rewrite ler_sqr.
   apply: expectation_le => //.
     - by apply: measurableT_comp => //; exact: measurableT_comp.
@@ -624,7 +642,7 @@ have le (u : R) : (0 <= u)%R ->
     rewrite -[(_ ^+ 2)%R]/(((Y \+ cst u) ^+ 2) x)%R; over.
   rewrite -[X in X%:E * _]gtr0_norm => [|//].
   apply: (le_trans (markov _ peps _ _ _)) => //=.
-    by move=> x y /[!inE]/= /[!in_itv]/= /[!andbT] /ger0_norm-> /ger0_norm->.
+    by move=> x y /[!nnegrE] /ger0_norm-> /ger0_norm->.
   rewrite -/Y le_eqVlt; apply/orP; left; apply/eqP; congr expectation.
   by apply/funeqP => x /=; rewrite -expr2 normr_id ger0_norm ?sqr_ge0.
 pose u0 := (fine 'V_P[X] / lambda)%R.

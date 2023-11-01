@@ -155,6 +155,16 @@ Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 HB.instance Definition _ := @isMeasurableFun.Build _ _ rT
   (@normr rT rT) (@measurable_normr rT setT).
 
+HB.instance Definition _ :=
+  isMeasurableFun.Build _ _ _ (@expR rT) (@measurable_expR rT).
+
+Lemma measurableT_comp_subproof (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :
+  measurable_fun setT (f \o g).
+Proof. apply: measurableT_comp. exact. apply: @measurable_funP _ _ _ g. Qed.
+
+HB.instance Definition _ (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :=
+  isMeasurableFun.Build _ _ _ (f \o g) (measurableT_comp_subproof _ _).
+
 End mfun.
 
 Section ring.
