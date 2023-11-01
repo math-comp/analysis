@@ -1168,6 +1168,7 @@ have hp : forall eps, P [set i | `| X' i - p%:num | >= eps * p%:num]%R <= (2 * e
     rewrite -[in RHS](@mulr1 _ (X_sum x)) -{2}[in RHS](@mulVf _ n%:R) ?gt_eqF// ?ltr0n//.
     rewrite mulrA -mulrBl normrM (@ger0_norm _ n%:R)//.
     by apply/eqP; rewrite ler_pmul2r ?ltr0n.
+  have := @chernoff _ _ _ P (normr \o (X_sum \- cst (p%:num * n%:R)))%R _ (eps * p%:num * n%:R).
   admit. (* use chernoff bound *)
 have hp1 :  P [set i | `| X' i - p%:num | >= theta]%R <= (2 * expR (-theta^+2 / 3 * n%:R))%:E.
   have -> : theta = ((theta / p%:num) * p%:num)%R by rewrite -mulrA mulVf ?mulr1.
