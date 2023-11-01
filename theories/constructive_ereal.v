@@ -1020,13 +1020,13 @@ by apply/eqP/esum_eqyP => //; exists i.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqNyP`")]
-Notation esum_ninftyP := esum_eqNyP.
+Notation esum_ninftyP := esum_eqNyP (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqNy`")]
-Notation esum_ninfty := esum_eqNy.
+Notation esum_ninfty := esum_eqNy (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqyP`")]
-Notation esum_pinftyP := esum_eqyP.
+Notation esum_pinftyP := esum_eqyP (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqy`")]
-Notation esum_pinfty := esum_eqy.
+Notation esum_pinfty := esum_eqy (only parsing).
 
 Lemma adde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
 Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
@@ -1398,13 +1398,13 @@ by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqNyP`")]
-Notation desum_ninftyP := desum_eqNyP.
+Notation desum_ninftyP := desum_eqNyP (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqNy`")]
-Notation desum_ninfty := desum_eqNy.
+Notation desum_ninfty := desum_eqNy (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqyP`")]
-Notation desum_pinftyP := desum_eqyP.
+Notation desum_pinftyP := desum_eqyP (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `desum_eqy`")]
-Notation desum_pinfty := desum_eqy.
+Notation desum_pinfty := desum_eqy (only parsing).
 
 Lemma dadde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
 Proof. rewrite dual_addeE oppe_ge0 -!oppe_le0; exact: adde_le0. Qed.
@@ -1498,7 +1498,7 @@ by apply/negP; rewrite -leNgt; apply/Ax/ltr_spaddr; rewrite // le_maxr lexx.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `eqyP`")]
-Notation eq_pinftyP := eqyP.
+Notation eq_pinftyP := eqyP (only parsing).
 
 Lemma seq_psume_eq0 (I : choiceType) (r : seq I)
     (P : pred I) (F : I -> \bar R) : (forall i, P i -> 0 <= F i)%E ->
@@ -2597,11 +2597,11 @@ Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
 #[deprecated(since="mathcomp-analysis 0.6", note="Use lte_spaddre instead.")]
-Notation lte_spaddr := lte_spaddre.
+Notation lte_spaddr := lte_spaddre (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.5", note="Use leeN2 instead.")]
-Notation lee_opp := leeN2.
+Notation lee_opp := leeN2 (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.5", note="Use lteN2 instead.")]
-Notation lte_opp := lteN2.
+Notation lte_opp := lteN2 (only parsing).
 
 Module DualAddTheoryRealDomain.
 

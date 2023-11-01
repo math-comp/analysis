@@ -1,4 +1,4 @@
-# Contribution Guide for the mathcomp-analysis	library (WIP)
+# Contribution Guide for the mathcomp-analysis library (WIP)
 
 The purpose of this file is to document coding styles to be
 used when contributing to mathcomp-analysis. It comes as an addition
@@ -44,6 +44,24 @@ Landau notations can be written in four shapes:
 
 The outcome is an expression with the normal Leibniz equality `=` and term `'o_F` which is not parsable. See [this paper](https://doi.org/10.6092/issn.1972-5787/8124) for more explanation and the header of the file [landau.v](https://github.com/math-comp/analysis/blob/master/theories/landau.v).
 
+## Deprecation
+
+Deprecations are introduced for breaking changes. For a simple renaming, the pattern is:
+```
+#[deprecated(since="analysis X.Y.Z", note="Use new_definition instead.")]
+Notation old_definition := new_definition (only parsing).
+```
+Note that this needs to be at the top-level (i.e., not inside a section).
+
+When a lemma `lem` is scheduled for deletion, it ought better be renamed `__deprecated__lem`
+(so that it can be blacklisted). The deprecation command then becomes:
+```
+#[deprecated(since="analysis X.Y.Z", note="Use another_lemma instead.")]
+Notation lem := __deprecated__lem (only parsing).
+```
+The `(only parsing)` format is needed so that Coq does not print back the deprecated name
+(for example when displaying error messages, that would be confusing).
+
 ## Naming convention
 
 ### homo and mono notations
@@ -65,22 +83,3 @@ short name, and the `{mono ...}` lemma gets the suffix `in`.
 
 - The construction `_ !=set0` corresponds to suffix `nonempty`
 - The construction `_ != set0` corresponds to suffix `neq0`
-
-## Idioms
-
-### How to introduce a positive real number?
-
-When introducing a positive real number, it is best to turn it into a
-`posnum` whose type is equipped with better automation. There is an
-idiomatic way to perform such an introduction. Given a goal of the
-form
-```
-==========================
-forall e : R, 0 < e -> G
-```
-the tactic `move=> _/posnumP[e]` performs the following introduction
-```
-e : {posnum R}
-==========================
-G
-```

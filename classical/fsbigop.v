@@ -276,7 +276,7 @@ Proof. by move=> Afin; apply: __deprecated__full_fsbigID; apply: finite_setIl. Q
 Arguments fsbigID {R idx op I} B.
 
 #[deprecated(note="Use fsbigID instead")]
-Notation full_fsbigID := __deprecated__full_fsbigID.
+Notation full_fsbigID := __deprecated__full_fsbigID (only parsing).
 
 Lemma fsbigU (R : Type) (idx : R) (op : Monoid.com_law idx)
     (I : choiceType) (A B : set I) (F : I -> R) :
@@ -422,9 +422,9 @@ Arguments fsbig_image {R idx op I J} _ _.
 Arguments __deprecated__reindex_inside {R idx op I J} _ _.
 Arguments reindex_fsbigT {R idx op I J} _ _.
 #[deprecated(note="use reindex_fsbig, fsbig_image or reindex_fsbigT instead")]
-Notation reindex_inside := __deprecated__reindex_inside.
+Notation reindex_inside := __deprecated__reindex_inside (only parsing).
 #[deprecated(note="use reindex_fsbigT instead")]
-Notation reindex_inside_setT := reindex_fsbigT.
+Notation reindex_inside_setT := reindex_fsbigT (only parsing).
 
 Lemma fsbigN1 (R : eqType) (idx : R) (op : Monoid.com_law idx)
     (T1 T2 : choiceType) (Q : set T2) (f : T1 -> T2 -> R) (x : T1) :

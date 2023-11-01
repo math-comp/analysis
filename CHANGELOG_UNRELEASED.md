@@ -33,6 +33,14 @@
     `wlength_sigma_sub_additive`, `wlength_sigma_finite`
   + measure instance of `hlength`
   + definition `lebesgue_stieltjes_measure`
+- in `mathcomp_extra.v`
+  + lemmas `ge0_ler_normr`, `gt0_ler_normr`, `le0_ger_normr` and `lt0_ger_normr`
+  
+- in `probability.v`:
+  + definition `mmt_gen_fun`, `chernoff`
+  
+- in `lebesgue_integral.v`:
+  + `mfun` instances for `expR` and `comp`
 
 ### Changed
 
@@ -60,6 +68,9 @@
   + notations `_.-ocitv`, `_.-ocitv.-measurable`
   + definitions `ocitv`, `ocitv_display`
   + lemmas `is_ocitv`, `ocitv0`, `ocitvP`, `ocitvD`, `ocitvI`
+  
+- in `probability.v`:
+  + `markov` now uses `Num.nneg`
 
 ### Renamed
 
@@ -68,6 +79,35 @@
 
 - in `ereal.v`:
   + `le_er_map` -> `le_er_map_in`
+
+- in `sequences.v`:
+  + `lim_sup` -> `limn_sup`
+  + `lim_inf` -> `limn_inf`
+  + `lim_infN` -> `limn_infN`
+  + `lim_supE` -> `limn_supE`
+  + `lim_infE` -> `limn_infE`
+  + `lim_inf_le_lim_sup` -> `limn_inf_sup`
+  + `cvg_lim_inf_sup` -> `cvg_limn_inf_sup`
+  + `cvg_lim_supE` -> `cvg_limn_supE`
+  + `le_lim_supD` -> `le_limn_supD`
+  + `le_lim_infD` -> `le_limn_infD`
+  + `lim_supD` -> `limn_supD`
+  + `lim_infD` -> `limn_infD`
+  + `LimSup.lim_esup` -> `limn_esup`
+  + `LimSup.lim_einf` -> `limn_einf`
+  + `lim_einf_shift` -> `limn_einf_shift`
+  + `lim_esup_le_cvg` -> `limn_esup_le_cvg`
+  + `lim_einfN` -> `limn_einfN`
+  + `lim_esupN` -> `limn_esupN`
+  + `lim_einf_sup` -> `limn_einf_sup`
+  + `cvgNy_lim_einf_sup` -> `cvgNy_limn_einf_sup`
+  + `cvg_lim_einf_sup` -> `cvg_limn_einf_sup`
+  + `is_cvg_lim_einfE` -> `is_cvg_limn_einfE`
+  + `is_cvg_lim_esupE` -> `is_cvg_limn_esupE`
+
+- in `lebesgue_measure.v`:
+  + `measurable_fun_lim_sup` -> `measurable_fun_limn_sup`
+  + `measurable_fun_lim_esup` -> `measurable_fun_limn_esup`
 
 ### Generalized
 
@@ -79,6 +119,26 @@
 ### Removed
 
 - `lebesgue_measure_unique` (generalized to `lebesgue_stieltjes_measure_unique`)
+
+- in `sequences.v`:
+  + notations `elim_sup`, `elim_inf`
+  + `LimSup.lim_esup`, `LimSup.lim_einf`
+  + `elim_inf_shift`
+  + `elim_sup_le_cvg`
+  + `elim_infN`
+  + `elim_supN`
+  + `elim_inf_sup`
+  + `cvg_ninfty_elim_inf_sup`
+  + `cvg_ninfty_einfs`
+  + `cvg_ninfty_esups`
+  + `cvg_pinfty_einfs`
+  + `cvg_pinfty_esups`
+  + `cvg_elim_inf_sup`
+  + `is_cvg_elim_infE`
+  + `is_cvg_elim_supE`
+
+- in `lebesgue_measure.v`:
+  + `measurable_fun_elim_sup`
 
 ### Infrastructure
 
