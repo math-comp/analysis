@@ -1115,11 +1115,18 @@ have -> : \int[P]_x `|(EFin \o X) x| = 'E_P[X].
   rewrite unlock /expectation.
   apply: eq_integral => x _.
   rewrite gee0_abs //= lee_fin.
-  move: bX => [_].
-  move/seteqP.
-  admit.
+  by rewrite bernoulli_ge0//.
 by rewrite bernoulli_expectation// ltry.
-Admitted.
+Qed.
+
+Lemma probability_integrable_square (X : {RV P >-> R}) :
+  P.-integrable [set: T] (EFin \o X) -> P.-integrable [set: T] (EFin \o (X ^+ 2)%R).
+Proof.
+move=> /integrableP[mX iX]; apply/integrableP; split.
+  move/EFin_measurable_fun in mX.
+  apply/EFin_measurable_fun.
+  exact: (measurableT_comp (measurable_exprn 2)).
+Abort.
 
 Lemma bernoulli_variance (X : {RV P >-> R}) :
 (* NB(rei): no need for that?
@@ -1128,9 +1135,10 @@ Lemma bernoulli_variance (X : {RV P >-> R}) :
 bernoulli_RV X -> 'V_P[X] = (p%:num * (`1-(p%:num)))%:E.
 move=> b.
 rewrite varianceE; last 2 first.
+  exact: integrable_bernoulli.
   rewrite unlock /integrable.
   Search "integrable".
-admit. admit.
+  admit.
 rewrite (bernoulli_expectation b).
 have b2 := bernoulli_sqr b.
 rewrite (bernoulli_expectation b2) /=.
