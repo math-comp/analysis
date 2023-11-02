@@ -1592,7 +1592,7 @@ Lemma Radon_Nikodym_cscale d (T : measurableType d) (R : realType)
   (mu : {sigma_finite_measure set T -> \bar R})
   (nu : {charge set T -> \bar R}) (c : R) :
   nu `<< mu ->
-  ae_eq mu [set: T] ('d (cscale c nu) '/d mu)
+  ae_eq mu [set: T] ('d [the charge _ _ of cscale c nu] '/d mu)
                     (fun x => c%:E * 'd nu '/d mu x).
 Proof.
 move=> numu; apply: integral_ae_eq => [//| | |E mE].
@@ -1617,7 +1617,7 @@ Lemma Radon_Nikodym_cadd d (T : measurableType d) (R : realType)
   (mu : {sigma_finite_measure set T -> \bar R})
   (nu0 nu1 : {charge set T -> \bar R})
   (dom0 : nu0 `<< mu) (dom1 : nu1 `<< mu) :
-   ae_eq mu [set: T] ('d (cadd nu0 nu1) '/d mu)
+   ae_eq mu [set: T] ('d [the charge _ _ of cadd nu0 nu1] '/d mu)
                      ('d nu0 '/d mu \+ 'd nu1 '/d mu).
 Proof.
 apply: integral_ae_eq => [//| | |E mE].
