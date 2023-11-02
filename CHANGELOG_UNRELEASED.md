@@ -43,7 +43,8 @@
   + `mfun` instances for `expR` and `comp`
 
 - in `charge.v`:
-  + lemmas `measure_dominates_cscalel`, `RN_deriv_cscalel`
+  + lemmas `dominates_cscale`, `Radon_Nikodym_cscale`
+  + definition `cadd`, lemmas `dominates_caddl`, `Radon_Nikodym_cadd`
 
 ### Changed
 
