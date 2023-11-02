@@ -46,6 +46,9 @@
   + lemmas `dominates_cscale`, `Radon_Nikodym_cscale`
   + definition `cadd`, lemmas `dominates_caddl`, `Radon_Nikodym_cadd`
 
+- in `lebesgue_integral.v`:
+  + lemma `abse_integralP`
+
 ### Changed
 
 - in `hoelder.v`:
@@ -75,6 +78,8 @@
   
 - in `probability.v`:
   + `markov` now uses `Num.nneg`
+- in `lebesgue_integral.v`:
+  + order of arguments in the lemma `le_abse_integral`
 
 ### Renamed
 
@@ -117,6 +122,9 @@
 
 - in `topology.v`:
   + `ball_filter` generalized to `realDomainType`
+
+- in `lebesgue_integral.v`:
+  + weaken an hypothesis of `integral_ae_eq`
 
 ### Deprecated
 

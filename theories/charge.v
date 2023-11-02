@@ -387,6 +387,7 @@ Let cadd_sigma_additive : semi_sigma_additive cadd.
 Proof.
 move=> F mF tF mUF; rewrite /cadd.
 under eq_fun do rewrite big_split; apply: cvg_trans.
+  (* TODO: IIRC explicit arguments were added to please Coq 8.14, rm if not needed anymore *)
   apply: (@cvgeD _ _ _ R (fun x => \sum_(0 <= i < x) (m1 (F i)))
                          (fun x => \sum_(0 <= i < x) (m2 (F i)))
                          (m1 (\bigcup_n F n)) (m2 (\bigcup_n F n))).
@@ -1597,7 +1598,8 @@ Lemma Radon_Nikodym_cscale d (T : measurableType d) (R : realType)
 Proof.
 move=> numu; apply: integral_ae_eq => [//| | |E mE].
 - by apply: Radon_Nikodym_integrable; exact: dominates_cscale.
-- by rewrite integrableZl//; exact: Radon_Nikodym_integrable.
+  apply: emeasurable_funM => //.
+  exact: measurable_int (Radon_Nikodym_integrable _).
 - rewrite integralZl//; last first.
     by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
   rewrite -Radon_Nikodym_integral => //; last exact: dominates_cscale.
@@ -1614,15 +1616,15 @@ by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
 Qed.
 
 Lemma Radon_Nikodym_cadd d (T : measurableType d) (R : realType)
-  (mu : {sigma_finite_measure set T -> \bar R})
-  (nu0 nu1 : {charge set T -> \bar R})
-  (dom0 : nu0 `<< mu) (dom1 : nu1 `<< mu) :
-   ae_eq mu [set: T] ('d [the charge _ _ of cadd nu0 nu1] '/d mu)
-                     ('d nu0 '/d mu \+ 'd nu1 '/d mu).
+    (mu : {sigma_finite_measure set T -> \bar R})
+    (nu0 nu1 : {charge set T -> \bar R}) :
+  nu0 `<< mu -> nu1 `<< mu ->
+  ae_eq mu [set: T] ('d [the charge _ _ of cadd nu0 nu1] '/d mu)
+                    ('d nu0 '/d mu \+ 'd nu1 '/d mu).
 Proof.
-apply: integral_ae_eq => [//| | |E mE].
+move=> nu0mu nu1mu; apply: integral_ae_eq => [//| | |E mE].
 - by apply: Radon_Nikodym_integrable => /=; exact: dominates_caddl.
-- by apply: integrableD => //; exact: Radon_Nikodym_integrable.
+  by apply: emeasurable_funD; exact: measurable_int (Radon_Nikodym_integrable _).
 - rewrite integralD => //; [|exact: integrableS (Radon_Nikodym_integrable _)..].
   rewrite -Radon_Nikodym_integral //=; last exact: dominates_caddl.
   by rewrite -Radon_Nikodym_integral // -Radon_Nikodym_integral.

@@ -3382,7 +3382,7 @@ move=> if1 if2; rewrite (integralD_EFin mD if1); last first.
 by rewrite -integralN//; exact: integrable_add_def.
 Qed.
 
-Lemma le_abse_integral d (R : realType) (T : measurableType d)
+Lemma le_abse_integral d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) (D : set T) (f : T -> \bar R)
   (mD : measurable D) : measurable_fun D f ->
   (`| \int[mu]_(x in D) (f x) | <= \int[mu]_(x in D) `|f x|)%E.
@@ -3393,6 +3393,19 @@ rewrite integralE (le_trans (lee_abs_sub _ _))// gee0_abs; last first.
 rewrite gee0_abs; last exact: integral_ge0.
 by rewrite -ge0_integralD // -?fune_abse//;
   [exact: measurable_funepos | exact: measurable_funeneg].
+Qed.
+
+Lemma abse_integralP d (T : measurableType d) (R : realType)
+    (mu : {measure set T -> \bar R}) (D : set T) (f : T -> \bar R) :
+    measurable D -> measurable_fun D f ->
+  (`| \int[mu]_(x in D) f x | < +oo <-> \int[mu]_(x in D) `|f x| < +oo)%E.
+Proof.
+move=> mD mf; split => [|] foo; last first.
+  exact: (le_lt_trans (le_abse_integral mu mD mf) foo).
+under eq_integral do rewrite -/((abse \o f) _) fune_abse.
+rewrite ge0_integralD//;[|exact/measurable_funepos|exact/measurable_funeneg].
+move: foo; rewrite integralE/= -fin_num_abs fin_numB => /andP[fpoo fnoo].
+by rewrite lte_add_pinfty// ltey_eq ?fpoo ?fnoo.
 Qed.
 
 Section integral_indic.
@@ -4348,13 +4361,13 @@ by move/cvg_lim => h2; rewrite setI_bigcupr -h2// h1.
 Qed.
 
 Lemma integral_ae_eq (D : set T) (mD : measurable D) (g f : T -> \bar R) :
-  mu.-integrable D f -> mu.-integrable D g ->
+  mu.-integrable D f -> measurable_fun D g ->
   (forall E, measurable E -> \int[mu]_(x in E) f x = \int[mu]_(x in E) g x) ->
   ae_eq mu D f g.
 Proof.
-move=> mf mg fg.
-have msf := measurable_int mf.
-have msg := measurable_int mg.
+move=> fi mg fg; have mf := measurable_int fi; have gi : mu.-integrable D g.
+  apply/integrableP; split => //; apply/abse_integralP => //; rewrite -fg//.
+  by apply/abse_integralP => //; case/integrableP : fi.
 have mugf : mu (D `&` [set x | g x < f x]) = 0 by exact: integral_measure_lt.
 have mufg : mu (D `&` [set x | f x < g x]) = 0.
   by apply: integral_measure_lt => // E mE; rewrite fg.
@@ -4365,8 +4378,8 @@ apply/negligibleP.
   by rewrite h; apply: emeasurable_fun_neq.
 rewrite h set_neq_lt setIUr measureU//.
 - by rewrite [X in X + _]mufg add0e [LHS]mugf.
-- by apply: emeasurable_fun_lt.
-- by apply: emeasurable_fun_lt.
+- exact: emeasurable_fun_lt.
+- exact: emeasurable_fun_lt.
 - apply/seteqP; split => [x [[Dx/= + [_]]]|//].
   by move=> /lt_trans => /[apply]; rewrite ltxx.
 Qed.
