@@ -1826,8 +1826,8 @@ Variables (m1 m2 : {measure set T -> \bar R}).
 
 Definition measure_add := msum (fun n => if n is 0%N then m1 else m2) 2.
 
-Lemma measure_addE : measure_add = m1 \+ m2.
-Proof. by apply: funext=>A; rewrite /measure_add/= /msum 2!big_ord_recl/= big_ord0 adde0. Qed.
+Lemma measure_addE A : measure_add A = m1 A + m2 A.
+Proof. by rewrite /measure_add/= /msum 2!big_ord_recl/= big_ord0 adde0. Qed.
 
 End measure_add.
 
