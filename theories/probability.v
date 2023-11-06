@@ -1132,27 +1132,47 @@ move=> mA; rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI A) -measureD ?se
 by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
 Qed.
 
-Definition is_bernoulli_trial (X : seq {RV P >-> R}) := (forall Xi, Xi \in X -> bernoulli_RV Xi).
+Definition is_bernoulli_trial (X : seq {RV P >-> R}) n := ((forall Xi, Xi \in X -> bernoulli_RV Xi) /\ size X = n).
 
-Definition bernoulli_trial (X : seq {RV P >-> R}) (bX : is_bernoulli_trial X) := (\sum_(Xi <- X) Xi)%R.
+Definition bernoulli_trial (X : seq {RV P >-> R}) := (\sum_(Xi <- X) Xi)%R.
+
+Lemma expectation_bernoulli_trial (X : seq {RV P >-> R}) n :
+  is_bernoulli_trial X n -> 'E_P[@bernoulli_trial X] = (n%:R * p%:num)%:E.
+Proof.
+rewrite /bernoulli_trial/is_bernoulli_trial. 
+move => [b1 b2].
+rewrite expectation_sum; last first.
+  move=> Xi XiX; exact: (integrable_bernoulli (b1 _ XiX)).
+under eq_bigr=> Xi _. rewrite (bernoulli_expectation (b1 Xi _)). over. admit.
+rewrite /=.
+admit.
+Admitted.
 
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
 
-Theorem poisson_ineq (X : seq {RV P >-> R}) bX (delta : R) :
-  let X' := @bernoulli_trial X bX in
+Theorem poisson_ineq (X : seq {RV P >-> R}) (delta : R) n :
+  is_bernoulli_trial X n ->
+  let X' := @bernoulli_trial X in
   let mu := 'E_P[X'] in
+  (0 < n)%nat ->
   (0 < delta < 1)%R ->
-  P [set i | X' i >= (1+delta)*fine mu ]%R <= (expR (-(fine mu * delta^+3)/3))%:E.
+  P [set i | X' i >= (1+delta)*fine mu ]%R <= (expR (-(fine mu * delta^+2)/3))%:E.
 Proof.
-move=> X' mu /andP[delta0 delta1].
-rewrite [leRHS](_ : _ = (expR (-(delta^+2 / 3) * fine mu)) %:E); last admit.
+move=> bX X' mu n0 /andP[delta0 delta1].
+rewrite [leRHS](_ : _ = (expR (-(delta^+2 / 3) * fine mu)) %:E); last by rewrite !mulNr (mulrC _ (fine mu)) [in RHS]mulrA.
 apply: (@le_trans _ _ (expR ((delta - (1+delta) * ln (1 + delta)) * fine mu))%:E); last first.
 rewrite lee_fin.
-rewrite ler_expR ler_pmul2r; last admit.
+rewrite /mu /X' (expectation_bernoulli_trial bX) /fine.
+have [->|p0] := eqVneq p%:num 0%R.
+  by rewrite !mulr0.
+rewrite ler_expR ler_pmul2r; last first.
+  rewrite mulr_gt0//. admit.
+  by rewrite lt_neqAle eq_sym p0 andTb.  
 rewrite ler_oppr opprB ler_subr_addl taylor_ln_le//.
-apply: (le_trans (@chernoff _ _ _ P X' delta ((1+delta) * fine mu) _)); last first.
+apply: (le_trans (@chernoff _ _ _ P X' delta ((1+delta) * fine mu) _)) => //; last first.
 rewrite /mmt_gen_fun.
-rewrite (_ : 'E_P[_] = expR (delta * fine mu)).
+rewrite (_ : 'E_P[_] = (expR (delta * fine mu))%:E); last admit.
+
 Admitted.
 
 
