@@ -370,6 +370,38 @@ HB.instance Definition _ := isCharge.Build _ _ _ cscale
 
 End charge_scale.
 
+Section charge_add.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variables (m1 m2 : {charge set T -> \bar R}).
+
+Definition cadd := m1 \+ m2.
+
+Let cadd0 : cadd set0 = 0.
+Proof. by rewrite /cadd 2!charge0 adde0. Qed.
+
+Let cadd_finite A : measurable A -> cadd A \is a fin_num.
+Proof. by move=> mA; rewrite fin_numD !fin_num_measure. Qed.
+
+Let cadd_sigma_additive : semi_sigma_additive cadd.
+Proof.
+move=> F mF tF mUF; rewrite /cadd.
+under eq_fun do rewrite big_split; apply: cvg_trans.
+  (* TODO: IIRC explicit arguments were added to please Coq 8.14, rm if not needed anymore *)
+  apply: (@cvgeD _ _ _ R (fun x => \sum_(0 <= i < x) (m1 (F i)))
+                         (fun x => \sum_(0 <= i < x) (m2 (F i)))
+                         (m1 (\bigcup_n F n)) (m2 (\bigcup_n F n))).
+  - by rewrite fin_num_adde_defr// fin_num_measure.
+  - exact: charge_semi_sigma_additive.
+  - exact: charge_semi_sigma_additive.
+exact: cvg_id.
+Qed.
+
+HB.instance Definition _ := isCharge.Build _ _ _ cadd
+  cadd0 cadd_finite cadd_sigma_additive.
+
+End charge_add.
+
 Section positive_negative_set.
 Context d (T : semiRingOfSetsType d) (R : numDomainType).
 Implicit Types nu : set T -> \bar R.
@@ -1548,3 +1580,54 @@ Qed.
 
 End radon_nikodym.
 Notation "'d nu '/d mu" := (Radon_Nikodym mu nu) : charge_scope.
+
+Section radon_nikodym_lemmas.
+
+Lemma dominates_cscale d (T : measurableType d) (R : realType)
+  (mu : {sigma_finite_measure set T -> \bar R})
+  (nu : {charge set T -> \bar R})
+  (c : R) : nu `<< mu -> cscale c nu `<< mu.
+Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
+
+Lemma Radon_Nikodym_cscale d (T : measurableType d) (R : realType)
+  (mu : {sigma_finite_measure set T -> \bar R})
+  (nu : {charge set T -> \bar R}) (c : R) :
+  nu `<< mu ->
+  ae_eq mu [set: T] ('d [the charge _ _ of cscale c nu] '/d mu)
+                    (fun x => c%:E * 'd nu '/d mu x).
+Proof.
+move=> numu; apply: integral_ae_eq => [//| | |E mE].
+- by apply: Radon_Nikodym_integrable; exact: dominates_cscale.
+  apply: emeasurable_funM => //.
+  exact: measurable_int (Radon_Nikodym_integrable _).
+- rewrite integralZl//; last first.
+    by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
+  rewrite -Radon_Nikodym_integral => //; last exact: dominates_cscale.
+  by rewrite -Radon_Nikodym_integral.
+Qed.
+
+Lemma dominates_caddl d (T : measurableType d)
+  (R : realType) (mu : {sigma_finite_measure set T -> \bar R})
+  (nu0 nu1 : {charge set T -> \bar R}) :
+  nu0 `<< mu -> nu1 `<< mu ->
+  cadd nu0 nu1 `<< mu.
+Proof.
+by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
+Qed.
+
+Lemma Radon_Nikodym_cadd d (T : measurableType d) (R : realType)
+    (mu : {sigma_finite_measure set T -> \bar R})
+    (nu0 nu1 : {charge set T -> \bar R}) :
+  nu0 `<< mu -> nu1 `<< mu ->
+  ae_eq mu [set: T] ('d [the charge _ _ of cadd nu0 nu1] '/d mu)
+                    ('d nu0 '/d mu \+ 'd nu1 '/d mu).
+Proof.
+move=> nu0mu nu1mu; apply: integral_ae_eq => [//| | |E mE].
+- by apply: Radon_Nikodym_integrable => /=; exact: dominates_caddl.
+  by apply: emeasurable_funD; exact: measurable_int (Radon_Nikodym_integrable _).
+- rewrite integralD => //; [|exact: integrableS (Radon_Nikodym_integrable _)..].
+  rewrite -Radon_Nikodym_integral //=; last exact: dominates_caddl.
+  by rewrite -Radon_Nikodym_integral // -Radon_Nikodym_integral.
+Qed.
+
+End radon_nikodym_lemmas.
