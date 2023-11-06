@@ -1143,9 +1143,9 @@ rewrite /bernoulli_trial/is_bernoulli_trial.
 move => [b1 b2].
 rewrite expectation_sum; last first.
   move=> Xi XiX; exact: (integrable_bernoulli (b1 _ XiX)).
-under eq_bigr=> Xi _. rewrite (bernoulli_expectation (b1 Xi _)). over. admit.
-rewrite /=.
+under eq_big_seq=> Xi _. rewrite (bernoulli_expectation (b1 Xi _)). over.
 admit.
+rewrite /=.
 Admitted.
 
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
@@ -1166,32 +1166,32 @@ rewrite /mu /X' (expectation_bernoulli_trial bX) /fine.
 have [->|p0] := eqVneq p%:num 0%R.
   by rewrite !mulr0.
 rewrite ler_expR ler_pmul2r; last first.
-  rewrite mulr_gt0//. admit.
+  rewrite mulr_gt0// ?ltr0n//.
   by rewrite lt_neqAle eq_sym p0 andTb.  
 rewrite ler_oppr opprB ler_subr_addl taylor_ln_le//.
 apply: (le_trans (@chernoff _ _ _ P X' delta ((1+delta) * fine mu) _)) => //; last first.
 rewrite /mmt_gen_fun.
-rewrite (_ : 'E_P[_] = (expR (delta * fine mu))%:E); last admit.
+rewrite (_ : 'E_P[_] = (expR (delta * fine mu))%:E); last first.
+  admit.
 rewrite -EFinM -expRD lee_fin ler_expR mulrBl lerB//.
 rewrite mulrA ler_pM//.
-- admit.
+- by rewrite mulr_ge0 ?ln_ge0// ?addr_ge0// ?ler_addl// le_eqVlt delta0 orbT.
 - rewrite fine_ge0// /mu expectation_ge0// /X' => x. admit.
-- rewrite mulrC ler_pM// ?ln_ge0//. admit. admit. admit.
+- by rewrite mulrC ler_pM// ?le_ln1Dx ?ln_ge0 ?addr_ge0 ?ler_addl// le_eqVlt delta0 orbT.
 Admitted.
 
 
-
-
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
-Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) (bX : forall Xi, Xi \in X -> bernoulli_RV Xi) :
+Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let n := size X in
-  let X_sum := bernoulli_trial bX in
+  let X_sum := bernoulli_trial X in
   let X' x := (X_sum x) / (n%:R) in
+  is_bernoulli_trial X n ->
   (0 <= delta)%R -> (0 <= theta)%R -> (0 < n)%nat ->
   (n%:R >= 3 / (theta ^+ 2) * ln (2 / delta))%R ->
   P [set i | `| X' i - (p%:num) | <= theta]%R >= 1 - delta%:E.
 Proof.
-move=> n X_sum X' delta0 theta0 n0 tdn.
+move=> n X_sum X' [bX Xn] delta0 theta0 n0 tdn.
 have [p0|pn0] := eqVneq (p%:num) 0%R.
   rewrite p0.
   under eq_set => x.
