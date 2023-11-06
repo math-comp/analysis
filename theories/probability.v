@@ -1172,7 +1172,11 @@ rewrite ler_oppr opprB ler_subr_addl taylor_ln_le//.
 apply: (le_trans (@chernoff _ _ _ P X' delta ((1+delta) * fine mu) _)) => //; last first.
 rewrite /mmt_gen_fun.
 rewrite (_ : 'E_P[_] = (expR (delta * fine mu))%:E); last admit.
-
+rewrite -EFinM -expRD lee_fin ler_expR mulrBl lerB//.
+rewrite mulrA ler_pM//.
+- admit.
+- rewrite fine_ge0// /mu expectation_ge0// /X' => x. admit.
+- rewrite mulrC ler_pM// ?ln_ge0//. admit. admit. admit.
 Admitted.
 
 
