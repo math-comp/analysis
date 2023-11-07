@@ -1219,12 +1219,13 @@ Admitted.
 
 Corollary cor27 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
+  (0 < n)%nat ->
   let X' := @bernoulli_trial X in
   let mu := 'E_P[X'] in
   P [set i | `|X' i - fine mu | >=  delta * fine mu]%R <=
   (expR (- (fine mu * delta ^+ 2) / 3)%R *+ 2)%:E.
 Proof.
-move=> bX /andP[delta0 delta1] /=.
+move=> bX delta01 n0 /=.
 set X' := @bernoulli_trial X.
 set mu := 'E_P[X'].
 under eq_set => x.
@@ -1236,8 +1237,15 @@ under eq_set => x.
 rewrite /=.
 rewrite set_orb.
 rewrite measureU; last 3 first. admit. admit. admit.
-rewrite mulr2n EFinD.
-rewrite lee_add//=.
+rewrite mulr2n EFinD lee_add//=.
+apply: (poisson_ineq bX) => //.
+apply: (le_trans (thm26 bX delta01)).
+rewrite lee_fin ler_expR !mulNr lerN2.
+rewrite ler_pM//; last admit.
+move: delta01 => /andP [delta0 delta1].
+rewrite mulr_ge0 ?fine_ge0 ?sqr_ge0//.
+rewrite /mu unlock /expectation integral_ge0// => x _.
+rewrite /X' lee_fin; apply: (bernoulli_trial_ge0 bX).
 Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
