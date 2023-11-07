@@ -1221,6 +1221,14 @@ have := @chernoff _ _ _ P X' (ln (1+delta))%R ((1-delta)*fine mu)%R (ln_gt0 delt
 rewrite /mmt_gen_fun.
 Admitted.
 
+Lemma measurable_fun_le D (f g : T -> R) : d.-measurable D -> measurable_fun D f -> measurable_fun D g ->
+  measurable (D `&` [set x | f x <= g x]%R).
+Proof.
+move=> mD mf mg.
+under eq_set => x do rewrite -lee_fin.
+apply: emeasurable_fun_le => //; apply: measurableT_comp => //.
+Qed.
+
 Corollary cor27 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
   (0 < n)%nat ->
@@ -1254,10 +1262,8 @@ rewrite measureU; last 3 first.
   rewrite -ltNge.
   apply: (@lt_le_trans _ _ _ _ _ _ X0).
   rewrite !EFinM. 
-  Search (?X * _ < ?X * _).
-  Search "mul2r".
   rewrite lte_pmul2r//.
-  - move: delta01 => /andP[d0 d1]; rewrite lte_fin ltr_add2l gt0_cp//.
+    move: delta01 => /andP[d0 d1]; rewrite lte_fin ltr_add2l gt0_cp//.
   by rewrite fineK /mu/X' (expectation_bernoulli_trial bX)// lte_fin  mulr_gt0 ?ltr0n.
 rewrite mulr2n EFinD lee_add//=.
 - apply: (poisson_ineq bX) => //.
@@ -1316,8 +1322,7 @@ have step1 : P [set i | `| X' i - p%:num | >= epsilon * p%:num]%R <=
   rewrite -mulrA.
   have -> : (p%:num * n%:R)%R = fine (p%:num * n%:R)%:E by [].
   rewrite -E_X_sum.
-  apply: (@cor27 X epsilon _ bX).
-  exact: epsilon01.
+  apply: (@cor27 X epsilon _ bX) => //.
 have step2 : P [set i | `| X' i - p%:num | >= theta]%R <=
     ((expR (- (n%:R * theta ^+ 2) / 3)) *+ 2)%:E.
   rewrite thetaE; move/le_trans : step1; apply.
@@ -1332,9 +1337,11 @@ suff : delta%:E >= P [set i | (`|X' i - p%:num| >=(*NB: this >= in the pdf *) th
       by rewrite leNgt => /negP.
     by rewrite ltNge => /negP/negPn.
   have ? : measurable [set i | (`|X' i - p%:num| < theta)%R].
-    admit.
-    (* measurability of some set, use a lemma like emeasurable_fun_infty_o
-       but for real numbers (we only have it for extended real numbers..) *)
+    under eq_set => x do rewrite -lte_fin.
+    rewrite -(@setIidr _ setT [set _ | _]) ?subsetT /X'//.
+    by apply: emeasurable_fun_lt => //; apply: measurableT_comp => //;
+      apply: measurableT_comp => //; apply: measurable_funD => //;
+      apply: measurable_funM.
   rewrite probability_setC// lee_subel_addr//.
   rewrite -lee_subel_addl//; last by rewrite fin_num_measure.
   move=> /le_trans; apply.
