@@ -1238,14 +1238,14 @@ rewrite /=.
 rewrite set_orb.
 rewrite measureU; last 3 first. admit. admit. admit.
 rewrite mulr2n EFinD lee_add//=.
-apply: (poisson_ineq bX) => //.
-apply: (le_trans (thm26 bX delta01)).
-rewrite lee_fin ler_expR !mulNr lerN2.
-rewrite ler_pM//; last admit.
-move: delta01 => /andP [delta0 delta1].
-rewrite mulr_ge0 ?fine_ge0 ?sqr_ge0//.
-rewrite /mu unlock /expectation integral_ge0// => x _.
-rewrite /X' lee_fin; apply: (bernoulli_trial_ge0 bX).
+- apply: (poisson_ineq bX) => //.
+- apply: (le_trans (thm26 bX delta01)).
+  rewrite lee_fin ler_expR !mulNr lerN2.
+  rewrite ler_pM//; last admit.
+  move: delta01 => /andP [delta0 delta1].
+  rewrite mulr_ge0 ?fine_ge0 ?sqr_ge0//.
+  rewrite /mu unlock /expectation integral_ge0// => x _.
+  rewrite /X' lee_fin; apply: (bernoulli_trial_ge0 bX).
 Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
