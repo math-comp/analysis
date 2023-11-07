@@ -1150,10 +1150,6 @@ rewrite /= -Xn -sum1_size natr_sum big_distrl/= sumEFin; congr EFin.
 by under [RHS]eq_bigr do rewrite mul1r.
 Qed.
 
-Lemma integrable_bernoulli_trial (X : seq {RV P >-> R}) n :
-  is_bernoulli_trial X n -> P.-integrable [set: T] (EFin \o (bernoulli_trial X)).
-Admitted.
-
 Lemma bernoulli_trial_ge0 (X : seq {RV P >-> R}) n : is_bernoulli_trial X n ->
   (forall t, 0 <= bernoulli_trial X t)%R.
 Proof.
@@ -1346,7 +1342,11 @@ suff : delta%:E >= P [set i | (`|X' i - p%:num| >=(*NB: this >= in the pdf *) th
   rewrite -lee_subel_addl//; last by rewrite fin_num_measure.
   move=> /le_trans; apply.
   rewrite le_measure ?inE//.
-    admit. (* measurability goal similar to the above *)
+    under eq_set => x do rewrite -lee_fin.
+    rewrite -(@setIidr _ setT [set _ | _]) ?subsetT /X'//.
+    by apply: emeasurable_fun_le => //; apply: measurableT_comp => //;
+      apply: measurableT_comp => //; apply: measurable_funD => //;
+      apply: measurable_funM.
   by move=> t/= /ltW.
 (* NB: last step in the pdf *)
 apply: (le_trans step2).
