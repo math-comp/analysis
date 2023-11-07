@@ -1132,31 +1132,33 @@ move=> mA; rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI A) -measureD ?se
 by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
 Qed.
 
-Definition is_bernoulli_trial (X : seq {RV P >-> R}) n := ((forall Xi, Xi \in X -> bernoulli_RV Xi) /\ size X = n).
+Definition is_bernoulli_trial (X : seq {RV P >-> R}) n :=
+  (forall Xi, Xi \in X -> bernoulli_RV Xi) /\
+    size X = n(*NB: used n.-tuple instead of seq*).
 
-Definition bernoulli_trial (X : seq {RV P >-> R}) := (\sum_(Xi <- X) Xi)%R.
-
-Lemma bernoulli_trial_ge0 (X : seq {RV P >-> R}) n :
-  is_bernoulli_trial X n -> forall i, (0 <= bernoulli_trial X i)%R.
-Proof.
-move=> [bX nX] i.
-rewrite /bernoulli_trial mfun_sum sumr_ge0// => Xi _.
-rewrite bernoulli_ge0//.
-apply: bX.
-admit.
-Admitted.
+Definition bernoulli_trial (X : seq {RV P >-> R}) :=
+  (\sum_(Xi <- X) Xi)%R.
 
 Lemma expectation_bernoulli_trial (X : seq {RV P >-> R}) n :
   is_bernoulli_trial X n -> 'E_P[@bernoulli_trial X] = (n%:R * p%:num)%:E.
 Proof.
-rewrite /bernoulli_trial/is_bernoulli_trial. 
-move => [b1 b2].
-rewrite expectation_sum; last first.
-  move=> Xi XiX; exact: (integrable_bernoulli (b1 _ XiX)).
-under eq_big_seq=> Xi _. rewrite (bernoulli_expectation (b1 Xi _)). over.
-admit.
-rewrite /=.
-Admitted.
+move=> [bRV Xn]; rewrite expectation_sum; last first.
+  by move=> Xi XiX; exact: (integrable_bernoulli (bRV _ XiX)).
+under eq_big_seq => Xi XiX.
+  by rewrite (bernoulli_expectation (bRV Xi _))//; over.
+rewrite /= -Xn -sum1_size natr_sum big_distrl/= sumEFin; congr EFin.
+by under [RHS]eq_bigr do rewrite mul1r.
+Qed.
+
+Lemma bernoulli_trial_ge0 (X : seq {RV P >-> R}) n : is_bernoulli_trial X n ->
+  (forall t, 0 <= bernoulli_trial X t)%R.
+Proof.
+move=> [bRV Xn] t.
+rewrite /bernoulli_trial [leRHS](_ : _ = \sum_(Xi <- X) Xi t)%R; last first.
+  by rewrite {bRV Xn}; elim/big_ind2 : _ => //= _ f _ g <- <-.
+  (* NB: this maybe need to be a lemma*)
+by rewrite big_seq; apply: sumr_ge0 => i iX; exact/bernoulli_ge0/bRV.
+Qed.
 
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
 
@@ -1177,25 +1179,20 @@ have [->|p0] := eqVneq p%:num 0%R.
   by rewrite !mulr0.
 rewrite ler_expR ler_pmul2r; last first.
   rewrite mulr_gt0// ?ltr0n//.
-  by rewrite lt_neqAle eq_sym p0 andTb.  
+  by rewrite lt_neqAle eq_sym p0 andTb.
 rewrite ler_oppr opprB ler_subr_addl taylor_ln_le//.
 apply: (le_trans (@chernoff _ _ _ P X' delta ((1+delta) * fine mu) _)) => //; last first.
 rewrite /mmt_gen_fun.
 rewrite (_ : 'E_P[_] = (expR (delta * fine mu))%:E); last first.
   rewrite /mu.
-admit.
-rewrite -EFinM -expRD lee_fin ler_expR mulrBl lerB//.
-rewrite mulrA ler_pM//.
-- by rewrite mulr_ge0 ?ln_ge0// ?addr_ge0// ?ler_addl// le_eqVlt delta0 orbT.
-- rewrite fine_ge0// /mu expectation_ge0// /X' => x.
-  rewrite /bernoulli_trial.
-  rewrite mfun_sum.
-  apply: sumr_ge0 => Xi _.
-  apply: bernoulli_ge0.
   admit.
-- by rewrite mulrC ler_pM// ?le_ln1Dx ?ln_ge0 ?addr_ge0 ?ler_addl// le_eqVlt delta0 orbT.
+rewrite -EFinM -expRD lee_fin ler_expR mulrBl ler_sub//.
+rewrite mulrA ler_pmul//.
+- by rewrite mulr_ge0 ?ln_ge0// ?addr_ge0// ?ler_addl// le_eqVlt delta0 orbT.
+- rewrite fine_ge0// /mu expectation_ge0// => t; rewrite /X'.
+  exact: (bernoulli_trial_ge0 bX).
+- by rewrite mulrC ler_pmul// ?le_ln1Dx ?ln_ge0 ?addr_ge0 ?ler_addl// le_eqVlt delta0 orbT.
 Admitted.
-
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
@@ -1216,7 +1213,8 @@ have [p0|pn0] := eqVneq (p%:num) 0%R.
     rewrite (@le_trans _ _ 0 (-_))%R ?oppr_le0// ?andTb; last
       by rewrite mulr_ge0//; apply: (@bernoulli_trial_ge0 X n); split.
     over.
-  by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.
+  rewrite /=.
+  (*by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.*) admit. (*NB(rei): I maybe broke this*)
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum/=; last first.
     by move=> Xi XiX; exact: integrable_bernoulli (bX Xi XiX).
@@ -1234,9 +1232,13 @@ have hp : forall eps, P [set i | `| X' i - p%:num | >= eps * p%:num]%R <= (2 * e
     rewrite mulrA -mulrBl normrM (@ger0_norm _ n%:R)//.
     by apply/eqP; rewrite ler_pmul2r ?ltr0n.
   rewrite [leLHS](_ : _ = 2%:E * P [set i | (eps * p%:num * n%:R <= X_sum i - p%:num * n%:R)%R]); last first.
-  rewrite [set i | (eps * p%:num * n%:R <= `|X_sum i - p%:num * n%:R|)%R] = [set i | (eps * p%:num * n%:R <= X_sum i - p%:num * n%:R)%R] `|` [set i | (eps * p%:num * n%:R >= X_sum i - p%:num * n%:R)%R].
-  have := @chernoff _ _ _ P (normr \o (X_sum \- cst (p%:num * n%:R)))%R _ (eps * p%:num * n%:R). 
-
+    rewrite [X in P X = _](_ : _ =
+      [set i | (eps * p%:num * n%:R <= X_sum i - p%:num * n%:R)%R] `|`
+      [set i | (eps * p%:num * n%:R >= X_sum i - p%:num * n%:R)%R]); last first.
+      admit.
+    admit.
+  have := @chernoff _ _ _ P (normr \o (X_sum \- cst (p%:num * n%:R)))%R _ (eps * p%:num * n%:R).
+  rewrite /=.
 expR(r * p * n)
 
 mmt_gen_fun r = 'E_P[expR \o r \o* X]
