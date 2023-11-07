@@ -1200,11 +1200,11 @@ Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let X_sum := bernoulli_trial X in
   let X' x := (X_sum x) / (n%:R) in
   is_bernoulli_trial X n ->
-  (0 <= delta)%R -> (0 <= theta)%R -> (0 < n)%nat ->
+  (0 <= delta <= 1)%R -> (0 <= theta <= 1)%R -> (0 < n)%nat ->
   (n%:R >= 3 / (theta ^+ 2) * ln (2 / delta))%R ->
   P [set i | `| X' i - (p%:num) | <= theta]%R >= 1 - delta%:E.
 Proof.
-move=> n X_sum X' [bX Xn] delta0 theta0 n0 tdn.
+move=> n X_sum X' [bX Xn] /andP[delta0 delta1] /andP[theta0 theta1] n0 tdn.
 have [p0|pn0] := eqVneq (p%:num) 0%R.
   rewrite p0.
   under eq_set => x.
