@@ -1212,69 +1212,105 @@ Proof.
 move=> bX /andP[delta0 delta1] /=.
 set X' := @bernoulli_trial X.
 set mu := 'E_P[X'].
-have delta110 : (1 < 1 + delta)%R by rewrite ltrDl.
+have delta110 : (1 < 1 + delta)%R by rewrite ltr_addl.
 have := @chernoff _ _ _ P X' (ln (1+delta))%R ((1-delta)*fine mu)%R (ln_gt0 delta110).
 rewrite /mmt_gen_fun.
+Admitted.
+
+Corollary cor27 (X : seq {RV P >-> R}) (delta : R) n :
+  is_bernoulli_trial X n -> (0 < delta < 1)%R ->
+  let X' := @bernoulli_trial X in
+  let mu := 'E_P[X'] in
+  P [set i | `|X' i - fine mu | >=  delta * fine mu]%R <=
+  (expR (- (fine mu * delta ^+ 2) / 3)%R *+ 2)%:E.
+Proof.
 Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let n := size X in
   let X_sum := bernoulli_trial X in
-  let X' x := (X_sum x) / (n%:R) in
+  let X' x := (X_sum x) / n%:R in
+  (0 < p%:num)%R ->
   is_bernoulli_trial X n ->
-  (0 <= delta <= 1)%R -> (0 <= theta <= 1)%R -> (0 < n)%nat ->
-  (n%:R >= 3 / (theta ^+ 2) * ln (2 / delta))%R ->
-  P [set i | `| X' i - (p%:num) | <= theta]%R >= 1 - delta%:E.
+  (0 <= delta <= 1)%R -> (0 < theta <= 1)%R -> (0 < n)%nat ->
+  (3 / theta ^+ 2 * ln (2 / delta) <= n%:R)%R ->
+  P [set i | `| X' i - p%:num | <= theta]%R >= 1 - delta%:E.
 Proof.
-move=> n X_sum X' [bX Xn] /andP[delta0 delta1] /andP[theta0 theta1] n0 tdn.
-have [p0|pn0] := eqVneq (p%:num) 0%R.
-  rewrite p0.
-  under eq_set => x.
-    rewrite subr0 /X' /X_sum.
-    rewrite lter_norml.
-    rewrite (@le_trans _ _ 0 (-_))%R ?oppr_le0// ?andTb; last first.
-      by rewrite mulr_ge0//; apply: (@bernoulli_trial_ge0 X n).
-    rewrite ler_pdivrMr ?ltr0n//.
-    over.
-  rewrite /=.
-  (*by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.*) admit. (*NB(rei): I maybe broke this*)
+move=> n X_sum X' p0 bX /andP[delta0 delta1] /andP[theta0 theta1] n0 tdn.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum/=; last first.
-    by move=> Xi XiX; exact: integrable_bernoulli (bX Xi XiX).
+    by move=> Xi XiX; exact: integrable_bernoulli (bX.1 Xi XiX).
   rewrite big_seq.
   under eq_bigr.
-    move=> Xi XiX; rewrite (bernoulli_expectation (bX _ XiX)); over.
+    move=> Xi XiX; rewrite (bernoulli_expectation (bX.1 _ XiX)); over.
   rewrite /= sumEFin big_const_seq iter_addr_0/= mulr_natr; congr ((_ *+ _)%:E).
   by rewrite /n -count_predT; apply: eq_in_count => x ->.
-have hp : forall eps, P [set i | `| X' i - p%:num | >= eps * p%:num]%R <= (2 * expR (-eps^+2 / 3 * p%:num * n%:R))%:E.
-  move=> eps.
-  have -> : ([set i | `|X' i - p%:num| >= eps * p%:num] = [set i | `|X_sum i - p%:num*n%:R| >= eps * p%:num * n%:R])%R.
-    apply: eq_set => x.
-    rewrite /X'.
-    rewrite -[in RHS](@mulr1 _ (X_sum x)) -{2}[in RHS](@mulVf _ n%:R) ?gt_eqF// ?ltr0n//.
-    rewrite mulrA -mulrBl normrM (@ger0_norm _ n%:R)//.
-    by apply/eqP; rewrite ler_pmul2r ?ltr0n.
-  rewrite [leLHS](_ : _ = 2%:E * P [set i | (eps * p%:num * n%:R <= X_sum i - p%:num * n%:R)%R]); last first.
-    rewrite [X in P X = _](_ : _ =
-      [set i | (eps * p%:num * n%:R <= X_sum i - p%:num * n%:R)%R] `|`
-      [set i | (eps * p%:num * n%:R >= X_sum i - p%:num * n%:R)%R]); last first.
-      admit.
+set epsilon := theta / p%:num.
+have epsilon01 : (0 < epsilon < 1)%R.
+  apply/andP; split.
+    by rewrite /epsilon divr_gt0.
+  rewrite /epsilon.
+  rewrite ltr_pdivr_mulr// mul1r.
+  (* theta < p ?! *)
+  admit.
+have thetaE : theta = (epsilon * p%:num)%R.
+  by rewrite /epsilon -mulrA mulVf ?mulr1// gt_eqF.
+have step1 : P [set i | `| X' i - p%:num | >= epsilon * p%:num]%R <=
+    ((expR (- (p%:num * n%:R * (epsilon ^+ 2)) / 3)) *+ 2)%:E.
+  rewrite [X in P X <= _](_ : _ =
+      [set i | `| X_sum i - p%:num * n%:R | >= epsilon * p%:num * n%:R]%R); last first.
+    apply/seteqP; split => [t|t]/=.
+      move/(@ler_wpmul2r _ n%:R (ler0n _ _)) => /le_trans; apply.
+      rewrite -[X in (_ * X)%R](@ger0_norm _ n%:R)// -normrM mulrBl.
+      by rewrite -mulrA mulVf ?mulr1// gt_eqF ?ltr0n.
+    move/(@ler_wpmul2r _ n%:R^-1); rewrite invr_ge0// ler0n => /(_ erefl).
+    rewrite -(mulrA _ _ n%:R^-1) divff ?mulr1 ?gt_eqF ?ltr0n//.
+    move=> /le_trans; apply.
+    rewrite -[X in (_ * X)%R](@ger0_norm _ n%:R^-1)// -normrM mulrBl.
+    by rewrite -mulrA divff ?mulr1// gt_eqF// ltr0n.
+  rewrite -mulrA.
+  have -> : (p%:num * n%:R)%R = fine (p%:num * n%:R)%:E by [].
+  rewrite -E_X_sum.
+  apply: (@cor27 X epsilon _ bX).
+  exact: epsilon01.
+have step2 : P [set i | `| X' i - p%:num | >= theta]%R <=
+    ((expR (- (n%:R * theta ^+ 2) / 3)) *+ 2)%:E.
+  rewrite thetaE; move/le_trans : step1; apply.
+  rewrite lee_fin ler_wmuln2r// ler_expR mulNr ler_oppl mulNr opprK.
+  rewrite -2![in leRHS]mulrA [in leRHS]mulrCA -[in leLHS]mulrA ler_wpmul2l//.
+  rewrite (mulrC epsilon) exprMn -mulrA ler_wpmul2r//.
+    by rewrite divr_ge0// sqr_ge0.
+  by rewrite expr2 ler_pimull.
+suff : delta%:E >= P [set i | (`|X' i - p%:num| >=(*NB: this >= in the pdf *) theta)%R].
+  rewrite [X in P X <= _ -> _](_ : _ = ~` [set i | (`|X' i - p%:num| < theta)%R]); last first.
+    apply/seteqP; split => [t|t]/=.
+      by rewrite leNgt => /negP.
+    by rewrite ltNge => /negP/negPn.
+  have ? : measurable [set i | (`|X' i - p%:num| <= theta)%R].
+    rewrite -[X in measurable X]setTI.
+    (*NB: we should be able to use a lemma like emeasurable_fun_infty_o
+      but the latter is for extended real numbers...*)
     admit.
-  have := @chernoff _ _ _ P (normr \o (X_sum \- cst (p%:num * n%:R)))%R _ (eps * p%:num * n%:R).
-  rewrite /=.
-expR(r * p * n)
-
-mmt_gen_fun r = 'E_P[expR \o r \o* X]
-
-  admit. (* use chernoff bound *)
-have hp1 :  P [set i | `| X' i - p%:num | >= theta]%R <= (2 * expR (-theta^+2 / 3 * n%:R))%:E.
-  have -> : theta = ((theta / p%:num) * p%:num)%R by rewrite -mulrA mulVf ?mulr1.
-  apply: le_trans; first apply: (hp (theta/p%:num)).
-  rewrite lee_fin ler_wpmul2l// ler_expR -(mulrA theta (p%:num^-1) (p%:num)) mulVf//.
-  rewrite mulr1 !expr2 !mulNr mulrA ler_oppl opprK -!mulrA ler_wpmul2l// [leRHS]mulrC -mulrA ler_wpmul2l//.
-  by rewrite -mulrA (mulrC p%:num^-1) -!mulrA ler_wpmul2l// mulrC -mulrA ler_pmulr// ?ltr0n// -mulrA mulVf// mulr1 invf_ge1 ?p1// lt_neqAle eq_sym pn0//=.
-rewrite probability_setC /setC/=.
+  rewrite probability_setC//.
+  rewrite lee_subel_addr//.
+  rewrite lee_subel_addl//.
+  admit.
+  by rewrite fin_num_measure.
+  admit.
+(* NB: last step in the pdf *)
+apply: (le_trans step2).
+rewrite lee_fin -(mulr_natr _ 2) -ler_pdivl_mulr//.
+rewrite -(@lnK _ (delta / 2)); last first.
+  rewrite posrE divr_gt0//.
+  admit.
+rewrite ler_expR mulNr ler_oppl -lnV; last first.
+  rewrite posrE divr_gt0//.
+  admit.
+rewrite invf_div ler_pdivl_mulr// mulrC.
+rewrite -ler_pdivr_mulr; last first.
+  admit.
+by rewrite mulrAC.
 Admitted.
 
 End bernoulli.
