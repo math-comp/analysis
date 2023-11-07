@@ -1174,6 +1174,9 @@ set X := @bernoulli_trial X_.
 set mu := 'E_P[X].
 Admitted.
 
+Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
+Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
+
 (* theorem 2.5 *)
 Theorem poisson_ineq (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n ->
@@ -1187,6 +1190,7 @@ Proof.
 move=> bX X' mu n0 /andP[delta0 delta1].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
   (*TODO: using thm24 *)
+  Search (powR _ _) (expR _).
   admit.
 apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   rewrite lee_fin ler_expR ler_wpmul2r//.
