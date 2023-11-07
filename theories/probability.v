@@ -1202,14 +1202,8 @@ have [p0|pn0] := eqVneq (p%:num) 0%R.
   rewrite p0.
   under eq_set => x.
     rewrite subr0 /X' /X_sum (@le_trans _ _ 0)%R//; last first.
-    rewrite normr_le0.
-    have -> : (\sum_(Xi <- X) Xi)%R x = 0%R.
-      rewrite mfun_sum.
-      apply /eqP.
-      rewrite psumr_eq0.
-      Search "sum" "eq0".
-      admit.
-    rewrite mul0r//.
+    rewrite normr_le0 mulf_eq0 invr_eq0. 
+    rewrite pnatr_eq0 (eq_sym n) ltn_eqF// ?orbF.
     over.
   by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
