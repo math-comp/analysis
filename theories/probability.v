@@ -1207,6 +1207,14 @@ Theorem thm26 (X : seq {RV P >-> R}) (delta : R) n :
   let X' := @bernoulli_trial X in
   let mu := 'E_P[X'] in
   P [set i | X' i <= (1 - delta) * fine mu]%R <= (expR (-(fine mu * delta ^+ 2) / 2)%R)%:E.
+Proof.
+move=> bX /andP[delta0 delta1] /=.
+set X' := @bernoulli_trial X.
+set mu := 'E_P[X'].
+have := @chernoff _ _ _ P X' 1%R ((1-delta)*fine mu)%R.
+rewrite /mmt_gen_fun.
+rewrite mul1r.
+Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
