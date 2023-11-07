@@ -1136,6 +1136,16 @@ Definition is_bernoulli_trial (X : seq {RV P >-> R}) n := ((forall Xi, Xi \in X 
 
 Definition bernoulli_trial (X : seq {RV P >-> R}) := (\sum_(Xi <- X) Xi)%R.
 
+Lemma bernoulli_trial_ge0 (X : seq {RV P >-> R}) n :
+  is_bernoulli_trial X n -> forall i, (0 <= bernoulli_trial X i)%R.
+Proof.
+move=> [bX nX] i.
+rewrite /bernoulli_trial mfun_sum sumr_ge0// => Xi _.
+rewrite bernoulli_ge0//.
+apply: bX.
+admit.
+Admitted.
+
 Lemma expectation_bernoulli_trial (X : seq {RV P >-> R}) n :
   is_bernoulli_trial X n -> 'E_P[@bernoulli_trial X] = (n%:R * p%:num)%:E.
 Proof.
@@ -1201,9 +1211,10 @@ move=> n X_sum X' [bX Xn] delta0 theta0 n0 tdn.
 have [p0|pn0] := eqVneq (p%:num) 0%R.
   rewrite p0.
   under eq_set => x.
-    rewrite subr0 /X' /X_sum (@le_trans _ _ 0)%R//; last first.
-    rewrite normr_le0 mulf_eq0 invr_eq0. 
-    rewrite pnatr_eq0 (eq_sym n) ltn_eqF// ?orbF.
+    rewrite subr0 /X' /X_sum.
+    rewrite lter_norml.
+    rewrite (@le_trans _ _ 0 (-_))%R ?oppr_le0// ?andTb; last
+      by rewrite mulr_ge0//; apply: (@bernoulli_trial_ge0 X n); split.
     over.
   by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
