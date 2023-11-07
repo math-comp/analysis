@@ -1224,6 +1224,20 @@ Corollary cor27 (X : seq {RV P >-> R}) (delta : R) n :
   P [set i | `|X' i - fine mu | >=  delta * fine mu]%R <=
   (expR (- (fine mu * delta ^+ 2) / 3)%R *+ 2)%:E.
 Proof.
+move=> bX /andP[delta0 delta1] /=.
+set X' := @bernoulli_trial X.
+set mu := 'E_P[X'].
+under eq_set => x.
+  rewrite ler_normr.
+  rewrite lerBrDl opprD opprK -{1}(mul1r (fine mu)) -mulrDl.
+  rewrite -lerBDr -(lerN2 (- _)%R) opprK opprB.
+  rewrite -{2}(mul1r (fine mu)) -mulrBl.
+  over.
+rewrite /=.
+rewrite set_orb.
+rewrite measureU; last 3 first. admit. admit. admit.
+rewrite mulr2n EFinD.
+rewrite lee_add//=.
 Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
@@ -1233,11 +1247,11 @@ Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let X' x := (X_sum x) / n%:R in
   (0 < p%:num)%R ->
   is_bernoulli_trial X n ->
-  (0 < delta <= 1)%R -> (0 < theta <= 1)%R -> (0 < n)%nat ->
+  (0 < delta <= 1)%R -> (0 < theta)%R -> (0 < n)%nat ->
   (3 / theta ^+ 2 * ln (2 / delta) <= n%:R)%R ->
   P [set i | `| X' i - p%:num | <= theta]%R >= 1 - delta%:E.
 Proof.
-move=> n X_sum X' p0 bX /andP[delta0 delta1] /andP[theta0 theta1] n0 tdn.
+move=> n X_sum X' p0 bX /andP[delta0 delta1] theta0 n0 tdn.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum/=; last first.
     by move=> Xi XiX; exact: integrable_bernoulli (bX.1 Xi XiX).
