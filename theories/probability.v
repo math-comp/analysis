@@ -1162,15 +1162,41 @@ Qed.
 
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
 
+(* theorem 2.4 *)
+Theorem thm24 (X_ : seq {RV P >-> R}) (delta : R) :
+  let X := @bernoulli_trial X_ (*NB: independence? *) in
+  let mu := 'E_P[X] in
+  P [set i | X i >= (1 + delta) * fine mu]%R <=
+  ((expR delta / (1 + delta) `^ (1 + delta)) `^ (fine mu))%:E.
+Proof.
+rewrite /=.
+set X := @bernoulli_trial X_.
+set mu := 'E_P[X].
+Admitted.
+
+(* theorem 2.5 *)
 Theorem poisson_ineq (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n ->
   let X' := @bernoulli_trial X in
   let mu := 'E_P[X'] in
   (0 < n)%nat ->
   (0 < delta < 1)%R ->
-  P [set i | X' i >= (1+delta)*fine mu ]%R <= (expR (-(fine mu * delta^+2)/3))%:E.
+  P [set i | X' i >= (1 + delta) * fine mu]%R <=
+  (expR (- (fine mu * delta ^+ 2) / 3))%:E.
 Proof.
 move=> bX X' mu n0 /andP[delta0 delta1].
+apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
+  (*TODO: using thm24 *)
+  admit.
+apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
+  rewrite lee_fin ler_expR ler_wpmul2r//.
+    by rewrite fine_ge0//; apply: expectation_ge0 => t; exact: (bernoulli_trial_ge0 bX).
+  rewrite ler_sub//.
+  exact: taylor_ln_le.
+rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (expR _)%:E.
+by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
+
+
 rewrite [leRHS](_ : _ = (expR (-(delta^+2 / 3) * fine mu)) %:E); last by rewrite !mulNr (mulrC _ (fine mu)) [in RHS]mulrA.
 apply: (@le_trans _ _ (expR ((delta - (1+delta) * ln (1 + delta)) * fine mu))%:E); last first.
 rewrite lee_fin.
@@ -1210,8 +1236,8 @@ have [p0|pn0] := eqVneq (p%:num) 0%R.
   under eq_set => x.
     rewrite subr0 /X' /X_sum.
     rewrite lter_norml.
-    rewrite (@le_trans _ _ 0 (-_))%R ?oppr_le0// ?andTb; last
-      by rewrite mulr_ge0//; apply: (@bernoulli_trial_ge0 X n); split.
+    rewrite (@le_trans _ _ 0 (-_))%R ?oppr_le0// ?andTb; last first.
+      by rewrite mulr_ge0//; apply: (@bernoulli_trial_ge0 X n).
     over.
   rewrite /=.
   (*by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.*) admit. (*NB(rei): I maybe broke this*)
