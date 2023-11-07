@@ -1172,6 +1172,8 @@ Proof.
 rewrite /=.
 set X := @bernoulli_trial X_.
 set mu := 'E_P[X].
+apply: (le_trans (chernoff _ _ _)); last first.
+rewrite /mmt_gen_fun.
 Admitted.
 
 Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
@@ -1189,7 +1191,6 @@ Theorem poisson_ineq (X : seq {RV P >-> R}) (delta : R) n :
 Proof.
 move=> bX X' mu n0 /andP[delta0 delta1].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
-  (*TODO: using thm24 *)
   rewrite expR_powR expRB (mulrC _ (ln _)) expR_powR lnK; last rewrite posrE addr_gt0//.
   apply: thm24.
 apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
