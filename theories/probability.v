@@ -1160,6 +1160,7 @@ rewrite /bernoulli_trial [leRHS](_ : _ = \sum_(Xi <- X) Xi t)%R; last first.
 by rewrite big_seq; apply: sumr_ge0 => i iX; exact/bernoulli_ge0/bRV.
 Qed.
 
+(* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65 *)
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
 
 (* theorem 2.4 *)
