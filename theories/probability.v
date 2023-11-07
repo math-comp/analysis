@@ -1202,6 +1202,12 @@ rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (expR _)%:E.
 by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
 Qed.
 
+Theorem thm26 (X : seq {RV P >-> R}) (delta : R) n :
+  is_bernoulli_trial X n -> (0 < delta < 1)%R ->
+  let X' := @bernoulli_trial X in
+  let mu := 'E_P[X'] in
+  P [set i | X' i <= (1 - delta) * fine mu]%R <= (expR (-(fine mu * delta ^+ 2) / 2)%R)%:E.
+
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let n := size X in
@@ -1220,6 +1226,7 @@ have [p0|pn0] := eqVneq (p%:num) 0%R.
     rewrite lter_norml.
     rewrite (@le_trans _ _ 0 (-_))%R ?oppr_le0// ?andTb; last first.
       by rewrite mulr_ge0//; apply: (@bernoulli_trial_ge0 X n).
+    rewrite ler_pdivrMr ?ltr0n//.
     over.
   rewrite /=.
   (*by rewrite /= set_true probability_setT gee_addl// EFinN oppe_le0 lee_fin.*) admit. (*NB(rei): I maybe broke this*)
