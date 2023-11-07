@@ -1172,11 +1172,17 @@ rewrite ler_oppr opprB ler_subr_addl taylor_ln_le//.
 apply: (le_trans (@chernoff _ _ _ P X' delta ((1+delta) * fine mu) _)) => //; last first.
 rewrite /mmt_gen_fun.
 rewrite (_ : 'E_P[_] = (expR (delta * fine mu))%:E); last first.
-  admit.
+  rewrite /mu.
+admit.
 rewrite -EFinM -expRD lee_fin ler_expR mulrBl lerB//.
 rewrite mulrA ler_pM//.
 - by rewrite mulr_ge0 ?ln_ge0// ?addr_ge0// ?ler_addl// le_eqVlt delta0 orbT.
-- rewrite fine_ge0// /mu expectation_ge0// /X' => x. admit.
+- rewrite fine_ge0// /mu expectation_ge0// /X' => x.
+  rewrite /bernoulli_trial.
+  rewrite mfun_sum.
+  apply: sumr_ge0 => Xi _.
+  apply: bernoulli_ge0.
+  admit.
 - by rewrite mulrC ler_pM// ?le_ln1Dx ?ln_ge0 ?addr_ge0 ?ler_addl// le_eqVlt delta0 orbT.
 Admitted.
 
@@ -1198,6 +1204,10 @@ have [p0|pn0] := eqVneq (p%:num) 0%R.
     rewrite subr0 /X' /X_sum (@le_trans _ _ 0)%R//; last first.
     rewrite normr_le0.
     have -> : (\sum_(Xi <- X) Xi)%R x = 0%R.
+      rewrite mfun_sum.
+      apply /eqP.
+      rewrite psumr_eq0.
+      Search "sum" "eq0".
       admit.
     rewrite mul0r//.
     over.
