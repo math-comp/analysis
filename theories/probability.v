@@ -1232,7 +1232,7 @@ Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let X' x := (X_sum x) / n%:R in
   (0 < p%:num)%R ->
   is_bernoulli_trial X n ->
-  (0 <= delta <= 1)%R -> (0 < theta <= 1)%R -> (0 < n)%nat ->
+  (0 < delta <= 1)%R -> (0 < theta <= 1)%R -> (0 < n)%nat ->
   (3 / theta ^+ 2 * ln (2 / delta) <= n%:R)%R ->
   P [set i | `| X' i - p%:num | <= theta]%R >= 1 - delta%:E.
 Proof.
@@ -1286,29 +1286,23 @@ suff : delta%:E >= P [set i | (`|X' i - p%:num| >=(*NB: this >= in the pdf *) th
     apply/seteqP; split => [t|t]/=.
       by rewrite leNgt => /negP.
     by rewrite ltNge => /negP/negPn.
-  have ? : measurable [set i | (`|X' i - p%:num| <= theta)%R].
-    rewrite -[X in measurable X]setTI.
-    (*NB: we should be able to use a lemma like emeasurable_fun_infty_o
-      but the latter is for extended real numbers...*)
+  have ? : measurable [set i | (`|X' i - p%:num| < theta)%R].
     admit.
-  rewrite probability_setC//.
-  rewrite lee_subel_addr//.
-  rewrite lee_subel_addl//.
-  admit.
-  by rewrite fin_num_measure.
-  admit.
+    (* measurability of some set, use a lemma like emeasurable_fun_infty_o
+       but for real numbers (we only have it for extended real numbers..) *)
+  rewrite probability_setC// lee_subel_addr//.
+  rewrite -lee_subel_addl//; last by rewrite fin_num_measure.
+  move=> /le_trans; apply.
+  rewrite le_measure ?inE//.
+    admit. (* measurability goal similar to the above *)
+  by move=> t/= /ltW.
 (* NB: last step in the pdf *)
 apply: (le_trans step2).
 rewrite lee_fin -(mulr_natr _ 2) -ler_pdivl_mulr//.
-rewrite -(@lnK _ (delta / 2)); last first.
-  rewrite posrE divr_gt0//.
-  admit.
-rewrite ler_expR mulNr ler_oppl -lnV; last first.
-  rewrite posrE divr_gt0//.
-  admit.
+rewrite -(@lnK _ (delta / 2)); last by rewrite posrE divr_gt0.
+rewrite ler_expR mulNr ler_oppl -lnV; last by rewrite posrE divr_gt0.
 rewrite invf_div ler_pdivl_mulr// mulrC.
-rewrite -ler_pdivr_mulr; last first.
-  admit.
+rewrite -ler_pdivr_mulr; last by rewrite exprn_gt0.
 by rewrite mulrAC.
 Admitted.
 
