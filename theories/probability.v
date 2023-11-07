@@ -1211,9 +1211,9 @@ Proof.
 move=> bX /andP[delta0 delta1] /=.
 set X' := @bernoulli_trial X.
 set mu := 'E_P[X'].
-have := @chernoff _ _ _ P X' 1%R ((1-delta)*fine mu)%R.
+have delta110 : (1 < 1 + delta)%R by rewrite ltrDl.
+have := @chernoff _ _ _ P X' (ln (1+delta))%R ((1-delta)*fine mu)%R (ln_gt0 delta110).
 rewrite /mmt_gen_fun.
-rewrite mul1r.
 Admitted.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
