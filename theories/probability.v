@@ -1190,8 +1190,8 @@ Proof.
 move=> bX X' mu n0 /andP[delta0 delta1].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
   (*TODO: using thm24 *)
-  Search (powR _ _) (expR _).
-  admit.
+  rewrite expR_powR expRB (mulrC _ (ln _)) expR_powR lnK; last rewrite posrE addr_gt0//.
+  apply: thm24.
 apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   rewrite lee_fin ler_expR ler_wpmul2r//.
     by rewrite fine_ge0//; apply: expectation_ge0 => t; exact: (bernoulli_trial_ge0 bX).
@@ -1199,30 +1199,7 @@ apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   exact: taylor_ln_le.
 rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (expR _)%:E.
 by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
-
-
-rewrite [leRHS](_ : _ = (expR (-(delta^+2 / 3) * fine mu)) %:E); last by rewrite !mulNr (mulrC _ (fine mu)) [in RHS]mulrA.
-apply: (@le_trans _ _ (expR ((delta - (1+delta) * ln (1 + delta)) * fine mu))%:E); last first.
-rewrite lee_fin.
-rewrite /mu /X' (expectation_bernoulli_trial bX) /fine.
-have [->|p0] := eqVneq p%:num 0%R.
-  by rewrite !mulr0.
-rewrite ler_expR ler_pmul2r; last first.
-  rewrite mulr_gt0// ?ltr0n//.
-  by rewrite lt_neqAle eq_sym p0 andTb.
-rewrite ler_oppr opprB ler_subr_addl taylor_ln_le//.
-apply: (le_trans (@chernoff _ _ _ P X' delta ((1+delta) * fine mu) _)) => //; last first.
-rewrite /mmt_gen_fun.
-rewrite (_ : 'E_P[_] = (expR (delta * fine mu))%:E); last first.
-  rewrite /mu.
-  admit.
-rewrite -EFinM -expRD lee_fin ler_expR mulrBl ler_sub//.
-rewrite mulrA ler_pmul//.
-- by rewrite mulr_ge0 ?ln_ge0// ?addr_ge0// ?ler_addl// le_eqVlt delta0 orbT.
-- rewrite fine_ge0// /mu expectation_ge0// => t; rewrite /X'.
-  exact: (bernoulli_trial_ge0 bX).
-- by rewrite mulrC ler_pmul// ?le_ln1Dx ?ln_ge0 ?addr_ge0 ?ler_addl// le_eqVlt delta0 orbT.
-Admitted.
+Qed.
 
 (* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
