@@ -1345,7 +1345,7 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
   rewrite powRM ?expR_ge0 ?invr_ge0 ?powR_ge0//.
   rewrite -expR_powR.
   rewrite -powR_inv1 ?powR_ge0// -!powRrM.
-  rewrite mulN1r mulrN lnK.
+  rewrite mulN1r mulrN lnK; last by rewrite posrE subr_gt0.
   rewrite -[in leLHS]mulrN -mulrA.
   (* this looks like the end of thm24, there is maybe something to share
 (expR (expR t - 1) `^ fine mu)%:E *
