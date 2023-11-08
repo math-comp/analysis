@@ -1242,6 +1242,25 @@ Admitted.
 Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
 Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
 
+Lemma end_thm24 (X_ : seq {RV P >-> R}) n (t delta : R) :
+  is_bernoulli_trial X_ n ->
+  (0 < delta)%R ->
+  let X := @bernoulli_trial X_ in
+  let mu := 'E_P[X] in
+  let t := ln (1 + delta) in
+  (expR (expR t - 1) `^ fine mu)%:E *
+    (expR (- t * (1 + delta)) `^ fine mu)%:E <=
+    ((expR delta / (1 + delta) `^ (1 + delta)) `^ fine mu)%:E.
+Proof.
+move=> bX d0 /=.
+rewrite -EFinM lee_fin -powRM ?expR_ge0// ge0_ler_powR ?nnegrE//.
+- by rewrite fine_ge0// expectation_ge0// => x; exact: (bernoulli_trial_ge0 bX).
+- by rewrite mulr_ge0// expR_ge0.
+- by rewrite divr_ge0 ?expR_ge0// powR_ge0.
+- rewrite lnK ?posrE ?addr_gt0// addrAC subrr add0r ler_wpmul2l ?expR_ge0//.
+  by rewrite -powRN mulNr -mulrN expR_powR lnK// posrE addr_gt0.
+Qed.
+
 (* theorem 2.4 *)
 Theorem thm24 (X_ : seq {RV P >-> R}) n (delta : R) :
   is_bernoulli_trial X_ n ->
@@ -1262,12 +1281,7 @@ apply: (@le_trans _ _ ((expR (fine mu * (expR t - 1)))%:E *
   rewrite lee_pmul2r ?lte_fin ?expR_gt0//.
   by apply: (lm23 _ bX); rewrite le_eqVlt t0 orbT.
 rewrite mulrC expR_powR -mulNr mulrA expR_powR.
-rewrite -EFinM lee_fin -powRM ?expR_ge0// ge0_ler_powR ?nnegrE//.
-- by rewrite fine_ge0// expectation_ge0// => x; exact: (bernoulli_trial_ge0 bX).
-- by rewrite mulr_ge0// expR_ge0.
-- by rewrite divr_ge0 ?expR_ge0// powR_ge0.
-- rewrite lnK ?posrE ?addr_gt0// addrAC subrr add0r ler_wpmul2l ?expR_ge0//.
-  by rewrite -powRN mulNr -mulrN expR_powR lnK// posrE addr_gt0.
+exact: (end_thm24 _ bX).
 Qed.
 
 (* theorem 2.5 *)
@@ -1327,7 +1341,11 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
     move: bX => [bX1 [bX2 bX3]].
     rewrite bX2 lee_fin ler_wpmul2r ?invr_ge0 ?expR_ge0//.
     admit. (* alessandro: we maybe already dealt with something similar *)
-  (* this looks like the end of thm24, there is maybe something to share *)
+  (* this looks like the end of thm24, there is maybe something to share
+(expR (expR t - 1) `^ fine mu)%:E *
+  (expR (- t * (1 + delta)) `^ fine mu)%:E <=
+  ((expR delta / (1 + delta) `^ (1 + delta)) `^ fine mu)%:E
+ *)
   admit.
 rewrite lee_fin.
 rewrite -mulrN -mulrA [in leRHS]mulrC expR_powR ge0_ler_powR// ?nnegrE.
