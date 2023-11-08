@@ -1246,7 +1246,7 @@ Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
 Theorem thm24 (X_ : seq {RV P >-> R}) n (delta : R) :
   is_bernoulli_trial X_ n ->
   (0 < delta)%R ->
-  let X := @bernoulli_trial X_ (*NB: independence? *) in
+  let X := @bernoulli_trial X_ in
   let mu := 'E_P[X] in
   P [set i | X i >= (1 + delta) * fine mu]%R <=
   ((expR delta / ((1 + delta) `^ (1 + delta))) `^ (fine mu))%:E.
@@ -1314,11 +1314,7 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
     P [set i | (X' i <= (1 - delta) * fine mu)%R] = P [set i | ((expR \o t \o* X') i >= expR (t * (1 - delta) * fine mu))%R].
     move=> t0; apply: congr1; apply: eq_set => x /=.
     rewrite ler_expR (mulrC _ t) -mulrA.
-    apply/eqP.
-    rewrite ler_wnmul2l.
-       admit.
-      rewrite le_eqVlt t0 orbT//.
-      admit.
+    by rewrite -[in RHS]ler_ndivrMl// mulrA mulVf ?lt_eqF// mul1r.
   set t := ln (1 - delta).
   have ln1delta : (t < 0)%R.
     (* TODO: lacking a lemma here *)
@@ -1415,7 +1411,7 @@ Proof.
 move=> n X_sum X' p0 bX /andP[delta0 delta1] theta0 n0 tdn.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum/=; last first.
-    by move=> Xi XiX; exact: integrable_bernoulli (bX.1 Xi XiX).
+    by move=> Xi XiX; exact: integrabl e_bernoulli (bX.1 Xi XiX).
   rewrite big_seq.
   under eq_bigr.
     move=> Xi XiX; rewrite (bernoulli_expectation (bX.1 _ XiX)); over.
