@@ -1194,7 +1194,10 @@ Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta 
 
 Lemma expR_prod (X : seq {RV P >-> R}) (f : {RV P >-> R} -> R) :
   (\prod_(x <- X) expR (f x) = expR (\sum_(x <- X) f x))%R.
-Admitted.
+Proof.
+elim: X => [|h t ih]; first by rewrite !big_nil expR0.
+by rewrite !big_cons ih expRD.
+Qed.
 
 Lemma bernoulli_mmt_gen_fun (X : {RV P >-> R}) (t : R) :
   (0 <= t)%R ->
