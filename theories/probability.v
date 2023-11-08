@@ -1236,12 +1236,12 @@ move: t0; rewrite le_eqVlt => /predU1P[<-|t0].
   by rewrite expR0 subrr !mulr0.
 rewrite ler_expR ler_pmul2r; last first.
   by rewrite subr_gt0 -expR0 ltr_expR.
-rewrite /mu.
-rewrite expectation_sum.
-rewrite -sum_fine.
-rewrite !big_seq ler_sum// => Xi XiX.
-rewrite bernoulli_expectation //=; exact: bX1.
-Admitted.
+rewrite /mu big_seq expectation_sum; last first.
+  move=> Xi XiX; apply: integrable_bernoulli; exact: bX1.
+rewrite big_seq -sum_fine.
+  by apply: ler_sum => Xi XiX; rewrite bernoulli_expectation //=; exact: bX1.
+move=> Xi XiX. rewrite bernoulli_expectation //=; exact: bX1.
+Qed.
 
 Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
 Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
