@@ -1819,7 +1819,7 @@ Notation emeasurable_fun_funeneg := measurable_funeneg (only parsing).
 Notation measurable_fun_lim_esup := measurable_fun_limn_esup (only parsing).
 
 Section lebesgue_regularity.
-Context {d : measure_display} {R : realType}.
+Context {R : realType}.
 Let mu := [the measure _ _ of @lebesgue_measure R].
 
 Local Open Scope ereal_scope.
