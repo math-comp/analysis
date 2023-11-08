@@ -1194,14 +1194,14 @@ Admitted.
 
 (* theorem 2.4 *)
 Theorem thm24 (X_ : seq {RV P >-> R}) n (delta t : R) :
-  (0 < delta)%R -> (0 < t)%R ->
   is_bernoulli_trial X_ n ->
+  (0 < delta)%R -> (0 < t)%R ->
   let X := @bernoulli_trial X_ (*NB: independence? *) in
   let mu := 'E_P[X] in
   P [set i | X i >= (1 + delta) * fine mu]%R <=
   ((expR delta / (1 + delta) `^ (1 + delta)) `^ (fine mu))%:E.
 Proof.
-rewrite /= => delta0 t0 bX.
+rewrite /= => bX delta0 t0.
 set X := @bernoulli_trial X_.
 set mu := 'E_P[X].
 apply: (le_trans (chernoff _ _ t0)).
@@ -1226,7 +1226,7 @@ Proof.
 move=> bX X' mu n0 /andP[delta0 delta1].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
   rewrite expR_powR expRB (mulrC _ (ln _)) expR_powR lnK; last rewrite posrE addr_gt0//.
-  apply: thm24 => //.
+  apply: (thm24 bX) => //.
 apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   rewrite lee_fin ler_expR ler_wpmul2r//.
     by rewrite fine_ge0//; apply: expectation_ge0 => t; exact: (bernoulli_trial_ge0 bX).
@@ -1247,7 +1247,7 @@ set X' := @bernoulli_trial X.
 set mu := 'E_P[X'].
 have delta110 : (1 < 1 + delta)%R by rewrite ltr_addl.
 have := @chernoff _ _ _ P X' (ln (1+delta))%R ((1-delta)*fine mu)%R (ln_gt0 delta110).
-rewrite /mmt_gen_fun.
+
 Admitted.
 
 Lemma measurable_fun_le D (f g : T -> R) : d.-measurable D -> measurable_fun D f -> measurable_fun D g ->
