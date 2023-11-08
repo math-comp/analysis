@@ -979,7 +979,7 @@ Lemma cvg_expr (R : archiFieldType) (z : R) :
   `|z| < 1 -> (GRing.exp z : R ^nat) --> (0 : R).
 Proof.
 move=> Nz_lt1; apply/norm_cvg0P; pose t := (1 - `|z|).
-apply: (@squeeze_cvgr _ _ _ _ (cst 0) _ (t^-1 *: @harmonic R)); last 2 first.
+apply: (@squeeze_cvgr _ _ _ _ (cst 0) (t^-1 *: @harmonic R)); last 2 first.
 - exact: cvg_cst.
 - by rewrite -(scaler0 _ t^-1); exact: (cvgZr cvg_harmonic).
 near=> n; rewrite normr_ge0 normrX/= ler_pdivl_mull ?subr_gt0//.
