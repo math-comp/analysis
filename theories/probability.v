@@ -1206,8 +1206,20 @@ by rewrite !big_cons ih expRD.
 Qed.
 
 Lemma bernoulli_mmt_gen_fun (X : {RV P >-> R}) (t : R) :
-  (0 <= t)%R ->
   bernoulli_RV X -> 'E_P[expR \o t \o* X] = (p%:num * expR t + (1-p%:num))%:E.
+Admitted.
+
+Lemma binomial_mmt_gen_fun (X_ : seq {RV P >-> R}) n (t : R) :
+  is_bernoulli_trial X_ n ->
+  let X := bernoulli_trial X_ : {RV P >-> R} in
+  mmt_gen_fun X t = ((p%:num * expR t + (1-p%:num))`^(n%:R))%:E.
+Proof.
+rewrite /is_bernoulli_trial /independent_RVs /bernoulli_trial.
+move=> [bX1 [bX2 bX3]] /=.
+rewrite -[LHS]fineK; last admit.
+rewrite bX2 big_seq.
+apply: congr1.
+under eq_bigr => Xi XiX do rewrite (bernoulli_mmt_gen_fun _ (bX1 _ _))//=.
 Admitted.
 
 Lemma lm23 (X_ : seq {RV P >-> R}) (t : R) n :
@@ -1217,16 +1229,16 @@ Lemma lm23 (X_ : seq {RV P >-> R}) (t : R) n :
   let mu := 'E_P[X] in
   mmt_gen_fun X t <= (expR (fine mu * (expR t - 1)))%:E.
 Proof.
-rewrite /= => t0 [bX1 [bX2 bX3]].
+rewrite /= => t0 bX. (*[bX1 [bX2 bX3]].*)
 set X := bernoulli_trial X_.
 set mu := 'E_P[X].
 have -> : @mmt_gen_fun _ _ _ P X t = (\prod_(Xi <- X_) fine (mmt_gen_fun Xi t))%:E.
-  rewrite /mmt_gen_fun -[LHS]fineK; last admit.
-  apply: congr1; apply: bX2 => //.
+  rewrite -[LHS]fineK; last rewrite (binomial_mmt_gen_fun _ bX)//.
+  apply: congr1; apply: bX.2.1 => //.
 under eq_big_seq => Xi XiX.
   have -> : @mmt_gen_fun _ _ _ P Xi t = (1 + p%:num * (expR t - 1))%:E.
     rewrite /mmt_gen_fun.
-    rewrite bernoulli_mmt_gen_fun//; last exact: bX1.
+    rewrite bernoulli_mmt_gen_fun//; last exact: bX.1.
     apply: congr1.
     by rewrite mulrBr mulr1 addrCA.
   over.
@@ -1242,11 +1254,11 @@ move: t0; rewrite le_eqVlt => /predU1P[<-|t0].
 rewrite ler_expR ler_pmul2r; last first.
   by rewrite subr_gt0 -expR0 ltr_expR.
 rewrite /mu big_seq expectation_sum; last first.
-  move=> Xi XiX; apply: integrable_bernoulli; exact: bX1.
+  move=> Xi XiX; apply: integrable_bernoulli; exact: bX.1.
 rewrite big_seq -sum_fine.
-  by apply: ler_sum => Xi XiX; rewrite bernoulli_expectation //=; exact: bX1.
-move=> Xi XiX. rewrite bernoulli_expectation //=; exact: bX1.
-Admitted.
+  by apply: ler_sum => Xi XiX; rewrite bernoulli_expectation //=; exact: bX.1.
+move=> Xi XiX. rewrite bernoulli_expectation //=; exact: bX.1.
+Qed.
 
 Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
 Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
@@ -1351,7 +1363,7 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
     rewrite EFinM lee_pdivl_mulr ?expR_gt0// muleC fineK.
     apply: (@markov _ _ _ P (expR \o t \o* X' : {RV P >-> R}) id (expR (t * (1 - delta) * fine mu))%R _ _ _ _) => //.
     - apply: expR_gt0.
-    - rewrite norm_expR. admit.
+    - rewrite norm_expR. rewrite bernoulli_mmt_gen_fun//.
   apply: (@le_trans _ _ (((expR ((expR t - 1) * fine mu)) / (expR (t * (1 - delta) * fine mu))))%:E).
     rewrite norm_expR lee_fin ler_wpmul2r ?invr_ge0 ?expR_ge0//.
     admit. (* alessandro: we maybe already dealt with something similar *)
