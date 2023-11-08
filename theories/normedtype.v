@@ -5007,7 +5007,7 @@ Section FilterRealType.
 Context {T : Type} {a : set (set T)} {Fa : Filter a} {R : realFieldType}.
 Implicit Types f g h : T -> R.
 
-Lemma squeeze_cvgr f g h : (\near a, f a <= g a <= h a) ->
+Lemma squeeze_cvgr f h g : (\near a, f a <= g a <= h a) ->
   forall (l : R), f @ a --> l -> h @ a --> l -> g @ a --> l.
 Proof.
 move=> fgh l lfa lga; apply/cvgrPdist_lt => e e_gt0.

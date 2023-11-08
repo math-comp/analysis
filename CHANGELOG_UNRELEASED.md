@@ -84,6 +84,9 @@
 - in `lebesgue_measure.v`:
   + remove one argument of `lebesgue_regularity_inner_sup`
 
+- in `normedtype.v`:
+  + order of arguments of `squeeze_cvgr`
+
 ### Renamed
 
 - in `charge.v`
