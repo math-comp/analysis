@@ -81,6 +81,9 @@
 - in `lebesgue_integral.v`:
   + order of arguments in the lemma `le_abse_integral`
 
+- in `lebesgue_measure.v`:
+  + remove one argument of `lebesgue_regularity_inner_sup`
+
 ### Renamed
 
 - in `charge.v`

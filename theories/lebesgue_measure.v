@@ -1977,7 +1977,7 @@ rewrite -{1}(setDKU BA) (@le_trans _ _ (mu B + mu (A `\` B)))//.
 by rewrite lee_add//; [apply: ereal_sup_ub => /=; exists B|exact/ltW].
 Qed.
 
-Lemma lebesgue_regularity_inner_sup (D : set R) (eps : R) : measurable D ->
+Lemma lebesgue_regularity_inner_sup (D : set R) : measurable D ->
   mu D = ereal_sup [set mu K | K in [set K | compact K /\ K `<=` D]].
 Proof.
 move=> mD; have [?|] := ltP (mu D) +oo.
