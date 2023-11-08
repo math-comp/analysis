@@ -1213,11 +1213,8 @@ rewrite /= => t0 [bX1 [bX2 bX3]].
 set X := bernoulli_trial X_.
 set mu := 'E_P[X].
 have -> : @mmt_gen_fun _ _ _ P X t = (\prod_(Xi <- X_) fine (mmt_gen_fun Xi t))%:E.
-  rewrite /mmt_gen_fun.
-  red in bX2.
-  rewrite -[LHS]fineK; last admit.
-  apply: congr1.
-  apply: bX2 => //.
+  rewrite /mmt_gen_fun -[LHS]fineK; last admit.
+  apply: congr1; apply: bX2 => //.
 under eq_big_seq => Xi XiX.
   have -> : @mmt_gen_fun _ _ _ P Xi t = (1 + p%:num * (expR t - 1))%:E.
     rewrite /mmt_gen_fun.
