@@ -1243,6 +1243,9 @@ rewrite !big_seq ler_sum// => Xi XiX.
 rewrite bernoulli_expectation //=; exact: bX1.
 Admitted.
 
+Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
+Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
+
 (* theorem 2.4 *)
 Theorem thm24 (X_ : seq {RV P >-> R}) n (delta t : R) :
   is_bernoulli_trial X_ n ->
@@ -1259,10 +1262,9 @@ apply: (le_trans (chernoff _ _ t0)).
 apply: (@le_trans _ _ ((expR (fine mu * (expR t - 1)))%:E * (expR (- (t * ((1 + delta) * fine mu))))%:E) ).
   rewrite lee_pmul2r ?lte_fin ?expR_gt0//.
   by apply: (lm23 _ bX); rewrite le_eqVlt t0 orbT.
+rewrite -EFinM -expRD lee_fin powRM ?expR_ge0 ?invr_ge0 ?powR_ge0//.
+rewrite -expR_powR -powRN -powRrM.
 Admitted.
-
-Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
-Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
 
 (* theorem 2.5 *)
 Theorem poisson_ineq (X : seq {RV P >-> R}) (delta : R) n :
