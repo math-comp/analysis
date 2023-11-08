@@ -547,7 +547,7 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 
 Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) :
     (0 < eps)%R ->
-    measurable_fun [set: R] f -> (forall r, 0 <= f r)%R ->
+    measurable_fun [set: R] f -> (forall r, 0 <= r -> 0 <= f r)%R ->
     {in Num.nneg &, {homo f : x y / x <= y}}%R ->
   (f eps)%:E * P [set x | eps%:E <= `| (X x)%:E | ] <=
     'E_P[f \o (fun x => `| x |%R) \o X].
@@ -590,7 +590,7 @@ have h (Y : {RV P >-> R}) :
   rewrite exprnN expfV exprz_inv opprK -exprnP.
   apply: (@le_trans _ _ ('E_P[(@GRing.exp R ^~ 2%N \o normr) \o Y])).
     apply: (@markov Y (@GRing.exp R ^~ 2%N)) => //.
-    - by move=> r; apply: sqr_ge0.
+    - by move=> r _; apply: sqr_ge0.
     - move=> x y; rewrite !nnegrE => x0 y0.
       by rewrite ler_sqr.
   apply: expectation_le => //.
@@ -1157,6 +1157,12 @@ move=> mA; rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI A) -measureD ?se
 by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
 Qed.
 
+Lemma probability_setC' A : d.-measurable A -> P A = 1 - P (~` A).
+Proof.
+move=> mA. rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI (~` A)) -measureD ?setTD ?setCK//; first exact: measurableC.
+by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
+Qed.
+
 Definition independent_RVs (X : seq {RV P >-> R}) := forall t,
     (fine ('E_P[expR \o t \o* \sum_(Xi <- X) Xi]) = \prod_(Xi <- X) fine ('E_P[expR \o t \o* Xi]))%R.
 
@@ -1316,6 +1322,9 @@ Proof.
 by move=> x y; rewrite !posrE => x0 y0; rewrite lnM ?posrE ?invr_gt0// lnV ?posrE.
 Qed.
 
+Lemma norm_expR : normr \o expR = (expR : R -> R).
+Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
+
 Theorem thm26 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
   let X' := @bernoulli_trial X in
@@ -1328,9 +1337,9 @@ set mu := 'E_P[X'].
 apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine mu))%:E)).
   (* using Markov's inequality somewhere, see mu's book page 66 *)
   have H1 t : (t < 0)%R ->
-    P [set i | (X' i <= (1 - delta) * fine mu)%R] = P [set i | ((expR \o t \o* X') i >= expR (t * (1 - delta) * fine mu))%R].
+    P [set i | (X' i <= (1 - delta) * fine mu)%R] = P [set i | `|(expR \o t \o* X') i|%:E >= (expR (t * (1 - delta) * fine mu))%:E].
     move=> t0; apply: congr1; apply: eq_set => x /=.
-    rewrite ler_expR (mulrC _ t) -mulrA.
+    rewrite lee_fin ger0_norm ?expR_ge0// ler_expR (mulrC _ t) -mulrA.
     by rewrite -[in RHS]ler_ndivrMl// mulrA mulVf ?lt_eqF// mul1r.
   set t := ln (1 - delta).
   have ln1delta : (t < 0)%R.
@@ -1338,27 +1347,18 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
     rewrite -oppr0 ltr_oppr -lnV ?posrE ?subr_gt0// ln_gt0//.
     by rewrite invf_gt1// ?subr_gt0// ltr_subl_addr ltr_addl.
   have {H1}-> := H1 _ ln1delta.
-  apply: (@le_trans _ _ (((fine 'E_P[expR \o t \o* X']) / (expR (t * (1 - delta) * fine mu))))%:E).
-    admit.
-  apply: (@le_trans _ _ (((expR (expR t - 1)) / (expR (t * (1 - delta) * fine mu))))%:E).
-    move: bX => [bX1 [bX2 bX3]].
-    rewrite bX2 lee_fin ler_wpmul2r ?invr_ge0 ?expR_ge0//.
+  apply: (@le_trans _ _ (((fine 'E_P[normr \o expR \o t \o* X']) / (expR (t * (1 - delta) * fine mu))))%:E).
+    rewrite EFinM lee_pdivl_mulr ?expR_gt0// muleC fineK.
+    apply: (@markov _ _ _ P (expR \o t \o* X' : {RV P >-> R}) id (expR (t * (1 - delta) * fine mu))%R _ _ _ _) => //.
+    - apply: expR_gt0.
+    - rewrite norm_expR. admit.
+  apply: (@le_trans _ _ (((expR ((expR t - 1) * fine mu)) / (expR (t * (1 - delta) * fine mu))))%:E).
+    rewrite norm_expR lee_fin ler_wpmul2r ?invr_ge0 ?expR_ge0//.
     admit. (* alessandro: we maybe already dealt with something similar *)
-  rewrite -expRN powRM ?expR_ge0 ?invr_ge0 ?powR_ge0// !EFinM.
-  rewrite -expR_powR.
-  rewrite -powR_inv1 ?powR_ge0// -!powRrM.
-  rewrite mulN1r mulrN lnK; last by rewrite posrE subr_gt0.
-  rewrite -[in leLHS]mulrN -mulrA.
-  rewrite addrAC subrr sub0r expR_powR lnK.
-  rewrite mulrN lee_wpmul2r ?lee_fin ?powR_ge0//.
-  rewrite ler_expR ler_nMr ?oppr_lt0//.
-
-  (* this looks like the end of thm24, there is maybe something to share
-(expR (expR t - 1) `^ fine mu)%:E *
-  (expR (- t * (1 + delta)) `^ fine mu)%:E <=
-  ((expR delta / (1 + delta) `^ (1 + delta)) `^ fine mu)%:E
- *)
-  admit.
+  rewrite !lnK ?posrE ?subr_gt0//.
+  rewrite -addrAC subrr sub0r -mulrA [X in (_ / X)%R]expR_powR lnK ?posrE ?subr_gt0//.
+  rewrite -[in leRHS]powR_inv1 ?powR_ge0// powRM// ?expR_ge0 ?invr_ge0 ?powR_ge0//.
+  by rewrite powRAC powR_inv1 ?powR_ge0// powRrM expR_powR.
 rewrite lee_fin.
 rewrite -mulrN -mulrA [in leRHS]mulrC expR_powR ge0_ler_powR// ?nnegrE.
 - by rewrite fine_ge0// expectation_ge0// => x; exact: (bernoulli_trial_ge0 bX).
@@ -1368,7 +1368,7 @@ rewrite -mulrN -mulrA [in leRHS]mulrC expR_powR ge0_ler_powR// ?nnegrE.
   rewrite expRK// ln_div ?posrE ?expR_gt0 ?powR_gt0 ?subr_gt0//.
   rewrite expRK//.
   rewrite /powR (*TODO: lemma ln of powR*) gt_eqF ?subr_gt0// expRK.
-  (* see p.66 of mu's book *)
+  (* requires analytical argument: see p.66 of mu's book *)
   admit.
 Admitted.
 
