@@ -41,6 +41,31 @@ Reserved Notation "{ 'dmfun' aT >-> T }"
 Reserved Notation "'{' 'dRV' P >-> R '}'"
   (at level 0, format "'{' 'dRV'  P  '>->'  R '}'").
 
+Notation "\prod_ ( i <- r | P ) F" :=
+  (\big[*%E/1%:E]_(i <- r | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( i <- r ) F" :=
+  (\big[*%E/1%:E]_(i <- r) F%E) : ereal_scope.
+Notation "\prod_ ( m <= i < n | P ) F" :=
+  (\big[*%E/1%:E]_(m <= i < n | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( m <= i < n ) F" :=
+  (\big[*%E/1%:E]_(m <= i < n) F%E) : ereal_scope.
+Notation "\prod_ ( i | P ) F" :=
+  (\big[*%E/1%:E]_(i | P%B) F%E) : ereal_scope.
+Notation "\prod_ i F" :=
+  (\big[*%E/1%:E]_i F%E) : ereal_scope.
+Notation "\prod_ ( i : t | P ) F" :=
+  (\big[*%E/1%:E]_(i : t | P%B) F%E) (only parsing) : ereal_scope.
+Notation "\prod_ ( i : t ) F" :=
+  (\big[*%E/1%:E]_(i : t) F%E) (only parsing) : ereal_scope.
+Notation "\prod_ ( i < n | P ) F" :=
+  (\big[*%E/1%:E]_(i < n | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( i < n ) F" :=
+  (\big[*%E/1%:E]_(i < n) F%E) : ereal_scope.
+Notation "\prod_ ( i 'in' A | P ) F" :=
+  (\big[*%E/1%:E]_(i in A | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( i 'in' A ) F" :=
+  (\big[*%E/1%:E]_(i in A) F%E) : ereal_scope.
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -1132,8 +1157,13 @@ move=> mA; rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI A) -measureD ?se
 by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
 Qed.
 
+Definition independent_RVs (X : seq {RV P >-> R}) := forall t,
+  (0 <= t)%R ->
+    (fine ('E_P[expR \o t \o* \sum_(Xi <- X) Xi]) = \prod_(Xi <- X) fine ('E_P[expR \o t \o* Xi]))%R.
+
 Definition is_bernoulli_trial (X : seq {RV P >-> R}) n :=
   (forall Xi, Xi \in X -> bernoulli_RV Xi) /\
+    independent_RVs X /\
     size X = n(*NB: used n.-tuple instead of seq*).
 
 Definition bernoulli_trial (X : seq {RV P >-> R}) :=
@@ -1142,7 +1172,7 @@ Definition bernoulli_trial (X : seq {RV P >-> R}) :=
 Lemma expectation_bernoulli_trial (X : seq {RV P >-> R}) n :
   is_bernoulli_trial X n -> 'E_P[@bernoulli_trial X] = (n%:R * p%:num)%:E.
 Proof.
-move=> [bRV Xn]; rewrite expectation_sum; last first.
+move=> [bRV [_ Xn]]; rewrite expectation_sum; last first.
   by move=> Xi XiX; exact: (integrable_bernoulli (bRV _ XiX)).
 under eq_big_seq => Xi XiX.
   by rewrite (bernoulli_expectation (bRV Xi _))//; over.
@@ -1167,6 +1197,11 @@ Lemma expR_prod (X : seq {RV P >-> R}) (f : {RV P >-> R} -> R) :
   (\prod_(x <- X) expR (f x) = expR (\sum_(x <- X) f x))%R.
 Admitted.
 
+Lemma bernoulli_mmt_gen_fun (X : {RV P >-> R}) (t : R) :
+  (0 <= t)%R ->
+  bernoulli_RV X -> 'E_P[expR \o t \o* X] = (p%:num * expR t + (1-p%:num))%:E.
+Admitted.
+
 Lemma lm23 (X_ : seq {RV P >-> R}) (t : R) n :
   (0 <= t)%R ->
   is_bernoulli_trial X_ n ->
@@ -1174,22 +1209,38 @@ Lemma lm23 (X_ : seq {RV P >-> R}) (t : R) n :
   let mu := 'E_P[X] in
   mmt_gen_fun X t <= (expR (fine mu * (expR t - 1)))%:E.
 Proof.
-rewrite /= => t0 bX.
+rewrite /= => t0 [bX1 [bX2 bX3]].
 set X := bernoulli_trial X_.
 set mu := 'E_P[X].
-have -> : mmt_gen_fun X t = (\prod_(Xi <- X_) fine (mmt_gen_fun Xi t))%:E.
-  admit.
+have -> : @mmt_gen_fun _ _ _ P X t = (\prod_(Xi <- X_) fine (mmt_gen_fun Xi t))%:E.
+  rewrite /mmt_gen_fun.
+  red in bX2.
+  rewrite -[LHS]fineK; last admit.
+  apply: congr1.
+  apply: bX2 => //.
 under eq_big_seq => Xi XiX.
-  have -> : mmt_gen_fun Xi t = (1 + p%:num * (expR t - 1))%:E.
-    admit.
+  have -> : @mmt_gen_fun _ _ _ P Xi t = (1 + p%:num * (expR t - 1))%:E.
+    rewrite /mmt_gen_fun.
+    rewrite bernoulli_mmt_gen_fun//; last exact: bX1.
+    apply: congr1.
+    by rewrite mulrBr mulr1 addrCA.
   over.
 rewrite lee_fin /=.
-apply: (le_trans (@ler_prod _ _ _ _ _ (fun x => expR (p%:num * expR (t - 1)))%R _)).
+apply: (le_trans (@ler_prod _ _ _ _ _ (fun x => expR (p%:num * (expR t - 1)))%R _)).
   move=> Xi _.
   rewrite addr_ge0 ?mulr_ge0 ?subr_ge0 ?andTb//; last first.
     rewrite -expR0 ler_expR//.
-  admit.
+  by rewrite expR_ge1Dx ?mulr_ge0// subr_ge0 -expR0 ler_expR.
 rewrite expR_prod -mulr_suml.
+move: t0; rewrite le_eqVlt => /predU1P[<-|t0].
+  by rewrite expR0 subrr !mulr0.
+rewrite ler_expR ler_pmul2r; last first. 
+  by rewrite subr_gt0 -expR0 ltr_expR.
+rewrite /mu.
+rewrite expectation_sum.
+rewrite -sum_fine.
+rewrite !big_seq ler_sum// => Xi XiX.
+rewrite bernoulli_expectation //=; exact: bX1.
 Admitted.
 
 (* theorem 2.4 *)
