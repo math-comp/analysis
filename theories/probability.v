@@ -1339,12 +1339,12 @@ Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 
 Theorem thm26 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
-  let X' := @bernoulli_trial X in
+  let X' := @bernoulli_trial X : {RV P >-> R} in
   let mu := 'E_P[X'] in
   P [set i | X' i <= (1 - delta) * fine mu]%R <= (expR (-(fine mu * delta ^+ 2) / 2)%R)%:E.
 Proof.
 move=> bX /andP[delta0 delta1] /=.
-set X' := @bernoulli_trial X.
+set X' := @bernoulli_trial X : {RV P >-> R}.
 set mu := 'E_P[X'].
 apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine mu))%:E)).
   (* using Markov's inequality somewhere, see mu's book page 66 *)
@@ -1363,9 +1363,22 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
     rewrite EFinM lee_pdivl_mulr ?expR_gt0// muleC fineK.
     apply: (@markov _ _ _ P (expR \o t \o* X' : {RV P >-> R}) id (expR (t * (1 - delta) * fine mu))%R _ _ _ _) => //.
     - apply: expR_gt0.
-    - rewrite norm_expR. rewrite bernoulli_mmt_gen_fun//.
+    - rewrite norm_expR.
+      have -> : 'E_P[expR \o t \o* X'] = mmt_gen_fun X' t by [].
+      by rewrite (binomial_mmt_gen_fun _ bX).
   apply: (@le_trans _ _ (((expR ((expR t - 1) * fine mu)) / (expR (t * (1 - delta) * fine mu))))%:E).
     rewrite norm_expR lee_fin ler_wpmul2r ?invr_ge0 ?expR_ge0//.
+    have -> : 'E_P[expR \o t \o* X'] = mmt_gen_fun X' t by [].
+    rewrite (binomial_mmt_gen_fun _ bX)/=.
+    rewrite /mu /X' (expectation_bernoulli_trial bX)/=.
+    rewrite !lnK ?posrE ?subr_gt0//.
+    rewrite expR_powR powRrM powRAC.
+    rewrite ge0_ler_powR ?ler0n// ?nnegrE ?powR_ge0//.
+      by rewrite addr_ge0 ?mulr_ge0// subr_ge0// ltW.
+    rewrite addrAC subrr sub0r -expR_powR.
+    rewrite addrCA -{2}(mulr1 (p%:num)) -mulrBr addrAC subrr sub0r mulrC mulNr.
+    rewrite expR_ge1Dx//.
+    (* 0 <= - (delta * p%:num) ?! *)
     admit. (* alessandro: we maybe already dealt with something similar *)
   rewrite !lnK ?posrE ?subr_gt0//.
   rewrite -addrAC subrr sub0r -mulrA [X in (_ / X)%R]expR_powR lnK ?posrE ?subr_gt0//.
@@ -1453,7 +1466,7 @@ Proof.
 move=> n X_sum X' p0 bX /andP[delta0 delta1] theta0 n0 tdn.
 have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
   rewrite expectation_sum/=; last first.
-    by move=> Xi XiX; exact: integrabl e_bernoulli (bX.1 Xi XiX).
+    by move=> Xi XiX; exact: integrable_bernoulli (bX.1 Xi XiX).
   rewrite big_seq.
   under eq_bigr.
     move=> Xi XiX; rewrite (bernoulli_expectation (bX.1 _ XiX)); over.
