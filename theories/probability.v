@@ -1193,18 +1193,21 @@ rewrite expR_prod -mulr_suml.
 Admitted.
 
 (* theorem 2.4 *)
-Theorem thm24 (X_ : seq {RV P >-> R}) (delta : R) :
-  (0 < delta)%R ->
+Theorem thm24 (X_ : seq {RV P >-> R}) n (delta t : R) :
+  (0 < delta)%R -> (0 < t)%R ->
+  is_bernoulli_trial X_ n ->
   let X := @bernoulli_trial X_ (*NB: independence? *) in
   let mu := 'E_P[X] in
   P [set i | X i >= (1 + delta) * fine mu]%R <=
   ((expR delta / (1 + delta) `^ (1 + delta)) `^ (fine mu))%:E.
 Proof.
-rewrite /= => delta0.
+rewrite /= => delta0 t0 bX.
 set X := @bernoulli_trial X_.
 set mu := 'E_P[X].
-apply: (le_trans (chernoff _ _ _)); last first.
-rewrite /mmt_gen_fun.
+apply: (le_trans (chernoff _ _ t0)).
+apply: (@le_trans _ _ ((expR (fine mu * (expR t - 1)))%:E * (expR (- (t * ((1 + delta) * fine mu))))%:E) ).
+  rewrite lee_pmul2r ?lte_fin ?expR_gt0//.
+  by apply: (lm23 _ bX); rewrite le_eqVlt t0 orbT.
 Admitted.
 
 Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
