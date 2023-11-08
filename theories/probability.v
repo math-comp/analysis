@@ -1165,12 +1165,13 @@ Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta 
 
 (* theorem 2.4 *)
 Theorem thm24 (X_ : seq {RV P >-> R}) (delta : R) :
+  (0 < delta)%R ->
   let X := @bernoulli_trial X_ (*NB: independence? *) in
   let mu := 'E_P[X] in
   P [set i | X i >= (1 + delta) * fine mu]%R <=
   ((expR delta / (1 + delta) `^ (1 + delta)) `^ (fine mu))%:E.
 Proof.
-rewrite /=.
+rewrite /= => delta0.
 set X := @bernoulli_trial X_.
 set mu := 'E_P[X].
 apply: (le_trans (chernoff _ _ _)); last first.
