@@ -1341,6 +1341,12 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
     move: bX => [bX1 [bX2 bX3]].
     rewrite bX2 lee_fin ler_wpmul2r ?invr_ge0 ?expR_ge0//.
     admit. (* alessandro: we maybe already dealt with something similar *)
+  rewrite -expRN EFinM.
+  rewrite powRM ?expR_ge0 ?invr_ge0 ?powR_ge0//.
+  rewrite -expR_powR.
+  rewrite -powR_inv1 ?powR_ge0// -!powRrM.
+  rewrite mulN1r mulrN lnK.
+  rewrite -[in leLHS]mulrN -mulrA.
   (* this looks like the end of thm24, there is maybe something to share
 (expR (expR t - 1) `^ fine mu)%:E *
   (expR (- t * (1 + delta)) `^ fine mu)%:E <=
