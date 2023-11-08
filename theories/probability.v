@@ -1158,7 +1158,6 @@ by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
 Qed.
 
 Definition independent_RVs (X : seq {RV P >-> R}) := forall t,
-  (0 <= t)%R ->
     (fine ('E_P[expR \o t \o* \sum_(Xi <- X) Xi]) = \prod_(Xi <- X) fine ('E_P[expR \o t \o* Xi]))%R.
 
 Definition is_bernoulli_trial (X : seq {RV P >-> R}) n :=
@@ -1238,7 +1237,7 @@ rewrite /mu big_seq expectation_sum; last first.
 rewrite big_seq -sum_fine.
   by apply: ler_sum => Xi XiX; rewrite bernoulli_expectation //=; exact: bX1.
 move=> Xi XiX. rewrite bernoulli_expectation //=; exact: bX1.
-Qed.
+Admitted.
 
 Lemma expR_powR (x y : R) : (expR (x * y) = (expR x) `^ y)%R.
 Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
@@ -1313,7 +1312,13 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
   (* using Markov's inequality somewhere, see mu's book page 66 *)
   have H1 t : (t < 0)%R ->
     P [set i | (X' i <= (1 - delta) * fine mu)%R] = P [set i | ((expR \o t \o* X') i >= expR (t * (1 - delta) * fine mu))%R].
-    admit.
+    move=> t0; apply: congr1; apply: eq_set => x /=.
+    rewrite ler_expR (mulrC _ t) -mulrA.
+    apply/eqP.
+    rewrite ler_wnmul2l.
+       admit.
+      rewrite le_eqVlt t0 orbT//.
+      admit.
   set t := ln (1 - delta).
   have ln1delta : (t < 0)%R.
     (* TODO: lacking a lemma here *)
@@ -1323,6 +1328,8 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
   apply: (@le_trans _ _ (((fine 'E_P[expR \o t \o* X']) / (expR (t * (1 - delta) * fine mu))))%:E).
     admit.
   apply: (@le_trans _ _ (((expR (expR t - 1)) / (expR (t * (1 - delta) * fine mu))))%:E).
+    move: bX => [bX1 [bX2 bX3]].
+    rewrite bX2 lee_fin ler_wpmul2r ?invr_ge0 ?expR_ge0//.
     admit. (* alessandro: we maybe already dealt with something similar *)
   (* this looks like the end of thm24, there is maybe something to share *)
   admit.
