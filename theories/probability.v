@@ -1297,6 +1297,12 @@ rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (expR _)%:E.
 by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
 Qed.
 
+(* TODO: move *)
+Lemma ln_div : {in Num.pos &, {morph ln (R:=R) : x y / (x / y)%R >-> (x - y)%R}}.
+Proof.
+by move=> x y; rewrite !posrE => x0 y0; rewrite lnM ?posrE ?invr_gt0// lnV ?posrE.
+Qed.
+
 Theorem thm26 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
   let X' := @bernoulli_trial X in
@@ -1306,9 +1312,34 @@ Proof.
 move=> bX /andP[delta0 delta1] /=.
 set X' := @bernoulli_trial X.
 set mu := 'E_P[X'].
-have delta110 : (1 < 1 + delta)%R by rewrite ltr_addl.
-have := @chernoff _ _ _ P X' (ln (1+delta))%R ((1-delta)*fine mu)%R (ln_gt0 delta110).
-
+apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine mu))%:E)).
+  (* using Markov's inequality somewhere, see mu's book page 66 *)
+  have H1 t : (t < 0)%R ->
+    P [set i | (X' i <= (1 - delta) * fine mu)%R] = P [set i | ((expR \o t \o* X') i >= expR (t * (1 - delta) * fine mu))%R].
+    admit.
+  set t := ln (1 - delta).
+  have ln1delta : (t < 0)%R.
+    (* TODO: lacking a lemma here *)
+    rewrite -oppr0 ltr_oppr -lnV ?posrE ?subr_gt0// ln_gt0//.
+    by rewrite invf_gt1// ?subr_gt0// ltr_subl_addr ltr_addl.
+  have {H1}-> := H1 _ ln1delta.
+  apply: (@le_trans _ _ (((fine 'E_P[expR \o t \o* X']) / (expR (t * (1 - delta) * fine mu))))%:E).
+    admit.
+  apply: (@le_trans _ _ (((expR (expR t - 1)) / (expR (t * (1 - delta) * fine mu))))%:E).
+    admit. (* alessandro: we maybe already dealt with something similar *)
+  (* this looks like the end of thm24, there is maybe something to share *)
+  admit.
+rewrite lee_fin.
+rewrite -mulrN -mulrA [in leRHS]mulrC expR_powR ge0_ler_powR// ?nnegrE.
+- by rewrite fine_ge0// expectation_ge0// => x; exact: (bernoulli_trial_ge0 bX).
+- by rewrite divr_ge0 ?expR_ge0// powR_ge0.
+- by rewrite expR_ge0.
+- rewrite -ler_ln ?posrE ?divr_gt0 ?expR_gt0 ?powR_gt0 ?subr_gt0//.
+  rewrite expRK// ln_div ?posrE ?expR_gt0 ?powR_gt0 ?subr_gt0//.
+  rewrite expRK//.
+  rewrite /powR (*TODO: lemma ln of powR*) gt_eqF ?subr_gt0// expRK.
+  (* see p.66 of mu's book *)
+  admit.
 Admitted.
 
 Lemma measurable_fun_le D (f g : T -> R) : d.-measurable D -> measurable_fun D f -> measurable_fun D g ->
