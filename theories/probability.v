@@ -1163,6 +1163,35 @@ Qed.
 (* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65 *)
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
 
+Lemma expR_prod (X : seq {RV P >-> R}) (f : {RV P >-> R} -> R) :
+  (\prod_(x <- X) expR (f x) = expR (\sum_(x <- X) f x))%R.
+Admitted.
+
+Lemma lm23 (X_ : seq {RV P >-> R}) (t : R) n :
+  (0 <= t)%R ->
+  is_bernoulli_trial X_ n ->
+  let X := bernoulli_trial X_ : {RV P >-> R} in
+  let mu := 'E_P[X] in
+  mmt_gen_fun X t <= (expR (fine mu * (expR t - 1)))%:E.
+Proof.
+rewrite /= => t0 bX.
+set X := bernoulli_trial X_.
+set mu := 'E_P[X].
+have -> : mmt_gen_fun X t = (\prod_(Xi <- X_) fine (mmt_gen_fun Xi t))%:E.
+  admit.
+under eq_big_seq => Xi XiX.
+  have -> : mmt_gen_fun Xi t = (1 + p%:num * (expR t - 1))%:E.
+    admit.
+  over.
+rewrite lee_fin /=.
+apply: (le_trans (@ler_prod _ _ _ _ _ (fun x => expR (p%:num * expR (t - 1)))%R _)).
+  move=> Xi _.
+  rewrite addr_ge0 ?mulr_ge0 ?subr_ge0 ?andTb//; last first.
+    rewrite -expR0 ler_expR//.
+  admit.
+rewrite expR_prod -mulr_suml.
+Admitted.
+
 (* theorem 2.4 *)
 Theorem thm24 (X_ : seq {RV P >-> R}) (delta : R) :
   (0 < delta)%R ->
@@ -1194,7 +1223,7 @@ Proof.
 move=> bX X' mu n0 /andP[delta0 delta1].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
   rewrite expR_powR expRB (mulrC _ (ln _)) expR_powR lnK; last rewrite posrE addr_gt0//.
-  apply: thm24.
+  apply: thm24 => //.
 apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   rewrite lee_fin ler_expR ler_wpmul2r//.
     by rewrite fine_ge0//; apply: expectation_ge0 => t; exact: (bernoulli_trial_ge0 bX).
