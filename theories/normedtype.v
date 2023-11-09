@@ -105,7 +105,7 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*       is_ball A == boolean predicate that holds when A is an open ball     *)
 (*          k *` A == open ball with center cpoint A and radius k * radius A  *)
 (*   vitali_collection_partition B V r n == subset of indices of V such the   *)
-(*                    the ball B i as a radius between r/2^n+1 and r/2^n      *)
+(*                    the ball B i has a radius between r/2^n+1 and r/2^n     *)
 (*                                                                            *)
 (******************************************************************************)
 
