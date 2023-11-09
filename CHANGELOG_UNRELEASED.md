@@ -81,6 +81,15 @@
 - in `lebesgue_integral.v`:
   + order of arguments in the lemma `le_abse_integral`
 
+- in `lebesgue_measure.v`:
+  + remove one argument of `lebesgue_regularity_inner_sup`
+
+- in `normedtype.v`:
+  + order of arguments of `squeeze_cvgr`
+
+- moved from `derive.v` to `normedtype.v`:
+  + lemmas `cvg_at_rightE`, `cvg_at_leftE`
+  
 ### Renamed
 
 - in `charge.v`
