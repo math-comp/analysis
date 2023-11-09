@@ -1216,7 +1216,8 @@ Lemma binomial_mmt_gen_fun (X_ : seq {RV P >-> R}) n (t : R) :
 Proof.
 rewrite /is_bernoulli_trial /independent_RVs /bernoulli_trial.
 move=> [bX1 [bX2 bX3]] /=.
-rewrite -[LHS]fineK; last admit.
+rewrite -[LHS]fineK; last first.
+  admit.
 rewrite bX2 big_seq.
 apply: congr1.
 under eq_bigr => Xi XiX do rewrite (bernoulli_mmt_gen_fun _ (bX1 _ _))//=.
@@ -1337,6 +1338,10 @@ Qed.
 Lemma norm_expR : normr \o expR = (expR : R -> R).
 Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 
+Lemma le01_expR_ge1Dx (x : R) : (-1 <= x <= 0 -> 1 + x <= expR x)%R.
+Proof.
+Admitted.
+
 Theorem thm26 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
   let X' := @bernoulli_trial X : {RV P >-> R} in
@@ -1352,7 +1357,7 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
     P [set i | (X' i <= (1 - delta) * fine mu)%R] = P [set i | `|(expR \o t \o* X') i|%:E >= (expR (t * (1 - delta) * fine mu))%:E].
     move=> t0; apply: congr1; apply: eq_set => x /=.
     rewrite lee_fin ger0_norm ?expR_ge0// ler_expR (mulrC _ t) -mulrA.
-    by rewrite -[in RHS]ler_ndivrMl// mulrA mulVf ?lt_eqF// mul1r.
+    by rewrite -[in RHS]ler_ndivr_mull// mulrA mulVf ?lt_eqF// mul1r.
   set t := ln (1 - delta).
   have ln1delta : (t < 0)%R.
     (* TODO: lacking a lemma here *)
@@ -1377,9 +1382,9 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
       by rewrite addr_ge0 ?mulr_ge0// subr_ge0// ltW.
     rewrite addrAC subrr sub0r -expR_powR.
     rewrite addrCA -{2}(mulr1 (p%:num)) -mulrBr addrAC subrr sub0r mulrC mulNr.
-    rewrite expR_ge1Dx//.
-    (* 0 <= - (delta * p%:num) ?! *)
-    admit. (* alessandro: we maybe already dealt with something similar *)
+    apply: le01_expR_ge1Dx.
+    rewrite ler_oppl opprK mulr_ile1//=; [|exact: ltW..].
+    by rewrite ler_oppl oppr0 mulr_ge0// ltW.
   rewrite !lnK ?posrE ?subr_gt0//.
   rewrite -addrAC subrr sub0r -mulrA [X in (_ / X)%R]expR_powR lnK ?posrE ?subr_gt0//.
   rewrite -[in leRHS]powR_inv1 ?powR_ge0// powRM// ?expR_ge0 ?invr_ge0 ?powR_ge0//.
@@ -1397,8 +1402,8 @@ rewrite -mulrN -mulrA [in leRHS]mulrC expR_powR ge0_ler_powR// ?nnegrE.
   admit.
 Admitted.
 
-Lemma measurable_fun_le D (f g : T -> R) : d.-measurable D -> measurable_fun D f -> measurable_fun D g ->
-  measurable (D `&` [set x | f x <= g x]%R).
+Lemma measurable_fun_le D (f g : T -> R) : d.-measurable D -> measurable_fun D f ->
+  measurable_fun D g -> measurable (D `&` [set x | f x <= g x]%R).
 Proof.
 move=> mD mf mg.
 under eq_set => x do rewrite -lee_fin.
