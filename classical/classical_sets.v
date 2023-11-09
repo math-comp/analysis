@@ -122,6 +122,10 @@ From mathcomp Require Import mathcomp_extra boolp.
 (*          pblock_index D F x == index i such that i \in D and x \in F i     *)
 (*                pblock D F x := F (pblock_index D F x)                      *)
 (*                                                                            *)
+(*   maximal_disjoint_subcollection F A B == A is a maximal (for inclusion)   *)
+(*                                   disjoint subcollection of the collection *)
+(*                                   B of elements in F : I -> set T          *)
+(*                                                                            *)
 (* * Upper and lower bounds:                                                  *)
 (*              ubound A == the set of upper bounds of the set A              *)
 (*              lbound A == the set of lower bounds of the set A              *)
@@ -1059,8 +1063,11 @@ apply/predeqP => x; split=> [[a ? [b ? <-]]|[[a b] [? ? <-]]]/=;
 by [exists (a, b) | exists a => //; exists b].
 Qed.
 
-Lemma set_nil (T : choiceType) : [set` [::]] = @set0 T.
+Lemma set_nil (T : eqType) : [set` [::]] = @set0 T.
 Proof. by rewrite predeqP. Qed.
+
+Lemma set_cons1 (T : eqType) (x : T) : [set` [:: x]] = [set x].
+Proof. by apply/seteqP; split => y /=; rewrite ?inE => /eqP. Qed.
 
 Lemma set_seq_eq0 (T : eqType) (S : seq T) : ([set` S] == set0) = (S == [::]).
 Proof.
@@ -2450,6 +2457,16 @@ Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
   (f : aT -> rT) : trivIset D (fun x => A `&` f @^-1` [set x]).
 Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
 
+Lemma trivIset_bigcup (I T : Type) (J : eqType) (D : J -> set I) (F : I -> set T) :
+  (forall n, trivIset (D n) F) ->
+  (forall n m i j, n != m -> D n i -> D m j -> F i `&` F j !=set0 -> i = j) ->
+  trivIset (\bigcup_k D k) F.
+Proof.
+move=> tB H; move=> i j [n _ Dni] [m _ Dmi] ij.
+have [nm|nm] := eqVneq n m; first by apply: (tB m) => //; rewrite -nm.
+exact: (H _ _ _ _ nm).
+Qed.
+
 Definition cover T I D (F : I -> set T) := \bigcup_(i in D) F i.
 
 Lemma coverE T I D (F : I -> set T) : cover D F = \bigcup_(i in D) F i.
@@ -2677,6 +2694,34 @@ have [| | |sA sAmax] := Zorn _ _ _ totR.
 Qed.
 
 End Zorn_subset.
+
+Definition maximal_disjoint_subcollection T I (F : I -> set T) (A B : set I) :=
+  [/\ A `<=` B, trivIset A F & forall C,
+      A `<` C -> C `<=` B -> ~ trivIset C F ].
+
+Section maximal_disjoint_subcollection.
+Context {I T : Type}.
+Variables (B : I -> set T) (D : set I).
+
+Let P := fun X => X `<=` D /\ trivIset X B.
+
+Let maxP (A : set (set I)) :
+  A `<=` P -> total_on A (fun x y => x `<=` y) -> P (\bigcup_(x in A) x).
+Proof.
+move=> AP h; split; first by apply: bigcup_sub => E /AP [].
+move=> i j [x Ax] xi [y Ay] yj ij; have [xy|yx] := h _ _ Ax Ay.
+- by apply: (AP _ Ay).2 => //; exact: xy.
+- by apply: (AP _ Ax).2 => //; exact: yx.
+Qed.
+
+Lemma ex_maximal_disjoint_subcollection :
+  { E | maximal_disjoint_subcollection B E D }.
+Proof.
+have /cid[E [[ED tEB] maxE]] := Zorn_bigcup maxP.
+by exists E; split => // F /maxE + FD; exact: contra_not.
+Qed.
+
+End maximal_disjoint_subcollection.
 
 Definition premaximal T (R : T -> T -> Prop) (t : T) :=
   forall s, R t s -> R s t.

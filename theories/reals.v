@@ -685,7 +685,7 @@ Qed.
 Lemma le_inf A B : -%R @` B `<=` down (-%R @` A) -> nonempty B -> has_inf A ->
   inf A <= inf B.
 Proof.
-move=> SBA AB Ai; rewrite ler_oppl opprK le_sup// ?has_inf_supN//.
+move=> SBA AB Ai; rewrite lerNl opprK le_sup// ?has_inf_supN//.
 exact/nonemptyN.
 Qed.
 

@@ -1480,7 +1480,7 @@ Arguments measure0 {d T R} _.
   solve [apply: measure_ge0] : core.
 
 #[global] Hint Extern 0
-  ((_ : {content set _ -> \bar _}) set0 = 0%R) =>
+  ((_ : {content set _ -> \bar _}) set0 = 0%R)%E =>
   solve [apply: measure0] : core.
 
 #[global]
@@ -1888,7 +1888,7 @@ Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 
 Local Notation restr := (mrestr mu mD).
 
-Let restr0 : restr set0 = 0%E. Proof. by rewrite /mrestr set0I measure0. Qed.
+Let restr0 : restr set0 = 0%E. Proof. by rewrite /mrestr set0I. Qed.
 
 Let restr_ge0 (A : set _) : (0 <= restr A)%E.
 Proof. by rewrite /restr; apply: measure_ge0; exact: measurableI. Qed.
