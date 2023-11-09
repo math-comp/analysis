@@ -2639,6 +2639,11 @@ Proof. by under eq_fun do rewrite -meets_openr meets_globallyl. Qed.
 Lemma subset_closure (A : set T) : A `<=` closure A.
 Proof. by move=> p ??; exists p; split=> //; apply: nbhs_singleton. Qed.
 
+Lemma closure_eq0 (A : set T) : closure A = set0 -> A = set0.
+Proof.
+by move=> A0; apply/seteqP; split => //; rewrite -A0; exact: subset_closure.
+Qed.
+
 Lemma closureI (A B : set T) : closure (A `&` B) `<=` closure A `&` closure B.
 Proof. by move=> p clABp; split=> ? /clABp [q [[]]]; exists q. Qed.
 
@@ -6496,6 +6501,29 @@ have /rat_in_itvoo[q /itvP qre] : r < r + e%:num by rewrite ltr_addl.
 exists (ratr q) => //; split; last by exists q.
 apply: reA; rewrite /ball /= distrC ltr_distl qre andbT.
 by rewrite (@le_lt_trans _ _ r)// ?qre// ler_subl_addl ler_addr ltW.
+Qed.
+
+Lemma separated_open_countable
+    {R : realType} (I : Type) (B : I -> set R) (D : set I) :
+    (forall i, open (B i)) -> (forall i, B i !=set0) ->
+  trivIset D B -> countable D.
+Proof.
+move=> oB B0 tB; have [f fB] :
+    {f : I -> rat & forall i, D i -> B i (ratr (f i))}.
+  apply: (@choice _ _ (fun x y => D x -> B x (ratr y))) => i.
+  have [r [Bir [q _ qr]]] := dense_rat (B0 _) (oB i).
+  by exists q => Di; rewrite qr.
+have inj_f : {in D &, injective f}.
+  move=> i j /[!inE] Di Dj /(congr1 ratr) ratrij.
+  have ? : (B i `&` B j) (ratr (f i)).
+    by split => //; [exact: fB|rewrite ratrij; exact: fB].
+  by apply/(tB _ _ Di Dj); exists (ratr (f i)).
+apply/pcard_injP; have /card_bijP/cid[g bijg] := card_rat.
+pose nat_of_rat (q : rat) : nat := set_val (g (to_setT q)).
+have inj_nat_of_rat : injective nat_of_rat.
+  rewrite /nat_of_rat; apply: inj_comp => //; apply: inj_comp => //.
+  exact/bij_inj.
+by exists (nat_of_rat \o f) => i j Di Dj /inj_nat_of_rat/inj_f; exact.
 Qed.
 
 Section weak_pseudoMetric.

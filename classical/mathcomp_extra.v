@@ -1470,3 +1470,13 @@ Lemma ltr0_ge_norm :
 Proof. by move=> x y; rewrite !negrE => /ltW x0 /ltW y0; exact: ler0_ge_norm. Qed.
 
 End normr.
+
+Lemma leq_ltn_expn m : exists n, (2 ^ n <= m.+1 < 2 ^ n.+1)%N.
+Proof.
+elim: m => [|m [n /andP[h1 h2]]]; first by exists O.
+have [m2n|nm2] := ltnP m.+2 (2 ^ n.+1)%N.
+  by exists n; rewrite m2n andbT (leq_trans h1).
+exists n.+1; rewrite nm2/= -addn1.
+rewrite -[X in (_ <= X)%N]prednK ?expn_gt0// -[X in (_ <= X)%N]addn1 leq_add2r.
+by rewrite (leq_trans h2)// -subn1 leq_subRL ?expn_gt0// add1n ltn_exp2l.
+Qed.
