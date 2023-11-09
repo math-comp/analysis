@@ -1819,7 +1819,7 @@ Notation emeasurable_fun_funeneg := measurable_funeneg (only parsing).
 Notation measurable_fun_lim_esup := measurable_fun_limn_esup (only parsing).
 
 Section lebesgue_regularity.
-Context {d : measure_display} {R : realType}.
+Context {R : realType}.
 Let mu := [the measure _ _ of @lebesgue_measure R].
 
 Local Open Scope ereal_scope.
@@ -1977,7 +1977,7 @@ rewrite -{1}(setDKU BA) (@le_trans _ _ (mu B + mu (A `\` B)))//.
 by rewrite lee_add//; [apply: ereal_sup_ub => /=; exists B|exact/ltW].
 Qed.
 
-Lemma lebesgue_regularity_inner_sup (D : set R) (eps : R) : measurable D ->
+Lemma lebesgue_regularity_inner_sup (D : set R) : measurable D ->
   mu D = ereal_sup [set mu K | K in [set K | compact K /\ K `<=` D]].
 Proof.
 move=> mD; have [?|] := ltP (mu D) +oo.

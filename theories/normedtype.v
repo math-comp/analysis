@@ -2719,6 +2719,25 @@ Module Export NbhsNorm.
 Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
 End NbhsNorm.
 
+Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
+  cvg (f @ x^') -> lim (f @ x^') = lim (f @ x^'+).
+Proof.
+move=> cvfx; apply/Logic.eq_sym.
+apply: (@cvg_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+by exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
+Qed.
+Arguments cvg_at_rightE {R V} f x.
+
+Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
+  cvg (f @ x^') -> lim (f @ x^') = lim (f @ x^'-).
+Proof.
+move=> cvfx; apply/Logic.eq_sym.
+apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
+by apply: xe_A => //; rewrite eq_sym.
+Qed.
+Arguments cvg_at_leftE {R V} f x.
+
 (* TODO: generalize to R : numFieldType *)
 Section hausdorff.
 
@@ -5007,7 +5026,7 @@ Section FilterRealType.
 Context {T : Type} {a : set (set T)} {Fa : Filter a} {R : realFieldType}.
 Implicit Types f g h : T -> R.
 
-Lemma squeeze_cvgr f g h : (\near a, f a <= g a <= h a) ->
+Lemma squeeze_cvgr f h g : (\near a, f a <= g a <= h a) ->
   forall (l : R), f @ a --> l -> h @ a --> l -> g @ a --> l.
 Proof.
 move=> fgh l lfa lga; apply/cvgrPdist_lt => e e_gt0.
