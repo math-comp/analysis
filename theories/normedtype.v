@@ -99,9 +99,13 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*     the Heine-Borel theorem, which states that the compact sets of R^n are *)
 (*     the closed and bounded sets.                                           *)
 (*                                                                            *)
+(*        cpoint A == the center of the set A if it is an open ball           *)
+(*        radius A == the radius of the set A if it is an open ball           *)
+(*                    radius A has type {nonneg R}                            *)
+(*       is_ball A == boolean predicate that holds when A is an open ball     *)
+(*          k *` A == open ball with center cpoint A and radius k * radius A  *)
 (*   vitali_collection_partition B V r n == subset of indices of V such the   *)
-(*                                   the ball B i as a radius between r/2^n+1 *)
-(*                                   and r/2^n                                *)
+(*                    the ball B i as a radius between r/2^n+1 and r/2^n      *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -6311,7 +6315,7 @@ rewrite [in LHS](ballE ballA) (scale_ballE _ _ (ltW k0))// cpoint_ball//.
 by rewrite mulr_gt0.
 Qed.
 
-Lemma radius_sball (A : set R) (k : R) : 0 <= k -> is_ball A ->
+Lemma radius_scale_ball (A : set R) (k : R) : 0 <= k -> is_ball A ->
   (radius (k *` A))%:num = k * (radius A)%:num.
 Proof.
 move=> k0 ballA.
@@ -6608,7 +6612,7 @@ exists j; split => //.
     rewrite (ballE (is_ballB j)) scale_ballE; last by [].
     by rewrite radius_ball_num ?mulr_ge0// mulr_gt0.
   rewrite /closed_ball_ /= cpoint_scale_ball; [|by []..].
-  rewrite radius_sball//.
+  rewrite radius_scale_ball//.
   apply: (@le_trans _ _ (2 * (radius (B i))%:num + (radius (B j))%:num)).
     case: BiBj => y [Biy Bjy].
     rewrite (le_trans (ler_dist_add y _ _))// [in leRHS]addrC ler_add//.

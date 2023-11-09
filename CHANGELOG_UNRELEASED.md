@@ -49,6 +49,39 @@
 - in `lebesgue_integral.v`:
   + lemma `abse_integralP`
 
+- in `classical_sets.v`:
+  + lemma `set_cons1`
+  + lemma `trivIset_bigcup`
+  + definition `maximal_disjoint_subcollection`
+  + lemma `ex_maximal_disjoint_subcollection`
+
+- in `mathcomp_extra.v`:
+  + lemma `leq_ltn_expn`
+
+- in `lebesgue_measure.v`:
+  + lemma `lebesgue_measurable_ball`
+  + lemmas `measurable_closed_ball`, `lebesgue_measurable_closed_ball`
+
+- in `normedtype.v`:
+  + lemmas `ball0`, `ball_itv`, `closed_ball0`, `closed_ball_itv`
+  + definitions `cpoint`, `radius`, `is_ball`
+  + definition `scale_ball`, notation notation ``` *` ```
+  + lemmas `sub_scale_ball`, `scale_ball1`, `sub1_scale_ball`
+  + lemmas `ball_inj`, `radius0`, `cpoint_ball`, `radius_ball_num`,
+    `radius_ball`, `is_ballP`, `is_ball_ball`, `scale_ball0`,
+    `ballE`, `is_ball_closure`, `scale_ballE`, `cpoint_scale_ball`,
+	`radius_scale_ball`
+  + lemmas `vitali_lemma_finite`, `vitali_lemma_finite_cover`
+  + definition `vitali_collection_partition`
+  + lemmas `vitali_collection_partition_ub_gt0`,
+    `ex_vitali_collection_partition`, `cover_vitali_collection_partition`,
+	`disjoint_vitali_collection_partition`
+  + lemma `separate_closed_ball_countable`
+  + lemmas `vitali_lemma_infinite`, `vitali_lemma_infinite_cover`
+
+- in `topology.v`:
+  + lemmas `closure_eq0`, `separated_open_countable`
+
 ### Changed
 
 - in `hoelder.v`:
@@ -134,6 +167,8 @@
 
 - in `lebesgue_integral.v`:
   + weaken an hypothesis of `integral_ae_eq`
+- in `classical_sets.v`:
+  + `set_nil` generalized to `eqType`
 
 ### Deprecated
 
