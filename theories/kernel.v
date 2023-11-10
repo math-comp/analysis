@@ -520,7 +520,7 @@ rewrite (_ : (fun x => _) =
   apply/funext => x.
   transitivity (lim (\int[l x]_y (k_ n (x, y))%:E @[n --> \oo])); last first.
     rewrite is_cvg_limn_esupE//.
-    apply: ereal_nondecreasing_is_cvg => m n mn.
+    apply: ereal_nondecreasing_is_cvgn => m n mn.
     apply: ge0_le_integral => //.
     - by move=> y _; rewrite lee_fin.
     - exact/EFin_measurable_fun/measurableT_comp.
