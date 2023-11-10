@@ -160,6 +160,22 @@
   + `measurable_fun_lim_sup` -> `measurable_fun_limn_sup`
   + `measurable_fun_lim_esup` -> `measurable_fun_limn_esup`
 
+- in `sequences.v`:
+  + `ereal_nondecreasing_cvg` -> `ereal_nondecreasing_cvgn`
+  + `ereal_nondecreasing_is_cvg` -> `ereal_nondecreasing_is_cvgn`
+  + `ereal_nonincreasing_cvg` -> `ereal_nonincreasing_cvgn`
+  + `ereal_nonincreasing_is_cvg` -> `ereal_nonincreasing_is_cvgn`
+  + `ereal_nondecreasing_opp` -> `ereal_nondecreasing_oppn`
+  + `nonincreasing_cvg_ge` -> `nonincreasing_cvgn_ge`
+  + `nondecreasing_cvg_le` -> `nondecreasing_cvgn_le`
+  + `nonincreasing_cvg` -> `nonincreasing_cvgn`
+  + `nondecreasing_cvg` -> `nondecreasing_cvgn`
+  + `nonincreasing_is_cvg` -> `nonincreasing_is_cvgn`
+  + `nondecreasing_is_cvg` -> `nondecreasing_is_cvgn`
+  + `near_nonincreasing_is_cvg` -> `near_nonincreasing_is_cvgn`
+  + `near_nondecreasing_is_cvg` -> `near_nondecreasing_is_cvgn`
+  + `nondecreasing_dvg_lt` -> `nondecreasing_dvgn_lt`
+
 ### Generalized
 
 - in `topology.v`:

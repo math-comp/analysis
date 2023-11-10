@@ -519,7 +519,7 @@ Lemma summable_cvg (P : pred nat) (f : (\bar R)^nat) :
   (forall i, P i -> 0 <= f i)%E -> summable P f ->
   cvg (fun n => \sum_(0 <= k < n | P k) fine (f k))%R.
 Proof.
-move=> f0 Pf; apply: nondecreasing_is_cvg.
+move=> f0 Pf; apply: nondecreasing_is_cvgn.
   by apply: nondecreasing_series => n Pn; exact/fine_ge0/f0.
 exists (fine (\sum_(i <oo | P i) `|f i|)) => x /= [n _ <-].
 rewrite summable_fine_sum// -lee_fin fineK//; last first.
