@@ -497,82 +497,68 @@ Local Close Scope convex_scope.
 End expR.
 
 Section expeR.
-
-Variable R : realType.
-Implicit Types x y : \bar R.
-Implicit Types r s : R.
+Context {R : realType}.
+Implicit Types (x y : \bar R) (r s : R).
 
 Local Open Scope ereal_scope.
 
 Definition expeR x :=
-  match x with
-  | r%:E => (expR r)%:E
-  | +oo => +oo
-  | -oo => 0
-  end.
+  match x with | r%:E => (expR r)%:E | +oo => +oo | -oo => 0 end.
 
-Lemma expeR0 : expeR 0 = 1.
-Proof. by rewrite /= expR0. Qed.
+Lemma expeR0 : expeR 0 = 1. Proof. by rewrite /= expR0. Qed.
 
 Lemma expeR_ge0 x : 0 <= expeR x.
-Proof. by case: x => //= r; rewrite ltW// lte_fin expR_gt0. Qed.
+Proof. by case: x => //= r; rewrite lee_fin expR_ge0. Qed.
 
 Lemma expeR_gt0 x : -oo < x -> 0 < expeR x.
 Proof. by case: x => //= r; rewrite lte_fin expR_gt0. Qed.
 
 Lemma expeR_eq0 x : (expeR x == 0) = (x == -oo).
-Proof. case: x => //= [r|]; rewrite ?eq_refl// eqe expR_eq0 gt_eqF// ltNyr//. Qed.
+Proof. by case: x => //= [r|]; rewrite ?eqxx// eqe expR_eq0. Qed.
 
 Lemma expeRD x y : expeR (x + y) = expeR x * expeR y.
-Proof. 
-case: x => /= [r||].
-- case: y => /= [s||].
-  by rewrite -?EFinM ?expRD. 
-  by rewrite ?mule0// mulry /Num.sg expR_eq0 le_gtF ?mul1e ?expR_ge0// mule0.
-  by rewrite mule0.
-- case: y => //= [s||].
-  by rewrite mulyr /Num.sg expR_eq0 le_gtF ?mul1e ?expR_ge0.
-  by rewrite mulyy.
-by rewrite mule0.
-by rewrite mul0e.
+Proof.
+case: x => /= [r| |]; last by rewrite mul0e.
+- case: y => /= [s| |]; last by rewrite mule0.
+  + by rewrite expRD EFinM.
+  + by rewrite mulry gtr0_sg ?mul1e// expR_gt0.
+- case: y => /= [s| |]; last by rewrite mule0.
+  + by rewrite mulyr gtr0_sg ?mul1e// expR_gt0.
+  + by rewrite mulyy.
 Qed.
 
 Lemma expeR_ge1Dx x : 0 <= x -> 1 + x <= expeR x.
-Proof. case: x => //= r; rewrite -EFinD !lee_fin; exact: expR_ge1Dx. Qed.
+Proof. by case: x => //= r; rewrite -EFinD !lee_fin; exact: expR_ge1Dx. Qed.
 
 Lemma ltr_expeR : {mono expeR : x y / x < y}.
 Proof.
-move=> x y.
-case: x => /= [r||].
-- by case: y => /= [s||]; rewrite ?lte_fin ?ltr_expR// ?ltry ?le_gtF ?leNye ?expR_ge0.
-- by rewrite !le_gtF ?lteey.
-- by case: y => //= [s|]; rewrite ?lte_fin ?expR_gt0 ?ltNyr ?ltry ?ltNye. 
+move=> [r| |] [s| |]//=; rewrite ?ltry//.
+- by rewrite !lte_fin ltr_expR.
+- by rewrite !ltNge lee_fin expR_ge0 leNye.
+- by rewrite lte_fin expR_gt0 ltNye.
 Qed.
 
 Lemma ler_expeR : {mono expeR : x y / x <= y}.
 Proof.
-move=> x y.
-case: x => [r||].
-- by case: y => [s||]; rewrite ?lee_fin ?ler_expR ?leey// le_eqVlt expR_eq0 le_gtF ?expR_ge0.
-- by case: y.
-- by case: y => /= [s||]; rewrite ?lee_fin ?leNye ?expR_ge0 ?leey ?le_refl.
+move=> [r| |] [s| |]//=; rewrite ?leey ?lexx//.
+- by rewrite !lee_fin ler_expR.
+- by rewrite !leNgt lte_fin expR_gt0 ltNye.
+- by rewrite lee_fin expR_ge0 leNye.
 Qed.
 
 Lemma expeR_inj : injective expeR.
 Proof.
-case => [r||]; case => //=.
-- by move=> s; case=> ?; apply: congr1; exact: expR_inj.
-- by move/eqP; rewrite eqe expR_eq0.
-- by move=> r /eqP; rewrite eqe eq_sym expR_eq0.
+move=> [r| |] [s| |] => //=.
+- by move=> [] /expR_inj ->.
+- by case => /eqP; rewrite expR_eq0.
+- by case => /esym/eqP; rewrite expR_eq0.
 Qed.
 
 Lemma expeR_total x : 0 <= x -> exists y, expeR y = x.
 Proof.
-case: x => // [r|_].
-  rewrite le_eqVlt => /orP [/eqP <-|r0].
-  - by exists -oo.
-  - by have := expR_total r0; case=> s <-; exists s%:E.
-by exists +oo.
+move: x => [r|_|//]; last by exists +oo.
+rewrite le_eqVlt => /predU1P[<-|]; first by exists -oo.
+by rewrite lte_fin => /expR_total[y <-]; exists y%:E.
 Qed.
 
 End expeR.
