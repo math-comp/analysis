@@ -321,7 +321,7 @@ have -> : 1 + x = lim (series (f x)).
   by apply/esym/lim_near_cst => //; near=> n; apply: F; near: n.
 apply: ler_lim; first by apply: is_cvg_near_cst; near=> n; apply: F; near: n.
   exact: is_cvg_series_exp_coeff.
-by near=> n; apply: ler_sum => [] [|[|i]] _;
+by near=> n; apply: ler_sum => -[|[|i]] _;
   rewrite /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
           // exp_coeff_ge0.
 Unshelve. all: by end_near. Qed.
