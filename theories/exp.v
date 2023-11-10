@@ -19,6 +19,7 @@ Require Import itv convex.
 (*         pseries f x == [series f n * x ^ n]_n                              *)
 (*   pseries_diffs f i == (i + 1) * f (i + 1)                                 *)
 (*                                                                            *)
+(*             expeR x == extended real number-valued exponential function    *)
 (*                ln x == the natural logarithm                               *)
 (*              s `^ r == power function, in ring_scope (assumes s >= 0)      *)
 (*              e `^ r == power function, in ereal_scope (assumes e >= 0)     *)
