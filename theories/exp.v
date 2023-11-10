@@ -19,6 +19,7 @@ Require Import itv convex.
 (*         pseries f x == [series f n * x ^ n]_n                              *)
 (*   pseries_diffs f i == (i + 1) * f (i + 1)                                 *)
 (*                                                                            *)
+(*             expeR x == extended real number-valued exponential function    *)
 (*                ln x == the natural logarithm                               *)
 (*              s `^ r == power function, in ring_scope (assumes s >= 0)      *)
 (*              e `^ r == power function, in ereal_scope (assumes e >= 0)     *)
@@ -327,7 +328,7 @@ have -> : 1 + x = limn (series (f x)).
   by apply/esym/lim_near_cst => //; near=> n; apply: F; near: n.
 apply: ler_lim; first by apply: is_cvg_near_cst; near=> n; apply: F; near: n.
   exact: is_cvg_series_exp_coeff.
-by near=> n; apply: ler_sum => [] [|[|i]] _;
+by near=> n; apply: ler_sum => -[|[|i]] _;
   rewrite /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
           // exp_coeff_ge0.
 Unshelve. all: by end_near. Qed.
@@ -501,6 +502,73 @@ Qed.
 Local Close Scope convex_scope.
 
 End expR.
+
+Section expeR.
+Context {R : realType}.
+Implicit Types (x y : \bar R) (r s : R).
+
+Local Open Scope ereal_scope.
+
+Definition expeR x :=
+  match x with | r%:E => (expR r)%:E | +oo => +oo | -oo => 0 end.
+
+Lemma expeR0 : expeR 0 = 1. Proof. by rewrite /= expR0. Qed.
+
+Lemma expeR_ge0 x : 0 <= expeR x.
+Proof. by case: x => //= r; rewrite lee_fin expR_ge0. Qed.
+
+Lemma expeR_gt0 x : -oo < x -> 0 < expeR x.
+Proof. by case: x => //= r; rewrite lte_fin expR_gt0. Qed.
+
+Lemma expeR_eq0 x : (expeR x == 0) = (x == -oo).
+Proof. by case: x => //= [r|]; rewrite ?eqxx// eqe expR_eq0. Qed.
+
+Lemma expeRD x y : expeR (x + y) = expeR x * expeR y.
+Proof.
+case: x => /= [r| |]; last by rewrite mul0e.
+- case: y => /= [s| |]; last by rewrite mule0.
+  + by rewrite expRD EFinM.
+  + by rewrite mulry gtr0_sg ?mul1e// expR_gt0.
+- case: y => /= [s| |]; last by rewrite mule0.
+  + by rewrite mulyr gtr0_sg ?mul1e// expR_gt0.
+  + by rewrite mulyy.
+Qed.
+
+Lemma expeR_ge1Dx x : 0 <= x -> 1 + x <= expeR x.
+Proof. by case: x => //= r; rewrite -EFinD !lee_fin; exact: expR_ge1Dx. Qed.
+
+Lemma ltr_expeR : {mono expeR : x y / x < y}.
+Proof.
+move=> [r| |] [s| |]//=; rewrite ?ltry//.
+- by rewrite !lte_fin ltr_expR.
+- by rewrite !ltNge lee_fin expR_ge0 leNye.
+- by rewrite lte_fin expR_gt0 ltNye.
+Qed.
+
+Lemma ler_expeR : {mono expeR : x y / x <= y}.
+Proof.
+move=> [r| |] [s| |]//=; rewrite ?leey ?lexx//.
+- by rewrite !lee_fin ler_expR.
+- by rewrite !leNgt lte_fin expR_gt0 ltNye.
+- by rewrite lee_fin expR_ge0 leNye.
+Qed.
+
+Lemma expeR_inj : injective expeR.
+Proof.
+move=> [r| |] [s| |] => //=.
+- by move=> [] /expR_inj ->.
+- by case => /eqP; rewrite expR_eq0.
+- by case => /esym/eqP; rewrite expR_eq0.
+Qed.
+
+Lemma expeR_total x : 0 <= x -> exists y, expeR y = x.
+Proof.
+move: x => [r|_|//]; last by exists +oo.
+rewrite le_eqVlt => /predU1P[<-|]; first by exists -oo.
+by rewrite lte_fin => /expR_total[y <-]; exists y%:E.
+Qed.
+
+End expeR.
 
 Section Ln.
 Variable R : realType.

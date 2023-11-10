@@ -1627,7 +1627,7 @@ Local Open Scope ring_scope.
 
 HB.instance Definition _ := Inv.Build V V (-%R) (-%R).
 
-Lemma inv_oppr : (-%R)^-1%FUN = (-%R). by []. Qed.
+Lemma inv_oppr : (-%R)^-1%FUN = (-%R). Proof. by []. Qed.
 
 Lemma oppr_can2_subproof : Inv_Can2 V V setT setT (-%R).
 Proof. by split => // y _; rewrite inv_oppr ?GRing.opprK. Qed.
