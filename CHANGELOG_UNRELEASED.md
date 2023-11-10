@@ -82,6 +82,12 @@
 - in `topology.v`:
   + lemmas `closure_eq0`, `separated_open_countable`
 
+- in `exp.v`:
+  + definition `expeR`
+  + lemmas `expeR0`, `expeR_ge0`, `expeR_gt0`
+  + lemmas `expeR_eq0`, `expeRD`, `expeR_ge1Dx`
+  + lemmas `ltr_expeR`, `ler_expeR`, `expeR_inj`, `expeR_total`
+
 ### Changed
 
 - in `hoelder.v`:
