@@ -3566,7 +3566,7 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
   move=> XA; rewrite (_ : limn _ = ereal_sup
       ((fun n => \sum_(k < n) mu (X `&` A k)) @` setT)); last first.
     under eq_fun do rewrite big_mkord.
-    apply/cvg_lim => //; apply: ereal_nondecreasing_cvg.
+    apply/cvg_lim => //; apply: ereal_nondecreasing_cvgn.
     apply: (lee_sum_nneg_ord (fun n => mu (X `&` A n)) xpredT) => n _.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => [x| |].

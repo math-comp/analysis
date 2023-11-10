@@ -1027,12 +1027,12 @@ Lemma max_approxRN_seq_nd x : nondecreasing_seq (F_ ^~ x).
 Proof. by move=> a b ab; rewrite (le_bigmax_ord xpredT (g_ ^~ x)). Qed.
 
 Lemma is_cvg_max_approxRN_seq n : cvg (F_ ^~ n @ \oo).
-Proof. by apply: ereal_nondecreasing_is_cvg; exact: max_approxRN_seq_nd. Qed.
+Proof. by apply: ereal_nondecreasing_is_cvgn; exact: max_approxRN_seq_nd. Qed.
 
 Lemma is_cvg_int_max_approxRN_seq A :
   measurable A -> cvg ((fun n => \int[mu]_(x in A) F_ n x) @ \oo).
 Proof.
-move=> mA; apply: ereal_nondecreasing_is_cvg => a b ab.
+move=> mA; apply: ereal_nondecreasing_is_cvgn => a b ab.
 apply: ge0_le_integral => //.
 - by move=> ? ?; exact: max_approxRN_seq_ge0.
 - by apply: measurable_funS (measurable_max_approxRN_seq a).
