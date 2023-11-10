@@ -970,9 +970,9 @@ Tactic Notation "near:" ident(x) :=
   else fail "the goal depends on variables introduced after" x.
 
 Ltac under_near i tac := near=> i; tac; near: i.
-Tactic Notation "near=>" ident(i) "do" tactic1(tac) := under_near i ltac:(tac).
+Tactic Notation "near=>" ident(i) "do" tactic3(tac) := under_near i ltac:(tac).
 Tactic Notation "near=>" ident(i) "do" "[" tactic4(tac) "]" := near=> i do tac.
-Tactic Notation "near" "do" tactic1(tac) :=
+Tactic Notation "near" "do" tactic3(tac) :=
   let i := fresh "i" in under_near i ltac:(tac).
 Tactic Notation "near" "do" "[" tactic4(tac) "]" := near do tac.
 
