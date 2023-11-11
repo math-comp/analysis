@@ -2348,10 +2348,15 @@ have ZNF5 : Z r%:num `<=`
     case: Zz => -[Az notDBz]; rewrite /ball/= sub0r normrN => rz.
     have [d dzr zdK0] : exists2 d : {posnum R},
         (d%:num < r%:num - `|z|)%R & closed_ball z d%:num `&` K = set0.
-      move: rz; rewrite -subr_gt0.
-      move=> /(@closed_disjoint_closed_ball _ [normedModType R of R^o]
-                                            _ _ _ closedK Kz).
-      by case=> d drz zdK; exists d.
+      have [d/= d0 dzK] := (@closed_disjoint_closed_ball _
+        [normedModType R of R^o] _ _ closedK Kz).
+      have rz0 : (0 < minr ((r%:num - `|z|) / 2) (d / 2))%R.
+        by rewrite lt_minr (divr_gt0 d0)//= andbT divr_gt0// subr_gt0.
+      exists (PosNum rz0) => /=.
+        by rewrite lt_minl ltr_pdivr_mulr// ltr_pmulr ?subr_gt0// ltr1n.
+      apply: dzK => //=.
+      rewrite sub0r normrN gtr0_norm// lt_minl (ltr_pdivr_mulr d d)//.
+      by rewrite ltr_pmulr// ltr1n orbT.
     have N0_gt0 : (0 < d%:num / 2 :> R)%R by rewrite divr_gt0.
     have [i [Vi Biz BiN0]] := ABV _ Az _ N0_gt0.
     exists i; split => //.
