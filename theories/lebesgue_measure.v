@@ -2264,7 +2264,7 @@ have finite_set_F i : finite_set (F i).
     - by move=> /= x [n Fni Bnx]; exists n => //; exists i.
   have {CFi Fir2} := le_trans MC (le_trans CFi Fir2).
   apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
-  rewrite -(natr1 _ `| _ |%N) natr_absz ger0_norm ?ceil_ge0// -ltr_pdivr_mulr//.
+  rewrite -(@natr1 _ `| _ |%N) natr_absz ger0_norm ?ceil_ge0// -ltr_pdivr_mulr//.
   by rewrite -ltr_subl_addr (lt_le_trans _ (ceil_ge _))// ltr_subl_addr ltr_addl.
 have mur2_fin_num_ : mu (ball (0 : R^o) (r%:num + 2))%R < +oo.
   by rewrite lebesgue_measure_ball// ltry.
