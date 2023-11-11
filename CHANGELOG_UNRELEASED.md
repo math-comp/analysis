@@ -96,6 +96,10 @@
 
 - in `hoelder.v`:
   + lemmas `powR_Lnorm`, `minkowski`
+  + lemma `expRM`
+
+- in `measure.v`:
+  + lemma `probability_setC`
 
 ### Changed
 
