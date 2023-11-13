@@ -1518,7 +1518,7 @@ have step1 : P [set i | `| X' i - p%:num | >= epsilon * p%:num]%R <=
   rewrite -mulrA.
   have -> : (p%:num * n%:R)%R = fine (p%:num * n%:R)%:E by [].
   rewrite -E_X_sum.
-  apply: (@cor27 X epsilon _ bX) => //.
+  apply: (@cor27 X epsilon _ bX) => //. (* this is the critical bit, and indeed implies theta < p *)
 have step2 : P [set i | `| X' i - p%:num | >= theta]%R <=
     ((expR (- (n%:R * theta ^+ 2) / 3)) *+ 2)%:E.
   rewrite thetaE; move/le_trans : step1; apply.
