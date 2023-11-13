@@ -1016,6 +1016,8 @@ Arguments max_fun {T R} _ _ _ /.
 (* End of mathComp > 1.16 additions *)
 (************************************)
 
+Reserved Notation "`1- x" (format "`1- x", at level 2).
+
 Section onem.
 Variable R : numDomainType.
 Implicit Types r : R.
@@ -1064,6 +1066,9 @@ Qed.
 
 End onem.
 Notation "`1- r" := (onem r) : ring_scope.
+
+Lemma onemV (F : numFieldType) (x : F) : x != 0 -> `1-(x^-1) = (x - 1) / x.
+Proof. by move=> ?; rewrite mulrDl divff// mulN1r. Qed.
 
 Lemma lez_abs2 (a b : int) : 0 <= a -> a <= b -> (`|a| <= `|b|)%N.
 Proof. by case: a => //= n _; case: b. Qed.
