@@ -1342,38 +1342,18 @@ Require Import derive.
 
 Lemma le01_expR_ge1Dx (x : R) : (-1 <= x <= 0 -> 1 + x <= expR x)%R.
 Proof.
-move=> xN10.
-pose f : R^o -> R := (expR - (fun x => 1 + x))%R.
-rewrite -subr_ge0.
-rewrite (_ : 0%R = f 0%R); last first.
-  by rewrite /f !fctE/= expR0 addr0 subrr.
-rewrite -/(f x).
-pose f' : R^o -> R := (expR \- cst 1)%R.
-move: xN10 => /andP[].
-rewrite le_eqVlt => /predU1P[<-|N1x].
+move=> /andP [N1x x0].
+pose f : R^o -> R := (expR \- (cst 1 \+ id))%R.
+rewrite -subr_ge0 (_ : 0%R = f 0%R); last by rewrite /f !fctE/= expR0 addr0 subrr.
+pose f' : R^o -> R := (expR \- (cst 0 \+ cst 1))%R.
+move: N1x; rewrite le_eqVlt => /predU1P[<-|N1x].
   by rewrite /f !fctE /= expR0 addr0 subrr subr0 expR_ge0.
-rewrite le_eqVlt => /predU1P[<-//|x0].
+move: x0; rewrite le_eqVlt => /predU1P[<-//|x0].
 have [c cx] : exists2 c, c \in `]x, 0%R[ & (f 0 - f x)%R = (f' c * (0 - x))%R.
   apply: MVT => //.
-    move=> z; rewrite in_itv/= => /andP[xz z0].
-    rewrite /f /f'.
-    apply: is_deriveB.
-    rewrite (_ : +%R 1 = cst 1 \+ idfun)%R; last first.
-      by apply/funext => y/=.
-    rewrite [X in is_derive _ _ _ X](_ : 1%R = 0%R + 1%:R)%R; last first.
-      by rewrite add0r.
-    exact: is_deriveD.
   admit.
-move=> h.
-rewrite -[leRHS]/(f x).
-rewrite -subr_le0.
-rewrite h.
-rewrite sub0r.
-rewrite /f' /=.
-rewrite mulr_le0_ge0//.
-  rewrite subr_le0 -expR0 ler_expR//.
-  move: cx.
-  by rewrite in_itv/= => /andP[_ /ltW].
+rewrite -[leRHS]/(f x) -subr_le0 sub0r /f' => ->; apply: mulr_le0_ge0.
+  by rewrite /=subr_le0 add0r -expR0 ler_expR; move: cx; rewrite in_itv => /andP[_ /ltW].
 by rewrite ler_oppr oppr0 ltW.
 Admitted.
 
