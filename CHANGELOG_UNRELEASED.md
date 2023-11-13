@@ -88,6 +88,15 @@
   + lemmas `expeR_eq0`, `expeRD`, `expeR_ge1Dx`
   + lemmas `ltr_expeR`, `ler_expeR`, `expeR_inj`, `expeR_total`
 
+- in `exp.v`:
+  + lemmas `mulr_powRB1`, `fin_num_poweR`, `poweRN`, `poweR_lty`, `lty_poweRy`, `gt0_ler_poweR`
+
+- in `mathcomp_extra.v`:
+  + lemma `onemV`
+
+- in `hoelder.v`:
+  + lemmas `powR_Lnorm`, `minkowski`
+
 ### Changed
 
 - in `hoelder.v`:
