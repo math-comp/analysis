@@ -6140,6 +6140,259 @@ have := ball_triangle yz_he (ball_sym zx_he).
 by rewrite -mulr2n -mulr_natr divfK // => /ltW.
 Qed.
 
+(** * Some Topology on real numbers *)
+
+Definition pinfty_nbhs (R : numFieldType) : set (set R) :=
+  fun P => exists M, M \is Num.real /\ forall x, M < x -> P x.
+Arguments pinfty_nbhs R : clear implicits.
+Definition ninfty_nbhs (R : numFieldType) : set (set R) :=
+  fun P => exists M, M \is Num.real /\ forall x, x < M -> P x.
+Arguments ninfty_nbhs R : clear implicits.
+
+Reserved Notation "+oo_ R" (at level 3, format "+oo_ R").
+Reserved Notation "-oo_ R" (at level 3, format "-oo_ R").
+
+Notation "+oo_ R" := (pinfty_nbhs [numFieldType of R])
+  (only parsing) : ring_scope.
+Notation "-oo_ R" := (ninfty_nbhs [numFieldType of R])
+  (only parsing) : ring_scope.
+
+Notation "+oo" := (pinfty_nbhs _) : ring_scope.
+Notation "-oo" := (ninfty_nbhs _) : ring_scope.
+
+Local Import Num.Def.
+
+Section infty_nbhs_instances.
+Context {R : numFieldType}.
+Let R_topologicalType := [topologicalType of R].
+Implicit Types r : R.
+
+Global Instance proper_pinfty_nbhs : ProperFilter (pinfty_nbhs R).
+Proof.
+apply Build_ProperFilter.
+  by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite ltr_addl.
+split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
+- by exists 0.
+- exists (maxr MP MQ); split=> [|x]; first exact: max_real.
+  by rewrite comparable_lt_maxl ?real_comparable // => /andP[/gtMP ? /gtMQ].
+- by exists M; split => // ? /gtM /sPQ.
+Qed.
+
+Global Instance proper_ninfty_nbhs : ProperFilter (ninfty_nbhs R).
+Proof.
+apply Build_ProperFilter.
+  move=> P [M [Mr ltMP]]; exists (M - 1).
+  by apply: ltMP; rewrite gtr_addl oppr_lt0.
+split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
+- by exists 0.
+- exists (Num.min MP MQ); split=> [|x]; first exact: min_real.
+  by rewrite comparable_lt_minr ?real_comparable // => /andP[/ltMP ? /ltMQ].
+- by exists M; split => // x /ltM /sPQ.
+Qed.
+
+Lemma nbhs_pinfty_gt r : r \is Num.real -> \forall x \near +oo, r < x.
+Proof. by exists r. Qed.
+
+Lemma nbhs_pinfty_ge r : r \is Num.real -> \forall x \near +oo, r <= x.
+Proof. by exists r; split => //; apply: ltW. Qed.
+
+Lemma nbhs_ninfty_lt r : r \is Num.real -> \forall x \near -oo, r > x.
+Proof. by exists r. Qed.
+
+Lemma nbhs_ninfty_le r : r \is Num.real -> \forall x \near -oo, r >= x.
+Proof. by exists r; split => // ?; apply: ltW. Qed.
+
+Lemma nbhs_pinfty_real : \forall x \near +oo, x \is @Num.real R.
+Proof. by apply: filterS (nbhs_pinfty_gt (@real0 _)); apply: gtr0_real. Qed.
+
+Lemma nbhs_ninfty_real : \forall x \near -oo, x \is @Num.real R.
+Proof. by apply: filterS (nbhs_ninfty_lt (@real0 _)); apply: ltr0_real. Qed.
+
+Lemma pinfty_ex_gt (m : R) (A : set R) : m \is Num.real ->
+  (\forall k \near +oo, A k) -> exists2 M, m < M & A M.
+Proof.
+move=> m_real Agt; near (pinfty_nbhs R) => M.
+by exists M; near: M => //; apply: nbhs_pinfty_gt.
+Unshelve. all: by end_near. Qed.
+
+Lemma pinfty_ex_ge (m : R) (A : set R) : m \is Num.real ->
+  (\forall k \near +oo, A k) -> exists2 M, m <= M & A M.
+Proof.
+move=> m_real Agt; near (pinfty_nbhs R) => M.
+by exists M; near: M => //; apply: nbhs_pinfty_ge.
+Unshelve. all: by end_near. Qed.
+
+Lemma pinfty_ex_gt0 (A : set R) :
+  (\forall k \near +oo, A k) -> exists2 M, M > 0 & A M.
+Proof. exact: pinfty_ex_gt. Qed.
+
+Lemma near_pinfty_div2 (A : set R) :
+  (\forall k \near +oo, A k) -> (\forall k \near +oo, A (k / 2)).
+Proof.
+move=> [M [Mreal AM]]; exists (M * 2); split; first by rewrite realM.
+by move=> x; rewrite -ltr_pdivl_mulr //; exact: AM.
+Qed.
+
+End infty_nbhs_instances.
+
+#[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: nbhs_pinfty_gt end : core.
+#[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: nbhs_pinfty_ge end : core.
+#[global] Hint Extern 0 (is_true (_ > ?x)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: nbhs_ninfty_lt end : core.
+#[global] Hint Extern 0 (is_true (_ >= ?x)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: nbhs_ninfty_le end : core.
+#[global] Hint Extern 0 (is_true (?x \is Num.real)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: nbhs_pinfty_real end : core.
+#[global] Hint Extern 0 (is_true (?x \is Num.real)) => match goal with
+  H : x \is_near _ |- _ => near: x; exact: nbhs_ninfty_real end : core.
+
+Section cvg_infty_numField.
+Context {R : numFieldType}.
+
+Let cvgryPnum {F : set (set R)} {FF : Filter F} : [<->
+(* 0 *) F --> +oo;
+(* 1 *) forall A, A \is Num.real -> \forall x \near F, A <= x;
+(* 2 *) forall A, A \is Num.real -> \forall x \near F, A < x;
+(* 3 *) \forall A \near +oo, \forall x \near F, A < x;
+(* 4 *) \forall A \near +oo, \forall x \near F, A <= x ].
+Proof.
+tfae; first by move=> Foo A Areal; apply: Foo; apply: nbhs_pinfty_ge.
+- move=> AF A Areal; near +oo_R => B.
+  by near do apply: (@lt_le_trans _ _ B) => //=; apply: AF.
+- by move=> Foo; near do apply: Foo => //.
+- by apply: filterS => ?; apply: filterS => ?; apply: ltW.
+case=> [A [AR AF]] P [x [xR Px]]; near +oo_R => B.
+by near do [apply: Px; apply: (@lt_le_trans _ _ B) => //]; apply: AF.
+Unshelve. all: by end_near. Qed.
+
+Let cvgrNyPnum {F : set (set R)} {FF : Filter F} : [<->
+(* 0 *) F --> -oo;
+(* 1 *) forall A, A \is Num.real -> \forall x \near F, A >= x;
+(* 2 *) forall A, A \is Num.real -> \forall x \near F, A > x;
+(* 3 *) \forall A \near -oo, \forall x \near F, A > x;
+(* 4 *) \forall A \near -oo, \forall x \near F, A >= x ].
+Proof.
+tfae; first by move=> Foo A Areal; apply: Foo; apply: nbhs_ninfty_le.
+- move=> AF A Areal; near -oo_R => B.
+  by near do apply: (@le_lt_trans _ _ B) => //; apply: AF.
+- by move=> Foo; near do apply: Foo => //.
+- by apply: filterS => ?; apply: filterS => ?; apply: ltW.
+case=> [A [AR AF]] P [x [xR Px]]; near -oo_R => B.
+by near do [apply: Px; apply: (@le_lt_trans _ _ B) => //]; apply: AF.
+Unshelve. all: end_near. Qed.
+
+Context {T} {F : set (set T)} {FF : Filter F}.
+Implicit Types f : T -> R.
+
+Lemma cvgryPger f :
+  f @ F --> +oo <-> forall A, A \is Num.real -> \forall x \near F, A <= f x.
+Proof. exact: (cvgryPnum 0%N 1%N). Qed.
+
+Lemma cvgryPgtr f :
+  f @ F --> +oo <-> forall A, A \is Num.real -> \forall x \near F, A < f x.
+Proof. exact: (cvgryPnum 0%N 2%N). Qed.
+
+Lemma cvgryPgty f :
+  f @ F --> +oo <-> \forall A \near +oo, \forall x \near F, A < f x.
+Proof. exact: (cvgryPnum 0%N 3%N). Qed.
+
+Lemma cvgryPgey f :
+  f @ F --> +oo <-> \forall A \near +oo, \forall x \near F, A <= f x.
+Proof. exact: (cvgryPnum 0%N 4%N). Qed.
+
+Lemma cvgrNyPler f :
+  f @ F --> -oo <-> forall A, A \is Num.real -> \forall x \near F, A >= f x.
+Proof. exact: (cvgrNyPnum 0%N 1%N). Qed.
+
+Lemma cvgrNyPltr f :
+  f @ F --> -oo <-> forall A, A \is Num.real -> \forall x \near F, A > f x.
+Proof. exact: (cvgrNyPnum 0%N 2%N). Qed.
+
+Lemma cvgrNyPltNy f :
+  f @ F --> -oo <-> \forall A \near -oo, \forall x \near F, A > f x.
+Proof. exact: (cvgrNyPnum 0%N 3%N). Qed.
+
+Lemma cvgrNyPleNy f :
+  f @ F --> -oo <-> \forall A \near -oo, \forall x \near F, A >= f x.
+Proof. exact: (cvgrNyPnum 0%N 4%N). Qed.
+
+Lemma cvgry_ger f :
+  f @ F --> +oo -> forall A, A \is Num.real -> \forall x \near F, A <= f x.
+Proof. by rewrite cvgryPger. Qed.
+
+Lemma cvgry_gtr f :
+  f @ F --> +oo -> forall A, A \is Num.real -> \forall x \near F, A < f x.
+Proof. by rewrite cvgryPgtr. Qed.
+
+Lemma cvgrNy_ler f :
+  f @ F --> -oo -> forall A, A \is Num.real -> \forall x \near F, A >= f x.
+Proof. by rewrite cvgrNyPler. Qed.
+
+Lemma cvgrNy_ltr f :
+  f @ F --> -oo -> forall A, A \is Num.real -> \forall x \near F, A > f x.
+Proof. by rewrite cvgrNyPltr. Qed.
+
+Lemma cvgNry f : (- f @ F --> +oo) <-> (f @ F --> -oo).
+Proof.
+rewrite cvgrNyPler cvgryPger; split=> Foo A Areal;
+by near do rewrite -ler_opp2 ?opprK; apply: Foo; rewrite rpredN.
+Unshelve. all: end_near. Qed.
+
+Lemma cvgNrNy f : (- f @ F --> -oo) <-> (f @ F --> +oo).
+Proof. by rewrite -cvgNry opprK. Qed.
+
+End cvg_infty_numField.
+
+Section cvg_infty_realField.
+Context {R : realFieldType}.
+Context {T} {F : set (set T)} {FF : Filter F} (f : T -> R).
+
+Lemma cvgryPge : f @ F --> +oo <-> forall A, \forall x \near F, A <= f x.
+Proof.
+by rewrite cvgryPger; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgryPgt : f @ F --> +oo <-> forall A, \forall x \near F, A < f x.
+Proof.
+by rewrite cvgryPgtr; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgrNyPle : f @ F --> -oo <-> forall A, \forall x \near F, A >= f x.
+Proof.
+by rewrite cvgrNyPler; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgrNyPlt : f @ F --> -oo <-> forall A, \forall x \near F, A > f x.
+Proof.
+by rewrite cvgrNyPltr; under eq_forall do rewrite num_real; split=> + *; apply.
+Qed.
+
+Lemma cvgry_ge : f @ F --> +oo -> forall A, \forall x \near F, A <= f x.
+Proof. by rewrite cvgryPge. Qed.
+
+Lemma cvgry_gt : f @ F --> +oo -> forall A, \forall x \near F, A < f x.
+Proof. by rewrite cvgryPgt. Qed.
+
+Lemma cvgrNy_le : f @ F --> -oo -> forall A, \forall x \near F, A >= f x.
+Proof. by rewrite cvgrNyPle. Qed.
+
+Lemma cvgrNy_lt : f @ F --> -oo -> forall A, \forall x \near F, A > f x.
+Proof. by rewrite cvgrNyPlt. Qed.
+
+End cvg_infty_realField.
+
+Lemma cvgrnyP {R : realType} {T} {F : set (set T)} {FF : Filter F} (f : T -> nat) :
+   (((f n)%:R : R) @[n --> F] --> +oo) <-> (f @ F --> \oo).
+Proof.
+split=> [/cvgryPge|/cvgnyPge] Foo.
+  by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
+apply/cvgryPgey; near=> A; near=> n.
+rewrite (le_trans (@ceil_ge R A))// (ler_int _ _ (f n)) [ceil _]intEsign.
+by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
+Unshelve. all: by end_near. Qed.
+
 Section RestrictedUniformTopology.
 Context {U : choiceType} (A : set U) {V : uniformType} .
 
