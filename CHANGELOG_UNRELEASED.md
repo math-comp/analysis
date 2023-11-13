@@ -68,7 +68,7 @@
   + definition `scale_ball`, notation notation ``` *` ```
   + lemmas `sub_scale_ball`, `scale_ball1`, `sub1_scale_ball`
   + lemmas `ball_inj`, `radius0`, `cpoint_ball`, `radius_ball_num`,
-    `radius_ball`, `is_ballP`, `is_ball_ball`, `scale_ball0`,
+    `radius_ball`, `is_ballP`, `is_ball_ball`, `scale_ball_set0`,
     `ballE`, `is_ball_closure`, `scale_ballE`, `cpoint_scale_ball`,
 	`radius_scale_ball`
   + lemmas `vitali_lemma_finite`, `vitali_lemma_finite_cover`
@@ -121,6 +121,9 @@
 
 - in `sequences.v`:
   + lemma `nneseries_tail_cvg`
+
+- in `normedtype.v`:
+  + lemmas `scale_ball0`, `closure_ball`, `bigcup_ballT`
 
 ### Changed
 

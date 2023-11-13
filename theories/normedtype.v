@@ -101,9 +101,10 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                                                            *)
 (*        cpoint A == the center of the set A if it is an open ball           *)
 (*        radius A == the radius of the set A if it is an open ball           *)
-(*                    radius A has type {nonneg R}                            *)
+(*                    Radius A has type {nonneg R} with R a numDomainType.    *)
 (*       is_ball A == boolean predicate that holds when A is an open ball     *)
 (*          k *` A == open ball with center cpoint A and radius k * radius A  *)
+(*                    if A is an open ball and set0 o.w.                      *)
 (*   vitali_collection_partition B V r n == subset of indices of V such the   *)
 (*                    the ball B i has a radius between r/2^n+1 and r/2^n     *)
 (*                                                                            *)
@@ -337,6 +338,18 @@ Lemma ball_normE : ball_norm = ball.
 Proof. by case: V => ? [? ? ? ? ? ? []]. Qed.
 
 End pseudoMetricnormedzmodule_lemmas.
+
+Lemma bigcup_ballT {R : realType} : \bigcup_n ball (0%R : R) n%:R = setT.
+Proof.
+apply/seteqP; split => // x _; have [x0|x0] := ltP 0%R x.
+  exists `|ceil x|.+1 => //.
+  rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
+  by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_spaddr.
+exists `|ceil (- x)|.+1 => //.
+rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
+rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?ler_oppr ?oppr0//.
+by rewrite ltr_spaddr.
+Qed.
 
 (** neighborhoods *)
 
@@ -6201,6 +6214,14 @@ Proof. by move/scale_ball1 => {1}<-; apply: sub_scale_ball; rewrite ler1n. Qed.
 End center_radius.
 Notation "k *` B" := (scale_ball k B) : classical_set_scope.
 
+Lemma scale_ball0 {R : realFieldType} (A : set R) r : (r <= 0)%R ->
+  r *` A = set0.
+Proof.
+move=> r0; apply/seteqP; split => // x.
+rewrite /scale_ball; case: ifPn => // ballA.
+by rewrite ((ball0 _ _).2 _)// mulr_le0_ge0.
+Qed.
+
 Section center_radius_realFieldType.
 Context {R : realFieldType}.
 Implicit Types x y r s : R.
@@ -6297,7 +6318,7 @@ have [r0|/ball0 ->] := ltP 0 r; last exact: is_ball0.
 by apply/eqP; rewrite cpoint_ball// (radius_ball _ (ltW r0)).
 Qed.
 
-Lemma scale_ball0 (k : R) : k *` set0 = set0 :> set R.
+Lemma scale_ball_set0 (k : R) : k *` set0 = set0 :> set R.
 Proof. by rewrite /scale_ball is_ball0// radius0/= mulr0 ball0. Qed.
 
 Lemma ballE (A : set R) : is_ball A -> A = ball (cpoint A) (radius A)%:num.
@@ -6319,6 +6340,13 @@ Lemma is_ball_closure (A : set R) : is_ball A ->
   closure A = closed_ball (cpoint A) (radius A)%:num.
 Proof. by move=> ballA; rewrite /closed_ball -ballE. Qed.
 
+Lemma closure_ball (c r : R) : closure (ball c r) = closed_ball c r.
+Proof.
+have [r0|r0] := leP r 0.
+  by rewrite closed_ball0// ((ball0 _ _).2 r0) closure0.
+by rewrite (is_ball_closure (is_ball_ball _ _)) cpoint_ball// radius_ball ?ltW.
+Qed.
+
 Lemma scale_ballE k x r : 0 <= k -> k *` ball x r = ball x (k * r).
 Proof.
 move=> k0; have [r0|r0] := ltP 0 r.
@@ -6326,7 +6354,7 @@ move=> k0; have [r0|r0] := ltP 0 r.
     rewrite /scale_ball is_ball_ball//= cpoint_ball//.
     by rewrite (radius_ball_num _ (ltW _)).
   by rewrite /scale_ball is_ball_ball cpoint_ball// radius_ball_num// ltW.
-rewrite ((ball0 _ _).2 r0) scale_ball0; apply/esym/ball0.
+rewrite ((ball0 _ _).2 r0) scale_ball_set0; apply/esym/ball0.
 by rewrite mulr_ge0_le0.
 Qed.
 
