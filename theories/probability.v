@@ -541,7 +541,7 @@ rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
   exact: (monoW_in (@ger0_le_norm _)).
 rewrite ger0_norm ?expR_ge0// muleC lee_pmul2l// ?lte_fin ?expR_gt0//.
 rewrite [X in _ <= P X](_ : _ = [set x | a <= X x]%R)//; apply: eq_set => t/=.
-by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pmul2r.
+by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pM2r.
 Qed.
 
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
