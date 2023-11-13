@@ -2919,10 +2919,18 @@ HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
 Section probability_lemmas.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
-Lemma probability_le1 (A : set T) : measurable A -> (P A <= 1)%E.
+Lemma probability_le1 (A : set T) : measurable A -> P A <= 1.
 Proof.
 move=> mA; rewrite -(@probability_setT _ _ _ P).
 by apply: le_measure => //; rewrite ?in_setE.
+Qed.
+
+Lemma probability_setC (A : set T) : measurable A -> P (~` A) = 1 - P A.
+Proof.
+move=> mA.
+rewrite -(@probability_setT _ _ _ P) -(setvU A) measureU ?addeK ?setICl//.
+- by rewrite fin_num_measure.
+- exact: measurableC.
 Qed.
 
 End probability_lemmas.
