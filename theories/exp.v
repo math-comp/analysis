@@ -700,6 +700,9 @@ Definition powR a x := if a == 0 then (x == 0)%:R else expR (x * ln a).
 
 Local Notation "a `^ x" := (powR a x).
 
+Lemma expRM x y : expR (x * y) = (expR x) `^ y.
+Proof. by rewrite /powR gt_eqF ?expR_gt0// expRK mulrC. Qed.
+
 Lemma powR_ge0 a x : 0 <= a `^ x.
 Proof. by rewrite /powR; case: ifPn => // _; exact: expR_ge0. Qed.
 
