@@ -3221,7 +3221,7 @@ Lemma compact_precompact (A B : set X) :
   hausdorff_space X -> compact A -> precompact A.
 Proof.
 move=> h c; rewrite precompactE ( _ : closure A = A)//.
-apply/esym/closure_id; exact: compact_closed.
+by apply/esym/closure_id; exact: compact_closed.
 Qed.
 
 Lemma precompact_closed (A : set X) : closed A -> precompact A = compact A.
@@ -3676,7 +3676,7 @@ exists (fun i => if i is false then A `\` C else A `&` C); split.
   + rewrite setIC; apply/disjoints_subset; rewrite closureC => x [? ?].
     by exists C => //; split=> //; rewrite setDE setCI setCK; right.
   + apply/disjoints_subset => y -[Ay Cy].
-    rewrite -BAC BAD=> /closureI[_]; rewrite -(proj1 (@closure_id _ _) cD)=> Dy.
+    rewrite -BAC BAD => /closureI[_]; move/closure_id : cD => <- Dy.
     by have : B y; [by rewrite BAD; split|rewrite BAC => -[]].
 Qed.
 
@@ -4368,14 +4368,6 @@ Qed.
 
 End uniform_closeness.
 
-Lemma ent_closure {X : uniformType} (x : X) E : entourage E ->
-  closure (to_set (split_ent E) x) `<=` to_set E x.
-Proof.
-pose E' := ((split_ent E) `&` ((split_ent E)^-1)%classic).
-move=> entE z /(_ [set y | E' (z, y)]) [].
-  by rewrite -nbhs_entourageE; exists E' => //; apply: filterI.
-by move=> y [/=] + [_]; apply: entourage_split.
-Qed.
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
 
