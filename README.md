@@ -80,7 +80,7 @@ own risk.
 ## Documentation
 
 Each file is documented in its header
-([coqdoc presentation for the last version](https://math-comp.github.io/analysis/htmldoc_0_6_5/index.html)).
+([coqdoc presentation for the last version](https://math-comp.github.io/analysis/htmldoc_0_6_6/index.html)).
 
 Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
 [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
