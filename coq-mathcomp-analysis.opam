@@ -19,7 +19,7 @@ build: [make "-C" "theories" "-j%{jobs}%"]
 install: [make "-C" "theories" "install"]
 depends: [
   "coq-mathcomp-classical" { = version}
-  "coq-mathcomp-solvable" { (>= "1.15.0" & < "1.18~") | (= "dev") }
+  "coq-mathcomp-solvable" { (>= "1.15.0" & < "1.19~") | (= "dev") }
   "coq-mathcomp-field"
   "coq-mathcomp-bigenough" { (>= "1.0.0") }
 ]
