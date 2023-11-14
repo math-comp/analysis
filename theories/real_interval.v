@@ -430,4 +430,3 @@ case: b => /=.
 - by move/ltW; rewrite ler_norml => /andP[-> ->].
 - by rewrite ltr_norml => /andP[-> /ltW->].
 Qed.
-

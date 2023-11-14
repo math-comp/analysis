@@ -640,6 +640,10 @@ Proof. by rewrite /ceil lerNl -floor_ge_int// -lerNr mulrNz opprK. Qed.
 Lemma ceil_lt_int x (z : int) : (z%:~R < x) = (z < ceil x).
 Proof. by rewrite ltNge ceil_ge_int -ltNge. Qed.
 
+Lemma ceilN x : ceil (- x) = - floor x. Proof. by rewrite /ceil opprK. Qed.
+
+Lemma floorN x : floor (- x) = - ceil x. Proof. by rewrite /ceil opprK. Qed.
+
 End CeilTheory.
 
 (* -------------------------------------------------------------------- *)

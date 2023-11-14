@@ -5291,7 +5291,7 @@ HB.mixin Record Uniform_isComplete T of Uniform T := {
 HB.structure Definition Complete := {T of Uniform T & Uniform_isComplete T}.
 
 #[deprecated(since="mathcomp-analysis 2.0", note="use cauchy_cvg instead")]
-Notation complete_ax := cauchy_cvg.
+Notation complete_ax := cauchy_cvg (only parsing).
 
 Section completeType1.
 
@@ -5444,11 +5444,11 @@ HB.structure Definition CompletePseudoMetric R :=
   {T of Complete T & PseudoMetric R T}.
 
 HB.instance Definition _ (R : numFieldType) (T : completePseudoMetricType R)
-  (m n : nat) := Uniform_isComplete.Build 'M[T]_(m, n) complete_ax.
+  (m n : nat) := Uniform_isComplete.Build 'M[T]_(m, n) cauchy_cvg.
 
 HB.instance Definition _ (T : choiceType) (R : numFieldType)
     (U : completePseudoMetricType R) :=
-  Uniform_isComplete.Build (T -> U) complete_ax.
+  Uniform_isComplete.Build (T -> U) cauchy_cvg.
 
 HB.instance Definition _ (R : zmodType) := isPointed.Build R 0.
 
