@@ -880,7 +880,7 @@ rewrite jordan_decomp// /jordan_pos /jordan_neg /measure_of_charge/=.
 rewrite /cscale/= /crestr0/= mem_set// EFinN mulN1e oppeK.
 have mAP : measurable (A `&` P) by exact: measurableI.
 suff : mu (A `&` P) = 0 by move/(nu_mu _ mAP); rewrite /crestr => ->.
-by apply/eqP; rewrite eq_le measure_ge0// andbT -muA0 le_measure// inE.
+by apply/eqP; rewrite -measure_le0 -muA0 le_measure// inE.
 Qed.
 
 Lemma jordan_neg_dominates (mu : {measure set T -> \bar R}) :
@@ -892,7 +892,7 @@ rewrite /cscale/= /crestr0/= mem_set//.
 have mAN : measurable (A `&` N) by exact: measurableI.
 suff : mu (A `&` N) = 0.
   by move=> /(nu_mu _ mAN); rewrite /crestr => ->; rewrite mule0.
-by apply/eqP; rewrite eq_le measure_ge0// andbT -muA0 le_measure// inE.
+by apply/eqP; rewrite -measure_le0 -muA0 le_measure// inE.
 Qed.
 
 End jordan_decomposition.
@@ -1361,7 +1361,7 @@ have [P [N [[mP posP] [mN negN] PNX PN0]]] := Hahn_decomposition sigma.
 pose AP := A `&` P.
 have mAP : measurable AP by exact: measurableI.
 have muAP_gt0 : 0 < mu AP.
-  rewrite lt_neqAle measure_ge0// andbT eq_sym.
+  rewrite lt0e measure_ge0// andbT.
   apply/eqP/(@contra_not _ _ (nu_mu _ mAP))/eqP; rewrite gt_eqF//.
   rewrite (@lt_le_trans _ _ (sigma AP))//.
     rewrite (@lt_le_trans _ _ (sigma A))//; last first.
