@@ -106,7 +106,7 @@ Hypothesis refine_separates: forall x y : X, x != y ->
   exists n, forall (U : set X) e,
     @refine_apx n U e x -> ~@refine_apx n U e y.
 
-Local Lemma refine_subset n U e : @refine_apx n U e `<=` U.
+Let refine_subset n U e : @refine_apx n U e `<=` U.
 Proof. by rewrite [X in _ `<=` X](refine_cover n); exact: bigcup_sup. Qed.
 
 Let T := product_topologicalType K.
@@ -116,10 +116,10 @@ Local Fixpoint branch_apx (b : T) n :=
 
 Let tree_mapF (b : T) := filter_from [set: nat] (branch_apx b).
 
-Local Lemma tree_map_invar b n : tree_invariant (branch_apx b n).
+Let tree_map_invar b n : tree_invariant (branch_apx b n).
 Proof. by elim: n => // n ?; exact: refine_invar. Qed.
 
-Local Lemma tree_map_sub b i j :
+Let tree_map_sub b i j :
   (i <= j)%N -> branch_apx b j `<=` branch_apx b i.
 Proof.
 elim: j i => [?|j IH i]; first by rewrite leqn0 => /eqP ->.
@@ -137,7 +137,7 @@ Qed.
 
 Let tree_map b := lim (tree_mapF b).
 
-Local Lemma cvg_tree_map b : cvg (tree_mapF b).
+Let cvg_tree_map b : cvg (tree_mapF b).
 Proof.
 have [|x [_ clx]] := cmptX (tree_map_filter b); first exact: filterT.
 apply/cvg_ex; exists x => /=; apply: (compact_cluster_set1 _ cmptX) => //.
@@ -173,7 +173,7 @@ have /(_ IH) := projT2 (cid (zcov' n (branch_apx g' n))).
 by case: n {IH} => // n; rewrite apxg.
 Qed.
 
-Local Lemma tree_prefix (b : T) (n : nat) :
+Let tree_prefix (b : T) (n : nat) :
   \forall c \near b, forall i,  (i < n)%N -> b i = c i.
 Proof.
 elim: n => [|n IH]; first by near=> z => ?; rewrite ltn0.
@@ -183,14 +183,14 @@ split => //; suff : @open T (proj n @^-1` [set b n]) by [].
 by apply: open_comp; [move=> + _; exact: proj_continuous| exact: discrete_open].
 Unshelve. all: end_near. Qed.
 
-Local Lemma apx_prefix b c n :
+Let apx_prefix b c n :
   (forall i, (i < n)%N -> b i = c i) -> branch_apx b n = branch_apx c n.
 Proof.
 elim: n => //= n IH inS; rewrite IH; first by rewrite inS.
 by move=> ? ?; exact/inS/ltnW.
 Qed.
 
-Local Lemma tree_map_apx b n : branch_apx b n (tree_map b).
+Let tree_map_apx b n : branch_apx b n (tree_map b).
 Proof.
 apply: (@closed_cvg _ _ _ (tree_map_filter b)); last exact: cvg_tree_map.
   by apply: invar_cl; exact: tree_map_invar.
@@ -213,7 +213,7 @@ move=> xyE; exists (tree_map y); split.
 by rewrite -/(branch_apx y n.+1); exact: tree_map_apx.
 Qed.
 
-Let tree_map_inj : (forall n U, trivIset [set: K n] (@refine_apx n U)) ->
+Local Lemma tree_map_inj : (forall n U, trivIset [set: K n] (@refine_apx n U)) ->
   set_inj [set: T] tree_map.
 Proof.
 move=> triv x y _ _ xyE; apply: functional_extensionality_dep => n.
@@ -225,7 +225,7 @@ rewrite (@triv m (branch_apx x m) (x m) (y m) I I) 1?brE//.
 by rewrite -[in X in X `&` _]brE; exact: tree_map_setI.
 Qed.
 
-Lemma tree_map_props : exists (f : T -> X),
+Lemma tree_map_props : exists f : T -> X,
   [/\ continuous f,
       set_surj [set: T] [set: X] f &
       (forall n U, trivIset [set: K n] (@refine_apx n U)) ->
@@ -255,14 +255,7 @@ Let hsdfT : @hausdorff_space T.   Proof. by case: cantorT. Qed.
 
 Let c_invar (U : set T) := clopen U /\ U !=set0.
 
-Let clopen_surj : $|{surjfun [set: nat] >-> @clopen T}|.
-Proof.
-suff : @clopen T = set0 \/ $|{surjfun [set: nat] >-> @clopen T}|.
-  by case; rewrite // eqEsubset => -[/(_ _ clopenT)].
-exact/pfcard_geP/clopen_countable/compact_second_countable.
-Qed.
-
-Let U_ := unsquash clopen_surj.
+Let U_ := unsquash (clopen_surj cmptT).
 
 Let split_clopen' (U : set T) : exists V,
   open U -> U !=set0 -> clopen V /\ V `&` U !=set0 /\ ~`V `&` U !=set0.
@@ -322,7 +315,7 @@ Qed.
 
 Let tree_map := projT1 (cid cantor_map).
 
-Local Lemma tree_map_bij : bijective tree_map.
+Let tree_map_bij : bijective tree_map.
 Proof.
 by rewrite -setTT_bijective; have [? ? ?] := projT2 (cid cantor_map); split.
 Qed.
@@ -330,9 +323,8 @@ Qed.
 #[local] HB.instance Definition _ := @BijTT.Build _ _ _ tree_map_bij.
 
 Lemma homeomorphism_cantor_like :
-  exists (f : {splitbij [set: cantor_space] >-> [set: T]}),
-    continuous f /\
-    (forall A, closed A -> closed (f @` A)).
+  exists f : {splitbij [set: cantor_space] >-> [set: T]},
+    continuous f /\ (forall A, closed A -> closed (f @` A)).
 Proof.
 exists [the {splitbij _ >-> _} of tree_map] => /=.
 have [cts surj inje] := projT2 (cid cantor_map); split; first exact: cts.
@@ -344,9 +336,10 @@ Qed.
 
 End TreeStructure.
 
-(* Part 3: Finitely Branching trees are cantor-like *)
+(* Part 3: Finitely branching trees are Cantor-like *)
 Section FinitelyBranchingTrees.
 Context {R : realType}.
+
 Definition pointed_discrete (P : pointedType) : pseudoMetricType R :=
   @discrete_pseudoMetricType R
     (@discrete_uniformType (TopologicalType
@@ -388,7 +381,7 @@ Section two_pointed.
 Context (t0 t1 : T).
 Hypothesis T2e : t0 != t1.
 
-Local Lemma ent_balls' (E : set (T * T)) :
+Let ent_balls' (E : set (T * T)) :
   exists M : set (set T), entourage E -> [/\
     finite_set M,
     forall A, M A -> exists a, A a /\
@@ -434,23 +427,21 @@ Let count_unif' := cid2
 
 Let count_unif := projT1 count_unif'.
 
-Local Lemma ent_count_unif n : entourage (count_unif n).
+Let ent_count_unif n : entourage (count_unif n).
 Proof.
 have := projT2 (cid (ent_balls' (count_unif n))).
 rewrite /count_unif; case: count_unif'.
 by move=> /= f fnA fnE; case /(_ (fnE _)) => _ _ _ + _; rewrite -subTset.
 Qed.
 
-Local Lemma count_unif_sub E : entourage E -> exists N, count_unif N `<=` E.
+Let count_unif_sub E : entourage E -> exists N, count_unif N `<=` E.
 Proof.
 by move=> entE; rewrite /count_unif; case: count_unif' => f + ? /=; exact.
 Qed.
 
-Hint Resolve ent_count_unif : core.
-
 Let K' n : Type := @sigT (set T) (ent_balls (count_unif n)).
 
-Local Lemma K'p n :  K' n.
+Let K'p n : K' n.
 Proof.
 apply: cid; have [//| _ _ _ + _] := projT2 (cid (ent_balls' (count_unif n))).
 by rewrite -subTset => /(_ point I) [W Q ?]; exists W; exact: Q.
@@ -467,39 +458,36 @@ Let embed_refine n (U : set T) (k : K n) :=
     else set0) `&` U.
 Let embed_invar (U : set T) := closed U /\ U !=set0.
 
-Local Lemma Kn_closed n (e : K n) : closed (projT1 e).
+Let Kn_closed n (e : K n) : closed (projT1 e).
 Proof.
 case: e => W; have [//| _ _ _ _] := projT2 (cid (ent_balls' (count_unif n))).
 exact.
 Qed.
 
-Local Lemma cantor_surj_pt1 : exists f : Tree -> T,
-  continuous f /\ set_surj [set: Tree] [set: T] f.
+Local Lemma cantor_surj_pt1 : exists2 f : Tree -> T,
+  continuous f & set_surj [set: Tree] [set: T] f.
 Proof.
 pose entn n := projT2 (cid (ent_balls' (count_unif n))).
-have [] := @tree_map_props (@pointed_discrete R \o K) T (embed_refine)
-    (embed_invar) cptT hsdfT.
-- by [].
+have [//| | |? []//| |? []// | |] := @tree_map_props (@pointed_discrete R \o K)
+    T (embed_refine) (embed_invar) cptT hsdfT.
 - move=> n U; rewrite eqEsubset; split=> [t Ut|t [? ? []]//].
   have [//|_ _ _ + _] := entn n; rewrite -subTset.
   move=> /(_ t I)[W cbW Wt]; exists (existT _ W cbW) => //.
   by rewrite /embed_refine; case: pselect => //=; apply: absurd; exists t.
 - move=> n U e [clU Un0]; split.
-    apply: closedI => //; case: pselect => //= ?; first exact: Kn_closed.
+    apply: closedI => //; case: pselect => //= ?.
     by case: pselect => ?; [exact: Kn_closed|exact: closed0].
   rewrite /embed_refine; case: pselect => //= ?; case: pselect.
     by case=> i [z [pz bz]]; set P := cid _; have := projT2 P; apply.
   case: Un0 => z Uz; apply: absurd.
   have [//|_ _ _ + _] := entn n; rewrite -subTset; move=> /(_ z I)[i bi iz].
   by exists (existT _ _ bi), z.
-- by move => ? [].
 - by split; [exact: closedT | exists point].
-- by move => ? [].
 - move=> x y xny; move: hsdfT; rewrite open_hausdorff.
   move=> /(_ _ _ xny)[[U V]] /= [/set_mem Ux /set_mem Vy] [+ oV UVI0].
   rewrite openE => /(_ _ Ux); rewrite /interior -nbhs_entourageE => -[E entE ExU].
   have [//| n ctE] :=
-    @count_unif_sub ((split_ent E) `&` ((split_ent E)^-1%classic)).
+    @count_unif_sub (split_ent E `&` (split_ent E)^-1%classic).
     exact: filterI.
   exists n => B [C ebC]; have [//|_ Csub _ _ _ embx emby] := entn n.
   have [[D cbD] /= Dx Dy] : exists2 e : K n, projT1 e x & projT1 e y.
@@ -516,7 +504,7 @@ by move=> f [ctsf surjf _]; exists f.
 Qed.
 
 Local Lemma cantor_surj_pt2 :
-  exists (f : {surj [set: cantor_space] >-> [set: Tree]}), continuous f.
+  exists f : {surj [set: cantor_space] >-> [set: Tree]}, continuous f.
 Proof.
 have [|f [ctsf _]] := @homeomorphism_cantor_like R Tree; last by exists f.
 apply: (@cantor_like_finite_prod _ (@pointed_discrete R \o K)) => [n /=|n].
@@ -532,9 +520,9 @@ by move: AB; apply: contra_neq => -[].
 Qed.
 
 Local Lemma cantor_surj_twop :
-  exists (f : {surj [set: cantor_space] >-> [set: T]}), continuous f.
+  exists f : {surj [set: cantor_space] >-> [set: T]}, continuous f.
 Proof.
-move: cantor_surj_pt2 cantor_surj_pt1 => -[f ctsf] [g [ctsg /Psurj [sjg gsjg]]].
+move: cantor_surj_pt2 cantor_surj_pt1 => -[f ctsf] [g ctsg /Psurj[sjg gsjg]].
 exists [surj of sjg \o f] => z.
 by apply continuous_comp; [exact: ctsf|rewrite -gsjg; exact: ctsg].
 Qed.
@@ -543,7 +531,7 @@ End two_pointed.
 
 (* The Alexandroff-Hausdorff theorem*)
 Theorem cantor_surj :
-  exists (f : {surj [set: cantor_space] >->  [set: T]}), continuous f.
+  exists f : {surj [set: cantor_space] >-> [set: T]}, continuous f.
 Proof.
 have [[p ppt]|/forallNP xpt] := pselect (exists p : T, p != point).
   by apply: cantor_surj_twop; exact: ppt.

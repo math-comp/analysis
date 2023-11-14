@@ -14,6 +14,7 @@
   + new theorem `cantor_surj`.
 - in file `topology.v`,
   + new lemmas `perfect_set2`, and `ent_closure`.
+  + lemma `clopen_surj`
 
 ### Changed
   

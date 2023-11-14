@@ -6615,6 +6615,15 @@ pose B := \bigcup_n (f n) @` [set` h'' n]; exists B;[|split].
   by apply: (le_ball (ltW deleps)); apply: interior_subset.
 Qed.
 
+Lemma clopen_surj {R : realType} {T : pseudoMetricType R} :
+  compact [set: T] -> $|{surjfun [set: nat] >-> @clopen T}|.
+Proof.
+move=> cmptT.
+suff : @clopen T = set0 \/ $|{surjfun [set: nat] >-> @clopen T}|.
+  by case => //; rewrite eqEsubset => -[/(_ _ clopenT)].
+exact/pfcard_geP/clopen_countable/compact_second_countable.
+Qed.
+
 (* This section proves that uniform spaces, with a countable base for their
    entourage, are metrizable. The definition of this metric is rather arcane,
    and the proof is tough. That's ok because the resulting metric is not
