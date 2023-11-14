@@ -10,12 +10,12 @@ From HB Require Import structures.
 (*                                                                            *)
 (* This file develops the theory of the Cantor space, that is bool^nat with   *)
 (* the product topology. The two main theorems proved here are                *)
-(* homeomorphism_cantor_like, and cantor_surj, aka Alexandroff-Hausdorff.     *)
+(* homeomorphism_cantor_like, and cantor_surj, a.k.a. Alexandroff-Hausdorff.  *)
 (*                                                                            *)
-(*         cantor_space == the Cantor space, with its canonical metric        *)
+(*          cantor_space == the Cantor space, with its canonical metric       *)
 (*         cantor_like T == perfect + compact + hausdroff + zero dimensional  *)
-(*         pointed_discrete T == equips T with the discrete topology          *)
-(*         tree_of T == builds a topological tree with levels (T n)           *)
+(*    pointed_discrete T == equips T with the discrete topology               *)
+(*             tree_of T == builds a topological tree with levels (T n)       *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -285,8 +285,7 @@ Let c_ind n (V : set T) (b : bool) :=
 Local Lemma cantor_map : exists f : cantor_space -> T,
   [/\ continuous f,
       set_surj [set: cantor_space] [set: T] f &
-      set_inj [set: cantor_space] f
-  ].
+      set_inj [set: cantor_space] f ].
 Proof.
 have [] := @tree_map_props
     (fun=> [topologicalType of bool]) T c_ind c_invar cmptT hsdfT.
@@ -335,7 +334,7 @@ Lemma homeomorphism_cantor_like :
     continuous f /\
     (forall A, closed A -> closed (f @` A)).
 Proof.
-exists tree_map => /=.
+exists [the {splitbij _ >-> _} of tree_map] => /=.
 have [cts surj inje] := projT2 (cid cantor_map); split; first exact: cts.
 move=> A clA; apply: (compact_closed hsdfT).
 apply: (@continuous_compact _ _ tree_map); first exact: continuous_subspaceT.
@@ -390,14 +389,13 @@ Context (t0 t1 : T).
 Hypothesis T2e : t0 != t1.
 
 Local Lemma ent_balls' (E : set (T * T)) :
-  exists M : set (set T),
-    entourage E -> [/\
-      finite_set M,
-      forall A, M A -> exists a, A a /\
-        A `<=` closure [set y | split_ent E (a, y)],
-      exists A B : set T, M A /\ M B /\ A != B,
-      \bigcup_(A in M) A = [set: T] &
-      M `<=` closed].
+  exists M : set (set T), entourage E -> [/\
+    finite_set M,
+    forall A, M A -> exists a, A a /\
+      A `<=` closure [set y | split_ent E (a, y)],
+    exists A B : set T, M A /\ M B /\ A != B,
+    \bigcup_(A in M) A = [set: T] &
+    M `<=` closed].
 Proof.
 have [entE|?] := pselect (entourage E); last by exists point.
 move: cptT; rewrite compact_cover.
