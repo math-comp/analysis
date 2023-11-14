@@ -68,7 +68,7 @@
   + definition `scale_ball`, notation notation ``` *` ```
   + lemmas `sub_scale_ball`, `scale_ball1`, `sub1_scale_ball`
   + lemmas `ball_inj`, `radius0`, `cpoint_ball`, `radius_ball_num`,
-    `radius_ball`, `is_ballP`, `is_ball_ball`, `scale_ball0`,
+    `radius_ball`, `is_ballP`, `is_ball_ball`, `scale_ball_set0`,
     `ballE`, `is_ball_closure`, `scale_ballE`, `cpoint_scale_ball`,
 	`radius_scale_ball`
   + lemmas `vitali_lemma_finite`, `vitali_lemma_finite_cover`
@@ -100,6 +100,30 @@
 
 - in `measure.v`:
   + lemma `probability_setC`
+- in `classical_sets.v`:
+  + lemmas `mem_not_I`, `trivIsetT_bigcup`
+
+- in `lebesgue_measure.v`:
+  + definition `vitali_cover`
+  + lemma `vitali_theorem`
+
+- in `measure.v`:
+  + lemma `measure_sigma_sub_additive_tail`
+  + lemma `outer_measure_sigma_subadditive_tail`
+
+- in `normedtype.v`:
+  + lemma `open_subball`
+  + lemma `closed_disjoint_closed_ball`
+  + lemma `is_scale_ball`
+
+- in `reals.v`:
+  + lemmas `ceilN`, `floorN`
+
+- in `sequences.v`:
+  + lemma `nneseries_tail_cvg`
+
+- in `normedtype.v`:
+  + lemmas `scale_ball0`, `closure_ball`, `bigcup_ballT`
 
 ### Changed
 

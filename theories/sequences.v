@@ -1806,8 +1806,6 @@ Lemma __deprecated__ereal_cvgD (R : realFieldType) (f g : (\bar R)^nat) a b :
   a +? b -> f @ \oo --> a -> g @ \oo --> b -> f \+ g @ \oo --> a + b.
 Proof. exact: cvgeD. Qed.
 
-Section nneseries_split.
-
 Lemma __deprecated__ereal_cvgB (R : realFieldType) (f g : (\bar R)^nat) a b :
   a +? - b -> f @ \oo --> a -> g @ \oo --> b -> f \- g @ \oo --> a - b.
 Proof. exact: cvgeB. Qed.
@@ -1876,6 +1874,8 @@ rewrite ltninfty_adde_def// inE (@lt_le_trans _ _ 0)//.
 by apply: lime_ge => //; exact: nearW.
 Qed.
 
+Section nneseries_split.
+
 Let near_eq_lim (R : realFieldType) (f g : nat -> \bar R) :
   cvgn g -> {near \oo, f =1 g} -> limn f = limn g.
 Proof.
@@ -1898,6 +1898,26 @@ rewrite -lim_shift_cst; last by rewrite (@lt_le_trans _ _ 0).
 Unshelve. all: by end_near. Qed.
 
 End nneseries_split.
+
+Lemma nneseries_tail_cvg (R : realType) (f : (\bar R)^nat) :
+  \sum_(k <oo) f k < +oo -> (forall k, 0 <= f k) ->
+  \sum_(N <= k <oo) f k @[N --> \oo] --> 0.
+Proof.
+move=> foo f0.
+have : cvg (\sum_(0 <= k < n) f k @[n --> \oo]).
+  by apply: ereal_nondecreasing_is_cvgn; exact: lee_sum_nneg_natr.
+move/cvg_ex => [[l fl||/cvg_lim fnoo]] /=; last 2 first.
+  - by move/cvg_lim => fpoo; rewrite fpoo// in foo.
+  - have : 0 <= \sum_(k <oo) f k by exact: nneseries_ge0.
+    by rewrite fnoo.
+rewrite [X in X @ _ --> _](_ : _ = fun N => l%:E - \sum_(0 <= k < N) f k).
+  apply/cvgeNP; rewrite oppe0.
+  under eq_fun => ? do rewrite oppeD// oppeK addeC.
+  exact/cvge_sub0.
+apply/funext => N; apply/esym/eqP; rewrite sube_eq//.
+  by rewrite addeC big_mkord -(nneseries_split N)//; exact/eqP/esym/cvg_lim.
+by rewrite ge0_adde_def//= ?inE; [exact: nneseries_ge0|exact: sume_ge0].
+Qed.
 
 Lemma nneseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) :
   (forall i, P i -> 0 <= f i) -> (forall i, P i -> 0 <= g i) ->

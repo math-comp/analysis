@@ -3617,7 +3617,7 @@ move=> mf; split=> [iDf0|Df0].
   exists (D `&` [set x | f x != 0]); split;
     [exact: emeasurable_neq| |by move=> t /= /not_implyP [Dt /eqP ft0]].
   have muDf a : (0 < a)%R -> mu (D `&` [set x | a%:E <= `|f x|]) = 0.
-    move=> a0; apply/eqP; rewrite eq_le measure_ge0 ?andbT.
+    move=> a0; apply/eqP; rewrite -measure_le0.
     by have := le_integral_abse mu mD mf a0; rewrite iDf0 pmule_rle0 ?lte_fin.
   rewrite [X in mu X](_ : _ =
      \bigcup_n (D `&` [set x | `|f x| >= n.+1%:R^-1%:E])); last first.
@@ -4431,7 +4431,7 @@ have mE j : measurable (E j).
   rewrite /E; apply: emeasurable_fun_le => //.
   by apply/(emeasurable_funD msf)/measurableT_comp => //; case: mg.
 have muE j : mu (E j) = 0.
-  apply/eqP; rewrite eq_le measure_ge0// andbT.
+  apply/eqP; rewrite -measure_le0.
   have fg0 : \int[mu]_(x in E j) (f \- g) x = 0.
     rewrite integralB//; last 2 first.
       by apply: integrableS itf => //; exact: subIsetl.
