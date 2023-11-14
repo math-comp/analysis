@@ -6,7 +6,7 @@ From mathcomp Require Import cardinality.
 From HB Require Import structures.
 Require Import exp numfun lebesgue_measure lebesgue_integral.
 Require Import reals ereal signed topology normedtype sequences esum measure.
-Require Import hoelder.
+Require Import hoelder derive.
 
 (******************************************************************************)
 (*                       Probability (experimental)                           *)
@@ -1217,6 +1217,8 @@ Proof.
 rewrite /is_bernoulli_trial /independent_RVs /bernoulli_trial.
 move=> [bX1 [bX2 bX3]] /=.
 rewrite -[LHS]fineK; last first.
+  rewrite /mmt_gen_fun unlock /expectation.
+  apply: integral_fune_fin_num => //.
   admit.
 rewrite bX2 big_seq.
 apply: congr1.
@@ -1230,7 +1232,7 @@ Lemma lm23 (X_ : seq {RV P >-> R}) (t : R) n :
   let mu := 'E_P[X] in
   mmt_gen_fun X t <= (expR (fine mu * (expR t - 1)))%:E.
 Proof.
-rewrite /= => t0 bX. (*[bX1 [bX2 bX3]].*)
+rewrite /= => t0 bX.
 set X := bernoulli_trial X_.
 set mu := 'E_P[X].
 have -> : @mmt_gen_fun _ _ _ P X t = (\prod_(Xi <- X_) fine (mmt_gen_fun Xi t))%:E.
@@ -1283,7 +1285,7 @@ rewrite -EFinM lee_fin -powRM ?expR_ge0// ge0_ler_powR ?nnegrE//.
   by rewrite -powRN mulNr -mulrN expR_powR lnK// posrE addr_gt0.
 Qed.
 
-(* theorem 2.4 *)
+(* theorem 2.4 Rajani / thm 4.4.(2) mu-book *)
 Theorem thm24 (X_ : seq {RV P >-> R}) n (delta : R) :
   is_bernoulli_trial X_ n ->
   (0 < delta)%R ->
@@ -1316,7 +1318,7 @@ Theorem poisson_ineq (X : seq {RV P >-> R}) (delta : R) n :
   P [set i | X' i >= (1 + delta) * fine mu]%R <=
   (expR (- (fine mu * delta ^+ 2) / 3))%:E.
 Proof.
-move=> bX X' mu n0 /andP[delta0 delta1].
+move=> bX X' mu n0 /andP[delta0 _].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
   rewrite expR_powR expRB (mulrC _ (ln _)) expR_powR lnK; last rewrite posrE addr_gt0//.
   apply: (thm24 bX) => //.
@@ -1357,6 +1359,7 @@ rewrite -[leRHS]/(f x) -subr_le0 sub0r /f' => ->; apply: mulr_le0_ge0.
 by rewrite ler_oppr oppr0 ltW.
 Admitted.
 
+(* Rajani thm 2.6 / mu-book thm 4.5.(2) *)
 Theorem thm26 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
   let X' := @bernoulli_trial X : {RV P >-> R} in
@@ -1425,6 +1428,7 @@ under eq_set => x do rewrite -lee_fin.
 apply: emeasurable_fun_le => //; apply: measurableT_comp => //.
 Qed.
 
+(* Rajani -> corollary 2.7 / mu-book -> corollary 4.7 *)
 Corollary cor27 (X : seq {RV P >-> R}) (delta : R) n :
   is_bernoulli_trial X n -> (0 < delta < 1)%R ->
   (0 < n)%nat ->
@@ -1434,7 +1438,7 @@ Corollary cor27 (X : seq {RV P >-> R}) (delta : R) n :
   P [set i | `|X' i - fine mu | >=  delta * fine mu]%R <=
   (expR (- (fine mu * delta ^+ 2) / 3)%R *+ 2)%:E.
 Proof.
-move=> bX delta01 n0 p0 /=.
+move=> bX /andP[d0 d1] n0 p0 /=.
 set X' := @bernoulli_trial X.
 set mu := 'E_P[X'].
 under eq_set => x.
@@ -1458,21 +1462,19 @@ rewrite measureU; last 3 first.
   rewrite -ltNge.
   apply: (@lt_le_trans _ _ _ _ _ _ X0).
   rewrite !EFinM.
-  rewrite lte_pmul2r//.
-    move: delta01 => /andP[d0 d1]; rewrite lte_fin ltr_add2l gt0_cp//.
+  rewrite lte_pmul2r//; first by rewrite lte_fin ltr_add2l gt0_cp.
   by rewrite fineK /mu/X' (expectation_bernoulli_trial bX)// lte_fin  mulr_gt0 ?ltr0n.
 rewrite mulr2n EFinD lee_add//=.
-- apply: (poisson_ineq bX) => //.
-- apply: (le_trans (thm26 bX delta01)).
+- by apply: (poisson_ineq bX); rewrite //d0 d1.
+- apply: (le_trans (@thm26 _ delta _ bX _)); first by rewrite d0 d1.
   rewrite lee_fin ler_expR !mulNr ler_opp2.
   rewrite ler_pmul//; last by rewrite lef_pinv ?posrE ?ler_nat.
-  move: delta01 => /andP [delta0 delta1].
   rewrite mulr_ge0 ?fine_ge0 ?sqr_ge0//.
   rewrite /mu unlock /expectation integral_ge0// => x _.
-  rewrite /X' lee_fin; apply: (bernoulli_trial_ge0 bX).
+  by rewrite /X' lee_fin; apply: (bernoulli_trial_ge0 bX).
 Qed.
 
-(* TODO: formalize https://math.uchicago.edu/~may/REU2019/REUPapers/Rajani.pdf *)
+(* Rajani thm 3.1 / mu-book thm 4.7 *)
 Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let n := size X in
   let X_sum := bernoulli_trial X in
@@ -1518,7 +1520,9 @@ have step1 : P [set i | `| X' i - p%:num | >= epsilon * p%:num]%R <=
   rewrite -mulrA.
   have -> : (p%:num * n%:R)%R = fine (p%:num * n%:R)%:E by [].
   rewrite -E_X_sum.
-  apply: (@cor27 X epsilon _ bX) => //. (* this is the critical bit, and indeed implies theta < p *)
+  apply: (@cor27 X epsilon _ bX) => [|//|//]. 
+  (* this is the critical bit, and indeed implies theta < p *)
+  
 have step2 : P [set i | `| X' i - p%:num | >= theta]%R <=
     ((expR (- (n%:R * theta ^+ 2) / 3)) *+ 2)%:E.
   rewrite thetaE; move/le_trans : step1; apply.
