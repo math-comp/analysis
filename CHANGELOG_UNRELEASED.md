@@ -5,7 +5,7 @@
 ### Added
 
 - in file `cantor.v`,
-  + new definitions `cantor_space`, `cantor_like`, `pointedDiscrete`, and 
+  + new definitions `cantor_space`, `cantor_like`, `pointed_discrete`, and 
     `tree_of`.
   + new lemmas `cantor_space_compact`, `cantor_space_hausdorff`, 
     `cantor_zero_dimensional`, `cantor_perfect`, `cantor_like_cantor_space`, 
