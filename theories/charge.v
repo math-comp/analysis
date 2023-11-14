@@ -479,7 +479,10 @@ HB.instance Definition _ := isCharge.Build _ _ _
 End pushforward_charge.
 
 HB.builders Context d (T : measurableType d) (R : realType)
-  mu of Measure_isFinite d T R mu.
+  (mu : set T -> \bar R) of Measure_isFinite d T R mu.
+
+Let mu0 : mu set0 = 0.
+Proof. by apply: measure0. Qed.
 
 HB.instance Definition _ := isCharge.Build _ _ _
   mu (measure0 [the content _ _ of mu]) fin_num_measure measure_semi_sigma_additive.
@@ -970,7 +973,8 @@ HB.instance Definition _ := @Measure_isFinite.Build _ _ _
   jordan_neg finite_jordan_neg.
 
 Lemma jordan_decomp (A : set T) (mA : measurable A) :
-  nu A = (cadd [the charge _ _ of jordan_pos] [the charge _ _ of (cscale (-1) [the charge _ _ of jordan_neg])]) A.
+  nu A = (cadd [the charge _ _ of jordan_pos]
+           ([the charge _ _ of cscale (-1) [the charge _ _ of jordan_neg]])) A.
 Proof.
 rewrite caddE cjordan_posE /= cscaleE EFinN mulN1e cjordan_negE oppeK.
 rewrite /crestr0 mem_set// -[in LHS](setIT A).
