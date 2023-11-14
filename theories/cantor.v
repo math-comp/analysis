@@ -29,7 +29,7 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 
 Definition cantor_space :=
-  product_uniformType (fun (_ : nat) => @discrete_uniformType _ discrete_bool).
+  product_uniformType (fun _ : nat => @discrete_uniformType _ discrete_bool).
 
 Definition cantor_like (T : topologicalType) :=
   [/\ perfect_set [set: T],
@@ -38,7 +38,7 @@ Definition cantor_like (T : topologicalType) :=
       zero_dimensional T].
 
 Canonical cantor_pseudoMetric {R} :=
-  @product_pseudoMetricType R _ (fun (_ : nat) =>
+  @product_pseudoMetricType R _ (fun _ : nat =>
     @discrete_pseudoMetricType R _ discrete_bool) (countableP _).
 
 Lemma cantor_space_compact : compact [set: cantor_space].
@@ -114,13 +114,12 @@ Let T := product_topologicalType K.
 Local Fixpoint branch_apx (b : T) n :=
   if n is m.+1 then refine_apx (branch_apx b m) (b m) else [set: X].
 
-Let tree_mapF (b : T) := filter_from [set: nat] (branch_apx b).
+Let tree_mapF b := filter_from [set: nat] (branch_apx b).
 
 Let tree_map_invar b n : tree_invariant (branch_apx b n).
 Proof. by elim: n => // n ?; exact: refine_invar. Qed.
 
-Let tree_map_sub b i j :
-  (i <= j)%N -> branch_apx b j `<=` branch_apx b i.
+Let tree_map_sub b i j : (i <= j)%N -> branch_apx b j `<=` branch_apx b i.
 Proof.
 elim: j i => [?|j IH i]; first by rewrite leqn0 => /eqP ->.
 rewrite leq_eqVlt => /predU1P[->//|/IH].
@@ -258,13 +257,13 @@ Let c_invar (U : set T) := clopen U /\ U !=set0.
 Let U_ := unsquash (clopen_surj cmptT).
 
 Let split_clopen' (U : set T) : exists V,
-  open U -> U !=set0 -> clopen V /\ V `&` U !=set0 /\ ~`V `&` U !=set0.
+  open U -> U !=set0 -> [/\ clopen V, V `&` U !=set0 & ~`V `&` U !=set0].
 Proof.
 have [oU|?] := pselect (open U); last by exists point.
 have [Un0|?] := pselect (U !=set0); last by exists point.
 have [x [y] [Ux] Uy xny] := (iffLR perfect_set2) pftT U oU Un0.
-have [V [clV Vx Vy]] := dsctT xny; exists V.
-by repeat split => //; [exists x | exists y].
+have [V [clV Vx Vy]] := dsctT xny; exists V => _ _.
+by split => //; [exists x | exists y].
 Qed.
 
 Let split_clopen (U : set T) := projT1 (cid (split_clopen' U)).
@@ -295,7 +294,7 @@ have [] := @tree_map_props
   + move=> [UU CUU]; case: e => //; split => //; apply: clopenI => //.
       exact: funS.
     by apply: clopenC => //; exact: funS.
-  + move=> _; have [|//|clscU [scUU CscUU]] := projT2 (cid (split_clopen' U)).
+  + move=> _; have [|//|clscU scUU CscUU] := projT2 (cid (split_clopen' U)).
       by case: clU.
     case: e; split => //; first exact: clopenI.
     by apply: clopenI => //; exact: clopenC.
