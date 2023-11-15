@@ -1481,7 +1481,7 @@ Theorem sampling (X : seq {RV P >-> R}) (theta delta : R) :
   let X' x := (X_sum x) / n%:R in
   (0 < p%:num)%R ->
   is_bernoulli_trial X n ->
-  (0 < delta <= 1)%R -> (0 < theta < p%:num * n%:R)%R -> (0 < n)%nat ->
+  (0 < delta <= 1)%R -> (0 < theta < p%:num)%R -> (0 < n)%nat ->
   (3 / theta ^+ 2 * ln (2 / delta) <= n%:R)%R ->
   P [set i | `| X' i - p%:num | <= theta]%R >= 1 - delta%:E.
 Proof.
@@ -1494,11 +1494,11 @@ have E_X_sum: 'E_P[X_sum] = (p%:num * n%:R)%:E.
     move=> Xi XiX; rewrite (bernoulli_expectation (bX.1 _ XiX)); over.
   rewrite /= sumEFin big_const_seq iter_addr_0/= mulr_natr; congr ((_ *+ _)%:E).
   by rewrite /n -count_predT; apply: eq_in_count => x ->.
-set epsilon := theta / (p%:num * n%:R).
+set epsilon := theta / p%:num.
 have epsilon01 : (0 < epsilon < 1)%R.
-  by rewrite /epsilon ?ltr_pdivr_mulr ?divr_gt0 ?mul1r ?mulr_gt0 ?ltr0n.
-have thetaE : theta = (epsilon * p%:num * n%:R)%R.
-  by rewrite /epsilon -!mulrA mulVf ?mulr1// gt_eqF ?mulr_gt0 ?ltr0n.
+  by rewrite /epsilon ?ltr_pdivr_mulr ?divr_gt0 ?mul1r.
+have thetaE : theta = (epsilon * p%:num)%R.
+  by rewrite /epsilon -mulrA mulVf ?mulr1// gt_eqF.
 have step1 : P [set i | `| X' i - p%:num | >= epsilon * p%:num]%R <=
     ((expR (- (p%:num * n%:R * (epsilon ^+ 2)) / 3)) *+ 2)%:E.
   rewrite [X in P X <= _](_ : _ =
@@ -1515,8 +1515,7 @@ have step1 : P [set i | `| X' i - p%:num | >= epsilon * p%:num]%R <=
   rewrite -mulrA.
   have -> : (p%:num * n%:R)%R = fine (p%:num * n%:R)%:E by [].
   rewrite -E_X_sum.
-  by apply: (@cor27 X epsilon _ bX). 
-(* here *)
+  by apply: (@cor27 X epsilon _ bX).
 have step2 : P [set i | `| X' i - p%:num | >= theta]%R <=
     ((expR (- (n%:R * theta ^+ 2) / 3)) *+ 2)%:E.
   rewrite thetaE; move/le_trans : step1; apply.
@@ -1554,6 +1553,6 @@ rewrite ler_expR mulNr ler_oppl -lnV; last by rewrite posrE divr_gt0.
 rewrite invf_div ler_pdivl_mulr// mulrC.
 rewrite -ler_pdivr_mulr; last by rewrite exprn_gt0.
 by rewrite mulrAC.
-Admitted.
+Qed.
 
 End bernoulli.
