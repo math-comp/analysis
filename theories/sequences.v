@@ -687,9 +687,9 @@ Proof.
 move=> leu u_ub; set M := sup (range u_).
 have su_ : has_sup (range u_) by split => //; exists (u_ 0%N), 0%N.
 apply/cvgrPdist_le => _/posnumP[e].
-have [p /andP[Mu_p u_pM]] : exists p, M - e%:num <= u_ p <= M.
+have [p Mu_p] : exists p, M - e%:num <= u_ p.
   have [_ -[p _] <- /ltW Mu_p] := sup_adherent (gt0 e) su_.
-  by exists p; rewrite Mu_p; have /ubP := sup_upper_bound su_; apply; exists p.
+  by exists p; rewrite Mu_p.
 near=> n; have pn : (p <= n)%N by near: n; exact: nbhs_infty_ge.
 rewrite ler_distlC (le_trans Mu_p (leu _ _ _))//= (@le_trans _ _ M) ?ler_addl//.
 by have /ubP := sup_upper_bound su_; apply; exists n.

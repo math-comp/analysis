@@ -2056,6 +2056,12 @@ End at_left_right.
 Notation "x ^'-" := (at_left x) : classical_set_scope.
 Notation "x ^'+" := (at_right x) : classical_set_scope.
 
+#[global] Hint Extern 0 (Filter (nbhs _^'+)) =>
+  (apply: at_right_proper_filter) : typeclass_instances.
+
+#[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
+  (apply: at_left_proper_filter) : typeclass_instances.
+
 Section open_itv_subset.
 Context {R : realType}.
 Variables (A : set R) (x : R).
