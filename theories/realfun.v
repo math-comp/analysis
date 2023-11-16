@@ -28,6 +28,366 @@ Local Open Scope ring_scope.
 
 Import numFieldNormedType.Exports.
 
+Notation "'nondecreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n <= m)%O})
+  (at level 10).
+Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n >= m)%O})
+  (at level 10).
+Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
+  (at level 10).
+Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
+  (at level 10).
+
+Section fun_cvg.
+
+Section fun_cvg_realFieldType.
+Context {R : realFieldType}.
+
+(* NB: see cvg_addnl in topology.v *)
+Lemma cvg_addrl (M : R) : M + r @[r --> +oo] --> +oo.
+Proof.
+move=> P [r [rreal rP]]; exists (r - M); split.
+  by rewrite realB// num_real.
+by move=> m; rewrite ltr_subl_addl => /rP.
+Qed.
+
+(* NB: see cvg_addnr in topology.v *)
+Lemma cvg_addrr (M : R) : (r + M) @[r --> +oo] --> +oo.
+Proof. by under [X in X @ _]funext => n do rewrite addrC; exact: cvg_addrl. Qed.
+
+(* NB: see cvg_centern in sequences.v *)
+Lemma cvg_centerr (M : R) (T : topologicalType) (f : R -> T) (l : T) :
+  (f (n - M) @[n --> +oo] --> l) = (f r @[r --> +oo] --> l).
+Proof.
+rewrite propeqE; split; last by apply: cvg_comp; exact: cvg_addrr.
+gen have cD : f l / f r @[r --> +oo] --> l -> f (n + M) @[n --> +oo] --> l.
+   by apply: cvg_comp; exact: cvg_addrr.
+move=> /cD /=.
+by under [X in X @ _ --> l]funext => n do rewrite addrK.
+Qed.
+
+(* NB: see cvg_shiftn in sequence.v *)
+Lemma cvg_shiftr (M : R) (T : topologicalType) (f : R -> T) (l : T) :
+  (f (n + M) @[n --> +oo]--> l) = (f r @[r --> +oo] --> l).
+Proof.
+rewrite propeqE; split; last by apply: cvg_comp; exact: cvg_addrr.
+rewrite -[X in X -> _](cvg_centerr M); apply: cvg_trans => /=.
+apply: near_eq_cvg; near do rewrite subrK; exists M.
+by rewrite num_real.
+Unshelve. all: by end_near. Qed.
+
+End fun_cvg_realFieldType.
+
+Section fun_cvg_realType.
+Context {R : realType}.
+
+(* NB: see nondecreasing_cvgn in sequences.v *)
+Lemma nondecreasing_cvgr (f : R -> R) :
+    nondecreasing_fun f -> has_ubound (range f) ->
+  f r @[r --> +oo] --> sup (range f).
+Proof.
+move=> ndf ubf; set M := sup (range f).
+have supf : has_sup (range f) by split => //; exists (f 0), 0.
+apply/cvgrPdist_le => _/posnumP[e].
+have [p Mefp] : exists p, M - e%:num <= f p.
+  have [_ -[p _] <- /ltW efp] := sup_adherent (gt0 e) supf.
+  by exists p; rewrite efp.
+near=> n; have pn : p <= n by near: n; apply: nbhs_pinfty_ge; rewrite num_real.
+rewrite ler_distlC (le_trans Mefp (ndf _ _ _))//= (@le_trans _ _ M) ?ler_addl//.
+by have /ubP := sup_upper_bound supf; apply; exists n.
+Unshelve. all: by end_near. Qed.
+
+Lemma nonincreasing_at_right_cvgr (f : R -> R) a :
+    {in `]a, +oo[, nonincreasing_fun f} ->
+    has_ubound (f @` `]a, +oo[) ->
+  f x @[x --> a ^'+] --> sup (f @` `]a, +oo[).
+Proof.
+move=> lef ubf; set M := sup _.
+have supf : has_sup [set f x | x in `]a, +oo[].
+  split => //; exists (f (a + 1)), (a + 1) => //=.
+  by rewrite in_itv/= ltr_addl ltr01.
+apply/cvgrPdist_le => _/posnumP[e].
+have [p ap Mefp] : exists2 p, a < p & M - e%:num <= f p.
+  have [_ -[p ap] <- /ltW efp] := sup_adherent (gt0 e) supf.
+  exists p; last by rewrite efp.
+  by move: ap; rewrite /= in_itv/= andbT.
+near=> n.
+rewrite ler_distl; apply/andP; split; last first.
+  rewrite -ler_subl_addr (le_trans Mefp)// lef//.
+    by rewrite in_itv/= andbT; near: n; exact: nbhs_right_gt.
+  by near: n; exact: nbhs_right_le.
+have : f n <= M.
+  apply: sup_ub => //=; exists n => //; rewrite in_itv/= andbT.
+  by near: n; apply: nbhs_right_gt.
+by apply: le_trans; rewrite ler_subl_addr ler_addl.
+Unshelve. all: by end_near. Qed.
+
+Lemma nondecreasing_at_right_cvgr (f : R -> R) a :
+    {in `]a, +oo[, nondecreasing_fun f} ->
+    has_lbound (f @` `]a, +oo[) ->
+  f x @[x --> a ^'+] --> inf (f @` `]a, +oo[).
+Proof.
+move=> nif hlb.
+have ndNf : {in `]a, +oo[, nonincreasing_fun (\- f)}.
+  by move=> r ra y /nif; rewrite ler_opp2; exact.
+have hub : has_ubound [set (\- f) x | x in `]a, +oo[].
+  apply/has_ub_lbN; rewrite image_comp/=.
+  rewrite [X in has_lbound X](_ : _ = [set f x | x in `]a, +oo[])//.
+  by apply: eq_imagel => y _ /=; rewrite opprK.
+have /cvgN := nonincreasing_at_right_cvgr ndNf hub.
+rewrite opprK [X in _ --> X -> _](_ : _ = inf [set f x | x in `]a, +oo[])//.
+by rewrite /inf; congr (- sup _); rewrite image_comp/=; exact: eq_imagel.
+Qed.
+
+End fun_cvg_realType.
+
+Section fun_cvg_ereal.
+Context {R : realType}.
+Local Open Scope ereal_scope.
+
+(* NB: see ereal_nondecreasing_cvgn in sequences.v *)
+Lemma nondecreasing_cvge (f : R -> \bar R) :
+  nondecreasing_fun f -> f r @[r --> +oo%R] --> ereal_sup (range f).
+Proof.
+move=> ndf; set S := range f; set l := ereal_sup S.
+have [Spoo|Spoo] := pselect (S +oo).
+  have [N Nf] : exists N, forall n, (n >= N)%R -> f n = +oo.
+    case: Spoo => N _ uNoo; exists N => n Nn.
+    by have := ndf _ _ Nn; rewrite uNoo leye_eq => /eqP.
+  have -> : l = +oo by rewrite /l /ereal_sup; exact: supremum_pinfty.
+  rewrite -(cvg_shiftr `|N|); apply: cvg_near_cst.
+  exists N; split; first by rewrite num_real.
+  by move=> x /ltW Nx; rewrite Nf// ler_paddr.
+have [lpoo|lpoo] := eqVneq l +oo.
+  rewrite lpoo; apply/cvgeyPge => M.
+  have /ereal_sup_gt[_ [n _] <- Mun] : M%:E < l by rewrite lpoo// ltry.
+  exists n; split; first by rewrite num_real.
+  by move=> m /= nm; rewrite (le_trans (ltW Mun))// ndf// ltW.
+have [fnoo|fnoo] := pselect (f = cst -oo).
+  rewrite /l (_ : S = [set -oo]).
+    by rewrite ereal_sup1 fnoo; exact: cvg_cst.
+  apply/seteqP; split => [_ [n _] <- /[!fnoo]//|_ ->].
+  by rewrite /S fnoo; exists 0%R.
+have [/ereal_sup_ninfty lnoo|lnoo] := eqVneq l -oo.
+  by exfalso; apply/fnoo/funext => n; rewrite (lnoo (f n))//; exists n.
+have l_fin_num : l \is a fin_num by rewrite fin_numE lpoo lnoo.
+set A := [set n | f n = -oo]; set B := [set n | f n != -oo].
+have f_fin_num n : B n -> f n \is a fin_num.
+  move=> Bn; rewrite fin_numE Bn/=.
+  by apply: contra_notN Spoo => /eqP unpoo; exists n.
+have [x Bx] : B !=set0.
+  apply/set0P/negP => /eqP B0; apply/fnoo/funext => n.
+  apply/eqP/negPn/negP => unnoo.
+  by move/seteqP : B0 => [+ _] => /(_ n); apply.
+have xB r : (x <= r)%R -> B r.
+  move=> /ndf xr; apply/negP => /eqP urnoo.
+  by move: xr; rewrite urnoo leeNy_eq; exact/negP.
+rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
+  exists x; split; first by rewrite num_real.
+  by move=> r A1r; rewrite f_fin_num //; exact/xB/ltW.
+set g := fun n => if (n < x)%R then fine (f x) else fine (f n).
+have <- : sup (range g) = fine l.
+  apply: EFin_inj; rewrite -ereal_sup_EFin//; last 2 first.
+    - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
+      have [mx|xm] := ltP m x.
+        by rewrite fine_le// ?f_fin_num//; apply: ereal_sup_ub; exists x.
+      rewrite fine_le// ?f_fin_num//; first exact/xB.
+      by apply: ereal_sup_ub; exists m.
+    - by exists (g 0%R), 0%R.
+  rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split.
+    apply: le_ereal_sup => _ /= [_ [m _] <-] <-.
+    rewrite /g; have [_|xm] := ltP m x.
+      by rewrite fineK// ?f_fin_num//; exists x.
+    by rewrite fineK// ?f_fin_num//; [exists m|exact/xB].
+  apply: ub_ereal_sup => /= _ [m _] <-.
+  have [mx|xm] := ltP m x.
+    rewrite (le_trans (ndf _ _ (ltW mx)))//.
+    apply: ereal_sup_ub => /=; exists (fine (f x)); last first.
+      by rewrite fineK// f_fin_num.
+    by exists m => //; rewrite /g mx.
+  apply: ereal_sup_ub => /=; exists (fine (f m)) => //.
+    by exists m => //; rewrite /g ltNge xm.
+  by rewrite fineK ?f_fin_num//; exact: xB.
+suff: g x @[x --> +oo%R] --> sup (range g).
+  apply: cvg_trans; apply: near_eq_cvg; near=> n.
+  rewrite /g ifF//; apply/negbTE; rewrite -leNgt.
+  by near: n; apply: nbhs_pinfty_ge; rewrite num_real.
+apply: nondecreasing_cvgr.
+- move=> m n mn; rewrite /g /=; have [_|xm] := ltP m x.
+  + have [nx|nx] := ltP n x; first by rewrite fine_le// f_fin_num.
+    by rewrite fine_le// ?f_fin_num//; [exact: xB|exact: ndf].
+  + rewrite ltNge (le_trans xm mn)//= fine_le ?f_fin_num//.
+    * exact: xB.
+    * by apply: xB; rewrite (le_trans xm).
+    * exact/ndf.
+- exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
+  rewrite -lee_fin (fineK l_fin_num); apply: ereal_sup_ub.
+  have [_|xm] := ltP m x; first by rewrite fineK// ?f_fin_num//; eexists.
+  by rewrite fineK// ?f_fin_num//; [exists m|exact/xB].
+Unshelve. all: by end_near. Qed.
+
+(* NB: see ereal_nondecreasing_is_cvgn in sequences.v *)
+Lemma nondecreasing_is_cvge (f : R -> \bar R) :
+  nondecreasing_fun f -> (cvg (f r @[r --> +oo]))%R.
+Proof. by move=> u_nd u_ub; apply: cvgP; exact: nondecreasing_cvge. Qed.
+
+Lemma nondecreasing_at_right_cvge (f : R -> \bar R) a :
+    {in `]a, +oo[, nondecreasing_fun f} ->
+  f x @[x --> a ^'+] --> ereal_inf (f @` `]a, +oo[).
+Proof.
+move=> ndf; set S := (X in ereal_inf X); set l := ereal_inf S.
+have [Snoo|Snoo] := pselect (S -oo).
+  case: (Snoo) => N /=; rewrite in_itv/= andbT => aN fNpoo.
+  have Nf n : (a < n <= N)%R -> f n = -oo.
+    move=> /andP[an nN]; apply/eqP.
+    by rewrite eq_le leNye andbT -fNpoo ndf// in_itv/= an.
+  have -> : l = -oo.
+    by rewrite /l /ereal_inf /ereal_sup supremum_pinfty//=; exists -oo.
+  apply: cvg_near_cst; exists (N - a)%R => /=; first by rewrite subr_gt0.
+  move=> y /= + ay.
+  rewrite ltr0_norm ?subr_lt0// opprB => ayNa.
+  by rewrite Nf// ay/= -(subrK a y) -ler_subr_addr ltW.
+have [lnoo|lnoo] := eqVneq l -oo.
+  rewrite lnoo; apply/cvgeNyPle => M.
+  have : M%:E > l by rewrite lnoo ltNyr.
+  move=> /ereal_inf_lt[x [y]].
+  rewrite /= in_itv/= andbT => ay <- fyM.
+  exists (y - a)%R => /=; first by rewrite subr_gt0.
+  move=> z /= + az.
+  rewrite ltr0_norm ?subr_lt0// opprB ltr_subl_addr subrK => zy.
+  by rewrite (le_trans _ (ltW fyM))// ndf// ?in_itv/= ?andbT// ltW.
+have [fpoo|fpoo] := pselect {in `]a, +oo[, forall x, f x = +oo}.
+  rewrite /l (_ : S = [set +oo]).
+    rewrite ereal_inf1; apply/cvgeyPgey; near=> M.
+    near=> x.
+    rewrite fpoo ?leey// in_itv/= andbT.
+    by near: x; exact: nbhs_right_gt.
+  apply/seteqP; split => [_ [n _] <- /[!fpoo]//|_ ->].
+  rewrite /S /=; exists (a + 1)%R; first by rewrite in_itv/= andbT ltr_addl.
+  by rewrite fpoo// in_itv /= andbT ltr_addl.
+have [/ereal_inf_pinfty lpoo|lpoo] := eqVneq l +oo.
+  exfalso.
+  apply/fpoo => n; rewrite in_itv/= andbT => an; rewrite (lpoo (f n))//.
+  by exists n => //=; rewrite in_itv/= andbT.
+have l_fin_num : l \is a fin_num by rewrite fin_numE lpoo lnoo.
+set A := [set n | (a < n)%R /\ f n != +oo].
+set B := [set n | (a < n)%R /\ f n = +oo].
+have f_fin_num n : n \in A -> f n \is a fin_num.
+  move=> /[1!inE]-[an fnnoo]; rewrite fin_numE fnnoo andbT.
+  apply: contra_notN Snoo => /eqP unpoo.
+  by exists n => //=; rewrite in_itv/= andbT.
+have [x [Ax fxpoo]] : A !=set0.
+  apply/set0P/negP => /eqP A0; apply/fpoo => x; rewrite in_itv/= andbT => ax.
+  apply/eqP/negPn/negP => unnoo.
+  by move/seteqP : A0 => [+ _] => /(_ x); apply; rewrite /A/= ax.
+have axA r : (a < r <= x)%R -> r \in A.
+  move=> /andP[ar rx]; move: (rx) => /ndf rafx; rewrite /A /= inE; split => //.
+  apply/negP => /eqP urnoo.
+  move: rafx; rewrite urnoo in_itv/= andbT => /(_ ar).
+  by rewrite leye_eq (negbTE fxpoo).
+rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
+  exists (x - a)%R => /=; first by rewrite subr_gt0.
+  move=> z /= + az.
+  rewrite ltr0_norm ?subr_lt0// opprB ltr_subl_addr subrK// => zx.
+  by rewrite f_fin_num// axA// az/= ltW.
+set g := fun n => if (a < n < x)%R then fine (f n) else fine (f x).
+have <- : inf [set g x | x in `]a, +oo[] = fine l.
+  apply: EFin_inj; rewrite -ereal_inf_EFin//; last 2 first.
+    - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
+      case: ifPn => [/andP[am mx]|].
+        rewrite fine_le// ?f_fin_num//; first by rewrite axA// am (ltW mx).
+        by apply: ereal_inf_lb; exists m => //=; rewrite in_itv/= andbT.
+      rewrite negb_and -!leNgt => /orP[ma|xm].
+        rewrite fine_le// ?f_fin_num ?inE//.
+        by apply: ereal_inf_lb; exists x => //=; rewrite in_itv/= andbT.
+      rewrite fine_le// ?f_fin_num ?inE//.
+      by apply: ereal_inf_lb; exists x => //=; rewrite in_itv/= andbT.
+    - by exists (g (a + 1)%R), (a + 1)%R => //=; rewrite in_itv/= andbT ltr_addl.
+  rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split; last first.
+    apply: le_ereal_inf => _ /= [_ [m _] <-] <-.
+    rewrite /g; case: ifPn => [/andP[am mx]|].
+      rewrite fineK// ?f_fin_num//; last by rewrite axA// am ltW.
+      by exists m => //=; rewrite in_itv/= andbT.
+    rewrite negb_and -!leNgt => /orP[ma|xm].
+      rewrite fineK//; first by exists x => //=; rewrite in_itv/= andbT.
+      by rewrite f_fin_num ?inE.
+    exists x => /=; first by rewrite in_itv/= andbT.
+    by rewrite fineK// f_fin_num ?inE.
+  apply: lb_ereal_inf => /= y [m] /=; rewrite in_itv/= andbT => am <-{y}.
+  have [mx|xm] := ltP m x.
+    apply: ereal_inf_lb => /=; exists (fine (f m)); last first.
+      by rewrite fineK// f_fin_num// axA// am (ltW mx).
+    exists m; first by rewrite in_itv/= andbT.
+    by rewrite /g am mx.
+  rewrite (le_trans _ (ndf _ _ _ xm))//; last by rewrite in_itv/= andbT.
+  apply: ereal_inf_lb => /=; exists (fine (f x)); last first.
+    by rewrite fineK// f_fin_num ?inE.
+  exists x; first by rewrite in_itv andbT.
+  by rewrite /g ltxx andbF.
+suff: g x @[x --> a^'+] --> inf [set g x | x in `]a, +oo[].
+  apply: cvg_trans; apply: near_eq_cvg; near=> n.
+  rewrite /g /=; case: ifPn => [//|].
+  rewrite negb_and -!leNgt => /orP[na|xn].
+    exfalso.
+    move: na; rewrite leNgt => /negP; apply.
+    by near: n; exact: nbhs_right_gt.
+  suff nx : (n < x)%R by rewrite ltNge xn in nx.
+  near: n; exists ((x - a) / 2)%R; first by rewrite /= divr_gt0// subr_gt0.
+  move=> y /= /[swap] ay.
+  rewrite ltr0_norm// ?subr_lt0// opprB ltr_subl_addr => /lt_le_trans; apply.
+  by rewrite -ler_subr_addr ler_pdivr_mulr// ler_pmulr// ?ler1n// subr_gt0.
+apply: nondecreasing_at_right_cvgr.
+- move=> m ma n mn /=; rewrite /g /=; case: ifPn => [/andP[am mx]|].
+    rewrite (lt_le_trans am mn) /=; have [nx|nn0] := ltP n x.
+      rewrite fine_le ?f_fin_num ?ndf//; first by rewrite axA// am (ltW mx).
+      by rewrite axA// (ltW nx) andbT (lt_le_trans am).
+    rewrite fine_le ?f_fin_num//.
+    + by rewrite axA// am (ltW (lt_le_trans mx _)).
+    + by rewrite inE.
+    + by rewrite ndf// ltW.
+  rewrite negb_and -!leNgt => /orP[ma'|xm].
+    by rewrite in_itv/= andbT ltNge ma' in ma.
+  rewrite in_itv/= andbT in ma.
+  by rewrite (lt_le_trans ma mn)/= ltNge (le_trans xm mn).
+- exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
+  rewrite -lee_fin (fineK l_fin_num); apply: ereal_inf_lb.
+  case: ifPn => [/andP[am mn0]|].
+    rewrite fineK//; first by exists m => //=; rewrite in_itv/= am.
+    by rewrite f_fin_num// axA// am (ltW mn0).
+  rewrite negb_and -!leNgt => /orP[ma|xm].
+    rewrite fineK//; first by exists x => //=; rewrite in_itv/= Ax.
+    by rewrite f_fin_num ?inE.
+  by rewrite fineK// ?f_fin_num ?inE//; exists x => //=; rewrite in_itv/= andbT.
+Unshelve. all: by end_near. Qed.
+
+Lemma nondecreasing_at_right_is_cvge (f : R -> \bar R) a :
+    {in `]a, +oo[, nondecreasing_fun f} ->
+  cvg (f x @[x --> a ^'+]).
+Proof. by move=> ndf; apply: cvgP; exact: nondecreasing_at_right_cvge. Qed.
+
+Lemma nonincreasing_at_right_cvge (f : R -> \bar R) a :
+    {in `]a, +oo[, nonincreasing_fun f} ->
+  f x @[x --> a ^'+] --> ereal_sup (f @` `]a, +oo[).
+Proof.
+move=> nif.
+have ndNf : {in `]a, +oo[, {homo (\- f) : n m / (n <= m)%R >-> n <= m}}.
+  by move=> r ra y /nif; rewrite leeN2; exact.
+have /cvgeN := nondecreasing_at_right_cvge ndNf.
+under eq_fun do rewrite oppeK.
+set lhs := (X in _ --> X -> _); set rhs := (X in _ -> _ --> X).
+suff : lhs = rhs by move=> ->.
+rewrite {}/rhs {}/lhs; rewrite /ereal_inf oppeK; congr ereal_sup.
+by rewrite image_comp/=; apply: eq_imagel => x _ /=; rewrite oppeK.
+Qed.
+
+Lemma nonincreasing_at_right_is_cvge (f : R -> \bar R) a :
+    {in `]a, +oo[, nonincreasing_fun f} ->
+  cvg (f x @[x --> a ^'+]).
+Proof. by move=> ndf; apply: cvgP; exact: nonincreasing_at_right_cvge. Qed.
+
+End fun_cvg_ereal.
+
+End fun_cvg.
+
 Section derivable_oo_continuous_bnd.
 Context {R : numFieldType} {V : normedModType R}.
 
