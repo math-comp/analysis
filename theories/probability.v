@@ -1163,6 +1163,18 @@ move=> mA. rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI (~` A)) -measure
 by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
 Qed.
 
+Definition independent (X Y : {RV P >-> R}) := 'E_P[X * Y] = 'E_P[X] * 'E_P[Y].
+
+Definition independent_RVs (X : seq {RV P >-> R}) :=
+  forall Xi, Xi \in X -> forall Xj, Xj \in X -> independent Xi Xj.
+
+Lemma independent_RVs_expectation (X : seq {RV P >-> R}) :
+  independent_RVs X -> 'E_P[\prod_(Xi <- X) Xi] = \prod_(Xi <- X) 'E_P[Xi].
+Proof.
+elim: X => [_|X0 X IH hRVs].
+  by rewrite !big_nil expectation_cst.
+rewrite !big_cons.
+rewrite -IH.
 Definition independent_RVs (X : seq {RV P >-> R}) := forall t,
     (fine ('E_P[expR \o t \o* \sum_(Xi <- X) Xi]) = \prod_(Xi <- X) fine ('E_P[expR \o t \o* Xi]))%R.
 
