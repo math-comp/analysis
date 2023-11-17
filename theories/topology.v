@@ -3199,7 +3199,7 @@ Lemma compact_precompact (A B : set X) :
   hausdorff_space X -> compact A -> precompact A.
 Proof.
 move=> h c; rewrite precompactE ( _ : closure A = A)//.
-apply/esym/closure_id; exact: compact_closed.
+by apply/esym/closure_id; exact: compact_closed.
 Qed.
 
 Lemma precompact_closed (A : set X) : closed A -> precompact A = compact A.
@@ -3567,6 +3567,7 @@ Qed.
 Lemma close_eq x y : close x y -> x = y.
 Proof. by rewrite closeE. Qed.
 
+
 Lemma cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : T | F --> x].
 Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
 
@@ -3656,7 +3657,7 @@ exists (fun i => if i is false then A `\` C else A `&` C); split.
   + rewrite setIC; apply/disjoints_subset; rewrite closureC => x [? ?].
     by exists C => //; split=> //; rewrite setDE setCI setCK; right.
   + apply/disjoints_subset => y -[Ay Cy].
-    rewrite -BAC BAD=> /closureI[_]; rewrite -(proj1 (@closure_id _ _) cD)=> Dy.
+    rewrite -BAC BAD => /closureI[_]; move/closure_id : cD => <- Dy.
     by have : B y; [by rewrite BAD; split|rewrite BAC => -[]].
 Qed.
 
@@ -3917,6 +3918,20 @@ exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
 apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
 rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
 by move=> ->; have := projT2 (sigW (npts N)).
+Qed.
+
+Lemma perfect_set2 {T} : perfect_set [set: T] <->
+  forall (U : set T), open U -> U !=set0 -> 
+  exists x y, [/\ U x, U y & x != y] .
+Proof.
+apply: iff_trans; first exact: perfectTP; split.
+  move=> nx1 U oU [] x Ux; exists x.
+  have : U <> [set x] by move=> Ux1; apply: (nx1 x); rewrite -Ux1.
+  apply: contra_notP; move/not_existsP/contrapT=> Uyx; rewrite eqEsubset.
+  (split => //; last by move=> ? ->); move=> y Uy; have  /not_and3P := Uyx y.
+  by case => // /negP; rewrite negbK => /eqP ->.
+move=> Unxy x Ox; have [] := Unxy _ Ox; first by exists x.
+by move=> y [] ? [->] -> /eqP.
 Qed.
 
 End perfect_sets.
@@ -5991,6 +6006,15 @@ pose B := \bigcup_n (f n) @` [set` h'' n]; exists B;[|split].
   rewrite [_%:num]splitr; apply: (@ball_triangle _ _ w).
     by apply: (le_ball (ltW deleps)); apply/ball_sym; apply: interior_subset.
   by apply: (le_ball (ltW deleps)); apply: interior_subset.
+Qed.
+
+Lemma clopen_surj {R : realType} {T : pseudoMetricType R} :
+  compact [set: T] -> $|{surjfun [set: nat] >-> @clopen T}|.
+Proof.
+move=> cmptT.
+suff : @clopen T = set0 \/ $|{surjfun [set: nat] >-> @clopen T}|.
+  by case => //; rewrite eqEsubset => -[/(_ _ clopenT)].
+exact/pfcard_geP/clopen_countable/compact_second_countable.
 Qed.
 
 (* This section proves that uniform spaces, with a countable base for their
