@@ -35,6 +35,12 @@ Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 (*                              non-measurable sets                           *)
 (*                     czero == zero charge                                   *)
 (*               cscale r nu == charge nu scaled by a factor r : R            *)
+(*          charge_add n1 n2 == the charge corresponding to the sum of        *)
+(*                              charges n1 and n2                             *)
+(*        cpushforward nu mf == pushforward charge of nu along                *)
+(*                              measurable function f, mf is a proof that     *)
+(*                              f is measurable function                      *)
+(* charge_of_finite_measure mu == charge corresponding to a finite measure mu *)
 (*                                                                            *)
 (* * Theory                                                                   *)
 (*         nu.-positive_set P == P is a positive set with nu a charge         *)
@@ -400,14 +406,14 @@ Lemma dominates_cscale d (T : measurableType d) (R : realType)
   (mu : {sigma_finite_measure set T -> \bar R})
   (nu : {charge set T -> \bar R})
   (c : R) : nu `<< mu -> cscale c nu `<< mu.
-Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
+Proof. by move=> numu E mE /numu; rewrite cscaleE => ->//; rewrite mule0. Qed.
 
 Section charge_add.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
-Variables (m1 m2 : {charge set T -> \bar R}).
+Variables (n1 n2 : {charge set T -> \bar R}).
 
-Definition cadd := m1 \+ m2.
+Definition cadd := n1 \+ n2.
 
 Let cadd0 : cadd set0 = 0.
 Proof. by rewrite /cadd 2!charge0 adde0. Qed.
@@ -420,9 +426,9 @@ Proof.
 move=> F mF tF mUF; rewrite /cadd.
 under eq_fun do rewrite big_split; apply: cvg_trans.
   (* TODO: IIRC explicit arguments were added to please Coq 8.14, rm if not needed anymore *)
-  apply: (@cvgeD _ _ _ R (fun x => \sum_(0 <= i < x) (m1 (F i)))
-                         (fun x => \sum_(0 <= i < x) (m2 (F i)))
-                         (m1 (\bigcup_n F n)) (m2 (\bigcup_n F n))).
+  apply: (@cvgeD _ _ _ R (fun x => \sum_(0 <= i < x) (n1 (F i)))
+                         (fun x => \sum_(0 <= i < x) (n2 (F i)))
+                         (n1 (\bigcup_n F n)) (n2 (\bigcup_n F n))).
   - by rewrite fin_num_adde_defr// fin_num_measure.
   - exact: charge_semi_sigma_additive.
   - exact: charge_semi_sigma_additive.
@@ -432,7 +438,7 @@ Qed.
 HB.instance Definition _ := isCharge.Build _ _ _ cadd
   cadd0 cadd_finite cadd_sigma_additive.
 
-Lemma caddE E : cadd E = m1 E + m2 E. Proof. by []. Qed.
+Lemma caddE E : cadd E = n1 E + n2 E. Proof. by []. Qed.
 
 End charge_add.
 
@@ -442,7 +448,7 @@ Lemma dominates_caddl d (T : measurableType d)
   nu0 `<< mu -> nu1 `<< mu ->
   cadd nu0 nu1 `<< mu.
 Proof.
-by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
+by move=> nu0mu nu1mu A mA A0; rewrite caddE nu0mu// nu1mu// adde0.
 Qed.
 
 Section pushforward_charge.
@@ -577,6 +583,74 @@ Qed.
 
 End positive_negative_set_realFieldType.
 
+
+Section min_cvg_0_cvg_0.
+Context (R : realFieldType).
+
+Lemma minr_cvg_0_cvg_0 (x : R^nat) (p : R) :
+ (0 < p)%R -> (forall k, 0 <= x k)%R ->
+  (fun n => minr (x n) p)%R --> (0:R)%R -> x --> (0:R)%R.
+Proof.
+move=> p0 x_ge0 minr_cvg.
+apply/(@cvgrPdist_lt _ [normedModType R of R^o]) => _ /posnumP[e].
+have : (0 < minr (e%:num) p)%R by rewrite lt_minr// p0 andbT.
+move/(@cvgrPdist_lt _ [normedModType R of R^o]) : minr_cvg => /[apply] -[M _ hM].
+near=> n; rewrite sub0r normrN.
+have /hM : (M <= n)%N by near: n; exists M.
+rewrite sub0r normrN !ger0_norm// ?le_minr ?divr_ge0//=.
+  by move/lt_min_lt.
+by rewrite x_ge0 ltW.
+Unshelve. all: by end_near. Qed.
+
+Lemma mine_cvg_0_cvg_fin_num (x : (\bar R)^nat) (p : \bar R) :
+  (0 < p) -> (forall k, 0 <= x k) ->
+  (fun n => mine (x n) p) --> 0 ->
+  \forall n \near \oo, x n \is a fin_num.
+Proof.
+case : p => //; last first.
+- move=> _ x_ge0.
+  under eq_cvg do rewrite miney.
+  by move/fine_cvgP => [].
+- move=> p p0 x_ge0 /fine_cvgP[_].
+  move=> /(@cvgrPdist_lt _ [normedModType R of R^o])/(_ _ p0)[N _ hN].
+  near=> n; have /hN : (N <= n)%N by near: n; exists N.
+  rewrite sub0r normrN /= ger0_norm ?fine_ge0//; last first.
+    by rewrite le_minr x_ge0 ltW.
+  have := x_ge0 n; case: (x n) => //=; rewrite ltxx //=.
+Unshelve. all: by end_near. Qed.
+
+Lemma mine_cvg_minr_cvg (x : (\bar R)^nat) (p : R) :
+  (0 < p)%R -> (forall k, 0 <= x k) ->
+  (fun n => mine (x n) p%:E) --> 0 ->
+  (fun n => minr ((fine \o x) n) p) --> (0:R)%R.
+Proof.
+move=> p0 x_ge0 mine_cvg.
+apply: (cvg_trans _ (fine_cvg mine_cvg)).
+move/fine_cvgP : mine_cvg => [_ /=] /(@cvgrPdist_lt _ [normedModType R of R^o]).
+move=> /(_ _ p0)[N _ hN]; apply: near_eq_cvg; near=> n.
+have xnoo : x n < +oo.
+  rewrite ltNge leye_eq; apply/eqP => xnoo.
+  have /hN : (N <= n)%N by near: n; exists N.
+  by rewrite /= sub0r normrN xnoo //= gtr0_norm // ltxx.
+by rewrite /= -(@fineK _ (x n)) ?ge0_fin_numE//= -fine_min.
+Unshelve. all: by end_near. Qed.
+
+Lemma mine_cvg_0_cvg_0 (x : (\bar R)^nat) (p : \bar R) :
+  (0 < p) -> (forall k, 0 <= x k) ->
+  (fun n => mine (x n) p) --> 0 -> x --> 0.
+Proof.
+move=> p0 x_ge0 h; apply/fine_cvgP; split; first exact: (mine_cvg_0_cvg_fin_num p0).
+case: p p0 h => //; last first.
+- move=> _.
+  under eq_cvg do rewrite miney.
+  exact: fine_cvg.
+- move=> p p0 h.
+  apply: (@minr_cvg_0_cvg_0 (fine \o x) p) => //; last exact: mine_cvg_minr_cvg.
+  by move=> k /=; rewrite fine_ge0.
+Qed.
+
+End min_cvg_0_cvg_0.
+
 Section hahn_decomposition_lemma.
 Context d (T : measurableType d) (R : realType).
 Variables (nu : {charge set T -> \bar R}) (D : set T).
@@ -624,55 +698,19 @@ have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < d_ A.
 by exists B; split => //; rewrite (le_trans _ (ltW mnuB)).
 Qed.
 
-(* TODO: generalize? *)
-Let minr_cvg_0_cvg_0 (x : R^nat) : (forall k, 0 <= x k)%R ->
-  (fun n => minr (x n * 2^-1) 1)%R --> (0:R)%R -> x --> (0:R)%R.
+Let mine2_cvg_0_cvg_0 (x : (\bar R)^nat) :
+  (forall k, 0 <= x k) ->
+  (fun n => mine (x n * 2^-1%:E) 1) --> 0 -> x --> 0.
 Proof.
-move=> x_ge0 minr_cvg.
-apply/(@cvgrPdist_lt _ [normedModType R of R^o]) => _ /posnumP[e].
-have : (0 < minr (e%:num / 2) 1)%R by rewrite lt_minr// ltr01 andbT divr_gt0.
-move/(@cvgrPdist_lt _ [normedModType R of R^o]) : minr_cvg => /[apply] -[M _ hM].
-near=> n; rewrite sub0r normrN.
-have /hM : (M <= n)%N by near: n; exists M.
-rewrite sub0r normrN !ger0_norm// ?le_minr ?divr_ge0//=.
-rewrite -[X in minr _ X](@divrr _ 2) ?unitfE -?minr_pmull//.
-rewrite -[X in (_ < minr _ X)%R](@divrr _ 2) ?unitfE -?minr_pmull//.
-by rewrite ltr_pmul2r//; exact: lt_min_lt.
-Unshelve. all: by end_near. Qed.
-
-Let mine_cvg_0_cvg_fin_num (x : (\bar R)^nat) : (forall k, 0 <= x k) ->
-  (fun n => mine (x n * (2^-1)%:E) 1) --> 0 ->
-  \forall n \near \oo, x n \is a fin_num.
-Proof.
-move=> x_ge0 /fine_cvgP[_].
-move=> /(@cvgrPdist_lt _ [normedModType R of R^o])/(_ _ ltr01)[N _ hN].
-near=> n; have /hN : (N <= n)%N by near: n; exists N.
-rewrite sub0r normrN /= ger0_norm ?fine_ge0//; last first.
-  by rewrite le_minr mule_ge0//=.
-by have := x_ge0 n; case: (x n) => //=; rewrite gt0_mulye//= ltxx.
-Unshelve. all: by end_near. Qed.
-
-Let mine_cvg_minr_cvg (x : (\bar R)^nat) : (forall k, 0 <= x k) ->
-  (fun n => mine (x n * (2^-1)%:E) 1) --> 0 ->
-  (fun n => minr ((fine \o x) n / 2) 1%R) --> (0:R)%R.
-Proof.
-move=> x_ge0 mine_cvg.
-apply: (cvg_trans _ (fine_cvg mine_cvg)).
-move/fine_cvgP : mine_cvg => [_ /=] /(@cvgrPdist_lt _ [normedModType R of R^o]).
-move=> /(_ _ ltr01)[N _ hN]; apply: near_eq_cvg; near=> n.
-have xnoo : x n < +oo.
-  rewrite ltNge leye_eq; apply/eqP => xnoo.
-  have /hN : (N <= n)%N by near: n; exists N.
-  by rewrite /= sub0r normrN xnoo gt0_mulye//= normr1 ltxx.
-by rewrite /= -(@fineK _ (x n)) ?ge0_fin_numE//= -fine_min.
-Unshelve. all: by end_near. Qed.
-
-Let mine_cvg_0_cvg_0 (x : (\bar R)^nat) : (forall k, 0 <= x k) ->
-  (fun n => mine (x n * (2^-1)%:E) 1) --> 0 -> x --> 0.
-Proof.
-move=> x_ge0 h; apply/fine_cvgP; split; first exact: mine_cvg_0_cvg_fin_num.
-apply: (@minr_cvg_0_cvg_0 (fine \o x)) => //; last exact: mine_cvg_minr_cvg.
-by move=> k /=; rewrite fine_ge0.
+move=> x_ge0 h.
+have x2x2 : x =1 (fun n => 2%:E * (x n * 2^-1%:E)).
+  move=> n.
+  by rewrite muleCA -EFinM divff ?mule1.
+under eq_cvg do rewrite x2x2.
+rewrite -(mule0 2%:E).
+apply: cvgeMl => //.
+apply: (mine_cvg_0_cvg_0 lte01) => //.
+by move=> n; rewrite mule_ge0.
 Qed.
 
 Lemma hahn_decomposition_lemma : measurable D ->
@@ -717,7 +755,7 @@ have mine_cvg_0 : (fun n => mine (g_ (v n) * 2^-1%:E) 1) --> 0.
   apply: (@squeeze_cvge _ _ _ _ _ _ (fun n => nu (A_ (v n))));
     [|exact: cvg_cst|by []].
   by apply: nearW => n /=; rewrite nuA_g_ andbT le_minr lee01 andbT mule_ge0.
-have d_cvg_0 : g_ \o v --> 0 by apply: mine_cvg_0_cvg_0 => //=.
+have d_cvg_0 : g_ \o v --> 0 by apply: mine2_cvg_0_cvg_0 => //=.
 have nuDAoo : nu D >= nu (D `\` Aoo).
   rewrite -[in leRHS](@setDUK _ Aoo D); last first.
     by apply: bigcup_sub => i _; exact: A_D.
@@ -1545,21 +1583,18 @@ Qed.
 
 End radon_nikodym_finite.
 
-(* TODO: move? *)
+(* PR:#1110 *)
 Lemma measure_dominates_ae_eq d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) (nu : {measure set T -> \bar R})
   (f g : T -> \bar R) E : measurable E ->
     nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
-Proof. by move=> mE munu [A [mA A0 EA]]; exists A; split => //; exact: munu. Qed.
+Proof. Admitted.
 
-(* TODO: move *)
+(* PR:#1110 *)
 Lemma ae_eqS d (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}) A B f g :
   B `<=` A -> ae_eq mu A f g ->  ae_eq mu B f g.
 Proof.
-move=> BA.
-case => N [mN N0 fg]; exists N; split => //.
-by apply: subset_trans fg; apply: subsetC => z /= /[swap] /BA ? ->//.
-Qed.
+Admitted.
 
 Section radon_nikodym_sigma_finite.
 Context d (T : measurableType d) (R : realType).

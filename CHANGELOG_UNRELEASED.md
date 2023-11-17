@@ -75,6 +75,37 @@
 	`ae_eq_mul2l`,
 	`ae_eq_mul1l`,
 	`ae_eq_abse`
+  
+- in `charge.v`
+  + `charge_add` instance of `charge` 
+  + `cpushforward` instance of `charge`
+  + `charge_of_finite_measure` instance of `charge`
+  + lemma `cscaleE`
+  + lemma `dominates_cscale`
+  + lemma `caddE`
+  + lemma `dominates_caddl`
+  + lemma `dominates_pushforward`
+  + lemma `cjordan_posE`
+  + lemma `jordan_posE`
+  + lemma `cjordan_negE`
+  + lemma `jordan_negE`
+  + lemma `Radon_Nikodym_sigma_finite_fin_num`
+  + lemma `Radon_NikodymE`
+  + lemma `Radon_Nikodym_fin_num`
+  + lemma `ae_eq_Radon_Nikodym_SigmaFinite`
+  + lemma `Radon_Nikodym_change_of_variables`
+  + lemma `Radon_Nikodym_cscale`
+  + lemma `Radon_Nikodym_cadd`
+  + lemma `Radon_Nikodym_chain_rule`
+
+### Changed
+
+- in `charge.v`
+  + definition `jordan_decomp` now uses `cadd` and `cscale`
+  + Definition `Radon_Nikodym_SigmaFinite` now be a module `Radon_Nikodym_SigmaFinite` with
+    * lemma `change_of_variables`
+    * lemma `integralM`
+    * lemma `chain_rule`
 
 ### Renamed
 
@@ -85,6 +116,8 @@
 
 - in `lebesgue_integral.v`
   + `ge0_integral_bigsetU` generalized from `nat` to `eqType`
+- in `lebesgue_measure.v`
+  + an hypothesis of lemma `integral_ae_eq` is weakened
 
 ### Deprecated
 
