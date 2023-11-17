@@ -243,7 +243,7 @@ suff Cc : lim
   have Ckf := @is_cvg_seriesZ _ _ h^-1 C1.
   have Cu : (series (h^-1 *: (shx h - sx)) - series s1) x0 @[x0 --> \oo] -->
       lim (series (h^-1 *: (shx h - sx))) - lim (series s).
-    by apply: cvgB.
+    exact: cvgB.
   set w := (fun n : nat => _ in RHS).
   have -> : w = h^-1 *: (shx h - sx)  - s1.
     apply: funext => i; rewrite !fctE.
@@ -625,7 +625,7 @@ Proof. by move=> x y x_gt0 y_gt0; rewrite -ltr_expR !lnK. Qed.
 Lemma ler_ln : {in Num.pos &, {mono ln : x y / x <= y}}.
 Proof. by move=> x y x_gt0 y_gt0; rewrite -ler_expR !lnK. Qed.
 
-Lemma lnX n x : 0 < x -> ln(x ^+ n) = ln x *+ n.
+Lemma lnXn n x : 0 < x -> ln (x ^+ n) = ln x *+ n.
 Proof.
 move=> x_gt0; elim: n => [|n ih] /=; first by rewrite expr0 ln1 mulr0n.
 by rewrite !exprS lnM ?qualifE// ?exprn_gt0// mulrS ih.
