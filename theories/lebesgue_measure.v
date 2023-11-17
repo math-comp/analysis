@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
-Require Import reals ereal signed topology numfun normedtype function_spaces.
+Require Import reals ereal signed topology numfun tvs normedtype function_spaces.
 From HB Require Import structures.
 Require Import sequences esum measure real_interval realfun exp.
 Require Export lebesgue_stieltjes_measure.
@@ -61,7 +61,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import numFieldTopology.Exports.
+Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -1708,7 +1708,7 @@ Lemma ae_pointwise_almost_uniform
 Proof.
 move=> mf mg mA Afin [C [mC C0 nC] epspos].
 have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E &
-    {uniform (A `\` C) `\` B,  f @ \oo --> g}].
+    {uniform (A `\` C) `\` B,  f @\oo --> g}].
   apply: pointwise_almost_uniform => //.
   - by move=> n; apply : (measurable_funS mA _ (mf n)) => ? [].
   - by apply: measurableI => //; exact: measurableC.
