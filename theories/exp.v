@@ -631,7 +631,7 @@ Proof. by move=> x y x_gt0 y_gt0; rewrite -ltr_expR !lnK. Qed.
 Lemma ler_ln : {in Num.pos &, {mono ln : x y / x <= y}}.
 Proof. by move=> x y x_gt0 y_gt0; rewrite -ler_expR !lnK. Qed.
 
-Lemma lnX n x : 0 < x -> ln(x ^+ n) = ln x *+ n.
+Lemma lnXn n x : 0 < x -> ln (x ^+ n) = ln x *+ n.
 Proof.
 move=> x_gt0; elim: n => [|n ih] /=; first by rewrite expr0 ln1 mulr0n.
 by rewrite !exprS lnM ?qualifE//= ?exprn_gt0// mulrS ih.
