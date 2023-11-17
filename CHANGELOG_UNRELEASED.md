@@ -26,6 +26,9 @@
   
 ### Renamed
 
+- in `exp.v`:
+  + `lnX` -> `lnXn`
+
 ### Generalized
 
 ### Deprecated

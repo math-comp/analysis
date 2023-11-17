@@ -2520,7 +2520,7 @@ HB.instance Definition _ :=
 
 End Product_Topology.
 
-(** dnbhs *)
+(** deleted neighborhood *)
 
 Definition dnbhs {T : topologicalType} (x : T) :=
   within (fun y => y != x) (nbhs x).

@@ -13,6 +13,7 @@ reals.v
 landau.v
 Rstruct.v
 topology.v
+cantor.v
 prodnormedzmodule.v
 normedtype.v
 realfun.v
