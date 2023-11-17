@@ -3,8 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import set_interval.
-From mathcomp Require Import reals ereal signed topology normedtype landau.
+From mathcomp Require Import set_interval reals ereal signed topology.
+From mathcomp Require Import tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Definitions and lemmas about sequences                                   *)
@@ -1123,7 +1123,7 @@ move=> k0 kfK; have [K0|K0] := lerP K 0.
   near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
   move=> t /=; rewrite distrC subr0 => tk2 t0.
   by rewrite normr_gt0 t0 (lt_trans tk2) // -[in ltLHS](add0r k) midf_lt.
-- apply/(@eqolim0 _ _ R (0^'))/eqoP => _/posnumP[e]; near=> x.
+- apply/(@eqolim0 _ _ R 0^')/eqoP => _/posnumP[e]; near=> x.
   rewrite (le_trans (kfK _ _)) //=.
   + near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
     move=> t /=; rewrite distrC subr0 => tk2 t0.

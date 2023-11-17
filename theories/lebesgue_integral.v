@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop signed reals ereal topology.
-From mathcomp Require Import normedtype sequences real_interval esum measure.
+From mathcomp Require Import tvs normedtype sequences real_interval esum measure.
 From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 
 (**md**************************************************************************)
@@ -96,7 +96,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import numFieldTopology.Exports.
+Import numFieldNormedType.Exports.
 From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope classical_set_scope.
@@ -1775,7 +1775,7 @@ Qed.
 End approximation_sfun.
 
 Section lusin.
-Hint Extern 0  (hausdorff_space _) => (exact: Rhausdorff ) : core.
+Hint Extern 0 (hausdorff_space _) => (exact: Rhausdorff) : core.
 Local Open Scope ereal_scope.
 Context (rT : realType) (A : set rT).
 Let mu := [the measure _ _ of @lebesgue_measure rT].

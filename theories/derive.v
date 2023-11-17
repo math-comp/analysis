@@ -2,8 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals signed topology prodnormedzmodule normedtype.
-From mathcomp Require Import landau forms.
+From mathcomp Require Import reals signed topology prodnormedzmodule tvs.
+From mathcomp Require Import normedtype landau forms.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)
@@ -788,13 +788,14 @@ by rewrite prod_normE/= !normrZ !normfV !normr_id !mulVf ?gt_eqF// maxxx ltr1n.
 Qed.
 
 Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
-  continuous (fun p => f p.1 p.2) -> (fun p => f p.1 p.2) =o_ 0 id.
+  continuous (fun p => f p.1 p.2) -> (fun p => f p.1 p.2) =o_ (0 : U * V') id.
 Proof.
 move=> fc; have [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
 apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
 rewrite ler_pM ?pmulr_rge0 //; last by rewrite num_le_max /= lexx orbT.
 rewrite -ler_pdivlMl //.
-suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite num_le_max /= lexx.
+suff : `|x| <= k%:num ^-1 * e%:num.
+  by apply: le_trans; rewrite num_le_max /= lexx.
 near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
 by exists (k%:num ^-1 * e%:num) => //= ? /=; rewrite /= distrC subr0 => /ltW.
 Unshelve. all: by end_near. Qed.
@@ -803,7 +804,7 @@ Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
   continuous (fun p => f p.1 p.2) ->
   continuous (fun q => (f p.1 q.2 + f q.1 p.2)) /\
   (fun q => f q.1 q.2) \o shift p = cst (f p.1 p.2) +
-    (fun q => f p.1 q.2 + f q.1 p.2) +o_ 0 id.
+    (fun q => f p.1 q.2 + f q.1 p.2) +o_ (0 : U * V') id.
 Proof.
 move=> fc; split=> [q|].
   by apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
