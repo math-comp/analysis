@@ -1,8 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
-From mathcomp Require Import interval rat fintype finmap.
-Require Import mathcomp_extra boolp classical_sets signed functions cardinality.
-Require Import reals topology.
+From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum interval rat.
+From mathcomp Require Import finmap.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality.
+Require Import reals signed topology.
 From HB Require Import structures.
 
 (******************************************************************************)
@@ -36,10 +37,6 @@ Definition cantor_like (T : topologicalType) :=
       compact [set: T],
       hausdorff_space T &
       zero_dimensional T].
-
-Canonical cantor_pseudoMetric {R} :=
-  @product_pseudoMetricType R _ (fun _ : nat =>
-    @discrete_pseudoMetricType R _ discrete_bool) (countableP _).
 
 Lemma cantor_space_compact : compact [set: cantor_space].
 Proof.

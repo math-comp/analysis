@@ -593,7 +593,7 @@ Context {R : numDomainType}.
 Implicit Type (x : \bar R).
 
 Definition fin_num := [qualify a x : \bar R | (x != -oo) && (x != +oo)].
-Fact fin_num_key : pred_key fin_num. by []. Qed.
+Fact fin_num_key : pred_key fin_num. Proof. by []. Qed.
 Canonical fin_num_keyd := KeyedQualifier fin_num_key.
 
 Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
