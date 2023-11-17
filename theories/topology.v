@@ -4762,7 +4762,45 @@ End sup_uniform.
 HB.instance Definition _ (I : Type) (T : I -> uniformType) :=
   Uniform.copy (prod_topology T)
     (sup_topology (fun i => Uniform.class
-      [the uniformType of weak_topology (@proj _ T i)])).
+                           [the uniformType of weak_topology (@proj _ T i)])).
+
+(** Uniform of Normed Domain**)
+
+
+HB.instance Definition _ (R : zmodType) := isPointed.Build R 0.
+
+HB.instance Definition _ (R : zmodType) := Pointed.on R^o.
+
+HB.howto GRing.regular topologicalType.
+
+Definition numDomain_axiom (R : numDomainType) : Pointed_isBaseTopological R^o.
+Admitted.
+HB.instance Definition _ (R : numDomainType) := numDomain_axiom R.
+
+(** * Topological vector spaces                *)
+
+Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
+  forall x y lambda, lambda *: x + (1 - lambda) *: y \in A. 
+
+HB.mixin Record Uniform_isTopvec (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
+    add_continuous : continuous (uncurry (@GRing.add E));
+    scale_continuous : continuous (uncurry (@GRing.scale R E) : R^o * E -> E);
+    locally_convex : exists B : set (set E), (forall b, b \in B -> convex b) /\ (basis B)     
+  }.
+
+HB.structure Definition Evt (R : numDomainType) :=
+  {E of Uniform_isTopvec R E & Uniform E & GRing.Lmodule R E}. 
+
+HB.factory Record Topological_isTopvec (R : numDomainType) E
+      of Topological E & GRing.Lmodule R E := {
+    add_continuous : continuous (uncurry (@GRing.add E));
+    scale_continuous : continuous (uncurry (@GRing.scale R E) : R^o * E -> E);
+    locally_convex : exists B : set (set E), (forall b, b \in B -> convex b) /\ (basis B)     
+  }.
+HB.builders Context R E of Topological_isTopvec R E.
+    
+HB.end.
+
 
 (** * PseudoMetric spaces defined using balls *)
 
@@ -5465,7 +5503,6 @@ HB.instance Definition _ (T : choiceType) (R : numFieldType)
     (U : completePseudoMetricType R) :=
   Uniform_isComplete.Build (T -> U) cauchy_cvg.
 
-HB.instance Definition _ (R : zmodType) := isPointed.Build R 0.
 
 Lemma compact_cauchy_cvg {T : uniformType} (U : set T) (F : set_system T) :
   ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
