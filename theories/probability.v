@@ -255,11 +255,16 @@ Definition inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
   forall x_ : I -> R,
     inde_event P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
 
+(* Remark 2.15 (i) *)
+Lemma prob_inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
+  inde_RV A X ->
+    forall J : {fset I}, [set` J] `<=` A ->
+
 Lemma inde_expectation (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
-  forall B : {fset I}, [set` B] `<=` A ->
-    inde_RV A X -> 'E_P[\prod_(i <- B) X i] = \prod_(i <- B) 'E_P[X i].
+  inde_RV A X ->
+    forall B : {fset I}, [set` B] `<=` A -> 'E_P[\prod_(i <- B) X i] = \prod_(i <- B) 'E_P[X i].
 Proof.
-move=> B BleA irvX.
+move=> irvX B BleA.
 Admitted.
 
 End independent_RVs.
