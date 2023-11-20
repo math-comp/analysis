@@ -226,6 +226,39 @@ Qed.
 
 End expectation_lemmas.
 
+Section independent_events.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Local Open Scope ereal_scope.
+
+Definition inde_event (I : choiceType) (A : set I) (E : I -> set T) :=
+  (forall i, A i -> measurable (E i)) /\
+  forall B : {fset I}, [set` B] `<=` A ->
+    P (\bigcap_(i in [set` B]) E i) = \prod_(i <- B) P (E i).
+
+Lemma inde_ev2 (E1 E2 : set T) :
+  inde_event [set: nat] (bigcap2 E1 E2) -> P (E1 `&` E2) = P E1 * P E2.
+Proof.
+move=> [mE12 ieprod].
+have := ieprod [fset 0%N; 1%N]%fset (@subsetT _ _).
+rewrite bigcap_fset.
+rewrite !big_fsetU1 ?inE//=.
+by rewrite !big_seq_fset1.
+Qed.
+
+End independent_events.
+
+Require Import real_interval.
+
+Section independent_RVs.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Local Open Scope ereal_scope.
+
+Definition inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
+  forall x_ : I -> R,
+    inde_event P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
+
+End independent_RVs.
+
 HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
     (P : probability T R) (X Y : T -> R) :=
   'E_P[(X \- cst (fine 'E_P[X])) * (Y \- cst (fine 'E_P[Y]))]%E.
@@ -1175,6 +1208,8 @@ elim: X => [_|X0 X IH hRVs].
   by rewrite !big_nil expectation_cst.
 rewrite !big_cons.
 rewrite -IH.
+
+
 Definition independent_RVs (X : seq {RV P >-> R}) := forall t,
     (fine ('E_P[expR \o t \o* \sum_(Xi <- X) Xi]) = \prod_(Xi <- X) fine ('E_P[expR \o t \o* Xi]))%R.
 
