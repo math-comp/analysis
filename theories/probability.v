@@ -240,9 +240,7 @@ Lemma inde_ev2 (E1 E2 : set T) :
 Proof.
 move=> [mE12 ieprod].
 have := ieprod [fset 0%N; 1%N]%fset (@subsetT _ _).
-rewrite bigcap_fset.
-rewrite !big_fsetU1 ?inE//=.
-by rewrite !big_seq_fset1.
+by rewrite bigcap_fset !big_fsetU1 ?inE//= !big_seq_fset1.
 Qed.
 
 End independent_events.
@@ -256,6 +254,13 @@ Local Open Scope ereal_scope.
 Definition inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
   forall x_ : I -> R,
     inde_event P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
+
+Lemma inde_expectation (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
+  forall B : {fset I}, [set` B] `<=` A ->
+    inde_RV A X -> 'E_P[\prod_(i <- B) X i] = \prod_(i <- B) 'E_P[X i].
+Proof.
+move=> B BleA irvX.
+Admitted.
 
 End independent_RVs.
 
