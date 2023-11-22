@@ -256,9 +256,12 @@ Definition inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
     inde_event P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
 
 (* Remark 2.15 (i) *)
-Lemma prob_inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
+Lemma prob_inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
   inde_RV A X ->
     forall J : {fset I}, [set` J] `<=` A ->
+      forall x_ : I -> R,
+        P (\bigcap_(i <- J) X i @^-1` `[(x_ i), +oo[%classic) = 
+          \prod_(i <- J) P (X i @^-1` `[(x_ i), +oo[%classic).
 
 Lemma inde_expectation (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
   inde_RV A X ->
