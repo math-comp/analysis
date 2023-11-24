@@ -7,8 +7,8 @@ From mathcomp.classical Require Import functions fsbigop cardinality.
 Require Import reals ereal signed topology numfun normedtype sequences esum.
 Require Import real_interval measure realfun.
 
-(******************************************************************************)
-(*                       Lebesgue Stieltjes Measure                           *)
+(***md*************************************************************************)
+(* # Lebesgue Stieltjes Measure                                               *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue-Stieltjes measure using *)
 (* the Measure Extension theorem from measure.v.                              *)
@@ -16,6 +16,7 @@ Require Import real_interval measure realfun.
 (* Reference:                                                                 *)
 (* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*    right_continuous f == the function f is right-continuous                *)
 (*          cumulative R == type of non-decreasing, right-continuous          *)
 (*                          functions (with R : numFieldType)                 *)
@@ -30,6 +31,7 @@ Require Import real_interval measure realfun.
 (*                          numbers A being delimited by a and b              *)
 (* lebesgue_stieltjes_measure f == Lebesgue-Stieltjes measure for f           *)
 (*                          f is a cumulative function.                       *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 

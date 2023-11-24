@@ -3,13 +3,15 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality.
 
-(******************************************************************************)
-(*                     Finitely-supported big operators                       *)
+(***md*************************************************************************)
+(* # Finitely-supported big operators                                         *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*     finite_support idx D F := D `&` F @^-1` [set~ idx]                     *)
 (* \big[op/idx]_(i \in A) F i == iterated application of the operator op      *)
 (*                               with neutral idx over finite_support idx A F *)
 (*         \sum_(i \in A) F i == iterated addition, in ring_scope             *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 

@@ -4,17 +4,19 @@ From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
 
-(******************************************************************************)
-(*                  Filters and basic topological notions                     *)
+(***md*************************************************************************)
+(* # Filters and basic topological notions                                    *)
 (*                                                                            *)
 (* This file develops tools for the manipulation of filters and basic         *)
 (* topological notions.                                                       *)
+(*                                                                            *)
 (* The development of topological notions builds on "filtered types". They    *)
 (* are types equipped with an interface that associates to each element a     *)
 (* set of sets, intended to represent a filter. The notions of limit and      *)
 (* convergence are defined for filtered types and in the documentation below  *)
 (* we call "canonical filter" of an element the set of sets associated to it  *)
 (* by the interface of filtered types.                                        *)
+(*                                                                            *)
 (* We used these topological notions to prove, e.g., Tychonoff's Theorem,     *)
 (* which states that any product of compact sets is compact according to the  *)
 (* product topology or Arzela-Ascoli's theorem.                               *)
@@ -35,12 +37,14 @@ Require Import reals signed.
 (*      + Complete pseudometric spaces                                        *)
 (*      + Function space topologies                                           *)
 (*      + Subspaces of topological spaces                                     *)
+(*                                                                            *)
 (******************************************************************************)
 
-(******************************************************************************)
-(*                               1. Filters                                   *)
+(***md*************************************************************************)
+(* # 1. Filters                                                               *)
 (*                                                                            *)
-(* * Structure of filter                                                      *)
+(* ## Structure of filter                                                     *)
+(* ```                                                                        *)
 (*                   filteredType U == interface type for types whose         *)
 (*                                     elements represent sets of sets on U.  *)
 (*                                     These sets are intended to be filters  *)
@@ -63,13 +67,15 @@ Require Import reals signed.
 (*                Filtered.Source F == if F : (X -> Y) -> set (set Z), packs  *)
 (*                                     X with F in a Filtered.source Y Z      *)
 (*                                     structure                              *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of filter, e.g.:        *)
 (* - products: filtered_prod                                                  *)
 (* - matrices: matrix_filtered                                                *)
 (* - natural numbers: nat_filteredType                                        *)
 (*                                                                            *)
-(* * Theory of filters                                                        *)
+(* ## Theory of filters                                                       *)
+(* ```                                                                        *)
 (*                           nbhs p == set of sets associated to p (in a      *)
 (*                                     filtered type)                         *)
 (*                  filter_from D B == set of the supersets of the elements   *)
@@ -148,16 +154,18 @@ Require Import reals signed.
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true                        *)
 (*                         clopen U == U is both open and closed              *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * Near notations and tactics                                               *)
+(* ## Near notations and tactics                                              *)
 (* The purpose of the near notations and tactics is to make the manipulation  *)
-(* of filters easier. Instead of proving F G, one can prove G x for x         *)
-(* "near F", i.e., for x such that H x for H arbitrarily precise as long as   *)
-(* F H. The near tactics allow for a delayed introduction of H:               *)
-(* H is introduced as an existential variable and progressively instantiated  *)
-(* during the proof process.                                                  *)
+(* of filters easier. Instead of proving $F\; G$, one can prove $G\; x$ for   *)
+(* $x$ "near F", i.e., for x such that H x for H arbitrarily precise as long  *)
+(* as $F\; H$. The near tactics allow for a delayed introduction of $H$:      *)
+(* $H$ is introduced as an existential variable and progressively             *)
+(* instantiated during the proof process.                                     *)
 (*                                                                            *)
-(* ** Notations                                                               *)
+(* ### Notations                                                              *)
+(* ```                                                                        *)
 (*                      {near F, P} == the property P holds near the          *)
 (*                                     canonical filter associated to F       *)
 (*                                     P must have the form forall x, Q x.    *)
@@ -170,7 +178,9 @@ Require Import reals signed.
 (*     \forall x & y \near F, P x y == same as before, with G = F             *)
 (*               \near x & y, P x y := \forall z \near x & t \near y, P x y   *)
 (*                     x \is_near F == x belongs to a set P : in_filter F     *)
-(* ** Tactics                                                                 *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ### Tactics                                                                *)
 (* - near=> x    introduces x:                                                *)
 (*   On the goal \forall x \near F, G x, introduces the variable x and an     *)
 (*   "existential", and an unaccessible hypothesis ?H x and asks the user to  *)
@@ -192,11 +202,12 @@ Require Import reals signed.
 (*                                                                            *)
 (******************************************************************************)
 
-(******************************************************************************)
-(*                      2. Basic topological notions                          *)
+(***md*************************************************************************)
+(* # 2. Basic topological notions                                             *)
 (*                                                                            *)
-(* * Mathematical structures                                                  *)
-(* ** Topology                                                                *)
+(* ## Mathematical structures                                                 *)
+(* ### Topology                                                               *)
+(* ```                                                                        *)
 (*                  topologicalType == interface type for topological space   *)
 (*                                     structure.                             *)
 (*              TopologicalType T m == packs the mixin m to build a           *)
@@ -304,8 +315,14 @@ Require Import reals signed.
 (*                                     empty or singletons                    *)
 (*               zero_dimensional T == points are separable by a clopen set   *)
 (*                       set_nbhs A == filter from open sets containing A     *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* ** Uniform spaces                                                          *)
+(* We used these topological notions to prove Tychonoff's Theorem, which      *)
+(* states that any product of compact sets is compact according to the        *)
+(* product topology.                                                          *)
+(*                                                                            *)
+(* ### Uniform spaces                                                         *)
+(* ```                                                                        *)
 (*                      nbhs_ ent == neighbourhoods defined using entourages  *)
 (*                    uniformType == interface type for uniform spaces: a     *)
 (*                                   type equipped with entourages            *)
@@ -333,12 +350,15 @@ Require Import reals signed.
 (*               weak_uniformType == the uniform space for weak topologies    *)
 (*                sup_uniformType == the uniform space for sup topologies     *)
 (*                   discrete_ent == entourages for the discrete topology     *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of uniform space, e.g.: *)
 (* - products: prod_uniformType                                               *)
 (* - matrices: matrix_uniformType                                             *)
 (*                                                                            *)
-(* ** Pseudometric spaces                                                     *)
+(* ### PseudoMetric spaces                                                    *)
+(* ```                                                                        *)
+(*                entourage_ ball == entourages defined using balls           *)
 (*               pseudoMetricType == interface type for pseudo metric space   *)
 (*                                   structure: a type equipped with balls    *)
 (*  PseudoMetricMixin brefl bsym btriangle nbhsb == builds the mixin for a    *)
@@ -362,16 +382,18 @@ Require Import reals signed.
 (*                                   pseudometric space                       *)
 (*                  discrete_ball == singleton balls for the discrete         *)
 (*                                   topology                                 *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of pseudometric space,  *)
 (* e.g.:                                                                      *)
 (* - products: prod_pseudoMetricType                                          *)
 (* - matrices: matrix_pseudoMetricType                                        *)
-(* - weak_pseudoMetricType                                                    *)
+(* - weak_pseudoMetricType (the metric space for weak topologies)             *)
 (* - sup_pseudoMetricType                                                     *)
 (* - product_pseudoMetricType                                                 *)
 (*                                                                            *)
-(* ** Complete uniform spaces                                                 *)
+(* ### Complete uniform spaces                                                *)
+(* ```                                                                        *)
 (*                      cauchy F <-> the set of sets F is a cauchy filter     *)
 (*                                   (entourage definition)                   *)
 (*                   completeType == interface type for a complete uniform    *)
@@ -385,13 +407,15 @@ Require Import reals signed.
 (*                                   cT                                       *)
 (*            [completeType of T] == clone of a canonical structure of        *)
 (*                                   completeType on T                        *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of complete uniform     *)
 (* space, e.g.:                                                               *)
 (* - matrices: matrix_completeType                                            *)
 (* - functions: fun_completeType                                              *)
 (*                                                                            *)
-(* ** Complete pseudometric spaces                                            *)
+(* ### Complete pseudometric spaces                                           *)
+(* ```                                                                        *)
 (*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
 (*                                   (epsilon-delta definition)               *)
 (*                 cauchy_ball F <-> the set of sets F is a cauchy filter     *)
@@ -409,6 +433,7 @@ Require Import reals signed.
 (*                                   completePseudoMetricType on T.           *)
 (*                        ball_ N == balls defined by the norm/absolute       *)
 (*                                   value N                                  *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of complete             *)
 (* pseudometric space, e.g.:                                                  *)
@@ -422,7 +447,8 @@ Require Import reals signed.
 (* - numField_uniformType                                                     *)
 (* - numField_pseudoMetricType                                                *)
 (*                                                                            *)
-(* ** Function space topologies                                               *)
+(* ### Function space topologies                                              *)
+(* ```                                                                        *)
 (*     {uniform` A -> V} == the space U -> V, equipped with the topology of   *)
 (*                          uniform convergence from a set A to V, where      *)
 (*                          V is a uniformType                                *)
@@ -443,8 +469,10 @@ Require Import reals signed.
 (*               dense S == the set (S : set T) is dense in T, with T of      *)
 (*                          type topologicalType                              *)
 (*  weak_pseudoMetricType == the metric space for weak topologies             *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* ** Subspaces of topological spaces                                         *)
+(* ### Subspaces of topological spaces                                        *)
+(* ```                                                                        *)
 (*              subspace A == for (A : set T), this is a copy of T with a     *)
 (*                            topology that ignores points outside A          *)
 (*         incl_subspace x == with x of type subspace A with (A : set T),     *)
@@ -468,6 +496,7 @@ Require Import reals signed.
 (*      equicontinuous W x == the set (W : X -> Y) is equicontinuous at x     *)
 (*  pointwise_precompact W == for each (x : X), the set of images             *)
 (*                            [f x | f in W] is precompact                    *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -855,9 +884,7 @@ rewrite propeqE; split => -[[/=A B] [FA FB] ABP];
 by exists (B, A) => // -[x y] [/=Bx Ay]; apply: (ABP (y, x)).
 Qed.
 
-(** * Filters *)
-
-(** ** Definitions *)
+(** Filters *)
 
 Class Filter {T : Type} (F : set (set T)) := {
   filterT : F setT ;
@@ -1223,7 +1250,7 @@ move=> ? PF; near do move=> /asboolP.
 by case: asboolP=> [/PF|_]; by [apply: filterS|apply: nearW].
 Unshelve. all: by end_near. Qed.
 
-(** ** Limits expressed with filters *)
+(** Limits expressed with filters *)
 
 Definition fmap {T U : Type} (f : T -> U) (F : set (set T)) :=
   [set P | F (f @^-1` P)].
@@ -1369,7 +1396,7 @@ Global Instance globally_properfilter {T : Type} (A : set T) a :
   infer (A a) -> ProperFilter (globally A).
 Proof. by move=> Aa; apply: Build_ProperFilter' => /(_ a). Qed.
 
-(** ** Specific filters *)
+(** Specific filters *)
 
 Section frechet_filter.
 Variable T : Type.
@@ -1697,7 +1724,7 @@ Canonical bool_discrete_filter := FilteredType bool bool principal_filter.
 
 End PrincipalFilters.
 
-(** * Topological spaces *)
+(** Topological spaces *)
 
 Module Topological.
 
@@ -2308,7 +2335,7 @@ Qed.
 
 End TopologyOfSubbase.
 
-(* Topology on nat *)
+(** Topology on nat *)
 
 Section nat_topologicalType.
 
@@ -2432,7 +2459,7 @@ End map.
 
 End infty_nat.
 
-(** ** Topology on the product of two spaces *)
+(** Topology on the product of two spaces *)
 
 Section Prod_Topology.
 
@@ -2463,7 +2490,7 @@ Canonical prod_topologicalType :=
 
 End Prod_Topology.
 
-(** ** Topology on matrices *)
+(** Topology on matrices *)
 
 Section matrix_Topology.
 
@@ -2683,7 +2710,7 @@ Qed.
 Lemma proper_meetsxx T (F : set (set T)) (FF : ProperFilter F) : F `#` F.
 Proof. by rewrite meetsxx; apply: filter_not_empty. Qed.
 
-(** ** Closed sets in topological spaces *)
+(** Closed sets in topological spaces *)
 
 Section Closed.
 
@@ -2875,7 +2902,7 @@ Qed.
 
 End closure_lemmas.
 
-(** ** Compact sets *)
+(** Compact sets *)
 
 Section Compact.
 
@@ -4125,7 +4152,7 @@ Qed.
 
 End set_nbhs.
 
-(** * Uniform spaces *)
+(** Uniform spaces *)
 
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
 
@@ -4526,7 +4553,7 @@ End prod_Uniform.
 Canonical prod_uniformType (U V : uniformType) :=
   UniformType (U * V) (@prod_uniformType_mixin U V).
 
-(** matrices *)
+(** Matrices *)
 
 Section matrix_Uniform.
 
@@ -4691,7 +4718,7 @@ Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
 Canonical set_filter_source (U : uniformType) :=
   @Filtered.Source Prop _ U (fun A => nbhs_ (@entourage_set U) A).
 
-(** * PseudoMetric spaces defined using balls *)
+(** PseudoMetric spaces defined using balls *)
 
 Definition entourage_ {R : numDomainType} {T T'} (ball : T -> R -> set T') :=
   @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
@@ -5489,7 +5516,7 @@ End discrete_pseudoMetric.
 Definition pseudoMetric_bool {R : realType} :=
   @discrete_pseudoMetricType R [topologicalType of bool] discrete_bool.
 
-(** ** Complete uniform spaces *)
+(** Complete uniform spaces *)
 
 Definition cauchy {T : uniformType} (F : set (set T)) := (F, F) --> entourage.
 
@@ -5618,7 +5645,7 @@ Canonical fun_completeType := CompleteType (T -> U) fun_complete.
 
 End fun_Complete.
 
-(** ** Limit switching *)
+(** Limit switching *)
 Section Cvg_switch.
 Context {T1 T2 : choiceType}.
 
@@ -5668,7 +5695,7 @@ Qed.
 
 End Cvg_switch.
 
-(** ** Complete pseudoMetric spaces *)
+(** Complete pseudoMetric spaces *)
 
 Definition cauchy_ex {R : numDomainType} {T : pseudoMetricType R} (F : set (set T)) :=
   forall eps : R, 0 < eps -> exists x, F (ball x eps).

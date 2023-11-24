@@ -7,12 +7,13 @@ Add Search Blacklist "__functions_".
 Add Search Blacklist "_factory_".
 Add Search Blacklist "_mixin_".
 
-(******************************************************************************)
-(*                            Theory of functions                             *)
+(***md*************************************************************************)
+(* # Theory of functions                                                      *)
 (*                                                                            *)
-(* This file provides a theory of functions whose domain and codomain are     *)
-(* represented by sets.                                                       *)
+(* This file provides a theory of functions $f : A\to B$ whose domain $A$     *)
+(* and codomain $B$ are represented by sets.                                  *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*          set_fun A B f == f : aT -> rT is a function with domain           *)
 (*                           A : set aT and codomain B : set rT               *)
 (*         set_surj A B f == f is surjective                                  *)
@@ -44,7 +45,9 @@ Add Search Blacklist "_mixin_".
 (*                           {splitsurj A >-> B}                              *)
 (*                'inj_ f == proof of {in A &, injective f} where f has type  *)
 (*                           {splitinj A >-> _}                               *)
+(* ```                                                                        *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*              funin A f == alias for f : aT -> rT, with A : set aT          *)
 (*             [fun f in A] == the function f from the set A to the set f @` A*)
 (*            'split_ d f == partial injection from aT : Type to rt : Type;   *)
@@ -78,8 +81,10 @@ Add Search Blacklist "_mixin_".
 (*           'pinv_ d A f == inverse of the function [fun f in A] over        *)
 (*                           f @` A, function d outside of f @` A             *)
 (*                  pinv := notation for 'pinv_point                          *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * Function restriction:                                                    *)
+(* ## Function restriction                                                    *)
+(* ```                                                                        *)
 (*            patch d A f == "partial function" that behaves as the function  *)
 (*                           f over the set A and as the function d otherwise *)
 (*           restrict D f := patch (fun=> point) D f                          *)
@@ -105,11 +110,14 @@ Add Search Blacklist "_mixin_".
 (*       valLfun_ v A B f := [fun of valL_ f] with f : {fun [set: A] >-> B}   *)
 (*                   valL := 'valL_ point                                     *)
 (*             valLRfun v := 'valLfun_ v \o valR_fun                          *)
+(* ```                                                                        *)
 (*                                                                            *)
+(* ```                                                                        *)
 (* Section function_space == canonical ringType and lmodType                  *)
 (*                           structures for functions whose range is          *)
 (*                           a ringType, comRingType, or lmodType.            *)
 (*                   fctE == multi-rule for fct                               *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -348,10 +356,8 @@ HB.structure Definition SplitBij {aT rT} {A : set aT} {B : set rT} :=
 Notation "{ 'splitbij' A >-> B }" := (@SplitBij.type _ _ A B) : type_scope.
 Notation "[ 'splitbij'  'of'  f ]" := [the {splitbij _ >-> _} of f] : form_scope.
 
-(** begin hide *)
 (* Hint View for move / Inversible.sort inv | 2. *)
 (* Hint View for apply / Inversible.sort inv | 2. *)
-(** end hide *)
 
 Module ShortFunSyntax.
 Notation "A ~> B" := {fun A >-> B} (at level 70) : type_scope.
@@ -371,9 +377,9 @@ Notation "A <~> B" := {bij A >-> B} (at level 70) : type_scope.
 Notation "A <<~> B" := {splitbij A >-> B} (at level 70) : type_scope.
 End ShortFunSyntax.
 
-(**********)
-(* Theory *)
-(**********)
+(***md*************************************************************************)
+(* ## Theory                                                                  *)
+(******************************************************************************)
 
 Definition phant_funS aT rT (A : set aT) (B : set rT)
   (f : {fun A >-> B}) of phantom (_ -> _) f := @funS _ _ _ _ f.
@@ -478,9 +484,7 @@ Definition phant_funK aT rT (A : set aT) (f : {splitinj A >-> rT})
 Notation "'funK_  f" := (phant_funK (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Resolve funK : core.
 
-(**********************)
-(* Structure Equality *)
-(**********************)
+(** Structure Equality *)
 
 Lemma funP {aT rT} {A : set aT} {B : set rT} (f g : {fun A >-> B}) :
   f = g <-> f =1 g.
@@ -491,9 +495,7 @@ rewrite eqfg in ffun *; congr {| Fun.sort := _; Fun.class := {|
 exact: Prop_irrelevance.
 Qed.
 
-(************************)
-(* Preliminary Builders *)
-(************************)
+(** Preliminary Builders *)
 
 HB.factory Record Inv_Can {aT rT} {A : set aT} (f : aT -> rT) of Inv _ _ f :=
   { funK : {in A, cancel f f^-1} }.
@@ -517,9 +519,7 @@ HB.builders Context {aT rT} {A : set aT} {B : set rT} (f : aT -> rT)
   HB.instance Definition _ := OInv_CanV.Build _ _ _ _ f oinvS oinvK.
 HB.end.
 
-(*********************)
-(* Trivial instances *)
-(*********************)
+(** Trivial instances *)
 
 Section OInverse.
 Context {aT rT : Type} {A : set aT} {B : set rT}.
@@ -770,9 +770,7 @@ HB.instance Definition _ (f : {surjfun A >-> B}) := Fun.on (omap f).
 HB.instance Definition _ (f : {bij A >-> B}) := Fun.on (omap f).
 End Map.
 
-(************)
-(* Builders *)
-(************)
+(** Builders *)
 
 HB.factory Record CanV {aT rT} {A : set aT} {B : set rT} (f : aT -> rT) :=
   { inv; invS : {homo inv : x / B x >-> A x}; invK : {in B, cancel inv f}; }.
@@ -857,9 +855,7 @@ HB.builders Context {aT rT} f of BijTT aT rT f.
     (in1W (projT2 exg).1) (in1W (projT2 exg).2).
 HB.end.
 
-(**********)
-(* Fun in *)
-(**********)
+(** Fun in *)
 
 Section surj_oinv.
 Context {aT rT} {A : set aT} {B : set rT} {f : aT -> rT} (fsurj : set_surj A B f).
@@ -927,9 +923,7 @@ Notation "[ 'fun' f 'in' A ]" := (funin A f)
    format "[ 'fun'  f  'in'  A ]") : function_scope.
 #[global] Hint Resolve set_fun_image : core.
 
-(*********************)
-(* Partial injection *)
-(*********************)
+(** Partial injection *)
 
 Section split.
 Context {aT rT} (A : set aT) (B : set rT).
@@ -967,9 +961,7 @@ End split.
 Notation "''split_' a" := (split_ a) : form_scope.
 Notation split := 'split_point.
 
-(*****************)
-(* More Builders *)
-(*****************)
+(** More Builders *)
 
 HB.factory Record Inj {aT rT} (A : set aT) (f : aT -> rT) :=
    { inj : {in A &, injective f} }.
@@ -1014,9 +1006,9 @@ HB.instance Definition _ (f : {inj A >-> rT}) :=
   SurjFun_Inj.Build _ _ _ _ [fun f in A] 'inj_f.
 End Inverses.
 
-(********************)
-(* Simple Factories *)
-(********************)
+(***md*************************************************************************)
+(* ## Simple Factories                                                        *)
+(******************************************************************************)
 
 Section Pinj.
 Context {aT rT} {A : set aT} {f : aT -> rT} (finj : {in A &, injective f}).
@@ -1109,20 +1101,16 @@ Proof.
 by move/in1W/(@funPsplitsurj _ _ _ _ [fun of totalfun f] [fun of totalfun g]).
 Qed.
 
-(*************)
-(* Instances *)
-(*************)
+(***md*************************************************************************)
+(* ## Instances                                                               *)
+(******************************************************************************)
 
-(*************************************)
-(* The identity is a split bijection *)
-(*************************************)
+(** The identity is a split bijection *)
 
 HB.instance Definition _ T A := @Can2.Build T T A A idfun idfun
    (fun x y => y) (fun x y => y) (fun _ _ => erefl) (fun _ _ => erefl).
 
-(**********************************************************)
-(* Iteration preserves Fun, Injectivity, and Surjectivity *)
-(**********************************************************)
+(** Iteration preserves Fun, Injectivity, and Surjectivity *)
 Section iter_inv.
 
 Context {aT} {A : set aT}.
@@ -1189,9 +1177,7 @@ HB.instance Definition _ n (f : {splitbij A >-> A}) := Surject.on (iter n f).
 
 End iter_surj.
 
-(**********)
-(* Unbind *)
-(**********)
+(** Unbind *)
 
 Section Unbind.
 Context {aT rT} {A : set aT} {B : set rT} (dflt : aT -> rT).
@@ -1248,9 +1234,7 @@ HB.instance Definition _ (f : {splitbij A >-> some @` B}) := Bij.on (unbind f).
 
 End Unbind.
 
-(*********)
-(* Odflt *)
-(*********)
+(** Odflt *)
 
 Section Odflt.
 Context {T} {A : set T} (x : T).
@@ -1264,9 +1248,7 @@ HB.instance Definition _ := SplitBij.copy (odflt x)
 
 End Odflt.
 
-(************)
-(* Subtypes *)
-(************)
+(** Subtypes *)
 
 Section SubType.
 Context {T : Type} {P : pred T} (sT : subType P) (x0 : sT).
@@ -1291,9 +1273,7 @@ Lemma inv_insubd : (insubd x0)^-1 = val. Proof. by []. Qed.
 
 End SubType.
 
-(***********)
-(* To setT *)
-(***********)
+(** To setT *)
 
 Definition to_setT {T} (x : T) : [set: T] :=
   @SigSub _ _ _ x (mem_set I : x \in setT).
@@ -1306,9 +1286,7 @@ Definition setTbij {T} := [splitbij of @to_setT T].
 
 Lemma inv_to_setT T : (@to_setT T)^-1 = val. Proof. by []. Qed.
 
-(**********)
-(* Subfun *)
-(**********)
+(** Subfun *)
 
 Section subfun.
 Context {T} {A B : set T}.
@@ -1364,9 +1342,8 @@ HB.instance Definition _ := seteqfun_can2_subproof.
 
 End seteqfun.
 
-(*************)
-(* Inclusion *)
-(*************)
+(** Inclusion *)
+
 Section incl.
 Context  {T} {A B : set T}.
 Definition incl (AB : A `<=` B) := @id T.
@@ -1385,9 +1362,7 @@ HB.instance Definition _ AB := eqincl_surj AB.
 End incl.
 Notation inclT A := (incl (@subsetT _ _)).
 
-(*******************)
-(* Ad hoc function *)
-(*******************)
+(** Ad hoc function *)
 
 Section mkfun.
 Context {aT} {rT} {A : set aT} {B : set rT}.
@@ -1404,9 +1379,7 @@ HB.instance Definition _ (f : {splitsurj A >-> B}) fAB :=
   SplitSurj.on (@mkfun f fAB).
 End mkfun.
 
-(***********)
-(* set_val *)
-(***********)
+(** set_val *)
 
 Section set_val.
 Context {T} {A : set T}.
@@ -1419,27 +1392,21 @@ End set_val.
 #[global]
 Hint Extern 0 (is_true (set_val _ \in _)) => solve [apply: valP] : core.
 
-(**********)
-(* Squash *)
-(**********)
+(** Squash *)
 
 HB.instance Definition _ T := CanV.Build T $|T| setT setT squash (fun _ _ => I)
                               (in1W unsquashK).
 HB.instance Definition _ T := SplitInj.copy (@unsquash T) squash^-1%FUN.
 Definition ssquash {T} := [splitsurj of @squash T].
 
-(***********************)
-(* pickle and unpickle *)
-(***********************)
+(** pickle and unpickle *)
 
 HB.instance Definition _ (T : countType) :=
   Inj.Build _ _ setT (@choice.pickle T) (in2W (pcan_inj choice.pickleK)).
 HB.instance Definition _ (T : countType) :=
   isFun.Build _ _ setT setT (@choice.pickle T) (fun _ _ => I).
 
-(***********)
-(* set0fun *)
-(***********)
+(** set0fun *)
 
 Lemma set0fun_inj {P T} : injective (@set0fun P T).
 Proof. by case=> x x0; have := set_mem x0. Qed.
@@ -1449,18 +1416,14 @@ HB.instance Definition _ P T :=
 HB.instance Definition _ P T :=
   isFun.Build _ _ setT setT (@set0fun P T) (fun _ _ => I).
 
-(************)
-(* cast_ord *)
-(************)
+(** cast_ord *)
 
 HB.instance Definition _ {m n} {eq_mn : m = n} :=
   Can2.Build 'I_m 'I_n setT setT (cast_ord eq_mn)
     (fun _ _ => I) (fun _ _ => I)
     (in1W (cast_ordK _)) (in1W (cast_ordKV _)).
 
-(************************)
-(* enum_val & enum_rank *)
-(************************)
+(** enum_val & enum_rank *)
 
 HB.instance Definition _ (T : finType) :=
   Can2.Build T _ setT setT enum_rank (fun _ _ => I) (fun _ _ => I)
@@ -1470,9 +1433,7 @@ HB.instance Definition _ (T : finType) :=
   Can2.Build _ T setT setT enum_val (fun _ _ => I) (fun _ _ => I)
                                     (in1W enum_valK) (in1W enum_rankK).
 
-(**************)
-(* Finset val *)
-(**************)
+(** Finset val *)
 
 Definition finset_val {T : choiceType} {X : {fset T}} (x : X) : [set` X] :=
   exist (fun x => x \in [set` X]) (val x) (mem_set (valP x)).
@@ -1494,17 +1455,15 @@ HB.instance Definition _  {T : choiceType} {X : {fset T}} :=
   Can2.Build _ X setT setT val_finset (fun _ _ => I) (fun _ _ => I)
              (in1W val_finsetK) (in1W finset_valK).
 
-(*****************)
-(* 'I_n and `I_n *)
-(*****************)
+(** 'I_n and `I_n *)
 
 HB.instance Definition _ n := Can2.Build _ _ setT setT (@ordII n)
    (fun _ _ => I) (fun _ _ => I) (in1W ordIIK) (in1W IIordK).
 HB.instance Definition _ n := SplitBij.copy (@IIord n) (ordII^-1).
 
-(***********)
-(* Glueing *)
-(***********)
+(***md*************************************************************************)
+(* ## Glueing                                                                 *)
+(******************************************************************************)
 
 Definition glue {T T'} {X Y : set T} {A B : set T'}
   of [disjoint X & Y] & [disjoint A & B] :=
@@ -1599,9 +1558,7 @@ HB.instance Definition _ (f : {splitbij X >-> A}) (g : {splitbij Y >-> B}) :=
 
 End Glue.
 
-(************************************)
-(* Z-module addition is a bijection *)
-(************************************)
+(** Z-module addition is a bijection *)
 
 Section addition.
 Context {V : zmodType} (x : V).
@@ -1616,9 +1573,7 @@ HB.instance Definition _ := addr_can2_subproof.
 
 End addition.
 
-(************************************)
-(* Z-module opposite is a bijection *)
-(************************************)
+(** Z-module opposite is a bijection *)
 
 Section addition.
 Context {V : zmodType} (x : V).
@@ -1633,9 +1588,7 @@ HB.instance Definition _ := oppr_can2_subproof.
 
 End addition.
 
-(*************)
-(* emtpyType *)
-(*************)
+(** emtpyType *)
 
 Section empty.
 Context {T : emptyType} {T' : Type} {X : set T}.
@@ -1656,9 +1609,9 @@ HB.instance Definition _ := empty_canv_subproof.
 
 End empty.
 
-(************************)
-(* Theory of surjection *)
-(************************)
+(***md*************************************************************************)
+(* ## Theory of surjection                                                    *)
+(******************************************************************************)
 
 Section surj_lemmas.
 Variables aT rT : Type.
@@ -1795,9 +1748,7 @@ move=> j; apply/seteqP; split=> x.
 by move=> [f fDE fF i Fi]; exists (f i); [apply: fDE|apply: fF].
 Qed.
 
-(**************)
-(* Injections *)
-(**************)
+(** Injections *)
 
 Lemma trivIset_inj T I (D : set I) (F : I -> set T) :
   (forall i, D i -> F i !=set0) -> trivIset D F -> set_inj D F.
@@ -1806,9 +1757,7 @@ move=> FN0 Ftriv i j; rewrite !inE => Di Dj Fij.
 by apply: Ftriv Di (Dj) _; rewrite Fij setIid; apply: FN0.
 Qed.
 
-(**************)
-(* Bijections *)
-(**************)
+(** Bijections *)
 
 Section set_bij_lemmas.
 Context {aT rT : Type} {A : set aT} {B : set rT} {f : aT -> rT}.
@@ -1873,9 +1822,9 @@ Definition phant_bijTT aT rT (f : {bij [set: aT] >-> [set: rT]})
 Notation "''bijTT_'  f" := (phant_bijTT (Phantom (_ -> _) f)) : form_scope.
 #[global] Hint Extern 0 (bijective _) => solve [apply: bijTT] : core.
 
-(*****************************)
-(* Patching and restrictions *)
-(*****************************)
+(***md*************************************************************************)
+(* ## Patching and restrictions                                               *)
+(******************************************************************************)
 
 Section patch.
 Context {aT rT : Type} (d : aT -> rT) (A : set aT).
@@ -1957,10 +1906,9 @@ do 2![case: ifPn => //]; rewrite !in_setE => Di Dj Fix Fjx.
 by apply: FDtriv => //; exists x.
 Qed.
 
-
-(**************************************)
-(* Restriction of domain and codomain *)
-(**************************************)
+(***md*************************************************************************)
+(* ## Restriction of domain and codomain                                      *)
+(******************************************************************************)
 
 Section RestrictionLeft.
 Context {U V : Type} (v : V) {A : set U} {B : set V}.

@@ -5,24 +5,27 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 (* -------------------------------------------------------------------- *)
 
-(******************************************************************************)
-(*                   An axiomatization of real numbers                        *)
+(***md*************************************************************************)
+(* # An axiomatization of real numbers $\mathbb{R}$                           *)
 (*                                                                            *)
 (* This file provides a classical axiomatization of real numbers as a         *)
 (* discrete real archimedean field with in particular a theory of floor and   *)
 (* ceil.                                                                      *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*     realType == type of real numbers                                       *)
 (*        sup A == where A : set R with R : realType, the supremum of A when  *)
 (*                 it exists, 0 otherwise                                     *)
 (*        inf A := - sup (- A)                                                *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* The mixin corresponding to realType extends an archiFieldType with two     *)
 (* properties:                                                                *)
-(*  - when sup A exists, it is an upper bound of A (lemma sup_upper_bound)    *)
-(*  - when sup A exists, there exists an element x in A such that             *)
-(*    sup A - eps < x for any 0 < eps (lemma sup_adherent)                    *)
+(* - when sup A exists, it is an upper bound of A (lemma sup_upper_bound)     *)
+(* - when sup A exists, there exists an element x in A such that              *)
+(*   sup A - eps < x for any 0 < eps (lemma sup_adherent)                     *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*         Rint == the set of real numbers that can be written as z%:~R,      *)
 (*                 i.e., as an integer                                        *)
 (*     Rtoint r == r when r is an integer, 0 otherwise                        *)
@@ -32,6 +35,7 @@
 (*     range1 x := [set y |x <= y < x + 1]                                    *)
 (*      Rceil x == the ceil of x as a real number, i.e., - Rfloor (- x)       *)
 (*       ceil x := - floor (- x)                                              *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -315,6 +319,7 @@ Qed.
 
 Lemma Rint_ltr_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
   (x < y + 1) = (x <= y).
+Proof.
 move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{3}[1]mulr1z.
 by rewrite -intrD !(ltr_int, ler_int) ltz_addr1.
 Qed.

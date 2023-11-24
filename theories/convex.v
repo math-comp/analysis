@@ -7,15 +7,18 @@ Require Import ereal reals signed topology prodnormedzmodule normedtype derive.
 Require Import realfun itv.
 From HB Require Import structures.
 
-(******************************************************************************)
-(*                                Convexity                                   *)
+(***md*************************************************************************)
+(* # Convexity                                                                *)
 (*                                                                            *)
 (* This file provides a small account of convexity using convex spaces, to be *)
 (* completed with material from infotheo.                                     *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*   isConvexSpace R T == interface for convex spaces                         *)
 (*       ConvexSpace R == structure of convex space                           *)
 (*         a <| t |> b == convexity operator                                  *)
+(* ```                                                                        *)
+(*                                                                            *)
 (* E : lmodType R with R : realDomainType and R : realDomainType are shown to *)
 (* be convex spaces                                                           *)
 (*                                                                            *)

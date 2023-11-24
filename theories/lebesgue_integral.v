@@ -6,8 +6,8 @@ From mathcomp Require Import cardinality fsbigop .
 Require Import signed reals ereal topology normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure numfun.
 
-(******************************************************************************)
-(*                            Lebesgue Integral                               *)
+(***md*************************************************************************)
+(* # Lebesgue Integral                                                        *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue integral. It starts     *)
 (* with simple functions and their integral, provides basic operations        *)
@@ -16,12 +16,20 @@ Require Import esum measure lebesgue_measure numfun.
 (* measurable functions, proves the approximation theorem, the properties of  *)
 (* their integral (semi-linearity, non-decreasingness), the monotone          *)
 (* convergence theorem, and Fatou's lemma. Finally, it proves the linearity   *)
-(* properties of the integral, the dominated convergence theorem and Fubini's *)
-(* theorem.                                                                   *)
+(* properties of the integral, the dominated convergence theorem and          *)
+(* Fubini's theorem, etc.                                                     *)
+(*                                                                            *)
+(* Main notation:                                                             *)
+(* | Coq notation          | | Meaning                         |              *)
+(* |-----------------------|-|---------------------------------|              *)
+(* | \int[mu]_(x in D) f x | | $\int_{x\in D} f(x)\mathbf{d}x$ |              *)
+(* | \int[mu]_x f x        | | $\int_x f(x)\mathbf{d}x$        |              *)
 (*                                                                            *)
 (* Main reference:                                                            *)
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (*                                                                            *)
+(* Detailed contents:                                                         *)
+(* ````                                                                       *)
 (*         {mfun T >-> R} == type of real-valued measurable functions         *)
 (*         {sfun T >-> R} == type of simple functions                         *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
@@ -51,6 +59,7 @@ Require Import esum measure lebesgue_measure numfun.
 (*             HL_maximal == the Hardy–Littlewood maximal operator            *)
 (*                           input: real number-valued function               *)
 (*                           output: extended real number-valued function     *)
+(* ````                                                                       *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -603,8 +612,7 @@ by apply: (mulemu_ge0 (fun x => f @^-1` [set x])); exact: preimage_nnfun0.
 Qed.
 End mulem_ge0.
 
-(* Definition of Simple Integrals *)
-(**********************************)
+(** Definition of Simple Integrals *)
 
 Section simple_fun_raw_integral.
 Local Open Scope ereal_scope.
@@ -4354,9 +4362,7 @@ Qed.
 
 End integral_ae_eq.
 
-(******************************************************************************)
-(* * product measure                                                          *)
-(******************************************************************************)
+(** Product measure *)
 
 Section measurable_section.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).

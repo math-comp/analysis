@@ -6,9 +6,8 @@ From mathcomp Require Export set_interval.
 From HB Require Import structures.
 Require Import reals ereal signed topology normedtype sequences.
 
-(******************************************************************************)
-(* This files contains lemmas about sets and intervals on reals.              *)
-(*                                                                            *)
+(***md*************************************************************************)
+(* # Sets and intervals on $\overline{\mathbb{R}}$                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.

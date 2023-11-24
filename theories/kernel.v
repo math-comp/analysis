@@ -6,14 +6,18 @@ From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology normedtype sequences esum measure.
 Require Import numfun lebesgue_measure lebesgue_integral.
 
-(******************************************************************************)
-(*                                 Kernels                                    *)
+(***md*************************************************************************)
+(* # Kernels                                                                  *)
 (*                                                                            *)
 (* This file provides a formation of kernels, s-finite kernels, finite        *)
 (* kernels, subprobability kernels, and probability kernels. The main         *)
 (* formalized result is the fact that s-finite kernels are stable by          *)
 (* composition.                                                               *)
+(* Reference:                                                                 *)
+(* - R. Affeldt, C. Cohen, A. Saito. Semantics of probabilistic programs      *)
+(*   using s-finite kernels in Coq. CPP 2023                                  *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*       R.-ker X ~> Y == kernel from X to Y where X and Y are of type        *)
 (*                        measurableType                                      *)
 (*                        The HB class is Kernel.                             *)
@@ -39,9 +43,8 @@ Require Import numfun lebesgue_measure lebesgue_integral.
 (*      kprobability m == kernel defined by a probability measure             *)
 (*          kadd k1 k2 == lifting of the addition of measures to kernels      *)
 (*              l \; k == composition of kernels                              *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* ref: R. Affeldt, C. Cohen, A. Saito, Semantics of probabilistic programs   *)
-(* using s-finite kernels in Coq, CPP 2023                                    *)
 (******************************************************************************)
 
 Set Implicit Arguments.

@@ -6,17 +6,32 @@ From mathcomp Require Import cardinality.
 Require Import reals signed topology.
 From HB Require Import structures.
 
-(******************************************************************************)
-(*                      The Cantor Space and Applications                     *)
+(***md*************************************************************************)
+(* # The Cantor Space and Applications                                        *)
 (*                                                                            *)
 (* This file develops the theory of the Cantor space, that is bool^nat with   *)
 (* the product topology. The two main theorems proved here are                *)
 (* homeomorphism_cantor_like, and cantor_surj, a.k.a. Alexandroff-Hausdorff.  *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*          cantor_space == the Cantor space, with its canonical metric       *)
 (*         cantor_like T == perfect + compact + hausdroff + zero dimensional  *)
 (*    pointed_discrete T == equips T with the discrete topology               *)
 (*             tree_of T == builds a topological tree with levels (T n)       *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* The overall goal of the next few sections is to prove that                 *)
+(*       Every compact metric space `T` is the image of the Cantor space.     *)
+(*  The overall proof will build two continuous functions                     *)
+(*           Cantor space -> a bespoke tree for `T` -> `T`                    *)
+(*                                                                            *)
+(* The proof is in 4 parts:                                                   *)
+(* - Part 1: Some generic machinery about continuous functions from trees.    *)
+(* - Part 2: All cantor-like spaces are homeomorphic to the Cantor space.     *)
+(*           (an application of part 1)                                       *)
+(* - Part 3: Finitely branching trees are Cantor-like.                        *)
+(* - Part 4: Every compact metric space has a finitely branching tree with    *)
+(*           a continuous surjection. (a second application of part 1)        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -62,29 +77,20 @@ split.
 - exact: cantor_zero_dimensional.
 Qed.
 
-(* The overall goal of the next few sections is to prove that
-        Every compact metric space `T` is the image of the Cantor space.
-   The overall proof will build two continuous functions
-             Cantor space -> a bespoke tree for `T` -> `T`
-   The proof is in 4 parts.
-
-   Part 1: Some generic machinery about continuous functions from trees.
-   Part 2: All cantor-like spaces are homeomorphic to the Cantor space.
-          (an application of part 1)
-   Part 3: Finitely branching trees are Cantor-like.
-   Part 4: Every compact metric space has a finitely branching tree with
-           a continuous surjection. (a second application of part 1)
-
-   Part 1:
-   A tree here has countable levels, and nodes of type `K n` on the nth level.
-   Each level is in the 'discrete' topology, so the nodes are independent.
-   The goal is to build a map from branches to X.
-   1. Each level of the tree corresponds to an approximation of `X`.
-   2. Each level refines the previous approximation.
-   3. Then each branch has a corresponding Cauchy filter.
-   4. The overall function from branches to X is a continuous surjection.
-   5. With an extra disjointness condition, this is also an injection
-*)
+(***md*************************************************************************)
+(* ## Part 1                                                                  *)
+(*                                                                            *)
+(* A tree here has countable levels, and nodes of type `K n` on the nth       *)
+(* level.                                                                     *)
+(* Each level is in the 'discrete' topology, so the nodes are independent.    *)
+(* The goal is to build a map from branches to X.                             *)
+(* 1. Each level of the tree corresponds to an approximation of `X`.          *)
+(* 2. Each level refines the previous approximation.                          *)
+(* 3. Then each branch has a corresponding Cauchy filter.                     *)
+(* 4. The overall function from branches to X is a continuous surjection.     *)
+(* 5. With an extra disjointness condition, this is also an injection         *)
+(*                                                                            *)
+(******************************************************************************)
 Section topological_trees.
 Context {K : nat -> topologicalType} {X : topologicalType}
         (refine_apx : forall n, set X -> K n -> set X)
@@ -235,10 +241,11 @@ Qed.
 
 End topological_trees.
 
-(*
-  Part 2: We can use `tree_map_props` to build a homeomorphism from the
-  cantor_space to a Cantor-like space T.
-*)
+(***md*************************************************************************)
+(* ## Part 2                                                                  *)
+(* We can use `tree_map_props` to build a homeomorphism from the              *)
+(* cantor_space to a Cantor-like space T.                                     *)
+(******************************************************************************)
 
 Section TreeStructure.
 Context {R : realType} {T : pseudoMetricType R}.
@@ -332,7 +339,9 @@ Qed.
 
 End TreeStructure.
 
-(* Part 3: Finitely branching trees are Cantor-like *)
+(***md*************************************************************************)
+(* ## Part 3: Finitely branching trees are Cantor-like                        *)
+(******************************************************************************)
 Section FinitelyBranchingTrees.
 Context {R : realType}.
 
@@ -366,7 +375,9 @@ End FinitelyBranchingTrees.
 
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
 
-(* Part 4: Building a finitely branching tree to cover `T` *)
+(***md*************************************************************************)
+(* ## Part 4: Building a finitely branching tree to cover `T`                 *)
+(******************************************************************************)
 Section alexandroff_hausdorff.
 Context {R : realType} {T : pseudoMetricType R}.
 
@@ -525,7 +536,7 @@ Qed.
 
 End two_pointed.
 
-(* The Alexandroff-Hausdorff theorem*)
+(** The Alexandroff-Hausdorff theorem *)
 Theorem cantor_surj :
   exists f : {surj [set: cantor_space] >-> [set: T]}, continuous f.
 Proof.

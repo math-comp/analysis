@@ -4,12 +4,13 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology sequences normedtype numfun.
 
-(******************************************************************************)
-(*                      Summation over classical sets                         *)
+(***md*************************************************************************)
+(* # Summation over classical sets                                            *)
 (*                                                                            *)
 (* This file provides a definition of sum over classical sets and a few       *)
 (* lemmas in particular for the case of sums of non-negative terms.           *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*            fsets S == the set of finite sets (fset) included in S          *)
 (* \esum_(i in I) f i == summation of non-negative extended real numbers over *)
 (*                       classical sets; I is a classical set and f is a      *)
@@ -17,6 +18,7 @@ Require Import reals ereal signed topology sequences normedtype numfun.
 (*                       reals; it is 0 if I = set0 and sup(\sum_A a) where A *)
 (*                       is a finite set included in I o.w.                   *)
 (*       summable D f := \esum_(x in D) `| f x | < +oo                        *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 

@@ -3,7 +3,9 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 Require Import reals signed topology prodnormedzmodule normedtype landau forms.
 
-(******************************************************************************)
+(***md*************************************************************************)
+(* # Differentiation                                                          *)
+(*                                                                            *)
 (* This file provides a theory of differentiation. It includes the standard   *)
 (* rules of differentiation (differential of a sum, of a product, of          *)
 (* exponentiation, of the inverse, etc.) as well as standard theorems (the    *)
@@ -11,6 +13,7 @@ Require Import reals signed topology prodnormedzmodule normedtype landau forms.
 (*                                                                            *)
 (* Parsable notations (in all of the following, f is not supposed to be       *)
 (* differentiable):                                                           *)
+(* ```                                                                        *)
 (*               'd f x == the differential of a function f at a point x      *)
 (*   differentiable f x == the function f is differentiable at a point x      *)
 (*               'J f x == the Jacobian of f at a point x                     *)
@@ -20,6 +23,7 @@ Require Import reals signed topology prodnormedzmodule normedtype landau forms.
 (*                         and R : numFieldType                               *)
 (*               f^`()  == the derivative of f of domain R                    *)
 (*               f^`(n) == the nth derivative of f of domain R                *)
+(* ```                                                                        *)
 (******************************************************************************)
 
 Set Implicit Arguments.

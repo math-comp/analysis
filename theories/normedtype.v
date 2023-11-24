@@ -5,17 +5,23 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule.
 
-(******************************************************************************)
-(* This file extends the topological hierarchy with norm-related notions.     *)
+(***md*************************************************************************)
+(* # Norm-related Notions                                                     *)
 (*                                                                            *)
+(* This file extends the topological hierarchy with norm-related notions.     *)
 (* Note that balls in topology.v are not necessarily open, here they are.     *)
+(* We used these definitions to prove the intermediate value theorem and      *)
+(* the Heine-Borel theorem, which states that the compact sets of             *)
+(* $\mathbb{R}^n$ are the closed and bounded sets, Urysohn's lemma, Vitali's  *)
+(* covering lemmas (finite case), etc.                                        *)
 (*                                                                            *)
 (* * Limit superior and inferior:                                             *)
 (*   limf_esup f F, limf_einf f F == limit sup/inferior of f at "filter" F    *)
 (*                                   f has type X -> \bar R.                  *)
 (*                                   F has type set (set X).                  *)
 (*                                                                            *)
-(* * Normed Topological Abelian groups:                                       *)
+(* ## Normed Topological Abelian groups:                                      *)
+(* ```                                                                        *)
 (*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
 (*  PseudoMetricNormedZmodule.Mixin nb == builds the mixin for a normed       *)
@@ -23,13 +29,15 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                   compatibility between the norm and       *)
 (*                                   balls; the carrier type must have a      *)
 (*                                   normed Zmodule over a numDomainType.     *)
+(* ```                                                                        *)
 (*                                                                            *)
 (*         lower_semicontinuous f == the extented real-valued function f is   *)
 (*                                   lower-semicontinuous. The type of f is   *)
 (*                                   X -> \bar R with X : topologicalType and *)
 (*                                   R : realType                             *)
 (*                                                                            *)
-(* * Normed modules :                                                         *)
+(* ## Normed modules                                                          *)
+(* ```                                                                        *)
 (*                normedModType K == interface type for a normed module       *)
 (*                                   structure over the numDomainType K.      *)
 (*           NormedModMixin normZ == builds the mixin for a normed module     *)
@@ -66,8 +74,10 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                     maxr (f a) (f b)]%classic              *)
 (*                  f @`] a , b [ := `]minr (f a) (f b),                      *)
 (*                                     maxr (f a) (f b)[%classic              *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * Domination notations:                                                    *)
+(* ## Domination notations                                                    *)
+(* ```                                                                        *)
 (*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
 (*                  bounded_near f F == f is bounded near F                   *)
 (*            [bounded f x | x in A] == f is bounded on A, ie F := globally A *)
@@ -93,22 +103,24 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                           Rhull A == the real interval hull of a set A     *)
 (*                         shift x y == y + x                                 *)
 (*                          center c := shift (- c)                           *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * Complete normed modules :                                                *)
+(* ## Complete normed modules                                                 *)
+(* ```                                                                        *)
 (*        completeNormedModType K == interface type for a complete normed     *)
 (*                                   module structure over a realFieldType    *)
 (*                                   K.                                       *)
 (* [completeNormedModType K of T] == clone of a canonical complete normed     *)
 (*                                   module structure over K on T.            *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * Filters :                                                                *)
+(* ## Filters                                                                 *)
+(* ```                                                                        *)
 (*          at_left x, at_right x == filters on real numbers for predicates   *)
 (*                                   s.t. nbhs holds on the left/right of x   *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* --> We used these definitions to prove the intermediate value theorem and  *)
-(*     the Heine-Borel theorem, which states that the compact sets of R^n are *)
-(*     the closed and bounded sets.                                           *)
-(*                                                                            *)
+(* ```                                                                        *)
 (*        cpoint A == the center of the set A if it is an open ball           *)
 (*        radius A == the radius of the set A if it is an open ball           *)
 (*                    Radius A has type {nonneg R} with R a numDomainType.    *)
@@ -117,6 +129,7 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                    if A is an open ball and set0 o.w.                      *)
 (*   vitali_collection_partition B V r n == subset of indices of V such the   *)
 (*                    the ball B i has a radius between r/2^n+1 and r/2^n     *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -482,8 +495,6 @@ Qed.
 
 #[global] Hint Extern 0 (ProperFilter _^') =>
   (apply: Proper_dnbhs_numFieldType) : typeclass_instances.
-
-(** * Some Topology on extended real numbers *)
 
 Definition pinfty_nbhs (R : numFieldType) : set (set R) :=
   fun P => exists M, M \is Num.real /\ forall x, M < x -> P x.
@@ -902,7 +913,7 @@ Lemma cvgenyP {R : realType} {T} {F : set (set T)} {FF : Filter F} (f : T -> nat
    (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
 Proof. by rewrite cvgeryP cvgrnyP. Qed.
 
-(** ** Modules with a norm *)
+(** Modules with a norm *)
 
 Module NormedModule.
 
@@ -1977,7 +1988,7 @@ Section open_closed_sets.
          in a numDomainType *)
 Variable R : realFieldType.
 
-(** Some open sets of [R] *)
+(** Some open sets of R *)
 Lemma open_lt (y : R) : open [set x : R| x < y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => yDx_gt0. exists (y - x) => // z.
@@ -2012,10 +2023,9 @@ move: a b => [[]a|[]] [[]b|[]]// _ _.
 - by rewrite (_ : mkset _ = setT); [exact: openT | rewrite predeqE].
 Qed.
 
-(** Some closed sets of [R] *)
+(** Some closed sets of R *)
 (* TODO: we can probably extend these results to numFieldType
    by adding a precondition that y \is Num.real *)
-
 Lemma closed_le (y : R) : closed [set x : R | x <= y].
 Proof.
 rewrite (_ : mkset _ = ~` [set x | x > y]); first exact: open_closedC.
@@ -2938,8 +2948,7 @@ Proof. by move=> cf /cvg_eq->// e; rewrite subrr normr0. Qed.
   note="simply use the fact that `(x --> l) -> (x = l)`")]
 Notation continuous_cvg_dist := __deprecated__continuous_cvg_dist (only parsing).
 
-(** ** Matrices *)
-
+(** Matrices: *)
 Section mx_norm.
 Variables (K : numDomainType) (m n : nat).
 Implicit Types x y : 'M[K]_(m, n).
@@ -3059,8 +3068,7 @@ Canonical matrix_normedModType :=
 
 End matrix_NormedModule.
 
-(** ** Pairs *)
-
+(** Pairs: *)
 Section prod_PseudoMetricNormedZmodule.
 Context {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
 
@@ -3151,8 +3159,8 @@ Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
 note="use `fcvgr2dist_ltP` or a variant instead")]
 Notation cvg_dist2P := fcvgr2dist_ltP (only parsing).
 
-(** Normed vector spaces have some continuous functions *)
-(** that are in fact continuous on pseudoMetricNormedZmodType *)
+(** Normed vector spaces have some continuous functions that are in fact
+continuous on pseudoMetricNormedZmodType *)
 Section NVS_continuity_pseudoMetricNormedZmodType.
 Context {K : numFieldType} {V : pseudoMetricNormedZmodType K}.
 
@@ -4832,9 +4840,7 @@ End CompleteNormedModule.
 
 Export CompleteNormedModule.Exports.
 
-(** * Extended Types *)
-
-(** * The topology on real numbers *)
+(** The topology on real numbers *)
 
 Lemma R_complete (R : realType) (F : set (set R)) : ProperFilter F -> cauchy F -> cvg F.
 Proof.
@@ -5569,7 +5575,7 @@ End interval_realType.
 Section segment.
 Variable R : realType.
 
-(** properties of segments in [R] *)
+(** properties of segments in R *)
 
 Lemma segment_connected (a b : R) : connected `[a, b].
 Proof. exact/connected_intervalP/interval_is_interval. Qed.
@@ -5650,7 +5656,7 @@ apply/connected_intervalP/connected_continuous_connected => //.
 exact: segment_connected.
 Qed.
 
-(** Local properties in [R] *)
+(* Local properties in R *)
 
 (* Topology on [R]² *)
 
@@ -5893,8 +5899,7 @@ have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v x.1 x.2| | x : 'I_1 * 'I_n.+1].
 by rewrite [leRHS]/normr /= mx_normrE; apply/bigmax_geP; right => /=; exists j.
 Qed.
 
-
-(** * Some limits on real functions *)
+(** Some limits on real functions *)
 
 Section Shift.
 

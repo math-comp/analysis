@@ -3,8 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 
-(******************************************************************************)
-(*                              Cardinality                                   *)
+(***md*************************************************************************)
+(* # Cardinality                                                              *)
 (*                                                                            *)
 (* This file provides an account of cardinality properties of classical sets. *)
 (* This includes standard results of set theory such as the Pigeon Hole       *)
@@ -16,6 +16,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 (* only relations A #<= B and A #= B to compare the cardinals of two sets     *)
 (* (on two possibly different types).                                         *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*           A #<= B == the cardinal of A is smaller or equal to the one of B *)
 (*           A #>= B := B #<= A                                               *)
 (*            A #= B == the cardinal of A is equal to the cardinal of B       *)
@@ -32,6 +33,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 (*              A.`1 := [fset x.1 | x in A]                                   *)
 (*              A.`2 := [fset x.2 | x in A]                                   *)
 (* {fimfun aT >-> T} == type of functions with a finite image                 *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
