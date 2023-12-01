@@ -52,6 +52,8 @@
   + lemmas `HL_maximal_ge0`, `HL_maximalT_ge0`,
     `lower_semicontinuous_HL_maximal`, `measurable_HL_maximal`,
     `maximal_inequality`
+- in file `lebesgue_integral.v`
+  + add lemmas `ae_eqS`, `measure_dominates_ae_eq`.
 
 ### Changed
 
