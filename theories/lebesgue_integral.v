@@ -3488,6 +3488,25 @@ Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
 End ae_eq.
 
+Section ae_eq_lemmas.
+Context d (T : measurableType d) (R : realType).
+
+Lemma ae_eqS (mu : {measure set T -> \bar R}) A B f g :
+  B `<=` A -> ae_eq mu A f g ->  ae_eq mu B f g.
+Proof.
+move=> BA.
+case => N [mN N0 fg]; exists N; split => //.
+by apply: subset_trans fg; apply: subsetC => z /= /[swap] /BA ? ->//.
+Qed.
+
+Lemma measure_dominates_ae_eq
+  (mu : {measure set T -> \bar R}) (nu : {measure set T -> \bar R})
+  (f g : T -> \bar R) E : measurable E ->
+    nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
+Proof. by move=> mE munu [A [mA A0 EA]]; exists A; split => //; exact: munu. Qed.
+
+End ae_eq_lemmas.
+
 Section ae_eq_integral.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
