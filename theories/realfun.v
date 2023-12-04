@@ -1518,3 +1518,206 @@ End is_derive_inverse.
 
 #[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (eapply is_deriveV; first by []) : typeclass_instances.
+  
+Section bounded_variation.
+
+Context {R : realType}.
+
+Fixpoint partition (a b : R) l := 
+  match l with 
+  | nil => False
+  | p :: nil => p = a /\ p = b
+  | p :: ((q :: l) as rest) => p = a /\ p <= q /\ partition q b rest
+  end.
+
+Lemma partition_head (a b x : R) l : partition a b (x :: l) -> a = x.
+Proof. by case: l => [[]|? ? [->]]. Qed.
+
+Lemma partitionrr (a b : R) l : partition a b (a :: a :: l) -> partition a b (a :: l).
+Proof. by elim: l a => [ ? [_ [//]]| ?] l IH a /= [_ [_ ]]. Qed.
+
+Lemma partition_cons (a b : R) l : partition a b l -> partition a b (a :: l).
+Proof. by case: l => //= ? [[-> -> //]|] ? ? [-> [? ?]]. Qed.
+
+Lemma partition_le (a b : R) l : partition a b l -> a <= b.
+Proof. 
+by elim: l a => //= a [_ ? [->->] //| ] x l IH ? [<- [ + /IH]]; exact: le_trans.
+Qed.
+
+Lemma partition_eq a l x : partition a a l -> x \in l -> x = a.
+Proof.
+elim: l x a => //= x [_ ? ? [-> _ /[!inE]/eqP//]|] a l IH ? ? [<- []] xa.
+move=> /[dup]/partition_le ax; have -> : x = a by apply/le_anti/andP; split.
+by move/IH => P; rewrite in_cons => /orP [/eqP //|]; apply: P.
+Qed.
+
+Lemma partition2 a b : a <= b -> partition a b (a :: b :: nil).
+Proof. by split; rewrite //= andbT. Qed.
+
+Lemma partition_concat a b c l1 l2: 
+  partition a b l1 -> 
+  partition b c l2 -> 
+  partition a c (l1 ++ l2). 
+Proof.
+elim: l1 a b l2 => // x [_ ? ? ? [-> ->]|]; first exact: partition_cons.
+move=> a l1 IH p b l2 pbxa1 pb2.
+rewrite ?cat_cons -(partition_head pbxa1); split => //.
+split; first by case: pbxa1 => -> [].
+apply: IH; last exact: pb2. 
+by case: l1 pbxa1=> [[-> [_ [_ -> //]]]|] ? ? /= [_ [_]].
+Qed.
+
+Lemma partition_concat_tl a b c l1 l2: 
+  partition a b l1 -> 
+  partition b c l2 -> 
+  partition a c (l1 ++ List.tl l2). 
+Proof.
+elim: l1 a b l2 => // x [? ? ? l2 [-> ->]|]. 
+  by case: l2 => //= ? [[-> -> //]| ? ? [-> [? ?]]]; split => //.
+move=> a l1 IH p b l2 pbxa1 pb2.
+rewrite ?cat_cons -(partition_head pbxa1); split => //.
+split; first by case: pbxa1 => -> [].
+apply: IH; last exact: pb2. 
+by case: l1 pbxa1=> [[-> [_ [_ -> //]]]|] ? ? /= [_ [_]].
+Qed.
+
+Definition pvar part (f : R -> R)  := 
+   \sum_(xy <- zip part (List.tl part)) `|f xy.2 - f xy.1|.
+
+Definition variations a b f := [set pvar l f | l in partition a b].
+Definition total_variation a b (f : R -> R) := ereal_sup [set x%:E | x in (variations a b f)].
+Local Notation TV := total_variation.
+
+Lemma variations_n0 a b f : a <= b -> variations a b f !=set0.
+Proof.
+move=> ?; exists (pvar (a :: b :: nil) f), (a::b::nil) => //.
+Qed.
+
+Lemma partition_TV f a b l : 
+  partition a b l -> 
+  a <= b ->
+  ((pvar l f)%:E <= TV a b f)%E.
+Proof.
+move=> pl alb; rewrite /total_variation/sup/supremum. 
+rewrite /ereal_sup/supremum.
+case E: (_ == _).
+  have /set0P := (@variations_n0 _ _ f alb); move/eqP/image_set0_set0:E ->. 
+  by move/eqP.
+rewrite /has_ubound; case: xgetP.
+  move=> w wE [] /(_ (pvar l f)%:E) + _; apply; exists (pvar l f) => //.
+  by exists l.
+have [w Qw] := @ereal_supremums_neq0 R [set x%:E | x in variations a b f].
+by move => /(_ w).
+Qed.
+
+Lemma partition_TV2 a b f: a <= b -> (`|f b - f a|%:E <= TV a b f)%E.
+Proof.
+move=> ?; suff -> : `|f b - f a| = pvar (a :: b :: nil) f.
+  by apply: partition_TV => //; apply: partition2.
+by rewrite /pvar /= big_seq1.
+Qed.
+
+Lemma total_variation_ge0 a b f: a <= b -> (0 <= TV a b f)%E.
+Proof. by move=> ab; apply: le_trans; last exact: partition_TV2. Qed.
+
+Definition bounded_variation a b (f : R -> R) := 
+  has_ubound (variations a b f).
+
+Lemma hasNrub_ereal_sup (A : set R) : ~ has_ubound A ->
+  A !=set0 -> ereal_sup [set x%:E | x in A] = +oo%E.
+Proof.
+move=> hasNubA /[dup] [][a Aa] A0.
+apply/eqP; rewrite eq_le leey /= leNgt; apply: contra_notN hasNubA => Aoo.
+exists (sup A); apply: sup_ub.
+exists (fine (ereal_sup [set x%:E | x in A])) => w Aw.
+have -> : w = fine (ereal_sup [set x%:E | x in [set w]]).
+  by rewrite ereal_sup_EFin /= ?sup1 //; exists w => // ? ->.
+rewrite fine_le //.
+  by rewrite ereal_sup_EFin //=; exists w => // ? ->.
+  apply/fin_real/andP; split => //.
+  rewrite ltNge leeNy_eq; apply/negP => /eqP/ereal_sup_ninfty/(_ (w%:E)).
+  apply/not_implyP; split => //; by exists w. 
+by apply: le_ereal_sup => ? [? -> <-]; exists w.
+Qed.
+
+Lemma bounded_variationP a b f : a <= b ->
+  bounded_variation a b f <-> TV a b f \is a fin_num.
+Proof.
+split; first by move=> ?; rewrite /TV ereal_sup_EFin //; exact: variations_n0.
+rewrite ge0_fin_numE ?total_variation_ge0 //; apply: contraPP => Nbdf.
+suff -> : (TV a b f = +oo)%E by [].
+apply: hasNrub_ereal_sup => //; exact: variations_n0.
+Qed.
+
+Lemma total_variation_neg a b f : TV a b f = TV a b (\- f).
+Proof.
+rewrite /TV; suff -> : variations a b f = variations a b (\- f) by [].
+rewrite /variations; suff -> : pvar^~ f = pvar ^~ (\- f) by [].
+rewrite /pvar /= funeqE => x /=. 
+by under eq_bigr => i _ do rewrite -normrN -mulN1r mulrBr ?mulN1r.
+Qed.
+
+Lemma bounded_variation_le a b p q f : 
+  bounded_variation a b f -> p <= q -> a <= p -> q <= b -> 
+  bounded_variation p q f.
+Proof.
+move=> + pq ap qb; have ab : a <= b by exact/(le_trans ap)/(le_trans pq).
+case=> M ubdM; exists M => ? [l pql <-]. 
+apply: (@le_trans _ _ (pvar (a :: l ++ [:: b]) f)).
+  rewrite /pvar /=; case: l pql => //. 
+  move=> ? l /[dup]/partition_head <- pql /=.
+  rewrite /= ?big_cons /=; apply ler_paddl => //. 
+  elim: l p a pq {ab ubdM} ap pql => //.
+    move=> ?????; rewrite /= ?big_cons; apply ler_paddl => //.
+  move=> w l IH p a pq ap pql. 
+  rewrite /= ?big_cons; rewrite ler_add //. 
+  move: pql => [_ [?] pql]. apply: IH => //.
+  exact: (@partition_le w q (w::l)).
+apply: ubdM; exists (a :: l ++ [::b]) => //.
+rewrite -cat_cons (_ : [:: b] = List.tl (q :: b ::nil)); last by [].
+apply: (@partition_concat_tl _ q) => //.
+case: l pql => // ? ? /[dup] /partition_head <- Q /=; split => //. 
+Qed.
+
+Lemma total_variation_concat a b c f : 
+  a <= b -> b <= c -> (TV a b f + TV b c f <= TV a c f)%E.
+Proof.
+move=> ab bc; have ac : a <= c by exact: (le_trans ab).
+case : (pselect (bounded_variation a c f)); first last.
+  move=> nbdac; suff /eqP -> : TV a c f == +oo%E by rewrite leey.
+  have: (-oo < TV a c f)%E by apply: (lt_le_trans _ (total_variation_ge0 f ac)).
+  by rewrite ltNye_eq => /orP [] => // /bounded_variationP => /(_ ac).
+move=> bdAC.
+have bdf1 : bounded_variation a b f by exact: (bounded_variation_le bdAC).
+have bdf2 : bounded_variation b c f by exact: (bounded_variation_le bdAC).
+rewrite /total_variation ?ereal_sup_EFin => //; try exact: variations_n0.
+rewrite -EFinD -sup_sumE /has_sup; try (by split => //; exact: variations_n0).
+apply: le_sup.
+- move=> ? [? [l1 pabl2 <-]] [? [l2 pbcl2 <-] <-]; exists (pvar (l1 ++ List.tl l2) f).
+  split; first by exists (l1 ++ List.tl l2)=> //=; apply: (partition_concat_tl pabl2).
+  rewrite /pvar -big_cat /=.
+  rewrite (_ : (zip l1 (List.tl l1) ++ zip l2 (List.tl l2)) = zip (l1 ++ List.tl l2) (List.tl (l1 ++ List.tl l2))) //.
+  elim: l1 a {bdf1 bdf2 bdAC ac ab} pabl2 pbcl2 => // x [/= _ ? [-> ->]|].
+    by move=> bc2; congr (_ _ _); case: l2 bc2 => // ? ? /partition_head ->.
+  move=> z ? IH ? pabl1 pbcl2 /=; congr (_ _); apply: (IH z) => //.
+  by case: pabl1 => /= _ [_].
+- have [x0 vx0] := (variations_n0 f ab).
+  have [y0 vy0] := (variations_n0 f bc).
+  exists (x0 + y0); exists x0 => //; exists y0 => //.
+- split => //; exact: variations_n0.
+Qed.
+
+Definition neg_tv a f (x:R) := ((TV a x f - (f x)%:E)*2^-1%:E)%E.
+
+Lemma neg_TV_increasing a b (f : R -> R) :
+  {in `[a,b] &, {homo (neg_tv a f) : x y / x <= y >-> (x <= y)%E}}.
+Proof.
+move=> x y xab yab xy; have ax : a <= x.
+  by move: xab; rewrite in_itv //= => /andP [].
+rewrite /neg_tv lee_pmul2r // lee_subr_addl // addeCA -EFinB.
+apply: le_trans; last exact: (@total_variation_concat _ x).
+apply: lee_add => //; apply: le_trans; last exact: partition_TV2.
+by rewrite lee_fin ler_norm.
+Qed.
+
+End bounded_variation.
