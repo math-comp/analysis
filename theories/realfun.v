@@ -1530,6 +1530,8 @@ Fixpoint partition (a b : R) l :=
   | p :: ((q :: l) as rest) => p = a /\ p <= q /\ partition q b rest
   end.
 
+Arguments partition _ _ : simpl never.
+
 Lemma partition_head (a b x : R) l : partition a b (x :: l) -> a = x.
 Proof. by case: l => [[]|? ? [->]]. Qed.
 
@@ -1542,6 +1544,14 @@ Lemma partition_tail (a b x y : R) l :
   partition a b (x :: y :: l) -> partition y b (y :: l).
 Proof. by case=> [-> [//]]. Qed.
 
+Lemma partition_consP (a b x y : R) l : partition a b (x :: y :: l) <-> 
+  [/\ a = x, a <= y, y <= b & partition y b (y :: l)].
+Proof. 
+split; last by case => ->.
+move=> /[dup]; case => -> [-> ?] /partition_tail/partition_le ->. 
+by split.
+Qed.
+
 
 Lemma partitionrr (a b : R) l : partition a b (a :: a :: l) -> partition a b (a :: l).
 Proof. by elim: l a => [ ? [_ [//]]| ?] l IH a /= [_ [_ ]]. Qed.
@@ -1551,8 +1561,8 @@ Proof. by case: l => //= ? [[-> -> //]|] ? ? [-> [? ?]]. Qed.
 
 Lemma partition_eq a l x : partition a a l -> x \in l -> x = a.
 Proof.
-elim: l x a => //= x [_ ? ? [-> _ /[!inE]/eqP//]|] a l IH ? ? [<- []] xa.
-move=> /[dup]/partition_le ax; have -> : x = a by apply/le_anti/andP; split.
+elim: l x a => //= x [_ ? ? [-> _ /[!inE]/eqP//]|] a l IH ? ?. 
+move=> /partition_consP[-> ? ax]; have -> : x = a by apply/le_anti/andP; split.
 by move/IH => P; rewrite in_cons => /orP [/eqP //|]; apply: P.
 Qed.
 
@@ -1590,7 +1600,10 @@ Definition pvar part (f : R -> R)  :=
    \sum_(xy <- zip part (List.tl part)) `|f xy.2 - f xy.1|.
 
 Definition variations a b f := [set pvar l f | l in partition a b].
-Definition total_variation a b (f : R -> R) := ereal_sup [set x%:E | x in (variations a b f)].
+
+Definition total_variation a b (f : R -> R) :=
+  ereal_sup [set x%:E | x in (variations a b f)].
+
 Local Notation TV := total_variation.
 
 Lemma variations_n0 a b f : a <= b -> variations a b f !=set0.
@@ -1691,7 +1704,7 @@ apply: (@partition_concat_tl _ q) => //.
 case: l pql => // ? ? /[dup] /partition_head <- Q /=; split => //. 
 Qed.
 
-Lemma total_variation_concat a b c f : 
+Let total_variation_concat_le a b c f : 
   a <= b -> b <= c -> (TV a b f + TV b c f <= TV a c f)%E.
 Proof.
 move=> ab bc; have ac : a <= c by exact: (le_trans ab).
@@ -1718,6 +1731,80 @@ apply: le_sup.
   exists (x0 + y0); exists x0 => //; exists y0 => //.
 - split => //; exact: variations_n0.
 Qed.
+
+Fixpoint part_split x (l : seq R) :=
+  match l with 
+  | [::] => ([::x], [::x]) 
+  | y :: tl => if x < y then ([:: x], x :: y :: tl) else 
+      let xy := part_split x tl
+      in (y :: xy.1, xy.2 )
+  end.
+
+Lemma part_splitl a b x l :
+  a <= x -> x <= b -> partition a b l ->
+  partition a x (part_split x l).1.
+Proof.
+elim: l a => // a [/= _ ? ax bx|].
+  move: ax => /[swap]; move: bx => /[swap] [[-> ->]] ? ?.
+  have -> : x = b by apply/ le_anti/andP; split.
+  by rewrite lt_irreflexive /=; repeat split.
+move=> w l IH ? + xb /partition_consP => /[swap] [[->]] aw wb wbl ax /=.
+rewrite ltNge ax /= /=; case Nxw: (x < w) => //=. 
+have wx : w <= x by rewrite leNgt Nxw.
+apply/partition_consP; split => //.
+by have /= := IH w wx xb wbl; rewrite Nxw.
+Qed.
+
+Lemma part_splitr a b x l :
+  a <= x -> x <= b -> partition a b l ->
+  partition x b (part_split x l).2.
+Proof.
+elim: l a => // a [/= _ ? ax bx|].
+  case=> -> ->; move: (bx); rewrite le_eqVlt => /orP.
+  by case=> [/eqP ->|->]; rewrite ?lt_irreflexive //=.
+move=> w l IH ? + xb /partition_consP => /[swap] [[->]] aw wb wbl ax /=.
+rewrite ltNge ax /= /=; case Nxw: (x < w) => //=.
+  by apply/partition_consP; split => //; apply: ltW.
+have wx : w <= x by rewrite leNgt Nxw.
+by have /= := IH w wx xb wbl; rewrite Nxw.
+Qed.
+
+Lemma part_split_pvar a b x l f : 
+  partition a b l -> 
+  a <= x -> x <= b ->
+  pvar l f <= pvar (part_split x l).1 f + pvar (part_split x l).2 f.
+Proof.
+move=> + + xb; elim: l a => // a [_ w [<- -> bx]|].
+  by rewrite /pvar [x in x <= _]/= big_nil addr_ge0 //; apply: sumr_ge0 => ?.
+move=> w l IH ? /partition_consP [-> aw wb pwbl ax].
+rewrite /= ?[x < a]ltNge ?ax /=; case Nxw: (x < w) => /=.
+  rewrite /pvar /= ?big_cons /= ?big_nil addr0 addrA.
+  by rewrite ler_add2r [x in _ <= x]addrC ler_dist_add.
+rewrite /pvar /= ?big_cons /= -?addrA ler_add2l. 
+have wx : w <= x by rewrite leNgt Nxw.
+by have /= := IH w pwbl wx; rewrite Nxw /=. 
+Qed.
+
+Let total_variation_concat_ge a b c f : 
+  a <= b -> b <= c -> (TV a b f + TV b c f >= TV a c f)%E.
+Proof.
+move=> ab bc; have ac : a <= c by exact: (le_trans ab).
+case : (pselect (bounded_variation a b f)); first last.
+  move=> nbdac; have /eqP -> : TV a b f == +oo%E. 
+    have: (-oo < TV a b f)%E by apply: (lt_le_trans _ (total_variation_ge0 f ab)).
+    by rewrite ltNye_eq => /orP [] => // /bounded_variationP => /(_ ab).
+  by rewrite addye ?leey // -ltNye (@lt_le_trans _ _ 0)%E // ?total_variation_ge0 //.
+case : (pselect (bounded_variation b c f)); first last.
+  move=> nbdac; have /eqP -> : TV b c f == +oo%E. 
+    have: (-oo < TV b c f)%E by apply: (lt_le_trans _ (total_variation_ge0 f bc)).
+    by rewrite ltNye_eq => /orP [] => // /bounded_variationP => /(_ bc).
+  by rewrite addey ?leey // -ltNye (@lt_le_trans _ _ 0)%E // ?total_variation_ge0 //.
+move=> bdAB bdAC.
+rewrite /total_variation ?ereal_sup_EFin => //; try exact: variations_n0.
+rewrite -EFinD -sup_sumE /has_sup; try (by split => //; exact: variations_n0).
+apply: le_sup.
+- move=> ? [l pacl <-].
+  rewrite /down /=.
 
 Definition neg_tv a f (x:R) := ((TV a x f - (f x)%:E)*2^-1%:E)%E.
 
@@ -1791,3 +1878,15 @@ Lemma neg_TV_bounded_variation a b f :
 Proof.
 by move=> ?; apply increasing_bounded_variation; apply: neg_TV_increasing_fin.
 Qed.
+
+Lemma neg_TV_continuous a b (f : R -> R) :
+  {within `[a,b], continuous f} ->
+  {within `[a,b], continuous (TV a ^~ f)}.
+Proof.
+move=> ctsf.
+
+Qed.
+
+
+
+
