@@ -846,16 +846,14 @@ Context d1 d2 d3 (X : measurableType d1) (Y : measurableType d2)
 Variable l : R.-ker X ~> Y.
 Variable k : R.-ker [the measurableType _ of X * Y] ~> Z.
 
-Local Notation "l \; k" := (kcomp l k).
-
-Let kcomp0 x : (l \; k) x set0 = 0.
+Let kcomp0 x : kcomp l k x set0 = 0.
 Proof.
 by rewrite /kcomp (eq_integral (cst 0)) ?integral0// => y _; rewrite measure0.
 Qed.
 
-Let kcomp_ge0 x U : 0 <= (l \; k) x U. Proof. exact: integral_ge0. Qed.
+Let kcomp_ge0 x U : 0 <= kcomp l k x U. Proof. exact: integral_ge0. Qed.
 
-Let kcomp_sigma_additive x : semi_sigma_additive ((l \; k) x).
+Let kcomp_sigma_additive x : semi_sigma_additive (kcomp l k x).
 Proof.
 move=> U mU tU mUU; rewrite [X in _ --> X](_ : _ =
   \int[l x]_y (\sum_(n <oo) k (x, y) (U n))); last first.
@@ -868,10 +866,10 @@ exact: measurableT_comp (measurable_kernel k _ (mU n)) _.
 Qed.
 
 HB.instance Definition _ x := isMeasure.Build _ _ R
-  ((l \; k) x) (kcomp0 x) (kcomp_ge0 x) (@kcomp_sigma_additive x).
+  (kcomp l k x) (kcomp0 x) (kcomp_ge0 x) (@kcomp_sigma_additive x).
 
 Definition mkcomp : X -> {measure set Z -> \bar R} := fun x =>
-  [the measure _ _ of (l \; k) x].
+  [the measure _ _ of kcomp l k x].
 
 End kcomp_is_measure.
 
@@ -902,7 +900,7 @@ Context d d' d3 (X : measurableType d) (Y : measurableType d')
 Variable l : R.-fker X ~> Y.
 Variable k : R.-fker [the measurableType _ of X * Y] ~> Z.
 
-Let mkcomp_finite : measure_fam_uub (l \; k).
+Let mkcomp_finite : measure_fam_uub (kcomp l k).
 Proof.
 have /measure_fam_uubP[r hr] := measure_uub k.
 have /measure_fam_uubP[s hs] := measure_uub l.
@@ -1047,14 +1045,14 @@ Variables (l : R.-sfker X ~> Y)
           (k : R.-sfker [the measurableType _ of X * Y] ~> Z).
 
 Let integral_kcomp_indic x E (mE : measurable E) :
-  \int[(l \; k) x]_z (\1_E z)%:E = \int[l x]_y (\int[k (x, y)]_z (\1_E z)%:E).
+  \int[kcomp l k x]_z (\1_E z)%:E = \int[l x]_y (\int[k (x, y)]_z (\1_E z)%:E).
 Proof.
 rewrite integral_indic//= /kcomp.
 by apply: eq_integral => y _; rewrite integral_indic.
 Qed.
 
 Let integral_kcomp_nnsfun x (f : {nnsfun Z >-> R}) :
-  \int[(l \; k) x]_z (f z)%:E = \int[l x]_y (\int[k (x, y)]_z (f z)%:E).
+  \int[kcomp l k x]_z (f z)%:E = \int[l x]_y (\int[k (x, y)]_z (f z)%:E).
 Proof.
 under [in LHS]eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite ge0_integral_fsum//; last 2 first.
@@ -1099,11 +1097,11 @@ by rewrite integral0_eq// => y _; rewrite preimage_nnfun0// measure0 mule0.
 Qed.
 
 Lemma integral_kcomp x f : (forall z, 0 <= f z) -> measurable_fun [set: Z] f ->
-  \int[(l \; k) x]_z f z = \int[l x]_y (\int[k (x, y)]_z f z).
+  \int[kcomp l k x]_z f z = \int[l x]_y (\int[k (x, y)]_z f z).
 Proof.
 move=> f0 mf.
 have [f_ [ndf_ f_f]] := approximation measurableT mf (fun z _ => f0 z).
-transitivity (\int[(l \; k) x]_z (lim ((f_ n z)%:E @[n --> \oo]))).
+transitivity (\int[kcomp l k x]_z (lim ((f_ n z)%:E @[n --> \oo]))).
   by apply/eq_integral => z _; apply/esym/cvg_lim => //=; exact: f_f.
 rewrite monotone_convergence//; last 3 first.
   by move=> n; exact/EFin_measurable_fun.
