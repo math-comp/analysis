@@ -1533,16 +1533,21 @@ Fixpoint partition (a b : R) l :=
 Lemma partition_head (a b x : R) l : partition a b (x :: l) -> a = x.
 Proof. by case: l => [[]|? ? [->]]. Qed.
 
+Lemma partition_le (a b : R) l : partition a b l -> a <= b.
+Proof. 
+by elim: l a => //= a [_ ? [->->] //| ] x l IH ? [<- [ + /IH]]; exact: le_trans.
+Qed.
+
+Lemma partition_tail (a b x y : R) l : 
+  partition a b (x :: y :: l) -> partition y b (y :: l).
+Proof. by case=> [-> [//]]. Qed.
+
+
 Lemma partitionrr (a b : R) l : partition a b (a :: a :: l) -> partition a b (a :: l).
 Proof. by elim: l a => [ ? [_ [//]]| ?] l IH a /= [_ [_ ]]. Qed.
 
 Lemma partition_cons (a b : R) l : partition a b l -> partition a b (a :: l).
 Proof. by case: l => //= ? [[-> -> //]|] ? ? [-> [? ?]]. Qed.
-
-Lemma partition_le (a b : R) l : partition a b l -> a <= b.
-Proof. 
-by elim: l a => //= a [_ ? [->->] //| ] x l IH ? [<- [ + /IH]]; exact: le_trans.
-Qed.
 
 Lemma partition_eq a l x : partition a a l -> x \in l -> x = a.
 Proof.
@@ -1649,13 +1654,20 @@ suff -> : (TV a b f = +oo)%E by [].
 apply: hasNrub_ereal_sup => //; exact: variations_n0.
 Qed.
 
-Lemma total_variation_neg a b f : TV a b f = TV a b (\- f).
+Lemma variationN a b f : 
+  variations a b (\- f) = variations a b f.
 Proof.
-rewrite /TV; suff -> : variations a b f = variations a b (\- f) by [].
 rewrite /variations; suff -> : pvar^~ f = pvar ^~ (\- f) by [].
 rewrite /pvar /= funeqE => x /=. 
 by under eq_bigr => i _ do rewrite -normrN -mulN1r mulrBr ?mulN1r.
 Qed.
+
+Lemma total_variationN a b f : TV a b (\- f) = TV a b f.
+Proof. by rewrite /TV; rewrite variationN. Qed.
+
+Lemma bounded_variationN a b f : 
+  bounded_variation a b f -> bounded_variation a b (\- f).
+Proof. by rewrite /bounded_variation variationN. Qed.
 
 Lemma bounded_variation_le a b p q f : 
   bounded_variation a b f -> p <= q -> a <= p -> q <= b -> 
@@ -1720,4 +1732,62 @@ apply: lee_add => //; apply: le_trans; last exact: partition_TV2.
 by rewrite lee_fin ler_norm.
 Qed.
 
-End bounded_variation.
+Lemma total_variation_jordan_decompE a b f : 
+  bounded_variation a b f ->
+  {in `[a,b], f =1 (fine \o neg_tv a (\- f)) \- (fine \o neg_tv a f)}.
+Proof.
+move=> bdabf x; rewrite in_itv /= => /andP [ax xb].
+have ffin: TV a x f \is a fin_num.
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bdabf).
+have Nffin : TV a x (\- f) \is a fin_num.
+  apply/bounded_variationP => //; apply/bounded_variationN.
+  exact: (bounded_variation_le bdabf).
+rewrite /neg_tv /= total_variationN -fineB -?muleBl // ?fineM //; first last.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
+- by apply: fin_num_adde_defl; rewrite fin_numN fin_numD; apply/andP; split.
+- by rewrite fin_numB ?fin_numD ?ffin; apply/andP; split.
+rewrite addeAC oppeD //= ?fin_num_adde_defl //.
+by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -splitr.
+Qed.
+
+Lemma neg_TV_increasing_fin a b (f : R -> R) :
+  bounded_variation a b f ->
+  {in `[a,b] &, {homo (fine \o neg_tv a f) : x y / x <= y}}.
+Proof.
+move=> bdv p q pab qab pq /=.
+move: (pab) (qab); rewrite ?in_itv /= => /andP [? ?] /andP [? ?].
+apply: fine_le; rewrite /neg_tv ?fin_numM // ?fin_numB /=.
+- apply/andP; split => //; apply/bounded_variationP => //.
+  exact: (bounded_variation_le bdv).
+- apply/andP; split => //; apply/bounded_variationP => //.
+  exact: (bounded_variation_le bdv).
+by apply: (neg_TV_increasing _ pab).
+Qed.
+
+Lemma increasing_bounded_variation a b (f : R -> R) :
+  {in `[a,b] &, {homo f : x y / x <= y}} ->
+  bounded_variation a b f.
+Proof.
+move=> incf; exists (f b - f a) => ? [l pabl <-]; rewrite le_eqVlt.
+apply/orP; left; apply/eqP.
+rewrite /pvar; elim: l a incf pabl => // ? [].
+  by move=> _ ? _ [-> ->]; rewrite /= big_nil subrr.
+move=> w l IH a fi /[dup]/partition_le ab /[dup]/partition_tail/[dup] ?.
+move=> /partition_le wb [] => [-> [aw _]]; rewrite /= big_cons /=.
+rewrite (IH w) //; first last.
+  move=> p q; rewrite in_itv /= => /andP [? ?] /andP [? ?] pq.
+  by apply: fi; rewrite //in_itv; apply/andP; split => //; exact: (le_trans aw).
+have -> : `|f w - f a| = f w - f a.
+  rewrite ger0_norm // subr_ge0; apply: fi => //; rewrite // in_itv /=. 
+    by apply/andP; split => //.
+  by apply/andP; split => //.
+by rewrite addrCA; congr (_ _); rewrite addrC addrA [-_ + _]addrC subrr add0r.
+Qed.
+
+Lemma neg_TV_bounded_variation a b f :
+  bounded_variation a b f -> 
+  bounded_variation a b (fine \o neg_tv a f).
+Proof.
+by move=> ?; apply increasing_bounded_variation; apply: neg_TV_increasing_fin.
+Qed.
