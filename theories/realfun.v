@@ -1800,11 +1800,29 @@ case : (pselect (bounded_variation b c f)); first last.
     by rewrite ltNye_eq => /orP [] => // /bounded_variationP => /(_ bc).
   by rewrite addey ?leey // -ltNye (@lt_le_trans _ _ 0)%E // ?total_variation_ge0 //.
 move=> bdAB bdAC.
-rewrite /total_variation ?ereal_sup_EFin => //; try exact: variations_n0.
+rewrite /total_variation [x in (x + _)%E]ereal_sup_EFin => //; try exact: variations_n0.
+rewrite [x in (_ + x)%E]ereal_sup_EFin => //; try exact: variations_n0.
 rewrite -EFinD -sup_sumE /has_sup; try (by split => //; exact: variations_n0).
-apply: le_sup.
-- move=> ? [l pacl <-].
-  rewrite /down /=.
+apply: ub_ereal_sup => ? [? [l pacl <- <-]]; rewrite lee_fin.
+apply: le_trans; first exact: (@part_split_pvar a c b).
+apply: sup_ub. 
+  case: bdAB => M ubdM; case: bdAC => N ubdN; exists (N + M).
+  move=> q [?] [i pabi <-] [? [j pbcj <-]] <-.
+  by apply: ler_add; [apply: ubdN;exists i|apply:ubdM;exists j]. 
+exists (pvar (part_split b l).1 f).
+  by exists (part_split b l).1 => //; apply: (@part_splitl a c).
+exists (pvar (part_split b l).2 f) => //.
+by exists (part_split b l).2 => //; apply: (@part_splitr a c).
+Qed.
+  
+Lemma total_variation_concatE a b c f : 
+  a <= b -> b <= c -> (TV a b f + TV b c f = TV a c f)%E.
+Proof.
+move=> ab bc; apply/le_anti/andP; split.
+  exact: total_variation_concat_le.
+exact: total_variation_concat_ge.
+Qed.
+
 
 Definition neg_tv a f (x:R) := ((TV a x f - (f x)%:E)*2^-1%:E)%E.
 
@@ -1814,7 +1832,7 @@ Proof.
 move=> x y xab yab xy; have ax : a <= x.
   by move: xab; rewrite in_itv //= => /andP [].
 rewrite /neg_tv lee_pmul2r // lee_subr_addl // addeCA -EFinB.
-apply: le_trans; last exact: (@total_variation_concat _ x).
+rewrite -[TV a y _](@total_variation_concatE _ x) //.
 apply: lee_add => //; apply: le_trans; last exact: partition_TV2.
 by rewrite lee_fin ler_norm.
 Qed.
@@ -1879,11 +1897,48 @@ Proof.
 by move=> ?; apply increasing_bounded_variation; apply: neg_TV_increasing_fin.
 Qed.
 
-Lemma neg_TV_continuous a b (f : R -> R) :
-  {within `[a,b], continuous f} ->
-  {within `[a,b], continuous (TV a ^~ f)}.
+Lemma neg_TV_continuous a b x (f : R -> R) :
+  a <= x -> x < b ->
+  {for x, continuous f} ->
+  bounded_variation a b f ->
+  (fine \o TV a ^~ f @ at_right x --> fine (TV a x f)).
 Proof.
-move=> ctsf.
+move=> ax xb ctsf bvf; have ? : a <= b by apply:ltW; apply: (le_lt_trans ax).
+  apply/cvgrPdist_lt=> _/posnumP[eps].
+have ? : Filter (nbhs x^'+) by exact: at_right_proper_filter.
+apply: filter_app (nbhs_right_ge _). 
+apply: filter_app (nbhs_right_le xb).
+have abfin : TV a b f \is a fin_num by apply/bounded_variationP.
+have [//|?] := @ub_ereal_sup_adherent R _ (eps%:num/2) _ abfin.
+case=> ? [l pxl <- <-]; rewrite -/(total_variation a b f).
+rewrite lte_subl_addr // -EFinD => tvp.
+near=> t => tb xt; have ? : a <= t by exact: (le_trans ax).
+have ? : x <= b by exact: (le_trans xt).
+rewrite -fineB; first last.
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+rewrite -(total_variation_concatE _ ax xt).
+rewrite oppeD ?fin_num_adde_defl //; first last.
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+have xtfin : TV x t f \is a fin_num.
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+rewrite addeA subee //; first last.
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+rewrite sub0e fineN normrN ger0_norm; first last.
+  rewrite fine_ge0 //; exact: total_variation_ge0.
+apply: (@lt_trans _ _ (pvar l f + eps%:num / 2)). 
+  by rewrite -lte_fin /= fineK.
+rewrite {tvp} [x in _ < x]splitr ltr_add2r; move: l pxl.
+near: t.
+
+  rewrite 
+  rewrite -[x in _ < x]fineK.
+Search fine (Order.lt).
+
+near: t.
+Search ereal_sup.
+
+
 
 Qed.
 
