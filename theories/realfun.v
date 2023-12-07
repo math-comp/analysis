@@ -1611,6 +1611,14 @@ Proof.
 move=> ?; exists (pvar (a :: b :: nil) f), (a::b::nil) => //.
 Qed.
 
+Lemma pvar_cons0 f a l : 
+  pvar (a :: a :: l) f = pvar (a :: l) f.
+Proof. by rewrite /pvar /= big_cons /= subrr normr0 add0r. Qed.
+
+Lemma pvar_consE f a b l : 
+  pvar (a :: b :: l) f = `|f b - f a| + pvar (b :: l) f.
+Proof. by rewrite /pvar /= big_cons. Qed.
+
 Lemma partition_TV f a b l : 
   partition a b l -> 
   a <= b ->
@@ -1897,51 +1905,109 @@ Proof.
 by move=> ?; apply increasing_bounded_variation; apply: neg_TV_increasing_fin.
 Qed.
 
+Fixpoint collapse_head (l : seq R) := 
+  match l with 
+  | nil => nil
+  | x :: nil => x :: nil
+  | x :: ((y :: _) as tl) => if x == y then collapse_head tl else x :: tl
+  end.
+
+Lemma collapse_head_consE x l : 
+  collapse_head (x :: x :: l) = collapse_head (x :: l).
+Proof. by rewrite /= eq_refl. Qed.
+
+Lemma collapse_head_consNE x y l : 
+  x != y -> collapse_head (x :: y :: l) = x :: y :: l.
+Proof. 
+move=> xy; case E: (x == y). 
+  by move/eqP: E xy => ->; rewrite eq_refl.
+by rewrite /= E. 
+Qed. 
+
+Lemma collapse_head_partition a b l :
+  a <= b -> partition a b l -> partition a b (collapse_head l).
+Proof.
+elim: l a => // a [//| w l IH] ? /[swap] /partition_consP [-> + wb wbl ab].
+rewrite le_eqVlt => /orP [|]. 
+  by move/eqP=> ->; rewrite collapse_head_consE; exact: IH.
+move=> aw; rewrite collapse_head_consNE => //.
+  by apply/partition_consP; split => //; exact: ltW.
+by apply/negP=> E; move /eqP: E aw => ->; rewrite lt_irreflexive.
+Qed.
+
+Lemma collapse_head_pvar l f:
+  pvar l f = pvar (collapse_head l) f.
+Proof.
+elim: l => // w [//|] y l; case E: (w == y).
+  by move/eqP: E => ->; rewrite pvar_cons0 collapse_head_consE.
+by rewrite collapse_head_consNE //; rewrite E.
+Qed.
+
+Lemma collapse_head_neq l a b tl:
+  (collapse_head l) = a :: b :: tl -> a != b.
+Proof.
+elim: l a b tl => // w [//=|x l IH] a b tl.
+case E: (w == x). 
+  move/eqP: E => ->; rewrite collapse_head_consE; apply: IH.
+rewrite collapse_head_consNE ?E //.
+by case=> <- <- _; rewrite E.
+Qed.
+
 Lemma neg_TV_continuous a b x (f : R -> R) :
   a <= x -> x < b ->
-  {for x, continuous f} ->
+  (f @ at_right x --> f x) ->
   bounded_variation a b f ->
   (fine \o TV a ^~ f @ at_right x --> fine (TV a x f)).
 Proof.
 move=> ax xb ctsf bvf; have ? : a <= b by apply:ltW; apply: (le_lt_trans ax).
-  apply/cvgrPdist_lt=> _/posnumP[eps].
+apply/cvgrPdist_lt=> _/posnumP[eps].
 have ? : Filter (nbhs x^'+) by exact: at_right_proper_filter.
-apply: filter_app (nbhs_right_ge _). 
-apply: filter_app (nbhs_right_le xb).
-have abfin : TV a b f \is a fin_num by apply/bounded_variationP.
-have [//|?] := @ub_ereal_sup_adherent R _ (eps%:num/2) _ abfin.
-case=> ? [l pxl <- <-]; rewrite -/(total_variation a b f).
-rewrite lte_subl_addr // -EFinD => tvp.
-near=> t => tb xt; have ? : a <= t by exact: (le_trans ax).
-have ? : x <= b by exact: (le_trans xt).
-rewrite -fineB; first last.
+have xbl := ltW xb.
+have xbfin : TV x b f \is a fin_num.
   by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+have [//|?] := @ub_ereal_sup_adherent R _ (eps%:num/2) _ xbfin.
+case=> ? [l + <- <-]; rewrite -/(total_variation x b f).
+rewrite collapse_head_pvar => /(collapse_head_partition xbl).
+case E : (collapse_head l) => //; move: E.
+set i := (w in _ :: w); case: i => //.
+  by move=> _ []; move: xb => /[swap] -> /[swap] ->; rewrite lt_irreflexive.
+move=> i j /collapse_head_neq /[swap] /[dup] /partition_consP [<-]; rewrite le_eqVlt.
+move=> /orP [/eqP ->|]; rewrite ?eq_refl => // xi ib pibj pxij _ tv_eps.
+apply: filter_app (nbhs_right_ge _). 
+apply: filter_app (nbhs_right_lt xi).
+have e20 : 0 < eps%:num/2 by [].
+move/cvgrPdist_lt/(_ (eps%:num/2) e20):ctsf; apply: filter_app.
+near=> t => fxt ti xt; have ? : a <= t by exact: (le_trans ax).
+have ? : x <= b by apply: ltW; exact: (lt_le_trans xi).
+have tb : t <= b by apply: ltW; exact: (lt_le_trans ti).
+rewrite -fineB; first last.
+  apply/bounded_variationP => //; apply: (bounded_variation_le bvf) => //.
   by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
 rewrite -(total_variation_concatE _ ax xt).
 rewrite oppeD ?fin_num_adde_defl //; first last.
   by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
 have xtfin : TV x t f \is a fin_num.
   by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+have tbfin : TV t b f \is a fin_num.
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
 rewrite addeA subee //; first last.
   by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
 rewrite sub0e fineN normrN ger0_norm; first last.
   rewrite fine_ge0 //; exact: total_variation_ge0.
-apply: (@lt_trans _ _ (pvar l f + eps%:num / 2)). 
-  by rewrite -lte_fin /= fineK.
-rewrite {tvp} [x in _ < x]splitr ltr_add2r; move: l pxl.
-near: t.
-
-  rewrite 
-  rewrite -[x in _ < x]fineK.
-Search fine (Order.lt).
-
-near: t.
-Search ereal_sup.
-
-
-
-Qed.
-
-
-
-
+move: (tv_eps); rewrite -(total_variation_concatE f _ tb) //.
+pose r := [:: x, i & j].
+have := part_split_pvar f pxij xt tb.
+rewrite -lee_fin => /lt_le_trans /[apply].
+have -> : part_split t [:: x, i & j] = (x :: t :: nil, [:: t, i & j]).
+  by rewrite /part_split; rewrite ?ti ltNge xt /=.
+rewrite /= -addeA -lte_subr_addr; first last.
+  by rewrite fin_numD; apply/andP; split => //.
+rewrite EFinD -lte_fin ?fineK // oppeD //= ?fin_num_adde_defl // opprK addeA. 
+move/lt_trans; apply.
+rewrite [x in (_ < x%:E)%E]splitr EFinD addeC lte_add2lE //. 
+rewrite -addeA; apply: (@le_lt_trans _ _ (pvar [::x;t] f)%:E).
+  rewrite gee_addl // sube_le0; apply: ereal_sup_ub. 
+  exists (pvar [::t,i&j] f) => //; exists [::t,i&j] => //.
+  by apply/partition_consP; split => //; apply: ltW.
+  by rewrite /pvar /= big_seq1 /= distrC lte_fin.
+Unshelve. all: by end_near. Qed.
