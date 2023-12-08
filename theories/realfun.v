@@ -1832,7 +1832,9 @@ exact: total_variation_concat_ge.
 Qed.
 
 
-Definition neg_tv a f (x:R) := ((TV a x f - (f x)%:E)*2^-1%:E)%E.
+Definition neg_tv a f (x:R) : \bar R := ((TV a x f - (f x)%:E)*2^-1%:E)%E.
+
+Definition pos_tv a f (x:R) : \bar R := neg_tv a (\- f) x.
 
 Lemma neg_TV_increasing a b (f : R -> R) :
   {in `[a,b] &, {homo (neg_tv a f) : x y / x <= y >-> (x <= y)%E}}.
@@ -1953,7 +1955,7 @@ rewrite collapse_head_consNE ?E //.
 by case=> <- <- _; rewrite E.
 Qed.
 
-Lemma neg_TV_continuous a b x (f : R -> R) :
+Lemma TV_right_continuous a b x (f : R -> R) :
   a <= x -> x < b ->
   (f @ at_right x --> f x) ->
   bounded_variation a b f ->
@@ -2011,3 +2013,34 @@ rewrite -addeA; apply: (@le_lt_trans _ _ (pvar [::x;t] f)%:E).
   by apply/partition_consP; split => //; apply: ltW.
   by rewrite /pvar /= big_seq1 /= distrC lte_fin.
 Unshelve. all: by end_near. Qed.
+
+Lemma neg_TV_right_continuous a x b (f : R -> R) :
+  a <= x -> x < b ->
+  bounded_variation a b f ->
+  (f @ at_right x --> f x) ->
+  (fine \o neg_tv a f @ at_right x --> fine (neg_tv a f x)).
+Proof.
+move=> ax ? bvf fcts; have xb : x <= b by exact: ltW. 
+have xbfin : TV a x f \is a fin_num.
+  by apply/bounded_variationP => //; apply: (bounded_variation_le bvf).
+apply: fine_cvg; rewrite /neg_tv fineM // ?fin_numB ?xbfin //= EFinM.
+under eq_fun => i do rewrite EFinN.
+apply: cvg_trans; first (apply: cvgeMr => //); last exact: cvg_id. 
+rewrite fineD // EFinB; apply: cvgeB => //.
+  apply/ fine_cvgP; split; first exists (b-x).
+  - by rewrite /= subr_gt0.
+  - move=> t /= xtbx xt; have ? : a <= t.
+      by apply: ltW; apply: (le_lt_trans ax).
+    apply/bounded_variationP => //; apply: (bounded_variation_le bvf) => //. 
+    move: xtbx; rewrite distrC ger0_norm ?subr_ge0; last by exact: ltW.
+    by rewrite ltr_subr_addr -addrA [-_ + _]addrC subrr addr0 => /ltW.
+  by apply: TV_right_continuous => //; last exact: bvf => //.
+apply: cvg_comp; first exact: fcts.
+apply/ fine_cvgP; split; first by near=> t => //.
+by have -> : (fine \o EFin = id) by move=> ?; rewrite funeqE => ? /=.
+Unshelve. all: by end_near. Qed.
+
+Definition totally_bounded_variation (f : R -> R) :=
+  forall a b, bounded_variation a b f.
+
+End bounded_variation.
