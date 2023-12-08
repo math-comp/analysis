@@ -1234,11 +1234,11 @@ Notation "x *? y" := (mule_def x y) : ereal_scope.
 
 Notation maxe := (@Order.max ereal_display _).
 Notation "@ 'maxe' R" := (@Order.max ereal_display R)
-  (at level 10, R at level 8, only parsing) : fun_scope.
+  (at level 10, R at level 8, only parsing) : function_scope.
 
 Notation mine := (@Order.min ereal_display _).
 Notation "@ 'mine' R" := (@Order.min ereal_display R)
-  (at level 10, R at level 8, only parsing) : fun_scope.
+  (at level 10, R at level 8, only parsing) : function_scope.
 
 Module DualAddTheoryNumDomain.
 
