@@ -132,7 +132,7 @@ Bind Scope ring_scope with Real.sort.
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := @supremum _ R 0.
 (*Local Notation "-` E" := [pred x | - x \in E]
-  (at level 35, right associativity) : fun_scope.*)
+  (at level 35, right associativity) : function_scope.*)
 Definition inf {R : realType} (E : set R) := - sup (-%R @` E).
 
 (* -------------------------------------------------------------------- *)

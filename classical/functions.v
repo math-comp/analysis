@@ -260,11 +260,12 @@ Notation "{ 'inv' aT >->  rT }" := (@Inversible.type aT rT) : type_scope.
 Notation "[ 'inv'  'of'  f ]" := [the {inv _ >-> _} of f : _ -> _] : form_scope.
 Definition phant_inv aT rT (f : {inv aT >-> rT}) of phantom (_ -> _) f :=
   @inv _ _ f.
-Notation "f ^-1" := (@inv _ _ f%FUN) (only printing) : fun_scope.
 Notation "f ^-1" := (@inv _ _ f%function) (only printing) : function_scope.
-Notation "f ^-1" := (@phant_inv _ _ _ (Phantom (_ -> _) f%FUN)) : fun_scope.
 Notation "f ^-1" :=
   (@phant_inv _ _ _ (Phantom (_ -> _) f%function)) : function_scope.
+(* TODO: remove the following notations in fun_scope *)
+Notation "f ^-1" := (@inv _ _ f%FUN) (only printing) : fun_scope.
+Notation "f ^-1" := (@phant_inv _ _ _ (Phantom (_ -> _) f%FUN)) : fun_scope.
 
 HB.structure Definition InvFun aT rT A B :=
   {f of Inv aT rT f & isFun aT rT A B f}.
@@ -1903,7 +1904,7 @@ End inj.
 
 End patch.
 Notation restrict := (patch (fun=> point)).
-Notation "f \_ D" := (restrict D f) : fun_scope.
+Notation "f \_ D" := (restrict D f) : function_scope.
 
 Lemma patchE aT (rT : pointedType) (f : aT -> rT) (B : set aT) x :
   (f \_ B) x = if x \in B then f x else point.
