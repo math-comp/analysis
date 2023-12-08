@@ -39,6 +39,7 @@ Instance Nsatz_realType_Ring_ops:
   Nsatz_realType_mul
   Nsatz_realType_sub
   Nsatz_realType_opp (@eq T)).
+Proof.
 Defined.
 
 #[global]
