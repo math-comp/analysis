@@ -55,6 +55,7 @@ From mathcomp Require Import mathcomp_extra boolp.
 (* |                 trivIset D F |==| F is a sequence of pairwise disjoint | *)
 (* |                              |  | sets indexed over the domain D       | *)
 (*                                                                            *)
+(* Details:                                                                   *)
 (* ## Sets                                                                    *)
 (* ```                                                                        *)
 (*                       set T == type of sets on T                           *)
