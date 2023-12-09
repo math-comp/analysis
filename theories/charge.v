@@ -590,6 +590,69 @@ Qed.
 
 End positive_negative_set_realFieldType.
 
+Section absolute_continuity.
+Context {R : realType}.
+Notation mu := (@lebesgue_measure R).
+
+Lemma interval_measure0 A : is_interval A -> mu A = 0 -> is_subset1 A.
+Proof.
+Admitted.
+
+Lemma measure0_disconnected A : 
+  measurable A -> mu A = 0 -> totally_disconnected A.
+Proof.
+move=> mA A0 x Ax; rewrite eqEsubset; split; first last.
+  by move=> ? ->; exact: connected_component_refl.
+move=> y [U /= [Ux UA /connected_intervalP ]] itvU.
+have : mu U = 0.
+  apply/eqP; rewrite -measure_le0 //= -A0.
+  by apply: (le_measure); rewrite ?inE //; first exact: is_interval_measurable.
+by move/(interval_measure0 itvU) => /[apply]; apply.
+Qed.
+
+
+
+
+Definition maps_null E (f : R -> R) :=
+  forall A, A `<=` E -> mu A = 0%:E -> mu (f @` A) = 0%:E.
+
+Definition absolutely_continuous a b (f : R -> R) := 
+  [/\ {within `[a,b], continuous f },
+      bounded_variation a b f & 
+      maps_null `[a,b] f
+  ].
+
+Lemma maps_null_total_variation (a b : R) f : 
+  (a <= b)%R ->
+  absolutely_continuous a b f ->
+  maps_null `[a, b] (fine \o neg_tv a f).
+Proof.
+move=> ab [ctsf bdf] f0 A AE A0.
+
+\int[pushforward mu mphi]_(y in (phi @` U)) f y 
+  = \int[mu]_(x in phi^-1 (phi @` U)) (f \o phi) x.
+
+0 = \int_(f@`A) id
+
+integralD
+
+Search measure (0%:E).
+
+Local Notation TV := (@total_variation R).
+
+Lemma absolute_continuity_cumulative a b (f : R -> R) :
+  absolutely_continuous a b f -> exists g h, 
+    [/\ absolutely_continuous a b g, 
+        absolutely_continuous a b h,
+        {in `[a,b] &, {homo g : x y / x <= y}},
+        {in `[a,b] &, {homo h : x y / x <= y}} &
+        f = g \- h
+    ].
+Proof.
+case => ctsf bdf f0.
+
+End absolute_continuity.
+
 Section hahn_decomposition_lemma.
 Context d (T : measurableType d) (R : realType).
 Variables (nu : {charge set T -> \bar R}) (D : set T).

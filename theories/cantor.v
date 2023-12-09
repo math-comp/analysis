@@ -548,3 +548,39 @@ by exists f; rewrite -cstf; exact: cst_continuous.
 Qed.
 
 End alexandroff_hausdorff.
+
+Section cantor_subspace.
+Context {T : topologicalType} (A : set T) a (Aa : A a).
+Let A' := PointedType (classicType_choiceType {x & A x}) (exist _ a Aa).
+Let WA :=  @weak_topologicalType A' T (@projT1 _ A).
+Lemma perfect_set_weak :
+  perfect_set A -> perfect_set [set: WA].
+Proof.
+move=> pftA; apply/perfectTP; case=> t At /=.
+rewrite /open/=/wopen/=; apply/forallPNP => E oE.
+case: (pselect (E t)); first last.
+  apply: contra_not; rewrite eqEsubset; case=> _ /(_ (existT _ _ At)).
+  exact.
+case: pftA => clA lpA Et; have : A t by done. 
+rewrite -[a in a _]lpA => /(_ E) []; first exact: open_nbhs_nbhs.
+move=> e [+] Ae Ee; apply: contra_neq_not.
+rewrite eqEsubset; case=> /(_ (existT _ _ Ae) Ee) /= + _. 
+exact: EqdepFacts.eq_sigT_fst.
+Qed.
+
+Lemma compact_set_weak :
+  compact A -> compact [set: WA].
+Proof.
+move=> /compact_near_coveringP cptA; apply/ compact_near_coveringP.
+move=> ? F /= P FF cvr; pose Q i x := if pselect (A x) is left Ax 
+  then P i (existT _ _ Ax) else True.
+have := (@cptA _ F Q FF); have FQ : forall x, A x -> \near x & F, Q F x.
+  move=> x Ax; have := cvr (existT _ _ Ax) I.
+  case; case=> E j [/= [? [[V oV /= <- /= Vx VE FJ EJ]]]].
+  exists (V, j); first by split => //; apply: open_nbhs_nbhs; split.
+  case=> /= z i [Vz ji]; rewrite /Q; case: (pselect _) => // Az. 
+  by have := (EJ (existT _ _ Az, i)); apply; split => //; apply: VE.
+move/(_ FQ); apply: filter_app; near=> z => + [r /= Ar _] => /(_ _ Ar).
+by rewrite /Q; case (pselect _) => // Ar'; suff -> // : Ar = Ar'.
+Unshelve. all: end_near. Qed.
+End cantor_subspace.

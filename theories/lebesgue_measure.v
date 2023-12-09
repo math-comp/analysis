@@ -2155,31 +2155,6 @@ Qed.
 
 End egorov.
 
-Section absolute_continuity.
-Context {R : realType}.
-Notation mu := (@lebesgue_measure R).
-
-Definition absolutely_continuous a b (f : R -> R) := 
-  [/\ {within `[a,b], continuous f },
-      bounded_variation a b f & 
-      forall E, E `<=` `[a,b] -> mu E = 0%:E -> mu (f @` E) = 0%:E
-  ].
-
-Local Notation TV := (@total_variation R).
-
-Lemma absolute_continuity_cumulative a b (f : R -> R) :
-  absolutely_continuous a b f -> exists g h, 
-    [/\ absolutely_continuous a b g, 
-        absolutely_continuous a b h,
-        {in `[a,b] &, {homo g : x y / x <= y}},
-        {in `[a,b] &, {homo h : x y / x <= y}} &
-        f = g \- h
-    ].
-Proof.
-case => ctsf bdf f0.
-
-End absolute_continuity.
-
 Definition vitali_cover {R : realType} (E : set R) I
     (B : I -> set R) (D : set I) :=
   (forall i, is_ball (B i)) /\
