@@ -583,7 +583,7 @@ Qed.
 
 End positive_negative_set_realFieldType.
 
-
+(* TODO: generalize *)
 Section min_cvg_0_cvg_0.
 Context (R : realFieldType).
 
@@ -650,6 +650,82 @@ case: p p0 h => //; last first.
 Qed.
 
 End min_cvg_0_cvg_0.
+
+Section max_cvg_0_cvg_0.
+Context (R : realFieldType).
+
+Lemma maxr_cvg_0_cvg_0 (x : R^nat) (np : R) :
+ (np < 0)%R -> (forall k, x k <= 0)%R ->
+  (fun n => maxr (x n) np)%R --> (0:R)%R -> x --> (0:R)%R.
+Proof.
+move=> np0 x_le0.
+under eq_fun do rewrite -(opprK (x _)) -{1}(opprK np) -oppr_min.
+rewrite -oppr0.
+move/(@cvgNP _ [normedModType R of R^o]).
+move/minr_cvg_0_cvg_0.
+rewrite -oppr0 ltr_oppr in np0.
+move/(_ np0).
+have oppx_ge0 : (forall k : nat, (0 <= - x k)%R); first by move=> n; rewrite ler_oppr oppr0.
+move/(_ oppx_ge0).
+move/(@cvgNP _ [normedModType R of R^o]).
+by rewrite opprK.
+Qed.
+
+Lemma maxe_cvg_0_cvg_fin_num (x : (\bar R)^nat) (np : \bar R) :
+  (np < 0) -> (forall k, x k <= 0) ->
+  (fun n => maxe (x n) np) --> 0 ->
+  \forall n \near \oo, x n \is a fin_num.
+Proof.
+move=> np0 x_le0.
+under eq_fun do rewrite -(oppeK (x _)) -{1}(oppeK np) -oppe_min.
+rewrite -oppe0.
+move/cvgeNP.
+move/mine_cvg_0_cvg_fin_num.
+rewrite -oppe0 lte_oppr in np0.
+move/(_ np0).
+have oppx_ge0 : (forall k : nat, 0 <= - x k); first by move=> n; rewrite lee_oppr oppe0.
+move/(_ oppx_ge0).
+move=> [] n _ Hn.
+exists n => // k nk.
+rewrite -fin_numN.
+by apply: Hn.
+Qed.
+
+Lemma maxe_cvg_maxr_cvg (x : (\bar R)^nat) (np : R) :
+  (np < 0)%R -> (forall k, x k <= 0) ->
+  (fun n => maxe (x n) np%:E) --> 0 ->
+  (fun n => maxr ((fine \o x) n) np) --> (0:R)%R.
+Proof.
+move=> np0 x_le0.
+under eq_fun do rewrite -(oppeK (x _)) -{1}(oppeK np%:E) -oppe_min.
+rewrite -oppr0 EFinN.
+move/cvgeNP.
+move/mine_cvg_minr_cvg.
+rewrite -oppr0 ltr_oppr in np0.
+move/(_ np0).
+have oppx_ge0 : (forall k : nat, 0 <= - x k); first by move=> n; rewrite lee_oppr oppe0.
+move/(_ oppx_ge0).
+move/(@cvgNP _ [normedModType R of R^o]).
+by under eq_cvg do rewrite /GRing.opp /= oppr_min fineN !opprK.
+Qed.
+
+Lemma maxe_cvg_0_cvg_0 (x : (\bar R)^nat) (np : \bar R) :
+  (np < 0) -> (forall k, x k <= 0) ->
+  (fun n => maxe (x n) np) --> 0 -> x --> 0.
+Proof.
+move=> np0 x_le0.
+under eq_fun do rewrite -(oppeK (x _)) -{1}(oppeK np) -oppe_min.
+rewrite -oppe0.
+move/cvgeNP.
+move/mine_cvg_0_cvg_0.
+rewrite -oppe0 lte_oppr in np0.
+move/(_ np0).
+have oppx_ge0 : (forall k : nat, 0 <= - x k); first by move=> n; rewrite lee_oppr oppe0.
+move/(_ oppx_ge0) /cvgeNP.
+by under eq_cvg do rewrite oppeK.
+Qed.
+
+End max_cvg_0_cvg_0.
 
 Section hahn_decomposition_lemma.
 Context d (T : measurableType d) (R : realType).

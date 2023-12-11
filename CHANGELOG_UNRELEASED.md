@@ -98,6 +98,15 @@
   + lemma `Radon_Nikodym_cadd`
   + lemma `Radon_Nikodym_chain_rule`
 
+  + lemma `minr_cvg_0_cvg_0`
+  + lemma `mine_cvg_0_cvg_fin_num`
+  + lemma `mine_cvg_minr_cvg`
+  + lemma `mine_cvg_0_cvg_0`
+  + lemma `maxr_cvg_0_cvg_0`
+  + lemma `maxe_cvg_0_cvg_fin_num`
+  + lemma `maxe_cvg_maxr_cvg`
+  + lemma `maxe_cvg_0_cvg_0`
+
 ### Changed
 
 - in `charge.v`
