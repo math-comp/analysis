@@ -506,11 +506,8 @@ case: xgetP => /=; first by move=> _ -> -[] /ubP geS _; apply geS.
 by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
 Qed.
 
-Lemma ereal_sup_le S x : S !=set0 ->
-  (forall y, S y -> x <= y) -> x <= ereal_sup S.
-Proof.
-by case=> y Sy Sx; rewrite (@le_trans _ _ y)//; [exact:Sx|exact:ereal_sup_ub].
-Qed.
+Lemma ereal_sup_le S x : (exists2 y, S y & x <= y) -> x <= ereal_sup S.
+Proof. by move=> [y Sy] /le_trans; apply; exact: ereal_sup_ub. Qed.
 
 Lemma ereal_sup_ninfty S : ereal_sup S = -oo <-> S `<=` [set -oo].
 Proof.
@@ -524,11 +521,8 @@ Proof.
 by move=> x Sx; rewrite /ereal_inf lee_oppl; apply ereal_sup_ub; exists x.
 Qed.
 
-Lemma ereal_inf_le S x : S !=set0 -> (forall y, S y -> y <= x) ->
-  ereal_inf S <= x.
-Proof.
-by case=> y Sy Sx; rewrite (@le_trans _ _ y)//; [exact:ereal_inf_lb|exact:Sx].
-Qed.
+Lemma ereal_inf_le S x : (exists2 y, S y & y <= x) -> ereal_inf S <= x.
+Proof. by move=> [y Sy]; apply: le_trans; exact: ereal_inf_lb. Qed.
 
 Lemma ereal_inf_pinfty S : ereal_inf S = +oo <-> S `<=` [set +oo].
 Proof. rewrite eqe_oppLRP oppe_subset image_set1; exact: ereal_sup_ninfty. Qed.
