@@ -2781,6 +2781,32 @@ apply: eq_exist; rewrite predeqE => r; split=> [Br|/sAB] //.
 by have /sBAs [|ser] // := Br; rewrite ser in Br.
 Qed.
 
+Lemma Zorn_over T (R : T -> T -> Prop) :
+  (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
+  (forall s t, R s t -> R t s -> s = t) ->
+  (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
+  forall u, exists t, R u t /\ forall s, R t s -> s = t.
+Proof.
+move=> Rrefl Rtrans Rantisym Rtot_max u.
+set Tu := ({x : T | R u x}).
+set Ru := fun x y : Tu => R (sval x) (sval y).
+have Ru_refl x : Ru x x by [].
+have Ru_trans x y z : Ru x y -> Ru y z -> Ru x z by apply: Rtrans.
+have Ru_antisym : forall x y, Ru x y -> Ru y x -> x = y.
+  by move=> [? ?] [? ?] *; exact/eq_exist/Rantisym.
+have Ru_tot_max Au : total_on Au Ru -> exists y, forall x, Au x -> Ru x y.
+  have [->|] := eqVneq Au set0; first by exists (exist _ u (Rrefl u)).
+  move=> /set0P [v Auv] Au_tot.
+  pose A := sval @` Au.
+  have Atot : total_on A R by move=> x y [xu Axu <-] [yu Ayu <-]; exact: Au_tot.
+  have [y ymax] := Rtot_max A Atot.
+  have uy : R u y by apply /(Rtrans _ _ _ (svalP v)) /ymax; exists v.
+  by exists (exist _ y uy) => x Au_x; apply: ymax; exists x.
+have [[x ux] xmax] := Zorn Ru_refl Ru_trans Ru_antisym Ru_tot_max.
+exists x; split=> // y xy.
+by have /(_ xy)/(congr1 sval) := xmax (exist _ y (Rtrans _ _ _ ux xy)).
+Qed.
+
 Section Zorn_subset.
 Variables (T : Type) (P : set (set T)).
 
