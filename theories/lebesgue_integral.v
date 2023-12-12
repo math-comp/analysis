@@ -5923,30 +5923,22 @@ have KDB : K `<=` cover [set` D] B.
   by apply: (subset_trans Kcover) => /= x [r Dr] rx; exists r.
 have is_ballB i : is_ball (B i) by exact: is_ball_ball.
 have Bset0 i : B i !=set0 by exists i; exact: ballxx.
-have [E [ED tEB DE]] := @vitali_lemma_finite_cover _ _ B is_ballB Bset0 D.
-pose E' := undup E.
-have {ED}E'D : {subset E' <= D} by move=> x; rewrite mem_undup => /ED.
-have {tEB}tE'B : trivIset [set` E'] B.
-  by apply: sub_trivIset tEB => x/=; rewrite mem_undup.
-have {DE}DE' : cover [set` D] B `<=`
-               cover [set` E'] (scale_ball 3%:R \o B).
-  by move=> x /DE [r/= rE] Brx; exists r => //=; rewrite mem_undup.
-have uniqE' : uniq E' by exact: undup_uniq.
-rewrite (@le_trans _ _ (3%:R%:E * \sum_(i <- E') mu (B i)))//.
-  have {}DE' := subset_trans KDB DE'.
+have [E [uE ED tEB DE]] := @vitali_lemma_finite_cover _ _ B is_ballB Bset0 D.
+rewrite (@le_trans _ _ (3%:R%:E * \sum_(i <- E) mu (B i)))//.
+  have {}DE := subset_trans KDB DE.
   apply: (le_trans (@content_sub_additive _ _ _ [the measure _ _ of mu]
-      K (fun i => 3%:R *` B (nth 0%R E' i)) (size E') _ _ _)) => //.
+      K (fun i => 3%:R *` B (nth 0%R E i)) (size E) _ _ _)) => //.
   - by move=> k ?; rewrite scale_ballE//; exact: measurable_ball.
   - by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
-  - apply: (subset_trans DE'); rewrite /cover bigcup_seq.
+  - apply: (subset_trans DE); rewrite /cover bigcup_seq.
     by rewrite (big_nth 0%R)//= big_mkord.
   - rewrite ge0_sume_distrr//= (big_nth 0%R) big_mkord; apply: lee_sum => i _.
     rewrite scale_ballE// !lebesgue_measure_ball ?mulr_ge0 ?(ltW (r_pos _))//.
     by rewrite -mulrnAr EFinM.
 rewrite !EFinM -muleA lee_wpmul2l//=.
 apply: (@le_trans _ _
-    (\sum_(i <- E') c^-1%:E * \int[mu]_(y in B i) `|(f y)|%:E)).
-  rewrite big_seq [in leRHS]big_seq; apply: lee_sum => r /E'D /Dsub /[!inE] rD.
+    (\sum_(i <- E) c^-1%:E * \int[mu]_(y in B i) `|(f y)|%:E)).
+  rewrite big_seq [in leRHS]big_seq; apply: lee_sum => r /ED /Dsub /[!inE] rD.
   by rewrite -lee_pdivr_mull ?invr_gt0// invrK /B/=; exact/ltW/cMfx_int.
 rewrite -ge0_sume_distrr//; last by move=> x _; rewrite integral_ge0.
 rewrite lee_wpmul2l//; first by rewrite lee_fin invr_ge0 ltW.
