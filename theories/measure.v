@@ -721,6 +721,8 @@ HB.mixin Record isSemiRingOfSets (d : measure_display) T := {
 #[short(type=semiRingOfSetsType)]
 HB.structure Definition SemiRingOfSets d := {T of isSemiRingOfSets d T}.
 
+Arguments measurable {d}%measure_display_scope {s} _%classical_set_scope.
+
 Canonical semiRingOfSets_eqType d (T : semiRingOfSetsType d) := EqType T ptclass.
 Canonical semiRingOfSets_choiceType d (T : semiRingOfSetsType d) :=
   ChoiceType T ptclass.
