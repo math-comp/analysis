@@ -46,12 +46,18 @@
   + definition `locally_integrable`
   + lemmas `integrable_locally`, `locally_integrableN`, `locally_integrableD`,
     `locally_integrableB`
-  + definitions `HL_max`, `HL_maximal`
-  + lemmas `HL_max_ge0`, `HL_maximal_ge0`, `HL_maximalT_ge0`,
+  + definition `iavg`
+  + lemmas `iavg0`, `iavg_ge0`, `iavg_restrict`, `iavgD`
+  + definitions `HL_maximal`
+  + lemmas `HL_maximal_ge0`, `HL_maximalT_ge0`,
     `lower_semicontinuous_HL_maximal`, `measurable_HL_maximal`,
     `maximal_inequality`
 
 ### Changed
+
+- in `normedtype.v`:
+  + lemmas `vitali_lemma_finite` and `vitali_lemma_finite_cover` now returns
+    duplicate-free lists of indices
   
 ### Renamed
 

@@ -47,6 +47,8 @@ Require Import esum measure lebesgue_measure numfun.
 (*                           measure over T2                                  *)
 (* locally_integrable D f == the real number-valued function f is locally     *)
 (*                           integrable on D                                  *)
+(*               iavg f A := "average" of the real-valued function f over     *)
+(*                           the set A                                        *)
 (*             HL_maximal == the Hardy–Littlewood maximal operator            *)
 (*                           input: real number-valued function               *)
 (*                           output: extended real number-valued function     *)
