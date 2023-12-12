@@ -550,8 +550,17 @@ Qed.
 End alexandroff_hausdorff.
 
 Section cantor_subspace.
-Context {T : topologicalType} (A : set T) a (Aa : A a).
-Let A' := PointedType (classicType_choiceType {x & A x}) (exist _ a Aa).
+Context {T : topologicalType} (A : set T).
+
+Definition cantor_like_subspace := 
+  [/\ perfect_set A,
+      compact A,
+      hausdorff_space T &
+      totally_disconnected A].
+
+Context a0 (Aa0 : A a0).
+
+Let A' := PointedType (classicType_choiceType {x & A x}) (exist _ _ Aa0).
 Let WA :=  @weak_topologicalType A' T (@projT1 _ A).
 Lemma perfect_set_weak :
   perfect_set A -> perfect_set [set: WA].
@@ -583,4 +592,63 @@ have := (@cptA _ F Q FF); have FQ : forall x, A x -> \near x & F, Q F x.
 move/(_ FQ); apply: filter_app; near=> z => + [r /= Ar _] => /(_ _ Ar).
 by rewrite /Q; case (pselect _) => // Ar'; suff -> // : Ar = Ar'.
 Unshelve. all: end_near. Qed.
+
+Lemma totally_disconnected_weak :
+  totally_disconnected A -> totally_disconnected [set: WA].
+Proof.
+move=> tdA [x Ax] _; rewrite eqEsubset; split; first last.
+  by move=> ? ->; exact: connected_component_refl.
+move=> [y Ay] [U [Ux _ ctU Uy]] => /=.
+apply/eq_existT_curried; last by move=> ?.
+have := tdA _ Ax; rewrite eqEsubset; case=> + _; apply.
+exists (@projT1 T _ @` U); last by exists (existT _ _ Ay).
+split; first by exists (existT _ _ Ax).
+  by move=> ? [[? ? ? <-]].
+apply: connected_continuous_connected => //.
+by apply: continuous_subspaceT; exact: weak_continuous.
+Qed.
+
+Lemma hausdorff_weak :
+  hausdorff_space T -> hausdorff_space WA.
+Proof.
+move=> hsdfK [p Ap] [q Aq] /= clstr.
+apply/eq_existT_curried; last by move=> ?.
+apply: hsdfK; move: clstr; rewrite ?cluster_cvgE /= => -[G PG [GtoQ psubG]].
+exists (@projT1 T _ @ G); [exact: fmap_proper_filter|split].
+  apply: cvg_trans; first (apply:cvg_app; exact: GtoQ).
+  exact: weak_continuous.
+move/(cvg_app (@projT1 T _)): psubG => /cvg_trans; apply.
+exact: weak_continuous.
+Qed.
+
+Definition foo {R : realType} (P : set R) (P01 : P `<=` `[0%R,1%R]) : R -> R := 
+  0%R.
+              tvf@`P  (wlog (tvf 1 = 1))
+
+  C --> [0,1] --> [0,1]
+  A      A          A
+  |      |          |
+  V      |          |
+  C <--> P ------> tvf @`P
+
+
+mu (tvf @` P) = eps
+mu (f @` P) = mu (((tvf + f)/2 - (tvf - f) /2) )
+
+mu (f@` `[a,b]) = 
+
+
+Lemma cantor_like_subspaceP : 
+  cantor_like_subspace -> cantor_like WA.
+Proof.
+case=> /perfect_set_weak ? /compact_set_weak ?.
+
+Search (existT _ _ _ = existT _ _ _).
+pose f x := if pselect (A x) is left Ax then existT _ _ Ax else existT _ _ Aa0.
+have -> : [set existT _ _ Ax] = f @` [set x].
+  rewrite eqEsubset /f; split => z. 
+    by move=> ->; exists x => //; case (pselect _) => // Ax';suff -> : Ax = Ax'.
+  by case => ? /= ->; case (pselect _) => // Ax'; suff -> : Ax = Ax'.
+
+apply: connected_component_max.
 End cantor_subspace.

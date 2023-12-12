@@ -1649,6 +1649,9 @@ Proof. by move=> ab; apply: le_trans; last exact: partition_TV2. Qed.
 Definition bounded_variation a b (f : R -> R) := 
   has_ubound (variations a b f).
 
+Definition bounded_variationT (f : R -> R) :=
+  forall a b, bounded_variation a b f.
+
 Lemma hasNrub_ereal_sup (A : set R) : ~ has_ubound A ->
   A !=set0 -> ereal_sup [set x%:E | x in A] = +oo%E.
 Proof.
@@ -2040,7 +2043,128 @@ apply/ fine_cvgP; split; first by near=> t => //.
 by have -> : (fine \o EFin = id) by move=> ?; rewrite funeqE => ? /=.
 Unshelve. all: by end_near. Qed.
 
-Definition totally_bounded_variation (f : R -> R) :=
-  forall a b, bounded_variation a b f.
+Lemma pvarNE (l : seq R) f :  
+  pvar l f = pvar (map (-%R) l) (f \o (-%R)).
+Proof.
+elim: l; first by rewrite /pvar /= !big_nil.
+move=> a [|]; first by move=> _ /=; rewrite /pvar /= !big_nil.
+by move=> w l IH; rewrite /= ?pvar_consE /= ?opprK; congr( _ + _).
+Qed.
+
+Lemma pvarNE2 (l : seq R) f :  
+  pvar (map (-%R) l) f = pvar l (f \o (-%R)).
+Proof.
+have NE : (-%R) \o (-%R) = @id R.
+  by apply: eq_fun => ?; rewrite opprK.
+have compE g : g \o id = g by apply: eq_fun.
+by rewrite (_ : f = f \o (-%R) \o (-%R)) -?pvarNE -compA NE compE.
+Qed.
+
+Lemma partition_rev a b l :
+  partition a b l -> partition (-b) (-a) (rev (map (-%R) l)).
+Proof.
+elim: l a b => // => w [].
+  by move=> /= _ ? ? [] <- <-; split.
+move=> y l; set j := y :: l => IH a b /partition_consP [<-] ay yb pyb. 
+have /(@partition_concat_tl _ _ _ _ (-y :: -a :: nil)) := IH _ _ pyb. 
+rewrite /= rev_cons -cats1 ?rev_cons -?cats1; apply.
+by split => //; repeat split => //; rewrite ler_opp2.
+Qed.
+
+Lemma pvar_cat a (l1 l2 : seq R) f :  
+  pvar (l1 ++ a :: l2) f = pvar (l1 ++ [:: a]) f + pvar (a :: l2) f.
+Proof.
+elim: l1 a l2; first by move => ? ?; rewrite /= /pvar /= big_nil /= add0r.
+move=> w []. 
+  by move=> _ ? ? /=; rewrite ?pvar_consE /= /pvar /= big_nil /= -addrA add0r.
+move=> y l1 IH a l2. 
+by rewrite ?cat_cons ?pvar_consE IH ?cat_cons addrA.
+Qed.
+
+Lemma pvar_revE (l : seq R) f :  
+  pvar l f = pvar (rev l) f.
+Proof.
+elim: l; first by rewrite /pvar /= !big_nil.
+move=> a [|]; first by move=> _ /=; rewrite /pvar /= !big_nil.
+move=> w l IH; rewrite pvar_consE; rewrite distrC IH.
+rewrite ?rev_cons -?cats1 -catA [x in _ = x]pvar_cat addrC; congr (_ + _).
+by rewrite pvar_consE /pvar big_nil addr0.
+Qed.
+
+Lemma variation_revE a b f: 
+  variations (-b) (-a) (f \o [eta -%R]) = variations a b f.
+Proof.
+rewrite eqEsubset; split => ?.
+  move=> [l] /partition_rev + <-; rewrite ?opprK => plrev.
+  by rewrite -pvarNE2 pvar_revE; exists (rev (map (-%R) l)) => //.
+have fNE : f = (f \o -%R) \o -%R.
+  by apply: eq_fun => ?; rewrite /= opprK.
+rewrite -{1}[a]opprK -{1}[b]opprK fNE.
+move=> [l] /partition_rev + <-; rewrite ?opprK => plrev.
+rewrite -pvarNE2 pvar_revE; exists (rev (map (-%R) l)) => //.
+by rewrite -compA fNE; congr (_ _ ); apply: eq_fun => ?; rewrite /= ?opprK.
+Qed.
+
+Lemma total_variation_revE a b f: 
+  TV a b f = TV (-b) (-a) (f \o (-%R)). 
+Proof. by rewrite /total_variation -variation_revE. Qed.
+
+Lemma at_left_at_rightP {T: topologicalType} (f : R -> T) x (z:T):
+  f @ at_left x --> z <-> 
+  f \o (-%R) @ at_right (-x) --> z. 
+Proof.
+
+suff -> : (- x)^'+ = (-%R) @ x^'-.
+  by rewrite -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
+rewrite eqEsubset /=; split.
+  move=> E /= [r rpos xb]; exists r => //.
+  move=> t /= xtr tx; apply: xb. 
+    by rewrite /= -opprB opprK normrN addrC.
+  by rewrite ltr_oppr opprK.
+move=> E /= [r rpos xb]; exists r => //.
+move=> t /= xtr tx; rewrite -[t]opprK; apply: xb. 
+  by rewrite /= opprK -normrN opprD.
+by rewrite ltr_oppl.
+Qed.
+
+Lemma TV_left_continuous a b x (f : R -> R) :
+  a < x -> x <= b ->
+  (f @ at_left x --> f x) ->
+  bounded_variation a b f ->
+  (fine \o TV a ^~ f @ at_left x --> fine (TV a x f)).
+Proof.
+move=> ax xb fNcts bvf.
+apply/at_left_at_rightP; rewrite total_variation_revE.
+have bvNf : bounded_variation (-b) (-a) (f \o -%R).
+  by case:bvf=> M; rewrite -variation_revE => ?; exists M.
+have bx : -b <= -x by rewrite ler_oppl opprK.
+have xa : -x < -a by rewrite ltr_oppl opprK.
+have ? : -x <= -a by apply: ltW.
+have ? : Filter (nbhs (-x)^'+) by exact: at_right_proper_filter.
+have -> : fine (TV (-x) (-a) (f \o -%R)) = 
+    fine (TV (-b) (-a) (f \o -%R)) - fine (TV (-b) (-x) (f \o -%R)).
+  apply/eqP; rewrite -subr_eq opprK addrC.
+  rewrite -fineD ?total_variation_concatE //.
+  - by apply/bounded_variationP => //; apply: (bounded_variation_le bvNf).
+  - by apply/bounded_variationP => //; apply: (bounded_variation_le bvNf).
+have /near_eq_cvg/cvg_trans : {near ((-x)^'+),
+    (fun t => fine (TV (-b) (-a) (f \o -%R)) - fine (TV (-b) t (f\o-%R))) =1
+    (fine \o (TV a)^~ f) \o -%R }.
+  apply: filter_app (nbhs_right_lt xa).
+  apply: filter_app (nbhs_right_ge _).
+  near=> t => xt ta; have ? : -b <= t by exact: (le_trans bx).
+  have ? : t <= -a by exact: ltW.
+  apply/eqP; rewrite eq_sym -subr_eq opprK addrC.
+  rewrite /= [TV a _ f]total_variation_revE opprK -fineD ?total_variation_concatE //.
+  - by apply/bounded_variationP => //; apply: (bounded_variation_le bvNf) => //.
+  - by apply/bounded_variationP => //; apply: (bounded_variation_le bvNf).
+apply.
+apply: cvgB; first exact: cvg_cst.
+apply: (TV_right_continuous _ _ _ bvNf).
+- by rewrite ler_oppl opprK //.
+- by rewrite ltr_oppl opprK //.
+by apply/at_left_at_rightP; rewrite /= opprK.
+Unshelve. all: by end_near. Qed.
 
 End bounded_variation.
+Unshelve. all: by end_near. Qed.
