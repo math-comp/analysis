@@ -1386,9 +1386,9 @@ Proof. by move/is_intervalP => ->; exact: measurable_itv. Qed.
 Section coutinuous_measurable.
 Variable R : realType.
 
-Lemma open_measurable (U : set R) : open U -> measurable U.
+Lemma open_measurable (A : set R) : open A -> measurable A.
 Proof.
-move=> /open_bigcup_rat ->; rewrite bigcup_mkcond; apply: bigcupT_measurable_rat.
+move=>/open_bigcup_rat ->; rewrite bigcup_mkcond; apply: bigcupT_measurable_rat.
 move=> q; case: ifPn => // qfab; apply: is_interval_measurable => //.
 exact: is_interval_bigcup_ointsub.
 Qed.
@@ -1400,7 +1400,7 @@ move=> mD /open_subspaceP [V [oV] VD]; rewrite setIC -VD.
 by apply: measurableI => //; exact: open_measurable.
 Qed.
 
-Lemma closed_measurable (U : set R) : closed U -> measurable U.
+Lemma closed_measurable (A : set R) : closed A -> measurable A.
 Proof. by move/closed_openC/open_measurable/measurableC; rewrite setCK. Qed.
 
 Lemma compact_measurable (A : set R) : compact A -> measurable A.
@@ -1430,6 +1430,14 @@ by move=> cf; apply: open_continuous_measurable_fun => //; exact: openT.
 Qed.
 
 End coutinuous_measurable.
+
+Lemma lower_semicontinuous_measurable {R : realType} (f : R -> \bar R) :
+  lower_semicontinuous f -> measurable_fun setT f.
+Proof.
+move=> scif; apply: (measurability (ErealGenOInfty.measurableE R)).
+move=> /= _ [_ [a ->]] <-; apply: measurableI => //; apply: open_measurable.
+by rewrite preimage_itv_o_infty; move/lower_semicontinuousP : scif; exact.
+Qed.
 
 Section standard_measurable_fun.
 Variable R : realType.

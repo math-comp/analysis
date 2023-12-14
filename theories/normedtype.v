@@ -19,6 +19,11 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                   balls; the carrier type must have a      *)
 (*                                   normed Zmodule over a numDomainType.     *)
 (*                                                                            *)
+(*         lower_semicontinuous f == the extented real-valued function f is   *)
+(*                                   lower-semicontinuous. The type of f is   *)
+(*                                   X -> \bar R with X : topologicalType and *)
+(*                                   R : realType                             *)
+(*                                                                            *)
 (* * Normed modules :                                                         *)
 (*                normedModType K == interface type for a normed module       *)
 (*                                   structure over the numDomainType K.      *)
@@ -350,6 +355,27 @@ rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
 rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?ler_oppr ?oppr0//.
 by rewrite ltr_spaddr.
 Qed.
+
+Section lower_semicontinuous.
+Context {X : topologicalType} {R : realType}.
+Implicit Types f : X -> \bar R.
+Local Open Scope ereal_scope.
+
+Definition lower_semicontinuous f := forall x a, a%:E < f x ->
+  exists2 V, nbhs x V & forall y, V y -> a%:E < f y.
+
+Lemma lower_semicontinuousP f :
+  lower_semicontinuous f <-> forall a, open [set x | f x > a%:E].
+Proof.
+split=> [sci a|openf x a afx].
+  rewrite openE /= => x /= /sci[A + Aaf]; rewrite nbhsE /= => -[B xB BA].
+  apply: nbhs_singleton; apply: nbhs_interior.
+  by rewrite nbhsE /=; exists B => // y /BA /=; exact: Aaf.
+exists [set x | a%:E < f x] => //.
+by rewrite nbhsE/=; exists [set x | a%:E < f x].
+Qed.
+
+End lower_semicontinuous.
 
 (** neighborhoods *)
 
@@ -6398,7 +6424,7 @@ Hypothesis is_ballB : forall i, is_ball (B i).
 Hypothesis B_set0 : forall i, B i !=set0.
 
 Lemma vitali_lemma_finite (s : seq I) :
-  { D : seq I | [/\
+  { D : seq I | [/\ uniq D,
     {subset D <= s}, trivIset [set` D] B &
     forall i, i \in s -> exists j, [/\ j \in D,
       B i `&` B j !=set0,
@@ -6409,7 +6435,7 @@ pose LE x y := radius (B x) <= radius (B y).
 have LE_trans : transitive LE by move=> x y z; exact: le_trans.
 wlog : s / sorted LE s.
   have : sorted LE (sort LE s) by apply: sort_sorted => x y; exact: le_total.
-  move=> /[swap] /[apply] -[D [Ds trivIset_DB H]]; exists D; split => //.
+  move=> /[swap] /[apply] -[D [uD Ds trivIset_DB H]]; exists D; split => //.
   - by move=> x /Ds; rewrite mem_sort.
   - by move=> i; rewrite -(mem_sort LE) => /H.
 elim: s => [_|i [/= _ _|j t]]; first by exists nil.
@@ -6417,9 +6443,18 @@ elim: s => [_|i [/= _ _|j t]]; first by exists nil.
   move=> _ /[1!inE] /eqP ->; exists i; split => //; first by rewrite mem_head.
   - by rewrite setIid; exact: B_set0.
   - exact: sub1_scale_ball.
-rewrite /= => + /andP[ij jt] => /(_ jt)[u [ujt trivIset_uB H]].
+rewrite /= => + /andP[ij jt] => /(_ jt)[u [uu ujt trivIset_uB H]].
 have [K|] := pselect (forall j, j \in u -> B j `&` B i = set0).
+  have [iu|iu] := boolP (i \in u).
+    exists u; split => //.
+    - by move=> x /ujt xjt; rewrite inE xjt orbT.
+    - move=> k /[1!inE] /predU1P[->{k}|].
+        exists i; split; [by []| |exact: lexx|].
+          by rewrite setIid; exact: B_set0.
+        exact: sub1_scale_ball.
+      by move/H => [l [lu lk0 kl k3l]]; exists l; split => //; rewrite inE lu orbT.
   exists (i :: u); split => //.
+  - by rewrite /= iu.
   - move=> x /[1!inE] /predU1P[->|]; first by rewrite mem_head.
     by move/ujt => xjt; rewrite in_cons xjt orbT.
   - move=> k l /= /[1!inE] /predU1P[->{k}|ku].
@@ -6455,11 +6490,11 @@ move=> _ /[1!inE] /predU1P[->|/H//]; exists k; split; [exact: ku| | |].
 Qed.
 
 Lemma vitali_lemma_finite_cover (s : seq I) :
-  { D : seq I | [/\ {subset D <= s},
+  { D : seq I | [/\ uniq D, {subset D <= s},
     trivIset [set` D] B &
     cover [set` s] B `<=` cover [set` D] (scale_ball 3%:R \o B)] }.
 Proof.
-have [D [DV tD maxD]] := vitali_lemma_finite s.
+have [D [uD DV tD maxD]] := vitali_lemma_finite s.
 exists D; split => // x [i Vi] cBix/=.
 by have [j [Dj BiBj ij]] := maxD i Vi; move/(_ _ cBix) => ?; exists j.
 Qed.

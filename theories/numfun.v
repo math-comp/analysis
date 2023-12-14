@@ -308,6 +308,13 @@ Qed.
 
 End indic_lemmas.
 
+Lemma patch_indic T {R : numFieldType} (f : T -> R) (D : set T) :
+  f \_ D = (f \* \1_D)%R.
+Proof.
+apply/funext => x /=; rewrite /patch /= indicE.
+by case: ifPn => _; rewrite ?(mulr1, mulr0).
+Qed.
+
 Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
   xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
