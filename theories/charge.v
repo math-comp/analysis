@@ -1145,17 +1145,19 @@ Let E m j := is_max_approxRN mu nu m j.
 
 Let int_F_nu m A (mA : measurable A) : \int[mu]_(x in A) F m x <= nu A.
 Proof.
-rewrite [leLHS](_ : _ = \sum_(j < m.+1) \int[mu]_(x in (A `&` E m j)) F m x);
-    last first.
+rewrite [leLHS](_ : _ =
+    \sum_(j < m.+1) \int[mu]_(x in (A `&` E m j)) F m x); last first.
   rewrite -[in LHS](setIT A) -(bigsetU_is_max_approxRN mu nu m) big_distrr/=.
-  rewrite (@ge0_integral_bigsetU _ _ _ _ (fun n => A `&` E m n))//.
+  rewrite -(@big_mkord _ _ _ m.+1 xpredT (fun i => A `&` is_max_approxRN mu nu m i)).
+  rewrite ge0_integral_bigsetU ?big_mkord//.
   - by move=> n; apply: measurableI => //; exact: measurable_is_max_approxRN.
-  - by apply: measurable_funTS => //; exact: measurable_max_approxRN_seq.
-  - by move=> ? ?; exact: max_approxRN_seq_ge0.
+  - exact: iota_uniq.
   - apply: trivIset_setIl; apply: (@sub_trivIset _ _ _ setT (E m)) => //.
     exact: trivIset_is_max_approxRN.
-rewrite [leLHS](_ : _ = \sum_(j < m.+1) (\int[mu]_(x in (A `&` (E m j))) g j x));
-    last first.
+  - by apply: measurable_funTS => //; exact: measurable_max_approxRN_seq.
+  - by move=> ? ?; exact: max_approxRN_seq_ge0.
+rewrite [leLHS](_ : _ =
+    \sum_(j < m.+1) (\int[mu]_(x in (A `&` (E m j))) g j x)); last first.
   apply: eq_bigr => i _; apply:eq_integral => x; rewrite inE => -[?] [] Fmgi h.
   by apply/eqP; rewrite eq_le; rewrite /F Fmgi lexx.
 rewrite [leRHS](_ : _ = \sum_(j < m.+1) (nu (A `&` E m j))); last first.
@@ -1591,16 +1593,15 @@ End radon_nikodym.
 Notation "'d nu '/d mu" := (Radon_Nikodym mu nu) : charge_scope.
 
 Section radon_nikodym_lemmas.
+Context d (T : measurableType d) (R : realType).
 
-Lemma dominates_cscale d (T : measurableType d) (R : realType)
-  (mu : {sigma_finite_measure set T -> \bar R})
-  (nu : {charge set T -> \bar R})
-  (c : R) : nu `<< mu -> cscale c nu `<< mu.
+Lemma dominates_cscale (mu : {sigma_finite_measure set T -> \bar R})
+    (nu : {charge set T -> \bar R}) (c : R) :
+  nu `<< mu -> cscale c nu `<< mu.
 Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
 
-Lemma Radon_Nikodym_cscale d (T : measurableType d) (R : realType)
-  (mu : {sigma_finite_measure set T -> \bar R})
-  (nu : {charge set T -> \bar R}) (c : R) :
+Lemma Radon_Nikodym_cscale (mu : {sigma_finite_measure set T -> \bar R})
+    (nu : {charge set T -> \bar R}) (c : R) :
   nu `<< mu ->
   ae_eq mu [set: T] ('d [the charge _ _ of cscale c nu] '/d mu)
                     (fun x => c%:E * 'd nu '/d mu x).
@@ -1615,17 +1616,14 @@ move=> numu; apply: integral_ae_eq => [//| | |E mE].
   by rewrite -Radon_Nikodym_integral.
 Qed.
 
-Lemma dominates_caddl d (T : measurableType d)
-  (R : realType) (mu : {sigma_finite_measure set T -> \bar R})
-  (nu0 nu1 : {charge set T -> \bar R}) :
-  nu0 `<< mu -> nu1 `<< mu ->
-  cadd nu0 nu1 `<< mu.
+Lemma dominates_caddl (mu : {sigma_finite_measure set T -> \bar R})
+    (nu0 nu1 : {charge set T -> \bar R}) :
+  nu0 `<< mu -> nu1 `<< mu -> cadd nu0 nu1 `<< mu.
 Proof.
 by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
 Qed.
 
-Lemma Radon_Nikodym_cadd d (T : measurableType d) (R : realType)
-    (mu : {sigma_finite_measure set T -> \bar R})
+Lemma Radon_Nikodym_cadd (mu : {sigma_finite_measure set T -> \bar R})
     (nu0 nu1 : {charge set T -> \bar R}) :
   nu0 `<< mu -> nu1 `<< mu ->
   ae_eq mu [set: T] ('d [the charge _ _ of cadd nu0 nu1] '/d mu)

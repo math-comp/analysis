@@ -45,6 +45,13 @@ Require Import esum measure lebesgue_measure numfun.
 (*              m1 \x^ m2 == product measure over T1 * T2, m2 is a measure    *)
 (*                           measure over T1, and m1 is a sigma finite        *)
 (*                           measure over T2                                  *)
+(* locally_integrable D f == the real number-valued function f is locally     *)
+(*                           integrable on D                                  *)
+(*               iavg f A := "average" of the real-valued function f over     *)
+(*                           the set A                                        *)
+(*             HL_maximal == the Hardy–Littlewood maximal operator            *)
+(*                           input: real number-valued function               *)
+(*                           output: extended real number-valued function     *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -2900,28 +2907,30 @@ rewrite integral_mkcond integral0_eq// => x _.
 by rewrite /restrict; case: ifPn => //; rewrite in_set0.
 Qed.
 
-Lemma ge0_integral_bigsetU (F : (set T)^nat) (f : T -> \bar R) n :
-  (forall n, measurable (F n)) ->
-  let D := \big[setU/set0]_(i < n) F i in
+Lemma ge0_integral_bigsetU (I : eqType) (F : I -> set T) (f : T -> \bar R)
+    (s : seq I) : (forall n, measurable (F n)) -> uniq s ->
+  trivIset [set` s] F ->
+  let D := \big[setU/set0]_(i <- s) F i in
   measurable_fun D f ->
   (forall x, D x -> 0 <= f x) ->
-  trivIset `I_n F ->
-  \int[mu]_(x in D) f x = \sum_(i < n) \int[mu]_(x in F i) f x.
+  \int[mu]_(x in D) f x = \sum_(i <- s) \int[mu]_(x in F i) f x.
 Proof.
-move=> mF.
-elim: n => [|n ih] D mf f0 tF; first by rewrite /D 2!big_ord0 integral_set0.
-rewrite /D big_ord_recr/= integral_setU//; last 4 first.
-  - exact: bigsetU_measurable.
-  - by move: mf; rewrite /D big_ord_recr.
-  - by move: f0; rewrite /D big_ord_recr.
-  - apply/eqP; move: (trivIset_bigsetUI tF (ltnSn n) (leqnn n)).
-    rewrite [in X in X -> _](eq_bigl xpredT)// => i.
-    by rewrite (leq_trans (ltn_ord i)).
-rewrite ih ?big_ord_recr//.
-- apply: measurable_funS mf => //; first exact: bigsetU_measurable.
-  by rewrite /D big_ord_recr /=; apply: subsetUl.
-- by move=> t Dt; apply: f0; rewrite /D big_ord_recr/=; left.
-- by apply: sub_trivIset tF => x; exact: leq_trans.
+move=> mF; elim: s => [|h t ih] us tF D mf f0.
+  by rewrite /D 2!big_nil integral_set0.
+rewrite /D big_cons integral_setU//.
+- rewrite big_cons ih//.
+  + by move: us => /= /andP[].
+  + by apply: sub_trivIset tF => /= i /= it; rewrite inE it orbT.
+  + apply: measurable_funS mf => //; first exact: bigsetU_measurable.
+    by rewrite /D big_cons; exact: subsetUr.
+  + by move=> x UFx; apply: f0; rewrite /D big_cons; right.
+- exact: bigsetU_measurable.
+- by move: mf; rewrite /D big_cons.
+- by move: f0; rewrite /D big_cons.
+- apply/eqP; rewrite big_distrr/= big_seq big1// => i it.
+  move/trivIsetP : tF; apply => //=; rewrite ?mem_head//.
+  + by rewrite inE it orbT.
+  + by apply/eqP => hi; move: us => /=; rewrite hi it.
 Qed.
 
 Lemma le_integral_abse (D : set T) (mD : measurable D) (g : T -> \bar R) a :
@@ -3235,11 +3244,13 @@ rewrite monotone_convergence//; last 3 first.
     by rewrite 2!big_mkord; apply: subset_bigsetU.
 transitivity (limn (fun N => \int[mu]_(x in \big[setU/set0]_(i < N) F i) f x)).
   by apply/congr_lim/funext => n; rewrite /f_ [in RHS]integral_mkcond big_mkord.
-apply/congr_lim/funext => /= n; rewrite ge0_integral_bigsetU ?big_mkord//.
+apply/congr_lim/funext => /= n.
+rewrite -(big_mkord xpredT) ge0_integral_bigsetU ?big_mkord//.
+- exact: iota_uniq.
+- exact: sub_trivIset tF.
 - case: fi => + _; apply: measurable_funS => //; first exact: bigcup_measurable.
   exact: bigsetU_bigcup.
 - by move=> y Dy; apply: f0; exact: bigsetU_bigcup Dy.
-- exact: sub_trivIset tF.
 Qed.
 
 Lemma integrableS (E D : set T) (f : T -> \bar R) :
@@ -3414,14 +3425,14 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
       \int[mu]_(x in D) (g1^\- x) + \int[mu]_(x in D) (g2^\- x) \is a fin_num.
     rewrite ge0_fin_numE//.
       by rewrite lte_add_pinfty// ; exact: integral_funeneg_lt_pinfty.
-    by apply: adde_ge0; exact: integral_ge0.
+    by rewrite adde_ge0// integral_ge0.
   rewrite -sube_eq; last 2 first.
     - rewrite ge0_fin_numE.
         apply: lte_add_pinfty; last exact: integral_funeneg_lt_pinfty.
         apply: lte_add_pinfty; last exact: integral_funeneg_lt_pinfty.
         exact: integral_funepos_lt_pinfty (integrableD _ _ _).
       rewrite adde_ge0//; last exact: integral_ge0.
-      by apply: adde_ge0; exact: integral_ge0.
+      by rewrite adde_ge0// integral_ge0.
     - by rewrite fin_num_adde_defr.
   rewrite -(addeA (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
   rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)) -[eqbLHS]addeA.
@@ -5754,3 +5765,296 @@ by rewrite ritv //= -EFinM lee_fin mulrC.
 Unshelve. all: by end_near. Qed.
 
 End lebesgue_differentiation_continuous.
+
+Section locally_integrable.
+Context {R : realType}.
+Implicit Types (D : set R) (f g : R -> R).
+Local Open Scope ereal_scope.
+
+Local Notation mu := lebesgue_measure.
+
+Definition locally_integrable D f := [/\ measurable_fun D f, open D &
+  forall K, K `<=` D -> compact K -> \int[mu]_(x in K) `|f x|%:E < +oo].
+
+Lemma integrable_locally D f : open D ->
+  mu.-integrable D (EFin \o f) -> locally_integrable D f.
+Proof.
+move=> oD /integrableP[mf foo]; split => //; first exact/EFin_measurable_fun.
+move=> K KD cK; rewrite (le_lt_trans _ foo)// subset_integral//=.
+- exact: compact_measurable.
+- exact: open_measurable.
+- apply/EFin_measurable_fun; apply: measurableT_comp => //.
+  exact/EFin_measurable_fun.
+Qed.
+
+Lemma locally_integrableN D f :
+  locally_integrable D f -> locally_integrable D (\- f)%R.
+Proof.
+move=> [mf oD foo]; split => //; first exact: measurableT_comp.
+by move=> K KD cK; under eq_integral do rewrite normrN; exact: foo.
+Qed.
+
+Lemma locally_integrableD D f g :
+  locally_integrable D f -> locally_integrable D g ->
+  locally_integrable D (f \+ g)%R.
+Proof.
+move=> [mf oD foo] [mg _ goo]; split => //; first exact: measurable_funD.
+move=> K KD cK.
+suff : lebesgue_measure.-integrable K ((EFin \o f) \+ (EFin \o g)).
+  by case/integrableP.
+apply: integrableD => //=; first exact: compact_measurable.
+- apply/integrableP; split; last exact: foo.
+  apply/EFin_measurable_fun; apply: measurable_funS mf => //.
+  exact: open_measurable.
+- apply/integrableP; split; last exact: goo.
+  apply/EFin_measurable_fun; apply: measurable_funS mg => //.
+  exact: open_measurable.
+Qed.
+
+Lemma locally_integrableB D f g :
+  locally_integrable D f -> locally_integrable D g ->
+  locally_integrable D (f \- g)%R.
+Proof.
+by move=> lf lg; apply: locally_integrableD => //; exact: locally_integrableN.
+Qed.
+
+End locally_integrable.
+
+Section iavg.
+Context {R : realType}.
+Implicit Types (D A : set R) (f g : R -> R).
+Local Open Scope ereal_scope.
+
+Local Notation mu := lebesgue_measure.
+
+Definition iavg f A := (fine (mu A))^-1%:E * \int[mu]_(y in A) `| (f y)%:E |.
+
+Lemma iavg0 f : iavg f set0 = 0.
+Proof. by rewrite /iavg integral_set0 mule0. Qed.
+
+Lemma iavg_ge0 f A : 0 <= iavg f A.
+Proof.
+by rewrite /iavg mule_ge0 ?integral_ge0// lee_fin invr_ge0// fine_ge0.
+Qed.
+
+Lemma iavg_restrict f D A : measurable D -> measurable A ->
+  iavg (f \_ D) A = ((fine (mu A))^-1)%:E * \int[mu]_(y in D `&` A) `|f y|%:E.
+Proof.
+move=> mD mA; rewrite /iavg setIC integral_setI_indic//=; congr *%E.
+apply: eq_integral => /= y yx1.
+by rewrite patch_indic/= normrM EFinM (@ger0_norm _ (\1_D _)).
+Qed.
+
+Lemma iavgD f g A : measurable A -> mu A < +oo ->
+  measurable_fun A f -> measurable_fun A g ->
+  iavg (f \+ g)%R A <= iavg f A + iavg g A.
+Proof.
+move=> mA Aoo mf mg; have [r0|r0] := eqVneq (mu A) 0.
+  by rewrite /iavg r0/= invr0 !mul0e adde0.
+rewrite -muleDr//=; last by rewrite ge0_adde_def// inE integral_ge0.
+rewrite lee_pmul2l//; last first.
+  by rewrite lte_fin invr_gt0// fine_gt0// Aoo andbC/= lt0e r0/=.
+rewrite -ge0_integralD//=; [|by do 2 apply: measurableT_comp..].
+apply: ge0_le_integral => //=.
+- by do 2 apply: measurableT_comp => //; exact: measurable_funD.
+- by move=> /= x _; rewrite adde_ge0.
+- by apply: measurableT_comp => //; apply: measurable_funD => //;
+    exact: measurableT_comp.
+- by move=> /= x _; exact: ler_normD.
+Qed.
+
+End iavg.
+
+Section hardy_littlewood.
+Context {R : realType}.
+Notation mu := (@lebesgue_measure R).
+Implicit Types (D : set R) (f : R -> R).
+Local Open Scope ereal_scope.
+
+Definition HL_maximal f (x : R) : \bar R :=
+  ereal_sup [set iavg f (ball x r) | r in `]0, +oo[%classic%R].
+
+Local Notation HL := HL_maximal.
+
+Lemma HL_maximal_ge0 f D : locally_integrable D f ->
+  forall x, 0 <= HL (f \_ D) x.
+Proof.
+move=> Df x; apply: ereal_sup_le => //=.
+pose k := \int[mu]_(x in D `&` ball x 1) `|f x|%:E.
+exists ((fine (mu (ball x 1)))^-1%:E * k); last first.
+  rewrite mule_ge0//; last exact: integral_ge0.
+  by rewrite lee_fin// invr_ge0// fine_ge0.
+exists 1%R; first by rewrite in_itv/= ltr01.
+rewrite iavg_restrict//; last exact: measurable_ball.
+by case: Df => _ /open_measurable.
+Qed.
+
+Lemma HL_maximalT_ge0 f : locally_integrable setT f -> forall x, 0 <= HL f x.
+Proof. by move=> + x => /HL_maximal_ge0 /(_ x); rewrite patch_setT. Qed.
+
+Let locally_integrable_ltbally (f : R -> R) (x r : R) :
+  locally_integrable setT f -> \int[mu]_(y in ball x r) `|(f y)%:E| < +oo.
+Proof.
+move=> [mf _ locf]; have [r0|r0] := leP r 0%R.
+  by rewrite (ball0 _ _).2// integral_set0.
+rewrite (le_lt_trans _ (locf (closed_ball x r) _ (closed_ballR_compact _)))//.
+apply: subset_integral => //; first exact: measurable_ball.
+- by apply: measurable_closed_ball; exact/ltW.
+- apply: measurable_funTS; apply/measurableT_comp => //=.
+  exact: measurableT_comp.
+- exact: subset_closed_ball.
+Qed.
+
+Lemma lower_semicontinuous_HL_maximal f :
+  locally_integrable setT f -> lower_semicontinuous (HL f).
+Proof.
+move=> [mf ? locf]; apply/lower_semicontinuousP => a.
+have [a0|a0] := lerP 0 a; last first.
+  rewrite [X in open X](_ : _ = setT); first exact: openT.
+  by apply/seteqP; split=> // x _; exact: (lt_le_trans _ (HL_maximalT_ge0 _ _)).
+rewrite openE /= => x /= /ereal_sup_gt[_ [r r0] <-] afxr.
+rewrite /= in_itv /= andbT in r0.
+rewrite /iavg in afxr; set k := \int[_]_(_ in _) _ in afxr.
+apply: nbhs_singleton; apply: nbhs_interior; rewrite nbhsE /=.
+have k_gt0 : 0 < k.
+  rewrite lt0e integral_ge0// andbT; apply/negP => /eqP k0.
+  by move: afxr; rewrite k0 mule0 lte_fin ltNge a0.
+move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
+  move: afxr; rewrite -{a}a0 => xrk.
+  near (0%R : R)^'+ => d.
+  have xrdk : 0 < (fine (mu (ball x (r + d))))^-1%:E * k.
+    rewrite mule_gt0// lte_fin invr_gt0// fine_gt0//.
+    rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW.
+    by rewrite ltry andbT lte_fin pmulrn_lgt0// addr_gt0.
+  exists (ball x d).
+    by split; [exact: ball_open|exact: ballxx].
+  move=> y; rewrite /ball/= => xyd.
+  have ? : ball x r `<=` ball y (r + d).
+    move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
+    by rewrite (le_lt_trans (ler_normD _ _))// addrC ltrD// distrC.
+  have ? : k <= \int[mu]_(y in ball y (r + d)) `|(f y)%:E|.
+    apply: subset_integral =>//; [exact:measurable_ball|exact:measurable_ball|].
+    apply: measurable_funTS; apply: measurableT_comp => //=.
+    by apply/measurableT_comp => //=; case: locf.
+  have : iavg f (ball y (r + d)) <= HL f y.
+    apply: ereal_sup_ub => /=; exists (r + d)%R => //.
+    by rewrite in_itv/= andbT addr_gt0.
+  apply/lt_le_trans/(lt_le_trans xrdk); rewrite /iavg.
+  do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
+  rewrite lee_wpmul2l// lee_fin invr_ge0// fine_ge0// lee_fin pmulrn_rge0//.
+  by rewrite addr_gt0.
+have ka_pos : fine k / a \is Num.pos.
+  by rewrite posrE divr_gt0// fine_gt0 // k_gt0/= locally_integrable_ltbally.
+have k_fin_num : k \is a fin_num.
+  by rewrite ge0_fin_numE ?locally_integrable_ltbally// integral_ge0.
+have kar : (0 < 2^-1 * (fine k / a) - r)%R.
+  move: afxr; rewrite -{1}(fineK k_fin_num) -lte_pdivr_mulr; last first.
+    by rewrite fine_gt0// k_gt0/= ltey_eq k_fin_num.
+  rewrite (lebesgue_measure_ball _ (ltW r0))//.
+  rewrite -!EFinM !lte_fin -invf_div ltf_pV2 ?posrE ?pmulrn_lgt0//.
+  rewrite /= -[in X in X -> _]mulr_natl -ltr_pdivlMl//.
+  by rewrite -[in X in X -> _]subr_gt0.
+near (0%R : R)^'+ => d.
+have axrdk : a%:E < (fine (mu (ball x (r + d))))^-1%:E * k.
+  rewrite lebesgue_measure_ball//; last by rewrite addr_ge0// ltW.
+  rewrite -(fineK k_fin_num) -lte_pdivr_mulr; last first.
+    by rewrite fine_gt0// k_gt0/= locally_integrable_ltbally.
+  rewrite -!EFinM !lte_fin -invf_div ltf_pV2//; last first.
+    by rewrite posrE fine_gt0// ltry andbT lte_fin pmulrn_lgt0// addr_gt0.
+  rewrite -mulr_natl -ltr_pdivlMl// -ltrBrDl.
+  by near: d; exact: nbhs_right_lt.
+exists (ball x d).
+  by split; [exact: ball_open|exact: ballxx].
+move=> y; rewrite /ball/= => xyd.
+have ? : ball x r `<=` ball y (r + d).
+  move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
+  by rewrite (le_lt_trans (ler_normD _ _))// addrC ltrD// distrC.
+have ? : k <= \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
+  apply: subset_integral => //; [exact: measurable_ball|exact: measurable_ball|].
+  by apply: measurable_funTS; do 2 apply: measurableT_comp => //.
+have afxrdi : a%:E < (fine (mu (ball x (r + d))))^-1%:E *
+    \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
+  by rewrite (lt_le_trans axrdk)// lee_wpmul2l// lee_fin invr_ge0// fine_ge0.
+have /lt_le_trans : a%:E < iavg f (ball y (r + d)).
+  rewrite (lt_le_trans afxrdi)// /iavg.
+  do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
+  rewrite lee_wpmul2l// lee_fin invr_ge0// fine_ge0//= lee_fin pmulrn_rge0//.
+  by rewrite addr_gt0.
+apply; apply: ereal_sup_ub => /=.
+by exists (r + d)%R => //; rewrite in_itv/= andbT addr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma measurable_HL_maximal f :
+  locally_integrable setT f -> measurable_fun setT (HL f).
+Proof.
+move=> lf; apply: lower_semicontinuous_measurable.
+exact: lower_semicontinuous_HL_maximal.
+Qed.
+
+Let norm1 D f := \int[mu]_(y in D) `|(f y)%:E|.
+
+Lemma maximal_inequality f c :
+  locally_integrable setT f -> (0 < c)%R ->
+  mu [set x | HL f x > c%:E] <= (3%:R / c)%:E * norm1 setT f.
+Proof.
+move=> /= locf c0.
+have r_proof x : HL f x > c%:E -> {r | (0 < r)%R &
+    \int[mu]_(y in ball x r) `|(f y)%:E| > c%:E * mu (ball x r)}.
+  move=> /ereal_sup_gt/cid2[y /= /cid2[r]].
+  rewrite in_itv/= andbT => rg0 <-{y} Hc; exists r => //.
+  rewrite -(@fineK _ (mu (ball x r))) ?ge0_fin_numE//; last first.
+    by rewrite lebesgue_measure_ball ?ltry// ltW.
+  rewrite -lte_pdivl_mulr// 1?muleC// fine_gt0//.
+  by rewrite lebesgue_measure_ball 1?ltW// ltry lte_fin mulrn_wgt0.
+rewrite lebesgue_regularity_inner_sup//; last first.
+  rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+  exact: measurable_HL_maximal.
+apply: ub_ereal_sup => /= x /= [K [cK Kcmf <-{x}]].
+pose r_ x :=
+  if pselect (HL f x > c%:E) is left H then s2val (r_proof _ H) else 1%R.
+have r_pos (x : R) : (0 < r_ x)%R.
+  by rewrite /r_; case: pselect => //= cMfx; case: (r_proof _ cMfx).
+have cMfx_int x : c%:E < HL f x ->
+    \int[mu]_(y in ball x (r_ x)) `|(f y)|%:E > c%:E * mu (ball x (r_ x)).
+  move=> cMfx; rewrite /r_; case: pselect => //= => {}cMfx.
+  by case: (r_proof _ cMfx).
+set B := fun r => ball r (r_ r).
+have {}Kcmf : K `<=` cover [set i | HL f i > c%:E] (fun i => ball i (r_ i)).
+  by move=> r /Kcmf /= cMfr; exists r => //; exact: ballxx.
+have {Kcmf}[D Dsub Kcover] : finite_subset_cover [set i | c%:E < HL f i]
+    (fun i => ball i (r_ i)) K.
+  move: cK; rewrite compact_cover => /(_ _ _ _ _ Kcmf); apply.
+  by move=> /= x cMfx; exact/ball_open/r_pos.
+have KDB : K `<=` cover [set` D] B.
+  by apply: (subset_trans Kcover) => /= x [r Dr] rx; exists r.
+have is_ballB i : is_ball (B i) by exact: is_ball_ball.
+have Bset0 i : B i !=set0 by exists i; exact: ballxx.
+have [E [uE ED tEB DE]] := @vitali_lemma_finite_cover _ _ B is_ballB Bset0 D.
+rewrite (@le_trans _ _ (3%:R%:E * \sum_(i <- E) mu (B i)))//.
+  have {}DE := subset_trans KDB DE.
+  apply: (le_trans (@content_sub_additive _ _ _ [the measure _ _ of mu]
+      K (fun i => 3%:R *` B (nth 0%R E i)) (size E) _ _ _)) => //.
+  - by move=> k ?; rewrite scale_ballE//; exact: measurable_ball.
+  - by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
+  - apply: (subset_trans DE); rewrite /cover bigcup_seq.
+    by rewrite (big_nth 0%R)//= big_mkord.
+  - rewrite ge0_sume_distrr//= (big_nth 0%R) big_mkord; apply: lee_sum => i _.
+    rewrite scale_ballE// !lebesgue_measure_ball ?mulr_ge0 ?(ltW (r_pos _))//.
+    by rewrite -mulrnAr EFinM.
+rewrite !EFinM -muleA lee_wpmul2l//=.
+apply: (@le_trans _ _
+    (\sum_(i <- E) c^-1%:E * \int[mu]_(y in B i) `|(f y)|%:E)).
+  rewrite [in leLHS]big_seq [in leRHS]big_seq; apply: lee_sum => r /ED /Dsub /[!inE] rD.
+  by rewrite -lee_pdivr_mull ?invr_gt0// invrK /B/=; exact/ltW/cMfx_int.
+rewrite -ge0_sume_distrr//; last by move=> x _; rewrite integral_ge0.
+rewrite lee_wpmul2l//; first by rewrite lee_fin invr_ge0 ltW.
+rewrite -ge0_integral_bigsetU//=.
+- apply: subset_integral => //.
+  + by apply: bigsetU_measurable => ? ?; exact: measurable_ball.
+  + by apply: measurableT_comp => //; apply: measurableT_comp => //; case: locf.
+- by move=> n; exact: measurable_ball.
+- apply: measurableT_comp => //; apply: measurable_funTS.
+  by apply: measurableT_comp => //; case: locf.
+Qed.
+
+End hardy_littlewood.

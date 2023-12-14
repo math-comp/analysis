@@ -275,33 +275,7 @@ by move=> []; case: ifPn; rewrite ?negbK// => /set0P[t [At Dt]] ->;
    exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_set).
 Qed.
 
-Lemma image_indic_sub D A : \1_D @` A `<=` ([set 0; 1] : set R).
-Proof.
-by rewrite image_indic; do ![case: ifP=> //= _] => // t []//= ->; [left|right].
-Qed.
-
-Lemma fimfunE (f : {fimfun T >-> R}) x :
-  f x = \sum_(y \in range f) (y * \1_(f @^-1` [set y]) x).
-Proof.
-rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
-by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
-Qed.
-
-End indic_lemmas.
-
-Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
-  \1_A = (1 : T -> R) \_ A.
-Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
-
-Lemma restrict_indic T (R : numFieldType) (E A : set T) :
-  ((\1_E : T -> R) \_ A) = \1_(E `&` A).
-Proof.
-apply/funext => x; rewrite /restrict 2!indicE.
-case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
-by rewrite in_setI (negbTE xA) andbF.
-Qed.
-
-Lemma preimage_indic (T : Type) (R : ringType) (D : set T) (B : set R) :
+Lemma preimage_indic (D : set T) (B : set R) :
   \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
                             else (if 0 \in B then ~` D else set0).
 Proof.
@@ -320,6 +294,27 @@ rewrite /preimage/= /indic; apply/seteqP; split => x;
   by rewrite inE in B0.
 Qed.
 
+Lemma image_indic_sub D A : \1_D @` A `<=` ([set 0; 1] : set R).
+Proof.
+by rewrite image_indic; do ![case: ifP=> //= _] => // t []//= ->; [left|right].
+Qed.
+
+Lemma fimfunE (f : {fimfun T >-> R}) x :
+  f x = \sum_(y \in range f) (y * \1_(f @^-1` [set y]) x).
+Proof.
+rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
+by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
+Qed.
+
+End indic_lemmas.
+
+Lemma patch_indic T {R : numFieldType} (f : T -> R) (D : set T) :
+  f \_ D = (f \* \1_D)%R.
+Proof.
+apply/funext => x /=; rewrite /patch /= indicE.
+by case: ifPn => _; rewrite ?(mulr1, mulr0).
+Qed.
+
 Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
   xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
@@ -334,6 +329,18 @@ Proof.
 apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
 by rewrite mem_ysection => ->.
 by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
+Qed.
+
+Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
+  \1_A = (1 : T -> R) \_ A.
+Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
+
+Lemma restrict_indic T (R : numFieldType) (E A : set T) :
+  ((\1_E : T -> R) \_ A) = \1_(E `&` A).
+Proof.
+apply/funext => x; rewrite /restrict 2!indicE.
+case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
+by rewrite in_setI (negbTE xA) andbF.
 Qed.
 
 Section ring.
