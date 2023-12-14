@@ -2611,6 +2611,10 @@ Definition dnbhs {T : topologicalType} (x : T) :=
   within (fun y => y != x) (nbhs x).
 Notation "x ^'" := (dnbhs x) : classical_set_scope.
 
+Lemma nbhs_dnbhs_neq {T : topologicalType} (p : T) :
+  \forall x \near nbhs p^', x != p.
+Proof. exact: withinT. Qed.
+
 Lemma dnbhsE (T : topologicalType) (x : T) : nbhs x = x^' `&` at_point x.
 Proof.
 rewrite predeqE => A; split=> [x_A|[x_A Ax]].

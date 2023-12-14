@@ -3035,6 +3035,14 @@ apply/(iffP idP) => [|].
   by rewrite lee_fin; apply/ler_addgt0Pr => e e0; rewrite -lee_fin EFinD xy.
 Qed.
 
+Lemma lee_subgt0Pr x y :
+  reflect (forall e, (0 < e)%R -> x - e%:E <= y) (x <= y).
+Proof.
+apply/(iffP idP) => [xy e|xy].
+  by rewrite lee_subl_addr//; move: e; exact/lee_addgt0Pr.
+by apply/lee_addgt0Pr => e e0; rewrite -lee_subl_addr// xy.
+Qed.
+
 Lemma lee_mul01Pr x y : 0 <= x ->
   reflect (forall r, (0 < r < 1)%R -> r%:E * x <= y) (x <= y).
 Proof.

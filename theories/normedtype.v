@@ -2077,6 +2077,16 @@ Lemma nbhs_left_ge x z : z < x -> \forall y \near x^'-, z <= y.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
 Unshelve. all: by end_near. Qed.
 
+Lemma not_near_at_rightP T (f : R -> T) (p : R) (P : pred T) :
+  ~ (\forall x \near p^'+, P (f x)) ->
+  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P (f x).
+Proof.
+move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
+apply: contrapT; apply: pePf; apply/andP; split.
+- by near: t; exact: nbhs_right_gt.
+- by near: t; apply: nbhs_right_lt; rewrite ltr_addl.
+Unshelve. all: by end_near. Qed.
+
 End at_left_right.
 #[global] Typeclasses Opaque at_left at_right.
 Notation "x ^'-" := (at_left x) : classical_set_scope.

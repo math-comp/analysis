@@ -83,6 +83,33 @@
   + lemma `maxe_cvg_0_cvg_fin_num`
   + lemma `maxe_cvg_maxr_cvg`
   + lemma `maxe_cvg_0_cvg_0`
+- in `constructive_ereal.v`
+  + lemma `lee_subgt0Pr`
+
+- in `topology.v`:
+  + lemma `nbhs_dnbhs_neq`
+
+- in `normedtype.v`:
+  + lemma `not_near_at_rightP`
+
+- in `realfun.v`:
+  + lemma `cvg_at_right_left_dnbhs`
+  + lemma `cvg_at_rightP`
+  + lemma `cvg_at_leftP`
+  + lemma `cvge_at_rightP`
+  + lemma `lime_sup`
+  + lemma `lime_inf`
+  + lemma `lime_supE`
+  + lemma `lime_infE`
+  + lemma `lime_infN`
+  + lemma `lime_supN`
+  + lemma `lime_sup_ge0`
+  + lemma `lime_inf_ge0`
+  + lemma `lime_supD`
+  + lemma `lime_sup_le`
+  + lemma `lime_inf_sup`
+  + lemma `lim_lime_inf`
+  + lemma `lim_lime_sup`
 
 ### Changed
 
