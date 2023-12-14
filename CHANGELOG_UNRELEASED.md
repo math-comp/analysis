@@ -34,8 +34,35 @@
 	`nondecreasing_cvge`, `nondecreasing_is_cvge`,
 	`nondecreasing_at_right_cvge`, `nondecreasing_at_right_is_cvge`,
 	`nonincreasing_at_right_cvge`, `nonincreasing_at_right_is_cvge`
+- in `ereal.v`:
+  + lemmas `ereal_sup_le`, `ereal_inf_le`
+
+- in `normedtype.v`:
+  + definition `lower_semicontinuous`
+  + lemma `lower_semicontinuousP`
+
+- in `numfun.v`:
+  + lemma `patch_indic`
+
+- in `lebesgue_measure.v`
+  + lemma `lower_semicontinuous_measurable`
+
+- in `lebesgue_integral.v`:
+  + definition `locally_integrable`
+  + lemmas `integrable_locally`, `locally_integrableN`, `locally_integrableD`,
+    `locally_integrableB`
+  + definition `iavg`
+  + lemmas `iavg0`, `iavg_ge0`, `iavg_restrict`, `iavgD`
+  + definitions `HL_maximal`
+  + lemmas `HL_maximal_ge0`, `HL_maximalT_ge0`,
+    `lower_semicontinuous_HL_maximal`, `measurable_HL_maximal`,
+    `maximal_inequality`
 
 ### Changed
+
+- in `normedtype.v`:
+  + lemmas `vitali_lemma_finite` and `vitali_lemma_finite_cover` now returns
+    duplicate-free lists of indices
   
 ### Renamed
 
@@ -43,6 +70,9 @@
   + `lnX` -> `lnXn`
 
 ### Generalized
+
+- in `lebesgue_integral.v`
+  + `ge0_integral_bigsetU` generalized from `nat` to `eqType`
 
 ### Deprecated
 
