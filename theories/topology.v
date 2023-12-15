@@ -4248,14 +4248,6 @@ suff : R `&` U = R by move: Rx => /[swap] <- [].
 by apply: ctdR; [exists z|exists U|exists U].
 Qed.
 
-Lemma totally_disconnected_compact {T : topologicalType} :
-  hausdorff_space T -> 
-  compact [set: T] ->
-  totally_disconnected [set: T] -> 
-  zero_dimensional T.
-Proof.
-move=> hsdfT cmpT dctT x y xny.
-
 Lemma totally_disconnected_cvg {T : topologicalType} (x : T) :
   hausdorff_space T -> zero_dimensional T -> compact [set: T] ->
   filter_from [set D : set T | D x /\ clopen D] id --> x.
