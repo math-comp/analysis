@@ -11,6 +11,7 @@
 classical/all_classical.v
 classical/boolp.v
 classical/contra.v
+classical/wochoice.v
 classical/classical_sets.v
 classical/mathcomp_extra.v
 classical/functions.v
