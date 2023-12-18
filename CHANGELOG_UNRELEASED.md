@@ -13,6 +13,20 @@
 - in `lebesgue_integral.v`:
   + `sigma_finite_measure` instance on product measure `\x`
 
+- file `contra.v`
+- in `contra.v`
+  + lemma `assume_not`
+  + tactic `assume_not`
+  + lemma `absurd_not`
+  + tactics `absurd_not`, `contrapose`
+  + tactic notations `contra`, `contra : constr(H)`, `contra : ident(H)`,
+    `contra : { hyp_list(Hs) } constr(H)`, `contra : { hyp_list(Hs) } ident(H)`,
+	 `contra : { - } constr(H)`
+  + lemma `absurd`
+  + tactic notations `absurd`, `absurd constr(P)`, `absurd : constr(H)`,
+    `absurd : ident(H)`, `absurd : { hyp_list(Hs) } constr(H)`,
+	 `absurd : { hyp_list(Hs) } ident(H)`
+
 - in `topology.v`:
   + lemma `filter_bigI_within`
   + lemma `near_powerset_map`
