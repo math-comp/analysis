@@ -8,6 +8,7 @@
 -arg -w -arg -projection-no-head-constant
 
 boolp.v
+contra.v
 classical_sets.v
 mathcomp_extra.v
 functions.v
