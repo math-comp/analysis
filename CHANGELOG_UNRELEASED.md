@@ -98,6 +98,7 @@
   + lemma `Radon_Nikodym_cadd`
   + lemma `Radon_Nikodym_chain_rule`
 
+- in `sequences.v`:
   + lemma `minr_cvg_0_cvg_0`
   + lemma `mine_cvg_0_cvg_fin_num`
   + lemma `mine_cvg_minr_cvg`

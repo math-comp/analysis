@@ -2052,6 +2052,131 @@ Notation nneseries_pred0 := eseries_pred0 (only parsing).
 #[deprecated(since="analysis 0.6.0", note="Use eseries_mkcond instead.")]
 Notation nneseries_mkcond := eseries_mkcond (only parsing).
 
+Section minr_cvg_0.
+Local Open Scope ring_scope.
+Context {R : realFieldType}.
+Implicit Types (u : R^nat) (r : R).
+
+Lemma minr_cvg_0_cvg_0 u r : 0 < r -> (forall k, 0 <= u k) ->
+  minr (u n) r @[n --> \oo] --> (0:R) -> u --> (0:R).
+Proof.
+move=> r0 u0 minr_cvg; apply/cvgrPdist_lt => _ /posnumP[e].
+have : 0 < minr e%:num r by rewrite lt_minr// r0 andbT.
+move/cvgrPdist_lt : minr_cvg => /[apply] -[M _ hM].
+near=> n; rewrite sub0r normrN.
+have /hM : (M <= n)%N by near: n; exists M.
+rewrite sub0r normrN (ger0_norm (u0 n)) ger0_norm//; last first.
+  by rewrite le_minr u0 ltW.
+by move/lt_min_lt.
+Unshelve. all: by end_near. Qed.
+
+Lemma maxr_cvg_0_cvg_0 u r : r < 0 -> (forall k, u k <= 0) ->
+  maxr (u n) r @[n --> \oo] --> (0:R) -> u --> (0:R).
+Proof.
+move=> r0 u0.
+under eq_fun do rewrite -(opprK (u _)) -{1}(opprK r) -oppr_min.
+rewrite -oppr0.
+move/cvgNP/minr_cvg_0_cvg_0.
+rewrite -oppr0 ltr_oppr in r0.
+move/(_ r0).
+have Nu0 k : 0 <= - u k by rewrite ler_oppr oppr0.
+by move=> /(_ Nu0)/cvgNP; rewrite opprK.
+Qed.
+
+End minr_cvg_0.
+
+Section mine_cvg_0.
+Context {R : realFieldType}.
+Local Open Scope ereal_scope.
+Implicit Types (u : (\bar R)^nat) (r : R) (x : \bar R).
+
+Lemma mine_cvg_0_cvg_fin_num u x : 0 < x -> (forall k, 0 <= u k) ->
+  mine (u n) x @[n --> \oo] --> 0 ->
+  \forall n \near \oo, u n \is a fin_num.
+Proof.
+case: x => [r r0 u0 /fine_cvgP[_]|_ u0|//]; last first.
+  under eq_cvg do rewrite miney.
+  by case/fine_cvgP.
+move=> /cvgrPdist_lt/(_ _ r0)[N _ hN].
+near=> n; have /hN : (N <= n)%N by near: n; exists N.
+rewrite sub0r normrN /= ger0_norm ?fine_ge0//; last first.
+  by rewrite le_minr u0 ltW.
+by have := u0 n; case: (u n) => //=; rewrite ltxx.
+Unshelve. all: by end_near. Qed.
+
+Lemma mine_cvg_minr_cvg u r : (0 < r)%R -> (forall k, 0 <= u k) ->
+  mine (u n) r%:E @[n --> \oo] --> 0 ->
+  minr (fine (u n)) r @[n --> \oo] --> (0:R)%R.
+Proof.
+move=> r0 u0 mine_cvg; apply: (cvg_trans _ (fine_cvg mine_cvg)).
+move/fine_cvgP : mine_cvg => [_ /=] /cvgrPdist_lt.
+move=> /(_ _ r0)[N _ hN]; apply: near_eq_cvg; near=> n.
+have xnoo : u n < +oo.
+  rewrite ltNge leye_eq; apply/eqP => xnoo.
+  have /hN : (N <= n)%N by near: n; exists N.
+  by rewrite /= sub0r normrN xnoo //= gtr0_norm // ltxx.
+by rewrite /= -(@fineK _ (u n)) ?ge0_fin_numE//= -fine_min.
+Unshelve. all: by end_near. Qed.
+
+Lemma mine_cvg_0_cvg_0 u x : 0 < x -> (forall k, 0 <= u k) ->
+  mine (u n) x @[n --> \oo] --> 0 -> u --> 0.
+Proof.
+move=> x0 u0 h; apply/fine_cvgP; split.
+  exact: (mine_cvg_0_cvg_fin_num x0).
+case: x x0 h => [r r0 h|_|//]; last first.
+  under eq_cvg do rewrite miney.
+  exact: fine_cvg.
+apply: (@minr_cvg_0_cvg_0 _ (fine \o u) r) => //.
+  by move=> k /=; rewrite fine_ge0.
+exact: mine_cvg_minr_cvg.
+Qed.
+
+Lemma maxe_cvg_0_cvg_fin_num u x : x < 0 -> (forall k, u k <= 0) ->
+  maxe (u n) x @[n --> \oo] --> 0 ->
+  \forall n \near \oo, u n \is a fin_num.
+Proof.
+move=> x0 u0.
+under eq_fun do rewrite -(oppeK (u _)) -{1}(oppeK x) -oppe_min.
+rewrite -oppe0.
+move/cvgeNP/mine_cvg_0_cvg_fin_num.
+rewrite -oppe0 lte_oppr in x0.
+move/(_ x0).
+have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
+move=> /(_ Nu0)[n _ Hn].
+by exists n => // k nk; rewrite -fin_numN; exact: Hn.
+Qed.
+
+Lemma maxe_cvg_maxr_cvg u r : (r < 0)%R -> (forall k, u k <= 0) ->
+  maxe (u n) r%:E @[n --> \oo] --> 0 ->
+  maxr (fine (u n)) r @[n --> \oo] --> (0:R)%R.
+Proof.
+move=> r0 u0.
+under eq_fun do rewrite -(oppeK (u _)) -{1}(oppeK r%:E) -oppe_min.
+rewrite -oppr0 EFinN.
+move/cvgeNP/mine_cvg_minr_cvg.
+rewrite -oppr0 ltr_oppr in r0.
+move/(_ r0).
+have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
+move=> /(_ Nu0)/cvgNP.
+by under eq_cvg do rewrite /GRing.opp /= oppr_min fineN !opprK.
+Qed.
+
+Lemma maxe_cvg_0_cvg_0 u x : x < 0 -> (forall k, u k <= 0) ->
+  maxe (u n) x @[n --> \oo] --> 0 -> u --> 0.
+Proof.
+move=> x0 u0.
+under eq_fun do rewrite -(oppeK (u _)) -{1}(oppeK x) -oppe_min.
+rewrite -oppe0.
+move/cvgeNP/mine_cvg_0_cvg_0.
+rewrite -oppe0 lte_oppr in x0.
+move/(_ x0).
+have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
+move=> /(_ Nu0)/cvgeNP.
+by under eq_cvg do rewrite oppeK.
+Qed.
+
+End mine_cvg_0.
+
 Definition sdrop T (u : T^nat) n := [set u k | k in [set k | k >= n]]%N.
 
 Section sdrop.

@@ -238,7 +238,7 @@ Local Notation nu := (charge_of_finite_measure mu).
 Let nu0 : nu set0 = 0. Proof. exact: measure0. Qed.
 
 Let nu_finite S : measurable S -> nu S \is a fin_num.
-Proof. by apply: fin_num_measure. Qed.
+Proof. exact: fin_num_measure. Qed.
 
 Let nu_sigma_additive : semi_sigma_additive nu.
 Proof. exact: measure_semi_sigma_additive. Qed.
@@ -442,8 +442,8 @@ Lemma caddE E : cadd E = n1 E + n2 E. Proof. by []. Qed.
 
 End charge_add.
 
-Lemma dominates_caddl d (T : measurableType d)
-  (R : realType) (mu : {sigma_finite_measure set T -> \bar R})
+Lemma dominates_caddl d (T : measurableType d) (R : realType)
+  (mu : {sigma_finite_measure set T -> \bar R})
   (nu0 nu1 : {charge set T -> \bar R}) :
   nu0 `<< mu -> nu1 `<< mu ->
   cadd nu0 nu1 `<< mu.
@@ -453,7 +453,7 @@ Qed.
 
 Section pushforward_charge.
 Local Open Scope ereal_scope.
-Context d d' (T1 : measurableType d) (T2 : measurableType d') (f : T1 -> T2).
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (f : T1 -> T2).
 Variables (R : realFieldType) (nu : {charge set T1 -> \bar R}).
 
 Definition cpushforward (mf : measurable_fun setT f) A := nu (f @^-1` A).
@@ -466,7 +466,7 @@ Proof. by rewrite /cpushforward preimage_set0 charge0. Qed.
 Let cpushforward_finite A : measurable A -> cpushforward mf A \is a fin_num.
 Proof.
 move=> mA; apply: fin_num_measure.
-by rewrite -[X in measurable X]setTI; apply: mf.
+by rewrite -[X in measurable X]setTI; exact: mf.
 Qed.
 
 Let cpushforward_sigma_additive : semi_sigma_additive (cpushforward mf).
@@ -479,8 +479,8 @@ apply: charge_semi_sigma_additive.
 - by rewrite -preimage_bigcup -[X in measurable X]setTI; exact: mf.
 Qed.
 
-HB.instance Definition _ := isCharge.Build _ _ _
-  (cpushforward mf) cpushforward0 cpushforward_finite cpushforward_sigma_additive.
+HB.instance Definition _ := isCharge.Build _ _ _ (cpushforward mf)
+  cpushforward0 cpushforward_finite cpushforward_sigma_additive.
 
 End pushforward_charge.
 
@@ -521,6 +521,7 @@ End positive_negative_set.
 
 Notation "nu .-negative_set" := (negative_set nu) : charge_scope.
 Notation "nu .-positive_set" := (positive_set nu) : charge_scope.
+
 Local Open Scope charge_scope.
 
 Section positive_negative_set_lemmas.
@@ -583,150 +584,6 @@ Qed.
 
 End positive_negative_set_realFieldType.
 
-(* TODO: generalize *)
-Section min_cvg_0_cvg_0.
-Context (R : realFieldType).
-
-Lemma minr_cvg_0_cvg_0 (x : R^nat) (p : R) :
- (0 < p)%R -> (forall k, 0 <= x k)%R ->
-  (fun n => minr (x n) p)%R --> (0:R)%R -> x --> (0:R)%R.
-Proof.
-move=> p0 x_ge0 minr_cvg.
-apply/(@cvgrPdist_lt _ [normedModType R of R^o]) => _ /posnumP[e].
-have : (0 < minr (e%:num) p)%R by rewrite lt_minr// p0 andbT.
-move/(@cvgrPdist_lt _ [normedModType R of R^o]) : minr_cvg => /[apply] -[M _ hM].
-near=> n; rewrite sub0r normrN.
-have /hM : (M <= n)%N by near: n; exists M.
-rewrite sub0r normrN !ger0_norm// ?le_minr ?divr_ge0//=.
-  by move/lt_min_lt.
-by rewrite x_ge0 ltW.
-Unshelve. all: by end_near. Qed.
-
-Lemma mine_cvg_0_cvg_fin_num (x : (\bar R)^nat) (p : \bar R) :
-  (0 < p) -> (forall k, 0 <= x k) ->
-  (fun n => mine (x n) p) --> 0 ->
-  \forall n \near \oo, x n \is a fin_num.
-Proof.
-case : p => //; last first.
-- move=> _ x_ge0.
-  under eq_cvg do rewrite miney.
-  by move/fine_cvgP => [].
-- move=> p p0 x_ge0 /fine_cvgP[_].
-  move=> /(@cvgrPdist_lt _ [normedModType R of R^o])/(_ _ p0)[N _ hN].
-  near=> n; have /hN : (N <= n)%N by near: n; exists N.
-  rewrite sub0r normrN /= ger0_norm ?fine_ge0//; last first.
-    by rewrite le_minr x_ge0 ltW.
-  have := x_ge0 n; case: (x n) => //=; rewrite ltxx //=.
-Unshelve. all: by end_near. Qed.
-
-Lemma mine_cvg_minr_cvg (x : (\bar R)^nat) (p : R) :
-  (0 < p)%R -> (forall k, 0 <= x k) ->
-  (fun n => mine (x n) p%:E) --> 0 ->
-  (fun n => minr ((fine \o x) n) p) --> (0:R)%R.
-Proof.
-move=> p0 x_ge0 mine_cvg.
-apply: (cvg_trans _ (fine_cvg mine_cvg)).
-move/fine_cvgP : mine_cvg => [_ /=] /(@cvgrPdist_lt _ [normedModType R of R^o]).
-move=> /(_ _ p0)[N _ hN]; apply: near_eq_cvg; near=> n.
-have xnoo : x n < +oo.
-  rewrite ltNge leye_eq; apply/eqP => xnoo.
-  have /hN : (N <= n)%N by near: n; exists N.
-  by rewrite /= sub0r normrN xnoo //= gtr0_norm // ltxx.
-by rewrite /= -(@fineK _ (x n)) ?ge0_fin_numE//= -fine_min.
-Unshelve. all: by end_near. Qed.
-
-Lemma mine_cvg_0_cvg_0 (x : (\bar R)^nat) (p : \bar R) :
-  (0 < p) -> (forall k, 0 <= x k) ->
-  (fun n => mine (x n) p) --> 0 -> x --> 0.
-Proof.
-move=> p0 x_ge0 h; apply/fine_cvgP; split; first exact: (mine_cvg_0_cvg_fin_num p0).
-case: p p0 h => //; last first.
-- move=> _.
-  under eq_cvg do rewrite miney.
-  exact: fine_cvg.
-- move=> p p0 h.
-  apply: (@minr_cvg_0_cvg_0 (fine \o x) p) => //; last exact: mine_cvg_minr_cvg.
-  by move=> k /=; rewrite fine_ge0.
-Qed.
-
-End min_cvg_0_cvg_0.
-
-Section max_cvg_0_cvg_0.
-Context (R : realFieldType).
-
-Lemma maxr_cvg_0_cvg_0 (x : R^nat) (np : R) :
- (np < 0)%R -> (forall k, x k <= 0)%R ->
-  (fun n => maxr (x n) np)%R --> (0:R)%R -> x --> (0:R)%R.
-Proof.
-move=> np0 x_le0.
-under eq_fun do rewrite -(opprK (x _)) -{1}(opprK np) -oppr_min.
-rewrite -oppr0.
-move/(@cvgNP _ [normedModType R of R^o]).
-move/minr_cvg_0_cvg_0.
-rewrite -oppr0 ltr_oppr in np0.
-move/(_ np0).
-have oppx_ge0 : (forall k : nat, (0 <= - x k)%R); first by move=> n; rewrite ler_oppr oppr0.
-move/(_ oppx_ge0).
-move/(@cvgNP _ [normedModType R of R^o]).
-by rewrite opprK.
-Qed.
-
-Lemma maxe_cvg_0_cvg_fin_num (x : (\bar R)^nat) (np : \bar R) :
-  (np < 0) -> (forall k, x k <= 0) ->
-  (fun n => maxe (x n) np) --> 0 ->
-  \forall n \near \oo, x n \is a fin_num.
-Proof.
-move=> np0 x_le0.
-under eq_fun do rewrite -(oppeK (x _)) -{1}(oppeK np) -oppe_min.
-rewrite -oppe0.
-move/cvgeNP.
-move/mine_cvg_0_cvg_fin_num.
-rewrite -oppe0 lte_oppr in np0.
-move/(_ np0).
-have oppx_ge0 : (forall k : nat, 0 <= - x k); first by move=> n; rewrite lee_oppr oppe0.
-move/(_ oppx_ge0).
-move=> [] n _ Hn.
-exists n => // k nk.
-rewrite -fin_numN.
-by apply: Hn.
-Qed.
-
-Lemma maxe_cvg_maxr_cvg (x : (\bar R)^nat) (np : R) :
-  (np < 0)%R -> (forall k, x k <= 0) ->
-  (fun n => maxe (x n) np%:E) --> 0 ->
-  (fun n => maxr ((fine \o x) n) np) --> (0:R)%R.
-Proof.
-move=> np0 x_le0.
-under eq_fun do rewrite -(oppeK (x _)) -{1}(oppeK np%:E) -oppe_min.
-rewrite -oppr0 EFinN.
-move/cvgeNP.
-move/mine_cvg_minr_cvg.
-rewrite -oppr0 ltr_oppr in np0.
-move/(_ np0).
-have oppx_ge0 : (forall k : nat, 0 <= - x k); first by move=> n; rewrite lee_oppr oppe0.
-move/(_ oppx_ge0).
-move/(@cvgNP _ [normedModType R of R^o]).
-by under eq_cvg do rewrite /GRing.opp /= oppr_min fineN !opprK.
-Qed.
-
-Lemma maxe_cvg_0_cvg_0 (x : (\bar R)^nat) (np : \bar R) :
-  (np < 0) -> (forall k, x k <= 0) ->
-  (fun n => maxe (x n) np) --> 0 -> x --> 0.
-Proof.
-move=> np0 x_le0.
-under eq_fun do rewrite -(oppeK (x _)) -{1}(oppeK np) -oppe_min.
-rewrite -oppe0.
-move/cvgeNP.
-move/mine_cvg_0_cvg_0.
-rewrite -oppe0 lte_oppr in np0.
-move/(_ np0).
-have oppx_ge0 : (forall k : nat, 0 <= - x k); first by move=> n; rewrite lee_oppr oppe0.
-move/(_ oppx_ge0) /cvgeNP.
-by under eq_cvg do rewrite oppeK.
-Qed.
-
-End max_cvg_0_cvg_0.
-
 Section hahn_decomposition_lemma.
 Context d (T : measurableType d) (R : realType).
 Variables (nu : {charge set T -> \bar R}) (D : set T).
@@ -774,15 +631,13 @@ have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < d_ A.
 by exists B; split => //; rewrite (le_trans _ (ltW mnuB)).
 Qed.
 
-Let mine2_cvg_0_cvg_0 (x : (\bar R)^nat) :
-  (forall k, 0 <= x k) ->
-  (fun n => mine (x n * 2^-1%:E) 1) --> 0 -> x --> 0.
+Let mine2_cvg_0_cvg_0 (u : (\bar R)^nat) : (forall k, 0 <= u k) ->
+  mine (u n * 2^-1%:E) 1 @[n --> \oo] --> 0 -> u --> 0.
 Proof.
-move=> x_ge0 h.
-have x2x2 : x =1 (fun n => 2%:E * (x n * 2^-1%:E)).
-  move=> n.
-  by rewrite muleCA -EFinM divff ?mule1.
-under eq_cvg do rewrite x2x2.
+move=> u0 h.
+have u2u2 : u =1 (fun n => 2%:E * (u n * 2^-1%:E)).
+  by move=> n; rewrite muleCA -EFinM divff ?mule1.
+under eq_cvg do rewrite u2u2.
 rewrite -(mule0 2%:E).
 apply: cvgeMl => //.
 apply: (mine_cvg_0_cvg_0 lte01) => //.
@@ -1035,7 +890,8 @@ Let mP : measurable P. Proof. by have [[mP _] _ _ _] := nuPN. Qed.
 
 Let mN : measurable N. Proof. by have [_ [mN _] _ _] := nuPN. Qed.
 
-Local Definition cjordan_pos : {charge set T -> \bar R} := [the charge _ _ of crestr0 nu mP].
+Local Definition cjordan_pos : {charge set T -> \bar R} :=
+  [the charge _ _ of crestr0 nu mP].
 
 Lemma cjordan_posE A : cjordan_pos A = crestr0 nu mP A.
 Proof. by []. Qed.
@@ -1659,19 +1515,6 @@ Qed.
 
 End radon_nikodym_finite.
 
-(* PR:#1110 *)
-Lemma measure_dominates_ae_eq d (T : measurableType d) (R : realType)
-  (mu : {measure set T -> \bar R}) (nu : {measure set T -> \bar R})
-  (f g : T -> \bar R) E : measurable E ->
-    nu `<< mu -> ae_eq mu E f g -> ae_eq nu E f g.
-Proof. Admitted.
-
-(* PR:#1110 *)
-Lemma ae_eqS d (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R}) A B f g :
-  B `<=` A -> ae_eq mu A f g ->  ae_eq mu B f g.
-Proof.
-Admitted.
-
 Section radon_nikodym_sigma_finite.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {sigma_finite_measure set T -> \bar R})
@@ -1791,7 +1634,7 @@ exists g; split => //.
 - move=> A mA; rewrite nuf ?inE//; apply: ae_eq_integral => //.
   + exact: measurable_funTS.
   + exact: measurable_funTS.
-  + exact: ae_eqS fg.
+  + exact: ae_eq_subset fg.
 Qed.
 
 End radon_nikodym_sigma_finite.
