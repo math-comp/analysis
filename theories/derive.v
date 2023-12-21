@@ -808,10 +808,6 @@ Proof.
 by move=> fc; apply/diff_locallyP; rewrite diff_bilin //; apply: dbilin p fc.
 Qed.
 
-Definition mulr_rev (y x : R) := x * y.
-Canonical rev_mulr := @RevOp _ _ _ mulr_rev (@GRing.mul [ringType of R])
-  (fun _ _ => erefl).
-
 Lemma mulr_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
 Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
 Canonical mulr_linear x := Linear (mulr_is_linear x).

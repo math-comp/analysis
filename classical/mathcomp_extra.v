@@ -1485,3 +1485,12 @@ exists n.+1; rewrite nm2/= -addn1.
 rewrite -[X in (_ <= X)%N]prednK ?expn_gt0// -[X in (_ <= X)%N]addn1 leq_add2r.
 by rewrite (leq_trans h2)// -subn1 leq_subRL ?expn_gt0// add1n ltn_exp2l.
 Qed.
+
+Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
+  fun_of_revop :> X -> Y -> Z;
+  _ : forall x, f x =1 fun_of_revop^~ x
+}.
+
+Definition mulr_rev {R : ringType} (y x : R) := x * y.
+Canonical rev_mulr {R : ringType} :=
+  @RevOp _ _ _ mulr_rev (@GRing.mul [ringType of R]) (fun _ _ => erefl).
