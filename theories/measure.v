@@ -195,6 +195,7 @@ From HB Require Import structures.
 (*  measure_is_complete mu == the measure mu is complete                      *)
 (*  {ae mu, forall x, P x} == P holds almost everywhere for the measure mu,   *)
 (*                            declared as an instance of the type of filters  *)
+(*             ae_eq D f g == f is equal to g almost everywhere               *)
 (*                                                                            *)
 (* * From a premeasure to an outer measure (Measure Extension Theorem part 1) *)
 (*   measurable_cover X == the set of sequences F such that                   *)
@@ -3385,6 +3386,66 @@ move=> aP; have -> : P = setT by rewrite predeqE => t; split.
 by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
 Qed.
 
+Section ae_eq.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T).
+Implicit Types f g h i : T -> \bar R.
+
+Definition ae_eq f g := {ae mu, forall x, D x -> f x = g x}.
+
+Lemma ae_eq0 f g : measurable D -> mu D = 0 -> ae_eq f g.
+Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
+
+Lemma ae_eq_comp (j : \bar R -> \bar R) f g :
+  ae_eq f g -> ae_eq (j \o f) (j \o g).
+Proof. by apply: filterS => x /[apply] /= ->. Qed.
+
+Lemma ae_eq_funeposneg f g : ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
+Proof.
+split=> [fg|[]].
+  by rewrite /funepos /funeneg; split; apply: filterS fg => x /[apply] ->.
+apply: filterS2 => x + + Dx => /(_ Dx) fg /(_ Dx) gf.
+by rewrite (funeposneg f) (funeposneg g) fg gf.
+Qed.
+
+Lemma ae_eq_refl f : ae_eq f f. Proof. exact/aeW. Qed.
+
+Lemma ae_eq_sym f g : ae_eq f g -> ae_eq g f.
+Proof. by apply: filterS => x + Dx => /(_ Dx). Qed.
+
+Lemma ae_eq_trans f g h : ae_eq f g -> ae_eq g h -> ae_eq f h.
+Proof. by apply: filterS2 => x + + Dx => /(_ Dx) ->; exact. Qed.
+
+Lemma ae_eq_sub f g h i : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
+Proof. by apply: filterS2 => x + + Dx => /(_ Dx) -> /(_ Dx) ->. Qed.
+
+Lemma ae_eq_mul2r f g h : ae_eq f g -> ae_eq (f \* h) (g \* h).
+Proof. by apply: filterS => x /[apply] ->. Qed.
+
+Lemma ae_eq_mul2l f g h : ae_eq f g -> ae_eq (h \* f) (h \* g).
+Proof. by apply: filterS => x /[apply] ->. Qed.
+
+Lemma ae_eq_mul1l f g : ae_eq f (cst 1) -> ae_eq g (g \* f).
+Proof. by apply: filterS => x /[apply] ->; rewrite mule1. Qed.
+
+Lemma ae_eq_abse f g : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
+Proof. by apply: filterS => x /[apply] /= ->. Qed.
+
+End ae_eq.
+
+Section ae_eq_lemmas.
+Context d (T : measurableType d) (R : realType).
+Implicit Types mu : {measure set T -> \bar R}.
+
+Lemma ae_eq_subset mu A B f g : B `<=` A -> ae_eq mu A f g -> ae_eq mu B f g.
+Proof.
+move=> BA [N [mN N0 fg]]; exists N; split => //.
+by apply: subset_trans fg; apply: subsetC => z /= /[swap] /BA ? ->.
+Qed.
+
+End ae_eq_lemmas.
+
 Definition sigma_subadditive {T} {R : numFieldType}
   (mu : set T -> \bar R) := forall (F : (set T) ^nat),
   mu (\bigcup_n (F n)) <= \sum_(i <oo) mu (F i).
@@ -4437,13 +4498,21 @@ Implicit Types m : set T -> \bar R.
 Definition measure_dominates m1 m2 :=
   forall A, measurable A -> m2 A = 0 -> m1 A = 0.
 
-Local Notation "m1 `<< m2" := (measure_dominates m1 m2).
+End absolute_continuity.
+Notation "m1 `<< m2" := (measure_dominates m1 m2).
+
+Section absolute_continuity_lemmas.
+Context d (T : measurableType d) (R : realType).
+Implicit Types m : {measure set T -> \bar R}.
 
 Lemma measure_dominates_trans m1 m2 m3 : m1 `<< m2 -> m2 `<< m3 -> m1 `<< m3.
 Proof. by move=> m12 m23 A mA /m23-/(_ mA) /m12; exact. Qed.
 
-End absolute_continuity.
-Notation "m1 `<< m2" := (measure_dominates m1 m2).
+Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
+    m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
+Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
+
+End absolute_continuity_lemmas.
 
 Section essential_supremum.
 Context d {T : measurableType d} {R : realType}.

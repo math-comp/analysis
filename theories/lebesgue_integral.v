@@ -38,7 +38,6 @@ Require Import esum measure lebesgue_measure numfun.
 (*       Rintegral mu D f := fine (\int[mu]_(x in D) f x).                    *)
 (*     mu.-integrable D f == f is measurable over D and the integral of f     *)
 (*                           w.r.t. D is < +oo                                *)
-(*            ae_eq D f g == f is equal to g almost everywhere                *)
 (*               m1 \x m2 == product measure over T1 * T2, m1 is a measure    *)
 (*                           measure over T1, and m2 is a sigma finite        *)
 (*                           measure over T2                                  *)
@@ -3440,54 +3439,6 @@ Proof. by rewrite -integral_setI_indic// setIid. Qed.
 
 End integral_indic.
 
-Section ae_eq.
-Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (D : set T).
-Implicit Types f g h i : T -> \bar R.
-
-Definition ae_eq f g := {ae mu, forall x, D x -> f x = g x}.
-
-Lemma ae_eq0 f g : measurable D -> mu D = 0 -> ae_eq f g.
-Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
-
-Lemma ae_eq_comp (j : \bar R -> \bar R) f g :
-  ae_eq f g -> ae_eq (j \o f) (j \o g).
-Proof. by apply: filterS => x /[apply] /= ->. Qed.
-
-Lemma ae_eq_funeposneg f g : ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
-Proof.
-split=> [fg|[]].
-  by rewrite /funepos /funeneg; split; apply: filterS fg => x /[apply] ->.
-apply: filterS2 => x + + Dx => /(_ Dx) fg /(_ Dx) gf.
-by rewrite (funeposneg f) (funeposneg g) fg gf.
-Qed.
-
-Lemma ae_eq_refl f : ae_eq f f. Proof. exact/aeW. Qed.
-
-Lemma ae_eq_sym f g : ae_eq f g -> ae_eq g f.
-Proof. by apply: filterS => x + Dx => /(_ Dx). Qed.
-
-Lemma ae_eq_trans f g h : ae_eq f g -> ae_eq g h -> ae_eq f h.
-Proof. by apply: filterS2 => x + + Dx => /(_ Dx) ->; exact. Qed.
-
-Lemma ae_eq_sub f g h i : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
-Proof. by apply: filterS2 => x + + Dx => /(_ Dx) -> /(_ Dx) ->. Qed.
-
-Lemma ae_eq_mul2r f g h : ae_eq f g -> ae_eq (f \* h) (g \* h).
-Proof. by apply: filterS => x /[apply] ->. Qed.
-
-Lemma ae_eq_mul2l f g h : ae_eq f g -> ae_eq (h \* f) (h \* g).
-Proof. by apply: filterS => x /[apply] ->. Qed.
-
-Lemma ae_eq_mul1l f g : ae_eq f (cst 1) -> ae_eq g (g \* f).
-Proof. by apply: filterS => x /[apply] ->; rewrite mule1. Qed.
-
-Lemma ae_eq_abse f g : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
-Proof. by apply: filterS => x /[apply] /= ->. Qed.
-
-End ae_eq.
-
 Section ae_eq_integral.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
@@ -3710,7 +3661,7 @@ Qed.
 Lemma ge0_ae_eq_integral (D : set T) (f g : T -> \bar R) :
   measurable D -> measurable_fun D f -> measurable_fun D g ->
   (forall x, D x -> 0 <= f x) -> (forall x, D x -> 0 <= g x) ->
-  ae_eq D f g -> \int[mu]_(x in D) (f x)  = \int[mu]_(x in D) (g x).
+  ae_eq D f g -> \int[mu]_(x in D) (f x) = \int[mu]_(x in D) (g x).
 Proof.
 move=> mD mf mg f0 g0 [N [mN N0 subN]].
 rewrite integralEindic// [RHS]integralEindic//.
