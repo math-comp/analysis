@@ -1,11 +1,7 @@
 From HB Require Import structures.
-From mathcomp
-Require Import all_ssreflect ssralg fingroup zmodp poly ssrnum.
-From mathcomp
-Require Import matrix mxalgebra vector falgebra ssrnum algC algnum.
-From mathcomp
-Require Import fieldext.
-From mathcomp Require Import vector.
+From mathcomp Require Import all_ssreflect ssralg fingroup zmodp poly ssrnum.
+From mathcomp Require Import matrix mxalgebra vector falgebra ssrnum fieldext.
+From mathcomp Require Import vector mathcomp_extra.
 
 (**md**************************************************************************)
 (* # Bilinear forms                                                           *)
@@ -37,11 +33,6 @@ Notation "''e_' i" := (delta_mx 0 i)
 
 Local Notation "M ^ phi" := (map_mx phi M).
 Local Notation "M ^t phi" := (map_mx phi (M ^T)) (phi at level 30, at level 30).
-
-Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
-  fun_of_revop :> X -> Y -> Z;
-  _ : forall x, f x =1 fun_of_revop^~ x
-}.
 
 Lemma eq_map_mx_id (R : ringType) m n (M : 'M[R]_(m,n)) (f : R -> R) :
   f =1 id -> M ^ f = M.

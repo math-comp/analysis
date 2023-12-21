@@ -459,7 +459,7 @@ Inductive boxed T := Box of T.
 Reserved Notation "`1- r" (format "`1- r", at level 2).
 Reserved Notation "f \^-1" (at level 3, format "f \^-1", left associativity).
 
-(* To be backported to finmap *)
+(* TODO: To be backported to finmap *)
 
 Lemma fset_nat_maximum (X : choiceType) (A : {fset X})
     (f : X -> nat) : A != fset0 ->
@@ -612,3 +612,12 @@ rewrite /Order.min/=; case: ifPn => xz; case: ifPn => yz; rewrite ?ltxx//.
 Qed.
 
 End order_min.
+
+Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
+  fun_of_revop :> X -> Y -> Z;
+  _ : forall x, f x =1 fun_of_revop^~ x
+}.
+
+Definition mulr_rev {R : ringType} (y x : R) := x * y.
+Canonical rev_mulr {R : ringType} :=
+  @RevOp _ _ _ mulr_rev (@GRing.mul R) (fun _ _ => erefl).
