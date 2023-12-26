@@ -70,7 +70,7 @@
   + lemma `Radon_Nikodym_sigma_finite_fin_num`
   + module `Radon_Nikodym_SigmaFinite`
     * definition `f`
-	* lemmas `f_ge0`, `f_fin_num`, `f_integrable`, `f_integral`
+    * lemmas `f_ge0`, `f_fin_num`, `f_integrable`, `f_integral`
     * lemma `change_of_variables`
     * lemma `integrableM`
     * lemma `chain_rule`
