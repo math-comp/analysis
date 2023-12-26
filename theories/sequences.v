@@ -2065,22 +2065,18 @@ have : 0 < minr e%:num r by rewrite lt_minr// r0 andbT.
 move/cvgrPdist_lt : minr_cvg => /[apply] -[M _ hM].
 near=> n; rewrite sub0r normrN.
 have /hM : (M <= n)%N by near: n; exists M.
-rewrite sub0r normrN (ger0_norm (u0 n)) ger0_norm//; last first.
-  by rewrite le_minr u0 ltW.
-by move/lt_min_lt.
+rewrite sub0r normrN (ger0_norm (u0 n)) ger0_norm// => [/lt_min_lt//|].
+by rewrite le_minr u0 ltW.
 Unshelve. all: by end_near. Qed.
 
 Lemma maxr_cvg_0_cvg_0 u r : r < 0 -> (forall k, u k <= 0) ->
   maxr (u n) r @[n --> \oo] --> (0:R) -> u --> (0:R).
 Proof.
-move=> r0 u0.
-under eq_fun do rewrite -(opprK (u _)) -{1}(opprK r) -oppr_min.
-rewrite -oppr0.
-move/cvgNP/minr_cvg_0_cvg_0.
-rewrite -oppr0 ltr_oppr in r0.
-move/(_ r0).
+rewrite -[in r < _]oppr0 ltr_oppr => r0 u0.
+under eq_fun do rewrite -(opprK (u _)) -[in maxr _ _](opprK r) -oppr_min.
+rewrite -[in _ --> _]oppr0 => /cvgNP/minr_cvg_0_cvg_0-/(_ r0).
 have Nu0 k : 0 <= - u k by rewrite ler_oppr oppr0.
-by move=> /(_ Nu0)/cvgNP; rewrite opprK.
+by move=> /(_ Nu0)/(cvgNP _ _).2; rewrite opprK oppr0.
 Qed.
 
 End minr_cvg_0.
@@ -2135,44 +2131,33 @@ Lemma maxe_cvg_0_cvg_fin_num u x : x < 0 -> (forall k, u k <= 0) ->
   maxe (u n) x @[n --> \oo] --> 0 ->
   \forall n \near \oo, u n \is a fin_num.
 Proof.
-move=> x0 u0.
-under eq_fun do rewrite -(oppeK (u _)) -{1}(oppeK x) -oppe_min.
-rewrite -oppe0.
-move/cvgeNP/mine_cvg_0_cvg_fin_num.
-rewrite -oppe0 lte_oppr in x0.
-move/(_ x0).
+rewrite -[in x < _]oppe0 lte_oppr => x0 u0.
+under eq_fun do rewrite -(oppeK (u _)) -[in maxe _ _](oppeK x) -oppe_min.
+rewrite -[in _ --> _]oppe0 => /cvgeNP/mine_cvg_0_cvg_fin_num-/(_ x0).
 have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
-move=> /(_ Nu0)[n _ Hn].
-by exists n => // k nk; rewrite -fin_numN; exact: Hn.
+by move=> /(_ Nu0)[n _ nu]; exists n => // m/= nm; rewrite -fin_numN nu.
 Qed.
 
 Lemma maxe_cvg_maxr_cvg u r : (r < 0)%R -> (forall k, u k <= 0) ->
   maxe (u n) r%:E @[n --> \oo] --> 0 ->
   maxr (fine (u n)) r @[n --> \oo] --> (0:R)%R.
 Proof.
-move=> r0 u0.
-under eq_fun do rewrite -(oppeK (u _)) -{1}(oppeK r%:E) -oppe_min.
-rewrite -oppr0 EFinN.
-move/cvgeNP/mine_cvg_minr_cvg.
-rewrite -oppr0 ltr_oppr in r0.
-move/(_ r0).
+rewrite -[in (r < _)%R]oppr0 ltr_oppr => r0 u0.
+under eq_fun do rewrite -(oppeK (u _)) -[in maxe _ _](oppeK r%:E) -oppe_min.
+rewrite -[in _ --> _]oppe0 => /cvgeNP/mine_cvg_minr_cvg-/(_ r0).
 have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
-move=> /(_ Nu0)/cvgNP.
+move=> /(_ Nu0)/(cvgNP _ _).2; rewrite oppr0.
 by under eq_cvg do rewrite /GRing.opp /= oppr_min fineN !opprK.
 Qed.
 
 Lemma maxe_cvg_0_cvg_0 u x : x < 0 -> (forall k, u k <= 0) ->
   maxe (u n) x @[n --> \oo] --> 0 -> u --> 0.
 Proof.
-move=> x0 u0.
-under eq_fun do rewrite -(oppeK (u _)) -{1}(oppeK x) -oppe_min.
-rewrite -oppe0.
-move/cvgeNP/mine_cvg_0_cvg_0.
-rewrite -oppe0 lte_oppr in x0.
-move/(_ x0).
+rewrite -[in x < _]oppe0 lte_oppr => x0 u0.
+under eq_fun do rewrite -(oppeK (u _)) -[in maxe _ _](oppeK x) -oppe_min.
+rewrite -[in _ --> _]oppe0 => /cvgeNP/mine_cvg_0_cvg_0-/(_ x0).
 have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
-move=> /(_ Nu0)/cvgeNP.
-by under eq_cvg do rewrite oppeK.
+by move=> /(_ Nu0); rewrite -[in _ --> _]oppe0 => /cvgeNP.
 Qed.
 
 End mine_cvg_0.

@@ -4335,8 +4335,7 @@ Proof.
 move=> fi mg fg; have mf := measurable_int fi; have gi : mu.-integrable D g.
   apply/integrableP; split => //; apply/abse_integralP => //; rewrite -fg//.
   by apply/abse_integralP => //; case/integrableP : fi.
-have mugf : mu (D `&` [set x | g x < f x]) = 0.
-  by apply: integral_measure_lt.
+have mugf : mu (D `&` [set x | g x < f x]) = 0 by apply: integral_measure_lt.
 have mufg : mu (D `&` [set x | f x < g x]) = 0.
   by apply: integral_measure_lt => // E ED mE; rewrite fg.
 have h : ~` [set x | D x -> f x = g x] = D `&` [set x | f x != g x].
