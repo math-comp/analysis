@@ -536,15 +536,13 @@ Proof. by move=> A B AB; apply: lb_ereal_inf => x Bx; exact/ereal_inf_lb/AB. Qed
 Lemma hasNub_ereal_sup (A : set R) : ~ has_ubound A ->
   A !=set0 -> ereal_sup (EFin @` A) = +oo%E.
 Proof.
-move=> hasNubA A0.
-apply/eqP; rewrite eq_le leey /= leNgt; apply: contra_notN hasNubA => Aoo.
+move=> + A0; apply: contra_notP => /eqP; rewrite -ltey => Aoo.
 exists (fine (ereal_sup (EFin @` A))) => x Ax.
 rewrite -lee_fin -(@fineK _ x%:E)// lee_fin fine_le//; last first.
   by apply: ereal_sup_ub => /=; exists x.
 rewrite fin_numE// -ltey Aoo andbT.
-apply/negP => /eqP/ereal_sup_ninfty/(_ x%:E).
-have : (EFin @` A) x%:E by exists x.
-by move=> /[swap] /[apply].
+apply/eqP => /ereal_sup_ninfty/(_ x%:E).
+by have /[swap] /[apply]: (EFin @` A) x%:E by exists x.
 Qed.
 
 Lemma ereal_sup_EFin (A : set R) :
@@ -565,7 +563,7 @@ by rewrite -lee_fin fineK//; apply: ereal_sup_ub; exists r.
 Qed.
 
 Lemma ereal_inf_EFin (A : set R) : has_lbound A -> A !=set0 ->
-   ereal_inf (EFin @` A) = (inf A)%:E.
+  ereal_inf (EFin @` A) = (inf A)%:E.
 Proof.
 move=> has_lbA A0; rewrite /ereal_inf /inf EFinN; congr (- _)%E.
 rewrite -ereal_sup_EFin; [|exact/has_lb_ubN|exact/nonemptyN].
