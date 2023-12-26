@@ -68,12 +68,6 @@
   + lemma `cjordan_negE`
   + lemma `jordan_negE`
   + lemma `Radon_Nikodym_sigma_finite_fin_num`
-  + module `Radon_Nikodym_SigmaFinite`
-    * definition `f`
-    * lemmas `f_ge0`, `f_fin_num`, `f_integrable`, `f_integral`
-    * lemma `change_of_variables`
-    * lemma `integrableM`
-    * lemma `chain_rule`
   + lemma `Radon_Nikodym_fin_num`
   + lemma `Radon_Nikodym_integral`
   + lemma `ae_eq_Radon_Nikodym_SigmaFinite`
@@ -114,7 +108,9 @@
 
 - in `charge.v`
   + definition `jordan_decomp` now uses `cadd` and `cscale`
-  + Definition `Radon_Nikodym_SigmaFinite` now be a module `Radon_Nikodym_SigmaFinite` with
+  + definition `Radon_Nikodym_SigmaFinite` now in a module `Radon_Nikodym_SigmaFinite` with
+    * definition `f`
+    * lemmas `f_ge0`, `f_fin_num`, `f_integrable`, `f_integral`
     * lemma `change_of_variables`
     * lemma `integralM`
     * lemma `chain_rule`
