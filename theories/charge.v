@@ -396,15 +396,13 @@ Qed.
 HB.instance Definition _ := isCharge.Build _ _ _ cscale
   cscale0 cscale_finite_measure_function cscale_sigma_additive.
 
-Lemma cscaleE A : cscale A = r%:E * nu A. Proof. by []. Qed.
-
 End charge_scale.
 
 Lemma dominates_cscale d (T : measurableType d) (R : realType)
   (mu : set T -> \bar R)
   (nu : {charge set T -> \bar R})
   (c : R) : nu `<< mu -> cscale c nu `<< mu.
-Proof. by move=> numu E mE /numu; rewrite cscaleE => ->//; rewrite mule0. Qed.
+Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
 
 Section charge_add.
 Local Open Scope ereal_scope.
@@ -436,8 +434,6 @@ Qed.
 HB.instance Definition _ := isCharge.Build _ _ _ cadd
   cadd0 cadd_finite cadd_sigma_additive.
 
-Lemma caddE E : cadd E = n1 E + n2 E. Proof. by []. Qed.
-
 End charge_add.
 
 Lemma dominates_cadd d (T : measurableType d) (R : realType)
@@ -446,7 +442,7 @@ Lemma dominates_cadd d (T : measurableType d) (R : realType)
   nu0 `<< mu -> nu1 `<< mu ->
   cadd nu0 nu1 `<< mu.
 Proof.
-by move=> nu0mu nu1mu A mA A0; rewrite caddE nu0mu// nu1mu// adde0.
+by move=> nu0mu nu1mu A mA A0; rewrite /cadd nu0mu// nu1mu// adde0.
 Qed.
 
 Section pushforward_charge.
@@ -916,7 +912,7 @@ Local Definition cjordan_neg : {charge set T -> \bar R} :=
   [the charge _ _ of cscale (-1) [the charge _ _ of crestr0 nu mN]].
 
 Lemma cjordan_negE A : cjordan_neg A = - crestr0 nu mN A.
-Proof. by rewrite /= cscaleE EFinN mulN1e. Qed.
+Proof. by rewrite /= /cscale/= EFinN mulN1e. Qed.
 
 Let positive_set_cjordan_neg E : 0 <= cjordan_neg E.
 Proof.
@@ -943,7 +939,7 @@ Lemma jordan_decomp (A : set T) : measurable A ->
            ([the charge _ _ of cscale (-1) [the charge _ _ of jordan_neg]])) A.
 Proof.
 move=> mA.
-rewrite caddE cjordan_posE /= cscaleE EFinN mulN1e cjordan_negE oppeK.
+rewrite /cadd cjordan_posE /= /cscale EFinN mulN1e cjordan_negE oppeK.
 rewrite /crestr0 mem_set// -[in LHS](setIT A).
 case: nuPN => _ _ <- PN0; rewrite setIUr chargeU//.
 - exact: measurableI.
@@ -1802,8 +1798,8 @@ exists (fp \- fn); split; first by move=> x; rewrite fin_numB// fpfin fnfin.
   exact: integrableB.
 move=> E mE; rewrite [LHS](jordan_decomp nuPN mE)// integralB//;
   [|exact: (integrableS measurableT)..].
-rewrite -fpE ?inE// -fnE ?inE//= caddE jordan_posE jordan_negE.
-by rewrite [X in _ + X]/= cscaleE EFinN mulN1e.
+rewrite -fpE ?inE// -fnE ?inE//= /cadd/= jordan_posE jordan_negE.
+by rewrite /cscale EFinN mulN1e.
 Qed.
 
 Definition Radon_Nikodym : T -> \bar R :=
