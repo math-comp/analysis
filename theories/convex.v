@@ -14,10 +14,12 @@ From HB Require Import structures.
 (* completed with material from infotheo.                                     *)
 (*                                                                            *)
 (*   isConvexSpace R T == interface for convex spaces                         *)
-(*       ConvexSpace R == structure of convex space                           *)
+(*                        The HB class is ConvexSpace.                        *)
 (*         a <| t |> b == convexity operator                                  *)
-(* E : lmodType R with R : realDomainType and R : realDomainType are shown to *)
-(* be convex spaces                                                           *)
+(*                                                                            *)
+(* * instances of convex space:                                               *)
+(*   E : lmodType R with R : realDomainType, R : realDomainType,              *)
+(*   R : realFieldType, R : realType                                          *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -107,35 +109,18 @@ HB.instance Definition _ :=
 
 End lmodType_convex_space.
 
-Section realDomainType_convex_space.
-Context {R : realDomainType}.
-Implicit Types p q : {i01 R}.
-
-Let avg p (a b : [the lmodType R of R^o]) := a <| p |> b.
-
-Let avg0 a b : avg 0%:i01 a b = a.
-Proof. by rewrite /avg conv0. Qed.
-
-Let avgI p x : avg p x x = x.
-Proof. by rewrite /avg convmm. Qed.
-
-Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
-Proof. by rewrite /avg convC. Qed.
-
-Let avgA p q r (a b c : R) :
-  p%:inum * (`1-(q%:inum)) = (`1-(p%:inum * q%:inum)) * r%:inum ->
-  avg p a (avg q b c) = avg (p%:inum * q%:inum)%:i01 (avg r a b) c.
-Proof. by move=> h; rewrite /avg (convA _ _ r). Qed.
-
-HB.instance Definition _ := @isConvexSpace.Build R R^o
-  (Choice.class _) _ avg0 avgI avgC avgA.
-
-End realDomainType_convex_space.
+HB.instance Definition _ (R : realDomainType) :=
+  ConvexSpace.copy R [the lmodType R of R^o].
+HB.instance Definition _ (R : realFieldType) :=
+  ConvexSpace.copy R [the lmodType R of R^o].
+HB.instance Definition _ (R : realType) :=
+  ConvexSpace.copy R [the lmodType R of R^o].
 
 Section conv_realDomainType.
 Context {R : realDomainType}.
+Implicit Types a b : R.
 
-Lemma conv_gt0 (a b : R^o) (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
+Lemma conv_gt0 a b (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
 Proof.
 move=> a0 b0.
 have [->|t0] := eqVneq t 0%:i01; first by rewrite conv0.
@@ -144,7 +129,7 @@ rewrite addr_gt0// mulr_gt0//; last by rewrite lt_neqAle eq_sym t0/=.
 by rewrite onem_gt0// lt_neqAle t1/=.
 Qed.
 
-Lemma convRE (a b : R^o) (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * a + t%:inum * b.
+Lemma convRE a b (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * a + t%:inum * b.
 Proof. by []. Qed.
 
 End conv_realDomainType.
@@ -156,7 +141,7 @@ Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
 Section twice_derivable_convex.
 Context {R : realType}.
-Variables (f : R -> R^o) (a b : R^o).
+Variables (f : R -> R) (a b : R).
 
 Let Df := 'D_1 f.
 Let DDf := 'D_1 Df.

@@ -56,6 +56,9 @@
 - in file `measure.v`
   + add lemmas `ae_eq_subset`, `measure_dominates_ae_eq`.
 
+- in `convex.v`:
+  + `convType` on `realDomainType`, `realFieldType` and `realType`
+
 ### Changed
 
 - in `normedtype.v`:
@@ -89,6 +92,9 @@
 ### Deprecated
 
 ### Removed
+
+- in `convex.v`:
+  + instance of `convType` for `R^o` with `R : realDomainType`
 
 ### Infrastructure
 
