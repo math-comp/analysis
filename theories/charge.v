@@ -37,9 +37,6 @@ Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 (*               cscale r nu == charge nu scaled by a factor r : R            *)
 (*          charge_add n1 n2 == the charge corresponding to the sum of        *)
 (*                              charges n1 and n2                             *)
-(*        cpushforward nu mf == pushforward charge of nu along                *)
-(*                              measurable function f, mf is a proof that     *)
-(*                              f is measurable function                      *)
 (* charge_of_finite_measure mu == charge corresponding to a finite measure mu *)
 (*                                                                            *)
 (* * Theory                                                                   *)
@@ -450,22 +447,20 @@ Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (f : T1 -> T2).
 Variables (R : realFieldType) (nu : {charge set T1 -> \bar R}).
 
-Definition cpushforward (mf : measurable_fun setT f) A := nu (f @^-1` A).
-
 Hypothesis mf : measurable_fun setT f.
 
-Let cpushforward0 : cpushforward mf set0 = 0.
-Proof. by rewrite /cpushforward preimage_set0 charge0. Qed.
+Let pushforward0 : pushforward nu mf set0 = 0.
+Proof. by rewrite /pushforward preimage_set0 charge0. Qed.
 
-Let cpushforward_finite A : measurable A -> cpushforward mf A \is a fin_num.
+Let pushforward_finite A : measurable A -> pushforward nu mf A \is a fin_num.
 Proof.
 move=> mA; apply: fin_num_measure.
 by rewrite -[X in measurable X]setTI; exact: mf.
 Qed.
 
-Let cpushforward_sigma_additive : semi_sigma_additive (cpushforward mf).
+Let pushforward_sigma_additive : semi_sigma_additive (pushforward nu mf).
 Proof.
-move=> F mF tF mUF; rewrite /cpushforward preimage_bigcup.
+move=> F mF tF mUF; rewrite /pushforward preimage_bigcup.
 apply: charge_semi_sigma_additive.
 - by move=> n; rewrite -[X in measurable X]setTI; exact: mf.
 - apply/trivIsetP => /= i j _ _ ij; rewrite -preimage_setI.
@@ -473,8 +468,8 @@ apply: charge_semi_sigma_additive.
 - by rewrite -preimage_bigcup -[X in measurable X]setTI; exact: mf.
 Qed.
 
-HB.instance Definition _ := isCharge.Build _ _ _ (cpushforward mf)
-  cpushforward0 cpushforward_finite cpushforward_sigma_additive.
+HB.instance Definition _ := isCharge.Build _ _ _ (pushforward nu mf)
+  pushforward0 pushforward_finite pushforward_sigma_additive.
 
 End pushforward_charge.
 
@@ -495,7 +490,7 @@ Section dominates_pushforward.
 Lemma dominates_pushforward d d' (T : measurableType d) (T' : measurableType d')
   (R : realType) (mu : {measure set T -> \bar R})
   (nu : {charge set T -> \bar R}) (f : T -> T') (mf : measurable_fun setT f) :
-  nu `<< mu -> cpushforward nu mf `<< pushforward mu mf.
+  nu `<< mu -> pushforward nu mf `<< pushforward mu mf.
 Proof.
 by move=> numu A mA; apply: numu; rewrite -[X in measurable X]setTI; exact: mf.
 Qed.
@@ -1900,8 +1895,8 @@ Lemma Radon_Nikodym_cscale mu nu c E : measurable E -> nu `<< mu ->
 Proof.
 move=> mE numu; apply: integral_ae_eq => [//| | |A AE mA].
 - apply: (integrableS measurableT) => //.
-  by apply: Radon_Nikodym_integrable => /=; exact: dominates_cscale.
-- by apply: measurable_funTS; exact: emeasurable_funM.
+  exact/Radon_Nikodym_integrable/dominates_cscale.
+- exact/measurable_funTS/emeasurable_funM.
 - rewrite integralZl//; last first.
     by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
   rewrite -Radon_Nikodym_integral => //; last exact: dominates_cscale.
@@ -1932,7 +1927,8 @@ Variables (nu : {charge set T -> \bar R})
 
 Lemma Radon_Nikodym_chain_rule : nu `<< mu -> mu `<< la ->
   ae_eq la setT ('d nu '/d la)
-                ('d nu '/d mu \* 'd [the charge _ _ of charge_of_finite_measure mu] '/d la).
+                ('d nu '/d mu \*
+                  'd [the charge _ _ of charge_of_finite_measure mu] '/d la).
 Proof.
 have [Pnu [Nnu nuPN]] := Hahn_decomposition nu.
 move=> numu mula; have nula := measure_dominates_trans numu mula.

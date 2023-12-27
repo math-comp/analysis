@@ -117,6 +117,7 @@ From HB Require Import structures.
 (* * Instances of measures                                                    *)
 (*  pushforward mf m == pushforward/image measure of m by f, where mf is a    *)
 (*                      proof that f is measurable                            *)
+(*                      m has type set T -> \bar R.                           *)
 (*              \d_a == Dirac measure                                         *)
 (*         msum mu n == the measure corresponding to the sum of the measures  *)
 (*                      mu_0, ..., mu_{n-1}                                   *)
@@ -1652,22 +1653,25 @@ Arguments measure_bigcup {d R T} _ _.
 #[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
 
+Definition pushforward d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
+  (R : realFieldType) (m : set T1 -> \bar R) (f : T1 -> T2)
+  of measurable_fun setT f := fun A => m (f @^-1` A).
+Arguments pushforward {d1 d2 T1 T2 R} m {f}.
+
 Section pushforward_measure.
 Local Open Scope ereal_scope.
-Context d d' (T1 : measurableType d) (T2 : measurableType d') (f : T1 -> T2).
-Variables (R : realFieldType) (m : {measure set T1 -> \bar R}).
-
-Definition pushforward (mf : measurable_fun setT f) A := m (f @^-1` A).
-
+Context d d' (T1 : measurableType d) (T2 : measurableType d')
+        (R : realFieldType).
+Variables (m : {measure set T1 -> \bar R}) (f : T1 -> T2).
 Hypothesis mf : measurable_fun setT f.
 
-Let pushforward0 : pushforward mf set0 = 0.
+Let pushforward0 : pushforward m mf set0 = 0.
 Proof. by rewrite /pushforward preimage_set0 measure0. Qed.
 
-Let pushforward_ge0 A : 0 <= pushforward mf A.
+Let pushforward_ge0 A : 0 <= pushforward m mf A.
 Proof. by apply: measure_ge0; rewrite -[X in measurable X]setIT; apply: mf. Qed.
 
-Let pushforward_sigma_additive : semi_sigma_additive (pushforward mf).
+Let pushforward_sigma_additive : semi_sigma_additive (pushforward m mf).
 Proof.
 move=> F mF tF mUF; rewrite /pushforward preimage_bigcup.
 apply: measure_semi_sigma_additive.
@@ -1678,7 +1682,7 @@ apply: measure_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _
-  (pushforward mf) pushforward0 pushforward_ge0 pushforward_sigma_additive.
+  (pushforward m mf) pushforward0 pushforward_ge0 pushforward_sigma_additive.
 
 End pushforward_measure.
 
