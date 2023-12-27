@@ -3554,7 +3554,7 @@ Lemma open_hausdorff : hausdorff_space T =
                 [/\ open AB.1, open AB.2 & AB.1 `&` AB.2 == set0].
 Proof.
 rewrite propeqE; split => [T_filterT2|T_openT2] x y.
-  have := @contra_not _ _ (T_filterT2 x y); rewrite (rwP eqP) (rwP negP).  (* change @contra_not _ _ to contra_not when requiring MathComp > 1.14 *)
+  have := contra_not (T_filterT2 x y); rewrite (rwP eqP) (rwP negP).
   move=> /[apply] /asboolPn/existsp_asboolPn[A]; rewrite -existsNE => -[B].
   rewrite [nbhs _ _ -> _](rwP imply_asboolP) => /negP.
   rewrite asbool_imply !negb_imply => /andP[/asboolP xA] /andP[/asboolP yB].
