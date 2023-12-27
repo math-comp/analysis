@@ -1793,7 +1793,7 @@ Definition Radon_Nikodym : T -> \bar R :=
   | left nu_mu => sval (cid (Radon_Nikodym0 nu_mu))
   | right _ => cst -oo
   end.
-xxx
+
 Lemma Radon_NikodymE (numu : nu `<< mu) :
   Radon_Nikodym = sval (cid (Radon_Nikodym0 numu)).
 Proof.
