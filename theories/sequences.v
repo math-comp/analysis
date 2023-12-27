@@ -257,6 +257,7 @@ by rewrite /seqDU -setIDA bigcup_mkord -big_distrr/= setDIr setIUr setDIK set0U.
 Qed.
 
 End seqDU.
+Arguments trivIset_seqDU {T} F.
 #[global] Hint Resolve trivIset_seqDU : core.
 
 Section seqD.

@@ -65,7 +65,7 @@
   + lemma `jordan_posE`
   + lemma `cjordan_negE`
   + lemma `jordan_negE`
-  + lemma `Radon_Nikodym_sigma_finite_fin_num`
+  + lemma `Radon_Nikodym_sigma_finite`
   + lemma `Radon_Nikodym_fin_num`
   + lemma `Radon_Nikodym_integral`
   + lemma `ae_eq_Radon_Nikodym_SigmaFinite`
@@ -112,6 +112,9 @@
     * lemma `change_of_variables`
     * lemma `integralM`
     * lemma `chain_rule`
+
+- in `sequences.v`:
+  + change the implicit arguments of `trivIset_seqDU`
 
 ### Renamed
 

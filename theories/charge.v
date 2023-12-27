@@ -1508,37 +1508,36 @@ Context d (T : measurableType d) (R : realType).
 Variables (mu : {sigma_finite_measure set T -> \bar R})
           (nu : {finite_measure set T -> \bar R}).
 
-Local Lemma radon_nikodym_sigma_finite : nu `<< mu ->
-  exists f : T -> \bar R, [/\ forall x, f x >= 0, mu.-integrable [set: T] f &
-    forall E, E \in measurable -> nu E = integral mu E f].
+Lemma radon_nikodym_sigma_finite : nu `<< mu ->
+  exists f : T -> \bar R, [/\ forall x, f x >= 0, forall x, f x \is a fin_num,
+    mu.-integrable [set: T] f &
+    forall A, measurable A -> nu A = \int[mu]_(x in A) f x].
 Proof.
-move=> nu_mu.
-have [F TF mFAFfin] := sigma_finiteT mu.
-have {mFAFfin}[mF Ffin] := all_and2 mFAFfin.
+move=> nu_mu; have [F TF /all_and2[mF muFoo]] := sigma_finiteT mu.
 pose E := seqDU F.
 have mE k : measurable (E k).
   by apply: measurableD => //; exact: bigsetU_measurable.
-have Efin k : mu (E k) < +oo.
-  by rewrite (le_lt_trans _ (Ffin k))// le_measure ?inE//; exact: subDsetl.
-have bigcupE : \bigcup_i E i = setT by rewrite TF [RHS]seqDU_bigcup_eq.
-have tE := @trivIset_seqDU _ F.
+have muEoo k : mu (E k) < +oo.
+  by rewrite (le_lt_trans _ (muFoo k))// le_measure ?inE//; exact: subDsetl.
+have UET : \bigcup_i E i = [set: T] by rewrite TF [RHS]seqDU_bigcup_eq.
+have tE := trivIset_seqDU F.
 pose mu_ j : {finite_measure set T -> \bar R} :=
-  [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (Efin j)].
-have H1 i : nu (E i) < +oo by rewrite ltey_eq fin_num_measure.
+  [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (muEoo j)].
+have nuEoo i : nu (E i) < +oo by rewrite ltey_eq fin_num_measure.
 pose nu_ j : {finite_measure set T -> \bar R} :=
-  [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (H1 j)].
+  [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (nuEoo j)].
 have nu_mu_ k : nu_ k `<< mu_ k.
   by move=> S mS mu_kS0; apply: nu_mu => //; exact: measurableI.
-have [g Hg] := choice (fun j => radon_nikodym_finite (nu_mu_ j)).
-have [g_ge0 integrable_g int_gE {Hg}] := all_and3 Hg.
-pose f_ j x := if x \in E j then g j x else 0.
-have fRN_ge0 k x : 0 <= f_ k x by rewrite /f_; case: ifP.
+have [g_] := choice (fun j => radon_nikodym_finite (nu_mu_ j)).
+move=> /all_and3[g_ge0 ig_ int_gE].
+pose f_ j x := if x \in E j then g_ j x else 0.
+have f_ge0 k x : 0 <= f_ k x by rewrite /f_; case: ifP.
 have mf_ k : measurable_fun setT (f_ k).
   apply: measurable_fun_if => //.
   - by apply: (measurable_fun_bool true); rewrite preimage_mem_true.
   - rewrite preimage_mem_true.
-    by apply: measurable_funTS => //; have /integrableP[] := integrable_g k.
-have int_f_T k : integrable mu setT (f_ k).
+    by apply: measurable_funTS => //; have /integrableP[] := ig_ k.
+have if_T k : integrable mu setT (f_ k).
   apply/integrableP; split => //.
   under eq_integral do rewrite gee0_abs//.
   rewrite -(setUv (E k)) integral_setU //; last 3 first.
@@ -1560,7 +1559,7 @@ have int_f_E j S : measurable S -> \int[mu]_(x in S) f_ j x = nu (S `&` E j).
   rewrite -{1}(setUIDK S (E j)) (integral_setU _ mSIEj mSDEj)//; last 2 first.
     - by rewrite setUIDK; exact: (measurable_funS measurableT).
     - by apply/disj_set2P; rewrite setDE setIACA setICr setI0.
-  rewrite /f_ -(eq_integral _ (g j)); last first.
+  rewrite /f_ -(eq_integral _ (g_ j)); last first.
     by move=> x /[!inE] SIEjx; rewrite /f_ ifT// inE; exact: (@subIsetr _ S).
   rewrite (@eq_measure_integral _ _ _ (S `&` E j) (mu_ j)); last first.
     move=> A mA; rewrite subsetI => -[_ ?]; rewrite /mu_ /=.
@@ -1576,53 +1575,45 @@ have int_f_nuT : \int[mu]_x f x = nu setT.
   rewrite integral_nneseries//.
   transitivity (\sum_(n <oo) nu (E n)).
     by apply: eq_eseriesr => i _; rewrite int_f_E// setTI.
-  rewrite -bigcupE measure_bigcup//.
+  rewrite -UET measure_bigcup//.
   by apply: eq_eseriesl => // x; rewrite in_setT.
-exists f; split.
-- by move=> t; rewrite /f; exact: nneseries_ge0.
-- apply/integrableP; split; first exact: ge0_emeasurable_fun_sum.
+have mf : measurable_fun setT f by exact: ge0_emeasurable_fun_sum.
+have fi : mu.-integrable setT f.
+  apply/integrableP; split => //.
   under eq_integral do (rewrite gee0_abs; last exact: nneseries_ge0).
   by rewrite int_f_nuT ltey_eq fin_num_measure.
-move=> A /[!inE] mA; rewrite integral_nneseries//; last first.
-  by move=> n; exact: measurable_funTS.
-rewrite nneseries_esum; last by move=> m _; rewrite integral_ge0.
-under eq_esum do rewrite int_f_E//.
-rewrite -nneseries_esum; last first.
-  by move=> n; rewrite measure_ge0//; exact: measurableI.
-rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])); last first.
-  by move=> x; rewrite in_setT.
-rewrite -measure_bigcup//.
-- by rewrite -setI_bigcupr bigcupE setIT.
-- by move=> i _; exact: measurableI.
-- exact: trivIset_setIl.
-Qed.
-
-Lemma radon_nikodym_sigma_finite_fin_num : nu `<< mu ->
-  exists f : T -> \bar R, [/\ forall x, f x >= 0, forall x, f x \is a fin_num,
-    mu.-integrable [set: T] f &
-    forall A, measurable A -> nu A = \int[mu]_(x in A) f x].
-Proof.
-move=> /radon_nikodym_sigma_finite[f [f0 fi nuf]].
 have ae_f := integrable_ae measurableT fi.
-pose g x := if f x \is a fin_num then f x else 0.
-have fg : ae_eq mu setT f g.
+pose f' x := if f x \is a fin_num then f x else 0.
+have ff' : ae_eq mu setT f f'.
   case: ae_f => N [mN N0 fN]; exists N; split => //.
   apply: subset_trans fN; apply: subsetC => z/= /(_ I) fz _.
-  by rewrite /g fz.
-move/integrableP : fi => [mf fi].
-have mg : measurable_fun [set: T] g.
+  by rewrite /f' fz.
+have mf' : measurable_fun setT f'.
   apply: measurable_fun_ifT => //; apply: (measurable_fun_bool true) => /=.
   by have := emeasurable_fin_num measurableT mf; rewrite setTI.
-exists g; split => // [x|x| |A mA].
-- by rewrite /g; case: ifPn.
-- by rewrite /g; case: ifPn.
+exists f'; split.
+- by move=> t; rewrite /f'; case: ifPn => // ?; exact: nneseries_ge0.
+- by move=> t; rewrite /f'; case: ifPn.
 - apply/integrableP; split => //; apply/abse_integralP => //.
-  move/ae_eq_integral : (fg) => /(_ measurableT mf) <-//.
-  exact/abse_integralP.
-- rewrite nuf ?inE//; apply: ae_eq_integral => //.
-  + exact: measurable_funTS.
-  + exact: measurable_funTS.
-  + exact: ae_eq_subset fg.
+  move/ae_eq_integral : (ff') => /(_ measurableT mf) <-//.
+  by apply/abse_integralP => //; move/integrableP : fi => [].
+have nuf A : d.-measurable A -> nu A = \int[mu]_(x in A) f x.
+  move=> mA; rewrite integral_nneseries//; last first.
+    by move=> n; exact: measurable_funTS.
+  rewrite nneseries_esum; last by move=> m _; rewrite integral_ge0.
+  under eq_esum do rewrite int_f_E//.
+  rewrite -nneseries_esum; last first.
+    by move=> n; rewrite measure_ge0//; exact: measurableI.
+  rewrite (@eq_eseriesl _ _ (fun x => x \in [set: nat])); last first.
+    by move=> x; rewrite in_setT.
+  rewrite -measure_bigcup//.
+  - by rewrite -setI_bigcupr UET setIT.
+  - by move=> i _; exact: measurableI.
+  - exact: trivIset_setIl.
+move=> A mA; rewrite nuf ?inE//; apply: ae_eq_integral => //.
+- exact/measurable_funTS.
+- exact/measurable_funTS.
+- exact: ae_eq_subset ff'.
 Qed.
 
 End radon_nikodym_sigma_finite.
@@ -1635,7 +1626,7 @@ Variables (nu : {finite_measure set T -> \bar R})
 
 Definition f : T -> \bar R :=
   match pselect (nu `<< mu) with
-  | left nu_mu => sval (cid (radon_nikodym_sigma_finite_fin_num nu_mu))
+  | left nu_mu => sval (cid (radon_nikodym_sigma_finite nu_mu))
   | right _ => cst -oo
   end.
 
@@ -1783,10 +1774,10 @@ Local Lemma Radon_Nikodym0 : nu `<< mu ->
     forall A, measurable A -> nu A = \int[mu]_(x in A) f x].
 Proof.
 move=> nu_mu; have [P [N nuPN]] := Hahn_decomposition nu.
-have [fp [fp0 fpfin intfp fpE]] := @radon_nikodym_sigma_finite_fin_num _ _ _ mu
+have [fp [fp0 fpfin intfp fpE]] := @radon_nikodym_sigma_finite _ _ _ mu
   [the {finite_measure set _ -> \bar _} of jordan_pos nuPN]
   (jordan_pos_dominates nuPN nu_mu).
-have [fn [fn0 fnfin intfn fnE]] := @radon_nikodym_sigma_finite_fin_num _ _ _ mu
+have [fn [fn0 fnfin intfn fnE]] := @radon_nikodym_sigma_finite _ _ _ mu
   [the {finite_measure set _ -> \bar _} of jordan_neg nuPN]
   (jordan_neg_dominates nuPN nu_mu).
 exists (fp \- fn); split; first by move=> x; rewrite fin_numB// fpfin fnfin.
@@ -1802,7 +1793,7 @@ Definition Radon_Nikodym : T -> \bar R :=
   | left nu_mu => sval (cid (Radon_Nikodym0 nu_mu))
   | right _ => cst -oo
   end.
-
+xxx
 Lemma Radon_NikodymE (numu : nu `<< mu) :
   Radon_Nikodym = sval (cid (Radon_Nikodym0 numu)).
 Proof.
