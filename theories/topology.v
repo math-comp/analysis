@@ -8654,3 +8654,4 @@ apply: (Lh (h a)); first by exists a => //; split => //; exists (a,b).
 by exists b.
 Unshelve. all: by end_near. Qed.
 End cartesian_closed.
+End currying.
