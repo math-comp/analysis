@@ -832,7 +832,7 @@ HB.instance Definition _ x := GRing.isLinear.Build R R R _ ( *%R x)
   (mulr_is_linear x).
 
 Lemma mulr_rev_is_linear y : linear (mulr_rev y : R -> R).
-Proof. by move=> ? ? ?; rewrite /mulr_rev mulrDl scalerAl. Qed.
+Proof. by move=> ? ? ?; rewrite /mulr_rev mulrDr scalerAl. Qed.
 HB.instance Definition _ y := GRing.isLinear.Build R R R _ (mulr_rev y)
   (mulr_rev_is_linear y).
 

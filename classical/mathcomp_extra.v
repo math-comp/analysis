@@ -615,9 +615,8 @@ End order_min.
 
 Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
   fun_of_revop :> X -> Y -> Z;
-  _ : forall x, f x =1 fun_of_revop^~ x
-}.
+  _ : forall x, f x =1 fun_of_revop^~ x }.
 
-Definition mulr_rev {R : ringType} (y x : R) := x * y.
+Definition mulr_rev {R : ringType} := @GRing.mul R^c.
 Canonical rev_mulr {R : ringType} :=
   @RevOp _ _ _ mulr_rev (@GRing.mul R) (fun _ _ => erefl).

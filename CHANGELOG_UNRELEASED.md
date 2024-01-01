@@ -33,24 +33,6 @@
 
 ### Changed
 
-- in `normedtype.v`:
-  + lemmas `vitali_lemma_finite` and `vitali_lemma_finite_cover` now returns
-    duplicate-free lists of indices
-
-- moved from `lebesgue_integral.v` to `measure.v`:
-  + definition `ae_eq`
-  + lemmas
-	`ae_eq0`,
-	`ae_eq_comp`,
-	`ae_eq_funeposneg`,
-	`ae_eq_refl`,
-	`ae_eq_trans`,
-	`ae_eq_sub`,
-	`ae_eq_mul2r`,
-	`ae_eq_mul2l`,
-	`ae_eq_mul1l`,
-	`ae_eq_abse`
-
 - move from `forms.v` to `mathcomp_extra.v`:
   + structure `revop`
 
