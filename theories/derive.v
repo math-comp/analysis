@@ -812,8 +812,8 @@ Lemma mulr_is_linear x : linear (@GRing.mul [ringType of R] x : R -> R).
 Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
 Canonical mulr_linear x := Linear (mulr_is_linear x).
 
-Lemma mulr_rev_is_linear y : linear (mulr_rev y : R -> R).
-Proof. by move=> ???; rewrite /mulr_rev mulrDl scalerAl. Qed.
+Lemma mulr_rev_is_linear (y : R) : linear (mulr_rev y).
+Proof. by move=> x a b; rewrite /mulr_rev /GRing.mul/= mulrDl scalerAl. Qed.
 Canonical mulr_rev_linear y := Linear (mulr_rev_is_linear y).
 
 Canonical mulr_bilinear :=
