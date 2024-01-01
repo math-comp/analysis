@@ -95,6 +95,9 @@
 
 ### Removed
 
+- in `forms.v`:
+  + lemmas `eq_map_mx`, `map_mx_id`
+
 ### Infrastructure
 
 ### Misc
