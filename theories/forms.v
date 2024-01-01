@@ -39,13 +39,6 @@ Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
   _ : forall x, f x =1 fun_of_revop^~ x
 }.
 
-Lemma eq_map_mx (R S : ringType) m n (M : 'M[R]_(m,n))
-      (g f : R -> S) : f =1 g -> M ^ f = M ^ g.
-Proof. by move=> eq_fg; apply/matrixP=> i j; rewrite !mxE. Qed.
-
-Lemma map_mx_id (R : ringType) m n (M : 'M[R]_(m,n)) : M ^ id = M.
-Proof. by apply/matrixP=> i j; rewrite !mxE. Qed.
-
 Lemma eq_map_mx_id (R : ringType) m n (M : 'M[R]_(m,n)) (f : R -> R) :
   f =1 id -> M ^ f = M.
 Proof. by move=> /eq_map_mx->; rewrite map_mx_id. Qed.
