@@ -76,6 +76,13 @@
 	`ae_eq_mul1l`,
 	`ae_eq_abse`
 
+- move from `forms.v` to `mathcomp_extra.v`:
+  + structure `revop`
+
+- move from `derive.v` to `mathcomp_extra.v`:
+  + definition `mulr_rev`
+  + canonical `rev_mulr`
+
 ### Renamed
 
 - in `exp.v`:
