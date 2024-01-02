@@ -147,16 +147,6 @@ Require Import reals signed.
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true                        *)
 (*                         clopen U == U is both open and closed              *)
-(*                   normal_space X == X is normal, sometimes called T4       *)
-(*                  regular_space X == X is regular, sometimes called T3      *)
-(*    separate_points_from_closed f == for a closed set U and point x outside *)
-(*                                     some member of the family f, it sends  *)
-(*                                     f_i(x) outside (closure (f_i @` U))    *)
-(*                                     Used together with join_product.       *)
-(*                   join_product f == the function (x => f ^~ x)             *)
-(*                                     When the family f separates points     *)
-(*                                     from closed sets, join_product is an   *)
-(*                                     embedding.                             *)
 (*                                                                            *)
 (* * Near notations and tactics                                               *)
 (* The purpose of the near notations and tactics is to make the manipulation  *)
@@ -282,7 +272,7 @@ Require Import reals signed.
 (*                        cluster F == set of cluster points of F             *)
 (*                          compact == set of compact sets w.r.t. the filter- *)
 (*                                     based definition of compactness        *)
-(*               hausdorff_space T <-> T is a Hausdorff space (T_2)           *)
+(*               hausdorff_space T <-> T is a Hausdorff space (T2)            *)
 (*                   compact_near F == the filter F contains a closed comapct *)
 (*                                     set                                    *)
 (*                     precompact A == the set A is contained in a closed and *)
@@ -296,8 +286,8 @@ Require Import reals signed.
 (*                                     cover-based definition of compactness  *)
 (*                    near_covering == a reformulation of covering compact    *)
 (*                                     better suited for use with `near`      *)
-(*              kolmogorov_space T <-> T is a Kolmogorov space (T_0)          *)
-(*              accessible_space T <-> T is an accessible space (T_1)         *)
+(*              kolmogorov_space T <-> T is a Kolmogorov space (T0)           *)
+(*              accessible_space T <-> T is an accessible space (T1)          *)
 (*                       close x y <-> x and y are arbitrarily close w.r.t.   *)
 (*                                     to balls                               *)
 (*                     connected A <-> the only non empty subset of A which   *)
@@ -401,15 +391,15 @@ Require Import reals signed.
 (*                                                                            *)
 (* ** Complete pseudometric spaces                                            *)
 (*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
-(*                                   (epsilon-delta definition).              *)
+(*                                   (epsilon-delta definition)               *)
 (*                 cauchy_ball F <-> the set of sets F is a cauchy filter     *)
 (*                                   (using the near notations)               *)
 (*       completePseudoMetricType == interface type for a complete            *)
-(*                                   pseudometric space structure.            *)
+(*                                   pseudometric space structure             *)
 (* CompletePseudoMetricType T cvgCauchy == packs the proof that every proper  *)
 (*                                   cauchy filter on T converges into a      *)
-(*                                   completePseudoMetricType structure; T    *)
-(*                                   must have a canonical structure of       *)
+(*                                   completePseudoMetricType structure       *)
+(*                                   T must have a canonical structure of     *)
 (*                                   pseudoMetricType.                        *)
 (* [completePseudoMetricType of T for cT] == T-clone of the                   *)
 (*                                   completePseudoMetricType structure cT.   *)
@@ -447,13 +437,6 @@ Require Import reals signed.
 (*                          topology of compact convergence.                  *)
 (* {family fam, F --> f} == F converges to f in {family fam, U -> V}          *)
 (*                                                                            *)
-(*               gauge E == for an entourage E, gauge E is a filter which     *)
-(*                          includes `iter n split_ent E`                     *)
-(*                          Critically, `gauge E` forms a uniform space with  *)
-(*                          a countable uniformity.                           *)
-(*  gauge_pseudoMetricType E == the pseudoMetricType associated with the      *)
-(*                          `gauge E`                                         *)
-(*                                                                            *)
 (*               dense S == the set (S : set T) is dense in T, with T of      *)
 (*                          type topologicalType                              *)
 (*  weak_pseudoMetricType == the metric space for weak topologies             *)
@@ -463,10 +446,25 @@ Require Import reals signed.
 (*                            topology that ignores points outside A          *)
 (*         incl_subspace x == with x of type subspace A with (A : set T),     *)
 (*                            inclusion of subspace A into T                  *)
+(*    separate_points_from_closed f == for a closed set U and point x outside *)
+(*                                     some member of the family f, it sends  *)
+(*                                     f_i(x) outside (closure (f_i @` U))    *)
+(*                                     Used together with join_product.       *)
+(*          join_product f == the function (x => f ^~ x)                      *)
+(*                            When the family f separates points from closed  *)
+(*                            sets, join_product is an embedding.             *)
 (*            singletons T := [set [set x] | x in [set: T]]                   *)
+(*                 gauge E == for an entourage E, gauge E is a filter which   *)
+(*                            includes `iter n split_ent E`                   *)
+(*                            Critically, `gauge E` forms a uniform space     *)
+(*                            with a countable uniformity.                    *)
+(*  gauge_pseudoMetricType E == the pseudoMetricType associated with the      *)
+(*                           `gauge E`                                        *)
+(*          normal_space X == X is normal (sometimes called T4)               *)
+(*         regular_space X == X is regular (sometimes called T3)              *)
 (*      equicontinuous W x == the set (W : X -> Y) is equicontinuous at x     *)
-(*  pointwise_precompact W == For each (x : X), set of images [f x | f in W]  *)
-(*                            is precompact                                   *)
+(*  pointwise_precompact W == for each (x : X), the set of images             *)
+(*                            [f x | f in W] is precompact                    *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -2067,6 +2065,8 @@ End within_topologicalType.
 
 Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 
+(** Topology defined by a filter *)
+
 Section TopologyOfFilter.
 
 Context {T : Type} {nbhs' : T -> set (set T)}.
@@ -2122,6 +2122,8 @@ by move=> /Aop [B [Bop Bp sBA]]; exists (existT _ B (conj Bop sBA)).
 Qed.
 
 End TopologyOfOpen.
+
+(** Topology defined by a base of open sets *)
 
 Section TopologyOfBase.
 
@@ -2217,6 +2219,8 @@ move=> + [+ [n _]]; elim: n => [A B|n IH/= A B].
 move=> [P sFP] [Q sFQ] PQB /filterS; apply; rewrite -PQB.
 by apply: (filterI _ _); [exact: (IH _ _ sFP)|exact: (IH _ _ sFQ)].
 Qed.
+
+(** Topology defined by a subbase of open sets *)
 
 Definition finI_from (I : choiceType) T (D : set I) (f : I -> set T) :=
   [set \bigcap_(i in [set` D']) f i |
@@ -2490,6 +2494,8 @@ Canonical matrix_topologicalType :=
 
 End matrix_Topology.
 
+(** Weak topology by a function *)
+
 Section Weak_Topology.
 
 Variable (S : pointedType) (T : topologicalType) (f : S -> T).
@@ -2579,6 +2585,8 @@ by apply: (cvFt i); apply: Eop; move: Ct; rewrite -IDeC => /(_ _ DE).
 Qed.
 
 End Sup_Topology.
+
+(** Product topology *)
 
 Section Product_Topology.
 
@@ -4505,6 +4513,8 @@ End prod_Uniform.
 Canonical prod_uniformType (U V : uniformType) :=
   UniformType (U * V) (@prod_uniformType_mixin U V).
 
+(** matrices *)
+
 Section matrix_Uniform.
 
 Variables (m n : nat) (T : uniformType).
@@ -5256,9 +5266,7 @@ rewrite /= -[leRHS]invrK lef_pinv ?posrE ?invr_gt0// -natr1.
 by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// lt_succ_floor.
 Qed.
 
-(** ** Specific pseudoMetric spaces *)
-
-(** matrices *)
+(* Specific pseudoMetric spaces *)
 Section matrix_PseudoMetric.
 Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
 Implicit Types x y : 'M[T]_(m, n).
@@ -5295,7 +5303,7 @@ Canonical matrix_pseudoMetricType :=
   PseudoMetricType 'M[T]_(m, n) matrix_pseudoMetricType_mixin.
 End matrix_PseudoMetric.
 
-(** product of two pseudoMetric spaces *)
+(* product of two pseudoMetric spaces *)
 Section prod_PseudoMetric.
 Context {R : numDomainType} {U V : pseudoMetricType R}.
 Implicit Types (x y : U * V).
@@ -7956,7 +7964,7 @@ Qed.
 (* A convenient notion that is in between compactness in
    {family compact, X -> y} and compactness in {ptws X -> y}.*)
 Definition pointwise_precompact {I} (W : set I) (d : I -> X -> Y) :=
-  forall x, precompact [set (d i x) | i in W].
+  forall x, precompact [set d i x | i in W].
 
 Lemma pointwise_precompact_subset {I J} (W : set I) (V : set J)
     {fW : I -> X -> Y} {fV : J -> X -> Y} :
