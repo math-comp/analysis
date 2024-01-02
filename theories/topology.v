@@ -2088,6 +2088,8 @@ Next Obligation. done. Qed.
 
 End TopologyOfFilter.
 
+(** Topology defined by open sets *)
+
 Section TopologyOfOpen.
 
 Variable (T : Type) (op : set T -> Prop).
@@ -2551,6 +2553,8 @@ Qed.
 
 End Weak_Topology.
 
+(** Supremum of a family of topologies *)
+
 Section Sup_Topology.
 
 Variable (T : pointedType) (I : Type) (Tc : I -> Topological.class_of T).
@@ -2597,6 +2601,8 @@ Definition product_topologicalType :=
     (weak_topologicalType (fun f : dep_arrow_pointedType T => f i))).
 
 End Product_Topology.
+
+(** deleted neighborhood *)
 
 Definition dnbhs {T : topologicalType} (x : T) :=
   within (fun y => y != x) (nbhs x).
@@ -5266,7 +5272,9 @@ rewrite /= -[leRHS]invrK lef_pinv ?posrE ?invr_gt0// -natr1.
 by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// lt_succ_floor.
 Qed.
 
-(* Specific pseudoMetric spaces *)
+(** Specific pseudoMetric spaces *)
+
+(** matrices *)
 Section matrix_PseudoMetric.
 Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
 Implicit Types x y : 'M[T]_(m, n).
@@ -5303,7 +5311,7 @@ Canonical matrix_pseudoMetricType :=
   PseudoMetricType 'M[T]_(m, n) matrix_pseudoMetricType_mixin.
 End matrix_PseudoMetric.
 
-(* product of two pseudoMetric spaces *)
+(** product of two pseudoMetric spaces *)
 Section prod_PseudoMetric.
 Context {R : numDomainType} {U V : pseudoMetricType R}.
 Implicit Types (x y : U * V).
