@@ -114,6 +114,19 @@
 - in `normedtype.v`:
   + lemmas `withinN`, `at_rightN`, `at_leftN`, `cvg_at_leftNP`, `cvg_at_rightNP`
 
+- in `topology.v`:
+  + lemma `dnbhs_ball`
+
+- in `normedtype.v`
+  + definitions `limf_esup`, `limf_einf`
+  + lemmas `limf_esupE`, `limf_einfE`, `limf_esupN`, `limf_einfN`
+
+- in `sequences.v`:
+  + lemmas `limn_esup_lim`, `limn_einf_lim`
+
+- in `realfun.v`:
+  + lemmas `lime_sup_lim`, `lime_inf_lim`
+
 ### Changed
 
 - in `normedtype.v`:
@@ -148,6 +161,10 @@
 - moved from `topology.v` to `mathcomp_extra.v`
   + definition `monotonous`
 
+- in `sequences.v`:
+  + `limn_esup` now defined from `lime_sup`
+  + `limn_einf` now defined from `limn_esup`
+  
 ### Renamed
 
 - in `exp.v`:

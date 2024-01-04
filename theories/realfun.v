@@ -19,10 +19,9 @@ From HB Require Import structures.
 (*   derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and       *)
 (*                                        continuous up to the boundary       *)
 (*                                                                            *)
-(*            lime_sup f a == limit superior of the extended real-valued      *)
-(*                            function f at a                                 *)
-(*            lime_inf f a == limit inferior of the extended real-valued      *)
-(*                            function f at a                                 *)
+(* * Limit superior and inferior for functions:                               *)
+(*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
+(*                                valued function f at point a                *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -513,21 +512,14 @@ End fun_cvg_ereal.
 
 End fun_cvg.
 
-(*Section lim_sup_inf.
-Variables (T : choiceType) (X : filteredType T) (R : realType) (f : X -> \bar R).
-
-Definition limf_sup (F : set (set X)) :=
-  ereal_inf [set ereal_sup [set f x | x in V] | V in F].
-
-Definition limf_inf (F : set (set X)) :=
-  ereal_sup [set ereal_inf [set f x | x in V] | V in F].
-
-End lim_sup_inf.*)
-
 Section lime_sup_inf.
 Variable R : realType.
 Local Open Scope ereal_scope.
 Implicit Types (f g : R -> \bar R) (a r s l : R).
+
+Definition lime_sup f a : \bar R := limf_esup f a^'.
+
+Definition lime_inf f a : \bar R := - lime_sup (\- f) a.
 
 Let sup_ball f a r := ereal_sup [set f x | x in ball a r `\ a].
 
@@ -537,12 +529,26 @@ move=> rs; apply: ub_ereal_sup => /= _ /= [t [rt ta] <-].
 by apply: ereal_sup_ub => /=; exists t => //; split => //; exact: le_ball rt.
 Qed.
 
-Let inf_ball f a r := ereal_inf [set f x | x in ball a r `\ a].
+Let sup_ball_is_cvg f a : cvg (sup_ball f a e @[e --> 0^'+]).
+Proof.
+apply: nondecreasing_at_right_is_cvge => x.
+by rewrite in_itv/= andbT => x0 y /sup_ball_le.
+Qed.
+
+Let inf_ball f a r := - sup_ball (\- f) a r.
+
+Let inf_ballE f a r : inf_ball f a r = ereal_inf [set f x | x in ball a r `\ a].
+Proof.
+by rewrite /inf_ball /ereal_inf; congr (- _); rewrite /sup_ball -image_comp.
+Qed.
 
 Let inf_ball_le f a r s : (s <= r)%R -> inf_ball f a r <= inf_ball f a s.
+Proof. by move=> sr; rewrite /inf_ball lee_oppl oppeK sup_ball_le. Qed.
+
+Let inf_ball_is_cvg f a : cvg (inf_ball f a e @[e --> 0^'+]).
 Proof.
-move=> sr; apply: lb_ereal_inf => /= _ /= [t [st ta] <-].
-by apply: ereal_inf_lb => /=; exists t => //; split => //; exact: le_ball st.
+apply: nonincreasing_at_right_is_cvge => //.
+by move=> x; rewrite in_itv/= andbT => x0 y /inf_ball_le.
 Qed.
 
 Let le_sup_ball f g a :
@@ -554,41 +560,41 @@ apply: (@le_trans _ _ (g s)); first exact: (fg r).
 by apply: ereal_sup_ub => /=; exists s => //; split => //; exact/eqP.
 Unshelve. all: by end_near. Qed.
 
-Definition lime_sup f a : \bar R := lim (sup_ball f a e @[e --> 0^'+]).
+Lemma lime_sup_lim f a : lime_sup f a = lim (sup_ball f a e @[e --> 0^'+]).
+Proof.
+apply/eqP; rewrite eq_le; apply/andP; split.
+  apply: lime_ge => //; near=> e; apply: ereal_inf_lb => /=.
+  by exists (ball a e `\ a) => //=; exact: dnbhs_ball.
+apply: lb_ereal_inf => /= _ [A [r /= r0 arA] <-].
+apply: lime_le => //; near=> e.
+apply: le_ereal_sup => _ [s [ase /eqP sa] <- /=].
+exists s => //; apply: arA => //=; apply: (lt_le_trans ase).
+by near: e; exact: nbhs_right_le.
+Unshelve. all: by end_near. Qed.
 
-Definition lime_inf f a : \bar R := lim (inf_ball f a e @[e --> 0^'+]).
+Lemma lime_inf_lim f a : lime_inf f a = lim (inf_ball f a e @[e --> 0^'+]).
+Proof.
+rewrite /lime_inf lime_sup_lim -limeN; last exact: sup_ball_is_cvg.
+by rewrite /sup_ball; under eq_fun do rewrite -image_comp.
+Qed.
 
 Lemma lime_supE f a :
   lime_sup f a = ereal_inf [set sup_ball f a e | e in `]0, +oo[ ]%R.
 Proof.
-apply/cvg_lim => //; apply: nondecreasing_at_right_cvge => //.
-by move=> x; rewrite in_itv/= andbT => x0 y /sup_ball_le.
+rewrite lime_sup_lim; apply/cvg_lim => //.
+apply: nondecreasing_at_right_cvge => //.
+by move=> x; rewrite in_itv/= andbT => x0 y; exact: sup_ball_le.
 Qed.
 
 Lemma lime_infE f a :
   lime_inf f a = ereal_sup [set inf_ball f a e | e in `]0, +oo[ ]%R.
-Proof.
-apply/cvg_lim => //; apply: nonincreasing_at_right_cvge => //.
-by move=> x; rewrite in_itv/= andbT => x0 y /inf_ball_le.
-Qed.
+Proof. by rewrite /lime_inf lime_supE /ereal_inf oppeK image_comp. Qed.
 
 Lemma lime_infN f a : lime_inf (\- f) a = - lime_sup f a.
-Proof.
-rewrite lime_supE lime_infE /ereal_inf oppeK; congr ereal_sup.
-apply/seteqP; split=> [_ /= [r r0] <-|].
-  exists (sup_ball f a r); first by exists r.
-  rewrite /inf_ball /ereal_inf image_comp/= compA.
-  by rewrite (_ : _ \o -%E = id) // funeqE => x/=; rewrite oppeK.
-move=> _ /= [_] [r] r0 <- <-; exists r => //.
-rewrite /inf_ball /ereal_inf image_comp compA.
-  by rewrite (_ : _ \o -%E = id) // funeqE => x/=; rewrite oppeK.
-Qed.
+Proof. by rewrite /lime_sup -limf_einfN. Qed.
 
 Lemma lime_supN f a : lime_sup (\- f) a = - lime_inf f a.
-Proof.
-rewrite -eqe_oppLRP -lime_infN; congr (lime_inf _ a).
-by apply/funext => x; rewrite oppeK.
-Qed.
+Proof. by rewrite /lime_inf oppeK. Qed.
 
 Lemma lime_sup_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_sup f a.
 Proof.
@@ -603,23 +609,17 @@ Qed.
 
 Lemma lime_inf_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_inf f a.
 Proof.
-move=> f0; apply: lime_ge.
-  apply: nonincreasing_at_right_is_cvge => //.
-  by move=> x; rewrite in_itv/= andbT => x0 y /inf_ball_le.
-by near=> b; apply: lb_ereal_inf => /= _ [r [abr/= ra]] <-; exact: f0.
+move=> f0; rewrite lime_inf_lim; apply: lime_ge; first exact: inf_ball_is_cvg.
+near=> b; rewrite inf_ballE.
+by apply: lb_ereal_inf => /= _ [r [abr/= ra]] <-; exact: f0.
 Unshelve. all: by end_near. Qed.
 
 Lemma lime_supD f g a : lime_sup f a +? lime_sup g a ->
   lime_sup (f \+ g)%E a <= lime_sup f a + lime_sup g a.
 Proof.
-move=> fg; rewrite /lime_sup -limeD//; last 2 first.
-  - apply: nondecreasing_at_right_is_cvge => x.
-    by rewrite in_itv/= andbT => x0 y /sup_ball_le.
-  - apply: nondecreasing_at_right_is_cvge => x.
-    by rewrite in_itv/= andbT => x0 y /sup_ball_le.
-apply: lee_lim.
-- apply: nondecreasing_at_right_is_cvge => x.
-  by rewrite in_itv/= andbT => x0 y /sup_ball_le.
+move=> fg; rewrite !lime_sup_lim -limeD//; last first.
+  by rewrite -!lime_sup_lim.
+apply: lee_lim => //.
 - apply: nondecreasing_at_right_is_cvge => x.
   by rewrite in_itv/= andbT => x0 y xy; rewrite lee_add//; exact: sup_ball_le.
 - near=> a0; apply: ub_ereal_sup => _ /= [a1 [a1ae a1a]] <-.
@@ -630,36 +630,27 @@ Lemma lime_sup_le f g a :
   (forall r, (0 < r)%R -> forall y, y != a -> ball a r y -> f y <= g y) ->
   lime_sup f a <= lime_sup g a.
 Proof.
-move=> fg; apply: lee_lim; last exact: le_sup_ball.
-- apply: nondecreasing_at_right_is_cvge => r.
-  by rewrite in_itv/= andbT => r0 ? /sup_ball_le.
-- apply: nondecreasing_at_right_is_cvge => r.
-  by rewrite in_itv/= andbT => r0 ? /sup_ball_le.
+by move=> fg; rewrite !lime_sup_lim; apply: lee_lim => //; exact: le_sup_ball.
 Qed.
 
 Lemma lime_inf_sup f a : lime_inf f a <= lime_sup f a.
 Proof.
-apply: lee_lim => //.
-- apply: nonincreasing_at_right_is_cvge => r.
-  by rewrite in_itv/= andbT => r0 s rs; exact: inf_ball_le.
-- apply: nondecreasing_at_right_is_cvge => r.
-  by rewrite in_itv/= andbT => r0 s rs; exact: sup_ball_le.
+rewrite lime_inf_lim lime_sup_lim; apply: lee_lim => //.
 near=> r.
-rewrite  ereal_sup_le//.
+rewrite ereal_sup_le//.
 have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2)%R.
   exists (a + r / 2)%R => //;  split.
     rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
     by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
   by apply/eqP; rewrite gt_eqF// ltr_spaddr// divr_gt0.
-by exists (f (a + r / 2)%R) => //=; rewrite ereal_inf_lb.
+by exists (f (a + r / 2)%R) => //=; rewrite inf_ballE ereal_inf_lb.
 Unshelve. all: by end_near. Qed.
 
 Local Lemma lim_lime_sup' f a (l : R) :
   f r @[r --> a] --> l%:E -> lime_sup f a <= l%:E.
 Proof.
-move=> fpA; apply/lee_addgt0Pr => e e0; apply: lime_le.
-  apply: nondecreasing_at_right_is_cvge => x.
-  by rewrite in_itv/= andbT => x0 y /sup_ball_le.
+move=> fpA; apply/lee_addgt0Pr => e e0; rewrite lime_sup_lim.
+apply: lime_le => //.
 move/fine_cvg : (fpA) => /cvgrPdist_le fpA1.
 move/fcvg_is_fine : (fpA); rewrite near_map => -[d d0] fpA2.
 have := fpA1 _ e0 => -[q /= q0] H.
@@ -682,13 +673,13 @@ Qed.
 Local Lemma lim_lime_inf' f a (l : R) :
   f r @[r --> a] --> l%:E -> l%:E <= lime_inf f a.
 Proof.
-move=> fpA; apply/lee_subgt0Pr => e e0; apply: lime_ge.
-  apply: nonincreasing_at_right_is_cvge => x.
-  by rewrite in_itv/= andbT => x0 y /inf_ball_le.
+move=> fpA; apply/lee_subgt0Pr => e e0; rewrite lime_inf_lim.
+apply: lime_ge => //.
 move/fine_cvg : (fpA) => /cvgrPdist_le fpA1.
 move/fcvg_is_fine : (fpA); rewrite near_map => -[d d0] fpA2.
 have := fpA1 _ e0 => -[q /= q0] H.
 near=> x.
+rewrite inf_ballE.
 apply: lb_ereal_inf => //= _ [y [pry /= yp <-]].
 have ? : f y \is a fin_num.
   apply: fpA2.
@@ -776,7 +767,8 @@ have [d1 Hd1] : exists d1 : {posnum R},
   have : l%:E - e%:num%:E < lime_inf f a.
     by rewrite inffpl lte_subl_addr// lte_addl.
   rewrite lime_infE => /ereal_sup_gt[x /= [r]]; rewrite in_itv/= andbT.
-  by move=> r0 <-{x} H; exists (PosNum r0); rewrite ltW.
+  move=> r0 <-{x} H; exists (PosNum r0); rewrite ltW//.
+  by rewrite -inf_ballE.
 have [d2 Hd2] : exists d2 : {posnum R},
     ereal_sup [set f x | x in ball a d2%:num `\ a] <= l%:E + e%:num%:E.
   have : lime_sup f a < l%:E + e%:num%:E by rewrite supfpl lte_addl.
@@ -804,20 +796,6 @@ apply: ereal_sup_ub => /=; exists (u n).
   by apply: ucvg => //=; near: n; exists m.
 by rewrite fineK//; near: n.
 Unshelve. all: by end_near. Qed.
-
-Local Lemma lime_supP' f a l :
-  lime_sup f a = l%:E -> forall (e : {posnum R}) (d : {posnum R}),
-    exists x, (ball a d%:num `\ a) x /\ l%:E - e%:num%:E < f x.
-Proof.
-move=> fal.
-have H (e d : {posnum R}) : l%:E - e%:num%:E < l%:E <= sup_ball f a d%:num.
-  apply/andP; split; first by rewrite lte_subl_addr// lte_addl.
-  rewrite -fal lime_supE; apply: ereal_inf_lb => /=; exists d%:num => //.
-  by rewrite in_itv//= andbT.
-move=> e d; have {H}/andP[] := H e d.
-move=> /lt_le_trans => /[apply].
-by move/ereal_sup_gt => [_] /= [r [pdr rp]] <- H; exists r.
-Qed.
 
 End lime_sup_inf.
 

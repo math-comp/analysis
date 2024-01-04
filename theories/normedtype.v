@@ -10,6 +10,11 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                                                            *)
 (* Note that balls in topology.v are not necessarily open, here they are.     *)
 (*                                                                            *)
+(* * Limit superior and inferior:                                             *)
+(*   limf_esup f F, limf_einf f F == limit sup/inferior of f at "filter" F    *)
+(*                                   f has type X -> \bar R.                  *)
+(*                                   F has type set (set X).                  *)
+(*                                                                            *)
 (* * Normed Topological Abelian groups:                                       *)
 (*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
@@ -143,6 +148,35 @@ Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+Section limf_esup_einf.
+Variables (T : choiceType) (X : filteredType T) (R : realType).
+Implicit Types (f : X -> \bar R) (F : set (set X)).
+Local Open Scope ereal_scope.
+
+Definition limf_esup f F := ereal_inf [set ereal_sup (f @` V) | V in F].
+
+Definition limf_einf f F := - limf_esup (\- f) F.
+
+Lemma limf_esupE f F :
+  limf_esup f F = ereal_inf [set ereal_sup (f @` V) | V in F].
+Proof. by []. Qed.
+
+Lemma limf_einfE f F :
+  limf_einf f F = ereal_sup [set ereal_inf (f @` V) | V in F].
+Proof.
+rewrite /limf_einf limf_esupE /ereal_inf oppeK -[in RHS]image_comp /=.
+congr (ereal_sup [set _ | _ in [set ereal_sup _ | _ in _]]).
+by under eq_fun do rewrite -image_comp.
+Qed.
+
+Lemma limf_esupN f F : limf_esup (\- f) F = - limf_einf f F.
+Proof. by rewrite /limf_einf oppeK. Qed.
+
+Lemma limf_einfN f F : limf_einf (\- f) F = - limf_esup f F.
+Proof. by rewrite /limf_einf; under eq_fun do rewrite oppeK. Qed.
+
+End limf_esup_einf.
 
 Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 

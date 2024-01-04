@@ -5152,6 +5152,13 @@ Lemma near_ball (y : M) (eps : {posnum R}) :
    \forall y' \near y, ball y eps%:num y'.
 Proof. exact: nbhsx_ballx. Qed.
 
+Lemma dnbhs_ball (a : M) (e : R) : (0 < e)%R -> a^' (ball a e `\ a).
+Proof.
+move: e => _/posnumP[e]; rewrite /dnbhs /within; near=> r => ra.
+split => //=; last exact/eqP.
+by near: r; rewrite near_simpl; exact: near_ball.
+Unshelve. all: by end_near. Qed.
+
 Lemma fcvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !nbhs_simpl /=. Qed.
