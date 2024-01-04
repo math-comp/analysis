@@ -230,13 +230,30 @@ Section independent_events.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 
-Definition inde_event (I : choiceType) (A : set I) (E : I -> set T) :=
+Definition mutually_independent (I : choiceType) (A : set I) (E : I -> set T) :=
   (forall i, A i -> measurable (E i)) /\
   forall B : {fset I}, [set` B] `<=` A ->
     P (\bigcap_(i in [set` B]) E i) = \prod_(i <- B) P (E i).
 
-Lemma inde_ev2 (E1 E2 : set T) :
-  inde_event [set: nat] (bigcap2 E1 E2) -> P (E1 `&` E2) = P E1 * P E2.
+Definition kwise_independent (I : choiceType) (A : set I) (E : I -> set T) k :=
+  (forall i, A i -> measurable (E i)) /\
+  forall B : {fset I}, [set` B] `<=` A -> (#|` B | <= k)%nat ->
+    P (\bigcap_(i in [set` B]) E i) = \prod_(i <- B) P (E i).
+
+Lemma mutual_indep_is_kwise_indep (I : choiceType) (A : set I) (E : I -> set T) k :
+  mutually_independent A E -> kwise_independent A E k.
+Proof.
+rewrite/mutually_independent/kwise_independent.
+move=> [mE miE]; split=> // B BleA _.
+exact: miE.
+Qed.
+
+Definition pairwise_independent E1 E2 := mutually_independent [set: nat] (bigcap2 E1 E2).
+
+(* nb: if n = | A | > 0, mutual independence is equivalent to n-wise independence *)
+
+Lemma pairwise_independentM (E1 E2 : set T) :
+  pairwise_independent E1 E2 -> P (E1 `&` E2) = P E1 * P E2.
 Proof.
 move=> [mE12 ieprod].
 have := ieprod [fset 0%N; 1%N]%fset (@subsetT _ _).
