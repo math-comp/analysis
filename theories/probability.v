@@ -36,6 +36,7 @@ Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
 Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]", at level 5).
 Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]", at level 5).
+Reserved Notation "' P [ A | B ]".
 Reserved Notation "{ 'dmfun' aT >-> T }"
   (at level 0, format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'"
@@ -119,6 +120,32 @@ HB.instance Definition _ := Measure_isProbability.Build _ _ R
   (distribution P X) distribution_is_probability.
 
 End distribution_is_probability.
+
+Section probability.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Lemma probability_setC A : d.-measurable A -> P (~` A) = 1 - P A.
+Proof.
+move=> mA; rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI A) -measureD ?setTD ?setCK//.
+by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
+Qed.
+
+Lemma probability_setC' A : d.-measurable A -> P A = 1 - P (~` A).
+Proof.
+move=> mA. rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI (~` A)) -measureD ?setTD ?setCK//; first exact: measurableC.
+by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
+Qed.
+
+Lemma probability_fin_num A : d.-measurable A -> P A \is a fin_num.
+Proof.
+move=> mA.
+rewrite fin_numElt.
+rewrite (le_lt_trans (probability_le1 P mA) (ltry _)).
+by rewrite (lt_le_trans ltNy0 (measure_ge0 P _)).
+Qed.
+
+End probability.
 
 Section transfer_probability.
 Local Open Scope ereal_scope.
@@ -248,19 +275,69 @@ move=> [mE miE]; split=> // B BleA _.
 exact: miE.
 Qed.
 
-Definition pairwise_independent E1 E2 := mutually_independent [set: nat] (bigcap2 E1 E2).
-
-(* nb: if n = | A | > 0, mutual independence is equivalent to n-wise independence *)
-
-Lemma pairwise_independentM (E1 E2 : set T) :
-  pairwise_independent E1 E2 -> P (E1 `&` E2) = P E1 * P E2.
+Lemma nwise_indep_is_mutual_indep (I : choiceType) (A : {fset I}) (E : I -> set T) n :
+  #|` A | = n -> kwise_independent [set` A] E n -> mutually_independent [set` A] E.
 Proof.
-move=> [mE12 ieprod].
-have := ieprod [fset 0%N; 1%N]%fset (@subsetT _ _).
-by rewrite bigcap_fset !big_fsetU1 ?inE//= !big_seq_fset1.
+rewrite/mutually_independent/kwise_independent.
+move=> nA [mE miE]; split=> // B BleA.
+apply: miE => //; rewrite -nA fsubset_leq_card//.
+by apply/fsubsetP => x xB; exact: (BleA x).
 Qed.
 
+Definition pairwise_independent E1 E2 := mutually_independent [set: nat] (bigcap2 E1 E2).
+
+Lemma pairwise_independentM (E1 E2 : set T) :
+  pairwise_independent E1 E2 <-> d.-measurable E1 /\ d.-measurable E2 /\ P (E1 `&` E2) = P E1 * P E2.
+Proof.
+split.
+- move=> [] mE1E2 /(_ [fset 0%N; 1%N]%fset (@subsetT _ _)).
+  rewrite bigcap_fset !big_fsetU1 ?inE//= !big_seq_fset1.
+  repeat split=> //.
+  + exact: (mE1E2 0%N).
+  + exact: (mE1E2 1%N).
+- move=> [mE1 [mE2 E1E2M]]; rewrite/pairwise_independent/mutually_independent; split.
+  + by repeat case=> //=.
+  + admit.
+Admitted.
+
+Lemma pairwise_independentC (E1 E2 : set T) :
+  pairwise_independent E1 E2 -> pairwise_independent E1 (~` E2).
+Proof.
+rewrite/pairwise_independent.
+move/pairwise_independentM=> [mE1 [mE2 h]].
+apply/pairwise_independentM; repeat split=> //.
+- exact: measurableC.
+- rewrite -setDE measureD//; last first.
+    exact: (le_lt_trans (probability_le1 P mE1) (ltry _)).
+  rewrite probability_setC// muleBr// ?mule1 -?h//.
+  exact: probability_fin_num.
+Qed.
+
+(* ale: maybe interesting is thm 8.3 and exercise 8.6 from shoup/ntb at this point *)
+
 End independent_events.
+
+Section conditional_probability.
+Context d (T : measurableType d) (R : realType).
+Local Open Scope ereal_scope.
+
+Definition conditional_probability (P : probability T R) E1 E2 := (fine (P (E1 `&` E2)) / fine (P E2))%:E.
+Local Notation "' P [ E1 | E2 ]" := (conditional_probability P E1 E2).
+
+Lemma conditional_independence (P : probability T R) E1 E2 :
+  (P E2 != 0) -> pairwise_independent P E1 E2 -> 'P [ E1 | E2 ] = P E1.
+Proof.
+move=> PE2ne0 iE12.
+have /= mE1 := (iE12.1 0%N).
+have /= mE2 := (iE12.1 1%N).
+rewrite/conditional_probability ((pairwise_independentM _ _ _).1 iE12).2.2.
+rewrite fineM ?probability_fin_num//; [|exact: mE1|exact: mE2].
+rewrite -mulrA mulfV ?mulr1 ?fineK// ?probability_fin_num//; first exact: mE1.
+by rewrite fine_eq0// probability_fin_num//; exact: mE2.
+Qed.
+
+End conditional_probability.
+Notation "' P [ E1 | E2 ]" := (conditional_probability P E1 E2).
 
 Require Import real_interval.
 
@@ -268,17 +345,47 @@ Section independent_RVs.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 
+Definition pairwise_independent_RV (X Y : {RV P >-> R}) :=
+  forall s t, pairwise_independent P (X @^-1` s) (Y @^-1` t).
+
+Lemma conditional_independent_RV (X Y : {RV P >-> R}) :
+  pairwise_independent_RV X Y ->
+  forall s t, P (Y @^-1` t) != 0 -> 'P [X @^-1` s | Y @^-1` t] = P (X @^-1` s).
+Proof.
+move=> iRVXY s t PYtne0.
+exact: conditional_independence.
+Qed.
+
+Definition mutually_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
+  forall (s : I -> set R), mutually_independent P A (fun i => X i @^-1` s i).
+
+Definition kwise_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) k :=
+  forall (s : I -> set R), kwise_independent P A (fun i => X i @^-1` s i) k.
+
+Lemma nwise_indep_is_mutual_indep_RV (I : choiceType) (A : {fset I}) (X : I -> {RV P >-> R}) n :
+  #|` A | = n -> kwise_independent_RV [set` A] X n -> mutually_independent_RV [set` A] X.
+Proof.
+rewrite/mutually_independent_RV/kwise_independent_RV=> nA kwX s.
+by apply: nwise_indep_is_mutual_indep; rewrite ?nA.
+Qed.
+
+
+(* old formalization *)
 Definition inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
   forall x_ : I -> R,
-    inde_event P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
+    mutually_independent P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
 
 (* Remark 2.15 (i) *)
 Lemma prob_inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
   inde_RV A X ->
     forall J : {fset I}, [set` J] `<=` A ->
       forall x_ : I -> R,
-        P (\bigcap_(i <- J) X i @^-1` `[(x_ i), +oo[%classic) = 
+        P (\bigcap_(i in [set` J]) X i @^-1` `[(x_ i), +oo[%classic) = 
           \prod_(i <- J) P (X i @^-1` `[(x_ i), +oo[%classic).
+Proof.
+move=> iRVX J JleA x_.
+apply: (iRVX _).2 => //.
+Qed.
 
 Lemma inde_expectation (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
   inde_RV A X ->
@@ -943,6 +1050,13 @@ HB.instance Definition _ :=
 
 End bernoulli.
 
+Section bernoulli_RV.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Definition bernoulli_RV (p : R) : {RV P >-> R} := 
+
+End bernoulli_RV.
+
 Local Open Scope ereal_scope.
 Lemma integral_bernoulli {R : realType}
     (p : {nonneg R}) (p1 : (p%:num <= 1)%R) (f : R -> \bar R) :
@@ -1212,18 +1326,6 @@ rewrite (bernoulli_expectation b).
 have b2 := bernoulli_sqr b.
 rewrite (bernoulli_expectation b2) /=.
 by rewrite -EFinD mulrDr mulr1 mulrN.
-Qed.
-
-Lemma probability_setC A : d.-measurable A -> P (~` A) = 1 - P A.
-Proof.
-move=> mA; rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI A) -measureD ?setTD ?setCK//.
-by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
-Qed.
-
-Lemma probability_setC' A : d.-measurable A -> P A = 1 - P (~` A).
-Proof.
-move=> mA. rewrite -(@probability_setT _ _ _ P) -[in RHS](setTI (~` A)) -measureD ?setTD ?setCK//; first exact: measurableC.
-by rewrite [ltLHS](@probability_setT _ _ _ P) ltry.
 Qed.
 
 Definition independent (X Y : {RV P >-> R}) := 'E_P[X * Y] = 'E_P[X] * 'E_P[Y].
