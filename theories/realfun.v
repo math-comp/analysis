@@ -152,38 +152,14 @@ Lemma cvg_at_leftP (f : R -> R) (p l : R) :
   (forall u : R^nat, (forall n, u n < p) /\ (u --> p) ->
     f (u n) @[n --> \oo] --> l).
 Proof.
-split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt ucvg]|pfl].
-  apply/cvgrPdist_le => e e0.
-  have [r /= r0 {}fpl] := fpl _ e0; have [s /= s0 {}ucvg] := ucvg _ r0.
-  near=> t; apply: fpl => //=; apply: ucvg => /=.
-  by near: t; exists s.
-apply: contrapT => fpl; move: pfl; apply/existsNP.
-suff: exists2 x : R ^nat,
-    ((forall k, x k < p) /\ x --> p) & ~ f (x n) @[n --> \oo] --> l.
-  by move=> [x_] h; exists x_; apply/not_implyP.
-have [e He] : exists e : {posnum R}, forall d : {posnum R},
-    exists xn : R, [/\ xn < p, `|xn - p| < d%:num & `|f xn - l| >= e%:num].
-  apply: contrapT; apply: contra_not fpl => /forallNP h.
-  apply/cvgrPdist_le => e e0; have /existsNP[d] := h (PosNum e0).
-  move/forallNP => {}h; near=> t.
-  have /not_and3P[abs|abs|/negP] := h t.
-  - by exfalso; apply: abs; near: t; exact: nbhs_left_lt.
-  - exfalso; apply: abs.
-    by near: t; exists d%:num => //= z/=; rewrite distrC.
-  - by rewrite -ltNge distrC => /ltW.
-have invn n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
-exists (fun n => sval (cid (He (PosNum (invn n))))).
-  split => [k|]; first by rewrite /sval/=; case: cid => x [].
-  apply/cvgrPdist_lt => r r0; near=> t.
-  rewrite /sval/=; case: cid => x [px xpt _].
-  rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pinv ?posrE ?invr_gt0//.
-  near: t; exists `|ceil (r^-1)|%N => // s /=.
-  rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
-  by rewrite natr_absz gtr0_norm ?ceil_gt0 ?invr_gt0// ceil_ge.
-move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
-rewrite /sval/=; case: cid => // x [px xpn].
-by rewrite leNgt distrC => /negP.
-Unshelve. all: by end_near. Qed.
+apply: (iff_trans (cvg_at_leftNP f p l)).
+apply: (iff_trans (cvg_at_rightP _ _ _)).
+split=> [pfl u [pu up]|pfl u [pu up]].
+  rewrite -(opprK u); apply: pfl.
+  by split; [move=> k; rewrite ltr_oppr opprK//|exact/cvgNP].
+apply: pfl.
+by split; [move=> k; rewrite ltr_oppl//|apply/cvgNP => /=; rewrite opprK].
+Qed.
 
 End cvgr_fun_cvg_seq.
 

@@ -2087,6 +2087,30 @@ apply: contrapT; apply: pePf; apply/andP; split.
 - by near: t; apply: nbhs_right_lt; rewrite ltr_addl.
 Unshelve. all: by end_near. Qed.
 
+Lemma withinN (A : set R) a :
+  within A (nbhs (- a)) = - x @[x --> within (-%R @` A) (nbhs a)].
+Proof.
+rewrite eqEsubset /=; split; move=> E /= [e e0 aeE]; exists e => //.
+  move=> r are ra; apply: aeE; last by rewrite memNE opprK.
+  by rewrite /= opprK addrC distrC.
+move=> r aer ar; rewrite -(opprK r); apply: aeE; last by rewrite -memNE.
+by rewrite /= opprK -normrN opprD.
+Qed.
+
+Lemma at_rightN a : (- a)^'+ = -%R @ a^'-.
+Proof.
+rewrite /at_right withinN (_ : [set - x | x in _] = (fun u => u < a))//.
+apply/seteqP; split=> [x [r /[1!ltr_oppl] ? <-//]|x xa/=].
+by exists (- x); rewrite 1?ltr_oppr ?opprK.
+Qed.
+
+Lemma at_leftN a : (- a)^'- = -%R @ a^'+.
+Proof.
+rewrite /at_left withinN (_ : [set - x | x in _] = (fun u => a < u))//.
+apply/seteqP; split=> [x [r /[1!ltr_oppr] ? <-//]|x xa/=].
+by exists (- x); rewrite 1?ltr_oppr ?opprK.
+Qed.
+
 End at_left_right.
 #[global] Typeclasses Opaque at_left at_right.
 Notation "x ^'-" := (at_left x) : classical_set_scope.
@@ -2097,6 +2121,20 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
+
+Lemma cvg_at_leftNP {T : topologicalType} {R : numFieldType}
+    (f : R -> T) a (l : T) :
+  f @ a^'- --> l <-> f \o -%R @ (- a)^'+ --> l.
+Proof.
+by rewrite at_rightN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
+Qed.
+
+Lemma cvg_at_rightNP {T : topologicalType} {R : numFieldType}
+    (f : R -> T) a (l : T) :
+  f @ a^'+ --> l <-> f \o -%R @ (- a)^'- --> l.
+Proof.
+by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
+Qed.
 
 Section open_itv_subset.
 Context {R : realType}.

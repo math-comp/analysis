@@ -111,6 +111,9 @@
   + lemma `lim_lime_inf`
   + lemma `lim_lime_sup`
 
+- in `normedtype.v`:
+  + lemmas `withinN`, `at_rightN`, `at_leftN`, `cvg_at_leftNP`, `cvg_at_rightNP`
+
 ### Changed
 
 - in `normedtype.v`:
