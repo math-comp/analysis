@@ -1058,7 +1058,7 @@ apply/predeqP => x; split=> [[a ? [b ? <-]]|[[a b] [? ? <-]]]/=;
 by [exists (a, b) | exists a => //; exists b].
 Qed.
 
-Lemma set_nil (T : choiceType) : [set` [::]] = @set0 T.
+Lemma set_nil (T : eqType) : [set` [::]] = @set0 T.
 Proof. by rewrite predeqP. Qed.
 
 Lemma set_seq_eq0 (T : eqType) (S : seq T) : ([set` S] == set0) = (S == [::]).
