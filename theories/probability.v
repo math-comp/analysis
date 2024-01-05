@@ -299,6 +299,28 @@ apply: miE => //; rewrite -nA fsubset_leq_card//.
 by apply/fsubsetP => x xB; exact: (BleA x).
 Qed.
 
+Lemma mutually_independent_weak (I : choiceType) (E : I -> set T) (B : set I) :
+  (forall b, ~ B b -> E b = setT) ->
+  mutually_independent [set: I] E <->
+  mutually_independent B E.
+Proof.
+move=> BE; split; first exact: sub_mutually_independent.
+move=> [mE h]; split=> [i _|C _].
+  by have [Bi|Bi] := pselect (B i); [exact: mE|rewrite BE].
+have [CB|CB] := pselect ([set` C] `<=` B); first by rewrite h.
+rewrite -(setIT [set` C]) -(setUv B) setIUr bigcap_setU.
+rewrite (@bigcapT _ _ (_ `&` ~` _)) ?setIT//; last by move=> i [_ /BE].
+have [D CBD] : exists D : {fset I}, [set` C] `&` B = [set` D].
+  exists (fset_set ([set` C] `&` B)).
+  by rewrite fset_setK//; exact: finite_setIl.
+rewrite CBD h; last first.
+  rewrite -CBD; exact: subIsetr.
+rewrite [RHS]fsbig_seq//= [RHS](fsbigID B)//=.
+rewrite [X in _ * X](_ : _ = 1) ?mule1; last first.
+  by rewrite fsbig1// => m [_ /BE] ->; rewrite probability_setT.
+by rewrite CBD -fsbig_seq.
+Qed.
+
 Lemma kwise_independent_weak (I : choiceType) (E : I -> set T) (B : set I) k :
   (forall b, ~ B b -> E b = setT) ->
   kwise_independent [set: I] E k <->
@@ -483,10 +505,20 @@ rewrite -mulrA mulfV ?mulr1 ?fineK// ?probability_fin_num//; first exact: mE1.
 by rewrite fine_eq0// probability_fin_num//; exact: mE2.
 Qed.
 
-Lemma summation (I : choiceType) (A : set I) (E : T) (F : A -> T) (P : probability T R) :
-  P (\bigcap_(i in A) F i) = 1 -> P E = \sum_(i in I) 'P [E | F i] * P (F i).
+(* Lemma summation (I : choiceType) (A : set I) E F (P : probability T R) : *)
+(*   P (\bigcap_(i in A) F i) = 1 -> P E = \prod_(i in I) ('P [E | F i] * P (F i)). *)
 
-Lemma bayes (P : probability T R) 
+Lemma bayes (P : probability T R) E F :
+  d.-measurable E -> d.-measurable F ->
+  'P[ E | F ] = ((fine ('P[F | E] * P E)) / (fine (P F)))%:E.
+Proof.
+rewrite /conditional_probability => mE mF.
+have [PE0|PE0] := eqVneq (P E) 0.
+  have -> : P (E `&` F) = 0.
+    by apply/eqP; rewrite eq_le -{1}PE0 (@measureIl _ _ _ P E F mE mF)/= measure_ge0.
+  by rewrite PE0 fine0 invr0 mulr0 mule0 mul0r.
+by rewrite -{2}(@fineK _ (P E)) -?EFinM -?(mulrA (fine _)) ?mulVf ?fine_eq0 ?probability_fin_num// mul1r setIC//.
+Qed.
 
 End conditional_probability.
 Notation "' P [ E1 | E2 ]" := (conditional_probability P E1 E2).
