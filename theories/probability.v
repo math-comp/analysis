@@ -465,11 +465,17 @@ Proof.
 move=> PE2ne0 iE12.
 have /= mE1 := (iE12.1 0%N).
 have /= mE2 := (iE12.1 1%N).
-rewrite/conditional_probability ((pairwise_independentM _ _ _).1 iE12).2.2.
+rewrite/conditional_probability.
+have [_ _ ->] := (pairwise_independentM _ _ _).1 iE12.
 rewrite fineM ?probability_fin_num//; [|exact: mE1|exact: mE2].
 rewrite -mulrA mulfV ?mulr1 ?fineK// ?probability_fin_num//; first exact: mE1.
 by rewrite fine_eq0// probability_fin_num//; exact: mE2.
 Qed.
+
+Lemma summation (I : choiceType) (A : set I) (E : T) (F : A -> T) (P : probability T R) :
+  P (\bigcap_(i in A) F i) = 1 -> P E = \sum_(i in I) 'P [E | F i] * P (F i).
+
+Lemma bayes (P : probability T R) 
 
 End conditional_probability.
 Notation "' P [ E1 | E2 ]" := (conditional_probability P E1 E2).
@@ -492,10 +498,10 @@ exact: conditional_independence.
 Qed.
 
 Definition mutually_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
-  forall (s : I -> set R), mutually_independent P A (fun i => X i @^-1` s i).
+  forall x_ : I -> R, mutually_independent P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
 
 Definition kwise_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) k :=
-  forall (s : I -> set R), kwise_independent P A (fun i => X i @^-1` s i) k.
+  forall x_ : I -> R, kwise_independent P A (fun i => X i @^-1` `[(x_ i), +oo[%classic) k.
 
 Lemma nwise_indep_is_mutual_indep_RV (I : choiceType) (A : {fset I}) (X : I -> {RV P >-> R}) n :
   #|` A | = n -> kwise_independent_RV [set` A] X n -> mutually_independent_RV [set` A] X.
@@ -504,15 +510,19 @@ rewrite/mutually_independent_RV/kwise_independent_RV=> nA kwX s.
 by apply: nwise_indep_is_mutual_indep; rewrite ?nA.
 Qed.
 
-
-(* old formalization *)
+(* alternative formalization
 Definition inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
-  forall x_ : I -> R,
-    mutually_independent P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
+  forall (s : I -> set R), mutually_independent P A (fun i => X i @^-1` s i).
+
+Definition kwise_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) k :=
+  forall (s : I -> set R), kwise_independent P A (fun i => X i @^-1` s i) k.
+
+this should be equivalent according to wikipedia https://en.wikipedia.org/wiki/Independence_(probability_theory)#For_real_valued_random_variables
+*)
 
 (* Remark 2.15 (i) *)
 Lemma prob_inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
-  inde_RV A X ->
+  mutually_independent_RV A X ->
     forall J : {fset I}, [set` J] `<=` A ->
       forall x_ : I -> R,
         P (\bigcap_(i in [set` J]) X i @^-1` `[(x_ i), +oo[%classic) = 
@@ -523,7 +533,7 @@ apply: (iRVX _).2 => //.
 Qed.
 
 Lemma inde_expectation (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
-  inde_RV A X ->
+  mutually_independent_RV A X ->
     forall B : {fset I}, [set` B] `<=` A -> 'E_P[\prod_(i <- B) X i] = \prod_(i <- B) 'E_P[X i].
 Proof.
 move=> irvX B BleA.
