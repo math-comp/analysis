@@ -331,11 +331,32 @@ apply: kwise_independent_weak.
 by move=> n /= /not_orP[/eqP /negbTE -> /eqP /negbTE ->].
 Qed.
 
+Lemma mutually_independent_weak (I : choiceType) (E : I -> set T) (B : set I) :
+  (forall b, ~ B b -> E b = setT) ->
+  mutually_independent [set: I] E <->
+  mutually_independent B E.
+Proof.
+move=> BE; split; first exact: sub_mutually_independent.
+move=> [mE h]; split=> [i _|C CI].
+  by have [Bi|Bi] := pselect (B i); [exact: mE|rewrite BE].
+have [CB|CB] := pselect ([set` C] `<=` B); first by rewrite h.
+rewrite -(setIT [set` C]) -(setUv B) setIUr bigcap_setU.
+rewrite (@bigcapT _ _ (_ `&` ~` _)) ?setIT//; last by move=> i [_ /BE].
+have [D CBD] : exists D : {fset I}, [set` C] `&` B = [set` D].
+  exists (fset_set ([set` C] `&` B)).
+  by rewrite fset_setK//; exact: finite_setIl.
+rewrite CBD h; last first.
+  - rewrite -CBD; exact: subIsetr.
+rewrite [RHS]fsbig_seq//= [RHS](fsbigID B)//=.
+rewrite [X in _ * X](_ : _ = 1) ?mule1; last first.
+  by rewrite fsbig1// => m [_ /BE] ->; rewrite probability_setT.
+by rewrite CBD -fsbig_seq.
+Qed.
+
 Definition pairwise_independent E1 E2 :=
-  (*kwise_independent [set 0%N; 1%N] (bigcap2 E1 E2) 2%N*)
   mutually_independent [set: nat] (bigcap2 E1 E2).
 
-Lemma pairwise_independentM (E1 E2 : set T) :
+Lemma pairwise_independentM_old (E1 E2 : set T) :
   pairwise_independent E1 E2 <->
   [/\ d.-measurable E1, d.-measurable E2 & P (E1 `&` E2) = P E1 * P E2].
 Proof.
@@ -382,7 +403,7 @@ split.
     by rewrite probability_setT.
 Qed.
 
-Lemma pairwise_independentM_alt (E1 E2 : set T) :
+Lemma pairwise_independentM (E1 E2 : set T) :
   pairwise_independent E1 E2 <->
   [/\ d.-measurable E1, d.-measurable E2 & P (E1 `&` E2) = P E1 * P E2].
 Proof.
@@ -394,9 +415,17 @@ split.
 - move=> [mE1 mE2 E1E2M].
   rewrite /pairwise_independent.
   suff: kwise_independent setT (bigcap2 E1 E2) 2%N.
+    have H : (forall b : nat, ~ [set 0%N; 1%N] b -> bigcap2 E1 E2 b = [set: T]).
+      by move=> n /= /not_orP[/eqP /negbTE -> /eqP /negbTE ->].
+    move=> /(@kwise_independent_weak _ _ [set 0%N; 1%N] _ H).
     move=> [mE h].
-    split => // B _.
-    admit.
+    apply/(mutually_independent_weak H).
+    split => // B B01.
+    apply: h => //.
+    move: B01.
+    rewrite fset_set_sub// set_fsetK.
+    move=> /fsubset_leq_card /leq_trans; apply.
+    by rewrite fset_setU1// fset_set1 cardfs2.
   apply/(@kwise_independent_weak _ _ [set 0%N; 1%N]).
     by move=> n /= /not_orP[/eqP /negbTE -> /eqP /negbTE ->].
   split.
@@ -415,7 +444,7 @@ split.
       rewrite fsbigU//=; last first.
         by move=> n [/= ->].
       by rewrite !fsbig_set1//=.
-Abort.
+Qed.
 
 Lemma pairwise_independentC (E1 E2 : set T) :
   pairwise_independent E1 E2 -> pairwise_independent E1 (~` E2).
