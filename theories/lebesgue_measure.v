@@ -1950,7 +1950,7 @@ have finDn n : mu (Dn n) \is a fin_num.
   by rewrite le_measure// ?inE//=; [exact: mDn|exact: subIsetl].
 have finD : mu D \is a fin_num by rewrite fin_num_abs gee0_abs.
 rewrite -[mu D]fineK// => /fine_cvg/(_ (interior (ball (fine (mu D)) eps)))[].
-  exact/nbhs_interior/(nbhsx_ballx _ (PosNum epspos)).
+  exact/nbhs_interior/nbhsx_ballx.
 move=> n _ /(_ _ (leqnn n))/interior_subset muDN.
 exists (-n%:R, n%:R)%R; rewrite measureD//=.
 move: muDN; rewrite /ball/= /ereal_ball/= -fineB//=; last exact: finDn.
@@ -2089,9 +2089,7 @@ have mE k n : measurable (E k n).
 have nEcvg x k : exists n, A x -> (~` (E k n)) x.
   case : (pselect (A x)); last by move => ?; exists point.
   move=> Ax; have [] := fptwsg _ Ax (interior (ball (g x) (k.+1%:R^-1))).
-    apply: open_nbhs_nbhs; split; first exact: open_interior.
-    have ki0 : ((0:R) < k.+1%:R^-1)%R by rewrite invr_gt0.
-    rewrite (_ : k.+1%:R^-1 = (PosNum ki0)%:num ) //; exact: nbhsx_ballx.
+    by apply: open_nbhs_nbhs; split; [exact: open_interior|exact: nbhsx_ballx].
   move=> N _ Nk; exists N.+1 => _; rewrite /E setC_bigcup => i /= /ltnW Ni.
   apply/not_andP; right; apply/negP; rewrite /h -real_ltNge // distrC.
   by case: (Nk _ Ni) => _/posnumP[?]; apply; exact: ball_norm_center.
@@ -2108,8 +2106,7 @@ have badn' : forall k, exists n, mu (E k n) < ((eps/2) / (2 ^ k.+1)%:R)%:E.
     - by apply: bigcap_measurable => ?.
   case/fine_cvg/(_ (interior (ball (0:R) ek))%R).
     apply: open_nbhs_nbhs; split; first exact: open_interior.
-    have ekpos : (0 < ek)%R by rewrite divr_gt0 // divr_gt0.
-    by move: ek ekpos => _/posnumP[ek]; exact: nbhsx_ballx.
+    by apply: nbhsx_ballx; rewrite !divr_gt0.
   move=> N _ /(_ N (leqnn _))/interior_subset muEN; exists N; move: muEN.
   rewrite /ball /= distrC subr0 ger0_norm // -[x in x < _]fineK ?ge0_fin_numE//.
   by apply:(le_lt_trans _ finA); apply le_measure; rewrite ?inE// => ? [? _ []].
