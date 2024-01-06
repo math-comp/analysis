@@ -58,7 +58,7 @@
 
 - in `charge.v`
   + definition `charge_of_finite_measure` (instance of `charge`)
-  + lemma `dominates_cscale`
+  + lemmas `dominates_cscalel`, `dominates_cscaler`
   + definition `cpushforward` (instance of `charge`)
   + lemma `dominates_pushforward`
   + lemma `cjordan_posE`

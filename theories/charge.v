@@ -395,11 +395,20 @@ HB.instance Definition _ := isCharge.Build _ _ _ cscale
 
 End charge_scale.
 
-Lemma dominates_cscale d (T : measurableType d) (R : realType)
+Lemma dominates_cscalel d (T : measurableType d) (R : realType)
   (mu : set T -> \bar R)
   (nu : {charge set T -> \bar R})
   (c : R) : nu `<< mu -> cscale c nu `<< mu.
 Proof. by move=> numu E mE /numu; rewrite /cscale => ->//; rewrite mule0. Qed.
+
+Lemma dominates_cscaler d (T : measurableType d) (R : realType)
+  (nu : {charge set T -> \bar R})
+  (mu : set T -> \bar R)
+  (c : R) : c != 0%R -> mu `<< nu -> mu `<< cscale c nu.
+Proof.
+move=> /negbTE c0 munu E mE /eqP; rewrite /cscale mule_eq0 eqe c0/=.
+by move=> /eqP/munu; exact.
+Qed.
 
 Section charge_add.
 Local Open Scope ereal_scope.
@@ -1886,11 +1895,11 @@ Lemma Radon_Nikodym_cscale mu nu c E : measurable E -> nu `<< mu ->
 Proof.
 move=> mE numu; apply: integral_ae_eq => [//| | |A AE mA].
 - apply: (integrableS measurableT) => //.
-  exact/Radon_Nikodym_integrable/dominates_cscale.
+  exact/Radon_Nikodym_integrable/dominates_cscalel.
 - exact/measurable_funTS/emeasurable_funM.
 - rewrite integralZl//; last first.
     by apply: (integrableS measurableT) => //; exact: Radon_Nikodym_integrable.
-  rewrite -Radon_Nikodym_integral => //; last exact: dominates_cscale.
+  rewrite -Radon_Nikodym_integral => //; last exact: dominates_cscalel.
   by rewrite -Radon_Nikodym_integral.
 Qed.
 
