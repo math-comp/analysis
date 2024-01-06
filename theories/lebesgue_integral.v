@@ -4285,7 +4285,8 @@ Context d (T : measurableType d) (R : realType) (mu : {measure set T -> \bar R})
 
 Let integral_measure_lt (D : set T) (mD : measurable D) (g f : T -> \bar R) :
   mu.-integrable D f -> mu.-integrable D g ->
-  (forall E, measurable E -> \int[mu]_(x in E) f x = \int[mu]_(x in E) g x) ->
+  (forall E, E `<=` D -> measurable E ->
+    \int[mu]_(x in E) f x = \int[mu]_(x in E) g x) ->
   mu (D `&` [set x | g x < f x]) = 0.
 Proof.
 move=> itf itg fg; pose E j := D `&` [set x | f x - g x >= j.+1%:R^-1%:E].
@@ -4300,7 +4301,8 @@ have muE j : mu (E j) = 0.
     rewrite integralB//; last 2 first.
       by apply: integrableS itf => //; exact: subIsetl.
       by apply: integrableS itg => //; exact: subIsetl.
-    rewrite fg// subee// fin_num_abs (le_lt_trans (le_abse_integral _ _ _))//.
+    rewrite fg//; last apply: subIsetl.
+    rewrite subee// fin_num_abs (le_lt_trans (le_abse_integral _ _ _))//.
       by apply: measurable_funS msg => //; first exact: subIsetl.
     apply: le_lt_trans (integrableP _ _ _ itg).2; apply: subset_integral => //.
       exact: measurableT_comp msg.
@@ -4318,7 +4320,7 @@ have muE j : mu (E j) = 0.
 have nd_E : {homo E : n0 m / (n0 <= m)%N >-> (n0 <= m)%O}.
   move=> i j ij; apply/subsetPset => x [Dx /= ifg]; split => //.
   by move: ifg; apply: le_trans; rewrite lee_fin lef_pinv// ?posrE// ler_nat.
-rewrite set_lte_bigcup.
+rewrite real_interval.set_lte_bigcup.
 have /cvg_lim h1 : mu \o E --> 0 by apply: cvg_near_cst; exact: nearW.
 have := @nondecreasing_cvg_mu _ _ _ mu E mE (bigcupT_measurable E mE) nd_E.
 by move/cvg_lim => h2; rewrite setI_bigcupr -h2// h1.
@@ -4326,15 +4328,16 @@ Qed.
 
 Lemma integral_ae_eq (D : set T) (mD : measurable D) (g f : T -> \bar R) :
   mu.-integrable D f -> measurable_fun D g ->
-  (forall E, measurable E -> \int[mu]_(x in E) f x = \int[mu]_(x in E) g x) ->
+  (forall E, E `<=` D -> measurable E ->
+    \int[mu]_(x in E) f x = \int[mu]_(x in E) g x) ->
   ae_eq mu D f g.
 Proof.
 move=> fi mg fg; have mf := measurable_int fi; have gi : mu.-integrable D g.
   apply/integrableP; split => //; apply/abse_integralP => //; rewrite -fg//.
   by apply/abse_integralP => //; case/integrableP : fi.
-have mugf : mu (D `&` [set x | g x < f x]) = 0 by exact: integral_measure_lt.
+have mugf : mu (D `&` [set x | g x < f x]) = 0 by apply: integral_measure_lt.
 have mufg : mu (D `&` [set x | f x < g x]) = 0.
-  by apply: integral_measure_lt => // E mE; rewrite fg.
+  by apply: integral_measure_lt => // E ED mE; rewrite fg.
 have h : ~` [set x | D x -> f x = g x] = D `&` [set x | f x != g x].
   apply/seteqP; split => [x/= /not_implyP[? /eqP]//|x/= [Dx fgx]].
   by apply/not_implyP; split => //; exact/eqP.

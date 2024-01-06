@@ -56,6 +56,34 @@
 - in file `measure.v`
   + add lemmas `ae_eq_subset`, `measure_dominates_ae_eq`.
 
+- in `charge.v`
+  + definition `charge_of_finite_measure` (instance of `charge`)
+  + lemmas `dominates_cscalel`, `dominates_cscaler`
+  + definition `cpushforward` (instance of `charge`)
+  + lemma `dominates_pushforward`
+  + lemma `cjordan_posE`
+  + lemma `jordan_posE`
+  + lemma `cjordan_negE`
+  + lemma `jordan_negE`
+  + lemma `Radon_Nikodym_sigma_finite`
+  + lemma `Radon_Nikodym_fin_num`
+  + lemma `Radon_Nikodym_integral`
+  + lemma `ae_eq_Radon_Nikodym_SigmaFinite`
+  + lemma `Radon_Nikodym_change_of_variables`
+  + lemma `Radon_Nikodym_cscale`
+  + lemma `Radon_Nikodym_cadd`
+  + lemma `Radon_Nikodym_chain_rule`
+
+- in `sequences.v`:
+  + lemma `minr_cvg_0_cvg_0`
+  + lemma `mine_cvg_0_cvg_fin_num`
+  + lemma `mine_cvg_minr_cvg`
+  + lemma `mine_cvg_0_cvg_0`
+  + lemma `maxr_cvg_0_cvg_0`
+  + lemma `maxe_cvg_0_cvg_fin_num`
+  + lemma `maxe_cvg_maxr_cvg`
+  + lemma `maxe_cvg_0_cvg_0`
+
 ### Changed
 
 - in `normedtype.v`:
@@ -76,15 +104,31 @@
 	`ae_eq_mul1l`,
 	`ae_eq_abse`
 
+- in `charge.v`
+  + definition `jordan_decomp` now uses `cadd` and `cscale`
+  + definition `Radon_Nikodym_SigmaFinite` now in a module `Radon_Nikodym_SigmaFinite` with
+    * definition `f`
+    * lemmas `f_ge0`, `f_fin_num`, `f_integrable`, `f_integral`
+    * lemma `change_of_variables`
+    * lemma `integralM`
+    * lemma `chain_rule`
+
+- in `sequences.v`:
+  + change the implicit arguments of `trivIset_seqDU`
+
 ### Renamed
 
 - in `exp.v`:
   + `lnX` -> `lnXn`
+- in `charge.v`:
+  + `dominates_caddl` -> `dominates_cadd`
 
 ### Generalized
 
 - in `lebesgue_integral.v`
   + `ge0_integral_bigsetU` generalized from `nat` to `eqType`
+- in `lebesgue_measure.v`
+  + an hypothesis of lemma `integral_ae_eq` is weakened
 
 ### Deprecated
 
