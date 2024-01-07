@@ -30,6 +30,8 @@ From mathcomp Require Import finset interval.
 (*             dfwith f x == fun j => x if j = i, and f j otherwise           *)
 (*                           given x : T i                                    *)
 (*                 swap x := (x.2, x.1)                                       *)
+(*         monotonous A f := {in A &, {mono f : x y / x <= y}} \/             *)
+(*                           {in A &, {mono f : x y /~ x <= y}}               *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -1485,3 +1487,6 @@ exists n.+1; rewrite nm2/= -addn1.
 rewrite -[X in (_ <= X)%N]prednK ?expn_gt0// -[X in (_ <= X)%N]addn1 leq_add2r.
 by rewrite (leq_trans h2)// -subn1 leq_subRL ?expn_gt0// add1n ltn_exp2l.
 Qed.
+
+Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
+  {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.

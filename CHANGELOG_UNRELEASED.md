@@ -115,6 +115,8 @@
 
 - in `sequences.v`:
   + change the implicit arguments of `trivIset_seqDU`
+- moved from `topology.v` to `mathcomp_extra.v`
+  + definition `monotonous`
 
 ### Renamed
 
