@@ -723,6 +723,8 @@ HB.mixin Record isSemiRingOfSets (d : measure_display) T := {
 HB.structure Definition SemiRingOfSets d :=
   {T of Pointed T & isSemiRingOfSets d T}.
 
+Arguments measurable {d}%measure_display_scope {s} _%classical_set_scope.
+
 Lemma measurable_curry (T1 T2 : Type) d (T : semiRingOfSetsType d)
     (G : T1 * T2 -> set T) (x : T1 * T2) :
   measurable (G x) <-> measurable (curry G x.1 x.2).
