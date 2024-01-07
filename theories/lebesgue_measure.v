@@ -492,24 +492,24 @@ Qed.
 
 Lemma measurable_itv (i : interval R) : measurable [set` i].
 Proof.
-have moc (a b : R) : measurable `]a, b]%classic.
+have moc (a b : R) : measurable `]a, b].
   by apply: sub_sigma_algebra; apply: is_ocitv.
-have mopoo (x : R) : measurable `]x, +oo[%classic.
+have mopoo (x : R) : measurable `]x, +oo[.
   by rewrite itv_bnd_infty_bigcup; exact: bigcup_measurable.
-have mnooc (x : R) : measurable `]-oo, x]%classic.
+have mnooc (x : R) : measurable `]-oo, x].
   by rewrite -setCitvr; exact/measurableC.
-have ooE (a b : R) : `]a, b[%classic = `]a, b]%classic `\ b.
+have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
   case: (boolP (a < b)) => ab; last by rewrite !set_itv_ge ?set0D.
   by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx andbF.
-have moo (a b : R) : measurable `]a, b[%classic.
+have moo (a b : R) : measurable `]a, b[.
   by rewrite ooE; exact: measurableD.
-have mcc (a b : R) : measurable `[a, b]%classic.
+have mcc (a b : R) : measurable `[a, b].
   case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
   by rewrite -setU1itv//; apply/measurableU.
-have mco (a b : R) : measurable `[a, b[%classic.
+have mco (a b : R) : measurable `[a, b[.
   case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
   by rewrite -setU1itv//; apply/measurableU.
-have oooE (b : R) : `]-oo, b[%classic = `]-oo, b]%classic `\ b.
+have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
   by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx.
 case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
 - by rewrite -setU1itv//; exact/measurableU.
