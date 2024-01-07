@@ -10,6 +10,11 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                                                            *)
 (* Note that balls in topology.v are not necessarily open, here they are.     *)
 (*                                                                            *)
+(* * Limit superior and inferior:                                             *)
+(*   limf_esup f F, limf_einf f F == limit sup/inferior of f at "filter" F    *)
+(*                                   f has type X -> \bar R.                  *)
+(*                                   F has type set (set X).                  *)
+(*                                                                            *)
 (* * Normed Topological Abelian groups:                                       *)
 (*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
@@ -144,6 +149,35 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Section limf_esup_einf.
+Variables (T : choiceType) (X : filteredType T) (R : realFieldType).
+Implicit Types (f : X -> \bar R) (F : set (set X)).
+Local Open Scope ereal_scope.
+
+Definition limf_esup f F := ereal_inf [set ereal_sup (f @` V) | V in F].
+
+Definition limf_einf f F := - limf_esup (\- f) F.
+
+Lemma limf_esupE f F :
+  limf_esup f F = ereal_inf [set ereal_sup (f @` V) | V in F].
+Proof. by []. Qed.
+
+Lemma limf_einfE f F :
+  limf_einf f F = ereal_sup [set ereal_inf (f @` V) | V in F].
+Proof.
+rewrite /limf_einf limf_esupE /ereal_inf oppeK -[in RHS]image_comp /=.
+congr (ereal_sup [set _ | _ in [set ereal_sup _ | _ in _]]).
+by under eq_fun do rewrite -image_comp.
+Qed.
+
+Lemma limf_esupN f F : limf_esup (\- f) F = - limf_einf f F.
+Proof. by rewrite /limf_einf oppeK. Qed.
+
+Lemma limf_einfN f F : limf_einf (\- f) F = - limf_esup f F.
+Proof. by rewrite /limf_einf; under eq_fun do rewrite oppeK. Qed.
+
+End limf_esup_einf.
+
 Definition pointed_of_zmodule (R : zmodType) : pointedType := PointedType R 0.
 
 Definition filtered_of_normedZmod (K : numDomainType) (R : normedZmodType K)
@@ -212,6 +246,20 @@ move=> B oppx_B; have : [set - x | x in A] `&` [set - x | x in B] !=set0.
   by apply: clNAx; rewrite -[x]opprK nbhsNimage; exists B.
 move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
+Qed.
+
+Lemma dnbhsN {R : numFieldType} (r : R) :
+  (- r)%R^' = (fun A => -%R @` A) @` r^'.
+Proof.
+apply/seteqP; split=> [A [e/= e0 reA]|_/= [A [e/= e0 reA <-]]].
+  exists (-%R @` A).
+    exists e => // x/= rxe xr; exists (- x)%R; rewrite ?opprK//.
+    by apply: reA; rewrite ?eqr_opp//= opprK addrC distrC.
+  rewrite image_comp (_ : _ \o _ = idfun) ?image_id// funeqE => x/=.
+  by rewrite opprK.
+exists e => //= x/=; rewrite -opprD normrN => axe xa.
+exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?eqr_oppLR//=.
+by rewrite opprK.
 Qed.
 
 Module PseudoMetricNormedZmodule.
@@ -1629,6 +1677,15 @@ End Exports.
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
+Lemma limf_esup_dnbhsN {R : realType} (f : R -> \bar R) (a : R) :
+  limf_esup f a^' = limf_esup (fun x => f (- x)%R) (- a)%R^'.
+Proof.
+rewrite /limf_esup dnbhsN image_comp/=.
+congr (ereal_inf [set _ | _ in _]); apply/funext => A /=.
+rewrite image_comp/= -compA (_ : _ \o _ = idfun)// funeqE => x/=.
+by rewrite opprK.
+Qed.
+
 Section NormedModule_numDomainType.
 Variables (R : numDomainType) (V : normedModType R).
 
@@ -2077,6 +2134,47 @@ Lemma nbhs_left_ge x z : z < x -> \forall y \near x^'-, z <= y.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
 Unshelve. all: by end_near. Qed.
 
+Lemma not_near_at_rightP T (f : R -> T) (p : R) (P : pred T) :
+  ~ (\forall x \near p^'+, P (f x)) ->
+  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P (f x).
+Proof.
+move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
+apply: contrapT; apply: pePf; apply/andP; split.
+- by near: t; exact: nbhs_right_gt.
+- by near: t; apply: nbhs_right_lt; rewrite ltr_addl.
+Unshelve. all: by end_near. Qed.
+
+Lemma withinN (A : set R) a :
+  within A (nbhs (- a)) = - x @[x --> within (-%R @` A) (nbhs a)].
+Proof.
+rewrite eqEsubset /=; split; move=> E /= [e e0 aeE]; exists e => //.
+  move=> r are ra; apply: aeE; last by rewrite memNE opprK.
+  by rewrite /= opprK addrC distrC.
+move=> r aer ar; rewrite -(opprK r); apply: aeE; last by rewrite -memNE.
+by rewrite /= opprK -normrN opprD.
+Qed.
+
+Let fun_predC (T : choiceType) (f : T -> T) (p : pred T) : involutive f ->
+  [set f x | x in p] = [set x | x in p \o f].
+Proof.
+by move=> fi; apply/seteqP; split => _/= [y hy <-];
+  exists (f y) => //; rewrite fi.
+Qed.
+
+Lemma at_rightN a : (- a)^'+ = -%R @ a^'-.
+Proof.
+rewrite /at_right withinN [X in within X _](_ : _ = [set u | u < a])//.
+rewrite (@fun_predC _ -%R)/=; last exact: opprK.
+by rewrite image_id; under eq_fun do rewrite ltr_oppl opprK.
+Qed.
+
+Lemma at_leftN a : (- a)^'- = -%R @ a^'+.
+Proof.
+rewrite /at_left withinN [X in within X _](_ : _ = [set u | a < u])//.
+rewrite (@fun_predC _ -%R)/=; last exact: opprK.
+by rewrite image_id; under eq_fun do rewrite ltr_oppl opprK.
+Qed.
+
 End at_left_right.
 #[global] Typeclasses Opaque at_left at_right.
 Notation "x ^'-" := (at_left x) : classical_set_scope.
@@ -2087,6 +2185,20 @@ Notation "x ^'+" := (at_right x) : classical_set_scope.
 
 #[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
   (apply: at_left_proper_filter) : typeclass_instances.
+
+Lemma cvg_at_leftNP {T : topologicalType} {R : numFieldType}
+    (f : R -> T) a (l : T) :
+  f @ a^'- --> l <-> f \o -%R @ (- a)^'+ --> l.
+Proof.
+by rewrite at_rightN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
+Qed.
+
+Lemma cvg_at_rightNP {T : topologicalType} {R : numFieldType}
+    (f : R -> T) a (l : T) :
+  f @ a^'+ --> l <-> f \o -%R @ (- a)^'- --> l.
+Proof.
+by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
+Qed.
 
 Section open_itv_subset.
 Context {R : realType}.

@@ -83,6 +83,54 @@
   + lemma `maxe_cvg_0_cvg_fin_num`
   + lemma `maxe_cvg_maxr_cvg`
   + lemma `maxe_cvg_0_cvg_0`
+- in `constructive_ereal.v`
+  + lemma `lee_subgt0Pr`
+
+- in `topology.v`:
+  + lemma `nbhs_dnbhs_neq`
+
+- in `normedtype.v`:
+  + lemma `not_near_at_rightP`
+
+- in `realfun.v`:
+  + lemma `cvg_at_right_left_dnbhs`
+  + lemma `cvg_at_rightP`
+  + lemma `cvg_at_leftP`
+  + lemma `cvge_at_rightP`
+  + lemma `cvge_at_leftP`
+  + lemma `lime_sup`
+  + lemma `lime_inf`
+  + lemma `lime_supE`
+  + lemma `lime_infE`
+  + lemma `lime_infN`
+  + lemma `lime_supN`
+  + lemma `lime_sup_ge0`
+  + lemma `lime_inf_ge0`
+  + lemma `lime_supD`
+  + lemma `lime_sup_le`
+  + lemma `lime_inf_sup`
+  + lemma `lim_lime_inf`
+  + lemma `lim_lime_sup`
+  + lemma `lime_sup_inf_at_right`
+  + lemma `lime_sup_inf_at_left`
+
+- in `normedtype.v`:
+  + lemmas `withinN`, `at_rightN`, `at_leftN`, `cvg_at_leftNP`, `cvg_at_rightNP`
+  + lemma `dnbhsN`
+  + lemma `limf_esup_dnbhsN`
+
+- in `topology.v`:
+  + lemma `dnbhs_ball`
+
+- in `normedtype.v`
+  + definitions `limf_esup`, `limf_einf`
+  + lemmas `limf_esupE`, `limf_einfE`, `limf_esupN`, `limf_einfN`
+
+- in `sequences.v`:
+  + lemmas `limn_esup_lim`, `limn_einf_lim`
+
+- in `realfun.v`:
+  + lemmas `lime_sup_lim`, `lime_inf_lim`
 
 ### Changed
 
@@ -118,6 +166,10 @@
 - moved from `topology.v` to `mathcomp_extra.v`
   + definition `monotonous`
 
+- in `sequences.v`:
+  + `limn_esup` now defined from `lime_sup`
+  + `limn_einf` now defined from `limn_esup`
+  
 ### Renamed
 
 - in `exp.v`:

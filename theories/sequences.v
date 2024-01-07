@@ -69,14 +69,15 @@ Require Import reals ereal signed topology normedtype landau.
 (*   positive) extended numbers use the string "nneseries" (resp. "npeseries")*)
 (*   as part of their identifier                                              *)
 (*                                                                            *)
-(* * Limit superior and inferior:                                             *)
-(*             sdrop u n := {u_k | k >= n}                                    *)
-(*                sups u := [sequence sup (sdrop u n)]_n                      *)
-(*                infs u := [sequence inf (sdrop u n)]_n                      *)
-(*         limn_{inf,sup} == limit inferior/superior for realType             *)
-(*               esups u := [sequence ereal_sup (sdrop u n)]_n                *)
-(*               einfs u := [sequence ereal_inf (sdrop u n)]_n                *)
-(*        limn_e{inf,sup} == limit inferior/superior for \bar R               *)
+(* * Limit superior and inferior for sequences:                               *)
+(*              sdrop u n := {u_k | k >= n}                                   *)
+(*                 sups u := [sequence sup (sdrop u n)]_n                     *)
+(*                 infs u := [sequence inf (sdrop u n)]_n                     *)
+(*     limn_sup, limn_inf == limit sup/inferior for a sequence of reals       *)
+(*                esups u := [sequence ereal_sup (sdrop u n)]_n               *)
+(*                einfs u := [sequence ereal_inf (sdrop u n)]_n               *)
+(* limn_esup u, limn_einf == limit sup/inferior for a sequence of             *)
+(*                           of extended reals                                *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -2579,8 +2580,36 @@ Qed.
 
 End esups_einfs.
 
-Definition limn_esup (R : realType) (u : (\bar R)^nat) := lim (esups u).
-Definition limn_einf (R : realType) (u : (\bar R)^nat) := lim (einfs u).
+Section limn_esup_einf.
+Context {R : realType}.
+Implicit Type (u : (\bar R)^nat).
+Local Open Scope ereal_scope.
+
+Definition limn_esup u := limf_esup u \oo.
+
+Definition limn_einf u := - limn_esup (\- u).
+
+Lemma limn_esup_lim u : limn_esup u = lim (esups u).
+Proof.
+apply/eqP; rewrite eq_le; apply/andP; split.
+  apply: lime_ge; first exact: is_cvg_esups.
+  near=> m; apply: ereal_inf_lb => /=.
+  by exists [set k | (m <= k)%N] => //=; exists m.
+apply: lb_ereal_inf => /= _ [A [r /= r0 rA] <-].
+apply: lime_le; first exact: is_cvg_esups.
+near=> m;   apply: le_ereal_sup => _ [n /= mn] <-.
+exists n => //; apply: rA => //=; apply: leq_trans mn.
+by near: m; exists r.
+Unshelve. all: by end_near. Qed.
+
+Lemma limn_einf_lim u : limn_einf u = lim (einfs u).
+Proof.
+rewrite /limn_einf limn_esup_lim esupsN -limeN//.
+  by under eq_fun do rewrite oppeK.
+by apply: is_cvgeN; exact: is_cvg_einfs.
+Qed.
+
+End limn_esup_einf.
 
 Section lim_esup_inf.
 Local Open Scope ereal_scope.
@@ -2590,7 +2619,8 @@ Implicit Types (u v : (\bar R)^nat) (l : \bar R).
 Lemma limn_einf_shift u l : l \is a fin_num ->
   limn_einf (fun x => l + u x) = l + limn_einf u.
 Proof.
-move=> lfin; apply/cvg_lim => //; apply: cvg_trans; last first.
+move=> lfin; rewrite !limn_einf_lim; apply/cvg_lim => //.
+apply: cvg_trans; last first.
   by apply: (@cvgeD _ \oo _ _ (cst l) (einfs u) _ (lim (einfs u)));
     [exact: fin_num_adde_defr|exact: cvg_cst|exact: is_cvg_einfs].
 suff : einfs (fun n => l + u n) = (fun n => l + einfs u n) by move=> ->.
@@ -2611,25 +2641,22 @@ move=> supul ul; have usupu n : l <= u n <= esups u n.
 suff : esups u --> l.
   by apply: (@squeeze_cvge _ _ _ _ (cst l)) => //; [exact: nearW|exact: cvg_cst].
 apply/cvg_closeP; split; first exact: is_cvg_esups.
-rewrite closeE//; apply/eqP; rewrite eq_le supul.
+rewrite closeE//; apply/eqP.
+rewrite eq_le -[X in X <= _ <= _]limn_esup_lim supul/=.
 apply: (lime_ge (@is_cvg_esups _ _)); apply: nearW => m.
 have /le_trans : l <= einfs u m by apply: lb_ereal_inf => _ [p /= pm] <-.
 by apply; exact: einfs_le_esups.
 Qed.
 
 Lemma limn_einfN u : limn_einf (-%E \o u) = - limn_esup u.
-Proof.
-by rewrite /limn_einf einfsN /limn_esup limeN //; exact/is_cvg_esups.
-Qed.
+Proof. by rewrite /limn_esup -limf_einfN. Qed.
 
 Lemma limn_esupN u : limn_esup (-%E \o u) = - limn_einf u.
-Proof.
-apply/eqP; rewrite -eqe_oppLR -limn_einfN /=.
-by rewrite (_ : _ \o _ = u) // funeqE => n /=; rewrite oppeK.
-Qed.
+Proof. by rewrite /limn_einf oppeK. Qed.
 
 Lemma limn_einf_sup u : limn_einf u <= limn_esup u.
 Proof.
+rewrite limn_esup_lim limn_einf_lim.
 apply: lee_lim; [exact/is_cvg_einfs|exact/is_cvg_esups|].
 by apply: nearW; exact: einfs_le_esups.
 Qed.
@@ -2639,7 +2666,7 @@ Lemma cvgNy_limn_einf_sup u : u --> -oo ->
 Proof.
 move=> uoo; suff: limn_esup u = -oo.
   by move=> {}uoo; split => //; apply/eqP; rewrite -leeNy_eq -uoo limn_einf_sup.
-apply: cvg_lim => //=. apply/cvgeNyPle => M.
+rewrite limn_esup_lim; apply: cvg_lim => //=; apply/cvgeNyPle => M.
 have /cvgeNyPle/(_ M)[m _ uM] := uoo.
 near=> n; apply: ub_ereal_sup => _ [k /= nk <-].
 by apply: uM => /=; rewrite (leq_trans _ nk)//; near: n; exists m.
@@ -2648,13 +2675,14 @@ Unshelve. all: by end_near. Qed.
 Lemma cvgNy_einfs u : u --> -oo -> einfs u --> -oo.
 Proof.
 move=> /cvgNy_limn_einf_sup[uoo _].
-by apply/cvg_closeP; split; [exact: is_cvg_einfs|rewrite closeE].
+apply/cvg_closeP; split; [exact: is_cvg_einfs|rewrite closeE//].
+by rewrite -limn_einf_lim.
 Qed.
 
 Lemma cvgNy_esups u : u --> -oo -> esups u --> -oo.
 Proof.
-move=> /cvgNy_limn_einf_sup[_ uoo].
-by apply/cvg_closeP; split; [exact: is_cvg_esups|rewrite closeE].
+move=> /cvgNy_limn_einf_sup[_ uoo]; apply/cvg_closeP.
+by split; [exact: is_cvg_esups|rewrite closeE// -limn_esup_lim].
 Qed.
 
 Lemma cvgy_einfs u : u --> +oo -> einfs u --> +oo.
@@ -2700,7 +2728,9 @@ Qed.
 
 Lemma cvg_limn_einf_sup u l : u --> l -> (limn_einf u = l) * (limn_esup u = l).
 Proof.
-by move=> ul; split; apply/cvg_lim => //; [apply/cvg_einfs|apply/cvg_esups].
+move=> ul; rewrite limn_esup_lim limn_einf_lim; split.
+- by apply/cvg_lim => //; exact/cvg_einfs.
+- by apply/cvg_lim => //; exact/cvg_esups.
 Qed.
 
 Lemma is_cvg_limn_einfE u : cvg u -> limn_einf u = lim u.

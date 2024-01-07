@@ -1823,7 +1823,7 @@ Proof.
 move=> mf mD; rewrite (_ :  (fun _ => _) =
     (fun x => ereal_inf [set esups (f^~ x) n | n in [set n | n >= 0]%N])).
   by apply: measurable_fun_einfs => // k; exact: measurable_fun_esups.
-rewrite funeqE => t; apply/cvg_lim => //.
+rewrite funeqE => t; rewrite limn_esup_lim; apply/cvg_lim => //.
 rewrite [X in _ --> X](_ : _ = ereal_inf (range (esups (f^~t)))).
   exact: cvg_esups_inf.
 by congr (ereal_inf [set _ | _ in _]); rewrite predeqE.
@@ -1834,6 +1834,7 @@ Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall x, D x -> f_ ^~ x --> f x) -> measurable_fun D f.
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = limn_esup (f_^~ x).
+  rewrite limn_esup_lim.
   by move=> Dx; have /cvg_lim  <-// := @cvg_esups _ (f_^~x) (f x) (f_f x Dx).
 apply: (eq_measurable_fun (fun x => limn_esup (f_ ^~ x))) => //.
   by move=> x; rewrite inE => Dx; rewrite fE.

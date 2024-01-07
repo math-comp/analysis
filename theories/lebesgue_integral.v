@@ -2370,7 +2370,8 @@ pose g n := fun x => einfs (f ^~ x) n.
 have mg := measurable_fun_einfs mf.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: lb_ereal_inf => _ [m /= nm <-]; exact: f0.
-rewrite monotone_convergence //; last first.
+under eq_integral do rewrite limn_einf_lim.
+rewrite limn_einf_lim monotone_convergence //; last first.
   move=> x Dx m n mn /=; apply: le_ereal_inf => _ /= [p /= np <-].
   by exists p => //=; rewrite (leq_trans mn).
 apply: lee_lim.
