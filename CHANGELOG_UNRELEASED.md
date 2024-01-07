@@ -97,6 +97,7 @@
   + lemma `cvg_at_rightP`
   + lemma `cvg_at_leftP`
   + lemma `cvge_at_rightP`
+  + lemma `cvge_at_leftP`
   + lemma `lime_sup`
   + lemma `lime_inf`
   + lemma `lime_supE`
@@ -110,9 +111,13 @@
   + lemma `lime_inf_sup`
   + lemma `lim_lime_inf`
   + lemma `lim_lime_sup`
+  + lemma `lime_sup_inf_at_right`
+  + lemma `lime_sup_inf_at_left`
 
 - in `normedtype.v`:
   + lemmas `withinN`, `at_rightN`, `at_leftN`, `cvg_at_leftNP`, `cvg_at_rightNP`
+  + lemma `dnbhsN`
+  + lemma `limf_esup_dnbhsN`
 
 - in `topology.v`:
   + lemma `dnbhs_ball`

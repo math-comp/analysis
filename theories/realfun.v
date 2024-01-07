@@ -199,6 +199,18 @@ have {mn} := mfy_ _ mn.
 rewrite /y_ /sval; case: cid2 => /= x _.
 Unshelve. all: by end_near. Qed.
 
+Lemma cvge_at_leftP (f : R -> \bar R) (p l : R) :
+  f x @[x --> p^'-] --> l%:E <->
+  (forall u : R^nat, (forall n, u n < p) /\ u --> p ->
+    f (u n) @[n --> \oo] --> l%:E).
+Proof.
+apply: (iff_trans (cvg_at_leftNP f p l%:E)).
+apply: (iff_trans (cvge_at_rightP _ _ l)); split=> h u [up pu].
+- rewrite (_ : u = \- (\- u))%R; last by apply/funext => ?/=; rewrite opprK.
+  by apply: h; split; [by move=> n; rewrite ltr_oppl opprK|exact: cvgN].
+- by apply: h; split => [n|]; [rewrite ltr_oppl|move/cvgN : pu; rewrite opprK].
+Qed.
+
 End cvge_fun_cvg_seq.
 
 Section fun_cvg_realType.
@@ -744,7 +756,7 @@ have [d {}H] := H e.
 by exists d => r /H; rewrite lte_oppl oppeD// EFinN oppeK.
 Qed.
 
-Lemma lime_inf_sup_lim f a l :
+Lemma lime_sup_inf_at_right f a l :
   lime_sup f a = l%:E -> lime_inf f a = l%:E -> f x @[x --> a^'+] --> l%:E.
 Proof.
 move=> supfpl inffpl; apply/cvge_at_rightP => u [pu up].
@@ -796,6 +808,14 @@ apply: ereal_sup_ub => /=; exists (u n).
   by apply: ucvg => //=; near: n; exists m.
 by rewrite fineK//; near: n.
 Unshelve. all: by end_near. Qed.
+
+Lemma lime_sup_inf_at_left f a l :
+  lime_sup f a = l%:E -> lime_inf f a = l%:E -> f x @[x --> a^'-] --> l%:E.
+Proof.
+move=> supfal inffal; apply/cvg_at_leftNP/lime_sup_inf_at_right.
+- by rewrite /lime_sup -limf_esup_dnbhsN.
+- by rewrite /lime_inf /lime_sup -(limf_esup_dnbhsN (-%E \o f)) limf_esupN oppeK.
+Qed.
 
 End lime_sup_inf.
 

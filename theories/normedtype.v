@@ -150,7 +150,7 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section limf_esup_einf.
-Variables (T : choiceType) (X : filteredType T) (R : realType).
+Variables (T : choiceType) (X : filteredType T) (R : realFieldType).
 Implicit Types (f : X -> \bar R) (F : set (set X)).
 Local Open Scope ereal_scope.
 
@@ -246,6 +246,20 @@ move=> B oppx_B; have : [set - x | x in A] `&` [set - x | x in B] !=set0.
   by apply: clNAx; rewrite -[x]opprK nbhsNimage; exists B.
 move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
 by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
+Qed.
+
+Lemma dnbhsN {R : numFieldType} (r : R) :
+  (- r)%R^' = (fun A => -%R @` A) @` r^'.
+Proof.
+apply/seteqP; split=> [A [e/= e0 reA]|_/= [A [e/= e0 reA <-]]].
+  exists (-%R @` A).
+    exists e => // x/= rxe xr; exists (- x)%R; rewrite ?opprK//.
+    by apply: reA; rewrite ?eqr_opp//= opprK addrC distrC.
+  rewrite image_comp (_ : _ \o _ = idfun) ?image_id// funeqE => x/=.
+  by rewrite opprK.
+exists e => //= x/=; rewrite -opprD normrN => axe xa.
+exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?eqr_oppLR//=.
+by rewrite opprK.
 Qed.
 
 Module PseudoMetricNormedZmodule.
@@ -1663,6 +1677,15 @@ End Exports.
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
+Lemma limf_esup_dnbhsN {R : realType} (f : R -> \bar R) (a : R) :
+  limf_esup f a^' = limf_esup (fun x => f (- x)%R) (- a)%R^'.
+Proof.
+rewrite /limf_esup dnbhsN image_comp/=.
+congr (ereal_inf [set _ | _ in _]); apply/funext => A /=.
+rewrite image_comp/= -compA (_ : _ \o _ = idfun)// funeqE => x/=.
+by rewrite opprK.
+Qed.
+
 Section NormedModule_numDomainType.
 Variables (R : numDomainType) (V : normedModType R).
 
@@ -2131,18 +2154,25 @@ move=> r aer ar; rewrite -(opprK r); apply: aeE; last by rewrite -memNE.
 by rewrite /= opprK -normrN opprD.
 Qed.
 
+Let fun_predC (T : choiceType) (f : T -> T) (p : pred T) : involutive f ->
+  [set f x | x in p] = [set x | x in p \o f].
+Proof.
+by move=> fi; apply/seteqP; split => _/= [y hy <-];
+  exists (f y) => //; rewrite fi.
+Qed.
+
 Lemma at_rightN a : (- a)^'+ = -%R @ a^'-.
 Proof.
-rewrite /at_right withinN (_ : [set - x | x in _] = (fun u => u < a))//.
-apply/seteqP; split=> [x [r /[1!ltr_oppl] ? <-//]|x xa/=].
-by exists (- x); rewrite 1?ltr_oppr ?opprK.
+rewrite /at_right withinN [X in within X _](_ : _ = [set u | u < a])//.
+rewrite (@fun_predC _ -%R)/=; last exact: opprK.
+by rewrite image_id; under eq_fun do rewrite ltr_oppl opprK.
 Qed.
 
 Lemma at_leftN a : (- a)^'- = -%R @ a^'+.
 Proof.
-rewrite /at_left withinN (_ : [set - x | x in _] = (fun u => a < u))//.
-apply/seteqP; split=> [x [r /[1!ltr_oppr] ? <-//]|x xa/=].
-by exists (- x); rewrite 1?ltr_oppr ?opprK.
+rewrite /at_left withinN [X in within X _](_ : _ = [set u | a < u])//.
+rewrite (@fun_predC _ -%R)/=; last exact: opprK.
+by rewrite image_id; under eq_fun do rewrite ltr_oppl opprK.
 Qed.
 
 End at_left_right.
