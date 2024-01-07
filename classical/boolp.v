@@ -90,6 +90,8 @@ Qed.
 Lemma propext (P Q : Prop) : (P <-> Q) -> (P = Q).
 Proof. by have [propext _] := extensionality; apply: propext. Qed.
 
+Ltac eqProp := apply: propext; split.
+
 Lemma funext {T U : Type} (f g : T -> U) : (f =1 g) -> f = g.
 Proof. by case: extensionality=> _; apply. Qed.
 
@@ -448,6 +450,36 @@ apply: (iffP idP); first by case/asboolP=> x Px; exists x; apply/asboolP.
 by case=> x bPx; apply/asboolP; exists x; apply/asboolP.
 Qed.
 
+(* -------------------------------------------------------------------- *)
+
+Variant BoolProp : Prop -> Type :=
+ | TrueProp : BoolProp True
+ | FalseProp : BoolProp False.
+
+Lemma PropB P : BoolProp P.
+Proof. by case: (asboolP P) => [/propT-> | /propF->]; [left | right]. Qed.
+
+Lemma notB : ((~ True) = False) * ((~ False) = True).
+Proof. by rewrite /not; split; eqProp. Qed.
+
+Lemma andB : left_id True and * right_id True and
+          * (left_zero False and * right_zero False and * idempotent and).
+Proof. by do ![split] => /PropB[]; eqProp=> // -[]. Qed.
+
+Lemma orB : left_id False or * right_id False or
+          * (left_zero True or * right_zero True or * idempotent or).
+Proof. do ![split] => /PropB[]; eqProp=> -[] //; by [left | right]. Qed.
+
+Lemma implyB : let imply (P Q : Prop) :=  P -> Q in
+    (imply False =1 fun=> True) * (imply^~ False =1 not)
+  * (left_id True imply * right_zero True imply * self_inverse True imply).
+Proof. by do ![split] => /PropB[]; eqProp=> //; apply. Qed.
+
+Lemma decide_or P Q : P \/ Q -> {P} + {Q}.
+Proof. by case/PropB: P; [left | rewrite orB; right]. Qed.
+
+(* -------------------------------------------------------------------- *)
+
 Lemma notT (P : Prop) : P = False -> ~ P. Proof. by move->. Qed.
 
 Lemma contrapT P : ~ ~ P -> P.
@@ -587,11 +619,14 @@ split=> [/asboolP|[p nq pq]]; [|exact/nq/pq].
 by rewrite asbool_neg => /imply_asboolPn.
 Qed.
 
-Lemma not_andP (P Q : Prop) : ~ (P /\ Q) <-> ~ P \/ ~ Q.
+Lemma not_andE (P Q : Prop) : (~ (P /\ Q)) = ~ P \/ ~ Q.
 Proof.
-split => [/asboolPn|[|]]; try by apply: contra_not => -[].
+eqProp=> [/asboolPn|[|]]; try by apply: contra_not => -[].
 by rewrite asbool_and negb_and => /orP[]/asboolPn; [left|right].
 Qed.
+
+Lemma not_andP (P Q : Prop) : ~ (P /\ Q) <-> ~ P \/ ~ Q.
+Proof. by rewrite not_andE. Qed.
 
 Lemma not_and3P (P Q R : Prop) : ~ [/\ P, Q & R] <-> [\/ ~ P, ~ Q | ~ R].
 Proof.
@@ -605,8 +640,11 @@ Proof. by split => [|p]; [exact: contrapT|exact]. Qed.
 
 Lemma notE (P : Prop) : (~ ~ P) = P. Proof. by rewrite propeqE notP. Qed.
 
+Lemma not_orE (P Q : Prop) : (~ (P \/ Q)) = ~ P /\ ~ Q.
+Proof. by rewrite -[_ /\ _]notE not_andE 2!notE. Qed.
+
 Lemma not_orP (P Q : Prop) : ~ (P \/ Q) <-> ~ P /\ ~ Q.
-Proof. by rewrite -(notP (_ /\ _)) not_andP 2!notE. Qed.
+Proof. by rewrite not_orE. Qed.
 
 Lemma not_implyE (P Q : Prop) : (~ (P -> Q)) = (P /\ ~ Q).
 Proof. by rewrite propeqE not_implyP. Qed.
@@ -614,17 +652,78 @@ Proof. by rewrite propeqE not_implyP. Qed.
 Lemma implyE (P Q : Prop) : (P -> Q) = (~ P \/ Q).
 Proof. by rewrite -[LHS]notE not_implyE propeqE not_andP notE. Qed.
 
-Lemma orC (P Q : Prop) : (P \/ Q) = (Q \/ P).
-Proof. by rewrite propeqE; split=> [[]|[]]; [right|left|right|left]. Qed.
+Lemma orC : commutative or.
+Proof. by move=> P Q; rewrite propeqE; split; (case=> ?; [right|left]). Qed.
 
 Lemma orA : associative or.
 Proof. by move=> P Q R; rewrite propeqE; split=> [|]; tauto. Qed.
 
-Lemma andC (P Q : Prop) : (P /\ Q) = (Q /\ P).
-Proof. by rewrite propeqE; split=> [[]|[]]. Qed.
+Lemma orCA : left_commutative or.
+Proof. by move=> P Q R; rewrite !orA (orC P). Qed.
+
+Lemma orAC : right_commutative or.
+Proof. by move=> P Q R; rewrite -!orA (orC Q). Qed.
+
+Lemma orACA : interchange or or.
+Proof. by move=> P Q R S; rewrite !orA (orAC P). Qed.
+
+Lemma orNp P Q : (~ P \/ Q) = (P -> Q).
+Proof. by case/PropB: P; rewrite notB orB implyB. Qed.
+
+Lemma orpN P Q : (P \/ ~ Q) = (Q -> P). Proof. by rewrite orC orNp. Qed.
+
+Lemma or3E P Q R : [\/ P, Q | R] = (P \/ Q \/ R).
+Proof. by rewrite -(asboolE P) -(asboolE Q) -(asboolE R) (reflect_eq or3P) -2!(reflect_eq orP). Qed.
+
+Lemma or4E P Q R S : [\/ P, Q, R | S] = (P \/ Q \/ R \/ S).
+Proof.
+by rewrite -(asboolE P) -(asboolE Q) -(asboolE R) -(asboolE S) (reflect_eq or4P) -3!(reflect_eq orP).
+Qed.
+
+Lemma andC : commutative and.
+Proof. by move=> P Q; rewrite propeqE; split=> [[]|[]]. Qed.
 
 Lemma andA : associative and.
 Proof. by move=> P Q R; rewrite propeqE; split=> [|]; tauto. Qed.
+
+Lemma andCA : left_commutative and.
+Proof. by move=> P Q R; rewrite !andA (andC P). Qed.
+
+Lemma andAC : right_commutative and.
+Proof. by move=> P Q R; rewrite -!andA (andC Q). Qed.
+
+Lemma andACA : interchange and and.
+Proof. by move=> P Q R S; rewrite !andA (andAC P). Qed.
+
+Lemma and3E P Q R : [/\ P, Q & R] = (P /\ Q /\ R).
+Proof. by eqProp=> [[] | [? []]]. Qed.
+
+Lemma and4E P Q R S : [/\ P, Q, R & S] = (P /\ Q /\ R /\ S).
+Proof. by eqProp=> [[] | [? [? []]]]. Qed.
+
+Lemma and5E P Q R S T : [/\ P, Q, R, S & T] = (P /\ Q /\ R /\ S /\ T).
+Proof. by eqProp=> [[] | [? [? [? []]]]]. Qed.
+
+Lemma implyNp P Q : (~ P -> Q : Prop) = (P \/ Q).
+Proof. by rewrite -orNp notK. Qed.
+
+Lemma implypN (P Q : Prop) : (P -> ~ Q) = ~ (P /\ Q).
+Proof. by case/PropB: P; rewrite implyB andB ?notB. Qed.
+
+Lemma implyNN P Q : (~ P -> ~ Q) = (Q -> P).
+Proof. by rewrite implyNp orpN. Qed.
+
+Lemma or_andr : right_distributive or and.
+Proof. by case/PropB=> Q R; rewrite !orB ?andB. Qed.
+
+Lemma or_andl : left_distributive or and.
+Proof. by move=> P Q R; rewrite -!(orC R) or_andr. Qed.
+
+Lemma and_orr : right_distributive and or.
+Proof. by move=> P Q R; apply/not_inj; rewrite !(not_andE, not_orE) or_andr. Qed.
+
+Lemma and_orl : left_distributive and or.
+Proof. by move=> P Q R; apply/not_inj; rewrite !(not_andE, not_orE) or_andl. Qed.
 
 Lemma forallNE {T} (P : T -> Prop) : (forall x, ~ P x) = ~ exists x, P x.
 Proof.
@@ -649,9 +748,12 @@ Proof. by rewrite forallNE. Qed.
 Lemma not_forallP T (P : T -> Prop) : (forall x, P x) <-> ~ exists x, ~ P x.
 Proof. by rewrite existsNE notK. Qed.
 
+Lemma exists2E A P Q : (exists2 x : A, P x & Q x) = (exists x, P x /\ Q x).
+Proof. by eqProp=> -[x]; last case; exists x. Qed.
+
 Lemma exists2P T (P Q : T -> Prop) :
   (exists2 x, P x & Q x) <-> exists x, P x /\ Q x.
-Proof. by split=> [[x ? ?] | [x []]]; exists x. Qed.
+Proof. by rewrite exists2E. Qed.
 
 Lemma not_exists2P T (P Q : T -> Prop) :
   (exists2 x, P x & Q x) <-> ~ forall x, ~ P x \/ ~ Q x.
@@ -801,3 +903,14 @@ Proof. by apply/funeqP => ?; rewrite iterSr. Qed.
 
 Lemma iter0 {T} (f : T -> T) : iter 0 f = id.
 Proof. by []. Qed.
+
+Section Inhabited.
+Variable (T : Type).
+
+Lemma inhabitedE: inhabited T = exists x : T, True.
+Proof. by eqProp; case. Qed.
+
+Lemma inhabited_witness: inhabited T -> T.
+Proof. by rewrite inhabitedE => /cid[]. Qed.
+
+End Inhabited.
