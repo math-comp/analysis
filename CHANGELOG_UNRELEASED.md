@@ -134,7 +134,7 @@
 
 - in `boolp.v`:
   + tactic `eqProp`
-  + definition `BoolProp`
+  + variant `BoolProp`
   + lemmas `PropB`, `notB`, `andB`, `orB`, `implyB`, `decide_or`, `not_andE`,
     `not_orE`, `orCA`, `orAC`, `orACA`, `orNp`, `orpN`, `or3E`, `or4E`, `andCA`,
 	 `andAC`, `andACA`, `and3E`, `and4E`, `and5E`, `implyNp`, `implypN`,
@@ -202,6 +202,10 @@
 
 - in `forms.v`:
   + lemmas `eq_map_mx`, `map_mx_id`
+
+- in `boolp.v`:
+  + lemma `pdegen`
+
 
 ### Infrastructure
 
