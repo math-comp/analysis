@@ -15,8 +15,6 @@ From mathcomp Require Import finset interval.
 (* This files contains lemmas and definitions missing from MathComp.          *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*               f \max g := fun x => Num.max (f x) (g x)                     *)
-(*               f \min g := fun x => Num.min (f x) (g x)                     *)
 (*                oflit f := Some \o f                                        *)
 (*          pred_oapp T D := [pred x | oapp (mem D) false x]                  *)
 (*                 f \* g := fun x => f x * g x                               *)
@@ -48,6 +46,9 @@ Reserved Notation "f \- g" (at level 50, left associativity).
 Reserved Notation "\- f"  (at level 35, f at level 35).
 
 Number Notation positive Pos.of_num_int Pos.to_num_uint : AC_scope.
+
+Notation "f \min g" := (Order.min_fun f g) : function_scope.
+Notation "f \max g" := (Order.max_fun f g) : function_scope.
 
 Lemma all_sig2_cond {I : Type} {T : Type} (D : pred I)
    (P Q : I -> T -> Prop) : T ->
@@ -1008,20 +1009,6 @@ Arguments eq_bigmin {d T I x} j.
 (* End of MathComp 1.16.0 additions *)
 (************************************)
 
-(*****************************)
-(* MathComp > 1.16 additions *)
-(*****************************)
-
-Reserved Notation "f \max g" (at level 50, left associativity).
-
-Definition max_fun T (R : numDomainType) (f g : T -> R) x := Num.max (f x) (g x).
-Notation "f \max g" := (max_fun f g) : ring_scope.
-Arguments max_fun {T R} _ _ _ /.
-
-(************************************)
-(* End of mathComp > 1.16 additions *)
-(************************************)
-
 Reserved Notation "`1- x" (format "`1- x", at level 2).
 
 Section onem.
@@ -1383,12 +1370,6 @@ have := @deg_le2_poly_ge0 _ p (size_poly _ _); rewrite !coef_poly/=; apply=> r.
 rewrite horner_poly !big_ord_recr !big_ord0/= !Monoid.simpm/= expr1.
 by rewrite -mulrA -expr2 addrC addrA addrAC.
 Qed.
-
-Reserved Notation "f \min g" (at level 50, left associativity).
-
-Definition min_fun T (R : numDomainType) (f g : T -> R) x := Num.min (f x) (g x).
-Notation "f \min g" := (min_fun f g) : ring_scope.
-Arguments min_fun {T R} _ _ _ /.
 
 (* NB: Coq 8.17.0 generalizes dependent_choice from Set to Type
    making the following lemma redundant *)
