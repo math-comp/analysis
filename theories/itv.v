@@ -5,7 +5,9 @@ From mathcomp Require Import interval.
 From mathcomp Require Import mathcomp_extra boolp.
 Require Import signed.
 
-(******************************************************************************)
+(***md*************************************************************************)
+(* # Numbers within an intervel                                               *)
+(*                                                                            *)
 (* This file develops tools to make the manipulation of numbers within        *)
 (* a known interval easier, thanks to canonical structures. This adds types   *)
 (* like {itv R & `[a, b]}, a notation e%:itv that infers an enclosing         *)
@@ -14,7 +16,8 @@ Require Import signed.
 (* For instance, x : {i01 R}, we have (1 - x%:inum)%:itv : {i01 R}            *)
 (* automatically inferred.                                                    *)
 (*                                                                            *)
-(* * types for values within known interval                                   *)
+(* ## types for values within known interval                                  *)
+(* ```                                                                        *)
 (*       {i01 R} == interface type for elements in R that live in `[0, 1];    *)
 (*                  R must have a numDomainType structure.                    *)
 (*                  Allows to solve automatically goals of the form x >= 0    *)
@@ -23,15 +26,19 @@ Require Import signed.
 (*   {itv R & i} == more generic type of values in interval i : interval int  *)
 (*                  R must have a numDomainType structure. This type is shown *)
 (*                  to be a porderType.                                       *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * casts from/to values within known interval                               *)
+(* ## casts from/to values within known interval                              *)
+(* ```                                                                        *)
 (*        x%:itv == explicitly casts x to the most precise known {itv R & i}  *)
 (*                  according to existing canonical instances.                *)
 (*        x%:i01 == explicitly casts x to {i01 R} according to existing       *)
 (*                  canonical instances.                                      *)
 (*       x%:inum == explicit cast from {itv R & i} to R.                      *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * sign proofs                                                              *)
+(* ## sign proofs                                                             *)
+(* ```                                                                        *)
 (*    [itv of x] == proof that x is in interval inferred by x%:itv            *)
 (*     [lb of x] == proof that lb < x or lb <= x with lb the lower bound      *)
 (*                  inferred by x%:itv                                        *)
@@ -39,15 +46,18 @@ Require Import signed.
 (*                  inferred by x%:itv                                        *)
 (*    [lbe of x] == proof that lb <= x                                        *)
 (*    [ube of x] == proof that x <= ub                                        *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * constructors                                                             *)
+(* ## constructors                                                            *)
+(* ```                                                                        *)
 (*    ItvNum xin == builds a {itv R & i} from a proof xin : x \in i           *)
 (*                  where x : R                                               *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* --> A number of canonical instances are provided for common operations, if *)
+(* A number of canonical instances are provided for common operations, if     *)
 (* your favorite operator is missing, look below for examples on how to add   *)
 (* the appropriate Canonical.                                                 *)
-(* --> Canonical instances are also provided according to types, as a         *)
+(* Canonical instances are also provided according to types, as a             *)
 (* fallback when no known operator appears in the expression. Look to         *)
 (* itv_top_typ below for an example on how to add your favorite type.         *)
 (******************************************************************************)
@@ -849,12 +859,15 @@ Variable R : numDomainType.
 Variable x : {i01 R}.
 
 Goal 0%:i01 = 1%:i01 :> {i01 R}.
+Proof.
 Abort.
 
 Goal (- x%:inum)%:itv = (- x%:inum)%:itv :> {itv R & `[-1, 0]}.
+Proof.
 Abort.
 
 Goal (1 - x%:inum)%:i01 = x.
+Proof.
 Abort.
 
 End Test1.
@@ -865,6 +878,7 @@ Variable R : realDomainType.
 Variable x y : {i01 R}.
 
 Goal (x%:inum * y%:inum)%:i01 = x%:inum%:i01.
+Proof.
 Abort.
 
 End Test2.

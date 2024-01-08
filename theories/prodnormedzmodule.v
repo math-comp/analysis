@@ -1,7 +1,7 @@
 From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
 Require Import signed.
 
-(******************************************************************************)
+(***md*************************************************************************)
 (* This file equips the product of two normedZmodTypes with a canonical       *)
 (* normedZmodType structure. It is a short file that has been added here for  *)
 (* convenience during the rebase of MathComp-Analysis on top of MathComp 1.1. *)

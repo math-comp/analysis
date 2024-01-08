@@ -9,13 +9,12 @@ Coercion choice.Choice.mixin : choice.Choice.class_of >-> choice.Choice.mixin_of
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
-(***************************)
-(* MathComp 1.15 additions *)
-(***************************)
-
-(******************************************************************************)
+(***md*************************************************************************)
+(* # MathComp extra                                                           *)
+(*                                                                            *)
 (* This files contains lemmas and definitions missing from MathComp.          *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*               f \max g := fun x => Num.max (f x) (g x)                     *)
 (*               f \min g := fun x => Num.min (f x) (g x)                     *)
 (*                oflit f := Some \o f                                        *)
@@ -32,12 +31,17 @@ From mathcomp Require Import finset interval.
 (*                 swap x := (x.2, x.1)                                       *)
 (*         monotonous A f := {in A &, {mono f : x y / x <= y}} \/             *)
 (*                           {in A &, {mono f : x y /~ x <= y}}               *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
+(***************************)
+(* MathComp 1.15 additions *)
+(***************************)
 
 Reserved Notation "f \* g" (at level 40, left associativity).
 Reserved Notation "f \- g" (at level 50, left associativity).

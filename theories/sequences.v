@@ -5,18 +5,20 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import set_interval.
 Require Import reals ereal signed topology normedtype landau.
 
-(******************************************************************************)
-(*                Definitions and lemmas about sequences                      *)
+(***md*************************************************************************)
+(* # Definitions and lemmas about sequences                                   *)
 (*                                                                            *)
 (* The purpose of this file is to gather generic definitions and lemmas about *)
 (* sequences.                                                                 *)
-(*                                                                            *)
+(* ```                                                                        *)
 (*     nondecreasing_seq u == the sequence u is non-decreasing                *)
 (*     nonincreasing_seq u == the sequence u is non-increasing                *)
 (*        increasing_seq u == the sequence u is (strictly) increasing         *)
 (*        decreasing_seq u == the sequence u is (strictly) decreasing         *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * About sequences of real numbers:                                         *)
+(* ## About sequences of real numbers                                         *)
+(* ```                                                                        *)
 (*        [sequence u_n]_n == the sequence of general element u_n             *)
 (*                  R ^nat == notation for the type of sequences, i.e.,       *)
 (*                            functions of type nat -> R                      *)
@@ -38,13 +40,14 @@ Require Import reals ereal signed topology normedtype landau.
 (*                            exponential                                     *)
 (*                  expR x == the exponential function defined on a realType  *)
 (* is_cvg_series_exp_coeff == convergence of \sum_n^+oo x^n / n!              *)
-(*                                                                            *)
 (*        \sum_<range> F i == lim (fun n => (\sum_<range>) F i)) where        *)
 (*                            <range> can be (i <oo), (i <oo | P i),          *)
 (*                            (m <= i <oo), or (m <= i <oo | P i)             *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* Sections sequences_R_* contain properties of sequences of real numbers.    *)
 (* For example:                                                               *)
+(* ```                                                                        *)
 (* nonincreasing_cvgn_ge u_ == if u_ is nonincreasing and convergent then     *)
 (*                             forall n, lim u_ <= u_ n                       *)
 (* nondecreasing_cvgn_le u_ == if u_ is nondecreasing and convergent then     *)
@@ -55,11 +58,12 @@ Require Import reals ereal signed topology normedtype landau.
 (*                             then u_ is convergent                          *)
 (*                 adjacent == adjacent sequences lemma                       *)
 (*                   cesaro == Cesaro's lemma                                 *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* * About sequences of natural numbers:                                      *)
+(* ## About sequences of natural numbers                                      *)
 (*   nseries                                                                  *)
 (*                                                                            *)
-(* * About sequences of extended real numbers:                                *)
+(* ## About sequences of extended real numbers                                *)
 (*   eseries, etelescope, etc.                                                *)
 (*                                                                            *)
 (* Section sequences_ereal contain properties of sequences of extended real   *)
@@ -69,7 +73,8 @@ Require Import reals ereal signed topology normedtype landau.
 (*   positive) extended numbers use the string "nneseries" (resp. "npeseries")*)
 (*   as part of their identifier                                              *)
 (*                                                                            *)
-(* * Limit superior and inferior for sequences:                               *)
+(* ## Limit superior and inferior for sequences:                              *)
+(* ```                                                                        *)
 (*              sdrop u n := {u_k | k >= n}                                   *)
 (*                 sups u := [sequence sup (sdrop u n)]_n                     *)
 (*                 infs u := [sequence inf (sdrop u n)]_n                     *)
@@ -78,6 +83,7 @@ Require Import reals ereal signed topology normedtype landau.
 (*                einfs u := [sequence ereal_inf (sdrop u n)]_n               *)
 (* limn_esup u, limn_einf == limit sup/inferior for a sequence of             *)
 (*                           of extended reals                                *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -202,9 +208,7 @@ Proof. by move=> ndf ndg t m n mn; apply: ler_add; [exact/ndf|exact/ndg]. Qed.
 Local Notation eqolimn := (@eqolim _ _ _ eventually_filter).
 Local Notation eqolimPn := (@eqolimP _ _ _ eventually_filter).
 
-(*********************)
-(* Sequences of sets *)
-(*********************)
+(** Sequences of sets *)
 
 Section seqDU.
 Variables (T : Type).
@@ -329,9 +333,7 @@ Qed.
 
 End seqD.
 
-(************************************)
-(* Convergence of patched sequences *)
-(************************************)
+(** Convergence of patched sequences *)
 
 Section sequences_patched.
 (* TODO: generalizations to numDomainType *)
@@ -1283,9 +1285,7 @@ End exponential_series.
 (* TODO: generalize *)
 Definition expR {R : realType} (x : R) : R := lim (series (exp_coeff x)).
 
-(********************************)
-(* Sequences of natural numbers *)
-(********************************)
+(** Sequences of natural numbers *)
 
 Lemma __deprecated__nat_dvg_real (R : realType) (u_ : nat ^nat) : u_ --> \oo ->
   ([sequence (u_ n)%:R : R^o]_n --> +oo)%R.
@@ -1354,9 +1354,7 @@ exists l => _ [n _ <-]; rewrite leNgt; apply/negP => lun; apply: lu.
 by near do rewrite (leq_trans lun) ?le_nseries//; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
 
-(**************************************)
-(* Sequences of extended real numbers *)
-(**************************************)
+(** Sequences of extended real numbers *)
 
 Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F" :=
   (lim (fun n => (\big[ op / idx ]_(m <= i < n | P) F))) : big_scope.

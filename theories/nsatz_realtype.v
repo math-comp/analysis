@@ -3,14 +3,15 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
 From mathcomp Require Import boolp.
 Require Import reals ereal.
 
-(******************************************************************************)
-(*                           nsatz for realType                               *)
+(***md*************************************************************************)
+(* # nsatz for realType                                                       *)
 (*                                                                            *)
 (* This file registers the ring corresponding to the MathComp-Analysis type   *)
 (* realType to the tactic nsatz of Coq. This enables some automation used for *)
 (* example in the file trigo.v.                                               *)
 (*                                                                            *)
-(* ref: https://coq.inria.fr/refman/addendum/nsatz.html                       *)
+(* Reference:                                                                 *)
+(* - https://coq.inria.fr/refman/addendum/nsatz.html                          *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -38,6 +39,7 @@ Instance Nsatz_realType_Ring_ops:
   Nsatz_realType_mul
   Nsatz_realType_sub
   Nsatz_realType_opp (@eq T)).
+Proof.
 Defined.
 
 #[global]

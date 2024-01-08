@@ -21,6 +21,10 @@ the economic rights, and the successive licensors have only limited
 liability. See the COPYING file for more details.
 *)
 
+(***md*************************************************************************)
+(* # Compatibility with the real numbers of Coq                               *)
+(******************************************************************************)
+
 Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
@@ -201,9 +205,10 @@ by move/RlebP=> ->; rewrite orbT.
 Qed.
 
 Lemma RnormM : {morph Rabs : x y / x * y}.
-exact: Rabs_mult. Qed.
+Proof. exact: Rabs_mult. Qed.
 
 Lemma Rleb_def x y : (Rleb x y) = (Rabs (y - x) == y - x).
+Proof.
 apply/(sameP (RlebP x y))/(iffP idP)=> [/eqP H| /Rle_minus H].
   apply: Rminus_le; rewrite -Ropp_minus_distr.
   apply/Rge_le/Ropp_0_le_ge_contravar.
@@ -214,6 +219,7 @@ by apply/Ropp_0_ge_le_contravar/Rle_ge.
 Qed.
 
 Lemma Rltb_def x y : (Rltb x y) = (y != x) && (Rleb x y).
+Proof.
 apply/(sameP (RltbP x y))/(iffP idP).
   case/andP=> /eqP H /RlebP/Rle_not_gt H2.
   by case: (Rtotal_order x y)=> // [][] // /esym.

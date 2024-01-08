@@ -5,6 +5,10 @@ From mathcomp Require Import interval zmodp.
 From mathcomp Require Import boolp classical_sets.
 Require Import ereal reals Rstruct signed topology normedtype.
 
+(***md*************************************************************************)
+(* (undocumented experiment)                                                  *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

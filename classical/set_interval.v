@@ -4,9 +4,12 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From HB Require Import structures.
 From mathcomp Require Import functions.
 
-(******************************************************************************)
+(***md*************************************************************************)
+(* # Sets and Intervals                                                       *)
+(*                                                                            *)
 (* This files contains lemmas about sets and intervals.                       *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*              neitv i == the interval i is non-empty                        *)
 (*                         when the support type is a numFieldType, this      *)
 (*                         is equivalent to (i.1 < i.2)%O (lemma neitvE)      *)
@@ -17,6 +20,7 @@ From mathcomp Require Import functions.
 (*         factor a b x := (x - a) / (b - a)                                  *)
 (*             set_itvE == multirule to turn intervals into inequalities      *)
 (*     disjoint_itv i j == intervals i and j are disjoint                     *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -28,8 +32,8 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* definitions and lemmas to make a bridge between MathComp intervals and     *)
-(* classical sets                                                             *)
+(** definitions and lemmas to make a bridge between MathComp intervals and
+    classical sets *)
 Section set_itv_porderType.
 Variables (d : unit) (T : porderType d).
 Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
@@ -319,7 +323,7 @@ rewrite predeqE => /= r; split => [[{}r + <-]|].
 by exists (- r); rewrite ?opprK// !in_itv/= ltr_oppl ltr_oppr andbC.
 Qed.
 
-(* lemmas between itv and set-theoretic operations *)
+(** lemmas between itv and set-theoretic operations *)
 Section set_itv_porderType.
 Variables (d : unit) (T : orderType d).
 Implicit Types (a : itv_bound T) (x y : T) (i j : interval T) (b : bool).

@@ -7,10 +7,13 @@ Require Import ereal reals signed topology prodnormedzmodule normedtype derive.
 Require Import sequences real_interval.
 From HB Require Import structures.
 
-(******************************************************************************)
+(***md*************************************************************************)
+(* # Real-valued functions over reals                                         *)
+(*                                                                            *)
 (* This file provides properties of standard real-valued functions over real  *)
 (* numbers (e.g., the continuity of the inverse of a continuous function).    *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*     nondecreasing_fun f == the function f is non-decreasing                *)
 (*     nonincreasing_fun f == the function f is non-increasing                *)
 (*        increasing_fun f == the function f is (strictly) increasing         *)
@@ -18,6 +21,7 @@ From HB Require Import structures.
 (*                                                                            *)
 (*   derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and       *)
 (*                                        continuous up to the boundary       *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* * Limit superior and inferior for functions:                               *)
 (*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
@@ -848,10 +852,9 @@ Section real_inverse_functions.
 Variable R : realType.
 Implicit Types (a b : R) (f g : R -> R).
 
-(* This lemma should be used with caution. Generally `{within I, continuous f}`
+(** This lemma should be used with caution. Generally `{within I, continuous f}`
    is what one would intend. So having `{in I, continuous f}` as a condition
-   may indicate potential issues at the endpoints of the interval.
-*)
+   may indicate potential issues at the endpoints of the interval. *)
 Lemma continuous_subspace_itv (I : interval R) (f : R -> R) :
   {in I, continuous f} -> {within [set` I], continuous f}.
 Proof.
@@ -993,8 +996,8 @@ move=> /(_ b a); rewrite !bound_itvE fafb.
 by move=> /(_ (ltW aLb) (ltW aLb)); rewrite lt_geF.
 Qed.
 
-(* The condition "f a <= f b" is unnecessary because the last                *)
-(* interval condition is vacuously true otherwise.                           *)
+(** The condition "f a <= f b" is unnecessary because the last
+    interval condition is vacuously true otherwise. *)
 Lemma segment_can_le a b f g : a <= b ->
     {within `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->
@@ -1021,7 +1024,7 @@ Proof. by split=> x /=; rewrite oppr_itvcc. Qed.
 HB.instance Definition _ a b := itv_oppr_is_fun a b.
 End negation_itv.
 
-(* The condition "f b <= f a" is unnecessary---see seg...increasing above    *)
+(** The condition "f b <= f a" is unnecessary---see seg...increasing above    *)
 Lemma segment_can_ge a b f g : a <= b ->
     {within `[a, b], continuous f} ->
     {in `[a, b], cancel f g} ->

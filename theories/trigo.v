@@ -5,12 +5,13 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 Require Import reals ereal nsatz_realtype signed topology normedtype landau.
 Require Import sequences derive realfun exp.
 
-(******************************************************************************)
-(*                     Theory of trigonometric functions                      *)
+(***md*************************************************************************)
+(* # Theory of trigonometric functions                                        *)
 (*                                                                            *)
 (* This file provides the definitions of basic trigonometric functions and    *)
 (* develops their theories.                                                   *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*    periodic f T == f is a periodic function of period T                    *)
 (* alternating f T == f is an alternating function of period T                *)
 (*     sin_coeff x == the sequence of coefficients of sin x                   *)
@@ -24,6 +25,7 @@ Require Import sequences derive realfun exp.
 (*          acos x == the arccos function                                     *)
 (*          asin x == the arcsin function                                     *)
 (*          atan x == the arctangent function                                 *)
+(* ```                                                                        *)
 (*                                                                            *)
 (* Acknowledgments: the proof of cos 2 < 0 is inspired from HOL-light, some   *)
 (* proofs of trigonometric relations are taken from                           *)

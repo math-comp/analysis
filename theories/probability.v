@@ -8,12 +8,13 @@ Require Import exp numfun lebesgue_measure lebesgue_integral.
 Require Import reals ereal signed topology normedtype sequences esum measure.
 Require Import exp numfun lebesgue_measure lebesgue_integral.
 
-(******************************************************************************)
-(*                       Probability (experimental)                           *)
+(***md*************************************************************************)
+(* # Probability                                                              *)
 (*                                                                            *)
 (* This file provides basic notions of probability theory. See measure.v for  *)
 (* the type probability T R (a measure that sums to 1).                       *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*          {RV P >-> R} == real random variable: a measurable function from  *)
 (*                          the measurableType of the probability P to R      *)
 (*        distribution X == measure image of P by X : {RV P -> R}, declared   *)
@@ -29,6 +30,7 @@ Require Import exp numfun lebesgue_measure lebesgue_integral.
 (*            dRV_enum X == bijection between the domain and the range of X   *)
 (*               pmf X r := fine (P (X @^-1` [set r]))                        *)
 (*         enum_prob X k == probability of the kth value in the range of X    *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -683,6 +685,7 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 
 Definition dRV_dom_enum (X : {dRV P >-> R}) :
   { B : set nat & {splitbij B >-> range X}}.
+Proof.
 have /countable_bijP/cid[B] := @countable_range _ _ _ X.
 move/card_esym/ppcard_eqP/unsquash => f.
 exists B; exact: f.

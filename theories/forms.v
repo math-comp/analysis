@@ -6,7 +6,10 @@ From mathcomp
 Require Import fieldext.
 From mathcomp Require Import vector.
 
-(* From mathcomp Require classfun. *)
+(***md*************************************************************************)
+(* # Bilinear forms                                                           *)
+(* (undocumented)                                                             *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.

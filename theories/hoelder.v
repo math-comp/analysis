@@ -7,13 +7,14 @@ Require Import signed reals ereal topology normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure lebesgue_integral numfun exp.
 Require Import convex itv.
 
-(******************************************************************************)
-(*                         Hoelder's Inequality                               *)
+(***md*************************************************************************)
+(* # Hoelder's Inequality                                                     *)
 (*                                                                            *)
 (* This file provides Hoelder's inequality.                                   *)
-(*                                                                            *)
+(* ```                                                                        *)
 (*           'N[mu]_p[f] := (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1             *)
 (*                          The corresponding definition is Lnorm.            *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
