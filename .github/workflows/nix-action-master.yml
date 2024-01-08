@@ -158,6 +158,7 @@ jobs:
   mathcomp:
     needs:
     - coq
+    - hierarchy-builder
     runs-on: ubuntu-latest
     steps:
     - name: Determine which commit to initially checkout
@@ -227,6 +228,10 @@ jobs:
       name: 'Building/fetching previous CI target: mathcomp-character'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "master"
         --argstr job "mathcomp-character"
+    - if: steps.stepCheck.outputs.status == 'built'
+      name: 'Building/fetching previous CI target: hierarchy-builder'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "master"
+        --argstr job "hierarchy-builder"
     - if: steps.stepCheck.outputs.status == 'built'
       name: Building/fetching current CI target
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "master"
@@ -492,8 +497,10 @@ name: Nix CI for bundle master
 'on':
   pull_request:
     paths:
-    - .github/workflows/**
+    - .github/workflows/nix-action-master.yml
   pull_request_target:
+    paths-ignore:
+    - .github/workflows/nix-action-master.yml
     types:
     - opened
     - synchronize
