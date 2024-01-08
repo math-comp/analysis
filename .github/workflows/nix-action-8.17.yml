@@ -331,8 +331,10 @@ name: Nix CI for bundle 8.17
 'on':
   pull_request:
     paths:
-    - .github/workflows/**
+    - .github/workflows/nix-action-8.17.yml
   pull_request_target:
+    paths-ignore:
+    - .github/workflows/nix-action-8.17.yml
     types:
     - opened
     - synchronize

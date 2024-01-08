@@ -502,8 +502,10 @@ name: Nix CI for bundle master
 'on':
   pull_request:
     paths:
-    - .github/workflows/**
+    - .github/workflows/nix-action-master.yml
   pull_request_target:
+    paths-ignore:
+    - .github/workflows/nix-action-master.yml
     types:
     - opened
     - synchronize
