@@ -534,11 +534,13 @@ Qed.
 Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
 
 Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
-  P [set x | X x >= a]%R * (expR (r * a))%:E <= mmt_gen_fun X r.
+  P [set x | X x >= a]%R <= mmt_gen_fun X r * (expR (- (r * a)))%:E.
 Proof.
-move=> t0; rewrite /mmt_gen_fun; have -> : expR \o r \o* X =
+move=> t0.
+rewrite /mmt_gen_fun; have -> : expR \o r \o* X =
     (normr \o normr) \o [the {mfun T >-> R} of expR \o r \o* X].
   by apply: funext => t /=; rewrite normr_id ger0_norm ?expR_ge0.
+rewrite expRN lee_pdivl_mulr ?expR_gt0//.
 rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
   exact: (monoW_in (@ger0_le_norm _)).
 rewrite ger0_norm ?expR_ge0// muleC lee_pmul2l// ?lte_fin ?expR_gt0//.
