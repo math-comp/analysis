@@ -132,6 +132,15 @@
 - in `realfun.v`:
   + lemmas `lime_sup_lim`, `lime_inf_lim`
 
+- in `boolp.v`:
+  + tactic `eqProp`
+  + variant `BoolProp`
+  + lemmas `PropB`, `notB`, `andB`, `orB`, `implyB`, `decide_or`, `not_andE`,
+    `not_orE`, `orCA`, `orAC`, `orACA`, `orNp`, `orpN`, `or3E`, `or4E`, `andCA`,
+	 `andAC`, `andACA`, `and3E`, `and4E`, `and5E`, `implyNp`, `implypN`,
+	 `implyNN`, `or_andr`, `or_andl`, `and_orr`, `and_orl`, `exists2E`,
+	 `inhabitedE`, `inhabited_witness`
+
 ### Changed
 
 - in `normedtype.v`:
@@ -169,6 +178,9 @@
 - in `sequences.v`:
   + `limn_esup` now defined from `lime_sup`
   + `limn_einf` now defined from `limn_esup`
+
+-in `boolp.v`
+  - lemmas `orC` and `andC` now use `commutative`
   
 ### Renamed
 
@@ -190,6 +202,10 @@
 
 - in `forms.v`:
   + lemmas `eq_map_mx`, `map_mx_id`
+
+- in `boolp.v`:
+  + lemma `pdegen`
+
 
 ### Infrastructure
 
