@@ -7,15 +7,17 @@ Require Import reals ereal.
 Require Import signed topology normedtype landau sequences derive realfun.
 Require Import itv convex.
 
-(******************************************************************************)
-(*               Theory of exponential/logarithm functions                    *)
+(***md*************************************************************************)
+(* # Theory of exponential/logarithm functions                                *)
 (*                                                                            *)
 (* This file defines exponential and logarithm functions and develops their   *)
 (* theory.                                                                    *)
 (*                                                                            *)
-(* * Differentiability of series (Section PseriesDiff)                        *)
-(*   This formalization is inspired by HOL-Light (transc.ml). This part is    *)
-(*   temporary: it should be subsumed by a proper theory of power series.     *)
+(* ## Differentiability of series (Section PseriesDiff)                       *)
+(*                                                                            *)
+(* This formalization is inspired by HOL-Light (transc.ml). This part is      *)
+(* temporary: it should be subsumed by a proper theory of power series.       *)
+(* ```                                                                        *)
 (*         pseries f x == [series f n * x ^ n]_n                              *)
 (*   pseries_diffs f i == (i + 1) * f (i + 1)                                 *)
 (*                                                                            *)
@@ -27,6 +29,7 @@ Require Import itv convex.
 (*                        of type realType                                    *)
 (*       e `^?(r +? s) == validity condition for the distributivity of        *)
 (*                        the power of the addition, in ereal_scope           *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 

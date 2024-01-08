@@ -5,9 +5,12 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
 From mathcomp Require Import functions cardinality set_interval.
 Require Import signed reals ereal topology normedtype sequences.
 
-(******************************************************************************)
+(***md*************************************************************************)
+(* # Numerical functions                                                      *)
+(*                                                                            *)
 (* This file provides definitions and lemmas about numerical functions.       *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*    {nnfun T >-> R} == type of non-negative functions                       *)
 (*              f ^\+ == the function formed by the non-negative outputs      *)
 (*                       of f (from a type to the type of extended real       *)
@@ -17,6 +20,7 @@ Require Import signed reals ereal topology normedtype sequences.
 (*                       of f and 0 o.w.                                      *)
 (*                       rendered as f ⁻ with company-coq (U+207B)            *)
 (*              \1_ A == indicator function 1_A                               *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
