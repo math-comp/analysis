@@ -1,10 +1,6 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 Require Import BinPos.
 From mathcomp Require choice.
-(* Missing coercion (done before Import to avoid redeclaration error,
-   thanks to KS for the trick) *)
-(* MathComp 1.15 addition *)
-
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
@@ -14,8 +10,6 @@ From mathcomp Require Import finset interval.
 (* This files contains lemmas and definitions missing from MathComp.          *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*               f \max g := fun x => Num.max (f x) (g x)                     *)
-(*               f \min g := fun x => Num.min (f x) (g x)                     *)
 (*                oflit f := Some \o f                                        *)
 (*          pred_oapp T D := [pred x | oapp (mem D) false x]                  *)
 (*                 f \* g := fun x => f x * g x                               *)
