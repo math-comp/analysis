@@ -105,7 +105,12 @@ From mathcomp Require Import mathcomp_extra boolp.
 (*     upper bound has a maximal element. We also proved an analogous version *)
 (*     for preorders, where maximal is replaced with premaximal: t is         *)
 (*     premaximal if whenever t < s we also have s < t.                       *)
+(*     Variations: Zorn is the standard one for posets.  Zorn_over is a       *)
+(*     relativization over a given point.  Zorn_bigcup is the usual           *)
+(*     specialization to set inclusions and big union.  ZL_preorder is a      *)
+(*     generalization to preorders                                            *)
 (*                                                                            *)
+(* * Squash type (aka bracket type, propositional truncation)                 *)
 (*                      $| T | == T : Type is inhabited                       *)
 (*                    squash x == proof of $| T | (with x : T)                *)
 (*                  unsquash s == extract a witness from s : $| T |           *)
@@ -2779,6 +2784,32 @@ have [Bs|nBs] := pselect (B s).
 left; case: A tub Astot sBAs sAB => A Atot /= tub Astot sBAs sAB.
 apply: eq_exist; rewrite predeqE => r; split=> [Br|/sAB] //.
 by have /sBAs [|ser] // := Br; rewrite ser in Br.
+Qed.
+
+Lemma Zorn_over T (R : T -> T -> Prop) :
+  (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
+  (forall s t, R s t -> R t s -> s = t) ->
+  (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
+  forall u, exists t, R u t /\ forall s, R t s -> s = t.
+Proof.
+move=> Rrefl Rtrans Rantisym Rtot_max u.
+set Tu := ({x : T | R u x}).
+set Ru := fun x y : Tu => R (sval x) (sval y).
+have Ru_refl x : Ru x x by [].
+have Ru_trans x y z : Ru x y -> Ru y z -> Ru x z by apply: Rtrans.
+have Ru_antisym : forall x y, Ru x y -> Ru y x -> x = y.
+  by move=> [? ?] [? ?] *; exact/eq_exist/Rantisym.
+have Ru_tot_max Au : total_on Au Ru -> exists y, forall x, Au x -> Ru x y.
+  have [->|] := eqVneq Au set0; first by exists (exist _ u (Rrefl u)).
+  move=> /set0P [v Auv] Au_tot.
+  pose A := sval @` Au.
+  have Atot : total_on A R by move=> x y [xu Axu <-] [yu Ayu <-]; exact: Au_tot.
+  have [y ymax] := Rtot_max A Atot.
+  have uy : R u y by apply /(Rtrans _ _ _ (svalP v)) /ymax; exists v.
+  by exists (exist _ y uy) => x Au_x; apply: ymax; exists x.
+have [[x ux] xmax] := Zorn Ru_refl Ru_trans Ru_antisym Ru_tot_max.
+exists x; split=> // y xy.
+by have /(_ xy)/(congr1 sval) := xmax (exist _ y (Rtrans _ _ _ ux xy)).
 Qed.
 
 Section Zorn_subset.
