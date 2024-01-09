@@ -2,8 +2,8 @@
 Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg ssrnum.
-Require Import boolp reals Rstruct Rbar.
-Require Import classical_sets posnum topology normedtype landau.
+From mathcomp Require Import boolp reals Rstruct ereal.
+From mathcomp Require Import classical_sets signed topology normedtype landau.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -55,6 +55,7 @@ rewrite !Rsqr_pow2 !RpowE; apply/andP; split.
 wlog lex12 : x / (`|x.1| <= `|x.2|).
   move=> ler_norm; case: (lerP `|x.1| `|x.2|) => [/ler_norm|] //.
   rewrite lt_leAnge => /andP [lex21 _].
+  rewrite RplusE.
   by rewrite addrC [`|_|]maxC (ler_norm (x.2, x.1)).
 rewrite [`|_|]max_r // -[X in X * _]ger0_norm // -normrM.
 rewrite -sqrtr_sqr ler_wsqrtr // exprMn sqr_sqrtr // mulr_natl mulr2n ler_add2r.
@@ -90,14 +91,12 @@ Proof.
 move=> /OuP_to_ex [_/posnumP[a] [_/posnumP[C] fOg]].
 apply/eqOP; near=> k; near=> x; apply: le_trans (fOg _ _ _ _) _; last 2 first.
 - by near: x; exists (setT, P); [split=> //=; apply: withinT|move=> ? []].
-- rewrite ler_pmul => //; near: k; exists C%:num; split.
-    exact: posnum_real.
-  by move=> ?; rewrite lt_leAnge => /andP[].
+- by rewrite ler_pmul.
 - near: x; exists (setT, ball (0 : R^o * R^o) a%:num).
     by split=> //=; rewrite /within; near=> x =>_; near: x; apply: nbhsx_ballx.
   move=> x [_ [/=]]; rewrite -ball_normE /= distrC subr0 distrC subr0.
   by move=> ??; rewrite lt_maxl; apply/andP.
-Grab Existential Variables. all: end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 Lemma OuO_to_P f g : OuO f g -> OuP f g.
 Proof.
