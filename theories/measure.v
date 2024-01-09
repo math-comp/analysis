@@ -112,15 +112,16 @@ From HB Require Import structures.
 (*                            The HB class is FiniteMeasure.                  *)
 (*      SigmaFinite_isFinite == mixin for finite measures                     *)
 (*          Measure_isFinite == factory for finite measures                   *)
-(*       subprobability T R == subprobability measure over the measurableType *)
-(*                            T with values in \bar R with R : realType       *)
+(*        subprobability T R == subprobability measure over the               *)
+(*                            measurableType T with values in \bar R with     *)
+(*                            R : realType                                    *)
 (*                            The HB class is SubProbability.                 *)
-(*         probability T R == probability measure over the measurableType T   *)
+(*           probability T R == probability measure over the measurableType T *)
 (*                            with values in \bar with R : realType           *)
 (*               probability == type of probability measures                  *)
 (*                            The HB class is Probability.                    *)
 (*     Measure_isProbability == factor for probability measures               *)
-(*              mnormalize mu == normalization of a measure to a probability  *)
+(*             mnormalize mu == normalization of a measure to a probability   *)
 (* {outer_measure set T -> \bar R} == type of an outer measure over sets      *)
 (*                            of elements of type T : Type where R is         *)
 (*                            expected to be a numFieldType                   *)
@@ -1177,8 +1178,8 @@ Lemma measurable_fun_if (g h : T1 -> T2) D (mD : measurable D)
   measurable_fun D (fun t => if f t then g t else h t).
 Proof.
 move=> mx my /= _ B mB; rewrite (_ : _ @^-1` B =
-    ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
-    ((f @^-1` [set false]) `&` (h @^-1` B))).
+   ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
+   ((f @^-1` [set false]) `&` (h @^-1` B))).
   rewrite setIUr; apply: measurableU.
   - by rewrite setIA; apply: mx => //; exact: mf.
   - by rewrite setIA; apply: my => //; exact: mf.
@@ -1210,6 +1211,30 @@ have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
   apply: measurableU; first exact: measurableC.
   by rewrite FNT preimage_setC setCK; exact: mfT.
 - by rewrite -setT_bool preimage_setT setIT.
+Qed.
+
+Lemma measurable_and (f : T1 -> bool) (g : T1 -> bool) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (fun x => f x && g x).
+Proof.
+move=> mf mg; apply: (@measurable_fun_bool _ _ true).
+rewrite [X in measurable X](_ : _ = f @^-1` [set true] `&` g @^-1` [set true]).
+  apply: measurableI.
+  - rewrite -[X in measurable X]setTI; exact: mf.
+  - rewrite -[X in measurable X]setTI; exact: mg.
+by apply/seteqP; split => x /andP.
+Qed.
+
+Lemma measurable_or (f : T1 -> bool) (g : T1 -> bool) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (fun x => f x || g x).
+Proof.
+move=> mf mg; apply: (@measurable_fun_bool _ _ true).
+rewrite [X in measurable X](_ : _ = f @^-1` [set true] `|` g @^-1` [set true]).
+  apply: measurableU.
+  - rewrite -[X in measurable X]setTI; exact: mf.
+  - rewrite -[X in measurable X]setTI; exact: mg.
+by apply/seteqP; split=> x /orP.
 Qed.
 
 End measurable_fun.

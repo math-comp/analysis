@@ -18,7 +18,7 @@ the Coq proof-assistant and using the Mathematical Components library."""
 build: [make "-C" "classical" "-j%{jobs}%"]
 install: [make "-C" "classical" "install"]
 depends: [
-  "coq" { (>= "8.14" & < "8.19~") | (= "dev") }
+  "coq" { (>= "8.16" & < "8.19~") | (= "dev") }
   "coq-mathcomp-ssreflect" { (>= "1.13.0" & < "1.19~") | (= "dev") }
   "coq-mathcomp-fingroup"
   "coq-mathcomp-algebra"

@@ -3487,7 +3487,7 @@ by rewrite mule0 -eq_le => /eqP.
 Qed.
 
 Lemma ae_eq_integral_abs (D : set T) (mD : measurable D) (f : T -> \bar R) :
-  measurable_fun D f -> \int[mu]_(x in D) `|f x|  = 0 <-> ae_eq D f (cst 0).
+  measurable_fun D f -> \int[mu]_(x in D) `|f x| = 0 <-> ae_eq D f (cst 0).
 Proof.
 move=> mf; split=> [iDf0|Df0].
   exists (D `&` [set x | f x != 0]); split;
