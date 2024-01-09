@@ -33,12 +33,12 @@ the Coq proof-assistant and using the Mathematical Components library.
   - Pierre-Yves Strub (initial)
   - Laurent Théry
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.14 to 8.17 (or dev)
+- Compatible Coq versions: Coq 8.14 to 8.18 (or dev)
 - Additional dependencies:
   - [MathComp ssreflect 1.13 or later](https://math-comp.github.io)
   - [MathComp fingroup 1.13 or later](https://math-comp.github.io)
   - [MathComp algebra 1.13 or later](https://math-comp.github.io)
-  - [MathComp solvable 1.13 or later](https://math-comp.github.io)
+  - [MathComp solvable 1.15 or later](https://math-comp.github.io)
   - [MathComp field 1.13 or later](https://math-comp.github.io)
   - [MathComp finmap 1.5.1](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
@@ -80,7 +80,7 @@ own risk.
 ## Documentation
 
 Each file is documented in its header
-([coqdoc presentation for the last version](https://math-comp.github.io/analysis/htmldoc_0_6_6/index.html)).
+([coqdoc presentation for the last version](https://math-comp.github.io/analysis/htmldoc_0_6_7/index.html)).
 
 Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
 [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
@@ -93,6 +93,7 @@ Other work using MathComp-Analysis:
 - [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
 - [Semantics of Probabilistic Programs using s-Finite Kernels in Coq](https://hal.inria.fr/hal-03917948/document) (2023)
 - [CoqQ: Foundational Verification of Quantum Programs](https://arxiv.org/pdf/2207.11350.pdf) (2023)
+- [Experimenting with an intrinsically-typed probabilistic programming language in Coq](https://staff.aist.go.jp/reynald.affeldt/documents/syntax-aplas2023.pdf) (2023)
 
 ## Mathematical structures
 
