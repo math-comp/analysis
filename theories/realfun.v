@@ -56,7 +56,7 @@ Lemma cvg_addrl (M : R) : M + r @[r --> +oo] --> +oo.
 Proof.
 move=> P [r [rreal rP]]; exists (r - M); split.
   by rewrite realB// num_real.
-by move=> m; rewrite ltr_subl_addl => /rP.
+by move=> m; rewrite ltrBlDl => /rP.
 Qed.
 
 (* NB: see cvg_addnr in topology.v *)
@@ -96,11 +96,11 @@ rewrite neq_lt => /orP[tp|pt].
 - apply: fpnl => //=; near: t.
   exists (b / 2) => //=; first by rewrite divr_gt0.
   move=> z/= + _ => /lt_le_trans; apply.
-  by rewrite ler_pdivr_mulr// ler_pmulr// ler1n.
+  by rewrite ler_pdivrMr// ler_pMr// ler1n.
 - apply: fppl =>//=; near: t.
   exists (a / 2) => //=; first by rewrite divr_gt0.
   move=> z/= + _ => /lt_le_trans; apply.
-  by rewrite ler_pdivr_mulr// ler_pmulr// ler1n.
+  by rewrite ler_pdivrMr// ler_pMr// ler1n.
 Unshelve. all: by end_near. Qed.
 
 End fun_cvg_realFieldType.
@@ -110,7 +110,7 @@ Context {R : realType}.
 
 Lemma cvg_at_rightP (f : R -> R) (p l : R) :
   f x @[x --> p^'+] --> l <->
-  (forall u : R^nat, (forall n, u n > p) /\ (u --> p) ->
+  (forall u : R^nat, (forall n, u n > p) /\ (u n @[n --> \oo] --> p) ->
     f (u n) @[n --> \oo] --> l).
 Proof.
 split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt ucvg]|pfl].
@@ -120,7 +120,7 @@ split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt ucvg]|pfl].
   by near: t; exists s.
 apply: contrapT => fpl; move: pfl; apply/existsNP.
 suff: exists2 x : R ^nat,
-    (forall k, x k > p) /\ x --> p & ~ f (x n) @[n --> \oo] --> l.
+    (forall k, x k > p) /\ x n @[n --> \oo] --> p & ~ f (x n) @[n --> \oo] --> l.
   by move=> [x_] h; exists x_; exact/not_implyP.
 have [e He] : exists e : {posnum R}, forall d : {posnum R},
     exists xn : R, [/\ xn > p, `|xn - p| < d%:num & `|f xn - l| >= e%:num].
@@ -137,7 +137,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   split => [k|]; first by rewrite /sval/=; case: cid => x [].
   apply/cvgrPdist_lt => r r0; near=> t.
   rewrite /sval/=; case: cid => x [px xpt _].
-  rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pinv ?posrE ?invr_gt0//.
+  rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists `|ceil (r^-1)|%N => // s /=.
   rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
   by rewrite natr_absz gtr0_norm ?ceil_gt0 ?invr_gt0// ceil_ge.
@@ -148,16 +148,16 @@ Unshelve. all: by end_near. Qed.
 
 Lemma cvg_at_leftP (f : R -> R) (p l : R) :
   f x @[x --> p^'-] --> l <->
-  (forall u : R^nat, (forall n, u n < p) /\ (u --> p) ->
+  (forall u : R^nat, (forall n, u n < p) /\ u n @[n --> \oo] --> p ->
     f (u n) @[n --> \oo] --> l).
 Proof.
 apply: (iff_trans (cvg_at_leftNP f p l)).
 apply: (iff_trans (cvg_at_rightP _ _ _)).
 split=> [pfl u [pu up]|pfl u [pu up]].
   rewrite -(opprK u); apply: pfl.
-  by split; [move=> k; rewrite ltr_oppr opprK//|exact/cvgNP].
+  by split; [move=> k; rewrite ltrNr opprK//|exact/cvgNP].
 apply: pfl.
-by split; [move=> k; rewrite ltr_oppl//|apply/cvgNP => /=; rewrite opprK].
+by split; [move=> k; rewrite ltrNl//|apply/cvgNP => /=; rewrite opprK].
 Qed.
 
 End cvgr_fun_cvg_seq.
@@ -167,7 +167,7 @@ Context {R : realType}.
 
 Lemma cvge_at_rightP (f : R -> \bar R) (p l : R) :
   f x @[x --> p^'+] --> l%:E <->
-  (forall u : R^nat, (forall n, u n > p) /\ u --> p ->
+  (forall u : R^nat, (forall n, u n > p) /\ u n @[n --> \oo] --> p ->
     f (u n) @[n --> \oo] --> l%:E).
 Proof.
 split=> [/fine_cvgP [ffin_num fpl] u [pu up]|h].
@@ -181,12 +181,12 @@ apply: contrapT => /not_near_at_rightP abs.
 have invn n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
 pose y_ n := sval (cid2 (abs (PosNum (invn n)))).
 have py_ k : p < y_ k by rewrite /y_ /sval/=; case: cid2 => //= x /andP[].
-have y_p : y_ --> p.
+have y_p : y_ n @[n --> \oo] --> p.
   apply/cvgrPdist_lt => e e0; near=> t.
   rewrite ltr0_norm// ?subr_lt0// opprB.
   rewrite /y_ /sval/=; case: cid2 => //= x /andP[_ + _].
-  rewrite ltr_subl_addr => /lt_le_trans; apply.
-  rewrite addrC ler_add2r -(invrK e) lef_pinv// ?posrE ?invr_gt0//.
+  rewrite ltrBlDr => /lt_le_trans; apply.
+  rewrite addrC lerD2r -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
   near: t.
   exists `|ceil e^-1|%N => // k /= ek.
   rewrite (le_trans (ceil_ge _))// (@le_trans _ _ `|ceil e^-1|%:~R)//.
@@ -201,14 +201,14 @@ Unshelve. all: by end_near. Qed.
 
 Lemma cvge_at_leftP (f : R -> \bar R) (p l : R) :
   f x @[x --> p^'-] --> l%:E <->
-  (forall u : R^nat, (forall n, u n < p) /\ u --> p ->
+  (forall u : R^nat, (forall n, u n < p) /\ u n @[n --> \oo] --> p ->
     f (u n) @[n --> \oo] --> l%:E).
 Proof.
 apply: (iff_trans (cvg_at_leftNP f p l%:E)).
 apply: (iff_trans (cvge_at_rightP _ _ l)); split=> h u [up pu].
 - rewrite (_ : u = \- (\- u))%R; last by apply/funext => ?/=; rewrite opprK.
-  by apply: h; split; [by move=> n; rewrite ltr_oppl opprK|exact: cvgN].
-- by apply: h; split => [n|]; [rewrite ltr_oppl|move/cvgN : pu; rewrite opprK].
+  by apply: h; split; [by move=> n; rewrite ltrNl opprK|exact: cvgN].
+- by apply: h; split => [n|]; [rewrite ltrNl|move/cvgN : pu; rewrite opprK].
 Qed.
 
 End cvge_fun_cvg_seq.
@@ -228,7 +228,7 @@ have [p Mefp] : exists p, M - e%:num <= f p.
   have [_ -[p _] <- /ltW efp] := sup_adherent (gt0 e) supf.
   by exists p; rewrite efp.
 near=> n; have pn : p <= n by near: n; apply: nbhs_pinfty_ge; rewrite num_real.
-rewrite ler_distlC (le_trans Mefp (ndf _ _ _))//= (@le_trans _ _ M) ?ler_addl//.
+rewrite ler_distlC (le_trans Mefp (ndf _ _ _))//= (@le_trans _ _ M) ?lerDl//.
 by have /ubP := sup_upper_bound supf; apply; exists n.
 Unshelve. all: by end_near. Qed.
 
@@ -240,7 +240,7 @@ Proof.
 move=> lef ubf; set M := sup _.
 have supf : has_sup [set f x | x in `]a, +oo[].
   split => //; exists (f (a + 1)), (a + 1) => //=.
-  by rewrite in_itv/= ltr_addl ltr01.
+  by rewrite in_itv/= ltrDl ltr01.
 apply/cvgrPdist_le => _/posnumP[e].
 have [p ap Mefp] : exists2 p, a < p & M - e%:num <= f p.
   have [_ -[p ap] <- /ltW efp] := sup_adherent (gt0 e) supf.
@@ -248,13 +248,13 @@ have [p ap Mefp] : exists2 p, a < p & M - e%:num <= f p.
   by move: ap; rewrite /= in_itv/= andbT.
 near=> n.
 rewrite ler_distl; apply/andP; split; last first.
-  rewrite -ler_subl_addr (le_trans Mefp)// lef//.
+  rewrite -lerBlDr (le_trans Mefp)// lef//.
     by rewrite in_itv/= andbT; near: n; exact: nbhs_right_gt.
   by near: n; exact: nbhs_right_le.
 have : f n <= M.
   apply: sup_ub => //=; exists n => //; rewrite in_itv/= andbT.
   by near: n; apply: nbhs_right_gt.
-by apply: le_trans; rewrite ler_subl_addr ler_addl.
+by apply: le_trans; rewrite lerBlDr lerDl.
 Unshelve. all: by end_near. Qed.
 
 Lemma nondecreasing_at_right_cvgr (f : R -> R) a :
@@ -264,7 +264,7 @@ Lemma nondecreasing_at_right_cvgr (f : R -> R) a :
 Proof.
 move=> nif hlb.
 have ndNf : {in `]a, +oo[, nonincreasing_fun (\- f)}.
-  by move=> r ra y /nif; rewrite ler_opp2; exact.
+  by move=> r ra y /nif; rewrite lerN2; exact.
 have hub : has_ubound [set (\- f) x | x in `]a, +oo[].
   apply/has_ub_lbN; rewrite image_comp/=.
   rewrite [X in has_lbound X](_ : _ = [set f x | x in `]a, +oo[])//.
@@ -292,7 +292,7 @@ have [Spoo|Spoo] := pselect (S +oo).
   have -> : l = +oo by rewrite /l /ereal_sup; exact: supremum_pinfty.
   rewrite -(cvg_shiftr `|N|); apply: cvg_near_cst.
   exists N; split; first by rewrite num_real.
-  by move=> x /ltW Nx; rewrite Nf// ler_paddr.
+  by move=> x /ltW Nx; rewrite Nf// ler_wpDr.
 have [lpoo|lpoo] := eqVneq l +oo.
   rewrite lpoo; apply/cvgeyPge => M.
   have /ereal_sup_gt[_ [n _] <- Mun] : M%:E < l by rewrite lpoo// ltry.
@@ -381,7 +381,7 @@ have [Snoo|Snoo] := pselect (S -oo).
   apply: cvg_near_cst; exists (N - a)%R => /=; first by rewrite subr_gt0.
   move=> y /= + ay.
   rewrite ltr0_norm ?subr_lt0// opprB => ayNa.
-  by rewrite Nf// ay/= -(subrK a y) -ler_subr_addr ltW.
+  by rewrite Nf// ay/= -(subrK a y) -lerBrDr ltW.
 have [lnoo|lnoo] := eqVneq l -oo.
   rewrite lnoo; apply/cvgeNyPle => M.
   have : M%:E > l by rewrite lnoo ltNyr.
@@ -389,7 +389,7 @@ have [lnoo|lnoo] := eqVneq l -oo.
   rewrite /= in_itv/= andbT => ay <- fyM.
   exists (y - a)%R => /=; first by rewrite subr_gt0.
   move=> z /= + az.
-  rewrite ltr0_norm ?subr_lt0// opprB ltr_subl_addr subrK => zy.
+  rewrite ltr0_norm ?subr_lt0// opprB ltrBlDr subrK => zy.
   by rewrite (le_trans _ (ltW fyM))// ndf// ?in_itv/= ?andbT// ltW.
 have [fpoo|fpoo] := pselect {in `]a, +oo[, forall x, f x = +oo}.
   rewrite /l (_ : S = [set +oo]).
@@ -398,8 +398,8 @@ have [fpoo|fpoo] := pselect {in `]a, +oo[, forall x, f x = +oo}.
     rewrite fpoo ?leey// in_itv/= andbT.
     by near: x; exact: nbhs_right_gt.
   apply/seteqP; split => [_ [n _] <- /[!fpoo]//|_ ->].
-  rewrite /S /=; exists (a + 1)%R; first by rewrite in_itv/= andbT ltr_addl.
-  by rewrite fpoo// in_itv /= andbT ltr_addl.
+  rewrite /S /=; exists (a + 1)%R; first by rewrite in_itv/= andbT ltrDl.
+  by rewrite fpoo// in_itv /= andbT ltrDl.
 have [/ereal_inf_pinfty lpoo|lpoo] := eqVneq l +oo.
   exfalso.
   apply/fpoo => n; rewrite in_itv/= andbT => an; rewrite (lpoo (f n))//.
@@ -423,7 +423,7 @@ have axA r : (a < r <= x)%R -> r \in A.
 rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
   exists (x - a)%R => /=; first by rewrite subr_gt0.
   move=> z /= + az.
-  rewrite ltr0_norm ?subr_lt0// opprB ltr_subl_addr subrK// => zx.
+  rewrite ltr0_norm ?subr_lt0// opprB ltrBlDr subrK// => zx.
   by rewrite f_fin_num// axA// az/= ltW.
 set g := fun n => if (a < n < x)%R then fine (f n) else fine (f x).
 have <- : inf [set g x | x in `]a, +oo[] = fine l.
@@ -437,7 +437,7 @@ have <- : inf [set g x | x in `]a, +oo[] = fine l.
         by apply: ereal_inf_lb; exists x => //=; rewrite in_itv/= andbT.
       rewrite fine_le// ?f_fin_num ?inE//.
       by apply: ereal_inf_lb; exists x => //=; rewrite in_itv/= andbT.
-    - by exists (g (a + 1)%R), (a + 1)%R => //=; rewrite in_itv/= andbT ltr_addl.
+    - by exists (g (a + 1)%R), (a + 1)%R => //=; rewrite in_itv/= andbT ltrDl.
   rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split; last first.
     apply: le_ereal_inf => _ /= [_ [m _] <-] <-.
     rewrite /g; case: ifPn => [/andP[am mx]|].
@@ -469,8 +469,8 @@ suff: g x @[x --> a^'+] --> inf [set g x | x in `]a, +oo[].
   suff nx : (n < x)%R by rewrite ltNge xn in nx.
   near: n; exists ((x - a) / 2)%R; first by rewrite /= divr_gt0// subr_gt0.
   move=> y /= /[swap] ay.
-  rewrite ltr0_norm// ?subr_lt0// opprB ltr_subl_addr => /lt_le_trans; apply.
-  by rewrite -ler_subr_addr ler_pdivr_mulr// ler_pmulr// ?ler1n// subr_gt0.
+  rewrite ltr0_norm// ?subr_lt0// opprB ltrBlDr => /lt_le_trans; apply.
+  by rewrite -lerBrDr ler_pdivrMr// ler_pMr// ?ler1n// subr_gt0.
 apply: nondecreasing_at_right_cvgr.
 - move=> m ma n mn /=; rewrite /g /=; case: ifPn => [/andP[am mx]|].
     rewrite (lt_le_trans am mn) /=; have [nx|nn0] := ltP n x.
@@ -615,8 +615,8 @@ rewrite in_itv/= andbT => e0 <-{x}; rewrite -(ereal_sup1 0) ereal_sup_le //=.
 exists (f (a + e / 2)%R); last by rewrite ereal_sup1 f0.
 exists (a + e / 2)%R => //=; split.
   rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
-  by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
-by apply/eqP; rewrite gt_eqF// ltr_spaddr// divr_gt0.
+  by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
+by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
 Qed.
 
 Lemma lime_inf_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_inf f a.
@@ -653,8 +653,8 @@ rewrite ereal_sup_le//.
 have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2)%R.
   exists (a + r / 2)%R => //;  split.
     rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
-    by rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n.
-  by apply/eqP; rewrite gt_eqF// ltr_spaddr// divr_gt0.
+    by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
+  by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
 by exists (f (a + r / 2)%R) => //=; rewrite inf_ballE ereal_inf_lb.
 Unshelve. all: by end_near. Qed.
 
@@ -677,8 +677,8 @@ rewrite (le_trans (ler_norm _))// distrC H// /ball_/= ltr_distlC.
 move: pry; rewrite /ball/= ltr_distlC => /andP[pay ypa].
 have xq : (x <= q)%R by near: x; exact: nbhs_right_le.
 apply/andP; split.
-  by rewrite (le_lt_trans _ pay)// ler_sub.
-by rewrite (lt_le_trans ypa)// ler_add2l.
+  by rewrite (le_lt_trans _ pay)// lerB.
+by rewrite (lt_le_trans ypa)// lerD2l.
 Unshelve. all: by end_near.
 Qed.
 
@@ -697,13 +697,13 @@ have ? : f y \is a fin_num.
   apply: fpA2.
   rewrite /ball_ /= (lt_le_trans pry)//.
   by near: x; exact: nbhs_right_le.
-rewrite -(@fineK _ (f y)) // -EFinB lee_fin ler_subl_addr -ler_subl_addl.
+rewrite -(@fineK _ (f y)) // -EFinB lee_fin lerBlDr -lerBlDl.
 rewrite (le_trans (ler_norm _))// H// /ball_/= ltr_distlC.
 move: pry; rewrite /ball/= ltr_distlC => /andP[pay ypa].
 have xq : (x <= q)%R by near: x; exact: nbhs_right_le.
 apply/andP; split.
-  by rewrite (le_lt_trans _ pay)// ler_sub.
-by rewrite (lt_le_trans ypa)// ler_add2l.
+  by rewrite (le_lt_trans _ pay)// lerB.
+by rewrite (lt_le_trans ypa)// lerD2l.
 Unshelve. all: by end_near.
 Qed.
 
