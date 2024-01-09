@@ -147,70 +147,14 @@
 	 `inhabitedE`, `inhabited_witness`
 
 ### Changed
-
-- in `normedtype.v`:
-  + lemmas `vitali_lemma_finite` and `vitali_lemma_finite_cover` now returns
-    duplicate-free lists of indices
-
-- moved from `lebesgue_integral.v` to `measure.v`:
-  + definition `ae_eq`
-  + lemmas
-	`ae_eq0`,
-	`ae_eq_comp`,
-	`ae_eq_funeposneg`,
-	`ae_eq_refl`,
-	`ae_eq_trans`,
-	`ae_eq_sub`,
-	`ae_eq_mul2r`,
-	`ae_eq_mul2l`,
-	`ae_eq_mul1l`,
-	`ae_eq_abse`
-
-- in `charge.v`
-  + definition `jordan_decomp` now uses `cadd` and `cscale`
-  + definition `Radon_Nikodym_SigmaFinite` now in a module `Radon_Nikodym_SigmaFinite` with
-    * definition `f`
-    * lemmas `f_ge0`, `f_fin_num`, `f_integrable`, `f_integral`
-    * lemma `change_of_variables`
-    * lemma `integralM`
-    * lemma `chain_rule`
-
-- in `sequences.v`:
-  + change the implicit arguments of `trivIset_seqDU`
-- moved from `topology.v` to `mathcomp_extra.v`
-  + definition `monotonous`
-
-- in `sequences.v`:
-  + `limn_esup` now defined from `lime_sup`
-  + `limn_einf` now defined from `limn_esup`
-
--in `boolp.v`
-  - lemmas `orC` and `andC` now use `commutative`
   
 ### Renamed
 
-- in `exp.v`:
-  + `lnX` -> `lnXn`
-- in `charge.v`:
-  + `dominates_caddl` -> `dominates_cadd`
-
 ### Generalized
-
-- in `lebesgue_integral.v`
-  + `ge0_integral_bigsetU` generalized from `nat` to `eqType`
-- in `lebesgue_measure.v`
-  + an hypothesis of lemma `integral_ae_eq` is weakened
 
 ### Deprecated
 
 ### Removed
-
-- in `forms.v`:
-  + lemmas `eq_map_mx`, `map_mx_id`
-
-- in `boolp.v`:
-  + lemma `pdegen`
-
 
 ### Infrastructure
 
