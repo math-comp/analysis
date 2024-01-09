@@ -175,35 +175,91 @@ by apply left.
 by apply right.
 Qed.
 
+(* TODO: move? *)
+Definition dep_uncurry :=
+(fun (A : Type) (B : A -> Type) (C : Type) (f : forall a : A, B a -> C) (p : {a : A & B a}) => let (a, Ba) := p in f a Ba) :
+forall [A : Type] [B : A -> Type] [C : Type],
+(forall a : A, B a -> C) -> {a : A & B a} -> C.
+
 Definition bernoulli0 := @bernoulli R 0%R%:nng ler01.
 
 HB.instance Definition _ := Probability.on bernoulli0.
 
-Definition bernoulli_trunc (p : R) := match (sumbool_ler 0%R p) with
-| left l0p => match (sumbool_ler (NngNum l0p)%:num 1%R) with
+Definition bernoulli_trunc (p : R) := match sumbool_ler 0%R p with
+| left l0p => match sumbool_ler (NngNum l0p)%:num 1%R with
   | left lp1 => [the probability _ _ of @bernoulli R (NngNum l0p) lp1]
   | right _ => [the probability _ _ of bernoulli0]
   end
 | right _ => [the probability _ _ of bernoulli0]
 end.
 
-HB.instance Definition _ (p : R) := Probability.on (bernoulli_trunc p).
+(*HB.instance Definition _ (p : R) := Probability.on (bernoulli_trunc p).*)
 
-Lemma measurable_bernoulli_trunc : measurable_fun setT (bernoulli_trunc : _ -> pprobability _ _).
+Let simpe := (@mule0 R, @adde0 R, @mule1 R, @add0e R).
+
+Lemma measurable_bernoulli_trunc :
+  measurable_fun setT (bernoulli_trunc : _ -> pprobability _ _).
 Proof.
-(* move=> _ Y mY. *)
-(* rewrite setTI. *)
 apply: (@measurability _ _ _ _ _ _
   (@pset _ _ _ : set (set (pprobability _ R)))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-.
-apply: emeasurable_fun_infty_o => //.
-rewrite /bernoulli_trunc.
-(* apply: measurable_fun_case_suml.
-case: sumbool_ler. *)
-(* case: (sumbool_ler 0 p) => [p0'/=|].
-  case: (sumbool_ler p 1) => [p1'/=|]. *)
-(* exact: (measurable_kernel (knormalize f point) Ys). *)
-Admitted.
+apply: emeasurable_fun_infty_o => //=.
+rewrite /bernoulli_trunc/=.
+have := @subsetT _ Ys; rewrite setT_bool => UT.
+have [->|->|->|->] /= := subset_set2 UT.
+- rewrite [X in measurable_fun _ X](_ : _ = (fun=> 0%E))//.
+  apply/funext => x/=.
+  by case: sumbool_ler.
+- rewrite [X in measurable_fun _ X](_ : _ = (fun x => if 0 <= x <= 1 then x%:E else 0%E))//.
+    apply: measurable_fun_ifT => //=; apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
+      rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
+      by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
+    by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+  apply/funext => x/=; case: sumbool_ler => /= x0.
+    case: sumbool_ler => /= x1.
+      rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+      by rewrite mem_set//= memNset//= ?simpe x0 x1.
+    rewrite /bernoulli0.
+    rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+    by rewrite mem_set//= memNset//= ?simpe x0/= leNgt x1.
+  rewrite /bernoulli0.
+  rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+  by rewrite mem_set//= memNset//= ?simpe leNgt x0.
+- rewrite [X in measurable_fun _ X](_ : _ = (fun x => if 0 <= x <= 1 then (`1-x)%:E else 1%E))//.
+    apply: measurable_fun_ifT => //=.
+      apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
+      rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
+      by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
+    by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+  by apply/EFin_measurable_fun; apply/measurable_funB.
+  apply/funext => x/=; case: sumbool_ler => /= x0.
+    case: sumbool_ler => /= x1.
+      rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+      by rewrite memNset//= mem_set//= ?simpe x0 x1/=.
+    rewrite /bernoulli0.
+    rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+    by rewrite memNset//= mem_set//= ?simpe x0/= leNgt x1/= onem0.
+  rewrite /bernoulli0.
+  rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+  by rewrite memNset//= mem_set//= leNgt x0/= ?simpe onem0.
+- rewrite [X in measurable_fun _ X](_ : _ = (fun=> 1%E))//; apply/funext => x/=.
+  case: sumbool_ler => /= x0.
+    case: sumbool_ler => /= x1.
+      rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+      rewrite mem_set//=; last by left.
+      rewrite mem_set//=; last by right.
+      by rewrite ?simpe -EFinD add_onemK.
+    rewrite /bernoulli0.
+    rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+    rewrite mem_set//=; last by left.
+    rewrite mem_set//=; last by right.
+    by rewrite ?simpe onem0.
+  rewrite /bernoulli0.
+  rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
+  rewrite mem_set//=; last by left.
+  rewrite mem_set//=; last by right.
+  by rewrite ?simpe onem0.
+Qed.
 
 End bernoulli_trunc.
 
