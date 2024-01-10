@@ -351,7 +351,7 @@ Definition lebesgue_measure {R : realType} :
   [the measure _ _ of lebesgue_stieltjes_measure [the cumulative _ of idfun]].
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
-  SigmaFiniteContent.on (@lebesgue_measure R).
+  SigmaFiniteMeasure.on (@lebesgue_measure R).
 
 Section ps_infty.
 Context {T : Type}.

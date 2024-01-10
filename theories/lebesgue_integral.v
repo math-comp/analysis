@@ -4591,7 +4591,7 @@ End measurable_fun_ysection.
 
 Section product_measures.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Context (m1 : {measure set T1 -> \bar R}) (m2 : {measure set T2 -> \bar R}).
+Context (m1 : set T1 -> \bar R) (m2 : set T2 -> \bar R).
 
 Definition product_measure1 := (fun A => \int[m1]_x (m2 \o xsection A) x)%E.
 Definition product_measure2 := (fun A => \int[m2]_x (m1 \o ysection A) x)%E.
@@ -4660,41 +4660,54 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
 Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
 
+Let product_measure_sigma_finite : sigma_finite setT (m1 \x m2).
+Proof.
+have /sigma_finiteP[F TF [ndF Foo]] := sigma_finiteT m1.
+have /sigma_finiteP[G TG [ndG Goo]] := sigma_finiteT m2.
+exists (fun n => F n `*` G n).
+ rewrite -setMTT TF TG predeqE => -[x y]; split.
+    move=> [/= [n _ Fnx] [k _ Gky]]; exists (maxn n k) => //; split.
+    - by move: x Fnx; exact/subsetPset/ndF/leq_maxl.
+    - by move: y Gky; exact/subsetPset/ndG/leq_maxr.
+  by move=> [n _ []/= ? ?]; split; exists n.
+move=> k; have [? ?] := Foo k; have [? ?] := Goo k.
+split; first exact: measurableM.
+by rewrite product_measure1E// lte_mul_pinfty// ge0_fin_numE.
+Qed.
+
+HB.instance Definition _ := Measure_isSigmaFinite.Build _ _ _ (m1 \x m2)
+  product_measure_sigma_finite.
+
 Lemma product_measure_unique
     (m' : {measure set [the semiRingOfSetsType _ of T1 * T2] -> \bar R}) :
     (forall A1 A2, measurable A1 -> measurable A2 ->
       m' (A1 `*` A2) = m1 A1 * m2 A2) ->
   forall X : set (T1 * T2), measurable X -> (m1 \x m2) X = m' X.
 Proof.
-move=> m'E; pose m := product_measure1 m1 m2.
-have /sigma_finiteP [F1 F1_T [F1_nd F1_oo]] := sigma_finiteT m1.
-have /sigma_finiteP [F2 F2_T [F2_nd F2_oo]] := sigma_finiteT m2.
-have UF12T : \bigcup_k (F1 k `*` F2 k) = setT.
-  rewrite -setMTT F1_T F2_T predeqE => -[x y]; split.
+move=> m'E.
+have /sigma_finiteP[F TF [ndF Foo]] := sigma_finiteT m1.
+have /sigma_finiteP[G TG [ndG Goo]] := sigma_finiteT m2.
+have UFGT : \bigcup_k (F k `*` G k) = setT.
+  rewrite -setMTT TF TG predeqE => -[x y]; split.
     by move=> [n _ []/= ? ?]; split; exists n.
-  move=> [/= [n _ F1nx] [k _ F2ky]]; exists (maxn n k) => //; split.
-  - by move: x F1nx; apply/subsetPset/F1_nd; rewrite leq_maxl.
-  - by move: y F2ky; apply/subsetPset/F2_nd; rewrite leq_maxr.
-have mF1F2 n : measurable (F1 n `*` F2 n) /\ m (F1 n `*` F2 n) < +oo.
-  have [? ?] := F1_oo n; have [? ?] := F2_oo n.
-  split; first exact: measurableM.
-  by rewrite /m product_measure1E // lte_mul_pinfty// ge0_fin_numE.
-have sm : sigma_finite setT m by exists (fun n => F1 n `*` F2 n).
-pose C : set (set (T1 * T2)) := [set C |
-  exists A1, measurable A1 /\ exists A2, measurable A2 /\ C = A1 `*` A2].
+  move=> [/= [n _ Fnx] [k _ Gky]]; exists (maxn n k) => //; split.
+  - by move: x Fnx; exact/subsetPset/ndF/leq_maxl.
+  - by move: y Gky; exact/subsetPset/ndG/leq_maxr.
+pose C : set (set (T1 * T2)) :=
+  [set C | exists A, measurable A /\ exists B, measurable B /\ C = A `*` B].
 have CI : setI_closed C.
   move=> /= _ _ [X1 [mX1 [X2 [mX2 ->]]]] [Y1 [mY1 [Y2 [mY2 ->]]]].
   rewrite -setMI; exists (X1 `&` Y1); split; first exact: measurableI.
   by exists (X2 `&` Y2); split => //; exact: measurableI.
-move=> X mX; apply: (measure_unique C (fun n => F1 n `*` F2 n)) => //.
+move=> X mX; apply: (measure_unique C (fun n => F n `*` G n)) => //.
 - rewrite measurable_prod_measurableType //; congr (<<s _ >>).
-  rewrite predeqE; split => [[A1 mA1 [A2 mA2 <-]]|[A1 [mA1 [A2 [mA2 ->]]]]].
-    by exists A1; split => //; exists A2; split.
-  by exists A1 => //; exists A2.
-- move=> n; rewrite /C /=; exists (F1 n); split; first by have [] := F1_oo n.
-  by exists (F2 n); split => //; have [] := F2_oo n.
+  rewrite predeqE; split => [[A mA [B mB <-]]|[A [mA [B [mB ->]]]]].
+    by exists A; split => //; exists B.
+  by exists A => //; exists B.
+- move=> n; rewrite /C /=; exists (F n); split; first by have [] := Foo n.
+  by exists (G n); split => //; have [] := Goo n.
 - by move=> A [A1 [mA1 [A2 [mA2 ->]]]]; rewrite m'E//= product_measure1E.
-- move=> k; have [? ?] := F1_oo k; have [? ?] := F2_oo k.
+- move=> k; have [? ?] := Foo k; have [? ?] := Goo k.
   by rewrite /= product_measure1E// lte_mul_pinfty// ge0_fin_numE.
 Qed.
 
