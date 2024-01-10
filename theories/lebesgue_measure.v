@@ -341,6 +341,8 @@ Definition lebesgue_measure {R : realType} :
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
   SigmaFiniteContent.on (@lebesgue_measure R).
+HB.instance Definition _ (R : realType) :=
+  SigmaFiniteMeasure.on (@lebesgue_measure R).
 
 Section ps_infty.
 Context {T : Type}.

@@ -256,6 +256,68 @@ End expectation_lemmas.
 (* TODO: move *)
 From mathcomp Require Import fsbigop.
 
+Section product_lebesgue_measure.
+Context {R : realType}.
+
+Definition p := [the sigma_finite_measure _ _ of
+  ([the sigma_finite_measure _ _ of (@lebesgue_measure R)] \x
+   [the sigma_finite_measure _ _ of (@lebesgue_measure R)])]%E.
+
+Fixpoint iter_mprod (n : nat) : {d & measurableType d} :=
+  match n with
+  | 0%N => existT measurableType _ (salgebraType R.-ocitv.-measurable)
+  | n'.+1 => let t' := iter_mprod n' in
+    let a := existT measurableType _ (salgebraType R.-ocitv.-measurable) in
+    existT _ _ [the measurableType (projT1 a, projT1 t').-prod of
+                (projT2 a * projT2 t')%type]
+  end.
+
+Fixpoint measurable_of_typ (d : nat) : {d & measurableType d} :=
+  match d with
+  | O => existT _ _ (@lebesgue_measure R)
+  | d'.+1 => existT _ _
+      [the measurableType (projT1 (@lebesgue_measure R),
+                           projT1 (measurable_of_typ d')).-prod%mdisp of
+      ((@lebesgue_measure R) \x
+       projT2 (measurable_of_typ d'))%E]
+  end.
+
+Definition mtyp_disp t : measure_display := projT1 (measurable_of_typ t).
+
+Definition mtyp t : measurableType (mtyp_disp t) :=
+  projT2 (measurable_of_typ t).
+
+Definition measurable_of_seq (l : seq typ) : {d & measurableType d} :=
+  iter_mprod (map measurable_of_typ l).
+
+
+Fixpoint leb_meas (d : nat) :=
+  match d with
+  | 0%N => @lebesgue_measure R
+  | d'.+1 =>
+    ((leb_meas d') \x (@lebesgue_measure R))%E
+  end.
+
+
+
+
+
+End product_lebesgue_measure.
+
+(* independent class of events, klenke def 2.11, p.59 *)
+Section independent_class.
+Context {d : measure_display} {T : measurableType d} {R : realType}
+        {P : probability T R}.
+Variable (I : choiceType) (E : I -> set (set T)).
+Hypothesis mE : forall i, E i `<=` measurable.
+
+Definition independent_class :=
+  forall J : {fset I},
+    forall e : I -> set T, (forall i, (E i) (e i)) ->
+      P (\big[setI/setT]_(i <- J) e i) = (\prod_(i <- J) P (e i))%E.
+
+End independent_class.
+
 Section independent_events.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
@@ -641,9 +703,13 @@ Qed.
 
 Lemma inde_expectation (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
   mutually_independent_RV A X ->
-    forall B : {fset I}, [set` B] `<=` A -> 'E_P[\prod_(i <- B) X i] = \prod_(i <- B) 'E_P[X i].
+    forall B : {fset I}, [set` B] `<=` A ->
+    'E_P[\prod_(i <- B) X i] = \prod_(i <- B) 'E_P[X i].
 Proof.
-move=> irvX B BleA.
+move=> AX B BA.
+rewrite [in LHS]unlock.
+rewrite /mutually_independent_RV in AX.
+rewrite /mutually_independent in AX.
 Admitted.
 
 End independent_RVs.
