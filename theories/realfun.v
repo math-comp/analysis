@@ -241,7 +241,7 @@ have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
 have mn : (m <= n)%N by near: n; exists m.
 have {mn} := mfy_ _ mn.
-rewrite /y_ /sval; case: cid2 => /= x _.
+by rewrite /y_ /sval; case: cid2 => /= x _.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvge_at_leftP (f : R -> \bar R) (p l : R) :
