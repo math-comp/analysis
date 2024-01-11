@@ -501,7 +501,7 @@ Lemma sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R) :
   sigma_finite setT (lebesgue_stieltjes_measure f).
 Proof. exact/measure_extension_sigma_finite/wlength_sigma_finite. Qed.
 
-HB.instance Definition _ (f : cumulative R) := @isSigmaFinite.Build _ _ _
+HB.instance Definition _ (f : cumulative R) := @Measure_isSigmaFinite.Build _ _ _
   (lebesgue_stieltjes_measure f) (sigmaT_finite_lebesgue_stieltjes_measure f).
 
 End wlength_extension.
