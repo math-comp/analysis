@@ -1210,6 +1210,7 @@ have : f a >= f b by rewrite (itvP xfafb).
 by case: ltrgtP xfafb => // ->.
 Qed.
 
+
 Lemma segment_inc_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y / x <= y}} -> set_surj `[a, b] `[f a, f b] f ->
   {within `[a, b], continuous f}.
@@ -1520,12 +1521,7 @@ End is_derive_inverse.
   (eapply is_deriveV; first by []) : typeclass_instances.
 
 From mathcomp Require Import path.
-Require Import sequences.
 
-Notation "'nondecreasing_fun' f" := ({homo f : n m / (n <= m)%R >-> (n <= m)%R})
-  (at level 10).
-Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%R >-> (n >= m)%R})
-  (at level 10).
 
 Lemma nondecreasing_funN {R : realType} a b (f : R -> R) :
   {in `[a, b] &, nondecreasing_fun f} <-> {in `[a, b] &, nonincreasing_fun (\- f)}.
@@ -1552,11 +1548,6 @@ Lemma sup_le {R : realType} (S : set R) x : has_ubound S ->
 Proof.
 by move=> uS [y Sy] /le_trans; apply; apply: sup_ub.
 Qed.
-
-(* NB: already in master? *)
-Lemma ereal_sup_le {R : realType} (S : set (\bar R)) x :
-  (exists2 y, S y & x <= y)%E -> (x <= ereal_sup S)%E.
-Proof. by move=> [y Sy] /le_trans; apply; exact: ereal_sup_ub. Qed.
 
 Lemma ereal_supy {R : realType} (A : set \bar R) :
   A +oo%E -> ereal_sup A = +oo%E.
@@ -2389,7 +2380,7 @@ Lemma total_variation_opp a b f : TV a b f = TV (- b) (- a) (f \o -%R).
 Proof. by rewrite /total_variation variations_opp. Qed.
 
 Lemma TV_left_continuous a b x f : a < x -> x <= b ->
-  f @ at_left x --> f x ->
+  f @ x^'- --> f x ->
   BV a b f ->
   fine \o TV a ^~ f @ x^'- --> fine (TV a x f).
 Proof.
@@ -2428,19 +2419,13 @@ apply: (TV_right_continuous _ _ _ bvNf).
 by apply/at_left_at_rightP; rewrite /= opprK.
 Unshelve. all: by end_near. Qed.
 
-Lemma continuous_within_itvP a b (f : R -> R) :
-  {within `[a,b], continuous f} <->
-  {in `]a,b[, continuous f} /\ f @ a^'+ --> f a /\ f @b^'- --> f b.
-Proof.
-Admitted.
-
 Lemma TV_continuous a b (f : R -> R) : a < b ->
   {within `[a,b], continuous f} ->
   BV a b f ->
   {within `[a,b], continuous (fine \o TV a ^~ f)}.
 Proof.
-move=> ab /continuous_within_itvP [int [l r]] bdf.
-apply/continuous_within_itvP; repeat split.
+move=> ab /(@continuous_within_itvP _ _ _ _ ab) [int [l r]] bdf.
+apply/continuous_within_itvP; (repeat split) => //.
 - move=> x /[dup] xab; rewrite in_itv /= => /andP [ax xb].
   apply/left_right_continuousP; split.
     apply: (TV_left_continuous _ (ltW xb)) => //.
