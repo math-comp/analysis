@@ -87,6 +87,20 @@ apply: near_eq_cvg; near do rewrite subrK; exists M.
 by rewrite num_real.
 Unshelve. all: by end_near. Qed.
 
+Lemma left_right_continuousP
+    {T: topologicalType} (f : R -> T) x :
+  (f @ x^'- --> f x /\ f @ x^'+ --> f x) <-> f @ x --> f x.
+Proof.
+split; first last.
+  by move=> cts; split; exact: cvg_within_filter.
+case => + + U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
+rewrite ?near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
+near=> t => xlt xgt; have := @real_leVge R x t; rewrite ?num_real.
+move=> /(_ isT isT) /orP; rewrite ?le_eqVlt; case => /orP; case => //.
+  by move/eqP <-; apply: nbhs_singleton.
+by move/eqP ->; apply: nbhs_singleton.
+Unshelve. all: by end_near. Qed.
+
 Lemma cvg_at_right_left_dnbhs (f : R -> R) (p : R) (l : R) :
   f x @[x --> p^'+] --> l -> f x @[x --> p^'-] --> l ->
   f x @[x --> p^'] --> l.
@@ -105,7 +119,6 @@ rewrite neq_lt => /orP[tp|pt].
   move=> z/= + _ => /lt_le_trans; apply.
   by rewrite ler_pdivr_mulr// ler_pmulr// ler1n.
 Unshelve. all: by end_near. Qed.
-
 End fun_cvg_realFieldType.
 
 Section cvgr_fun_cvg_seq.
@@ -2214,20 +2227,6 @@ move=> t /= xtr tx; rewrite -[t]opprK; apply: xb.
   by rewrite /= opprK -normrN opprD.
 by rewrite ltr_oppl.
 Qed.
-
-Lemma left_right_continuousP
-    {T: topologicalType} {R : realType} (f : R -> T) x :
-  (f @ x^'- --> f x /\ f @ x^'+ --> f x) <-> f @ x --> f x.
-Proof.
-split; first last.
-  by move=> cts; split; exact: cvg_within_filter.
-case => + + U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
-rewrite ?near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
-near=> t => xlt xgt; have := @real_leVge R x t; rewrite ?num_real.
-move=> /(_ isT isT) /orP; rewrite ?le_eqVlt; case => /orP; case => //.
-  by move/eqP <-; apply: nbhs_singleton.
-by move/eqP ->; apply: nbhs_singleton.
-Unshelve. all: by end_near. Qed.
 
 Section variation_continuity.
 Context {R : realType}.
