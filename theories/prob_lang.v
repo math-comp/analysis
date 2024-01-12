@@ -60,6 +60,7 @@ Notation var3of3 := (@measurable_snd _ _ _ _).*)
                  salgebraType (R.-ocitv.-measurable)]. *)
 Notation munit := Datatypes_unit__canonical__measure_Measurable.
 Notation mbool := Datatypes_bool__canonical__measure_Measurable.
+Notation mnat := Datatypes_nat__canonical__measure_Measurable.
 End Notations.
 
 (* TODO: PR *)
@@ -136,7 +137,7 @@ Arguments p1S {R}.
 Section bernoulli.
 Variables (R : realType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
 
-Definition bernoulli : set _ -> \bar R :=
+Definition bernoulli : set bool -> \bar R :=
   measure_add
     [the measure _ _ of mscale p [the measure _ _ of dirac true]]
     [the measure _ _ of mscale (onem_nonneg p1) [the measure _ _ of dirac false]].
@@ -211,10 +212,7 @@ have [->|->|->|->] /= := subset_set2 UT.
   apply/funext => x/=.
   by case: sumbool_ler.
 - rewrite [X in measurable_fun _ X](_ : _ = (fun x => if 0 <= x <= 1 then x%:E else 0%E))//.
-    apply: measurable_fun_ifT => //=; apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
-      rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
-      by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
-    by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+    by apply: measurable_fun_ifT => //=; apply: measurable_and => //; exact: measurable_fun_ler.
   apply/funext => x/=; case: sumbool_ler => /= x0.
     case: sumbool_ler => /= x1.
       rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
@@ -227,11 +225,8 @@ have [->|->|->|->] /= := subset_set2 UT.
   by rewrite mem_set//= memNset//= ?simpe leNgt x0.
 - rewrite [X in measurable_fun _ X](_ : _ = (fun x => if 0 <= x <= 1 then (`1-x)%:E else 1%E))//.
     apply: measurable_fun_ifT => //=.
-      apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
-      rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
-      by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
-    by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
-  by apply/EFin_measurable_fun; apply/measurable_funB.
+      by apply: measurable_and => //; exact: measurable_fun_ler.
+    by apply/EFin_measurable_fun; apply/measurable_funB.
   apply/funext => x/=; case: sumbool_ler => /= x0.
     case: sumbool_ler => /= x1.
       rewrite /bernoulli/= /measure_add/= /msum/= !big_ord_recl//= big_ord0//= /mscale/= !diracE.
@@ -286,11 +281,11 @@ Context {R : realType} (n : nat) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
 Local Open Scope ring_scope.
 
 (* C(n, k) * p^(n-k) * (1-p)^k *)
-Definition bino_term (k : nat) :{nonneg R} :=
-  (p%:num^+(n-k)%N * (NngNum (onem_ge0 p1))%:num^+k *+ 'C(n, k))%:nng.
+Definition bino_term (k : nat) : {nonneg R} :=
+  (p%:num^+k * (NngNum (onem_ge0 p1))%:num^+(n-k)%N *+ 'C(n, k))%:nng.
 
 Lemma bino_term0 : 
-  bino_term 0 = (p%:num^+n)%:nng.
+  bino_term 0 = ((NngNum (onem_ge0 p1))%:num^+n)%:nng.
 Proof.
 rewrite /bino_term bin0 subn0/=.
 apply/val_inj => /=.
@@ -298,18 +293,22 @@ by field.
 Qed.
 
 Lemma bino_term1 : 
-  bino_term 1 = (p%:num^+(n-1)%N * (NngNum (onem_ge0 p1))%:num *+ n)%:nng.
+  bino_term 1 = (p%:num * (NngNum (onem_ge0 p1))%:num^+(n-1)%N *+ n)%:nng.
 Proof.
 rewrite /bino_term bin1/=.
 apply/val_inj => /=.
 by rewrite expr1.
 Qed.
 
+Import Notations.
+
+(* Check \sum_(k < n.+1) (fun k => [the measure _ _ of mscale (bino_term k)
+    [the measure _ _ of \d_k]]). *)
 (* \sum_(k < n.+1) (bino_coef p n k) * \d_k. *)
-Definition binomial_probability : set (measurableTypeR R) -> \bar R :=
+Definition binomial_probability : set nat -> \bar R :=
   @msum _ _ R
     (fun k => [the measure _ _ of mscale (bino_term k)
-    [the measure _ _ of @dirac _ (measurableTypeR R) k%:R R]]) n.+1.
+    [the measure _ _ of \d_k]]) n.+1.
 
 HB.instance Definition _ := Measure.on binomial_probability.
 
@@ -318,8 +317,11 @@ Proof.
 rewrite /binomial_probability/msum/mscale/bino_term/=/mscale/=.
 under eq_bigr do rewrite diracT mule1.
 rewrite sumEFin.
+under eq_bigr=> i _.
+  rewrite mulrC.
+  over.
 rewrite -exprDn_comm; last by rewrite /GRing.comm mulrC.
-by rewrite add_onemK; congr _%:E; rewrite expr1n.
+by rewrite addrC add_onemK; congr _%:E; rewrite expr1n.
 Qed.
 
 HB.instance Definition _ :=
@@ -331,10 +333,10 @@ Section integral_binomial.
 Variables (R : realType) (d : measure_display) (T : measurableType d).
 
 Lemma integral_binomial (n : nat) (p : {nonneg R}) 
-  (p1 : (p%:num <= 1)%R) (f : R -> \bar R)
+  (p1 : (p%:num <= 1)%R) (f : nat -> \bar R)
   (mf : measurable_fun setT f) :
   (forall x, 0 <= f x) -> \int[binomial_probability n p1]_y (f y) =
-  \sum_(k < n.+1) (bino_term n p1 k)%:num%:E * f k%:R.
+  \sum_(k < n.+1) (bino_term n p1 k)%:num%:E * f k.
 Proof.
 move=> f0.
 rewrite ge0_integral_measure_sum//=; last first.
@@ -364,6 +366,14 @@ Definition binomial_probability_trunc n (p : R) :=
 
 Lemma measurable_binomial_probability_trunc (n : nat) 
   : measurable_fun setT (binomial_probability_trunc n : R -> pprobability _ _).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+  (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-.
+apply: emeasurable_fun_infty_o => //=.
+rewrite /binomial_probability_trunc/=.
+(* have := @subsetT _ Ys; rewrite setT_bool => UT.
+have [->|->|->|->] /= := subset_set2 UT. *)
 Admitted.
 
 End binomial_trunc.
@@ -374,9 +384,10 @@ Arguments measurable_binomial_probability_trunc {R}.
 Section integral_binomial_trunc.
 Variables (R : realType) (d : measure_display) (T : measurableType d).
 
+Import Notations.
 Lemma integral_binomial_probabilty_trunc (n : nat) (p : R) 
-  (p0 : (0 <= p)%R) (p1 : ((NngNum p0)%:num <= 1)%R) (f : R -> \bar R) (mf : measurable_fun setT f) :
-  (forall x, 0 <= f x) -> \int[binomial_probability_trunc n p]_y (f y) = \sum_(k < n.+1) (bino_term n p1 k)%:num%:E * f k%:R.
+  (p0 : (0 <= p)%R) (p1 : ((NngNum p0)%:num <= 1)%R) (f : mnat -> \bar R) (mf : measurable_fun setT f) :
+  (forall x, 0 <= f x) -> \int[binomial_probability_trunc n p]_y (f y) = \sum_(k < n.+1) (bino_term n p1 k)%:num%:E * f k.
 Proof.
 move=> f0.
 rewrite /binomial_probability_trunc/=.
@@ -393,15 +404,15 @@ Section binomial_example.
 Context {R : realType}.
 Open Scope ring_scope.
 
-Lemma binomial3_2 : @binomial_probability R 3 _ (p1S 1) [set 2%:R] = (3 / 8)%:E.
+Lemma binomial3_2 : @binomial_probability R 3 _ (p1S 1) [set 2%N] = (3 / 8)%:E.
 Proof. 
 rewrite /binomial_probability/msum !big_ord_recl/= big_ord0 adde0 bino_term0.
 rewrite /mscale/= !diracE /bump/=.
 repeat rewrite ?binS ?bin0 ?bin1 ?bin_small//.
-rewrite memNset//=; last by move/eqP; rewrite eqr_nat.
-rewrite memNset//=; last by move/eqP; rewrite eqr_nat.
+rewrite memNset//=.
+rewrite memNset//=.
 rewrite mem_set//=.
-rewrite memNset//=; last by move/eqP; rewrite eqr_nat.
+rewrite memNset//=.
 congr _%:E.
 rewrite expr0 !mulr1 !mulr0 !add0r !addn0 !add0n /onem.
 by field.
@@ -930,12 +941,15 @@ Definition k10 : measurable_fun _ _ := kr 10%:R.
 Definition ktt := @measurable_cst _ _ T _ setT tt.
 Definition kb (b : bool) := @measurable_cst _ _ T _ setT b.
 
+Definition kn (n : nat) := @measurable_cst _ _ T _ setT n.
+
 End cst_fun.
 Arguments kr {d T R}.
 Arguments k3 {d T R}.
 Arguments k10 {d T R}.
 Arguments ktt {d T}.
 Arguments kb {d T}.
+Arguments kn {d T}.
 
 Section iter_mprod.
 Import Notations.
