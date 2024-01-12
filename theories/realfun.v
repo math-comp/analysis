@@ -2211,23 +2211,6 @@ Qed.
 
 End total_variation.
 
-Lemma at_left_at_rightP
-    {T : topologicalType} {R : realType} (f : R -> T) x (z : T) :
-  f @ x^'- --> z <-> f \o -%R @ (- x)^'+ --> z.
-Proof.
-suff -> : (- x)^'+ = (-%R) @ x^'-.
-  by rewrite -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
-rewrite eqEsubset /=; split.
-  move=> E /= [r rpos xb]; exists r => //.
-  move=> t /= xtr tx; apply: xb.
-    by rewrite /= -opprB opprK normrN addrC.
-  by rewrite ltr_oppr opprK.
-move=> E /= [r rpos xb]; exists r => //.
-move=> t /= xtr tx; rewrite -[t]opprK; apply: xb.
-  by rewrite /= opprK -normrN opprD.
-by rewrite ltr_oppl.
-Qed.
-
 Section variation_continuity.
 Context {R : realType}.
 Implicit Type f : R -> R.
@@ -2384,7 +2367,7 @@ Lemma TV_left_continuous a b x f : a < x -> x <= b ->
   fine \o TV a ^~ f @ x^'- --> fine (TV a x f).
 Proof.
 move=> ax xb fNcts bvf.
-apply/at_left_at_rightP; rewrite total_variation_opp.
+apply/cvg_at_leftNP; rewrite total_variation_opp.
 have bvNf : BV (-b) (-a) (f \o -%R).
   by case: bvf => M; rewrite -variations_opp => ?; exists M.
 have bx : - b <= - x by rewrite ler_oppl opprK.
@@ -2415,7 +2398,7 @@ apply: cvgB; first exact: cvg_cst.
 apply: (TV_right_continuous _ _ _ bvNf).
 - by rewrite ler_oppl opprK //.
 - by rewrite ltr_oppl opprK //.
-by apply/at_left_at_rightP; rewrite /= opprK.
+by apply/cvg_at_leftNP; rewrite /= opprK.
 Unshelve. all: by end_near. Qed.
 
 Lemma TV_continuous a b (f : R -> R) : a < b ->
