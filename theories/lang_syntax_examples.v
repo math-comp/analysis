@@ -456,37 +456,22 @@ Definition sample_binomial3 : @exp R _ [::] _ :=
    return #{"x"}].
 
 Lemma exec_sample_binomial3 t U : measurable U ->
-  execP sample_binomial3 t U = ((1 / 8)%:E * \d_(0%:R : R) U +
-                                (3 / 8)%:E * \d_(1%:R : R) U +
-                                (3 / 8)%:E * \d_(2%:R : R) U +
-                                (1 / 8)%:E * \d_(3%:R : R) U)%E.
+  execP sample_binomial3 t U = ((1 / 8)%:E * \d_0%N U +
+                                (3 / 8)%:E * \d_1%N U +
+                                (3 / 8)%:E * \d_2%N U +
+                                (1 / 8)%:E * \d_3%N U)%E.
 Proof.
 move=> mU; rewrite /sample_binomial3 execP_letin execP_sample execP_return.
 rewrite exp_var'E (execD_var_erefl "x") !execD_binomial/=.
-rewrite letin'E ge0_integral_measure_sum//=; last first.
-  exact: measurable_fun_dirac.
+rewrite letin'E ge0_integral_measure_sum//=.
 rewrite !big_ord_recl big_ord0 !ge0_integral_mscale//=; [|exact: measurable_fun_dirac..].
 rewrite !integral_dirac// /bump; [|exact: measurable_fun_dirac..].
 rewrite !binS/= !bin0 bin1 bin2 bin_small// addn0.
 rewrite expr0 mulr1 mul1r subn0.
 rewrite -2!addeA !mul1r.
 congr _%:E.
-rewrite indicT !mul1r.
-congr (_ + _).
-  congr (_ * _).
-  by field.
-congr (_ + _).
-  congr (_ * _).
-  rewrite expr1 /onem.
-  by field.
-congr (_ + _).
-  congr (_ * _).
-  rewrite /onem/=.
-  by field.
-rewrite addr0.
-congr (_ * _).
-rewrite /onem/=.
-by field.
+rewrite indicT !mul1r /onem !addrA addr0 expr1/=.
+by congr (_ + _ + _ + _); congr (_ * _); field.
 Qed.
 
 End binomial_examples.

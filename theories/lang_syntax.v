@@ -265,7 +265,7 @@ Import Notations.
 Context {R : realType}.
 
 Inductive typ :=
-| Unit | Bool | Real
+| Unit | Bool | Nat | Real
 | Pair : typ -> typ -> typ
 | Prob : typ -> typ.
 
@@ -275,6 +275,7 @@ Fixpoint measurable_of_typ (t : typ) : {d & measurableType d} :=
   match t with
   | Unit => existT _ _ munit
   | Bool => existT _ _ mbool
+  | Nat => existT _ _ (nat : measurableType _)
   | Real => existT _ _ 
     [the measurableType _ of (@measurableTypeR R)]
     (* (Real_sort__canonical__measure_Measurable R) *)
@@ -406,22 +407,22 @@ Section relop.
 Inductive relop :=
 | relop_le | relop_lt | relop_eq .
 
-Definition fun_of_relop g (r : relop) : (@mctx R g -> @mtyp R Real) ->
-  (mctx g -> mtyp Real) -> @mctx R g -> @mtyp R Bool := 
+Definition fun_of_relop g (r : relop) : (@mctx R g -> @mtyp R Nat) ->
+  (mctx g -> mtyp Nat) -> @mctx R g -> @mtyp R Bool :=
 match r with
-| relop_le => (fun f1 f2 x => (f1 x <= f2 x)%R)
-| relop_lt => (fun f1 f2 x => (f1 x < f2 x)%R)
-| relop_eq => (fun f1 f2 x => (f1 x == f2 x)%R)
+| relop_le => (fun f1 f2 x => (f1 x <= f2 x)%N)
+| relop_lt => (fun f1 f2 x => (f1 x < f2 x)%N)
+| relop_eq => (fun f1 f2 x => (f1 x == f2 x)%N)
 end.
 
 Definition mfun_of_relop g r
-  (f1 : @mctx R g -> @mtyp R Real) (mf1 : measurable_fun setT f1)
-  (f2 : @mctx R g -> @mtyp R Real) (mf2 : measurable_fun setT f2) :
+  (f1 : @mctx R g -> @mtyp R Nat) (mf1 : measurable_fun setT f1)
+  (f2 : @mctx R g -> @mtyp R Nat) (mf2 : measurable_fun setT f2) :
   measurable_fun [set: @mctx R g] (fun_of_relop r f1 f2).
 destruct r.
-exact: measurable_fun_ler.
-exact: measurable_fun_ltr.
-exact: measurable_fun_eqr.
+exact: measurable_fun_leq.
+exact: measurable_fun_ltn.
+exact: measurable_fun_eqn.
 Defined.
 
 End relop.
@@ -429,12 +430,13 @@ End relop.
 Inductive exp : flag -> ctx -> typ -> Type :=
 | exp_unit g : exp D g Unit
 | exp_bool g : bool -> exp D g Bool
+| exp_nat g : nat -> exp D g Nat
 | exp_real g : R -> exp D g Real
 | exp_pow g : nat -> exp D g Real -> exp D g Real
 | exp_bin (b : binop) g : exp D g (type_of_binop b) ->
     exp D g (type_of_binop b) -> exp D g (type_of_binop b)
-| exp_rel (r : relop) g : exp D g Real ->
-    exp D g Real -> exp D g Bool
+| exp_rel (r : relop) g : exp D g Nat ->
+    exp D g Nat -> exp D g Bool
 | exp_pair g t1 t2 : exp D g t1 -> exp D g t2 -> exp D g (Pair t1 t2)
 | exp_proj1 g t1 t2 : exp D g (Pair t1 t2) -> exp D g t1
 | exp_proj2 g t1 t2 : exp D g (Pair t1 t2) -> exp D g t2
@@ -444,9 +446,9 @@ Inductive exp : flag -> ctx -> typ -> Type :=
 | exp_bernoulli_trunc g :
     exp D g Real -> exp D g (Prob Bool)
 | exp_binomial g (n : nat) (r : {nonneg R}) (r1 : (r%:num <= 1)%R) :
-    exp D g (Prob Real)
+    exp D g (Prob Nat)
 | exp_binomial_trunc g (n : nat) :
-    exp D g Real -> exp D g (Prob Real)
+    exp D g Real -> exp D g (Prob Nat)
 | exp_uniform g (a b : R) (ab0 : (0 < b - a)%R) : exp D g (Prob Real)
 | exp_poisson g : nat -> exp D g Real -> exp D g Real
 | exp_normalize g t : exp P g t -> exp D g (Prob t)
@@ -472,6 +474,7 @@ End syntax_of_expressions.
 Arguments exp {R}.
 Arguments exp_unit {R g}.
 Arguments exp_bool {R g}.
+Arguments exp_nat {R g}.
 Arguments exp_real {R g}.
 Arguments exp_pow {R g}.
 Arguments exp_bin {R} b {g} &.
@@ -497,6 +500,8 @@ Declare Custom Entry expr.
 Notation "[ e ]" := e (e custom expr at level 5) : lang_scope.
 Notation "'TT'" := (exp_unit) (in custom expr at level 1) : lang_scope.
 Notation "b ':B'" := (@exp_bool _ _ b%bool)
+  (in custom expr at level 1) : lang_scope.
+Notation "n ':N'" := (@exp_nat _ _ n%N)
   (in custom expr at level 1) : lang_scope.
 Notation "r ':R'" := (@exp_real _ _ r%R)
   (in custom expr at level 1, format "r :R") : lang_scope.
@@ -556,6 +561,7 @@ Fixpoint free_vars k g t (e : @exp R k g t) : seq string :=
   match e with
   | exp_unit _              => [::]
   | exp_bool _ _            => [::]
+  | exp_nat _ _             => [::]
   | exp_real _ _            => [::]
   | exp_pow _ _ e           => free_vars e
   | exp_bin _ _ e1 e2    => free_vars e1 ++ free_vars e2
@@ -693,6 +699,8 @@ Inductive evalD : forall g t, exp D g t ->
 
 | eval_bool g b : ([b:B] : exp D g _) -D> cst b ; kb b
 
+| eval_nat g n : ([n:N] : exp D g _) -D> cst n; kn n
+
 | eval_real g r : ([r:R] : exp D g _) -D> cst r ; kr r
 
 | eval_pow g n (e : exp D g _) f mf : e -D> f ; mf -> 
@@ -822,6 +830,9 @@ all: (rewrite {g t e u v mu mv hu}).
   by inj_ex H3.
 - move=> g b {}v {}mv.
   inversion 1; subst g0 b0.
+  by inj_ex H3.
+- move=> g n {}v {}mv.
+  inversion 1; subst g0 n0.
   by inj_ex H3.
 - move=> g r {}v {}mv.
   inversion 1; subst g0 r0.
@@ -973,6 +984,9 @@ all: rewrite {g t e u v eu}.
 - move=> g b {}v {}mv.
   inversion 1; subst g0 b0.
   by inj_ex H3.
+- move=> g n {}v {}mv.
+  inversion 1; subst g0 n0.
+  by inj_ex H3.
 - move=> g r {}v {}mv.
   inversion 1; subst g0 r0.
   by inj_ex H3.
@@ -1119,6 +1133,7 @@ elim: e.
 all: rewrite {z g t}.
 - by do 2 eexists; exact: eval_unit.
 - by do 2 eexists; exact: eval_bool.
+- by do 2 eexists; exact: eval_nat.
 - by do 2 eexists; exact: eval_real.
 - move=> g n e [f [mf H]].
   by exists (fun x => (f x ^+ n)%R); eexists; exact: eval_pow.
@@ -1237,6 +1252,9 @@ Proof. exact/execD_evalD/eval_unit. Qed.
 
 Lemma execD_bool g b : @execD g _ [b:B] = existT _ (cst b) (kb b).
 Proof. exact/execD_evalD/eval_bool. Qed.
+
+Lemma execD_nat g n : @execD g _ [n:N] = existT _ (cst n) (kn n).
+Proof. exact/execD_evalD/eval_nat. Qed.
 
 Lemma execD_real g r : @execD g _ [r:R] = existT _ (cst r) (kr r).
 Proof. exact/execD_evalD/eval_real. Qed.
