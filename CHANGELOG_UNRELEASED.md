@@ -96,11 +96,23 @@
 
   + new lemmas `total_variationxx`, `total_variation_ge`, `total_variation_ge0`,
     `bounded_variationP`, `nondecreasing_total_variation`, `total_variationN`,
-	`total_variation_le`, `total_variationD`, `neg_tv_nondecreasing`,
+	  `total_variation_le`, `total_variationD`, `neg_tv_nondecreasing`,
     `total_variation_jordan_decompE`, `fine_neg_tv_nondecreasing`,
     `neg_tv_bounded_variation`, `total_variation_right_continuous`,
-    `neg_tv_right_continuous`, `total_variation_opp`, `total_variation_left_continuous`,
-    `total_variation_continuous`
+    `neg_tv_right_continuous`, `total_variation_opp`,
+    `total_variation_left_continuous`, `total_variation_continuous`,
+    `le_variation`, `variation_opp_rev`, `variation_rev_opp`,
+    `variation_monotone`, `variations_variation`, `variations_neq0`,
+    `variationsN`, `variationsxx`, `bounded_variationxx`, `bounded_variationD`,
+    `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
+    `variations_opp`, `nondecreasing_bounded_variation`, `total_variationxx`,
+    `total_variation_ge`, `total_variation_ge0`,
+    `nondecreasing_total_variation`, `bounded_variationP`, `total_variationN`,
+    `total_variation_le`, `total_variationD`, `neg_TV_increasing`,
+    `total_variation_jordan_decompE`, `neg_TV_increasing_fin`,
+    `neg_TV_bounded_variation`, `TV_right_continuous`,
+    `neg_TV_right_continuous`, `total_variation_opp`, `TV_left_continuous`, and
+    `TV_continuous`.
 
 ### Changed
 

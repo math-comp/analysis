@@ -1952,6 +1952,32 @@ suff: (f \o -%R) \o -%R = f by move=> ->.
 by apply/funext=> ? /=; rewrite opprK.
 Qed.
 
+Lemma variation_monotone a b f (s t : list R) :
+  itv_partition a b s -> itv_partition a b t ->
+  subseq s t ->
+  variation a b f s <= variation a b f t.
+Proof.
+elim: t s a; first by move=> ? ? ? [/=] _ /eqP -> /eqP ->.
+move=> a s IH [] /= x; first by rewrite variation_nil // variation_ge0.
+move=> t w /[dup] /itv_partition_cons itvxb /[dup] /itv_partition_le wb itvxt.
+move=> /[dup] /itv_partition_cons itvas itvws.
+have ? : a <= b by exact: (itv_partition_le itvas).
+have wa : w < a by case: itvws => /= /andP [].
+have waW : w <= a by exact: ltW.
+case nXA: (x == a).
+  move/eqP:nXA itvxt itvxb => -> itvat itvt sub; rewrite -[_ :: t]cat1s -[_ :: s]cat1s.
+  by rewrite -?(@variationD _ _ a) // ?ler_add // ?(ltW wa) //;
+    [exact: IH | exact: itv_partition1 | exact: itv_partition1].
+move=> sub; rewrite -[_ :: s]cat1s -(@variationD _ _ a) => //; last exact: itv_partition1.
+have [y [s' s'E]] : exists y s', s = y :: s'.
+  by case: {itvas itvws IH} s sub => // y s' ?; exists y, s'.
+apply: le_trans; first apply IH => //.
+  case: itvws => /= /andP [_]; rewrite s'E /= => /andP [ay ys' lyb].
+  by split => //; apply/andP; split => //; apply: (lt_trans wa).
+rewrite variationD => //; last exact: itv_partition1.
+apply: le_variation.
+Qed.
+  
 End variation.
 
 Section bounded_variation.
