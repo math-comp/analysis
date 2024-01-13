@@ -14,26 +14,30 @@ From HB Require Import structures.
 (* numbers (e.g., the continuity of the inverse of a continuous function).    *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*        nondecreasing_fun f == the function f is non-decreasing             *)
-(*        nonincreasing_fun f == the function f is non-increasing             *)
-(*           increasing_fun f == the function f is (strictly) increasing      *)
-(*           decreasing_fun f == the function f is (strictly) decreasing      *)
+(*      nondecreasing_fun f == the function f is non-decreasing               *)
+(*      nonincreasing_fun f == the function f is non-increasing               *)
+(*         increasing_fun f == the function f is (strictly) increasing        *)
+(*         decreasing_fun f == the function f is (strictly) decreasing        *)
 (*                                                                            *)
-(*  lime_sup f a/lime_inf f a == limit sup/inferior of the extended           *)
-(*                               real-valued function f at point a            *)
+(*   derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and       *)
+(*                             continuous up to the boundary                  *)
 (*                                                                            *)
-(* derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and         *)
-(*                               continuous up to the boundary                *)
-(*       itv_partition a b s == s is a partition of the interval `[a,b]       *)
-(*        itv_partitionL s c == the left side of splitting a partition at c   *)
-(*        itv_partitionR s c == the right side of splitting a partition at c  *)
-(*        variation a b f s  == the sum of f at all points in the partition s *)
-(*         variations a b f  == the set of all variation of f between a and b *)
-(*  bounded_variation a b f  == all variations of f are bounded               *)
-(*    total_variation a b f  == the sup over all variations of f from a to b  *)
-(*             neg_tv a f x  == the decreasing component of f                 *)
-(*             pos_tv a f x  == the increasing component of f                 *)
+(*      itv_partition a b s == s is a partition of the interval `[a, b]       *)
+(*       itv_partitionL s c == the left side of splitting a partition at c    *)
+(*       itv_partitionR s c == the right side of splitting a partition at c   *)
+(*        variation a b f s == the sum of f at all points in the partition s  *)
+(*         variations a b f == the set of all variations of f between a and b *)
+(*  bounded_variation a b f == all variations of f are bounded                *)
+(*    total_variation a b f == the sup over all variations of f from a to b   *)
+(*             neg_tv a f x == the decreasing component of f                  *)
+(*             pos_tv a f x == the increasing component of f                  *)
 (*                                                                            *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* * Limit superior and inferior for functions:                               *)
+(* ```                                                                        *)
+(*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
+(*                             valued function f at point a                   *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -58,6 +62,23 @@ Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
   (at level 10).
 Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
   (at level 10).
+
+Lemma nondecreasing_funN {R : realType} a b (f : R -> R) :
+  {in `[a, b] &, nondecreasing_fun f} <->
+  {in `[a, b] &, nonincreasing_fun (\- f)}.
+Proof.
+split=> [h m n mab nab mn|h m n mab nab mn]; first by rewrite ler_oppr opprK h.
+by rewrite -(opprK (f n)) -ler_oppr h.
+Qed.
+
+Lemma nonincreasing_funN {R : realType} a b (f : R -> R) :
+  {in `[a, b] &, nonincreasing_fun f} <->
+  {in `[a, b] &, nondecreasing_fun (\- f)}.
+Proof.
+apply: iff_sym; apply: (iff_trans (nondecreasing_funN a b (\- f))).
+rewrite [in X in _ <-> X](_ : f = \- (\- f))//.
+by apply/funext => x /=; rewrite opprK.
+Qed.
 
 Section fun_cvg.
 
@@ -97,18 +118,16 @@ apply: near_eq_cvg; near do rewrite subrK; exists M.
 by rewrite num_real.
 Unshelve. all: by end_near. Qed.
 
-Lemma left_right_continuousP
-    {T: topologicalType} (f : R -> T) x :
-  (f @ x^'- --> f x /\ f @ x^'+ --> f x) <-> f @ x --> f x.
+Lemma left_right_continuousP {T : topologicalType} (f : R -> T) x :
+  f @ x^'- --> f x /\ f @ x^'+ --> f x <-> f @ x --> f x.
 Proof.
-split; first last.
-  by move=> cts; split; exact: cvg_within_filter.
-case => + + U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
-rewrite ?near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
-near=> t => xlt xgt; have := @real_leVge R x t; rewrite ?num_real.
-move=> /(_ isT isT) /orP; rewrite ?le_eqVlt; case => /orP; case => //.
-  by move/eqP <-; apply: nbhs_singleton.
-by move/eqP ->; apply: nbhs_singleton.
+split; last by move=> cts; split; exact: cvg_within_filter.
+move=> [+ +] U /= Uz => /(_ U Uz) + /(_ U Uz); near_simpl.
+rewrite !near_withinE => lf rf; apply: filter_app lf; apply: filter_app rf.
+near=> t => xlt xgt; have := @real_leVge R x t; rewrite !num_real.
+move=> /(_ isT isT) /orP; rewrite !le_eqVlt => -[|] /predU1P[|//].
+- by move=> <-; exact: nbhs_singleton.
+- by move=> ->; exact: nbhs_singleton.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvg_at_right_left_dnbhs (f : R -> R) (p : R) (l : R) :
@@ -1543,40 +1562,13 @@ End is_derive_inverse.
 #[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (eapply is_deriveV; first by []) : typeclass_instances.
 
-From mathcomp Require Import path.
-
-
-Lemma nondecreasing_funN {R : realType} a b (f : R -> R) :
-  {in `[a, b] &, nondecreasing_fun f} <-> {in `[a, b] &, nonincreasing_fun (\- f)}.
+Lemma last_filterP d {T : porderType d} (h : T) (P : pred T) t :
+  P h -> P (last h [seq x <- t | P x]).
 Proof.
-split=> [h m n mab nab mn|h m n mab nab mn]; first by rewrite ler_oppr opprK h.
-by rewrite -(opprK (f n)) -ler_oppr h.
+elim: t h => //= t1 t2 ih h hc.
+by case: ifPn => //= t1c; exact: ih.
 Qed.
-
-Lemma nonincreasing_funN {R : realType} a b (f : R -> R) :
-  {in `[a, b] &, nonincreasing_fun f} <-> {in `[a, b] &, nondecreasing_fun (\- f)}.
-Proof.
-apply: iff_sym; rewrite [in X in _ <-> X](_ : f = (\- (\- f))); last first.
-  by apply/funext => x /=; rewrite opprK.
-exact: nondecreasing_funN.
-Qed.
-
-Lemma has_ubound_ereal_sup {R : realType} T (A : set T) (f : T -> R) :
-  [set f x | x in A] !=set0 ->
-  has_ubound [set f x | x in A] -> (ereal_sup [set (f x)%:E | x in A] < +oo)%E.
-Proof. by move=> A0 ubA; rewrite -image_comp ereal_sup_EFin// ltry. Qed.
-
-Lemma sup_le {R : realType} (S : set R) x : has_ubound S ->
-  (exists2 y, S y & x <= y) -> x <= sup S.
-Proof.
-by move=> uS [y Sy] /le_trans; apply; apply: sup_ub.
-Qed.
-
-Lemma ereal_supy {R : realType} (A : set \bar R) :
-  A +oo%E -> ereal_sup A = +oo%E.
-Proof.
-by move=> Aoo; apply/eqP; rewrite eq_le leey/=; exact: ereal_sup_ub.
-Qed.
+Arguments last_filterP {d T h} P t.
 
 Lemma path_lt_filter0 d {T : orderType d} h (s : seq T) :
   path <%O h s -> [seq x <- s | (x < h)%O] = [::].
@@ -1593,14 +1585,13 @@ move=> /lt_path_min/allP sh; rewrite -[RHS](filter_predT s).
 by apply: eq_in_filter => x xs; exact: sh.
 Qed.
 
-Lemma last_filter_lt d {T : porderType d} (h c : T) t :
-  (h < c)%O -> (last h [seq x <- t | x < c] < c)%O.
+Lemma path_lt_head d {T : porderType d} (a b : T) (s : seq T) :
+  (a < b)%O -> path <%O b s -> path <%O a s.
 Proof.
-elim: t h => //= t1 t2 ih h hc.
-by case: ifPn => //= t1c; exact: ih.
+by elim: s b => // h t ih b /= ab /andP[bh ->]; rewrite andbT (lt_trans ab).
 Qed.
 
-Lemma last_filter d {T : porderType d} (a b c : T) (l : seq T) :
+Lemma path_lt_last_filter d {T : porderType d} (a b c : T) (l : seq T) :
   (a < c)%O -> (c < b)%O -> path <%O a l -> last a l = b ->
   last c [seq x <- l | (c < x)%O] = b.
 Proof.
@@ -1611,12 +1602,6 @@ elim/last_ind : l a b c => /= [|h t ih a b c ac cb].
 rewrite rcons_path => /andP[ah ht].
 rewrite last_rcons => htb.
 by rewrite filter_rcons htb cb last_rcons.
-Qed.
-
-Lemma path_inv d {T : porderType d} (a b : T) (s : seq T) :
-  (a < b)%O -> path <%O b s -> path <%O a s.
-Proof.
-by elim: s b => // h t ih b /= ab /andP[bh ->]; rewrite andbT (lt_trans ab).
 Qed.
 
 Lemma path_lt_le_last d {T : porderType d} (i : T) (s : seq T) :
@@ -1632,16 +1617,21 @@ Section interval_partition.
 Context {R : realType}.
 Implicit Type (a b : R) (s : seq R).
 
-(* a :: s is a of the interval [a, b] *)
+(** a :: s is a partition of the interval [a, b] *)
 Definition itv_partition a b s := [/\ path <%R a s & last a s == b].
 
 Lemma itv_partition_nil a b : itv_partition a b [::] -> a = b.
 Proof. by move=> [_ /eqP <-]. Qed.
 
+Lemma itv_partition_cons a b x s :
+  itv_partition a b (x :: s) -> itv_partition x b s.
+Proof. by rewrite /itv_partition/= => -[/andP[]]. Qed.
+
 Lemma itv_partition1 a b : a < b -> itv_partition a b [:: b].
 Proof. by rewrite /itv_partition /= => ->. Qed.
 
-Lemma itv_partition_cons a b s : (size s > 0)%N -> itv_partition a b s -> a < b.
+Lemma itv_partition_size_neq0 a b s :
+  (size s > 0)%N -> itv_partition a b s -> a < b.
 Proof.
 elim: s a => // x [_ a _|h t ih a _]; rewrite /itv_partition /=.
   by rewrite andbT => -[ax /eqP <-].
@@ -1659,13 +1649,9 @@ Qed.
 
 Lemma itv_partition_le a b s : itv_partition a b s -> a <= b.
 Proof.
-case: s => [/itv_partition_nil ->//|h t /itv_partition_cons - /(_ _)/ltW].
+case: s => [/itv_partition_nil ->//|h t /itv_partition_size_neq0 - /(_ _)/ltW].
 exact.
 Qed.
-
-Lemma itv_partition_tail a b x s :
-  itv_partition a b (x :: s) -> itv_partition x b s.
-Proof. by rewrite /itv_partition/= => -[/andP[]]. Qed.
 
 Lemma itv_partition_cat a b c s t :
   itv_partition a b s -> itv_partition b c t -> itv_partition a c (s ++ t).
@@ -1677,7 +1663,7 @@ Qed.
 Lemma itv_partition_nth_size def a b s : itv_partition a b s ->
   nth def (a :: s) (size s) = b.
 Proof.
-by elim: s a => [a/= /itv_partition_nil//|y t ih a /= /itv_partition_tail/ih].
+by elim: s a => [a/= /itv_partition_nil//|y t ih a /= /itv_partition_cons/ih].
 Qed.
 
 Lemma itv_partition_nth_ge a b s m : (m < (size s).+1)%N ->
@@ -1692,7 +1678,7 @@ Lemma itv_partition_nth_le a b s m : (m < (size s).+1)%N ->
   itv_partition a b s -> nth b (a :: s) m <= b.
 Proof.
 elim: m s a => [s a _|n ih]; first exact: itv_partition_le.
-by move=> [//|a h t /= nt] H; rewrite ih//; exact: itv_partition_tail H.
+by move=> [//|a h t /= nt] H; rewrite ih//; exact: itv_partition_cons H.
 Qed.
 
 Lemma nondecreasing_fun_itv_partition a b f s :
@@ -1726,7 +1712,7 @@ move/nonincreasing_funN => ndNf abs F k ks; rewrite -(opprK (F k)) ler_oppr.
 exact: (nondecreasing_fun_itv_partition ndNf abs).
 Qed.
 
-(* given a partition of [a,b] and c, returns a partition of [a,c] *)
+(** given a partition of [a, b] and c, returns a partition of [a, c] *)
 Definition itv_partitionL s c := rcons [seq x <- s | x < c] c.
 
 Lemma itv_partitionLP a b c s : a < c -> c < b -> itv_partition a b s ->
@@ -1735,11 +1721,11 @@ Proof.
 move=> ac bc [] al /eqP htb; split.
   rewrite /itv_partitionL rcons_path/=; apply/andP; split.
     by apply: path_filter => //; exact: lt_trans.
-  exact: last_filter_lt.
+  exact: (last_filterP [pred x | x < c]).
 by rewrite /itv_partitionL last_rcons.
 Qed.
 
-(* given a partition of [a,b] and c, returns a partition of [c,b] *)
+(** given a partition of [a, b] and c, returns a partition of [c, b] *)
 Definition itv_partitionR s c := [seq x <- s | c < x].
 
 Lemma itv_partitionRP a b c s : a < c -> c < b -> itv_partition a b s ->
@@ -1749,7 +1735,7 @@ move=> ac cb [] sa /eqP alb; rewrite /itv_partition; split.
   move: sa; rewrite lt_path_sortedE => /andP[allas ss].
   rewrite lt_path_sortedE filter_all/=.
   by apply: sorted_filter => //; exact: lt_trans.
-exact/eqP/(last_filter ac).
+exact/eqP/(path_lt_last_filter ac).
 Qed.
 
 Lemma in_itv_partition c s : sorted <%R s -> c \in s ->
@@ -1773,8 +1759,8 @@ Proof.
 elim: s c => // h t ih c /= ht.
 rewrite inE negb_or => /andP[]; rewrite neq_lt => /orP[ch|ch] ct.
   rewrite ch ltNge (ltW ch)/= path_lt_filter0/= /itv_partitionR; last first.
-    exact: path_inv ht.
-  by rewrite path_lt_filterT//; exact: path_inv ht.
+    exact: path_lt_head ht.
+  by rewrite path_lt_filterT//; exact: path_lt_head ht.
 by rewrite ch/= ltNge (ltW ch)/= -ih//; exact: path_sorted ht.
 Qed.
 
@@ -2087,6 +2073,17 @@ Qed.
 Lemma total_variation_ge0 a b f : a <= b -> (0 <= TV a b f)%E.
 Proof. by move=> ab; rewrite (le_trans _ (total_variation_ge _ ab)). Qed.
 
+Lemma bounded_variationP a b f : a <= b -> BV a b f <-> TV a b f \is a fin_num.
+Proof.
+rewrite le_eqVlt => /predU1P[<-{b}|ab].
+  by rewrite total_variationxx; split => // ?; exact: bounded_variationxx.
+rewrite ge0_fin_numE; last exact/total_variation_ge0/ltW.
+split=> [abf|].
+  by rewrite /total_variation ereal_sup_EFin ?ltry//; exact: variations_neq0.
+rewrite /total_variation /bounded_variation ltey => /eqP; apply: contra_notP.
+by move/hasNub_ereal_sup; apply; exact: variations_neq0.
+Qed.
+
 Lemma nondecreasing_total_variation a b f : a <= b ->
   {in `[a, b] &, nondecreasing_fun f} -> TV a b f = (f b - f a)%:E.
 Proof.
@@ -2099,18 +2096,6 @@ apply/seteqP; split => [x/= [s [t abt <-{s} <-{x}]]|x/= ->{x}].
 exists (variation a b f [:: b]) => //.
   exact/variations_variation/itv_partition1.
 by rewrite nondecreasing_variation//; exact: itv_partition1.
-Qed.
-
-Lemma bounded_variationP a b f : a <= b -> BV a b f <-> TV a b f \is a fin_num.
-Proof.
-rewrite le_eqVlt => /predU1P[<-{b}|ab].
-  by rewrite total_variationxx; split => // ?; exact: bounded_variationxx.
-rewrite ge0_fin_numE; last exact/total_variation_ge0/ltW.
-split=> [abf|].
-  apply: has_ubound_ereal_sup => //; rewrite image_id//.
-  exact: variations_neq0.
-rewrite /total_variation /bounded_variation ltey => /eqP; apply: contra_notP.
-by move/hasNub_ereal_sup; apply; exact: variations_neq0.
 Qed.
 
 Lemma total_variationN a b f : TV a b (\- f) = TV a b f.
@@ -2232,8 +2217,8 @@ Definition neg_tv a f (x : R) : \bar R := ((TV a x f - (f x)%:E) * 2^-1%:E)%E.
 
 Definition pos_tv a f (x : R) : \bar R := neg_tv a (\- f) x.
 
-Lemma neg_TV_increasing a b f :
-  {in `[a, b] &, {homo (neg_tv a f) : x y / x <= y >-> (x <= y)%E}}.
+Lemma neg_tv_nondecreasing a b f :
+  {in `[a, b] &, nondecreasing_fun (neg_tv a f)}.
 Proof.
 move=> x y xab yab xy; have ax : a <= x.
   by move: xab; rewrite in_itv //= => /andP [].
@@ -2262,8 +2247,8 @@ rewrite addeAC oppeD //= ?fin_num_adde_defl //.
 by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -Num.Theory.splitr.
 Qed.
 
-Lemma neg_TV_increasing_fin a b f : BV a b f ->
-  {in `[a,b] &, {homo (fine \o neg_tv a f) : x y / x <= y}}.
+Lemma fine_neg_tv_nondecreasing a b f : BV a b f ->
+  {in `[a, b] &, nondecreasing_fun (fine \o neg_tv a f)}.
 Proof.
 move=> bdv p q pab qab pq /=.
 move: (pab) (qab); rewrite ?in_itv /= => /andP[ap pb] /andP[aq qb].
@@ -2272,20 +2257,19 @@ apply: fine_le; rewrite /neg_tv ?fin_numM // ?fin_numB /=.
   exact: (bounded_variationl _ pb).
 - apply/andP; split => //; apply/bounded_variationP => //.
   exact: (bounded_variationl _ qb).
-exact: (neg_TV_increasing _ pab).
+exact: (neg_tv_nondecreasing _ pab).
 Qed.
 
-Lemma neg_TV_bounded_variation a b f : BV a b f ->
-  BV a b (fine \o neg_tv a f).
+Lemma neg_tv_bounded_variation a b f : BV a b f -> BV a b (fine \o neg_tv a f).
 Proof.
 move=> ?; apply: nondecreasing_bounded_variation.
-exact: neg_TV_increasing_fin.
+exact: fine_neg_tv_nondecreasing.
 Qed.
 
-Lemma TV_right_continuous a b x f : a <= x -> x < b ->
-  f @ at_right x --> f x ->
+Lemma total_variation_right_continuous a b x f : a <= x -> x < b ->
+  f @ x^'+ --> f x ->
   BV a b f ->
-  fine \o TV a ^~ f @ at_right x --> fine (TV a x f).
+  fine \o TV a ^~ f @ x^'+ --> fine (TV a x f).
 Proof.
 move=> ax xb ctsf bvf; have ? : a <= b by apply:ltW; apply: (le_lt_trans ax).
 apply/cvgrPdist_lt=> _/posnumP[eps].
@@ -2336,13 +2320,12 @@ rewrite -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
   rewrite [in leRHS]variationE; last exact: itv_partition1.
   rewrite gee_addl // sube_le0; apply: ereal_sup_ub => /=.
-  exists (variation t b f (i :: j)) => //.
-  apply: variations_variation.
+  exists (variation t b f (i :: j)) => //; apply: variations_variation.
   by rewrite /itv_partition/= ijb ij ti.
 by rewrite /variation/= big_nat_recr//= big_nil add0r distrC lte_fin.
 Unshelve. all: by end_near. Qed.
 
-Lemma neg_TV_right_continuous a x b f : a <= x -> x < b ->
+Lemma neg_tv_right_continuous a x b f : a <= x -> x < b ->
   BV a b f ->
   f @ x^'+ --> f x ->
   fine \o neg_tv a f @ x^'+ --> fine (neg_tv a f x).
@@ -2362,7 +2345,7 @@ rewrite fineD // EFinB; apply: cvgeB => //.
     apply: bounded_variationl bvf => //.
     move: xtbx; rewrite distrC ger0_norm ?subr_ge0; last by exact: ltW.
     by rewrite ltr_subr_addr -addrA [-_ + _]addrC subrr addr0 => /ltW.
-  by apply: TV_right_continuous => //; last exact: bvf.
+  by apply: total_variation_right_continuous => //; last exact: bvf.
 apply: cvg_comp; first exact: fcts.
 apply/ fine_cvgP; split; first by near=> t => //.
 by have -> : fine \o EFin = id by move=> ?; rewrite funeqE => ? /=.
@@ -2371,7 +2354,7 @@ Unshelve. all: by end_near. Qed.
 Lemma total_variation_opp a b f : TV a b f = TV (- b) (- a) (f \o -%R).
 Proof. by rewrite /total_variation variations_opp. Qed.
 
-Lemma TV_left_continuous a b x f : a < x -> x <= b ->
+Lemma total_variation_left_continuous a b x f : a < x -> x <= b ->
   f @ x^'- --> f x ->
   BV a b f ->
   fine \o TV a ^~ f @ x^'- --> fine (TV a x f).
@@ -2405,13 +2388,13 @@ have /near_eq_cvg/cvg_trans : {near (- x)^'+,
   by rewrite -total_variationD.
 apply.
 apply: cvgB; first exact: cvg_cst.
-apply: (TV_right_continuous _ _ _ bvNf).
+apply: (total_variation_right_continuous _ _ _ bvNf).
 - by rewrite ler_oppl opprK //.
 - by rewrite ltr_oppl opprK //.
 by apply/cvg_at_leftNP; rewrite /= opprK.
 Unshelve. all: by end_near. Qed.
 
-Lemma TV_continuous a b (f : R -> R) : a < b ->
+Lemma total_variation_continuous a b (f : R -> R) : a < b ->
   {within `[a,b], continuous f} ->
   BV a b f ->
   {within `[a,b], continuous (fine \o TV a ^~ f)}.
@@ -2420,12 +2403,12 @@ move=> ab /(@continuous_within_itvP _ _ _ _ ab) [int [l r]] bdf.
 apply/continuous_within_itvP; (repeat split) => //.
 - move=> x /[dup] xab; rewrite in_itv /= => /andP [ax xb].
   apply/left_right_continuousP; split.
-    apply: (TV_left_continuous _ (ltW xb)) => //.
+    apply: (total_variation_left_continuous _ (ltW xb)) => //.
     by have /left_right_continuousP [] := int x xab.
-  apply: (TV_right_continuous _ xb) => //; first exact: ltW.
+  apply: (total_variation_right_continuous _ xb) => //; first exact: ltW.
   by have /left_right_continuousP [] := int x xab.
-- exact: (TV_right_continuous _ ab).
-- exact: (TV_left_continuous ab).
+- exact: (total_variation_right_continuous _ ab).
+- exact: (total_variation_left_continuous ab).
 Qed.
 
 End variation_continuity.

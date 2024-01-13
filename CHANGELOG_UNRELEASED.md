@@ -62,35 +62,45 @@
 - in file `normedtype.v`,
   + new lemma `continuous_within_itvP`.
 
+- in `ereal.v`:
+  + lemma `ereal_supy`
+
 - in file `realfun.v`,
   + new definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`, 
     `variation`, `variations`, `bounded_variation`, `total_variation`, 
     `neg_tv`, and `pos_tv`.
 
-  + new lemmas `left_right_continuousP`, `nondecreasing_funN`, 
-    `nonincreasing_funN`, `has_ubound_ereal_sup`, `sup_le`, `ereal_supy`, 
-    `path_lt_filter0`, `path_lt_filterT`, `last_filter_lt`, `last_filter`, 
-    `path_inv`, `path_lt_le_last`, `itv_partition_nil`, `itv_partition1`, 
-    `itv_partition_cons`, `itv_partitionxx`, `itv_partition_le`, 
-    `itv_partition_tail`, `itv_partition_cat`, `itv_partition_nth_size`, 
+  + new lemmas `left_right_continuousP`,
+    `nondecreasing_funN`, `nonincreasing_funN`, `last_filterP`,
+    `path_lt_filter0`, `path_lt_filterT`, `path_lt_head`, `path_lt_last_filter`,
+	`path_lt_le_last`
+
+  + new lemmas `itv_partition_nil`, `itv_partition_cons`, `itv_partition1`,
+    `itv_partition_size_neq0`, `itv_partitionxx`, `itv_partition_le`,
+    `itv_partition_cat`, `itv_partition_nth_size`,
     `itv_partition_nth_ge`, `itv_partition_nth_le`, 
     `nondecreasing_fun_itv_partition`, `nonincreasing_fun_itv_partition`, 
     `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`, 
-    `notin_itv_partition`, `itv_partition_rev`, `variationE`, `variation_nil`, 
+    `notin_itv_partition`, `itv_partition_rev`,
+
+  + new lemmas `variationE`, `variation_nil`,
     `variation_ge0`, `variationN`, `variation_le`, `nondecreasing_variation`, 
     `nonincreasing_variation`, `variationD`, `variation_itv_partitionLR`, 
-    `le_variation`, `variation_opp_rev`, `variation_rev_opp`, 
-    `variations_variation`, `variations_neq0`, `variationsN`, `variationsxx`, 
-    `bounded_variationxx`, `bounded_variationD`, `bounded_variationN`, 
+    `le_variation`, `variation_opp_rev`, `variation_rev_opp`
+
+  + new lemmas `variations_variation`, `variations_neq0`, `variationsN`, `variationsxx`
+
+  + new lemmas `bounded_variationxx`, `bounded_variationD`, `bounded_variationN`,
     `bounded_variationl`, `bounded_variationr`, `variations_opp`, 
-    `nondecreasing_bounded_variation`, `total_variationxx`, 
-    `total_variation_ge`, `total_variation_ge0`, 
-    `nondecreasing_total_variation`, `bounded_variationP`, `total_variationN`, 
-    `total_variation_le`, `total_variationD`, `neg_TV_increasing`, 
-    `total_variation_jordan_decompE`, `neg_TV_increasing_fin`, 
-    `neg_TV_bounded_variation`, `TV_right_continuous`, 
-    `neg_TV_right_continuous`, `total_variation_opp`, `TV_left_continuous`, and 
-    `TV_continuous`.
+    `nondecreasing_bounded_variation`
+
+  + new lemmas `total_variationxx`, `total_variation_ge`, `total_variation_ge0`,
+    `bounded_variationP`, `nondecreasing_total_variation`, `total_variationN`,
+	`total_variation_le`, `total_variationD`, `neg_tv_nondecreasing`,
+    `total_variation_jordan_decompE`, `fine_neg_tv_nondecreasing`,
+    `neg_tv_bounded_variation`, `total_variation_right_continuous`,
+    `neg_tv_right_continuous`, `total_variation_opp`, `total_variation_left_continuous`,
+    `total_variation_continuous`
 
 ### Changed
 
