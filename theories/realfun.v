@@ -1973,11 +1973,10 @@ have [y [s' s'E]] : exists y s', s = y :: s'.
   by case: {itvas itvws IH} s sub => // y s' ?; exists y, s'.
 apply: le_trans; first apply IH => //.
   case: itvws => /= /andP [_]; rewrite s'E /= => /andP [ay ys' lyb].
-  by split => //; apply/andP; split => //; apply: (lt_trans wa).
-rewrite variationD => //; last exact: itv_partition1.
-apply: le_variation.
+  by split => //; apply/ (path_lt_head wa)/andP; split => //.
+by rewrite variationD => //; [exact: le_variation | exact: itv_partition1].
 Qed.
-  
+
 End variation.
 
 Section bounded_variation.
@@ -2254,8 +2253,8 @@ apply: lee_add => //; apply: le_trans; last exact: total_variation_ge.
 by rewrite lee_fin ler_norm.
 Qed.
 
-Lemma total_variation_jordan_decompE a b f : BV a b f ->
-  {in `[a, b], f =1 (fine \o neg_tv a (\- f)) \- (fine \o neg_tv a f)}.
+Lemma bounded_variation_pos_neg_tvE a b f : BV a b f ->
+  {in `[a, b], f =1 (fine \o pos_tv a f) \- (fine \o neg_tv a f)}.
 Proof.
 move=> bdabf x; rewrite in_itv /= => /andP [ax xb].
 have ffin: TV a x f \is a fin_num.
@@ -2264,13 +2263,13 @@ have ffin: TV a x f \is a fin_num.
 have Nffin : TV a x (\- f) \is a fin_num.
   apply/bounded_variationP => //; apply/bounded_variationN.
   exact: (bounded_variationl ax xb).
-rewrite /neg_tv /= total_variationN -fineB -?muleBl // ?fineM //; first last.
-- by rewrite fin_numM // fin_numD; apply/andP; split.
-- by rewrite fin_numM // fin_numD; apply/andP; split.
-- by apply: fin_num_adde_defl; rewrite fin_numN fin_numD; apply/andP; split.
+rewrite /pos_tv /neg_tv /= total_variationN -fineB -?muleBl // ?fineM //.
+- rewrite addeAC oppeD //= ?fin_num_adde_defl //.
+  by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -Num.Theory.splitr.
 - by rewrite fin_numB ?fin_numD ?ffin; apply/andP; split.
-rewrite addeAC oppeD //= ?fin_num_adde_defl //.
-by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -Num.Theory.splitr.
+- by apply: fin_num_adde_defl; rewrite fin_numN fin_numD; apply/andP; split.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
+- by rewrite fin_numM // fin_numD; apply/andP; split.
 Qed.
 
 Lemma fine_neg_tv_nondecreasing a b f : BV a b f ->

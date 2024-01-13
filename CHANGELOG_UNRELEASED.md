@@ -97,7 +97,7 @@
   + new lemmas `total_variationxx`, `total_variation_ge`, `total_variation_ge0`,
     `bounded_variationP`, `nondecreasing_total_variation`, `total_variationN`,
 	  `total_variation_le`, `total_variationD`, `neg_tv_nondecreasing`,
-    `total_variation_jordan_decompE`, `fine_neg_tv_nondecreasing`,
+    `total_variation_pos_neg_tvE`, `fine_neg_tv_nondecreasing`,
     `neg_tv_bounded_variation`, `total_variation_right_continuous`,
     `neg_tv_right_continuous`, `total_variation_opp`,
     `total_variation_left_continuous`, `total_variation_continuous`,
