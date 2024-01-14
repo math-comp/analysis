@@ -7,7 +7,7 @@ Require Import ereal reals signed topology prodnormedzmodule normedtype derive.
 Require Import sequences real_interval.
 From HB Require Import structures.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Real-valued functions over reals                                         *)
 (*                                                                            *)
 (* This file provides properties of standard real-valued functions over real  *)

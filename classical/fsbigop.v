@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Finitely-supported big operators                                         *)
 (*                                                                            *)
 (* ```                                                                        *)

@@ -5,7 +5,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 Require Import reals ereal nsatz_realtype signed topology normedtype landau.
 Require Import sequences derive realfun exp.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Theory of trigonometric functions                                        *)
 (*                                                                            *)
 (* This file provides the definitions of basic trigonometric functions and    *)

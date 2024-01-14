@@ -8,7 +8,7 @@ From HB Require Import structures.
 Require Import sequences esum measure real_interval realfun exp.
 Require Export lebesgue_stieltjes_measure.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Lebesgue Measure                                                         *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue measure using the       *)

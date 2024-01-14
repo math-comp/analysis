@@ -6,7 +6,7 @@ From mathcomp Require Import cardinality fsbigop .
 Require Import signed reals ereal topology normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure numfun.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Lebesgue Integral                                                        *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue integral. It starts     *)

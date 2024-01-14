@@ -7,7 +7,7 @@
 
 From mathcomp Require Import all_ssreflect.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Classical Logic                                                          *)
 (*                                                                            *)
 (* This file provides the axioms of classical logic and tools to perform      *)

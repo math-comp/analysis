@@ -7,7 +7,7 @@ Require Import ereal reals signed topology prodnormedzmodule normedtype derive.
 Require Import realfun itv.
 From HB Require Import structures.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Convexity                                                                *)
 (*                                                                            *)
 (* This file provides a small account of convexity using convex spaces, to be *)

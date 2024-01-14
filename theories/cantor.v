@@ -6,7 +6,7 @@ From mathcomp Require Import cardinality.
 Require Import reals signed topology.
 From HB Require Import structures.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # The Cantor Space and Applications                                        *)
 (*                                                                            *)
 (* This file develops the theory of the Cantor space, that is bool^nat with   *)
@@ -77,7 +77,7 @@ split.
 - exact: cantor_zero_dimensional.
 Qed.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* ## Part 1                                                                  *)
 (*                                                                            *)
 (* A tree here has countable levels, and nodes of type `K n` on the nth       *)
@@ -241,7 +241,7 @@ Qed.
 
 End topological_trees.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* ## Part 2                                                                  *)
 (* We can use `tree_map_props` to build a homeomorphism from the              *)
 (* cantor_space to a Cantor-like space T.                                     *)
@@ -339,7 +339,7 @@ Qed.
 
 End TreeStructure.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* ## Part 3: Finitely branching trees are Cantor-like                        *)
 (******************************************************************************)
 Section FinitelyBranchingTrees.
@@ -375,7 +375,7 @@ End FinitelyBranchingTrees.
 
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* ## Part 4: Building a finitely branching tree to cover `T`                 *)
 (******************************************************************************)
 Section alexandroff_hausdorff.

@@ -5,7 +5,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Norm-related Notions                                                     *)
 (*                                                                            *)
 (* This file extends the topological hierarchy with norm-related notions.     *)
@@ -20,7 +20,7 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                                   f has type X -> \bar R.                  *)
 (*                                   F has type set (set X).                  *)
 (*                                                                            *)
-(* ## Normed Topological Abelian groups:                                      *)
+(* ## Normed topological abelian groups                                       *)
 (* ```                                                                        *)
 (*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
