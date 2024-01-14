@@ -7,7 +7,7 @@ Require Import signed reals ereal topology normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure lebesgue_integral numfun exp.
 Require Import convex itv.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
 (*                                                                            *)
 (* This file provides Hoelder's inequality.                                   *)

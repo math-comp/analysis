@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 Require Import reals signed topology prodnormedzmodule normedtype landau forms.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Differentiation                                                          *)
 (*                                                                            *)
 (* This file provides a theory of differentiation. It includes the standard   *)

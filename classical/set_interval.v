@@ -4,7 +4,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From HB Require Import structures.
 From mathcomp Require Import functions.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Sets and Intervals                                                       *)
 (*                                                                            *)
 (* This files contains lemmas about sets and intervals.                       *)

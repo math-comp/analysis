@@ -4,7 +4,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology sequences normedtype numfun.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Summation over classical sets                                            *)
 (*                                                                            *)
 (* This file provides a definition of sum over classical sets and a few       *)

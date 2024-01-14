@@ -5,7 +5,7 @@ From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Filters and basic topological notions                                    *)
 (*                                                                            *)
 (* This file develops tools for the manipulation of filters and basic         *)
@@ -41,7 +41,7 @@ Require Import reals signed.
 (*                                                                            *)
 (******************************************************************************)
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # 1. Filters                                                               *)
 (*                                                                            *)
 (* ## Structure of filter                                                     *)
@@ -203,7 +203,7 @@ Require Import reals signed.
 (*                                                                            *)
 (******************************************************************************)
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # 2. Basic topological notions                                             *)
 (*                                                                            *)
 (* ## Mathematical structures                                                 *)

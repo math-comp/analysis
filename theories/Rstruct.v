@@ -21,7 +21,7 @@ the economic rights, and the successive licensors have only limited
 liability. See the COPYING file for more details.
 *)
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Compatibility with the real numbers of Coq                               *)
 (******************************************************************************)
 

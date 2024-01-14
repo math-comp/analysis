@@ -6,7 +6,7 @@ From mathcomp Require Import interval.
 From mathcomp Require Import mathcomp_extra boolp.
 Require Import signed.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Numbers within an intervel                                               *)
 (*                                                                            *)
 (* This file develops tools to make the manipulation of numbers within        *)

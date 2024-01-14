@@ -5,7 +5,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import set_interval.
 Require Import reals ereal signed topology normedtype landau.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Definitions and lemmas about sequences                                   *)
 (*                                                                            *)
 (* The purpose of this file is to gather generic definitions and lemmas about *)

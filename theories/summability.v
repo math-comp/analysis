@@ -6,7 +6,7 @@ From mathcomp Require Import interval zmodp.
 From mathcomp Require Import boolp classical_sets.
 Require Import ereal reals Rstruct signed topology normedtype.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* (undocumented experiment)                                                  *)
 (******************************************************************************)
 
