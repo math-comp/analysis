@@ -5,7 +5,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
 From mathcomp Require Import functions cardinality set_interval.
 Require Import signed reals ereal topology normedtype sequences.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Numerical functions                                                      *)
 (*                                                                            *)
 (* This file provides definitions and lemmas about numerical functions.       *)

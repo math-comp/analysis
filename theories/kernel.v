@@ -6,7 +6,7 @@ From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology normedtype sequences esum measure.
 Require Import numfun lebesgue_measure lebesgue_integral.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Kernels                                                                  *)
 (*                                                                            *)
 (* This file provides a formation of kernels, s-finite kernels, finite        *)

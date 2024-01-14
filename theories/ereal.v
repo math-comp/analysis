@@ -11,7 +11,7 @@ From mathcomp Require Import fsbigop cardinality set_interval.
 Require Import reals signed topology.
 Require Export constructive_ereal.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Extended real numbers, classical part ($\overline{\mathbb{R}}$)          *)
 (*                                                                            *)
 (* This is an addition to the file constructive_ereal.v with classical logic  *)

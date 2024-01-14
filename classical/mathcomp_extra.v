@@ -9,7 +9,7 @@ Coercion choice.Choice.mixin : choice.Choice.class_of >-> choice.Choice.mixin_of
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # MathComp extra                                                           *)
 (*                                                                            *)
 (* This files contains lemmas and definitions missing from MathComp.          *)

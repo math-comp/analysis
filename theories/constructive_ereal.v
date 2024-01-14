@@ -13,7 +13,7 @@ From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import mathcomp_extra.
 Require Import signed.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Extended real numbers $\overline{R}$                                     *)
 (*                                                                            *)
 (* Given a type R for numbers, \bar R is the type R extended with symbols     *)

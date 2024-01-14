@@ -7,7 +7,7 @@ Require Import reals ereal.
 Require Import signed topology normedtype landau sequences derive realfun.
 Require Import itv convex.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Theory of exponential/logarithm functions                                *)
 (*                                                                            *)
 (* This file defines exponential and logarithm functions and develops their   *)

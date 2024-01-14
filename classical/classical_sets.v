@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect ssralg matrix finmap order ssrnum.
 From mathcomp Require Import ssrint interval.
 From mathcomp Require Import mathcomp_extra boolp.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Set Theory                                                               *)
 (*                                                                            *)
 (* This file develops a basic theory of sets and types equipped with a        *)

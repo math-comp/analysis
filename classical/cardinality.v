@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Cardinality                                                              *)
 (*                                                                            *)
 (* This file provides an account of cardinality properties of classical sets. *)

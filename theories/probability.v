@@ -8,7 +8,7 @@ Require Import exp numfun lebesgue_measure lebesgue_integral.
 Require Import reals ereal signed topology normedtype sequences esum measure.
 Require Import exp numfun lebesgue_measure lebesgue_integral.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Probability                                                              *)
 (*                                                                            *)
 (* This file provides basic notions of probability theory. See measure.v for  *)
