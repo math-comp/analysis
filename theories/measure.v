@@ -5,7 +5,7 @@ From mathcomp Require Import cardinality fsbigop .
 Require Import reals ereal signed topology normedtype sequences esum numfun.
 From HB Require Import structures.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Measure Theory                                                           *)
 (*                                                                            *)
 (* NB: See CONTRIBUTING.md for an introduction to HB concepts and commands.   *)

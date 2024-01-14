@@ -7,7 +7,7 @@ From mathcomp.classical Require Import functions fsbigop cardinality.
 Require Import reals ereal signed topology numfun normedtype sequences esum.
 Require Import real_interval measure realfun.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Lebesgue Stieltjes Measure                                               *)
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue-Stieltjes measure using *)

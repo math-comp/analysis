@@ -4,7 +4,7 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
 From mathcomp Require Import mathcomp_extra.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Positive, non-negative numbers, etc.                                     *)
 (*                                                                            *)
 (* This file develops tools to make the manipulation of numbers with a known  *)

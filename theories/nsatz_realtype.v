@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
 From mathcomp Require Import boolp.
 Require Import reals ereal.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # nsatz for realType                                                       *)
 (*                                                                            *)
 (* This file registers the ring corresponding to the MathComp-Analysis type   *)

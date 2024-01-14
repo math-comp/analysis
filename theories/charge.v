@@ -7,7 +7,7 @@ From HB Require Import structures.
 Require Import reals ereal signed topology numfun normedtype sequences.
 Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Charges                                                                  *)
 (*                                                                            *)
 (* NB: See CONTRIBUTING.md for an introduction to HB concepts and commands.   *)

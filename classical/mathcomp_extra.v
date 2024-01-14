@@ -8,7 +8,7 @@ From mathcomp Require choice.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # MathComp extra                                                           *)
 (*                                                                            *)
 (* This files contains lemmas and definitions missing from MathComp.          *)

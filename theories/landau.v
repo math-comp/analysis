@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 Require Import ereal reals signed topology normedtype prodnormedzmodule.
 
-(***md*************************************************************************)
+(**md**************************************************************************)
 (* # Bachmann-Landau notations: $f=o(e)$, $f=O(e)$                            *)
 (*                                                                            *)
 (* This library is very asymmetric, in multiple respects:                     *)
