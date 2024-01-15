@@ -1795,6 +1795,37 @@ have /ih : itv_partition h b t by split => //; exact/eqP.
 by rewrite /variation => ->; rewrite !big_seq; apply/eq_bigr => r rt.
 Qed.
 
+Lemma variation_prev a b f s : itv_partition a b s ->
+  variation a b f s = \sum_(x <- s) `|f x - f (prev (locked (a :: s)) x)|.
+Proof.
+move=> [] sa /eqP asb; rewrite /variation [in LHS]/= (big_nth b) !big_nat.
+apply: eq_bigr => i /andP[_ si]; congr (`| _ - f _ |).
+rewrite -lock.
+rewrite prev_nth inE gt_eqF; last first.
+  rewrite -[a]/(nth b (a :: s) 0) -[ltRHS]/(nth b (a :: s) i.+1).
+  exact: lt_sorted_ltn_nth.
+rewrite orFb mem_nth// index_uniq//.
+  by apply: set_nth_default => /=; rewrite ltnS ltnW.
+by apply: (sorted_uniq lt_trans) => //; apply: path_sorted sa.
+Qed.
+
+Lemma variation_next a b f s : itv_partition a b s ->
+  variation a b f s =
+  \sum_(x <- belast a s) `|f (next (locked (a :: s)) x) - f x|.
+Proof.
+move=> [] sa /eqP asb; rewrite /variation [in LHS]/= (big_nth b) !big_nat.
+rewrite size_belast; apply: eq_bigr => i /andP[_ si].
+congr (`| f _ - f _ |); last first.
+  by rewrite lastI -cats1 nth_cat size_belast// si.
+rewrite -lock next_nth.
+rewrite {1}lastI mem_rcons inE mem_nth ?size_belast// orbT.
+rewrite lastI -cats1 index_cat mem_nth ?size_belast//.
+rewrite index_uniq ?size_belast//.
+  exact: set_nth_default.
+have /lt_sorted_uniq : sorted <%R (a :: s) by [].
+by rewrite lastI rcons_uniq => /andP[].
+Qed.
+
 Lemma variation_nil a b f : variation a b f [::] = 0.
 Proof. by rewrite /variation/= big_nil. Qed.
 
@@ -2336,14 +2367,14 @@ have : variation x b f (i :: j) <= variation x t f (t :: nil) +
     by rewrite /itv_partition/= ti ij ijb.
   exact: le_variation.
 rewrite -lee_fin => /lt_le_trans /[apply].
-rewrite {1}variationE; last  exact: itv_partition1.
+rewrite {1}variation_prev; last exact: itv_partition1.
 rewrite /= -addeA -lte_subr_addr; last by rewrite fin_numD; apply/andP.
 rewrite EFinD -lte_fin ?fineK // oppeD //= ?fin_num_adde_defl // opprK addeA.
 move/lt_trans; apply.
 rewrite [x in (_ < x%:E)%E]Num.Theory.splitr EFinD addeC lte_add2lE //.
 rewrite -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
-  rewrite [in leRHS]variationE; last exact: itv_partition1.
+  rewrite [in leRHS]variation_prev; last exact: itv_partition1.
   rewrite gee_addl // sube_le0; apply: ereal_sup_ub => /=.
   exists (variation t b f (i :: j)) => //; apply: variations_variation.
   by rewrite /itv_partition/= ijb ij ti.

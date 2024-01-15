@@ -114,6 +114,9 @@
     `neg_TV_right_continuous`, `total_variation_opp`, `TV_left_continuous`, and
     `TV_continuous`.
 
+- in `realfun.v`:
+  + lemmas `variation_prev`, `variation_next`
+
 ### Changed
 
 - in `topology.v`:
