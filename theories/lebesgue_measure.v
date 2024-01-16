@@ -1208,7 +1208,7 @@ Lemma measurable_itv_bnd_infty b x :
 Proof.
 case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itv_c_infty.
 rewrite [X in measurable X](_ : _ =
-    \bigcup_(k in [set k | k >= x]%N) `[k.+1, +oo[%classic); last first.
+  \bigcup_(k in [set k | k >= x]%N) `[k.+1, +oo[%classic); last first.
   apply/seteqP; split => [z /=|/= z [t/= xt]].
     rewrite in_itv/= andbT => xz; exists z.-1 => /=.
       by rewrite -ltnS//=; case: z xz.
@@ -1350,7 +1350,7 @@ Lemma measurable_fun_leq D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
 - rewrite preimage_true [X in _ `&` X](_ : _  =
-      \bigcup_(i in range g) ([set y | f y <= i]%O `&` [set t | i <= g t]%O)).
+    \bigcup_(i in range g) ([set y | f y <= i]%O `&` [set t | i <= g t]%O)).
     rewrite setI_bigcupr; apply: bigcup_measurable => k fk.
     rewrite setIIr; apply: measurableI => //.
     + by rewrite -preimage_itv_infty_c; exact: mf.
@@ -1438,6 +1438,7 @@ Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
 Proof.
 split=> [mf mD A mA|]; last by move=> mg; exact: measurableT_comp.
 rewrite [X in measurable X](_ : _ = D `&` (EFin \o g) @^-1` (EFin @` A)).
+  (* TODO: use measurable_image_EFin? *)
   by apply: mf => //; exists A => //; exists set0; [constructor|rewrite setU0].
 congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
