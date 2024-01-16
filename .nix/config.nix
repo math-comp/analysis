@@ -45,12 +45,7 @@
   bundles."8.18".push-branches = [ "master" "hierarchy-builder" ];
   bundles."8.18".coqPackages.coq.override.version = "8.18";
   bundles."8.19".push-branches = [ "master" "hierarchy-builder" ];
-  bundles."8.19".coqPackages = {
-    coq.override.version = "8.19";
-    mathcomp.override.version = "mathcomp-1.19.0";
-    mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "1.5.2";
-  };
+  bundles."8.19".coqPackages.coq.override.version = "8.19";
 
   bundles."master".push-branches = [ "master" "hierarchy-builder" ];
   bundles."master".coqPackages = {
