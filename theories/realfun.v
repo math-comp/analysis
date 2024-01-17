@@ -1562,57 +1562,6 @@ End is_derive_inverse.
 #[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (eapply is_deriveV; first by []) : typeclass_instances.
 
-Lemma last_filterP d {T : porderType d} (h : T) (P : pred T) t :
-  P h -> P (last h [seq x <- t | P x]).
-Proof.
-elim: t h => //= t1 t2 ih h hc.
-by case: ifPn => //= t1c; exact: ih.
-Qed.
-Arguments last_filterP {d T h} P t.
-
-Lemma path_lt_filter0 d {T : orderType d} h (s : seq T) :
-  path <%O h s -> [seq x <- s | (x < h)%O] = [::].
-Proof.
-move=> /lt_path_min/allP sh; rewrite -(filter_pred0 s).
-apply: eq_in_filter => x xs.
-by apply/negbTE; have := sh _ xs; rewrite ltNge; apply: contra => /ltW.
-Qed.
-
-Lemma path_lt_filterT d {T : porderType d} h (s : seq T) :
-  path <%O h s -> [seq x <- s | (h < x)%O] = s.
-Proof.
-move=> /lt_path_min/allP sh; rewrite -[RHS](filter_predT s).
-by apply: eq_in_filter => x xs; exact: sh.
-Qed.
-
-Lemma path_lt_head d {T : porderType d} (a b : T) (s : seq T) :
-  (a < b)%O -> path <%O b s -> path <%O a s.
-Proof.
-by elim: s b => // h t ih b /= ab /andP[bh ->]; rewrite andbT (lt_trans ab).
-Qed.
-
-Lemma path_lt_last_filter d {T : porderType d} (a b c : T) (l : seq T) :
-  (a < c)%O -> (c < b)%O -> path <%O a l -> last a l = b ->
-  last c [seq x <- l | (c < x)%O] = b.
-Proof.
-elim/last_ind : l a b c => /= [|h t ih a b c ac cb].
-  move=> a b c ac cb _ ?; subst b.
-  have := lt_trans ac cb.
-  by rewrite ltxx.
-rewrite rcons_path => /andP[ah ht].
-rewrite last_rcons => htb.
-by rewrite filter_rcons htb cb last_rcons.
-Qed.
-
-Lemma path_lt_le_last d {T : porderType d} (i : T) (s : seq T) :
-  path <%O i s -> (i <= last i s)%O.
-Proof.
-elim: s i => // a [_ i /andP[/ltW//]|b t ih i/= /and3P[ia ab bt]] /=.
-have /= := ih a.
-rewrite ab bt => /(_ erefl).
-by apply: le_trans; exact/ltW.
-Qed.
-
 Section interval_partition.
 Context {R : realType}.
 Implicit Type (a b : R) (s : seq R).
@@ -1784,7 +1733,7 @@ Implicit Types (a b : R) (f g : R -> R).
 Definition variation a b f s := let F := f \o nth b (a :: s) in
   \sum_(0 <= n < size s) `|F n.+1 - F n|%R.
 
-Lemma variationE a b f s : itv_partition a b s ->
+Lemma variation_zip a b f s : itv_partition a b s ->
   variation a b f s = \sum_(x <- zip s (a :: s)) `|f x.1 - f x.2|.
 Proof.
 elim: s a b => // [a b|h t ih a b].
@@ -1795,6 +1744,7 @@ have /ih : itv_partition h b t by split => //; exact/eqP.
 by rewrite /variation => ->; rewrite !big_seq; apply/eq_bigr => r rt.
 Qed.
 
+(* NB: not used yet but should allow for "term-by-term" comparisons *)
 Lemma variation_prev a b f s : itv_partition a b s ->
   variation a b f s = \sum_(x <- s) `|f x - f (prev (locked (a :: s)) x)|.
 Proof.
@@ -1888,6 +1838,7 @@ rewrite addSnnS (addnC k) -cat_cons nth_cat/= -ltn_subRL subnn ltn0.
 by rewrite -(addnC k) addnK.
 Qed.
 
+(* NB: this is the only lemma that uses variation_zip *)
 Lemma variation_itv_partitionLR a b c f s : a < c -> c < b ->
   itv_partition a b s ->
   variation a b f s <= variation a b f (itv_partitionL s c ++ itv_partitionR s c).
@@ -1898,7 +1849,7 @@ rewrite /itv_partitionL [in leLHS](notin_itv_partition _ cl)//; last first.
   by apply: path_sorted; case: abs => + _; exact.
 rewrite -notin_itv_partition//; last first.
   by apply: path_sorted; case: abs => /= + _; exact.
-rewrite !variationE//; last first.
+rewrite !variation_zip//; last first.
   by apply: itv_partition_cat;
     [exact: (itv_partitionLP _ bc)|exact: (itv_partitionRP ac)].
 rewrite [in leLHS](notin_itv_partition _ cl); last first.
@@ -1983,29 +1934,32 @@ suff: (f \o -%R) \o -%R = f by move=> ->.
 by apply/funext=> ? /=; rewrite opprK.
 Qed.
 
-Lemma variation_monotone a b f (s t : list R) :
+Lemma variation_subseq a b f (s t : list R) :
   itv_partition a b s -> itv_partition a b t ->
   subseq s t ->
   variation a b f s <= variation a b f t.
 Proof.
-elim: t s a; first by move=> ? ? ? [/=] _ /eqP -> /eqP ->.
-move=> a s IH [] /= x; first by rewrite variation_nil // variation_ge0.
-move=> t w /[dup] /itv_partition_cons itvxb /[dup] /itv_partition_le wb itvxt.
-move=> /[dup] /itv_partition_cons itvas itvws.
-have ? : a <= b by exact: (itv_partition_le itvas).
-have wa : w < a by case: itvws => /= /andP [].
-have waW : w <= a by exact: ltW.
-case nXA: (x == a).
-  move/eqP:nXA itvxt itvxb => -> itvat itvt sub; rewrite -[_ :: t]cat1s -[_ :: s]cat1s.
-  by rewrite -?(@variationD _ _ a) // ?ler_add // ?(ltW wa) //;
-    [exact: IH | exact: itv_partition1 | exact: itv_partition1].
-move=> sub; rewrite -[_ :: s]cat1s -(@variationD _ _ a) => //; last exact: itv_partition1.
+elim: t s a => [? ? ? /= _ /eqP ->//|a s IH [|x t] w].
+  by rewrite variation_nil // variation_ge0.
+move=> /[dup] /itv_partition_cons itvxb /[dup] /itv_partition_le wb itvxt.
+move=> /[dup] /itv_partition_cons itvas itvws /=.
+have ab : a <= b by exact: (itv_partition_le itvas).
+have wa : w < a by case: itvws => /= /andP[].
+have waW : w <= a := ltW wa.
+case: ifPn => [|] nXA.
+  move/eqP : nXA itvxt itvxb => -> itvat itvt /= ta.
+  rewrite -[_ :: t]cat1s -[_ :: s]cat1s.
+  rewrite -?(@variationD _ _ a)//; [|exact: itv_partition1..].
+  by rewrite ler_add// IH.
+move=> xts; rewrite -[_ :: s]cat1s -(@variationD _ _ a) => //; last first.
+  exact: itv_partition1.
 have [y [s' s'E]] : exists y s', s = y :: s'.
-  by case: {itvas itvws IH} s sub => // y s' ?; exists y, s'.
-apply: le_trans; first apply IH => //.
-  case: itvws => /= /andP [_]; rewrite s'E /= => /andP [ay ys' lyb].
-  by split => //; apply/ (path_lt_head wa)/andP; split => //.
-by rewrite variationD => //; [exact: le_variation | exact: itv_partition1].
+  by case: {itvas itvws IH} s xts => // y s' ?; exists y, s'.
+apply: (@le_trans _ _ (variation w b f s)).
+  rewrite IH//.
+  case: itvws => /= /andP[_]; rewrite s'E /= => /andP[ay ys' lyb].
+  by split => //; rewrite (path_lt_head wa)//= ys' andbT.
+by rewrite variationD //; [exact: le_variation | exact: itv_partition1].
 Qed.
 
 End variation.

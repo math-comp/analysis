@@ -83,7 +83,7 @@
     `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`, 
     `notin_itv_partition`, `itv_partition_rev`,
 
-  + new lemmas `variationE`, `variation_nil`,
+  + new lemmas `variation_zip`, `variation_prev`, `variation_next`, `variation_nil`,
     `variation_ge0`, `variationN`, `variation_le`, `nondecreasing_variation`, 
     `nonincreasing_variation`, `variationD`, `variation_itv_partitionLR`, 
     `le_variation`, `variation_opp_rev`, `variation_rev_opp`
@@ -102,7 +102,7 @@
     `neg_tv_right_continuous`, `total_variation_opp`,
     `total_variation_left_continuous`, `total_variation_continuous`,
     `le_variation`, `variation_opp_rev`, `variation_rev_opp`,
-    `variation_monotone`, `variations_variation`, `variations_neq0`,
+    `variation_subseq`, `variations_variation`, `variations_neq0`,
     `variationsN`, `variationsxx`, `bounded_variationxx`, `bounded_variationD`,
     `bounded_variationN`, `bounded_variationl`, `bounded_variationr`,
     `variations_opp`, `nondecreasing_bounded_variation`, `total_variationxx`,
@@ -113,9 +113,6 @@
     `neg_TV_bounded_variation`, `TV_right_continuous`,
     `neg_TV_right_continuous`, `total_variation_opp`, `TV_left_continuous`, and
     `TV_continuous`.
-
-- in `realfun.v`:
-  + lemmas `variation_prev`, `variation_next`
 
 ### Changed
 
