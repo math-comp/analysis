@@ -479,8 +479,8 @@ split=> [[k k0 fOg] | [k [kreal fOg]]].
   exists k; rewrite realE (ltW k0) /=; split=> // l ltkl; move: fOg.
   by apply: filter_app; near=> x => /le_trans; apply; rewrite ler_wpmul2r // ltW.
 exists (Num.max 1 `|k + 1|) => //.
-apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
-  by rewrite (@lt_le_trans _ _ (k + 1)) ?ltr_addl // real_ler_norm ?realD.
+apply: fOg; rewrite (@le_trans _ _ `|k + 1|) //.
+  by rewrite (@le_trans _ _ (k + 1)) ?ler_addl// real_ler_norm ?realD.
 by rewrite comparable_le_maxr ?real_comparable// lexx orbT.
 Unshelve. end_near. Qed.
 
@@ -678,9 +678,11 @@ Notation "[o_ x e 'of' f ]" := (mklittleo gen_tag x f e).
 (*Printing*)
 Notation "[o '_' x e 'of' f ]" := (the_littleo _ _ (PhantomF x) f e).
 
-Lemma eqoO (F : filter_on T) (f : T -> V) (e : T -> W) :
-  [o_F e of f] =O_F e.
-Proof. by apply/eqOP; exists 0; split => // k kgt0; apply: littleoP. Qed.
+Lemma eqoO (F : filter_on T) (f : T -> V) (e : T -> W) : [o_F e of f] =O_F e.
+Proof.
+apply/eqOP; exists 1; split => // k kge1; apply: littleoP.
+by rewrite (lt_le_trans _ kge1).
+Qed.
 Hint Resolve eqoO : core.
 
 (* NB: duplicate from Section Domination *)
@@ -1115,10 +1117,10 @@ rewrite -linearB opprD addrC addrNK linearN normrN; near: y.
 suff flip : \forall k \near +oo, forall x, `|f x| <= k * `|x|.
   near +oo => k; near=> y.
   rewrite (le_lt_trans (near flip k _ _)) // -ltr_pdivl_mull; last first.
-    by near: k; exists 0.
+    by near: k; exact: nbhs_pinfty_gt.
   near: y; apply/nbhs_normP.
   eexists; last by move=> ?; rewrite /= sub0r normrN; apply.
-  by rewrite /= mulr_gt0 // invr_gt0; near: k; exists 0.
+  by rewrite /= mulr_gt0 // invr_gt0; near: k; exact: nbhs_pinfty_gt.
 have /nbhs_normP [_/posnumP[d]] := Of1.
 rewrite /cst [X in _ * X]normr1 mulr1 => fk; near=> k => y.
 case: (ler0P `|y|) => [|y0].
@@ -1131,7 +1133,7 @@ rewrite -normm_s.
 have <- : GRing.Scale.op s_law =2 s by rewrite GRing.Scale.opE.
 rewrite -linearZ fk //= distrC subr0 normrZ ger0_norm //.
 rewrite invfM mulrA mulfVK ?lt0r_neq0 // ltr_pdivr_mulr //.
-by rewrite -ltr_pdivr_mull//.
+by rewrite -ltr_pdivr_mull.
 Unshelve. all: by end_near. Qed.
 
 End Linear3.
@@ -1337,7 +1339,7 @@ rewrite (@le_trans _ _ ((k2%:num * k1%:num)^-1 * `|(W1 * W2) x|)) //.
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA (@normrM _ (W1 x)).
   by rewrite ler_pmul ?mulr_ge0 //; near: x.
-by rewrite ler_wpmul2r // ltW //.
+by rewrite ler_wpmul2r // ltW.
 Unshelve. all: by end_near. Qed.
 
 End big_omega_in_R.
@@ -1499,7 +1501,7 @@ rewrite [`|_|]normrM (@le_trans _ _ ((k2%:num * k1%:num)^-1 * `|(T1 * T2) x|)) /
   rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivl_mull //.
   rewrite ler_pdivl_mull // (mulrA k1%:num) mulrCA (@normrM _ (T1 x)) ler_pmul //;
   by [rewrite mulr_ge0 //|near: x].
-by rewrite ler_wpmul2r // ltW //.
+by rewrite ler_wpmul2r // ltW.
 Unshelve. all: by end_near. Qed.
 
 End big_theta_in_R.

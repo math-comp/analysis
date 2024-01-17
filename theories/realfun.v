@@ -60,7 +60,7 @@ Lemma cvg_addrl (M : R) : M + r @[r --> +oo] --> +oo.
 Proof.
 move=> P [r [rreal rP]]; exists (r - M); split.
   by rewrite realB// num_real.
-by move=> m; rewrite ltr_subl_addl => /rP.
+by move=> m; rewrite ler_subl_addl => /rP.
 Qed.
 
 (* NB: see cvg_addnr in topology.v *)
@@ -296,7 +296,7 @@ have [Spoo|Spoo] := pselect (S +oo).
   have -> : l = +oo by rewrite /l /ereal_sup; exact: supremum_pinfty.
   rewrite -(cvg_shiftr `|N|); apply: cvg_near_cst.
   exists N; split; first by rewrite num_real.
-  by move=> x /ltW Nx; rewrite Nf// ler_paddr.
+  by move=> x Nx; rewrite Nf// ler_paddr.
 have [lpoo|lpoo] := eqVneq l +oo.
   rewrite lpoo; apply/cvgeyPge => M.
   have /ereal_sup_gt[_ [n _] <- Mun] : M%:E < l by rewrite lpoo// ltry.
@@ -323,7 +323,7 @@ have xB r : (x <= r)%R -> B r.
   by move: xr; rewrite urnoo leeNy_eq; exact/negP.
 rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
   exists x; split; first by rewrite num_real.
-  by move=> r A1r; rewrite f_fin_num //; exact/xB/ltW.
+  by move=> r A1r; rewrite f_fin_num //; exact/xB.
 set g := fun n => if (n < x)%R then fine (f x) else fine (f n).
 have <- : sup (range g) = fine l.
   apply: EFin_inj; rewrite -ereal_sup_EFin//; last 2 first.

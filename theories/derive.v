@@ -1323,8 +1323,8 @@ have imf_sup : has_sup imf.
   split; first by exists (f a); apply/imageP; rewrite /= in_itv /= lexx.
   have [M [Mreal imfltM]] : bounded_set (f @` `[a, b]).
     by apply/compact_bounded/continuous_compact => //; exact: segment_compact.
-  exists (M + 1) => y /imfltM yleM.
-  by rewrite (le_trans _ (yleM _ _)) ?ler_norm ?ltr_addl.
+  exists (M + 1); apply/ubP => y /imfltM/= yleM.
+  by rewrite (le_trans _ (yleM _ _)) ?ler_addl ?ler_norm.
 have [|imf_ltsup] := pselect (exists2 c, c \in `[a, b]%R & f c = sup imf).
   move=> [c cab fceqsup]; exists c => // t tab; rewrite fceqsup.
   by apply/sup_upper_bound => //; exact/imageP.

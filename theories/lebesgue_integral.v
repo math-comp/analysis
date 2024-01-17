@@ -433,7 +433,7 @@ Lemma simple_bounded (f : {sfun T >-> R}) :
 Proof.
 have /finite_seqP[r fr] := fimfunP f.
 exists (fine (\big[maxe/-oo%E]_(i <- r) `|i|%:E)).
-split; rewrite ?num_real// => x mx z _; apply/ltW/(le_lt_trans _ mx).
+split; rewrite ?num_real// => x mx z _; apply/(le_trans _ mx).
 have ? : f z \in r by have := imageT f z; rewrite fr.
 rewrite -[leLHS]/(fine `|f z|%:E) fine_le//.
   have := @bigmaxe_fin_num _ (map normr r) `|f z|.
@@ -4785,7 +4785,7 @@ Proof.
 move=> Afin mfA bdA; apply/integrableP; split; first exact/EFin_measurable_fun.
 have [M [_ mrt]] := bdA; apply: le_lt_trans.
   apply: (integral_le_bound (`|M| + 1)%:E) => //; first exact: measurableT_comp.
-  by apply: aeW => z Az; rewrite lee_fin mrt// ltr_spaddr// ler_norm.
+  by apply: aeW => z Az; rewrite lee_fin mrt// ler_paddr// ler_norm.
 by rewrite lte_mul_pinfty.
 Qed.
 
@@ -4877,7 +4877,7 @@ Lemma compact_finite_measure (A : set R^o) : compact A -> mu A < +oo.
 Proof.
 move=> /[dup]/compact_measurable => mA /compact_bounded[N [_ N1x]].
 have AN1 : (A `<=` `[- (`|N| + 1), `|N| + 1])%R.
-  by move=> z Az; rewrite set_itvcc /= -ler_norml N1x// ltr_spaddr// ler_norm.
+  by move=> z Az; rewrite set_itvcc /= -ler_norml N1x// ler_paddr// ler_norm.
 rewrite (le_lt_trans (le_measure _ _ _ AN1)) ?inE//=.
 by rewrite lebesgue_measure_itv/= lte_fin gtr_opp// EFinD ltry.
 Qed.
@@ -4936,7 +4936,7 @@ have mg : measurable_fun E g.
 have [M Mpos Mbd] : (exists2 M, 0 < M & forall x, `|g x| <= M)%R.
   have [M [_ /= bdM]] := simple_bounded g.
   exists (`|M| + 1)%R; first exact: ltr_spaddr.
-  by move=> x; rewrite bdM// ltr_spaddr// ler_norm.
+  by move=> x; rewrite bdM// ler_paddr// ler_norm.
 have [] // := @measurable_almost_continuous _ _ mE _ g (eps%:num / 2 / (M *+ 2)).
   by rewrite divr_gt0// mulrn_wgt0.
 move=> A [cptA AE /= muAE ctsAF].
@@ -4950,7 +4950,7 @@ move=> h [gh ctsh hbdM]; have mh : measurable_fun E h.
 have intg : mu.-integrable E (EFin \o h).
   apply: measurable_bounded_integrable => //.
   exists M; split; rewrite ?num_real // => x Mx y _ /=.
-  by rewrite (le_trans _ (ltW Mx)).
+  by rewrite (le_trans _ Mx).
 exists h; split => //; rewrite [eps%:num]splitr; apply: le_lt_trans.
   pose fgh x := `|(f x - g x)%:E| + `|(g x - h x)%:E|.
   apply: (@ge0_le_integral _ _ _ mu _ mE _ fgh) => //.

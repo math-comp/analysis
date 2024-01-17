@@ -2225,7 +2225,7 @@ move=> cf; have [M [Mreal Mu]] := cvg_seq_bounded cf.
 apply: nonincreasing_is_cvgn.
   exact/nonincreasing_sups/bounded_fun_has_ubound/cvg_seq_bounded.
 exists (- (M + 1)) => _ [n _ <-]; rewrite (@le_trans _ _ (u n)) //.
-  by apply/lerNnormlW/Mu => //; rewrite ltr_addl.
+  by apply/lerNnormlW/Mu => //; rewrite ler_addl.
 apply: sup_ub; last by exists n => /=.
 exact/has_ubound_sdrop/bounded_fun_has_ubound/cvg_seq_bounded.
 Qed.

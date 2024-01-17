@@ -745,7 +745,7 @@ Local Notation "{ 'all3' P }" := (forall x y z, P x y z: Prop) (at level 0).
 Local Notation ph := (phantom _).
 
 Definition prop_near1 {X} {fX : filteredType X} (x : fX)
-   P (phP : ph {all1 P}) := nbhs x P.
+  P (phP : ph {all1 P}) := nbhs x P.
 
 Definition prop_near2 {X X'} {fX : filteredType X} {fX' : filteredType X'}
   (x : fX) (x' : fX') := fun P of ph {all2 P} =>
@@ -798,7 +798,7 @@ Arguments cvg_refl {T F}.
 #[global] Hint Resolve cvg_refl : core.
 
 Lemma cvg_trans T (G F H : set (set T)) :
-  (F `=>` G) -> (G `=>` H) -> (F `=>` H).
+  F `=>` G -> G `=>` H -> F `=>` H.
 Proof. by move=> FG GH P /GH /FG. Qed.
 
 Notation "F --> G" := (cvg_to [filter of F] [filter of G]) : classical_set_scope.
