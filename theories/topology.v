@@ -6257,7 +6257,7 @@ apply/in_segment_addgt0Pr => _ /posnumP[e].
 rewrite in_itv /= -ler_distl; have he : 0 < (e%:num / 2) by [].
 have [z [zx_he yz_he]] := clxy _ _ (nbhsx_ballx x _ he) (nbhsx_ballx y _ he).
 have := ball_triangle yz_he (ball_sym zx_he).
-by rewrite -mulr2n -mulr_natr divfK // => /ltW.
+by rewrite -mulr2n -(mulr_natr (_ / _) 2) divfK// => /ltW.
 Qed.
 
 Section RestrictedUniformTopology.
