@@ -299,8 +299,10 @@ Require Import reals signed.
 (*                                     for a finite number of indices in D    *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness  *)
+(*                          regular == regular space                          *)
 (*                    near_covering == a reformulation of covering compact    *)
 (*                                     better suited for use with `near`      *)
+(*             near_covering_within == equivalent definition of near_covering *)
 (*              kolmogorov_space T <-> T is a Kolmogorov space (T0)           *)
 (*              accessible_space T <-> T is an accessible space (T1)          *)
 (*                       close x y <-> x and y are arbitrarily close w.r.t.   *)
@@ -449,26 +451,29 @@ Require Import reals signed.
 (*                                                                            *)
 (* ### Function space topologies                                              *)
 (* ```                                                                        *)
-(*     {uniform` A -> V} == the space U -> V, equipped with the topology of   *)
-(*                          uniform convergence from a set A to V, where      *)
-(*                          V is a uniformType                                *)
-(*      {uniform U -> V} := {uniform` [set: U] -> V}                          *)
-(*  {uniform A, F --> f} == F converges to f in {uniform A -> V}              *)
-(*    {uniform, F --> f} := {uniform setT, F --> f}                           *)
-(*         {ptws U -> V} == the space U -> V, equipped with the topology of   *)
-(*                          pointwise convergence from U to V, where V is a   *)
-(*                          topologicalType                                   *)
-(*                          This is a notation for @fct_Pointwise U V.        *)
-(*       {ptws, F --> f} == F converges to f in {ptws U -> V}                 *)
-(*  {family fam, U -> V} == The space U -> V, equipped with the supremum      *)
-(*                          topology of {uniform A -> f} for each A in 'fam'  *)
-(*                          In particular {family compact, U -> V} is the     *)
-(*                          topology of compact convergence.                  *)
-(* {family fam, F --> f} == F converges to f in {family fam, U -> V}          *)
+(*       {uniform` A -> V} == the space U -> V, equipped with the topology    *)
+(*                            of uniform convergence from a set A to V, where *)
+(*                            V is a uniformType                              *)
+(*        {uniform U -> V} := {uniform` [set: U] -> V}                        *)
+(*    {uniform A, F --> f} == F converges to f in {uniform A -> V}            *)
+(*      {uniform, F --> f} := {uniform setT, F --> f}                         *)
+(*           {ptws U -> V} == the space U -> V, equipped with the topology of *)
+(*                            pointwise convergence from U to V, where V is   *)
+(*                            a topologicalType                               *)
+(*                            This is a notation for @fct_Pointwise U V.      *)
+(*         {ptws, F --> f} == F converges to f in {ptws U -> V}               *)
+(*    {family fam, U -> V} == the space U -> V, equipped with the supremum    *)
+(*                            topology of {uniform A -> f} for each A in      *)
+(*                            'fam'                                           *)
+(*                            In particular {family compact, U -> V} is the   *)
+(*                            topology of compact convergence.                *)
+(*   {family fam, F --> f} == F converges to f in {family fam, U -> V}        *)
+(*  {compact_open, U -> V} == compact-open topology                           *)
+(* {compact_open, F --> f} == F converges to f in {compact_open, U -> V}      *)
 (*                                                                            *)
-(*               dense S == the set (S : set T) is dense in T, with T of      *)
-(*                          type topologicalType                              *)
-(*  weak_pseudoMetricType == the metric space for weak topologies             *)
+(*                 dense S == the set (S : set T) is dense in T, with T of    *)
+(*                            type topologicalType                            *)
+(*   weak_pseudoMetricType == the metric space for weak topologies            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ### Subspaces of topological spaces                                        *)
@@ -6617,7 +6622,7 @@ Qed.
 
 Definition fct_UniformFamily (fam : (set U) -> Prop) := U -> V.
 
-Definition family_cvg_uniformType (fam: set U -> Prop) :=
+Definition family_cvg_uniformType (fam : set U -> Prop) :=
   @sup_uniformType  _
     (sigT fam)
     (fun k => Uniform.class (@fct_restrictedUniformType U (projT1 k) V)).
@@ -6712,15 +6717,15 @@ case=> y g [/= Efxy] AEg Ay; apply: EfO; apply: subset_split_ent => //.
 by exists (f y) => //=; exact: AEg.
 Unshelve. all: by end_near. Qed.
 
-(* It turns out {family compact, U -> V} can be generalized to only assume    *)
-(* `topologicalType` on V. This topology is called the compact-open topology. *)
-(* This topology is special because it is the _only_ topology that will allow *)
-(* curry/uncurry to be continuous.                                            *)
+(**md It turns out `{family compact, U -> V}` can be generalized to only assume
+  `topologicalType` on `V`. This topology is called the compact-open topology.
+   This topology is special because it is the _only_ topology that will allow
+   `curry`/`uncurry` to be continuous. *)
 
 Section compact_open.
 Context {T U : topologicalType}.
 
-Definition compact_open : Type := T->U.
+Definition compact_open : Type := T -> U.
 
 Section compact_open_setwise.
 Context {K : set T}.
