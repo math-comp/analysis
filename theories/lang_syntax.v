@@ -450,6 +450,7 @@ Inductive exp : flag -> ctx -> typ -> Type :=
 | exp_binomial_trunc g (n : nat) :
     exp D g Real -> exp D g (Prob Nat)
 | exp_uniform g (a b : R) (ab0 : (0 < b - a)%R) : exp D g (Prob Real)
+| exp_beta g (a b : nat) : exp D g (Prob Real)
 | exp_poisson g : nat -> exp D g Real -> exp D g Real
 | exp_normalize g t : exp P g t -> exp D g (Prob t)
 | exp_letin g t1 t2 str : exp P g t1 -> exp P ((str, t1) :: g) t2 ->
@@ -485,6 +486,7 @@ Arguments exp_bernoulli {R g}.
 Arguments exp_bernoulli_trunc {R g} &.
 Arguments exp_binomial {R g}.
 Arguments exp_uniform {R g} &.
+Arguments exp_beta {R g} &.
 Arguments exp_binomial_trunc {R g} &.
 Arguments exp_poisson {R g}.
 Arguments exp_normalize {R g _}.
@@ -574,6 +576,7 @@ Fixpoint free_vars k g t (e : @exp R k g t) : seq string :=
   | exp_bernoulli_trunc _ e     => free_vars e
   | exp_binomial _ _ _ _     => [::]
   | exp_uniform _ _ _ _     => [::]
+  | exp_beta _ _ _ => [::]
   | exp_binomial_trunc _ _ e     => free_vars e
   | exp_poisson _ _ e       => free_vars e
   | exp_normalize _ _ e     => free_vars e
@@ -754,6 +757,9 @@ Inductive evalD : forall g t, exp D g t ->
   (exp_uniform a b ab0 : exp D g _) -D> cst (uniform_probability ab0) ;
                                         measurable_cst _
 
+| eval_beta g (a b : nat) (p : {nonneg R}) (p1 : (p%:num <= 1)%R) :
+  (exp_beta a b : exp D g _) -D> cst (beta a b p1) ; measurable_cst _
+
 | eval_poisson g n (e : exp D g _) f mf :
   e -D> f ; mf ->
   exp_poisson n e -D> poisson n \o f ;
@@ -901,11 +907,11 @@ all: (rewrite {g t e u v mu mv hu}).
   inversion 1; subst g0 a0 b0.
   inj_ex H4; subst v.
   by have -> : ab0 = ab2.
-- move=> g n e0 f mf ev IH {}v {}mv.
-  inversion 1; subst g0 n0.
-  inj_ex H2; subst e0.
-  inj_ex H4; subst v.
-  by rewrite (IH _ _ H3).
+- move=> g a b p p1 {}v {}mv.
+  inversion 1. subst g0 a0 b0.
+  inj_ex H2; subst v.
+  inj_ex H4.
+  have -> : p1 = p2 by [].
 - move=> g t e0 k ev IH {}v {}mv.
   inversion 1; subst g0 t0.
   inj_ex H2; subst e0.
