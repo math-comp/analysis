@@ -5033,13 +5033,13 @@ Lemma ball_triangle (y x z : M) (e1 e2 : R) :
   ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
 Proof. exact: ball_triangle_subproof. Qed.
 
-Lemma nbhsx_ballx (x : M) (eps : {posnum R}) : nbhs x (ball x eps%:num).
-Proof. by apply/nbhs_ballP; exists eps%:num => /=. Qed.
+Lemma nbhsx_ballx (x : M) (eps : R) : 0 < eps -> nbhs x (ball x eps).
+Proof. by move=> e0; apply/nbhs_ballP; exists eps. Qed.
 
 Lemma open_nbhs_ball (x : M) (eps : {posnum R}) : open_nbhs x ((ball x eps%:num)^°).
 Proof.
 split; first exact: open_interior.
-by apply: nbhs_singleton; apply: nbhs_interior; apply:nbhsx_ballx.
+by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhsx_ballx.
 Qed.
 
 Lemma le_ball (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
@@ -5054,8 +5054,7 @@ apply: Build_ProperFilter; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
 by exists (point, point); apply: sbeA; apply: ballxx.
 Qed.
 
-Lemma near_ball (y : M) (eps : {posnum R}) :
-   \forall y' \near y, ball y eps%:num y'.
+Lemma near_ball (y : M) (eps : R) : 0 < eps -> \forall y' \near y, ball y eps y'.
 Proof. exact: nbhsx_ballx. Qed.
 
 Lemma dnbhs_ball (a : M) (e : R) : (0 < e)%R -> a^' (ball a e `\ a).
@@ -5112,6 +5111,9 @@ End pseudoMetricType_numDomainType.
 #[global] Hint Resolve nbhsx_ballx : core.
 #[global] Hint Resolve close_refl : core.
 Arguments close_cvg {T} F1 F2 {FF2} _.
+
+Arguments nbhsx_ballx {R M} x eps.
+Arguments near_ball {R M} y eps.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `cvg_ball`")]
 Notation app_cvg_locally := cvg_ball (only parsing).
@@ -5707,10 +5709,10 @@ Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
 Proof.
 move=> x y clxy; apply/eqP; rewrite eq_le.
 apply/in_segment_addgt0Pr => _ /posnumP[e].
-rewrite in_itv /= -ler_distl; set he := (e%:num / 2)%:pos.
-have [z [zx_he yz_he]] := clxy _ _ (nbhsx_ballx x he) (nbhsx_ballx y he).
+rewrite in_itv /= -ler_distl; have he : 0 < (e%:num / 2) by [].
+have [z [zx_he yz_he]] := clxy _ _ (nbhsx_ballx x _ he) (nbhsx_ballx y _ he).
 have := ball_triangle yz_he (ball_sym zx_he).
-by rewrite -mulr2n -mulr_natr divfK // => /ltW.
+by rewrite -mulr2n -(mulr_natr (_ / _) 2) divfK// => /ltW.
 Qed.
 
 Section RestrictedUniformTopology.
