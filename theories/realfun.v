@@ -14,18 +14,17 @@ From HB Require Import structures.
 (* numbers (e.g., the continuity of the inverse of a continuous function).    *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*     nondecreasing_fun f == the function f is non-decreasing                *)
-(*     nonincreasing_fun f == the function f is non-increasing                *)
-(*        increasing_fun f == the function f is (strictly) increasing         *)
-(*        decreasing_fun f == the function f is (strictly) decreasing         *)
+(*        nondecreasing_fun f == the function f is non-decreasing             *)
+(*        nonincreasing_fun f == the function f is non-increasing             *)
+(*           increasing_fun f == the function f is (strictly) increasing      *)
+(*           decreasing_fun f == the function f is (strictly) decreasing      *)
 (*                                                                            *)
-(*   derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and       *)
-(*                                        continuous up to the boundary       *)
+(*  lime_sup f a/lime_inf f a == limit sup/inferior of the extended           *)
+(*                               real-valued function f at point a            *)
+(*                                                                            *)
+(* derivable_oo_continuous_bnd f x y == f is derivable on `]x, y[ and         *)
+(*                               continuous up to the boundary                *)
 (* ```                                                                        *)
-(*                                                                            *)
-(* * Limit superior and inferior for functions:                               *)
-(*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
-(*                                valued function f at point a                *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -219,10 +218,10 @@ End cvge_fun_cvg_seq.
 
 Section fun_cvg_realType.
 Context {R : realType}.
+Implicit Types f : R -> R.
 
 (* NB: see nondecreasing_cvgn in sequences.v *)
-Lemma nondecreasing_cvgr (f : R -> R) :
-    nondecreasing_fun f -> has_ubound (range f) ->
+Lemma nondecreasing_cvgr f : nondecreasing_fun f -> has_ubound (range f) ->
   f r @[r --> +oo] --> sup (range f).
 Proof.
 move=> ndf ubf; set M := sup (range f).
@@ -236,49 +235,97 @@ rewrite ler_distlC (le_trans Mefp (ndf _ _ _))//= (@le_trans _ _ M) ?lerDl//.
 by have /ubP := sup_upper_bound supf; apply; exists n.
 Unshelve. all: by end_near. Qed.
 
-Lemma nonincreasing_at_right_cvgr (f : R -> R) a :
-    {in `]a, +oo[, nonincreasing_fun f} ->
-    has_ubound (f @` `]a, +oo[) ->
-  f x @[x --> a ^'+] --> sup (f @` `]a, +oo[).
+(***md This covers the cases where the interval is
+   $]a, +\infty[$, $]a, b[$, or $]a, b]$. *)
+Lemma nonincreasing_at_right_cvgr f a (b : itv_bound R) : (BRight a < b)%O ->
+    {in Interval (BRight a) b &, nonincreasing_fun f} ->
+    has_ubound (f @` [set` Interval (BRight a) b]) ->
+  f x @[x --> a ^'+] --> sup (f @` [set` Interval (BRight a) b]).
 Proof.
-move=> lef ubf; set M := sup _.
-have supf : has_sup [set f x | x in `]a, +oo[].
-  split => //; exists (f (a + 1)), (a + 1) => //=.
-  by rewrite in_itv/= ltrDl ltr01.
+move=> ab lef ubf; set M := sup _.
+have supf : has_sup [set f x | x in [set` Interval (BRight a) b]].
+  split => //; case: b ab {lef ubf M} => [[|] t ta|[]] /=.
+  - exists (f ((a + t) / 2)), ((a + t) / 2) => //=.
+    by rewrite in_itv/= !midf_lt.
+  - exists (f ((a + t) / 2)), ((a + t) / 2) => //=.
+    by rewrite in_itv/= midf_lt// midf_le// ltW.
+  - by exists (f (a + 1)), (a + 1).
+  - by exists (f (a + 1)), (a + 1) => //=; rewrite in_itv/= ltr_addl andbT.
 apply/cvgrPdist_le => _/posnumP[e].
-have [p ap Mefp] : exists2 p, a < p & M - e%:num <= f p.
-  have [_ -[p ap] <- /ltW efp] := sup_adherent (gt0 e) supf.
-  exists p; last by rewrite efp.
-  by move: ap; rewrite /= in_itv/= andbT.
-near=> n.
-rewrite ler_distl; apply/andP; split; last first.
-  rewrite -lerBlDr (le_trans Mefp)// lef//.
-    by rewrite in_itv/= andbT; near: n; exact: nbhs_right_gt.
-  by near: n; exact: nbhs_right_le.
-have : f n <= M.
-  apply: sup_ub => //=; exists n => //; rewrite in_itv/= andbT.
-  by near: n; apply: nbhs_right_gt.
-by apply: le_trans; rewrite lerBlDr lerDl.
+have {supf} [p [ap pb]] :
+    exists p, [/\ a < p, (BLeft p < b)%O & M - e%:num <= f p].
+  have [_ -[p apb] <- /ltW efp] := sup_adherent (gt0 e) supf.
+  move: apb; rewrite /= in_itv/= -[X in _ && X]/(BLeft p < b)%O => /andP[ap pb].
+  by exists p; split.
+rewrite ler_subl_addr {}/M.
+move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
+- near=> r; rewrite ler_distl; apply/andP; split.
+  + suff: f r <= M by apply: le_trans; rewrite ler_subl_addr ler_addl.
+    apply: sup_ub => //=; exists r => //; rewrite in_itv/=.
+    by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_lt].
+  + rewrite (le_trans Mefp)// ler_add2r lef//=; last 2 first.
+      by rewrite in_itv/= ap.
+      by near: r; exact: nbhs_right_le.
+    apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_lt].
+- near=> r; rewrite ler_distl; apply/andP; split.
+  + suff: f r <= M by apply: le_trans; rewrite ler_subl_addr ler_addl.
+    apply: sup_ub => //=; exists r => //; rewrite in_itv/=.
+    by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_le].
+  + rewrite (le_trans Mefp)// ler_add2r lef//=; last 2 first.
+      by rewrite in_itv/= ap.
+      by near: r; exact: nbhs_right_le.
+    by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_le].
+- near=> r; rewrite ler_distl; apply/andP; split.
+  suff: f r <= M by apply: le_trans; rewrite ler_subl_addr ler_addl.
+  apply: sup_ub => //=; exists r => //; rewrite in_itv/= andbT.
+    by near: r; apply: nbhs_right_gt.
+  rewrite (le_trans Mefp)// ler_add2r lef//.
+  - by rewrite in_itv/= andbT; near: r; exact: nbhs_right_gt.
+  - by rewrite in_itv/= ap.
+  - by near: r; exact: nbhs_right_le.
 Unshelve. all: by end_near. Qed.
 
-Lemma nondecreasing_at_right_cvgr (f : R -> R) a :
-    {in `]a, +oo[, nondecreasing_fun f} ->
-    has_lbound (f @` `]a, +oo[) ->
-  f x @[x --> a ^'+] --> inf (f @` `]a, +oo[).
+Lemma nonincreasing_at_right_is_cvgr f a :
+    (\forall x \near a^'+, {in `]a, x[ &, nonincreasing_fun f}) ->
+    (\forall x \near a^'+, has_ubound (f @` `]a, x[)) ->
+  cvg (f x @[x --> a ^'+]).
 Proof.
-move=> nif hlb.
-have ndNf : {in `]a, +oo[, nonincreasing_fun (\- f)}.
-  by move=> r ra y /nif; rewrite lerN2; exact.
-have hub : has_ubound [set (\- f) x | x in `]a, +oo[].
+move=> nif ubf; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nonincreasing_at_right_cvgr _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
+
+Lemma nondecreasing_at_right_cvgr f a (b : itv_bound R) : (BRight a < b)%O ->
+    {in Interval (BRight a) b &, nondecreasing_fun f} ->
+    has_lbound (f @` [set` Interval (BRight a) b]) ->
+  f x @[x --> a ^'+] --> inf (f @` [set` Interval (BRight a) b]).
+Proof.
+move=> ab nif hlb; set M := inf _.
+have ndNf : {in Interval (BRight a) b &, nonincreasing_fun (\- f)}.
+  by move=> r s rab sab /nif; rewrite ler_opp2; exact.
+have hub : has_ubound [set (\- f) x | x in [set` Interval (BRight a) b]].
   apply/has_ub_lbN; rewrite image_comp/=.
-  rewrite [X in has_lbound X](_ : _ = [set f x | x in `]a, +oo[])//.
+  rewrite [X in has_lbound X](_ : _ = f @` [set` Interval (BRight a) b])//.
   by apply: eq_imagel => y _ /=; rewrite opprK.
-have /cvgN := nonincreasing_at_right_cvgr ndNf hub.
-rewrite opprK [X in _ --> X -> _](_ : _ = inf [set f x | x in `]a, +oo[])//.
+have /cvgN := nonincreasing_at_right_cvgr ab ndNf hub.
+rewrite opprK [X in _ --> X -> _](_ : _ =
+    inf (f @` [set` Interval (BRight a) b]))//.
 by rewrite /inf; congr (- sup _); rewrite image_comp/=; exact: eq_imagel.
 Qed.
 
+Lemma nondecreasing_at_right_is_cvgr f a :
+    (\forall x \near a^'+, {in `]a, x[ &, nondecreasing_fun f}) ->
+    (\forall x \near a^'+, has_lbound (f @` `]a, x[)) ->
+  cvg (f x @[x --> a ^'+]).
+Proof.
+move=> ndf lbf; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nondecreasing_at_right_cvgr _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
+
 End fun_cvg_realType.
+Arguments nondecreasing_at_right_cvgr {R f a} b.
+Arguments nondecreasing_at_right_cvgr {R f a} b.
 
 Section fun_cvg_ereal.
 Context {R : realType}.
@@ -370,100 +417,129 @@ Lemma nondecreasing_is_cvge (f : R -> \bar R) :
   nondecreasing_fun f -> (cvg (f r @[r --> +oo]))%R.
 Proof. by move=> u_nd u_ub; apply: cvgP; exact: nondecreasing_cvge. Qed.
 
-Lemma nondecreasing_at_right_cvge (f : R -> \bar R) a :
-    {in `]a, +oo[, nondecreasing_fun f} ->
-  f x @[x --> a ^'+] --> ereal_inf (f @` `]a, +oo[).
+Lemma nondecreasing_at_right_cvge (f : R -> \bar R) a (b : itv_bound R) :
+    (BRight a < b)%O ->
+    {in Interval (BRight a) b &, nondecreasing_fun f} ->
+  f x @[x --> a ^'+] --> ereal_inf (f @` [set` Interval (BRight a) b]).
 Proof.
-move=> ndf; set S := (X in ereal_inf X); set l := ereal_inf S.
+move=> ab ndf; set S := (X in ereal_inf X); set l := ereal_inf S.
 have [Snoo|Snoo] := pselect (S -oo).
-  case: (Snoo) => N /=; rewrite in_itv/= andbT => aN fNpoo.
+  case: (Snoo) => N/=.
+  rewrite in_itv/= -[X in _ && X]/(BLeft N < b)%O => /andP[aN Nb] fNpoo.
   have Nf n : (a < n <= N)%R -> f n = -oo.
     move=> /andP[an nN]; apply/eqP.
-    by rewrite eq_le leNye andbT -fNpoo ndf// in_itv/= an.
+    rewrite eq_le leNye andbT -fNpoo ndf//.
+      by rewrite in_itv/= -[X in _ && X]/(BLeft n < b)%O an (le_lt_trans _ Nb).
+    by rewrite in_itv/= -[X in _ && X]/(BLeft N < b)%O (lt_le_trans an nN).
   have -> : l = -oo.
     by rewrite /l /ereal_inf /ereal_sup supremum_pinfty//=; exists -oo.
   apply: cvg_near_cst; exists (N - a)%R => /=; first by rewrite subr_gt0.
-  move=> y /= + ay.
-  rewrite ltr0_norm ?subr_lt0// opprB => ayNa.
+  move=> y /= + ay; rewrite ltr0_norm ?subr_lt0// opprB => ayNa.
   by rewrite Nf// ay/= -(subrK a y) -lerBrDr ltW.
 have [lnoo|lnoo] := eqVneq l -oo.
   rewrite lnoo; apply/cvgeNyPle => M.
-  have : M%:E > l by rewrite lnoo ltNyr.
-  move=> /ereal_inf_lt[x [y]].
-  rewrite /= in_itv/= andbT => ay <- fyM.
+  have /ereal_inf_lt[x [y]]/= : M%:E > l by rewrite lnoo ltNyr.
+  rewrite in_itv/= -[X in _ && X]/(BLeft y < b)%O/= => /andP[ay yb] <- fyM.
   exists (y - a)%R => /=; first by rewrite subr_gt0.
   move=> z /= + az.
-  rewrite ltr0_norm ?subr_lt0// opprB ltrBlDr subrK => zy.
-  by rewrite (le_trans _ (ltW fyM))// ndf// ?in_itv/= ?andbT// ltW.
-have [fpoo|fpoo] := pselect {in `]a, +oo[, forall x, f x = +oo}.
-  rewrite /l (_ : S = [set +oo]).
+  rewrite ltr0_norm ?subr_lt0// opprB ltr_subl_addr subrK => zy.
+  rewrite (le_trans _ (ltW fyM))// ndf ?ltW//.
+    by rewrite in_itv/= -[X in _ && X]/(BLeft z < b)%O/= az/= (lt_trans _ yb).
+  by rewrite in_itv/= -[X in _ && X]/(BLeft y < b)%O/= (lt_trans az zy).
+have [fpoo|fpoo] := pselect {in Interval (BRight a) b, forall x, f x = +oo}.
+  rewrite {}/l in lnoo *; rewrite {}/S in Snoo lnoo *.
+  rewrite [X in ereal_inf X](_ : _ = [set +oo]).
     rewrite ereal_inf1; apply/cvgeyPgey; near=> M.
-    near=> x.
-    rewrite fpoo ?leey// in_itv/= andbT.
-    by near: x; exact: nbhs_right_gt.
+    move: b ab {ndf lnoo Snoo} fpoo => [[|] b|[//|]] ab fpoo.
+    - near=> x; rewrite fpoo ?leey// in_itv/=.
+      by apply/andP; split; near: x; [exact: nbhs_right_gt|exact: nbhs_right_lt].
+    - near=> x; rewrite fpoo ?leey// in_itv/=.
+      by apply/andP; split; near: x; [exact: nbhs_right_gt|exact: nbhs_right_le].
+    - near=> x; rewrite fpoo ?leey// in_itv/= andbT.
+      by near: x; exact: nbhs_right_gt.
   apply/seteqP; split => [_ [n _] <- /[!fpoo]//|_ ->].
-  rewrite /S /=; exists (a + 1)%R; first by rewrite in_itv/= andbT ltrDl.
-  by rewrite fpoo// in_itv /= andbT ltrDl.
+  move: b ab ndf lnoo Snoo fpoo => [[|] s|[//|]] ab ndf lnoo Snoo fpoo /=.
+  - by exists ((a + s) / 2)%R; rewrite ?fpoo// in_itv/= !midf_lt.
+  - by exists ((a + s) / 2)%R; rewrite ?fpoo// in_itv/= !(midf_lt, midf_le)// ltW.
+  - by exists (a + 1)%R; rewrite ?fpoo// in_itv/= andbT ltr_addl.
 have [/ereal_inf_pinfty lpoo|lpoo] := eqVneq l +oo.
-  exfalso.
-  apply/fpoo => n; rewrite in_itv/= andbT => an; rewrite (lpoo (f n))//.
-  by exists n => //=; rewrite in_itv/= andbT.
+  by exfalso; apply/fpoo => r rab; rewrite (lpoo (f r))//; exists r.
 have l_fin_num : l \is a fin_num by rewrite fin_numE lpoo lnoo.
-set A := [set n | (a < n)%R /\ f n != +oo].
-set B := [set n | (a < n)%R /\ f n = +oo].
-have f_fin_num n : n \in A -> f n \is a fin_num.
-  move=> /[1!inE]-[an fnnoo]; rewrite fin_numE fnnoo andbT.
-  apply: contra_notN Snoo => /eqP unpoo.
-  by exists n => //=; rewrite in_itv/= andbT.
-have [x [Ax fxpoo]] : A !=set0.
-  apply/set0P/negP => /eqP A0; apply/fpoo => x; rewrite in_itv/= andbT => ax.
+set A := [set r | [/\ (a < r)%R, (BLeft r < b)%O & f r != +oo]].
+have f_fin_num r : r \in A -> f r \is a fin_num.
+  rewrite inE /A/= => -[ar rb] frnoo; rewrite fin_numE frnoo andbT.
+  apply: contra_notN Snoo => /eqP frpoo.
+  by exists r => //=; rewrite in_itv/= -[X in _ && X]/(BLeft r < b)%O ar rb.
+have [x [ax xb fxpoo]] : A !=set0.
+  apply/set0P/negP => /eqP A0; apply/fpoo => x.
+  rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O => /andP[ax xb].
   apply/eqP/negPn/negP => unnoo.
   by move/seteqP : A0 => [+ _] => /(_ x); apply; rewrite /A/= ax.
 have axA r : (a < r <= x)%R -> r \in A.
   move=> /andP[ar rx]; move: (rx) => /ndf rafx; rewrite /A /= inE; split => //.
+    by rewrite (le_lt_trans _ xb).
   apply/negP => /eqP urnoo.
-  move: rafx; rewrite urnoo in_itv/= andbT => /(_ ar).
-  by rewrite leye_eq (negbTE fxpoo).
+  move: rafx; rewrite urnoo.
+  rewrite in_itv/= -[X in _ && X]/(BLeft r < b)%O ar/=.
+  rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax/=.
+  by rewrite leye_eq (negbTE fxpoo) -falseE; apply; rewrite (le_lt_trans _ xb).
 rewrite -(@fineK _ l)//; apply/fine_cvgP; split.
   exists (x - a)%R => /=; first by rewrite subr_gt0.
   move=> z /= + az.
   rewrite ltr0_norm ?subr_lt0// opprB ltrBlDr subrK// => zx.
   by rewrite f_fin_num// axA// az/= ltW.
 set g := fun n => if (a < n < x)%R then fine (f n) else fine (f x).
-have <- : inf [set g x | x in `]a, +oo[] = fine l.
+have <- : inf [set g x | x in [set` Interval (BRight a) b]] = fine l.
   apply: EFin_inj; rewrite -ereal_inf_EFin//; last 2 first.
     - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
       case: ifPn => [/andP[am mx]|].
         rewrite fine_le// ?f_fin_num//; first by rewrite axA// am (ltW mx).
-        by apply: ereal_inf_lb; exists m => //=; rewrite in_itv/= andbT.
+        apply: ereal_inf_lb; exists m => //=.
+        rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am/=.
+        by rewrite (le_lt_trans _ xb) ?ltW.
       rewrite negb_and -!leNgt => /orP[ma|xm].
         rewrite fine_le// ?f_fin_num ?inE//.
-        by apply: ereal_inf_lb; exists x => //=; rewrite in_itv/= andbT.
+        apply: ereal_inf_lb; exists x => //=.
+        by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
       rewrite fine_le// ?f_fin_num ?inE//.
-      by apply: ereal_inf_lb; exists x => //=; rewrite in_itv/= andbT.
-    - by exists (g (a + 1)%R), (a + 1)%R => //=; rewrite in_itv/= andbT ltrDl.
+      apply: ereal_inf_lb; exists x => //=.
+      by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
+    - rewrite {}/l in lnoo lpoo l_fin_num *.
+      rewrite {}/S in Snoo lnoo lpoo l_fin_num *.
+      rewrite {}/A in f_fin_num axA *.
+      move: b ab {xb ndf lnoo lpoo l_fin_num f_fin_num Snoo fpoo axA} =>
+            [[|] s|[//|]] ab /=.
+      + exists (g ((a + s) / 2))%R, ((a + s) / 2)%R => //=.
+        by rewrite /= in_itv/= !midf_lt.
+      + exists (g ((a + s) / 2))%R, ((a + s) / 2)%R => //=.
+        by rewrite /= in_itv/= !(midf_lt, midf_le)// ltW.
+      + exists (g (a + 1)%R), (a + 1)%R => //=.
+        by rewrite in_itv/= andbT ltr_addl.
   rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split; last first.
     apply: le_ereal_inf => _ /= [_ [m _] <-] <-.
     rewrite /g; case: ifPn => [/andP[am mx]|].
       rewrite fineK// ?f_fin_num//; last by rewrite axA// am ltW.
-      by exists m => //=; rewrite in_itv/= andbT.
+      exists m => //=.
+      by rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am/= (lt_trans _ xb).
     rewrite negb_and -!leNgt => /orP[ma|xm].
-      rewrite fineK//; first by exists x => //=; rewrite in_itv/= andbT.
-      by rewrite f_fin_num ?inE.
-    exists x => /=; first by rewrite in_itv/= andbT.
+      rewrite fineK//; last by rewrite f_fin_num ?inE.
+      exists x => //=.
+      by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
+    exists x => /=.
+      by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
     by rewrite fineK// f_fin_num ?inE.
-  apply: lb_ereal_inf => /= y [m] /=; rewrite in_itv/= andbT => am <-{y}.
+  apply: lb_ereal_inf => /= y [m] /=.
+  rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O => /andP[am mb] <-{y}.
   have [mx|xm] := ltP m x.
     apply: ereal_inf_lb => /=; exists (fine (f m)); last first.
       by rewrite fineK// f_fin_num// axA// am (ltW mx).
-    exists m; first by rewrite in_itv/= andbT.
-    by rewrite /g am mx.
-  rewrite (le_trans _ (ndf _ _ _ xm))//; last by rewrite in_itv/= andbT.
+    by exists m; [rewrite in_itv/= am|rewrite /g am mx].
+  rewrite (@le_trans _ _ (f x))//; last first.
+    by apply: ndf => //; rewrite in_itv//= ?ax ?am.
   apply: ereal_inf_lb => /=; exists (fine (f x)); last first.
     by rewrite fineK// f_fin_num ?inE.
-  exists x; first by rewrite in_itv andbT.
-  by rewrite /g ltxx andbF.
-suff: g x @[x --> a^'+] --> inf [set g x | x in `]a, +oo[].
+  by exists x; [rewrite in_itv/= ax|rewrite /g ltxx andbF].
+suff: g x @[x --> a^'+] --> inf [set g x | x in [set` Interval (BRight a) b]].
   apply: cvg_trans; apply: near_eq_cvg; near=> n.
   rewrite /g /=; case: ifPn => [//|].
   rewrite negb_and -!leNgt => /orP[na|xn].
@@ -473,45 +549,55 @@ suff: g x @[x --> a^'+] --> inf [set g x | x in `]a, +oo[].
   suff nx : (n < x)%R by rewrite ltNge xn in nx.
   near: n; exists ((x - a) / 2)%R; first by rewrite /= divr_gt0// subr_gt0.
   move=> y /= /[swap] ay.
-  rewrite ltr0_norm// ?subr_lt0// opprB ltrBlDr => /lt_le_trans; apply.
-  by rewrite -lerBrDr ler_pdivrMr// ler_pMr// ?ler1n// subr_gt0.
-apply: nondecreasing_at_right_cvgr.
-- move=> m ma n mn /=; rewrite /g /=; case: ifPn => [/andP[am mx]|].
+  rewrite ltr0_norm// ?subr_lt0// opprB ltr_subl_addr => /lt_le_trans; apply.
+  by rewrite -ler_subr_addr ler_pdivr_mulr// ler_pmulr// ?ler1n// subr_gt0.
+apply: nondecreasing_at_right_cvgr => //.
+- move=> m n; rewrite !in_itv/= -[X in _ && X]/(BLeft m < b)%O.
+  rewrite -[X in _ -> _ && X -> _]/(BLeft n < b)%O.
+  move=> /andP[am mb] /andP[an nb] mn.
+  rewrite /g /=; case: ifPn => [/andP[_ mx]|].
     rewrite (lt_le_trans am mn) /=; have [nx|nn0] := ltP n x.
       rewrite fine_le ?f_fin_num ?ndf//; first by rewrite axA// am (ltW mx).
       by rewrite axA// (ltW nx) andbT (lt_le_trans am).
+      by rewrite in_itv/= am.
+      by rewrite in_itv/= an.
     rewrite fine_le ?f_fin_num//.
     + by rewrite axA// am (ltW (lt_le_trans mx _)).
     + by rewrite inE.
-    + by rewrite ndf// ltW.
-  rewrite negb_and -!leNgt => /orP[ma'|xm].
-    by rewrite in_itv/= andbT ltNge ma' in ma.
-  rewrite in_itv/= andbT in ma.
-  by rewrite (lt_le_trans ma mn)/= ltNge (le_trans xm mn).
+    + rewrite ndf//; last exact/ltW.
+      by rewrite !in_itv/= am.
+      by rewrite !in_itv/= ax.
+  rewrite negb_and -!leNgt => /orP[|xm]; first by rewrite leNgt am.
+  by rewrite (lt_le_trans am mn)/= ltNge (le_trans xm mn).
 - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
   rewrite -lee_fin (fineK l_fin_num); apply: ereal_inf_lb.
   case: ifPn => [/andP[am mn0]|].
-    rewrite fineK//; first by exists m => //=; rewrite in_itv/= am.
-    by rewrite f_fin_num// axA// am (ltW mn0).
+    rewrite fineK//; last by rewrite f_fin_num// axA// am (ltW mn0).
+    exists m => //=.
+    by rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am (lt_trans _ xb).
   rewrite negb_and -!leNgt => /orP[ma|xm].
-    rewrite fineK//; first by exists x => //=; rewrite in_itv/= Ax.
+    rewrite fineK//; first by exists x => //=; rewrite in_itv/= ax.
     by rewrite f_fin_num ?inE.
-  by rewrite fineK// ?f_fin_num ?inE//; exists x => //=; rewrite in_itv/= andbT.
+  by rewrite fineK// ?f_fin_num ?inE//; exists x => //=; rewrite in_itv/= ax.
 Unshelve. all: by end_near. Qed.
 
-Lemma nondecreasing_at_right_is_cvge (f : R -> \bar R) a :
-    {in `]a, +oo[, nondecreasing_fun f} ->
+Lemma nondecreasing_at_right_is_cvge (f : R -> \bar R) (a : R) :
+    (\forall x \near a^'+, {in `]a, x[ &, nondecreasing_fun f}) ->
   cvg (f x @[x --> a ^'+]).
-Proof. by move=> ndf; apply: cvgP; exact: nondecreasing_at_right_cvge. Qed.
-
-Lemma nonincreasing_at_right_cvge (f : R -> \bar R) a :
-    {in `]a, +oo[, nonincreasing_fun f} ->
-  f x @[x --> a ^'+] --> ereal_sup (f @` `]a, +oo[).
 Proof.
-move=> nif.
-have ndNf : {in `]a, +oo[, {homo (\- f) : n m / (n <= m)%R >-> n <= m}}.
-  by move=> r ra y /nif; rewrite leeN2; exact.
-have /cvgeN := nondecreasing_at_right_cvge ndNf.
+move=> ndf; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nondecreasing_at_right_cvge _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
+
+Lemma nonincreasing_at_right_cvge (f : R -> \bar R) a (b : itv_bound R) :
+    (BRight a < b)%O -> {in Interval (BRight a) b &, nonincreasing_fun f} ->
+  f x @[x --> a ^'+] --> ereal_sup (f @` [set` Interval (BRight a) b]).
+Proof.
+move=> ab nif; have ndNf : {in Interval (BRight a) b &,
+    {homo (\- f) : n m / (n <= m)%R >-> n <= m}}.
+  by move=> r s rab sab /nif; rewrite leeN2; exact.
+have /cvgeN := nondecreasing_at_right_cvge ab ndNf.
 under eq_fun do rewrite oppeK.
 set lhs := (X in _ --> X -> _); set rhs := (X in _ -> _ --> X).
 suff : lhs = rhs by move=> ->.
@@ -520,13 +606,21 @@ by rewrite image_comp/=; apply: eq_imagel => x _ /=; rewrite oppeK.
 Qed.
 
 Lemma nonincreasing_at_right_is_cvge (f : R -> \bar R) a :
-    {in `]a, +oo[, nonincreasing_fun f} ->
+    (\forall x \near a^'+, {in `]a, x[ &, nonincreasing_fun f}) ->
   cvg (f x @[x --> a ^'+]).
-Proof. by move=> ndf; apply: cvgP; exact: nonincreasing_at_right_cvge. Qed.
+Proof.
+move=> nif; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nonincreasing_at_right_cvge _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
 
 End fun_cvg_ereal.
 
 End fun_cvg.
+Arguments nondecreasing_at_right_cvge {R f a} b.
+Arguments nondecreasing_at_right_is_cvge {R f a}.
+Arguments nonincreasing_at_right_cvge {R f a} b.
+Arguments nonincreasing_at_right_is_cvge {R f a}.
 
 Section lime_sup_inf.
 Variable R : realType.
@@ -547,9 +641,9 @@ Qed.
 
 Let sup_ball_is_cvg f a : cvg (sup_ball f a e @[e --> 0^'+]).
 Proof.
-apply: nondecreasing_at_right_is_cvge => x.
-by rewrite in_itv/= andbT => x0 y /sup_ball_le.
-Qed.
+apply: nondecreasing_at_right_is_cvge; near=> e.
+by move=> x y; rewrite !in_itv/= => /andP[x0 xe] /andP[y0 ye] /sup_ball_le.
+Unshelve. all: by end_near. Qed.
 
 Let inf_ball f a r := - sup_ball (\- f) a r.
 
@@ -563,9 +657,9 @@ Proof. by move=> sr; rewrite /inf_ball lee_oppl oppeK sup_ball_le. Qed.
 
 Let inf_ball_is_cvg f a : cvg (inf_ball f a e @[e --> 0^'+]).
 Proof.
-apply: nonincreasing_at_right_is_cvge => //.
-by move=> x; rewrite in_itv/= andbT => x0 y /inf_ball_le.
-Qed.
+apply: nonincreasing_at_right_is_cvge; near=> e.
+by move=> x y; rewrite !in_itv/= => /andP[x0 xe] /andP[y0 ye] /inf_ball_le.
+Unshelve. all: by end_near. Qed.
 
 Let le_sup_ball f g a :
   (forall r, (0 < r)%R -> forall y : R, y != a -> ball a r y -> f y <= g y) ->
@@ -599,7 +693,7 @@ Lemma lime_supE f a :
 Proof.
 rewrite lime_sup_lim; apply/cvg_lim => //.
 apply: nondecreasing_at_right_cvge => //.
-by move=> x; rewrite in_itv/= andbT => x0 y; exact: sup_ball_le.
+by move=> x y; rewrite !in_itv/= !andbT => x0 y0; exact: sup_ball_le.
 Qed.
 
 Lemma lime_infE f a :
@@ -636,8 +730,8 @@ Proof.
 move=> fg; rewrite !lime_sup_lim -limeD//; last first.
   by rewrite -!lime_sup_lim.
 apply: lee_lim => //.
-- apply: nondecreasing_at_right_is_cvge => x.
-  by rewrite in_itv/= andbT => x0 y xy; rewrite lee_add//; exact: sup_ball_le.
+- apply: nondecreasing_at_right_is_cvge; near=> e => x y; rewrite !in_itv/=.
+  by move=> /andP[? ?] /andP[? ?] xy; apply: lee_add => //; exact: sup_ball_le.
 - near=> a0; apply: ub_ereal_sup => _ /= [a1 [a1ae a1a]] <-.
   by apply: lee_add; apply: ereal_sup_ub => /=; exists a1.
 Unshelve. all: by end_near. Qed.
@@ -1329,7 +1423,6 @@ Section is_derive_inverse.
 Variable R : realType.
 
 (* Attempt to prove the diff of inverse *)
-
 Lemma is_derive1_caratheodory (f : R -> R) (x a : R) :
   is_derive x 1 f a <->
   exists g, [/\ forall z, f z - f x = g z * (z - x),

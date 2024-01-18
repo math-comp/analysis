@@ -163,6 +163,14 @@
 
 ### Generalized
 
+- in `realfun.v`:
+  + lemmas `nonincreasing_at_right_cvgr`, `nonincreasing_at_left_cvgr`
+  + lemmas `nondecreasing_at_right_cvge`, `nondecreasing_at_right_is_cvge`,
+    `nonincreasing_at_right_cvge`, `nonincreasing_at_right_is_cvge`
+
+- in `realfun.v`:
+  + lemmas `nonincreasing_at_right_is_cvgr`, `nondecreasing_at_right_is_cvgr`
+
 ### Deprecated
 
 ### Removed
