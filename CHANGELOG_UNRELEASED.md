@@ -22,7 +22,6 @@
   + definition `near_covering_within`
   + lemma `near_covering_withinP`
   + lemma `compact_setM`
-  + definition `regular`
   + lemma `compact_regular`
   + lemma `fam_compact_nbhs`
   + definition `compact_open`, notation `{compact-open, U -> V}`

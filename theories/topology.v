@@ -299,7 +299,6 @@ Require Import reals signed.
 (*                                     for a finite number of indices in D    *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
 (*                                     cover-based definition of compactness  *)
-(*                          regular == regular space                          *)
 (*                    near_covering == a reformulation of covering compact    *)
 (*                                     better suited for use with `near`      *)
 (*             near_covering_within == equivalent definition of near_covering *)
@@ -3651,8 +3650,40 @@ move=> /DsubC /= [y /= yfs hyz]; exists (h' y) => //.
 by rewrite set_imfset /=; exists y.
 Qed.
 
-Definition regular {T : topologicalType} := forall x : T,
-  filter_from (nbhs x) closure --> x.
+Section set_nbhs.
+Context {T : topologicalType} (A : set T).
+
+Definition set_nbhs := \bigcap_(x in A) nbhs x.
+
+Global Instance set_nbhs_filter : Filter set_nbhs.
+Proof.
+split => P Q; first by exact: filterT.
+  by move=> Px Qx x Ax; apply: filterI; [exact: Px | exact: Qx].
+by move=> PQ + x Ax => /(_ _ Ax)/filterS; exact.
+Qed.
+
+Global Instance set_nbhs_pfilter : A!=set0 -> ProperFilter set_nbhs.
+Proof.
+case=> x Ax; split; last exact: set_nbhs_filter.
+by move/(_ x Ax)/nbhs_singleton.
+Qed.
+
+Lemma set_nbhsP (B : set T) :
+   set_nbhs B <-> (exists C, [/\ open C, A `<=` C & C `<=` B]).
+Proof.
+split; first last.
+  by case=> V [? AV /filterS +] x /AV ?; apply; apply: open_nbhs_nbhs.
+move=> snB; have Ux x : exists U, A x -> [/\ U x, open U & U `<=` B].
+  have [/snB|?] := pselect (A x); last by exists point.
+  by rewrite nbhsE => -[V [? ? ?]]; exists V.
+exists (\bigcup_(x in A) (projT1 (cid (Ux x)))); split.
+- by apply: bigcup_open => x Ax; have [] := projT2 (cid (Ux x)).
+- by move=> x Ax; exists x => //; have [] := projT2 (cid (Ux x)).
+- by move=> x [y Ay]; have [//| _ _] := projT2 (cid (Ux y)); exact.
+Qed.
+
+End set_nbhs.
+
 
 Section separated_topologicalType.
 Variable T : topologicalType.
@@ -3769,6 +3800,13 @@ rewrite setIC => /disjoints_subset VUc; exists U; repeat split => //.
 by rewrite inE; apply: VUc; rewrite -inE.
 Qed.
 
+Definition normal_space :=
+  forall A : set T, closed A ->
+    filter_from (set_nbhs A) closure `=>` set_nbhs A.
+
+Definition regular_space :=
+  forall a : T, filter_from (nbhs a) closure --> a.
+
 Hypothesis sep : hausdorff_space T.
 
 Lemma closeE x y : close x y = (x = y).
@@ -3813,7 +3851,7 @@ Proof.
 move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
 Qed.
 
-Lemma compact_regular (x : T) V : compact V -> nbhs x V -> {for x, regular}.
+Lemma compact_regular (x : T) V : compact V -> nbhs x V -> {for x, regular_space}.
 Proof.
 move=> cptv Vx; apply: (@compact_cluster_set1 T x _ V) => //.
 - apply: filter_from_proper => //; first last.
@@ -4237,40 +4275,6 @@ by move=> D [DF _ [C DC]]/(_ _ DC)/subsetC2/filterS; apply; exact: DF.
 Qed.
 
 End totally_disconnected.
-
-Section set_nbhs.
-Context {T : topologicalType} (A : set T).
-
-Definition set_nbhs := \bigcap_(x in A) nbhs x.
-
-Global Instance set_nbhs_filter : Filter set_nbhs.
-Proof.
-split => P Q; first by exact: filterT.
-  by move=> Px Qx x Ax; apply: filterI; [exact: Px | exact: Qx].
-by move=> PQ + x Ax => /(_ _ Ax)/filterS; exact.
-Qed.
-
-Global Instance set_nbhs_pfilter : A!=set0 -> ProperFilter set_nbhs.
-Proof.
-case=> x Ax; split; last exact: set_nbhs_filter.
-by move/(_ x Ax)/nbhs_singleton.
-Qed.
-
-Lemma set_nbhsP (B : set T) :
-   set_nbhs B <-> (exists C, [/\ open C, A `<=` C & C `<=` B]).
-Proof.
-split; first last.
-  by case=> V [? AV /filterS +] x /AV ?; apply; apply: open_nbhs_nbhs.
-move=> snB; have Ux x : exists U, A x -> [/\ U x, open U & U `<=` B].
-  have [/snB|?] := pselect (A x); last by exists point.
-  by rewrite nbhsE => -[V [? ? ?]]; exists V.
-exists (\bigcup_(x in A) (projT1 (cid (Ux x)))); split.
-- by apply: bigcup_open => x Ax; have [] := projT2 (cid (Ux x)).
-- by move=> x Ax; exists x => //; have [] := projT2 (cid (Ux x)).
-- by move=> x [y Ay]; have [//| _ _] := projT2 (cid (Ux y)); exact.
-Qed.
-
-End set_nbhs.
 
 (** Uniform spaces *)
 
@@ -8246,14 +8250,6 @@ exact: iter_split_ent.
 Qed.
 
 End gauges.
-
-Definition normal_space (T : topologicalType) :=
-  forall A : set T, closed A ->
-    set_nbhs A `<=` filter_from (set_nbhs A) closure.
-
-Definition regular_space (T : topologicalType) :=
-  forall a : T, nbhs a `<=` filter_from (nbhs a) closure.
-
 Section ArzelaAscoli.
 Context {X : topologicalType}.
 Context {Y : uniformType}.
@@ -8495,7 +8491,7 @@ Qed.
 
 End ArzelaAscoli.
 
-Lemma uniform_regular {T : uniformType} : @regular T.
+Lemma uniform_regular {T : uniformType} : @regular_space T.
 Proof.
 move=> x R /=; rewrite -{1}nbhs_entourageE => -[E entE ER].
 pose E' := split_ent E; have eE' : entourage E' by exact: entourage_split_ent.
@@ -8553,7 +8549,7 @@ by exists (Q, P) => // -[b a] /= [Qb Pa] Kb; exact: PQfO.
 Unshelve. all: by end_near. Qed.
 
 Lemma continuous_uncurry_regular (f : U ~> V ~> W) :
-  locally_compact [set: V] -> @regular V -> continuous f ->
+  locally_compact [set: V] -> @regular_space V -> continuous f ->
   (forall u, continuous (f u)) -> continuous (uncurry f : U * V ~> W).
 Proof.
 move=> lcV reg cf cfp /= [u v] D; rewrite /= nbhsE => -[O [oO Ofuv]] /filterS.
@@ -8580,7 +8576,7 @@ move=> v; have [B] := @lcV v I; rewrite withinET => Bv [cptB clB].
 by move=> z; exact: (@compact_regular V hsdf v B).
 Qed.
 
-Lemma curry_continuous (f : U * V ~> W) : continuous f -> @regular U ->
+Lemma curry_continuous (f : U * V ~> W) : continuous f -> @regular_space U ->
   {for f, continuous (curry : (U * V ~> W) -> (U ~> V ~> W))}.
 Proof.
 move=> ctsf regU; apply/compact_open_cvgP.
@@ -8617,7 +8613,7 @@ by exists (a, b); split => //; split => //; exact/subset_closure.
 Unshelve. all: by end_near. Qed.
 
 Lemma uncurry_continuous (f : U ~> V ~> W) :
-  locally_compact [set: V] -> @regular V -> @regular U ->
+  locally_compact [set: V] -> @regular_space V -> @regular_space U ->
   continuous f -> (forall u, continuous (f u)) ->
   {for f, continuous (uncurry : (U ~> V ~> W) -> (U * V ~> W))}.
 Proof.
