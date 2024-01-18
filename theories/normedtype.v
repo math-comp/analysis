@@ -1033,7 +1033,7 @@ Lemma dnbhs0_le e : 0 < e -> \forall x \near (0 : V)^', `|x| <= e.
 Proof. by move=> e_gt0; apply: cvg_within; apply: nbhs0_le. Qed.
 
 Lemma nbhs_norm_ball x (eps : {posnum R}) : nbhs_norm x (ball x eps%:num).
-Proof. rewrite nbhs_nbhs_norm; by apply: nbhsx_ballx. Qed.
+Proof. by rewrite nbhs_nbhs_norm; exact: nbhsx_ballx. Qed.
 
 Lemma nbhsDl (P : set V) (x y : V) :
   (\forall z \near (x + y), P z) <-> (\near x, P (x + y)).
@@ -3180,36 +3180,33 @@ move=> [x y]; have [pE U /= Upinf|] := eqVneq (edist (x, y)) +oo%E.
 rewrite -ltey -ge0_fin_numE// => efin.
 rewrite /continuous_at -[edist (x, y)]fineK//; apply: cvg_EFin.
   by have := edist_fin_open efin; apply: filter_app; near=> w.
-move=> U /=; rewrite nbhs_simpl/= -nbhs_ballE.
-move=> [] _/posnumP[r] distrU; rewrite nbhs_simpl /=.
-have r2p : 0 < r%:num / 4%:R by rewrite divr_gt0// ltr0n.
-exists (ball x (r%:num / 4%:R), ball y (r%:num / 4%:R)).
-  by split => //=; exact: (@nbhsx_ballx _ _ _ (@PosNum _ _ r2p)).
-case => a b /= [/ball_sym xar yar]; apply: distrU => /=.
-have abxy : (edist (a, b) <= edist (a, x) + edist (x, y) + edist (y, b))%E.
-  by rewrite -addeA (le_trans (@edist_triangle _ x _)) ?lee_add ?edist_triangle.
+apply/cvgrPdist_le => _/posnumP[eps].
+suff: \forall t \near (nbhs x, nbhs y),
+   `|fine (edist (x, y)) - fine (edist t)| <= eps%:num by [].
+rewrite -near2_pair; near=> a b => /=.
+have abxy : (edist (a, b) <= edist (x, a) + edist (x, y) + edist (y, b))%E.
+  rewrite (edist_sym x a) -addeA.
+  by rewrite (le_trans (@edist_triangle _ x _)) ?lee_add ?edist_triangle.
+have xyab : (edist (x, y) <= edist (x, a) + edist (a, b) + edist (y, b))%E.
+  rewrite (edist_sym y b) -addeA.
+  by rewrite (le_trans (@edist_triangle _ a _))// ?lee_add// ?edist_triangle.
+have xafin : edist (x, a) \is a fin_num.
+  by apply/edist_finP; exists 1 =>//; near: a; exact: nbhsx_ballx.
+have ybfin : edist (y, b) \is a fin_num.
+  by apply/edist_finP; exists 1 =>//; near: b; exact: nbhsx_ballx.
 have abfin : edist (a, b) \is a fin_num.
-  rewrite ge0_fin_numE// (le_lt_trans abxy)//.
-  by apply: lte_add_pinfty; [apply: lte_add_pinfty|];
-    rewrite -ge0_fin_numE //; apply/edist_finP; exists (r%:num / 4%:R).
-have xyabfin : `|edist (x, y) - edist (a, b)|%E \is a fin_num.
-  by rewrite abse_fin_num fin_numB abfin efin.
-have daxr : edist (a, x) \is a fin_num by apply/edist_finP; exists (r%:num / 4).
-have dybr : edist (y, b) \is a fin_num by apply/edist_finP; exists (r%:num / 4).
-rewrite /ball/= -fineB// -fine_abse ?fin_numB ?abfin ?efin//.
-rewrite (@le_lt_trans _ _ (fine (edist (a, x) + edist (y, b))))//.
-  rewrite fine_le// ?fin_numD ?daxr ?dybr//.
-  have [xyab|xyab] := leP (edist (a, b)) (edist (x, y)).
-    rewrite gee0_abs ?subre_ge0// lee_subl_addr//.
-    rewrite (le_trans (@edist_triangle _ a _))// (edist_sym a x) -addeA.
-    by rewrite lee_add// addeC (edist_sym y) edist_triangle.
-  rewrite lte0_abs ?subre_lt0// oppeB ?fin_num_adde_defr// addeC.
-  by rewrite lee_subl_addr// addeAC.
-rewrite fineD // [_%:num]splitr.
-have r42 : r%:num / 4 < r%:num / 2.
-  by rewrite ltr_pM2l// ltf_pV2 ?posrE ?ltr0n// ltr_nat.
-by apply: ltrD; rewrite (le_lt_trans _ r42)// -lee_fin fineK // edist_fin.
-Unshelve. end_near. Qed.
+  by rewrite ge0_fin_numE// (le_lt_trans abxy) ?lte_add_pinfty// -ge0_fin_numE.
+have xyabfin: (edist (x, y) - edist (a, b))%E \is a fin_num
+  by rewrite fin_numB abfin efin.
+rewrite -fineB// -fine_abse// -lee_fin fineK ?abse_fin_num//.
+rewrite (@le_trans _ _ (edist (x, a) + edist (y, b))%E)//; last first.
+  by rewrite [eps%:num]splitr/= EFinD lee_add//; apply: edist_fin => //=;
+       [near: a | near: b]; exact: nbhsx_ballx.
+have [ab_le_xy|/ltW xy_le_ab] := leP (edist (a, b)) (edist (x, y)).
+  by rewrite gee0_abs ?subre_ge0// lee_subl_addr// addeAC.
+rewrite lee0_abs ?sube_le0// oppeB ?fin_num_adde_defr//.
+by rewrite addeC lee_subl_addr// addeAC.
+Unshelve. all: end_near. Qed.
 
 Lemma edist_closeP x y : close x y <-> edist (x, y) = 0%E.
 Proof.
@@ -3297,7 +3294,7 @@ have fwfin : \forall w \near z, edist_inf w \is a fin_num.
   rewrite fin_numD fz_fin andbT; apply/edist_finP; exists 1 => //.
   exact/ball_sym.
 split => //; apply/cvgrPdist_le => _/posnumP[eps].
-have : nbhs z (ball z eps%:num) by apply: nbhsx_ballx.
+have : nbhs z (ball z eps%:num) by exact: nbhsx_ballx.
 apply: filter_app; near_simpl; move: fwfin; apply: filter_app.
 near=> t => tfin /= /[dup] ?.
 have ztfin : edist (z, t) \is a fin_num by apply/edist_finP; exists eps%:num.
@@ -4644,7 +4641,8 @@ move=> x clAx; have abx : x \in `[a, b].
   by apply: interval_closed; have /closureI [] := clAx.
 split=> //; have /sabUf [i Di fx] := abx.
 have /fop := Di; rewrite openE => /(_ _ fx) [_ /posnumP[e] xe_fi].
-have /clAx [y [[aby [E sD [sayUf _]]] xe_y]] := nbhsx_ballx x e.
+have /clAx [y [[aby [E sD [sayUf _]]] xe_y]] :=
+  nbhsx_ballx x e%:num ltac:(by []).
 exists (i |` E)%fset; first by move=> j /fset1UP[->|/sD] //; rewrite inE.
 split=> [z axz|]; last first.
   exists i; first by rewrite /= !inE eq_refl.
