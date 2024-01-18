@@ -218,10 +218,10 @@ End cvge_fun_cvg_seq.
 
 Section fun_cvg_realType.
 Context {R : realType}.
+Implicit Types f : R -> R.
 
 (* NB: see nondecreasing_cvgn in sequences.v *)
-Lemma nondecreasing_cvgr (f : R -> R) :
-    nondecreasing_fun f -> has_ubound (range f) ->
+Lemma nondecreasing_cvgr f : nondecreasing_fun f -> has_ubound (range f) ->
   f r @[r --> +oo] --> sup (range f).
 Proof.
 move=> ndf ubf; set M := sup (range f).
@@ -237,8 +237,7 @@ Unshelve. all: by end_near. Qed.
 
 (***md This covers the cases where the interval is
    $]a, +\infty[$, $]a, b[$, or $]a, b]$. *)
-Lemma nonincreasing_at_right_cvgr (f : R -> R) a (b : itv_bound R) :
-    (BRight a < b)%O ->
+Lemma nonincreasing_at_right_cvgr f a (b : itv_bound R) : (BRight a < b)%O ->
     {in Interval (BRight a) b &, nonincreasing_fun f} ->
     has_ubound (f @` [set` Interval (BRight a) b]) ->
   f x @[x --> a ^'+] --> sup (f @` [set` Interval (BRight a) b]).
@@ -253,10 +252,10 @@ have supf : has_sup [set f x | x in [set` Interval (BRight a) b]].
   - by exists (f (a + 1)), (a + 1).
   - by exists (f (a + 1)), (a + 1) => //=; rewrite in_itv/= ltr_addl andbT.
 apply/cvgrPdist_le => _/posnumP[e].
-have {supf} [p [ap pb]] : exists p, [/\ (a < p), (BLeft p < b)%O & M - e%:num <= f p].
+have {supf} [p [ap pb]] :
+    exists p, [/\ a < p, (BLeft p < b)%O & M - e%:num <= f p].
   have [_ -[p apb] <- /ltW efp] := sup_adherent (gt0 e) supf.
-  move: apb.
-  rewrite /= in_itv/= -[X in _ && X]/(BLeft p < b)%O => /andP[ap pb].
+  move: apb; rewrite /= in_itv/= -[X in _ && X]/(BLeft p < b)%O => /andP[ap pb].
   by exists p; split.
 rewrite ler_subl_addr {}/M.
 move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
@@ -286,8 +285,17 @@ move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
   - by near: r; exact: nbhs_right_le.
 Unshelve. all: by end_near. Qed.
 
-Lemma nondecreasing_at_right_cvgr (f : R -> R) a (b : itv_bound R) :
-    (BRight a < b)%O ->
+Lemma nonincreasing_at_right_is_cvgr f a :
+    (\forall x \near a^'+, {in `]a, x[ &, nonincreasing_fun f}) ->
+    (\forall x \near a^'+, has_ubound (f @` `]a, x[)) ->
+  cvg (f x @[x --> a ^'+]).
+Proof.
+move=> nif ubf; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nonincreasing_at_right_cvgr _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
+
+Lemma nondecreasing_at_right_cvgr f a (b : itv_bound R) : (BRight a < b)%O ->
     {in Interval (BRight a) b &, nondecreasing_fun f} ->
     has_lbound (f @` [set` Interval (BRight a) b]) ->
   f x @[x --> a ^'+] --> inf (f @` [set` Interval (BRight a) b]).
@@ -300,9 +308,20 @@ have hub : has_ubound [set (\- f) x | x in [set` Interval (BRight a) b]].
   rewrite [X in has_lbound X](_ : _ = f @` [set` Interval (BRight a) b])//.
   by apply: eq_imagel => y _ /=; rewrite opprK.
 have /cvgN := nonincreasing_at_right_cvgr ab ndNf hub.
-rewrite opprK [X in _ --> X -> _](_ : _ = inf (f @`  [set` Interval (BRight a) b]))//.
+rewrite opprK [X in _ --> X -> _](_ : _ =
+    inf (f @` [set` Interval (BRight a) b]))//.
 by rewrite /inf; congr (- sup _); rewrite image_comp/=; exact: eq_imagel.
 Qed.
+
+Lemma nondecreasing_at_right_is_cvgr f a :
+    (\forall x \near a^'+, {in `]a, x[ &, nondecreasing_fun f}) ->
+    (\forall x \near a^'+, has_lbound (f @` `]a, x[)) ->
+  cvg (f x @[x --> a ^'+]).
+Proof.
+move=> ndf lbf; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nondecreasing_at_right_cvgr _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
 
 End fun_cvg_realType.
 Arguments nondecreasing_at_right_cvgr {R f a} b.
@@ -562,17 +581,21 @@ apply: nondecreasing_at_right_cvgr => //.
   by rewrite fineK// ?f_fin_num ?inE//; exists x => //=; rewrite in_itv/= ax.
 Unshelve. all: by end_near. Qed.
 
-Lemma nondecreasing_at_right_is_cvge (f : R -> \bar R) a (b : itv_bound R) :
-    (BRight a < b)%O -> {in Interval (BRight a) b &, nondecreasing_fun f} ->
+Lemma nondecreasing_at_right_is_cvge (f : R -> \bar R) (a : R) :
+    (\forall x \near a^'+, {in `]a, x[ &, nondecreasing_fun f}) ->
   cvg (f x @[x --> a ^'+]).
-Proof. by move=> h ?; apply: cvgP; exact: (nondecreasing_at_right_cvge h). Qed.
+Proof.
+move=> ndf; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nondecreasing_at_right_cvge _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
 
 Lemma nonincreasing_at_right_cvge (f : R -> \bar R) a (b : itv_bound R) :
     (BRight a < b)%O -> {in Interval (BRight a) b &, nonincreasing_fun f} ->
   f x @[x --> a ^'+] --> ereal_sup (f @` [set` Interval (BRight a) b]).
 Proof.
-move=> ab nif.
-have ndNf : {in Interval (BRight a) b &, {homo (\- f) : n m / (n <= m)%R >-> n <= m}}.
+move=> ab nif; have ndNf : {in Interval (BRight a) b &,
+    {homo (\- f) : n m / (n <= m)%R >-> n <= m}}.
   by move=> r s rab sab /nif; rewrite leeN2; exact.
 have /cvgeN := nondecreasing_at_right_cvge ab ndNf.
 under eq_fun do rewrite oppeK.
@@ -582,19 +605,22 @@ rewrite {}/rhs {}/lhs; rewrite /ereal_inf oppeK; congr ereal_sup.
 by rewrite image_comp/=; apply: eq_imagel => x _ /=; rewrite oppeK.
 Qed.
 
-Lemma nonincreasing_at_right_is_cvge (f : R -> \bar R) a (b : itv_bound R) :
-    (BRight a < b)%O -> {in Interval (BRight a) b &, nonincreasing_fun f} ->
+Lemma nonincreasing_at_right_is_cvge (f : R -> \bar R) a :
+    (\forall x \near a^'+, {in `]a, x[ &, nonincreasing_fun f}) ->
   cvg (f x @[x --> a ^'+]).
-Proof. by move=> h ?; apply: cvgP; exact: (nonincreasing_at_right_cvge h). Qed.
+Proof.
+move=> nif; apply/cvg_ex; near a^'+ => b.
+by eexists; apply: (@nonincreasing_at_right_cvge _ _ (BLeft b));
+  [rewrite bnd_simp|near: b..].
+Unshelve. all: by end_near. Qed.
 
 End fun_cvg_ereal.
 
 End fun_cvg.
-Arguments nonincreasing_at_right_is_cvge {R f a} b.
 Arguments nondecreasing_at_right_cvge {R f a} b.
-Arguments nondecreasing_at_right_is_cvge {R f a} b.
+Arguments nondecreasing_at_right_is_cvge {R f a}.
 Arguments nonincreasing_at_right_cvge {R f a} b.
-Arguments nonincreasing_at_right_is_cvge {R f a} b.
+Arguments nonincreasing_at_right_is_cvge {R f a}.
 
 Section lime_sup_inf.
 Variable R : realType.
@@ -615,9 +641,9 @@ Qed.
 
 Let sup_ball_is_cvg f a : cvg (sup_ball f a e @[e --> 0^'+]).
 Proof.
-apply: (nondecreasing_at_right_is_cvge +oo)%O => //=.
-by move=> x y; rewrite !in_itv/= !andbT => x0 y0 /sup_ball_le.
-Qed.
+apply: nondecreasing_at_right_is_cvge; near=> e.
+by move=> x y; rewrite !in_itv/= => /andP[x0 xe] /andP[y0 ye] /sup_ball_le.
+Unshelve. all: by end_near. Qed.
 
 Let inf_ball f a r := - sup_ball (\- f) a r.
 
@@ -631,9 +657,9 @@ Proof. by move=> sr; rewrite /inf_ball lee_oppl oppeK sup_ball_le. Qed.
 
 Let inf_ball_is_cvg f a : cvg (inf_ball f a e @[e --> 0^'+]).
 Proof.
-apply: (nonincreasing_at_right_is_cvge +oo)%O => //.
-by move=> x y; rewrite !in_itv/= !andbT => x0 y0 /inf_ball_le.
-Qed.
+apply: nonincreasing_at_right_is_cvge; near=> e.
+by move=> x y; rewrite !in_itv/= => /andP[x0 xe] /andP[y0 ye] /inf_ball_le.
+Unshelve. all: by end_near. Qed.
 
 Let le_sup_ball f g a :
   (forall r, (0 < r)%R -> forall y : R, y != a -> ball a r y -> f y <= g y) ->
@@ -704,8 +730,8 @@ Proof.
 move=> fg; rewrite !lime_sup_lim -limeD//; last first.
   by rewrite -!lime_sup_lim.
 apply: lee_lim => //.
-- apply: (nondecreasing_at_right_is_cvge +oo)%O => //= x y.
-  by rewrite !in_itv/= !andbT => x0 y0 xy; rewrite lee_add//; exact: sup_ball_le.
+- apply: nondecreasing_at_right_is_cvge; near=> e => x y; rewrite !in_itv/=.
+  by move=> /andP[? ?] /andP[? ?] xy; apply: lee_add => //; exact: sup_ball_le.
 - near=> a0; apply: ub_ereal_sup => _ /= [a1 [a1ae a1a]] <-.
   by apply: lee_add; apply: ereal_sup_ub => /=; exists a1.
 Unshelve. all: by end_near. Qed.
