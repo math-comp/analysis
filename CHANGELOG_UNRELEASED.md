@@ -65,15 +65,18 @@
 - in `ereal.v`:
   + lemma `ereal_supy`
 
+- in `mathcomp_extra.v`:
+  + lemmas `last_filterP`,
+    `path_lt_filter0`, `path_lt_filterT`, `path_lt_head`, `path_lt_last_filter`,
+	`path_lt_le_last`
+
 - in file `realfun.v`,
   + new definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`, 
     `variation`, `variations`, `bounded_variation`, `total_variation`, 
     `neg_tv`, and `pos_tv`.
 
   + new lemmas `left_right_continuousP`,
-    `nondecreasing_funN`, `nonincreasing_funN`, `last_filterP`,
-    `path_lt_filter0`, `path_lt_filterT`, `path_lt_head`, `path_lt_last_filter`,
-	`path_lt_le_last`
+    `nondecreasing_funN`, `nonincreasing_funN`
 
   + new lemmas `itv_partition_nil`, `itv_partition_cons`, `itv_partition1`,
     `itv_partition_size_neq0`, `itv_partitionxx`, `itv_partition_le`,
