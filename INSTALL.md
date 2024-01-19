@@ -2,11 +2,11 @@
 
 ## Requirements
 
-- [The Coq Proof Assistant version ≥ 8.14](https://coq.inria.fr)
-- [Mathematical Components version ≥ 1.13.0](https://github.com/math-comp/math-comp)
-  + except `coq-mathcomp-solvable` ≥ 1.15.0
+- [The Coq Proof Assistant version ≥ 8.15](https://coq.inria.fr)
+- [Mathematical Components version ≥ 1.17.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 1.5.1](https://github.com/math-comp/finmap)
 - [Hierarchy builder version >= 1.2.0](https://github.com/math-comp/hierarchy-builder)
+- [bigenough >= 1.0.0](https://github.com/math-comp/bigenough)
 
 These requirements can be installed in a custom way, or through
 [opam](https://opam.ocaml.org/) (the recommended way) using
@@ -48,7 +48,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.0.6.7
+$ opam install coq-mathcomp-analysis.0.7.0
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -71,20 +71,20 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.14.0 and MathComp 1.13.0. For other versions, update the
+With the example of Coq 8.15.0 and MathComp 1.17.0. For other versions, update the
 version numbers accordingly.
 
-1. Install Coq 8.14.0
+1. Install Coq 8.15.0
 ```
-$ opam install coq.8.14.0
+$ opam install coq.8.15.0
 ```
 2. Install the Mathematical Components
 ```
-$ opam install coq-mathcomp-ssreflect.1.13.0
-$ opam install coq-mathcomp-fingroup.1.13.0
-$ opam install coq-mathcomp-algebra.1.13.0
-$ opam install coq-mathcomp-solvable.1.13.0
-$ opam install coq-mathcomp-field.1.13.0
+$ opam install coq-mathcomp-ssreflect.1.17.0
+$ opam install coq-mathcomp-fingroup.1.17.0
+$ opam install coq-mathcomp-algebra.1.17.0
+$ opam install coq-mathcomp-solvable.1.17.0
+$ opam install coq-mathcomp-field.1.17.0
 ```
 3. Install the Finite maps library
 ```
