@@ -2075,6 +2075,51 @@ by apply: xe_A => //; rewrite eq_sym.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
+Lemma continuous_within_itvP {R : realType } a b (f : R -> R) :
+  a < b ->
+  {within `[a,b], continuous f} <->
+  {in `]a,b[, continuous f} /\ f @ a^'+ --> f a /\ f @b^'- --> f b.
+Proof.
+move=> ab; split=> [abf|].
+  split.
+    suff : {in `]a, b[%classic, continuous f}.
+      by move=> P c W; apply: P; rewrite inE.
+    rewrite -continuous_open_subspace; last exact: interval_open.
+    by move: abf; exact/continuous_subspaceW/subset_itvW.
+  have [aab bab] : a \in `[a, b] /\ b \in `[a, b].
+    by rewrite !in_itv/= !lexx (ltW ab).
+  split; apply/cvgrPdist_lt => eps eps_gt0 /=.
+  + move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (abf a).
+    rewrite /dnbhs/= near_withinE !near_simpl// /prop_near1 /nbhs/=.
+    rewrite -nbhs_subspace_in// /within/= near_simpl.
+    apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
+    apply=> //; rewrite ?gt_eqF// !in_itv/= (ltW ac)/=; move: cba => /=.
+    by rewrite ltr0_norm ?subr_lt0// opprB ltr_add2r => /ltW.
+  + move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (abf b).
+    rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
+    rewrite -nbhs_subspace_in// /within/= near_simpl.
+    apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
+    apply=> //; rewrite ?lt_eqF// !in_itv/= (ltW ac)/= andbT; move: cba => /=.
+    by rewrite gtr0_norm ?subr_gt0// ltr_add2l ltr_oppr opprK => /ltW.
+case=> ctsoo [ctsL ctsR]; apply/subspace_continuousP => x /andP[].
+rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
+- by move/eqP; rewrite lt_eqF.
+- move=> _; apply/cvgrPdist_lt => eps eps_gt0 /=.
+  move/cvgrPdist_lt/(_ _ eps_gt0): ctsL; rewrite /at_right !near_withinE.
+  apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
+  have : a <= c by move: ac => /andP[].
+  by rewrite le_eqVlt => /predU1P[->|/[swap] /[apply]//]; rewrite subrr normr0.
+- move=> ->; apply/cvgrPdist_lt => eps eps_gt0 /=.
+  move/cvgrPdist_lt/(_ _ eps_gt0): ctsR; rewrite /at_left !near_withinE.
+  apply: filter_app; exists (b - a); rewrite /= ?subr_gt0 // => c cba + ac.
+  have : c <= b by move: ac => /andP[].
+  by rewrite le_eqVlt => /predU1P[->|/[swap] /[apply]//]; rewrite subrr normr0.
+- move=> xb; have aboox : x \in `]a, b[ by rewrite !in_itv/= ax.
+  rewrite within_interior; first exact: ctsoo.
+  suff : `]a, b[ `<=` interior `[a, b] by exact.
+  by rewrite -open_subsetE; [exact: subset_itvW| exact: interval_open].
+Qed.
+
 (* TODO: generalize to R : numFieldType *)
 Section hausdorff.
 

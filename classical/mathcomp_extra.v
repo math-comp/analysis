@@ -934,3 +934,54 @@ Qed.
 
 Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
   {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
+
+(* NB: these lemmas have been introduced to develop the theory of bounded variation *)
+Section path_lt.
+Context d {T : orderType d}.
+Implicit Types (a b c : T) (s : seq T).
+
+Lemma last_filterP a (P : pred T) s :
+  P a -> P (last a [seq x <- s | P x]).
+Proof.
+by elim: s a => //= t1 t2 ih a Pa; case: ifPn => //= Pt1; exact: ih.
+Qed.
+
+Lemma path_lt_filter0 a s : path <%O a s -> [seq x <- s | (x < a)%O] = [::].
+Proof.
+move=> /lt_path_min/allP sa; rewrite -(filter_pred0 s).
+apply: eq_in_filter => x xs.
+by apply/negbTE; have := sa _ xs; rewrite ltNge; apply: contra => /ltW.
+Qed.
+
+Lemma path_lt_filterT a s : path <%O a s -> [seq x <- s | (a < x)%O] = s.
+Proof.
+move=> /lt_path_min/allP sa; rewrite -[RHS](filter_predT s).
+by apply: eq_in_filter => x xs; exact: sa.
+Qed.
+
+Lemma path_lt_head a b s : (a < b)%O -> path <%O b s -> path <%O a s.
+Proof.
+by elim: s b => // h t ih b /= ab /andP[bh ->]; rewrite andbT (lt_trans ab).
+Qed.
+
+(* TODO: this lemma feels a bit too technical, generalize? *)
+Lemma path_lt_last_filter a b c s :
+  (a < c)%O -> (c < b)%O -> path <%O a s -> last a s = b ->
+  last c [seq x <- s | (c < x)%O] = b.
+Proof.
+elim/last_ind : s a b c => /= [|h t ih a b c ac cb].
+  move=> a b c ac cb _ ab.
+  by apply/eqP; rewrite eq_le (ltW cb) -ab (ltW ac).
+rewrite rcons_path => /andP[ah ht]; rewrite last_rcons => tb.
+by rewrite filter_rcons tb cb last_rcons.
+Qed.
+
+Lemma path_lt_le_last a s : path <%O a s -> (a <= last a s)%O.
+Proof.
+elim: s a => // a [_ c /andP[/ltW//]|b t ih i/= /and3P[ia ab bt]] /=.
+have /= := ih a; rewrite ab bt => /(_ erefl).
+by apply: le_trans; exact/ltW.
+Qed.
+
+End path_lt.
+Arguments last_filterP {d T a} P s.

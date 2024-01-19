@@ -511,6 +511,11 @@ case: xgetP => /=; first by move=> _ -> -[] /ubP geS _; apply geS.
 by case: (ereal_supremums_neq0 S) => /= x0 Sx0; move/(_ x0).
 Qed.
 
+Lemma ereal_supy S : S +oo -> ereal_sup S = +oo.
+Proof.
+by move=> Soo; apply/eqP; rewrite eq_le leey/=; exact: ereal_sup_ub.
+Qed.
+
 Lemma ereal_sup_le S x : (exists2 y, S y & x <= y) -> x <= ereal_sup S.
 Proof. by move=> [y Sy] /le_trans; apply; exact: ereal_sup_ub. Qed.
 
