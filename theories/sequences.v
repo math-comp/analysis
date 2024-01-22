@@ -2453,14 +2453,14 @@ move=> ba bb; have ab k : infs u k + infs v k <= infs (u \+ v) k.
   by move=> M [n /= kn <-]; apply: lerD; apply: inf_lb; [
     exact/has_lbound_sdrop/bounded_fun_has_lbound; exact | exists n |
     exact/has_lbound_sdrop/bounded_fun_has_lbound; exact | exists n ].
-have cu : cvg (infs u).
+have cu : cvgn (infs u).
   apply: nondecreasing_is_cvgn; last exact: bounded_fun_has_ubound_infs.
   exact/nondecreasing_infs/bounded_fun_has_lbound.
-have cv : cvg (infs v).
+have cv : cvgn (infs v).
   apply: nondecreasing_is_cvgn; last exact: bounded_fun_has_ubound_infs.
   exact/nondecreasing_infs/bounded_fun_has_lbound.
-rewrite -(@limD _ [normedModType R of R^o] _ _ _ _ _ cu cv); apply: ler_lim.
-- exact: (@is_cvgD _ [normedModType R of R^o] _ _ _ _ _ cu cv).
+rewrite -(limD cu cv); apply: ler_lim.
+- exact: is_cvgD cu cv.
 - apply: nondecreasing_is_cvgn; last first.
     exact/bounded_fun_has_ubound_infs/bounded_funD.
   exact/nondecreasing_infs/bounded_fun_has_lbound/bounded_funD.
@@ -2862,7 +2862,7 @@ have [q_gt0 | | q0] := ltrgt0P q%:num.
 - near=> n => /=; apply: (le_lt_trans (@ctrfq (_, _) _)) => //=.
   + split; last exact: funS.
     by apply: closed_cvg contraction_cvg => //; apply: nearW => ?; exact: funS.
-  + rewrite -ltr_pdivl_mull //; near: n; move/cvgrPdist_lt: contraction_cvg.
+  + rewrite -ltr_pdivlMl //; near: n; move/cvgrPdist_lt: contraction_cvg.
     by apply; rewrite mulr_gt0 // invr_gt0.
 - by rewrite ltNge//; exact: contraNP.
 - apply: nearW => /= n; apply: (le_lt_trans (@ctrfq (_, _) _)).

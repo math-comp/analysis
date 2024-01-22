@@ -1312,7 +1312,7 @@ Proof.
 move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
 apply: contrapT; apply: pePf; apply/andP; split.
 - by near: t; exact: nbhs_right_gt.
-- by near: t; apply: nbhs_right_lt; rewrite ltr_addl.
+- by near: t; apply: nbhs_right_lt; rewrite ltrDl.
 Unshelve. all: by end_near. Qed.
 
 Lemma withinN (A : set R) a :
@@ -1336,14 +1336,14 @@ Lemma at_rightN a : (- a)^'+ = -%R @ a^'-.
 Proof.
 rewrite /at_right withinN [X in within X _](_ : _ = [set u | u < a])//.
 rewrite (@fun_predC _ -%R)/=; last exact: opprK.
-by rewrite image_id; under eq_fun do rewrite ltr_oppl opprK.
+by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
 Lemma at_leftN a : (- a)^'- = -%R @ a^'+.
 Proof.
 rewrite /at_left withinN [X in within X _](_ : _ = [set u | a < u])//.
 rewrite (@fun_predC _ -%R)/=; last exact: opprK.
-by rewrite image_id; under eq_fun do rewrite ltr_oppl opprK.
+by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
 End at_left_right.
@@ -2094,13 +2094,13 @@ move=> ab; split=> [abf|].
     rewrite -nbhs_subspace_in// /within/= near_simpl.
     apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
     apply=> //; rewrite ?gt_eqF// !in_itv/= (ltW ac)/=; move: cba => /=.
-    by rewrite ltr0_norm ?subr_lt0// opprB ltr_add2r => /ltW.
+    by rewrite ltr0_norm ?subr_lt0// opprB ltrD2r => /ltW.
   + move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (abf b).
     rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
     rewrite -nbhs_subspace_in// /within/= near_simpl.
     apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
     apply=> //; rewrite ?lt_eqF// !in_itv/= (ltW ac)/= andbT; move: cba => /=.
-    by rewrite gtr0_norm ?subr_gt0// ltr_add2l ltr_oppr opprK => /ltW.
+    by rewrite gtr0_norm ?subr_gt0// ltrD2l ltrNr opprK => /ltW.
 case=> ctsoo [ctsL ctsR]; apply/subspace_continuousP => x /andP[].
 rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
 - by move/eqP; rewrite lt_eqF.
