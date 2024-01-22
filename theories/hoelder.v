@@ -308,7 +308,7 @@ have [->|p_neq1] := eqVneq p 1.
   by rewrite !powRr1// addr_ge0// mulr_ge0// /w2 ?onem_ge0.
 have {p_neq1} {}p1 : 1 < p by rewrite lt_neqAle eq_sym p_neq1.
 pose q := p / (p - 1).
-have q1 : 1 <= q by rewrite /q ler_pdivl_mulr// ?mul1r ?gerBl// subr_gt0.
+have q1 : 1 <= q by rewrite /q ler_pdivlMr// ?mul1r ?gerBl// subr_gt0.
 have q0 : 0 < q by rewrite (lt_le_trans _ q1).
 have pq1 : p^-1 + q^-1 = 1.
   rewrite /q invf_div -{1}(div1r p) -mulrDl addrCA subrr addr0.
@@ -348,7 +348,7 @@ Let convex_powR_abs_half f g p x : 1 <= p ->
 Proof.
 move=> p1; rewrite (@le_trans _ _ ((2^-1 * `| f x | + 2^-1 * `| g x |) `^ p))//.
   rewrite ge0_ler_powR ?nnegrE ?(le_trans _ p1)//.
-  by rewrite (le_trans (ler_norm_add _ _))// 2!normrM ger0_norm.
+  by rewrite (le_trans (ler_normD _ _))// 2!normrM ger0_norm.
 rewrite {1 3}(_ : 2^-1 = 1 - 2^-1); last by rewrite {2}(splitr 1) div1r addrK.
 rewrite (@convex_powR _ _ p1 (@Itv.mk _ _ _ _)) ?inE/= ?in_itv/= ?normr_ge0//.
 by rewrite /Itv.itv_cond/= in_itv/= invr_ge0 ler0n invf_le1 ?ler1n.
@@ -368,8 +368,9 @@ move=> mf mg.
 rewrite !Lnorm1 -ge0_integralD//; [|by do 2 apply: measurableT_comp..].
 rewrite ge0_le_integral//.
 - by do 2 apply: measurableT_comp => //; exact: measurable_funD.
+- by move=> x _; rewrite lee_fin.
 - by apply/measurableT_comp/measurable_funD; exact/measurableT_comp.
-- by move=> x _; rewrite lee_fin ler_norm_add.
+- by move=> x _; rewrite lee_fin ler_normD.
 Qed.
 
 Let minkowski_lty f g p :
@@ -449,7 +450,7 @@ apply: (@le_trans _ _
   - apply/measurableT_comp => //; apply: measurable_funM.
       by apply/measurable_funD => //; exact: measurableT_comp.
     exact/measurableT_comp_powR/measurableT_comp/measurable_funD.
-  - by move=> ? _; rewrite lee_fin ler_wpmul2r// ?powR_ge0// ler_norm_add.
+  - by move=> ? _; rewrite lee_fin ler_wpM2r// ?powR_ge0// ler_normD.
 under eq_integral=> ? _ do rewrite mulrDl EFinD.
 rewrite ge0_integralD//; last 4 first.
   - by move=> x _; rewrite lee_fin mulr_ge0// powR_ge0.

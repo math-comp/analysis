@@ -190,14 +190,14 @@ Lemma lt0_funeposM r f : (r < 0)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => - r%:E * (f^\- x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funeposN gt0_funenegM -1?ltr_oppr ?oppr0.
+by rewrite funeposN gt0_funenegM -1?ltrNr ?oppr0.
 Qed.
 
 Lemma lt0_funenegM r f : (r < 0)%R ->
   (fun x => r%:E * f x)^\- = (fun x => - r%:E * (f^\+ x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funenegN gt0_funeposM -1?ltr_oppr ?oppr0.
+by rewrite funenegN gt0_funeposM -1?ltrNr ?oppr0.
 Qed.
 
 Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.
@@ -205,9 +205,9 @@ Proof.
 rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
 - rewrite lee0_abs// /funepos /funeneg.
   move/max_idPr : (fx0) => ->; rewrite add0e.
-  by move: fx0; rewrite -{1}oppr0 EFinN lee_oppr => /max_idPl ->.
+  by move: fx0; rewrite -{1}oppe0 lee_oppr => /max_idPl ->.
 - rewrite gee0_abs// /funepos /funeneg; move/max_idPl : (fx0) => ->.
-  by move: fx0; rewrite -{1}oppr0 EFinN lee_oppl => /max_idPr ->; rewrite adde0.
+  by move: fx0; rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0.
 Qed.
 
 Lemma funeposneg f : f = (fun x => f^\+ x - f^\- x).
@@ -248,9 +248,9 @@ Qed.
 
 End funposneg_lemmas.
 #[global]
-Hint Extern 0 (is_true (0 <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
+Hint Extern 0 (is_true (0%R <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
 #[global]
-Hint Extern 0 (is_true (0 <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
+Hint Extern 0 (is_true (0%R <= _ ^\- _)%E) => solve [apply: funeneg_ge0] : core.
 
 Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
@@ -268,7 +268,18 @@ Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
 Lemma indic0 : \1_(@set0 T) = cst (0 : R).
 Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
 
-Lemma preimage_indic D (B : set R) :
+Lemma image_indic D A :
+  \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
+              (if A `&` D != set0 then [set 1 : R] else set0).
+Proof.
+rewrite /indic; apply/predeqP => x; split => [[t At /= <-]|].
+  by rewrite /indic; case: (boolP (t \in D)); rewrite ?(inE, notin_set) => Dt;
+     [right|left]; rewrite ifT//=; apply/set0P; exists t.
+by move=> []; case: ifPn; rewrite ?negbK// => /set0P[t [At Dt]] ->;
+   exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_set).
+Qed.
+
+Lemma preimage_indic (D : set T) (B : set R) :
   \1_D @^-1` B = if 1 \in B then (if 0 \in B then setT else D)
                             else (if 0 \in B then ~` D else set0).
 Proof.
@@ -285,17 +296,6 @@ rewrite /preimage/= /indic; apply/seteqP; split => x;
   by rewrite inE in B1.
 - have [|xD] := boolP (x \in D); first by rewrite inE.
   by rewrite inE in B0.
-Qed.
-
-Lemma image_indic D A :
-  \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
-              (if A `&` D != set0 then [set 1 : R] else set0).
-Proof.
-rewrite /indic; apply/predeqP => x; split => [[t At /= <-]|].
-  by rewrite /indic; case: (boolP (t \in D)); rewrite ?(inE, notin_set) => Dt;
-     [right|left]; rewrite ifT//=; apply/set0P; exists t.
-by move=> []; case: ifPn; rewrite ?negbK// => /set0P[t [At Dt]] ->;
-   exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_set).
 Qed.
 
 Lemma image_indic_sub D A : \1_D @` A `<=` ([set 0; 1] : set R).
@@ -336,11 +336,11 @@ by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
 Qed.
 
 Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
-  \1_A = 1 \_ A :> (T -> R).
+  \1_A = (1 : T -> R) \_ A.
 Proof. by apply/funext => x; rewrite indicE /patch; case: ifP. Qed.
 
 Lemma restrict_indic T (R : numFieldType) (E A : set T) :
-  (\1_E \_ A) = \1_(E `&` A) :> (T -> R).
+  ((\1_E : T -> R) \_ A) = \1_(E `&` A).
 Proof.
 apply/funext => x; rewrite /restrict 2!indicE.
 case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
@@ -355,10 +355,10 @@ Proof.
 split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
 by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
 Qed.
-Canonical fimfun_mul := MulrPred fimfun_mulr_closed.
-Canonical fimfun_ring := SubringPred fimfun_mulr_closed.
-Definition fimfun_ringMixin := [ringMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfun_ringType := RingType {fimfun aT >-> rT} fimfun_ringMixin.
+
+HB.instance Definition _ :=
+   @GRing.isMulClosed.Build _ (@fimfun aT rT) fimfun_mulr_closed.
+HB.instance Definition _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 
@@ -388,9 +388,7 @@ Arguments indic_fimfun {aT rT} _.
 
 Section comring.
 Context (aT : pointedType) (rT : comRingType).
-Definition fimfun_comRingMixin := [comRingMixin of {fimfun aT >-> rT} by <:].
-Canonical fimfun_comRingType :=
-  ComRingType {fimfun aT >-> rT} fimfun_comRingMixin.
+HB.instance Definition _ := [SubRing_isSubComRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types (f g : {fimfun aT >-> rT}).
 HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
@@ -424,10 +422,10 @@ Proof.
 move=> cA cB A0 xy; move/normal_separatorP : normalX => urysohn_ext.
 have /(@uniform_separatorP _ R)[f [cf f01 f0 f1]] := urysohn_ext _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
-- move=> t; apply: continuous_comp; first exact: cf.
-  apply: (@continuousD R [normedModType R of R^o]).
+  move=> t; apply: continuous_comp; first exact: cf.
+  apply: (@continuousD R R^o).
     apply: continuousM; last exact: cvg_cst.
-    by apply: (@continuousB R [normedModType R of R^o]) => //; exact: cvg_cst.
+    by apply: (@continuousB R R^o) => //; exact: cvg_cst.
   by apply: continuousM; [exact: cvg_id|exact: cvg_cst].
 - by rewrite -image_comp => z /= [? /f0 -> <-]; rewrite line_path0.
 - by rewrite -image_comp => z /= [? /f1 -> <-]; rewrite line_path1.
@@ -450,33 +448,33 @@ Proof.
 move: M => _/posnumP[M] ctsf fA1.
 have [] := @urysohn_ext_itv (A `&` f @^-1` `]-oo, -(1/3) * M%:num])
     (A `&` f @^-1` `[1/3 * M%:num,+oo[) (-(1/3) * M%:num) (1/3 * M%:num).
-- by rewrite closed_setSI; exact: closed_comp.
-- by rewrite closed_setSI; apply: closed_comp => //; exact: interval_closed.
+- by rewrite closed_setSI//; exact: closed_comp.
+- by rewrite closed_setSI//; apply: closed_comp => //; exact: interval_closed.
 - rewrite setIACA -preimage_setI eqEsubset; split => z // [_ []].
   rewrite !set_itvE/= => /[swap] /le_trans /[apply].
-  by rewrite leNgt mulNr gtr_opp// mulr_gt0// divr_gt0.
-- by rewrite mulNr gtr_opp// mulr_gt0.
+  by rewrite leNgt mulNr gtrN// mulr_gt0// divr_gt0.
+- by rewrite mulNr gtrN// mulr_gt0//.
 move=> g [ctsg gL3 gR3 grng]; exists g; split => //; first last.
   by move=> x; rewrite ler_norml -mulNr; apply: grng; exists x.
 move=> x Ax; have := fA1 _ Ax; rewrite 2!ler_norml => /andP[Mfx fxM].
 have [xL|xL] := leP (f x) (-(1/3) * M%:num).
   have: [set g x | x in A `&` f@^-1` `]-oo, -(1/3) * M%:num]] (g x) by exists x.
   move/gL3=> ->; rewrite !mulNr opprK; apply/andP; split.
-    by rewrite -ler_subl_addr -opprD -2!mulrDl natr1 divrr ?unitfE// mul1r.
-  rewrite -ler_subr_addr -2!mulrBl -(@natrB _ 2 1)// (le_trans xL)//.
-  by rewrite ler_pmul2r// ltW// gtr_opp// divr_gt0.
+    by rewrite -lerBlDr -opprD -2!mulrDl natr1 divrr ?unitfE// mul1r.
+  rewrite -lerBrDr -2!mulrBl -(@natrB _ 2 1)// (le_trans xL)//.
+  by rewrite ler_pM2r// ltW// gtrN// divr_gt0.
 have [xR|xR] := lerP (1/3 * M%:num) (f x).
   have : [set g x | x in A `&` f@^-1` `[1/3 * M%:num, +oo[] (g x).
     by exists x => //; split => //; rewrite /= in_itv //= xR.
   move/gR3 => ->; apply/andP; split.
-    rewrite ler_subr_addl -2!mulrBl (le_trans _ xR)// ler_pmul2r//.
-    by rewrite ler_wpmul2r ?invr_ge0 ?ler0n// ler_subl_addl natr1 ler1n.
-  by rewrite ler_subl_addl -2!mulrDl nat1r divrr ?mul1r// unitfE.
+    rewrite lerBrDl -2!mulrBl (le_trans _ xR)// ler_pM2r//.
+    by rewrite ler_wpM2r ?invr_ge0 ?ler0n// lerBlDl natr1 ler1n.
+  by rewrite lerBlDl -2!mulrDl nat1r divrr ?mul1r// unitfE.
 have /andP[ng3 pg3] : -(1/3) * M%:num <= g x <= 1/3 * M%:num.
   by apply: grng; exists x.
 rewrite ?(intrD _ 1 1) !mulrDl; apply/andP; split.
-  by rewrite opprD ler_sub// -mulNr ltW.
-by rewrite (ler_add (ltW _))// ler_oppl -mulNr.
+  by rewrite opprD lerB// -mulNr ltW.
+by rewrite (lerD (ltW _))// lerNl -mulNr.
 Qed.
 
 Let tietze_step (f : X -> R) M :
@@ -506,7 +504,7 @@ pose f_ := fix F n :=
 pose g_ n := projT1 (tietze_step (f_ n) (M2d3 n)).
 have fgE n : f_ n - f_ n.+1 = g_ n by rewrite /= opprB addrC subrK.
 have twothirds1 : `|2/3| < 1 :> R.
-  by rewrite gtr0_norm //= ltr_pdivr_mulr// mul1r ltr_nat.
+  by rewrite gtr0_norm //= ltr_pdivrMr// mul1r ltr_nat.
 have f_geo n : {within A, continuous f_ n} /\
     (forall x, A x -> `|f_ n x| <= geometric M%:num (2/3) n).
   elim: n => [|n [ctsN bdN]]; first by split=> //= x ?; rewrite expr0 mulr1 fbd.
@@ -518,8 +516,8 @@ have g_cts n : continuous (g_ n).
 have g_bd n : forall x, `|g_ n x| <= geometric ((1/3) * M%:num) (2/3) n.
   have [ctsN bdfN] := f_geo n; rewrite /geometric /= -[_ * M%:num * _]mulrA.
   by have [_ _] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdfN.
-pose h_ : nat -> [completeType of {uniform X -> _}] :=
-  @series [zmodType of {uniform X -> _}] g_.
+pose h_ : nat -> [the completeType of {uniform X -> R^o}] :=
+  @series {uniform X -> _} g_.
 have cvgh' : cvg (h_ @ \oo).
   apply/cauchy_cvgP/cauchy_ballP => eps epos; near_simpl.
   suff : \forall x & x' \near \oo, (x' <= x)%N -> ball (h_ x) eps (h_ x').
@@ -531,7 +529,7 @@ have cvgh' : cvg (h_ @ \oo).
   rewrite (le_lt_trans (ler_sum _ (fun i _ => g_bd i t)))// -mulr_sumr.
   rewrite -(subnKC MN) geometric_partial_tail.
   pose L := (1/3) * M%:num * ((2/3) ^+ m / (1 - (2/3))).
-  apply: (@le_lt_trans _ _ L); first by rewrite ler_pmul2l // geometric_le_lim.
+  apply: (@le_lt_trans _ _ L); first by rewrite ler_pM2l // geometric_le_lim.
   rewrite /L onem_twothirds.
   rewrite [_ ^+ _ * _ ^-1]mulrC mulrA -[x in x < _]ger0_norm; last by [].
   near: m; near_simpl; move: eps epos.
@@ -542,7 +540,7 @@ exists (lim (h_ @ \oo)); split.
 - move=> t /set_mem At; have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
     !! pointwise_uniform_cvg _ cvgh.
   rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ (@Rhausdorff R)).
-  apply: (@cvg_zero R [pseudoMetricNormedZmodType R of R^o]).
+  apply: (@cvg_zero R [the pseudoMetricNormedZmodType R of R^o]).
   apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
     under [fun _ : nat => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
@@ -563,12 +561,12 @@ exists (lim (h_ @ \oo)); split.
     !! pointwise_uniform_cvg _ cvgh.
   rewrite -fmap_comp /comp /h_ => <-.
   under [fun _ : nat => _]eq_fun => ? do rewrite /series /= fct_sumE.
-  have cvg_gt : cvg [normed series (g_^~ t)].
+  have cvg_gt : cvgn [normed series (g_^~ t)].
     apply: (series_le_cvg _ _ (g_bd ^~ t) (is_cvg_geometric_series _)) => //.
     by move=> n; rewrite mulr_ge0.
   rewrite (le_trans (lim_series_norm _))//; apply: le_trans.
     exact/(lim_series_le cvg_gt _ (g_bd ^~ t))/is_cvg_geometric_series.
-  rewrite (cvg_lim _ (cvg_geometric_series _))//.
+  rewrite (cvg_lim _ (cvg_geometric_series _))//; last exact: Rhausdorff.
   by rewrite onem_twothirds mulrAC divrr ?mul1r// unitfE.
 Unshelve. all: by end_near. Qed.
 

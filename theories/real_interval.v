@@ -29,7 +29,7 @@ move: b i => [] [[]y|[]]; rewrite ?bnd_simp => xy; split=> //; do 1?[
   by exists ((x + y) / 2); rewrite !set_itvE/= addrC !(midf_le,midf_lt) //;
     exact: ltW
 | by exists (x - 1); rewrite !set_itvE/=
-    !(ltr_subl_addr, ler_subl_addr, ltr_addl,ler_addl)].
+    !(ltrBlDr, lerBlDr, ltrDl,lerDl)].
 Qed.
 
 Lemma has_inf_half x b (i : itv_bound R) : (BSide b x < i)%O ->
@@ -39,7 +39,7 @@ move: b i => [] [[]y|[]]; rewrite ?bnd_simp => xy; do 1?[
   by split=> //; exists ((x + y) / 2);
      rewrite !set_itvE/= !(midf_le,midf_lt) //;
      exact: ltW
- | by split => //; exists (x + 1); rewrite !set_itvE/= !(ltr_addl,ler_addl)].
+ | by split => //; exists (x + 1); rewrite !set_itvE/= !(ltrDl,lerDl)].
 Qed.
 
 End interval_has.
@@ -59,7 +59,7 @@ case: b; last first.
   by rewrite -setUitv1// sup_setU ?sup1// => ? ? ? ->; exact/ltW.
 set s := sup _; apply/eqP; rewrite eq_le; apply/andP; split.
 - apply sup_le_ub; last by move=> ? /ltW.
-  by exists (x - 1); rewrite !set_itvE/= ltr_subl_addr ltr_addl.
+  by exists (x - 1); rewrite !set_itvE/= ltrBlDr ltrDl.
 - rewrite leNgt; apply/negP => sx; pose p := (s + x) / 2.
   suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt sup_ub.
   by rewrite !midf_lt.
@@ -100,7 +100,7 @@ Let inf_itv_bnd_o x y b : (BSide b x < BLeft y)%O ->
 Proof.
 case: b => xy.
   by rewrite -setU1itv// inf_setU ?inf1// => _ ? -> /andP[/ltW].
-by rewrite /inf opp_itv_bnd_bnd sup_itv_o_bnd ?opprK // ltr_oppl opprK.
+by rewrite /inf opp_itv_bnd_bnd sup_itv_o_bnd ?opprK // ltrNl opprK.
 Qed.
 
 Let inf_itv_bounded x y a b : (BSide a x < BSide b y)%O ->
@@ -160,12 +160,12 @@ Lemma itv_c_inftyEbigcap x :
   `[x, +oo[%classic = \bigcap_k `]x - k.+1%:R^-1, +oo[%classic.
 Proof.
 rewrite predeqE => y; split=> /= [|xy].
-  rewrite in_itv /= andbT => xy z _ /=; rewrite in_itv /= andbT ltr_subl_addr.
-  by rewrite (le_lt_trans xy) // ltr_addl invr_gt0 ltr0n.
+  rewrite in_itv /= andbT => xy z _ /=; rewrite in_itv /= andbT ltrBlDr.
+  by rewrite (le_lt_trans xy) // ltrDl invr_gt0 ltr0n.
 rewrite in_itv /= andbT leNgt; apply/negP => yx.
 have {}[k ykx] := ltr_add_invr yx.
 have {xy}/= := xy k Logic.I.
-by rewrite in_itv /= andbT; apply/negP; rewrite -leNgt ler_subr_addr ltW.
+by rewrite in_itv /= andbT; apply/negP; rewrite -leNgt lerBrDr ltW.
 Qed.
 
 Lemma itv_bnd_inftyEbigcup b x : [set` Interval (BSide b x) +oo%O] =
@@ -175,7 +175,7 @@ rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[xy yn]; rewrite in_itv /= xy.
 rewrite in_itv /= andbT => xy; exists `|floor y|%N.+1 => //=.
 rewrite in_itv /= xy /=.
-have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_spaddr.
+have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_pwDr.
 by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 1?ltW// lt_succ_floor.
 Qed.
 
@@ -187,7 +187,7 @@ rewrite predeqE => y; split => [|[n _]]/=.
   have {}[k xky] := ltr_add_invr xy.
   by exists k => //=; rewrite in_itv /= (ltW xky).
 rewrite in_itv /= andbT => xny.
-by rewrite in_itv /= andbT (lt_le_trans _ xny) // ltr_addl invr_gt0.
+by rewrite in_itv /= andbT (lt_le_trans _ xny) // ltrDl invr_gt0.
 Qed.
 
 Lemma set_itv_setT (i : interval R) : [set` i] = setT -> i = `]-oo, +oo[.
@@ -342,9 +342,9 @@ move fxE : (f x) => fx; case: fx fxE => [fx fxE gxE|fxoo gxE _|//]; last first.
   by exists 0%N => //; rewrite /E/= fxoo gxE// addye// leey.
 rewrite lte_fin -subr_gt0 => fgx; exists `|floor (fx - gx)^-1%R|%N => //.
 rewrite /E/= -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0; last exact/ltW.
-rewrite fxE gxE lee_fin -[leRHS]invrK lef_pinv//.
+rewrite fxE gxE lee_fin -[leRHS]invrK lef_pV2//.
 - by apply/ltW; rewrite lt_succ_floor.
-- by rewrite posrE// ltr_spaddr// ler0z floor_ge0 invr_ge0 ltW.
+- by rewrite posrE// ltr_pwDr// ler0z floor_ge0 invr_ge0 ltW.
 - by rewrite posrE invr_gt0.
 Qed.
 
@@ -360,11 +360,11 @@ Lemma set1_bigcap_oc (R : realType) (r : R) :
   [set r] = \bigcap_i `]r - i.+1%:R^-1, r]%classic.
 Proof.
 apply/seteqP; split=> [x ->|].
-  by move=> i _/=; rewrite in_itv/= lexx ltr_subl_addr ltr_addl invr_gt0 ltr0n.
+  by move=> i _/=; rewrite in_itv/= lexx ltrBlDr ltrDl invr_gt0 ltr0n.
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
-apply/ler_addgt0Pl => e e_gt0; rewrite -ler_subl_addl ltW//.
+apply/ler_addgt0Pl => e e_gt0; rewrite -lerBlDl ltW//.
 have := rx `|floor e^-1%R|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite ler_add2l ler_opp2 -lef_pinv ?invrK//; last by rewrite qualifE.
+rewrite lerD2l lerN2 -lef_pV2 ?invrK//; last by rewrite posrE.
 by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW// lt_succ_floor.
 Qed.
 
@@ -374,13 +374,13 @@ Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
 Proof.
 apply/seteqP; split => [x/=|]; last first.
   move=> x [n _ /=] /[!in_itv] /andP[-> /le_lt_trans]; apply.
-  by rewrite ltr_subl_addr ltr_addl invr_gt0 ltr0n.
+  by rewrite ltrBlDr ltrDl invr_gt0 ltr0n.
 rewrite in_itv/= => /andP[sx xs]; exists `|ceil ((s - x)^-1)|%N => //=.
-rewrite in_itv/= sx/= ler_subr_addl addrC -ler_subr_addl.
-rewrite -[in X in _ <= X](invrK (s - x)) ler_pinv.
+rewrite in_itv/= sx/= lerBrDl addrC -lerBrDl.
+rewrite -[in X in _ <= X](invrK (s - x)) ler_pV2.
 - rewrite -natr1 natr_absz ger0_norm; last first.
     by rewrite ceil_ge0// invr_ge0 subr_ge0 ltW.
-  by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?ler_addl// ceil_ge.
+  by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?lerDl// ceil_ge.
 - by rewrite inE unitfE ltr0n andbT pnatr_eq0.
 - by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
 Qed.
@@ -402,7 +402,7 @@ Lemma itv_bnd_infty_bigcup (R : realType) b (x : R) :
 Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
-move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -ler_subl_addl.
+move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -lerBlDl.
 rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
 by case: b xy => //= /ltW.
 Qed.

@@ -39,6 +39,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
 
@@ -80,7 +81,7 @@ Proof. by rewrite predeqE => r; split => // _. Qed.
 Lemma lboundT : lbound [set: R] = set0.
 Proof.
 rewrite predeqE => r; split => // /(_ (r - 1) Logic.I).
-rewrite ler_subr_addl addrC -ler_subr_addl subrr.
+rewrite lerBrDl addrC -lerBrDl subrr.
 by rewrite real_leNgt ?realE ?ler01// ?lexx// ltr01.
 Qed.
 
@@ -116,166 +117,44 @@ Qed.
 End has_bound_lemmas.
 
 (* -------------------------------------------------------------------- *)
-Module Real.
-Section Mixin.
 
-Variable (R : archiFieldType).
-
-Record mixin_of : Type := Mixin {
-   _  :
-    forall E : set (Num.ArchimedeanField.sort R),
+HB.mixin Record ArchimedeanField_isReal R of Num.ArchimedeanField R := {
+  sup_upper_bound_subdef :
+    forall E : set [the archiFieldType of R],
       has_sup E -> ubound E (supremum 0 E) ;
-   _  :
-    forall (E : set (Num.ArchimedeanField.sort R)) (eps : R), 0 < eps ->
+  sup_adherent_subdef :
+    forall (E : set [the archiFieldType of R]) (eps : R), 0 < eps ->
       has_sup E -> exists2 e : R, E e & (supremum 0 E - eps) < e ;
 }.
 
-End Mixin.
+#[short(type=realType)]
+HB.structure Definition Real := {R of ArchimedeanField_isReal R
+  & Num.ArchimedeanField R & Num.RealClosedField R}.
 
-Definition EtaMixin R sup_upper_bound sup_adherent :=
-  let _ := @Mixin R sup_upper_bound sup_adherent in
-  @Mixin (Num.ArchimedeanField.Pack (Num.ArchimedeanField.class R))
-         sup_upper_bound sup_adherent.
-Section ClassDef.
-
-Record class_of (R : Type) : Type := Class {
-  base : Num.ArchimedeanField.class_of R;
-  mixin_rcf : Num.real_closed_axiom (Num.NumDomain.Pack base);
-  (* TODO: ajouter une structure de pseudoMetricNormedDomain *)
-  mixin : mixin_of (Num.ArchimedeanField.Pack base)
-}.
-
-Local Coercion base : class_of >-> Num.ArchimedeanField.class_of.
-Local Coercion base_rcf R (c : class_of R) : Num.RealClosedField.class_of R :=
-  @Num.RealClosedField.Class _ c (@mixin_rcf _ c).
-
-Structure type := Pack {sort; _ : class_of sort; _ : Type}.
-Local Coercion sort : type >-> Sortclass.
-Variables (T : Type) (cT : type).
-Definition class := let: Pack _ c _ as cT' := cT return class_of cT' in c.
-Definition clone c of phant_id class c := @Pack T c T.
-Let xT := let: Pack T _ _ := cT in T.
-Notation xclass := (class : class_of xT).
-
-Definition rcf_axiom {R} (cR : Num.RealClosedField.class_of R) :
-   Num.real_closed_axiom (Num.NumDomain.Pack cR) :=
-  match cR with Num.RealClosedField.Class _ ax => ax end.
-Coercion rcf_axiom : Num.RealClosedField.class_of >-> Num.real_closed_axiom.
-
-Definition pack b0 (m0 : mixin_of (@Num.ArchimedeanField.Pack T b0)) :=
-  fun bT b & phant_id (Num.ArchimedeanField.class bT) b =>
-  fun (bTr : rcfType) (br : Num.RealClosedField.class_of bTr) &
-      phant_id (Num.RealClosedField.class bTr) br =>
-  fun  cra & phant_id (@rcf_axiom bTr br) cra =>
-  fun    m & phant_id m0 m => Pack (@Class T b cra m) T.
-
-Definition eqType := @Equality.Pack cT xclass.
-Definition choiceType := @Choice.Pack cT xclass.
-Definition porderType := @Order.POrder.Pack ring_display cT xclass.
-Definition latticeType := @Order.Lattice.Pack ring_display cT xclass.
-Definition distrLatticeType := @Order.DistrLattice.Pack ring_display cT xclass.
-Definition orderType := @Order.Total.Pack ring_display cT xclass.
-Definition zmodType := @GRing.Zmodule.Pack cT xclass.
-Definition ringType := @GRing.Ring.Pack cT xclass.
-Definition comRingType := @GRing.ComRing.Pack cT xclass.
-Definition unitRingType := @GRing.UnitRing.Pack cT xclass.
-Definition comUnitRingType := @GRing.ComUnitRing.Pack cT xclass.
-Definition idomainType := @GRing.IntegralDomain.Pack cT xclass.
-Definition numDomainType := @Num.NumDomain.Pack cT xclass.
-Definition normedZmodType := NormedZmodType numDomainType cT xclass.
-Definition fieldType := @GRing.Field.Pack cT xclass.
-Definition realDomainType := @Num.RealDomain.Pack cT xclass.
-Definition numFieldType := @Num.NumField.Pack cT xclass.
-Definition realFieldType := @Num.RealField.Pack cT xclass.
-Definition archimedeanFieldType := @Num.ArchimedeanField.Pack cT xclass.
-Definition rcfType := @Num.RealClosedField.Pack cT xclass.
-Definition join_rcfType := @Num.RealClosedField.Pack archimedeanFieldType xclass.
-
-End ClassDef.
-
-Module Exports.
-Coercion base : class_of >-> Num.ArchimedeanField.class_of.
-Coercion base_rcf : class_of >-> Num.RealClosedField.class_of.
-Coercion mixin : class_of >-> mixin_of.
-Coercion sort : type >-> Sortclass.
-Bind Scope ring_scope with sort.
-Coercion eqType : type >-> Equality.type.
-Canonical eqType.
-Coercion choiceType : type >-> Choice.type.
-Canonical choiceType.
-Coercion porderType : type >-> Order.POrder.type.
-Canonical porderType.
-Coercion latticeType : type >-> Order.Lattice.type.
-Canonical latticeType.
-Coercion distrLatticeType : type >-> Order.DistrLattice.type.
-Canonical distrLatticeType.
-Coercion orderType : type >-> Order.Total.type.
-Canonical orderType.
-Coercion zmodType : type >-> GRing.Zmodule.type.
-Canonical zmodType.
-Coercion ringType : type >-> GRing.Ring.type.
-Canonical ringType.
-Coercion comRingType : type >-> GRing.ComRing.type.
-Canonical comRingType.
-Coercion unitRingType : type >-> GRing.UnitRing.type.
-Canonical unitRingType.
-Coercion comUnitRingType : type >-> GRing.ComUnitRing.type.
-Canonical comUnitRingType.
-Coercion idomainType : type >-> GRing.IntegralDomain.type.
-Canonical idomainType.
-Coercion numDomainType : type >-> Num.NumDomain.type.
-Canonical numDomainType.
-Coercion normedZmodType : type >-> Num.NormedZmodule.type.
-Canonical normedZmodType.
-Coercion realDomainType : type >-> Num.RealDomain.type.
-Canonical realDomainType.
-Coercion fieldType : type >-> GRing.Field.type.
-Canonical fieldType.
-Coercion numFieldType : type >-> Num.NumField.type.
-Canonical numFieldType.
-Coercion realFieldType : type >-> Num.RealField.type.
-Canonical realFieldType.
-Coercion archimedeanFieldType : type >-> Num.ArchimedeanField.type.
-Canonical archimedeanFieldType.
-Coercion rcfType : type >-> Num.RealClosedField.type.
-Canonical rcfType.
-Canonical join_rcfType.
-
-Notation realType := type.
-Notation RealType T m := (@pack T _ m _ _ id _ _ id _ id _ id).
-Notation RealMixin := EtaMixin.
-Notation "[ 'realType' 'of' T 'for' cT ]" := (@clone T cT _ idfun)
-  (at level 0, format "[ 'realType'  'of'  T  'for'  cT ]") : form_scope.
-Notation "[ 'realType' 'of' T ]" := (@clone T _ _ id)
-  (at level 0, format "[ 'realType'  'of'  T ]") : form_scope.
-
-End Exports.
-End Real.
-
-Export Real.Exports.
+Bind Scope ring_scope with Real.sort.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := @supremum _ R 0.
 (*Local Notation "-` E" := [pred x | - x \in E]
-  (at level 35, right associativity) : fun_scope.*)
+  (at level 35, right associativity) : function_scope.*)
 Definition inf {R : realType} (E : set R) := - sup (-%R @` E).
 
 (* -------------------------------------------------------------------- *)
 Lemma sup_upper_bound {R : realType} (E : set R):
   has_sup E -> ubound E (sup E).
-Proof. by move=> supE; case: R E supE=> ? [? ? []]. Qed.
+Proof. exact: sup_upper_bound_subdef. Qed.
 
 Lemma sup_adherent {R : realType} (E : set R) (eps : R) : 0 < eps ->
   has_sup E -> exists2 e : R, E e & (sup E - eps) < e.
-Proof. by case: R E eps=> ? [? ? []]. Qed.
+Proof. exact: sup_adherent_subdef. Qed.
 
 (* -------------------------------------------------------------------- *)
 Section IsInt.
 Context {R : realFieldType}.
 
-Definition Rint := [qualify a x : R | `[< exists z, x == z%:~R >]].
-Fact Rint_key : pred_key Rint. Proof. by []. Qed.
-Canonical Rint_keyed := KeyedQualifier Rint_key.
+Definition Rint_pred := fun x : R => `[< exists z, x == z%:~R >].
+Arguments Rint_pred _ /.
+Definition Rint := [qualify a x | Rint_pred x].
 
 Lemma Rint_def x : (x \is a Rint) = (`[< exists z, x == z%:~R >]).
 Proof. by []. Qed.
@@ -302,29 +181,25 @@ split=> // _ _ /RintP[x ->] /RintP[y ->]; apply/RintP.
 by exists (x - y); rewrite rmorphB. by exists (x * y); rewrite rmorphM.
 Qed.
 
-Canonical Rint_opprPred := OpprPred Rint_subring_closed.
-Canonical Rint_addrPred := AddrPred Rint_subring_closed.
-Canonical Rint_mulrPred := MulrPred Rint_subring_closed.
-Canonical Rint_zmodPred := ZmodPred Rint_subring_closed.
-Canonical Rint_semiringPred := SemiringPred Rint_subring_closed.
-Canonical Rint_smulrPred := SmulrPred Rint_subring_closed.
-Canonical Rint_subringPred := SubringPred Rint_subring_closed.
+HB.instance Definition _ := GRing.isSubringClosed.Build R Rint_pred
+  Rint_subring_closed.
 
 Lemma Rint_ler_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
   (x + 1 <= y) = (x < y).
 Proof.
 move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{2}[1]mulr1z.
-by rewrite -intrD !(ltr_int, ler_int) lez_addr1.
+by rewrite -intrD !(ltr_int, ler_int) lezD1.
 Qed.
 
 Lemma Rint_ltr_addr1 (x y : R) : x \is a Rint -> y \is a Rint ->
   (x < y + 1) = (x <= y).
 Proof.
 move=> /RintP[xi ->] /RintP[yi ->]; rewrite -{3}[1]mulr1z.
-by rewrite -intrD !(ltr_int, ler_int) ltz_addr1.
+by rewrite -intrD !(ltr_int, ler_int) ltzD1.
 Qed.
 
 End IsInt.
+Arguments Rint_pred _ _ /.
 
 (* -------------------------------------------------------------------- *)
 Section ToInt.
@@ -422,11 +297,11 @@ have Dz: 2%:R * z = x + y.
   by rewrite mulrCA divff ?mulr1 // pnatr_eq0.
 have ubE : has_sup E by split => //; exists x.
 have [/downP [t Et lezt] | leyz] := sup_total z ubE.
-  rewrite -(ler_add2l x) -Dz -mulr2n -[leRHS]mulr_natl.
-  rewrite ler_pmul2l ?ltr0Sn //; apply/(le_trans lezt).
+  rewrite -(lerD2l x) -Dz -mulr2n -[leRHS]mulr_natl.
+  rewrite ler_pM2l ?ltr0Sn //; apply/(le_trans lezt).
   by move/ubP : leEx; exact.
-rewrite -(ler_add2r y) -Dz -mulr2n -[leLHS]mulr_natl.
-by rewrite ler_pmul2l ?ltr0Sn.
+rewrite -(lerD2r y) -Dz -mulr2n -[leLHS]mulr_natl.
+by rewrite ler_pM2l ?ltr0Sn.
 Qed.
 
 Lemma sup_setU (A B : set R) : has_sup B ->
@@ -459,16 +334,16 @@ move=> /[dup] supA [[a Aa] ubA] /[dup] supB [[b Bb] ubB].
 have ABsup : has_sup [set x + y | x in A & y in B].
   split; first by exists (a + b), a => //; exists b.
   case: ubA ubB => p up [q uq]; exists (p + q) => ? [r Ar [s Bs] <-].
-  by apply: ler_add; [exact: up | exact: uq].
+  by apply: lerD; [exact: up | exact: uq].
 apply: le_anti; apply/andP; split.
   apply: sup_le_ub; first by case: ABsup.
-  by move=> ? [p Ap [q Bq] <-]; apply: ler_add; exact: sup_ub.
+  by move=> ? [p Ap [q Bq] <-]; apply: lerD; exact: sup_ub.
 rewrite real_leNgt ?num_real// -subr_gt0; apply/negP.
 set eps := (_ + _ - _) => epos.
 have e2pos : 0 < eps / 2%:R by rewrite divr_gt0// ltr0n.
 have [r Ar supBr] := sup_adherent e2pos supA.
 have [s Bs supAs] := sup_adherent e2pos supB.
-have := ltr_add supBr supAs.
+have := ltrD supBr supAs.
 rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
 rewrite subrr add0r; apply/negP; rewrite -real_leNgt ?num_real//.
 by apply: sup_upper_bound => //; exists r => //; exists s.
@@ -501,7 +376,7 @@ Implicit Types x : R.
 Lemma inf_lower_bound E : has_inf E -> lbound E (inf E).
 Proof.
 move=> /has_inf_supN /sup_upper_bound /ubP inflb; apply/lbP => x.
-by rewrite memNE => /inflb; rewrite ler_oppl.
+by rewrite memNE => /inflb; rewrite lerNl.
 Qed.
 
 Lemma inf_adherent E (eps : R) : 0 < eps ->
@@ -509,7 +384,7 @@ Lemma inf_adherent E (eps : R) : 0 < eps ->
 Proof.
 move=> + /has_inf_supN supNE => /sup_adherent /(_ supNE)[e NEx egtsup].
 exists (- e); first by case: NEx => x Ex <-{}; rewrite opprK.
-by rewrite ltr_oppl -mulN1r mulrDr !mulN1r opprK.
+by rewrite ltrNl -mulN1r mulrDr !mulN1r opprK.
 Qed.
 
 Lemma inf_out E : ~ has_inf E -> inf E = 0.
@@ -536,7 +411,7 @@ Qed.
 
 Lemma lb_le_inf E x : nonempty E -> (lbound E) x -> x <= inf E.
 Proof.
-by move=> /(nonemptyN E) En0 /lb_ubN /(sup_le_ub En0); rewrite ler_oppr.
+by move=> /(nonemptyN E) En0 /lb_ubN /(sup_le_ub En0); rewrite lerNr.
 Qed.
 
 Lemma has_infPn E : nonempty E ->
@@ -551,14 +426,14 @@ Lemma inf_setU (A B : set R) : has_inf A ->
 Proof.
 move=> hiA AB; congr (- _).
 rewrite image_setU setUC sup_setU //; first exact/has_inf_supN.
-by move=> _ _ [] b Bb <-{} [] a Aa <-{}; rewrite ler_oppl opprK; apply AB.
+by move=> _ _ [] b Bb <-{} [] a Aa <-{}; rewrite lerNl opprK; apply AB.
 Qed.
 
 Lemma inf_lt (S : set R) (x : R) : S !=set0 ->
   (inf S < x -> exists2 y, S y & y < x)%R.
 Proof.
-move=> /nonemptyN S0; rewrite /inf ltr_oppl => /sup_gt => /(_ S0)[r [r' Sr']].
-by move=> <-; rewrite ltr_oppr opprK => r'x; exists r'.
+move=> /nonemptyN S0; rewrite /inf ltrNl => /sup_gt => /(_ S0)[r [r' Sr']].
+by move=> <-; rewrite ltrNr opprK => r'x; exists r'.
 Qed.
 
 End InfTheory.
@@ -572,7 +447,7 @@ Implicit Types x y : R.
 Lemma has_sup_floor_set x : has_sup (floor_set x).
 Proof.
 split; [exists (- (Num.bound (-x))%:~R) | exists (Num.bound x)%:~R].
-  rewrite /floor_set/mkset rpredN rpred_int /= ler_oppl.
+  rewrite /floor_set/mkset rpredN rpred_int /= lerNl.
   case: (ger0P (-x)) => [/archi_boundP/ltW//|].
   by move/ltW/le_trans; apply; rewrite ler0z.
 apply/ubP=> y /andP[_] /le_trans; apply.
@@ -585,12 +460,12 @@ Proof.
 have /(sup_adherent ltr01) [y Fy] := has_sup_floor_set x.
 have /sup_upper_bound /ubP /(_ _ Fy) := has_sup_floor_set x.
 rewrite le_eqVlt=> /orP[/eqP<-//| lt_yFx].
-rewrite ltr_subl_addr -ltr_subl_addl => lt1_FxBy.
+rewrite ltrBlDr -ltrBlDl => lt1_FxBy.
 pose e := sup (floor_set x) - y; have := has_sup_floor_set x.
 move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
 move=> z Fz; rewrite /e opprB addrCA subrr addr0 => lt_yz.
 have /sup_upper_bound /ubP /(_ _ Fz) := has_sup_floor_set x.
-rewrite -(ler_add2r (-y)) => /le_lt_trans /(_ lt1_FxBy).
+rewrite -(lerD2r (-y)) => /le_lt_trans /(_ lt1_FxBy).
 case/andP: Fy Fz lt_yz=> /RintP[yi -> _].
 case/andP=> /RintP[zi -> _]; rewrite -rmorphB /= ltrz1 ltr_int.
 rewrite lt_neqAle => /andP[ne_yz le_yz].
@@ -612,7 +487,7 @@ have [|] := pselect ((floor_set x) (Rfloor x + 1)); last first.
   rewrite /floor_set => /negP.
   by rewrite negb_and -ltNge rpredD // ?(Rint1, isint_Rfloor).
 move/ubP : (sup_upper_bound (has_sup_floor_set x)) => h/h.
-by rewrite ger_addl ler10.
+by rewrite gerDl ler10.
 Qed.
 
 Lemma Rfloor_le x : Rfloor x <= x.
@@ -630,12 +505,12 @@ Proof.
 move=> /andP[m1x x_m1] /andP[m2x x_m2].
 wlog suffices: m1 m2 m1x {x_m1 m2x} x_m2 / (m1 <= m2).
   by move=> ih; apply/eqP; rewrite eq_le !ih.
-rewrite -(ler_add2r 1) lez_addr1 -(@ltr_int R) intrD.
+rewrite -(lerD2r 1) lezD1 -(@ltr_int R) intrD.
 exact/(le_lt_trans m1x).
 Qed.
 
 Lemma range1rr x : (range1 x) x.
-Proof. by rewrite /range1/mkset lexx /= ltr_addl ltr01. Qed.
+Proof. by rewrite /range1/mkset lexx /= ltrDl ltr01. Qed.
 
 Lemma range1zP (m : int) x : Rfloor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
@@ -717,7 +592,7 @@ Proof. by rewrite Rfloor_ge_int RfloorE ler_int. Qed.
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
 move=> yx; exists `|floor (x - y)^-1|%N.
-rewrite -ltr_subr_addl -{2}(invrK (x - y)%R) ltf_pinv ?qualifE ?ltr0n//.
+rewrite -ltrBrDl -{2}(invrK (x - y)%R) ltf_pV2 ?qualifE/= ?ltr0n//.
   by rewrite invr_gt0 subr_gt0.
 rewrite -natr1 natr_absz ger0_norm.
   by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
@@ -738,10 +613,10 @@ Lemma Rceil0 : Rceil 0 = 0 :> R.
 Proof. by rewrite /Rceil oppr0 Rfloor0 oppr0. Qed.
 
 Lemma Rceil_ge x : x <= Rceil x.
-Proof. by rewrite /Rceil ler_oppr Rfloor_le. Qed.
+Proof. by rewrite /Rceil lerNr Rfloor_le. Qed.
 
 Lemma le_Rceil : {homo (@Rceil R) : x y / x <= y}.
-Proof. by move=> x y ?; rewrite ler_oppl opprK le_Rfloor // ler_oppl opprK. Qed.
+Proof. by move=> x y ?; rewrite lerNl opprK le_Rfloor // lerNl opprK. Qed.
 
 Lemma Rceil_ge0 x : 0 <= x -> 0 <= Rceil x.
 Proof. by move=> ?; rewrite -Rceil0 le_Rceil. Qed.
@@ -756,16 +631,16 @@ Lemma ceil_ge0 x : 0 <= x -> 0 <= ceil x.
 Proof. by move/(ge_trans (ceil_ge x)); rewrite -(ler_int R). Qed.
 
 Lemma ceil_gt0 x : 0 < x -> 0 < ceil x.
-Proof. by move=> ?; rewrite /ceil oppr_gt0 floor_lt0 // ltr_oppl oppr0. Qed.
+Proof. by move=> ?; rewrite /ceil oppr_gt0 floor_lt0 // ltrNl oppr0. Qed.
 
 Lemma ceil_le0 x : x <= 0 -> ceil x <= 0.
-Proof. by move=> x0; rewrite -ler_oppl oppr0 floor_ge0 -ler_oppr oppr0. Qed.
+Proof. by move=> x0; rewrite -lerNl oppr0 floor_ge0 -lerNr oppr0. Qed.
 
 Lemma le_ceil : {homo @ceil R : x y / x <= y}.
-Proof. by move=> x y xy; rewrite ler_oppl opprK le_floor // ler_oppl opprK. Qed.
+Proof. by move=> x y xy; rewrite lerNl opprK le_floor // lerNl opprK. Qed.
 
 Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (ceil x <= z).
-Proof. by rewrite /ceil ler_oppl -floor_ge_int// -ler_oppr mulrNz opprK. Qed.
+Proof. by rewrite /ceil lerNl -floor_ge_int// -lerNr mulrNz opprK. Qed.
 
 Lemma ceil_lt_int x (z : int) : (z%:~R < x) = (z < ceil x).
 Proof. by rewrite ltNge ceil_ge_int -ltNge. Qed.
@@ -819,7 +694,7 @@ Qed.
 Lemma le_inf A B : -%R @` B `<=` down (-%R @` A) -> nonempty B -> has_inf A ->
   inf A <= inf B.
 Proof.
-move=> SBA AB Ai; rewrite ler_oppl opprK le_sup// ?has_inf_supN//.
+move=> SBA AB Ai; rewrite lerNl opprK le_sup// ?has_inf_supN//.
 exact/nonemptyN.
 Qed.
 
@@ -867,7 +742,7 @@ have i0i1n : i0 - (i + 1) = n by rewrite opprD addrA i0in1 -addn1 PoszD addrK.
 have [?|/not_forallP] := pselect (lbound B (i + 1)); first exact: (ih (i + 1)).
 move=> /contrapT[x /not_implyP[Bx i1x]]; exists x; split => // k Bk.
 rewrite (le_trans _ (lbBi _ Bk)) //.
-by move/negP : i1x; rewrite -ltNge ltz_addr1.
+by move/negP : i1x; rewrite -ltNge ltzD1.
 Qed.
 
 Section rat_in_itvoo.
@@ -879,7 +754,7 @@ Let archi_bound_divP (R : archiFieldType) (x y : R) :
   0 < x -> y < x *+ bound_div x y.
 Proof.
 move=> x0; have [y0|y0] := leP 0 y; last by rewrite /bound_div y0 mulr0n.
-rewrite /bound_div (ltNge y 0) y0/= -mulr_natl -ltr_pdivr_mulr//.
+rewrite /bound_div (ltNge y 0) y0/= -mulr_natl -ltr_pdivrMr//.
 by rewrite archi_boundP// (divr_ge0 _(ltW _)).
 Qed.
 
@@ -902,31 +777,31 @@ have [m2 m2nx] : exists m2, m2.+1%:~R > - x *+ n.
   by rewrite mulrn_wge0 // oppr_ge0.
 have : exists m, -(m2.+1 : int) <= m <= m1.+1 /\ m%:~R - 1 <= x *+ n < m%:~R.
   have m2m1 : - (m2.+1 : int) < m1.+1.
-    by rewrite -(ltr_int R) (lt_trans _ m1nx)// rmorphN /= ltr_oppl // -mulNrn.
+    by rewrite -(ltr_int R) (lt_trans _ m1nx)// rmorphN /= ltrNl // -mulNrn.
   pose B := [set m : int | m%:~R > x *+ n].
   have m1B : B m1.+1 by [].
   have m2B : lbound B (- m2.+1%:~R).
-    move=> i; rewrite /B /= -(opprK (x *+ n)) -ltr_oppl -mulNrn => nxi.
-    rewrite -(mulN1r m2.+1%:~R) mulN1r -ler_oppl.
+    move=> i; rewrite /B /= -(opprK (x *+ n)) -ltrNl -mulNrn => nxi.
+    rewrite -(mulN1r m2.+1%:~R) mulN1r -lerNl.
     by have := lt_trans nxi m2nx; rewrite intz -mulrNz ltr_int => /ltW.
   have [m [Bm infB]] := int_lbound_has_minimum (ex_intro _ _ m1B) m2B.
   have mN1B : ~ B (m - 1).
-    by move=> /infB; apply/negP; rewrite -ltNge ltr_subl_addr ltz_addr1.
+    by move=> /infB; apply/negP; rewrite -ltNge ltrBlDr ltzD1.
   exists m; split; [apply/andP; split|apply/andP; split] => //.
   - by move: m2B; rewrite /lbound /= => /(_ _ Bm); rewrite intz.
   - exact: infB.
   - by rewrite leNgt; apply/negP; rewrite /B /= intrD in mN1B.
 move=> [m [/andP[m2m mm1] /andP[mnx nxm]]].
 have [/andP[a b] c] : x *+ n < m%:~R <= 1 + x *+ n /\ 1 + x *+ n < y *+ n.
-  split; [apply/andP; split|] => //; first by rewrite -ler_subl_addl.
-  by move: nyx; rewrite mulrnDl -ltr_subr_addr mulNrn.
+  split; [apply/andP; split|] => //; first by rewrite -lerBlDl.
+  by move: nyx; rewrite mulrnDl -ltrBrDr mulNrn.
 have n_gt0 : n != 0%N by apply: contraTN nyx => /eqP ->; rewrite mulr0n ltr10.
 exists (m%:Q / n%:Q); rewrite in_itv /=; apply/andP; split.
-  rewrite rmorphM (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
-  rewrite ltr_pdivl_mulr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
+  rewrite rmorphM/= (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
+  rewrite ltr_pdivlMr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
   by rewrite mulrC // !ratr_int mulr_natl.
 rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
-rewrite ltr_pdivr_mulr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
+rewrite ltr_pdivrMr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
 by rewrite 2!ratr_int mulr_natr (le_lt_trans _ c).
 Qed.
 

@@ -424,7 +424,7 @@ rewrite covarianceDl//=; last 3 first.
   exact: integrableZl.
 - by rewrite mulrDr compreDr ?integrableD.
 - by rewrite mulrDr mulrC compreDr ?integrableD.
-rewrite covarianceDr// covarianceDr ?(mulrC Y X)//.
+rewrite covarianceDr// covarianceDr; [|by []..|by rewrite mulrC |exact: Y2].
 rewrite (covarianceC P Y X) [LHS]addeA [LHS](ACl (1*4*(2*3)))/=.
 by rewrite -[2%R]/(1 + 1)%R EFinD muleDl ?mul1e// covariance_fin_num.
 Qed.
@@ -493,11 +493,12 @@ rewrite -sqrteM ?variance_ge0//.
 rewrite lee_sqrE ?sqrte_ge0// sqr_sqrte ?mule_ge0 ?variance_ge0//.
 rewrite -(fineK (variance_fin_num X1 X2)) -(fineK (variance_fin_num Y1 Y2)).
 rewrite -(fineK (covariance_fin_num X1 Y1 XY1)).
-rewrite -EFin_expe -EFinM lee_fin -(@ler_pmul2l _ 4%:R) ?ltr0n// [leRHS]mulrA.
-rewrite [in leLHS](natrM _ 2 2) mulrACA -expr2 -subr_le0.
-apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
+rewrite -EFin_expe -EFinM lee_fin -(@ler_pM2l _ 4) ?ltr0n// [leRHS]mulrA.
+rewrite [in leLHS](_ : 4 = 2 * 2)%R -natrM// [in leLHS]natrM mulrACA -expr2.
+rewrite -subr_le0; apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
 rewrite EFinM fineK ?variance_fin_num// muleC -varianceZ//.
-rewrite -mulrA EFinM mulrC EFinM ?fineK ?covariance_fin_num// -covarianceZl//.
+rewrite 2!EFinM ?fineK ?variance_fin_num// ?covariance_fin_num//.
+rewrite -muleA [_ * r%:E]muleC -covarianceZl//.
 rewrite addeAC -varianceD ?variance_ge0//=.
 - by rewrite compre_scale ?integrableZl.
 - rewrite [X in EFin \o X](_ : _ = r ^+2 \o* X ^+ 2)%R 1?mulrACA//.
@@ -544,7 +545,7 @@ rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
   exact: (monoW_in (@ger0_le_norm _)).
 rewrite ger0_norm ?expR_ge0// muleC lee_pmul2l// ?lte_fin ?expR_gt0//.
 rewrite [X in _ <= P X](_ : _ = [set x | a <= X x]%R)//; apply: eq_set => t/=.
-by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pmul2r.
+by rewrite ger0_norm ?expR_ge0// lee_fin ler_expR  mulrC ler_pM2r.
 Qed.
 
 Lemma chebyshev (X : {RV P >-> R}) (eps : R) : (0 < eps)%R ->
@@ -625,11 +626,11 @@ have le (u : R) : (0 <= u)%R ->
     by rewrite (varianceD_cst_r _ Y1 Y2) EFinD fineK ?(variance_fin_num Y1 Y2).
   have le : [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
       `<=` [set x | ((lambda + u)^2)%:E <= ((Y x + u)^+2)%:E].
-    move=> x /= le; rewrite lee_fin; apply: ler_expn2r.
+    move=> x /= le; rewrite lee_fin; apply: lerXn2r.
     - exact: addr_ge0 (ltW lambda_gt0) _.
     - apply/(addr_ge0 _ uge0)/(le_trans (ltW lambda_gt0) _).
       by rewrite -lee_fin EFinB finEK.
-    - by rewrite ler_add2r -lee_fin EFinB finEK.
+    - by rewrite lerD2r -lee_fin EFinB finEK.
   apply: (le_trans (le_measure _ _ _ le)).
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
     by apply: emeasurable_funB => //; exact: measurable_int X1.
@@ -639,7 +640,7 @@ have le (u : R) : (0 <= u)%R ->
     apply/measurableT_comp => //; apply/measurable_funD => //.
     by rewrite -EFin_measurable_fun; apply: measurable_int Y1.
   set eps := ((lambda + u) ^ 2)%R.
-  have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_paddr.
+  have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_wpDr.
   rewrite (lee_pdivl_mulr _ _ peps) muleC.
   under eq_set => x.
     rewrite -[leRHS]gee0_abs ?lee_fin ?sqr_ge0 -?lee_fin => [|//].
@@ -653,9 +654,9 @@ pose u0 := (fine 'V_P[X] / lambda)%R.
 have u0ge0 : (0 <= u0)%R.
   by apply: divr_ge0 (ltW lambda_gt0); rewrite -lee_fin finVK variance_ge0.
 apply: le_trans (le _ u0ge0) _; rewrite lee_fin le_eqVlt; apply/orP; left.
-rewrite GRing.eqr_div; [|apply: lt0r_neq0..]; last 2 first.
-- by rewrite exprz_gt0 -1?[ltLHS]addr0 ?ltr_le_add.
-- by rewrite ltr_paddl ?fine_ge0 ?variance_ge0 ?exprz_gt0.
+rewrite eqr_div; [|apply: lt0r_neq0..]; last 2 first.
+- by rewrite exprz_gt0 -1?[ltLHS]addr0 ?ltr_leD.
+- by rewrite ltr_wpDl ?fine_ge0 ?variance_ge0 ?exprz_gt0.
 apply/eqP; have -> : fine 'V_P[X] = (u0 * lambda)%R.
   by rewrite /u0 -mulrA mulVr ?mulr1 ?unitfE ?gt_eqF.
 by rewrite -mulrDl -mulrDr (addrC u0) [in RHS](mulrAC u0) -exprnP expr2 !mulrA.

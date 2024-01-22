@@ -52,7 +52,7 @@ Add Search Blacklist "_mixin_".
 (*             [fun f in A] == the function f from the set A to the set f @` A*)
 (*            'split_ d f == partial injection from aT : Type to rt : Type;   *)
 (*                           f : aT -> rT, d : rT -> aT                       *)
-(*                  split := 'split_point                                     *)
+(*                  split := 'split_(fun=> point)                             *)
 (*             @to_setT T == function that associates to x : T a dependent    *)
 (*                           pair of x with a proof that x belongs to setT    *)
 (*                           (i.e., the type set_type [set: T])               *)
@@ -80,7 +80,7 @@ Add Search Blacklist "_mixin_".
 (*                           A and B are intended to be the ranges of f and g *)
 (*           'pinv_ d A f == inverse of the function [fun f in A] over        *)
 (*                           f @` A, function d outside of f @` A             *)
-(*                  pinv := notation for 'pinv_point                          *)
+(*                  pinv := notation for 'pinv_(fun=> point)                  *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Function restriction                                                    *)
@@ -268,11 +268,12 @@ Notation "{ 'inv' aT >->  rT }" := (@Inversible.type aT rT) : type_scope.
 Notation "[ 'inv'  'of'  f ]" := [the {inv _ >-> _} of f : _ -> _] : form_scope.
 Definition phant_inv aT rT (f : {inv aT >-> rT}) of phantom (_ -> _) f :=
   @inv _ _ f.
-Notation "f ^-1" := (@inv _ _ f%FUN) (only printing) : fun_scope.
 Notation "f ^-1" := (@inv _ _ f%function) (only printing) : function_scope.
-Notation "f ^-1" := (@phant_inv _ _ _ (Phantom (_ -> _) f%FUN)) : fun_scope.
 Notation "f ^-1" :=
   (@phant_inv _ _ _ (Phantom (_ -> _) f%function)) : function_scope.
+(* TODO: remove the following notations in fun_scope *)
+Notation "f ^-1" := (@inv _ _ f%FUN) (only printing) : fun_scope.
+Notation "f ^-1" := (@phant_inv _ _ _ (Phantom (_ -> _) f%FUN)) : fun_scope.
 
 HB.structure Definition InvFun aT rT A B :=
   {f of Inv aT rT f & isFun aT rT A B f}.
@@ -959,7 +960,7 @@ HB.instance Definition _ (f : {bij A >-> B}) := Surject.on (split f).
 
 End split.
 Notation "''split_' a" := (split_ a) : form_scope.
-Notation split := 'split_point.
+Notation split := 'split_(fun=> point).
 
 (** More Builders *)
 
@@ -1577,10 +1578,12 @@ End addition.
 
 Section addition.
 Context {V : zmodType} (x : V).
+Local Open Scope ring_scope.
+(* TODO: promote -%R to empty scope in mathcomp/HB *)
 
 HB.instance Definition _ := Inv.Build V V (-%R) (-%R).
 
-Lemma inv_oppr : (-%R)^-1 = (-%R). Proof. by []. Qed.
+Lemma inv_oppr : (-%R)^-1%FUN = (-%R). Proof. by []. Qed.
 
 Lemma oppr_can2_subproof : Inv_Can2 V V setT setT (-%R).
 Proof. by split => // y _; rewrite inv_oppr ?GRing.opprK. Qed.
@@ -1850,7 +1853,7 @@ End inj.
 
 End patch.
 Notation restrict := (patch (fun=> point)).
-Notation "f \_ D" := (restrict D f) : fun_scope.
+Notation "f \_ D" := (restrict D f) : function_scope.
 
 Lemma patchE aT (rT : pointedType) (f : aT -> rT) (B : set aT) x :
   (f \_ B) x = if x \in B then f x else point.
@@ -2531,16 +2534,16 @@ End funpPinj.
 
 End pointed_inverse.
 Notation "''pinv_' dflt" := (pinv_ dflt) : form_scope.
-Notation pinv := 'pinv_point.
+Notation pinv := 'pinv_(fun=> point).
 Notation "''pPbij_' dflt" := (pPbij_ dflt) : form_scope.
-Notation pPbij := 'pPbij_point.
+Notation pPbij := 'pPbij_(fun=> point).
 Notation selfPbij := 'pPbij_id.
 Notation "''pPinj_' dflt" := (pPinj_ dflt) : form_scope.
-Notation pPinj := 'pPinj_point.
+Notation pPinj := 'pPinj_(fun=> point).
 Notation "''injpPfun_' dflt" := (injpPfun_ dflt) : form_scope.
-Notation injpPfun := 'injpPfun_point.
+Notation injpPfun := 'injpPfun_(fun=> point).
 Notation "''funpPinj_' dflt" := (funpPinj_ dflt) : form_scope.
-Notation funpPinj := 'funpPinj_point.
+Notation funpPinj := 'funpPinj_(fun=> point).
 
 Section function_space.
 Local Open Scope ring_scope.
@@ -2558,16 +2561,16 @@ Qed.
 Obligation Tactic := idtac.
 
 Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @ZmodMixin (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g) _ _ _ _.
+  @GRing.isZmodule.Build (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g)
+     _ _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
 Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
-Canonical fct_zmodType T (M : zmodType) := ZmodType (T -> M) (fct_zmodMixin T M).
+HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.
 
 Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @RingMixin [zmodType of T -> M] (cst 1) (fun f g => f \* g)
-             _ _ _ _ _ _.
+  @GRing.Zmodule_isRing.Build (T -> M) (cst 1) (fun f g => f \* g) _ _ _ _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
@@ -2576,25 +2579,30 @@ Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
 Next Obligation.
 by move=> T M ; apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
 Qed.
-Canonical fct_ringType (T : pointedType) (M : ringType) :=
-  RingType (T -> M) (fct_ringMixin T M).
+HB.instance Definition _ (T : pointedType) (M : ringType) := fct_ringMixin T M.
 
-Program Canonical fct_comRingType (T : pointedType) (M : comRingType) :=
-  ComRingType (T -> M) _.
-Next Obligation. by move=> T M f g; rewrite funeqE => x/=; rewrite mulrC. Qed.
-
-Program Definition fct_lmodMixin (U : Type) (R : ringType) (V : lmodType R)
-  := @LmodMixin R [zmodType of U -> V] (fun k f => k \*: f) _ _ _ _.
-Next Obligation. by move=> U R V k f v; rewrite funeqE=> x; exact: scalerA. Qed.
-Next Obligation. by move=> U R V f; rewrite funeqE=> x /=; rewrite scale1r. Qed.
+Program Definition fct_comRingType (T : pointedType) (M : comRingType) :=
+  GRing.Ring_hasCommutativeMul.Build (T -> M) _.
 Next Obligation.
-by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDr.
+by move=> T M f g; rewrite funeqE => x; rewrite /GRing.mul/= mulrC.
+Qed.
+HB.instance Definition _ (T : pointedType) (M : comRingType) :=
+  fct_comRingType T M.
+
+Section fct_lmod.
+Variables (U : Type) (R : ringType) (V : lmodType R).
+Program Definition fct_lmodMixin := @GRing.Zmodule_isLmodule.Build R (U -> V)
+  (fun k f => k \*: f) _ _ _ _.
+Next Obligation. by move=> k f v; rewrite funeqE=> x; exact: scalerA. Qed.
+Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite scale1r. Qed.
+Next Obligation.
+by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr.
 Qed.
 Next Obligation.
-by move=> U R V f g h; rewrite funeqE => x /=; rewrite scalerDl.
+by move=> f g h; rewrite funeqE => x /=; rewrite scalerDl.
 Qed.
-Canonical fct_lmodType U (R : ringType) (V : lmodType R) :=
-  LmodType _ (U -> V) (fct_lmodMixin U V).
+HB.instance Definition _ := fct_lmodMixin.
+End fct_lmod.
 
 Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M)
     (x : T) :

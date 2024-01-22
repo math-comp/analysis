@@ -29,6 +29,7 @@ Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
 From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
+From HB Require Import structures.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -53,8 +54,7 @@ Proof.
 by move=> r1 r2; rewrite /eqr; case: Req_EM_T=> H; apply: (iffP idP).
 Qed.
 
-Canonical R_eqMixin := EqMixin eqrP.
-Canonical R_eqType := Eval hnf in EqType R R_eqMixin.
+#[hnf] HB.instance Definition _ := hasDecEq.Build R eqrP.
 
 Fact inhR : inhabited R.
 Proof. exact: (inhabits 0). Qed.
@@ -76,17 +76,15 @@ suff->: u = v by rewrite PEQ.
 by congr epsilon; apply: functional_extensionality=> x; rewrite PEQ.
 Qed.
 
-Definition R_choiceMixin : choiceMixin R :=
-  Choice.Mixin pickR_some pickR_ex pickR_ext.
-
-Canonical R_choiceType := Eval hnf in ChoiceType R R_choiceMixin.
+#[hnf]
+HB.instance Definition _ := hasChoice.Build R pickR_some pickR_ex pickR_ext.
 
 Fact RplusA : associative (Rplus).
 Proof. by move=> *; rewrite Rplus_assoc. Qed.
 
-Definition R_zmodMixin := ZmodMixin RplusA Rplus_comm Rplus_0_l Rplus_opp_l.
-
-Canonical R_zmodType := Eval hnf in ZmodType R R_zmodMixin.
+#[hnf]
+HB.instance Definition _ := GRing.isZmodule.Build R
+  RplusA Rplus_comm Rplus_0_l Rplus_opp_l.
 
 Fact RmultA : associative (Rmult).
 Proof. by move=> *; rewrite Rmult_assoc. Qed.
@@ -94,22 +92,24 @@ Proof. by move=> *; rewrite Rmult_assoc. Qed.
 Fact R1_neq_0 : R1 != R0.
 Proof. by apply/eqP/R1_neq_R0. Qed.
 
-Definition R_ringMixin := RingMixin RmultA Rmult_1_l Rmult_1_r
-  Rmult_plus_distr_r Rmult_plus_distr_l R1_neq_0.
+#[hnf]
+HB.instance Definition _ := GRing.Zmodule_isRing.Build R
+  RmultA Rmult_1_l Rmult_1_r Rmult_plus_distr_r Rmult_plus_distr_l R1_neq_0.
 
-Canonical R_ringType := Eval hnf in RingType R R_ringMixin.
-Canonical R_comRingType := Eval hnf in ComRingType R Rmult_comm.
+#[hnf]
+HB.instance Definition _ := GRing.Ring_hasCommutativeMul.Build R Rmult_comm.
 
 Import Monoid.
 
-Canonical Radd_monoid := Law RplusA Rplus_0_l Rplus_0_r.
-Canonical Radd_comoid := ComLaw Rplus_comm.
+HB.instance Definition _ := isComLaw.Build R 0 Rplus
+  RplusA Rplus_comm Rplus_0_l.
 
-Canonical Rmul_monoid := Law RmultA Rmult_1_l Rmult_1_r.
-Canonical Rmul_comoid := ComLaw Rmult_comm.
+HB.instance Definition _ := isComLaw.Build R 1 Rmult
+  RmultA Rmult_comm Rmult_1_l.
 
-Canonical Rmul_mul_law := MulLaw Rmult_0_l Rmult_0_r.
-Canonical Radd_add_law := AddLaw Rmult_plus_distr_r Rmult_plus_distr_l.
+HB.instance Definition _ := isMulLaw.Build R 0 Rmult Rmult_0_l Rmult_0_r.
+HB.instance Definition _ := isAddLaw.Build R Rmult Rplus
+  Rmult_plus_distr_r Rmult_plus_distr_l.
 
 Definition Rinvx r := if (r != 0) then / r else r.
 
@@ -136,26 +136,19 @@ Qed.
 Lemma Rinvx_out : {in predC unit_R, Rinvx =1 id}.
 Proof. by move=> x; rewrite inE/= /Rinvx -if_neg => ->. Qed.
 
-Definition R_unitRingMixin :=
-  UnitRingMixin RmultRinvx RinvxRmult intro_unit_R Rinvx_out.
-
-Canonical R_unitRing :=
-  Eval hnf in UnitRingType R R_unitRingMixin.
-
-Canonical R_comUnitRingType :=
-  Eval hnf in [comUnitRingType of R].
+#[hnf]
+HB.instance Definition _ := GRing.Ring_hasMulInverse.Build R
+  RmultRinvx RinvxRmult intro_unit_R Rinvx_out.
 
 Lemma R_idomainMixin x y : x * y = 0 -> (x == 0) || (y == 0).
 Proof. by move=> /Rmult_integral []->; rewrite eqxx ?orbT. Qed.
 
-Canonical R_idomainType := Eval hnf in IdomainType R R_idomainMixin.
+#[hnf]
+HB.instance Definition _ := GRing.ComUnitRing_isIntegral.Build R
+  R_idomainMixin.
 
-Lemma R_fieldMixin : GRing.Field.mixin_of [unitRingType of R].
-Proof. by done. Qed.
-
-Definition R_fieldIdomainMixin := FieldIdomainMixin R_fieldMixin.
-
-Canonical R_fieldType := FieldType R R_fieldMixin.
+Lemma R_fieldMixin : GRing.field_axiom R. Proof. by []. Qed.
+HB.instance Definition _ := GRing.UnitRing_isField.Build R R_fieldMixin.
 
 (** Reflect the order on the reals to bool *)
 
@@ -228,11 +221,8 @@ move=> H; apply/andP; split; [apply/eqP|apply/RlebP].
 exact: Rlt_le.
 Qed.
 
-Definition R_numMixin := NumMixin Rleb_norm_add addr_Rgtb0 Rnorm0_eq0
-                                  Rleb_leVge RnormM Rleb_def Rltb_def.
-Canonical R_porderType := POrderType ring_display R R_numMixin.
-Canonical R_numDomainType := NumDomainType R R_numMixin.
-Canonical R_normedZmodType := NormedZmodType R R R_numMixin.
+HB.instance Definition _ := Num.IntegralDomain_isNumRing.Build R
+  Rleb_norm_add addr_Rgtb0 Rnorm0_eq0 Rleb_leVge RnormM Rleb_def Rltb_def.
 
 Lemma RleP : forall x y, reflect (Rle x y) (x <= y)%R.
 Proof. exact: RlebP. Qed.
@@ -244,27 +234,22 @@ Proof. exact: RltbP. Qed.
 (* Lemma RgtP : forall x y, reflect (Rgt x y) (x > y)%R. *)
 (* Proof. exact: RltbP. Qed. *)
 
-Canonical R_numFieldType := [numFieldType of R].
-
 Lemma Rreal_axiom (x : R) : (0 <= x)%R || (x <= 0)%R.
 Proof.
 case: (Rle_dec 0 x)=> [/RleP ->|] //.
 by move/Rnot_le_lt/Rlt_le/RleP=> ->; rewrite orbT.
 Qed.
 
-Lemma R_total : totalPOrderMixin R_porderType.
+Lemma R_total : total (<=%O : rel R).
 Proof.
 move=> x y; case: (Rle_lt_dec x y) => [/RleP -> //|/Rlt_le/RleP ->];
   by rewrite orbT.
 Qed.
 
-Canonical R_latticeType := LatticeType R R_total.
-Canonical R_distrLatticeType := DistrLatticeType R R_total.
-Canonical R_orderType := OrderType R R_total.
-Canonical R_realDomainType := [realDomainType of R].
-Canonical R_realFieldType := [realFieldType of R].
+HB.instance Definition _ := Order.POrder_isTotal.Build _ R R_total.
 
-Lemma Rarchimedean_axiom : Num.archimedean_axiom R_numDomainType.
+Lemma Rarchimedean_axiom :
+  Num.archimedean_axiom [the numDomainType of R : Type].
 Proof.
 move=> x; exists (Z.abs_nat (up x) + 2)%N.
 have [Hx1 Hx2]:= (archimed x).
@@ -282,7 +267,7 @@ apply/RltbP/Rabs_def1.
     apply/Rplus_le_compat_r/IHz; split; first exact: Zlt_le_weak.
     exact: Zlt_pred.
   apply: (Rle_trans _ (IZR 0)); first exact: IZR_le.
-  by apply/RlebP/(ler0n R_numDomainType (Z.abs_nat z)).
+  by apply/RlebP/(ler0n [the numDomainType of R : Type] (Z.abs_nat z)).
 apply: (Rlt_le_trans _ (IZR (up x) - 1)).
   apply: Ropp_lt_cancel; rewrite Ropp_involutive.
   rewrite Ropp_minus_distr /Rminus -opp_IZR -{2}(Z.opp_involutive (up x)).
@@ -300,16 +285,14 @@ apply: (Rlt_le_trans _ (IZR (up x) - 1)).
   rewrite mulrnDr; apply: (Rlt_le_trans _ 2).
     by rewrite -{1}[1]Rplus_0_r; apply/Rplus_lt_compat_l/Rlt_0_1.
   rewrite -[2]Rplus_0_l; apply: Rplus_le_compat_r.
-  by apply/RlebP/(ler0n R_numDomainType (Z.abs_nat _)).
+  by apply/RlebP/(ler0n [the numDomainType of R : Type] (Z.abs_nat _)).
 apply: Rminus_le.
 rewrite /Rminus Rplus_assoc [- _ + _]Rplus_comm -Rplus_assoc -!/(Rminus _ _).
 exact: Rle_minus.
 Qed.
 
-(* Canonical R_numArchiDomainType := ArchiDomainType R Rarchimedean_axiom. *)
-(* (* Canonical R_numArchiFieldType := [numArchiFieldType of R]. *) *)
-(* Canonical R_realArchiDomainType := [realArchiDomainType of R]. *)
-Canonical R_realArchiFieldType := ArchiFieldType R Rarchimedean_axiom.
+HB.instance Definition _ := Num.RealField_isArchimedean.Build R
+  Rarchimedean_axiom.
 
 (** Here are the lemmas that we will use to prove that R has
 the rcfType structure. *)
@@ -349,7 +332,8 @@ have Hg: (fun x=> f x * f x ^+ n)%R =1 g.
 by apply: (continuity_eq Hg); exact: continuity_mult.
 Qed.
 
-Lemma Rreal_closed_axiom : Num.real_closed_axiom R_numDomainType.
+Lemma Rreal_closed_axiom :
+  Num.real_closed_axiom [the numDomainType of R : Type].
 Proof.
 move=> p a b; rewrite !le_eqVlt.
 case Hpa: ((p.[a])%R == 0%R).
@@ -372,8 +356,7 @@ apply:continuity_scal; apply: continuity_exp=> x esp Hesp.
 by exists esp; split=> // y [].
 Qed.
 
-Canonical R_rcfType := RcfType R Rreal_closed_axiom.
-(* Canonical R_realClosedArchiFieldType := [realClosedArchiFieldType of R]. *)
+HB.instance Definition _ := Num.RealField_isClosed.Build R Rreal_closed_axiom.
 
 End ssreal_struct.
 
@@ -432,9 +415,8 @@ Proof.
 by move=> supE x Ex; apply/ge_supremum_Nmem => //; exact: Rsupremums_neq0.
 Qed.
 
-Definition real_realMixin : Real.mixin_of _ :=
-  RealMixin (@Rsup_ub (0 : R)) (real_sup_adherent 0).
-Canonical real_realType := RealType R real_realMixin.
+HB.instance Definition _ := ArchimedeanField_isReal.Build R
+  (@Rsup_ub (0 : R)) (real_sup_adherent 0).
 
 Implicit Types (x y : R) (m n : nat).
 
@@ -486,7 +468,7 @@ Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
 Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
-rewrite eq_sym -(eqr_expn2 (_: 0 < 2)%N t1) //; last by apply /RleP.
+rewrite eq_sym -(eqrXn2 (_: 0 < 2)%N t1) //; last by apply /RleP.
 rewrite sqr_sqrtr // !exprS expr0 mulr1 -RmultE ?sqrt_sqrt //; by apply/RleP.
 Qed.
 
@@ -583,7 +565,7 @@ Proof.
 move=> k0; elim: s => /= [|h [/=|h' t ih]].
 by rewrite bigmaxr_nil mulr0.
 by rewrite !bigmaxr_un.
-by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pmulr.
+by rewrite bigmaxr_cons {}ih bigmaxr_cons maxr_pMr.
 Qed.
 
 #[deprecated(note="To be removed. Use topology.v's bigmax/min lemmas instead.")]
@@ -705,20 +687,7 @@ Require Import signed topology.
 
 Section analysis_struct.
 
-Canonical R_pointedType := [pointedType of R for pointed_of_zmodule R_ringType].
-Canonical R_filteredType :=
-  [filteredType R of R for filtered_of_normedZmod R_normedZmodType].
-Canonical R_topologicalType : topologicalType := TopologicalType R
-  (topologyOfEntourageMixin
-    (uniformityOfBallMixin
-      (@nbhs_ball_normE _ R_normedZmodType)
-      (pseudoMetric_of_normedDomain R_normedZmodType))).
-Canonical R_uniformType : uniformType :=
-  UniformType R
-  (uniformityOfBallMixin (@nbhs_ball_normE _ R_normedZmodType)
-    (pseudoMetric_of_normedDomain R_normedZmodType)).
-Canonical R_pseudoMetricType : pseudoMetricType R_numDomainType :=
-  PseudoMetricType R (pseudoMetric_of_normedDomain R_normedZmodType).
+HB.instance Definition _ := PseudoMetric.copy R R^o.
 
 (* TODO: express using ball?*)
 Lemma continuity_pt_nbhs (f : R -> R) x :
@@ -742,10 +711,10 @@ Lemma continuity_pt_cvg (f : R -> R) (x : R) :
 Proof.
 eapply iff_trans; first exact: continuity_pt_nbhs.
 apply iff_sym.
-have FF : Filter (f @ x).
+have FF : Filter (f @ x)%classic.
   by typeclasses eauto.
   (*by apply fmap_filter; apply: @filter_filter' (locally_filter _).*)
-case: (@fcvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
+case: (@fcvg_ballP _ _ (f @ x)%classic FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} - /H1 {}H1 eps|{H1} H].
 - have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.

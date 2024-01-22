@@ -31,30 +31,39 @@
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.18";
+  default-bundle = "8.16";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
-  bundles."8.15".coqPackages.coq.override.version = "8.15";
   bundles."8.16".push-branches = [ "master" "hierarchy-builder" ];
-  bundles."8.16".coqPackages.coq.override.version = "8.16";
+  bundles."8.16".coqPackages = {
+    coq.override.version = "8.16";
+    mathcomp.override.version = "mathcomp-2.0.0";
+    mathcomp-finmap.override.version = "master";
+  };
   bundles."8.17".push-branches = [ "master" "hierarchy-builder" ];
-  bundles."8.17".coqPackages.coq.override.version = "8.17";
+  bundles."8.17".coqPackages = {
+    coq.override.version = "8.17";
+    mathcomp.override.version = "mathcomp-2.0.0";
+    mathcomp-finmap.override.version = "master";
+  };
   bundles."8.18".push-branches = [ "master" "hierarchy-builder" ];
-  bundles."8.18".coqPackages.coq.override.version = "8.18";
-  bundles."8.19".push-branches = [ "master" "hierarchy-builder" ];
-  bundles."8.19".coqPackages.coq.override.version = "8.19";
+  bundles."8.18".coqPackages = {
+    coq.override.version = "8.18";
+    mathcomp.override.version = "mathcomp-2.0.0";
+    mathcomp-finmap.override.version = "master";
+  };
 
   bundles."master".push-branches = [ "master" "hierarchy-builder" ];
   bundles."master".coqPackages = {
     coq.override.version = "master";
     coq-elpi.override.version = "coq-master";
     hierarchy-builder.override.version = "master";
-    mathcomp.override.version = "mathcomp-1";
+    mathcomp.override.version = "master";
     mathcomp-bigenough.override.version = "1.0.1";
-    mathcomp-finmap.override.version = "1.5.2";
+    mathcomp-finmap.override.version = "master";
   };
 
   ## Cachix caches to use in CI
@@ -62,17 +71,17 @@
   cachix.coq = {};
   cachix.math-comp.authToken = "CACHIX_AUTH_TOKEN";
   cachix.coq-community = {};
-  
+
   ## If you have write access to one of these caches you can
   ## provide the auth token or signing key through a secret
   ## variable on GitHub. Then, you should give the variable
   ## name here. For instance, coq-community projects can use
   ## the following line instead of the one above:
   # cachix.coq-community.authToken = "CACHIX_AUTH_TOKEN";
-  
+
   ## Or if you have a signing key for a given Cachix cache:
   # cachix.my-cache.signingKey = "CACHIX_SIGNING_KEY"
-  
+
   ## Note that here, CACHIX_AUTH_TOKEN and CACHIX_SIGNING_KEY
   ## are the names of secret variables. They are set in
   ## GitHub's web interface.

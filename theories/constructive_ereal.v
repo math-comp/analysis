@@ -9,6 +9,7 @@
    (c.f. https://github.com/math-comp/real-closed/pull/29 ) and
    incorporate it into mathcomp proper where it could then be used for
    bounds of intervals*)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import mathcomp_extra.
 Require Import signed.
@@ -75,9 +76,11 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Reserved Notation "x %:E" (at level 2, format "x %:E").
+Reserved Notation "x %:dE" (at level 2, format "x %:dE").
 Reserved Notation "x +? y" (at level 50, format "x  +?  y").
 Reserved Notation "x *? y" (at level 50, format "x  *?  y").
 Reserved Notation "'\bar' x" (at level 2, format "'\bar'  x").
+Reserved Notation "'\bar' '^d' x" (at level 2, format "'\bar' '^d'  x").
 Reserved Notation "{ 'posnum' '\bar' R }" (at level 0,
   format "{ 'posnum'  '\bar'  R }").
 Reserved Notation "{ 'nonneg' '\bar' R }" (at level 0,
@@ -98,6 +101,8 @@ Proof. by move=> a b; case. Qed.
 
 Definition dual_extended := extended.
 
+Definition dEFin : forall {R}, R -> dual_extended R := @EFin.
+
 (* Notations in ereal_dual_scope should be kept *before* the
    corresponding notation in ereal_scope, otherwise when none of the
    scope is open (lte x y) would be displayed as (x < y)%dE, instead
@@ -106,10 +111,13 @@ Notation "+oo" := (@EPInf _ : dual_extended _) : ereal_dual_scope.
 Notation "+oo" := (@EPInf _) : ereal_scope.
 Notation "-oo" := (@ENInf _ : dual_extended _) : ereal_dual_scope.
 Notation "-oo" := (@ENInf _) : ereal_scope.
+Notation "r %:dE" := (@EFin _ r%R : dual_extended _) : ereal_dual_scope.
+Notation "r %:E" := (@EFin _ r%R : dual_extended _) : ereal_dual_scope.
 Notation "r %:E" := (@EFin _ r%R).
 Notation "'\bar' R" := (extended R) : type_scope.
-Notation "0" := (0%R%:E : dual_extended _) : ereal_dual_scope.
-Notation "0" := (0%R%:E) : ereal_scope.
+Notation "'\bar' '^d' R" := (dual_extended R) : type_scope.
+Notation "0" := (@GRing.zero (\bar^d _)) : ereal_dual_scope.
+Notation "0" := (@GRing.zero (\bar _)) : ereal_scope.
 Notation "1" := (1%R%:E : dual_extended _) : ereal_dual_scope.
 Notation "1" := (1%R%:E) : ereal_scope.
 
@@ -146,8 +154,7 @@ Definition eq_ereal (x y : \bar R) :=
 Lemma ereal_eqP : Equality.axiom eq_ereal.
 Proof. by case=> [?||][?||]; apply: (iffP idP) => //= [/eqP|[]] ->. Qed.
 
-Definition ereal_eqMixin := Equality.Mixin ereal_eqP.
-Canonical ereal_eqType := Equality.Pack ereal_eqMixin.
+HB.instance Definition _ := hasDecEq.Build (\bar R) ereal_eqP.
 
 Lemma eqe (r1 r2 : R) : (r1%:E == r2%:E) = (r1 == r2). Proof. by []. Qed.
 
@@ -173,16 +180,14 @@ Definition decode (x : GenTree.tree R) : option (\bar R) :=
 
 Lemma codeK : pcancel code decode. Proof. by case. Qed.
 
-Definition ereal_choiceMixin := PcanChoiceMixin codeK.
-Canonical ereal_choiceType  := ChoiceType (extended R) ereal_choiceMixin.
+HB.instance Definition _ := Choice.copy (\bar R) (pcan_type codeK).
 
 End ERealChoice.
 
 Section ERealCount.
 Variable (R : countType).
 
-Definition ereal_countMixin := PcanCountMixin (@codeK R).
-Canonical ereal_countType := CountType (extended R) ereal_countMixin.
+HB.instance Definition _ := PCanIsCountable (@codeK R).
 
 End ERealCount.
 
@@ -225,11 +230,8 @@ Qed.
 
 Fact ereal_display : unit. Proof. by []. Qed.
 
-Definition ereal_porderMixin :=
-  LePOrderMixin lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
-
-Canonical ereal_porderType :=
-  POrderType ereal_display (extended R) ereal_porderMixin.
+HB.instance Definition _ := Order.isPOrder.Build ereal_display (\bar R)
+  lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
 
 Lemma leEereal x y : (x <= y)%O = le_ereal x y. Proof. by []. Qed.
 Lemma ltEereal x y : (x < y)%O = lt_ereal x y. Proof. by []. Qed.
@@ -283,6 +285,63 @@ Notation "x < y < z"   := ((x < y) && (y < z)) : ereal_scope.
 
 Notation "x <= y :> T" := ((x : T) <= (y : T)) (only parsing) : ereal_scope.
 Notation "x < y :> T" := ((x : T) < (y : T)) (only parsing) : ereal_scope.
+
+Section ERealZsemimodule.
+Context {R : nmodType}.
+Implicit Types x y z : \bar R.
+
+Definition adde_subdef x y :=
+  match x, y with
+  | x%:E , y%:E  => (x + y)%:E
+  | -oo, _     => -oo
+  | _    , -oo => -oo
+  | +oo, _     => +oo
+  | _    , +oo => +oo
+  end.
+
+Definition adde := nosimpl adde_subdef.
+
+Definition dual_adde_subdef x y :=
+  match x, y with
+  | x%:E , y%:E  => (x + y)%R%:E
+  | +oo, _     => +oo
+  | _    , +oo => +oo
+  | -oo, _     => -oo
+  | _    , -oo => -oo
+  end.
+
+Definition dual_adde := nosimpl dual_adde_subdef.
+
+Lemma addeA_subproof : associative (S := \bar R) adde.
+Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
+
+Lemma addeC_subproof : commutative (S := \bar R) adde.
+Proof. by case=> [x||] [y||] //; rewrite /adde /= addrC. Qed.
+
+Lemma add0e_subproof : left_id (0%:E : \bar R) adde.
+Proof. by case=> // r; rewrite /adde /= add0r. Qed.
+
+HB.instance Definition _ := GRing.isNmodule.Build (\bar R)
+  addeA_subproof addeC_subproof add0e_subproof.
+
+Lemma daddeA_subproof : associative (S := \bar^d R) dual_adde.
+Proof. by case=> [x||] [y||] [z||] //; rewrite /dual_adde /= addrA. Qed.
+
+Lemma daddeC_subproof : commutative (S := \bar^d R) dual_adde.
+Proof. by case=> [x||] [y||] //; rewrite /dual_adde /= addrC. Qed.
+
+Lemma dadd0e_subproof : left_id (0%:dE%dE : \bar^d R) dual_adde.
+Proof. by case=> // r; rewrite /dual_adde /= add0r. Qed.
+
+HB.instance Definition _ := Choice.on (\bar^d R).
+HB.instance Definition _ := GRing.isNmodule.Build (\bar^d R)
+  daddeA_subproof daddeC_subproof dadd0e_subproof.
+
+Definition enatmul x n : \bar R := iterop n +%R x 0.
+
+Definition ednatmul (x : \bar^d R) n : \bar^d R := iterop n +%R x 0.
+
+End ERealZsemimodule.
 
 Section ERealOrder_numDomainType.
 Context {R : numDomainType}.
@@ -370,52 +429,22 @@ move=> ndf.
 by move=> [r| |] [l| |]//=; rewrite ?leey ?leNye// !lee_fin; exact: ndf.
 Qed.
 
-Lemma le_total_ereal : totalPOrderMixin [porderType of \bar R].
+Lemma le_total_ereal : total (Order.le : rel (\bar R)).
 Proof.
 by move=> [?||][?||]//=; rewrite (ltEereal, leEereal)/= ?num_real ?le_total.
 Qed.
 
-Canonical ereal_latticeType := LatticeType (extended R) le_total_ereal.
-Canonical ereal_distrLatticeType :=  DistrLatticeType (extended R) le_total_ereal.
-Canonical ereal_orderType := OrderType (extended R) le_total_ereal.
+HB.instance Definition _ := Order.POrder_isTotal.Build ereal_display (\bar R)
+  le_total_ereal.
 
-Lemma ereal_blatticeMixin :
-  Order.BLattice.mixin_of (Order.POrder.class (@ereal_porderType R)).
-Proof. by exists -oo; exact leNye. Qed.
-Canonical ereal_blatticeType := BLatticeType (extended R) ereal_blatticeMixin.
-
-Lemma ereal_tblatticeMixin :
-  Order.TBLattice.mixin_of (Order.POrder.class ereal_blatticeType).
-Proof. by exists +oo; exact leey. Qed.
-Canonical ereal_tblatticeType := TBLatticeType (extended R) ereal_tblatticeMixin.
+HB.instance Definition _ := Order.hasBottom.Build ereal_display (\bar R) leNye.
+HB.instance Definition _ := Order.hasTop.Build ereal_display (\bar R) leey.
 
 End ERealOrder_realDomainType.
 
-Section ERealArith.
-Context {R : numDomainType}.
+Section ERealZmodule.
+Context {R : zmodType}.
 Implicit Types x y z : \bar R.
-
-Definition adde_subdef x y :=
-  match x, y with
-  | x%:E , y%:E  => (x + y)%:E
-  | -oo, _     => -oo
-  | _    , -oo => -oo
-  | +oo, _     => +oo
-  | _    , +oo => +oo
-  end.
-
-Definition adde := nosimpl adde_subdef.
-
-Definition dual_adde_subdef x y :=
-  match x, y with
-  | x%:E , y%:E  => (x + y)%R%:E
-  | +oo, _     => +oo
-  | _    , +oo => +oo
-  | -oo, _     => -oo
-  | _    , -oo => -oo
-  end.
-
-Definition dual_adde := nosimpl dual_adde_subdef.
 
 Definition oppe x :=
   match x with
@@ -423,6 +452,12 @@ Definition oppe x :=
   | -oo => +oo
   | +oo => -oo
   end.
+
+End ERealZmodule.
+
+Section ERealArith.
+Context {R : numDomainType}.
+Implicit Types x y z : \bar R.
 
 Definition mule_subdef x y :=
   match x, y with
@@ -433,35 +468,31 @@ Definition mule_subdef x y :=
 
 Definition mule := nosimpl mule_subdef.
 
-Definition abse x := if x is r%:E then `|r|%:E else +oo.
+Definition abse x : \bar R := if x is r%:E then `|r|%:E else +oo.
 
 Definition expe x n := iterop n mule x 1.
 
-Definition enatmul x n := iterop n adde x 0.
-
-Definition ednatmul x n := iterop n dual_adde x 0.
-
 End ERealArith.
 
-Notation "+%dE"   := dual_adde.
-Notation "+%E"   := adde.
+Notation "+%dE"  := (@GRing.add (\bar^d _)).
+Notation "+%E"   := (@GRing.add (\bar _)).
 Notation "-%E"   := oppe.
-Notation "x + y" := (dual_adde x%dE y%dE) : ereal_dual_scope.
-Notation "x + y" := (adde x y) : ereal_scope.
-Notation "x - y" := (dual_adde x%dE (oppe y%dE)) : ereal_dual_scope.
-Notation "x - y" := (adde x (oppe y)) : ereal_scope.
-Notation "- x"   := (oppe (x%dE : dual_extended _)) : ereal_dual_scope.
-Notation "- x"   := (oppe x) : ereal_scope.
+Notation "x + y" := (GRing.add (x%dE : \bar^d _) y%dE) : ereal_dual_scope.
+Notation "x + y" := (GRing.add x%E y%E) : ereal_scope.
+Notation "x - y" := ((x%dE : \bar^d _) + oppe y%dE) : ereal_dual_scope.
+Notation "x - y" := (x%E + (oppe y%E)) : ereal_scope.
+Notation "- x"   := (oppe x%dE : \bar^d _) : ereal_dual_scope.
+Notation "- x"   := (oppe x%E) : ereal_scope.
 Notation "*%E"   := mule.
-Notation "x * y" := (mule (x%dE : dual_extended _) (y%dE : dual_extended _)) : ereal_dual_scope.
-Notation "x * y" := (mule x y) : ereal_scope.
-Notation "`| x |" := (abse (x%dE : dual_extended _)) : ereal_dual_scope.
-Notation "`| x |" := (abse x) : ereal_scope.
+Notation "x * y" := (mule x%dE y%dE : \bar^d _) : ereal_dual_scope.
+Notation "x * y" := (mule x%E y%E) : ereal_scope.
+Notation "`| x |" := (abse x%dE : \bar^d _) : ereal_dual_scope.
+Notation "`| x |" := (abse x%E) : ereal_scope.
 Arguments abse {R}.
-Notation "x ^+ n" := (expe x%dE n) : ereal_dual_scope.
-Notation "x ^+ n" := (expe x n) : ereal_scope.
+Notation "x ^+ n" := (expe x%dE n : \bar^d _) : ereal_dual_scope.
+Notation "x ^+ n" := (expe x%E n) : ereal_scope.
 Notation "x *+ n" := (ednatmul x%dE n) : ereal_dual_scope.
-Notation "x *+ n" := (enatmul x n) : ereal_scope.
+Notation "x *+ n" := (enatmul x%E n) : ereal_scope.
 
 Notation "\- f" := (fun x => - f x)%dE : ereal_dual_scope.
 Notation "\- f" := (fun x => - f x)%E : ereal_scope.
@@ -473,53 +504,53 @@ Notation "f \- g" := (fun x => f x - g x)%dE : ereal_dual_scope.
 Notation "f \- g" := (fun x => f x - g x)%E : ereal_scope.
 
 Notation "\sum_ ( i <- r | P ) F" :=
-  (\big[+%dE/0%:E]_(i <- r | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i <- r | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i <- r | P ) F" :=
-  (\big[+%E/0%:E]_(i <- r | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i <- r | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i <- r ) F" :=
-  (\big[+%dE/0%:E]_(i <- r) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i <- r) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i <- r ) F" :=
-  (\big[+%E/0%:E]_(i <- r) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i <- r) F%E) : ereal_scope.
 Notation "\sum_ ( m <= i < n | P ) F" :=
-  (\big[+%dE/0%:E]_(m <= i < n | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(m <= i < n | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( m <= i < n | P ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(m <= i < n | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( m <= i < n ) F" :=
-  (\big[+%dE/0%:E]_(m <= i < n) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(m <= i < n) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( m <= i < n ) F" :=
-  (\big[+%E/0%:E]_(m <= i < n) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(m <= i < n) F%E) : ereal_scope.
 Notation "\sum_ ( i | P ) F" :=
-  (\big[+%dE/0%:E]_(i | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i | P ) F" :=
-  (\big[+%E/0%:E]_(i | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i | P%B) F%E) : ereal_scope.
 Notation "\sum_ i F" :=
-  (\big[+%dE/0%:E]_i F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_i F%dE) : ereal_dual_scope.
 Notation "\sum_ i F" :=
-  (\big[+%E/0%:E]_i F%E) : ereal_scope.
+  (\big[+%E/0%E]_i F%E) : ereal_scope.
 Notation "\sum_ ( i : t | P ) F" :=
-  (\big[+%dE/0%:E]_(i : t | P%B) F%dE) (only parsing) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i : t | P%B) F%dE) (only parsing) : ereal_dual_scope.
 Notation "\sum_ ( i : t | P ) F" :=
-  (\big[+%E/0%:E]_(i : t | P%B) F%E) (only parsing) : ereal_scope.
+  (\big[+%E/0%E]_(i : t | P%B) F%E) (only parsing) : ereal_scope.
 Notation "\sum_ ( i : t ) F" :=
-  (\big[+%dE/0%:E]_(i : t) F%dE) (only parsing) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i : t) F%dE) (only parsing) : ereal_dual_scope.
 Notation "\sum_ ( i : t ) F" :=
-  (\big[+%E/0%:E]_(i : t) F%E) (only parsing) : ereal_scope.
+  (\big[+%E/0%E]_(i : t) F%E) (only parsing) : ereal_scope.
 Notation "\sum_ ( i < n | P ) F" :=
-  (\big[+%dE/0%:E]_(i < n | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i < n | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i < n | P ) F" :=
-  (\big[+%E/0%:E]_(i < n | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i < n | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i < n ) F" :=
-  (\big[+%dE/0%:E]_(i < n) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i < n) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i < n ) F" :=
-  (\big[+%E/0%:E]_(i < n) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i < n) F%E) : ereal_scope.
 Notation "\sum_ ( i 'in' A | P ) F" :=
-  (\big[+%dE/0%:E]_(i in A | P%B) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i in A | P%B) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i 'in' A | P ) F" :=
-  (\big[+%E/0%:E]_(i in A | P%B) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i in A | P%B) F%E) : ereal_scope.
 Notation "\sum_ ( i 'in' A ) F" :=
-  (\big[+%dE/0%:E]_(i in A) F%dE) : ereal_dual_scope.
+  (\big[+%dE/0%dE]_(i in A) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i 'in' A ) F" :=
-  (\big[+%E/0%:E]_(i in A) F%E) : ereal_scope.
+  (\big[+%E/0%E]_(i in A) F%E) : ereal_scope.
 
 Section ERealOrderTheory.
 Context {R : numDomainType}.
@@ -646,6 +677,10 @@ Proof. by case: x => //=; rewrite oppr0. Qed.
 
 Lemma EFinD r r' : (r + r')%:E = r%:E + r'%:E. Proof. by []. Qed.
 
+Lemma EFin_semi_additive : @semi_additive _ (\bar R) EFin. Proof. by split. Qed.
+HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar R) EFin
+  EFin_semi_additive.
+
 Lemma EFinB r r' : (r - r')%:E = r%:E - r'%:E. Proof. by []. Qed.
 
 Lemma EFinM r r' : (r * r')%:E = r%:E * r'%:E. Proof. by []. Qed.
@@ -680,20 +715,13 @@ Proof. by case: x. Qed.
 Lemma ge0_adde_def : {in [pred x | x >= 0] &, forall x y, x +? y}.
 Proof. by move=> [x| |] [y| |]. Qed.
 
-Lemma addeC : commutative (S := \bar R) +%E.
-Proof. by case=> [x||] [y||] //; rewrite /adde /= addrC. Qed.
+Lemma addeC : commutative (S := \bar R) +%E. Proof. exact: addrC. Qed.
 
-Lemma adde0 : right_id (0 : \bar R) +%E.
-Proof. by case=> // r; rewrite /adde /= addr0. Qed.
+Lemma adde0 : right_id (0 : \bar R) +%E. Proof. exact: addr0. Qed.
 
-Lemma add0e : left_id (0 : \bar R) +%E.
-Proof. by move=> x; rewrite addeC adde0. Qed.
+Lemma add0e : left_id (0 : \bar R) +%E. Proof. exact: add0r. Qed.
 
-Lemma addeA : associative (S := \bar R) +%E.
-Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
-
-Canonical adde_monoid := Monoid.Law addeA add0e adde0.
-Canonical adde_comoid := Monoid.ComLaw addeC.
+Lemma addeA : associative (S := \bar R) +%E. Proof. exact: addrA. Qed.
 
 Lemma adde_def_sum I h t (P : pred I) (f : I -> \bar R) :
     {in P, forall i : I, f h +? f i} ->
@@ -779,7 +807,7 @@ Proof. by move: x => [r| |] //=; rewrite /mule/= ?mulr0// eqxx. Qed.
 Lemma mul0e x : 0 * x = 0.
 Proof. by move: x => [r| |]/=; rewrite /mule/= ?mul0r// eqxx. Qed.
 
-Canonical mule_mulmonoid := @Monoid.MulLaw _ _ mule mul0e mule0.
+HB.instance Definition _ := Monoid.isMulLaw.Build (\bar R) 0 mule mul0e mule0.
 
 Lemma expeS x n : x ^+ n.+1 = x * x ^+ n.
 Proof. by case: n => //=; rewrite mule1. Qed.
@@ -825,7 +853,7 @@ Proof. by move=> [x| |] [y| |]. Qed.
 Lemma abse_eq0 x : (`|x| == 0) = (x == 0).
 Proof. by move: x => [| |] //= r; rewrite !eqe normr_eq0. Qed.
 
-Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse normr0. Qed.
+Lemma abse0 : `|0| = 0 :> \bar R. Proof. by rewrite /abse/= normr0. Qed.
 
 Lemma abse1 : `|1| = 1 :> \bar R. Proof. by rewrite /abse normr1. Qed.
 
@@ -1037,7 +1065,7 @@ Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
 
 Lemma adde_le0 x y : x <= 0 -> y <= 0 -> x + y <= 0.
 Proof.
-move: x y => [r0||] [r1||]// ? ?; rewrite !lee_fin -(addr0 0%R); exact: ler_add.
+move: x y => [r0||] [r1||]// ? ?; rewrite !lee_fin -(addr0 0%R); exact: lerD.
 Qed.
 
 Lemma oppe_gt0 x : (0 < - x) = (x < 0).
@@ -1164,7 +1192,7 @@ Lemma mule_lt0_gt0 x y : x < 0 -> 0 < y -> x * y < 0.
 Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 
 Lemma gte_opp x : 0 < x -> - x < x.
-Proof. by case: x => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
+Proof. by case: x => //= r; rewrite !lte_fin; apply: gtrN. Qed.
 
 Lemma realMe x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x * y)%O.
 Proof.
@@ -1210,11 +1238,11 @@ Notation "x *? y" := (mule_def x y) : ereal_scope.
 
 Notation maxe := (@Order.max ereal_display _).
 Notation "@ 'maxe' R" := (@Order.max ereal_display R)
-  (at level 10, R at level 8, only parsing) : fun_scope.
+  (at level 10, R at level 8, only parsing) : function_scope.
 
 Notation mine := (@Order.min ereal_display _).
 Notation "@ 'mine' R" := (@Order.min ereal_display R)
-  (at level 10, R at level 8, only parsing) : fun_scope.
+  (at level 10, R at level 8, only parsing) : function_scope.
 
 Module DualAddTheoryNumDomain.
 
@@ -1224,12 +1252,12 @@ Local Open Scope ereal_dual_scope.
 
 Context {R : numDomainType}.
 
-Implicit Types x y z : \bar R.
+Implicit Types x y z : \bar^d R.
 
 Lemma dual_addeE x y : (x + y)%dE = - ((- x) + (- y))%E.
 Proof. by case: x => [x| |]; case: y => [y| |] //=; rewrite opprD !opprK. Qed.
 
-Lemma dual_sumeE I (r : seq I) (P : pred I) (F : I -> \bar R) :
+Lemma dual_sumeE I (r : seq I) (P : pred I) (F : I -> \bar^d R) :
   (\sum_(i <- r | P i) F i)%dE = - (\sum_(i <- r | P i) (- F i)%E)%E.
 Proof.
 apply: (big_ind2 (fun x y => x = - y)%E) => [|_ x _ y -> ->|i _].
@@ -1244,6 +1272,14 @@ Proof. by case: x => [x| |]; case: y. Qed.
 Lemma dEFinD (r r' : R) : (r + r')%R%:E = r%:E + r'%:E.
 Proof. by []. Qed.
 
+Lemma dEFinE (r : R) : dEFin r = r%:E. Proof. by []. Qed.
+
+Lemma dEFin_semi_additive : @semi_additive _ (\bar^d R) dEFin.
+Proof. by split. Qed.
+#[export]
+HB.instance Definition _ := GRing.isSemiAdditive.Build R (\bar^d R) dEFin
+  dEFin_semi_additive.
+
 Lemma dEFinB (r r' : R) : (r - r')%R%:E = r%:E - r'%:E.
 Proof. by []. Qed.
 
@@ -1251,31 +1287,24 @@ Lemma dsumEFin I r P (F : I -> R) :
   \sum_(i <- r | P i) (F i)%:E = (\sum_(i <- r | P i) F i)%R%:E.
 Proof. by rewrite dual_sumeE fin_num_sumeN// oppeK sumEFin. Qed.
 
-Lemma daddeC : commutative (S := \bar R) +%dE.
-Proof. by move=> x y; rewrite !dual_addeE addeC. Qed.
+Lemma daddeC : commutative (S := \bar^d R) +%dE. Proof. exact: addrC. Qed.
 
-Lemma dadde0 : right_id (0 : \bar R) +%dE.
-Proof. by move=> x; rewrite dual_addeE eqe_oppLRP oppe0 adde0. Qed.
+Lemma dadde0 : right_id (0 : \bar^d R) +%dE. Proof. exact: addr0. Qed.
 
-Lemma dadd0e : left_id (0 : \bar R) +%dE.
-Proof. by move=> x;rewrite dual_addeE eqe_oppLRP oppe0 add0e. Qed.
+Lemma dadd0e : left_id (0 : \bar^d R) +%dE. Proof. exact: add0r. Qed.
 
-Lemma daddeA : associative (S := \bar R) +%dE.
-Proof. by move=> x y z; rewrite !dual_addeE !oppeK addeA. Qed.
+Lemma daddeA : associative (S := \bar^d R) +%dE. Proof. exact: addrA. Qed.
 
-Canonical dadde_monoid := Monoid.Law daddeA dadd0e dadde0.
-Canonical dadde_comoid := Monoid.ComLaw daddeC.
-
-Lemma daddeAC : right_commutative (S := \bar R) +%dE.
+Lemma daddeAC : right_commutative (S := \bar^d R) +%dE.
 Proof. exact: Monoid.mulmAC. Qed.
 
-Lemma daddeCA : left_commutative (S := \bar R) +%dE.
+Lemma daddeCA : left_commutative (S := \bar^d R) +%dE.
 Proof. exact: Monoid.mulmCA. Qed.
 
-Lemma daddeACA : @interchange (\bar R) +%dE +%dE.
+Lemma daddeACA : @interchange (\bar^d R) +%dE +%dE.
 Proof. exact: Monoid.mulmACA. Qed.
 
-Lemma realDed x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x + y)%O.
+Lemma realDed x y : (0%dE >=< x)%O -> (0%dE >=< y)%O -> (0%dE >=< x + y)%O.
 Proof. case: x y => [x||] [y||] //; exact: realD. Qed.
 
 Lemma doppeD x y : x +? y -> - (x + y) = - x - y.
@@ -1367,7 +1396,7 @@ Lemma dadde_ss_eq0 x y : (0 <= x) && (0 <= y) || (x <= 0) && (y <= 0) ->
   x + y == 0 = (x == 0) && (y == 0).
 Proof. move=> /orP[|] /andP[]; [exact: pdadde_eq0|exact: ndadde_eq0]. Qed.
 
-Lemma desum_eqyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+Lemma desum_eqyP (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar^d R) :
   \sum_(i <- s | P i) f i = +oo <-> exists i, [/\ i \in s, P i & f i = +oo].
 Proof.
 rewrite dual_sumeE eqe_oppLRP /= esum_eqNyP.
@@ -1382,7 +1411,7 @@ by under eq_existsb => i do rewrite eqe_oppLR.
 Qed.
 
 Lemma desum_eqNyP
-    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar R) :
+    (T : eqType) (s : seq T) (P : pred T) (f : T -> \bar^d R) :
   (forall i, P i -> f i != +oo) ->
   \sum_(i <- s | P i) f i = -oo <-> exists i, [/\ i \in s, P i & f i = -oo].
 Proof.
@@ -1392,7 +1421,7 @@ rewrite dual_sumeE eqe_oppLRP /= esum_eqyP => [|i Pi]; last first.
 by split=> -[i + /ltac:(exists i)] => [|] []; [|split]; rewrite // eqe_oppLRP.
 Qed.
 
-Lemma desum_eqNy (I : finType) (f : I -> \bar R) (P : {pred I}) :
+Lemma desum_eqNy (I : finType) (f : I -> \bar^d R) (P : {pred I}) :
   (forall i, f i != +oo) ->
   (\sum_(i | P i) f i == -oo) = [exists i in P, f i == -oo].
 Proof.
@@ -1416,27 +1445,27 @@ Proof. rewrite dual_addeE oppe_ge0 -!oppe_le0; exact: adde_le0. Qed.
 Lemma dadde_le0 x y : x <= 0 -> y <= 0 -> x + y <= 0.
 Proof. rewrite dual_addeE oppe_le0 -!oppe_ge0; exact: adde_ge0. Qed.
 
-Lemma dsume_ge0 T (f : T -> \bar R) (P : pred T) :
+Lemma dsume_ge0 T (f : T -> \bar^d R) (P : pred T) :
   (forall n, P n -> 0 <= f n) -> forall l, 0 <= \sum_(i <- l | P i) f i.
 Proof.
 move=> u0 l; rewrite dual_sumeE oppe_ge0 sume_le0 // => t Pt.
 rewrite oppe_le0; exact: u0.
 Qed.
 
-Lemma dsume_le0 T (f : T -> \bar R) (P : pred T) :
+Lemma dsume_le0 T (f : T -> \bar^d R) (P : pred T) :
   (forall n, P n -> f n <= 0) -> forall l, \sum_(i <- l | P i) f i <= 0.
 Proof.
 move=> u0 l; rewrite dual_sumeE oppe_le0 sume_ge0 // => t Pt.
 rewrite oppe_ge0; exact: u0.
 Qed.
 
-Lemma gte_dopp (r : \bar R) : (0 < r)%E -> (- r < r)%E.
-Proof. by case: r => //= r; rewrite !lte_fin; apply: gtr_opp. Qed.
+Lemma gte_dopp (r : \bar^d R) : (0 < r)%E -> (- r < r)%E.
+Proof. by case: r => //= r; rewrite !lte_fin; apply: gtrN. Qed.
 
-Lemma ednatmul_pinfty n : +oo *+ n.+1 = +oo :> \bar R.
+Lemma ednatmul_pinfty n : +oo *+ n.+1 = +oo :> \bar^d R.
 Proof. by elim: n => //= n ->. Qed.
 
-Lemma ednatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar R.
+Lemma ednatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar^d R.
 Proof. by elim: n => //= n ->. Qed.
 
 Lemma EFin_dnatmul (r : R) n : (r *+ n.+1)%:E = r%:E *+ n.+1.
@@ -1497,8 +1526,8 @@ split=> [-> // A A0|Ax]; first by rewrite leey.
 apply/eqP; rewrite eq_le leey /= leNgt; apply/negP.
 case: x Ax => [x Ax _|//|/(_ _ ltr01)//].
 suff: ~ x%:E < (Order.max 0 x + 1)%:E.
-  by apply; rewrite lte_fin ltr_spaddr// le_maxr lexx orbT.
-by apply/negP; rewrite -leNgt; apply/Ax/ltr_spaddr; rewrite // le_maxr lexx.
+  by apply; rewrite lte_fin ltr_pwDr// le_maxr lexx orbT.
+by apply/negP; rewrite -leNgt; apply/Ax/ltr_pwDr; rewrite // le_maxr lexx.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `eqyP`")]
@@ -1567,22 +1596,22 @@ Proof. by move=> /orP[?|?]; [rewrite suber_ge0|rewrite subre_ge0]. Qed.
 
 Lemma lte_oppl x y : (- x < y) = (- y < x).
 Proof.
-by move: x y => [r| |] [r'| |] //=; rewrite ?(ltry, ltNyr)// !lte_fin ltr_oppl.
+by move: x y => [r| |] [r'| |] //=; rewrite ?(ltry, ltNyr)// !lte_fin ltrNl.
 Qed.
 
 Lemma lte_oppr x y : (x < - y) = (y < - x).
 Proof.
-by move: x y => [r| |] [r'| |] //=; rewrite ?(ltry, ltNyr)// !lte_fin ltr_oppr.
+by move: x y => [r| |] [r'| |] //=; rewrite ?(ltry, ltNyr)// !lte_fin ltrNr.
 Qed.
 
 Lemma lee_oppr x y : (x <= - y) = (y <= - x).
 Proof.
-by move: x y => [r0| |] [r1| |] //=; rewrite ?(leey, leNye)// !lee_fin ler_oppr.
+by move: x y => [r0| |] [r1| |] //=; rewrite ?(leey, leNye)// !lee_fin lerNr.
 Qed.
 
 Lemma lee_oppl x y : (- x <= y) = (- y <= x).
 Proof.
-by move: x y => [r0| |] [r1| |] //=; rewrite ?(leey, leNye)// !lee_fin ler_oppl.
+by move: x y => [r0| |] [r1| |] //=; rewrite ?(leey, leNye)// !lee_fin lerNl.
 Qed.
 
 Lemma muleN x y : x * - y = - (x * y).
@@ -1704,13 +1733,13 @@ Proof. by rewrite lte_oppl oppeK. Qed.
 Lemma lte_add a b x y : a < b -> x < y -> a + x < b + y.
 Proof.
 move: a b x y=> [a| |] [b| |] [x| |] [y| |]; rewrite ?(ltry,ltNyr)//.
-by rewrite !lte_fin; exact: ltr_add.
+by rewrite !lte_fin; exact: ltrD.
 Qed.
 
 Lemma lee_addl x y : 0 <= y -> x <= x + y.
 Proof.
 move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
-  by [rewrite !lee_fin ler_addl | move=> _; exact: leey].
+  by [rewrite !lee_fin lerDl | move=> _; exact: leey].
 Qed.
 
 Lemma lee_addr x y : 0 <= y -> x <= y + x.
@@ -1719,7 +1748,7 @@ Proof. by rewrite addeC; exact: lee_addl. Qed.
 Lemma gee_addl x y : y <= 0 -> x + y <= x.
 Proof.
 move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
-  by [rewrite !lee_fin ger_addl | move=> _; exact: leNye].
+  by [rewrite !lee_fin gerDl | move=> _; exact: leNye].
 Qed.
 
 Lemma gee_addr x y : y <= 0 -> y + x <= x.
@@ -1727,7 +1756,7 @@ Proof. rewrite addeC; exact: gee_addl. Qed.
 
 Lemma lte_addl y x : y \is a fin_num -> (y < y + x) = (0 < x).
 Proof.
-by move: x y => [x| |] [y| |] _ //; rewrite ?ltry ?ltNyr // !lte_fin ltr_addl.
+by move: x y => [x| |] [y| |] _ //; rewrite ?ltry ?ltNyr // !lte_fin ltrDl.
 Qed.
 
 Lemma lte_addr y x : y \is a fin_num -> (y < x + y) = (0 < x).
@@ -1736,7 +1765,7 @@ Proof. rewrite addeC; exact: lte_addl. Qed.
 Lemma gte_subl y x : y \is a fin_num -> (y - x < y) = (0 < x).
 Proof.
 move: y x => [x| |] [y| |] _ //; rewrite addeC /= ?ltNyr ?ltry//.
-by rewrite !lte_fin gtr_addr ltr_oppl oppr0.
+by rewrite !lte_fin gtrDr ltrNl oppr0.
 Qed.
 
 Lemma gte_subr y x : y \is a fin_num -> (- x + y < y) = (0 < x).
@@ -1744,7 +1773,7 @@ Proof. by rewrite addeC; exact: gte_subl. Qed.
 
 Lemma gte_addl x y : x \is a fin_num -> (x + y < x) = (y < 0).
 Proof.
-by move: x y => [r| |] [s| |]// _; [rewrite !lte_fin gtr_addl|rewrite !ltNyr].
+by move: x y => [r| |] [s| |]// _; [rewrite !lte_fin gtrDl|rewrite !ltNyr].
 Qed.
 
 Lemma gte_addr x y : x \is a fin_num -> (y + x < x) = (y < 0).
@@ -1753,13 +1782,13 @@ Proof. by rewrite addeC; exact: gte_addl. Qed.
 Lemma lte_add2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
 Proof.
 move: a b x => [a| |] [b| |] [x| |] _ //; rewrite ?(ltry, ltNyr)//.
-by rewrite !lte_fin ltr_add2l.
+by rewrite !lte_fin ltrD2l.
 Qed.
 
 Lemma lee_add2l x a b : a <= b -> x + a <= x + b.
 Proof.
 move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
-- by rewrite !lee_fin ler_add2l.
+- by rewrite !lee_fin lerD2l.
 - by move=> r _; exact: leey.
 - by move=> -[b [|  |]// | []// | //] r oob; exact: leNye.
 Qed.
@@ -1767,7 +1796,7 @@ Qed.
 Lemma lee_add2lE x a b : x \is a fin_num -> (x + a <= x + b) = (a <= b).
 Proof.
 move: a b x => [a| |] [b| |] [x| |] _ //; rewrite ?(leey, leNye)//.
-by rewrite !lee_fin ler_add2l.
+by rewrite !lee_fin lerD2l.
 Qed.
 
 Lemma lee_add2r x a b : a <= b -> a + x <= b + x.
@@ -1776,13 +1805,13 @@ Proof. rewrite addeC (addeC b); exact: lee_add2l. Qed.
 Lemma lee_add a b x y : a <= b -> x <= y -> a + x <= b + y.
 Proof.
 move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(leey, leNye)//.
-by rewrite !lee_fin; exact: ler_add.
+by rewrite !lee_fin; exact: lerD.
 Qed.
 
 Lemma lte_le_add a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
 Proof.
 move: x y a b => [x| |] [y| |] [a| |] [b| |] _ //=; rewrite ?(ltry, ltNyr)//.
-by rewrite !lte_fin; exact: ltr_le_add.
+by rewrite !lte_fin; exact: ltr_leD.
 Qed.
 
 Lemma lee_lt_add a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
@@ -1791,20 +1820,20 @@ Proof. by move=> afin xa yb; rewrite (addeC a) (addeC x) lte_le_add. Qed.
 Lemma lee_sub x y z u : x <= y -> u <= z -> x - z <= y - u.
 Proof.
 move: x y z u => -[x| |] -[y| |] -[z| |] -[u| |] //=; rewrite ?(leey,leNye)//.
-by rewrite !lee_fin; exact: ler_sub.
+by rewrite !lee_fin; exact: lerB.
 Qed.
 
 Lemma lte_le_sub z u x y : u \is a fin_num ->
   x < z -> u <= y -> x - y < z - u.
 Proof.
 move: z u x y => [z| |] [u| |] [x| |] [y| |] _ //=; rewrite ?(ltry, ltNyr)//.
-by rewrite !lte_fin => xltr tley; apply: ltr_le_add; rewrite // ler_oppl opprK.
+by rewrite !lte_fin => xltr tley; apply: ltr_leD; rewrite // lerNl opprK.
 Qed.
 
 Lemma lte_pmul2r z : z \is a fin_num -> 0 < z -> {mono *%E^~ z : x y / x < y}.
 Proof.
 move: z => [z| |] _ // z0 [x| |] [y| |] //.
-- by rewrite !lte_fin ltr_pmul2r.
+- by rewrite !lte_fin ltr_pM2r.
 - by rewrite mulr_infty gtr0_sg// mul1e 2!ltry.
 - by rewrite mulr_infty gtr0_sg// mul1e ltNge leNye ltNge leNye.
 - by rewrite mulr_infty gtr0_sg// mul1e ltNge leey ltNge leey.
@@ -1955,7 +1984,7 @@ Qed.
 Lemma lte_subl_addr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?ltry ?ltNyr //.
-by rewrite !lte_fin ltr_subl_addr.
+by rewrite !lte_fin ltrBlDr.
 Qed.
 
 Lemma lte_subl_addl x y z : y \is a fin_num -> (x - y < z) = (x < y + z).
@@ -1964,7 +1993,7 @@ Proof. by move=> ?; rewrite lte_subl_addr// addeC. Qed.
 Lemma lte_subr_addr x y z : z \is a fin_num -> (x < y - z) = (x + z < y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?ltNyr ?ltry //.
-by rewrite !lte_fin ltr_subr_addr.
+by rewrite !lte_fin ltrBrDr.
 Qed.
 
 Lemma lte_subr_addl x y z : z \is a fin_num -> (x < y - z) = (z + x < y).
@@ -1973,7 +2002,7 @@ Proof. by move=> ?; rewrite lte_subr_addr// addeC. Qed.
 Lemma lte_subel_addr x y z : x \is a fin_num -> (x - y < z) = (x < z + y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?ltNyr ?ltry //.
-by rewrite !lte_fin ltr_subl_addr.
+by rewrite !lte_fin ltrBlDr.
 Qed.
 
 Lemma lte_subel_addl x y z : x \is a fin_num -> (x - y < z) = (x < y + z).
@@ -1982,7 +2011,7 @@ Proof. by move=> ?; rewrite lte_subel_addr// addeC. Qed.
 Lemma lte_suber_addr x y z : x \is a fin_num -> (x < y - z) = (x + z < y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?ltNyr ?ltry //.
-by rewrite !lte_fin ltr_subr_addr.
+by rewrite !lte_fin ltrBrDr.
 Qed.
 
 Lemma lte_suber_addl x y z : x \is a fin_num -> (x < y - z) = (z + x < y).
@@ -1991,7 +2020,7 @@ Proof. by move=> ?; rewrite lte_suber_addr// addeC. Qed.
 Lemma lee_subl_addr x y z : y \is a fin_num -> (x - y <= z) = (x <= z + y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?leey ?leNye //.
-by rewrite !lee_fin ler_subl_addr.
+by rewrite !lee_fin lerBlDr.
 Qed.
 
 Lemma lee_subl_addl x y z : y \is a fin_num -> (x - y <= z) = (x <= y + z).
@@ -2000,7 +2029,7 @@ Proof. by move=> ?; rewrite lee_subl_addr// addeC. Qed.
 Lemma lee_subr_addr x y z : z \is a fin_num -> (x <= y - z) = (x + z <= y).
 Proof.
 move: y x z => [y| |] [x| |] [z| |] _ //=; rewrite ?leNye ?leey //.
-by rewrite !lee_fin ler_subr_addr.
+by rewrite !lee_fin lerBrDr.
 Qed.
 
 Lemma lee_subr_addl x y z : z \is a fin_num -> (x <= y - z) = (z + x <= y).
@@ -2009,7 +2038,7 @@ Proof. by move=> ?; rewrite lee_subr_addr// addeC. Qed.
 Lemma lee_subel_addr x y z : z \is a fin_num -> (x - y <= z) = (x <= z + y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?leey ?leNye //.
-by rewrite !lee_fin ler_subl_addr.
+by rewrite !lee_fin lerBlDr.
 Qed.
 
 Lemma lee_subel_addl x y z : z \is a fin_num -> (x - y <= z) = (x <= y + z).
@@ -2018,7 +2047,7 @@ Proof. by move=> ?; rewrite lee_subel_addr// addeC. Qed.
 Lemma lee_suber_addr x y z : y \is a fin_num -> (x <= y - z) = (x + z <= y).
 Proof.
 move: y x z => [y| |] [x| |] [z| |] _ //=; rewrite ?leNye ?leey //.
-by rewrite !lee_fin ler_subr_addr.
+by rewrite !lee_fin lerBrDr.
 Qed.
 
 Lemma lee_suber_addl x y z : y \is a fin_num -> (x <= y - z) = (z + x <= y).
@@ -2112,8 +2141,8 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-Canonical mule_monoid := Monoid.Law muleA mul1e mule1.
-Canonical mule_comoid := Monoid.ComLaw muleC.
+HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 1%E mule
+  muleA muleC mul1e.
 
 Lemma muleCA : left_commutative ( *%E : \bar R -> \bar R -> \bar R ).
 Proof. exact: Monoid.mulmCA. Qed.
@@ -2150,7 +2179,7 @@ rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
 - by case: ltgtP => //; rewrite adde0.
 - rewrite !eqe paddr_eq0 //; move: s0; rewrite lee_fin.
   case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0e.
-  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_le_add // lte_fin s0.
+  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_leD // lte_fin s0.
     by case: ltgtP t0 => // [t0|[<-{t}]] _; [rewrite gt_eqF|rewrite eqxx].
   + by move: t0; rewrite lee_fin; case: (ltgtP t).
 - by rewrite ltry; case: ltgtP s0.
@@ -2158,7 +2187,7 @@ rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
 - by rewrite ltry.
 - rewrite !eqe paddr_eq0 //; move: s0; rewrite lee_fin.
   case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0e.
-  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_le_add // lte_fin s0.
+  + rewrite lte_fin -[in LHS](addr0 0%R) ltr_leD // lte_fin s0.
     by case: ltgtP t0 => // [t0|[<-{t}]].
   + by move: t0; rewrite lee_fin; case: (ltgtP t).
 - by rewrite ltry; case: ltgtP s0.
@@ -2178,7 +2207,7 @@ rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
 - by case: ltgtP => //; rewrite adde0.
 - rewrite !eqe naddr_eq0 //; move: s0; rewrite lee_fin.
   case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0e.
-  + rewrite !lte_fin -[in LHS](addr0 0%R) ltNge ler_add // ?ltW //=.
+  + rewrite !lte_fin -[in LHS](addr0 0%R) ltNge lerD // ?ltW //=.
     by rewrite !ltNge ltW //.
   + by case: (ltgtP t).
 - by rewrite ltry; case: ltgtP s0.
@@ -2186,7 +2215,7 @@ rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
 - by rewrite ltry.
 - rewrite !eqe naddr_eq0 //; move: s0; rewrite lee_fin.
   case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0e.
-  + rewrite !lte_fin -[in LHS](addr0 0%R) ltNge ler_add // ?ltW //=.
+  + rewrite !lte_fin -[in LHS](addr0 0%R) ltNge lerD // ?ltW //=.
     by rewrite !ltNge ltW // -lee_fin t0; case: eqP.
   + by case: (ltgtP t).
 - by rewrite ltNge s0 /=; case: eqP.
@@ -2199,7 +2228,7 @@ Proof. by move=> y0 z0; rewrite !(muleC x) le0_muleDl. Qed.
 Lemma gee_pmull y x : y \is a fin_num -> 0 < x -> y <= 1 -> y * x <= x.
 Proof.
 move: x y => [x| |] [y| |] _ //=.
-- by rewrite lte_fin => x0 r0; rewrite /mule/= lee_fin ger_pmull.
+- by rewrite lte_fin => x0 r0; rewrite /mule/= lee_fin ger_pMl.
 - by move=> _; rewrite /mule/= eqe => r1; rewrite leey.
 Qed.
 
@@ -2207,7 +2236,7 @@ Lemma lee_wpmul2r x : 0 <= x -> {homo *%E^~ x : y z / y <= z}.
 Proof.
 move: x => [x|_|//].
   rewrite lee_fin le_eqVlt => /predU1P[<- y z|x0]; first by rewrite 2!mule0.
-  move=> [y| |] [z| |]//; first by rewrite !lee_fin// ler_pmul2r.
+  move=> [y| |] [z| |]//; first by rewrite !lee_fin// ler_pM2r.
   - by move=> _; rewrite mulr_infty gtr0_sg// mul1e leey.
   - by move=> _; rewrite mulr_infty gtr0_sg// mul1e leNye.
   - by move=> _; rewrite 2!mulr_infty gtr0_sg// 2!mul1e.
@@ -2302,7 +2331,7 @@ Qed.
 
 Lemma lee_abs_add x y : `|x + y| <= `|x| + `|y|.
 Proof.
-by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_norm_add.
+by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_normD.
 Qed.
 
 Lemma lee_abs_sum (I : Type) (s : seq I) (F : I -> \bar R) (P : pred I) :
@@ -2314,7 +2343,7 @@ Qed.
 
 Lemma lee_abs_sub x y : `|x - y| <= `|x| + `|y|.
 Proof.
-by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_norm_sub.
+by move: x y => [x| |] [y| |] //; rewrite /abse -EFinD lee_fin ler_normB.
 Qed.
 
 Lemma abseM : {morph @abse R : x y / x * y}.
@@ -2354,14 +2383,14 @@ Qed.
 Lemma EFin_min : {morph (@EFin R) : r s / Num.min r s >-> mine r s}.
 Proof. by move=> a b /=; rewrite -fine_min. Qed.
 
-Lemma adde_maxl : left_distributive (@adde R) maxe.
+Lemma adde_maxl : left_distributive (@GRing.add (\bar R)) maxe.
 Proof.
 move=> x y z; have [xy|yx] := leP x y.
 by apply/esym/max_idPr; rewrite lee_add2r.
 by apply/esym/max_idPl; rewrite lee_add2r// ltW.
 Qed.
 
-Lemma adde_maxr : right_distributive (@adde R) maxe.
+Lemma adde_maxr : right_distributive (@GRing.add (\bar R)) maxe.
 Proof.
 move=> x y z; have [yz|zy] := leP y z.
 by apply/esym/max_idPr; rewrite lee_add2l.
@@ -2380,8 +2409,8 @@ Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge leNye. Qed.
 Lemma maxeNy : right_id (-oo : \bar R) maxe.
 Proof. by move=> x; rewrite maxC maxNye. Qed.
 
-Canonical maxe_monoid := Monoid.Law maxA maxNye maxeNy.
-Canonical maxe_comoid := Monoid.ComLaw maxC.
+HB.instance Definition _ :=
+  Monoid.isLaw.Build (\bar R) -oo maxe maxA maxNye maxeNy.
 
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
@@ -2395,8 +2424,6 @@ Proof. by move=> x; have [//|] := leP x +oo; rewrite ltNge leey. Qed.
 Lemma miney : right_id (+oo : \bar R) mine.
 Proof. by move=> x; rewrite minC minye. Qed.
 
-Canonical mine_monoid := Monoid.Law minA minye miney.
-Canonical mine_comoid := Monoid.ComLaw minC.
 
 Lemma oppe_max : {morph -%E : x y / maxe x y >-> mine x y : \bar R}.
 Proof.
@@ -2426,7 +2453,8 @@ Proof. by move=> zfin z0; rewrite muleC maxeMr// !(muleC z). Qed.
 Lemma mineMr z x y : z \is a fin_num -> 0 < z ->
   z * mine x y = mine (z * x) (z * y).
 Proof.
-by move=> ? ?; rewrite -eqe_oppP -muleN oppe_min maxeMr// !muleN -oppe_min.
+move=> fz zgt0.
+by rewrite -eqe_oppP -muleN [in LHS]oppe_min maxeMr// !muleN -oppe_min.
 Qed.
 
 Lemma mineMl z x y : z \is a fin_num -> 0 < z ->
@@ -2446,7 +2474,7 @@ Qed.
 Lemma lee_pemull x y : 0 <= y -> 1 <= x -> y <= x * y.
 Proof.
 move: x y => [x| |] [y| |] //; last by rewrite mulyy.
-- by rewrite -EFinM 3!lee_fin; exact: ler_pemull.
+- by rewrite -EFinM 3!lee_fin; exact: ler_peMl.
 - move=> _; rewrite lee_fin => x1.
   by rewrite mulr_infty gtr0_sg ?mul1e// (lt_le_trans _ x1).
 - rewrite lee_fin le_eqVlt => /predU1P[<- _|y0 _]; first by rewrite mule0.
@@ -2456,7 +2484,7 @@ Qed.
 Lemma lee_nemull x y : y <= 0 -> 1 <= x -> x * y <= y.
 Proof.
 move: x y => [x| |] [y| |] //; last by rewrite mulyNy.
-- by rewrite -EFinM 3!lee_fin; exact: ler_nemull.
+- by rewrite -EFinM 3!lee_fin; exact: ler_neMl.
 - move=> _; rewrite lee_fin => x1.
   by rewrite mulr_infty gtr0_sg ?mul1e// (lt_le_trans _ x1).
 - rewrite lee_fin le_eqVlt => /predU1P[-> _|y0 _]; first by rewrite mule0.
@@ -2483,7 +2511,7 @@ Lemma lte_pmul x1 y1 x2 y2 :
 Proof.
 move: x1 y1 x2 y2 => [x1| |] [y1| |] [x2| |] [y2| |] //;
     rewrite !(lte_fin,lee_fin).
-- by move=> *; rewrite ltr_pmul.
+- by move=> *; rewrite ltr_pM.
 - move=> x10 x20 xy1 xy2.
   by rewrite mulry gtr0_sg ?mul1e -?EFinM ?ltry// (le_lt_trans _ xy1).
 - move=> x10 x20 xy1 xy2.
@@ -2495,7 +2523,7 @@ Lemma lee_pmul x1 y1 x2 y2 : 0 <= x1 -> 0 <= x2 -> x1 <= y1 -> x2 <= y2 ->
   x1 * x2 <= y1 * y2.
 Proof.
 move: x1 y1 x2 y2 => [x1| |] [y1| |] [x2| |] [y2| |] //; rewrite !lee_fin.
-- exact: ler_pmul.
+- exact: ler_pM.
 - rewrite le_eqVlt => /predU1P[<- x20 y10 _|x10 x20 xy1 _].
     by rewrite mul0e mule_ge0// leey.
   by rewrite mulr_infty gtr0_sg// ?mul1e ?leey// (lt_le_trans x10).
@@ -2522,7 +2550,7 @@ Qed.
 Lemma lee_pmul2l x : x \is a fin_num -> 0 < x -> {mono *%E x : x y / x <= y}.
 Proof.
 move: x => [x _|//|//] /[!(@lte_fin R)] x0 [y| |] [z| |].
-- by rewrite -2!EFinM 2!lee_fin ler_pmul2l.
+- by rewrite -2!EFinM 2!lee_fin ler_pM2l.
 - by rewrite mulry gtr0_sg// mul1e 2!leey.
 - by rewrite mulrNy gtr0_sg// mul1e 2!leeNy_eq.
 - by rewrite mulry gtr0_sg// mul1e 2!leye_eq.
@@ -2582,13 +2610,13 @@ Proof. by move=> *; rewrite addeC lte_paddl. Qed.
 Lemma lte_spaddre z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
 move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltry)//.
-exact: ltr_spaddr.
+exact: ltr_pwDr.
 Qed.
 
 Lemma lte_spadder z x y : x \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
 move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltry,ltNyr)//.
-exact: ltr_spaddr.
+exact: ltr_pwDr.
 Qed.
 
 End ERealArithTh_realDomainType.
@@ -2616,7 +2644,7 @@ Import DualAddTheoryNumDomain.
 Local Open Scope ereal_dual_scope.
 
 Context {R : realDomainType}.
-Implicit Types x y z a b : \bar R.
+Implicit Types x y z a b : \bar^d R.
 
 Lemma dsube_lt0 x y : (x - y < 0) = (x < y).
 Proof. by rewrite dual_addeE oppe_lt0 sube_gt0 lteN2. Qed.
@@ -2667,7 +2695,7 @@ Proof. by rewrite -fin_numN dual_addeE lte_oppl oppeK; exact: lte_addr. Qed.
 
 Lemma gte_daddl x y : x \is a fin_num -> (x + y < x) = (y < 0).
 Proof.
-by rewrite -fin_numN dual_addeE lte_oppl -oppe0 lte_oppr; exact: lte_addl.
+by rewrite -fin_numN dual_addeE lte_oppl -[0]oppe0 lte_oppr; exact: lte_addl.
 Qed.
 
 Lemma gte_daddr x y : x \is a fin_num -> (y + x < x) = (y < 0).
@@ -2700,7 +2728,7 @@ Proof. rewrite !dual_addeE lee_oppl oppeK -leeN2 !oppeK; exact: lee_add. Qed.
 Lemma lte_le_dsub z u x y : u \is a fin_num -> x < z -> u <= y -> x - y < z - u.
 Proof. by rewrite !dual_addeE lteN2 !oppeK -lteN2; exact: lte_le_add. Qed.
 
-Lemma lee_dsum I (f g : I -> \bar R) s (P : pred I) :
+Lemma lee_dsum I (f g : I -> \bar^d R) s (P : pred I) :
   (forall i, P i -> f i <= g i) ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i) g i.
 Proof.
@@ -2708,7 +2736,7 @@ move=> Pfg; rewrite !dual_sumeE leeN2.
 apply: lee_sum => i Pi; rewrite leeN2; exact: Pfg.
 Qed.
 
-Lemma lee_dsum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
+Lemma lee_dsum_nneg_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar^d R) :
   {subset Q <= P} -> {in [predD P & Q], forall i, 0 <= f i} ->
   \sum_(i <- s | Q i) f i <= \sum_(i <- s | P i) f i.
 Proof.
@@ -2716,7 +2744,7 @@ move=> QP PQf; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos_subset => [//|i iPQ]; rewrite oppe_le0; exact: PQf.
 Qed.
 
-Lemma lee_dsum_npos_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar R) :
+Lemma lee_dsum_npos_subset I (s : seq I) (P Q : {pred I}) (f : I -> \bar^d R) :
   {subset Q <= P} -> {in [predD P & Q], forall i, f i <= 0} ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | Q i) f i.
 Proof.
@@ -2725,7 +2753,7 @@ apply: lee_sum_nneg_subset => [//|i iPQ]; rewrite oppe_ge0; exact: PQf.
 Qed.
 
 Lemma lee_dsum_nneg (I : eqType) (s : seq I) (P Q : pred I)
-  (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> 0 <= f i) ->
+  (f : I -> \bar^d R) : (forall i, P i -> ~~ Q i -> 0 <= f i) ->
   \sum_(i <- s | P i && Q i) f i <= \sum_(i <- s | P i) f i.
 Proof.
 move=> PQf; rewrite !dual_sumeE leeN2.
@@ -2733,14 +2761,14 @@ apply: lee_sum_npos => i Pi nQi; rewrite oppe_le0; exact: PQf.
 Qed.
 
 Lemma lee_dsum_npos (I : eqType) (s : seq I) (P Q : pred I)
-  (f : I -> \bar R) : (forall i, P i -> ~~ Q i -> f i <= 0) ->
+  (f : I -> \bar^d R) : (forall i, P i -> ~~ Q i -> f i <= 0) ->
   \sum_(i <- s | P i) f i <= \sum_(i <- s | P i && Q i) f i.
 Proof.
 move=> PQf; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg => i Pi nQi; rewrite oppe_ge0; exact: PQf.
 Qed.
 
-Lemma lee_dsum_nneg_ord (f : nat -> \bar R) (P : pred nat) :
+Lemma lee_dsum_nneg_ord (f : nat -> \bar^d R) (P : pred nat) :
   (forall n, P n -> 0 <= f n)%E ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
@@ -2749,7 +2777,7 @@ apply: (lee_sum_npos_ord (fun i => - f i)%E) => [i Pi|//].
 rewrite oppe_le0; exact: f0.
 Qed.
 
-Lemma lee_dsum_npos_ord (f : nat -> \bar R) (P : pred nat) :
+Lemma lee_dsum_npos_ord (f : nat -> \bar^d R) (P : pred nat) :
   (forall n, P n -> f n <= 0)%E ->
   {homo (fun n => \sum_(i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
@@ -2758,7 +2786,7 @@ apply: (lee_sum_nneg_ord (fun i => - f i)%E) => [i Pi|//].
 rewrite oppe_ge0; exact: f0.
 Qed.
 
-Lemma lee_dsum_nneg_natr (f : nat -> \bar R) (P : pred nat) m :
+Lemma lee_dsum_nneg_natr (f : nat -> \bar^d R) (P : pred nat) m :
   (forall n, (m <= n)%N -> P n -> 0 <= f n) ->
   {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
@@ -2766,7 +2794,7 @@ move=> f0 i j le_ij; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos_natr => [n ? ?|//]; rewrite oppe_le0; exact: f0.
 Qed.
 
-Lemma lee_dsum_npos_natr (f : nat -> \bar R) (P : pred nat) m :
+Lemma lee_dsum_npos_natr (f : nat -> \bar^d R) (P : pred nat) m :
   (forall n, (m <= n)%N -> P n -> f n <= 0) ->
   {homo (fun n => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
@@ -2774,7 +2802,7 @@ move=> f0 i j le_ij; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg_natr => [n ? ?|//]; rewrite oppe_ge0; exact: f0.
 Qed.
 
-Lemma lee_dsum_nneg_natl (f : nat -> \bar R) (P : pred nat) n :
+Lemma lee_dsum_nneg_natl (f : nat -> \bar^d R) (P : pred nat) n :
   (forall m, (m < n)%N -> P m -> 0 <= f m) ->
   {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> j <= i}.
 Proof.
@@ -2782,7 +2810,7 @@ move=> f0 i j le_ij; rewrite !dual_sumeE leeN2.
 apply: lee_sum_npos_natl => [m ? ?|//]; rewrite oppe_le0; exact: f0.
 Qed.
 
-Lemma lee_dsum_npos_natl (f : nat -> \bar R) (P : pred nat) n :
+Lemma lee_dsum_npos_natl (f : nat -> \bar^d R) (P : pred nat) n :
   (forall m, (m < n)%N -> P m -> f m <= 0) ->
   {homo (fun m => \sum_(m <= i < n | P i) (f i)) : i j / (i <= j)%N >-> i <= j}.
 Proof.
@@ -2791,7 +2819,7 @@ apply: lee_sum_nneg_natl => [m ? ?|//]; rewrite oppe_ge0; exact: f0.
 Qed.
 
 Lemma lee_dsum_nneg_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
-  (f : T -> \bar R) : {subset A <= B} ->
+  (f : T -> \bar^d R) : {subset A <= B} ->
   {in [predD B & A], forall t, P t -> 0 <= f t} ->
   \sum_(t <- A | P t) f t <= \sum_(t <- B | P t) f t.
 Proof.
@@ -2800,7 +2828,7 @@ apply: lee_sum_npos_subfset => [//|? ? ?]; rewrite oppe_le0; exact: f0.
 Qed.
 
 Lemma lee_dsum_npos_subfset (T : choiceType) (A B : {fset T}%fset) (P : pred T)
-  (f : T -> \bar R) : {subset A <= B} ->
+  (f : T -> \bar^d R) : {subset A <= B} ->
   {in [predD B & A], forall t, P t -> f t <= 0} ->
   \sum_(t <- B | P t) f t <= \sum_(t <- A | P t) f t.
 Proof.
@@ -2899,7 +2927,9 @@ Lemma dsube_gt0 x y : (x \is a fin_num) || (y \is a fin_num) ->
 Proof. by move=> /orP[?|?]; [rewrite dsuber_gt0|rewrite dsubre_gt0]. Qed.
 
 Lemma dmuleDr x y z : x \is a fin_num -> y +? z -> x * (y + z) = x * y + x * z.
-Proof. by move=> *; rewrite !dual_addeE muleN muleDr ?adde_defNN// !muleN. Qed.
+Proof.
+by move=> *; rewrite !dual_addeE/= muleN muleDr ?adde_defNN// !muleN.
+Qed.
 
 Lemma dmuleDl x y z : x \is a fin_num -> y +? z -> (y + z) * x = y * x + z * x.
 Proof. by move=> *; rewrite -!(muleC x) dmuleDr. Qed.
@@ -2916,7 +2946,8 @@ Proof. by move=> *; rewrite !dual_addeE mulNe ge0_muleDl ?oppe_ge0 ?mulNe. Qed.
 Lemma dle0_muleDr x y z : y <= 0 -> z <= 0 -> x * (y + z) = x * y + x * z.
 Proof. by move=> *; rewrite !dual_addeE muleN ge0_muleDr ?oppe_ge0 ?muleN. Qed.
 
-Lemma ge0_dsume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma ge0_dsume_distrl (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> 0 <= F i) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
 Proof.
@@ -2925,14 +2956,16 @@ move=> F0; rewrite !dual_sumeE !mulNe le0_sume_distrl => [|i Pi].
 - by rewrite oppe_le0 F0.
 Qed.
 
-Lemma ge0_dsume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma ge0_dsume_distrr (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> 0 <= F i) ->
   x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
 Proof.
 by move=> F0; rewrite muleC ge0_dsume_distrl//; under eq_bigr do rewrite muleC.
 Qed.
 
-Lemma le0_dsume_distrl (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma le0_dsume_distrl (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> F i <= 0) ->
   (\sum_(i <- s | P i) F i) * x = \sum_(i <- s | P i) (F i * x).
 Proof.
@@ -2941,7 +2974,8 @@ move=> F0; rewrite !dual_sumeE mulNe ge0_sume_distrl => [|i Pi].
 - by rewrite oppe_ge0 F0.
 Qed.
 
-Lemma le0_dsume_distrr (I : Type) (s : seq I) x (P : pred I) (F : I -> \bar R) :
+Lemma le0_dsume_distrr (I : Type) (s : seq I) x (P : pred I)
+    (F : I -> \bar^d R) :
   (forall i, P i -> F i <= 0) ->
   x * (\sum_(i <- s | P i) F i) = \sum_(i <- s | P i) (x * F i).
 Proof.
@@ -2950,10 +2984,10 @@ Qed.
 
 Lemma lee_abs_dadd x y : `|x + y| <= `|x| + `|y|.
 Proof.
-by move: x y => [x| |] [y| |] //; rewrite /abse -dEFinD lee_fin ler_norm_add.
+by move: x y => [x| |] [y| |] //; rewrite /abse -dEFinD lee_fin ler_normD.
 Qed.
 
-Lemma lee_abs_dsum (I : Type) (s : seq I) (F : I -> \bar R) (P : pred I) :
+Lemma lee_abs_dsum (I : Type) (s : seq I) (F : I -> \bar^d R) (P : pred I) :
   `|\sum_(i <- s | P i) F i| <= \sum_(i <- s | P i) `|F i|.
 Proof.
 elim/big_ind2 : _ => //; first by rewrite abse0.
@@ -2962,13 +2996,13 @@ Qed.
 
 Lemma lee_abs_dsub x y : `|x - y| <= `|x| + `|y|.
 Proof.
-by move: x y => [x| |] [y| |] //; rewrite /abse -dEFinD lee_fin ler_norm_sub.
+by move: x y => [x| |] [y| |] //; rewrite /abse -dEFinD lee_fin ler_normB.
 Qed.
 
-Lemma dadde_minl : left_distributive (@dual_adde R) mine.
+Lemma dadde_minl : left_distributive (@GRing.add (\bar^d R)) mine.
 Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxl oppe_max. Qed.
 
-Lemma dadde_minr : right_distributive (@dual_adde R) mine.
+Lemma dadde_minr : right_distributive (@GRing.add (\bar^d R)) mine.
 Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
 
 Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
@@ -2989,13 +3023,13 @@ Proof. by move=> *; rewrite daddeC lte_pdaddl. Qed.
 Lemma lte_spdaddre z x y : z \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
 move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltry,ltNyr)//.
-exact: ltr_spaddr.
+exact: ltr_pwDr.
 Qed.
 
 Lemma lte_spdadder z x y : x \is a fin_num -> 0 < y -> z <= x -> z < x + y.
 Proof.
 move: z y x => [z| |] [y| |] [x| |] _ //=; rewrite ?(lte_fin,ltry,ltNyr)//.
-exact: ltr_spaddr.
+exact: ltr_pwDr.
 Qed.
 
 End DualERealArithTh_realDomainType.
@@ -3010,14 +3044,14 @@ End DualAddTheoryRealDomain.
 
 Lemma lee_opp2 {R : numDomainType} : {mono @oppe R : x y /~ x <= y}.
 Proof.
-move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !ler_opp2.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !lerN2.
   by rewrite  /Order.le/= realN.
 by rewrite /Order.le/= realN.
 Qed.
 
 Lemma lte_opp2 {R : numDomainType} : {mono @oppe R : x y /~ x < y}.
 Proof.
-move=> x y; case: x y => [?||] [?||] //; first by rewrite !lte_fin !ltr_opp2.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lte_fin !ltrN2.
   by rewrite  /Order.lt/= realN.
 by rewrite /Order.lt/= realN.
 Qed.
@@ -3032,7 +3066,7 @@ Lemma lee_addgt0Pr x y :
 Proof.
 apply/(iffP idP) => [|].
 - move: x y => [x| |] [y| |]//.
-  + by rewrite lee_fin => xy e e0; rewrite -EFinD lee_fin ler_paddr// ltW.
+  + by rewrite lee_fin => xy e e0; rewrite -EFinD lee_fin ler_wpDr// ltW.
   + by move=> _ e e0; rewrite leNye.
 - move: x y => [x| |] [y| |]// xy; rewrite ?leey ?leNye//;
     [|by move: xy => /(_ _ lte01)..].
@@ -3062,7 +3096,7 @@ move: x y => [x||] [y||] // in x0 h *.
   rewrite lee_fin leNgt; apply/negP => yx.
   have /h : (0 < (y + x) / (2 * x) < 1)%R.
     apply/andP; split; first by rewrite divr_gt0 // ?addr_gt0// ?mulr_gt0.
-    by rewrite ltr_pdivr_mulr ?mulr_gt0// mul1r mulr_natl mulr2n ltr_add2r.
+    by rewrite ltr_pdivrMr ?mulr_gt0// mul1r mulr_natl mulr2n ltrD2r.
   rewrite -(EFinM _ x) lee_fin invrM ?unitfE// ?gt_eqF// -mulrA mulrAC.
   by rewrite mulVr ?unitfE ?gt_eqF// mul1r; apply/negP; rewrite -ltNge midf_lt.
 - by rewrite leey.
@@ -3074,7 +3108,7 @@ Qed.
 Lemma lte_pdivr_mull r x y : (0 < r)%R -> (r^-1%:E * y < x) = (y < r%:E * x).
 Proof.
 move=> r0; move: x y => [x| |] [y| |] //=.
-- by rewrite 2!lte_fin ltr_pdivr_mull.
+- by rewrite 2!lte_fin ltr_pdivrMl.
 - by rewrite mulr_infty sgrV gtr0_sg// mul1e 2!ltNge 2!leey.
 - by rewrite mulr_infty sgrV gtr0_sg// mul1e -EFinM 2!ltNyr.
 - by rewrite mulr_infty gtr0_sg// mul1e 2!ltry.
@@ -3091,7 +3125,7 @@ Proof. by move=> r0; rewrite muleC lte_pdivr_mull// muleC. Qed.
 Lemma lte_pdivl_mull r y x : (0 < r)%R -> (x < r^-1%:E * y) = (r%:E * x < y).
 Proof.
 move=> r0; move: x y => [x| |] [y| |] //=.
-- by rewrite 2!lte_fin ltr_pdivl_mull.
+- by rewrite 2!lte_fin ltr_pdivlMl.
 - by rewrite mulr_infty sgrV gtr0_sg// mul1e 2!ltry.
 - by rewrite mulr_infty sgrV gtr0_sg// mul1e.
 - by rewrite mulr_infty gtr0_sg// mul1e.
@@ -3107,7 +3141,7 @@ Proof. by move=> r0; rewrite muleC lte_pdivl_mull// muleC. Qed.
 
 Lemma lte_ndivl_mulr r x y : (r < 0)%R -> (x < y * r^-1%:E) = (y < x * r%:E).
 Proof.
-rewrite -oppr0 ltr_oppr => r0; rewrite -{1}(opprK r) invrN.
+rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
 by rewrite EFinN muleN lte_oppr lte_pdivr_mulr// EFinN muleNN.
 Qed.
 
@@ -3116,7 +3150,7 @@ Proof. by move=> r0; rewrite muleC lte_ndivl_mulr// muleC. Qed.
 
 Lemma lte_ndivr_mull r x y : (r < 0)%R -> (r^-1%:E * y < x) = (r%:E * x < y).
 Proof.
-rewrite -oppr0 ltr_oppr => r0; rewrite -{1}(opprK r) invrN.
+rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
 by rewrite EFinN mulNe lte_oppl lte_pdivl_mull// EFinN muleNN.
 Qed.
 
@@ -3149,7 +3183,7 @@ Proof. by move=> r0; rewrite muleC lee_pdivl_mull// muleC. Qed.
 
 Lemma lee_ndivl_mulr r x y : (r < 0)%R -> (x <= y * r^-1%:E) = (y <= x * r%:E).
 Proof.
-rewrite -oppr0 ltr_oppr => r0; rewrite -{1}(opprK r) invrN.
+rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
 by rewrite EFinN muleN lee_oppr lee_pdivr_mulr// EFinN muleNN.
 Qed.
 
@@ -3158,7 +3192,7 @@ Proof. by move=> r0; rewrite muleC lee_ndivl_mulr// muleC. Qed.
 
 Lemma lee_ndivr_mull r x y : (r < 0)%R -> (r^-1%:E * y <= x) = (r%:E * x <= y).
 Proof.
-rewrite -oppr0 ltr_oppr => r0; rewrite -{1}(opprK r) invrN.
+rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
 by rewrite EFinN mulNe lee_oppl lee_pdivl_mull// EFinN muleNN.
 Qed.
 
@@ -3182,7 +3216,7 @@ Import DualAddTheoryNumDomain DualAddTheoryRealDomain.
 Section DualRealFieldType_lemmas.
 Local Open Scope ereal_dual_scope.
 Variable R : realFieldType.
-Implicit Types x y : \bar R.
+Implicit Types x y : \bar^d R.
 
 Lemma lee_daddgt0Pr x y :
   reflect (forall e, (0 < e)%R -> x <= y + e%:E) (x <= y).
@@ -3255,9 +3289,9 @@ Export DualAddTheory.
 End ConstructiveDualAddTheory.
 
 Definition posnume (R : numDomainType) of phant R := {> 0 : \bar R}.
-Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R))  : type_scope.
+Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R)) : type_scope.
 Definition nonnege (R : numDomainType) of phant R := {>= 0 : \bar R}.
-Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R))  : type_scope.
+Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R)) : type_scope.
 
 Notation "x %:pos" := (widen_signed x%:sgn : {posnum \bar _}) (only parsing)
   : ereal_dual_scope.
@@ -3353,7 +3387,7 @@ Lemma adde_snum_subproof (xnz ynz : KnownSign.nullity)
     (y : {compare (0 : \bar R) & ynz & yr})
     (rnz := add_nonzero_subdef xnz ynz xr yr)
     (rrl := add_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (x%:num + y%:num).
+  Signed.spec 0 rnz rrl (adde x%:num y%:num).
 Proof.
 rewrite {}/rnz {}/rrl; apply/andP; split.
   move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
@@ -3361,7 +3395,7 @@ rewrite {}/rnz {}/rrl; apply/andP; split.
 move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
   do ?[by case: (bottom x)|by case: (bottom y)
       |by rewrite adde_ge0|by rewrite adde_le0
-      |exact: realDe|by rewrite 2!eq0 add0e].
+      |exact: realDe|by rewrite 2!eq0 /adde/= addr0].
 Qed.
 
 Canonical adde_snum (xnz ynz : KnownSign.nullity)
@@ -3372,13 +3406,20 @@ Canonical adde_snum (xnz ynz : KnownSign.nullity)
 
 Import DualAddTheory.
 
+Lemma dEFin_snum_subproof nz cond (x : {num R & nz & cond}) :
+  Signed.spec 0 nz cond (dEFin x%:num).
+Proof. exact: EFin_snum_subproof. Qed.
+
+Canonical dEFin_snum nz cond (x : {num R & nz & cond}) :=
+  Signed.mk (dEFin_snum_subproof x).
+
 Lemma dadde_snum_subproof (xnz ynz : KnownSign.nullity)
     (xr yr : KnownSign.reality)
     (x : {compare (0 : \bar R) & xnz & xr})
     (y : {compare (0 : \bar R) & ynz & yr})
     (rnz := add_nonzero_subdef xnz ynz xr yr)
     (rrl := add_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (x%:num + y%:num)%dE.
+  Signed.spec 0 rnz rrl (dual_adde x%:num y%:num)%dE.
 Proof.
 rewrite {}/rnz {}/rrl; apply/andP; split.
   move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
@@ -3386,7 +3427,7 @@ rewrite {}/rnz {}/rrl; apply/andP; split.
 move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
   do ?[by case: (bottom x)|by case: (bottom y)
       |by rewrite dadde_ge0|by rewrite dadde_le0
-      |exact: realDed|by rewrite 2!eq0 dadd0e].
+      |exact: realDed|by rewrite 2!eq0 /dual_adde/= addr0].
 Qed.
 
 Canonical dadde_snum (xnz ynz : KnownSign.nullity)
@@ -3444,7 +3485,7 @@ Context {R : numDomainType} {nz : KnownSign.nullity} {cond : KnownSign.reality}.
 Local Notation nR := {compare (0 : \bar R) & nz & cond}.
 Implicit Types (a : \bar R).
 
-Lemma num_abse_eq0 a : (`|a|%:nng == 0%:nng) = (a == 0).
+Lemma num_abse_eq0 a : (`|a|%:nng == 0%:E%:nng) = (a == 0).
 Proof. by rewrite -abse_eq0. Qed.
 
 End MorphNum.
@@ -3543,8 +3584,8 @@ Definition contract x : R :=
 Lemma contract_lt1 r : (`|contract r%:E| < 1)%R.
 Proof.
 rewrite normrM normrV ?unitfE //.
-rewrite ltr_pdivr_mulr // ?mul1r//; last by rewrite gtr0_norm.
-by rewrite [ltRHS]gtr0_norm ?ltr_addr// ltr_spaddl.
+rewrite ltr_pdivrMr // ?mul1r//; last by rewrite gtr0_norm.
+by rewrite [ltRHS]gtr0_norm ?ltrDr// ltr_pwDl.
 Qed.
 
 Lemma contract_le1 x : (`|contract x| <= 1)%R.
@@ -3553,7 +3594,7 @@ by case: x => [r| |] /=; rewrite ?normrN1 ?normr1 // (ltW (contract_lt1 _)).
 Qed.
 
 Lemma contract0 : contract 0 = 0%R.
-Proof. by rewrite /contract mul0r. Qed.
+Proof. by rewrite /contract/= mul0r. Qed.
 
 Lemma contractN x : contract (- x) = (- contract x)%R.
 Proof. by case: x => //= [r|]; [ rewrite normrN mulNr | rewrite opprK]. Qed.
@@ -3570,15 +3611,15 @@ Proof. by move=> r1; rewrite /expand r1. Qed.
 Lemma expandN r : expand (- r)%R = - expand r.
 Proof.
 rewrite /expand; case: ifPn => [r1|].
-  rewrite ifF; [by rewrite ifT // -ler_oppr|apply/negbTE].
-  by rewrite -ltNge -(opprK r) -ltr_oppl (lt_le_trans _ r1) // -subr_gt0 opprK.
-rewrite -ltNge => r1; case: ifPn; rewrite ler_oppl opprK; [by move=> ->|].
-by rewrite -ltNge leNgt => ->; rewrite leNgt -ltr_oppl r1 /= mulNr normrN.
+  rewrite ifF; [by rewrite ifT // -lerNr|apply/negbTE].
+  by rewrite -ltNge -(opprK r) -ltrNl (lt_le_trans _ r1) // -subr_gt0 opprK.
+rewrite -ltNge => r1; case: ifPn; rewrite lerNl opprK; [by move=> ->|].
+by rewrite -ltNge leNgt => ->; rewrite leNgt -ltrNl r1 /= mulNr normrN.
 Qed.
 
 Lemma expandN1 r : (r <= -1)%R -> expand r = -oo.
 Proof.
-by rewrite ler_oppr => /expand1/eqP; rewrite expandN eqe_oppLR => /eqP.
+by rewrite lerNr => /expand1/eqP; rewrite expandN eqe_oppLR => /eqP.
 Qed.
 
 Lemma expand0 : expand 0%R = 0.
@@ -3589,7 +3630,7 @@ Proof.
 move=> r; rewrite inE le_eqVlt => /orP[|r1].
   rewrite eqr_norml => /andP[/orP[]/eqP->{r}] _;
     by [rewrite expand1|rewrite expandN1].
-rewrite /expand 2!leNgt ltr_oppl; case/ltr_normlP : (r1) => -> -> /=.
+rewrite /expand 2!leNgt ltrNl; case/ltr_normlP : (r1) => -> -> /=.
 have r_pneq0 : (1 + r / (1 - r) != 0)%R.
   rewrite -[X in (X + _)%R](@divrr _ (1 - r)%R) -?mulrDl; last first.
     by rewrite unitfE subr_eq0 eq_sym lt_eqF // ltr_normlW.
@@ -3615,16 +3656,16 @@ Qed.
 Lemma le_contract : {mono contract : x y / (x <= y)%O}.
 Proof.
 apply: le_mono; move=> -[r0 | | ] [r1 | _ | _] //=.
-- rewrite lte_fin => r0r1; rewrite ltr_pdivr_mulr ?ltr_paddr//.
-  rewrite mulrAC ltr_pdivl_mulr ?ltr_paddr// 2?mulrDr 2?mulr1.
+- rewrite lte_fin => r0r1; rewrite ltr_pdivrMr ?ltr_wpDr//.
+  rewrite mulrAC ltr_pdivlMr ?ltr_wpDr// 2?mulrDr 2?mulr1.
   have [r10|?] := ler0P r1; last first.
-    rewrite ltr_le_add // mulrC; have [r00|//] := ler0P r0.
-    by rewrite (@le_trans _ _ 0%R) // ?pmulr_lle0// mulr_ge0// ?oppr_ge0// ltW.
-  have [?|r00] := ler0P r0; first by rewrite ltr_le_add // 2!mulrN mulrC.
+    rewrite ltr_leD // mulrC; have [r00|//] := ler0P r0.
+    by rewrite (@le_trans _ _ 0%R) // ?pmulr_rle0// mulr_ge0// ?oppr_ge0// ltW.
+  have [?|r00] := ler0P r0; first by rewrite ltr_leD // 2!mulrN mulrC.
   by move: (le_lt_trans r10 (lt_trans r00 r0r1)); rewrite ltxx.
-- by rewrite ltr_pdivr_mulr ?ltr_paddr// mul1r ltr_spaddl // ler_norm.
-- rewrite ltr_pdivl_mulr ?mulN1r ?ltr_paddr// => _.
-  by rewrite ltr_oppl ltr_spaddl // ler_normr lexx orbT.
+- by rewrite ltr_pdivrMr ?ltr_wpDr// mul1r ltr_pwDl // ler_norm.
+- rewrite ltr_pdivlMr ?mulN1r ?ltr_wpDr// => _.
+  by rewrite ltrNl ltr_pwDl // ler_normr lexx orbT.
 - by rewrite -subr_gt0 opprK.
 Qed.
 
@@ -3641,7 +3682,7 @@ Definition expand_inj := mono_inj_in lexx le_anti le_expand_in.
 Lemma fine_expand r : (`|r| < 1)%R ->
   (fine (expand r))%:E = expand r.
 Proof.
-by move=> r1; rewrite /expand 2!leNgt ltr_oppl; case/ltr_normlP : r1 => -> ->.
+by move=> r1; rewrite /expand 2!leNgt ltrNl; case/ltr_normlP : r1 => -> ->.
 Qed.
 
 Lemma le_expand : {homo expand : x y / (x <= y)%O}.
@@ -3649,9 +3690,9 @@ Proof.
 move=> x y xy; have [x1|] := lerP `|x| 1.
   have [y_le1|/ltW /expand1->] := leP y 1%R; last by rewrite leey.
   rewrite le_expand_in ?inE// ler_norml y_le1 (le_trans _ xy)//.
-  by rewrite ler_oppl (ler_normlP _ _ _).
+  by rewrite lerNl (ler_normlP _ _ _).
 rewrite ltr_normr => /orP[|] x1; last first.
-  by rewrite expandN1 // ?leNye // ler_oppr ltW.
+  by rewrite expandN1 // ?leNye // lerNr ltW.
 by rewrite expand1; [rewrite expand1 // (le_trans _ xy) // ltW | exact: ltW].
 Qed.
 
@@ -3667,7 +3708,7 @@ Qed.
 End contract_expand.
 
 Section ereal_PseudoMetric.
-Variable R : realFieldType.
+Context {R : realFieldType}.
 Implicit Types (x y : \bar R) (r : R).
 
 Definition ereal_ball x r y := (`|contract x - contract y| < r)%R.
@@ -3682,7 +3723,7 @@ Lemma ereal_ball_triangle x y z r1 r2 :
   ereal_ball x r1 y -> ereal_ball y r2 z -> ereal_ball x (r1 + r2) z.
 Proof.
 rewrite /ereal_ball => h1 h2; rewrite -[X in (X - _)%R](subrK (contract y)).
-by rewrite -addrA (le_lt_trans (ler_norm_add _ _)) // ltr_add.
+by rewrite -addrA (le_lt_trans (ler_normD _ _)) // ltrD.
 Qed.
 
 Lemma ereal_ballN x y (e : {posnum R}) :
@@ -3693,7 +3734,7 @@ Lemma ereal_ball_ninfty_oversize (e : {posnum R}) x :
   (2 < e%:num)%R -> ereal_ball -oo e%:num x.
 Proof.
 move=> e2; rewrite /ereal_ball /= (le_lt_trans _ e2) // -opprB normrN opprK.
-rewrite (le_trans (ler_norm_add _ _)) // normr1 -ler_subr_addr.
+rewrite (le_trans (ler_normD _ _)) // normr1 -lerBrDr.
 by rewrite (le_trans (contract_le1 _)) // (_ : 2 = 1 + 1)%R // addrK.
 Qed.
 
@@ -3702,7 +3743,7 @@ Lemma contract_ereal_ball_pinfty r (e : {posnum R}) :
 Proof.
 move=> re1; rewrite /ereal_ball; rewrite [contract +oo]/= ler0_norm; last first.
   by rewrite subr_le0; case/ler_normlP: (contract_le1 r%:E).
-by rewrite opprB ltr_subl_addl.
+by rewrite opprB ltrBlDl.
 Qed.
 
 End ereal_PseudoMetric.
@@ -3724,9 +3765,9 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
     rewrite -subr_gt0 opprD addrA {1}[(b - r)%R]splitr addrK.
     by rewrite divr_gt0 ?subr_gt0.
   by rewrite -subr_gt0 addrAC {1}[(r - a)%R]splitr addrK divr_gt0 ?subr_gt0.
-- have [//||d dP] := wlog a (r + 1)%R; rewrite ?lte_fin ?ltr_addl //.
+- have [//||d dP] := wlog a (r + 1)%R; rewrite ?lte_fin ?ltrDl //.
   by exists d => y /dP /andP[->] /= /lt_le_trans; apply; rewrite leey.
-- have [//||d dP] := wlog (r - 1)%R b; rewrite ?lte_fin ?gtr_addl ?ltrN10 //.
+- have [//||d dP] := wlog (r - 1)%R b; rewrite ?lte_fin ?gtrDl ?ltrN10 //.
   by exists d => y /dP /andP[_ ->] /=; rewrite ltNyr.
 - by exists 1%:pos%R => ? ?; rewrite ltNyr ltry.
 Qed.

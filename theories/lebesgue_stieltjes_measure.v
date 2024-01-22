@@ -72,16 +72,16 @@ Lemma nondecreasing_right_continuousP (R : numFieldType) (a : R) (e : R)
   e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
 Proof.
 move=> e0; move: (cumulative_is_right_continuous f).
-move=> /(_ a)/(@cvgr_dist_lt _ [normedModType R of R^o]).
+move=> /(_ a)/(@cvgr_dist_lt _ [the normedModType R of R^o]).
 move=> /(_ _ e0)[] _ /posnumP[d] => h.
 exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
 rewrite opprD addrA subrr distrC subr0 ger0_norm //.
-rewrite ltr_pdivr_mulr// ltr_pmulr// ltr1n => /(_ erefl).
-rewrite ltr_addl divr_gt0// => /(_ erefl).
+rewrite ltr_pdivrMr// ltr_pMr// ltr1n => /(_ erefl).
+rewrite ltrDl divr_gt0// => /(_ erefl).
 rewrite ler0_norm; last first.
-  by rewrite subr_le0 (cumulative_is_nondecreasing f)// ler_addl.
-by rewrite opprB ltr_subl_addl => fa; exact: ltW.
+  by rewrite subr_le0 (cumulative_is_nondecreasing f)// lerDl.
+by rewrite opprB ltrBlDl => fa; exact: ltW.
 Qed.
 
 Section id_is_cumulative.
@@ -156,9 +156,10 @@ Qed.
 
 Definition ocitv_display : Type -> measure_display. Proof. exact. Qed.
 
+HB.instance Definition _ := Pointed.on ocitv_type.
 HB.instance Definition _ :=
   @isSemiRingOfSets.Build (ocitv_display R)
-    ocitv_type (Pointed.class R) ocitv ocitv0 ocitvI ocitvD.
+    ocitv_type ocitv ocitv0 ocitvI ocitvD.
 
 End itv_semiRingOfSets.
 
@@ -259,7 +260,8 @@ Proof.
 rewrite wlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
 - by rewrite suber_ge0// => /ltW /(le_er_map ndf).
 - by rewrite ltNge leey.
-- by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
+- case: (i.2 : \bar _) => //=; last by rewrite leey.
+  by move=> r _; rewrite leey.
 Qed.
 
 Lemma wlength_Rhull (A : set R) : wlength [set` Rhull A] = wlength A.
@@ -299,7 +301,7 @@ End wlength.
 Section wlength_extension.
 Context {R : realType}.
 
-Lemma wlength_semi_additive (f : R -> R) : semi_additive (wlength f).
+Lemma wlength_semi_additive (f : R -> R) : measure.semi_additive (wlength f).
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
@@ -436,10 +438,10 @@ have acbd : `[ a.1 + c%:num / 2, a.2] `<=`
             \bigcup_i `](b i).1, (b i).2 + (D i)%:num[%classic.
   apply: (@subset_trans _ `]a.1, a.2]).
     move=> r; rewrite /= !in_itv/= => /andP [+ ->].
-    by rewrite andbT; apply: lt_le_trans; rewrite ltr_addl.
+    by rewrite andbT; apply: lt_le_trans; rewrite ltrDl.
   apply: (subset_trans lebig) => r [n _ Anr]; exists n => //.
   move: Anr; rewrite AE /= !in_itv/= => /andP [->]/= /le_lt_trans.
-  by apply; rewrite ltr_addl.
+  by apply; rewrite ltrDl.
 have := @segment_compact _ (a.1 + c%:num / 2) a.2; rewrite compact_cover.
 have obd k : [set: nat] k -> open `](b k).1, ((b k).2 + (D k)%:num)[%classic.
   by move=> _; exact: interval_open.
@@ -450,13 +452,13 @@ rewrite -EFinD.
 apply: (@le_trans _ _ (\sum_(i <- X) (wlength f `](b i).1, (b i).2]%classic) +
     \sum_(i <- X) (f ((b i).2 + (D i)%:num)%R - f (b i).2)%:E)%E).
   apply: (@le_trans _ _ (f a.2 - f (a.1 + c%:num / 2))%:E).
-    rewrite lee_fin -addrA -opprD ler_sub// (le_trans _ ce)//.
+    rewrite lee_fin -addrA -opprD lerB// (le_trans _ ce)//.
     rewrite cumulative_is_nondecreasing//.
-    by rewrite ler_add2l ler_pdivr_mulr// ler_pmulr// ler1n.
+    by rewrite lerD2l ler_pdivrMr// ler_pMr// ler1n.
   apply: (@le_trans _ _
       (\sum_(i <- X) (f ((b i).2 + (D i)%:num) - f (b i).1)%:E)%E).
     rewrite sumEFin lee_fin cumulative_content_sub_fsum//.
-      by move=> k kX; rewrite (@le_trans _ _ (b k).2)// ler_addl.
+      by move=> k kX; rewrite (@le_trans _ _ (b k).2)// lerDl.
     apply: subset_trans.
       exact/(subset_trans _ acXbd)/subset_itv_oc_cc.
     move=> x [k kX] kx; rewrite -bigcup_fset; exists k => //.
@@ -466,7 +468,7 @@ apply: (@le_trans _ _ (\sum_(i <- X) (wlength f `](b i).1, (b i).2]%classic) +
 rewrite -big_split/= nneseries_esum//; last by move=> k _; rewrite adde_ge0.
 rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite//= set_fsetK.
 rewrite big_seq [in X in (_ <= X)%E]big_seq; apply: lee_sum => k kX.
-by rewrite AE lee_add2l// lee_fin ler_subl_addl natrX De.
+by rewrite AE lee_add2l// lee_fin lerBlDl natrX De.
 Qed.
 
 HB.instance Definition _ (f : cumulative R) :=

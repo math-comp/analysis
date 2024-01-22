@@ -38,7 +38,7 @@ Definition OuP (f : A -> R * R -> R) (g : R * R -> R) :=
 
 (* first we replace sig with ex and the l^2 norm with the l^oo norm *)
 
-Let normedR2 := [normedModType _ of (R^o * R^o)].
+Let normedR2 := [the normedModType _ of (R^o * R^o)%type].
 
 Definition OuPex (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
   exists2 alp, 0 < alp & exists2 C, 0 < C &
@@ -51,23 +51,23 @@ Proof.
 rewrite RsqrtE; last by rewrite addr_ge0 //; apply/RleP/Rle_0_sqr.
 rewrite !Rsqr_pow2 !RpowE; apply/andP; split.
   by rewrite le_maxl; apply/andP; split;
-    rewrite -[`|_|]sqrtr_sqr ler_wsqrtr // (ler_addl, ler_addr) sqr_ge0.
+    rewrite -[`|_|]sqrtr_sqr ler_wsqrtr // (lerDl, lerDr) sqr_ge0.
 wlog lex12 : x / (`|x.1| <= `|x.2|).
   move=> ler_norm; case: (lerP `|x.1| `|x.2|) => [/ler_norm|] //.
   rewrite lt_leAnge => /andP [lex21 _].
   rewrite RplusE.
   by rewrite addrC [`|_|]maxC (ler_norm (x.2, x.1)).
 rewrite [`|_|]max_r // -[X in X * _]ger0_norm // -normrM.
-rewrite -sqrtr_sqr ler_wsqrtr // exprMn sqr_sqrtr // mulr_natl mulr2n ler_add2r.
+rewrite -sqrtr_sqr ler_wsqrtr // exprMn sqr_sqrtr // mulr_natl mulr2n lerD2r.
 rewrite -[_ ^+ 2]ger0_norm ?sqr_ge0 // -[X in _ <=X]ger0_norm ?sqr_ge0 //.
-by rewrite !normrX ler_expn2r // nnegrE normr_ge0.
+by rewrite !normrX lerXn2r // nnegrE normr_ge0.
 Qed.
 
 Lemma OuP_to_ex f g : OuP f g -> OuPex f g.
 Proof.
 move=> [_ [_ [/posnumP[a] [/posnumP[C] fOg]]]].
 exists (a%:num / Num.sqrt 2) => //; exists C%:num => // x dx ltdxa Pdx.
-apply: fOg; move: ltdxa; rewrite ltr_pdivl_mulr //; apply: le_lt_trans.
+apply: fOg; move: ltdxa; rewrite ltr_pdivlMr //; apply: le_lt_trans.
 by rewrite mulrC; have /andP[] := ler_norm2 dx.
 Qed.
 
@@ -83,17 +83,17 @@ Qed.
 (* then we replace the epsilon/delta definition with bigO *)
 
 Definition OuO (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
-  (fun x => f x.1 x.2) =O_ (filter_prod [set setT]
-  (within P [filter of 0 : R^o * R^o])) (fun x => g x.2).
+  (fun x => f x.1 x.2) =O_ (filter_prod [set setT]%classic
+  (within P (nbhs (0%R:R^o,0%R:R^o))(*[filter of 0 : R^o * R^o]*))) (fun x => g x.2).
 
 Lemma OuP_to_O f g : OuP f g -> OuO f g.
 Proof.
 move=> /OuP_to_ex [_/posnumP[a] [_/posnumP[C] fOg]].
 apply/eqOP; near=> k; near=> x; apply: le_trans (fOg _ _ _ _) _; last 2 first.
 - by near: x; exists (setT, P); [split=> //=; apply: withinT|move=> ? []].
-- by rewrite ler_pmul.
+- by rewrite ler_pM.
 - near: x; exists (setT, ball (0 : R^o * R^o) a%:num).
-    by split=> //=; rewrite /within; near=> x =>_; near: x; apply: nbhsx_ballx.
+    by split=> //=; rewrite /within /=; near=> x =>_; near: x; apply: nbhsx_ballx.
   move=> x [_ [/=]]; rewrite -ball_normE /= distrC subr0 distrC subr0.
   by move=> ??; rewrite lt_maxl; apply/andP.
 Unshelve. all: by end_near. Qed.
@@ -101,7 +101,7 @@ Unshelve. all: by end_near. Qed.
 Lemma OuO_to_P f g : OuO f g -> OuP f g.
 Proof.
 move=> fOg; apply/Ouex_to_P; move: fOg => /eqOP [k [kreal hk]].
-have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite lt_maxr ltr_addl orbC ltr01.
+have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite lt_maxr ltrDl orbC ltr01.
 move=> [R [[_/posnumP[e1] Re1] [_/posnumP[e2] Re2]] sRQ] fOg.
 exists (minr e1%:num e2%:num) => //.
 exists (maxr 1 (k + 1)); first by rewrite lt_maxr ltr01.

@@ -67,7 +67,7 @@ Local Open Scope ereal_scope.
 Implicit Types i j : interval R.
 
 Definition hlength (A : set (ocitv_type R)) : \bar R :=
-  let i := Rhull A in i.2 - i.1.
+  let i := Rhull A in (i.2 : \bar R) - i.1.
 
 Lemma hlength0 : hlength (set0 : set R) = 0.
 Proof. by rewrite /hlength Rhull0 /= subee. Qed.
@@ -81,7 +81,8 @@ Qed.
 Lemma hlength_setT : hlength setT = +oo%E :> \bar R.
 Proof. by rewrite /hlength RhullT. Qed.
 
-Lemma hlength_itv i : hlength [set` i] = if i.2 > i.1 then i.2 - i.1 else 0.
+Lemma hlength_itv i :
+  hlength [set` i] = if i.2 > i.1 then (i.2 : \bar R) - i.1 else 0.
 Proof.
 case: ltP => [/lt_ereal_bnd/neitvP i12|]; first by rewrite /hlength set_itvK.
 rewrite le_eqVlt => /orP[|/lt_ereal_bnd i12]; last first.
@@ -137,7 +138,7 @@ Proof.
 rewrite hlength_itv; case: ifPn => //; case: (i.1 : \bar _) => [r| |].
 - by rewrite suber_ge0//; exact: ltW.
 - by rewrite ltNge leey.
-- by case: (i.2 : \bar _) => //= [r _]; rewrite leey.
+- by move=> i2gtNy; rewrite addey//; case: (i.2 : \bar R) i2gtNy.
 Qed.
 
 Lemma hlength_Rhull (A : set R) : hlength [set` Rhull A] = hlength A.
@@ -158,7 +159,7 @@ move=> /subset_itvP ij; apply: lee_sub => /=.
 have [lj /=|lj] := asboolP (has_lbound J); last by rewrite leNye.
 have [li /=|li] := asboolP (has_lbound I); last first.
   by move: li; have := subset_has_lbound ij lj.
-rewrite lee_fin ler_oppl opprK le_sup// ?has_inf_supN//; last exact/nonemptyN.
+rewrite lee_fin lerNl opprK le_sup// ?has_inf_supN//; last exact/nonemptyN.
 move=> r [r' Ir' <-{r}]; exists (- r')%R.
 by split => //; exists r' => //; apply: ij.
 Qed.
@@ -173,7 +174,8 @@ Lemma hlength_ge0 I : (0 <= hlength I)%E.
 Proof. by rewrite -hlength0 le_hlength. Qed.
 
 End hlength.
-#[local] Hint Extern 0 (0%:E <= hlength _) => solve[apply: hlength_ge0] : core.
+#[local] Hint Extern 0 (is_true (0%R <= hlength _)) =>
+  solve[apply: hlength_ge0] : core.
 
 (* Unused *)
 (* Lemma hlength_semi_additive2 : semi_additive2 hlength. *)
@@ -211,7 +213,7 @@ Context {R : realType}.
 
 Notation hlength := (@hlength R).
 
-Lemma hlength_semi_additive : semi_additive hlength.
+Lemma hlength_semi_additive : measure.semi_additive hlength.
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.
@@ -300,10 +302,10 @@ pose Aoc i : set (ocitv_type R) :=
 have: `[a.1 + e%:num / 2, a.2] `<=` \bigcup_i Aoo i.
   apply: (@subset_trans _ `]a.1, a.2]).
     move=> x; rewrite /= !in_itv /= => /andP[+ -> //].
-    by move=> /lt_le_trans-> //; rewrite ltr_addl.
+    by move=> /lt_le_trans-> //; rewrite ltrDl.
   apply: (subset_trans lebig); apply: subset_bigcup => i _; rewrite AE /Aoo/=.
   move=> x /=; rewrite !in_itv /= => /andP[-> /le_lt_trans->]//=.
-  by rewrite ltr_addl.
+  by rewrite ltrDl.
 have := @segment_compact _ (a.1 + e%:num / 2) a.2; rewrite compact_cover.
 move=> /[apply]-[i _|X _ Xc]; first exact: interval_open.
 have: `](a.1 + e%:num / 2), a.2] `<=` \bigcup_(i in [set` X]) Aoc i.
@@ -320,7 +322,7 @@ rewrite fsbig_finite//= set_fsetK//.
 rewrite lee_sum // => i _; rewrite ?AE// !hlength_itv/= ?lte_fin -?EFinD/=.
 do !case: ifPn => //= ?; do ?by rewrite ?adde_ge0 ?lee_fin// ?subr_ge0// ?ltW.
   by rewrite addrAC.
-by rewrite addrAC lee_fin ler_add// subr_le0 leNgt.
+by rewrite addrAC lee_fin lerD// subr_le0 leNgt.
 Qed.
 
 HB.instance Definition _ := Content_SubSigmaAdditive_isMeasure.Build _ _ _
@@ -332,7 +334,7 @@ exists (fun k : nat => `] (- k%:R)%R, k%:R]%classic); first by rewrite bigcup_it
 by move=> k; split => //; rewrite hlength_itv/= -EFinB; case: ifP; rewrite ltry.
 Qed.
 
-Definition lebesgue_measure := measure_extension [the measure _ _ of hlength].
+Definition lebesgue_measure := measure_extension hlength.
 HB.instance Definition _ := Measure.on lebesgue_measure.
 
 Let sigmaT_finite_lebesgue_measure : sigma_finite setT lebesgue_measure.
@@ -430,9 +432,8 @@ rewrite predeqE => i /=; split=> [[r [n _ fn1r <-{i}]]|[n _ [r fn1r <-{i}]]];
  by [exists n => //; exists r | exists r => //; exists n].
 Qed.
 
-Definition ereal_isMeasurable :
-  isMeasurable default_measure_display (\bar R) :=
-  isMeasurable.Build _ _ (Pointed.class _)
+Definition ereal_isMeasurable : isMeasurable default_measure_display (\bar R) :=
+  isMeasurable.Build _ _
     emeasurable0 emeasurableC bigcupT_emeasurable.
 
 End salgebra_ereal.
@@ -485,9 +486,10 @@ Definition measurableTypeR := salgebraType (R.-ocitv.-measurable).
 Definition measurableR : set (set R) :=
   (R.-ocitv.-measurable).-sigma.-measurable.
 
+HB.instance Definition _ := Pointed.on R.
 HB.instance Definition R_isMeasurable :
   isMeasurable default_measure_display R :=
-  @isMeasurable.Build _ measurableTypeR (Pointed.class R) measurableR
+  @isMeasurable.Build _ measurableTypeR measurableR
     measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
 (*HB.instance (Real.sort R) R_isMeasurable.*)
 
@@ -640,7 +642,7 @@ rewrite [X in lebesgue_measure X](_ : _ =
   rewrite predeqE => r; split.
     by move=> [x [[n _ Fnx xoo <-]]]; exists n => //; exists x.
   by move=> [n _ [x [Fnx xoo <-{r}]]]; exists x => //; split => //; exists n.
-apply: (@measure_semi_sigma_additive _ _ _ [the measure _ _ of (@lebesgue_measure R)]
+apply: (@measure_semi_sigma_additive _ _ _ (@lebesgue_measure R)
   (fun n => fine @` (F n `\` [set -oo; +oo]%E))).
 - move=> n; have := mF n.
   move=> [X mX [X' mX']] XX'Fn.
@@ -744,22 +746,23 @@ Qed.
 Let lebesgue_measure_itvoo_subr1 (a : R) :
   lebesgue_measure (`]a - 1, a[%classic : set R) = 1%E.
 Proof.
-rewrite itv_bnd_open_bigcup//; transitivity (lim (lebesgue_measure \o
+rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
     (fun k => `]a - 1, a - k.+1%:R^-1]%classic : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   - by move=> ?; exact: measurable_itv.
   - by apply: bigcup_measurable => k _; exact: measurable_itv.
   - move=> n m nm; apply/subsetPset => x /=; rewrite !in_itv/= => /andP[->/=].
-    by move/le_trans; apply; rewrite ler_sub// ler_pinv ?ler_nat//;
+    by move/le_trans; apply; rewrite lerB// ler_pV2 ?ler_nat//;
       rewrite inE ltr0n andbT unitfE.
 rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
   apply/funext => n /=; rewrite lebesgue_measure_itvoc.
-  have [->|n0] := eqVneq n 0%N; first by rewrite invr1 subrr set_itvoc0.
+  have [->|n0] := eqVneq n 0%N.
+    by rewrite invr1 subrr set_itvoc0 wlength0.
   rewrite wlength_itv/= lte_fin ifT; last first.
-    by rewrite ler_lt_sub// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
+    by rewrite ler_ltB// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
   by rewrite !(EFinB,EFinN) fin_num_oppeB// addeAC addeA subee// add0e.
 apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
-apply/(@cvgrPdist_lt _ [pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
+apply/(@cvgrPdist_lt _ [the pseudoMetricNormedZmodType R of R^o]) => _/posnumP[e].
 near=> n; rewrite opprB addrCA subrr addr0 ger0_norm//.
 by near: n; exact: near_infty_natSinv_lt.
 Unshelve. all: by end_near. Qed.
@@ -770,10 +773,10 @@ suff : (lebesgue_measure (`]a - 1, a]%classic%R : set R) =
         lebesgue_measure (`]a - 1, a[%classic%R : set R) +
         lebesgue_measure [set a])%E.
   rewrite lebesgue_measure_itvoo_subr1 lebesgue_measure_itvoc => /eqP.
-  rewrite wlength_itv lte_fin ltr_subl_addr ltr_addl ltr01.
+  rewrite wlength_itv lte_fin ltrBlDr ltrDl ltr01.
   rewrite [in X in X == _]/= EFinN EFinB fin_num_oppeB// addeA subee// add0e.
   by rewrite addeC -sube_eq ?fin_num_adde_defl// subee// => /eqP.
-rewrite -setUitv1// ?bnd_simp; last by rewrite ltr_subl_addr ltr_addl.
+rewrite -setUitv1// ?bnd_simp; last by rewrite ltrBlDr ltrDl.
 rewrite measureU //; apply/seteqP; split => // x []/=.
 by rewrite in_itv/= => + xa; rewrite xa ltxx andbF.
 Qed.
@@ -820,39 +823,39 @@ by move: x y => [|] [|]; [exact: lebesgue_measure_itvco |
   exact: lebesgue_measure_itvoc].
 Qed.
 
-Let limnatR : lim (fun k => (k%:R)%:E : \bar R) = +oo%E.
+Let limnatR : lim (((k%:R)%:E : \bar R) @[k --> \oo]) = +oo%E.
 Proof. by apply/cvg_lim => //; apply/cvgenyP. Qed.
 
 Let lebesgue_measure_itv_bnd_infty x (a : R) :
   lebesgue_measure ([set` Interval (BSide x a) +oo%O] : set R) = +oo%E.
 Proof.
-rewrite itv_bnd_infty_bigcup; transitivity (lim (lebesgue_measure \o
+rewrite itv_bnd_infty_bigcup; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[->/=].
-    by move=> /le_trans; apply; rewrite ler_add// ler_nat.
+    by move=> /le_trans; apply; rewrite lerD// ler_nat.
 rewrite (_ : _ \o _ = (fun k => k%:R%:E))//.
 apply/funext => n /=; rewrite lebesgue_measure_itv_bnd wlength_itv/=.
 rewrite lte_fin;  have [->|n0] := eqVneq n 0%N; first by rewrite addr0 ltxx.
-by rewrite ltr_addl ltr0n lt0n n0 EFinD addeAC EFinN subee ?add0e.
+by rewrite ltrDl ltr0n lt0n n0 EFinD addeAC EFinN subee ?add0e.
 Qed.
 
 Let lebesgue_measure_itv_infty_bnd y (b : R) :
   lebesgue_measure ([set` Interval -oo%O (BSide y b)] : set R) = +oo%E.
 Proof.
-rewrite itv_infty_bnd_bigcup; transitivity (lim (lebesgue_measure \o
+rewrite itv_infty_bnd_bigcup; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
   + by apply: bigcup_measurable => k _; exact: measurable_itv.
   + move=> m n mn; apply/subsetPset => r/=; rewrite !in_itv/= => /andP[+ ->].
-    by rewrite andbT; apply: le_trans; rewrite ler_sub// ler_nat.
+    by rewrite andbT; apply: le_trans; rewrite lerB// ler_nat.
 rewrite (_ : _ \o _ = (fun k : nat => k%:R%:E))//.
 apply/funext => n /=; rewrite lebesgue_measure_itv_bnd wlength_itv/= lte_fin.
 have [->|n0] := eqVneq n 0%N; first by rewrite subr0 ltxx.
-rewrite ltr_subl_addr ltr_addl ltr0n lt0n n0 EFinN EFinB fin_num_oppeB// addeA.
+rewrite ltrBlDr ltrDl ltr0n lt0n n0 EFinN EFinB fin_num_oppeB// addeA.
 by rewrite subee// add0e.
 Qed.
 
@@ -868,7 +871,8 @@ by rewrite [X in (_ + X)%E]lebesgue_measure_itv_bnd_infty.
 Qed.
 
 Lemma lebesgue_measure_itv (i : interval R) :
-  lebesgue_measure ([set` i] : set R) = (if i.1 < i.2 then i.2 - i.1 else 0)%E.
+  lebesgue_measure ([set` i] : set R) =
+  (if i.1 < i.2 then (i.2 : \bar R) - i.1 else 0)%E.
 Proof.
 move: i => [[x a|[|]]] [y b|[|]].
   by rewrite lebesgue_measure_itv_bnd wlength_itv.
@@ -893,9 +897,9 @@ Proof. by rewrite ball_itv; exact: measurable_itv. Qed.
 Lemma lebesgue_measure_ball (x r : R) : (0 <= r)%R ->
   lebesgue_measure (ball x r) = (r *+ 2)%:E.
 Proof.
-rewrite le_eqVlt => /orP[/eqP <-|r0].
+rewrite le_eqVlt => /predU1P[ <-|r0].
   by rewrite (ball0 _ _).2// measure0 mul0rn.
-rewrite ball_itv lebesgue_measure_itv/= lte_fin ltr_subl_addr -addrA ltr_addl.
+rewrite ball_itv lebesgue_measure_itv/= lte_fin ltrBlDr -addrA ltrDl.
 by rewrite addr_gt0 // -EFinD addrAC opprD opprK addrA subrr add0r -mulr2n.
 Qed.
 
@@ -908,9 +912,9 @@ Qed.
 Lemma lebesgue_measure_closed_ball (x r : R) : 0 <= r ->
   lebesgue_measure (closed_ball x r) = (r *+ 2)%:E.
 Proof.
-rewrite le_eqVlt => /predU1P[<-|r0]; first by rewrite mul0rn closed_ball0.
-rewrite closed_ball_itv// lebesgue_measure_itv/= lte_fin -ltr_subl_addl addrAC.
-rewrite subrr add0r gtr_opp// ?mulr_gt0// -EFinD; congr (_%:E).
+rewrite le_eqVlt => /predU1P[<-|r0]; first by rewrite mul0rn closed_ball0// measure0.
+rewrite closed_ball_itv// lebesgue_measure_itv/= lte_fin -ltrBlDl addrAC.
+rewrite subrr add0r gtrN// ?mulr_gt0// -EFinD; congr (_%:E).
 by rewrite opprB addrAC addrCA subrr addr0 -mulr2n.
 Qed.
 
@@ -961,7 +965,7 @@ rewrite [X in measurable X](_ : _ =
 rewrite predeqE => t; split => [/= [Dt ft]|].
   have [ft0|ft0] := leP 0%R (fine (f t)).
     exists `|ceil (fine (f t))|%N => //=; split => //; split.
-      by rewrite -{2}(fineK ft)// lee_fin (le_trans _ ft0)// ler_oppl oppr0.
+      by rewrite -{2}(fineK ft)// lee_fin (le_trans _ ft0)// lerNl oppr0.
     by rewrite natr_absz ger0_norm ?ceil_ge0// -(fineK ft) lee_fin ceil_ge.
   exists `|floor (fine (f t))|%N => //=; split => //; split.
     rewrite natr_absz ltr0_norm ?floor_lt0// EFinN.
@@ -1174,15 +1178,15 @@ rewrite predeqE => x; split=> [|].
 - move: x => [s /=| _ n _|//].
   + rewrite in_itv /= andbT lee_fin => rs n _ /=; rewrite in_itv/= andbT.
     case: b => /=.
-    * by rewrite lee_fin ler_subl_addl (le_trans rs)// ler_addr.
-    * by rewrite lte_fin ltr_subl_addl (le_lt_trans rs)// ltr_addr.
+    * by rewrite lee_fin lerBlDl (le_trans rs)// lerDr.
+    * by rewrite lte_fin ltrBlDl (le_lt_trans rs)// ltrDr.
   + by rewrite /= in_itv /= andbT; case: b => /=; rewrite lteey.
 - move: x => [s| |/(_ 0%N Logic.I)] /=; rewrite ?in_itv/= ?leey//; last first.
     by case: b.
   move=> h; rewrite lee_fin leNgt andbT; apply/negP => /ltr_add_invr[k skr].
   have {h} := h k Logic.I; rewrite /= in_itv /= andbT; case: b => /=.
-  + by rewrite lee_fin ler_subl_addr leNgt skr.
-  + by rewrite lte_fin ltr_subl_addr ltNge (ltW skr).
+  + by rewrite lee_fin lerBlDr leNgt skr.
+  + by rewrite lte_fin ltrBlDr ltNge (ltW skr).
 Qed.
 
 Lemma eitv_infty_bnd b r : `]-oo, r%:E]%classic =
@@ -1192,8 +1196,8 @@ rewrite predeqE => x; split=> [|].
 - move: x => [s /=|//|_ n _].
   + rewrite in_itv /= lee_fin => sr n _; rewrite /= in_itv /= -EFinD.
     case: b => /=.
-    * by rewrite lte_fin (le_lt_trans sr)// ltr_addl.
-    * by rewrite lee_fin (le_trans sr)// ler_addl.
+    * by rewrite lte_fin (le_lt_trans sr)// ltrDl.
+    * by rewrite lee_fin (le_trans sr)// lerDl.
   + by rewrite /= in_itv /= -EFinD; case: b => //=; rewrite lteNye.
 - move: x => [s|/(_ 0%N Logic.I)|]/=; rewrite !in_itv/= ?leNye//; last first.
     by case: b.
@@ -1210,10 +1214,10 @@ rewrite eqEsubset; split=> [_ -> i _ |]; first by rewrite /= in_itv /= ltNyr.
 move=> [r|/(_ O Logic.I)|]//.
 move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
-  by rewrite (le_trans _ r0) // ler_oppl oppr0 ler0n.
-rewrite ler_oppl -abszN natr_absz gtr0_norm; last first.
-  by rewrite ltr_oppr oppr0 floor_lt0.
-by rewrite mulrNz ler_oppl opprK floor_le.
+  by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
+rewrite lerNl -abszN natr_absz gtr0_norm; last first.
+  by rewrite ltrNr oppr0 floor_lt0.
+by rewrite mulrNz lerNl opprK floor_le.
 Qed.
 
 Lemma eset1y : [set +oo] = \bigcap_k `]k%:R%:E, +oo[%classic :> set (\bar R).
@@ -1468,9 +1472,9 @@ have [x0|x0] := leP 0 x.
   - have [r0|r0] := leP 0 r; [rewrite ger0_norm|rewrite ltr0_norm] => // xr;
       rewrite 2!in_itv/=.
     + by right; rewrite xr.
-    + by left; rewrite ltr_oppr.
+    + by left; rewrite ltrNr.
   - move=> rx /=.
-    by rewrite ler0_norm 1?ltr_oppr// (le_trans (ltW rx))// ler_oppl oppr0.
+    by rewrite ler0_norm 1?ltrNr// (le_trans (ltW rx))// lerNl oppr0.
   - by rewrite in_itv /= andbT => xr; rewrite (lt_le_trans _ (ler_norm _)).
 rewrite [X in measurable X](_ : _ = setT)// predeqE => r.
 by split => // _; rewrite /= in_itv /= andbT (lt_le_trans x0).
@@ -1531,11 +1535,11 @@ rewrite [X in measurable X](_ : _ = \bigcup_(q : rat)
   - by rewrite -preimage_itv_o_infty; apply: mf => //; apply: measurable_itv.
   - by rewrite -preimage_itv_o_infty; apply: mg => //; apply: measurable_itv.
 rewrite predeqE => x; split => [|[r _] []/= [Dx rfx]] /= => [[Dx]|[_]].
-  rewrite -ltr_subl_addr => /rat_in_itvoo[r]; rewrite inE /= => /itvP h.
+  rewrite -ltrBlDr => /rat_in_itvoo[r]; rewrite inE /= => /itvP h.
   exists r => //; rewrite setIACA setIid; split => //; split => /=.
     by rewrite h.
-  by rewrite ltr_subl_addr addrC -ltr_subl_addr h.
-by rewrite ltr_subl_addr=> afg; rewrite (lt_le_trans afg)// addrC ler_add2r ltW.
+  by rewrite ltrBlDr addrC -ltrBlDr h.
+by rewrite ltrBlDr=> afg; rewrite (lt_le_trans afg)// addrC lerD2r ltW.
 Qed.
 
 Lemma measurable_funB D f g : measurable_fun D f ->
@@ -1616,7 +1620,7 @@ Proof.
 move=> f_ub f_lb mf.
 have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
               =1 (fun x => limn_sup (h^~ x))}.
-  move=> t; rewrite inE => Dt; apply/esym/cvg_lim; first exact: Rhausdorff.
+  move=> t; rewrite inE => Dt; apply/esym/cvg_lim => //.
   rewrite [X in _ --> X](_ : _ = inf (range (sups (h^~t)))).
     by apply: cvg_sups_inf; [exact: f_ub|exact: f_lb].
   by congr (inf [set _ | _ in _]); rewrite predeqE.
@@ -1628,19 +1632,16 @@ by move=> k; exact: measurable_fun_sups.
 Qed.
 
 Lemma measurable_fun_cvg D (h : (T -> R)^nat) f :
-  (forall m, measurable_fun D (h m)) -> (forall x, D x -> h ^~ x --> f x) ->
+  (forall m, measurable_fun D (h m)) -> (forall x, D x -> h ^~ x @ \oo --> f x) ->
   measurable_fun D f.
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = limn_sup (h ^~ x).
   move=> Dx; have /cvg_lim  <-// := @cvg_sups _ (h ^~ x) (f x) (f_f _ Dx).
-  exact: Rhausdorff.
 apply: (@eq_measurable_fun _ _ _ _ D (fun x => limn_sup (h ^~ x))).
   by move=> x; rewrite inE => Dx; rewrite -fE.
 apply: (@measurable_fun_limn_sup _ h) => // t Dt.
-- apply/bounded_fun_has_ubound/(@cvg_seq_bounded _ [normedModType R of R^o]).
-  by apply/cvg_ex; eexists; exact: f_f.
-- apply/bounded_fun_has_lbound/(@cvg_seq_bounded _ [normedModType R of R^o]).
-  by apply/cvg_ex; eexists; exact: f_f.
+- by apply/bounded_fun_has_ubound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
+- by apply/bounded_fun_has_lbound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
 Qed.
 
 End measurable_fun_realType.
@@ -1839,7 +1840,7 @@ Qed.
 
 Lemma emeasurable_fun_cvg D (f_ : (T -> \bar R)^nat) (f : T -> \bar R) :
   (forall m, measurable_fun D (f_ m)) ->
-  (forall x, D x -> f_ ^~ x --> f x) -> measurable_fun D f.
+  (forall x, D x -> f_ ^~ x @ \oo --> f x) -> measurable_fun D f.
 Proof.
 move=> mf_ f_f; have fE x : D x -> f x = limn_esup (f_^~ x).
   rewrite limn_esup_lim.
@@ -1890,9 +1891,9 @@ have muM n : mu (M n) <= mu (M' n) + (e2 n)%:E.
   have -> : (`]a, (b + e2 n)%R[ = `]a, b] `|` `]b, (b + e2 n)%R[ )%classic.
     apply: funext=> r /=; rewrite (@itv_splitU _ _ (BRight b)).
       by rewrite propeqE; split=> /orP.
-    by rewrite !bnd_simp (ltW alb)/= ltr_spaddr.
+    by rewrite !bnd_simp (ltW alb)/= ltr_pwDr.
   rewrite measureU/=.
-  - rewrite !lebesgue_measure_itv/= !lte_fin alb ltr_spaddr//=.
+  - rewrite !lebesgue_measure_itv/= !lte_fin alb ltr_pwDr//=.
     by rewrite -(EFinD (b + e2 n)) (addrC b) addrK.
   - by apply: sub_sigma_algebra; exact: is_ocitv.
   - by apply: open_measurable; exact: interval_open.
@@ -1905,7 +1906,7 @@ exists U; have DU : D `<=` U.
   have /ocitvP [-> //| [[/= a b alb -> mn]]] : ocitv (M' n).
     by case: covDM => /(_ n).
   rewrite /= !in_itv/= => /andP[ax xb]; rewrite ?inf_itv ?sup_itv//.
-  by rewrite ax/= (le_lt_trans xb)// ltr_spaddr.
+  by rewrite ax/= (le_lt_trans xb)// ltr_pwDr.
 have mM n : measurable (M n).
   rewrite /M; case: pselect; first by move=> /= _; exact: measurable0.
   by move=> /= _; apply: open_measurable; apply: interval_open.
@@ -1938,12 +1939,12 @@ Lemma lebesgue_nearly_bounded (D : set R) (eps : R) :
 Proof.
 move=> mD Dfin epspos; pose Dn n := D `&` [set` `[-(n%:R), n%:R]]%R.
 have mDn n : measurable (Dn n) by exact: measurableI.
-have : mu \o Dn --> mu (\bigcup_n Dn n).
+have : mu \o Dn @ \oo --> mu (\bigcup_n Dn n).
   apply: nondecreasing_cvg_mu => //.
   - by apply: bigcup_measurable => // ? _; exact: mDn.
   - move=> n m nm; apply/subsetPset; apply: setIS => z /=; rewrite !in_itv/=.
     move=> /andP[nz zn]; rewrite (le_trans _ nz)/= ?(le_trans zn) ?ler_nat//.
-    by rewrite ler_oppl opprK ler_nat.
+    by rewrite lerNl opprK ler_nat.
 rewrite -setI_bigcupr; rewrite bigcup_itvT setIT.
 have finDn n : mu (Dn n) \is a fin_num.
   rewrite ge0_fin_numE// (le_lt_trans _ Dfin)//.
@@ -1994,7 +1995,7 @@ have mD' : measurable D' by exact: measurableD.
 have [] := lebesgue_regularity_outer mD' _ epspos.
   rewrite (@le_lt_trans _ _ (mu `[a,b]%classic))//.
     by rewrite le_measure ?inE//; exact: subIsetl.
-  by rewrite /= lebesgue_measure_itv //= -EFinD -fun_if ltry.
+  by rewrite /= lebesgue_measure_itv/= -EFinD -(fun_if EFin) ltry.
 move=> U [oU /subsetC + mDeps]; rewrite setCI setCK => nCD'.
 exists (`[a, b] `&` ~` U); split.
 - apply: (subclosed_compact _ (@segment_compact _ a b)) => //.
@@ -2069,9 +2070,9 @@ Local Open Scope ereal_scope.
 Lemma pointwise_almost_uniform
     (f_ : (T -> R)^nat) (g : T -> R) (A : set T) (eps : R):
   (forall n, measurable_fun A (f_ n)) -> measurable_fun A g ->
-  measurable A -> mu A < +oo -> (forall x, A x -> f_ ^~ x --> g x) ->
+  measurable A -> mu A < +oo -> (forall x, A x -> f_ ^~ x @\oo --> g x) ->
   (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E &
-    {uniform A `\` B, f_ --> g}].
+    {uniform A `\` B, f_ @\oo --> g}].
 Proof.
 move=> mf mg mA finA fptwsg epspos; pose h q (z : T) : R := `|f_ q z - g z|%R.
 have mfunh q : measurable_fun A (h q).
@@ -2099,29 +2100,30 @@ have Ek0 k : (\bigcap_n (E k n)) = set0.
     by have [N /(_ Az) ?] := nEcvg z k; exists N.
   by exists O; rewrite // /E setC_bigcup => n ? [].
 have badn' : forall k, exists n, mu (E k n) < ((eps/2) / (2 ^ k.+1)%:R)%:E.
-  move=> k; pose ek :R := eps/2 / (2 ^ k.+1)%:R; have : mu \o E k --> (0%R)%:E.
-    rewrite -(measure0 mu) -(Ek0 k); apply: nonincreasing_cvg_mu => //.
+  move=> k; pose ek :R := eps/2 / (2 ^ k.+1)%:R.
+  have : mu \o E k @\oo --> mu set0.
+    rewrite -(Ek0 k); apply: nonincreasing_cvg_mu => //.
     - apply: (le_lt_trans _ finA); apply: le_measure; rewrite ?inE //.
       by move=> ? [? _ []].
     - by apply: bigcap_measurable => ?.
-  case/fine_cvg/(_ (interior (ball (0:R) ek))%R).
+  rewrite measure0; case/fine_cvg/(_ (interior (ball (0:R) ek))%R).
     apply: open_nbhs_nbhs; split; first exact: open_interior.
     by apply: nbhsx_ballx; rewrite !divr_gt0.
   move=> N _ /(_ N (leqnn _))/interior_subset muEN; exists N; move: muEN.
   rewrite /ball /= distrC subr0 ger0_norm // -[x in x < _]fineK ?ge0_fin_numE//.
-  by apply:(le_lt_trans _ finA); apply le_measure; rewrite ?inE// => ? [? _ []].
+  by apply:(le_lt_trans _ finA); apply: le_measure; rewrite ?inE// => ? [? _ []].
 pose badn k := projT1 (cid (badn' k)); exists (\bigcup_k (E k (badn k))); split.
 - exact: bigcup_measurable.
 - apply: (@le_lt_trans _ _ (eps/2)%R%:E); first last.
-    by rewrite lte_fin ltr_pdivr_mulr // ltr_pmulr // Rint_ltr_addr1 // ?Rint1.
+    by rewrite lte_fin ltr_pdivrMr // ltr_pMr // Rint_ltr_addr1 // ?Rint1.
   apply: le_trans.
     apply: (measure_sigma_sub_additive _ (fun k => mE k (badn k)) _ _) => //.
     exact: bigcup_measurable.
   apply: le_trans; first last.
     by apply: (@epsilon_trick0 R _ xpredT); rewrite divr_ge0 //; exact: ltW.
   by rewrite lee_nneseries // => n _; exact/ltW/(projT2 (cid (badn' _))).
-apply/uniform_restrict_cvg => /= U /=; rewrite ?uniform_nbhsT.
-case/nbhs_ex => del /filterS; apply.
+apply/uniform_restrict_cvg => /= U /=; rewrite !uniform_nbhsT.
+case/nbhs_ex => del /= ballU; apply: filterS; first by move=> ?; exact: ballU.
 have [N _ /(_ N)/(_ (leqnn _)) Ndel] := near_infty_natSinv_lt del.
 exists (badn N) => // r badNr x.
 rewrite /patch; case xAB: (x \in A `\` _) => //; apply: (lt_trans _ Ndel).
@@ -2133,13 +2135,14 @@ Qed.
 Lemma ae_pointwise_almost_uniform
     (f_ : (T -> R)^nat) (g : T -> R) (A : set T) (eps : R):
   (forall n, measurable_fun A (f_ n)) -> measurable_fun A g ->
-  measurable A -> mu A < +oo -> {ae mu, (forall x, A x -> f_ ^~ x --> g x)} ->
+  measurable A -> mu A < +oo ->
+  {ae mu, (forall x, A x -> f_ ^~ x @\oo --> g x)} ->
   (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E &
-    {uniform A `\` B, (fun n => (f_ n : T -> R)) --> g}].
+    {uniform A `\` B, f_ @\oo --> g}].
 Proof.
 move=> mf mg mA Afin [C [mC C0 nC] epspos].
 have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E &
-    {uniform (A `\` C) `\` B,  f_ --> g}].
+    {uniform (A `\` C) `\` B,  f_ @\oo --> g}].
   apply: pointwise_almost_uniform => //.
   - by move=> n; apply : (measurable_funS mA _ (mf n)) => ? [].
   - by apply : (measurable_funS mA _ (mg)) => ? [].
@@ -2208,9 +2211,9 @@ have E_partition : E = \bigcup_n (F n).
 have EBr2 n : E n -> closure (B n) `<=` (ball (0:R) (r%:num + 2))%R.
   move=> [Dn] [x] => -[Bnx rx] y /= Bny.
   move: rx; rewrite /ball /= !sub0r !normrN => rx.
-  rewrite -(subrK x y) (le_lt_trans (ler_norm_add _ _))//.
-  rewrite addrC ltr_le_add// -(subrK (cpoint (B n)) y) -(addrA (y - _)%R).
-  rewrite (le_trans (ler_norm_add _ _))// (_ : 2 = 1 + 1)%R// ler_add//.
+  rewrite -(subrK x y) (le_lt_trans (ler_normD _ _))//.
+  rewrite addrC ltr_leD// -(subrK (cpoint (B n)) y) -(addrA (y - _)%R).
+  rewrite (le_trans (ler_normD _ _))// (_ : 2 = 1 + 1)%R// lerD//.
     rewrite distrC; have := is_ball_closureP (ABV.1 n) Bny.
     by move=> /le_trans; apply; rewrite VB1//; exact: DV.
   have := is_ball_closureP (ABV.1 n) Bnx.
@@ -2244,7 +2247,7 @@ have finite_set_F i : finite_set (F i).
     move=> /CsubFi[_ /andP[+ _]].
     rewrite -lte_fin => /ltW/le_trans; apply.
     rewrite (is_ball_closure (is_ballB _))// lebesgue_measure_closed_ball//.
-    by rewrite lee_fin mulr2n ler_addr.
+    by rewrite lee_fin mulr2n lerDr.
   have CFi : mu (\bigcup_(j in [set` C]) closure (B j)) <=
              mu (\bigcup_(j in F i) closure (B j)).
     apply: le_measure => //; rewrite ?inE.
@@ -2267,8 +2270,8 @@ have finite_set_F i : finite_set (F i).
     - by move=> /= x [n Fni Bnx]; exists n => //; exists i.
   have {CFi Fir2} := le_trans MC (le_trans CFi Fir2).
   apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
-  rewrite -(@natr1 _ `| _ |%N) natr_absz ger0_norm ?ceil_ge0// -ltr_pdivr_mulr//.
-  by rewrite -ltr_subl_addr (lt_le_trans _ (ceil_ge _))// ltr_subl_addr ltr_addl.
+  rewrite -(@natr1 _ `| _ |%N) natr_absz ger0_norm ?ceil_ge0// -ltr_pdivrMr//.
+  by rewrite -ltrBlDr (lt_le_trans _ (ceil_ge _))// ltrBlDr ltrDl.
 have mur2_fin_num_ : mu (ball (0:R) (r%:num + 2))%R < +oo.
   by rewrite lebesgue_measure_ball// ltry.
 have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =
@@ -2312,8 +2315,7 @@ have [N F5e] : exists N, \sum_(N <= n <oo) \esum_(i in F n) mu (closure (B i)) <
     + by apply: sub_trivIset tDB => // x [].
   have : \sum_(N <= k <oo) (mu \o f) k @[N --> \oo] --> 0.
     exact: nneseries_tail_cvg.
-  rewrite /f /= => /fine_fcvg /=.
-  move/(@cvgrPdist_lt _ [pseudoMetricNormedZmodType R of R^o]).
+  rewrite /f /= => /fine_fcvg /= /cvgrPdist_lt /=.
   have : (0 < 5%:R^-1 * e%:num)%R by rewrite mulr_gt0// invr_gt0// ltr0n.
   move=> /[swap] /[apply].
   rewrite near_map => -[N _]/(_ _ (leqnn N)) h; exists N; move: h.
@@ -2344,35 +2346,34 @@ have ZNF5 : Z r%:num `<=`
     case: Zz => -[Az notDBz]; rewrite /ball/= sub0r normrN => rz.
     have [d dzr zdK0] : exists2 d : {posnum R},
         (d%:num < r%:num - `|z|)%R & closed_ball z d%:num `&` K = set0.
-      have [d/= d0 dzK] := (@closed_disjoint_closed_ball _
-        [normedModType R of R^o] _ _ closedK Kz).
+      have [d/= d0 dzK] := closed_disjoint_closed_ball closedK Kz.
       have rz0 : (0 < minr ((r%:num - `|z|) / 2) (d / 2))%R.
         by rewrite lt_minr (divr_gt0 d0)//= andbT divr_gt0// subr_gt0.
       exists (PosNum rz0) => /=.
-        by rewrite lt_minl ltr_pdivr_mulr// ltr_pmulr ?subr_gt0// ltr1n.
+        by rewrite lt_minl ltr_pdivrMr// ltr_pMr ?subr_gt0// ltr1n.
       apply: dzK => //=.
-      rewrite sub0r normrN gtr0_norm// lt_minl (ltr_pdivr_mulr d d)//.
-      by rewrite ltr_pmulr// ltr1n orbT.
+      rewrite sub0r normrN gtr0_norm// lt_minl (ltr_pdivrMr d d)//.
+      by rewrite ltr_pMr// ltr1n orbT.
     have N0_gt0 : (0 < d%:num / 2)%R by rewrite divr_gt0.
     have [i [Vi Biz BiN0]] := ABV _ Az _ N0_gt0.
     exists i; split => //.
       exact: subset_closure.
       move=> y Biy; rewrite /ball/= sub0r normrN -(@subrK _ (cpoint (B i)) y).
-      rewrite (le_lt_trans (ler_norm_add _ _))//.
+      rewrite (le_lt_trans (ler_normD _ _))//.
       rewrite (@le_lt_trans _ _ (d%:num / 2 + `|cpoint (B i)|)%R)//.
-        rewrite ler_add2r// distrC.
+        rewrite lerD2r// distrC.
         by rewrite (le_trans (is_ball_closureP (is_ballB i) Biy))// ltW.
       rewrite -(@subrK _ z (cpoint (B i))).
       rewrite (@le_lt_trans _ _ (d%:num / 2 + `|cpoint (B i) - z| + `|z|)%R)//.
-        by rewrite -[leRHS]addrA ler_add2l//; exact: ler_norm_add.
+        by rewrite -[leRHS]addrA lerD2l//; exact: ler_normD.
       rewrite (@le_lt_trans _ _ (d%:num + `|z|)%R)//.
-        rewrite [in leRHS](splitr d%:num) -!addrA ler_add2l// ler_add2r//.
+        rewrite [in leRHS](splitr d%:num) -!addrA lerD2l// lerD2r//.
         by rewrite (le_trans (ltW (is_ballP (is_ballB i) Biz)))// ltW.
-      by move: dzr; rewrite -ltr_subr_addr.
+      by move: dzr; rewrite -ltrBrDr.
     apply: subsetI_eq0 zdK0 => // y Biy.
-    rewrite (@closed_ballE _ [normedModType R of R^o])//= /closed_ball_/=.
+    rewrite closed_ballE//= /closed_ball_/=.
     rewrite -(@subrK _ (cpoint (B i)) z) -(addrA (z - _)%R).
-    rewrite (le_trans (ler_norm_add _ _))// [in leRHS](splitr d%:num) ler_add//.
+    rewrite (le_trans (ler_normD _ _))// [in leRHS](splitr d%:num) lerD//.
       by rewrite distrC (le_trans (ltW (is_ballP (is_ballB i) Biz)))// ltW.
     by rewrite (le_trans (is_ball_closureP (is_ballB i) Biy))// ltW.
   have [j [Ej Bij0 Bij5]] : exists j, [/\ E j,
@@ -2404,7 +2405,7 @@ have {}ZNF5 : mu (Z r%:num) <=
   rewrite -[in leRHS](set_mem_set (F n)) -nneseries_esum// bigcup_mkcond.
   rewrite eseries_mkcond [leRHS](_ : _ = \sum_(i <oo) mu
       (if i \in F n then closure (5%:R *` B i) else set0)); last first.
-    congr (lim _); apply/funext => x.
+    congr (limn _); apply/funext => x.
     by under [RHS]eq_bigr do rewrite (fun_if mu) measure0.
   apply: measure_sigma_sub_additive => //.
   + move=> m; case: ifPn => // _.

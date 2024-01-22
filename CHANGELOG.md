@@ -64,8 +64,8 @@ Latest releases: [[0.7.0] - 2024-01-19](#070---2024-01-19) and [[0.6.7] - 2024-0
   + new lemma `continuous_within_itvP`.
 
 - in file `realfun.v`,
-  + new definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`, 
-    `variation`, `variations`, `bounded_variation`, `total_variation`, 
+  + new definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`,
+    `variation`, `variations`, `bounded_variation`, `total_variation`,
     `neg_tv`, and `pos_tv`.
 
   + new lemmas `left_right_continuousP`,
@@ -74,20 +74,20 @@ Latest releases: [[0.7.0] - 2024-01-19](#070---2024-01-19) and [[0.6.7] - 2024-0
   + new lemmas `itv_partition_nil`, `itv_partition_cons`, `itv_partition1`,
     `itv_partition_size_neq0`, `itv_partitionxx`, `itv_partition_le`,
     `itv_partition_cat`, `itv_partition_nth_size`,
-    `itv_partition_nth_ge`, `itv_partition_nth_le`, 
-    `nondecreasing_fun_itv_partition`, `nonincreasing_fun_itv_partition`, 
-    `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`, 
+    `itv_partition_nth_ge`, `itv_partition_nth_le`,
+    `nondecreasing_fun_itv_partition`, `nonincreasing_fun_itv_partition`,
+    `itv_partitionLP`, `itv_partitionRP`, `in_itv_partition`,
     `notin_itv_partition`, `itv_partition_rev`,
 
   + new lemmas `variation_zip`, `variation_prev`, `variation_next`, `variation_nil`,
-    `variation_ge0`, `variationN`, `variation_le`, `nondecreasing_variation`, 
-    `nonincreasing_variation`, `variationD`, `variation_itv_partitionLR`, 
+    `variation_ge0`, `variationN`, `variation_le`, `nondecreasing_variation`,
+    `nonincreasing_variation`, `variationD`, `variation_itv_partitionLR`,
     `le_variation`, `variation_opp_rev`, `variation_rev_opp`
 
   + new lemmas `variations_variation`, `variations_neq0`, `variationsN`, `variationsxx`
 
   + new lemmas `bounded_variationxx`, `bounded_variationD`, `bounded_variationN`,
-    `bounded_variationl`, `bounded_variationr`, `variations_opp`, 
+    `bounded_variationl`, `bounded_variationr`, `variations_opp`,
     `nondecreasing_bounded_variation`
 
   + new lemmas `total_variationxx`, `total_variation_ge`, `total_variation_ge0`,
