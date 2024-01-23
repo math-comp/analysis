@@ -2116,7 +2116,7 @@ HB.end.
 
 (** Topology defined by open sets *)
 
-Definition nbhs_of_open (T : pointedType) (op : set T -> Prop) (p : T) (A : set T) :=
+Definition nbhs_of_open (T : Type) (op : set T -> Prop) (p : T) (A : set T) :=
   exists B, [/\ op B, B p & B `<=` A].
 
 (* was topologyOfOpenMixin *)
@@ -2383,7 +2383,6 @@ Proof. by move=> i j t _ _ -> ->; exists j. Qed.
 HB.instance Definition _ := Pointed_isBaseTopological.Build nat bT bD.
 
 End nat_topologicalType.
-
 
 Global Instance eventually_filter : ProperFilter eventually.
 Proof.
@@ -5894,7 +5893,7 @@ HB.instance Definition _ (U : Type) (V : topologicalType) :=
 End PtwsFun.
 
 Lemma pointwise_cvgE {U : Type} {V : topologicalType}
-    (F : set_system(U -> V)) (A : set U) (f : U -> V) :
+    (F : set_system (U -> V)) (A : set U) (f : U -> V) :
   {ptws, F --> f} = (F --> (f : {ptws U -> V})).
 Proof. by []. Qed.
 

@@ -981,8 +981,6 @@ Let discrete_measurableU (F : (set unit)^nat) :
   discrete_measurable_unit (\bigcup_i F i).
 Proof. by []. Qed.
 
-HB.instance Definition _ := isPointed.Build unit tt.
-
 HB.instance Definition _ := @isMeasurable.Build default_measure_display unit
   discrete_measurable_unit discrete_measurable0
   discrete_measurableC discrete_measurableU.

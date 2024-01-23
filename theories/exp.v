@@ -60,7 +60,7 @@ Definition pseries f (x : R) := [series f i * x ^+ i]_i.
 
 Fact is_cvg_pseries_inside_norm f (x z : R) :
     cvgn (pseries f x) -> `|z| < `|x| ->
-  cvgn ((pseries (fun i => `|f i|) z)).
+  cvgn (pseries (fun i => `|f i|) z).
 Proof.
 move=> Cx zLx; have [K [Kreal Kf]] := cvg_series_bounded Cx.
 have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n|  by rewrite !mulr_ge0.

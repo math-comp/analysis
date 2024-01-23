@@ -1490,7 +1490,7 @@ Lemma __deprecated__ereal_cvg_real (R : realFieldType) (f : (\bar R)^nat) a :
 Proof. by rewrite fine_cvgP. Qed.
 
 Lemma ereal_nondecreasing_cvgn (R : realType) (u_ : (\bar R)^nat) :
-  nondecreasing_seq u_ -> u_ @ \oo --> ereal_sup (u_ @` setT).
+  nondecreasing_seq u_ -> u_ @ \oo --> ereal_sup (range u_).
 Proof.
 move=> nd_u_; set S := u_ @` setT; set l := ereal_sup S.
 have [Spoo|Spoo] := pselect (S +oo).
@@ -1499,7 +1499,7 @@ have [Spoo|Spoo] := pselect (S +oo).
     by move: (nd_u_ _ _ Nn); rewrite uNoo leye_eq => /eqP.
   have -> : l = +oo by rewrite /l /ereal_sup; exact: supremum_pinfty.
   rewrite -(cvg_shiftn N); set f := (X in X @ \oo --> _).
-  rewrite (_ : f = (fun=> +oo)); first exact: cvg_cst.
+  rewrite (_ : f = cst +oo); first exact: cvg_cst.
   by rewrite funeqE => n; rewrite /f /= Nu // leq_addl.
 have [/funext Snoo|Snoo] := pselect (forall n, u_ n = -oo).
   rewrite /l (_ : S = [set -oo]).
