@@ -14,6 +14,7 @@
 (*                                                                            *)
 (* ```                                                                        *)
 (*     realType == type of real numbers                                       *)
+(*                 The HB class is Real.                                      *)
 (*        sup A == where A : set R with R : realType, the supremum of A when  *)
 (*                 it exists, 0 otherwise                                     *)
 (*        inf A := - sup (- A)                                                *)

@@ -25,11 +25,7 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (* ```                                                                        *)
 (*  pseudoMetricNormedZmodType R  == interface type for a normed topological  *)
 (*                                   Abelian group equipped with a norm       *)
-(*  PseudoMetricNormedZmodule.Mixin nb == builds the mixin for a normed       *)
-(*                                   topological Abelian group from the       *)
-(*                                   compatibility between the norm and       *)
-(*                                   balls; the carrier type must have a      *)
-(*                                   normed Zmodule over a numDomainType.     *)
+(*                                   The HB class is PseudoMetricNormedZmod.  *)
 (* ```                                                                        *)
 (*                                                                            *)
 (*         lower_semicontinuous f == the extented real-valued function f is   *)
@@ -40,31 +36,20 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (* ## Normed modules                                                          *)
 (* ```                                                                        *)
 (*                normedModType K == interface type for a normed module       *)
-(*                                   structure over the numDomainType K.      *)
-(*           NormedModMixin normZ == builds the mixin for a normed module     *)
-(*                                   from the property of the linearity of    *)
-(*                                   the norm; the carrier type must have a   *)
-(*                                   pseudoMetricNormedZmodType structure     *)
-(*            NormedModType K T m == packs the mixin m to build a             *)
-(*                                   normedModType K; T must have canonical   *)
-(*                                   pseudoMetricNormedZmodType K and         *)
-(*                                   pseudoMetricType structures.             *)
-(*  [normedModType K of T for cT] == T-clone of the normedModType K structure *)
-(*                                   cT.                                      *)
-(*         [normedModType K of T] == clone of a canonical normedModType K     *)
-(*                                   structure on T.                          *)
-(*                           `|x| == the norm of x (notation from ssrnum).    *)
+(*                                   structure over the numDomainType K       *)
+(*                                   The HB class is NormedModule.            *)
+(*                           `|x| == the norm of x (notation from ssrnum)     *)
 (*                      ball_norm == balls defined by the norm.               *)
 (*                          edist == the extended distance function for a     *)
-(*                                   pseudometric X, from X*X -> \bar R       *)
+(*                                   pseudometric X, from X * X -> \bar R     *)
 (*                    edist_inf A == the infimum of distances to the set A    *)
 (*                    Urysohn A B == a continuous function T -> [0,1] which   *)
 (*                                   separates A and B when                   *)
 (*                                   `uniform_separator A B`                  *)
-(*          uniform_separator A B == There is a suitable uniform space and    *)
+(*          uniform_separator A B == there is a suitable uniform space and    *)
 (*                                   entourage separating A and B             *)
-(*                      nbhs_norm == neighborhoods defined by the norm.       *)
-(*                    closed_ball == closure of a ball.                       *)
+(*                      nbhs_norm == neighborhoods defined by the norm        *)
+(*                    closed_ball == closure of a ball                        *)
 (*   f @`[ a , b ], f @`] a , b [ == notations for images of intervals,       *)
 (*                                   intended for continuous, monotonous      *)
 (*                                   functions, defined in ring_scope and     *)
@@ -83,10 +68,10 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (*                  bounded_near f F == f is bounded near F                   *)
 (*            [bounded f x | x in A] == f is bounded on A, ie F := globally A *)
 (*   [locally [bounded f x | x in A] == f is locally bounded on A             *)
-(*                       bounded_set == set of bounded sets.                  *)
+(*                       bounded_set == set of bounded sets                   *)
 (*                                   := [set A | [bounded x | x in A]]        *)
 (*                       bounded_fun == set of functions bounded on their     *)
-(*                                      whole domain.                         *)
+(*                                      whole domain                          *)
 (*                                   := [set f | [bounded f x | x in setT]]   *)
 (*                  lipschitz_on f F == f is lipschitz near F                 *)
 (*          [lipschitz f x | x in A] == f is lipschitz on A                   *)
@@ -110,14 +95,13 @@ Require Import ereal reals signed topology prodnormedzmodule.
 (* ```                                                                        *)
 (*        completeNormedModType K == interface type for a complete normed     *)
 (*                                   module structure over a realFieldType    *)
-(*                                   K.                                       *)
-(* [completeNormedModType K of T] == clone of a canonical complete normed     *)
-(*                                   module structure over K on T.            *)
+(*                                   K                                        *)
+(*                                   The HB class is CompleteNormedModule.    *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Filters                                                                 *)
 (* ```                                                                        *)
-(*          at_left x, at_right x == filters on real numbers for predicates   *)
+(*                     x^'-, x^'+ == filters on real numbers for predicates   *)
 (*                                   s.t. nbhs holds on the left/right of x   *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -2154,7 +2138,7 @@ Proof. by move=> cf /cvg_eq->// e; rewrite subrr normr0. Qed.
   note="simply use the fact that `(x --> l) -> (x = l)`")]
 Notation continuous_cvg_dist := __deprecated__continuous_cvg_dist (only parsing).
 
-(** Matrices: *)
+(** Matrices *)
 Section mx_norm.
 Variables (K : numDomainType) (m n : nat).
 Implicit Types x y : 'M[K]_(m, n).
@@ -2270,7 +2254,7 @@ HB.instance Definition _ :=
 
 End matrix_NormedModule.
 
-(** Pairs: *)
+(** Pairs *)
 Section prod_PseudoMetricNormedZmodule.
 Context {K : numDomainType} {U V : pseudoMetricNormedZmodType K}.
 
@@ -2307,10 +2291,10 @@ Variables (K : numDomainType).
 
 Example matrix_triangke m n (M N : 'M[K]_(m.+1, n.+1)) :
   `|M + N| <= `|M| + `|N|.
-Proof. apply ler_normD. Qed.
+Proof. exact: ler_normD. Qed.
 
 Example pair_triangle (x y : K * K) : `|x + y| <= `|x| + `|y|.
-Proof. apply ler_normD. Qed.
+Proof. exact: ler_normD. Qed.
 
 End example_of_sharing.
 
@@ -3910,7 +3894,7 @@ Unshelve. all: by end_near. Qed.
 
 End closure_left_right_open.
 
-(** ** Complete Normed Modules *)
+(** Complete Normed Modules *)
 
 #[short(type="completeNormedModType")]
 HB.structure Definition CompleteNormedModule (K : numFieldType) :=
