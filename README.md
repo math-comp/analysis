@@ -99,12 +99,16 @@ Other work using MathComp-Analysis:
 
 MathComp-Analysis adds mathematical structures on top of MathComp's ones.
 The following inheritance diagram displays the resulting hiearchy
-(excluding `finGroupType`, `countalg`, `finalg`, and some `order` structures).
-The structures and inheritance introduced by MathComp-Analysis are highlighted.
-The dotted inheritance edges to the `numFieldType` structure are enabled only
-when one imports `numFieldNormedType.Exports`.
+(excluding most MathComp structures).
+The structures introduced by MathComp-Analysis are highlighted.
 
-![Inheritance diagram](./hierarchy.png "Inheritance diagram")
+<img width="600" alt="Main_inheritance_graph" src="etc/hierarchy_main.png">
+
+### Hierarchies of functions
+
+| Functions | Functions with a finite image | Measures |
+|-----------|--------------|----------|
+| <img width="300" alt="Functions" src="etc/hierarchy_functions.png"> | <img width="200" alt="Functions_with_a_finite_image" src="etc/hierarchy_fimfun.png"> | <img width="300" alt="Measures" src="etc/hierarchy_measure.png"> |
 
 ## Development information
 
