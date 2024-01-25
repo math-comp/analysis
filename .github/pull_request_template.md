@@ -23,5 +23,5 @@ Reference: [How to document](https://github.com/math-comp/math-comp/wiki/How-to-
 ##### Reminder to reviewers
 
 - Read [this Checklist](https://github.com/math-comp/math-comp/wiki/Checklist-for-creating-and-review-PRs)
-- Put a milestone if possible.
-- Check labels.
+- Put a milestone if possible
+- Check labels
