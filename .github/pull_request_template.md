@@ -16,6 +16,8 @@
 
 - [ ] added corresponding documentation in the headers
 
+Reference: [How to document](https://github.com/math-comp/math-comp/wiki/How-to-document)
+
 <!-- Cross-out the above items using ~crossed out item~ when irrelevant -->
 
 ##### Reminder to reviewers
