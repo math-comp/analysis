@@ -495,9 +495,7 @@ Definition lebesgue_stieltjes_measure (f : cumulative R) :=
 HB.instance Definition _ (f : cumulative R) :=
   Measure.on (lebesgue_stieltjes_measure f).
 
-(* TODO: this ought to be turned into a Let but older version of mathcomp/coq
-   does not seem to allow, try to change asap *)
-Lemma sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R) :
+Let sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R) :
   sigma_finite setT (lebesgue_stieltjes_measure f).
 Proof. exact/measure_extension_sigma_finite/wlength_sigma_finite. Qed.
 

@@ -648,6 +648,8 @@
   + definitions `fct_UniformFamily` (use `uniform_fun_family` instead), canonicals `fct_UniformFamilyFilteredType`,
    `fct_UniformFamilyTopologicalType`, `fct_UniformFamilyUniformType`
 
+- in `lebesgue_stieltjes_measure.v`
+  + lemma `sigmaT_finite_lebesgue_stieltjes_measure` turned into a `Let`
 
 ### Infrastructure
 

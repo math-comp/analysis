@@ -2030,9 +2030,7 @@ Proof.
 move=> mD; have [?|] := ltP (mu D) +oo.
   exact: lebesgue_regularity_innerE_bounded.
 have /sigma_finiteP [F RFU [Fsub ffin]] :=
-  sigmaT_finite_lebesgue_stieltjes_measure [the @cumulative R of idfun]
-  (*TODO: sigma_finiteT mu should be enough but does not seem to work with older
-    versions of MathComp/Coq (Coq <= 8.15?) *).
+  sigma_finiteT (lebesgue_stieltjes_measure [the cumulative _ of @idfun R]).
 rewrite leye_eq => /eqP /[dup] + ->.
 have {1}-> : D = \bigcup_n (F n `&` D) by rewrite -setI_bigcupl -RFU setTI.
 move=> FDp; apply/esym/eq_infty => M.
