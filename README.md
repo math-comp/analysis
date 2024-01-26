@@ -22,6 +22,7 @@ the Coq proof-assistant and using the Mathematical Components library.
 
 - Author(s):
   - Reynald Affeldt (initial)
+  - Alessandro Bruni
   - Yves Bertot
   - Cyril Cohen (initial)
   - Marie Kerjean
@@ -69,7 +70,6 @@ make   # or make -j <number-of-cores-on-your-machine>
 make install
 ```
 
-
 ## Disclaimer
 
 This library is still at an experimental stage.  Contents may
@@ -80,7 +80,7 @@ own risk.
 ## Documentation
 
 Each file is documented in its header
-([coqdoc presentation for the last version](https://math-comp.github.io/analysis/htmldoc_0_7_0/index.html)).
+([coqdoc presentation for the last version](https://math-comp.github.io/analysis/htmldoc_1_0_0/index.html)).
 
 Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
 [CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
