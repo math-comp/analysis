@@ -23,6 +23,7 @@ theories/reals.v
 theories/landau.v
 theories/Rstruct.v
 theories/topology.v
+theories/function_spaces.v
 theories/cantor.v
 theories/prodnormedzmodule.v
 theories/normedtype.v
