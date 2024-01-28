@@ -124,7 +124,6 @@ HB.instance Definition _ (R : realType) (Ii : countType)
 
 End Product_Topology.
 
-Definition pointwise_fun (U V : Type) := U -> V.
 Notation "{ 'ptws' U -> V }" := (prod_topology (fun _ : U => V)) : type_scope.
 Notation "{ 'ptws' , F --> f }" :=
   (cvg_to F (nbhs (f : {ptws _ -> _}))) : classical_set_scope.
