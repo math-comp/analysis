@@ -3081,9 +3081,12 @@ Unshelve. all: by end_near. Qed.
 Section Tychonoff.
 
 Class UltraFilter T (F : set_system T) := {
-  ultra_proper :> ProperFilter F ;
+  ultra_proper : ProperFilter F ;
   max_filter : forall G : set_system T, ProperFilter G -> F `<=` G -> G = F
 }.
+(* When requiring Coq >= 8.17, replace the line below with
+  #[global] ultra_proper :: ProperFilter F ; *)
+#[global] Existing Instance ultra_proper.
 
 Lemma ultra_cvg_clusterE (T : topologicalType) (F : set_system T) :
   UltraFilter F -> cluster F = [set p | F --> p].
