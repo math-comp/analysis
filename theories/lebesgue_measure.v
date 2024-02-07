@@ -150,7 +150,7 @@ set I := [set` i]; set J := [set` j].
 have [->|/set0P I0] := eqVneq I set0; first by rewrite hlength0 hlength_itv_ge0.
 have [J0|/set0P J0] := eqVneq J set0.
   by move/subset_itvP; rewrite -/J J0 subset0 -/I => ->.
-move=> /subset_itvP ij; apply: lee_sub => /=.
+move=> /subset_itvP ij; apply: leeB => /=.
   have [ui|ui] := asboolP (has_ubound I).
     have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
     by rewrite lee_fin le_sup // => r Ir; exists r; split => //; apply: ij.
@@ -1724,7 +1724,7 @@ Proof.
 move=> mD; apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite (_ : _ @^-1` _ = `]-oo, (- x)%:E]%classic).
   by apply: measurableI => //; exact: emeasurable_itv.
-by rewrite predeqE => y; rewrite preimage_itv !in_itv/= andbT in_itv lee_oppr.
+by rewrite predeqE => y; rewrite preimage_itv !in_itv/= andbT in_itv leeNr.
 Qed.
 
 End standard_emeasurable_fun.
@@ -1986,7 +1986,7 @@ wlog : eps epspos D mD finD / exists ab : R * R, D `<=` `[ab.1, ab.2]%classic.
     by apply/propext; split => [[]|[[]]].
   have mV : measurable V.
     by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
-  rewrite [eps]splitr EFinD (measureU mu) // ?lte_add //.
+  rewrite [eps]splitr EFinD (measureU mu) // ?lteD //.
   - by apply: measurableD => //; exact: measurableI.
   - exact: measurableD.
   - by rewrite eqEsubset; split => z // [[[_ + _] [_]]].
@@ -2021,7 +2021,7 @@ apply/lee_addgt0Pr => e e0.
 have [B [cB BA /= ABe]] := lebesgue_regularity_inner mA muA e0.
 rewrite -{1}(setDKU BA) (@le_trans _ _ (mu B + mu (A `\` B)))//.
   by rewrite setUC outer_measureU2.
-by rewrite lee_add//; [apply: ereal_sup_ub => /=; exists B|exact/ltW].
+by rewrite leeD//; [apply: ereal_sup_ub => /=; exists B|exact/ltW].
 Qed.
 
 Lemma lebesgue_regularity_inner_sup (D : set R) : measurable D ->
@@ -2048,7 +2048,7 @@ move=> V [/[dup] /compact_measurable mV cptV VFND] FDV1 M1FD.
 rewrite (@le_trans _ _ (mu V))//; last first.
   apply: ereal_sup_ub; exists V => //=; split => //.
   exact: (subset_trans VFND (@subIsetr _ _ _)).
-rewrite -(@lee_add2lE _ 1)// {1}addeC -EFinD (le_trans M1FD)//.
+rewrite -(@leeD2lE _ 1)// {1}addeC -EFinD (le_trans M1FD)//.
 rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; last exact: measurableI.
 rewrite ltW// lte_le_add // ?ge0_fin_numE //; last first.
   by rewrite measureIr//; apply: measurableI.
@@ -2322,7 +2322,7 @@ have [N F5e] : exists N, \sum_(N <= n <oo) \esum_(i in F n) mu (closure (B i)) <
   set X : \bar R := (X in fine X).
   have Xoo : X < +oo.
     apply: le_lt_trans foo.
-    by rewrite (nneseries_split N)// lee_addr//; exact: sume_ge0.
+    by rewrite (nneseries_split N)// leeDr//; exact: sume_ge0.
   rewrite fineK ?ge0_fin_numE//; last exact: nneseries_ge0.
   apply: lee_nneseries => //; first by move=> i _; exact: esum_ge0.
   move=> n Nn; rewrite measure_bigcup//=.

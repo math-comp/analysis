@@ -1452,8 +1452,8 @@ Implicit Types u : (\bar T)^nat.
 Lemma ereal_nondecreasing_oppn u_ :
   nondecreasing_seq (-%E \o u_) = nonincreasing_seq u_.
 Proof.
-rewrite propeqE; split => ni_u m n mn; last by rewrite lee_oppr oppeK ni_u.
-by rewrite -(oppeK (u_ m)) -lee_oppr ni_u.
+rewrite propeqE; split => ni_u m n mn; last by rewrite leeNr oppeK ni_u.
+by rewrite -(oppeK (u_ m)) -leeNr ni_u.
 Qed.
 
 End sequences_ereal_realDomainType.
@@ -2149,10 +2149,10 @@ Lemma maxe_cvg_0_cvg_fin_num u x : x < 0 -> (forall k, u k <= 0) ->
   maxe (u n) x @[n --> \oo] --> 0 ->
   \forall n \near \oo, u n \is a fin_num.
 Proof.
-rewrite -[in x < _]oppe0 lte_oppr => x0 u0.
+rewrite -[in x < _]oppe0 lteNr => x0 u0.
 under eq_fun do rewrite -(oppeK (u _)) -[in maxe _ _](oppeK x) -oppe_min.
 rewrite -[in _ --> _]oppe0 => /cvgeNP/mine_cvg_0_cvg_fin_num-/(_ x0).
-have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
+have Nu0 k : 0 <= - u k by rewrite leeNr oppe0.
 by move=> /(_ Nu0)[n _ nu]; exists n => // m/= nm; rewrite -fin_numN nu.
 Qed.
 
@@ -2163,7 +2163,7 @@ Proof.
 rewrite -[in (r < _)%R]oppr0 ltrNr => r0 u0.
 under eq_fun do rewrite -(oppeK (u _)) -[in maxe _ _](oppeK r%:E) -oppe_min.
 rewrite -[in _ --> _]oppe0 => /cvgeNP/mine_cvg_minr_cvg-/(_ r0).
-have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
+have Nu0 k : 0 <= - u k by rewrite leeNr oppe0.
 move=> /(_ Nu0)/(cvgNP _ _).2; rewrite oppr0.
 by under eq_cvg do rewrite /GRing.opp /= oppr_min fineN !opprK.
 Qed.
@@ -2171,10 +2171,10 @@ Qed.
 Lemma maxe_cvg_0_cvg_0 u x : x < 0 -> (forall k, u k <= 0) ->
   maxe (u n) x @[n --> \oo] --> 0 -> u n @[n --> \oo] --> 0.
 Proof.
-rewrite -[in x < _]oppe0 lte_oppr => x0 u0.
+rewrite -[in x < _]oppe0 lteNr => x0 u0.
 under eq_fun do rewrite -(oppeK (u _)) -[in maxe _ _](oppeK x) -oppe_min.
 rewrite -[in _ --> _]oppe0 => /cvgeNP/mine_cvg_0_cvg_0-/(_ x0).
-have Nu0 k : 0 <= - u k by rewrite lee_oppr oppe0.
+have Nu0 k : 0 <= - u k by rewrite leeNr oppe0.
 by move=> /(_ Nu0); rewrite -[in _ --> _]oppe0 => /cvgeNP.
 Qed.
 
@@ -2644,7 +2644,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite lee_subl_addr//; apply: ereal_inf_lb.
   by exists m => //; rewrite addeC.
 - apply: lb_ereal_inf => /= _ [m /= mn] <-.
-  by rewrite lee_add2l//; apply: ereal_inf_lb; exists m => /=.
+  by rewrite leeD2l//; apply: ereal_inf_lb; exists m => /=.
 Qed.
 
 Lemma limn_esup_le_cvg u l : limn_esup u <= l -> (forall n, l <= u n) ->
