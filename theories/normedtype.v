@@ -251,11 +251,11 @@ Proof.
 apply/seteqP; split => // x _; have [x0|x0] := ltP 0%R x.
   exists `|ceil x|.+1 => //.
   rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
-  by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_spaddr.
+  by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_pwDr.
 exists `|ceil (- x)|.+1 => //.
 rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
-rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?ler_oppr ?oppr0//.
-by rewrite ltr_spaddr.
+rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?lerNr ?oppr0//.
+by rewrite ltr_pwDr.
 Qed.
 
 Section lower_semicontinuous.
@@ -2832,20 +2832,20 @@ have yE u v x : u @ F --> +oo -> v @ F --> x%:E -> u \+ v @ F --> +oo.
   move=> /cvgeyPge/= foo /fine_cvgP[Fg gb]; apply/cvgeyPgey.
   near=> A; near=> n; have /(_ _)/wrap[//|Fgn] := near Fg n.
   rewrite -lee_subl_addr// (@le_trans _ _ (A - (x - 1))%:E)//; last by near: n.
-  rewrite ?EFinB lee_sub// lee_subl_addr// -[v n]fineK// -EFinD lee_fin.
+  rewrite ?EFinB leeB// lee_subl_addr// -[v n]fineK// -EFinD lee_fin.
   by rewrite ler_distlDr// ltW//; near: n; apply: cvgr_dist_lt.
 have NyE u v x : u @ F --> -oo -> v @ F --> x%:E -> u \+ v @ F --> -oo.
   move=> /cvgeNyPle/= foo /fine_cvgP -[Fg gb]; apply/cvgeNyPleNy.
   near=> A; near=> n; have /(_ _)/wrap[//|Fgn] := near Fg n.
   rewrite -lee_subr_addr// (@le_trans _ _ (A - (x + 1))%:E)//; first by near: n.
-  rewrite ?EFinB ?EFinD lee_sub// -[v n]fineK// -EFinD lee_fin.
+  rewrite ?EFinB ?EFinD leeB// -[v n]fineK// -EFinD lee_fin.
   by rewrite ler_distlCDr// ltW//; near: n; apply: cvgr_dist_lt.
 have yyE u v : u @ F --> +oo -> v @ F --> +oo -> u \+ v @ F --> +oo.
   move=> /cvgeyPge foo /cvgeyPge goo; apply/cvgeyPge => A; near=> y.
-  by rewrite -[leLHS]adde0 lee_add//; near: y; [apply: foo|apply: goo].
+  by rewrite -[leLHS]adde0 leeD//; near: y; [apply: foo|apply: goo].
 have NyNyE u v : u @ F --> -oo -> v @ F --> -oo -> u \+ v @ F --> -oo.
   move=> /cvgeNyPle foo /cvgeNyPle goo; apply/cvgeNyPle => A; near=> y.
-  by rewrite -[leRHS]adde0 lee_add//; near: y; [apply: foo|apply: goo].
+  by rewrite -[leRHS]adde0 leeD//; near: y; [apply: foo|apply: goo].
 have addfC u v : u \+ v = v \+ u.
   by apply/funeqP => x; rewrite /= addeC.
 move: a b => [a| |] [b| |] //= _; rewrite ?(addey, addye, addeNy, addNye)//=;
@@ -2886,7 +2886,7 @@ Proof.
 case=> [r|A /= [r [rreal rA]]|A /= [r [rreal rA]]]/=.
 - exact/(cvg_comp (@norm_continuous _ [the normedModType R of R^o] r)).
 - by exists r; split => // y ry; apply: rA; rewrite (lt_le_trans ry)// lee_abs.
-- exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -lte_oppr => yr.
+- exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -lteNr => yr.
   by apply: rA; rewrite (lt_le_trans yr)// -abseN lee_abs.
 Qed.
 
@@ -3215,10 +3215,10 @@ suff: \forall t \near (nbhs x, nbhs y),
 rewrite -near2_pair; near=> a b => /=.
 have abxy : (edist (a, b) <= edist (x, a) + edist (x, y) + edist (y, b))%E.
   rewrite (edist_sym x a) -addeA.
-  by rewrite (le_trans (@edist_triangle _ x _)) ?lee_add ?edist_triangle.
+  by rewrite (le_trans (@edist_triangle _ x _)) ?leeD ?edist_triangle.
 have xyab : (edist (x, y) <= edist (x, a) + edist (a, b) + edist (y, b))%E.
   rewrite (edist_sym y b) -addeA.
-  by rewrite (le_trans (@edist_triangle _ a _))// ?lee_add// ?edist_triangle.
+  by rewrite (le_trans (@edist_triangle _ a _))// ?leeD// ?edist_triangle.
 have xafin : edist (x, a) \is a fin_num.
   by apply/edist_finP; exists 1 =>//; near: a; exact: nbhsx_ballx.
 have ybfin : edist (y, b) \is a fin_num.
@@ -3229,7 +3229,7 @@ have xyabfin: (edist (x, y) - edist (a, b))%E \is a fin_num
   by rewrite fin_numB abfin efin.
 rewrite -fineB// -fine_abse// -lee_fin fineK ?abse_fin_num//.
 rewrite (@le_trans _ _ (edist (x, a) + edist (y, b))%E)//; last first.
-  by rewrite [eps%:num]splitr/= EFinD lee_add//; apply: edist_fin => //=;
+  by rewrite [eps%:num]splitr/= EFinD leeD//; apply: edist_fin => //=;
        [near: a | near: b]; exact: nbhsx_ballx.
 have [ab_le_xy|/ltW xy_le_ab] := leP (edist (a, b)) (edist (x, y)).
   by rewrite gee0_abs ?subre_ge0// lee_subl_addr// addeAC.
@@ -3293,7 +3293,7 @@ apply/lee_addgt0Pr => _/posnumP[eps].
 have [//|? [a Aa <-] yaeps] := @lb_ereal_inf_adherent R _ eps%:num _ fyn.
 apply: le_trans; first by apply: (@ereal_inf_lb _ _ (edist (x, a))); exists a.
 apply: le_trans; first exact: (@edist_triangle _ _ _ y).
-by rewrite -addeA lee_add2lE // ltW.
+by rewrite -addeA leeD2lE // ltW.
 Qed.
 
 Lemma edist_inf_continuous : continuous edist_inf.
@@ -3311,7 +3311,7 @@ have [] := eqVneq (edist_inf z) +oo%E.
   have /gee0P[|[r' r'pos war']] := edist_ge0 (w, a).
     by rewrite war => ->; apply: zAp; exists a.
   have := @edist_triangle _ _ z w a; rewrite war'; apply: contra_leP => _.
-  rewrite (@le_lt_trans _ _ (1 + r'%:E)%E) ?lee_add2r ?edist_fin//.
+  rewrite (@le_lt_trans _ _ (1 + r'%:E)%E) ?leeD2r ?edist_fin//.
   by rewrite -EFinD [edist (z, a)]zAp ?ltey //; exists a.
 rewrite -ltey -ge0_fin_numE ?edist_inf_ge0 // => fz_fin.
 rewrite /continuous_at -[edist_inf z]fineK //; apply/fine_cvgP.

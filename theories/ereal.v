@@ -422,8 +422,8 @@ Qed.
 
 Lemma lb_ereal_inf S M : lbound S M -> M <= ereal_inf S.
 Proof.
-move=> SM; rewrite /ereal_inf lee_oppr; apply ub_ereal_sup => x [y Sy <-{x}].
-by rewrite lee_oppl oppeK; apply SM.
+move=> SM; rewrite /ereal_inf leeNr; apply ub_ereal_sup => x [y Sy <-{x}].
+by rewrite leeNl oppeK; apply SM.
 Qed.
 
 Lemma ub_ereal_sup_adherent S (e : R) : (0 < e)%R ->
@@ -431,7 +431,7 @@ Lemma ub_ereal_sup_adherent S (e : R) : (0 < e)%R ->
 Proof.
 move=> e0 Sr; have : ~ ubound S (ereal_sup S - e%:E).
   move/ub_ereal_sup; apply/negP.
-  by rewrite -ltNge lte_subl_addr // lte_addl // lte_fin.
+  by rewrite -ltNge lte_subl_addr // lteDl // lte_fin.
 move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
 by rewrite not_implyE => -[? ?]; exists x => //; rewrite ltNge; apply/negP.
 Qed.
@@ -440,7 +440,7 @@ Lemma lb_ereal_inf_adherent S (e : R) : (0 < e)%R ->
   ereal_inf S \is a fin_num -> exists2 x, S x & (x < ereal_inf S + e%:E).
 Proof.
 move=> e0; rewrite fin_numN => /(ub_ereal_sup_adherent e0)[x []].
-move=> y Sy <-; rewrite -lte_oppr => /lt_le_trans ex; exists y => //.
+move=> y Sy <-; rewrite -lteNr => /lt_le_trans ex; exists y => //.
 by apply: ex; rewrite fin_num_oppeD// oppeK.
 Qed.
 
@@ -452,8 +452,8 @@ Qed.
 
 Lemma ereal_inf_lt S x : ereal_inf S < x -> exists2 y, S y & y < x.
 Proof.
-rewrite lte_oppl => /ereal_sup_gt[_ [y Sy <-]].
-by rewrite lte_oppl oppeK => xlty; exists y.
+rewrite lteNl => /ereal_sup_gt[_ [y Sy <-]].
+by rewrite lteNl oppeK => xlty; exists y.
 Qed.
 
 End ereal_supremum.
@@ -528,7 +528,7 @@ Qed.
 
 Lemma ereal_inf_lb S : lbound S (ereal_inf S).
 Proof.
-by move=> x Sx; rewrite /ereal_inf lee_oppl; apply ereal_sup_ub; exists x.
+by move=> x Sx; rewrite /ereal_inf leeNl; apply ereal_sup_ub; exists x.
 Qed.
 
 Lemma ereal_inf_le S x : (exists2 y, S y & y <= x) -> ereal_inf S <= x.
@@ -838,19 +838,19 @@ case: x => [r /=| |].
 - rewrite predeqE => S; split=> [[M [Mreal MS]]|[x [M [Mreal Mx]] <-]].
     exists (-%E @` S).
       exists (- M)%R; rewrite realN Mreal; split => // x Mx.
-      by exists (- x); [apply MS; rewrite lte_oppl | rewrite oppeK].
+      by exists (- x); [apply MS; rewrite lteNl | rewrite oppeK].
     rewrite predeqE => x; split=> [[y [z Sz <- <-]]|Sx]; first by rewrite oppeK.
     by exists (- x); [exists x | rewrite oppeK].
   exists (- M)%R; rewrite realN; split => // y yM.
-  exists (- y); by [apply Mx; rewrite lte_oppr|rewrite oppeK].
+  exists (- y); by [apply Mx; rewrite lteNr|rewrite oppeK].
 - rewrite predeqE => S; split=> [[M [Mreal MS]]|[x [M [Mreal Mx]] <-]].
     exists (-%E @` S).
       exists (- M)%R; rewrite realN Mreal; split => // x Mx.
-      by exists (- x); [apply MS; rewrite lte_oppr | rewrite oppeK].
+      by exists (- x); [apply MS; rewrite lteNr | rewrite oppeK].
     rewrite predeqE => x; split=> [[y [z Sz <- <-]]|Sx]; first by rewrite oppeK.
     by exists (- x); [exists x | rewrite oppeK].
   exists (- M)%R; rewrite realN; split => // y yM.
-  exists (- y); by [apply Mx; rewrite lte_oppl|rewrite oppeK].
+  exists (- y); by [apply Mx; rewrite lteNl|rewrite oppeK].
 Qed.
 
 Lemma nbhsNKe (R : realFieldType) (z : \bar R) (A : set (\bar R)) :

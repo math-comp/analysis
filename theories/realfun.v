@@ -695,7 +695,7 @@ by rewrite /inf_ball /ereal_inf; congr (- _); rewrite /sup_ball -image_comp.
 Qed.
 
 Let inf_ball_le f a r s : (s <= r)%R -> inf_ball f a r <= inf_ball f a s.
-Proof. by move=> sr; rewrite /inf_ball lee_oppl oppeK sup_ball_le. Qed.
+Proof. by move=> sr; rewrite /inf_ball leeNl oppeK sup_ball_le. Qed.
 
 Let inf_ball_is_cvg f a : cvg (inf_ball f a e @[e --> 0^'+]).
 Proof.
@@ -773,9 +773,9 @@ move=> fg; rewrite !lime_sup_lim -limeD//; last first.
   by rewrite -!lime_sup_lim.
 apply: lee_lim => //.
 - apply: nondecreasing_at_right_is_cvge; near=> e => x y; rewrite !in_itv/=.
-  by move=> /andP[? ?] /andP[? ?] xy; apply: lee_add => //; exact: sup_ball_le.
+  by move=> /andP[? ?] /andP[? ?] xy; apply: leeD => //; exact: sup_ball_le.
 - near=> a0; apply: ub_ereal_sup => _ /= [a1 [a1ae a1a]] <-.
-  by apply: lee_add; apply: ereal_sup_ub => /=; exists a1.
+  by apply: leeD; apply: ereal_sup_ub => /=; exists a1.
 Unshelve. all: by end_near. Qed.
 
 Lemma lime_sup_le f g a :
@@ -881,7 +881,7 @@ have H (e : {posnum R}) :
       rewrite (le_lt_trans _ farl)//; apply: ereal_inf_lb => /=; exists r => //.
       by rewrite in_itv/= r0.
     by rewrite fal ltxx.
-  by rewrite -leNgt; apply: le_trans; rewrite lee_add2r// fal.
+  by rewrite -leNgt; apply: le_trans; rewrite leeD2r// fal.
 move=> e; have [d /andP[lfp fpe]] := H e.
 exists d => r /= [] prd rp.
 by rewrite (le_lt_trans _ fpe)//; apply: ereal_sup_ub => /=; exists r.
@@ -893,7 +893,7 @@ Local Lemma lime_infP f a l :
 Proof.
 move=> /(congr1 oppe); rewrite -lime_supN => /lime_supP => H e.
 have [d {}H] := H e.
-by exists d => r /H; rewrite lte_oppl oppeD// EFinN oppeK.
+by exists d => r /H; rewrite lteNl oppeD// EFinN oppeK.
 Qed.
 
 Lemma lime_sup_inf_at_right f a l :
@@ -917,13 +917,13 @@ apply/cvgrPdist_le => _/posnumP[e].
 have [d1 Hd1] : exists d1 : {posnum R},
     l%:E - e%:num%:E <= ereal_inf [set f x | x in ball a d1%:num `\ a].
   have : l%:E - e%:num%:E < lime_inf f a.
-    by rewrite inffpl lte_subl_addr// lte_addl.
+    by rewrite inffpl lte_subl_addr// lteDl.
   rewrite lime_infE => /ereal_sup_gt[x /= [r]]; rewrite in_itv/= andbT.
   move=> r0 <-{x} H; exists (PosNum r0); rewrite ltW//.
   by rewrite -inf_ballE.
 have [d2 Hd2] : exists d2 : {posnum R},
     ereal_sup [set f x | x in ball a d2%:num `\ a] <= l%:E + e%:num%:E.
-  have : lime_sup f a < l%:E + e%:num%:E by rewrite supfpl lte_addl.
+  have : lime_sup f a < l%:E + e%:num%:E by rewrite supfpl lteDl.
   rewrite lime_supE => /ereal_inf_lt[x /= [r]]; rewrite in_itv/= andbT.
   by move=> r0 <-{x} H; exists (PosNum r0); rewrite ltW.
 pose d := minr d1%:num d2%:num.
@@ -1791,7 +1791,7 @@ Lemma variation_le a b f g s :
   variation a b (f \+ g)%R s <= variation a b f s + variation a b g s.
 Proof.
 rewrite [in leRHS]/variation -big_split/=.
-apply: ler_sum => k _; apply: le_trans; last exact: ler_norm_add.
+apply: ler_sum => k _; apply: le_trans; last exact: ler_normD.
 by rewrite /= addrACA addrA opprD addrA.
 Qed.
 
@@ -2131,7 +2131,7 @@ have BVabfg : BV a b (f \+ g).
 apply: ub_ereal_sup => y /= [r' [s' abs <-{r'} <-{y}]].
 apply: (@le_trans _ _ (variation a b f s' + variation a b g s')%:E).
   exact: variation_le.
-by rewrite EFinD lee_add// ereal_sup_le//;
+by rewrite EFinD leeD// ereal_sup_le//;
   (eexists; last exact: lexx); (eexists; last reflexivity);
   exact: variations_variation.
 Qed.
@@ -2233,7 +2233,7 @@ move=> x y xab yab xy; have ax : a <= x.
   by move: xab; rewrite in_itv //= => /andP [].
 rewrite /neg_tv lee_pmul2r // lee_subr_addl // addeCA -EFinB.
 rewrite [TV a y _](total_variationD _ ax xy) //.
-apply: lee_add => //; apply: le_trans; last exact: total_variation_ge.
+apply: leeD => //; apply: le_trans; last exact: total_variation_ge.
 by rewrite lee_fin ler_norm.
 Qed.
 
@@ -2324,7 +2324,7 @@ rewrite {1}variation_prev; last exact: itv_partition1.
 rewrite /= -addeA -lte_subr_addr; last by rewrite fin_numD; apply/andP.
 rewrite EFinD -lte_fin ?fineK // oppeD //= ?fin_num_adde_defl // opprK addeA.
 move/lt_trans; apply.
-rewrite [x in (_ < x%:E)%E]Num.Theory.splitr EFinD addeC lte_add2lE //.
+rewrite [x in (_ < x%:E)%E]Num.Theory.splitr EFinD addeC lteD2lE //.
 rewrite -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
   rewrite [in leRHS]variation_prev; last exact: itv_partition1.

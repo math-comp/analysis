@@ -165,7 +165,7 @@ Proof. by move=> f0 x; rewrite inE => Dx; apply/max_idPl/f0. Qed.
 
 Lemma ge0_funenegE f : (forall x, D x -> 0 <= f x) -> {in D, f^\- =1 cst 0}.
 Proof.
-by move=> f0 x; rewrite inE => Dx; apply/max_idPr; rewrite lee_oppl oppe0 f0.
+by move=> f0 x; rewrite inE => Dx; apply/max_idPr; rewrite leeNl oppe0 f0.
 Qed.
 
 Lemma le0_funeposE f : (forall x, D x -> f x <= 0) -> {in D, f^\+ =1 cst 0}.
@@ -173,7 +173,7 @@ Proof. by move=> f0 x; rewrite inE => Dx; exact/max_idPr/f0. Qed.
 
 Lemma le0_funenegE f : (forall x, D x -> f x <= 0) -> {in D, f^\- =1 \- f}.
 Proof.
-by move=> f0 x; rewrite inE => Dx; apply/max_idPl; rewrite lee_oppr oppe0 f0.
+by move=> f0 x; rewrite inE => Dx; apply/max_idPl; rewrite leeNr oppe0 f0.
 Qed.
 
 Lemma gt0_funeposM r f : (0 < r)%R ->
@@ -205,16 +205,16 @@ Proof.
 rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
 - rewrite lee0_abs// /funepos /funeneg.
   move/max_idPr : (fx0) => ->; rewrite add0e.
-  by move: fx0; rewrite -{1}oppe0 lee_oppr => /max_idPl ->.
+  by move: fx0; rewrite -{1}oppe0 leeNr => /max_idPl ->.
 - rewrite gee0_abs// /funepos /funeneg; move/max_idPl : (fx0) => ->.
-  by move: fx0; rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0.
+  by move: fx0; rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0.
 Qed.
 
 Lemma funeposneg f : f = (fun x => f^\+ x - f^\- x).
 Proof.
 rewrite funeqE => x; rewrite /funepos /funeneg; have [|/ltW] := leP (f x) 0.
-  by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite oppeK add0e.
-by rewrite -{1}oppe0 -lee_oppl => /max_idPr ->; rewrite sube0.
+  by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
+by rewrite -{1}oppe0 -leeNl => /max_idPr ->; rewrite sube0.
 Qed.
 
 Lemma add_def_funeposneg f x : (f^\+ x +? - f^\- x).
@@ -226,22 +226,22 @@ Qed.
 Lemma funeD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
 Proof.
 apply/funext => x; rewrite /funepos /funeneg; have [|/ltW] := leP 0 (f x + g x).
-- by rewrite -{1}oppe0 -lee_oppl => /max_idPr ->; rewrite sube0.
-- by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite oppeK add0e.
+- by rewrite -{1}oppe0 -leeNl => /max_idPr ->; rewrite sube0.
+- by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
 Qed.
 
 Lemma funeD_posD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
 Proof.
 apply/funext => x; rewrite /funepos /funeneg.
 have [|fx0] := leP 0 (f x); last rewrite add0e.
-- rewrite -{1}oppe0 lee_oppl => /max_idPr ->; have [|/ltW] := leP 0 (g x).
-    by rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0 sube0.
-  by rewrite -{1}oppe0 -lee_oppr => /max_idPl ->; rewrite adde0 sub0e oppeK.
-- move/ltW : (fx0); rewrite -{1}oppe0 lee_oppr => /max_idPl ->.
+- rewrite -{1}oppe0 leeNl => /max_idPr ->; have [|/ltW] := leP 0 (g x).
+    by rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0 sube0.
+  by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite adde0 sub0e oppeK.
+- move/ltW : (fx0); rewrite -{1}oppe0 leeNr => /max_idPl ->.
   have [|] := leP 0 (g x); last rewrite add0e.
-    by rewrite -{1}oppe0 lee_oppl => /max_idPr ->; rewrite adde0 oppeK addeC.
+    by rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0 oppeK addeC.
   move gg' : (g x) => g'; move: g' gg' => [g' gg' g'0|//|goo _].
-  + move/ltW : (g'0); rewrite -{1}oppe0 -lee_oppr => /max_idPl => ->.
+  + move/ltW : (g'0); rewrite -{1}oppe0 -leeNr => /max_idPl => ->.
     by rewrite fin_num_oppeD// 2!oppeK.
   + by rewrite /maxe /=; case: (f x) fx0.
 Qed.

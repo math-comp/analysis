@@ -134,14 +134,14 @@ Lemma esumD [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
 Proof.
 move=> ag0 bg0; apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ub_ereal_sup//= => x [X [finX XI]] <-; rewrite fsbig_split//=.
-  by rewrite lee_add// ereal_sup_ub//=; exists X.
+  by rewrite leeD// ereal_sup_ub//=; exists X.
 wlog : a b ag0 bg0 / \esum_(i in I) a i \isn't a fin_num => [saoo|]; last first.
   move=> /fin_numPn[->|/[dup] aoo ->]; first by rewrite leNye.
   rewrite (@le_trans _ _ +oo)//; first by rewrite /adde/=; case: esum.
   rewrite leye_eq; apply/eqP/eq_infty => y; rewrite esum_ge//.
   have : y%:E < \esum_(i in I) a i by rewrite aoo// ltry.
   move=> /ereal_sup_gt[_ [X [finX XI]] <-] /ltW yle; exists X => //=.
-  rewrite (le_trans yle)// fsbig_split// lee_addl// fsume_ge0// => // i.
+  rewrite (le_trans yle)// fsbig_split// leeDl// fsume_ge0// => // i.
   by move=> /XI; exact: bg0.
 case: (boolP (\esum_(i in I) a i \is a fin_num)) => sa; last exact: saoo.
 case: (boolP (\esum_(i in I) b i \is a fin_num)) => sb; last first.
@@ -156,7 +156,7 @@ have saX : \sum_(i \in X) a i \is a fin_num.
 rewrite lee_subr_addr// addeC -lee_subr_addr// ub_ereal_sup//= => _ [Y [finY YI]] <-.
 rewrite lee_subr_addr// addeC esum_ge//; exists (X `|` Y).
   by split; [rewrite finite_setU|rewrite subUset].
-rewrite fsbig_split ?finite_setU//= lee_add// lee_fsum_nneg_subset//= ?finite_setU//.
+rewrite fsbig_split ?finite_setU//= leeD// lee_fsum_nneg_subset//= ?finite_setU//.
 - exact/subsetP/subsetUl.
 - by move=> x; rewrite !inE in_setU andb_orr andNb/= => /andP[_] /[!inE] /YI/ag0.
 - exact/subsetP/subsetUr.
@@ -250,7 +250,7 @@ apply: (@le_trans _ _
   rewrite (_ : [fset x | x in Y & x \in X] = Y `&` fset_set X)%fset; last first.
     by apply/fsetP => x; rewrite 2!inE/= in_fset_set.
   rewrite (fsetIidPr _).
-    rewrite fsbig_finite// lee_addl// big_seq sume_ge0//=.
+    rewrite fsbig_finite// leeDl// big_seq sume_ge0//=.
     move=> [x y] /imfsetP[[x1 y1]] /[!inE] /andP[] /imfset2P[x2]/= /[!inE].
     rewrite andbT in_fset_set//; last exact: finite_set_fst.
     move=> /[!inE] x2X [y2] /[!inE] /andP[] /[!in_fset_set]; last first.
@@ -281,7 +281,7 @@ Lemma lee_sum_fset_nat (R : realDomainType)
 Proof.
 move=> f0 Fn; rewrite [leRHS](bigID (mem F))/=.
 suff -> : \sum_(0 <= i < n | P i && (i \in F)) f i = \sum_(i <- F | P i) f i.
-  by rewrite lee_addl ?sume_ge0// => i /andP[/f0].
+  by rewrite leeDl ?sume_ge0// => i /andP[/f0].
 rewrite -big_filter -[RHS]big_filter; apply: perm_big.
 rewrite uniq_perm ?filter_uniq ?index_iota ?iota_uniq ?fset_uniq//.
 move=> i; rewrite ?mem_filter.
@@ -462,7 +462,7 @@ Implicit Types (D : set T) (f : T -> \bar R).
 Lemma summable_pinfty D f : summable D f -> forall x, D x -> `| f x | < +oo.
 Proof.
 move=> Dfoo x Dx; apply: le_lt_trans Dfoo.
-rewrite (esumID [set x])// setI1 mem_set// esum_set1// lee_addl//.
+rewrite (esumID [set x])// setI1 mem_set// esum_set1// leeDl//.
 exact: esum_ge0.
 Qed.
 
@@ -489,13 +489,13 @@ Proof. by move=> Df; rewrite summableN; exact: summableD. Qed.
 Lemma summable_funepos D f : summable D f -> summable D f^\+.
 Proof.
 apply: le_lt_trans; apply le_esum => t Dt.
-by rewrite -/((abse \o f) t) fune_abse gee0_abs// lee_addl.
+by rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDl.
 Qed.
 
 Lemma summable_funeneg D f : summable D f -> summable D f^\-.
 Proof.
 apply: le_lt_trans; apply le_esum => t Dt.
-by rewrite -/((abse \o f) t) fune_abse gee0_abs// lee_addr.
+by rewrite -/((abse \o f) t) fune_abse gee0_abs// leeDr.
 Qed.
 
 End summable_lemmas.
@@ -620,9 +620,9 @@ have /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_pos
     by move=> t Dt; rewrite le_maxr lexx orbT.
     by move=> t Dt; rewrite le_maxr lexx orbT.
   apply eq_esum => i Di; have [fg|fg] := leP 0 (f i - g i).
-    rewrite max_r 1?lee_oppl ?oppe0// add0e subeK//.
+    rewrite max_r 1?leeNl ?oppe0// add0e subeK//.
     by rewrite fin_num_abs (summable_pinfty Dg).
-  rewrite add0e max_l; last by rewrite lee_oppr oppe0 ltW.
+  rewrite add0e max_l; last by rewrite leeNr oppe0 ltW.
   rewrite fin_num_oppeB//; last by rewrite fin_num_abs (summable_pinfty Dg).
   by rewrite -addeA addeCA addeA subeK// fin_num_abs (summable_pinfty Df).
 rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.

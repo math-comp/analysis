@@ -2359,7 +2359,7 @@ Proof.
 move=> A B; rewrite ?inE => mA mB AB; have [|muBfin] := leP +oo%E (mu B).
   by rewrite leye_eq => /eqP ->; rewrite leey.
 rewrite -[leRHS]SetRing.RmuE// -[B](setDUK AB) measureU/= ?setDIK//.
-- by rewrite SetRing.RmuE ?lee_addl.
+- by rewrite SetRing.RmuE ?leeDl.
 - exact: sub_gen_smallest.
 - by apply: measurableD; exact: sub_gen_smallest.
 Qed.
@@ -2437,8 +2437,8 @@ Qed.
 (* have Bm : measurable (B : set rT). *)
 (*   by rewrite -[B]bigcup_mkord; apply: fin_bigcup_measurable => //= i /ltnW/Am. *)
 (* rewrite measureU // ?setDIK//; last exact: measurableD. *)
-(* rewrite (@le_trans _ _ (ammu B + ammu (A n))) // ?lee_add2l //; last first. *)
-(*   by rewrite big_ord_recr /= lee_add2r// IHn// => i /ltnW/Am. *)
+(* rewrite (@le_trans _ _ (ammu B + ammu (A n))) // ?leeD2l //; last first. *)
+(*   by rewrite big_ord_recr /= leeD2r// IHn// => i /ltnW/Am. *)
 (* by rewrite le_measure // ?inE// ?setDE//; exact: measurableD. *)
 (* Qed. *)
 
@@ -3596,7 +3596,7 @@ Lemma caratheodory_measurable_setU_le (X A B : set T) :
   mu (X `&` (A `|` B)) + mu (X `&` ~` (A `|` B)) <= mu X.
 Proof.
 move=> mA mB; pose Y := X `&` A `|` X `&` B `&` ~` A.
-have /(lee_add2r (mu (X `&` ~` (A `|` B)))) :
+have /(leeD2r (mu (X `&` ~` (A `|` B)))) :
     mu Y <= mu (X `&` A) + mu (X `&` B `&` ~` A).
   pose Z := bigcup2 (X `&` A) (X `&` B `&` ~` A).
   have -> : Y = \bigcup_k Z k.
@@ -3710,8 +3710,8 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
   - by rewrite addeNy leNye.
 move=> n.
 apply: (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
-  apply/lee_add2l/le_outer_measure; apply: setIS; exact/subsetC/bigsetU_bigcup.
-rewrite [in leRHS](caratheodory_measurable_bigsetU MA n) lee_add2r//.
+  apply/leeD2l/le_outer_measure; apply: setIS; exact/subsetC/bigsetU_bigcup.
+rewrite [in leRHS](caratheodory_measurable_bigsetU MA n) leeD2r//.
 by rewrite caratheodory_additive.
 Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
@@ -3722,7 +3722,7 @@ Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) :
   (forall n, M (A n)) -> trivIset setT A -> M (\bigcup_k (A k)).
 Proof.
 move=> MA tA; apply: le_caratheodory_measurable => X /=.
-have /(lee_add2r (mu (X `&` ~` \bigcup_k A k))) := outer_measure_bigcup_lim A X.
+have /(leeD2r (mu (X `&` ~` \bigcup_k A k))) := outer_measure_bigcup_lim A X.
 by move/le_trans; apply; exact: caratheodory_lime_le.
 Qed.
 
@@ -3787,7 +3787,7 @@ suff : forall X, mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B).
 move=> X.
 have mB : mu.-cara.-measurable B := caratheodory_measurable_bigcup mA.
 apply/eqP; rewrite eq_le (caratheodory_lime_le mA tA X) andbT.
-have /(lee_add2r (mu (X `&` ~` B))) := outer_measure_bigcup_lim mu A X.
+have /(leeD2r (mu (X `&` ~` B))) := outer_measure_bigcup_lim mu A X.
 by rewrite -le_caratheodory_measurable // => ?; rewrite -mB.
 Qed.
 
@@ -3821,7 +3821,7 @@ move=> A0 /nonnegP[{}e].
 rewrite (@le_trans _ _ (lim ((fun n => (\sum_(0 <= i < n | P i) A i) +
     \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) @ \oo))) //.
   rewrite nneseriesD // limeD //.
-  - rewrite lee_add2l //; apply: lee_lim => //.
+  - rewrite leeD2l //; apply: lee_lim => //.
     + exact: is_cvg_nneseries.
     + exact: is_cvg_nneseries.
     + by near=> n; exact: lee_sum_nneg_subset.
@@ -3831,7 +3831,7 @@ rewrite (@le_trans _ _ (lim ((fun n => (\sum_(0 <= i < n | P i) A i) +
 suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) @ \oo -->
     e%:num%:E.
   rewrite limeD //.
-  - by rewrite lee_add2l // (cvg_lim _ cvggeo).
+  - by rewrite leeD2l // (cvg_lim _ cvggeo).
   - exact: is_cvg_nneseries.
   - by apply: is_cvg_nneseries => ?; rewrite lee_fin divr_ge0.
   - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_defl.
@@ -4198,7 +4198,7 @@ rewrite -(eq_eseriesr (fun _ _ => SetRing.RmuE _ (mB _))) => //.
 have RmB i : measurable (B i : set rT) by exact: sub_gen_smallest.
 set BA := eseries (fun n => Rmu (B n `&` A)).
 set BNA := eseries (fun n => Rmu (B n `&` ~` A)).
-apply: (@le_trans _ _ (limn BA + limn BNA)); [apply: lee_add|].
+apply: (@le_trans _ _ (limn BA + limn BNA)); [apply: leeD|].
   - rewrite (_ : BA = eseries (fun n => mu_ext mu (B n `&` A))); last first.
       rewrite funeqE => n; apply: eq_bigr => k _.
       by rewrite /= measurable_Rmu_extE //; exact: measurableI.

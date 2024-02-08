@@ -467,7 +467,7 @@ rewrite [leRHS](_ : _ = ('N_p%:E[f] + 'N_p%:E[g]) *
     - rewrite fin_num_poweR// -powR_Lnorm ?gt_eqF// fin_num_poweR//.
       by rewrite ge0_fin_numE ?Lnorm_ge0.
     - by rewrite ge0_adde_def// inE Lnorm_ge0.
-  apply: lee_add.
+  apply: leeD.
   - pose h := (@powR R ^~ (p - 1) \o normr \o (f \+ g))%R; pose i := (f \* h)%R.
     rewrite [leLHS](_ : _ = 'N_1[i]%R); last first.
       rewrite Lnorm1; apply: eq_integral => x _.
