@@ -432,24 +432,7 @@ Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
 Reserved Notation "{ 'within' A , 'continuous' f }"
   (at level 70, A at level 69, format "{ 'within'  A ,  'continuous'  f }").
-Reserved Notation "{ 'uniform`' A -> V }"
-  (at level 0, A at level 69, format "{ 'uniform`'  A  ->  V }").
-Reserved Notation "{ 'uniform' U -> V }"
-  (at level 0, U at level 69, format "{ 'uniform'  U  ->  V }").
-Reserved Notation "{ 'uniform' A , F --> f }"
-  (at level 0, A at level 69, F at level 69,
-   format "{ 'uniform'  A ,  F  -->  f }").
-Reserved Notation "{ 'uniform' , F --> f }"
-  (at level 0, F at level 69,
-   format "{ 'uniform' ,  F  -->  f }").
-Reserved Notation "{ 'family' fam , U -> V }"
-  (at level 0, U at level 69, format "{ 'family'  fam ,  U  ->  V }").
-Reserved Notation "{ 'family' fam , F --> f }"
-  (at level 0, F at level 69, format "{ 'family'  fam ,  F  -->  f }").
-Reserved Notation "{ 'compact-open' , U -> V }"
-  (at level 0, U at level 69, format "{ 'compact-open' ,  U  ->  V }").
-Reserved Notation "{ 'compact-open' , F --> f }"
-  (at level 0, F at level 69, format "{ 'compact-open' ,  F  -->  f }").
+
 
 Set Implicit Arguments.
 Unset Strict Implicit.
