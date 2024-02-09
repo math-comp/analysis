@@ -746,6 +746,7 @@ Proof. by rewrite 2!lax_notE. Qed.
 
 End Internals.
 Import Internals.
+Hint View for move/ move_viewP|2.
 Canonical TypeForall.
 Canonical PropForall.
 Canonical SetForall.
