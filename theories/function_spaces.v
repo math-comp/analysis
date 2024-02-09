@@ -9,7 +9,7 @@ Require Import reals signed topology.
 (* # The topology of functions spaces                                         *)
 (*                                                                            *)
 (* Function spaces have no canonical topology. We develop the theory of       *)
-(* several general purpose function space topologies here. Contextually,      *)
+(* several general-purpose function space topologies here. Contextually,      *)
 (* there is often a natural choice, though. So we provide modules to assign   *)
 (* topologies to arrow types locally.                                         *)
 (*                                                                            *)
@@ -19,14 +19,19 @@ Require Import reals signed topology.
 (* - Topology of uniform convergence on subspaces                             *)
 (* - The compact-open topology                                                *)
 (*                                                                            *)
-(* The major results are                                                      *)
-(* - compactness in the product topology via Tychonoff's                      *)
-(* - compactness in the compact congergence topology via Ascoli's             *)
-(* - Conditions when sup (weak f_i) = weak (f_ ^~ if_1 `*` f_2 `*`...)               *)
+(* Available modules to assign a topology to `->`:                            *)
+(* - ArrowAsProduct assigns the product topology                              *)
+(* - ArrowAsUniformType assigns the uniform topology                          *)
+(* - ArrowAsCompactOpen assign the compact-open topology                      *)
+(*                                                                            *)
+(* The major results are:                                                     *)
+(* - Compactness in the product topology via Tychonoff's                      *)
+(* - Compactness in the compact convergence topology via Ascoli's             *)
+(* - Conditions when sup (weak f_i) = weak (f_ ^~ if_1 `*` f_2 `*`...)        *)
 (* - The compact-open topology is the topopology of compact convergence       *)
 (* - Cartesian closedness for the category of locally compact topologies      *)
 (*                                                                            *)
-(* ### Function space notations                                               *)
+(* ## Function space notations                                                *)
 (* ```                                                                        *)
 (*       {uniform` A -> V} == the space U -> V, equipped with the topology    *)
 (*                            of uniform convergence from a set A to V, where *)
@@ -53,11 +58,14 @@ Require Import reals signed topology.
 (*   {family fam, F --> f} == F converges to f in {family fam, U -> V}        *)
 (*  {compact_open, U -> V} == compact-open topology                           *)
 (* {compact_open, F --> f} == F converges to f in {compact_open, U -> V}      *)
+(* ```                                                                        *)
 (*                                                                            *)
-(* ### Ascoli's theorem notations                                             *)
+(* ## Ascoli's theorem notations                                              *)
+(* ```                                                                        *)
 (*      equicontinuous W x == the set (W : X -> Y) is equicontinuous at x     *)
 (*  pointwise_precompact W == for each (x : X), the set of images             *)
 (*                            [f x | f in W] is precompact                    *)
+(* ```                                                                        *)
 (******************************************************************************)
 
 Reserved Notation "{ 'uniform`' A -> V }"
@@ -83,7 +91,6 @@ Reserved Notation "{ 'compact-open' , U -> V }"
 Reserved Notation "{ 'compact-open' , F --> f }"
   (at level 0, F at level 69, format "{ 'compact-open' ,  F  -->  f }").
 
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -97,17 +104,17 @@ Local Open Scope ring_scope.
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
 Local Notation "'to_set' A x" := ([set y | A (x, y)])
   (at level 0, A at level 0) : classical_set_scope.
-(** Product topology, also knows as the topology of pointwise convergence *)
 
+(** Product topology, also known as the topology of pointwise convergence *)
 Section Product_Topology.
 
 Definition prod_topology {I : Type} (T : I -> Type) := forall i, T i.
 
-Variable (I : Type).
+Variable I : Type.
 
 Definition product_topology_def (T : I -> topologicalType) :=
   sup_topology (fun i => Topological.class
-    (weak_topology (fun f : [the pointedType of (forall i : I, T i)] => f i))).
+    (weak_topology (fun f : [the pointedType of forall i, T i] => f i))).
 
 HB.instance Definition _ (T : I -> topologicalType) :=
   Topological.copy (prod_topology T) (product_topology_def T).
@@ -129,14 +136,14 @@ Notation "{ 'ptws' , F --> f }" :=
   (cvg_to F (nbhs (f : {ptws _ -> _}))) : classical_set_scope.
 
 Module ArrowAsProduct.
-HB.instance Definition _ (U : Type) (T : U -> topologicalType) := 
-  Topological.copy (forall (x : U), T x) (prod_topology T).
+HB.instance Definition _ (U : Type) (T : U -> topologicalType) :=
+  Topological.copy (forall x : U, T x) (prod_topology T).
 
-HB.instance Definition _ (U : Type) (T : U -> uniformType) := 
-  Uniform.copy (forall (x : U), T x) (prod_topology T).
+HB.instance Definition _ (U : Type) (T : U -> uniformType) :=
+  Uniform.copy (forall x : U, T x) (prod_topology T).
 
-HB.instance Definition _ (U : Type) R (T : U -> pseudoMetricType R) := 
-  Uniform.copy (forall (x : U), T x) (prod_topology T).
+HB.instance Definition _ (U : Type) R (T : U -> pseudoMetricType R) :=
+  Uniform.copy (forall x : U, T x) (prod_topology T).
 End ArrowAsProduct.
 
 Section product_spaces.
@@ -157,7 +164,8 @@ rewrite eqEsubset; split => y //; exists (dfwith (fun=> point) i y) => //.
 by rewrite dfwithin.
 Qed.
 
-Lemma dfwith_continuous g (i : I) : continuous (dfwith g _ : K i -> (forall i, K i)).
+Lemma dfwith_continuous g (i : I) :
+  continuous (dfwith g _ : K i -> (forall i, K i)).
 Proof.
 move=> z U [] P [] [] Q QfinP <- [] V JV Vpz.
 move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
@@ -169,7 +177,7 @@ have [->|wnx] := eqVneq w i => N oN NM.
   apply: open_nbhs_nbhs; split => //; move: Vpz.
   by rewrite -VL => /(_ _ LM); rewrite -NM /= dfwithin.
 apply: nearW => y /=; move: Vpz.
-by rewrite -VL => /(_ _ LM); rewrite -NM /= ? dfwithout // eq_sym.
+by rewrite -VL => /(_ _ LM); rewrite -NM /= ?dfwithout // eq_sym.
 Qed.
 
 Lemma proj_open i (A : set (prod_topology K)) : open A -> open (proj i @` A).
@@ -199,29 +207,28 @@ End projection_maps.
 Lemma tychonoff (I : eqType) (T : I -> topologicalType)
   (A : forall i, set (T i)) :
   (forall i, compact (A i)) ->
-  compact [set f : (forall i, T i) | forall i, A i (f i)].
+  compact [set f : forall i, T i | forall i, A i (f i)].
 Proof.
 move=> Aco; rewrite compact_ultra => F FU FA.
 set subst_coord := fun (i : I) (pi : T i) (f : forall x : I, T x) (j : I) =>
   if eqP is ReflectT e then ecast i (T i) (esym e) pi else f j.
 have subst_coordT i pi f : subst_coord i pi f i = pi.
-  rewrite /subst_coord; case eqP => // e.
+  rewrite /subst_coord; case: eqP => // e.
   by rewrite (eq_irrelevance e (erefl _)).
 have subst_coordN i pi f j : i != j -> subst_coord i pi f j = f j.
   move=> inej; rewrite /subst_coord; case: eqP => // e.
   by move: inej; rewrite {1}e => /negP.
 have pr_surj i : @^~ i @` [set: forall i, T i] = setT.
   rewrite predeqE => pi; split=> // _.
-  by exists (subst_coord i pi (fun _ => point))=> //; rewrite subst_coordT.
+  by exists (subst_coord i pi (fun=> point)) => //; rewrite subst_coordT.
 pose pF i : set_system _ := [set @^~ i @` B | B in F].
-have pFultra : forall i, UltraFilter (pF i).
-  by move=> i; apply: ultra_image (pr_surj i).
-have pFA : forall i, pF i (A i).
-  move=> i; exists [set g | forall i, A i (g i)] => //.
+have pFultra i : UltraFilter (pF i) by exact: ultra_image (pr_surj i).
+have pFA i : pF i (A i).
+  exists [set g | forall i, A i (g i)] => //.
   rewrite predeqE => pi; split; first by move=> [g Ag <-]; apply: Ag.
   move=> Aipi; have [f Af] := filter_ex FA.
   exists (subst_coord i pi f); last exact: subst_coordT.
-  move=> j; case: (eqVneq i j); first by case: _ /; rewrite subst_coordT.
+  move=> j; have [<-{j}|] := eqVneq i j; first by rewrite subst_coordT.
   by move=> /subst_coordN ->; apply: Af.
 have cvpFA i : A i `&` [set p | pF i --> p] !=set0.
   by rewrite -ultra_cvg_clusterE; apply: Aco.
@@ -231,7 +238,7 @@ by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
 Qed.
 
 Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) :
-  perfect_set [set: K i] -> perfect_set [set: (forall i, K i)].
+  perfect_set [set: K i] -> perfect_set [set: forall i, K i].
 Proof.
 move=> /perfectTP KPo; apply/perfectTP => f oF; apply: (KPo (f i)).
 rewrite (_ : [set f i] = proj i @` [set f]).
@@ -240,23 +247,23 @@ by rewrite eqEsubset; split => ? //; [move=> -> /=; exists f | case=> g ->].
 Qed.
 
 Lemma perfect_diagonal (K : nat -> topologicalType) :
-  (forall i, exists (xy: K i * K i), xy.1 != xy.2) ->
-  perfect_set [set: (forall i, K i)].
+  (forall i, exists xy : K i * K i, xy.1 != xy.2) ->
+  perfect_set [set: forall i, K i].
 Proof.
 move=> npts; split; first exact: closedT.
 rewrite eqEsubset; split => f // _.
 pose distincts (i : nat) := projT1 (sigW (npts i)).
-pose derange (i : nat) (z : K i) :=
+pose derange i (z : K i) :=
   if z == (distincts i).1 then (distincts i).2 else (distincts i).1.
-pose g (N i : nat) := if (i < N)%nat then f i else derange _ (f i).
+pose g (N i : nat) := if (i < N)%N then f i else derange _ (f i).
 have gcvg : g @ \oo --> f.
   apply/cvg_sup => N U [V] [[W] oW <-] WfN WU.
   by apply: (filterS WU); rewrite nbhs_simpl /g; exists N.+1 => // i /= ->.
-move=> A /gcvg; rewrite nbhs_simpl; case=> N _ An.
-exists (g N); split => //; last by apply: An; rewrite /= ?leqnn //.
+move=> A /gcvg; rewrite nbhs_simpl => -[N _ An].
+exists (g N); split => //; last by apply: An; rewrite /= leqnn.
 apply/eqP => M; suff: g N N != f N by rewrite M; move/eqP.
-rewrite /g ltnn /derange eq_sym; case: (eqVneq (f N) (distincts N).1) => //.
-by move=> ->; have := projT2 (sigW (npts N)).
+rewrite /g ltnn /derange eq_sym; have [->|//] := eqVneq (f N) (distincts N).1.
+exact: projT2 (sigW (npts N)).
 Qed.
 
 Lemma zero_dimension_prod (I : choiceType) (T : I -> topologicalType) :
@@ -285,15 +292,14 @@ apply/(connected_continuous_connected ctC)/continuous_subspaceT.
 exact: proj_continuous.
 Qed.
 
+(**md A handy technique for embedding a space `T` into a product. The key
+  interface is `separate_points_from_closed`', which guarantees that the
+  topologies
+   - `T`'s native topology
+   - `sup (weak f_i)`: the sup of all the weak topologies of `f_i`
+   - `weak (x => (f_1 x, f_2 x, ...))`: the weak topology from the product space
 
-(* A handy technique for embedding a space T into a product. The key interface
-   is 'separate_points_from_closed', which guarantees that the topologies
-   - T's native topology
-   - sup (weak f_i) - the sup of all the weak topologies of f_i
-   - weak (x => (f_1 x, f_2 x,...)) - the weak topology from the product space
-  are equivalent (the last equivalence seems to require accessible_space).
-*)
-
+  are equivalent (the last equivalence seems to require accessible_space). *)
 Section product_embeddings.
 Context {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType}.
 Variable (f_ : forall i, T -> U_ i).
@@ -325,7 +331,7 @@ move/cvg_sup => wiFx U; rewrite /= nbhs_simpl nbhsE => [[B [oB ?]]].
 move/filterS; apply; have [//|i nclfix] := @sepf _ x (open_closedC oB).
 apply: (wiFx i); have /= -> := @nbhsE (weak_topology (f_ i)) x.
 exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); [split=>//|].
-  apply: open_comp; last by rewrite ?openC; last apply: closed_closure.
+  apply: open_comp; last by rewrite ?openC//; exact: closed_closure.
   by move=> + _; exact: (@weak_continuous _ _ (f_ i)).
 rewrite closureC preimage_bigcup => z [V [oV]] VnB => /VnB.
 by move/forall2NP => /(_ z) [] // /contrapT.
@@ -401,15 +407,11 @@ Qed.
 End product_embeddings.
 End product_spaces.
 
-
-(* ------------ the uniform topologies type ------------- *)
-
+(**md the uniform topologies type *)
 Section fct_Uniform.
-
 Variable (T : choiceType) (U : uniformType).
-Definition fct_ent :=
-  filter_from
-  (@entourage U)
+
+Definition fct_ent := filter_from (@entourage U)
   (fun P => [set fg | forall t : T, P (fg.1 t, fg.2 t)]).
 
 Lemma fct_ent_filter : Filter fct_ent.
@@ -451,21 +453,18 @@ Definition arrow_uniform_type : Type := T -> U.
 End fct_Uniform.
 
 Lemma cvg_fct_entourageP (T : choiceType) (U : uniformType)
-  (F : set_system (arrow_uniform_type T U)) (FF : Filter F) 
+    (F : set_system (arrow_uniform_type T U)) (FF : Filter F)
     (f : arrow_uniform_type T U) :
-  F --> f <->
-  forall A, entourage A ->
-  \forall g \near F, forall t, A (f t, g t).
+  F --> f <-> forall A, entourage A ->
+              \forall g \near F, forall t, A (f t, g t).
 Proof.
-split.
-  move=> /cvg_entourageP Ff A entA.
+split => [/cvg_entourageP Ff A entA|Ff].
   by apply: (Ff [set fg | forall t : T, A (fg.1 t, fg.2 t)]); exists A.
-move=> Ff; apply/cvg_entourageP => A [P entP sPA].
+apply/cvg_entourageP => A [P entP sPA].
 by near=> g do apply: sPA; apply: Ff.
 Unshelve. all: by end_near. Qed.
 
 Section fun_Complete.
-
 Context {T : choiceType} {U : completeType}.
 
 Lemma fun_complete (F : set_system (arrow_uniform_type T U))
@@ -482,8 +481,8 @@ move: (t); near: g; near: f; apply: nearP_dep; apply: Fc.
 exists ((split_ent A)^-1)%classic=> //=.
 Unshelve. all: by end_near. Qed.
 
-HB.instance Definition _ := Uniform_isComplete.Build 
-    (arrow_uniform_type T U) fun_complete.
+HB.instance Definition _ := Uniform_isComplete.Build
+  (arrow_uniform_type T U) fun_complete.
 
 HB.instance Definition _ (R : numFieldType) :=
   Uniform_isComplete.Build (arrow_uniform_type T U) cauchy_cvg.
@@ -493,8 +492,8 @@ End fun_Complete.
 (** Functional metric spaces *)
 Section fct_PseudoMetric.
 Variable (T : choiceType) (R : numFieldType) (U : pseudoMetricType R).
-Definition fct_ball (x : arrow_uniform_type T U) (eps : R) (y : arrow_uniform_type T U) :=
-  forall t : T, ball (x t) eps (y t).
+Definition fct_ball (x : arrow_uniform_type T U) (eps : R)
+  (y : arrow_uniform_type T U) := forall t : T, ball (x t) eps (y t).
 Lemma fct_ball_center (x : T -> U) (e : R) : 0 < e -> fct_ball x e x.
 Proof. by move=> /posnumP[{}e] ?. Qed.
 
@@ -511,25 +510,25 @@ move=> [P]; rewrite -entourage_ballE => -[_/posnumP[e] sbeP] sPA.
 by exists e%:num => //= fg fg_e; apply: sPA => t; apply: sbeP; apply: fg_e.
 Qed.
 
-HB.instance Definition _ := Uniform_isPseudoMetric.Build R 
-  (arrow_uniform_type T U) fct_ball_center fct_ball_sym 
+HB.instance Definition _ := Uniform_isPseudoMetric.Build R
+  (arrow_uniform_type T U) fct_ball_center fct_ball_sym
   fct_ball_triangle fct_entourage.
 End fct_PseudoMetric.
 
 Module ArrowAsUniformType.
-HB.instance Definition _ (U : choiceType) (V : uniformType) 
-   := Uniform.copy (U -> V) (arrow_uniform_type U V).
+HB.instance Definition _ (U : choiceType) (V : uniformType) :=
+  Uniform.copy (U -> V) (arrow_uniform_type U V).
 
-HB.instance Definition _ (U : choiceType) (R : numFieldType) 
-      (V : pseudoMetricType R) 
-   := PseudoMetric.copy (U -> V) (arrow_uniform_type U V).
+HB.instance Definition _ (U : choiceType) (R : numFieldType)
+    (V : pseudoMetricType R) :=
+  PseudoMetric.copy (U -> V) (arrow_uniform_type U V).
 End ArrowAsUniformType.
 
 (** Limit switching *)
 Section Cvg_switch.
-
-Local Import ArrowAsUniformType.
 Context {T1 T2 : choiceType}.
+Local Import ArrowAsUniformType.
+
 Lemma cvg_switch_1 {U : uniformType}
   F1 {FF1 : ProperFilter F1} F2 {FF2 : Filter F2}
   (f : T1 -> T2 -> U) (g : T2 -> U) (h : T1 -> U) (l : U) :
@@ -628,6 +627,7 @@ by move: Efg => /= /(_ (@exist _ (fun x => in_mem x (mem A)) _ At)).
 Qed.
 
 End RestrictedUniformTopology.
+
 Lemma restricted_cvgE {U : choiceType} {V : uniformType}
     (F : set_system (U -> V)) A (f : U -> V) :
   {uniform A, F --> f} = (F --> (f : {uniform` A -> V})).
@@ -639,19 +639,17 @@ Lemma pointwise_cvgE {U : Type} {V : topologicalType}
 Proof. by []. Qed.
 
 
-(* We use this function to help coq identify the correct notation to use
-   when printing. Otherwise you get goals like `F --> f -> F --> f`      *)
-
+(**md We use this function to help Coq identify the correct notation to use
+  when printing. Otherwise you get goals like `F --> f -> F --> f`. *)
 Definition uniform_fun_family {U} V (fam : set U -> Prop) := U -> V.
 
 Notation "{ 'family' fam , U -> V }" :=  (@uniform_fun_family U V fam).
 Notation "{ 'family' fam , F --> f }" :=
   (cvg_to F (@nbhs _ {family fam, _ -> _} f)) : type_scope.
 
-HB.instance Definition _
-    {U : choiceType} {V : uniformType} (fam : set U -> Prop) :=
-  Uniform.copy {family fam, U -> V}
-    (sup_topology (fun k : sigT fam =>
+HB.instance Definition _ {U : choiceType} {V : uniformType}
+    (fam : set U -> Prop) :=
+  Uniform.copy {family fam, U -> V} (sup_topology (fun k : sigT fam =>
        Uniform.class [the uniformType of {uniform` projT1 k -> V}])).
 
 Section UniformCvgLemmas.
@@ -1002,8 +1000,8 @@ Unshelve. all: by end_near. Qed.
 End compact_open_uniform.
 
 Module ArrowAsCompactOpen.
-HB.instance Definition _ (U : topologicalType) (V : topologicalType) 
-   := Topological.copy (U -> V) {compact-open, U -> V}.
+HB.instance Definition _ (U : topologicalType) (V : topologicalType) :=
+  Topological.copy (U -> V) {compact-open, U -> V}.
 End ArrowAsCompactOpen.
 
 Definition compactly_in {U : topologicalType} (A : set U) :=
@@ -1049,7 +1047,6 @@ apply: (@uniform_limit_continuous (subspace K) _ (restrict K @ F) _).
 by apply (@uniform_restrict_cvg _ _ F ) => //; exact: PF.
 Qed.
 
-
 End UniformContinuousLimits.
 
 Section UniformPointwise.
@@ -1093,14 +1090,11 @@ Qed.
 End UniformPointwise.
 
 Section ArzelaAscoli.
-Context {X : topologicalType}.
-Context {Y : uniformType}.
-Context {hsdf : hausdorff_space Y}.
+Context {X : topologicalType} {Y : uniformType} {hsdf : hausdorff_space Y}.
 Implicit Types (I : Type).
 
-(* The key condition in Arzela-Ascoli that, like uniform continuity,
-   moves a quantifier around so all functions have the same 'deltas'. *)
-
+(** The key condition in Arzela-Ascoli that, like uniform continuity, moves a
+    quantifier around so all functions have the same "deltas": *)
 Definition equicontinuous {I} (W : set I) (d : I -> (X -> Y)) :=
   forall x (E : set (Y * Y)), entourage E ->
     \forall y \near x, forall i, W i -> E (d i x, d i y).
@@ -1134,8 +1128,8 @@ move=> ectsW Wf x; apply: equicontinuous_continuous_for; last exact: Wf.
 by move=> ?; exact: ectsW.
 Qed.
 
-(* A convenient notion that is in between compactness in
-   {family compact, X -> y} and compactness in {ptws X -> y}.*)
+(**md A convenient notion that is in between compactness in
+   `{family compact, X -> y}` and compactness in `{ptws X -> y}`: *)
 Definition pointwise_precompact {I} (W : set I) (d : I -> X -> Y) :=
   forall x, precompact [set d i x | i in W].
 

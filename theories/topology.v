@@ -368,6 +368,7 @@ Require Import reals signed.
 (* We endow `numFieldType` with the types of topological notions              *)
 (* (accessible with `Import numFieldTopology.Exports.`)                       *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*                 dense S == the set (S : set T) is dense in T, with T of    *)
 (*                            type topologicalType                            *)
 (* ```                                                                        *)
@@ -378,10 +379,6 @@ Require Import reals signed.
 (*                            topology that ignores points outside A          *)
 (*         incl_subspace x == with x of type subspace A with (A : set T),     *)
 (*                            inclusion of subspace A into T                  *)
-(* separate_points_from_closed f == for a closed set U and point x outside    *)
-(*                            some member of the family f, it sends f_i(x)    *)
-(*                            outside (closure (f_i @` U))                    *)
-(*                            Used together with join_product.                *)
 (*          join_product f == the function (x => f ^~ x)                      *)
 (*                            When the family f separates points from closed  *)
 (*                            sets, join_product is an embedding.             *)
@@ -445,10 +442,6 @@ Reserved Notation "{ 'uniform' A , F --> f }"
 Reserved Notation "{ 'uniform' , F --> f }"
   (at level 0, F at level 69,
    format "{ 'uniform' ,  F  -->  f }").
-Reserved Notation "{ 'ptws' U -> V }"
-  (at level 0, U at level 69, format "{ 'ptws'  U  ->  V }").
-Reserved Notation "{ 'ptws' , F --> f }"
-  (at level 0, F at level 69, format "{ 'ptws' ,  F  -->  f }").
 Reserved Notation "{ 'family' fam , U -> V }"
   (at level 0, U at level 69, format "{ 'family'  fam ,  U  ->  V }").
 Reserved Notation "{ 'family' fam , F --> f }"

@@ -7,7 +7,7 @@ From mathcomp Require Import mathcomp_extra boolp.
 Require Import signed.
 
 (**md**************************************************************************)
-(* # Numbers within an intervel                                               *)
+(* # Numbers within an interval                                               *)
 (*                                                                            *)
 (* This file develops tools to make the manipulation of numbers within        *)
 (* a known interval easier, thanks to canonical structures. This adds types   *)

@@ -78,6 +78,10 @@
 
 ### Removed
 
+- in `topology.v`:
+  + definition `pointwise_fun`
+  + module `PtwsFun`
+
 ### Infrastructure
 
 ### Misc
