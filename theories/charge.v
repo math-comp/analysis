@@ -704,7 +704,7 @@ have g_cvg_0 : (g_ \o v) n @[n --> \oo] --> 0 by apply: mine2_cvg_0_cvg_0 => //=
 have nuDAoo : nu D >= nu (D `\` Aoo).
   rewrite -[in leRHS](@setDUK _ Aoo D); last first.
     by apply: bigcup_sub => i _; exact: A_D.
-  by rewrite chargeU// ?lee_addr// ?setDIK//; exact: measurableD.
+  by rewrite chargeU// ?leeDr// ?setDIK//; exact: measurableD.
 split; [by []| |by []]; split; [exact: measurableD | move=> E mE EDAoo].
 pose H n := subDD (\big[setU/set0]_(i < n) A_ (v i)).
 have EH n : [set nu E] `<=` H n.
@@ -940,7 +940,7 @@ Proof. by rewrite /= /cscale/= EFinN mulN1e. Qed.
 Let positive_set_cjordan_neg E : 0 <= cjordan_neg E.
 Proof.
 rewrite cjordan_negE /crestr0/=; case: ifPn; rewrite ?oppe0//.
-move=> /[!inE] mE; rewrite /crestr lee_oppr oppe0.
+move=> /[!inE] mE; rewrite /crestr leeNr oppe0.
 by move: nuPN => [_ [_ +] _ _] => -> //; exact: measurableI.
 Qed.
 
@@ -1496,7 +1496,7 @@ have hnu S : measurable S -> \int[mu]_(x in S) h x <= nu S.
   have mSDAP : measurable (S `\` AP) by exact: measurableD.
   rewrite integral_setU //.
   - rewrite measureU//.
-      by apply: lee_add; [exact: hnuN|exact: hnuP].
+      by apply: leeD; [exact: hnuN|exact: hnuP].
     by rewrite setDE setIACA setICl setI0.
   - exact: measurable_funTS.
   - by rewrite disj_set2E setDE setIACA setICl setI0.

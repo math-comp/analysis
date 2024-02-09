@@ -6,6 +6,10 @@
 
 ### Changed
 
+- move from `kernel.v` to `measure.v`
+  + definition `mset`, `pset`, `pprobability`
+  + lemmas `lt0_mset`, `gt1_mset`
+
 ### Renamed
 
 - in `constructive_ereal.v`:
