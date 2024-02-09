@@ -27,7 +27,7 @@ Require Import reals signed topology.
 (* The major results are:                                                     *)
 (* - Compactness in the product topology via Tychonoff's                      *)
 (* - Compactness in the compact convergence topology via Ascoli's             *)
-(* - Conditions when sup (weak f_i) = weak (f_ ^~ if_1 `*` f_2 `*`...)        *)
+(* - Conditions when the supremum and weak topology commute in products       *)
 (* - The compact-open topology is the topopology of compact convergence       *)
 (* - Cartesian closedness for the category of locally compact topologies      *)
 (*                                                                            *)
@@ -39,10 +39,9 @@ Require Import reals signed topology.
 (*        {uniform U -> V} := {uniform` [set: U] -> V}                        *)
 (*    {uniform A, F --> f} == F converges to f in {uniform A -> V}            *)
 (*      {uniform, F --> f} := {uniform setT, F --> f}                         *)
-(*           {ptws U -> V} == the space U -> V, equipped with the topology of *)
-(*                            pointwise convergence from U to V, where V is   *)
-(*                            a topologicalType                               *)
-(*                            This is a notation for @fct_Pointwise U V.      *)
+(*       prod_topology I T == the topology of pointwise convergence on the    *)
+(*                            dependent space `forall (i:I), T i`             *)
+(*           {ptws U -> V} == prod_topology for the non-dependent product     *)
 (* separate_points_from_closed f == for a closed set U and point x outside    *)
 (*                            some member of the family f, it sends f_i(x)    *)
 (*                            outside (closure (f_i @` U))                    *)
@@ -50,11 +49,9 @@ Require Import reals signed topology.
 (*          join_product f == the function (x => f ^~ x)                      *)
 (*                            When the family f separates points from closed  *)
 (*         {ptws, F --> f} == F converges to f in {ptws U -> V}               *)
-(*    {family fam, U -> V} == the space U -> V, equipped with the supremum    *)
-(*                            topology of {uniform A -> f} for each A in      *)
-(*                            'fam'                                           *)
-(*                            In particular {family compact, U -> V} is the   *)
-(*                            topology of compact convergence.                *)
+(*    {family fam, U -> V} == the supremum of {uniform A -> f} for each A in  *)
+(*                            'fam'. In particular {family compact, U -> V}   *)
+(*                            is the topology of compact convergence.         *)
 (*   {family fam, F --> f} == F converges to f in {family fam, U -> V}        *)
 (*  {compact_open, U -> V} == compact-open topology                           *)
 (* {compact_open, F --> f} == F converges to f in {compact_open, U -> V}      *)
@@ -152,10 +149,7 @@ Local Import ArrowAsProduct.
 Section projection_maps.
 Context {I : eqType} {K : I -> topologicalType}.
 
-(* Note we have to give the signature explicitly because there's no canonical *)
-(* topology associated with `K`. This should be cleaned up after HB port.     *)
-
-Lemma proj_continuous i : continuous (proj i : (forall i, K i) -> K i).
+Lemma proj_continuous i : continuous (@proj I K i).
 Proof.
 move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
 move=> h; apply: cvg_trans (h _) => {h}.
@@ -164,8 +158,8 @@ rewrite eqEsubset; split => y //; exists (dfwith (fun=> point) i y) => //.
 by rewrite dfwithin.
 Qed.
 
-Lemma dfwith_continuous g (i : I) :
-  continuous (dfwith g _ : K i -> (forall i, K i)).
+
+Lemma dfwith_continuous g (i : I) : continuous (@dfwith I K g i).
 Proof.
 move=> z U [] P [] [] Q QfinP <- [] V JV Vpz.
 move/(@preimage_subset _ _ (dfwith g i))/filterS; apply.
