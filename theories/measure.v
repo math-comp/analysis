@@ -81,46 +81,51 @@ From HB Require Import structures.
 (*                            T is expected to be a semiring of sets and R a  *)
 (*                            numFieldType.                                   *)
 (*                            The HB class is Measure.                        *)
-(* Content_SubSigmaAdditive_isMeasure ==                                      *)
-(*                      mixin that extends a content to a measure with the    *)
-(*                      proof that it is semi_sigma_additive                  *)
-(* Content_isMeasure == factory that extends a content to a measure with      *)
-(*                      the proof that it is sub_sigma_additive               *)
-(*                 isMeasure == factory corresponding to the "textbook        *)
+(* Content_SubSigmaAdditive_isMeasure == mixin that extends a content to a    *)
+(*                            measure with the proof that it is               *)
+(*                            semi_sigma_additive                             *)
+(*       Content_isMeasure == factory that extends a content to a measure     *)
+(*                            with the proof that it is sub_sigma_additive    *)
+(*               isMeasure == factory corresponding to the "textbook          *)
 (*                            definition" of measures                         *)
-(*           sfinite_measure == predicate for s-finite measure functions      *)
+(*         sfinite_measure == predicate for s-finite measure functions        *)
 (* {sfinite_measure set T -> \bar R} == type of s-finite measures             *)
 (*                            The HB class is SFiniteMeasure.                 *)
-(*    sfinite_measure_seq mu == the sequence of finite measures of the        *)
+(*  sfinite_measure_seq mu == the sequence of finite measures of the          *)
 (*                            s-finite measure mu                             *)
-(*  Measure_isSFinite_subdef == mixin for s-finite measures                   *)
-(*         Measure_isSFinite == factory for s-finite measures                 *)
+(* Measure_isSFinite_subdef == mixin for s-finite measures                    *)
+(*       Measure_isSFinite == factory for s-finite measures                   *)
 (* {sigma_finite_content set T -> \bar R} == contents that are also sigma     *)
 (*                            finite                                          *)
 (*                            The HB class is SigmaFiniteContent.             *)
 (* {sigma_finite_measure set T -> \bar R} == measures that are also sigma     *)
 (*                            finite                                          *)
 (*                            The HB class is SigmaFiniteMeasure.             *)
-(*          sigma_finite A f == the measure function f is sigma-finite on the *)
+(*        sigma_finite A f == the measure function f is sigma-finite on the   *)
 (*                            A : set T with T a semiring of sets             *)
-(*               fin_num_fun == predicate for finite function over measurable *)
+(*             fin_num_fun == predicate for finite function over measurable   *)
 (*                            sets                                            *)
-(*            FinNumFun.type == type of functions over semiring of sets       *)
+(*          FinNumFun.type == type of functions over semiring of sets         *)
 (*                            returning a fin_num                             *)
 (*                            The HB class is FinNumFun.                      *)
 (* {finite_measure set T -> \bar R} == finite measures                        *)
 (*                            The HB class is FiniteMeasure.                  *)
-(*      SigmaFinite_isFinite == mixin for finite measures                     *)
-(*          Measure_isFinite == factory for finite measures                   *)
-(*       subprobability T R == subprobability measure over the measurableType *)
+(*    SigmaFinite_isFinite == mixin for finite measures                       *)
+(*        Measure_isFinite == factory for finite measures                     *)
+(*      subprobability T R == subprobability measure over the measurableType  *)
 (*                            T with values in \bar R with R : realType       *)
 (*                            The HB class is SubProbability.                 *)
 (*         probability T R == probability measure over the measurableType T   *)
 (*                            with values in \bar with R : realType           *)
-(*               probability == type of probability measures                  *)
+(*             probability == type of probability measures                    *)
 (*                            The HB class is Probability.                    *)
-(*     Measure_isProbability == factor for probability measures               *)
-(*              mnormalize mu == normalization of a measure to a probability  *)
+(*   Measure_isProbability == factor for probability measures                 *)
+(*           mnormalize mu == normalization of a measure to a probability     *)
+(*                mset U r == the set of probability measures mu such that    *)
+(*                            mu U < r                                        *)
+(*                    pset == the sets mset U r with U measurable and         *)
+(*                            r \in [0,1]                                     *)
+(*            pprobability == the measurable type generated by pset           *)
 (* {outer_measure set T -> \bar R} == type of an outer measure over sets      *)
 (*                            of elements of type T : Type where R is         *)
 (*                            expected to be a numFieldType                   *)
@@ -2950,6 +2955,11 @@ HB.mixin Record isProbability d (T : measurableType d) (R : realType)
 HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
   {P of @SubProbability d T R P & isProbability d T R P }.
 
+HB.instance Definition _ d (T : measurableType d) (R : realType) :=
+  gen_eqMixin (probability T R).
+HB.instance Definition _ d (T : measurableType d) (R : realType) :=
+  gen_choiceMixin (probability T R).
+
 Section probability_lemmas.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
@@ -3035,6 +3045,35 @@ HB.instance Definition _ x :=
   Measure_isProbability.Build _ _ _ (@dirac _ T x R) (diracT R x).
 
 End pdirac.
+
+HB.instance Definition _ d (T : measurableType d) (R : realType) :=
+  isPointed.Build (probability T R) [the probability _ _ of dirac point].
+
+Section dist_salgebra_instance.
+Context d (T : measurableType d) (R : realType).
+
+Definition mset (U : set T) (r : R) := [set mu : probability T R | mu U < r%:E].
+
+Lemma lt0_mset (U : set T) (r : R) : (r < 0)%R -> mset U r = set0.
+Proof.
+move=> r0; apply/seteqP; split => // x/=.
+by apply/negP; rewrite -leNgt (@le_trans _ _ 0)// lee_fin ltW.
+Qed.
+
+Lemma gt1_mset (U : set T) (r : R) :
+  measurable U -> (1 < r)%R -> mset U r = [set: probability T R].
+Proof.
+move=> mU r1; apply/seteqP; split => // x/= _.
+by rewrite /mset/= (le_lt_trans (probability_le1 _ _)).
+Qed.
+
+Definition pset : set (set (probability T R)) :=
+  [set mset U r | r in `[0%R,1%R] & U in measurable].
+
+Definition pprobability : measurableType pset.-sigma :=
+  [the measurableType _ of salgebraType pset].
+
+End dist_salgebra_instance.
 
 Lemma sigma_finite_counting (R : realType) :
   sigma_finite [set: nat] (@counting _ R).
