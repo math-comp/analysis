@@ -251,10 +251,8 @@ rewrite !letin'_sample_uniform//.
 congr (_ * _)%E.
 apply: eq_integral => p p01.
 apply: s01.
-by rewrite inE in t01.
-admit.
-admit.
-Admitted.
+by rewrite inE in p01.
+Qed.
 
 (* Lemma casino01 : execP casino0 = execP casino1.
 Proof.
