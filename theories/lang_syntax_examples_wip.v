@@ -414,4 +414,64 @@ congr (_%:E * _)%E.
 lra.
 Qed.
 
+Definition casino2 : @exp R _ [::] _ :=
+  [let "p" := Sample {exp_uniform 0 1 a01} in 
+   let "_" := Score {[{56}:R * #{"p"} ^+ {5%nat} * {[{1}:R - #{"p"}]} ^+ {3%nat}]} in
+   Sample {exp_bernoulli_trunc [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%nat}]}].
+
+Lemma casino12 y V :
+  measurable V ->
+  execP casino1' y V = execP casino2 y V.
+Proof.
+move=> mV.
+rewrite /casino1' /casino2.
+apply: execP_letin_uniform => //.
+move=> p x U /andP[p0 p1].
+rewrite !execP_letin !execP_sample execP_if execD_rel/=.
+rewrite !execP_score !(@execD_bin _ _ binop_mult).
+rewrite !execD_bernoulli_trunc/= !(@execD_bin _ _ binop_minus) !execD_pow.
+rewrite !(@execD_bin _ _ binop_minus)/=.
+rewrite !execD_real !execD_nat/= execP_return execD_unit.
+rewrite !execD_binomial_trunc/=.
+rewrite !exp_var'E !(execD_var_erefl "p") !(execD_var_erefl "a1")/=.
+rewrite !letin'E/=.
+rewrite integral_binomial_probabilty_trunc//=.
+(* set s := letin' _ _. *)
+rewrite (bigD1 (inord 5))//=.
+  rewrite big1; last first.
+  move=> [[|[|[|[|[|[|[|[|[|//]]]]]]]]]]//= Hi Hi5; rewrite letin'E iteE;
+  rewrite ?ge0_integral_mscale//= ?normr0 ?mul0e ?mule0 ?add0e//.
+  suff: false by [].
+  move/negbTE: Hi5 => <-.
+  by apply/eqP/val_inj => /=; rewrite inordK.
+rewrite letin'E iteE ge0_integral_mscale//= inordK//= adde0 /onem.
+congr (_ * _)%E.
+rewrite ger0_norm.
+  by rewrite -mulrA mulr_natl.
+apply/mulr_ge0.
+  exact/mulr_ge0/exprn_ge0.
+apply/exprn_ge0.
+by rewrite subr_ge0.
+Qed.
+
+Definition casino3 : @exp R _ [::] _ :=
+  [let "_" := Score {1 / 9}:R in
+   let "p" := Sample {exp_beta 6 4} in
+   Sample {exp_bernoulli_trunc [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%nat}]}].
+
+Definition casino4 : @exp R _ [::] _ :=
+  [let "_" := Score {1 / 9}:R in
+   Sample {exp_bernoulli_trunc [{10 / 11}:R]}].
+
+Definition casino5 : @exp R _ [::] _ :=
+  [Normalize Sample {exp_bernoulli_trunc [{10 / 11}:R]}].
+
+(* Lemma casino5_ans U : projT1 (execD casino5) tt U =
+  ((10 / 11)%:E * \d_true U + (1 / 11)%:E * \d_false U)%E.
+Proof.
+rewrite /casino5 execD_normalize_pt execP_sample execD_bernoulli_trunc/=.
+rewrite execD_real/=.
+rewrite normalizeE/= bernoulli_truncE.
+rewrite /mnormalize/=. *)
+
 End casino_example.
