@@ -619,7 +619,7 @@ apply: mulr_ge0; apply/exprn_ge0; lra. *)
 
 Set Printing All.
 
-Lemma beta_ge0 : 0 <= B.
+Lemma B_ge0 : 0 <= B.
 Proof.
 rewrite /B.
 Admitted.
@@ -637,12 +637,39 @@ apply/measurable_fun_pow/measurable_funB => //.
 Qed. *)
 
 (* TODO: beta_ge0 a b : is_true (0 <= beta a b) (to remove %E) *)
-Let p01 : 0 < 1 - 0 :> R.
-Proof. lra. Qed.
+Definition p01 : 0 < 1 - 0 :> R.
+Proof. by []. Qed.
+
+Definition prebeta U : \bar R :=
+  (* \int[lebesgue_measure]_(x in U `&` `[0, 1]) (x^+(a-1) * (1-x)^+(b-1))%:E. *)
+  \int[uniform_probability p01]_(t in U) (t^+(a-1) * (1-t)^+(b-1))%:E.
+
+Let prebeta0 : prebeta set0 = 0%:E.
+Proof.
+(* by rewrite /prebeta integral_setI_indic// integral_set0. *)
+by rewrite /prebeta integral_set0.
+Qed.
+
+Let prebeta_ge0 U : (0 <= prebeta U)%E.
+Proof.
+rewrite /prebeta.
+rewrite integral_ge0// => x Ux.
+Admitted.
+
+Let prebeta_sigma_additive : semi_sigma_additive prebeta.
+Proof. move=> /= F mF tF mUF.
+rewrite /prebeta.
+Admitted.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ prebeta
+  prebeta0 prebeta_ge0 prebeta_sigma_additive.
+
+(* HB.instance Definition _ := Measure.on prebeta. *)
 
 (* 1/B(a, b) * \int_U p^(a-1) * (1-p)^(b-1) dx = beta *)
-Definition beta (U : set _) : \bar R :=
-  (1 / B)%:E * \int[uniform_probability p01]_(t in U) (t^+(a-1) * (1-t)^+(b-1))%:E.
+Definition beta : set _ -> \bar R :=
+  @mscale _ _ R (invr_nonneg (NngNum B_ge0)) prebeta.
+
   (* \int[lebesgue_measure]_(t in U)
   @mscale _ _ R (t^+(a-1)
   (* * (NngNum (onem_ge0 p1))%:num^+(b-1) *)
@@ -650,14 +677,24 @@ Definition beta (U : set _) : \bar R :=
   (invr_nonneg (NngNum beta_ge0))%:num)%:nng
     (mrestr lebesgue_measure (measurable_itv `[0, 1])) U. *)
 
-Example __ : beta `[0, 1] = 1%:E.
+HB.instance Definition _ := Measure.on beta.
+
+Let beta_setT : beta [set: _] = 1%:E.
 Proof.
-rewrite /beta integral_mkcond.
-rewrite integral_uniform//=.
-rewrite oppr0 addr0 invr1 mul1e.
+rewrite /beta /mscale/= /mrestr/=.
 Admitted.
 
-HB.instance Definition _ (p : {nonneg R}) (p1 : p%:num <= 1)
+HB.instance Definition _ := @Measure_isProbability.Build _ _ R
+  beta beta_setT.
+
+Example __ : beta `[0, 1] = 1%:E.
+Proof.
+(* rewrite /beta integral_mkcond.
+rewrite integral_uniform//=.
+rewrite oppr0 addr0 invr1 mul1e. *)
+Admitted.
+
+(* HB.instance Definition _ (p : {nonneg R}) (p1 : p%:num <= 1)
   := Measure.on (beta p1).
 
 Let beta_setT (p : {nonneg R}) (p1 : p%:num <= 1)
@@ -670,7 +707,7 @@ rewrite ltr01 oppr0 adde0 mule1 /B /Beta.
 Admitted.
 
 HB.instance Definition _ (p : {nonneg R}) (p1 : p%:num <= 1) := @Measure_isProbability.Build _ _ R
-  (beta p1) (beta_setT p1).
+  (beta p1) (beta_setT p1). *)
 
 (* Lemma __ : beta_probability 6 4 (p1S 2) `[0, 1] = 1%:E.
 Proof.
