@@ -4629,19 +4629,19 @@ Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 Lemma measurable_fun_xsection A : measurable A -> measurable_fun setT (phi A).
 Proof.
 move: A; suff : measurable `<=` B by move=> + A => /[apply] -[].
-have /sigma_finiteP [F F_T [F_nd F_oo]] := sigma_finiteT m2 => X mX.
+have /sigma_finiteP [F [F_T F_nd F_oo]] := sigma_finiteT m2 => X mX.
 have -> : X = \bigcup_n (X `&` (setT `*` F n)).
   by rewrite -setI_bigcupr -setM_bigcupr -F_T setMTT setIT.
 apply: xsection_ndseq_closed.
   move=> m n mn; apply/subsetPset; apply: setIS; apply: setSM => //.
   exact/subsetPset/F_nd.
 move=> n; rewrite -/B; have [? ?] := F_oo n.
-pose m2Fn := [the measure _ _ of mrestr m2 (F_oo n).1].
+pose m2Fn := mrestr m2 (F_oo n).1.
 have m2Fn_bounded : exists M, forall X, measurable X -> (m2Fn X < M%:E)%E.
   exists (fine (m2Fn (F n)) + 1) => Y mY.
   rewrite [in ltRHS]EFinD lte_spadder// fineK; last first.
-    by rewrite ge0_fin_numE ?measure_ge0//= /mrestr/= setIid.
-  by rewrite /= /mrestr/= setIid le_measure// inE//; exact: measurableI.
+    by rewrite ge0_fin_numE ?measure_ge0//= /m2Fn /mrestr setIid.
+  by rewrite /m2Fn /mrestr/= setIid le_measure// inE//; exact: measurableI.
 pose phi' A := m2Fn \o xsection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (phi' A)].
 have subset_B' : measurable `<=` B' by exact: measurable_prod_subset_xsection.
@@ -4664,14 +4664,14 @@ Let B := [set A | measurable A /\ measurable_fun setT (phi A)].
 Lemma measurable_fun_ysection A : measurable A -> measurable_fun setT (phi A).
 Proof.
 move: A; suff : measurable `<=` B by move=> + A => /[apply] -[].
-have /sigma_finiteP[F F_T [F_nd F_oo]] := sigma_finiteT m1 => X mX.
+have /sigma_finiteP[F [F_T F_nd F_oo]] := sigma_finiteT m1 => X mX.
 have -> : X = \bigcup_n (X `&` (F n `*` setT)).
   by rewrite -setI_bigcupr -setM_bigcupl -F_T setMTT setIT.
 apply: ysection_ndseq_closed.
   move=> m n mn; apply/subsetPset; apply: setIS; apply: setSM => //.
   exact/subsetPset/F_nd.
 move=> n; have [? ?] := F_oo n; rewrite -/B.
-pose m1Fn := [the measure _ _ of mrestr m1 (F_oo n).1].
+pose m1Fn := mrestr m1 (F_oo n).1.
 have m1Fn_bounded : exists M, forall X, measurable X -> (m1Fn X < M%:E)%E.
   exists (fine (m1Fn (F n)) + 1) => Y mY.
   rewrite [in ltRHS]EFinD lte_spadder// fineK; last first.
@@ -4761,8 +4761,8 @@ Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
 
 Let product_measure_sigma_finite : sigma_finite setT (m1 \x m2).
 Proof.
-have /sigma_finiteP[F TF [ndF Foo]] := sigma_finiteT m1.
-have /sigma_finiteP[G TG [ndG Goo]] := sigma_finiteT m2.
+have /sigma_finiteP[F [TF ndF Foo]] := sigma_finiteT m1.
+have /sigma_finiteP[G [TG ndG Goo]] := sigma_finiteT m2.
 exists (fun n => F n `*` G n).
  rewrite -setMTT TF TG predeqE => -[x y]; split.
     move=> [/= [n _ Fnx] [k _ Gky]]; exists (maxn n k) => //; split.
@@ -4784,8 +4784,8 @@ Lemma product_measure_unique
   forall X : set (T1 * T2), measurable X -> (m1 \x m2) X = m' X.
 Proof.
 move=> m'E.
-have /sigma_finiteP[F TF [ndF Foo]] := sigma_finiteT m1.
-have /sigma_finiteP[G TG [ndG Goo]] := sigma_finiteT m2.
+have /sigma_finiteP[F [TF ndF Foo]] := sigma_finiteT m1.
+have /sigma_finiteP[G [TG ndG Goo]] := sigma_finiteT m2.
 have UFGT : \bigcup_k (F k `*` G k) = setT.
   rewrite -setMTT TF TG predeqE => -[x y]; split.
     by move=> [n _ []/= ? ?]; split; exists n.
