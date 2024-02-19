@@ -10,6 +10,9 @@
   + definition `mset`, `pset`, `pprobability`
   + lemmas `lt0_mset`, `gt1_mset`
 
+- in `measure.v`:
+  + lemma `sigma_finiteP` generalized to an equivalence and changed to use `[/\ ..., .. & ....]`
+
 ### Renamed
 
 - in `constructive_ereal.v`:

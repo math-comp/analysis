@@ -3243,7 +3243,7 @@ Context d (R : realFieldType) (T : ringOfSetsType d).
 Variable mu : {content set T -> \bar R}.
 
 Theorem Boole_inequality (A : (set T) ^nat) n :
-    (forall i, `I_n i -> measurable (A i)) ->
+    (forall i, (i < n)%N -> measurable (A i)) ->
   mu (\big[setU/set0]_(i < n) A i) <= \sum_(i < n) mu (A i).
 Proof.
 move=> Am; rewrite content_sub_additive// -bigcup_mkord.
@@ -3257,21 +3257,20 @@ Section sigma_finite_lemma.
 Context d (T : ringOfSetsType d) (R : realFieldType) (A : set T)
         (mu : {content set T -> \bar R}).
 
-Lemma sigma_finiteP : sigma_finite A mu ->
-  exists2 F, A = \bigcup_i F i &
-    nondecreasing_seq F /\ forall i, measurable (F i) /\ mu (F i) < +oo.
+Lemma sigma_finiteP : sigma_finite A mu <->
+  exists F, [/\ A = \bigcup_i F i,
+    nondecreasing_seq F & forall i, measurable (F i) /\ mu (F i) < +oo].
 Proof.
-move=> [S AS moo]; exists (fun n => \big[setU/set0]_(i < n.+1) S i).
-  rewrite AS predeqE => t; split => [[i _ Sit]|[i _]].
-    by exists i => //; rewrite big_ord_recr /=; right.
-  by rewrite -bigcup_mkord => -[j /= ji Sjt]; exists j.
-split=> [|i].
-- apply/nondecreasing_seqP => i; rewrite [in leRHS]big_ord_recr /=.
-  by apply/subsetPset; left.
-- split; first by apply: bigsetU_measurable => j _; exact: (moo j).1.
-  rewrite (@le_lt_trans _ _ (\sum_(j < i.+1) mu (S j)))//.
-    by apply: Boole_inequality => j _; exact: (moo j).1.
-  by apply/lte_sum_pinfty => j _; exact: (moo j).2.
+split=> [[F AUF mF]|[F [? ? ?]]]; last by exists F.
+exists (fun n => \big[setU/set0]_(i < n.+1) F i); split.
+- rewrite AUF; apply/seteqP; split.
+    by apply: subset_bigcup => i _; exact: bigsetU_sup.
+  by apply: bigcup_sub => i _; exact: bigsetU_bigcup.
+- by move=> i j ij; exact/subsetPset/subset_bigsetU.
+- move=> i; split; first by apply: bigsetU_measurable => j _; exact: (mF j).1.
+  rewrite (le_lt_trans (Boole_inequality _ _))//.
+    by move=> j _; exact: (mF _).1.
+  by apply/lte_sum_pinfty => j _; exact: (mF j).2.
 Qed.
 
 End sigma_finite_lemma.
