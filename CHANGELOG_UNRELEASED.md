@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `exp.v`
+  + lemma `ln_lt0`
+
 ### Changed
 
 - move from `kernel.v` to `measure.v`

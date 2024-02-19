@@ -658,7 +658,7 @@ Proof.
 by move=> x_ge1; rewrite -ler_expR expR0 lnK// qualifE/= (lt_le_trans _ x_ge1).
 Qed.
 
-Lemma ln_lt0 (x : R) : 0 < x < 1 -> ln x < 0.
+Lemma ln_lt0 x : 0 < x < 1 -> ln x < 0.
 Proof.
 by move=> /andP[x_gt0 x_lt1]; rewrite -ltr_expR expR0 lnK.
 Qed.
