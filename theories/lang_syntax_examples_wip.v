@@ -1,12 +1,12 @@
 Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions cardinality fsbigop.
-Require Import signed reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun lebesgue_integral kernel prob_lang.
-Require Import lang_syntax_util lang_syntax.
 From mathcomp Require Import ring lra.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import cardinality fsbigop interval_inference reals.
+From mathcomp Require Import ereal topology normedtype sequences esum.
+From mathcomp Require Import measure lebesgue_measure numfun lebesgue_integral.
+From mathcomp Require Import kernel prob_lang lang_syntax_util lang_syntax.
 
 (******************************************************************************)
 (*  Casino example                                                            *)
@@ -227,7 +227,7 @@ Proof.
 move=> my; rewrite letin'E/=.
 rewrite integral_uniform//= => _ /= Y mY /=.
 have /= := measurable_kernel u _ my measurableT _ mY.
-move/measurable_ysection => /(_ R x) /=.
+move/measurable_ysection => /(_ x) /=.
 set A := (X in measurable X).
 set B := (X in _ -> measurable X).
 suff : A = B by move=> ->.
