@@ -490,7 +490,7 @@ End binomial_example.
 Section uniform_probability.
 Context (R : realType) (a b : R) (ab0 : (0 < b - a)%R).
 
-Definition uniform_probability (* : set _ -> \bar R *) :=
+Definition uniform_probability : set _ -> \bar R :=
   @mscale _ _ R (invr_nonneg (NngNum (ltW ab0)))
     (mrestr lebesgue_measure (measurable_itv `[a, b])).
 
@@ -604,7 +604,7 @@ Context {R : realType}.
 Variables a b : nat.
 
 (* unnormalized pdf for beta specialized to nat *)
-Definition ubeta_nat_pdf (t : R) := t ^+ a.-1 * (`1- t) ^+ b.-1.
+Definition ubeta_nat_pdf (t : R) := t ^+ a * (`1- t) ^+ b.
 
 Lemma ubeta_nat_pdf_ge0 t : 0 <= t <= 1 -> 0 <= ubeta_nat_pdf t.
 Proof. by move=> /andP[t0 t1]; rewrite mulr_ge0// exprn_ge0// onem_ge0. Qed.
@@ -688,7 +688,19 @@ Definition beta_nat (*: set [the measurableType (R.-ocitv.-measurable).-sigma of
   salgebraType R.-ocitv.-measurable] -> \bar R*) :=
   @mscale _ _ _ (invr_nonneg (NngNum beta_nat_norm_ge0)) ubeta_nat.
 
-HB.instance Definition _ := Measure.on beta_nat.
+Let beta_nat0 : beta_nat set0 = 0.
+Proof. exact: measure0. Qed.
+
+Let beta_nat_ge0 U : (0 <= beta_nat U)%E.
+Proof. exact: measure_ge0. Qed.
+
+Let beta_nat_sigma_additive : semi_sigma_additive beta_nat.
+Proof. move=> /= F mF tF mUF; exact: measure_semi_sigma_additive. Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ beta_nat
+  beta_nat0 beta_nat_ge0 beta_nat_sigma_additive.
+
+(* HB.instance Definition _ := Measure.on beta_nat. *)
 
 (*Let beta_nat0 : beta_nat set0 = 0.
 Proof. exact: measure0. Qed.
@@ -727,16 +739,16 @@ Section beta_probability11.
 Local Open Scope ring_scope.
 Context {R : realType}.
 
-Lemma ubeta_nat_pdf11 : ubeta_nat_pdf 1 1 = @cst R _ 1.
+Lemma ubeta_nat_pdf11 : ubeta_nat_pdf 0 0 = @cst R _ 1.
 Proof. by apply/funext => r; rewrite /ubeta_nat_pdf/= !expr0 mulr1. Qed.
 
-Lemma beta_nat_norm11 : beta_nat_norm 1 1 = 1 :> R.
+Lemma beta_nat_norm11 : beta_nat_norm 0 0 = 1 :> R.
 Proof. by rewrite /beta_nat_norm/= fact0 mulr1/= divff. Qed.
 
 Let a01 : 0 < 1 - 0 :> R. Proof. by []. Qed.
 
 Lemma beta11_uniform U : measurable U ->
-  beta_nat 1 1 U = uniform_probability a01 U.
+  beta_nat 0 0 U = uniform_probability a01 U.
 Proof.
 move=> mU; rewrite /beta_nat /uniform_probability.
 rewrite /mscale/= beta_nat_norm11 subr0 invr1 !mul1e.

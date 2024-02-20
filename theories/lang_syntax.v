@@ -369,7 +369,7 @@ Qed.
 
 Local Notation B := beta_nat_norm.
 
-Definition Baa'bb'Bab : R := (B (a + a') (b + b')) / B a b.
+Definition Baa'bb'Bab : R := (beta_nat_norm (a + a') (b + b')) / beta_nat_norm a b.
 
 Lemma Baa'bb'Bab_ge0 : 0 <= Baa'bb'Bab.
 Proof. by rewrite /Baa'bb'Bab divr_ge0// beta_nat_norm_ge0. Qed.
@@ -416,8 +416,8 @@ transitivity ((\int[beta_nat a b]_y
   move=> H_ge0.
   case: sumbool_ler; last admit.
   move=> H_le1.
-  rewrite /=.
-  admit.
+  rewrite /=/bernoulli !measure_addE/= /mscale/=.
+  congr _%E.
 rewrite /beta_nat/=.
 transitivity ((((B a b)^-1)%:E * \int[ubeta_nat a b]_x bernoulli (ubeta_nat_pdf_le1' x) U)%E).
   apply:  ge0_integral_mscale => //=.
@@ -453,7 +453,7 @@ congr adde.
   admit.
 rewrite [in LHS]/mscale/= [in RHS]/mscale/=.
 suff: (\int[ubeta_nat a b]_x (`1-(ubeta_nat_pdf a' b' x))%:E =
-       (B a b - B (a + a') (b + b'))%:E :> \bar R)%E.
+       (B a b - B (a + a'.-1) (b + b'.-1))%:E :> \bar R)%E.
   admit.
 under eq_integral do rewrite EFinB/=.
 rewrite integralB_EFin//=; last 2 first.
@@ -464,9 +464,14 @@ rewrite beta_nat_normE.
 rewrite {1}/ubeta_nat setTI.
 rewrite EFinB.
 congr (_ - _)%E.
+  (* rewrite fineK//. *)
   admit.
 rewrite integral_ubeta_nat//.
 rewrite beta_nat_normE /ubeta_nat_pdf.
+under eq_integral => x _.
+  rewrite -mulrA -mulrCA !mulrA/= -exprD -mulrA [X in _ * X]mulrC -exprD.
+over.
+rewrite /=.
 admit.
 Admitted.
 
@@ -885,7 +890,7 @@ Inductive evalD : forall g t, exp D g t ->
                                         measurable_cst _
 
 | eval_beta g (a b : nat) :
-  (exp_beta a b : exp D g _) -D> (cst (beta_nat a b)) ; measurable_cst _
+  (exp_beta a b : exp D g _) -D> cst (beta_nat a b) ; measurable_cst _
 
 | eval_poisson g n (e : exp D g _) f mf :
   e -D> f ; mf ->
