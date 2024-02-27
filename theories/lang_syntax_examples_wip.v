@@ -334,11 +334,11 @@ Qed.
 Lemma exec_beta_a1 U :
   @execP R [::] _ [let "p" := Sample {exp_beta 6 4} in
          Sample {exp_bernoulli_trunc [#{"p"}]}] tt U =
-  @execP R [::] _ [Sample {exp_bernoulli_trunc [{7 / 55 (* TODO: 3 / 5 *)}:R]}] tt U.
+  @execP R [::] _ [Sample {exp_bernoulli_trunc [{3 / 5}:R]}] tt U.
 Proof.
 rewrite execP_letin !execP_sample execD_beta_nat !execD_bernoulli_trunc/=.
 rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
-transitivity (beta_nat_bern 6 4 2 1 tt U : \bar R).
+transitivity (beta_nat_bern 6 4 1 0 tt U : \bar R).
   rewrite /beta_nat_bern !letin'E/= /ubeta_nat_pdf/= /onem.
   apply: eq_integral => x _.
   rewrite /=.
@@ -440,12 +440,12 @@ Definition casino3 : @exp R _ [::] _ :=
 Lemma casino34' U :
   @execP R [::] _ [let "p" := Sample {exp_beta 6 4} in
          Sample {exp_bernoulli_trunc [{[{1}:R - #{"p"}]} ^+ {3%nat}]}] tt U =
-  @execP R [::] _ [Sample {exp_bernoulli_trunc [{3 / 143 (* TODO: 1 / 11*)}:R]}] tt U.
+  @execP R [::] _ [Sample {exp_bernoulli_trunc [{1 / 11}:R]}] tt U.
 Proof.
 rewrite execP_letin !execP_sample execD_beta_nat !execD_bernoulli_trunc/=.
 rewrite execD_pow/= (@execD_bin _ _ binop_minus) !execD_real/=.
 rewrite exp_var'E (execD_var_erefl "p")/=.
-transitivity (beta_nat_bern 6 4 1 4 tt U : \bar R).
+transitivity (beta_nat_bern 6 4 0 3 tt U : \bar R).
   rewrite /beta_nat_bern !letin'E/= /ubeta_nat_pdf/= /onem.
   apply: eq_integral => x _.
   do 2 f_equal.
@@ -476,7 +476,7 @@ Admitted.
 Definition casino4 : @exp R _ [::] _ :=
   [Normalize
    let "_" := Score {1 / 9}:R in
-   Sample {exp_bernoulli_trunc [{140 / 143(*TODO: 10 / 11*)}:R]}].
+   Sample {exp_bernoulli_trunc [{10 / 11}:R]}].
 
 Lemma casino34 :
   execD casino3 = execD casino4.
@@ -491,9 +491,9 @@ rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
 transitivity (\int[beta_nat 6 4]_y bernoulli_trunc (1 - (1 - y) ^+ 3) U : \bar R)%E.
   by rewrite /beta_nat_bern !letin'E/= /onem.
 rewrite bernoulli_truncE; last by lra.
-have -> := (@bern_onem (fun x => (1 - x) ^+ 3) U (3 / 143) (*TODO: (1 / 11)*) _).
+have -> := (@bern_onem (fun x => (1 - x) ^+ 3) U (1 / 11) _).
   congr (_ * _ + _ * _)%E; congr _%:E; rewrite /onem; lra.
-transitivity (beta_nat_bern 6 4 1 4 tt U : \bar R).
+transitivity (beta_nat_bern 6 4 0 3 tt U : \bar R).
   rewrite /beta_nat_bern !letin'E/= /ubeta_nat_pdf/= /onem.
   apply: eq_integral => y0 _.
   do 2 f_equal.
@@ -545,7 +545,7 @@ by rewrite muleC muleA -EFinM mulVf// invr1 /onem !(mul1r, mule1).
 Qed.
 
 Definition casino5 : @exp R _ [::] _ :=
-  [Normalize Sample {exp_bernoulli_trunc [{(*TODO: 10 / 11*) 140 /143}:R]}].
+  [Normalize Sample {exp_bernoulli_trunc [{10 / 11}:R]}].
 
 Lemma casino45 :
   execD casino4 = execD casino5.
