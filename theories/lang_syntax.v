@@ -423,7 +423,7 @@ Import Notations.
 Program Definition beta_nat_bern : R.-sfker munit ~> mbool :=
   @letin' _ _ _ munit _ mbool _
     (sample_cst [the probability _ _ of beta_nat a b])
-    (sample (bernoulli_trunc \o ubeta_nat_pdf a' b' \o @fst (measurableTypeR R) _ ) _).
+    (sample (bernoulli_trunc \o ubeta_nat_pdf a'.+1 b'.+1 \o @fst (measurableTypeR R) _ ) _).
 Next Obligation.
 apply: measurableT_comp.
   apply: measurableT_comp.
@@ -493,7 +493,7 @@ rewrite subr_ge0.
 exact: Baa'bb'Bab_le1.
 Qed.
 
-Lemma ubeta_nat_pdf_ge0' t : 0 <= ubeta_nat_pdf a' b' t :> R.
+Lemma ubeta_nat_pdf_ge0' t : 0 <= ubeta_nat_pdf a'.+1 b'.+1 t :> R.
 Proof.
 apply: ubeta_nat_pdf_ge0. (* TODO: needs 0 <= t <= 1 *)
 Admitted.
@@ -506,10 +506,11 @@ rewrite /ubeta_nat_pdf'. (* TODO: needs 0 <= t <= 1 *)
 Admitted.
 
 Lemma integral_ubeta_nat :
- (\int[ubeta_nat a b]_x (ubeta_nat_pdf a' b' x)%:E =
+ (\int[ubeta_nat a b]_x (ubeta_nat_pdf a'.+1 b'.+1 x)%:E =
   \int[mu]_(x in `[0%R, 1%R])
       (x ^+ a'.-1 * `1-x ^+ b'.-1 * x ^+ a * `1-x ^+ b)%:E :> \bar R)%E.
 Proof.
+rewrite /ubeta_nat/ubeta_nat_pdf.
 Admitted.
 
 Lemma beta_nat_bern_bern U :
@@ -571,7 +572,7 @@ transitivity (
 rewrite measure_addE.
 congr adde.
   rewrite [in LHS]/mscale/= [in RHS]/mscale/=.
-  suff: (\int[ubeta_nat a b]_x ((ubeta_nat_pdf a' b' x)%:E)
+  suff: (\int[ubeta_nat a b]_x ((ubeta_nat_pdf a'.+1 b'.+1 x)%:E)
         = (B (a + a') (b + b'))%:E :> \bar R)%E.
     move=> <-.
     rewrite muleC.
@@ -599,7 +600,7 @@ congr adde.
   rewrite /ubeta_nat_pdf'.
   admit.
 rewrite [in LHS]/mscale/= [in RHS]/mscale/=.
-suff: (\int[ubeta_nat a b]_x (`1-(ubeta_nat_pdf a' b' x))%:E =
+suff: (\int[ubeta_nat a b]_x (`1-(ubeta_nat_pdf a'.+1 b'.+1 x))%:E =
        (B a b - B ((a + a')) ((b + b')))%:E :> \bar R)%E.
   rewrite /Baa'bb'Bab.
   admit.
