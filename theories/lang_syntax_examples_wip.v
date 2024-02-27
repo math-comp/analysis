@@ -334,23 +334,29 @@ Qed.
 Lemma exec_beta_a1 U :
   @execP R [::] _ [let "p" := Sample {exp_beta 6 4} in
          Sample {exp_bernoulli_trunc [#{"p"}]}] tt U =
-  @execP R [::] _ [Sample {exp_bernoulli_trunc [{3 / 5}:R]}] tt U.
+  @execP R [::] _ [Sample {exp_bernoulli_trunc [{7 / 55 (* TODO: 3 / 5 *)}:R]}] tt U.
 Proof.
 rewrite execP_letin !execP_sample execD_beta_nat !execD_bernoulli_trunc/=.
 rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
-transitivity (beta_nat_bern 6 4 1 0 tt U : \bar R).
+transitivity (beta_nat_bern 6 4 2 1 tt U : \bar R).
   rewrite /beta_nat_bern !letin'E/= /ubeta_nat_pdf/= /onem.
   apply: eq_integral => x _.
+  rewrite /=.
   do 2 f_equal.
-  by rewrite (mul1r, mulr1).
+  by rewrite /ubeta_nat_pdf' expr1 expr0 mulr1.
 rewrite beta_nat_bern_bern/= /bernoulli/= bernoulli_truncE; last by lra.
 rewrite measure_addE/= /mscale/=.
-congr (_ * _ + _ * _)%:E; rewrite /onem; rewrite /Baa'bb'Bab /beta_nat_norm/=;
-by rewrite !factS/= fact0; field.
+congr (_ * _ + _ * _)%:E.
+  rewrite /Baa'bb'Bab /beta_nat_norm/=.
+  rewrite !factS/= fact0.
+  by field.
+rewrite /onem; rewrite /Baa'bb'Bab /beta_nat_norm/=;
+rewrite !factS/= fact0.
+by field.
 Qed.
 
 Definition casino0 : @exp R _ [::] _ :=
-  [Normalize 
+  [Normalize
    let "p" := Sample {exp_uniform 0 1 a01} in
    let "a1" := Sample {exp_binomial_trunc 8 [#{"p"}]} in
    let "_" := if #{"a1"} == {5}:N then return TT else Score {0}:R in
@@ -434,24 +440,29 @@ Definition casino3 : @exp R _ [::] _ :=
 Lemma casino34' U :
   @execP R [::] _ [let "p" := Sample {exp_beta 6 4} in
          Sample {exp_bernoulli_trunc [{[{1}:R - #{"p"}]} ^+ {3%nat}]}] tt U =
-  @execP R [::] _ [Sample {exp_bernoulli_trunc [{1 / 11}:R]}] tt U.
+  @execP R [::] _ [Sample {exp_bernoulli_trunc [{3 / 143 (* TODO: 1 / 11*)}:R]}] tt U.
 Proof.
 rewrite execP_letin !execP_sample execD_beta_nat !execD_bernoulli_trunc/=.
 rewrite execD_pow/= (@execD_bin _ _ binop_minus) !execD_real/=.
 rewrite exp_var'E (execD_var_erefl "p")/=.
-transitivity (beta_nat_bern 6 4 0 3 tt U : \bar R).
+transitivity (beta_nat_bern 6 4 1 4 tt U : \bar R).
   rewrite /beta_nat_bern !letin'E/= /ubeta_nat_pdf/= /onem.
   apply: eq_integral => x _.
   do 2 f_equal.
+  rewrite /ubeta_nat_pdf'.
+  rewrite expr0.
   by rewrite mul1r.
 rewrite bernoulli_truncE; last by lra.
 rewrite beta_nat_bern_bern/= /bernoulli/=.
 rewrite measure_addE/= /mscale/=.
-by congr (_ * _ + _ * _)%:E; rewrite /onem;
-rewrite /Baa'bb'Bab /beta_nat_norm/=; rewrite !factS/= fact0; field.
+congr (_ * _ + _ * _)%:E; rewrite /onem.
+  rewrite /Baa'bb'Bab /beta_nat_norm/=.
+  by rewrite !factS/= fact0; field.
+rewrite /Baa'bb'Bab /beta_nat_norm/=.
+by rewrite !factS/= fact0; field.
 Qed.
 
-Lemma bern_onem (f : _ -> R) U p : 
+Lemma bern_onem (f : _ -> R) U p :
   (\int[beta_nat 6 4]_y bernoulli_trunc (f y) U = p%:E * \d_true U + `1-p%:E * \d_false U)%E ->
   (\int[beta_nat 6 4]_y bernoulli_trunc (1 - f y) U = `1-p%:E * \d_true U + p%:E * \d_false U)%E.
 Proof.
@@ -465,7 +476,7 @@ Admitted.
 Definition casino4 : @exp R _ [::] _ :=
   [Normalize
    let "_" := Score {1 / 9}:R in
-   Sample {exp_bernoulli_trunc [{10 / 11}:R]}].
+   Sample {exp_bernoulli_trunc [{140 / 143(*TODO: 10 / 11*)}:R]}].
 
 Lemma casino34 :
   execD casino3 = execD casino4.
@@ -480,17 +491,22 @@ rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
 transitivity (\int[beta_nat 6 4]_y bernoulli_trunc (1 - (1 - y) ^+ 3) U : \bar R)%E.
   by rewrite /beta_nat_bern !letin'E/= /onem.
 rewrite bernoulli_truncE; last by lra.
-have -> := (@bern_onem (fun x => (1 - x) ^+ 3) U (1 / 11) _).
+have -> := (@bern_onem (fun x => (1 - x) ^+ 3) U (3 / 143) (*TODO: (1 / 11)*) _).
   congr (_ * _ + _ * _)%E; congr _%:E; rewrite /onem; lra.
-transitivity (beta_nat_bern 6 4 0 3 tt U : \bar R).
+transitivity (beta_nat_bern 6 4 1 4 tt U : \bar R).
   rewrite /beta_nat_bern !letin'E/= /ubeta_nat_pdf/= /onem.
   apply: eq_integral => y0 _.
   do 2 f_equal.
+  rewrite /ubeta_nat_pdf'/=.
+  rewrite expr0.
   by rewrite mul1r.
 rewrite beta_nat_bern_bern/= /bernoulli/=.
 rewrite measure_addE/= /mscale/=.
-by congr (_ * _ + _ * _)%:E; rewrite /onem;
-rewrite /Baa'bb'Bab /beta_nat_norm/=; rewrite !factS/= fact0; field.
+congr (_ * _ + _ * _)%:E; rewrite /onem.
+  rewrite /Baa'bb'Bab /beta_nat_norm/=.
+  by rewrite !factS/= fact0; field.
+rewrite /Baa'bb'Bab /beta_nat_norm/=.
+by rewrite !factS/= fact0; field.
 Qed.
 
 Lemma norm_score_bern g p1 p2 (p10 : p1 != 0) (p1_ge0 : 0 <= p1)
@@ -529,10 +545,13 @@ by rewrite muleC muleA -EFinM mulVf// invr1 /onem !(mul1r, mule1).
 Qed.
 
 Definition casino5 : @exp R _ [::] _ :=
-  [Normalize Sample {exp_bernoulli_trunc [{10 / 11}:R]}].
+  [Normalize Sample {exp_bernoulli_trunc [{(*TODO: 10 / 11*) 140 /143}:R]}].
 
 Lemma casino45 :
   execD casino4 = execD casino5.
-Proof. by rewrite norm_score_bern//; lra. Qed.
+Proof.
+rewrite norm_score_bern//.
+lra.
+Qed.
 
 End casino_example.
