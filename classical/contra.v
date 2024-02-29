@@ -255,19 +255,19 @@ Proof. by rewrite -implypN lax_notE. Qed.
 Canonical and_nProp P tQ nQ Q :=
   ProperNegatedProp (@and_nPropP P tQ nQ Q).
 
-Fact and3_nPropP P Q tR nR R : (~ [/\ P, Q & nProp tR nR R]) = (P -> Q -> nR). 
+Fact and3_nPropP P Q tR nR R : (~ [/\ P, Q & nProp tR nR R]) = (P -> Q -> nR).
 Proof. by hnf; rewrite and3E notE. Qed.
 Canonical and3_nProp P Q tR nR R :=
   ProperNegatedProp (@and3_nPropP P Q tR nR R).
 
 Fact and4_nPropP P Q R tS nS S :
-  (~ [/\ P, Q, R & nProp tS nS S]) = (P -> Q -> R -> nS). 
+  (~ [/\ P, Q, R & nProp tS nS S]) = (P -> Q -> R -> nS).
 Proof. by hnf; rewrite and4E notE. Qed.
 Canonical and4_nProp P Q R tS nS S :=
   ProperNegatedProp (@and4_nPropP P Q R tS nS S).
 
 Fact and5_nPropP P Q R S tT nT T :
-  (~ [/\ P, Q, R, S & nProp tT nT T]) = (P -> Q -> R -> S -> nT). 
+  (~ [/\ P, Q, R, S & nProp tT nT T]) = (P -> Q -> R -> S -> nT).
 Proof. by hnf; rewrite and5E notE. Qed.
 Canonical and5_nProp P Q R S tT nT T :=
   ProperNegatedProp (@and5_nPropP P Q R S tT nT T).
@@ -279,14 +279,14 @@ Canonical or_nProp tP nP P tQ nQ Q :=
   ProperNegatedProp (@or_nPropP tP nP P tQ nQ Q).
 
 Fact or3_nPropP tP nP P tQ nQ Q tR nR R :
-  (~ [\/ nProp tP nP P, nProp tQ nQ Q | nProp tR nR R]) = [/\ nP, nQ & nR]. 
+  (~ [\/ nProp tP nP P, nProp tQ nQ Q | nProp tR nR R]) = [/\ nP, nQ & nR].
 Proof. by rewrite or3E notE and3E. Qed.
 Canonical or3_nProp tP nP P tQ nQ Q tR nR R :=
   ProperNegatedProp (@or3_nPropP tP nP P tQ nQ Q tR nR R).
 
 Fact or4_nPropP tP nP P tQ nQ Q tR nR R tS nS S :
   (~ [\/ nProp tP nP P, nProp tQ nQ Q, nProp tR nR R | nProp tS nS S])
-     = [/\ nP, nQ, nR & nS]. 
+     = [/\ nP, nQ, nR & nS].
 Proof. by rewrite or4E notE and4E. Qed.
 Canonical or4_nProp tP nP P tQ nQ Q tR nR R tS nS S :=
   ProperNegatedProp (@or4_nPropP tP nP P tQ nQ Q tR nR R tS nS S).
@@ -451,7 +451,7 @@ Canonical leq_neg n lt_nm m := NegatedBool (@leq_negP n lt_nm m).
 (******************************************************************************)
 
 Structure neqRHS nP T x :=
-  NeqRHS {neq_RHS :> wrapped T; _ : (x <> unwrap neq_RHS) = nP}. 
+  NeqRHS {neq_RHS :> wrapped T; _ : (x <> unwrap neq_RHS) = nP}.
 Structure boolNeqRHS nP (x : bool) :=
   BoolNeqRHS {bool_neq_RHS; _ : (x <> bool_neq_RHS) = nP}.
 
@@ -464,9 +464,7 @@ Proof. by case: y. Qed.
 Canonical bool_neq nP x y := @NeqRHS nP bool x (wrap _) (@bool_neqP nP x y).
 Canonical true_neq nP b := BoolNeqRHS (@is_true_nPropP nP b).
 Local Fact false_neqP P (b : positedBool P) : (b <> false :> bool) = P.
-Proof.
-  admit.
-Admitted.
+Proof. by move: b => [] [] /= <-; exact/propext. Qed.
 Canonical false_neq P b := BoolNeqRHS (@false_neqP P b).
 
 Local Fact eqType_neqP (T : eqType) (x y : T) : (x <> y) = (x != y).
@@ -561,16 +559,16 @@ Local Fact sumbool_wTypeP P Q : inhabited ({P} + {Q}) = (P \/ Q).
 Proof. by eqInh=> [[] | /decide_or[]]; by [left | right]. Qed.
 Canonical sumbool_wType P Q := ProperWitnessedType (@sumbool_wTypeP P Q).
 
-Local Fact sumor_wTypeP P Q T : inhabited (wType P T + {Q}) = (P \/ Q). 
+Local Fact sumor_wTypeP P Q T : inhabited (wType P T + {Q}) = (P \/ Q).
 Proof. by eqInh=> [[/wTypeP|] | /decide_or[/T|]]; by [left | right]. Qed.
 Canonical sumor_wType P Q T := ProperWitnessedType (@sumor_wTypeP P Q T).
 
-Local Fact sig1_wTypeP T P : inhabited {x : T | P x} = (exists x : T, P x). 
+Local Fact sig1_wTypeP T P : inhabited {x : T | P x} = (exists x : T, P x).
 Proof. by eqInh=> [[x Px] | /cid//]; exists x. Qed.
 Canonical sig1_wType T P := ProperWitnessedType (@sig1_wTypeP T P).
 
 Local Fact sig2_wTypeP T P Q :
-  inhabited {x : T | P x & Q x} = exists2 x : T, P x & Q x. 
+  inhabited {x : T | P x & Q x} = exists2 x : T, P x & Q x.
 Proof. by eqInh=> [[x Px Qx] | /cid2//]; exists x. Qed.
 Canonical sig2_wType T P Q := ProperWitnessedType (@sig2_wTypeP T P Q).
 
