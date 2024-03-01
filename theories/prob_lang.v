@@ -648,10 +648,11 @@ by apply /measurable_funM => //; exact/measurable_fun_pow/measurable_funB.
 Qed.
 
 Lemma beta_nat_normE :
-  beta_nat_norm a b = \int[lebesgue_measure]_(x in `[0, 1]) ubeta_nat_pdf x.
+  (beta_nat_norm a b)%:E = (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (ubeta_nat_pdf x)%:E)%E.
 Proof.
 rewrite /beta_nat_norm.
-rewrite /ubeta_nat_pdf /ubeta_nat_pdf'.
+rewrite /ubeta_nat_pdf.
+rewrite /ubeta_nat_pdf'.
 Admitted.
 
 (* normalized pdf for beta specialized to nat *)
@@ -683,23 +684,34 @@ rewrite /ubeta_nat integral_ge0//= => x [Ux].
 by rewrite in_itv/= => x01; rewrite lee_fin ubeta_nat_pdf_ge0.
 Qed.
 
-(* TODO: doable *)
+(* TODO: should be shorter *)
 Let ubeta_nat_sigma_additive : semi_sigma_additive ubeta_nat.
 Proof.
-move=> /= F mF tF mUF.
-rewrite /ubeta_nat.
-rewrite setI_bigcupl.
-apply: cvg_toP.
+move=> /= F mF tF mUF; rewrite /ubeta_nat setI_bigcupl; apply: cvg_toP.
   apply: ereal_nondecreasing_is_cvgn => m n mn.
-  admit.
+  apply: lee_sum_nneg_natr => // k _ _.
+  apply: integral_ge0 => /= x [_]; rewrite in_itv => x01.
+  by rewrite lee_fin; exact: ubeta_nat_pdf_ge0.
 rewrite ge0_integral_bigcup//=.
 - by move=> k; exact: measurableI.
-- admit.
-- move=> /= r [i _ [Fir]] /=.
-  rewrite in_itv/= => r01.
+- apply/integrableP; split.
+    by apply/EFin_measurable_fun; exact: measurable_funTS measurable_ubeta_nat_pdf.
+  apply: le_lt_trans => /=.
+    apply: (@subset_integral _ _ _ mu _ `[0%R, 1%R]) => //=.
+    - rewrite -setI_bigcupl; apply: measurableI => //.
+    - apply/measurableT_comp => //; apply/measurableT_comp => //.
+      exact: measurable_funTS measurable_ubeta_nat_pdf.
+    - by apply: bigcup_sub => k _; exact: subIsetr.
+  rewrite /=.
+  under eq_integral.
+    move=> /= x; rewrite inE/= in_itv/= => x01.
+    rewrite ger0_norm//; last by rewrite ubeta_nat_pdf_ge0.
+    over.
+  by rewrite -beta_nat_normE ltry.
+- move=> x [k _ [_]]; rewrite /= in_itv/= => x01.
   by rewrite lee_fin ubeta_nat_pdf_ge0.
 - exact: trivIset_setIr.
-Admitted.
+Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ ubeta_nat
   ubeta_nat0 ubeta_nat_ge0 ubeta_nat_sigma_additive.
@@ -735,22 +747,20 @@ HB.instance Definition _ := isMeasure.Build _ _ _ beta_nat beta_nat0 beta_nat_ge
 
 Let beta_nat_setT : beta_nat setT = 1%:E.
 Proof.
-rewrite /beta_nat.
-rewrite /=.
-rewrite /mscale /=.
-rewrite beta_nat_normE /ubeta_nat setTI.
-(* TODO: doable *)
-Admitted.
+rewrite /beta_nat /= /mscale /=.
+rewrite /ubeta_nat/= setTI.
+by rewrite -beta_nat_normE -EFinM mulVr// unitfE gt_eqF// beta_nat_norm_gt0.
+Qed.
 
 HB.instance Definition _ := @Measure_isProbability.Build _ _ _
   beta_nat beta_nat_setT.
 
 Lemma beta_nat01 : beta_nat `[0, 1] = 1%:E.
 Proof.
-rewrite /beta_nat.
-rewrite /mscale/= /beta_nat /ubeta_nat.
-rewrite beta_nat_normE setIid.
-Admitted.
+rewrite /beta_nat /= /mscale/=.
+rewrite /beta_nat /ubeta_nat setIidr//.
+by rewrite -beta_nat_normE -EFinM mulVr// unitfE gt_eqF// beta_nat_norm_gt0.
+Qed.
 
 End beta_probability.
 
