@@ -582,7 +582,7 @@ congr adde.
     exact: measurable_ubeta_nat_pdf.
     move=> x _.
     rewrite lee_fin ubeta_nat_pdf_ge0//.
-    admit.
+    admit. (* 0 <= x <= 1 *)
   transitivity ( (* calculating distribution (13) *)
     \int[mu]_(x in `[(0:R)%R, (1:R)%R]%classic)
        ((x ^+ a'.-1 * (`1- x) ^+ b'.-1 * x ^+ a * (`1- x) ^+ b)%:E)
@@ -595,10 +595,7 @@ congr adde.
     rewrite inE/= in_itv/= => /andP[t0 t1].
     congr EFin.
     admit.
-  rewrite beta_nat_normE//.
-  rewrite /ubeta_nat_pdf//.
-  rewrite /ubeta_nat_pdf'.
-  admit.
+  by rewrite beta_nat_normE.
 rewrite [in LHS]/mscale/= [in RHS]/mscale/=.
 suff: (\int[ubeta_nat a b]_x (`1-(ubeta_nat_pdf a'.+1 b'.+1 x))%:E =
        (B a b - B ((a + a')) ((b + b')))%:E :> \bar R)%E.
@@ -609,12 +606,10 @@ rewrite integralB_EFin//=; last 2 first.
   admit.
   admit.
 rewrite integral_cst//= mul1e.
-rewrite beta_nat_normE.
 rewrite {1}/ubeta_nat setTI.
 rewrite EFinB.
 congr (_ - _)%E.
-  (* rewrite fineK//. *)
-  admit.
+  by rewrite -beta_nat_normE.
 rewrite integral_ubeta_nat//.
 rewrite beta_nat_normE /ubeta_nat_pdf.
 rewrite /ubeta_nat_pdf'.
@@ -622,7 +617,6 @@ under eq_integral => x _.
   rewrite -mulrA -mulrCA !mulrA/= -exprD -mulrA [X in _ * X]mulrC -exprD.
 over.
 rewrite /=.
-admit.
 Admitted.
 
 End casino3_casino4.
