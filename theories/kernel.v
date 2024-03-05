@@ -545,11 +545,11 @@ rewrite [X in measurable_fun _ X](_ : _ = (fun x => \sum_(r \in range (k_ n))
     exact/measurableT_comp.
   - by move=> m y _; rewrite nnfun_muleindic_ge0.
 apply: emeasurable_fun_fsum => // r.
-rewrite [X in measurable_fun _ X](_ : _ = (fun x => r%:E *
-    \int[l x]_y (\1_(k_ n @^-1` [set r]) (x, y))%:E)); last first.
+rewrite [X in measurable_fun _ X](_ : _ = fun x => r%:E *
+    \int[l x]_y (\1_(k_ n @^-1` [set r]) (x, y))%:E); last first.
   apply/funext => x; under eq_integral do rewrite EFinM.
   have [r0|r0] := leP 0%R r.
-    rewrite ge0_integralZl//; last by move=> y _; rewrite lee_fin.
+    rewrite ge0_integralZl//; last by move=> *; rewrite lee_fin.
     exact/EFin_measurable_fun/measurableT_comp.
   rewrite integral0_eq; last first.
     by move=> y _; rewrite preimage_nnfun0// indic0 mule0.
@@ -1056,7 +1056,7 @@ rewrite /= integral_kcomp_indic; last exact/measurable_sfunP.
 have [r0|r0] := leP 0%R r.
   rewrite ge0_integralZl//; last first.
     exact: measurableT_comp (measurable_kernel k (f @^-1` [set r]) _) _.
-  by congr (_ * _); apply: eq_integral => y _; rewrite integral_indic// setIT.
+  by under eq_integral do rewrite integral_indic// setIT.
 rewrite integral0_eq ?mule0; last first.
    move=> y _; rewrite integral0_eq// => z _.
    by rewrite preimage_nnfun0// indic0.

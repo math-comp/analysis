@@ -1621,7 +1621,6 @@ Qed.
 
 End approximation.
 
-
 Section semi_linearity0.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
@@ -2276,24 +2275,25 @@ Qed.
 
 End integral_nneseries.
 
-(* generalization of ge0_integralZl_EFin to a constant potentially +oo
-   using the monotone convergence theorem *)
-Section ge0_integralZl.
+(**md Generalization of `ge0_integralZl_EFin` to a constant potentially $+\infty$
+   using the monotone convergence theorem: *)
+Section ge0_integralZ.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Variables (D : set T) (mD : measurable D) (f : T -> \bar R).
 Hypothesis mf : measurable_fun D f.
+Implicit Type k : \bar R.
 
-Lemma ge0_integralZl (k : \bar R) : (forall x, D x -> 0 <= f x) ->
-  0 <= k -> \int[mu]_(x in D) (k * f x)%E = k * \int[mu]_(x in D) (f x).
+Lemma ge0_integralZl k : (forall x, D x -> 0 <= f x) ->
+  0 <= k -> \int[mu]_(x in D) (k * f x) = k * \int[mu]_(x in D) (f x).
 Proof.
 move=> f0; move: k => [k|_|//]; first exact: ge0_integralZl_EFin.
 pose g : (T -> \bar R)^nat := fun n x => n%:R%:E * f x.
 have mg n : measurable_fun D (g n) by apply: measurable_funeM.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: mule_ge0; [rewrite lee_fin|exact:f0].
-have nd_g x : D x -> nondecreasing_seq (g^~x).
+have nd_g x : D x -> nondecreasing_seq (g ^~ x).
   by move=> Dx m n mn; rewrite lee_wpmul2r ?f0// lee_fin ler_nat.
 pose h := fun x => limn (g^~ x).
 transitivity (\int[mu]_(x in D) limn (g^~ x)).
@@ -2318,17 +2318,17 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
     rewrite -(ler_nat R); apply: le_trans.
     rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// -mulrNN.
     by rewrite mulr_ge0// lerNr oppr0// ltW// invr_lt0.
-  - rewrite -fx0 mule0 /g -fx0 [X in X @ _ --> _](_ : _ = cst 0).
-      exact: cvg_cst.
-    by rewrite funeqE => n /=; rewrite mule0.
+  - rewrite -fx0 mule0 /g -fx0.
+    under eq_fun do rewrite mule0/=. (*TODO: notation broken*)
+    exact: cvg_cst.
 rewrite (monotone_convergence mu mD mg g0 nd_g).
 under eq_fun do  rewrite /g ge0_integralZl_EFin//.
-have : 0 <= \int[mu]_(x in D) (f x) by exact: integral_ge0.
+have : 0 <= \int[mu]_(x in D) f x by exact: integral_ge0.
 rewrite le_eqVlt => /predU1P[<-|if_gt0].
   by rewrite mule0; under eq_fun do rewrite mule0; rewrite lim_cst.
 rewrite gt0_mulye//; apply/cvg_lim => //; apply/cvgeyPgey; near=> M.
 have M0 : (0 <= M)%R by [].
-near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) (f x)) +oo; last first.
+near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) f x) +oo; last first.
   rewrite leye_eq => /eqP ->; rewrite mulry muleC gt0_mulye ?leey//.
   by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
 rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
@@ -2339,10 +2339,17 @@ near: n.
 exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 rewrite lee_fin natr_absz ger0_norm ?ceil_ge// ceil_ge0//.
-by rewrite mulr_ge0// ?invr_ge0//; apply/fine_ge0/integral_ge0.
+by rewrite mulr_ge0// ?invr_ge0//; exact/fine_ge0/integral_ge0.
 Unshelve. all: by end_near. Qed.
 
-End ge0_integralZl.
+Lemma ge0_integralZr k : (forall x, D x -> 0 <= f x) ->
+  0 <= k -> \int[mu]_(x in D) (f x * k) = \int[mu]_(x in D) (f x) * k.
+Proof.
+move=> f0 k0; under eq_integral do rewrite muleC.
+by rewrite ge0_integralZl// muleC.
+Qed.
+
+End ge0_integralZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl` instead")]
 Notation ge0_integralM := ge0_integralZl (only parsing).
 
