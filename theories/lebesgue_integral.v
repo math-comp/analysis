@@ -2322,7 +2322,7 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
     under eq_fun do rewrite mule0/=. (*TODO: notation broken*)
     exact: cvg_cst.
 rewrite (monotone_convergence mu mD mg g0 nd_g).
-under eq_fun do  rewrite /g ge0_integralZl_EFin//.
+under eq_fun do rewrite /g ge0_integralZl_EFin//.
 have : 0 <= \int[mu]_(x in D) f x by exact: integral_ge0.
 rewrite le_eqVlt => /predU1P[<-|if_gt0].
   by rewrite mule0; under eq_fun do rewrite mule0; rewrite lim_cst.
@@ -4750,11 +4750,11 @@ Lemma product_measure1E (A1 : set T1) (A2 : set T2) :
   measurable A1 -> measurable A2 -> (m1 \x m2) (A1 `*` A2) = m1 A1 * m2 A2.
 Proof.
 move=> mA1 mA2 /=; rewrite /product_measure1 /=.
-rewrite (eq_integral (fun x => m2 A2 * (\1_A1 x)%:E)); last first.
+rewrite (eq_integral (fun x => (\1_A1 x)%:E * m2 A2)); last first.
   by move=> x _; rewrite indicE; have [xA1|xA1] /= := boolP (x \in A1);
-    [rewrite in_xsectionM// mule1|rewrite mule0 notin_xsectionM].
-rewrite ge0_integralZl//; last by move=> x _; rewrite lee_fin.
-- by rewrite muleC integral_indic// setIT.
+    [rewrite in_xsectionM// mul1e|rewrite mul0e notin_xsectionM].
+rewrite ge0_integralZr//; last by move=> x _; rewrite lee_fin.
+- by rewrite integral_indic// setIT.
 - exact: measurableT_comp.
 Qed.
 
@@ -4867,10 +4867,10 @@ Proof.
 have mA1A2 : measurable (A1 `*` A2) by apply: measurableM.
 transitivity (\int[m2]_y (m1 \o ysection (A1 `*` A2)) y) => //.
 rewrite (_ : _ \o _ = fun y => m1 A1 * (\1_A2 y)%:E).
-  rewrite ge0_integralZl//; last 2 first.
-    - exact: measurableT_comp.
-    - by move=> y _; rewrite lee_fin.
-  by rewrite integral_indic ?setIT ?mul1e.
+  rewrite ge0_integralZl//.
+  - by rewrite integral_indic ?setIT ?mul1e.
+  - exact: measurableT_comp.
+  - by move=> y _; rewrite lee_fin.
 rewrite funeqE => y; rewrite indicE.
 have [yA2|yA2] := boolP (y \in A2); first by rewrite mule1 /= in_ysectionM.
 by rewrite mule0 /= notin_ysectionM.
@@ -5233,7 +5233,7 @@ under [LHS]eq_integral
     apply/EFin_measurable_fun/measurableT_comp => //=.
   - by move=> r /= z _; exact: nnfun_muleindic_ge0.
 transitivity (\sum_(k \in range f)
-  \int[m1]_x (k%:E * (fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x))).
+  \int[m1]_x (k%:E * fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x)).
   apply: eq_fsbigr => i; rewrite inE => -[z _ <-{i}].
   rewrite ge0_integralZl//; last 3 first.
     - exact/EFin_measurable_fun.
