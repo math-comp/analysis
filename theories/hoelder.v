@@ -199,21 +199,17 @@ have [foo|foo] := eqVneq 'N_p%:E[f] +oo%E; first by rewrite foo gt0_mulye ?leey.
 have [goo|goo] := eqVneq 'N_q%:E[g] +oo%E; first by rewrite goo gt0_muley ?leey.
 pose F := normalized p f; pose G := normalized q g.
 rewrite [leLHS](_ : _ = 'N_1[(F \* G)%R] * 'N_p%:E[f] * 'N_q%:E[g]); last first.
-  rewrite !Lnorm1.
-  under [in RHS]eq_integral.
-    move=> x _.
-    rewrite /F /G /= /normalized (mulrC `|f x|)%R mulrA -(mulrA (_^-1)).
-    rewrite (mulrC (_^-1)) -mulrA ger0_norm; last first.
-      by rewrite mulr_ge0// divr_ge0 ?(fine_ge0, Lnorm_ge0, invr_ge0).
-    by rewrite mulrC -normrM EFinM; over.
-  rewrite ge0_integralZl//; last 2 first.
+  rewrite !Lnorm1; under [in RHS]eq_integral.
+    move=> x _; rewrite /F /G /normalized/=.
+    rewrite ger0_norm; last by rewrite mulr_ge0 ?divr_ge0 ?fine_ge0 ?Lnorm_ge0.
+    by rewrite mulrACA -normrM EFinM; over.
+  rewrite ge0_integralZr//; last 2 first.
     - by do 2 apply: measurableT_comp => //; exact: measurable_funM.
     - by rewrite lee_fin mulr_ge0// invr_ge0 fine_ge0// Lnorm_ge0.
-  rewrite -muleA muleC muleA EFinM muleCA 2!muleA.
+  rewrite -!muleA [X in _ * X](_ : _ = 1) ?mule1// EFinM muleACA.
   rewrite (_ : _ * 'N_p%:E[f] = 1) ?mul1e; last first.
     rewrite -[X in _ * X]fineK; last by rewrite ge0_fin_numE ?ltey// Lnorm_ge0.
     by rewrite -EFinM mulVr ?unitfE ?gt_eqF// fine_gt0// fpos/= ltey.
-  rewrite (_ : 'N_q%:E[g] * _ = 1) ?mul1e// muleC.
   rewrite -[X in _ * X]fineK; last by rewrite ge0_fin_numE ?ltey// Lnorm_ge0.
   by rewrite -EFinM mulVr ?unitfE ?gt_eqF// fine_gt0// gpos/= ltey.
 rewrite -(mul1e ('N_p%:E[f] * _)) -muleA lee_pmul ?mule_ge0 ?Lnorm_ge0//.
@@ -227,29 +223,29 @@ rewrite [leRHS](_ : _ = \int[mu]_x (F x `^ p / p + G x `^ q / q)%:E).
        exact: measurable_normalized.
   apply/aeW => x _; rewrite lee_fin ger0_norm ?conjugate_powR ?normalized_ge0//.
   by rewrite mulr_ge0// normalized_ge0.
-under eq_integral do rewrite EFinD mulrC (mulrC _ (_^-1)).
+under eq_integral do rewrite EFinD.
 rewrite ge0_integralD//; last 4 first.
 - by move=> x _; rewrite lee_fin mulr_ge0// ?invr_ge0 ?powR_ge0// ltW.
-- do 2 apply: measurableT_comp => //.
+- apply: measurableT_comp => //; apply: measurable_funM => //.
   by apply: measurableT_comp_powR => //; exact: measurable_normalized.
 - by move=> x _; rewrite lee_fin mulr_ge0// ?invr_ge0 ?powR_ge0// ltW.
-- do 2 apply: measurableT_comp => //.
+- apply: measurableT_comp => //; apply: measurable_funM => //.
   by apply: measurableT_comp_powR => //; exact: measurable_normalized.
 under eq_integral do rewrite EFinM.
-rewrite {1}ge0_integralZl//; last 3 first.
+rewrite [X in X + _]ge0_integralZr//; last 3 first.
 - apply: measurableT_comp => //.
   by apply: measurableT_comp_powR => //; exact: measurable_normalized.
 - by move=> x _; rewrite lee_fin powR_ge0.
 - by rewrite lee_fin invr_ge0 ltW.
-under [X in (_ + X)%E]eq_integral => x _ do rewrite EFinM.
-rewrite ge0_integralZl//; last 3 first.
+under [X in _ + X]eq_integral => x _ do rewrite EFinM.
+rewrite ge0_integralZr//; last 3 first.
 - apply: measurableT_comp => //.
   by apply: measurableT_comp_powR => //; exact: measurable_normalized.
 - by move=> x _; rewrite lee_fin powR_ge0.
 - by rewrite lee_fin invr_ge0 ltW.
 rewrite integral_normalized//; last exact: integrable_powR.
 rewrite integral_normalized//; last exact: integrable_powR.
-by rewrite 2!mule1 -EFinD pq.
+by rewrite 2!mul1e -EFinD pq.
 Qed.
 
 End hoelder.

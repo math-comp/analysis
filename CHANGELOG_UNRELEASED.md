@@ -7,6 +7,9 @@
 - in `exp.v`
   + lemma `ln_lt0`
 
+- in `lebesgue_integral.v`
+  + lemma `ge0_integralZr`
+
 ### Changed
 
 - move from `kernel.v` to `measure.v`

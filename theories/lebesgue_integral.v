@@ -11,13 +11,12 @@ Require Import esum measure lebesgue_measure numfun.
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue integral. It starts     *)
 (* with simple functions and their integral, provides basic operations        *)
-(* (addition, etc.), and proves the properties of their integral              *)
-(* (semi-linearity, non-decreasingness). It then defines the integral of      *)
-(* measurable functions, proves the approximation theorem, the properties of  *)
-(* their integral (semi-linearity, non-decreasingness), the monotone          *)
-(* convergence theorem, and Fatou's lemma. Finally, it proves the linearity   *)
-(* properties of the integral, the dominated convergence theorem and          *)
-(* Fubini's theorem, etc.                                                     *)
+(* (addition, etc.), and proves the properties of their integral (linearity,  *)
+(* non-decreasingness). It then defines the integral of measurable functions, *)
+(* proves the approximation theorem, the properties of their integral         *)
+(* (linearity, non-decreasingness), the monotone convergence theorem, and     *)
+(* Fatou's lemma. Finally, it proves the linearity properties of the          *)
+(* integral, the dominated convergence theorem and Fubini's theorem, etc.     *)
 (*                                                                            *)
 (* Main notation:                                                             *)
 (* | Coq notation          |  | Meaning                         |             *)
@@ -1621,8 +1620,7 @@ Qed.
 
 End approximation.
 
-
-Section semi_linearity0.
+Section ge0_linearityZ.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -1654,11 +1652,11 @@ rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
   by apply: cvgeMl => //; exact: gh1.
 Qed.
 
-End semi_linearity0.
+End ge0_linearityZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl_EFin` instead")]
 Notation ge0_integralM_EFin := ge0_integralZl_EFin (only parsing).
 
-Section semi_linearity.
+Section ge0_linearityD.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
@@ -1733,7 +1731,7 @@ rewrite lee_fin; apply: nondecreasing_cvgn_le.
 by apply/cvg_ex; eexists; exact: u_h1.
 Unshelve. all: by end_near. Qed.
 
-End semi_linearity.
+End ge0_linearityD.
 
 Section approximation_sfun.
 Context d (T : measurableType d) (R : realType) (f : T -> \bar R).
@@ -2276,24 +2274,25 @@ Qed.
 
 End integral_nneseries.
 
-(* generalization of ge0_integralZl_EFin to a constant potentially +oo
-   using the monotone convergence theorem *)
-Section ge0_integralZl.
+(**md Generalization of `ge0_integralZl_EFin` to a constant potentially $+\infty$
+   using the monotone convergence theorem: *)
+Section ge0_integralZ.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Variables (D : set T) (mD : measurable D) (f : T -> \bar R).
 Hypothesis mf : measurable_fun D f.
+Implicit Type k : \bar R.
 
-Lemma ge0_integralZl (k : \bar R) : (forall x, D x -> 0 <= f x) ->
-  0 <= k -> \int[mu]_(x in D) (k * f x)%E = k * \int[mu]_(x in D) (f x).
+Lemma ge0_integralZl k : (forall x, D x -> 0 <= f x) ->
+  0 <= k -> \int[mu]_(x in D) (k * f x) = k * \int[mu]_(x in D) (f x).
 Proof.
 move=> f0; move: k => [k|_|//]; first exact: ge0_integralZl_EFin.
 pose g : (T -> \bar R)^nat := fun n x => n%:R%:E * f x.
 have mg n : measurable_fun D (g n) by apply: measurable_funeM.
 have g0 n x : D x -> 0 <= g n x.
   by move=> Dx; apply: mule_ge0; [rewrite lee_fin|exact:f0].
-have nd_g x : D x -> nondecreasing_seq (g^~x).
+have nd_g x : D x -> nondecreasing_seq (g ^~ x).
   by move=> Dx m n mn; rewrite lee_wpmul2r ?f0// lee_fin ler_nat.
 pose h := fun x => limn (g^~ x).
 transitivity (\int[mu]_(x in D) limn (g^~ x)).
@@ -2318,17 +2317,17 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
     rewrite -(ler_nat R); apply: le_trans.
     rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// -mulrNN.
     by rewrite mulr_ge0// lerNr oppr0// ltW// invr_lt0.
-  - rewrite -fx0 mule0 /g -fx0 [X in X @ _ --> _](_ : _ = cst 0).
-      exact: cvg_cst.
-    by rewrite funeqE => n /=; rewrite mule0.
+  - rewrite -fx0 mule0 /g -fx0.
+    under eq_fun do rewrite mule0/=. (*TODO: notation broken*)
+    exact: cvg_cst.
 rewrite (monotone_convergence mu mD mg g0 nd_g).
-under eq_fun do  rewrite /g ge0_integralZl_EFin//.
-have : 0 <= \int[mu]_(x in D) (f x) by exact: integral_ge0.
+under eq_fun do rewrite /g ge0_integralZl_EFin//.
+have : 0 <= \int[mu]_(x in D) f x by exact: integral_ge0.
 rewrite le_eqVlt => /predU1P[<-|if_gt0].
   by rewrite mule0; under eq_fun do rewrite mule0; rewrite lim_cst.
 rewrite gt0_mulye//; apply/cvg_lim => //; apply/cvgeyPgey; near=> M.
 have M0 : (0 <= M)%R by [].
-near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) (f x)) +oo; last first.
+near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) f x) +oo; last first.
   rewrite leye_eq => /eqP ->; rewrite mulry muleC gt0_mulye ?leey//.
   by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
 rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
@@ -2339,10 +2338,17 @@ near: n.
 exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 rewrite lee_fin natr_absz ger0_norm ?ceil_ge// ceil_ge0//.
-by rewrite mulr_ge0// ?invr_ge0//; apply/fine_ge0/integral_ge0.
+by rewrite mulr_ge0// ?invr_ge0//; exact/fine_ge0/integral_ge0.
 Unshelve. all: by end_near. Qed.
 
-End ge0_integralZl.
+Lemma ge0_integralZr k : (forall x, D x -> 0 <= f x) ->
+  0 <= k -> \int[mu]_(x in D) (f x * k) = \int[mu]_(x in D) (f x) * k.
+Proof.
+move=> f0 k0; under eq_integral do rewrite muleC.
+by rewrite ge0_integralZl// muleC.
+Qed.
+
+End ge0_integralZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl` instead")]
 Notation ge0_integralM := ge0_integralZl (only parsing).
 
@@ -3364,7 +3370,7 @@ Qed.
 
 End integrable_ae.
 
-Section linearity.
+Section linearityZ.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -3397,11 +3403,11 @@ have [r0|r0|->] := ltgtP r 0%R; last first.
   by rewrite [in RHS]integralE.
 Qed.
 
-End linearity.
+End linearityZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl` instead")]
 Notation integralM := integralZl (only parsing).
 
-Section linearity.
+Section linearityD_EFin.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -3484,7 +3490,7 @@ rewrite (ge0_integralD mu mD) //; last exact: measurable_funepos.
 exact/measurable_funeneg/emeasurable_funD.
 Qed.
 
-End linearity.
+End linearityD_EFin.
 
 Lemma integralB_EFin d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) (D : set T) (f1 f2 : T -> R)
@@ -4743,11 +4749,11 @@ Lemma product_measure1E (A1 : set T1) (A2 : set T2) :
   measurable A1 -> measurable A2 -> (m1 \x m2) (A1 `*` A2) = m1 A1 * m2 A2.
 Proof.
 move=> mA1 mA2 /=; rewrite /product_measure1 /=.
-rewrite (eq_integral (fun x => m2 A2 * (\1_A1 x)%:E)); last first.
+rewrite (eq_integral (fun x => (\1_A1 x)%:E * m2 A2)); last first.
   by move=> x _; rewrite indicE; have [xA1|xA1] /= := boolP (x \in A1);
-    [rewrite in_xsectionM// mule1|rewrite mule0 notin_xsectionM].
-rewrite ge0_integralZl//; last by move=> x _; rewrite lee_fin.
-- by rewrite muleC integral_indic// setIT.
+    [rewrite in_xsectionM// mul1e|rewrite mul0e notin_xsectionM].
+rewrite ge0_integralZr//; last by move=> x _; rewrite lee_fin.
+- by rewrite integral_indic// setIT.
 - exact: measurableT_comp.
 Qed.
 
@@ -4860,10 +4866,10 @@ Proof.
 have mA1A2 : measurable (A1 `*` A2) by apply: measurableM.
 transitivity (\int[m2]_y (m1 \o ysection (A1 `*` A2)) y) => //.
 rewrite (_ : _ \o _ = fun y => m1 A1 * (\1_A2 y)%:E).
-  rewrite ge0_integralZl//; last 2 first.
-    - exact: measurableT_comp.
-    - by move=> y _; rewrite lee_fin.
-  by rewrite integral_indic ?setIT ?mul1e.
+  rewrite ge0_integralZl//.
+  - by rewrite integral_indic ?setIT ?mul1e.
+  - exact: measurableT_comp.
+  - by move=> y _; rewrite lee_fin.
 rewrite funeqE => y; rewrite indicE.
 have [yA2|yA2] := boolP (y \in A2); first by rewrite mule1 /= in_ysectionM.
 by rewrite mule0 /= notin_ysectionM.
@@ -5226,7 +5232,7 @@ under [LHS]eq_integral
     apply/EFin_measurable_fun/measurableT_comp => //=.
   - by move=> r /= z _; exact: nnfun_muleindic_ge0.
 transitivity (\sum_(k \in range f)
-  \int[m1]_x (k%:E * (fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x))).
+  \int[m1]_x (k%:E * fubini_F m2 (EFin \o \1_(f @^-1` [set k])) x)).
   apply: eq_fsbigr => i; rewrite inE => -[z _ <-{i}].
   rewrite ge0_integralZl//; last 3 first.
     - exact/EFin_measurable_fun.

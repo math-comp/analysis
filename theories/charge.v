@@ -1734,11 +1734,8 @@ under [RHS]eq_integral do rewrite EFinM.
 rewrite integralZl_indic_nnsfun => //.
 under eq_integral do rewrite EFinM -muleA.
 rewrite ge0_integralZl//.
-  congr *%E.
-    under eq_integral do rewrite muleC.
-    under [RHS]eq_integral do rewrite -[_%:E]mul1e -/(idfun 1).
-    rewrite -(integral_setI_indic _ _)// -(integral_setI_indic _ _)//.
-  by rewrite -f_integral//= integral_cst ?mul1e.
+- under eq_integral do rewrite muleC.
+  by rewrite -integral_setI_indic// -f_integral// integral_indic// setIC.
 - apply: emeasurable_funM; first exact/EFin_measurable_fun.
   exact/measurable_funTS/(measurable_int (f_integrable _)).
 - by move=> t Et; rewrite mule_ge0// ?lee_fin//; exact: f_ge0.
