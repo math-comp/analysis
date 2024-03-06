@@ -11,13 +11,12 @@ Require Import esum measure lebesgue_measure numfun.
 (*                                                                            *)
 (* This file contains a formalization of the Lebesgue integral. It starts     *)
 (* with simple functions and their integral, provides basic operations        *)
-(* (addition, etc.), and proves the properties of their integral              *)
-(* (semi-linearity, non-decreasingness). It then defines the integral of      *)
-(* measurable functions, proves the approximation theorem, the properties of  *)
-(* their integral (semi-linearity, non-decreasingness), the monotone          *)
-(* convergence theorem, and Fatou's lemma. Finally, it proves the linearity   *)
-(* properties of the integral, the dominated convergence theorem and          *)
-(* Fubini's theorem, etc.                                                     *)
+(* (addition, etc.), and proves the properties of their integral (linearity,  *)
+(* non-decreasingness). It then defines the integral of measurable functions, *)
+(* proves the approximation theorem, the properties of their integral         *)
+(* (linearity, non-decreasingness), the monotone convergence theorem, and     *)
+(* Fatou's lemma. Finally, it proves the linearity properties of the          *)
+(* integral, the dominated convergence theorem and Fubini's theorem, etc.     *)
 (*                                                                            *)
 (* Main notation:                                                             *)
 (* | Coq notation          |  | Meaning                         |             *)
@@ -1621,7 +1620,7 @@ Qed.
 
 End approximation.
 
-Section semi_linearity0.
+Section ge0_linearityZ.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -1653,11 +1652,11 @@ rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
   by apply: cvgeMl => //; exact: gh1.
 Qed.
 
-End semi_linearity0.
+End ge0_linearityZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl_EFin` instead")]
 Notation ge0_integralM_EFin := ge0_integralZl_EFin (only parsing).
 
-Section semi_linearity.
+Section ge0_linearityD.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
@@ -1732,7 +1731,7 @@ rewrite lee_fin; apply: nondecreasing_cvgn_le.
 by apply/cvg_ex; eexists; exact: u_h1.
 Unshelve. all: by end_near. Qed.
 
-End semi_linearity.
+End ge0_linearityD.
 
 Section approximation_sfun.
 Context d (T : measurableType d) (R : realType) (f : T -> \bar R).
@@ -3371,7 +3370,7 @@ Qed.
 
 End integrable_ae.
 
-Section linearity.
+Section linearityZ.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -3404,11 +3403,11 @@ have [r0|r0|->] := ltgtP r 0%R; last first.
   by rewrite [in RHS]integralE.
 Qed.
 
-End linearity.
+End linearityZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl` instead")]
 Notation integralM := integralZl (only parsing).
 
-Section linearity.
+Section linearityD_EFin.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
@@ -3491,7 +3490,7 @@ rewrite (ge0_integralD mu mD) //; last exact: measurable_funepos.
 exact/measurable_funeneg/emeasurable_funD.
 Qed.
 
-End linearity.
+End linearityD_EFin.
 
 Lemma integralB_EFin d (T : measurableType d) (R : realType)
   (mu : {measure set T -> \bar R}) (D : set T) (f1 f2 : T -> R)
