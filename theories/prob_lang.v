@@ -5,14 +5,21 @@ From mathcomp Require Import rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
 Require Import reals ereal signed topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun lebesgue_integral exp kernel.
+Require Import charge lebesgue_measure numfun lebesgue_integral exp kernel.
 From mathcomp Require Import ring lra.
 
-(******************************************************************************)
-(*  Semantics of a probabilistic programming language using s-finite kernels  *)
-(*                                                                            *)
-(*       bernoulli r1 == Bernoulli probability with r1 a proof that           *)
-(*                       r : {nonneg R} is smaller than 1                     *)
+(**md**************************************************************************)
+(* # Semantics of a probabilistic programming language using s-finite kernels *)
+(*             bernoulli p1 == Bernoulli probability with p1 a proof that     *)
+(*                             p : {nonneg R} is smaller than 1               *)
+(*         bernoulli_trunc r == Bernoulli probability with real number r      *)
+(*           bino_term n k p == $\binom{n}{k}p^k (1-p)^(n-k)$                 *)
+(*                              Computes a binomial distribution term for     *)
+(*                              k successes in n trials with success rate p   *)
+(* binomial_probability n p1 == binomial probability with n and p1 a proof    *)
+(*                              that p : {nonneg R} is smaller than 1         *)
+(* binomial_probability_trunc n r == binomial probability with n and real     *)
+(*                                   number r                                 *)
 (* uniform_probability a b ab0 == uniform probability over the interval [a,b] *)
 (*          sample mP == sample according to the probability P where mP is a  *)
 (*                       proof that P is a measurable function                *)
@@ -194,7 +201,21 @@ Definition bernoulli_trunc (p : R) := match sumbool_ler 0%R p with
 | inr _ => bernoulli0
 end.
 
-(*HB.instance Definition _ (p : R) := Probability.on (bernoulli_trunc p).*)
+Lemma bernoulli_truncE (p : R) U :
+  (0 <= p <= 1)%R ->
+  (bernoulli_trunc p U =
+  p%:E * \d_true U + (`1-p)%:E * \d_false U)%E.
+Proof.
+move=> /andP[p0 p1].
+rewrite /bernoulli_trunc.
+case: (sumbool_ler 0 p) => [{}p0/=|].
+  case: (sumbool_ler p 1) => [{}p1/=|].
+    by rewrite /bernoulli/= measure_addE.
+  by rewrite ltNge p1.
+by rewrite ltNge p0.
+Qed.
+
+(* HB.instance Definition _ (p : R) := Probability.on (bernoulli_trunc p). *)
 
 Let simpe := (@mule0 R, @adde0 R, @mule1 R, @add0e R).
 
@@ -675,6 +696,15 @@ Definition ubeta_nat (U : set (measurableTypeR R)) : \bar R :=
   \int[mu]_(x in U `&` `[0, 1](*NB: is this correct?*)) (ubeta_nat_pdf x)%:E.
 (* TODO: define as \int[uniform_probability p01]_(t in U) (ubeta_nat_pdf t)%:E ? *)
 
+Lemma ubeta_natE U :
+  (ubeta_nat U =
+  \int[mu]_(x in U `&` `[0%R, 1%R]) (ubeta_nat_pdf x)%:E :> \bar R)%E.
+Proof. by []. Qed.
+
+Lemma ubeta_nat_lty U : (ubeta_nat U < +oo)%E.
+Proof.
+Admitted.
+
 Let ubeta_nat0 : ubeta_nat set0 = 0%:E.
 Proof. by rewrite /ubeta_nat set0I integral_set0. Qed.
 
@@ -732,19 +762,6 @@ Proof. move=> /= F mF tF mUF; exact: measure_semi_sigma_additive. Qed.
 HB.instance Definition _ := isMeasure.Build _ _ _ beta_nat
   beta_nat0 beta_nat_ge0 beta_nat_sigma_additive.
 
-(* HB.instance Definition _ := Measure.on beta_nat. *)
-
-(*Let beta_nat0 : beta_nat set0 = 0.
-Proof. exact: measure0. Qed.
-
-Let beta_nat_ge0 U : (0 <= beta_nat U)%E.
-Proof. exact: measure_ge0. Qed.
-
-Let beta_nat_sigma_additive : semi_sigma_additive beta_nat.
-Proof. move=> /= F mF tF mUF; exact: measure_semi_sigma_additive. Qed.
-
-HB.instance Definition _ := isMeasure.Build _ _ _ beta_nat beta_nat0 beta_nat_ge0 beta_nat_sigma_additive.*)
-
 Let beta_nat_setT : beta_nat setT = 1%:E.
 Proof.
 rewrite /beta_nat /= /mscale /=.
@@ -763,6 +780,8 @@ by rewrite -beta_nat_normE -EFinM mulVr// unitfE gt_eqF// beta_nat_norm_gt0.
 Qed.
 
 End beta_probability.
+
+Arguments beta_nat {R}.
 
 Section beta_probability11.
 Local Open Scope ring_scope.
@@ -784,6 +803,356 @@ exact: measurableI.
 Qed.
 
 End beta_probability11.
+
+Lemma factD n m : (n`! * m`! <= (n + m).+1`!)%N.
+Proof.
+elim: n m => /= [m|n ih m].
+  by rewrite fact0 mul1n add0n factS leq_pmull.
+rewrite 2!factS [in X in (_ <= _ * X)%N]addSn -mulnA leq_mul//.
+by rewrite ltnS addSnnS leq_addr.
+Qed.
+
+Lemma factD' n m : (n`! * m.-1`! <= (n + m)`!)%N.
+Proof.
+case: m => //= [|m].
+  by rewrite fact0 muln1 addn0.
+by rewrite addnS factD.
+Qed.
+
+Lemma leq_prod2 (x y n m : nat) : (n <= x)%N -> (m <= y)%N ->
+  (\prod_(m <= i < y) i * \prod_(n <= i < x) i <= \prod_(n + m <= i < x + y) i)%N.
+Proof.
+move=> nx my.
+rewrite big_addn.
+rewrite -addnBA//.
+rewrite {3}/index_iota.
+rewrite -addnBAC//.
+rewrite iotaD.
+rewrite big_cat/=.
+rewrite mulnC.
+rewrite leq_mul//.
+  rewrite /index_iota.
+  apply: leq_prod.
+  by move=> i _; rewrite leq_addr.
+rewrite subnKC//.
+rewrite -{1}(add0n m).
+rewrite big_addn.
+rewrite {2}(_ : (y - m) = ((y - m + x) - x))%N; last first.
+  by rewrite -addnBA// subnn addn0.
+rewrite -{1}(add0n x).
+rewrite big_addn.
+rewrite -addnBA// subnn addn0.
+apply: leq_prod => i _.
+by rewrite leq_add2r leq_addr.
+Qed.
+
+Lemma leq_fact2 (x y n m : nat) :
+  (n <= x) %N -> (m <= y)%N ->
+  (x`! * y`! * ((n + m).+1)`! <= n`! * m`! * ((x + y).+1)`!)%N.
+Proof.
+move=> nx my.
+rewrite (_ : x`! = n`! * \prod_(n.+1 <= i < x.+1) i)%N; last first.
+  by rewrite -fact_split.
+rewrite -!mulnA leq_mul2l; apply/orP; right.
+rewrite (_ : y`! = m`! * \prod_(m.+1 <= i < y.+1) i)%N; last first.
+  by rewrite -fact_split.
+rewrite mulnCA -!mulnA leq_mul2l; apply/orP; right.
+rewrite (_ : (x + y).+1`! = (n + m).+1`! * \prod_((n + m).+2 <= i < (x + y).+2) i)%N; last first.
+  rewrite -fact_split//.
+  by rewrite ltnS leq_add.
+rewrite mulnA mulnC leq_mul2l; apply/orP; right.
+rewrite -addSn -addnS.
+rewrite -addSn -addnS.
+exact: leq_prod2.
+Qed.
+
+Section integral_beta.
+Context {R : realType}.
+Variables a b a' b' : nat.
+
+Local Notation mu := lebesgue_measure.
+
+Lemma integralMl f g1 g2 A :
+measurable A -> measurable_fun A f ->
+  measurable_fun A g1 -> measurable_fun A g2 ->
+(ae_eq mu A g1 (EFin \o g2)) ->
+  \int[mu]_(x in A) (f x * g1 x) =
+  \int[mu]_(x in A) (f x * (g2 x)%:E) :> \bar R.
+Proof.
+move=> mA mf mg1 mg2 Hg.
+apply: ae_eq_integral => //.
+    by apply: emeasurable_funM.
+  apply: emeasurable_funM => //.
+  by apply/EFin_measurable_fun.
+by apply: ae_eq_mul2l.
+Qed.
+
+Let beta_nat_dom : (@beta_nat R a b `<< mu).
+Proof.
+move=> A mA muA0.
+rewrite /beta_nat /mscale/= /ubeta_nat.
+have -> : \int[mu]_(x0 in A `&` `[0%R, 1%R]) (ubeta_nat_pdf a b x0)%:E = 0%:E.
+  apply/eqP; rewrite eq_le.
+  apply/andP; split; last first.
+    apply: integral_ge0 => x [Ax /=].
+    rewrite in_itv /= => x01.
+    by rewrite lee_fin ubeta_nat_pdf_ge0.
+  apply: le_trans.
+    apply: (@subset_integral _ _ _ _ _ A).
+      by apply: measurableI.
+      by [].
+      apply/EFin_measurable_fun.
+      apply: (@measurable_funS _ _ _ _ setT) => //=.
+        apply: measurable_ubeta_nat_pdf.
+      move=> x Ax.
+      have : (`[0%R, 1%R]%classic x).
+        admit.
+      rewrite /= in_itv/=.
+    apply: ubeta_nat_pdf_ge0.
+    apply: subIsetl.
+  rewrite /=.
+      (* rewrite integral_abs_eq0. *) (* without abs *)
+  admit.
+by rewrite mule0.
+Admitted.
+
+Lemma integral_beta_nat f :
+  measurable_fun setT f ->
+  \int[beta_nat a b]_(x in `[0%R, 1%R]) `|f x| < +oo ->
+  \int[beta_nat a b]_(x in `[0%R, 1%R]) f x =
+  \int[mu]_(x in `[0%R, 1%R]) (f x * (beta_nat_pdf a b x)%:E) :> \bar R.
+Proof.
+move=> mf finf.
+rewrite -(Radon_Nikodym_change_of_variables beta_nat_dom) //=.
+apply: integralMl => //.
+  apply: (@measurable_funS _ _ _ _ [set: R]) => //.
+  apply: (@measurable_funS _ _ _ _ [set: R]) => //.
+    rewrite Radon_NikodymE.
+      by exact: beta_nat_dom.
+      move=> /= H.
+      case: cid => /= h [h1 h2 h3].
+      have : (measurable_fun setT h /\ \int[mu]_x `|h x| < +oo).
+        apply/integrableP/h2.
+      move=> /= [mh _].
+      apply: mh.
+    apply: (@measurable_funS _ _ _ _ [set: R]) => //.
+    apply: measurable_beta_nat_pdf.
+  rewrite Radon_NikodymE => /= A.
+    by exact: beta_nat_dom.
+case: cid => /= h [h1 h2 h3].
+apply: integral_ae_eq => //.
+  apply: integrableS h2 => //. (* integrableST? *)
+  apply: (@measurable_funS _ _ _ _ [set: R]) => //.
+  apply: measurableT_comp => //.
+  apply: measurable_beta_nat_pdf.
+  move=> E E01 mE.
+  have mB : measurable_fun E (EFin \o ubeta_nat_pdf a b).
+    apply: measurableT_comp => //.
+    apply: (@measurable_funS _ _ _ _ [set: R]) => //.
+    apply: measurable_ubeta_nat_pdf.
+  rewrite -(h3 _ mE).
+    rewrite /beta_nat/mscale/ubeta_nat/beta_nat_pdf/=.
+    under eq_integral do rewrite mulrC EFinM.
+    rewrite (integralZl mE).
+    rewrite /ubeta_nat setIidl //.
+    rewrite /=.
+    apply/integrableP; split.
+      by apply: mB.
+    under eq_integral => x x01.
+      rewrite gee0_abs /=.
+      over.
+    apply: ubeta_nat_pdf_ge0.
+    have : x \in `[0%R, 1%R].
+      apply: (@subset_trans _ _ `[x,x] _ _ E01).
+      by rewrite set_interval.set_itv1 sub1set x01.
+      by rewrite /= in_itv/= lexx.
+  by rewrite in_itv/=.
+  rewrite /=.
+  have <- := (setIidl E01).
+  by rewrite -ubeta_natE ubeta_nat_lty.
+apply/integrableP; split.
+  by apply: (@measurable_funS _ _ _ _ [set: R]).
+exact: finf.
+Qed.
+
+Local Open Scope ring_scope.
+
+(* TODO: `[0, 1]? *)
+Definition beta_nat_bern U : \bar R :=
+  \int[beta_nat a b]_y bernoulli_trunc (ubeta_nat_pdf a'.+1 b'.+1 y) U.
+
+Local Notation B := beta_nat_norm.
+
+Definition Baa'bb'Bab : R := (beta_nat_norm (a + a') (b + b')) / beta_nat_norm a b.
+
+Lemma Baa'bb'Bab_ge0 : 0 <= Baa'bb'Bab.
+Proof. by rewrite /Baa'bb'Bab divr_ge0// beta_nat_norm_ge0. Qed.
+
+Definition Baa'bb'Bab_nneg : {nonneg R} := NngNum Baa'bb'Bab_ge0.
+
+Lemma Baa'bb'Bab_le1 : Baa'bb'Bab_nneg%:num <= 1.
+Proof.
+rewrite /Baa'bb'Bab_nneg/= /Baa'bb'Bab.
+rewrite ler_pdivrMr// ?mul1r ?beta_nat_norm_gt0//.
+rewrite /B /beta_nat_norm.
+rewrite ler_pdivrMr ?ltr0n ?fact_gt0//.
+rewrite mulrAC.
+rewrite ler_pdivlMr ?ltr0n ?fact_gt0//.
+rewrite -!natrM ler_nat.
+case: a.
+  rewrite /= fact0 mul1n !add0n.
+  case: b => /=.
+    case: a' => //.
+      case: b' => //= m.
+      by rewrite fact0 !mul1n muln1.
+    move=> n/=.
+    by rewrite fact0 add0n muln1 mul1n factD'.
+  move=> m.
+  rewrite mulnC leq_mul// mulnC.
+  by rewrite (leq_trans (factD' _ _))// addSn addnS//= addnC.
+move=> n.
+rewrite addSn.
+case: b.
+  rewrite !fact0 add0n muln1 [leqRHS]mulnC addn0/= leq_mul//.
+  by rewrite factD'.
+move=> m.
+clear a b.
+rewrite [(n + a').+1.-1]/=.
+rewrite [n.+1.-1]/=.
+rewrite [m.+1.-1]/=.
+rewrite addnS.
+rewrite [(_ + m).+1.-1]/=.
+rewrite (addSn m b').
+rewrite [(m + _).+1.-1]/=.
+rewrite (addSn (n + a')).
+rewrite [_.+1.-1]/=.
+rewrite addSn addnS.
+by rewrite leq_fact2// leq_addr.
+Qed.
+
+Lemma onem_Baa'bb'Bab_ge0 : 0 <= 1 - (Baa'bb'Bab_nneg%:num).
+Proof. by rewrite subr_ge0 Baa'bb'Bab_le1. Qed.
+
+Lemma onem_Baa'bb'Bab_ge0_fix : 0 <= B a b * (1 - Baa'bb'Bab_nneg%:num).
+Proof.
+rewrite mulr_ge0//.
+  rewrite /B.
+  exact: beta_nat_norm_ge0.
+rewrite subr_ge0.
+exact: Baa'bb'Bab_le1.
+Qed.
+
+Lemma ubeta_nat_pdf_ge0' t : 0 <= ubeta_nat_pdf a'.+1 b'.+1 t :> R.
+Proof.
+apply: ubeta_nat_pdf_ge0. (* TODO: needs 0 <= t <= 1 *)
+Admitted.
+
+Lemma ubeta_nat_pdf_le1' t : (NngNum (ubeta_nat_pdf_ge0' t))%:num <= 1 :> R.
+Proof.
+rewrite /=.
+rewrite /ubeta_nat_pdf.
+rewrite /ubeta_nat_pdf'. (* TODO: needs 0 <= t <= 1 *)
+Admitted.
+
+Lemma integral_ubeta_nat' :
+ (\int[ubeta_nat a b]_x (ubeta_nat_pdf a'.+1 b'.+1 x)%:E =
+  \int[mu]_(x in `[0%R, 1%R])
+      (x ^+ a'.-1 * `1-x ^+ b'.-1 * x ^+ a * `1-x ^+ b)%:E :> \bar R)%E.
+Proof.
+rewrite /ubeta_nat/ubeta_nat_pdf.
+Admitted.
+
+Lemma beta_nat_bern_bern U :
+  (a > 0)%N -> (b > 0)%N ->
+  beta_nat_bern U =
+  bernoulli_trunc Baa'bb'Bab U.
+Proof.
+rewrite /beta_nat_bern.
+transitivity ((\int[beta_nat a b]_(y in `[0%R, 1%R])
+  bernoulli_trunc (ubeta_nat_pdf a'.+1 b'.+1 y) U)%E : \bar R).
+    admit.
+rewrite integral_beta_nat /=; last 2 first.
+  apply: (@measurableT_comp _ _ _ _ _ _ (bernoulli_trunc ^~ U)).
+    apply: (measurability (ErealGenInftyO.measurableE R)) => //=.
+    move=> /= _ [_ [x ->] <-]; apply: measurableI => //.
+    admit.
+  exact: measurable_ubeta_nat_pdf.
+  admit.
+under eq_integral => x.
+  rewrite inE/= in_itv/= => x01.
+  rewrite bernoulli_truncE.
+  over.
+  apply/andP; split.
+    apply/ubeta_nat_pdf_ge0/x01.
+  apply/ubeta_nat_pdf_le1/x01.
+rewrite /=.
+rewrite bernoulli_truncE; last first.
+  apply/andP; split.
+    exact: Baa'bb'Bab_ge0.
+  exact: Baa'bb'Bab_le1.
+under eq_integral => x _.
+  rewrite muleC muleDr//.
+  over.
+rewrite integralD//=; last 2 first.
+  (* TODO: integrableM *)
+  admit.
+  admit.
+congr (_ + _).
+  under eq_integral do rewrite muleA muleC.
+  rewrite integralZl//=; last first.
+    admit.
+  rewrite muleC.
+  congr (_ * _)%E.
+  rewrite /beta_nat_pdf.
+  under eq_integral do rewrite EFinM -muleA muleC -muleA.
+  rewrite integralZl//=; last first.
+    admit.
+  transitivity (((beta_nat_norm a b)^-1)%:E * \int[lebesgue_measure]_(x in `[0%R, 1%R]) ((ubeta_nat_pdf (a+a') (b+b') x)%:E) : \bar R)%E.
+    congr (_ * _)%E.
+    apply: eq_integral => x x01.
+    rewrite /ubeta_nat_pdf /ubeta_nat_pdf' muleC /onem -EFinM/=.
+    rewrite mulrCA -mulrA -exprD mulrA -exprD.
+    congr (_ ^+ _ * _ ^+ _)%:E.
+      rewrite -!subn1 subDnCA//.
+    rewrite addnC -!subn1 subDnCA//.
+  rewrite -beta_nat_normE.
+  rewrite /Baa'bb'Bab/B -!EFinM.
+  congr _%:E.
+  rewrite mulrC//.
+under eq_integral do rewrite muleA muleC.
+rewrite integralZl//=; last first.
+  admit.
+rewrite muleC.
+congr (_ * _)%E.
+rewrite /beta_nat_pdf.
+under eq_integral do rewrite EFinM -muleA muleC -muleA.
+rewrite integralZl//=; last first.
+  admit.
+transitivity (((beta_nat_norm a b)^-1)%:E * \int[lebesgue_measure]_(x in `[0%R, 1%R]) ((ubeta_nat_pdf a b x)%:E - (ubeta_nat_pdf (a+a') (b+b') x)%:E) : \bar R)%E.
+  congr (_ * _)%E.
+  apply: eq_integral => x x01.
+  rewrite /onem -EFinM mulrBl mul1r EFinB.
+  congr (_ - _)%E.
+  rewrite /ubeta_nat_pdf /ubeta_nat_pdf'/=.
+  rewrite mulrCA -mulrA -exprD mulrA -exprD.
+  congr (_ ^+ _ * _ ^+ _)%:E.
+    rewrite addnC -!subn1 subDnCA//.
+  rewrite -!subn1 subDnCA//.
+rewrite integralB_EFin//=; last 2 first.
+  admit.
+  admit.
+rewrite -!beta_nat_normE -EFinM mulrBr /onem mulVf; last first.
+  rewrite /B mulf_eq0 negb_or.
+  apply/andP; split.
+    rewrite mulf_eq0 negb_or.
+    rewrite gt_eqF ?ltr0n ?fact_gt0//=.
+    rewrite gt_eqF ?ltr0n ?fact_gt0//=.
+    rewrite invr_eq0 gt_eqF ?ltr0n ?fact_gt0//=.
+congr (_ - _)%:E.
+by rewrite mulrC.
+Admitted.
+
+End integral_beta.
 
 Section mscore.
 Context d (T : measurableType d) (R : realType).
