@@ -121,22 +121,107 @@ Definition set_itvE := (set_itv1, set_itvoo0, set_itvoc0, set_itvco0, set_itvoo,
   set_itvcc, set_itvoc, set_itvco, set_itv_infty_infty, set_itv_o_infty,
   set_itv_c_infty, set_itv_infty_o, set_itv_infty_c, set_itv_infty_set0).
 
-Lemma setUitv1 (a : itv_bound T) (x : T) : (a <= BLeft x)%O ->
+Lemma set_itvxx a : [set` Interval a a] = set0.
+Proof. by move: a => [[|] a |[|]]; rewrite !set_itvE. Qed.
+
+Lemma setUitv1 a x : (a <= BLeft x)%O ->
   [set` Interval a (BLeft x)] `|` [set x] = [set` Interval a (BRight x)].
 Proof.
 move=> ax; apply/predeqP => z /=; rewrite itv_splitU1// [in X in _ <-> X]inE.
 by rewrite (rwP eqP) (rwP orP) orbC.
 Qed.
 
-Lemma setU1itv (a : itv_bound T) (x : T) : (BRight x <= a)%O ->
+Lemma setU1itv a x : (BRight x <= a)%O ->
   x |` [set` Interval (BRight x) a] = [set` Interval (BLeft x) a].
 Proof.
 move=> ax; apply/predeqP => z /=; rewrite itv_split1U// [in X in _ <-> X]inE.
 by rewrite (rwP eqP) (rwP orP) orbC.
 Qed.
 
+Lemma setDitv1r a x :
+  [set` Interval a (BRight x)] `\ x = [set` Interval a (BLeft x)].
+Proof.
+apply/seteqP; split => [z|z] /=; rewrite !in_itv/=.
+  by move=> [/andP[-> /= zx] /eqP xz]; rewrite lt_neqAle xz.
+by rewrite lt_neqAle => /andP[-> /andP[/eqP ? ->]].
+Qed.
+
+Lemma setDitv1l a x :
+  [set` Interval (BLeft x) a] `\ x = [set` Interval (BRight x) a].
+Proof.
+apply/seteqP; split => [z|z] /=; rewrite !in_itv/=.
+  move=> [/andP[xz ->]]; rewrite andbT => /eqP.
+  by rewrite lt_neqAle eq_sym => ->.
+move=> /andP[]; rewrite lt_neqAle => /andP[xz zx ->].
+by rewrite andbT; split => //; exact/nesym/eqP.
+Qed.
+
 End set_itv_porderType.
 Arguments neitv {d T} _.
+
+Section set_itv_orderType.
+Variables (d : unit) (T : orderType d).
+Implicit Types a x y : itv_bound T.
+Local Open Scope order_scope.
+
+Lemma itv_bndbnd_setU a x y : a <= x -> x <= y ->
+  ([set` Interval a y] = [set` Interval a x] `|` [set` Interval x y])%classic.
+Proof.
+rewrite le_eqVlt => /predU1P[<-{x} ay|]; first by rewrite set_itvxx set0U.
+move=> /[swap].
+rewrite le_eqVlt => /predU1P[-> ay|]; first by rewrite set_itvxx setU0.
+move: y => [yb y/=|[|]]; last 2 first.
+  by case: x => [|[|]].
+  move=> _ ax; apply/seteqP; split => [z|z] /=.
+    rewrite !in_itv/= !andbT => -> /=; apply/orP.
+    by move: x => [[|] x/=|[|]//] in ax *; rewrite leNgt ?(orbN,orNb).
+  rewrite !in_itv/= !andbT => -[/andP[]|]//.
+  move: x => [[|] x/=|[|]//] in ax *; move: a => [[|] a/=|[|]//] in ax * => //.
+  - by apply/le_trans; exact/ltW.
+  - exact/lt_le_trans.
+  - by move=> /(le_lt_trans ax) /ltW.
+  - exact/lt_trans.
+move=> xy ax; apply/seteqP; split => [z|z] /=.
+  rewrite !in_itv /= => /andP[].
+  move: a ax => [b t /=|[]//= oox _].
+    move=> tx -> zxy /=; rewrite zxy andbT/=; apply/orP.
+    by case: x xy tx => [[|] x/=|[|]//] xy tx; rewrite leNgt ?(orbN,orNb).
+  move=> ->; rewrite andbT; apply/orP.
+  by move: x => [[|] x/=|[|]//] in oox xy *; rewrite leNgt ?(orbN,orNb).
+rewrite !in_itv/=.
+move: a ax => [b t /= tx| [/= oox|/= oox]].
+- move=> [/andP[-> zx]|].
+    move: x => [[|] x|[|]//]/= in xy tx zx *.
+      case: yb => /= in xy *.
+        by rewrite (lt_trans zx _).
+      by rewrite (ltW (lt_le_trans zx _)).
+    rewrite bnd_simp in xy.
+    case: yb => /=.
+      by rewrite (le_lt_trans zx _).
+    by rewrite (ltW (le_lt_trans zx _)).
+  move: x => [[|] x|[|]//]/= in xy tx *; rewrite bnd_simp in xy tx.
+  + move=> /andP[xz ->]; rewrite andbT.
+    case: b => /=.
+      by rewrite (le_trans _ xz)// ltW.
+    by rewrite (lt_le_trans tx).
+  move=> /andP[xz ->]; rewrite andbT.
+  case: b tx => /= tx; rewrite bnd_simp in tx.
+    by rewrite ltW// (le_lt_trans _ xz).
+  by rewrite (lt_trans tx).
+- move: x => [[|] x|[|]//]/= in xy oox *; move=> [|].
+  + case: yb => /= in xy *.
+      by move=> /lt_trans; exact.
+    rewrite bnd_simp in xy.
+    by move=> /lt_le_trans => /(_ _ xy)/ltW.
+  + by move=> /andP[].
+  + case: yb => /= in xy *.
+      by move=> /le_lt_trans; apply.
+    by move=> /le_trans; apply; exact/ltW.
+  + by move=> /andP[].
+- by move: x => [[|] x|[|]//]/= in xy oox *.
+Qed.
+
+End set_itv_orderType.
 
 Lemma set_itv_ge [disp : unit] [T : porderType disp] [b1 b2 : itv_bound T] :
   ~~ (b1 < b2)%O -> [set` Interval b1 b2] = set0.

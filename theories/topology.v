@@ -2266,6 +2266,13 @@ Proof. by exists N.+1. Qed.
 Lemma nbhs_infty_ge N : \forall n \near \oo, (N <= n)%N.
 Proof. by exists N. Qed.
 
+Lemma nbhs_infty_ger {R : realType} (r : R) :
+  \forall n \near \oo, (r <= n%:R)%R.
+Proof.
+exists (`|ceil r|)%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
+by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
+Qed.
+
 Lemma cvg_addnl N : addn N @ \oo --> \oo.
 Proof.
 by move=> P [n _ Pn]; exists (n - N)%N => // m; rewrite /= leq_subLR => /Pn.
@@ -5355,7 +5362,22 @@ HB.instance Definition _ (R : numFieldType) := PseudoMetric.copy R R^o.
 Module Exports. HB.reexport. End Exports.
 
 End numFieldTopology.
+
 Import numFieldTopology.Exports.
+
+Lemma nbhs0_ltW (R : realFieldType) (x : R) : (0 < x)%R ->
+ \forall r \near nbhs (0%R:R), (r <= x)%R.
+Proof.
+exists x => // y; rewrite /ball/= sub0r normrN => /ltW.
+by apply: le_trans; rewrite ler_norm.
+Qed.
+
+Lemma nbhs0_lt (R : realType) (x : R) : (0 < x)%R ->
+ \forall r \near nbhs (0%R:R), (r < x)%R.
+Proof.
+exists x => // z /=; rewrite sub0r normrN.
+by apply: le_lt_trans; rewrite ler_norm.
+Qed.
 
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.
@@ -6236,7 +6258,6 @@ rewrite fVA -setIA setIid eqEsubset; split => x [fVx Ax]; split => //.
 - by have /[!VBOB]-[] : (V `&` B) (f x) by split => //; exact: funS.
 - by have /[!esym VBOB]-[] : (O `&` B) (f x) by split => //; exact: funS.
 Qed.
-
 
 Lemma continuous_subspace0 {U} (f : T -> U) : {within set0, continuous f}.
 Proof.

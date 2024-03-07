@@ -778,6 +778,13 @@ HB.instance Definition _ :=
 
 End regular_topology.
 
+Lemma ball_itv {R : realFieldType} (x r : R) :
+  ball x r = `]x - r, x + r[%classic.
+Proof.
+rewrite -(@ball_normE _ R^o) /ball_ set_itvE.
+by apply/seteqP; split => t/=; rewrite ltr_distlC.
+Qed.
+
 Module numFieldNormedType.
 
 Section realType.
@@ -5036,11 +5043,6 @@ move=> r0; apply/seteqP; split => // y; rewrite /ball/=.
 by move/lt_le_trans => /(_ _ r0); rewrite normr_lt0.
 Qed.
 
-Lemma ball_itv (x r : R) : (ball x r = `]x - r, x + r[%classic)%R.
-Proof.
-by apply/seteqP; split => y; rewrite /ball/= in_itv/= ltr_distlC.
-Qed.
-
 End ball_realFieldType.
 
 Section Closed_Ball.
@@ -5113,6 +5115,16 @@ Lemma closed_ball_itv (R : realFieldType) (x r : R) : 0 < r ->
 Proof.
 by move=> r0; apply/seteqP; split => y;
   rewrite closed_ballE// /closed_ball_ /= in_itv/= ler_distlC.
+Qed.
+
+Lemma closed_ball_ball {R : realFieldType} (x r : R) : (0 < r)%R ->
+  closed_ball x r = [set (x - r)%R] `|` ball x r `|` [set (x + r)%R].
+Proof.
+move=> r0; rewrite closed_ball_itv// -(@setU1itv _ _ _ (x - r)%R); last first.
+  by rewrite bnd_simp lerBlDr -addrA lerDl ltW// addr_gt0.
+rewrite -(@setUitv1 _ _ _ (x + r)%R); last first.
+  by rewrite bnd_simp ltrBlDr -addrA ltrDl addr_gt0.
+by rewrite ball_itv setUA.
 Qed.
 
 Lemma closed_ballR_compact (R : realType) (x e : R) : 0 < e ->

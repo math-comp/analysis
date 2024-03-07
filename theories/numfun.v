@@ -347,6 +347,21 @@ case: ifPn => [|] xA; first by rewrite in_setI xA andbT.
 by rewrite in_setI (negbTE xA) andbF.
 Qed.
 
+Lemma cvg_indic {R : realFieldType} (x : R^o) k :
+  x \in (ball 0 k : set R^o) ->
+  \1_(ball 0 k : set R^o) y @[y --> x] --> (\1_(ball 0 k) x : R).
+Proof.
+move=> xB; apply/(@cvgrPdist_le _ R^o) => /= e e0; near=> t.
+rewrite !indicE xB/= mem_set//=; first by rewrite subrr normr0// ltW.
+near: t.
+rewrite inE /ball /= sub0r normrN in xB.
+exists ((k - `|x|)/2) => /=; first by rewrite divr_gt0// subr_gt0.
+rewrite /ball_/= => z /= h; rewrite /ball/= sub0r normrN.
+rewrite -(subrK x z) (le_lt_trans (ler_normD _ _))//.
+rewrite -ltrBrDr distrC (lt_le_trans h)//.
+by rewrite ler_pdivrMr//= ler_pMr// ?subr_gt0// ler1n.
+Unshelve. all: by end_near. Qed.
+
 Section ring.
 Context (aT : pointedType) (rT : ringType).
 

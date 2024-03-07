@@ -10,6 +10,44 @@
 - in `lebesgue_integral.v`
   + lemma `ge0_integralZr`
 - file `function_spaces.v`
+- in `mathcomp_extra.v`
+  + lemma `invf_plt`
+
+- in `set_interval.v`
+  + lemmas `setDitv1r`, `setDitv1l`
+  + lemmas `set_itvxx`, `itv_bndbnd_setU`
+
+- in `reals.v`
+  + lemma `abs_ceil_ge`
+
+- in `topology.v`:
+  + lemmas `nbhs_infty_ger`, `nbhs0_ltW`, `nbhs0_lt`
+
+- in `normedtype.v`
+  + lemma `closed_ball_ball`
+
+- in `numfun.v`
+  + lemma `cvg_indic`
+
+- in `lebesgue_integral.v`
+  + lemma `locally_integrable_indic`
+  + definition `davg`,
+    lemmas `davg0`, `davgD`, `continuous_cvg_davg`
+  + definition `lim_sup_davg`,
+    lemmas `lim_sup_davg_ge0`, `lim_sup_davg_le`,
+	`continuous_lim_sup_davg`, `lim_sup_davgB`, `lim_sup_davgT_HL_maximal`
+  + definition `lebesgue_pt`,
+    lemma `continuous_lebesgue_pt`
+  + lemma `integral_setU_EFin`
+  + lemmas `integral_set1`, `ge0_integral_closed_ball`, `integral_setD1_EFin`,
+    `integral_itv_bndo_bndc`, `integral_itv_obnd_cbnd`
+  + lemma `lebesgue_differentiation`
+  + lemma `lebesgue_density`
+  + definition `nicely_shrinking`,
+    lemmas `nicely_shrinking_gt0`, `nicely_shrinking_lty`, `nice_lebesgue_differentiation`
+
+- new file `ftc.v`:
+  - lemmas `FTC1`, `continuous_FTC1`
 
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
@@ -72,6 +110,9 @@
   + `lte_add` -> `lteD`
   + `lte_addl` -> `lteDl`
   + `lte_addr` -> `lteDr`
+
+- in `lebesgue_integral.v`
+  + `integral_setU` -> `ge0_integral_setU`
 
 ### Generalized
 
