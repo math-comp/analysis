@@ -6,12 +6,13 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-(******************************************************************************)
-(*                              Contraposition                                *)
+(**md**************************************************************************)
+(* # Contraposition                                                           *)
 (*                                                                            *)
 (* This file provides tactics to reason by contraposition and contradiction.  *)
 (*                                                                            *)
-(* * Tactics                                                                  *)
+(* ## Tactics                                                                 *)
+(* ```                                                                        *)
 (* assume_not == add a goal negation assumption. The tactic also works for    *)
 (*               goals in Type, simplifies the added assumption, and          *)
 (*               exposes its top-level constructive content.                  *)
@@ -39,6 +40,7 @@ Unset Printing Implicit Defensive.
 (*               negation of the (single) <d-item> (as with contra:, a clear  *)
 (*               switch is also allowed.                                      *)
 (*               Finally the Ltac absurd term form is also supported.         *)
+(* ```                                                                        *)
 (******************************************************************************)
 
 (* Hiding module for the internal definitions and lemmas used by the tactics
@@ -60,6 +62,34 @@ Module Internals.
 Variant move_view S T := MoveView of S -> T.
 Definition move_viewP {S T} mv : S -> T := let: MoveView v := mv in v.
 Hint View for move/ move_viewP|2.
+
+(******************************************************************************)
+(* Type-level equivalence                                                     *)
+(******************************************************************************)
+
+Variant equivT S T := EquivT of S -> T & T -> S.
+
+Definition equivT_refl S : equivT S S := EquivT id id.
+Definition equivT_transl {S T U} : equivT S T -> equivT S U -> equivT T U :=
+  fun (st : equivT S T) (su : equivT S U) =>
+    let: EquivT S_T T_S := st in
+    let: EquivT S_U U_S := su in
+    EquivT (S_U \o T_S) (S_T \o U_S).
+Definition equivT_sym {S T} : equivT S T -> equivT T S :=
+   equivT_transl^~ (equivT_refl S).
+Definition equivT_trans {S T U} : equivT S T -> equivT T U -> equivT S U :=
+   equivT_transl \o equivT_sym.
+Definition equivT_transr {S T U} eqST : equivT U S -> equivT U T :=
+   equivT_trans^~ eqST.
+Definition equivT_Prop (P Q : Prop) : (equivT P Q) <-> (equivT P Q).
+Proof. split; destruct 1; split; assumption. Defined.
+Definition equivT_LR {S T} (eq : equivT S T) : S -> T :=
+  let: EquivT S_T _ := eq in S_T.
+Definition equivT_RL {S T} (eq : equivT S T) : T -> S :=
+  let: EquivT _ T_S := eq in T_S.
+
+Hint View for move/ equivT_LR|2 equivT_RL|2.
+Hint View for apply/ equivT_RL|2 equivT_LR|2.
 
 (******************************************************************************)
 (*   A generic Forall "constructor" for the Gallina forall quantifier, i.e.,  *)
@@ -744,7 +774,10 @@ Proof. by rewrite 2!lax_notE. Qed.
 
 End Internals.
 Import Internals.
+Definition notP := @Internals.notP.
 Hint View for move/ move_viewP|2.
+Hint View for move/ Internals.equivT_LR|2 Internals.equivT_RL|2.
+Hint View for apply/ Internals.equivT_RL|2 Internals.equivT_LR|2.
 Export (canonicals) Internals.
 
 (******************************************************************************)
