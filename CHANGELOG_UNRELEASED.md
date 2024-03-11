@@ -9,6 +9,7 @@
 
 - in `lebesgue_integral.v`
   + lemma `ge0_integralZr`
+- file `function_spaces.v`
 
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 

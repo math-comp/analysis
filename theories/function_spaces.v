@@ -50,8 +50,9 @@ Require Import reals signed topology.
 (*                            When the family f separates points from closed  *)
 (*         {ptws, F --> f} == F converges to f in {ptws U -> V}               *)
 (*    {family fam, U -> V} == the supremum of {uniform A -> f} for each A in  *)
-(*                            'fam'. In particular {family compact, U -> V}   *)
-(*                            is the topology of compact convergence.         *)
+(*                            `fam`                                           *)
+(*                            In particular, {family compact, U -> V} is the  *)
+(*                            topology of compact convergence.                *)
 (*   {family fam, F --> f} == F converges to f in {family fam, U -> V}        *)
 (*  {compact_open, U -> V} == compact-open topology                           *)
 (* {compact_open, F --> f} == F converges to f in {compact_open, U -> V}      *)
@@ -287,13 +288,13 @@ exact: proj_continuous.
 Qed.
 
 (**md A handy technique for embedding a space `T` into a product. The key
-  interface is `separate_points_from_closed`', which guarantees that the
+  interface is `separate_points_from_closed`, which guarantees that the
   topologies
    - `T`'s native topology
    - `sup (weak f_i)`: the sup of all the weak topologies of `f_i`
    - `weak (x => (f_1 x, f_2 x, ...))`: the weak topology from the product space
 
-  are equivalent (the last equivalence seems to require accessible_space). *)
+  are equivalent (the last equivalence seems to require `accessible_space`). *)
 Section product_embeddings.
 Context {I : choiceType} {T : topologicalType} {U_ : I -> topologicalType}.
 Variable (f_ : forall i, T -> U_ i).
