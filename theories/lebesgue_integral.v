@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop .
 Require Import signed reals ereal topology normedtype sequences real_interval.
-Require Import esum measure lebesgue_measure numfun.
+Require Import esum measure lebesgue_measure numfun function_spaces.
 
 (**md**************************************************************************)
 (* # Lebesgue Integral                                                        *)

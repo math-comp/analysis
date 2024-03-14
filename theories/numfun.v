@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
 From mathcomp Require Import functions cardinality set_interval.
-Require Import signed reals ereal topology normedtype sequences.
+Require Import signed reals ereal topology normedtype sequences function_spaces.
 
 (**md**************************************************************************)
 (* # Numerical functions                                                      *)
@@ -516,7 +516,7 @@ have g_cts n : continuous (g_ n).
 have g_bd n : forall x, `|g_ n x| <= geometric ((1/3) * M%:num) (2/3) n.
   have [ctsN bdfN] := f_geo n; rewrite /geometric /= -[_ * M%:num * _]mulrA.
   by have [_ _] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdfN.
-pose h_ : nat -> [the completeType of {uniform X -> R^o}] :=
+pose h_ : nat -> arrow_uniform_type X R^o :=
   @series {uniform X -> _} g_.
 have cvgh' : cvg (h_ @ \oo).
   apply/cauchy_cvgP/cauchy_ballP => eps epos; near_simpl.
