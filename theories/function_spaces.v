@@ -1179,7 +1179,7 @@ Lemma pointwise_cvg_entourage (x : X) (f : {ptws X -> Y}) E :
   entourage E -> \forall g \near f, E (f x, g x).
 Proof.
 move=> entE; have : ({ptws, nbhs f --> f}) by [].
-have ? : Filter (nbhs f) by exact: nbhs_pfilter.
+have ? : Filter (nbhs f) by exact: nbhs_pfilter. (* NB: This Filter (nbhs f) used to infer correctly. *)
 rewrite pointwise_cvg_family_singleton => /fam_cvgP /(_ [set x]).
 rewrite uniform_set1 => /(_ _ (to_set E (f x))); apply; first by exists x.
 by move: E entE; exact/cvg_entourageP.
@@ -1188,9 +1188,9 @@ Qed.
 Lemma equicontinuous_closure (W : set {ptws X -> Y}) :
   equicontinuous W id -> equicontinuous (closure W) id.
 Proof.
-move=> ectsW => x E entE; near=> y => f clWf.
+move=> ectsW x E entE; near=> y => f clWf.
 have ? : ProperFilter (within W (nbhs (f : {ptws X -> Y}))).
-  exact: within_nbhs_proper.
+  exact: within_nbhs_proper. (* TODO: This ProperFilter _ also used to infer correctly. *)
 near (within W (nbhs (f : {ptws X -> Y}))) => g.
 near: g; rewrite near_withinE; near_simpl; near=> g => Wg.
 apply: (@entourage_split _ (g x)) => //.
