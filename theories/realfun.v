@@ -704,11 +704,13 @@ by move=> x y; rewrite !in_itv/= => /andP[x0 xe] /andP[y0 ye] /inf_ball_le.
 Unshelve. all: by end_near. Qed.
 
 Let le_sup_ball f g a :
-  (forall r, (0 < r)%R -> forall y : R, y != a -> ball a r y -> f y <= g y) ->
+  (\forall r \near 0^'+, forall y : R, y != a -> ball a r y -> f y <= g y) ->
   \forall r \near 0^'+, sup_ball f a r <= sup_ball g a r.
 Proof.
-move=> fg; near=> r; apply: ub_ereal_sup => /= _ [s [pas /= /eqP ps]] <-.
-apply: (@le_trans _ _ (g s)); first exact: (fg r).
+move=> [e/= e0 fg].
+near=> r; apply: ub_ereal_sup => /= _ [s [pas /= /eqP ps]] <-.
+rewrite (@le_trans _ _ (g s))//.
+  by rewrite (fg r)//= sub0r normrN gtr0_norm.
 by apply: ereal_sup_ub => /=; exists s => //; split => //; exact/eqP.
 Unshelve. all: by end_near. Qed.
 
@@ -779,7 +781,7 @@ apply: lee_lim => //.
 Unshelve. all: by end_near. Qed.
 
 Lemma lime_sup_le f g a :
-  (forall r, (0 < r)%R -> forall y, y != a -> ball a r y -> f y <= g y) ->
+  (\forall r \near 0^'+, forall y, y != a -> ball a r y -> f y <= g y) ->
   lime_sup f a <= lime_sup g a.
 Proof.
 by move=> fg; rewrite !lime_sup_lim; apply: lee_lim => //; exact: le_sup_ball.
@@ -788,17 +790,16 @@ Qed.
 Lemma lime_inf_sup f a : lime_inf f a <= lime_sup f a.
 Proof.
 rewrite lime_inf_lim lime_sup_lim; apply: lee_lim => //.
-near=> r.
-rewrite ereal_sup_le//.
+near=> r; rewrite ereal_sup_le//.
 have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2)%R.
-  exists (a + r / 2)%R => //;  split.
+  exists (a + r / 2)%R => //; split.
     rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
     by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
   by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
-by exists (f (a + r / 2)%R) => //=; rewrite inf_ballE ereal_inf_lb.
+by exists (f (a + r / 2)) => //=; rewrite inf_ballE ereal_inf_lb.
 Unshelve. all: by end_near. Qed.
 
-Local Lemma lim_lime_sup' f a (l : R) :
+Local Lemma lim_lime_sup' f a l :
   f r @[r --> a] --> l%:E -> lime_sup f a <= l%:E.
 Proof.
 move=> fpA; apply/lee_addgt0Pr => e e0; rewrite lime_sup_lim.
@@ -806,8 +807,7 @@ apply: lime_le => //.
 move/fine_cvg : (fpA) => /cvgrPdist_le fpA1.
 move/fcvg_is_fine : (fpA); rewrite near_map => -[d d0] fpA2.
 have := fpA1 _ e0 => -[q /= q0] H.
-near=> x.
-apply: ub_ereal_sup => //= _ [y [pry /= yp <-]].
+near=> x; apply: ub_ereal_sup => //= _ [y [pry /= yp <-]].
 have ? : f y \is a fin_num.
   apply: fpA2.
   rewrite /ball_ /= (lt_le_trans pry)//.

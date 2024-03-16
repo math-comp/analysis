@@ -27,11 +27,10 @@ Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
 Implicit Types (f : R -> R) (a : itv_bound R).
 
-Let FTC0 f a :
-  mu.-integrable setT (EFin \o f) ->
+Let FTC0 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) f t)%R in
   forall x, a < BRight x -> lebesgue_pt f x ->
-    h^-1 *: (F (h + x) - F x) @[h --> (0:R)%R^'] --> f x.
+    h^-1 *: (F (h + x) - F x) @[h --> 0%R^'] --> f x.
 Proof.
 move=> intf F x ax fx.
 have locf : locally_integrable setT f.
@@ -180,42 +179,39 @@ apply: cvg_at_right_left_dnbhs.
 Unshelve. all: by end_near. Qed.
 
 (* NB: right-closed interval *)
-Lemma FTC1 f a :
-  mu.-integrable setT (EFin \o f) ->
+Lemma FTC1 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) (f t))%R in
   forall x, a < BRight x -> lebesgue_pt f x ->
-  derivable F x 1 /\
-  F^`() x = f x.
+  derivable F x 1 /\ F^`() x = f x.
 Proof.
 move=> intf F x ax fx; split; last first.
   by apply/cvg_lim; [exact: Rhausdorff|exact: FTC0].
 apply/cvg_ex; exists (f x).
-set g := (f in f n @[n --> _] --> _).
-have := FTC0 intf ax fx.
-set h := (f in f n @[n --> _] --> _ -> _).
+have /= := FTC0 intf ax fx.
+set g := (f in f n @[n --> _] --> _ -> _).
+set h := (f in _ -> f n @[n --> _] --> _).
 suff : g = h by move=> <-.
-apply/funext => y.
-rewrite /g /h /=.
-by rewrite [X in F (X + _)](mulr1).
+by apply/funext => y;rewrite /g /h /= [X in F (X + _)](mulr1).
 Qed.
 
-Lemma continuous_FTC1 f a :
-  mu.-integrable setT (EFin \o f) ->
+Corollary continuous_FTC1 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) (f t))%R in
   forall x, a < BRight x -> {for x, continuous f} ->
-  derivable F x 1 /\
-  F^`() x = f x.
+  derivable F x 1 /\ F^`() x = f x.
 Proof.
 move=> fi F x ax fx.
 have lfx : lebesgue_pt f x.
-  apply: continuous_lebesgue_pt => // U xU.
-  case/integrableP : fi => + _.
-  by move/EFin_measurable_fun; exact: measurable_funS.
+  near (0%R:R)^'+ => e.
+  apply: (@continuous_lebesgue_pt _ _ _ (ball x e)).
+  - exact: ball_open_nbhs.
+  - exact: measurable_ball.
+  - case/integrableP : fi => + _.
+    by move/EFin_measurable_fun; exact: measurable_funS.
+  - exact: fx.
 have lif : locally_integrable setT f.
   by apply: integrable_locally => //; exact: openT.
-have /= := @FTC1 f a fi x.
-move=> /(_ ax lfx)/= [dfx f'xE].
+have /= /(_ ax lfx)/= [dfx f'xE] := @FTC1 f a fi x.
 by split; [exact: dfx|rewrite f'xE].
-Qed.
+Unshelve. all: by end_near. Qed.
 
 End FTC.

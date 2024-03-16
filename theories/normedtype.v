@@ -5045,8 +5045,6 @@ Qed.
 
 End ball_realFieldType.
 
-Section Closed_Ball.
-
 Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
   0 < r -> open (ball x r).
 Proof.
@@ -5054,6 +5052,12 @@ rewrite openE -ball_normE /interior => r0 y /= Bxy; near=> z.
 rewrite /= (le_lt_trans (ler_distD y _ _)) // addrC -ltrBrDr.
 by near: z; apply: cvgr_dist_lt; rewrite // subr_gt0.
 Unshelve. all: by end_near. Qed.
+
+Lemma ball_open_nbhs (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
+  0 < r -> open_nbhs x (ball x r).
+Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+
+Section Closed_Ball.
 
 Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
   (x : V) (e : R) := [set y | norm (x - y) <= e].

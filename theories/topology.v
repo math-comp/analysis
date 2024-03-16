@@ -42,7 +42,7 @@ Require Import reals signed.
 (* ## Structure of filter                                                     *)
 (* ```                                                                        *)
 (*                   filteredType U == interface type for types whose         *)
-(*                                     elements represent sets of sets on U.  *)
+(*                                     elements represent sets of sets on U   *)
 (*                                     These sets are intended to be filters  *)
 (*                                     on U but this is not enforced yet.     *)
 (*                                     The HB class is called Filtered.       *)
@@ -4645,7 +4645,6 @@ exists (finI_from (\bigcup_n g n) id); split.
 Qed.
 
 End sup_uniform.
-
 
 (** PseudoMetric spaces defined using balls *)
 

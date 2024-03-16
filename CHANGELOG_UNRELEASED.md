@@ -32,7 +32,7 @@
 - in `lebesgue_integral.v`
   + lemma `locally_integrable_indic`
   + definition `davg`,
-    lemmas `davg0`, `davgD`, `continuous_cvg_davg`
+    lemmas `davg0`, `davg_ge0`, `davgD`, `continuous_cvg_davg`
   + definition `lim_sup_davg`,
     lemmas `lim_sup_davg_ge0`, `lim_sup_davg_le`,
 	`continuous_lim_sup_davg`, `lim_sup_davgB`, `lim_sup_davgT_HL_maximal`
@@ -45,6 +45,9 @@
   + lemma `lebesgue_density`
   + definition `nicely_shrinking`,
     lemmas `nicely_shrinking_gt0`, `nicely_shrinking_lty`, `nice_lebesgue_differentiation`
+
+- in `normedtype.v`:
+  + lemma `ball_open_nbhs`
 
 - new file `ftc.v`:
   - lemmas `FTC1`, `continuous_FTC1`
@@ -115,6 +118,9 @@
   + `integral_setU` -> `ge0_integral_setU`
 
 ### Generalized
+
+- in `realfun.v`
+  + lemma `lime_sup_le`
 
 ### Deprecated
 
