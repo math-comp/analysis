@@ -46,6 +46,8 @@ Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 (*                    Urysohn A B == a continuous function T -> [0,1] which   *)
 (*                                   separates A and B when                   *)
 (*                                   `uniform_separator A B`                  *)
+(*       completely_regular_space == a space where points and closed sets can *)
+(*                                   be separated by a function into R        *)
 (*          uniform_separator A B == there is a suitable uniform space and    *)
 (*                                   entourage separating A and B             *)
 (*                      nbhs_norm == neighborhoods defined by the norm        *)
@@ -3644,6 +3646,7 @@ Qed.
 
 End normal_uniform_separators.
 End Urysohn.
+
 Lemma uniform_separatorP {T : topologicalType} {R : realType} (A B : set T) :
   uniform_separator A B <->
   exists (f : T -> R), [/\ continuous f, range f `<=` `[0, 1],
@@ -3710,6 +3713,36 @@ Lemma normal_separatorP : normal_space T <->
 Proof. exact: (normal_spaceP 0%N 1%N). Qed.
 
 End normalP.
+
+Section completely_regular.
+
+Definition completely_regular_space {R : realType} {T : topologicalType} :=
+  forall (a : T) (B : set T), closed B -> ~ B a -> exists (f : T -> R), [/\
+    continuous f,
+    f a = 0 &
+    f @` B `<=` [set 1]
+  ].
+
+Lemma point_uniform_separator {T : uniformType} (x : T) (B : set T) :
+  closed B -> ~ B x -> uniform_separator [set x] B.
+Proof.
+move=> clB nBx; have : open (~` B) by rewrite openC.
+rewrite openE => /(_ _ nBx); rewrite /interior /= -nbhs_entourageE.
+case=> E entE EnB.
+pose T' := ([the pseudoMetricType Rdefinitions.R of gauge.type entE]).
+exists (Uniform.class T); exists E; split => //; last by move => ?.
+by rewrite -subset0; case => ? w[/=[-> ? ?]]; apply: (EnB w).
+Qed.
+
+Lemma uniform_completely_regular {R : realType} {T : uniformType} : 
+    @completely_regular_space R T.
+Proof.
+move=> x B clB Bx. 
+have /(@uniform_separatorP _ R) [f] := point_uniform_separator clB Bx.
+by case=> ? _; rewrite image_set1 => fx ?; exists f; split => //; apply: fx.
+Qed.
+
+End completely_regular.
 
 Section pseudometric_normal.
 
