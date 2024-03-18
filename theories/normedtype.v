@@ -3717,11 +3717,10 @@ End normalP.
 Section completely_regular.
 
 Definition completely_regular_space {R : realType} {T : topologicalType} :=
-  forall (a : T) (B : set T), closed B -> ~ B a -> exists (f : T -> R), [/\
+  forall (a : T) (B : set T), closed B -> ~ B a -> exists f : T -> R, [/\
     continuous f,
     f a = 0 &
-    f @` B `<=` [set 1]
-  ].
+    f @` B `<=` [set 1] ].
 
 Lemma point_uniform_separator {T : uniformType} (x : T) (B : set T) :
   closed B -> ~ B x -> uniform_separator [set x] B.
@@ -3729,17 +3728,17 @@ Proof.
 move=> clB nBx; have : open (~` B) by rewrite openC.
 rewrite openE => /(_ _ nBx); rewrite /interior /= -nbhs_entourageE.
 case=> E entE EnB.
-pose T' := ([the pseudoMetricType Rdefinitions.R of gauge.type entE]).
+pose T' := [the pseudoMetricType Rdefinitions.R of gauge.type entE].
 exists (Uniform.class T); exists E; split => //; last by move => ?.
-by rewrite -subset0; case => ? w[/=[-> ? ?]]; apply: (EnB w).
+by rewrite -subset0 => -[? w [/= [-> ? ?]]]; exact: (EnB w).
 Qed.
 
-Lemma uniform_completely_regular {R : realType} {T : uniformType} : 
-    @completely_regular_space R T.
+Lemma uniform_completely_regular {R : realType} {T : uniformType} :
+   @completely_regular_space R T.
 Proof.
-move=> x B clB Bx. 
+move=> x B clB Bx.
 have /(@uniform_separatorP _ R) [f] := point_uniform_separator clB Bx.
-by case=> ? _; rewrite image_set1 => fx ?; exists f; split => //; apply: fx.
+by case=> ? _; rewrite image_set1 => fx ?; exists f; split => //; exact: fx.
 Qed.
 
 End completely_regular.
