@@ -135,6 +135,10 @@
   + definition `pointwise_fun`
   + module `PtwsFun`
 
+- in `mathcomp_extra.v`:
+  + notations `eqLHS` and `eqRHS`
+    (they are `eqbLHS` and `eqbRHS` in mathcomp since 1.15.0)
+
 ### Infrastructure
 
 ### Misc

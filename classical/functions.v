@@ -731,15 +731,17 @@ Notation totalfun := (totalfun_ setT).
 Section Olift.
 Context {aT rT} {A : set aT} {B : set rT}.
 
-HB.instance Definition _ {f : {oinv aT >-> rT}} := OInversible.on (olift f).
+HB.instance Definition _ {f : {oinv aT >-> rT}} := OInversible.copy (olift f)
+  (Some \o f).
 
 Lemma oinv_olift  {f : {oinv aT >-> rT}} : 'oinv_(olift f) = obind 'oinv_f.
 Proof. by []. Qed.
 
 HB.instance Definition _ (f : {inj A >-> rT}) :=
-  Inject.copy (olift f) (olift ('totalfun_A f)).
-HB.instance Definition _ (f : {surj A >-> B}) := Surject.on (olift f).
-HB.instance Definition _ (f : {fun A >-> B}) := Fun.on (olift f).
+  Inject.copy (olift f) (Some \o ('totalfun_A f)).
+HB.instance Definition _ (f : {surj A >-> B}) :=
+  Surject.copy (olift f) (Some \o f).
+HB.instance Definition _ (f : {fun A >-> B}) := Fun.copy (olift f) (Some \o f).
 HB.instance Definition _ (f : {oinvfun A >-> B}) := Fun.on (olift f).
 HB.instance Definition _ (f : {injfun A >-> B}) := Fun.on (olift f).
 HB.instance Definition _ (f : {surjfun A >-> B}) := Fun.on (olift f).
