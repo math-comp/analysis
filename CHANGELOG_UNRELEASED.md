@@ -11,6 +11,11 @@
   + lemma `ge0_integralZr`
 - file `function_spaces.v`
 
+- in file `normedtype.v`,
+  + new definition `completely_regular_space`.
+  + new lemmas `point_uniform_separator`, and 
+    `uniform_completely_regular`.
+
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
     `product_topology_def`, `proj_continuous`, `dfwith_continuous`, 
