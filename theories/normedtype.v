@@ -3473,7 +3473,7 @@ Lemma uniform_separatorW {T : uniformType} (A B : set T) :
 Proof. by case=> E entE AB0; exists (Uniform.class T), E; split => // ?. Qed.
 
 Section Urysohn.
-Context {T : topologicalType} .
+Context {T : topologicalType}.
 Hypothesis normalT : normal_space T.
 Section normal_uniform_separators.
 Context (A : set T).

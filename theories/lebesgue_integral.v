@@ -6648,7 +6648,7 @@ Proof.
 move=> mA; have := lebesgue_differentiation (locally_integrable_indic openT mA).
 apply: filter_app; first exact: (ae_filter_ringOfSetsType mu).
 apply: aeW => /= x Ax.
-apply/(cvge_sub0 _ _).1 => //.
+apply: (cvge_sub0 _ _).1 => //.
 move: Ax; rewrite /lebesgue_pt /davg /= -/mu => Ax.
 have : (fine (mu (ball x r)))^-1%:E *
        `|\int[mu]_(y in ball x r) (\1_A y - \1_A x)%:E | @[r --> 0^'+] --> 0.
@@ -6683,7 +6683,7 @@ rewrite (_ : f = fun r => (fine (mu (ball x r)))^-1%:E *
   rewrite integral_indic//=; last exact: measurable_ball.
   by rewrite -/mu integral_cst//; exact: measurable_ball.
 rewrite indicE; have [xA xrA0|xA] := boolP (x \in A); last first.
-  apply: iffRL; apply/propeqP; apply eq_cvg => r.
+  apply: iffRL; apply/propeqP; apply: eq_cvg => r.
   by rewrite -mulNrn mulr0n adde0 mul0e sube0 gee0_abs// muleC.
 have {xrA0} /cvgeN : (fine (mu (ball x r)))^-1%:E *
     (mu (ball x r) - mu (A `&` ball x r)) @[r --> 0^'+] --> 0.
@@ -6751,7 +6751,7 @@ Lemma nice_lebesgue_differentiation (f : R -> R) :
   (fine (mu (E x n)))^-1%:E * \int[mu]_(y in E x n) (f y)%:E
     @[n --> \oo] --> (f x)%:E.
 Proof.
-move=> locf x fx; apply/(cvge_sub0 _ _).1 => //=; apply/cvg_abse0P.
+move=> locf x fx; apply: (cvge_sub0 _ _).1 => //=; apply/cvg_abse0P.
 pose r_ x : {posnum R} ^nat := (sval (cid (hE x).2)).2.
 pose C := (sval (cid (hE x).2)).1.
 have C_gt0 : (0 < C)%R by rewrite /C /sval/=; case: cid => -[? ?] [].
