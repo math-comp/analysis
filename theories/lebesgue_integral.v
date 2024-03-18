@@ -6683,7 +6683,7 @@ rewrite (_ : f = fun r => (fine (mu (ball x r)))^-1%:E *
   rewrite integral_indic//=; last exact: measurable_ball.
   by rewrite -/mu integral_cst//; exact: measurable_ball.
 rewrite indicE; have [xA xrA0|xA] := boolP (x \in A); last first.
-  apply: iffRL; apply/propeqP; apply: eq_cvg => r.
+  apply: iffRL; apply/propeqP; apply eq_cvg => r.
   by rewrite -mulNrn mulr0n adde0 mul0e sube0 gee0_abs// muleC.
 have {xrA0} /cvgeN : (fine (mu (ball x r)))^-1%:E *
     (mu (ball x r) - mu (A `&` ball x r)) @[r --> 0^'+] --> 0.
