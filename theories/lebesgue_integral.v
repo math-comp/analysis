@@ -3466,7 +3466,7 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
       \int[mu]_(x in D) ((g1 \+ g2)^\- x) + \int[mu]_(x in D) (g1^\+ x) +
         \int[mu]_(x in D) (g2^\+ x).
   move=> h; rewrite [in LHS]integralE.
-  move/eqP : h; rewrite -[in eqRHS]addeA [in eqRHS]addeC.
+  move/eqP : h; rewrite -[in eqbRHS]addeA [in eqbRHS]addeC.
   have g12pos :
       \int[mu]_(x in D) (g1^\+ x) + \int[mu]_(x in D) (g2^\+ x) \is a fin_num.
     rewrite ge0_fin_numE//.
@@ -3495,7 +3495,7 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
   by rewrite addeACA (integralE _ _ g1) (integralE _ _ g2).
 have : (g1 \+ g2)^\+ \+ g1^\- \+ g2^\- = (g1 \+ g2)^\- \+ g1^\+ \+ g2^\+.
   rewrite funeqE => x.
-  apply/eqP; rewrite -2!addeA [in eqRHS]addeC -sube_eq; last 2 first.
+  apply/eqP; rewrite -2!addeA [in eqbRHS]addeC -sube_eq; last 2 first.
     by rewrite /funepos /funeneg -!fine_max.
     by rewrite /funepos /funeneg -!fine_max.
   rewrite addeAC eq_sym -sube_eq; last 2 first.
