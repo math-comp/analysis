@@ -1875,8 +1875,8 @@ Lemma lebesgue_regularity_outer (D : set R) (eps : R) :
   measurable D -> mu D < +oo -> (0 < eps)%R ->
   exists U : set R, [/\ open U , D `<=` U & mu (U `\` D) < eps%:E].
 Proof.
-move=> mD muDpos epspos.
-have /ereal_inf_lt[z [M' covDM sMz zDe]] : mu D < mu D + (eps / 2)%:E.
+move=> mD muDoo epspos.
+have /ereal_inf_lt[z [/= M' covDM sMz zDe]] : mu D < mu D + (eps / 2)%:E.
   by rewrite lte_spaddre ?lte_fin ?divr_gt0// ge0_fin_numE.
 pose e2 n := (eps / 2) / (2 ^ n.+1)%:R.
 have e2pos n : (0 < e2 n)%R by rewrite ?divr_gt0.
@@ -2134,7 +2134,7 @@ Lemma ae_pointwise_almost_uniform
   measurable A -> mu A < +oo ->
   {ae mu, (forall x, A x -> f_ ^~ x @\oo --> g x)} ->
   (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E &
-    {uniform A `\` B, f_ @\oo --> g}].
+    {uniform A `\` B, f_ @ \oo --> g}].
 Proof.
 move=> mf mg mA Afin [C [mC C0 nC] epspos].
 have [B [mB Beps Bunif]] : exists B, [/\ d.-measurable B, mu B < eps%:E &

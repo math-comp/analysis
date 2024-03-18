@@ -5839,12 +5839,12 @@ Qed.
 Lemma locally_integrable_indic D (A : set R) :
   open D -> measurable A -> locally_integrable D \1_A.
 Proof.
-move=> oU; split => // K _ cK.
+move=> oU mA; split => // K KD_ cK.
 apply: (@le_lt_trans _ _ (\int[mu]_(x in K) cst 1 x)).
   apply: ge0_le_integral => //=; first exact: compact_measurable.
   - by do 2 apply: measurableT_comp => //.
-  - move=> y _.
-    by rewrite indicE; case: (y \in A) => /=; rewrite ?(normr1,normr0).
+  - move=> y Kx; rewrite indicE.
+    by case: (y \in A) => /=; rewrite ?(normr1,normr0,lexx,lee01).
 by rewrite integral_cst//= ?mul1e; [exact: compact_finite_measure|
                                     exact: compact_measurable].
 Qed.
