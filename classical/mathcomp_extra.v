@@ -985,3 +985,10 @@ Qed.
 
 End path_lt.
 Arguments last_filterP {d T a} P s.
+
+(* TODO: in MathComp since version 2.3.0 *)
+Lemma invf_plt (F : numFieldType) :
+  {in Num.pos &, forall x y : F, (x^-1 < y)%R = (y^-1 < x)%R}.
+Proof.
+by move=> x y ? ?; rewrite -[in LHS](@invrK _ y) ltf_pV2// posrE invr_gt0.
+Qed.

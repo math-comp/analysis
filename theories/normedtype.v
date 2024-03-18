@@ -780,6 +780,13 @@ HB.instance Definition _ :=
 
 End regular_topology.
 
+Lemma ball_itv {R : realFieldType} (x r : R) :
+  ball x r = `]x - r, x + r[%classic.
+Proof.
+rewrite -(@ball_normE _ R^o) /ball_ set_itvE.
+by apply/seteqP; split => t/=; rewrite ltr_distlC.
+Qed.
+
 Module numFieldNormedType.
 
 Section realType.
@@ -3468,7 +3475,7 @@ Lemma uniform_separatorW {T : uniformType} (A B : set T) :
 Proof. by case=> E entE AB0; exists (Uniform.class T), E; split => // ?. Qed.
 
 Section Urysohn.
-Context {T : topologicalType} .
+Context {T : topologicalType}.
 Hypothesis normalT : normal_space T.
 Section normal_uniform_separators.
 Context (A : set T).
@@ -5068,14 +5075,7 @@ move=> r0; apply/seteqP; split => // y; rewrite /ball/=.
 by move/lt_le_trans => /(_ _ r0); rewrite normr_lt0.
 Qed.
 
-Lemma ball_itv (x r : R) : (ball x r = `]x - r, x + r[%classic)%R.
-Proof.
-by apply/seteqP; split => y; rewrite /ball/= in_itv/= ltr_distlC.
-Qed.
-
 End ball_realFieldType.
-
-Section Closed_Ball.
 
 Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
   0 < r -> open (ball x r).
@@ -5084,6 +5084,12 @@ rewrite openE -ball_normE /interior => r0 y /= Bxy; near=> z.
 rewrite /= (le_lt_trans (ler_distD y _ _)) // addrC -ltrBrDr.
 by near: z; apply: cvgr_dist_lt; rewrite // subr_gt0.
 Unshelve. all: by end_near. Qed.
+
+Lemma ball_open_nbhs (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
+  0 < r -> open_nbhs x (ball x r).
+Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+
+Section Closed_Ball.
 
 Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
   (x : V) (e : R) := [set y | norm (x - y) <= e].
@@ -5145,6 +5151,16 @@ Lemma closed_ball_itv (R : realFieldType) (x r : R) : 0 < r ->
 Proof.
 by move=> r0; apply/seteqP; split => y;
   rewrite closed_ballE// /closed_ball_ /= in_itv/= ler_distlC.
+Qed.
+
+Lemma closed_ball_ball {R : realFieldType} (x r : R) : (0 < r)%R ->
+  closed_ball x r = [set (x - r)%R] `|` ball x r `|` [set (x + r)%R].
+Proof.
+move=> r0; rewrite closed_ball_itv// -(@setU1itv _ _ _ (x - r)%R); last first.
+  by rewrite bnd_simp lerBlDr -addrA lerDl ltW// addr_gt0.
+rewrite -(@setUitv1 _ _ _ (x + r)%R); last first.
+  by rewrite bnd_simp ltrBlDr -addrA ltrDl addr_gt0.
+by rewrite ball_itv setUA.
 Qed.
 
 Lemma closed_ballR_compact (R : realType) (x e : R) : 0 < e ->

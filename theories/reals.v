@@ -650,6 +650,13 @@ Lemma ceilN x : ceil (- x) = - floor x. Proof. by rewrite /ceil opprK. Qed.
 
 Lemma floorN x : floor (- x) = - ceil x. Proof. by rewrite /ceil opprK. Qed.
 
+Lemma abs_ceil_ge x : `|x| <= `|ceil x|.+1%:R.
+Proof.
+rewrite -natr1 natr_absz; have [x0|x0] := ltP 0%R x.
+  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (ceil_ge _))// lerDl.
+by rewrite !ler0_norm ?ceil_le0// /ceil opprK; exact/ltW/lt_succ_floor.
+Qed.
+
 End CeilTheory.
 
 (* -------------------------------------------------------------------- *)
