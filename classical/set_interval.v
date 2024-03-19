@@ -35,7 +35,7 @@ Local Open Scope ring_scope.
 (** definitions and lemmas to make a bridge between MathComp intervals and
     classical sets *)
 Section set_itv_porderType.
-Variables (d : unit) (T : porderType d).
+Variables (d : Order.disp_t) (T : porderType d).
 Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
 
 Definition neitv i := [set` i] != set0.
@@ -160,11 +160,10 @@ End set_itv_porderType.
 Arguments neitv {d T} _.
 
 Section set_itv_orderType.
-Variables (d : unit) (T : orderType d).
+Variables (d : Order.disp_t) (T : orderType d).
 Implicit Types a x y : itv_bound T.
-Local Open Scope order_scope.
 
-Lemma itv_bndbnd_setU a x y : a <= x -> x <= y ->
+Lemma itv_bndbnd_setU a x y : (a <= x)%O -> (x <= y)%O ->
   ([set` Interval a y] = [set` Interval a x] `|` [set` Interval x y])%classic.
 Proof.
 rewrite le_eqVlt => /predU1P[<-{x} ay|]; first by rewrite set_itvxx set0U.
@@ -223,12 +222,12 @@ Qed.
 
 End set_itv_orderType.
 
-Lemma set_itv_ge [disp : unit] [T : porderType disp] [b1 b2 : itv_bound T] :
+Lemma set_itv_ge disp [T : porderType disp] [b1 b2 : itv_bound T] :
   ~~ (b1 < b2)%O -> [set` Interval b1 b2] = set0.
 Proof. by move=> Nb12; rewrite -subset0 => x /=; rewrite itv_ge. Qed.
 
 Section set_itv_latticeType.
-Variables (d : unit) (T : latticeType d).
+Variables (d : Order.disp_t) (T : latticeType d).
 Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
 
 Lemma set_itvI i j :  [set` (i `&` j)%O] = [set` i] `&` [set` j].
@@ -410,7 +409,7 @@ Qed.
 
 (** lemmas between itv and set-theoretic operations *)
 Section set_itv_porderType.
-Variables (d : unit) (T : orderType d).
+Variables (d : Order.disp_t) (T : orderType d).
 Implicit Types (a : itv_bound T) (x y : T) (i j : interval T) (b : bool).
 
 Lemma setCitvl a : ~` [set` Interval -oo%O a] = [set` Interval a +oo%O].

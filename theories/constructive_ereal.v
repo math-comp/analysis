@@ -228,7 +228,7 @@ case=> [?||][?||][?||] //=; rewrite -?comparabler0; first exact: le_trans.
 by move=> cmp /ge_comparable /comparabler_trans; apply.
 Qed.
 
-Fact ereal_display : unit. Proof. by []. Qed.
+Fact ereal_display : Order.disp_t. Proof. by []. Qed.
 
 HB.instance Definition _ := Order.isPOrder.Build ereal_display (\bar R)
   lt_def_ereal le_refl_ereal le_anti_ereal le_trans_ereal.
