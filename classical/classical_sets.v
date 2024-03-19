@@ -447,27 +447,27 @@ Notation "`] a , '+oo' [" :=
 Notation "`] -oo , '+oo' [" :=
   [set` Interval -oo%O +oo%O] : classical_set_scope.
 
-Lemma preimage_itv T (d : unit) (rT : porderType d) (f : T -> rT) (i : interval rT) (x : T) :
+Lemma preimage_itv T d (rT : porderType d) (f : T -> rT) (i : interval rT) (x : T) :
   ((f @^-1` [set` i]) x) = (f x \in i).
 Proof. by rewrite inE. Qed.
 
-Lemma preimage_itv_o_infty T (d : unit) (rT : porderType d) (f : T -> rT) y :
+Lemma preimage_itv_o_infty T d (rT : porderType d) (f : T -> rT) y :
   f @^-1` `]y, +oo[%classic = [set x | (y < f x)%O].
 Proof.
 by rewrite predeqE => t; split => [|?]; rewrite /= in_itv/= andbT.
 Qed.
 
-Lemma preimage_itv_c_infty T (d : unit) (rT : porderType d) (f : T -> rT) y :
+Lemma preimage_itv_c_infty T d (rT : porderType d) (f : T -> rT) y :
   f @^-1` `[y, +oo[%classic = [set x | (y <= f x)%O].
 Proof.
 by rewrite predeqE => t; split => [|?]; rewrite /= in_itv/= andbT.
 Qed.
 
-Lemma preimage_itv_infty_o T (d : unit) (rT : orderType d) (f : T -> rT) y :
+Lemma preimage_itv_infty_o T d (rT : orderType d) (f : T -> rT) y :
   f @^-1` `]-oo, y[%classic = [set x | (f x < y)%O].
 Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
 
-Lemma preimage_itv_infty_c T (d : unit) (rT : orderType d) (f : T -> rT) y :
+Lemma preimage_itv_infty_c T d (rT : orderType d) (f : T -> rT) y :
   f @^-1` `]-oo, y]%classic = [set x | (f x <= y)%O].
 Proof. by rewrite predeqE => t; split => [|?]; rewrite /= in_itv. Qed.
 
@@ -2860,7 +2860,7 @@ Qed.
 
 Section UpperLowerTheory.
 Import Order.TTheory.
-Variables (d : unit) (T : porderType d).
+Variables (d : Order.disp_t) (T : porderType d).
 Implicit Types (A : set T) (x y z : T).
 
 Definition ubound A : set T := [set y | forall x, A x -> (x <= y)%O].
@@ -2986,7 +2986,7 @@ End UpperLowerTheory.
 
 Section UpperLowerOrderTheory.
 Import Order.TTheory.
-Variables (d : unit) (T : orderType d).
+Variables (d : Order.disp_t) (T : orderType d).
 Implicit Types (A : set T) (x y z : T).
 
 Lemma ge_supremum_Nmem x0 A t :
@@ -3042,7 +3042,7 @@ Proof. by move=> /sub_meets; apply. Qed.
 
 End meets.
 
-Fact set_display : unit. Proof. by []. Qed.
+Fact set_display : Order.disp_t. Proof. by []. Qed.
 
 Module SetOrder.
 Module Internal.

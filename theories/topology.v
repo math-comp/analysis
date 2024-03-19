@@ -453,8 +453,8 @@ Section bigmaxmin.
 Local Notation max := Order.max.
 Local Notation min := Order.min.
 Local Open Scope order_scope.
-Variables (d : unit) (T : orderType d) (x : T) (I : finType) (P : pred I)
-          (m : T) (F : I -> T).
+Variables (d : Order.disp_t) (T : orderType d).
+Variables (x : T) (I : finType) (P : pred I) (m : T) (F : I -> T).
 
 Lemma bigmax_geP : reflect (m <= x \/ exists2 i, P i & m <= F i)
                            (m <= \big[max/x]_(i | P i) F i).

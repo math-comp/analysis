@@ -6,6 +6,7 @@
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import mathcomp_extra.
 
 (**md**************************************************************************)
 (* # Classical Logic                                                          *)
@@ -516,14 +517,14 @@ Proof. by move=> Pxy; apply: contraNP => /Pxy/eqP. Qed.
 Lemma contra_eqP (T : eqType) (x y : T) Q : (~ Q -> x != y) -> x = y -> Q.
 Proof. by move=> Qxy /eqP; apply: contraTP. Qed.
 
-Lemma contra_leP {disp1 : unit} {T1 : porderType disp1} [P : Prop] [x y : T1] :
+Lemma contra_leP {disp1} {T1 : porderType disp1} [P : Prop] [x y : T1] :
   (~ P -> (x < y)%O) -> (y <= x)%O -> P.
 Proof.
 move=> Pxy yx; apply/asboolP.
 by apply: Order.POrderTheory.contra_leT yx => /asboolPn.
 Qed.
 
-Lemma contra_ltP {disp1 : unit} {T1 : porderType disp1} [P : Prop] [x y : T1] :
+Lemma contra_ltP {disp1} {T1 : porderType disp1} [P : Prop] [x y : T1] :
   (~ P -> (x <= y)%O) -> (y < x)%O -> P.
 Proof.
 move=> Pxy yx; apply/asboolP.
@@ -786,10 +787,10 @@ Qed.
 Module FunOrder.
 Section FunOrder.
 Import Order.TTheory.
-Variables (aT : Type) (d : unit) (T : porderType d).
+Variables (aT : Type) (d : Order.disp_t) (T : porderType d).
 Implicit Types f g h : aT -> T.
 
-Lemma fun_display : unit. Proof. exact: tt. Qed.
+Lemma fun_display : Order.disp_t. Proof. exact: Order.default_display. Qed.
 
 Definition lef f g := `[< forall x, (f x <= g x)%O >].
 Local Notation "f <= g" := (lef f g).
@@ -830,7 +831,7 @@ End FunOrder.
 
 Section FunLattice.
 Import Order.TTheory.
-Variables (aT : Type) (d : unit) (T : latticeType d).
+Variables (aT : Type) (d : Order.disp_t) (T : latticeType d).
 Implicit Types f g h : aT -> T.
 
 Definition meetf f g := fun x => Order.meet (f x) (g x).

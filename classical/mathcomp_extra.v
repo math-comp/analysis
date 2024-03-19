@@ -265,6 +265,16 @@ Qed.
 (* MathComp 2.3 additions *)
 (**************************)
 
+(* Compatibility layer for Order.disp_t introduced in MathComp 2.3            *)
+(* TODO: remove when we drop the support for MathComp 2.2                     *)
+Module Order.
+Import Order.
+Definition disp_t : Set.
+Proof. exact: disp_t || exact: unit. Defined.
+Definition default_display : disp_t.
+Proof. exact: tt || exact: Disp tt tt. Defined.
+End Order.
+
 Lemma invf_plt (F : numFieldType) :
   {in Num.pos &, forall x y : F, (x^-1 < y)%R = (y^-1 < x)%R}.
 Proof.
@@ -592,7 +602,7 @@ Arguments dfwith {I T} f i x.
 Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).
 
 Section order_min.
-Variables (d : unit) (T : orderType d).
+Variables (d : Order.disp_t) (T : orderType d).
 
 Lemma lt_min_lt (x y z : T) : (Order.min x z < Order.min y z)%O -> (x < y)%O.
 Proof.

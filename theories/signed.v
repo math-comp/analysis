@@ -238,7 +238,7 @@ End KnownSign.
 
 Module Signed.
 Section Signed.
-Context (disp : unit) (T : porderType disp) (x0 : T).
+Context (disp : Order.disp_t) (T : porderType disp) (x0 : T).
 
 Local Coercion is_real r := if r is Real _ then true else false.
 Definition reality_cond (n : reality) (x : T) :=
@@ -329,7 +329,8 @@ End Signed.
 Export Signed.Exports.
 
 Section POrder.
-Variables (d : unit) (T : porderType d) (x0 : T) (nz : nullity) (cond : reality).
+Variables (d : Order.disp_t) (T : porderType d).
+Variables (x0 : T) (nz : nullity) (cond : reality).
 Local Notation sT := {compare x0 & nz & cond}.
 HB.instance Definition _ := [isSub for @Signed.r d T x0 nz cond].
 HB.instance Definition _ : Order.POrder d sT := [POrder of sT by <:].
@@ -406,8 +407,8 @@ Proof. by []. Qed.
 Proof. by case: cond => [[[]|]|]. Qed.
 
 Section Theory.
-Context {d : unit} {T : porderType d} {x0 : T}
-  {nz : nullity} {cond : reality}.
+Context {d : Order.disp_t} {T : porderType d} {x0 : T}.
+Context {nz : nullity} {cond : reality}.
 Local Notation sT := {compare x0 & nz & cond}.
 Implicit Type x : sT.
 
@@ -558,7 +559,7 @@ HB.instance Definition _ := Order.POrder_isTotal.Build ring_display nR
 End Order.
 
 Section POrderStability.
-Context {disp : unit} {T : porderType disp} {x0 : T}.
+Context {disp : Order.disp_t} {T : porderType disp} {x0 : T}.
 
 Definition min_nonzero_subdef (xnz ynz : nullity) (xr yr : reality) :=
   nz_of_bool
@@ -1062,7 +1063,8 @@ Proof. by []. Qed.
 End Morph0.
 
 Section Morph.
-Context {d : unit} {T : porderType d} {x0 : T} {nz : nullity} {cond : reality}.
+Context {d : Order.disp_t} {T : porderType d}.
+Context {x0 : T} {nz : nullity} {cond : reality}.
 Local Notation sT := {compare x0 & nz & cond}.
 Implicit Types x y : sT.
 Local Notation num := (@num _ _ x0 nz cond).

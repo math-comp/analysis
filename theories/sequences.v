@@ -163,25 +163,25 @@ Lemma increasing_opp (T : numDomainType) (u_ : T ^nat) :
   increasing_seq (- u_) = decreasing_seq u_.
 Proof. by rewrite propeqE; split => du x y; rewrite -du lerN2. Qed.
 
-Lemma nondecreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+Lemma nondecreasing_seqP d (T : porderType d) (u_ : T ^nat) :
   (forall n, u_ n <= u_ n.+1)%O <-> nondecreasing_seq u_.
 Proof. by split=> [|h n]; [exact: homo_leq le_trans | exact: h]. Qed.
 
-Lemma nonincreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+Lemma nonincreasing_seqP d (T : porderType d) (u_ : T ^nat) :
   (forall n, u_ n >= u_ n.+1)%O <-> nonincreasing_seq u_.
 Proof.
 split; first by apply: homo_leq (fun _ _ _ u v => le_trans v u).
 by move=> u_nincr n; exact: u_nincr.
 Qed.
 
-Lemma increasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+Lemma increasing_seqP d (T : porderType d) (u_ : T ^nat) :
   (forall n, u_ n < u_ n.+1)%O <-> increasing_seq u_.
 Proof.
 split; first by move=> u_nondec; apply: le_mono; apply: homo_ltn lt_trans _.
 by move=> u_incr n; rewrite lt_neqAle eq_le !u_incr leqnSn ltnn.
 Qed.
 
-Lemma decreasing_seqP (d : unit) (T : porderType d) (u_ : T ^nat) :
+Lemma decreasing_seqP d (T : porderType d) (u_ : T ^nat) :
   (forall n, u_ n > u_ n.+1)%O <-> decreasing_seq u_.
 Proof.
 split.
@@ -199,7 +199,7 @@ Lemma lef_at (aT : Type) d (T : porderType d) (f : (aT -> T)^nat) x :
   nondecreasing_seq f -> {homo (f^~ x) : n m / (n <= m)%N >-> (n <= m)%O}.
 Proof. by move=> nf m n mn; have /asboolP := nf _ _ mn; exact. Qed.
 
-Lemma nondecreasing_seqD T (d : unit) (R : numDomainType) (f g : (T -> R)^nat) :
+Lemma nondecreasing_seqD T (R : numDomainType) (f g : (T -> R)^nat) :
   (forall x, nondecreasing_seq (f ^~ x)) ->
   (forall x, nondecreasing_seq (g ^~ x)) ->
   (forall x, nondecreasing_seq ((f \+ g) ^~ x)).
@@ -2217,7 +2217,7 @@ End mine_cvg_0.
 Definition sdrop T (u : T^nat) n := [set u k | k in [set k | k >= n]]%N.
 
 Section sdrop.
-Variables (d : unit) (R : porderType d).
+Variables (d : Order.disp_t) (R : porderType d).
 Implicit Types (u : R^o^nat).
 
 Lemma has_lbound_sdrop u : has_lbound (range u) ->
