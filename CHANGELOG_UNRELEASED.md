@@ -64,6 +64,9 @@
       `equivT_transr`, `equivT_Prop`, `equivT_LR` (hint view), `equivT_RL` (hint view)
   + definition `notP`
   + hint view for `move/` and `apply/` for `Internals.equivT_LR`, `Internals.equivT_RL`
+- in file `mathcomp_extra.v`:
+  + module `Order`
+    * definitions `disp_t`, `default_display`
 
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
@@ -107,6 +110,9 @@
 
 - in `measure.v`:
   + lemma `sigma_finiteP` generalized to an equivalence and changed to use `[/\ ..., .. & ....]`
+
+- in `sequences.v`:
+  + lemma `nondecreasing_seqD`: spurious `d` argument removed
 
 ### Renamed
 
