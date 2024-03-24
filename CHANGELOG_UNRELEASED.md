@@ -57,6 +57,14 @@
   + new lemmas `point_uniform_separator`, and 
     `uniform_completely_regular`.
 
+- in `contra.v`:
+  + in module `Internals`
+    * variant `equivT`
+    * definitions `equivT_refl`, `equivT_transl`, `equivT_sym`, `equivT_trans`,
+      `equivT_transr`, `equivT_Prop`, `equivT_LR` (hint view), `equivT_RL` (hint view)
+  + definition `notP`
+  + hint view for `move/` and `apply/` for `Internals.equivT_LR`, `Internals.equivT_RL`
+
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
     `product_topology_def`, `proj_continuous`, `dfwith_continuous`, 
