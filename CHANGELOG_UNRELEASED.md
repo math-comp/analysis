@@ -10,6 +10,14 @@
 - in `lebesgue_integral.v`
   + lemma `ge0_integralZr`
 
+- in `contra.v`:
+  + in module `Internals`
+    * variant `equivT`, notation `<--->`
+    * definitions `equivT_refl`, `equivT_transl`, `equivT_sym`, `equivT_trans`,
+      `equivT_transr`, `equivT_Prop`, `equivT_LR` (hint view), `equivT_RL` (hint view)
+  + definition `notP`
+  + hint view for `move/` and `apply/` for `Internals.equivT_LR`, `Internals.equivT_RL`
+
 ### Changed
 
 - move from `kernel.v` to `measure.v`
