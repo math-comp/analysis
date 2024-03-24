@@ -2139,6 +2139,18 @@ HB.instance Definition _ := Content_isMeasure.Build d T R mu
   measure_semi_sigma_additive.
 HB.end.
 
+(*Lemma eq_measure d (T : measurableType d) (R : realFieldType)
+  (m1 m2 : {measure set T -> \bar R}) :
+  (forall U, measurable U -> m1 U = m2 U) -> m1 = m2.
+Proof.
+move: m1 m2 => [m1 [[m10 m1ge0 [m1sa]]]] [m2 [[m20 m2ge0 [m2sa]]]] /= m1m2.
+have : forall U : set T, measurable U.
+  move=> U.
+
+rewrite -{}m1m2 => m10' m1ge0' m1sa'; f_equal.
+by rewrite (_ : m10' = m10)// (_ : m1ge0' = m1ge0)// (_ : m1sa' = m1sa).
+Qed.*)
+
 Lemma eq_measure d (T : measurableType d) (R : realFieldType)
   (m1 m2 : {measure set T -> \bar R}) :
   (m1 = m2 :> (set T -> \bar R)) -> m1 = m2.
