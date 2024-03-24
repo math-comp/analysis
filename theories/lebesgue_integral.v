@@ -7310,6 +7310,18 @@ Qed.
 
 End nicely_shrinking.
 
+Section set_itv_porderType.
+Variables (d : Order.disp_t) (T : porderType d).
+Implicit Types (x y : T).
+
+Lemma subset_itv' x y z u : (x < y)%O -> (z < u)%O -> `[y, z] `<=` `]x, u[.
+Proof.
+move=> xy zu w/=; rewrite !in_itv/= => /andP[yw wz].
+by rewrite (lt_le_trans xy)//= (le_lt_trans wz).
+Qed.
+
+End set_itv_porderType.
+
 Section nice_lebesgue_differentiation.
 Local Open Scope ereal_scope.
 Context {R : realType}.
