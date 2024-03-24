@@ -10,6 +10,10 @@
 - in `sequences.v`:
   + lemma `nneseries_recl`
 
+- in file `mathcomp_extra.v`:
+  + module `Order`
+    * definitions `disp_t`, `default_display`
+
 - in `measure.v`:
   + definition `subset_sigma_subadditive`
   + factory `isSubsetOuterMeasure`
