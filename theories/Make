@@ -64,4 +64,4 @@ lang_syntax_util.v
 lang_syntax_toy.v
 lang_syntax.v
 lang_syntax_examples.v
-lang_syntax_examples_wip.v
+lang_syntax_table_game.v
