@@ -100,6 +100,12 @@
 - in `measure.v`:
   + lemma `sigma_finiteP` generalized to an equivalence and changed to use `[/\ ..., .. & ....]`
 
+- moved from `cantor.v` to `topology.v`:
+  + lemma `discrete_bool_compact`
+  + definition `pointed_principal_filter`
+  + definition `pointed_discrete_topology`
+  + lemma `discrete_pointed`
+
 ### Renamed
 
 - in `constructive_ereal.v`:
