@@ -122,6 +122,10 @@
 - in `lebesgue_integral.v`
   + `integral_setU` -> `ge0_integral_setU`
 
+- in `measure.v`:
+  + `Measure_isSFinite_subdef` -> `isSFinite`
+  + `sfinite_measure_subdef` -> `s_finite`
+
 ### Generalized
 
 - in `realfun.v`
