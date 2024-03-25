@@ -229,13 +229,13 @@ by rewrite opprK.
 Qed.
 
 HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
-    of Num.NormedZmodule R T & PseudoMetric R T := {
+    of Num.NormedZmodule R T & PseudoPointedMetric R T := {
   pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |)
 }.
 
 #[short(type="pseudoMetricNormedZmodType")]
 HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
-  {T of Num.NormedZmodule R T & PseudoMetric R T
+  {T of Num.NormedZmodule R T & PseudoPointedMetric R T
    & NormedZmod_PseudoMetric_eq R T}.
 
 Section pseudoMetricnormedzmodule_lemmas.
@@ -2743,16 +2743,24 @@ Lemma continuousZl s a x :
   {for x, continuous s} -> {for x, continuous (fun z => s z *: a)}.
 Proof. by move=> ?; apply: cvgZl. Qed.
 
-Lemma continuousM s t x :
-  {for x, continuous s} -> {for x, continuous t} ->
-  {for x, continuous (s * t)}.
-Proof. by move=> f_cont g_cont; apply: cvgM. Qed.
-
 Lemma continuousV s x : s x != 0 ->
   {for x, continuous s} -> {for x, continuous (fun x => (s x)^-1%R)}.
 Proof. by move=> ?; apply: cvgV. Qed.
 
 End local_continuity.
+
+(* TODO: we need `ptopological` only because need to inherit the semiring structure. 
+         if that is ever fixed upstream, we can eliminate this section *)
+Section local_continuity_ring.
+Context {K : numFieldType} {V : normedModType K} {T : ptopologicalType}.
+Implicit Types (f g : T -> V) (s t : T -> K) (x : T) (k : K) (a : V).
+
+Lemma continuousM s t x :
+  {for x, continuous s} -> {for x, continuous t} ->
+  {for x, continuous (s * t)}.
+Proof. by move=> f_cont g_cont; apply: cvgM. Qed.
+End local_continuity_ring.
+
 
 Section nbhs_ereal.
 Context {R : numFieldType} (P : \bar R -> Prop).
@@ -3609,11 +3617,11 @@ Qed.
 
 Definition urysohnType : Type := T.
 
-HB.instance Definition _ := Pointed.on urysohnType.
-
+HB.instance Definition _ := Choice.on urysohnType.
 HB.instance Definition _ :=
   isUniform.Build urysohnType ury_unif_filter ury_unif_refl ury_unif_inv
   ury_unif_split.
+HB.instance Definition _ {p : Pointed T} := Pointed.copy urysohnType (Pointed.Pack p).
 
 Lemma normal_uniform_separator (B : set T) :
   closed A -> closed B -> A `&` B = set0 -> uniform_separator A B.
@@ -4923,7 +4931,7 @@ have : n \in enum_fset D by [].
 by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
 Qed.
 
-Lemma rV_compact (T : topologicalType) n (A : 'I_n.+1 -> set T) :
+Lemma rV_compact (T : ptopologicalType) n (A : 'I_n.+1 -> set T) :
   (forall i, compact (A i)) ->
   compact [ set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)].
 Proof.
@@ -5447,7 +5455,7 @@ Notation linear_continuous0 := __deprecated__linear_continuous0 (only parsing).
 Notation linear_bounded0 := __deprecated__linear_bounded0 (only parsing).
 
 Section center_radius.
-Context {R : numDomainType} {M : pseudoMetricType R}.
+Context {R : numDomainType} {M : pseudoPMetricType R}.
 Implicit Types A : set M.
 
 (* NB: the identifier "center" is already taken! *)

@@ -5414,22 +5414,22 @@ HB.instance Definition _ (R : numFieldType) :=
 Module numFieldTopology.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : realType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : realType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : rcfType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : rcfType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : archiFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : archiFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : realFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : realFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : numClosedFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : numClosedFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : numFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
 
 Module Exports. HB.reexport. End Exports.
 
