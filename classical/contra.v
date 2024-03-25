@@ -68,21 +68,25 @@ Hint View for move/ move_viewP|2.
 (******************************************************************************)
 
 Variant equivT S T := EquivT of S -> T & T -> S.
-Notation "S <--> T" := (equivT S T) (at level 95, no associativity).
 
-Definition equivT_refl S : S <--> S := EquivT id id.
-Definition equivT_transl {S T U} : S <--> T -> S <--> U -> T <--> U :=
-  fun '(EquivT S_T T_S) '(EquivT S_U U_S) => EquivT (S_U \o T_S) (S_T \o U_S).
-Definition equivT_sym {S T} : S <--> T -> T <--> S :=
+Definition equivT_refl S : equivT S S := EquivT id id.
+Definition equivT_transl {S T U} : equivT S T -> equivT S U -> equivT T U :=
+  fun (st : equivT S T) (su : equivT S U) =>
+    let: EquivT S_T T_S := st in
+    let: EquivT S_U U_S := su in
+    EquivT (S_U \o T_S) (S_T \o U_S).
+Definition equivT_sym {S T} : equivT S T -> equivT T S :=
    equivT_transl^~ (equivT_refl S).
-Definition equivT_trans {S T U} : S <--> T -> T <--> U -> S <--> U :=
+Definition equivT_trans {S T U} : equivT S T -> equivT T U -> equivT S U :=
    equivT_transl \o equivT_sym.
-Definition equivT_transr {S T U} eqST : U <--> S -> U <--> T :=
+Definition equivT_transr {S T U} eqST : equivT U S -> equivT U T :=
    equivT_trans^~ eqST.
-Definition equivT_Prop (P Q : Prop) : (P <--> Q) <-> (P <-> Q).
+Definition equivT_Prop (P Q : Prop) : (equivT P Q) <-> (equivT P Q).
 Proof. split; destruct 1; split; assumption. Defined.
-Definition equivT_LR {S T} '(EquivT S_T _) : S -> T := S_T.
-Definition equivT_RL {S T} '(EquivT _ T_S) : T -> S := T_S.
+Definition equivT_LR {S T} (eq : equivT S T) : S -> T :=
+  let: EquivT S_T _ := eq in S_T.
+Definition equivT_RL {S T} (eq : equivT S T) : T -> S :=
+  let: EquivT _ T_S := eq in T_S.
 
 Hint View for move/ equivT_LR|2 equivT_RL|2.
 Hint View for apply/ equivT_RL|2 equivT_LR|2.
