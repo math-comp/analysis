@@ -123,6 +123,12 @@
   + `integral_setU` -> `ge0_integral_setU`
   + `subset_integral` -> `ge0_subset_integral`
 
+- in `measure.v`:
+  + `Measure_isSFinite_subdef` -> `isSFinite`
+  + `sfinite_measure_subdef` -> `s_finite`
+  + `SigmaFinite_isFinite` -> `isFinite`
+  + `FiniteMeasure_isSubProbability` -> `isSubProbability`
+
 ### Generalized
 
 - in `realfun.v`

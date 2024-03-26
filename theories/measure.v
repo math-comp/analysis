@@ -80,21 +80,27 @@ From HB Require Import structures.
 (*                              T is expected to be a semiring of sets and    *)
 (*                              R is expected to be a numFieldType.           *)
 (*                              The HB class is Measure.                      *)
-(* Content_SubSigmaAdditive_isMeasure == mixin that extends a content to      *)
-(*                              a measure with the proof that it is           *)
-(*                              semi_sigma_additive                           *)
-(*         Content_isMeasure == mixin that extends a content to a measure     *)
+(*         Content_isMeasure == interface that extends a content to a measure *)
 (*                              with the proof that it is semi_sigma_additive *)
-(*                 isMeasure == factory corresponding to the "textbook        *)
+(* Content_SubSigmaAdditive_isMeasure == interface that extends a content to  *)
+(*                              a measure with the proof that it is           *)
+(*                              sigma_sub_additive                            *)
+(*                 isMeasure == interface corresponding to the "textbook      *)
 (*                              definition" of measures                       *)
 (*           sfinite_measure == predicate for s-finite measure functions      *)
 (* {sfinite_measure set T -> \bar R} == type of s-finite measures             *)
 (*                              The HB class is SFiniteMeasure.               *)
 (*    sfinite_measure_seq mu == the sequence of finite measures of the        *)
 (*                              s-finite measure mu                           *)
-(*  Measure_isSFinite_subdef == mixin for s-finite measures                   *)
-(*         Measure_isSFinite == factory for s-finite measures                 *)
-(*             isSigmaFinite == mixin corresponding to sigma finiteness       *)
+(*                 isSFinite == interface for functions that satisfy the      *)
+(*                              sfinite_measure predicate                     *)
+(*                              s-finite measure using a sequence of finite   *)
+(*                              measures                                      *)
+(*         Measure_isSFinite == interface that extends a measure to an        *)
+(*                              s-finite measure using a sequence of finite   *)
+(*                              measures                                      *)
+(*             isSigmaFinite == interface for functions that satisfy          *)
+(*                              sigma finiteness                              *)
 (* {sigma_finite_content set T -> \bar R} == contents that are also sigma     *)
 (*                              finite                                        *)
 (*                              The HB class is SigmaFiniteContent.           *)
@@ -110,21 +116,27 @@ From HB Require Import structures.
 (*                              The HB class is FinNumFun.                    *)
 (* {finite_measure set T -> \bar R} == finite measures                        *)
 (*                              The HB class is FiniteMeasure.                *)
-(*      SigmaFinite_isFinite == mixin for finite measures                     *)
-(*          Measure_isFinite == factory for finite measures                   *)
-(* FiniteMeasure_isSubProbability == mixin corresponding to subprobability    *)
+(*                  isFinite == interface for functions that satisfy the      *)
+(*                              fin_num_fun predicate                         *)
+(*          Measure_isFinite == interface that extends a measure to a finite  *)
+(*                              measure using a proof of fin_num_fun          *)
+(*          isSubProbability == interface for functions that satisfy the      *)
+(*                              property of subprobability                    *)
 (*                              The HB class is SubProbability.               *)
 (*        subprobability T R == subprobability measure over the               *)
 (*                              measurableType T with values in \bar R with   *)
 (*                              R : realType                                  *)
 (*                              The HB class is SubProbability.               *)
-(*  Measure_isSubProbability == factory for subprobability measures           *)
-(*             isProbability == mixin corresponding to probability measures   *)
+(*  Measure_isSubProbability == interface that extends measures to            *)
+(*                              subprobability measures                       *)
+(*             isProbability == interface for functions that satisfy the      *)
+(*                              property of probability measures              *)
 (*                              The HB class is Probability.                  *)
 (*           probability T R == type of probability measure over the          *)
 (*                              measurableType T with values in \bar R        *)
 (*                              with R : realType                             *)
-(*     Measure_isProbability == factory for probability measures              *)
+(*     Measure_isProbability == interface that extends measures to            *)
+(*                              probability measures                          *)
 (*             mnormalize mu == normalization of a measure to a probability   *)
 (*                  mset U r == the set of probability measures mu such that  *)
 (*                              mu U < r                                      *)
@@ -749,7 +761,7 @@ HB.mixin Record SemiRingOfSets_isRingOfSets d T of SemiRingOfSets d T := {
 
 #[short(type="ringOfSetsType")]
 HB.structure Definition RingOfSets d :=
-  {T of SemiRingOfSets_isRingOfSets d T & SemiRingOfSets d T}.
+  {T of SemiRingOfSets d T & SemiRingOfSets_isRingOfSets d T }.
 
 HB.mixin Record RingOfSets_isAlgebraOfSets d T of RingOfSets d T := {
   measurableT : measurable [set: T]
@@ -757,7 +769,7 @@ HB.mixin Record RingOfSets_isAlgebraOfSets d T of RingOfSets d T := {
 
 #[short(type="algebraOfSetsType")]
 HB.structure Definition AlgebraOfSets d :=
-  {T of RingOfSets_isAlgebraOfSets d T & RingOfSets d T}.
+  {T of RingOfSets d T & RingOfSets_isAlgebraOfSets d T }.
 
 HB.mixin Record AlgebraOfSets_isMeasurable d T of AlgebraOfSets d T := {
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
@@ -766,7 +778,7 @@ HB.mixin Record AlgebraOfSets_isMeasurable d T of AlgebraOfSets d T := {
 
 #[short(type="measurableType")]
 HB.structure Definition Measurable d :=
-  {T of AlgebraOfSets_isMeasurable d T & AlgebraOfSets d T}.
+  {T of AlgebraOfSets d T & AlgebraOfSets_isMeasurable d T }.
 
 HB.factory Record isRingOfSets (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
@@ -1554,7 +1566,7 @@ HB.mixin Record Content_isMeasure d (T : semiRingOfSetsType d)
 #[short(type=measure)]
 HB.structure Definition Measure d (T : semiRingOfSetsType d)
     (R : numFieldType) :=
-  {mu of Content_isMeasure d T R mu & Content d mu}.
+  {mu of Content d mu & Content_isMeasure d T R mu }.
 
 Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure T%type R)
   (at level 36, T, R at next level,
@@ -2515,14 +2527,16 @@ Qed.
 End ring_sigma_sub_additive_content.
 
 #[key="mu"]
-HB.factory Record Content_SubSigmaAdditive_isMeasure d
-    (R : realType) (T : semiRingOfSetsType d) (mu : set T -> \bar R) of Content d mu := {
+HB.factory Record Content_SubSigmaAdditive_isMeasure d (R : realType)
+    (T : semiRingOfSetsType d) (mu : set T -> \bar R) of Content d mu := {
   measure_sigma_sub_additive : sigma_sub_additive mu }.
 
 HB.builders Context d (R : realType) (T : semiRingOfSetsType d)
   (mu : set T -> \bar R) of Content_SubSigmaAdditive_isMeasure d R T mu.
-  HB.instance Definition _ := Content_isMeasure.Build d T R mu
-    (semiring_sigma_additive (measure_sigma_sub_additive)).
+
+HB.instance Definition _ := Content_isMeasure.Build d T R mu
+  (semiring_sigma_additive (measure_sigma_sub_additive)).
+
 HB.end.
 
 Section more_premeasure_ring_lemmas.
@@ -2699,14 +2713,19 @@ apply: (@measure_sigma_additive _ _ _ mu (fun k => U `&` seqDU F k)).
 exact/trivIset_setIl/trivIset_seqDU.
 Qed.
 
-HB.mixin Record Measure_isSFinite_subdef d (T : measurableType d)
-    (R : realType) (mu : set T -> \bar R) := {
-  sfinite_measure_subdef : sfinite_measure mu }.
+HB.mixin Record isSFinite d (T : measurableType d) (R : realType)
+    (mu : set T -> \bar R) := {
+  s_finite : sfinite_measure mu }.
 
 HB.structure Definition SFiniteMeasure
     d (T : measurableType d) (R : realType) :=
-  {mu of @Measure _ T R mu & Measure_isSFinite_subdef _ T R mu }.
-Arguments sfinite_measure_subdef {d T R} _.
+  {mu of @Measure _ T R mu & isSFinite _ T R mu }.
+Arguments s_finite {d T R} _.
+
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isSFinite.Build`")]
+Notation "Measure_isSFinite_subdef.Build" := (@isSFinite.Build _ _ _ _ _) (only parsing).
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `s_finite`")]
+Notation sfinite_measure_subdef := s_finite (only parsing).
 
 Notation "{ 'sfinite_measure' 'set' T '->' '\bar' R }" :=
   (SFiniteMeasure.type T R) (at level 36, T, R at next level,
@@ -2717,7 +2736,7 @@ HB.mixin Record isSigmaFinite d (T : semiRingOfSetsType d) (R : numFieldType)
 
 #[short(type="sigma_finite_content")]
 HB.structure Definition SigmaFiniteContent d T R :=
-  { mu of isSigmaFinite d T R mu & @Content d T R mu }.
+  { mu of @Content d T R mu & isSigmaFinite d T R mu }.
 
 Arguments sigma_finiteT {d T R} s.
 #[global] Hint Resolve sigma_finiteT : core.
@@ -2746,7 +2765,7 @@ HB.builders Context d (T : measurableType d) (R : realType)
 Lemma sfinite : sfinite_measure mu.
 Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finiteT. Qed.
 
-HB.instance Definition _ := @Measure_isSFinite_subdef.Build _ _ _ mu sfinite.
+HB.instance Definition _ := @isSFinite.Build _ _ _ mu sfinite.
 
 HB.instance Definition _ := @isSigmaFinite.Build _ _ _ mu sigma_finiteT.
 
@@ -2764,17 +2783,19 @@ Lemma sfinite_mzero d (T : measurableType d) (R : realType) :
 Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finite_mzero. Qed.
 
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
-  @Measure_isSFinite_subdef.Build d T R mzero (@sfinite_mzero d T R).
+  @isSFinite.Build d T R mzero (@sfinite_mzero d T R).
 
-HB.mixin Record SigmaFinite_isFinite d (T : semiRingOfSetsType d)
-    (R : numDomainType) (k : set T -> \bar R) :=
-  { fin_num_measure : fin_num_fun k }.
+HB.mixin Record isFinite d (T : semiRingOfSetsType d) (R : numDomainType)
+  (k : set T -> \bar R) := { fin_num_measure : fin_num_fun k }.
 
 HB.structure Definition FinNumFun d (T : semiRingOfSetsType d)
-    (R : numFieldType) := { k of SigmaFinite_isFinite _ T R k }.
+  (R : numFieldType) := { k of isFinite _ T R k }.
+
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isFinite.Build`")]
+Notation "SigmaFinite_isFinite.Build" := (@isFinite.Build _ _ _ _ _) (only parsing).
 
 HB.structure Definition FiniteMeasure d (T : measurableType d) (R : realType) :=
-  { k of @SigmaFiniteMeasure _ _ _ k & SigmaFinite_isFinite _ T R k }.
+  { k of @SigmaFiniteMeasure _ _ _ k & isFinite _ T R k }.
 Arguments fin_num_measure {d T R} _.
 
 Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" :=
@@ -2794,7 +2815,7 @@ apply: sfinite_measure_sigma_finite.
 by apply: fin_num_fun_sigma_finite; [rewrite measure0|exact: fin_num_measure].
 Qed.
 
-HB.instance Definition _ := @Measure_isSFinite_subdef.Build d T R k sfinite.
+HB.instance Definition _ := @isSFinite.Build d T R k sfinite.
 
 Let sigma_finite : sigma_finite setT k.
 Proof.
@@ -2805,13 +2826,13 @@ HB.instance Definition _ := @isSigmaFinite.Build d T R k sigma_finite.
 
 Let finite : fin_num_fun k. Proof. exact: fin_num_measure. Qed.
 
-HB.instance Definition _ := @SigmaFinite_isFinite.Build d T R k finite.
+HB.instance Definition _ := @isFinite.Build d T R k finite.
 
 HB.end.
 
 HB.factory Record Measure_isSFinite d (T : measurableType d)
     (R : realType) (k : set T -> \bar R) of isMeasure _ _ _ k := {
-  sfinite_measure_subdef : exists s : {finite_measure set T -> \bar R}^nat,
+  s_finite : exists s : {finite_measure set T -> \bar R}^nat,
     forall U, measurable U -> k U = mseries s 0 U }.
 
 HB.builders Context d (T : measurableType d) (R : realType)
@@ -2819,11 +2840,11 @@ HB.builders Context d (T : measurableType d) (R : realType)
 
 Let sfinite : sfinite_measure k.
 Proof.
-have [s sE] := sfinite_measure_subdef.
+have [s sE] := s_finite.
 by exists s => //=> n; exact: fin_num_measure.
 Qed.
 
-HB.instance Definition _ := @Measure_isSFinite_subdef.Build d T R k sfinite.
+HB.instance Definition _ := @isSFinite.Build d T R k sfinite.
 
 HB.end.
 
@@ -2831,8 +2852,7 @@ Section sfinite_measure.
 Context d (T : measurableType d) (R : realType)
         (mu : {sfinite_measure set T -> \bar R}).
 
-Let s : (set T -> \bar R)^nat :=
-  let: exist2 x _ _ := cid2 (sfinite_measure_subdef mu) in x.
+Let s : (set T -> \bar R)^nat := let: exist2 x _ _ := cid2 (s_finite mu) in x.
 
 Let s0 n : s n set0 = 0.
 Proof. by rewrite /s; case: cid2. Qed.
@@ -2883,18 +2903,19 @@ move=> U mU; rewrite /restr /mrestr ge0_fin_numE ?measure_ge0//.
 by rewrite (le_lt_trans _ moo)// le_measure// ?inE//; exact: measurableI.
 Qed.
 
-HB.instance Definition _ := Measure_isFinite.Build _ _ _ restr
-  restr_fin.
+HB.instance Definition _ := Measure_isFinite.Build _ _ _ restr restr_fin.
 
 End measure_frestr.
 
-HB.mixin Record FiniteMeasure_isSubProbability d (T : measurableType d)
-    (R : realType) (P : set T -> \bar R) :=
-  { sprobability_setT : P setT <= 1%E }.
+HB.mixin Record isSubProbability d (T : measurableType d) (R : realType)
+  (P : set T -> \bar R) := { sprobability_setT : P setT <= 1%E }.
 
 #[short(type=subprobability)]
 HB.structure Definition SubProbability d (T : measurableType d) (R : realType)
-  := {mu of @FiniteMeasure d T R mu & FiniteMeasure_isSubProbability d T R mu }.
+  := {mu of @FiniteMeasure d T R mu & isSubProbability d T R mu }.
+
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isSubProbability.Build`")]
+Notation "FiniteMeasure_isSubProbability.Build" := (@isSubProbability.Build _ _ _ _ _) (only parsing).
 
 HB.factory Record Measure_isSubProbability d (T : measurableType d)
     (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=
@@ -2911,8 +2932,7 @@ Qed.
 
 HB.instance Definition _ := finite.
 
-HB.instance Definition _ :=
-  @FiniteMeasure_isSubProbability.Build _ _ _ P sprobability_setT.
+HB.instance Definition _ := @isSubProbability.Build _ _ _ P sprobability_setT.
 
 HB.end.
 
