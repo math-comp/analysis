@@ -43,28 +43,28 @@ Unset Printing Implicit Defensive.
 (* ```                                                                        *)
 (******************************************************************************)
 
-(* Hiding module for the internal definitions and lemmas used by the tactics
+(** Hiding module for the internal definitions and lemmas used by the tactics
   defined here. *)
 Module Internals.
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* A wrapper for view lemmas with an indeterminate conclusion (of the form    *)
 (* forall ... T ..., pattern -> T), and for which the intended view pattern   *)
 (* may fail to match some assumptions. This wrapper ensures that such views   *)
 (* are only used in the forward direction (as in move/), and only with the    *)
 (* appropriate move_viewP hint, preventing its application to an arbitrary    *)
 (* assumption A by the instatiation to A -> T' of its indeterminate           *)
-(* conclusion T. This is similar to the implies wrapper, except move_viewP is *)
-(* NOT declared as a coercion - it must be used explicitly to apply the view  *)
-(* manually to an assumption (as in, move_viewP my_view some_assumption).     *)
+(* conclusion T. This is similar to the implies wrapper, except move_viewP    *)
+(* is *NOT* declared as a coercion---it must be used explicitly to apply the  *)
+(* view manually to an assumption (as in, move_viewP my_view some_assumption).*)
 (******************************************************************************)
 
 Variant move_view S T := MoveView of S -> T.
 Definition move_viewP {S T} mv : S -> T := let: MoveView v := mv in v.
 Hint View for move/ move_viewP|2.
 
-(******************************************************************************)
-(* Type-level equivalence                                                     *)
+(**md**************************************************************************)
+(* ## Type-level equivalence                                                  *)
 (******************************************************************************)
 
 Variant equivT S T := EquivT of S -> T & T -> S.
@@ -91,26 +91,32 @@ Definition equivT_RL {S T} (eq : equivT S T) : T -> S :=
 Hint View for move/ equivT_LR|2 equivT_RL|2.
 Hint View for apply/ equivT_RL|2 equivT_LR|2.
 
-(******************************************************************************)
-(*   A generic Forall "constructor" for the Gallina forall quantifier, i.e.,  *)
+(**md**************************************************************************)
+(* A generic Forall "constructor" for the Gallina forall quantifier, i.e.,    *)
+(* ```                                                                        *)
 (*   \Forall x, P := Forall (fun x => P) := forall x, P.                      *)
+(* ```                                                                        *)
 (* The main use of Forall is to apply congruence to a forall equality:        *)
+(* ```                                                                        *)
 (*    congr1 Forall : forall P Q, P = Q -> Forall P = Forall Q.               *)
+(* ```                                                                        *)
 (* in particular in a classical setting with function extensionality, where   *)
 (* we can have (forall x, P x = Q x) -> (forall x, P x) = (forall x, Q x).    *)
-(*   We use a forallSort structure to factor the ad hoc PTS product formation *)
+(*                                                                            *)
+(* We use a forallSort structure to factor the ad hoc PTS product formation   *)
 (* rules; forallSort is keyed on the type of the entire forall expression, or *)
-(* (up to subsumption) the type of the forall body - this is always a sort.   *)
-(*   This implementation has two important limitations:                       *)
-(*     1) It cannot handle the SProp sort and its typing rules. However, its  *)
-(*        main application is extensionality, which is not compatible with    *)
-(*        SProp because an (A : SProp) -> B "function" is not a generic       *)
-(*        (A : Type) -> B function as SProp is not included in Type.          *)
-(*     2) The Forall constructor can't be inserted by a straightforward       *)
-(*        unfold (as in, rewrite -[forall x, _]/(Forall _)) because of the    *)
-(*        way Coq unification handles Type constraints. The ForallI tactic    *)
-(*        mitigates this issue, but there are additional issues with its      *)
-(*        implementation -- see below.                                        *)
+(* (up to subsumption) the type of the forall body---this is always a sort.   *)
+(*                                                                            *)
+(* This implementation has two important limitations:                         *)
+(* 1. It cannot handle the SProp sort and its typing rules. However, its      *)
+(*    main application is extensionality, which is not compatible with        *)
+(*    SProp because an (A : SProp) -> B "function" is not a generic           *)
+(*    (A : Type) -> B function as SProp is not included in Type.              *)
+(* 2. The Forall constructor can't be inserted by a straightforward           *)
+(*    unfold (as in, rewrite -[forall x, _]/(Forall _)) because of the        *)
+(*    way Coq unification handles Type constraints. The ForallI tactic        *)
+(*    mitigates this issue, but there are additional issues with its          *)
+(*    implementation---see below.                                             *)
 (******************************************************************************)
 
 Structure forallSort A :=
@@ -154,8 +160,8 @@ Tactic Notation "ForallI" ssrpatternarg(pat) :=
   case: F / (@erefl _ F : Forall _ = _).
 Tactic Notation "ForallI" := ForallI (forall x, _).
 
-(******************************************************************************)
-(*   We define specialized copies of the wrapped structure of ssrfun for Prop *)
+(**md**************************************************************************)
+(* We define specialized copies of the wrapped structure of ssrfun for Prop   *)
 (* and Type, as we need more than two alternative rules (indeed, 3 for Prop   *)
 (* and 4 for Type). We need separate copies for Prop and Type as universe     *)
 (* polymorphism cannot instantiate Type with Prop.                            *)
@@ -178,38 +184,41 @@ Lemma generic_forall_extensionality {A} {S : forallSort A} {P Q : A -> S} :
   P =1 Q -> Forall P = Forall Q.
 Proof. by move/funext->. Qed.
 
-(******************************************************************************)
-(*   A set of tools (tactics, views, and rewrite rules) to facilitate the     *)
+(**md**************************************************************************)
+(* A set of tools (tactics, views, and rewrite rules) to facilitate the       *)
 (* handling of classical negation. The core functionality of these tools is   *)
 (* implemented by three sets of canonical structures that provide for the     *)
 (* simplification of negation statements (e.g., using de Morgan laws), the    *)
 (* conversion from constructive statements in Type to purely logical ones in  *)
 (* Prop (equivalently, expansion rules for the statement inhabited T), and    *)
 (* conversely extraction of constructive contents from logical statements.    *)
-(*   Except for bool predicates and operators, all definitions are treated    *)
+(*                                                                            *)
+(* Except for bool predicates and operators, all definitions are treated      *)
 (* transparently when matching statements for either simplification or        *)
 (* conversion; this is achieved by using the wrapper telescope pattern, first *)
 (* delegating the matching of specific logical connectives, predicates, or    *)
-(* type constructors to an auxiliary structure that FAILS to match unknown    *)
+(* type constructors to an auxiliary structure that *FAILS* to match unknown  *)
 (* operators, thus triggers the expansion of defined constants. If this       *)
 (* ultimately fails then the wrapper is expanded, and the primary structure   *)
 (* instance for the expanded wrapper provides an alternative default rule:    *)
 (* not simplifying ~ P, not expanding inhabited T, or not extracting any      *)
 (* contents from a proposition P, respectively.                               *)
-(*   Additional rules, for intermediate wrapper instances, are used to handle *)
+(*                                                                            *)
+(* Additional rules, for intermediate wrapper instances, are used to handle   *)
 (* forall statements (for which canonical instances are not yet supported),   *)
 (* as well as addiitonal simplifications, such as inhabited P = P :> Prop.    *)
-(*   Finally various tertiary structures are used to match deeper patterns,   *)
+(*                                                                            *)
+(* Finally various tertiary structures are used to match deeper patterns,     *)
 (* such as bounded forall statements of the form forall x, P x -> Q x, or     *)
 (* inequalites x != y (i.e., is_true (~~ (x == y))). As mentioned above,      *)
 (* tertiary rules for bool subexpressions do not try to expand definitions,   *)
-(* as this would lead to the undesireable expansion of some standard          *)
-(* definitions. This is simply achieved by NOT using the wrapper telescope    *)
+(* as this would lead to the undesirable expansion of some standard           *)
+(* definitions. This is simply achieved by *NOT* using the wrapper telescope  *)
 (* pattern, and just having a default instance alongside those for specific   *)
 (* predicates and connectives.                                                *)
 (******************************************************************************)
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* The negatedProp structure provides simplification of the Prop negation     *)
 (* (~ _) for standard connectives and predicates. The instances below cover   *)
 (* the pervasive and ssrbool Prop connectives, decidable equality, as well as *)
@@ -220,15 +229,15 @@ Proof. by move/funext->. Qed.
 (* predicates can be added by declaring instances of proper_negatedProp.      *)
 (******************************************************************************)
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* The implementation follows the wrapper telescope pattern outlined above:   *)
 (* negatedProp instances match on the wrappedProp wrapper to try three        *)
-(* generic matching rules, in sucession:                                      *)
-(*   Rule 1: match a specific connective or predicate with an instance of the *)
+(* generic matching rules, in succession:                                     *)
+(* - Rule 1: match a specific connective or predicate with an instance of the *)
 (*           properNegatedProp secondary structure, expanding definitions     *)
 (*           if needed, but failing if no proper match is found.              *)
-(*   Rule 2: match a forall statement (including (T : Type) -> P statements). *)
-(*   Rule 3: match any Prop but return the trivial simplification.            *)
+(* - Rule 2: match a forall statement (including (T : Type) -> P statements). *)
+(* - Rule 3: match any Prop but return the trivial simplification.            *)
 (* The simplified proposition is returned as a projection parameter nP rather *)
 (* than a Structure member, so that applying the corresponding views or       *)
 (* rewrite rules doesn't expose the inferred structures; properNegatedProp    *)
@@ -248,11 +257,11 @@ Local Notation nProp t nP P := (unwrap_Prop (@negated_Prop t nP P)).
 Local Notation nPred t nP P x := (nProp t (nP x) (P x)).
 Local Notation pnProp nP P := (@proper_negated_Prop nP P).
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* User views and rewrite rules. The plain versions (notP, notE and notI) do  *)
 (* not match trivial instances; lax_XXX versions allow them. In addition,     *)
 (* the negation introduction rewrite rule notI does not match forall or ->    *)
-(* statements - lax_notI must be used for these.                              *)
+(* statements---lax_notI must be used for these.                              *)
 (******************************************************************************)
 
 Lemma lax_notE {t nP} P : (~ nProp t nP P) = nP. Proof. by case: P. Qed.
@@ -265,16 +274,16 @@ Definition notP {nP P} := MoveView (@lax_notP false nP P).
 Fact proper_nPropP nP P : (~ pnProp nP P) = nP. Proof. by case: P. Qed.
 Definition notI {nP} P : pnProp nP P = ~ nP := canRL notK (proper_nPropP P).
 
-(* Rule 1: proper negation simplification, delegated to properNegatedProp. *)
+(** Rule 1: proper negation simplification, delegated to properNegatedProp. *)
 Canonical proper_nProp nP P :=
   @NegatedProp false nP (wrap1Prop (pnProp nP P)) (proper_nPropP P).
 
-(* Rule 2: forall_nProp is defined below as it uses exists_nProp. *)
+(** Rule 2: forall_nProp is defined below as it uses exists_nProp. *)
 
-(* Rule 3: trivial negation. *)
+(** Rule 3: trivial negation. *)
 Canonical trivial_nProp P := @NegatedProp true (~ P) (wrap3Prop P) erefl.
 
-(* properNegatedProp instances. *)
+(** properNegatedProp instances. *)
 
 Canonical True_nProp := @ProperNegatedProp False True notB.1.
 Canonical False_nProp := @ProperNegatedProp True False notB.2.
@@ -321,8 +330,8 @@ Proof. by rewrite or4E notE and4E. Qed.
 Canonical or4_nProp tP nP P tQ nQ Q tR nR R tS nS S :=
   ProperNegatedProp (@or4_nPropP tP nP P tQ nQ Q tR nR R tS nS S).
 
-(******************************************************************************)
-(*   The andRHS tertiary structure used to simplify (~ (P -> False)) to P,    *)
+(**md**************************************************************************)
+(* The andRHS tertiary structure used to simplify (~ (P -> False)) to P,      *)
 (* both here for the imply_nProp instance and for bounded_forall_nProp below. *)
 (* Because the andRHS instances match the Prop RETURNED by negatedProp they   *)
 (* do not need to expand definitions, hence do not need to use the wrapper    *)
@@ -360,12 +369,14 @@ Fact inhabited_nPropP T : (~ inhabited T) = (T -> False).
 Proof. by rewrite inhabitedE notE. Qed.
 Canonical inhabited_nProp T := ProperNegatedProp (inhabited_nPropP T).
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* Rule 2: forall negation, including (T : Type) -> P statements.             *)
-(*   We use tertiary structures to recognize bounded foralls and simplify,    *)
+(*                                                                            *)
+(* We use tertiary structures to recognize bounded foralls and simplify,      *)
 (* e.g., ~ forall x, P -> Q to exists2 x, P & ~ Q, or even exists x, P when   *)
 (* Q :=  False (as above for imply).                                          *)
-(*   As forall_body_nProp and forall_body_proper_nProp are telescopes         *)
+(*                                                                            *)
+(* As forall_body_nProp and forall_body_proper_nProp are telescopes           *)
 (* over negatedProp and properNegatedProp, respectively, their instances      *)
 (* match instances declared above without the need to expand definitions,     *)
 (* hence do not need to use the wrapper telescope idiom.                      *)
@@ -377,7 +388,7 @@ Structure properNegatedForallBody b P nQ nR := ProperNegatedForallBody {
   proper_negated_forall_body :> properNegatedProp nR; _ : and_def b P nQ nR}.
 Notation nBody b P nQ t nR x := (negatedForallBody b (P x) (nQ x) t (nR x)).
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* The explicit argument to fun_if is a workaround for a bug in the Coq       *)
 (* unification code that prevents default instances from ever matching match  *)
 (* constructs. Furthermore rewriting with ifE would not work here, because    *)
@@ -411,16 +422,17 @@ Canonical bounded_nBody b P nQ PnQ tR nR R :=
 Canonical unbounded_nBody nQ Q :=
   @ProperNegatedForallBody false True nQ nQ Q erefl.
 
-(******************************************************************************)
-(*    The properNegatedProp instance that handles boolean statements. We use  *)
+(**md**************************************************************************)
+(* The properNegatedProp instance that handles boolean statements. We use     *)
 (* two tertiary structures to handle positive and negative boolean statements *)
 (* so that the contra tactic below will mostly subsume the collection of      *)
 (* contraXX lemmas in ssrbool and eqtype.                                     *)
-(*    We only match manifest ~~ connectives, the true and false constants,    *)
-(* and the ==, <=%N, and <%N predicates. In particular we do not use de       *)
-(* Morgan laws to push boolean negation into connectives, as we did above for *)
-(* Prop connectives. It will be up to the user to use rewriting to put the    *)
-(* negated statement in its desired shape.                                    *)
+(*                                                                            *)
+(* We only match manifest ~~ connectives, the true and false constants, and   *)
+(* the ==, <=%N, and <%N predicates. In particular we do not use de Morgan    *)
+(* laws to push boolean negation into connectives, as we did above for Prop   *)
+(* connectives. It will be up to the user to use rewriting to put the negated *)
+(* statement in its desired shape.                                            *)
 (******************************************************************************)
 
 Structure negatedBool nP :=
@@ -452,7 +464,7 @@ Local Fact negb_posP nP (b : negatedBool nP) : (~~ b = nP :> Prop).
 Proof. by rewrite -(reflect_eq negP) notE. Qed.
 Canonical negb_pos nP b := PositedBool (@negb_posP nP b).
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* We use a tertiary structure to handle the negation of nat comparisons, and *)
 (* simplify ~ m <= n to n < m, and ~ m < n to n <= m. As m < n is merely      *)
 (* notation for m.+1 <= n, we need to dispatch on the left hand side of the   *)
@@ -468,8 +480,8 @@ Local Fact leq_negP n lt_nm (m : negatedLeqLHS n lt_nm) : (~ m <= n) = lt_nm.
 Proof. by rewrite notE -ltnNge; case: m => /= m ->. Qed.
 Canonical leq_neg n lt_nm m := NegatedBool (@leq_negP n lt_nm m).
 
-(******************************************************************************)
-(*   We use two tertiary structures to simplify negation of boolean constant  *)
+(**md**************************************************************************)
+(* We use two tertiary structures to simplify negation of boolean constant    *)
 (* and decidable equalities, simplifying b <> true to ~~ b, b <> false to b,  *)
 (* x <> y to x != y, and ~ x != y to x = y. We do need to use the wrapper     *)
 (* telescope pattern here, as we want to simplify instances of x <> y when y  *)
@@ -505,20 +517,21 @@ Local Fact eq_op_posP (T : eqType) x y : (x == y :> T : Prop) = (x = y).
 Proof. exact/esym/reflect_eq/eqP. Qed.
 Canonical eq_op_pos T x y := PositedBool (@eq_op_posP T x y).
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* The witnessedType structure provides conversion between Type and Prop in   *)
 (* goals; the conversion is mostly used in the Type-to-Prop direction, e.g.,  *)
 (* as a preprocessing step preceding proof by contradiction (see absurd_not   *)
 (* below), but the Prop-to-Type direction is required for contraposition.     *)
-(*   Thus witnessedType associates to a type T a "witness" proposition P      *)
+(*                                                                            *)
+(* Thus witnessedType associates to a type T a "witness" proposition P        *)
 (* equivalent to the existence of an x of type T. As in a `{classical_logic}  *)
 (* context inhabited T is such a proposition, witnessedType can be understood *)
 (* as providing simplification for inhabited T, much like negatedProp         *)
 (* provides simplification for ~ P for standard connectives and predicates.   *)
 (******************************************************************************)
 
-(******************************************************************************)
-(*  Similarly to negatedProp, witnessedType returns the witness proposition   *)
+(**md**************************************************************************)
+(* Similarly to negatedProp, witnessedType returns the witness proposition     *)
 (* via a projection argument P, but does not need to signal "trivial"         *)
 (* instances as the default value for P is nontrivial (namely, inhabited T),  *)
 (* while the "trivial" case where P = T is actually desireable and handled    *)
@@ -548,28 +561,28 @@ Local Fact eq_inhabited T (P : Prop) : (T -> P) -> (P -> T) -> inhabited T = P.
 Proof. by move=> T_P P_T; eqProp=> [[/T_P] | /P_T]. Qed.
 Ltac eqInh := apply: eq_inhabited.
 
-(* Rule 1: Prop goals are left as is. *)
+(** Rule 1: Prop goals are left as is. *)
 Canonical Prop_wType P :=
   @WitnessedType P (wrap1Type P) (eq_inhabited (@id P) id).
 
-(* Rule 2: Specific type constructors (sigs, sums, and pairs) are delegated   *)
-(* to the secondary properWitnessedType structure.                            *)
+(** Rule 2: Specific type constructors (sigs, sums, and pairs) are delegated
+    to the secondary properWitnessedType structure. *)
 Lemma proper_wTypeP P (T : properWitnessedType P) : inhabited T = P.
 Proof. by case: T. Qed.
 Canonical proper_wType P T :=
   @WitnessedType P (wrap2Type _) (@proper_wTypeP P T).
 
-(* Rule 3: Forall (and -> as a special case). *)
+(** Rule 3: Forall (and -> as a special case). *)
 Local Fact forall_wTypeP A P T :
   inhabited (forall x : A, wTycon P T x) = (forall x : A, P x) .
 Proof. by do [eqInh=> allP x; have:= allP x] => [/wTypeP | /T]. Qed.
 Canonical forall_wType A P T :=
   @WitnessedType _ (wrap3Type _) (@forall_wTypeP A P T).
 
-(* Rule 4: Default to inhabited if all else fails. *)
+(** Rule 4: Default to inhabited if all else fails. *)
 Canonical inhabited_wType T := @WitnessedType (inhabited T) (wrap4Type T) erefl.
 
-(* Specific proper_witnessedType instances. *)
+(** Specific proper_witnessedType instances. *)
 
 Local Fact void_wTypeP : inhabited void = False. Proof. by eqInh. Qed.
 Canonical void_wType := ProperWitnessedType void_wTypeP.
@@ -613,8 +626,8 @@ Proof. by eqInh=> [[x /wTypeP-Px /wTypeP] | /cid2[x /S-y /T]]; exists x. Qed.
 Canonical sigT2_wType A P Q S T :=
   ProperWitnessedType (@sigT2_wTypeP A P Q S T).
 
-(******************************************************************************)
-(*    The witnessProp structure provides for conversion of some Prop          *)
+(**md**************************************************************************)
+(* The witnessProp structure provides for conversion of some Prop             *)
 (* assumptions to Type values with some constructive contents, e.g., convert  *)
 (* a P \/ Q assumption to a {P} + {Q} sumbool value. This is not the same as  *)
 (* the forward direction of witnessedType, because instances here match the   *)
@@ -622,13 +635,14 @@ Canonical sigT2_wType A P Q S T :=
 (* finds a P such that P -> T (and T -> P for the converse direction).        *)
 (******************************************************************************)
 
-(******************************************************************************)
-(*   The implementation follows the wrapper telescope pattern similarly to    *)
+(**md**************************************************************************)
+(* The implementation follows the wrapper telescope pattern similarly to      *)
 (* negatedProp, with three rules, one for Prop constructors with proper       *)
 (* constructive contents, one for forall propositions (also with proper       *)
 (* constructive contents) and one default rule that just returns P : Prop as  *)
 (* is (thus, with no other contents except the provability of P).             *)
-(*   The witnessProp structure also uses projection parameters to return the  *)
+(*                                                                            *)
+(* The witnessProp structure also uses projection parameters to return the    *)
 (* inferred Type T together with a bool 'trivial' flag that is set when the   *)
 (* trivial rule is used. Here, however, this flag is used in both directions: *)
 (* the 'witness' view forces it to false to prevent trivial instances, but    *)
@@ -637,16 +651,18 @@ Canonical sigT2_wType A P Q S T :=
 (* relies on the fact that the tactic engine will eagerly iota reduce the     *)
 (* returned type, so that the user will never see the conditionals specified  *)
 (* in the proper_witness_Prop instances.                                      *)
-(*   However, it would not be possible to construct the specialised types     *)
+(*                                                                            *)
+(* However, it would not be possible to construct the specialised types       *)
 (* for trivial witnesses (e.g., {P} + {Q}) using the types returned by        *)
 (* witnessProp instances, since thes are in Type, and the information that    *)
 (* they are actully in Prop has been lost. This is solved by returning an     *)
 (* additional Prop P0 that is a copy of the matched Prop P when               *)
 (* trivial = true. (We put P0 = True when trivial = false, as we only need to *)
 (* ensure P -> P0.)                                                           *)
-(*  Caveat: although P0 should in principle be the last parameter of          *)
+(*                                                                            *)
+(* Caveat: although P0 should in principle be the last parameter of           *)
 (* witness_Prop, and we use this order for the wProp and wPred projector      *)
-(* local notation, it is important to put P0 BEFORE T, to circumvent an       *)
+(* local notation, it is important to put P0 _BEFORE_ T, to circumvent an     *)
 (* incompleteness in Coq's implementation of higher-order pattern unification *)
 (* that would cause the trivial rule to fail for the body of an exists.       *)
 (* In such a case the rule needs to unify (1) ?P0 x ~ ?P and (2) ?T x ~ ?P    *)
@@ -671,28 +687,28 @@ Lemma lax_witness {t T P0 P} : move_view (wProp t T P0 P) T.
 Proof. by split=> /wPropP[]. Qed.
 Definition witness {T P0 P} := @lax_witness false T P0 P.
 
-(* Rule 1: proper instances (except forall), delegated to an auxiliary        *)
-(* structures.                                                                *)
+(** Rule 1: proper instances (except forall), delegated to an auxiliary
+    structures. *)
 Local Fact proper_wPropP T P : wrap1Prop (@proper_witness_Prop T P) -> T * True.
 Proof. by case: P => _ P_T {}/P_T. Qed.
 Canonical proper_wProp T P := WitnessProp false (@proper_wPropP T P).
 
-(* Rule 2: forall types (including implication); as only proper instances are *)
-(* allowed, we set trivial = false for the recursive body instance.           *)
+(** Rule 2: forall types (including implication); as only proper instances are
+    allowed, we set trivial = false for the recursive body instance. *)
 Local Fact forall_wPropP A T P0 P :
   wrap2Prop (forall x : A, wPred false T P0 P x) -> (forall x, T x) * True.
 Proof. by move=> P_A; split=> // x; have /witness := P_A x. Qed.
 Canonical forall_wProp A T P0 P := WitnessProp false (@forall_wPropP A T P0 P).
 
-(* Rule 3: trivial (proof) self-witness. *)
+(** Rule 3: trivial (proof) self-witness. *)
 Canonical trivial_wProp P :=
   WitnessProp true (fun p : wrap3Prop P => (p, p) : P * P).
 
-(* Specific proper_witnesss_Prop instances. *)
+(** Specific proper_witnesss_Prop instances. *)
 
 Canonical inhabited_wProp T := ProperWitnessProp (@inhabited_witness T).
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* Conjunctions P /\ Q are a little delicate to handle, as we should not      *)
 (* produce a proper instance (and thus fail) if neither P nor Q is proper.    *)
 (* We use a tertiary structure for this : nand_bool b, which has instances    *)
@@ -738,24 +754,24 @@ Proof. by case/cid2=> x /wPropP[P0x y] /wPropP[]; case: ifP; exists x. Qed.
 Canonical exists2_wProp A s S P0 P t T Q0 Q :=
   ProperWitnessProp (@exists2_wPropP A s S P0 P t T Q0 Q).
 
-(******************************************************************************)
-(*   User lemmas and tactics for proof by contradiction and contraposition.   *)
+(**md**************************************************************************)
+(* ## User lemmas and tactics for proof by contradiction and contraposition.  *)
 (******************************************************************************)
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* Helper lemmas:                                                             *)
-(*   push_goal_copy makes a copy of the goal that can then be matched with    *)
+(* - push_goal_copy makes a copy of the goal that can then be matched with    *)
 (*     witnessedType and negatedProp instances to generate a contradiction    *)
 (*     assuption, without disturbing the original form of the goal.           *)
-(*   assume_not_with turns the copy generated by push_identity into an        *)
+(* - assume_not_with turns the copy generated by push_identity into an        *)
 (*     equivalent negative assumption, which can then be simplified using the *)
 (*     lax_notP and lax_witness views.                                        *)
-(*   absurd and absurdW replace the goal with False; absurdW does this under  *)
+(* - absurd and absurdW replace the goal with False; absurdW does this under  *)
 (*     an assumption, and is used to weaken proof-by-assuming-negation to     *)
 (*     proof-by-contradiction.                                                *)
-(*   contra_Type converts an arbitrary function goal (with assumption and     *)
+(* - contra_Type converts an arbitrary function goal (with assumption and     *)
 (*     conclusion in Type) to an equivalent contrapositive Prop implication.  *)
-(*   contra_notP simplifies a contrapositive ~ Q -> ~ P goal using            *)
+(* - contra_notP simplifies a contrapositive ~ Q -> ~ P goal using            *)
 (*     negatedProp instances.                                                 *)
 (******************************************************************************)
 
@@ -780,7 +796,7 @@ Hint View for move/ Internals.equivT_LR|2 Internals.equivT_RL|2.
 Hint View for apply/ Internals.equivT_RL|2 Internals.equivT_LR|2.
 Export (canonicals) Internals.
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* Lemma and tactic assume_not: add a goal negation assumption. The tactic    *)
 (* also works for goals in Type, simplifies the added assumption, and         *)
 (* exposes its top-level constructive content.                                *)
@@ -791,7 +807,7 @@ Ltac assume_not :=
   apply: Internals.push_goal_copy; apply: Internals.assume_not_with
     => /Internals.lax_notP-/Internals.lax_witness.
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* Lemma and tactic absurd_not: proof by contradiction. Same as assume_not,   *)
 (* but the goal is erased and replaced by False.                              *)
 (* Caveat: absurd_not cannot be used as a move/ view because its conclusion   *)
@@ -800,15 +816,17 @@ Ltac assume_not :=
 Lemma absurd_not {P} : (~ P -> False) -> P. Proof. by move/Internals.notP. Qed.
 Ltac absurd_not := assume_not; apply: Internals.absurdW.
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* Tactic contra: proof by contraposition. Assume the negation of the goal    *)
 (* conclusion, and prove the negation of a given assumption. The defective    *)
 (* form contra (which can also be written contrapose) expects the assumption  *)
 (* to be pushed on the goal which thus has the form assumption -> conclusion. *)
-(*   As with assume_not, contra allows both assumption and conclusion to be   *)
+(*                                                                            *)
+(* As with assume_not, contra allows both assumption and conclusion to be     *)
 (* in Type, simplifies the negation of both assumption and conclusion, and    *)
 (* exposes the constructive contents of the negated conclusion.               *)
-(*   The contra tactic also supports a limited form of the ':' discharge      *)
+(*                                                                            *)
+(* The contra tactic also supports a limited form of the ':' discharge        *)
 (* pseudo tactical, whereby contra: <d-items> means move: <d-items>; contra.  *)
 (* The only <d-items> allowed are one term, possibly preceded by a clear      *)
 (* switch.                                                                    *)
@@ -826,7 +844,7 @@ Tactic Notation "contra" ":" "{" hyp_list(Hs) "}" ident(H) :=
   contra: H; clear Hs.
 Tactic Notation "contra" ":" "{" "-" "}" constr(H) := contra: (H).
 
-(******************************************************************************)
+(**md**************************************************************************)
 (* Lemma and tactic absurd: proof by contradiction. The defective form of the *)
 (* lemma simply replaces the entire goal with False (just as the Ltac         *)
 (* exfalso), leaving the user to derive a contradiction from the assumptions. *)
