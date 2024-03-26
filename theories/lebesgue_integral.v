@@ -30,6 +30,12 @@ Require Import esum measure lebesgue_measure numfun realfun function_spaces.
 (* Main reference:                                                            *)
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (*                                                                            *)
+(* About the local naming convention: Lemmas about the Lebesgue integral      *)
+(* often appears in two flavors, depending on whether they are about non-     *)
+(* negative functions or about integrable functions. Lemmas about non-        *)
+(* negative functions are prefixed with ge0_, lemmas about integrable         *)
+(* functions are not.                                                         *)
+(*                                                                            *)
 (* Detailed contents:                                                         *)
 (* ````                                                                       *)
 (*         {mfun T >-> R} == type of real-valued measurable functions         *)
@@ -2920,7 +2926,7 @@ rewrite ge0_integralD//; last 5 first.
 by rewrite -integral_mkcondl setIC setUK -integral_mkcondl setKU.
 Qed.
 
-Lemma subset_integral (A B : set T) (mA : measurable A) (mB : measurable B)
+Lemma ge0_subset_integral (A B : set T) (mA : measurable A) (mB : measurable B)
     (f : T -> \bar R) : measurable_fun B f -> (forall x, B x -> 0 <= f x) ->
   A `<=` B -> \int[mu]_(x in A) f x <= \int[mu]_(x in B) f x.
 Proof.
@@ -2969,7 +2975,7 @@ apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) `|g x|)).
   - by move=> x _ /=; exact/ltW.
   - by apply: measurableT_comp => //; exact: measurable_funS mg.
   - by move=> x /= [].
-by apply: subset_integral => //; exact: measurableT_comp.
+by apply: ge0_subset_integral => //; exact: measurableT_comp.
 Qed.
 
 End subset_integral.
@@ -3310,7 +3316,7 @@ Lemma integrableS (E D : set T) (f : T -> \bar R) :
 Proof.
 move=> mE mD DE /integrableP[mf ifoo]; apply/integrableP; split.
   exact: measurable_funS mf.
-apply: le_lt_trans ifoo; apply: subset_integral => //.
+apply: le_lt_trans ifoo; apply: ge0_subset_integral => //.
 exact: measurableT_comp.
 Qed.
 
@@ -3748,7 +3754,8 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (fun x => f x * (oneCN x)%:E).
     rewrite (eq_integral (fun x => `|f x| * (\1_(~` N) x)%:E)); last first.
       by move=> t _; rewrite abseM (@gee0_abs _ (\1_(~` N) t)%:E) // lee_fin.
     rewrite -integral_setI_indic//; case: intf => _; apply: le_lt_trans.
-    by apply: subset_integral => //; [exact:measurableI|exact:measurableT_comp].
+    by apply: ge0_subset_integral => //; [exact:measurableI|
+                                          exact:measurableT_comp].
   apply/integrableP; split => //; rewrite (funID mN f) -/oneCN -/oneN.
   have ? : measurable_fun D (fun x : T => f x * (oneCN x)%:E).
     by apply: emeasurable_funM=> //; exact/EFin_measurable_fun/measurable_funTS.
@@ -3773,7 +3780,7 @@ have h2 : mu.-integrable (D `\` N) f <->
     rewrite (eq_integral (fun x => `|f x| * (\1_(~` N) x)%:E)); last first.
       by move=> t _; rewrite abseM (@gee0_abs _ (\1_(~` N) t)%:E)// lee_fin.
     rewrite -integral_setI_indic //; case: intCf => _; apply: le_lt_trans.
-    apply: subset_integral => //; [exact: measurableI|exact: measurableD|].
+    apply: ge0_subset_integral => //; [exact: measurableI|exact: measurableD|].
     by apply: measurableT_comp => //; apply: measurable_funS mf => // ? [].
   split.
     move=> mDN A mA; rewrite setDE (setIC D) -setIA; apply: measurableI => //.
@@ -3874,7 +3881,7 @@ apply: (@le_trans _ _ (\int[mu]_(x in D `&` [set x | `|g x| >= a%:E]) f `|g x|))
     exact: measurable_funS mg.
   - by move=> x /= [Dx]; apply: f_nd;
       rewrite inE /= in_itv /= andbT// lee_fin ltW.
-apply: subset_integral => //; last by move=> x _ /=; rewrite f0.
+apply: ge0_subset_integral => //; last by move=> x _ /=; rewrite f0.
 by apply: measurableT_comp => //; exact: measurableT_comp.
 Qed.
 
@@ -4454,8 +4461,8 @@ have muE j : mu (E j) = 0.
     rewrite fg//; last apply: subIsetl.
     rewrite subee// fin_num_abs (le_lt_trans (le_abse_integral _ _ _))//.
       by apply: measurable_funS msg => //; first exact: subIsetl.
-    apply: le_lt_trans (integrableP _ _ _ itg).2; apply: subset_integral => //.
-      exact: measurableT_comp msg.
+    apply: le_lt_trans (integrableP _ _ _ itg).2.
+    apply: ge0_subset_integral => //; first exact: measurableT_comp msg.
     exact: subIsetl.
   suff : mu (E j) <= j.+1%:R%:E * \int[mu]_(x in E j) (f \- g) x.
     by rewrite fg0 mule0.
@@ -5798,7 +5805,7 @@ Lemma integrable_locally D f : open D ->
   mu.-integrable D (EFin \o f) -> locally_integrable D f.
 Proof.
 move=> oD /integrableP[mf foo]; split => //; first exact/EFin_measurable_fun.
-move=> K KD cK; rewrite (le_lt_trans _ foo)// subset_integral//=.
+move=> K KD cK; rewrite (le_lt_trans _ foo)// ge0_subset_integral//=.
 - exact: compact_measurable.
 - exact: open_measurable.
 - apply/EFin_measurable_fun; apply: measurableT_comp => //.
@@ -5929,7 +5936,7 @@ Proof.
 move=> [mf _ locf]; have [r0|r0] := leP r 0%R.
   by rewrite (ball0 _ _).2// integral_set0.
 rewrite (le_lt_trans _ (locf (closed_ball x r) _ (closed_ballR_compact _)))//.
-apply: subset_integral => //; first exact: measurable_ball.
+apply: ge0_subset_integral => //; first exact: measurable_ball.
 - by apply: measurable_closed_ball; exact/ltW.
 - apply: measurable_funTS; apply/measurableT_comp => //=.
   exact: measurableT_comp.
@@ -5964,7 +5971,8 @@ move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
     move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
     by rewrite (le_lt_trans (ler_normD _ _))// addrC ltrD// distrC.
   have ? : k <= \int[mu]_(y in ball y (r + d)) `|(f y)%:E|.
-    apply: subset_integral =>//; [exact:measurable_ball|exact:measurable_ball|].
+    apply: ge0_subset_integral =>//; [exact:measurable_ball|
+                                      exact:measurable_ball|].
     apply: measurable_funTS; apply: measurableT_comp => //=.
     by apply/measurableT_comp => //=; case: locf.
   have : iavg f (ball y (r + d)) <= HL f y.
@@ -6001,7 +6009,8 @@ have ? : ball x r `<=` ball y (r + d).
   move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
   by rewrite (le_lt_trans (ler_normD _ _))// addrC ltrD// distrC.
 have ? : k <= \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
-  apply: subset_integral => //; [exact: measurable_ball|exact: measurable_ball|].
+  apply: ge0_subset_integral => //; [exact: measurable_ball|
+                                     exact: measurable_ball|].
   by apply: measurable_funTS; do 2 apply: measurableT_comp => //.
 have afxrdi : a%:E < (fine (mu (ball x (r + d))))^-1%:E *
     \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
@@ -6080,7 +6089,7 @@ apply: (@le_trans _ _
 rewrite -ge0_sume_distrr//; last by move=> x _; rewrite integral_ge0.
 rewrite lee_wpmul2l//; first by rewrite lee_fin invr_ge0 ltW.
 rewrite -ge0_integral_bigsetU//=.
-- apply: subset_integral => //.
+- apply: ge0_subset_integral => //.
   + by apply: bigsetU_measurable => ? ?; exact: measurable_ball.
   + by apply: measurableT_comp => //; apply: measurableT_comp => //; case: locf.
 - by move=> n; exact: measurable_ball.
@@ -6479,7 +6488,7 @@ have locf_g_B n : locally_integrable setT (f_ k \- g_B n)%R.
   + by move/EFin_measurable_fun : mf.
   + exact: openT.
   + move=> K _ cK; rewrite (le_lt_trans _ intf)//=.
-    apply: subset_integral => //.
+    apply: ge0_subset_integral => //.
     * exact: compact_measurable.
     * by do 2 apply: measurableT_comp => //; move/EFin_measurable_fun : mf.
 have mEHL i : measurable (HLf_g_Be i).
@@ -6791,7 +6800,7 @@ apply: (@le_trans _ _ ((fine (mu (E x n)))^-1%:E *
       by apply/EFin_measurable_fun; case: locf => + _ _; exact: measurable_funS.
     rewrite (@le_lt_trans _ _
       (\int[mu]_(y in closed_ball x (r_ x n)%:num) `|(f y)%:E|))//.
-      apply: subset_integral => //.
+      apply: ge0_subset_integral => //.
       + exact: (hE _).1.
       + exact: measurable_closed_ball.
       + apply: measurableT_comp => //; apply/EFin_measurable_fun => //.
@@ -6816,7 +6825,7 @@ rewrite muleA lee_pmul//.
   * apply: le_abse_integral => //; first exact: (hE x).1.
     apply/EFin_measurable_fun; apply/measurable_funB => //.
     by case: locf => + _ _; exact: measurable_funS.
-  * apply: subset_integral => //; first exact: (hE x).1.
+  * apply: ge0_subset_integral => //; first exact: (hE x).1.
     exact: measurable_ball.
   * apply/EFin_measurable_fun; apply: measurableT_comp => //.
     apply/measurable_funB => //.

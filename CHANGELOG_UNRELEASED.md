@@ -121,6 +121,7 @@
 
 - in `lebesgue_integral.v`
   + `integral_setU` -> `ge0_integral_setU`
+  + `subset_integral` -> `ge0_subset_integral`
 
 ### Generalized
 
