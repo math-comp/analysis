@@ -1386,7 +1386,7 @@ under [in leRHS]eq_integral.
   move=> x _; rewrite gee0_abs; last first.
     exact: fRN_ge0.
   over.
-apply: subset_integral => //; first exact: measurable_fun_fRN.
+apply: ge0_subset_integral => //; first exact: measurable_fun_fRN.
 by move=> x _; exact: fRN_ge0.
 Qed.
 
