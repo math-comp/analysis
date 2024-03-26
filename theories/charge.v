@@ -121,7 +121,7 @@ HB.builders Context d (T : semiRingOfSetsType d) (R : realFieldType)
 
 Let finite : fin_num_fun mu. Proof. exact: charge_finite. Qed.
 
-HB.instance Definition _ := SigmaFinite_isFinite.Build d T R mu finite.
+HB.instance Definition _ := isFinite.Build d T R mu finite.
 
 Let semi_additive : measure.semi_additive mu.
 Proof.
@@ -281,7 +281,7 @@ move=> mU.
 by have /(fin_num_measure nu) : measurable (U `&` D) by exact: measurableI.
 Qed.
 
-HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
+HB.instance Definition _ := isFinite.Build _ _ _
   restr crestr_finite_measure_function.
 
 Let crestr_semi_additive : measure.semi_additive restr.
@@ -385,7 +385,7 @@ Let cscale0 : cscale set0 = 0. Proof. by rewrite /cscale charge0 mule0. Qed.
 Let cscale_finite_measure_function U : measurable U -> cscale U \is a fin_num.
 Proof. by move=> mU; apply: fin_numM => //; exact: fin_num_measure. Qed.
 
-HB.instance Definition _ := SigmaFinite_isFinite.Build _ _ _
+HB.instance Definition _ := isFinite.Build _ _ _
   cscale cscale_finite_measure_function.
 
 Let cscale_semi_additive : measure.semi_additive cscale.

@@ -125,6 +125,8 @@
 - in `measure.v`:
   + `Measure_isSFinite_subdef` -> `isSFinite`
   + `sfinite_measure_subdef` -> `s_finite`
+  + `SigmaFinite_isFinite` -> `isFinite`
+  + `FiniteMeasure_isSubProbability` -> `isSubProbability`
 
 ### Generalized
 
