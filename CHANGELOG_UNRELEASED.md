@@ -57,6 +57,12 @@
   + new lemmas `point_uniform_separator`, and 
     `uniform_completely_regular`.
 
+- in file `classical_sets.v`
+  + lemmas `bigcup_series_addn`, `bigcap_series_addn`
+
+- in file `sequences.v`
+  + lemma `nneseries_addn`
+
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
     `product_topology_def`, `proj_continuous`, `dfwith_continuous`, 
