@@ -9,6 +9,7 @@
 
 boolp.v
 contra.v
+wochoice.v
 classical_sets.v
 mathcomp_extra.v
 functions.v
