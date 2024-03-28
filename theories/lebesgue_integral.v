@@ -1864,7 +1864,7 @@ move=> D [/= mD Deps KDf]; exists (K `\` D); split => //.
     exact: measurableD.
   rewrite setDE setC_bigcap setI_bigcupr.
   apply: (@le_trans _ _(\sum_(k <oo) mu (A `\` gK k))).
-    apply: measure_sigma_sub_additive => //; [|apply: bigcup_measurable => + _].
+  apply: measure_sigma_subadditive => //; [|apply: bigcup_measurable => + _].
       by move=> k /=; apply: measurableD => //; apply: mgK.
     by move=> k /=; apply: measurableD => //; apply: mgK.
   apply: (@le_trans _ _(\sum_(k <oo) (e2n k)%:E)); last exact: epsilon_trick0.
@@ -2879,7 +2879,8 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
     transitivity (\int[measure_add [the measure _ _ of msum m_ n]
                                    [the measure _ _ of mseries m_ n]]_(x in D) f x).
       congr (\int[_]_(_ in D) _); apply/funext => A.
-      by rewrite measure_addE; exact: nneseries_split.
+      rewrite measure_addE/= /msum -(big_mkord xpredT (m_ ^~ A)).
+      exact: nneseries_split.
     rewrite integral_measure_add//; congr (_ + _).
     by rewrite -ge0_integral_measure_sum.
   by apply: leeDl; exact: integral_ge0.
@@ -6072,7 +6073,7 @@ have Bset0 i : B i !=set0 by exists i; exact: ballxx.
 have [E [uE ED tEB DE]] := @vitali_lemma_finite_cover _ _ B is_ballB Bset0 D.
 rewrite (@le_trans _ _ (3%:R%:E * \sum_(i <- E) mu (B i)))//.
   have {}DE := subset_trans KDB DE.
-  apply: (le_trans (@content_sub_additive _ _ _ [the measure _ _ of mu]
+  apply: (le_trans (@content_subadditive _ _ _ [the measure _ _ of mu]
       K (fun i => 3%:R *` B (nth 0%R E i)) (size E) _ _ _)) => //.
   - by move=> k ?; rewrite scale_ballE//; exact: measurable_ball.
   - by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
