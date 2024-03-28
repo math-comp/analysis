@@ -14,8 +14,6 @@ From HB Require Import structures.
 (* homeomorphism_cantor_like, and cantor_surj, a.k.a. Alexandroff-Hausdorff.  *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*     pointed_principal_filter == alias for pointed types with principal     *)
-(*                                 filters                                    *)
 (*          cantor_space == the Cantor space, with its canonical metric       *)
 (*         cantor_like T == perfect + compact + hausdroff + zero dimensional  *)
 (*             tree_of T == builds a topological tree with levels (T n)       *)
@@ -45,42 +43,6 @@ Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 
-(* we start by introducing an alias for pointed types with
-   principal filters *)
-Definition pointed_principal_filter (P : pointedType) : Type := P.
-HB.instance Definition _ (P : pointedType) :=
-  Pointed.on (pointed_principal_filter P).
-HB.instance Definition _ (P : pointedType) :=
-  hasNbhs.Build (pointed_principal_filter P) principal_filter.
-
-(* we use `discrete_topology` to equip pointed types
-   with a discrete topology *)
-Section discrete_topology_for_pointed_types.
-
-Let discrete_pointed_subproof (P : pointedType) :
-  discrete_space (pointed_principal_filter P).
-Proof. by []. Qed.
-
-Definition pointed_discrete_topology (P : pointedType) : Type :=
-  discrete_topology (discrete_pointed_subproof P).
-
-End discrete_topology_for_pointed_types.
-(* note that in topology.v, we already have:
-HB.instance Definition _ := discrete_uniform_mixin.
-and
-HB.instance Definition _ := discrete_pseudometric_mixin. *)
-
-(* we need the following proof when using
-  `discrete_hausdorff` or `discrete_zero_dimension` *)
-Lemma discrete_pointed (T : pointedType) :
-  discrete_space (pointed_discrete_topology T).
-Proof.
-apply/funext => /= x; apply/funext => A; apply/propext; split.
-- by move=> [E hE EA] x0 ->{x0}; apply: EA => /=; apply: hE => /=; exists x.
-- move=> h; exists [set x | x.1 = x.2]; first by move=> -[a b] [t _] [<- <-].
-  by move=> y /= xy; exact: h.
-Qed.
-
 Definition cantor_space :=
   prod_topology (fun _ : nat => discrete_topology discrete_bool).
 
@@ -93,10 +55,6 @@ Definition cantor_like (T : topologicalType) :=
       compact [set: T],
       hausdorff_space T &
       zero_dimensional T].
-
-(* TODO: move to topology.v? *)
-Lemma discrete_bool_compact : compact [set: discrete_topology discrete_bool].
-Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
 
 Lemma cantor_space_compact : compact [set: cantor_space].
 Proof.

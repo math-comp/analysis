@@ -120,6 +120,8 @@ Require Import reals signed.
 (*                       within D F == restriction of the filter F to the     *)
 (*                                     domain D                               *)
 (*               principal_filter x == filter containing every superset of x  *)
+(*         pointed_principal_filter == alias for pointed types with           *)
+(*                                     principal filters                      *)
 (*                subset_filter F D == similar to within D F, but with        *)
 (*                                     dependent types                        *)
 (*           powerset_filter_from F == the filter of downward closed subsets  *)
@@ -323,6 +325,8 @@ Require Import reals signed.
 (*                      nbhs_ball == nbhs defined using balls in a            *)
 (*                                   pseudometric space                       *)
 (*                  discrete_ball == singleton balls for the discrete         *)
+(*                                   topology                                 *)
+(*      pointed_discrete_topology == equip pointed types with a discrete      *)
 (*                                   topology                                 *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -1625,6 +1629,13 @@ Section PrincipalFilters.
 
 Definition principal_filter {X : Type} (x : X) : set_system X :=
   globally [set x].
+
+(** we introducing an alias for pointed types with principal filters *)
+Definition pointed_principal_filter (P : pointedType) : Type := P.
+HB.instance Definition _ (P : pointedType) :=
+  Pointed.on (pointed_principal_filter P).
+HB.instance Definition _ (P : pointedType) :=
+  hasNbhs.Build (pointed_principal_filter P) principal_filter.
 
 Lemma principal_filterP {X} (x : X) (W : set X) : principal_filter x W <-> W x.
 Proof. by split=> [|? ? ->]; [exact|]. Qed.
@@ -3841,6 +3852,7 @@ Qed.
 End connected_sets.
 Arguments connected {T}.
 Arguments connected_component {T}.
+
 Section DiscreteTopology.
 Section DiscreteMixin.
 Context {X : Type}.
@@ -4697,6 +4709,9 @@ HB.instance Definition _ := discrete_uniform_mixin.
 
 End discrete_uniform.
 
+Lemma discrete_bool_compact : compact [set: discrete_topology discrete_bool].
+Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
+
 (* was uniformityOfBallMixin *)
 HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
   ent : set_system (M * M);
@@ -5148,6 +5163,33 @@ End discrete_pseudoMetric.
 
 Definition pseudoMetric_bool {R : realType} :=
   [the pseudoMetricType R of discrete_topology discrete_bool : Type].
+
+(** we use `discrete_topology` to equip pointed types with a discrete topology *)
+Section discrete_topology_for_pointed_types.
+
+Let discrete_pointed_subproof (P : pointedType) :
+  discrete_space (pointed_principal_filter P).
+Proof. by []. Qed.
+
+Definition pointed_discrete_topology (P : pointedType) : Type :=
+  discrete_topology (discrete_pointed_subproof P).
+
+End discrete_topology_for_pointed_types.
+(* note that in topology.v, we already have:
+HB.instance Definition _ := discrete_uniform_mixin.
+and
+HB.instance Definition _ := discrete_pseudometric_mixin. *)
+
+(** we need the following proof when using
+  `discrete_hausdorff` or `discrete_zero_dimension` in `cantor.v` *)
+Lemma discrete_pointed (T : pointedType) :
+  discrete_space (pointed_discrete_topology T).
+Proof.
+apply/funext => /= x; apply/funext => A; apply/propext; split.
+- by move=> [E hE EA] x0 ->{x0}; apply: EA => /=; apply: hE => /=; exists x.
+- move=> h; exists [set x | x.1 = x.2]; first by move=> -[a b] [t _] [<- <-].
+  by move=> y /= xy; exact: h.
+Qed.
 
 (** Complete uniform spaces *)
 
