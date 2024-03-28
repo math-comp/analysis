@@ -2153,6 +2153,30 @@ move=> n m nm; rewrite big_mkcond [in X in _ `<=` X]big_mkcond/=.
 exact: (@subset_bigsetI (fun i => if P i then F i else _)).
 Qed.
 
+Lemma bigcup_series_addn (k : nat) F :
+  (\bigcup_(j in [set j | (k <= j)]) F j = \bigcup_i (F (i + k))).
+Proof.
+rewrite eqEsubset; split.
+- rewrite /bigcup => x /= [] n kn H.
+  exists (n - k) => //.
+  by rewrite subnK.
+- rewrite /bigcup => x /= [] n _ H.
+  exists (n + k) => //.
+  by rewrite leq_addl.
+Qed.
+
+Lemma bigcap_series_addn (k : nat) F :
+  (\bigcap_(j in [set j | (k <= j)]) F j = \bigcap_i (F (i + k))).
+Proof.
+rewrite eqEsubset; split.
+- rewrite /bigcap => x /= H n _.
+  apply:H.
+  exact: leq_addl.
+- rewrite /bigcap => x /= H n ki.
+  rewrite -(subnK ki).
+  by apply: H.
+Qed.
+
 End bigop_nat_lemmas.
 
 Definition is_subset1 {T} (A : set T) := forall x y, A x -> A y -> x = y.
