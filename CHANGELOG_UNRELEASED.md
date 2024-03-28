@@ -4,6 +4,16 @@
 
 ### Added
 
+- in `classical_sets.v`:
+  + lemma `bigcup_recl`
+
+- in `sequences.v`:
+  + lemma `nneseries_recl`
+
+- in `measure.v`:
+  + definition `subset_sigma_subadditive`
+  + factory `isSubsetOuterMeasure`
+
 ### Changed
 
 ### Renamed
@@ -23,10 +33,22 @@
   + `lee_subr_addr` -> `leeBrDr`
   + `lee_subr_addl` -> `leeBrDl`
 
+- in `measure.v`:
+  + `sub_additive` -> `subadditive`
+  + `sigma_sub_additive` -> `measurable_subset_sigma_subadditive`
+  + `content_sub_additive` -> `content_subadditive`
+  + `ring_sigma_sub_additive` -> `ring_sigma_subadditive`
+  + `Content_SubSigmaAdditive_isMeasure` -> `Content_SigmaSubAdditive_isMeasure`
+  + `measure_sigma_sub_additive` -> `measure_sigma_subadditive`
+  + `measure_sigma_sub_additive_tail` -> `measure_sigma_subadditive_tail`
+
 ### Generalized
 
 - in `constructive_ereal.v`:
   + `gee_pMl` (was `gee_pmull`)
+
+- in `sequences.v`:
+  + lemmas `eseries0`, `nneseries_split`
 
 ### Deprecated
 

@@ -236,7 +236,7 @@ exists (fun n => if n is O then [the _.-ker _ ~> _ of k] else
   [the _.-ker _ ~> _ of @kzero _ _ X Y R]).
   by case => [|_]; [exact: measure_uub|exact: kzero_uub].
 move=> t U mU/=; rewrite /mseries.
-rewrite (nneseries_split 1%N)// big_ord_recl/= big_ord0 adde0.
+rewrite (nneseries_split _ 1%N)// big_mkord big_ord_recl/= big_ord0 adde0.
 rewrite ereal_series (@eq_eseriesr _ _ (fun=> 0%E)); last by case.
 by rewrite eseries0// adde0.
 Qed.

@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop .
+From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology normedtype sequences esum numfun.
 From HB Require Import structures.
 
@@ -147,6 +147,8 @@ From HB Require Import structures.
 (*                              of elements of type T : Type where R is       *)
 (*                              expected to be a numFieldType                 *)
 (*                              The HB class is OuterMeasure.                 *)
+(*                              interfaces: isOuterMeasure,                   *)
+(*                              isSubsetOuterMeasure                          *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Instances of measures                                                   *)
@@ -197,6 +199,9 @@ From HB Require Import structures.
 (*      measurable_fun D f == the function f with domain D is measurable      *)
 (*    preimage_class D f G == class of the preimages by f of sets in G        *)
 (*       image_class D f G == class of the sets with a preimage by f in G     *)
+(*    sigma_subadditive mu == predicate defining sigma-subadditivity          *)
+(* subset_sigma_subadditive mu == alternative predicate defining              *)
+(*                            sigma-subadditivity                             *)
 (*        mu.-negligible A == A is mu negligible                              *)
 (*  measure_is_complete mu == the measure mu is complete                      *)
 (*  {ae mu, forall x, P x} == P holds almost everywhere for the measure mu,   *)
@@ -1285,6 +1290,10 @@ End measurability.
 
 Local Open Scope ereal_scope.
 
+Definition subset_sigma_subadditive {T} {R : numFieldType}
+  (mu : set T -> \bar R) (A : set T) (F : nat -> set T) :=
+  A `<=` \bigcup_n F n -> mu A <= \sum_(n <oo) mu (F n).
+
 Section additivity.
 Context d (R : numFieldType) (T : semiRingOfSetsType d)
         (mu : set T -> \bar R).
@@ -1314,15 +1323,15 @@ Definition sigma_additive :=
   forall F, (forall i : nat, measurable (F i)) -> trivIset setT F ->
   (fun n => \sum_(0 <= i < n) mu (F i)) @ \oo --> mu (\bigcup_n F n).
 
-Definition sub_additive := forall (A : set T) (F : nat -> set T) n,
- (forall k, `I_n k -> measurable (F k)) -> measurable A ->
+Definition subadditive := forall (A : set T) (F : nat -> set T) n,
+  (forall k, `I_n k -> measurable (F k)) -> measurable A ->
   A `<=` \big[setU/set0]_(k < n) F k ->
   mu A <= \sum_(k < n) mu (F k).
 
-Definition sigma_sub_additive := forall (A : set T) (F : nat -> set T),
- (forall n, measurable (F n)) -> measurable A ->
-  A `<=` \bigcup_n F n ->
-  mu A <= \sum_(n <oo) mu (F n).
+Definition measurable_subset_sigma_subadditive :=
+  forall (A : set T) (F : nat -> set T),
+    (forall n, measurable (F n)) -> measurable A ->
+    subset_sigma_subadditive mu A F.
 
 Lemma semi_additiveW : mu set0 = 0 -> semi_additive -> semi_additive2.
 Proof.
@@ -1334,6 +1343,10 @@ move=> /(amx (bigcup2 A B))->.
 Qed.
 
 End additivity.
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `subadditive`")]
+Notation sub_additive := subadditive (only parsing).
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `measurable_subset_sigma_subadditive`")]
+Notation sigma_sub_additive := measurable_subset_sigma_subadditive (only parsing).
 
 Section ring_additivity.
 Context d (R : numFieldType) (T : ringOfSetsType d) (mu : set T -> \bar R).
@@ -2358,7 +2371,7 @@ Section more_content_semiring_lemmas.
 Context d (R : realFieldType) (T : semiRingOfSetsType d).
 Variable mu : {content set T -> \bar R}.
 
-Lemma content_sub_additive : sub_additive mu.
+Lemma content_subadditive : subadditive mu.
 Proof.
 move=> X A n Am Xm XA; pose B i := A\_`I_n i `&` X.
 have XE : X = \big[setU/set0]_(i < n) B i.
@@ -2394,7 +2407,7 @@ elim/choicePpointed: I => I in A_ D *.
   by rewrite measure0 fsbig_set0.
 move=> Dfin A_m Am Asub; have [n /ppcard_eqP[f]] := Dfin.
 rewrite (reindex_fsbig f^-1%FUN `I_n)//= -fsbig_ord.
-rewrite (@content_sub_additive A (A_ \o f^-1%FUN))//=.
+rewrite (@content_subadditive A (A_ \o f^-1%FUN))//=.
   by move=> i ltin; apply: A_m; apply: funS.
 rewrite (fsbig_ord _ _ (A_ \o f^-1%FUN))/= -(reindex_fsbig _ _ D)//=.
 by rewrite fsbig_setU.
@@ -2428,6 +2441,8 @@ Qed.
 (* Qed. *)
 
 End more_content_semiring_lemmas.
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `content_sub_additive`")]
+Notation content_sub_additive := content_subadditive (only parsing).
 
 Section content_ring_lemmas.
 Context d (R : realType) (T : ringOfSetsType d).
@@ -2443,7 +2458,8 @@ near=> n; rewrite big_mkord -measure_bigsetU//= le_measure ?inE//=.
 - by rewrite -bigcup_mkord; apply: bigcup_sub => i lein; apply: bigcup_sup.
 Unshelve. all: by end_near. Qed.
 
-Lemma content_ring_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive mu.
+Lemma content_ring_sigma_additive :
+  measurable_subset_sigma_subadditive mu -> semi_sigma_additive mu.
 Proof.
 move=> mu_sub A Am Atriv UAm.
 suff <- : \sum_(i <oo) mu (A i) = mu (\bigcup_n A n) by exact: is_cvg_nneseries.
@@ -2452,13 +2468,15 @@ Qed.
 
 End content_ring_lemmas.
 
-Section ring_sigma_sub_additive_content.
+Section ring_sigma_subadditive_content.
 Context d (R : realType) (T : semiRingOfSetsType d)
         (mu : {content set T -> \bar R}).
 Local Notation Rmu := (SetRing.measure mu).
 Import SetRing.
 
-Lemma ring_sigma_sub_additive : sigma_sub_additive mu -> sigma_sub_additive Rmu.
+Lemma ring_sigma_subadditive :
+  measurable_subset_sigma_subadditive mu ->
+  measurable_subset_sigma_subadditive Rmu.
 Proof.
 move=> muS; move=> /= D A Am Dm Dsub.
 rewrite /Rmu -(eq_eseriesr (fun _ _ => esum_fset _ _))//; last first.
@@ -2509,13 +2527,14 @@ rewrite -measure_fin_bigcup//=.
 - by move=> X /= XD; apply: sub_gen_smallest; apply: mfD; rewrite inE.
 Unshelve. all: by end_near. Qed.
 
-Lemma ring_semi_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive Rmu.
+Lemma ring_semi_sigma_additive :
+  measurable_subset_sigma_subadditive mu -> semi_sigma_additive Rmu.
 Proof.
-move=> mu_sub; apply: content_ring_sigma_additive.
-by apply: ring_sigma_sub_additive.
+by move=> mu_sub; exact/content_ring_sigma_additive/ring_sigma_subadditive.
 Qed.
 
-Lemma semiring_sigma_additive : sigma_sub_additive mu -> semi_sigma_additive mu.
+Lemma semiring_sigma_additive :
+  measurable_subset_sigma_subadditive mu -> semi_sigma_additive mu.
 Proof.
 move=> /ring_semi_sigma_additive Rmu_sigmadd F Fmeas Ftriv cupFmeas.
 have Fringmeas i : d.-ring.-measurable (F i) by apply: measurable_subring.
@@ -2524,27 +2543,39 @@ rewrite SetRing.RmuE//.
 by under eq_fun do under eq_bigr do rewrite SetRing.RmuE//=.
 Qed.
 
-End ring_sigma_sub_additive_content.
+End ring_sigma_subadditive_content.
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `ring_sigma_subadditive`")]
+Notation ring_sigma_sub_additive := ring_sigma_subadditive (only parsing).
 
 #[key="mu"]
-HB.factory Record Content_SubSigmaAdditive_isMeasure d (R : realType)
+HB.factory Record Content_SigmaSubAdditive_isMeasure d (R : realType)
     (T : semiRingOfSetsType d) (mu : set T -> \bar R) of Content d mu := {
-  measure_sigma_sub_additive : sigma_sub_additive mu }.
+  measure_sigma_subadditive : measurable_subset_sigma_subadditive mu }.
 
 HB.builders Context d (R : realType) (T : semiRingOfSetsType d)
-  (mu : set T -> \bar R) of Content_SubSigmaAdditive_isMeasure d R T mu.
+  (mu : set T -> \bar R) of Content_SigmaSubAdditive_isMeasure d R T mu.
 
 HB.instance Definition _ := Content_isMeasure.Build d T R mu
-  (semiring_sigma_additive (measure_sigma_sub_additive)).
+  (semiring_sigma_additive (measure_sigma_subadditive)).
 
 HB.end.
+
+#[deprecated(since="mathcomp-analysis 1.1.0",
+  note="renamed `Content_SigmaSubAdditive_isMeasure.Build`")]
+Notation "'Content_SubSigmaAdditive_isMeasure.Build' d R T mu" :=
+  (@Content_SigmaSubAdditive_isMeasure.Build d R T mu)
+  (at level 2, d, R, T, mu at next level, only parsing).
+#[deprecated(since="mathcomp-analysis 1.1.0",
+  note="renamed `measure_sigma_subadditive`")]
+Notation measure_sigma_sub_additive :=
+  Content_SigmaSubAdditive_isMeasure.measure_sigma_subadditive (only parsing).
 
 Section more_premeasure_ring_lemmas.
 Context d (R : realType) (T : semiRingOfSetsType d).
 Variable mu : {measure set T -> \bar R}.
 Import SetRing.
 
-Lemma measure_sigma_sub_additive : sigma_sub_additive mu.
+Lemma measure_sigma_subadditive : measurable_subset_sigma_subadditive mu.
 Proof.
 move=> X A Am Xm XA; pose B i := A i `&` X.
 have XE : X = \bigcup_i B i by rewrite -setI_bigcupl setIidr.
@@ -2626,7 +2657,7 @@ Qed.
 
 End more_premeasure_ring_lemmas.
 
-Lemma measure_sigma_sub_additive_tail d (R : realType) (T : semiRingOfSetsType d)
+Lemma measure_sigma_subadditive_tail d (R : realType) (T : semiRingOfSetsType d)
   (mu : {measure set T -> \bar R}) (A : set T) (F : nat -> set T) N :
     (forall n, measurable (F n)) -> measurable A ->
     A `<=` \bigcup_(n in ~` `I_N) F n ->
@@ -2634,12 +2665,14 @@ Lemma measure_sigma_sub_additive_tail d (R : realType) (T : semiRingOfSetsType d
 Proof.
 move=> mF mA AF; rewrite eseries_cond eseries_mkcondr.
 rewrite (@eq_eseriesr _ _ (fun n => mu (if (N <= n)%N then F n else set0))).
-- apply: measure_sigma_sub_additive => //.
+- apply: measure_sigma_subadditive => //.
   + by move=> n; case: ifPn.
   + move: AF; rewrite bigcup_mkcond.
     by under eq_bigcupr do rewrite mem_not_I.
 - by move=> o _; rewrite (fun_if mu) measure0.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `measure_sigma_subadditive_tail`")]
+Notation measure_sigma_sub_additive_tail := measure_sigma_subadditive_tail (only parsing).
 
 Section ring_sigma_content.
 Context d (R : realType) (T : semiRingOfSetsType d)
@@ -2648,7 +2681,7 @@ Local Notation Rmu := (SetRing.measure mu).
 Import SetRing.
 
 Let ring_sigma_content : semi_sigma_additive Rmu.
-Proof. exact/ring_semi_sigma_additive/measure_sigma_sub_additive. Qed.
+Proof. exact/ring_semi_sigma_additive/measure_sigma_subadditive. Qed.
 
 HB.instance Definition _ := Content_isMeasure.Build _ _ _ Rmu
   ring_sigma_content.
@@ -2792,7 +2825,8 @@ HB.structure Definition FinNumFun d (T : semiRingOfSetsType d)
   (R : numFieldType) := { k of isFinite _ T R k }.
 
 #[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isFinite.Build`")]
-Notation "SigmaFinite_isFinite.Build" := (@isFinite.Build _ _ _ _ _) (only parsing).
+Notation "'@SigmaFinite_isFinite.Build' d T R k" :=
+  (@isFinite.Build d T R k) (at level 2, d, T, R, k at next level, only parsing).
 
 HB.structure Definition FiniteMeasure d (T : measurableType d) (R : realType) :=
   { k of @SigmaFiniteMeasure _ _ _ k & isFinite _ T R k }.
@@ -2915,7 +2949,8 @@ HB.structure Definition SubProbability d (T : measurableType d) (R : realType)
   := {mu of @FiniteMeasure d T R mu & isSubProbability d T R mu }.
 
 #[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isSubProbability.Build`")]
-Notation "FiniteMeasure_isSubProbability.Build" := (@isSubProbability.Build _ _ _ _ _) (only parsing).
+Notation "'FiniteMeasure_isSubProbability.Build' d T R P" :=
+  (@isSubProbability.Build d T R P) (at level 2, d, T, R, P at next level, only parsing).
 
 HB.factory Record Measure_isSubProbability d (T : measurableType d)
     (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=
@@ -3117,7 +3152,7 @@ Lemma measureU2 A B : measurable A -> measurable B ->
   mu (A `|` B) <= mu A + mu B.
 Proof.
 move=> ? ?; rewrite -bigcup2inE bigcup_mkord.
-rewrite (le_trans (@content_sub_additive _ _ _ mu _ (bigcup2 A B) 2%N _ _ _))//.
+rewrite (le_trans (@content_subadditive _ _ _ mu _ (bigcup2 A B) 2%N _ _ _))//.
 by move=> -[//|[//|[|]]].
 by apply: bigsetU_measurable => -[] [//|[//|[|]]].
 by rewrite big_ord_recr/= big_ord_recr/= big_ord0 add0e.
@@ -3234,7 +3269,7 @@ Theorem Boole_inequality (A : (set T) ^nat) n :
     (forall i, (i < n)%N -> measurable (A i)) ->
   mu (\big[setU/set0]_(i < n) A i) <= \sum_(i < n) mu (A i).
 Proof.
-move=> Am; rewrite content_sub_additive// -bigcup_mkord.
+move=> Am; rewrite content_subadditive// -bigcup_mkord.
 exact: fin_bigcup_measurable.
 Qed.
 
@@ -3270,7 +3305,7 @@ Variable mu : {measure set T -> \bar R}.
 Theorem generalized_Boole_inequality (A : (set T) ^nat) :
   (forall i, measurable (A i)) -> measurable (\bigcup_n A n) ->
   mu (\bigcup_n A n) <= \sum_(i <oo) mu (A i).
-Proof. by move=> Am UAm; rewrite measure_sigma_sub_additive. Qed.
+Proof. by move=> Am UAm; rewrite measure_sigma_subadditive. Qed.
 
 End generalized_boole_inequality.
 Notation le_mu_bigcup := generalized_Boole_inequality.
@@ -3330,7 +3365,7 @@ move=> [N [mN N0 AN]] [M [mM M0 BM]]; exists (N `|` M); split => //.
 - exact: measurableU.
 - apply/eqP; rewrite -measure_le0 -N0 -[leRHS]adde0 -M0 -bigsetU_bigcup2.
   apply: le_trans.
-  + apply: (@content_sub_additive _ _ _ _ _ (bigcup2 N M) 2%N) => //.
+  + apply: (@content_subadditive _ _ _ _ _ (bigcup2 N M) 2%N) => //.
     * by move=> [|[|[|]]].
     * apply: bigsetU_measurable => // i _; rewrite /bigcup2.
       by case: ifPn => // i0; case: ifPn.
@@ -3357,7 +3392,7 @@ move=> mF; exists (\bigcup_k sval (cid (mF k))); split.
 - rewrite seqDU_bigcup_eq measure_bigcup//; last first.
     move=> k _; apply: measurableD; first by case: cid => //= A [].
     by apply: bigsetU_measurable => i _; case: cid => //= A [].
-  rewrite eseries0// => k _.
+  rewrite eseries0// => k _ _.
   have [mFk mFk0 ?] := svalP (cid (mF k)).
   rewrite measureD//=.
   + rewrite mFk0 sub0e eqe_oppLRP oppe0; apply/eqP; rewrite -measure_le0.
@@ -3518,6 +3553,34 @@ Arguments outer_measure_ge0 {R T} _.
 Arguments le_outer_measure {R T} _.
 Arguments outer_measure_sigma_subadditive {R T} _.
 
+HB.factory Record isSubsetOuterMeasure
+    (R : realType) (T : Type) (mu : set T -> \bar R) := {
+  outer_measure0 : mu set0 = 0 ;
+  outer_measure_ge0 : forall x, 0 <= mu x ;
+  subset_outer_measure_sigma_subadditive :
+    forall A F, subset_sigma_subadditive mu A F}.
+
+HB.builders Context {R : realType} T mu of isSubsetOuterMeasure R T mu.
+
+Lemma le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B}.
+Proof.
+move=> A B AB; pose B_ k := if k is 0%N then B else set0.
+have -> : mu B = \sum_(n <oo) mu (B_ n).
+  rewrite nneseries_recl; last by move=> ?; rewrite outer_measure_ge0.
+  rewrite eseries_cond/= eseries0 ?adde0// => -[|]//= k _ _.
+  by rewrite outer_measure0.
+apply: subset_outer_measure_sigma_subadditive => //.
+by rewrite bigcup_recl/= bigcup0 ?setU0// => -[/negP|].
+Qed.
+
+Lemma outer_measure_sigma_subadditive : sigma_subadditive mu.
+Proof. by move=> F; exact: subset_outer_measure_sigma_subadditive. Qed.
+
+HB.instance Definition _ := isOuterMeasure.Build R T mu outer_measure0
+  outer_measure_ge0 le_outer_measure outer_measure_sigma_subadditive.
+
+HB.end.
+
 Lemma outer_measure_sigma_subadditive_tail (T : Type) (R : realType)
     (mu : {outer_measure set T -> \bar R}) N (F : (set T) ^nat) :
   (mu (\bigcup_(n in ~` `I_N) (F n)) <= \sum_(N <= i <oo) mu (F i))%E.
@@ -3548,11 +3611,10 @@ have := outer_measure_sigma_subadditive mu F'.
 rewrite (bigcup_splitn n) (_ : bigcup _ _ = set0) ?setU0; last first.
   by rewrite bigcup0 // => k _; rewrite /F' /= ltnNge leq_addr.
 move/le_trans; apply.
-rewrite (nneseries_split n); last by move=> ?; exact: outer_measure_ge0.
-rewrite [X in _ + X](_ : _ = 0) ?adde0//; last first.
-  rewrite eseries_cond/= eseries_mkcond eseries0//.
-  by move=> k _; case: ifPn => //; rewrite /F' leqNgt => /negbTE ->.
-by apply: lee_sum => i _; rewrite /F' ltn_ord.
+rewrite (nneseries_split _ n); last by move=> ? ?; exact: outer_measure_ge0.
+rewrite [X in _ + X]eseries0 ?adde0; last first.
+  by move=> k nk _; rewrite /F' ltnNge nk/= outer_measure0.
+by rewrite big_mkord; apply: lee_sum => i _; rewrite /F' ltn_ord.
 Qed.
 
 Lemma outer_measureU2 A B : mu (A `|` B) <= mu A + mu B.
@@ -4163,7 +4225,7 @@ have XUA : X = \bigcup_n (X `&` A n).
   rewrite predeqE => t; split => [Xt|[i _ []//]].
   by have [i _ Ait] := XA _ Xt; exists i.
 apply: (@le_trans _ _ (\sum_(i <oo) mu (X `&` A i))).
-  by rewrite measure_sigma_sub_additive//= -?XUA => // i; apply: measurableI.
+  by rewrite measure_sigma_subadditive//= -?XUA => // i; apply: measurableI.
 apply: lee_lim; [exact: is_cvg_nneseries|exact: is_cvg_nneseries|].
 by apply: nearW => n; apply: lee_sum => i  _; exact: measureIr.
 Qed.

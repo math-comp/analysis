@@ -1597,6 +1597,10 @@ Lemma eq_eseriesl (R : realFieldType) (P Q : pred nat) (f : (\bar R)^nat) :
 Proof. by move=> efg; apply/congr_lim/funext => n; apply: eq_bigl. Qed.
 Arguments eq_eseriesl {R P} Q.
 
+Lemma lim_mkord (R : realFieldType) (P : {pred nat}) (f : (\bar R)^nat) :
+  limn (fun n => \sum_(k < n | P k) f k)%E = \sum_(k <oo | P k) f k.
+Proof. by under eq_fun do rewrite -big_mkord. Qed.
+
 Section ereal_series.
 Variables (R : realFieldType) (f : (\bar R)^nat).
 Implicit Types P : pred nat.
@@ -1615,8 +1619,16 @@ rewrite ereal_series_cond; congr (limn _); apply/funext => n.
 by apply: eq_big => // i; rewrite andbT.
 Qed.
 
-Lemma eseries0 P : (forall i, P i -> f i = 0) -> \sum_(i <oo | P i) f i = 0.
-Proof. by move=> f0; under eq_fun do rewrite big1//; rewrite lim_cst. Qed.
+Lemma eseries0 N P : (forall i, (N <= i)%N -> P i -> f i = 0) ->
+  \sum_(N <= i <oo | P i) f i = 0.
+Proof.
+move=> f0; apply/cvg_lim => //.
+under eq_fun.
+  move=> n.
+  rewrite big_nat_cond big1; last by move=> k /andP[/andP[+ _]]; exact: f0.
+  over.
+exact: cvg_cst.
+Qed.
 
 Lemma eseries_pred0 P : P =1 xpred0 -> \sum_(i <oo | P i) f i = 0.
 Proof.
@@ -1888,21 +1900,37 @@ move=> cg fg; suff: f @ \oo --> limn g by exact/cvg_lim.
 by apply: cvg_trans cg; apply: near_eq_cvg; near do apply/esym.
 Unshelve. all: by end_near. Qed.
 
-Lemma nneseries_split (R : realType) (f : nat -> \bar R) n :
-  (forall k, 0 <= f k) ->
-  \sum_(k <oo) f k = \sum_(k < n) f k + \sum_(n <= k <oo) f k.
+Lemma nneseries_split (R : realType) (f : nat -> \bar R) N n :
+  (forall k, (N <= k)%N -> 0 <= f k) ->
+  \sum_(N <= k <oo) f k = \sum_(N <= k < N + n) f k + \sum_(N + n <= k <oo) f k.
 Proof.
-move=> f0; elim: n => [|n ih]; first by rewrite big_ord0 add0e.
-rewrite big_ord_recr/= -addeA [f n + _](_ : _ = \sum_(n <= k <oo) f k)//.
-rewrite -lim_shift_cst; last by rewrite (@lt_le_trans _ _ 0).
-- apply: (@near_eq_lim _ (fun x => f n + _)).
-    exact: is_cvg_ereal_nneg_natsum.
+elim: n N => [N |n ih N] f0.
+  rewrite addn0 [in X in _ = X + _]/index_iota subnn.
+  by rewrite (@size0nil _ (iota _ 0)) ?size_iota// big_nil add0r.
+rewrite addnS big_nat_recr/= ?leq_addr// -addeA.
+rewrite [f (N + n)%N + _](_ : _ = \sum_(N + n <= k <oo) f k); first exact: ih.
+have cf m : (m >= N)%N -> cvgn (fun n => \sum_(m <= k < n) f k).
+  move=> Nm; apply: is_cvg_ereal_nneg_natsum => p Nmp.
+  by rewrite f0// (leq_trans _ Nmp).
+rewrite -lim_shift_cst; last by rewrite (@lt_le_trans _ _ 0)// f0// leq_addr.
+- apply: (@near_eq_lim _ (fun x => f (N + n)%N + _)) => //.
+  by apply: cf; rewrite leq_addr.
   by near do rewrite -big_ltn//; exact: nbhs_infty_gt.
-- exact: is_cvg_ereal_nneg_natsum.
-- by move=> m; exact: sume_ge0.
+- by apply: cf; rewrite -addnS leq_addr.
+- move=> m; rewrite big_seq; apply: sume_ge0 => /= p.
+  rewrite mem_index_iota => /andP[Nnp _].
+  by rewrite f0// (leq_trans _ Nnp)// -addnS leq_addr.
 Unshelve. all: by end_near. Qed.
 
 End nneseries_split.
+Arguments nneseries_split {R f} _ _.
+
+Lemma nneseries_recl (R : realType) (f : nat -> \bar R) :
+  (forall k, 0 <= f k) -> \sum_(k <oo) f k = f 0%N + \sum_(1 <= k <oo) f k.
+Proof.
+move=> f0; rewrite [LHS](nneseries_split _ 1)// add0n.
+by rewrite /index_iota subn0/= big_cons big_nil addr0.
+Qed.
 
 Lemma nneseries_tail_cvg (R : realType) (f : (\bar R)^nat) :
   \sum_(k <oo) f k < +oo -> (forall k, 0 <= f k) ->
@@ -1920,7 +1948,7 @@ rewrite [X in X @ _ --> _](_ : _ = fun N => l%:E - \sum_(0 <= k < N) f k).
   under eq_fun => ? do rewrite oppeD// oppeK addeC.
   exact/cvge_sub0.
 apply/funext => N; apply/esym/eqP; rewrite sube_eq//.
-  by rewrite addeC big_mkord -(nneseries_split N)//; exact/eqP/esym/cvg_lim.
+  by rewrite addeC -nneseries_split//; exact/eqP/esym/cvg_lim.
 by rewrite ge0_adde_def//= ?inE; [exact: nneseries_ge0|exact: sume_ge0].
 Qed.
 
@@ -1975,13 +2003,6 @@ have {}Mu : forall x, M%:E > u x by move=> x; rewrite ltNge; apply/negP.
 have : limn u <= M%:E by apply lime_le => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
-
-Lemma lim_mkord (R : realFieldType) (P : {pred nat}) (f : (\bar R)^nat) :
-  limn (fun n => \sum_(k < n | P k) f k)%E = \sum_(k <oo | P k) f k.
-Proof.
-rewrite (_ : (fun n => _) = (fun n => \sum_(0 <= k < n | P k) f k)%E) //.
-by rewrite funeqE => k; rewrite big_mkord.
-Qed.
 
 Lemma eseries_mkcond [R : realFieldType] [P : pred nat] (f : nat -> \bar R) :
   \sum_(i <oo | P i) f i = \sum_(i <oo) if P i then f i else 0.
@@ -2069,6 +2090,8 @@ Notation eq_nneseries := eq_eseriesr (only parsing).
 Notation nneseries_pred0 := eseries_pred0 (only parsing).
 #[deprecated(since="analysis 0.6.0", note="Use eseries_mkcond instead.")]
 Notation nneseries_mkcond := eseries_mkcond (only parsing).
+
+Arguments nneseries_split {R f} _ _.
 
 Section minr_cvg_0.
 Local Open Scope ring_scope.
