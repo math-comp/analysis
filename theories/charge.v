@@ -1494,7 +1494,7 @@ have hnu S : measurable S -> \int[mu]_(x in S) h x <= nu S.
   rewrite -(setD0 S) -(setDv AP) setDDr.
   have mSIAP : measurable (S `&` AP) by exact: measurableI.
   have mSDAP : measurable (S `\` AP) by exact: measurableD.
-  rewrite integral_setU //.
+  rewrite ge0_integral_setU //.
   - rewrite measureU//.
       by apply: leeD; [exact: hnuN|exact: hnuP].
     by rewrite setDE setIACA setICl setI0.
@@ -1503,14 +1503,14 @@ have hnu S : measurable S -> \int[mu]_(x in S) h x <= nu S.
 have int_h_M : \int[mu]_x h x > M.
   have mCAP := measurableC mAP.
   have disj_AP : [disjoint AP & ~` AP] by exact/disj_set2P/setICr.
-  rewrite -(setUv AP) integral_setU ?setUv// /h.
+  rewrite -(setUv AP) ge0_integral_setU ?setUv// /h.
   under eq_integral do rewrite ifT//.
   under [X in _ < _ + X]eq_integral.
     by move=> x; rewrite inE /= => xE0p; rewrite memNset//; over.
   rewrite ge0_integralD//; last 2 first.
     - by move=> x _; exact: f_ge0.
     - by apply: measurable_funTS; exact: mf.
-  rewrite integral_cst // addeAC -integral_setU//; last 2 first.
+  rewrite integral_cst // addeAC -ge0_integral_setU//; last 2 first.
     by rewrite setUv//; exact: mf.
     by move=> x _; exact: f_ge0.
   rewrite setUv int_fRNE -lte_subel_addl; last first.
@@ -1568,7 +1568,7 @@ have mf_ k : measurable_fun setT (f_ k).
 have if_T k : integrable mu setT (f_ k).
   apply/integrableP; split => //.
   under eq_integral do rewrite gee0_abs//.
-  rewrite -(setUv (E k)) integral_setU //; last 3 first.
+  rewrite -(setUv (E k)) ge0_integral_setU //; last 3 first.
     - exact: measurableC.
     - by rewrite setUv.
     - exact/disj_set2P/subsets_disjoint.
@@ -1584,7 +1584,7 @@ have int_f_E j S : measurable S -> \int[mu]_(x in S) f_ j x = nu (S `&` E j).
   move=> mS.
   have mSIEj := measurableI _ _ mS (mE j).
   have mSDEj := measurableD mS (mE j).
-  rewrite -{1}(setUIDK S (E j)) (integral_setU _ mSIEj mSDEj)//; last 2 first.
+  rewrite -{1}(setUIDK S (E j)) (ge0_integral_setU _ mSIEj mSDEj)//; last 2 first.
     - by rewrite setUIDK; exact: (measurable_funS measurableT).
     - by apply/disj_set2P; rewrite setDE setIACA setICr setI0.
   rewrite /f_ -(eq_integral _ (g_ j)); last first.

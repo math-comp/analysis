@@ -64,6 +64,15 @@
       `equivT_transr`, `equivT_Prop`, `equivT_LR` (hint view), `equivT_RL` (hint view)
   + definition `notP`
   + hint view for `move/` and `apply/` for `Internals.equivT_LR`, `Internals.equivT_RL`
+- in `classical_sets.v`:
+  + lemma `bigcup_recl`
+
+- in `sequences.v`:
+  + lemma `nneseries_recl`
+
+- in `measure.v`:
+  + definition `subset_sigma_subadditive`
+  + factory `isOuterMeasureAlt`
 
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
@@ -137,10 +146,22 @@
   + `SigmaFinite_isFinite` -> `isFinite`
   + `FiniteMeasure_isSubProbability` -> `isSubProbability`
 
+- in `measure.v`:
+  + `sub_additive` -> `subadditive`
+  + `sigma_sub_additive` -> `measurable_subset_sigma_subadditive`
+  + `content_sub_additive` -> `content_subadditive`
+  + `ring_sigma_sub_additive` -> `ring_sigma_subadditive`
+  + `Content_SubSigmaAdditive_isMeasure` -> `Content_SigmaSubAdditive_isMeasure`
+  + `measure_sigma_sub_additive` -> `measure_sigma_subadditive`
+  + `measure_sigma_sub_additive_tail` -> `measure_sigma_subadditive_tail`
+
 ### Generalized
 
 - in `realfun.v`
   + lemma `lime_sup_le`
+
+- in `sequences.v`:
+  + lemmas `eseries0`, `nneseries_split`
 
 ### Deprecated
 

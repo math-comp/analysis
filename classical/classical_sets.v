@@ -1879,6 +1879,27 @@ Lemma bigcapID (Q : set I) (F : I -> set T) (P : set I) :
     (\bigcap_(i in P `&` Q) F i) `&` (\bigcap_(i in P `&` ~` Q) F i).
 Proof. by rewrite -bigcap_setU -setIUr setUv setIT. Qed.
 
+Lemma bigcup_sub F A P :
+  (forall i, P i -> F i `<=` A) -> \bigcup_(i in P) F i `<=` A.
+Proof. by move=> FD t [n An Fnt]; exact: (FD n). Qed.
+
+Lemma sub_bigcap F A P :
+  (forall i, P i -> A `<=` F i) -> A `<=` \bigcap_(i in P) F i.
+Proof. by move=> AF t At n Pn; exact: AF. Qed.
+
+Lemma subset_bigcup P F G : (forall i, P i -> F i `<=` G i) ->
+  \bigcup_(i in P) F i `<=` \bigcup_(i in P) G i.
+Proof.
+by move=> FG; apply: bigcup_sub => i Pi + /(FG _ Pi); apply: bigcup_sup.
+Qed.
+
+Lemma subset_bigcap P F G : (forall i, P i -> F i `<=` G i) ->
+  \bigcap_(i in P) F i `<=` \bigcap_(i in P) G i.
+Proof.
+move=> FG; apply: sub_bigcap => i Pi x Fx; apply: FG => //.
+exact: bigcap_inf Fx.
+Qed.
+
 End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
@@ -1915,27 +1936,11 @@ apply: setC_inj; rewrite setC_bigcap setCI -bigcup2inE /bigcap2 /bigcup2.
 by apply: eq_bigcupr => // -[|[|[]]].
 Qed.
 
-Lemma bigcup_sub T I (F : I -> set T) (D : set T) (P : set I) :
-  (forall i, P i -> F i `<=` D) -> \bigcup_(i in P) F i `<=` D.
-Proof. by move=> FD t [n Pn Fnt]; apply: (FD n). Qed.
-
-Lemma sub_bigcap T I (F : I -> set T) (D : set T) (P : set I) :
-  (forall i, P i -> D `<=` F i) -> D `<=` \bigcap_(i in P) F i.
-Proof. by move=> DF t Dt n Pn; apply: DF. Qed.
-
-Lemma subset_bigcup T I [P : set I] [F G : I -> set T] :
-  (forall i, P i -> F i `<=` G i) ->
-  \bigcup_(i in P) F i `<=` \bigcup_(i in P) G i.
+Lemma bigcup_recl T (F : nat -> set T) :
+  \bigcup_n F n = F 0%N `|` \bigcup_(n in ~` `I_1) F n.
 Proof.
-by move=> FG; apply: bigcup_sub => i Pi + /(FG _ Pi); apply: bigcup_sup.
-Qed.
-
-Lemma subset_bigcap T I [P : set I] [F G : I -> set T] :
-  (forall i, P i -> F i `<=` G i) ->
-  \bigcap_(i in P) F i `<=` \bigcap_(i in P) G i.
-Proof.
-move=> FG; apply: sub_bigcap => i Pi x Fx; apply: FG => //.
-exact: bigcap_inf Fx.
+by apply/seteqP; split => [t [[_ F0t|n _ Fnt]]|t [F0t|[n /= n0 Fnt]]];
+  [left|right; by exists n.+1|exists 0%N|exists n].
 Qed.
 
 Lemma bigcup_image {aT rT I} (P : set aT) (f : aT -> I) (F : I -> set rT) :
