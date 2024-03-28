@@ -1991,6 +1991,17 @@ rewrite nneseries_sum_nat; last by move=> ? ?; case: ifP => // /f_ge0.
 by apply: eq_bigr => j _; case: ifP => //; rewrite eseries0.
 Qed.
 
+Lemma nneseries_addn [R : realType] [f : nat -> \bar R] (k : nat) :
+  (forall i, 0 <= f i) ->
+  \sum_(k <= i <oo) f i = \sum_(i <oo) (f (i + k)).
+Proof.
+move=> f0; have /cvg_ex[/= l fl] : cvg (\sum_(k <= i < n) f i @[n --> \oo]).
+  by apply: ereal_nondecreasing_is_cvgn => m n mn; exact: lee_sum_nneg_natr.
+rewrite (cvg_lim _ fl)//; apply/esym/cvg_lim => //=.
+move: fl; rewrite -(cvg_shiftn k) /=.
+by under eq_fun do rewrite -{1}(add0n k)// big_addn addnK.
+Qed.
+
 Lemma lte_lim (R : realFieldType) (u : (\bar R)^nat) (M : R) :
   nondecreasing_seq u -> cvgn u -> M%:E < limn u ->
   \forall n \near \oo, M%:E <= u n.
