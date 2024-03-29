@@ -65,6 +65,9 @@
   + definition `notP`
   + hint view for `move/` and `apply/` for `Internals.equivT_LR`, `Internals.equivT_RL`
 
+- in `exp.v`:
+  + lemma `expRMn`
+
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
     `product_topology_def`, `proj_continuous`, `dfwith_continuous`, 
@@ -142,6 +145,9 @@
   + `sfinite_measure_subdef` -> `s_finite`
   + `SigmaFinite_isFinite` -> `isFinite`
   + `FiniteMeasure_isSubProbability` -> `isSubProbability`
+
+- in `exp.v`:
+  + `expRMm` -> `expRnM`
 
 ### Generalized
 

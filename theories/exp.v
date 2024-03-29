@@ -416,11 +416,14 @@ rewrite expRxDyMexpx expRN [_ * expR y]mulrC mulfK //.
 by case: ltrgt0P (expR_gt0 x).
 Qed.
 
-Lemma expRMm n x : expR (n%:R * x) = expR x ^+ n.
+Lemma expRnM n x : expR (n%:R * x) = expR x ^+ n.
 Proof.
 elim: n x => [x|n IH x] /=; first by rewrite mul0r expr0 expR0.
 by rewrite exprS -nat1r mulrDl mul1r expRD IH.
 Qed.
+
+Lemma expRMn n x : expR (x * n%:R) = expR x ^+ n.
+Proof. by rewrite mulrC expRnM. Qed.
 
 Lemma expR_gt1 x : (1 < expR x) = (0 < x).
 Proof.
@@ -505,6 +508,9 @@ Qed.
 Local Close Scope convex_scope.
 
 End expR.
+
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `expRnM`")]
+Notation expRMm := expRnM (only parsing).
 
 Section expeR.
 Context {R : realType}.
@@ -895,7 +901,7 @@ rewrite le_eqVlt => /predU1P[<-|a0].
   by rewrite powR0 ?invr_eq0 ?pnatr_eq0// sqrtr0.
 have /eqP : (a `^ (2^-1)) ^+ 2 = (Num.sqrt a) ^+ 2.
   rewrite sqr_sqrtr; last exact: ltW.
-  by rewrite /powR gt_eqF// -expRMm mulrA divrr ?mul1r ?unitfE// lnK.
+  by rewrite /powR gt_eqF// -expRnM mulrA divrr ?mul1r ?unitfE// lnK.
 rewrite eqf_sqr => /predU1P[//|/eqP h].
 have : 0 < a `^ 2^-1 by exact: powR_gt0.
 by rewrite h oppr_gt0 ltNge sqrtr_ge0.
