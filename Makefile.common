@@ -126,3 +126,17 @@ doc: __always__ Makefile.coq
 
 doc-clean:
 	rm -rf _build_doc/
+
+coq2html:
+	../coq2html/coq2html \
+  -fragile-mathcomp-break \
+  -title "Mathcomp Analysis" \
+  -d html/ -base mathcomp -Q theories analysis \
+  -coqlib https://coq.inria.fr/doc/V8.18.0/stdlib/ \
+  -external https://math-comp.github.io/htmldoc/ mathcomp.ssreflect \
+  -external https://math-comp.github.io/htmldoc/ mathcomp.algebra \
+  classical/*.v classical/*.glob \
+  theories/*.v theories/*.glob
+
+coq2html-clean:
+	rm -f */*.glob

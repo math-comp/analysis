@@ -48,7 +48,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.1.0.0
+$ opam install coq-mathcomp-analysis.1.1.0
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -71,12 +71,12 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.16.0 and MathComp 2.0.0. For other versions, update the
+With the example of Coq 8.18.0 and MathComp 2.0.0. For other versions, update the
 version numbers accordingly.
 
-1. Install Coq 8.16.0
+1. Install Coq 8.18.0
 ```
-$ opam install coq.8.16.0
+$ opam install coq.8.18.0
 ```
 2. Install the Mathematical Components
 ```
