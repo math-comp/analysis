@@ -66,7 +66,7 @@
   + hint view for `move/` and `apply/` for `Internals.equivT_LR`, `Internals.equivT_RL`
 
 - in `exp.v`:
-  + lemma `expRMn`
+  + lemma `expRM_natr`
 
 ### Changed
 - moved from `topology.v` to `function_spaces.v`: `prod_topology`, 
@@ -147,7 +147,7 @@
   + `FiniteMeasure_isSubProbability` -> `isSubProbability`
 
 - in `exp.v`:
-  + `expRMm` -> `expRnM`
+  + `expRMm` -> `expRM_natl`
 
 ### Generalized
 
