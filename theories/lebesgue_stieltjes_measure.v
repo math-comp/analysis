@@ -274,7 +274,7 @@ set I := [set` i]; set J := [set` j].
 have [->|/set0P I0] := eqVneq I set0; first by rewrite wlength0 wlength_itv_ge0.
 have [J0|/set0P J0] := eqVneq J set0.
   by move/subset_itvP; rewrite -/J J0 subset0 -/I => ->.
-move=> /subset_itvP ij; apply: lee_sub => /=.
+move=> /subset_itvP ij; apply: leeB => /=.
   have [ui|ui] := asboolP (has_ubound I).
     have [uj /=|uj] := asboolP (has_ubound J); last by rewrite leey.
     rewrite lee_fin; apply: ndf; apply/le_sup => //.
@@ -424,7 +424,7 @@ wlog wlogh : b A AE lebig / forall n, (b n).1 <= (b n).2.
     by rewrite subset0 set_itv_ge//= bnd_simp -leNgt.
   - by move=> k; rewrite /b'; case: ifPn => //; rewrite -ltNge => /ltW.
 apply/lee_addgt0Pr => _/posnumP[e].
-rewrite [e%:num]splitr [in leRHS]EFinD addeA -lee_subl_addr//.
+rewrite [e%:num]splitr [in leRHS]EFinD addeA -leeBlDr//.
 apply: le_trans (epsilon_trick _ _ _) => //=.
 have [c ce] := nondecreasing_right_continuousP a.1 f [gt0 of e%:num / 2].
 have [D De] : exists D : nat -> {posnum R}, forall i,
@@ -468,7 +468,7 @@ apply: (@le_trans _ _ (\sum_(i <- X) (wlength f `](b i).1, (b i).2]%classic) +
 rewrite -big_split/= nneseries_esum//; last by move=> k _; rewrite adde_ge0.
 rewrite esum_ge//; exists [set` X] => //; rewrite fsbig_finite//= set_fsetK.
 rewrite big_seq [in X in (_ <= X)%E]big_seq; apply: lee_sum => k kX.
-by rewrite AE lee_add2l// lee_fin lerBlDl natrX De.
+by rewrite AE leeD2l// lee_fin lerBlDl natrX De.
 Qed.
 
 HB.instance Definition _ (f : cumulative R) :=

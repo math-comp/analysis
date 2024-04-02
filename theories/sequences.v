@@ -2640,8 +2640,8 @@ move=> lfin; rewrite !limn_einf_lim; apply/cvg_lim => //; apply: cvg_trans; last
 suff : einfs (fun n => l + u n) = (fun n => l + einfs u n) by move=> ->.
 rewrite funeqE => n.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- rewrite addeC -lee_subl_addr//; apply: lb_ereal_inf => /= _ [m /= mn] <-.
-  rewrite lee_subl_addr//; apply: ereal_inf_lb.
+- rewrite addeC -leeBlDr//; apply: lb_ereal_inf => /= _ [m /= mn] <-.
+  rewrite leeBlDr//; apply: ereal_inf_lb.
   by exists m => //; rewrite addeC.
 - apply: lb_ereal_inf => /= _ [m /= mn] <-.
   by rewrite leeD2l//; apply: ereal_inf_lb; exists m => /=.

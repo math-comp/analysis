@@ -3729,8 +3729,8 @@ suff : forall n, \sum_(k < n) mu (X `&` A k) + mu (X `&` ~` A') <= mu X.
     apply: (lee_sum_nneg_ord (fun n => mu (X `&` A n)) xpredT) => n _.
     exact: outer_measure_ge0.
   move XAx : (mu (X `&` ~` A')) => [x| |].
-  - rewrite -lee_subr_addr //; apply: ub_ereal_sup => /= _ [n _] <-.
-    by rewrite EFinN lee_subr_addr // -XAx XA.
+  - rewrite -leeBrDr //; apply: ub_ereal_sup => /= _ [n _] <-.
+    by rewrite EFinN leeBrDr // -XAx XA.
   - suff : mu X = +oo by move=> ->; rewrite leey.
     by apply/eqP; rewrite -leye_eq -XAx le_outer_measure.
   - by rewrite addeNy leNye.

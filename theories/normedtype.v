@@ -2840,13 +2840,13 @@ Proof.
 have yE u v x : u @ F --> +oo -> v @ F --> x%:E -> u \+ v @ F --> +oo.
   move=> /cvgeyPge/= foo /fine_cvgP[Fg gb]; apply/cvgeyPgey.
   near=> A; near=> n; have /(_ _)/wrap[//|Fgn] := near Fg n.
-  rewrite -lee_subl_addr// (@le_trans _ _ (A - (x - 1))%:E)//; last by near: n.
-  rewrite ?EFinB leeB// lee_subl_addr// -[v n]fineK// -EFinD lee_fin.
+  rewrite -leeBlDr// (@le_trans _ _ (A - (x - 1))%:E)//; last by near: n.
+  rewrite ?EFinB leeB// leeBlDr// -[v n]fineK// -EFinD lee_fin.
   by rewrite ler_distlDr// ltW//; near: n; apply: cvgr_dist_lt.
 have NyE u v x : u @ F --> -oo -> v @ F --> x%:E -> u \+ v @ F --> -oo.
   move=> /cvgeNyPle/= foo /fine_cvgP -[Fg gb]; apply/cvgeNyPleNy.
   near=> A; near=> n; have /(_ _)/wrap[//|Fgn] := near Fg n.
-  rewrite -lee_subr_addr// (@le_trans _ _ (A - (x + 1))%:E)//; first by near: n.
+  rewrite -leeBrDr// (@le_trans _ _ (A - (x + 1))%:E)//; first by near: n.
   rewrite ?EFinB ?EFinD leeB// -[v n]fineK// -EFinD lee_fin.
   by rewrite ler_distlCDr// ltW//; near: n; apply: cvgr_dist_lt.
 have yyE u v : u @ F --> +oo -> v @ F --> +oo -> u \+ v @ F --> +oo.
@@ -3234,16 +3234,16 @@ have ybfin : edist (y, b) \is a fin_num.
   by apply/edist_finP; exists 1 =>//; near: b; exact: nbhsx_ballx.
 have abfin : edist (a, b) \is a fin_num.
   by rewrite ge0_fin_numE// (le_lt_trans abxy) ?lte_add_pinfty// -ge0_fin_numE.
-have xyabfin: (edist (x, y) - edist (a, b))%E \is a fin_num
+have xyabfin : (edist (x, y) - edist (a, b))%E \is a fin_num
   by rewrite fin_numB abfin efin.
 rewrite -fineB// -fine_abse// -lee_fin fineK ?abse_fin_num//.
 rewrite (@le_trans _ _ (edist (x, a) + edist (y, b))%E)//; last first.
   by rewrite [eps%:num]splitr/= EFinD leeD//; apply: edist_fin => //=;
        [near: a | near: b]; exact: nbhsx_ballx.
 have [ab_le_xy|/ltW xy_le_ab] := leP (edist (a, b)) (edist (x, y)).
-  by rewrite gee0_abs ?subre_ge0// lee_subl_addr// addeAC.
+  by rewrite gee0_abs ?subre_ge0// leeBlDr// addeAC.
 rewrite lee0_abs ?sube_le0// oppeB ?fin_num_adde_defr//.
-by rewrite addeC lee_subl_addr// addeAC.
+by rewrite addeC leeBlDr// addeAC.
 Unshelve. all: end_near. Qed.
 
 Lemma edist_closeP x y : close x y <-> edist (x, y) = 0%E.

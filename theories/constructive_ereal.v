@@ -1979,23 +1979,23 @@ rewrite big_fset /= big_seq_cond sume_le0 // => t /andP[tB tA].
 by case: ifPn => // Pt; rewrite f0 // !inE tA.
 Qed.
 
-Lemma lte_subl_addr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
+Lemma lteBlDr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?ltry ?ltNyr //.
 by rewrite !lte_fin ltrBlDr.
 Qed.
 
-Lemma lte_subl_addl x y z : y \is a fin_num -> (x - y < z) = (x < y + z).
-Proof. by move=> ?; rewrite lte_subl_addr// addeC. Qed.
+Lemma lteBlDl x y z : y \is a fin_num -> (x - y < z) = (x < y + z).
+Proof. by move=> ?; rewrite lteBlDr// addeC. Qed.
 
-Lemma lte_subr_addr x y z : z \is a fin_num -> (x < y - z) = (x + z < y).
+Lemma lteBrDr x y z : z \is a fin_num -> (x < y - z) = (x + z < y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?ltNyr ?ltry //.
 by rewrite !lte_fin ltrBrDr.
 Qed.
 
-Lemma lte_subr_addl x y z : z \is a fin_num -> (x < y - z) = (z + x < y).
-Proof. by move=> ?; rewrite lte_subr_addr// addeC. Qed.
+Lemma lteBrDl x y z : z \is a fin_num -> (x < y - z) = (z + x < y).
+Proof. by move=> ?; rewrite lteBrDr// addeC. Qed.
 
 Lemma lte_subel_addr x y z : x \is a fin_num -> (x - y < z) = (x < z + y).
 Proof.
@@ -2015,23 +2015,23 @@ Qed.
 Lemma lte_suber_addl x y z : x \is a fin_num -> (x < y - z) = (z + x < y).
 Proof. by move=> ?; rewrite lte_suber_addr// addeC. Qed.
 
-Lemma lee_subl_addr x y z : y \is a fin_num -> (x - y <= z) = (x <= z + y).
+Lemma leeBlDr x y z : y \is a fin_num -> (x - y <= z) = (x <= z + y).
 Proof.
 move: x y z => [x| |] [y| |] [z| |] _ //=; rewrite ?leey ?leNye //.
 by rewrite !lee_fin lerBlDr.
 Qed.
 
-Lemma lee_subl_addl x y z : y \is a fin_num -> (x - y <= z) = (x <= y + z).
-Proof. by move=> ?; rewrite lee_subl_addr// addeC. Qed.
+Lemma leeBlDl x y z : y \is a fin_num -> (x - y <= z) = (x <= y + z).
+Proof. by move=> ?; rewrite leeBlDr// addeC. Qed.
 
-Lemma lee_subr_addr x y z : z \is a fin_num -> (x <= y - z) = (x + z <= y).
+Lemma leeBrDr x y z : z \is a fin_num -> (x <= y - z) = (x + z <= y).
 Proof.
 move: y x z => [y| |] [x| |] [z| |] _ //=; rewrite ?leNye ?leey //.
 by rewrite !lee_fin lerBrDr.
 Qed.
 
-Lemma lee_subr_addl x y z : z \is a fin_num -> (x <= y - z) = (z + x <= y).
-Proof. by move=> ?; rewrite lee_subr_addr// addeC. Qed.
+Lemma leeBrDl x y z : z \is a fin_num -> (x <= y - z) = (z + x <= y).
+Proof. by move=> ?; rewrite leeBrDr// addeC. Qed.
 
 Lemma lee_subel_addr x y z : z \is a fin_num -> (x - y <= z) = (x <= z + y).
 Proof.
@@ -2055,7 +2055,7 @@ Lemma subre_lt0 x y : x \is a fin_num -> (x - y < 0) = (x < y).
 Proof. by move=> ?; rewrite lte_subel_addr// add0e. Qed.
 
 Lemma suber_lt0 x y : y \is a fin_num -> (x - y < 0) = (x < y).
-Proof. by move=> ?; rewrite lte_subl_addl// adde0. Qed.
+Proof. by move=> ?; rewrite lteBlDl// adde0. Qed.
 
 Lemma sube_lt0 x y : (x \is a fin_num) || (y \is a fin_num) ->
   (x - y < 0) = (x < y).
@@ -2300,7 +2300,7 @@ Qed.
 Lemma eq_infty x : (forall r, r%:E <= x) -> x = +oo.
 Proof.
 case: x => [x /(_ (x + 1)%R)|//|/(_ 0%R)//].
-by rewrite EFinD addeC -lee_subr_addr// subee// lee_fin ler10.
+by rewrite EFinD addeC -leeBrDr// subee// lee_fin ler10.
 Qed.
 
 Lemma eq_ninfty x : (forall r, x <= r%:E) -> x = -oo.
@@ -2672,6 +2672,22 @@ Notation gee_addr := geeDr (only parsing).
 Notation gte_addr := gteDr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.2.0", note="Use gteDl instead.")]
 Notation gte_addl := gteDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBlDr instead.")]
+Notation lte_subl_addr := lteBlDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBlDl instead.")]
+Notation lte_subl_addl := lteBlDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBrDr instead.")]
+Notation lte_subr_addr := lteBrDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use lteBrDl instead.")]
+Notation lte_subr_addl := lteBrDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBlDr instead.")]
+Notation lee_subl_addr := leeBlDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBlDl instead.")]
+Notation lee_subl_addl := leeBlDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBrDr instead.")]
+Notation lee_subr_addr := leeBrDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBrDl instead.")]
+Notation lee_subr_addl := leeBrDl (only parsing).
 
 Module DualAddTheoryRealDomain.
 
@@ -2875,24 +2891,16 @@ apply: lee_sum_nneg_subfset => [//|? ? ?]; rewrite oppe_ge0; exact: f0.
 Qed.
 
 Lemma lte_dsubl_addr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
-Proof.
-by move=> ?; rewrite !dual_addeE lteNl lteNr oppeK lte_subl_addr.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr oppeK lteBlDr. Qed.
 
 Lemma lte_dsubl_addl x y z : y \is a fin_num -> (x - y < z) = (x < y + z).
-Proof.
-by move=> ?; rewrite !dual_addeE lteNl lteNr lte_subr_addl ?fin_numN.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr lteBrDl ?fin_numN. Qed.
 
 Lemma lte_dsubr_addr x y z : z \is a fin_num -> (x < y - z) = (x + z < y).
-Proof.
-by move=> ?; rewrite !dual_addeE lteNl lteNr lte_subl_addr ?fin_numN.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr lteBlDr ?fin_numN. Qed.
 
 Lemma lte_dsubr_addl x y z : z \is a fin_num -> (x < y - z) = (z + x < y).
-Proof.
-by move=> ?; rewrite !dual_addeE lteNl lteNr lte_subl_addl ?fin_numN.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr lteBlDl ?fin_numN. Qed.
 
 Lemma lte_dsuber_addr x y z : y \is a fin_num -> (x < y - z) = (x + z < y).
 Proof.
@@ -2915,24 +2923,16 @@ by move=> ?; rewrite !dual_addeE lteNl lteNr lte_suber_addl ?fin_numN.
 Qed.
 
 Lemma lee_dsubl_addr x y z : y \is a fin_num -> (x - y <= z) = (x <= z + y).
-Proof.
-by move=> ?; rewrite !dual_addeE leeNl leeNr lee_subr_addr ?fin_numN.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE leeNl leeNr leeBrDr ?fin_numN. Qed.
 
 Lemma lee_dsubl_addl x y z : y \is a fin_num -> (x - y <= z) = (x <= y + z).
-Proof.
-by move=> ?; rewrite !dual_addeE leeNl leeNr lee_subr_addl ?fin_numN.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE leeNl leeNr leeBrDl ?fin_numN. Qed.
 
 Lemma lee_dsubr_addr x y z : z \is a fin_num -> (x <= y - z) = (x + z <= y).
-Proof.
-by move=> ?; rewrite !dual_addeE leeNl leeNr lee_subl_addr ?fin_numN.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE leeNl leeNr leeBlDr ?fin_numN. Qed.
 
 Lemma lee_dsubr_addl x y z : z \is a fin_num -> (x <= y - z) = (z + x <= y).
-Proof.
-by move=> ?; rewrite !dual_addeE leeNl leeNr lee_subl_addl ?fin_numN.
-Qed.
+Proof. by move=> ?; rewrite !dual_addeE leeNl leeNr leeBlDl ?fin_numN. Qed.
 
 Lemma lee_dsubel_addr x y z : x \is a fin_num -> (x - y <= z) = (x <= z + y).
 Proof.
@@ -3115,8 +3115,8 @@ Lemma lee_subgt0Pr x y :
   reflect (forall e, (0 < e)%R -> x - e%:E <= y) (x <= y).
 Proof.
 apply/(iffP idP) => [xy e|xy].
-  by rewrite lee_subl_addr//; move: e; exact/lee_addgt0Pr.
-by apply/lee_addgt0Pr => e e0; rewrite -lee_subl_addr// xy.
+  by rewrite leeBlDr//; move: e; exact/lee_addgt0Pr.
+by apply/lee_addgt0Pr => e e0; rewrite -leeBlDr// xy.
 Qed.
 
 Lemma lee_mul01Pr x y : 0 <= x ->
