@@ -401,17 +401,17 @@ rewrite -sumEFin fsbig_finite//= set_fsetK// big_seq [in X in (_ <= X)%E]big_seq
 by apply: lee_sum => i iD; rewrite wlength_itv_bnd// Dab.
 Qed.
 
-Lemma wlength_sigma_sub_additive (f : cumulative R) :
-  sigma_sub_additive (wlength f).
+Lemma wlength_sigma_subadditive (f : cumulative R) :
+  measurable_subset_sigma_subadditive (wlength f).
 Proof.
-move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE.
-move=> [a _ <-]; rewrite wlength_itv ?lte_fin/= -EFinB => lebig.
+move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE => -[a _ <-].
+rewrite /subset_sigma_subadditive wlength_itv ?lte_fin/= -EFinB => lebig.
 case: ifPn => a12; last by rewrite nneseries_esum ?esum_ge0.
 wlog wlogh : b A AE lebig / forall n, (b n).1 <= (b n).2.
   move=> /= h.
   set A' := fun n => if (b n).1 >= (b n).2 then set0 else A n.
   set b' := fun n => if (b n).1 >= (b n).2 then (0, 0) else b n.
-  rewrite [X in (_ <= X)%E](_ : _ = \sum_(n <oo) wlength f (A' n))%E; last first.
+  rewrite [leRHS](_ : _ = \sum_(n <oo) wlength f (A' n))%E; last first.
     apply: (@eq_eseriesr _ (wlength f \o A) (wlength f \o A')) => k.
     rewrite /= /A' AE; case: ifPn => // bn.
     by rewrite set_itv_ge//= bnd_simp -leNgt.
@@ -472,8 +472,8 @@ by rewrite AE leeD2l// lee_fin lerBlDl natrX De.
 Qed.
 
 HB.instance Definition _ (f : cumulative R) :=
-  Content_SubSigmaAdditive_isMeasure.Build _ _ _
-    (wlength f) (wlength_sigma_sub_additive f).
+  Content_SigmaSubAdditive_isMeasure.Build _ _ _
+    (wlength f) (wlength_sigma_subadditive f).
 
 Lemma wlength_sigma_finite (f : R -> R) :
   sigma_finite [set: (ocitv_type R)] (wlength f).
@@ -504,6 +504,9 @@ HB.instance Definition _ (f : cumulative R) := @Measure_isSigmaFinite.Build _ _ 
 
 End wlength_extension.
 Arguments lebesgue_stieltjes_measure {R}.
+
+#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `wlength_sigma_subadditive`")]
+Notation wlength_sigma_sub_additive := wlength_sigma_subadditive (only parsing).
 
 Section lebesgue_stieltjes_measure.
 Variable R : realType.

@@ -283,11 +283,11 @@ HB.instance Definition _ := isContent.Build _ _ R
 
 Hint Extern 0 ((_ .-ocitv).-measurable _) => solve [apply: is_ocitv] : core.
 
-Lemma hlength_sigma_sub_additive :
-  sigma_sub_additive (hlength : set (ocitv_type R) -> _).
+Lemma hlength_sigma_subadditive :
+  measurable_subset_sigma_subadditive (hlength : set (ocitv_type R) -> _).
 Proof.
-move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE.
-move=> [a _ <-]; rewrite hlength_itv ?lte_fin/= -EFinB => lebig.
+move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE => -[a _ <-].
+rewrite /subset_sigma_subadditive hlength_itv ?lte_fin/= -EFinB => lebig.
 case: ifPn => a12; last by rewrite nneseries_esum// esum_ge0.
 apply/lee_addgt0Pr => _ /posnumP[e].
 rewrite [e%:num]splitr [in leRHS]EFinD addeA -leeBlDr//.
@@ -325,8 +325,8 @@ do !case: ifPn => //= ?; do ?by rewrite ?adde_ge0 ?lee_fin// ?subr_ge0// ?ltW.
 by rewrite addrAC lee_fin lerD// subr_le0 leNgt.
 Qed.
 
-HB.instance Definition _ := Content_SubSigmaAdditive_isMeasure.Build _ _ _
-  hlength hlength_sigma_sub_additive.
+HB.instance Definition _ := Content_SigmaSubAdditive_isMeasure.Build _ _ _
+  hlength hlength_sigma_subadditive.
 
 Lemma hlength_sigma_finite : sigma_finite setT (hlength : set (ocitv_type R) -> _).
 Proof.
@@ -933,7 +933,7 @@ rewrite measure_bigcup//; last first.
   move=> /fmorph_inj.
   have /set_bij_inj /[apply] := bijpinv_bij (fun=> 0) bijf.
   by rewrite in_setE => /(_ Logic.I Logic.I); exact/eqP.
-by rewrite eseries0// => n _; exact: lebesgue_measure_set1.
+by rewrite eseries0// => n _ _; exact: lebesgue_measure_set1.
 Qed.
 
 Section measurable_fun_measurable.
@@ -2113,7 +2113,7 @@ pose badn k := projT1 (cid (badn' k)); exists (\bigcup_k (E k (badn k))); split.
 - apply: (@le_lt_trans _ _ (eps/2)%R%:E); first last.
     by rewrite lte_fin ltr_pdivrMr // ltr_pMr // Rint_ltr_addr1 // ?Rint1.
   apply: le_trans.
-    apply: (measure_sigma_sub_additive _ (fun k => mE k (badn k)) _ _) => //.
+    apply: (measure_sigma_subadditive _ (fun k => mE k (badn k)) _ _) => //.
     exact: bigcup_measurable.
   apply: le_trans; first last.
     by apply: (@epsilon_trick0 R _ xpredT); rewrite divr_ge0 //; exact: ltW.
@@ -2320,7 +2320,7 @@ have [N F5e] : exists N, \sum_(N <= n <oo) \esum_(i in F n) mu (closure (B i)) <
   set X : \bar R := (X in fine X).
   have Xoo : X < +oo.
     apply: le_lt_trans foo.
-    by rewrite (nneseries_split N)// leeDr//; exact: sume_ge0.
+    by rewrite (nneseries_split _ N)// leeDr//; exact: sume_ge0.
   rewrite fineK ?ge0_fin_numE//; last exact: nneseries_ge0.
   apply: lee_nneseries => //; first by move=> i _; exact: esum_ge0.
   move=> n Nn; rewrite measure_bigcup//=.
@@ -2392,7 +2392,7 @@ have {}ZNF5 : mu (Z r%:num) <=
     exact: le_outer_measure.
   apply: (@le_trans _ _ (\sum_(N <= i <oo) mu
                            (\bigcup_(j in F i) closure (5%:R *` B j)))).
-    apply: measure_sigma_sub_additive_tail => //.
+    apply: measure_sigma_subadditive_tail => //.
       move=> n; apply: bigcup_measurable => k _.
       by apply: measurable_closure; exact: is_scale_ball.
     apply: bigcup_measurable => k _; apply: bigcup_measurable => k' _.
@@ -2403,7 +2403,7 @@ have {}ZNF5 : mu (Z r%:num) <=
       (if i \in F n then closure (5%:R *` B i) else set0)); last first.
     congr (limn _); apply/funext => x.
     by under [RHS]eq_bigr do rewrite (fun_if mu) measure0.
-  apply: measure_sigma_sub_additive => //.
+  apply: measure_sigma_subadditive => //.
   + move=> m; case: ifPn => // _.
     by apply: measurable_closure; exact: is_scale_ball.
   + apply: bigcup_measurable => k _; case: ifPn => // _.

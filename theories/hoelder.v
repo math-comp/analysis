@@ -265,18 +265,19 @@ pose f a b n : R := match n with 0%nat => a | 1%nat => b | _ => 0 end.
 have mf a b : measurable_fun setT (f a b) by [].
 have := hoelder [the measure _ _ of counting] (mf a1 a2) (mf b1 b2) p0 q0 pq.
 rewrite !Lnorm_counting//.
-rewrite (nneseries_split 2); last by move=> k; rewrite lee_fin powR_ge0.
-rewrite ereal_series_cond eseries0 ?adde0; last first.
+rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
+rewrite add0n ereal_series_cond eseries0 ?adde0; last first.
   by move=> [//|] [//|n _]; rewrite /f /= mulr0 normr0 powR0.
-rewrite 2!big_ord_recr /= big_ord0 add0e powRr1 ?normr_ge0 ?powRr1 ?normr_ge0//.
-rewrite (nneseries_split 2); last by move=> k; rewrite lee_fin powR_ge0.
+rewrite big_mkord 2!big_ord_recr/= big_ord0 add0e.
+rewrite powRr1 ?normr_ge0 ?powRr1 ?normr_ge0//.
+rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
 rewrite ereal_series_cond eseries0 ?adde0; last first.
   by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
-rewrite 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
-rewrite (nneseries_split 2); last by move=> k; rewrite lee_fin powR_ge0.
+rewrite big_mkord 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
+rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
 rewrite ereal_series_cond eseries0 ?adde0; last first.
   by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
-rewrite 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
+rewrite big_mkord 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
 rewrite -EFinM invr1 powRr1; last by rewrite addr_ge0.
 do 2 (rewrite ger0_norm; last by rewrite mulr_ge0).
 by do 4 (rewrite ger0_norm; last by []).
