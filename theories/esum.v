@@ -146,15 +146,15 @@ wlog : a b ag0 bg0 / \esum_(i in I) a i \isn't a fin_num => [saoo|]; last first.
 case: (boolP (\esum_(i in I) a i \is a fin_num)) => sa; last exact: saoo.
 case: (boolP (\esum_(i in I) b i \is a fin_num)) => sb; last first.
   by rewrite addeC (eq_esum (fun _ _ => addeC _ _)) saoo.
-rewrite -lee_subr_addr// ub_ereal_sup//= => _ [X [finX XI]] <-.
+rewrite -leeBrDr// ub_ereal_sup//= => _ [X [finX XI]] <-.
 have saX : \sum_(i \in X) a i \is a fin_num.
   apply: contraTT sa => /fin_numPn[] sa.
     suff : \sum_(i \in X) a i >= 0 by rewrite sa.
     by rewrite fsume_ge0// => i /XI/ag0.
   apply/fin_numPn; right; apply/eqP; rewrite -leye_eq esum_ge//.
   by exists X; rewrite // sa.
-rewrite lee_subr_addr// addeC -lee_subr_addr// ub_ereal_sup//= => _ [Y [finY YI]] <-.
-rewrite lee_subr_addr// addeC esum_ge//; exists (X `|` Y).
+rewrite leeBrDr// addeC -leeBrDr// ub_ereal_sup//= => _ [Y [finY YI]] <-.
+rewrite leeBrDr// addeC esum_ge//; exists (X `|` Y).
   by split; [rewrite finite_setU|rewrite subUset].
 rewrite fsbig_split ?finite_setU//= leeD// lee_fsum_nneg_subset//= ?finite_setU//.
 - exact/subsetP/subsetUl.

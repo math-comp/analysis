@@ -430,8 +430,7 @@ Lemma ub_ereal_sup_adherent S (e : R) : (0 < e)%R ->
   ereal_sup S \is a fin_num -> exists2 x, S x & (ereal_sup S - e%:E < x).
 Proof.
 move=> e0 Sr; have : ~ ubound S (ereal_sup S - e%:E).
-  move/ub_ereal_sup; apply/negP.
-  by rewrite -ltNge lte_subl_addr // lteDl // lte_fin.
+  by move/ub_ereal_sup; apply/negP; rewrite -ltNge lteBlDr// lteDl// lte_fin.
 move/asboolP; rewrite asbool_neg; case/existsp_asboolPn => /= x.
 by rewrite not_implyE => -[? ?]; exists x => //; rewrite ltNge; apply/negP.
 Qed.

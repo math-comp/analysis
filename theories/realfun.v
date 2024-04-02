@@ -917,7 +917,7 @@ apply/cvgrPdist_le => _/posnumP[e].
 have [d1 Hd1] : exists d1 : {posnum R},
     l%:E - e%:num%:E <= ereal_inf [set f x | x in ball a d1%:num `\ a].
   have : l%:E - e%:num%:E < lime_inf f a.
-    by rewrite inffpl lte_subl_addr// lteDl.
+    by rewrite inffpl lteBlDr// lteDl.
   rewrite lime_infE => /ereal_sup_gt[x /= [r]]; rewrite in_itv/= andbT.
   move=> r0 <-{x} H; exists (PosNum r0); rewrite ltW//.
   by rewrite -inf_ballE.
@@ -2231,7 +2231,7 @@ Lemma neg_tv_nondecreasing a b f :
 Proof.
 move=> x y xab yab xy; have ax : a <= x.
   by move: xab; rewrite in_itv //= => /andP [].
-rewrite /neg_tv lee_pmul2r // lee_subr_addl // addeCA -EFinB.
+rewrite /neg_tv lee_pmul2r // leeBrDl // addeCA -EFinB.
 rewrite [TV a y _](total_variationD _ ax xy) //.
 apply: leeD => //; apply: le_trans; last exact: total_variation_ge.
 by rewrite lee_fin ler_norm.
@@ -2321,14 +2321,14 @@ have : variation x b f (i :: j) <= variation x t f (t :: nil) +
   exact: le_variation.
 rewrite -lee_fin => /lt_le_trans /[apply].
 rewrite {1}variation_prev; last exact: itv_partition1.
-rewrite /= -addeA -lte_subr_addr; last by rewrite fin_numD; apply/andP.
+rewrite /= -addeA -lteBrDr; last by rewrite fin_numD; apply/andP.
 rewrite EFinD -lte_fin ?fineK // oppeD //= ?fin_num_adde_defl // opprK addeA.
 move/lt_trans; apply.
 rewrite [x in (_ < x%:E)%E]Num.Theory.splitr EFinD addeC lteD2lE //.
 rewrite -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
   rewrite [in leRHS]variation_prev; last exact: itv_partition1.
-  rewrite gee_addl // sube_le0; apply: ereal_sup_ub => /=.
+  rewrite geeDl// sube_le0; apply: ereal_sup_ub => /=.
   exists (variation t b f (i :: j)) => //; apply: variations_variation.
   by rewrite /itv_partition/= ijb ij ti.
 by rewrite /variation/= big_nat_recr//= big_nil add0r distrC lte_fin.

@@ -1352,12 +1352,12 @@ have e_gt0 : (0 < e)%R.
 exists (PosNum e_gt0); rewrite ge0_integralD//; last 2 first.
   by move=> x Ax; exact: fRN_ge0.
   exact: measurable_funS measurable_fun_fRN.
-rewrite integral_cst// -lte_subr_addr//; last first.
+rewrite integral_cst// -lteBrDr//; last first.
   by rewrite fin_numM// fin_num_measure.
 rewrite -[X in _ * X](@fineK _ (mu A)) ?fin_num_measure//.
 rewrite -EFinM -mulrA mulVr ?mulr1; last first.
   by rewrite unitfE gt_eqF// fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
-rewrite lte_subr_addl// addeC -lte_subr_addl//; last first.
+rewrite lteBrDl// addeC -lteBrDl//; last first.
 rewrite -(@fineK _ (nu A))// ?fin_num_measure// -[X in _ - X](@fineK _)//.
 rewrite -EFinB lte_fin /mid ltr_pdivrMr// ltr_pMr// ?ltr1n// subr_gt0.
 by rewrite fine_lt// fin_num_measure.
@@ -1462,7 +1462,7 @@ have muAP_gt0 : 0 < mu AP.
   apply/eqP/(contra_not (nu_mu _ mAP))/eqP; rewrite gt_eqF//.
   rewrite (@lt_le_trans _ _ (sigma AP))//.
     rewrite (@lt_le_trans _ _ (sigma A))//; last first.
-      rewrite (charge_partition _ _ mP mN)// gee_addl//.
+      rewrite (charge_partition _ _ mP mN)// geeDl//.
       by apply: negN => //; exact: measurableI.
     by rewrite sube_gt0// (proj2_sig (epsRN_ex mA abs)).
   rewrite /sigma/= /sigmaRN lee_subel_addl ?fin_num_measure//.

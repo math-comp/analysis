@@ -1233,7 +1233,7 @@ rewrite le_eqVlt => /predU1P[|] mufoo; last first.
   rewrite ge0_integralTE// => /ub_ereal_sup_adherent h.
   apply/lee_addgt0Pr => _/posnumP[e].
   have {h} [/= _ [G Gf <-]] := h _ [gt0 of e%:num].
-  rewrite EFinN lte_subl_addr// => fGe.
+  rewrite EFinN lteBlDr// => fGe.
   have : forall x, cvgn (g^~ x) -> (G x <= limn (g ^~ x))%R.
     move=> x cg; rewrite -lee_fin -(EFin_lim cg).
     by have /cvg_lim gxfx := @gf x; rewrite (le_trans (Gf _))// gxfx.
@@ -4285,7 +4285,7 @@ rewrite [X in _ <= X -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x)  + -
       - by move=> x Dx; rewrite /= abse_id.
   rewrite limn_einf_shift // -limn_einfN; congr (_ + limn_einf _).
   by rewrite funeqE => n /=; rewrite -integral_ge0N// => x Dx; rewrite /g_.
-rewrite addeC -lee_subl_addr// subee// leeNr oppe0 => lim_ge0.
+rewrite addeC -leeBlDr// subee// leeNr oppe0 => lim_ge0.
 by apply/limn_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
 Qed.
 
@@ -6521,8 +6521,8 @@ have davgfEe : B k `&` [set x | (f_ k)^* x > e%:E] `<=` Ee.
   have {}efgnr := lt_le_trans efgnr (lim_sup_davgT_HL_maximal r (locf_g_B n)).
   have [|h] := ltP (e / 2)%:E (HL_maximal (f_ k \- g_B n)%R r); first by left.
   right; move: efgnr.
-  rewrite {1}(splitr e) EFinD -lte_subr_addl// => /ltW/le_trans; apply.
-  by rewrite lee_subl_addl// leeD.
+  rewrite {1}(splitr e) EFinD -lteBrDl// => /ltW/le_trans; apply.
+  by rewrite leeBlDl// leeD.
 suff: mu Ee = 0 by exists Ee.
 have HL_null n : mu (HLf_g_Be n) <= (3%:R / (e / 2))%:E * n.+1%:R^-1%:E.
   rewrite (le_trans (maximal_inequality _ _ )) ?divr_gt0//.
