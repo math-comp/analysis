@@ -3094,9 +3094,9 @@ Lemma subEset A B : (A `\` B)%O = (A `\` B). Proof. by []. Qed.
 
 Lemma complEset A : (~` A)%O = ~` A. Proof. by []. Qed.
 
-Lemma botEset : 0%O = @set0 T. Proof. by []. Qed.
+Lemma botEset : \bot%O = @set0 T. Proof. by []. Qed.
 
-Lemma topEset : 1%O = @setT T. Proof. by []. Qed.
+Lemma topEset : \top%O = @setT T. Proof. by []. Qed.
 
 Lemma meetEset A B : (A `&` B)%O = (A `&` B). Proof. by []. Qed.
 
