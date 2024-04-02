@@ -251,7 +251,7 @@ Proof. by apply: (iffP idP); rewrite -neitvE. Qed.
 
 End set_itv_numFieldType.
 
-Lemma setitv0 (R : realDomainType) : [set` (0%O : interval R)] = set0.
+Lemma setitv0 (R : realDomainType) : [set` (\bot%O : interval R)] = set0.
 Proof. by rewrite predeqE. Qed.
 
 Section interval_has_bound.
