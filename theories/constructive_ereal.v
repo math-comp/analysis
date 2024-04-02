@@ -1744,14 +1744,13 @@ Qed.
 Lemma leeDr x y : 0 <= y -> x <= y + x.
 Proof. by rewrite addeC; exact: leeDl. Qed.
 
-Lemma gee_addl x y : y <= 0 -> x + y <= x.
+Lemma geeDl x y : y <= 0 -> x + y <= x.
 Proof.
 move: x y => -[ x [y| |]//= | [| |]// | [| | ]//];
   by [rewrite !lee_fin gerDl | move=> _; exact: leNye].
 Qed.
 
-Lemma gee_addr x y : y <= 0 -> y + x <= x.
-Proof. rewrite addeC; exact: gee_addl. Qed.
+Lemma geeDr x y : y <= 0 -> y + x <= x. Proof. rewrite addeC; exact: geeDl. Qed.
 
 Lemma lteDl y x : y \is a fin_num -> (y < y + x) = (0 < x).
 Proof.
@@ -1770,13 +1769,13 @@ Qed.
 Lemma gte_subr y x : y \is a fin_num -> (- x + y < y) = (0 < x).
 Proof. by rewrite addeC; exact: gte_subl. Qed.
 
-Lemma gte_addl x y : x \is a fin_num -> (x + y < x) = (y < 0).
+Lemma gteDl x y : x \is a fin_num -> (x + y < x) = (y < 0).
 Proof.
 by move: x y => [r| |] [s| |]// _; [rewrite !lte_fin gtrDl|rewrite !ltNyr].
 Qed.
 
-Lemma gte_addr x y : x \is a fin_num -> (y + x < x) = (y < 0).
-Proof. by rewrite addeC; exact: gte_addl. Qed.
+Lemma gteDr x y : x \is a fin_num -> (y + x < x) = (y < 0).
+Proof. by rewrite addeC; exact: gteDl. Qed.
 
 Lemma lteD2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
 Proof.
@@ -2224,10 +2223,11 @@ Qed.
 Lemma le0_muleDr x y z : y <= 0 -> z <= 0 -> x * (y + z) = x * y + x * z.
 Proof. by move=> y0 z0; rewrite !(muleC x) le0_muleDl. Qed.
 
-Lemma gee_pmull y x : y \is a fin_num -> 0 < x -> y <= 1 -> y * x <= x.
+Lemma gee_pMl y x : y \is a fin_num -> 0 <= x -> y <= 1 -> y * x <= x.
 Proof.
-move: x y => [x| |] [y| |] _ //=.
-- by rewrite lte_fin => x0 r0; rewrite /mule/= lee_fin ger_pMl.
+move=> yfin; rewrite le_eqVlt => /predU1P[<-|]; first by rewrite mule0.
+move: x y yfin => [x| |] [y| |] //= _.
+- by rewrite lte_fin => x0 y1; rewrite lee_fin ger_pMl.
 - by move=> _; rewrite /mule/= eqe => r1; rewrite leey.
 Qed.
 
@@ -2632,36 +2632,46 @@ Notation lte_spaddr := lte_spaddre (only parsing).
 Notation lee_opp := leeN2 (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.5", note="Use lteN2 instead.")]
 Notation lte_opp := lteN2 (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeDl instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeDl instead.")]
 Notation lee_addl := leeDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeDr instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeDr instead.")]
 Notation lee_addr := leeDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeD2l instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD2l instead.")]
 Notation lee_add2l := leeD2l (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeD2r instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD2r instead.")]
 Notation lee_add2r := leeD2r (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeD instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD instead.")]
 Notation lee_add := leeD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeB instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeB instead.")]
 Notation lee_sub := leeB (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeD2lE instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD2lE instead.")]
 Notation lee_add2lE := leeD2lE (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeNl instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeNl instead.")]
 Notation lee_oppl := leeNl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use leeNr instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeNr instead.")]
 Notation lee_oppr := leeNr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use lteNl instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteNl instead.")]
 Notation lte_oppl := lteNl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use lteNr instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteNr instead.")]
 Notation lte_oppr := lteNr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use lteD instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteD instead.")]
 Notation lte_add := lteD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use lteD2lE instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteD2lE instead.")]
 Notation lte_add2lE := lteD2lE (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use lteDl instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteDl instead.")]
 Notation lte_addl := lteDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.0.1", note="Use lteDr instead.")]
+#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteDr instead.")]
 Notation lte_addr := lteDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use gee_pMl instead.")]
+Notation gee_pmull := gee_pMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use geeDl instead.")]
+Notation gee_addl := geeDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use geeDr instead.")]
+Notation gee_addr := geeDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use gteDr instead.")]
+Notation gte_addr := gteDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use gteDl instead.")]
+Notation gte_addl := gteDl (only parsing).
 
 Module DualAddTheoryRealDomain.
 
@@ -2698,10 +2708,10 @@ Lemma lte_dadd a b x y : a < b -> x < y -> a + x < b + y.
 Proof. rewrite !dual_addeE lteN2 -lteN2 -(lteN2 y); exact: lteD. Qed.
 
 Lemma lee_daddl x y : 0 <= y -> x <= x + y.
-Proof. rewrite dual_addeE leeNr -oppe_le0; exact: gee_addl. Qed.
+Proof. rewrite dual_addeE leeNr -oppe_le0; exact: geeDl. Qed.
 
 Lemma lee_daddr x y : 0 <= y -> x <= y + x.
-Proof. rewrite dual_addeE leeNr -oppe_le0; exact: gee_addr. Qed.
+Proof. rewrite dual_addeE leeNr -oppe_le0; exact: geeDr. Qed.
 
 Lemma gee_daddl x y : y <= 0 -> x + y <= x.
 Proof. rewrite dual_addeE leeNl -oppe_ge0; exact: leeDl. Qed.
@@ -3114,7 +3124,7 @@ Lemma lee_mul01Pr x y : 0 <= x ->
 Proof.
 move=> x0; apply/(iffP idP) => [xy r /andP[r0 r1]|h].
   move: x0 xy; rewrite le_eqVlt => /predU1P[<-|x0 xy]; first by rewrite mule0.
-  by rewrite (le_trans _ xy) // gee_pmull // ltW.
+  by rewrite (le_trans _ xy)// gee_pMl// ltW.
 have h01 : (0 < (2^-1 : R) < 1)%R by rewrite invr_gt0 ?invf_lt1 ?ltr0n ?ltr1n.
 move: x y => [x||] [y||] // in x0 h *.
 - move: (x0); rewrite lee_fin le_eqVlt => /predU1P[<-|{}x0].

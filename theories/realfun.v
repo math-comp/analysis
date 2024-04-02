@@ -2328,7 +2328,7 @@ rewrite [x in (_ < x%:E)%E]Num.Theory.splitr EFinD addeC lteD2lE //.
 rewrite -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
   rewrite [in leRHS]variation_prev; last exact: itv_partition1.
-  rewrite gee_addl // sube_le0; apply: ereal_sup_ub => /=.
+  rewrite geeDl// sube_le0; apply: ereal_sup_ub => /=.
   exists (variation t b f (i :: j)) => //; apply: variations_variation.
   by rewrite /itv_partition/= ijb ij ti.
 by rewrite /variation/= big_nat_recr//= big_nil add0r distrC lte_fin.

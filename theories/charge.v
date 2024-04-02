@@ -1462,7 +1462,7 @@ have muAP_gt0 : 0 < mu AP.
   apply/eqP/(contra_not (nu_mu _ mAP))/eqP; rewrite gt_eqF//.
   rewrite (@lt_le_trans _ _ (sigma AP))//.
     rewrite (@lt_le_trans _ _ (sigma A))//; last first.
-      rewrite (charge_partition _ _ mP mN)// gee_addl//.
+      rewrite (charge_partition _ _ mP mN)// geeDl//.
       by apply: negN => //; exact: measurableI.
     by rewrite sube_gt0// (proj2_sig (epsRN_ex mA abs)).
   rewrite /sigma/= /sigmaRN lee_subel_addl ?fin_num_measure//.
