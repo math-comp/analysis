@@ -56,7 +56,7 @@ From mathcomp Require Import mathcomp_extra boolp.
 (* |                 trivIset D F |==| F is a sequence of pairwise disjoint   *)
 (* |                              |  | sets indexed over the domain D         *)
 (*                                                                            *)
-(* Detailed documentation:                                                                   *)
+(* Detailed documentation:                                                    *)
 (* ## Sets                                                                    *)
 (* ```                                                                        *)
 (*                       set T == type of sets on T                           *)
@@ -94,11 +94,13 @@ From mathcomp Require Import mathcomp_extra boolp.
 (*                                index satisfies P                           *)
 (*           \bigcup_(i : T) F == union of the family F indexed on T          *)
 (*           \bigcup_(i < n) F := \bigcup_(i in `I_n) F                       *)
+(*          \bigcup_(i >= n) F := \bigcup_(i in [set i | i >= n]) F           *)
 (*                 \bigcup_i F == same as before with T left implicit         *)
 (*          \bigcap_(i in P) F == intersection of the elements of the family  *)
 (*                                F whose index satisfies P                   *)
 (*           \bigcap_(i : T) F == union of the family F indexed on T          *)
 (*           \bigcap_(i < n) F := \bigcap_(i in `I_n) F                       *)
+(*          \bigcap_(i >= n) F := \bigcap_(i in [set i | i >= n]) F           *)
 (*                 \bigcap_i F == same as before with T left implicit         *)
 (*                smallest C G := \bigcap_(A in [set M | C M /\ G `<=` M]) A  *)
 (*                   A `<=` B <-> A is included in B                          *)
@@ -251,6 +253,9 @@ Reserved Notation "\bigcup_ ( i : T ) F"
 Reserved Notation "\bigcup_ ( i < n ) F"
   (at level 41, F at level 41, i, n at level 50,
            format "'[' \bigcup_ ( i  <  n ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i >= n ) F"
+  (at level 41, F at level 41, i, n at level 50,
+           format "'[' \bigcup_ ( i  >=  n ) '/  '  F ']'").
 Reserved Notation "\bigcup_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcup_ i '/  '  F ']'").
@@ -263,6 +268,9 @@ Reserved Notation "\bigcap_ ( i : T ) F"
 Reserved Notation "\bigcap_ ( i < n ) F"
   (at level 41, F at level 41, i, n at level 50,
            format "'[' \bigcap_ ( i  <  n ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i >= n ) F"
+  (at level 41, F at level 41, i, n at level 50,
+           format "'[' \bigcap_ ( i  >=  n ) '/  '  F ']'").
 Reserved Notation "\bigcap_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcap_ i '/  '  F ']'").
@@ -396,6 +404,8 @@ Notation "\bigcup_ ( i : T ) F" :=
   (\bigcup_(i in @setT T) F) : classical_set_scope.
 Notation "\bigcup_ ( i < n ) F" :=
   (\bigcup_(i in `I_n) F) : classical_set_scope.
+Notation "\bigcup_ ( i >= n ) F" :=
+  (\bigcup_(i in [set i | (n <= i)%N]) F) : classical_set_scope.
 Notation "\bigcup_ i F" := (\bigcup_(i : _) F) : classical_set_scope.
 Notation "\bigcap_ ( i 'in' P ) F" :=
   (bigcap P (fun i => F)) : classical_set_scope.
@@ -403,6 +413,8 @@ Notation "\bigcap_ ( i : T ) F" :=
   (\bigcap_(i in @setT T) F) : classical_set_scope.
 Notation "\bigcap_ ( i < n ) F" :=
   (\bigcap_(i in `I_n) F) : classical_set_scope.
+Notation "\bigcap_ ( i >= n ) F" :=
+  (\bigcap_(i in [set i | (n <= i)%N]) F) : classical_set_scope.
 Notation "\bigcap_ i F" := (\bigcap_(i : _) F) : classical_set_scope.
 
 Notation "A `<=` B" := (subset A B) : classical_set_scope.
@@ -2153,28 +2165,18 @@ move=> n m nm; rewrite big_mkcond [in X in _ `<=` X]big_mkcond/=.
 exact: (@subset_bigsetI (fun i => if P i then F i else _)).
 Qed.
 
-Lemma bigcup_series_addn (k : nat) F :
-  (\bigcup_(j in [set j | (k <= j)]) F j = \bigcup_i (F (i + k))).
+Lemma bigcup_addn F n : \bigcup_(i >= n) F i = \bigcup_i F (n + i).
 Proof.
-rewrite eqEsubset; split.
-- rewrite /bigcup => x /= [] n kn H.
-  exists (n - k) => //.
-  by rewrite subnK.
-- rewrite /bigcup => x /= [] n _ H.
-  exists (n + k) => //.
-  by rewrite leq_addl.
+rewrite eqEsubset; split => [x /= [m nm Fmx]|x /= [m _ Fmnx]].
+- by exists (m - n) => //; rewrite subnKC.
+- by exists (n + m) => //=; rewrite leq_addr.
 Qed.
 
-Lemma bigcap_series_addn (k : nat) F :
-  (\bigcap_(j in [set j | (k <= j)]) F j = \bigcap_i (F (i + k))).
+Lemma bigcap_addn F n : \bigcap_(i >= n) F i = \bigcap_i F (n + i).
 Proof.
-rewrite eqEsubset; split.
-- rewrite /bigcap => x /= H n _.
-  apply:H.
-  exact: leq_addl.
-- rewrite /bigcap => x /= H n ki.
-  rewrite -(subnK ki).
-  by apply: H.
+rewrite eqEsubset; split=> [x /= nFx m _|x /= Fnx m nm].
+- exact/nFx/leq_addr.
+- by rewrite -(subnKC nm); exact: Fnx.
 Qed.
 
 End bigop_nat_lemmas.

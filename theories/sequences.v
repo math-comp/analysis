@@ -1991,9 +1991,9 @@ rewrite nneseries_sum_nat; last by move=> ? ?; case: ifP => // /f_ge0.
 by apply: eq_bigr => j _; case: ifP => //; rewrite eseries0.
 Qed.
 
-Lemma nneseries_addn [R : realType] [f : nat -> \bar R] (k : nat) :
+Lemma nneseries_addn {R : realType} (f : (\bar R)^nat) k :
   (forall i, 0 <= f i) ->
-  \sum_(k <= i <oo) f i = \sum_(i <oo) (f (i + k)).
+  \sum_(k <= i <oo) f i = \sum_(i <oo) f (i + k)%N.
 Proof.
 move=> f0; have /cvg_ex[/= l fl] : cvg (\sum_(k <= i < n) f i @[n --> \oo]).
   by apply: ereal_nondecreasing_is_cvgn => m n mn; exact: lee_sum_nneg_natr.
