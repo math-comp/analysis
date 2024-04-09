@@ -9,7 +9,7 @@
 
 - in `sequences.v`:
   + lemma `nneseries_recl`
-  
+
 - in `measure.v`:
   + definition `subset_sigma_subadditive`
   + factory `isSubsetOuterMeasure`
