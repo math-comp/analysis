@@ -2,11 +2,11 @@
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality.
+From mathcomp Require Import cardinality fsbigop.
 From HB Require Import structures.
 Require Import exp numfun lebesgue_measure lebesgue_integral.
 Require Import reals ereal signed topology normedtype sequences esum measure.
-Require Import exp numfun lebesgue_measure lebesgue_integral.
+Require Import exp numfun lebesgue_measure lebesgue_integral kernel.
 
 (**md**************************************************************************)
 (* # Probability                                                              *)
@@ -828,3 +828,487 @@ by rewrite /pmf fineK// fin_num_measure.
 Qed.
 
 End discrete_distribution.
+
+(* TODO: move *)
+Lemma onem_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
+  (p%:num <= 1 -> 0 <= `1-(p%:num))%R.
+Proof. by rewrite /onem/= subr_ge0. Qed.
+
+Definition onem_nonneg (R : numDomainType) (p : {nonneg R})
+   (p1 : (p%:num <= 1)%R) :=
+  NngNum (onem_nonneg_proof p1).
+
+Section bernoulli.
+Local Open Scope ereal_scope.
+Variables (R : realType) (p : {nonneg R}) (p1 : (p%:num <= 1)%R).
+
+Definition bernoulli : set bool -> \bar R := measure_add
+  (mscale p (dirac true)) (mscale (onem_nonneg p1) (dirac false)).
+
+HB.instance Definition _ := Measure.on bernoulli.
+
+Let bernoulli_setT : bernoulli [set: _] = 1.
+Proof.
+rewrite /bernoulli/= measure_addE/= /mscale/= !diracT !mule1.
+by rewrite -EFinD add_onemK.
+Qed.
+
+HB.instance Definition _ :=
+  @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
+
+Lemma integral_bernoulli (f : bool -> \bar R) : (forall x, 0 <= f x) ->
+  \int[bernoulli]_y (f y) = p%:num%:E * f true + (`1-(p%:num))%:E * f false.
+Proof.
+move=> f0.
+rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
+by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT !mul1e.
+Qed.
+
+End bernoulli.
+
+(* TODO: move *)
+Lemma sumbool_ler {R : realDomainType} (x y : R) : (x <= y)%R + (x > y)%R.
+Proof. by have [_|_] := leP x y; [exact: inl|exact: inr]. Qed.
+
+Lemma measurable_fun_TF d1 (T1 : measurableType d1) (D : set T1) (f : T1 -> bool) :
+  measurable (D `&` f @^-1` [set true]) ->
+  measurable (D `&` f @^-1` [set false]) -> measurable_fun D f.
+Proof.
+move=> mT mF mD /= Y mY.
+have := @subsetT _ Y; rewrite setT_bool => YT.
+move: mY; have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
+- by rewrite preimage0 ?setI0.
+- exact: mT.
+- exact: mF.
+- by rewrite -setT_bool preimage_setT setIT.
+Qed.
+
+Lemma measurable_and d1 (T1 : measurableType d1) (D : set T1)
+  (f : T1 -> bool) (g : T1 -> bool) :
+  measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x && g x).
+Proof.
+move=> mf mg mD; apply: measurable_fun_TF => //.
+- rewrite [X in measurable X](_ : _ =
+    D `&` f @^-1` [set true] `&` (D `&` g @^-1` [set true])); last first.
+    rewrite setICA !setIA setIid -setIA; congr (_ `&` _).
+    by apply/seteqP; split => x /andP.
+  by apply: measurableI; [exact: mf|exact: mg].
+- rewrite [X in measurable X](_ : _ =
+    D `&` f @^-1` [set false] `|` (D `&` g @^-1` [set false])); last first.
+    rewrite -setIUr; congr (_ `&` _).
+    apply/seteqP; split => x /=.
+      by case: (f x); case: (g x); [|right|left|left].
+    by case: (f x); case: (g x) => //= -[].
+  by apply: measurableU; [exact: mf|exact: mg].
+Qed.
+
+Lemma measurable_fun_pow d (T : measurableType d) (R : realType) (D : set T)
+    (f : T -> R) n : measurable_fun D f ->
+  measurable_fun D (fun x => f x ^+ n).
+Proof.
+move=> mf.
+exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
+Qed.
+
+Section bernoulli_total.
+Local Open Scope ring_scope.
+Variable R : realType.
+Implicit Type p : R.
+
+Definition bernoulli0 := @bernoulli R 0%:nng ler01.
+
+HB.instance Definition _ := Probability.on bernoulli0.
+
+Definition bernoulliT p : probability bool R :=
+  if sumbool_ler 0 p is inl l0p then
+    if sumbool_ler (NngNum l0p)%:num 1%R is inl lp1 then
+      bernoulli lp1
+    else bernoulli0
+  else bernoulli0.
+
+Lemma bernoulliTE p U : 0 <= p <= 1 ->
+  (bernoulliT p U = p%:E * \d_true U + (`1-p)%:E * \d_false U)%E.
+Proof.
+move=> /andP[p0 p1].
+rewrite /bernoulliT; case: sumbool_ler => [{}p0/=|]; last first.
+  by rewrite ltNge p0.
+case: sumbool_ler => [{}p1/=|]; last by rewrite ltNge p1.
+by rewrite /bernoulli/= measure_addE.
+Qed.
+
+Lemma bernoulliT_le1 p U : (bernoulliT p U <= 1)%E.
+Proof.
+rewrite /bernoulliT; case: sumbool_ler => //= p0; last first.
+  by rewrite probability_le1.
+by case: sumbool_ler => //= p1; rewrite probability_le1.
+Qed.
+
+Lemma measurable_bernoulliT :
+  measurable_fun setT (bernoulliT : R -> pprobability bool R).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+ (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
+rewrite /bernoulliT.
+have := @subsetT _ Ys; rewrite setT_bool => UT.
+have [->|->|->|->] /= := subset_set2 UT.
+- rewrite [X in measurable_fun _ X](_ : _ = cst 0%E)//.
+  by apply/funext => x/=; case: sumbool_ler.
+- rewrite [X in measurable_fun _ X](_ : _ =
+    (fun x => if 0 <= x <= 1 then x%:E else 0%E))//.
+    apply: measurable_fun_ifT => //=; apply: measurable_and => //;
+    apply: (measurable_fun_bool true) => //=.
+      rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
+      by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
+    by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+  apply/funext => x/=; case: sumbool_ler => /= x0.
+    case: sumbool_ler => /= x1.
+      rewrite x0 x1/= /bernoulli/= measure_addE/= /mscale/= !diracE.
+      by rewrite mem_set//= memNset//= mule0 adde0 mule1.
+    rewrite x0/= leNgt x1/= /bernoulli0 /bernoulli /= measure_addE/= /mscale/=.
+    by rewrite mul0e add0e diracE memNset//= mule0.
+  rewrite leNgt x0/= /bernoulli0 /bernoulli /= measure_addE/= /mscale/=.
+  by rewrite mul0e add0e diracE memNset//= mule0.
+- rewrite [X in measurable_fun _ X](_ : _ =
+    (fun x => if 0 <= x <= 1 then (`1-x)%:E else 1%E))//.
+    apply: measurable_fun_ifT => //=.
+      apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
+        rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
+        by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
+      by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+    exact/EFin_measurable_fun/measurable_funB.
+  apply/funext => x/=; case: sumbool_ler => /= x0.
+    case: sumbool_ler => /= x1.
+      rewrite /bernoulli/= measure_addE/= /mscale/=.
+      by rewrite !diracE memNset//= mule0 add0e mem_set//= mule1 x0 x1.
+    rewrite /bernoulli0 /bernoulli /= measure_addE/= /mscale/=.
+    by rewrite mul0e add0e onem0 mul1e diracE mem_set//= x0/= leNgt x1.
+  rewrite /bernoulli0 /bernoulli /= measure_addE/= /mscale/=.
+  by rewrite mul0e add0e onem0 mul1e diracE mem_set//= leNgt x0.
+- rewrite [X in measurable_fun _ X](_ : _ = cst 1%E)//; apply/funext => x/=.
+  case: sumbool_ler => /= x0.
+    case: sumbool_ler => /= x1.
+      rewrite /bernoulli/= measure_addE/=.
+      by rewrite /mscale/= -setT_bool !diracT !mule1 -EFinD add_onemK.
+    rewrite /bernoulli0 /bernoulli/= measure_addE/=.
+    by rewrite /mscale/= -setT_bool !diracT mul0e mule1 add0e onem0.
+  rewrite /bernoulli0 /bernoulli/= measure_addE/=.
+  by rewrite /mscale/= -setT_bool !diracT mul0e add0e mule1 onem0.
+Qed.
+
+Lemma measurable_bernoulliT2 U : measurable U ->
+  measurable_fun setT (bernoulliT ^~ U : R -> \bar R).
+Proof.
+by move=> ?; exact: (measurable_kernel (kprobability measurable_bernoulliT)).
+Qed.
+
+Lemma integral_bernoulliT p (f : bool -> \bar R) :
+    0 <= p <= 1 -> (forall x, 0 <= f x)%E ->
+  (\int[bernoulliT p]_y (f y) = p%:E * f true + (`1-p)%:E * f false)%E.
+Proof.
+move=> /andP[p0 p1] f0; rewrite /bernoulliT; case: sumbool_ler => [? /=|].
+  case: (sumbool_ler p 1) => [? /=|]; last by rewrite ltNge p1.
+  by rewrite integral_bernoulli.
+by rewrite ltNge p0.
+Qed.
+
+End bernoulli_total.
+Arguments bernoulliT {R}.
+Arguments measurable_bernoulliT {R}.
+
+Section binomial_probability.
+Local Open Scope ring_scope.
+Context {R : realType} (n : nat) (p : {nonneg R}) (p1 : p%:num <= 1).
+
+Definition bin_prob (k : nat) : {nonneg R} :=
+  (p%:num^+k * (NngNum (onem_ge0 p1))%:num^+(n-k)%N *+ 'C(n, k))%:nng.
+
+Lemma bin_prob0 : bin_prob 0 = ((NngNum (onem_ge0 p1))%:num^+n)%:nng.
+Proof.
+rewrite /bin_prob bin0 subn0/=; apply/val_inj => /=.
+by rewrite expr0 mul1r mulr1n.
+Qed.
+
+Lemma bin_prob1 :
+  bin_prob 1 = (p%:num * (NngNum (onem_ge0 p1))%:num^+(n-1)%N *+ n)%:nng.
+Proof. by rewrite /bin_prob bin1/=; apply/val_inj => /=; rewrite expr1. Qed.
+
+Definition binomial_prob : set nat -> \bar R :=
+  msum (fun k => mscale (bin_prob k) \d_k) n.+1.
+
+HB.instance Definition _ := Measure.on binomial_prob.
+
+Let binomial_setT : binomial_prob [set: _] = 1%:E.
+Proof.
+rewrite /binomial_prob /msum /mscale /bin_prob/= /mscale/=.
+under eq_bigr do rewrite diracT mule1.
+rewrite sumEFin.
+under eq_bigr do rewrite mulrC.
+by rewrite -exprDn_comm ?subrK ?expr1n//; exact: mulrC.
+Qed.
+
+HB.instance Definition _ :=
+  Measure_isProbability.Build _ _ R binomial_prob binomial_setT.
+
+Lemma integral_binomial (f : nat -> \bar R) : (forall x, 0 <= f x)%E ->
+  (\int[binomial_prob]_y (f y) = \sum_(k < n.+1) (bin_prob k)%:num%:E * f k)%E.
+Proof.
+move=> f0; rewrite ge0_integral_measure_sum//=; apply: eq_bigr => i _.
+by rewrite ge0_integral_mscale//= integral_dirac//= diracT mul1e.
+Qed.
+
+End binomial_probability.
+
+Section binomial_total.
+Local Open Scope ring_scope.
+Variables (R : realType) (n : nat).
+Implicit Type p : R.
+
+Definition binomial_prob0 := @binomial_prob R 0 0%:nng ler01.
+
+Definition binomial_probT p : probability nat R :=
+  if sumbool_ler 0 p is inl l0p then
+    if sumbool_ler (NngNum l0p)%:num 1 is inl lp1 then
+      @binomial_prob R n (NngNum l0p) lp1
+    else binomial_prob0
+  else binomial_prob0.
+
+Lemma measurable_binomial_probT :
+  measurable_fun setT (binomial_probT : R -> pprobability _ _).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+  (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
+rewrite /binomial_probT/=.
+set f := (X in measurable_fun _ X).
+rewrite (_ : f = fun x => if 0 <= x <= 1 then (\sum_(m < n.+1)
+      if sumbool_ler 0 x is inl l0p then
+        if sumbool_ler x 1 is inl lp1 then
+           mscale (@bin_prob _ n (NngNum l0p) lp1 m) (\d_(nat_of_ord m)) Ys
+         else
+          (x ^+ m * `1-x ^+ (n - m) *+ 'C(n, m))%:E * \d_(nat_of_ord m) Ys
+      else (x ^+ m * `1-x ^+ (n - m) *+ 'C(n, m))%:E * \d_(nat_of_ord m) Ys)%E
+   else \d_0%N Ys)//.
+  move=> _; apply: measurable_fun_ifT => //=.
+    apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
+      rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
+      by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
+    by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+  apply: emeasurable_fun_sum => m /=.
+  rewrite /mscale/= [X in measurable_fun _ X](_ : _ = (fun x =>
+    (x ^+ m * `1-x ^+ (n - m) *+ 'C(n, m))%:E * \d_(nat_of_ord m) Ys)%E); last first.
+    by apply:funext => x; case: sumbool_ler => // x0; case: sumbool_ler.
+  apply: emeasurable_funM => //; apply/EFin_measurable_fun => //.
+  under eq_fun do rewrite -mulr_natr.
+  do 2 apply: measurable_funM => //.
+  exact/measurable_fun_pow/measurable_funB.
+rewrite {}/f; apply/funext => x.
+case: sumbool_ler => /= x0; last first.
+  rewrite leNgt x0/= /binomial_prob /= /msum big_ord_recl/= big_ord0 /mscale.
+  by rewrite bin_prob0/= expr0 mul1e adde0.
+rewrite x0/=; case: sumbool_ler => /= x1; last first.
+  rewrite (leNgt x) x1/= /binomial_prob /msum big_ord_recl/=/=.
+  by rewrite bin_prob0/= big_ord0 adde0 /mscale/= expr0 mul1e.
+by rewrite x1.
+Qed.
+
+Lemma integral_binomial_probT p (p0 : 0 <= p) (p1 : (NngNum p0)%:num <= 1)
+    (f : nat -> \bar R) : (forall x, 0 <= f x)%E ->
+  (\int[binomial_probT p]_y (f y) = \sum_(k < n.+1) (bin_prob n p1 k)%:num%:E * f k)%E.
+Proof.
+move=> f0; rewrite /binomial_probT/=; case: sumbool_ler => [? /=|]; last first.
+  by rewrite ltNge p0.
+case: sumbool_ler => [?/=|]; last by rewrite ltNge p1.
+by rewrite integral_binomial.
+Qed.
+
+End binomial_total.
+Arguments binomial_probT {R}.
+Arguments measurable_binomial_probT {R}.
+
+Section uniform_probability.
+Local Open Scope ring_scope.
+Context (R : realType) (a b : R).
+
+Definition uniform_pdf x := if a <= x <= b then (b - a)^-1 else 0.
+
+Lemma uniform_pdf_ge0 x : a < b -> 0 <= uniform_pdf x.
+Proof.
+move=> ab; rewrite /uniform_pdf; case: ifPn => // axb.
+by rewrite invr_ge0// ltW// subr_gt0.
+Qed.
+
+Lemma measurable_uniform_pdf : measurable_fun setT uniform_pdf.
+Proof.
+rewrite /uniform_pdf /=; apply: measurable_fun_if => //=.
+apply: measurable_and => //.
+  apply: (measurable_fun_bool true) => //=.
+  rewrite (_ : _ @^-1` _ = `[a, +oo[%classic)//.
+  by apply/seteqP; split => [z|z] /=; rewrite in_itv/= andbT.
+apply: (measurable_fun_bool true) => //=.
+by rewrite (_ : _ @^-1` _ = `]-oo, b]%classic).
+Qed.
+
+Local Notation mu := lebesgue_measure.
+
+Lemma integral_uniform_pdf U :
+  (\int[mu]_(x in U) (uniform_pdf x)%:E =
+   \int[mu]_(x in U `&` `[a, b]) (uniform_pdf x)%:E)%E.
+Proof.
+rewrite [RHS]integral_mkcondr/=; apply: eq_integral => x xU.
+rewrite patchE; case: ifPn => //.
+rewrite notin_set/= in_itv/= => /negP/negbTE xab.
+by rewrite /uniform_pdf xab.
+Qed.
+
+Lemma integral_uniform_pdf1 A (ab : a < b) : `[a, b] `<=` A ->
+  (\int[mu]_(x in A) (uniform_pdf x)%:E = 1)%E.
+Proof.
+move=> abA; rewrite integral_uniform_pdf setIidr//.
+rewrite (eq_integral (fun=> (b - a)^-1%:E)); last first.
+  by move=> x; rewrite inE/= in_itv/= /uniform_pdf => ->.
+rewrite integral_cst//= lebesgue_measure_itv/= lte_fin.
+by rewrite ab -EFinD -EFinM mulVf// gt_eqF// subr_gt0.
+Qed.
+
+Definition uniform_prob (ab : a < b) : set _ -> \bar R :=
+  fun U => (\int[mu]_(x in U) (uniform_pdf x)%:E)%E.
+
+Hypothesis ab : (a < b)%R.
+
+Let uniform0 : uniform_prob ab set0 = 0.
+Proof. by rewrite /uniform_prob integral_set0. Qed.
+
+Let uniform_ge0 U : (0 <= uniform_prob ab U)%E.
+Proof.
+by apply: integral_ge0 => /= x Ux; rewrite lee_fin uniform_pdf_ge0.
+Qed.
+
+Lemma integrable_uniform_pdf :
+  mu.-integrable setT (fun x => (uniform_pdf x)%:E).
+Proof.
+apply/integrableP; split.
+  by apply: measurableT_comp => //; exact: measurable_uniform_pdf.
+under eq_integral.
+  move=> x _; rewrite gee0_abs//; last first.
+    by rewrite lee_fin uniform_pdf_ge0.
+  over.
+by rewrite /= integral_uniform_pdf1 ?ltry// -subr_gt0.
+Qed.
+
+Let uniform_sigma_additive : semi_sigma_additive (uniform_prob ab).
+Proof.
+move=> /= F mF tF mUF; rewrite /uniform_prob; apply: cvg_toP.
+  apply: ereal_nondecreasing_is_cvgn => m n mn.
+  apply: lee_sum_nneg_natr => // k _ _.
+  by apply: integral_ge0 => /= x Fkx; rewrite lee_fin uniform_pdf_ge0.
+rewrite ge0_integral_bigcup//=.
+- by apply: integrableS; [| | | exact: integrable_uniform_pdf].
+- by move=> x _; rewrite lee_fin uniform_pdf_ge0.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ (uniform_prob ab)
+  uniform0 uniform_ge0 uniform_sigma_additive.
+
+Let uniform_setT : uniform_prob ab [set: _] = 1%:E.
+Proof. by rewrite /uniform_prob /mscale/= integral_uniform_pdf1. Qed.
+
+HB.instance Definition _ := @Measure_isProbability.Build _ _ R
+  (uniform_prob ab) uniform_setT.
+
+Lemma dominates_uniform_prob : uniform_prob ab `<< mu.
+Proof.
+move=> A mA muA0; rewrite /uniform_prob integral_uniform_pdf.
+apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  apply: integral_ge0 => x [Ax /=]; rewrite in_itv /= => xab.
+  by rewrite lee_fin uniform_pdf_ge0.
+apply: (@le_trans _ _
+    (\int[mu]_(x in A `&` `[a, b]%classic) (b - a)^-1%:E))%E; last first.
+  rewrite integral_cst//= ?mul1e//.
+    by rewrite pmule_rle0 ?lte_fin ?invr_gt0// ?subr_gt0// -muA0 measureIl.
+  exact: measurableI.
+apply: ge0_le_integral => //=.
+- exact: measurableI.
+- by move=> x [Ax]; rewrite /= in_itv/= => axb; rewrite lee_fin uniform_pdf_ge0.
+- by apply/EFin_measurable_fun/measurable_funTS; exact: measurable_uniform_pdf.
+- by move=> x [Ax _]; rewrite lee_fin invr_ge0// ltW// subr_gt0.
+- by move=> x [Ax]; rewrite in_itv/= /uniform_pdf => ->.
+Qed.
+
+Let integral_uniform_indic E : measurable E ->
+  (\int[uniform_prob ab]_x (\1_E x)%:E =
+   (b - a)^-1%:E * \int[mu]_(x in `[a, b]) (\1_E x)%:E)%E.
+Proof.
+move=> mE; rewrite integral_indic//= /uniform_prob setIT -ge0_integralZl//=.
+- rewrite [LHS]integral_mkcond/= [RHS]integral_mkcond/=.
+  apply: eq_integral => x _; rewrite !patchE; case: ifPn => xE.
+    case: ifPn.
+      rewrite inE/= in_itv/= => xab.
+      by rewrite /uniform_pdf xab indicE xE mule1.
+    by rewrite notin_set/= in_itv/= => /negP/negbTE; rewrite /uniform_pdf => ->.
+  case: ifPn => //.
+  by rewrite inE/= in_itv/= => axb; rewrite indicE (negbTE xE) mule0.
+- exact/EFin_measurable_fun/measurable_indic.
+- by move=> x _; rewrite lee_fin.
+- by rewrite lee_fin invr_ge0// ltW// subr_gt0.
+Qed.
+
+Let integral_uniform_nnsfun (f : {nnsfun _ >-> R}) :
+  (\int[uniform_prob ab]_x (f x)%:E =
+   (b - a)^-1%:E * \int[mu]_(x in `[a, b]) (f x)%:E)%E.
+Proof.
+under [LHS]eq_integral do rewrite fimfunE -fsumEFin//.
+rewrite [LHS]ge0_integral_fsum//; last 2 first.
+  - by move=> r; exact/EFin_measurable_fun/measurableT_comp.
+  - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
+rewrite -[RHS]ge0_integralZl//; last 3 first.
+  - exact/EFin_measurable_fun/measurable_funTS.
+  - by move=> x _; rewrite lee_fin.
+  - by rewrite lee_fin invr_ge0// ltW// subr_gt0.
+under [RHS]eq_integral.
+  move=> x xD; rewrite fimfunE -fsumEFin// ge0_mule_fsumr; last first.
+    by move=> r; rewrite EFinM nnfun_muleindic_ge0.
+  over.
+rewrite [RHS]ge0_integral_fsum//; last 2 first.
+  - by move=> r; apply/EFin_measurable_fun; do 2 apply/measurableT_comp => //.
+  - move=> n x _; rewrite EFinM mule_ge0//; last by rewrite nnfun_muleindic_ge0.
+    by rewrite lee_fin invr_ge0// ltW// subr_gt0.
+apply: eq_fsbigr => r _; rewrite ge0_integralZl//.
+- by rewrite !integralZl_indic_nnsfun//= integral_uniform_indic// muleCA.
+- exact/EFin_measurable_fun/measurableT_comp.
+- by move=> t _; rewrite nnfun_muleindic_ge0.
+- by rewrite lee_fin invr_ge0// ltW// subr_gt0.
+Qed.
+
+Lemma integral_uniform (f : _ -> \bar R) :
+  measurable_fun setT f -> (forall x, 0 <= f x)%E ->
+  (\int[uniform_prob ab]_x f x = (b - a)^-1%:E * \int[mu]_(x in `[a, b]) f x)%E.
+Proof.
+move=> mf f0.
+have [f_ [ndf_ f_f]] := approximation measurableT mf (fun y _ => f0 y).
+transitivity (lim (\int[uniform_prob ab]_x (f_ n x)%:E @[n --> \oo])%E).
+  rewrite -monotone_convergence//=.
+  - apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //=.
+    exact: f_f.
+  - by move=> n; exact/EFin_measurable_fun/measurable_funTS.
+  - by move=> n ? _; rewrite lee_fin.
+  - by move=> ? _ ? ? mn; rewrite lee_fin; exact/lefP/ndf_.
+rewrite [X in _ = (_ * X)%E](_ : _ = lim
+    (\int[mu]_(x in `[a, b]) (f_ n x)%:E @[n --> \oo])%E); last first.
+  rewrite -monotone_convergence//=.
+  - by apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //; exact: f_f.
+  - by move=> n; exact/EFin_measurable_fun/measurable_funTS.
+  - by move=> n ? _; rewrite lee_fin.
+  - by move=> ? _ ? ? /ndf_ /lefP; rewrite lee_fin.
+rewrite -limeMl//.
+  by apply: congr_lim; apply/funext => n /=; exact: integral_uniform_nnsfun.
+apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
+- by move=> ? _; rewrite lee_fin.
+- exact/EFin_measurable_fun/measurable_funTS.
+- by move=> ? _; rewrite lee_fin.
+- exact/EFin_measurable_fun/measurable_funTS.
+- by move=> ? _; rewrite lee_fin; move/ndf_ : xy => /lefP.
+Qed.
+
+End uniform_probability.
