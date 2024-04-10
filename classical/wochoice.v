@@ -171,7 +171,7 @@ have init_total Y Z: f_ind Y -> f_ind Z -> {init_seg Y Z} + {init_seg Z Y}.
     rewrite -(fY z Yz); congr f; apply/esym/funext=> x /=.
     apply/idP/idP=> [/andP[Yx] | Ix]; first by contra=> I'x; apply/minYz/andP.
     have Yx := sIY x Ix; rewrite Yx /=; contra: (I'z) => Rzx.
-    by rewrite (RYanti z x) // Rzx RIY.    
+    by rewrite (RYanti z x) // Rzx RIY.
   case: iI1Y {iI1}(iI1 Z) => [<- _| iI1Y [||<-|iI1Z]//]; [by left | by right |].
   by case/notCf/negP: Ich; apply/(maxI I1); [apply/asboolP|apply/predU1l].
 pose U x := `[< exists2 X, x \in X & f_ind X >].
@@ -182,7 +182,7 @@ have Umax X: f_ind X -> init_seg X U.
 have RUanti: {in U &, antisymmetric R}.
   move=> x y /asboolP[X Xx indX] /asboolP[Y Yy indY].
   without loss [sXY _]: x y X Y Xx Yy {indX} indY / init_seg X Y.
-    move=> IH. 
+    move=> IH.
     by case: (init_total X Y) => // {}/IH-IH; [|rewrite andbC] => /IH->.
   have [/wo_chain_antisymmetric RYanti _] := indY.
   by apply: RYanti => //; apply: sXY.
@@ -323,7 +323,7 @@ have /maxR/(_ _)/asboolP: ([predU1 z & D] : pred T, Rz : rel T) \in pwo.
     have /minXy/= := Xx; case: ifP => // _ /idPn[].
     by rewrite negb_or andbT (memPn notDz).
   apply: Ux; split=> [|t /andP[/minXy]]; first exact/andP.
-  by rewrite /= Dy => /predU1P[-> /idPn[]|].   
+  by rewrite /= Dy => /predU1P[-> /idPn[]|].
 case=> [|/= -> //]; last exact/predU1l.
 apply/asboolP; split=> [x|x y /= Dx]; first exact: predU1r.
 rewrite Dx => /predU1P[-> | /= Dy]; first by rewrite eqxx (negPf notDz).

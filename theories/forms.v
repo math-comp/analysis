@@ -2,7 +2,7 @@ From HB Require Import structures.
 From mathcomp
 Require Import all_ssreflect ssralg fingroup zmodp poly ssrnum.
 From mathcomp
-Require Import matrix mxalgebra vector falgebra ssrnum algC algnum.
+Require Import matrix mxalgebra vector falgebra ssrnum.
 From mathcomp
 Require Import fieldext.
 From mathcomp Require Import vector.
