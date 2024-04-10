@@ -2165,18 +2165,18 @@ move=> n m nm; rewrite big_mkcond [in X in _ `<=` X]big_mkcond/=.
 exact: (@subset_bigsetI (fun i => if P i then F i else _)).
 Qed.
 
-Lemma bigcup_addn F n : \bigcup_(i >= n) F i = \bigcup_i F (n + i).
+Lemma bigcup_addn F n : \bigcup_i F (n + i) = \bigcup_(i >= n) F i.
 Proof.
-rewrite eqEsubset; split => [x /= [m nm Fmx]|x /= [m _ Fmnx]].
-- by exists (m - n) => //; rewrite subnKC.
+rewrite eqEsubset; split => [x /= [m _ Fmnx]|x /= [m nm Fmx]].
 - by exists (n + m) => //=; rewrite leq_addr.
+- by exists (m - n) => //; rewrite subnKC.
 Qed.
 
-Lemma bigcap_addn F n : \bigcap_(i >= n) F i = \bigcap_i F (n + i).
+Lemma bigcap_addn F n : \bigcap_i F (n + i) = \bigcap_(i >= n) F i.
 Proof.
-rewrite eqEsubset; split=> [x /= nFx m _|x /= Fnx m nm].
-- exact/nFx/leq_addr.
+rewrite eqEsubset; split=> [x /= Fnx m nm|x /= nFx m _].
 - by rewrite -(subnKC nm); exact: Fnx.
+- exact/nFx/leq_addr.
 Qed.
 
 End bigop_nat_lemmas.

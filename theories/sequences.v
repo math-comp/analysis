@@ -1993,11 +1993,11 @@ Qed.
 
 Lemma nneseries_addn {R : realType} (f : (\bar R)^nat) k :
   (forall i, 0 <= f i) ->
-  \sum_(k <= i <oo) f i = \sum_(i <oo) f (i + k)%N.
+  \sum_(i <oo) f (i + k)%N = \sum_(k <= i <oo) f i.
 Proof.
 move=> f0; have /cvg_ex[/= l fl] : cvg (\sum_(k <= i < n) f i @[n --> \oo]).
   by apply: ereal_nondecreasing_is_cvgn => m n mn; exact: lee_sum_nneg_natr.
-rewrite (cvg_lim _ fl)//; apply/esym/cvg_lim => //=.
+rewrite (cvg_lim _ fl)//; apply/cvg_lim => //=.
 move: fl; rewrite -(cvg_shiftn k) /=.
 by under eq_fun do rewrite -{1}(add0n k)// big_addn addnK.
 Qed.
