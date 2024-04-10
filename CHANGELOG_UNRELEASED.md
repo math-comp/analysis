@@ -113,6 +113,15 @@
 - in `classical_sets.v`:
   + lemmas `xsectionP`, `ysectionP`
 
+- file `wochoice.v`:
+  + definition `prop_within`
+  + lemmas `withinW`, `withinT`, `sub_within`
+  + notation `{in <= _, _}`
+  + definitions `maximal`, `minimal`, `upper_bound`, `lower_bound`, `preorder`, `partial_order`,
+   `total_order`, `nonempty`, `minimum_of`, `maximum_of`, `well_order`, `chain`, `wo_chain`
+  + lemmas `antisymmetric_wo_chain`, `antisymmetric_well_order`, `wo_chainW`, `wo_chain_reflexive`,
+    `wo_chain_antisymmetric`, `Zorn's_lemma`, `Hausdorff_maximal_principle`, `well_ordering_principle`
+
 ### Changed
 
 - in `topology.v`:
@@ -146,6 +155,9 @@
 
 - moved from `lebesgue_integral.v` to `cardinality.v`:
   + hint `solve [apply: fimfunP]`
+
+- in `classical_sets.v`:
+  + lemmas `Zorn` and `ZL_preorder` now require a relation of type `rel T` instead of `T -> T -> Prop`
 
 ### Renamed
 
@@ -242,6 +254,9 @@
 
 - in `topology.v`, `function_spaces.v`, `normedtype.v`:
   + local notation `to_set`
+- in `classical_sets.v`:
+  + inductive `tower`
+  + lemma `ZL'`
 
 ### Infrastructure
 

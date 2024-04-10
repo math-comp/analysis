@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg matrix finmap ssrnum.
 From mathcomp Require Import ssrint interval.
-From mathcomp Require Import mathcomp_extra boolp.
+From mathcomp Require Import mathcomp_extra boolp wochoice.
 
 (**md**************************************************************************)
 (* # Set Theory                                                               *)
@@ -2757,126 +2757,54 @@ End partitions.
 #[deprecated(note="Use trivIset_setIl instead")]
 Notation trivIset_setI := trivIset_setIl (only parsing).
 
+Section Zorn.
+
 Definition total_on T (A : set T) (R : T -> T -> Prop) :=
   forall s t, A s -> A t -> R s t \/ R t s.
 
-Section ZL.
-
-Variable (T : Type) (t0 : T) (R : T -> T -> Prop).
-Hypothesis (Rrefl : forall t, R t t).
-Hypothesis (Rtrans : forall r s t, R r s -> R s t -> R r t).
-Hypothesis (Rantisym : forall s t, R s t -> R t s -> s = t).
-Hypothesis (tot_lub : forall A : set T, total_on A R -> exists t,
-  (forall s, A s -> R s t) /\ forall r, (forall s, A s -> R s r) -> R t r).
-Hypothesis (Rsucc : forall s, exists t, R s t /\ s <> t /\
-  forall r, R s r -> R r t -> r = s \/ r = t).
-
-Let Teq := @gen_eqMixin T.
-Let Tch := @gen_choiceMixin T.
-Let Tp : pointedType :=  (* FIXME: use HB.pack *)
-  Pointed.Pack (@Pointed.Class T (isPointed.Axioms_ t0) Tch Teq).
-Let lub := fun A : {A : set T | total_on A R} =>
-  [get t : Tp | (forall s, sval A s -> R s t) /\
-    forall r, (forall s, sval A s -> R s r) -> R t r].
-Let succ := fun s => [get t : Tp | R s t /\ s <> t /\
-  forall r, R s r -> R r t -> r = s \/ r = t].
-
-Inductive tower : set T :=
-  | Lub : forall A, sval A `<=` tower -> tower (lub A)
-  | Succ : forall t, tower t -> tower (succ t).
-
-Lemma ZL' : False.
+Let total_on_wo_chain (T : Type) (R : rel T) (P : {pred T}) :
+  (forall A, total_on A R -> exists t, forall s, A s -> R s t) ->
+  wo_chain R P -> exists2 z, z \in predT & upper_bound R P z.
 Proof.
-have lub_ub (A : {A : set T | total_on A R}) :
-  forall s, sval A s -> R s (lub A).
-  suff /getPex [] : exists t : Tp, (forall s, sval A s -> R s t) /\
-    forall r, (forall s, sval A s -> R s r) -> R t r by [].
-  by apply: tot_lub; apply: (svalP A).
-have lub_lub (A : {A : set T | total_on A R}) :
-  forall t, (forall s, sval A s -> R s t) -> R (lub A) t.
-  suff /getPex [] : exists t : Tp, (forall s, sval A s -> R s t) /\
-    forall r, (forall s, sval A s -> R s r) -> R t r by [].
-  by apply: tot_lub; apply: (svalP A).
-have RS s : R s (succ s) /\ s <> succ s.
-  by have /getPex [? []] : exists t : Tp, R s t /\ s <> t /\
-    forall r, R s r -> R r t -> r = s \/ r = t by apply: Rsucc.
-have succS s : forall t, R s t -> R t (succ s) -> t = s \/ t = succ s.
-  by have /getPex [? []] : exists t : Tp, R s t /\ s <> t /\
-    forall r, R s r -> R r t -> r = s \/ r = t by apply: Rsucc.
-suff Twtot : total_on tower R.
-  have [R_S] := RS (lub (exist _ tower Twtot)); apply.
-  by apply/Rantisym => //; apply/lub_ub/Succ/Lub.
-move=> s t Tws; elim: Tws t => {s} [A sATw ihA|s Tws ihs] t Twt.
-  have [?|/asboolP] := pselect (forall s, sval A s -> R s t).
-    by left; apply: lub_lub.
-  rewrite asbool_neg => /existsp_asboolPn [s /asboolP].
-  rewrite asbool_neg => /imply_asboolPn [As nRst]; right.
-  by have /lub_ub := As; apply: Rtrans; have [] := ihA _ As _ Twt.
-suff /(_ _ Twt) [Rts|RSst] : forall r, tower r -> R r s \/ R (succ s) r.
-    by right; apply: Rtrans Rts _; have [] := RS s.
-  by left.
-move=> r; elim=> {r} [A sATw ihA|r Twr ihr].
-  have [?|/asboolP] := pselect (forall r, sval A r -> R r s).
-    by left; apply: lub_lub.
-  rewrite asbool_neg => /existsp_asboolPn [r /asboolP].
-  rewrite asbool_neg => /imply_asboolPn [Ar nRrs]; right.
-  by have /lub_ub := Ar; apply: Rtrans; have /ihA [] := Ar.
-have [Rrs|RSsr] := ihr; last by right; apply: Rtrans RSsr _; have [] := RS r.
-have : tower (succ r) by apply: Succ.
-move=> /ihs [RsSr|]; last by left.
-by have [->|->] := succS _ _ Rrs RsSr; [right|left]; apply: Rrefl.
+move: R P; elim/Peq : T => T R P Atot RP.
+suff : total_on P R by move=> /Atot[t ARt]; exists t.
+move=> s t Ps Pt; have [| |] := RP [predU (pred1 s) & (pred1 t)].
+- by move=> x; rewrite !inE => /orP[/eqP ->{x}|/eqP ->{x}].
+- by exists s; rewrite !inE eqxx.
+- move=> x [[]]; rewrite !inE => /orP[/eqP ->{x}|/eqP ->{x}].
+  + by move=> /(_ t); rewrite !inE eqxx orbT => /(_ isT) Rst _; left.
+  + by move=> /(_ s); rewrite !inE eqxx => /(_ isT) Rts _; right.
 Qed.
 
-End ZL.
-
-Lemma Zorn T (R : T -> T -> Prop) :
+Lemma Zorn (T : Type) (R : rel T) :
   (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
   (forall s t, R s t -> R t s -> s = t) ->
   (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
   exists t, forall s, R t s -> s = t.
 Proof.
-move=> Rrefl Rtrans Rantisym Rtot_max.
-pose totR := {A : set T | total_on A R}.
-set R' := fun A B : totR => sval A `<=` sval B.
-have R'refl A : R' A A by [].
-have R'trans A B C : R' A B -> R' B C -> R' A C by apply: subset_trans.
-have R'antisym A B : R' A B -> R' B A -> A = B.
-  rewrite /R'; move: A B => [/= A totA] [/= B totB] sAB sBA.
-  by apply: eq_exist; rewrite predeqE=> ?; split=> [/sAB|/sBA].
-have R'tot_lub A : total_on A R' -> exists t, (forall s, A s -> R' s t) /\
-    forall r, (forall s, A s -> R' s r) -> R' t r.
-  move=> Atot.
-  have AUtot : total_on (\bigcup_(B in A) (sval B)) R.
-    move=> s t [B AB Bs] [C AC Ct].
-    have [/(_ _ Bs) Cs|/(_ _ Ct) Bt] := Atot _ _ AB AC.
-      by have /(_ _ _ Cs Ct) := svalP C.
-    by have /(_ _ _ Bs Bt) := svalP B.
-  exists (exist _ (\bigcup_(B in A) sval B) AUtot); split.
-    by move=> B ? ? ?; exists B.
-  by move=> B Bub ? /= [? /Bub]; apply.
-apply: contrapT => nomax.
-have {}nomax t : exists s, R t s /\ s <> t.
-  have /asboolP := nomax; rewrite asbool_neg => /forallp_asboolPn /(_ t).
-  move=> /asboolP; rewrite asbool_neg => /existsp_asboolPn [s].
-  by move=> /asboolP; rewrite asbool_neg => /imply_asboolPn []; exists s.
-have tot0 : total_on set0 R by [].
-apply: (ZL' (exist _ set0 tot0)) R'tot_lub _ => // A.
-have /Rtot_max [t tub] := svalP A; have [s [Rts snet]] := nomax t.
-have Astot : total_on (sval A `|` [set s]) R.
-  move=> u v [Au|->]; last first.
-    by move=> [/tub Rvt|->]; right=> //; apply: Rtrans Rts.
-  move=> [Av|->]; [apply: (svalP A)|left] => //.
-  by apply: Rtrans Rts; apply: tub.
-exists (exist _ (sval A `|` [set s]) Astot); split; first by move=> ? ?; left.
-split=> [AeAs|[B Btot] sAB sBAs].
-  have [/tub Rst|] := pselect (sval A s); first exact/snet/Rantisym.
-  by rewrite AeAs /=; apply; right.
-have [Bs|nBs] := pselect (B s).
-  by right; apply: eq_exist; rewrite predeqE => r; split=> [/sBAs|[/sAB|->]].
-left; case: A tub Astot sBAs sAB => A Atot /= tub Astot sBAs sAB.
-apply: eq_exist; rewrite predeqE => r; split=> [Br|/sAB] //.
-by have /sBAs [|ser] // := Br; rewrite ser in Br.
+move: R; elim/Peq : T => T R Rxx Rtrans Ranti Atot.
+have [//| |P _ RP|] := @Zorn's_lemma _ R predT _.
+- by move=> ? ? ? _ _ _; exact: Rtrans.
+- exact: total_on_wo_chain.
+by move=> x _ Rx; exists x => s Rxs; apply: (Ranti _ _ _ Rxs) => //; exact: Rx.
 Qed.
+
+Definition premaximal T (R : T -> T -> Prop) (t : T) :=
+  forall s, R t s -> R s t.
+
+Lemma ZL_preorder (T : Type) (t0 : T) (R : rel T) :
+  (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
+  (forall A, total_on A R -> exists t, forall s, A s -> R s t) ->
+  exists t, premaximal R t.
+Proof.
+move: t0 R; elim/Peq : T => T t0 R Rxx Rtrans Atot.
+have [//| | |z _ Hz] := @Zorn's_lemma T R predT.
+- by move=> ? ? ? _ _ _; exact: Rtrans.
+- by move=> A _ RA; exact: total_on_wo_chain.
+by exists z => s Rzs; exact: Hz.
+Qed.
+
+End Zorn.
 
 Section Zorn_subset.
 Variables (T : Type) (P : set (set T)).
@@ -2886,20 +2814,24 @@ Lemma Zorn_bigcup :
       P (\bigcup_(X in F) X)) ->
   exists A, P A /\ forall B, A `<` B -> ~ P B.
 Proof.
-move=> totP; pose R (sA sB : P) := sval sA `<=` sval sB.
+move=> totP; pose R (sA sB : P) := `[< sval sA `<=` sval sB >].
 have {}totR F (FR : total_on F R) : exists sB, forall sA, F sA -> R sA sB.
    have FP : [set val x | x in F] `<=` P.
-     by move=> _ [X FX <-]; apply: set_mem; apply: valP.
+     by move=> _ [X FX <-]; apply: set_mem; exact/valP.
    have totF : total_on [set val x | x in F] subset.
-     by move=> _ _ [X FX <-] [Y FY <-]; apply: FR.
-   exists (SigSub (mem_set (totP _ FP totF))) => A FA; rewrite /R/=.
-   exact: (bigcup_sup (imageP val _)).
+     move=> _ _ [X FX <-] [Y FY <-].
+     by have [/asboolP|/asboolP] := FR _ _ FX FY; [left|right].
+   exists (SigSub (mem_set (totP _ FP totF))) => A FA.
+   exact/asboolP/(bigcup_sup (imageP val _)).
 have [| | |sA sAmax] := Zorn _ _ _ totR.
-- by move=> ?; exact: subset_refl.
-- by move=> ? ? ?; exact: subset_trans.
-- by move=> [A PA] [B PB]; rewrite /R /= => AB BA; exact/eq_exist/seteqP.
+- by move=> ?; apply/asboolP; exact: subset_refl.
+- by move=> ? ? ? /asboolP ? /asboolP st; apply/asboolP; exact: subset_trans st.
+- by move=> [A PA] [B PB] /asboolP AB /asboolP BA; exact/eq_exist/seteqP.
 - exists (val sA); case: sA => A PA /= in sAmax *; split; first exact: set_mem.
-  move=> B AB PB; have [BA] := sAmax (SigSub (mem_set PB)) (properW AB).
+  move=> B AB PB.
+  have : R (exist (fun x : T -> Prop => x \in P) A PA) (SigSub (mem_set PB)).
+    by apply/asboolP; exact: properW.
+  move=> /(sAmax (SigSub (mem_set PB)))[BA].
   by move: AB; rewrite BA; exact: properxx.
 Qed.
 
@@ -2932,58 +2864,6 @@ by exists E; split => // F /maxE + FD; exact: contra_not.
 Qed.
 
 End maximal_disjoint_subcollection.
-
-Definition premaximal T (R : T -> T -> Prop) (t : T) :=
-  forall s, R t s -> R s t.
-
-Lemma ZL_preorder T (t0 : T) (R : T -> T -> Prop) :
-  (forall t, R t t) -> (forall r s t, R r s -> R s t -> R r t) ->
-  (forall A : set T, total_on A R -> exists t, forall s, A s -> R s t) ->
-  exists t, premaximal R t.
-Proof.
-set Teq := @gen_eqMixin T; set Tch := @gen_choiceMixin T.
-pose Tpo := isPointed.Build T t0.
-pose Tp : pointedType := HB.pack T Teq Tch Tpo.
-move=> Rrefl Rtrans tot_max.
-set eqR := fun s t => R s t /\ R t s; set ceqR := fun s => [set t | eqR s t].
-have eqR_trans r s t : eqR r s -> eqR s t -> eqR r t.
-  by move=> [Rrs Rsr] [Rst Rts]; split; [apply: Rtrans Rst|apply: Rtrans Rsr].
-have ceqR_uniq s t : eqR s t -> ceqR s = ceqR t.
-  by rewrite predeqE => - [Rst Rts] r; split=> [[Rr rR] | [Rr rR]]; split;
-    try exact: Rtrans Rr; exact: Rtrans rR _.
-set ceqRs := ceqR @` setT; set quotR := sig ceqRs.
-have ceqRP t : ceqRs (ceqR t) by exists t.
-set lift := fun t => exist _ (ceqR t) (ceqRP t).
-have lift_surj (A : quotR) : exists t : Tp, lift t = A.
-  case: A => A [t Tt ctA]; exists t; rewrite /lift; case : _ / ctA.
-  exact/congr1/Prop_irrelevance.
-have lift_inj s t : eqR s t -> lift s = lift t.
-  by move=> eqRst; apply/eq_exist/ceqR_uniq.
-have lift_eqR s t : lift s = lift t -> eqR s t.
-  move=> cst; have ceqst : ceqR s = ceqR t by have := congr1 sval cst.
-  by rewrite [_ s]ceqst; split; apply: Rrefl.
-set repr := fun A : quotR => get [set t : Tp | lift t = A].
-have repr_liftE t : eqR t (repr (lift t))
-  by apply: lift_eqR; have -> := getPex (lift_surj (lift t)).
-set R' := fun A B : quotR => R (repr A) (repr B).
-have R'refl A : R' A A by apply: Rrefl.
-have R'trans A B C : R' A B -> R' B C -> R' A C by apply: Rtrans.
-have R'antisym A B : R' A B -> R' B A -> A = B.
-  move=> RAB RBA; have [t tA] := lift_surj A; have [s sB] := lift_surj B.
-  rewrite -tA -sB; apply: lift_inj; apply (eqR_trans _ _ _ (repr_liftE t)).
-  have eAB : eqR (repr A) (repr B) by [].
-  rewrite tA; apply: eqR_trans eAB _; rewrite -sB.
-  by have [] := repr_liftE s.
-have [A Atot|A Amax] := Zorn R'refl R'trans R'antisym.
-  have /tot_max [t tmax] : total_on [set repr B | B in A] R.
-    by move=> ?? [B AB <-] [C AC <-]; apply: Atot.
-  exists (lift t) => B AB; have [Rt _] := repr_liftE t.
-  by apply: Rtrans Rt; apply: tmax; exists B.
-exists (repr A) => t RAt.
-have /Amax <- : R' A (lift t).
-  by have [Rt _] := repr_liftE t; apply: Rtrans Rt.
-by have [] := repr_liftE t.
-Qed.
 
 Section UpperLowerTheory.
 Import Order.TTheory.
