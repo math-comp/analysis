@@ -2,8 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop.
+From mathcomp Require Import boolp classical_sets functions wochoice.
+From mathcomp Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
 
 (**md**************************************************************************)
@@ -3048,34 +3048,39 @@ Lemma ultraFilterLemma T (F : set_system T) :
 Proof.
 move=> FF.
 set filter_preordset := ({G : set_system T & ProperFilter G /\ F `<=` G}).
-set preorder := fun G1 G2 : filter_preordset => projT1 G1 `<=` projT1 G2.
-suff [G Gmax] : exists G : filter_preordset, premaximal preorder G.
-  have [GF sFG] := projT2 G; exists (projT1 G); split=> //; split=> // H HF sGH.
+set preorder :=
+  fun G1 G2 : {classic filter_preordset} => `[< projT1 G1 `<=` projT1 G2 >].
+suff [G Gmax] : exists G : {classic filter_preordset}, premaximal preorder G.
+  have [GF sFG] := projT2 G; exists (projT1 G); split; last exact: sFG.
+  split; [exact: GF|move=> H HF sGH].
   have sFH : F `<=` H by apply: subset_trans sGH.
-  have sHG : preorder (existT _ H (conj HF sFH)) G by apply: Gmax.
-  by rewrite predeqE => ?; split=> [/sHG|/sGH].
+  have sHG : preorder (existT _ H (conj HF sFH)) G.
+    by move/asboolP in sGH; exact: (Gmax (existT _ H (conj HF sFH)) sGH).
+  by rewrite predeqE => A; split; [move/asboolP : sHG; exact|exact: sGH].
 have sFF : F `<=` F by [].
-apply: (ZL_preorder ((existT _ F (conj FF sFF)) : filter_preordset)) =>
-  [?|G H I sGH sHI ? /sGH /sHI|A Atot] //.
-case: (pselect (A !=set0)) => [[G AG] | A0]; last first.
-  exists (existT _ F (conj FF sFF)) => G AG.
-  by have /asboolP := A0; rewrite asbool_neg => /forallp_asboolPn /(_ G).
-have [GF sFG] := projT2 G.
-suff UAF : ProperFilter (\bigcup_(H in A) projT1 H).
-  have sFUA : F `<=` \bigcup_(H in A) projT1 H.
-    by move=> B FB; exists G => //; apply: sFG.
-  exists (existT _ (\bigcup_(H in A) projT1 H) (conj UAF sFUA)) => H AH B HB /=.
-  by exists H.
-apply: Build_ProperFilter.
-  by move=> B [H AH HB]; have [HF _] := projT2 H; apply: (@filter_ex _ _ HF).
-split; first by exists G => //; apply: filterT.
-  move=> B C [HB AHB HBB] [HC AHC HCC]; have [sHBC|sHCB] := Atot _ _ AHB AHC.
-    exists HC => //; have [HCF _] := projT2 HC; apply: filterI HCC.
-    exact: sHBC.
-  exists HB => //; have [HBF _] := projT2 HB; apply: filterI HBB _.
-  exact: sHCB.
-move=> B C SBC [H AH HB]; exists H => //; have [HF _] := projT2 H.
-exact: filterS HB.
+apply: (ZL_preorder (existT _ F (conj FF sFF))).
+- by move=> t; exact/asboolP.
+- move=> r s t; rewrite /preorder => /asboolP sr /asboolP st.
+  exact/asboolP/(subset_trans _ st).
+- move=> A Atot; have [[G AG] | A0] := pselect (A !=set0); last first.
+    exists (existT _ F (conj FF sFF)) => G AG.
+    by have /asboolP := A0; rewrite asbool_neg => /forallp_asboolPn /(_ G).
+  have [GF sFG] := projT2 G.
+  suff UAF : ProperFilter (\bigcup_(H in A) projT1 H).
+    have sFUA : F `<=` \bigcup_(H in A) projT1 H.
+      by move=> B FB; exists G => //; exact: sFG.
+    exists (existT _ (\bigcup_(H in A) projT1 H) (conj UAF sFUA)) => H AH.
+    by apply/asboolP => B HB /=; exists H.
+  apply: Build_ProperFilter.
+    by move=> B [H AH HB]; have [HF _] := projT2 H; exact: (@filter_ex _ _ HF).
+  split; first by exists G => //; apply: filterT.
+  + move=> B C [HB AHB HBB] [HC AHC HCC]; have [sHBC|sHCB] := Atot _ _ AHB AHC.
+    * exists HC => //; have [HCF _] := projT2 HC; apply: filterI HCC.
+      by move/asboolP : sHBC; exact.
+    * exists HB => //; have [HBF _] := projT2 HB; apply: filterI HBB _.
+      by move/asboolP : sHCB; exact.
+  + move=> B C SBC [H AH HB]; exists H => //; have [HF _] := projT2 H.
+    exact: filterS HB.
 Qed.
 
 Lemma compact_ultra (T : topologicalType) :

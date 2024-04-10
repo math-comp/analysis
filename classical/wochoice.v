@@ -1,14 +1,45 @@
-(* (c) Copyright 2006-2016 Microsoft Corporation and Inria.                  *)
-(* Distributed under the terms of CeCILL-B.                                  *)
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
 Require Import boolp contra.
+
+(**md**************************************************************************)
+(* # Well-ordered choice                                                      *)
+(*                                                                            *)
+(* This file provides proofs of Zorn's lemma, Hausdorff maximal principle,    *)
+(* and the well-ordering principle. It does not rely on `classical_sets.v`.   *)
+(*                                                                            *)
+(* NB: Some definitions are likely to move to MathComp. Similar definitions   *)
+(* can be found in `classical_sets.v` but expressed with `Prop` instead of    *)
+(* `bool` (in particular); there is likely to be more sharing in the future.  *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*         nonempty A := exists x, x \in A                                    *)
+(*       {in <= S, P} == the predicate P holds for all subsets of S           *)
+(*                       P has type {pred T} -> Prop for T : predArgType.     *)
+(*        maximal R z == z is a maximal element for the relation R            *)
+(*        minimal R z == z is a minimal element for the relation R            *)
+(*  upper_bound R A z == for all x in A, we have R x z                        *)
+(*  lower_bound R A z == for all x in A, we have R z x                        *)
+(*         preorder R == R is reflexive and transitive                        *)
+(*    partial_order R == R is an antisymmetric preorder                       *)
+(*      total_order R == R is a total partial order                           *)
+(*   minimum_of R A z := z \in A /\ lower_bound A z                           *)
+(*   maximum_of R A z := z \in A /\ upper_bound A z                           *)
+(*       well_order R == every non-empty subset has a unique minimum element  *)
+(*          chain R C == the subset C is totally ordered                      *)
+(*                    := {in C &, total R}                                    *)
+(*       wo_chain R C := {in <= C, well_order R}                              *)
+(* ```                                                                        *)
+(*                                                                            *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Section LocalProperties.
+Definition nonempty {T: Type} (A : {pred T}) := exists x, x \in A.
 
+Section LocalProperties.
 Context {T1 T2 T3 : Type} {T : predArgType}.
 Implicit Type A : {pred T}.
 
@@ -33,11 +64,10 @@ Notation "{ 'in' <= S , P }" :=
   (prop_within (mem S) (inPhantom P)) : type_scope.
 
 Section RelDefs.
-
 Variables (T : Type) (R : rel T).
 Implicit Types (x y z : T) (A C : {pred T}).
 
-(* TOTHINK: This should be ported to mathcomp. *)
+(* TODO: This should be ported to mathcomp. *)
 Definition maximal z := forall x, R z x -> R x z.
 
 Definition minimal z := forall x, R x z -> R z x.
@@ -51,8 +81,6 @@ Definition preorder := reflexive R /\ transitive R.
 Definition partial_order := preorder /\ antisymmetric R.
 
 Definition total_order := partial_order /\ total R.
-
-Definition nonempty A := exists x, x \in A.
 
 Definition minimum_of A z := z \in A /\ lower_bound A z.
 
@@ -102,8 +130,6 @@ have /Rwo[] := ne_cons x [::y]; first exact/allP/and3P.
 move=> z [_ Uz] /andP[Rxy Ryx]; have /and3P[xy_x xy_y _] := all_mem [:: x; y].
 by rewrite -(Uz x) ?(Uz y); split=> //; apply/allP; rewrite /= (Rxy, Ryx) Rxx.
 Qed.
-
-(******************************************************************************)
 
 Section Zorn.
 
@@ -171,7 +197,7 @@ have init_total Y Z: f_ind Y -> f_ind Z -> {init_seg Y Z} + {init_seg Z Y}.
     rewrite -(fY z Yz); congr f; apply/esym/funext=> x /=.
     apply/idP/idP=> [/andP[Yx] | Ix]; first by contra=> I'x; apply/minYz/andP.
     have Yx := sIY x Ix; rewrite Yx /=; contra: (I'z) => Rzx.
-    by rewrite (RYanti z x) // Rzx RIY.    
+    by rewrite (RYanti z x) // Rzx RIY.
   case: iI1Y {iI1}(iI1 Z) => [<- _| iI1Y [||<-|iI1Z]//]; [by left | by right |].
   by case/notCf/negP: Ich; apply/(maxI I1); [apply/asboolP|apply/predU1l].
 pose U x := `[< exists2 X, x \in X & f_ind X >].
@@ -182,7 +208,7 @@ have Umax X: f_ind X -> init_seg X U.
 have RUanti: {in U &, antisymmetric R}.
   move=> x y /asboolP[X Xx indX] /asboolP[Y Yy indY].
   without loss [sXY _]: x y X Y Xx Yy {indX} indY / init_seg X Y.
-    move=> IH. 
+    move=> IH.
     by case: (init_total X Y) => // {}/IH-IH; [|rewrite andbC] => /IH->.
   have [/wo_chain_antisymmetric RYanti _] := indY.
   by apply: RYanti => //; apply: sXY.
@@ -323,7 +349,7 @@ have /maxR/(_ _)/asboolP: ([predU1 z & D] : pred T, Rz : rel T) \in pwo.
     have /minXy/= := Xx; case: ifP => // _ /idPn[].
     by rewrite negb_or andbT (memPn notDz).
   apply: Ux; split=> [|t /andP[/minXy]]; first exact/andP.
-  by rewrite /= Dy => /predU1P[-> /idPn[]|].   
+  by rewrite /= Dy => /predU1P[-> /idPn[]|].
 case=> [|/= -> //]; last exact/predU1l.
 apply/asboolP; split=> [x|x y /= Dx]; first exact: predU1r.
 rewrite Dx => /predU1P[-> | /= Dy]; first by rewrite eqxx (negPf notDz).
