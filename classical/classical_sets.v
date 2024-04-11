@@ -2690,7 +2690,7 @@ Proof.
 move=> totP; pose R (sA sB : P) := `[< sval sA `<=` sval sB >].
 have {}totR F (FR : total_on F R) : exists sB, forall sA, F sA -> R sA sB.
    have FP : [set val x | x in F] `<=` P.
-     by move=> _ [X FX <-]; exact/set_mem/valP.
+     by move=> _ [X FX <-]; apply: set_mem; exact/valP.
    have totF : total_on [set val x | x in F] subset.
      move=> _ _ [X FX <-] [Y FY <-].
      by have [/asboolP|/asboolP] := FR _ _ FX FY; [left|right].
