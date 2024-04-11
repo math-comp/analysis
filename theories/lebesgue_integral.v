@@ -3215,10 +3215,10 @@ apply/le_lt_trans/ge0_le_integral => //.
 Qed.
 
 Lemma integrableMl f (h : T -> R) :
-  measurable_fun D h -> [bounded h x | x in D] ->
-  mu_int f -> mu_int (f \* (EFin \o h)).
+  mu_int f -> measurable_fun D h -> [bounded h x | x in D] ->
+  mu_int (f \* (EFin \o h)).
 Proof.
-move=> mh mg fi; rewrite /is_true -(integrableMr mh mg fi).
+move=> fi mh mg; rewrite /is_true -(integrableMr mh mg fi).
 by apply/congr1/funext => ?; rewrite muleC.
 Qed.
 
