@@ -20,6 +20,8 @@
 
 - in file `sequences.v`
   + lemma `nneseries_addn`
+- in `lebesgue_integral.v`:
+  + lemmas `integrableMl`, `integrableMr`
 
 ### Changed
 
@@ -60,6 +62,9 @@
 ### Deprecated
 
 ### Removed
+
+- in `lebesgue_integral.v`:
+  + `integrablerM`, `integrableMr` (were deprecated since version 0.6.4)
 
 ### Infrastructure
 

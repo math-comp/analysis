@@ -3194,13 +3194,37 @@ case: fi => mf; apply: le_lt_trans; apply: ge0_le_integral => //.
 - by move=> x Dx; rewrite -/((abse \o f) x) (fune_abse f) leeDl.
 Qed.
 
+Lemma integrableMr (h : T -> R) g :
+  measurable_fun D h -> [bounded h x | x in D] ->
+  mu_int g -> mu_int ((EFin \o h) \* g).
+Proof.
+move=> mh [M [Mreal Mh]] gi; apply/integrableP; split.
+  by apply: emeasurable_funM => //; [exact: measurableT_comp|
+                                     exact: (measurable_int gi)].
+under eq_integral do rewrite abseM.
+have: \int[mu]_(x in D) (`|M + 1|%:E * `|g x|) < +oo.
+  rewrite ge0_integralZl ?lte_mul_pinfty//; first by case/integrableP : gi.
+  by apply: measurableT_comp => //; exact: measurable_int gi.
+apply/le_lt_trans/ge0_le_integral => //.
+- apply/emeasurable_funM; last exact/measurableT_comp/(measurable_int gi).
+  exact/EFin_measurable_fun/measurableT_comp.
+- apply/emeasurable_funM => //; apply/measurableT_comp => //.
+  exact: (measurable_int gi).
+- move=> x Dx; rewrite lee_wpmul2r//= lee_fin Mh//=.
+  by rewrite (lt_le_trans _ (ler_norm _))// ltrDl.
+Qed.
+
+Lemma integrableMl f (h : T -> R) :
+  mu_int f -> measurable_fun D h -> [bounded h x | x in D] ->
+  mu_int (f \* (EFin \o h)).
+Proof.
+move=> fi mh mg; rewrite /is_true -(integrableMr mh mg fi).
+by apply/congr1/funext => ?; rewrite muleC.
+Qed.
+
 End integrable_theory.
 Notation "mu .-integrable" := (integrable mu) : type_scope.
 Arguments eq_integrable {d T R mu D} mD f.
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `integrableZl` instead")]
-Notation integrablerM := integrableZl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `integrableZr` instead")]
-Notation integrableMr := integrableZr (only parsing).
 
 Section sequence_measure.
 Local Open Scope ereal_scope.
