@@ -536,22 +536,43 @@ HB.mixin Record isFiltered U T := {
   nbhs : T -> set_system U
 }.
 
-#[short(type="filteredType")]
-HB.structure Definition Filtered (U : Type) := {T of Choice T & isFiltered U T}.
+HB.structure Definition JustFiltered U := { T of isFiltered U T }.
 
-#[short(type="pfilteredType")]
-HB.structure Definition PointedFiltered (U : Type) := {T of Pointed T & Filtered U T}.
 Arguments nbhs {_ _} _ _ : simpl never.
+Module UnpointedFiltered.
+#[export] HB.structure Definition Filtered (U:Type) := {T of Choice T & isFiltered U T}.
+Module Exports. HB.reexport. End Exports.
+End UnpointedFiltered.
+Export UnpointedFiltered.Exports.
 
-Notation "[ 'filteredType' U 'of' T ]" := (Filtered.clone U T _)
-  (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
+Module PointedFiltered.
+#[export] HB.structure Definition Filtered (U:Type) := {T of Pointed T & isFiltered U T}.
+Module Exports. HB.reexport. End Exports.
+End PointedFiltered.
+Export PointedFiltered.Exports.
+
+
+Notation "'pfilteredType'" := (PointedFiltered.Filtered.type) (at level 0).
+Notation "[ 'pfilteredType' U 'of' T ]" := (PointedFiltered.Filtered.clone U T _)
+  (at level 0, format "[ 'pfilteredType'  U  'of'  T ]").
+
+Declare Scope pointed_filter_scope.
+Notation "'filteredType'" := (PointedFiltered.Filtered.type)
+  (at level 0, format "'filteredType'") : pointed_filter_scope.
+Notation "[ 'filteredType' U 'of' T ]" := (PointedFiltered.Filtered.clone U T _)
+  (at level 0, format "[ 'filteredType'  U  'of'  T ]") : pointed_filter_scope.
+
+Declare Scope unpointed_filter_scope.
+Notation "'filteredType'" := (UnpointedFiltered.Filtered.type)
+  (at level 0, format "'filteredType'") : unpointed_filter_scope.
+Notation "[ 'filteredType' U 'of' T ]" := (UnpointedFiltered.Filtered.clone U T _)
+  (at level 0, format "[ 'filteredType'  U  'of'  T ]") : unpointed_filter_scope.
 
 HB.instance Definition _ T := Equality.on (set_system T).
 HB.instance Definition _ T := Choice.on (set_system T).
 HB.instance Definition _ T := Pointed.on (set_system T).
 HB.instance Definition _ T := isFiltered.Build T (set_system T) id.
 
-Arguments nbhs {_ _} _ _ : simpl never.
 
 HB.mixin Record selfFiltered T := {}.
 
@@ -561,11 +582,39 @@ HB.builders Context T of hasNbhs T.
   HB.instance Definition _ := selfFiltered.Build T.
 HB.end.
 
-#[short(type="nbhsType")]
-HB.structure Definition Nbhs := {T of Choice T & hasNbhs T}.
+Module UnpointedNbhs.
+#[export] HB.structure Definition Nbhs := {T of Choice T & hasNbhs T}.
+Module Exports. HB.reexport. End Exports.
+End UnpointedNbhs.
+Export UnpointedNbhs.Exports.
 
-#[short(type="pnbhsType")]
-HB.structure Definition PointedNbhs := {T of Pointed T & hasNbhs T}.
+Module PointedNbhs.
+#[export] HB.structure Definition Nbhs := {T of Pointed T & hasNbhs T}.
+Module Exports. HB.reexport. End Exports.
+End PointedNbhs.
+Export PointedNbhs.Exports.
+
+
+Notation "'pnbhsType'" := (PointedNbhs.Nbhs.type) (at level 0).
+Notation "[ 'pnbhsType' 'of' T ]" := (PointedNbhs.Nbhs.clone T _)
+  (at level 0, format "[ 'pnbhsType'  'of'  T ]").
+
+Notation "'nbhsType'" := (PointedNbhs.Nbhs.type)
+  (at level 0, format "'nbhsType'") : pointed_filter_scope.
+Notation "[ 'nbhsType' 'of' T ]" := (PointedNbhs.Nbhs.clone T _)
+  (at level 0, format "[ 'nbhsType'  'of'  T ]") : pointed_filter_scope.
+Notation "'Nbhs' T" := (PointedNbhs.Nbhs T)
+  (at level 0, format "'Nbhs'  T") : pointed_filter_scope.
+
+Notation "'nbhsType'" := (UnpointedNbhs.Nbhs.type)
+  (at level 0, format "'nbhsType'") : unpointed_filter_scope.
+Notation "[ 'nbhsType' 'of' T ]" := (UnpointedNbhs.Nbhs.clone T _)
+  (at level 0, format "[ 'nbhsType'  'of'  T ]") : unpointed_filter_scope.
+Notation "'Nbhs' T" := (UnpointedNbhs.Nbhs T)
+  (at level 0, format "'Nbhs'  T") : unpointed_filter_scope.
+
+
+Local Open Scope unpointed_filter_scope.
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) :
   set_system T := [set P | exists2 i, D i & B i `<=` P].
@@ -1643,7 +1692,7 @@ HB.instance Definition _ := hasNbhs.Build bool principal_filter.
 End PrincipalFilters.
 
 (** Topological spaces *)
-HB.mixin Record Nbhs_isTopological (T : Type) of Nbhs T := {
+HB.mixin Record Nbhs_isTopological (T : Type) of isFiltered T T := {
   open : set_system T;
   nbhs_pfilter_subproof : forall p : T, ProperFilter (nbhs p) ;
   nbhsE_subproof : forall p : T, nbhs p =
@@ -1651,13 +1700,43 @@ HB.mixin Record Nbhs_isTopological (T : Type) of Nbhs T := {
   openE_subproof : open = [set A : set T | A `<=` nbhs^~ A ]
 }.
 
-#[short(type="topologicalType")]
-HB.structure Definition Topological :=
-  {T of Nbhs T & Nbhs_isTopological T}.
+HB.structure Definition JustTopological := {T of Nbhs_isTopological T }.
 
-#[short(type="ptopologicalType")]
-HB.structure Definition PointedTopological :=
-  {T of PointedNbhs T & Nbhs_isTopological T}.
+Module UnpointedTopological.
+#[export] HB.structure Definition Topological := 
+  {T of Choice T & Nbhs_isTopological T & selfFiltered T}.
+Module Exports. HB.reexport. End Exports.
+End UnpointedTopological.
+Export UnpointedTopological.Exports.
+
+Module PointedTopological.
+#[export] HB.structure Definition Topological := {T of Pointed T 
+  & Nbhs_isTopological T & selfFiltered T}.
+Module Exports. HB.reexport. End Exports.
+End PointedTopological.
+Export PointedTopological.Exports.
+
+Notation "'ptopologicalType'" := (PointedTopological.Topological.type) (at level 0).
+Notation "[ 'ptopologicalType' 'of' T ]" := (PointedTopological.Topological.clone T _)
+  (at level 0, format "[ 'ptopologicalType'  'of'  T ]").
+
+Notation "'topologicalType'" := (PointedTopological.Topological.type)
+  (at level 0, format "'topologicalType'") : pointed_filter_scope.
+Notation "[ 'topologicalType' 'of' T ]" := (PointedTopological.Topological.clone T _)
+  (at level 0, format "[ 'topologicalType'  'of'  T ]") : pointed_filter_scope.
+Notation "'Topological' T" := (PointedTopological.Topological T)
+  (at level 0, format "'Topological'  T") : pointed_filter_scope.
+Notation "'Topological.Pack' T" := (PointedTopological.Topological.Pack T)
+  (at level 0, format "'Topological.Pack'  T") : pointed_filter_scope.
+
+Notation "'topologicalType'" := (UnpointedTopological.Topological.type)
+  (at level 0, format "'topologicalType'") : unpointed_filter_scope.
+Notation "[ 'topologicalType' 'of' T ]" := (UnpointedTopological.Topological.clone T _)
+  (at level 0, format "[ 'topologicalType'  'of'  T ]") : unpointed_filter_scope.
+Notation "'Topological' T" := (UnpointedTopological.Topological T)
+  (at level 0, format "'Topological'  T") : unpointed_filter_scope.
+Notation "'Topological.Pack' T" := (UnpointedTopological.Topological.Pack T)
+  (at level 0, format "'Topological.Pack'  T") : unpointed_filter_scope.
 
 Section Topological1.
 
@@ -1963,7 +2042,7 @@ Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 
 (** Topology defined by a filter *)
 
-HB.factory Record Nbhs_isNbhsTopological T of Nbhs T := {
+HB.factory Record Nbhs_isNbhsTopological T of isFiltered T T := {
   nbhs_filter : forall p : T, ProperFilter (nbhs p);
   nbhs_singleton : forall (p : T) (A : set T), nbhs p A -> A p;
   nbhs_nbhs : forall (p : T) (A : set T), nbhs p A -> nbhs p (nbhs^~ A);
@@ -2208,7 +2287,7 @@ Proof. by rewrite filterI_iter_finI filterI_iterE. Qed.
 End filter_supremums.
 
 HB.factory Record isSubBaseTopological T of Choice T := {
-  I : pointedType;
+  I : choiceType;
   D : set I;
   b : I -> (set T);
 }.
@@ -4029,7 +4108,7 @@ Lemma nbhs_E {T T'} (ent : set_system (T * T')) x :
   nbhs_ ent x = filter_from ent (fun A => to_set A x).
 Proof. by []. Qed.
 
-HB.mixin Record Nbhs_isUniform_mixin M of Nbhs M := {
+HB.mixin Record Nbhs_isUniform_mixin M of isFiltered M M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_refl_subproof : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A;
@@ -4039,15 +4118,46 @@ HB.mixin Record Nbhs_isUniform_mixin M of Nbhs M := {
   nbhsE_subproof : nbhs = nbhs_ entourage;
 }.
 
-#[short(type="uniformType")]
-HB.structure Definition Uniform :=
-  {T of Topological T & Nbhs_isUniform_mixin T}.
+HB.structure Definition JustUniform := {M of Nbhs_isUniform_mixin M}.
 
-#[short(type="puniformType")]
-HB.structure Definition PointedUniform :=
-  {T of PointedTopological T & Nbhs_isUniform_mixin T}.
+Module UnpointedUniform.
+#[export] HB.structure Definition Uniform := 
+  {T of UnpointedTopological.Topological T & Nbhs_isUniform_mixin T}.
+Module Exports. HB.reexport. End Exports.
+End UnpointedUniform.
+Export UnpointedUniform.Exports.
 
-HB.factory Record Nbhs_isUniform M of Nbhs M := {
+Module PointedUniform.
+#[export] HB.structure Definition Uniform := 
+  {T of PointedTopological.Topological T & Nbhs_isUniform_mixin T}.
+Module Exports. HB.reexport. End Exports.
+End PointedUniform.
+Export PointedUniform.Exports.
+
+Notation "'puniformType'" := (PointedUniform.Uniform.type) (at level 0).
+Notation "[ 'puniformType' 'of' T ]" := (PointedUniform.Uniform.clone T _)
+  (at level 0, format "[ 'puniformType'  'of'  T ]").
+
+Notation "'uniformType'" := (PointedUniform.Uniform.type)
+  (at level 0, format "'uniformType'") : pointed_filter_scope.
+Notation "[ 'uniformType' 'of' T ]" := (PointedUniform.Uniform.clone T _)
+  (at level 0, format "[ 'uniformType'  'of'  T ]") : pointed_filter_scope.
+Notation "'Uniform' T" := (PointedUniform.Uniform T)
+  (at level 0, format "'Uniform'  T") : pointed_filter_scope.
+Notation "'Uniform.Pack' T" := (PointedUniform.Uniform.Pack T)
+  (at level 0, format "'Uniform.Pack'  T") : pointed_filter_scope.
+
+Notation "'uniformType'" := (UnpointedUniform.Uniform.type)
+  (at level 0, format "'uniformType'") : unpointed_filter_scope.
+Notation "[ 'uniformType' 'of' T ]" := (UnpointedUniform.Uniform.clone T _)
+  (at level 0, format "[ 'uniformType'  'of'  T ]") : unpointed_filter_scope.
+Notation "'Uniform' T" := (UnpointedUniform.Uniform T)
+  (at level 0, format "'Uniform'  T") : unpointed_filter_scope.
+Notation "'Uniform.Pack' T" := (UnpointedUniform.Uniform.Pack T)
+  (at level 0, format "'Uniform.Pack'  T") : unpointed_filter_scope.
+
+
+HB.factory Record Nbhs_isUniform M of isFiltered M M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_refl : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A;
@@ -4714,7 +4824,8 @@ Lemma entourage_E {R : numDomainType} {T T'} (ball : T -> R -> set T') :
   @filter_from R _ [set x | 0 < x] (fun e => [set xy | ball xy.1 e xy.2]).
 Proof. by []. Qed.
 
-HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M of Uniform M := {
+HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M of 
+    Nbhs_isUniform_mixin M & isFiltered M M := {
   ball : M -> R -> M -> Prop ;
   ball_center_subproof : forall x (e : R), 0 < e -> ball x e x ;
   ball_sym_subproof : forall x y (e : R), ball x e y -> ball y e x ;
@@ -4723,13 +4834,43 @@ HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M of Uniform M := {
   entourageE_subproof : entourage = entourage_ ball
 }.
 
-#[short(type="pseudoMetricType")]
-HB.structure Definition PseudoMetric (R : numDomainType) :=
-  {T of Uniform T & Uniform_isPseudoMetric R T}.
+HB.structure Definition JustPseudoMetric R := {M of Uniform_isPseudoMetric R M}.
 
-#[short(type="pseudoPMetricType")]
-HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
-  {T of Pointed T & PseudoMetric R T}.
+Module UnpointedPseudoMetric.
+#[export] HB.structure Definition PseudoMetric (R : numDomainType) := 
+  {T of UnpointedUniform.Uniform T & Uniform_isPseudoMetric R T}.
+Module Exports. HB.reexport. End Exports.
+End UnpointedPseudoMetric.
+Export UnpointedPseudoMetric.Exports.
+
+Module PointedPseudoMetric.
+#[export] HB.structure Definition PseudoMetric (R : numDomainType) := 
+  {T of PointedUniform.Uniform T & Uniform_isPseudoMetric R T}.
+Module Exports. HB.reexport. End Exports.
+End PointedPseudoMetric.
+Export PointedPseudoMetric.Exports.
+
+Notation "'ppseudoMetricType'" := (PointedPseudoMetric.PseudoMetric.type) (at level 0).
+Notation "[ 'ppseudoMetricType' R 'of' T ]" := (PointedPseudoMetric.PseudoMetric.clone R T _)
+  (at level 0, format "[ 'ppseudoMetricType'  R  'of'  T ]").
+
+Notation "'pseudoMetricType'" := (PointedPseudoMetric.PseudoMetric.type)
+  (at level 0, format "'pseudoMetricType'") : pointed_filter_scope.
+Notation "[ 'pseudoMetricType' R 'of' T ]" := (PointedPseudoMetric.PseudoMetric.clone R T _)
+  (at level 0, format "[ 'pseudoMetricType'  R  'of'  T ]") : pointed_filter_scope.
+Notation "'PseudoMetric' T" := (PointedPseudoMetric.PseudoMetric T)
+  (at level 0, format "'PseudoMetric'  T") : pointed_filter_scope.
+Notation "'PseudoMetric.Pack' T" := (PointedPseudoMetric.PseudoMetric.Pack T)
+  (at level 0, format "'PseudoMetric.Pack'  T") : pointed_filter_scope.
+
+Notation "'pseudoMetricType'" := (UnpointedPseudoMetric.PseudoMetric.type)
+  (at level 0, format "'pseudoMetricType'") : unpointed_filter_scope.
+Notation "[ 'pseudoMetricType' R 'of' T ]" := (UnpointedPseudoMetric.PseudoMetric.clone R T _)
+  (at level 0, format "[ 'pseudoMetricType'  R  'of'  T ]") : unpointed_filter_scope.
+Notation "'PseudoMetric' T" := (UnpointedPseudoMetric.PseudoMetric T)
+  (at level 0, format "'PseudoMetric'  T") : unpointed_filter_scope.
+Notation "'PseudoMetric.Pack' T" := (UnpointedPseudoMetric.PseudoMetric.Pack T)
+  (at level 0, format "'PseudoMetric.Pack'  T") : unpointed_filter_scope.
 
 Definition discrete_topology T (dsc : discrete_space T) : Type := T.
 
@@ -4761,7 +4902,7 @@ End discrete_uniform.
 HB.instance Definition _ {T : pnbhsType} {dsc: discrete_space T} := Pointed.on (discrete_topology dsc).
 
 (* was uniformityOfBallMixin *)
-HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
+HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of isFiltered M M := {
   ent : set_system (M * M);
   nbhsE : nbhs = nbhs_ ent;
   ball : M -> R -> M -> Prop ;
@@ -4828,8 +4969,8 @@ Proof. by rewrite entourageE_subproof. Qed.
 Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
   @filter_from R _ [set x : R | 0 < x]
     (fun e => [set xy | @ball R M xy.1 e xy.2]) = entourage.
-Proof. by rewrite -entourage_ballE. Qed.
 
+Proof. by rewrite -entourage_ballE. Qed.
 Lemma entourage_ball {R : numDomainType} (M : pseudoMetricType R)
   (e : {posnum R}) : entourage [set xy : M * M | ball xy.1 e%:num xy.2].
 Proof. by rewrite -entourage_ballE; exists e%:num => /=. Qed.
@@ -4841,10 +4982,12 @@ Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
 Definition nbhs_ball {R : numDomainType} {M : pseudoMetricType R} :=
   nbhs_ball_ (@ball R M).
 
-Lemma nbhs_ballE {R : numDomainType} {M : pseudoMetricType R} : (@nbhs_ball R M) = nbhs.
+Lemma nbhs_ballE {R : numDomainType} {M : pseudoMetricType R} : 
+  (@nbhs_ball R M) = nbhs.
 Proof.
 rewrite predeq2E => x P; rewrite -nbhs_entourageE; split.
-  by move=> [_/posnumP[e] sbxeP]; exists [set xy | ball xy.1 e%:num xy.2].
+  move=> [_/posnumP[e] sbxeP]; exists [set xy | ball xy.1 e%:num xy.2].
+  simple apply (entourage_ball).
 rewrite -entourage_ballE; move=> [A [e egt0 sbeA] sAP].
 by exists e => // ??; apply/sAP/sbeA.
 Qed.
@@ -4952,7 +5095,7 @@ Proof. by move/cvgi_ballP. Qed.
 
 End pseudoMetricType_numDomainType.
 
-Global Instance entourage_proper_filter {R : numDomainType} {M : pseudoPMetricType R} :
+Global Instance entourage_proper_filter {R : numDomainType} {M : ppseudoMetricType R} :
   ProperFilter (@entourage M).
 Proof.
 apply: Build_ProperFilter; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
