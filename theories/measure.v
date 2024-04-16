@@ -3741,7 +3741,8 @@ Let caratheodory_decomp X :
          mu (X `&` ~` A `&` B) + mu (X `&` ~` A `&` ~` B).
 Proof. by rewrite mA mB [X in _ + _ + X = _]mB addeA. Qed.
 
-Let caratheorody_decompIU X : mu (X `&` (A `|` B)) =
+(* TODO: not used? *)
+Let caratheodory_decompIU X : mu (X `&` (A `|` B)) =
   mu (X `&` A `&` B) + mu (X `&` ~` A `&` B) + mu (X `&` A `&` ~` B).
 Proof.
 rewrite caratheodory_decomp -!addeA; congr (mu _ + _).
@@ -3765,6 +3766,7 @@ rewrite (setIC A) setIA setIC; apply/setIidPl.
 - rewrite setIA setIC; apply/setIidPl; rewrite setIUl setICr set0U.
   by move: AB; rewrite setIC => /disjoints_subset => AB; rewrite subsetI; split.
 Qed.
+
 End additive_ext_lemmas.
 
 Lemma caratheodory_additive (A : (set T) ^nat) : (forall n, M (A n)) ->
