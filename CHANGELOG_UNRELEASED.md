@@ -64,6 +64,12 @@
 
 - in `lebesgue_integral.v`:
   + lemma `ge0_integral_bigcup`
+- in `measure.v`:
+  + lemmas `outer_measure_subadditive`, `outer_measureU2` (from `semiRingOfSetType` to `Type`)
+  + lemmas `caratheodory_measurable_mu_ext`, `measurableM`, `measure_dominates_trans`, `ess_sup_ge0`
+    definitions `preimage_classes`, `measure_dominates`, `ess_sup`
+	(from `measurableType` to `semiRingOfSetsType`)
+  + lemmas ` measurable_prod_measurableType`, `measurable_prod_g_measurableTypeR` (from `measurableType` to `algebraOfSetsType`)
 
 ### Deprecated
 
@@ -71,6 +77,10 @@
 
 - in `lebesgue_integral.v`:
   + `integrablerM`, `integrableMr` (were deprecated since version 0.6.4)
+
+- in `measure.v`:
+  + lemmas `prod_salgebra_set0`, `prod_salgebra_setC`, `prod_salgebra_bigcup`
+    (use `measurable0`, `measurableC`, `measurable_bigcup` instead)
 
 ### Infrastructure
 

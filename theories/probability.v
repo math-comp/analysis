@@ -67,7 +67,7 @@ Lemma probability_range d (T : measurableType d) (R : realType)
   (P : probability T R) (X : {RV P >-> R}) : P (X @^-1` range X) = 1%E.
 Proof. by rewrite preimage_range probability_setT. Qed.
 
-Definition distribution (d : _) (T : measurableType d) (R : realType)
+Definition distribution d (T : measurableType d) (R : realType)
     (P : probability T R) (X : {mfun T >-> R}) :=
   pushforward P (@measurable_funP _ _ _ X).
 
