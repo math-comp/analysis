@@ -37,7 +37,6 @@
   + structure `revop`
 
 - move from `derive.v` to `mathcomp_extra.v`:
-  + definition `mulr_rev`
   + canonical `rev_mulr`
 
 ### Renamed
@@ -99,6 +98,8 @@
 - in `measure.v`:
   + lemmas `prod_salgebra_set0`, `prod_salgebra_setC`, `prod_salgebra_bigcup`
     (use `measurable0`, `measurableC`, `measurable_bigcup` instead)
+- in `forms.v`:
+  + definition `mulr_rev`
 
 ### Infrastructure
 

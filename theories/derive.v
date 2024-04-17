@@ -831,9 +831,9 @@ Proof. by move=> ? ? ?; rewrite mulrDr scalerAr. Qed.
 HB.instance Definition _ x := GRing.isLinear.Build R R R _ ( *%R x)
   (mulr_is_linear x).
 
-Lemma mulr_rev_is_linear y : linear (mulr_rev y : R -> R).
-Proof. by move=> ? ? ?; rewrite /mulr_rev mulrDr scalerAl. Qed.
-HB.instance Definition _ y := GRing.isLinear.Build R R R _ (mulr_rev y)
+Lemma mulr_rev_is_linear y : linear (@GRing.mul R^c y : R -> R).
+Proof. by move=> ? ? ?; rewrite mulrDr scalerAl. Qed.
+HB.instance Definition _ y := GRing.isLinear.Build R R R _ (@GRing.mul R^c y)
   (mulr_rev_is_linear y).
 
 Lemma mulr_is_bilinear :
