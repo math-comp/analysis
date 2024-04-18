@@ -59,6 +59,9 @@
 - in `sequences.v`:
   + lemmas `eseries0`, `nneseries_split`
 
+- in `lebesgue_integral.v`:
+  + lemma `ge0_integral_bigcup`
+
 ### Deprecated
 
 ### Removed

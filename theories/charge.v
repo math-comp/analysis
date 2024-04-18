@@ -1406,17 +1406,14 @@ rewrite [X in X @ _ --> _](_ : _ = (fun n => \sum_(0 <= i < n) nu (H i) -
 apply: cvgeB.
 - by rewrite adde_defC fin_num_adde_defl// fin_num_measure.
 - exact: measure_semi_sigma_additive.
-- rewrite (ge0_integral_bigcup mH _ _ tH).
+- rewrite (ge0_integral_bigcup _ mH _ _ tH).
   + have /cvg_ex[/= l hl] : cvg ((fun n =>
         \sum_(0 <= i < n) \int[mu]_(y in H i) (fRN y + epsRN%:num%:E)) @ \oo).
       apply: is_cvg_ereal_nneg_natsum => n _.
       by apply: integral_ge0 => x _; rewrite adde_ge0//; exact: fRN_ge0.
     by rewrite (@cvg_lim _ _ _ _ _ _ l).
-  + apply: integrableD => //=.
-    * apply: (integrableS measurableT) => //.
-      by apply/integrableP; split; [exact:measurable_fun_fRN|exact:int_fRN_lty].
-    * apply/integrableP; split => //.
-      by rewrite integral_cst// lte_mul_pinfty// ltey_eq fin_num_measure.
+  + apply: emeasurable_funD => //=; apply: measurable_funTS.
+    exact: measurable_fun_fRN.
   + by move=> x _; rewrite adde_ge0//; exact: fRN_ge0.
 Qed.
 
