@@ -3291,12 +3291,12 @@ Context d (T : measurableType d) (R : realType)
 Lemma ge0_integral_bigcup (F : (set _)^nat) (f : T -> \bar R) :
   (forall k, measurable (F k)) ->
   let D := \bigcup_k F k in
-  mu.-integrable D f ->
+  measurable_fun D f ->
   (forall x, D x -> 0 <= f x) ->
   trivIset setT F ->
   \int[mu]_(x in D) f x = \sum_(i <oo) \int[mu]_(x in F i) f x.
 Proof.
-move=> mF D /integrableP fi f0 tF.
+move=> mF D mf f0 tF.
 pose f_ N := f \_ (\big[setU/set0]_(0 <= i < N) F i).
 have lim_f_ t : f_ ^~ t @ \oo --> (f \_ D) t.
   rewrite [X in _ --> X](_ : _ = ereal_sup (range (f_ ^~ t))); last first.
@@ -3317,7 +3317,7 @@ transitivity (\int[mu]_x limn (f_ ^~ x)).
 rewrite monotone_convergence//; last 3 first.
   - move=> n; apply/(measurable_restrict f) => //.
       by apply: bigsetU_measurable => k _; exact: mF.
-    case: fi => + _; apply/measurable_funS =>//; first exact: bigcup_measurable.
+    move: mf; apply/measurable_funS =>//; first exact: bigcup_measurable.
     by rewrite big_mkord; exact: bigsetU_bigcup.
   - move=> n x _; apply: erestrict_ge0 => y; rewrite big_mkord => Dy; apply: f0.
     exact: bigsetU_bigcup Dy.
@@ -3330,7 +3330,7 @@ apply/congr_lim/funext => /= n.
 rewrite -(big_mkord xpredT) ge0_integral_bigsetU ?big_mkord//.
 - exact: iota_uniq.
 - exact: sub_trivIset tF.
-- case: fi => + _; apply: measurable_funS => //; first exact: bigcup_measurable.
+- move: mf; apply: measurable_funS => //; first exact: bigcup_measurable.
   exact: bigsetU_bigcup.
 - by move=> y Dy; apply: f0; exact: bigsetU_bigcup Dy.
 Qed.
@@ -4148,13 +4148,13 @@ Proof.
 move=> tF mF fi.
 rewrite /summable -(_ : [set _ | true] = setT); last exact/seteqP.
 rewrite -nneseries_esum//.
-case: (integrableP _ _ _ fi) => _.
-rewrite ge0_integral_bigcup//; last exact: integrable_abse.
+have [mf {fi}] := integrableP _ _ _ fi.
+rewrite ge0_integral_bigcup//; last exact: measurableT_comp.
 apply: le_lt_trans; apply: lee_lim.
 - exact: is_cvg_ereal_nneg_natsum_cond.
 - by apply: is_cvg_ereal_nneg_natsum_cond => n _ _; exact: integral_ge0.
 - apply: nearW => n; apply: lee_sum => m _; apply: le_abse_integral => //.
-  apply: measurable_funS (measurable_int fi) => //; [exact: bigcup_measurable|].
+  apply: measurable_funS mf => //; [exact: bigcup_measurable|].
   exact: bigcup_sup.
 Qed.
 
@@ -4174,7 +4174,7 @@ transitivity (\int[mu]_(x in \bigcup_i F i) g^\+ x -
   rewrite -integralB; last 3 first.
     - exact: bigcupT_measurable.
     - by apply: integrable_funepos => //; exact: bigcupT_measurable.
-    -by apply: integrable_funeneg => //; exact: bigcupT_measurable.
+    - by apply: integrable_funeneg => //; exact: bigcupT_measurable.
   by apply: eq_integral => t Ft; rewrite [in LHS](funeposneg g).
 transitivity (\sum_(i <oo) (\int[mu]_(x in F i) g^\+ x -
                             \int[mu]_(x in F i) g^\- x)); last first.
@@ -4182,9 +4182,10 @@ transitivity (\sum_(i <oo) (\int[mu]_(x in F i) g^\+ x -
 transitivity ((\sum_(i <oo) \int[mu]_(x in F i) g^\+ x) -
               (\sum_(i <oo) \int[mu]_(x in F i) g^\- x))%E.
   rewrite ge0_integral_bigcup//; last first.
-    by apply: integrable_funepos => //; exact: bigcupT_measurable.
-  by rewrite ge0_integral_bigcup//; apply: integrable_funepos => //;
-    [exact: bigcupT_measurable|exact: integrableN].
+    by apply: measurable_funepos; case/integrableP : fi.
+  rewrite ge0_integral_bigcup//.
+    apply: measurable_funepos; apply: measurableT_comp => //.
+    by case/integrableP : fi.
 rewrite [X in X - _]nneseries_esum; last by move=> n _; exact: integral_ge0.
 rewrite [X in _ - X]nneseries_esum; last by move=> n _; exact: integral_ge0.
 rewrite set_true -esumB//=; last 4 first.
