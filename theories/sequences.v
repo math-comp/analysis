@@ -2963,7 +2963,7 @@ pose P (m : nat) (arn : U * {posnum K}) (arm : U * {posnum K}) :=
 have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
     P na.1.+1 na.2 b.
   move=> [n [an rn]].
-  have [openFn denseFn] := odF n.+1.
+  have [ openFn denseFn] := odF n.+1.
   have [an1 B0Fn2an1] : exists x, ((closed_ball an rn%:num)^° `&` F n.+1) x.
     have [//|? ?] := @open_nbhs_closed_ball _ _ an rn%:num.
     by apply: denseFn => //; exists an.
@@ -3016,7 +3016,7 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
 - have Hinter : (closed_ball a0 r0%:num) l.
     apply: (@closed_cvg _ _ \oo eventually_filter a) => //.
     + exact: closed_ball_closed.
-    + apply/nearW; move=> m; have /(_ (a m)) := @Suite_ball 0%N _ (leq0n m).
+    + apply: nearW; move=> m; have /(_ (a m)) := @Suite_ball 0%N _ (leq0n m).
       by apply; exact: closed_ballxx.
   suff : closed_ball a0 r0%:num `<=` D by move/(_ _ Hinter).
   by move: Ball_a0; rewrite closed_ballE //= subsetI; apply: proj1.
@@ -3025,7 +3025,7 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
     rewrite -(@cvg_shiftn i _ a l) /= in Hl.
     apply: (@closed_cvg _ _ \oo eventually_filter (fun n => a (n + i)%N)) => //=.
     + exact: closed_ball_closed.
-    + by apply/nearW; move=> n; exact/(Suite_ball _ _ (leq_addl n i))/closed_ballxx.
+    + by apply: nearW; move=> n; exact/(Suite_ball _ _ (leq_addl n i))/closed_ballxx.
   move: i => [|n].
     by move: Ball_a0; rewrite subsetI => -[_ p] la0; move: (p _ la0).
   have [+ _] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply : (Pf (n , ar n)).
@@ -3118,7 +3118,7 @@ have ContraBaire : exists i, not (dense (O i)).
 have [n [x0 [r H]] k] :
     exists n x (r : {posnum K}), (ball x r%:num) `<=` (~` (O n)).
   move: ContraBaire =>
-  [i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballP [r [r0 bxr]]
+  [i /(denseNE) [ O0 [ [ x /open_nbhs_nbhs /nbhs_ballP [r r0 bxr]
    /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]]] /(_ bxr) bxrOi.
   by exists i, x, (PosNum r0); apply/disjoints_subset/bxrOi.
 exists ((n + n)%:R * k * 2 / r%:num)=> f Ff y Hx; move: (Propf f Ff) => [ _ linf].
