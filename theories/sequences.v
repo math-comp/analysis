@@ -2941,40 +2941,31 @@ Unshelve. all: end_near. Qed.
 
 End banach_contraction.
 
-(* NB: PR 732 in MC in progress *)
 Lemma gtz0_norm (R : numDomainType) (i : int) : 0 < i -> `|i|%:R = i%:~R :> R.
 Proof. by move/gtz0_abs => <-. Qed.
-
-Lemma lez_abs (i : int) : i <= `|i|%N.
-Proof.
-have [i0|i0] := ltrP 0 i; first by rewrite gtz0_abs.
-by rewrite lez0_abs // -subr_ge0 addr_ge0 // oppr_ge0.
-Qed.
-(* END NB: PR 732 in MC in progress *)
 
 Section Baire.
 Variable K : realType.
 
-Theorem Baire (U : completeNormedModType K) : forall F : (set U)^nat,
+Theorem Baire (U : completeNormedModType K) (F : (set U)^nat) :
   (forall i, open (F i) /\ dense (F i)) -> dense (\bigcap_i (F i)).
 Proof.
-move=> F odF D Dy OpenD.
+move=> odF D Dy OpenD.
 have /(_ D Dy OpenD)[a0 DF0a0] : dense (F 0%N) := proj2 (odF 0%N).
 have {OpenD Dy} openIDF0 : open (D `&` F 0%N).
   by apply: openI => //; exact: (proj1 (odF 0%N)).
 have /open_nbhs_nbhs/nbhs_closedballP[r0 Ball_a0] : open_nbhs a0 (D `&` F 0%N).
   by [].
 pose P (m : nat) (arn : U * {posnum K}) (arm : U * {posnum K}) :=
-  closed_ball arm.1 (arm.2%:num) `<=` (closed_ball arn.1 arn.2%:num)^° `&` F m /\
-  arm.2%:num < m.+1%:R^-1.
+  closed_ball arm.1 (arm.2%:num) `<=` (closed_ball arn.1 arn.2%:num)^° `&` F m
+  /\ arm.2%:num < m.+1%:R^-1.
 have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
     P na.1.+1 na.2 b.
   move=> [n [an rn]].
-  have [ openFn denseFn] := odF n.+1.
+  have [openFn denseFn] := odF n.+1.
   have [an1 B0Fn2an1] : exists x, ((closed_ball an rn%:num)^° `&` F n.+1) x.
     have [//|? ?] := @open_nbhs_closed_ball _ _ an rn%:num.
-    apply: denseFn => //.
-    by exists an.
+    by apply: denseFn => //; exists an.
   have openIB0Fn1 : open ((closed_ball an rn%:num)^° `&` F n.+1).
     by apply/openI => //; exact/open_interior.
   have /open_nbhs_nbhs/nbhs_closedballP[rn01 Ball_an1] :
@@ -2985,7 +2976,7 @@ have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
     apply/(subset_trans _ Ball_an1)/le_closed_ball => /=.
     by rewrite le_minl lexx orbT.
   rewrite (@le_lt_trans _ _ n.+3%:R^-1) //= ?le_minl ?lexx//.
-  by rewrite ltf_pinv // ?ltr_nat// posrE.
+  by rewrite ltf_pV2 // ?ltr_nat// posrE.
 have [f Pf] := choice Ar.
 pose fix ar n := if n is p.+1 then (f (p, ar p)) else (a0, r0).
 pose a := fun n => (ar n).1.
@@ -3005,7 +2996,7 @@ have : cvg (a @ \oo).
     pose eps := e / 2.
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
       exists `|ceil eps^-1|%N.
-      rewrite -ltf_pinv ?(posrE,divr_gt0)// invrK -addn1 natrD.
+      rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK -addn1 natrD.
       rewrite gtz0_norm ?(ceil_gt0,invr_gt0,divr_gt0)//.
       by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
     exists n.+1; rewrite -ltr_pdivlMl //.
@@ -3019,7 +3010,7 @@ have : cvg (a @ \oo).
      have /(_ (a m)) := Suite_ball n m nsupm.
      by apply; exact: closed_ballxx.
   rewrite closed_ballE /closed_ball_ //= => /le_lt_trans; apply.
-  by rewrite  -?ltr_pdivr_mulr ?mulfV ?ltr1n.
+  by rewrite  -?ltr_pdivrMr ?mulfV ?ltr1n.
 rewrite cvg_ex //= => -[l Hl]; exists l; split.
 - have Hinter : (closed_ball a0 r0%:num) l.
     apply: (@closed_cvg _ _ \oo eventually_filter a) => //.
@@ -3041,7 +3032,6 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
 Qed.
 
 End Baire.
-
 
 Definition bounded_fun_norm (K : realType) (V : completeNormedModType K)
     (W : normedModType K) (f : V -> W) :=
@@ -3068,16 +3058,11 @@ Lemma semi_additive_linear (R : ringType) (U : lmodType R) V
   (s : GRing.Scale.law R V) (f : U -> V) : linear_for s f -> semi_additive f.
 Proof.
 move=> Lsf; split.
-  rewrite -[X in f X](addr0 0).
-  rewrite -[X in f (X + _)](scaler0 _ (- 1)).
-  rewrite Lsf.
-  by rewrite GRing.Scale.N1op addrC subrr.
+  rewrite -[X in f X](addr0 0) -[X in f (X + _)](scaler0 _ (- 1)).
+  by rewrite Lsf GRing.Scale.N1op addrC subrr.
 move=> x y.
-rewrite -{1}(opprK y).
-rewrite -{1}(scaleN1r y).
-rewrite (additive_linear Lsf).
-rewrite (scalable_linear Lsf).
-by rewrite GRing.Scale.N1op opprK.
+rewrite -{1}(opprK y) -{1}(scaleN1r y).
+by rewrite (additive_linear Lsf) (scalable_linear Lsf) GRing.Scale.N1op opprK.
 Qed.
 
 Section banach_steinhaus.
@@ -3091,6 +3076,12 @@ Definition uniform_bounded (F : set (V -> W)) :=
   forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
 (*End NB: to be removed*)
 
+Definition mylinear (f : V -> W) (lf : linear f) : {linear V -> W}.
+Proof.
+apply: (@GRing.Linear.Pack K V W _ _); apply: GRing.Linear.Class.
+  exact: (GRing.isSemiAdditive.Build _ _ _ (semi_additive_linear lf)).
+exact: (GRing.isScalable.Build _ _ _ _ _ (scalable_linear lf)).
+Defined.
 
 Theorem Banach_Steinhauss (F : set (V -> W)):
   (forall f, F f -> bounded_fun_norm f /\ linear f) ->
@@ -3104,15 +3095,8 @@ have O_open : forall n, open ( O n ).
     exact: open_gt.
   move=> x Hx; apply: continuous_comp; last exact: norm_continuous.
   have Li : linear i := proj2 (Propf _ Fi).
-  have @i' : {linear V -> W}.
-    apply: (@GRing.Linear.Pack K V W _ _).
-    apply: GRing.Linear.Class.
-      have := GRing.isSemiAdditive.Build _ _ _ (semi_additive_linear Li).
-      exact.
-    have := (GRing.isScalable.Build _ _ _ _ _ (scalable_linear Li)).
-    exact.
-  apply: (@linear_continuous K V W i') => /=.
-  exact/(proj1 (bounded_landau i'))/(proj1 (Propf _ Fi)).
+  apply: (@linear_continuous K V W (mylinear Li)) => /=.
+  exact/(proj1 (bounded_landau (mylinear Li)))/(proj1 (Propf _ Fi)).
 set O_inf := \bigcap_i (O i).
 have O_infempty : O_inf = set0.
   rewrite -subset0 => x.
@@ -3137,44 +3121,30 @@ have [n [x0 [r H]] k] :
    /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]]] /(_ bxr) bxrOi.
   by exists i, x, (PosNum r0); apply/disjoints_subset/bxrOi.
 exists ((n + n)%:R * k * 2 / r%:num)=> f Ff y Hx; move: (Propf f Ff) => [ _ linf].
-have @linf' : {linear V -> W}.
-  apply: (@GRing.Linear.Pack K V W _ _).
-  apply: GRing.Linear.Class.
-    have := GRing.isSemiAdditive.Build _ _ _ (semi_additive_linear linf).
-    exact.
-  have := (GRing.isScalable.Build _ _ _ _ _ (scalable_linear linf)).
-  exact.
 case: (eqVneq y 0) => [-> | Zeroy].
-  move: (linear0 (linf')) => /= ->.
+  move: (linear0 (mylinear linf)) => /= ->.
   by rewrite normr0 !mulr_ge0 // (le_trans _ Hx).
 have majballi : forall f x, F f -> (ball x0 r%:num) x -> `|f x | <= n%:R.
   move=> g x Fg /(H x); rewrite leNgt.
   by rewrite /O setC_bigcup /= => /(_ _ Fg)/negP.
 have majball : forall f x, F f -> (ball x0 r%:num) x -> `|f (x - x0)| <= n%:R + n%:R.
   move=> g x Fg; move: (Propf g Fg) => [Bg Lg].
-  have @Lg' : {linear V -> W}.
-    apply: (@GRing.Linear.Pack K V W _ _).
-    apply: GRing.Linear.Class.
-      have := GRing.isSemiAdditive.Build _ _ _ (semi_additive_linear Lg).
-      exact.
-    have := (GRing.isScalable.Build _ _ _ _ _ (scalable_linear Lg)).
-    exact.
-  move: (linearB (Lg')) => /= -> Ballx.
-  apply/(le_trans (ler_norm_sub _ _))/ler_add; first exact: majballi.
+  move: (linearB (mylinear Lg)) => /= -> Ballx.
+  apply/(le_trans (ler_normB _ _))/lerD; first exact: majballi.
   by apply: majballi => //; exact/ball_center.
 have ballprop : ball x0 r%:num (2^-1 * (r%:num / `|y|) *: y  + x0).
-  rewrite -ball_normE /ball_ /= opprD addrCA subrr addr0 normrN normmZ.
+  rewrite -ball_normE /ball_ /= opprD addrCA subrr addr0 normrN normrZ.
   rewrite 2!normrM -2!mulrA (@normfV _ `|y|) normr_id mulVf ?mulr1 ?normr_eq0//.
-  by rewrite gtr0_norm // gtr0_norm // gtr_pmull // invf_lt1 // ltr1n.
+  by rewrite gtr0_norm // gtr0_norm // gtr_pMl // invf_lt1 // ltr1n.
 have := majball f (2^-1 * (r%:num / `|y|) *: y + x0) Ff ballprop.
 rewrite -addrA addrN linf.
-move: (linear0 (linf')) => /= ->.
-rewrite addr0 normmZ 2!normrM gtr0_norm // gtr0_norm //.
-rewrite normfV normr_id -ler_pdivl_mull //=; last first.
+move: (linear0 (mylinear linf)) => /= ->.
+rewrite addr0 normrZ 2!normrM gtr0_norm // gtr0_norm //.
+rewrite normfV normr_id -ler_pdivlMl //=; last first.
   by rewrite mulr_gt0 // mulr_gt0 // invr_gt0 normr_gt0.
 move/le_trans; apply.
 rewrite -natrD -!mulrA (mulrC (_%:R)) ler_pM //.
-by rewrite invfM invrK mulrCA ler_pmul2l // invf_div // ler_pmul2r.
+by rewrite invfM invrK mulrCA ler_pM2l // invf_div // ler_pM2r.
 Qed.
 
 End banach_steinhaus.

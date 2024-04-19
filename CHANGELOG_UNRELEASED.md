@@ -53,14 +53,6 @@
 - in `lebesgue_integral.v`:
   + lemmas `integrableMl`, `integrableMr`
   
-- in `topology.v`:
-  + global instance `ball_filter`
-  + module `regular_topology` with an `Exports` submodule
-    * canonicals `pointedType`, `filteredType`, `topologicalType`,
-      `uniformType`, `pseudoMetricType`
-  + module `numFieldTopology` with an `Exports` submodule
-    * many canonicals and coercions
-  + global instance `Proper_nbhs'_regular_numFieldType`
 - in `normedtype.v`:
   + lemma `le_closed_ball` 
 - in `sequences.v`:
