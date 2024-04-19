@@ -17,8 +17,11 @@ Require Import exp numfun lebesgue_measure lebesgue_integral.
 (* ```                                                                        *)
 (*          {RV P >-> R} == real random variable: a measurable function from  *)
 (*                          the measurableType of the probability P to R      *)
-(*        distribution X == measure image of P by X : {RV P -> R}, declared   *)
-(*                          as an instance of probability measure             *)
+(*      distribution P X == measure image of the probability measure P by the *)
+(*                          random variable X : {RV P -> R}                   *)
+(*                          P as type probability T R with T of type          *)
+(*                          measurableType.                                   *)
+(*                          Declared as an instance of probability measure.   *)
 (*               'E_P[X] == expectation of the real measurable function X     *)
 (*        covariance X Y == covariance between real random variable X and Y   *)
 (*               'V_P[X] == variance of the real random variable X            *)
@@ -67,7 +70,7 @@ Lemma probability_range d (T : measurableType d) (R : realType)
   (P : probability T R) (X : {RV P >-> R}) : P (X @^-1` range X) = 1%E.
 Proof. by rewrite preimage_range probability_setT. Qed.
 
-Definition distribution (d : _) (T : measurableType d) (R : realType)
+Definition distribution d (T : measurableType d) (R : realType)
     (P : probability T R) (X : {mfun T >-> R}) :=
   pushforward P (@measurable_funP _ _ _ X).
 
