@@ -1839,7 +1839,7 @@ Lemma patchT f : {in A, patch f =1 f}. Proof. by rewrite /patch => x ->. Qed.
 Lemma patchN f : {in [predC A], patch f =1 d}.
 Proof. by rewrite /patch => x /negPf/= ->. Qed.
 Lemma patchC f : {in ~` A, patch f =1 d}.
-Proof. by move=> u /set_mem/= NAu; rewrite patchN ?inE//= notin_set. Qed.
+Proof. by move=> u /set_mem/= NAu; rewrite patchN ?inE//= notin_setE. Qed.
 
 HB.instance Definition _ f :=
   SurjFun.copy (patch f) [fun patch f in A].
@@ -1870,7 +1870,7 @@ Lemma preimage_restrict (aT : Type) (rT : pointedType)
   (f \_ D) @^-1` B = (if point \in B then ~` D else set0) `|` D `&` f @^-1` B.
 Proof.
 rewrite /preimage/= /patch; apply/predeqP => x /=; split.
-  case: ifPn; rewrite ?(inE, notin_set); first by right.
+  case: ifPn; rewrite ?(inE, notin_setE); first by right.
   by move=> NDx Bp; rewrite ifT ?inE//=; left.
 move=> [|[Dx Bfx]]; last by rewrite ifT ?inE.
 by case: ifP; rewrite // inE => Bp NDx; case: ifPn; rewrite // inE.

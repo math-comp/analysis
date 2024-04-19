@@ -133,8 +133,8 @@ rewrite uniq_perm ?filter_uniq//= => i; rewrite mem_filter.
 set g := fun i => if i \in A then f i else idx.
 have gAf : setT `&` g @^-1` [set~ idx] = (A `&` f @^-1` [set~ idx]).
   rewrite setTI; apply/predeqP => x; split; rewrite /preimage/g/=.
-    by case: ifPn; rewrite (inE, notin_set).
-  by case: ifPn; rewrite (inE, notin_set) => ? [].
+    by case: ifPn; rewrite (inE, notin_setE).
+  by case: ifPn; rewrite (inE, notin_setE) => ? [].
 case: finite_supportP => //.
   rewrite -gAf; case: finite_supportP=> //=; first by rewrite ?inE andbF.
   by move=> X _ gidx <-//.
@@ -214,7 +214,7 @@ Lemma fsbig_widen (T : choiceType) [R : Type] [idx : R]
   \big[op/idx]_(i \in P) f i = \big[op/idx]_(i \in D) f i.
 Proof.
 move=> PD DPf; rewrite fsbig_mkcond [RHS]fsbig_mkcond.
-apply: eq_fsbigr => x _; rewrite /patch; case: ifPn; rewrite (inE, notin_set).
+apply: eq_fsbigr => x _; rewrite /patch; case: ifPn; rewrite (inE, notin_setE).
   by move=> Px; rewrite ifT// inE; apply: PD.
 by move=> Px; case: ifP => //; rewrite inE => Dx; rewrite DPf.
 Qed.

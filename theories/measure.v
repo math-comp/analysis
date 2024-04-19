@@ -1716,7 +1716,7 @@ Proof.
 move=> F mF tF mUF; rewrite /dirac indicE; have [|aFn] /= := boolP (a \in _).
   rewrite inE => -[n _ Fna].
   have naF m : m != n -> a \notin F m.
-    move=> mn; rewrite notin_set => Fma.
+    move=> mn; rewrite notin_setE => Fma.
     move/trivIsetP : tF => /(_ _ _ Logic.I Logic.I mn).
     by rewrite predeqE => /(_ a)[+ _]; exact.
   apply/cvg_ballP => _/posnumP[e]; near=> m.
@@ -2202,7 +2202,7 @@ exists (B `&` [set X | X != set0]); split.
 - by move=> X Y/= [XB _] [YB _]; exact: Btriv.
 - by move=> X/= /[!inE] -[] /Bm.
 rewrite bigcup_mkcondr; apply: eq_bigcupr => X Bx; case: ifPn => //.
-by rewrite notin_set/= => /negP/negPn/eqP.
+by rewrite notin_setE/= => /negP/negPn/eqP.
 Qed.
 
 Definition decomp (A : set rT) : set (set T) :=
@@ -2612,13 +2612,13 @@ move=> XEbig; rewrite measure_semi_bigcup//= -?XEbig//; last first.
 rewrite [leLHS](_ : _ = \sum_(i <oo | g i != set0) mu (g i)); last first.
   rewrite !nneseries_esum// esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
   move=> i _; rewrite ifT ?inE//=; case: ifPn => //.
-  by rewrite notin_set /= -/(g _) => /negP/negPn/eqP ->.
+  by rewrite notin_setE /= -/(g _) => /negP/negPn/eqP ->.
 rewrite -(esum_pred_image mu g)//.
 rewrite [leLHS](_ : _ = \esum_(X in range g) mu X); last first.
   rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum.
-  move=> Y _; case: ifPn; rewrite ?(inE, notin_set)/=.
+  move=> Y _; case: ifPn; rewrite ?(inE, notin_setE)/=.
     by move=> [i giN0 giY]; rewrite ifT// ?inE//=; exists i.
-  move=> Ngx; case: ifPn; rewrite ?(inE, notin_set)//=.
+  move=> Ngx; case: ifPn; rewrite ?(inE, notin_setE)//=.
   move=> [i _ giY]; apply: contra_not_eq Ngx; rewrite -giY => mugi.
   by exists i => //; apply: contra_neq mugi => ->; rewrite measure0.
 have -> : range g = \bigcup_i (decomp (seqDU B i)).

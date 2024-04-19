@@ -1483,7 +1483,7 @@ have hnuP S : measurable S -> S `<=` AP -> \int[mu]_(x in S) h x <= nu S.
 have hnuN S : measurable S -> S `<=` ~` AP -> \int[mu]_(x in S) h x <= nu S.
   move=> mS ScAP; rewrite /h; under eq_integral.
     move=> x xS; rewrite ifF; last first.
-      by apply/negbTE; rewrite notin_set; apply: ScAP; apply: set_mem.
+      by apply/negbTE; rewrite notin_setE; apply: ScAP; apply: set_mem.
     over.
   exact: int_fRN_ub.
 have hnu S : measurable S -> \int[mu]_(x in S) h x <= nu S.

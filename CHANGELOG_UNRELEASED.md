@@ -58,6 +58,9 @@
   + `measure_sigma_sub_additive` -> `measure_sigma_subadditive`
   + `measure_sigma_sub_additive_tail` -> `measure_sigma_subadditive_tail`
 
+- in `classical_sets.v`:
+  + `notin_set` -> `notin_setE`
+
 ### Generalized
 
 - in `constructive_ereal.v`:
@@ -76,6 +79,9 @@
   + lemmas ` measurable_prod_measurableType`, `measurable_prod_g_measurableTypeR` (from `measurableType` to `algebraOfSetsType`)
 
 ### Deprecated
+
+- in `classical_sets.v`:
+  + `notin_set` (use `notin_setE` instead)
 
 ### Removed
 
