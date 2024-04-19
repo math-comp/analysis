@@ -23,6 +23,9 @@
 - in `lebesgue_integral.v`:
   + lemmas `integrableMl`, `integrableMr`
 
+- in `realfun.v`
+  + lemmas `total_variation_nondecreasing`, `total_variation_bounded_variation`
+
 ### Changed
 
 ### Renamed

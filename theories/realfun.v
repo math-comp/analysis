@@ -2226,6 +2226,27 @@ Definition neg_tv a f (x : R) : \bar R := ((TV a x f - (f x)%:E) * 2^-1%:E)%E.
 
 Definition pos_tv a f (x : R) : \bar R := neg_tv a (\- f) x.
 
+Lemma total_variation_nondecreasing a b f :
+  {in `[a, b] &, nondecreasing_fun (TV a ^~ f)}.
+Proof.
+move=> x y; rewrite !in_itv/= => /andP[ax xb] /andP[ay yb] xy.
+by rewrite (total_variationD f ax xy)// leeDl// total_variation_ge0.
+Qed.
+
+Lemma total_variation_bounded_variation a b (f : R -> R) : a <= b ->
+  BV a b f ->
+  BV a b (fine \o TV a ^~ f).
+Proof.
+move=> ab BVf; apply/bounded_variationP => //.
+rewrite ge0_fin_numE; last exact: total_variation_ge0.
+rewrite nondecreasing_total_variation/= ?ltry//.
+move=> x y; rewrite !in_itv!/= => /andP[ax xb] /andP[ay yb] xy.
+apply: fine_le.
+- exact/(bounded_variationP _ ax)/(bounded_variationl ax xb).
+- exact/(bounded_variationP _ ay)/(bounded_variationl ay yb).
+- by apply: (@total_variation_nondecreasing _ b); rewrite ?in_itv //= ?ax ?ay.
+Qed.
+
 Lemma neg_tv_nondecreasing a b f :
   {in `[a, b] &, nondecreasing_fun (neg_tv a f)}.
 Proof.
