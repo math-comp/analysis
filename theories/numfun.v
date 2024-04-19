@@ -273,10 +273,10 @@ Lemma image_indic D A :
               (if A `&` D != set0 then [set 1 : R] else set0).
 Proof.
 rewrite /indic; apply/predeqP => x; split => [[t At /= <-]|].
-  by rewrite /indic; case: (boolP (t \in D)); rewrite ?(inE, notin_set) => Dt;
+  by rewrite /indic; case: (boolP (t \in D)); rewrite ?(inE, notin_setE) => Dt;
      [right|left]; rewrite ifT//=; apply/set0P; exists t.
 by move=> []; case: ifPn; rewrite ?negbK// => /set0P[t [At Dt]] ->;
-   exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_set).
+   exists t => //; case: (boolP (t \in D)); rewrite ?(inE, notin_setE).
 Qed.
 
 Lemma preimage_indic (D : set T) (B : set R) :
@@ -286,13 +286,13 @@ Proof.
 rewrite /preimage/= /indic; apply/seteqP; split => x;
   case: ifPn => B1; case: ifPn => B0 //=.
 - have [|] := boolP (x \in D); first by rewrite inE.
-  by rewrite notin_set in B0.
-- have [|] := boolP (x \in D); last by rewrite notin_set.
-  by rewrite notin_set in B1.
+  by rewrite notin_setE in B0.
+- have [|] := boolP (x \in D); last by rewrite notin_setE.
+  by rewrite notin_setE in B1.
 - by have [xD|xD] := boolP (x \in D);
-    [rewrite notin_set in B1|rewrite notin_set in B0].
+    [rewrite notin_setE in B1|rewrite notin_setE in B0].
 - by have [xD|xD] := boolP (x \in D); [rewrite inE in B1|rewrite inE in B0].
-- have [xD|] := boolP (x \in D); last by rewrite notin_set.
+- have [xD|] := boolP (x \in D); last by rewrite notin_setE.
   by rewrite inE in B1.
 - have [|xD] := boolP (x \in D); first by rewrite inE.
   by rewrite inE in B0.

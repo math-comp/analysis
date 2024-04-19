@@ -402,7 +402,7 @@ move=> /set0P[x Ax]; right; apply/surjfunPex.
 exists (fun y => if f y \in A then f y else x).
 apply/seteqP; split.
   by move=> x' /[dup] /= /'surj_f [y By <-] Afy; exists y; rewrite ?ifT// inE.
-by apply/image_subP => y By; case: ifPn; rewrite (inE, notin_set).
+by apply/image_subP => y By; case: ifPn; rewrite (inE, notin_setE).
 Qed.
 
 Lemma card_le_II n m : (`I_n #<= `I_m) = (n <= m)%N.
@@ -777,7 +777,7 @@ Lemma fset_setD {T : choiceType} (A B : set T) :
 Proof.
 move=> fA fB; apply/fsetP=> x.
 rewrite ?(inE, in_fset_set)//; last exact: finite_setD.
-by apply/idP/andP; rewrite ?inE => -[]; rewrite ?notin_set.
+by apply/idP/andP; rewrite ?inE => -[]; rewrite ?notin_setE.
 Qed.
 
 Lemma fset_setD1 {T : choiceType} (x : T) (A : set T) :

@@ -1484,14 +1484,14 @@ Proof.
 move=> ltab fdrvbl fcont faefb.
 have [cmax cmaxab fcmax] := EVT_max (ltW ltab) fcont.
 have [cmaxeaVb|] := boolP (cmax \in [set a; b]); last first.
-  rewrite notin_set => /not_orP[/eqP cnea /eqP cneb].
+  rewrite notin_setE => /not_orP[/eqP cnea /eqP cneb].
   have {}cmaxab : cmax \in `]a, b[%R.
     by rewrite in_itv /= !lt_def !(itvP cmaxab) cnea eq_sym cneb.
   exists cmax => //; apply: derive1_at_max (ltW ltab) fdrvbl cmaxab _ => t tab.
   by apply: fcmax; rewrite in_itv /= !ltW // (itvP tab).
 have [cmin cminab fcmin] := EVT_min (ltW ltab) fcont.
 have [cmineaVb|] := boolP (cmin \in [set a; b]); last first.
-  rewrite notin_set => /not_orP[/eqP cnea /eqP cneb].
+  rewrite notin_setE => /not_orP[/eqP cnea /eqP cneb].
   have {}cminab : cmin \in `]a, b[%R.
     by rewrite in_itv /= !lt_def !(itvP cminab) cnea eq_sym cneb.
   exists cmin => //; apply: derive1_at_min (ltW ltab) fdrvbl cminab _ => t tab.

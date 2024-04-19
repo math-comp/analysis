@@ -423,12 +423,12 @@ move=> Jtriv a_ge0.
 pose J' i := if a @` J i == [set 0] then set0 else J i.
 pose a' x := if x \in \bigcup_(k in K) J k then a x else 0.
 have a'E k x : K k -> J k x -> a' x = a x.
-  move=> Kk Jkx; rewrite /a'; case: ifPn; rewrite ?(inE, notin_set)//=.
+  move=> Kk Jkx; rewrite /a'; case: ifPn; rewrite ?(inE, notin_setE)//=.
   by case; exists k.
 have a'_ge0 x : a' x >= 0 by rewrite /a'; case: ifPn; rewrite // ?inE => /a_ge0.
 transitivity (\esum_(i in \bigcup_(k in K) J' k) a' i).
   rewrite esum_mkcond [RHS]esum_mkcond /a'; apply: eq_esum => x _.
-  do 2!case: ifPn; rewrite ?(inE, notin_set)//= => J'x Jx.
+  do 2!case: ifPn; rewrite ?(inE, notin_setE)//= => J'x Jx.
   apply: contra_not_eq J'x => Nax.
   move: Jx => [k kK Jkx]; exists k=> //; rewrite /J'/=; case: ifPn=> //=.
   move=> /eqP/(congr1 (@^~ (a x)))/=; rewrite propeqE => -[+ _].
@@ -439,7 +439,7 @@ rewrite esum_bigcupT//; last first.
   by have := Jtriv i j Ai0 Aj0; apply; exists x.
 apply: eq_esum => i Ki.
 rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum => x _.
-do 2!case: ifPn; rewrite ?(inE, notin_set)//=.
+do 2!case: ifPn; rewrite ?(inE, notin_setE)//=.
 - by move=> /a'E->//.
 - by rewrite /J'; case: ifPn => //.
 move=> Jix; rewrite /J'; case: ifPn=> //=.

@@ -765,7 +765,7 @@ rewrite sintegralE (fsbig_widen _ [set 0%R; 1%R]) => //; last 2 first.
 have N01 : (0 <> 1:> R)%R by move=> /esym/eqP; rewrite oner_eq0.
 rewrite fsbigU//=; last by move=> t [->]//.
 rewrite !fsbig_set1 mul0e add0e mul1e.
-by rewrite preimage_indic ifT ?inE// ifN ?notin_set.
+by rewrite preimage_indic ifT ?inE// ifN ?notin_setE.
 Qed.
 
 (* NB: not used *)
@@ -1423,7 +1423,7 @@ apply/negP => /andP[/allP An0]; rewrite mulf_eq0 => /orP[|].
   by apply/negP; near: n; exists 1%N => //= m /=; rewrite lt0n pnatr_eq0.
 rewrite pnatr_eq0 => /eqP.
 have [//|] := boolP (x \in B n).
-rewrite notin_set /B /setI /= => /not_andP[] // /negP.
+rewrite notin_setE /B /setI /= => /not_andP[] // /negP.
 rewrite -ltNge => fxn _.
 have K : (`|floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
   rewrite -ltz_nat gez0_abs; last by rewrite floor_ge0 mulr_ge0// ltW.
@@ -2568,7 +2568,7 @@ rewrite sintegralE (fsbig_widen _ [set 0%R; x%:num])/=.
 - have [->|x0] := eqVneq x%:num 0%R; first by rewrite setUid fsbig_set1 !mul0e.
   rewrite fsbigU0//=; last by move=> y [->]/esym; apply/eqP.
   rewrite !fsbig_set1 mul0e add0e preimage_restrict//.
-  by rewrite ifN ?set0U ?setIidl//= notin_set => /esym; exact/eqP.
+  by rewrite ifN ?set0U ?setIidl//= notin_setE => /esym; exact/eqP.
 - by move=> y [t _ <-] /=; rewrite /patch; case: ifPn; [right|left].
 - by move=> y [_ /=/preimage10->]; rewrite measure0 mule0.
 Qed.
@@ -3635,7 +3635,7 @@ pose f' : T -> R := indic Df_neq0.
 have le_f_M t : D t -> `|f t| <= M%:E * (f' t)%:E.
   move=> Dt; rewrite /f' indicE; have [|] := boolP (t \in Df_neq0).
     by rewrite inE => -[_ _]; rewrite mule1 fM.
-  by rewrite notin_set=> /not_andP[//|/negP/negPn/eqP ->]; rewrite abse0 mule0.
+  by rewrite notin_setE=> /not_andP[//|/negP/negPn/eqP ->]; rewrite abse0 mule0.
 have : 0 <= \int[mu]_(x in D) `|f x|  <= `|M|%:E * mu Df_neq0.
   rewrite integral_ge0//= /Df_neq0 -{2}(setIid D) setIAC -integral_indic//.
   rewrite -/Df_neq0 -ge0_integralZl//; last 2 first.
@@ -3854,7 +3854,7 @@ rewrite [RHS](ge0_negligible_integral mN)//; last 2 first.
 - apply: eq_integral => x;rewrite in_setD => /andP[_ xN].
   apply: contrapT; rewrite indicE; have [|?] := boolP (x \in D).
     rewrite inE => Dx; rewrite !mule1.
-    move: xN; rewrite notin_set; apply: contra_not => fxgx; apply: subN => /=.
+    move: xN; rewrite notin_setE; apply: contra_not => fxgx; apply: subN => /=.
     exact/not_implyP.
   by rewrite !mule0.
 Qed.
@@ -3929,7 +3929,7 @@ rewrite [X in measurable X](_ : _ = D `&` ~` N `&` (f @^-1` `]x%:E, +oo[)
   - have [->|fgy] := eqVneq (f y) (g y).
       have [yN|yN] := boolP (y \in N).
         by right; split => //; rewrite inE in yN.
-      by left; split => //; rewrite notin_set in yN.
+      by left; split => //; rewrite notin_setE in yN.
     by right; split => //; split => //; apply: subN => /= /(_ Dy); exact/eqP.
   - split => //; have [<-//|fgy] := eqVneq (f y) (g y).
     by exfalso; apply/Ny/subN => /= /(_ Dy); exact/eqP.
@@ -3988,19 +3988,19 @@ transitivity (\int[mu]_(x in D) (EFin \o (g1 \+ g2)%R) x).
     rewrite EFinD /g1 /g2 /restrict /=; have [|] := boolP (x \in A `&` B).
       by rewrite in_setI => /andP[xA xB] /=; rewrite !fineK.
     by rewrite in_setI negb_and => /orP[|];
-      rewrite in_setI negb_and /= (mem_set Dx)/= notin_set/=.
+      rewrite in_setI negb_and /= (mem_set Dx)/= notin_setE/=.
 - rewrite (_ : _ \o _ = (EFin \o g1) \+ (EFin \o g2))// integralD_EFin//.
   congr (_ + _); apply: ae_eq_integral => //.
   + apply: (filterS2 _ _ (integrable_ae mD if1) (integrable_ae mD if2)).
     move=> x + + Dx => /(_ Dx) f1fin /(_ Dx) f2fin /=; rewrite /g1 /restrict /=.
     have [/=|] := boolP (x \in A `&` B); first by rewrite fineK.
     by rewrite in_setI negb_and => /orP[|];
-      rewrite in_setI negb_and /= (mem_set Dx) /= notin_set/=.
+      rewrite in_setI negb_and /= (mem_set Dx) /= notin_setE/=.
   + apply: (filterS2 _ _ (integrable_ae mD if1) (integrable_ae mD if2)).
     move=> x + + Dx => /(_ Dx) f1fin /(_ Dx) f2fin /=; rewrite /g2 /restrict /=.
     have [/=|] := boolP (x \in A `&` B); first by rewrite fineK.
     by rewrite in_setI negb_and => /orP[|];
-      rewrite in_setI negb_and /= (mem_set Dx) /= notin_set.
+      rewrite in_setI negb_and /= (mem_set Dx) /= notin_setE.
 Qed.
 
 End integralD.

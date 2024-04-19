@@ -64,7 +64,7 @@ Notation "{ 'RV' P >-> R }" := (@random_variable _ _ R P) : form_scope.
 Lemma notin_range_measure d (T : measurableType d) (R : realType)
     (P : {measure set T -> \bar R}) (X : T -> R) r :
   r \notin range X -> P (X @^-1` [set r]) = 0%E.
-Proof. by rewrite notin_set => hr; rewrite preimage10. Qed.
+Proof. by rewrite notin_setE => hr; rewrite preimage10. Qed.
 
 Lemma probability_range d (T : measurableType d) (R : realType)
   (P : probability T R) (X : {RV P >-> R}) : P (X @^-1` range X) = 1%E.
@@ -751,7 +751,7 @@ rewrite eseries_mkcond; apply: eq_eseriesr => k _.
 rewrite /enum_prob patchE; case: ifPn => nX; rewrite ?mul0e//.
 rewrite diracE; have [kA|] := boolP (_ \in A).
   by rewrite mule1 setIidr// => _ /= ->; exact: set_mem.
-rewrite notin_set => kA.
+rewrite notin_setE => kA.
 rewrite mule0 (disjoints_subset _ _).2 ?preimage_set0 ?measure0//.
 by apply: subsetCr; rewrite sub1set inE.
 Qed.
@@ -780,7 +780,7 @@ rewrite -[in LHS](_ : \bigcup_k (if k \in dRV_dom X then
   exists ((dRV_enum X)^-1%function (X t)) => //.
   case: ifPn=> [_|].
     by rewrite invK// inE.
-  by rewrite notin_set/=; apply; apply: funS.
+  by rewrite notin_setE/=; apply; apply: funS.
 have tA : trivIset (dRV_dom X) (fun k => [set dRV_enum X k]).
   by move=> i j iX jX [r [/= ->{r}]] /inj; rewrite !inE; exact.
 have {tA}/trivIset_mkcond tXA :

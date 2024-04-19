@@ -511,7 +511,7 @@ Lemma set_memK {A} {u : T} : cancel (@set_mem A u) mem_set. Proof. by []. Qed.
 Lemma memNset (A : set T) (u : T) : ~ A u -> u \in A = false.
 Proof. by apply: contra_notF; rewrite inE. Qed.
 
-Lemma notin_set (A : set T) x : (x \notin A : Prop) = ~ (A x).
+Lemma notin_setE (A : set T) x : (x \notin A : Prop) = ~ (A x).
 Proof. by apply/propext; split=> /asboolPn. Qed.
 
 Lemma setTPn (A : set T) : A != setT <-> exists t, ~ A t.
@@ -527,13 +527,13 @@ Lemma in_set0 (x : T) : (x \in set0) = false. Proof. by rewrite memNset. Qed.
 Lemma in_setT (x : T) : x \in setT. Proof. by rewrite mem_set. Qed.
 
 Lemma in_setC (x : T) A : (x \in ~` A) = (x \notin A).
-Proof. by apply/idP/idP; rewrite inE notin_set. Qed.
+Proof. by apply/idP/idP; rewrite inE notin_setE. Qed.
 
 Lemma in_setI (x : T) A B : (x \in A `&` B) = (x \in A) && (x \in B).
 Proof. by apply/idP/andP; rewrite !inE. Qed.
 
 Lemma in_setD (x : T) A B : (x \in A `\` B) = (x \in A) && (x \notin B).
-Proof. by apply/idP/andP; rewrite !inE notin_set. Qed.
+Proof. by apply/idP/andP; rewrite !inE notin_setE. Qed.
 
 Lemma in_setU (x : T) A B : (x \in A `|` B) = (x \in A) || (x \in B).
 Proof. by apply/idP/orP; rewrite !inE. Qed.
@@ -755,7 +755,7 @@ Proof.  by move=> Aa; rewrite setDUK//= => x ->. Qed.
 
 Lemma setI1 A a : A `&` [set a] = if a \in A then [set a] else set0.
 Proof.
-by apply/predeqP => b; case: ifPn; rewrite (inE, notin_set) => Aa;
+by apply/predeqP => b; case: ifPn; rewrite (inE, notin_setE) => Aa;
    split=> [[]|]//; [move=> -> //|move=> /[swap] -> /Aa].
 Qed.
 
@@ -1091,6 +1091,8 @@ Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
 Notation setvI := setICl (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6", note="Use setICr instead.")]
 Notation setIv := setICr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="Use notin_setE instead.")]
+Notation notin_set := notin_setE (only parsing).
 Arguments setU_id2r {T} C {A B}.
 
 Section set_order.
@@ -1205,7 +1207,7 @@ have [Bt|Bt] := boolP (true \in B); have [Bf|Bf] := boolP (false \in B).
   apply/seteqP; split => -[]// /mem_set; last by move=> _; exact: set_mem.
   by rewrite (negbTE Bt).
 - suff : B = set0 by move=> ->; apply/or4P; rewrite eqxx/= !orbT.
-  by apply/seteqP; split => -[]//=; rewrite 2!notin_set in Bt, Bf.
+  by apply/seteqP; split => -[]//=; rewrite 2!notin_setE in Bt, Bf.
 Qed.
 
 (* TODO: other lemmas that relate fset and classical sets *)
@@ -1434,7 +1436,7 @@ Qed.
 Lemma notin_setI_preimage T R D (f : T -> R) i :
   i \notin f @` D -> D `&` f @^-1` [set i] = set0.
 Proof.
-by rewrite notin_set/=; apply: contra_notP => /eqP/set0P[t [Dt fit]]; exists t.
+by rewrite notin_setE/=; apply: contra_notP => /eqP/set0P[t [Dt fit]]; exists t.
 Qed.
 
 Lemma comp_preimage T1 T2 T3 (A : set T3) (g : T1 -> T2) (f : T2 -> T3) :
@@ -1772,8 +1774,8 @@ Lemma bigcup_mkcond P F :
   \bigcup_(i in P) F i = \bigcup_i if i \in P then F i else set0.
 Proof.
 rewrite predeqE => x; split=> [[i Pi Fix]|[i _]].
-  by exists i => //; case: ifPn; rewrite (inE, notin_set).
-by case: ifPn; rewrite (inE, notin_set) => Pi Fix; exists i.
+  by exists i => //; case: ifPn; rewrite (inE, notin_setE).
+by case: ifPn; rewrite (inE, notin_setE) => Pi Fix; exists i.
 Qed.
 
 Lemma bigcup_mkcondr P Q F :
@@ -3210,13 +3212,13 @@ Qed.
 Lemma notin_xsectionM X1 X2 x : x \notin X1 -> xsection (X1 `*` X2) x = set0.
 Proof.
 move=> xX1; rewrite /xsection /= predeqE => y; split => //.
-by rewrite /xsection/= inE => -[] /=; rewrite notin_set in xX1.
+by rewrite /xsection/= inE => -[] /=; rewrite notin_setE in xX1.
 Qed.
 
 Lemma notin_ysectionM X1 X2 y : y \notin X2 -> ysection (X1 `*` X2) y = set0.
 Proof.
 move=> yX2; rewrite /xsection /= predeqE => x; split => //.
-by rewrite /ysection/= inE => -[_]; rewrite notin_set in yX2.
+by rewrite /ysection/= inE => -[_]; rewrite notin_setE in yX2.
 Qed.
 
 Lemma xsection_bigcup (F : nat -> set (T1 * T2)) x :

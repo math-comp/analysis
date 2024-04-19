@@ -5944,7 +5944,7 @@ Variant nbhs_subspace_spec x : Prop -> Prop -> bool -> set_system T -> Type :=
 Lemma nbhs_subspaceP_subproof x :
   nbhs_subspace_spec x (A x) (~ A x) (x \in A) (nbhs_subspace x).
 Proof.
-rewrite /nbhs_subspace; case:(boolP (x \in A)); rewrite ?(inE, notin_set) => xA.
+rewrite /nbhs_subspace; case:(boolP (x \in A)); rewrite ?(inE, notin_setE) => xA.
   by rewrite (@propext (A x) True)// not_True; constructor.
 by rewrite (@propext (A x) False)// not_False; constructor.
 Qed.
