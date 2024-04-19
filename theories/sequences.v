@@ -2945,9 +2945,6 @@ Unshelve. all: end_near. Qed.
 
 End banach_contraction.
 
-Lemma gtz0_norm (R : numDomainType) (i : int) : 0 < i -> `|i|%:R = i%:~R :> R.
-Proof. by move/gtz0_abs => <-. Qed.
-
 Section Baire.
 Variable K : realType.
 
@@ -3001,7 +2998,7 @@ have : cvg (a @ \oo).
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
       exists `|ceil eps^-1|%N.
       rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK -addn1 natrD.
-      rewrite gtz0_norm ?(ceil_gt0,invr_gt0,divr_gt0)//.
+      rewrite natr_absz gtr0_norm ?(ceil_gt0,invr_gt0,divr_gt0)//.
       by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
     exists n.+1; rewrite -ltr_pdivlMl //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
