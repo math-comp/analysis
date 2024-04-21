@@ -70,20 +70,21 @@ make   # or make -j <number-of-cores-on-your-machine>
 make install
 ```
 
-## Disclaimer
+## About the stability of this library
 
-This library is still at an experimental stage.  Contents may
-change, definitions and theorems may be renamed, and inference
-mechanisms may be replaced at any major version bump.  Use at your
-own risk.
+Changes are documented systematically in [CHANGELOG.md](CHANGELOG.md) and
+[CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
+
+We bump the minor part of the version number for breaking changes.
+
+We use deprecation warnings to help transitioning to new versions.
+
+We try to preserve backward compatibility as best as we can.
 
 ## Documentation
 
 Each file is documented in its header
 ([`coq2html`](https://github.com/xavierleroy/coq2html) [documentation for the last version](https://math-comp.github.io/analysis/htmldoc_1_1_0/index.html)).
-
-Changes are documented in [CHANGELOG.md](CHANGELOG.md) and
-[CHANGELOG_UNRELEASED.md](CHANGELOG_UNRELEASED.md).
 
 Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 
