@@ -281,6 +281,25 @@ Proof.
 by move=> x y ? ?; rewrite -[in LHS](@invrK _ y) ltf_pV2// posrE invr_gt0.
 Qed.
 
+(* cf. math-comp/math-comp#1213 *)
+Disable Notation "\0" : ring_scope.
+Disable Notation "f \+ g" : ring_scope.
+Disable Notation "f \- g" : ring_scope.
+Disable Notation "\- f" : ring_scope.
+Disable Notation "a \*: f" : ring_scope.
+Disable Notation "x \*o f" : ring_scope.
+Disable Notation "x \o* f" : ring_scope.
+Disable Notation "f \* g" : ring_scope.
+
+Notation "\0" := (GRing.null_fun _) : function_scope.
+Notation "f \+ g" := (GRing.add_fun f g) : function_scope.
+Notation "f \- g" := (GRing.sub_fun f g) : function_scope.
+Notation "\- f" := (GRing.opp_fun f) : function_scope.
+Notation "a \*: f" := (GRing.scale_fun a f) : function_scope.
+Notation "x \*o f" := (GRing.mull_fun x f) : function_scope.
+Notation "x \o* f" := (GRing.mulr_fun x f) : function_scope.
+Notation "f \* g" := (GRing.mul_fun f g) : function_scope.
+
 (**********************)
 (* not yet backported *)
 (**********************)
