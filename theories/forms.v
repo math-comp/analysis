@@ -188,9 +188,6 @@ End BidirectionalLinearZ.
 
 End BilinearTheory.
 
-Canonical rev_mulmx (R : ringType) m n p := @RevOp _ _ _ (@mulmxr R m n p)
-  (@mulmx R m n p) (fun _ _ => erefl).
-
 Lemma mulmx_is_bilinear (R : comRingType) m n p :
   bilinear_for
     (GRing.Scale.Law.clone _ _ *:%R _) (GRing.Scale.Law.clone _ _ *:%R _)
