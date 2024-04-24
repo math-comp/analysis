@@ -2928,10 +2928,10 @@ move=> [s||]/=.
     by apply/nbhs_EFin; near do rewrite fin_numM//.
   move=> P /= Prs; apply/nbhs_EFin=> //=.
   by apply: near_fun => //=; apply: continuousM => //=; apply: cvg_cst.
-- rewrite muleC /mule/= eqe gt_eqF// lte_fin r0 => A [u [realu uA]].
+- rewrite gt0_muley ?lte_fin// => A [u [realu uA]].
   exists (r^-1 * u)%R; split; first by rewrite realM// realV realE ltW.
   by move=> x rux; apply: uA; move: rux; rewrite EFinM lte_pdivr_mull.
-- rewrite muleC /mule/= eqe gt_eqF// lte_fin r0 => A [u [realu uA]].
+- rewrite gt0_muleNy ?lte_fin// => A [u [realu uA]].
   exists (r^-1 * u)%R; split; first by rewrite realM// realV realE ltW.
   by move=> x xru; apply: uA; move: xru; rewrite EFinM lte_pdivl_mull.
 Unshelve. all: by end_near. Qed.

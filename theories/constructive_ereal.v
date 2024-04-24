@@ -290,7 +290,7 @@ Section ERealZsemimodule.
 Context {R : nmodType}.
 Implicit Types x y z : \bar R.
 
-Definition adde_subdef x y :=
+Definition adde x y :=
   match x, y with
   | x%:E , y%:E  => (x + y)%:E
   | -oo, _     => -oo
@@ -298,10 +298,9 @@ Definition adde_subdef x y :=
   | +oo, _     => +oo
   | _    , +oo => +oo
   end.
+Arguments adde : simpl never.
 
-Definition adde := nosimpl adde_subdef.
-
-Definition dual_adde_subdef x y :=
+Definition dual_adde x y :=
   match x, y with
   | x%:E , y%:E  => (x + y)%R%:E
   | +oo, _     => +oo
@@ -309,8 +308,7 @@ Definition dual_adde_subdef x y :=
   | -oo, _     => -oo
   | _    , -oo => -oo
   end.
-
-Definition dual_adde := nosimpl dual_adde_subdef.
+Arguments dual_adde : simpl never.
 
 Lemma addeA_subproof : associative (S := \bar R) adde.
 Proof. by case=> [x||] [y||] [z||] //; rewrite /adde /= addrA. Qed.
@@ -342,6 +340,8 @@ Definition enatmul x n : \bar R := iterop n +%R x 0.
 Definition ednatmul (x : \bar^d R) n : \bar^d R := iterop n +%R x 0.
 
 End ERealZsemimodule.
+Arguments adde : simpl never.
+Arguments dual_adde : simpl never.
 
 Section ERealOrder_numDomainType.
 Context {R : numDomainType}.
@@ -459,20 +459,20 @@ Section ERealArith.
 Context {R : numDomainType}.
 Implicit Types x y z : \bar R.
 
-Definition mule_subdef x y :=
+Definition mule x y :=
   match x, y with
   | x%:E , y%:E => (x * y)%:E
   | -oo, y | y, -oo => if y == 0 then 0 else if 0 < y then -oo else +oo
   | +oo, y | y, +oo => if y == 0 then 0 else if 0 < y then +oo else -oo
   end.
-
-Definition mule := nosimpl mule_subdef.
+Arguments mule : simpl never.
 
 Definition abse x : \bar R := if x is r%:E then `|r|%:E else +oo.
 
 Definition expe x n := iterop n mule x 1.
 
 End ERealArith.
+Arguments mule : simpl never.
 
 Notation "+%dE"  := (@GRing.add (\bar^d _)).
 Notation "+%E"   := (@GRing.add (\bar _)).
