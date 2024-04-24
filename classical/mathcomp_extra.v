@@ -612,10 +612,3 @@ rewrite /Order.min/=; case: ifPn => xz; case: ifPn => yz; rewrite ?ltxx//.
 Qed.
 
 End order_min.
-
-(*Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
-  fun_of_revop :> X -> Y -> Z;
-  _ : forall x, f x =1 fun_of_revop^~ x }.
-
-Canonical rev_mulr {R : ringType} :=
-  @RevOp _ _ _ (@GRing.mul R^c) (@GRing.mul R) (fun _ _ => erefl).*)
