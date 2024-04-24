@@ -36,6 +36,9 @@
 - in `forms.v`:
   + notation ``` u ``_ _ ```
 
+- moved from `forms.v` to `matchomp_extra.v`:
+  + structure `revop`
+
 ### Renamed
 
 - in `constructive_ereal.v`:
@@ -99,8 +102,6 @@
   + definition `mulr_rev`
   + canonical `rev_mulr`
   + lemmas `mulr_is_linear`, `mulr_rev_is_linear`
-- in `forms.v`:
-  + structure `revop`
 
 ### Infrastructure
 
