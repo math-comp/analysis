@@ -34,7 +34,7 @@
 ### Changed
 
 - in `forms.v`:
-  + notation ``` u ``_ _ ````
+  + notation ``` u ``_ _ ```
 
 ### Renamed
 
