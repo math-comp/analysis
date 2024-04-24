@@ -2,8 +2,8 @@
 
 ## Requirements
 
-- [The Coq Proof Assistant version ≥ 8.16](https://coq.inria.fr)
-- [Mathematical Components version ≥ 2.0.0](https://github.com/math-comp/math-comp)
+- [The Coq Proof Assistant version ≥ 8.18](https://coq.inria.fr)
+- [Mathematical Components version ≥ 2.1.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 2.0.0](https://github.com/math-comp/finmap)
 - [Hierarchy builder version >= 1.4.0](https://github.com/math-comp/hierarchy-builder)
 - [bigenough >= 1.0.0](https://github.com/math-comp/bigenough)
@@ -71,7 +71,7 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.18.0 and MathComp 2.0.0. For other versions, update the
+With the example of Coq 8.18.0 and MathComp 2.1.0. For other versions, update the
 version numbers accordingly.
 
 1. Install Coq 8.18.0
@@ -80,11 +80,11 @@ $ opam install coq.8.18.0
 ```
 2. Install the Mathematical Components
 ```
-$ opam install coq-mathcomp-ssreflect.2.0.0
-$ opam install coq-mathcomp-fingroup.2.0.0
-$ opam install coq-mathcomp-algebra.2.0.0
-$ opam install coq-mathcomp-solvable.2.0.0
-$ opam install coq-mathcomp-field.2.0.0
+$ opam install coq-mathcomp-ssreflect.2.1.0
+$ opam install coq-mathcomp-fingroup.2.1.0
+$ opam install coq-mathcomp-algebra.2.1.0
+$ opam install coq-mathcomp-solvable.2.1.0
+$ opam install coq-mathcomp-field.2.1.0
 ```
 3. Install the Finite maps library
 ```

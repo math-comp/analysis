@@ -765,7 +765,7 @@ Class ProperFilter' {T : Type} (F : set_system T) := {
   filter_filter' : Filter F
 }.
 (* TODO: Reuse :> above and remove the following line and the coercion below
-   after 8.17 is the minimum required version for Coq *)
+   after 8.21 is the minimum required version for Coq *)
 Global Existing Instance filter_filter'.
 Global Hint Mode ProperFilter' - ! : typeclass_instances.
 Arguments filter_not_empty {T} F {_}.
@@ -3031,12 +3031,9 @@ Unshelve. all: by end_near. Qed.
 Section UltraFilters.
 
 Class UltraFilter T (F : set_system T) := {
-  ultra_proper : ProperFilter F ;
+  #[global] ultra_proper :: ProperFilter F ;
   max_filter : forall G : set_system T, ProperFilter G -> F `<=` G -> G = F
 }.
-(* When requiring Coq >= 8.17, replace the line below with
-  #[global] ultra_proper :: ProperFilter F ; *)
-#[global] Existing Instance ultra_proper.
 
 Lemma ultra_cvg_clusterE (T : topologicalType) (F : set_system T) :
   UltraFilter F -> cluster F = [set p | F --> p].
