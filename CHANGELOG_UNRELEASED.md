@@ -36,6 +36,9 @@
 - in `forms.v`:
   + notation ``` u ``_ _ ```
 
+- in `trigo.v`:
+  + definitions `sin` and `cos` are now HB.locked
+
 ### Renamed
 
 - in `constructive_ereal.v`:
