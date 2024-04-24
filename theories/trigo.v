@@ -1,4 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
@@ -132,12 +133,21 @@ Qed.
 
 End alternating.
 
+Definition sin_coeff {R : realType} (x : R) :=
+  [sequence (odd n)%:R * (-1) ^+ n.-1./2 * x ^+ n / n`!%:R]_n.
+
+HB.lock Definition sin {R : realType} x : R := lim (series (sin_coeff x) @ \oo).
+Canonical locked_sin := Unlockable sin.unlock.
+
+Definition cos_coeff {R : realType} (x : R) :=
+  [sequence (~~ odd n)%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
+
+HB.lock Definition cos {R : realType} x : R := lim (series (cos_coeff x) @ \oo).
+Canonical locked_cos := Unlockable cos.unlock.
+
 Section CosSin.
 Variable R : realType.
 Implicit Types x y : R.
-
-Definition sin_coeff x :=
-  [sequence (odd n)%:R * (-1) ^+ n.-1./2 * x ^+ n / n`!%:R]_n.
 
 Lemma sin_coeffE x : sin_coeff x =
   (fun n => (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) n * x ^+ n).
@@ -157,11 +167,9 @@ apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
   by case: odd; [rewrite mul1r| rewrite !mul0r].
 Qed.
 
-Definition sin x : R := lim (series (sin_coeff x) @ \oo).
-
 Lemma sinE : sin = fun x =>
   lim (pseries (fun n => (odd n)%:R * (-1) ^+ n.-1./2 * (n`!%:R)^-1) x @ \oo).
-Proof. by apply/funext => x; rewrite /pseries -sin_coeffE. Qed.
+Proof. by apply/funext => x; rewrite /pseries unlock -sin_coeffE. Qed.
 
 Definition sin_coeff' x (n : nat) := (-1)^n * x ^+ n.*2.+1 / n.*2.+1`!%:R.
 
@@ -172,6 +180,7 @@ Qed.
 
 Lemma cvg_sin_coeff' x : series (sin_coeff' x) @ \oo --> sin x.
 Proof.
+rewrite unlock.
 have /(@cvg_series_cvg_series_group _ _ 2) := @is_cvg_series_sin_coeff x.
 move=> /(_ isT); apply: cvg_trans.
 rewrite [X in _ --> series X @ \oo](_ : _ = (fun n => sin_coeff x n.*2.+1)).
@@ -189,21 +198,19 @@ apply/funext => i; rewrite /pseries_diffs /= factS natrM invfM.
 by rewrite [_.+1%:R * _]mulrC -!mulrA [_.+1%:R^-1 * _]mulrC mulfK.
 Qed.
 
-Lemma series_sin_coeff0 n : series (sin_coeff 0) n.+1 = 0.
+Lemma series_sin_coeff0 n : series (@sin_coeff R 0) n.+1 = 0.
 Proof.
 rewrite /series /= big_nat_recl //= /sin_coeff /= expr0n divr1 !mulr1.
 by rewrite big1 ?addr0 // => i _; rewrite expr0n !(mul0r, mulr0).
 Qed.
 
-Lemma sin0 : sin 0 = 0.
+Lemma sin0 : sin 0 = 0 :> R.
 Proof.
+rewrite unlock.
 apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_sin_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /sin_coeff /= expr0n !(mulr0, mul0r).
 Unshelve. all: by end_near. Qed.
-
-Definition cos_coeff x :=
-  [sequence (~~ odd n)%:R * (-1)^n./2 * x ^+ n / n`!%:R]_n.
 
 Lemma cos_coeff_odd n x : cos_coeff x n.*2.+1 = 0.
 Proof. by rewrite /cos_coeff /= odd_double /= !mul0r. Qed.
@@ -240,13 +247,11 @@ apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
   by case: odd; [rewrite !mul0r | rewrite mul1r].
 Qed.
 
-Definition cos x : R := lim (series (cos_coeff x) @ \oo).
-
 Lemma cosE : cos = fun x =>
   lim (series (fun n =>
                 (fun n => (~~(odd n))%:R * (-1)^+ n./2 * (n`!%:R)^-1) n
                 * x ^+ n) @ \oo).
-Proof. by apply/funext => x; rewrite -cos_coeffE. Qed.
+Proof. by rewrite unlock; apply/funext => x; rewrite -cos_coeffE. Qed.
 
 Definition cos_coeff' x (n : nat) := (-1)^n * x ^+ n.*2 / n.*2`!%:R.
 
@@ -258,6 +263,7 @@ Qed.
 
 Lemma cvg_cos_coeff' x : series (cos_coeff' x) @ \oo --> cos x.
 Proof.
+rewrite unlock.
 have /(@cvg_series_cvg_series_group _ _ 2) := @is_cvg_series_cos_coeff x.
 move=> /(_ isT); apply: cvg_trans.
 rewrite [X in _ --> series X @ \oo](_ : _ = (fun n => cos_coeff x n.*2)); last first.
@@ -278,14 +284,15 @@ rewrite factS natrM invfM.
 by rewrite [_.+1%:R * _]mulrC -!mulrA [_.+1%:R^-1 * _]mulrC mulfK.
 Qed.
 
-Lemma series_cos_coeff0 n : series (cos_coeff 0) n.+1 = 1.
+Lemma series_cos_coeff0 n : series (cos_coeff 0) n.+1 = 1 :> R.
 Proof.
 rewrite /series /= big_nat_recl //= /cos_coeff /= expr0n divr1 !mulr1.
 by rewrite big1 ?addr0 // => i _; rewrite expr0n !(mul0r, mulr0).
 Qed.
 
-Lemma cos0 : cos 0 = 1.
+Lemma cos0 : cos 0 = 1 :> R.
 Proof.
+rewrite unlock.
 apply: lim_near_cst => //; near=> m; rewrite -[m]prednK; last by near: m.
 rewrite -addn1 series_addn series_cos_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /cos_coeff /= expr0n !(mulr0, mul0r).
@@ -312,7 +319,7 @@ Qed.
 Lemma derivable_sin x : derivable sin x 1.
 Proof. by apply: ex_derive; apply: is_derive_sin. Qed.
 
-Lemma continuous_sin : continuous sin.
+Lemma continuous_sin : continuous (@sin R).
 Proof.
 by move=> x; apply/differentiable_continuous/derivable1_diffP/derivable_sin.
 Qed.
@@ -344,7 +351,7 @@ Qed.
 Lemma derivable_cos x : derivable cos x 1.
 Proof. by apply: ex_derive; apply: is_derive_cos. Qed.
 
-Lemma continuous_cos : continuous cos.
+Lemma continuous_cos : continuous (@cos R).
 Proof.
 by move=> x; exact/differentiable_continuous/derivable1_diffP/derivable_cos.
 Qed.
