@@ -1,11 +1,7 @@
 From HB Require Import structures.
-From mathcomp
-Require Import all_ssreflect ssralg fingroup zmodp poly ssrnum.
-From mathcomp
-Require Import matrix mxalgebra vector falgebra ssrnum algC algnum.
-From mathcomp
-Require Import fieldext.
-From mathcomp Require Import vector.
+From mathcomp Require Import all_ssreflect ssralg fingroup zmodp poly ssrnum.
+From mathcomp Require Import matrix mxalgebra vector falgebra ssrnum fieldext.
+From mathcomp Require Import vector mathcomp_extra.
 
 (**md**************************************************************************)
 (* # Bilinear forms                                                           *)
@@ -31,17 +27,12 @@ Reserved Notation "A ^_|_"    (at level 8, format "A ^_|_").
 Reserved Notation "A _|_ B" (at level 69, format "A  _|_  B").
 Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui").
 
-Notation "u '``_' i" := (u (GRing.zero [the zmodType of 'I_1]) i) : ring_scope.
+Notation "u '``_' i" := (u (0 : 'I_1) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
  (format "''e_' i", at level 3) : ring_scope.
 
 Local Notation "M ^ phi" := (map_mx phi M).
 Local Notation "M ^t phi" := (map_mx phi (M ^T)) (phi at level 30, at level 30).
-
-Structure revop X Y Z (f : Y -> X -> Z) := RevOp {
-  fun_of_revop :> X -> Y -> Z;
-  _ : forall x, f x =1 fun_of_revop^~ x
-}.
 
 Lemma eq_map_mx_id (R : ringType) m n (M : 'M[R]_(m,n)) (f : R -> R) :
   f =1 id -> M ^ f = M.
@@ -196,9 +187,6 @@ Variables (S : ringType) (h : GRing.Scale.law S V).
 End BidirectionalLinearZ.
 
 End BilinearTheory.
-
-Canonical rev_mulmx (R : ringType) m n p := @RevOp _ _ _ (@mulmxr R m n p)
-  (@mulmx R m n p) (fun _ _ => erefl).
 
 Lemma mulmx_is_bilinear (R : comRingType) m n p :
   bilinear_for

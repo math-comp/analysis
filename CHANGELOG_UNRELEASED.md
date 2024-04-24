@@ -33,6 +33,9 @@
 
 ### Changed
 
+- in `forms.v`:
+  + notation ``` u ``_ _ ```
+
 ### Renamed
 
 - in `constructive_ereal.v`:
@@ -92,6 +95,14 @@
 - in `measure.v`:
   + lemmas `prod_salgebra_set0`, `prod_salgebra_setC`, `prod_salgebra_bigcup`
     (use `measurable0`, `measurableC`, `measurable_bigcup` instead)
+- in `derive.v`:
+  + definition `mulr_rev`
+  + canonical `rev_mulr`
+  + lemmas `mulr_is_linear`, `mulr_rev_is_linear`
+
+- in `forms.v`
+  + canonical `rev_mulmx`
+  + structure `revop`
 
 ### Infrastructure
 

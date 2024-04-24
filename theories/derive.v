@@ -826,19 +826,6 @@ Proof.
 by move=> fc; apply/diff_locallyP; rewrite diff_bilin //; apply: dbilin p fc.
 Qed.
 
-Definition mulr_rev (y x : R) := x * y.
-Canonical rev_mulr := @RevOp _ _ _ mulr_rev (@GRing.mul R) (fun _ _ => erefl).
-
-Lemma mulr_is_linear x : linear (@GRing.mul R x : R -> R).
-Proof. by move=> ???; rewrite mulrDr scalerAr. Qed.
-HB.instance Definition _ x := GRing.isLinear.Build R R R _ ( *%R x)
-  (mulr_is_linear x).
-
-Lemma mulr_rev_is_linear y : linear (mulr_rev y : R -> R).
-Proof. by move=> ???; rewrite /mulr_rev mulrDl scalerAl. Qed.
-HB.instance Definition _ y := GRing.isLinear.Build R R R _ (mulr_rev y)
-  (mulr_rev_is_linear y).
-
 Lemma mulr_is_bilinear :
   bilinear_for
     (GRing.Scale.Law.clone _ _ *:%R _) (GRing.Scale.Law.clone _ _ *:%R _)
