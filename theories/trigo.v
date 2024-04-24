@@ -906,15 +906,18 @@ Arguments tan {R}.
 #[global] Hint Extern 0 (is_derive _ _ tan _) =>
   (eapply is_derive_tan; first by []) : typeclass_instances.
 
+HB.lock Definition acos {R : realType} (x : R) : R :=
+  get [set y | 0 <= y <= pi /\ cos y = x].
+Canonical locked_acos := Unlockable acos.unlock.
+
 Section Acos.
 Variable R : realType.
-
-Definition acos (x : R) : R := get [set y | 0 <= y <= pi /\ cos y = x].
+Implicit Type x : R.
 
 Lemma acos_def x :
   -1 <= x <= 1 -> 0 <= acos x <= pi /\ cos (acos x) = x.
 Proof.
-move=> xB; rewrite /acos; case: xgetP => //= He.
+move=> xB; rewrite unlock /acos; case: xgetP => //= He.
 pose f y := cos y - x.
 have /(IVT (@pi_ge0 _))[] // : minr (f 0) (f pi) <= 0 <= maxr (f 0) (f pi).
   rewrite /f cos0 cospi /minr /maxr ltrD2r -subr_lt0 opprK (_ : 1 + 1 = 2)//.
@@ -932,7 +935,7 @@ Proof. by move=> /acos_def[/andP[]]. Qed.
 Lemma acos_lepi x : -1 <= x <= 1 -> acos x <= pi.
 Proof. by move=> /acos_def[/andP[]]. Qed.
 
-Lemma acosK : {in `[(-1),1], cancel acos cos}.
+Lemma acosK : {in `[(-1),1], cancel (@acos R) cos}.
 Proof. by move=> x; rewrite in_itv/==> /acos_def[/andP[]]. Qed.
 
 Lemma acos_gt0 x : -1 <= x < 1 -> 0 < acos x.
@@ -951,7 +954,7 @@ have : cos (acos x) = x by rewrite acosK// in_itv/= x_le1 ltW.
 by case: (ltrgtP (acos x) pi) => // ->; rewrite cospi => ->; rewrite ltxx.
 Qed.
 
-Lemma cosK : {in `[0, pi], cancel cos acos}.
+Lemma cosK : {in `[0, pi], cancel (@cos R) acos}.
 Proof.
 move=> x xB; apply: cos_inj => //; rewrite ?acosK//; last first.
   by move: xB; rewrite !in_itv/= => /andP[? ?];rewrite cos_geN1 cos_le1.
@@ -971,7 +974,7 @@ rewrite cos_pihalf => -> //; rewrite in_itv//= divr_ge0 ?ler0n ?pi_ge0//=.
 by rewrite ler_pdivrMr ?ltr0n// ler_peMr ?pi_ge0// ler1n.
 Qed.
 
-Lemma acosN a : -1 <= a <= 1 -> acos (- a) = pi - acos a.
+Lemma acosN a : -1 <= a <= 1 -> acos (- a) = pi - acos a :> R.
 Proof.
 move=> a1; have ? : -1 <= - a <= 1 by rewrite lerNl opprK lerNl andbC.
 apply: cos_inj; first by rewrite in_itv/= acos_ge0//= acos_lepi.
@@ -982,9 +985,9 @@ Qed.
 Lemma acosN1 : acos (- 1) = (pi : R).
 Proof. by rewrite acosN ?acos1 ?subr0 ?lexx// -subr_ge0 opprK addr_ge0. Qed.
 
-Lemma cosKN a : - pi <= a <= 0 -> acos (cos a) = - a.
+Lemma cosKN x : - pi <= x <= 0 -> acos (cos x) = - x.
 Proof.
-by move=> pia0; rewrite -(cosN a) cosK// in_itv/= lerNr oppr0 lerNl andbC.
+by move=> pia0; rewrite -(cosN x) cosK// in_itv/= lerNr oppr0 lerNl andbC.
 Qed.
 
 Lemma sin_acos x : -1 <= x <= 1 -> sin (acos x) = Num.sqrt (1 - x^+2).
@@ -1008,7 +1011,7 @@ suff /itvP zI : z \in `]0, pi[ by have : 0 <= z <= pi by rewrite ltW ?zI.
 by near: z.
 Unshelve. all: by end_near. Qed.
 
-Lemma is_derive1_acos (x : R) :
+Lemma is_derive1_acos x :
   -1 < x < 1 -> is_derive x 1 acos (- (Num.sqrt (1 - x ^+ 2))^-1).
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -sin_acos ?ltW // -invrN.
@@ -1031,15 +1034,18 @@ End Acos.
 #[global] Hint Extern 0 (is_derive _ 1 (@acos _) _) =>
   (eapply is_derive1_acos; first by []) : typeclass_instances.
 
+HB.lock Definition asin {R : realType} (x : R) : R :=
+  get [set y | -(pi / 2) <= y <= pi / 2 /\ sin y = x].
+Canonical locked_asin := Unlockable asin.unlock.
+
 Section Asin.
 Variable R : realType.
-
-Definition asin (x : R) : R := get [set y | -(pi / 2) <= y <= pi / 2 /\ sin y = x].
+Implicit Type x : R.
 
 Lemma asin_def x :
   -1 <= x <= 1 -> -(pi / 2) <= asin x <= pi / 2 /\ sin (asin x) = x.
 Proof.
-move=> xB; rewrite /asin; case: xgetP => //= He.
+move=> xB; rewrite unlock /asin; case: xgetP => //= He.
 pose f y := sin y - x.
 have /IVT[] // :
     minr (f (-(pi/2))) (f (pi/2)) <= 0 <= maxr (f (-(pi/2))) (f (pi/2)).
@@ -1058,7 +1064,7 @@ Proof. by move=> /asin_def[/andP[]]. Qed.
 Lemma asin_lepi2 x : -1 <= x <= 1 -> asin x <= pi / 2.
 Proof. by move=> /asin_def[/andP[]]. Qed.
 
-Lemma asinK : {in `[(-1),1], cancel asin sin}.
+Lemma asinK : {in `[(-1),1], cancel (@asin R) sin}.
 Proof. by move=> x; rewrite in_itv/= => /asin_def[/andP[]]. Qed.
 
 Lemma asin_ltpi2 x : -1 <= x < 1 -> asin x < pi/2.
@@ -1078,7 +1084,7 @@ have : sin (asin x) = x by rewrite asinK// in_itv/= x_le1 ltW.
 by case: (ltrgtP (asin x)) => //->; rewrite sinN sin_pihalf => <-; rewrite ltxx.
 Qed.
 
-Lemma sinK : {in `[(- (pi / 2)), pi / 2], cancel sin asin}.
+Lemma sinK : {in `[(- (pi / 2)), pi / 2], cancel (@sin R) asin}.
 Proof.
 move=> x; rewrite !in_itv/= => xB ; apply: sin_inj => //; last first.
   by rewrite asinK// in_itv/= sin_geN1 sin_le1.
@@ -1106,7 +1112,7 @@ suff /itvP zI : z \in `](-(pi/2)), (pi/2)[.
 by near: z.
 Unshelve. all: by end_near. Qed.
 
-Lemma is_derive1_asin (x : R) :
+Lemma is_derive1_asin x :
   -1 < x < 1 -> is_derive x 1 asin ((Num.sqrt (1 - x ^+ 2))^-1).
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -cos_asin ?ltW //.
@@ -1130,16 +1136,18 @@ End Asin.
 #[global] Hint Extern 0 (is_derive _ 1 (@asin _) _) =>
   (eapply is_derive1_asin; first by []) : typeclass_instances.
 
+HB.lock Definition atan {R : realType} (x : R) : R :=
+  get [set y | -(pi / 2) < y < pi / 2 /\ tan y = x].
+Canonical locked_atan := Unlockable atan.unlock.
+
 Section Atan.
 Variable R : realType.
-
-Definition atan (x : R) : R :=
-  get [set y | -(pi / 2) < y < pi / 2 /\ tan y = x].
+Implicit Type x : R.
 
 (* Did not see how to use ITV like in the other *)
 Lemma atan_def x : -(pi / 2) < atan x < pi / 2 /\ tan (atan x) = x.
 Proof.
-rewrite /atan; case: xgetP => //= He.
+rewrite unlock /atan; case: xgetP => //= He.
 pose x1 := Num.sqrt (1 + x^+ 2) ^-1.
 have ox2_gt0 : 0 < 1 + x^2.
   by apply: lt_le_trans (_ : 1 <= _); rewrite ?lerDl ?sqr_ge0.
@@ -1173,7 +1181,7 @@ Proof. by case: (atan_def x) => [] /andP[]. Qed.
 Lemma atan_ltpi2 x : atan x < pi / 2.
 Proof. by case: (atan_def x) => [] /andP[]. Qed.
 
-Lemma atanK : cancel atan tan.
+Lemma atanK : cancel (@atan R) tan.
 Proof. by move=> x; case: (atan_def x). Qed.
 
 Lemma atan0 : atan 0 = 0 :> R.
@@ -1202,7 +1210,7 @@ apply: tan_inj; first by rewrite in_itv/= atan_ltpi2 atan_gtNpi2.
 - by rewrite tanN !atanK.
 Qed.
 
-Lemma tanK : {in `](- (pi / 2)), (pi / 2)[ , cancel tan atan}.
+Lemma tanK : {in `](- (pi / 2)), (pi / 2)[ , cancel (@tan R) atan}.
 Proof.
 move=> x xB; apply tan_inj => //; rewrite ?atanK//.
 by rewrite in_itv/= atan_gtNpi2 atan_ltpi2.
@@ -1231,7 +1239,7 @@ move: cos_gt0; rewrite cosE ltNge; case/negP.
 by rewrite oppr_le0 invr_ge0 sqrtr_ge0.
 Qed.
 
-Global Instance is_derive1_atan (x : R) : is_derive x 1 atan (1 + x ^+ 2)^-1.
+Global Instance is_derive1_atan x : is_derive x 1 atan (1 + x ^+ 2)^-1.
 Proof.
 rewrite -{1}[x]atanK.
 have cosD0 : cos (atan x) != 0.

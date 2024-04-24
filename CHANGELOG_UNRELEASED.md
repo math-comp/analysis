@@ -37,7 +37,9 @@
   + notation ``` u ``_ _ ```
 
 - in `trigo.v`:
-  + definitions `sin` and `cos` are now HB.locked
+  + definitions `sin`, `cos`, `acos`, `asin`, `atan` are now HB.locked
+- in `sequences.v`:
+  + definition `expR` is now HB.locked
 
 ### Renamed
 
