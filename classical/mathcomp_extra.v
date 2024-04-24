@@ -245,6 +245,37 @@ Proof. by rewrite GRing.mulrSr. Qed.
 Lemma nat1r (R : ringType) (n : nat) : (1 + n%:R = n.+1%:R :> R)%R.
 Proof. by rewrite GRing.mulrS. Qed.
 
+(* NB: became an equality in MC *)
+Lemma gerBl {R : numDomainType} (x y : R) : 0 <= y -> x - y <= x.
+Proof. by move=> y0; rewrite lerBlDl lerDr. Qed.
+
+Section normr.
+Variable R : realDomainType.
+
+Definition Rnpos : qualifier 0 R := [qualify x : R | x <= 0].
+Lemma nposrE x : (x \is Rnpos) = (x <= 0). Proof. by []. Qed.
+
+Lemma ger0_le_norm :
+  {in Num.nneg &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
+Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
+
+Lemma gtr0_le_norm :
+  {in Num.pos &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
+Proof. by move=> x y; rewrite !posrE => /ltW x0 /ltW y0; exact: ger0_le_norm. Qed.
+
+Lemma ler0_ge_norm :
+  {in Rnpos &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
+Proof.
+move=> x y; rewrite !nposrE => x0 y0.
+by rewrite !ler0_norm// -subr_ge0 opprK addrC subr_ge0.
+Qed.
+
+Lemma ltr0_ge_norm :
+  {in Num.neg &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
+Proof. by move=> x y; rewrite !negrE => /ltW x0 /ltW y0; exact: ler0_ge_norm. Qed.
+
+End normr.
+
 (**************************)
 (* MathComp 2.2 additions *)
 (**************************)
@@ -280,6 +311,36 @@ Lemma invf_plt (F : numFieldType) :
 Proof.
 by move=> x y ? ?; rewrite -[in LHS](@invrK _ y) ltf_pV2// posrE invr_gt0.
 Qed.
+
+Definition proj {I} {T : I -> Type} i (f : forall i, T i) := f i.
+
+Section DFunWith.
+Variables (I : eqType) (T : I -> Type) (f : forall i, T i).
+
+Definition dfwith i (x : T i) (j : I) : T j :=
+  if (i =P j) is ReflectT ij then ecast j (T j) ij x else f j.
+
+Lemma dfwithin i x : dfwith x i = x.
+Proof. by rewrite /dfwith; case: eqP => // ii; rewrite eq_axiomK. Qed.
+
+Lemma dfwithout i (x : T i) j : i != j -> dfwith x j = f j.
+Proof. by rewrite /dfwith; case: eqP. Qed.
+
+Variant dfwith_spec i (x : T i) : forall j, T j -> Type :=
+  | DFunWithin : dfwith_spec x x
+  | DFunWithout j : i != j -> dfwith_spec x (f j).
+
+Lemma dfwithP i (x : T i) (j : I) : dfwith_spec x (dfwith x j).
+Proof.
+by case: (eqVneq i j) => [<-|nij];
+   [rewrite dfwithin|rewrite dfwithout//]; constructor.
+Qed.
+
+Lemma projK i (x : T i) : cancel (@dfwith i) (proj i).
+Proof. by move=> z; rewrite /proj dfwithin. Qed.
+
+End DFunWith.
+Arguments dfwith {I T} f i x.
 
 (**********************)
 (* not yet backported *)
@@ -353,38 +414,6 @@ Proof. by move=> i0r Pi0 ?; apply: le_trans (le_bigmax_seq _ _ _). Qed.
 
 End bigmax_seq.
 Arguments le_bigmax_seq {d T} x {I r} i0 P.
-
-(* NB: PR 1079 to MathComp in progress *)
-Lemma gerBl {R : numDomainType} (x y : R) : 0 <= y -> x - y <= x.
-Proof. by move=> y0; rewrite lerBlDl lerDr. Qed.
-
-(* the following appears in MathComp 2.1.0 and MathComp 1.18.0 *)
-Section normr.
-Variable R : realDomainType.
-
-Definition Rnpos : qualifier 0 R := [qualify x : R | x <= 0].
-Lemma nposrE x : (x \is Rnpos) = (x <= 0). Proof. by []. Qed.
-
-Lemma ger0_le_norm :
-  {in Num.nneg &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
-Proof. by move=> x y; rewrite !nnegrE => x0 y0; rewrite !ger0_norm. Qed.
-
-Lemma gtr0_le_norm :
-  {in Num.pos &, {mono (@Num.Def.normr _ R) : x y / x <= y}}.
-Proof. by move=> x y; rewrite !posrE => /ltW x0 /ltW y0; exact: ger0_le_norm. Qed.
-
-Lemma ler0_ge_norm :
-  {in Rnpos &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
-Proof.
-move=> x y; rewrite !nposrE => x0 y0.
-by rewrite !ler0_norm// -subr_ge0 opprK addrC subr_ge0.
-Qed.
-
-Lemma ltr0_ge_norm :
-  {in Num.neg &, {mono (@Num.Def.normr _ R) : x y / x <= y >-> x >= y}}.
-Proof. by move=> x y; rewrite !negrE => /ltW x0 /ltW y0; exact: ler0_ge_norm. Qed.
-
-End normr.
 
 Lemma leq_ltn_expn m : exists n, (2 ^ n <= m.+1 < 2 ^ n.+1)%N.
 Proof.
@@ -568,36 +597,6 @@ Definition bound_side d (T : porderType d) (c : bool) (x : itv_bound T) :=
 Lemma real_ltr_distlC [R : numDomainType] [x y : R] (e : R) :
   x - y \is Num.real -> (`|x - y| < e) = (x - e < y < x + e).
 Proof. by move=> ?; rewrite distrC real_ltr_distl// -rpredN opprB. Qed.
-
-Definition proj {I} {T : I -> Type} i (f : forall i, T i) := f i.
-
-Section DFunWith.
-Variables (I : eqType) (T : I -> Type) (f : forall i, T i).
-
-Definition dfwith i (x : T i) (j : I) : T j :=
-  if (i =P j) is ReflectT ij then ecast j (T j) ij x else f j.
-
-Lemma dfwithin i x : dfwith x i = x.
-Proof. by rewrite /dfwith; case: eqP => // ii; rewrite eq_axiomK. Qed.
-
-Lemma dfwithout i (x : T i) j : i != j -> dfwith x j = f j.
-Proof. by rewrite /dfwith; case: eqP. Qed.
-
-Variant dfwith_spec i (x : T i) : forall j, T j -> Type :=
-  | DFunWithin : dfwith_spec x x
-  | DFunWithout j : i != j -> dfwith_spec x (f j).
-
-Lemma dfwithP i (x : T i) (j : I) : dfwith_spec x (dfwith x j).
-Proof.
-by case: (eqVneq i j) => [<-|nij];
-   [rewrite dfwithin|rewrite dfwithout//]; constructor.
-Qed.
-
-Lemma projK i (x : T i) : cancel (@dfwith i) (proj i).
-Proof. by move=> z; rewrite /proj dfwithin. Qed.
-
-End DFunWith.
-Arguments dfwith {I T} f i x.
 
 Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).
 
