@@ -27,7 +27,7 @@ Reserved Notation "A ^_|_"    (at level 8, format "A ^_|_").
 Reserved Notation "A _|_ B" (at level 69, format "A  _|_  B").
 Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui").
 
-Notation "u '``_' i" := (u (GRing.zero [the zmodType of 'I_1]) i) : ring_scope.
+Notation "u '``_' i" := (u (0 : 'I_1) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
  (format "''e_' i", at level 3) : ring_scope.
 
