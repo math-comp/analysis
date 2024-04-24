@@ -33,12 +33,6 @@
 
 ### Changed
 
-- move from `forms.v` to `mathcomp_extra.v`:
-  + structure `revop`
-
-- move from `derive.v` to `mathcomp_extra.v`:
-  + canonical `rev_mulr`
-
 - in `forms.v`:
   + notation ``` u ``_ _ ````
 
