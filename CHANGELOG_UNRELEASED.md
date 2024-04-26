@@ -36,6 +36,11 @@
 - in `forms.v`:
   + notation ``` u ``_ _ ```
 
+- in `trigo.v`:
+  + definitions `sin`, `cos`, `acos`, `asin`, `atan` are now HB.locked
+- in `sequences.v`:
+  + definition `expR` is now HB.locked
+
 ### Renamed
 
 - in `constructive_ereal.v`:
