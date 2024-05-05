@@ -132,7 +132,7 @@ Lemma measurable_fun_kseries (U : set Y) :
   measurable U -> measurable_fun [set: X] (kseries ^~ U).
 Proof.
 move=> mU.
-by apply: ge0_emeasurable_fun_sum => // n; exact/measurable_kernel.
+by apply: ge0_emeasurable_fun_sum => // n _; exact/measurable_kernel.
 Qed.
 
 HB.instance Definition _ :=
@@ -585,7 +585,7 @@ have [l_ hl_] := sfinite_kernel l.
 rewrite (_ : (fun x => _) = (fun x =>
     mseries (l_ ^~ x) 0 (xsection (k_ n @^-1` [set r]) x))); last first.
   by apply/funext => x; rewrite hl_//; exact/measurable_xsection.
-apply: ge0_emeasurable_fun_sum => // m.
+apply: ge0_emeasurable_fun_sum => // m _.
 by apply: measurable_fun_xsection_finite_kernel => // /[!inE].
 Qed.
 
