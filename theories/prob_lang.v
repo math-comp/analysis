@@ -115,6 +115,14 @@ Definition dep_uncurry (A : Type) (B : A -> Type) (C : Type) :
     (forall a : A, B a -> C) -> {a : A & B a} -> C :=
   fun f p => let (a, Ba) := p in f a Ba.
 
+(* TODO: move *)
+Lemma measurable_natmul {R : realType} D n :
+  measurable_fun D ((@GRing.natmul R)^~ n).
+Proof.
+under eq_fun do rewrite -mulr_natr.
+by do 2 apply: measurable_funM => //.
+Qed.
+
 Section bernoulli_pmf.
 Context {R : realType} (p : R).
 Local Open Scope ring_scope.
@@ -135,6 +143,12 @@ by rewrite !fsbig_set1/= -EFinD addrCA subrr addr0.
 Qed.
 
 End bernoulli_pmf.
+
+Lemma measurable_bernoulli_pmf {R : realType} D n :
+  measurable_fun D (@bernoulli_pmf R ^~ n).
+Proof.
+by apply/measurable_funTS/measurable_fun_if => //=; exact: measurable_funB.
+Qed.
 
 Definition bernoulli {R : realType} (p : R) : set bool -> \bar R := fun A =>
   if (0 <= p <= 1)%R then \sum_(b \in A) (bernoulli_pmf p b)%:E else \d_false A.
@@ -243,27 +257,15 @@ Proof.
 apply: (@measurability _ _ _ _ _ _
   (@pset _ _ _ : set (set (pprobability _ R)))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
-rewrite /bernoulli; have := @subsetT _ Ys; rewrite setT_bool => UT.
-have [->|->|->|->] /= := subset_set2 UT.
-- rewrite [X in measurable_fun _ X](_ : _ = cst 0%E)//.
-  by apply/funext => x/=; case: ifPn => // _; rewrite fsbig_set0.
-- rewrite [X in measurable_fun _ X](_ : _ =
-    (fun x => if 0 <= x <= 1 then x%:E else 0%E))//.
-    apply: measurable_fun_ifT => //=; apply: measurable_and => //;
-    exact: measurable_fun_ler.
-  apply/funext => x/=; case: ifPn => /= x01.
-    by rewrite fsbig_set1//= lee_fin; case/andP : x01.
-  by rewrite diracE memNset//.
-- rewrite [X in measurable_fun _ X](_ : _ =
-    (fun x => if 0 <= x <= 1 then (`1-x)%:E else 1%E))//.
-    apply: measurable_fun_ifT => //=.
-      by apply: measurable_and => //; apply: measurable_fun_ler.
-    exact/EFin_measurable_fun/measurable_funB.
-  apply/funext => x/=; case: ifPn => /= x01.
-    by rewrite fsbig_set1//= lee_fin subr_ge0; case/andP : x01.
-  by rewrite diracE mem_set.
-- rewrite [X in measurable_fun _ X](_ : _ = cst 1%E)//; apply/funext => x/=.
-  by rewrite -setT_bool diracT; case: ifPn => // x01; rewrite bernoulli_pmf1.
+apply: measurable_fun_if => //=.
+  by apply: measurable_and => //; exact: measurable_fun_ler.
+apply: (eq_measurable_fun (fun t =>
+    \sum_(b <- fset_set Ys) (bernoulli_pmf t b)%:E)).
+  move=> x /set_mem[_/= x01].
+  by rewrite fsbig_finite/=.
+apply: emeasurable_fun_sum => n.
+move=> k Ysk; apply/measurableT_comp => //.
+exact: measurable_bernoulli_pmf.
 Qed.
 
 Lemma measurable_bernoulli2 U : measurable U ->
@@ -289,6 +291,15 @@ exact: onem_ge0.
 Qed.
 
 End binomial_pmf.
+
+Lemma measurable_binomial_pmf {R : realType} D n k :
+  measurable_fun D (@binomial_pmf R n ^~ k).
+Proof.
+apply: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x *+ 'C(n, k))%R) => /=.
+  exact: measurable_natmul.
+apply: measurable_funM => //=; apply: measurable_fun_pow.
+exact: measurable_funB.
+Qed.
 
 Definition binomial_prob {R : realType} (n : nat) (p : R) : set nat -> \bar R :=
   fun U => if (0 <= p <= 1)%R then
@@ -426,9 +437,6 @@ rewrite addeC -ge0_sume_distrl.
   by apply/mulrn_wge0/mulr_ge0; apply/exprn_ge0 => //; exact/onem_ge0.
 Qed.
 
-Lemma sumbool_ler {R : realDomainType} (x y : R) : (x <= y)%R + (x > y)%R.
-Proof. by have [_|_] := leP x y; [exact: inl|exact: inr]. Qed.
-
 Section binomial_total.
 Local Open Scope ring_scope.
 Variables (R : realType) (n : nat).
@@ -442,45 +450,17 @@ apply: (@measurability _ _ _ _ _ _
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
 rewrite /binomial_prob/=.
 set f := (X in measurable_fun _ X).
-rewrite (_ : f = fun x => if 0 <= x <= 1 then (\sum_(m < n.+1)
-      if sumbool_ler 0 x is inl l0p then
-        if sumbool_ler x 1 is inl lp1 then
-           mscale (@bin_prob _ n _ l0p lp1 m) (\d_(nat_of_ord m)) Ys
-         else
-          (x ^+ m * `1-x ^+ (n - m) *+ 'C(n, m))%:E * \d_(nat_of_ord m) Ys
-      else (x ^+ m * `1-x ^+ (n - m) *+ 'C(n, m))%:E * \d_(nat_of_ord m) Ys)%E
-   else \d_0%N Ys)//.
-  apply: measurable_fun_ifT => //=.
-    by apply: measurable_and => //; exact: measurable_fun_ler.
-  apply: emeasurable_fun_sum => m /=.
-  rewrite /mscale/= [X in measurable_fun _ X](_ : _ = (fun x =>
-    (x ^+ m * `1-x ^+ (n - m) *+ 'C(n, m))%:E * \d_(nat_of_ord m) Ys)%E); last first.
-    by apply:funext => x; case: sumbool_ler => // x0; case: sumbool_ler.
-  apply: emeasurable_funM => //; apply/EFin_measurable_fun => //.
-  under eq_fun do rewrite -mulr_natr.
-  do 2 apply: measurable_funM => //.
-  exact/measurable_fun_pow/measurable_funB.
-rewrite {}/f; apply/funext => x.
-case: ifPn => // /andP[x0 x1].
-rewrite (esumID `I_n.+1)//; last first.
-  by move=> k _; rewrite lee_fin// binomial_pmf_ge0// x0.
-rewrite [X in (_ + X)%E]esum1 ?adde0; last first.
-  by move=> k [_ /= /negP]; rewrite -leqNgt => nk; rewrite /binomial_pmf bin_small.
-rewrite esum_mkcondl esum_fset//=; last first.
-  move=> k; rewrite inE/= ltnS => kn.
-  by case: ifPn => // _; rewrite lee_fin binomial_pmf_ge0// x0.
-rewrite -fsbig_ord//=; apply: eq_bigr => i _.
-case: ifPn => iYs.
-  case: sumbool_ler => //= x0'.
-    case: sumbool_ler => //= x1'.
-      by rewrite /mscale/= /binomial_pmf diracE iYs mule1.
-    by move: x1'; rewrite ltNge x1.
-  by move: x0'; rewrite ltNge x0.
-case: sumbool_ler => //= x0'.
-  case: sumbool_ler => //= x1'.
-    by rewrite /mscale/= /binomial_pmf diracE (negbTE iYs) mule0.
-  by move: x1'; rewrite ltNge x1.
-by move: x0'; rewrite ltNge x0.
+apply: measurable_fun_if => //=.
+  by apply: measurable_and => //; exact: measurable_fun_ler.
+apply: (eq_measurable_fun (fun t =>
+    \sum_(k <oo | k \in Ys) (binomial_pmf n t k)%:E)).
+  move=> x /set_mem[_/= x01].
+  rewrite nneseries_esum// -1?[in RHS](set_mem_set Ys)// => k kYs.
+  by rewrite lee_fin binomial_pmf_ge0.
+apply: ge0_emeasurable_fun_sum.
+  by move=> k x/= [_ x01] _; rewrite lee_fin binomial_pmf_ge0.
+move=> k Ysk; apply/measurableT_comp => //.
+exact: measurable_binomial_pmf.
 Qed.
 
 End binomial_total.
@@ -2038,9 +2018,9 @@ Context d d' d1 d2 d3 (X : measurableType d) (Y : measurableType d')
   (R : realType).
 Import Notations.
 Variables (t : R.-sfker X ~> T1)
-          (u : R.-sfker [the measurableType _ of (X * T1)%type] ~> T2)
-          (v : R.-sfker [the measurableType _ of (X * T2)%type] ~> Y)
-          (v' : R.-sfker [the measurableType _ of (X * T1 * T2)%type] ~> Y)
+          (u : R.-sfker (X * T1) ~> T2)
+          (v : R.-sfker (X * T2) ~> Y)
+          (v' : R.-sfker (X * T1 * T2) ~> Y)
           (vv' : forall y, v =1 fun xz => v' (xz.1, y, xz.2)).
 
 Lemma letinA x A : measurable A ->
