@@ -1177,6 +1177,36 @@ have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
 - by rewrite -setT_bool preimage_setT setIT.
 Qed.
 
+Lemma measurable_fun_TF D (f : T1 -> bool) :
+  measurable (D `&` f @^-1` [set true]) ->
+  measurable (D `&` f @^-1` [set false]) ->
+  measurable_fun D f.
+Proof.
+move=> mT mF mD /= Y mY.
+have := @subsetT _ Y; rewrite setT_bool => YT.
+move: mY; have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
+- by rewrite preimage0 ?setI0.
+- exact: mT.
+- exact: mF.
+- by rewrite -setT_bool preimage_setT setIT.
+Qed.
+
+Lemma measurable_and D (f : T1 -> bool) (g : T1 -> bool) :
+  measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x && g x).
+Proof.
+move=> mf mg mD; apply: measurable_fun_TF => //.
+- rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set true] `&`
+                                      (D `&` g @^-1` [set true])); last first.
+    by rewrite setIACA setIid; congr (_ `&` _); apply/seteqP; split => x /andP.
+  by apply: measurableI; [exact: mf|exact: mg].
+- rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set false] `|`
+                                      (D `&` g @^-1` [set false])); last first.
+  rewrite -setIUr; congr (_ `&` _).
+  by apply/seteqP; split => x /=; case: (f x); case: (g x); tauto.
+- by apply: measurableU; [exact: mf|exact: mg].
+Qed.
+
 End measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
   solve [apply: measurable_cst] : core.

@@ -1577,6 +1577,20 @@ move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
 - by rewrite preimage_setT setIT.
 Qed.
 
+Lemma measurable_fun_ler D f g : measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x <= g x).
+Proof.
+move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
+- under eq_fun do rewrite -subr_ge0.
+  rewrite preimage_true -preimage_itv_c_infty.
+  by apply: (measurable_funB mg mf) => //; exact: measurable_itv.
+- under eq_fun do rewrite leNgt -subr_gt0.
+  rewrite preimage_false set_predC setCK -preimage_itv_o_infty.
+  by apply: (measurable_funB mf mg) => //; exact: measurable_itv.
+- by rewrite preimage_set0 setI0.
+- by rewrite preimage_setT setIT.
+Qed.
+
 Lemma measurable_maxr D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \max g).
 Proof.

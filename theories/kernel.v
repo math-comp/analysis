@@ -132,7 +132,7 @@ Lemma measurable_fun_kseries (U : set Y) :
   measurable U -> measurable_fun [set: X] (kseries ^~ U).
 Proof.
 move=> mU.
-by apply: ge0_emeasurable_fun_sum => // n; exact/measurable_kernel.
+by apply: ge0_emeasurable_fun_sum => // n _; exact/measurable_kernel.
 Qed.
 
 HB.instance Definition _ :=
@@ -506,7 +506,7 @@ Variable k : X * Y -> \bar R.
 
 Lemma measurable_fun_xsection_integral
     (l : X -> {measure set Y -> \bar R})
-    (k_ : ({nnsfun [the measurableType _ of X * Y] >-> R})^nat)
+    (k_ : {nnsfun (X * Y) >-> R}^nat)
     (ndk_ : nondecreasing_seq (k_ : (X * Y -> R)^nat))
     (k_k : forall z, (k_ n z)%:E @[n --> \oo] --> k z) :
   (forall n r,
@@ -585,7 +585,7 @@ have [l_ hl_] := sfinite_kernel l.
 rewrite (_ : (fun x => _) = (fun x =>
     mseries (l_ ^~ x) 0 (xsection (k_ n @^-1` [set r]) x))); last first.
   by apply/funext => x; rewrite hl_//; exact/measurable_xsection.
-apply: ge0_emeasurable_fun_sum => // m.
+apply: ge0_emeasurable_fun_sum => // m _.
 by apply: measurable_fun_xsection_finite_kernel => // /[!inE].
 Qed.
 
@@ -614,7 +614,7 @@ Qed.
 HB.instance Definition _ := isKernel.Build _ _ _ _ _ (kdirac mf)
   measurable_fun_kdirac.
 
-Let kdirac_prob x : kdirac mf x setT = 1.
+Let kdirac_prob x : kdirac mf x [set: Y] = 1.
 Proof. by rewrite /kdirac/= diracT. Qed.
 
 HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
@@ -717,6 +717,55 @@ HB.instance Definition _ t :=
   Kernel_isFinite.Build _ _ _ _ R (kadd k1 k2) kadd_finite_uub.
 End fkadd.
 
+Section knormalize.
+Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Variable f : R.-ker X ~> Y.
+
+Definition knormalize (P : probability Y R) : X -> {measure set Y -> \bar R} :=
+  fun x => mnormalize (f x) P.
+
+Let measurable_knormalize (P : probability Y R) U :
+  measurable U -> measurable_fun [set: X] (knormalize P ^~ U).
+Proof.
+move=> mU; rewrite /knormalize/= /mnormalize /=.
+rewrite (_ : (fun _ => _) = (fun x =>
+     if f x setT == 0 then P U else if f x setT == +oo then P U
+     else f x U * (fine (f x setT))^-1%:E)); last first.
+  apply/funext => x; case: ifPn => [/orP[->//|->]|]; first by case: ifPn.
+  by rewrite negb_or=> /andP[/negbTE -> /negbTE ->].
+apply: measurable_fun_if => //; [exact: kernel_measurable_fun_eq_cst|].
+apply: measurable_fun_if => //.
+- rewrite setTI [X in measurable X](_ : _ = [set t | f t setT != 0]).
+    exact: kernel_measurable_neq_cst.
+  by apply/seteqP; split => [x /negbT//|x /negbTE].
+- apply: (@measurable_funS _ _ _ _ setT) => //.
+  exact: kernel_measurable_fun_eq_cst.
+- apply: emeasurable_funM.
+    exact: measurable_funS (measurable_kernel f U mU).
+  apply/EFin_measurable_fun.
+  apply: (@measurable_comp _ _ _ _ _ _ [set r : R | r != 0%R]) => //.
+  + exact: open_measurable.
+  + move=> /= r [t] [] [_ ft0] ftoo ftr; apply/eqP => r0.
+    move: (ftr); rewrite r0 => /eqP; rewrite fine_eq0 ?ft0//.
+    by rewrite ge0_fin_numE// lt_neqAle leey ftoo.
+  + apply: open_continuous_measurable_fun => //; apply/in_setP => x /= x0.
+    exact: inv_continuous.
+  + apply: measurableT_comp => //=.
+    by have := measurable_kernel f _ measurableT; exact: measurable_funS.
+Qed.
+
+HB.instance Definition _ (P : probability Y R) :=
+  isKernel.Build _ _ _ _ R (knormalize P) (measurable_knormalize P).
+
+Let knormalize1 (P : probability Y R) x : knormalize P x [set: Y] = 1.
+Proof. by rewrite /knormalize/= probability_setT. Qed.
+
+HB.instance Definition _ (P : probability Y R):=
+  @Kernel_isProbability.Build _ _ _ _ _ (knormalize P) (knormalize1 P).
+
+End knormalize.
+
+(* TODO: useful? *)
 Lemma measurable_fun_mnormalize d d' (X : measurableType d)
     (Y : measurableType d') (R : realType) (k : R.-ker X ~> Y) :
   measurable_fun [set: X] (fun x =>
@@ -746,56 +795,6 @@ apply: measurable_fun_if => //.
     exact: inv_continuous.
   + by apply: measurableT_comp => //; exact/measurable_funS/measurable_kernel.
 Qed.
-
-Section knormalize.
-Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
-Variable f : R.-ker X ~> Y.
-
-Definition knormalize (P : probability Y R) : X -> {measure set Y -> \bar R} :=
-  fun x => [the measure _ _ of mnormalize (f x) P].
-
-Variable P : probability Y R.
-
-Let measurable_fun_knormalize U :
-  measurable U -> measurable_fun [set: X] (knormalize P ^~ U).
-Proof.
-move=> mU; rewrite /knormalize/= /mnormalize /=.
-rewrite (_ : (fun _ => _) = (fun x =>
-     if f x setT == 0 then P U else if f x setT == +oo then P U
-     else f x U * (fine (f x setT))^-1%:E)); last first.
-  apply/funext => x; case: ifPn => [/orP[->//|->]|]; first by case: ifPn.
-  by rewrite negb_or=> /andP[/negbTE -> /negbTE ->].
-apply: measurable_fun_if => //; [exact: kernel_measurable_fun_eq_cst|].
-apply: measurable_fun_if => //.
-- rewrite setTI [X in measurable X](_ : _ = [set t | f t setT != 0]).
-    exact: kernel_measurable_neq_cst.
-  by apply/seteqP; split => [x /negbT//|x /negbTE].
-- apply: (@measurable_funS _ _ _ _ setT) => //.
-  exact: kernel_measurable_fun_eq_cst.
-- apply: emeasurable_funM.
-    by have := measurable_kernel f U mU; exact: measurable_funS.
-  apply/EFin_measurable_fun.
-  apply: (@measurable_comp _ _ _ _ _ _ [set r : R | r != 0%R]) => //.
-  + exact: open_measurable.
-  + move=> /= r [t] [] [_ ft0] ftoo ftr; apply/eqP => r0.
-    move: (ftr); rewrite r0 => /eqP; rewrite fine_eq0 ?ft0//.
-    by rewrite ge0_fin_numE// lt_neqAle leey ftoo.
-  + apply: open_continuous_measurable_fun => //; apply/in_setP => x /= x0.
-    exact: inv_continuous.
-  + apply: measurableT_comp => //=.
-    by have := measurable_kernel f _ measurableT; exact: measurable_funS.
-Qed.
-
-HB.instance Definition _ := isKernel.Build _ _ _ _ R (knormalize P)
-  measurable_fun_knormalize.
-
-Let knormalize1 x : knormalize P x [set: Y] = 1.
-Proof. by rewrite /knormalize/= probability_setT. Qed.
-
-HB.instance Definition _ :=
-  @Kernel_isProbability.Build _ _ _ _ _ (knormalize P) knormalize1.
-
-End knormalize.
 
 Section kcomp_def.
 Context d1 d2 d3 (X : measurableType d1) (Y : measurableType d2)
