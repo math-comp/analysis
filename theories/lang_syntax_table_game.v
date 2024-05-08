@@ -9,7 +9,7 @@ Require Import prob_lang lang_syntax_util lang_syntax lang_syntax_examples.
 From mathcomp Require Import ring lra.
 
 (**md**************************************************************************)
-(* # Edd's table game example                                                 *)
+(* # Eddy's table game example                                                *)
 (*                                                                            *)
 (* ref:                                                                       *)
 (* - Chung-chieh Shan, Equational reasoning for probabilistic programming,    *)
@@ -276,7 +276,7 @@ rewrite (@execD_bin _ _ binop_minus) !execD_real/= !execD_nat.
 rewrite !exp_var'E !(execD_var_erefl "p") !(execD_var_erefl "a2")/=.
 rewrite !letin'E/=.
 move: r01 => /andP[r0 r1].
-by apply/integral_binomial_bernoulli/andP.
+by apply/integral_binomial_prob/andP.
 Qed.
 
 Lemma casino12 : execD casino1 = execD casino2.
@@ -443,7 +443,7 @@ transitivity (\int[beta_nat 6 4]_(y in `[0%R, 1%R]%classic : set R)
   rewrite patchE; case: ifPn => //.
   rewrite /beta_nat_pdf /ubeta_nat_pdf notin_setE/= in_itv/= => /negP/negbTE ->.
   by rewrite mul0r mule0.
-have := (@beta_nat_bernE R 6 4 0 3 U) isT isT.
+have := (@beta_nat_bernoulliE R 6 4 0 3 U) isT isT.
 rewrite /beta_nat_bernoulli /ubeta_nat_pdf /=.
 under eq_integral.
   move=> x.
@@ -468,7 +468,7 @@ have f1 x : x \in (`[0%R, 1%R]%classic : set R) -> (f x <= 1)%R.
   by move => /f01/andP[].
 under eq_integral => x.
   move=> x01.
-  rewrite bernoulliE_ext//=; last first.
+  rewrite bernoulliE//=; last first.
     by rewrite subr_ge0 f1//= lerBlDr addrC -lerBlDr subrr f0.
   over.
 rewrite /=.
@@ -501,8 +501,7 @@ rewrite [X in _ + X = _]ge0_integralZr//=; last 2 first.
   by apply/EFin_measurable_fun; exact: measurable_beta_nat_pdf.
   by move=> x x01; rewrite mule_ge0// lee_fin// ?f0// ?inE// beta_nat_pdf_ge0.
 under [in RHS]eq_integral => x x01.
-  rewrite bernoulliE_ext//=; last first.
-    by rewrite f0//= f1.
+  rewrite bernoulliE//=; last by rewrite f0//= f1.
   rewrite muleDl//.
   over.
 rewrite /= ge0_integralD//=; last 4 first.
@@ -653,7 +652,7 @@ rewrite (@execD_bin _ _ binop_minus) execD_pow/= (@execD_bin _ _ binop_minus).
 rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
 transitivity (\int[beta_nat 6 4]_y bernoulli (1 - (1 - y) ^+ 3) U : \bar R)%E.
   by rewrite /beta_nat_bernoulli !letin'E/= /onem.
-rewrite bernoulliE_ext//=; last lra.
+rewrite bernoulliE//=; last lra.
 rewrite integral_beta_nat//; last first.
   by have := @integral_beta_bernoulli_onem_lty R _ _ _ U.
   apply: (measurableT_comp (measurable_bernoulli2 _)) => //.
@@ -678,15 +677,9 @@ rewrite (@integral_bernoulli_beta_nat_pdf (fun x => (1 - x) ^+ 3)%R U (1 / 11))/
     rewrite [RHS]integral_beta_nat//; last 2 first.
       apply: (measurableT_comp (measurable_bernoulli2 _)) => //.
       apply: measurable_fun_if => //.
-        apply: measurable_and => //.
-          apply: (measurable_fun_bool true) => //=.
-          rewrite (_ : _ @^-1` _ = `[0%R, +oo[%classic)//.
-          by apply/seteqP; split => [z|z] /=; rewrite in_itv/= andbT.
-        apply: (measurable_fun_bool true) => //=.
-        by rewrite (_ : _ @^-1` _ = `]-oo, 1%R]%classic).
+        by apply: measurable_and => //; exact: measurable_fun_ler.
       apply: measurable_funTS; apply: measurable_funM => //.
-      apply: measurable_fun_pow => //.
-      by apply: measurable_funB => //.
+      by apply: measurable_fun_pow => //; exact: measurable_funB.
     rewrite (le_lt_trans _ (integral_beta_bernoulli_expn_lty 3 6 4 U))//.
     rewrite integral_mkcond /=; apply: ge0_le_integral => //=.
       by move=> z _; rewrite patchE expr0 mul1r; case: ifPn.
@@ -694,12 +687,7 @@ rewrite (@integral_bernoulli_beta_nat_pdf (fun x => (1 - x) ^+ 3)%R U (1 / 11))/
       apply: measurable_funTS; apply: measurableT_comp => //=.
       apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
       apply: measurable_fun_if => //=.
-        apply: measurable_and => //.
-        apply: (measurable_fun_bool true) => //=.
-          rewrite (_ : _ @^-1` _ = `[0%R, +oo[%classic)//.
-          by apply/seteqP; split => [z|z] /=; rewrite in_itv/= andbT.
-        apply: (measurable_fun_bool true) => //=.
-        by rewrite (_ : _ @^-1` _ = `]-oo, 1%R]%classic).
+        by apply: measurable_and => //; exact: measurable_fun_ler.
       apply: measurable_funTS; apply: measurable_funM => //.
       by apply: measurable_fun_pow => //; exact: measurable_funB.
       by apply/measurableT_comp => //; exact: measurable_bernoulli_expn.
@@ -709,7 +697,7 @@ rewrite (@integral_bernoulli_beta_nat_pdf (fun x => (1 - x) ^+ 3)%R U (1 / 11))/
     apply: eq_integral => z z01.
     rewrite inE/= in_itv/= in z01.
     by rewrite z01 expr0 mul1r.
-  rewrite beta_nat_bernE//= bernoulliE_ext//=; last first.
+  rewrite beta_nat_bernoulliE//= bernoulliE//=; last first.
     by rewrite div_beta_nat_norm_ge0// div_beta_nat_norm_le1.
   rewrite probability_setT.
   by congr (_ * _ + _ * _)%:E; rewrite /onem;
@@ -730,12 +718,12 @@ rewrite !execP_sample !execD_bernoulli !execD_real/=.
 apply: funext=> x.
 apply: eq_probability=> /= y.
 rewrite !normalizeE/=.
-rewrite !bernoulliE_ext//=; [|lra..].
+rewrite !bernoulliE//=; [|lra..].
 rewrite !diracT !mule1 -EFinD add_onemK onee_eq0/=.
 rewrite !letin'E.
 under eq_integral.
   move=> x0 _ /=.
-  rewrite !bernoulliE_ext//=; [|lra..].
+  rewrite !bernoulliE//=; [|lra..].
   rewrite !diracT !mule1 -EFinD add_onemK.
   over.
 rewrite !ge0_integral_mscale//= (ger0_norm (ltW p0))//.
@@ -743,7 +731,7 @@ rewrite integral_dirac// !diracT !indicT /= !mule1.
 rewrite gt_eqF ?lte_fin//=.
 rewrite integral_dirac//= diracT !mul1e !mulr1.
 rewrite addrCA subrr addr0 invr1 mule1.
-rewrite !bernoulliE_ext//=; [|lra..].
+rewrite !bernoulliE//=; [|lra..].
 by rewrite muleAC -EFinM divff// ?gt_eqF// mul1r EFinD.
 Qed.
 

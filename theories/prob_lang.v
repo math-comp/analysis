@@ -18,13 +18,15 @@ From mathcomp Require Import ring lra.
 (* ```                                                                        *)
 (*      bernoulli_pmf p == Bernoulli pmf                                      *)
 (*          bernoulli p == Bernoulli probability measure when 0 <= p <= 1     *)
+(*                         and \d_false otherwise                             *)
 (*     binomial_pmf n p == binomial pmf                                       *)
 (*    binomial_prob n p == binomial probability measure when 0 <= p <= 1      *)
+(*                         and \d_0%N otherwise                               *)
 (*       bin_prob n k p == $\binom{n}{k}p^k (1-p)^(n-k)$                      *)
 (*                         Computes a binomial distribution term for          *)
 (*                         k successes in n trials with success rate p        *)
 (*      uniform_pdf a b == uniform pdf                                        *)
-(* uniform_prob a b ab0 == uniform probability over the interval [a,b]        *)
+(*  uniform_prob a b ab == uniform probability over the interval [a,b]        *)
 (*                         with ab0 a proof that 0 < b - a                    *)
 (*          poisson_pdf == Poisson pdf                                        *)
 (*      exponential_pdf == exponential distribution pdf                       *)
@@ -71,19 +73,12 @@ Definition onem_nonneg (R : numDomainType) (p : {nonneg R})
 (* /TODO: PR? *)
 
 Lemma nneseries_sum_bigcup {R : realType} (T : choiceType) (F : (set T)^nat)
-    (f : T -> \bar R) :
-  trivIset [set: nat] F ->
-  (forall i, 0 <= f i)%E ->
-  (\esum_(i in \bigcup_n F n) f i)%R =
-  \big[+%R/0%R]_(0 <= i <oo) (\esum_(j in F i) f j)%R.
+    (f : T -> \bar R) : trivIset [set: nat] F -> (forall i, 0 <= f i)%E ->
+  \esum_(i in \bigcup_n F n) f i = \sum_(0 <= i <oo) (\esum_(j in F i) f j).
 Proof.
-move=> (*finUF*) tF f0.
-rewrite esum_bigcupT//.
-rewrite nneseries_esum//; last first.
-  move=> k _.
-  by apply: esum_ge0.
-rewrite fun_true.
-by apply: eq_esum => /= i _.
+move=> tF f0; rewrite esum_bigcupT// nneseries_esum//; last first.
+  by move=> k _; exact: esum_ge0.
+by rewrite fun_true; apply: eq_esum => /= i _.
 Qed.
 
 Lemma eq_probability R d (Y : measurableType d) (m1 m2 : probability Y R) :
@@ -179,10 +174,11 @@ apply: cvg_toP.
   apply: lee_sum_nneg_natr => // k _ _.
   rewrite fsbig_finite//= sumEFin lee_fin.
   by apply: sumr_ge0 => /= b _; exact: bernoulli_pmf_ge0.
-transitivity (\big[+%R/0%R]_(0 <= i <oo) (\esum_(i0 in F i) (bernoulli_pmf p i0)%:E)%R).
+transitivity (\sum_(0 <= i <oo) (\esum_(j in F i) (bernoulli_pmf p j)%:E)%R).
 apply: eq_eseriesr => k _; rewrite esum_fset//= => b _.
   by rewrite lee_fin bernoulli_pmf_ge0.
-rewrite -nneseries_sum_bigcup//=; last by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
+rewrite -nneseries_sum_bigcup//=; last first.
+  by move=> b; rewrite lee_fin bernoulli_pmf_ge0.
 by rewrite esum_fset//= => b _; rewrite lee_fin bernoulli_pmf_ge0.
 Qed.
 
@@ -204,8 +200,8 @@ Section bernoulli_measure.
 Context {R : realType}.
 Variables (p : R) (p0 : (0 <= p)%R) (p1 : ((NngNum p0)%:num <= 1)%R).
 
-Lemma bernoulliE : bernoulli p = measure_add
-  (mscale (NngNum p0) (dirac true)) (mscale (onem_nonneg p1) (dirac false)).
+Lemma bernoulli_dirac : bernoulli p = measure_add
+  (mscale (NngNum p0) \d_true) (mscale (onem_nonneg p1) \d_false).
 Proof.
 apply/funext => U; rewrite /bernoulli; case: ifPn => [p01|]; last first.
   by rewrite p0/= p1.
@@ -231,15 +227,13 @@ Section integral_bernoulli.
 Context {R : realType}.
 Variables (p : R) (p01 : (0 <= p <= 1)%R).
 
-Lemma bernoulliE_ext A :
-  bernoulli p A = p%:E * \d_true A + (`1-p)%:E * \d_false A.
-Proof. by case/andP : p01 => p0 p1; rewrite bernoulliE// measure_addE. Qed.
+Lemma bernoulliE A : bernoulli p A = p%:E * \d_true A + (`1-p)%:E * \d_false A.
+Proof. by case/andP : p01 => p0 p1; rewrite bernoulli_dirac// measure_addE. Qed.
 
 Lemma integral_bernoulli (f : bool -> \bar R) : (forall x, 0 <= f x) ->
   \int[bernoulli p]_y (f y) = p%:E * f true + (`1-p)%:E * f false.
 Proof.
-move=> f0; case/andP : p01 => p0 p1.
-rewrite bernoulliE/=.
+move=> f0; case/andP : p01 => p0 p1; rewrite bernoulli_dirac/=.
 rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
 by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT !mul1e.
 Qed.
@@ -258,10 +252,7 @@ apply: (@measurability _ _ _ _ _ _
   (@pset _ _ _ : set (set (pprobability _ R)))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
 apply: measurable_fun_if => //=.
-  apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
-    rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
-    by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
-  by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+  by apply: measurable_and => //; exact: measurable_fun_ler.
 apply: (eq_measurable_fun (fun t =>
     \sum_(b <- fset_set Ys) (bernoulli_pmf t b)%:E)).
   move=> x /set_mem[_/= x01].
@@ -288,8 +279,7 @@ Definition binomial_pmf k := p ^+ k * (`1-p) ^+ (n - k) *+ 'C(n, k).
 
 Lemma binomial_pmf_ge0 k (p01 : (0 <= p <= 1)%R) : 0 <= binomial_pmf k.
 Proof.
-move: p01 => /andP[p0 p1].
-rewrite /binomial_pmf mulrn_wge0// mulr_ge0// ?exprn_ge0//.
+move: p01 => /andP[p0 p1]; rewrite mulrn_wge0// mulr_ge0// ?exprn_ge0//.
 exact: onem_ge0.
 Qed.
 
@@ -306,7 +296,7 @@ Qed.
 
 Definition binomial_prob {R : realType} (n : nat) (p : R) : set nat -> \bar R :=
   fun U => if (0 <= p <= 1)%R then
-    \esum_(k in U) (binomial_pmf n p k)%:E else \d_O U.
+    \esum_(k in U) (binomial_pmf n p k)%:E else \d_0%N U.
 
 Section binomial.
 Context {R : realType} (n : nat) (p : R).
@@ -314,14 +304,11 @@ Context {R : realType} (n : nat) (p : R).
 Local Notation binomial := (binomial_prob n p).
 
 Let binomial0 : binomial set0 = 0.
-Proof.
-by rewrite /binomial measure0; case: ifPn => //; rewrite esum_set0.
-Qed.
+Proof. by rewrite /binomial measure0; case: ifPn => //; rewrite esum_set0. Qed.
 
 Let binomial_ge0 U : 0 <= binomial U.
 Proof.
-rewrite /binomial; case: ifPn => // p01.
-apply: esum_ge0 => /= k Uk.
+rewrite /binomial; case: ifPn => // p01; apply: esum_ge0 => /= k Uk.
 by rewrite lee_fin binomial_pmf_ge0.
 Qed.
 
@@ -333,8 +320,7 @@ apply: cvg_toP.
   apply: ereal_nondecreasing_is_cvgn => a b ab.
   apply: lee_sum_nneg_natr => // k _ _.
   by apply: esum_ge0 => /= ? _; exact: binomial_pmf_ge0.
-rewrite nneseries_sum_bigcup// => i.
-by rewrite lee_fin binomial_pmf_ge0.
+by rewrite nneseries_sum_bigcup// => i; rewrite lee_fin binomial_pmf_ge0.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ binomial
@@ -344,15 +330,15 @@ Let binomial_setT : binomial [set: _] = 1.
 Proof.
 rewrite /binomial; case: ifPn; last by move=> _; rewrite probability_setT.
 move=> p01; rewrite /binomial_pmf.
-have ? : forall k, 0%R <= (p ^+ k * `1-p ^+ (n - k) *+ 'C(n, k))%:E.
-  move=> k; case/andP : p01 => p1 p2.
+have pkn k : 0%R <= (p ^+ k * `1-p ^+ (n - k) *+ 'C(n, k))%:E.
+  case/andP : p01 => p0 p1.
   by rewrite lee_fin mulrn_wge0// mulr_ge0 ?exprn_ge0 ?subr_ge0.
-rewrite (esumID (`I_n.+1))// [X in _ + X]esum1 ?adde0; last first.
+rewrite (esumID `I_n.+1)// [X in _ + X]esum1 ?adde0; last first.
   by move=> /= k [_ /negP]; rewrite -leqNgt => nk; rewrite bin_small.
 rewrite setTI esum_fset// -fsbig_ord//=.
 under eq_bigr do rewrite mulrC.
 rewrite sumEFin -exprDn_comm; last exact: mulrC.
-by rewrite subrK expr1n.
+by rewrite addrC add_onemK expr1n.
 Qed.
 
 HB.instance Definition _ :=
@@ -362,10 +348,11 @@ End binomial.
 
 Section binomial_probability.
 Local Open Scope ring_scope.
-Context {R : realType} (n : nat) (p : R) (p0 : (0 <= p)%R) (p1 : ((NngNum p0)%:num <= 1)%R).
+Context {R : realType} (n : nat) (p : R)
+        (p0 : (0 <= p)%R) (p1 : ((NngNum p0)%:num <= 1)%R).
 
 Definition bin_prob (k : nat) : {nonneg R} :=
-  ((NngNum p0)%:num^+k * (NngNum (onem_ge0 p1))%:num^+(n-k)%N *+ 'C(n, k))%:nng.
+  ((NngNum p0)%:num ^+ k * (NngNum (onem_ge0 p1))%:num ^+ (n - k)%N *+ 'C(n, k))%:nng.
 
 Lemma bin_prob0 : bin_prob 0 = ((NngNum (onem_ge0 p1))%:num^+n)%:nng.
 Proof.
@@ -373,71 +360,66 @@ rewrite /bin_prob bin0 subn0/=; apply/val_inj => /=.
 by rewrite expr0 mul1r mulr1n.
 Qed.
 
-Lemma bin_prob1 :
-  bin_prob 1 = ((NngNum p0)%:num * (NngNum (onem_ge0 p1))%:num^+(n-1)%N *+ n)%:nng.
-Proof. by rewrite /bin_prob bin1/=; apply/val_inj => /=; rewrite expr1. Qed.
-
-Lemma binomialE : binomial_prob n p =
-  @msum _ _ R (fun k => mscale (bin_prob k) \d_k) n.+1.
+Lemma bin_prob1 : bin_prob 1 =
+  ((NngNum p0)%:num * (NngNum (onem_ge0 p1))%:num ^+ n.-1 *+ n)%:nng.
 Proof.
-apply/funext => U; rewrite /binomial_prob; case: ifPn => [_|]; last by rewrite p1 p0.
+by rewrite /bin_prob bin1/=; apply/val_inj => /=; rewrite expr1 subn1.
+Qed.
+
+Lemma binomial_msum :
+  binomial_prob n p = msum (fun k => mscale (bin_prob k) \d_k) n.+1.
+Proof.
+apply/funext => U.
+rewrite /binomial_prob; case: ifPn => [_|]; last by rewrite p1 p0.
 rewrite /msum/= /mscale/= /binomial_pmf.
-have ? : forall k, (0%R <= (p ^+ k * `1-p ^+ (n - k) *+ 'C(n, k))%:E)%E.
-  move=> k.
+have pkn k : (0%R <= (p ^+ k * `1-p ^+ (n - k) *+ 'C(n, k))%:E)%E.
   by rewrite lee_fin mulrn_wge0// mulr_ge0 ?exprn_ge0 ?subr_ge0.
-rewrite (esumID (`I_n.+1))// [X in _ + X]esum1 ?adde0; last first.
+rewrite (esumID `I_n.+1)//= [X in _ + X]esum1 ?adde0; last first.
   by move=> /= k [_ /negP]; rewrite -leqNgt => nk; rewrite bin_small.
 rewrite esum_mkcondl esum_fset//; last by move=> i /= _; case: ifPn.
 rewrite -fsbig_ord//=; apply: eq_bigr => i _.
 by rewrite diracE; case: ifPn => /= iU; [rewrite mule1|rewrite mule0].
 Qed.
 
-Lemma binomialE_ext U : binomial_prob n p U =
+Lemma binomial_probE U : binomial_prob n p U =
   (\sum_(k < n.+1) (bin_prob k)%:num%:E * (\d_(nat_of_ord k) U))%E.
-Proof. by rewrite binomialE /msum//=. Qed.
+Proof. by rewrite binomial_msum. Qed.
 
 Lemma integral_binomial (f : nat -> \bar R) : (forall x, 0 <= f x)%E ->
-  (\int[binomial_prob n p]_y (f y) = \sum_(k < n.+1) (bin_prob k)%:num%:E * f k)%E.
+  (\int[binomial_prob n p]_y (f y) =
+   \sum_(k < n.+1) (bin_prob k)%:num%:E * f k)%E.
 Proof.
-move=> f0; rewrite binomialE ge0_integral_measure_sum//=; apply: eq_bigr => i _.
+move=> f0; rewrite binomial_msum ge0_integral_measure_sum//=.
+apply: eq_bigr => i _.
 by rewrite ge0_integral_mscale//= integral_dirac//= diracT mul1e.
 Qed.
 
 End binomial_probability.
 
-Lemma integral_binomial_bernoulli (R : realType) n p U :
-  (0 <= p <= 1)%R ->
-  \int[binomial_prob n p]_y \d_(0 < y)%N U = bernoulli (1 - `1-p ^+ n) U :> \bar R.
+Lemma integral_binomial_prob (R : realType) n p U : (0 <= p <= 1)%R ->
+  \int[binomial_prob n p]_y \d_(0 < y)%N U =
+  bernoulli (1 - `1-p ^+ n) U :> \bar R.
 Proof.
-move=> /andP[p0 p1].
-rewrite bernoulliE_ext//=; last first.
-  rewrite subr_ge0 exprn_ile1//=; last 2 first.
-    exact/onem_ge0.
-    exact/onem_le1.
+move=> /andP[p0 p1]; rewrite bernoulliE//=; last first.
+  rewrite subr_ge0 exprn_ile1//=; [|exact/onem_ge0|exact/onem_le1].
   by rewrite lerBlDr addrC -lerBlDr subrr; exact/exprn_ge0/onem_ge0.
-rewrite (@integral_binomial _ n p _ _ (fun y => \d_(1 <= y)%N U))//; last first.
+rewrite (@integral_binomial _ n p _ _ (fun y => \d_(1 <= y)%N U))//.
 rewrite !big_ord_recl/=.
-rewrite /bump.
-under eq_bigr => i _.
-  rewrite /=.
-  have -> : (0 < 1 + i)%N => //.
-  over.
-rewrite addeC -ge0_sume_distrl.
-- congr (_ * _ + _ * _).
-  + have -> : \sum_(i < n) (p ^+ (1 + i) * `1-p ^+ (n - (1 + i)) *+ 'C(n, 1 + i))%:E =
-              \sum_(i < n.+1) (p ^+ i * `1-p ^+ (n - i) *+ 'C(n, i))%:E - (`1-p ^+ n)%:E.
-      rewrite big_ord_recl/= expr0 subn0 mul1r bin0 mulr1n addeC addeA.
-      by rewrite (addeC _ (_ ^+ n)%:E) EFinN subee// add0e.
-    rewrite sumEFin !EFinB EFin_expe.
-    congr (_ - _)%E.
-    under eq_bigr do rewrite mulrC.
-    rewrite -(@exprDn_comm _ `1-p p n); last first.
-      by rewrite /GRing.comm/onem mulrC.
-   by rewrite /onem subrK expr1n.
-  + rewrite subn0 expr0 bin0 mulr1n /onem.
-    by rewrite mul1r opprB addrCA subrr addr0.
-- move=> i _.
+rewrite expr0 mul1r subn0 bin0 ltnn mulr1n addrC.
+rewrite onemD opprK onem1 add0r; congr +%E.
+rewrite /bump; under eq_bigr do rewrite leq0n add1n ltnS leq0n.
+rewrite -ge0_sume_distrl; last first.
+  move=> i _.
   by apply/mulrn_wge0/mulr_ge0; apply/exprn_ge0 => //; exact/onem_ge0.
+congr *%E.
+transitivity (\sum_(i < n.+1) (`1-p ^+ (n - i) * p ^+ i *+ 'C(n, i))%:E -
+              (`1-p ^+ n)%:E).
+  rewrite big_ord_recl/=.
+  rewrite expr0 mulr1 subn0 bin0 mulr1n addrAC -EFinD subrr add0e.
+  by rewrite /bump; under [RHS]eq_bigr do rewrite leq0n add1n mulrC.
+rewrite sumEFin -(@exprDn_comm _ `1-p p n)//.
+  by rewrite subrK expr1n.
+by rewrite /GRing.comm/onem mulrC.
 Qed.
 
 Section binomial_total.
@@ -445,7 +427,7 @@ Local Open Scope ring_scope.
 Variables (R : realType) (n : nat).
 Implicit Type p : R.
 
-Lemma measurable_binomial_probT :
+Lemma measurable_binomial_prob :
   measurable_fun setT (binomial_prob n : R -> pprobability _ _).
 Proof.
 apply: (@measurability _ _ _ _ _ _
@@ -454,10 +436,7 @@ move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
 rewrite /binomial_prob/=.
 set f := (X in measurable_fun _ X).
 apply: measurable_fun_if => //=.
-  apply: measurable_and => //; apply: (measurable_fun_bool true) => //=.
-    rewrite (_ : _ @^-1` _ = `[0, +oo[%classic)//.
-    by apply/seteqP; split => [x|x] /=; rewrite in_itv/= andbT.
-  by rewrite (_ : _ @^-1` _ = `]-oo, 1]%classic).
+  by apply: measurable_and => //; exact: measurable_fun_ler.
 apply: (eq_measurable_fun (fun t =>
     \sum_(k <oo | k \in Ys) (binomial_pmf n t k)%:E)).
   move=> x /set_mem[_/= x01].
@@ -471,7 +450,7 @@ Qed.
 
 End binomial_total.
 Arguments binomial_prob {R}.
-Arguments measurable_binomial_probT {R}.
+Arguments measurable_binomial_prob {R}.
 
 Section uniform_probability.
 Local Open Scope ring_scope.
@@ -488,12 +467,7 @@ Qed.
 Lemma measurable_uniform_pdf : measurable_fun setT uniform_pdf.
 Proof.
 rewrite /uniform_pdf /=; apply: measurable_fun_if => //=.
-apply: measurable_and => //.
-  apply: (measurable_fun_bool true) => //=.
-  rewrite (_ : _ @^-1` _ = `[a, +oo[%classic)//.
-  by apply/seteqP; split => [z|z] /=; rewrite in_itv/= andbT.
-apply: (measurable_fun_bool true) => //=.
-by rewrite (_ : _ @^-1` _ = `]-oo, b]%classic).
+by apply: measurable_and => //; exact: measurable_fun_ler.
 Qed.
 
 Local Notation mu := lebesgue_measure.
@@ -537,8 +511,7 @@ Proof.
 apply/integrableP; split.
   by apply: measurableT_comp => //; exact: measurable_uniform_pdf.
 under eq_integral.
-  move=> x _; rewrite gee0_abs//; last first.
-    by rewrite lee_fin uniform_pdf_ge0.
+  move=> x _; rewrite gee0_abs//; last by rewrite lee_fin uniform_pdf_ge0.
   over.
 by rewrite /= integral_uniform_pdf1 ?ltry// -subr_gt0.
 Qed.
@@ -664,7 +637,6 @@ Section poisson_pdf.
 Variable R : realType.
 Local Open Scope ring_scope.
 
-(* density function for Poisson *)
 Definition poisson_pdf k r : R :=
   if r > 0 then r ^+ k / k`!%:R^-1 * expR (- r) else 1%:R.
 
@@ -683,9 +655,7 @@ Qed.
 Lemma measurable_poisson_pdf k : measurable_fun setT (poisson_pdf k).
 Proof.
 rewrite /poisson_pdf; apply: measurable_fun_if => //.
-  apply: (measurable_fun_bool true).
-  rewrite (_ : _ @^-1` _ = `]0, +oo[%classic)//.
-  by apply/seteqP; split => x /=; rewrite in_itv/= andbT.
+  exact: measurable_fun_ltr.
 by apply: measurable_funM => /=;
   [exact: measurable_funM|exact: measurableT_comp].
 Qed.
@@ -812,8 +782,7 @@ Context d (T : measurableType d) (R : realType).
 Variable f : T -> R.
 
 Definition mscore t : {measure set unit -> \bar R} :=
-  let p := NngNum (normr_ge0 (f t)) in
-  mscale p (dirac tt).
+  let p := NngNum (normr_ge0 (f t)) in mscale p \d_tt.
 
 Lemma mscoreE t U : mscore t U = if U == set0 then 0 else `| (f t)%:E |.
 Proof.
@@ -897,7 +866,7 @@ rewrite (_ : (fun x => _) = (fun x => x *
   apply/funext => x; case: ifPn => ix; first by rewrite indicE/= mem_set ?mule1.
   by rewrite indicE/= memNset ?mule0// /= in_itv/=; exact/negP.
 apply: emeasurable_funM => //=; apply/EFin_measurable_fun.
-by rewrite (_ : \1__ = mindic R (emeasurable_itv `[(i%:R)%:E, (i.+1%:R)%:E[)).
+by rewrite (_ : \1__ = mindic R (emeasurable_itv `[i%:R%:E, i.+1%:R%:E[)).
 Qed.
 
 Definition mk i t := [the measure _ _ of k mf i t].
@@ -2130,7 +2099,7 @@ rewrite muleDr//= -muleDl//.
 rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
 have -> : (1 / 2 * (1 / 2) = 1 / 4%:R :> R)%R by rewrite mulf_div mulr1// -natrM.
 rewrite [in RHS](_ : 1 / 4 = (1 / 4)%:nng%:num)%R//.
-rewrite (bernoulliE p14).
+rewrite (bernoulli_dirac p14).
 rewrite measure_addE/= /mscale/= -!EFinM; congr( _ + (_ * _)%:E).
 have -> : (1 / 2 = 2 / 4%:R :> R)%R.
   by apply/eqP; rewrite eqr_div// ?pnatr_eq0// mul1r -natrM.

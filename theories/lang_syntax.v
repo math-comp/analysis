@@ -696,21 +696,20 @@ move=> /andP[x0 x1]; rewrite ler_norml; apply/andP; split.
 by rewrite lerBlDr lerDl.
 Qed.
 
-Lemma beta_nat_bernE a' b' U : (a > 0)%N -> (b > 0)%N ->
+Lemma beta_nat_bernoulliE a' b' U : (a > 0)%N -> (b > 0)%N ->
   beta_nat_bernoulli a' b' U = bernoulli (div_beta_nat_norm a' b') U.
 Proof.
 move=> a0 b0.
 rewrite /beta_nat_bernoulli.
 under eq_integral => x.
   rewrite inE/= in_itv/= => x01.
-  rewrite bernoulliE_ext/= ?ubeta_nat_pdf_ge0 ?ubeta_nat_pdf_le1//.
+  rewrite bernoulliE/= ?ubeta_nat_pdf_ge0 ?ubeta_nat_pdf_le1//.
   over.
 rewrite /=.
-rewrite [in RHS]bernoulliE_ext/= ?div_beta_nat_norm_ge0 ?div_beta_nat_norm_le1//=.
+rewrite [in RHS]bernoulliE/= ?div_beta_nat_norm_ge0 ?div_beta_nat_norm_le1//=.
 under eq_integral => x x01.
-  rewrite /ubeta_nat_pdf.
   rewrite inE /=in_itv/= in x01.
-  rewrite x01.
+  rewrite /ubeta_nat_pdf x01.
   over.
 rewrite /=.
 rewrite integralD//=; last 2 first.
@@ -785,7 +784,8 @@ rewrite integralZl//=; last first.
       by rewrite mulr_ile1// ?exprn_ge0 ?exprn_ile1// ?onem_ge0 ?onem_le1//; case/andP: t01.
   - exact: integrableS (integrable_ubeta_nat_pdf _ _).
 transitivity (((beta_nat_norm a b)^-1)%:E *
-    \int[mu]_(x in `[0%R, 1%R]) ((ubeta_nat_pdf a b x)%:E - (ubeta_nat_pdf (a+a') (b+b') x)%:E) : \bar R)%E.
+    \int[mu]_(x in `[0%R, 1%R]) ((ubeta_nat_pdf a b x)%:E -
+                                 (ubeta_nat_pdf (a + a') (b + b') x)%:E) : \bar R)%E.
   congr (_ * _)%E.
   apply: eq_integral => x x01.
   rewrite /onem -EFinM mulrBl mul1r EFinB.
@@ -1280,7 +1280,7 @@ Inductive evalD : forall g t, exp D g t ->
 
 | eval_binomial g n e r mr :
   e -D> r ; mr -> (exp_binomial n e : exp D g _) -D> binomial_prob n \o r ;
-                   measurableT_comp (measurable_binomial_probT n) mr
+                   measurableT_comp (measurable_binomial_prob n) mr
 
 | eval_uniform g (a b : R) (ab : (a < b)%R) :
   (exp_uniform a b ab : exp D g _) -D> cst (uniform_prob ab) ;
@@ -1858,7 +1858,7 @@ Proof. exact/execD_evalD/eval_bernoulli/evalD_execD. Qed.
 Lemma execD_binomial g n e :
   @execD g _ (exp_binomial n e) =
     existT _ ((binomial_prob n : R -> pprobability nat R) \o projT1 (execD e))
-             (measurableT_comp (measurable_binomial_probT n) (projT2 (execD e))).
+             (measurableT_comp (measurable_binomial_prob n) (projT2 (execD e))).
 Proof. exact/execD_evalD/eval_binomial/evalD_execD. Qed.
 
 Lemma execD_uniform g a b ab0 :
@@ -1926,10 +1926,13 @@ Lemma congr_letinl {R : realType} g t1 t2 str (e1 e2 : @exp _ _ g t1)
   @execP R g t2 [let str := e2 in e] x U.
 Proof. by move=> + mU; move/eq_sfkernel => He; rewrite !execP_letin He. Qed.
 
-Lemma congr_letinr {R : realType} g t1 t2 str (e : @exp _ _ _ t1) (e1 e2 : @exp _ _ (_ :: g) t2) x U :
+Lemma congr_letinr {R : realType} g t1 t2 str (e : @exp _ _ _ t1)
+  (e1 e2 : @exp _ _ (_ :: g) t2) x U :
   (forall y V, execP e1 (y, x) V = execP e2 (y, x) V) ->
   @execP R g t2 [let str := e in e1] x U = @execP R g t2 [let str := e in e2] x U.
-Proof. by move=> He; rewrite !execP_letin !letin'E; apply: eq_integral => ? _; exact: He. Qed.
+Proof.
+by move=> He; rewrite !execP_letin !letin'E; apply: eq_integral => ? _; exact: He.
+Qed.
 
 Lemma congr_normalize {R : realType} g t (e1 e2 : @exp R _ g t) :
   (forall x U, execP e1 x U = execP e2 x U) ->
