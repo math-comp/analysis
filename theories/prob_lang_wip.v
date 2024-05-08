@@ -42,7 +42,7 @@ Lemma measurable_gauss_pdf m s : measurable_fun setT (gauss_pdf m s).
 Proof.
 apply: measurable_funM => //=; apply: measurableT_comp => //=.
 apply: measurable_funM => //=; apply: measurableT_comp => //=.
-apply: measurableT_comp (measurable_exprn _) _ => /=.
+apply: measurableT_comp (exprn_measurable _) _ => /=.
 by apply: measurable_funM => //=; exact: measurable_funD.
 Qed.
 
@@ -141,7 +141,7 @@ apply: ge0_le_integral => //=.
 - by move=> x _; rewrite lee_fin gauss_pdf01_ub.
 Qed.
 
-Let f1 (x : salgebraType (R.-ocitv.-measurable)) := (gauss_pdf01 x) ^-1.
+Let f1 (x : g_sigma_algebraType (R.-ocitv.-measurable)) := (gauss_pdf01 x) ^-1.
 
 Lemma measurable_fun_f1 : measurable_fun setT f1.
 Proof.
@@ -152,7 +152,7 @@ exact: continuous_gauss_pdf1.
 Qed.
 
 Lemma integrable_f1 U : measurable U ->
-  (gauss01 integral_gauss_pdf01).-integrable U (fun x : salgebraType (R.-ocitv.-measurable) => (f1 x)%:E).
+  (gauss01 integral_gauss_pdf01).-integrable U (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (f1 x)%:E).
 Proof.
 Admitted.
 
@@ -213,11 +213,12 @@ Proof.
 move=> mU; rewrite [in LHS]/staton_lebesgue/=.
 rewrite [in LHS]letinE /=.
 transitivity (\int[gauss01 integral_gauss_pdf01]_(y in U) (f1 y)%:E).
-  rewrite -[in RHS](setTI U) integral_setI_indic//=.
-  apply: eq_integral => //= r.
+  rewrite -[in RHS](setTI U) integral_mkcondr/=.
+  apply: eq_integral => //= r _.
   rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
     by rewrite invr_ge0// gauss_pdf_ge0.
-  by rewrite integral_dirac// diracT mul1e diracE indicE.
+  rewrite integral_dirac// diracT mul1e/= diracE epatch_indic/=.
+  by rewrite indicE.
 rewrite integral_mgauss01//.
 transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
   apply: eq_integral => /= y yU.

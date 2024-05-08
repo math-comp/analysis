@@ -279,7 +279,7 @@ rewrite ger0_norm//.
 rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
 rewrite exp_var'E (execD_var_erefl "x")/=.
 rewrite !indicT/= !mulr1.
-rewrite bernoulliE_ext//=; last lra.
+rewrite bernoulliE//=; last lra.
 by rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM; congr (_%:E);
   rewrite !indicE /onem /=; case: (_ \in _); field.
@@ -319,7 +319,7 @@ rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
 rewrite exp_var'E (execD_var_erefl "x")/=.
-rewrite bernoulliE_ext//=; last lra.
+rewrite bernoulliE//=; last lra.
 rewrite !mul1r.
 rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM;
@@ -363,7 +363,7 @@ rewrite !letin'E/= !iteE/=.
 rewrite !ge0_integral_mscale//=.
 rewrite ger0_norm//.
 rewrite !integral_dirac//= !diracT !mul1e ger0_norm//.
-rewrite bernoulliE_ext//=; last lra.
+rewrite bernoulliE//=; last lra.
 rewrite muleDl//; congr (_ + _)%E;
   rewrite -!EFinM;
   congr (_%:E);
@@ -583,7 +583,7 @@ by rewrite -ge0_fin_numE// beta_nat_fin_num.
 Qed.
 
 Lemma integrable_bernoulli_ubeta_nat_pdf a b U
-  (mu : {measure set (salgebraType (R.-ocitv.-measurable)) -> \bar R}) :
+  (mu : {measure set (g_sigma_algebraType (R.-ocitv.-measurable)) -> \bar R}) :
   measurable U -> (mu `[0%R, 1%R]%classic < +oo)%E ->
   mu.-integrable `[0, 1] (fun x => bernoulli (ubeta_nat_pdf a b x) U).
 Proof.
@@ -650,7 +650,7 @@ transitivity (beta_nat_bernoulli 6 4 1 0 U : \bar R).
     by rewrite expr0 expr1 mulr1.
   rewrite !mul0r !mule0.
   by case: ifPn.
-rewrite beta_nat_bernE// !bernoulliE_ext//=; last 2 first.
+rewrite beta_nat_bernoulliE// !bernoulliE//=; last 2 first.
   lra.
   by rewrite div_beta_nat_norm_ge0 div_beta_nat_norm_le1.
 congr (_ * _ + _ * _)%:E.

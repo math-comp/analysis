@@ -1208,7 +1208,7 @@ Lemma measurable_itv_bnd_infty b x :
 Proof.
 case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itv_c_infty.
 rewrite [X in measurable X](_ : _ =
-  \bigcup_(k in [set k | k >= x]%N) `[k.+1, +oo[%classic); last first.
+    \bigcup_(k in [set k | k >= x]%N) `[k.+1, +oo[%classic); last first.
   apply/seteqP; split => [z /=|/= z [t/= xt]].
     rewrite in_itv/= andbT => xz; exists z.-1 => /=.
       by rewrite -ltnS//=; case: z xz.
@@ -1350,7 +1350,7 @@ Lemma measurable_fun_leq D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
 - rewrite preimage_true [X in _ `&` X](_ : _  =
-    \bigcup_(i in range g) ([set y | f y <= i]%O `&` [set t | i <= g t]%O)).
+      \bigcup_(i in range g) ([set y | f y <= i]%O `&` [set t | i <= g t]%O)).
     rewrite setI_bigcupr; apply: bigcup_measurable => k fk.
     rewrite setIIr; apply: measurableI => //.
     + by rewrite -preimage_itv_infty_c; exact: mf.
