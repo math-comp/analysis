@@ -9,7 +9,7 @@ Require Import prob_lang lang_syntax_util lang_syntax lang_syntax_examples.
 From mathcomp Require Import ring lra.
 
 (**md**************************************************************************)
-(* # Edd's table game example                                                 *)
+(* # Eddy's table game example                                                *)
 (*                                                                            *)
 (* ref:                                                                       *)
 (* - Chung-chieh Shan, Equational reasoning for probabilistic programming,    *)
@@ -157,22 +157,22 @@ Qed.
 End bounded.
 
 Lemma measurable_bernoulli_expn {R : realType} U n :
-  measurable_fun [set: salgebraType (R.-ocitv.-measurable)]
-    (fun x : salgebraType (R.-ocitv.-measurable) => bernoulli ((1 - x) ^+ n) U).
+  measurable_fun [set: g_sigma_algebraType (R.-ocitv.-measurable)]
+    (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => bernoulli ((1 - x) ^+ n) U).
 Proof.
 apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-by apply: measurable_fun_pow => //=; exact: measurable_funB.
+by apply: measurable_funX => //=; exact: measurable_funB.
 Qed.
 
 Lemma integrable_bernoulli_beta_nat_pdf {R : realType} U : measurable U ->
-  (@lebesgue_measure R).-integrable [set: salgebraType (R.-ocitv.-measurable)]
+  (@lebesgue_measure R).-integrable [set: g_sigma_algebraType (R.-ocitv.-measurable)]
     (fun x => (bernoulli (1 - (1 - x) ^+ 3) U * (beta_nat_pdf 6 4 x)%:E)%E).
 Proof.
 move=> mU.
-have ? : measurable_fun [set: salgebraType (R.-ocitv.-measurable)]
+have ? : measurable_fun [set: g_sigma_algebraType (R.-ocitv.-measurable)]
     (fun x => bernoulli (1 - (1 - x) ^+ 3) U).
   apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-  apply: measurable_funB => //; apply: measurable_fun_pow => //.
+  apply: measurable_funB => //; apply: measurable_funX => //.
   exact: measurable_funB.
 apply/integrableP; split => /=.
   apply: emeasurable_funM => //.
@@ -185,7 +185,7 @@ apply: (@le_lt_trans _ _ (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (beta_nat_pd
     by apply/EFin_measurable_fun; exact: measurable_beta_nat_pdf.
   - move=> x _ /=; rewrite patchE; case: ifPn => // _.
     by rewrite lee_fin beta_nat_pdf_ge0.
-  - apply: (measurable_restrict _ _ _).1 => //.
+  - apply/(measurable_restrict _ _ _) => //.
     apply/measurable_funTS/measurableT_comp => //.
     exact: measurable_beta_nat_pdf.
   - move=> x _.
@@ -276,7 +276,7 @@ rewrite (@execD_bin _ _ binop_minus) !execD_real/= !execD_nat.
 rewrite !exp_var'E !(execD_var_erefl "p") !(execD_var_erefl "a2")/=.
 rewrite !letin'E/=.
 move: r01 => /andP[r0 r1].
-by apply/integral_binomial_bernoulli/andP.
+by apply/integral_binomial_prob/andP.
 Qed.
 
 Lemma casino12 : execD casino1 = execD casino2.
@@ -338,11 +338,11 @@ under eq_integral => y _.
   rewrite integral_cst//= /mscale/= diracT mule1.
   over.
 rewrite /=.
-have H1 : measurable_fun [set: salgebraType (R.-ocitv.-measurable)]
-  (fun x0 : salgebraType (R.-ocitv.-measurable) => bernoulli (1 - (1 - x0) ^+ 3) U).
+have H1 : measurable_fun [set: g_sigma_algebraType (R.-ocitv.-measurable)]
+  (fun x0 : g_sigma_algebraType (R.-ocitv.-measurable) => bernoulli (1 - (1 - x0) ^+ 3) U).
   apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
   apply: measurable_funB => //.
-  apply: measurable_fun_pow.
+  apply: measurable_funX.
   exact: measurable_funB.
 have H2 a b : (\int[beta_nat a b]_x0 `|bernoulli (1 - (1 - x0) ^+ 3) U| < +oo :> \bar R)%E.
   apply: (@le_lt_trans _ _ (\int[beta_nat a b]_x0 1)%E).
@@ -357,7 +357,7 @@ rewrite integral_beta_nat//=; last 2 first.
     apply: measurableT_comp => //.
     apply: measurable_funM => //.
       exact: measurable_funM.
-    apply: measurable_fun_pow => //.
+    apply: measurable_funX => //.
     exact: measurable_funB.
   - suff: (beta_nat 1 1).-integrable setT
       (fun x0 => bernoulli (1 - (1 - x0) ^+ 3) U *
@@ -370,7 +370,7 @@ rewrite integral_beta_nat//=; last 2 first.
       apply: measurableT_comp => //.
       apply: measurable_funM => //.
         exact: measurable_funM.
-      apply: measurable_fun_pow => //.
+      apply: measurable_funX => //.
       exact: measurable_funB.
     rewrite beta11_uniform.
     rewrite integral_uniform//=.
@@ -390,7 +390,7 @@ rewrite integral_beta_nat//=; last 2 first.
       apply: @measurableT_comp => //.
       apply: measurable_funM => //.
         exact: measurable_funM.
-      apply: measurable_fun_pow => //.
+      apply: measurable_funX => //.
       exact: measurable_funB.
       + exact: bounded_casino23.
     apply: @measurableT_comp => //.
@@ -398,7 +398,7 @@ rewrite integral_beta_nat//=; last 2 first.
     do 2 apply: @measurableT_comp => //.
     apply: measurable_funM => //.
       exact: measurable_funM.
-    by apply: measurable_fun_pow => //; exact: measurable_funB.
+    by apply: measurable_funX => //; exact: measurable_funB.
 rewrite ger0_norm// integral_dirac// diracT mul1e letin'E/=.
 rewrite integral_beta_nat/=; [|by []|by []|exact: H2].
 rewrite -integralZl//=; last exact: integrable_bernoulli_beta_nat_pdf.
@@ -435,7 +435,7 @@ transitivity (\int[beta_nat 6 4]_(y in `[0%R, 1%R]%classic : set R)
     apply: (le_lt_trans _ (integral_beta_bernoulli_expn_lty 3 6 4 U)).
     apply: ge0_subset_integral => //=; apply: measurableT_comp => //=.
     apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-    by apply: measurable_fun_pow => //=; exact: measurable_funB.
+    by apply: measurable_funX => //=; exact: measurable_funB.
   rewrite integral_beta_nat//; last 2 first.
     exact: measurable_bernoulli_expn.
     exact: integral_beta_bernoulli_expn_lty.
@@ -443,7 +443,7 @@ transitivity (\int[beta_nat 6 4]_(y in `[0%R, 1%R]%classic : set R)
   rewrite patchE; case: ifPn => //.
   rewrite /beta_nat_pdf /ubeta_nat_pdf notin_setE/= in_itv/= => /negP/negbTE ->.
   by rewrite mul0r mule0.
-have := (@beta_nat_bernE R 6 4 0 3 U) isT isT.
+have := (@beta_nat_bernoulliE R 6 4 0 3 U) isT isT.
 rewrite /beta_nat_bernoulli /ubeta_nat_pdf /=.
 under eq_integral.
   move=> x.
@@ -468,7 +468,7 @@ have f1 x : x \in (`[0%R, 1%R]%classic : set R) -> (f x <= 1)%R.
   by move => /f01/andP[].
 under eq_integral => x.
   move=> x01.
-  rewrite bernoulliE_ext//=; last first.
+  rewrite bernoulliE//=; last first.
     by rewrite subr_ge0 f1//= lerBlDr addrC -lerBlDr subrr f0.
   over.
 rewrite /=.
@@ -501,8 +501,7 @@ rewrite [X in _ + X = _]ge0_integralZr//=; last 2 first.
   by apply/EFin_measurable_fun; exact: measurable_beta_nat_pdf.
   by move=> x x01; rewrite mule_ge0// lee_fin// ?f0// ?inE// beta_nat_pdf_ge0.
 under [in RHS]eq_integral => x x01.
-  rewrite bernoulliE_ext//=; last first.
-    by rewrite f0//= f1.
+  rewrite bernoulliE//=; last by rewrite f0//= f1.
   rewrite muleDl//.
   over.
 rewrite /= ge0_integralD//=; last 4 first.
@@ -554,7 +553,7 @@ rewrite -muleDr//; last first.
 rewrite [in RHS](muleC _ (\d_true U)).
 rewrite -muleDr//; last first.
   by rewrite fin_num_adde_defr// beta_nat_fin_num.
-have ? : (beta_nat 6 4).-integrable [set: salgebraType (R.-ocitv.-measurable)] (EFin \o (fun=> 1%R)).
+have ? : (beta_nat 6 4).-integrable [set: g_sigma_algebraType (R.-ocitv.-measurable)] (EFin \o (fun=> 1%R)).
   apply/integrableP; split.
     exact/EFin_measurable_fun.
   rewrite integral_beta_nat//=.
@@ -568,8 +567,8 @@ have ? : (beta_nat 6 4).-integrable [set: salgebraType (R.-ocitv.-measurable)] (
     by rewrite /=.
   rewrite integral_cst//= !normr1 mul1e.
   by rewrite -ge0_fin_numE// beta_nat_fin_num.
-have ? : lebesgue_measure.-integrable [set: salgebraType (R.-ocitv.-measurable)]
-    (EFin \o (fun x : salgebraType (R.-ocitv.-measurable) => (f x * beta_nat_pdf 6 4 x)%R)).
+have ? : lebesgue_measure.-integrable [set: g_sigma_algebraType (R.-ocitv.-measurable)]
+    (EFin \o (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (f x * beta_nat_pdf 6 4 x)%R)).
     apply/integrableP; split.
       apply/EFin_measurable_fun.
       apply/measurable_funM => //.
@@ -653,11 +652,11 @@ rewrite (@execD_bin _ _ binop_minus) execD_pow/= (@execD_bin _ _ binop_minus).
 rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
 transitivity (\int[beta_nat 6 4]_y bernoulli (1 - (1 - y) ^+ 3) U : \bar R)%E.
   by rewrite /beta_nat_bernoulli !letin'E/= /onem.
-rewrite bernoulliE_ext//=; last lra.
+rewrite bernoulliE//=; last lra.
 rewrite integral_beta_nat//; last first.
   by have := @integral_beta_bernoulli_onem_lty R _ _ _ U.
   apply: (measurableT_comp (measurable_bernoulli2 _)) => //.
-  apply: measurable_funB => //; apply: measurable_fun_pow => //.
+  apply: measurable_funB => //; apply: measurable_funX => //.
   exact: measurable_funB.
 transitivity (\int[mu]_(x in `[0%R, 1%R]) (bernoulli (1 - (1 - x) ^+ 3) U *
                                            (beta_nat_pdf 6 4 x)%:E) : \bar R)%E.
@@ -668,7 +667,7 @@ transitivity (\int[mu]_(x in `[0%R, 1%R]) (bernoulli (1 - (1 - x) ^+ 3) U *
     by rewrite /beta_nat_pdf /ubeta_nat_pdf leNgt z0/= mul0r mule0.
   by rewrite /beta_nat_pdf /ubeta_nat_pdf (leNgt z) z1/= andbF mul0r mule0.
 rewrite (@integral_bernoulli_beta_nat_pdf (fun x => (1 - x) ^+ 3)%R U (1 / 11))//=; last 3 first.
-  by apply: measurable_fun_pow => //; exact: measurable_funB.
+  by apply: measurable_funX => //; exact: measurable_funB.
   move=> z.
   rewrite inE/= in_itv/= => /andP[z0 z1].
   rewrite exprn_ge0 ?subr_ge0//= exprn_ile1// ?subr_ge0//.
@@ -680,18 +679,17 @@ rewrite (@integral_bernoulli_beta_nat_pdf (fun x => (1 - x) ^+ 3)%R U (1 / 11))/
       apply: measurable_fun_if => //.
         by apply: measurable_and => //; exact: measurable_fun_ler.
       apply: measurable_funTS; apply: measurable_funM => //.
-      apply: measurable_fun_pow => //.
-      by apply: measurable_funB => //.
+      by apply: measurable_funX => //; exact: measurable_funB.
     rewrite (le_lt_trans _ (integral_beta_bernoulli_expn_lty 3 6 4 U))//.
     rewrite integral_mkcond /=; apply: ge0_le_integral => //=.
       by move=> z _; rewrite patchE expr0 mul1r; case: ifPn.
-      apply: (measurable_restrict _ _ _).1 => //.
+      apply/(measurable_restrict _ _ _) => //.
       apply: measurable_funTS; apply: measurableT_comp => //=.
       apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
       apply: measurable_fun_if => //=.
         by apply: measurable_and => //; exact: measurable_fun_ler.
       apply: measurable_funTS; apply: measurable_funM => //.
-      by apply: measurable_fun_pow => //; exact: measurable_funB.
+      by apply: measurable_funX => //; exact: measurable_funB.
       by apply/measurableT_comp => //; exact: measurable_bernoulli_expn.
       move=> z _; rewrite patchE; case: ifPn => //.
          by rewrite inE/= in_itv /= => ->; rewrite expr0 mul1r.
@@ -699,7 +697,7 @@ rewrite (@integral_bernoulli_beta_nat_pdf (fun x => (1 - x) ^+ 3)%R U (1 / 11))/
     apply: eq_integral => z z01.
     rewrite inE/= in_itv/= in z01.
     by rewrite z01 expr0 mul1r.
-  rewrite beta_nat_bernE//= bernoulliE_ext//=; last first.
+  rewrite beta_nat_bernoulliE//= bernoulliE//=; last first.
     by rewrite div_beta_nat_norm_ge0// div_beta_nat_norm_le1.
   rewrite probability_setT.
   by congr (_ * _ + _ * _)%:E; rewrite /onem;
@@ -720,12 +718,12 @@ rewrite !execP_sample !execD_bernoulli !execD_real/=.
 apply: funext=> x.
 apply: eq_probability=> /= y.
 rewrite !normalizeE/=.
-rewrite !bernoulliE_ext//=; [|lra..].
+rewrite !bernoulliE//=; [|lra..].
 rewrite !diracT !mule1 -EFinD add_onemK onee_eq0/=.
 rewrite !letin'E.
 under eq_integral.
   move=> x0 _ /=.
-  rewrite !bernoulliE_ext//=; [|lra..].
+  rewrite !bernoulliE//=; [|lra..].
   rewrite !diracT !mule1 -EFinD add_onemK.
   over.
 rewrite !ge0_integral_mscale//= (ger0_norm (ltW p0))//.
@@ -733,7 +731,7 @@ rewrite integral_dirac// !diracT !indicT /= !mule1.
 rewrite gt_eqF ?lte_fin//=.
 rewrite integral_dirac//= diracT !mul1e !mulr1.
 rewrite addrCA subrr addr0 invr1 mule1.
-rewrite !bernoulliE_ext//=; [|lra..].
+rewrite !bernoulliE//=; [|lra..].
 by rewrite muleAC -EFinM divff// ?gt_eqF// mul1r EFinD.
 Qed.
 

@@ -6,7 +6,7 @@ From mathcomp Require Import functions cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences esum exp.
 Require Import measure lebesgue_measure numfun lebesgue_integral itv kernel.
 Require Import charge prob_lang lang_syntax_util.
-From mathcomp Require Import ring lra.
+From mathcomp Require Import lra.
 
 (**md**************************************************************************)
 (* # Syntax and Evaluation for a Probabilistic Programming Language           *)
@@ -137,7 +137,7 @@ Qed.
 Lemma measurable_fun_expn_onem {R : realType} a b :
   measurable_fun setT (fun x : R => x ^+ a * `1-x ^+ b)%R.
 Proof.
-apply/measurable_funM => //; apply/measurable_fun_pow => //.
+apply/measurable_funM => //; apply/measurable_funX => //.
 exact: measurable_funB.
 Qed.
 
@@ -240,7 +240,7 @@ Context {R : realType} (a b : nat).
 Local Notation mu := lebesgue_measure.
 
 Lemma integrable_ubeta_nat_pdf : mu.-integrable setT
-  (fun x : salgebraType (R.-ocitv.-measurable) => (ubeta_nat_pdf a b x)%:E).
+  (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (ubeta_nat_pdf a b x)%:E).
 Proof.
 apply/integrableP; split.
   by apply/EFin_measurable_fun; exact: measurable_ubeta_nat_pdf.
@@ -394,7 +394,7 @@ HB.instance Definition _ := isMeasure.Build _ _ _ ubeta_nat
   ubeta_nat0 ubeta_nat_ge0 ubeta_nat_sigma_additive.
 
 Definition beta_nat (*: set [the measurableType (R.-ocitv.-measurable).-sigma of
-  salgebraType R.-ocitv.-measurable] -> \bar R*) :=
+  g_sigma_algebraType R.-ocitv.-measurable] -> \bar R*) :=
   @mscale _ _ _ (invr_nonneg (NngNum (beta_nat_norm_ge0 a b))) ubeta_nat.
 
 (*Let beta_nat0 : beta_nat set0 = 0.
@@ -471,7 +471,7 @@ apply: (@le_lt_trans _ _ (\int[beta_nat a b]_x cst 1 x))%E.
   apply: ge0_le_integral => //=.
     apply: measurableT_comp => //=.
     apply: (measurableT_comp (measurable_bernoulli2 _)) => //.
-    by apply: measurable_fun_pow => //; exact: measurable_funB.
+    by apply: measurable_funX => //; exact: measurable_funB.
   by move=> x _; rewrite gee0_abs// probability_le1.
 by rewrite integral_cst//= mul1e -ge0_fin_numE// beta_nat_fin_num.
 Qed.
@@ -484,7 +484,7 @@ apply: (@le_lt_trans _ _ (\int[beta_nat a b ]_x cst 1 x))%E.
     apply: measurableT_comp => //=.
     apply: (measurableT_comp (measurable_bernoulli2 _)) => //.
     apply: measurable_funB => //=.
-    by apply: measurable_fun_pow => //; exact: measurable_funB.
+    by apply: measurable_funX => //; exact: measurable_funB.
   by move=> x y; rewrite gee0_abs// probability_le1.
 by rewrite integral_cst//= mul1e -ge0_fin_numE// beta_nat_fin_num.
 Qed.
@@ -623,7 +623,7 @@ Qed.
 
 Lemma beta_nat_integrable a' b' :
   (beta_nat a b).-integrable `[0, 1]
-  (fun x : salgebraType (R.-ocitv.-measurable) => (x ^+ a' * `1-x ^+ b')%:E).
+  (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (x ^+ a' * `1-x ^+ b')%:E).
 Proof.
 apply/integrableP; split.
   apply/measurable_funTS/measurableT_comp => //.
@@ -644,10 +644,10 @@ Qed.
 
 Lemma beta_nat_integrable_onem a' b' :
   (beta_nat a b).-integrable `[0, 1]
-  (fun x : salgebraType (R.-ocitv.-measurable) => (`1-(x ^+ a' * `1-x ^+ b')%:E)).
+  (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (`1-(x ^+ a' * `1-x ^+ b')%:E)).
 Proof.
-apply: (eq_integrable _ (cst 1 \- (fun x : salgebraType (R.-ocitv.-measurable) => (x ^+ a' * `1-x ^+ b')%:E))%E) => //.
-apply: (@integrableB _ (salgebraType R.-ocitv.-measurable)) => //=.
+apply: (eq_integrable _ (cst 1 \- (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (x ^+ a' * `1-x ^+ b')%:E))%E) => //.
+apply: (@integrableB _ (g_sigma_algebraType R.-ocitv.-measurable)) => //=.
   (* TODO: lemma? *)
   apply/integrableP; split => //.
   rewrite (eq_integral (fun x => (\1_setT x)%:E))/=; last first.
@@ -666,7 +666,7 @@ Qed.
 
 Lemma beta_nat_integrable_dirac a' b' (c : bool) U :
   (beta_nat a b).-integrable `[0, 1]
-  (fun x : salgebraType (R.-ocitv.-measurable) => ((x ^+ a' * `1-x ^+ b')%:E * \d_c U)%E).
+  (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => ((x ^+ a' * `1-x ^+ b')%:E * \d_c U)%E).
 Proof.
 apply: integrableMl => //=; last first.
   exists 1; split => // x x1/= _ _; rewrite (le_trans _ (ltW x1))//.
@@ -676,7 +676,7 @@ Qed.
 
 Lemma beta_nat_integrable_onem_dirac a' b' (c : bool) U :
   (beta_nat a b).-integrable `[0, 1]
-  (fun x : salgebraType (R.-ocitv.-measurable) => (`1-(x ^+ a' * `1-x ^+ b')%:E * \d_c U)%E).
+  (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (`1-(x ^+ a' * `1-x ^+ b')%:E * \d_c U)%E).
 Proof.
 apply: integrableMl => //=; last first.
   exists 1; split => // x x1/= _ _; rewrite (le_trans _ (ltW x1))//.
@@ -691,21 +691,20 @@ move=> /andP[x0 x1]; rewrite ler_norml; apply/andP; split.
 by rewrite lerBlDr lerDl.
 Qed.
 
-Lemma beta_nat_bernE a' b' U : (a > 0)%N -> (b > 0)%N ->
+Lemma beta_nat_bernoulliE a' b' U : (a > 0)%N -> (b > 0)%N ->
   beta_nat_bernoulli a' b' U = bernoulli (div_beta_nat_norm a' b') U.
 Proof.
 move=> a0 b0.
 rewrite /beta_nat_bernoulli.
 under eq_integral => x.
   rewrite inE/= in_itv/= => x01.
-  rewrite bernoulliE_ext/= ?ubeta_nat_pdf_ge0 ?ubeta_nat_pdf_le1//.
+  rewrite bernoulliE/= ?ubeta_nat_pdf_ge0 ?ubeta_nat_pdf_le1//.
   over.
 rewrite /=.
-rewrite [in RHS]bernoulliE_ext/= ?div_beta_nat_norm_ge0 ?div_beta_nat_norm_le1//=.
+rewrite [in RHS]bernoulliE/= ?div_beta_nat_norm_ge0 ?div_beta_nat_norm_le1//=.
 under eq_integral => x x01.
-  rewrite /ubeta_nat_pdf.
   rewrite inE /=in_itv/= in x01.
-  rewrite x01.
+  rewrite /ubeta_nat_pdf x01.
   over.
 rewrite /=.
 rewrite integralD//=; last 2 first.
@@ -780,7 +779,8 @@ rewrite integralZl//=; last first.
       by rewrite mulr_ile1// ?exprn_ge0 ?exprn_ile1// ?onem_ge0 ?onem_le1//; case/andP: t01.
   - exact: integrableS (integrable_ubeta_nat_pdf _ _).
 transitivity (((beta_nat_norm a b)^-1)%:E *
-    \int[mu]_(x in `[0%R, 1%R]) ((ubeta_nat_pdf a b x)%:E - (ubeta_nat_pdf (a+a') (b+b') x)%:E) : \bar R)%E.
+    \int[mu]_(x in `[0%R, 1%R]) ((ubeta_nat_pdf a b x)%:E -
+                                 (ubeta_nat_pdf (a + a') (b + b') x)%:E) : \bar R)%E.
   congr (_ * _)%E.
   apply: eq_integral => x x01.
   rewrite /onem -EFinM mulrBl mul1r EFinB.
@@ -1224,7 +1224,7 @@ HB.instance Definition _ := Probability.on bernoulli0.*)
 Lemma __ : Measurable.sort
                  (pprobability
                     [the measurableType (R.-ocitv.-measurable).-sigma of
-                    salgebraType (R.-ocitv.-measurable)] R) =
+                    g_sigma_algebraType (R.-ocitv.-measurable)] R) =
 Measurable.sort (@mtyp R (Prob Real)).
 rewrite /=.
 (* done. *)
@@ -1241,7 +1241,7 @@ Inductive evalD : forall g t, exp D g t ->
 | eval_real g r : ([r:R] : exp D g _) -D> cst r ; kr r
 
 | eval_pow g n (e : exp D g _) f mf : e -D> f ; mf ->
-  [e ^+ {n}] -D> (fun x => f x ^+ n) ; (measurable_fun_pow n mf)
+  [e ^+ {n}] -D> (fun x => f x ^+ n) ; (measurable_funX n mf)
 
 | eval_bin g bop (e1 : exp D g _) f1 mf1 e2 f2 mf2 :
   e1 -D> f1 ; mf1 -> e2 -D> f2 ; mf2 ->
@@ -1275,7 +1275,7 @@ Inductive evalD : forall g t, exp D g t ->
 
 | eval_binomial g n e r mr :
   e -D> r ; mr -> (exp_binomial n e : exp D g _) -D> binomial_prob n \o r ;
-                   measurableT_comp (measurable_binomial_probT n) mr
+                   measurableT_comp (measurable_binomial_prob n) mr
 
 | eval_uniform g (a b : R) (ab : (a < b)%R) :
   (exp_uniform a b ab : exp D g _) -D> cst (uniform_prob ab) ;
@@ -1782,7 +1782,7 @@ Local Open Scope ring_scope.
 Lemma execD_pow g (e : exp D g _) n :
   let f := projT1 (execD e) in let mf := projT2 (execD e) in
   execD (exp_pow n e) =
-  @existT _ _ (fun x => f x ^+ n) (measurable_fun_pow n mf).
+  @existT _ _ (fun x => f x ^+ n) (measurable_funX n mf).
 Proof.
 by move=> f mf; apply/execD_evalD/eval_pow/evalD_execD.
 Qed.
@@ -1853,7 +1853,7 @@ Proof. exact/execD_evalD/eval_bernoulli/evalD_execD. Qed.
 Lemma execD_binomial g n e :
   @execD g _ (exp_binomial n e) =
     existT _ ((binomial_prob n : R -> pprobability nat R) \o projT1 (execD e))
-             (measurableT_comp (measurable_binomial_probT n) (projT2 (execD e))).
+             (measurableT_comp (measurable_binomial_prob n) (projT2 (execD e))).
 Proof. exact/execD_evalD/eval_binomial/evalD_execD. Qed.
 
 Lemma execD_uniform g a b ab0 :
@@ -1921,10 +1921,13 @@ Lemma congr_letinl {R : realType} g t1 t2 str (e1 e2 : @exp _ _ g t1)
   @execP R g t2 [let str := e2 in e] x U.
 Proof. by move=> + mU; move/eq_sfkernel => He; rewrite !execP_letin He. Qed.
 
-Lemma congr_letinr {R : realType} g t1 t2 str (e : @exp _ _ _ t1) (e1 e2 : @exp _ _ (_ :: g) t2) x U :
+Lemma congr_letinr {R : realType} g t1 t2 str (e : @exp _ _ _ t1)
+  (e1 e2 : @exp _ _ (_ :: g) t2) x U :
   (forall y V, execP e1 (y, x) V = execP e2 (y, x) V) ->
   @execP R g t2 [let str := e in e1] x U = @execP R g t2 [let str := e in e2] x U.
-Proof. by move=> He; rewrite !execP_letin !letin'E; apply: eq_integral => ? _; exact: He. Qed.
+Proof.
+by move=> He; rewrite !execP_letin !letin'E; apply: eq_integral => ? _; exact: He.
+Qed.
 
 Lemma congr_normalize {R : realType} g t (e1 e2 : @exp R _ g t) :
   (forall x U, execP e1 x U = execP e2 x U) ->

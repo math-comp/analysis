@@ -1573,8 +1573,8 @@ Lemma measurable_fun_if (g h : T1 -> T2) D (mD : measurable D)
   measurable_fun D (fun t => if f t then g t else h t).
 Proof.
 move=> mx my /= _ B mB; rewrite (_ : _ @^-1` B =
-   ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
-   ((f @^-1` [set false]) `&` (h @^-1` B))).
+    ((f @^-1` [set true]) `&` (g @^-1` B)) `|`
+    ((f @^-1` [set false]) `&` (h @^-1` B))).
   rewrite setIUr; apply: measurableU.
   - by rewrite setIA; apply: mx => //; exact: mf.
   - by rewrite setIA; apply: my => //; exact: mf.
@@ -2138,18 +2138,6 @@ HB.instance Definition _ := isContent.Build d T R mu
 HB.instance Definition _ := Content_isMeasure.Build d T R mu
   measure_semi_sigma_additive.
 HB.end.
-
-(*Lemma eq_measure d (T : measurableType d) (R : realFieldType)
-  (m1 m2 : {measure set T -> \bar R}) :
-  (forall U, measurable U -> m1 U = m2 U) -> m1 = m2.
-Proof.
-move: m1 m2 => [m1 [[m10 m1ge0 [m1sa]]]] [m2 [[m20 m2ge0 [m2sa]]]] /= m1m2.
-have : forall U : set T, measurable U.
-  move=> U.
-
-rewrite -{}m1m2 => m10' m1ge0' m1sa'; f_equal.
-by rewrite (_ : m10' = m10)// (_ : m1ge0' = m1ge0)// (_ : m1sa' = m1sa).
-Qed.*)
 
 Lemma eq_measure d (T : measurableType d) (R : realFieldType)
   (m1 m2 : {measure set T -> \bar R}) :

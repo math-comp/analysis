@@ -680,7 +680,6 @@ Qed.
 
 End Rintegration_by_parts.
 
-(* TODO: move to realfun.v? *)
 Section integration_by_substitution_preliminaries.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
