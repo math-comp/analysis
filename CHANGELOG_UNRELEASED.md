@@ -31,6 +31,9 @@
   + lemmas `total_variation_nondecreasing`, `total_variation_bounded_variation`
 - new file `theories/all_analysis.v`
 
+- in `normedtype.v`:
+  + lemma `not_near_at_leftP`
+
 ### Changed
 
 - in `forms.v`:

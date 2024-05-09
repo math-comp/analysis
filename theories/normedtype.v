@@ -1308,6 +1308,16 @@ apply: contrapT; apply: pePf; apply/andP; split.
 - by near: t; apply: nbhs_right_lt; rewrite ltrDl.
 Unshelve. all: by end_near. Qed.
 
+Lemma not_near_at_leftP T (f : R -> T) (p : R) (P : pred T) :
+  ~ (\forall x \near p^'-, P (f x)) ->
+  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P (f x).
+Proof.
+move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
+apply: contrapT; apply: pePf; apply/andP; split.
+- by near: t; apply: nbhs_left_gt; rewrite ltrBlDr ltrDl.
+- by near: t; exact: nbhs_left_lt.
+Unshelve. all: by end_near. Qed.
+
 Lemma withinN (A : set R) a :
   within A (nbhs (- a)) = - x @[x --> within (-%R @` A) (nbhs a)].
 Proof.
