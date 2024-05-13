@@ -70,6 +70,12 @@ by move: b0 b1 => [] [] /=; [exact: subset_itv_oo_co|exact: subset_itv_oo_cc|
   exact: subset_refl|exact: subset_itv_oo_oc].
 Qed.
 
+Lemma interval_set1 x : `[x, x]%classic = [set x] :> set T.
+Proof.
+apply/seteqP; split => [y/=|y <-]; last by rewrite /= in_itv/= lexx.
+by rewrite in_itv/= => /andP[yx xy]; apply/eqP; rewrite eq_le yx xy.
+Qed.
+
 Lemma set_itvoo x y : `]x, y[%classic = [set z | (x < z < y)%O].
 Proof. by []. Qed.
 
