@@ -1286,6 +1286,12 @@ move=> xz; exists (z - x) => //=; first by rewrite subr_gt0.
 by move=> y /= + xy; rewrite distrC ?ger0_norm ?subr_ge0 1?ltW// ltrD2r.
 Qed.
 
+Lemma nbhs_right_ltDr x e : 0 < e -> \forall y \near x ^'+, y - x < e.
+Proof.
+move=> e0; near=> y; rewrite ltrBlDr; near: y.
+by apply: nbhs_right_lt; rewrite ltrDr.
+Unshelve. all: by end_near. Qed.
+
 Lemma nbhs_right_le x z : x < z -> \forall y \near x^'+, y <= z.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_right_lt.
 Unshelve. all: by end_near. Qed.

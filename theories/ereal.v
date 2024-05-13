@@ -347,6 +347,13 @@ End DualAddTheory.
 
 HB.instance Definition _ (R : numDomainType) := isPointed.Build (\bar R) 0%E.
 
+Lemma funID {aT : pointedType} (D : set aT) {R : numDomainType}
+  (f : aT -> \bar R) : f = (f \_ ~` D) \+ (f \_ D).
+Proof.
+by apply/funext => x; rewrite !patchE in_setC; case: ifPn => [xD|/negPn ->];
+  rewrite ?(negbTE xD) ?(addr0,add0r).
+Qed.
+
 Section ereal_supremum.
 Variable R : realFieldType.
 Local Open Scope classical_set_scope.
@@ -595,6 +602,10 @@ Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
 Proof.
 by apply/funext=> t; rewrite /restrict/=; case: ifPn => // _; rewrite abse0.
 Qed.
+
+Lemma restrict_EFin T (R : numFieldType) (f : T -> R) (D : set T) :
+  (EFin \o f) \_ D = EFin \o (f \_ D).
+Proof. by apply/funext => x; rewrite /= !patchE; case: ifPn. Qed.
 
 Section SignedRealFieldStability.
 Context {R : realFieldType}.

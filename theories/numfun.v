@@ -73,6 +73,11 @@ Lemma ler_restrict D f g :
   (forall x, D x -> f x <= g x) -> forall x, (f \_ D) x <= (g \_ D) x.
 Proof. by move=> f0 x; rewrite /patch; case: ifP => // /set_mem/f0->. Qed.
 
+Lemma restrict_normr D f : (normr \o f) \_ D = normr \o (f \_ D).
+Proof.
+by apply/funext => t; rewrite /= !patchE; case: ifPn =>// tD; rewrite ger0_norm.
+Qed.
+
 End restrict_lemmas.
 
 Lemma erestrict_ge0 {aT} {rT : numFieldType} (D : set aT) (f : aT -> \bar rT) :
@@ -246,6 +251,24 @@ have [|fx0] := leP 0 (f x); last rewrite add0e.
   + by rewrite /maxe /=; case: (f x) fx0.
 Qed.
 
+Lemma funepos_le f g :
+  {in D, forall x, f x <= g x} -> {in D, forall x, f^\+ x <= g^\+ x}.
+Proof.
+move=> fg x Dx; rewrite /funepos /maxe; case: ifPn => fx; case: ifPn => gx //.
+- by rewrite leNgt.
+- by move: fx; rewrite -leNgt => /(lt_le_trans gx); rewrite ltNge fg.
+- exact: fg.
+Qed.
+
+Lemma funeneg_le f g :
+  {in D, forall x, f x <= g x} -> {in D, forall x, g^\- x <= f^\- x}.
+Proof.
+move=> fg x Dx; rewrite /funeneg /maxe; case: ifPn => gx; case: ifPn => fx //.
+- by rewrite leNgt.
+- by move: gx; rewrite -leNgt => /(lt_le_trans fx); rewrite lteN2 ltNge fg.
+- by rewrite leeN2; exact: fg.
+Qed.
+
 End funposneg_lemmas.
 #[global]
 Hint Extern 0 (is_true (0%R <= _ ^\+ _)%E) => solve [apply: funepos_ge0] : core.
@@ -323,8 +346,15 @@ End indic_lemmas.
 Lemma patch_indic T {R : numFieldType} (f : T -> R) (D : set T) :
   f \_ D = (f \* \1_D)%R.
 Proof.
-apply/funext => x /=; rewrite /patch /= indicE.
+apply/funext => x /=; rewrite patchE /= indicE.
 by case: ifPn => _; rewrite ?(mulr1, mulr0).
+Qed.
+
+Lemma epatch_indic T (R : numDomainType) (f : T -> \bar R) (D : set T) :
+  (f \_ D = f \* (EFin \o \1_D))%E.
+Proof.
+apply/funext => x; rewrite patchE/= indicE.
+by case: ifPn => /=; rewrite ?mule1// mule0.
 Qed.
 
 Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
