@@ -1922,6 +1922,17 @@ End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
 
+Lemma setD_bigcup {T} (I : eqType) (F : I -> set T) (P : set I) (j : I) : P j ->
+  F j `\` \bigcup_(i in [set k | P k /\ k != j]) (F j `\` F i) =
+  \bigcap_(i in P) F i.
+Proof.
+move=> Pj; apply/seteqP; split => [t [Fjt UFt] i Pi|t UFt].
+  have [->//|ij] := eqVneq i j.
+  by apply: contrapT => Fit; apply: UFt; by exists i.
+split; first exact: UFt.
+by move=> [k/= [Pk kj]] [Fjt]; apply; exact: UFt.
+Qed.
+
 Definition bigcup2 T (A B : set T) : nat -> set T :=
   fun i => if i == 0 then A else if i == 1 then B else set0.
 Arguments bigcup2 T A B n /.

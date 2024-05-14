@@ -479,6 +479,10 @@ Qed.
 
 End puncture_ereal_itv.
 
+Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
+
+#[global] Hint Resolve nat_nonempty : core.
+
 Section salgebra_R_ssets.
 Variable R : realType.
 
@@ -495,7 +499,7 @@ HB.instance Definition R_isMeasurable :
 
 Lemma measurable_set1 (r : R) : measurable [set r].
 Proof.
-rewrite set1_bigcap_oc; apply: bigcap_measurable => k // _.
+rewrite set1_bigcap_oc; apply: bigcap_measurable => // k _.
 by apply: sub_sigma_algebra; exact/is_ocitv.
 Qed.
 #[local] Hint Resolve measurable_set1 : core.
@@ -1242,9 +1246,9 @@ Definition G := [set A : set \bar R | exists r, A = `]r%:E, +oo[%classic].
 
 Lemma measurable_set1Ny : G.-sigma.-measurable [set -oo].
 Proof.
-rewrite eset1Ny; apply: bigcap_measurable => i _.
+rewrite eset1Ny; apply: bigcap_measurable => // i _.
 rewrite -setCitvr; apply: measurableC; rewrite (eitv_bnd_infty false).
-apply: bigcap_measurable => j _; apply: sub_sigma_algebra.
+apply: bigcap_measurable => // j _; apply: sub_sigma_algebra.
 by exists (- (i%:R + j.+1%:R^-1))%R; rewrite opprD.
 Qed.
 
@@ -1301,9 +1305,9 @@ Qed.
 
 Lemma measurable_set1y : G.-sigma.-measurable [set +oo].
 Proof.
-rewrite eset1y; apply: bigcap_measurable => i _.
+rewrite eset1y; apply: bigcap_measurable => // i _.
 rewrite -setCitvl; apply: measurableC; rewrite (eitv_infty_bnd true).
-apply: bigcap_measurable => j _; rewrite -setCitvr; apply: measurableC.
+apply: bigcap_measurable => // j _; rewrite -setCitvr; apply: measurableC.
 by apply: sub_sigma_algebra; exists (i%:R + j.+1%:R^-1)%R.
 Qed.
 
@@ -1795,7 +1799,7 @@ Proof.
 move=> mf n mD.
 apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite einfs_preimage -bigcapIr; last by exists n =>/=.
-by apply: bigcap_measurable => ? ?; exact/mf/emeasurable_itv.
+by apply: bigcap_measurable' => ? ?; exact/mf/emeasurable_itv.
 Qed.
 
 Lemma measurable_fun_esups D (f : (T -> \bar R)^nat) :

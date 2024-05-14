@@ -776,10 +776,14 @@ HB.mixin Record RingOfSets_isAlgebraOfSets d T of RingOfSets d T := {
 HB.structure Definition AlgebraOfSets d :=
   {T of RingOfSets d T & RingOfSets_isAlgebraOfSets d T }.
 
-HB.mixin Record AlgebraOfSets_isMeasurable d T of AlgebraOfSets d T := {
+HB.mixin Record AlgebraOfSets_isMeasurable d T of RingOfSets d T := {
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
     measurable (\bigcup_i (F i))
 }.
+
+#[short(type="sigmaRingType")]
+HB.structure Definition SigmaRing d :=
+  {T of RingOfSets d T & AlgebraOfSets_isMeasurable d T}.
 
 #[short(type="measurableType")]
 HB.structure Definition Measurable d :=
@@ -929,12 +933,9 @@ Qed.
 
 End algebraofsets_lemmas.
 
-Section measurable_lemmas.
-Context d (T : measurableType d).
+Section sigmaring_lemmas.
+Context d (T : sigmaRingType d).
 Implicit Types (A B : set T) (F : (set T)^nat) (P : set nat).
-
-Lemma sigma_algebra_measurable : sigma_algebra setT (@measurable d T).
-Proof. by split=> // [A|]; [exact: measurableD|exact: bigcupT_measurable]. Qed.
 
 Lemma bigcup_measurable F P :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcup_(i in P) F i).
@@ -943,25 +944,43 @@ move=> PF; rewrite bigcup_mkcond; apply: bigcupT_measurable => k.
 by case: ifP => //; rewrite inE; exact: PF.
 Qed.
 
-Lemma bigcap_measurable F P :
+Lemma bigcap_measurable F P : P !=set0 ->
+  (forall k, P k -> measurable (F k)) -> measurable (\bigcap_(i in P) F i).
+Proof.
+move=> [j Pj] PF; rewrite -(setD_bigcup F Pj).
+apply: measurableD; first exact: PF.
+by apply: bigcup_measurable => k/= [Pk kj]; apply: measurableD; exact: PF.
+Qed.
+
+Lemma bigcapT_measurable F :
+  (forall k, measurable (F k)) -> measurable (\bigcap_i F i).
+Proof. by move=> PF; apply: bigcap_measurable => //; exists 1. Qed.
+
+End sigmaring_lemmas.
+
+Lemma bigcupT_measurable_rat d (T : sigmaRingType d) (F : rat -> set T) :
+  (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
+Proof.
+move=> Fm; have /ppcard_eqP[f] := card_rat.
+by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
+Qed.
+
+Section measurable_lemmas.
+Context d (T : measurableType d).
+Implicit Types (A B : set T) (F : (set T)^nat) (P : set nat).
+
+Lemma sigma_algebra_measurable : sigma_algebra setT (@measurable d T).
+Proof. by split=> // [A|]; [exact: measurableD|exact: bigcupT_measurable]. Qed.
+
+(* TODO: rename *)
+Lemma bigcap_measurable' F P :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcap_(i in P) F i).
 Proof.
 move=> PF; rewrite -[X in measurable X]setCK setC_bigcap; apply: measurableC.
 by apply: bigcup_measurable => k Pk; exact/measurableC/PF.
 Qed.
 
-Lemma bigcapT_measurable F : (forall i, measurable (F i)) ->
-  measurable (\bigcap_i (F i)).
-Proof. by move=> ?; exact: bigcap_measurable. Qed.
-
 End measurable_lemmas.
-
-Lemma bigcupT_measurable_rat d (T : measurableType d) (F : rat -> set T) :
-  (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
-Proof.
-move=> Fm; have /ppcard_eqP[f] := card_rat.
-by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
-Qed.
 
 Section discrete_measurable_unit.
 
@@ -974,7 +993,7 @@ Let discrete_measurableC X :
 Proof. by []. Qed.
 
 Let discrete_measurableU (F : (set unit)^nat) :
-  (forall i, discrete_measurable_unit (F i)) ->
+    (forall i, discrete_measurable_unit (F i)) ->
   discrete_measurable_unit (\bigcup_i F i).
 Proof. by []. Qed.
 
@@ -1052,13 +1071,13 @@ Lemma measurable_g_measurableTypeE (T : pointedType) (G : set (set T)) :
   sigma_algebra setT G -> G.-sigma.-measurable = G.
 Proof. exact: sigma_algebra_id. Qed.
 
-Definition measurable_fun d d' (T : measurableType d) (U : measurableType d')
+Definition measurable_fun d d' (T : sigmaRingType d) (U : sigmaRingType d')
     (D : set T) (f : T -> U) :=
   measurable D -> forall Y, measurable Y -> measurable (D `&` f @^-1` Y).
 
 Section measurable_fun.
-Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
-        (T3 : measurableType d3).
+Context d1 d2 d3 (T1 : sigmaRingType d1) (T2 : sigmaRingType d2)
+        (T3 : sigmaRingType d3).
 Implicit Type D E : set T1.
 
 Lemma measurable_id D : measurable_fun D id.
@@ -1075,10 +1094,6 @@ rewrite (_ : _ `&` _ = E `&` g @^-1` (F `&` f @^-1` A)); last first.
   by move=> x/= [Ex Afgx]; split => //; split => //; exact: FgE.
 by apply/mg => //; exact: mf.
 Qed.
-
-Lemma measurableT_comp (f : T2 -> T3) E (g : T1 -> T2) :
-  measurable_fun setT f -> measurable_fun E g -> measurable_fun E (f \o g).
-Proof. exact: measurable_comp. Qed.
 
 Lemma eq_measurable_fun D (f g : T1 -> T2) :
   {in D, f =1 g} -> measurable_fun D f -> measurable_fun D g.
@@ -1123,25 +1138,6 @@ suff -> : D `|` (E `\` D) = E by move=> [[]] //.
 by rewrite setDUK.
 Qed.
 
-Lemma measurable_funTS D (f : T1 -> T2) :
-  measurable_fun setT f -> measurable_fun D f.
-Proof. exact: measurable_funS. Qed.
-
-Lemma measurable_restrict D E (f : T1 -> T2) :
-  measurable D -> measurable E -> D `<=` E ->
-  measurable_fun D f <-> measurable_fun E (f \_ D).
-Proof.
-move=> mD mE DE; split => mf _ /= X mX.
-- rewrite preimage_restrict; apply/measurableI => //.
-  by apply/measurableU/mf => //; case: ifP => // _; apply: measurableC.
-- have := mf mE _ mX; rewrite preimage_restrict.
-  case: ifP => ptX; last first.
-    rewrite set0U => /(measurableI _ _ mD).
-    by rewrite (setIA D) (setIidl DE) setIA setIid.
-  rewrite setUIr setvU setTI => /(measurableI _ _ mD).
-  by rewrite setIA (setIidl DE) setIUr setICr set0U.
-Qed.
-
 Lemma measurable_fun_if (g h : T1 -> T2) D (mD : measurable D)
     (f : T1 -> bool) (mf : measurable_fun D f) :
   measurable_fun (D `&` (f @^-1` [set true])) g ->
@@ -1158,10 +1154,55 @@ apply/seteqP; split=> [t /=| t /= [] [] ->//].
 by case: ifPn => ft; [left|right].
 Qed.
 
+End measurable_fun.
+#[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
+  solve [apply: measurable_cst] : core.
+#[global] Hint Extern 0 (measurable_fun _ (cst _)) =>
+  solve [apply: measurable_cst] : core.
+#[global] Hint Extern 0 (measurable_fun _ id) =>
+  solve [apply: measurable_id] : core.
+Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
+#[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
+Notation measurable_fun_ext := eq_measurable_fun (only parsing).
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_id`")]
+Notation measurable_fun_id := measurable_id (only parsing).
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_cst`")]
+Notation measurable_fun_cst := measurable_cst (only parsing).
+#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_comp`")]
+Notation measurable_fun_comp := measurable_comp (only parsing).
+
+Section measurable_fun_measurableType.
+Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
+        (T3 : measurableType d3).
+Implicit Type D E : set T1.
+
+Lemma measurableT_comp (f : T2 -> T3) E (g : T1 -> T2) :
+  measurable_fun [set: T2] f -> measurable_fun E g -> measurable_fun E (f \o g).
+Proof. exact: measurable_comp. Qed.
+
+Lemma measurable_funTS D (f : T1 -> T2) :
+  measurable_fun [set: T1] f -> measurable_fun D f.
+Proof. exact: measurable_funS. Qed.
+
+Lemma measurable_restrict D E (f : T1 -> T2) :
+    measurable D -> measurable E -> D `<=` E ->
+  measurable_fun D f <-> measurable_fun E (f \_ D).
+Proof.
+move=> mD mE DE; split => mf _ /= X mX.
+- rewrite preimage_restrict; apply/measurableI => //.
+  by apply/measurableU/mf => //; case: ifP => // _; apply: measurableC.
+- have := mf mE _ mX; rewrite preimage_restrict.
+  case: ifP => ptX; last first.
+    rewrite set0U => /(measurableI _ _ mD).
+    by rewrite (setIA D) (setIidl DE) setIA setIid.
+  rewrite setUIr setvU setTI => /(measurableI _ _ mD).
+  by rewrite setIA (setIidl DE) setIUr setICr set0U.
+Qed.
+
 Lemma measurable_fun_ifT (g h : T1 -> T2) (f : T1 -> bool)
-    (mf : measurable_fun setT f) :
-  measurable_fun setT g -> measurable_fun setT h ->
-  measurable_fun setT (fun t => if f t then g t else h t).
+    (mf : measurable_fun [set: T1] f) :
+  measurable_fun [set: T1] g -> measurable_fun [set: T1] h ->
+  measurable_fun [set: T1] (fun t => if f t then g t else h t).
 Proof.
 by move=> mx my; apply: measurable_fun_if => //;
   [exact: measurable_funS mx|exact: measurable_funS my].
@@ -1201,13 +1242,13 @@ Lemma measurable_and D (f : T1 -> bool) (g : T1 -> bool) :
   measurable_fun D (fun x => f x && g x).
 Proof.
 move=> mf mg mD; apply: (measurable_fun_bool true) => //.
-- rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set true] `&`
-                                      (D `&` g @^-1` [set true])); last first.
-    by rewrite setIACA setIid; congr (_ `&` _); apply/seteqP; split => x /andP.
-  by apply: measurableI; [exact: mf|exact: mg].
+rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set true] `&`
+                                    (D `&` g @^-1` [set true])); last first.
+  by rewrite setIACA setIid; congr (_ `&` _); apply/seteqP; split => x /andP.
+by apply: measurableI; [exact: mf|exact: mg].
 Qed.
 
-End measurable_fun.
+End measurable_fun_measurableType.
 #[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
   solve [apply: measurable_cst] : core.
 #[global] Hint Extern 0 (measurable_fun _ (cst _)) =>
@@ -1216,14 +1257,6 @@ End measurable_fun.
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Arguments measurable_fun_bool {d1 T1 D f} b.
-#[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
-Notation measurable_fun_ext := eq_measurable_fun (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_id`")]
-Notation measurable_fun_id := measurable_id (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_cst`")]
-Notation measurable_fun_cst := measurable_cst (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_comp`")]
-Notation measurable_fun_comp := measurable_comp (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurableT_comp`")]
 Notation measurable_funT_comp := measurableT_comp (only parsing).
 
@@ -1300,16 +1333,15 @@ by move=> _ [B mB <-]; exact: sG'sfun.
 Qed.
 
 Lemma measurability d d' (aT : measurableType d) (rT : measurableType d')
-    (D : set aT) (f : aT -> rT)
-    (G' : set (set rT)) :
-  @measurable _ rT = <<s G' >> -> preimage_class D f G' `<=` @measurable _ aT ->
+    (D : set aT) (f : aT -> rT) (G : set (set rT)) :
+  @measurable _ rT = <<s G >> -> preimage_class D f G `<=` @measurable _ aT ->
   measurable_fun D f.
 Proof.
 move=> sG_rT fG_aT mD.
 suff h : preimage_class D f (@measurable _ rT) `<=` @measurable _ aT.
   by move=> A mA; apply: h; exists A.
 have -> : preimage_class D f (@measurable _ rT) =
-         <<s D , (preimage_class D f G')>>.
+         <<s D, preimage_class D f G >>.
   by rewrite [in LHS]sG_rT [in RHS]sigma_algebra_preimage_classE.
 apply: smallest_sub => //; split => //.
 - by move=> A mA; exact: measurableD.
@@ -1430,7 +1462,7 @@ by rewrite [X in _ + X]big1 ?adde0// => ?; rewrite -ltn_subRL subnn.
 Unshelve. all: by end_near. Qed.
 
 Lemma semi_sigma_additiveE
-  (R : numFieldType) d (T : measurableType d) (mu : set T -> \bar R) :
+  (R : numFieldType) d (T : sigmaRingType d) (mu : set T -> \bar R) :
   semi_sigma_additive mu = sigma_additive mu.
 Proof.
 rewrite propeqE; split=> [amu A mA tA|amu A mA tA mbigcupA]; last exact: amu.
@@ -1438,7 +1470,7 @@ by apply: amu => //; exact: bigcupT_measurable.
 Qed.
 
 Lemma sigma_additive_is_additive
-  (R : realFieldType) d (T : measurableType d) (mu : set T -> \bar R) :
+  (R : realFieldType) d (T : sigmaRingType d) (mu : set T -> \bar R) :
   mu set0 = 0 -> sigma_additive mu -> additive mu.
 Proof.
 move=> mu0; rewrite -semi_sigma_additiveE -semi_additiveE.
@@ -1674,7 +1706,7 @@ End measure_lemmas.
 #[global] Hint Extern 0 (is_true (0%:E <= _)) => solve [apply: measure_ge0] : core.
 
 Section measure_lemmas.
-Context d (R : realFieldType) (T : measurableType d).
+Context d (R : realFieldType) (T : sigmaRingType d).
 Variable mu : {measure set T -> \bar R}.
 
 Lemma measure_sigma_additive : sigma_additive mu.
@@ -1689,7 +1721,7 @@ move=> mF tF; rewrite bigcup_mkcond measure_semi_bigcup.
 - by rewrite [in RHS]eseries_mkcond; apply: eq_eseriesr => n _; case: ifPn.
 - by move=> i; case: ifPn => // /set_mem; exact: mF.
 - by move/trivIset_mkcond : tF.
-- by rewrite -bigcup_mkcond; apply: bigcup_measurable.
+- by rewrite -bigcup_mkcond; exact: bigcup_measurable.
 Qed.
 
 End measure_lemmas.
@@ -1698,9 +1730,9 @@ Arguments measure_bigcup {d R T} _ _.
 #[global] Hint Extern 0 (sigma_additive _) =>
   solve [apply: measure_sigma_additive] : core.
 
-Definition pushforward d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
+Definition pushforward d1 d2 (T1 : sigmaRingType d1) (T2 : sigmaRingType d2)
   (R : realFieldType) (m : set T1 -> \bar R) (f : T1 -> T2)
-  of measurable_fun setT f := fun A => m (f @^-1` A).
+  of measurable_fun [set: T1] f := fun A => m (f @^-1` A).
 Arguments pushforward {d1 d2 T1 T2 R} m {f}.
 
 Section pushforward_measure.
@@ -1708,7 +1740,7 @@ Local Open Scope ereal_scope.
 Context d d' (T1 : measurableType d) (T2 : measurableType d')
         (R : realFieldType).
 Variables (m : {measure set T1 -> \bar R}) (f : T1 -> T2).
-Hypothesis mf : measurable_fun setT f.
+Hypothesis mf : measurable_fun [set: T1] f.
 
 Let pushforward0 : pushforward m mf set0 = 0.
 Proof. by rewrite /pushforward preimage_set0 measure0. Qed.
@@ -1733,7 +1765,7 @@ End pushforward_measure.
 
 Section dirac_measure.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (a : T) (R : realFieldType).
+Context d (T : sigmaRingType d) (a : T) (R : realFieldType).
 
 Definition dirac (A : set T) : \bar R := (\1_A a)%:E.
 
@@ -1769,7 +1801,7 @@ Notation "\d_ a" := (dirac a) : ring_scope.
 
 Section dirac_lemmas_realFieldType.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realFieldType).
+Context d (T : sigmaRingType d) (R : realFieldType).
 
 Lemma diracE a (A : set T) : \d_a A = (a \in A)%:R%:E :> \bar R.
 Proof. by rewrite /dirac indicE. Qed.
@@ -1784,7 +1816,7 @@ End dirac_lemmas_realFieldType.
 
 Section dirac_lemmas.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 
 Lemma finite_card_sum (A : set T) : finite_set A ->
   \esum_(i in A) 1 = (#|` fset_set A|%:R)%:E :> \bar R.
