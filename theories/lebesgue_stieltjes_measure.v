@@ -129,7 +129,7 @@ rewrite /Order.meet/= /Order.meet/= /Order.join/=
          ?(andbF, orbF)/= ?(meetEtotal, joinEtotal).
 rewrite -negb_or le_total/=; set c := minr _ _; set d := maxr _ _.
 have inside : a.1 < c -> d < a.2 -> `]a.1, c] `&` `]d, a.2] = set0.
-  rewrite -subset0 lt_minr lt_maxl => /andP[a12 ab1] /andP[_ ba2] x /= [].
+  rewrite -subset0 lt_min gt_max => /andP[a12 ab1] /andP[_ ba2] x /= [].
   have b1a2 : b.1 <= a.2 by rewrite ltW// (lt_trans ltb).
   have a1b2 : a.1 <= b.2 by rewrite ltW// (lt_trans _ ltb).
   rewrite /c /d (min_idPr _)// (max_idPr _)// !in_itv /=.

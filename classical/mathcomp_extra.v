@@ -155,8 +155,8 @@ Lemma le_bigmax_seq F :
   i0 \in r -> P i0 -> (F i0 <= \big[Order.max/x]_(i <- r | P i) F i)%O.
 Proof.
 move=> + Pi0; elim: r => // h t ih; rewrite inE big_cons.
-move=> /predU1P[<-|i0t]; first by rewrite Pi0 le_maxr// lexx.
-by case: ifPn => Ph; [rewrite le_maxr ih// orbT|rewrite ih].
+move=> /predU1P[<-|i0t]; first by rewrite Pi0 le_max// lexx.
+by case: ifPn => Ph; [rewrite le_max ih// orbT|rewrite ih].
 Qed.
 
 (* NB: as of [2023-08-28], bigop.bigmax_sup_seq already exists for nat *)

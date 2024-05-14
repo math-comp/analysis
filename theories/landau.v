@@ -482,7 +482,7 @@ split=> [[k k0 fOg] | [k [kreal fOg]]].
 exists (Num.max 1 `|k + 1|) => //.
 apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
   by rewrite (@lt_le_trans _ _ (k + 1)) ?ltrDl // real_ler_norm ?realD.
-by rewrite comparable_le_maxr ?real_comparable// lexx orbT.
+by rewrite comparable_le_max ?real_comparable// lexx orbT.
 Unshelve. end_near. Qed.
 
 Structure bigO_type (F : set_system T) (g : T -> W) := BigO {

@@ -107,14 +107,14 @@ Proof. by apply/normr_ge0. Qed.
 
 Lemma le_fpos_norm f x : fpos f x <= `|f x|.
 Proof.
-rewrite /fpos ger0_norm ?(le_maxr, lexx) //.
-by rewrite le_maxl normr_ge0 ler_norm.
+rewrite /fpos ger0_norm ?(le_max, lexx) //.
+by rewrite ge_max normr_ge0 ler_norm.
 Qed.
 
 Lemma le_fpos f1 f2 : f1 <=1 f2 -> fpos f1 <=1 fpos f2.
 Proof.
-move=> le_f x; rewrite /fpos !ger0_norm ?le_maxr ?lexx //.
-by rewrite le_maxl lexx /=; case: ltP => //=; rewrite le_f.
+move=> le_f x; rewrite /fpos !ger0_norm ?le_max ?lexx //.
+by rewrite ge_max lexx /=; case: ltP => //=; rewrite le_f.
 Qed.
 
 Lemma fposBfneg f x : fpos f x - fneg f x = f x.

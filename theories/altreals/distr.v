@@ -81,10 +81,10 @@ Definition clamp (x : R) :=
   Num.max (Num.min x 1) 0.
 
 Lemma ge0_clamp x : 0 <= clamp x.
-Proof. by rewrite le_maxr lexx orbT. Qed.
+Proof. by rewrite le_max lexx orbT. Qed.
 
 Lemma le1_clamp x : clamp x <= 1.
-Proof. by rewrite le_maxl le_minl lexx ler01 orbT. Qed.
+Proof. by rewrite ge_max ge_min lexx ler01 orbT. Qed.
 
 Definition cp01_clamp := (ge0_clamp, le1_clamp).
 
@@ -1171,7 +1171,7 @@ Lemma has_esp_bounded f mu :
   (exists M, forall x, `|f x| < M) -> \E?_[mu] f.
 Proof.                          (* TO BE REMOVED *)
 case=> M ltM; rewrite /has_esp; apply/summable_seqP.
-exists (Num.max M 0); first by rewrite le_maxr lexx orbT.
+exists (Num.max M 0); first by rewrite le_max lexx orbT.
 move=> J uqJ; apply/(@le_trans _ _ (\sum_(j <- J) M * mu j)).
   apply/ler_sum=> j _; rewrite normrM [X in _*X]ger0_norm //.
   by apply/ler_wpM2r=> //; apply/ltW.

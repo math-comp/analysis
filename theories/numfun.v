@@ -140,10 +140,10 @@ Variables (T : Type) (R : realDomainType) (D : set T).
 Implicit Types (f g : T -> \bar R) (r : R).
 
 Lemma funepos_ge0 f x : 0 <= f^\+ x.
-Proof. by rewrite /funepos /= le_maxr lexx orbT. Qed.
+Proof. by rewrite /funepos /= le_max lexx orbT. Qed.
 
 Lemma funeneg_ge0 f x : 0 <= f^\- x.
-Proof. by rewrite /funeneg le_maxr lexx orbT. Qed.
+Proof. by rewrite /funeneg le_max lexx orbT. Qed.
 
 Lemma funeposN f : (\- f)^\+ = f^\-. Proof. exact/funext. Qed.
 

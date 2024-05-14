@@ -617,8 +617,8 @@ Proof.
 move=> Df Dg f0 g0.
 have /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_posneg D f.
   rewrite !ge0_esum_posneg// -!esumD//; last 2 first.
-    by move=> t Dt; rewrite le_maxr lexx orbT.
-    by move=> t Dt; rewrite le_maxr lexx orbT.
+    by move=> t Dt; rewrite le_max lexx orbT.
+    by move=> t Dt; rewrite le_max lexx orbT.
   apply eq_esum => i Di; have [fg|fg] := leP 0 (f i - g i).
     rewrite max_r 1?leeNl ?oppe0// add0e subeK//.
     by rewrite fin_num_abs (summable_pinfty Dg).

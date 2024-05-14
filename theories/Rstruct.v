@@ -532,9 +532,9 @@ Lemma bigmaxr_ler (x0 : R) s i :
   (i < size s)%N -> (nth x0 s i) <= (bigmaxr x0 s).
 Proof.
 rewrite /bigmaxr; elim: s i => // h t IH [_|i] /=.
-  by rewrite big_cons /= le_maxr lexx.
+  by rewrite big_cons /= le_max lexx.
 rewrite ltnS => ti; case: t => [|h' t] // in IH ti *.
-by rewrite big_cons bigrmax_dflt le_maxr orbC IH.
+by rewrite big_cons bigrmax_dflt le_max orbC IH.
 Qed.
 
 (* Compatibilité avec l'addition *)
@@ -553,8 +553,8 @@ Proof.
 rewrite /bigmaxr; case: lr => // h t _.
 elim: t => //= [|h' t IH] in h *; first by rewrite big_cons big_nil inE maxxx.
 rewrite big_cons bigrmax_dflt inE eq_le; case: lerP => /=.
-- by rewrite le_maxr lexx.
-- by rewrite lt_maxr ltxx => ?; rewrite max_r ?IH // ltW.
+- by rewrite le_max lexx.
+- by rewrite lt_max ltxx => ?; rewrite max_r ?IH // ltW.
 Qed.
 
 (* TODO: bigmaxr_morph? *)

@@ -1096,39 +1096,55 @@ Local Notation nR := {num R & nz & r}.
 Implicit Type x y : nR.
 Local Notation num := (@num _ _ (0 : R) nz r).
 
-Lemma num_le_maxr a x y :
+Lemma num_le_max a x y :
   a <= Num.max x%:num y%:num = (a <= x%:num) || (a <= y%:num).
-Proof. by rewrite -comparable_le_maxr// real_comparable. Qed.
+Proof. by rewrite -comparable_le_max// real_comparable. Qed.
 
-Lemma num_le_maxl a x y :
-  Num.max x%:num  y%:num <= a = (x%:num <= a) && (y%:num <= a).
-Proof. by rewrite -comparable_le_maxl// real_comparable. Qed.
+Lemma num_ge_max a x y :
+  Num.max x%:num y%:num <= a = (x%:num <= a) && (y%:num <= a).
+Proof. by rewrite -comparable_ge_max// real_comparable. Qed.
 
-Lemma num_le_minr a x y :
+Lemma num_le_min a x y :
   a <= Num.min x%:num y%:num = (a <= x%:num) && (a <= y%:num).
-Proof. by rewrite -comparable_le_minr// real_comparable. Qed.
+Proof. by rewrite -comparable_le_min// real_comparable. Qed.
 
-Lemma num_le_minl a x y :
+Lemma num_ge_min a x y :
   Num.min x%:num y%:num <= a = (x%:num <= a) || (y%:num <= a).
-Proof. by rewrite -comparable_le_minl// real_comparable. Qed.
+Proof. by rewrite -comparable_ge_min// real_comparable. Qed.
 
-Lemma num_lt_maxr a x y :
+Lemma num_lt_max a x y :
   a < Num.max x%:num y%:num = (a < x%:num) || (a < y%:num).
-Proof. by rewrite -comparable_lt_maxr// real_comparable. Qed.
+Proof. by rewrite -comparable_lt_max// real_comparable. Qed.
 
-Lemma num_lt_maxl a x y :
+Lemma num_gt_max a x y :
   Num.max x%:num  y%:num < a = (x%:num < a) && (y%:num < a).
-Proof. by rewrite -comparable_lt_maxl// real_comparable. Qed.
+Proof. by rewrite -comparable_gt_max// real_comparable. Qed.
 
-Lemma num_lt_minr a x y :
+Lemma num_lt_min a x y :
   a < Num.min x%:num y%:num = (a < x%:num) && (a < y%:num).
-Proof. by rewrite -comparable_lt_minr// real_comparable. Qed.
+Proof. by rewrite -comparable_lt_min// real_comparable. Qed.
 
-Lemma num_lt_minl a x y :
+Lemma num_gt_min a x y :
   Num.min x%:num y%:num < a = (x%:num < a) || (y%:num < a).
-Proof. by rewrite -comparable_lt_minl// real_comparable. Qed.
+Proof. by rewrite -comparable_gt_min// real_comparable. Qed.
 
 End MorphReal.
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_le_max`")]
+Notation num_le_maxr := num_le_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_ge_max`")]
+Notation num_le_maxl := num_ge_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_le_min`")]
+Notation num_le_minr := num_le_min (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_ge_min`")]
+Notation num_le_minl := num_ge_min (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lt_max`")]
+Notation num_lt_maxr := num_lt_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gt_max`")]
+Notation num_lt_maxl := num_gt_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lt_min`")]
+Notation num_lt_minr := num_lt_min (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gt_min`")]
+Notation num_lt_minl := num_gt_min (only parsing).
 
 Section MorphGe0.
 Context {R : numDomainType} {nz : nullity}.

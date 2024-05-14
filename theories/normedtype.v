@@ -3,6 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 
@@ -251,10 +252,10 @@ End pseudoMetricnormedzmodule_lemmas.
 Lemma bigcup_ballT {R : realType} : \bigcup_n ball (0%R : R) n%:R = setT.
 Proof.
 apply/seteqP; split => // x _; have [x0|x0] := ltP 0%R x.
-  exists `|ceil x|.+1 => //.
+  exists `|reals.ceil x|.+1 => //.
   rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
   by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_pwDr.
-exists `|ceil (- x)|.+1 => //.
+exists `|reals.ceil (- x)|.+1 => //.
 rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
 rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?lerNr ?oppr0//.
 by rewrite ltr_pwDr.
@@ -367,7 +368,7 @@ apply Build_ProperFilter.
 split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
 - by exists 0.
 - exists (maxr MP MQ); split=> [|x]; first exact: max_real.
-  by rewrite comparable_lt_maxl ?real_comparable // => /andP[/gtMP ? /gtMQ].
+  by rewrite comparable_gt_max ?real_comparable // => /andP[/gtMP ? /gtMQ].
 - by exists M; split => // ? /gtM /sPQ.
 Qed.
 
@@ -379,7 +380,7 @@ apply Build_ProperFilter.
 split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
 - by exists 0.
 - exists (Num.min MP MQ); split=> [|x]; first exact: min_real.
-  by rewrite comparable_lt_minr ?real_comparable // => /andP[/ltMP ? /ltMQ].
+  by rewrite comparable_lt_min ?real_comparable // => /andP[/ltMP ? /ltMQ].
 - by exists M; split => // x /ltM /sPQ.
 Qed.
 
@@ -595,7 +596,7 @@ Proof.
 split=> [/cvgryPge|/cvgnyPge] Foo.
   by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
 apply/cvgryPgey; near=> A; near=> n.
-rewrite (le_trans (@ceil_ge R A))// (ler_int _ _ (f n)) [ceil _]intEsign.
+rewrite (le_trans (@ceil_ge R A))// (ler_int _ _ (f n)) [reals.ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
@@ -2271,7 +2272,7 @@ Lemma ball_prod_normE : ball = ball_ (fun x => `| x : U * V |).
 Proof.
 rewrite funeq2E => - [xu xv] e; rewrite predeqE => - [yu yv].
 rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
-by rewrite comparable_lt_maxl// ?real_comparable//; split=> /andP.
+by rewrite comparable_gt_max// ?real_comparable//; split=> /andP.
 Qed.
 
 Lemma prod_norm_ball :
@@ -3399,7 +3400,7 @@ pose f z := (f' z)/eps%:num; exists f; split.
   apply: fine_cvg; first exact: nbhs_filter.
   rewrite fineK //; first exact: edist_inf_continuous.
 - move=> _ [x _ <-]; rewrite set_itvE /=; apply/andP; split.
-    by rewrite /f divr_ge0 // /f' /= le_minr fine_ge0//= edist_inf_ge0.
+    by rewrite /f divr_ge0 // /f' /= le_min fine_ge0//= edist_inf_ge0.
   by rewrite /f ler_pdivrMr // mul1r /f' /= /minr; case: ltP => // /ltW.
 - by move=> ? [z Az] <-; rewrite /f/f' /= edist_inf0 // /minr fine0 ifT ?mul0r.
 - move=> ? [b Bb] <-; rewrite /f /f'/= /minr/=.
@@ -4908,7 +4909,7 @@ Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
 Proof.
 rewrite compact_cover => Aco.
 have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (floor `|p| + 1) => //; rewrite rmorphD/= lt_succ_floor.
+  by move=> p _; exists (reals.floor `|p| + 1) => //; rewrite rmorphD/= reals.lt_succ_floor.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
   apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
@@ -5509,9 +5510,9 @@ move=> {}xy; have [rs|sr] := ltP r s.
     by apply; rewrite xrys /ball/= ltr_distlC !ltrD2l -ltr_norml gtr0_norm.
   by rewrite /ball/= ltr_distlC ltrD2r (ltNge y) (ltW xy) andbF.
 - suff : ~ ball y s (x - r + minr ((y - x) / 2) r).
-    apply; rewrite -xrys /ball/= ltr_distlC ltrDl lt_minr r0 andbT.
+    apply; rewrite -xrys /ball/= ltr_distlC ltrDl lt_min r0 andbT.
     rewrite divr_gt0 ?subr_gt0//= addrAC ltrBlDl addrCA ler_ltD//.
-    by rewrite lt_minl ltrDl r0 orbT.
+    by rewrite gt_min ltrDl r0 orbT.
   have [yx2r|ryx2] := ltP ((y - x) / 2) r.
     rewrite /ball/= ltr_distlC => /andP[+ _]; rewrite -(@ltr_pM2l _ 2)//.
     rewrite !mulrDr mulrCA divff// mulr1 ltNge => /negP; apply.
@@ -5752,13 +5753,13 @@ Notation r_gt0 := vitali_collection_partition_ub_gt0.
 Lemma ex_vitali_collection_partition i :
   V i -> exists n, vitali_collection_partition n i.
 Proof.
-move=> Vi; pose f := floor (r / (radius (B i))%:num).
+move=> Vi; pose f := reals.floor (r / (radius (B i))%:num).
 have f_ge0 : 0 <= f by rewrite floor_ge0// divr_ge0// ltW// (r_gt0 Vi).
 have [m /andP[mf fm]] := leq_ltn_expn `|f|.-1.
 exists m; split => //; apply/andP; split => [{mf}|{fm}].
   rewrite -(@ler_nat R) in fm.
   rewrite ltr_pdivrMr// mulrC -ltr_pdivrMr// (lt_le_trans _ fm)//.
-  rewrite (lt_le_trans (lt_succ_floor _))//= -/f -natr1 lerD2r//.
+  rewrite (lt_le_trans (reals.lt_succ_floor _))//= -/f -natr1 lerD2r//.
   have [<-|f0] := eqVneq 0 f; first by rewrite /= ler0n.
   rewrite prednK//; last by rewrite absz_gt0 eq_sym.
   by rewrite natr_absz// ger0_norm.
@@ -5768,7 +5769,7 @@ rewrite ler_pdivlMr// mulrC -ler_pdivlMr//.
 have [f0|f0] := eqVneq 0 f.
   by move: mf; rewrite -f0 absz0 leNgt expnS ltr_nat leq_pmulr// expn_gt0.
 rewrite (le_trans mf)// prednK//; last by rewrite absz_gt0 eq_sym.
-by rewrite natr_absz// ger0_norm// floor_le.
+by rewrite natr_absz// ger0_norm// reals.floor_le.
 Qed.
 
 Lemma cover_vitali_collection_partition :
@@ -5962,7 +5963,7 @@ Qed.
 
 Lemma vitali_lemma_infinite_cover : { D : set I | [/\ countable D,
   D `<=` V, trivIset D (closure\o B) &
-  cover V (closure\o B) `<=` cover D (closure \o scale_ball 5%:R \o B)] }.
+  cover V (closure \o B) `<=` cover D (closure \o scale_ball 5%:R \o B)] }.
 Proof.
 have [D [cD DV tD maxD]] := vitali_lemma_infinite.
 exists D; split => // x [i Vi] cBix/=.

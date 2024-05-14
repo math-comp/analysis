@@ -341,8 +341,8 @@ move: a => [b r|[|]] _ //.
   suff: ~ has_lbound `]-oo, r[%classic.
     by case: b => //; apply/contra_not/subset_has_lbound => x /ltW.
   apply/has_lbPn => x; exists (minr (r - 1) (x - 1)).
-    by rewrite !set_itvE/= lt_minl ltrBlDr ltrDl ltr01.
-  by rewrite lt_minl orbC ltrBlDr ltrDl ltr01.
+    by rewrite !set_itvE/= gt_min ltrBlDr ltrDl ltr01.
+  by rewrite gt_min orbC ltrBlDr ltrDl ltr01.
 case=> r /(_ (r - 1)) /=; rewrite in_itv /= => /(_ erefl).
 by apply/negP; rewrite -ltNge ltrBlDr ltrDl.
 Qed.
@@ -355,7 +355,7 @@ move: a => [b r|[|]] _ //.
     case: b => //; apply/contra_not/subset_has_ubound => x.
     by rewrite !set_itvE => /ltW.
   apply/has_ubPn => x; rewrite !set_itvE; exists (maxr (r + 1) (x + 1));
-  by rewrite ?in_itv /= ?andbT lt_maxr ltrDl ltr01 // orbT.
+  by rewrite ?in_itv /= ?andbT lt_max ltrDl ltr01 // orbT.
 case=> r /(_ (r + 1)) /=; rewrite in_itv /= => /(_ erefl).
 by apply/negP; rewrite -ltNge ltrDl.
 Qed.
