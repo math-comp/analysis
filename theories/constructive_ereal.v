@@ -61,7 +61,7 @@ Require Import signed.
 (*             x%:nng == explicitly casts x to {nonneg \bar R}, in scope %E   *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* ## Topology of extended real numbers                                        *)
+(* ## Topology of extended real numbers                                       *)
 (* ```                                                                        *)
 (*                       contract == order-preserving bijective function      *)
 (*                                   from extended real numbers to [-1; 1]    *)
