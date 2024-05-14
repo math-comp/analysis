@@ -1973,30 +1973,15 @@ move=> fs mh; under eq_fun do rewrite fsbig_finite//.
 exact: emeasurable_fun_sum.
 Qed.
 
-Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) (P : pred nat) :
-  (forall k x, D x -> P k -> 0 <= h k x) -> (forall k, P k -> measurable_fun D (h k)) ->
-  measurable_fun D (fun x => \sum_(i <oo | i \in P) h i x).
+Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) :
+  (forall k x, 0 <= h k x) -> (forall k, measurable_fun D (h k)) ->
+  measurable_fun D (fun x => \sum_(i <oo) h i x).
 Proof.
-Proof.
-move=> h0 mh.
-move=> mD; move: (mD).
-apply/(@measurable_restrict _ _ _ _ _ setT) => //.
-rewrite [X in measurable_fun _ X](_ : _ =
-  (fun x => \sum_(0 <= i <oo | i \in P) (h i \_ D) x)); last first.
-  apply/funext => x/=; rewrite /patch; case: ifPn => // xD.
-  by rewrite eseries0.
-rewrite [X in measurable_fun _ X](_ : _ =
-    (fun x => limn_esup (fun n => \sum_(0 <= i < n | P i) (h i) \_ D x))); last first.
+move=> h0 mh; rewrite [X in measurable_fun _ X](_ : _ =
+    (fun x => limn_esup (fun n => \sum_(0 <= i < n) h i x))); last first.
   apply/funext=> x; rewrite is_cvg_limn_esupE//.
-  apply: is_cvg_nneseries_cond => n Pn; rewrite patchE.
-  by case: ifPn => // xD; rewrite h0//; exact/set_mem.
-apply: measurable_fun_limn_esup => k.
-under eq_fun do rewrite big_mkcond.
-apply: emeasurable_fun_sum => n.
-have [|] := boolP (n \in P).
-  rewrite /in_mem/= => Pn; rewrite Pn.
-  by apply/(measurable_restrict (h n)) => //; exact: mh.
-by rewrite /in_mem/= => /negbTE ->.
+  exact: is_cvg_ereal_nneg_natsum.
+by apply: measurable_fun_limn_esup => k; exact: emeasurable_fun_sum.
 Qed.
 
 Lemma emeasurable_funB D f g :
