@@ -776,18 +776,18 @@ HB.mixin Record RingOfSets_isAlgebraOfSets d T of RingOfSets d T := {
 HB.structure Definition AlgebraOfSets d :=
   {T of RingOfSets d T & RingOfSets_isAlgebraOfSets d T }.
 
-HB.mixin Record AlgebraOfSets_isMeasurable d T of RingOfSets d T := {
+HB.mixin Record hasCountableUnion d T of SemiRingOfSets d T := {
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
     measurable (\bigcup_i (F i))
 }.
 
 #[short(type="sigmaRingType")]
 HB.structure Definition SigmaRing d :=
-  {T of RingOfSets d T & AlgebraOfSets_isMeasurable d T}.
+  {T of RingOfSets d T & hasCountableUnion d T}.
 
 #[short(type="measurableType")]
 HB.structure Definition Measurable d :=
-  {T of AlgebraOfSets d T & AlgebraOfSets_isMeasurable d T }.
+  {T of AlgebraOfSets d T & hasCountableUnion d T }.
 
 HB.factory Record isRingOfSets (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
@@ -864,8 +864,7 @@ Lemma mC : setC_closed measurable. Proof. by move=> *; apply: measurableC. Qed.
 HB.instance Definition _ := @isAlgebraOfSets.Build d T
   measurable measurable0 mU mC.
 
-HB.instance Definition _ :=
-  @AlgebraOfSets_isMeasurable.Build d T measurable_bigcup.
+HB.instance Definition _ := @hasCountableUnion.Build d T measurable_bigcup.
 
 HB.end.
 
@@ -972,8 +971,7 @@ Implicit Types (A B : set T) (F : (set T)^nat) (P : set nat).
 Lemma sigma_algebra_measurable : sigma_algebra setT (@measurable d T).
 Proof. by split=> // [A|]; [exact: measurableD|exact: bigcupT_measurable]. Qed.
 
-(* TODO: rename *)
-Lemma bigcap_measurable' F P :
+Lemma bigcap_measurableType F P :
   (forall k, P k -> measurable (F k)) -> measurable (\bigcap_(i in P) F i).
 Proof.
 move=> PF; rewrite -[X in measurable X]setCK setC_bigcap; apply: measurableC.
