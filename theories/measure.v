@@ -354,6 +354,13 @@ Definition fin_bigcup_closed :=
 Definition semi_setD_closed := forall A B, G A -> G B -> exists D,
   [/\ finite_set D, D `<=` G, A `\` B = \bigcup_(X in D) X & trivIset D id].
 
+Lemma setDI_semi_setD_closed : setDI_closed -> semi_setD_closed.
+Proof.
+move=> mD A B Am Bm; exists [set A `\` B]; split; rewrite ?bigcup_set1//.
+  by move=> X ->; apply: mD.
+by move=> X Y -> ->.
+Qed.
+
 Definition ndseq_closed :=
  forall F, nondecreasing_seq F -> (forall i, G (F i)) -> G (\bigcup_i (F i)).
 
@@ -779,18 +786,54 @@ HB.mixin Record RingOfSets_isAlgebraOfSets d T of RingOfSets d T := {
 HB.structure Definition AlgebraOfSets d :=
   {T of RingOfSets d T & RingOfSets_isAlgebraOfSets d T }.
 
-HB.mixin Record hasCountableUnion d T of SemiRingOfSets d T := {
+HB.mixin Record hasMeasurableCountableUnion d T of SemiRingOfSets d T := {
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
     measurable (\bigcup_i (F i))
 }.
 
+HB.builders Context d T of hasMeasurableCountableUnion d T.
+
+Let mU : @setU_closed T measurable.
+Proof.
+move=> A B mA mB; rewrite -bigcup2E.
+by apply: bigcupT_measurable => -[//|[//|/= _]]; exact: measurable0.
+Qed.
+
+HB.instance Definition _ := SemiRingOfSets_isRingOfSets.Build d T mU.
+
+HB.end.
+
 #[short(type="sigmaRingType")]
 HB.structure Definition SigmaRing d :=
-  {T of RingOfSets d T & hasCountableUnion d T}.
+  {T of SemiRingOfSets d T & hasMeasurableCountableUnion d T}.
+
+HB.factory Record isSigmaRing (d : measure_display) T of Pointed T := {
+  measurable : set (set T) ;
+  measurable0 : measurable set0 ;
+  measurableD : setDI_closed measurable ;
+  bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
+    measurable (\bigcup_i (F i))
+}.
+
+HB.builders Context d T of isSigmaRing d T.
+
+Let m0 : measurable set0. Proof. exact: measurable0. Qed.
+
+Let mI : setI_closed measurable.
+Proof. by have [] := (sedDI_closedP measurable).1 measurableD. Qed.
+
+Let mD : semi_setD_closed measurable.
+Proof. by apply: setDI_semi_setD_closed; exact: measurableD. Qed.
+
+HB.instance Definition _ := isSemiRingOfSets.Build d T m0 mI mD.
+
+HB.instance Definition _ := hasMeasurableCountableUnion.Build d T bigcupT_measurable.
+
+HB.end.
 
 #[short(type="measurableType")]
 HB.structure Definition Measurable d :=
-  {T of AlgebraOfSets d T & hasCountableUnion d T }.
+  {T of AlgebraOfSets d T & hasMeasurableCountableUnion d T }.
 
 HB.factory Record isRingOfSets (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
@@ -803,14 +846,10 @@ HB.builders Context d T of isRingOfSets d T.
 Implicit Types (A B C D : set T).
 
 Lemma mI : setI_closed measurable.
-Proof. by move=> A B mA mB; rewrite -setDD; do ?apply: measurableD. Qed.
+Proof. by have [] := (sedDI_closedP measurable).1 measurableD. Qed.
 
 Lemma mD : semi_setD_closed measurable.
-Proof.
-move=> A B Am Bm; exists [set A `\` B]; split; rewrite ?bigcup_set1//.
-  by move=> C ->; apply: measurableD.
-by move=> X Y -> ->.
-Qed.
+Proof. by apply: setDI_semi_setD_closed; exact: measurableD. Qed.
 
 HB.instance Definition _ :=
   @isSemiRingOfSets.Build d T measurable measurable0 mI mD.
@@ -867,7 +906,8 @@ Lemma mC : setC_closed measurable. Proof. by move=> *; apply: measurableC. Qed.
 HB.instance Definition _ := @isAlgebraOfSets.Build d T
   measurable measurable0 mU mC.
 
-HB.instance Definition _ := @hasCountableUnion.Build d T measurable_bigcup.
+HB.instance Definition _ :=
+  @hasMeasurableCountableUnion.Build d T measurable_bigcup.
 
 HB.end.
 

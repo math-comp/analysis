@@ -39,7 +39,9 @@
 
 - in `measure.v`:
   + structure `SigmaRing`, notation `sigmaRingType`
+  + factory `isSigmaRing`
   + lemma `bigcap_measurable` for `sigmaRingType`
+  + lemma `setDI_semi_setD_closed`
 
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_ler`
@@ -94,6 +96,7 @@
 - in `measure.v`:
   + change the hypothesis of `measurable_fun_bool`
   + mixin `AlgebraOfSets_isMeasurable` renamed to `hasCountableUnion`
+  + mixin `AlgebraOfSets_isMeasurable` renamed to `hasMeasurableCountableUnion`
     and made to inherit from `SemiRingOfSets`
 
 ### Renamed
