@@ -1882,7 +1882,7 @@ rewrite -(ae_eq_integral _ _ _ _ _
 - apply: emeasurable_funM => //; first exact: measurable_int mf.
   exact: measurable_funTS.
 rewrite [in LHS](funeposneg f).
-under eq_integral => x xE. rewrite muleBl; last 2 first.
+under [in LHS]eq_integral => x xE. rewrite muleBl; last 2 first.
   - exact: Radon_Nikodym_SigmaFinite.f_fin_num.
   - exact: add_def_funeposneg.
   over.

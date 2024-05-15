@@ -184,7 +184,22 @@
 	* lemmas `semi_sigma_additiveE`, `sigma_additive_is_additive`, `measure_sigma_additive`
 	* definitions `pushforward`, `dirac`
 	* lemmas `diracE`, `dirac0`, `diracT`, `finite_card_sum`, `finite_card_dirac`, `infinite_card_dirac`
-	
+	* definitions `msum`, `measure_add`, `mscale`, `mseries`, `mrestr`
+	* lemmas `msum_mzero`, `measure_addE`
+	* definition `sfinite_measure`
+	* mixin `isSFinite`, structure `SFiniteMeasure`
+	* structure `FiniteMeasure`
+	* factory `Measure_isSFinite`
+	* lemma `negligible_bigcup`
+	* definition `ae_eq`
+	* lemmas `ae_eq0`, `ae_eq_comp`, `ae_eq_funeposneg`, `ae_eq_refl`, `ae_eq_sym`,
+	  `ae_eq_trans`, `ae_eq_sub`, `ae_eq_mul2r`, `ae_eq_mul2l`, `ae_eq_mul1l`,
+	  `ae_eq_abse`
+  + from `measurableType` to `sigmaRingType` and from `realType` to `realFieldType`
+	* definition `mzero`
+  + from `realType` to `realFieldType`:
+    * lemma `sigma_finite_mzero`
+
 - in `lebesgue_integral.v`:
   + from `measurableType` to `sigmaRingType`
     * mixin `isMeasurableFun` 

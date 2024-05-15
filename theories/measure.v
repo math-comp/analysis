@@ -1851,7 +1851,7 @@ End dirac_lemmas.
 
 Section measure_sum.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (m : {measure set T -> \bar R}^nat) (n : nat).
 
 Definition msum (A : set T) : \bar R := \sum_(k < n) m k A.
@@ -1877,7 +1877,7 @@ Arguments msum {d T R}.
 
 Section measure_zero.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realFieldType).
 
 Definition mzero (A : set T) : \bar R := 0.
 
@@ -1897,14 +1897,14 @@ HB.instance Definition _ := isMeasure.Build _ _ _ mzero
 End measure_zero.
 Arguments mzero {d T R}.
 
-Lemma msum_mzero d (T : measurableType d) (R : realType)
+Lemma msum_mzero d (T : sigmaRingType d) (R : realType)
     (m_ : {measure set T -> \bar R}^nat) :
   msum m_ 0 = mzero.
 Proof. by apply/funext => A/=; rewrite /msum big_ord0. Qed.
 
 Section measure_add.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (m1 m2 : {measure set T -> \bar R}).
 
 Definition measure_add := msum (fun n => if n is 0%N then m1 else m2) 2.
@@ -1916,7 +1916,7 @@ End measure_add.
 
 Section measure_scale.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realFieldType).
+Context d (T : sigmaRingType d) (R : realFieldType).
 Variables (r : {nonneg R}) (m : {measure set T -> \bar R}).
 
 Definition mscale (A : set T) : \bar R := r%:num%:E * m A.
@@ -1945,7 +1945,7 @@ Arguments mscale {d T R}.
 
 Section measure_series.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (m : {measure set T -> \bar R}^nat) (n : nat).
 
 Definition mseries (A : set T) : \bar R := \sum_(n <= k <oo) m k A.
@@ -1981,11 +1981,11 @@ HB.instance Definition _ := isMeasure.Build _ _ _ mseries
 End measure_series.
 Arguments mseries {d T R}.
 
-Definition mrestr d (T : measurableType d) (R : realFieldType) (D : set T)
+Definition mrestr d (T : sigmaRingType d) (R : realFieldType) (D : set T)
   (f : set T -> \bar R) (mD : measurable D) := fun X => f (X `&` D).
 
 Section measure_restr.
-Context d (T : measurableType d) (R : realFieldType).
+Context d (T : sigmaRingType d) (R : realFieldType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 
 Local Notation restr := (mrestr mu mD).
@@ -2016,7 +2016,7 @@ Definition counting (T : choiceType) (R : realType) (X : set T) : \bar R :=
 Arguments counting {T R}.
 
 Section measure_count.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (D : set T) (mD : measurable D).
 
 Local Notation counting := (@counting T R).
@@ -2766,7 +2766,7 @@ move=> h U mU; rewrite fin_real// (lt_le_trans _ (measure_ge0 mu U))//=.
 by rewrite (le_lt_trans _ h)//= le_measure// inE.
 Qed.
 
-Definition sfinite_measure d (T : measurableType d) (R : realType)
+Definition sfinite_measure d (T : sigmaRingType d) (R : realType)
     (mu : set T -> \bar R) :=
   exists2 s : {measure set T -> \bar R}^nat,
     forall n, fin_num_fun (s n) &
@@ -2809,12 +2809,11 @@ apply: (@measure_sigma_additive _ _ _ mu (fun k => U `&` seqDU F k)).
 exact/trivIset_setIl/trivIset_seqDU.
 Qed.
 
-HB.mixin Record isSFinite d (T : measurableType d) (R : realType)
+HB.mixin Record isSFinite d (T : sigmaRingType d) (R : realType)
     (mu : set T -> \bar R) := {
   s_finite : sfinite_measure mu }.
 
-HB.structure Definition SFiniteMeasure
-    d (T : measurableType d) (R : realType) :=
+HB.structure Definition SFiniteMeasure d (T : sigmaRingType d) (R : realType) :=
   {mu of @Measure _ T R mu & isSFinite _ T R mu }.
 Arguments s_finite {d T R} _.
 
@@ -2851,8 +2850,8 @@ Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" :=
     format "{ 'sigma_finite_measure'  'set'  T  '->'  '\bar'  R }")
   : ring_scope.
 
-HB.factory Record Measure_isSigmaFinite d (T : measurableType d) (R : realType)
-    (mu : set T -> \bar R) of isMeasure _ _ _ mu :=
+HB.factory Record Measure_isSigmaFinite d (T : measurableType d)
+    (R : realType) (mu : set T -> \bar R) of isMeasure _ _ _ mu :=
   { sigma_finiteT : sigma_finite setT mu }.
 
 HB.builders Context d (T : measurableType d) (R : realType)
@@ -2867,11 +2866,11 @@ HB.instance Definition _ := @isSigmaFinite.Build _ _ _ mu sigma_finiteT.
 
 HB.end.
 
-Lemma sigma_finite_mzero d (T : measurableType d) (R : realType) :
+Lemma sigma_finite_mzero d (T : measurableType d) (R : realFieldType) :
   sigma_finite setT (@mzero d T R).
 Proof. by apply: fin_num_fun_sigma_finite => //; rewrite measure0. Qed.
 
-HB.instance Definition _ d (T : measurableType d) (R : realType) :=
+HB.instance Definition _ d (T : measurableType d) (R : realFieldType) :=
   @isSigmaFinite.Build d T R mzero (@sigma_finite_mzero d T R).
 
 Lemma sfinite_mzero d (T : measurableType d) (R : realType) :
@@ -2891,7 +2890,7 @@ HB.structure Definition FinNumFun d (T : semiRingOfSetsType d)
 Notation "'@SigmaFinite_isFinite.Build' d T R k" :=
   (@isFinite.Build d T R k) (at level 2, d, T, R, k at next level, only parsing).
 
-HB.structure Definition FiniteMeasure d (T : measurableType d) (R : realType) :=
+HB.structure Definition FiniteMeasure d (T : sigmaRingType d) (R : realType) :=
   { k of @SigmaFiniteMeasure _ _ _ k & isFinite _ T R k }.
 Arguments fin_num_measure {d T R} _.
 
@@ -2927,12 +2926,12 @@ HB.instance Definition _ := @isFinite.Build d T R k finite.
 
 HB.end.
 
-HB.factory Record Measure_isSFinite d (T : measurableType d)
+HB.factory Record Measure_isSFinite d (T : sigmaRingType d)
     (R : realType) (k : set T -> \bar R) of isMeasure _ _ _ k := {
   s_finite : exists s : {finite_measure set T -> \bar R}^nat,
     forall U, measurable U -> k U = mseries s 0 U }.
 
-HB.builders Context d (T : measurableType d) (R : realType)
+HB.builders Context d (T : sigmaRingType d) (R : realType)
   k of Measure_isSFinite d T R k.
 
 Let sfinite : sfinite_measure k.
@@ -3004,7 +3003,7 @@ HB.instance Definition _ := Measure_isFinite.Build _ _ _ restr restr_fin.
 
 End measure_frestr.
 
-HB.mixin Record isSubProbability d (T : measurableType d) (R : realType)
+HB.mixin Record isSubProbability d (T : sigmaRingType d) (R : realType)
   (P : set T -> \bar R) := { sprobability_setT : P setT <= 1%E }.
 
 #[short(type=subprobability)]
@@ -3446,7 +3445,7 @@ Qed.
 
 End negligible_ringOfSetsType.
 
-Lemma negligible_bigcup d (T : measurableType d) (R : realFieldType)
+Lemma negligible_bigcup d (T : sigmaRingType d) (R : realFieldType)
     (mu : {measure set T -> \bar R}) (F : (set T)^nat) :
   (forall k, mu.-negligible (F k)) -> mu.-negligible (\bigcup_k F k).
 Proof.
@@ -3530,7 +3529,7 @@ Qed.
 
 Section ae_eq.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
 Implicit Types f g h i : T -> \bar R.
 
