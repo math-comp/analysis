@@ -568,7 +568,7 @@ Qed.
 Lemma cos_exists : exists2 pih : R, 1 <= pih <= 2 & cos pih = 0.
 Proof.
 have /IVT[] : minr (cos 1) (cos 2) <= (0 : R) <= maxr (cos 1) (cos 2).
-  - by rewrite le_maxr (ltW cos1_gt0) le_minl (ltW cos2_lt0) orbC.
+  - by rewrite le_max (ltW cos1_gt0) ge_min (ltW cos2_lt0) orbC.
   - by rewrite ler1n.
   - by apply/continuous_subspaceT => ?; exact: continuous_cos.
 by move=> pih /itvP pihI chpi_eq0; exists pih; rewrite ?pihI.

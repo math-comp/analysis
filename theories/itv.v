@@ -812,7 +812,7 @@ have [leuxlx|-> ->|lxneg uxneg|lxpos uxpos|lxneg uxpos] := interval_signP.
                                (Order.max (mulr (opp lx) (opp ly))
                                   (mulr ux uy))).
     rewrite /Itv.itv_cond itv_boundlr.
-    rewrite map_itv_bound_min map_itv_bound_max le_minl le_maxr.
+    rewrite map_itv_bound_min map_itv_bound_max ge_min le_max.
     rewrite -[x * y]opprK !opp_itv_boundl_subproof.
     rewrite -[in X in ((X || _) && _)]mulNr -[in X in ((_ || X) && _)]mulrN.
     rewrite -[in X in (_ && (X || _))]mulrNN !opprK.

@@ -73,6 +73,26 @@
 - in `classical_sets.v`:
   + `notin_set` -> `notin_setE`
 
+- in `signed.v`:
+  + `num_le_maxr` -> `num_le_max`
+  + `num_le_maxl` -> `num_ge_max`
+  + `num_le_minr` -> `num_le_min`
+  + `num_le_minl` -> `num_ge_min`
+  + `num_lt_maxr` -> `num_lt_max`
+  + `num_lt_maxl` -> `num_gt_max`
+  + `num_lt_minr` -> `num_lt_min`
+  + `num_lt_minl` -> `num_gt_min`
+
+- in `constructive_ereal.v`:
+  + `num_lee_maxr` -> `num_lee_max`
+  + `num_lee_maxl` -> `num_gee_max`
+  + `num_lee_minr` -> `num_lee_min`
+  + `num_lee_minl` -> `num_gee_min`
+  + `num_lte_maxr` -> `num_lte_max`
+  + `num_lte_maxl` -> `num_gte_max`
+  + `num_lte_minr` -> `num_lte_min`
+  + `num_lte_minl` -> `num_gte_min`
+
 ### Generalized
 
 - in `constructive_ereal.v`:

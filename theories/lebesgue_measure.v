@@ -1800,9 +1800,9 @@ move=> mf mg mD; apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite [X in measurable X](_ : _ =
     (D `&` f @^-1` `[x%:E, +oo[) `|` (D `&` g @^-1` `[x%:E, +oo[)); last first.
   rewrite predeqE => t /=; split.
-    by rewrite !/= /= !in_itv /= !andbT le_maxr => -[Dx /orP[|]];
+    by rewrite !/= /= !in_itv /= !andbT le_max => -[Dx /orP[|]];
       tauto.
-  by move=> [|]; rewrite !/= /= !in_itv/= !andbT le_maxr;
+  by move=> [|]; rewrite !/= /= !in_itv/= !andbT le_max;
     move=> [Dx ->]//; rewrite orbT.
 by apply: measurableU; [exact/mf/emeasurable_itv| exact/mg/emeasurable_itv].
 Qed.
@@ -2176,12 +2176,12 @@ wlog VB1 : V ABV / forall i, V i -> ((radius (B i))%:num <= 1)%R.
   pose V' := V `\` [set i | (radius (B i))%:num > 1]%R.
   have : vitali_cover A B V'.
     split; [exact: ABV.1|move=> x Ax e e0].
-    have : (0 < minr e 1)%R by rewrite lt_minr// e0/=.
+    have : (0 < minr e 1)%R by rewrite lt_min// e0/=.
     move=> /(ABV.2 x Ax)[i [Vi ix ie]].
     exists i; split => //.
     - split => //=; rewrite ltNge; apply/negP/negPn.
-      by rewrite (le_trans (ltW ie))// le_minl lexx orbT.
-    - by rewrite (lt_le_trans ie)// le_minl lexx.
+      by rewrite (le_trans (ltW ie))// ge_min lexx orbT.
+    - by rewrite (lt_le_trans ie)// ge_min lexx.
   move/wlg.
   have V'B1 i : V' i -> ((radius (B i))%:num <= 1)%R.
     by move=> [Vi /=]; rewrite ltNge => /negP/negPn.
@@ -2344,11 +2344,11 @@ have ZNF5 : Z r%:num `<=`
         (d%:num < r%:num - `|z|)%R & closed_ball z d%:num `&` K = set0.
       have [d/= d0 dzK] := closed_disjoint_closed_ball closedK Kz.
       have rz0 : (0 < minr ((r%:num - `|z|) / 2) (d / 2))%R.
-        by rewrite lt_minr (divr_gt0 d0)//= andbT divr_gt0// subr_gt0.
+        by rewrite lt_min (divr_gt0 d0)//= andbT divr_gt0// subr_gt0.
       exists (PosNum rz0) => /=.
-        by rewrite lt_minl ltr_pdivrMr// ltr_pMr ?subr_gt0// ltr1n.
+        by rewrite gt_min ltr_pdivrMr// ltr_pMr ?subr_gt0// ltr1n.
       apply: dzK => //=.
-      rewrite sub0r normrN gtr0_norm// lt_minl (ltr_pdivrMr d d)//.
+      rewrite sub0r normrN gtr0_norm// gt_min (ltr_pdivrMr d d)//.
       by rewrite ltr_pMr// ltr1n orbT.
     have N0_gt0 : (0 < d%:num / 2)%R by rewrite divr_gt0.
     have [i [Vi Biz BiN0]] := ABV _ Az _ N0_gt0.

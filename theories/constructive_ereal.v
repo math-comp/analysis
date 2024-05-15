@@ -61,7 +61,7 @@ Require Import signed.
 (*             x%:nng == explicitly casts x to {nonneg \bar R}, in scope %E   *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* ## Topology of extended real numbers                                        *)
+(* ## Topology of extended real numbers                                       *)
 (* ```                                                                        *)
 (*                       contract == order-preserving bijective function      *)
 (*                                   from extended real numbers to [-1; 1]    *)
@@ -1526,8 +1526,8 @@ split=> [-> // A A0|Ax]; first by rewrite leey.
 apply/eqP; rewrite eq_le leey /= leNgt; apply/negP.
 case: x Ax => [x Ax _|//|/(_ _ ltr01)//].
 suff: ~ x%:E < (Order.max 0 x + 1)%:E.
-  by apply; rewrite lte_fin ltr_pwDr// le_maxr lexx orbT.
-by apply/negP; rewrite -leNgt; apply/Ax/ltr_pwDr; rewrite // le_maxr lexx.
+  by apply; rewrite lte_fin ltr_pwDr// le_max lexx orbT.
+by apply/negP; rewrite -leNgt; apply/Ax/ltr_pwDr; rewrite // le_max lexx.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `eqyP`")]
@@ -3534,39 +3534,55 @@ Local Notation nR := {compare (0 : \bar R) & nz & r}.
 Implicit Type x y : nR.
 Local Notation num := (@num _ _ (0 : R) nz r).
 
-Lemma num_lee_maxr a x y :
+Lemma num_lee_max a x y :
   a <= maxe x%:num y%:num = (a <= x%:num) || (a <= y%:num).
-Proof. by rewrite -comparable_le_maxr// ereal_comparable. Qed.
+Proof. by rewrite -comparable_le_max// ereal_comparable. Qed.
 
-Lemma num_lee_maxl a x y :
+Lemma num_gee_max a x y :
   maxe x%:num  y%:num <= a = (x%:num <= a) && (y%:num <= a).
-Proof. by rewrite -comparable_le_maxl// ereal_comparable. Qed.
+Proof. by rewrite -comparable_ge_max// ereal_comparable. Qed.
 
-Lemma num_lee_minr a x y :
+Lemma num_lee_min a x y :
   a <= mine x%:num y%:num = (a <= x%:num) && (a <= y%:num).
-Proof. by rewrite -comparable_le_minr// ereal_comparable. Qed.
+Proof. by rewrite -comparable_le_min// ereal_comparable. Qed.
 
-Lemma num_lee_minl a x y :
+Lemma num_gee_min a x y :
   mine x%:num y%:num <= a = (x%:num <= a) || (y%:num <= a).
-Proof. by rewrite -comparable_le_minl// ereal_comparable. Qed.
+Proof. by rewrite -comparable_ge_min// ereal_comparable. Qed.
 
-Lemma num_lte_maxr a x y :
+Lemma num_lte_max a x y :
   a < maxe x%:num y%:num = (a < x%:num) || (a < y%:num).
-Proof. by rewrite -comparable_lt_maxr// ereal_comparable. Qed.
+Proof. by rewrite -comparable_lt_max// ereal_comparable. Qed.
 
-Lemma num_lte_maxl a x y :
+Lemma num_gte_max a x y :
   maxe x%:num  y%:num < a = (x%:num < a) && (y%:num < a).
-Proof. by rewrite -comparable_lt_maxl// ereal_comparable. Qed.
+Proof. by rewrite -comparable_gt_max// ereal_comparable. Qed.
 
-Lemma num_lte_minr a x y :
+Lemma num_lte_min a x y :
   a < mine x%:num y%:num = (a < x%:num) && (a < y%:num).
-Proof. by rewrite -comparable_lt_minr// ereal_comparable. Qed.
+Proof. by rewrite -comparable_lt_min// ereal_comparable. Qed.
 
-Lemma num_lte_minl a x y :
+Lemma num_gte_min a x y :
   mine x%:num y%:num < a = (x%:num < a) || (y%:num < a).
-Proof. by rewrite -comparable_lt_minl// ereal_comparable. Qed.
+Proof. by rewrite -comparable_gt_min// ereal_comparable. Qed.
 
 End MorphReal.
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lee_max`")]
+Notation num_lee_maxr := num_lee_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gee_max`")]
+Notation num_lee_maxl := num_gee_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lee_min`")]
+Notation num_lee_minr := num_lee_min (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gee_min`")]
+Notation num_lee_minl := num_gee_min (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lte_max`")]
+Notation num_lte_maxr := num_lte_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gte_max`")]
+Notation num_lte_maxl := num_gte_max (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lte_min`")]
+Notation num_lte_minr := num_lte_min (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gte_min`")]
+Notation num_lte_minl := num_gte_min (only parsing).
 
 Section MorphGe0.
 Context {R : numDomainType} {nz : KnownSign.nullity}.
@@ -3796,8 +3812,8 @@ move=> [:wlog]; case: a b => [a||] [b||] //= ltax ltxb.
 - move: a b ltax ltxb; abstract: wlog. (*BUG*)
   move=> {}a {}b ltxa ltxb.
   have m_gt0 : (Num.min ((r - a) / 2) ((b - r) / 2) > 0)%R.
-    by rewrite lt_minr !divr_gt0 // ?subr_gt0.
-  exists (PosNum m_gt0) => y //=; rewrite lt_minr !ltr_distl.
+    by rewrite lt_min !divr_gt0 // ?subr_gt0.
+  exists (PosNum m_gt0) => y //=; rewrite lt_min !ltr_distl.
   move=> /andP[/andP[ay _] /andP[_ yb]].
   rewrite 2!lte_fin (lt_trans _ ay) ?(lt_trans yb) //=.
     rewrite -subr_gt0 opprD addrA {1}[(b - r)%R]splitr addrK.

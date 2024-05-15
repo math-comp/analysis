@@ -623,7 +623,7 @@ Let nuA_g_ x : nu (A_ x) >= mine (g_ x * 2^-1%:E) 1.
 Proof. by move: x => [[[? ?] ?]] []. Qed.
 
 Let nuA_ge0 x : 0 <= nu (A_ x).
-Proof. by rewrite (le_trans _ (nuA_g_ _))// le_minr lee01 andbT mule_ge0. Qed.
+Proof. by rewrite (le_trans _ (nuA_g_ _))// le_min lee01 andbT mule_ge0. Qed.
 
 Let subDD A := [set nu E | E in [set E | measurable E /\ E `<=` D `\` A] ].
 
@@ -645,7 +645,7 @@ have /ereal_sup_gt/cid2[_ [B/= [mB BDA <- mnuB]]] : m < d_ A.
   rewrite /m; have [->|dn1oo] := eqVneq (d_ A) +oo.
     by rewrite min_r ?ltey ?gt0_mulye ?leey.
   rewrite -(@fineK _ (d_ A)); last by rewrite gt0_fin_numE// ltey.
-  rewrite -EFinM -fine_min// lte_fin lt_minl; apply/orP; left.
+  rewrite -EFinM -fine_min// lte_fin gt_min; apply/orP; left.
   by rewrite ltr_pdivrMr// ltr_pMr ?ltr1n// fine_gt0// d_gt0/= ltey.
 by exists B; split => //; rewrite (le_trans _ (ltW mnuB)).
 Qed.
@@ -699,7 +699,7 @@ have A_cvg_0 : nu (A_ (v n)) @[n --> \oo] --> 0.
 have mine_cvg_0 : (mine (g_ (v n) * 2^-1%:E) 1) @[n --> \oo] --> 0.
   apply: (@squeeze_cvge _ _ _ _ _ _ (fun n => nu (A_ (v n))));
     [|exact: cvg_cst|by []].
-  by apply: nearW => n /=; rewrite nuA_g_ andbT le_minr lee01 andbT mule_ge0.
+  by apply: nearW => n /=; rewrite nuA_g_ andbT le_min lee01 andbT mule_ge0.
 have g_cvg_0 : (g_ \o v) n @[n --> \oo] --> 0 by apply: mine2_cvg_0_cvg_0 => //=.
 have nuDAoo : nu D >= nu (D `\` Aoo).
   rewrite -[in leRHS](@setDUK _ Aoo D); last first.
@@ -780,7 +780,7 @@ have /ereal_inf_lt/cid2[_ [B/= [mB BU] <-] nuBm] : s_ U < m.
   rewrite /m; have [->|s0oo] := eqVneq (s_ U) -oo.
     by rewrite max_r ?ltNye// gt0_mulNye// leNye.
   rewrite -(@fineK _ (s_ U)); last by rewrite lt0_fin_numE// ltNye.
-  rewrite -EFinM -fine_max// lte_fin lt_maxr; apply/orP; left.
+  rewrite -EFinM -fine_max// lte_fin lt_max; apply/orP; left.
   by rewrite ltr_pdivlMr// gtr_nMr ?ltr1n// fine_lt0// s_lt0/= ltNye andbT.
 have [C [CB nsC nuCB]] := hahn_decomposition_lemma nu mB.
 exists C; split => //; first exact: (subset_trans CB).
@@ -818,7 +818,7 @@ have znuD n : z_ (v n) <= nu D.
   apply: (subset_trans DP); apply: subsetC; rewrite Ubig.
   exact: bigsetU_bigcup.
 have max_le0 n : maxe (z_ (v n) * 2^-1%:E) (- 1%E) <= 0.
-  by rewrite le_maxl leeN10 andbT pmule_lle0.
+  by rewrite ge_max leeN10 andbT pmule_lle0.
 have not_s_cvg_0 : ~ (z_ \o v) n @[n --> \oo]  --> 0.
   move/fine_cvgP => -[zfin] /cvgrPdist_lt.
   have /[swap] /[apply] -[M _ hM] : (0 < `|fine (nu D)|)%R.
@@ -849,7 +849,7 @@ have : cvg (series (fun n => fine (maxe (z_ (v n) * 2^-1%:E) (- 1%E))) n @[n -->
   rewrite (_ : _ \o _ = (fun n =>
     \sum_(0 <= k < n) fine (maxe (z_ (v k) * 2^-1%:E)%E (- 1%E)%E))%R) //.
   apply/funext => n/=; rewrite sum_fine// => m _.
-  rewrite le0_fin_numE; first by rewrite lt_maxr ltNyr orbT.
+  rewrite le0_fin_numE; first by rewrite lt_max ltNyr orbT.
   by rewrite /maxe; case: ifPn => // _; rewrite mule_le0_ge0.
 move/cvg_series_cvg_0 => maxe_cvg_0.
 apply: not_s_cvg_0.
@@ -864,13 +864,13 @@ apply/fine_cvgP; split.
     by apply: contra maxe_lt1 => /eqP ->; rewrite max_r ?leNye//= normrN1 lexx.
   by rewrite lt_eqF// (@le_lt_trans _ _ 0)// mule_le0_ge0.
 apply/cvgrPdist_lt => _ /posnumP[e].
-have : (0 < minr e%:num 1)%R by rewrite lt_minr// ltr01 andbT.
+have : (0 < minr e%:num 1)%R by rewrite lt_min// ltr01 andbT.
 move/cvgrPdist_lt : maxe_cvg_0 => /[apply] -[M _ hM].
 near=> n; rewrite sub0r normrN.
 have /hM : (M <= n)%N by near: n; exists M.
 rewrite sub0r normrN /maxe/=; case: ifPn => [_|].
-  by rewrite normrN normr1 lt_minr ltxx andbF.
-by rewrite -leNgt => ? /lt_le_trans; apply; rewrite le_minl lexx.
+  by rewrite normrN normr1 lt_min ltxx andbF.
+by rewrite -leNgt => ? /lt_le_trans; apply; rewrite ge_min lexx.
 Unshelve. all: by end_near. Qed.
 
 Lemma Hahn_decomposition_uniq P1 N1 P2 N2 :

@@ -783,9 +783,9 @@ Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
 Proof.
 move=> fc; have [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
 apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
-rewrite ler_pM ?pmulr_rge0 //; last by rewrite num_le_maxr /= lexx orbT.
+rewrite ler_pM ?pmulr_rge0 //; last by rewrite num_le_max /= lexx orbT.
 rewrite -ler_pdivlMl //.
-suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite num_le_maxr /= lexx.
+suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite num_le_max /= lexx.
 near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
 by exists (k%:num ^-1 * e%:num) => //= ? /=; rewrite /= distrC subr0 => /ltW.
 Unshelve. all: by end_near. Qed.
@@ -849,7 +849,7 @@ Lemma eqo_pair (U V' W' : normedModType R) (F : filter_on U)
   (f : U -> V') (g : U -> W') :
   (fun t => ([o_F id of f] t, [o_F id of g] t)) =o_F id.
 Proof.
-apply/eqoP => _/posnumP[e]; near=> x; rewrite num_le_maxl /=.
+apply/eqoP => _/posnumP[e]; near=> x; rewrite num_ge_max /=.
 by apply/andP; split; near: x; apply: littleoP.
 Unshelve. all: by end_near. Qed.
 

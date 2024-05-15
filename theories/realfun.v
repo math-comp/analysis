@@ -927,22 +927,22 @@ have [d2 Hd2] : exists d2 : {posnum R},
   rewrite lime_supE => /ereal_inf_lt[x /= [r]]; rewrite in_itv/= andbT.
   by move=> r0 <-{x} H; exists (PosNum r0); rewrite ltW.
 pose d := minr d1%:num d2%:num.
-have d0 : (0 < d)%R by rewrite lt_minr; apply/andP; split => //=.
+have d0 : (0 < d)%R by rewrite lt_min; apply/andP; split => //=.
 move/cvgrPdist_lt : up => /(_ _ d0)[m _] {}ucvg.
 near=> n.
 rewrite /= ler_distlC; apply/andP; split.
   rewrite -lee_fin EFinB (le_trans Hd1)//.
   rewrite (@le_trans _ _ (ereal_inf [set f x | x in ball a d `\ a]))//.
     apply: le_ereal_inf => _/= [r [adr ra] <-]; exists r => //; split => //.
-    by rewrite /ball/= (lt_le_trans adr)// /d le_minl lexx.
+    by rewrite /ball/= (lt_le_trans adr)// /d ge_min lexx.
   apply: ereal_inf_lb => /=; exists (u n).
     split; last by apply/eqP; rewrite eq_sym lt_eqF.
-    by apply: ucvg => //=; near: n; by exists m.
+    by apply: ucvg => //=; near: n; exists m.
   by rewrite fineK//; by near: n.
 rewrite -lee_fin EFinD (le_trans _ Hd2)//.
 rewrite (@le_trans _ _ (ereal_sup [set f x | x in ball a d `\ a]))//; last first.
   apply: le_ereal_sup => z/= [r [adr rp] <-{z}]; exists r => //; split => //.
-  by rewrite /ball/= (lt_le_trans adr)// /d le_minl lexx orbT.
+  by rewrite /ball/= (lt_le_trans adr)// /d ge_min lexx orbT.
 apply: ereal_sup_ub => /=; exists (u n).
   split; last by apply/eqP; rewrite eq_sym lt_eqF.
   by apply: ucvg => //=; near: n; exists m.
@@ -1252,7 +1252,6 @@ have : f a >= f b by rewrite (itvP xfafb).
 by case: ltrgtP xfafb => // ->.
 Qed.
 
-
 Lemma segment_inc_surj_continuous a b f :
     {in `[a, b] &, {mono f : x y / x <= y}} -> set_surj `[a, b] `[f a, f b] f ->
   {within `[a, b], continuous f}.
@@ -1284,10 +1283,10 @@ rewrite ler_distlC; near: y.
 pose u := minr (f x + e%:num / 2) (f b).
 pose l := maxr (f x - e%:num / 2) (f a).
 have ufab : u \in `[f a, f b].
-  rewrite !in_itv /= le_minl ?le_minr lexx ?fle // le_ab orbT ?andbT.
+  rewrite !in_itv /= ge_min ?le_min lexx ?fle // le_ab orbT ?andbT.
   by rewrite ler_wpDr // fle.
 have lfab : l \in `[f a, f b].
-  rewrite !in_itv/= le_maxl ?le_maxr lexx ?fle// le_ab orbT ?andbT.
+  rewrite !in_itv/= ge_max ?le_max lexx ?fle// le_ab orbT ?andbT.
   by rewrite lerBlDr ler_wpDr// fle // lexx.
 have guab : g u \in `[a, b].
   rewrite !in_itv; apply/andP; split; have := ufab; rewrite in_itv => /andP.
@@ -1298,33 +1297,33 @@ have glab : g l \in `[a, b].
     by case; rewrite -[f _ <= _]gle // ?fK // bound_itvE fle.
   by case => _; rewrite -[_ <= f _]gle // ?fK // bound_itvE fle.
 have faltu : f a < u.
-  rewrite /u comparable_lt_minr ?real_comparable ?num_real// flt// aLb andbT.
+  rewrite /u comparable_lt_min ?real_comparable ?num_real// flt// aLb andbT.
   by rewrite (@le_lt_trans _ _ (f x)) ?fle// ltrDl.
 have lltfb : l < f b.
-  rewrite /u comparable_lt_maxl ?real_comparable ?num_real// flt// aLb andbT.
+  rewrite /u comparable_gt_max ?real_comparable ?num_real// flt// aLb andbT.
   by rewrite (@lt_le_trans _ _ (f x)) ?fle// ltrBlDr ltrDl.
 case: pselect => // _; rewrite near_withinE; near_simpl.
 have Fnbhs : Filter (nbhs x) by apply: nbhs_filter.
 have := ax; rewrite le_eqVlt => /orP[/eqP|] {}ax.
   near=> y => /[dup] yab; rewrite /= in_itv => /andP[ay yb]; apply/andP; split.
     by rewrite (@le_trans _ _ (f a)) ?fle// lerBlDr ax ler_wpDr.
-  apply: ltW; suff : f y < u by rewrite lt_minr => /andP[->].
+  apply: ltW; suff : f y < u by rewrite lt_min => /andP[->].
   rewrite -?[f y < _]glt// ?fK//; last by rewrite in_itv /= !fle.
   by near: y; near_simpl; apply: open_lt; rewrite /= -flt ?gK// -ax.
 have := xb; rewrite le_eqVlt => /orP[/eqP {}xb {ax}|{}xb].
   near=> y => /[dup] yab; rewrite /= in_itv /= => /andP[ay yb].
   apply/andP; split; last by rewrite (@le_trans _ _ (f b)) ?fle// xb ler_wpDr.
-  apply: ltW; suff : l < f y by rewrite lt_maxl => /andP[->].
+  apply: ltW; suff : l < f y by rewrite gt_max => /andP[->].
   rewrite -?[_ < f y]glt// ?fK//; last by rewrite in_itv /= !fle.
   by near: y; near_simpl; apply: open_gt; rewrite /= -flt// gK// xb.
 have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
 near=> y; suff: l <= f y <= u.
-  by rewrite le_maxl le_minr -!andbA => /and4P[-> _ ->].
+  by rewrite ge_max le_min -!andbA => /and4P[-> _ ->].
 have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
 have fyab : f y \in `[f a, f b] by rewrite in_itv/= !fle// ?ltW.
 rewrite -[l <= _]gle -?[_ <= u]gle// ?fK //.
 apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv /=.
-rewrite -[x]fK // !glt//= lt_minr lt_maxl ?andbT ltrBlDr ltr_pwDr //.
+rewrite -[x]fK // !glt//= lt_min gt_max ?andbT ltrBlDr ltr_pwDr //.
 by apply/and3P; split; rewrite // flt.
 Unshelve. all: by end_near. Qed.
 

@@ -1,6 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
+From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop.
 Require Import reals signed.
@@ -462,8 +463,8 @@ Proof.
 apply: (iffP idP) => [|[mx|[i Pi mFi]]].
 - rewrite leNgt => /bigmax_ltP /not_andP[/negP|]; first by rewrite -leNgt; left.
   by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -leNgt; right; exists i.
-- by rewrite bigmax_idl le_maxr mx.
-- by rewrite (bigmaxD1 i)// le_maxr mFi.
+- by rewrite bigmax_idl le_max mx.
+- by rewrite (bigmaxD1 i)// le_max mFi.
 Qed.
 
 Lemma bigmax_gtP : reflect (m < x \/ exists2 i, P i & m < F i)
@@ -472,8 +473,8 @@ Proof.
 apply: (iffP idP) => [|[mx|[i Pi mFi]]].
 - rewrite ltNge => /bigmax_leP /not_andP[/negP|]; first by rewrite -ltNge; left.
   by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -ltNge; right; exists i.
-- by rewrite bigmax_idl lt_maxr mx.
-- by rewrite (bigmaxD1 i)// lt_maxr mFi.
+- by rewrite bigmax_idl lt_max mx.
+- by rewrite (bigmaxD1 i)// lt_max mFi.
 Qed.
 
 Lemma bigmin_leP : reflect (x <= m \/ exists2 i, P i & F i <= m)
@@ -482,8 +483,8 @@ Proof.
 apply: (iffP idP) => [|[xm|[i Pi Fim]]].
 - rewrite leNgt => /bigmin_gtP /not_andP[/negP|]; first by rewrite -leNgt; left.
   by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -leNgt; right; exists i.
-- by rewrite bigmin_idl le_minl xm.
-- by rewrite (bigminD1 i)// le_minl Fim.
+- by rewrite bigmin_idl ge_min xm.
+- by rewrite (bigminD1 i)// ge_min Fim.
 Qed.
 
 Lemma bigmin_ltP : reflect (x < m \/ exists2 i, P i & F i < m)
@@ -492,8 +493,8 @@ Proof.
 apply: (iffP idP) => [|[xm|[i Pi Fim]]].
 - rewrite ltNge => /bigmin_geP /not_andP[/negP|]; first by rewrite -ltNge; left.
   by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -ltNge; right; exists i.
-- by rewrite bigmin_idl lt_minl xm.
-- by rewrite (bigminD1 _ _ _ Pi) lt_minl Fim.
+- by rewrite bigmin_idl gt_min xm.
+- by rewrite (bigminD1 _ _ _ Pi) gt_min Fim.
 Qed.
 
 End bigmaxmin.
@@ -4738,7 +4739,7 @@ Proof.
 rewrite entourageE; apply: filter_from_filter; first by exists 1 => /=.
 move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //=.
 by rewrite subsetI; split=> ?; apply: ball_le;
-   rewrite num_le// le_minl lexx ?orbT.
+   rewrite num_le// ge_min lexx ?orbT.
 Qed.
 
 Lemma ball_sym_subproof A : ent A -> [set xy | xy.1 = xy.2] `<=` A.
@@ -4989,7 +4990,7 @@ exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
 move=> E; rewrite -entourage_ballE => -[e e0 subE].
 exists `|floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
 rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// -natr1.
-by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// lt_succ_floor.
+by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// reals.lt_succ_floor.
 Qed.
 
 (** Specific pseudoMetric spaces *)
@@ -5034,18 +5035,24 @@ End matrix_PseudoMetric.
 Section prod_PseudoMetric.
 Context {R : numDomainType} {U V : pseudoMetricType R}.
 Implicit Types (x y : U * V).
+
 Definition prod_point : U * V := (point, point).
+
 Definition prod_ball x (eps : R) y :=
   ball (fst x) eps (fst y) /\ ball (snd x) eps (snd y).
+
 Lemma prod_ball_center x (eps : R) : 0 < eps -> prod_ball x eps x.
 Proof. by move=> /posnumP[?]. Qed.
+
 Lemma prod_ball_sym x y (eps : R) : prod_ball x eps y -> prod_ball y eps x.
 Proof. by move=> [bxy1 bxy2]; split; apply: ball_sym. Qed.
+
 Lemma prod_ball_triangle x y z (e1 e2 : R) :
   prod_ball x e1 y -> prod_ball y e2 z -> prod_ball x (e1 + e2) z.
 Proof.
 by move=> [bxy1 bxy2] [byz1 byz2]; split; apply: ball_triangle; eassumption.
 Qed.
+
 Lemma prod_entourage : entourage = entourage_ prod_ball.
 Proof.
 rewrite predeqE => P; split; last first.
@@ -5059,12 +5066,13 @@ move=> [[_/posnumP[eA] sbA] [_/posnumP[eB] sbB] sABP].
 exists (Num.min eA eB)%:num => //= -[[a b] [c d] [/= bac bbd]].
 suff /sABP [] : (A `*` B) ((a, c), (b, d)) by move=> [[??] [??]] ? [<-<-<-<-].
 split; [apply: sbA|apply: sbB] => /=.
-  by apply: le_ball bac; rewrite num_le le_minl lexx.
-by apply: le_ball bbd; rewrite num_le le_minl lexx orbT.
+  by apply: le_ball bac; rewrite num_le ge_min lexx.
+by apply: le_ball bbd; rewrite num_le ge_min lexx orbT.
 Qed.
 
 HB.instance Definition _ := Uniform_isPseudoMetric.Build R (U * V)%type
   prod_ball_center prod_ball_sym prod_ball_triangle prod_entourage.
+
 End prod_PseudoMetric.
 
 Section Nbhs_fct2.
@@ -5334,10 +5342,10 @@ Global Instance ball_filter (R : realDomainType) (t : R) : Filter
   [set P | exists2 i : R, 0 < i & ball_ Num.norm t i `<=` P].
 Proof.
 apply: Build_Filter; [by exists 1 | move=> P Q | move=> P Q PQ]; rewrite /mkset.
-- move=> -[x x0 xP] [y ? yQ]; exists (Num.min x y); first by rewrite lt_minr x0.
+- move=> -[x x0 xP] [y ? yQ]; exists (Num.min x y); first by rewrite lt_min x0.
   move=> z tz; split.
-    by apply: xP; rewrite /= (lt_le_trans tz) // le_minl lexx.
-  by apply: yQ; rewrite /= (lt_le_trans tz) // le_minl lexx orbT.
+    by apply: xP; rewrite /= (lt_le_trans tz) // ge_min lexx.
+  by apply: yQ; rewrite /= (lt_le_trans tz) // ge_min lexx orbT.
 - by move=> -[x ? xP]; exists x => //; apply: (subset_trans xP).
 Qed.
 
@@ -5670,7 +5678,7 @@ Local Open Scope ring_scope.
 Local Definition distN (e : R) : nat := `|floor e^-1|%N.
 
 Local Lemma distN0 : distN 0 = 0%N.
-Proof. by rewrite /distN invr0 floor0. Qed.
+Proof. by rewrite /distN invr0 reals.floor0. Qed.
 
 Local Lemma distN_nat (n : nat): distN (n%:R^-1) = n.
 Proof.

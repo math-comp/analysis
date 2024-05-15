@@ -1,8 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
+From mathcomp Require Import archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop .
+From mathcomp Require Import cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure numfun realfun function_spaces.
 
@@ -1282,22 +1283,22 @@ Lemma bigsetU_dyadic_itv n : `[n%:R, n.+1%:R[%classic =
   \big[setU/set0]_(n * 2 ^ n.+1 <= k < n.+1 * 2 ^ n.+1) [set` I n.+1 k].
 Proof.
 rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
-- rewrite -bigcup_seq /=; exists `|floor (r * 2 ^+ n.+1)|%N.
+- rewrite -bigcup_seq /=; exists `|reals.floor (r * 2 ^+ n.+1)|%N.
     rewrite /= mem_index_iota; apply/andP; split.
-      rewrite -ltez_nat gez0_abs ?floor_ge0; last first.
+      rewrite -ltez_nat gez0_abs ?reals.floor_ge0; last first.
         by rewrite mulr_ge0// (le_trans _ nr).
-      apply: (@le_trans _ _ (floor (n * 2 ^ n.+1)%:R)); last first.
+      apply: (@le_trans _ _ (reals.floor (n * 2 ^ n.+1)%:R)); last first.
         by apply: le_floor; rewrite natrM natrX ler_pM2r.
       by rewrite floor_natz intz.
     rewrite -ltz_nat gez0_abs; last first.
       by rewrite floor_ge0 mulr_ge0// (le_trans _ nr).
-    rewrite -(@ltr_int R) (le_lt_trans (floor_le _))//.
+    rewrite -(@ltr_int R) (le_lt_trans (reals.floor_le _))//.
     by rewrite PoszM intrM -natrX ltr_pM2r.
   rewrite /= in_itv /=; apply/andP; split.
-    rewrite ler_pdivrMr// (le_trans _ (floor_le _))//.
-    by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// (le_trans _ nr).
-  rewrite ltr_pdivlMr// (lt_le_trans (lt_succ_floor _))//.
-  rewrite -[in leRHS]natr1 lerD2r// -(@gez0_abs (floor _))// floor_ge0.
+    rewrite ler_pdivrMr// (le_trans _ (reals.floor_le _))//.
+    by rewrite -(@gez0_abs (reals.floor _))// floor_ge0 mulr_ge0// (le_trans _ nr).
+  rewrite ltr_pdivlMr// (lt_le_trans (reals.lt_succ_floor _))//.
+  rewrite -[in leRHS]natr1 lerD2r// -(@gez0_abs (reals.floor _))// floor_ge0.
   by rewrite mulr_ge0// (le_trans _ nr).
 - rewrite -bigcup_seq => -[/= k] /[!mem_index_iota] /andP[nk kn].
   rewrite in_itv /= => /andP[knr rkn]; rewrite in_itv /=; apply/andP; split.
@@ -1425,18 +1426,18 @@ rewrite pnatr_eq0 => /eqP.
 have [//|] := boolP (x \in B n).
 rewrite notin_setE /B /setI /= => /not_andP[] // /negP.
 rewrite -ltNge => fxn _.
-have K : (`|floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
-  rewrite -ltz_nat gez0_abs; last by rewrite floor_ge0 mulr_ge0// ltW.
-  rewrite -(@ltr_int R); rewrite (le_lt_trans (floor_le _))// PoszM intrM.
+have K : (`|reals.floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
+  rewrite -ltz_nat gez0_abs; last by rewrite reals.floor_ge0 mulr_ge0// ltW.
+  rewrite -(@ltr_int R); rewrite (le_lt_trans (reals.floor_le _))// PoszM intrM.
   by rewrite -natrX ltr_pM2r// -lte_fin (fineK fxfin).
 have /[!mem_index_enum]/(_ isT) := An0 (Ordinal K).
 rewrite implyTb indicE mem_set ?mulr1; last first.
   rewrite /A K /= inE; split=> //=; exists (fine (f x)); last by rewrite fineK.
   rewrite in_itv /=; apply/andP; split.
-    rewrite ler_pdivrMr// (le_trans _ (floor_le _))//.
-    by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// ltW.
-  rewrite ltr_pdivlMr// (lt_le_trans (lt_succ_floor _))// -[in leRHS]natr1.
-  by rewrite lerD2r// -{1}(@gez0_abs (floor _))// floor_ge0// mulr_ge0// ltW.
+    rewrite ler_pdivrMr// (le_trans _ (reals.floor_le _))//.
+    by rewrite -(@gez0_abs (reals.floor _))// reals.floor_ge0 mulr_ge0// ltW.
+  rewrite ltr_pdivlMr// (lt_le_trans (reals.lt_succ_floor _))// -[in leRHS]natr1.
+  by rewrite lerD2r// -{1}(@gez0_abs (reals.floor _))// reals.floor_ge0// mulr_ge0// ltW.
 rewrite mulf_eq0// -exprVn; apply/negP; rewrite negb_or expf_neq0//= andbT.
 rewrite pnatr_eq0 -lt0n absz_gt0 floor_neq0// -ler_pdivrMr//.
 apply/orP; right; apply/ltW; near: n.
@@ -1533,11 +1534,11 @@ near=> n.
 have mn : (m <= n)%N by near: n; exists m.
 have : fine (f x) < n%:R.
   near: n.
-  exists `|floor (fine (f x))|.+1%N => //= p /=.
+  exists `|reals.floor (fine (f x))|.+1%N => //= p /=.
   rewrite -(@ler_nat R); apply: lt_le_trans.
-  rewrite -natr1 (_ : `| _ |%:R  = (floor (fine (f x)))%:~R); last first.
-    by rewrite -[in RHS](@gez0_abs (floor _))// floor_ge0//; exact/fine_ge0/f0.
-  by rewrite lt_succ_floor.
+  rewrite -natr1 (_ : `| _ |%:R  = (reals.floor (fine (f x)))%:~R); last first.
+    by rewrite -[in RHS](@gez0_abs (reals.floor _))// reals.floor_ge0//; exact/fine_ge0/f0.
+  by rewrite reals.lt_succ_floor.
 rewrite -lte_fin (fineK fxfin) => fxn.
 have [approx_nx0|[k [/andP[k0 kn2n] ? ->]]] := f_ub_approx fxn.
   by have := Hm _ mn; rewrite approx_nx0.
@@ -1573,21 +1574,21 @@ move=> Dx fxoo; have approx_x n : approx n x = n%:R.
   by rewrite fgen_A0 // ?mulr0 // fxoo leey.
 case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
 - move=> /cvgrPdist_lt/(_ _ ltr01) -[n _].
-  move=> /(_ (`|ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
+  move=> /(_ (`|reals.ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
   rewrite approx_x.
   apply/negP; rewrite -leNgt distrC (le_trans _ (lerB_normD _ _)) //.
   rewrite normrN lerBrDl addSnnS [leRHS]ger0_norm ?ler0n//.
   rewrite natrD lerD// ?ler1n// ger0_norm // (le_trans (ceil_ge _)) //.
-  by rewrite -(@gez0_abs (ceil _)) // ceil_ge0.
+  by rewrite -(@gez0_abs (reals.ceil _)) // ceil_ge0.
 - move/cvgrPdist_lt => /(_ _ ltr01) -[n _].
-  move=> /(_ (`|floor l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
+  move=> /(_ (`|reals.floor l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
   rewrite approx_x.
   apply/negP; rewrite -leNgt distrC (le_trans _ (lerB_normD _ _)) //.
   rewrite normrN lerBrDl addSnnS [leRHS]ger0_norm ?ler0n//.
   rewrite natrD lerD// ?ler1n// ler0_norm //; last by rewrite ltW.
-  rewrite (@le_trans _ _ (- floor l)%:~R) //.
-    by rewrite mulrNz lerNl opprK floor_le.
-  by rewrite -(@lez0_abs (floor _)) // floor_le0 // ltW.
+  rewrite (@le_trans _ _ (- reals.floor l)%:~R) //.
+    by rewrite mulrNz lerNl opprK reals.floor_le.
+  by rewrite -(@lez0_abs (reals.floor _)) // reals.floor_le0 // ltW.
 Qed.
 
 Lemma ecvg_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
@@ -2169,7 +2170,7 @@ apply/nondecreasing_seqP => n; apply/lefP => x; rewrite 2!bigmax_nnsfunE.
 rewrite (@le_trans _ _ (\big[maxr/0]_(i < n) g2 i n.+1 x)%R) //.
   apply: le_bigmax2 => i _; apply: (nondecreasing_seqP (g2 i ^~ x)).2 => a b ab.
    by rewrite !nnsfun_approxE; exact/lefP/nd_approx.
-rewrite (bigmaxD1 ord_max)// le_maxr; apply/orP; right.
+rewrite (bigmaxD1 ord_max)// le_max; apply/orP; right.
 rewrite [leRHS](eq_bigl (fun i => nat_of_ord i < n)%N).
   by rewrite (big_ord_narrow (leqnSn n)).
 move=> i /=; rewrite neq_lt; apply/orP/idP => [[//|]|]; last by left.
@@ -2327,7 +2328,7 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
       exists 1%N => // m /= m0.
       by rewrite mulry gtr0_sg// ?mul1e ?leey// ltr0n.
     near=> n; rewrite lee_fin -ler_pdivrMr//.
-    near: n; exists `|ceil (M / r)|%N => // m /=.
+    near: n; exists `|reals.ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
     by rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// divr_ge0// ?ltW.
   - rewrite lt0_mulye//; apply/cvgeNyPleNy; near=> M;
@@ -2336,7 +2337,7 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
       exists 1%N => // m /= m0.
       by rewrite mulrNy gtr0_sg// ?ltr0n// mul1e ?leNye.
     near=> n; rewrite lee_fin -ler_ndivrMr//.
-    near: n; exists `|ceil (M / r)|%N => // m /=.
+    near: n; exists `|reals.ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
     rewrite natr_absz ger0_norm ?ceil_ge// ceil_ge0// -mulrNN.
     by rewrite mulr_ge0// lerNr oppr0// ltW// invr_lt0.
@@ -2358,7 +2359,7 @@ rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
 rewrite -lee_pdivr_mulr//; last first.
   by move: if_gt0 ifoo; case: (\int[mu]_(x in D) f x).
 near: n.
-exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
+exists `|reals.ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
 rewrite lee_fin natr_absz ger0_norm ?ceil_ge// ceil_ge0//.
 by rewrite mulr_ge0// ?invr_ge0//; exact/fine_ge0/integral_ge0.
@@ -2589,7 +2590,7 @@ Proof.
 move=> muD0; pose g : (T -> \bar R)^nat := fun n => cst n%:R%:E.
 have <- : (fun t => limn (g^~ t)) = cst +oo.
   rewrite funeqE => t; apply/cvg_lim => //=.
-  apply/cvgeryP/cvgryPge => M; exists `|ceil M|%N => //= m.
+  apply/cvgeryP/cvgryPge => M; exists `|reals.ceil M|%N => //= m.
   rewrite /= -(ler_nat R); apply: le_trans.
   by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
 rewrite monotone_convergence //.
@@ -2598,7 +2599,7 @@ rewrite monotone_convergence //.
   have [muDoo|muDoo] := ltP (mu D) +oo; last first.
     exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
-  exists `|ceil (M / fine (mu D))|%N => // m /=.
+  exists `|reals.ceil (M / fine (mu D))|%N => // m /=.
   rewrite -(ler_nat R) => MDm; rewrite -(@fineK _ (mu D)) ?ge0_fin_numE//.
   rewrite -lee_pdivr_mulr; last by rewrite fine_gt0// lt0e muD0 measure_ge0.
   rewrite lee_fin (le_trans _ MDm)//.
@@ -3421,7 +3422,7 @@ have [M M0 muM] : exists2 M, (0 <= M)%R &
 apply/eqP/negPn/negP => /eqP muED0; move/not_forallP : muM; apply.
 have [muEDoo|] := ltP (mu (E `&` D)) +oo; last first.
   by rewrite leye_eq => /eqP ->; exists 1%N; rewrite mul1e leye_eq.
-exists `|ceil (M * (fine (mu (E `&` D)))^-1)|%N.+1.
+exists `|reals.ceil (M * (fine (mu (E `&` D)))^-1)|%N.+1.
 apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
   by rewrite fin_numElt muEDoo (lt_le_trans _ (measure_ge0 _ _)).
@@ -3669,7 +3670,7 @@ move=> mf; split=> [iDf0|Df0].
     rewrite predeqE => t; split=> [[Dt ft0]|[n _ /= [Dt nft]]].
       have [ftoo|ftoo] := eqVneq `|f t| +oo.
         by exists 0%N => //; split => //=; rewrite ftoo /= leey.
-      pose m := `|ceil (fine `|f t|)^-1|%N.
+      pose m := `|reals.ceil (fine `|f t|)^-1|%N.
       have ftfin : `|f t|%E \is a fin_num by rewrite ge0_fin_numE// ltey.
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin -ler_pV2; last 2 first.
@@ -4121,7 +4122,7 @@ move=> sa.
 transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
   congr (integral _ _ _); apply/funext => A.
   by rewrite /= counting_dirac.
-rewrite (@ge0_integral_measure_series _ _ R (fun n => [the measure _ _ of \d_ n]) setT)//=.
+rewrite (@ge0_integral_measure_series _ _ R (fun n => \d_ n) setT)//=.
 by apply: eq_eseriesr=> i _; rewrite integral_dirac//= diracT mul1e.
 Qed.
 
@@ -6440,7 +6441,7 @@ move=> Ef; have {Ef} : mu.-negligible (E `&` [set x | 0 < f^* x]).
   near \oo => m; exists m => //=.
   rewrite -(@fineK _ (f^* x)) ?gt0_fin_numE ?ltey// lte_fin.
   rewrite invf_plt ?posrE//; last by rewrite fine_gt0// ltey fx0.
-  set r := _^-1; rewrite (@le_lt_trans _ _ `|ceil r|.+1%:R)//.
+  set r := _^-1; rewrite (@le_lt_trans _ _ `|reals.ceil r|.+1%:R)//.
     by rewrite (le_trans _ (abs_ceil_ge _))// ler_norm.
   by rewrite ltr_nat ltnS; near: m; exact: nbhs_infty_gt.
 apply: negligibleS => z /= /not_implyP[Ez H]; split => //.
@@ -6642,14 +6643,14 @@ have fE y k r : (ball 0%R k.+1%:R) y -> (r < 1)%R ->
   rewrite (le_trans (ltW yk1))// -lerBlDr opprK -lerBrDl.
   rewrite -natrB//; last by rewrite -addnn addSnnS ltn_addl.
   by rewrite -addnn addnK ler1n.
-have := h `|ceil x|.+1%N Logic.I.
-have Bxx : B `|ceil x|.+1 x.
+have := h `|reals.ceil x|.+1%N Logic.I.
+have Bxx : B `|reals.ceil x|.+1 x.
   rewrite /B /ball/= sub0r normrN (le_lt_trans (abs_ceil_ge _))// ltr_nat.
   by rewrite -addnn addSnnS ltn_addl.
 move=> /(_ Bxx)/fine_cvgP[davg_fk_fin_num davg_fk0].
 have f_fk_ceil : \forall t \near 0^'+,
   \int[mu]_(y in ball x t) `|(f y)%:E - (f x)%:E| =
-  \int[mu]_(y in ball x t) `|fk `|ceil x|.+1 y - fk `|ceil x|.+1 x|%:E.
+  \int[mu]_(y in ball x t) `|fk `|reals.ceil x|.+1 y - fk `|reals.ceil x|.+1 x|%:E.
   near=> t.
   apply: eq_integral => /= y /[1!inE] xty.
   rewrite -(fE x _ t)//; last first.

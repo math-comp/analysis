@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
-From mathcomp Require Import interval rat.
+From mathcomp Require Import interval rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import set_interval.
 Require Import reals ereal signed topology normedtype landau.
@@ -1264,9 +1264,9 @@ Proof.
 rewrite /series; near \oo => N; have xN : x < N%:R; last first.
   rewrite -(@is_cvg_series_restrict N.+1).
   by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; apply: S1_sup.
-near: N; exists (absz (floor x)).+1 => // m; rewrite /mkset -(@ler_nat R).
-move/lt_le_trans => -> //; rewrite (lt_le_trans (lt_succ_floor x)) // -addn1.
-by rewrite natrD lerD2r -(@gez0_abs (floor x)) ?floor_ge0// ltW.
+near: N; exists (absz (reals.floor x)).+1 => // m; rewrite /mkset -(@ler_nat R).
+move/lt_le_trans => -> //; rewrite (lt_le_trans (reals.lt_succ_floor x)) // -addn1.
+by rewrite natrD lerD2r -(@gez0_abs (reals.floor x)) ?reals.floor_ge0// ltW.
 Unshelve. all: by end_near. Qed.
 
 End exponential_series_cvg.
@@ -2113,12 +2113,12 @@ Lemma minr_cvg_0_cvg_0 u r : 0 < r -> (forall k, 0 <= u k) ->
   minr (u n) r @[n --> \oo] --> 0 -> u n @[n --> \oo] --> 0.
 Proof.
 move=> r0 u0 minr_cvg; apply/cvgrPdist_lt => _ /posnumP[e].
-have : 0 < minr e%:num r by rewrite lt_minr// r0 andbT.
+have : 0 < minr e%:num r by rewrite lt_min// r0 andbT.
 move/cvgrPdist_lt : minr_cvg => /[apply] -[M _ hM].
 near=> n; rewrite sub0r normrN.
 have /hM : (M <= n)%N by near: n; exists M.
 rewrite sub0r normrN (ger0_norm (u0 n)) ger0_norm// => [/lt_min_lt//|].
-by rewrite le_minr u0 ltW.
+by rewrite le_min u0 ltW.
 Unshelve. all: by end_near. Qed.
 
 Lemma maxr_cvg_0_cvg_0 u r : r < 0 -> (forall k, u k <= 0) ->
@@ -2148,7 +2148,7 @@ case: x => [r r0 u0 /fine_cvgP[_]|_ u0|//]; last first.
 move=> /cvgrPdist_lt/(_ _ r0)[N _ hN].
 near=> n; have /hN : (N <= n)%N by near: n; exists N.
 rewrite sub0r normrN /= ger0_norm ?fine_ge0//; last first.
-  by rewrite le_minr u0 ltW.
+  by rewrite le_min u0 ltW.
 by have := u0 n; case: (u n) => //=; rewrite ltxx.
 Unshelve. all: by end_near. Qed.
 
