@@ -1686,6 +1686,20 @@ Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
 #[global] Hint Extern 0 (measurable_fun _ expR) =>
   solve [apply: measurable_expR] : core.
 
+Lemma measurable_natmul {R : realType} D n :
+  measurable_fun D ((@GRing.natmul R)^~ n).
+Proof.
+under eq_fun do rewrite -mulr_natr.
+by do 2 apply: measurable_funM => //.
+Qed.
+
+Lemma measurable_fun_pow {R : realType} D (f : R -> R) n : measurable_fun D f ->
+  measurable_fun D (fun x => f x ^+ n).
+Proof.
+move=> mf.
+exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
+Qed.
+
 Lemma measurable_powR (R : realType) p :
   measurable_fun [set: R] (@powR R ^~ p).
 Proof.

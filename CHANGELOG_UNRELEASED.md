@@ -34,6 +34,37 @@
 - in `normedtype.v`:
   + lemma `not_near_at_leftP`
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_fun_ler`
+
+- in `measure.v`:
+  + lemmas `measurable_fun_TF`, `measurable_and`
+
+- in `signed.v`:
+  + lemma `onem_nonneg_proof`, definition `onem_nonneg`
+
+- in `esum.v`:
+  + lemma `nneseries_sum_bigcup`
+
+- in `lebesgue_measurable.v`:
+  + lemmas `measurable_natmul`, `measurable_fun_pow`
+
+- in `probability.v`:
+  + definition `bernoulli_pmf`
+  + lemmas `bernoulli_pmf_ge0`, `bernoulli_pmf1`, `measurable_bernoulli_pmf`
+  + definition  `bernoulli` (equipped with the `probability` structure)
+  + lemmas `bernoulli_dirac`, `bernoulliE`, `integral_bernoulli`, `measurable_bernoulli`,
+    `measurable_bernoulli2`
+  + definition `binomial_pmf`
+  + lemmas `binomial_pmf_ge0`, `measurable_binomial_pmf`
+  + definitions `binomial_prob` (equipped with the `probability` structure), `bin_prob`
+  + lemmas `bin_prob0`, `bin_prob1`, `binomial_msum`, `binomial_probE`, `integral_binomial`,
+    `integral_binomial_prob`, `measurable_binomial_prob`
+  + definition `uniform_pdf`
+  + lemmas `measurable_uniform_pdf`, `integral_uniform_pdf`, `integral_uniform_pdf1`
+  + definition `uniform_prob` (equipped with the `probability` structure)
+  + lemmas `dominates_uniform_prob`, `integral_uniform`
+
 ### Changed
 
 - in `forms.v`:
@@ -109,6 +140,9 @@
     definitions `preimage_classes`, `measure_dominates`, `ess_sup`
 	(from `measurableType` to `semiRingOfSetsType`)
   + lemmas ` measurable_prod_measurableType`, `measurable_prod_g_measurableTypeR` (from `measurableType` to `algebraOfSetsType`)
+
+- in `lebesgue_integral.v`:
+  + lemma `ge0_emeasurable_fun_sum`
 
 ### Deprecated
 

@@ -15,24 +15,39 @@ Require Import exp numfun lebesgue_measure lebesgue_integral kernel.
 (* the type probability T R (a measure that sums to 1).                       *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*          {RV P >-> R} == real random variable: a measurable function from  *)
-(*                          the measurableType of the probability P to R      *)
-(*      distribution P X == measure image of the probability measure P by the *)
-(*                          random variable X : {RV P -> R}                   *)
-(*                          P as type probability T R with T of type          *)
-(*                          measurableType.                                   *)
-(*                          Declared as an instance of probability measure.   *)
-(*               'E_P[X] == expectation of the real measurable function X     *)
-(*        covariance X Y == covariance between real random variable X and Y   *)
-(*               'V_P[X] == variance of the real random variable X            *)
-(*         mmt_gen_fun X == moment generating function of the random variable *)
-(*                          X *)
-(*       {dmfun T >-> R} == type of discrete real-valued measurable functions *)
-(*         {dRV P >-> R} == real-valued discrete random variable              *)
-(*             dRV_dom X == domain of the discrete random variable X          *)
-(*            dRV_enum X == bijection between the domain and the range of X   *)
-(*               pmf X r := fine (P (X @^-1` [set r]))                        *)
-(*         enum_prob X k == probability of the kth value in the range of X    *)
+(*         {RV P >-> R} == real random variable: a measurable function from   *)
+(*                         the measurableType of the probability P to R       *)
+(*     distribution P X == measure image of the probability measure P by the  *)
+(*                         random variable X : {RV P -> R}                    *)
+(*                         P as type probability T R with T of type           *)
+(*                         measurableType.                                    *)
+(*                         Declared as an instance of probability measure.    *)
+(*              'E_P[X] == expectation of the real measurable function X      *)
+(*       covariance X Y == covariance between real random variable X and Y    *)
+(*              'V_P[X] == variance of the real random variable X             *)
+(*        mmt_gen_fun X == moment generating function of the random variable  *)
+(*                         X                                                  *)
+(*      {dmfun T >-> R} == type of discrete real-valued measurable functions  *)
+(*        {dRV P >-> R} == real-valued discrete random variable               *)
+(*            dRV_dom X == domain of the discrete random variable X           *)
+(*           dRV_enum X == bijection between the domain and the range of X    *)
+(*             pmf X r := fine (P (X @^-1` [set r]))                          *)
+(*        enum_prob X k == probability of the kth value in the range of X     *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*      bernoulli_pmf p == Bernoulli pmf                                      *)
+(*          bernoulli p == Bernoulli probability measure when 0 <= p <= 1     *)
+(*                         and \d_false otherwise                             *)
+(*     binomial_pmf n p == binomial pmf                                       *)
+(*    binomial_prob n p == binomial probability measure when 0 <= p <= 1      *)
+(*                         and \d_0%N otherwise                               *)
+(*       bin_prob n k p == $\binom{n}{k}p^k (1-p)^(n-k)$                      *)
+(*                         Computes a binomial distribution term for          *)
+(*                         k successes in n trials with success rate p        *)
+(*      uniform_pdf a b == uniform pdf                                        *)
+(*  uniform_prob a b ab == uniform probability over the interval [a,b]        *)
+(*                         with ab0 a proof that 0 < b - a                    *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -828,39 +843,6 @@ by rewrite /pmf fineK// fin_num_measure.
 Qed.
 
 End discrete_distribution.
-
-(* TODO: move *)
-Lemma onem_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
-  (p%:num <= 1 -> 0 <= `1-(p%:num))%R.
-Proof. by rewrite /onem/= subr_ge0. Qed.
-
-Definition onem_nonneg (R : numDomainType) (p : {nonneg R})
-   (p1 : (p%:num <= 1)%R) :=
-  NngNum (onem_nonneg_proof p1).
-
-Lemma nneseries_sum_bigcup {R : realType} (T : choiceType) (F : (set T)^nat)
-    (f : T -> \bar R) : trivIset [set: nat] F -> (forall i, 0 <= f i)%E ->
-  (\esum_(i in \bigcup_n F n) f i = \sum_(0 <= i <oo) (\esum_(j in F i) f j))%E.
-Proof.
-move=> tF f0; rewrite esum_bigcupT// nneseries_esum//; last first.
-  by move=> k _; exact: esum_ge0.
-by rewrite fun_true; apply: eq_esum => /= i _.
-Qed.
-
-Lemma measurable_fun_pow {R : realType} D (f : R -> R) n : measurable_fun D f ->
-  measurable_fun D (fun x => f x ^+ n).
-Proof.
-move=> mf.
-apply: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f) => //.
-Qed.
-
-Lemma measurable_natmul {R : realType} D n :
-  measurable_fun D ((@GRing.natmul R)^~ n).
-Proof.
-under eq_fun do rewrite -mulr_natr.
-by do 2 apply: measurable_funM => //.
-Qed.
-(* /TODO: move *)
 
 Section bernoulli_pmf.
 Context {R : realType} (p : R).
