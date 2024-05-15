@@ -1179,12 +1179,9 @@ rewrite is_max_approxRNE; apply: measurableI => /=.
                                        exact: measurable_approxRN_seq].
 rewrite [T in measurable T](_ : _ =
   \bigcap_(k in `I_j) [set x | g_ k x < g_ j x])//.
-have [->|j0] := eqVneq j 0%N; first by rewrite II0 bigcap_set0.
-apply: bigcap_measurable.
-  by exists j.-1 => /=; first by rewrite prednK// lt0n.
-move=> k _.
-rewrite -[X in measurable X]setTI; apply: emeasurable_fun_lt => //;
-exact: measurable_approxRN_seq.
+apply: bigcap_measurableType => k _.
+by rewrite -[X in measurable X]setTI; apply: emeasurable_fun_lt => //;
+  exact: measurable_approxRN_seq.
 Qed.
 
 End approxRN_seq.

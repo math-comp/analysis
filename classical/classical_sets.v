@@ -451,6 +451,10 @@ Notation "`] a , '+oo' [" :=
 Notation "`] -oo , '+oo' [" :=
   [set` Interval -oo%O +oo%O] : classical_set_scope.
 
+Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
+
+#[global] Hint Resolve nat_nonempty : core.
+
 Lemma preimage_itv T d (rT : porderType d) (f : T -> rT) (i : interval rT) (x : T) :
   ((f @^-1` [set` i]) x) = (f x \in i).
 Proof. by rewrite inE. Qed.

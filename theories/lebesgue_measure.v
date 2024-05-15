@@ -479,10 +479,6 @@ Qed.
 
 End puncture_ereal_itv.
 
-Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
-
-#[global] Hint Resolve nat_nonempty : core.
-
 Section salgebra_R_ssets.
 Variable R : realType.
 

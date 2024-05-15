@@ -33,6 +33,13 @@
 
 - in `normedtype.v`:
   + lemma `not_near_at_leftP`
+- in `classical_sets.v`:
+  + lemmas `setD_bigcup`, `nat_nonempty`
+  + hint `nat_nonempty`
+
+- in `measure.v`:
+  + structure `SigmaRing`, notation `sigmaRingType`
+  + lemma `bigcap_measurable` for `sigmaRingType`
 
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_ler`
@@ -86,6 +93,8 @@
 
 - in `measure.v`:
   + change the hypothesis of `measurable_fun_bool`
+  + mixin `AlgebraOfSets_isMeasurable` renamed to `hasCountableUnion`
+    and made to inherit from `SemiRingOfSets`
 
 ### Renamed
 
@@ -135,6 +144,8 @@
   + `num_lte_maxl` -> `num_gte_max`
   + `num_lte_minr` -> `num_lte_min`
   + `num_lte_minl` -> `num_gte_min`
+- in `measure.v`:
+  + `bigcap_measurable` -> `bigcap_measurableType`
 
 - in `lebesgue_integral.v`:
   + `integral_measure_add` -> `ge0_integral_measure_add`
@@ -165,6 +176,25 @@
 
 - in `probability.v`:
   + lemma `markov`
+- in `measure.v`:
+  + from `measurableType` to `sigmaRingType`
+    * lemmas `bigcup_measurable`, `bigcapT_measurable`
+	* definition `measurable_fun`
+	* lemmas `measurable_id`, `measurable_comp`, `eq_measurable_fun`, `measurable_cst`, `measurable_fun_bigcup`, `measurable_funU`, `measurable_funS`, `measurable_fun_if`
+	* lemmas `semi_sigma_additiveE`, `sigma_additive_is_additive`, `measure_sigma_additive`
+	* definitions `pushforward`, `dirac`
+	* lemmas `diracE`, `dirac0`, `diracT`, `finite_card_sum`, `finite_card_dirac`, `infinite_card_dirac`
+	
+- in `lebesgue_integral.v`:
+  + from `measurableType` to `sigmaRingType`
+    * mixin `isMeasurableFun` 
+    * structure `SimpleFun`
+	* structure `NonNegSimpleFun`
+	* sections `fimfun_bin`, `mfun_pred`, `sfun_pred`, `simple_bounded`
+	* lemmas `nnfun_muleindic_ge0`, `mulemu_ge0`, `nnsfun_mulemu_ge0`
+	* section `sintegral_lemmas`
+	* lemma `eq_sintegral`
+	* section `sintegralrM`
 
 ### Deprecated
 
