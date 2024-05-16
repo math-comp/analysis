@@ -42,6 +42,7 @@
   + factory `isSigmaRing`
   + lemma `bigcap_measurable` for `sigmaRingType`
   + lemma `setDI_semi_setD_closed`
+  + lemmas `monotone_class_powerset`, `monotone_class_smallest`, `sigmaRing_monotone`
 
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_ler`
@@ -98,6 +99,9 @@
   + mixin `AlgebraOfSets_isMeasurable` renamed to `hasCountableUnion`
   + mixin `AlgebraOfSets_isMeasurable` renamed to `hasMeasurableCountableUnion`
     and made to inherit from `SemiRingOfSets`
+
+- in `measure.v`:
+  + rm hypo and variable in lemma `smallest_monotone_classE`
 
 ### Renamed
 
@@ -213,6 +217,10 @@
 	* section `sintegral_lemmas`
 	* lemma `eq_sintegral`
 	* section `sintegralrM`
+
+- in `measure.v`:
+  + rm hypo in lemma `monotone_class_g_salgebra`
+  + rm hypo in lemma `monotone_class_subset`
 
 ### Deprecated
 
