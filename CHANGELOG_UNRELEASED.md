@@ -42,7 +42,7 @@
   + factory `isSigmaRing`
   + lemma `bigcap_measurable` for `sigmaRingType`
   + lemma `setDI_semi_setD_closed`
-  + lemmas `monotone_class_powerset`, `monotone_class_smallest`, `sigmaRing_monotone`
+  + lemmas `powerset_lambda_system`, `lambda_system_smallest`, `sigmaRingType_lambda_system`
 
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_ler`
@@ -102,6 +102,12 @@
 
 - in `measure.v`:
   + rm hypo and variable in lemma `smallest_monotone_classE`
+    and rename to `smallest_lambda_system`
+  + rm hypo in lemma `monotone_class_g_salgebra` and renamed
+    to `g_salgebra_lambda_system`
+  + rm hypo in lemma `monotone_class_subset` and renamed to
+    `lambda_system_subset`
+  + notation `<<m _, _>>` changed to `<<l _, _>>`
 
 ### Renamed
 
@@ -157,6 +163,12 @@
 - in `lebesgue_integral.v`:
   + `integral_measure_add` -> `ge0_integral_measure_add`
   + `integral_pushforward` -> `ge0_integral_pushforward`
+- in `measure.v`:
+  + `monotone_classP -> `lambda_system`
+  + `monotone_class_g_salgebra` -> `g_salgebra_lambda_system`
+  + `smallest_monotone_classE` -> `smallest_lambda_system`
+  + `dynkin_monotone` -> `dynkin_lambda_system`
+  + `dynkin_g_dynkin` -> `g_dynkin_dynkin`
 
 ### Generalized
 
@@ -217,10 +229,6 @@
 	* section `sintegral_lemmas`
 	* lemma `eq_sintegral`
 	* section `sintegralrM`
-
-- in `measure.v`:
-  + rm hypo in lemma `monotone_class_g_salgebra`
-  + rm hypo in lemma `monotone_class_subset`
 
 ### Deprecated
 

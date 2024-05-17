@@ -4639,7 +4639,7 @@ have CB : C `<=` B.
     have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_xsectionM.
     by rewrite mule0 notin_xsectionM// set0I measure0.
   exact/measurable_funeM/EFin_measurable_fun.
-suff monoB : monotone_class setT B by exact: monotone_class_subset.
+suff lsystemB : lambda_system setT B by exact: lambda_system_subset.
 split => //; [exact: CB| |exact: xsection_ndseq_closed].
 move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
 have -> : phi (X `\` Y) = (fun x => phi X x - phi Y x)%E.
@@ -4680,7 +4680,7 @@ have CB : C `<=` B.
     have [yX2|yX2] := boolP (y \in X2); first by rewrite mule1 in_ysectionM.
     by rewrite mule0 notin_ysectionM// set0I measure0.
   exact/measurable_funeM/EFin_measurable_fun.
-suff monoB : monotone_class setT B by exact: monotone_class_subset.
+suff lsystemB : lambda_system setT B by exact: lambda_system_subset.
 split => //; [exact: CB| |exact: ysection_ndseq_closed].
 move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
 rewrite (_ : psi _ = (psi X \- psi Y)%E); first exact: emeasurable_funB.
