@@ -331,6 +331,14 @@ rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
 by exists i => //; rewrite big_ord_recr /=; right.
 Qed.
 
+Lemma eq_bigcup_bigsetU F :
+  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
+Proof.
+apply/seteqP; split=> [x [i _]|x [i _ Fix]].
+  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
+by exists i => //; rewrite big_ord_recr/=; right.
+Qed.
+
 End seqD.
 
 (** Convergence of patched sequences *)
