@@ -1032,6 +1032,12 @@ Proof. by move=> *; rewrite setUC setUKD. Qed.
 Lemma setIDA A B C : A `&` (B `\` C) = (A `&` B) `\` C.
 Proof. by rewrite !setDE setIA. Qed.
 
+Lemma setIDAC A B C : (A `\` B) `&` C = A `&` C `\` B.
+Proof.
+apply/seteqP; split => [x [[Ax Bx] Cx]|x]; first by split.
+by move=> [[Ax Cx Bx]]; split.
+Qed.
+
 Lemma setDD A B : A `\` (A `\` B) = A `&` B.
 Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
@@ -1046,6 +1052,15 @@ Proof. by rewrite !setDE setCI setIUr. Qed.
 
 Lemma setUIDK A B : (A `&` B) `|` A `\` B = A.
 Proof. by rewrite setUC -setDDr setDv setD0. Qed.
+
+Lemma setDUD A B C : (A `|` B) `\` C = A `\` C `|` B `\` C.
+Proof.
+apply/seteqP; split => [x [[Ax|Bx] Cx]|x [[Ax]|[Bx] Cx]].
+- by left.
+- by right; split.
+- by split => //; left.
+- by split => //; right.
+Qed.
 
 Lemma setM0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.

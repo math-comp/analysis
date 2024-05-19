@@ -938,7 +938,7 @@ Qed.
 
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (D : set T) (f : T -> \bar R).
 Hypotheses (mD : measurable D) (mf : measurable_fun D f).
 Implicit Types y : \bar R.
@@ -1356,38 +1356,6 @@ Qed.
 
 End erealgeninftyo.
 End ErealGenInftyO.
-
-Section trace.
-Variable (T : Type).
-Implicit Types (G : set (set T)) (A D : set T).
-
-(* intended as a trace sigma-algebra *)
-Definition strace G D := [set x `&` D | x in G].
-
-Lemma stracexx G D : G D -> strace G D D.
-Proof. by rewrite /strace /=; exists D => //; rewrite setIid. Qed.
-
-Lemma sigma_algebra_strace G D :
-  sigma_algebra setT G -> sigma_algebra D (strace G D).
-Proof.
-move=> [G0 GC GU]; split; first by exists set0 => //; rewrite set0I.
-- move=> S [A mA ADS]; have mCA := GC _ mA.
-  have : strace G D (D `&` ~` A).
-    by rewrite setIC; exists (setT `\` A) => //; rewrite setTD.
-  rewrite -setDE => trDA.
-  have DADS : D `\` A = D `\` S by rewrite -ADS !setDE setCI setIUr setICr setU0.
-  by rewrite DADS in trDA.
-- move=> S mS; have /choice[M GM] : forall n, exists A, G A /\ S n = A `&` D.
-    by move=> n; have [A mA ADSn] := mS n; exists A.
-  exists (\bigcup_i (M i)); first by apply GU => i;  exact: (GM i).1.
-  by rewrite setI_bigcupl; apply eq_bigcupr => i _; rewrite (GM i).2.
-Qed.
-
-End trace.
-
-Lemma strace_measurable d (T : measurableType d) (A : set T) : measurable A ->
-  strace measurable A `<=` measurable.
-Proof. by move=> mA=> _ [C mC <-]; apply: measurableI. Qed.
 
 (* more properties of measurable functions *)
 

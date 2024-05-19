@@ -48,6 +48,11 @@
 
 - in `classical_sets.v`:
   + lemma `eq_bigcup_bigsetU`
+  + lemmas `setDUD`, `setIDAC`
+
+- in `measure.v`:
+  + lemmas `powerset_sigma_ring`, `g_sigma_ring_strace`, `setI_g_sigma_ring`,
+    `subset_strace`
 
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_ler`
@@ -113,6 +118,10 @@
   + rm hypo in lemma `monotone_class_subset` and renamed to
     `lambda_system_subset`
   + notation `<<m _, _>>` changed to `<<l _, _>>`
+
+- moved from `lebesgue_measure.v` to `measure.v`:
+  + definition `strace`
+  + lemma `sigma_algebra_strace`
 
 ### Renamed
 
@@ -218,7 +227,7 @@
 	* definition `ae_eq`
 	* lemmas `ae_eq0`, `ae_eq_comp`, `ae_eq_funeposneg`, `ae_eq_refl`, `ae_eq_sym`,
 	  `ae_eq_trans`, `ae_eq_sub`, `ae_eq_mul2r`, `ae_eq_mul2l`, `ae_eq_mul1l`,
-	  `ae_eq_abse`
+	  `ae_eq_abse`, `ae_eq_subset`
   + from `measurableType` to `sigmaRingType` and from `realType` to `realFieldType`
 	* definition `mzero`
   + from `realType` to `realFieldType`:
@@ -234,6 +243,10 @@
 	* section `sintegral_lemmas`
 	* lemma `eq_sintegral`
 	* section `sintegralrM`
+
+- in `lebesgue_measure.v`:
+  + from `measurableType` to `sigmaRingType`
+    * section `measurable_fun_measurable`
 
 ### Deprecated
 
@@ -259,6 +272,8 @@
 
 - in `reals.v`
   + lemma `inf_lower_bound` (use `inf_lb` instead)
+- in `lebesgue_measure.v`:
+  + lemmas `stracexx`, `strace_measurable`
 
 ### Infrastructure
 
