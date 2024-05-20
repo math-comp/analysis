@@ -7,6 +7,23 @@
 - in `topology.v`:
   + lemma `ball_subspace_ball`
 
+- in `classical_sets.v`:
+  + lemma `setDU`
+
+- in `measure.v`:
+  + definition `completed_measure_extension`
+  + lemma `completed_measure_extension_sigma_finite`
+
+- in `lebesgue_stieltjes_measure.v`:
+  + definition `completed_lebesgue_stieltjes_measure`
+
+- in `lebesgue_measure.v`:
+  + definition `completed_lebesgue_measure`
+  + lemma `completed_lebesgue_measure_is_complete`
+  + definition `completed_algebra_gen`
+  + lemmas `completed_salgebra_lebesgue_measure`, `negligible_sub_caratheodory`,
+    `completed_caratheodory_measurable`
+
 ### Changed
 
 - in `topology.v`:

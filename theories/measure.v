@@ -250,6 +250,8 @@ From HB Require Import structures.
 (*                            sets to a measure over the generated            *)
 (*                            sigma algebra (requires a proof of              *)
 (*                            sigma-sub-additivity)                           *)
+(* completed_measure_extension mu == similar to measure_extension but returns *)
+(*                            a complete measure                              *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Product of measurable spaces                                            *)
@@ -4812,6 +4814,45 @@ Lemma caratheodory_measurable_mu_ext d (R : realType) (T : semiRingOfSetsType d)
 Proof.
 by move=> Am; apply: sub_caratheodory => //; apply: sub_sigma_algebra.
 Qed.
+
+Section completed_measure_extension.
+Local Open Scope ereal_scope.
+Context d (T : semiRingOfSetsType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+Notation rT := (SetRing.type T).
+Let Rmu : set rT -> \bar R := SetRing.measure mu.
+
+Let I := [the measurableType _ of caratheodory_type (mu^*)%mu].
+
+Definition completed_measure_extension : set I -> \bar R := (mu^*)%mu.
+
+Let measure0 : completed_measure_extension set0 = 0.
+Proof. exact: mu_ext0. Qed.
+
+Let measure_ge0 (A : set I) : 0 <= completed_measure_extension A.
+Proof. exact: mu_ext_ge0. Qed.
+
+Let measure_semi_sigma_additive :
+  semi_sigma_additive completed_measure_extension.
+Proof.
+move=> F mF tF mUF; rewrite /completed_measure_extension.
+exact: caratheodory_measure_sigma_additive.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ completed_measure_extension
+  measure0 measure_ge0 measure_semi_sigma_additive.
+
+Lemma completed_measure_extension_sigma_finite : @sigma_finite _ T _ setT mu ->
+  @sigma_finite _ _ _ setT completed_measure_extension.
+Proof.
+move=> -[S setTS mS]; exists S => //; move=> i; split.
+- apply: sub_caratheodory; apply: sub_sigma_algebra.
+  exact: (mS i).1.
+- by rewrite /completed_measure_extension /= measurable_mu_extE //;
+    [exact: (mS i).2 | exact: (mS i).1].
+Qed.
+
+End completed_measure_extension.
 
 Definition preimage_classes d1 d2
     (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2) (T : Type)
