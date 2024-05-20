@@ -1467,7 +1467,7 @@ have muAP_gt0 : 0 < mu AP.
 pose h x := if x \in AP then f x + (epsRN mA abs)%:num%:E else f x.
 have mh : measurable_fun setT h.
   apply: measurable_fun_if => //.
-  - by apply: (measurable_fun_bool true); rewrite preimage_mem_true.
+  - by apply: (measurable_fun_bool true); rewrite setTI preimage_mem_true.
   - by apply: measurable_funTS; apply: emeasurable_funD => //; exact: mf.
   - by apply: measurable_funTS; exact: mf.
 have hge0 x : 0 <= h x.
@@ -1559,7 +1559,7 @@ pose f_ j x := if x \in E j then g_ j x else 0.
 have f_ge0 k x : 0 <= f_ k x by rewrite /f_; case: ifP.
 have mf_ k : measurable_fun setT (f_ k).
   apply: measurable_fun_if => //.
-  - by apply: (measurable_fun_bool true); rewrite preimage_mem_true.
+  - by apply: (measurable_fun_bool true); rewrite setTI preimage_mem_true.
   - rewrite preimage_mem_true.
     by apply: measurable_funTS => //; have /integrableP[] := ig_ k.
 have if_T k : integrable mu setT (f_ k).

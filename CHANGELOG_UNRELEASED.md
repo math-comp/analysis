@@ -38,7 +38,7 @@
   + lemma `measurable_fun_ler`
 
 - in `measure.v`:
-  + lemmas `measurable_fun_TF`, `measurable_and`
+  + lemma `measurable_and`
 
 - in `signed.v`:
   + lemma `onem_nonneg_proof`, definition `onem_nonneg`
@@ -65,6 +65,9 @@
   + definition `uniform_prob` (equipped with the `probability` structure)
   + lemmas `dominates_uniform_prob`, `integral_uniform`
 
+- in `measure.v`:
+  + lemma `measurableID`
+
 ### Changed
 
 - in `forms.v`:
@@ -74,6 +77,9 @@
   + definitions `sin`, `cos`, `acos`, `asin`, `atan` are now HB.locked
 - in `sequences.v`:
   + definition `expR` is now HB.locked
+
+- in `measure.v`:
+  + change the hypothesis of `measurable_fun_bool`
 
 ### Renamed
 

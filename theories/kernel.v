@@ -784,8 +784,8 @@ apply: measurable_fun_if => //.
 - apply: (measurable_fun_bool true) => //.
   rewrite (_ : _ @^-1` _ = [set t | k t setT == 0] `|`
                            [set t | k t setT == +oo]); last first.
-    by apply/seteqP; split=> x /= /orP//.
-  by apply: measurableU; exact: kernel_measurable_eq_cst.
+    by apply/seteqP; split=> x /= /orP.
+  by rewrite setTI; apply: measurableU; exact: kernel_measurable_eq_cst.
 - apply/emeasurable_funM; first exact/measurable_funTS/measurable_kernel.
   apply/EFin_measurable_fun; rewrite setTI.
   apply: (@measurable_comp _ _ _ _ _ _ [set r : R | r != 0%R]).
