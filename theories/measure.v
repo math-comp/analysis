@@ -208,8 +208,7 @@ From HB Require Import structures.
 (* ## Other measure-theoretic definitions                                     *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*      measurable_fun D f == the measurable function f with domain D is      *)
-(*                            measurable                                      *)
+(*      measurable_fun D f == the function f with domain D is measurable      *)
 (*    preimage_class D f G == class of the preimages by f of sets in G        *)
 (*       image_class D f G == class of the sets with a preimage by f in G     *)
 (*    sigma_subadditive mu == predicate defining sigma-subadditivity          *)
@@ -1347,7 +1346,7 @@ Let discrete_measurableC X :
 Proof. by []. Qed.
 
 Let discrete_measurableU (F : (set unit)^nat) :
-    (forall i, discrete_measurable_unit (F i)) ->
+  (forall i, discrete_measurable_unit (F i)) ->
   discrete_measurable_unit (\bigcup_i F i).
 Proof. by []. Qed.
 

@@ -178,7 +178,7 @@
   + `integral_measure_add` -> `ge0_integral_measure_add`
   + `integral_pushforward` -> `ge0_integral_pushforward`
 - in `measure.v`:
-  + `monotone_classP -> `lambda_system`
+  + `monotone_classP` -> `lambda_system`
   + `monotone_class_g_salgebra` -> `g_salgebra_lambda_system`
   + `smallest_monotone_classE` -> `smallest_lambda_system`
   + `dynkin_monotone` -> `dynkin_lambda_system`
@@ -213,7 +213,8 @@
   + from `measurableType` to `sigmaRingType`
     * lemmas `bigcup_measurable`, `bigcapT_measurable`
 	* definition `measurable_fun`
-	* lemmas `measurable_id`, `measurable_comp`, `eq_measurable_fun`, `measurable_cst`, `measurable_fun_bigcup`, `measurable_funU`, `measurable_funS`, `measurable_fun_if`
+	* lemmas `measurable_id`, `measurable_comp`, `eq_measurable_fun`, `measurable_cst`,
+	  `measurable_fun_bigcup`, `measurable_funU`, `measurable_funS`, `measurable_fun_if`
 	* lemmas `semi_sigma_additiveE`, `sigma_additive_is_additive`, `measure_sigma_additive`
 	* definitions `pushforward`, `dirac`
 	* lemmas `diracE`, `dirac0`, `diracT`, `finite_card_sum`, `finite_card_dirac`, `infinite_card_dirac`
