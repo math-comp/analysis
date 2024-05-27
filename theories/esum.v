@@ -451,6 +451,15 @@ End esum_bigcup.
 Arguments esum_bigcupT {R T K} J a.
 Arguments esum_bigcup {R T K} J a.
 
+Lemma nneseries_sum_bigcup {R : realType} (T : choiceType) (F : (set T)^nat)
+    (f : T -> \bar R) : trivIset [set: nat] F -> (forall i, 0 <= f i)%E ->
+  (\esum_(i in \bigcup_n F n) f i = \sum_(0 <= i <oo) (\esum_(j in F i) f j))%E.
+Proof.
+move=> tF f0; rewrite esum_bigcupT// nneseries_esum//; last first.
+  by move=> k _; exact: esum_ge0.
+by rewrite fun_true; apply: eq_esum => /= i _.
+Qed.
+
 Definition summable (T : choiceType) (R : realType) (D : set T)
   (f : T -> \bar R) := (\esum_(x in D) `| f x | < +oo)%E.
 

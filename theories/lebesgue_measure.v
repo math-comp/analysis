@@ -1566,15 +1566,17 @@ Qed.
 Lemma measurable_fun_ltr D f g : measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (fun x => f x < g x).
 Proof.
-move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
-- under eq_fun do rewrite -subr_gt0.
-  rewrite preimage_true -preimage_itv_o_infty.
-  by apply: (measurable_funB mg mf) => //; exact: measurable_itv.
-- under eq_fun do rewrite ltNge -subr_ge0.
-  rewrite preimage_false set_predC setCK -preimage_itv_c_infty.
-  by apply: (measurable_funB mf mg) => //; exact: measurable_itv.
-- by rewrite preimage_set0 setI0.
-- by rewrite preimage_setT setIT.
+move=> mf mg mD; apply: (measurable_fun_bool true) => //.
+under eq_fun do rewrite -subr_gt0.
+by rewrite preimage_true -preimage_itv_o_infty; exact: measurable_funB.
+Qed.
+
+Lemma measurable_fun_ler D f g : measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x <= g x).
+Proof.
+move=> mf mg mD; apply: (measurable_fun_bool true) => //.
+under eq_fun do rewrite -subr_ge0.
+by rewrite preimage_true -preimage_itv_c_infty; exact: measurable_funB.
 Qed.
 
 Lemma measurable_maxr D f g :
@@ -1672,11 +1674,26 @@ Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
 #[global] Hint Extern 0 (measurable_fun _ expR) =>
   solve [apply: measurable_expR] : core.
 
+Lemma measurable_natmul {R : realType} D n :
+  measurable_fun D ((@GRing.natmul R)^~ n).
+Proof.
+under eq_fun do rewrite -mulr_natr.
+by do 2 apply: measurable_funM => //.
+Qed.
+
+Lemma measurable_fun_pow {R : realType} D (f : R -> R) n : measurable_fun D f ->
+  measurable_fun D (fun x => f x ^+ n).
+Proof.
+move=> mf.
+exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
+Qed.
+
 Lemma measurable_powR (R : realType) p :
   measurable_fun [set: R] (@powR R ^~ p).
 Proof.
 apply: measurable_fun_if => //.
-- apply: (measurable_fun_bool true); rewrite (_ : _ @^-1` _ = [set 0])//.
+- apply: (measurable_fun_bool true).
+  rewrite (_ : _ @^-1` _ = [set 0]) ?setTI//.
   by apply/seteqP; split => [_ /eqP ->//|_ -> /=]; rewrite eqxx.
 - rewrite setTI; apply: measurableT_comp => //.
   rewrite (_ : _ @^-1` _ = [set~ 0]); first exact: measurableT_comp.
@@ -1760,9 +1777,7 @@ move=> mf;rewrite (_ : er_map _ =
   fun x => if x \is a fin_num then (f (fine x))%:E else x); last first.
   by apply: funext=> -[].
 apply: measurable_fun_ifT => //=.
-+ apply: (measurable_fun_bool true).
-  rewrite /preimage/= -[X in measurable X]setTI.
-  exact/emeasurable_fin_num.
++ by apply: (measurable_fun_bool true); exact/emeasurable_fin_num.
 + exact/EFin_measurable_fun/measurableT_comp.
 Qed.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_er_map`")]
@@ -1779,7 +1794,7 @@ Lemma measurable_fun_einfs D (f : (T -> \bar R)^nat) :
 Proof.
 move=> mf n mD.
 apply: (measurability (ErealGenCInfty.measurableE R)) => //.
-move=> _ [_ [x ->] <-]; rewrite einfs_preimage -bigcapIr; last by exists n => /=.
+move=> _ [_ [x ->] <-]; rewrite einfs_preimage -bigcapIr; last by exists n =>/=.
 by apply: bigcap_measurable => ? ?; exact/mf/emeasurable_itv.
 Qed.
 

@@ -1225,4 +1225,10 @@ Lemma onemX_NngNum r (r1 : r <= 1) (r0 : 0 <= r) n :
   `1-(r ^+ n) = (NngNum (onemX_ge0 n r0 r1))%:num.
 Proof. by []. Qed.
 
+Lemma onem_nonneg_proof (p : {nonneg R}) : p%:num <= 1 -> 0 <= `1-(p%:num).
+Proof. by rewrite /onem/= subr_ge0. Qed.
+
+Definition onem_nonneg (p : {nonneg R}) (p1 : p%:num <= 1) :=
+  NngNum (onem_nonneg_proof p1).
+
 End onem_signed.

@@ -920,6 +920,13 @@ rewrite -bigsetI_fset_set// big_seq; apply: bigsetI_measurable => i.
 by rewrite in_fset_set ?inE// => *; apply: Fm.
 Qed.
 
+Lemma measurableID A B : measurable A -> measurable (A `&` B) ->
+  measurable (A `\` B).
+Proof.
+move=> mA /measurableC; rewrite setCI => /(measurableI A) => /(_ mA).
+by rewrite setIUr setICr set0U.
+Qed.
+
 End algebraofsets_lemmas.
 
 Section measurable_lemmas.
@@ -1160,21 +1167,44 @@ by move=> mx my; apply: measurable_fun_if => //;
   [exact: measurable_funS mx|exact: measurable_funS my].
 Qed.
 
-Lemma measurable_fun_bool D (f : T1 -> bool) b :
-  measurable (f @^-1` [set b]) -> measurable_fun D f.
+Section measurable_fun_bool.
+
+Let measurable_fun_TF D (f : T1 -> bool) :
+  measurable (D `&` f @^-1` [set true]) ->
+  measurable (D `&` f @^-1` [set false]) ->
+  measurable_fun D f.
 Proof.
-have FNT : [set false] = [set~ true] by apply/seteqP; split => -[]//=.
-wlog {b}-> : b / b = true.
-  case: b => [|h]; first exact.
-  by rewrite FNT -preimage_setC => /measurableC; rewrite setCK; exact: h.
-move=> mfT mD /= Y; have := @subsetT _ Y; rewrite setT_bool => YT.
-have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
+move=> mT mF mD /= Y mY.
+have := @subsetT _ Y; rewrite setT_bool => YT.
+move: mY; have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
 - by rewrite preimage0 ?setI0.
-- by apply: measurableI => //; exact: mfT.
-- rewrite -[X in measurable X]setCK; apply: measurableC; rewrite setCI.
-  apply: measurableU; first exact: measurableC.
-  by rewrite FNT preimage_setC setCK; exact: mfT.
+- exact: mT.
+- exact: mF.
 - by rewrite -setT_bool preimage_setT setIT.
+Qed.
+
+Lemma measurable_fun_bool D (f : T1 -> bool) b :
+  measurable (D `&` f @^-1` [set b]) -> measurable_fun D f.
+Proof.
+move=> mb mD; have mDb : measurable (D `&` f @^-1` [set ~~ b]).
+  rewrite (_ : [set ~~ b] = [set~ b]); last first.
+    by apply/seteqP; split=> -[] /=; case: b {mb}.
+  by rewrite -preimage_setC; exact: measurableID.
+by case: b => /= in mb mDb *; exact: measurable_fun_TF.
+Qed.
+
+End measurable_fun_bool.
+Arguments measurable_fun_bool {D f} _.
+
+Lemma measurable_and D (f : T1 -> bool) (g : T1 -> bool) :
+  measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x && g x).
+Proof.
+move=> mf mg mD; apply: (measurable_fun_bool true) => //.
+- rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set true] `&`
+                                      (D `&` g @^-1` [set true])); last first.
+    by rewrite setIACA setIid; congr (_ `&` _); apply/seteqP; split => x /andP.
+  by apply: measurableI; [exact: mf|exact: mg].
 Qed.
 
 End measurable_fun.
