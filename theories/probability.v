@@ -2158,6 +2158,7 @@ rewrite -[LHS]fineK; last first.
   rewrite /mmt_gen_fun unlock /expectation.
   apply: integral_fune_fin_num => //.
   admit.
+(* TODO(ale) *)
 (*rewrite bX2 big_seq.
 apply: congr1.
 under eq_bigr => Xi XiX do rewrite (bernoulli_mmt_gen_fun _ (bX1 _ _))//=.*)
