@@ -47,8 +47,9 @@ Section Lfun_canonical.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : R).
 
-Canonical Lfun_eqType := EqType (LfunType mu p) gen_eqMixin.
-Canonical Lfun_choiceType := ChoiceType (LfunType mu p) gen_choiceMixin.
+HB.instance Definition _ := gen_eqMixin (LfunType mu p).
+HB.instance Definition _ := gen_choiceMixin (LfunType mu p).
+
 End Lfun_canonical.
 
 Section Lequiv.
@@ -59,18 +60,17 @@ Definition Lequiv (f g : LfunType mu p) := `[< {ae mu, forall x, f x = g x} >].
 
 Let Lequiv_refl : reflexive Lequiv.
 Proof.
-by move=> f; exact/asboolP/(ae_imply _ (ae_eq_refl mu setT (EFin \o f))).
+by move=> f; exact/asboolP/(filterS _ (ae_eq_refl mu setT (EFin \o f))).
 Qed.
 
 Let Lequiv_sym : symmetric Lequiv.
 Proof.
-by move=> f g; apply/idP/idP => /asboolP h; apply/asboolP; exact: ae_imply h.
+by move=> f g; apply/idP/idP => /asboolP h; apply/asboolP; exact: filterS h.
 Qed.
 
 Let Lequiv_trans : transitive Lequiv.
 Proof.
-move=> f g h /asboolP gf /asboolP fh; apply/asboolP/(ae_imply2 _ gf fh).
-by move=> x ->.
+by move=> f g h /asboolP gf /asboolP fh; apply/asboolP/(filterS2 _ _ gf fh) => x ->.
 Qed.
 
 Canonical Lequiv_canonical :=
@@ -103,10 +103,10 @@ Arguments Lspace : clear implicits.
 
 Lemma LType1_integrable (f : LType mu 1) : mu.-integrable setT (EFin \o f).
 Proof.
-split; first exact/EFin_measurable_fun.
+apply/integrableP; split; first exact/EFin_measurable_fun.
 under eq_integral.
   move=> x _ /=.
-  rewrite -(@powere_pose1 _ `|f x|%:E)//.
+  rewrite -(@poweRe1 _ `|f x|%:E)//.
   over.
 exact: lfuny f.
 Qed.
@@ -114,15 +114,19 @@ Qed.
 Lemma LType2_integrable_sqr (f : LType mu 2) :
   mu.-integrable [set: T] (EFin \o (fun x => f x ^+ 2)).
 Proof.
-split; first exact/EFin_measurable_fun/measurable_fun_exprn.
+apply/integrableP; split.
+
+apply/EFin_measurable_fun.
+exact: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f) => //.
 rewrite (le_lt_trans _ (lfuny f))// ge0_le_integral//.
-- apply: measurable_funT_comp => //.
-  exact/EFin_measurable_fun/measurable_fun_exprn.
-- by move=> x _; rewrite lee_fin power_pos_ge0.
+- apply: measurableT_comp => //.
+  apply/EFin_measurable_fun.
+  exact: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f) => //.
+- by move=> x _; rewrite lee_fin powR_ge0.
 - apply/EFin_measurable_fun.
-  under eq_fun do rewrite power_pos_mulrn//.
-  exact/measurable_fun_exprn/measurable_funT_comp.
-- by move=> t _/=; rewrite lee_fin normrX power_pos_mulrn.
+  apply: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x `^ 2)%R) => //.
+  exact: measurableT_comp.
+- by move=> t _/=; rewrite lee_fin normrX powR_mulrn.
 Qed.
 
 End Lspace.
