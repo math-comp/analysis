@@ -130,6 +130,10 @@
   + `num_lte_minr` -> `num_lte_min`
   + `num_lte_minl` -> `num_gte_min`
 
+- in `lebesgue_integral.v`:
+  + `integral_measure_add` -> `ge0_integral_measure_add`
+  + `integral_pushforward` -> `ge0_integral_pushforward`
+
 ### Generalized
 
 - in `constructive_ereal.v`:
@@ -149,6 +153,9 @@
 
 - in `lebesgue_integral.v`:
   + lemma `ge0_emeasurable_fun_sum`
+
+- in `probability.v`:
+  + lemma `markov`
 
 ### Deprecated
 

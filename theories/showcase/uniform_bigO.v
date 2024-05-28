@@ -50,7 +50,7 @@ Lemma ler_norm2 (x : normedR2) :
 Proof.
 rewrite RsqrtE; last by rewrite addr_ge0 //; apply/RleP/Rle_0_sqr.
 rewrite !Rsqr_pow2 !RpowE; apply/andP; split.
-  by rewrite le_maxl; apply/andP; split;
+  by rewrite ge_max; apply/andP; split;
     rewrite -[`|_|]sqrtr_sqr ler_wsqrtr // (lerDl, lerDr) sqr_ge0.
 wlog lex12 : x / (`|x.1| <= `|x.2|).
   move=> ler_norm; case: (lerP `|x.1| `|x.2|) => [/ler_norm|] //.
@@ -95,18 +95,18 @@ apply/eqOP; near=> k; near=> x; apply: le_trans (fOg _ _ _ _) _; last 2 first.
 - near: x; exists (setT, ball (0 : R^o * R^o) a%:num).
     by split=> //=; rewrite /within /=; near=> x =>_; near: x; apply: nbhsx_ballx.
   move=> x [_ [/=]]; rewrite -ball_normE /= distrC subr0 distrC subr0.
-  by move=> ??; rewrite lt_maxl; apply/andP.
+  by move=> ? ?; rewrite gt_max; apply/andP.
 Unshelve. all: by end_near. Qed.
 
 Lemma OuO_to_P f g : OuO f g -> OuP f g.
 Proof.
 move=> fOg; apply/Ouex_to_P; move: fOg => /eqOP [k [kreal hk]].
-have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite lt_maxr ltrDl orbC ltr01.
+have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite lt_max ltrDl orbC ltr01.
 move=> [R [[_/posnumP[e1] Re1] [_/posnumP[e2] Re2]] sRQ] fOg.
 exists (minr e1%:num e2%:num) => //.
-exists (maxr 1 (k + 1)); first by rewrite lt_maxr ltr01.
+exists (maxr 1 (k + 1)); first by rewrite lt_max ltr01.
 move=> x dx dxe Pdx; apply: (fOg (x, dx)); split=> //=.
-move: dxe; rewrite lt_maxl !lt_minr => /andP[/andP [dxe11 _] /andP [_ dxe22]].
+move: dxe; rewrite gt_max !lt_min => /andP[/andP [dxe11 _] /andP [_ dxe22]].
 by apply/sRQ => //; split; [apply/Re1|apply/Re2]; rewrite /= distrC subr0.
 Qed.
 
