@@ -1461,6 +1461,78 @@ Definition independent_RV (I : choiceType) (X : I -> {RV P >-> R}) :=
 Definition independent_RV_tuple n (X : n.-tuple {RV P >-> R}) :=
   independent_class P (fun i => generated_salgebra (X `_ i)).
 
+Lemma independent_RV_tuple_thead_prod_behead n (X : n.+1.-tuple {RV P >-> R}) :
+  independent_RV_tuple X ->
+  independent_RV_tuple [tuple thead X; (\prod_(j <- behead X) j)%R].
+Proof.
+move: X; elim: n => [X [h1 h2]|].
+  have -> : behead X = nil. admit.
+  rewrite big_nil.
+  rewrite /independent_RV_tuple/independent_class/=.
+  split.
+    case => //=.
+      by move: (h1 0); rewrite {1}(tuple_eta X).
+    case => //=.
+      rewrite /generated_salgebra /preimage_class.
+      admit.
+    case => /= [|_].
+      admit.
+    admit.
+  admit.
+(*rewrite /independent_RV_tuple/independent_class/= => [[h1 h2]].
+split.
+  admit.
+move=> J E h3.
+rewrite h2// => i iJ.
+have := h3 i iJ.
+move: iJ.
+case: i => [//|i _].*)
+Admitted.
+
+Lemma independent_RV_tuple_behead n (X : n.-tuple {RV P >-> R}) :
+  independent_RV_tuple X -> independent_RV_tuple [tuple of behead X].
+Proof.
+move: X; case: n => [X|n X].
+  by rewrite tuple0.
+rewrite /independent_RV_tuple/independent_class/=.
+move=> [iXm iX].
+split; first by move=> i; rewrite nth_behead; exact: iXm.
+move=> J E h.
+pose E' n := match n with
+               0 => setT
+             | S m => E m
+             end.
+have := (@iX (0 |` [fset i.+1 | i in J])%fset E').
+have ? : 0 \notin [fset i.+1 | i in J]%fset.
+  apply/negP.
+  move/imfsetP.
+  by case.
+rewrite big_fsetU1//=.
+rewrite setTI big_fsetU1//=.
+rewrite probability_setT mul1e.
+rewrite big_imfset/=; last first.
+  move=> x y _ _; exact: succn_inj.
+move=> ->; last first.
+  elim.
+    move=> _.
+    rewrite/generated_salgebra/preimage_class.
+    (* TODO: make lemma *)
+    rewrite inE/=.
+    exists setT => //.
+    by rewrite setTI preimage_setT.
+  rewrite /E' => l _ h1.
+  have := (h l).
+  rewrite /generated_salgebra.
+  rewrite nth_behead => -> //.
+  move: h1.
+  move/fset1UP => []//.
+  move/imfsetP.
+  case => k/= kJ.
+  by case => ->.
+rewrite big_imfset//=.
+move=> x y _ _; exact: succn_inj.
+Qed.
+
 End independent_RV.
 
 Lemma indic_setI {R : ringType} T (A B : set T) :
@@ -1672,10 +1744,10 @@ rewrite XE !big_cons.
 rewrite independent_RVs_expectation2//; last 3 first.
   admit.
   admit.
-  admit.
+  exact: independent_RV_tuple_thead_prod_behead.
 congr *%E.
 apply: (ih [tuple of behead X]).
-admit.
+exact: independent_RV_tuple_behead.
 Admitted.
 
 End independent_product.
