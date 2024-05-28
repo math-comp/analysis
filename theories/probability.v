@@ -1475,6 +1475,22 @@ Proof.
 move=> XY.
 Admitted.
 
+Lemma independent_RVs_expectation n (X : n.-tuple {RV P >-> R}) :
+  independent_RV_tuple X -> 'E_P[\prod_(Xi <- X) Xi] = \prod_(Xi <- X) 'E_P[Xi].
+Proof.
+elim: n X => [|n ih X iX].
+  move=> X _.
+  have -> : X = nil by exact/tuple0.
+  by rewrite !big_nil expectation_cst.
+have XE := tuple_eta X.
+rewrite XE !big_cons.
+rewrite independent_RVs_expectation2//; last first.
+  admit.
+congr *%E.
+apply: (ih [tuple of behead X]).
+admit.
+Admitted.
+
 End independent_product.
 
 Require Import real_interval.
@@ -1743,11 +1759,6 @@ have b2 := bernoulli_sqr b.
 rewrite (bernoulli_expectation b2) /=.
 by rewrite -EFinD mulrDr mulr1 mulrN.
 Qed.
-
-Lemma independent_RVs_expectation n (X : n.-tuple {RV P >-> R}) :
-  independent_RV_tuple X -> 'E_P[\prod_(Xi <- X) Xi] = \prod_(Xi <- X) 'E_P[Xi].
-Proof.
-Admitted.
 
 (*
 Definition independent_RVs (X : seq {RV P >-> R}) := forall t,
