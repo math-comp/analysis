@@ -1463,16 +1463,201 @@ Definition independent_RV_tuple n (X : n.-tuple {RV P >-> R}) :=
 
 End independent_RV.
 
+Lemma indic_setI {R : ringType} T (A B : set T) :
+  \1_A \* \1_B = \1_(A `&` B) :> (T -> R).
+Proof.
+by apply/funext => x/=; rewrite /indic in_setI/= -natrM mulnb.
+Qed.
+
+Lemma preimage_class_mindic {R : realType} d {T : measurableType d}
+    (A : set T) (mA : measurable A) :
+  preimage_class [set: T] (mindic R mA) measurable A.
+Proof.
+exists [set 1%R] => //; rewrite setTI preimage_indic/=.
+by rewrite mem_set// memNset//=; apply/eqP; rewrite eq_sym oner_eq0.
+Qed.
+
+(* TODO: move near nnfun_muleindic_ge0 *)
+Section nnfun_mulrindic_ge0.
+
+Let mulrf_ge0 (R : realDomainType) x (f : R -> R) :
+  0 <= f x -> (x < 0 -> f x = 0) -> 0 <= x * f x.
+Proof.
+move=> A0 xA /=; have [x0|x0] := ltP x 0%R; first by rewrite (xA x0) mulr0.
+by rewrite mulr_ge0.
+Qed.
+
+Lemma nnfun_mulrindic_ge0 d (T : measurableType d) (R : realDomainType)
+  (f : {nnfun T >-> R}) r z : (0 <= r * (\1_(f @^-1` [set r]) z))%R.
+Proof.
+apply: (@mulrf_ge0 _ _ (fun r => \1_(f @^-1` [set r]) z)).
+  by rewrite indicE.
+by move=> r0; rewrite preimage_nnfun0// indic0.
+Qed.
+
+End nnfun_mulrindic_ge0.
+
 Section independent_product.
 Context {R : realType} d {T : measurableType d}.
 Variable P : probability T R.
 Local Open Scope ereal_scope.
 
+Let independent_RVs_expectation2_prob (A B : set T)
+  (mA : measurable A) (mB : measurable B) :
+  independent_RV_tuple [tuple of [:: mindic R mA : {RV P >-> R};
+                                     mindic R mB : {RV P >-> R}]] ->
+  P (A `&` B) = P A * P B.
+Proof.
+move=> AB.
+pose O1 := [fset 0; 1]%N%fset.
+pose funO1 := [eta fun=> set0 with 0 |-> A, 1 |-> B]%N.
+have : forall i : nat, i \in O1 ->
+    funO1 i \in @generated_salgebra _ _ _ P [:: mindic R mA : {RV P >-> R} ;
+                                                mindic R mB : {RV P >-> R}]`_i.
+  move=> [|[|?]]; rewrite /O1 ?inE//= => _.
+  + by rewrite /generated_salgebra; exact: preimage_class_mindic.
+  + by rewrite /generated_salgebra; exact: preimage_class_mindic.
+move/AB.2.
+by rewrite /O1 !big_fsetU1/= ?inE// !big_seq_fset1/=.
+Qed.
+
+Let independent_RVs_expectation2_indic (A B : set T)
+  (mA : measurable A) (mB : measurable B) :
+  independent_RV_tuple [tuple of [:: mindic R mA : {RV P >-> R};
+                                     mindic R mB : {RV P >-> R}]] ->
+  'E_P[\1_A * \1_B] = 'E_P[\1_A] * 'E_P[\1_B].
+Proof.
+move=> AB.
+transitivity ('E_P[\1_(A `&` B)]).
+  by rewrite -indic_setI.
+rewrite !expectation_indic//; last exact: measurableI.
+exact: independent_RVs_expectation2_prob.
+Qed.
+
+Let independent_RVs_expectation2_nnsfun (f g : {nnsfun T >-> R}) :
+  independent_RV_tuple [tuple of [:: f : {RV P >-> R} ;
+                                     g : {RV P >-> R}]] ->
+  'E_P[f \* g] = 'E_P[f] * 'E_P[g].
+Proof.
+move=> fg.
+rewrite [in RHS]unlock.
+under [X in _ = X * _]eq_integral do rewrite (fimfunE f) -fsumEFin//.
+under [X in _ = _ * X]eq_integral do rewrite (fimfunE g) -fsumEFin//.
+rewrite ge0_integral_fsum//; last 2 first.
+  by move=> n; apply/measurableT_comp => //; exact/measurable_funM.
+  by move=> n x _/=; rewrite lee_fin//=; exact: nnfun_mulrindic_ge0.
+rewrite ge0_integral_fsum//; last 2 first.
+  by move=> n; apply/measurableT_comp => //; exact/measurable_funM.
+  by move=> n x _/=; rewrite lee_fin//=; exact: nnfun_mulrindic_ge0.
+under [in X in _ = X * _]eq_fsbigr.
+  move=> x xf.
+  rewrite (integralZl_indic measurableT (fun k => f @^-1` [set x]))//; last first.
+    exact: preimage_nnfun0.
+  rewrite integral_indic// setIT.
+  over.
+rewrite /=.
+under [in X in _ = _ * X]eq_fsbigr.
+  move=> x xf.
+  rewrite (integralZl_indic measurableT (fun k => g @^-1` [set x]))//; last first.
+    exact: preimage_nnfun0.
+  rewrite integral_indic// setIT.
+  over.
+rewrite /=.
+rewrite !fsbig_finite//=.
+rewrite ge0_sume_distrl; last by move=> r _; rewrite nnsfun_mulemu_ge0.
+under eq_bigr.
+  move=> r _.
+  rewrite ge0_sume_distrr; last by move=> s _; rewrite nnsfun_mulemu_ge0.
+  under eq_bigr do rewrite muleACA.
+  over.
+rewrite /=.
+transitivity (
+  (\sum_(i <- fset_set (range f))
+      \sum_(i0 <- fset_set (range g))
+         (i%:E * i0%:E * (P (f @^-1` [set i] `&` g @^-1` [set i0])))%E)%R
+); last first.
+  rewrite big_seq [RHS]big_seq; apply: eq_bigr => r rf.
+  rewrite big_seq [RHS]big_seq; apply: eq_bigr => s sf.
+  congr *%E.
+  rewrite -[in RHS](setIT (f @^-1` [set r])).
+  rewrite -[in RHS](setIT (g @^-1` [set s])).
+  do 2 rewrite -[in RHS]integral_indic//.
+  do 2 rewrite integral_indic//.
+  rewrite !setIT.
+  admit.
+transitivity (
+  \int[P]_x (\sum_(i <- fset_set (range f))
+      \sum_(i0 <- fset_set (range g))
+         (i%:E * i0%:E * (\1_(f @^-1` [set i] `&` g @^-1` [set i0]) x)%:E)%E)%R
+); last first.
+  rewrite ge0_integral_sum//=; last 2 first.
+    move=> r; apply: emeasurable_fun_sum => // s.
+    apply: emeasurable_funM => //.
+    apply: measurableT_comp => //.
+    apply: measurable_indic.
+    exact: measurableI.
+    move=> r t _.
+    apply: sume_ge0 => // s _.
+    rewrite -indic_setI/= EFinM.
+    by rewrite -muleACA mule_ge0//; exact: nnfun_muleindic_ge0.
+  apply: eq_bigr => r _.
+  rewrite ge0_integral_sum//=; last 2 first.
+    move=> s; apply: emeasurable_funM => //.
+    apply: measurableT_comp => //.
+    apply: measurable_indic.
+    exact: measurableI.
+    move=> s t _.
+    rewrite -indic_setI/= EFinM.
+    by rewrite -muleACA mule_ge0//; exact: nnfun_muleindic_ge0.
+  apply: eq_bigr => s _.
+  under eq_integral do rewrite -EFinM.
+  admit.
+rewrite unlock.
+apply: eq_integral => x _.
+under eq_bigr do rewrite sumEFin.
+rewrite sumEFin.
+congr EFin.
+rewrite /=.
+rewrite (fimfunE f).
+rewrite (fimfunE g).
+rewrite !fsbig_finite//=.
+rewrite big_distrl//=.
+apply: eq_bigr => r _.
+rewrite big_distrr//=.
+apply: eq_bigr => s _.
+rewrite mulrACA.
+by rewrite -indic_setI.
+Admitted.
+
+Let independent_RVs_expectation2_ge0 (X Y : {RV P >-> R}) :
+  independent_RV_tuple [tuple of [:: X; Y]] ->
+  (forall x, 0 <= X x)%R ->
+  (forall x, 0 <= Y x)%R ->
+  'E_P[X * Y] = 'E_P[X] * 'E_P[Y].
+Proof.
+move=> XY X0 Y0.
+have mX : measurable_fun setT (EFin \o X) by exact/measurableT_comp.
+have mY : measurable_fun setT (EFin \o Y) by exact/measurableT_comp.
+have [X_ [ndX_ X_X]] := approximation measurableT mX (fun t _ => X0 t).
+have [Y_ [ndY_ Y_Y]] := approximation measurableT mY (fun t _ => Y0 t).
+transitivity (limn (fun n => \int[P]_x ((X_ n \* Y_ n) x)%:E)).
+  admit.
+transitivity (limn (fun n => \int[P]_x ((X_ n) x)%:E * \int[P]_y ((Y_ n) y)%:E)).
+  admit.
+transitivity (\int[P]_x 'E_P [X] * \int[P]_y 'E_P [Y]).
+  admit.
+Admitted.
+
 Lemma independent_RVs_expectation2 (X Y : {RV P >-> R}) :
+  P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o Y) ->
   independent_RV_tuple [tuple of [:: X; Y]] ->
   'E_P[X * Y] = 'E_P[X] * 'E_P[Y].
 Proof.
-move=> XY.
+move=> iX iY XY.
+have iXY : P.-integrable setT (EFin \o (X \* Y)%R).
+  admit.
+have dX := funeposneg (EFin \o X).
+have dY := funeposneg (EFin \o X).
 Admitted.
 
 Lemma independent_RVs_expectation n (X : n.-tuple {RV P >-> R}) :
@@ -1484,7 +1669,9 @@ elim: n X => [|n ih X iX].
   by rewrite !big_nil expectation_cst.
 have XE := tuple_eta X.
 rewrite XE !big_cons.
-rewrite independent_RVs_expectation2//; last first.
+rewrite independent_RVs_expectation2//; last 3 first.
+  admit.
+  admit.
   admit.
 congr *%E.
 apply: (ih [tuple of behead X]).
