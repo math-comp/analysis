@@ -2637,7 +2637,7 @@ Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
 Variables (phi : X -> Y) (mphi : measurable_fun setT phi).
 Variables (mu : {measure set X -> \bar R}).
 
-Lemma integral_pushforward (f : Y -> \bar R) :
+Lemma ge0_integral_pushforward (f : Y -> \bar R) :
   measurable_fun setT f -> (forall y, 0 <= f y) ->
   \int[pushforward mu mphi]_y f y = \int[mu]_x (f \o phi) x.
 Proof.
@@ -2822,7 +2822,7 @@ Qed.
 
 End integral_mfun_measure_sum.
 
-Lemma integral_measure_add d (T : measurableType d) (R : realType)
+Lemma ge0_integral_measure_add d (T : measurableType d) (R : realType)
     (m1 m2 : {measure set T -> \bar R}) (D : set T) (mD : measurable D)
     (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x)%E -> measurable_fun D f ->
@@ -2890,15 +2890,13 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
       by apply: is_cvg_ereal_nneg_natsum => k _; exact: integral_ge0.
     by apply: nearW => x; rewrite big_mkord.
   move=> n.
-  rewrite [X in _ <= X](_ : _ = (\sum_(k < n) \int[m_ k]_(x in D) f x
-    + \int[mseries m_ n]_(x in D) f x)); last first.
-    transitivity (\int[measure_add [the measure _ _ of msum m_ n]
-                                   [the measure _ _ of mseries m_ n]]_(x in D) f x).
+  rewrite [X in _ <= X](_ : _ = \sum_(k < n) \int[m_ k]_(x in D) f x +
+                                \int[mseries m_ n]_(x in D) f x); last first.
+    transitivity (\int[measure_add (msum m_ n) (mseries m_ n)]_(x in D) f x).
       congr (\int[_]_(_ in D) _); apply/funext => A.
       rewrite measure_addE/= /msum -(big_mkord xpredT (m_ ^~ A)).
       exact: nneseries_split.
-    rewrite integral_measure_add//; congr (_ + _).
-    by rewrite -ge0_integral_measure_sum.
+    by rewrite ge0_integral_measure_add// -ge0_integral_measure_sum.
   by apply: leeDl; exact: integral_ge0.
 rewrite ge0_integralE//=; apply: ub_ereal_sup => /= _ [g /= gf] <-.
 rewrite -integralT_nnsfun (integral_measure_series_nnsfun _ mD).

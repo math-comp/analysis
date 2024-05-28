@@ -41,6 +41,7 @@ convex.v
 charge.v
 kernel.v
 all_analysis.v
+showcase/uniform_bigO.v
 altreals/xfinmap.v
 altreals/discrete.v
 altreals/realseq.v

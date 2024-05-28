@@ -126,7 +126,7 @@ Proof. by []. Qed.
 Lemma integral_distribution (X : {RV P >-> R}) (f : R -> \bar R) :
     measurable_fun [set: R] f -> (forall y, 0 <= f y) ->
   \int[distribution P X]_y f y = \int[P]_x (f \o X) x.
-Proof. by move=> mf f0; rewrite integral_pushforward. Qed.
+Proof. by move=> mf f0; rewrite ge0_integral_pushforward. Qed.
 
 End transfer_probability.
 
@@ -533,7 +533,7 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 
 Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) :
     (0 < eps)%R ->
-    measurable_fun [set: R] f -> (forall r, 0 <= f r)%R ->
+    measurable_fun [set: R] f -> (forall r, 0 <= r -> 0 <= f r)%R ->
     {in Num.nneg &, {homo f : x y / x <= y}}%R ->
   (f eps)%:E * P [set x | eps%:E <= `| (X x)%:E | ] <=
     'E_P[f \o (fun x => `| x |%R) \o X].
@@ -577,13 +577,13 @@ have h (Y : {RV P >-> R}) :
   rewrite exprnN expfV exprz_inv opprK -exprnP.
   apply: (@le_trans _ _ ('E_P[(@GRing.exp R ^~ 2%N \o normr) \o Y])).
     apply: (@markov Y (@GRing.exp R ^~ 2%N)) => //.
-    - by move=> r; apply: sqr_ge0.
+    - by move=> r _; exact: sqr_ge0.
     - move=> x y; rewrite !nnegrE => x0 y0.
       by rewrite ler_sqr.
   apply: expectation_le => //.
     - by apply: measurableT_comp => //; exact: measurableT_comp.
-  - by move=> x /=; apply: sqr_ge0.
-  - by move=> x /=; apply: sqr_ge0.
+  - by move=> x /=; exact: sqr_ge0.
+  - by move=> x /=; exact: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.
 have := h [the {mfun T >-> R} of (X \- cst (fine ('E_P[X])))%R].
 by move=> /le_trans; apply; rewrite /variance [in leRHS]unlock.
