@@ -1552,7 +1552,7 @@ Qed.
 (* TODO: move near nnfun_muleindic_ge0 *)
 Section nnfun_mulrindic_ge0.
 
-Let mulrf_ge0 (R : realDomainType) x (f : R -> R) :
+Lemma mulrf_ge0 (R : realDomainType) x (f : R -> R) :
   0 <= f x -> (x < 0 -> f x = 0) -> 0 <= x * f x.
 Proof.
 move=> A0 xA /=; have [x0|x0] := ltP x 0%R; first by rewrite (xA x0) mulr0.
@@ -1656,6 +1656,9 @@ transitivity (
   do 2 rewrite -[in RHS]integral_indic//.
   do 2 rewrite integral_indic//.
   rewrite !setIT.
+  apply: independent_RVs_expectation2_prob => /=.
+  rewrite /independent_RV_tuple/independent_class/= in fg.
+  case: (fg) => _.
   admit.
 transitivity (
   \int[P]_x (\sum_(i <- fset_set (range f))
@@ -1682,8 +1685,16 @@ transitivity (
     rewrite -indic_setI/= EFinM.
     by rewrite -muleACA mule_ge0//; exact: nnfun_muleindic_ge0.
   apply: eq_bigr => s _.
-  under eq_integral do rewrite -EFinM.
-  admit.
+  under eq_integral do rewrite -muleA.
+  rewrite integralZl//; last first.
+    admit.
+  rewrite -muleA.
+  congr *%E.
+  rewrite integralZl//; last first.
+    admit.
+  congr *%E.
+  rewrite integral_indic ?setIT//.
+  exact: measurableI.
 rewrite unlock.
 apply: eq_integral => x _.
 under eq_bigr do rewrite sumEFin.
@@ -1732,8 +1743,8 @@ have dX := funeposneg (EFin \o X).
 have dY := funeposneg (EFin \o X).
 Admitted.
 
-Lemma independent_RVs_expectation n (X : n.-tuple {RV P >-> R}) :
-  independent_RV_tuple X -> 'E_P[\prod_(Xi <- X) Xi] = \prod_(Xi <- X) 'E_P[Xi].
+Lemma independent_RVs_expectation (X : seq {RV P >-> R}) :
+  independent_RV X -> 'E_P[\prod_(Xi <- X) Xi] = \prod_(Xi <- X) 'E_P[Xi].
 Proof.
 elim: n X => [|n ih X iX].
   move=> X _.
@@ -2095,11 +2106,21 @@ rewrite /= => t0 bX.
 set X := bernoulli_trial X_.
 set mu := 'E_P[X].
 have -> : @mmt_gen_fun _ _ _ P X t = (\prod_(Xi <- X_) fine (mmt_gen_fun Xi t))%:E.
-  rewrite -[LHS]fineK; last rewrite (binomial_mmt_gen_fun _ bX)//.
-  apply: congr1.
-  have := bX.2.1.
-  rewrite /independent_RV.
-  (*apply: bX.2.1 => //*) admit. (* TODO: critical -> independence *)
+  rewrite -[LHS]fineK; last by rewrite (binomial_mmt_gen_fun _ bX).
+  congr EFin.
+  rewrite /mmt_gen_fun.
+  transitivity (fine 'E_P[expR \o t \o* (\sum_(i < n) tnth X_ i)%R]).
+    congr (fine 'E_P[ _ ]).
+    apply/funext => x/=.
+    congr expR.
+    rewrite /X /bernoulli_trial /=.
+    admit.
+  transitivity (fine 'E_P[\prod_(i < n ) (expR \o t \o* (tnth X_ i))]).
+    congr (fine 'E_P[ _ ]).
+    apply/funext => x/=.
+    (* TODO: use expR_prod *)
+    admit.
+  admit.
 under eq_big_seq => Xi XiX.
   have -> : @mmt_gen_fun _ _ _ P Xi t = (1 + p%:num * (expR t - 1))%:E.
     rewrite /mmt_gen_fun.
