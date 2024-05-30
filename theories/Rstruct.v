@@ -30,6 +30,7 @@ Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
 From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
 From HB Require Import structures.
+Require Import mathcomp_extra.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -456,11 +457,23 @@ Lemma RmultE x y : Rmult x y = x * y. Proof. by []. Qed.
 
 Lemma RoppE x : Ropp x = - x. Proof. by []. Qed.
 
-Lemma RinvE x : x != 0 -> Rinv x = x^-1.
+Let neq0_RinvE x : x != 0 -> Rinv x = x^-1.
 Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
 
-Lemma RdivE x y : y != 0 -> Rdiv x y = x / y.
-Proof. by move=> y_neq0; rewrite /Rdiv RinvE. Qed.
+Lemma RinvE (x : R) : Rinv x = x^-1.
+Proof.
+have [-> | ] := eqVneq x R0; last exact: neq0_RinvE.
+rewrite /GRing.inv /GRing.mul /= /Rinvx eqxx /=.
+rewrite RinvImpl.Rinv_def.
+case: (Req_appart_dec 0 R0) => //.
+by move=> /[dup] -[] => /RltP; rewrite Order.POrderTheory.ltxx.
+Qed.
+
+Lemma RdivE (x y : R) : Rdiv x y = x / y.
+Proof. by rewrite /Rdiv RinvE. Qed.
+
+Lemma IZposRE (p : positive) : IZR (Z.pos p) = INR (nat_of_pos p).
+Proof. by rewrite -Pos_to_natE INR_IPR. Qed.
 
 Lemma INRE n : INR n = n%:R.
 Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.

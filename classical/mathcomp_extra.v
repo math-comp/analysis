@@ -364,3 +364,12 @@ rewrite /Order.min/=; case: ifPn => xz; case: ifPn => yz; rewrite ?ltxx//.
 Qed.
 
 End order_min.
+
+Section positive.
+Lemma Pos_to_natE p : Pos.to_nat p = nat_of_pos p.
+Proof.
+by elim: p => //= p <-; rewrite ?Pnat.Pos2Nat.inj_xI ?Pnat.Pos2Nat.inj_xO;
+   change (2 * Pos.to_nat p)%coq_nat with (2 * Pos.to_nat p)%nat;
+   rewrite mul2n NatTrec.doubleE.
+Qed.
+End positive.
