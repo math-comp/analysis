@@ -4,12 +4,6 @@
 
 ### Added
 
-- in `mathcomp_extra.v`:
-  + lemma `Pos_to_natE`
-
-- in `Rstruct.v`:
-  + lemma `IZposRE`
-
 - in `classical_sets.v`:
   + lemma `bigcup_recl`
 
@@ -73,6 +67,12 @@
 
 - in `measure.v`:
   + lemma `measurableID`
+
+- in `mathcomp_extra.v`:
+  + lemma `Pos_to_natE`
+
+- in `Rstruct.v`:
+  + lemma `IZRposE`
 
 ### Changed
 

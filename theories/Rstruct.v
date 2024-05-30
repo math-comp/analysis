@@ -460,23 +460,25 @@ Lemma RoppE x : Ropp x = - x. Proof. by []. Qed.
 Let neq0_RinvE x : x != 0 -> Rinv x = x^-1.
 Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
 
-Lemma RinvE (x : R) : Rinv x = x^-1.
+Lemma RinvE x : Rinv x = x^-1.
 Proof.
-have [-> | ] := eqVneq x R0; last exact: neq0_RinvE.
+have [->| ] := eqVneq x R0; last exact: neq0_RinvE.
 rewrite /GRing.inv /GRing.mul /= /Rinvx eqxx /=.
-rewrite RinvImpl.Rinv_def.
-case: (Req_appart_dec 0 R0) => //.
-by move=> /[dup] -[] => /RltP; rewrite Order.POrderTheory.ltxx.
+rewrite RinvImpl.Rinv_def; case: Req_appart_dec => //.
+by move=> /[dup] -[] /RltP; rewrite Order.POrderTheory.ltxx.
 Qed.
 
-Lemma RdivE (x y : R) : Rdiv x y = x / y.
-Proof. by rewrite /Rdiv RinvE. Qed.
-
-Lemma IZposRE (p : positive) : IZR (Z.pos p) = INR (nat_of_pos p).
-Proof. by rewrite -Pos_to_natE INR_IPR. Qed.
+Lemma RdivE x y : Rdiv x y = x / y. Proof. by rewrite /Rdiv RinvE. Qed.
 
 Lemma INRE n : INR n = n%:R.
 Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
+
+(**md Though not strictly about the type of real numbers from the Coq
+  standard library, the following lemma `IZRposE` is often needed in
+  practice as its left-hand side often appears as a result of other
+  rewritings using `R*E` lemmas. *)
+Lemma IZRposE (p : positive) : IZR (Z.pos p) = INR (nat_of_pos p).
+Proof. by rewrite -Pos_to_natE INR_IPR. Qed.
 
 Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
