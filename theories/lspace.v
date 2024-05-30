@@ -79,10 +79,10 @@ Canonical Lequiv_canonical :=
 Local Open Scope quotient_scope.
 
 Definition LspaceType := {eq_quot Lequiv}.
-Canonical LspaceType_quotType := [quotType of LspaceType].
-Canonical LspaceType_eqType := [eqType of LspaceType].
-Canonical LspaceType_choiceType := [choiceType of LspaceType].
-Canonical LspaceType_eqQuotType := [eqQuotType Lequiv of LspaceType].
+Canonical LspaceType_quotType := [the quotType _ of LspaceType].
+Canonical LspaceType_eqType := [the eqType of LspaceType].
+Canonical LspaceType_choiceType := [the choiceType of LspaceType].
+Canonical LspaceType_eqQuotType := [the eqQuotType Lequiv of LspaceType].
 
 Lemma LequivP (f g : LfunType mu p) :
   reflect {ae mu, forall x, f x = g x} (f == g %[mod LspaceType]).
