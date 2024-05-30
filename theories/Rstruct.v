@@ -473,18 +473,16 @@ Lemma RdivE x y : Rdiv x y = x / y. Proof. by rewrite /Rdiv RinvE. Qed.
 Lemma INRE n : INR n = n%:R.
 Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
 
-(**md Though not strictly about the type of real numbers from the Coq
-  standard library, the following lemma `IZRposE` is often needed in
-  practice as its left-hand side often appears as a result of other
-  rewritings using `R*E` lemmas. *)
+(**md Note that rewrites using the following lemma `IZRposE` are
+  systematically followed by a rewrite using the lemma `INRE`. *)
 Lemma IZRposE (p : positive) : IZR (Z.pos p) = INR (nat_of_pos p).
 Proof. by rewrite -Pos_to_natE INR_IPR. Qed.
 
 Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
-rewrite eq_sym -(eqrXn2 (_: 0 < 2)%N t1) //; last by apply /RleP.
-rewrite sqr_sqrtr // !exprS expr0 mulr1 -RmultE ?sqrt_sqrt //; by apply/RleP.
+rewrite eq_sym -(eqrXn2 (_: 0 < 2)%N t1) //; last exact/RleP.
+by rewrite sqr_sqrtr // !exprS expr0 mulr1 -RmultE ?sqrt_sqrt //; exact/RleP.
 Qed.
 
 Lemma RpowE x n : pow x n = x ^+ n.
