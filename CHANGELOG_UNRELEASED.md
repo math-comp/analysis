@@ -68,6 +68,12 @@
 - in `measure.v`:
   + lemma `measurableID`
 
+- in `mathcomp_extra.v`:
+  + lemma `Pos_to_natE`
+
+- in `Rstruct.v`:
+  + lemma `IZRposE`
+
 ### Changed
 
 - in `forms.v`:
@@ -135,6 +141,9 @@
   + `integral_pushforward` -> `ge0_integral_pushforward`
 
 ### Generalized
+
+- in `Rstruct.v`:
+  + lemmas `RinvE`, `RdivE`
 
 - in `constructive_ereal.v`:
   + `gee_pMl` (was `gee_pmull`)
