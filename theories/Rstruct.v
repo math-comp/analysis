@@ -30,7 +30,7 @@ Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
 From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
 From HB Require Import structures.
-Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
