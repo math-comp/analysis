@@ -26,6 +26,16 @@
   + lemma `nneseries_addn`
 - in `lebesgue_integral.v`:
   + lemmas `integrableMl`, `integrableMr`
+  
+- in `normedtype.v`:
+  + lemma `le_closed_ball` 
+- in `sequences.v`:
+  + theorem `Baire`
+  + definition `bounded_fun_norm`
+  + lemma `bounded_landau`
+  + definition `pointwise_bounded`
+  + definition `uniform_bounded`
+  + theorem `Banach_Steinhauss`
 
 - in `realfun.v`
   + lemmas `total_variation_nondecreasing`, `total_variation_bounded_variation`
