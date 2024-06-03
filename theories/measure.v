@@ -627,7 +627,7 @@ Qed.
 Lemma g_sigma_ring_monotone T (G : set (set T)) : monotone <<sr G >>.
 Proof. by apply: sigma_ring_monotone => //; exact: smallest_sigma_ring. Qed.
 
-Lemma sub_sigma_ring T (G : set (set T)) : G `<=` <<sr G >>.
+Lemma sub_g_sigma_ring T (G : set (set T)) : G `<=` <<sr G >>.
 Proof. exact: sub_smallest. Qed.
 
 (**md see Paul Halmos' Measure Theory, Ch.1, sec.6, thm.A(2), p.27 *)
@@ -704,7 +704,8 @@ Qed.
 Lemma smallest_monotone : <<M G >> = <<sr G >>.
 Proof.
 rewrite eqEsubset; split.
-  by apply: smallest_sub; [exact: g_sigma_ring_monotone|exact: sub_sigma_ring].
+  by apply: smallest_sub; [exact: g_sigma_ring_monotone|
+                           exact: sub_g_sigma_ring].
 apply: smallest_sub; last exact: sub_smallest.
 apply: setring_monotone_sigma_ring; last exact: monotone_g_monotone.
 exact: g_monotone_setring.
@@ -1007,8 +1008,8 @@ have D_sigma_ring : sigma_ring D.
 apply/seteqP; split => [|].
   have GD : G `<=` D.
     move=> E GE; exists (E `&` A).
-      by apply: sub_sigma_ring; exists E.
-    by exists E; [exact: sub_sigma_ring|exact: setUIDK].
+      by apply: sub_g_sigma_ring; exists E.
+    by exists E; [exact: sub_g_sigma_ring|exact: setUIDK].
   have {}GD : <<sr G >> `<=` D by exact: smallest_sub GD.
   have GDA : strace <<sr G >> A `<=` strace D A by exact: subset_strace.
   suff: strace D A = <<sr strace G A >> by move=> <-.

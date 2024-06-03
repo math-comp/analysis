@@ -43,8 +43,11 @@
   + lemma `bigcap_measurable` for `sigmaRingType`
   + lemma `setDI_semi_setD_closed`
   + lemmas `powerset_lambda_system`, `lambda_system_smallest`, `sigmaRingType_lambda_system`
-  + definitions `niseq_closed`, `sigma_ring` (notation `<<sr _ >>`), `monotone` (notation `<<M _ >>`)
-  + lemmas `smallest_sigma_ring`, `sigma_ring_monotone`, `g_sigma_ring_monotone`, `sub_sigma_ring`, `setring_monotone_sigma_ring`, `monotone_g_monotone`, `g_monotone_setring`, `smallest_monotone`, `setring_g_sigma_ring`
+  + definitions `niseq_closed`, `sigma_ring` (notation `<<sr _ >>`),
+    `monotone` (notation `<<M _ >>`)
+  + lemmas `smallest_sigma_ring`, `sigma_ring_monotone`, `g_sigma_ring_monotone`,
+    `sub_g_sigma_ring`, `setring_monotone_sigma_ring`, `monotone_g_monotone`,
+	`g_monotone_setring`, `smallest_monotone`, `setring_g_sigma_ring`
 
 - in `classical_sets.v`:
   + lemma `eq_bigcup_bigsetU`
