@@ -1763,7 +1763,7 @@ Proof.
 move=> mf n mD.
 apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite einfs_preimage -bigcapIr; last by exists n =>/=.
-by apply: bigcap_measurable' => ? ?; exact/mf/emeasurable_itv.
+by apply: bigcap_measurableType => ? ?; exact/mf/emeasurable_itv.
 Qed.
 
 Lemma measurable_fun_esups D (f : (T -> \bar R)^nat) :
