@@ -46,8 +46,8 @@
   + definitions `niseq_closed`, `sigma_ring` (notation `<<sr _ >>`),
     `monotone` (notation `<<M _ >>`)
   + lemmas `smallest_sigma_ring`, `sigma_ring_monotone`, `g_sigma_ring_monotone`,
-    `sub_g_sigma_ring`, `setring_monotone_sigma_ring`, `monotone_g_monotone`,
-	`g_monotone_setring`, `smallest_monotone`, `setring_g_sigma_ring`
+    `sub_g_sigma_ring`, `setring_monotone_sigma_ring`, `g_monotone_monotone`,
+	`g_monotone_setring`, `g_monotone_g_sigma_ring`, `monotone_setring_sub_g_sigma_ring`
 
 - in `classical_sets.v`:
   + lemma `eq_bigcup_bigsetU`
@@ -126,6 +126,9 @@
   + definition `strace`
   + lemma `sigma_algebra_strace`
 
+- in `sequences.v`:
+  + equality reversed in lemma `eq_bigcup_seqD`
+
 ### Renamed
 
 - in `constructive_ereal.v`:
@@ -182,10 +185,20 @@
   + `integral_pushforward` -> `ge0_integral_pushforward`
 - in `measure.v`:
   + `monotone_classP` -> `lambda_system`
-  + `monotone_class_g_salgebra` -> `g_salgebra_lambda_system`
+  + `monotone_class_g_salgebra` -> `g_sigma_algebra_lambda_system`
   + `smallest_monotone_classE` -> `smallest_lambda_system`
   + `dynkin_monotone` -> `dynkin_lambda_system`
   + `dynkin_g_dynkin` -> `g_dynkin_dynkin`
+  + `salgebraType` -> `g_sigma_algebraType`
+  + `g_salgebra_measure_unique_trace` -> `g_sigma_algebra_measure_unique_trace`
+  + `g_salgebra_measure_unique_cover` -> `g_sigma_algebra_measure_unique_cover`
+  + `g_salgebra_measure_unique` -> `g_sigma_algebra_measure_unique`
+  + `setI_closed_gdynkin_salgebra` -> `setI_closed_g_dynkin_g_sigma_algebra`
+
+- in `sequences.v`:
+  + `eq_bigcup_bigsetU` -> `bigcup_bigsetU_bigcup`
+  + `eq_bigsetU_seqD` -> `nondecreasing_bigsetU_seqD`
+
 
 ### Generalized
 

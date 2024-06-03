@@ -68,7 +68,7 @@ From HB Require Import structures.
 (*                             <<s G >> is equipped with a structure of       *)
 (*                             sigma-algebra                                  *)
 (*   G.-sigma.-measurable A == A is measurable for the sigma-algebra <<s G >> *)
-(*           salgebraType G == the measurableType corresponding to <<s G >>   *)
+(*    g_sigma_algebraType G == the measurableType corresponding to <<s G >>   *)
 (*                             This is an HB alias.                           *)
 (*    mu .-cara.-measurable == sigma-algebra of Caratheodory measurable sets  *)
 (* ```                                                                        *)
@@ -411,11 +411,12 @@ End classes.
 #[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `lambda_system`")]
 Notation monotone_class := lambda_system (only parsing).
 
-Lemma powerset_sigma_ring (T : Type) (A : set T) : sigma_ring (subset^~ A).
+Lemma powerset_sigma_ring (T : Type) (D : set T) :
+  sigma_ring [set X | X `<=` D].
 Proof.
-split => //.
-  by move=> U V + VA; apply: subset_trans; exact: subDsetl.
-by move=> F FA; exact: bigcup_sub.
+split => //; last first.
+  by move=> F FA/=; apply: bigcup_sub => i _; exact: FA.
+by move=> U V + VA; apply: subset_trans; exact: subDsetl.
 Qed.
 
 Lemma powerset_lambda_system (T : Type) (D : set T) :
@@ -599,15 +600,15 @@ Qed.
 End generated_setring.
 #[global] Hint Resolve smallest_setring setring0 : core.
 
-Lemma g_salgebra_lambda_system T (G : set (set T)) (D : set T) :
+Lemma g_sigma_algebra_lambda_system T (G : set (set T)) (D : set T) :
   (forall X, <<s D, G >> X -> X `<=` D) ->
   lambda_system D <<s D, G >>.
 Proof.
 move=> sDGD; have := smallest_sigma_algebra D G.
 by move=> /(sigma_algebraP sDGD) [sT sD snd sI]; split.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_salgebra_lambda_system`")]
-Notation monotone_class_g_salgebra := g_salgebra_lambda_system (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_lambda_system`")]
+Notation monotone_class_g_salgebra := g_sigma_algebra_lambda_system (only parsing).
 
 Lemma smallest_sigma_ring T (G : set (set T)) : sigma_ring <<sr G >>.
 Proof.
@@ -635,12 +636,12 @@ Lemma setring_monotone_sigma_ring T (G : set (set T)) :
   setring G -> monotone G -> sigma_ring G.
 Proof.
 move=> [G0 GU GD] [ndG niG]; split => // F GF.
-rewrite -eq_bigcup_bigsetU; apply: ndG.
+rewrite -bigcup_bigsetU_bigcup; apply: ndG.
   by move=> *; exact/subsetPset/subset_bigsetU.
 by elim=> [|n ih]; rewrite big_ord_recr/= ?big_ord0 ?set0U//; exact: GU.
 Qed.
 
-Lemma monotone_g_monotone T (G : set (set T)) : monotone <<M G>>.
+Lemma g_monotone_monotone T (G : set (set T)) : monotone <<M G>>.
 Proof.
 split=> /= F ndF GF C [[ndC niC] GC];
   have {}GC : <<M G >> `<=` C by exact: smallest_sub.
@@ -648,7 +649,7 @@ split=> /= F ndF GF C [[ndC niC] GC];
 - by apply: (niC) => // i; apply: (GC); exact: GF.
 Qed.
 
-Section smallest_monotone.
+Section g_monotone_g_sigma_ring.
 Variables (T : Type) (G : set (set T)).
 Hypothesis ringG : setring G.
 
@@ -661,26 +662,26 @@ have KP E F : K(F) E -> K(E) F by move=> [] *; split; rewrite 1?setUC.
 have K_monotone F : monotone (K(F)).
   split.
     move=> /= H ndH KFH; split.
-    - rewrite setD_bigcupl; apply: (monotone_g_monotone G).1.
+    - rewrite setD_bigcupl; apply: (g_monotone_monotone G).1.
         by move=> m n mn; apply/subsetPset; apply: setSD; exact/subsetPset/ndH.
       by move=> i; have [] := KFH i.
-    - rewrite setDE setC_bigcup -bigcapIr//; apply: (monotone_g_monotone G).2.
+    - rewrite setDE setC_bigcup -bigcapIr//; apply: (g_monotone_monotone G).2.
         move=> m n mn; apply/subsetPset.
         by apply: setDS; exact/subsetPset/ndH.
       by move=> i; have [] := KFH i.
-    - rewrite -bigcupUl//; apply: (monotone_g_monotone G).1.
+    - rewrite -bigcupUl//; apply: (g_monotone_monotone G).1.
         move=> m n mn; apply/subsetPset.
         by apply: setSU; exact/subsetPset/ndH.
       by move=> i; have [] := KFH i.
   move=> /= H niH KFH; split.
-  - rewrite setDE -bigcapIl//; apply: (monotone_g_monotone G).2.
+  - rewrite setDE -bigcapIl//; apply: (g_monotone_monotone G).2.
       move=> m n mn; apply/subsetPset; apply: setSI; exact/subsetPset/niH.
     by move=> i; have [] := KFH i.
-  - rewrite setDE setC_bigcap setI_bigcupr; apply: (monotone_g_monotone G).1.
+  - rewrite setDE setC_bigcap setI_bigcupr; apply: (g_monotone_monotone G).1.
       move=> m n mn; apply/subsetPset.
       by apply: setIS; apply: subsetC; exact/subsetPset/niH.
     by move=> i; have [] := KFH i.
-  - rewrite setU_bigcapl//; apply: (monotone_g_monotone G).2.
+  - rewrite setU_bigcapl//; apply: (g_monotone_monotone G).2.
       move=> m n mn; apply/subsetPset.
       by apply: setSU; exact/subsetPset/niH.
     by move=> i; have [] := KFH i.
@@ -701,22 +702,22 @@ split.
 - by move=> A B GA GB; have [] := MM_KF _ GB _ GA.
 Qed.
 
-Lemma smallest_monotone : <<M G >> = <<sr G >>.
+Lemma g_monotone_g_sigma_ring : <<M G >> = <<sr G >>.
 Proof.
 rewrite eqEsubset; split.
   by apply: smallest_sub; [exact: g_sigma_ring_monotone|
                            exact: sub_g_sigma_ring].
 apply: smallest_sub; last exact: sub_smallest.
-apply: setring_monotone_sigma_ring; last exact: monotone_g_monotone.
+apply: setring_monotone_sigma_ring; last exact: g_monotone_monotone.
 exact: g_monotone_setring.
 Qed.
 
-End smallest_monotone.
+End g_monotone_g_sigma_ring.
 
-Corollary setring_g_sigma_ring T (G R : set (set T)) : monotone G ->
+Corollary monotone_setring_sub_g_sigma_ring T (G R : set (set T)) : monotone G ->
   setring R -> R `<=` G -> <<sr R>> `<=` G.
 Proof.
-by move=> mG rR RG; rewrite -smallest_monotone//; exact: smallest_sub.
+by move=> mG rR RG; rewrite -g_monotone_g_sigma_ring//; exact: smallest_sub.
 Qed.
 
 Section smallest_lambda_system.
@@ -727,7 +728,7 @@ Lemma smallest_lambda_system : (forall X, <<s D, G >> X -> X `<=` D) ->
   <<l D, G >> = <<s D, G >>.
 Proof.
 move=> sDGD; rewrite eqEsubset; split.
-  apply: smallest_sub; first exact: g_salgebra_lambda_system.
+  apply: smallest_sub; first exact: g_sigma_algebra_lambda_system.
   exact: sub_sigma_algebra.
 suff: setI_closed <<l D, G >>.
   move=> IH; apply: smallest_sub => //.
@@ -816,7 +817,7 @@ split => [[GT setCG trG]|[_ GT setDG ndG]]; split => //.
   rewrite setCK -bigcup2E; apply trG.
   + by rewrite -trivIset_bigcup2 setIC; apply subsets_disjoint.
   + by move=> [|[//|n]]; [exact: setCG|rewrite /bigcup2 -setCT; apply: setCG].
-- move=> F ndF GF; rewrite eq_bigcup_seqD; apply: (trG).
+- move=> F ndF GF; rewrite -eq_bigcup_seqD; apply: (trG).
     exact: trivIset_seqD.
   move=> [/=|n]; first exact: GF.
   rewrite /seqD setDE -(setCK (_ `&` _)) setCI; apply: (setCG).
@@ -827,10 +828,7 @@ split => [[GT setCG trG]|[_ GT setDG ndG]]; split => //.
     by move=> _; rewrite -setCT; apply: setCG.
 - by move=> A B; rewrite -setTD; apply: setDG.
 - move=> F tF GF; pose A i := \big[setU/set0]_(k < i.+1) F k.
-  rewrite (_ : bigcup _ _ = \bigcup_i A i); last first.
-    rewrite predeqE => t; split => [[n _ Fn]|[n _]].
-      by exists n => //; rewrite /A -bigcup_mkord; exists n=> //=; rewrite ltnS.
-    by rewrite /A -bigcup_mkord => -[m /=]; rewrite ltnS => mn Fmt; exists m.
+  rewrite -bigcup_bigsetU_bigcup.
   apply: ndG; first by move=> a b ab; exact/subsetPset/subset_bigsetU.
   elim=> /= => [|n ih].
     by rewrite /A big_ord_recr /= big_ord0 set0U; exact: GF.
@@ -876,10 +874,11 @@ move=> dG GI; split => [|//|F DF].
   by apply: (@dynkin_setI_bigsetI _ (fun x => ~` F x)) => // ?; exact/(dynkinC dG).
 Qed.
 
-Lemma setI_closed_gdynkin_salgebra G : setI_closed G -> <<d G >> = <<s G >>.
+Lemma setI_closed_g_dynkin_g_sigma_algebra G :
+  setI_closed G -> <<d G >> = <<s G >>.
 Proof.
 move=> GI; rewrite eqEsubset; split.
-  by apply: sub_smallest2l; apply: sigma_algebra_dynkin.
+  by apply: sub_smallest2l; exact: sigma_algebra_dynkin.
 pose delta (D : set T) := [set E | <<d G >> (E `&` D)].
 have ddelta (D : set T) : <<d G >> D -> dynkin (delta D).
   move=> dGD; split; first by rewrite /delta /= setTI.
@@ -924,6 +923,8 @@ exact: g_dynkin_dynkin.
 Qed.
 
 End dynkin_lemmas.
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `setI_closed_g_dynkin_g_sigma_algebra`")]
+Notation setI_closed_gdynkin_salgebra := setI_closed_g_dynkin_g_sigma_algebra (only parsing).
 
 Section trace.
 Variable (T : Type).
@@ -1401,7 +1402,9 @@ End discrete_measurable_nat.
 Definition sigma_display {T} : set (set T) -> measure_display.
 Proof. exact. Qed.
 
-Definition salgebraType {T} (G : set (set T)) := T.
+Definition g_sigma_algebraType {T} (G : set (set T)) := T.
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `g_sigma_algebraType`")]
+Notation salgebraType := g_sigma_algebraType (only parsing).
 
 Section g_salgebra_instance.
 Variables (T : pointedType) (G : set (set T)).
@@ -1409,9 +1412,9 @@ Variables (T : pointedType) (G : set (set T)).
 Lemma sigma_algebraC (A : set T) : <<s G >> A -> <<s G >> (~` A).
 Proof. by move=> sGA; rewrite -setTD; exact: sigma_algebraCD. Qed.
 
-HB.instance Definition _ := Pointed.on (salgebraType G).
+HB.instance Definition _ := Pointed.on (g_sigma_algebraType G).
 HB.instance Definition _ := @isMeasurable.Build (sigma_display G)
-  (salgebraType G)
+  (g_sigma_algebraType G)
   <<s G >> (@sigma_algebra0 _ setT G) (@sigma_algebraC)
   (@sigma_algebra_bigcup _ setT G).
 
@@ -1419,7 +1422,7 @@ End g_salgebra_instance.
 
 Notation "G .-sigma" := (sigma_display G) : measure_display_scope.
 Notation "G .-sigma.-measurable" :=
-  (measurable : set (set (salgebraType G))) : classical_set_scope.
+  (measurable : set (set (g_sigma_algebraType G))) : classical_set_scope.
 
 Lemma measurable_g_measurableTypeE (T : pointedType) (G : set (set T)) :
   sigma_algebra setT G -> G.-sigma.-measurable = G.
@@ -1623,7 +1626,7 @@ Definition preimage_class (aT rT : Type) (D : set aT) (f : aT -> rT)
 (* f is measurable on the sigma-algebra generated by itself *)
 Lemma preimage_class_measurable_fun d (aT : pointedType) (rT : measurableType d)
   (D : set aT) (f : aT -> rT) :
-  measurable_fun (D : set (salgebraType (preimage_class D f measurable))) f.
+  measurable_fun (D : set (g_sigma_algebraType (preimage_class D f measurable))) f.
 Proof. by move=> mD A mA; apply: sub_sigma_algebra; exists A. Qed.
 
 Lemma sigma_algebra_preimage_class (aT rT : Type) (G : set (set rT))
@@ -3487,7 +3490,7 @@ End pdirac.
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
   isPointed.Build (probability T R) [the probability _ _ of dirac point].
 
-Section dist_salgebra_instance.
+Section dist_sigma_algebra_instance.
 Context d (T : measurableType d) (R : realType).
 
 Definition mset (U : set T) (r : R) := [set mu : probability T R | mu U < r%:E].
@@ -3509,9 +3512,9 @@ Definition pset : set (set (probability T R)) :=
   [set mset U r | r in `[0%R,1%R] & U in measurable].
 
 Definition pprobability : measurableType pset.-sigma :=
-  [the measurableType _ of salgebraType pset].
+  [the measurableType _ of g_sigma_algebraType pset].
 
-End dist_salgebra_instance.
+End dist_sigma_algebra_instance.
 
 Lemma sigma_finite_counting (R : realType) :
   sigma_finite [set: nat] (@counting _ R).
@@ -3635,14 +3638,15 @@ Proof.
 move=> mF mbigcupF ndF.
 have Binter : trivIset setT (seqD F) := trivIset_seqD ndF.
 have FBE : forall n, F n.+1 = F n `|` seqD F n.+1 := setU_seqD ndF.
-have FE n : F n = \big[setU/set0]_(i < n.+1) (seqD F) i := eq_bigsetU_seqD n ndF.
-rewrite eq_bigcup_seqD.
-have mB i : measurable (seqD F i) by elim: i => * //=; apply: measurableD.
+have FE n : \big[setU/set0]_(i < n.+1) (seqD F) i = F n :=
+  nondecreasing_bigsetU_seqD n ndF.
+rewrite -eq_bigcup_seqD.
+have mB i : measurable (seqD F i) by elim: i => * //=; exact: measurableD.
 apply: cvg_trans (measure_semi_sigma_additive _ mB Binter _); last first.
-  by rewrite -eq_bigcup_seqD.
-apply: (@cvg_trans _ ((fun n => \sum_(i < n.+1) mu (seqD F i)) @ \oo)).
+  by rewrite eq_bigcup_seqD.
+apply: (@cvg_trans _ (\sum_(i < n.+1) mu (seqD F i) @[n --> \oo])).
   rewrite [X in _ --> X @ \oo](_ : _ = mu \o F) // funeqE => n.
-  by rewrite -measure_semi_additive // -?FE// => -[|k].
+  by rewrite -measure_semi_additive ?FE// => -[|].
 move=> S [n _] nS; exists n => // m nm.
 under eq_fun do rewrite -(big_mkord predT (mu \o seqD F)).
 exact/(nS m.+1)/(leq_trans nm).
@@ -3660,7 +3664,7 @@ have F0E r : mu (F 0%N) - (mu (F 0%N) - r) = r.
   by rewrite oppeB ?addeA ?subee ?add0e// fin_num_adde_defr.
 rewrite -[x in _ --> x] F0E.
 have -> : mu \o F = fun n => mu (F 0%N) - (mu (F 0%N) - mu (F n)).
-  by apply:funext => n; rewrite F0E.
+  by apply: funext => n; rewrite F0E.
 apply: cvgeB; rewrite ?fin_num_adde_defr//; first exact: cvg_cst.
 have -> : \bigcap_n F n = F 0%N `&` \bigcap_n F n.
   by rewrite setIidr//; exact: bigcap_inf.
@@ -3676,7 +3680,7 @@ Qed.
 
 End measure_continuity.
 
-Section g_salgebra_measure_unique_trace.
+Section g_sigma_algebra_measure_unique_trace.
 Context d (R : realType) (T : measurableType d).
 Variables (G : set (set T)) (D : set T) (mD : measurable D).
 Let H := [set X | G X /\ X `<=` D] (* "trace" of G wrt D *).
@@ -3685,7 +3689,7 @@ Variables m1 m2 : {measure set T -> \bar R}.
 Hypothesis m1m2D : m1 D = m2 D.
 Hypotheses (m1m2 : forall A, H A -> m1 A = m2 A) (m1oo : (m1 D < +oo)%E).
 
-Lemma g_salgebra_measure_unique_trace :
+Lemma g_sigma_algebra_measure_unique_trace :
   (forall X, (<<s D, H >>) X -> X `<=` D) -> forall X, <<s D, H >> X ->
   m1 X = m2 X.
 Proof.
@@ -3715,7 +3719,10 @@ have sDHE : <<s D, H >> `<=` E.
 by move=> X /sDHE[].
 Qed.
 
-End g_salgebra_measure_unique_trace.
+End g_sigma_algebra_measure_unique_trace.
+Arguments g_sigma_algebra_measure_unique_trace {d R T} G D.
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique_trace`")]
+Notation g_salgebra_measure_unique_trace := g_sigma_algebra_measure_unique_trace (only parsing).
 
 Section boole_inequality.
 Context d (R : realFieldType) (T : ringOfSetsType d).
@@ -4527,7 +4534,7 @@ HB.instance Definition _ := isOuterMeasure.Build
 
 End outer_measure_of_content.
 
-Section g_salgebra_measure_unique.
+Section g_sigma_algebra_measure_unique.
 Context d (R : realType) (T : measurableType d).
 Variable G : set (set T).
 Hypothesis Gm : G `<=` measurable.
@@ -4536,11 +4543,11 @@ Hypotheses Gg : forall i, G (g i).
 Hypothesis g_cover : \bigcup_k (g k) = setT.
 Variables m1 m2 : {measure set T -> \bar R}.
 
-Lemma g_salgebra_measure_unique_cover :
+Lemma g_sigma_algebra_measure_unique_cover :
   (forall n A, <<s G >> A -> m1 (g n `&` A) = m2 (g n `&` A)) ->
   forall A, <<s G >> A -> m1 A = m2 A.
 Proof.
-pose GT := [the ringOfSetsType _ of salgebraType G].
+pose GT : ringOfSetsType G.-sigma:= g_sigma_algebraType G.
 move=> sGm1m2; pose g' k := \bigcup_(i < k) g i.
 have sGm := smallest_sub (@sigma_algebra_measurable _ T) Gm.
 have Gg' i : <<s G >> (g' i).
@@ -4579,7 +4586,7 @@ Hypothesis setIG : setI_closed G.
 Hypothesis m1m2 : forall A, G A -> m1 A = m2 A.
 Hypothesis m1goo : forall k, (m1 (g k) < +oo)%E.
 
-Lemma g_salgebra_measure_unique : forall E, <<s G >> E -> m1 E = m2 E.
+Lemma g_sigma_algebra_measure_unique : forall E, <<s G >> E -> m1 E = m2 E.
 Proof.
 pose G_ n := [set X | G X /\ X `<=` g n]. (* "trace" *)
 have G_E n : G_ n = [set g n `&` C | C in G].
@@ -4595,8 +4602,8 @@ have preimg_gGE n : preimage_class (g n) id G = G_ n.
   rewrite eqEsubset; split => [_ [Y GY <-]|].
     by rewrite preimage_id G_E /=; exists Y => //; rewrite setIC.
   by move=> X [GX Xgn]; exists X => //; rewrite preimage_id setIidr.
-apply: g_salgebra_measure_unique_cover => //.
-move=> n A sGA; apply: (@g_salgebra_measure_unique_trace _ _ _ G (g n)) => //.
+apply: g_sigma_algebra_measure_unique_cover => //.
+move=> n A sGA; apply: (g_sigma_algebra_measure_unique_trace G (g n)) => //.
 - exact: Gm.
 - by move=> ? [? _]; exact/Gm.
 - by move=> ? ? [? ?] [? ?]; split; [exact: setIG|apply: subIset; tauto].
@@ -4607,7 +4614,12 @@ move=> n A sGA; apply: (@g_salgebra_measure_unique_trace _ _ _ G (g n)) => //.
 - by rewrite -/(G_ n) -preimg_gGE -gIsGE; exists A.
 Qed.
 
-End g_salgebra_measure_unique.
+End g_sigma_algebra_measure_unique.
+Arguments g_sigma_algebra_measure_unique {d R T} G.
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique_cover`")]
+Notation g_salgebra_measure_unique_cover := g_sigma_algebra_measure_unique_cover (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `g_sigma_algebra_measure_unique`")]
+Notation g_salgebra_measure_unique := g_sigma_algebra_measure_unique (only parsing).
 
 Section measure_unique.
 Context d (R : realType) (T : measurableType d).
@@ -4621,7 +4633,7 @@ Hypothesis m1goo : forall k, (m1 (g k) < +oo)%E.
 
 Lemma measure_unique A : measurable A -> m1 A = m2 A.
 Proof.
-move=> mA; apply: (@g_salgebra_measure_unique _ _ _ G); rewrite -?mG//.
+move=> mA; apply: (g_sigma_algebra_measure_unique G); rewrite -?mG//.
 by rewrite mG; exact: sub_sigma_algebra.
 Qed.
 
@@ -4744,7 +4756,7 @@ near=> n; apply: lee_sum => i _; rewrite -measure_semi_additive2.
 - by rewrite setIACA setICr setI0.
 Unshelve. all: by end_near. Qed.
 
-Let I := [the measurableType _ of salgebraType (@measurable _ T)].
+Let I := [the measurableType _ of g_sigma_algebraType (@measurable _ T)].
 
 Definition measure_extension : set I -> \bar R := mu^*.
 
@@ -4897,7 +4909,7 @@ Hypothesis setTC2 : setT `<=` C2.
 
 (* NB: useful? *)
 Lemma measurable_prod_g_measurableTypeR :
-  @measurable _ [the measurableType _ of T1 * salgebraType C2 : Type]
+  @measurable _ [the measurableType _ of T1 * g_sigma_algebraType C2 : Type]
   = <<s [set A `*` B | A in measurable & B in C2] >>.
 Proof.
 rewrite measurable_prod_measurableType //; congr (<<s _ >>).
@@ -4913,8 +4925,8 @@ Variables (T1 T2 : pointedType) (C1 : set (set T1)) (C2 : set (set T2)).
 Hypotheses (setTC1 : setT `<=` C1) (setTC2 : setT `<=` C2).
 
 Lemma measurable_prod_g_measurableType :
-  @measurable _ [the measurableType _ of salgebraType C1 * salgebraType C2 : Type]
-  = <<s [set A `*` B | A in C1 & B in C2] >>.
+  @measurable _ (g_sigma_algebraType C1 * g_sigma_algebraType C2)%type =
+  <<s [set A `*` B | A in C1 & B in C2] >>.
 Proof.
 rewrite measurable_prod_measurableType //; congr (<<s _ >>).
 rewrite predeqE => X; split=> [[A mA] [B mB] <-{X}|[A C1A] [B C2B] <-{X}].

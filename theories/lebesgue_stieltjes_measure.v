@@ -510,7 +510,7 @@ Notation wlength_sigma_sub_additive := wlength_sigma_subadditive (only parsing).
 
 Section lebesgue_stieltjes_measure.
 Variable R : realType.
-Let gitvs := [the measurableType _ of salgebraType (@ocitv R)].
+Let gitvs := [the measurableType _ of g_sigma_algebraType (@ocitv R)].
 
 Lemma lebesgue_stieltjes_measure_unique (f : cumulative R)
     (mu : {measure set gitvs -> \bar R}) :

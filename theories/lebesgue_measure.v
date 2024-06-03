@@ -349,7 +349,7 @@ End LebesgueMeasure.
 
 Definition lebesgue_measure {R : realType} :
   set [the measurableType _.-sigma of
-       salgebraType R.-ocitv.-measurable] -> \bar R :=
+       g_sigma_algebraType R.-ocitv.-measurable] -> \bar R :=
   [the measure _ _ of lebesgue_stieltjes_measure [the cumulative _ of idfun]].
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
@@ -482,7 +482,7 @@ End puncture_ereal_itv.
 Section salgebra_R_ssets.
 Variable R : realType.
 
-Definition measurableTypeR := salgebraType (R.-ocitv.-measurable).
+Definition measurableTypeR := g_sigma_algebraType (R.-ocitv.-measurable).
 Definition measurableR : set (set R) :=
   (R.-ocitv.-measurable).-sigma.-measurable.
 
