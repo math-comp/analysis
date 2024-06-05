@@ -655,8 +655,7 @@ have le (u : R) : (0 <= u)%R ->
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
     rewrite EFin_measurable_fun [X in measurable_fun _ X](_ : _ =
       (fun x => x ^+ 2) \o (fun x => Y x + u))%R//.
-    apply/measurableT_comp => //; apply/measurable_funD => //.
-    by rewrite -EFin_measurable_fun; apply: measurable_int Y1.
+    by apply/measurableT_comp => //; apply/measurable_funD.
   set eps := ((lambda + u) ^ 2)%R.
   have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_wpDr.
   rewrite (lee_pdivl_mulr _ _ peps) muleC.

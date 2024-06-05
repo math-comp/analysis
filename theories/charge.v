@@ -1177,10 +1177,11 @@ rewrite is_max_approxRNE; apply: measurableI => /=.
   rewrite -[X in measurable X]setTI.
   by apply: emeasurable_fun_eq => //; [exact: measurable_max_approxRN_seq|
                                        exact: measurable_approxRN_seq].
-rewrite [T in measurable T](_ : _ = \bigcap_(k in `I_j) [set x | g_ k x < g_ j x])//.
-apply: bigcap_measurable => k _.
-rewrite -[X in measurable X]setTI; apply: emeasurable_fun_lt => //;
-exact: measurable_approxRN_seq.
+rewrite [T in measurable T](_ : _ =
+  \bigcap_(k in `I_j) [set x | g_ k x < g_ j x])//.
+apply: bigcap_measurableType => k _.
+by rewrite -[X in measurable X]setTI; apply: emeasurable_fun_lt => //;
+  exact: measurable_approxRN_seq.
 Qed.
 
 End approxRN_seq.
@@ -1881,7 +1882,7 @@ rewrite -(ae_eq_integral _ _ _ _ _
 - apply: emeasurable_funM => //; first exact: measurable_int mf.
   exact: measurable_funTS.
 rewrite [in LHS](funeposneg f).
-under eq_integral => x xE. rewrite muleBl; last 2 first.
+under [in LHS]eq_integral => x xE. rewrite muleBl; last 2 first.
   - exact: Radon_Nikodym_SigmaFinite.f_fin_num.
   - exact: add_def_funeposneg.
   over.

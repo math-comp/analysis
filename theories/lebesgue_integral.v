@@ -100,9 +100,9 @@ Reserved Notation "m1 '\x^' m2" (at level 40, m2 at next level).
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
-HB.mixin Record isMeasurableFun d (aT : measurableType d) (rT : realType)
+HB.mixin Record isMeasurableFun d (aT : sigmaRingType d) (rT : realType)
     (f : aT -> rT) := {
-  measurable_funP : measurable_fun setT f
+  measurable_funP : measurable_fun [set: aT] f
 }.
 HB.structure Definition MeasurableFun d aT rT :=
   {f of @isMeasurableFun d aT rT f}.
@@ -119,9 +119,10 @@ Reserved Notation "[ 'mfun' 'of' f ]"
   (at level 0, format "[ 'mfun'  'of'  f ]").
 Notation "{ 'mfun' aT >-> T }" := (@MeasurableFun.type _ aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
-#[global] Hint Resolve measurable_funP : core.
+#[global] Hint Extern 0 (measurable_fun [set: _] _) =>
+  solve [apply: measurable_funP] : core.
 
-HB.structure Definition SimpleFun d (aT : measurableType d) (rT : realType) :=
+HB.structure Definition SimpleFun d (aT : sigmaRingType d) (rT : realType) :=
 (* HB.structure Definition SimpleFun d (aT (*rT*) : measurableType d) (rT : realType) := *)
   {f of @isMeasurableFun d aT rT f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
@@ -134,7 +135,6 @@ Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 Lemma measurable_sfunP {d} {aT : measurableType d} {rT : realType}
   (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
 Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
-
 
 HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
   fun_ge0 : forall x, 0 <= f x
@@ -151,7 +151,7 @@ Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
 (* HB.structure Definition NonNegSimpleFun d (aT : measurableType d) (rT : realType) := *)
 
 HB.structure Definition NonNegSimpleFun
-    d (aT : measurableType d) (rT : realType) :=
+    d (aT : sigmaRingType d) (rT : realType) :=
   {f of @SimpleFun d _ _ f & @NonNegFun aT rT f}.
 Reserved Notation "{ 'nnsfun' aT >-> T }"
   (at level 0, format "{ 'nnsfun'  aT  >->  T }").
@@ -229,7 +229,7 @@ Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
 Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
 
 Section fimfun_bin.
-Variables (d : measure_display) (T : measurableType d).
+Variables (d : measure_display) (T : sigmaRingType d).
 Variables (R : numDomainType) (f g : {fimfun T >-> R}).
 
 Lemma max_fimfun_subproof : @FiniteImage T R (f \max g).
@@ -252,7 +252,7 @@ HB.builders Context T R f of @FiniteDecomp T R f.
 HB.end.
 
 Section mfun_pred.
-Context {d} {aT : measurableType d} {rT : realType}.
+Context {d} {aT : sigmaRingType d} {rT : realType}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
 Definition mfun_key : pred_key mfun. Proof. exact. Qed.
 Canonical mfun_keyed := KeyedPred mfun_key.
@@ -301,7 +301,7 @@ HB.instance Definition _ :=
 
 Lemma measurableT_comp_subproof (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :
   measurable_fun setT (f \o g).
-Proof. apply: measurableT_comp. exact. apply: @measurable_funP _ _ _ g. Qed.
+Proof. exact: measurableT_comp. Qed.
 
 HB.instance Definition _ (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :=
   isMeasurableFun.Build _ _ _ (f \o g) (measurableT_comp_subproof _ _).
@@ -388,7 +388,7 @@ Qed.
 Notation measurable_fun_indic := measurable_indic (only parsing).
 
 Section sfun_pred.
-Context {d} {aT : measurableType d} {rT : realType}.
+Context {d} {aT : sigmaRingType d} {rT : realType}.
 Definition sfun : {pred _ -> _} := [predI @mfun _ aT rT & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
@@ -535,7 +535,7 @@ by rewrite gzf -fxfy addrC subrK.
 Qed.
 
 Section simple_bounded.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 
 Lemma simple_bounded (f : {sfun T >-> R}) : bounded_fun f.
 Proof.
@@ -632,7 +632,10 @@ Variable f : {nnsfun T >-> R}.
 
 Lemma nnsfun_cover :
   \big[setU/set0]_(i \in range f) (f @^-1` [set i]) = setT.
-Proof. by rewrite fsbig_setU//= -subTset => x _; exists (f x). Qed.
+Proof.
+rewrite fsbig_setU//=; last exact: fimfunP.
+by rewrite -subTset => x _; exists (f x).
+Qed.
 
 Lemma nnsfun_coverT :
   \big[setU/set0]_(i \in [set: R]) (f @^-1` [set i]) = setT.
@@ -648,7 +651,7 @@ End nnsfun_cover.
 Lemma measurable_sfun_inP {d} {aT : measurableType d} {rT : realType}
    (f : {mfun aT >-> rT}) D (y : rT) :
   measurable D -> measurable (D `&` f @^-1` [set y]).
-Proof. by move=> Dm; apply: measurableI. Qed.
+Proof. by move=> Dm; exact: measurableI. Qed.
 
 #[global] Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
   solve [apply: measurable_sfun_inP; assumption] : core.
@@ -696,7 +699,7 @@ move=> A0 xA /=; have [x0|x0] := ltP x 0%R; first by rewrite (xA x0) mule0.
 by rewrite mule_ge0.
 Qed.
 
-Lemma nnfun_muleindic_ge0 d (T : measurableType d) (R : realDomainType)
+Lemma nnfun_muleindic_ge0 d (T : sigmaRingType d) (R : realDomainType)
   (f : {nnfun T >-> R}) r z : 0 <= r%:E * (\1_(f @^-1` [set r]) z)%:E.
 Proof.
 apply: (@mulef_ge0 _ _ (fun r => (\1_(f @^-1` [set r]) z)%:E)).
@@ -704,7 +707,7 @@ apply: (@mulef_ge0 _ _ (fun r => (\1_(f @^-1` [set r]) z)%:E)).
 by move=> r0; rewrite preimage_nnfun0// indic0.
 Qed.
 
-Lemma mulemu_ge0 d (T : measurableType d) (R : realType)
+Lemma mulemu_ge0 d (T : sigmaRingType d) (R : realType)
     (mu : {measure set T -> \bar R}) x (A : R -> set T) :
   ((x < 0)%R -> A x = set0) -> 0 <= x%:E * mu (A x).
 Proof.
@@ -712,12 +715,13 @@ by move=> xA; rewrite (@mulef_ge0 _ _ (mu \o _))//= => /xA ->; rewrite measure0.
 Qed.
 Global Arguments mulemu_ge0 {d T R mu x} A.
 
-Lemma nnsfun_mulemu_ge0 d (T : measurableType d) (R : realType)
+Lemma nnsfun_mulemu_ge0 d (T : sigmaRingType d) (R : realType)
     (mu : {measure set T -> \bar R}) (f : {nnsfun T >-> R}) x :
   0 <= x%:E * mu (f @^-1` [set x]).
 Proof.
 by apply: (mulemu_ge0 (fun x => f @^-1` [set x])); exact: preimage_nnfun0.
 Qed.
+
 End mulem_ge0.
 
 (** Definition of Simple Integrals *)
@@ -738,7 +742,7 @@ End simple_fun_raw_integral.
   solve [apply: measure_ge0] : core.
 
 Section sintegral_lemmas.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
 Local Open Scope ereal_scope.
 
@@ -781,15 +785,15 @@ Qed.
 
 End sintegral_lemmas.
 
-Lemma eq_sintegral d (T : measurableType d) (R : numDomainType)
-     (mu : set T -> \bar R) g f :
-   f =1 g -> sintegral mu f = sintegral mu g.
+Lemma eq_sintegral d (T : sigmaRingType d) (R : numDomainType)
+    (mu : set T -> \bar R) g f :
+  f =1 g -> sintegral mu f = sintegral mu g.
 Proof. by move=> /funext->. Qed.
 Arguments eq_sintegral {d T R mu} g.
 
 Section sintegralrM.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (m : {measure set T -> \bar R}) (r : R) (f : {nnsfun T >-> R}).
 
 Lemma sintegralrM : sintegral m (cst r \* f)%R = r%:E * sintegral m f.
@@ -1850,7 +1854,7 @@ pose K := \bigcap_i gK i; have mgK n : measurable (gK n).
 have mK : measurable K by exact: bigcap_measurable.
 have Kab : K `<=` A by move=> z /(_ O I); have [_ + _ _] := gKP O; apply.
 have []// := @pointwise_almost_uniform _ rT R mu g_ f K (eps%:num / 2).
-- by move=> n; exact: measurable_funTS.
+- by move=> n; apply: measurable_funTS.
 - exact: (measurable_funS _ Kab).
 - by rewrite (@le_lt_trans _ _ (mu A))// le_measure// ?inE.
 - by move=> z Kz; have /fine_fcvg := gf' z (Kab _ Kz); rewrite -fmap_comp compA.
@@ -1973,7 +1977,6 @@ Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) (P : pred nat) :
   (forall k x, D x -> P k -> 0 <= h k x) -> (forall k, P k -> measurable_fun D (h k)) ->
   measurable_fun D (fun x => \sum_(i <oo | i \in P) h i x).
 Proof.
-Proof.
 move=> h0 mh.
 move=> mD; move: (mD).
 apply/(@measurable_restrict _ _ _ _ _ setT) => //.
@@ -2031,7 +2034,7 @@ wlog fg : D mD mf mg mfg / forall x, D x -> f x *? g x => [hwlogM|]; last first.
 move=> A mA; wlog NA0: A mD mf mg mA / ~ (A 0) => [hwlogA|].
   have [] := pselect (A 0); last exact: hwlogA.
   move=> /(@setD1K _ 0)<-; rewrite preimage_setU setIUr.
-  apply: measurableU; last by apply: hwlogA=> //; [exact: measurableD|case => /=].
+  apply: measurableU; last by apply: hwlogA=> //; [exact: measurableD|case=>/=].
   have -> : (fun x => f x * g x) @^-1` [set 0] =
            f @^-1` [set 0] `|` g @^-1` [set 0].
      apply/seteqP; split=> x /= => [/eqP|[]]; rewrite /preimage/=.
@@ -2457,7 +2460,7 @@ rewrite [LHS]ge0_integral_fsum//; last 2 first.
   - by move=> r; exact/EFin_measurable_fun/measurableT_comp.
   - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
 rewrite -[RHS]ge0_integralZl//; last 2 first.
-  - exact/EFin_measurable_fun/measurable_funTS.
+  - by apply: measurableT_comp => //; exact: measurable_funTS.
   - by move=> x _; rewrite lee_fin.
 under [RHS]eq_integral.
   move=> x xD; rewrite fimfunE -fsumEFin// ge0_mule_fsumr; last first.
@@ -2480,7 +2483,7 @@ move=> f0; have [f_ [ndf_ f_f]] := approximation mD mf f0.
 transitivity (limn (fun n => \int[mscale k m]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//=.
   - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //=; exact: f_f.
-  - by move=> n; exact/EFin_measurable_fun/measurable_funTS.
+  - by move=> n; apply: measurableT_comp => //; exact: measurable_funTS.
   - by move=> n x _; rewrite lee_fin.
   - by move=> x _ a b /ndf_ /lefP; rewrite lee_fin.
 rewrite (_ : \int[m]_(x in D) _ =
@@ -4650,7 +4653,7 @@ have CB : C `<=` B.
     have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_xsectionM.
     by rewrite mule0 notin_xsectionM// set0I measure0.
   exact/measurable_funeM/EFin_measurable_fun.
-suff monoB : monotone_class setT B by exact: monotone_class_subset.
+suff lsystemB : lambda_system setT B by exact: lambda_system_subset.
 split => //; [exact: CB| |exact: xsection_ndseq_closed].
 move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
 have -> : phi (X `\` Y) = (fun x => phi X x - phi Y x)%E.
@@ -4691,7 +4694,7 @@ have CB : C `<=` B.
     have [yX2|yX2] := boolP (y \in X2); first by rewrite mule1 in_ysectionM.
     by rewrite mule0 notin_ysectionM// set0I measure0.
   exact/measurable_funeM/EFin_measurable_fun.
-suff monoB : monotone_class setT B by exact: monotone_class_subset.
+suff lsystemB : lambda_system setT B by exact: lambda_system_subset.
 split => //; [exact: CB| |exact: ysection_ndseq_closed].
 move=> X Y XY [mX mphiX] [mY mphiY]; split; first exact: measurableD.
 rewrite (_ : psi _ = (psi X \- psi Y)%E); first exact: emeasurable_funB.
@@ -5122,8 +5125,7 @@ have [g [gfe2 ig]] : exists g : {sfun R >-> rT},
   split; last exact: intG.
   have /= := Nb _ (leqnn n); rewrite /ball/= sub0r normrN -fine_abse// -lte_fin.
   by rewrite fineK ?abse_fin_num// => /le_lt_trans; apply; exact: lee_abs.
-have mg : measurable_fun E g.
-  by apply: (measurable_funS measurableT) => //; exact: measurable_funP.
+have mg : measurable_fun E g by exact: measurable_funTS.
 have [M Mpos Mbd] : (exists2 M, 0 < M & forall x, `|g x| <= M)%R.
   have [M [_ /= bdM]] := simple_bounded g.
   exists (`|M| + 1)%R; first exact: ltr_pwDr.
@@ -6861,13 +6863,13 @@ rewrite muleA lee_pmul//.
     by rewrite lebesgue_measure_ball// ltry andbT lte_fin mulrn_wgt0.
   rewrite fineK; last by rewrite ge0_fin_numE// (nicely_shrinking_lty (hE x)).
   exact: muEr_.
-+ apply: le_trans.
-  * apply: le_abse_integral => //; first exact: (hE x).1.
+- apply: le_trans.
+  + apply: le_abse_integral => //; first exact: (hE x).1.
     apply/EFin_measurable_fun; apply/measurable_funB => //.
     by case: locf => + _ _; exact: measurable_funS.
-  * apply: ge0_subset_integral => //; first exact: (hE x).1.
+  + apply: ge0_subset_integral => //; first exact: (hE x).1.
     exact: measurable_ball.
-  * apply/EFin_measurable_fun; apply: measurableT_comp => //.
+  + apply/EFin_measurable_fun; apply: measurableT_comp => //.
     apply/measurable_funB => //.
     by case: locf => + _ _; exact: measurable_funS.
 Unshelve. all: by end_near. Qed.

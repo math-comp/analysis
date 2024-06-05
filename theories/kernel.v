@@ -457,7 +457,7 @@ have CXY : C `<=` XY.
   rewrite phiM.
   apply: emeasurable_funM => //; first exact/measurable_kernel/measurableI.
   by apply/EFin_measurable_fun; rewrite (_ : \1_ _ = mindic R mA).
-suff monoB : monotone_class setT XY by exact: monotone_class_subset.
+suff lsystemB : lambda_system setT XY by exact: lambda_system_subset.
 split => //; [exact: CXY| |exact: xsection_ndseq_closed].
 move=> A B BA [mA mphiA] [mB mphiB]; split; first exact: measurableD.
 suff : phi (A `\` B) = (fun x => phi A x - phi B x).

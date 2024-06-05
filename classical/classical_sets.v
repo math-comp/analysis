@@ -451,6 +451,10 @@ Notation "`] a , '+oo' [" :=
 Notation "`] -oo , '+oo' [" :=
   [set` Interval -oo%O +oo%O] : classical_set_scope.
 
+Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
+
+#[global] Hint Resolve nat_nonempty : core.
+
 Lemma preimage_itv T d (rT : porderType d) (f : T -> rT) (i : interval rT) (x : T) :
   ((f @^-1` [set` i]) x) = (f x \in i).
 Proof. by rewrite inE. Qed.
@@ -1028,6 +1032,9 @@ Proof. by move=> *; rewrite setUC setUKD. Qed.
 Lemma setIDA A B C : A `&` (B `\` C) = (A `&` B) `\` C.
 Proof. by rewrite !setDE setIA. Qed.
 
+Lemma setIDAC A B C : (A `\` B) `&` C = A `&` (C `\` B).
+Proof. by rewrite setIC !setIDA setIC. Qed.
+
 Lemma setDD A B : A `\` (A `\` B) = A `&` B.
 Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
 
@@ -1042,6 +1049,15 @@ Proof. by rewrite !setDE setCI setIUr. Qed.
 
 Lemma setUIDK A B : (A `&` B) `|` A `\` B = A.
 Proof. by rewrite setUC -setDDr setDv setD0. Qed.
+
+Lemma setDUD A B C : (A `|` B) `\` C = A `\` C `|` B `\` C.
+Proof.
+apply/seteqP; split=> [x [[Ax|Bx] Cx]|x [[Ax]|[Bx] Cx]].
+- by left.
+- by right.
+- by split=> //; left.
+- by split=> //; right.
+Qed.
 
 Lemma setM0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
@@ -1921,6 +1937,15 @@ Qed.
 End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
+
+Lemma setD_bigcup {T} (I : eqType) (F : I -> set T) (P : set I) (j : I) : P j ->
+  F j `\` \bigcup_(i in [set k | P k /\ k != j]) (F j `\` F i) =
+  \bigcap_(i in P) F i.
+Proof.
+move=> Pj; apply/seteqP; split => [t [Fjt UFt] i Pi|t UFt].
+  by have [->//|ij] := eqVneq i j; apply: contra_notP UFt => Fit; exists i.
+by split=> [|[k [Pk kj]] [Fjt]]; [|apply]; exact: UFt.
+Qed.
 
 Definition bigcup2 T (A B : set T) : nat -> set T :=
   fun i => if i == 0 then A else if i == 1 then B else set0.

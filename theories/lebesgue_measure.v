@@ -349,7 +349,7 @@ End LebesgueMeasure.
 
 Definition lebesgue_measure {R : realType} :
   set [the measurableType _.-sigma of
-       salgebraType R.-ocitv.-measurable] -> \bar R :=
+       g_sigma_algebraType R.-ocitv.-measurable] -> \bar R :=
   [the measure _ _ of lebesgue_stieltjes_measure [the cumulative _ of idfun]].
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
@@ -482,7 +482,7 @@ End puncture_ereal_itv.
 Section salgebra_R_ssets.
 Variable R : realType.
 
-Definition measurableTypeR := salgebraType (R.-ocitv.-measurable).
+Definition measurableTypeR := g_sigma_algebraType (R.-ocitv.-measurable).
 Definition measurableR : set (set R) :=
   (R.-ocitv.-measurable).-sigma.-measurable.
 
@@ -495,7 +495,7 @@ HB.instance Definition R_isMeasurable :
 
 Lemma measurable_set1 (r : R) : measurable [set r].
 Proof.
-rewrite set1_bigcap_oc; apply: bigcap_measurable => k // _.
+rewrite set1_bigcap_oc; apply: bigcap_measurable => // k _.
 by apply: sub_sigma_algebra; exact/is_ocitv.
 Qed.
 #[local] Hint Resolve measurable_set1 : core.
@@ -938,7 +938,7 @@ Qed.
 
 Section measurable_fun_measurable.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType).
 Variables (D : set T) (f : T -> \bar R).
 Hypotheses (mD : measurable D) (mf : measurable_fun D f).
 Implicit Types y : \bar R.
@@ -1242,9 +1242,9 @@ Definition G := [set A : set \bar R | exists r, A = `]r%:E, +oo[%classic].
 
 Lemma measurable_set1Ny : G.-sigma.-measurable [set -oo].
 Proof.
-rewrite eset1Ny; apply: bigcap_measurable => i _.
+rewrite eset1Ny; apply: bigcap_measurable => // i _.
 rewrite -setCitvr; apply: measurableC; rewrite (eitv_bnd_infty false).
-apply: bigcap_measurable => j _; apply: sub_sigma_algebra.
+apply: bigcap_measurable => // j _; apply: sub_sigma_algebra.
 by exists (- (i%:R + j.+1%:R^-1))%R; rewrite opprD.
 Qed.
 
@@ -1301,9 +1301,9 @@ Qed.
 
 Lemma measurable_set1y : G.-sigma.-measurable [set +oo].
 Proof.
-rewrite eset1y; apply: bigcap_measurable => i _.
+rewrite eset1y; apply: bigcap_measurable => // i _.
 rewrite -setCitvl; apply: measurableC; rewrite (eitv_infty_bnd true).
-apply: bigcap_measurable => j _; rewrite -setCitvr; apply: measurableC.
+apply: bigcap_measurable => // j _; rewrite -setCitvr; apply: measurableC.
 by apply: sub_sigma_algebra; exists (i%:R + j.+1%:R^-1)%R.
 Qed.
 
@@ -1356,38 +1356,6 @@ Qed.
 
 End erealgeninftyo.
 End ErealGenInftyO.
-
-Section trace.
-Variable (T : Type).
-Implicit Types (G : set (set T)) (A D : set T).
-
-(* intended as a trace sigma-algebra *)
-Definition strace G D := [set x `&` D | x in G].
-
-Lemma stracexx G D : G D -> strace G D D.
-Proof. by rewrite /strace /=; exists D => //; rewrite setIid. Qed.
-
-Lemma sigma_algebra_strace G D :
-  sigma_algebra setT G -> sigma_algebra D (strace G D).
-Proof.
-move=> [G0 GC GU]; split; first by exists set0 => //; rewrite set0I.
-- move=> S [A mA ADS]; have mCA := GC _ mA.
-  have : strace G D (D `&` ~` A).
-    by rewrite setIC; exists (setT `\` A) => //; rewrite setTD.
-  rewrite -setDE => trDA.
-  have DADS : D `\` A = D `\` S by rewrite -ADS !setDE setCI setIUr setICr setU0.
-  by rewrite DADS in trDA.
-- move=> S mS; have /choice[M GM] : forall n, exists A, G A /\ S n = A `&` D.
-    by move=> n; have [A mA ADSn] := mS n; exists A.
-  exists (\bigcup_i (M i)); first by apply GU => i;  exact: (GM i).1.
-  by rewrite setI_bigcupl; apply eq_bigcupr => i _; rewrite (GM i).2.
-Qed.
-
-End trace.
-
-Lemma strace_measurable d (T : measurableType d) (A : set T) : measurable A ->
-  strace measurable A `<=` measurable.
-Proof. by move=> mA=> _ [C mC <-]; apply: measurableI. Qed.
 
 (* more properties of measurable functions *)
 
@@ -1795,7 +1763,7 @@ Proof.
 move=> mf n mD.
 apply: (measurability (ErealGenCInfty.measurableE R)) => //.
 move=> _ [_ [x ->] <-]; rewrite einfs_preimage -bigcapIr; last by exists n =>/=.
-by apply: bigcap_measurable => ? ?; exact/mf/emeasurable_itv.
+by apply: bigcap_measurableType => ? ?; exact/mf/emeasurable_itv.
 Qed.
 
 Lemma measurable_fun_esups D (f : (T -> \bar R)^nat) :

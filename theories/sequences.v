@@ -301,37 +301,47 @@ by move=> ?; have [?|?] := pselect (F n x); [left | right].
 by move=> -[|[]//]; move: x; exact/subsetPset/ndF.
 Qed.
 
-Lemma eq_bigsetU_seqD F n : nondecreasing_seq F ->
-  F n = \big[setU/set0]_(i < n.+1) seqD F i.
+Lemma nondecreasing_bigsetU_seqD F n : nondecreasing_seq F ->
+  \big[setU/set0]_(i < n.+1) seqD F i = F n.
 Proof.
 move=> ndF; elim: n => [|n ih]; rewrite funeqE => x; rewrite propeqE; split.
-- by move=> ?; rewrite big_ord_recl big_ord0; left.
 - by rewrite big_ord_recl big_ord0 setU0.
-- rewrite (setU_seqD ndF) => -[|/=].
-  by rewrite big_ord_recr /= -ih => Fnx; left.
-  by move=> -[Fn1x Fnx]; rewrite big_ord_recr /=; right.
-- by rewrite big_ord_recr /= -ih => -[|[]//]; move: x; exact/subsetPset/ndF.
+- by move=> ?; rewrite big_ord_recl big_ord0; left.
+- by rewrite big_ord_recr /= ih => -[|[]//]; move: x; exact/subsetPset/ndF.
+- rewrite (setU_seqD ndF) => -[|/= [Fn1x Fnx]].
+    by rewrite big_ord_recr /= -ih => Fnx; left.
+  by rewrite big_ord_recr /=; right.
 Qed.
 
-Lemma eq_bigcup_seqD F : \bigcup_n F n = \bigcup_n seqD F n.
+Lemma eq_bigcup_seqD F : \bigcup_n seqD F n = \bigcup_n F n.
 Proof.
-rewrite funeqE => x; rewrite propeqE; split.
-  case; elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
-  have [|Fnx] := pselect (F n x); last by exists n.+1.
-  by move=> /(ih I)[m _ Fmx]; exists m.
-case; elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; by [exists O | exists n.+1].
+apply/seteqP; split => [x []|x []].
+  by elim=> [_ /= F0x|n ih _ /= [Fn1x Fnx]]; [exists O | exists n.+1].
+elim=> [_ F0x|n ih _ Fn1x]; first by exists O.
+have [|Fnx] := pselect (F n x); last by exists n.+1.
+by move=> /(ih I)[m _ Fmx]; exists m.
 Qed.
 
 Lemma eq_bigcup_seqD_bigsetU F :
   \bigcup_n (seqD (fun n => \big[setU/set0]_(i < n.+1) F i) n) = \bigcup_n F n.
 Proof.
-rewrite -(@eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
+rewrite (eq_bigcup_seqD (fun n => \big[setU/set0]_(i < n.+1) F i)).
 rewrite eqEsubset; split => [t [i _]|t [i _ Fit]].
   by rewrite -bigcup_seq_cond => -[/= j _ Fjt]; exists j.
 by exists i => //; rewrite big_ord_recr /=; right.
 Qed.
 
+Lemma bigcup_bigsetU_bigcup F :
+  \bigcup_k \big[setU/set0]_(i < k.+1) F i = \bigcup_k F k.
+Proof.
+apply/seteqP; split=> [x [i _]|x [i _ Fix]].
+  by rewrite -bigcup_mkord => -[j _ Fjx]; exists j.
+by exists i => //; rewrite big_ord_recr/=; right.
+Qed.
+
 End seqD.
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed to `nondecreasing_bigsetU_seqD`")]
+Notation eq_bigsetU_seqD := nondecreasing_bigsetU_seqD (only parsing).
 
 (** Convergence of patched sequences *)
 

@@ -33,6 +33,29 @@
 
 - in `normedtype.v`:
   + lemma `not_near_at_leftP`
+- in `classical_sets.v`:
+  + lemmas `setD_bigcup`, `nat_nonempty`
+  + hint `nat_nonempty`
+
+- in `measure.v`:
+  + structure `SigmaRing`, notation `sigmaRingType`
+  + factory `isSigmaRing`
+  + lemma `bigcap_measurable` for `sigmaRingType`
+  + lemma `setDI_semi_setD_closed`
+  + lemmas `powerset_lambda_system`, `lambda_system_smallest`, `sigmaRingType_lambda_system`
+  + definitions `niseq_closed`, `sigma_ring` (notation `<<sr _ >>`),
+    `monotone` (notation `<<M _ >>`)
+  + lemmas `smallest_sigma_ring`, `sigma_ring_monotone`, `g_sigma_ring_monotone`,
+    `sub_g_sigma_ring`, `setring_monotone_sigma_ring`, `g_monotone_monotone`,
+	`g_monotone_setring`, `g_monotone_g_sigma_ring`, `monotone_setring_sub_g_sigma_ring`
+
+- in `classical_sets.v`:
+  + lemma `bigcup_bigsetU_bigcup`
+  + lemmas `setDUD`, `setIDAC`
+
+- in `measure.v`:
+  + lemmas `powerset_sigma_ring`, `g_sigma_ring_strace`, `setI_g_sigma_ring`,
+    `subset_strace`
 
 - in `lebesgue_measure.v`:
   + lemma `measurable_fun_ler`
@@ -74,6 +97,9 @@
 - in `Rstruct.v`:
   + lemma `IZRposE`
 
+- in `measure.v`:
+  + lemma `strace_sigma_ring`
+
 ### Changed
 
 - in `forms.v`:
@@ -86,6 +112,28 @@
 
 - in `measure.v`:
   + change the hypothesis of `measurable_fun_bool`
+  + mixin `AlgebraOfSets_isMeasurable` renamed to `hasMeasurableCountableUnion`
+    and made to inherit from `SemiRingOfSets`
+
+- in `measure.v`:
+  + rm hypo and variable in lemma `smallest_monotone_classE`
+    and rename to `smallest_lambda_system`
+  + rm hypo in lemma `monotone_class_g_salgebra` and renamed
+    to `g_salgebra_lambda_system`
+  + rm hypo in lemma `monotone_class_subset` and renamed to
+    `lambda_system_subset`
+  + notation `<<m _, _>>` changed to `<<l _, _>>`,
+    notation `<<m _>>` changed to `<<l _>>`
+
+- moved from `lebesgue_measure.v` to `measure.v`:
+  + definition `strace`
+  + lemma `sigma_algebra_strace`
+
+- in `sequences.v`:
+  + equality reversed in lemma `eq_bigcup_seqD`
+- in `sequences.v`:
+  + `eq_bigsetU_seqD` renamed to `nondecreasing_bigsetU_seqD`
+    and equality reversed
 
 ### Renamed
 
@@ -135,10 +183,23 @@
   + `num_lte_maxl` -> `num_gte_max`
   + `num_lte_minr` -> `num_lte_min`
   + `num_lte_minl` -> `num_gte_min`
+- in `measure.v`:
+  + `bigcap_measurable` -> `bigcap_measurableType`
 
 - in `lebesgue_integral.v`:
   + `integral_measure_add` -> `ge0_integral_measure_add`
   + `integral_pushforward` -> `ge0_integral_pushforward`
+- in `measure.v`:
+  + `monotone_class` -> `lambda_system`
+  + `monotone_class_g_salgebra` -> `g_sigma_algebra_lambda_system`
+  + `smallest_monotone_classE` -> `smallest_lambda_system`
+  + `dynkin_monotone` -> `dynkin_lambda_system`
+  + `dynkin_g_dynkin` -> `g_dynkin_dynkin`
+  + `salgebraType` -> `g_sigma_algebraType`
+  + `g_salgebra_measure_unique_trace` -> `g_sigma_algebra_measure_unique_trace`
+  + `g_salgebra_measure_unique_cover` -> `g_sigma_algebra_measure_unique_cover`
+  + `g_salgebra_measure_unique` -> `g_sigma_algebra_measure_unique`
+  + `setI_closed_gdynkin_salgebra` -> `setI_closed_g_dynkin_g_sigma_algebra`
 
 ### Generalized
 
@@ -165,6 +226,45 @@
 
 - in `probability.v`:
   + lemma `markov`
+- in `measure.v`:
+  + from `measurableType` to `sigmaRingType`
+    * lemmas `bigcup_measurable`, `bigcapT_measurable`
+	* definition `measurable_fun`
+	* lemmas `measurable_id`, `measurable_comp`, `eq_measurable_fun`, `measurable_cst`,
+	  `measurable_fun_bigcup`, `measurable_funU`, `measurable_funS`, `measurable_fun_if`
+	* lemmas `semi_sigma_additiveE`, `sigma_additive_is_additive`, `measure_sigma_additive`
+	* definitions `pushforward`, `dirac`
+	* lemmas `diracE`, `dirac0`, `diracT`, `finite_card_sum`, `finite_card_dirac`, `infinite_card_dirac`
+	* definitions `msum`, `measure_add`, `mscale`, `mseries`, `mrestr`
+	* lemmas `msum_mzero`, `measure_addE`
+	* definition `sfinite_measure`
+	* mixin `isSFinite`, structure `SFiniteMeasure`
+	* structure `FiniteMeasure`
+	* factory `Measure_isSFinite`
+	* lemma `negligible_bigcup`
+	* definition `ae_eq`
+	* lemmas `ae_eq0`, `ae_eq_comp`, `ae_eq_funeposneg`, `ae_eq_refl`, `ae_eq_sym`,
+	  `ae_eq_trans`, `ae_eq_sub`, `ae_eq_mul2r`, `ae_eq_mul2l`, `ae_eq_mul1l`,
+	  `ae_eq_abse`, `ae_eq_subset`
+  + from `measurableType` to `sigmaRingType` and from `realType` to `realFieldType`
+	* definition `mzero`
+  + from `realType` to `realFieldType`:
+    * lemma `sigma_finite_mzero`
+
+- in `lebesgue_integral.v`:
+  + from `measurableType` to `sigmaRingType`
+    * mixin `isMeasurableFun` 
+    * structure `SimpleFun`
+	* structure `NonNegSimpleFun`
+	* sections `fimfun_bin`, `mfun_pred`, `sfun_pred`, `simple_bounded`
+	* lemmas `nnfun_muleindic_ge0`, `mulemu_ge0`, `nnsfun_mulemu_ge0`
+	* section `sintegral_lemmas`
+	* lemma `eq_sintegral`
+	* section `sintegralrM`
+
+- in `lebesgue_measure.v`:
+  + from `measurableType` to `sigmaRingType`
+    * section `measurable_fun_measurable`
 
 ### Deprecated
 
@@ -190,6 +290,8 @@
 
 - in `reals.v`
   + lemma `inf_lower_bound` (use `inf_lb` instead)
+- in `lebesgue_measure.v`:
+  + lemmas `stracexx`, `strace_measurable`
 
 ### Infrastructure
 
