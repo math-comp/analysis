@@ -17,7 +17,7 @@ Add Search Blacklist "_mixin_".
 (*          set_fun A B f == f : aT -> rT is a function with domain           *)
 (*                           A : set aT and codomain B : set rT               *)
 (*         set_surj A B f == f is surjective                                  *)
-(*          set inj A B f == f is injective                                   *)
+(*          set_inj A B f == f is injective                                   *)
 (*          set_bij A B f == f is bijective                                   *)
 (*                                                                            *)
 (*          {fun A >-> B} == type of functions f : aT -> rT from A : set aT   *)
