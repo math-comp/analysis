@@ -188,6 +188,9 @@
   + canonical `rev_mulmx`
   + structure `revop`
 
+- in `reals.v`
+  + lemma `inf_lower_bound` (use `inf_lb` instead)
+
 ### Infrastructure
 
 ### Misc
