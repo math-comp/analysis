@@ -286,12 +286,11 @@ Lemma nonincreasing_at_right_cvgr f a (b : itv_bound R) : (BRight a < b)%O ->
 Proof.
 move=> ab lef ubf; set M := sup _.
 have supf : has_sup [set f x | x in [set` Interval (BRight a) b]].
-  split => //; case: b ab {lef ubf M} => [[|] t ta|[]] /=.
+  split => //; case: b ab {lef ubf M} => [[|] t ta|[]] //=.
   - exists (f ((a + t) / 2)), ((a + t) / 2) => //=.
     by rewrite in_itv/= !midf_lt.
   - exists (f ((a + t) / 2)), ((a + t) / 2) => //=.
     by rewrite in_itv/= midf_lt// midf_le// ltW.
-  - by exists (f (a + 1)), (a + 1).
   - by exists (f (a + 1)), (a + 1) => //=; rewrite in_itv/= ltrDl andbT.
 apply/cvgrPdist_le => _/posnumP[e].
 have {supf} [p [ap pb]] :
