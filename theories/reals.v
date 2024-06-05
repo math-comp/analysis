@@ -375,12 +375,6 @@ Variables (R : realType).
 Implicit Types E : set R.
 Implicit Types x : R.
 
-Lemma inf_lower_bound E : has_inf E -> lbound E (inf E).
-Proof.
-move=> /has_inf_supN /sup_upper_bound /ubP inflb; apply/lbP => x.
-by rewrite memNE => /inflb; rewrite lerNl.
-Qed.
-
 Lemma inf_adherent E (eps : R) : 0 < eps ->
   has_inf E -> exists2 e, E e & e < inf E + eps.
 Proof.
@@ -735,7 +729,7 @@ Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
 Proof.
 set P := [set y | _]; move=> hs; rewrite -subr_gt0.
 move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrCA subrr addr0 => ltFxl.
-by exists x=> //; move/lbP : (inf_lower_bound hs) => -> //; exists x.
+by exists x => //; rewrite (inf_lb hs.2)//; exists x.
 Qed.
 
 End Sup.
