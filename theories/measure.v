@@ -400,8 +400,8 @@ Definition sigma_algebra :=
 Definition dynkin := [/\ G setT, setC_closed & trivIset_closed].
 
 (**md Until MathComp-Analysis 1.1.0, the identifier was `monotone_class`
-because this definition corresponds to "classe monotone" is several
-French references, e.g., the definition of "class monotone" on the French wikipedia. *)
+because this definition corresponds to "classe monotone" in several
+French references, e.g., the definition of "classe monotone" on the French wikipedia. *)
 Definition lambda_system :=
   [/\ forall A, G A -> A `<=` D, G D, setD_closed & ndseq_closed].
 
@@ -925,6 +925,10 @@ Qed.
 End dynkin_lemmas.
 #[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `setI_closed_g_dynkin_g_sigma_algebra`")]
 Notation setI_closed_gdynkin_salgebra := setI_closed_g_dynkin_g_sigma_algebra (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `g_dynkin_dynkin`")]
+Notation dynkin_g_dynkin := g_dynkin_dynkin (only parsing).
+#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed into `dynkin_lambda_system`")]
+Notation dynkin_monotone := dynkin_lambda_system (only parsing).
 
 Section trace.
 Variable (T : Type).

@@ -340,8 +340,6 @@ by exists i => //; rewrite big_ord_recr/=; right.
 Qed.
 
 End seqD.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed to `bigcup_bigsetU_bigcup`")]
-Notation eq_bigcup_bigsetU := bigcup_bigsetU_bigcup (only parsing).
 #[deprecated(since="mathcomp-analysis 1.2.0", note="renamed to `nondecreasing_bigsetU_seqD`")]
 Notation eq_bigsetU_seqD := nondecreasing_bigsetU_seqD (only parsing).
 

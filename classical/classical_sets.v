@@ -1032,11 +1032,8 @@ Proof. by move=> *; rewrite setUC setUKD. Qed.
 Lemma setIDA A B C : A `&` (B `\` C) = (A `&` B) `\` C.
 Proof. by rewrite !setDE setIA. Qed.
 
-Lemma setIDAC A B C : (A `\` B) `&` C = A `&` C `\` B.
-Proof.
-apply/seteqP; split => [x [[Ax Bx] Cx]|x]; first by split.
-by move=> [[Ax Cx Bx]]; split.
-Qed.
+Lemma setIDAC A B C : (A `\` B) `&` C = A `&` (C `\` B).
+Proof. by rewrite setIC !setIDA setIC. Qed.
 
 Lemma setDD A B : A `\` (A `\` B) = A `&` B.
 Proof. by rewrite 2!setDE setCI setCK setIUr setICr set0U. Qed.
@@ -1055,11 +1052,11 @@ Proof. by rewrite setUC -setDDr setDv setD0. Qed.
 
 Lemma setDUD A B C : (A `|` B) `\` C = A `\` C `|` B `\` C.
 Proof.
-apply/seteqP; split => [x [[Ax|Bx] Cx]|x [[Ax]|[Bx] Cx]].
+apply/seteqP; split=> [x [[Ax|Bx] Cx]|x [[Ax]|[Bx] Cx]].
 - by left.
-- by right; split.
-- by split => //; left.
-- by split => //; right.
+- by right.
+- by split=> //; left.
+- by split=> //; right.
 Qed.
 
 Lemma setM0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
@@ -1946,10 +1943,8 @@ Lemma setD_bigcup {T} (I : eqType) (F : I -> set T) (P : set I) (j : I) : P j ->
   \bigcap_(i in P) F i.
 Proof.
 move=> Pj; apply/seteqP; split => [t [Fjt UFt] i Pi|t UFt].
-  have [->//|ij] := eqVneq i j.
-  by apply: contrapT => Fit; apply: UFt; by exists i.
-split; first exact: UFt.
-by move=> [k/= [Pk kj]] [Fjt]; apply; exact: UFt.
+  by have [->//|ij] := eqVneq i j; apply: contra_notP UFt => Fit; exists i.
+by split=> [|[k [Pk kj]] [Fjt]]; [|apply]; exact: UFt.
 Qed.
 
 Definition bigcup2 T (A B : set T) : nat -> set T :=

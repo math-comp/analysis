@@ -50,7 +50,7 @@
 	`g_monotone_setring`, `g_monotone_g_sigma_ring`, `monotone_setring_sub_g_sigma_ring`
 
 - in `classical_sets.v`:
-  + lemma `eq_bigcup_bigsetU`
+  + lemma `bigcup_bigsetU_bigcup`
   + lemmas `setDUD`, `setIDAC`
 
 - in `measure.v`:
@@ -97,6 +97,9 @@
 - in `Rstruct.v`:
   + lemma `IZRposE`
 
+- in `measure.v`:
+  + lemma `strace_sigma_ring`
+
 ### Changed
 
 - in `forms.v`:
@@ -109,7 +112,6 @@
 
 - in `measure.v`:
   + change the hypothesis of `measurable_fun_bool`
-  + mixin `AlgebraOfSets_isMeasurable` renamed to `hasCountableUnion`
   + mixin `AlgebraOfSets_isMeasurable` renamed to `hasMeasurableCountableUnion`
     and made to inherit from `SemiRingOfSets`
 
@@ -120,7 +122,8 @@
     to `g_salgebra_lambda_system`
   + rm hypo in lemma `monotone_class_subset` and renamed to
     `lambda_system_subset`
-  + notation `<<m _, _>>` changed to `<<l _, _>>`
+  + notation `<<m _, _>>` changed to `<<l _, _>>`,
+    notation `<<m _>>` changed to `<<l _>>`
 
 - moved from `lebesgue_measure.v` to `measure.v`:
   + definition `strace`
@@ -128,6 +131,9 @@
 
 - in `sequences.v`:
   + equality reversed in lemma `eq_bigcup_seqD`
+- in `sequences.v`:
+  + `eq_bigsetU_seqD` renamed to `nondecreasing_bigsetU_seqD`
+    and equality reversed
 
 ### Renamed
 
@@ -184,7 +190,7 @@
   + `integral_measure_add` -> `ge0_integral_measure_add`
   + `integral_pushforward` -> `ge0_integral_pushforward`
 - in `measure.v`:
-  + `monotone_classP` -> `lambda_system`
+  + `monotone_class` -> `lambda_system`
   + `monotone_class_g_salgebra` -> `g_sigma_algebra_lambda_system`
   + `smallest_monotone_classE` -> `smallest_lambda_system`
   + `dynkin_monotone` -> `dynkin_lambda_system`
@@ -194,11 +200,6 @@
   + `g_salgebra_measure_unique_cover` -> `g_sigma_algebra_measure_unique_cover`
   + `g_salgebra_measure_unique` -> `g_sigma_algebra_measure_unique`
   + `setI_closed_gdynkin_salgebra` -> `setI_closed_g_dynkin_g_sigma_algebra`
-
-- in `sequences.v`:
-  + `eq_bigcup_bigsetU` -> `bigcup_bigsetU_bigcup`
-  + `eq_bigsetU_seqD` -> `nondecreasing_bigsetU_seqD`
-
 
 ### Generalized
 
