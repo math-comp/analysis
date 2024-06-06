@@ -84,7 +84,7 @@ We try to preserve backward compatibility as best as we can.
 ## Documentation
 
 Each file is documented in its header
-([`coq2html`](https://github.com/xavierleroy/coq2html) [documentation for the last version](https://math-comp.github.io/analysis/htmldoc_1_1_0/index.html)).
+([documentation for the last version](https://math-comp.github.io/analysis/htmldoc_1_2_0/index.html), using [`coq2html`](https://github.com/xavierleroy/coq2html)).
 
 Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 
