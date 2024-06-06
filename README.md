@@ -99,19 +99,19 @@ Other work using MathComp-Analysis:
 ## Mathematical structures
 
 MathComp-Analysis adds mathematical structures on top of MathComp's ones.
-The following inheritance diagram displays the resulting hiearchy
+The following inheritance diagram displays the resulting hierarchy as of version 1.1.0
 (excluding most MathComp structures).
 The structures introduced by MathComp-Analysis are highlighted.
 (See `topology.v`, `normedtype.v`, `reals.v`, `measure.v`.)
 
-<img width="600" alt="Main_inheritance_graph" src="etc/hierarchy_main.png">
+<img width="600" alt="Main_inheritance_graph" src="etc/hierarchy_main.1.1.0.png">
 
 
 ### Hierarchies of functions
 
 | Functions | Functions with a finite image | Measures | Kernels |
 |:----------:|:-----------------------------:|:--------:|:-------:|
-| <img width="300" alt="Functions" src="etc/hierarchy_functions.png"> | <img width="200" alt="Functions_with_a_finite_image" src="etc/hierarchy_fimfun.png"> | <img width="300" alt="Measures" src="etc/hierarchy_measure.png"> | <img width="200" alt="Kernels" src="etc/hierarchy_kernel.png"> |
+| <img width="300" alt="Functions" src="etc/hierarchy_functions.1.1.0.png"> | <img width="200" alt="Functions_with_a_finite_image" src="etc/hierarchy_fimfun.1.1.0.png"> | <img width="300" alt="Measures" src="etc/hierarchy_measure.1.1.0.png"> | <img width="200" alt="Kernels" src="etc/hierarchy_kernel.1.1.0.png"> |
 | (see `functions.v`) | (see `cardinality.v`, `lebesgue_integral.v`) | (see `measure.v`, `charge.v`) | (see `kernel.v`) |
 
 ## Development information
