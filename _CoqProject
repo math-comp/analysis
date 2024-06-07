@@ -45,6 +45,7 @@ theories/lebesgue_integral.v
 theories/ftc.v
 theories/hoelder.v
 theories/probability.v
+theories/sampling.v
 theories/summability.v
 theories/signed.v
 theories/itv.v
