@@ -2374,7 +2374,7 @@ near=> n; have [ifoo|] := ltP (\int[mu]_(x in D) f x) +oo; last first.
   by near: n; exists 1%N => // n /= n0; rewrite gtr0_sg// ?lte_fin// ltr0n.
 rewrite -(@fineK _ (\int[mu]_(x in D) f x)); last first.
   by rewrite fin_numElt ifoo (le_lt_trans _ if_gt0).
-rewrite -lee_pdivr_mulr//; last first.
+rewrite -lee_pdivrMr//; last first.
   by move: if_gt0 ifoo; case: (\int[mu]_(x in D) f x).
 near: n.
 exists `|reals.ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
@@ -2619,7 +2619,7 @@ rewrite monotone_convergence //.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
   exists `|reals.ceil (M / fine (mu D))|%N => // m /=.
   rewrite -(ler_nat R) => MDm; rewrite -(@fineK _ (mu D)) ?ge0_fin_numE//.
-  rewrite -lee_pdivr_mulr; last by rewrite fine_gt0// lt0e muD0 measure_ge0.
+  rewrite -lee_pdivrMr; last by rewrite fine_gt0// lt0e muD0 measure_ge0.
   rewrite lee_fin (le_trans _ MDm)//.
   by rewrite natr_absz (le_trans (ceil_ge _))// ler_int ler_norm.
 - by move=> n; exact: measurable_cst.
@@ -5175,7 +5175,7 @@ apply: (le_lt_trans (integral_le_bound (M *+ 2)%:E _ _ _ _)) => //.
 - by rewrite lee_fin mulrn_wge0// ltW.
 - apply: aeW => z [Ez _]; rewrite /= lee_fin mulr2n.
   by rewrite (le_trans (ler_normB _ _))// lerD.
-by rewrite -lte_pdivl_mull ?mulrn_wgt0// muleC -EFinM.
+by rewrite -lte_pdivlMl ?mulrn_wgt0// muleC -EFinM.
 Qed.
 
 End continuous_density_L1.
@@ -6029,7 +6029,7 @@ have ka_pos : fine k / a \is Num.pos.
 have k_fin_num : k \is a fin_num.
   by rewrite ge0_fin_numE ?locally_integrable_ltbally// integral_ge0.
 have kar : (0 < 2^-1 * (fine k / a) - r)%R.
-  move: afxr; rewrite -{1}(fineK k_fin_num) -lte_pdivr_mulr; last first.
+  move: afxr; rewrite -{1}(fineK k_fin_num) -lte_pdivrMr; last first.
     by rewrite fine_gt0// k_gt0/= ltey_eq k_fin_num.
   rewrite (lebesgue_measure_ball _ (ltW r0))//.
   rewrite -!EFinM !lte_fin -invf_div ltf_pV2 ?posrE ?pmulrn_lgt0//.
@@ -6038,7 +6038,7 @@ have kar : (0 < 2^-1 * (fine k / a) - r)%R.
 near (0%R : R)^'+ => d.
 have axrdk : a%:E < (fine (mu (ball x (r + d))))^-1%:E * k.
   rewrite lebesgue_measure_ball//; last by rewrite addr_ge0// ltW.
-  rewrite -(fineK k_fin_num) -lte_pdivr_mulr; last first.
+  rewrite -(fineK k_fin_num) -lte_pdivrMr; last first.
     by rewrite fine_gt0// k_gt0/= locally_integrable_ltbally.
   rewrite -!EFinM !lte_fin -invf_div ltf_pV2//; last first.
     by rewrite posrE fine_gt0// ltry andbT lte_fin pmulrn_lgt0// addr_gt0.
@@ -6086,7 +6086,7 @@ have r_proof x : HL f x > c%:E -> {r | (0 < r)%R &
   rewrite in_itv/= andbT => rg0 <-{y} Hc; exists r => //.
   rewrite -(@fineK _ (mu (ball x r))) ?ge0_fin_numE//; last first.
     by rewrite lebesgue_measure_ball ?ltry// ltW.
-  rewrite -lte_pdivl_mulr// 1?muleC// fine_gt0//.
+  rewrite -lte_pdivlMr// 1?muleC// fine_gt0//.
   by rewrite lebesgue_measure_ball 1?ltW// ltry lte_fin mulrn_wgt0.
 rewrite lebesgue_regularity_inner_sup//; last first.
   rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
@@ -6127,7 +6127,7 @@ rewrite !EFinM -muleA lee_wpmul2l//=.
 apply: (@le_trans _ _
     (\sum_(i <- E) c^-1%:E * \int[mu]_(y in B i) `|(f y)|%:E)).
   rewrite [in leLHS]big_seq [in leRHS]big_seq; apply: lee_sum => r /ED /Dsub /[!inE] rD.
-  by rewrite -lee_pdivr_mull ?invr_gt0// invrK /B/=; exact/ltW/cMfx_int.
+  by rewrite -lee_pdivrMl ?invr_gt0// invrK /B/=; exact/ltW/cMfx_int.
 rewrite -ge0_sume_distrr//; last by move=> x _; rewrite integral_ge0.
 rewrite lee_wpmul2l//; first by rewrite lee_fin invr_ge0 ltW.
 rewrite -ge0_integral_bigsetU//=.
@@ -6220,7 +6220,7 @@ near=> t.
 have [t0|t0] := leP t 0%R; first by rewrite /= davg0//= subrr normr0 ltW.
 rewrite sub0r normrN /= ger0_norm; last by rewrite fine_ge0// davg_ge0.
 rewrite -lee_fin fineK//; last by rewrite dfx//= sub0r normrN gtr0_norm.
-rewrite /davg/= /iavg/= lee_pdivr_mull//; last first.
+rewrite /davg/= /iavg/= lee_pdivrMl//; last first.
   by rewrite fine_gt0// lebesgue_measure_ball// ?ltry ?lte_fin ?mulrn_wgt0 ?ltW.
 rewrite (@le_trans _ _ (\int[mu]_(y in ball x t) e%:E))//.
   apply: ge0_le_integral => //=.
@@ -6577,7 +6577,7 @@ have HL_null n : mu (HLf_g_Be n) <= (3%:R / (e / 2))%:E * n.+1%:R^-1%:E.
   by rewrite indicE; case: (_ \in _) => /=; rewrite !(mulr1, mulr0).
 have fgn_null n : mu [set x | `|(f_ k \- g_B n) x|%:E >= (e / 2)%:E] <=
                      (e / 2)^-1%:E * n.+1%:R^-1%:E.
-  rewrite lee_pdivl_mull ?invr_gt0 ?divr_gt0// -[X in mu X]setTI.
+  rewrite lee_pdivlMl ?invr_gt0 ?divr_gt0// -[X in mu X]setTI.
   apply: le_trans.
     apply: (@le_integral_comp_abse _ _ _ mu _ measurableT
         (EFin \o (f_ k \- g_B n)%R) (e / 2) id) => //=.
@@ -6606,7 +6606,7 @@ rewrite (@le_trans _ _ ((4 / (e / 2))%:E * n.+1%:R^-1%:E))//.
   apply: le_trans; first by apply: leeD; [exact: HL_null|exact: fgn_null].
   rewrite -muleDl// lee_pmul2r// -EFinD lee_fin -{2}(mul1r (_^-1)) -div1r.
   by rewrite -mulrDl natr1.
-rewrite -lee_pdivl_mull ?divr_gt0// -EFinM lee_fin -(@invrK _ r).
+rewrite -lee_pdivlMl ?divr_gt0// -EFinM lee_fin -(@invrK _ r).
 rewrite -invrM ?unitfE ?gt_eqF ?invr_gt0 ?divr_gt0//.
 rewrite lef_pV2 ?posrE ?mulr_gt0 ?invr_gt0 ?divr_gt0//.
 by rewrite -(@natr1 _ n) -lerBlDr; near: n; exact: nbhs_infty_ger.
@@ -6773,7 +6773,7 @@ Lemma nicely_shrinking_gt0 x E : nicely_shrinking x E ->
   forall n, (0 < mu (E n))%E.
 Proof.
 move=> [mE [[C r_]]] [/= C_gt0 _ _ + ] n => /(_ n).
-rewrite lebesgue_measure_ball// -lee_pdivr_mull//.
+rewrite lebesgue_measure_ball// -lee_pdivrMl//.
 apply: lt_le_trans.
 by rewrite mule_gt0// lte_fin invr_gt0.
 Qed.

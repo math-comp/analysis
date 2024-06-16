@@ -2392,7 +2392,7 @@ have {}ZNF5 : mu (Z r%:num) <=
   + apply: bigcup_measurable => k _; case: ifPn => // _.
     by apply: measurable_closure; exact: is_scale_ball.
 apply/(le_trans ZNF5).
-move/ltW: F5e; rewrite [in X in X -> _](@lee_pdivl_mull R 5%:R) ?ltr0n//.
+move/ltW: F5e; rewrite [in X in X -> _](@lee_pdivlMl R 5%:R) ?ltr0n//.
 rewrite -nneseriesZl//; last by move=> *; exact: esum_ge0.
 apply: le_trans; apply: lee_nneseries => //; first by move=> *; exact: esum_ge0.
 move=> n _.
