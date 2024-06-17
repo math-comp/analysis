@@ -186,7 +186,9 @@ From HB Require Import structures.
 (*                       intersection                                         *)
 (*      setU_closed G == the set of sets G is closed under finite union       *)
 (*      setC_closed G == the set of sets G is closed under complement         *)
-(*      setD_closed G == the set of sets G is closed under difference         *)
+(*     setSD_closed G == the set of sets G is closed under relative           *)
+(*                       difference                                           *)
+(*     setDI_closed G == the set of sets G is closed under difference         *)
 (*     ndseq_closed G == the set of sets G is closed under non-decreasing     *)
 (*                       countable union                                      *)
 (*     niseq_closed G == the set of sets G is closed under non-increasing     *)
@@ -350,7 +352,7 @@ Context {T} (C : set (set T) -> Prop) (D : set T) (G : set (set T)).
 Definition setC_closed := forall A, G A -> G (~` A).
 Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
 Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
-Definition setD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
+Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
 Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
 
 Definition fin_bigcap_closed :=
@@ -405,13 +407,15 @@ Definition dynkin := [/\ G setT, setC_closed & trivIset_closed].
 because this definition corresponds to "classe monotone" in several
 French references, e.g., the definition of "classe monotone" on the French wikipedia. *)
 Definition lambda_system :=
-  [/\ forall A, G A -> A `<=` D, G D, setD_closed & ndseq_closed].
+  [/\ forall A, G A -> A `<=` D, G D, setSD_closed & ndseq_closed].
 
 Definition monotone := ndseq_closed /\ niseq_closed.
 
 End classes.
 #[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `lambda_system`")]
 Notation monotone_class := lambda_system (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `setSD_closed`")]
+Notation setD_closed := setSD_closed (only parsing).
 
 Lemma powerset_sigma_ring (T : Type) (D : set T) :
   sigma_ring [set X | X `<=` D].
@@ -480,7 +484,7 @@ by rewrite setICA; apply: GI => //; apply: GA.
 Qed.
 
 Lemma sedDI_closedP T (G : set (set T)) :
-  setDI_closed G <-> (setI_closed G /\ setD_closed G).
+  setDI_closed G <-> (setI_closed G /\ setSD_closed G).
 Proof.
 split=> [GDI|[GI GD]].
   by split=> A B => [|AB] => GA GB; rewrite -?setDD//; do ?apply: (GDI).
@@ -502,7 +506,7 @@ Qed.
 Lemma sigma_algebraP T U (C : set (set T)) :
   (forall X, C X -> X `<=` U) ->
   sigma_algebra U C <->
-  [/\ C U, setD_closed C, ndseq_closed C & setI_closed C].
+  [/\ C U, setSD_closed C, ndseq_closed C & setI_closed C].
 Proof.
 move=> C_subU; split => [[C0 CD CU]|[DT DC DU DI]]; split.
 - by rewrite -(setD0 U); apply: CD.
@@ -737,7 +741,7 @@ suff: setI_closed <<l D, G >>.
   by apply/sigma_algebraP; case: lambdaDG.
 pose H := <<l D, G >>.
 pose H_ A := [set X | H X /\ H (X `&` A)].
-have setDH_ A : setD_closed (H_ A).
+have setDH_ A : setSD_closed (H_ A).
   move=> X Y XY [HX HXA] [HY HYA]; case: lambdaDG => h _ setDH _; split.
     exact: setDH.
   rewrite (_ : _ `&` _ = (X `&` A) `\` (Y `&` A)); last first.
@@ -3702,7 +3706,7 @@ Proof.
 move=> sDHD; set E := [set A | [/\ measurable A, m1 A = m2 A & A `<=` D] ].
 have HE : H `<=` E.
   by move=> X HX; rewrite /E /=; split; [exact: Hm|exact: m1m2|case: HX].
-have setDE : setD_closed E.
+have setDE : setSD_closed E.
   move=> A B BA [mA m1m2A AD] [mB m1m2B BD]; split; first exact: measurableD.
   - rewrite measureD//; last first.
       by rewrite (le_lt_trans _ m1oo)//; apply: le_measure => // /[!inE].
