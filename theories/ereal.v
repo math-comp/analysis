@@ -1266,7 +1266,7 @@ rewrite predeq2E => x A; split.
     case=> [r' /= re'r'| |]/=.
     * rewrite /ereal_ball in re'r'.
       have [r'r|rr'] := lerP (contract r'%:E) (contract r%:E).
-        apply: reA; rewrite /ball /= real_ltr_norml // ?num_real //.
+        apply: reA; rewrite /ball /= ltr_norml//.
         rewrite ger0_norm ?subr_ge0// in re'r'.
         have : (contract (r%:E - e%:num%:E) < contract r'%:E)%R.
           move: re'r'; rewrite /e' lt_min => /andP[+ _].
@@ -1276,7 +1276,7 @@ rewrite predeq2E => x A; split.
         rewrite ltrBlDr addrC -ltrBlDr => ->; rewrite andbT.
         rewrite (@lt_le_trans _ _ 0%R)// 1?ltrNl 1?oppr0// subr_ge0.
         by rewrite -lee_fin -le_contract.
-      apply: reA; rewrite /ball /= real_ltr_norml // ?num_real //.
+      apply: reA; rewrite /ball /= ltr_norml//.
       rewrite ltr0_norm ?subr_lt0// opprB in re'r'.
       apply/andP; split; last first.
         by rewrite (@lt_trans _ _ 0%R) // subr_lt0 -lte_fin -lt_contract.
@@ -1402,21 +1402,24 @@ Lemma cvg_ereal_loc_seq (R : realType) (x : \bar R) :
 Proof.
 move=> P; rewrite /ereal_loc_seq.
 case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 first.
-    have /ZnatP[N Nfloor] : floor (Num.max d 0%R) \is a Znat.
-      by rewrite Znat_def floor_ge0 le_max lexx orbC.
+    have /natrP[N Nfloor] : Num.floor (Num.max d 0%R) \is a Num.nat.
+      by rewrite natr_def floor_ge0 le_max lexx orbC.
     exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin.
     have /le_lt_trans : (d <= Num.max d 0)%R by rewrite le_max lexx.
-    by apply; rewrite (lt_le_trans (reals.lt_succ_floor _))// Nfloor natr1 ler_nat.
-  have /ZnatP [N Nfloor] : floor (Num.max (- d)%R 0%R) \is a Znat.
-    by rewrite Znat_def floor_ge0 le_max lexx orbC.
+    apply; rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor _))// Nfloor.
+    by rewrite natr1 mulrz_nat ler_nat.
+  have /natrP[N Nfloor] : Num.floor (Num.max (- d)%R 0%R) \is a Num.nat.
+    by rewrite natr_def floor_ge0 le_max lexx orbC.
   exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin ltrNl.
   have /le_lt_trans : (- d <= Num.max (- d) 0)%R by rewrite le_max lexx.
-  by apply; rewrite (lt_le_trans (reals.lt_succ_floor _))// Nfloor natr1 ler_nat.
-have /ZnatP[N Nfloor] : floor (d%:num^-1) \is a Num.nat.
-  by rewrite Znat_def floor_ge0.
+  apply; rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor _))// Nfloor.
+  by rewrite natr1 mulrz_nat ler_nat.
+have /natrP[N Nfloor] : Num.floor d%:num^-1 \is a Num.nat.
+  by rewrite natr_def floor_ge0.
 exists N => // n leNn; apply: dP; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym; exact/invr_neq0/lt0r_neq0.
 rewrite /= opprD addrA subrr distrC subr0 gtr0_norm; last by rewrite invr_gt0.
 rewrite -[ltLHS]mulr1 ltr_pdivrMl // -ltr_pdivrMr // div1r.
-by rewrite (lt_le_trans (reals.lt_succ_floor _))// Nfloor lerD// ler_nat.
+rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor _))// Nfloor.
+by rewrite !natr1 mulrz_nat ler_nat.
 Qed.

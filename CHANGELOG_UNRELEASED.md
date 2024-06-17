@@ -27,12 +27,32 @@
   + lemma `FTC1` (specialization of the previous `FTC1` lemma, now renamed to `FTC1_lebesgue_pt`)
   + lemma `FTC1Ny`
 
+- in `reals.v`:
+  + lemma `mem_rg1_floor`
+
+- in `mathcomp_extra.v`:
+  + lemma `ge_floor`
+
+- in `mathcomp_extra.v`:
+  + lemmas `intr1`, `int1r`, `natr_def`
+
 ### Changed
 
 - in `topology.v`:
   + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
     `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
 	into local `Let`'s
+
+- in `reals.v`:
+  + definitions `Rceil`, `Rfloor`
+
+- moved from `reals.v` to `mathcomp_extra.v`
+  + lemma `lt_succ_floor`: conclusion changed to match `lt_succ_floor` in MathComp,
+    generalized to `archiDomainType`
+  + generalized to `archiDomainType`:
+    lemmas `floor_ge0`, `floor_le0`, `floor_lt0`, `floor_natz`,
+    `floor_ge_int`, `floor_neq0`, `floor_lt_int`, `ceil_ge`, `ceil_ge0`, `ceil_gt0`,
+    `ceil_le0`, `ceil_ge_int`, `ceil_lt_int`, `ceilN`, `abs_ceil_ge`
 
 ### Renamed
 
@@ -62,7 +82,18 @@
 
 ### Deprecated
 
+- in `reals.v`:
+  + `floor_le` (use `ge_floor` instead)
+  + `le_floor` (use `Num.Theory.floor_le` instead)
+  + `le_ceil` (use `ceil_ge` instead)
+
 ### Removed
+
+- in `reals.v`:
+  + definition `floor` (use `Num.floor` instead)
+  + definition `ceil` (use `Num.ceil` instead)
+  + lemmas `floor0`, `floor1`
+  + lemma `le_floor` (use `Num.Theory.floor_le` instead)
 
 ### Infrastructure
 
