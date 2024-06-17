@@ -1,6 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
+From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum archimedean.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
+From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality.
 Require Import ereal reals signed topology prodnormedzmodule normedtype derive.
@@ -183,7 +184,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   apply/cvgrPdist_lt => r r0; near=> t.
   rewrite /sval/=; case: cid => x [px xpt _].
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists `|ceil (r^-1)|%N => // s /=.
+  near: t; exists `|ceil r^-1|%N => // s /=.
   rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
   by rewrite natr_absz gtr0_norm ?ceil_gt0 ?invr_gt0// ceil_ge.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
@@ -1426,7 +1427,6 @@ Proof. by move=> fct fK; have [] := near_can_continuousAcan_sym fK fct. Qed.
 End real_inverse_functions.
 
 Section real_inverse_function_instances.
-
 Variable R : realType.
 
 Lemma exprn_continuous n : continuous (@GRing.exp R ^~ n).
@@ -2268,7 +2268,7 @@ have Nffin : TV a x (\- f) \is a fin_num.
   exact: (bounded_variationl ax xb).
 rewrite /pos_tv /neg_tv /= total_variationN -fineB -?muleBl // ?fineM //.
 - rewrite addeAC oppeD //= ?fin_num_adde_defl //.
-  by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -Num.Theory.splitr.
+  by rewrite addeA subee // add0e -EFinD //= opprK mulrDl -splitr.
 - by rewrite fin_numB ?fin_numD ?ffin; apply/andP; split.
 - by apply: fin_num_adde_defl; rewrite fin_numN fin_numD; apply/andP; split.
 - by rewrite fin_numM // fin_numD; apply/andP; split.
@@ -2343,7 +2343,7 @@ rewrite {1}variation_prev; last exact: itv_partition1.
 rewrite /= -addeA -lteBrDr; last by rewrite fin_numD; apply/andP.
 rewrite EFinD -lte_fin ?fineK // oppeD //= ?fin_num_adde_defl // opprK addeA.
 move/lt_trans; apply.
-rewrite [x in (_ < x%:E)%E]Num.Theory.splitr EFinD addeC lteD2lE //.
+rewrite [x in (_ < x%:E)%E]splitr EFinD addeC lteD2lE //.
 rewrite -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
   rewrite [in leRHS]variation_prev; last exact: itv_partition1.

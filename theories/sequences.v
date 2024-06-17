@@ -1274,9 +1274,10 @@ Proof.
 rewrite /series; near \oo => N; have xN : x < N%:R; last first.
   rewrite -(@is_cvg_series_restrict N.+1).
   by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; apply: S1_sup.
-near: N; exists (absz (reals.floor x)).+1 => // m; rewrite /mkset -(@ler_nat R).
-move/lt_le_trans => -> //; rewrite (lt_le_trans (reals.lt_succ_floor x)) // -addn1.
-by rewrite natrD lerD2r -(@gez0_abs (reals.floor x)) ?reals.floor_ge0// ltW.
+near: N; exists (absz (floor x)).+1 => // m; rewrite /mkset -(@ler_nat R).
+move/lt_le_trans => -> //.
+rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor x))//.
+by rewrite -intr1 -natr1 lerD2r -(@gez0_abs (floor x)) ?floor_ge0// ltW.
 Unshelve. all: by end_near. Qed.
 
 End exponential_series_cvg.

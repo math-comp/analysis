@@ -252,10 +252,10 @@ End pseudoMetricnormedzmodule_lemmas.
 Lemma bigcup_ballT {R : realType} : \bigcup_n ball (0%R : R) n%:R = setT.
 Proof.
 apply/seteqP; split => // x _; have [x0|x0] := ltP 0%R x.
-  exists `|reals.ceil x|.+1 => //.
+  exists `|ceil x|.+1 => //.
   rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
   by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_pwDr.
-exists `|reals.ceil (- x)|.+1 => //.
+exists `|ceil (- x)|.+1 => //.
 rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
 rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?lerNr ?oppr0//.
 by rewrite ltr_pwDr.
@@ -596,7 +596,7 @@ Proof.
 split=> [/cvgryPge|/cvgnyPge] Foo.
   by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
 apply/cvgryPgey; near=> A; near=> n.
-rewrite (le_trans (@ceil_ge R A))// (ler_int _ _ (f n)) [reals.ceil _]intEsign.
+rewrite (le_trans (@ceil_ge R A))// (ler_int _ _ (f n)) [ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
@@ -4919,7 +4919,7 @@ Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
 Proof.
 rewrite compact_cover => Aco.
 have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (reals.floor `|p| + 1) => //; rewrite rmorphD/= reals.lt_succ_floor.
+  by move=> p _; exists (floor `|p| + 1) => //=; rewrite lt_succ_floor.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
   apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
@@ -5763,13 +5763,13 @@ Notation r_gt0 := vitali_collection_partition_ub_gt0.
 Lemma ex_vitali_collection_partition i :
   V i -> exists n, vitali_collection_partition n i.
 Proof.
-move=> Vi; pose f := reals.floor (r / (radius (B i))%:num).
+move=> Vi; pose f := floor (r / (radius (B i))%:num).
 have f_ge0 : 0 <= f by rewrite floor_ge0// divr_ge0// ltW// (r_gt0 Vi).
 have [m /andP[mf fm]] := leq_ltn_expn `|f|.-1.
 exists m; split => //; apply/andP; split => [{mf}|{fm}].
   rewrite -(@ler_nat R) in fm.
   rewrite ltr_pdivrMr// mulrC -ltr_pdivrMr// (lt_le_trans _ fm)//.
-  rewrite (lt_le_trans (reals.lt_succ_floor _))//= -/f -natr1 lerD2r//.
+  rewrite (lt_le_trans (lt_succ_floor _))//= -/f intrD -natr1 lerD2r//.
   have [<-|f0] := eqVneq 0 f; first by rewrite /= ler0n.
   rewrite prednK//; last by rewrite absz_gt0 eq_sym.
   by rewrite natr_absz// ger0_norm.
@@ -5779,7 +5779,7 @@ rewrite ler_pdivlMr// mulrC -ler_pdivlMr//.
 have [f0|f0] := eqVneq 0 f.
   by move: mf; rewrite -f0 absz0 leNgt expnS ltr_nat leq_pmulr// expn_gt0.
 rewrite (le_trans mf)// prednK//; last by rewrite absz_gt0 eq_sym.
-by rewrite natr_absz// ger0_norm// reals.floor_le.
+by rewrite natr_absz// ger0_norm// mathcomp_extra.ge_floor.
 Qed.
 
 Lemma cover_vitali_collection_partition :
