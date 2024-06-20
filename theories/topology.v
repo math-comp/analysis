@@ -6403,17 +6403,18 @@ End SubspaceUniform.
 
 Section SubspacePseudoMetric.
 Context {R : numDomainType} {X : pseudoMetricType R} (A : set X).
+Implicit Type e : R.
 
 Definition subspace_ball (x : subspace A) (r : R) :=
   if x \in A then A `&` ball (x : X) r else [set x].
 
-Lemma subspace_pm_ball_center x (e : R) : 0 < e -> subspace_ball x e x.
+Let subspace_pm_ball_center x e : 0 < e -> subspace_ball x e x.
 Proof.
 rewrite /subspace_ball; case: ifP => //= /asboolP ? ?.
 by split=> //; exact: ballxx.
 Qed.
 
-Lemma subspace_pm_ball_sym x y (e : R) :
+Let subspace_pm_ball_sym x y e :
   subspace_ball x e y -> subspace_ball y e x.
 Proof.
 rewrite /subspace_ball; case: ifP => //= /asboolP ?.
@@ -6421,7 +6422,7 @@ rewrite /subspace_ball; case: ifP => //= /asboolP ?.
 by move=> ->; case: ifP => /asboolP.
 Qed.
 
-Lemma subspace_pm_ball_triangle x y z e1 e2 :
+Let subspace_pm_ball_triangle x y z e1 e2 :
   subspace_ball x e1 y -> subspace_ball y e2 z -> subspace_ball x (e1 + e2) z.
 Proof.
 rewrite /subspace_ball; (repeat case: ifP => /asboolP).
@@ -6431,7 +6432,7 @@ rewrite /subspace_ball; (repeat case: ifP => /asboolP).
 - by move=> _ _ -> ->.
 Qed.
 
-Lemma subspace_pm_entourageE :
+Let subspace_pm_entourageE :
   @entourage (subspace A) = entourage_ subspace_ball.
 Proof.
 rewrite eqEsubset; split; rewrite /subspace_ball.
@@ -6451,6 +6452,10 @@ HB.instance Definition _ :=
   @Uniform_isPseudoMetric.Build R (subspace A) subspace_ball
     subspace_pm_ball_center subspace_pm_ball_sym subspace_pm_ball_triangle
     subspace_pm_entourageE.
+
+Lemma ball_subspace_ball (x : subspace A) r (y : subspace A) :
+  ball x r y = subspace_ball x r y.
+Proof. by []. Qed.
 
 End SubspacePseudoMetric.
 
