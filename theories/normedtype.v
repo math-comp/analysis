@@ -2941,10 +2941,10 @@ move=> [s||]/=.
   by apply: near_fun => //=; apply: continuousM => //=; apply: cvg_cst.
 - rewrite gt0_muley ?lte_fin// => A [u [realu uA]].
   exists (r^-1 * u)%R; split; first by rewrite realM// realV realE ltW.
-  by move=> x rux; apply: uA; move: rux; rewrite EFinM lte_pdivr_mull.
+  by move=> x rux; apply: uA; move: rux; rewrite EFinM lte_pdivrMl.
 - rewrite gt0_muleNy ?lte_fin// => A [u [realu uA]].
   exists (r^-1 * u)%R; split; first by rewrite realM// realV realE ltW.
-  by move=> x xru; apply: uA; move: xru; rewrite EFinM lte_pdivl_mull.
+  by move=> x xru; apply: uA; move: xru; rewrite EFinM lte_pdivlMl.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvgeMl f x y : y \is a fin_num ->
@@ -2981,7 +2981,7 @@ Proof.
 move=> b_gt0 /cvgeyPge foo /fine_cvgP[gfin gb]; apply/cvgeyPgey.
 near (0%R : R)^'+ => e; near=> A; near=> n.
 rewrite (@le_trans _ _ (f n * e%:E))// ?lee_pmul// ?lee_fin//.
-- by rewrite -lee_pdivr_mulr ?divr_gt0//; near: n; apply: foo.
+- by rewrite -lee_pdivrMr ?divr_gt0//; near: n; apply: foo.
 - by rewrite (@le_trans _ _ 1) ?lee_fin//; near: n; apply: foo.
 rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
 by near: n; apply: (cvgr_ge b).
@@ -2993,7 +2993,7 @@ Proof.
 move=> b0 /cvgeyPge foo /fine_cvgP -[gfin gb]; apply/cvgeNyPleNy.
 near (0%R : R)^'+ => e; near=> A; near=> n.
 rewrite -leeN2 -muleN (@le_trans _ _ (f n * e%:E))//.
-  by rewrite -lee_pdivr_mulr ?mulr_gt0 ?oppr_gt0//; near: n; apply: foo.
+  by rewrite -lee_pdivrMr ?mulr_gt0 ?oppr_gt0//; near: n; apply: foo.
 rewrite lee_pmul ?lee_fin//.
   by rewrite (@le_trans _ _ 1) ?lee_fin//; near: n; apply: foo.
 rewrite -(@fineK _ (g n)) ?lee_fin; last by near: n; exact: gfin.
@@ -3270,7 +3270,7 @@ have : (edist (x, y) <= (eps%:num / 2)%:E)%E.
   apply: ereal_inf_lb; exists (eps%:num / 2) => //; split => //.
   exact: (bxy (eps%:num / 2)%:pos).
 apply: contra_leP => _.
-by rewrite /= EFinM fineK// lte_pdivr_mulr// lte_pmulr// lte1n.
+by rewrite /= EFinM fineK// lte_pdivrMr// lte_pmulr// lte1n.
 Qed.
 
 Lemma edist_refl x : edist (x, x) = 0%E. Proof. exact/edist_closeP. Qed.

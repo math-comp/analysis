@@ -3143,7 +3143,7 @@ move: x y => [x||] [y||] // in x0 h *.
 - by have := h _ h01; rewrite mulr_infty sgrV gtr0_sg // mul1e.
 Qed.
 
-Lemma lte_pdivr_mull r x y : (0 < r)%R -> (r^-1%:E * y < x) = (y < r%:E * x).
+Lemma lte_pdivrMl r x y : (0 < r)%R -> (r^-1%:E * y < x) = (y < r%:E * x).
 Proof.
 move=> r0; move: x y => [x| |] [y| |] //=.
 - by rewrite 2!lte_fin ltr_pdivrMl.
@@ -3157,10 +3157,10 @@ move=> r0; move: x y => [x| |] [y| |] //=.
 - by rewrite mulr_infty [in RHS]mulr_infty sgrV gtr0_sg// mul1e.
 Qed.
 
-Lemma lte_pdivr_mulr r x y : (0 < r)%R -> (y * r^-1%:E < x) = (y < x * r%:E).
-Proof. by move=> r0; rewrite muleC lte_pdivr_mull// muleC. Qed.
+Lemma lte_pdivrMr r x y : (0 < r)%R -> (y * r^-1%:E < x) = (y < x * r%:E).
+Proof. by move=> r0; rewrite muleC lte_pdivrMl// muleC. Qed.
 
-Lemma lte_pdivl_mull r y x : (0 < r)%R -> (x < r^-1%:E * y) = (r%:E * x < y).
+Lemma lte_pdivlMl r y x : (0 < r)%R -> (x < r^-1%:E * y) = (r%:E * x < y).
 Proof.
 move=> r0; move: x y => [x| |] [y| |] //=.
 - by rewrite 2!lte_fin ltr_pdivlMl.
@@ -3174,78 +3174,112 @@ move=> r0; move: x y => [x| |] [y| |] //=.
 - by rewrite mulr_infty [in RHS]mulr_infty sgrV gtr0_sg// mul1e.
 Qed.
 
-Lemma lte_pdivl_mulr r x y : (0 < r)%R -> (x < y * r^-1%:E) = (x * r%:E < y).
-Proof. by move=> r0; rewrite muleC lte_pdivl_mull// muleC. Qed.
+Lemma lte_pdivlMr r x y : (0 < r)%R -> (x < y * r^-1%:E) = (x * r%:E < y).
+Proof. by move=> r0; rewrite muleC lte_pdivlMl// muleC. Qed.
 
-Lemma lte_ndivl_mulr r x y : (r < 0)%R -> (x < y * r^-1%:E) = (y < x * r%:E).
+Lemma lte_ndivlMr r x y : (r < 0)%R -> (x < y * r^-1%:E) = (y < x * r%:E).
 Proof.
 rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
-by rewrite EFinN muleN lteNr lte_pdivr_mulr// EFinN muleNN.
+by rewrite EFinN muleN lteNr lte_pdivrMr// EFinN muleNN.
 Qed.
 
-Lemma lte_ndivl_mull r x y : (r < 0)%R -> (x < r^-1%:E * y) = (y < r%:E * x).
-Proof. by move=> r0; rewrite muleC lte_ndivl_mulr// muleC. Qed.
+Lemma lte_ndivlMl r x y : (r < 0)%R -> (x < r^-1%:E * y) = (y < r%:E * x).
+Proof. by move=> r0; rewrite muleC lte_ndivlMr// muleC. Qed.
 
-Lemma lte_ndivr_mull r x y : (r < 0)%R -> (r^-1%:E * y < x) = (r%:E * x < y).
+Lemma lte_ndivrMl r x y : (r < 0)%R -> (r^-1%:E * y < x) = (r%:E * x < y).
 Proof.
 rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
-by rewrite EFinN mulNe lteNl lte_pdivl_mull// EFinN muleNN.
+by rewrite EFinN mulNe lteNl lte_pdivlMl// EFinN muleNN.
 Qed.
 
-Lemma lte_ndivr_mulr r x y : (r < 0)%R -> (y * r^-1%:E < x) = (x * r%:E < y).
-Proof. by move=> r0; rewrite muleC lte_ndivr_mull// muleC. Qed.
+Lemma lte_ndivrMr r x y : (r < 0)%R -> (y * r^-1%:E < x) = (x * r%:E < y).
+Proof. by move=> r0; rewrite muleC lte_ndivrMl// muleC. Qed.
 
-Lemma lee_pdivr_mull r x y : (0 < r)%R -> (r^-1%:E * y <= x) = (y <= r%:E * x).
+Lemma lee_pdivrMl r x y : (0 < r)%R -> (r^-1%:E * y <= x) = (y <= r%:E * x).
 Proof.
 move=> r0; apply/idP/idP.
-- rewrite le_eqVlt => /predU1P[<-|]; last by rewrite lte_pdivr_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[<-|]; last by rewrite lte_pdivrMl// => /ltW.
   by rewrite muleA -EFinM divrr ?mul1e// unitfE gt_eqF.
-- rewrite le_eqVlt => /predU1P[->|]; last by rewrite -lte_pdivr_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[->|]; last by rewrite -lte_pdivrMl// => /ltW.
   by rewrite muleA -EFinM mulVr ?mul1e// unitfE gt_eqF.
 Qed.
 
-Lemma lee_pdivr_mulr r x y : (0 < r)%R -> (y * r^-1%:E <= x) = (y <= x * r%:E).
-Proof. by move=> r0; rewrite muleC lee_pdivr_mull// muleC. Qed.
+Lemma lee_pdivrMr r x y : (0 < r)%R -> (y * r^-1%:E <= x) = (y <= x * r%:E).
+Proof. by move=> r0; rewrite muleC lee_pdivrMl// muleC. Qed.
 
-Lemma lee_pdivl_mull r y x : (0 < r)%R -> (x <= r^-1%:E * y) = (r%:E * x <= y).
+Lemma lee_pdivlMl r y x : (0 < r)%R -> (x <= r^-1%:E * y) = (r%:E * x <= y).
 Proof.
 move=> r0; apply/idP/idP.
-- rewrite le_eqVlt => /predU1P[->|]; last by rewrite lte_pdivl_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[->|]; last by rewrite lte_pdivlMl// => /ltW.
   by rewrite muleA -EFinM divrr ?mul1e// unitfE gt_eqF.
-- rewrite le_eqVlt => /predU1P[<-|]; last by rewrite -lte_pdivl_mull// => /ltW.
+- rewrite le_eqVlt => /predU1P[<-|]; last by rewrite -lte_pdivlMl// => /ltW.
   by rewrite muleA -EFinM mulVr ?mul1e// unitfE gt_eqF.
 Qed.
 
-Lemma lee_pdivl_mulr r x y : (0 < r)%R -> (x <= y * r^-1%:E) = (x * r%:E <= y).
-Proof. by move=> r0; rewrite muleC lee_pdivl_mull// muleC. Qed.
+Lemma lee_pdivlMr r x y : (0 < r)%R -> (x <= y * r^-1%:E) = (x * r%:E <= y).
+Proof. by move=> r0; rewrite muleC lee_pdivlMl// muleC. Qed.
 
-Lemma lee_ndivl_mulr r x y : (r < 0)%R -> (x <= y * r^-1%:E) = (y <= x * r%:E).
+Lemma lee_ndivlMr r x y : (r < 0)%R -> (x <= y * r^-1%:E) = (y <= x * r%:E).
 Proof.
 rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
-by rewrite EFinN muleN leeNr lee_pdivr_mulr// EFinN muleNN.
+by rewrite EFinN muleN leeNr lee_pdivrMr// EFinN muleNN.
 Qed.
 
-Lemma lee_ndivl_mull r x y : (r < 0)%R -> (x <= r^-1%:E * y) = (y <= r%:E * x).
-Proof. by move=> r0; rewrite muleC lee_ndivl_mulr// muleC. Qed.
+Lemma lee_ndivlMl r x y : (r < 0)%R -> (x <= r^-1%:E * y) = (y <= r%:E * x).
+Proof. by move=> r0; rewrite muleC lee_ndivlMr// muleC. Qed.
 
-Lemma lee_ndivr_mull r x y : (r < 0)%R -> (r^-1%:E * y <= x) = (r%:E * x <= y).
+Lemma lee_ndivrMl r x y : (r < 0)%R -> (r^-1%:E * y <= x) = (r%:E * x <= y).
 Proof.
 rewrite -oppr0 ltrNr => r0; rewrite -{1}(opprK r) invrN.
-by rewrite EFinN mulNe leeNl lee_pdivl_mull// EFinN muleNN.
+by rewrite EFinN mulNe leeNl lee_pdivlMl// EFinN muleNN.
 Qed.
 
-Lemma lee_ndivr_mulr r x y : (r < 0)%R -> (y * r^-1%:E <= x) = (x * r%:E <= y).
-Proof. by move=> r0; rewrite muleC lee_ndivr_mull// muleC. Qed.
+Lemma lee_ndivrMr r x y : (r < 0)%R -> (y * r^-1%:E <= x) = (x * r%:E <= y).
+Proof. by move=> r0; rewrite muleC lee_ndivrMl// muleC. Qed.
 
-Lemma eqe_pdivr_mull r x y : (r != 0)%R ->
+Lemma eqe_pdivrMl r x y : (r != 0)%R ->
   ((r^-1)%:E * y == x) = (y == r%:E * x).
 Proof.
 rewrite neq_lt => /orP[|] r0.
-- by rewrite eq_le lee_ndivr_mull// lee_ndivl_mull// -eq_le.
-- by rewrite eq_le lee_pdivr_mull// lee_pdivl_mull// -eq_le.
+- by rewrite eq_le lee_ndivrMl// lee_ndivlMl// -eq_le.
+- by rewrite eq_le lee_pdivrMl// lee_pdivlMl// -eq_le.
 Qed.
 
 End realFieldType_lemmas.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivrMl`")]
+Notation lte_pdivr_mull := lte_pdivrMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivrMr`")]
+Notation lte_pdivr_mulr := lte_pdivrMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivlMl`")]
+Notation lte_pdivl_mull := lte_pdivlMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_pdivlMr`")]
+Notation lte_pdivl_mulr := lte_pdivlMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivrMl`")]
+Notation lee_pdivr_mull := lee_pdivrMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivrMr`")]
+Notation lee_pdivr_mulr := lee_pdivrMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivlMl`")]
+Notation lee_pdivl_mull := lee_pdivlMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_pdivlMr`")]
+Notation lee_pdivl_mulr := lee_pdivlMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivrMl`")]
+Notation lte_ndivr_mull := lte_ndivrMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivrMr`")]
+Notation lte_ndivr_mulr := lte_ndivrMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivlMl`")]
+Notation lte_ndivl_mull := lte_ndivlMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_ndivlMr`")]
+Notation lte_ndivl_mulr := lte_ndivlMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivrMl`")]
+Notation lee_ndivr_mull := lee_ndivrMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivrMr`")]
+Notation lee_ndivr_mulr := lee_ndivrMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivlMl`")]
+Notation lee_ndivl_mull := lee_ndivlMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_ndivlMr`")]
+Notation lee_ndivl_mulr := lee_ndivlMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `eqe_pdivrMl`")]
+Notation eqe_pdivr_mull := eqe_pdivrMl (only parsing).
 
 Module DualAddTheoryRealField.
 

@@ -179,7 +179,7 @@ under eq_integral do rewrite EFinM muleC.
 have foo : \int[mu]_x (`|f x| `^ p)%:E < +oo.
   move/integrableP: ifp => -[_].
   by under eq_integral do rewrite gee0_abs// ?lee_fin ?powR_ge0//.
-rewrite integralZl//; apply/eqP; rewrite eqe_pdivr_mull ?mule1.
+rewrite integralZl//; apply/eqP; rewrite eqe_pdivrMl ?mule1.
 - by rewrite fineK// gt0_fin_numE.
 - by rewrite gt_eqF// fine_gt0// foo andbT.
 Qed.
@@ -423,14 +423,14 @@ suff : 'N_p%:E[(f \+ g)%R] `^ p <= ('N_p%:E[f] + 'N_p%:E[g]) *
     'N_p%:E[(f \+ g)%R] `^ p * (fine 'N_p%:E[(f \+ g)%R])^-1%:E.
   have [-> _|Nfg0] := eqVneq 'N_p%:E[(f \+ g)%R] 0.
     by rewrite adde_ge0 ?Lnorm_ge0.
-  rewrite lee_pdivl_mulr ?fine_gt0// ?lt0e ?Nfg0 ?Lnorm_ge0//.
+  rewrite lee_pdivlMr ?fine_gt0// ?lt0e ?Nfg0 ?Lnorm_ge0//.
   rewrite -{1}(@fineK _ ('N_p%:E[(f \+ g)%R] `^ p)); last first.
     by rewrite fin_num_poweR// ge0_fin_numE// Lnorm_ge0.
-  rewrite -(invrK (fine _)) lee_pdivr_mull; last first.
+  rewrite -(invrK (fine _)) lee_pdivrMl; last first.
     rewrite invr_gt0 fine_gt0// (poweR_lty _ Nfgoo) andbT poweR_gt0//.
     by rewrite lt0e Nfg0 Lnorm_ge0.
   rewrite fineK ?ge0_fin_numE ?Lnorm_ge0// => /le_trans; apply.
-  rewrite lee_pdivr_mull; last first.
+  rewrite lee_pdivrMl; last first.
     by rewrite fine_gt0// poweR_lty// andbT poweR_gt0// lt0e Nfg0 Lnorm_ge0.
   by rewrite fineK// 1?muleC// fin_num_poweR// ge0_fin_numE ?Lnorm_ge0.
 have p0 : (0 < p)%R by exact: (lt_trans _ p1).

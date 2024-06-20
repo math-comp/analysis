@@ -558,7 +558,7 @@ move=> t0.
 rewrite /mmt_gen_fun; have -> : expR \o r \o* X =
     (normr \o normr) \o [the {mfun T >-> R} of expR \o r \o* X].
   by apply: funext => t /=; rewrite normr_id ger0_norm ?expR_ge0.
-rewrite expRN lee_pdivl_mulr ?expR_gt0//.
+rewrite expRN lee_pdivlMr ?expR_gt0//.
 rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
   exact: (monoW_in (@ger0_le_norm _)).
 rewrite ger0_norm ?expR_ge0// muleC lee_pmul2l// ?lte_fin ?expR_gt0//.
@@ -573,7 +573,7 @@ move => heps; have [->|hv] := eqVneq 'V_P[X] +oo.
   by rewrite mulr_infty gtr0_sg ?mul1e// ?leey// invr_gt0// exprn_gt0.
 have h (Y : {RV P >-> R}) :
     P [set x | (eps <= `|Y x|)%R] <= (eps ^- 2)%:E * 'E_P[Y ^+ 2].
-  rewrite -lee_pdivr_mull; last by rewrite invr_gt0// exprn_gt0.
+  rewrite -lee_pdivrMl; last by rewrite invr_gt0// exprn_gt0.
   rewrite exprnN expfV exprz_inv opprK -exprnP.
   apply: (@le_trans _ _ ('E_P[(@GRing.exp R ^~ 2%N \o normr) \o Y])).
     apply: (@markov Y (@GRing.exp R ^~ 2%N)) => //.
@@ -658,7 +658,7 @@ have le (u : R) : (0 <= u)%R ->
     by apply/measurableT_comp => //; apply/measurable_funD.
   set eps := ((lambda + u) ^ 2)%R.
   have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_wpDr.
-  rewrite (lee_pdivl_mulr _ _ peps) muleC.
+  rewrite (lee_pdivlMr _ _ peps) muleC.
   under eq_set => x.
     rewrite -[leRHS]gee0_abs ?lee_fin ?sqr_ge0 -?lee_fin => [|//].
     rewrite -[(_ ^+ 2)%R]/(((Y \+ cst u) ^+ 2) x)%R; over.
