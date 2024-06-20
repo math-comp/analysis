@@ -186,7 +186,7 @@ From HB Require Import structures.
 (*                       intersection                                         *)
 (*      setU_closed G == the set of sets G is closed under finite union       *)
 (*      setC_closed G == the set of sets G is closed under complement         *)
-(*     setSD_closed G == the set of sets G is closed under relative           *)
+(*     setSD_closed G == the set of sets G is closed under proper             *)
 (*                       difference                                           *)
 (*     setDI_closed G == the set of sets G is closed under difference         *)
 (*     ndseq_closed G == the set of sets G is closed under non-decreasing     *)
