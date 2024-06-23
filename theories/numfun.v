@@ -555,7 +555,7 @@ have [|?] := pselect (forall x, A x -> `|f x| <= M); last by exists point.
 by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
 Qed.
 
-Let onem_twothirds : 1 - 2/3%:R = 1/3%:R :> R.
+Let onem_twothirds : 1 - 2/3 = 1/3 :> R.
 Proof. by apply/eqP; rewrite subr_eq/= -mulrDl nat1r divrr// unitfE. Qed.
 
 Lemma continuous_bounded_extension (f : X -> R^o) M :
@@ -569,7 +569,7 @@ pose f_ := fix F n :=
 pose g_ n := projT1 (tietze_step (f_ n) (M2d3 n)).
 have fgE n : f_ n - f_ n.+1 = g_ n by rewrite /= opprB addrC subrK.
 have twothirds1 : `|2/3| < 1 :> R.
-  by rewrite gtr0_norm //= ltr_pdivrMr// mul1r ltr_nat.
+  by rewrite gtr0_norm//= ltr_pdivrMr// mul1r ltr_nat.
 have f_geo n : {within A, continuous f_ n} /\
     (forall x, A x -> `|f_ n x| <= geometric M%:num (2/3) n).
   elim: n => [|n [ctsN bdN]]; first by split=> //= x ?; rewrite expr0 mulr1 fbd.
@@ -581,8 +581,7 @@ have g_cts n : continuous (g_ n).
 have g_bd n : forall x, `|g_ n x| <= geometric ((1/3) * M%:num) (2/3) n.
   have [ctsN bdfN] := f_geo n; rewrite /geometric /= -[_ * M%:num * _]mulrA.
   by have [_ _] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdfN.
-pose h_ : nat -> arrow_uniform_type X R^o :=
-  @series {uniform X -> _} g_.
+pose h_ : nat -> arrow_uniform_type X R^o := @series {uniform X -> _} g_.
 have cvgh' : cvg (h_ @ \oo).
   apply/cauchy_cvgP/cauchy_ballP => eps epos; near_simpl.
   suff : \forall x & x' \near \oo, (x' <= x)%N -> ball (h_ x) eps (h_ x').

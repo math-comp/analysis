@@ -6568,12 +6568,12 @@ have locg_B n : locally_integrable [set: R] (g_B n).
       by rewrite normr0 lee_fin.
 have locf_g_B n : locally_integrable setT (f_ k \- g_B n)%R.
   apply: locally_integrableB => //; split.
-  + by move/EFin_measurable_fun : mf.
-  + exact: openT.
-  + move=> K _ cK; rewrite (le_lt_trans _ intf)//=.
+  - by move/EFin_measurable_fun : mf.
+  - exact: openT.
+  - move=> K _ cK; rewrite (le_lt_trans _ intf)//=.
     apply: ge0_subset_integral => //.
-    * exact: compact_measurable.
-    * by do 2 apply: measurableT_comp => //; move/EFin_measurable_fun : mf.
+    + exact: compact_measurable.
+    + by do 2 apply: measurableT_comp => //; move/EFin_measurable_fun : mf.
 have mEHL i : measurable (HLf_g_Be i).
   rewrite /HLf_g_Be -[X in measurable X]setTI.
   apply: emeasurable_fun_o_infty => //.
@@ -6607,7 +6607,7 @@ have davgfEe : B k `&` [set x | (f_ k)^* x > e%:E] `<=` Ee.
   rewrite {1}(splitr e) EFinD -lteBrDl// => /ltW/le_trans; apply.
   by rewrite leeBlDl// leeD.
 suff: mu Ee = 0 by exists Ee.
-have HL_null n : mu (HLf_g_Be n) <= (3%:R / (e / 2))%:E * n.+1%:R^-1%:E.
+have HL_null n : mu (HLf_g_Be n) <= (3 / (e / 2))%:E * n.+1%:R^-1%:E.
   rewrite (le_trans (maximal_inequality _ _ )) ?divr_gt0//.
   rewrite lee_pmul2l ?lte_fin ?divr_gt0//.
   set h := (fun x => `|(f_ k \- g_ n) x|%:E) \_ (B k).
