@@ -6,6 +6,7 @@
 
 - in `ftc.v`:
   + lemma `FTC1` (specialization of the previous `FTC1` lemma, now renamed to `FTC1_lebesgue_pt`)
+  + lemma `FTC1Ny`
 
 ### Changed
 
