@@ -4,7 +4,15 @@
 
 ### Added
 
+- in `topology.v`:
+  + lemma `ball_subspace_ball`
+
 ### Changed
+
+- in `topology.v`:
+  + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
+    `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
+	into local `Let`'s
 
 ### Renamed
 
