@@ -205,6 +205,15 @@ apply: filterS; first exact: (ae_filter_ringOfSetsType mu).
 by move=> i fi ai; apply: FTC1_lebesgue_pt => //; rewrite ltNyr.
 Qed.
 
+Corollary FTC1Ny f : mu.-integrable setT (EFin \o f) ->
+  let F x := (\int[mu]_(t in [set` `]-oo, x]]) (f t))%R in
+  {ae mu, forall x, derivable F x 1 /\ F^`() x = f x}.
+Proof.
+move=> intf F; have := FTC1 -oo%O intf.
+apply: filterS; first exact: (ae_filter_ringOfSetsType mu).
+by move=> r /=; apply; rewrite ltNyr.
+Qed.
+
 Corollary continuous_FTC1 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) (f t))%R in
   forall x, a < BRight x -> {for x, continuous f} ->
