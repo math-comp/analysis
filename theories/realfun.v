@@ -858,16 +858,8 @@ Proof. by rewrite /lime_sup -limf_einfN. Qed.
 Lemma lime_supN f a : lime_sup (\- f) a = - lime_inf f a.
 Proof. by rewrite /lime_inf oppeK. Qed.
 
-Lemma lime_sup_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_sup f a.
-Proof.
-move=> f0; rewrite lime_supE; apply: lb_ereal_inf => /= x [e /=].
-rewrite in_itv/= andbT => e0 <-{x}; rewrite -(ereal_sup1 0) ereal_sup_le //=.
-exists (f (a + e / 2)%R); last by rewrite ereal_sup1 f0.
-exists (a + e / 2)%R => //=; split.
-  rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
-  by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
-by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
-Qed.
+Lemma __deprecated__lime_sup_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_sup f a.
+Proof. by move=> f0; exact: limf_esup_ge0. Qed.
 
 Lemma lime_inf_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_inf f a.
 Proof.
@@ -1066,6 +1058,8 @@ move=> supfal inffal; apply/cvg_at_leftNP/lime_sup_inf_at_right.
 Qed.
 
 End lime_sup_inf.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `limf_esup_ge0` instead")]
+Notation lime_sup_ge0 := __deprecated__lime_sup_ge0 (only parsing).
 
 Section derivable_oo_continuous_bnd.
 Context {R : numFieldType} {V : normedModType R}.
