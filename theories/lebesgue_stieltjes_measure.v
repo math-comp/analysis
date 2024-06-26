@@ -17,20 +17,22 @@ Require Import real_interval measure realfun.
 (* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*    right_continuous f == the function f is right-continuous                *)
-(*          cumulative R == type of non-decreasing, right-continuous          *)
-(*                          functions (with R : numFieldType)                 *)
-(*                          The HB class is Cumulative.                       *)
-(*                          instance: idfun                                   *)
-(*          ocitv_type R == alias for R : realType                            *)
-(*                 ocitv == set of open-closed intervals ]x, y] where         *)
-(*                          x and y are real numbers                          *)
-(*              R.-ocitv == display for ocitv_type R                          *)
-(*  R.-ocitv.-measurable == semiring of sets of open-closed intervals         *)
-(*           wlength f A := f b - f a with the hull of the set of real        *)
-(*                          numbers A being delimited by a and b              *)
+(*           right_continuous f == the function f is right-continuous         *)
+(*                 cumulative R == type of non-decreasing, right-continuous   *)
+(*                                 functions (with R : numFieldType)          *)
+(*                                 The HB class is Cumulative.                *)
+(*                                 instance: idfun                            *)
+(*                 ocitv_type R == alias for R : realType                     *)
+(*                        ocitv == set of open-closed intervals ]x, y] where  *)
+(*                                 x and y are real numbers                   *)
+(*                     R.-ocitv == display for ocitv_type R                   *)
+(*         R.-ocitv.-measurable == semiring of sets of open-closed intervals  *)
+(*                  wlength f A := f b - f a with the hull of the set of real *)
+(*                                 numbers A being delimited by a and b       *)
 (* lebesgue_stieltjes_measure f == Lebesgue-Stieltjes measure for f           *)
-(*                          f is a cumulative function.                       *)
+(*                                 f is a cumulative function.                *)
+(* completed_lebesgue_stieltjes_measure f == the completed Lebesgue-Stieltjes *)
+(*                                 measure                                    *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -523,3 +525,24 @@ by move=> A mA; rewrite -muE// -measurable_mu_extE.
 Qed.
 
 End lebesgue_stieltjes_measure.
+
+Section completed_lebesgue_stieltjes_measure.
+Context {R : realType}.
+
+Definition completed_lebesgue_stieltjes_measure (f : cumulative R) :=
+  @completed_measure_extension _ _ _ [the measure _ _ of wlength f].
+
+HB.instance Definition _ (f : cumulative R) :=
+  Measure.on (@completed_lebesgue_stieltjes_measure f).
+
+Let sigmaT_finite_completed_lebesgue_stieltjes_measure (f : cumulative R) :
+  sigma_finite setT (@completed_lebesgue_stieltjes_measure f).
+Proof. exact/completed_measure_extension_sigma_finite/wlength_sigma_finite. Qed.
+
+HB.instance Definition _ (f : cumulative R) :=
+  @Measure_isSigmaFinite.Build _ _ _
+    (@completed_lebesgue_stieltjes_measure f)
+    (sigmaT_finite_completed_lebesgue_stieltjes_measure f).
+
+End completed_lebesgue_stieltjes_measure.
+Arguments completed_lebesgue_stieltjes_measure {R}.

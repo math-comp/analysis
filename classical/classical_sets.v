@@ -732,6 +732,16 @@ Qed.
 Lemma setDKU A B : A `<=` B -> (B `\` A) `|` A = B.
 Proof. by move=> /setDUK; rewrite setUC. Qed.
 
+Lemma setDU A B C : A `<=` B -> B `<=` C -> C `\` A = (C `\` B) `|` (B `\` A).
+Proof.
+move=> AB BC; apply/seteqP; split.
+  move=> x [Cx Ax].
+  by have [Bx|Bx] := pselect (B x); [right|left].
+move=> x [[Cx Bx]|[Bx Ax]].
+- by split => // /AB.
+- by split => //; exact/BC.
+Qed.
+
 Lemma setDv A : A `\` A = set0.
 Proof. by rewrite predeqE => t; split => // -[]. Qed.
 

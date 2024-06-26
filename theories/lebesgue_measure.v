@@ -24,12 +24,15 @@ Require Export lebesgue_stieltjes_measure.
 (* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*      lebesgue_measure == the Lebesgue measure                              *)
-(*              ps_infty == inductive definition of the powerset              *)
-(*                          {0, {-oo}, {+oo}, {-oo,+oo}}                      *)
-(*         emeasurable G == sigma-algebra over \bar R built out of the        *)
-(*                          measurables G of a sigma-algebra over R           *)
-(*     elebesgue_measure == the Lebesgue measure extended to \bar R           *)
+(*           lebesgue_measure == the Lebesgue measure                         *)
+(* completed_lebesgue_measure == the completed Lebesgue measure               *)
+(*      completed_algebra_gen == generator of the completed Lebesgue          *)
+(*                               sigma-algebra                                *)
+(*                   ps_infty == inductive definition of the powerset         *)
+(*                               {0, {-oo}, {+oo}, {-oo,+oo}}                 *)
+(*              emeasurable G == sigma-algebra over \bar R built out of the   *)
+(*                               measurables G of a sigma-algebra over R      *)
+(*          elebesgue_measure == the Lebesgue measure extended to \bar R      *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* The modules RGenOInfty, RGenInftyO, RGenCInfty, RGenOpens provide proofs   *)
@@ -350,10 +353,198 @@ End LebesgueMeasure.
 Definition lebesgue_measure {R : realType} :
   set [the measurableType _.-sigma of
        g_sigma_algebraType R.-ocitv.-measurable] -> \bar R :=
-  [the measure _ _ of lebesgue_stieltjes_measure [the cumulative _ of idfun]].
+  [the measure _ _ of lebesgue_stieltjes_measure idfun].
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
   SigmaFiniteMeasure.on (@lebesgue_measure R).
+
+Definition completed_lebesgue_measure {R : realType} : set _ -> \bar R :=
+  [the measure _ _ of completed_lebesgue_stieltjes_measure idfun].
+HB.instance Definition _ (R : realType) :=
+  Measure.on (@completed_lebesgue_measure R).
+HB.instance Definition _ (R : realType) :=
+  SigmaFiniteMeasure.on (@completed_lebesgue_measure R).
+
+Lemma completed_lebesgue_measure_is_complete {R : realType} :
+  measure_is_complete (@completed_lebesgue_measure R).
+Proof. exact: measure_is_complete_caratheodory. Qed.
+
+Definition completed_algebra_gen d {T : semiRingOfSetsType d} {R : realType}
+    (mu : set T -> \bar R) : set _ :=
+  [set A `|` N | A in d.-measurable & N in mu.-negligible].
+
+(* the completed sigma-algebra is the same as the caratheodory sigma-algebra *)
+Section completed_algebra_caratheodory.
+Context {R : realType}.
+Local Open Scope ereal_scope.
+
+Notation hlength := (@wlength R idfun).
+Notation mu := (@lebesgue_measure R).
+Notation completed_mu := (@completed_lebesgue_measure R).
+
+Let cara_sub_calgebra : hlength^*%mu.-cara.-measurable `<=`
+  (completed_algebra_gen mu).-sigma.-measurable.
+Proof.
+move=> E; wlog : E / completed_mu E < +oo.
+  move=> /= wlg.
+  have /sigma_finiteP[/= F [UFI ndF mF]] :=
+    measure_extension_sigma_finite (@wlength_sigma_finite R idfun).
+  move=> mE.
+  rewrite -(setIT E)/= UFI setI_bigcupr; apply: bigcupT_measurable => i.
+  apply: wlg.
+  - rewrite (le_lt_trans _ (mF i).2)//= le_measure// inE/=.
+    + by apply: measurableI => //; apply: sub_caratheodory; exact: (mF i).1.
+    + by apply: sub_caratheodory; exact: (mF i).1.
+  - by apply: measurableI => //; apply: sub_caratheodory; exact: (mF i).1.
+move=> mEoo /= mE.
+have inv0 n : (0 < n.+1%:R^-1 :> R)%R by rewrite invr_gt0.
+set S := [set \sum_(0 <= k <oo) hlength (A k) | A in measurable_cover E].
+have coverE s : (0 < s)%R ->
+   exists2 A, @measurable_cover _ (ocitv_type R) E A &
+   \sum_(0 <= k <oo) hlength (A k) < completed_mu E + s%:E.
+  move=> s0; have : mu E \is a fin_num by rewrite ge0_fin_numE.
+  by move/lb_ereal_inf_adherent => /(_ _ s0)[_/= [A EA] <-] ?; exists A.
+pose A n := projT1 (cid2 (coverE _ (inv0 n))).
+have mA k : @measurable_cover _ (ocitv_type R) E (A k).
+  by rewrite /A; case: cid2.
+have mA_E n :
+    \sum_(0 <= k <oo) hlength (A n k) < completed_mu E + n.+1%:R^-1%:E.
+  by rewrite /A; case: cid2.
+pose F_ n := \bigcup_m (A n m).
+have EF_n n : E `<=` F_ n.
+  have [/= _] := mA n.
+  by move=> /subset_trans; apply; apply: subset_bigcup => i _.
+have mF_ m : mu (F_ m) < completed_mu E + m.+1%:R^-1%:E.
+  apply: (le_lt_trans _ (mA_E m)).
+  apply: (le_trans (outer_measure_sigma_subadditive hlength^*%mu (A m))).
+  apply: lee_nneseries => // n _.
+  by rewrite -((measurable_mu_extE hlength) (A m n))//; have [/(_ n)] := mA m.
+pose F := \bigcap_n (F_ n).
+have FM : @measurable _ (g_sigma_algebraType R.-ocitv.-measurable) F.
+  apply: bigcapT_measurable => k; apply: bigcupT_measurable => i.
+  by apply: sub_sigma_algebra; have [/(_ i)] := mA k.
+have EF : E `<=` F by exact: sub_bigcap.
+have muEF : completed_mu E = mu F.
+  apply/eqP; rewrite eq_le le_outer_measure//=.
+  apply/lee_addgt0Pr => /= _/posnumP[e]; near \oo => n.
+  apply: (@le_trans _ _ (mu (F_ n))).
+    by apply: le_outer_measure; exact: bigcap_inf.
+  rewrite (le_trans (ltW (mF_ n)))// leeD// lee_fin ltW//.
+  by near: n; apply: near_infty_natSinv_lt.
+have coverEF s : (0 < s)%R ->
+     exists2 A, @measurable_cover _ (ocitv_type R) (F `\` E) A &
+     \sum_(0 <= k <oo) hlength (A k) < completed_mu (F `\` E) + s%:E.
+  move=> s0.
+  have : mu (F `\` E) \is a fin_num.
+    rewrite ge0_fin_numE// (@le_lt_trans _ _ (mu F))//; last by rewrite -muEF.
+    by apply: le_outer_measure; exact: subDsetl.
+  by move/lb_ereal_inf_adherent => /(_ _ s0)[_/= [B FEB] <-] ?; exists B.
+pose B n := projT1 (cid2 (coverEF _ (inv0 n))).
+have mB k : @measurable_cover _ (ocitv_type R) (F `\` E) (B k).
+  by rewrite /B; case: cid2.
+have mB_FE n :
+    \sum_(0 <= k <oo) hlength (B n k) < completed_mu (F `\` E) + n.+1%:R^-1%:E.
+  by rewrite /B; case: cid2.
+pose G_ n := \bigcup_m (B n m).
+have FEG_n n : F `\` E `<=` G_ n.
+  have [/= _] := mB n.
+  by move=> /subset_trans; apply; apply: subset_bigcup => i _.
+have mG_ m : mu (G_ m) < completed_mu (F `\` E) + m.+1%:R^-1%:E.
+  apply: (le_lt_trans _ (mB_FE m)).
+  apply: (le_trans (outer_measure_sigma_subadditive hlength^*%mu (B m))).
+  apply: lee_nneseries => // n _.
+  by rewrite -((measurable_mu_extE hlength) (B m n))//; have [/(_ n)] := mB m.
+pose G := \bigcap_n (G_ n).
+have GM : @measurable _ (g_sigma_algebraType R.-ocitv.-measurable) G.
+  apply: bigcapT_measurable => k; apply: bigcupT_measurable => i.
+  by apply: sub_sigma_algebra; have [/(_ i)] := mB k.
+have FEG : F `\` E `<=` G by exact: sub_bigcap.
+have muG : mu G = 0.
+  transitivity (completed_mu (F `\` E)).
+    apply/eqP; rewrite eq_le; apply/andP; split; last exact: le_outer_measure.
+    apply/lee_addgt0Pr => _/posnumP[e].
+    near \oo => n.
+    apply: (@le_trans _ _ (mu (G_ n))).
+      by apply: le_outer_measure; exact: bigcap_inf.
+    rewrite (le_trans (ltW (mG_ n)))// leeD// lee_fin ltW//.
+    by near: n; apply: near_infty_natSinv_lt.
+  rewrite measureD//=.
+  + by rewrite setIidr// muEF subee// ge0_fin_numE//; move: mEoo; rewrite muEF.
+  + exact: sub_caratheodory.
+  + by move: mEoo; rewrite muEF.
+apply: sub_sigma_algebra; exists (F `\` G); first exact: measurableD.
+exists (E `&` G).
+  by apply: (@negligibleS _ _ _ mu G _ (@subIsetr _ E G)); exists G; split.
+apply/seteqP; split=> [/= x [[Fx Gx]|[]//]|x Ex].
+- by rewrite -(notK (E x)) => Ex; apply: Gx; exact: FEG.
+- have [|FGx] := pselect ((F `\` G) x); first by left.
+  right; split => //.
+  move/not_andP : FGx => [|].
+    by have := EF _ Ex.
+  by rewrite notK.
+Unshelve. all: by end_near. Qed.
+
+Lemma g_sigma_completed_algebra_genE :
+  (completed_algebra_gen mu).-sigma.-measurable = completed_algebra_gen mu.
+Proof.
+apply/seteqP; split; last first.
+  move=> _ [/= A /= mA [N neglN]] <-.
+  by apply: sub_sigma_algebra; exists A => //; exists N.
+apply: smallest_sub => //=; split => /=.
+- by exists set0 => //; exists set0; [exact: negligible_set0|rewrite setU0].
+- move=> G [/= A mA [N negN ANG]]; case: negN => /= F [mF F0 NF].
+  have GANA : ~` G = ~` A `\` (N `&` ~` A).
+    by rewrite -ANG setCU setDE setCI setCK setIUr setICl setU0.
+  pose AA := ~` A `\` (F `&` ~` A).
+  pose NN := (F `&` ~` A) `\` (N `&` ~` A).
+  have GAANN : ~` G = AA `|` NN.
+    rewrite (_ : ~` G = ~` A `\` (N `&` ~` A))//.
+    by apply: setDU; [exact: setSI|exact: subIsetr].
+  exists AA.
+    apply: measurableI => //=; first exact: measurableC.
+    by apply: measurableC; apply: measurableI => //; exact: measurableC.
+  by exists NN; [exists F; split => // x [] []|rewrite setDE setTI].
+- move=> F mF/=.
+  pose A n := projT1 (cid2 (mF n)).
+  pose N n := projT1 (cid2 (projT2 (cid2 (mF n))).2).
+  exists (\bigcup_k A k).
+    by apply: bigcupT_measurable => i; rewrite /A; case: cid2.
+  exists (\bigcup_k N k).
+    apply: negligible_bigcup => /= k.
+    by rewrite /N; case: (cid2 (mF k)) => //= *; case: cid2.
+  rewrite -bigcupU; apply: eq_bigcup => // i _.
+  by rewrite /A /N; case: (cid2 (mF i)) => //= *; case: cid2.
+Qed.
+
+Lemma negligible_sub_caratheodory :
+  completed_mu.-negligible `<=` hlength^*%mu.-cara.-measurable.
+Proof.
+move=> N /= [/= A] [mA A0 NA].
+apply: le_caratheodory_measurable => /= X.
+apply: (@le_trans _ _ (hlength^*%mu N + hlength^*%mu (X `&` ~` N))).
+  by rewrite leeD2r// le_outer_measure//; exact: subIsetr.
+have -> : hlength^*%mu N = 0.
+  by apply/eqP; rewrite eq_le outer_measure_ge0//= andbT -A0 le_outer_measure.
+by rewrite add0e// le_outer_measure//; exact: subIsetl.
+Qed.
+
+Let calgebra_sub_cara : (completed_algebra_gen mu).-sigma.-measurable `<=`
+  hlength^*%mu.-cara.-measurable.
+Proof.
+rewrite g_sigma_completed_algebra_genE => A -[/= X mX] [N negN] <-{A}.
+apply: measurableU => //; first exact: sub_caratheodory.
+apply: negligible_sub_caratheodory; case: negN => /= B [mB B0 NB].
+by exists B; split => //=; exact: sub_caratheodory.
+Qed.
+
+Lemma completed_caratheodory_measurable :
+  (completed_algebra_gen mu).-sigma.-measurable =
+  hlength^*%mu.-cara.-measurable.
+Proof.
+by apply/seteqP; split; [exact: calgebra_sub_cara | exact: cara_sub_calgebra].
+Qed.
+
+End completed_algebra_caratheodory.
 
 Section ps_infty.
 Context {T : Type}.
