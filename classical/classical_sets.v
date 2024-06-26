@@ -995,6 +995,9 @@ Qed.
 Lemma setCI A B : ~` (A `&` B) = ~` A `|` ~` B.
 Proof. by rewrite -[in LHS](setCK A) -[in LHS](setCK B) -setCU setCK. Qed.
 
+Lemma setCD A B : ~` (A `\` B) = ~` A `|` B.
+Proof. by rewrite setDE setCI setCK. Qed.
+
 Lemma setDUr A B C : A `\` (B `|` C) = (A `\` B) `&` (A `\` C).
 Proof. by rewrite !setDE setCU setIIr. Qed.
 
