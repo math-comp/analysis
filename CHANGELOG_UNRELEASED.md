@@ -6,6 +6,8 @@
 
 - in `topology.v`:
   + lemma `ball_subspace_ball`
+- in `normedtype.v`:
+  + lemma `limf_esup_ge0`
 
 - in `classical_sets.v`:
   + lemma `setDU`
@@ -55,6 +57,9 @@
 ### Generalized
 
 ### Deprecated
+
+- in `realfun.v`:
+  + lemma `lime_sup_ge0`
 
 ### Removed
 
