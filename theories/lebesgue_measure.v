@@ -2306,7 +2306,7 @@ Lemma ae_pointwise_almost_uniform
     (f_ : (T -> R)^nat) (g : T -> R) (A : set T) (eps : R):
   (forall n, measurable_fun A (f_ n)) -> measurable_fun A g ->
   measurable A -> mu A < +oo ->
-  {ae mu, (forall x, A x -> f_ ^~ x @\oo --> g x)} ->
+  {ae mu, (forall x, A x -> f_ ^~ x @ \oo --> g x)} ->
   (0 < eps)%R -> exists B, [/\ measurable B, mu B < eps%:E &
     {uniform A `\` B, f_ @ \oo --> g}].
 Proof.

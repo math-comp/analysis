@@ -397,18 +397,18 @@ Let ent_balls' (E : set (T * T)) :
   exists M : set (set T), entourage E -> [/\
     finite_set M,
     forall A, M A -> exists a, A a /\
-      A `<=` closure [set y | split_ent E (a, y)],
+      A `<=` closure (xsection (split_ent E) a),
     exists A B : set T, M A /\ M B /\ A != B,
     \bigcup_(A in M) A = [set: T] &
     M `<=` closed].
 Proof.
 have [entE|?] := pselect (entourage E); last by exists point.
 move: cptT; rewrite compact_cover.
-pose fs x := interior [set y | split_ent E (x, y)].
+pose fs x := interior (xsection (split_ent E) x).
 move=> /(_ T [ set: T] fs)[t _|t _ |].
 - exact: open_interior.
-- exists t => //.
-  by rewrite /fs /interior -nbhs_entourageE; exists (split_ent E).
+- exists t => //; rewrite /fs /interior.
+  by rewrite -nbhs_entourageE; exists (split_ent E) => // ? /xsectionP.
 move=> M' _ Mcov; exists
   ((closure \o fs) @` [set` M'] `|` [set [set t0]; [set t1]]).
 move=> _; split=> [|A [|]| | |].
@@ -416,10 +416,10 @@ move=> _; split=> [|A [|]| | |].
   exact: finite_set2.
 - move=> [z M'z] <-; exists z; split.
   + apply: subset_closure; apply: nbhs_singleton; apply: nbhs_interior.
-    by rewrite -nbhs_entourageE; exists (split_ent E).
+      by rewrite -nbhs_entourageE; exists (split_ent E) => // t /xsectionP.
   + by apply: closure_subset; exact: interior_subset.
 - by case => ->; [exists t0 | exists t1]; split => // t ->;
-    apply: subset_closure; exact: entourage_refl.
+    apply/subset_closure/xsectionP; exact: entourage_refl.
 - exists [set t0], [set t1]; split;[|split].
   + by right; left.
   + by right; right.
@@ -512,10 +512,11 @@ have [//| | |? []//| |? []// | |] := @tree_map_props
       by move=> ? [? ?] [? ?]; exists (existT _ _ ebC).
     case: pselect; last by move => ? ? [].
     by move=> e _ [? ?] [? ?]; exists (projT1 (cid e)).
-  suff : E (x, y) by move/ExU; move/eqP/disjoints_subset: UVI0 => /[apply].
+  suff : E (x, y).
+    by move/xsectionP/ExU; move/eqP/disjoints_subset: UVI0 => /[apply].
   have [z [Dz DzE]] := Csub _ cbD.
-  have /ent_closure:= DzE _ Dx => /(_ (ent_count_unif n))/ctE [_ /= Exz].
-  have /ent_closure:= DzE _ Dy => /(_ (ent_count_unif n))/ctE [Ezy _].
+  have /ent_closure := DzE _ Dx => /(_ (ent_count_unif n))/xsectionP/ctE [_ /= Exz].
+  have /ent_closure := DzE _ Dy => /(_ (ent_count_unif n))/xsectionP/ctE [Ezy _].
   exact: (@entourage_split _ (*[the uniformType of T]*) z).
 by move=> f [ctsf surjf _]; exists f.
 Qed.
