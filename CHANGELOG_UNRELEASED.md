@@ -6,6 +6,11 @@
 
 - in `topology.v`:
   + lemma `ball_subspace_ball`
+- in `classical_sets.v`:
+  + lemma `setCD`
+
+- in `measure.v`:
+  + factory `isAlgebraOfSetsD`
 
 - in `classical_sets.v`:
   + lemma `setDU`
