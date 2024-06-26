@@ -21,7 +21,7 @@
   + definition `completed_lebesgue_measure`
   + lemma `completed_lebesgue_measure_is_complete`
   + definition `completed_algebra_gen`
-  + lemmas `completed_salgebra_lebesgue_measure`, `negligible_sub_caratheodory`,
+  + lemmas `g_sigma_completed_algebra_genE`, `negligible_sub_caratheodory`,
     `completed_caratheodory_measurable`
 
 ### Changed
