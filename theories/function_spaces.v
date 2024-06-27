@@ -159,7 +159,6 @@ rewrite eqEsubset; split => y //; exists (dfwith (fun=> point) i y) => //.
 by rewrite dfwithin.
 Qed.
 
-
 Lemma dfwith_continuous g (i : I) : continuous (@dfwith I K g i).
 Proof.
 move=> z U [] P [] [] Q QfinP <- [] V JV Vpz.
@@ -404,7 +403,7 @@ End product_spaces.
 
 (**md the uniform topologies type *)
 Section fct_Uniform.
-Variable (T : choiceType) (U : uniformType).
+Variables (T : choiceType) (U : uniformType).
 
 Definition fct_ent := filter_from (@entourage U)
   (fun P => [set fg | forall t : T, P (fg.1 t, fg.2 t)]).
@@ -444,7 +443,6 @@ Definition arrow_uniform_type : Type := T -> U.
 #[export] HB.instance Definition _ := isUniform.Build arrow_uniform_type
   fct_ent_filter fct_ent_refl fct_ent_inv fct_ent_split.
 
-#[export] HB.instance Definition _ := Uniform.on arrow_uniform_type.
 End fct_Uniform.
 
 Lemma cvg_fct_entourageP (T : choiceType) (U : uniformType)
@@ -580,7 +578,7 @@ Notation "{ 'uniform' , F --> f }" :=
   (cvg_to F (nbhs (f : {uniform _ -> _}))) : classical_set_scope.
 
 Definition sigL_arrow {U : choiceType} (A : set U) (V : uniformType) :
-    (U -> V) -> arrow_uniform_type A V :=  (@sigL _ V A).
+  (U -> V) -> arrow_uniform_type A V := @sigL _ V A.
 
 HB.instance Definition _ (U : choiceType) (A : set U) (V : uniformType) :=
   Uniform.copy {uniform` A -> V} (weak_topology (@sigL_arrow _ A V)).
