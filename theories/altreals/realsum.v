@@ -2,9 +2,8 @@
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
-
 (* -------------------------------------------------------------------- *)
-From mathcomp Require Import all_ssreflect all_algebra.
+From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp.classical Require Import boolp.
 Require Import xfinmap ereal reals discrete realseq.
 From mathcomp.classical Require Import classical_sets functions mathcomp_extra.
@@ -142,16 +141,16 @@ Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[< exists p, x \in E p >]]}.
   move=> x; rewrite !inE => nz_fx.
-  pose j := `|floor (1 / `|f x|)|%N; exists j; rewrite inE.
+  pose j := `|Num.floor (1 / `|f x|)|%N; exists j; rewrite inE.
   rewrite ltr_pdivrMr ?ltr0z // -ltr_pdivrMl ?normr_gt0 //.
   rewrite mulr1 /j div1r -addn1 /= PoszD intrD mulr1z.
-  rewrite gez0_abs ?floor_ge0 ?invr_ge0 ?normr_ge0 //.
-  by rewrite -RfloorE; apply lt_succ_Rfloor.
+  rewrite gez0_abs ?floor_ge0 ?invr_ge0 ?normr_ge0//.
+  by rewrite intr1 mathcomp_extra.lt_succ_floor.
 apply/(countable_sub le)/cunion_countable=> i /=.
 case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
   by apply/finite_countable/finiteP; exists s => x /le_Eis.
-move/finiteNP; pose j := `|floor (M / i.+1%:R)|.+1.
-pose K := (`|floor M|.+1 * i.+1)%N; move/(_ K)/asboolP/exists_asboolP.
+move/finiteNP; pose j := `|Num.floor (M / i.+1%:R)|.+1.
+pose K := (`|Num.floor M|.+1 * i.+1)%N; move/(_ K)/asboolP/exists_asboolP.
 move=> h; have /asboolP[] := xchooseP h.
 set s := xchoose h=> eq_si uq_s le_sEi; pose J := [fset x in s].
 suff: \sum_(x : J) `|f (val x)| > M by rewrite ltNge bM.
@@ -160,9 +159,10 @@ apply/(@lt_le_trans _ _ (\sum_(x : J) 1 / i.+1%:~R)); last first.
   by have:= fsvalP m; rewrite in_fset => /le_sEi.
 rewrite sumr_const -cardfE card_fseq undup_id // eq_si -mulr_natr -pmulrn.
 rewrite mul1r natrM mulrCA mulVf ?mulr1 ?pnatr_eq0 //.
-have /andP[_] := mem_rg1_Rfloor M; rewrite RfloorE -addn1.
-by rewrite natrD /= mulr1n pmulrn -{1}[floor _]gez0_abs // floor_ge0.
+have /andP[_] := mem_rg1_floor M; rewrite -addn1.
+by rewrite natrD /= mulr1n pmulrn -{1}[Num.floor _]gez0_abs // floor_ge0.
 Qed.
+
 End SummableCountable.
 
 (* -------------------------------------------------------------------- *)
@@ -1201,9 +1201,8 @@ Qed.
 
 Lemma sum_seq1 S x : (forall y, S y != 0 -> x == y) -> sum S = S x.
 Proof.
-move=> domS; rewrite (sum_finseq (r := [:: x])) //.
-  by move=> y; rewrite !inE => /domS /eqP->.
-by rewrite big_seq1.
+move=> domS; rewrite (sum_finseq (r := [:: x])) ?big_seq1//.
+by move=> y; rewrite !inE => /domS /eqP->.
 Qed.
 
 End SumTheory.

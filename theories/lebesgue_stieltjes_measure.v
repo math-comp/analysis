@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import finmap fingroup perm rat.
+From mathcomp Require Import finmap fingroup perm rat archimedean.
 From HB Require Import structures.
 From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
 From mathcomp.classical Require Import functions fsbigop cardinality.
@@ -482,12 +482,12 @@ Lemma wlength_sigma_finite (f : R -> R) :
 Proof.
 exists (fun k => `](- k%:R), k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
-  exists `|(floor `|x|%R + 1)%R|%N; rewrite //= in_itv/=.
-  rewrite !natr_absz intr_norm intrD -RfloorE.
-  suff: `|x| < `|Rfloor `|x| + 1| by rewrite ltr_norml => /andP[-> /ltW->].
+  exists `|((floor `|x|%R)%real + 1)%R|%N; rewrite //= in_itv/=.
+  rewrite !natr_absz intr_norm intrD.
+  suff: `|x| < `|(floor `|x|)%real%:~R + 1| by rewrite ltr_norml => /andP[-> /ltW->].
   rewrite [ltRHS]ger0_norm//.
-    by rewrite (le_lt_trans _ (lt_succ_Rfloor _))// ?ler_norm.
-  by rewrite addr_ge0// -Rfloor0 le_Rfloor.
+    by rewrite intr1 (le_lt_trans _ (lt_succ_floor _))// ?ler_norm.
+  by rewrite addr_ge0// ler0z floor_ge0.
 move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.
 Qed.

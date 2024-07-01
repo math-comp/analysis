@@ -2281,7 +2281,7 @@ Proof. by exists N. Qed.
 Lemma nbhs_infty_ger {R : realType} (r : R) :
   \forall n \near \oo, (r <= n%:R)%R.
 Proof.
-exists (`|ceil r|)%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
+exists (`|Num.ceil r|)%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
 by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
 Qed.
 
@@ -4988,9 +4988,11 @@ apply/countable_uniformityP.
 exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
   by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
 move=> E; rewrite -entourage_ballE => -[e e0 subE].
-exists `|floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
+exists `|Num.floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
 rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// -natr1.
-by rewrite natr_absz ger0_norm ?floor_ge0 ?invr_ge0// 1?ltW// reals.lt_succ_floor.
+rewrite natr_absz ger0_norm; last first.
+  by rewrite -mathcomp_extra.floor_ge_int ?invr_ge0// ltW.
+by rewrite intr1 ltW// mathcomp_extra.lt_succ_floor.
 Qed.
 
 (** Specific pseudoMetric spaces *)
@@ -4999,11 +5001,15 @@ Qed.
 Section matrix_PseudoMetric.
 Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
 Implicit Types x y : 'M[T]_(m, n).
+
 Definition mx_ball x (e : R) y := forall i j, ball (x i j) e (y i j).
+
 Lemma mx_ball_center x (e : R) : 0 < e -> mx_ball x e x.
 Proof. by move=> ???; apply: ballxx. Qed.
+
 Lemma mx_ball_sym x y (e : R) : mx_ball x e y -> mx_ball y e x.
 Proof. by move=> xe_y ??; apply/ball_sym/xe_y. Qed.
+
 Lemma mx_ball_triangle x y z (e1 e2 : R) :
   mx_ball x e1 y -> mx_ball y e2 z -> mx_ball x (e1 + e2) z.
 Proof.
@@ -5675,21 +5681,23 @@ Qed.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Local Definition distN (e : R) : nat := `|floor e^-1|%N.
+Local Definition distN (e : R) : nat := `|Num.floor e^-1|%N.
 
 Local Lemma distN0 : distN 0 = 0%N.
-Proof. by rewrite /distN invr0 reals.floor0. Qed.
+Proof. by rewrite /distN invr0 floor0. Qed.
 
-Local Lemma distN_nat (n : nat): distN (n%:R^-1) = n.
+Local Lemma distN_nat (n : nat) : distN n%:R^-1 = n.
 Proof.
-by rewrite /distN invrK floor_natz -[RHS]distn0; congr absz; rewrite subr0 intz.
+rewrite /distN invrK.
+apply/eqP; rewrite -(@eqr_nat R) natr_absz ger0_norm ?floor_ge0//.
+by rewrite -intrEfloor intrEge0.
 Qed.
 
 Local Lemma distN_le e1 e2 : e1 > 0 -> e1 <= e2 -> (distN e2 <= distN e1)%N.
 Proof.
 move=> e1pos e1e2; rewrite /distN; apply: lez_abs2.
   by rewrite floor_ge0 ltW// invr_gt0 (lt_le_trans _ e1e2).
-by rewrite le_floor// lef_pV2 ?invrK ?invr_gt0//; exact: (lt_le_trans _ e1e2).
+by rewrite floor_le// lef_pV2 ?invrK ?invr_gt0//; exact: (lt_le_trans _ e1e2).
 Qed.
 
 Local Fixpoint n_step_ball n x e z :=
@@ -5819,7 +5827,7 @@ move: e1 e2 x z; elim: n.
       rewrite -[e2]addr0 -(subrr e1) addrA -lerBlDr opprK addrC.
       by rewrite [e2 + _]addrC -deE; exact: lerD.
     - by rewrite addn0.
-  move=> /negP; rewrite -real_ltNge ?num_real //.
+  move=> /negP; rewrite -ltNge//.
   move=> e1d1; exists y, z, 0%N, 0%N; split.
   - by apply: n_step_ball_le; last (exact: Oxy); exact: ltW.
   - rewrite -deE; apply: (@n_step_ball_le _ _ d2) => //.
@@ -5837,7 +5845,7 @@ case: (pselect (e2 <= d2)).
   - by rewrite addn0.
 have d1E' : d1 = e1 + (e2 - d2).
   by move: deE; rewrite addrA [e1 + _]addrC => <-; rewrite -addrA subrr addr0.
-move=> /negP; rewrite -?real_ltNge // ?num_real // => d2lee2.
+move=> /negP; rewrite -ltNge// => d2lee2.
   case: (IH e1 (e2 - d2) x y); rewrite ?subr_gt0 // -d1E' //.
   move=> t1 [t2] [c1] [c2] [] Oxy1 gt1t2 t2y <-.
   exists t1, t2, c1, c2.+1; split => //.
@@ -5896,7 +5904,7 @@ Lemma countable_uniform_bounded (x y : T) :
   in @ball _ U x 2 y.
 Proof.
 rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
-suff -> : @floor R 2^-1 = 0 by rewrite absz0 /=.
+rewrite [X in `|X|%N](_ : _ = 0) ?absz0//.
 apply/eqP; rewrite -[_ == _]negbK; rewrite floor_neq0 negb_or -?ltNge -?leNgt.
 by apply/andP; split => //; rewrite invf_lt1 //= ltrDl.
 Qed.
