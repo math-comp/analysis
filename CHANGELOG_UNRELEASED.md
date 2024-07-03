@@ -36,6 +36,9 @@
 - in `mathcomp_extra.v`:
   + lemmas `intr1D`, `intrD1`, `floor_eq`, `floorN`
 
+- in `realfun.v`:
+  + lemma `nondecreasing_at_left_is_cvgr`
+
 ### Changed
 
 - in `topology.v`:

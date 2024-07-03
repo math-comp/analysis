@@ -365,6 +365,22 @@ by eexists; apply: (@nondecreasing_at_right_cvgr _ _ (BLeft b));
   [rewrite bnd_simp|near: b..].
 Unshelve. all: by end_near. Qed.
 
+Lemma nondecreasing_at_left_is_cvgr f a :
+    (\forall x \near a^'-, {in `]x, a[ &, {homo f : n m / n <= m}}) ->
+    (\forall x \near a^'-, has_ubound [set f y | y in `]x, a[]) ->
+  cvg (f x @[x --> a^'-]).
+Proof.
+move=> ndf ubf; suff: cvg ((f \o -%R) x @[x --> (- a)^'+]).
+  move=> /cvg_ex[/= l fal].
+  by apply/cvg_ex; exists l; exact/cvg_at_leftNP.
+apply: @nonincreasing_at_right_is_cvgr.
+- rewrite at_rightN near_simpl; apply: filterS ndf => x ndf y z.
+  by rewrite -2!oppr_itvoo => yxa zxa yz; rewrite ndf// lerNr opprK.
+- rewrite at_rightN near_simpl; apply: filterS ubf => x [r ubf].
+  exists r => _/= [s sax <-]; rewrite ubf//=; exists (- s) => //.
+  by rewrite oppr_itvoo.
+Qed.
+
 End fun_cvg_realType.
 Arguments nondecreasing_at_right_cvgr {R f a} b.
 Arguments nondecreasing_at_right_cvgr {R f a} b.
