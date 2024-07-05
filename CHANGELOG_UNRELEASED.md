@@ -38,6 +38,16 @@
 
 - in `realfun.v`:
   + lemma `nondecreasing_at_left_is_cvgr`
+- in `set_interval.v`:
+  + lemmas `subset_itvl`, `subset_itvr`, `subset_itvS`
+
+- in `normedtype.v`:
+  + lemmas `nbhs_lt`, `nbhs_le`
+
+- in `lebesgue_integral.v`:
+  + lemmas `eq_Rintegral`, `Rintegral_mkcond`, `Rintegral_mkcondr`, `Rintegral_mkcondl`,
+    `le_normr_integral`, `Rintegral_setU_EFin`, `Rintegral_set0`, `Rintegral_itv_bndo_bndc`,
+    `Rintegral_itv_obnd_cbnd`, `Rintegral_set1`, `Rintegral_itvB`
 
 - in `constructive_ereal.v`:
   + lemmas `lteD2rE`, `leeD2rE`
@@ -88,9 +98,10 @@
   + lemmas `semi_sigma_additive_nng_induced`, `dominates_induced`, `integral_normr_continuous`
 
 - in `ftc.v`:
-  + definition `indefinite_integral`
-  + lemmas `indefinite_integral_near_left`,
-    `indefinite_integral_cvg_left`, `indefinite_integral_cvg_at_left`
+  + definition `parameterized_integral`
+  + lemmas `parameterized_integral_near_left`,
+    `parameterized_integral_left`, `parameterized_integral_cvg_at_left`,
+    `parameterized_integral_continuous`
   + corollary `continuous_FTC2`
 
 ### Changed

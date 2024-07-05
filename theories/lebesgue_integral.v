@@ -2919,9 +2919,9 @@ Definition Rintegral (D : set T) (f : T -> R) :=
 End Rintegral.
 
 Notation "\int [ mu ]_ ( x 'in' D ) f" :=
-  (Rintegral [the measure _ _ of mu] D (fun x => f)) : ring_scope.
+  (Rintegral mu D (fun x => f)) : ring_scope.
 Notation "\int [ mu ]_ x f" :=
-  (Rintegral [the measure _ _ of mu] setT (fun x => f)) : ring_scope.
+  (Rintegral mu setT (fun x => f)) : ring_scope.
 
 HB.lock Definition integrable {d} {T : measurableType d} {R : realType}
     (mu : set T -> \bar R) D f :=
@@ -4348,6 +4348,74 @@ split.
 Qed.
 
 End dominated_convergence_theorem.
+
+Section Rintegral.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+
+Lemma eq_Rintegral D g f : {in D, f =1 g} ->
+  \int[mu]_(x in D) f x = \int[mu]_(x in D) g x.
+Proof.
+move=> fg; rewrite /Rintegral; congr fine.
+by apply: eq_integral => /= x xD; rewrite fg.
+Qed.
+
+Lemma Rintegral_mkcond D f : \int[mu]_(x in D) f x = \int[mu]_x (f \_ D) x.
+Proof.
+rewrite {1}/Rintegral integral_mkcond/=.
+by under eq_integral do rewrite restrict_EFin.
+Qed.
+
+Lemma Rintegral_mkcondr D P f :
+  \int[mu]_(x in D `&` P) f x = \int[mu]_(x in D) (f \_ P) x.
+Proof.
+rewrite {1}/Rintegral integral_mkcondr.
+by under eq_integral do rewrite restrict_EFin.
+Qed.
+
+Lemma Rintegral_mkcondl D P f :
+  \int[mu]_(x in P `&` D) f x = \int[mu]_(x in D) (f \_ P) x.
+Proof. by rewrite setIC Rintegral_mkcondr. Qed.
+
+Lemma le_normr_integral A f : measurable A -> mu.-integrable A (EFin \o f) ->
+  (`|\int[mu]_(t in A) f t| <= \int[mu]_(t in A) `|f t|)%R.
+Proof.
+move=> mA /integrableP[mf ifoo].
+rewrite -lee_fin; apply: le_trans.
+  apply: (le_trans _ (le_abse_integral mu mA mf)).
+  rewrite /abse.
+  have [/fineK <-//|] := boolP (\int[mu]_(x in A) (EFin \o f) x \is a fin_num)%E.
+  by rewrite fin_numEn => /orP[|] /eqP ->; rewrite leey.
+rewrite /Rintegral.
+move: ifoo.
+rewrite -ge0_fin_numE; last exact: integral_ge0.
+move/fineK ->.
+by apply: ge0_le_integral => //=; do 2 apply: measurableT_comp => //;
+  exact/EFin_measurable_fun.
+Qed.
+
+Lemma Rintegral_setU_EFin (A B : set T) (f : T -> R) :
+    d.-measurable A -> d.-measurable B ->
+    mu.-integrable (A `|` B) (EFin \o f) -> [disjoint A & B] ->
+  \int[mu]_(x in (A `|` B)) f x = \int[mu]_(x in A) f x + \int[mu]_(x in B) f x.
+Proof.
+move=> mA mB mf AB; rewrite /Rintegral integral_setU_EFin//; last first.
+  exact/EFin_measurable_fun/(measurable_int mu).
+have mAf :  mu.-integrable A (EFin \o f).
+  by  apply: integrableS mf => //; exact: measurableU.
+have mBf :  mu.-integrable B (EFin \o f).
+  by apply: integrableS mf => //; exact: measurableU.
+move/integrableP : mAf => [mAf itAfoo].
+move/integrableP : mBf => [mBf itBfoo].
+rewrite fineD//.
+- by rewrite fin_num_abs (le_lt_trans _ itAfoo)//; exact: le_abse_integral.
+- by rewrite fin_num_abs (le_lt_trans _ itBfoo)//; exact: le_abse_integral.
+Qed.
+
+Lemma Rintegral_set0 (f : T -> R) : (\int[mu]_(x in set0) f x = 0)%R.
+Proof. by rewrite /Rintegral integral_set0. Qed.
+
+End Rintegral.
 
 Section ae_ge0_le_integral.
 Local Open Scope ereal_scope.
@@ -6346,6 +6414,60 @@ Qed.
 
 End lebesgue_measure_integral.
 Arguments integral_Sset1 {R f A} r.
+
+Section Rintegral_lebesgue_measure.
+Context {R : realType}.
+Notation mu := (@lebesgue_measure R).
+Implicit Type f : R -> R.
+
+Lemma Rintegral_itv_bndo_bndc (a : itv_bound R) (r : R) f :
+  mu.-integrable [set` Interval a (BRight r)] (EFin \o f) ->
+   \int[mu]_(x in [set` Interval a (BLeft r)]) (f x) =
+   \int[mu]_(x in [set` Interval a (BRight r)]) (f x).
+Proof.
+move=> mf; rewrite /Rintegral integral_itv_bndo_bndc//.
+by apply/EFin_measurable_fun; exact: (measurable_int mu).
+Qed.
+
+Lemma Rintegral_itv_obnd_cbnd (r : R) (b : itv_bound R) f :
+  mu.-integrable [set` Interval (BLeft r) b] (EFin \o f) ->
+  \int[mu]_(x in [set` Interval (BRight r) b]) (f x) =
+  \int[mu]_(x in [set` Interval (BLeft r) b]) (f x).
+Proof.
+move=> mf; rewrite /Rintegral integral_itv_obnd_cbnd//.
+by apply/EFin_measurable_fun; exact: (measurable_int mu).
+Qed.
+
+Lemma Rintegral_set1 f (r : R) : \int[mu]_(x in [set r]) f x = 0.
+Proof. by rewrite /Rintegral integral_set1. Qed.
+
+Lemma Rintegral_itvB f (a b : itv_bound R) x :
+  mu.-integrable [set` (Interval a b)] (EFin \o f) ->
+  (a <= BRight x)%O -> (BRight x <= b)%O ->
+  \int[mu]_(t in [set` Interval a b]) f t -
+  \int[mu]_(t in [set` Interval a (BRight x)]) f t =
+  \int[mu]_(x in [set` Interval (BRight x) b]) f x.
+Proof.
+move=> itf; rewrite le_eqVlt => /predU1P[ax|ax xb].
+  rewrite ax => _; rewrite [in X in _ - X]set_itv_ge ?bnd_simp//.
+  by rewrite Rintegral_set0 subr0.
+rewrite (@itv_bndbnd_setU _ _ _ (BLeft x)); last 2 first.
+  by case: a ax {itf} => -[]//.
+  by rewrite (le_trans _ xb)// bnd_simp.
+rewrite Rintegral_setU_EFin//=.
+- rewrite addrAC Rintegral_itv_bndo_bndc//; last first.
+    by apply: integrableS itf => //; exact: subset_itvl.
+  rewrite subrr add0r Rintegral_itv_obnd_cbnd//.
+  apply: integrableS itf => //; apply: subset_itvr.
+  by case: a ax => -[].
+- rewrite -itv_bndbnd_setU//.
+    by case: a ax {itf} => -[]//.
+  by rewrite (le_trans _ xb)// bnd_simp.
+- apply/disj_setPS => y; rewrite /= !in_itv/= => -[/andP[_ yx] /andP[]].
+  by rewrite leNgt yx.
+Qed.
+
+End Rintegral_lebesgue_measure.
 
 Section lebesgue_differentiation.
 Context {R : realType}.
