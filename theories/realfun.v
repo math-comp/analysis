@@ -383,7 +383,6 @@ Qed.
 
 End fun_cvg_realType.
 Arguments nondecreasing_at_right_cvgr {R f a} b.
-Arguments nondecreasing_at_right_cvgr {R f a} b.
 
 Section fun_cvg_ereal.
 Context {R : realType}.
