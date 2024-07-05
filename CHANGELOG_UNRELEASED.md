@@ -34,7 +34,7 @@
   + lemma `ge_floor`
 
 - in `mathcomp_extra.v`:
-  + lemmas `intr1`, `int1r`, `natr_def`
+  + lemmas `intr1`, `int1r`
 
 ### Changed
 

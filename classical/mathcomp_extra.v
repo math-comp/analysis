@@ -383,9 +383,6 @@ Proof. by rewrite intrD. Qed.
 
 From mathcomp Require Import archimedean.
 
-Lemma natr_def (n : int) : (n \is a Num.nat) = (0 <= n)%R.
-Proof. by []. Qed.
-
 Section floor_ceil.
 Context {R : archiDomainType}.
 Implicit Type x : R.
