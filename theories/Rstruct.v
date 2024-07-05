@@ -292,7 +292,7 @@ rewrite /Rminus Rplus_assoc [- _ + _]Rplus_comm -Rplus_assoc -!/(Rminus _ _).
 exact: Rle_minus.
 Qed.
 
-HB.instance Definition _ := Num.RealField_isArchimedean.Build R
+HB.instance Definition _ := Num.NumDomain_bounded_isArchimedean.Build R
   Rarchimedean_axiom.
 
 (** Here are the lemmas that we will use to prove that R has
