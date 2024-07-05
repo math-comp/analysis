@@ -161,16 +161,17 @@ Notation "{ 'nnsfun' aT >-> T }" := (@NonNegSimpleFun.type _ aT%type T) : form_s
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
 Section mfun_pred.
-Context {d} {aT : sigmaRingType d} {rT : realType}.
+Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
 Definition mfun_key : pred_key mfun. Proof. exact. Qed.
 Canonical mfun_keyed := KeyedPred mfun_key.
 End mfun_pred.
 
-Section mfun.
-Context {d} {aT : measurableType d} {rT : realType}.
+Section mfun_realType.
+Context {d} {aT : sigmaRingType d} {rT : realType}.
 Notation T := {mfun aT >-> rT}.
-Notation mfun := (@mfun _ aT rT).
+Notation mfun := (@mfun _ _ aT rT).
+
 Section Sub.
 Context (f : aT -> rT) (fP : f \in mfun).
 Definition mfun_Sub_subproof := @isMeasurableFun.Build d _ aT rT f (set_mem fP).
@@ -202,6 +203,11 @@ Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
 
 Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 
+End mfun_realType.
+
+Section mfun.
+Context {d} {aT : measurableType d} {rT : realType}.
+
 HB.instance Definition _ := @isMeasurableFun.Build _ _ _ rT
   (@normr rT rT) (@normr_measurable rT setT).
 
@@ -220,14 +226,14 @@ End mfun.
 Section ring.
 Context d (aT : measurableType d) (rT : realType).
 
-Lemma mfun_subring_closed : subring_closed (@mfun _ aT rT).
+Lemma mfun_subring_closed : subring_closed (@mfun _ _ aT rT).
 Proof.
 split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_cst.
 - exact: measurable_funB.
 - exact: measurable_funM.
 Qed.
-HB.instance Definition _ := GRing.isSubringClosed.Build _ mfun
+HB.instance Definition _ := GRing.isSubringClosed.Build _ (@mfun d default_measure_display aT rT)
   mfun_subring_closed.
 HB.instance Definition _ := [SubChoice_isSubComRing of {mfun aT >-> rT} by <:].
 
@@ -298,7 +304,7 @@ Notation measurable_fun_indic := measurable_indic (only parsing).
 
 Section sfun_pred.
 Context {d} {aT : sigmaRingType d} {rT : realType}.
-Definition sfun : {pred _ -> _} := [predI @mfun _ aT rT & fimfun].
+Definition sfun : {pred _ -> _} := [predI @mfun _ _ aT rT & fimfun].
 Definition sfun_key : pred_key sfun. Proof. exact. Qed.
 Canonical sfun_keyed := KeyedPred sfun_key.
 Lemma sub_sfun_mfun : {subset sfun <= mfun}. Proof. by move=> x /andP[]. Qed.
