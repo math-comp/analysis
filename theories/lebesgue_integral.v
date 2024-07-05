@@ -167,8 +167,8 @@ Definition mfun_key : pred_key mfun. Proof. exact. Qed.
 Canonical mfun_keyed := KeyedPred mfun_key.
 End mfun_pred.
 
-Section mfun_realType.
-Context {d} {aT : sigmaRingType d} {rT : realType}.
+Section mfun.
+Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
 Notation T := {mfun aT >-> rT}.
 Notation mfun := (@mfun _ _ aT rT).
 
@@ -196,23 +196,26 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {mfun aT >-> rT} by <:].
 
-Lemma cst_mfun_subproof x : @isMeasurableFun d _ aT rT (cst x).
+End mfun.
+
+Section mfun_realType.
+Context {d} {aT : sigmaRingType d} {rT : realType}.
+
+Let cst_mfun_subproof x : @isMeasurableFun d _ aT rT (cst x).
 Proof. by split. Qed.
+
 HB.instance Definition _ x := @cst_mfun_subproof x.
-Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
-
-Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
-
-End mfun_realType.
-
-Section mfun.
-Context {d} {aT : measurableType d} {rT : realType}.
 
 HB.instance Definition _ := @isMeasurableFun.Build _ _ _ rT
   (@normr rT rT) (@normr_measurable rT setT).
 
 HB.instance Definition _ :=
   isMeasurableFun.Build _ _ _ _ (@expR rT) (@measurable_expR rT).
+
+End mfun_realType.
+
+Section mfun_measurableType.
+Context {d d'} {aT : measurableType d} {rT : measurableType d'}.
 
 Lemma measurableT_comp_subproof (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :
   measurable_fun setT (f \o g).
@@ -221,7 +224,7 @@ Proof. exact: measurableT_comp. Qed.
 HB.instance Definition _ (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :=
   isMeasurableFun.Build _ _ _ _ (f \o g) (measurableT_comp_subproof _ _).
 
-End mfun.
+End mfun_measurableType.
 
 Section ring.
 Context d (aT : measurableType d) (rT : realType).
@@ -280,7 +283,7 @@ HB.instance Definition _ D mD := @indic_mfun_subproof D mD.
 Definition indic_mfun (D : set aT) (mD : measurable D) :=
   [the {mfun aT >-> rT} of mindic mD].
 
-HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_mfun k).
+HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst k).
 Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
 
 Lemma max_mfun_subproof f g : @isMeasurableFun d _ aT rT (f \max g).
