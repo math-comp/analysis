@@ -39,7 +39,8 @@ From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 (*                                                                            *)
 (* Detailed contents:                                                         *)
 (* ````                                                                       *)
-(*         {mfun T >-> R} == type of real-valued measurable functions         *)
+(*       {mfun aT >-> rT} == type of measurable functions                     *)
+(*                           aT and rT are sigmaRingType's.                   *)
 (*         {sfun T >-> R} == type of simple functions                         *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
 (*           cst_nnsfun r == constant simple function                         *)
@@ -108,12 +109,8 @@ HB.mixin Record isMeasurableFun d d' (aT : sigmaRingType d) (rT : sigmaRingType 
 HB.structure Definition MeasurableFun d d' aT rT :=
   {f of @isMeasurableFun d d' aT rT f}.
 
-(* HB.mixin Record isMeasurableFun d (aT : measurableType d) (rT : realType) (f : aT -> rT) := { *)
-(*   measurable_funP : measurable_fun setT f *)
-(* }. *)
 (* #[global] Hint Resolve fimfun_inP : core. *)
 
-(* HB.structure Definition MeasurableFun d aT rT := {f of @isMeasurableFun d aT rT f}. *)
 Reserved Notation "{ 'mfun' aT >-> T }"
   (at level 0, format "{ 'mfun'  aT  >->  T }").
 Reserved Notation "[ 'mfun' 'of' f ]"
@@ -147,8 +144,6 @@ Reserved Notation "[ 'nnfun' 'of' f ]"
 Notation "{ 'nnfun' aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
 Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
-
-(* HB.structure Definition NonNegSimpleFun d (aT : measurableType d) (rT : realType) := *)
 
 HB.structure Definition NonNegSimpleFun
     d (aT : sigmaRingType d) (rT : realType) :=
@@ -201,10 +196,11 @@ End mfun.
 Section mfun_realType.
 Context {d} {aT : sigmaRingType d} {rT : realType}.
 
-Let cst_mfun_subproof x : @isMeasurableFun d _ aT rT (cst x).
-Proof. by split. Qed.
+Let cst_mfun_subproof x : @measurable_fun d _ aT rT [set: aT] (cst x).
+Proof. by []. Qed.
 
-HB.instance Definition _ x := @cst_mfun_subproof x.
+HB.instance Definition _ x := isMeasurableFun.Build d _ aT rT (cst x)
+  (@cst_mfun_subproof x).
 
 HB.instance Definition _ := @isMeasurableFun.Build _ _ _ rT
   (@normr rT rT) (@normr_measurable rT setT).
