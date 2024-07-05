@@ -963,7 +963,7 @@ HB.instance Definition _ n := @isNonNegFun.Build _ _ _ (k_2_ge0 n).
 Let mk_2 n : measurable_fun [set: X * Y] (k_2 n).
 Proof. by apply: measurableT_comp => //; exact: measurable_snd. Qed.
 
-HB.instance Definition _ n := @isMeasurableFun.Build _ _ _ _ (mk_2 n).
+HB.instance Definition _ n := @isMeasurableFun.Build _ _ _ _ _ (mk_2 n).
 
 Let fk_2 n : finite_set (range (k_2 n)).
 Proof.

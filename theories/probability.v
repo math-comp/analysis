@@ -88,7 +88,7 @@ Proof. by rewrite preimage_range probability_setT. Qed.
 
 Definition distribution d (T : measurableType d) (R : realType)
     (P : probability T R) (X : {mfun T >-> R}) :=
-  pushforward P (@measurable_funP _ _ _ X).
+  pushforward P (@measurable_funP _ _ _ _ X).
 
 Section distribution_is_probability.
 Context d (T : measurableType d) (R : realType) (P : probability T R)
@@ -680,13 +680,13 @@ Qed.
 End markov_chebyshev_cantelli.
 
 HB.mixin Record MeasurableFun_isDiscrete d (T : measurableType d) (R : realType)
-    (X : T -> R) of @MeasurableFun d T R X := {
+    (X : T -> R) of @MeasurableFun d _ T R X := {
   countable_range : countable (range X)
 }.
 
 HB.structure Definition discreteMeasurableFun d (T : measurableType d)
     (R : realType) := {
-  X of isMeasurableFun d T R X & MeasurableFun_isDiscrete d T R X
+  X of isMeasurableFun d _ T R X & MeasurableFun_isDiscrete d T R X
 }.
 
 Notation "{ 'dmfun' aT >-> T }" :=

@@ -101,12 +101,12 @@ Reserved Notation "m1 '\x^' m2" (at level 40, left associativity).
 #[global]
 Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
-HB.mixin Record isMeasurableFun d (aT : sigmaRingType d) (rT : realType)
+HB.mixin Record isMeasurableFun d d' (aT : sigmaRingType d) (rT : sigmaRingType d')
     (f : aT -> rT) := {
   measurable_funP : measurable_fun [set: aT] f
 }.
-HB.structure Definition MeasurableFun d aT rT :=
-  {f of @isMeasurableFun d aT rT f}.
+HB.structure Definition MeasurableFun d d' aT rT :=
+  {f of @isMeasurableFun d d' aT rT f}.
 
 (* HB.mixin Record isMeasurableFun d (aT : measurableType d) (rT : realType) (f : aT -> rT) := { *)
 (*   measurable_funP : measurable_fun setT f *)
@@ -118,14 +118,13 @@ Reserved Notation "{ 'mfun' aT >-> T }"
   (at level 0, format "{ 'mfun'  aT  >->  T }").
 Reserved Notation "[ 'mfun' 'of' f ]"
   (at level 0, format "[ 'mfun'  'of'  f ]").
-Notation "{ 'mfun' aT >-> T }" := (@MeasurableFun.type _ aT T) : form_scope.
+Notation "{ 'mfun' aT >-> T }" := (@MeasurableFun.type _ _ aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 #[global] Hint Extern 0 (measurable_fun [set: _] _) =>
   solve [apply: measurable_funP] : core.
 
 HB.structure Definition SimpleFun d (aT : sigmaRingType d) (rT : realType) :=
-(* HB.structure Definition SimpleFun d (aT (*rT*) : measurableType d) (rT : realType) := *)
-  {f of @isMeasurableFun d aT rT f & @FiniteImage aT rT f}.
+  {f of @isMeasurableFun d _ aT rT f & @FiniteImage aT rT f}.
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
 Reserved Notation "[ 'sfun' 'of' f ]"
@@ -174,7 +173,7 @@ Notation T := {mfun aT >-> rT}.
 Notation mfun := (@mfun _ aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in mfun).
-Definition mfun_Sub_subproof := @isMeasurableFun.Build d aT rT f (set_mem fP).
+Definition mfun_Sub_subproof := @isMeasurableFun.Build d _ aT rT f (set_mem fP).
 #[local] HB.instance Definition _ := mfun_Sub_subproof.
 Definition mfun_Sub := [mfun of f].
 End Sub.
@@ -196,25 +195,25 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {mfun aT >-> rT} by <:].
 
-Lemma cst_mfun_subproof x : @isMeasurableFun d aT rT (cst x).
+Lemma cst_mfun_subproof x : @isMeasurableFun d _ aT rT (cst x).
 Proof. by split. Qed.
 HB.instance Definition _ x := @cst_mfun_subproof x.
 Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
 
 Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 
-HB.instance Definition _ := @isMeasurableFun.Build _ _ rT
+HB.instance Definition _ := @isMeasurableFun.Build _ _ _ rT
   (@normr rT rT) (@normr_measurable rT setT).
 
 HB.instance Definition _ :=
-  isMeasurableFun.Build _ _ _ (@expR rT) (@measurable_expR rT).
+  isMeasurableFun.Build _ _ _ _ (@expR rT) (@measurable_expR rT).
 
 Lemma measurableT_comp_subproof (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :
   measurable_fun setT (f \o g).
 Proof. exact: measurableT_comp. Qed.
 
 HB.instance Definition _ (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :=
-  isMeasurableFun.Build _ _ _ (f \o g) (measurableT_comp_subproof _ _).
+  isMeasurableFun.Build _ _ _ _ (f \o g) (measurableT_comp_subproof _ _).
 
 End mfun.
 
@@ -261,7 +260,7 @@ Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
 HB.instance Definition _ (D : set aT) (mD : measurable D) :
    @FImFun aT rT (mindic mD) := FImFun.on (mindic mD).
 Lemma indic_mfun_subproof (D : set aT) (mD : measurable D) :
-  @isMeasurableFun d aT rT (mindic mD).
+  @isMeasurableFun d _ aT rT (mindic mD).
 Proof.
 split=> mA /= B mB; rewrite preimage_indic.
 case: ifPn => B1; case: ifPn => B0 //.
@@ -278,7 +277,7 @@ Definition indic_mfun (D : set aT) (mD : measurable D) :=
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_mfun k).
 Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
 
-Lemma max_mfun_subproof f g : @isMeasurableFun d aT rT (f \max g).
+Lemma max_mfun_subproof f g : @isMeasurableFun d _ aT rT (f \max g).
 Proof. by split; apply: measurable_maxr. Qed.
 HB.instance Definition _ f g := max_mfun_subproof f g.
 Definition max_mfun f g := [the {mfun aT >-> _} of f \max g].
@@ -313,7 +312,7 @@ Notation sfun := (@sfun _ aT rT).
 Section Sub.
 Context (f : aT -> rT) (fP : f \in sfun).
 Definition sfun_Sub1_subproof :=
-  @isMeasurableFun.Build d aT rT f (set_mem (sub_sfun_mfun fP)).
+  @isMeasurableFun.Build d _ aT rT f (set_mem (sub_sfun_mfun fP)).
 #[local] HB.instance Definition _ := sfun_Sub1_subproof.
 Definition sfun_Sub2_subproof :=
   @FiniteImage.Build aT rT f (set_mem (sub_sfun_fimfun fP)).
