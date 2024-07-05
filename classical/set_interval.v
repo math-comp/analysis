@@ -70,6 +70,51 @@ by move: b0 b1 => [] [] /=; [exact: subset_itv_oo_co|exact: subset_itv_oo_cc|
   exact: subset_refl|exact: subset_itv_oo_oc].
 Qed.
 
+Lemma subset_itvl (a b c : itv_bound T) : (b <= c)%O ->
+  [set` Interval a b] `<=` [set` Interval a c].
+Proof.
+case: c => [[|] c bc x/=|[//|_] x/=].
+- rewrite !in_itv/= => /andP[->/=].
+  case: b bc => [[|]/=|[|]//] b bc.
+    by move=> /lt_le_trans; exact.
+  by move=> /le_lt_trans; exact.
+- rewrite !in_itv/= => /andP[->/=].
+  case: b bc => [[|]/=|[|]//] b bc.
+    by move=> /ltW /le_trans; apply.
+  by move=> /le_trans; apply.
+- by move: x; rewrite le_ninfty => /eqP ->.
+- by rewrite !in_itv/=; case: a => [[|]/=|[|]//] a /andP[->].
+Qed.
+
+Lemma subset_itvr (a b c : itv_bound T) : (c <= a)%O ->
+  [set` Interval a b] `<=` [set` Interval c b].
+Proof.
+move=> ac x/=; rewrite !in_itv/= => /andP[ax ->]; rewrite andbT.
+move: c a ax ac => [[|] c [[|]/= a ax|[|]//=]|[//|]]; rewrite ?bnd_simp.
+- by move=> /le_trans; exact.
+- by move=> /le_trans; apply; exact/ltW.
+- by move=> /lt_le_trans; exact.
+- by move=> /le_lt_trans; exact.
+- by move=> [[|]|[|]//].
+Qed.
+
+Lemma subset_itvS (a b : itv_bound T) (c e : T) :
+    (BLeft c <= a)%O -> (b <= BRight e)%O ->
+  [set` Interval a b] `<=` [set` `[c, e]].
+Proof.
+move=> ca be z/=; rewrite !in_itv/= => /andP[az zb].
+case: a ca az => [[|]/=|[|]//] a; rewrite bnd_simp => ca az.
+  rewrite (le_trans ca az)/=.
+  move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
+    by move=> /ltW/le_trans; exact.
+  by move=> /le_trans; exact.
+move/ltW in az.
+rewrite (le_trans ca az)/=.
+move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
+  by move=> /ltW/le_trans; exact.
+by move=> /le_trans; exact.
+Qed.
+
 Lemma interval_set1 x : `[x, x]%classic = [set x] :> set T.
 Proof.
 apply/seteqP; split => [y/=|y <-]; last by rewrite /= in_itv/= lexx.
