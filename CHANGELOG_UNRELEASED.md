@@ -23,6 +23,9 @@
   + definition `completed_algebra_gen`
   + lemmas `g_sigma_completed_algebra_genE`, `negligible_sub_caratheodory`,
     `completed_caratheodory_measurable`
+- in `ftc.v`:
+  + lemma `FTC1` (specialization of the previous `FTC1` lemma, now renamed to `FTC1_lebesgue_pt`)
+  + lemma `FTC1Ny`
 
 ### Changed
 
@@ -51,6 +54,9 @@
   + `lee_ndivr_mull` -> `lee_ndivrMl`
   + `lee_ndivr_mulr` -> `lee_ndivrMr`
   + `eqe_pdivr_mull` -> `eqe_pdivrMl`
+
+- in `ftc.v`:
+  + `FTC1` -> `FTC1_lebesgue_pt`
 
 ### Generalized
 
