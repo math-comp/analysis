@@ -10,7 +10,16 @@
   + lemma `setCD`
 
 - in `measure.v`:
-  + factory `isAlgebraOfSetsD`
+  + factory `isAlgebraOfSets_setD`
+
+- in `classical_sets.v`:
+  + definition `sym_diff`, notation ``` `^` ```
+  + lemmas `sym_diffxx`, `sym_diff_setU`, `sym_diff_set`, `sym_diff_setI`,
+    `sym_diffC`, `sym_diffA`, `sym_diff0`, `sym_diffE`, `sym_diffT`, `sym_diffv`,
+	`sym_diff_def`
+
+- in `measure.v`:
+  + factory `isRingOfSets_sym_diff`
 
 - in `classical_sets.v`:
   + lemma `setDU`

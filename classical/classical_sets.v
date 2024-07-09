@@ -42,6 +42,7 @@ From mathcomp Require Import mathcomp_extra boolp.
 (* |                   `` `\|` `` |==| $\cup$                                 *)
 (* |                    `` `&` `` |==| $\cap$                                 *)
 (* |                    `` `\` `` |==| set difference                         *)
+(* |                    `` `^` `` |==| symmetric difference                   *)
 (* |                     `` ~` `` |==| set complement                         *)
 (* |                   `` `<=` `` |==| $\subseteq$                            *)
 (* |                 `` f @` A `` |==| image by f of A                        *)
@@ -244,6 +245,7 @@ Reserved Notation "~` A" (at level 35, right associativity).
 Reserved Notation "[ 'set' ~ a ]" (at level 0, format "[ 'set' ~  a ]").
 Reserved Notation "A `\` B" (at level 50, left associativity).
 Reserved Notation "A `\ b" (at level 50, left associativity).
+Reserved Notation "A `^` B" (at level 52, left associativity).
 (*
 Reserved Notation "A `+` B"  (at level 54, left associativity).
 Reserved Notation "A +` B"  (at level 54, left associativity).
@@ -399,6 +401,10 @@ Notation "[ 'set' ~ a ]" := (~` [set a]) : classical_set_scope.
 Notation "A `\` B" := (setD A B) : classical_set_scope.
 Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
 Notation "[ 'disjoint' A & B ]" := (disj_set A B) : classical_set_scope.
+
+Definition sym_diff {T : Type} (A B : set T) := (A `\` B) `|` (B `\` A).
+Arguments sym_diff _ _ _ _ /.
+Notation "A `^` B" := (sym_diff A B) : classical_set_scope.
 
 Notation "'`I_' n" := [set k | is_true (k < n)%N].
 
@@ -1116,6 +1122,59 @@ Proof. by apply/predeqP => -[i j]; split=> [[? ? [/= -> //]]|[]]; exists i. Qed.
 Lemma bigcupM1r T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :
   \bigcup_(i in A2) (A1 i `*` [set i]) = A1 ``*` A2.
 Proof. by apply/predeqP => -[i j]; split=> [[? ? [? /= -> //]]|[]]; exists j. Qed.
+
+Lemma sym_diffxx A : A `^` A = set0.
+Proof. by rewrite /sym_diff setDv setU0. Qed.
+
+Lemma sym_diff0 A : A `^` set0 = A.
+Proof. by rewrite /sym_diff setD0 set0D setU0. Qed.
+
+Lemma sym_diffT A : A `^` [set: T] = ~` A.
+Proof. by rewrite /sym_diff setDT set0U setTD. Qed.
+
+Lemma sym_diffv A : A `^` ~` A = [set: T].
+Proof. by rewrite /sym_diff setDE setCK setIid setDE setIid setUv. Qed.
+
+Lemma sym_diffC A B : A `^` B = B `^` A.
+Proof. by rewrite /sym_diff setUC. Qed.
+
+Lemma sym_diffA A B C : A `^` (B `^` C) = (A `^` B) `^` C.
+Proof.
+rewrite /sym_diff; apply/seteqP; split => x/=;
+by have [|] := pselect (A x); have [|] := pselect (B x);
+  have [|] := pselect (C x); tauto.
+Qed.
+
+Lemma sym_diff_def A B : A `^` B = (A `&` ~` B) `|` (~` A `&` B).
+Proof. by rewrite /sym_diff !setDE (setIC B). Qed.
+
+Lemma sym_diffE A B : A `^` B = (A `|` B) `\` (A `&` B).
+Proof.
+rewrite /sym_diff; apply/seteqP; split => x/=;
+by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
+Qed.
+
+Lemma sym_diff_setU A B : (A `^` B) `^` (A `&` B) = A `|` B.
+Proof.
+rewrite /sym_diff; apply/seteqP; split => x/=;
+by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
+Qed.
+
+Lemma sym_diff_setD A B : A `^` (A `&` B) = A `\` B.
+Proof. by rewrite /sym_diff; apply/seteqP; split => x/=; tauto. Qed.
+
+Lemma sym_diff_setI A B : (A `|` B) `\` (A `^` B) = A `&` B.
+Proof.
+rewrite /sym_diff; apply/seteqP; split => x/=;
+by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
+Qed.
+
+Lemma setI_sym_diff A B C : A `&` (B `^` C) = (A `&` B) `^` (A `&` C).
+Proof.
+rewrite /sym_diff; apply/seteqP; split => x/=;
+by have [|] := pselect (A x); have [|] := pselect (B x);
+  have [|] := pselect (C x); tauto.
+Qed.
 
 End basic_lemmas.
 #[global]
