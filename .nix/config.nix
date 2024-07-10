@@ -47,14 +47,19 @@
     mathcomp.override.version = "2.2.0";
   };
 
-  bundles."master".coqPackages = {
+  bundles."8.20".coqPackages = {
+    coq.override.version = "8.20";
+    mathcomp.override.version = "2.2.0";
+  };
+
+  bundles."master" = { coqPackages = {
     coq.override.version = "master";
-    coq-elpi.override.version = "coq-master";
+    coq-elpi.override.version = "master";
     hierarchy-builder.override.version = "master";
     mathcomp.override.version = "master";
     mathcomp-bigenough.override.version = "1.0.1";
     mathcomp-finmap.override.version = "master";
-  };
+  }; ocamlPackages = { elpi.override.version = "1.19.2"; }; };
 
   ## Cachix caches to use in CI
   ## Below we list some standard ones
