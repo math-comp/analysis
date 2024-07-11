@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import cardinality mathcomp_extra fsbigop.
+From mathcomp Require Import cardinality fsbigop.
 Require Import reals signed.
 
 (**md**************************************************************************)
@@ -447,6 +447,7 @@ Unset Printing Implicit Defensive.
 Obligation Tactic := idtac.
 
 Import Order.TTheory GRing.Theory Num.Theory.
+From mathcomp Require Import mathcomp_extra.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
@@ -4991,8 +4992,8 @@ move=> E; rewrite -entourage_ballE => -[e e0 subE].
 exists `|Num.floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
 rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// -natr1.
 rewrite natr_absz ger0_norm; last first.
-  by rewrite -mathcomp_extra.floor_ge_int ?invr_ge0// ltW.
-by rewrite intr1 ltW// mathcomp_extra.lt_succ_floor.
+  by rewrite -floor_ge_int ?invr_ge0// ltW.
+by rewrite intr1 ltW// lt_succ_floor.
 Qed.
 
 (** Specific pseudoMetric spaces *)

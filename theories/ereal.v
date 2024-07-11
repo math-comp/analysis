@@ -6,7 +6,7 @@
 (* -------------------------------------------------------------------- *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import fsbigop cardinality set_interval.
 Require Import reals signed topology.
 Require Export constructive_ereal.
@@ -55,6 +55,7 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldTopology.Exports.
+From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope ring_scope.
 
@@ -1406,13 +1407,13 @@ case: x => /= [x [_/posnumP[d] dP] |[d [dreal dP]] |[d [dreal dP]]]; last 2 firs
       by rewrite Znat_def floor_ge0 le_max lexx orbC.
     exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin.
     have /le_lt_trans : (d <= Num.max d 0)%R by rewrite le_max lexx.
-    apply; rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor _))// Nfloor.
+    apply; rewrite (lt_le_trans (lt_succ_floor _))// Nfloor.
     by rewrite natr1 mulrz_nat ler_nat.
   have /natrP[N Nfloor] : Num.floor (Num.max (- d)%R 0%R) \is a Num.nat.
     by rewrite Znat_def floor_ge0 le_max lexx orbC.
   exists N.+1 => // n ltNn; apply: dP; rewrite lte_fin ltrNl.
   have /le_lt_trans : (- d <= Num.max (- d) 0)%R by rewrite le_max lexx.
-  apply; rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor _))// Nfloor.
+  apply; rewrite (lt_le_trans (lt_succ_floor _))// Nfloor.
   by rewrite natr1 mulrz_nat ler_nat.
 have /natrP[N Nfloor] : Num.floor d%:num^-1 \is a Num.nat.
   by rewrite Znat_def floor_ge0.
@@ -1420,6 +1421,5 @@ exists N => // n leNn; apply: dP; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym; exact/invr_neq0/lt0r_neq0.
 rewrite /= opprD addrA subrr distrC subr0 gtr0_norm; last by rewrite invr_gt0.
 rewrite -[ltLHS]mulr1 ltr_pdivrMl // -ltr_pdivrMr // div1r.
-rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor _))// Nfloor.
-by rewrite !natr1 mulrz_nat ler_nat.
+by rewrite (lt_le_trans (lt_succ_floor _))// Nfloor !natr1 mulrz_nat ler_nat.
 Qed.

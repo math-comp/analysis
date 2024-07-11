@@ -388,64 +388,56 @@ Context {R : archiDomainType}.
 Implicit Type x : R.
 
 Lemma ge_floor x : (Num.floor x)%:~R <= x.
-Proof. by rewrite Num.Theory.ge_floor. Qed.
+Proof. exact: Num.Theory.ge_floor. Qed.
+
+Lemma floor_ge_int x (z : int) : (z%:~R <= x) = (z <= Num.floor x).
+Proof. exact: Num.Theory.floor_ge_int. Qed.
+
+Lemma floor_lt_int x (z : int) : (x < z%:~R) = (Num.floor x < z).
+Proof. by rewrite ltNge floor_ge_int -ltNge. Qed.
 
 Lemma floor_ge0 x : (0 <= Num.floor x) = (0 <= x).
-Proof. by rewrite -Num.Theory.floor_ge_int. Qed.
+Proof. by rewrite -floor_ge_int. Qed.
 
 Lemma floor_le0 x : x <= 0 -> Num.floor x <= 0.
 Proof. by move/Num.Theory.floor_le; rewrite Num.Theory.floor0. Qed.
 
 Lemma floor_lt0 x : x < 0 -> Num.floor x < 0.
-Proof. by move=> x0; rewrite -(@ltrz0 R) (le_lt_trans (ge_floor _)). Qed.
+Proof. by rewrite -floor_lt_int. Qed.
 
 Lemma lt_succ_floor x : x < (Num.floor x + 1)%:~R.
-Proof. by rewrite Num.Theory.lt_succ_floor. Qed.
+Proof. exact: Num.Theory.lt_succ_floor. Qed.
 
 Lemma floor_natz n : Num.floor (n%:R : R) = n%:~R :> int.
-Proof.
-by rewrite (@Num.Theory.floor_def _ _ n%:~R)// intr1 !mulrz_nat lexx/= ltr_nat addn1.
-Qed.
-
-Lemma floor_ge_int x (z : int) : (z%:~R <= x) = (z <= Num.floor x).
-Proof. by rewrite Num.Theory.floor_ge_int. Qed.
+Proof. by rewrite (Num.Theory.intrKfloor n) intz. Qed.
 
 Lemma floor_neq0 x : (Num.floor x != 0) = (x < 0) || (x >= 1).
-Proof.
-apply/idP/orP => [|[x0|/Num.Theory.floor_le r1]]; first rewrite neq_lt => /orP[x0|x0].
-- by left; apply: contra_lt x0; rewrite -floor_ge_int.
-- by right; rewrite (le_trans _ (ge_floor _))// ler1z -gtz0_ge1.
-- by rewrite lt_eqF//; apply: contra_lt x0; rewrite -floor_ge_int.
-- by rewrite gt_eqF// (lt_le_trans _ r1)// Num.Theory.floor1.
-Qed.
-
-Lemma floor_lt_int x (z : int) : (x < z%:~R) = (Num.floor x < z).
-Proof. by rewrite ltNge Num.Theory.floor_ge_int// -ltNge. Qed.
+Proof. by rewrite neq_lt -floor_lt_int gtz0_ge1 -floor_ge_int. Qed.
 
 Lemma ceil_ge x : x <= (Num.ceil x)%:~R.
-Proof. by rewrite Num.Theory.le_ceil. Qed.
+Proof. exact: Num.Theory.le_ceil. Qed.
+
+Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (Num.ceil x <= z).
+Proof. exact: Num.Theory.ceil_le_int. Qed.
+
+Lemma ceil_lt_int x (z : int) : (z%:~R < x) = (z < Num.ceil x).
+Proof. by rewrite ltNge ceil_ge_int -ltNge. Qed.
 
 Lemma ceil_ge0 x : 0 <= x -> 0 <= Num.ceil x.
 Proof. by move/(ge_trans (ceil_ge x)); rewrite -(ler_int R). Qed.
 
 Lemma ceil_gt0 x : 0 < x -> 0 < Num.ceil x.
-Proof. by move=> ?; rewrite oppr_gt0 floor_lt0 // ltrNl oppr0. Qed.
+Proof. by rewrite -ceil_lt_int. Qed.
 
 Lemma ceil_le0 x : x <= 0 -> Num.ceil x <= 0.
-Proof. by move=> x0; rewrite -lerNl oppr0 floor_ge0 -lerNr oppr0. Qed.
-
-Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (Num.ceil x <= z).
-Proof. by rewrite Num.Theory.ceil_le_int. Qed.
-
-Lemma ceil_lt_int x (z : int) : (z%:~R < x) = (z < Num.ceil x).
-Proof. by rewrite ltNge ceil_ge_int -ltNge. Qed.
+Proof. by rewrite -ceil_ge_int. Qed.
 
 Lemma ceilN x : Num.ceil (- x) = - Num.floor x.
 Proof. by rewrite /Num.ceil opprK. Qed.
 
 Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
-rewrite -natr1 natr_absz; have [x0|x0] := ltP 0%R x.
+rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
   by rewrite !gtr0_norm ?ceil_gt0// (le_trans (ceil_ge _))// lerDl.
 by rewrite !ler0_norm ?ceil_le0// opprK intr1 ltW// lt_succ_floor.
 Qed.

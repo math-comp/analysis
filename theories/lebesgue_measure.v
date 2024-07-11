@@ -1155,10 +1155,10 @@ rewrite [X in measurable X](_ : _ =
                           exact: emeasurable_fun_infty_c].
 rewrite predeqE => t; split => [/= [Dt ft]|].
   have [ft0|ft0] := leP 0%R (fine (f t)).
-    exists `|(ceil (fine (f t)))%real|%N => //=; split => //; split.
+    exists `|ceil (fine (f t))|%N => //=; split => //; split.
       by rewrite -{2}(fineK ft)// lee_fin (le_trans _ ft0)// lerNl oppr0.
     by rewrite natr_absz ger0_norm ?ceil_ge0// -(fineK ft) lee_fin ceil_ge.
-  exists `|(floor (fine (f t)))%real|%N => //=; split => //; split.
+  exists `|floor (fine (f t))|%N => //=; split => //; split.
     rewrite natr_absz ltr0_norm ?floor_lt0// EFinN.
     by rewrite -{2}(fineK ft) lee_fin mulrNz opprK ge_floor// ?num_real.
   by rewrite -(fineK ft)// lee_fin (le_trans (ltW ft0)).
@@ -1403,7 +1403,7 @@ Lemma eset1Ny :
 Proof.
 rewrite eqEsubset; split=> [_ -> i _ |]; first by rewrite /= in_itv /= ltNyr.
 move=> [r|/(_ O Logic.I)|]//.
-move=> /(_ `|(floor r)%real|%N Logic.I); rewrite /= in_itv/= ltNge.
+move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
   by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
 rewrite lerNl -abszN natr_absz gtr0_norm; last first.
@@ -1414,7 +1414,7 @@ Qed.
 Lemma eset1y : [set +oo] = \bigcap_k `]k%:R%:E, +oo[%classic :> set (\bar R).
 Proof.
 rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
-move=> [r| |/(_ O Logic.I)] // /(_ `|(ceil r)%real|%N Logic.I); rewrite /= in_itv /=.
+move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
 by rewrite natr_absz gtr0_norm // ?ceil_ge// ceil_gt0.
@@ -2400,7 +2400,7 @@ have {}EBr2 : \esum_(i in E) mu (closure (B i)) <=
   by apply: bigcup_measurable => *; exact: measurable_closure.
 have finite_set_F i : finite_set (F i).
   apply: contrapT.
-  pose M := `|(ceil ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R)))%real|.+1.
+  pose M := `|ceil ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))|.+1.
   move/(infinite_set_fset M) => [/= C] CsubFi McardC.
   have MC : (M%:R * (1 / (2 ^ i.+1)%:R))%:E <=
             mu (\bigcup_(j in [set` C]) closure (B j)).

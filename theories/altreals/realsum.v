@@ -6,7 +6,7 @@
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp.classical Require Import boolp.
 Require Import xfinmap ereal reals discrete realseq.
-From mathcomp.classical Require Import classical_sets functions mathcomp_extra.
+From mathcomp.classical Require Import classical_sets functions.
 Require Import topology.
 
 Set Implicit Arguments.
@@ -15,6 +15,7 @@ Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
 Import Order.TTheory GRing.Theory Num.Theory.
+From mathcomp.classical Require Import mathcomp_extra.
 
 Local Open Scope fset_scope.
 Local Open Scope ring_scope.
@@ -141,11 +142,9 @@ Proof.
 case/summableP=> M ge0_M bM; pose E (p : nat) := [pred x | `|f x| > 1 / p.+1%:~R].
 set F := [pred x | _]; have le: {subset F <= [pred x | `[< exists p, x \in E p >]]}.
   move=> x; rewrite !inE => nz_fx.
-  pose j := `|Num.floor (1 / `|f x|)|%N; exists j; rewrite inE.
-  rewrite ltr_pdivrMr ?ltr0z // -ltr_pdivrMl ?normr_gt0 //.
-  rewrite mulr1 /j div1r -addn1 /= PoszD intrD mulr1z.
-  rewrite gez0_abs ?floor_ge0 ?invr_ge0 ?normr_ge0//.
-  by rewrite intr1 mathcomp_extra.lt_succ_floor.
+  pose j := `|Num.floor (`|f x|^-1)|%N; exists j; rewrite inE.
+  rewrite mul1r invf_plt ?unfold_in /= ?ltr0z ?normr_gt0 // /j -addn1 /=.
+  by rewrite PoszD gez0_abs ?floor_ge0 ?invr_ge0 ?normr_ge0// lt_succ_floor.
 apply/(countable_sub le)/cunion_countable=> i /=.
 case: (existsTP (fun s : seq T => {subset E i <= s}))=> /= [[s le_Eis]|].
   by apply/finite_countable/finiteP; exists s => x /le_Eis.
@@ -157,10 +156,9 @@ suff: \sum_(x : J) `|f (val x)| > M by rewrite ltNge bM.
 apply/(@lt_le_trans _ _ (\sum_(x : J) 1 / i.+1%:~R)); last first.
   apply/ler_sum=> /= m _; apply/ltW.
   by have:= fsvalP m; rewrite in_fset => /le_sEi.
-rewrite sumr_const -cardfE card_fseq undup_id // eq_si -mulr_natr -pmulrn.
-rewrite mul1r natrM mulrCA mulVf ?mulr1 ?pnatr_eq0 //.
-have /andP[_] := mem_rg1_floor M; rewrite -addn1.
-by rewrite natrD /= mulr1n pmulrn -{1}[Num.floor _]gez0_abs // floor_ge0.
+rewrite mul1r sumr_const -cardfE card_fseq undup_id // eq_si.
+rewrite -mulr_natr natrM mulrC mulfK ?pnatr_eq0//.
+by rewrite pmulrn -addn1 PoszD gez0_abs ?floor_ge0// lt_succ_floor.
 Qed.
 
 End SummableCountable.

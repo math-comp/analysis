@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure numfun realfun function_spaces.
@@ -83,6 +83,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports.
+From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -1288,20 +1289,14 @@ Lemma bigsetU_dyadic_itv n : `[n%:R, n.+1%:R[%classic =
 Proof.
 rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
 - rewrite -bigcup_seq /=; exists `|floor (r * 2 ^+ n.+1)|%N.
-    rewrite /= mem_index_iota; apply/andP; split.
-      rewrite -ltez_nat gez0_abs ?floor_ge0; last first.
-        by rewrite mulr_ge0// (le_trans _ nr).
-      apply: (@le_trans _ _ (floor (n * 2 ^ n.+1)%:R)); last first.
-        by apply: floor_le; rewrite natrM natrX ler_pM2r.
-      by rewrite -floor_ge_int.
-    rewrite -ltz_nat gez0_abs; last first.
-      by rewrite floor_ge0 mulr_ge0// (le_trans _ nr).
-    rewrite -(@ltr_int R) (le_lt_trans (ge_floor _)) ?num_real//.
-    by rewrite PoszM intrM -natrX ltr_pM2r.
+    rewrite /= mem_index_iota -ltz_nat -lez_nat gez0_abs ?floor_ge0; last first.
+      by rewrite mulr_ge0// (le_trans _ nr).
+    rewrite -floor_ge_int -floor_lt_int.
+    by rewrite !PoszM -!natrXE !rmorphM !rmorphXn /= ler_wpM2r ?ltr_pM2r.
   rewrite /= in_itv /=; apply/andP; split.
-    rewrite ler_pdivrMr// (le_trans _ (ge_floor _)) ?num_real//.
+    rewrite ler_pdivrMr// (le_trans _ (ge_floor _)) //.
     by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// (le_trans _ nr).
-  rewrite ltr_pdivlMr// (lt_le_trans (mathcomp_extra.lt_succ_floor _))//.
+  rewrite ltr_pdivlMr// (lt_le_trans (lt_succ_floor _))//.
   rewrite -[in leRHS]natr1 -intr1 lerD2r// -(@gez0_abs (floor _))// floor_ge0.
   by rewrite mulr_ge0// (le_trans _ nr).
 - rewrite -bigcup_seq => -[/= k] /[!mem_index_iota] /andP[nk kn].
@@ -1432,15 +1427,15 @@ rewrite notin_setE /B /setI /= => /not_andP[] // /negP.
 rewrite -ltNge => fxn _.
 have K : (`|floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
   rewrite -ltz_nat gez0_abs; last by rewrite floor_ge0 mulr_ge0// ltW.
-  rewrite -(@ltr_int R); rewrite (le_lt_trans (ge_floor _)) ?num_real// PoszM intrM.
+  rewrite -(@ltr_int R); rewrite (le_lt_trans (ge_floor _))// PoszM intrM.
   by rewrite -natrX ltr_pM2r// -lte_fin (fineK fxfin).
 have /[!mem_index_enum]/(_ isT) := An0 (Ordinal K).
 rewrite implyTb indicE mem_set ?mulr1; last first.
   rewrite /A K /= inE; split=> //=; exists (fine (f x)); last by rewrite fineK.
   rewrite in_itv /=; apply/andP; split.
-    rewrite ler_pdivrMr// (le_trans _ (ge_floor _)) ?num_real//.
+    rewrite ler_pdivrMr// (le_trans _ (ge_floor _))//.
     by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// ltW.
-  rewrite ltr_pdivlMr// (lt_le_trans (mathcomp_extra.lt_succ_floor _))//.
+  rewrite ltr_pdivlMr// (lt_le_trans (lt_succ_floor _))//.
   rewrite -[in leRHS]natr1 -intr1 lerD2r// -{1}(@gez0_abs (floor _))//.
   by rewrite floor_ge0// mulr_ge0// ltW.
 rewrite mulf_eq0// -exprVn; apply/negP; rewrite negb_or expf_neq0//= andbT.
@@ -1543,7 +1538,7 @@ have : fine (f x) < n%:R.
   rewrite -(@ler_nat R); apply: lt_le_trans.
   rewrite -natr1 (_ : `| _ |%:R  = (floor (fine (f x)))%:~R); last first.
     by rewrite -[in RHS](@gez0_abs (floor _))// floor_ge0//; exact/fine_ge0/f0.
-  by rewrite intr1 mathcomp_extra.lt_succ_floor.
+  by rewrite intr1 lt_succ_floor.
 rewrite -lte_fin (fineK fxfin) => fxn.
 have [approx_nx0|[k [/andP[k0 kn2n] ? ->]]] := f_ub_approx fxn.
   by have := Hm _ mn; rewrite approx_nx0.

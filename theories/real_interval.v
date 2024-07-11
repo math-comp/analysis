@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import fingroup perm rat archimedean finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Export set_interval.
 From HB Require Import structures.
 Require Import reals ereal signed topology normedtype sequences.
@@ -14,6 +14,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -176,8 +177,7 @@ rewrite predeqE => y; split=> /=; last first.
 rewrite in_itv /= andbT => xy; exists `|floor y|%N.+1 => //=.
 rewrite in_itv /= xy /=.
 have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_pwDr.
-rewrite -natr1 natr_absz ger0_norm ?floor_ge0 1?ltW//.
-by rewrite intr1 mathcomp_extra.lt_succ_floor.
+by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 1?ltW// intr1 lt_succ_floor.
 Qed.
 
 Lemma itv_o_inftyEbigcup x :
@@ -344,7 +344,7 @@ move fxE : (f x) => fx; case: fx fxE => [fx fxE gxE|fxoo gxE _|//]; last first.
 rewrite lte_fin -subr_gt0 => fgx; exists `|floor (fx - gx)^-1|%N => //.
 rewrite /E/= -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0; last exact/ltW.
 rewrite fxE gxE lee_fin -[leRHS]invrK lef_pV2//.
-- by rewrite intr1 ltW// mathcomp_extra.lt_succ_floor.
+- by rewrite intr1 ltW// lt_succ_floor.
 - by rewrite posrE// ltr_pwDr// ler0z floor_ge0 invr_ge0 ltW.
 - by rewrite posrE invr_gt0.
 Qed.
@@ -367,7 +367,7 @@ apply/ler_addgt0Pl => e e_gt0; rewrite -lerBlDl ltW//.
 have := rx `|floor e^-1|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
 rewrite lerD2l lerN2 -lef_pV2 ?invrK//; last by rewrite posrE.
 rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
-by rewrite intr1 mathcomp_extra.lt_succ_floor.
+by rewrite intr1 lt_succ_floor.
 Qed.
 
 Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :

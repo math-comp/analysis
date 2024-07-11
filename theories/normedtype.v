@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule function_spaces.
@@ -146,6 +146,7 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports.
+From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -5779,7 +5780,7 @@ rewrite ler_pdivlMr// mulrC -ler_pdivlMr//.
 have [f0|f0] := eqVneq 0 f.
   by move: mf; rewrite -f0 absz0 leNgt expnS ltr_nat leq_pmulr// expn_gt0.
 rewrite (le_trans mf)// prednK//; last by rewrite absz_gt0 eq_sym.
-by rewrite natr_absz// ger0_norm// mathcomp_extra.ge_floor.
+by rewrite natr_absz// ger0_norm// ge_floor.
 Qed.
 
 Lemma cover_vitali_collection_partition :

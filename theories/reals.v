@@ -39,9 +39,8 @@
 (******************************************************************************)
 
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect all_algebra archimedean.
+From mathcomp Require Import boolp classical_sets set_interval.
 
 Require Import Setoid.
 
@@ -54,6 +53,7 @@ Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
 Import Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
+From mathcomp Require Import mathcomp_extra.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -465,20 +465,17 @@ Lemma RfloorE x : Rfloor x = (floor x)%:~R.
 Proof. by []. Qed.
 
 Lemma mem_rg1_floor x : (range1 (floor x)%:~R) x.
-Proof.
-rewrite /range1 /mkset intr1 mathcomp_extra.lt_succ_floor andbT.
-by rewrite mathcomp_extra.ge_floor.
-Qed.
+Proof. by rewrite /range1 /mkset intr1 ge_floor lt_succ_floor. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
-Proof. by rewrite /Rfloor; exact: mem_rg1_floor. Qed.
+Proof. exact: mem_rg1_floor. Qed.
 
 Lemma Rfloor_le x : Rfloor x <= x.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
 #[deprecated(since="mathcomp-analysis 1.3.0", note="use `ge_floor` instead")]
 Lemma floor_le x : (floor x)%:~R <= x.
-Proof. by rewrite mathcomp_extra.ge_floor. Qed.
+Proof. by rewrite ge_floor. Qed.
 
 Lemma lt_succ_Rfloor x : x < Rfloor x + 1.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
@@ -499,8 +496,7 @@ Proof. by rewrite /range1/mkset lexx /= ltrDl ltr01. Qed.
 Lemma range1zP (m : int) x : Rfloor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
 split=> [<-|h]; first exact/mem_rg1_Rfloor.
-apply/eqP; rewrite RfloorE eqr_int; apply/eqP/(@range1z_inj x) => //.
-by rewrite /range1/mkset -RfloorE mem_rg1_Rfloor.
+by congr intmul; apply/floor_def; rewrite -intr1.
 Qed.
 
 Lemma Rfloor_natz (z : int) : Rfloor z%:~R = z%:~R :> R.
@@ -511,20 +507,13 @@ Lemma Rfloor0 : Rfloor 0 = 0 :> R. Proof. by rewrite /Rfloor floor0. Qed.
 Lemma Rfloor1 : Rfloor 1 = 1 :> R. Proof. by rewrite /Rfloor floor1. Qed.
 
 Lemma le_Rfloor : {homo (@Rfloor R) : x y / x <= y}.
-Proof.
-move=> x y le_xy; case: lerP=> //=; rewrite -Rint_ler_addr1 ?isint_Rfloor //.
-move/(lt_le_trans (lt_succ_Rfloor y))/lt_le_trans/(_ (Rfloor_le x)).
-by rewrite ltNge le_xy.
-Qed.
+Proof. by move=> x y /Num.Theory.floor_le; rewrite ler_int. Qed.
 
 Lemma Rfloor_ge_int x (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
-Proof.
-apply/idP/idP; last by move/le_trans => /(_ _ (Rfloor_le x)).
-by move/le_Rfloor; apply le_trans; rewrite Rfloor_natz.
-Qed.
+Proof. by rewrite ler_int floor_ge_int. Qed.
 
 Lemma Rfloor_lt_int x (z : int) : (x < z%:~R) = (Rfloor x < z%:~R).
-Proof. by rewrite ltNge Rfloor_ge_int -ltNge. Qed.
+Proof. by rewrite ltr_int floor_lt_int. Qed.
 
 Lemma Rfloor_le0 x : x <= 0 -> Rfloor x <= 0.
 Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
@@ -534,7 +523,7 @@ Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 
 #[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.floor_le` instead")]
 Lemma le_floor : {homo @Num.floor R : x y / x <= y}.
-Proof. by move=> a b ab; rewrite Num.Theory.floor_le. Qed.
+Proof. exact: Num.Theory.floor_le. Qed.
 
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
@@ -542,8 +531,8 @@ move=> yx; exists `|floor (x - y)^-1|%N.
 rewrite -ltrBrDl -{2}(invrK (x - y)%R) ltf_pV2 ?qualifE/= ?ltr0n//.
   by rewrite invr_gt0 subr_gt0.
 rewrite -natr1 natr_absz ger0_norm.
-  by rewrite -mathcomp_extra.floor_ge_int// invr_ge0 subr_ge0 ltW.
-by rewrite intr1 mathcomp_extra.lt_succ_floor.
+  by rewrite -floor_ge_int// invr_ge0 subr_ge0 ltW.
+by rewrite intr1 lt_succ_floor.
 Qed.
 
 End FloorTheory.
