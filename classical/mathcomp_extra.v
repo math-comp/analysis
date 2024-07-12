@@ -399,8 +399,10 @@ Proof. by rewrite ltNge floor_ge_int -ltNge. Qed.
 Lemma floor_ge0 x : (0 <= Num.floor x) = (0 <= x).
 Proof. by rewrite -floor_ge_int. Qed.
 
-Lemma floor_le0 x : x <= 0 -> Num.floor x <= 0.
-Proof. by move/Num.Theory.floor_le; rewrite Num.Theory.floor0. Qed.
+Lemma floor_le0 x : x < 1 -> Num.floor x <= 0.
+Proof.
+by rewrite (_ : 1 = 1%:~R)// floor_lt_int -ltzD1 add0r => /le_lt_trans; exact.
+Qed.
 
 Lemma floor_lt0 x : x < 0 -> Num.floor x < 0.
 Proof. by rewrite -floor_lt_int. Qed.

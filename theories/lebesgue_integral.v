@@ -1580,15 +1580,13 @@ case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
   rewrite normrN lerBrDl addSnnS [leRHS]ger0_norm ?ler0n//.
   rewrite natrD lerD// ?ler1n// ger0_norm // (le_trans (ceil_ge _)) //.
   by rewrite -(@gez0_abs (ceil _)) // ceil_ge0.
-- move/cvgrPdist_lt => /(_ _ ltr01) -[n _].
-  move=> /(_ (`|floor l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
-  rewrite approx_x.
-  apply/negP; rewrite -leNgt distrC (le_trans _ (lerB_normD _ _)) //.
+- move=> /cvgrPdist_lt/(_ _ ltr01)[n _].
+  move=> /(_ (`|floor l|.+1 + n)%N)/(_ (leq_addl _ _)); apply/negP.
+  rewrite approx_x -leNgt distrC (le_trans _ (lerB_normD _ _))//.
   rewrite normrN lerBrDl addSnnS [leRHS]ger0_norm ?ler0n//.
-  rewrite natrD lerD// ?ler1n// ler0_norm //; last by rewrite ltW.
-  rewrite (@le_trans _ _ (- floor l)%:~R) //.
+  rewrite natrD lerD ?ler1n// ltr0_norm// (@le_trans _ _ (- floor l)%:~R)//.
     by rewrite mulrNz lerNl opprK ge_floor.
-  by rewrite -(@lez0_abs (floor _))// floor_le0 // ltW.
+  by rewrite -(@lez0_abs (floor _))// floor_le0// (lt_le_trans l0).
 Qed.
 
 Lemma ecvg_approx (f0 : forall x, D x -> (0 <= f x)%E) x :

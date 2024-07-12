@@ -50,9 +50,11 @@
   + lemma `lt_succ_floor`: conclusion changed to match `lt_succ_floor` in MathComp,
     generalized to `archiDomainType`
   + generalized to `archiDomainType`:
-    lemmas `floor_ge0`, `floor_le0`, `floor_lt0`, `floor_natz`,
+    lemmas `floor_ge0`, `floor_lt0`, `floor_natz`,
     `floor_ge_int`, `floor_neq0`, `floor_lt_int`, `ceil_ge`, `ceil_ge0`, `ceil_gt0`,
     `ceil_le0`, `ceil_ge_int`, `ceil_lt_int`, `ceilN`, `abs_ceil_ge`
+  + generalized to `archiDomainType` and precondition generalized:
+    + `floor_le0`
 
 ### Renamed
 
