@@ -1159,7 +1159,7 @@ rewrite predeqE => t; split => [/= [Dt ft]|].
       by rewrite -{2}(fineK ft)// lee_fin (le_trans _ ft0)// lerNl oppr0.
     by rewrite natr_absz ger0_norm ?ceil_ge0// -(fineK ft) lee_fin ceil_ge.
   exists `|floor (fine (f t))|%N => //=; split => //; split.
-    rewrite natr_absz ltr0_norm ?floor_lt0// EFinN.
+    rewrite natr_absz ltr0_norm -?floor_lt0// EFinN.
     by rewrite -{2}(fineK ft) lee_fin mulrNz opprK ge_floor// ?num_real.
   by rewrite -(fineK ft)// lee_fin (le_trans (ltW ft0)).
 move=> [n _] [/= Dt [nft fnt]]; split => //; rewrite fin_numElt.
@@ -1407,7 +1407,7 @@ move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
   by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
 rewrite lerNl -abszN natr_absz gtr0_norm; last first.
-  by rewrite ltrNr oppr0 floor_lt0.
+  by rewrite ltrNr oppr0 -floor_lt0.
 by rewrite mulrNz lerNl opprK ge_floor.
 Qed.
 

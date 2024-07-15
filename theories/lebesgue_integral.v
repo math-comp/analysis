@@ -1287,22 +1287,20 @@ Qed.
 Lemma bigsetU_dyadic_itv n : `[n%:R, n.+1%:R[%classic =
   \big[setU/set0]_(n * 2 ^ n.+1 <= k < n.+1 * 2 ^ n.+1) [set` I n.+1 k].
 Proof.
-rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|].
-- rewrite -bigcup_seq /=; exists `|floor (r * 2 ^+ n.+1)|%N.
-    rewrite /= mem_index_iota -ltz_nat -lez_nat gez0_abs ?floor_ge0; last first.
-      by rewrite mulr_ge0// (le_trans _ nr).
-    rewrite -floor_ge_int -floor_lt_int.
-    by rewrite !PoszM -!natrXE !rmorphM !rmorphXn /= ler_wpM2r ?ltr_pM2r.
-  rewrite /= in_itv /=; apply/andP; split.
-    rewrite ler_pdivrMr// (le_trans _ (ge_floor _)) //.
-    by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// (le_trans _ nr).
-  rewrite ltr_pdivlMr// (lt_le_trans (lt_succ_floor _))//.
-  rewrite -[in leRHS]natr1 -intr1 lerD2r// -(@gez0_abs (floor _))// floor_ge0.
-  by rewrite mulr_ge0// (le_trans _ nr).
-- rewrite -bigcup_seq => -[/= k] /[!mem_index_iota] /andP[nk kn].
-  rewrite in_itv /= => /andP[knr rkn]; rewrite in_itv /=; apply/andP; split.
+rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|]; last first.
+  rewrite -bigcup_seq => -[/= k] /[!mem_index_iota] /andP[nk kn].
+  rewrite !in_itv /= => /andP[knr rkn]; apply/andP; split.
     by rewrite (le_trans _ knr)// ler_pdivlMr// -natrX -natrM ler_nat.
   by rewrite (lt_le_trans rkn)// ler_pdivrMr// -natrX -natrM ler_nat.
+rewrite -bigcup_seq /=; exists `|floor (r * 2 ^+ n.+1)|%N.
+  rewrite /= mem_index_iota -ltz_nat -lez_nat gez0_abs; last first.
+    by rewrite floor_ge0 mulr_ge0// (le_trans _ nr).
+  rewrite -floor_ge_int -floor_lt_int.
+  by rewrite !PoszM -!natrXE !rmorphM !rmorphXn /= ler_wpM2r ?ltr_pM2r.
+rewrite /= in_itv /= ler_pdivrMr// ltr_pdivlMr//.
+rewrite pmulrn [(`|_|.+1%:R)]pmulrn intS addrC gez0_abs; last first.
+  by rewrite floor_ge0 mulr_ge0 ?exprn_ge0 // (le_trans _ nr).
+by rewrite ge_floor lt_succ_floor.
 Qed.
 
 Lemma dyadic_itv_image n T (f : T -> \bar R) x :
@@ -1586,7 +1584,7 @@ case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
   rewrite normrN lerBrDl addSnnS [leRHS]ger0_norm ?ler0n//.
   rewrite natrD lerD ?ler1n// ltr0_norm// (@le_trans _ _ (- floor l)%:~R)//.
     by rewrite mulrNz lerNl opprK ge_floor.
-  by rewrite -(@lez0_abs (floor _))// floor_le0// (lt_le_trans l0).
+  by rewrite -(@lez0_abs (floor _))// -floor_le0// (lt_le_trans l0).
 Qed.
 
 Lemma ecvg_approx (f0 : forall x, D x -> (0 <= f x)%E) x :

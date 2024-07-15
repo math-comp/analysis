@@ -2282,7 +2282,7 @@ Proof. by exists N. Qed.
 Lemma nbhs_infty_ger {R : realType} (r : R) :
   \forall n \near \oo, (r <= n%:R)%R.
 Proof.
-exists (`|Num.ceil r|)%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
+exists `|Num.ceil r|%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
 by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
 Qed.
 
