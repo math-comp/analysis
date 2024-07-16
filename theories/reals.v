@@ -32,18 +32,15 @@
 (*     Rtoint r == r when r is an integer, 0 otherwise                        *)
 (*  floor_set x := [set y | Rtoint y /\ y <= x]                               *)
 (*     Rfloor x == the floor of x as a real number                            *)
-(*      floor x == the floor of x as an integer (type int)                    *)
 (*     range1 x := [set y |x <= y < x + 1]                                    *)
 (*      Rceil x == the ceil of x as a real number, i.e., - Rfloor (- x)       *)
-(*       ceil x := - floor (- x)                                              *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra.
-From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect all_algebra archimedean.
+From mathcomp Require Import boolp classical_sets set_interval.
 
 Require Import Setoid.
 
@@ -56,6 +53,7 @@ Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
 Import Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
+From mathcomp Require Import mathcomp_extra.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -97,9 +95,7 @@ Implicit Types x : R.
 Lemma has_ub_image_norm E : has_ubound (normr @` E) -> has_ubound E.
 Proof.
 case => M /ubP uM; exists `|M|; apply/ubP => r rS.
-rewrite (le_trans (real_ler_norm _)) ?num_real //.
-rewrite (le_trans (uM _ _)) ?real_ler_norm ?num_real //.
-by exists r.
+by rewrite (le_trans (ler_norm _))// (le_trans (uM _ _))//; exact: ler_norm.
 Qed.
 
 Lemma has_inf_supN E : has_sup (-%R @` E) <-> has_inf E.
@@ -121,12 +117,10 @@ End has_bound_lemmas.
 (* -------------------------------------------------------------------- *)
 
 HB.mixin Record ArchimedeanField_isReal R of Num.ArchiField R := {
-  sup_upper_bound_subdef :
-    forall E : set [the archiFieldType of R],
-      has_sup E -> ubound E (supremum 0 E) ;
-  sup_adherent_subdef :
-    forall (E : set [the archiFieldType of R]) (eps : R), 0 < eps ->
-      has_sup E -> exists2 e : R, E e & (supremum 0 E - eps) < e ;
+  sup_upper_bound_subdef : forall E : set [the archiFieldType of R],
+    has_sup E -> ubound E (supremum 0 E) ;
+  sup_adherent_subdef : forall (E : set [the archiFieldType of R]) (eps : R),
+    0 < eps -> has_sup E -> exists2 e : R, E e & (supremum 0 E - eps) < e
 }.
 
 #[short(type=realType)]
@@ -137,8 +131,6 @@ Bind Scope ring_scope with Real.sort.
 
 (* -------------------------------------------------------------------- *)
 Definition sup {R : realType} := @supremum _ R 0.
-(*Local Notation "-` E" := [pred x | - x \in E]
-  (at level 35, right associativity) : function_scope.*)
 Definition inf {R : realType} (E : set R) := - sup (-%R @` E).
 
 (* -------------------------------------------------------------------- *)
@@ -238,21 +230,18 @@ Qed.
 End ToInt.
 
 (* -------------------------------------------------------------------- *)
+
 Section RealDerivedOps.
 Variable R : realType.
 
 Implicit Types x y : R.
 Definition floor_set x := [set y : R | (y \is a Rint) && (y <= x)].
 
-Definition Rfloor x : R := sup (floor_set x).
-
-Definition floor x : int := Rtoint (Rfloor x).
+Definition Rfloor x : R := (floor x)%:~R.
 
 Definition range1 (x : R) := [set y | x <= y < x + 1].
 
-Definition Rceil x := - Rfloor (- x).
-
-Definition ceil x := - floor (- x).
+Definition Rceil x : R := (ceil x)%:~R.
 
 End RealDerivedOps.
 
@@ -340,14 +329,14 @@ have ABsup : has_sup [set x + y | x in A & y in B].
 apply: le_anti; apply/andP; split.
   apply: sup_le_ub; first by case: ABsup.
   by move=> ? [p Ap [q Bq] <-]; apply: lerD; exact: sup_ub.
-rewrite real_leNgt ?num_real// -subr_gt0; apply/negP.
+rewrite leNgt -subr_gt0; apply/negP.
 set eps := (_ + _ - _) => epos.
 have e2pos : 0 < eps / 2%:R by rewrite divr_gt0// ltr0n.
 have [r Ar supBr] := sup_adherent e2pos supA.
 have [s Bs supAs] := sup_adherent e2pos supB.
 have := ltrD supBr supAs.
 rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
-rewrite subrr add0r; apply/negP; rewrite -real_leNgt ?num_real//.
+rewrite subrr add0r; apply/negP; rewrite -leNgt.
 by apply: sup_upper_bound => //; exists r => //; exists s.
 Qed.
 
@@ -470,27 +459,23 @@ by rewrite absz_eq0 subr_eq0 eq_sym (negbTE ne_yz).
 Qed.
 
 Lemma isint_Rfloor x : Rfloor x \is a Rint.
-Proof. by case/andP: (sup_in_floor_set x). Qed.
+Proof. by rewrite inE; exists (floor x). Qed.
 
 Lemma RfloorE x : Rfloor x = (floor x)%:~R.
-Proof. by rewrite /floor RtointK ?isint_Rfloor. Qed.
+Proof. by []. Qed.
+
+Lemma mem_rg1_floor x : (range1 (floor x)%:~R) x.
+Proof. by rewrite /range1 /mkset intrD1 ge_floor lt_succ_floor. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
-Proof.
-rewrite /range1/mkset.
-have /andP[_ ->] /= := sup_in_floor_set x.
-have [|] := pselect ((floor_set x) (Rfloor x + 1)); last first.
-  rewrite /floor_set => /negP.
-  by rewrite negb_and -ltNge rpredD // ?(Rint1, isint_Rfloor).
-move/ubP : (sup_upper_bound (has_sup_floor_set x)) => h/h.
-by rewrite gerDl ler10.
-Qed.
+Proof. exact: mem_rg1_floor. Qed.
 
 Lemma Rfloor_le x : Rfloor x <= x.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `ge_floor` instead")]
 Lemma floor_le x : (floor x)%:~R <= x.
-Proof. by rewrite -RfloorE; exact: Rfloor_le. Qed.
+Proof. by rewrite ge_floor. Qed.
 
 Lemma lt_succ_Rfloor x : x < Rfloor x + 1.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
@@ -511,34 +496,24 @@ Proof. by rewrite /range1/mkset lexx /= ltrDl ltr01. Qed.
 Lemma range1zP (m : int) x : Rfloor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
 split=> [<-|h]; first exact/mem_rg1_Rfloor.
-apply/eqP; rewrite RfloorE eqr_int; apply/eqP/(@range1z_inj x) => //.
-by rewrite /range1/mkset -RfloorE mem_rg1_Rfloor.
+by congr intmul; apply/floor_def; rewrite -intrD1.
 Qed.
 
 Lemma Rfloor_natz (z : int) : Rfloor z%:~R = z%:~R :> R.
 Proof. by apply/range1zP/range1rr. Qed.
 
-Lemma Rfloor0 : Rfloor 0 = 0 :> R.
-Proof. by rewrite -{1}(mulr0z 1) Rfloor_natz. Qed.
+Lemma Rfloor0 : Rfloor 0 = 0 :> R. Proof. by rewrite /Rfloor floor0. Qed.
 
-Lemma Rfloor1 : Rfloor 1 = 1 :> R.
-Proof. by rewrite -{1}(mulr1z 1) Rfloor_natz. Qed.
+Lemma Rfloor1 : Rfloor 1 = 1 :> R. Proof. by rewrite /Rfloor floor1. Qed.
 
 Lemma le_Rfloor : {homo (@Rfloor R) : x y / x <= y}.
-Proof.
-move=> x y le_xy; case: lerP=> //=; rewrite -Rint_ler_addr1 ?isint_Rfloor //.
-move/(lt_le_trans (lt_succ_Rfloor y))/lt_le_trans/(_ (Rfloor_le x)).
-by rewrite ltNge le_xy.
-Qed.
+Proof. by move=> x y /Num.Theory.floor_le; rewrite ler_int. Qed.
 
 Lemma Rfloor_ge_int x (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
-Proof.
-apply/idP/idP; last by move/le_trans => /(_ _ (Rfloor_le x)).
-by move/le_Rfloor; apply le_trans; rewrite Rfloor_natz.
-Qed.
+Proof. by rewrite ler_int floor_ge_int. Qed.
 
 Lemma Rfloor_lt_int x (z : int) : (x < z%:~R) = (Rfloor x < z%:~R).
-Proof. by rewrite ltNge Rfloor_ge_int -ltNge. Qed.
+Proof. by rewrite ltr_int floor_lt_int. Qed.
 
 Lemma Rfloor_le0 x : x <= 0 -> Rfloor x <= 0.
 Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
@@ -546,44 +521,9 @@ Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
 Lemma Rfloor_lt0 x : x < 0 -> Rfloor x < 0.
 Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 
-Lemma floor_natz n : floor (n%:R : R) = n%:~R :> int.
-Proof. by rewrite /floor (Rfloor_natz n) Rtointz intz. Qed.
-
-Lemma floor0 : floor (0 : R) = 0.
-Proof. by rewrite /floor Rfloor0 (_ : 0 = 0%:R) // Rtointn. Qed.
-
-Lemma floor1 : floor (1 : R) = 1.
-Proof. by rewrite /floor Rfloor1 (_ : 1 = 1%:R) // Rtointn. Qed.
-
-Lemma floor_ge0 x : (0 <= floor x) = (0 <= x).
-Proof. by rewrite -(@ler_int R) -RfloorE -Rfloor_ge_int. Qed.
-
-Lemma floor_le0 x : x <= 0 -> floor x <= 0.
-Proof. by move=> ?; rewrite -(@ler_int R) -RfloorE Rfloor_le0. Qed.
-
-Lemma floor_lt0 x : x < 0 -> floor x < 0.
-Proof. by move=> ?; rewrite -(@ltrz0 R) RtointK ?isint_Rfloor// Rfloor_lt0. Qed.
-
-Lemma le_floor : {homo @floor R : x y / x <= y}.
-Proof. by move=>*; rewrite -(@ler_int R) !RtointK ?isint_Rfloor ?le_Rfloor. Qed.
-
-Lemma floor_neq0 x : (floor x != 0) = (x < 0) || (x >= 1).
-Proof.
-apply/idP/orP => [|[x0|/le_floor r1]]; first rewrite neq_lt => /orP[x0|x0].
-- by left; apply: contra_lt x0; rewrite floor_ge0.
-- by right; rewrite (le_trans _ (floor_le _))// ler1z -gtz0_ge1.
-- by rewrite lt_eqF//; apply: contra_lt x0; rewrite floor_ge0.
-- by rewrite gt_eqF// (lt_le_trans _ r1)// floor1.
-Qed.
-
-Lemma lt_succ_floor x : x < (floor x)%:~R + 1.
-Proof. by rewrite -RfloorE lt_succ_Rfloor. Qed.
-
-Lemma floor_lt_int x (z : int) : (x < z%:~R) = (floor x < z).
-Proof. by rewrite Rfloor_lt_int RfloorE ltr_int. Qed.
-
-Lemma floor_ge_int x (z : int) : (z%:~R <= x) = (z <= floor x).
-Proof. by rewrite Rfloor_ge_int RfloorE ler_int. Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.floor_le` instead")]
+Lemma le_floor : {homo @Num.floor R : x y / x <= y}.
+Proof. exact: Num.Theory.floor_le. Qed.
 
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
@@ -591,8 +531,8 @@ move=> yx; exists `|floor (x - y)^-1|%N.
 rewrite -ltrBrDl -{2}(invrK (x - y)%R) ltf_pV2 ?qualifE/= ?ltr0n//.
   by rewrite invr_gt0 subr_gt0.
 rewrite -natr1 natr_absz ger0_norm.
-  by rewrite floor_ge0 invr_ge0 subr_ge0 ltW.
-by rewrite -RfloorE lt_succ_Rfloor.
+  by rewrite -floor_ge_int// invr_ge0 subr_ge0 ltW.
+by rewrite intrD1 lt_succ_floor.
 Qed.
 
 End FloorTheory.
@@ -603,54 +543,26 @@ Variable R : realType.
 Implicit Types x y : R.
 
 Lemma isint_Rceil x : Rceil x \is a Rint.
-Proof. by rewrite /Rceil rpredN isint_Rfloor. Qed.
+Proof. by rewrite /Rceil RintC. Qed.
 
 Lemma Rceil0 : Rceil 0 = 0 :> R.
-Proof. by rewrite /Rceil oppr0 Rfloor0 oppr0. Qed.
+Proof. by rewrite /Rceil ceil0. Qed.
 
 Lemma Rceil_ge x : x <= Rceil x.
-Proof. by rewrite /Rceil lerNr Rfloor_le. Qed.
+Proof. by rewrite /Rceil le_ceil// num_real. Qed.
 
 Lemma le_Rceil : {homo (@Rceil R) : x y / x <= y}.
-Proof. by move=> x y ?; rewrite lerNl opprK le_Rfloor // lerNl opprK. Qed.
+Proof. by move=> x y ?; rewrite /Rceil ler_int ceil_le. Qed.
 
 Lemma Rceil_ge0 x : 0 <= x -> 0 <= Rceil x.
-Proof. by move=> ?; rewrite -Rceil0 le_Rceil. Qed.
+Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) ceil_le. Qed.
 
 Lemma RceilE x : Rceil x = (ceil x)%:~R.
-Proof. by rewrite /Rceil /ceil RfloorE mulrNz. Qed.
+Proof. by []. Qed.
 
-Lemma ceil_ge x : x <= (ceil x)%:~R.
-Proof. by rewrite -RceilE; exact: Rceil_ge. Qed.
-
-Lemma ceil_ge0 x : 0 <= x -> 0 <= ceil x.
-Proof. by move/(ge_trans (ceil_ge x)); rewrite -(ler_int R). Qed.
-
-Lemma ceil_gt0 x : 0 < x -> 0 < ceil x.
-Proof. by move=> ?; rewrite /ceil oppr_gt0 floor_lt0 // ltrNl oppr0. Qed.
-
-Lemma ceil_le0 x : x <= 0 -> ceil x <= 0.
-Proof. by move=> x0; rewrite -lerNl oppr0 floor_ge0 -lerNr oppr0. Qed.
-
-Lemma le_ceil : {homo @ceil R : x y / x <= y}.
-Proof. by move=> x y xy; rewrite lerNl opprK le_floor // lerNl opprK. Qed.
-
-Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (ceil x <= z).
-Proof. by rewrite /ceil lerNl -floor_ge_int// -lerNr mulrNz opprK. Qed.
-
-Lemma ceil_lt_int x (z : int) : (z%:~R < x) = (z < ceil x).
-Proof. by rewrite ltNge ceil_ge_int -ltNge. Qed.
-
-Lemma ceilN x : ceil (- x) = - floor x. Proof. by rewrite /ceil opprK. Qed.
-
-Lemma floorN x : floor (- x) = - ceil x. Proof. by rewrite /ceil opprK. Qed.
-
-Lemma abs_ceil_ge x : `|x| <= `|ceil x|.+1%:R.
-Proof.
-rewrite -natr1 natr_absz; have [x0|x0] := ltP 0%R x.
-  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (ceil_ge _))// lerDl.
-by rewrite !ler0_norm ?ceil_le0// /ceil opprK; exact/ltW/lt_succ_floor.
-Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le` instead")]
+Lemma le_ceil : {homo @Num.ceil R : x y / x <= y}.
+Proof. exact: ceil_le. Qed.
 
 End CeilTheory.
 

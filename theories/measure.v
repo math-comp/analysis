@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect all_algebra finmap.
+From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
 Require Import reals ereal signed topology normedtype sequences esum numfun.
@@ -2202,7 +2202,7 @@ Proof.
 move=> infA; apply/eqyP => r r0.
 have [B BA Br] := infinite_set_fset `|ceil r| infA.
 apply: esum_ge; exists [set` B] => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
-  by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
+  by rewrite lee_fin natr_absz gtr0_norm -?ceil_gt0// ceil_ge.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite (eq_fsbigr (cst 1))/=; last first.
   by move=> i /[!inE] /BA /mem_set iA; rewrite diracE iA.
@@ -2294,7 +2294,7 @@ move=> F mF tF mUF; rewrite [X in X @ \oo --> _](_ : _ =
     (fun n => (r%:num)%:E * \sum_(0 <= i < n) m (F i))); last first.
   by apply/funext => k; rewrite ge0_sume_distrr.
 rewrite /mscale; have [->|r0] := eqVneq r%:num 0%R.
-  rewrite mul0e [X in X @ \oo --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
+  rewrite mul0e [X in X @ \oo --> _](_ : _ = cst 0); first exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
 by apply: cvgeMl => //; exact: measure_semi_sigma_additive.
 Qed.

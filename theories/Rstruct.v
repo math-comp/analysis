@@ -29,6 +29,7 @@ Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 Require Import Rtrigo1 Reals.
 From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
+From mathcomp Require Import archimedean.
 From HB Require Import structures.
 From mathcomp Require Import mathcomp_extra.
 
@@ -87,7 +88,7 @@ Proof. by move=> *; rewrite Rplus_assoc. Qed.
 HB.instance Definition _ := GRing.isZmodule.Build R
   RplusA Rplus_comm Rplus_0_l Rplus_opp_l.
 
-Fact RmultA : associative (Rmult).
+Fact RmultA : associative Rmult.
 Proof. by move=> *; rewrite Rmult_assoc. Qed.
 
 Fact R1_neq_0 : R1 != R0.
@@ -292,7 +293,7 @@ rewrite /Rminus Rplus_assoc [- _ + _]Rplus_comm -Rplus_assoc -!/(Rminus _ _).
 exact: Rle_minus.
 Qed.
 
-HB.instance Definition _ := Num.RealField_isArchimedean.Build R
+HB.instance Definition _ := Num.NumDomain_bounded_isArchimedean.Build R
   Rarchimedean_axiom.
 
 (** Here are the lemmas that we will use to prove that R has
