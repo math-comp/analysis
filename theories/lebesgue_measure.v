@@ -1157,7 +1157,9 @@ rewrite predeqE => t; split => [/= [Dt ft]|].
   have [ft0|ft0] := leP 0%R (fine (f t)).
     exists `|ceil (fine (f t))|%N => //=; split => //; split.
       by rewrite -{2}(fineK ft)// lee_fin (le_trans _ ft0)// lerNl oppr0.
-    by rewrite natr_absz ger0_norm ?ceil_ge0// -(fineK ft) lee_fin ceil_ge.
+    rewrite natr_absz ger0_norm; last first.
+      by rewrite -ceil_ge0 (lt_le_trans _ ft0).
+    by rewrite -(fineK ft) lee_fin ceil_ge.
   exists `|floor (fine (f t))|%N => //=; split => //; split.
     rewrite natr_absz ltr0_norm -?floor_lt0// EFinN.
     by rewrite -{2}(fineK ft) lee_fin mulrNz opprK ge_floor// ?num_real.
@@ -1417,7 +1419,7 @@ rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
 move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
-by rewrite natr_absz gtr0_norm // ?ceil_ge// ceil_gt0.
+by rewrite natr_absz gtr0_norm// ?ceil_ge// -ceil_gt0.
 Qed.
 
 End erealwithrays.
@@ -2440,8 +2442,9 @@ have finite_set_F i : finite_set (F i).
     - by move=> /= x [n Fni Bnx]; exists n => //; exists i.
   have {CFi Fir2} := le_trans MC (le_trans CFi Fir2).
   apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
-  rewrite -(@natr1 _ `| _ |%N) natr_absz ger0_norm ?ceil_ge0// -ltr_pdivrMr//.
-  by rewrite -ltrBlDr (lt_le_trans _ (ceil_ge _))// ltrBlDr ltrDl.
+  rewrite -(@natr1 _ `| _ |%N) natr_absz ger0_norm; last first.
+    by rewrite -ceil_ge0// (lt_le_trans (ltrN10 _)).
+  by rewrite -ltr_pdivrMr// -ltrBlDr (lt_le_trans _ (ceil_ge _))// ltrBlDr ltrDl.
 have mur2_fin_num_ : mu (ball (0:R) (r%:num + 2))%R < +oo.
   by rewrite lebesgue_measure_ball// ltry.
 have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =

@@ -4993,7 +4993,7 @@ exists `|Num.floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
 rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// -natr1.
 rewrite natr_absz ger0_norm; last first.
   by rewrite -floor_ge_int ?invr_ge0// ltW.
-by rewrite intr1 ltW// lt_succ_floor.
+by rewrite intrD1 ltW// lt_succ_floor.
 Qed.
 
 (** Specific pseudoMetric spaces *)
@@ -5001,20 +5001,20 @@ Qed.
 (** matrices *)
 Section matrix_PseudoMetric.
 Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
-Implicit Types x y : 'M[T]_(m, n).
+Implicit Types (x y : 'M[T]_(m, n)) (e : R).
 
-Definition mx_ball x (e : R) y := forall i j, ball (x i j) e (y i j).
+Definition mx_ball x e y := forall i j, ball (x i j) e (y i j).
 
-Lemma mx_ball_center x (e : R) : 0 < e -> mx_ball x e x.
-Proof. by move=> ???; apply: ballxx. Qed.
+Lemma mx_ball_center x e : 0 < e -> mx_ball x e x.
+Proof. by move=> ? ? ?; exact: ballxx. Qed.
 
-Lemma mx_ball_sym x y (e : R) : mx_ball x e y -> mx_ball y e x.
-Proof. by move=> xe_y ??; apply/ball_sym/xe_y. Qed.
+Lemma mx_ball_sym x y e : mx_ball x e y -> mx_ball y e x.
+Proof. by move=> xe_y ? ?; apply/ball_sym/xe_y. Qed.
 
-Lemma mx_ball_triangle x y z (e1 e2 : R) :
+Lemma mx_ball_triangle x y z e1 e2 :
   mx_ball x e1 y -> mx_ball y e2 z -> mx_ball x (e1 + e2) z.
 Proof.
-by move=> xe1_y ye2_z ??; apply: ball_triangle; [apply: xe1_y| apply: ye2_z].
+by move=> xe1_y ye2_z ??; apply: ball_triangle; [exact: xe1_y|exact: ye2_z].
 Qed.
 
 Lemma mx_entourage : entourage = entourage_ mx_ball.
@@ -5023,14 +5023,14 @@ rewrite predeqE=> A; split; last first.
   move=> [_/posnumP[e] sbeA].
   by exists (fun _ _ => [set xy | ball xy.1 e%:num xy.2]).
 move=> [P]; rewrite -entourage_ballE => entP sPA.
-set diag := fun (e : {posnum R}) => [set xy : T * T | ball xy.1 e%:num xy.2].
+set diag := fun e : {posnum R} => [set xy : T * T | ball xy.1 e%:num xy.2].
 exists (\big[Num.min/1%:pos]_i \big[Num.min/1%:pos]_j xget 1%:pos
   (fun e : {posnum R} => diag e `<=` P i j))%:num => //=.
 move=> MN MN_min; apply: sPA => i j.
 have /(xgetPex 1%:pos): exists e : {posnum R}, diag e `<=` P i j.
   by have [_/posnumP[e]] := entP i j; exists e.
 apply; apply: le_ball (MN_min i j).
-apply: le_trans (@bigmin_le _ [the orderType _ of {posnum R}] _ _ i _) _.
+apply: le_trans (@bigmin_le _ {posnum R} _ _ i _) _.
 exact: bigmin_le.
 Qed.
 

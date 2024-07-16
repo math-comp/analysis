@@ -375,10 +375,10 @@ Qed.
 
 End positive.
 
-Lemma intr1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
+Lemma intrD1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
-Lemma int1r {R : ringType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
+Lemma intr1D {R : ringType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
 From mathcomp Require Import archimedean.
@@ -408,35 +408,49 @@ Proof. by rewrite -floor_lt_int. Qed.
 Lemma lt_succ_floor x : x < (Num.floor x + 1)%:~R.
 Proof. exact: Num.Theory.lt_succ_floor. Qed.
 
+Lemma floor_eq x m : (Num.floor x == m) = (m%:~R <= x < (m + 1)%:~R).
+Proof.
+apply/eqP/idP; [move=> <-|by move=> /Num.Theory.floor_def ->].
+by rewrite Num.Theory.ge_floor//= Num.Theory.lt_succ_floor.
+Qed.
+
 Lemma floor_neq0 x : (Num.floor x != 0) = (x < 0) || (x >= 1).
 Proof. by rewrite neq_lt -floor_lt_int gtz0_ge1 -floor_ge_int. Qed.
 
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.le_ceil` instead")]
 Lemma ceil_ge x : x <= (Num.ceil x)%:~R.
 Proof. exact: Num.Theory.le_ceil. Qed.
 
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le_int`")]
 Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (Num.ceil x <= z).
 Proof. exact: Num.Theory.ceil_le_int. Qed.
 
-Lemma ceil_lt_int x (z : int) : (z%:~R < x) = (z < Num.ceil x).
-Proof. by rewrite ltNge ceil_ge_int -ltNge. Qed.
-
-Lemma ceil_ge0 x : 0 <= x -> 0 <= Num.ceil x.
-Proof. by move/(ge_trans (ceil_ge x)); rewrite -(ler_int R). Qed.
-
-Lemma ceil_gt0 x : 0 < x -> 0 < Num.ceil x.
-Proof. by rewrite -ceil_lt_int. Qed.
-
-Lemma ceil_le0 x : x <= 0 -> Num.ceil x <= 0.
-Proof. by rewrite -ceil_ge_int. Qed.
+Lemma ceil_gt_int x (z : int) : (z%:~R < x) = (z < Num.ceil x).
+Proof. by rewrite ltNge Num.Theory.ceil_le_int// -ltNge. Qed.
 
 Lemma ceilN x : Num.ceil (- x) = - Num.floor x.
 Proof. by rewrite /Num.ceil opprK. Qed.
 
+Lemma floorN x : Num.floor (- x) = - Num.ceil x.
+Proof. by rewrite /Num.ceil opprK. Qed.
+
+Lemma ceil_ge0 x : (- 1 < x) = (0 <= Num.ceil x).
+Proof. by rewrite ltrNl floor_le0 floorN lerNl oppr0. Qed.
+
+Lemma ceil_gt0 x : (0 < x) = (0 < Num.ceil x).
+Proof. by rewrite -ceil_gt_int. Qed.
+
+Lemma ceil_le0 x : (x <= 0) = (Num.ceil x <= 0).
+Proof. by rewrite -Num.Theory.ceil_le_int. Qed.
+
 Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
 rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
-  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (ceil_ge _))// lerDl.
-by rewrite !ler0_norm ?ceil_le0// opprK intr1 ltW// lt_succ_floor.
+  by rewrite !gtr0_norm// -?ceil_gt0// (le_trans (Num.Theory.le_ceil _))// lerDl.
+by rewrite !ler0_norm -?ceil_le0// opprK intrD1 ltW// lt_succ_floor.
 Qed.
 
 End floor_ceil.
+
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to `ceil_gt_int`")]
+Notation ceil_lt_int := ceil_gt_int (only parsing).

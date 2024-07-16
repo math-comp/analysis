@@ -486,7 +486,7 @@ exists (fun k => `](- k%:R), k%:R]%classic).
   rewrite !natr_absz intr_norm intrD.
   suff: `|x| < `|(floor `|x|)%:~R + 1| by rewrite ltr_norml => /andP[-> /ltW->].
   rewrite [ltRHS]ger0_norm//.
-    by rewrite intr1 (le_lt_trans _ (lt_succ_floor _))// ?ler_norm.
+    by rewrite intrD1 (le_lt_trans _ (lt_succ_floor _))// ?ler_norm.
   by rewrite addr_ge0// ler0z floor_ge0.
 move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.

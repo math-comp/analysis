@@ -255,11 +255,11 @@ Proof.
 apply/seteqP; split => // x _; have [x0|x0] := ltP 0%R x.
   exists `|ceil x|.+1 => //.
   rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
-  by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_pwDr.
+  by rewrite -natr1 natr_absz -abszE gtz0_abs// -?ceil_gt0// ltr_pwDr.
 exists `|ceil (- x)|.+1 => //.
 rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
-rewrite -natr1 natr_absz -abszE gez0_abs ?ceil_ge0// 1?lerNr ?oppr0//.
-by rewrite ltr_pwDr.
+rewrite -natr1 natr_absz -abszE gez0_abs ?ltr_pwDr// -ceil_ge0 ltrNl opprK.
+by rewrite (le_lt_trans x0).
 Qed.
 
 Section lower_semicontinuous.
@@ -598,7 +598,7 @@ split=> [/cvgryPge|/cvgnyPge] Foo.
   by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
 apply/cvgryPgey; near=> A; near=> n.
 rewrite (le_trans (@ceil_ge R A))// (ler_int _ _ (f n)) [ceil _]intEsign.
-by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
+by rewrite le_gtF ?expr0 ?mul1r ?lez_nat -?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
 Section ecvg_infty_numField.
@@ -5973,7 +5973,7 @@ exists j; split => //.
 Qed.
 
 Lemma vitali_lemma_infinite_cover : { D : set I | [/\ countable D,
-  D `<=` V, trivIset D (closure\o B) &
+  D `<=` V, trivIset D (closure \o B) &
   cover V (closure \o B) `<=` cover D (closure \o scale_ball 5%:R \o B)] }.
 Proof.
 have [D [cD DV tD maxD]] := vitali_lemma_infinite.

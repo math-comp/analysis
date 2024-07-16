@@ -34,7 +34,7 @@
   + lemma `ge_floor`
 
 - in `mathcomp_extra.v`:
-  + lemmas `intr1`, `int1r`
+  + lemmas `intr1D`, `intrD1`, `floor_eq`, `floorN`
 
 ### Changed
 
@@ -52,9 +52,11 @@
   + generalized to `archiDomainType`:
     lemmas `floor_ge0`, `floor_lt0`, `floor_natz`,
     `floor_ge_int`, `floor_neq0`, `floor_lt_int`, `ceil_ge`, `ceil_ge0`, `ceil_gt0`,
-    `ceil_le0`, `ceil_ge_int`, `ceil_lt_int`, `ceilN`, `abs_ceil_ge`
+    `ceil_le0`, `ceil_ge_int`, `ceilN`, `abs_ceil_ge`
   + generalized to `archiDomainType` and precondition generalized:
-    + `floor_le0`
+    * `floor_le0`
+  + generalized to `archiDomainType` and renamed:
+    * `ceil_lt_int` -> `ceil_gt_int`
 
 ### Renamed
 

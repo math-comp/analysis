@@ -177,7 +177,7 @@ rewrite predeqE => y; split=> /=; last first.
 rewrite in_itv /= andbT => xy; exists `|floor y|%N.+1 => //=.
 rewrite in_itv /= xy /=.
 have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_pwDr.
-by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 1?ltW// intr1 lt_succ_floor.
+by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 1?ltW// intrD1 lt_succ_floor.
 Qed.
 
 Lemma itv_o_inftyEbigcup x :
@@ -344,7 +344,7 @@ move fxE : (f x) => fx; case: fx fxE => [fx fxE gxE|fxoo gxE _|//]; last first.
 rewrite lte_fin -subr_gt0 => fgx; exists `|floor (fx - gx)^-1|%N => //.
 rewrite /E/= -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0; last exact/ltW.
 rewrite fxE gxE lee_fin -[leRHS]invrK lef_pV2//.
-- by rewrite intr1 ltW// lt_succ_floor.
+- by rewrite intrD1 ltW// lt_succ_floor.
 - by rewrite posrE// ltr_pwDr// ler0z floor_ge0 invr_ge0 ltW.
 - by rewrite posrE invr_gt0.
 Qed.
@@ -367,7 +367,7 @@ apply/ler_addgt0Pl => e e_gt0; rewrite -lerBlDl ltW//.
 have := rx `|floor e^-1|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
 rewrite lerD2l lerN2 -lef_pV2 ?invrK//; last by rewrite posrE.
 rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
-by rewrite intr1 lt_succ_floor.
+by rewrite intrD1 lt_succ_floor.
 Qed.
 
 Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
@@ -381,7 +381,7 @@ rewrite in_itv/= => /andP[sx xs]; exists `|ceil (s - x)^-1|%N => //=.
 rewrite in_itv/= sx/= lerBrDl addrC -lerBrDl.
 rewrite -[in X in _ <= X](invrK (s - x)) ler_pV2.
 - rewrite -natr1 natr_absz ger0_norm; last first.
-    by rewrite ceil_ge0// invr_ge0 subr_ge0 ltW.
+    by rewrite -ceil_ge0 (lt_le_trans (ltrN10 R))// invr_ge0 subr_ge0 ltW.
   by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?lerDl// ceil_ge.
 - by rewrite inE unitfE ltr0n andbT pnatr_eq0.
 - by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
@@ -405,7 +405,8 @@ Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
 move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -lerBlDl.
-rewrite !natr_absz/= ger0_norm ?ceil_ge0 ?subr_ge0 ?ceil_ge//.
+rewrite !natr_absz/= ger0_norm -?ceil_ge0 ?ceil_ge//.
+rewrite (lt_le_trans (ltrN10 R))// subr_ge0.
 by case: b xy => //= /ltW.
 Qed.
 
@@ -426,7 +427,7 @@ Proof.
 rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
 rewrite in_itv/= !natr_absz intr_norm intrD.
 have : `|x| < `|(floor `|x|)%:~R + 1|.
-  by rewrite [ltRHS]ger0_norm ?intr1 ?lt_succ_floor// ler0z addr_ge0// floor_ge0.
+  by rewrite [ltRHS]ger0_norm ?intrD1 ?lt_succ_floor// ler0z addr_ge0// floor_ge0.
 case: b => /=.
 - by move/ltW; rewrite ler_norml => /andP[-> ->].
 - by rewrite ltr_norml => /andP[-> /ltW->].
