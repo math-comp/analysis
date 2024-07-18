@@ -10,6 +10,12 @@ Require Import derive charge.
 (**md**************************************************************************)
 (* # Fundamental Theorem of Calculus for the Lebesgue Integral                *)
 (*                                                                            *)
+(* NB: See CONTRIBUTING.md for an introduction to HB concepts and commands.   *)
+(*                                                                            *)
+(* This file provides a proof of the first fundamental theorem of calculus    *)
+(* for the Lebesgue integral. We derive from this theorem a corollary to      *)
+(* compute the definite integral of continuous functions.                     *)
+(*                                                                            *)
 (* parameterized_integral mu a x f := \int[mu]_(t \in `[a, x] f t)            *)
 (*                                                                            *)
 (******************************************************************************)
@@ -341,7 +347,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma parameterized_integral_continuous a b (f : R -> R) : a < b ->
   mu.-integrable `[a, b] (EFin \o f) ->
-  {within `[a,b], continuous (fun x => int a x f)}.
+  {within `[a, b], continuous (fun x => int a x f)}.
 Proof.
 move=> ab intf; apply/(continuous_within_itvP _ ab); split; last first.
   split; last exact: parameterized_integral_cvg_at_left.

@@ -13,7 +13,11 @@ Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 (* NB: See CONTRIBUTING.md for an introduction to HB concepts and commands.   *)
 (*                                                                            *)
 (* This file contains a formalization of charges (a.k.a. signed measures) and *)
-(* their theory (Hahn decomposition theorem, etc.).                           *)
+(* their theory (Hahn decomposition theorem, Radon-Nikodym derivative, etc.). *)
+(*                                                                            *)
+(* Reference:                                                                 *)
+(* - Y. Ishiguro, R. Affeldt. The Radon-Nikodym Theorem and the Lebesgue-     *)
+(*   Stieltjes measure in Coq. Computer Software 41(2) 2024                   *)
 (*                                                                            *)
 (* ## Structures for functions on classes of sets                             *)
 (* ```                                                                        *)
@@ -59,6 +63,10 @@ Require Import esum measure realfun lebesgue_measure lebesgue_integral.
 (*                              decomposition nuPN: hahn_decomposition nu P N *)
 (*     charge_variation nuPN == variation of the charge nu                    *)
 (*                           := jordan_pos nuPN \+ jordan_neg nuPN            *)
+(*              induced intf == charge induced by a function f : T -> \bar R  *)
+(*                              R has type realType; T is a measurableType.   *)
+(*                              intf is a proof that f is integrable over     *)
+(*                              [set: T]                                      *)
 (*              'd nu '/d mu == Radon-Nikodym derivative of nu w.r.t. mu      *)
 (*                              (the scope is charge_scope)                   *)
 (* ```                                                                        *)
@@ -1073,12 +1081,12 @@ move=> /choice[F /= H].
 have mF i : measurable (F i) by have [] := H i.
 have : mu (lim_sup_set F) = 0.
   apply: lim_sup_set_cvg0 => //.
-  have h : \sum_(0 <= n < k) (1 / 2 ^+ n.+1)%:E @[k --> \oo] --> (1 : \bar R).
+  have h : \sum_(0 <= n < k) (1 / 2 ^+ n.+1)%:E @[k --> \oo] --> (1%E : \bar R).
     apply/fine_cvgP; split.
       apply: nearW => /= n; rewrite sum_fin_num//.
       by apply/allP => /= r /mapP[/= k _] ->.
-    under eq_fun do rewrite sumEFin.
     have := @cvg_geometric_series_half R 1 0; rewrite {1}/series/= expr0 divr1.
+    under [in X in _ -> X]eq_fun do rewrite sumEFin.
     by under eq_fun do under eq_bigr do rewrite addn1 natrX.
   apply: (@le_lt_trans _ _ (\sum_(0 <= n <oo) (1 / (2 ^ n.+1))%:E)).
     apply: lee_lim.
@@ -1095,8 +1103,8 @@ suff : charge_variation nuPN (lim_sup_set F) >= e%:E by exact: lt_le_trans.
 have echarge n : e%:E <= charge_variation nuPN (\bigcup_(j >= n) F j).
   have [_ _ /le_trans] := H n; apply.
   rewrite le_measure// ?inE//; first exact: bigcup_measurable.
-  by apply: bigcup_sup => //=.
-have /(_ _ _)/cvg_lim <-// := @lim_sup_set_cvg _ _ _ (charge_variation nuPN) F.
+  by apply: bigcup_sup => /=.
+have /(_ _ _)/cvg_lim <-// := lim_sup_set_cvg (charge_variation nuPN) F.
   apply: lime_ge.
     apply: ereal_nonincreasing_is_cvgn => a b ab.
     rewrite le_measure ?inE//; [exact: bigcup_measurable|
