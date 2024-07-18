@@ -51,10 +51,6 @@
 
 ### Changed
 
-- in `topology.v`:
-  + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
-    `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
-	into local `Let`'s
 - in `classical_sets.v`:
   + lemmas `setC_I`, `bigcup_subset`
 
@@ -98,6 +94,11 @@
   + corollary `continuous_FTC2`
 
 ### Changed
+
+- in `topology.v`:
+  + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
+    `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
+	into local `Let`'s
 
 - in `lebesgue_integral.v`:
   + lemma `measurable_int`: argument `mu` now explicit 
