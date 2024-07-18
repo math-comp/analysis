@@ -3701,7 +3701,7 @@ End measure_continuity.
 Definition lim_sup_set T (F : (set T)^nat) := \bigcap_n \bigcup_(j >= n) F j.
 
 Section borel_cantelli_realFieldType.
-Context d (T : measurableType d) {R : realFieldType}
+Context {d} {T : measurableType d} {R : realFieldType}
         (mu : {measure set T -> \bar R}).
 Implicit Types F : (set T)^nat.
 Local Open Scope ereal_scope.
@@ -3728,6 +3728,7 @@ move=> mF mFoo; apply: nonincreasing_cvg_mu => //.
 Qed.
 
 End borel_cantelli_realFieldType.
+Arguments lim_sup_set_cvg {d T R} mu F.
 
 Section borel_cantelli.
 Context d (T : measurableType d) {R : realType} (mu : {measure set T -> \bar R}).
