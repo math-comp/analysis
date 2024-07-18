@@ -81,6 +81,8 @@
 
 - in `ftc.v`:
   + `FTC1` -> `FTC1_lebesgue_pt`
+- in `measure.v`:
+  + `setD_closed` -> `setSD_closed`
 
 ### Generalized
 
