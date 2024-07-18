@@ -49,8 +49,6 @@
     `le_normr_integral`, `Rintegral_setU_EFin`, `Rintegral_set0`, `Rintegral_itv_bndo_bndc`,
     `Rintegral_itv_obnd_cbnd`, `Rintegral_set1`, `Rintegral_itvB`
 
-### Changed
-
 - in `classical_sets.v`:
   + lemmas `setC_I`, `bigcup_subset`
 
