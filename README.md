@@ -12,11 +12,12 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
 
+This repository contains a real analysis library for the Coq proof-assistant.
+It is based on the [Mathematical Components](https://math-comp.github.io/) library.
 
-
-
-This repository contains an experimental library for real analysis for
-the Coq proof-assistant and using the Mathematical Components library.
+In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the following packages:
+- `coq-mathcomp-classical`: a layer for classical reasoning
+- `coq-mathcomp-analysis`: theories for real analysis
 
 ## Meta
 
@@ -45,23 +46,21 @@ the Coq proof-assistant and using the Mathematical Components library.
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
   - [Hierarchy Builder 1.4.0 or later](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
-- Related publication(s):
-  - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) (2018) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)
-  - [Formalisation Tools for Classical Analysis](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf) (2019)
-  - [Competing inheritance paths in dependent type theory---a case study in functional analysis](https://hal.inria.fr/hal-02463336) (2020) doi:[10.1007/978-3-030-51054-1_1](https://doi.org/10.1007/978-3-030-51054-1_1)
-  - [Measure Construction by Extension in Dependent Type Theory with Application to Integration](https://arxiv.org/pdf/2209.02345.pdf) (2023) doi:[10.1007/s10817-023-09671-5](https://doi.org/10.1007/s10817-023-09671-5)
 
 ## Building and installation instructions
 
-The easiest way to install the latest released version of Analysis library compatible with Mathematical Components
-is via [OPAM](https://opam.ocaml.org/doc/Install.html):
+The easiest way to install the latest released version of MathComp-Analysis library is
+via the [opam](https://opam.ocaml.org/doc/Install.html) package manager:
 
 ```shell
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-mathcomp-analysis
 ```
+Note that the package `coq-mathcomp-classical` will be installed as a dependency.
 
-To instead build and install manually, do:
+### Manual installation
+
+To build and install manually, make sure that the dependencies are met and do:
 
 ``` shell
 git clone https://github.com/math-comp/analysis.git
@@ -88,7 +87,12 @@ Each file is documented in its header
 
 Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
 
-See also "Related publication(s)" [above](https://github.com/math-comp/analysis#meta).
+Publications about MathComp-Analysis:
+- [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) (2018) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)
+- [Formalisation Tools for Classical Analysis](http://www-sop.inria.fr/members/Damien.Rouhling/data/phd/thesis.pdf) (2019)
+- [Competing inheritance paths in dependent type theory---a case study in functional analysis](https://hal.inria.fr/hal-02463336) (2020) doi:[10.1007/978-3-030-51054-1_1](https://doi.org/10.1007/978-3-030-51054-1_1)
+- [Measure Construction by Extension in Dependent Type Theory with Application to Integration](https://arxiv.org/pdf/2209.02345.pdf) (2023) doi:[10.1007/s10817-023-09671-5](https://doi.org/10.1007/s10817-023-09671-5)
+- [The Radon-Nikodým Theorem and the Lebesgue-Stieltjes Measure in Coq](https://www.jstage.jst.go.jp/article/jssst/41/2/41_2_41/_pdf/-char/en) (2024) doi:[10.11309/jssst.41.2_41](https://doi.org/10.11309/jssst.41.2_41)
 
 Other work using MathComp-Analysis:
 - [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
