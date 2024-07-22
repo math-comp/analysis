@@ -39,6 +39,9 @@
 - in `realfun.v`:
   + lemma `nondecreasing_at_left_is_cvgr`
 
+- in `constructive_ereal.v`:
+  + lemmas `lteD2rE`, `leeD2rE`
+
 ### Changed
 
 - in `topology.v`:

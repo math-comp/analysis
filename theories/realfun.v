@@ -2358,8 +2358,7 @@ rewrite {1}variation_prev; last exact: itv_partition1.
 rewrite /= -addeA -lteBrDr; last by rewrite fin_numD; apply/andP.
 rewrite EFinD -lte_fin ?fineK // oppeD //= ?fin_num_adde_defl // opprK addeA.
 move/lt_trans; apply.
-rewrite [x in (_ < x%:E)%E]splitr EFinD addeC lteD2lE //.
-rewrite -addeA.
+rewrite [in ltRHS](splitr (eps%:num)) EFinD lteD2rE// -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
   rewrite [in leRHS]variation_prev; last exact: itv_partition1.
   rewrite geeDl// sube_le0; apply: ereal_sup_ub => /=.

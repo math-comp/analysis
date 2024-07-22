@@ -1783,6 +1783,9 @@ move: a b x => [a| |] [b| |] [x| |] _ //; rewrite ?(ltry, ltNyr)//.
 by rewrite !lte_fin ltrD2l.
 Qed.
 
+Lemma lteD2rE x a b : x \is a fin_num -> (a + x < b + x) = (a < b).
+Proof. by rewrite -!(addeC x); exact: lteD2lE. Qed.
+
 Lemma leeD2l x a b : a <= b -> x + a <= x + b.
 Proof.
 move: a b x => -[a [b [x /=|//|//] | []// |//] | []// | ].
@@ -1796,6 +1799,9 @@ Proof.
 move: a b x => [a| |] [b| |] [x| |] _ //; rewrite ?(leey, leNye)//.
 by rewrite !lee_fin lerD2l.
 Qed.
+
+Lemma leeD2rE x a b : x \is a fin_num -> (a + x <= b + x) = (a <= b).
+Proof. by rewrite -!(addeC x); exact: leeD2lE. Qed.
 
 Lemma leeD2r x a b : a <= b -> a + x <= b + x.
 Proof. rewrite addeC (addeC b); exact: leeD2l. Qed.
