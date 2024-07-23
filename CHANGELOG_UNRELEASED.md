@@ -91,6 +91,9 @@
     `parameterized_integral_continuous`
   + corollary `continuous_FTC2`
 
+- in `ftc.v`:
+  + lemma `continuous_integration_by_parts`
+
 ### Changed
 
 - in `topology.v`:
