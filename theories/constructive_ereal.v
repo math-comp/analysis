@@ -2764,6 +2764,18 @@ Proof. by rewrite daddeC; exact: gte_daddl. Qed.
 Lemma lte_dadd2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
 Proof. by move=> ?; rewrite !dual_addeE lteN2 lteD2lE ?fin_numN// lteN2. Qed.
 
+Lemma lte_dadd2rE x a b : x \is a fin_num -> (a + x < b + x) = (a < b).
+Proof.
+move=> ?; rewrite !dual_addeE lteN2 -[RHS]lteN2.
+by rewrite -[RHS](@lteD2rE _ (- x))// fin_numN.
+Qed.
+
+Lemma lee_dadd2rE x a b : x \is a fin_num -> (a + x <= b + x) = (a <= b).
+Proof.
+move=> ?; rewrite !dual_addeE leeN2 -[RHS]leeN2.
+by rewrite -[RHS](@leeD2rE _ (- x))// fin_numN.
+Qed.
+
 Lemma lee_dadd2l x a b : a <= b -> x + a <= x + b.
 Proof. rewrite !dual_addeE leeN2 -leeN2; exact: leeD2l. Qed.
 

@@ -41,6 +41,7 @@
 
 - in `constructive_ereal.v`:
   + lemmas `lteD2rE`, `leeD2rE`
+  + lemmas `lte_dadd2rE`, `lee_dadd2lE`
 
 ### Changed
 
