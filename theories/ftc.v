@@ -51,7 +51,7 @@ apply: cvg_at_right_left_dnbhs.
     by rewrite -EFinD addrAC subrr add0r.
   have nice_E y : nicely_shrinking y (E y).
     split=> [n|]; first exact: measurable_itv.
-    exists (2, (fun n => PosNum (d_gt0 n))); split => //= [n z|n].
+    exists (2, fun n => PosNum (d_gt0 n)); split => //= [n z|n].
       rewrite /E/= in_itv/= /ball/= ltr_distlC => /andP[yz ->].
       by rewrite (lt_le_trans _ yz)// ltrBlDr ltrDl.
     rewrite (lebesgue_measure_ball _ (ltW _))// -/mu muE -EFinM lee_fin.
