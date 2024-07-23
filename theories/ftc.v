@@ -542,3 +542,46 @@ exact: integral_fune_fin_num.
 Unshelve. all: by end_near. Qed.
 
 End corollary_FTC1.
+
+Section integration_by_parts.
+Context {R : realType}.
+Notation mu := lebesgue_measure.
+Local Open Scope ereal_scope.
+Implicit Types (F G f g : R -> R) (a b : R).
+
+Lemma continuous_integration_by_parts F G f g a b :
+    (a < b)%R ->
+    {in `[a, b], continuous f} -> {in `[a, b], continuous F} ->
+    derivable_oo_continuous_bnd F a b ->
+    {in `]a, b[, F^`() =1 f} ->
+    {in `[a, b], continuous g} -> {in `[a, b], continuous G} ->
+    derivable_oo_continuous_bnd G a b ->
+    {in `]a, b[, G^`() =1 g} ->
+  (\int[mu]_(x in `[a, b]) (F x * g x)%:E = (F b * G b - F a * G a)%:E -
+   \int[mu]_(x in `[a, b]) (f x * G x)%:E).
+Proof.
+move=> ab cf cF Fab Ff cg cG Gab Gg.
+have cfg : {in `[a, b], continuous (f * G + F * g)%R}.
+  move=> z zab; apply: continuousD; apply: continuousM;
+    [exact: cf|exact: cG|exact: cF|exact: cg].
+have FGab : derivable_oo_continuous_bnd (F * G)%R a b.
+  move: Fab Gab => /= [abF FFa FFb] [abG GGa GGb];split; [|exact:cvgM..].
+  by move=> z zab; apply: derivableM; [exact: abF|exact: abG].
+have FGfg : {in `]a, b[, (F * G)^`() =1 f * G + F * g}%R.
+  move: Fab Gab => /= [abF FFa FFb] [abG GGa GGb] z zba.
+  rewrite derive1E deriveM; [|exact: abF|exact: abG].
+  by rewrite -derive1E Gg// -derive1E Ff// addrC (mulrC f).
+have := continuous_FTC2 ab cfg FGab FGfg; rewrite -EFinB => <-.
+under [X in _ = X - _]eq_integral do rewrite EFinD.
+have ? : mu.-integrable `[a, b] (fun x => ((f * G) x)%:E).
+  apply: continuous_compact_integrable => //; first exact: segment_compact.
+  apply: continuous_in_subspaceT => z /[!inE] zab.
+  by apply: continuousM; [exact: cf|exact: cG].
+rewrite /= integralD//=.
+- by rewrite addeAC subee ?add0e// integral_fune_fin_num.
+- apply: continuous_compact_integrable => //; first exact: segment_compact.
+  apply: continuous_in_subspaceT => z /[!inE] zab.
+  by apply: continuousM; [exact: cF|exact: cg].
+Qed.
+
+End integration_by_parts.

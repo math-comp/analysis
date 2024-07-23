@@ -27,6 +27,8 @@
   + definitions `is_open_itv`, `open_itv_cover`
   + lemmas `outer_measure_open_itv_cover`, `outer_measure_open_le`,
     `outer_measure_open`, `outer_measure_Gdelta`, `negligible_outer_measure`
+- in `ftc.v`:
+  + lemma `continuous_integration_by_parts`
 
 - in `classical_sets.v`:
   + scope `relation_scope` with delimiter `relation`
