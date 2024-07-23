@@ -41,7 +41,7 @@
 
 - in `constructive_ereal.v`:
   + lemmas `lteD2rE`, `leeD2rE`
-  + lemmas `lte_dadd2rE`, `lee_dadd2lE`
+  + lemmas `lte_dD2rE`, `lee_dD2lE`
 
 ### Changed
 
@@ -88,6 +88,29 @@
 
 - in `ftc.v`:
   + `FTC1` -> `FTC1_lebesgue_pt`
+
+- in `constructive_ereal.v`:
+  + `lte_dadd` -> `lte_dD`
+  + `lee_daddl` -> `lee_dDl`
+  + `lee_daddr` -> `lee_dDr`
+  + `gee_daddl` -> `gee_dDl`
+  + `gee_daddr` -> `gee_dDr`
+  + `lte_daddl` -> `lte_dDl`
+  + `lte_daddr` -> `lte_dDr`
+  + `gte_dsubl` -> `gte_dBl`
+  + `gte_dsubr` -> `gte_dBr`
+  + `gte_daddl` -> `gte_dDl`
+  + `gte_daddr` -> `gte_dDr`
+  + `lte_dadd2lE` -> `lte_dD2lE`
+  + `lee_dadd2rE` -> `lee_dD2rE`
+  + `lee_dadd2l` -> `lee_dD2l`
+  + `lee_dadd2r` -> `lee_dD2r`
+  + `lee_dadd` -> `lee_dD`
+  + `lee_dsub` -> `lee_dB`
+  + `lte_dsubl_addr` -> `lte_dBlDr`
+  + `lte_dsubl_addl` -> `lte_dBlDl`
+  + `lte_dsubr_addr` -> `lte_dBrDr`
+  + `lte_dsubr_addl` -> `lte_dBrDl`
 
 ### Generalized
 

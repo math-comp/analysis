@@ -2726,66 +2726,66 @@ Lemma dsube_le0 x y : (x \is a fin_num) || (y \is a fin_num) ->
   (y - x <= 0) = (y <= x).
 Proof. by move=> /orP[?|?]; [rewrite dsuber_le0|rewrite dsubre_le0]. Qed.
 
-Lemma lte_dadd a b x y : a < b -> x < y -> a + x < b + y.
+Lemma lte_dD a b x y : a < b -> x < y -> a + x < b + y.
 Proof. rewrite !dual_addeE lteN2 -lteN2 -(lteN2 y); exact: lteD. Qed.
 
-Lemma lee_daddl x y : 0 <= y -> x <= x + y.
+Lemma lee_dDl x y : 0 <= y -> x <= x + y.
 Proof. rewrite dual_addeE leeNr -oppe_le0; exact: geeDl. Qed.
 
-Lemma lee_daddr x y : 0 <= y -> x <= y + x.
+Lemma lee_dDr x y : 0 <= y -> x <= y + x.
 Proof. rewrite dual_addeE leeNr -oppe_le0; exact: geeDr. Qed.
 
-Lemma gee_daddl x y : y <= 0 -> x + y <= x.
+Lemma gee_dDl x y : y <= 0 -> x + y <= x.
 Proof. rewrite dual_addeE leeNl -oppe_ge0; exact: leeDl. Qed.
 
-Lemma gee_daddr x y : y <= 0 -> y + x <= x.
+Lemma gee_dDr x y : y <= 0 -> y + x <= x.
 Proof. rewrite dual_addeE leeNl -oppe_ge0; exact: leeDr. Qed.
 
-Lemma lte_daddl y x : y \is a fin_num -> (y < y + x) = (0 < x).
+Lemma lte_dDl y x : y \is a fin_num -> (y < y + x) = (0 < x).
 Proof. by rewrite -fin_numN dual_addeE lteNr; exact: gte_subl. Qed.
 
-Lemma lte_daddr y x : y \is a fin_num -> (y < x + y) = (0 < x).
+Lemma lte_dDr y x : y \is a fin_num -> (y < x + y) = (0 < x).
 Proof. by rewrite -fin_numN dual_addeE lteNr addeC; exact: gte_subl. Qed.
 
-Lemma gte_dsubl y x : y \is a fin_num -> (y - x < y) = (0 < x).
+Lemma gte_dBl y x : y \is a fin_num -> (y - x < y) = (0 < x).
 Proof. by rewrite -fin_numN dual_addeE lteNl oppeK; exact: lteDl. Qed.
 
-Lemma gte_dsubr y x : y \is a fin_num -> (- x + y < y) = (0 < x).
+Lemma gte_dBr y x : y \is a fin_num -> (- x + y < y) = (0 < x).
 Proof. by rewrite -fin_numN dual_addeE lteNl oppeK; exact: lteDr. Qed.
 
-Lemma gte_daddl x y : x \is a fin_num -> (x + y < x) = (y < 0).
+Lemma gte_dDl x y : x \is a fin_num -> (x + y < x) = (y < 0).
 Proof.
 by rewrite -fin_numN dual_addeE lteNl -[0]oppe0 lteNr; exact: lteDl.
 Qed.
 
-Lemma gte_daddr x y : x \is a fin_num -> (y + x < x) = (y < 0).
-Proof. by rewrite daddeC; exact: gte_daddl. Qed.
+Lemma gte_dDr x y : x \is a fin_num -> (y + x < x) = (y < 0).
+Proof. by rewrite daddeC; exact: gte_dDl. Qed.
 
-Lemma lte_dadd2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
+Lemma lte_dD2lE x a b : x \is a fin_num -> (x + a < x + b) = (a < b).
 Proof. by move=> ?; rewrite !dual_addeE lteN2 lteD2lE ?fin_numN// lteN2. Qed.
 
-Lemma lte_dadd2rE x a b : x \is a fin_num -> (a + x < b + x) = (a < b).
+Lemma lte_dD2rE x a b : x \is a fin_num -> (a + x < b + x) = (a < b).
 Proof.
 move=> ?; rewrite !dual_addeE lteN2 -[RHS]lteN2.
 by rewrite -[RHS](@lteD2rE _ (- x))// fin_numN.
 Qed.
 
-Lemma lee_dadd2rE x a b : x \is a fin_num -> (a + x <= b + x) = (a <= b).
+Lemma lee_dD2rE x a b : x \is a fin_num -> (a + x <= b + x) = (a <= b).
 Proof.
 move=> ?; rewrite !dual_addeE leeN2 -[RHS]leeN2.
 by rewrite -[RHS](@leeD2rE _ (- x))// fin_numN.
 Qed.
 
-Lemma lee_dadd2l x a b : a <= b -> x + a <= x + b.
+Lemma lee_dD2l x a b : a <= b -> x + a <= x + b.
 Proof. rewrite !dual_addeE leeN2 -leeN2; exact: leeD2l. Qed.
 
-Lemma lee_dadd2lE x a b : x \is a fin_num -> (x + a <= x + b) = (a <= b).
+Lemma lee_dD2lE x a b : x \is a fin_num -> (x + a <= x + b) = (a <= b).
 Proof. by move=> ?; rewrite !dual_addeE leeN2 leeD2lE ?fin_numN// leeN2. Qed.
 
-Lemma lee_dadd2r x a b : a <= b -> a + x <= b + x.
+Lemma lee_dD2r x a b : a <= b -> a + x <= b + x.
 Proof. rewrite !dual_addeE leeN2 -leeN2; exact: leeD2r. Qed.
 
-Lemma lee_dadd a b x y : a <= b -> x <= y -> a + x <= b + y.
+Lemma lee_dD a b x y : a <= b -> x <= y -> a + x <= b + y.
 Proof. rewrite !dual_addeE leeN2 -leeN2 -(leeN2 y); exact: leeD. Qed.
 
 Lemma lte_le_dadd a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
@@ -2794,7 +2794,7 @@ Proof. rewrite !dual_addeE lteN2 -lteN2; exact: lte_le_sub. Qed.
 Lemma lee_lt_dadd a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
 Proof. by move=> afin xa yb; rewrite (daddeC a) (daddeC x) lte_le_dadd. Qed.
 
-Lemma lee_dsub x y z t : x <= y -> t <= z -> x - z <= y - t.
+Lemma lee_dB x y z t : x <= y -> t <= z -> x - z <= y - t.
 Proof. rewrite !dual_addeE leeNl oppeK -leeN2 !oppeK; exact: leeD. Qed.
 
 Lemma lte_le_dsub z u x y : u \is a fin_num -> x < z -> u <= y -> x - y < z - u.
@@ -2908,16 +2908,16 @@ move=> AB f0; rewrite !dual_sumeE leeN2.
 apply: lee_sum_nneg_subfset => [//|? ? ?]; rewrite oppe_ge0; exact: f0.
 Qed.
 
-Lemma lte_dsubl_addr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
+Lemma lte_dBlDr x y z : y \is a fin_num -> (x - y < z) = (x < z + y).
 Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr oppeK lteBlDr. Qed.
 
-Lemma lte_dsubl_addl x y z : y \is a fin_num -> (x - y < z) = (x < y + z).
+Lemma lte_dBlDl x y z : y \is a fin_num -> (x - y < z) = (x < y + z).
 Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr lteBrDl ?fin_numN. Qed.
 
-Lemma lte_dsubr_addr x y z : z \is a fin_num -> (x < y - z) = (x + z < y).
+Lemma lte_dBrDr x y z : z \is a fin_num -> (x < y - z) = (x + z < y).
 Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr lteBlDr ?fin_numN. Qed.
 
-Lemma lte_dsubr_addl x y z : z \is a fin_num -> (x < y - z) = (z + x < y).
+Lemma lte_dBrDl x y z : z \is a fin_num -> (x < y - z) = (z + x < y).
 Proof. by move=> ?; rewrite !dual_addeE lteNl lteNr lteBlDl ?fin_numN. Qed.
 
 Lemma lte_dsuber_addr x y z : y \is a fin_num -> (x < y - z) = (x + z < y).
@@ -2973,7 +2973,7 @@ by move=> ?; rewrite !dual_addeE leeNl leeNr lee_subel_addl ?fin_numN.
 Qed.
 
 Lemma dsuber_gt0 x y : x \is a fin_num -> (0 < y - x) = (x < y).
-Proof. by move=> ?; rewrite lte_dsubr_addl// dadde0. Qed.
+Proof. by move=> ?; rewrite lte_dBrDl// dadde0. Qed.
 
 Lemma dsubre_gt0 x y : y \is a fin_num -> (0 < y - x) = (x < y).
 Proof. by move=> ?; rewrite lte_dsuber_addl// dadde0. Qed.
@@ -3047,7 +3047,7 @@ Lemma lee_abs_dsum (I : Type) (s : seq I) (F : I -> \bar^d R) (P : pred I) :
   `|\sum_(i <- s | P i) F i| <= \sum_(i <- s | P i) `|F i|.
 Proof.
 elim/big_ind2 : _ => //; first by rewrite abse0.
-by move=> *; exact/(le_trans (lee_abs_dadd _ _) (lee_dadd _ _)).
+by move=> *; exact/(le_trans (lee_abs_dadd _ _) (lee_dD _ _)).
 Qed.
 
 Lemma lee_abs_dsub x y : `|x - y| <= `|x| + `|y|.
@@ -3065,7 +3065,7 @@ Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
 Proof. by rewrite mule_natl ednatmulE. Qed.
 
 Lemma lee_pdaddl y x z : 0 <= x -> y <= z -> y <= x + z.
-Proof. by move=> *; rewrite -[y]dadd0e lee_dadd. Qed.
+Proof. by move=> *; rewrite -[y]dadd0e lee_dD. Qed.
 
 Lemma lte_pdaddl y x z : 0 <= x -> y < z -> y < x + z.
 Proof. by move=> x0 /lt_le_trans; apply; rewrite lee_pdaddl. Qed.
@@ -3095,6 +3095,49 @@ Arguments lee_dsum_nneg_natr {R}.
 Arguments lee_dsum_npos_natr {R}.
 Arguments lee_dsum_nneg_natl {R}.
 Arguments lee_dsum_npos_natl {R}.
+
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dD`")]
+Notation lte_dadd := lte_dD (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dDl`")]
+Notation lee_daddl := lee_dDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dDr`")]
+Notation lee_daddr := lee_dDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gee_dDl`")]
+Notation gee_daddl := gee_dDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gee_dDr`")]
+Notation gee_daddr := gee_dDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dDl`")]
+Notation lte_daddl := lte_dDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dDr`")]
+Notation lte_daddr := lte_dDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dBl`")]
+Notation gte_dsubl := gte_dBl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dBr`")]
+Notation gte_dsubr := gte_dBr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dDl`")]
+Notation gte_daddl := gte_dDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dDr`")]
+Notation gte_daddr := gte_dDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dD2lE`")]
+Notation lte_dadd2lE := lte_dD2lE (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD2rE`")]
+Notation lee_dadd2rE := lee_dD2rE (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD2l`")]
+Notation lee_dadd2l := lee_dD2l (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD2r`")]
+Notation lee_dadd2r := lee_dD2r (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dD`")]
+Notation lee_dadd := lee_dD (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_dB`")]
+Notation lee_dsub := lee_dB (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBlDr`")]
+Notation lte_dsubl_addr := lte_dBlDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBlDl`")]
+Notation lte_dsubl_addl := lte_dBlDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBrDr`")]
+Notation lte_dsubr_addr := lte_dBrDr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBrDl`")]
+Notation lte_dsubr_addl := lte_dBrDl (only parsing).
 
 End DualAddTheoryRealDomain.
 
