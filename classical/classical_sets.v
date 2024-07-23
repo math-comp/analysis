@@ -248,18 +248,24 @@ Reserved Notation "A `\ b" (at level 50, left associativity).
 Reserved Notation "A `+` B"  (at level 54, left associativity).
 Reserved Notation "A +` B"  (at level 54, left associativity).
 *)
-Reserved Notation "\bigcup_ ( i 'in' P ) F"
-  (at level 41, F at level 41, i, P at level 50,
-           format "'[' \bigcup_ ( i  'in'  P ) '/  '  F ']'").
-Reserved Notation "\bigcup_ ( i : T ) F"
-  (at level 41, F at level 41, i at level 50,
-           format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'").
 Reserved Notation "\bigcup_ ( i < n ) F"
   (at level 41, F at level 41, i, n at level 50,
            format "'[' \bigcup_ ( i  <  n ) '/  '  F ']'").
 Reserved Notation "\bigcup_ ( i >= n ) F"
   (at level 41, F at level 41, i, n at level 50,
            format "'[' \bigcup_ ( i  >=  n ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i < n ) F"
+  (at level 41, F at level 41, i, n at level 50,
+           format "'[' \bigcap_ ( i  <  n ) '/  '  F ']'").
+Reserved Notation "\bigcap_ ( i >= n ) F"
+  (at level 41, F at level 41, i, n at level 50,
+           format "'[' \bigcap_ ( i  >=  n ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i 'in' P ) F"
+  (at level 41, F at level 41, i, P at level 50,
+           format "'[' \bigcup_ ( i  'in'  P ) '/  '  F ']'").
+Reserved Notation "\bigcup_ ( i : T ) F"
+  (at level 41, F at level 41, i at level 50,
+           format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'").
 Reserved Notation "\bigcup_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcup_ i '/  '  F ']'").
@@ -269,12 +275,6 @@ Reserved Notation "\bigcap_ ( i 'in' P ) F"
 Reserved Notation "\bigcap_ ( i : T ) F"
   (at level 41, F at level 41, i at level 50,
            format "'[' \bigcap_ ( i  :  T ) '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i < n ) F"
-  (at level 41, F at level 41, i, n at level 50,
-           format "'[' \bigcap_ ( i  <  n ) '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i >= n ) F"
-  (at level 41, F at level 41, i, n at level 50,
-           format "'[' \bigcap_ ( i  >=  n ) '/  '  F ']'").
 Reserved Notation "\bigcap_ i F"
   (at level 41, F at level 41, i at level 0,
            format "'[' \bigcap_ i '/  '  F ']'").
@@ -1207,6 +1207,11 @@ Proof. by move=> k; apply/val_inj. Qed.
 Lemma IIordK {n} : cancel (@IIord n) ordII.
 Proof. by move=> k; apply/val_inj. Qed.
 
+Lemma setC_I n : ~` `I_n = [set k | n <= k].
+Proof.
+by apply/seteqP; split => [x /negP|x /= nx]; last apply/negP; rewrite -leqNgt.
+Qed.
+
 Lemma mem_not_I N n : (n \in ~` `I_N) = (N <= n).
 Proof. by rewrite in_setC /mkset /in_mem /mem /= /in_set asboolb -leqNgt. Qed.
 
@@ -1936,6 +1941,10 @@ Lemma subset_bigcup P F G : (forall i, P i -> F i `<=` G i) ->
 Proof.
 by move=> FG; apply: bigcup_sub => i Pi + /(FG _ Pi); apply: bigcup_sup.
 Qed.
+
+Lemma bigcup_subset P Q F : P `<=` Q ->
+  \bigcup_(i in P) F i `<=` \bigcup_(i in Q) F i.
+Proof. by move=> PQ t [i /PQ Qi Fit]; exists i. Qed.
 
 Lemma subset_bigcap P F G : (forall i, P i -> F i `<=` G i) ->
   \bigcap_(i in P) F i `<=` \bigcap_(i in P) G i.

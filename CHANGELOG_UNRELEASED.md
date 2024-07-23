@@ -38,6 +38,61 @@
 
 - in `realfun.v`:
   + lemma `nondecreasing_at_left_is_cvgr`
+- in `set_interval.v`:
+  + lemmas `subset_itvl`, `subset_itvr`, `subset_itvS`
+
+- in `normedtype.v`:
+  + lemmas `nbhs_lt`, `nbhs_le`
+
+- in `lebesgue_integral.v`:
+  + lemmas `eq_Rintegral`, `Rintegral_mkcond`, `Rintegral_mkcondr`, `Rintegral_mkcondl`,
+    `le_normr_integral`, `Rintegral_setU_EFin`, `Rintegral_set0`, `Rintegral_itv_bndo_bndc`,
+    `Rintegral_itv_obnd_cbnd`, `Rintegral_set1`, `Rintegral_itvB`
+
+- in `classical_sets.v`:
+  + lemmas `setC_I`, `bigcup_subset`
+
+- in `set_interval.v`:
+  + lemma `interval_set1`
+
+- in `normedtype.v`:
+  + lemma `nbhs_right_ltDr`
+
+- in `numfun.v`:
+  + lemma `epatch_indic`
+  + lemma `restrict_normr`
+  + lemmas `funepos_le`, `funeneg_le`
+
+- in `ereal.v`:
+  + lemmas `restrict_EFin`
+
+- in `measure.v`:
+  + definition `lim_sup_set`
+  + lemmas `lim_sup_set_ub`, `lim_sup_set_cvg`, `lim_sup_set_cvg0`
+
+- in `lebesgue_integral.v`:
+  + lemma `integral_Sset1`
+  + lemma `integralEpatch`
+  + lemma `integrable_restrict`
+  + lemma `le_integral`
+  + lemma `null_set_integral`
+  + lemma `EFin_normr_Rintegral`
+
+- in `charge.v`:
+  + definition `charge_variation`
+  + lemmas `abse_charge_variation`, `charge_variation_continuous`
+  + definition `induced`
+  + lemmas `semi_sigma_additive_nng_induced`, `dominates_induced`, `integral_normr_continuous`
+
+- in `ftc.v`:
+  + definition `parameterized_integral`
+  + lemmas `parameterized_integral_near_left`,
+    `parameterized_integral_left`, `parameterized_integral_cvg_at_left`,
+    `parameterized_integral_continuous`
+  + corollary `continuous_FTC2`
+
+- in `ftc.v`:
+  + lemma `continuous_integration_by_parts`
 
 ### Changed
 
@@ -45,6 +100,12 @@
   + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
     `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
 	into local `Let`'s
+
+- in `lebesgue_integral.v`:
+  + lemma `measurable_int`: argument `mu` now explicit 
+
+- moved from `lebesgue_integral.v` to `ereal.v`:
+  + lemma `funID`
 
 - in `reals.v`:
   + definitions `Rceil`, `Rfloor`
@@ -81,6 +142,8 @@
   + `lee_ndivr_mull` -> `lee_ndivrMl`
   + `lee_ndivr_mulr` -> `lee_ndivrMr`
   + `eqe_pdivr_mull` -> `eqe_pdivrMl`
+- in `measure.v`:
+  + `measurable_restrict` -> `measurable_restrictT`
 
 - in `ftc.v`:
   + `FTC1` -> `FTC1_lebesgue_pt`
@@ -89,12 +152,17 @@
 
 ### Generalized
 
+- in `measure.v`:
+  + lemma `measurable_restrict`
+
 ### Deprecated
 
 - in `reals.v`:
   + `floor_le` (use `ge_floor` instead)
   + `le_floor` (use `Num.Theory.floor_le` instead)
   + `le_ceil` (use `ceil_ge` instead)
+- in `lebesgue_integral.v`:
+  + lemmas `integralEindic`, `integral_setI_indic`
 
 ### Removed
 

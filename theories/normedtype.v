@@ -1139,6 +1139,26 @@ Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
 
 End analysis_struct.
 
+Section nbhs_lt_le.
+Context {R : realType}.
+Implicit Types x z : R.
+
+Lemma nbhs_lt x z : x < z -> \forall y \near x, x <= y -> y < z.
+Proof.
+move=> xz; near=> y.
+rewrite le_eqVlt => /predU1P[<-//|].
+near: y; exists (z - x) => /=; first by rewrite subr_gt0.
+move=> y/= /[swap] xy; rewrite ltr0_norm ?subr_lt0//.
+by rewrite opprD addrC ltrBlDr subrK opprK.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_le x z : x < z -> \forall y \near x, x <= y -> y <= z.
+Proof.
+by move=> xz; apply: filterS (nbhs_lt xz) => y /[apply] /ltW.
+Qed.
+
+End nbhs_lt_le.
+
 Section open_closed_sets.
 (* TODO: duplicate theory within the subspace topology of Num.real
          in a numDomainType *)
@@ -1285,6 +1305,12 @@ Proof.
 move=> xz; exists (z - x) => //=; first by rewrite subr_gt0.
 by move=> y /= + xy; rewrite distrC ?ger0_norm ?subr_ge0 1?ltW// ltrD2r.
 Qed.
+
+Lemma nbhs_right_ltDr x e : 0 < e -> \forall y \near x ^'+, y - x < e.
+Proof.
+move=> e0; near=> y; rewrite ltrBlDr; near: y.
+by apply: nbhs_right_lt; rewrite ltrDr.
+Unshelve. all: by end_near. Qed.
 
 Lemma nbhs_right_le x z : x < z -> \forall y \near x^'+, y <= z.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_right_lt.
