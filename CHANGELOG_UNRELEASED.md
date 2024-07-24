@@ -123,7 +123,7 @@
 ### Generalized
 
 - in `constructive_ereal.v`:
-  + lemmas `leeN2`, `lt2N2` generalized from `realDomainType` to `numDomainType`
+  + lemmas `leeN2`, `lteN2` generalized from `realDomainType` to `numDomainType`
 
 ### Deprecated
 
