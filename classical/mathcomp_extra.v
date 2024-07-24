@@ -63,6 +63,12 @@ Proof.
 by move=> x y ? ?; rewrite -[in LHS](@invrK _ y) ltf_pV2// posrE invr_gt0.
 Qed.
 
+Lemma invf_ltp (F : numFieldType) :
+  {in Num.pos &, forall x y : F, (x < y^-1)%R = (y < x^-1)%R}.
+Proof.
+by move=> x y ? ?; rewrite -[in RHS](@invrK _ y) ltf_pV2// posrE invr_gt0.
+Qed.
+
 Definition proj {I} {T : I -> Type} i (f : forall i, T i) := f i.
 
 Section DFunWith.
