@@ -620,6 +620,20 @@ Lemma mule2n x : x *+ 2 = x + x. Proof. by []. Qed.
 
 Lemma expe2 x : x ^+ 2 = x * x. Proof. by []. Qed.
 
+Lemma leeN2 : {mono @oppe R : x y /~ x <= y}.
+Proof.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !lerN2.
+  by rewrite /Order.le/= realN.
+by rewrite /Order.le/= realN.
+Qed.
+
+Lemma lteN2 : {mono @oppe R : x y /~ x < y}.
+Proof.
+move=> x y; case: x y => [?||] [?||] //; first by rewrite !lte_fin !ltrN2.
+  by rewrite /Order.lt/= realN.
+by rewrite /Order.lt/= realN.
+Qed.
+
 End ERealOrderTheory.
 #[global] Hint Resolve leeN10 lteN10 : core.
 
@@ -1733,8 +1747,6 @@ have := mule_eq_pinfty x (- y); rewrite muleN eqe_oppLR => ->.
 by rewrite !eqe_oppLR lteNr lteNl oppe0 (orbC _ ((x == -oo) && _)).
 Qed.
 
-Lemma lteN2 x y : (- x < - y) = (y < x). Proof. by rewrite lteNl oppeK. Qed.
-
 Lemma lteD a b x y : a < b -> x < y -> a + x < b + y.
 Proof.
 move: a b x y=> [a| |] [b| |] [x| |] [y| |]; rewrite ?(ltry,ltNyr)//.
@@ -2321,8 +2333,6 @@ move=> *; apply: (can_inj oppeK); apply: eq_infty => r.
 by rewrite leeNr -EFinN.
 Qed.
 
-Lemma leeN2 x y : (- x <= - y) = (y <= x). Proof. by rewrite leeNl oppeK. Qed.
-
 Lemma lee_abs x : x <= `|x|.
 Proof. by move: x => [x| |]//=; rewrite lee_fin ler_norm. Qed.
 
@@ -2706,6 +2716,10 @@ Notation lte_le_add := lte_leD (only parsing).
 Notation lee_lt_add := lee_ltD (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lte_leB` instead.")]
 Notation lte_le_sub := lte_leB (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="Use leeN2 instead.")]
+Notation lee_opp2 := leeN2 (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="Use lteN2 instead.")]
+Notation lte_opp2 := lteN2 (only parsing).
 
 Module DualAddTheoryRealDomain.
 
@@ -3158,20 +3172,6 @@ Notation lee_lt_dadd := lee_lt_dD (only parsing).
 Notation lte_le_dsub := lte_le_dD (only parsing).
 
 End DualAddTheoryRealDomain.
-
-Lemma lee_opp2 {R : numDomainType} : {mono @oppe R : x y /~ x <= y}.
-Proof.
-move=> x y;case: x y => [?||] [?||] //; first by rewrite !lee_fin !lerN2.
-  by rewrite  /Order.le/= realN.
-by rewrite /Order.le/= realN.
-Qed.
-
-Lemma lte_opp2 {R : numDomainType} : {mono @oppe R : x y /~ x < y}.
-Proof.
-move=> x y; case: x y => [?||] [?||] //; first by rewrite !lte_fin !ltrN2.
-  by rewrite  /Order.lt/= realN.
-by rewrite /Order.lt/= realN.
-Qed.
 
 Section realFieldType_lemmas.
 Variable R : realFieldType.

@@ -122,12 +122,18 @@
 
 ### Generalized
 
+- in `constructive_ereal.v`:
+  + lemmas `leeN2`, `lt2N2` generalized from `realDomainType` to `numDomainType`
+
 ### Deprecated
 
 - in `reals.v`:
   + `floor_le` (use `ge_floor` instead)
   + `le_floor` (use `Num.Theory.floor_le` instead)
   + `le_ceil` (use `ceil_ge` instead)
+
+- in `constructive_ereal.v`:
+  + lemmas `lte_opp2`, `lee_opp2` (use `lteN2`, `leeN2` instead)
 
 ### Removed
 
