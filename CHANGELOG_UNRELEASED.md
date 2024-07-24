@@ -101,6 +101,7 @@
   + `gte_dsubr` -> `gte_dBr`
   + `gte_daddl` -> `gte_dDl`
   + `gte_daddr` -> `gte_dDr`
+  + `lee_dadd2lE` -> `lee_dD2lE`
   + `lte_dadd2lE` -> `lte_dD2lE`
   + `lee_dadd2rE` -> `lee_dD2rE`
   + `lee_dadd2l` -> `lee_dD2l`
