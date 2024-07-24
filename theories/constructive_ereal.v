@@ -1191,7 +1191,7 @@ Qed.
 Lemma mule_lt0_gt0 x y : x < 0 -> 0 < y -> x * y < 0.
 Proof. by move=> x0 y0; rewrite muleC mule_gt0_lt0. Qed.
 
-Lemma gte_opp x : 0 < x -> - x < x.
+Lemma gteN x : 0 < x -> - x < x.
 Proof. by case: x => //= r; rewrite !lte_fin; apply: gtrN. Qed.
 
 Lemma realMe x y : (0%E >=< x)%O -> (0%E >=< y)%O -> (0%E >=< x * y)%O.
@@ -1243,6 +1243,9 @@ Notation "@ 'maxe' R" := (@Order.max ereal_display R)
 Notation mine := (@Order.min ereal_display _).
 Notation "@ 'mine' R" := (@Order.min ereal_display R)
   (at level 10, R at level 8, only parsing) : function_scope.
+
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `gteN`")]
+Notation gte_opp := gteN (only parsing).
 
 Module DualAddTheoryNumDomain.
 
@@ -1459,7 +1462,7 @@ move=> u0 l; rewrite dual_sumeE oppe_le0 sume_ge0 // => t Pt.
 rewrite oppe_ge0; exact: u0.
 Qed.
 
-Lemma gte_dopp (r : \bar^d R) : (0 < r)%E -> (- r < r)%E.
+Lemma gte_dN (r : \bar^d R) : (0 < r)%E -> (- r < r)%E.
 Proof. by case: r => //= r; rewrite !lte_fin; apply: gtrN. Qed.
 
 Lemma ednatmul_pinfty n : +oo *+ n.+1 = +oo :> \bar^d R.
@@ -1489,6 +1492,9 @@ by rewrite -EFinM -EFin_dnatmul -!EFin_expe -!dEFinD sqrrD.
 Qed.
 
 End DualERealArithTh_numDomainType.
+
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `gte_dN`")]
+Notation gte_dopp := gte_dN (only parsing).
 
 End DualAddTheoryNumDomain.
 
@@ -1812,14 +1818,14 @@ move: a b x y => [a| |] [b| |] [x| |] [y| |]; rewrite ?(leey, leNye)//.
 by rewrite !lee_fin; exact: lerD.
 Qed.
 
-Lemma lte_le_add a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
+Lemma lte_leD a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
 Proof.
 move: x y a b => [x| |] [y| |] [a| |] [b| |] _ //=; rewrite ?(ltry, ltNyr)//.
 by rewrite !lte_fin; exact: ltr_leD.
 Qed.
 
-Lemma lee_lt_add a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
-Proof. by move=> afin xa yb; rewrite (addeC a) (addeC x) lte_le_add. Qed.
+Lemma lee_ltD a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
+Proof. by move=> afin xa yb; rewrite (addeC a) (addeC x) lte_leD. Qed.
 
 Lemma leeB x y z u : x <= y -> u <= z -> x - z <= y - u.
 Proof.
@@ -1827,7 +1833,7 @@ move: x y z u => -[x| |] -[y| |] -[z| |] -[u| |] //=; rewrite ?(leey,leNye)//.
 by rewrite !lee_fin; exact: lerB.
 Qed.
 
-Lemma lte_le_sub z u x y : u \is a fin_num ->
+Lemma lte_leB z u x y : u \is a fin_num ->
   x < z -> u <= y -> x - y < z - u.
 Proof.
 move: z u x y => [z| |] [u| |] [x| |] [y| |] _ //=; rewrite ?(ltry, ltNyr)//.
@@ -2694,6 +2700,12 @@ Notation lee_subl_addl := leeBlDl (only parsing).
 Notation lee_subr_addr := leeBrDr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.2.0", note="Use leeBrDl instead.")]
 Notation lee_subr_addl := leeBrDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lte_leD` instead.")]
+Notation lte_le_add := lte_leD (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lee_ltD` instead.")]
+Notation lee_lt_add := lee_ltD (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="Use `lte_leB` instead.")]
+Notation lte_le_sub := lte_leB (only parsing).
 
 Module DualAddTheoryRealDomain.
 
@@ -2788,17 +2800,17 @@ Proof. rewrite !dual_addeE leeN2 -leeN2; exact: leeD2r. Qed.
 Lemma lee_dD a b x y : a <= b -> x <= y -> a + x <= b + y.
 Proof. rewrite !dual_addeE leeN2 -leeN2 -(leeN2 y); exact: leeD. Qed.
 
-Lemma lte_le_dadd a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
-Proof. rewrite !dual_addeE lteN2 -lteN2; exact: lte_le_sub. Qed.
+Lemma lte_le_dD a b x y : b \is a fin_num -> a < x -> b <= y -> a + b < x + y.
+Proof. by rewrite !dual_addeE lteN2 -lteN2; exact: lte_leB. Qed.
 
-Lemma lee_lt_dadd a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
-Proof. by move=> afin xa yb; rewrite (daddeC a) (daddeC x) lte_le_dadd. Qed.
+Lemma lee_lt_dD a b x y : a \is a fin_num -> a <= x -> b < y -> a + b < x + y.
+Proof. by move=> afin xa yb; rewrite (daddeC a) (daddeC x) lte_le_dD. Qed.
 
 Lemma lee_dB x y z t : x <= y -> t <= z -> x - z <= y - t.
 Proof. rewrite !dual_addeE leeNl oppeK -leeN2 !oppeK; exact: leeD. Qed.
 
-Lemma lte_le_dsub z u x y : u \is a fin_num -> x < z -> u <= y -> x - y < z - u.
-Proof. by rewrite !dual_addeE lteN2 !oppeK -lteN2; exact: lte_le_add. Qed.
+Lemma lte_le_dB z u x y : u \is a fin_num -> x < z -> u <= y -> x - y < z - u.
+Proof. by rewrite !dual_addeE lteN2 !oppeK -lteN2; exact: lte_leD. Qed.
 
 Lemma lee_dsum I (f g : I -> \bar^d R) s (P : pred I) :
   (forall i, P i -> f i <= g i) ->
@@ -3138,12 +3150,18 @@ Notation lte_dsubl_addl := lte_dBlDl (only parsing).
 Notation lte_dsubr_addr := lte_dBrDr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_dBrDl`")]
 Notation lte_dsubr_addl := lte_dBrDl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_le_dD`")]
+Notation lte_le_dadd := lte_le_dD (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lee_lt_dD`")]
+Notation lee_lt_dadd := lee_lt_dD (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `lte_le_dB`")]
+Notation lte_le_dsub := lte_le_dD (only parsing).
 
 End DualAddTheoryRealDomain.
 
 Lemma lee_opp2 {R : numDomainType} : {mono @oppe R : x y /~ x <= y}.
 Proof.
-move=> x y; case: x y => [?||] [?||] //; first by rewrite !lee_fin !lerN2.
+move=> x y;case: x y => [?||] [?||] //; first by rewrite !lee_fin !lerN2.
   by rewrite  /Order.le/= realN.
 by rewrite /Order.le/= realN.
 Qed.

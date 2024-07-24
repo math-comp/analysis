@@ -111,6 +111,14 @@
   + `lte_dsubl_addl` -> `lte_dBlDl`
   + `lte_dsubr_addr` -> `lte_dBrDr`
   + `lte_dsubr_addl` -> `lte_dBrDl`
+  + `gte_opp` -> `gteN`
+  + `gte_dopp` -> `gte_dN`
+  + `lte_le_add` -> `lte_ltD`
+  + `lee_lt_add` -> `lee_ltD`
+  + `lte_le_dadd` -> `lte_le_dD`
+  + `lee_lt_dadd` -> `lee_lt_dD`
+  + `lte_le_sub` -> `lte_leB`
+  + `lte_le_dsub` -> `lte_le_dB`
 
 ### Generalized
 
