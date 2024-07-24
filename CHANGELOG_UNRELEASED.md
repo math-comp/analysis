@@ -113,7 +113,7 @@
   + `lte_dsubr_addl` -> `lte_dBrDl`
   + `gte_opp` -> `gteN`
   + `gte_dopp` -> `gte_dN`
-  + `lte_le_add` -> `lte_ltD`
+  + `lte_le_add` -> `lte_leD`
   + `lee_lt_add` -> `lee_ltD`
   + `lte_le_dadd` -> `lte_le_dD`
   + `lee_lt_dadd` -> `lee_lt_dD`
