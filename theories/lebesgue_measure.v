@@ -2224,11 +2224,9 @@ move=> V [/[dup] /compact_measurable mV cptV VFND] FDV1 M1FD.
 rewrite (@le_trans _ _ (mu V))//; last first.
   apply: ereal_sup_ub; exists V => //=; split => //.
   exact: (subset_trans VFND (@subIsetr _ _ _)).
-rewrite -(@leeD2lE _ 1)// {1}addeC -EFinD (le_trans M1FD)//.
+rewrite -(@leeD2rE _ 1)// -EFinD (le_trans M1FD)//.
 rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; last exact: measurableI.
-rewrite ltW// lte_le_add // ?ge0_fin_numE //; last first.
-  by rewrite measureIr//; apply: measurableI.
-by rewrite -setIA (le_lt_trans _ (ffin N).2)// measureIl//; exact: measurableI.
+by rewrite addeC leeD//; [rewrite measureIr//; exact: measurableI|exact/ltW].
 Qed.
 
 End lebesgue_regularity.
