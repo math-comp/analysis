@@ -57,7 +57,7 @@
     coq-elpi.override.version = "master";
     hierarchy-builder.override.version = "master";
     mathcomp.override.version = "master";
-    mathcomp-bigenough.override.version = "1.0.1";
+    mathcomp-bigenough.override.version = "master";
     mathcomp-finmap.override.version = "master";
   }; ocamlPackages = { elpi.override.version = "1.19.2"; }; };
 
