@@ -1790,7 +1790,7 @@ have : {in D, (fun x => inf [set sups (h ^~ x) n | n in [set n | 0 <= n]%N])
 move/eq_measurable_fun; apply; apply: measurable_fun_infs => //.
   move=> t Dt; have [M hM] := f_lb _ Dt; exists M => _ [m /= nm <-].
   rewrite (@le_trans _ _ (h m t)) //; first by apply hM => /=; exists m.
-  by apply: sup_ub; [exact/has_ubound_sdrop/f_ub|exists m => /=].
+  by apply: sup_ubound; [exact/has_ubound_sdrop/f_ub|exists m => /=].
 by move=> k; exact: measurable_fun_sups.
 Qed.
 
@@ -2093,7 +2093,7 @@ have muU : mu U < mu D + eps%:E.
     by rewrite lee_nneseries.
   apply: le_lt_trans.
     by apply: epsilon_trick => //; rewrite divr_ge0// ltW.
-  rewrite {2}[eps]splitr EFinD addeA lte_le_add//.
+  rewrite {2}[eps]splitr EFinD addeA lte_leD//.
   rewrite (le_lt_trans _ zDe)// -sMz lee_nneseries// => i _.
   rewrite /= -wlength_Rhull wlength_itv !er_map_idfun.
   rewrite -lebesgue_measure_itv le_measure//= ?inE.
@@ -2197,7 +2197,7 @@ apply/lee_addgt0Pr => e e0.
 have [B [cB BA /= ABe]] := lebesgue_regularity_inner mA muA e0.
 rewrite -{1}(setDKU BA) (@le_trans _ _ (mu B + mu (A `\` B)))//.
   by rewrite setUC outer_measureU2.
-by rewrite leeD//; [apply: ereal_sup_ub => /=; exists B|exact/ltW].
+by rewrite leeD//; [apply: ereal_sup_ubound => /=; exists B|exact/ltW].
 Qed.
 
 Lemma lebesgue_regularity_inner_sup (D : set R) : measurable D ->
@@ -2222,7 +2222,7 @@ have [] := @lebesgue_regularity_inner (F N `&` D) _ _ _ ltr01.
 - by rewrite (le_lt_trans _ (ffin N).2)//= measureIl.
 move=> V [/[dup] /compact_measurable mV cptV VFND] FDV1 M1FD.
 rewrite (@le_trans _ _ (mu V))//; last first.
-  apply: ereal_sup_ub; exists V => //=; split => //.
+  apply: ereal_sup_ubound; exists V => //=; split => //.
   exact: (subset_trans VFND (@subIsetr _ _ _)).
 rewrite -(@leeD2rE _ 1)// -EFinD (le_trans M1FD)//.
 rewrite /mu (@measureDI _ _ _ _ (F N `&` D) _ _ mV)/=; last exact: measurableI.

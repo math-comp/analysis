@@ -62,7 +62,7 @@ set s := sup _; apply/eqP; rewrite eq_le; apply/andP; split.
 - apply sup_le_ub; last by move=> ? /ltW.
   by exists (x - 1); rewrite !set_itvE/= ltrBlDr ltrDl.
 - rewrite leNgt; apply/negP => sx; pose p := (s + x) / 2.
-  suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt sup_ub.
+  suff /andP[?]: (p < x) && (s < p) by apply/negP; rewrite -leNgt sup_ubound.
   by rewrite !midf_lt.
 Qed.
 
@@ -427,7 +427,7 @@ Proof.
 rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
 rewrite in_itv/= !natr_absz intr_norm intrD.
 have : `|x| < `|(floor `|x|)%:~R + 1|.
-  by rewrite [ltRHS]ger0_norm ?intrD1 ?lt_succ_floor// ler0z addr_ge0// floor_ge0.
+  by rewrite [ltRHS]ger0_norm ?intrD1 ?lt_succ_floor// ler0z addr_ge0 ?floor_ge0.
 case: b => /=.
 - by move/ltW; rewrite ler_norml => /andP[-> ->].
 - by rewrite ltr_norml => /andP[-> /ltW->].

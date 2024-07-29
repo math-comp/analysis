@@ -132,6 +132,12 @@
   + `lte_le_sub` -> `lte_leB`
   + `lte_le_dsub` -> `lte_le_dB`
 
+- in `reals.v`:
+  + `inf_lb` -> `inf_lbound`
+  + `sup_ub` -> `sup_ubound`
+  + `ereal_inf_lb` -> `ereal_inf_lbound`
+  + `ereal_sup_ub` -> `ereal_sup_ubound`
+
 ### Generalized
 
 - in `constructive_ereal.v`:

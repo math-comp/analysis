@@ -3217,8 +3217,8 @@ rewrite -EFinD lee_fin -inf_sumE //; first last.
 apply: lb_le_inf.
   by exists (r1%:num + r2%:num); exists r1%:num => //; exists r2%:num.
 move=> ? [+ []] => _/posnumP[p] xpy [+ []] => _/posnumP[q] yqz <-.
-apply: inf_lb; first by exists 0 => ? /= [/ltW].
-by split => //; apply: (ball_triangle xpy).
+apply: inf_lbound; first by exists 0 => ? /= [/ltW].
+by split => //; exact: (ball_triangle xpy).
 Qed.
 
 Lemma edist_continuous : continuous edist.
@@ -3268,7 +3268,7 @@ have xxfin : edist (x, y) \is a fin_num.
 have dpose : fine (edist (x, y)) > 0 by rewrite -lte_fin fineK.
 pose eps := PosNum dpose.
 have : (edist (x, y) <= (eps%:num / 2)%:E)%E.
-  apply: ereal_inf_lb; exists (eps%:num / 2) => //; split => //.
+  apply: ereal_inf_lbound; exists (eps%:num / 2) => //; split => //.
   exact: (bxy (eps%:num / 2)%:pos).
 apply: contra_leP => _.
 by rewrite /= EFinM fineK// lte_pdivrMr// lte_pmulr// lte1n.
@@ -3312,7 +3312,8 @@ have [xyfin|] := boolP (edist (x, y) \is a fin_num); first last.
   by rewrite ge0_fin_numE// ?ltey // negbK => /eqP->; rewrite addye ?leey.
 apply/lee_addgt0Pr => _/posnumP[eps].
 have [//|? [a Aa <-] yaeps] := @lb_ereal_inf_adherent R _ eps%:num _ fyn.
-apply: le_trans; first by apply: (@ereal_inf_lb _ _ (edist (x, a))); exists a.
+apply: le_trans.
+  by apply: (@ereal_inf_lbound _ _ (edist (x, a))); exists a.
 apply: le_trans; first exact: (@edist_triangle _ _ _ y).
 by rewrite -addeA leeD2lE // ltW.
 Qed.
@@ -3361,7 +3362,7 @@ Unshelve. all: by end_near. Qed.
 Lemma edist_inf0 a : A a -> edist_inf a = 0%E.
 Proof.
 move=> Aa; apply: le_anti; apply/andP; split; last exact: edist_inf_ge0.
-by apply: ereal_inf_lb; exists a => //; exact: edist_refl.
+by apply: ereal_inf_lbound; exists a => //; exact: edist_refl.
 Qed.
 
 End edist_inf.
@@ -3397,7 +3398,7 @@ have [->|/set0P[a A0]] := eqVneq A set0.
   - by move=> ? [? ? <-].
 have dfin x : @edist_inf R T' A x \is a fin_num.
   rewrite ge0_fin_numE ?edist_inf_ge0 //; apply: le_lt_trans.
-    by apply: ereal_inf_lb; exists a.
+    by apply: ereal_inf_lbound; exists a.
   rewrite -ge0_fin_numE ?edist_ge0 //; apply/edist_finP => /=; exists 2 => //.
   exact: countable_uniform.countable_uniform_bounded.
 pose f' := (fun z => fine (@edist_inf R T' A z)) \min (fun=> eps%:num).
@@ -4475,13 +4476,13 @@ Lemma right_bounded_interior (R : realType) (X : set R) :
 Proof.
 move=> uX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP supXr|]; last first.
-  by apply/negP; rewrite -leNgt sup_ub //; exact: interior_subset.
+  by apply/negP; rewrite -leNgt sup_ubound//; exact: interior_subset.
 suff : ~ X^° (sup X) by rewrite supXr.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (sup X + f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addrA subrr.
   by rewrite sub0r normrN gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
-have : sup X + f%:num <= sup X by apply sup_ub.
+have : sup X + f%:num <= sup X by exact: sup_ubound.
 by apply/negP; rewrite -ltNge; rewrite ltrDl.
 Qed.
 
@@ -4490,13 +4491,13 @@ Lemma left_bounded_interior (R : realType) (X : set R) :
 Proof.
 move=> lX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP rinfX|]; last first.
-  by apply/negP; rewrite -leNgt inf_lb //; exact: interior_subset.
+  by apply/negP; rewrite -leNgt inf_lbound//; exact: interior_subset.
 suff : ~ X^° (inf X) by rewrite -rinfX.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrCA subrr.
   by rewrite addr0 gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
-have : inf X <= inf X - f%:num by apply inf_lb.
+have : inf X <= inf X - f%:num by exact: inf_lbound.
 by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
 Qed.
 
@@ -4569,11 +4570,11 @@ Proof.
 move=> x Xx/=; rewrite in_itv/=.
 case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
 + by case: asboolP => ?; case: asboolP => ? //=;
-     rewrite !(lteifF, lteifT, sup_ub, inf_lb, sup_ub_strict, inf_lb_strict).
+     rewrite !(lteifF,lteifT,sup_ubound,inf_lbound,sup_ub_strict,inf_lb_strict).
 + by case: asboolP => XinfX; rewrite !(lteifF, lteifT);
-     [rewrite inf_lb | rewrite inf_lb_strict].
+     [rewrite inf_lbound | rewrite inf_lb_strict].
 + by case: asboolP => XsupX; rewrite !(lteifF, lteifT);
-     [rewrite sup_ub | rewrite sup_ub_strict].
+     [rewrite sup_ubound | rewrite sup_ub_strict].
 Qed.
 
 Lemma is_intervalP (X : set R) : is_interval X <-> X = [set x | x \in Rhull X].
@@ -4643,7 +4644,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
       by exists x; split => //; rewrite /mkset lexx /= (ltW xy).
     by move: sepA; rewrite /separated => -[] /disjoints_subset + _; apply.
   have /andP[xz zy] : x <= z < y.
-    rewrite sup_ub //=; [|by exists y => u [_] /andP[]|].
+    rewrite sup_ubound//=; [|by exists y => u [_] /andP[]|].
     + rewrite lt_neqAle sup_le_ub ?andbT; last by move=> u [_] /andP[].
       * by apply/negP; apply: contraPnot A1y => /eqP <-.
       * by exists x; split => //; rewrite /mkset /= lexx /= (ltW xy).
@@ -4674,7 +4675,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
   have nA0z1 : ~ (A false) z1.
     move=> A0z1; have : z < z1 by rewrite /z1 ltrDl.
     apply/negP; rewrite -leNgt.
-     apply: sup_ub; first by exists y => u [_] /andP[].
+     apply: sup_ubound; first by exists y => u [_] /andP[].
     by split => //; rewrite /mkset /z1 (le_trans xz) /= ?lerDl // (ltW z1y).
   by rewrite EU => -[//|]; apply: contra_not ncA1z1; exact: subset_closure.
 Qed.

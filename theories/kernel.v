@@ -368,7 +368,7 @@ HB.builders Context d d' (X : measurableType d) (Y : measurableType d')
 Let finite : @Kernel_isFinite d d' X Y R k.
 Proof.
 split; exists 2%R => /= ?; rewrite (@le_lt_trans _ _ 1%:E) ?lte_fin ?ltr1n//.
-by rewrite (le_trans _ sprob_kernel)//; exact: ereal_sup_ub.
+by rewrite (le_trans _ sprob_kernel)//; exact: ereal_sup_ubound.
 Qed.
 
 HB.instance Definition _ := finite.

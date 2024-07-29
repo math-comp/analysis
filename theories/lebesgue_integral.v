@@ -939,7 +939,7 @@ Variable (mu : {measure set T -> \bar R}).
 
 Let nnintegral_ge0 f : (forall x, 0 <= f x) -> 0 <= nnintegral mu f.
 Proof.
-by move=> f0; apply: ereal_sup_ub; exists nnsfun0; last by rewrite sintegral0.
+by move=> f0; apply: ereal_sup_ubound; exists nnsfun0 => //; exact: sintegral0.
 Qed.
 
 Let eq_nnintegral g f : f =1 g -> nnintegral mu f = nnintegral mu g.
@@ -948,8 +948,7 @@ Proof. by move=> /funext->. Qed.
 Let nnintegral0 : nnintegral mu (cst 0) = 0.
 Proof.
 rewrite /nnintegral /=; apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  apply/ereal_sup_ub; exists nnsfun0; last by rewrite sintegral0.
-  by [].
+  by apply/ereal_sup_ubound; exists nnsfun0; [|exact: sintegral0].
 apply/ub_ereal_sup => /= x [f /= f0 <-]; have {}f0 : forall x, f x = 0%R.
   by move=> y; apply/eqP; rewrite eq_le -2!lee_fin f0 //= lee_fin//.
 by rewrite (eq_sintegral (@nnsfun0 _ T R)) ?sintegral0.
@@ -960,7 +959,7 @@ Let nnintegral_nnsfun (h : {nnsfun T >-> R}) :
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
   by apply/ub_ereal_sup => /= _ -[g /= gh <-]; rewrite le_sintegral.
-by apply: ereal_sup_ub => /=; exists h.
+by apply: ereal_sup_ubound => /=; exists h.
 Qed.
 
 Local Notation "\int_ ( x 'in' D ) F" := (integral mu D (fun x => F))
@@ -1125,11 +1124,11 @@ Proof.
 rewrite ge0_integralTE//.
 apply/eqP; rewrite eq_le; apply/andP; split; last first.
   apply: lime_le; first exact: is_cvg_sintegral.
-  near=> n; apply: ereal_sup_ub; exists (g n) => //= => x.
+  near=> n; apply: ereal_sup_ubound; exists (g n) => //= => x.
   have <- : limn (EFin \o g ^~ x) = f x by apply/cvg_lim => //; exact: gf.
   have : EFin \o g ^~ x @ \oo --> ereal_sup (range (EFin \o g ^~ x)).
     by apply: ereal_nondecreasing_cvgn => p q pq /=; rewrite lee_fin; exact/nd_g.
-  by move/cvg_lim => -> //; apply: ereal_sup_ub; exists n.
+  by move/cvg_lim => -> //; apply: ereal_sup_ubound; exists n.
 have := leey (\int[mu]_x (f x)).
 rewrite le_eqVlt => /predU1P[|] mufoo; last first.
   have : \int[mu]_x (f x) \is a fin_num by rewrite ge0_fin_numE// integral_ge0.
@@ -1632,7 +1631,7 @@ have [g1 [nd_g1 /(_ _ Logic.I)gh1]] :=
 rewrite (nd_ge0_integral_lim _ h10 (fun x => lef_at x nd_g1) gh1)//.
 apply: lime_le.
   by apply: is_cvg_sintegral => // t Dt; exact/(lef_at t nd_g1).
-near=> n; rewrite ge0_integralTE//; apply: ereal_sup_ub => /=.
+near=> n; rewrite ge0_integralTE//; apply: ereal_sup_ubound => /=.
 exists (g1 n) => // t; rewrite (le_trans _ (h12 _)) //.
 have := gh1 t.
 have := leey (h1 t); rewrite le_eqVlt => /predU1P[->|ftoo].
@@ -1752,7 +1751,7 @@ move=> D [/= mD Deps KDf]; exists (K `\` D); split => //.
 - exact: subset_trans Kab.
 - rewrite setDDr; apply: le_lt_trans => /=.
     by apply: measureU2 => //; apply: measurableI => //; apply: measurableC.
-  rewrite [_%:num]splitr EFinD; apply: lee_lt_add => //=; first 2 last.
+  rewrite [_%:num]splitr EFinD; apply: lee_ltD => //=; first 2 last.
   + by rewrite (@le_lt_trans _ _ (mu D)) ?le_measure ?inE//; exact: measurableI.
   + rewrite ge0_fin_numE// (@le_lt_trans _ _ (mu A))// le_measure ?inE//.
     exact: measurableD.
@@ -2173,7 +2172,7 @@ apply: lee_lim.
 - apply: ereal_nondecreasing_is_cvgn => // n m nm; apply: ge0_le_integral => //.
   by move=> *; exact/nd_g.
 - apply: nearW => n; rewrite ge0_integralTE//.
-  by apply: ereal_sup_ub; exists (max_g2 n) => // t; exact: max_g2_g.
+  by apply: ereal_sup_ubound; exists (max_g2 n) => // t; exact: max_g2_g.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvg_monotone_convergence :
@@ -2428,7 +2427,7 @@ apply: lee_lim.
       \int[mu]_(x in D) g n x <= einfs (fun k => \int[mu]_(x in D) f k x) n.
     move=> n p np; apply: lb_ereal_inf => /= _ [k /= nk <-].
     apply: ge0_le_integral => //; [exact: g0|exact: mg|exact: f0|].
-    by move=> x Dx; apply: ereal_inf_lb; exists k.
+    by move=> x Dx; apply: ereal_inf_lbound; exists k.
   exact.
 Qed.
 
@@ -2688,7 +2687,7 @@ move=> f0 mf.
 have [f_ [f_nd f_f]] := approximation mD mf f0.
 elim => [|N ih]; first by rewrite big_ord0 msum_mzero integral_measure_zero.
 rewrite big_ord_recr/= -ih.
-rewrite (_ : _ m_ N.+1 = measure_add [the measure _ _ of msum m_ N] (m_ N)); last first.
+rewrite (_ : _ m_ N.+1 = measure_add (msum m_ N) (m_ N)); last first.
   by apply/funext => A; rewrite measure_addE /msum/= big_ord_recr.
 have mf_ n : measurable_fun D (fun x => (f_ n x)%:E).
   exact/measurable_funTS/EFin_measurable_fun.
@@ -3210,9 +3209,9 @@ have lim_f_ t : f_ ^~ t @ \oo --> (f \_ D) t.
   rewrite [X in _ --> X](_ : _ = ereal_sup (range (f_ ^~ t))); last first.
     apply/eqP; rewrite eq_le; apply/andP; split.
       rewrite /restrict; case: ifPn => [|_].
-        rewrite in_setE => -[n _ Fnt]; apply: ereal_sup_ub; exists n.+1 => //.
+        rewrite in_setE => -[n _ Fnt]; apply: ereal_sup_ubound; exists n.+1=>//.
         by rewrite /f_ big_mkord patchT// in_setE big_ord_recr/=; right.
-      rewrite (@le_trans _ _ (f_ O t))// ?ereal_sup_ub//.
+      rewrite (@le_trans _ _ (f_ O t))// ?ereal_sup_ubound//.
       by rewrite /f_ patchN// big_mkord big_ord0 inE/= in_set0.
     apply: ub_ereal_sup => x [n _ <-].
     by rewrite /f_ restrict_lee// big_mkord; exact: bigsetU_bigcup.
@@ -5910,7 +5909,7 @@ move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
     apply: measurable_funTS; apply: measurableT_comp => //=.
     by apply/measurableT_comp => //=; case: locf.
   have : iavg f (ball y (r + d)) <= HL f y.
-    apply: ereal_sup_ub => /=; exists (r + d)%R => //.
+    apply: ereal_sup_ubound => /=; exists (r + d)%R => //.
     by rewrite in_itv/= andbT addr_gt0.
   apply/lt_le_trans/(lt_le_trans xrdk); rewrite /iavg.
   do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
@@ -5954,7 +5953,7 @@ have /lt_le_trans : a%:E < iavg f (ball y (r + d)).
   do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
   rewrite lee_wpmul2l// lee_fin invr_ge0// fine_ge0//= lee_fin pmulrn_rge0//.
   by rewrite addr_gt0.
-apply; apply: ereal_sup_ub => /=.
+apply; apply: ereal_sup_ubound => /=.
 by exists (r + d)%R => //; rewrite in_itv/= andbT addr_gt0.
 Unshelve. all: by end_near. Qed.
 
@@ -6231,7 +6230,7 @@ have [r0|r0] := lerP r 0.
   by apply: HL_maximalT_ge0; split => //; exact: openT.
 rewrite muleDr//; last by rewrite ge0_adde_def// inE integral_ge0.
 rewrite leeD//.
-  by apply: ereal_sup_ub => /=; exists r => //; rewrite in_itv/= r0.
+  by apply: ereal_sup_ubound => /=; exists r => //; rewrite in_itv/= r0.
 under eq_integral do rewrite -(mule1 `| _ |).
 rewrite ge0_integralZl//; last exact: measurable_ball.
 rewrite integral_cst//; last exact: measurable_ball.
