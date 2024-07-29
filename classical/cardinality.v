@@ -1234,7 +1234,7 @@ HB.mixin Record FiniteImage aT rT (f : aT -> rT) := {
 HB.structure Definition FImFun aT rT := {f of @FiniteImage aT rT f}.
 
 Arguments fimfunP {aT rT} _.
-#[global] Hint Resolve fimfunP : core.
+#[global] Hint Extern 0 (finite_set _) => solve [apply: fimfunP] : core.
 
 Reserved Notation "{ 'fimfun' aT >-> T }"
   (at level 0, format "{ 'fimfun'  aT  >->  T }").

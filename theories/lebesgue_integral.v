@@ -161,97 +161,6 @@ Reserved Notation "[ 'nnsfun' 'of' f ]"
 Notation "{ 'nnsfun' aT >-> T }" := (@NonNegSimpleFun.type _ aT%type T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
 
-Section ring.
-Context (aT : pointedType) (rT : ringType).
-
-Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT).
-Proof.
-split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
-by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
-Qed.
-HB.instance Definition _ := GRing.isMulClosed.Build _ fimfun fimfun_mulr_closed.
-HB.instance Definition _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
-
-Implicit Types (f g : {fimfun aT >-> rT}).
-
-Lemma fimfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
-Lemma fimfun1 : (1 : {fimfun aT >-> rT}) = cst 1 :> (_ -> _). Proof. by []. Qed.
-Lemma fimfun_prod I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) :
-  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
-Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-Lemma fimfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
-Proof.
-by apply/funext => x; elim: n => [|n IHn]//; rewrite !exprS fimfunM/= IHn.
-Qed.
-
-Lemma indic_fimfun_subproof X : @FiniteImage aT rT \1_X.
-Proof.
-split; apply: (finite_subfset [fset 0; 1]%fset) => x [tt /=].
-by rewrite !inE indicE; case: (_ \in _) => _ <-; rewrite ?eqxx ?orbT.
-Qed.
-HB.instance Definition _ X := indic_fimfun_subproof X.
-Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
-
-HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
-Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
-
-End ring.
-Arguments indic_fimfun {aT rT} _.
-
-Section comring.
-Context (aT : pointedType) (rT : comRingType).
-HB.instance Definition _ := [SubRing_isSubComRing of {fimfun aT >-> rT} by <:].
-
-Implicit Types (f g : {fimfun aT >-> rT}).
-HB.instance Definition _ f g := FImFun.copy (f \* g) (f * g).
-End comring.
-
-Lemma fimfunE T (R : ringType) (f : {fimfun T >-> R}) x :
-  f x = \sum_(y \in range f) (y * \1_(f @^-1` [set y]) x).
-Proof.
-rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
-by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
-Qed.
-
-Lemma fimfunEord T (R : ringType) (f : {fimfun T >-> R})
-    (s := fset_set (f @` setT)) :
-  forall x, f x = \sum_(i < #|`s|) (s`_i * \1_(f @^-1` [set s`_i]) x).
-Proof.
-move=> x; rewrite fimfunE fsbig_finite//= (big_nth 0)/= big_mkord.
-exact: eq_bigr.
-Qed.
-
-Lemma trivIset_preimage1 {aT rT} D (f : aT -> rT) :
-  trivIset D (fun x => f @^-1` [set x]).
-Proof. by move=> y z _ _ [x [<- <-]]. Qed.
-
-Lemma trivIset_preimage1_in {aT} {rT : choiceType} (D : set rT) (A : set aT)
-  (f : aT -> rT) : trivIset D (fun x => A `&` f @^-1` [set x]).
-Proof. by move=> y z _ _ [x [[_ <-] [_ <-]]]. Qed.
-
-Section fimfun_bin.
-Variables (d : measure_display) (T : sigmaRingType d).
-Variables (R : numDomainType) (f g : {fimfun T >-> R}).
-
-Lemma max_fimfun_subproof : @FiniteImage T R (f \max g).
-Proof. by split; apply: (finite_image11 maxr). Qed.
-HB.instance Definition _ := max_fimfun_subproof.
-
-End fimfun_bin.
-
-HB.factory Record FiniteDecomp (T : pointedType) (R : ringType) (f : T -> R) :=
-  { fimfunE : exists (r : seq R) (A_ : R -> set T),
-      forall x, f x = \sum_(y <- r) (y * \1_(A_ y) x) }.
-HB.builders Context T R f of @FiniteDecomp T R f.
-  Lemma finite_subproof: @FiniteImage T R f.
-  Proof.
-  split; have [r [A_ fE]] := fimfunE.
-  suff -> : f = \sum_(y <- r) cst_fimfun y * indic_fimfun (A_ y) by [].
-  by apply/funext=> x; rewrite fE fimfun_sum.
-  Qed.
-  HB.instance Definition _ := finite_subproof.
-HB.end.
-
 Section mfun_pred.
 Context {d} {aT : sigmaRingType d} {rT : realType}.
 Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
@@ -499,12 +408,6 @@ Definition max_sfun f g := [the {sfun aT >-> _} of f \max g].
 End ring.
 Arguments indic_sfun {d aT rT} _.
 
-Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) (D : set T1)
-    (f : {fimfun T1 >-> T2}) (g : T2 -> T3) :
-  fset_set [set (g \o f) x | x in D] =
-  [fset g x | x in fset_set [set f x | x in D]]%fset.
-Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
-
 Lemma preimage_nnfun0 T (R : realDomainType) (f : {nnfun T >-> R}) t :
   t < 0 -> f @^-1` [set t] = set0.
 Proof.
@@ -631,12 +534,8 @@ Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variable f : {nnsfun T >-> R}.
 
-Lemma nnsfun_cover :
-  \big[setU/set0]_(i \in range f) (f @^-1` [set i]) = setT.
-Proof.
-rewrite fsbig_setU//=; last exact: fimfunP.
-by rewrite -subTset => x _; exists (f x).
-Qed.
+Lemma nnsfun_cover : \big[setU/set0]_(i \in range f) (f @^-1` [set i]) = setT.
+Proof. by rewrite fsbig_setU//= -subTset => x _; exists (f x). Qed.
 
 Lemma nnsfun_coverT :
   \big[setU/set0]_(i \in [set: R]) (f @^-1` [set i]) = setT.
@@ -656,8 +555,6 @@ Proof. by move=> Dm; exact: measurableI. Qed.
 
 #[global] Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
   solve [apply: measurable_sfun_inP; assumption] : core.
-
-#[global] Hint Extern 0 (finite_set _) => solve [apply: fimfunP] : core.
 
 Section measure_fsbig.
 Local Open Scope ereal_scope.

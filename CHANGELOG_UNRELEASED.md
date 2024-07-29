@@ -65,6 +65,12 @@
   + generalized to `archiDomainType` and renamed:
     * `ceil_lt_int` -> `ceil_gt_int`
 
+- moved from `lebesgue_integral.v` to `numfun.v`:
+  + lemmas `fimfunEord`, `fset_set_comp`
+
+- moved from `lebesgue_integral.v` to `cardinality.v`:
+  + hint `solve [apply: fimfunP]`
+
 ### Renamed
 
 - in `constructive_ereal.v`:
