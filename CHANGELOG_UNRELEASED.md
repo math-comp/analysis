@@ -13,13 +13,12 @@
   + factory `isAlgebraOfSets_setD`
 
 - in `classical_sets.v`:
-  + definition `sym_diff`, notation ``` `^` ```
-  + lemmas `sym_diffxx`, `sym_diff_setU`, `sym_diff_set`, `sym_diff_setI`,
-    `sym_diffC`, `sym_diffA`, `sym_diff0`, `sym_diffE`, `sym_diffT`, `sym_diffv`,
-	`sym_diff_def`
-
+  + definition `setX`, notation ``` `^` ```
+  + lemmas `setX0`, `set0X`, `setXK`, `setXC`, `setXA`, `setIXl`, `mulrXr`,
+    `setX_def`, `setXE`, `setXU`, `setXI`, `setXD`, `setXCT`, `setCXT`, `setXTC`, `setTXC`
+    
 - in `measure.v`:
-  + factory `isRingOfSets_sym_diff`
+  + factory `isRingOfSets_setX`
 
 - in `classical_sets.v`:
   + lemma `setDU`

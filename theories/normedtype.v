@@ -692,7 +692,7 @@ Proof. by rewrite cvgeNyPltr. Qed.
 Lemma cvgNey f : (\- f @ F --> +oo) <-> (f @ F --> -oo).
 Proof.
 rewrite cvgeNyPler cvgeyPger; split=> Foo A Areal;
-by near do rewrite -lee_opp2 ?oppeK; apply: Foo; rewrite rpredN.
+by near do rewrite -leeN2 ?oppeK; apply: Foo; rewrite rpredN.
 Unshelve. all: end_near. Qed.
 
 Lemma cvgNeNy f : (\- f @ F --> -oo) <-> (f @ F --> +oo).

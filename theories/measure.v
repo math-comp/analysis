@@ -189,7 +189,8 @@ From HB Require Import structures.
 (*     setSD_closed G == the set of sets G is closed under proper             *)
 (*                       difference                                           *)
 (*     setDI_closed G == the set of sets G is closed under difference         *)
-(*  sym_diff_closed G == the set of sets G is closed by symmetric difference  *)
+(*      setX_closed G == the set of sets G is closed under symmetric          *)
+(*                       difference                                           *)
 (*     ndseq_closed G == the set of sets G is closed under non-decreasing     *)
 (*                       countable union                                      *)
 (*     niseq_closed G == the set of sets G is closed under non-increasing     *)
@@ -355,7 +356,7 @@ Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
 Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
 Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
-Definition sym_diff_closed := forall A B, G A -> G B -> G (A `^` B).
+Definition setX_closed := forall A B, G A -> G B -> G (A `^` B).
 
 Definition fin_bigcap_closed :=
     forall I (D : set I) A_, finite_set D -> (forall i, D i -> G (A_ i)) ->
@@ -1166,33 +1167,32 @@ HB.instance Definition _ := SemiRingOfSets_isRingOfSets.Build d T measurableU.
 
 HB.end.
 
-HB.factory Record isRingOfSets_sym_diff (d : measure_display) T
+HB.factory Record isRingOfSets_setX (d : measure_display) T
     of Pointed T := {
   measurable : set (set T) ;
   measurable_nonempty : measurable !=set0 ;
-  measurable_sym_diff : sym_diff_closed measurable ;
+  measurable_setX : setX_closed measurable ;
   measurable_setI : setI_closed measurable }.
 
-HB.builders Context d T of isRingOfSets_sym_diff d T.
+HB.builders Context d T of isRingOfSets_setX d T.
 
 Let m0 : measurable set0.
 Proof.
 have [A mA] := measurable_nonempty.
-have := measurable_sym_diff mA mA.
-by rewrite sym_diffxx.
+have := measurable_setX mA mA.
+by rewrite setXK.
 Qed.
 
 Let mU : setU_closed measurable.
 Proof.
-move=> A B mA mB; rewrite -sym_diff_setU.
-apply: measurable_sym_diff; first exact: measurable_sym_diff.
-exact: measurable_setI.
+move=> A B mA mB; rewrite -setXU.
+by apply: measurable_setX; [exact: measurable_setX|exact: measurable_setI].
 Qed.
 
 Let mD : setDI_closed measurable.
 Proof.
-move=> A B mA mB; rewrite -sym_diff_setD.
-by apply: measurable_sym_diff => //; exact: measurable_setI.
+move=> A B mA mB; rewrite -setXD.
+by apply: measurable_setX => //; exact: measurable_setI.
 Qed.
 
 HB.instance Definition _ := isRingOfSets.Build d T m0 mU mD.
