@@ -259,7 +259,7 @@ Lemma sup0 : sup (@set0 R) = 0. Proof. exact: supremum0. Qed.
 
 Lemma sup1 x : sup [set x] = x. Proof. exact: supremum1. Qed.
 
-Lemma sup_ub {E} : has_ubound E -> ubound E (sup E).
+Lemma sup_ubound {E} : has_ubound E -> ubound E (sup E).
 Proof.
 move=> ubE; apply/ubP=> x x_in_E; move: (x) (x_in_E).
 by apply/ubP/sup_upper_bound=> //; split; first by exists x.
@@ -268,7 +268,7 @@ Qed.
 Lemma sup_ub_strict E : has_ubound E ->
   ~ E (sup E) -> E `<=` [set r | r < sup E].
 Proof.
-move=> ubE EsupE r Er; rewrite /mkset lt_neqAle sup_ub // andbT.
+move=> ubE EsupE r Er; rewrite /mkset lt_neqAle sup_ubound // andbT.
 by apply/negP => /eqP supEr; move: EsupE; rewrite -supEr.
 Qed.
 
@@ -300,9 +300,9 @@ Lemma sup_setU (A B : set R) : has_sup B ->
 Proof.
 move=> [B0 [l Bl]] AB; apply/eqP; rewrite eq_le; apply/andP; split.
 - apply sup_le_ub => [|x [Ax|]]; first by apply: subset_nonempty B0 => ?; right.
-  by case: B0 => b Bb; rewrite (le_trans (AB _ _ Ax Bb)) // sup_ub //; exists l.
-- by move=> Bx; rewrite sup_ub //; exists l.
-- apply sup_le_ub => // b Bb; apply sup_ub; last by right.
+  by case: B0 => b Bb; rewrite (le_trans (AB _ _ Ax Bb)) // sup_ubound //; exists l.
+- by move=> Bx; rewrite sup_ubound //; exists l.
+- apply sup_le_ub => // b Bb; apply: sup_ubound; last by right.
   by exists l => x [Ax|Bx]; [rewrite (le_trans (AB _ _ Ax Bb)) // Bl|exact: Bl].
 Qed.
 
@@ -314,6 +314,8 @@ by apply sup_le_ub => // y Sy; move: (g y) => -[// | /negP]; rewrite leNgt.
 Qed.
 
 End RealLemmas.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="Renamed `sup_ubound`.")]
+Notation sup_ub := sup_ubound (only parsing).
 
 Section sup_sum.
 Context {R : realType}.
@@ -328,7 +330,7 @@ have ABsup : has_sup [set x + y | x in A & y in B].
   by apply: lerD; [exact: up | exact: uq].
 apply: le_anti; apply/andP; split.
   apply: sup_le_ub; first by case: ABsup.
-  by move=> ? [p Ap [q Bq] <-]; apply: lerD; exact: sup_ub.
+  by move=> ? [p Ap [q Bq] <-]; apply: lerD; exact: sup_ubound.
 rewrite leNgt -subr_gt0; apply/negP.
 set eps := (_ + _ - _) => epos.
 have e2pos : 0 < eps / 2%:R by rewrite divr_gt0// ltr0n.
@@ -384,13 +386,13 @@ Proof. by rewrite /inf image_set0 sup0 oppr0. Qed.
 Lemma inf1 x : inf [set x] = x.
 Proof. by rewrite /inf image_set1 sup1 opprK. Qed.
 
-Lemma inf_lb E : has_lbound E -> lbound E (inf E).
-Proof. by move/has_lb_ubN/sup_ub/ub_lbN; rewrite setNK. Qed.
+Lemma inf_lbound E : has_lbound E -> lbound E (inf E).
+Proof. by move/has_lb_ubN/sup_ubound/ub_lbN; rewrite setNK. Qed.
 
 Lemma inf_lb_strict E : has_lbound E ->
   ~ E (inf E) -> E `<=` [set r | inf E < r].
 Proof.
-move=> lE EinfE r Er; rewrite /mkset lt_neqAle inf_lb // andbT.
+move=> lE EinfE r Er; rewrite /mkset lt_neqAle inf_lbound // andbT.
 by apply/negP => /eqP infEr; move: EinfE; rewrite infEr.
 Qed.
 
@@ -422,6 +424,8 @@ by move=> <-; rewrite ltrNr opprK => r'x; exists r'.
 Qed.
 
 End InfTheory.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="Renamed `inf_lbound`.")]
+Notation inf_lb := inf_lbound (only parsing).
 
 (* -------------------------------------------------------------------- *)
 Section FloorTheory.
@@ -641,7 +645,7 @@ Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
 Proof.
 set P := [set y | _]; move=> hs; rewrite -subr_gt0.
 move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrCA subrr addr0 => ltFxl.
-by exists x => //; rewrite (inf_lb hs.2)//; exists x.
+by exists x => //; rewrite (inf_lbound hs.2)//; exists x.
 Qed.
 
 End Sup.

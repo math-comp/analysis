@@ -79,7 +79,7 @@ Implicit Types (a : T -> \bar R).
 Lemma esum_ge0 (S : set T) a :
   (forall x, S x -> 0 <= a x) -> 0 <= \esum_(i in S) a i.
 Proof.
-move=> a0; apply: ereal_sup_ub.
+move=> a0; apply: ereal_sup_ubound.
 by exists set0; [exact: fsets_set0|rewrite fsbig_set0].
 Qed.
 
@@ -88,7 +88,7 @@ Lemma esum_fset (F : set T) a : finite_set F ->
   \esum_(i in F) a i = \sum_(i \in F) a i.
 Proof.
 move=> finF f0; apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  by apply ereal_sup_ub; exists F => //; exact: fsets_self.
+  by apply: ereal_sup_ubound; exists F => //; exact: fsets_self.
 apply ub_ereal_sup => /= ? -[F' [finF' F'F] <-].
 apply/lee_fsum_nneg_subset => //; first exact/subsetP.
 by  move=> t; rewrite inE/= => /andP[_] /f0.
@@ -101,11 +101,6 @@ Qed.
 
 End esum_realType.
 
-Lemma esum_ge [R : realType] [T : choiceType] (I : set T) (a : T -> \bar R) x :
-  (exists2 X : set T, fsets I X & x <= \sum_(i \in X) a i) ->
-  x <= \esum_(i in I) a i.
-Proof. by move=> [X IX /le_trans->//]; apply: ereal_sup_ub => /=; exists X. Qed.
-
 Lemma esum1 [R : realFieldType] [I : choiceType] (D : set I) (a : I -> \bar R) :
   (forall i, D i -> a i = 0) -> \esum_(i in D) a i = 0.
 Proof.
@@ -114,6 +109,11 @@ apply/seteqP; split=> x //= => [[X [finX XI]] <-|->].
   by rewrite fsbig1// => i /XI/a0.
 by exists set0; rewrite ?fsbig_set0//; exact: fsets_set0.
 Qed.
+
+Lemma esum_ge [R : realType] [T : choiceType] (I : set T) (a : T -> \bar R) x :
+  (exists2 X : set T, fsets I X & x <= \sum_(i \in X) a i) ->
+  x <= \esum_(i in I) a i.
+Proof. by move=> [X IX /le_trans->//]; apply: ereal_sup_ubound; exists X. Qed.
 
 Lemma le_esum [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
   (forall i, I i -> a i <= b i) ->
@@ -134,7 +134,7 @@ Lemma esumD [R : realType] [T : choiceType] (I : set T) (a b : T -> \bar R) :
 Proof.
 move=> ag0 bg0; apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite ub_ereal_sup//= => x [X [finX XI]] <-; rewrite fsbig_split//=.
-  by rewrite leeD// ereal_sup_ub//=; exists X.
+  by rewrite leeD// ereal_sup_ubound//=; exists X.
 wlog : a b ag0 bg0 / \esum_(i in I) a i \isn't a fin_num => [saoo|]; last first.
   move=> /fin_numPn[->|/[dup] aoo ->]; first by rewrite leNye.
   rewrite (@le_trans _ _ +oo)//; first by rewrite /adde/=; case: esum.
@@ -156,11 +156,12 @@ have saX : \sum_(i \in X) a i \is a fin_num.
 rewrite leeBrDr// addeC -leeBrDr// ub_ereal_sup//= => _ [Y [finY YI]] <-.
 rewrite leeBrDr// addeC esum_ge//; exists (X `|` Y).
   by split; [rewrite finite_setU|rewrite subUset].
-rewrite fsbig_split ?finite_setU//= leeD// lee_fsum_nneg_subset//= ?finite_setU//.
+rewrite fsbig_split ?finite_setU//= leeD// lee_fsum_nneg_subset ?finite_setU//=.
 - exact/subsetP/subsetUl.
-- by move=> x; rewrite !inE in_setU andb_orr andNb/= => /andP[_] /[!inE] /YI/ag0.
+- by move=> x; rewrite !inE in_setU andb_orr andNb => /andP[_] /[!inE] /YI/ag0.
 - exact/subsetP/subsetUr.
-- by move=> x; rewrite !inE in_setU andb_orr andNb/= orbF => /andP[_] /[!inE] /XI/bg0.
+- move=> x; rewrite !inE in_setU andb_orr andNb/= orbF.
+  by move=> /andP[_] /[!inE] /XI/bg0.
 Qed.
 
 Lemma esum_mkcond [R : realType] [T : choiceType] (I : set T)
@@ -169,20 +170,23 @@ Lemma esum_mkcond [R : realType] [T : choiceType] (I : set T)
 Proof.
 apply/eqP; rewrite eq_le !ub_ereal_sup//= => _ [X [finX XI]] <-.
   rewrite -big_mkcond/= big_fset_condE/=; set Y := [fset _ | _ in _ & _]%fset.
-  rewrite ereal_sup_ub//=; exists [set` Y]; last by rewrite fsbig_finite// set_fsetK.
-  by split => // i/=; rewrite !inE/= => /andP[_]; rewrite inE.
-rewrite ereal_sup_ub//; exists X => //; apply: eq_fsbigr => x; rewrite inE => Xx.
+  rewrite ereal_sup_ubound//=; exists [set` Y].
+    by split => // i/=; rewrite !inE/= => /andP[_]; rewrite inE.
+  by rewrite fsbig_finite// set_fsetK.
+rewrite ereal_sup_ubound//; exists X => //; apply: eq_fsbigr => x /[!inE] Xx.
 by rewrite ifT// inE; exact: XI.
 Qed.
 
-Lemma esum_mkcondr [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
+Lemma esum_mkcondr [R : realType] [T : choiceType] (I J : set T)
+    (a : T -> \bar R) :
   \esum_(i in I `&` J) a i = \esum_(i in I) if i \in J then a i else 0.
 Proof.
 rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum=> i _.
 by rewrite in_setI; case: (i \in I) (i \in J) => [] [].
 Qed.
 
-Lemma esum_mkcondl [R : realType] [T : choiceType] (I J : set T) (a : T -> \bar R) :
+Lemma esum_mkcondl [R : realType] [T : choiceType] (I J : set T)
+    (a : T -> \bar R) :
   \esum_(i in I `&` J) a i = \esum_(i in J) if i \in I then a i else 0.
 Proof.
 rewrite esum_mkcond [RHS]esum_mkcond; apply: eq_esum=> i _.
@@ -208,7 +212,7 @@ Lemma esum_sum [R : realType] [T1 T2 : choiceType]
 Proof.
 move=> a_ge0; elim: r => [|j r IHr]; rewrite ?(big_nil, big_cons)// -?IHr.
   by rewrite esum1// => i; rewrite big_nil.
-case: (boolP (P j)) => Pj; last first.
+case: ifPn => Pj; last first.
   by apply: eq_esum => i Ii; rewrite big_cons (negPf Pj).
 have aj_ge0 i : I i -> a i j >= 0 by move=> ?; apply: a_ge0.
 rewrite -esumD//; last by move=> i Ii; apply: sume_ge0 => *; apply: a_ge0.
@@ -227,7 +231,7 @@ move=> a_ge0; apply/eqP; rewrite eq_le; apply/andP; split.
     move=> i j _ /[!in_fset_set]// /[!inE] /XI Ij.
     by case: ifPn => // /[!inE] /a_ge0-/(_ Ij).
   under eq_esum do rewrite -big_seq -big_mkcond/=.
-  apply: ub_ereal_sup => /= _ [Y [finY _] <-]; apply: ereal_sup_ub => /=.
+  apply: ub_ereal_sup => /= _ [Y [finY _] <-]; apply: ereal_sup_ubound => /=.
   set XYJ := [set z | z \in X `*` Y /\ z.2 \in J z.1].
   have ? : finite_set XYJ.
     apply: sub_finite_set (finite_setM finX finY) => z/=.
@@ -266,7 +270,7 @@ apply: (@le_trans _ _
   by rewrite mem_set//; move/XIJ : Xij => [].
 rewrite -fsbig_finite; last exact: finite_set_fst.
 apply lee_fsum=> [|i Xi]; first exact: finite_set_fst.
-rewrite ereal_sup_ub => //=; have ? : finite_set (X.`2 `&` J i).
+rewrite ereal_sup_ubound //=; have ? : finite_set (X.`2 `&` J i).
   by apply: finite_setI; left; exact: finite_set_snd.
 exists (X.`2 `&` J i) => //.
 rewrite [in RHS]big_fset_condE/= fsbig_finite//; apply eq_fbigl => j.
@@ -308,10 +312,11 @@ Lemma nneseries_esum (R : realType) (a : nat -> \bar R) (P : pred nat) :
 Proof.
 move=> a0; apply/eqP; rewrite eq_le; apply/andP; split.
   apply: (lime_le (is_cvg_nneseries_cond a0)); apply: nearW => n.
-  apply: ereal_sup_ub => /=; exists [set` [fset val i | i in 'I_n & P i]%fset].
+  apply: ereal_sup_ubound; exists [set` [fset val i | i in 'I_n & P i]%fset].
     split; first exact: finite_fset.
     by move=> /= k /imfsetP[/= i]; rewrite inE => + ->.
-  rewrite fsbig_finite//= set_fsetK big_imfset/=; last by move=> ? ? ? ? /val_inj.
+  rewrite fsbig_finite//= set_fsetK big_imfset/=; last first.
+    by move=> ? ? ? ? /val_inj.
   by rewrite big_filter big_enum_cond/= big_mkord.
 apply: ub_ereal_sup => _ [/= F [finF PF] <-].
 rewrite fsbig_finite//= -(big_rmcond_in P)/=; first exact: lee_sum_fset_lim.
@@ -334,7 +339,7 @@ gen have le_esum : T T' a P Q e /
   rewrite [leRHS](_ : _ = \esum_(j in Q) a (e (e^-1%FUN j))); last first.
     by apply: eq_esum => i Qi; rewrite invK ?inE.
   by rewrite le_esum => //= i Qi; rewrite a_ge0//; exact: funS.
-rewrite ub_ereal_sup => //= _ [X [finX XQ] <-]; rewrite ereal_sup_ub => //=.
+rewrite ub_ereal_sup => //= _ [X [finX XQ] <-]; rewrite ereal_sup_ubound => //=.
 exists [set` (e^-1 @` (fset_set X))%fset].
   split=> [|t /= /imfsetP[t'/=]]; first exact: finite_fset.
   by rewrite in_fset_set// inE => /XQ Qt' ->; exact: funS.

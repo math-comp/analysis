@@ -303,7 +303,7 @@ rewrite lerBlDr {}/M.
 move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
 - near=> r; rewrite ler_distl; apply/andP; split.
   + suff: f r <= M by apply: le_trans; rewrite lerBlDr lerDl.
-    apply: sup_ub => //=; exists r => //; rewrite in_itv/=.
+    apply: sup_ubound => //=; exists r => //; rewrite in_itv/=.
     by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_lt].
   + rewrite (le_trans Mefp)// lerD2r lef//=; last 2 first.
       by rewrite in_itv/= ap.
@@ -311,7 +311,7 @@ move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
     apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_lt].
 - near=> r; rewrite ler_distl; apply/andP; split.
   + suff: f r <= M by apply: le_trans; rewrite lerBlDr lerDl.
-    apply: sup_ub => //=; exists r => //; rewrite in_itv/=.
+    apply: sup_ubound => //=; exists r => //; rewrite in_itv/=.
     by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_le].
   + rewrite (le_trans Mefp)// lerD2r lef//=; last 2 first.
       by rewrite in_itv/= ap.
@@ -319,7 +319,7 @@ move: b ab pb lef ubf => [[|] b|[//|]] ab pb lef ubf; set M := sup _ => Mefp.
     by apply/andP; split; near: r; [exact: nbhs_right_gt|exact: nbhs_right_le].
 - near=> r; rewrite ler_distl; apply/andP; split.
   suff: f r <= M by apply: le_trans; rewrite lerBlDr lerDl.
-  apply: sup_ub => //=; exists r => //; rewrite in_itv/= andbT.
+  apply: sup_ubound => //=; exists r => //; rewrite in_itv/= andbT.
     by near: r; apply: nbhs_right_gt.
   rewrite (le_trans Mefp)// lerD2r lef//.
   - by rewrite in_itv/= andbT; near: r; exact: nbhs_right_gt.
@@ -433,9 +433,9 @@ have <- : sup (range g) = fine l.
   apply: EFin_inj; rewrite -ereal_sup_EFin//; last 2 first.
     - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
       have [mx|xm] := ltP m x.
-        by rewrite fine_le// ?f_fin_num//; apply: ereal_sup_ub; exists x.
+        by rewrite fine_le// ?f_fin_num//; apply: ereal_sup_ubound; exists x.
       rewrite fine_le// ?f_fin_num//; first exact/xB.
-      by apply: ereal_sup_ub; exists m.
+      by apply: ereal_sup_ubound; exists m.
     - by exists (g 0%R), 0%R.
   rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split.
     apply: le_ereal_sup => _ /= [_ [m _] <-] <-.
@@ -445,10 +445,10 @@ have <- : sup (range g) = fine l.
   apply: ub_ereal_sup => /= _ [m _] <-.
   have [mx|xm] := ltP m x.
     rewrite (le_trans (ndf _ _ (ltW mx)))//.
-    apply: ereal_sup_ub => /=; exists (fine (f x)); last first.
+    apply: ereal_sup_ubound => /=; exists (fine (f x)); last first.
       by rewrite fineK// f_fin_num.
     by exists m => //; rewrite /g mx.
-  apply: ereal_sup_ub => /=; exists (fine (f m)) => //.
+  apply: ereal_sup_ubound => /=; exists (fine (f m)) => //.
     by exists m => //; rewrite /g ltNge xm.
   by rewrite fineK ?f_fin_num//; exact: xB.
 suff: g x @[x --> +oo%R] --> sup (range g).
@@ -464,7 +464,7 @@ apply: nondecreasing_cvgr.
     * by apply: xB; rewrite (le_trans xm).
     * exact/ndf.
 - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
-  rewrite -lee_fin (fineK l_fin_num); apply: ereal_sup_ub.
+  rewrite -lee_fin (fineK l_fin_num); apply: ereal_sup_ubound.
   have [_|xm] := ltP m x; first by rewrite fineK// ?f_fin_num//; eexists.
   by rewrite fineK// ?f_fin_num//; [exists m|exact/xB].
 Unshelve. all: by end_near. Qed.
@@ -551,15 +551,15 @@ have <- : inf [set g x | x in [set` Interval (BRight a) b]] = fine l.
     - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
       case: ifPn => [/andP[am mx]|].
         rewrite fine_le// ?f_fin_num//; first by rewrite axA// am (ltW mx).
-        apply: ereal_inf_lb; exists m => //=.
+        apply: ereal_inf_lbound; exists m => //=.
         rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O am/=.
         by rewrite (le_lt_trans _ xb) ?ltW.
       rewrite negb_and -!leNgt => /orP[ma|xm].
         rewrite fine_le// ?f_fin_num ?inE//.
-        apply: ereal_inf_lb; exists x => //=.
+        apply: ereal_inf_lbound; exists x => //=.
         by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
       rewrite fine_le// ?f_fin_num ?inE//.
-      apply: ereal_inf_lb; exists x => //=.
+      apply: ereal_inf_lbound; exists x => //=.
       by rewrite in_itv/= -[X in _ && X]/(BLeft x < b)%O ax xb.
     - rewrite {}/l in lnoo lpoo l_fin_num *.
       rewrite {}/S in Snoo lnoo lpoo l_fin_num *.
@@ -588,12 +588,12 @@ have <- : inf [set g x | x in [set` Interval (BRight a) b]] = fine l.
   apply: lb_ereal_inf => /= y [m] /=.
   rewrite in_itv/= -[X in _ && X]/(BLeft m < b)%O => /andP[am mb] <-{y}.
   have [mx|xm] := ltP m x.
-    apply: ereal_inf_lb => /=; exists (fine (f m)); last first.
+    apply: ereal_inf_lbound => /=; exists (fine (f m)); last first.
       by rewrite fineK// f_fin_num// axA// am (ltW mx).
     by exists m; [rewrite in_itv/= am|rewrite /g am mx].
   rewrite (@le_trans _ _ (f x))//; last first.
     by apply: ndf => //; rewrite in_itv//= ?ax ?am.
-  apply: ereal_inf_lb => /=; exists (fine (f x)); last first.
+  apply: ereal_inf_lbound => /=; exists (fine (f x)); last first.
     by rewrite fineK// f_fin_num ?inE.
   by exists x; [rewrite in_itv/= ax|rewrite /g ltxx andbF].
 suff: g x @[x --> a^'+] --> inf [set g x | x in [set` Interval (BRight a) b]].
@@ -627,7 +627,7 @@ apply: nondecreasing_at_right_cvgr => //.
   rewrite negb_and -!leNgt => /orP[|xm]; first by rewrite leNgt am.
   by rewrite (lt_le_trans am mn)/= ltNge (le_trans xm mn).
 - exists (fine l) => /= _ [m _ <-]; rewrite /g /=.
-  rewrite -lee_fin (fineK l_fin_num); apply: ereal_inf_lb.
+  rewrite -lee_fin (fineK l_fin_num); apply: ereal_inf_lbound.
   case: ifPn => [/andP[am mn0]|].
     rewrite fineK//; last by rewrite f_fin_num// axA// am (ltW mn0).
     exists m => //=.
@@ -693,7 +693,7 @@ Let sup_ball f a r := ereal_sup [set f x | x in ball a r `\ a].
 Let sup_ball_le f a r s : (r <= s)%R -> sup_ball f a r <= sup_ball f a s.
 Proof.
 move=> rs; apply: ub_ereal_sup => /= _ /= [t [rt ta] <-].
-by apply: ereal_sup_ub => /=; exists t => //; split => //; exact: le_ball rt.
+by apply: ereal_sup_ubound => /=; exists t => //; split => //; exact: le_ball rt.
 Qed.
 
 Let sup_ball_is_cvg f a : cvg (sup_ball f a e @[e --> 0^'+]).
@@ -726,13 +726,13 @@ move=> [e/= e0 fg].
 near=> r; apply: ub_ereal_sup => /= _ [s [pas /= /eqP ps]] <-.
 rewrite (@le_trans _ _ (g s))//.
   by rewrite (fg r)//= sub0r normrN gtr0_norm.
-by apply: ereal_sup_ub => /=; exists s => //; split => //; exact/eqP.
+by apply: ereal_sup_ubound => /=; exists s => //; split => //; exact/eqP.
 Unshelve. all: by end_near. Qed.
 
 Lemma lime_sup_lim f a : lime_sup f a = lim (sup_ball f a e @[e --> 0^'+]).
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: lime_ge => //; near=> e; apply: ereal_inf_lb => /=.
+  apply: lime_ge => //; near=> e; apply: ereal_inf_lbound => /=.
   by exists (ball a e `\ a) => //=; exact: dnbhs_ball.
 apply: lb_ereal_inf => /= _ [A [r /= r0 arA] <-].
 apply: lime_le => //; near=> e.
@@ -792,7 +792,7 @@ apply: lee_lim => //.
 - apply: nondecreasing_at_right_is_cvge; near=> e => x y; rewrite !in_itv/=.
   by move=> /andP[? ?] /andP[? ?] xy; apply: leeD => //; exact: sup_ball_le.
 - near=> a0; apply: ub_ereal_sup => _ /= [a1 [a1ae a1a]] <-.
-  by apply: leeD; apply: ereal_sup_ub => /=; exists a1.
+  by apply: leeD; apply: ereal_sup_ubound => /=; exists a1.
 Unshelve. all: by end_near. Qed.
 
 Lemma lime_sup_le f g a :
@@ -811,7 +811,7 @@ have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2)%R.
     rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
     by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
   by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
-by exists (f (a + r / 2)) => //=; rewrite inf_ballE ereal_inf_lb.
+by exists (f (a + r / 2)) => //=; rewrite inf_ballE ereal_inf_lbound.
 Unshelve. all: by end_near. Qed.
 
 Local Lemma lim_lime_sup' f a l :
@@ -893,13 +893,13 @@ have H (e : {posnum R}) :
   rewrite negb_and => /orP[|].
     rewrite -ltNge => farl.
     have : ereal_inf [set sup_ball f a r | r in `]0%R, +oo[] < l%:E.
-      rewrite (le_lt_trans _ farl)//; apply: ereal_inf_lb => /=; exists r => //.
+      rewrite (le_lt_trans _ farl)//; apply: ereal_inf_lbound => /=; exists r => //.
       by rewrite in_itv/= r0.
     by rewrite fal ltxx.
   by rewrite -leNgt; apply: le_trans; rewrite leeD2r// fal.
 move=> e; have [d /andP[lfp fpe]] := H e.
 exists d => r /= [] prd rp.
-by rewrite (le_lt_trans _ fpe)//; apply: ereal_sup_ub => /=; exists r.
+by rewrite (le_lt_trans _ fpe)//; apply: ereal_sup_ubound => /=; exists r.
 Qed.
 
 Local Lemma lime_infP f a l :
@@ -950,7 +950,7 @@ rewrite /= ler_distlC; apply/andP; split.
   rewrite (@le_trans _ _ (ereal_inf [set f x | x in ball a d `\ a]))//.
     apply: le_ereal_inf => _/= [r [adr ra] <-]; exists r => //; split => //.
     by rewrite /ball/= (lt_le_trans adr)// /d ge_min lexx.
-  apply: ereal_inf_lb => /=; exists (u n).
+  apply: ereal_inf_lbound => /=; exists (u n).
     split; last by apply/eqP; rewrite eq_sym lt_eqF.
     by apply: ucvg => //=; near: n; exists m.
   by rewrite fineK//; by near: n.
@@ -958,7 +958,7 @@ rewrite -lee_fin EFinD (le_trans _ Hd2)//.
 rewrite (@le_trans _ _ (ereal_sup [set f x | x in ball a d `\ a]))//; last first.
   apply: le_ereal_sup => z/= [r [adr rp] <-{z}]; exists r => //; split => //.
   by rewrite /ball/= (lt_le_trans adr)// /d ge_min lexx orbT.
-apply: ereal_sup_ub => /=; exists (u n).
+apply: ereal_sup_ubound => /=; exists (u n).
   split; last by apply/eqP; rewrite eq_sym lt_eqF.
   by apply: ucvg => //=; near: n; exists m.
 by rewrite fineK//; near: n.
@@ -2087,7 +2087,7 @@ Lemma total_variation_ge a b f : a <= b -> (`|f b - f a|%:E <= TV a b f)%E.
 Proof.
 rewrite le_eqVlt => /predU1P[<-{b}|ab].
   by rewrite total_variationxx subrr normr0.
-apply: ereal_sup_ub => /=; exists (variation a b f [:: b]).
+apply: ereal_sup_ubound => /=; exists (variation a b f [:: b]).
   exact/variations_variation/itv_partition1.
 by rewrite /variation/= big_nat_recr//= big_nil add0r.
 Qed.
@@ -2207,7 +2207,7 @@ rewrite [x in (_ + x)%E]ereal_sup_EFin //; last exact: variations_neq0.
 rewrite -EFinD -sup_sumE /has_sup; [|(by split => //; exact: variations_neq0)..].
 apply: ub_ereal_sup => ? [? [l pacl <- <-]]; rewrite lee_fin.
 apply: (le_trans (variation_itv_partitionLR _ ac _ _)) => //.
-apply: sup_ub => /=.
+apply: sup_ubound => /=.
   case: bdAB => M ubdM; case: bdAC => N ubdN; exists (N + M).
   move=> q [?] [i pabi <-] [? [j pbcj <-]] <-.
   by apply: lerD; [apply: ubdN;exists i|apply:ubdM;exists j].
@@ -2361,7 +2361,7 @@ move/lt_trans; apply.
 rewrite [in ltRHS](splitr (eps%:num)) EFinD lteD2rE// -addeA.
 apply: (@le_lt_trans _ _ (variation x t f (t :: nil))%:E).
   rewrite [in leRHS]variation_prev; last exact: itv_partition1.
-  rewrite geeDl// sube_le0; apply: ereal_sup_ub => /=.
+  rewrite geeDl// sube_le0; apply: ereal_sup_ubound => /=.
   exists (variation t b f (i :: j)) => //; apply: variations_variation.
   by rewrite /itv_partition/= ijb ij ti.
 by rewrite /variation/= big_nat_recr//= big_nil add0r distrC lte_fin.

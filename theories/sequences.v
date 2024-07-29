@@ -1539,21 +1539,21 @@ have <- : sup (range v_) = fine l.
   apply: EFin_inj; rewrite -ereal_sup_EFin//; last 2 first.
     - exists (fine l) => /= _ [m _ <-]; rewrite /v_ /= fine_le//.
         by rewrite u_fin_num// leq_addl.
-      by apply: ereal_sup_ub; exists (m + N)%N.
+      by apply: ereal_sup_ubound; exists (m + N)%N.
     - by exists (v_ 0%N), 0%N.
   rewrite fineK//; apply/eqP; rewrite eq_le; apply/andP; split.
     apply: le_ereal_sup => _ /= [_ [m _] <-] <-.
     by exists (m + N)%N => //; rewrite /v_/= fineK// u_fin_num// leq_addl.
   apply: ub_ereal_sup => /= _ [m _] <-.
   rewrite (@le_trans _ _ (u_ (m + N)%N))//; first by rewrite nd_u_// leq_addr.
-  apply: ereal_sup_ub => /=; exists (fine (u_ (m + N)%N)); first by exists m.
+  apply: ereal_sup_ubound => /=; exists (fine (u_ (m + N))); first by exists m.
   by rewrite fineK// u_fin_num// leq_addl.
 apply: nondecreasing_cvgn.
 - move=> m n mn /=; rewrite /v_ /= fine_le ?u_fin_num ?leq_addl//.
   by rewrite nd_u_// leq_add2r.
 - exists (fine l) => /= _ [m _ <-]; rewrite /v_ /= fine_le//.
     by rewrite u_fin_num// leq_addl.
-  by apply: ereal_sup_ub; exists (m + N)%N.
+  by apply: ereal_sup_ubound; exists (m + N).
 Unshelve. all: by end_near. Qed.
 
 Lemma ereal_nondecreasing_is_cvgn (R : realType) (u_ : (\bar R) ^nat) :
@@ -1654,7 +1654,7 @@ Lemma nneseries_lim_ge (R : realType) (u_ : (\bar R)^nat) (P : pred nat) k :
   \sum_(0 <= i < k | P i) u_ i <= \sum_(i <oo | P i) u_ i.
 Proof.
 move/ereal_nondecreasing_series/ereal_nondecreasing_cvgn/cvg_lim => -> //.
-by apply: ereal_sup_ub; exists k.
+by apply: ereal_sup_ubound; exists k.
 Qed.
 
 Lemma eseries_pinfty (R : realFieldType) (u_ : (\bar R)^nat)
@@ -2289,7 +2289,7 @@ apply: nonincreasing_is_cvgn.
   exact/nonincreasing_sups/bounded_fun_has_ubound/cvg_seq_bounded.
 exists (- (M + 1)) => _ [n _ <-]; rewrite (@le_trans _ _ (u n)) //.
   by apply/lerNnormlW/Mu => //; rewrite ltrDl.
-apply: sup_ub; last by exists n => /=.
+apply: sup_ubound; last by exists n => /=.
 exact/has_ubound_sdrop/bounded_fun_has_ubound/cvg_seq_bounded.
 Qed.
 
@@ -2302,7 +2302,7 @@ Lemma infs_le_sups u n : cvgn u -> infs u n <= sups u n.
 Proof.
 move=> cu; rewrite /infs /sups /=; set A := sdrop _ _.
 have [a Aa] : A !=set0 by exists (u n); rewrite /A /=; exists n => //=.
-rewrite (@le_trans _ _ a) //; [apply/inf_lb|apply/sup_ub] => //.
+rewrite (@le_trans _ _ a) //; [apply/inf_lbound|apply/sup_ubound] => //.
 - exact/has_lbound_sdrop/bounded_fun_has_lbound/cvg_seq_bounded.
 - exact/has_ubound_sdrop/bounded_fun_has_ubound/cvg_seq_bounded.
 Qed.
@@ -2313,7 +2313,7 @@ Proof.
 move=> u_ub u_lb; apply: nonincreasing_cvgn; first exact: nonincreasing_sups.
 case: u_lb => M uM; exists M => _ [n _ <-].
 rewrite (@le_trans _ _ (u n)) //; first by apply: uM; exists n.
-by apply: sup_ub; [exact/has_ubound_sdrop|exists n => /=].
+by apply: sup_ubound; [exact/has_ubound_sdrop|exists n => /=].
 Qed.
 
 Lemma cvg_infs_sup u : has_ubound (range u) -> has_lbound (range u) ->
@@ -2342,7 +2342,7 @@ move=> f_ub; rewrite predeqE => t; split.
   by rewrite /= in_itv /= rfmt.
 - move=> [Dt [k /= nk]]; rewrite in_itv /= andbT => rfkt.
   split=> //; rewrite /= in_itv /= andbT; apply: (lt_le_trans rfkt).
-  by apply: sup_ub; [exact/has_ubound_sdrop/f_ub|by exists k].
+  by apply: sup_ubound; [exact/has_ubound_sdrop/f_ub|by exists k].
 Qed.
 
 Lemma infs_preimage T (D : set T) r (f : (T -> R)^nat) n :
@@ -2357,7 +2357,7 @@ move=> lb_f; rewrite predeqE => t; split.
   by move=>  /(inf_lt h)[_ [m /= nm <-]] fmtr; split => //; exists m.
 - move=> [Dt [k /= nk]]; rewrite /= in_itv /= => fktr.
   rewrite in_itv /=; split => //; apply: le_lt_trans fktr.
-  by apply/inf_lb => //; [exact/has_lbound_sdrop/lb_f|by exists k].
+  by apply/inf_lbound => //; [exact/has_lbound_sdrop/lb_f|by exists k].
 Qed.
 
 Lemma bounded_fun_has_lbound_sups u :
@@ -2366,7 +2366,7 @@ Proof.
 move=> /[dup] ba /bounded_fun_has_lbound/has_lbound_sdrop h.
 have [M hM] := h O; exists M => y [n _ <-].
 rewrite (@le_trans _ _ (u n)) //; first by apply: hM; exists n.
-apply: sup_ub; last by exists n => /=.
+apply: sup_ubound; last by exists n => /=.
 by move: ba => /bounded_fun_has_ubound/has_ubound_sdrop; exact.
 Qed.
 
@@ -2376,7 +2376,7 @@ Proof.
 move=> /[dup] ba /bounded_fun_has_ubound/has_ubound_sdrop h.
 have [M hM] := h O; exists M => y [n _ <-].
 rewrite (@le_trans _ _ (u n)) //; last by apply: hM; exists n.
-apply: inf_lb; last by exists n => /=.
+apply: inf_lbound; last by exists n => /=.
 by move: ba => /bounded_fun_has_lbound/has_lbound_sdrop; exact.
 Qed.
 
@@ -2473,7 +2473,7 @@ Lemma le_limn_supD u v : bounded_fun u -> bounded_fun v ->
 Proof.
 move=> ba bb; have ab k : sups (u \+ v) k <= sups u k + sups v k.
   apply: sup_le_ub; first by exists ((u \+ v) k); exists k => /=.
-  by move=> M [n /= kn <-]; apply: lerD; apply: sup_ub; [
+  by move=> M [n /= kn <-]; apply: lerD; apply: sup_ubound; [
     exact/has_ubound_sdrop/bounded_fun_has_ubound; exact | exists n |
     exact/has_ubound_sdrop/bounded_fun_has_ubound; exact | exists n ].
 have cu : cvgn (sups u).
@@ -2495,7 +2495,7 @@ Lemma le_limn_infD u v : bounded_fun u -> bounded_fun v ->
 Proof.
 move=> ba bb; have ab k : infs u k + infs v k <= infs (u \+ v) k.
   apply: lb_le_inf; first by exists ((u \+ v) k); exists k => /=.
-  by move=> M [n /= kn <-]; apply: lerD; apply: inf_lb; [
+  by move=> M [n /= kn <-]; apply: lerD; apply: inf_lbound; [
     exact/has_lbound_sdrop/bounded_fun_has_lbound; exact | exists n |
     exact/has_lbound_sdrop/bounded_fun_has_lbound; exact | exists n ].
 have cu : cvgn (infs u).
@@ -2598,7 +2598,7 @@ Lemma einfs_le_esups u n : einfs u n <= esups u n.
 Proof.
 rewrite /einfs /=; set A := sdrop _ _; have [a Aa] : A !=set0.
   by exists (u n); rewrite /A /=; exists n => //=.
-by rewrite (@le_trans _ _ a) //; [exact/ereal_inf_lb|exact/ereal_sup_ub].
+by rewrite (@le_trans _ _ a)//; [exact/ereal_inf_lbound|exact/ereal_sup_ubound].
 Unshelve. all: by end_near. Qed.
 
 Lemma cvg_esups_inf u : esups u @ \oo --> ereal_inf (range (esups u)).
@@ -2621,7 +2621,7 @@ rewrite predeqE => t; split => /=.
   rewrite /= in_itv /= andbT=> /ereal_sup_gt[_ [/= k nk <-]] afnt.
   by exists k => //=; rewrite in_itv /= afnt.
 move=> -[k /= nk] /=; rewrite in_itv /= andbT => /lt_le_trans afkt.
-by rewrite in_itv andbT/=; apply/afkt/ereal_sup_ub; exists k.
+by rewrite in_itv andbT/=; apply/afkt/ereal_sup_ubound; exists k.
 Qed.
 
 Lemma einfs_preimage T (a : \bar R) (f : (T -> \bar R)^nat) n :
@@ -2630,7 +2630,7 @@ Lemma einfs_preimage T (a : \bar R) (f : (T -> \bar R)^nat) n :
 Proof.
 rewrite predeqE => t; split => /= [|h].
   rewrite in_itv andbT /= => h k nk /=.
-  by rewrite /= in_itv/= (le_trans h)//; apply: ereal_inf_lb; exists k.
+  by rewrite /= in_itv/= (le_trans h)//; apply: ereal_inf_lbound; exists k.
 rewrite /= in_itv /= andbT leNgt; apply/negP.
 move=> /ereal_inf_lt[_ /= [k nk <-]]; apply/negP.
 by have := h _ nk; rewrite /= in_itv /= andbT -leNgt.
@@ -2651,7 +2651,7 @@ Lemma limn_esup_lim u : limn_esup u = limn (esups u).
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
   apply: lime_ge; first exact: is_cvg_esups.
-  near=> m; apply: ereal_inf_lb => /=.
+  near=> m; apply: ereal_inf_lbound => /=.
   by exists [set k | (m <= k)%N] => //=; exists m.
 apply: lb_ereal_inf => /= _ [A [r /= r0 rA] <-].
 apply: lime_le; first exact: is_cvg_esups.
@@ -2686,17 +2686,17 @@ suff : einfs (fun n => l + u n) = (fun n => l + einfs u n) by move=> ->.
 rewrite funeqE => n.
 apply/eqP; rewrite eq_le; apply/andP; split.
 - rewrite addeC -leeBlDr//; apply: lb_ereal_inf => /= _ [m /= mn] <-.
-  rewrite leeBlDr//; apply: ereal_inf_lb.
+  rewrite leeBlDr//; apply: ereal_inf_lbound.
   by exists m => //; rewrite addeC.
 - apply: lb_ereal_inf => /= _ [m /= mn] <-.
-  by rewrite leeD2l//; apply: ereal_inf_lb; exists m => /=.
+  by rewrite leeD2l//; apply: ereal_inf_lbound; exists m => /=.
 Qed.
 
 Lemma limn_esup_le_cvg u l : limn_esup u <= l -> (forall n, l <= u n) ->
   u @ \oo --> l.
 Proof.
 move=> supul ul; have usupu n : l <= u n <= esups u n.
-  by rewrite ul /=; apply/ereal_sup_ub; exists n => /=.
+  by rewrite ul /=; apply/ereal_sup_ubound; exists n => /=.
 suff : esups u @ \oo --> l.
   by apply: (@squeeze_cvge _ _ _ _ (cst l)) => //; [exact: nearW|exact: cvg_cst].
 apply/cvg_closeP; split; first exact: is_cvg_esups.

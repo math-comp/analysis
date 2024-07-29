@@ -4464,7 +4464,7 @@ Unshelve. all: by end_near. Qed.
 Lemma mu_ext0 : mu^* set0 = 0.
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split; last exact/mu_ext_ge0.
-rewrite /mu_ext; apply: ereal_inf_lb; exists (fun=> set0); first by split.
+rewrite /mu_ext; apply: ereal_inf_lbound; exists (fun=> set0); first by split.
 by apply: lim_near_cst => //; near=> n => /=; rewrite big1.
 Unshelve. all: by end_near. Qed.
 
@@ -4494,7 +4494,7 @@ have [G PG] : {G : ((set T)^nat)^nat & forall n, P n (G n)}.
     by move=> /= _ [B [mB AnB] <-]; exact: nneseries_ge0.
 have muG_ge0 x : 0 <= (mu \o uncurry G) x by exact: measure_ge0.
 apply: (@le_trans _ _ (\esum_(i in setT) (mu \o uncurry G) i)).
-  rewrite /mu_ext; apply: ereal_inf_lb => /=.
+  rewrite /mu_ext; apply: ereal_inf_lbound => /=.
   have /card_esym/ppcard_eqP[f] := card_nat2.
   exists (uncurry G \o f).
     split => [i|]; first exact/measurable_uncurry/(PG (f i).1).1.1.
@@ -4655,7 +4655,7 @@ Lemma measurable_mu_extE d (R : realType) (T : semiRingOfSetsType d)
   measurable X -> mu^* X = mu X.
 Proof.
 move=> mX; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: ereal_inf_lb; exists (fun n => if n is 0%N then X else set0).
+  apply: ereal_inf_lbound; exists (fun n => if n is 0%N then X else set0).
     by split=> [[]// _|t Xt]; exists 0%N.
   apply/cvg_lim => //; rewrite -cvg_shiftS.
   rewrite (_ : [sequence _]_n = cst (mu X)); first exact: cvg_cst.
@@ -4678,8 +4678,8 @@ Lemma Rmu_ext d (R : realType) (T : semiRingOfSetsType d)
   (measure mu)^* = mu^*.
 Proof.
 apply/funeqP => /= X; rewrite /mu_ext/=; apply/eqP; rewrite eq_le.
-rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lb//; last first.
-  exists F; first by split=> // i; apply: sub_gen_smallest.
+rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lbound//; last first.
+  exists F; first by split=> // i; exact: sub_gen_smallest.
   by rewrite (eq_eseriesr (fun _ _ => RmuE _ (Fm _))).
 pose K := [set: nat] `*`` fun i => decomp (F i).
 have /ppcard_eqP[f] : (K #= [set: nat])%card.

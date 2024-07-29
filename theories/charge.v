@@ -630,7 +630,7 @@ Let subDD A := [set nu E | E in [set E | measurable E /\ E `<=` D `\` A] ].
 Let d_ A := ereal_sup (subDD A).
 
 Let d_ge0 X : 0 <= d_ X.
-Proof. by apply: ereal_sup_ub => /=; exists set0; rewrite ?charge0. Qed.
+Proof. by apply: ereal_sup_ubound => /=; exists set0; rewrite ?charge0. Qed.
 
 Let elt_rel i j :=
   [/\ g_ j = d_ (U_ i),  A_ j `<=` D `\` U_ i & U_ j = U_ i `|` A_ j ].
@@ -714,7 +714,7 @@ have EH n : [set nu E] `<=` H n.
   by apply: (subset_trans FDAoo); apply: setDS; exact: bigsetU_bigcup.
 have nudelta n : nu E <= g_ (v n).
   move: n => [|n].
-    rewrite v0/=; apply: ereal_sup_ub => /=; exists E; split => //.
+    rewrite v0/=; apply: ereal_sup_ubound => /=; exists E; split => //.
     by apply: (subset_trans EDAoo); exact: setDS.
   suff : nu E <= d_ (U_ (v n)) by have [<- _] := Pv n.
   have /le_ereal_sup := EH n.+1; rewrite ereal_sup1 => /le_trans; apply.
@@ -763,7 +763,7 @@ Let s_ A := ereal_inf (subC A).
 
 Let s_le0 X : s_ X <= 0.
 Proof.
-by apply: ereal_inf_lb => /=; exists set0; rewrite ?charge0//=; split.
+by apply: ereal_inf_lbound => /=; exists set0; rewrite ?charge0//=; split.
 Qed.
 
 Let elt_rel i j :=
@@ -813,8 +813,9 @@ exists P, N; split; [|exact: neg_set_N|by rewrite /P setvU|by rewrite /P setICl]
 split=> // D mD DP; rewrite leNgt; apply/negP => nuD0.
 have znuD n : z_ (v n) <= nu D.
   move: n => [|n].
-    by rewrite v0 /=; apply: ereal_inf_lb; exists D; split => //; rewrite setC0.
-  have [-> _ _] := Pv n; apply: ereal_inf_lb => /=; exists D; split => //.
+    rewrite v0 /=; apply: ereal_inf_lbound; exists D; split => //.
+    by rewrite setC0.
+  have [-> _ _] := Pv n; apply: ereal_inf_lbound => /=; exists D; split => //.
   apply: (subset_trans DP); apply: subsetC; rewrite Ubig.
   exact: bigsetU_bigcup.
 have max_le0 n : maxe (z_ (v n) * 2^-1%:E) (- 1%E) <= 0.
@@ -1277,7 +1278,7 @@ Let M_g_F m : M - m.+1%:R^-1%:E < \int[mu]_x g m x /\
 Proof.
 split; first by have [] := approxRN_seq_prop mu nu m.
 apply/andP; split; last first.
-  by apply: ereal_sup_ub; exists (F m)  => //; have := F_G m; rewrite inE.
+  by apply: ereal_sup_ubound; exists (F m)  => //; have := F_G m; rewrite inE.
 apply: ge0_le_integral => //.
 - by move=> x _; exact: approxRN_seq_ge0.
 - exact: measurable_approxRN_seq.
