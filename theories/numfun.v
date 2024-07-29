@@ -310,6 +310,14 @@ rewrite (fsbigD1 (f x))// /= indicE mem_set// mulr1 fsbig1 ?addr0//.
 by move=> y [fy /= /nesym yfx]; rewrite indicE memNset ?mulr0.
 Qed.
 
+Lemma fimfunEord (f : {fimfun T >-> R})
+    (s := fset_set (f @` setT)) :
+  forall x, f x = \sum_(i < #|`s|) (s`_i * \1_(f @^-1` [set s`_i]) x).
+Proof.
+move=> x; rewrite fimfunE fsbig_finite//= (big_nth 0)/= big_mkord.
+exact: eq_bigr.
+Qed.
+
 End indic_lemmas.
 
 Lemma patch_indic T {R : numFieldType} (f : T -> R) (D : set T) :
@@ -368,20 +376,23 @@ Context (aT : pointedType) (rT : ringType).
 Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT).
 Proof.
 split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
-by move=> fA gA; apply: (finite_image11 (fun x y => x * y)).
+by move=> fA gA; exact: (finite_image11 (fun x y => x * y)).
 Qed.
 
 HB.instance Definition _ :=
    @GRing.isMulClosed.Build _ (@fimfun aT rT) fimfun_mulr_closed.
 HB.instance Definition _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
 
-Implicit Types (f g : {fimfun aT >-> rT}).
+Implicit Types f g : {fimfun aT >-> rT}.
 
 Lemma fimfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
+
 Lemma fimfun1 : (1 : {fimfun aT >-> rT}) = cst 1 :> (_ -> _). Proof. by []. Qed.
+
 Lemma fimfun_prod I r (P : {pred I}) (f : I -> {fimfun aT >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+
 Lemma fimfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
 Proof.
 by apply/funext => x; elim: n => [|n IHn]//; rewrite !exprS fimfunM/= IHn.
@@ -392,10 +403,13 @@ Proof.
 split; apply: (finite_subfset [fset 0; 1]%fset) => x [tt /=].
 by rewrite !inE indicE; case: (_ \in _) => _ <-; rewrite ?eqxx ?orbT.
 Qed.
+
 HB.instance Definition _ X := indic_fimfun_subproof X.
+
 Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
 
 HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
+
 Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
 
 End ring.
@@ -421,6 +435,12 @@ HB.builders Context T R f of @FiniteDecomp T R f.
   Qed.
   HB.instance Definition _ := finite_subproof.
 HB.end.
+
+Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) (D : set T1)
+    (f : {fimfun T1 >-> T2}) (g : T2 -> T3) :
+  fset_set [set (g \o f) x | x in D] =
+  [fset g x | x in fset_set [set f x | x in D]]%fset.
+Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
 
 Section Tietze.
 Context {X : topologicalType} {R : realType}.

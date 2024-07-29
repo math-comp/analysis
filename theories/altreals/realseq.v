@@ -396,8 +396,8 @@ Lemma ncvg_lt (u : nat -> R) (l1 l2 : \bar R) :
     exists K, forall n, (K <= n)%N -> ((u n)%:E < l2)%E.
 Proof.
 move=> lt_12 cv_u_l1; case: (@ncvg_gt (- u) (-l2) (-l1)).
-  by rewrite lte_opp2. by apply/ncvgN.
-by move=> K cv; exists K => n /cv; rewrite (@lte_opp2 _ _ (u n)%:E).
+  by rewrite lteN2. by apply/ncvgN.
+by move=> K cv; exists K => n /cv; rewrite (lteN2 _ (u n)%:E).
 Qed.
 
 Lemma ncvg_homo_lt (u : nat -> R) (l1 l2 : \bar R) :
