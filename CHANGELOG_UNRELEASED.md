@@ -43,6 +43,9 @@
   + lemmas `lteD2rE`, `leeD2rE`
   + lemmas `lte_dD2rE`, `lee_dD2rE`
 
+- in `mathcomp_extra.v`:
+  + lemma `invf_ltp`
+
 ### Changed
 
 - in `topology.v`:
