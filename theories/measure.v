@@ -191,6 +191,8 @@ From HB Require Import structures.
 (*     setSD_closed G == the set of sets G is closed under proper             *)
 (*                       difference                                           *)
 (*     setDI_closed G == the set of sets G is closed under difference         *)
+(*      setX_closed G == the set of sets G is closed under symmetric          *)
+(*                       difference                                           *)
 (*     ndseq_closed G == the set of sets G is closed under non-decreasing     *)
 (*                       countable union                                      *)
 (*     niseq_closed G == the set of sets G is closed under non-increasing     *)
@@ -356,6 +358,7 @@ Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
 Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
 Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
+Definition setX_closed := forall A B, G A -> G B -> G (A `^` B).
 
 Definition fin_bigcap_closed :=
     forall I (D : set I) A_, finite_set D -> (forall i, D i -> G (A_ i)) ->
@@ -1166,6 +1169,38 @@ HB.instance Definition _ := SemiRingOfSets_isRingOfSets.Build d T measurableU.
 
 HB.end.
 
+HB.factory Record isRingOfSets_setX (d : measure_display) T
+    of Pointed T := {
+  measurable : set (set T) ;
+  measurable_nonempty : measurable !=set0 ;
+  measurable_setX : setX_closed measurable ;
+  measurable_setI : setI_closed measurable }.
+
+HB.builders Context d T of isRingOfSets_setX d T.
+
+Let m0 : measurable set0.
+Proof.
+have [A mA] := measurable_nonempty.
+have := measurable_setX mA mA.
+by rewrite setXK.
+Qed.
+
+Let mU : setU_closed measurable.
+Proof.
+move=> A B mA mB; rewrite -setXU.
+by apply: measurable_setX; [exact: measurable_setX|exact: measurable_setI].
+Qed.
+
+Let mD : setDI_closed measurable.
+Proof.
+move=> A B mA mB; rewrite -setXD.
+by apply: measurable_setX => //; exact: measurable_setI.
+Qed.
+
+HB.instance Definition _ := isRingOfSets.Build d T m0 mU mD.
+
+HB.end.
+
 HB.factory Record isAlgebraOfSets (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
@@ -1186,6 +1221,30 @@ HB.instance Definition T_isRingOfSets := @isRingOfSets.Build d T
 
 Lemma measurableT : measurable [set: T].
 Proof. by rewrite -setC0; apply: measurableC; exact: measurable0. Qed.
+
+HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
+
+HB.end.
+
+HB.factory Record isAlgebraOfSets_setD (d : measure_display) T of Pointed T := {
+  measurable : set (set T) ;
+  measurableT : measurable [set: T] ;
+  measurableD : setDI_closed measurable
+}.
+
+HB.builders Context d T of isAlgebraOfSets_setD d T.
+
+Let m0 : measurable set0.
+Proof. by rewrite -(setDT setT); apply: measurableD; exact: measurableT. Qed.
+
+Let mU : setU_closed measurable.
+Proof.
+move=> A B mA mB.
+rewrite -(setCK A) -setCD -!setTD; apply: measurableD; first exact: measurableT.
+by do 2 apply: measurableD => //; exact: measurableT.
+Qed.
+
+HB.instance Definition _ := isRingOfSets.Build d T m0 mU measurableD.
 
 HB.instance Definition _ := RingOfSets_isAlgebraOfSets.Build d T measurableT.
 

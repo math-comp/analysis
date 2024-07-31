@@ -4772,7 +4772,8 @@ HB.instance Definition _ := Uniform_isPseudoMetric.Build R M
 
 HB.end.
 
-Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} : entourage_ (@ball R M) = entourage.
+Lemma entourage_ballE {R : numDomainType} {M : pseudoMetricType R} :
+  entourage_ (@ball R M) = entourage.
 Proof. by rewrite entourageE_subproof. Qed.
 
 Lemma entourage_from_ballE {R : numDomainType} {M : pseudoMetricType R} :
@@ -4791,7 +4792,8 @@ Definition nbhs_ball_ {R : numDomainType} {T T'} (ball : T -> R -> set T')
 Definition nbhs_ball {R : numDomainType} {M : pseudoMetricType R} :=
   nbhs_ball_ (@ball R M).
 
-Lemma nbhs_ballE {R : numDomainType} {M : pseudoMetricType R} : (@nbhs_ball R M) = nbhs.
+Lemma nbhs_ballE {R : numDomainType} {M : pseudoMetricType R} :
+  @nbhs_ball R M = nbhs.
 Proof.
 rewrite predeq2E => x P; rewrite -nbhs_entourageE; split.
   by move=> [_/posnumP[e] sbxeP]; exists [set xy | ball xy.1 e%:num xy.2].
@@ -5360,11 +5362,14 @@ Qed.
 
 Section pseudoMetric_of_normedDomain.
 Context {K : numDomainType} {R : normedZmodType K}.
+
 Lemma ball_norm_center (x : R) (e : K) : 0 < e -> ball_ Num.norm x e x.
 Proof. by move=> ? /=; rewrite subrr normr0. Qed.
+
 Lemma ball_norm_symmetric (x y : R) (e : K) :
   ball_ Num.norm x e y -> ball_ Num.norm y e x.
 Proof. by rewrite /= distrC. Qed.
+
 Lemma ball_norm_triangle (x y z : R) (e1 e2 : K) :
   ball_ Num.norm x e1 y -> ball_ Num.norm y e2 z -> ball_ Num.norm x (e1 + e2) z.
 Proof.
@@ -5380,6 +5385,7 @@ rewrite /nbhs_ entourage_E predeq2E => x A; split.
   by exists [set xy | ball_ Num.norm xy.1 e xy.2] => //; exists e.
 by move=> [E [e egt0 sbeE] sEA]; exists e => // ??; apply/sEA/sbeE.
 Qed.
+
 End pseudoMetric_of_normedDomain.
 
 HB.instance Definition _ (R : zmodType) := Pointed.on R^o.

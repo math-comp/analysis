@@ -6,6 +6,19 @@
 
 - in `topology.v`:
   + lemma `ball_subspace_ball`
+- in `classical_sets.v`:
+  + lemma `setCD`
+
+- in `measure.v`:
+  + factory `isAlgebraOfSets_setD`
+
+- in `classical_sets.v`:
+  + definition `setX`, notation ``` `^` ```
+  + lemmas `setX0`, `set0X`, `setXK`, `setXC`, `setXA`, `setIXl`, `mulrXr`,
+    `setX_def`, `setXE`, `setXU`, `setXI`, `setXD`, `setXCT`, `setCXT`, `setXTC`, `setTXC`
+    
+- in `measure.v`:
+  + factory `isRingOfSets_setX`
 
 - in `classical_sets.v`:
   + lemma `setDU`
