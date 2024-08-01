@@ -4624,14 +4624,14 @@ set C := [set A1 `*` A2 | A1 in measurable & A2 in measurable].
 have CI : setI_closed C.
   move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
   exists (X1 `&` Y1); first exact: measurableI.
-  by exists (X2 `&` Y2); [exact: measurableI|rewrite setMI].
-have CT : C setT by exists setT => //; exists setT => //; rewrite setMTT.
+  by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
+have CT : C setT by exists setT => //; exists setT => //; rewrite setXTT.
 have CB : C `<=` B.
-  move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableM.
+  move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableX.
   have -> : phi (X1 `*` X2) = (fun x => m2D X2 * (\1_X1 x)%:E)%E.
     rewrite funeqE => x; rewrite indicE /phi /m2/= /mrestr.
-    have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_xsectionM.
-    by rewrite mule0 notin_xsectionM// set0I measure0.
+    have [xX1|xX1] := boolP (x \in X1); first by rewrite mule1 in_xsectionX.
+    by rewrite mule0 notin_xsectionX// set0I measure0.
   exact/measurable_funeM/EFin_measurable_fun.
 suff lsystemB : lambda_system setT B by exact: lambda_system_subset.
 split => //; [exact: CB| |exact: xsection_ndseq_closed].
@@ -4665,14 +4665,14 @@ set C := [set A1 `*` A2 | A1 in measurable & A2 in measurable].
 have CI : setI_closed C.
   move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
   exists (X1 `&` Y1); first exact: measurableI.
-  by exists (X2 `&` Y2); [exact: measurableI|rewrite setMI].
-have CT : C setT by exists setT => //; exists setT => //; rewrite setMTT.
+  by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
+have CT : C setT by exists setT => //; exists setT => //; rewrite setXTT.
 have CB : C `<=` B.
-  move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableM.
+  move=> X [X1 mX1 [X2 mX2 <-{X}]]; split; first exact: measurableX.
   have -> : psi (X1 `*` X2) = (fun x => m1D X1 * (\1_X2 x)%:E)%E.
     rewrite funeqE => y; rewrite indicE /psi /m1/= /mrestr.
-    have [yX2|yX2] := boolP (y \in X2); first by rewrite mule1 in_ysectionM.
-    by rewrite mule0 notin_ysectionM// set0I measure0.
+    have [yX2|yX2] := boolP (y \in X2); first by rewrite mule1 in_ysectionX.
+    by rewrite mule0 notin_ysectionX// set0I measure0.
   exact/measurable_funeM/EFin_measurable_fun.
 suff lsystemB : lambda_system setT B by exact: lambda_system_subset.
 split => //; [exact: CB| |exact: ysection_ndseq_closed].
@@ -4704,9 +4704,9 @@ Proof.
 move: A; suff : measurable `<=` B by move=> + A => /[apply] -[].
 have /sigma_finiteP [F [F_T F_nd F_oo]] := sigma_finiteT m2 => X mX.
 have -> : X = \bigcup_n (X `&` (setT `*` F n)).
-  by rewrite -setI_bigcupr -setM_bigcupr -F_T setMTT setIT.
+  by rewrite -setI_bigcupr -setX_bigcupr -F_T setXTT setIT.
 apply: xsection_ndseq_closed.
-  move=> m n mn; apply/subsetPset; apply: setIS; apply: setSM => //.
+  move=> m n mn; apply/subsetPset; apply: setIS; apply: setSX => //.
   exact/subsetPset/F_nd.
 move=> n; rewrite -/B; have [? ?] := F_oo n.
 pose m2Fn := mrestr m2 (F_oo n).1.
@@ -4718,10 +4718,10 @@ have m2Fn_bounded : exists M, forall X, measurable X -> (m2Fn X < M%:E)%E.
 pose phi' A := m2Fn \o xsection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (phi' A)].
 have subset_B' : measurable `<=` B' by exact: measurable_prod_subset_xsection.
-split=> [|_ Y mY]; first by apply: measurableI => //; exact: measurableM.
+split=> [|_ Y mY]; first by apply: measurableI => //; exact: measurableX.
 have [_ /(_ measurableT Y mY)] := subset_B' X mX.
 have ->// : phi' X = m2 \o xsection (X `&` setT `*` F n).
-by apply/funext => x/=; rewrite /phi' setTM xsectionI xsection_preimage_snd.
+by apply/funext => x/=; rewrite /phi' setTX xsectionI xsection_preimage_snd.
 Qed.
 
 End measurable_fun_xsection.
@@ -4739,9 +4739,9 @@ Proof.
 move: A; suff : measurable `<=` B by move=> + A => /[apply] -[].
 have /sigma_finiteP[F [F_T F_nd F_oo]] := sigma_finiteT m1 => X mX.
 have -> : X = \bigcup_n (X `&` (F n `*` setT)).
-  by rewrite -setI_bigcupr -setM_bigcupl -F_T setMTT setIT.
+  by rewrite -setI_bigcupr -setX_bigcupl -F_T setXTT setIT.
 apply: ysection_ndseq_closed.
-  move=> m n mn; apply/subsetPset; apply: setIS; apply: setSM => //.
+  move=> m n mn; apply/subsetPset; apply: setIS; apply: setSX => //.
   exact/subsetPset/F_nd.
 move=> n; have [? ?] := F_oo n; rewrite -/B.
 pose m1Fn := mrestr m1 (F_oo n).1.
@@ -4753,10 +4753,10 @@ have m1Fn_bounded : exists M, forall X, measurable X -> (m1Fn X < M%:E)%E.
 pose psi' A := m1Fn \o ysection A.
 pose B' := [set A | measurable A /\ measurable_fun setT (psi' A)].
 have subset_B' : measurable `<=` B' by exact: measurable_prod_subset_ysection.
-split=> [|_ Y mY]; first by apply: measurableI => //; exact: measurableM.
+split=> [|_ Y mY]; first by apply: measurableI => //; exact: measurableX.
 have [_ /(_ measurableT Y mY)] := subset_B' X mX.
 have ->// : psi' X = m1 \o (ysection (X `&` F n `*` setT)).
-by apply/funext => y/=; rewrite /psi' setMT ysectionI// ysection_preimage_fst.
+by apply/funext => y/=; rewrite /psi' setXT ysectionI// ysection_preimage_fst.
 Qed.
 
 End measurable_fun_ysection.
@@ -4818,7 +4818,7 @@ Proof.
 move=> mA1 mA2 /=; rewrite /product_measure1 /=.
 rewrite (eq_integral (fun x => (\1_A1 x)%:E * m2 A2)); last first.
   by move=> x _; rewrite indicE; have [xA1|xA1] /= := boolP (x \in A1);
-    [rewrite in_xsectionM// mul1e|rewrite mul0e notin_xsectionM].
+    [rewrite in_xsectionX// mul1e|rewrite mul0e notin_xsectionX].
 rewrite ge0_integralZr//; last by move=> x _; rewrite lee_fin.
 - by rewrite integral_indic// setIT.
 - exact: measurableT_comp.
@@ -4837,13 +4837,13 @@ Proof.
 have /sigma_finiteP[F [TF ndF Foo]] := sigma_finiteT m1.
 have /sigma_finiteP[G [TG ndG Goo]] := sigma_finiteT m2.
 exists (fun n => F n `*` G n).
- rewrite -setMTT TF TG predeqE => -[x y]; split.
+ rewrite -setXTT TF TG predeqE => -[x y]; split.
     move=> [/= [n _ Fnx] [k _ Gky]]; exists (maxn n k) => //; split.
     - by move: x Fnx; exact/subsetPset/ndF/leq_maxl.
     - by move: y Gky; exact/subsetPset/ndG/leq_maxr.
   by move=> [n _ []/= ? ?]; split; exists n.
 move=> k; have [? ?] := Foo k; have [? ?] := Goo k.
-split; first exact: measurableM.
+split; first exact: measurableX.
 by rewrite product_measure1E// lte_mul_pinfty// ge0_fin_numE.
 Qed.
 
@@ -4860,7 +4860,7 @@ move=> m'E.
 have /sigma_finiteP[F [TF ndF Foo]] := sigma_finiteT m1.
 have /sigma_finiteP[G [TG ndG Goo]] := sigma_finiteT m2.
 have UFGT : \bigcup_k (F k `*` G k) = setT.
-  rewrite -setMTT TF TG predeqE => -[x y]; split.
+  rewrite -setXTT TF TG predeqE => -[x y]; split.
     by move=> [n _ []/= ? ?]; split; exists n.
   move=> [/= [n _ Fnx] [k _ Gky]]; exists (maxn n k) => //; split.
   - by move: x Fnx; exact/subsetPset/ndF/leq_maxl.
@@ -4869,7 +4869,7 @@ pose C : set (set (T1 * T2)) :=
   [set C | exists A, measurable A /\ exists B, measurable B /\ C = A `*` B].
 have CI : setI_closed C.
   move=> /= _ _ [X1 [mX1 [X2 [mX2 ->]]]] [Y1 [mY1 [Y2 [mY2 ->]]]].
-  rewrite -setMI; exists (X1 `&` Y1); split; first exact: measurableI.
+  rewrite -setXI; exists (X1 `&` Y1); split; first exact: measurableI.
   by exists (X2 `&` Y2); split => //; exact: measurableI.
 move=> X mX; apply: (measure_unique C (fun n => F n `*` G n)) => //.
 - rewrite measurable_prod_measurableType //; congr (<<s _ >>).
@@ -4930,7 +4930,7 @@ Lemma product_measure2E (A1 : set T1) (A2 : set T2)
     (mA1 : measurable A1) (mA2 : measurable A2) :
   (m1 \x^ m2) (A1 `*` A2) = m1 A1 * m2 A2.
 Proof.
-have mA1A2 : measurable (A1 `*` A2) by apply: measurableM.
+have mA1A2 : measurable (A1 `*` A2) by apply: measurableX.
 transitivity (\int[m2]_y (m1 \o ysection (A1 `*` A2)) y) => //.
 rewrite (_ : _ \o _ = fun y => m1 A1 * (\1_A2 y)%:E).
   rewrite ge0_integralZl//.
@@ -4938,8 +4938,8 @@ rewrite (_ : _ \o _ = fun y => m1 A1 * (\1_A2 y)%:E).
   - exact: measurableT_comp.
   - by move=> y _; rewrite lee_fin.
 rewrite funeqE => y; rewrite indicE.
-have [yA2|yA2] := boolP (y \in A2); first by rewrite mule1 /= in_ysectionM.
-by rewrite mule0 /= notin_ysectionM.
+have [yA2|yA2] := boolP (y \in A2); first by rewrite mule1 /= in_ysectionX.
+by rewrite mule0 /= notin_ysectionX.
 Qed.
 
 End product_measure2E.

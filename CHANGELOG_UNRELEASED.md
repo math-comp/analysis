@@ -212,6 +212,48 @@
   + `ereal_inf_lb` -> `ereal_inf_lbound`
   + `ereal_sup_ub` -> `ereal_sup_ubound`
 
+- in `classical_sets.v`:
+  + `setM` -> `setX`
+  + `in_setM` -> `in_setX`
+  + `setMR` -> `setXR`
+  + `setML` -> `setXL`
+  + `setM0` -> `setX0`
+  + `set0M` -> `set0X`
+  + `setMTT` -> `setXTT`
+  + `setMT` -> `setXT`
+  + `setTM` -> `setTX`
+  + `setMI` -> `setXI`
+  + `setM_bigcupr` -> `setX_bigcupr`
+  + `setM_bigcupl` -> `setX_bigcupl`
+  + `bigcup_setM_dep` -> `bigcup_setX_dep`
+  + `bigcup_setM` -> `bigcup_setX`
+  + `fst_setM` -> `fst_setX`
+  + `snd_setM` -> `snd_setX`
+  + `in_xsectionM` -> `in_xsectionX`
+  + `in_ysectionM` -> `in_ysectionX`
+  + `notin_xsectionM` -> `notin_xsectionX`
+  + `notin_ysectionM` -> `notin_ysectionX`
+  + `setSM` -> `setSX`
+  + `bigcupM1l` -> `bigcupX1l`
+  + `bigcupM1r` -> `bigcupX1r`
+
+- in `cardinality.v`:
+  + `countableMR` -> `countableXR`
+  + `countableM` -> `countableX`
+  + `countableML` -> `countableXL`
+  + `infiniteMRl` -> `infiniteXRl`
+  + `cardMR_eq_nat` -> `cardXR_eq_nat`
+  + `finite_setM` -> `finite_setX`
+  + `finite_setMR` -> `finite_setXR`
+  + `finite_setML` -> `finite_setXL`
+  + `fset_setM` -> `fset_setX`
+
+- in `topology.v`:
+  + `compact_setM` -> `compact_setX`
+
+- in `measure.v`:
+  + `measurableM` -> `measurableX`
+
 ### Generalized
 
 - in `constructive_ereal.v`:

@@ -337,7 +337,7 @@ transitivity (\esum_(l in [set: nat] `*` [set: nat]) p l.1 l.2 x U).
   by rewrite kE// nneseries_esum.
 rewrite (reindex_esum [set: nat] _ f)//; last first.
   have := @bijTT _ _ f.
-  by rewrite -setTT_bijective/= -[in X in set_bij _ X _ -> _](@setMTT nat nat).
+  by rewrite -setTT_bijective/= -[in X in set_bij _ X _ -> _](@setXTT nat nat).
 by rewrite nneseries_esum// fun_true; exact: eq_esum.
 Qed.
 
@@ -437,8 +437,8 @@ Let XY := [set A | measurable A /\ measurable_fun [set: X] (phi A)].
 Let phiM (A : set X) B : phi (A `*` B) = (fun x => kD x B * (\1_A x)%:E).
 Proof.
 rewrite funeqE => x; rewrite indicE /phi/=.
-have [xA|xA] := boolP (x \in A); first by rewrite mule1 in_xsectionM.
-by rewrite mule0 notin_xsectionM// set0I measure0.
+have [xA|xA] := boolP (x \in A); first by rewrite mule1 in_xsectionX.
+by rewrite mule0 notin_xsectionX// set0I measure0.
 Qed.
 
 Lemma measurable_prod_subset_xsection_kernel :
@@ -450,10 +450,10 @@ set C := [set A `*` B | A in measurable & B in measurable].
 have CI : setI_closed C.
   move=> _ _ [X1 mX1 [X2 mX2 <-]] [Y1 mY1 [Y2 mY2 <-]].
   exists (X1 `&` Y1); first exact: measurableI.
-  by exists (X2 `&` Y2); [exact: measurableI|rewrite setMI].
-have CT : C setT by exists setT => //; exists setT => //; rewrite setMTT.
+  by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
+have CT : C setT by exists setT => //; exists setT => //; rewrite setXTT.
 have CXY : C `<=` XY.
-  move=> _ [A mA [B mB <-]]; split; first exact: measurableM.
+  move=> _ [A mA [B mB <-]]; split; first exact: measurableX.
   rewrite phiM.
   apply: emeasurable_funM => //; first exact/measurable_kernel/measurableI.
   by apply/EFin_measurable_fun; rewrite (_ : \1_ _ = mindic R mA).
