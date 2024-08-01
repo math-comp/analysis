@@ -13,12 +13,13 @@
   + factory `isAlgebraOfSets_setD`
 
 - in `classical_sets.v`:
-  + definition `setX`, notation ``` `^` ```
-  + lemmas `setX0`, `set0X`, `setXK`, `setXC`, `setXA`, `setIXl`, `mulrXr`,
-    `setX_def`, `setXE`, `setXU`, `setXI`, `setXD`, `setXCT`, `setCXT`, `setXTC`, `setTXC`
+  + definition `setY`, notation ``` `^` ```
+  + lemmas `setY0`, `set0Y`, `setYK`, `setYC`, `setYA`, `setIYl`, `mulrYr`,
+    `setY_def`, `setYE`, `setYU`, `setYI`, `setYD`, `setYCT`, `setCYT`, `setYTC`, `setTYC`
     
 - in `measure.v`:
-  + factory `isRingOfSets_setX`
+  + defintion `setY_closed`
+  + factory `isRingOfSets_setY`
 
 - in `classical_sets.v`:
   + lemma `setDU`

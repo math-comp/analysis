@@ -191,7 +191,7 @@ From HB Require Import structures.
 (*     setSD_closed G == the set of sets G is closed under proper             *)
 (*                       difference                                           *)
 (*     setDI_closed G == the set of sets G is closed under difference         *)
-(*      setX_closed G == the set of sets G is closed under symmetric          *)
+(*      setY_closed G == the set of sets G is closed under symmetric          *)
 (*                       difference                                           *)
 (*     ndseq_closed G == the set of sets G is closed under non-decreasing     *)
 (*                       countable union                                      *)
@@ -358,7 +358,7 @@ Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
 Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
 Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
-Definition setX_closed := forall A B, G A -> G B -> G (A `^` B).
+Definition setY_closed := forall A B, G A -> G B -> G (A `^` B).
 
 Definition fin_bigcap_closed :=
     forall I (D : set I) A_, finite_set D -> (forall i, D i -> G (A_ i)) ->
@@ -1169,32 +1169,32 @@ HB.instance Definition _ := SemiRingOfSets_isRingOfSets.Build d T measurableU.
 
 HB.end.
 
-HB.factory Record isRingOfSets_setX (d : measure_display) T
+HB.factory Record isRingOfSets_setY (d : measure_display) T
     of Pointed T := {
   measurable : set (set T) ;
   measurable_nonempty : measurable !=set0 ;
-  measurable_setX : setX_closed measurable ;
+  measurable_setY : setY_closed measurable ;
   measurable_setI : setI_closed measurable }.
 
-HB.builders Context d T of isRingOfSets_setX d T.
+HB.builders Context d T of isRingOfSets_setY d T.
 
 Let m0 : measurable set0.
 Proof.
 have [A mA] := measurable_nonempty.
-have := measurable_setX mA mA.
-by rewrite setXK.
+have := measurable_setY mA mA.
+by rewrite setYK.
 Qed.
 
 Let mU : setU_closed measurable.
 Proof.
-move=> A B mA mB; rewrite -setXU.
-by apply: measurable_setX; [exact: measurable_setX|exact: measurable_setI].
+move=> A B mA mB; rewrite -setYU.
+by apply: measurable_setY; [exact: measurable_setY|exact: measurable_setI].
 Qed.
 
 Let mD : setDI_closed measurable.
 Proof.
-move=> A B mA mB; rewrite -setXD.
-by apply: measurable_setX => //; exact: measurable_setI.
+move=> A B mA mB; rewrite -setYD.
+by apply: measurable_setY => //; exact: measurable_setI.
 Qed.
 
 HB.instance Definition _ := isRingOfSets.Build d T m0 mU mD.

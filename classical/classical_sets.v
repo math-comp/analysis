@@ -402,9 +402,9 @@ Notation "A `\` B" := (setD A B) : classical_set_scope.
 Notation "A `\ a" := (A `\` [set a]) : classical_set_scope.
 Notation "[ 'disjoint' A & B ]" := (disj_set A B) : classical_set_scope.
 
-Definition setX {T : Type} (A B : set T) := (A `\` B) `|` (B `\` A).
-Arguments setX _ _ _ _ /.
-Notation "A `^` B" := (setX A B) : classical_set_scope.
+Definition setY {T : Type} (A B : set T) := (A `\` B) `|` (B `\` A).
+Arguments setY _ _ _ _ /.
+Notation "A `^` B" := (setY A B) : classical_set_scope.
 
 Notation "'`I_' n" := [set k | is_true (k < n)%N].
 
@@ -1123,70 +1123,70 @@ Lemma bigcupM1r T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :
   \bigcup_(i in A2) (A1 i `*` [set i]) = A1 ``*` A2.
 Proof. by apply/predeqP => -[i j]; split=> [[? ? [? /= -> //]]|[]]; exists j. Qed.
 
-Lemma setX0 : right_id set0 (@setX T).
-Proof. by move=> A; rewrite /setX setD0 set0D setU0. Qed.
+Lemma setY0 : right_id set0 (@setY T).
+Proof. by move=> A; rewrite /setY setD0 set0D setU0. Qed.
 
-Lemma set0X : left_id set0 (@setX T).
-Proof. by move=> A; rewrite /setX set0D setD0 set0U. Qed.
+Lemma set0Y : left_id set0 (@setY T).
+Proof. by move=> A; rewrite /setY set0D setD0 set0U. Qed.
 
-Lemma setXK A : A `^` A = set0.
-Proof. by rewrite /setX setDv setU0. Qed.
+Lemma setYK A : A `^` A = set0.
+Proof. by rewrite /setY setDv setU0. Qed.
 
-Lemma setXC : commutative (@setX T).
-Proof. by move=> A B; rewrite /setX setUC. Qed.
+Lemma setYC : commutative (@setY T).
+Proof. by move=> A B; rewrite /setY setUC. Qed.
 
-Lemma setXTC A : A `^` [set: T] = ~` A.
-Proof. by rewrite /setX setDT set0U setTD. Qed.
+Lemma setYTC A : A `^` [set: T] = ~` A.
+Proof. by rewrite /setY setDT set0U setTD. Qed.
 
-Lemma setTXC A : [set: T] `^` A = ~` A.
-Proof. by rewrite setXC setXTC. Qed.
+Lemma setTYC A : [set: T] `^` A = ~` A.
+Proof. by rewrite setYC setYTC. Qed.
 
-Lemma setXA : associative (@setX T).
+Lemma setYA : associative (@setY T).
 Proof.
-move=> A B C; rewrite /setX; apply/seteqP; split => x/=;
+move=> A B C; rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x);
   have [|] := pselect (C x); tauto.
 Qed.
 
-Lemma setIXl : left_distributive (@setI T) (@setX T).
+Lemma setIYl : left_distributive (@setI T) (@setY T).
 Proof.
-move=> A B C; rewrite /setX; apply/seteqP; split => x/=;
+move=> A B C; rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x);
   have [|] := pselect (C x); tauto.
 Qed.
 
-Lemma setIXr : right_distributive (@setI T) (@setX T).
-Proof. by move=> A B C; rewrite setIC setIXl -2!(setIC A). Qed.
+Lemma setIYr : right_distributive (@setI T) (@setY T).
+Proof. by move=> A B C; rewrite setIC setIYl -2!(setIC A). Qed.
 
-Lemma setX_def A B : A `^` B = (A `\` B) `|` (B `\` A).
+Lemma setY_def A B : A `^` B = (A `\` B) `|` (B `\` A).
 Proof. by []. Qed.
 
-Lemma setXE A B : A `^` B = (A `|` B) `\` (A `&` B).
+Lemma setYE A B : A `^` B = (A `|` B) `\` (A `&` B).
 Proof.
-rewrite /setX; apply/seteqP; split => x/=;
+rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
 Qed.
 
-Lemma setXU A B : (A `^` B) `^` (A `&` B) = A `|` B.
+Lemma setYU A B : (A `^` B) `^` (A `&` B) = A `|` B.
 Proof.
-rewrite /setX; apply/seteqP; split => x/=;
+rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
 Qed.
 
-Lemma setXI A B : (A `|` B) `\` (A `^` B) = A `&` B.
+Lemma setYI A B : (A `|` B) `\` (A `^` B) = A `&` B.
 Proof.
-rewrite /setX; apply/seteqP; split => x/=;
+rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
 Qed.
 
-Lemma setXD A B : A `^` (A `&` B) = A `\` B.
-Proof. by rewrite /setX; apply/seteqP; split => x/=; tauto. Qed.
+Lemma setYD A B : A `^` (A `&` B) = A `\` B.
+Proof. by rewrite /setY; apply/seteqP; split => x/=; tauto. Qed.
 
-Lemma setXCT A : A `^` ~` A = [set: T].
-Proof. by rewrite /setX setDE setCK setIid setDE setIid setUv. Qed.
+Lemma setYCT A : A `^` ~` A = [set: T].
+Proof. by rewrite /setY setDE setCK setIid setDE setIid setUv. Qed.
 
-Lemma setCXT A : ~` A `^` A = [set: T].
-Proof. by rewrite setXC setXCT. Qed.
+Lemma setCYT A : ~` A `^` A = [set: T].
+Proof. by rewrite setYC setYCT. Qed.
 
 End basic_lemmas.
 #[global]
@@ -1388,8 +1388,8 @@ HB.instance Definition _ := isMulLaw.Build (set T) set0 setI set0I setI0.
 HB.instance Definition _ := isAddLaw.Build (set T) setU setI setUIl setUIr.
 HB.instance Definition _ := isAddLaw.Build (set T) setI setU setIUl setIUr.
 
-HB.instance Definition _ := isComLaw.Build (set T) set0 setX setXA setXC set0X.
-HB.instance Definition _ := isAddLaw.Build (set T) setI setX setIXl setIXr.
+HB.instance Definition _ := isComLaw.Build (set T) set0 setY setYA setYC set0Y.
+HB.instance Definition _ := isAddLaw.Build (set T) setI setY setIYl setIYr.
 
 End SetMonoids.
 
