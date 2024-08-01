@@ -110,6 +110,8 @@
     `parameterized_integral_left`, `parameterized_integral_cvg_at_left`,
     `parameterized_integral_continuous`
   + corollary `continuous_FTC2`
+- in `classical_sets.v`:
+  + lemmas `xsectionP`, `ysectionP`
 
 ### Changed
 
@@ -237,6 +239,9 @@
   + definition `ceil` (use `Num.ceil` instead)
   + lemmas `floor0`, `floor1`
   + lemma `le_floor` (use `Num.Theory.floor_le` instead)
+
+- in `topology.v`, `function_spaces.v`, `normedtype.v`:
+  + local notation `to_set`
 
 ### Infrastructure
 

@@ -3521,9 +3521,6 @@ Context (A : set T).
 
 Local Notation "A ^-1" := [set xy | A (xy.2, xy.1)] : classical_set_scope.
 
-Local Notation "'to_set' A x" := [set y | A (x, y)]
-  (at level 0, A at level 0) : classical_set_scope.
-
 (* Urysohn's lemma guarantees a continuous function : T -> R
    where "f @` A = [set 0]" and "f @` B = [set 1]".
    The idea is to leverage countable_uniformity to build that function
@@ -3670,7 +3667,7 @@ exists (Uniform.class urysohnType), (apxU (U, ~` B)); split => //.
   by have /subset_closure ? := AU _ Aa; case.
 move=> x ? [E gE] /(@filterS T); apply; move: gE.
 rewrite /= /ury_unif filterI_iterE; case => K /= [i _] /= uiK KE.
-suff : @nbhs T T x to_set K (x) by apply: filterS => y /KE.
+suff : @nbhs T T x [set y | K (x, y)] by apply: filterS => y /KE/xsectionP.
 elim: i K uiK {E KE}; last by move=> ? H ? [N] /H ? [M] /H ? <-; apply: filterI.
 move=> K [->|]; first exact: filterT.
 move=> [[/= P Q] [/= oP oQ AP cPQ <-]]; rewrite /apxU /=.
@@ -3776,7 +3773,7 @@ rewrite openE => /(_ _ nBx); rewrite /interior /= -nbhs_entourageE.
 case=> E entE EnB.
 pose T' := [the pseudoMetricType Rdefinitions.R of gauge.type entE].
 exists (Uniform.class T); exists E; split => //; last by move => ?.
-by rewrite -subset0 => -[? w [/= [-> ? ?]]]; exact: (EnB w).
+by rewrite -subset0 => -[? w [/= [-> ? /xsectionP ?]]]; exact: (EnB w).
 Qed.
 
 Lemma uniform_completely_regular {R : realType} {T : uniformType} :
@@ -3795,7 +3792,7 @@ Lemma uniform_regular {X : uniformType} : @regular_space X.
 Proof.
 move=> x A; rewrite /= -nbhs_entourageE => -[E entE].
 move/(subset_trans (ent_closure entE)) => ExA.
-by exists [set y | split_ent E (x, y)]; first by exists (split_ent E).
+by exists (xsection (split_ent E) x) => //; exists (split_ent E).
 Qed.
 
 Lemma regular_openP {T : topologicalType} (x : T) :
@@ -5700,7 +5697,7 @@ Lemma vitali_lemma_finite (s : seq I) :
     forall i, i \in s -> exists j, [/\ j \in D,
       B i `&` B j !=set0,
       radius (B j) >= radius (B i) &
-      B i `<=` 3%:R *` B j] ] }.
+      B i `<=` 3 *` B j] ] }.
 Proof.
 pose LE x y := radius (B x) <= radius (B y).
 have LE_trans : transitive LE by move=> x y z; exact: le_trans.

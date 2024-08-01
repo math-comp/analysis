@@ -100,8 +100,6 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
-Local Notation "'to_set' A x" := ([set y | A (x, y)])
-  (at level 0, A at level 0) : classical_set_scope.
 
 (** Product topology, also known as the topology of pointwise convergence *)
 Section Product_Topology.
@@ -380,7 +378,7 @@ Qed.
 Lemma join_product_inj : accessible_space T -> set_inj [set: T] join_product.
 Proof.
 move=> /accessible_closed_set1 cl1 x y; case: (eqVneq x y) => // xny _ _ jxjy.
-have [] := (@sepf [set y] x (cl1 y)); first by exact/eqP.
+have [] := @sepf [set y] x (cl1 y); first exact/eqP.
 move=> i P; suff : join_product x i != join_product y i by rewrite jxjy => /eqP.
 apply/negP; move: P; apply: contra_not => /eqP; rewrite /join_product => ->.
 by apply: subset_closure; exists y.
@@ -530,9 +528,9 @@ Lemma cvg_switch_1 {U : uniformType}
 Proof.
 move=> fg fh hl; apply/cvg_app_entourageP => A entA.
 near F1 => x1; near=> x2; apply: (entourage_split (h x1)) => //.
-  by near: x1; apply/(hl (to_set _ l)) => /=.
+  by apply/xsectionP; near: x1; exact: hl.
 apply: (entourage_split (f x1 x2)) => //.
-  by near: x2; apply/(fh x1 (to_set _ _)) => /=.
+  by apply/xsectionP; near: x2; exact: fh.
 move: (x2); near: x1; have /cvg_fct_entourageP /(_ (_^-1%classic)):= fg; apply.
 exact: entourage_inv.
 Unshelve. all: by end_near. Qed.
@@ -546,9 +544,9 @@ Proof.
 move=> fg fh; apply: cauchy_cvg => A entA.
 rewrite !near_simpl -near2_pair near_map2; near=> x1 y1 => /=; near F2 => x2.
 apply: (entourage_split (f x1 x2)) => //.
-  by near: x2; apply/(fh _ (to_set _ _)) => /=.
+  by apply/xsectionP; near: x2; exact: fh.
 apply: (entourage_split (f y1 x2)) => //; last first.
-  near: x2; apply/(fh _ (to_set ((_^-1)%classic) _)).
+  apply/xsectionP; near: x2; apply/(fh _ (xsection ((_^-1)%classic) _)).
   exact: nbhs_entourage (entourage_inv _).
 apply: (entourage_split (g x2)) => //; move: (x2); [near: x1|near: y1].
   have /cvg_fct_entourageP /(_ (_^-1)%classic) := fg; apply.
@@ -593,13 +591,15 @@ Proof.
 split=> [[Q [[/= W oW <- /=] Wf subP]]|[E [entE subP]]].
   rewrite openE /= /interior in oW.
   case: (oW _ Wf) => ? [ /= E entE] Esub subW.
-  exists E; split=> // h Eh; apply/subP/subW/Esub => /= [[u Au]].
+  exists E; split=> // h Eh; apply/subP/subW/xsectionP/Esub => /= [[u Au]].
   by apply: Eh => /=; rewrite -inE.
 near=> g; apply: subP => y /mem_set Ay; rewrite -!(sigLE A).
 move: (SigSub _); near: g.
 have := (@cvg_image _ _ (@sigL_arrow _ A V) _ f (nbhs_filter f)
   (image_sigL point)).1 cvg_id [set h | forall y, E (sigL A f y, h y)].
-case; first by exists [set fg | forall y, E (fg.1 y, fg.2 y)]; [exists E|].
+case.
+  exists [set fg | forall y, E (fg.1 y, fg.2 y)] => //; first by exists E.
+  by move=> g /xsectionP.
 move=> B nbhsB rBrE; apply: (filterS _ nbhsB) => g Bg [y yA].
 by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
 Unshelve. all: by end_near. Qed.
@@ -654,10 +654,10 @@ Proof.
 move=> FF; rewrite propeqE; split.
   move=> + W => /(_ [set t | W (t x)]) +; rewrite -nbhs_entourageE.
   rewrite uniform_nbhs => + [Q entQ subW].
-  by apply; exists Q; split => // h Qf; exact/subW/Qf.
+  by apply; exists Q; split => // h Qf; exact/subW/xsectionP/Qf.
 move=> Ff W; rewrite uniform_nbhs => [[E] [entE subW]].
 apply: (filterS subW); move/(nbhs_entourage (f x))/Ff: entE => //=; near_simpl.
-by apply: filter_app; apply: nearW=> ? ? ? ->.
+by apply: filter_app; apply: nearW=> ? /xsectionP ? ? ->.
 Qed.
 
 Lemma uniform_subset_nbhs (f : U -> V) (A B : set U) :
@@ -719,10 +719,12 @@ move=> hV.
 rewrite propeqE; split; last exact: eq_in_close.
 rewrite entourage_close => C u; rewrite inE => uA; apply: hV.
 rewrite /cluster -nbhs_entourageE /= => X Y [X' eX X'X] [Y' eY Y'Y].
-exists (g u); split; [apply: X'X| apply: Y'Y]; last exact: entourage_refl.
+exists (g u); split; [apply: X'X| apply: Y'Y]; apply/xsectionP; last first.
+  exact: entourage_refl.
 apply: (C [set fg | forall y, A y -> X' (fg.1 y, fg.2 y)]) => //=.
 by rewrite uniform_entourage; exists X'.
 Qed.
+
 Lemma uniform_restrict_cvg
     (F : set_system (U -> V)) (f : U -> V) A : Filter F ->
   {uniform A, F --> f} <-> {uniform, restrict A @ F --> restrict A f}.
@@ -749,9 +751,9 @@ Proof.
 rewrite eqEsubset; split=> A.
   case/uniform_nbhs => E [entE] /filterS; apply.
   exists [set fh | forall y, E (fh.1 y, fh.2 y)]; first by exists E.
-  by move=> ? /=.
+  by move=> ? /xsectionP /=.
 case => J [E entE EJ] /filterS; apply; apply/uniform_nbhs; exists E.
-by split => // z /= Efz; apply: EJ => t /=; exact: Efz.
+by split => // z /= Efz; apply/xsectionP/EJ => t /=; exact: Efz.
 Qed.
 
 Lemma cvg_uniformU (f : U -> V) (F : set_system (U -> V)) A B : Filter F ->
@@ -840,13 +842,14 @@ near=> z => /=; (suff: A `<=` [set y | O (z y)] by exact); near: z.
 apply: cfA => x Ax; have : O (f x) by exact: fAO.
 move: (oO); rewrite openE /= => /[apply] /[dup] /ctsf Ofx /=.
 rewrite /interior -nbhs_entourageE => -[E entE EfO].
-exists (f @^-1` to_set (split_ent E) (f x),
+exists (f @^-1` xsection (split_ent E) (f x),
     [set g | forall w, A w -> split_ent E (f w, g w)]).
   split => //=; last exact: fam_nbhs.
   by apply: ctsf; rewrite /= -nbhs_entourageE; exists (split_ent E).
-case=> y g [/= Efxy] AEg Ay; apply: EfO; apply: subset_split_ent => //.
-by exists (f y) => //=; exact: AEg.
+case=> y g [/= /xsectionP Efxy] AEg Ay; apply/EfO/xsectionP.
+by apply: subset_split_ent => //; exists (f y) => //=; exact: AEg.
 Unshelve. all: by end_near. Qed.
+
 End FamilyConvergence.
 
 (**md It turns out `{family compact, U -> V}` can be generalized to only assume
@@ -960,13 +963,13 @@ move=> ctsf FF; split; first last.
 move/compact_open_cvgP=> cptOF; apply/cvg_sup => -[K cptK R].
 case=> D [[E oE <-] Ekf] /filterS; apply.
 move: oE; rewrite openE => /(_ _ Ekf); case => A [J entJ] EKR KfE.
-near=> z; apply/KfE/EKR => -[u Kp]; rewrite /sigL_arrow /= /set_val /= /eqincl.
+near=> z; apply/KfE/xsectionP/EKR => -[u Kp]; rewrite /sigL_arrow /= /set_val /= /eqincl.
 (have Ku : K u by rewrite inE in Kp); move: u Ku {D Kp}; near: z.
 move/compact_near_coveringP/near_covering_withinP : (cptK); apply.
 move=> u Ku; near (powerset_filter_from (@entourage V)) => E'.
 have entE' : entourage E' by exact: (near (near_small_set _)).
-pose C := f @^-1` to_set E' (f u).
-pose B := \bigcup_(z in K `&` closure C) interior (to_set E' (f z)).
+pose C := f @^-1` xsection E' (f u).
+pose B := \bigcup_(z in K `&` closure C) interior (xsection E' (f z)).
 have oB : open B by apply: bigcup_open => ? ?; exact: open_interior.
 have fKB : f @` (K `&` closure C) `<=` B.
   move=> _ [z KCz <-]; exists z => //; rewrite /interior.
@@ -980,14 +983,19 @@ exists (C, [set g | [set g x | x in K `&` closure C] `<=` B]).
 case=> z h /= [Cz KB Kz].
 case: (KB (h z)); first by exists z; split => //; exact: subset_closure.
 move=> w [Kw Cw /interior_subset Jfwhz]; apply: subset_split_ent => //.
-exists (f w); last apply: (near (small_ent_sub _) E') => //.
+exists (f w); last first.
+  apply: (near (small_ent_sub _) E') => //.
+  exact/xsectionP.
 apply: subset_split_ent => //; exists (f u).
-  by apply/entourage_sym; apply: (near (small_ent_sub _) E').
-have [] := Cw (f@^-1` (to_set E' (f w))).
+  apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
+  exact/xsectionP.
+have [] := Cw (f @^-1` xsection E' (f w)).
   by apply: ctsf; rewrite /= -nbhs_entourageE; exists E'.
 move=> r [Cr /= Ewr]; apply: subset_split_ent => //; exists (f r).
-  exact: (near (small_ent_sub _) E').
-by apply/entourage_sym; apply: (near (small_ent_sub _) E').
+  apply: (near (small_ent_sub _) E') => //.
+  exact/xsectionP.
+apply/entourage_sym; apply: (near (small_ent_sub _) E') => //.
+exact/xsectionP.
 Unshelve. all: by end_near. Qed.
 
 End compact_open_uniform.
@@ -1179,7 +1187,7 @@ Proof.
 move=> entE; have : ({ptws, nbhs f --> f}) by [].
 have ? : Filter (nbhs f) by exact: nbhs_pfilter. (* NB: This Filter (nbhs f) used to infer correctly. *)
 rewrite pointwise_cvg_family_singleton => /fam_cvgP /(_ [set x]).
-rewrite uniform_set1 => /(_ _ (to_set E (f x))); apply; first by exists x.
+rewrite uniform_set1 => /(_ _ [set y | E (f x, y)]); apply; first by exists x.
 by move: E entE; exact/cvg_entourageP.
 Qed.
 
@@ -1283,7 +1291,7 @@ apply: (entourage_split (f x) entE).
   exact: (near (fam_nbhs _ entE' (@compact_set1 _ x)) g).
 apply: (entourage_split (f y) (entourage_split_ent entE)).
   apply: (near (small_ent_sub _) E') => //.
-  by near: y; apply: ((@ctsW f Wf x) (to_set _ _)); exact: nbhs_entourage.
+  by apply/xsectionP; near: y; apply: (@ctsW f Wf x); exact: nbhs_entourage.
 apply: (near (small_ent_sub _) E') => //.
 by apply: (near (fam_nbhs _ entE' cptU) g) => //; exact: (near UWx y).
 Unshelve. all: end_near. Qed.
@@ -1297,14 +1305,16 @@ move=> pcptW ctsW; apply: (equicontinuous_subset_id (@subset_closure _ W)).
 apply: compact_equicontinuous; last by rewrite -precompactE.
 move=> f; rewrite closureEcvg => [[G PG [Gf GW]]] x B /=.
 rewrite -nbhs_entourageE => -[E entE] /filterS; apply; near_simpl.
-suff ctsf : continuous f by move: E entE; apply/cvg_app_entourageP; exact: ctsf.
+suff ctsf : continuous f.
+  near=> x0; apply/xsectionP; near: x0.
+  by move: E entE; apply/cvg_app_entourageP; exact: ctsf.
 apply/continuous_localP => x'; apply/near_powerset_filter_fromP.
   by move=> ? ?; exact: continuous_subspaceW.
 case: (@lcptX x') => // U; rewrite withinET => nbhsU [cptU _].
 exists U => //; apply: (uniform_limit_continuous_subspace PG _ _).
   by near=> g; apply: continuous_subspaceT; near: g; exact: GW.
 by move/fam_cvgP/(_ _ cptU) : Gf.
-Unshelve. end_near. Qed.
+Unshelve. all: end_near. Qed.
 
 End precompact_equicontinuous.
 

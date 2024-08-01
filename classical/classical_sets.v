@@ -3313,8 +3313,14 @@ Proof. by move=> x Axy; exists y; rewrite /ysection/= inE in Axy. Qed.
 Lemma mem_xsection x y A : (y \in xsection A x) = ((x, y) \in A).
 Proof. by apply/idP/idP => [|]; [rewrite inE|rewrite /xsection !inE /= inE]. Qed.
 
+Lemma xsectionP x y A : xsection A x y <-> A (x, y).
+Proof. by rewrite /xsection/= inE. Qed.
+
 Lemma mem_ysection x y A : (x \in ysection A y) = ((x, y) \in A).
 Proof. by apply/idP/idP => [|]; [rewrite inE|rewrite /ysection !inE /= inE]. Qed.
+
+Lemma ysectionP x y A : ysection A y x <-> A (x, y).
+Proof. by rewrite /ysection/= inE. Qed.
 
 Lemma xsection0 x : xsection set0 x = set0.
 Proof. by rewrite predeqE /xsection => y; split => //=; rewrite inE. Qed.
