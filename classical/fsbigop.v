@@ -504,9 +504,9 @@ Lemma pair_fsbig (R : Type) (idx : R) (op : Monoid.com_law idx)
   \big[op/idx]_(i \in P) \big[op/idx]_(j \in Q) F i j
   = \big[op/idx]_(p \in P `*` Q) F p.1 p.2.
 Proof.
-move=> Pfin Qfin; have PQfin : finite_set (P `*` Q) by apply: finite_setM.
+move=> Pfin Qfin; have PQfin : finite_set (P `*` Q) by exact: finite_setX.
 rewrite !fsbig_finite//=; under eq_bigr do rewrite fsbig_finite//=.
-rewrite pair_big_dep_cond/= fset_setM//.
+rewrite pair_big_dep_cond/= fset_setX//.
 apply: eq_fbigl => -[i j] //=; apply/imfset2P/idP; rewrite inE //=.
   by move=> [x + [y + [-> ->]]]; rewrite 4!inE/= !andbT/= => -> ->.
 move=> /andP[Pi Qi]; exists i; rewrite 2?inE ?andbT//.

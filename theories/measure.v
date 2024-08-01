@@ -2639,8 +2639,8 @@ have mdW A : measurable A -> measurable_fin_trivIset A.
 have mdI : setI_closed measurable_fin_trivIset.
   move=> _ _ [A [-> Am Afin Atriv]] [B [-> Bm Bfin Btriv]].
   rewrite setI_bigcupl; under eq_bigcupr do rewrite setI_bigcupr.
-  rewrite -bigcup_setM -(bigcup_image _ _ id).
-  eexists; split; [reflexivity | | exact/finite_image/finite_setM |].
+  rewrite -bigcup_setX -(bigcup_image _ _ id).
+  eexists; split; [reflexivity | | exact/finite_image/finite_setX |].
     by move=> _ [X [? ?] <-]; apply: measurableI; [apply: Am|apply: Bm].
   apply: trivIset_sets => -[a b] [a' b']/= [Xa Xb] [Xa' Xb']; rewrite setIACA.
   by move=> [x [Ax Bx]]; rewrite (Atriv a a') 1?(Btriv b b')//; exists x.
@@ -2658,9 +2658,9 @@ have mdU : fin_trivIset_closed measurable_fin_trivIset.
   have /(_ _ (set_mem _))/cid-/(all_sig_cond_dep (fun=> set0))
        [G /(_ _ (mem_set _))GP] := Fm _ _.
   under eq_bigcupr => i Di do case: (GP i Di) => ->.
-  rewrite -bigcup_setM_dep -(bigcup_image _ _ id); eexists; split=> //.
+  rewrite -bigcup_setX_dep -(bigcup_image _ _ id); eexists; split=> //.
   - by move=> _ [i [Di Gi] <-]; have [_ + _ _] := GP i.1 Di; apply.
-  - by apply: finite_image; apply: finite_setMR=> // i Di; have [] := GP i Di.
+  - by apply: finite_image; apply: finite_setXR=> // i Di; have [] := GP i Di.
   apply: trivIset_sets => -[i X] [j Y] /= [Di Gi] [Dj Gj] XYN0.
   suff eqij : i = j.
     by rewrite {i}eqij in Di Gi *; have [_ _ _ /(_ _ _ _ _ XYN0)->] := GP j Dj.
@@ -2980,7 +2980,7 @@ rewrite /Rmu -(eq_eseriesr (fun _ _ => esum_fset _ _))//; last first.
 rewrite nneseries_esum ?esum_esum//=; last by move=> *; rewrite esum_ge0.
 set K := _ `*`` _.
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
-  apply: cardMR_eq_nat => [|i].
+  apply: cardXR_eq_nat => [|i].
     by rewrite (_ : [set _ | true] = setT)//; exact/predeqP.
   split; first by apply/finite_set_countable; exact: decomp_finite_set.
   exact/set0P/decompN0.
@@ -3083,9 +3083,9 @@ have DUBm i : measurable (seqDU B i : set (SetRing.type T)).
      do 1?apply: bigsetU_measurable => *; apply: sub_gen_smallest.
 rewrite XE; move: (XE); rewrite seqDU_bigcup_eq.
 under eq_bigcupr do rewrite -[seqDU B _]cover_decomp//.
-rewrite -bigcup_setM_dep; set K := _ `*`` _.
+rewrite -bigcup_setX_dep; set K := _ `*`` _.
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
-  apply: cardMR_eq_nat=> // i; split; last by apply/set0P; rewrite decompN0.
+  apply: cardXR_eq_nat=> // i; split; last by apply/set0P; rewrite decompN0.
   exact/finite_set_countable/decomp_finite_set.
 pose f' := f^-1%FUN; rewrite -(image_eq [bij of f'])/= bigcup_image/=.
 pose g n := (f' n).2; have fVtriv : trivIset [set: nat] g.
@@ -4801,7 +4801,7 @@ rewrite ?lb_ereal_inf// => _ [F [Fm XS] <-]; rewrite ereal_inf_lbound//; last fi
   by rewrite (eq_eseriesr (fun _ _ => RmuE _ (Fm _))).
 pose K := [set: nat] `*`` fun i => decomp (F i).
 have /ppcard_eqP[f] : (K #= [set: nat])%card.
-  apply: cardMR_eq_nat => // i; split; last by apply/set0P; rewrite decompN0.
+  apply: cardXR_eq_nat => // i; split; last by apply/set0P; rewrite decompN0.
   by apply: finite_set_countable => //; exact: decomp_finite_set.
 pose g i := (f^-1%FUN i).2; exists g; first split.
 - move=> k; have [/= _ /mem_set] : K (f^-1%FUN k) by apply: funS.
@@ -5034,17 +5034,19 @@ Notation "p .-prod.-measurable" :=
   ((p.-prod).-measurable : set (set (_ * _))) :
     classical_set_scope.
 
-Lemma measurableM d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2)
+Lemma measurableX d1 d2 (T1 : semiRingOfSetsType d1) (T2 : semiRingOfSetsType d2)
     (A : set T1) (B : set T2) :
   measurable A -> measurable B -> measurable (A `*` B).
 Proof.
 move=> mA mB.
 have -> : A `*` B = (A `*` setT) `&` (setT `*` B) :> set (T1 * T2).
-  by rewrite -{1}(setIT A) -{1}(setTI B) setMI.
-rewrite setMT setTM; apply: measurableI.
+  by rewrite -{1}(setIT A) -{1}(setTI B) setXI.
+rewrite setXT setTX; apply: measurableI.
 - by apply: sub_sigma_algebra; left; exists A => //; rewrite setTI.
 - by apply: sub_sigma_algebra; right; exists B => //; rewrite setTI.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `measurableX`")]
+Notation measurableM := measurableX (only parsing).
 
 Section product_salgebra_algebraOfSetsType.
 Context d1 d2 (T1 : algebraOfSetsType d1) (T2 : algebraOfSetsType d2).
@@ -5065,7 +5067,7 @@ rewrite eqEsubset; split.
       by move=> _ [Y MY <-]; exists setT; rewrite /M1 //; exists Y.
     by apply; exact: sub_sigma_algebra.
 apply: smallest_sub; first exact: smallest_sigma_algebra.
-by move=> _ [A MA] [B MB] <-; apply: measurableM => //; exact: sub_sigma_algebra.
+by move=> _ [A MA] [B MB] <-; apply: measurableX => //; exact: sub_sigma_algebra.
 Qed.
 
 End product_salgebra_algebraOfSetsType.

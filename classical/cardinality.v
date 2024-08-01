@@ -687,7 +687,7 @@ Proof. by move=> ?; apply: finite_setI; left. Qed.
 Lemma finite_setIr T (A B : set T) : finite_set B -> finite_set (A `&` B).
 Proof. by move=> ?; apply: finite_setI; right. Qed.
 
-Lemma finite_setM T T' (A : set T) (B : set T') :
+Lemma finite_setX T T' (A : set T) (B : set T') :
   finite_set A -> finite_set B -> finite_set (A `*` B).
 Proof.
 elim/Pchoice: T => T in A *; elim/Pchoice: T' => T' in B *.
@@ -695,15 +695,18 @@ move=> /finite_fsetP[{}A ->] /finite_fsetP[{}B ->].
 apply/finite_fsetP; exists (A `*` B)%fset; apply/predeqP => x.
 by split; rewrite /= inE => /andP.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to finite_setX.")]
+Notation finite_setM := finite_setX (only parsing).
 
-Lemma finite_image2 [aT bT rT : Type] [A : set aT] [B : set bT] (f : aT -> bT -> rT) :
-  finite_set A -> finite_set B -> finite_set [set f x y | x in A & y in B]%classic.
-Proof. by move=> fA fB; rewrite image2E; apply/finite_image/finite_setM. Qed.
+Lemma finite_image2 [aT bT rT : Type] [A : set aT] [B : set bT]
+    (f : aT -> bT -> rT) :
+  finite_set A -> finite_set B -> finite_set [set f x y | x in A & y in B].
+Proof. by move=> fA fB; rewrite image2E; exact/finite_image/finite_setX. Qed.
 
 Lemma finite_image11 [xT aT bT rT : Type] [X : set xT]
     (g : aT -> bT -> rT) (fa : xT -> aT) (fb : xT -> bT) :
     finite_set (fa @` X) -> finite_set (fb @` X) ->
-  finite_set [set g (fa x) (fb x) | x in X]%classic.
+  finite_set [set g (fa x) (fb x) | x in X].
 Proof.
 move=> /(finite_image2 g) /[apply]; apply: sub_finite_set; rewrite image2E.
 by move=> r/= [x Xx <-]; exists (fa x, fb x) => //; split; exists x.
@@ -784,15 +787,17 @@ Lemma fset_setD1 {T : choiceType} (x : T) (A : set T) :
   finite_set A -> fset_set (A `\ x) = (fset_set A `\ x)%fset.
 Proof. by move=> fA; rewrite fset_setD// fset_set1. Qed.
 
-Lemma fset_setM {T1 T2 : choiceType} (A : set T1) (B : set T2) :
+Lemma fset_setX {T1 T2 : choiceType} (A : set T1) (B : set T2) :
     finite_set A -> finite_set B ->
   fset_set (A `*` B) = (fset_set A `*` fset_set B)%fset.
 Proof.
-move=> Afin Bfin; have ABfin : finite_set (A `*` B) by apply: finite_setM.
+move=> Afin Bfin; have ABfin : finite_set (A `*` B) by exact: finite_setX.
 apply/fsetP => i; apply/idP/idP; rewrite !(inE, in_fset_set)//=.
   by move=> [/mem_set-> /mem_set->].
 by move=> /andP[]; rewrite !inE.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to fset_setX.")]
+Notation fset_setM := fset_setX (only parsing).
 
 Definition fst_fset (T1 T2 : choiceType) (A : {fset (T1 * T2)}) : {fset T1} :=
   [fset x.1 | x in A]%fset.
@@ -850,19 +855,23 @@ rewrite (@trivIset_bigsetUI _ xpredT)// ?fset_set0//.
 by rewrite [X in trivIset X F](_ : _ = [set: nat])//; exact/seteqP.
 Qed.
 
-Lemma finite_setMR (T T' : choiceType) (A : set T) (B : T -> set T') :
+Lemma finite_setXR (T T' : choiceType) (A : set T) (B : T -> set T') :
   finite_set A -> (forall x, A x -> finite_set (B x)) -> finite_set (A `*`` B).
 Proof.
-move=> Afin Bfin; rewrite -bigcupM1l.
-by apply: bigcup_finite => // i Ai; apply/finite_setM/Bfin.
+move=> Afin Bfin; rewrite -bigcupX1l.
+by apply: bigcup_finite => // i Ai; exact/finite_setX/Bfin.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to finite_setXR.")]
+Notation finite_setMR := finite_setXR (only parsing).
 
-Lemma finite_setML (T T' : choiceType) (A : T' -> set T) (B : set T') :
+Lemma finite_setXL (T T' : choiceType) (A : T' -> set T) (B : set T') :
   (forall x, B x -> finite_set (A x)) -> finite_set B -> finite_set (A ``*` B).
 Proof.
-move=> Afin Bfin; rewrite -bigcupM1r.
-by apply: bigcup_finite => // i Ai; apply/finite_setM=> //; apply: Afin.
+move=> Afin Bfin; rewrite -bigcupX1r.
+by apply: bigcup_finite => // i Ai; apply/finite_setX => //; exact: Afin.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to finite_setXL.")]
+Notation finite_setML := finite_setXL (only parsing).
 
 Lemma fset_set_II n : fset_set `I_n = [fset val i | i in 'I_n]%fset.
 Proof.
@@ -1134,44 +1143,54 @@ apply/pcard_geP/surjPex; exists (fun (k : {i & G i}) => val (projT2 k)).
 by move=> x [i _] Gix/=; exists (Tagged G (SigSub (mem_set Gix))).
 Qed.
 
-Lemma countableMR T T' (A : set T) (B : T -> set T') :
+Lemma countableXR T T' (A : set T) (B : T -> set T') :
   countable A -> (forall i, A i -> countable (B i)) -> countable (A `*`` B).
 Proof.
-elim/Ppointed: T => T in A B *; first by rewrite emptyE -bigcupM1l bigcup_set0.
+elim/Ppointed: T => T in A B *; first by rewrite emptyE -bigcupX1l bigcup_set0.
 elim/Ppointed: T' => T' in B *.
-  by rewrite -bigcupM1l bigcup0// => i; rewrite emptyE setM0.
-move=> Ac Bc; rewrite -bigcupM1l bigcup_countable// => i Ai.
+  by rewrite -bigcupX1l bigcup0// => i; rewrite emptyE setX0.
+move=> Ac Bc; rewrite -bigcupX1l bigcup_countable// => i Ai.
 have /ppcard_leP[f] := Bc i Ai; apply/pcard_geP/surjPex.
 exists (fun k => (i, f^-1%FUN k)) => -[_ j]/= [-> dj].
 by exists (f j) => //=; rewrite funK ?inE.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to countableXR.")]
+Notation countableMR := countableXR (only parsing).
 
-Lemma countableM T1 T2 (D1 : set T1) (D2 : set T2) :
+Lemma countableX T1 T2 (D1 : set T1) (D2 : set T2) :
   countable D1 -> countable D2 -> countable (D1 `*` D2).
-Proof. by move=> D1c D2c; apply: countableMR (fun _ _ => D2c). Qed.
+Proof. by move=> D1c D2c; exact: countableXR (fun _ _ => D2c). Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to countableX.")]
+Notation countableM := countableX (only parsing).
 
-Lemma countableML T T' (A : T' -> set T) (B : set T') :
+Lemma countableXL T T' (A : T' -> set T) (B : set T') :
   countable B -> (forall i, B i -> countable (A i)) -> countable (A ``*` B).
 Proof.
-move=> Bc Ac; rewrite -bigcupM1r; apply: bigcup_countable => // i Bi.
-by apply: countableM => //; apply: Ac.
+move=> Bc Ac; rewrite -bigcupX1r; apply: bigcup_countable => // i Bi.
+by apply: countableX => //; exact: Ac.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to countableXL.")]
+Notation countableML := countableXL (only parsing).
 
-Lemma infiniteMRl T T' (A : set T) (B : T -> set T') :
+Lemma infiniteXRl T T' (A : set T) (B : T -> set T') :
   infinite_set A -> (forall i, B i !=set0) -> infinite_set (A `*`` B).
 Proof.
 move=> /infiniteP/pcard_geP[f] /(_ _)/cid-/all_sig[b Bb].
 apply/infiniteP/pcard_geP/surjPex; exists (fun x => f x.1).
-by move=> i iT; have [a Aa fa] := 'oinvP_f iT; exists (a, b a) => /=.
+by move=> i iT; have [a Aa fa] := 'oinvP_f iT; exists (a, b a).
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to infiniteXRl.")]
+Notation infiniteMRl := infiniteXRl (only parsing).
 
-Lemma cardMR_eq_nat T T' (A : set T) (B : T -> set T') :
+Lemma cardXR_eq_nat T T' (A : set T) (B : T -> set T') :
     (A #= [set: nat] -> (forall i, countable (B i) /\ B i !=set0) ->
    A `*`` B #= [set: nat])%card.
 Proof.
 rewrite !card_eq_le => /andP[Acnt /infiniteP Ainfty] /all_and2[Bcnt Bn0].
-by rewrite [(_ #<= _)%card]countableMR//=; apply/infiniteP/infiniteMRl.
+by rewrite [(_ #<= _)%card]countableXR//=; exact/infiniteP/infiniteXRl.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to cardXR_eq_nat.")]
+Notation cardMR_eq_nat := cardXR_eq_nat (only parsing).
 
 Lemma eq_cardSP {T : Type} (A : set T) n :
   reflect (exists2 x, A x & A `\ x #= `I_n) (A #= `I_n.+1).
@@ -1194,7 +1213,7 @@ Proof.
 move=> Dcnt; elim: n => [|n].
   rewrite [X in countable X]( _ : _ = [set set0])// eqEsubset II0.
   by split=> A /=; [rewrite card_eq0; case=> _ /eqP | move->; split].
-move=> /(countableM Dcnt); apply: sub_countable.
+move=> /(countableX Dcnt); apply: sub_countable.
 apply: card_le_trans (card_image_le (fun u => u.1 |` u.2) _).
 apply: subset_card_le => B [BD] /eq_cardSP [x Bx BDx].
 exists (x, B `\ x) => /=; last by apply: setDUK => ? ->.

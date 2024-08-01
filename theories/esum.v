@@ -234,8 +234,8 @@ move=> a_ge0; apply/eqP; rewrite eq_le; apply/andP; split.
   apply: ub_ereal_sup => /= _ [Y [finY _] <-]; apply: ereal_sup_ubound => /=.
   set XYJ := [set z | z \in X `*` Y /\ z.2 \in J z.1].
   have ? : finite_set XYJ.
-    apply: sub_finite_set (finite_setM finX finY) => z/=.
-    by rewrite /XYJ/= in_setM => -[/andP[] /[!inE]].
+    apply: sub_finite_set (finite_setX finX finY) => z/=.
+    by rewrite /XYJ/= in_setX => -[/andP[] /[!inE]].
   exists XYJ => /=; first by split => //= z; rewrite /XYJ/= 2!inE=> -[[/XI]].
   rewrite [in RHS]fsbig_finite//= (exchange_big_dep xpredT)// pair_big_dep_cond.
   rewrite fsbig_finite//; apply: eq_fbigl => -[/= x y]; rewrite in_fset_set//.

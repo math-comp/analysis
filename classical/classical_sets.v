@@ -340,12 +340,12 @@ Definition setU A B := [set x | A x \/ B x].
 Definition nonempty A := exists a, A a.
 Definition setC A := [set a | ~ A a].
 Definition setD A B := [set x | A x /\ ~ B x].
-Definition setM T1 T2 (A1 : set T1) (A2 : set T2) := [set z | A1 z.1 /\ A2 z.2].
+Definition setX T1 T2 (A1 : set T1) (A2 : set T2) := [set z | A1 z.1 /\ A2 z.2].
 Definition fst_set T1 T2 (A : set (T1 * T2)) := [set x | exists y, A (x, y)].
 Definition snd_set T1 T2 (A : set (T1 * T2)) := [set y | exists x, A (x, y)].
-Definition setMR T1 T2 (A1 : set T1) (A2 : T1 -> set T2) :=
+Definition setXR T1 T2 (A1 : set T1) (A2 : T1 -> set T2) :=
   [set z | A1 z.1 /\ A2 z.1 z.2].
-Definition setML T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :=
+Definition setXL T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :=
   [set z | A1 z.2 z.1 /\ A2 z.2].
 
 Lemma mksetE (P : T -> Prop) x : [set x | P x] x = P x.
@@ -375,9 +375,15 @@ Arguments setI _ _ _ _ /.
 Arguments setU _ _ _ _ /.
 Arguments setC _ _ _ /.
 Arguments setD _ _ _ _ /.
-Arguments setM _ _ _ _ _ /.
-Arguments setMR _ _ _ _ _ /.
-Arguments setML _ _ _ _ _ /.
+Arguments setX _ _ _ _ _ /.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX.")]
+Notation setM := setX (only parsing).
+Arguments setXR _ _ _ _ _ /.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXR.")]
+Notation setMR := setXR (only parsing).
+Arguments setXL _ _ _ _ _ /.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXL.")]
+Notation setML := setXL (only parsing).
 Arguments fst_set _ _ _ _ /.
 Arguments snd_set _ _ _ _ /.
 Arguments subsetP {T A B}.
@@ -391,11 +397,11 @@ Notation "a |` A" := ([set a] `|` A) : classical_set_scope.
 Notation "[ 'set' a1 ; a2 ; .. ; an ]" :=
   (setU .. (a1 |` [set a2]) .. [set an]) : classical_set_scope.
 Notation "A `&` B" := (setI A B) : classical_set_scope.
-Notation "A `*` B" := (setM A B) : classical_set_scope.
+Notation "A `*` B" := (setX A B) : classical_set_scope.
 Notation "A .`1" := (fst_set A) : classical_set_scope.
 Notation "A .`2" := (snd_set A) : classical_set_scope.
-Notation "A `*`` B" := (setMR A B) : classical_set_scope.
-Notation "A ``*` B" := (setML A B) : classical_set_scope.
+Notation "A `*`` B" := (setXR A B) : classical_set_scope.
+Notation "A ``*` B" := (setXL A B) : classical_set_scope.
 Notation "~` A" := (setC A) : classical_set_scope.
 Notation "[ 'set' ~ a ]" := (~` [set a]) : classical_set_scope.
 Notation "A `\` B" := (setD A B) : classical_set_scope.
@@ -552,7 +558,7 @@ Proof. by apply/idP/andP; rewrite !inE notin_setE. Qed.
 Lemma in_setU (x : T) A B : (x \in A `|` B) = (x \in A) || (x \in B).
 Proof. by apply/idP/orP; rewrite !inE. Qed.
 
-Lemma in_setM T' (x : T * T') A E : (x \in A `*` E) = (x.1 \in A) && (x.2 \in E).
+Lemma in_setX T' (x : T * T') A E : (x \in A `*` E) = (x.1 \in A) && (x.2 \in E).
 Proof. by apply/idP/andP; rewrite !inE. Qed.
 
 Lemma set_valP {A} (x : A) : A (val x).
@@ -1078,48 +1084,48 @@ apply/seteqP; split=> [x [[Ax|Bx] Cx]|x [[Ax]|[Bx] Cx]].
 - by split=> //; right.
 Qed.
 
-Lemma setM0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
+Lemma setX0 T' (A : set T) : A `*` set0 = set0 :> set (T * T').
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 
-Lemma set0M T' (A : set T') : set0 `*` A = set0 :> set (T * T').
+Lemma set0X T' (A : set T') : set0 `*` A = set0 :> set (T * T').
 Proof. by rewrite predeqE => -[t u]; split => // -[]. Qed.
 
-Lemma setMTT T' : setT `*` setT = setT :> set (T * T').
+Lemma setXTT T' : setT `*` setT = setT :> set (T * T').
 Proof. exact/predeqP. Qed.
 
-Lemma setMT T1 T2 (A : set T1) : A `*` @setT T2 = fst @^-1` A.
+Lemma setXT T1 T2 (A : set T1) : A `*` @setT T2 = fst @^-1` A.
 Proof. by rewrite predeqE => -[x y]; split => //= -[]. Qed.
 
-Lemma setTM T1 T2 (B : set T2) : @setT T1 `*` B = snd @^-1` B.
+Lemma setTX T1 T2 (B : set T2) : @setT T1 `*` B = snd @^-1` B.
 Proof. by rewrite predeqE => -[x y]; split => //= -[]. Qed.
 
-Lemma setMI T1 T2 (X1 : set T1) (X2 : set T2) (Y1 : set T1) (Y2 : set T2) :
+Lemma setXI T1 T2 (X1 : set T1) (X2 : set T2) (Y1 : set T1) (Y2 : set T2) :
   (X1 `&` Y1) `*` (X2 `&` Y2) = X1 `*` X2 `&` Y1 `*` Y2.
 Proof. by rewrite predeqE => -[x y]; split=> [[[? ?] [*]//]|[] [? ?] [*]]. Qed.
 
-Lemma setSM T1 T2 (C D : set T1) (A B : set T2) :
+Lemma setSX T1 T2 (C D : set T1) (A B : set T2) :
   A `<=` B -> C `<=` D -> C `*` A `<=` D `*` B.
 Proof. by move=> AB CD x [] /CD Dx1 /AB Bx2. Qed.
 
-Lemma setM_bigcupr T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
+Lemma setX_bigcupr T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
   A `*` \bigcup_(i in P) F i = \bigcup_(i in P) (A `*` F i).
 Proof.
 rewrite predeqE => -[x y]; split; first by move=> [/= Ax [n Pn Fny]]; exists n.
 by move=> [n Pn [/= Ax Fny]]; split => //; exists n.
 Qed.
 
-Lemma setM_bigcupl T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
+Lemma setX_bigcupl T1 T2 I (F : I -> set T2) (P : set I) (A : set T1) :
   \bigcup_(i in P) F i `*` A = \bigcup_(i in P) (F i `*` A).
 Proof.
 rewrite predeqE => -[x y]; split; first by move=> [[n Pn Fnx] Ax]; exists n.
 by move=> [n Pn [/= Ax Fny]]; split => //; exists n.
 Qed.
 
-Lemma bigcupM1l T1 T2 (A1 : set T1) (A2 : T1 -> set T2) :
-  \bigcup_(i in A1) ([set i] `*` (A2 i)) = A1 `*`` A2.
+Lemma bigcupX1l T1 T2 (A1 : set T1) (A2 : T1 -> set T2) :
+  \bigcup_(i in A1) ([set i] `*` A2 i) = A1 `*`` A2.
 Proof. by apply/predeqP => -[i j]; split=> [[? ? [/= -> //]]|[]]; exists i. Qed.
 
-Lemma bigcupM1r T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :
+Lemma bigcupX1r T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :
   \bigcup_(i in A2) (A1 i `*` [set i]) = A1 ``*` A2.
 Proof. by apply/predeqP => -[i j]; split=> [[? ? [? /= -> //]]|[]]; exists j. Qed.
 
@@ -1198,6 +1204,30 @@ Notation setIv := setICr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.2.0", note="Use notin_setE instead.")]
 Notation notin_set := notin_setE (only parsing).
 Arguments setU_id2r {T} C {A B}.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to in_setX.")]
+Notation in_setM := in_setX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX0.")]
+Notation setM0 := setX0 (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to set0X.")]
+Notation set0M := set0X (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXTT.")]
+Notation setMTT := setXTT (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXT.")]
+Notation setMT := setXT (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setTX.")]
+Notation setTM := setTX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setXI.")]
+Notation setMI := setXI (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX_bigcupr.")]
+Notation setM_bigcupr := setX_bigcupr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setX_bigcupl.")]
+Notation setM_bigcupl := setX_bigcupl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to setSX.")]
+Notation setSM := setSX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to bigcupX1l.")]
+Notation bigcupM1l := bigcupX1l (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to bigcupX1r.")]
+Notation bigcupM1r := bigcupX1r (only parsing).
 
 Section set_order.
 Import Order.TTheory.
@@ -1605,7 +1635,7 @@ Arguments sub_image_setI {aT rT f A B} t _.
 Lemma image2_subset {aT bT rT : Type} (f : aT -> bT -> rT)
     (A B : set aT) (C D : set bT) : A `<=` B -> C `<=` D ->
   [set f x y | x in A & y in C] `<=` [set f x y | x in B & y in D].
-Proof. by move=> AB CD; rewrite !image2E; apply: image_subset; exact: setSM. Qed.
+Proof. by move=> AB CD; rewrite !image2E; apply: image_subset; exact: setSX. Qed.
 
 Lemma image_comp T1 T2 T3 (f : T1 -> T2) (g : T2 -> T3) A :
   g @` (f @` A) = (g \o f) @` A.
@@ -1975,7 +2005,7 @@ Lemma setD_bigcupl (F : I -> set T) (P : set I) (A : set T) :
   \bigcup_(i in P) F i `\` A = \bigcup_(i in P) (F i `\` A).
 Proof. by rewrite setDE setI_bigcupl; under eq_bigcupr do rewrite -setDE. Qed.
 
-Lemma bigcup_setM_dep {J : Type} (F : I -> J -> set T)
+Lemma bigcup_setX_dep {J : Type} (F : I -> J -> set T)
     (P : set I) (Q : I -> set J) :
   \bigcup_(k in P `*`` Q) F k.1 k.2 = \bigcup_(i in P) \bigcup_(j in Q i) F i j.
 Proof.
@@ -1983,9 +2013,9 @@ apply/predeqP => x; split=> [|[i Pi [j Pj Fijx]]]; last by exists (i, j).
 by move=> [[/= i j] [Pi Qj] Fijx]; exists i => //; exists j.
 Qed.
 
-Lemma bigcup_setM {J : Type} (F : I -> J -> set T) (P : set I) (Q : set J) :
+Lemma bigcup_setX {J : Type} (F : I -> J -> set T) (P : set I) (Q : set J) :
   \bigcup_(k in P `*` Q) F k.1 k.2 = \bigcup_(i in P) \bigcup_(j in Q) F i j.
-Proof. exact: bigcup_setM_dep. Qed.
+Proof. exact: bigcup_setX_dep. Qed.
 
 Lemma bigcup_bigcup T' (F : I -> set T) (P : set I) (G : T -> set T') :
   \bigcup_(i in \bigcup_(n in P) F n) G i =
@@ -2033,6 +2063,11 @@ Qed.
 End bigop_lemmas.
 Arguments bigcup_setD1 {T I} x.
 Arguments bigcap_setD1 {T I} x.
+
+#[deprecated(since="mathcomp-analysis 1.3.0",note="renamed to bigcup_setX_dep")]
+Notation bigcup_setM_dep := bigcup_setX_dep (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0",note="renamed to bigcup_setX")]
+Notation bigcup_setM := bigcup_setX (only parsing).
 
 Lemma setD_bigcup {T} (I : eqType) (F : I -> set T) (P : set I) (j : I) : P j ->
   F j `\` \bigcup_(i in [set k | P k /\ k != j]) (F j `\` F i) =
@@ -3165,16 +3200,22 @@ Lemma fst_set_fst A : A `<=` A.`1 \o fst. Proof. by move=> [x y]; exists y. Qed.
 
 Lemma snd_set_snd A: A `<=` A.`2 \o snd. Proof. by move=> [x y]; exists x. Qed.
 
-Lemma fst_setM (X : set T1) (Y : set T2) : (X `*` Y).`1 `<=` X.
+Lemma fst_setX (X : set T1) (Y : set T2) : (X `*` Y).`1 `<=` X.
 Proof. by move=> x [y [//]]. Qed.
 
-Lemma snd_setM (X : set T1) (Y : set T2) : (X `*` Y).`2 `<=` Y.
+Lemma snd_setX (X : set T1) (Y : set T2) : (X `*` Y).`2 `<=` Y.
 Proof. by move=> x [y [//]]. Qed.
 
-Lemma fst_setMR (X : set T1) (Y : T1 -> set T2) : (X `*`` Y).`1 `<=` X.
+Lemma fst_setXR (X : set T1) (Y : T1 -> set T2) : (X `*`` Y).`1 `<=` X.
 Proof. by move=> x [y [//]]. Qed.
 
 End product.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to fst_setX.")]
+Notation fst_setM := fst_setX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to snd_setX.")]
+Notation snd_setM := snd_setX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to fst_setXR instead.")]
+Notation fst_setMR := fst_setXR (only parsing).
 
 Section section.
 Variables (T1 T2 : Type).
@@ -3208,25 +3249,25 @@ Proof. by rewrite predeqE /xsection => y; split => //=; rewrite inE. Qed.
 Lemma ysection0 y : ysection set0 y = set0.
 Proof. by rewrite predeqE /ysection => x; split => //=; rewrite inE. Qed.
 
-Lemma in_xsectionM X1 X2 x : x \in X1 -> xsection (X1 `*` X2) x = X2.
+Lemma in_xsectionX X1 X2 x : x \in X1 -> xsection (X1 `*` X2) x = X2.
 Proof.
-move=> xX1; apply/seteqP; split=> [y /xsection_snd_set|]; first exact: snd_setM.
+move=> xX1; apply/seteqP; split=> [y /xsection_snd_set|]; first exact: snd_setX.
 by move=> y X2y; rewrite /xsection/= inE; split=> //=; rewrite inE in xX1.
 Qed.
 
-Lemma in_ysectionM X1 X2 y : y \in X2 -> ysection (X1 `*` X2) y = X1.
+Lemma in_ysectionX X1 X2 y : y \in X2 -> ysection (X1 `*` X2) y = X1.
 Proof.
-move=> yX2; apply/seteqP; split=> [x /ysection_fst_set|]; first exact: fst_setM.
+move=> yX2; apply/seteqP; split=> [x /ysection_fst_set|]; first exact: fst_setX.
 by move=> x X1x; rewrite /ysection/= inE; split=> //=; rewrite inE in yX2.
 Qed.
 
-Lemma notin_xsectionM X1 X2 x : x \notin X1 -> xsection (X1 `*` X2) x = set0.
+Lemma notin_xsectionX X1 X2 x : x \notin X1 -> xsection (X1 `*` X2) x = set0.
 Proof.
 move=> xX1; rewrite /xsection /= predeqE => y; split => //.
 by rewrite /xsection/= inE => -[] /=; rewrite notin_setE in xX1.
 Qed.
 
-Lemma notin_ysectionM X1 X2 y : y \notin X2 -> ysection (X1 `*` X2) y = set0.
+Lemma notin_ysectionX X1 X2 y : y \notin X2 -> ysection (X1 `*` X2) y = set0.
 Proof.
 move=> yX2; rewrite /xsection /= predeqE => x; split => //.
 by rewrite /ysection/= inE => -[_]; rewrite notin_setE in yX2.
@@ -3289,6 +3330,14 @@ Lemma ysection_preimage_fst (A : set T1) y : ysection (fst @^-1` A) y = A.
 Proof. by apply/seteqP; split; move=> x/=; rewrite /ysection/= inE. Qed.
 
 End section.
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to in_xsectionX.")]
+Notation in_xsectionM := in_xsectionX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to in_ysectionX.")]
+Notation in_ysectionM := in_ysectionX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to notin_xsectionX.")]
+Notation notin_xsectionM := notin_xsectionX (only parsing).
+#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to notin_ysectionX.")]
+Notation notin_ysectionM := notin_ysectionX (only parsing).
 
 Notation "B \; A" :=
   ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : classical_set_scope.

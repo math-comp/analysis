@@ -1896,7 +1896,7 @@ Notation lipschitz f := [lipschitz f x | x in setT].
 
 Lemma lipschitz_set0 (K : numFieldType) (V W : normedModType K)
   (f : V -> W) : [lipschitz f x | x in set0].
-Proof. by apply: nearW; rewrite setM0 => ?; apply: globally0. Qed.
+Proof. by apply: nearW; rewrite setX0 => ?; apply: globally0. Qed.
 
 Lemma lipschitz_set1 (K : numFieldType) (V W : normedModType K)
   (f : V -> W) (a : V) : [lipschitz f x | x in [set a]].

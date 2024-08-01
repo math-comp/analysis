@@ -3014,7 +3014,7 @@ Unshelve. all: by end_near. Qed.
 
 End near_covering.
 
-Lemma compact_setM {U V : topologicalType} (P : set U) (Q : set V) :
+Lemma compact_setX {U V : topologicalType} (P : set U) (Q : set V) :
   compact P -> compact Q -> compact (P `*` Q).
 Proof.
 rewrite !compact_near_coveringP => cptP cptQ I F Pr Ff cvfPQ.
@@ -3027,6 +3027,8 @@ exists (N2, N1`*`G); first by split => //; exists (N1, G).
 case=> a [b i] /= [N2a [N1b]] Gi.
 by apply: (ngPr (b, a, i)); split => //; exact: N1N2N.
 Unshelve. all: by end_near. Qed.
+#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `compact_setX`")]
+Notation compact_setM := compact_setX (only parsing).
 
 Section UltraFilters.
 
@@ -4309,13 +4311,13 @@ Qed.
 Lemma prod_ent_filter : Filter prod_ent.
 Proof.
 have prodF := filter_prod_filter (@entourage_pfilter U) (@entourage_pfilter V).
-split; rewrite /prod_ent; last 1 first.
+split; rewrite /prod_ent.
+- by rewrite -setXTT; apply: prod_entP filterT filterT.
+- move=> A B /= entA entB; apply: filterS (filterI entA entB) => xy [].
+  move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
+  move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.
+  by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP->.
 - by move=> A B sAB /=; apply: filterS => ? [xy /sAB ??]; exists xy.
-- by rewrite -setMTT; apply: prod_entP filterT filterT.
-move=> A B /= entA entB; apply: filterS (filterI entA entB) => xy [].
-move=> [zt Azt ztexy] [zt' Bzt' zt'exy]; exists zt => //; split=> //.
-move/eqP: ztexy; rewrite -zt'exy !xpair_eqE.
-by rewrite andbACA -!xpair_eqE -!surjective_pairing => /eqP->.
 Qed.
 
 Lemma prod_ent_refl A : prod_ent A -> [set xy | xy.1 = xy.2] `<=` A.

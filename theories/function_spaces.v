@@ -1428,7 +1428,7 @@ pose L := [set h | h @` ((K `&` closure P') `*` M) `<=` O].
 exists (setT, P' `*` L).
   split => //; [exact: filterT|]; exists (P', L) => //; split => //.
   apply: open_nbhs_nbhs; split; first apply: compact_open_open => //.
-    apply: compact_setM => //; apply: compact_closedI => //.
+    apply: compact_setX => //; apply: compact_closedI => //.
     exact: closed_closure.
   by move=> ? [[a b] [[Ka /cPO +] Mb <-]] => /(_ _ Mb)/nbhs_singleton.
 move=> [b [a h]] [/= _ [Pa] +] Ma Ka; apply.
