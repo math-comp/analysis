@@ -243,7 +243,7 @@ From HB Require Import structures.
 (*                         outer measure mu, i.e., sets A such that           *)
 (*                         forall B, mu A = mu (A `&` B) + mu (A `&` ~` B)    *)
 (* caratheodory_type mu := T, where mu : {outer_measure set T -> \bar R}      *)
-(*                         It is a canonical mesurableType copy of T.         *)
+(*                         It is a canonical measurableType copy of T.        *)
 (*                         The restriction of the outer measure mu to the     *)
 (*                         sigma algebra of Caratheodory measurable sets is a *)
 (*                         measure.                                           *)
