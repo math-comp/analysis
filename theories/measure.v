@@ -358,7 +358,7 @@ Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
 Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
 Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
-Definition setY_closed := forall A B, G A -> G B -> G (A `^` B).
+Definition setY_closed := forall A B, G A -> G B -> G (A `+` B).
 
 Definition fin_bigcap_closed :=
     forall I (D : set I) A_, finite_set D -> (forall i, D i -> G (A_ i)) ->
