@@ -42,7 +42,7 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (* |                   `` `\|` `` |==| $\cup$                                 *)
 (* |                    `` `&` `` |==| $\cap$                                 *)
 (* |                    `` `\` `` |==| set difference                         *)
-(* |                    `` `^` `` |==| symmetric difference                   *)
+(* |                    `` `+` `` |==| symmetric difference                   *)
 (* |                     `` ~` `` |==| set complement                         *)
 (* |                   `` `<=` `` |==| $\subseteq$                            *)
 (* |                 `` f @` A `` |==| image by f of A                        *)
@@ -245,11 +245,7 @@ Reserved Notation "~` A" (at level 35, right associativity).
 Reserved Notation "[ 'set' ~ a ]" (at level 0, format "[ 'set' ~  a ]").
 Reserved Notation "A `\` B" (at level 50, left associativity).
 Reserved Notation "A `\ b" (at level 50, left associativity).
-Reserved Notation "A `^` B" (at level 52, left associativity).
-(*
-Reserved Notation "A `+` B"  (at level 54, left associativity).
-Reserved Notation "A +` B"  (at level 54, left associativity).
-*)
+Reserved Notation "A `+` B" (at level 54, left associativity).
 Reserved Notation "\bigcup_ ( i < n ) F"
   (at level 41, F at level 41, i, n at level 50,
            format "'[' \bigcup_ ( i  <  n ) '/  '  F ']'").
@@ -410,7 +406,7 @@ Notation "[ 'disjoint' A & B ]" := (disj_set A B) : classical_set_scope.
 
 Definition setY {T : Type} (A B : set T) := (A `\` B) `|` (B `\` A).
 Arguments setY _ _ _ _ /.
-Notation "A `^` B" := (setY A B) : classical_set_scope.
+Notation "A `+` B" := (setY A B) : classical_set_scope.
 
 Notation "'`I_' n" := [set k | is_true (k < n)%N].
 
@@ -1135,16 +1131,16 @@ Proof. by move=> A; rewrite /setY setD0 set0D setU0. Qed.
 Lemma set0Y : left_id set0 (@setY T).
 Proof. by move=> A; rewrite /setY set0D setD0 set0U. Qed.
 
-Lemma setYK A : A `^` A = set0.
+Lemma setYK A : A `+` A = set0.
 Proof. by rewrite /setY setDv setU0. Qed.
 
 Lemma setYC : commutative (@setY T).
 Proof. by move=> A B; rewrite /setY setUC. Qed.
 
-Lemma setYTC A : A `^` [set: T] = ~` A.
+Lemma setYTC A : A `+` [set: T] = ~` A.
 Proof. by rewrite /setY setDT set0U setTD. Qed.
 
-Lemma setTYC A : [set: T] `^` A = ~` A.
+Lemma setTYC A : [set: T] `+` A = ~` A.
 Proof. by rewrite setYC setYTC. Qed.
 
 Lemma setYA : associative (@setY T).
@@ -1164,34 +1160,34 @@ Qed.
 Lemma setIYr : right_distributive (@setI T) (@setY T).
 Proof. by move=> A B C; rewrite setIC setIYl -2!(setIC A). Qed.
 
-Lemma setY_def A B : A `^` B = (A `\` B) `|` (B `\` A).
+Lemma setY_def A B : A `+` B = (A `\` B) `|` (B `\` A).
 Proof. by []. Qed.
 
-Lemma setYE A B : A `^` B = (A `|` B) `\` (A `&` B).
+Lemma setYE A B : A `+` B = (A `|` B) `\` (A `&` B).
 Proof.
 rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
 Qed.
 
-Lemma setYU A B : (A `^` B) `^` (A `&` B) = A `|` B.
+Lemma setYU A B : (A `+` B) `+` (A `&` B) = A `|` B.
 Proof.
 rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
 Qed.
 
-Lemma setYI A B : (A `|` B) `\` (A `^` B) = A `&` B.
+Lemma setYI A B : (A `|` B) `\` (A `+` B) = A `&` B.
 Proof.
 rewrite /setY; apply/seteqP; split => x/=;
 by have [|] := pselect (A x); have [|] := pselect (B x); tauto.
 Qed.
 
-Lemma setYD A B : A `^` (A `&` B) = A `\` B.
+Lemma setYD A B : A `+` (A `&` B) = A `\` B.
 Proof. by rewrite /setY; apply/seteqP; split => x/=; tauto. Qed.
 
-Lemma setYCT A : A `^` ~` A = [set: T].
+Lemma setYCT A : A `+` ~` A = [set: T].
 Proof. by rewrite /setY setDE setCK setIid setDE setIid setUv. Qed.
 
-Lemma setCYT A : ~` A `^` A = [set: T].
+Lemma setCYT A : ~` A `+` A = [set: T].
 Proof. by rewrite setYC setYCT. Qed.
 
 End basic_lemmas.
