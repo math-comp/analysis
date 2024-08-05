@@ -273,7 +273,7 @@ apply lee_fsum=> [|i Xi]; first exact: finite_set_fst.
 rewrite ereal_sup_ubound //=; have ? : finite_set (X.`2 `&` J i).
   by apply: finite_setI; left; exact: finite_set_snd.
 exists (X.`2 `&` J i) => //.
-rewrite [in RHS]big_fset_condE/= fsbig_finite//; apply eq_fbigl => j.
+rewrite [in RHS]big_fset_condE/= fsbig_finite//; apply/eq_fbigl => j.
 by rewrite in_fset_set// !inE/= in_setI in_fset_set//; exact: finite_set_snd.
 Qed.
 

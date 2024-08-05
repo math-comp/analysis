@@ -5845,7 +5845,7 @@ move: e1 e2 x z; elim: n.
     - apply: n_step_ball_le; last exact: Oxy.
       by rewrite -deE lerDl; apply: ltW.
     - apply: (@n_step_ball_le _ _ d2); last by split.
-      rewrite -[e2]addr0 -(subrr e1) addrA -lerBlDr opprK addrC.
+      rewrite -[e2]addr0 -(subrr e1) addrA -lerBlDr opprK [leLHS]addrC.
       by rewrite [e2 + _]addrC -deE; exact: lerD.
     - by rewrite addn0.
   move=> /negP; rewrite -ltNge//.
