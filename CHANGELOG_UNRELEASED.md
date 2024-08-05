@@ -121,8 +121,6 @@
    `total_order`, `nonempty`, `minimum_of`, `maximum_of`, `well_order`, `chain`, `wo_chain`
   + lemmas `antisymmetric_wo_chain`, `antisymmetric_well_order`, `wo_chainW`, `wo_chain_reflexive`,
     `wo_chain_antisymmetric`, `Zorn's_lemma`, `Hausdorff_maximal_principle`, `well_ordering_principle`
-- in `set_interval.v`:
-  + lemma `subset_itv_oo_ccW`
 
 - in `realfun.v`:
   + lemmas `nondecreasing_at_left_at_right`, `nonincreasing_at_left_at_right`

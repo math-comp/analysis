@@ -207,13 +207,6 @@ move=> /andP[]; rewrite lt_neqAle => /andP[xz zx ->].
 by rewrite andbT; split => //; exact/nesym/eqP.
 Qed.
 
-Lemma subset_itv_oo_ccW x y u v : (u <= x)%O -> (y <= v)%O ->
-  `]x, y[ `<=` `[u, v].
-Proof.
-move=> ux yv; apply: (subset_trans _ (@subset_itv_oo_cc _ _ _ _)) => z/=.
-by rewrite !in_itv/= => /andP[? zy]; rewrite (le_lt_trans ux) ?(lt_le_trans zy).
-Qed.
-
 End set_itv_porderType.
 Arguments neitv {d T} _.
 

@@ -386,11 +386,11 @@ Let nondecreasing_at_right_is_cvgrW f a b r : a < r -> r < b ->
 Proof.
 move=> ar rb ndf H; apply: nondecreasing_at_right_is_cvgr.
 - near=> s => x y xrs yrs xy; rewrite ndf//.
-  + by apply: subset_itv_oo_ccW xrs; exact/ltW.
-  + by apply: subset_itv_oo_ccW yrs; exact/ltW.
+  + by apply: subset_itvW xrs; exact/ltW.
+  + by apply: subset_itvW yrs; exact/ltW.
 - near=> x; exists (f r) => _ /= [s srx <-]; rewrite ndf//.
   + by apply: subset_itv_oo_cc; rewrite in_itv/= ar.
-  + by apply: subset_itv_oo_ccW srx; exact/ltW.
+  + by apply: subset_itvW srx; exact/ltW.
   + by move: srx; rewrite in_itv/= => /andP[/ltW].
 Unshelve. all: by end_near. Qed.
 
@@ -399,10 +399,10 @@ Let nondecreasing_at_left_is_cvgrW f a b r : a < r -> r < b ->
 Proof.
 move=> ar rb ndf H; apply: nondecreasing_at_left_is_cvgr.
 - near=> s => x y xrs yrs xy; rewrite ndf//.
-  + by apply: subset_itv_oo_ccW xrs; exact/ltW.
-  + by apply: subset_itv_oo_ccW yrs; exact/ltW.
+  + by apply: subset_itvW xrs; exact/ltW.
+  + by apply: subset_itvW yrs; exact/ltW.
 - near=> x; exists (f r) => _ /= [s srx <-]; rewrite ndf//.
-  + by apply: subset_itv_oo_ccW srx; exact/ltW.
+  + by apply: subset_itvW srx; exact/ltW.
   + by apply: subset_itv_oo_cc; rewrite in_itv/= ar.
   + by move: srx; rewrite in_itv/= => /andP[_ /ltW].
 Unshelve. all: by end_near. Qed.
