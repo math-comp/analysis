@@ -572,8 +572,8 @@ Proof.
 move=> has_ubA A0; apply/eqP; rewrite eq_le; apply/andP; split.
   by apply: ub_ereal_sup => /= y [r Ar <-{y}]; rewrite lee_fin sup_ubound.
 set esup := ereal_sup _; have := leey esup.
-rewrite le_eqVlt => /predU1P[->|esupoo]; first by rewrite leey.
-have := leNye esup; rewrite le_eqVlt => /predU1P[/esym|ooesup].
+rewrite [X in _ X]le_eqVlt => /predU1P[->|esupoo]; first by rewrite leey.
+have := leNye esup; rewrite [in X in X -> _]le_eqVlt => /predU1P[/esym|ooesup].
   case: A0 => i Ai.
   by move=> /ereal_sup_ninfty /(_ i%:E) /(_ (ex_intro2 A _ i Ai erefl)).
 have esup_fin_num : esup \is a fin_num.
