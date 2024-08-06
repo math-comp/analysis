@@ -85,7 +85,10 @@ We try to preserve backward compatibility as best as we can.
 Each file is documented in its header
 ([documentation for the last version](https://math-comp.github.io/analysis/htmldoc_1_3_0/index.html), using [`coq2html`](https://github.com/xavierleroy/coq2html)).
 
-Overview presentation: [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
+Overview presentations:
+- [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
+- [A selection of links to well-known lemmas](https://github.com/math-comp/analysis/wiki/What's-where%3F)
+- [An Introduction to MathComp-Analysis](https://staff.aist.go.jp/reynald.affeldt/documents/karate-coq.pdf) (2024)
 
 Publications about MathComp-Analysis:
 - [Formalization Techniques for Asymptotic Reasoning in Classical Analysis](https://jfr.unibo.it/article/view/8124) (2018) doi:[10.6092/issn.1972-5787/8124](https://doi.org/10.6092/issn.1972-5787/8124)
