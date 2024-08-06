@@ -497,7 +497,7 @@ apply/ler_gtP => _ /posnumP[e]; rewrite ler_pdivrMr //.
 have /oid /nbhs_ballP [_ /posnumP[d] dfe] := !! gt0 e.
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
 rewrite -{1}(@scalerKV _ _ k _ x) /k // linearZZ normrZ.
-rewrite -ler_pdivlMl; last by rewrite gtr0_norm.
+rewrite -ler_pdivlMl; last by rewrite gtr0_norm invr_gt0.
 rewrite mulrCA (@le_trans _ _ (e%:num * `|k^-1 *: x|)) //; last first.
   by rewrite ler_pM // normrZ normfV.
 apply: dfe; rewrite -ball_normE /= sub0r normrN normrZ.
@@ -761,9 +761,9 @@ rewrite -[`|u|]/((PosNum un0)%:num) -[`|v|]/((PosNum vn0)%:num).
 set ku := 2 / e%:num * (PosNum un0)%:num.
 set kv := 2 / e%:num * (PosNum vn0)%:num.
 rewrite -[X in f X](@scalerKV _ _ ku) /ku // linearZl_LR normrZ.
-rewrite gtr0_norm // -ler_pdivlMl //.
+rewrite gtr0_norm ?mulr_gt0 //= -ler_pdivlMl ?mulr_gt0 //=.
 rewrite -[X in f _ X](@scalerKV _ _ kv) /kv // linearZr_LR normrZ.
-rewrite gtr0_norm // -ler_pdivlMl //.
+rewrite gtr0_norm ?mulr_gt0 // -ler_pdivlMl ?mulr_gt0 //=.
 suff /he : ball 0 e%:num (ku^-1 *: u, kv^-1 *: v).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
   rewrite ler_pdivlMl 1?pmulr_lgt0// mulr1 ler_pdivlMl 1?pmulr_lgt0//.
