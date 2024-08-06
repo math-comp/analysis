@@ -130,17 +130,17 @@ The structures introduced by MathComp-Analysis are highlighted.
 
 This library was inspired by the [Coquelicot library](http://coquelicot.saclay.inria.fr/)
 by Sylvie Boldo, Catherine Lelay, and Guillaume Melquiond.
-`topology.v` and `normedtype.v` contained a reimplementation of file
+In the first releases, `topology.v` and `normedtype.v` contained a reimplementation of the file
 `Hierarchy.v` from the library Coquelicot.
 
 The instantiation of the mathematical structures of the Mathematical Components library
 with the real numbers of the standard Coq library used a well-known file (`Rstruct.v`)
 from the [CoqApprox library](http://tamadi.gforge.inria.fr/CoqApprox/) (with
-modifications from various authors).
+modifications by various authors).
 
-Our proof of Zorn's Lemma in `classical_sets.v` (NB: new filename) is a reimplementation
-of the one by Daniel Schepler (https://github.com/coq-community/zorns-lemma); we also took
-inspiration from his work on topology (https://github.com/coq-community/topology) for parts
+The proof of Zorn's Lemma in `classical_sets.v` (NB: new filename) was a reimplementation
+of the one by Daniel Schepler (https://github.com/coq-community/zorns-lemma) but it has been rewritten for version 1.3.0;
+we also originally took inspiration from Schepler's work on topology (https://github.com/coq-community/topology) for parts
 of `topology.v`.
 
 [ORIGINAL_FILES.md](ORIGINAL_FILES.md) gives more details about the
