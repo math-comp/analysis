@@ -5989,7 +5989,7 @@ move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
   move=> y; rewrite /ball/= => xyd.
   have ? : ball x r `<=` ball y (r + d).
     move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
-    by rewrite (le_lt_trans (ler_normD _ _))// addrC ltrD// distrC.
+    by rewrite (le_lt_trans (ler_normD _ _))// [ltLHS]addrC ltrD// distrC.
   have ? : k <= \int[mu]_(y in ball y (r + d)) `|(f y)%:E|.
     apply: ge0_subset_integral =>//; [exact:measurable_ball|
                                       exact:measurable_ball|].
@@ -6027,7 +6027,7 @@ exists (ball x d).
 move=> y; rewrite /ball/= => xyd.
 have ? : ball x r `<=` ball y (r + d).
   move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
-  by rewrite (le_lt_trans (ler_normD _ _))// addrC ltrD// distrC.
+  by rewrite (le_lt_trans (ler_normD _ _))// [ltLHS]addrC ltrD// distrC.
 have ? : k <= \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
   apply: ge0_subset_integral => //; [exact: measurable_ball|
                                      exact: measurable_ball|].

@@ -213,7 +213,7 @@ apply/asboolP/nboundedP; exists e => [|n]; first by rewrite lt_max ltr_wpDl.
 case: (ltnP n K); last first.
   move/cu; rewrite inE eclamp_id ?ltr01 // => ltunBx1.
   rewrite lt_max; apply/orP; left; rewrite -[u n](addrK x) addrAC.
-  by apply/(le_lt_trans (ler_normD _ _)); rewrite addrC ltrD2l.
+  by apply/(le_lt_trans (ler_normD _ _)); rewrite [ltLHS]addrC ltrD2l.
 move=> lt_nK; have: `|u n| \in S; first by apply/map_f; rewrite mem_iota.
 move=> un_S; rewrite lt_max; apply/orP; right.
 case E: {+}K lt_nK => [|k] // lt_nSk; apply/ltr_pwDr; first apply/ltr01.

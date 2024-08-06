@@ -721,7 +721,7 @@ Fact dcomp (U V' W' : normedModType R) (f : U -> V') (g : V' -> W') x :
 Proof.
 move=> df dg; split; first by move=> ?; apply: continuous_comp.
 apply: eqaddoEx => y; rewrite diff_locallyx// -addrA diff_locallyxC// linearD.
-rewrite addrA -addrA; congr (_ + _ + _).
+rewrite addrA -[LHS]addrA; congr (_ + _ + _).
 rewrite diff_eqO // ['d f x : _ -> _]diff_eqO //.
 by rewrite {2}eqoO addOx compOo_eqox compoO_eqox addox.
 Qed.

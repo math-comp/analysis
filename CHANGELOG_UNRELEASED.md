@@ -161,6 +161,8 @@
 
 - in `classical_sets.v`:
   + lemmas `Zorn` and `ZL_preorder` now require a relation of type `rel T` instead of `T -> T -> Prop`
+- in `mathcomp_extra.v`:
+  + Notation "f \^-1" now at level 35 with f at next level
 
 ### Renamed
 

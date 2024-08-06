@@ -244,7 +244,7 @@ Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_wnDl/F0. Qed.
 Inductive boxed T := Box of T.
 
 Reserved Notation "`1- r" (format "`1- r", at level 2).
-Reserved Notation "f \^-1" (at level 3, format "f \^-1", left associativity).
+Reserved Notation "f \^-1" (at level 35, format "f \^-1").
 
 (* TODO: To be backported to finmap *)
 
