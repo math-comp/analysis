@@ -381,6 +381,61 @@ apply: @nonincreasing_at_right_is_cvgr.
   by rewrite oppr_itvoo.
 Qed.
 
+Let nondecreasing_at_right_is_cvgrW f a b r : a < r -> r < b ->
+  {in `[a, b] &, nondecreasing_fun f} -> cvg (f x @[x --> r^'+]).
+Proof.
+move=> ar rb ndf H; apply: nondecreasing_at_right_is_cvgr.
+- near=> s => x y xrs yrs xy; rewrite ndf//.
+  + by apply: subset_itvW xrs; exact/ltW.
+  + by apply: subset_itvW yrs; exact/ltW.
+- near=> x; exists (f r) => _ /= [s srx <-]; rewrite ndf//.
+  + by apply: subset_itv_oo_cc; rewrite in_itv/= ar.
+  + by apply: subset_itvW srx; exact/ltW.
+  + by move: srx; rewrite in_itv/= => /andP[/ltW].
+Unshelve. all: by end_near. Qed.
+
+Let nondecreasing_at_left_is_cvgrW f a b r : a < r -> r < b ->
+  {in `[a, b] &, nondecreasing_fun f} -> cvg (f x @[x --> r^'-]).
+Proof.
+move=> ar rb ndf H; apply: nondecreasing_at_left_is_cvgr.
+- near=> s => x y xrs yrs xy; rewrite ndf//.
+  + by apply: subset_itvW xrs; exact/ltW.
+  + by apply: subset_itvW yrs; exact/ltW.
+- near=> x; exists (f r) => _ /= [s srx <-]; rewrite ndf//.
+  + by apply: subset_itvW srx; exact/ltW.
+  + by apply: subset_itv_oo_cc; rewrite in_itv/= ar.
+  + by move: srx; rewrite in_itv/= => /andP[_ /ltW].
+Unshelve. all: by end_near. Qed.
+
+Lemma nondecreasing_at_left_at_right f a b :
+  {in `[a, b] &, nondecreasing_fun f} ->
+  {in `]a, b[, forall r, lim (f x @[x --> r^'-]) <= lim (f x @[x --> r^'+])}.
+Proof.
+move=> ndf r; rewrite in_itv/= => /andP[ar rb]; apply: limr_ge.
+  exact: nondecreasing_at_right_is_cvgrW ndf.
+near=> x; apply: limr_le; first exact: nondecreasing_at_left_is_cvgrW ndf.
+near=> y; rewrite ndf// ?in_itv/=.
+- apply/andP; split; first by near: y; apply: nbhs_left_ge.
+  exact: (le_trans _ (ltW rb)).
+- by rewrite (le_trans (ltW ar))/= ltW.
+- exact: (@le_trans _ _ r).
+Unshelve. all: by end_near. Qed.
+
+Lemma nonincreasing_at_left_at_right f a b :
+  {in `[a, b] &, nonincreasing_fun f} ->
+  {in `]a, b[, forall r, lim (f x @[x --> r^'-]) >= lim (f x @[x --> r^'+])}.
+Proof.
+move=> nif; have ndNf : {in `[a, b] &, nondecreasing_fun (-%R \o f)}.
+  by move=> x y xab yab xy /=; rewrite lerNl opprK nif.
+move/nondecreasing_at_left_at_right : (ndNf) => H x.
+rewrite in_itv/= => /andP[ax xb]; rewrite -[leLHS]opprK lerNl -!limN//.
+- by apply: H; rewrite !in_itv/= ax.
+- rewrite -(opprK f); apply: is_cvgN.
+  exact: nondecreasing_at_right_is_cvgrW ndNf.
+- rewrite -(opprK f);apply: is_cvgN.
+  exact: nondecreasing_at_left_is_cvgrW ndNf.
+Qed.
+
 End fun_cvg_realType.
 Arguments nondecreasing_at_right_cvgr {R f a} b.
 

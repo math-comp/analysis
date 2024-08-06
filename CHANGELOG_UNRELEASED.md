@@ -122,6 +122,9 @@
   + lemmas `antisymmetric_wo_chain`, `antisymmetric_well_order`, `wo_chainW`, `wo_chain_reflexive`,
     `wo_chain_antisymmetric`, `Zorn's_lemma`, `Hausdorff_maximal_principle`, `well_ordering_principle`
 
+- in `realfun.v`:
+  + lemmas `nondecreasing_at_left_at_right`, `nonincreasing_at_left_at_right`
+
 ### Changed
 
 - in `topology.v`:
