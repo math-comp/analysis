@@ -22,7 +22,7 @@ Latest releases: [[1.3.0] - 2024-08-06](#130---2024-08-06) and [[1.2.0] - 2024-0
 
 - in `classical_sets.v`:
   + lemma `setCD`
-  + definition `setY`, notation ``` `^` ```
+  + definition `setY`, notation ``` `+` ```
   + lemmas `setY0`, `set0Y`, `setYK`, `setYC`, `setYA`, `setIYl`, `mulrYr`,
     `setY_def`, `setYE`, `setYU`, `setYI`, `setYD`, `setYCT`, `setCYT`, `setYTC`, `setTYC`
   + lemma `setDU`
