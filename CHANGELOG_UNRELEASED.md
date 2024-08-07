@@ -56,6 +56,7 @@
 
 - in `normedtype.v`:
   + lemmas `nbhs_lt`, `nbhs_le`
+	+ `not_near_ninftyP`
 
 - in `lebesgue_integral.v`:
   + lemmas `eq_Rintegral`, `Rintegral_mkcond`, `Rintegral_mkcondr`, `Rintegral_mkcondl`,
