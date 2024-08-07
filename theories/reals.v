@@ -677,7 +677,7 @@ rewrite /bound_div (ltNge y 0) y0/= -mulr_natl -ltr_pdivrMr//.
 by rewrite archi_boundP// (divr_ge0 _(ltW _)).
 Qed.
 
-Lemma rat_in_itvoo (R : realType) (x y : R) :
+Lemma rat_in_itvoo (R : archiFieldType) (x y : R) :
   x < y -> exists q, ratr q \in `]x, y[.
 Proof.
 move=> xy; move: (xy); rewrite -subr_gt0.

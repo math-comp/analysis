@@ -9,6 +9,8 @@
 ### Renamed
 
 ### Generalized
+- in `reals.v`:
+  + lemma `rat_in_itvoo`
 
 ### Deprecated
 
