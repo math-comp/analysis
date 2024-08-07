@@ -349,7 +349,7 @@ apply: (@pseries_snd_diffs _ _ (`|x| + 1)).
 Qed.
 
 Lemma derivable_cos x : derivable (@cos R) x 1.
-Proof. by apply: ex_derive; apply: is_derive_cos. Qed.
+Proof. by apply: ex_derive; exact: is_derive_cos. Qed.
 
 Lemma continuous_cos : continuous (@cos R).
 Proof.
