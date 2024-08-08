@@ -259,7 +259,7 @@ move=> Rxx Rtr Cch sCS.
 pose CSch X := `[< [/\ chain R X, {subset C <= X} & {subset X <= S}] >].
 pose Rch (X Y : {pred T}) := `[< {subset X <= Y} >].
 have: {in CSch & &, transitive Rch}.
-  by apply: in3W => X Y Z /asboolP-sXY /asboolP-sYZ; apply/asboolP=> x /sXY/sYZ.
+  by move=> X Y Z ? ? ? /asboolP-sXY /asboolP-sYZ; apply/asboolP => x /sXY/sYZ.
 have /Zorn's_lemma/[apply]: {in CSch, reflexive Rch} by move=> X _; apply/asboolP.
 case=> [XX CSchXX XXwo | M /asboolP[Mch sCM sMS] maxM]; last first.
   exists M; split=> // X Xch sMX sXS.
@@ -301,7 +301,7 @@ have initRtr: transitive initR.
   move=> R2 R1 R3 /asboolP[D12 R12] /asboolP[D23 R23]; apply/asboolP.
   split=> [x /D12/D23// | x y D1x D3y]; rewrite R23 ?(D12 x) //.
   by case D2y: (y \in R2.1); [apply: R12 | rewrite (contraFF (D12 y))].
-have: {in pwo & &, transitive initR} by apply: in3W.
+have: {in pwo & &, transitive initR} by move=> X Y Z ? ? ?; exact: initRtr.
 have/Zorn's_lemma/[apply]: {in pwo, reflexive initR} by [].
 case=> [C pwoC Cch | [D R] /asboolP/=pwoR maxR].
   have /(@wo_chainW ({pred T} * rel T)%type) {}Cch := Cch.
