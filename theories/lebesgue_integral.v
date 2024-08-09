@@ -1130,7 +1130,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
     by apply: ereal_nondecreasing_cvgn => p q pq /=; rewrite lee_fin; exact/nd_g.
   by move/cvg_lim => -> //; apply: ereal_sup_ubound; exists n.
 have := leey (\int[mu]_x (f x)).
-rewrite le_eqVlt => /predU1P[|] mufoo; last first.
+rewrite [in X in X -> _]le_eqVlt => /predU1P[|] mufoo; last first.
   have : \int[mu]_x (f x) \is a fin_num by rewrite ge0_fin_numE// integral_ge0.
   rewrite ge0_integralTE// => /ub_ereal_sup_adherent h.
   apply/lee_addgt0Pr => _/posnumP[e].
@@ -2115,7 +2115,8 @@ have /cvg_ex[l g_l] := @is_cvg_max_g2 t.
 suff : l == f t by move=> /eqP <-.
 rewrite eq_le; apply/andP; split.
   by rewrite /f (le_trans _ (lim_max_g2_f _)) // (cvg_lim _ g_l).
-have := leey l; rewrite le_eqVlt => /predU1P[->|loo]; first by rewrite leey.
+have := leey l; rewrite [in X in X -> _]le_eqVlt => /predU1P[->|loo].
+  by rewrite leey.
 rewrite -(cvg_lim _ g_l) //= lime_le => //.
 near=> n.
 have := leey (g n t); rewrite le_eqVlt => /predU1P[|] fntoo.
