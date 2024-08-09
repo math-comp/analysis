@@ -4,6 +4,12 @@ Latest releases: [[1.3.1] - 2024-08-09](#131---2024-08-09) and [[1.3.0] - 2024-0
 
 ## [1.3.1] - 2024-08-09
 
+### Changed
+
+- in `wochoice.v`:
+  + two applications of the lemma `in3W` have been removed because they seem to cause
+    a universe inconsistency when one loads the `ring` module of `algebra-tactics`
+
 ### Generalized
 
 - in `reals.v`:
