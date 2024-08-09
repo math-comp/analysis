@@ -3377,26 +3377,22 @@ Let mesf : measurable_fun D f. Proof. exact: measurable_int intf. Qed.
 Lemma integralZl r :
   \int[mu]_(x in D) (r%:E * f x) = r%:E * \int[mu]_(x in D) f x.
 Proof.
-have [r0|r0|->] := ltgtP r 0%R; last first.
-  by under eq_fun do rewrite mul0e; rewrite mul0e integral0.
-- rewrite [in LHS]integralE// gt0_funeposM// gt0_funenegM//.
-  rewrite (ge0_integralZl_EFin _ _ _ _ (ltW r0)) //; last first.
-    exact: measurable_funepos.
-  rewrite (ge0_integralZl_EFin _ _ _ _ (ltW r0)) //; last first.
-    exact: measurable_funeneg.
-  rewrite -muleBr 1?[in RHS]integralE//.
-  exact: integrable_add_def.
+have [r0|r0|->] := ltgtP r 0%R.
 - rewrite [in LHS]integralE// lt0_funeposM// lt0_funenegM//.
-  rewrite ge0_integralZl_EFin //; last 2 first.
-    + exact: measurable_funeneg.
-    + by rewrite -lerNr oppr0 ltW.
-  rewrite ge0_integralZl_EFin //; last 2 first.
-    + exact: measurable_funepos.
-    + by rewrite -lerNr oppr0 ltW.
-  rewrite -mulNe -EFinN opprK addeC EFinN mulNe -muleBr //; last first.
-    exact: integrable_add_def.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _)) ?oppr_ge0 ?ltW//.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _)) ?oppr_ge0 ?ltW//.
+  rewrite !EFinN addeC !mulNe oppeK -muleBr ?integrable_add_def//.
   by rewrite [in RHS]integralE.
+- rewrite [in LHS]integralE// gt0_funeposM// gt0_funenegM//.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _) (ltW r0))//.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _) (ltW r0))//.
+  by rewrite -muleBr 1?[in RHS]integralE// integrable_add_def.
+- by under eq_fun do rewrite mul0e; rewrite mul0e integral0.
 Qed.
+
+Lemma integralZr r :
+  \int[mu]_(x in D) (f x * r%:E) = r%:E * \int[mu]_(x in D) f x.
+Proof. by rewrite -integralZl; under eq_integral do rewrite muleC. Qed.
 
 End linearityZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl` instead")]

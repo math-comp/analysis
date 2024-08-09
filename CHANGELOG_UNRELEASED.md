@@ -33,6 +33,11 @@
   + notation `^-1` in `relation_scope` (use to be a local notation)
   + lemma `set_prod_invK` (was a local lemma in `normedtype.v`)
   + definition `diagonal`, lemma `diagonalP`
+- in `mathcomp_extra.v`:
+  + lemmas `invf_ple`, `invf_lep`
+
+- in `lebesgue_integral.v`:
+  + lemma `integralZr`
 
 ### Changed
 

@@ -65,7 +65,19 @@ Qed.
 Lemma invf_ltp (F : numFieldType) :
   {in Num.pos &, forall x y : F, (x < y^-1)%R = (y < x^-1)%R}.
 Proof.
-by move=> x y ? ?; rewrite -[in RHS](@invrK _ y) ltf_pV2// posrE invr_gt0.
+by move=> x y ? ?; rewrite -(invrK x) invf_plt ?posrE ?invr_gt0// !invrK.
+Qed.
+
+Lemma invf_ple (F : numFieldType) :
+  {in Num.pos &, forall x y : F, (x^-1 <= y)%R = (y^-1 <= x)%R}.
+Proof.
+by move=> x y ? ?; rewrite -[in LHS](@invrK _ y) lef_pV2// posrE invr_gt0.
+Qed.
+
+Lemma invf_lep (F : numFieldType) :
+  {in Num.pos &, forall x y : F, (x <= y^-1)%R = (y <= x^-1)%R}.
+Proof.
+by move=> x y ? ?; rewrite -(invrK x) invf_ple ?posrE ?invr_gt0// !invrK.
 Qed.
 
 Definition proj {I} {T : I -> Type} i (f : forall i, T i) := f i.
