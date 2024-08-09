@@ -1,6 +1,13 @@
 # Changelog
 
-Latest releases: [[1.3.0] - 2024-08-06](#130---2024-08-06) and [[1.2.0] - 2024-06-06](#120---2024-06-06)
+Latest releases: [[1.3.1] - 2024-08-09](#131---2024-08-09) and [[1.3.0] - 2024-08-06](#130---2024-08-06)
+
+## [1.3.1] - 2024-08-09
+
+### Generalized
+
+- in `reals.v`:
+  + lemma `rat_in_itvoo` (from `realType` to `archiFieldType`)
 
 ## [1.3.0] - 2024-08-06
 
