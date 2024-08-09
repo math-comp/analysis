@@ -1300,18 +1300,15 @@ exact: der_mult.
 Qed.
 
 Lemma deriveMr f (r : R) (x v : V) :
-  derivable f x v -> 'D_v (fun x => f x * r) x = (r * 'D_v f x)%R.
+  derivable f x v -> 'D_v (r \o* f) x = (r * 'D_v f x)%R.
 Proof.
 move/deriveM => /(_ _ (derivable_cst _ _ _)) ->.
 by rewrite derive_cst scaler0 add0r.
 Qed.
 
 Lemma deriveMl f (r : R) (x v : V) :
-  derivable f x v -> 'D_v (fun x => r * f x) x = (r * 'D_v f x)%R.
-Proof.
-move=> fxv.
-by rewrite -deriveMr//; under eq_fun do rewrite mulrC.
-Qed.
+  derivable f x v -> 'D_v (r \*o f) x = (r * 'D_v f x)%R.
+Proof. by move=> fxv; rewrite -deriveMr// mulr_funE. Qed.
 
 Global Instance is_deriveM f g (x v : V) (df dg : R) :
   is_derive x v f df -> is_derive x v g dg ->

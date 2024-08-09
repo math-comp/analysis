@@ -10,6 +10,9 @@
   + lemma `derive_cst`
   + lemma `deriveMr`, `deriveMl`
 
+- in `functions.v`:
+  + lemmas `mull_funE`, `mulr_funE`
+
 ### Changed
 
 ### Renamed
