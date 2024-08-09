@@ -159,10 +159,7 @@ Qed.
 
 Lemma expectationM (X : {RV P >-> R}) (iX : P.-integrable [set: T] (EFin \o X))
   (k : R) : 'E_P[k \o* X] = k%:E * 'E_P [X].
-Proof.
-rewrite unlock; under eq_integral do rewrite EFinM.
-by rewrite -integralZl//; under eq_integral do rewrite muleC.
-Qed.
+Proof. by rewrite unlock -integralZr. Qed.
 
 Lemma expectation_ge0 (X : {RV P >-> R}) :
   (forall x, 0 <= X x)%R -> 0 <= 'E_P[X].
