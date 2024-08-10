@@ -6,7 +6,7 @@
 
 - in `derive.v`:
   + lemma `derive_id`
-  + lemmas `deriveX_id`, `derive1X_id`
+  + lemmas `exp_derive`, `exp_derive1`
   + lemma `derive_cst`
   + lemma `deriveMr`, `deriveMl`
 
@@ -17,9 +17,13 @@
 
 ### Renamed
 
+- in `lebesgue_measure.v`:
+  + `measurable_exprn` -> `exprn_measurable`
+  + `measurable_mulrl` -> `mulrl_measurable`
+  + `measurable_mulrr` -> `mulrr_measurable`
+  + `measurable_fun_pow` -> `measurable_funX`
+
 ### Generalized
-- in `reals.v`:
-  + lemma `rat_in_itvoo`
 
 - in `derive.v`:
   + lemma `derivable_cst`
@@ -27,6 +31,11 @@
 ### Deprecated
 
 ### Removed
+
+- in `lebesgue_measure.v`:
+  + notation `measurable_fun_sqr` (was deprecated since 0.6.3)
+  + notation `measurable_fun_exprn` (was deprecated since 0.6.3)
+  + notation `measurable_funrM` (was deprecated since 0.6.3)
 
 ### Infrastructure
 

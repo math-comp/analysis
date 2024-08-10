@@ -1379,16 +1379,16 @@ End Derive_lemmasVR.
 Lemma derive1_cst {R : numFieldType} (k : R) t : (cst k)^`() t = 0.
 Proof. by rewrite derive1E derive_cst. Qed.
 
-Lemma deriveX_id {R : numFieldType} n x v :
+Lemma exp_derive {R : numFieldType} n x v :
   'D_v (@GRing.exp R ^~ n.+1) x = n.+1%:R *: x ^+ n *: v.
 Proof.
 have /= := @deriveX R R id n x v (@derivable_id _ _ _ _).
 by rewrite fctE => ->; rewrite derive_id.
 Qed.
 
-Lemma derive1X_id {R : numFieldType} n x :
+Lemma exp_derive1 {R : numFieldType} n x :
   (@GRing.exp R ^~ n.+1)^`() x = n.+1%:R *: x ^+ n.
-Proof. by rewrite derive1E deriveX_id [LHS]mulr1. Qed.
+Proof. by rewrite derive1E exp_derive [LHS]mulr1. Qed.
 
 Lemma EVT_max (R : realType) (f : R -> R) (a b : R) : (* TODO : Filter not infered *)
   a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &

@@ -1641,19 +1641,19 @@ rewrite [X in measurable X](_ : _ = setT)// predeqE => r.
 by split => // _; rewrite /= in_itv /= andbT (lt_le_trans x0).
 Qed.
 
-Lemma measurable_mulrl D (k : R) : measurable_fun D ( *%R k).
+Lemma mulrl_measurable D (k : R) : measurable_fun D ( *%R k).
 Proof.
 apply: measurable_funTS => /=.
 by apply: continuous_measurable_fun; exact: mulrl_continuous.
 Qed.
 
-Lemma measurable_mulrr D (k : R) : measurable_fun D (fun x => x * k).
+Lemma mulrr_measurable D (k : R) : measurable_fun D (fun x => x * k).
 Proof.
 apply: measurable_funTS => /=.
 by apply: continuous_measurable_fun; exact: mulrr_continuous.
 Qed.
 
-Lemma measurable_exprn D n : measurable_fun D (fun x => x ^+ n).
+Lemma exprn_measurable D n : measurable_fun D (fun x => x ^+ n).
 Proof.
 apply measurable_funTS => /=.
 by apply continuous_measurable_fun; exact: exprn_continuous.
@@ -1665,21 +1665,21 @@ End standard_measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ normr) =>
   solve [exact: measurable_normr] : core.
 #[global] Hint Extern 0 (measurable_fun _ ( *%R _)) =>
-  solve [exact: measurable_mulrl] : core.
+  solve [exact: mulrl_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ (fun x => x ^+ _)) =>
-  solve [exact: measurable_exprn] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_exprn` instead")]
-Notation measurable_fun_sqr := measurable_exprn (only parsing).
+  solve [exact: exprn_measurable] : core.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppr` instead")]
 Notation measurable_fun_opp := measurable_oppr (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppr` instead")]
 Notation measurable_funN := measurable_oppr (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_normr` instead")]
 Notation measurable_fun_normr := measurable_normr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_exprn` instead")]
-Notation measurable_fun_exprn := measurable_exprn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_mulrl` instead")]
-Notation measurable_funrM := measurable_mulrl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `exprn_measurable` instead")]
+Notation measurable_exprn := exprn_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `mulrl_measurable` instead")]
+Notation measurable_mulrl := mulrl_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `mulrr_measurable` instead")]
+Notation measurable_mulrr := mulrr_measurable (only parsing).
 
 Section measurable_fun_realType.
 Context d (T : measurableType d) (R : realType).
@@ -1714,11 +1714,11 @@ move=> mf mg; rewrite (_ : (_ \* _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
   \- (fun x => 2%:R^-1 * (f x ^+ 2)) \- (fun x => 2%:R^-1 * (g x ^+ 2))).
   apply: measurable_funB; first apply: measurable_funB.
   - apply: measurableT_comp => //.
-    by apply: measurableT_comp (measurable_exprn _) _; exact: measurable_funD.
+    by apply: measurableT_comp (exprn_measurable _) _; exact: measurable_funD.
   - apply: measurableT_comp => //.
-    exact: measurableT_comp (measurable_exprn _) _.
+    exact: measurableT_comp (exprn_measurable _) _.
   - apply: measurableT_comp => //.
-    exact: measurableT_comp (measurable_exprn _) _.
+    exact: measurableT_comp (exprn_measurable _) _.
 rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
 rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
@@ -1842,7 +1842,7 @@ under eq_fun do rewrite -mulr_natr.
 by do 2 apply: measurable_funM => //.
 Qed.
 
-Lemma measurable_fun_pow {R : realType} D (f : R -> R) n : measurable_fun D f ->
+Lemma measurable_funX {R : realType} D (f : R -> R) n : measurable_fun D f ->
   measurable_fun D (fun x => f x ^+ n).
 Proof.
 move=> mf.
@@ -1868,6 +1868,8 @@ Notation measurable_fun_power_pos := measurable_powR (only parsing).
 Notation measurable_power_pos := measurable_powR (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxr` instead")]
 Notation measurable_fun_max := measurable_maxr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `measurable_funX` instead")]
+Notation measurable_fun_pow := measurable_funX (only parsing).
 
 Section standard_emeasurable_fun.
 Variable R : realType.

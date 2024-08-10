@@ -1016,7 +1016,7 @@ Lemma measurable_binomial_pmf {R : realType} D n k :
 Proof.
 apply: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x *+ 'C(n, k))%R) => /=.
   exact: measurable_natmul.
-apply: measurable_funM => //=; apply: measurable_fun_pow.
+apply: measurable_funM => //=; apply: measurable_funX.
 exact: measurable_funB.
 Qed.
 
