@@ -1052,7 +1052,7 @@ Lemma diff1E f x :
   differentiable f x -> 'd f x = (fun h => h *: f^`() x) :> (R -> U).
 Proof.
 pose d (h : R) := h *: 'd f x 1.
-move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
+move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
 pose scalL : {linear _ -> _} := HB.pack d scallM.
 have -> : (fun h => h *: f^`() x) = scalL by rewrite derive1E'.
