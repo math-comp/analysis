@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- in `normedtype.v`:
+  + lemmas `not_near_inftyP` `not_near_ninftyP`
 
 ### Changed
 
