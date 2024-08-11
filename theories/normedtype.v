@@ -428,6 +428,15 @@ move=> [M [Mreal AM]]; exists (M * 2); split; first by rewrite realM.
 by move=> x; rewrite -ltr_pdivlMr //; exact: AM.
 Qed.
 
+Lemma not_near_inftyP T (f : R -> T) (P : pred T):
+  ~ (\forall x \near +oo, P (f x)) <->
+    forall M : R, M \is Num.real -> exists2 x, M < x & ~ P (f x).
+Proof.
+rewrite nearE /ninfty_nbhs -forallNP.
+rewrite -propeqE; apply: eq_forall => M; rewrite propeqE.
+by rewrite -implypN existsPNP.
+Qed.
+
 Lemma not_near_ninftyP T (f : R -> T) (P : pred T):
   ~ (\forall x \near -oo, P (f x)) <->
     forall M : R, M \is Num.real -> exists2 x, x < M & ~ P (f x).
