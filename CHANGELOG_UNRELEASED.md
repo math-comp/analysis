@@ -28,6 +28,7 @@
   + `measurable_oppr` -> `oppr_measurable`
   + `measurable_normr` -> `normr_measurable`
   + `measurable_fine` -> `fine_measurable`
+  + `measurable_natmul` -> `natmul_measurable`
 
 ### Generalized
 

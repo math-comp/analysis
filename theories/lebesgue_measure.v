@@ -1833,8 +1833,8 @@ Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
 #[global] Hint Extern 0 (measurable_fun _ expR) =>
   solve [apply: measurable_expR] : core.
 
-Lemma measurable_natmul {R : realType} D n :
-  measurable_fun D ((@GRing.natmul R)^~ n).
+Lemma natmul_measurable {R : realType} D n :
+  measurable_fun D (fun x : R => x *+ n).
 Proof.
 under eq_fun do rewrite -mulr_natr.
 by do 2 apply: measurable_funM => //.
@@ -1917,9 +1917,11 @@ Notation measurable_oppe := oppe_measurable (only parsing).
 Notation measurable_abse := abse_measurable (only parsing).
 #[deprecated(since="mathcomp-analysis 1.4.0", note="use `EFin_measurable` instead")]
 Notation measurable_EFin := EFin_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `natmul_measurable` instead")]
+Notation measurable_natmul := natmul_measurable (only parsing).
 
 (* NB: real-valued function *)
-(* TODO: rename to measurable_EFin after notation measurable_EFin is removed *)
+(* TODO: rename to measurable_EFin after notation measurable_EFin is removed? *)
 Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
     (g : T -> R) :
   measurable_fun D (EFin \o g) <-> measurable_fun D g.
