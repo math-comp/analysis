@@ -82,6 +82,12 @@
   + lemma `lebesgue_pt_restrict`
   + lemmas `not_near_inftyP` `not_near_ninftyP`
 
+- in `topology.v`:
+  + lemma `filterN`
+
+- in `normedtype.v`:
+  + lemma `ninftyN`
+
 ### Changed
 
 ### Renamed
