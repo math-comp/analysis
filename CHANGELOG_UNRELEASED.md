@@ -4,7 +4,7 @@
 
 ### Added
 - in `normedtype.v`:
-  + lemma `not_near_ninftyP`
+  + lemma `not_near_inftyP` `not_near_ninftyP`
 
 ### Changed
 
