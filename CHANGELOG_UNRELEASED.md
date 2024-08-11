@@ -90,6 +90,9 @@
 
 ### Changed
 
+- in `normedtype.v`:
+  + remove superflous parameters in lemmas `not_near_at_rightP` and `not_near_at_leftP`
+
 ### Renamed
 
 ### Generalized

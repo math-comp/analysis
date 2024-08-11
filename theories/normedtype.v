@@ -1386,38 +1386,21 @@ rewrite (@fun_predC _ -%R)/=; last exact: opprK.
 by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
-<<<<<<< HEAD
 Lemma not_near_at_rightP (p : R) (P : pred R) :
   ~ (\forall x \near p^'+, P x) ->
   forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
 Proof.
 move=> pPf e; apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
 apply: contrapT; apply: peP; apply/andP; split.
-=======
-Lemma not_near_at_rightP T (f : R -> T) (p : R) (P : pred T) :
-  ~ (\forall x \near p^'+, P (f x)) ->
-  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P (f x).
-Proof.
-move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
-apply: contrapT; apply: pePf; apply/andP; split.
->>>>>>> e2f3e0b1 (trying to exploit symmetry (tentative))
 - by near: t; exact: nbhs_right_gt.
 - by near: t; apply: nbhs_right_lt; rewrite ltrDl.
 Unshelve. all: by end_near. Qed.
 
-<<<<<<< HEAD
 Lemma not_near_at_leftP (p : R) (P : pred R) :
   ~ (\forall x \near p^'-, P x) ->
   forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P x.
 Proof.
 move=> pPf e; have := @not_near_at_rightP (- p) (P \o -%R).
-=======
-Lemma not_near_at_leftP T (f : R -> T) (p : R) (P : pred T) :
-  ~ (\forall x \near p^'-, P (f x)) ->
-  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P (f x).
-Proof.
-move=> pPf e; have := @not_near_at_rightP T (f \o -%R) (- p) P.
->>>>>>> e2f3e0b1 (trying to exploit symmetry (tentative))
 rewrite at_rightN => /(_ _ e)[|x pxe Pfx]; first by rewrite filterN.
 by exists (- x) => //; rewrite ltrNl ltrNr opprB addrC andbC.
 Qed.
