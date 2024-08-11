@@ -903,7 +903,7 @@ Notation emeasurable_itv_bnd_pinfty := emeasurable_itv (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.2", note="use `emeasurable_itv` instead")]
 Notation emeasurable_itv_ninfty_bnd := emeasurable_itv (only parsing).
 
-Lemma measurable_fine (R : realType) (D : set (\bar R)) : measurable D ->
+Lemma fine_measurable (R : realType) (D : set (\bar R)) : measurable D ->
   measurable_fun D fine.
 Proof.
 move=> mD _ /= B mB; rewrite [X in measurable X](_ : _ `&` _ = if 0%R \in B then
@@ -919,9 +919,9 @@ case: ifPn => B0; apply/measurableI => //; last exact: measurable_image_EFin.
 by apply: measurableU; [exact: measurable_image_EFin|exact: measurableU].
 Qed.
 #[global] Hint Extern 0 (measurable_fun _ fine) =>
-  solve [exact: measurable_fine] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_fine` instead")]
-Notation measurable_fun_fine := measurable_fine (only parsing).
+  solve [exact: fine_measurable] : core.
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `fine_measurable` instead")]
+Notation measurable_fine := fine_measurable (only parsing).
 
 Section lebesgue_measure_itv.
 Variable R : realType.

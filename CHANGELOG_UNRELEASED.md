@@ -27,6 +27,7 @@
   + `measurable_EFin` -> `EFin_measurable`
   + `measurable_oppr` -> `oppr_measurable`
   + `measurable_normr` -> `normr_measurable`
+  + `measurable_fine` -> `fine_measurable`
 
 ### Generalized
 
@@ -47,6 +48,7 @@
   + notation `measurable_funN` (was deprecated since 0.6.3)
   + notation `measurable_fun_opp` (was deprecated since 0.6.3)
   + notation `measurable_fun_normr` (was deprecated since 0.6.3)
+  + notation `measurable_fun_fine` (was deprecated since 0.6.3)
 
 ### Infrastructure
 
