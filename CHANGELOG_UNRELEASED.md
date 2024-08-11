@@ -4,7 +4,7 @@
 
 ### Added
 - in `normedtype.v`:
-  + lemmas `not_near_inftyP` `not_near_ninftyP`
+  + lemmas `not_near_inftyP`, `not_near_ninftyP`
 
 - in `topology.v`:
   + lemma `filterN`
@@ -13,6 +13,9 @@
   + lemma `ninftyN`
 
 ### Changed
+
+- in `normedtype.v`:
+  + remove superflous parameters in lemmas `not_near_at_rightP` and `not_near_at_leftP`
 
 ### Renamed
 

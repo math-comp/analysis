@@ -436,20 +436,20 @@ move=> [M [Mreal AM]]; exists (M * 2); split; first by rewrite realM.
 by move=> x; rewrite -ltr_pdivlMr //; exact: AM.
 Qed.
 
-Lemma not_near_inftyP T (f : R -> T) (P : pred T):
-  ~ (\forall x \near +oo, P (f x)) <->
-    forall M : R, M \is Num.real -> exists2 x, M < x & ~ P (f x).
+Lemma not_near_inftyP (P : pred R) :
+  ~ (\forall x \near +oo, P x) <->
+    forall M : R, M \is Num.real -> exists2 x, M < x & ~ P x.
 Proof.
 rewrite nearE -forallNP -propeqE; apply: eq_forall => M.
 by rewrite propeqE -implypN existsPNP.
 Qed.
 
-Lemma not_near_ninftyP T (f : R -> T) (P : pred T):
-  ~ (\forall x \near -oo, P (f x)) <->
-    forall M : R, M \is Num.real -> exists2 x, x < M & ~ P (f x).
+Lemma not_near_ninftyP (P : pred R):
+  ~ (\forall x \near -oo, P x) <->
+    forall M : R, M \is Num.real -> exists2 x, x < M & ~ P x.
 Proof.
-rewrite -filterN ninftyN not_near_inftyP/=; split => Pf M; rewrite -realN;
-by move=> /Pf[x Mx Pfx]; exists (- x) => //; rewrite 1?(ltrNl,ltrNr,opprK).
+rewrite -filterN ninftyN not_near_inftyP/=; split => PN M; rewrite -realN;
+by move=> /PN[x Mx PNx]; exists (- x) => //; rewrite 1?(ltrNl,ltrNr,opprK).
 Qed.
 
 End infty_nbhs_instances.
@@ -1381,21 +1381,21 @@ rewrite (@fun_predC _ -%R)/=; last exact: opprK.
 by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
-Lemma not_near_at_rightP T (f : R -> T) (p : R) (P : pred T) :
-  ~ (\forall x \near p^'+, P (f x)) ->
-  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P (f x).
+Lemma not_near_at_rightP (p : R) (P : pred R) :
+  ~ (\forall x \near p^'+, P x) ->
+  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
 Proof.
-move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
-apply: contrapT; apply: pePf; apply/andP; split.
+move=> pPf e; apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
+apply: contrapT; apply: peP; apply/andP; split.
 - by near: t; exact: nbhs_right_gt.
 - by near: t; apply: nbhs_right_lt; rewrite ltrDl.
 Unshelve. all: by end_near. Qed.
 
-Lemma not_near_at_leftP T (f : R -> T) (p : R) (P : pred T) :
-  ~ (\forall x \near p^'-, P (f x)) ->
-  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P (f x).
+Lemma not_near_at_leftP (p : R) (P : pred R) :
+  ~ (\forall x \near p^'-, P x) ->
+  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P x.
 Proof.
-move=> pPf e; have := @not_near_at_rightP T (f \o -%R) (- p) P.
+move=> pPf e; have := @not_near_at_rightP (- p) (P \o -%R).
 rewrite at_rightN => /(_ _ e)[|x pxe Pfx]; first by rewrite filterN.
 by exists (- x) => //; rewrite ltrNl ltrNr opprB addrC andbC.
 Qed.

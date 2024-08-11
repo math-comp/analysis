@@ -1423,9 +1423,8 @@ Definition near_simpl := (@near_simpl, @near_map, @near_mapi, @near_map2).
 Ltac near_simpl := rewrite ?near_simpl.
 End NearMap.
 
-Lemma filterN {R : numDomainType} T (P : pred T) (f : R -> T) (F : set_system R) :
-  (\forall x \near - x @[x --> F], P ((f \o -%R) x)) =
-  \forall x \near F, P (f x).
+Lemma filterN {R : numDomainType} (P : pred R) (F : set_system R) :
+  (\forall x \near - x @[x --> F], (P \o -%R) x) = \forall x \near F, P x.
 Proof. by rewrite near_simpl/= !nearE; under eq_fun do rewrite opprK. Qed.
 
 Lemma cvg_pair {T U V F} {G : set_system U} {H : set_system V}
