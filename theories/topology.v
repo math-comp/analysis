@@ -1423,6 +1423,11 @@ Definition near_simpl := (@near_simpl, @near_map, @near_mapi, @near_map2).
 Ltac near_simpl := rewrite ?near_simpl.
 End NearMap.
 
+Lemma filterN {R : numDomainType} T (P : pred T) (f : R -> T) (F : set_system R) :
+  (\forall x \near - x @[x --> F], P ((f \o -%R) x)) =
+  \forall x \near F, P (f x).
+Proof. by rewrite near_simpl/= !nearE; under eq_fun do rewrite opprK. Qed.
+
 Lemma cvg_pair {T U V F} {G : set_system U} {H : set_system V}
   {FF : Filter F} {FG : Filter G} {FH : Filter H} (f : T -> U) (g : T -> V) :
   f @ F --> G -> g @ F --> H ->
@@ -3449,7 +3454,6 @@ exists (\bigcup_(x in A) (projT1 (cid (Ux x)))); split.
 Qed.
 
 End set_nbhs.
-
 
 Section separated_topologicalType.
 Variable T : topologicalType.
