@@ -2043,6 +2043,138 @@ Notation emeasurable_fun_funeneg := measurable_funeneg (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_esup`")]
 Notation measurable_fun_lim_esup := measurable_fun_limn_esup (only parsing).
 
+Section negligible_outer_measure.
+Context {R : realType}.
+Implicit Types (A : set R).
+Local Open Scope ereal_scope.
+
+Definition is_open_itv A := exists ab, A = `]ab.1, ab.2[%classic.
+
+Definition open_itv_cover A := [set F : (set R)^nat |
+  (forall i, is_open_itv (F i)) /\ A `<=` \bigcup_k (F k)].
+
+Let l := (@wlength R idfun).
+
+Lemma outer_measure_open_itv_cover A : (l^*)%mu A =
+  ereal_inf [set \sum_(k <oo) l (F k) | F in open_itv_cover A].
+Proof.
+apply/eqP; rewrite eq_le; apply/andP; split.
+- apply: le_ereal_inf => _ /= [F [Fitv AF <-]].
+  exists (fun i => `](sval (cid (Fitv i))).1, (sval (cid (Fitv i))).2]%classic).
+  + split=> [i|].
+    * have [?|?] := ltP (sval (cid (Fitv i))).1 (sval (cid (Fitv i))).2.
+      - by apply/ocitvP; right; exists (sval (cid (Fitv i))).
+      - by apply/ocitvP; left; rewrite set_itv_ge// -leNgt.
+    * apply: (subset_trans AF) => r /= [n _ Fnr]; exists n => //=.
+      have := Fitv n; move: Fnr; case: cid => -[x y]/= ->/= + _.
+      exact: subset_itv_oo_oc.
+  + apply: eq_eseriesr => k _; rewrite /l wlength_itv/=.
+    case: (Fitv k) => /= -[a b]/= Fkab.
+    by case: cid => /= -[x1 x2] ->; rewrite wlength_itv.
+- have [/lb_ereal_inf_adherent lA|] :=
+      boolP ((l^* A)%mu \is a fin_num); last first.
+    rewrite ge0_fin_numE ?outer_measure_ge0// -leNgt leye_eq => /eqP ->.
+    exact: leey.
+  apply/lee_addgt0Pr => /= e e0.
+  have : (0 < e / 2)%R by rewrite divr_gt0.
+  move=> /lA[_ [/= F [mF AF]] <-]; rewrite -/((l^* A)%mu) => lFe.
+  have Fcover n : exists2 B, F n `<=` B &
+      is_open_itv B /\ l B <= l (F n) + (e / 2 ^+ n.+2)%:E.
+    have [[a b] _ /= abFn] := mF n.
+    exists `]a, b + e / 2^+n.+2[%classic.
+      rewrite -abFn => x/= /[!in_itv] /andP[->/=] /le_lt_trans; apply.
+      by rewrite ltrDl divr_gt0.
+    split; first by exists (a, b + e / 2^+n.+2).
+    have [ab|ba] := ltP a b.
+      rewrite /l -abFn !wlength_itv//= !lte_fin ifT.
+        by rewrite ab -!EFinD lee_fin addrAC.
+      by rewrite ltr_wpDr// divr_ge0// ltW.
+    rewrite -abFn [in leRHS]set_itv_ge ?bnd_simp -?leNgt// /l wlength0 add0r.
+    rewrite wlength_itv//=; case: ifPn => [abe|_]; last first.
+      by rewrite lee_fin divr_ge0// ltW.
+    by rewrite -EFinD addrAC lee_fin -[leRHS]add0r lerD2r subr_le0.
+  pose G := fun n => sval (cid2 (Fcover n)).
+  have FG n : F n `<=` G n by rewrite /G; case: cid2.
+  have Gitv n : is_open_itv (G n) by rewrite /G; case: cid2 => ? ? [].
+  have lGFe n : l (G n) <= l (F n) + (e / 2 ^+ n.+2)%:E.
+    by rewrite /G; case: cid2 => ? ? [].
+  have AG : A `<=` \bigcup_k G k.
+    by apply: (subset_trans AF) => [/= r [n _ /FG Gnr]]; exists n.
+  apply: (@le_trans _ _ (\sum_(0 <= k <oo) (l (F k) + (e / 2 ^+ k.+2)%:E))).
+    apply: (@le_trans _ _ (\sum_(0 <= k <oo) l (G k))).
+      by apply: ereal_inf_lbound => /=; exists G.
+    exact: lee_nneseries.
+  rewrite nneseriesD//; last first.
+    by move=> i _; rewrite lee_fin// divr_ge0// ltW.
+  rewrite [in leRHS](splitr e) EFinD addeA leeD//; first exact/ltW.
+  have := @cvg_geometric_eseries_half R e 1; rewrite expr1.
+  rewrite [X in eseries X](_ : _ = (fun k => (e / (2 ^+ (k.+2))%:R)%:E)); last first.
+    by apply/funext => n; rewrite addn2 natrX.
+  move/cvg_lim => <-//; apply: lee_nneseries => //.
+  - by move=> n _; rewrite lee_fin divr_ge0// ltW.
+  - by move=> n _; rewrite lee_fin -natrX.
+Qed.
+
+Definition mu := (@lebesgue_measure R).
+
+Lemma outer_measure_open A : (l^* A)%mu < +oo ->
+  forall e, (0 < e)%R -> exists U, [/\ open U,
+    A `<=` U & mu U <= (l^* A)%mu + e%:E].
+Proof.
+move=> Aoo/= e e0.
+have [F AF Fe] : exists2 I_, open_itv_cover A I_ &
+    \sum_(0 <= k <oo) l (I_ k) <= (l^* A)%mu + e%:E.
+  have : (l^* A)%mu\is a fin_num by rewrite ge0_fin_numE// outer_measure_ge0.
+  rewrite outer_measure_open_itv_cover.
+  move=> /lb_ereal_inf_adherent-/(_ _ e0)[_/= [F]] AF <- Fe.
+  by exists F => //; exact/ltW.
+exists (\bigcup_i F i); split.
+- apply: bigcup_open => // i _.
+  by case: AF => /(_ i)[ab -> _]; exact: interval_open.
+- by case: AF.
+- rewrite (le_trans _ Fe)//.
+  apply: (le_trans (outer_measure_sigma_subadditive mu F)).
+  apply: lee_nneseries => // i _.
+  case: AF => /(_ i)[[a b] -> _]/=.
+  by rewrite /l wlength_itv/= -(@lebesgue_measure_itv R `]a, b[).
+Qed.
+
+Lemma outer_measure_Gdelta A : (l^* A)%mu < +oo ->
+  exists G : (set R)^nat, [/\ (forall i, open (G i)),
+    A `<=` \bigcap_i G i &
+    mu (\bigcap_i G i) = (l^* A)%mu].
+Proof.
+move=> Xoo.
+have inv0 k : (0 < k.+1%:R^-1 :> R)%R by rewrite invr_gt0.
+pose F k := projT1 (cid (outer_measure_open Xoo (inv0 k))).
+have oF k : open (F k) by rewrite /F; case: cid => x /= [].
+have AF k : A `<=` F k by rewrite /F; case: cid => x /= [].
+have mF k : mu (F k) <= (l^* A)%mu + k.+1%:R^-1%:E.
+  by rewrite /F; case: cid => x /= [].
+pose G := \bigcap_k (F k).
+exists F; split => //; first exact: sub_bigcap.
+apply/eqP; rewrite eq_le; apply/andP; split.
+  apply/lee_addgt0Pr => /= _/posnumP[e].
+  near \oo => k.
+  apply: (@le_trans _ _ ((l^* A)%mu + k.+1%:R^-1%:E)).
+    by rewrite (le_trans _ (mF k))// le_outer_measure//; exact: bigcap_inf.
+  rewrite leeD2l// lee_fin; apply: ltW.
+  by near: k; exact: near_infty_natSinv_lt.
+rewrite [leRHS](_ : _ = l^* (\bigcap_i F i))%mu// le_outer_measure//.
+exact: sub_bigcap.
+Unshelve. all: by end_near. Qed.
+
+Lemma negligible_outer_measure (N : set R) : mu.-negligible N <-> (l^*)%mu N = 0.
+Proof.
+split=> [[/= A [mA mA0 NA]]|N0].
+- by apply/eqP; rewrite eq_le outer_measure_ge0 andbT -mA0 le_outer_measure.
+- have := @outer_measure_Gdelta N; rewrite N0 ltry => /(_ isT)[F [oF NF mF0]].
+  exists (\bigcap_i F i); split => //=.
+  by apply: bigcapT_measurable => i; exact: open_measurable.
+Qed.
+
+End negligible_outer_measure.
+
 Section lebesgue_regularity.
 Context {R : realType}.
 Let mu := [the measure _ _ of @lebesgue_measure R].

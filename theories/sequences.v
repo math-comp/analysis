@@ -1446,6 +1446,16 @@ Arguments eseries {R} u_ n : simpl never.
 Arguments etelescope {R} u_ n : simpl never.
 Notation "[ 'series' E ]_ n" := (eseries [sequence E%E]_n) : ereal_scope.
 
+Lemma cvg_geometric_eseries_half {R : archiFieldType} (r : R) (n : nat) :
+  eseries (fun k => (r / (2 ^ (k + n.+1))%:R)%:E) @ \oo --> (r / 2 ^+ n)%:E.
+Proof.
+apply: cvg_EFin => //.
+  by apply: nearW => //= x; rewrite /eseries/= sumEFin.
+rewrite [X in X @ _ --> _](_ : _ = series (fun k => r / (2 ^ (k + n.+1))%:R)); last first.
+  by apply/funext => x; rewrite /= /eseries/= sumEFin.
+exact: cvg_geometric_series_half.
+Qed.
+
 Section eseries_ops.
 Variable (R : numDomainType).
 Local Open Scope ereal_scope.
