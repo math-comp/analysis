@@ -115,17 +115,12 @@ Lemma LType2_integrable_sqr (f : LType mu 2) :
   mu.-integrable [set: T] (EFin \o (fun x => f x ^+ 2)).
 Proof.
 apply/integrableP; split.
-
-apply/EFin_measurable_fun.
-exact: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f) => //.
+  exact/EFin_measurable_fun/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f)/measurable_lfun.
 rewrite (le_lt_trans _ (lfuny f))// ge0_le_integral//.
 - apply: measurableT_comp => //.
-  apply/EFin_measurable_fun.
-  exact: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f) => //.
+  exact/EFin_measurable_fun/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f)/measurable_lfun.
 - by move=> x _; rewrite lee_fin powR_ge0.
-- apply/EFin_measurable_fun.
-  apply: (@measurableT_comp _ _ _ _ _ _ (fun x : R => x `^ 2)%R) => //.
-  exact: measurableT_comp.
+- exact/EFin_measurable_fun/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x `^ 2)%R)/measurableT_comp/measurable_lfun.
 - by move=> t _/=; rewrite lee_fin normrX powR_mulrn.
 Qed.
 
