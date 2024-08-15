@@ -132,3 +132,13 @@ Qed.
 
 End Lspace.
 Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
+
+Section Lspace_inclusion.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+Variables (p q : \bar R).
+
+Lemma Lspace_inclusion : (p <= q)%E -> mu.-Lspace q `<=` mu.-Lspace p.
+
+
+End Lspace_inclusion.
