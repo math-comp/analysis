@@ -5,7 +5,7 @@ Require Import boolp reals ereal.
 From HB Require Import structures.
 Require Import classical_sets signed functions topology normedtype cardinality.
 Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
-Require Import exp.
+Require Import exp hoelder.
 
 (******************************************************************************)
 (*                                                                            *)
@@ -29,14 +29,14 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 HB.mixin Record isLfun d (T : measurableType d) (R : realType)
-    (mu : {measure set T -> \bar R}) (p : R) (f : T -> R) := {
+    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) := {
   measurable_lfun : measurable_fun [set: T] f ;
-  lfuny : (\int[mu]_x (`|f x| `^ p)%:E < +oo)%E
+  lfuny : ('N[ mu ]_p [ f ] < +oo)%E
 }.
 
 #[short(type=LfunType)]
 HB.structure Definition Lfun d (T : measurableType d) (R : realType)
-    (mu : {measure set T -> \bar R}) (p : R) :=
+    (mu : {measure set T -> \bar R}) (p : \bar R) :=
   {f : T -> R & isLfun d T R mu p f}.
 
 #[global] Hint Resolve measurable_lfun : core.
@@ -45,7 +45,7 @@ Arguments lfuny {d} {T} {R} {mu} {p} _.
 
 Section Lfun_canonical.
 Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : R).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R).
 
 HB.instance Definition _ := gen_eqMixin (LfunType mu p).
 HB.instance Definition _ := gen_choiceMixin (LfunType mu p).
@@ -54,7 +54,7 @@ End Lfun_canonical.
 
 Section Lequiv.
 Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : R).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R).
 
 Definition Lequiv (f g : LfunType mu p) := `[< {ae mu, forall x, f x = g x} >].
 
@@ -104,19 +104,25 @@ Arguments Lspace : clear implicits.
 Lemma LType1_integrable (f : LType mu 1) : mu.-integrable setT (EFin \o f).
 Proof.
 apply/integrableP; split; first exact/EFin_measurable_fun.
-under eq_integral.
-  move=> x _ /=.
-  rewrite -(@poweRe1 _ `|f x|%:E)//.
-  over.
-exact: lfuny f.
+have := lfuny f.
+rewrite unlock /Lnorm ifF ?oner_eq0// invr1 poweRe1; last first.
+  by apply integral_ge0 => x _; rewrite lee_fin powRr1//.
+by under eq_integral => i _ do rewrite powRr1//.
 Qed.
 
-Lemma LType2_integrable_sqr (f : LType mu 2) :
+Lemma LType2_integrable_sqr (f : LType mu 2%:E) :
   mu.-integrable [set: T] (EFin \o (fun x => f x ^+ 2)).
 Proof.
 apply/integrableP; split.
   exact/EFin_measurable_fun/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f)/measurable_lfun.
-rewrite (le_lt_trans _ (lfuny f))// ge0_le_integral//.
+rewrite (@lty_poweRy _ _ (2^-1))//.
+rewrite (le_lt_trans _ (lfuny f))//.
+rewrite unlock /Lnorm ifF ?gt_eqF//.
+rewrite gt0_ler_poweR//.
+- by rewrite in_itv/= integral_ge0// leey.
+- rewrite in_itv/= leey integral_ge0// => x _.
+  by rewrite lee_fin powR_ge0.
+rewrite ge0_le_integral//.
 - apply: measurableT_comp => //.
   exact/EFin_measurable_fun/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f)/measurable_lfun.
 - by move=> x _; rewrite lee_fin powR_ge0.
