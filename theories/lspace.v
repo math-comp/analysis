@@ -133,12 +133,73 @@ Qed.
 End Lspace.
 Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
 
+Section Lspace_norm.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+Variable (p : R). (* add hypothesis p > 1 *)
+
+(* 0 - + should come with proofs that they are in LfunType mu p *)
+
+Notation ty := (T -> R).
+Definition nm f := fine ('N[mu]_p%:E[f]).
+
+(* Program Definition fct_zmodMixin := *)
+(*   @GRing.isZmodule.Build (LfunType mu p%:E) 0 (fun f x => - f x) (fun f g => f \+ g). *)
+
+(* measurable_fun setT f -> measurable_fun setT g -> (1 <= p)%R *)
+
+(* Notation ty := (LfunType mu p%:E). *)
+(* Definition nm (f : ty) := fine ('N[mu]_p%:E[f]). *)
+
+(* HB.instance Definition _ := GRing.Zmodule.on ty. *)
+
+Lemma ler_Lnorm_add (f g : ty) :
+  nm (f \+ g) <= nm f + nm g.
+Admitted.
+
+Lemma Lnorm_eq0 f : nm f = 0 -> f = 0.
+Admitted.
+
+Lemma Lnorm_natmul f k : nm (f *+ k) = nm f *+ k.
+Admitted.
+
+Lemma LnormN f : nm (-f) = nm f.
+Admitted.
+
+(*
+Lemma ler_Lnorm_add f g :
+  'N[mu]_p%:E[(f \+ g)%R] <= 'N[mu]_p%:E[f] + 'N[mu]_p%:E[g].
+Admitted.
+
+Lemma Lnorm_eq0 f : 'N[mu]_p%:E[f] = 0 -> f = 0%R.
+Admitted.
+
+Lemma Lnorm_natmul f k : 'N[mu]_p%:E [f *+ k]%R = 'N[mu]_p%:E [f] *+ k.
+Admitted.
+
+Lemma LnormN f : 'N[mu]_p%:E [- f]%R = 'N[mu]_p%:E [f].
+Admitted.
+*)
+
+HB.instance Definition _ :=
+  @Num.Zmodule_isNormed.Build R (*LType mu p%:E*) ty
+    nm ler_Lnorm_add Lnorm_eq0 Lnorm_natmul LnormN.
+
+(* todo: add equivalent of mx_normZ and HB instance *)
+
+End Lspace_norm.
+
+(*
 Section Lspace_inclusion.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
-Variables (p q : \bar R).
 
-Lemma Lspace_inclusion : (p <= q)%E -> mu.-Lspace q `<=` mu.-Lspace p.
+Lemma Lspace_inclusion p q : (p <= q)%E ->
+  forall (f : LfunType mu q), ('N[ mu ]_p [ f ] < +oo)%E.
+Proof.
+move=> pleq f.
 
+isLfun d T R mu p f.
 
 End Lspace_inclusion.
+*)
