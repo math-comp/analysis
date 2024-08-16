@@ -1308,7 +1308,7 @@ Qed.
 
 Lemma deriveMl f (r : R) (x v : V) :
   derivable f x v -> 'D_v (r \*o f) x = (r * 'D_v f x)%R.
-Proof. by move=> fxv; rewrite -deriveMr// mulr_funE. Qed.
+Proof. by move=> fxv; rewrite -deriveMr// mul_funC. Qed.
 
 Global Instance is_deriveM f g (x v : V) (df dg : R) :
   is_derive x v f df -> is_derive x v g dg ->

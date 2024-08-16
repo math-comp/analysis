@@ -11,7 +11,7 @@
   + lemma `deriveMr`, `deriveMl`
 
 - in `functions.v`:
-  + lemmas `mull_funE`, `mulr_funE`
+  + lemmas `mul_funC`
 
 ### Changed
 
