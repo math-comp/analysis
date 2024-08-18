@@ -2055,7 +2055,7 @@ Definition open_itv_cover A := [set F : (set R)^nat |
 
 Let l := (@wlength R idfun).
 
-Lemma outer_measure_open_itv_cover A : (l^*)%mu A =
+Lemma outer_measure_open_itv_cover A : (l^* A)%mu =
   ereal_inf [set \sum_(k <oo) l (F k) | F in open_itv_cover A].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
@@ -2117,11 +2117,12 @@ Qed.
 
 Definition mu := (@lebesgue_measure R).
 
-Lemma outer_measure_open A : (l^* A)%mu < +oo ->
-  forall e, (0 < e)%R -> exists U, [/\ open U,
-    A `<=` U & mu U <= (l^* A)%mu + e%:E].
+Lemma outer_measure_open_le A (e : R) : (0 < e)%R ->
+  exists U, [/\ open U, A `<=` U & mu U <= (l^* A)%mu + e%:E].
 Proof.
-move=> Aoo/= e e0.
+have [|Aoo e0] := leP +oo (l^* A)%mu.
+  rewrite leye_eq => /eqP Aoo e0.
+  by exists [set: R]; split => //; [exact: openT|rewrite Aoo leey].
 have [F AF Fe] : exists2 I_, open_itv_cover A I_ &
     \sum_(0 <= k <oo) l (I_ k) <= (l^* A)%mu + e%:E.
   have : (l^* A)%mu\is a fin_num by rewrite ge0_fin_numE// outer_measure_ge0.
@@ -2139,14 +2140,23 @@ exists (\bigcup_i F i); split.
   by rewrite /l wlength_itv/= -(@lebesgue_measure_itv R `]a, b[).
 Qed.
 
-Lemma outer_measure_Gdelta A : (l^* A)%mu < +oo ->
+Lemma outer_measure_open A : (l^* A)%mu =
+  ereal_inf [set (l^* U)%mu | U in [set U | open U /\ A `<=` U]].
+Proof.
+apply/eqP; rewrite eq_le; apply/andP; split.
+  by apply: lb_ereal_inf => /= _ /= [U [oU AU] <-]; exact: le_outer_measure.
+apply/lee_addgt0Pr => /= e e0; apply: ereal_inf_le.
+have [U [oU AU UAe]] := @outer_measure_open_le A _ e0.
+by exists (mu U) => //=; exists U.
+Qed.
+
+Lemma outer_measure_Gdelta A :
   exists G : (set R)^nat, [/\ (forall i, open (G i)),
     A `<=` \bigcap_i G i &
     mu (\bigcap_i G i) = (l^* A)%mu].
 Proof.
-move=> Xoo.
 have inv0 k : (0 < k.+1%:R^-1 :> R)%R by rewrite invr_gt0.
-pose F k := projT1 (cid (outer_measure_open Xoo (inv0 k))).
+pose F k := projT1 (cid (outer_measure_open_le A (inv0 k))).
 have oF k : open (F k) by rewrite /F; case: cid => x /= [].
 have AF k : A `<=` F k by rewrite /F; case: cid => x /= [].
 have mF k : mu (F k) <= (l^* A)%mu + k.+1%:R^-1%:E.
@@ -2164,11 +2174,11 @@ rewrite [leRHS](_ : _ = l^* (\bigcap_i F i))%mu// le_outer_measure//.
 exact: sub_bigcap.
 Unshelve. all: by end_near. Qed.
 
-Lemma negligible_outer_measure (N : set R) : mu.-negligible N <-> (l^*)%mu N = 0.
+Lemma negligible_outer_measure (N : set R) : mu.-negligible N <-> (l^* N)%mu = 0.
 Proof.
 split=> [[/= A [mA mA0 NA]]|N0].
 - by apply/eqP; rewrite eq_le outer_measure_ge0 andbT -mA0 le_outer_measure.
-- have := @outer_measure_Gdelta N; rewrite N0 ltry => /(_ isT)[F [oF NF mF0]].
+- have := @outer_measure_Gdelta N; rewrite N0 => -[F [oF NF mF0]].
   exists (\bigcap_i F i); split => //=.
   by apply: bigcapT_measurable => i; exact: open_measurable.
 Qed.
