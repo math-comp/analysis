@@ -204,7 +204,7 @@ Definition cst_mfun x := [the {mfun aT >-> rT} of cst x].
 Lemma mfun_cst x : @cst_mfun x =1 cst x. Proof. by []. Qed.
 
 HB.instance Definition _ := @isMeasurableFun.Build _ _ rT
-  (@normr rT rT) (@measurable_normr rT setT).
+  (@normr rT rT) (@normr_measurable rT setT).
 
 HB.instance Definition _ :=
   isMeasurableFun.Build _ _ _ (@expR rT) (@measurable_expR rT).
@@ -2975,7 +2975,7 @@ Lemma integrableN f : mu_int f -> mu_int (-%E \o f).
 Proof.
 move=> /integrableP[mf foo]; apply/integrableP; split; last first.
   by rewrite /comp; under eq_fun do rewrite abseN.
-by rewrite /comp; apply: measurableT_comp =>//; exact: measurable_oppe.
+by rewrite /comp; exact: measurableT_comp.
 Qed.
 
 Lemma integrableZl (k : R) f : mu_int f -> mu_int (fun x => k%:E * f x).
@@ -4213,7 +4213,7 @@ rewrite [X in X <= _ -> _](_ : _ = \int[mu]_(x in D) (2%:E * g x) ); last first.
   rewrite is_cvg_limn_einfE//; last first.
     by apply: is_cvgeN; apply/cvg_ex; eexists; exact: cvg_g_.
   rewrite [X in _ + X](_ : _ = 0) ?adde0//; apply/cvg_lim => //.
-  by rewrite -(oppe0); apply: cvgeN; exact: cvg_g_.
+  by rewrite -oppe0; apply: cvgeN; exact: cvg_g_.
 have i2g : \int[mu]_(x in D) (2%:E * g x)  < +oo.
 rewrite integralZl// lte_mul_pinfty// ?lee_fin//; case: (integrableP _ _ _ ig) => _.
   apply: le_lt_trans; rewrite le_eqVlt; apply/orP; left; apply/eqP.

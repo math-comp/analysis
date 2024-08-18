@@ -2617,6 +2617,10 @@ Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M)
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
+Lemma mul_funC (T : Type) {R : comSemiRingType} (f : T -> R) (r : R) :
+  r \*o f = r \o* f.
+Proof. by apply/funext => x/=; rewrite mulrC. Qed.
+
 End function_space.
 
 Section function_space_lemmas.

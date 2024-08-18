@@ -903,7 +903,7 @@ Notation emeasurable_itv_bnd_pinfty := emeasurable_itv (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.2", note="use `emeasurable_itv` instead")]
 Notation emeasurable_itv_ninfty_bnd := emeasurable_itv (only parsing).
 
-Lemma measurable_fine (R : realType) (D : set (\bar R)) : measurable D ->
+Lemma fine_measurable (R : realType) (D : set (\bar R)) : measurable D ->
   measurable_fun D fine.
 Proof.
 move=> mD _ /= B mB; rewrite [X in measurable X](_ : _ `&` _ = if 0%R \in B then
@@ -919,9 +919,9 @@ case: ifPn => B0; apply/measurableI => //; last exact: measurable_image_EFin.
 by apply: measurableU; [exact: measurable_image_EFin|exact: measurableU].
 Qed.
 #[global] Hint Extern 0 (measurable_fun _ fine) =>
-  solve [exact: measurable_fine] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_fine` instead")]
-Notation measurable_fun_fine := measurable_fine (only parsing).
+  solve [exact: fine_measurable] : core.
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `fine_measurable` instead")]
+Notation measurable_fine := fine_measurable (only parsing).
 
 Section lebesgue_measure_itv.
 Variable R : realType.
@@ -1616,13 +1616,13 @@ Section standard_measurable_fun.
 Variable R : realType.
 Implicit Types D : set R.
 
-Lemma measurable_oppr D : measurable_fun D (-%R).
+Lemma oppr_measurable D : measurable_fun D -%R.
 Proof.
 apply: measurable_funTS => /=; apply: continuous_measurable_fun.
-exact: (@opp_continuous R [the normedModType R of R^o]).
+exact: opp_continuous.
 Qed.
 
-Lemma measurable_normr D : measurable_fun D (@normr _ R).
+Lemma normr_measurable D : measurable_fun D (@normr _ R).
 Proof.
 move=> mD; apply: (measurability (RGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->] <-]; apply: measurableI => //.
@@ -1641,45 +1641,43 @@ rewrite [X in measurable X](_ : _ = setT)// predeqE => r.
 by split => // _; rewrite /= in_itv /= andbT (lt_le_trans x0).
 Qed.
 
-Lemma measurable_mulrl D (k : R) : measurable_fun D ( *%R k).
+Lemma mulrl_measurable D (k : R) : measurable_fun D ( *%R k).
 Proof.
 apply: measurable_funTS => /=.
 by apply: continuous_measurable_fun; exact: mulrl_continuous.
 Qed.
 
-Lemma measurable_mulrr D (k : R) : measurable_fun D (fun x => x * k).
+Lemma mulrr_measurable D (k : R) : measurable_fun D (fun x => x * k).
 Proof.
 apply: measurable_funTS => /=.
 by apply: continuous_measurable_fun; exact: mulrr_continuous.
 Qed.
 
-Lemma measurable_exprn D n : measurable_fun D (fun x => x ^+ n).
+Lemma exprn_measurable D n : measurable_fun D (fun x => x ^+ n).
 Proof.
 apply measurable_funTS => /=.
 by apply continuous_measurable_fun; exact: exprn_continuous.
 Qed.
 
 End standard_measurable_fun.
-#[global] Hint Extern 0 (measurable_fun _ (-%R)) =>
-  solve [exact: measurable_oppr] : core.
+#[global] Hint Extern 0 (measurable_fun _ -%R) =>
+  solve [exact: oppr_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ normr) =>
-  solve [exact: measurable_normr] : core.
+  solve [exact: normr_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ ( *%R _)) =>
-  solve [exact: measurable_mulrl] : core.
+  solve [exact: mulrl_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ (fun x => x ^+ _)) =>
-  solve [exact: measurable_exprn] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_exprn` instead")]
-Notation measurable_fun_sqr := measurable_exprn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppr` instead")]
-Notation measurable_fun_opp := measurable_oppr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppr` instead")]
-Notation measurable_funN := measurable_oppr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_normr` instead")]
-Notation measurable_fun_normr := measurable_normr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_exprn` instead")]
-Notation measurable_fun_exprn := measurable_exprn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_mulrl` instead")]
-Notation measurable_funrM := measurable_mulrl (only parsing).
+  solve [exact: exprn_measurable] : core.
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `exprn_measurable` instead")]
+Notation measurable_exprn := exprn_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `mulrl_measurable` instead")]
+Notation measurable_mulrl := mulrl_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `mulrr_measurable` instead")]
+Notation measurable_mulrr := mulrr_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `oppr_measurable` instead")]
+Notation measurable_oppr := oppr_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `normr_measurable` instead")]
+Notation measurable_normr := normr_measurable (only parsing).
 
 Section measurable_fun_realType.
 Context d (T : measurableType d) (R : realType).
@@ -1714,11 +1712,11 @@ move=> mf mg; rewrite (_ : (_ \* _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
   \- (fun x => 2%:R^-1 * (f x ^+ 2)) \- (fun x => 2%:R^-1 * (g x ^+ 2))).
   apply: measurable_funB; first apply: measurable_funB.
   - apply: measurableT_comp => //.
-    by apply: measurableT_comp (measurable_exprn _) _; exact: measurable_funD.
+    by apply: measurableT_comp (exprn_measurable _) _; exact: measurable_funD.
   - apply: measurableT_comp => //.
-    exact: measurableT_comp (measurable_exprn _) _.
+    exact: measurableT_comp (exprn_measurable _) _.
   - apply: measurableT_comp => //.
-    exact: measurableT_comp (measurable_exprn _) _.
+    exact: measurableT_comp (exprn_measurable _) _.
 rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
 rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
 by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
@@ -1835,14 +1833,14 @@ Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
 #[global] Hint Extern 0 (measurable_fun _ expR) =>
   solve [apply: measurable_expR] : core.
 
-Lemma measurable_natmul {R : realType} D n :
-  measurable_fun D ((@GRing.natmul R)^~ n).
+Lemma natmul_measurable {R : realType} D n :
+  measurable_fun D (fun x : R => x *+ n).
 Proof.
 under eq_fun do rewrite -mulr_natr.
 by do 2 apply: measurable_funM => //.
 Qed.
 
-Lemma measurable_fun_pow {R : realType} D (f : R -> R) n : measurable_fun D f ->
+Lemma measurable_funX {R : realType} D (f : R -> R) n : measurable_fun D f ->
   measurable_fun D (fun x => f x ^+ n).
 Proof.
 move=> mf.
@@ -1868,18 +1866,20 @@ Notation measurable_fun_power_pos := measurable_powR (only parsing).
 Notation measurable_power_pos := measurable_powR (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxr` instead")]
 Notation measurable_fun_max := measurable_maxr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `measurable_funX` instead")]
+Notation measurable_fun_pow := measurable_funX (only parsing).
 
 Section standard_emeasurable_fun.
 Variable R : realType.
 
-Lemma measurable_EFin (D : set R) : measurable_fun D EFin.
+Lemma EFin_measurable (D : set R) : measurable_fun D EFin.
 Proof.
 move=> mD; apply: (measurability (ErealGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->]] <-; apply: measurableI => //.
 by rewrite preimage_itv_o_infty EFin_itv; exact: measurable_itv.
 Qed.
 
-Lemma measurable_abse (D : set (\bar R)) : measurable_fun D abse.
+Lemma abse_measurable (D : set (\bar R)) : measurable_fun D abse.
 Proof.
 move=> mD; apply: (measurability (ErealGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->] <-].
@@ -1887,8 +1887,7 @@ rewrite [X in _ @^-1` X](punct_eitv_bndy _ x) preimage_setU setIUr.
 apply: measurableU; last first.
   by rewrite preimage_abse_pinfty; apply: measurableI => //; exact: measurableU.
 apply: measurableI => //; exists (normr @^-1` `]x, +oo[%classic).
-  rewrite -[X in measurable X]setTI.
-  by apply: measurable_normr => //; exact: measurable_itv.
+  by rewrite -[X in measurable X]setTI; exact: normr_measurable.
 exists set0; first by constructor.
 rewrite setU0 predeqE => -[y| |]; split => /= => -[r];
   rewrite ?/= /= ?in_itv /= ?andbT => xr//.
@@ -1896,7 +1895,7 @@ rewrite setU0 predeqE => -[y| |]; split => /= => -[r];
   + by move=> [ry]; exists y => //=; rewrite /= in_itv/= andbT -ry.
 Qed.
 
-Lemma measurable_oppe (D : set (\bar R)) :
+Lemma oppe_measurable (D : set (\bar R)) :
   measurable_fun D (-%E : \bar R -> \bar R).
 Proof.
 move=> mD; apply: (measurability (ErealGenCInfty.measurableE R)) => //.
@@ -1907,19 +1906,22 @@ Qed.
 
 End standard_emeasurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ abse) =>
-  solve [exact: measurable_abse] : core.
+  solve [exact: abse_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ EFin) =>
-  solve [exact: measurable_EFin] : core.
-#[global] Hint Extern 0 (measurable_fun _ (-%E)) =>
-  solve [exact: measurable_oppe] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_oppe` instead")]
-Notation emeasurable_fun_minus := measurable_oppe (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_abse` instead")]
-Notation measurable_fun_abse := measurable_abse (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_EFin` instead")]
-Notation measurable_fun_EFin := measurable_EFin (only parsing).
+  solve [exact: EFin_measurable] : core.
+#[global] Hint Extern 0 (measurable_fun _ -%E) =>
+  solve [exact: oppe_measurable] : core.
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `oppe_measurable` instead")]
+Notation measurable_oppe := oppe_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `abse_measurable` instead")]
+Notation measurable_abse := abse_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `EFin_measurable` instead")]
+Notation measurable_EFin := EFin_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `natmul_measurable` instead")]
+Notation measurable_natmul := natmul_measurable (only parsing).
 
 (* NB: real-valued function *)
+(* TODO: rename to measurable_EFin after notation measurable_EFin is removed? *)
 Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
     (g : T -> R) :
   measurable_fun D (EFin \o g) <-> measurable_fun D g.
@@ -2247,7 +2249,7 @@ Lemma pointwise_almost_uniform
 Proof.
 move=> mf mg mA finA fptwsg epspos; pose h q (z : T) : R := `|f_ q z - g z|%R.
 have mfunh q : measurable_fun A (h q).
-  by apply: measurableT_comp; [exact: measurable_normr |exact: measurable_funB].
+  by apply: measurableT_comp => //; exact: measurable_funB.
 pose E k n := \bigcup_(i in [set j | n <= j]%N)
   (A `&` [set x | h i x >= k.+1%:R^-1]%R).
 have Einc k : nonincreasing_seq (E k).

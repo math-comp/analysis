@@ -25,6 +25,18 @@ Require Import reals signed topology prodnormedzmodule normedtype landau forms.
 (*               f^`()  == the derivative of f of domain R                    *)
 (*               f^`(n) == the nth derivative of f of domain R                *)
 (* ```                                                                        *)
+(*                                                                            *)
+(* Naming convention in this file:                                            *)
+(* - lemmas of the form `... -> derivable f x v` are named `derivable*`       *)
+(*   (e.g., `derivableV`, `derivableM`)                                       *)
+(*   or `*derivable` (e.g., `diff_derivable`)                                 *)
+(* - lemmas of the form `D_v f x = ...` are named `derive*`                   *)
+(*   (e.g., `deriveVP, `deriveM`)                                             *)
+(* - lemmas of the form `f^`() x = ...` are named `derive1*`                  *)
+(*   (e.g., `derive1_cst`, `derive1_comp`)                                    *)
+(* - lemmas of the form `... -> is_derive x v f df` are named `is_derive*`    *)
+(*   (e.g., `is_derive_cst`)                                                  *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -313,7 +325,7 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: cvgD.
   apply/nbhs_ballP.
   by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE //= subrr normr0.
 rewrite /g2.
-have [/eqP ->|v0] := boolP (v == 0).
+have [->|v0] := eqVneq v 0.
   rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
   by rewrite funeqE => ?; rewrite scaler0 /k littleo_lim0 // scaler0.
 apply/cvgrPdist_lt => e e0.
@@ -812,7 +824,7 @@ Lemma diff_bilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
 Proof.
 pose d q := f p.1 q.2 + f q.1 p.2.
 move=> fc; have lind : linear d.
-  by move=> ???; rewrite /d linearPr linearPl scalerDr addrACA.
+  by move=> ? ? ?; rewrite /d linearPr linearPl scalerDr addrACA.
 pose dlM := GRing.isLinear.Build _ _ _ _ _ lind.
 pose dL : {linear _ -> _} := HB.pack d dlM.
 rewrite -/d -[d]/(dL : _ -> _).
@@ -1040,7 +1052,7 @@ Lemma diff1E f x :
   differentiable f x -> 'd f x = (fun h => h *: f^`() x) :> (R -> U).
 Proof.
 pose d (h : R) := h *: 'd f x 1.
-move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
+move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
 pose scalL : {linear _ -> _} := HB.pack d scallM.
 have -> : (fun h => h *: f^`() x) = scalL by rewrite derive1E'.
@@ -1097,11 +1109,15 @@ apply: DeriveDef; last by rewrite deriveE // diff_val.
 exact/diff_derivable.
 Qed.
 
+Lemma derivable_cst (w : W) (x v : V) : derivable (cst w) x v.
+Proof. exact/diff_derivable. Qed.
+
 Lemma is_derive_eq f (x v : V) (df f' : W) :
   is_derive x v f f' -> f' = df -> is_derive x v f df.
 Proof. by move=> ? <-. Qed.
 
 End DeriveVW.
+Arguments derivable_cst {R V W}.
 
 Section Derive_lemmasVW.
 Variables (R : numFieldType) (V W : normedModType R).
@@ -1222,7 +1238,31 @@ move=> dfx; apply: DeriveDef; first exact: derivableZ.
 by rewrite deriveZ // derive_val.
 Qed.
 
+Lemma derive_cst (k : R) (x v : V) : 'D_v (cst k) x = 0.
+Proof. by rewrite derive_val. Qed.
+
 End Derive_lemmasVW.
+
+Section derive_id.
+Variables (R : numFieldType) (V : normedModType R).
+
+Lemma derivable_id (x v : V) : derivable id x v.
+Proof. exact/diff_derivable. Qed.
+
+Global Instance is_derive_id (x v : V) : is_derive x v id v.
+Proof.
+apply: (DeriveDef (@derivable_id _ _)).
+rewrite deriveE// (@diff_lin _ _ _ idfun)//=.
+by rewrite /continuous_at.
+Qed.
+
+Global Instance is_deriveNid (x v : V) : is_derive x v -%R (- v).
+Proof. exact: is_deriveN. Qed.
+
+Lemma derive_id (x v : V) : 'D_v id x = v.
+Proof. by have /derivableP := @derivable_id x v; rewrite derive_val. Qed.
+
+End derive_id.
 
 Section Derive_lemmasVR.
 Variables (R : numFieldType) (V : normedModType R).
@@ -1258,6 +1298,17 @@ Proof.
 move=> df dg; apply/cvg_ex; exists (f x *: 'D_v g x + g x *: 'D_v f x).
 exact: der_mult.
 Qed.
+
+Lemma deriveMr f (r : R) (x v : V) :
+  derivable f x v -> 'D_v (r \o* f) x = (r * 'D_v f x)%R.
+Proof.
+move/deriveM => /(_ _ (derivable_cst _ _ _)) ->.
+by rewrite derive_cst scaler0 add0r.
+Qed.
+
+Lemma deriveMl f (r : R) (x v : V) :
+  derivable f x v -> 'D_v (r \*o f) x = (r * 'D_v f x)%R.
+Proof. by move=> fxv; rewrite -deriveMr// mul_funC. Qed.
 
 Global Instance is_deriveM f g (x v : V) (df dg : R) :
   is_derive x v f df -> is_derive x v g dg ->
@@ -1323,10 +1374,21 @@ move=> df dg; apply/cvg_ex; exists (- (f x) ^- 2 *: 'D_v f x).
 exact: der_inv.
 Qed.
 
-Lemma derive1_cst (k : V) t : (cst k)^`() t = 0.
-Proof. by rewrite derive1E derive_val. Qed.
-
 End Derive_lemmasVR.
+
+Lemma derive1_cst {R : numFieldType} (k : R) t : (cst k)^`() t = 0.
+Proof. by rewrite derive1E derive_cst. Qed.
+
+Lemma exp_derive {R : numFieldType} n x v :
+  'D_v (@GRing.exp R ^~ n.+1) x = n.+1%:R *: x ^+ n *: v.
+Proof.
+have /= := @deriveX R R id n x v (@derivable_id _ _ _ _).
+by rewrite fctE => ->; rewrite derive_id.
+Qed.
+
+Lemma exp_derive1 {R : numFieldType} n x :
+  (@GRing.exp R ^~ n.+1)^`() x = n.+1%:R *: x ^+ n.
+Proof. by rewrite derive1E exp_derive [LHS]mulr1. Qed.
 
 Lemma EVT_max (R : realType) (f : R -> R) (a b : R) : (* TODO : Filter not infered *)
   a <= b -> {within `[a, b], continuous f} -> exists2 c, c \in `[a, b]%R &
@@ -1513,8 +1575,7 @@ have gaegb : g a = g b.
   by apply: lt0r_neq0; rewrite subr_gt0.
 have [c cab dgc0] := Rolle altb gdrvbl gcont gaegb.
 exists c; first exact: cab.
-have /fdrvbl dfc := cab; move/@derive_val: dgc0; rewrite deriveB //; last first.
-  exact/derivable1_diffP.
+have /fdrvbl dfc := cab; move/@derive_val: dgc0; rewrite deriveB //.
 move/eqP; rewrite [X in _ - X]deriveE // derive_val diff_val scale1r subr_eq0.
 move/eqP->; rewrite -mulrA mulVf ?mulr1 //; apply: lt0r_neq0.
 by rewrite subr_gt0.
@@ -1576,27 +1637,6 @@ rewrite derive1E'; last exact/differentiable_comp.
 rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
-
-Section is_derive_instances.
-Variables (R : numFieldType) (V : normedModType R).
-
-Lemma derivable_cst (x : V) : derivable (fun=> x) 0 (1 : R).
-Proof. exact/diff_derivable. Qed.
-
-Lemma derivable_id (x v : V) : derivable id x v.
-Proof. exact/diff_derivable. Qed.
-
-Global Instance is_derive_id (x v : V) : is_derive x v id v.
-Proof.
-apply: (DeriveDef (@derivable_id _ _)).
-rewrite deriveE// (@diff_lin _ _ _ idfun)//=.
-by rewrite /continuous_at.
-Qed.
-
-Global Instance is_deriveNid (x v : V) : is_derive x v -%R (- v).
-Proof. exact: is_deriveN. Qed.
-
-End is_derive_instances.
 
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :

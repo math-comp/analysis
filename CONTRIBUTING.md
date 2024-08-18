@@ -13,8 +13,10 @@ Text markup files may be edited directly though, should you have commit rights.
 ## `-->` vs. `cvg` vs. `lim`
 
 - `F --> x` means `F` tends to `x`. _This is the preferred way of stating a convergence._ **Lemmas about it use the string `cvg`.**
-- `lim F` is the limit of `F`, it makes sense only when `F` converges and defaults to a distinguished point otherwise. _It should only be used when there is no other expression for the limit._ **Lemmas about it use the string `lim`.**
-- `cvg F` is defined as `F --> lim F`, and is equivalent through `cvgP` and `cvg_ex` to the existence of some `x` such that `F --> x`. _When the limit is known, `F --> x` should be preferred._ **Lemmas about it use the string `is_cvg`.**
+- `lim F` is the limit of `F`, it makes sense only when `F` converges and defaults to a distinguished point otherwise.
+  _It should only be used when there is no other expression for the limit._ **Lemmas about it use the string `lim`.**
+- `cvg F` is defined as `F --> lim F`, and is equivalent through `cvgP` and `cvg_ex` to the existence of some `x` such that `F --> x`.
+  _When the limit is known, `F --> x` should be preferred._ **Lemmas about it use the string `is_cvg`.**
 
 ## `near` tactics vs. `filterS`, `filterS2`, `filterS3` lemmas
 
@@ -42,7 +44,9 @@ Landau notations can be written in four shapes:
 - `f x =o_(x \near F) (e x)` (i.e. pointwise with a simple right member, thus binary)
 - `f x = g x +o_(x \near F) (e x)` (i.e. pointwise with an additive right member, thus ternary)
 
-The outcome is an expression with the normal Leibniz equality `=` and term `'o_F` which is not parsable. See [this paper](https://doi.org/10.6092/issn.1972-5787/8124) for more explanation and the header of the file [landau.v](https://github.com/math-comp/analysis/blob/master/theories/landau.v).
+The outcome is an expression with the normal Leibniz equality `=` and term `'o_F` which is not parsable.
+See [this paper](https://doi.org/10.6092/issn.1972-5787/8124) for more explanation and
+the header of the file [landau.v](https://github.com/math-comp/analysis/blob/master/theories/landau.v).
 
 ## Deprecation
 
@@ -83,3 +87,10 @@ short name, and the `{mono ...}` lemma gets the suffix `in`.
 
 - The construction `_ !=set0` corresponds to suffix `nonempty`
 - The construction `_ != set0` corresponds to suffix `neq0`
+
+### Properties of functions
+
+- when a lemma is about a composite, we use the single letter suffix (when it exists)
+  + e.g., `cvgM`, `continuousM`, `deriveX`, or `measurable_funX`
+- when a lemma is about applied functions, we use the multi-letter prefix instead
+  + e.g., `mul_continuous`, `exp_derive`, or `exp_measurable_fun`
