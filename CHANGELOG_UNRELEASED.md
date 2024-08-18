@@ -29,6 +29,13 @@
   + `measurable_normr` -> `normr_measurable`
   + `measurable_fine` -> `fine_measurable`
   + `measurable_natmul` -> `natmul_measurable`
+- in `topology.v`:
+  + in mixin `Nbhs_isUniform_mixin`:
+    * `entourage_refl_subproof` -> `entourage_diagonal_subproof`
+  + in factory `Nbhs_isUniform`:
+    * `entourage_refl` -> `entourage_diagonal`
+  + in factory `isUniform`:
+    * `entourage_refl` -> `entourage_diagonal`
 
 ### Generalized
 
