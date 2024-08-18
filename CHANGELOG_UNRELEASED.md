@@ -50,6 +50,15 @@
   + notation `measurable_fun_opp` (was deprecated since 0.6.3)
   + notation `measurable_fun_normr` (was deprecated since 0.6.3)
   + notation `measurable_fun_fine` (was deprecated since 0.6.3)
+- in `topology.v`:
+  + turned into Let's (inside `HB.builders`):
+    * lemmas `nbhsE_subproof`, `openE_subproof`
+    * lemmas `nbhs_pfilter_subproof`, `nbhsE_subproof`, `openE_subproof`
+    * lemmas `open_fromT`, `open_fromI`, `open_from_bigU`
+    * lemmas `finI_from_cover`, `finI_from_join`
+    * lemmas `nbhs_filter`, `nbhs_singleton`, `nbhs_nbhs`
+    * lemmas `ball_le`, `entourage_filter_subproof`, `ball_sym_subproof`,
+      `ball_triangle_subproof`, `entourageE_subproof`
 
 ### Infrastructure
 

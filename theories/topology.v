@@ -1974,7 +1974,7 @@ HB.builders Context T of Nbhs_isNbhsTopological T.
 
 Definition open_of_nbhs := [set A : set T | A `<=` nbhs^~ A].
 
-Lemma nbhsE_subproof (p : T) :
+Let nbhsE_subproof (p : T) :
   nbhs p = [set A | exists B, [/\ open_of_nbhs B, B p & B `<=` A] ].
 Proof.
 rewrite predeqE => A; split=> [p_A|]; last first.
@@ -1984,7 +1984,7 @@ exists (nbhs^~ A); split=> //; first by move=> ?; apply: nbhs_nbhs.
 by move=> q /nbhs_singleton.
 Qed.
 
-Lemma openE_subproof : open_of_nbhs = [set A : set T | A `<=` nbhs^~ A].
+Let openE_subproof : open_of_nbhs = [set A : set T | A `<=` nbhs^~ A].
 Proof. by []. Qed.
 
 HB.instance Definition _ := Nbhs_isTopological.Build T
@@ -2009,7 +2009,7 @@ HB.builders Context T of Pointed_isOpenTopological T.
 
 HB.instance Definition _ := hasNbhs.Build T (nbhs_of_open op).
 
-Lemma nbhs_pfilter_subproof (p : T) : ProperFilter (nbhs p).
+Let nbhs_pfilter_subproof (p : T) : ProperFilter (nbhs p).
 Proof.
 apply: Build_ProperFilter.
   by move=> A [B [_ Bp sBA]]; exists p; apply: sBA.
@@ -2021,11 +2021,11 @@ move=> A B sAB [C [Cop p_C sCA]].
 by exists C; split=> //; apply: subset_trans sAB.
 Qed.
 
-Lemma nbhsE_subproof (p : T) :
+Let nbhsE_subproof (p : T) :
   nbhs p = [set A | exists B, [/\ op B, B p & B `<=` A] ].
 Proof. by []. Qed.
 
-Lemma openE_subproof : op = [set A : set T | A `<=` nbhs^~ A].
+Let openE_subproof : op = [set A : set T | A `<=` nbhs^~ A].
 Proof.
 rewrite predeqE => A; split=> [Aop p Ap|Aop].
   by exists A; split=> //; split.
@@ -2055,10 +2055,10 @@ HB.builders Context T of Pointed_isBaseTopological T.
 
 Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
 
-Lemma open_fromT : open_from setT.
+Let open_fromT : open_from setT.
 Proof. exists D => //; exact: b_cover. Qed.
 
-Lemma open_fromI (A B : set T) : open_from A -> open_from B ->
+Let open_fromI (A B : set T) : open_from A -> open_from B ->
   open_from (A `&` B).
 Proof.
 move=> [DA sDAD AeUbA] [DB sDBD BeUbB].
@@ -2081,7 +2081,7 @@ rewrite predeqE => t; split=> [[_ [s ABs <-] bDtst]|ABt].
 by exists (get (Dt t)); [exists t| have /ABU/getPex [? []]:= ABt].
 Qed.
 
-Lemma open_from_bigU (I0 : Type) (f : I0 -> set T) :
+Let open_from_bigU (I0 : Type) (f : I0 -> set T) :
   (forall i, open_from (f i)) -> open_from (\bigcup_i f i).
 Proof.
 set fop := fun j => [set Dj | Dj `<=` D /\ f j = \bigcup_(i in Dj) b i].
@@ -2218,13 +2218,13 @@ HB.builders Context T of Pointed_isSubBaseTopological T.
 
 Local Notation finI_from := (finI_from D b).
 
-Lemma finI_from_cover : \bigcup_(A in finI_from) A = setT.
+Let finI_from_cover : \bigcup_(A in finI_from) A = setT.
 Proof.
 rewrite predeqE => t; split=> // _; exists setT => //.
 by exists fset0 => //; rewrite predeqE.
 Qed.
 
-Lemma finI_from_join A B t : finI_from A -> finI_from B -> A t -> B t ->
+Let finI_from_join A B t : finI_from A -> finI_from B -> A t -> B t ->
   exists k, [/\ finI_from k, k t & k `<=` A `&` B].
 Proof.
 move=> [DA sDAD AeIbA] [DB sDBD BeIbB] At Bt.
@@ -4036,7 +4036,7 @@ HB.factory Record Nbhs_isUniform M of Nbhs M := {
 
 HB.builders Context M of Nbhs_isUniform M.
 
-Lemma nbhs_filter (p : M) : ProperFilter (nbhs p).
+Let nbhs_filter (p : M) : ProperFilter (nbhs p).
 Proof.
 rewrite nbhsE nbhs_E; apply: filter_from_proper; last first.
   by move=> A entA; exists p; apply/mem_set; apply: entourage_refl entA _ _.
@@ -4046,13 +4046,13 @@ move=> A B entA entB; exists (A `&` B); last by rewrite xsectionI.
 exact: (@filterI _ _ entourage_filter).
 Qed.
 
-Lemma nbhs_singleton (p : M) A : nbhs p A -> A p.
+Let nbhs_singleton (p : M) A : nbhs p A -> A p.
 Proof.
 rewrite nbhsE nbhs_E  => - [B entB sBpA].
 by apply/sBpA/mem_set; apply: entourage_refl entB _ _.
 Qed.
 
-Lemma nbhs_nbhs (p : M) A : nbhs p A -> nbhs p (nbhs^~ A).
+Let nbhs_nbhs (p : M) A : nbhs p A -> nbhs p (nbhs^~ A).
 Proof.
 rewrite nbhsE nbhs_E => - [B entB sBpA].
 have /entourage_split_ex[C entC sC2B] := entB.
@@ -4078,9 +4078,12 @@ HB.factory Record isUniform M of Pointed M := {
 }.
 
 HB.builders Context M of isUniform M.
-  HB.instance Definition _ := @hasNbhs.Build M (nbhs_ entourage).
-  HB.instance Definition _ := @Nbhs_isUniform.Build M entourage
-    entourage_filter entourage_refl entourage_inv entourage_split_ex erefl.
+
+HB.instance Definition _ := @hasNbhs.Build M (nbhs_ entourage).
+
+HB.instance Definition _ := @Nbhs_isUniform.Build M entourage
+  entourage_filter entourage_refl entourage_inv entourage_split_ex erefl.
+
 HB.end.
 
 Lemma nbhs_entourageE {M : uniformType} : nbhs_ (@entourage M) = nbhs.
@@ -4738,7 +4741,7 @@ HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
 
 HB.builders Context R M of Nbhs_isPseudoMetric R M.
 
-Lemma ball_le x : {homo ball x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
+Let ball_le x : {homo ball x : e1 e2 / e1 <= e2 >-> e1 `<=` e2}.
 Proof.
 move=> e1 e2 le12 y xe1_y.
 move: le12; rewrite le_eqVlt => /orP [/eqP <- //|].
@@ -4748,7 +4751,7 @@ suff : ball x (PosNum lt12)%:num x by [].
 exact: ball_center.
 Qed.
 
-Lemma entourage_filter_subproof : Filter ent.
+Let entourage_filter_subproof : Filter ent.
 Proof.
 rewrite entourageE; apply: filter_from_filter; first by exists 1 => /=.
 move=> _ _ /posnumP[e1] /posnumP[e2]; exists (Num.min e1 e2)%:num => //=.
@@ -4756,19 +4759,19 @@ by rewrite subsetI; split=> ?; apply: ball_le;
    rewrite num_le// ge_min lexx ?orbT.
 Qed.
 
-Lemma ball_sym_subproof A : ent A -> [set xy | xy.1 = xy.2] `<=` A.
+Let ball_sym_subproof A : ent A -> [set xy | xy.1 = xy.2] `<=` A.
 Proof.
 rewrite entourageE; move=> [e egt0 sbeA] xy xey.
 apply: sbeA; rewrite /= xey; exact: ball_center.
 Qed.
 
-Lemma ball_triangle_subproof A : ent A -> ent (A^-1)%classic.
+Let ball_triangle_subproof A : ent A -> ent (A^-1)%classic.
 Proof.
 rewrite entourageE => - [e egt0 sbeA].
 by exists e => // xy xye; apply: sbeA; apply: ball_sym.
 Qed.
 
-Lemma entourageE_subproof A : ent A -> exists2 B, ent B & B \; B `<=` A.
+Let entourageE_subproof A : ent A -> exists2 B, ent B & B \; B `<=` A.
 Proof.
 rewrite entourageE; move=> [_/posnumP[e] sbeA].
 exists [set xy | ball xy.1 (e%:num / 2) xy.2].
