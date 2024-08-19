@@ -2975,8 +2975,8 @@ have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
   have majr : minr (PosNum n31_gt0)%:num rn01%:num > 0 by [].
   exists (an1, PosNum majr); split.
     apply/(subset_trans _ Ball_an1)/le_closed_ball => /=.
-    by rewrite le_minl lexx orbT.
-  rewrite (@le_lt_trans _ _ n.+3%:R^-1) //= ?le_minl ?lexx//.
+    by rewrite ge_min lexx orbT.
+  rewrite (@le_lt_trans _ _ n.+3%:R^-1) //= ?ge_min ?lexx//.
   by rewrite ltf_pV2 // ?ltr_nat// posrE.
 have [f Pf] := choice Ar.
 pose fix ar n := if n is p.+1 then (f (p, ar p)) else (a0, r0).
@@ -2998,7 +2998,7 @@ have : cvg (a @ \oo).
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
       exists `|ceil eps^-1|%N.  
       rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK -addn1 natrD.
-      rewrite natr_absz gtr0_norm.
+      rewrite natr_absz gtr0_norm. 
       by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
       by rewrite -ceil_gt0 invr_gt0 divr_gt0.                                                        
     exists n.+1; rewrite -ltr_pdivlMl //.
@@ -3084,6 +3084,7 @@ apply: (@GRing.Linear.Pack K V W _ _); apply: GRing.Linear.Class.
   exact: (GRing.isSemiAdditive.Build _ _ _ (semi_additive_linear lf)).
 exact: (GRing.isScalable.Build _ _ _ _ _ (scalable_linear lf)).
 Defined.
+(* TODO: use HB.pack *)
 
 Theorem Banach_Steinhauss (F : set (V -> W)):
   (forall f, F f -> bounded_fun_norm f /\ linear f) ->
