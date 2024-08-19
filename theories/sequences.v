@@ -3078,13 +3078,9 @@ Definition uniform_bounded (F : set (V -> W)) :=
   forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
 (*End NB: to be removed*)
 
-Definition mylinear (f : V -> W) (lf : linear f) : {linear V -> W}.
-Proof.
-apply: (@GRing.Linear.Pack K V W _ _); apply: GRing.Linear.Class.
-  exact: (GRing.isSemiAdditive.Build _ _ _ (semi_additive_linear lf)).
-exact: (GRing.isScalable.Build _ _ _ _ _ (scalable_linear lf)).
-Defined.
-(* TODO: use HB.pack *)
+Definition pack_linear (f : V -> W) (lf : linear f) : {linear V -> W}
+ := HB.pack f (GRing.isLinear.Build _ _ _ _ _ lf).
+(* NB: pack linear used 5 times below, used inside a proof in derive.v, fieldext.v, vector.v. *)
 
 Theorem Banach_Steinhauss (F : set (V -> W)):
   (forall f, F f -> bounded_fun_norm f /\ linear f) ->
@@ -3098,8 +3094,8 @@ have O_open : forall n, open ( O n ).
     exact: open_gt.
   move=> x Hx; apply: continuous_comp; last exact: norm_continuous.
   have Li : linear i := proj2 (Propf _ Fi).
-  apply: (@linear_continuous K V W (mylinear Li)) => /=.
-  exact/(proj1 (bounded_landau (mylinear Li)))/(proj1 (Propf _ Fi)).
+  apply: (@linear_continuous K V W (pack_linear Li)) => /=.
+  exact/(proj1 (bounded_landau (pack_linear Li)))/(proj1 (Propf _ Fi)).
 set O_inf := \bigcap_i (O i).
 have O_infempty : O_inf = set0.
   rewrite -subset0 => x.
@@ -3125,14 +3121,14 @@ have [n [x0 [r H]] k] :
   by exists i, x, (PosNum r0); apply/disjoints_subset/bxrOi.
 exists ((n + n)%:R * k * 2 / r%:num)=> f Ff y Hx; move: (Propf f Ff) => [ _ linf].
 case: (eqVneq y 0) => [-> | Zeroy].
-  move: (linear0 (mylinear linf)) => /= ->.
+  move: (linear0 (pack_linear linf)) => /= ->.
   by rewrite normr0 !mulr_ge0 // (le_trans _ Hx).
 have majballi : forall f x, F f -> (ball x0 r%:num) x -> `|f x | <= n%:R.
   move=> g x Fg /(H x); rewrite leNgt.
   by rewrite /O setC_bigcup /= => /(_ _ Fg)/negP.
 have majball : forall f x, F f -> (ball x0 r%:num) x -> `|f (x - x0)| <= n%:R + n%:R.
   move=> g x Fg; move: (Propf g Fg) => [Bg Lg].
-  move: (linearB (mylinear Lg)) => /= -> Ballx.
+  move: (linearB (pack_linear Lg)) => /= -> Ballx.
   apply/(le_trans (ler_normB _ _))/lerD; first exact: majballi.
   by apply: majballi => //; exact/ball_center.
 have ballprop : ball x0 r%:num (2^-1 * (r%:num / `|y|) *: y  + x0).
@@ -3141,7 +3137,7 @@ have ballprop : ball x0 r%:num (2^-1 * (r%:num / `|y|) *: y  + x0).
   by rewrite gtr0_norm // gtr0_norm // gtr_pMl // invf_lt1 // ltr1n.
 have := majball f (2^-1 * (r%:num / `|y|) *: y + x0) Ff ballprop.
 rewrite -addrA addrN linf.
-move: (linear0 (mylinear linf)) => /= ->.
+move: (linear0 (pack_linear linf)) => /= ->.
 rewrite addr0 normrZ 2!normrM gtr0_norm // gtr0_norm //.
 rewrite normfV normr_id -ler_pdivlMl //=; last first.
   by rewrite mulr_gt0 // mulr_gt0 // invr_gt0 normr_gt0.
