@@ -5287,8 +5287,6 @@ Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricNormedZmodType R)
   (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
 Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
 
-(*TBA topology.v once ball_normE is there*)
-
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> (closed_ball x r)^° = ball x r.
 Proof.
