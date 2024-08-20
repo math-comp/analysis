@@ -12,6 +12,13 @@
 
 - in `functions.v`:
   + lemmas `mul_funC`
+- in `sequences.v`:
+  + lemma `cvg_geometric_eseries_half`
+
+- in `lebesgue_measure.v`:
+  + definitions `is_open_itv`, `open_itv_cover`
+  + lemmas `outer_measure_open_itv_cover`, `outer_measure_open_le`,
+    `outer_measure_open`, `outer_measure_Gdelta`, `negligible_outer_measure`
 
 ### Changed
 
