@@ -358,6 +358,14 @@ Notation "-oo_ R" := (ninfty_nbhs R)
 Notation "+oo" := (pinfty_nbhs _) : ring_scope.
 Notation "-oo" := (ninfty_nbhs _) : ring_scope.
 
+Lemma ninftyN {R : numFieldType} : (- x : R)%R @[x --> -oo] = +oo.
+Proof.
+apply/seteqP; split => [A [M [Mreal MA]]|A [M [Mreal MA]]].
+  exists (- M); rewrite realN; split => // x.
+  by rewrite ltrNl => /MA/=; rewrite opprK.
+by exists (- M); rewrite ?realN; split=> // x; rewrite ltrNr => /MA.
+Qed.
+
 Section infty_nbhs_instances.
 Context {R : numFieldType}.
 Implicit Types r : R.
@@ -426,6 +434,22 @@ Lemma near_pinfty_div2 (A : set R) :
 Proof.
 move=> [M [Mreal AM]]; exists (M * 2); split; first by rewrite realM.
 by move=> x; rewrite -ltr_pdivlMr //; exact: AM.
+Qed.
+
+Lemma not_near_inftyP (P : pred R) :
+  ~ (\forall x \near +oo, P x) <->
+    forall M : R, M \is Num.real -> exists2 x, M < x & ~ P x.
+Proof.
+rewrite nearE -forallNP -propeqE; apply: eq_forall => M.
+by rewrite propeqE -implypN existsPNP.
+Qed.
+
+Lemma not_near_ninftyP (P : pred R):
+  ~ (\forall x \near -oo, P x) <->
+    forall M : R, M \is Num.real -> exists2 x, x < M & ~ P x.
+Proof.
+rewrite -filterN ninftyN not_near_inftyP/=; split => PN M; rewrite -realN;
+by move=> /PN[x Mx PNx]; exists (- x) => //; rewrite 1?(ltrNl,ltrNr,opprK).
 Qed.
 
 End infty_nbhs_instances.
@@ -1326,26 +1350,6 @@ Lemma nbhs_left_ge x z : z < x -> \forall y \near x^'-, z <= y.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
 Unshelve. all: by end_near. Qed.
 
-Lemma not_near_at_rightP T (f : R -> T) (p : R) (P : pred T) :
-  ~ (\forall x \near p^'+, P (f x)) ->
-  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P (f x).
-Proof.
-move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
-apply: contrapT; apply: pePf; apply/andP; split.
-- by near: t; exact: nbhs_right_gt.
-- by near: t; apply: nbhs_right_lt; rewrite ltrDl.
-Unshelve. all: by end_near. Qed.
-
-Lemma not_near_at_leftP T (f : R -> T) (p : R) (P : pred T) :
-  ~ (\forall x \near p^'-, P (f x)) ->
-  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P (f x).
-Proof.
-move=> pPf e; apply: contrapT => /forallPNP pePf; apply: pPf; near=> t.
-apply: contrapT; apply: pePf; apply/andP; split.
-- by near: t; apply: nbhs_left_gt; rewrite ltrBlDr ltrDl.
-- by near: t; exact: nbhs_left_lt.
-Unshelve. all: by end_near. Qed.
-
 Lemma withinN (A : set R) a :
   within A (nbhs (- a)) = - x @[x --> within (-%R @` A) (nbhs a)].
 Proof.
@@ -1375,6 +1379,25 @@ Proof.
 rewrite /at_left withinN [X in within X _](_ : _ = [set u | a < u])//.
 rewrite (@fun_predC _ -%R)/=; last exact: opprK.
 by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
+Qed.
+
+Lemma not_near_at_rightP (p : R) (P : pred R) :
+  ~ (\forall x \near p^'+, P x) ->
+  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
+Proof.
+move=> pPf e; apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
+apply: contrapT; apply: peP; apply/andP; split.
+- by near: t; exact: nbhs_right_gt.
+- by near: t; apply: nbhs_right_lt; rewrite ltrDl.
+Unshelve. all: by end_near. Qed.
+
+Lemma not_near_at_leftP (p : R) (P : pred R) :
+  ~ (\forall x \near p^'-, P x) ->
+  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P x.
+Proof.
+move=> pPf e; have := @not_near_at_rightP (- p) (P \o -%R).
+rewrite at_rightN => /(_ _ e)[|x pxe Pfx]; first by rewrite filterN.
+by exists (- x) => //; rewrite ltrNl ltrNr opprB addrC andbC.
 Qed.
 
 End at_left_right.

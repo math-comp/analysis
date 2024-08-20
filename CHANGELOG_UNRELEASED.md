@@ -3,6 +3,14 @@
 ## [Unreleased]
 
 ### Added
+- in `normedtype.v`:
+  + lemmas `not_near_inftyP`, `not_near_ninftyP`
+
+- in `topology.v`:
+  + lemma `filterN`
+
+- in `normedtype.v`:
+  + lemma `ninftyN`
 
 - in `derive.v`:
   + lemma `derive_id`
@@ -21,6 +29,9 @@
     `outer_measure_open`, `outer_measure_Gdelta`, `negligible_outer_measure`
 
 ### Changed
+
+- in `normedtype.v`:
+  + remove superflous parameters in lemmas `not_near_at_rightP` and `not_near_at_leftP`
 
 ### Renamed
 
