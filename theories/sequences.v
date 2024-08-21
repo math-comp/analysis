@@ -3056,17 +3056,6 @@ rewrite eqOP; split => [|Bf].
   by near: M.
 Unshelve. all: by end_near. Qed.
 
-Lemma semi_additive_linear (R : ringType) (U : lmodType R) V
-  (s : GRing.Scale.law R V) (f : U -> V) : linear_for s f -> semi_additive f.
-Proof.
-move=> Lsf; split.
-  rewrite -[X in f X](addr0 0) -[X in f (X + _)](scaler0 _ (- 1)).
-  by rewrite Lsf GRing.Scale.N1op addrC subrr.
-move=> x y.
-rewrite -{1}(opprK y) -{1}(scaleN1r y).
-by rewrite (additive_linear Lsf) (scalable_linear Lsf) GRing.Scale.N1op opprK.
-Qed.
-
 Section banach_steinhaus.
 Variables (K : realType) (V : completeNormedModType K) (W : normedModType K).
 
