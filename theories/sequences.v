@@ -3059,17 +3059,27 @@ Unshelve. all: by end_near. Qed.
 Section banach_steinhaus.
 Variables (K : realType) (V : completeNormedModType K) (W : normedModType K).
 
-(*NB:to be removed once a general theory of bounded function is introduced*)
-Definition pointwise_bounded (F : set (V -> W)) :=
+(*NB:to be changed once PR#1107 is integrated to the following*)
+(* 
+Definition bounded_top  (E : normedModType K) (B : set E) := forall (U : set E),
+nbhs 0 U -> (exists (k:K), B `<=` (fun (x:E) => (k *: x) ) @` U).  
+
+Definition pointwise_bounded  (F : set (V -> W)) := bounded_top F {ptws V -> W}.
+
+Definition uniform_bounded (F : set (V -> W)) := bounded_top F {uniform V -> W}.
+*)
+
+Definition pointwise_bounded  (F : set (V -> W)) :=
   forall x, exists M, forall f, F f -> `|f x| <= M.
 
 Definition uniform_bounded (F : set (V -> W)) :=
   forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
-(*End NB: to be removed*)
+(*End NB: to be changed*)
 
 Definition pack_linear (f : V -> W) (lf : linear f) : {linear V -> W}
  := HB.pack f (GRing.isLinear.Build _ _ _ _ _ lf).
-(* NB: pack linear used 5 times below, used inside a proof in derive.v, fieldext.v, vector.v. *)
+(* NB: pack linear used 5 times below, used inside a proof in derive.v,
+fieldext.v, vector.v. *)
 
 Theorem Banach_Steinhauss (F : set (V -> W)):
   (forall f, F f -> bounded_fun_norm f /\ linear f) ->
