@@ -155,15 +155,87 @@ Definition nm f := fine ('N[mu]_p%:E[f]).
 
 Lemma ler_Lnorm_add (f g : ty) :
   nm (f \+ g) <= nm f + nm g.
+Proof.
+rewrite /nm.
+have : (-oo < 'N[mu]_p%:E[f])%E by exact: (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)). 
+have : (-oo < 'N[mu]_p%:E[g])%E by exact: (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)). 
+rewrite !ltNye_eq => /orP[f_fin /orP[g_fin|/eqP foo]|/eqP goo].
+- rewrite -fineD ?fine_le//.
+  - admit.
+  - by rewrite fin_numD f_fin g_fin//.
+  rewrite minkowski//. admit. admit. admit.
+- rewrite foo/= add0r.
+  have : ('N[mu]_p%:E[f] <= 'N[mu]_p%:E[(f \+ g)])%E.
+  rewrite unlock /Lnorm.
+  rewrite {1}(@ifF _ (p == 0)).
+  rewrite {1}(@ifF _ (p == 0)).
+  rewrite gt0_ler_poweR.
+  - by [].
+  - admit.
+  - admit.
+  - admit.
+  rewrite ge0_le_integral//.
+  - move => x _. rewrite lee_fin powR_ge0//.
+  - admit.
+  - move => x _. rewrite lee_fin powR_ge0//.
+  - admit.
+  - move => x _. rewrite lee_fin gt0_ler_powR//. admit. (* rewrite normr_le. *)
+
 Admitted.
 
-Lemma Lnorm_eq0 f : nm f = 0 -> f = 0.
+Lemma natmulfctE (U : pointedType) (K : ringType) (f : U -> K) n :
+  f *+ n = (fun x => f x *+ n).
+Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
+
+
+Lemma Lnorm_eq0 f : nm f = 0 -> {ae mu, f =1 0}.
+rewrite /nm => /eqP.
+rewrite fine_eq0; last first. admit.
+move/eqP/Lnorm_eq0_eq0.
+(* ale: I don't think it holds almost everywhere equal does not mean equal *
+rewrite unlock /Lnorm ifF.
+rewrite poweR_eq0.
+rewrite integral_abs_eq0. *)
 Admitted.
 
 Lemma Lnorm_natmul f k : nm (f *+ k) = nm f *+ k.
+rewrite /nm unlock /Lnorm.
+case: (ifP (p == 0)).
+  admit.
+
+move => p0.
+under eq_integral => x _.
+  rewrite -mulr_natr/=.
+  rewrite fctE (_ : k%:R _ = k%:R); last by rewrite natmulfctE.
+  rewrite normrM powRM//=.
+  rewrite mulrC EFinM.
+  over.
+rewrite /=.
+rewrite integralZl//; last first. admit.
+rewrite poweRM; last 2 first.
+- by rewrite lee_fin powR_ge0.
+- by rewrite integral_ge0// => x _; rewrite lee_fin powR_ge0.
+
+rewrite poweR_EFin -powRrM mulfV; last admit.
+rewrite powRr1//.
+rewrite fineM//; last admit.
+rewrite mulrC.
+
 Admitted.
 
 Lemma LnormN f : nm (-f) = nm f.
+rewrite /nm.
+congr (fine _).
+rewrite unlock /Lnorm.
+case: ifP.
+move=> p0.
+ admit.
+
+move=> p0.
+congr (_ `^ _)%E.
+apply eq_integral => x _.
+congr ((_ `^ _)%:E).
+by rewrite normrN.
 Admitted.
 
 (*
