@@ -1840,8 +1840,8 @@ under eq_fun do rewrite -mulr_natr.
 by do 2 apply: measurable_funM => //.
 Qed.
 
-Lemma measurable_funX {R : realType} D (f : R -> R) n : measurable_fun D f ->
-  measurable_fun D (fun x => f x ^+ n).
+Lemma measurable_funX d (T : measurableType d) {R : realType} D (f : T -> R) n :
+  measurable_fun D f -> measurable_fun D (fun x => f x ^+ n).
 Proof.
 move=> mf.
 exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).

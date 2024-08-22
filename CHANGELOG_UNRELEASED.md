@@ -60,6 +60,9 @@
 - in `derive.v`:
   + lemma `derivable_cst`
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_funX` (was `measurable_fun_pow`)
+
 ### Deprecated
 
 ### Removed
