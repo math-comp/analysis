@@ -6358,26 +6358,27 @@ Qed.
 Lemma integral_set1 (f : R -> \bar R) (r : R) : \int[mu]_(x in [set r]) f x = 0.
 Proof. exact: (integral_Sset1 _ (@subset_refl _ _)). Qed.
 
-Lemma ge0_integral_closed_ball (r : R) (r0 : (0 < r)%R) (f : R -> \bar R) :
-  measurable_fun (closed_ball 0%R r : set R^o) f ->
-  (forall x, x \in closed_ball 0%R r -> 0 <= f x) ->
-  \int[mu]_(x in closed_ball 0%R r) f x = \int[mu]_(x in ball 0%R r) f x.
+Lemma ge0_integral_closed_ball c (r : R) (r0 : (0 < r)%R) (f : R -> \bar R) :
+  measurable_fun (closed_ball c r : set R) f ->
+  (forall x, x \in closed_ball c r -> 0 <= f x) ->
+  \int[mu]_(x in closed_ball c r) f x = \int[mu]_(x in ball c r) f x.
 Proof.
 move=> mf f0.
-rewrite closed_ball_ball//= sub0r add0r ge0_integral_setU//=; last 4 first.
+rewrite closed_ball_ball//= ge0_integral_setU//=; last 4 first.
   by apply: measurableU => //; exact: measurable_ball.
-  by move: mf; rewrite closed_ball_ball// sub0r add0r.
-  by move=> x H; rewrite f0// closed_ball_ball// inE/= sub0r add0r.
-  apply/disj_setPLR => x [->/=|]; first by apply/eqP; rewrite lt_eqF// gtrN.
-  by rewrite /ball/= sub0r normrN => /ltr_normlW ?; apply/eqP; rewrite lt_eqF.
-rewrite integral_set1 adde0 ge0_integral_setU//=.
-- by rewrite integral_set1//= ?add0e.
+  by move: mf; rewrite closed_ball_ball.
+  by move=> x xcr; rewrite f0// closed_ball_ball// inE.
+  apply/disj_setPLR => x [->|]/=; rewrite /ball/=.
+    by apply/eqP; rewrite (addrC _ r) -subr_eq -addrA addrC subrK eqNr gt_eqF.
+  by move=> /[swap] ->; rewrite opprD addrA subrr sub0r normrN gtr0_norm// ltxx.
+rewrite ge0_integral_setU//=.
+- by rewrite !integral_set1//= add0e adde0.
 - exact: measurable_ball.
 - apply: measurable_funS mf; first exact: measurable_closed_ball.
-  by move=> x; rewrite closed_ball_ball// sub0r add0r; left.
-- by move=> x H; rewrite f0// closed_ball_ball// inE/= sub0r add0r; left.
-- apply/disj_setPRL => x/=; rewrite /ball/= sub0r => /ltr_normlW ?.
-  by apply/eqP; rewrite gt_eqF// ltrNl.
+  by move=> x; rewrite closed_ball_ball//; left.
+- by move=> x H; rewrite f0// closed_ball_ball// inE/=; left.
+- apply/disj_setPRL => x /[swap] ->.
+  by rewrite /ball/= opprB addrCA subrr addr0 gtr0_norm// ltxx.
 Qed.
 
 Lemma integral_setD1_EFin (f : R -> R) r (D : set R) :
@@ -6687,18 +6688,15 @@ have fE y k r : (ball 0%R k.+1%:R) y -> (r < 1)%R ->
   have [t0|t0] := leP 0%R t.
     rewrite ger0_norm// (lt_le_trans txr)// -lerBrDr.
     rewrite (le_trans (ler_norm _))// (le_trans (ltW yk1))// -lerBlDr.
-    rewrite opprK -lerBrDl -natrB//; last by rewrite -addnn addSnnS ltn_addl.
-    by rewrite (le_trans (ltW r1))// -addnn addnK// ler1n.
+    by rewrite opprK -lerBrDl -addnn natrD addrK (le_trans (ltW r1))// ler1n.
   rewrite -opprB ltrNl in xrt.
   rewrite ltr0_norm// (lt_le_trans xrt)// lerBlDl (le_trans (ltW r1))//.
   rewrite -lerBlDl addrC -lerBrDr (le_trans (ler_norm _))//.
   rewrite -normrN in yk1.
-  rewrite (le_trans (ltW yk1))// -lerBlDr opprK -lerBrDl.
-  rewrite -natrB//; last by rewrite -addnn addSnnS ltn_addl.
-  by rewrite -addnn addnK ler1n.
+  by rewrite (le_trans (ltW yk1))// lerBrDr natr1 ler_nat -muln2 ltn_Pmulr.
 have := h `|ceil x|.+1%N Logic.I.
 have Bxx : B `|ceil x|.+1 x.
-  rewrite /B /ball/= sub0r normrN (le_lt_trans (abs_ceil_ge _))// ltr_nat.
+  rewrite /B /ball/= sub0r normrN (le_lt_trans (abs_ceil_ge _))//  ltr_nat.
   by rewrite -addnn addSnnS ltn_addl.
 move=> /(_ Bxx)/fine_cvgP[davg_fk_fin_num davg_fk0].
 have f_fk_ceil : \forall t \near 0^'+,
@@ -6707,15 +6705,13 @@ have f_fk_ceil : \forall t \near 0^'+,
   near=> t.
   apply: eq_integral => /= y /[1!inE] xty.
   rewrite -(fE x _ t)//; last first.
-    rewrite /ball/= sub0r normrN (le_lt_trans (abs_ceil_ge _))//.
-    by rewrite -[in ltRHS]natr1 ltrDl.
+    by rewrite /ball/= sub0r normrN (le_lt_trans (abs_ceil_ge _))// ltr_nat.
   rewrite -(fE x _ t)//; last first.
     by apply: ballxx; near: t; exact: nbhs_right_gt.
-  rewrite /ball/= sub0r normrN (le_lt_trans (abs_ceil_ge _))//.
-  by rewrite -[in ltRHS]natr1 ltrDl.
+  by rewrite /ball/= sub0r normrN (le_lt_trans (abs_ceil_ge _))// ltr_nat.
 apply/fine_cvgP; split=> [{davg_fk0}|{davg_fk_fin_num}].
 - move: davg_fk_fin_num => -[M /= M0] davg_fk_fin_num.
-  apply: filter_app f_fk_ceil; near=> t; move=> Ht.
+  apply: filter_app f_fk_ceil; near=> t => Ht.
   by rewrite /davg /iavg Ht davg_fk_fin_num//= sub0r normrN gtr0_norm.
 - move/cvgrPdist_le in davg_fk0; apply/cvgrPdist_le => e e0.
   have [M /= M0 {}davg_fk0] := davg_fk0 _ e0.

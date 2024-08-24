@@ -63,6 +63,9 @@
 - in `lebesgue_measure.v`:
   + lemma `measurable_funX` (was `measurable_fun_pow`)
 
+- in `lebesgue_integral.v`
+  + lemma `ge0_integral_closed_ball`
+
 ### Deprecated
 
 ### Removed
