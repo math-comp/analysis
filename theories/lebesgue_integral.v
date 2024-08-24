@@ -3391,8 +3391,8 @@ have [r0|r0|->] := ltgtP r 0%R.
 Qed.
 
 Lemma integralZr r :
-  \int[mu]_(x in D) (f x * r%:E) = r%:E * \int[mu]_(x in D) f x.
-Proof. by rewrite -integralZl; under eq_integral do rewrite muleC. Qed.
+  \int[mu]_(x in D) (f x * r%:E) = (\int[mu]_(x in D) f x) * r%:E.
+Proof. by rewrite muleC -integralZl; under eq_integral do rewrite muleC. Qed.
 
 End linearityZ.
 #[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl` instead")]
