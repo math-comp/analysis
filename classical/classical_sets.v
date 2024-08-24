@@ -206,7 +206,7 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*                                                                            *)
 (* ## Composition of relations                                                *)
 (* ```                                                                        *)
-(*                A \; B == [set x | exists z, A (x.1, z) & B (z, x.2)]       *)
+(*                B \; A == [set x | exists z, A (x.1, z) & B (z, x.2)]       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -3335,8 +3335,15 @@ Notation notin_xsectionM := notin_xsectionX (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to notin_ysectionX.")]
 Notation notin_ysectionM := notin_ysectionX (only parsing).
 
+Declare Scope relation_scope.
+Delimit Scope relation_scope with relation.
+
 Notation "B \; A" :=
-  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : classical_set_scope.
+  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : relation_scope.
+
+Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : relation_scope.
+
+Local Open Scope relation_scope.
 
 Lemma set_compose_subset {X Y : Type} (A C : set (X * Y)) (B D : set (Y * X)) :
   A `<=` C -> B `<=` D -> A \; B `<=` C \; D.
@@ -3350,3 +3357,5 @@ Proof.
 rewrite eqEsubset; split => [[_ _] [_ [_ _ [<- <-//]]]|[x y] Exy]/=.
 by exists x => //; exists x.
 Qed.
+
+Local Close Scope relation_scope.
