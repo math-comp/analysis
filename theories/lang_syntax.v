@@ -1293,9 +1293,113 @@ apply: ge0_le_integral => //=; first exact: measurableI.
 - by move=> x _; rewrite lee_fin XMonemX01_le1.
 Qed.
 
-Lemma integral_beta_prob a b f U : measurable U -> measurable_fun U f ->
-  \int[beta_prob a b]_(x in U) `|f x| < +oo ->
-  \int[beta_prob a b]_(x in U) f x = \int[mu]_(x in U) (f x * (beta_pdf a b x)%:E) :> \bar R.
+Section beta_pdf_Beta.
+
+Lemma nondecreasing_Beta (a b : nat) :
+  {homo (fun z : R => fine (@Beta R a b `[0%R, z])) : x y / (x <= y)%R}.
+Proof.
+move=> x y xy.
+case: (ltP x 0%R) => x0.
+  rewrite [leLHS](_:_= 0)%R; last first.
+    rewrite set_interval.set_itv_ge; last by rewrite -leNgt.
+    rewrite -integral_beta_pdf//.
+    by rewrite integral_set0.
+  rewrite -integral_beta_pdf//.
+  apply: fine_ge0.
+  apply: integral_ge0 => /= z _.
+  exact: beta_pdf_ge0.
+rewrite /Beta/=.
+rewrite /mscale/=.
+rewrite !fineM//; last 2 first.
+  admit.
+  admit.
+apply: ler_pmul; rewrite //?lee_fin.
+    rewrite invr_ge0.
+    exact: int_ubeta_pdf_ge0.
+  apply: fine_ge0.
+  apply: integral_ge0 => ? _.
+  exact: ubeta_pdf_ge0.
+rewrite -subr_ge0.
+rewrite Rintegral_itvB//.
+  apply: fine_ge0.
+  apply: integral_ge0 => ? _.
+  exact: ubeta_pdf_ge0.
+apply: (integrableS measurableT) => //.
+exact: integrable_ubeta_pdf.
+Qed.
+
+Lemma right_continuous_Beta (a b : nat) :
+  right_continuous (fun z => (@Beta R a b `[0%R, z])).
+Proof.
+move=> x/=.
+apply: nondecreasing_at_right_is_cvge.
+
+case : (ltP x 0%R) => x0.
+  apply: cvg_nearW.
+
+Local Open Scope charge_scope.
+
+Lemma beta_pdf_uniq_ae (a b : nat) :
+  ae_eq mu `[0%R, 1%R]%classic
+   ('d ((charge_of_finite_measure (@Beta R a b))) '/d mu)
+               (EFin \o (beta_pdf a b)).
+Proof.
+apply: integral_ae_eq => //.
+- apply: integrableS (Radon_Nikodym_integrable _) => //.
+  exact: Beta_dom.
+- apply/measurable_funTS/measurableT_comp => //.
+  exact: measurable_beta_pdf.
+- move=> E E01 mE.
+  have mB : measurable_fun E (EFin \o ubeta_pdf a b).
+    by apply/measurable_funTS/measurableT_comp => //; exact: measurable_ubeta_pdf.
+  rewrite integral_beta_pdf//.
+  apply/esym.
+  rewrite -Radon_Nikodym_integral//=.
+  exact: Beta_dom.
+Qed.
+
+Lemma in_continuous_restrictP (f : R -> R) (A B : set R) :
+ open A -> A `<=` B -> {in A, continuous f} <-> {in A, continuous (f \_ B)}.
+Proof.
+Admitted.
+
+(* unprovable *)
+Lemma beta_pdf_uniq (a b : nat) :
+  {in `[0%R, 1%R]%classic,
+   ('d ((charge_of_finite_measure (@Beta R a b))) '/d mu) =1
+               (EFin \o (beta_pdf a b))}.
+Proof.
+move=> /= x.
+rewrite inE/= in_itv/= => /andP[].
+rewrite !le_eqVlt => /predU1P[<- _|x0 /predU1P[-> |x1]].
+- admit.
+- admit.
+(* Radon_Nikodym derivertive is derivertive for continuous function *)
+(* similar to FTC1 *)
+have := (@lebesgue_differentiation_continuous R (beta_pdf a b) `]0%R, 1%R[ x).
+have o01 : @open R^o `]0%R, 1%R[%classic.
+  exact: interval_open.
+move/(_ o01) => /=.
+have integrable_beta_pdf01 : mu.-integrable `]0%R, 1%R[ (EFin \o (@beta_pdf R a b)).
+  apply: (integrableS measurableT) => //=.
+  exact: integrable_beta_pdf.
+move/(_ integrable_beta_pdf01).
+have cbeta_pdf : {in `]0%R, 1%R[, continuous (@beta_pdf R a b)}. 
+  admit.
+have x01 : x \in `]0%R, 1%R[ by rewrite in_itv/= x0 x1.
+move/(_ (cbeta_pdf x x01) x01).
+move/cvg_lim=> <- //.
+apply/esym => /=.
+rewrite -[RHS]fineK; last first.
+  admit.
+congr (EFin _).
+Abort.
+
+End beta_pdf_Beta.
+
+Lemma integral_Beta a b f U : measurable U -> measurable_fun U f ->
+  \int[Beta a b]_(x in U) `|f x| < +oo ->
+  \int[Beta a b]_(x in U) f x = \int[mu]_(x in U) (f x * (beta_pdf a b x)%:E) :> \bar R.
 Proof.
 move=> mU mf finf.
 rewrite -(Radon_Nikodym_change_of_variables (beta_prob_dom a b)) //=; last first.
@@ -1310,6 +1414,7 @@ apply: ae_eq_integral => //.
   rewrite Radon_NikodymE//=; first exact: beta_prob_dom.
   move=> ?.
   case: cid => /= h [h1 h2 h3].
+(* uniqueness of Radon-Nikodym derivertive up to equal on non null sets of mu *)
   apply: integral_ae_eq => //.
   + apply: integrableS h2 => //. (* integrableST? *)
     apply/measurable_funTS/measurableT_comp => //.
