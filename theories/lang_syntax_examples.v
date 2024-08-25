@@ -611,12 +611,12 @@ rewrite execP_letin !execP_sample execD_beta !execD_bernoulli/=.
 rewrite !execD_real/= exp_var'E (execD_var_erefl "p")/=.
 transitivity (beta_prob_bernoulli 6 4 1 0 U : \bar R).
   rewrite /beta_prob_bernoulli !letin'E/=.
-  rewrite integral_beta_prob//=; last 2 first.
+  rewrite integral_Beta//=; last 2 first.
     exact: measurable_bernoulli2.
     exact: integral_beta_prob_bernoulli_lty.
-  rewrite integral_beta_prob//=; last 2 first.
+  rewrite integral_Beta//=; last 2 first.
     by apply: measurable_funTS => /=; exact: measurable_bernoulli_XMonemX01.
-    rewrite integral_beta_prob//=.
+    rewrite integral_Beta//=.
     + suff: mu.-integrable `[0%R, 1%R]
           (fun x => bernoulli (XMonemX01 2 1 x) U * (beta_pdf 6 4 x)%:E)%E.
         move=> /integrableP[_].
