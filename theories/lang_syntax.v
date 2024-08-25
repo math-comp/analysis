@@ -72,6 +72,130 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
+(* In this module, we use our lemma continuous_FTC2 to compute the value of
+ * integration of the indicator function over the interval [0, 1].
+ * we can use our lemma continuous_FTC2 because it requires continuous
+ * within [0, 1], which the indicator function satisfies.
+ * we also shows that the indicator function is not continuous in [0, 1],
+ * required by previous version of lemma continuous_FTC2. This shows that
+ * our lemma continuous_FTC2 is
+ * enough weak to be usable in practice.
+ *)
+Module integral_indicator_function.
+Section integral_indicator_function.
+
+Context {R : realType}.
+Notation mu := lebesgue_measure.
+Local Open Scope ereal_scope.
+Implicit Types (f : R -> R) (a b : R).
+
+Local Import set_interval.
+
+Let uni := @indic R R `[0%R, 1%R]%classic.
+
+Let integrable_uni : mu.-integrable setT (EFin \o uni).
+Proof.
+apply/integrableP; split.
+  apply: measurableT_comp => //.
+  exact: measurable_indic.
+apply/abse_integralP => //.
+  apply: measurableT_comp => //.
+  exact: measurable_indic.
+rewrite -ge0_fin_numE; last exact: abse_ge0.
+rewrite abse_fin_num integral_indic// setIT.
+by rewrite /= lebesgue_measure_itv ifT.
+Qed.
+
+Let cuni_within : {within `[0%R, 1%R], continuous uni}.
+Proof.
+apply/continuous_within_itvP => //; split => //.
+- move=> x x01.
+  apply: (@near_cst_continuous R R 1%R).
+  near=> z.
+  rewrite /uni indic_restrict patchE ifT//.
+  rewrite inE/=.
+  apply: subset_itv_oo_cc.
+  near: z.
+  exact: near_in_itvoo.
+- rewrite (_: uni 0 = 1%R); last first.
+    rewrite /uni indic_restrict patchE ifT//.
+    by rewrite inE/= boundl_in_itv bnd_simp/=.
+  apply: cvg_near_cst.
+  near=> z.
+  rewrite /uni indic_restrict patchE ifT// inE/= in_itv/=; apply/andP; split => //.
+  near: z.
+  exact: nbhs_right_le.
+- rewrite (_:uni 1 = 1%R); last first.
+    rewrite /uni indic_restrict patchE ifT//.
+    by rewrite inE/= boundr_in_itv bnd_simp/=.
+  apply: cvg_near_cst.
+  near=> z.
+  rewrite /uni indic_restrict patchE ifT// inE/= in_itv/=; apply/andP; split => //.
+  near: z.
+  exact: nbhs_left_ge.
+Unshelve. all: end_near. Qed.
+
+Example cuni : ~ {in `[0%R, 1%R], continuous uni}.
+Proof.
+rewrite -existsNE/=.
+exists 0%R.
+rewrite not_implyE; split; first by rewrite boundl_in_itv/= bnd_simp.
+move/left_right_continuousP.
+apply/not_andP; left.
+move/(@cvgrPdist_le _ R^o).
+apply/existsNP.
+exists (2%:R^-1)%R.
+rewrite not_implyE; split; first by rewrite invr_gt0.
+move=> [e /= e0].
+move/(_ (-(e / 2))%R).
+apply/not_implyP; split.
+  rewrite /= sub0r opprK ger0_norm; last by rewrite divr_ge0// ltW.
+  rewrite -{1}(add0r e).
+  exact: (midf_lt e0).2.
+apply/not_implyP; split.
+  rewrite oppr_lt0.
+  exact: divr_gt0.
+apply/negP; rewrite -ltNge.
+rewrite /uni !indic_restrict !patchE.
+rewrite ifT; last by rewrite inE/= boundl_in_itv/= bnd_simp.
+rewrite ifF; last first.
+  apply: negbTE; apply/negP.
+  rewrite inE/= in_itv/=.
+  apply/negP; rewrite negb_and; apply/orP; left.
+  by rewrite -ltNge oppr_lt0 divr_gt0.
+rewrite /point/= {2}/1%R/= subr0.
+rewrite ger0_norm//.
+rewrite invf_lt1//.
+rewrite {1}(_:1%R = 1%:R)//; apply: ltr_nat.
+Qed.
+
+Let dintuni : derivable_oo_LRcontinuous (@id R^o) 0 1.
+Proof.
+split.
+- move=> x _.
+  exact: derivable_id.
+- exact: cvg_at_right_filter.
+- exact: cvg_at_left_filter.
+Qed.
+
+Let intuni'uni : {in `]0%R, 1%R[, (@id R^o)^`() =1 uni}.
+Proof.
+move=> x x01.
+rewrite derive1E derive_id.
+rewrite /uni indic_restrict patchE ifT// inE/=.
+exact: subset_itv_oo_cc.
+Qed.
+
+Lemma intuni1 : (\int[mu]_(x in `[0, 1]) uni x)%R = 1%R.
+Proof.
+rewrite [RHS](_:1%R = fine (1%:E))//; congr (fine _).
+rewrite (continuous_FTC2 ltr01 cuni_within dintuni intuni'uni).
+by rewrite sube0.
+Qed.
+
+End integral_indicator_function.
+End integral_indicator_function.
+
 (* TODO: naming *)
 Lemma cvg_atNP {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R) (l : T) :
   f x @[x --> a] --> l <-> (f \o -%R) x @[x --> (- a)%R] --> l.
@@ -239,13 +363,11 @@ Qed.
 
 Lemma Ronem_change (G : R -> R) (r : R) :
   (0 <= r <= 1)%R ->
-  locally_integrable [set: R] G ->
   {within `[0%R, r], continuous G} ->
-  (forall r, lebesgue_measure.-integrable `[0%R, r] (EFin \o G)) ->
   (\int[mu]_(x in `[0%R, r]) (G x) =
   \int[mu]_(x in `[(1 - r)%R, 1%R]) (G (1 - x)))%R.
 Proof.
-move=> r01 locG cG iG.
+move=> r01 cG.
 rewrite [in LHS]/Rintegral.
 by rewrite onem_change.
 Qed.
