@@ -617,7 +617,7 @@ transitivity (beta_prob_bernoulli 6 4 1 0 U : \bar R).
     exact: integral_beta_prob_bernoulli_lty.
   rewrite integral_beta_prob//=; last 2 first.
     by apply: measurable_funTS => /=; exact: measurable_bernoulli_XMonemX01.
-    rewrite integral_beta_prob//=.
+    rewrite integral_Beta//=.
     + suff: mu.-integrable `[0%R, 1%R]
           (fun x => bernoulli_prob (XMonemX01 2 1 x) U * (beta_pdf 6 4 x)%:E)%E.
         move=> /integrableP[_].
