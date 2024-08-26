@@ -3549,7 +3549,7 @@ Context (A : set T).
    rather than construct it directly.
 
    The bulk of the work is building a uniformity to measure "distance from A".
-   Each pair of "nested" U,V induces an approxmiantion "apxU".
+   Each pair of "nested" U,V induces an approximation "apxU".
                  A-------)] U
                  A----------------) V (points near A)
                           (------------  ~`closure U (points far from A)
@@ -3574,10 +3574,9 @@ Let nested (UV : set T * set T) :=
 
 Let ury_base := [set apxU UV | UV in nested].
 
-Local Lemma ury_base_refl E :
-  ury_base E -> [set fg | fg.1 = fg.2] `<=` E.
+Local Lemma ury_base_refl E : ury_base E -> diagonal `<=` E.
 Proof.
-case; case=> L R [_ _ _ /= LR] <- [? x /= ->].
+case; case=> L R [_ _ _ /= LR] <- [? x /= /diagonalP ->].
 case: (pselect (R x)); first by left.
 by move/subsetC: LR => /[apply] => ?; right.
 Qed.
@@ -3614,19 +3613,15 @@ Let ury_unif := smallest Filter ury_base.
 Instance ury_unif_filter : Filter ury_unif.
 Proof. exact: smallest_filter_filter. Qed.
 
-Local Lemma ury_unif_refl E : ury_unif E -> [set fg | fg.1 = fg.2] `<=` E.
+Local Lemma ury_unif_refl E : ury_unif E -> diagonal `<=` E.
 Proof.
-move/(_ (globally [set fg | fg.1 = fg.2])); apply; split.
-  exact: globally_filter.
-exact: ury_base_refl.
+by move/(_ (globally diagonal)); apply; split;
+  [exact: globally_filter|exact: ury_base_refl].
 Qed.
-
-Local Lemma set_prod_invK (K : set (T * T)) : K^-1^-1 = K.
-Proof. by rewrite eqEsubset; split; case. Qed.
 
 Local Lemma ury_unif_inv E : ury_unif E -> ury_unif E^-1.
 Proof.
-move=> ufE F [/filter_inv FF urF]; have [] := ufE [set (V^-1)%classic | V in F].
+move=> ufE F [/filter_inv FF urF]; have [] := ufE [set V^-1 | V in F].
   split => // K /ury_base_inv/urF /= ?; exists (K^-1)%classic => //.
   by rewrite set_prod_invK.
 by move=> R FR <-; rewrite set_prod_invK.

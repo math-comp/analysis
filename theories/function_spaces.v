@@ -413,7 +413,7 @@ exists (A `&` B); first exact: filterI.
 by move=> fg ABfg; split=> t; have [] := ABfg t.
 Qed.
 
-Lemma fct_ent_refl A : fct_ent A -> [set fg | fg.1 = fg.2] `<=` A.
+Lemma fct_ent_refl A : fct_ent A -> diagonal `<=` A.
 Proof.
 move=> [B entB sBA] fg feg; apply/sBA => t; rewrite feg.
 exact: entourage_refl.
@@ -692,7 +692,7 @@ Proof.
 move=> FF; split.
 - move=> cvgF P' /uniform_nbhs [E [entE EsubP]].
   apply: (filterS EsubP); apply: cvgF => /=.
-  apply: (filterS (P := [set h | forall y, A y -> E(f y, h y)])).
+  apply: (filterS (P := [set h | forall y, A y -> E (f y, h y)])).
     + by move=> h/= Eh [y ?] _; apply Eh; rewrite -inE.
     + by (apply/uniform_nbhs; eexists; split; eauto).
 - move=> cvgF P' /= /uniform_nbhs [ E [/= entE EsubP]].

@@ -4015,7 +4015,7 @@ HB.mixin Record Nbhs_isUniform_mixin M of Nbhs M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal_subproof :
-    forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A;
+    forall A, entourage A -> diagonal `<=` A;
   entourage_inv_subproof : forall A, entourage A -> entourage A^-1;
   entourage_split_ex_subproof :
     forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A;
@@ -4029,7 +4029,7 @@ HB.structure Definition Uniform :=
 HB.factory Record Nbhs_isUniform M of Nbhs M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
-  entourage_diagonal : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A;
+  entourage_diagonal : forall A, entourage A -> diagonal `<=` A;
   entourage_inv : forall A, entourage A -> entourage A^-1;
   entourage_split_ex :
     forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A;
@@ -4077,7 +4077,7 @@ Local Open Scope relation_scope.
 HB.factory Record isUniform M of Pointed M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
-  entourage_diagonal : forall A, entourage A -> [set xy | xy.1 = xy.2] `<=` A;
+  entourage_diagonal : forall A, entourage A -> diagonal `<=` A;
   entourage_inv : forall A, entourage A -> entourage A^-1;
   entourage_split_ex :
     forall A, entourage A -> exists2 B, entourage B & B \; B `<=` A;
@@ -4102,11 +4102,8 @@ Lemma entourage_sym {X Y : Type} E (x : X) (y : Y) :
 Proof. by []. Qed.
 
 Lemma filter_from_entourageE {M : uniformType} x :
-  filter_from (@entourage M) (fun A => [set y | A (x, y)]) = nbhs x.
-Proof.
-rewrite -nbhs_entourageE; congr filter_from.
-by apply/funext => A; apply/seteqP; split => y/= /xsectionP.
-Qed.
+  filter_from (@entourage M) (fun A => xsection A x) = nbhs x.
+Proof. by rewrite -nbhs_entourageE. Qed.
 
 Module Export NbhsEntourage.
 Definition nbhs_simpl :=
@@ -4174,7 +4171,11 @@ Proof. by move=> ?; apply/nbhsP; exists A. Qed.
 
 Lemma cvg_entourageP F (FF : Filter F) (p : M) :
   F --> p <-> forall A, entourage A -> \forall q \near F, A (p, q).
-Proof. by rewrite -filter_fromP !nbhs_simpl. Qed.
+Proof.
+rewrite -filter_fromP [X in filter_from _ X](_ : _ = @xsection M M ^~ p)//.
+  by rewrite filter_from_entourageE.
+by apply/funext => E; apply/seteqP; split => [|] ? /xsectionP.
+Qed.
 
 Lemma cvg_entourage {F} {FF : Filter F} (x : M) :
   F --> x -> forall A, entourage A -> \forall y \near F, A (x, y).
@@ -4227,7 +4228,7 @@ Unshelve. all: by end_near. Qed.
 
 (* This property is primarily useful only for metrizability on uniform spaces *)
 Definition countable_uniformity (T : uniformType) :=
-  exists R : set (set (T * T)), [/\
+  exists R : set_system (T * T), [/\
     countable R,
     R `<=` entourage &
     forall P, entourage P -> exists2 Q, R Q & Q `<=` P].
@@ -4329,7 +4330,7 @@ split; rewrite /prod_ent.
 - by move=> A B sAB /=; apply: filterS => ? [xy /sAB ??]; exists xy.
 Qed.
 
-Lemma prod_ent_refl A : prod_ent A -> [set xy | xy.1 = xy.2] `<=` A.
+Lemma prod_ent_refl A : prod_ent A -> diagonal `<=` A.
 Proof.
 move=> [B [entB1 entB2] sBA] xy /eqP.
 rewrite [_.1]surjective_pairing [xy.2]surjective_pairing xpair_eqE.
@@ -4404,7 +4405,7 @@ exists (fun i j => A i j `&` B i j); first by move=> ??; apply: filterI.
 by move=> MN ABMN; split=> i j; have [] := ABMN i j.
 Qed.
 
-Lemma mx_ent_refl A : mx_ent A -> [set MN | MN.1 = MN.2] `<=` A.
+Lemma mx_ent_refl A : mx_ent A -> diagonal `<=` A.
 Proof.
 move=> [B entB sBA] MN MN1e2; apply: sBA => i j.
 by rewrite MN1e2; exact: entourage_refl.
@@ -4492,9 +4493,9 @@ apply: filter_from_filter; first by exists setT; exact: entourageT.
 by move=> P Q ??; (exists (P `&` Q); first exact: filterI) => ?.
 Qed.
 
-Lemma weak_ent_refl A : weak_ent A -> [set fg | fg.1 = fg.2] `<=` A.
+Lemma weak_ent_refl A : weak_ent A -> diagonal `<=` A.
 Proof.
-by move=> [B ? sBA] [x y] /= ->; apply/sBA; exact: entourage_refl.
+by move=> [B ? sBA] [x y]/diagonalP ->; apply/sBA; exact: entourage_refl.
 Qed.
 
 Lemma weak_ent_inv A : weak_ent A -> weak_ent A^-1.
@@ -4524,8 +4525,8 @@ rewrite (@nbhsE U) => [[O [openU Ofx Osub]]].
 by move=> w ?; apply/mem_set; apply: V'subW; apply/set_mem; exact: Osub.
 Qed.
 
-HB.instance Definition _ := @Nbhs_isUniform.Build (weak_topology f) (*S nbhs*)
-  weak_ent weak_ent_filter weak_ent_refl weak_ent_inv weak_ent_split weak_ent_nbhs.
+HB.instance Definition _ := @Nbhs_isUniform.Build (weak_topology f) weak_ent
+  weak_ent_filter weak_ent_refl weak_ent_inv weak_ent_split weak_ent_nbhs.
 
 End weak_uniform.
 
@@ -4542,7 +4543,7 @@ Variable (T : pointedType) (Ii : Type) (Tc : Ii -> Uniform T).
 Let I : choiceType := {classic Ii}.
 Let TS := fun i => Uniform.Pack (Tc i).
 Notation Tt := (sup_topology Tc).
-Let ent_of (p : I * set (T * T)) := `[< @entourage (TS p.1) p.2>].
+Let ent_of (p : I * set (T * T)) := `[< @entourage (TS p.1) p.2 >].
 Let IEntType := {p : (I * set (T * T)) | ent_of p}.
 Let IEnt : choiceType := IEntType.
 
@@ -4560,9 +4561,10 @@ apply: finI_filter; move=> J JsubEnt /=; exists (point, point).
 by IEntP => i b /= /entourage_refl ? ? _.
 Qed.
 
-Lemma sup_ent_refl A : sup_ent A -> [set fg | fg.1 = fg.2] `<=` A.
+Lemma sup_ent_refl A : sup_ent A -> diagonal `<=` A.
 Proof.
-by move=> [B [F ? <-] BA] [??] /= ->; apply/BA; IEntP => i w /= /entourage_refl.
+move=> [B [F ? <-] BA] [? ?]/diagonalP ->; apply/BA.
+by IEntP => i w /= /entourage_refl.
 Qed.
 
 Lemma sup_ent_inv A : sup_ent A -> sup_ent A^-1.
@@ -4581,7 +4583,7 @@ Lemma sup_ent_split A : sup_ent A -> exists2 B, sup_ent B & B \; B `<=` A.
 Proof.
 have spt : (forall ie : IEnt, ent_of ((projT1 ie).1,
     (@split_ent (TS (projT1 ie).1) (projT1 ie).2))).
-  by case=> [[/= ??] /asboolP/entourage_split_ent ?]; exact/asboolP.
+  by case=> [[/= ? ?] /asboolP/entourage_split_ent ?]; exact/asboolP.
 pose g : (IEnt -> IEnt) := fun x => exist ent_of _ (spt x).
 case => W [F _ <-] sA; exists (\bigcap_(x in [set` F]) (projT1 (g x)).2).
   exists (\bigcap_(ie in [set`F]) (projT1 (g ie)).2) => //.
@@ -4613,13 +4615,13 @@ rewrite predeq2E => x V; split.
     move=> v /= /xsectionP Fgw; apply: BV; exists (\bigcap_(i in [set` F]) i) => //.
     by move=> w /[dup] ? /Fgw /= /mem_set/(projT2 (f w)); exact.
   exists (\bigcap_(w in [set` F]) (projT1 (projT1 (f w))).2) => //.
-  exists [fset (fun i => (projT1 (f i))) w | w in F]%fset.
+  exists [fset (fun i => projT1 (f i)) w | w in F]%fset.
     by move=> u ?; exact: in_setT.
   rewrite eqEsubset; split => y + z.
     by move=>/(_ (projT1 (f z))) => + ?; apply; apply/imfsetP; exists z.
   by move=> Fgy /imfsetP [/= u uF ->]; exact: Fgy.
 case=> E [D [/= F FsubEnt <-] FsubE EsubV].
-have F_nbhs_x: Filter (nbhs x) by typeclasses eauto.
+have F_nbhs_x : Filter (nbhs x) by typeclasses eauto.
 apply: (filterS EsubV).
 pose f : IEnt -> set T := fun w =>
   @interior (TS (projT1 w).1) (xsection (projT1 w).2 x).
@@ -4767,16 +4769,16 @@ by rewrite subsetI; split=> ?; apply: ball_le;
    rewrite num_le// ge_min lexx ?orbT.
 Qed.
 
-Let ball_sym_subproof A : ent A -> [set xy | xy.1 = xy.2] `<=` A.
+Let ball_sym_subproof A : ent A -> diagonal `<=` A.
 Proof.
 rewrite entourageE; move=> [e egt0 sbeA] xy xey.
-apply: sbeA; rewrite /= xey; exact: ball_center.
+by apply: sbeA; rewrite /= xey; exact: ball_center.
 Qed.
 
 Let ball_triangle_subproof A : ent A -> ent A^-1.
 Proof.
 rewrite entourageE => - [e egt0 sbeA].
-by exists e => // xy xye; apply: sbeA; apply: ball_sym.
+by exists e => // xy xye; apply: sbeA; exact: ball_sym.
 Qed.
 
 Let entourageE_subproof A : ent A -> exists2 B, ent B & B \; B `<=` A.
@@ -4785,7 +4787,7 @@ rewrite entourageE; move=> [_/posnumP[e] sbeA].
 exists [set xy | ball xy.1 (e%:num / 2) xy.2].
   by exists (e%:num / 2) => /=.
 move=> xy [z xzhe zyhe]; apply: sbeA.
-by rewrite [e%:num]splitr; apply: ball_triangle zyhe.
+by rewrite [e%:num]splitr; exact: ball_triangle zyhe.
 Qed.
 
 HB.instance Definition _ := Nbhs_isUniform.Build M
@@ -4863,7 +4865,7 @@ Proof. exact: ball_triangle_subproof. Qed.
 Lemma nbhsx_ballx (x : M) (eps : R) : 0 < eps -> nbhs x (ball x eps).
 Proof. by move=> e0; apply/nbhs_ballP; exists eps. Qed.
 
-Lemma open_nbhs_ball (x : M) (eps : {posnum R}) : open_nbhs x ((ball x eps%:num)^°).
+Lemma open_nbhs_ball (x : M) (eps : {posnum R}) : open_nbhs x (ball x eps%:num)^°.
 Proof.
 split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhsx_ballx.
@@ -5226,7 +5228,7 @@ Lemma discrete_pointed (T : pointedType) :
 Proof.
 apply/funext => /= x; apply/funext => A; apply/propext; split.
 - by move=> [E hE EA] _ ->; apply/EA/xsectionP/hE; exists x.
-- move=> h; exists [set x | x.1 = x.2]; first by move=> -[a b] [t _] [<- <-].
+- move=> h; exists diagonal; first by move=> -[a b] [t _] [<- <-].
   by move=> y /xsectionP/= xy; exact: h.
 Qed.
 
@@ -5567,14 +5569,14 @@ rewrite eqEsubset; split; apply/filter_fromP.
   by move=> ? ?; split => //; apply: le_ball; first exact: e1lee2.
 - by move=> E [e ?] heE; exists e => //; apply: preimage_subset.
 - apply: filter_from_filter.
-    by exists [set xy | (ball xy.1 1 xy.2)]; exists 1 => /=.
+    by exists [set xy | ball xy.1 1 xy.2]; exists 1 => /=.
   move=> E1 E2 [e1 e1pos he1E1] [e2 e2pos he2E2].
   wlog ? : E1 E2 e1 e2 e1pos e2pos he1E1 he2E2 / e1 <= e2.
     have [? /(_ _ _ e1 e2)|/ltW ? ] := lerP e1 e2; first exact.
     by rewrite setIC => /(_ _ _ e2 e1); exact.
   exists (E1 `&` E2) => //; exists e1 => // xy /= B; split; first exact: he1E1.
   by apply/he2E2/le_ball; last exact: B.
-- by move=> e ?; exists ([set xy | ball xy.1 e xy.2]) => //; by exists e => /=.
+- by move=> e ?; exists [set xy | ball xy.1 e xy.2] => //; exists e => /=.
 Qed.
 
 HB.instance Definition _ := Uniform_isPseudoMetric.Build R S
@@ -6384,10 +6386,8 @@ Qed.
 
 Let subspace_uniform_entourage_diagonal :
   forall X : set (subspace A * subspace A),
-    subspace_ent X -> [set xy | xy.1 = xy.2] `<=` X.
-Proof.
-by move=> ? + [x y]/= ->; case=> V entV; apply; left.
-Qed.
+    subspace_ent X -> diagonal `<=` X.
+Proof. by move=> ? + [x y]/diagonalP ->; case=> V entV; apply; left. Qed.
 
 Let subspace_uniform_entourage_inv : forall A : set (subspace A * subspace A),
   subspace_ent A -> subspace_ent A^-1.
@@ -6629,9 +6629,9 @@ rewrite leq_eqVlt => /predU1P[<-//|/ltnSE/IH]; apply: subset_trans.
 by move=> x/= [jx _]; apply: split_ent_subset => //; exact: iter_split_ent.
 Qed.
 
-Lemma gauge_refl A : gauge A -> [set fg | fg.1 = fg.2] `<=` A.
+Lemma gauge_refl A : gauge A -> diagonal `<=` A.
 Proof.
-case=> n _; apply: subset_trans => -[_ a]/= ->.
+case=> n _; apply: subset_trans => -[_ a]/diagonalP ->.
 by apply: entourage_refl; exact: iter_split_ent.
 Qed.
 

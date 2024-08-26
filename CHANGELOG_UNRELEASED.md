@@ -31,6 +31,8 @@
 - in `classical_sets.v`:
   + scope `relation_scope` with delimiter `relation`
   + notation `^-1` in `relation_scope` (use to be a local notation)
+  + lemma `set_prod_invK` (was a local lemma in `normedtype.v`)
+  + definition `diagonal`, lemma `diagonalP`
 
 ### Changed
 

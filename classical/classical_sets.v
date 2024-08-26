@@ -3353,11 +3353,19 @@ Proof.
 by move=> AsubC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AsubC].
 Qed.
 
-Lemma set_compose_diag {X : Type} (E : set (X * X)) :
+Lemma set_compose_diag {T : Type} (E : set (T * T)) :
   E \; range (fun x => (x, x)) = E.
 Proof.
 rewrite eqEsubset; split => [[_ _] [_ [_ _ [<- <-//]]]|[x y] Exy]/=.
 by exists x => //; exists x.
 Qed.
+
+Lemma set_prod_invK {T : Type} (E : set (T * T)) : E^-1^-1 = E.
+Proof. by rewrite eqEsubset; split; case. Qed.
+
+Definition diagonal {T : Type} := [set x : T * T | x.1 = x.2].
+
+Lemma diagonalP {T : Type} (x y : T) : diagonal (x, y) <-> x = y.
+Proof. by []. Qed.
 
 Local Close Scope relation_scope.
