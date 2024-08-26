@@ -471,3 +471,14 @@ End floor_ceil.
 
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to `ceil_gt_int`")]
 Notation ceil_lt_int := ceil_gt_int (only parsing).
+
+Section bijection_forall.
+
+Lemma bij_forall A B (f : A -> B) (P : B -> Prop) :
+  bijective f -> (forall y, P y) <-> (forall x, P (f x)).
+Proof.
+by case; rewrite /cancel => g _ cangf; split => // => ? y; rewrite -(cangf y).
+Qed.
+
+End bijection_forall.
+

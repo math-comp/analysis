@@ -260,6 +260,61 @@ Qed.
 
 End cvge_fun_cvg_seq.
 
+Section cvgr_fun_dvg_seq.
+Context {R : realType}.
+
+Lemma cvg_pinftyP (f : R -> R) (l : R) :
+  f x @[x --> +oo] --> l <->
+    forall u : R^nat, (u n @[n --> \oo] --> +oo) -> f (u n) @[n --> \oo] --> l.
+Proof.
+split.
+- by move=> ?? u_y; apply: (cvg_comp u_y).
+- move=> cvg_fu; apply: contrapT => noncvg_f; move: cvg_fu.
+  apply/existsNP.
+  suff: exists2 x : R ^nat,
+    x n @[n --> \oo] --> +oo & ~ f (x n) @[n --> \oo] --> l.
+  + by move => [u ??]; exists u; apply/not_implyP.
+  suff [e e_sep]: exists e : {posnum R},
+    forall A : R, exists un : R, A < un /\ e%:num <= `|f un - l|.
+  + exists (fun n => sval (cid (e_sep n%:R))).
+    * apply/cvgryPgt => A.
+      exists `|ceil A|%N => // => n /=.
+      rewrite -(ler_nat R) natr_absz => n_ge_absA.
+      rewrite /sval; case: cid => x [x_ltn _].
+      apply: (le_lt_trans _ x_ltn).
+      apply/(le_trans _ n_ge_absA)/(le_trans (le_ceil (num_real A))).
+      by rewrite ler_int; apply: ler_norm.
+    rewrite cvgrPdistC_lt /=.
+    case/(_ e%:num [gt0 of e%:num]) => N /= _ /(_ N (leqnn N)).
+    rewrite /sval; case: cid => uN.
+    by case => _ /le_lt_trans => /(_ e%:num); rewrite lt_irreflexive => /[apply].
+  move: noncvg_f => /cvgrPdistC_lt /=; rewrite -existsPNP.
+  case => eps eps_gt0.
+  rewrite (not_near_inftyP (fun x => normr (f x - l) < eps)) => eps_sep.
+  exists (PosNum eps_gt0) => A /=.
+  case: (eps_sep A (num_real A)) => x x_ltA /negP; rewrite -leNgt => ?.
+  by exists x.
+Qed.
+
+Lemma cvg_ninftyP (f : R -> R) (l : R) :
+  f x @[x --> -oo] --> l <->
+    forall u : R^nat, (u n @[n --> \oo] --> -oo) -> f (u n) @[n --> \oo] --> l.
+Proof.
+have f_opp : f =1 (fun x => (f \o -%R) (- x)).
+- by move=> x; rewrite /comp opprK.
+rewrite (eq_cvg -oo (nbhs l) f_opp) fmap_comp ninftyN.
+rewrite cvg_pinftyP.
+have u_opp : forall u : R^nat,
+  ((- u) n @[n --> \oo] --> +oo) = (u n @[n --> \oo] --> -oo).
+- by move=> u; rewrite propeqE cvgNry.
+rewrite (@bij_forall (R^nat) _ GRing.opp).
+- by under eq_forall => u do
+    [rewrite u_opp; under (eq_cvg _ (nbhs l)) => n do rewrite opprK].
+- by apply: inv_bij; rewrite /involutive /cancel => ?; rewrite opprK.
+Qed.
+
+End cvgr_fun_dvg_seq.
+
 Section fun_cvg_realType.
 Context {R : realType}.
 Implicit Types f : R -> R.

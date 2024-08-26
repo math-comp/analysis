@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- in `mathcomp_extra.v`:
+  + lemma `bij_forall`
+
 - in `normedtype.v`:
   + lemmas `not_near_inftyP`, `not_near_ninftyP`
 
@@ -87,6 +90,8 @@
 
 - in `normedtype.v`:
   + lemma `ninftyN`
+- in `realfun.v`:
+  + lemmas `cvg_pinftyP`, `cvg_ninftyP`
 
 ### Changed
 
