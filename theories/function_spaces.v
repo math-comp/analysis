@@ -99,8 +99,6 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
-
 (** Product topology, also known as the topology of pointwise convergence *)
 Section Product_Topology.
 
@@ -401,6 +399,7 @@ End product_spaces.
 
 (**md the uniform topologies type *)
 Section fct_Uniform.
+Local Open Scope relation_scope.
 Variables (T : choiceType) (U : uniformType).
 
 Definition fct_ent := filter_from (@entourage U)
@@ -414,16 +413,16 @@ exists (A `&` B); first exact: filterI.
 by move=> fg ABfg; split=> t; have [] := ABfg t.
 Qed.
 
-Lemma fct_ent_refl A : fct_ent A -> [set fg | fg.1 = fg.2] `<=` A.
+Lemma fct_ent_refl A : fct_ent A -> diagonal `<=` A.
 Proof.
 move=> [B entB sBA] fg feg; apply/sBA => t; rewrite feg.
 exact: entourage_refl.
 Qed.
 
-Lemma fct_ent_inv A : fct_ent A -> fct_ent (A^-1)%classic.
+Lemma fct_ent_inv A : fct_ent A -> fct_ent A^-1.
 Proof.
-move=> [B entB sBA]; exists (B^-1)%classic; first exact: entourage_inv.
-by move=> fg Bgf; apply/sBA.
+move=> [B entB sBA]; exists B^-1; first exact: entourage_inv.
+by move=> fg Bgf; exact/sBA.
 Qed.
 
 Lemma fct_ent_split A : fct_ent A -> exists2 B, fct_ent B & B \; B `<=` A.
@@ -469,7 +468,7 @@ apply/cvg_ex; exists (fun t => lim (@^~t @ F)).
 apply/cvg_fct_entourageP => A entA; near=> f => t; near F => g.
 apply: (entourage_split (g t)) => //; first by near: g; apply: cvF.
 move: (t); near: g; near: f; apply: nearP_dep; apply: Fc.
-exists ((split_ent A)^-1)%classic=> //=.
+by exists (split_ent A)^-1%relation => /=.
 Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ := Uniform_isComplete.Build
@@ -531,7 +530,7 @@ near F1 => x1; near=> x2; apply: (entourage_split (h x1)) => //.
   by apply/xsectionP; near: x1; exact: hl.
 apply: (entourage_split (f x1 x2)) => //.
   by apply/xsectionP; near: x2; exact: fh.
-move: (x2); near: x1; have /cvg_fct_entourageP /(_ (_^-1%classic)):= fg; apply.
+move: (x2); near: x1; have /cvg_fct_entourageP /(_ _^-1%relation):= fg; apply.
 exact: entourage_inv.
 Unshelve. all: by end_near. Qed.
 
@@ -546,10 +545,10 @@ rewrite !near_simpl -near2_pair near_map2; near=> x1 y1 => /=; near F2 => x2.
 apply: (entourage_split (f x1 x2)) => //.
   by apply/xsectionP; near: x2; exact: fh.
 apply: (entourage_split (f y1 x2)) => //; last first.
-  apply/xsectionP; near: x2; apply/(fh _ (xsection ((_^-1)%classic) _)).
+  apply/xsectionP; near: x2; apply/(fh _ (xsection _^-1%relation _)).
   exact: nbhs_entourage (entourage_inv _).
 apply: (entourage_split (g x2)) => //; move: (x2); [near: x1|near: y1].
-  have /cvg_fct_entourageP /(_ (_^-1)%classic) := fg; apply.
+  have /cvg_fct_entourageP /(_ _^-1%relation) := fg; apply.
   exact: entourage_inv.
 by have /cvg_fct_entourageP := fg; apply.
 Unshelve. all: by end_near. Qed.
@@ -693,7 +692,7 @@ Proof.
 move=> FF; split.
 - move=> cvgF P' /uniform_nbhs [E [entE EsubP]].
   apply: (filterS EsubP); apply: cvgF => /=.
-  apply: (filterS (P := [set h | forall y, A y -> E(f y, h y)])).
+  apply: (filterS (P := [set h | forall y, A y -> E (f y, h y)])).
     + by move=> h/= Eh [y ?] _; apply Eh; rewrite -inE.
     + by (apply/uniform_nbhs; eexists; split; eauto).
 - move=> cvgF P' /= /uniform_nbhs [ E [/= entE EsubP]].
@@ -1031,7 +1030,7 @@ apply: (entourage_split (g x)) => //.
   by near: g; apply/Ff/uniform_nbhs; exists (split_ent A); split => // ?; exact.
 apply: (entourage_split (g y)) => //; near: y; near: g.
   by apply: (filterS _ ctsF) => g /(_ x) /cvg_app_entourageP; exact.
-apply/Ff/uniform_nbhs; exists (split_ent (split_ent A))^-1%classic.
+apply/Ff/uniform_nbhs; exists (split_ent (split_ent A))^-1%relation.
 by split; [exact: entourage_inv | move=> g fg; near_simpl; near=> z; exact: fg].
 Unshelve. all: end_near. Qed.
 

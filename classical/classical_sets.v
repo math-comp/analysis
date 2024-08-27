@@ -204,9 +204,11 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*                           y-section of A                                   *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* ## Composition of relations                                                *)
+(* ## Relations                                                               *)
+(* Notations for composition and inverse (scope: relation_scope):             *)
 (* ```                                                                        *)
-(*                A \; B == [set x | exists z, A (x.1, z) & B (z, x.2)]       *)
+(*                B \; A == [set x | exists z, A (x.1, z) & B (z, x.2)]       *)
+(*                  A^-1 == [set xy | A (xy.2, xy.1)]                         *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -3335,8 +3337,15 @@ Notation notin_xsectionM := notin_xsectionX (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to notin_ysectionX.")]
 Notation notin_ysectionM := notin_ysectionX (only parsing).
 
+Declare Scope relation_scope.
+Delimit Scope relation_scope with relation.
+
 Notation "B \; A" :=
-  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : classical_set_scope.
+  ([set xy | exists2 z, A (xy.1, z) & B (z, xy.2)]) : relation_scope.
+
+Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : relation_scope.
+
+Local Open Scope relation_scope.
 
 Lemma set_compose_subset {X Y : Type} (A C : set (X * Y)) (B D : set (Y * X)) :
   A `<=` C -> B `<=` D -> A \; B `<=` C \; D.
@@ -3344,9 +3353,19 @@ Proof.
 by move=> AsubC BD [x z] /= [y] Bxy Ayz; exists y; [exact: BD | exact: AsubC].
 Qed.
 
-Lemma set_compose_diag {X : Type} (E : set (X * X)) :
+Lemma set_compose_diag {T : Type} (E : set (T * T)) :
   E \; range (fun x => (x, x)) = E.
 Proof.
 rewrite eqEsubset; split => [[_ _] [_ [_ _ [<- <-//]]]|[x y] Exy]/=.
 by exists x => //; exists x.
 Qed.
+
+Lemma set_prod_invK {T : Type} (E : set (T * T)) : E^-1^-1 = E.
+Proof. by rewrite eqEsubset; split; case. Qed.
+
+Definition diagonal {T : Type} := [set x : T * T | x.1 = x.2].
+
+Lemma diagonalP {T : Type} (x y : T) : diagonal (x, y) <-> x = y.
+Proof. by []. Qed.
+
+Local Close Scope relation_scope.

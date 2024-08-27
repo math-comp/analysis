@@ -3537,12 +3537,11 @@ Lemma uniform_separatorW {T : uniformType} (A B : set T) :
 Proof. by case=> E entE AB0; exists (Uniform.class T), E; split => // ?. Qed.
 
 Section Urysohn.
+Local Open Scope relation_scope.
 Context {T : topologicalType}.
 Hypothesis normalT : normal_space T.
 Section normal_uniform_separators.
 Context (A : set T).
-
-Local Notation "A ^-1" := [set xy | A (xy.2, xy.1)] : classical_set_scope.
 
 (* Urysohn's lemma guarantees a continuous function : T -> R
    where "f @` A = [set 0]" and "f @` B = [set 1]".
@@ -3550,7 +3549,7 @@ Local Notation "A ^-1" := [set xy | A (xy.2, xy.1)] : classical_set_scope.
    rather than construct it directly.
 
    The bulk of the work is building a uniformity to measure "distance from A".
-   Each pair of "nested" U,V induces an approxmiantion "apxU".
+   Each pair of "nested" U,V induces an approximation "apxU".
                  A-------)] U
                  A----------------) V (points near A)
                           (------------  ~`closure U (points far from A)
@@ -3575,15 +3574,14 @@ Let nested (UV : set T * set T) :=
 
 Let ury_base := [set apxU UV | UV in nested].
 
-Local Lemma ury_base_refl E :
-  ury_base E -> [set fg | fg.1 = fg.2] `<=` E.
+Local Lemma ury_base_refl E : ury_base E -> diagonal `<=` E.
 Proof.
-case; case=> L R [_ _ _ /= LR] <- [? x /= ->].
+case; case=> L R [_ _ _ /= LR] <- [? x /= /diagonalP ->].
 case: (pselect (R x)); first by left.
 by move/subsetC: LR => /[apply] => ?; right.
 Qed.
 
-Local Lemma ury_base_inv E : ury_base E -> ury_base (E^-1)%classic.
+Local Lemma ury_base_inv E : ury_base E -> ury_base E^-1.
 Proof.
 case; case=> L R ? <-; exists (L, R) => //.
 by rewrite eqEsubset; split => //; (case=> x y [] [? ?]; [left| right]).
@@ -3615,19 +3613,15 @@ Let ury_unif := smallest Filter ury_base.
 Instance ury_unif_filter : Filter ury_unif.
 Proof. exact: smallest_filter_filter. Qed.
 
-Local Lemma ury_unif_refl E : ury_unif E -> [set fg | fg.1 = fg.2] `<=` E.
+Local Lemma ury_unif_refl E : ury_unif E -> diagonal `<=` E.
 Proof.
-move/(_ (globally [set fg | fg.1 = fg.2])); apply; split.
-  exact: globally_filter.
-exact: ury_base_refl.
+by move/(_ (globally diagonal)); apply; split;
+  [exact: globally_filter|exact: ury_base_refl].
 Qed.
 
-Local Lemma set_prod_invK (K : set (T * T)) : (K^-1^-1)%classic = K.
-Proof. by rewrite eqEsubset; split; case. Qed.
-
-Local Lemma ury_unif_inv E : ury_unif E -> ury_unif (E^-1)%classic.
+Local Lemma ury_unif_inv E : ury_unif E -> ury_unif E^-1.
 Proof.
-move=> ufE F [/filter_inv FF urF]; have [] := ufE [set (V^-1)%classic | V in F].
+move=> ufE F [/filter_inv FF urF]; have [] := ufE [set V^-1 | V in F].
   split => // K /ury_base_inv/urF /= ?; exists (K^-1)%classic => //.
   by rewrite set_prod_invK.
 by move=> R FR <-; rewrite set_prod_invK.
@@ -3635,7 +3629,7 @@ Qed.
 
 Local Lemma ury_unif_split_iter E n :
   filterI_iter ury_base n E -> exists2 K : set (T * T),
-    filterI_iter ury_base n.+1 K & K\;K `<=` E.
+    filterI_iter ury_base n.+1 K & K \; K `<=` E.
 Proof.
 elim: n E; first move=> E [].
 - move=> ->; exists setT => //; exists setT; first by left.
@@ -4745,7 +4739,7 @@ set B := [set x | exists2 E : {fset I}, {subset E <= D} &
 set A := `[a, b] `&` B.
 suff Aeab : A = `[a, b]%classic.
   suff [_ [E ? []]] : A b by exists E.
-  by rewrite Aeab/= inE/=; apply/andP.
+  by rewrite Aeab/= inE/=; exact/andP.
 apply: segment_connected.
 - have aba : a \in `[a, b] by rewrite in_itv /= lexx.
   exists a; split=> //; have /sabUf [i /= Di fia] := aba.
@@ -5206,18 +5200,18 @@ Lemma closed_ball_closed (R : realFieldType) (V : pseudoMetricType R) (x : V)
 Proof. exact: closed_closure. Qed.
 
 Lemma closed_ball_itv (R : realFieldType) (x r : R) : 0 < r ->
-  (closed_ball x r = `[x - r, x + r]%classic)%R.
+  closed_ball x r = `[x - r, x + r]%classic.
 Proof.
 by move=> r0; apply/seteqP; split => y;
   rewrite closed_ballE// /closed_ball_ /= in_itv/= ler_distlC.
 Qed.
 
-Lemma closed_ball_ball {R : realFieldType} (x r : R) : (0 < r)%R ->
-  closed_ball x r = [set (x - r)%R] `|` ball x r `|` [set (x + r)%R].
+Lemma closed_ball_ball {R : realFieldType} (x r : R) : 0 < r ->
+  closed_ball x r = [set x - r] `|` ball x r `|` [set x + r].
 Proof.
-move=> r0; rewrite closed_ball_itv// -(@setU1itv _ _ _ (x - r)%R); last first.
+move=> r0; rewrite closed_ball_itv// -(@setU1itv _ _ _ (x - r)); last first.
   by rewrite bnd_simp lerBlDr -addrA lerDl ltW// addr_gt0.
-rewrite -(@setUitv1 _ _ _ (x + r)%R); last first.
+rewrite -(@setUitv1 _ _ _ (x + r)); last first.
   by rewrite bnd_simp ltrBlDr -addrA ltrDl addr_gt0.
 by rewrite ball_itv setUA.
 Qed.
@@ -5237,7 +5231,7 @@ by move=> m xm; rewrite -ball_normE /ball_ /= (le_lt_trans _ r01).
 Qed.
 
 Lemma nbhs_closedballP (R : realFieldType) (M : normedModType R) (B : set M)
-  (x : M) : nbhs x B <-> exists (r : {posnum R}), closed_ball x r%:num `<=` B.
+  (x : M) : nbhs x B <-> exists r : {posnum R}, closed_ball x r%:num `<=` B.
 Proof.
 split=> [/nbhs_ballP[_/posnumP[r] xrB]|[e xeB]]; last first.
   apply/nbhs_ballP; exists e%:num => //=.
@@ -5252,7 +5246,7 @@ Lemma subset_closed_ball (R : realFieldType) (V : pseudoMetricType R) (x : V)
 Proof. exact: subset_closure. Qed.
 
 Lemma open_subball {R : realFieldType} {M : normedModType R} (A : set M)
-    (x : M) : open A -> A x -> \forall e \near 0^'+, ball x e `<=` A.
+  (x : M) : open A -> A x -> \forall e \near 0^'+, ball x e `<=` A.
 Proof.
 move=> aA Ax.
 have /(@nbhs_closedballP R M _ x)[r xrA]: nbhs x A by rewrite nbhsE/=; exists A.
@@ -5428,7 +5422,6 @@ Qed.
 End image_interval.
 
 Section LinearContinuousBounded.
-
 Variables (R : numFieldType) (V W : normedModType R).
 
 Lemma linear_boundedP (f : {linear V -> W}) : bounded_near f (nbhs 0) <->
@@ -5482,7 +5475,7 @@ Lemma linear_bounded_continuous (f : {linear V -> W}) :
   bounded_near f (nbhs 0) <-> continuous f.
 Proof.
 split; first exact: bounded_linear_continuous.
-by move=> /(_ 0); apply: continuous_linear_bounded.
+by move=> /(_ 0); exact: continuous_linear_bounded.
 Qed.
 
 Lemma bounded_funP (f : {linear V -> W}) :
@@ -5494,7 +5487,7 @@ split => [/(_ 1) [M Bf]|/linear_boundedP fr y].
   by rewrite sub0r normrN => x1; exact/Bf/ltW.
 near +oo_R => r; exists (r * y) => x xe.
 rewrite (@le_trans _ _ (r * `|x|)) //; first by move: {xe} x; near: r.
-by rewrite ler_pM //.
+by rewrite ler_pM.
 Unshelve. all: by end_near. Qed.
 
 End LinearContinuousBounded.
