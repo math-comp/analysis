@@ -1643,8 +1643,9 @@ by move=> mx my; apply: measurable_fun_if => //;
 Qed.
 
 Section measurable_fun_bool.
+Implicit Types f g : T1 -> bool.
 
-Let measurable_fun_TF D (f : T1 -> bool) :
+Let measurable_fun_TF D f :
   measurable (D `&` f @^-1` [set true]) ->
   measurable (D `&` f @^-1` [set false]) ->
   measurable_fun D f.
@@ -1658,7 +1659,7 @@ move: mY; have [-> _|-> _|-> _ |-> _] := subset_set2 YT.
 - by rewrite -setT_bool preimage_setT setIT.
 Qed.
 
-Lemma measurable_fun_bool D (f : T1 -> bool) b :
+Lemma measurable_fun_bool D f b :
   measurable (D `&` f @^-1` [set b]) -> measurable_fun D f.
 Proof.
 move=> mb mD; have mDb : measurable (D `&` f @^-1` [set ~~ b]).
@@ -1667,12 +1668,9 @@ move=> mb mD; have mDb : measurable (D `&` f @^-1` [set ~~ b]).
   by rewrite -preimage_setC; exact: measurableID.
 by case: b => /= in mb mDb *; exact: measurable_fun_TF.
 Qed.
+#[global] Arguments measurable_fun_bool {D f} _.
 
-End measurable_fun_bool.
-Arguments measurable_fun_bool {D f} _.
-
-Lemma measurable_and D (f : T1 -> bool) (g : T1 -> bool) :
-  measurable_fun D f -> measurable_fun D g ->
+Lemma measurable_and D f g : measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (fun x => f x && g x).
 Proof.
 move=> mf mg mD; apply: (measurable_fun_bool true) => //.
@@ -1681,6 +1679,26 @@ rewrite [X in measurable X](_ : _ = D `&` f @^-1` [set true] `&`
   by rewrite setIACA setIid; congr (_ `&` _); apply/seteqP; split => x /andP.
 by apply: measurableI; [exact: mf|exact: mg].
 Qed.
+
+Lemma measurable_neg D f :
+  measurable_fun D f -> measurable_fun D (fun x => ~~ f x).
+Proof.
+move=> mf mD; apply: (measurable_fun_bool true) => //.
+rewrite [X in measurable X](_ : _ = (D `&` f @^-1` [set false])).
+  exact: mf.
+by apply/seteqP; split => [x [Dx/= /negbTE]|x [Dx/= ->]].
+Qed.
+
+Lemma measurable_or D f g : measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x || g x).
+Proof.
+move=> mf mg.
+rewrite [X in measurable_fun _ X](_ : _ = (fun x => ~~ (~~ f x && ~~ g x))).
+  by apply: measurable_neg; apply: measurable_and; exact: measurable_neg.
+by apply/funext=> x; rewrite -negb_or negbK.
+Qed.
+
+End measurable_fun_bool.
 
 End measurable_fun_measurableType.
 #[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
@@ -5218,7 +5236,7 @@ Context d (T : measurableType d) (R : realType).
 Implicit Types m : {measure set T -> \bar R}.
 
 Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
-    m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
+  m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
 Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
 
 End absolute_continuity_lemmas.
