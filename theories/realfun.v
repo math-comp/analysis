@@ -281,9 +281,8 @@ split.
       exists `|ceil A|%N => // => n /=.
       rewrite -(ler_nat R) natr_absz => n_ge_absA.
       rewrite /sval; case: cid => x [x_ltn _].
-      apply: (le_lt_trans _ x_ltn).
-      apply/(le_trans _ n_ge_absA)/(le_trans (le_ceil (num_real A))).
-      by rewrite ler_int; apply: ler_norm.
+      apply/(le_lt_trans _ x_ltn)/(le_trans _ n_ge_absA).
+      by apply: (le_trans (ceil_ge A)); rewrite ler_int; apply: ler_norm.
     rewrite cvgrPdistC_lt /=.
     case/(_ e%:num [gt0 of e%:num]) => N /= _ /(_ N (leqnn N)).
     rewrite /sval; case: cid => uN.

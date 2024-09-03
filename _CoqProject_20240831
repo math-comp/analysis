@@ -1,5 +1,3 @@
--R ../math-comp/mathcomp mathcomp
-
 -R classical mathcomp.classical
 -R theories mathcomp.analysis
 
@@ -48,13 +46,13 @@ theories/lebesgue_integral.v
 theories/ftc.v
 theories/hoelder.v
 theories/probability.v
+theories/summability.v
 theories/signed.v
 theories/itv.v
 theories/convex.v
 theories/charge.v
 theories/kernel.v
 theories/showcase/uniform_bigO.v
-theories/showcase/summability.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v
 theories/altreals/realseq.v
