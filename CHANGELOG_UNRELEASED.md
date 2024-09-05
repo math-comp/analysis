@@ -38,20 +38,6 @@
 
 - in `lebesgue_integral.v`:
   + lemma `integralZr`
-  + lemma `nneseries_recl`
-
-- in `measure.v`:
-  + definition `subset_sigma_subadditive`
-  + factory `isSubsetOuterMeasure`
-
-- in file `classical_sets.v`
-  + notations `\bigcup_(i >= n) F i` and `\bigcap_(i >= n) F i`
-  + lemmas `bigcup_addn`, `bigcap_addn`
-
-- in file `sequences.v`
-  + lemma `nneseries_addn`
-- in `lebesgue_integral.v`:
-  + lemmas `integrableMl`, `integrableMr`
   
 - in `normedtype.v`:
   + lemma `le_closed_ball` 
