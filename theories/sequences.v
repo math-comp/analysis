@@ -86,10 +86,19 @@ Require Import reals ereal signed topology normedtype landau.
 (*                           of extended reals                                *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* Theorems:                                                                  *)
-(*             Baire == A completeNormedModType is a Baire Space              *)
-(*  Banach_Steinhaus == a poinwise bounded family of bounded linear maps      *)
-(*                      over a completenormedmodtype is uniformly bounded     *)
+(* ## Bounded functions:                                                      *)
+(* This section proves Baire Theorem, stating that complete normed spaces are *)
+(* Baire spaces, and Banach-Steinhaus theorem, stating that between a         *)
+(* complete normed vector space and a normed vector spaces, pointwise bounded *)
+(* and uniformly bounded subset of functions correspond.                      *)
+(* ```                                                                        *)
+(*     bounded_fun_norm f == a function between normed spaces transforms a    *)
+(*                           bounded set into a bounded set                   *)
+(*    pointwise_bounded F == F is a set of pointwise bounded functions        *) 
+(*                           between normed spaces                            *)
+(*      uniform_bounded F == F is a set of uniform bounded functions          *)
+(*                           between normed spaces                            *)
+(* ```                                                                        *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -2948,6 +2957,7 @@ End banach_contraction.
 Section Baire.
 Variable K : realType.
 
+(* TODO: generalize to complete metric spaces  *)
 Theorem Baire (U : completeNormedModType K) (F : (set U)^nat) :
   (forall i, open (F i) /\ dense (F i)) -> dense (\bigcap_i (F i)).
 Proof.
@@ -3035,11 +3045,12 @@ Unshelve. all: by end_near. Qed.
 
 End Baire.
 
-Definition bounded_fun_norm (K : realType) (V : completeNormedModType K)
+(* TODO: generalize once PR#1107 is integrated *)
+Definition bounded_fun_norm (K : realType) (V : normedModType K)
     (W : normedModType K) (f : V -> W) :=
   forall r, exists M, forall x, `|x| <= r -> `|f x| <= M.
 
-Lemma bounded_landau (K : realType) (V : completeNormedModType K)
+Lemma bounded_landau (K : realType) (V : normedModType K)
     (W : normedModType K) (f : {linear V -> W}) :
   bounded_fun_norm f <-> ((f : V -> W) =O_ (0 : V) cst (1:K)).
 Proof.
@@ -3051,32 +3062,33 @@ rewrite eqOP; split => [|Bf].
   by apply/ltW; rewrite (le_lt_trans _ Mx)// bm// ltW.
 - apply/bounded_funP; rewrite /bounded_near.
   near=> M.
-  rewrite (_ : mkset _ = (fun x => (`|f x| <= M * `|cst 1%R x|))); last first.
+  rewrite (_ : mkset _ = (fun x => `|f x| <= M * `|cst 1 x|)); last first.
     by rewrite funeqE => x; rewrite normr1 mulr1.
   by near: M.
 Unshelve. all: by end_near. Qed.
 
+(* TODO: to be changed once PR#1107 is integrated, and the following put in evt.v *)
+
+(* Definition bounded_top (K: realType) (E : normedModType K) (B : set E) := 
+forall (U : set E), nbhs 0 U -> 
+(exists (k:K), B `<=` (fun (x:E) => (k *: x) ) @` U).
+
+Definition pointwise_bounded (K : realType) (V : normedModType K) (W : normedModType K) 
+(F : set (V -> W)) := bounded_top F {ptws V -> W}.
+
+Definition uniform_bounded (K : realType) (V : normedModType K) (W : normedModType K)
+ (F : set (V -> W)) := bounded_top F {uniform V -> W}.  *)
+
+Definition pointwise_bounded (K : realType) (V : normedModType K) (W : normedModType K)
+  (F : set (V -> W)) := forall x, exists M, forall f, F f -> `|f x| <= M.
+
+Definition uniform_bounded (K : realType) (V : normedModType K) (W : normedModType K)
+  (F : set (V -> W)) := forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
+
 Section banach_steinhaus.
 Variables (K : realType) (V : completeNormedModType K) (W : normedModType K).
 
-(*NB:to be changed once PR#1107 is integrated to the following*)
-(* 
-Definition bounded_top  (E : normedModType K) (B : set E) := forall (U : set E),
-nbhs 0 U -> (exists (k:K), B `<=` (fun (x:E) => (k *: x) ) @` U).  
-
-Definition pointwise_bounded  (F : set (V -> W)) := bounded_top F {ptws V -> W}.
-
-Definition uniform_bounded (F : set (V -> W)) := bounded_top F {uniform V -> W}.
-*)
-
-Definition pointwise_bounded  (F : set (V -> W)) :=
-  forall x, exists M, forall f, F f -> `|f x| <= M.
-
-Definition uniform_bounded (F : set (V -> W)) :=
-  forall r, exists M, forall f, F f -> forall x, `|x| <= r -> `|f x| <= M.
-(*End NB: to be changed*)
-
-Definition pack_linear (f : V -> W) (lf : linear f) : {linear V -> W}
+Let pack_linear (f : V -> W) (lf : linear f) : {linear V -> W}
  := HB.pack f (GRing.isLinear.Build _ _ _ _ _ lf).
 (* NB: pack linear used 5 times below, used inside a proof in derive.v,
 fieldext.v, vector.v. *)
