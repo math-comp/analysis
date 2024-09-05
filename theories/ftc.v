@@ -38,7 +38,7 @@ Implicit Types (f : R -> R) (a : itv_bound R).
 Let FTC0 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) f t)%R in
   forall x, a < BRight x -> lebesgue_pt f x ->
-    h^-1 *: (F (h + x) - F x) @[h --> 0%R^'] --> f x.
+    h^-1 *: (F (h + x) - F x) @[h --> (0:R)%R^'] --> f x.
 Proof.
 move=> intf F x ax fx.
 have locf : locally_integrable setT f.
@@ -353,7 +353,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma parameterized_integral_cvg_left a b (f : R -> R) : a < b ->
   mu.-integrable `[a, b] (EFin \o f) ->
-  int a x f @[x --> a] --> 0.
+  int a x f @[x --> a] --> (0:R).
 Proof.
 move=> ab intf; pose fab := f \_ `[a, b].
 have intfab : mu.-integrable `[a, b] (EFin \o fab).

@@ -18,12 +18,24 @@ Local Open Scope ring_scope.
 
 HB.structure Definition PointedNmodule := {M of Pointed M & GRing.Nmodule M}.
 HB.structure Definition PointedZmodule := {M of Pointed M & GRing.Zmodule M}.
+HB.structure Definition PointedLmodule (K : numDomainType) :=
+  {M of Pointed M & GRing.Lmodule K M}.
 HB.structure Definition FilteredNmodule := {M of Filtered M M & GRing.Nmodule M}.
 HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}.
+HB.structure Definition FilteredLmodule (K : numDomainType) :=
+  {M of Filtered M M & GRing.Lmodule K M}.
 HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
 HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
+HB.structure Definition NbhsLmodule (K : numDomainType) :=
+  {M of Nbhs M & GRing.Lmodule K M}.
 HB.structure Definition TopologicalNmodule := {M of Topological M & GRing.Nmodule M}.
-HB.structure Definition TopologicalZmodule := {M of Uniform M & GRing.Zmodule M}.
+HB.structure Definition TopologicalZmodule :=
+  {M of Topological M & GRing.Zmodule M}.
+HB.structure Definition TopologicalLmodule (K : numDomainType) :=
+  {M of Topological M & GRing.Lmodule K M}.
+HB.structure Definition UniformZmodule := {M of Uniform M & GRing.Zmodule M}.
+HB.structure Definition UniformLmodule (K : numDomainType) :=
+  {M of Uniform M & GRing.Lmodule K M}.
 
 Definition convex (R : ringType) (M : lmodType R) (A : set M) :=
   forall x y lambda, lambda *: x + (1 - lambda) *: y \in A.

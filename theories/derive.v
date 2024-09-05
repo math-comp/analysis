@@ -233,13 +233,13 @@ Qed.
 End diff_locally_converse_tentative.
 
 Definition derive (f : V -> W) a v :=
-  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^').
+  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ (0:R)^').
 
 Local Notation "''D_' v f" := (derive f ^~ v).
 Local Notation "''D_' v f c" := (derive f c v). (* printing *)
 
 Definition derivable (f : V -> W) a v :=
-  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^').
+  cvg ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ (0:R)^').
 
 Class is_derive (a v : V) (f : V -> W) (df : W) := DeriveDef {
   ex_derive : derivable f a v;
@@ -356,7 +356,7 @@ Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
 Definition derive1 V (f : R -> V) (a : R) :=
-   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ 0^').
+   lim ((fun h => h^-1 *: (f (h + a) - f a)) @ (0:R)^').
 
 Local Notation "f ^` ()" := (derive1 f).
 
@@ -1125,7 +1125,7 @@ Implicit Types f g : V -> W.
 
 Fact der_add f g (x v : V) : derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f + g) \o shift x) (h *: v) - (f + g) x)) @
-  0^'  --> 'D_v f x + 'D_v g x.
+  (0:R)^'  --> 'D_v f x + 'D_v g x.
 Proof.
 move=> df dg.
 evar (fg : R -> W); rewrite [X in X @ _](_ : _ = fg) /=; last first.
@@ -1177,7 +1177,7 @@ Qed.
 
 Fact der_opp f (x v : V) : derivable f x v ->
   (fun h => h^-1 *: (((- f) \o shift x) (h *: v) - (- f) x)) @
-  0^' --> - 'D_v f x.
+  (0:R)^' --> - 'D_v f x.
 Proof.
 move=> df; evar (g : R -> W); rewrite [X in X @ _](_ : _ = g) /=; last first.
   by rewrite funeqE => h; rewrite !scalerDr !scalerN -opprD -scalerBr /g.

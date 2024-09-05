@@ -7,6 +7,7 @@ From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 Require Export separation_axioms.
+Require Import evt.
 
 (**md**************************************************************************)
 (* # Norm-related Notions                                                     *)

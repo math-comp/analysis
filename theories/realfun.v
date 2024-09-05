@@ -1543,7 +1543,7 @@ Proof. exact: (@exprn_continuous 2%N). Qed.
 Lemma sqrt_continuous : continuous (@Num.sqrt R).
 Proof.
 move=> x; case: (ltrgtP x 0) => [xlt0 | xgt0 | ->].
-- apply: (near_cst_continuous 0).
+- apply: (near_cst_continuous (0:R)).
   by near do rewrite ltr0_sqrtr//; apply: (cvgr_lt x).
   pose I b : set R := [set` `]0 ^+ 2, b ^+ 2[].
   suff main b : 0 <= b -> {in I b, continuous (@Num.sqrt R)}.
@@ -1577,18 +1577,18 @@ split => [Hd|[g [fxE Cg gxE]]].
     by rewrite -subr_eq0 => /divfK->.
   - apply/continuous_withinNshiftx; rewrite eqxx /=.
     pose g1 h := (h^-1 *: ((f \o shift x) h%:A - f x)).
-    have F1 : g1 @ 0^' --> a by case: Hd => H1 <-.
+    have F1 : g1 @ (0:R)^' --> a by case: Hd => H1 <-.
     apply: cvg_trans F1; apply: near_eq_cvg; rewrite /g1 !fctE.
     near=> i.
     rewrite ifN; first by rewrite addrK mulrC /= [_%:A]mulr1.
     rewrite -subr_eq0 addrK.
     by near: i; rewrite near_withinE /= near_simpl; near=> x1.
   by rewrite eqxx.
-suff Hf : h^-1 *: ((f \o shift x) h%:A - f x) @[h --> 0^'] --> a.
+suff Hf : h^-1 *: ((f \o shift x) h%:A - f x) @[h --> (0:R)^'] --> a.
   have F1 : 'D_1 f x = a by apply: cvg_lim.
   rewrite -F1 in Hf.
     by constructor.
-  have F1 :  (g \o shift x) y @[y --> 0^'] --> a.
+  have F1 :  (g \o shift x) y @[y --> (0:R)^'] --> a.
   by rewrite -gxE; apply/continuous_withinNshiftx.
 apply: cvg_trans F1; apply: near_eq_cvg.
 near=> y.

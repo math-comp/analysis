@@ -198,10 +198,10 @@ Lemma pseries_snd_diffs (c : R^nat) K x :
 Proof.
 move=> Ck CdK CddK xLK; rewrite /pseries.
 set s := (fun n : nat => _); set (f := fun x0 => _).
-suff hfxs : h^-1 *: (f (h + x) - f x) @[h --> 0^'] --> limn (series s).
+suff hfxs : h^-1 *: (f (h + x) - f x) @[h --> (0:R)^'] --> limn (series s).
   have F : f^`() x = limn (series s) by apply: cvg_lim hfxs.
   have Df : derivable f x 1.
-    move: hfxs; rewrite /derivable [X in X @ 0^'](_ : _ =
+    move: hfxs; rewrite /derivable [X in X @ (0:R)^'](_ : _ =
         (fun h => h^-1 *: (f (h%:A + x) - f x))) /=; last first.
       by apply/funext => i //=; rewrite [i%:A]mulr1.
     by move=> /(cvg_lim _) -> //.
@@ -209,7 +209,7 @@ suff hfxs : h^-1 *: (f (h + x) - f x) @[h --> 0^'] --> limn (series s).
 pose sx := fun n : nat => c n * x ^+ n.
 have Csx : cvgn (pseries c x) by apply: is_cvg_pseries_inside Ck _.
 pose shx := fun h (n : nat) => c n * (h + x) ^+ n.
-suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> limn (series s).
+suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> (0:R)^'] --> limn (series s).
   apply: cvg_sub0 Cc.
   apply/cvgrPdist_lt => eps eps_gt0 /=.
   near=> h; rewrite sub0r normrN /=.
@@ -229,7 +229,7 @@ suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> limn (series s).
 apply: cvg_zero => /=.
 suff Cc : limn
     (series (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
-    @[h --> 0^'] --> (0 : R).
+    @[h --> (0:R)^'] --> (0 : R).
   apply: cvg_sub0 Cc.
   apply/cvgrPdist_lt => eps eps_gt0 /=.
   near=> h; rewrite sub0r normrN /=.

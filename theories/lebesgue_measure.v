@@ -1144,7 +1144,7 @@ rewrite (_ : [set~ 0] = `]-oo, 0[ `|` `]0, +oo[); last first.
     rewrite in_itv/= -eq_le eq_sym; [move/eqP/negbTE => ->|move/negP/eqP].
 apply/measurable_funU => //; split.
 - apply/measurable_restrictT => //=.
-  rewrite (_ : _ \_ _ = cst 0)//; apply/funext => y; rewrite patchE.
+  rewrite (_ : _ \_ _ = cst (0:R))//; apply/funext => y; rewrite patchE.
   by case: ifPn => //; rewrite inE/= in_itv/= => y0; rewrite ln0// ltW.
 - have : {in `]0, +oo[%classic, continuous (@ln R)}.
     by move=> x; rewrite inE/= in_itv/= andbT => x0; exact: continuous_ln.
