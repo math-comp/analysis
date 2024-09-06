@@ -807,15 +807,13 @@ HB.mixin Record PseudoMetricNormedZmod_Lmodule_isNormedModule K V
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
-(*#[short(type="normedModType")]
-HB.structure Definition NormedModule (K : numDomainType) :=
-  {T of TopologicalLmodule K T & GRing.Lmodule K T
-   & PseudoMetricNormedZmod_Lmodule_isNormedModule K T}.*)
-
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
-  {T of PseudoMetricNormedZmod K T & GRing.Lmodule K T
+  {T of PseudoMetricNormedZmod K T & Tvs K T
    & PseudoMetricNormedZmod_Lmodule_isNormedModule K T}.
+
+(* TODO: several factories, from a norm add-continuous,
+scale_continuous and locally convex can be deduced *)
 
 Section regular_topology.
 
@@ -823,15 +821,26 @@ Variable R : numFieldType.
 
 HB.instance Definition _ := Num.NormedZmodule.on R^o.
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
-HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R R^o (@normrM _).
 
-(*Let Ro_add_continuous : continuous (uncurry (@GRing.add R^o)).
+
+Let Ro_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
 Proof.
+(* Ugly proof
+move=> [/= x y].
+apply/cvg_ballP => e e0.
+rewrite /= nearE /= -nbhs_ballE /nbhs_ball /nbhs_ball_  /=. 
+exists ((ball x (e/2)),(ball y (e/2))).
+by move=> /=; split => /=; exists (e/2) => //=; rewrite ?divr_gt0. 
+move =>  [z1 z2]; rewrite /ball /= =>- [B1 B2].
+rewrite (le_lt_trans (ler_normD _ _)) //. 
+rewrite (splitr e).
+rewrite ltrD //. 
+Qed.
+ *)
 Admitted.
 
 Let Ro_scale_continuous :
-  continuous (uncurry (@GRing.scale R R^o) : R^o * R^o -> R^o).
+   continuous (fun z : R^o * R^o => z.1 *: z.2).
 Admitted.
 
 Let Ro_locally_convex : exists2 B : set (set R^o),
@@ -839,8 +848,11 @@ Let Ro_locally_convex : exists2 B : set (set R^o),
 Admitted.
 
 HB.instance Definition _ :=
-  TopologicalLmod_isTvs.Build R R^o Ro_add_continuous
-    Ro_scale_continuous Ro_locally_convex.*)
+  Uniform_isTvs.Build R R^o Ro_add_continuous
+    Ro_scale_continuous Ro_locally_convex.
+
+HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R R^o (@normrM _). 
 
 End regular_topology.
 
@@ -859,6 +871,7 @@ Variable (R : realType).
 HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
+
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := NormedModule.copy R R^o.
 End realType.
