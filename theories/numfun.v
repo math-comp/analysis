@@ -469,8 +469,6 @@ HB.end.
 Section Tietze.
 Context {X : topologicalType} {R : realType}.
 
-Local Notation "3" := 3%:R : ring_scope.
-
 Hypothesis normalX : normal_space X.
 
 Lemma urysohn_ext_itv A B x y :
@@ -494,8 +492,6 @@ Qed.
 
 Context (A : set X).
 Hypothesis clA : closed A.
-
-Local Notation "3" := 3%:R.
 
 Local Lemma tietze_step' (f : X -> R) (M : R) :
   0 < M -> {within A, continuous f} ->
