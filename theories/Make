@@ -17,7 +17,7 @@ separation_axioms.v
 function_spaces.v
 cantor.v
 prodnormedzmodule.v
-evt.v
+tvs.v
 normedtype.v
 realfun.v
 sequences.v

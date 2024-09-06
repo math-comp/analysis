@@ -18,8 +18,8 @@ Local Open Scope ring_scope.
 
 HB.structure Definition PointedNmodule := {M of Pointed M & GRing.Nmodule M}.
 HB.structure Definition PointedZmodule := {M of Pointed M & GRing.Zmodule M}.
-HB.structure Definition PointedLmodule (K : numDomainType) :=
-  {M of Pointed M & GRing.Lmodule K M}.
+HB.structure Definition PointedLmodule (K : numDomainType) := {M of Pointed M & GRing.Lmodule K M}.
+
 HB.structure Definition FilteredNmodule := {M of Filtered M M & GRing.Nmodule M}.
 HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}.
 HB.structure Definition FilteredLmodule (K : numDomainType) :=
@@ -28,7 +28,8 @@ HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
 HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
 HB.structure Definition NbhsLmodule (K : numDomainType) :=
   {M of Nbhs M & GRing.Lmodule K M}.
-HB.structure Definition TopologicalNmodule := {M of Topological M & GRing.Nmodule M}.
+
+(*HB.structure Definition TopologicalNmodule := {M of Topological M & GRing.Nmodule M}.*)
 HB.structure Definition TopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
 HB.structure Definition TopologicalLmodule (K : numDomainType) :=
@@ -40,7 +41,7 @@ HB.structure Definition UniformLmodule (K : numDomainType) :=
 Definition convex (R : ringType) (M : lmodType R) (A : set M) :=
   forall x y lambda, lambda *: x + (1 - lambda) *: y \in A.
 
-HB.mixin Record Uniform_isEvt (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
+HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
     (*continuous (uncurry (@GRing.add E))*)
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
@@ -49,17 +50,17 @@ HB.mixin Record Uniform_isEvt (R : numDomainType) E of Uniform E & GRing.Lmodule
 }.
 
 #[short(type="evtType")]
-HB.structure Definition Evt (R : numDomainType) :=
-  {E of Uniform_isEvt R E & Uniform E & GRing.Lmodule R E}.
+HB.structure Definition Tvs (R : numDomainType) :=
+  {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
-HB.factory Record TopologicalLmod_isEvt (R : numFieldType) E
+HB.factory Record TopologicalLmod_isTvs (R : numFieldType) E
     of Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (uncurry (@GRing.add E));
   scale_continuous : continuous (uncurry (@GRing.scale R E) : R^o * E -> E);
   locally_convex : exists2 B : set (set E), (forall b, b \in B -> convex b) & basis B
 }.
 
-HB.builders Context R E of TopologicalLmod_isEvt R E.
+HB.builders Context R E of TopologicalLmod_isTvs R E.
 
 Definition entourage : set_system (E * E):=
   fun P => exists U, nbhs 0 U /\ (forall xy : E * E, (xy.1 - xy.2) \in U -> xy \in P).
