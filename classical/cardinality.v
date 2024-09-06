@@ -1268,6 +1268,12 @@ Proof. by apply: (@sub_finite_set _ _ (range f)) => // y [x]; exists x. Qed.
 
 #[global] Hint Resolve fimfun_inP : core.
 
+Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) (D : set T1)
+    (f : {fimfun T1 >-> T2}) (g : T2 -> T3) :
+  fset_set [set (g \o f) x | x in D] =
+  [fset g x | x in fset_set [set f x | x in D]]%fset.
+Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
+
 Section fimfun_pred.
 Context {aT rT : Type}.
 Definition fimfun : {pred aT -> rT} := mem [set f | finite_set (range f)].

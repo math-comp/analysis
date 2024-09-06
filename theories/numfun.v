@@ -466,12 +466,6 @@ HB.builders Context T R f of @FiniteDecomp T R f.
   HB.instance Definition _ := finite_subproof.
 HB.end.
 
-Lemma fset_set_comp (T1 : Type) (T2 T3 : choiceType) (D : set T1)
-    (f : {fimfun T1 >-> T2}) (g : T2 -> T3) :
-  fset_set [set (g \o f) x | x in D] =
-  [fset g x | x in fset_set [set f x | x in D]]%fset.
-Proof. by rewrite -(image_comp f g) fset_set_image. Qed.
-
 Section Tietze.
 Context {X : topologicalType} {R : realType}.
 

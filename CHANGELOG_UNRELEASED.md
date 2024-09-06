@@ -57,6 +57,9 @@
 - in `lebesgue_measure.v`:
   + remove redundant hypothesis from lemma `pointwise_almost_uniform`
 
+- moved from `numfun.v` to `cardinality.v`:
+  + lemma `fset_set_comp`
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
