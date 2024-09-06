@@ -378,8 +378,6 @@ Qed.
 
 End FinitelyBranchingTrees.
 
-Local Notation "A ^-1" := ([set xy | A (xy.2, xy.1)]) : classical_set_scope.
-
 (**md**************************************************************************)
 (* ## Part 4: Building a finitely branching tree to cover `T`                 *)
 (******************************************************************************)
@@ -504,7 +502,7 @@ have [//| | |? []//| |? []// | |] := @tree_map_props
   move=> /(_ _ _ xny)[[U V]] /= [/set_mem Ux /set_mem Vy] [+ oV UVI0].
   rewrite openE => /(_ _ Ux); rewrite /interior -nbhs_entourageE => -[E entE ExU].
   have [//| n ctE] :=
-    @count_unif_sub (split_ent E `&` (split_ent E)^-1%classic).
+    @count_unif_sub (split_ent E `&` (split_ent E)^-1%relation).
     exact: filterI.
   exists n => B [C ebC]; have [//|_ Csub _ _ _ embx emby] := entn n.
   have [[D cbD] /= Dx Dy] : exists2 e : K n, projT1 e x & projT1 e y.
