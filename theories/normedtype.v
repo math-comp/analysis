@@ -807,6 +807,11 @@ HB.mixin Record PseudoMetricNormedZmod_Tvs_isNormedModule K V
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
+(*#[short(type="normedModType")]
+HB.structure Definition NormedModule (K : numDomainType) :=
+  {T of TopologicalLmodule K T & GRing.Lmodule K T
+   & PseudoMetricNormedZmod_Lmodule_isNormedModule K T}.*)
+
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
   {T of PseudoMetricNormedZmod K T & Tvs K T
@@ -915,6 +920,22 @@ HB.instance Definition _ := Num.NormedZmodule.on R^o.
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R R^o (@normrM _).
+
+(*Let Ro_add_continuous : continuous (uncurry (@GRing.add R^o)).
+Proof.
+Admitted.
+
+Let Ro_scale_continuous :
+  continuous (uncurry (@GRing.scale R R^o) : R^o * R^o -> R^o).
+Admitted.
+
+Let Ro_locally_convex : exists2 B : set (set R^o),
+  (forall b, b \in B -> convex b) & basis B.
+Admitted.
+
+HB.instance Definition _ :=
+  TopologicalLmod_isTvs.Build R R^o Ro_add_continuous
+    Ro_scale_continuous Ro_locally_convex.*)
 
 End regular_topology.
 

@@ -56,6 +56,7 @@ HB.structure Definition Tvs (R : numDomainType) :=
   {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
 HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
+
     of Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
     (*continuous (uncurry (@GRing.add E))*)
@@ -63,8 +64,6 @@ HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
     (* continuous (uncurry (@GRing.scale R E) : R^o * E -> E) *)
   locally_convex : exists2 B : set (set E), (forall b, b \in B -> convex b) & basis B
   }.
-
-
 
 HB.builders Context R E of TopologicalLmod_isTvs R E.
 
