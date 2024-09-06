@@ -1743,7 +1743,6 @@ have mK : measurable K by exact: bigcap_measurable.
 have Kab : K `<=` A by move=> z /(_ O I); have [_ + _ _] := gKP O; apply.
 have []// := @pointwise_almost_uniform _ rT R mu g_ f K (eps%:num / 2).
 - by move=> n; apply: measurable_funTS.
-- exact: (measurable_funS _ Kab).
 - by rewrite (@le_lt_trans _ _ (mu A))// le_measure// ?inE.
 - by move=> z Kz; have /fine_fcvg := gf' z (Kab _ Kz); rewrite -fmap_comp compA.
 move=> D [/= mD Deps KDf]; exists (K `\` D); split => //.

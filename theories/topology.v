@@ -418,7 +418,7 @@ Reserved Notation "'\forall' x & y '\near' z , P"
 Reserved Notation "'\near' x & y , P"
   (at level 200, x, y at level 99, P at level 200,
    format "'\near'  x  &  y ,  P", only parsing).
-Reserved Notation "[ 'filter' 'of' x ]" (format "[ 'filter'  'of'  x ]").
+(*Reserved Notation "[ 'filter' 'of' x ]" (format "[ 'filter'  'of'  x ]").*)
 Reserved Notation "F `=>` G" (at level 70, format "F  `=>`  G").
 Reserved Notation "F --> G" (at level 70, format "F  -->  G").
 Reserved Notation "[ 'lim' F 'in' T ]" (format "[ 'lim'  F  'in'  T ]").

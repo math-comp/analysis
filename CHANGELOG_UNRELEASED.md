@@ -54,6 +54,12 @@
 - in `normedtype.v`:
   + remove superflous parameters in lemmas `not_near_at_rightP` and `not_near_at_leftP`
 
+- in `lebesgue_measure.v`:
+  + remove redundant hypothesis from lemma `pointwise_almost_uniform`
+
+- moved from `numfun.v` to `cardinality.v`:
+  + lemma `fset_set_comp`
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
