@@ -86,6 +86,15 @@ split.
 - exact: cantor_zero_dimensional.
 Qed.
 
+HB.instance Definition _ (U : Type) (T : U -> ptopologicalType) :=
+  Pointed.copy (forall x : U, T x) (prod_topology T).
+
+Global Instance prod_topology_filter (U : Type) (T : U -> ptopologicalType) (f : prod_topology T) :
+  ProperFilter (nbhs f).
+Proof.
+exact: nbhs_pfilter.
+Qed.
+
 (**md**************************************************************************)
 (* ## Part 1                                                                  *)
 (*                                                                            *)
@@ -101,7 +110,7 @@ Qed.
 (*                                                                            *)
 (******************************************************************************)
 Section topological_trees.
-Context {K : nat -> topologicalType} {X : topologicalType}
+Context {K : nat -> ptopologicalType} {X : ptopologicalType}
         (refine_apx : forall n, set X -> K n -> set X)
         (tree_invariant : set X -> Prop).
 
@@ -191,7 +200,8 @@ elim: n => [|n IH]; first by near=> z => ?; rewrite ltn0.
 near=> z => i; rewrite leq_eqVlt => /predU1P[|iSn]; last by rewrite (near IH z).
 move=> [->]; near: z; exists (proj n @^-1` [set b n]).
 split => //; suff : @open T (proj n @^-1` [set b n]) by [].
-by apply: open_comp; [move=> + _; exact: proj_continuous| exact: discrete_open].
+apply: open_comp; [move=> + _; exact: proj_continuous| apply: discrete_open].
+exact: discreteK.
 Unshelve. all: end_near. Qed.
 
 Let apx_prefix b c n :
@@ -211,7 +221,6 @@ Qed.
 Local Lemma tree_map_cts : continuous tree_map.
 Proof.
 move=> b U /cvg_tree_map [n _] /filterS; apply.
-  exact/fmap_filter/nbhs_filter.
 rewrite nbhs_simpl /=; near_simpl; have := tree_prefix b n; apply: filter_app.
 by near=> z => /apx_prefix ->; exact: tree_map_apx.
 Unshelve. all: end_near. Qed.
@@ -257,7 +266,7 @@ End topological_trees.
 (******************************************************************************)
 
 Section TreeStructure.
-Context {R : realType} {T : pseudoMetricType R}.
+Context {R : realType} {T : pseudoPMetricType R}.
 Hypothesis cantorT : cantor_like T.
 
 Let dsctT : zero_dimensional T.   Proof. by case: cantorT. Qed.
@@ -353,13 +362,20 @@ End TreeStructure.
 (* ## Part 3: Finitely branching trees are Cantor-like                        *)
 (******************************************************************************)
 Section FinitelyBranchingTrees.
-Context {R : realType}.
 
-Definition tree_of (T : nat -> pointedType) : pseudoMetricType R :=
-  [the pseudoMetricType R of prod_topology
-    (fun n => pointed_discrete_topology (T n))].
+Definition tree_of (T : nat -> pointedType) : Type :=
+  prod_topology (fun n => pointed_discrete_topology (T n)).
 
-Lemma cantor_like_finite_prod (T : nat -> topologicalType) :
+HB.instance Definition _ (T : nat -> pointedType) : Pointed (tree_of T):= 
+  Pointed.on (tree_of T).
+
+HB.instance Definition _ (T : nat -> pointedType) := Uniform.on (tree_of T).
+
+HB.instance Definition _ {R : realType} (T : nat -> pointedType) : 
+    @PseudoMetric R _ :=
+   @PseudoMetric.on (tree_of T).
+
+Lemma cantor_like_finite_prod (T : nat -> ptopologicalType) :
   (forall n, finite_set [set: pointed_discrete_topology (T n)]) ->
   (forall n, (exists xy : T n * T n, xy.1 != xy.2)) ->
   cantor_like (tree_of T).
@@ -382,7 +398,7 @@ End FinitelyBranchingTrees.
 (* ## Part 4: Building a finitely branching tree to cover `T`                 *)
 (******************************************************************************)
 Section alexandroff_hausdorff.
-Context {R : realType} {T : pseudoMetricType R}.
+Context {R : realType} {T : pseudoPMetricType R}.
 
 Hypothesis cptT : compact [set: T].
 Hypothesis hsdfT : hausdorff_space T.
@@ -462,7 +478,7 @@ HB.instance Definition _ n := gen_choiceMixin (K' n).
 HB.instance Definition _ n := isPointed.Build (K' n) (K'p n).
 
 Let K n := [the pointedType of K' n].
-Let Tree := @tree_of R K.
+Let Tree := @tree_of K.
 
 Let embed_refine n (U : set T) (k : K n) :=
   (if pselect (projT1 k `&` U !=set0)
@@ -523,7 +539,7 @@ Local Lemma cantor_surj_pt2 :
   exists f : {surj [set: cantor_space] >-> [set: Tree]}, continuous f.
 Proof.
 have [|f [ctsf _]] := @homeomorphism_cantor_like R Tree; last by exists f.
-apply: (@cantor_like_finite_prod _ (pointed_discrete_topology \o K)) => [n /=|n].
+apply: (@cantor_like_finite_prod (pointed_discrete_topology \o K)) => [n /=|n].
   have [//| fs _ _ _ _] := projT2 (cid (ent_balls' (count_unif n))).
   suff -> : [set: {classic K' n}] =
       (@projT1 (set T) _) @^-1` (projT1 (cid (ent_balls' (count_unif n)))).

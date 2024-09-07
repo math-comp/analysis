@@ -365,7 +365,7 @@ Section sequences_patched.
 
 Section NatShift.
 
-Variables (N : nat) (V : topologicalType).
+Variables (N : nat) (V : ptopologicalType).
 Implicit Types (f : nat -> V) (u : V ^nat)  (l : V).
 
 Lemma cvg_restrict f u_ l :
@@ -402,7 +402,7 @@ Unshelve. all: by end_near. Qed.
 
 End NatShift.
 
-Variables (V : topologicalType).
+Variables (V : ptopologicalType).
 
 Lemma cvg_shiftS u_ (l : V) :
   ([sequence u_ n.+1]_n @ \oo --> l) = (u_ @ \oo --> l).
