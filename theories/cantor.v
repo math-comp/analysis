@@ -89,12 +89,6 @@ Qed.
 HB.instance Definition _ (U : Type) (T : U -> ptopologicalType) :=
   Pointed.copy (forall x : U, T x) (prod_topology T).
 
-Global Instance prod_topology_filter (U : Type) (T : U -> ptopologicalType) (f : prod_topology T) :
-  ProperFilter (nbhs f).
-Proof.
-exact: nbhs_pfilter.
-Qed.
-
 (**md**************************************************************************)
 (* ## Part 1                                                                  *)
 (*                                                                            *)

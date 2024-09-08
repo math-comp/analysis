@@ -398,6 +398,13 @@ by move=> z [w Uw] /inj <- //; rewrite inE.
 Qed.
 
 End product_embeddings.
+
+Global Instance prod_topology_filter (U : Type) (T : U -> ptopologicalType) (f : prod_topology T) :
+  ProperFilter (nbhs f).
+Proof.
+exact: nbhs_pfilter.
+Qed.
+
 End product_spaces.
 
 (**md the uniform topologies type *)

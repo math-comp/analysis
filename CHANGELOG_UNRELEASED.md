@@ -49,8 +49,14 @@
   + definition `uniform_bounded`
   + theorem `Banach_Steinhauss`
 
-### Changed
+- in `topology.v`:
+  + Structures `PointedFiltered`, `PointedNbhs`, `PointedUniform`, 
+    `PseudoPointedMetric`
 
+### Changed
+- in `topology.v`:
+  + removed the pointed assumptions from `FilteredType`, `Nbhs`, 
+    `TopologicalType`, `UniformType`, and `PseudoMetricType`.
 - in `normedtype.v`:
   + remove superflous parameters in lemmas `not_near_at_rightP` and `not_near_at_leftP`
 
