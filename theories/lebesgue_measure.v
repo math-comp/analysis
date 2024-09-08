@@ -13,7 +13,7 @@ Require Export lebesgue_stieltjes_measure.
 (*                                                                            *)
 (* This file further develops the theory of measurable functions (including   *)
 (* Egorov's theorem), contains a formalization of the Lebesgue measure using  *)
-(* the Measure Extension theorem from measure.v, and prove properties of the  *)
+(* the Measure Extension theorem from measure.v, and proves properties of the *)
 (* Lebesgue measure such as Vitali's theorem, i.e., given a Vitali cover $V$  *)
 (* of $A$, there exists a countable subcollection $D \subseteq V$ of pairwise *)
 (* disjoint closed balls such that $\lambda(A \setminus \bigcup_k D_k) = 0$.  *)
