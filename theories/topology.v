@@ -6129,8 +6129,8 @@ split; first last.
   move=> ? ? _; exists V; last by rewrite -setIA setIid.
   by move: oV; rewrite openE /interior; apply.
 rewrite -open_subspaceIT => oUA.
-have oxF : (forall (x : T), (U `&` A) x ->
-    exists V, (open_nbhs (x : T) V) /\ (V `&` A `<=` U `&` A)).
+have oxF : forall x : T, (U `&` A) x ->
+    exists V, (open_nbhs (x : T) V) /\ (V `&` A `<=` U `&` A).
   move=> x /[dup] UAx /= [??]; move: (oUA _ UAx);
     case: nbhs_subspaceP => // ?.
   rewrite withinE /= => [[V nbhsV UV]]; rewrite -setIA setIid in UV.
@@ -6248,12 +6248,12 @@ Qed.
 End Subspace.
 
 Global Instance subspace_filter {T : topologicalType}
-     (A : set T) (x : subspace A) :
-   Filter (nbhs_subspace x) := nbhs_subspace_filter x.
+    (A : set T) (x : subspace A) :
+  Filter (nbhs_subspace x) := nbhs_subspace_filter x.
 
 Global Instance subspace_proper_filter {T : topologicalType}
-     (A : set T) (x : subspace A) :
-   ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
+    (A : set T) (x : subspace A) :
+  ProperFilter (nbhs_subspace x) := nbhs_subspace_filter x.
 
 Notation "{ 'within' A , 'continuous' f }" :=
   (continuous (f : subspace A -> _)) : classical_set_scope.
