@@ -15,7 +15,7 @@ Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 (* We used these definitions to prove the intermediate value theorem and      *)
 (* the Heine-Borel theorem, which states that the compact sets of             *)
 (* $\mathbb{R}^n$ are the closed and bounded sets, Urysohn's lemma, Vitali's  *)
-(* covering lemmas (finite case), etc.                                        *)
+(* covering lemmas (finite case and infinite case), etc.                      *)
 (*                                                                            *)
 (* * Limit superior and inferior:                                             *)
 (*   limf_esup f F, limf_einf f F == limit sup/inferior of f at "filter" F    *)

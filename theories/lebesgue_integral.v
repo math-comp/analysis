@@ -6051,21 +6051,16 @@ Let norm1 D f := \int[mu]_(y in D) `|(f y)%:E|.
 
 Lemma maximal_inequality f c :
   locally_integrable setT f -> (0 < c)%R ->
-  mu [set x | HL f x > c%:E] <= (3%:R / c)%:E * norm1 setT f.
+  mu [set x | HL f x > c%:E] <= (3 / c)%:E * norm1 setT f.
 Proof.
 move=> /= locf c0.
-have r_proof x : HL f x > c%:E -> {r | (0 < r)%R &
-    \int[mu]_(y in ball x r) `|(f y)%:E| > c%:E * mu (ball x r)}.
-  move=> /ereal_sup_gt/cid2[y /= /cid2[r]].
-  rewrite in_itv/= andbT => rg0 <-{y} Hc; exists r => //.
-  rewrite -(@fineK _ (mu (ball x r))) ?ge0_fin_numE//; last first.
-    by rewrite lebesgue_measure_ball ?ltry// ltW.
-  rewrite -lte_pdivlMr// 1?muleC// fine_gt0//.
-  by rewrite lebesgue_measure_ball 1?ltW// ltry lte_fin mulrn_wgt0.
 rewrite lebesgue_regularity_inner_sup//; last first.
   rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
   exact: measurable_HL_maximal.
 apply: ub_ereal_sup => /= x /= [K [cK Kcmf <-{x}]].
+have r_proof x : HL f x > c%:E -> {r | (0 < r)%R & iavg f (ball x r) > c%:E}.
+  move=> /ereal_sup_gt/cid2[y /= /cid2[r]].
+  by rewrite in_itv/= andbT => rg0 <-{y} Hc; exists r.
 pose r_ x :=
   if pselect (HL f x > c%:E) is left H then s2val (r_proof _ H) else 1%R.
 have r_pos (x : R) : (0 < r_ x)%R.
@@ -6073,7 +6068,13 @@ have r_pos (x : R) : (0 < r_ x)%R.
 have cMfx_int x : c%:E < HL f x ->
     \int[mu]_(y in ball x (r_ x)) `|(f y)|%:E > c%:E * mu (ball x (r_ x)).
   move=> cMfx; rewrite /r_; case: pselect => //= => {}cMfx.
-  by case: (r_proof _ cMfx).
+  case: (r_proof _ cMfx) => /= r r0.
+  have ? : 0%R < (fine (mu (ball x r)))%:E.
+    rewrite lte_fin fine_gt0// (lebesgue_measure_ball _ (ltW r0))// ltry.
+    by rewrite lte_fin mulrn_wgt0.
+  rewrite /iavg -(@lte_pmul2r _ (fine (mu (ball x r)))%:E)//.
+  rewrite muleAC -[in X in _ < X]EFinM mulVf ?gt_eqF// mul1e fineK//.
+  by rewrite ge0_fin_numE// (lebesgue_measure_ball _ (ltW r0)) ltry.
 set B := fun r => ball r (r_ r).
 have {}Kcmf : K `<=` cover [set i | HL f i > c%:E] (fun i => ball i (r_ i)).
   by move=> r /Kcmf /= cMfr; exists r => //; exact: ballxx.
@@ -6086,10 +6087,10 @@ have KDB : K `<=` cover [set` D] B.
 have is_ballB i : is_ball (B i) by exact: is_ball_ball.
 have Bset0 i : B i !=set0 by exists i; exact: ballxx.
 have [E [uE ED tEB DE]] := @vitali_lemma_finite_cover _ _ B is_ballB Bset0 D.
-rewrite (@le_trans _ _ (3%:R%:E * \sum_(i <- E) mu (B i)))//.
+rewrite (@le_trans _ _ (3%:E * \sum_(i <- E) mu (B i)))//.
   have {}DE := subset_trans KDB DE.
-  apply: (le_trans (@content_subadditive _ _ _ [the measure _ _ of mu]
-      K (fun i => 3%:R *` B (nth 0%R E i)) (size E) _ _ _)) => //.
+  apply: (le_trans (@content_subadditive _ _ _ mu K
+      (fun i => 3 *` B (nth 0%R E i)) (size E) _ _ _)) => //.
   - by move=> k ?; rewrite scale_ballE//; exact: measurable_ball.
   - by apply: closed_measurable; apply: compact_closed => //; exact: Rhausdorff.
   - apply: (subset_trans DE); rewrite /cover bigcup_seq.
