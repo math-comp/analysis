@@ -918,7 +918,7 @@ Implicit Types D : set R.
 Lemma oppr_measurable D : measurable_fun D -%R.
 Proof.
 apply: measurable_funTS => /=; apply: continuous_measurable_fun.
-exact: opp_continuous.
+exact: (@opp_continuous _ R^o).
 Qed.
 
 Lemma normr_measurable D : measurable_fun D (@normr _ R).
