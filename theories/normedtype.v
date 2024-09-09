@@ -3719,14 +3719,14 @@ split; first do [move=> ?; exists (Urysohn A B); split].
 - exact: Urysohn_sub0.
 - exact: Urysohn_sub1.
 case=> f [ctsf f01 fA0 fB1].
-pose T' := weak_topology f.
+pose T' : uniformType := weak_topology f.
 exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 - exists [set xy | ball xy.1 1 xy.2]; last by case.
   by rewrite -entourage_ballE; exists 1 => //=.
 - rewrite -subset0 => -[a b [[/= Aa Bb]]].
   by rewrite (imsub1 fA0)// (imsub1 fB1)// /ball/= sub0r normrN normr1 ltxx.
-- move=> x U [V [[W oW <- /=]]] ? /filterS; apply; apply: ctsf.
-  exact: open_nbhs_nbhs.
+- move=> x U [V [[W oW <- /=]]] ? /filterS; apply.
+  by apply: ctsf; exact: open_nbhs_nbhs.
 Qed.
 
 Section normalP.

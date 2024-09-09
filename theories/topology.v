@@ -122,8 +122,8 @@ Require Import reals signed.
 (*                       within D F == restriction of the filter F to the     *)
 (*                                     domain D                               *)
 (*               principal_filter x == filter containing every superset of x  *)
-(*         pointed_principal_filter == alias for pointed types with           *)
-(*                                     principal filters                      *)
+(*            principal_filter_type == alias for choice types with principal  *)
+(*                                     filters                                *)
 (*                subset_filter F D == similar to within D F, but with        *)
 (*                                     dependent types                        *)
 (*           powerset_filter_from F == the filter of downward closed subsets  *)
@@ -328,7 +328,7 @@ Require Import reals signed.
 (*                                   pseudometric space                       *)
 (*                  discrete_ball == singleton balls for the discrete         *)
 (*                                   topology                                 *)
-(*      pointed_discrete_topology == equip pointed types with a discrete      *)
+(*         discrete_topology_type == equip choice types with a discrete       *)
 (*                                   topology                                 *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -546,7 +546,7 @@ HB.mixin Record isFiltered U T := {
 HB.structure Definition Filtered (U : Type) := {T of Choice T & isFiltered U T}.
 
 #[short(type="pfilteredType")]
-HB.structure Definition PointedFiltered (U : Type) := {T of Pointed T & Filtered U T}.
+HB.structure Definition PointedFiltered (U : Type) := {T of Pointed T & isFiltered U T}.
 Arguments nbhs {_ _} _ _ : simpl never.
 
 Notation "[ 'filteredType' U 'of' T ]" := (Filtered.clone U T _)
@@ -1642,11 +1642,15 @@ Definition principal_filter {X : Type} (x : X) : set_system X :=
   globally [set x].
 
 (** we introducing an alias for pointed types with principal filters *)
-Definition pointed_principal_filter (P : pointedType) : Type := P.
+Definition principal_filter_type (P : Type) : Type := P.
+HB.instance Definition _ (P : choiceType) :=
+  Choice.copy (principal_filter_type P) P.
 HB.instance Definition _ (P : pointedType) :=
-  Pointed.on (pointed_principal_filter P).
+  Pointed.on (principal_filter_type P).
+HB.instance Definition _ (P : choiceType) :=
+  hasNbhs.Build (principal_filter_type P) principal_filter.
 HB.instance Definition _ (P : pointedType) :=
-  hasNbhs.Build (pointed_principal_filter P) principal_filter.
+  Filtered.on (principal_filter_type P).
 
 Lemma principal_filterP {X} (x : X) (W : set X) : principal_filter x W <-> W x.
 Proof. by split=> [|? ? ->]; [exact|]. Qed.
@@ -1689,7 +1693,6 @@ Definition second_countable := exists2 B, countable B & basis B.
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: nbhs_pfilter_subproof; case: T p => ? []. Qed.
 Typeclasses Opaque nbhs.
-
 Lemma nbhs_filter (p : T) : Filter (nbhs p).
 Proof. exact: (@nbhs_pfilter). Qed.
 
@@ -1798,6 +1801,14 @@ End Topological1.
   solve [apply: nbhs_filter] : typeclass_instances.
 #[global] Hint Extern 0 (ProperFilter (nbhs _)) =>
   solve [apply: nbhs_pfilter] : typeclass_instances.
+
+Global Instance alias_nbhs_filter {T : topologicalType} x : 
+  @Filter T^o (@nbhs T^o T x).
+Proof. apply: @nbhs_filter T x. Qed.
+
+Global Instance alias_nbhs_pfilter {T : topologicalType} x : 
+  @ProperFilter T^o (@nbhs T^o T x).
+Proof. exact: @nbhs_pfilter T x. Qed.
 
 Notation "A ^°" := (interior A) : classical_set_scope.
 
@@ -2468,7 +2479,7 @@ End matrix_PointedTopology.
 
 (** Weak topology by a function *)
 
-Definition weak_topology {S : choiceType} {T : topologicalType}
+Definition weak_topology {S : Type} {T : Type}
   (f : S -> T) : Type := S.
 
 Section Weak_Topology.
@@ -2528,7 +2539,7 @@ HB.instance Definition _ (S : pointedType) (T : topologicalType) (f : S -> T) :=
 
 (** Supremum of a family of topologies *)
 
-Definition sup_topology {T : choiceType} {I : Type}
+Definition sup_topology {T : Type} {I : Type}
   (Tc : I -> Topological T) : Type := T.
 
 Section Sup_Topology.
@@ -4771,7 +4782,7 @@ HB.structure Definition PseudoMetric (R : numDomainType) :=
 
 #[short(type="pseudoPMetricType")]
 HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
-  {T of Pointed T & PseudoMetric R T}.
+  {T of Pointed T & Uniform T & Uniform_isPseudoMetric R T}.
 
 Definition discrete_topology T (dsc : discrete_space T) : Type := T.
 
@@ -4797,8 +4808,10 @@ Qed.
 
 HB.instance Definition _ := Choice.on (discrete_topology dsc).
 HB.instance Definition _ := discrete_uniform_mixin.
-
 End discrete_uniform.
+
+HB.instance Definition _ (P : pnbhsType) (dsc : discrete_space P) := 
+  Pointed.on (discrete_topology dsc).
 
 Lemma discrete_bool_compact : compact [set: discrete_topology discrete_bool].
 Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
@@ -5201,7 +5214,7 @@ Qed.
 
 End Nbhs_fct2.
 
-Definition quotient_topology (T : topologicalType) (Q : quotType T) : Type := Q.
+Definition quotient_topology (T : Type) (Q : quotType T) : Type := Q.
 
 Section quotients.
 Local Open Scope quotient_scope.
@@ -5275,32 +5288,36 @@ by rewrite {2}z12 -surjective_pairing.
 Qed.
 
 HB.instance Definition _ := discrete_pseudometric_mixin.
-
 End discrete_pseudoMetric.
 
 Definition pseudoMetric_bool {R : realType} :=
   [the pseudoMetricType R of discrete_topology discrete_bool : Type].
 
-(** we use `discrete_topology` to equip pointed types with a discrete topology *)
-Section discrete_topology_for_pointed_types.
+(** we use `discrete_topology` to equip choice types with a discrete topology *)
+Section discrete_topology.
 
-Let discrete_pointed_subproof (P : pointedType) :
-  discrete_space (pointed_principal_filter P).
+Let discrete_subproof (P : choiceType) :
+  discrete_space (principal_filter_type P).
 Proof. by []. Qed.
 
-Definition pointed_discrete_topology (P : pointedType) : Type :=
-  discrete_topology (discrete_pointed_subproof P).
+Definition discrete_topology_type (P : Type) : Type := P.
 
-End discrete_topology_for_pointed_types.
-(* note that in topology.v, we already have:
-HB.instance Definition _ := discrete_uniform_mixin.
-and
-HB.instance Definition _ := discrete_pseudometric_mixin. *)
+HB.instance Definition _ (P : choiceType) := Choice.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _ (P : choiceType) := Filtered.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _  (P : choiceType) := Uniform.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _ (P : pointedType) := Pointed.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _ R (P : choiceType) : @PseudoMetric R _ := 
+  PseudoMetric.copy 
+    (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
 
-(** we need the following proof when using
-  `discrete_hausdorff` or `discrete_zero_dimension` in `cantor.v` *)
-Lemma discrete_pointed (T : pointedType) :
-  discrete_space (pointed_discrete_topology T).
+End discrete_topology.
+
+Lemma discrete_space_discrete (P : choiceType) : 
+  discrete_space (discrete_topology_type P). 
 Proof.
 apply/funext => /= x; apply/funext => A; apply/propext; split.
 - by move=> [E hE EA] _ ->; apply/EA/xsectionP/hE; exists x.
@@ -6044,7 +6061,7 @@ Export countable_uniform.Exports.
 
 Notation countable_uniform := countable_uniform.type.
 
-Definition sup_pseudometric (R : realType) (T : choiceType) (Ii : Type)
+Definition sup_pseudometric (R : realType) (T : Type) (Ii : Type)
   (Tc : Ii -> PseudoMetric R T) (Icnt : countable [set: Ii]) : Type := T.
 
 Section sup_pseudometric.
@@ -6385,7 +6402,6 @@ Proof.
 rewrite /continuous_at /prop_for => inA ctsf.
 have [_|//] := nbhs_subspaceP A x.
 apply: (cvg_trans _ ctsf); apply: cvg_fmap2; apply: cvg_within.
-exact: (nbhs_filter x).
 Qed.
 
 Lemma continuous_in_subspaceT {U} A (f : T -> U) :

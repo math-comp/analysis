@@ -407,6 +407,9 @@ Qed.
 
 End product_spaces.
 
+HB.instance Definition _ (U : Type) (T : U -> ptopologicalType) :=
+  Pointed.copy (forall x : U, T x) (prod_topology T).
+
 (**md the uniform topologies type *)
 Section fct_Uniform.
 Local Open Scope relation_scope.
