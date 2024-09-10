@@ -800,7 +800,7 @@ Lemma cvgenyP {R : realType} {T} {F : set_system T} {FF : Filter F} (f : T -> na
    (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
 Proof. by rewrite cvgeryP cvgrnyP. Qed.
 
-(** Modules with a norm *)
+(** Modules with a norm depending on a numDomain*)
 
 HB.mixin Record PseudoMetricNormedZmod_Tvs_isNormedModule K V
     of PseudoMetricNormedZmod K V & Tvs K V := {
@@ -812,23 +812,63 @@ HB.structure Definition NormedModule (K : numDomainType) :=
   {T of PseudoMetricNormedZmod K T & Tvs K T
    & PseudoMetricNormedZmod_Tvs_isNormedModule K T}.
 
-HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numDomainType) V
+
+
+HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldType) V
     of PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
  normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
 HB.builders Context K V of PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
-
+(* These lemmas are done latter with more machinery. Move the factory ?*)
 Lemma add_continuous : continuous (fun x : V * V => x.1 + x.2).
 Proof.
-Admitted.
+move=> [/= x y]; apply/cvg_ballP => e e0 /=.
+rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_ //=.
+exists ((ball x (e/2)),(ball y (e/2))).
+rewrite !nbhs_simpl /=; split; by apply: nbhsx_ballx; rewrite ?divr_gt0.
+rewrite -ball_normE /= /ball_ /= => xy /= [nx ny].
+rewrite opprD addrACA (le_lt_trans (ler_normD _ _)) // (@splitr K (e)) ltrD //=.
+Qed.
 
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
+move=> [/= k x]; apply/cvg_ballP => e e0 /=.
+rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_ //=.
+near +oo_K => M.
+pose r := (e/2/M).
+exists ((ball k r),(ball x r)).
+rewrite !nbhs_simpl /=; split; by apply: nbhsx_ballx; rewrite ?divr_gt0.
+rewrite -ball_normE /= /ball_ /= => lz /= [nk nx].
+rewrite -?(scalerBr, scalerBl).
+have := @ball_split _ _ (k *: lz.2)  (k*: x)  (lz.1 *: lz.2) e; rewrite -ball_normE /=.
+move => T; apply: T; rewrite -?(scalerBr, scalerBl) normrZ.
+  by rewrite (@le_lt_trans _ _ (M * `|x - lz.2|)) ?ler_wpM2r -?ltr_pdivlMl// mulrC.
+rewrite (@le_lt_trans _ _ (`|k - lz.1| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
+ near: M. admit.
+Unshelve. all: by end_near.
 Admitted.
 
 Lemma locally_convex : exists2 B : set (set V), (forall b, b \in B -> convex b) & basis B.
 Proof.
+exists [set B | exists x, exists r, B = ball x r].
+  move=> b; rewrite inE /= => [[x]] [r] -> z y l. 
+  rewrite !inE -!ball_normE /= => zx zy l1.
+  rewrite opprD scalerDl opprD.
+  rewrite scale1r [X in (_ + X)]addrC addrA [X in (X - _)]addrA.
+  rewrite scaleNr opprK -addrA. admit.
+split =>  /=.
+  move => B [x] [r] ->.
+  rewrite openE -!ball_normE /interior=> y /= bxy.
+  rewrite -nbhs_ballE  /nbhs_ball /nbhs_ball_ /filter_from //=.
+  exists (r - (normr (x - y) )); first by rewrite subr_gt0.
+  move=> z. rewrite -ball_normE /= ltrBrDr addrC => H.
+  rewrite /= (le_lt_trans (ler_distD y _ _)) //.
+rewrite /filter_from /= => x B.
+rewrite -nbhs_ballE  /nbhs_ball /nbhs_ball_ /filter_from //=.
+move=> [r] r0 Bxr /=.
+rewrite nbhs_simpl /=; exists (ball x r) => //; split; last by apply: ballxx.
+by exists x; exists r.
 Admitted.
 
 HB.instance Definition _ :=
@@ -2399,7 +2439,7 @@ Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K (U * V)%type
+  PseudoMetricNormedZmod_Tvs_isNormedModule.Build K (U * V)%type
     prod_norm_scale.
 
 End prod_NormedModule.
