@@ -41,7 +41,7 @@ HB.structure Definition UniformLmodule (K : numDomainType) :=
 
 Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A -> 
-  (`|lambda| < 1) -> lambda *: x + (1 - lambda) *: y \in A.
+  (0< lambda) -> (lambda < 1) -> lambda *: x + (1 - lambda) *: y \in A.
 
 HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
