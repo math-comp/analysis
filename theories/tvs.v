@@ -39,8 +39,9 @@ HB.structure Definition UniformLmodule (K : numDomainType) :=
   {M of Uniform M & GRing.Lmodule K M}.
 
 
-Definition convex (R : ringType) (M : lmodType R) (A : set M) :=
-  forall x y lambda, lambda *: x + (1 - lambda) *: y \in A.
+Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
+  forall x y (lambda : R), x \in A -> y \in A -> 
+  (`|lambda| < 1) -> lambda *: x + (1 - lambda) *: y \in A.
 
 HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
@@ -214,6 +215,27 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
     entourage_inv_subproof entourage_split_ex_subproof
     nbhsE_subproof.
 HB.end.
+
+Section prod_Tvs.
+Context (K : numDomainType) (U V : tvsType K).
+
+Lemma prod_add_continuous : continuous (fun x : (U * V) * (U * V) => x.1 + x.2).
+Proof.
+Admitted.
+
+Lemma  prod_scale_continuous : continuous (fun z : K^o * (U * V) => z.1 *: z.2).
+Proof.
+Admitted.
+
+Lemma prod_locally_convex : 
+exists2 B : set (set (U * V)), (forall b, b \in B -> convex b) & basis B.
+Proof.
+Admitted.
+
+HB.instance Definition _ :=
+  Uniform_isTvs.Build K (U * V)%type
+prod_add_continuous prod_scale_continuous prod_locally_convex.
+End prod_Tvs.
 
 
 Section FirstLemmas.
