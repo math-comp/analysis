@@ -33,6 +33,7 @@ lebesgue_integral.v
 ftc.v
 hoelder.v
 probability.v
+sampling.v
 lebesgue_stieltjes_measure.v
 summability.v
 signed.v
