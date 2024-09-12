@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- [The Coq Proof Assistant version ≥ 8.18](https://coq.inria.fr)
+- [The Coq Proof Assistant version ≥ 8.19](https://coq.inria.fr)
 - [Mathematical Components version ≥ 2.1.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 2.0.0](https://github.com/math-comp/finmap)
 - [Hierarchy builder version >= 1.4.0](https://github.com/math-comp/hierarchy-builder)
@@ -71,12 +71,12 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.18.0 and MathComp 2.1.0. For other versions, update the
+With the example of Coq 8.19.0 and MathComp 2.1.0. For other versions, update the
 version numbers accordingly.
 
-1. Install Coq 8.18.0
+1. Install Coq 8.19.0
 ```
-$ opam install coq.8.18.0
+$ opam install coq.8.19.0
 ```
 2. Install the Mathematical Components
 ```
