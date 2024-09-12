@@ -3755,6 +3755,12 @@ rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_pwDl.
 Qed.
 
+Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
+
+Proof. exact: order_hausdorff. Qed.
+
+Hint Extern 0 (hausdorff_space _) => (exact: Rhausdorff ) : core.
+
 Definition dense (T : topologicalType) (S : set T) :=
   forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.
 
