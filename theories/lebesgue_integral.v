@@ -441,7 +441,7 @@ Qed.
 Section simple_bounded.
 Context d (T : sigmaRingType d) (R : realType).
 
-Lemma simple_bounded (f : {sfun T >-> R}) : bounded_fun f.
+Lemma simple_bounded (f : {sfun T >-> R}) : bounded_fun (f : _ -> R^o).
 Proof.
 have /finite_seqP[r fr] := fimfunP f.
 exists (fine (\big[maxe/-oo%E]_(i <- r) `|i|%:E)).
@@ -1671,7 +1671,6 @@ Qed.
 End approximation_sfun.
 
 Section lusin.
-Hint Extern 0  (hausdorff_space _) => (exact: Rhausdorff ) : core.
 Local Open Scope ereal_scope.
 Context (rT : realType) (A : set rT).
 Let mu := [the measure _ _ of @lebesgue_measure rT].
@@ -3098,7 +3097,7 @@ case: fi => mf; apply: le_lt_trans; apply: ge0_le_integral => //.
 - by move=> x Dx; rewrite -/((abse \o f) x) (fune_abse f) leeDl.
 Qed.
 
-Lemma integrableMr (h : T -> R) g :
+Lemma integrableMr (h : T -> R^o) g :
   measurable_fun D h -> [bounded h x | x in D] ->
   mu_int g -> mu_int ((EFin \o h) \* g).
 Proof.
@@ -3118,7 +3117,7 @@ apply/le_lt_trans/ge0_le_integral => //.
   by rewrite (lt_le_trans _ (ler_norm _))// ltrDl.
 Qed.
 
-Lemma integrableMl f (h : T -> R) :
+Lemma integrableMl f (h : T -> R^o) :
   mu_int f -> measurable_fun D h -> [bounded h x | x in D] ->
   mu_int (f \* (EFin \o h)).
 Proof.
@@ -5730,7 +5729,7 @@ Let R  := [the measurableType _ of measurableTypeR rT].
 Let ballE (x : R) (r : {posnum rT}) :
   ball x r%:num = `](x - r%:num), (x + r%:num)[%classic :> set rT.
 Proof.
-rewrite -ball_normE /ball_ set_itvoo.
+rewrite -(@ball_normE _ rT^o) /ball_ set_itvoo.
 by under eq_set => ? do rewrite ltr_distlC.
 Qed.
 
@@ -5754,7 +5753,7 @@ have ritv r : 0 < r -> mu `[x - r, x + r]%classic = (r *+ 2)%:E.
   rewrite ler_ltD // ?rE // -EFinD; congr (_ _).
   by rewrite opprB addrAC [_ - _]addrC addrA subrr add0r.
 move=> oA intf ctsfx Ax.
-apply: cvg_zero.
+apply: (@cvg_zero _ R^o).
 apply/cvgrPdist_le => eps epos; apply: filter_app (@nbhs_right_gt rT 0).
 move/cvgrPdist_le/(_ eps epos)/at_right_in_segment : ctsfx; apply: filter_app.
 apply: filter_app (open_itvcc_subset oA Ax).
@@ -6018,7 +6017,7 @@ move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
     rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW.
     by rewrite ltry andbT lte_fin pmulrn_lgt0// addr_gt0.
   exists (ball x d).
-    by split; [exact: ball_open|exact: ballxx].
+    by split; [exact: (@ball_open _ R^o)|exact: ballxx].
   move=> y; rewrite /ball/= => xyd.
   have ? : ball x r `<=` ball y (r + d).
     move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
@@ -6056,7 +6055,7 @@ have axrdk : a%:E < (fine (mu (ball x (r + d))))^-1%:E * k.
   rewrite -mulr_natl -ltr_pdivlMl// -ltrBrDl.
   by near: d; exact: nbhs_right_lt.
 exists (ball x d).
-  by split; [exact: ball_open|exact: ballxx].
+  by split; [exact: (@ball_open _ R^o)|exact: ballxx].
 move=> y; rewrite /ball/= => xyd.
 have ? : ball x r `<=` ball y (r + d).
   move=> /= z; rewrite /ball/= => xzr; rewrite -(subrK x y) -(addrA (y - x)%R).
@@ -6118,7 +6117,7 @@ have {}Kcmf : K `<=` cover [set i | HL f i > c%:E] (fun i => ball i (r_ i)).
 have {Kcmf}[D Dsub Kcover] : finite_subset_cover [set i | c%:E < HL f i]
     (fun i => ball i (r_ i)) K.
   move: cK; rewrite compact_cover => /(_ _ _ _ _ Kcmf); apply.
-  by move=> /= x cMfx; exact/ball_open/r_pos.
+  by move=> /= x cMfx; exact/(@ball_open _ R^o)/r_pos.
 have KDB : K `<=` cover [set` D] B.
   by apply: (subset_trans Kcover) => /= x [r Dr] rx; exists r.
 have is_ballB i : is_ball (B i) by exact: is_ball_ball.
@@ -6217,14 +6216,16 @@ Let continuous_integralB_fin_num :
   \forall t \near (0:R)%R,
     \int[mu]_(y in ball x t) `|(f y)%:E - (f x)%:E| \is a fin_num.
 Proof.
-move: fx => /cvgrPdist_le /= fx'.
+move: fx => /(@cvgrPdist_le _ R^o) /= fx'.
 near (0%R:R)^'+ => e.
 have e0 : (0 < e)%R by near: e; exact: nbhs_right_gt.
 have [r /= r0 {}fx'] := fx' _ e0.
-have [d/= d0 dxU] := open_subball xU.1 xU.2.
+have [d/= d0 dxU] := @open_subball _ R^o _ _ xU.1 xU.2.
 near=> t; rewrite ge0_fin_numE ?integral_ge0//.
 have [t0|t0] := leP t 0%R; first by rewrite ((ball0 _ _).2 t0) integral_set0.
-have xtU : ball x t `<=` U by apply: dxU => //=.
+have xtU : ball x t `<=` U.
+  apply: dxU => //=.
+  by rewrite /ball_ /= sub0r normrN; near: t; exact: (@nbhs0_lt _ R^o).
 rewrite (@le_lt_trans _ _ (\int[mu]_(y in ball x t) e%:E))//; last first.
   rewrite integral_cst//=; last exact: measurable_ball.
   by rewrite (lebesgue_measure_ball _ (ltW t0)) ltry.
@@ -6240,33 +6241,37 @@ Let continuous_davg_fin_num :
   \forall A \near (0:R)%R, davg f x A \is a fin_num.
 Proof.
 have [e /= e0 exf] := continuous_integralB_fin_num.
-move: fx => /cvgrPdist_le fx'.
+move: fx => /(@cvgrPdist_le _ R^o) fx'.
 near (0%R:R)^'+ => r.
 have r0 : (0 < r)%R by near: r; exact: nbhs_right_gt.
 have [d /= d0 {}fx'] := fx' _ e0.
 near=> t; have [t0|t0] := leP t 0%R; first by rewrite davg0.
-by rewrite fin_numM// exf/=.
+rewrite fin_numM// exf//=.
+by rewrite /ball_ /= sub0r normrN; near: t; exact: (@nbhs0_lt _ R^o).
 Unshelve. all: by end_near. Qed.
 
 Lemma continuous_cvg_davg : davg f x r @[r --> (0:R)%R] --> 0.
 Proof.
 apply/fine_cvgP; split; first exact: continuous_davg_fin_num.
-apply/cvgrPdist_le => e e0.
-move: fx => /cvgrPdist_le /= fx'.
+apply/(@cvgrPdist_le _ R^o) => e e0.
+move: fx => /(@cvgrPdist_le _ R^o) /= fx'.
 have [r /= r0 {}fx'] := fx' _ e0.
 have [d /= d0 dfx] := continuous_davg_fin_num.
-have [l/= l0 lxU] := open_subball xU.1 xU.2.
+have [l/= l0 lxU] := @open_subball _ R^o _ _ xU.1 xU.2.
 near=> t.
 have [t0|t0] := leP t 0%R; first by rewrite /= davg0//= subrr normr0 ltW.
 rewrite sub0r normrN /= ger0_norm; last by rewrite fine_ge0// davg_ge0.
-rewrite -lee_fin fineK//; last by rewrite dfx//= sub0r normrN gtr0_norm.
+rewrite -lee_fin fineK//; last first.
+  rewrite dfx//=.
+  by rewrite /ball_ /= sub0r normrN; near: t; exact: (@nbhs0_lt _ R^o).
 rewrite /davg/= /iavg/= lee_pdivrMl//; last first.
   by rewrite fine_gt0// lebesgue_measure_ball// ?ltry ?lte_fin ?mulrn_wgt0 ?ltW.
 rewrite (@le_trans _ _ (\int[mu]_(y in ball x t) e%:E))//.
   apply: ge0_le_integral => //=.
   - exact: measurable_ball.
   - do 2 apply: measurableT_comp => //=; apply: measurable_funB => //.
-    by apply: measurable_funS mUf => //; apply: lxU => //=.
+    apply: measurable_funS mUf => //; apply: lxU => //=.
+    by rewrite /ball_ /= sub0r normrN; near: t; exact: (@nbhs0_lt _ R^o).
   - by move=> y xty; rewrite lee_fin ltW.
   - move=> y xty; rewrite lee_fin distrC fx'//; apply: (lt_le_trans xty).
     by near: t; exact: nbhs0_ltW.
@@ -6296,7 +6301,7 @@ Lemma lim_sup_davg_le f g x (U : set R) : open_nbhs x U -> measurable U ->
 Proof.
 move=> xU mY mf /= mg; apply: le_trans (lime_supD _); last first.
   by rewrite ge0_adde_def// inE; exact: lim_sup_davg_ge0.
-have [e/= e0 exU] := open_subball xU.1 xU.2.
+have [e/= e0 exU] := @open_subball _ R^o _ _ xU.1 xU.2.
 apply: lime_sup_le; near=> r => y; rewrite neq_lt => /orP[y0|y0 ry].
   by rewrite !davg0 ?adde0// ltW.
 apply: davgD.
@@ -6326,7 +6331,7 @@ move=> xU mU mUf cg locg; apply/eqP; rewrite eq_le; apply/andP; split.
   rewrite (@continuous_lim_sup_davg (- g)%R _ _ xU mU); first by rewrite adde0.
   - apply/(measurable_comp measurableT) => //.
     by case: locg => + _ _; apply: measurable_funS.
-  + by move=> y; exact/continuousN/cg.
+  + by move=> y; exact/(@continuousN _ R^o)/cg.
 - rewrite [leRHS](_ : _ = ((f \- g)%R^* \+ g^*) x)//.
     rewrite {1}(_ : f = f \- g + g)%R; last by apply/funext => y; rewrite subrK.
     apply: (lim_sup_davg_le xU mU).
@@ -6340,7 +6345,7 @@ Qed.
 Local Notation mu := (@lebesgue_measure R).
 
 Let is_cvg_ereal_sup_davg f x :
-  cvg (ereal_sup [set davg f x y | y in ball 0%R e `\ 0%R] @[e --> 0^'+]).
+  cvg (ereal_sup [set davg f x y | y in @ball _ R^o 0%R e `\ 0%R] @[e --> 0^'+]).
 Proof.
 apply: nondecreasing_at_right_is_cvge; near=> e => y z.
 rewrite !in_itv/= => /andP[y0 ye] /andP[z0 ze] yz.
@@ -6621,7 +6626,7 @@ have {ex_g_} ex_gn n : exists gn : R -> R,
     [/\ continuous gn,
         mu.-integrable (B k) (EFin \o gn) &
         \int[mu]_(z in B k) `|f_ k z - gn z|%:E <= n.+1%:R^-1%:E].
-  case: ex_g_ => g_ [cg intg] /fine_cvgP[] [m _ fgfin] /cvgrPdist_le.
+  case: ex_g_ => g_ [cg intg] /fine_cvgP[] [m _ fgfin] /(@cvgrPdist_le _ R^o).
   move=> /(_ n.+1%:R^-1 ltac:(by []))[p _] /(_ _ (leq_addr m p)).
   rewrite sub0r normrN -lee_fin => /= fg0.
   exists (g_ (p + m)%N); split => //.
@@ -6689,11 +6694,11 @@ have davgfEe : B k `&` [set x | (f_ k)^* x > e%:E] `<=` Ee.
       B k `&` [set x | e%:E < (f_ k \- g_B n)%R^* x]); last first.
     apply/seteqP; split => [x [Ex] /=|x [Ex] /=].
       rewrite (@lim_sup_davgB _ _ _ _ (B k))//.
-      by split; [exact: ball_open|exact: Ex].
+      by split; [exact: (@ball_open _ R^o)|exact: Ex].
       by move/EFin_measurable_fun : mf; apply: measurable_funS.
       by apply: cg_B; rewrite inE.
     rewrite (@lim_sup_davgB _ _ _ _ (B k))//.
-    by split; [exact: ball_open|exact: Ex].
+    by split; [exact: (@ball_open _ R^o)|exact: Ex].
     by move/EFin_measurable_fun : mf; apply: measurable_funS.
     by apply: cg_B; rewrite inE.
   move=> r /= [Er] efgnr; split => //.
@@ -6775,7 +6780,7 @@ suff: ~` [set x | lebesgue_pt f x] `<=`
   by apply: negligible_bigcup => k /=; exact: suf.
 move=> x /= fx; rewrite -setC_bigcap => h; apply: fx.
 have fE y k r : (ball 0%R k.+1%:R) y -> (r < 1)%R ->
-    forall t, ball y r t -> f t = fk k t.
+    forall t : R^o, ball y r t -> f t = fk k t.
   rewrite /ball/= sub0r normrN => yk1 r1 t.
   rewrite ltr_distlC => /andP[xrt txr].
   rewrite /fk patchE mem_set// /B /ball/= sub0r normrN.
@@ -6807,7 +6812,7 @@ apply/fine_cvgP; split=> [{davg_fk0}|{davg_fk_fin_num}].
 - move: davg_fk_fin_num => -[M /= M0] davg_fk_fin_num.
   apply: filter_app f_fk_ceil; near=> t => Ht.
   by rewrite /davg /iavg Ht davg_fk_fin_num//= sub0r normrN gtr0_norm.
-- move/cvgrPdist_le in davg_fk0; apply/cvgrPdist_le => e e0.
+- move/(@cvgrPdist_le _ R^o) in davg_fk0; apply/(@cvgrPdist_le _ R^o) => e e0.
   have [M /= M0 {}davg_fk0] := davg_fk0 _ e0.
   apply: filter_app f_fk_ceil; near=> t; move=> Ht.
   by rewrite /davg /iavg Ht// davg_fk0//= sub0r normrN gtr0_norm.

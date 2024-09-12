@@ -623,7 +623,7 @@ exists (lim (h_ @ \oo)); split.
     by move=> n; rewrite mulr_ge0.
   rewrite (le_trans (lim_series_norm _))//; apply: le_trans.
     exact/(lim_series_le cvg_gt _ (g_bd ^~ t))/is_cvg_geometric_series.
-  rewrite (cvg_lim _ (cvg_geometric_series _))//; last exact: Rhausdorff.
+  rewrite (cvg_lim _ (cvg_geometric_series _))//.
   by rewrite onem_twothirds mulrAC divrr ?mul1r// unitfE.
 Unshelve. all: by end_near. Qed.
 

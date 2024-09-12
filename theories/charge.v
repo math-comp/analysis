@@ -700,7 +700,7 @@ have nuAoo : 0 <= nu Aoo.
 have A_cvg_0 : nu (A_ (v n)) @[n --> \oo] --> 0.
   rewrite [X in X @ _ --> _](_ : _ = (fun n => (fine (nu (A_ (v n))))%:E)); last first.
     by apply/funext => n/=; rewrite fineK// fin_num_measure.
-  apply: continuous_cvg => //; apply: cvg_series_cvg_0.
+  apply: continuous_cvg => //; apply: (@cvg_series_cvg_0 _ R^o).
   rewrite (_ : series _ = fine \o (fun n => \sum_(0 <= i < n) nu (A_ (v i)))); last first.
     apply/funext => n /=.
     by rewrite /series/= sum_fine//= => i _; rewrite fin_num_measure.
@@ -831,7 +831,7 @@ have znuD n : z_ (v n) <= nu D.
 have max_le0 n : maxe (z_ (v n) * 2^-1%:E) (- 1%E) <= 0.
   by rewrite ge_max leeN10 andbT pmule_lle0.
 have not_s_cvg_0 : ~ (z_ \o v) n @[n --> \oo]  --> 0.
-  move/fine_cvgP => -[zfin] /cvgrPdist_lt.
+  move/fine_cvgP => -[zfin] /(@cvgrPdist_lt _ R^o).
   have /[swap] /[apply] -[M _ hM] : (0 < `|fine (nu D)|)%R.
     by rewrite normr_gt0// fine_eq0// ?lt_eqF// fin_num_measure.
   near \oo => n.
@@ -862,7 +862,7 @@ have : cvg (series (fun n => fine (maxe (z_ (v n) * 2^-1%:E) (- 1%E))) n @[n -->
   apply/funext => n/=; rewrite sum_fine// => m _.
   rewrite le0_fin_numE; first by rewrite lt_max ltNyr orbT.
   by rewrite /maxe; case: ifPn => // _; rewrite mule_le0_ge0.
-move/cvg_series_cvg_0 => maxe_cvg_0.
+move/(@cvg_series_cvg_0 _ R^o) => maxe_cvg_0.
 apply: not_s_cvg_0.
 rewrite (_ : _ \o _ = (fun n => z_ (v n) * 2^-1%:E) \* cst 2%:E); last first.
   by apply/funext => n/=; rewrite -muleA -EFinM mulVr ?mule1// unitfE.
@@ -874,7 +874,7 @@ apply/fine_cvgP; split.
   rewrite sub0r normrN ltNge => maxe_lt1; rewrite fin_numE; apply/andP; split.
     by apply: contra maxe_lt1 => /eqP ->; rewrite max_r ?leNye//= normrN1 lexx.
   by rewrite lt_eqF// (@le_lt_trans _ _ 0)// mule_le0_ge0.
-apply/cvgrPdist_lt => _ /posnumP[e].
+apply/(@cvgrPdist_lt _ R^o) => _ /posnumP[e].
 have : (0 < minr e%:num 1)%R by rewrite lt_min// ltr01 andbT.
 move/cvgrPdist_lt : maxe_cvg_0 => /[apply] -[M _ hM].
 near=> n; rewrite sub0r normrN.
