@@ -28,7 +28,7 @@
   + lemmas `outer_measure_open_itv_cover`, `outer_measure_open_le`,
     `outer_measure_open`, `outer_measure_Gdelta`, `negligible_outer_measure`
 - in `ftc.v`:
-  + lemma `continuous_integration_by_parts`
+  + lemmas `integration_by_parts`, `Rintegration_by_parts`
 
 - in `classical_sets.v`:
   + scope `relation_scope` with delimiter `relation`
@@ -64,6 +64,17 @@
   + module `NGenCInfty`
     * definition `G`
     * lemmas `measurable_itv_bounded`, `measurableE`
+- in `continuous_FTC1_closed`:
+  + corollary `continuous_FTC1_closed`
+
+- in `lebesgue_integral.v`:
+  + lemma `locally_integrableS`
+
+- in `normedtype.v`:
+  + lemmas `nbhs_right_ltW`, `cvg_patch`
+
+- in `set_interval.v`:
+  + lemma `subset_itvSoo`
 
 ### Changed
 
@@ -91,6 +102,11 @@
 
 - moved from `numfun.v` to `cardinality.v`:
   + lemma `fset_set_comp`
+- in `ftc.v`:
+  + lemma `FTC1_lebesgue_pt`, corollaries `FTC1`, `FTC1Ny`: integrability hypothesis weakened
+
+- in `lebesgue_integral.v`:
+  + lemma `nice_lebesgue_differentiation`: change the local integrability hypothesis to easy application
 
 ### Renamed
 
@@ -114,6 +130,9 @@
   + in factory `isUniform`:
     * `entourage_refl` -> `entourage_diagonal`
 
+- in `set_interval.v`:
+  + `subset_itvS` -> `subset_itvScc`
+
 ### Generalized
 
 - in `derive.v`:
@@ -124,6 +143,9 @@
 
 - in `lebesgue_integral.v`
   + lemma `ge0_integral_closed_ball`
+
+- in `FTC.v`:
+  + lemma `continuous_FTC2` (continuity hypothesis weakened)
 
 ### Deprecated
 

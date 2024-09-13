@@ -98,7 +98,7 @@ move: c a ax ac => [[|] c [[|]/= a ax|[|]//=]|[//|]]; rewrite ?bnd_simp.
 - by move=> [[|]|[|]//].
 Qed.
 
-Lemma subset_itvS (a b : itv_bound T) (c e : T) :
+Lemma subset_itvScc (a b : itv_bound T) (c e : T) :
     (BLeft c <= a)%O -> (b <= BRight e)%O ->
   [set` Interval a b] `<=` [set` `[c, e]].
 Proof.
@@ -113,6 +113,22 @@ rewrite (le_trans ca az)/=.
 move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
   by move=> /ltW/le_trans; exact.
 by move=> /le_trans; exact.
+Qed.
+
+Lemma subset_itvSoo (a b : itv_bound T) (c e : T) :
+    (BLeft c < a)%O -> (b < BRight e)%O ->
+  [set` Interval a b] `<=` [set` `]c, e[].
+Proof.
+move=> ca be z/=; rewrite !in_itv/= => /andP[az zb].
+case: a ca az => [[|]/=|[|]//] a; rewrite bnd_simp => ca az.
+  rewrite (lt_le_trans ca az)/=.
+  move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
+    by move=> /lt_le_trans; exact.
+  by move=> /le_lt_trans; exact.
+rewrite (le_lt_trans ca az)/=.
+move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
+  by move=> /lt_le_trans; exact.
+by move=> /le_lt_trans; exact.
 Qed.
 
 Lemma interval_set1 x : `[x, x]%classic = [set x] :> set T.
@@ -209,6 +225,8 @@ Qed.
 
 End set_itv_porderType.
 Arguments neitv {d T} _.
+#[deprecated(since="mathcomp-analysis 1.4.0", note="renamed to subset_itvScc")]
+Notation subset_itvS := subset_itvScc (only parsing).
 
 Section set_itv_orderType.
 Variables (d : Order.disp_t) (T : orderType d).

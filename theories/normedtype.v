@@ -1330,6 +1330,11 @@ move=> xz; exists (z - x) => //=; first by rewrite subr_gt0.
 by move=> y /= + xy; rewrite distrC ?ger0_norm ?subr_ge0 1?ltW// ltrD2r.
 Qed.
 
+Lemma nbhs_right_ltW x z : x < z -> \forall y \near nbhs x^'+, y <= z.
+Proof.
+by move=> xz; near=> y; apply/ltW; near: y; exact: nbhs_right_lt.
+Unshelve. all: by end_near. Qed.
+
 Lemma nbhs_right_ltDr x e : 0 < e -> \forall y \near x ^'+, y - x < e.
 Proof.
 move=> e0; near=> y; rewrite ltrBlDr; near: y.
@@ -1639,7 +1644,6 @@ Arguments cvgr_neq0 {R V T F FF f}.
   H : x \is_near _ |- _ => near: x; exact: nbhs_right_ge end : core.
 #[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
-
 
 #[global] Hint Extern 0 (ProperFilter _^'-) =>
   (apply: at_left_proper_filter) : typeclass_instances.
@@ -5329,6 +5333,27 @@ Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 Lemma near_in_itv {R : realFieldType} (a b : R) :
   {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
 Proof. exact: interval_open. Qed.
+
+Lemma cvg_patch {R : realType} (f : R -> R^o) (a b : R) (x : R) : (a < b)%R ->
+  x \in `]a, b[ ->
+  f @ (x : subspace `[a, b]) --> f x ->
+  (f \_ `[a, b] x) @[x --> x] --> f x.
+Proof.
+move=> ab xab xf; apply/cvgrPdist_lt => /= e e0.
+move/cvgrPdist_lt : xf => /(_ e e0) xf.
+near=> z.
+rewrite patchE ifT//; last first.
+  rewrite inE; apply: subset_itv_oo_cc.
+  by near: z; exact: near_in_itv.
+near: z.
+rewrite /prop_near1 /nbhs/= /nbhs_subspace ifT// in xf; last first.
+  by rewrite inE/=; exact: subset_itv_oo_cc xab.
+case: xf => x0 /= x00 xf.
+near=> z.
+apply: xf => //=.
+rewrite inE; apply: subset_itv_oo_cc.
+by near: z; exact: near_in_itv.
+Unshelve. all: by end_near. Qed.
 
 Notation "f @`[ a , b ]" :=
   (`[minr (f a) (f b), maxr (f a) (f b)]) : ring_scope.

@@ -5872,6 +5872,26 @@ by rewrite integral_cst//= ?mul1e; [exact: compact_finite_measure|
                                     exact: compact_measurable].
 Qed.
 
+Lemma locally_integrableS (A B : set R) f :
+  measurable A -> measurable B -> A `<=` B ->
+  locally_integrable setT (f \_ B) -> locally_integrable setT (f \_ A).
+Proof.
+move=> mA mB AB [mfB oT ifB].
+have ? : measurable_fun [set: R] (f \_ A).
+  apply/(measurable_restrictT _ _).1 => //; apply: (measurable_funS _ AB) => //.
+  exact/(measurable_restrictT _ _).2.
+split => // K KT cK; apply: le_lt_trans (ifB _ KT cK).
+apply: ge0_le_integral => //=; first exact: compact_measurable.
+- apply/EFin_measurable_fun; apply/measurableT_comp => //.
+  exact/measurable_funTS.
+- apply/EFin_measurable_fun; apply/measurableT_comp => //.
+  exact/measurable_funTS.
+- move=> x Kx; rewrite lee_fin !patchE.
+  case: ifPn => xA; case: ifPn => xB //; last by rewrite normr0.
+  move: AB => /(_ x).
+  by move/set_mem : xA => /[swap] /[apply] /mem_set; rewrite (negbTE xB).
+Qed.
+
 End locally_integrable.
 
 Section iavg.
@@ -6818,41 +6838,6 @@ by rewrite lebesgue_measure_ball// ltry.
 Qed.
 
 End nicely_shrinking.
-
-(* TODO: move *)
-Lemma locally_integrableS {R : realType} (A B : set R) (f : R -> R) :
-  measurable A -> measurable B -> A `<=` B ->
-  locally_integrable setT (f \_ B) ->
-  locally_integrable setT (f \_ A).
-Proof.
-move=> mA mB AB [mfB oT ifB].
-have ? : measurable_fun [set: R] (f \_ A).
-  apply/(measurable_restrictT _ _).1 => //; apply: (measurable_funS _ AB) => //.
-  exact/(measurable_restrictT _ _).2.
-split => // K KT cK; apply: le_lt_trans (ifB _ KT cK).
-apply: ge0_le_integral => //=; first exact: compact_measurable.
-- apply/EFin_measurable_fun; apply/measurableT_comp => //.
-  exact/measurable_funTS.
-- apply/EFin_measurable_fun; apply/measurableT_comp => //.
-  exact/measurable_funTS.
-- move=> x Kx; rewrite lee_fin !patchE.
-  case: ifPn => xA; case: ifPn => xB //; last by rewrite normr0.
-  move: AB => /(_ x).
-  move/set_mem : xA => /[swap] /[apply] /mem_set.
-  by rewrite (negbTE xB).
-Qed.
-
-Section set_itv_porderType.
-Variables (d : Order.disp_t) (T : porderType d).
-Implicit Types (x y : T).
-
-Lemma subset_itv' x y z u : (x < y)%O -> (z < u)%O -> `[y, z] `<=` `]x, u[.
-Proof.
-move=> xy zu w/=; rewrite !in_itv/= => /andP[yw wz].
-by rewrite (lt_le_trans xy)//= (le_lt_trans wz).
-Qed.
-
-End set_itv_porderType.
 
 Section nice_lebesgue_differentiation.
 Local Open Scope ereal_scope.
