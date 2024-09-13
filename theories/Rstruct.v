@@ -702,6 +702,7 @@ Require Import signed topology.
 Section analysis_struct.
 
 HB.instance Definition _ := PseudoMetric.copy R R^o.
+HB.instance Definition _ := Pointed.copy R R^o.
 
 (* TODO: express using ball?*)
 Lemma continuity_pt_nbhs (f : R -> R) x :

@@ -50,6 +50,7 @@ Require Import reals signed.
 (*                                     It extends Pointed.                    *)
 (*                           nbhs p == set of sets associated to p (in a      *)
 (*                                     filtered type)                         *)
+(*                  pfilteredType U == a pointed and filtered type                                                        *)
 (*                          hasNbhs == factory for filteredType               *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -121,8 +122,8 @@ Require Import reals signed.
 (*                       within D F == restriction of the filter F to the     *)
 (*                                     domain D                               *)
 (*               principal_filter x == filter containing every superset of x  *)
-(*         pointed_principal_filter == alias for pointed types with           *)
-(*                                     principal filters                      *)
+(*            principal_filter_type == alias for choice types with principal  *)
+(*                                     filters                                *)
 (*                subset_filter F D == similar to within D F, but with        *)
 (*                                     dependent types                        *)
 (*           powerset_filter_from F == the filter of downward closed subsets  *)
@@ -194,6 +195,7 @@ Require Import reals signed.
 (*                  topologicalType == interface type for topological space   *)
 (*                                     structure                              *)
 (*                                     the HB class is Topological.           *)
+(*                 ptopologicalType == a pointed topologicalType              *)
 (*                             open == set of open sets                       *)
 (*                      open_nbhs p == set of open neighbourhoods of p        *)
 (*                          basis B == a family of open sets that converges   *)
@@ -208,29 +210,27 @@ Require Import reals signed.
 (*                                     space from the properties of nbhs and  *)
 (*                                     hence assumes that the carrier is a    *)
 (*                                     filterType.                            *)
-(*        Pointed_isOpenTopological == factory for a topology defined by open *)
+(*                isOpenTopological == factory for a topology defined by open *)
 (*                                     sets                                   *)
 (*                                     It builds the mixin for a topological  *)
 (*                                     space from the properties of open      *)
-(*                                     sets, assuming the carrier is a        *)
-(*                                     pointed type. nbhs_of_open must be     *)
-(*                                     used to declare a filterType.          *)
-(*        Pointed_isBaseTopological == factory for a topology defined by a    *)
+(*                                     sets, nbhs_of_open must be used to     *)
+(*                                     declare a filterType.                  *)
+(*                isBaseTopological == factory for a topology defined by a    *)
 (*                                     base of open sets                      *)
 (*                                     It builds the mixin for a topological  *)
 (*                                     space from the properties of a base of *)
 (*                                     open sets; the type of indices must be *)
-(*                                     a pointedType, as well as the carrier. *)
+(*                                     a pointedType                          *)
 (*                 filterI_iter F n == nth stage of recursively building the  *)
 (*                                     filter of finite intersections of F    *)
 (*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
 (*                                     a finite subset of D                   *)
-(*     Pointed_isSubBaseTopological == factory for a topology defined by a    *)
+(*             isSubBaseTopological == factory for a topology defined by a    *)
 (*                                     subbase of open sets                   *)
 (*                                     It builds the mixin for a topological  *)
 (*                                     space from a subbase of open sets b    *)
-(*                                     indexed on domain D; the type of       *)
-(*                                     indices must be a pointedType.         *)
+(*                                     indexed on domain D                    *)
 (*                                                                            *)
 (* We endow several standard types with the structure of topology, e.g.:      *)
 (* - products `(T * U)%type`                                                  *)
@@ -239,11 +239,10 @@ Require Import reals signed.
 (*                                                                            *)
 (*                  weak_topology f == weak topology by a function f : S -> T *)
 (*                                     on S                                   *)
-(*                                     S must be a pointedType and T a        *)
+(*                                     S must be a choiceType and T a        *)
 (*                                     topologicalType.                       *)
 (*                  sup_topology Tc == supremum topology of the family of     *)
 (*                                     topologicalType structures Tc on T     *)
-(*                                     T must be a pointedType.               *)
 (*              quotient_topology Q == the quotient topology corresponding to *)
 (*                                     quotient Q : quotType T where T has    *)
 (*                                     type topologicalType                   *)
@@ -294,6 +293,7 @@ Require Import reals signed.
 (*                    uniformType == interface type for uniform spaces: a     *)
 (*                                   type equipped with entourages            *)
 (*                                   The HB class is Uniform.                 *)
+(*                   puniformType == a pointed and uniform space              *)
 (*                      entourage == set of entourages in a uniform space     *)
 (*                 Nbhs_isUniform == factory to build a topological space     *)
 (*                                   from a mixin for a uniform space         *)
@@ -319,6 +319,7 @@ Require Import reals signed.
 (*               pseudoMetricType == interface type for pseudo metric space   *)
 (*                                   structure: a type equipped with balls    *)
 (*                                   The HB class is PseudoMetric.            *)
+(*              pseudoPMetricType == a pointed an pseudoMetric space          *)
 (*                       ball x e == ball of center x and radius e            *)
 (*            Nbhs_isPseudoMetric == factory to build a topological space     *)
 (*                                   from a mixin for a pseudoMetric space    *)
@@ -327,7 +328,7 @@ Require Import reals signed.
 (*                                   pseudometric space                       *)
 (*                  discrete_ball == singleton balls for the discrete         *)
 (*                                   topology                                 *)
-(*      pointed_discrete_topology == equip pointed types with a discrete      *)
+(*         discrete_topology_type == equip choice types with a discrete       *)
 (*                                   topology                                 *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -542,7 +543,10 @@ HB.mixin Record isFiltered U T := {
 }.
 
 #[short(type="filteredType")]
-HB.structure Definition Filtered (U : Type) := {T of Pointed T & isFiltered U T}.
+HB.structure Definition Filtered (U : Type) := {T of Choice T & isFiltered U T}.
+
+#[short(type="pfilteredType")]
+HB.structure Definition PointedFiltered (U : Type) := {T of Pointed T & isFiltered U T}.
 Arguments nbhs {_ _} _ _ : simpl never.
 
 Notation "[ 'filteredType' U 'of' T ]" := (Filtered.clone U T _)
@@ -564,7 +568,10 @@ HB.builders Context T of hasNbhs T.
 HB.end.
 
 #[short(type="nbhsType")]
-HB.structure Definition Nbhs := {T of Pointed T & hasNbhs T}.
+HB.structure Definition Nbhs := {T of Choice T & hasNbhs T}.
+
+#[short(type="pnbhsType")]
+HB.structure Definition PointedNbhs := {T of Pointed T & hasNbhs T}.
 
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) :
   set_system T := [set P | exists2 i, D i & B i `<=` P].
@@ -647,10 +654,10 @@ Proof. by move=> FG GH P /GH /FG. Qed.
 Notation "F --> G" := (cvg_to (nbhs F) (nbhs G)) : classical_set_scope.
 Definition type_of_filter {T} (F : set_system T) := T.
 
-Definition lim_in {U : Type} (T : filteredType U) :=
+Definition lim_in {U : Type} (T : pfilteredType U) :=
   fun F : set_system U => get (fun l : T => F --> l).
 Notation "[ 'lim' F 'in' T ]" := (@lim_in _ T (nbhs F)) : classical_set_scope.
-Definition lim {T : nbhsType} (F : set_system T) := [lim F in T].
+Definition lim {T : pnbhsType} (F : set_system T) := [lim F in T].
 Notation "[ 'cvg' F 'in' T ]" := (F --> [lim F in T]) : classical_set_scope.
 Notation cvg F := (F --> lim F).
 
@@ -674,41 +681,41 @@ move=> xl yk X [[X1 X2] /= [HX1 HX2] H]; exists (X1, X2) => //=.
 split; [exact: xl | exact: yk].
 Qed.
 
-Lemma cvg_in_ex {U : Type} (T : filteredType U) (F : set_system U) :
+Lemma cvg_in_ex {U : Type} (T : pfilteredType U) (F : set_system U) :
   [cvg F in T] <-> (exists l : T, F --> l).
 Proof. by split=> [cvg|/getPex//]; exists [lim F in T]. Qed.
 
-Lemma cvg_ex (T : nbhsType) (F : set_system T) :
+Lemma cvg_ex (T : pnbhsType) (F : set_system T) :
   cvg F <-> (exists l : T, F --> l).
 Proof. exact: cvg_in_ex. Qed.
 
-Lemma cvg_inP {U : Type} (T : filteredType U) (F : set_system U) (l : T) :
+Lemma cvg_inP {U : Type} (T : pfilteredType U) (F : set_system U) (l : T) :
    F --> l -> [cvg F in T].
 Proof. by move=> Fl; apply/cvg_in_ex; exists l. Qed.
 
-Lemma cvgP (T : nbhsType) (F : set_system T) (l : T) : F --> l -> cvg F.
+Lemma cvgP (T : pnbhsType) (F : set_system T) (l : T) : F --> l -> cvg F.
 Proof. exact: cvg_inP. Qed.
 
-Lemma cvg_in_toP {U : Type} (T : filteredType U) (F : set_system U) (l : T) :
+Lemma cvg_in_toP {U : Type} (T : pfilteredType U) (F : set_system U) (l : T) :
    [cvg F in T] -> [lim F in T] = l -> F --> l.
 Proof. by move=> /[swap]->. Qed.
 
-Lemma cvg_toP (T : nbhsType) (F : set_system T) (l : T) :
+Lemma cvg_toP (T : pnbhsType) (F : set_system T) (l : T) :
   cvg F -> lim F = l -> F --> l.
 Proof. exact: cvg_in_toP. Qed.
 
-Lemma dvg_inP {U : Type} (T : filteredType U) (F : set_system U) :
+Lemma dvg_inP {U : Type} (T : pfilteredType U) (F : set_system U) :
   ~ [cvg F in T] -> [lim F in T] = point.
 Proof. by rewrite /lim_in /=; case xgetP. Qed.
 
-Lemma dvgP (T : nbhsType) (F : set_system T) : ~ cvg F -> lim F = point.
+Lemma dvgP (T : pnbhsType) (F : set_system T) : ~ cvg F -> lim F = point.
 Proof. exact: dvg_inP. Qed.
 
-Lemma cvg_inNpoint {U} (T : filteredType U) (F : set_system U) :
+Lemma cvg_inNpoint {U} (T : pfilteredType U) (F : set_system U) :
   [lim F in T] != point -> [cvg F in T].
 Proof. by apply: contra_neqP; apply: dvg_inP. Qed.
 
-Lemma cvgNpoint (T : nbhsType) (F : set_system T) : lim F != point -> cvg F.
+Lemma cvgNpoint (T : pnbhsType) (F : set_system T) : lim F != point -> cvg F.
 Proof. exact: cvg_inNpoint. Qed.
 
 End FilteredTheory.
@@ -1230,11 +1237,11 @@ Lemma eq_cvg (T T' : Type) (F : set_system T) (f g : T -> T') (x : set_system T'
   f =1 g -> (f @ F --> x) = (g @ F --> x).
 Proof. by move=> /funext->. Qed.
 
-Lemma eq_is_cvg_in (T T' : Type) (fT : filteredType T') (F : set_system T) (f g : T -> T') :
+Lemma eq_is_cvg_in (T T' : Type) (fT : pfilteredType T') (F : set_system T) (f g : T -> T') :
   f =1 g -> [cvg (f @ F) in fT] = [cvg (g @ F) in fT].
 Proof. by move=> /funext->. Qed.
 
-Lemma eq_is_cvg (T : Type) (T' : nbhsType) (F : set_system T) (f g : T -> T') :
+Lemma eq_is_cvg (T : Type) (T' : pnbhsType) (F : set_system T) (f g : T -> T') :
   f =1 g -> cvg (f @ F) = cvg (g @ F).
 Proof. by move=> /funext->. Qed.
 
@@ -1635,11 +1642,15 @@ Definition principal_filter {X : Type} (x : X) : set_system X :=
   globally [set x].
 
 (** we introducing an alias for pointed types with principal filters *)
-Definition pointed_principal_filter (P : pointedType) : Type := P.
+Definition principal_filter_type (P : Type) : Type := P.
+HB.instance Definition _ (P : choiceType) :=
+  Choice.copy (principal_filter_type P) P.
 HB.instance Definition _ (P : pointedType) :=
-  Pointed.on (pointed_principal_filter P).
+  Pointed.on (principal_filter_type P).
+HB.instance Definition _ (P : choiceType) :=
+  hasNbhs.Build (principal_filter_type P) principal_filter.
 HB.instance Definition _ (P : pointedType) :=
-  hasNbhs.Build (pointed_principal_filter P) principal_filter.
+  Filtered.on (principal_filter_type P).
 
 Lemma principal_filterP {X} (x : X) (W : set X) : principal_filter x W <-> W x.
 Proof. by split=> [|? ? ->]; [exact|]. Qed.
@@ -1664,6 +1675,10 @@ HB.mixin Record Nbhs_isTopological (T : Type) of Nbhs T := {
 HB.structure Definition Topological :=
   {T of Nbhs T & Nbhs_isTopological T}.
 
+#[short(type="ptopologicalType")]
+HB.structure Definition PointedTopological :=
+  {T of PointedNbhs T & Nbhs_isTopological T}.
+
 Section Topological1.
 
 Context {T : topologicalType}.
@@ -1678,7 +1693,6 @@ Definition second_countable := exists2 B, countable B & basis B.
 Global Instance nbhs_pfilter (p : T) : ProperFilter (nbhs p).
 Proof. by apply: nbhs_pfilter_subproof; case: T p => ? []. Qed.
 Typeclasses Opaque nbhs.
-
 Lemma nbhs_filter (p : T) : Filter (nbhs p).
 Proof. exact: (@nbhs_pfilter). Qed.
 
@@ -1788,6 +1802,14 @@ End Topological1.
 #[global] Hint Extern 0 (ProperFilter (nbhs _)) =>
   solve [apply: nbhs_pfilter] : typeclass_instances.
 
+Global Instance alias_nbhs_filter {T : topologicalType} x : 
+  @Filter T^o (@nbhs T^o T x).
+Proof. apply: @nbhs_filter T x. Qed.
+
+Global Instance alias_nbhs_pfilter {T : topologicalType} x : 
+  @ProperFilter T^o (@nbhs T^o T x).
+Proof. exact: @nbhs_pfilter T x. Qed.
+
 Notation "A ^°" := (interior A) : classical_set_scope.
 
 Definition continuous_at (T U : nbhsType) (x : T) (f : T -> U) :=
@@ -1848,7 +1870,7 @@ move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
 exact: (@cvg_comp _ _ _ _ h _ _ _ fa).
 Qed.
 
-Lemma continuous_is_cvg {T : Type} {V U : topologicalType} [F : set_system T]
+Lemma continuous_is_cvg {T : Type} {V U : ptopologicalType} [F : set_system T]
   (FF : Filter F) (f : T -> V) (h : V -> U) :
   (forall l, f x @[x --> F] --> l -> {for l, continuous h}) ->
   cvg (f x @[x --> F]) -> cvg ((h \o f) x @[x --> F]).
@@ -1876,7 +1898,7 @@ by apply: filterS fFl => _ ->; apply: nbhs_singleton.
 Qed.
 Arguments cvg_near_cst {T U} l {f F FF}.
 
-Lemma is_cvg_near_cst (T : Type) (U : topologicalType)
+Lemma is_cvg_near_cst (T : Type) (U : ptopologicalType)
   (l : U) (f : T -> U) (F : set_system T) {FF : Filter F} :
   (\forall x \near F, f x = l) -> cvg (f @ F).
 Proof. by move=> /cvg_near_cst/cvgP. Qed.
@@ -1898,7 +1920,7 @@ Proof. by apply: cvg_near_cst; near=> x0. Unshelve. all: by end_near. Qed.
 Arguments cvg_cst {U} x {T F FF}.
 #[global] Hint Resolve cvg_cst : core.
 
-Lemma is_cvg_cst (U : topologicalType) (x : U) (T : Type)
+Lemma is_cvg_cst (U : ptopologicalType) (x : U) (T : Type)
   (F : set_system T) {FF : Filter F} :
   cvg ((fun _ : T => x) @ F).
 Proof. by apply: cvgP; apply: cvg_cst. Qed.
@@ -2001,7 +2023,7 @@ HB.end.
 Definition nbhs_of_open (T : Type) (op : set T -> Prop) (p : T) (A : set T) :=
   exists B, [/\ op B, B p & B `<=` A].
 
-HB.factory Record Pointed_isOpenTopological T of Pointed T := {
+HB.factory Record isOpenTopological T of Choice T := {
   op : set T -> Prop;
   opT : op setT;
   opI : forall (A B : set T), op A -> op B -> op (A `&` B);
@@ -2009,7 +2031,7 @@ HB.factory Record Pointed_isOpenTopological T of Pointed T := {
     op (\bigcup_i f i);
 }.
 
-HB.builders Context T of Pointed_isOpenTopological T.
+HB.builders Context T of isOpenTopological T.
 
 HB.instance Definition _ := hasNbhs.Build T (nbhs_of_open op).
 
@@ -2046,7 +2068,7 @@ HB.end.
 
 (** Topology defined by a base of open sets *)
 
-HB.factory Record Pointed_isBaseTopological T of Pointed T := {
+HB.factory Record isBaseTopological T of Choice T := {
   I : pointedType;
   D : set I;
   b : I -> (set T);
@@ -2055,7 +2077,7 @@ HB.factory Record Pointed_isBaseTopological T of Pointed T := {
     exists k, [/\ D k, b k t & b k `<=` b i `&` b j];
 }.
 
-HB.builders Context T of Pointed_isBaseTopological T.
+HB.builders Context T of isBaseTopological T.
 
 Definition open_from := [set \bigcup_(i in D') b i | D' in subset^~ D].
 
@@ -2100,7 +2122,7 @@ have /getPex [_ ->] : exists Dj, fop j Dj by have [Dj] := H j; exists Dj.
 by move=> [i]; exists i => //; exists j.
 Qed.
 
-HB.instance Definition _ := Pointed_isOpenTopological.Build T
+HB.instance Definition _ := isOpenTopological.Build T
   open_fromT open_fromI open_from_bigU.
 
 HB.end.
@@ -2212,13 +2234,13 @@ Proof. by rewrite filterI_iter_finI filterI_iterE. Qed.
 
 End filter_supremums.
 
-HB.factory Record Pointed_isSubBaseTopological T of Pointed T := {
+HB.factory Record isSubBaseTopological T of Choice T := {
   I : pointedType;
   D : set I;
   b : I -> (set T);
 }.
 
-HB.builders Context T of Pointed_isSubBaseTopological T.
+HB.builders Context T of isSubBaseTopological T.
 
 Local Notation finI_from := (finI_from D b).
 
@@ -2241,7 +2263,7 @@ by move=> [DAi|DBi];
   [have := As; rewrite -AeIbA; apply|have := Bs; rewrite -BeIbB; apply].
 Qed.
 
-HB.instance Definition _ := Pointed_isBaseTopological.Build T
+HB.instance Definition _ := isBaseTopological.Build T
   finI_from_cover finI_from_join.
 
 HB.end.
@@ -2259,7 +2281,7 @@ Let bD : forall i j t, D i -> D j -> b i t -> b j t ->
   exists k, [/\ D k, b k t & b k `<=` b i `&` b j].
 Proof. by move=> i j t _ _ -> ->; exists j. Qed.
 
-HB.instance Definition _ := Pointed_isBaseTopological.Build nat bT bD.
+HB.instance Definition _ := isBaseTopological.Build nat bT bD.
 
 End nat_topologicalType.
 
@@ -2428,8 +2450,8 @@ apply: (filter_from_proper (filter_from_filter _ _)) => [|P Q M_P M_Q|P M_P].
 - by exists (fun i j => setT) => ??; apply: filterT.
 - exists (fun i j => P i j `&` Q i j) => [??|mx PQmx]; first exact: filterI.
   by split=> i j; have [] := PQmx i j.
-- exists (\matrix_(i, j) get (P i j)) => i j; rewrite mxE; apply: getPex.
-  exact: filter_ex (M_P i j).
+- exists (\matrix_(i, j) xget (M i j) (P i j)) => i j; rewrite mxE. 
+  by apply: xgetPex; exact: filter_ex (M_P i j).
 Qed.
 
 Lemma mx_nbhs_singleton M (A : set 'M[T]_(m, n)) : nbhs M A -> A M.
@@ -2447,13 +2469,21 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build 'M[T]_(m, n)
 
 End matrix_Topology.
 
+
+Section matrix_PointedTopology.
+
+Variables (m n : nat) (T : pointedType).
+Implicit Types M : 'M[T]_(m, n).
+HB.instance Definition _ := Pointed.on 'M[T]_(m, n).
+End matrix_PointedTopology.
+
 (** Weak topology by a function *)
 
-Definition weak_topology {S : pointedType} {T : topologicalType}
+Definition weak_topology {S : Type} {T : Type}
   (f : S -> T) : Type := S.
 
 Section Weak_Topology.
-Variable (S : pointedType) (T : topologicalType) (f : S -> T).
+Variable (S : choiceType) (T : topologicalType) (f : S -> T).
 Local Notation W := (weak_topology f).
 
 Definition wopen := [set f @^-1` A | A in open].
@@ -2480,9 +2510,9 @@ rewrite predeqE => s; split=> [[i _]|[i _]]; last by rewrite g_preim; exists i.
 by rewrite -[_ _]/((f @^-1` _) _) -g_preim; exists i.
 Qed.
 
-HB.instance Definition _ := Pointed.on W.
+HB.instance Definition _ := Choice.on W.
 HB.instance Definition _ :=
-  Pointed_isOpenTopological.Build W wopT wopI wop_bigU.
+  isOpenTopological.Build W wopT wopI wop_bigU.
 
 Lemma weak_continuous : continuous (f : W -> T).
 Proof. by apply/continuousP => A ?; exists A. Qed.
@@ -2504,21 +2534,24 @@ Qed.
 
 End Weak_Topology.
 
+HB.instance Definition _ (S : pointedType) (T : topologicalType) (f : S -> T) :=
+  Pointed.on (weak_topology f).
+
 (** Supremum of a family of topologies *)
 
-Definition sup_topology {T : pointedType} {I : Type}
+Definition sup_topology {T : Type} {I : Type}
   (Tc : I -> Topological T) : Type := T.
 
 Section Sup_Topology.
-Variable (T : pointedType) (I : Type) (Tc : I -> Topological T).
+Variable (T : choiceType) (I : Type) (Tc : I -> Topological T).
 Local Notation S := (sup_topology Tc).
 
 Let TS := fun i => Topological.Pack (Tc i).
 
 Definition sup_subbase := \bigcup_i (@open (TS i) : set_system T).
 
-HB.instance Definition _ := Pointed.on S.
-HB.instance Definition _ := Pointed_isSubBaseTopological.Build S sup_subbase id.
+HB.instance Definition _ := Choice.on S.
+HB.instance Definition _ := isSubBaseTopological.Build S sup_subbase id.
 
 Lemma cvg_sup (F : set_system T) (t : T) :
   Filter F -> F --> (t : S) <-> forall i, F --> (t : TS i).
@@ -2540,6 +2573,9 @@ by apply: (cvFt i); apply: Eop; move: Ct; rewrite -IDeC => /(_ _ DE).
 Qed.
 
 End Sup_Topology.
+
+HB.instance Definition _ (I : Type) (T : pointedType) (f : I -> Topological T) :=
+  Pointed.on (sup_topology f).
 
 (** deleted neighborhood *)
 
@@ -2576,7 +2612,7 @@ Lemma cvg_within_filter {T U} {f : T -> U} (F : set_system T) {FF : (Filter F) }
   (G : set_system U) : forall (D : set T), (f @ F) --> G -> (f @ within D F) --> G.
 Proof. move=> ?;  exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed.
 
-Lemma cvg_app_within {T} {U : topologicalType} (f : T -> U) (F : set_system T)
+Lemma cvg_app_within {T} {U : ptopologicalType} (f : T -> U) (F : set_system T)
   (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
 Proof. by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter. Qed.
 
@@ -3267,7 +3303,7 @@ move=> finIf; apply: (filter_from_proper (filter_from_filter _ _)).
 - by move=> _ [?? <-]; apply: finIf.
 Qed.
 
-Lemma filter_finI (T : pointedType) (F : set_system T) (D : set_system T)
+Lemma filter_finI (T : choiceType) (F : set_system T) (D : set_system T)
   (f : set T -> set T) :
   ProperFilter F -> (forall A, D A -> F (f A)) -> finI D f.
 Proof.
@@ -3314,6 +3350,11 @@ Definition closed_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
   exists2 g : I -> set T, (forall i, D i -> closed (g i)) &
     forall i, D i -> f i = A `&` g i.
 
+End Covers.
+
+Section PCovers.
+
+Variable T : ptopologicalType.
 Lemma compact_In0 :
   compact = [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
     closed_fam_of A D f -> finI D f -> \bigcap_(i in D) f i !=set0].
@@ -3334,7 +3375,7 @@ exists p; split=> [|B C FB p_C]; first by have /AclFIp [] := FA.
 by have /AclFIp [_] := FB; move=> /(_ _ p_C).
 Qed.
 
-Lemma compact_cover : compact = cover_compact.
+Lemma compact_cover : compact = @cover_compact T.
 Proof.
 rewrite compact_In0 cover_compactE predeqE => A.
 split=> [Aco I D f [g gop feAg] fcov|Aco I D f [g gcl feAg]].
@@ -3379,7 +3420,7 @@ have /Ifp := D'k; rewrite feAg; last by have /sD := D'k; rewrite inE.
 by move=> [/sAnfcov [i D'i [_ nfip]] _]; have /Ifp := D'i.
 Qed.
 
-End Covers.
+End PCovers.
 
 Lemma finite_compact {X : topologicalType} (A : set X) :
   finite_set A -> compact A.
@@ -3389,7 +3430,7 @@ case/finite_setP=> n; elim: n A => [A|n ih A /eq_cardSP[x Ax /ih ?]].
 by rewrite -(setD1K Ax); apply: compactU => //; exact: compact_set1.
 Qed.
 
-Lemma clopen_countable {T : topologicalType}:
+Lemma clopen_countable {T : ptopologicalType}:
   compact [set: T] -> @second_countable T -> countable (@clopen T).
 Proof.
 move=> cmpT [B /fset_subset_countable cntB] [obase Bbase].
@@ -3516,16 +3557,6 @@ Lemma close_refl x : close x x.
 Proof. exact: (@cvg_close (nbhs x)). Qed.
 Hint Resolve close_refl : core.
 
-Lemma close_cvg (F1 F2 : set_system T) {FF2 : ProperFilter F2} :
-  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
-Proof.
-move=> F12 F21.
-have [/(cvg_trans F21) F2l|dvgF1] := pselect (cvg F1).
-  by apply: (@cvg_close F2) => //; apply: cvgP F2l.
-have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
-rewrite dvgP // dvgP //; exact/close_refl.
-Qed.
-
 Lemma cvgx_close x y : x --> y -> close x y.
 Proof. exact: cvg_close. Qed.
 
@@ -3592,31 +3623,10 @@ Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
 Lemma cvg_eq x y : x --> y -> x = y.
 Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 
-Lemma lim_id x : lim (nbhs x) = x.
-Proof. by apply/esym/cvg_eq/cvg_ex; exists x. Qed.
-
-Lemma cvg_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
-  f @ F --> l -> lim (f @ F) = l.
-Proof. by move=> /[dup] /cvgP /cvg_unique; apply. Qed.
-
-Lemma lim_near_cst {U} {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
-   (\forall x \near F, f x = l) -> lim (f @ F) = l.
-Proof. by move=> /cvg_near_cst/cvg_lim. Qed.
-
-Lemma lim_cst {U} {F} {FF : ProperFilter F} (k : T) :
-   lim ((fun _ : U => k) @ F) = k.
-Proof. by apply: cvg_lim; apply: cvg_cst. Qed.
-
 Lemma cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
   {near F, is_fun f} -> is_subset1 [set x : T | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
 
-Lemma cvgi_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
-  F (fun x : U => is_subset1 (f x)) ->
-  f `@ F --> l -> lim (f `@ F) = l.
-Proof.
-move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
-Qed.
 
 Lemma compact_regular (x : T) V : compact V -> nbhs x V -> {for x, regular_space}.
 Proof.
@@ -3640,6 +3650,46 @@ by apply/closure_subset/disjoints_subset; rewrite setIC.
 Qed.
 
 End separated_topologicalType.
+
+Section separated_ptopologicalType.
+Variable T : ptopologicalType.
+Implicit Types x y : T.
+
+Lemma close_cvg (F1 F2 : set_system T) {FF2 : ProperFilter F2} :
+  F1 --> F2 -> F2 --> F1 -> close (lim F1) (lim F2).
+Proof.
+move=> F12 F21.
+have [/(cvg_trans F21) F2l|dvgF1] := pselect (cvg F1).
+  by apply: (@cvg_close _ F2) => //; apply: cvgP F2l.
+have [/(cvg_trans F12)/cvgP//|dvgF2] := pselect (cvg F2).
+rewrite dvgP // dvgP //; exact/close_refl.
+Qed.
+
+Hypothesis sep : hausdorff_space T.
+
+Lemma lim_id x : lim (nbhs x) = x.
+Proof. by apply/esym/cvg_eq/cvg_ex => //; exists x. Qed.
+
+Lemma cvg_lim {U : Type} {F} {FF : ProperFilter F} (f : U -> T) (l : T) :
+  f @ F --> l -> lim (f @ F) = l.
+Proof. by move=> /[dup] /cvgP /cvg_unique; apply. Qed.
+
+Lemma lim_near_cst {U} {F} {FF : ProperFilter F} (l : T) (f : U -> T) :
+   (\forall x \near F, f x = l) -> lim (f @ F) = l.
+Proof. by move=> /cvg_near_cst/cvg_lim. Qed.
+
+Lemma lim_cst {U} {F} {FF : ProperFilter F} (k : T) :
+   lim ((fun _ : U => k) @ F) = k.
+Proof. by apply: cvg_lim; apply: cvg_cst. Qed.
+
+Lemma cvgi_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
+  F (fun x : U => is_subset1 (f x)) ->
+  f `@ F --> l -> lim (f `@ F) = l.
+Proof.
+move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
+Qed.
+
+End separated_ptopologicalType.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvg_lim`")]
 Notation cvg_map_lim := cvg_lim (only parsing).
@@ -4026,6 +4076,10 @@ HB.mixin Record Nbhs_isUniform_mixin M of Nbhs M := {
 HB.structure Definition Uniform :=
   {T of Topological T & Nbhs_isUniform_mixin T}.
 
+#[short(type="puniformType")]
+HB.structure Definition PointedUniform :=
+  {T of PointedTopological T & Nbhs_isUniform_mixin T}.
+
 HB.factory Record Nbhs_isUniform M of Nbhs M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
@@ -4074,7 +4128,7 @@ HB.end.
 
 Local Open Scope relation_scope.
 
-HB.factory Record isUniform M of Pointed M := {
+HB.factory Record isUniform M of Choice M := {
   entourage : set_system (M * M);
   entourage_filter : Filter entourage;
   entourage_diagonal : forall A, entourage A -> diagonal `<=` A;
@@ -4131,10 +4185,9 @@ Context {M : uniformType}.
 Lemma entourage_refl (A : set (M * M)) x : entourage A -> A (x, x).
 Proof. by move=> entA; exact: entourage_diagonal_subproof entA _ _. Qed.
 
-Global Instance entourage_pfilter : ProperFilter (@entourage M).
+Global Instance entourage_filter' : Filter (@entourage M).
 Proof.
-apply Build_ProperFilter; last exact: entourage_filter.
-by move=> A entA; exists (point, point); exact: entourage_refl.
+exact: entourage_filter.
 Qed.
 
 Lemma entourageT : entourage [set: M * M].
@@ -4196,6 +4249,12 @@ Qed.
 
 End uniformType1.
 
+Global Instance entourage_pfilter {M : puniformType} : ProperFilter (@entourage M).
+Proof.
+apply Build_ProperFilter; last exact: entourage_filter.
+by move=> A entA; exists (point, point); apply: entourage_refl.
+Qed.
+
 #[global]
 Hint Extern 0 (entourage (split_ent _)) => exact: entourage_split_ent : core.
 #[global]
@@ -4239,7 +4298,7 @@ Lemma countable_uniformityP {T : uniformType} :
     (forall n, entourage (f n)).
 Proof.
 split=> [[M []]|[f fsubE entf]].
-  move=> /pfcard_geP[-> _ /(_ _ entourageT)[]//|/unsquash f eM Msub].
+  move=> /pfcard_geP[-> _ /(_ _ (@entourageT _))[]//|/unsquash f eM Msub].
   exists f; last by move=> n; apply: eM; exact: funS.
   by move=> ? /Msub [Q + ?] => /(@surj _ _ _ _ f)[n _ fQ]; exists n; rewrite fQ.
 exists (range f); split; first exact: card_image_le.
@@ -4285,7 +4344,9 @@ apply/xsectionP; apply: (entourage_split x) => //.
 by have := cxy _ (entourage_inv (entourage_split_ent entA)).
 Qed.
 
-Lemma cvg_closeP (F : set_system U) (l : U) : ProperFilter F ->
+End uniform_closeness.
+
+Lemma cvg_closeP { U : puniformType} (F : set_system U) (l : U) : ProperFilter F ->
   F --> l <-> ([cvg F in U] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
@@ -4293,7 +4354,6 @@ move=> FF; split=> [Fl|[cvF]Cl].
 by apply: cvg_trans (close_cvgxx Cl).
 Qed.
 
-End uniform_closeness.
 
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
@@ -4320,7 +4380,7 @@ Qed.
 
 Lemma prod_ent_filter : Filter prod_ent.
 Proof.
-have prodF := filter_prod_filter (@entourage_pfilter U) (@entourage_pfilter V).
+have prodF := filter_prod_filter (@entourage_filter U) (@entourage_filter V).
 split; rewrite /prod_ent.
 - by rewrite -setXTT; apply: prod_entP filterT filterT.
 - move=> A B /= entA entB; apply: filterS (filterI entA entB) => xy [].
@@ -4453,7 +4513,7 @@ HB.instance Definition _ := Nbhs_isUniform.Build 'M[T]_(m, n)
 
 End matrix_Uniform.
 
-Lemma cvg_mx_entourageP (T : uniformType) m n (F : set_system 'M[T]_(m,n))
+Lemma cvg_mx_entourageP (T : puniformType) m n (F : set_system 'M[T]_(m,n))
   (FF : Filter F) (M : 'M[T]_(m,n)) :
   F --> M <->
   forall A, entourage A -> \forall N \near F,
@@ -4480,7 +4540,7 @@ Definition map_pair {S U} (f : S -> U) (x : (S * S)) : (U * U) :=
 
 Section weak_uniform.
 Local Open Scope relation_scope.
-Variable (pS : pointedType) (U : uniformType) (f : pS -> U).
+Variable (pS : choiceType) (U : uniformType) (f : pS -> U).
 
 Let S := weak_topology f.
 
@@ -4530,6 +4590,10 @@ HB.instance Definition _ := @Nbhs_isUniform.Build (weak_topology f) weak_ent
 
 End weak_uniform.
 
+HB.instance Definition _ (pS : pointedType) (U : uniformType) (f : pS -> U) :=
+  Pointed.on (weak_topology f).
+
+
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
   exists2 B, entourage B & forall PQ, A PQ -> forall p q,
     PQ.1 p -> PQ.2 q -> B (p,q).
@@ -4538,7 +4602,7 @@ Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
 
 Section sup_uniform.
 Local Open Scope relation_scope.
-Variable (T : pointedType) (Ii : Type) (Tc : Ii -> Uniform T).
+Variable (T : choiceType) (Ii : Type) (Tc : Ii -> Uniform T).
 
 Let I : choiceType := {classic Ii}.
 Let TS := fun i => Uniform.Pack (Tc i).
@@ -4557,8 +4621,19 @@ Ltac IEntP := move=> [[ /= + + /[dup] /asboolP]].
 
 Definition sup_ent_filter : Filter sup_ent.
 Proof.
-apply: finI_filter; move=> J JsubEnt /=; exists (point, point).
-by IEntP => i b /= /entourage_refl ? ? _.
+case: (pselect (exists t:T, True)).
+  case => p _; apply: finI_filter; move=> J JsubEnt /=; exists (p, p).
+  by IEntP => i b /= /entourage_refl ? ? _.
+move=> empT. 
+have TT0 (E : set (T*T)) : E = set0.
+  rewrite eqEsubset; split => //=; case=> t ? _; move: empT. 
+  by apply: absurd; exists t.
+have ent0 : sup_ent set0.
+  rewrite -(TT0 setT); exists set0 => //=; exists fset0 => //=.
+split.
+- rewrite (TT0 setT); exact: ent0.
+- by move => P Q ? ?; rewrite (TT0 (P `&` Q)).
+- by move=> P Q _ _; rewrite (TT0 Q).
 Qed.
 
 Lemma sup_ent_refl A : sup_ent A -> diagonal `<=` A.
@@ -4705,6 +4780,10 @@ HB.mixin Record Uniform_isPseudoMetric (R : numDomainType) M of Uniform M := {
 HB.structure Definition PseudoMetric (R : numDomainType) :=
   {T of Uniform T & Uniform_isPseudoMetric R T}.
 
+#[short(type="pseudoPMetricType")]
+HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
+  {T of Pointed T & Uniform T & Uniform_isPseudoMetric R T}.
+
 Definition discrete_topology T (dsc : discrete_space T) : Type := T.
 
 Section discrete_uniform.
@@ -4728,13 +4807,15 @@ by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
 Qed.
 
 HB.instance Definition _ := Choice.on (discrete_topology dsc).
-HB.instance Definition _ := Pointed.on (discrete_topology dsc).
 HB.instance Definition _ := discrete_uniform_mixin.
-
 End discrete_uniform.
+
+HB.instance Definition _ (P : pnbhsType) (dsc : discrete_space P) := 
+  Pointed.on (discrete_topology dsc).
 
 Lemma discrete_bool_compact : compact [set: discrete_topology discrete_bool].
 Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
+HB.instance Definition _ {T : pnbhsType} {dsc: discrete_space T} := Pointed.on (discrete_topology dsc).
 
 (* was uniformityOfBallMixin *)
 HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
@@ -4877,12 +4958,6 @@ move=> le12 y. case: comparableP le12 => [lte12 _|//|//|->//].
 by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
 Qed.
 
-Global Instance entourage_proper_filter : ProperFilter (@entourage M).
-Proof.
-apply: Build_ProperFilter; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
-by exists (point, point); apply: sbeA; apply: ballxx.
-Qed.
-
 Lemma near_ball (y : M) (eps : R) : 0 < eps -> \forall y' \near y, ball y eps y'.
 Proof. exact: nbhsx_ballx. Qed.
 
@@ -4937,6 +5012,14 @@ Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
 Proof. by move/cvgi_ballP. Qed.
 
 End pseudoMetricType_numDomainType.
+
+Global Instance entourage_proper_filter {R : numDomainType} {M : pseudoPMetricType R} :
+  ProperFilter (@entourage M).
+Proof.
+apply: Build_ProperFilter; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
+by exists (point, point); apply: sbeA; apply: ballxx.
+Qed.
+
 #[global] Hint Resolve nbhsx_ballx : core.
 #[global] Hint Resolve close_refl : core.
 Arguments close_cvg {T} F1 F2 {FF2} _.
@@ -5050,7 +5133,7 @@ Lemma mx_entourage : entourage = entourage_ mx_ball.
 Proof.
 rewrite predeqE=> A; split; last first.
   move=> [_/posnumP[e] sbeA].
-  by exists (fun _ _ => [set xy | ball xy.1 e%:num xy.2]).
+  exists (fun _ _ => [set xy | ball xy.1 e%:num xy.2]) => //= _ _.
 move=> [P]; rewrite -entourage_ballE => entP sPA.
 set diag := fun e : {posnum R} => [set xy : T * T | ball xy.1 e%:num xy.2].
 exists (\big[Num.min/1%:pos]_i \big[Num.min/1%:pos]_j xget 1%:pos
@@ -5071,8 +5154,6 @@ End matrix_PseudoMetric.
 Section prod_PseudoMetric.
 Context {R : numDomainType} {U V : pseudoMetricType R}.
 Implicit Types (x y : U * V).
-
-Definition prod_point : U * V := (point, point).
 
 Definition prod_ball x (eps : R) y :=
   ball (fst x) eps (fst y) /\ ball (snd x) eps (snd y).
@@ -5133,10 +5214,11 @@ Qed.
 
 End Nbhs_fct2.
 
-Definition quotient_topology (T : topologicalType) (Q : quotType T) : Type := Q.
+Definition quotient_topology (T : Type) (Q : quotType T) : Type := Q.
 
 Section quotients.
 Local Open Scope quotient_scope.
+Section unpointed.
 Context {T : topologicalType} {Q0 : quotType T}.
 
 Local Notation Q := (quotient_topology Q0).
@@ -5144,12 +5226,11 @@ Local Notation Q := (quotient_topology Q0).
 HB.instance Definition _ := Quotient.copy Q Q0.
 HB.instance Definition _ := [Sub Q of T by %/].
 HB.instance Definition _ := [Choice of Q by <:].
-HB.instance Definition _ := isPointed.Build Q (\pi_Q point : Q).
 
 Definition quotient_open U := open (\pi_Q @^-1` U).
 
 Program Definition quotient_topologicalType_mixin :=
-  @Pointed_isOpenTopological.Build Q quotient_open _ _ _.
+  @isOpenTopological.Build Q quotient_open _ _ _.
 Next Obligation. by rewrite /quotient_open preimage_setT; exact: openT. Qed.
 Next Obligation. by move=> ? ? ? ?; exact: openI. Qed.
 Next Obligation. by move=> I f ofi; apply: bigcup_open => i _; exact: ofi. Qed.
@@ -5175,7 +5256,15 @@ have greprE x : g (repr (\pi_Q x)) = g x by apply/eqP; rewrite rgE// reprK.
 by rewrite eqEsubset; split => x /=; rewrite greprE.
 Qed.
 
+End unpointed.
+
+Section pointed.
+Context {T : ptopologicalType} {Q0 : quotType T}.
+Local Notation Q := (quotient_topology Q0).
+HB.instance Definition _ := isPointed.Build Q (\pi_Q point : Q).
+End pointed.
 End quotients.
+
 
 Section discrete_pseudoMetric.
 Context {R : numDomainType} {T : nbhsType} {dsc : discrete_space T}.
@@ -5199,32 +5288,36 @@ by rewrite {2}z12 -surjective_pairing.
 Qed.
 
 HB.instance Definition _ := discrete_pseudometric_mixin.
-
 End discrete_pseudoMetric.
 
 Definition pseudoMetric_bool {R : realType} :=
   [the pseudoMetricType R of discrete_topology discrete_bool : Type].
 
-(** we use `discrete_topology` to equip pointed types with a discrete topology *)
-Section discrete_topology_for_pointed_types.
+(** we use `discrete_topology` to equip choice types with a discrete topology *)
+Section discrete_topology.
 
-Let discrete_pointed_subproof (P : pointedType) :
-  discrete_space (pointed_principal_filter P).
+Let discrete_subproof (P : choiceType) :
+  discrete_space (principal_filter_type P).
 Proof. by []. Qed.
 
-Definition pointed_discrete_topology (P : pointedType) : Type :=
-  discrete_topology (discrete_pointed_subproof P).
+Definition discrete_topology_type (P : Type) : Type := P.
 
-End discrete_topology_for_pointed_types.
-(* note that in topology.v, we already have:
-HB.instance Definition _ := discrete_uniform_mixin.
-and
-HB.instance Definition _ := discrete_pseudometric_mixin. *)
+HB.instance Definition _ (P : choiceType) := Choice.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _ (P : choiceType) := Filtered.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _  (P : choiceType) := Uniform.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _ (P : pointedType) := Pointed.copy 
+  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
+HB.instance Definition _ R (P : choiceType) : @PseudoMetric R _ := 
+  PseudoMetric.copy 
+    (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
 
-(** we need the following proof when using
-  `discrete_hausdorff` or `discrete_zero_dimension` in `cantor.v` *)
-Lemma discrete_pointed (T : pointedType) :
-  discrete_space (pointed_discrete_topology T).
+End discrete_topology.
+
+Lemma discrete_space_discrete (P : choiceType) : 
+  discrete_space (discrete_topology_type P). 
 Proof.
 apply/funext => /= x; apply/funext => A; apply/propext; split.
 - by move=> [E hE EA] _ ->; apply/EA/xsectionP/hE; exists x.
@@ -5236,7 +5329,7 @@ Qed.
 
 Definition cauchy {T : uniformType} (F : set_system T) := (F, F) --> entourage.
 
-Lemma cvg_cauchy {T : uniformType} (F : set_system T) : Filter F ->
+Lemma cvg_cauchy {T : puniformType} (F : set_system T) : Filter F ->
   [cvg F in T] -> cauchy F.
 Proof.
 move=> FF cvF A entA; have /entourage_split_ex [B entB sB2A] := entA.
@@ -5247,13 +5340,13 @@ move=> ab [/= /xsectionP Balima /xsectionP Blimb]; apply: sB2A.
 by exists (lim F).
 Qed.
 
-HB.mixin Record Uniform_isComplete T of Uniform T := {
+HB.mixin Record Uniform_isComplete T of PointedUniform T := {
   cauchy_cvg :
     forall (F : set_system T), ProperFilter F -> cauchy F -> cvg F
 }.
 
 #[short(type="completeType")]
-HB.structure Definition Complete := {T of Uniform T & Uniform_isComplete T}.
+HB.structure Definition Complete := {T of Uniform T & Uniform_isComplete T & isPointed T}.
 
 #[deprecated(since="mathcomp-analysis 2.0", note="use cauchy_cvg instead")]
 Notation complete_ax := cauchy_cvg (only parsing).
@@ -5269,6 +5362,16 @@ End completeType1.
 Arguments cauchy_cvg {T} F {FF} _ : rename.
 Arguments cauchy_cvgP {T} F {FF}.
 
+Section matrix_PointedTopology.
+Variables (m n : nat) .
+HB.instance Definition _ (T : ptopologicalType) := Filtered.on 'M[T]_(m, n).
+HB.instance Definition _ (T : ptopologicalType) := Pointed.on 'M[T]_(m, n).
+HB.instance Definition _ (T : ptopologicalType) := PointedFiltered.on 'M[T]_(m, n).
+HB.instance Definition _ (T : ptopologicalType) := PointedTopological.on 'M[T]_(m, n).
+HB.instance Definition _ (T : uniformType) := Uniform.on 'M[T]_(m, n).
+HB.instance Definition _ (T : puniformType) := Pointed.on 'M[T]_(m, n).
+HB.instance Definition _ (T : puniformType) := PointedUniform.on 'M[T]_(m, n).
+End matrix_PointedTopology.
 Section matrix_Complete.
 
 Variables (T : completeType) (m n : nat).
@@ -5338,14 +5441,14 @@ Arguments cauchyP {R T} F {PF}.
 
 #[short(type="completePseudoMetricType")]
 HB.structure Definition CompletePseudoMetric R :=
-  {T of Complete T & PseudoMetric R T}.
+  {T of Complete T & PseudoPointedMetric R T}.
 
 HB.instance Definition _ (R : numFieldType) (T : completePseudoMetricType R)
   (m n : nat) := Uniform_isComplete.Build 'M[T]_(m, n) cauchy_cvg.
 
 HB.instance Definition _ (R : zmodType) := isPointed.Build R 0.
 
-Lemma compact_cauchy_cvg {T : uniformType} (U : set T) (F : set_system T) :
+Lemma compact_cauchy_cvg {T : puniformType} (U : set T) (F : set_system T) :
   ProperFilter F -> cauchy F -> F U -> compact U -> cvg F.
 Proof.
 move=> PF cf FU /(_ F PF FU) [x [_ clFx]]; apply: (cvgP x).
@@ -5432,22 +5535,22 @@ HB.instance Definition _ (R : numFieldType) :=
 Module numFieldTopology.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : realType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : realType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : rcfType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : rcfType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : archiFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : archiFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : realFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : realFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : numClosedFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : numClosedFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : numFieldType) := PseudoMetric.copy R R^o.
+HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
 
 Module Exports. HB.reexport. End Exports.
 
@@ -5545,7 +5648,7 @@ by exists (nat_of_rat \o f) => i j Di Dj /inj_nat_of_rat/inj_f; exact.
 Qed.
 
 Section weak_pseudoMetric.
-Context {R : realType} (pS : pointedType) (U : pseudoMetricType R) .
+Context {R : realType} (pS : choiceType) (U : pseudoMetricType R) .
 Variable (f : pS -> U).
 
 Notation S := (weak_topology f).
@@ -5589,7 +5692,7 @@ Proof. by []. Qed.
 
 End weak_pseudoMetric.
 
-Lemma compact_second_countable {R : realType} {T : pseudoMetricType R} :
+Lemma compact_second_countable {R : realType} {T : pseudoPMetricType R} :
   compact [set: T] -> @second_countable T.
 Proof.
 have npos n : (0:R) < n.+1%:R^-1 by [].
@@ -5615,7 +5718,7 @@ pose B := \bigcup_n (f n) @` [set` h'' n]; exists B;[|split].
   by apply: (le_ball (ltW deleps)); apply: interior_subset.
 Qed.
 
-Lemma clopen_surj {R : realType} {T : pseudoMetricType R} :
+Lemma clopen_surj {R : realType} {T : pseudoPMetricType R} :
   compact [set: T] -> $|{surjfun [set: nat] >-> @clopen T}|.
 Proof.
 move=> cmptT.
@@ -5937,6 +6040,7 @@ Definition type : Type := let _ := countableBase in let _ := entF in T.
 #[export] HB.instance Definition _ := Uniform.on type.
 #[export] HB.instance Definition _ := Uniform_isPseudoMetric.Build R type
   step_ball_center step_ball_sym step_ball_triangle step_ball_entourage.
+#[export] HB.instance Definition _ {q : Pointed T} := Pointed.copy type (Pointed.Pack q).
 
 Lemma countable_uniform_bounded (x y : T) :
   let U := [the pseudoMetricType R of type]
@@ -5949,17 +6053,19 @@ by apply/andP; split => //; rewrite invf_lt1 //= ltrDl.
 Qed.
 
 End countable_uniform.
+
+
 Module Exports. HB.reexport. End Exports.
 End countable_uniform.
 Export countable_uniform.Exports.
 
 Notation countable_uniform := countable_uniform.type.
 
-Definition sup_pseudometric (R : realType) (T : pointedType) (Ii : Type)
+Definition sup_pseudometric (R : realType) (T : Type) (Ii : Type)
   (Tc : Ii -> PseudoMetric R T) (Icnt : countable [set: Ii]) : Type := T.
 
 Section sup_pseudometric.
-Variable (R : realType) (T : pointedType) (Ii : Type).
+Variable (R : realType) (T : choiceType) (Ii : Type).
 Variable (Tc : Ii -> PseudoMetric R T).
 
 Hypothesis Icnt : countable [set: Ii].
@@ -6014,8 +6120,6 @@ by apply: within_nbhs_proper; apply: subset_closure.
 Qed.
 
 HB.instance Definition _ := Choice.copy (subspace A) _.
-
-HB.instance Definition _ := isPointed.Build (subspace A) point.
 
 HB.instance Definition _ := hasNbhs.Build (subspace A) nbhs_subspace.
 
@@ -6216,6 +6320,7 @@ by move=> ?; exists (P, Q).
 Qed.
 End SubspaceOpen.
 
+
 Lemma compact_subspaceIP (U : set T) :
   compact (U `&` A : set (subspace A)) <-> compact (U `&` A : set T).
 Proof.
@@ -6246,6 +6351,9 @@ move=> clpnA U Un0 [V oV UVA] [W cW UWA]; apply: clpnA => //; first split.
 Qed.
 
 End Subspace.
+
+HB.instance Definition _ {T : ptopologicalType} (A : set T) := isPointed.Build (subspace A) point.
+
 
 Global Instance subspace_filter {T : topologicalType}
     (A : set T) (x : subspace A) :
@@ -6294,7 +6402,6 @@ Proof.
 rewrite /continuous_at /prop_for => inA ctsf.
 have [_|//] := nbhs_subspaceP A x.
 apply: (cvg_trans _ ctsf); apply: cvg_fmap2; apply: cvg_within.
-exact: (nbhs_filter x).
 Qed.
 
 Lemma continuous_in_subspaceT {U} A (f : T -> U) :
@@ -6506,7 +6613,7 @@ Proof. by []. Qed.
 End SubspacePseudoMetric.
 
 Section SubspaceWeak.
-Context {T : topologicalType} {U : pointedType}.
+Context {T : topologicalType} {U : choiceType}.
 Variables (f : U -> T).
 
 Lemma weak_subspace_open (A : set (weak_topology f)) :
@@ -6653,7 +6760,7 @@ Qed.
 
 Let gauged : Type := T.
 
-HB.instance Definition _ := Pointed.on gauged.
+HB.instance Definition _ := Choice.on gauged.
 HB.instance Definition _ :=
   @isUniform.Build gauged gauge gauge_filter gauge_refl gauge_inv gauge_split.
 
@@ -6665,18 +6772,14 @@ by move=> D [n _ ?]; exists (iter n split_sym (E `&` E^-1)).
 Qed.
 
 Definition type := countable_uniform.type gauge_countable_uniformity.
-
-#[export] HB.instance Definition _ := Uniform.on type.
-#[export] HB.instance Definition _ {R : realType} : PseudoMetric R _ :=
-  PseudoMetric.on type.
-
 End entourage_gauge.
+
 End gauge.
 Module Exports. HB.reexport. End Exports.
 End gauge.
 Export gauge.Exports.
 
-Lemma uniform_pseudometric_sup {R : realType} {T : uniformType} :
+Lemma uniform_pseudometric_sup {R : realType} {T : puniformType} :
     @entourage T = @sup_ent T {E : set (T * T) | @entourage T E}
   (fun E => Uniform.class (@gauge.type T (projT1 E) (projT2 E))).
 Proof.

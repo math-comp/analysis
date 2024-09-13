@@ -49,8 +49,26 @@
   + definition `uniform_bounded`
   + theorem `Banach_Steinhauss`
 
-### Changed
+- in `topology.v`:
+  + Structures `PointedFiltered`, `PointedNbhs`, `PointedUniform`, 
+    `PseudoPointedMetric`
 
+### Changed
+- in `topology.v`:
+  + removed the pointed assumptions from `FilteredType`, `Nbhs`, 
+    `TopologicalType`, `UniformType`, and `PseudoMetricType`.
+  + if you want the original pointed behavior, use the `p` variants
+    of the types, so `ptopologicalType` instead of `topologicalType`.
+  + generalized most lemmas to no longer depend on pointedness.
+    The main exception is for references to `cvg` and `lim` that depend
+    on `get` for their definition.
+  + `pointed_principal_filter` becomes `principle_filter_type` and 
+    requires only `choiceType` instead of `pointedType`
+  + `pointed_discrete_topology` becomes `discrete_topology_type` and 
+    requires only `choiceType` instead of `pointedType`
+  + renamed lemma `discrete_pointed`to `discrete_space_discrete` 
+- in `function_space.v`:
+  + generalized most lemmas to no longer depend on pointedness.
 - in `normedtype.v`:
   + remove superflous parameters in lemmas `not_near_at_rightP` and `not_near_at_leftP`
 

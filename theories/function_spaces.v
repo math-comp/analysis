@@ -108,7 +108,7 @@ Variable I : Type.
 
 Definition product_topology_def (T : I -> topologicalType) :=
   sup_topology (fun i => Topological.class
-    (weak_topology (fun f : [the pointedType of forall i, T i] => f i))).
+    (weak_topology (fun f : [the choiceType of forall i, T i] => f i))).
 
 HB.instance Definition _ (T : I -> topologicalType) :=
   Topological.copy (prod_topology T) (product_topology_def T).
@@ -151,7 +151,7 @@ Proof.
 move=> f; have /cvg_sup/(_ i)/cvg_image : f --> f by apply: cvg_id.
 move=> h; apply: cvg_trans (h _) => {h}.
   by move=> Q /= [W nbdW <-]; apply: filterS nbdW; exact: preimage_image.
-rewrite eqEsubset; split => y //; exists (dfwith (fun=> point) i y) => //.
+rewrite eqEsubset; split => y //; exists (dfwith f i y) => //.
 by rewrite dfwithin.
 Qed.
 
@@ -199,7 +199,9 @@ Lemma tychonoff (I : eqType) (T : I -> topologicalType)
   (forall i, compact (A i)) ->
   compact [set f : forall i, T i | forall i, A i (f i)].
 Proof.
-move=> Aco; rewrite compact_ultra => F FU FA.
+case: (pselect ([set f : forall i, T i | forall i, A i (f i)] == set0)). 
+  move/eqP => -> _; exact: compact0.
+case/negP/set0P=> a0 Aa0 Aco; rewrite compact_ultra => F FU FA.
 set subst_coord := fun (i : I) (pi : T i) (f : forall x : I, T x) (j : I) =>
   if eqP is ReflectT e then ecast i (T i) (esym e) pi else f j.
 have subst_coordT i pi f : subst_coord i pi f i = pi.
@@ -210,7 +212,7 @@ have subst_coordN i pi f j : i != j -> subst_coord i pi f j = f j.
   by move: inej; rewrite {1}e => /negP.
 have pr_surj i : @^~ i @` [set: forall i, T i] = setT.
   rewrite predeqE => pi; split=> // _.
-  by exists (subst_coord i pi (fun=> point)) => //; rewrite subst_coordT.
+  by exists (subst_coord i pi a0) => //; rewrite subst_coordT.
 pose pF i : set_system _ := [set @^~ i @` B | B in F].
 have pFultra i : UltraFilter (pF i) by exact: ultra_image (pr_surj i).
 have pFA i : pF i (A i).
@@ -222,9 +224,10 @@ have pFA i : pF i (A i).
   by move=> /subst_coordN ->; apply: Af.
 have cvpFA i : A i `&` [set p | pF i --> p] !=set0.
   by rewrite -ultra_cvg_clusterE; apply: Aco.
-exists (fun i => get (A i `&` [set p | pF i --> p])).
-split=> [i|]; first by have /getPex [] := cvpFA i.
-by apply/cvg_sup => i; apply/cvg_image=> //; have /getPex [] := cvpFA i.
+exists (fun i => xget (a0 i) (A i `&` [set p | pF i --> p])).
+split=> [i|]; first by have /(xgetPex (a0 i)) [] := cvpFA i.
+apply/cvg_sup => i; apply/cvg_image=> //. 
+by have /(xgetPex (a0 i)) [] := cvpFA i.
 Qed.
 
 Lemma perfect_prod {I : Type} (i : I) (K : I -> topologicalType) :
@@ -395,7 +398,17 @@ by move=> z [w Uw] /inj <- //; rewrite inE.
 Qed.
 
 End product_embeddings.
+
+Global Instance prod_topology_filter (U : Type) (T : U -> ptopologicalType) (f : prod_topology T) :
+  ProperFilter (nbhs f).
+Proof.
+exact: nbhs_pfilter.
+Qed.
+
 End product_spaces.
+
+HB.instance Definition _ (U : Type) (T : U -> ptopologicalType) :=
+  Pointed.copy (forall x : U, T x) (prod_topology T).
 
 (**md the uniform topologies type *)
 Section fct_Uniform.
@@ -436,11 +449,14 @@ Qed.
 
 Definition arrow_uniform_type : Type := T -> U.
 
-#[export] HB.instance Definition _ := Pointed.on arrow_uniform_type.
+#[export] HB.instance Definition _ := Choice.on arrow_uniform_type.
 #[export] HB.instance Definition _ := isUniform.Build arrow_uniform_type
   fct_ent_filter fct_ent_refl fct_ent_inv fct_ent_split.
 
 End fct_Uniform.
+
+#[export] HB.instance Definition _ {T : choiceType} {U : puniformType} := 
+  Pointed.on (arrow_uniform_type T U).
 
 Lemma cvg_fct_entourageP (T : choiceType) (U : uniformType)
     (F : set_system (arrow_uniform_type T U)) (FF : Filter F)
@@ -592,10 +608,14 @@ split=> [[Q [[/= W oW <- /=] Wf subP]]|[E [entE subP]]].
   case: (oW _ Wf) => ? [ /= E entE] Esub subW.
   exists E; split=> // h Eh; apply/subP/subW/xsectionP/Esub => /= [[u Au]].
   by apply: Eh => /=; rewrite -inE.
-near=> g; apply: subP => y /mem_set Ay; rewrite -!(sigLE A).
+case : (pselect (exists (u : U), True)); first last.
+  move=> nU; apply: (filterS subP); apply: (@filterS _ _ _ setT).
+  by move=> t _ /= y; move: nU; apply: absurd; exists y.
+  exact: filterT.
+case=> u0 _; near=> g; apply: subP => y /mem_set Ay; rewrite -!(sigLE A).
 move: (SigSub _); near: g.
 have := (@cvg_image _ _ (@sigL_arrow _ A V) _ f (nbhs_filter f)
-  (image_sigL point)).1 cvg_id [set h | forall y, E (sigL A f y, h y)].
+  (image_sigL (f u0))).1 cvg_id [set h | forall y, E (sigL A f y, h y)].
 case.
   exists [set fg | forall y, E (fg.1 y, fg.2 y)] => //; first by exists E.
   by move=> g /xsectionP.
@@ -724,26 +744,6 @@ apply: (C [set fg | forall y, A y -> X' (fg.1 y, fg.2 y)]) => //=.
 by rewrite uniform_entourage; exists X'.
 Qed.
 
-Lemma uniform_restrict_cvg
-    (F : set_system (U -> V)) (f : U -> V) A : Filter F ->
-  {uniform A, F --> f} <-> {uniform, restrict A @ F --> restrict A f}.
-Proof.
-move=> FF; rewrite cvg_sigL; split.
-- rewrite -sigLK; move/(cvg_app valL) => D.
-  apply: cvg_trans; first exact: D.
-  move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
-  apply/uniform_nbhs; exists E; split=> //= h /=.
-  rewrite /sigL => R u _; rewrite oinv_set_val.
-  by case: insubP=> /= *; [apply: R|apply: entourage_refl].
-- move/(@cvg_app _ _ _ _ (sigL A)).
-  rewrite -fmap_comp sigL_restrict => D.
-  apply: cvg_trans; first exact: D.
-  move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
-  apply/uniform_nbhs; exists E; split=> //= h /=.
-  rewrite /sigL => R [u Au] _ /=.
-  by have := R u I; rewrite /patch Au.
-Qed.
-
 Lemma uniform_nbhsT (f : U -> V) :
   (nbhs (f : {uniform U -> V})) = nbhs (f : arrow_uniform_type U V).
 Proof.
@@ -816,6 +816,27 @@ Qed.
 
 End UniformCvgLemmas.
 
+Lemma uniform_restrict_cvg {U : choiceType} {V : puniformType}
+    (F : set_system (U -> V)) (f : U -> V) A : Filter F ->
+  {uniform A, F --> f} <-> {uniform, restrict A @ F --> restrict A f}.
+Proof.
+move=> FF; rewrite cvg_sigL; split.
+- rewrite -sigLK; move/(cvg_app valL) => D.
+  apply: cvg_trans; first exact: D.
+  move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
+  apply/uniform_nbhs; exists E; split=> //= h /=.
+  rewrite /sigL => R u _; rewrite oinv_set_val.
+  by case: insubP=> /= *; [apply: R|apply: entourage_refl].
+- move/(@cvg_app _ _ _ _ (sigL A)).
+  rewrite -fmap_comp sigL_restrict => D.
+  apply: cvg_trans; first exact: D.
+  move=> P /uniform_nbhs [E [/=entE EsubP]]; apply: (filterS EsubP).
+  apply/uniform_nbhs; exists E; split=> //= h /=.
+  rewrite /sigL => R [u Au] _ /=.
+  by have := R u I; rewrite /patch Au.
+Qed.
+
+
 Section FamilyConvergence.
 
 Lemma fam_cvgE {U : choiceType} {V : uniformType} (F : set_system (U -> V))
@@ -881,7 +902,7 @@ move=> P Q [fKP oP] [fKQ oQ]; exists (P `&` Q); first split.
 by move=> g /= gPQ; split; exact: (subset_trans gPQ).
 Qed.
 
-HB.instance Definition _ := Pointed.on compact_openK.
+HB.instance Definition _ := Choice.on compact_openK.
 
 HB.instance Definition _ := hasNbhs.Build compact_openK compact_openK_nbhs.
 
@@ -907,8 +928,6 @@ HB.instance Definition _ :=
   compact_openK_nbhsE_subproof compact_openK_openE_subproof.
 
 End compact_open_setwise.
-
-HB.instance Definition _ := Pointed.on compact_open.
 
 Definition compact_open_def :=
   sup_topology (fun i : sigT (@compact T) =>
@@ -942,12 +961,19 @@ Qed.
 
 End compact_open.
 
+HB.instance Definition _ {U : topologicalType} {V : ptopologicalType} K := 
+    Pointed.on (@compact_openK U V K).
+
+HB.instance Definition _ {U : topologicalType} {V : ptopologicalType} := 
+  Pointed.on (@compact_open U V).
+
+
 Notation "{ 'compact-open' , U -> V }" := (@compact_open U V).
 Notation "{ 'compact-open' , F --> f }" :=
   (F --> (f : @compact_open _ _)).
 
 Section compact_open_uniform.
-Context {U : topologicalType} {V : uniformType}.
+Context {U : topologicalType} {V : puniformType}.
 
 Let small_ent_sub := @small_set_sub _ (@entourage V).
 
@@ -1034,7 +1060,7 @@ apply/Ff/uniform_nbhs; exists (split_ent (split_ent A))^-1%relation.
 by split; [exact: entourage_inv | move=> g fg; near_simpl; near=> z; exact: fg].
 Unshelve. all: end_near. Qed.
 
-Lemma uniform_limit_continuous_subspace {U : topologicalType} {V : uniformType}
+Lemma uniform_limit_continuous_subspace {U : topologicalType} {V : puniformType}
     (K : set U) (F : set_system (U -> V)) (f : subspace K -> V) :
   ProperFilter F -> (\forall g \near F, continuous (g : subspace K -> V)) ->
   {uniform K, F --> f} -> {within K, continuous f}.
@@ -1090,7 +1116,7 @@ Qed.
 End UniformPointwise.
 
 Section ArzelaAscoli.
-Context {X : topologicalType} {Y : uniformType} {hsdf : hausdorff_space Y}.
+Context {X : topologicalType} {Y : puniformType} {hsdf : hausdorff_space Y}.
 Implicit Types (I : Type).
 
 (** The key condition in Arzela-Ascoli that, like uniform continuity, moves a
