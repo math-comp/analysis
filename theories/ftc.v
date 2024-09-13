@@ -561,8 +561,8 @@ Lemma parameterized_integral_continuous a b (f : R -> R) : a < b ->
   mu.-integrable `[a, b] (EFin \o f) ->
   {within `[a, b], continuous (fun x => int a x f)}.
 Proof.
-move=> ab intf; apply/(continuous_within_itvP _ ab); split; last first.
-  split; last exact: parameterized_integral_cvg_at_left.
+move=> ab intf; apply/(continuous_within_itvP _ ab); split; first last.
+  exact: parameterized_integral_cvg_at_left.
   apply/cvg_at_right_filter.
   rewrite {2}/int /parameterized_integral interval_set1 Rintegral_set1.
   exact: (parameterized_integral_cvg_left ab).
@@ -744,10 +744,9 @@ have GbcFb : G x @[x --> b^'-] --> (- c + F b)%R.
   rewrite (_ : (G \- F)%R + F = G)//.
   by apply/funext => x/=; rewrite subrK.
 have contF : {within `[a, b], continuous F}.
-  apply/(continuous_within_itvP _ ab); split; last exact: (conj Fa Fb).
-  move=> z zab.
-  apply/differentiable_continuous/derivable1_diffP.
-  by case: dF => /= dF _ _; apply: dF.
+  apply/(continuous_within_itvP _ ab); split => //.
+  move=> z zab; apply/differentiable_continuous/derivable1_diffP.
+  by case: dF => /= + _ _; exact.
 have iabfab : mu.-integrable `[a, b] (EFin \o fab).
   by rewrite -restrict_EFin; apply/integrable_restrict => //; rewrite setIidr.
 have Ga : G x @[x --> a^'+] --> G a.

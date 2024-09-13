@@ -108,6 +108,9 @@
 - in `lebesgue_integral.v`:
   + lemma `nice_lebesgue_differentiation`: change the local integrability hypothesis to easy application
 
+- in `normedtype.v`:
+  + lemma `continuous_within_itvP`: change the statement to use the notation `[/\ _, _ & _]`
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
