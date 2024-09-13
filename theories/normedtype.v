@@ -1361,6 +1361,12 @@ Lemma nbhs_left_ge x z : z < x -> \forall y \near x^'-, z <= y.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
 Unshelve. all: by end_near. Qed.
 
+Lemma nbhs_left_ltBl x e : 0 < e -> \forall y \near x^'-, x - y < e.
+Proof.
+move=> e0; near=> y; rewrite -ltrBrDl ltrNl opprB; near: y.
+by apply: nbhs_left_gt; rewrite ltrBlDr ltrDl.
+Unshelve. all: by end_near. Qed.
+
 Lemma withinN (A : set R) a :
   within A (nbhs (- a)) = - x @[x --> within (-%R @` A) (nbhs a)].
 Proof.
@@ -2179,6 +2185,12 @@ rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
   rewrite within_interior; first exact: ctsoo.
   suff : `]a, b[ `<=` interior `[a, b] by exact.
   by rewrite -open_subsetE; [exact: subset_itvW| exact: interval_open].
+Qed.
+
+Lemma within_continuous_continuous {R : realType} a b (f : R -> R) x : (a < b)%R ->
+  {within `[a, b], continuous f} -> x \in `]a, b[ -> {for x, continuous f}.
+Proof.
+by move=> ab /continuous_within_itvP-/(_ ab)[+ _] /[swap] xab cf; exact.
 Qed.
 
 (* TODO: generalize to R : numFieldType *)

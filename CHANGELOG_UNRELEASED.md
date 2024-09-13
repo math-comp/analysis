@@ -69,6 +69,16 @@
 - in `set_interval.v`:
   + lemma `subset_itvSoo`
 
+- in `normedtype.v`:
+  + lemma `nbhs_left_ltBl`
+  + lemma `within_continuous_continuous`
+
+- in `ftc.v`:
+  + lemma `increasing_image_oo`, `decreasing_image_oo`,
+    `increasing_cvg_at_right_comp`, `increasing_cvg_at_left_comp`,
+	`decreasing_cvg_at_right_comp`, `decreasing_cvg_at_left_comp`,
+	`increasing_change`, `decreasing_change`
+
 ### Changed
 
 - in `lebesgue_measure.v`:
