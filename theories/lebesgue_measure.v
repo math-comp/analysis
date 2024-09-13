@@ -1067,25 +1067,24 @@ apply: (@measurable_fun_limn_sup _ h) => // t Dt.
 - by apply/bounded_fun_has_lbound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
 Qed.
 
-Lemma measurable_fun_dirac (U : set R) : measurable U ->
-  measurable_fun [set: _] (fun x : R => \d_x U : \bar R).
+Lemma measurable_fun_indic D (U : set T) : measurable U ->
+  measurable_fun D (\1_U : _ -> R).
 Proof.
-move=> mU _ /= Y mY; rewrite setTI;
-  have [Y0|Y0] := pselect (Y 0%E); have [Y1|Y1] := pselect (Y 1%E).
-- rewrite [X in measurable X](_ : _ = setT)//.
-  apply/seteqP; split => //= r _ /=.
-  by rewrite diracE; case: (_ \in _).
-- rewrite [X in measurable X](_ : _ = ~` U)//; first exact: measurableC.
-  apply/seteqP; split => [//= r /= + Ur|r Ur]; rewrite /= diracE.
+move=> mU mD /= Y mY.
+have [Y0|Y0] := pselect (Y 0%R); have [Y1|Y1] := pselect (Y 1%R).
+- rewrite [X in measurable X](_ : _ = D)//.
+  by apply/seteqP; split => //= r Dr /=; rewrite indicE; case: (_ \in _).
+- rewrite [X in measurable (_ `&` X)](_ : _ = ~` U)//.
+    by apply: measurableI => //; exact: measurableC.
+  apply/seteqP; split => [//= r /= + Ur|r Ur]; rewrite /= indicE.
     by rewrite mem_set.
   by rewrite memNset.
-- rewrite [X in measurable X](_ : _ = U)//.
-  apply/seteqP; split => [//= r /=|r Ur]; rewrite /= diracE.
+- rewrite [X in measurable (_ `&` X)](_ : _ = U); first exact: measurableI.
+  apply/seteqP; split => [//= r /=|r Ur]; rewrite /= indicE.
     by have [//|Ur] := pselect (U r); rewrite memNset.
   by rewrite mem_set.
 - rewrite [X in measurable X](_ : _ = set0)//.
-  apply/seteqP; split => //= r /=.
-  by rewrite diracE; case: (_ \in _).
+  by apply/seteqP; split => // r /= -[_]; rewrite indicE; case: (_ \in _).
 Qed.
 
 End measurable_fun_realType.
@@ -1398,8 +1397,13 @@ congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
 Qed.
 
-Lemma measurable_er_map d (T : measurableType d) (R : realType) (f : R -> R)
-  : measurable_fun setT f -> measurable_fun [set: \bar R] (er_map f).
+Lemma measurable_fun_dirac
+    d {T : measurableType d} {R : realType} D (U : set T) :
+  measurable U -> measurable_fun D (fun x => \d_x U : \bar R).
+Proof. by move=> /measurable_fun_indic/EFin_measurable_fun. Qed.
+
+Lemma measurable_er_map d (T : measurableType d) (R : realType) (f : R -> R) :
+  measurable_fun setT f -> measurable_fun [set: \bar R] (er_map f).
 Proof.
 move=> mf;rewrite (_ : er_map _ =
   fun x => if x \is a fin_num then (f (fine x))%:E else x); last first.

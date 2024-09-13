@@ -56,8 +56,8 @@
   + lemma `measurable_neg`, `measurable_or`
 
 - in `lebesgue_measure.v`:
-  + lemmas `measurable_fun_eqr`, `measurable_fun_dirac`, `measurable_fun_addn`,
-    `measurable_fun_maxn`, `measurable_fun_subn`, `measurable_fun_ltn`,
+  + lemmas `measurable_fun_eqr`, `measurable_fun_indic`, `measurable_fun_dirac`,
+    `measurable_fun_addn`, `measurable_fun_maxn`, `measurable_fun_subn`, `measurable_fun_ltn`,
     `measurable_fun_leq`, `measurable_fun_eqn`
   + module `NGenCInfty`
     * definition `G`
