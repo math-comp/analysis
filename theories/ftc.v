@@ -303,19 +303,11 @@ near (0%R:R)^'+ => e; apply: (@continuous_lebesgue_pt _ _ _ (ball x e)) => //.
 Unshelve. all: by end_near. Qed.
 
 Corollary continuous_FTC1_closed f (a x : R) (u : R) : (x < u)%R ->
-  locally_integrable setT (f \_ [set` `[a, u]]) ->
+  mu.-integrable `[a, u] (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` `[a, x]]) (f t))%R in
   (a < x)%R -> {for x, continuous f} ->
   derivable F x 1 /\ F^`() x = f x.
-Proof.
-move=> xu locf F ax fx; apply: (@continuous_FTC1 _ _ _ u) => //.
-apply/integrableP; split.
-  apply/EFin_measurable_fun.
-  by case: locf => /(measurable_restrictT _ _ ).2 + _ _; exact.
-rewrite integralEpatch//=.
-under eq_integral do rewrite restrict_EFin/= restrict_normr/=.
-by case: locf => _ _; apply => //; exact: segment_compact.
-Qed.
+Proof. by move=> xu locf F ax fx; exact: (@continuous_FTC1 _ _ _ u). Qed.
 
 End FTC.
 
@@ -539,9 +531,13 @@ have locfab : locally_integrable [set: R] fab.
     exact/EFin_measurable_fun.
 have G'f : {in `]a, b[, forall x, G^`() x = fab x /\ derivable G x 1}.
   move=> x /[!in_itv]/= /andP[ax xb].
-  have := @continuous_FTC1_closed _ fab a x b xb.
-  rewrite -patch_setI setIid => /(_ locfab).
-  move=> /(_ ax).
+  have : mu.-integrable `[a, b] (EFin \o fab).
+    rewrite -[X in _.-integrable X _]setIid.
+    apply/(integrable_restrict _ _ _ _).2 => //=.
+    rewrite restrict_EFin -patch_setI setIid -restrict_EFin.
+    apply/(integrable_restrict _ _ _ _).1 => //=.
+    by rewrite setIid.
+  move/(@continuous_FTC1_closed _ fab a x b xb) => /(_ ax).
   have : {for x, continuous fab}.
     have : x \in `[a, b] by rewrite in_itv/= (ltW ax) (ltW xb).
     move: cf => /(_ x).
@@ -644,23 +640,25 @@ Local Open Scope ereal_scope.
 Implicit Types (F G f g : R -> R) (a b : R).
 
 Lemma integration_by_parts F G f g a b : (a < b)%R ->
-    {within `[a, b], continuous f} -> {within `[a, b], continuous F} ->
+    {within `[a, b], continuous f} ->
     derivable_oo_continuous_bnd F a b ->
     {in `]a, b[, F^`() =1 f} ->
-    {within `[a, b], continuous g} -> {within `[a, b], continuous G} ->
+    {within `[a, b], continuous g} ->
     derivable_oo_continuous_bnd G a b ->
     {in `]a, b[, G^`() =1 g} ->
   \int[mu]_(x in `[a, b]) (F x * g x)%:E = (F b * G b - F a * G a)%:E -
   \int[mu]_(x in `[a, b]) (f x * G x)%:E.
 Proof.
-move=> ab cf cF Fab Ff cg cG Gab Gg.
+move=> ab cf Fab Ff cg Gab Gg.
 have cfg : {within `[a, b], continuous (f * G + F * g)%R}.
   apply/subspace_continuousP => x abx; apply: cvgD.
   - apply: cvgM.
     + by move/subspace_continuousP : cf; exact.
-    + by move/subspace_continuousP : cG; exact.
+    + have := derivable_oo_continuous_bnd_within Gab.
+      by move/subspace_continuousP; exact.
   - apply: cvgM.
-    + by move/subspace_continuousP : cF; exact.
+    + have := derivable_oo_continuous_bnd_within Fab.
+      by move/subspace_continuousP; exact.
     + by move/subspace_continuousP : cg; exact.
 have FGab : derivable_oo_continuous_bnd (F * G)%R a b.
   move: Fab Gab => /= [abF FFa FFb] [abG GGa GGb];split; [|exact:cvgM..].
@@ -675,12 +673,14 @@ have ? : mu.-integrable `[a, b] (fun x => ((f * G) x)%:E).
   apply: continuous_compact_integrable => //; first exact: segment_compact.
   apply/subspace_continuousP => x abx; apply: cvgM.
   + by move/subspace_continuousP : cf; exact.
-  + by move/subspace_continuousP : cG; exact.
+  + have := derivable_oo_continuous_bnd_within Gab.
+    by move/subspace_continuousP; exact.
 rewrite /= integralD//=.
 - by rewrite addeAC subee ?add0e// integral_fune_fin_num.
 - apply: continuous_compact_integrable => //; first exact: segment_compact.
   apply/subspace_continuousP => x abx;apply: cvgM.
-  + by move/subspace_continuousP : cF; exact.
+  + have := derivable_oo_continuous_bnd_within Fab.
+    by move/subspace_continuousP; exact.
   + by move/subspace_continuousP : cg; exact.
 Qed.
 
@@ -693,16 +693,16 @@ Implicit Types (F G f g : R -> R) (a b : R).
 
 Lemma Rintegration_by_parts F G f g a b :
     (a < b)%R ->
-    {within `[a, b], continuous f} -> {within `[a, b], continuous F} ->
+    {within `[a, b], continuous f} ->
     derivable_oo_continuous_bnd F a b ->
     {in `]a, b[, F^`() =1 f} ->
-    {within `[a, b], continuous g} -> {within `[a, b], continuous G} ->
+    {within `[a, b], continuous g} ->
     derivable_oo_continuous_bnd G a b ->
     {in `]a, b[, G^`() =1 g} ->
   \int[mu]_(x in `[a, b]) (F x * g x) = (F b * G b - F a * G a) -
   \int[mu]_(x in `[a, b]) (f x * G x).
 Proof.
-move=> ab cf cF Fab Ff cg cG Gab Gg.
+move=> ab cf Fab Ff cg Gab Gg.
 rewrite [in LHS]/Rintegral (@integration_by_parts R F G f g)// fineB//.
 suff: mu.-integrable `[a, b] (fun x => (f x * G x)%:E).
   move=> /integrableP[? abfG]; apply: fin_real.
@@ -710,7 +710,8 @@ suff: mu.-integrable `[a, b] (fun x => (f x * G x)%:E).
   by apply: le_lt_trans abfG; exact: le_abse_integral.
 apply: continuous_compact_integrable.
   exact: segment_compact.
-by move=> /= z; apply: continuousM; [exact: cf|exact: cG].
+move=> /= z; apply: continuousM; [exact: cf|].
+exact: (derivable_oo_continuous_bnd_within Gab).
 Qed.
 
 End Rintegration_by_parts.
