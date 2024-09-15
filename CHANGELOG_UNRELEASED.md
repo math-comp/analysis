@@ -78,6 +78,8 @@
 
 - in `lebesgue_integral.v`:
   + lemma `integrable_locally_restrict`
+  + lemma `near_davg`
+  + lemma `lebesgue_pt_restrict`
 
 ### Changed
 - in `topology.v`:

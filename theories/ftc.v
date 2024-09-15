@@ -35,13 +35,14 @@ Notation mu := (@lebesgue_measure R).
 Local Open Scope ereal_scope.
 Implicit Types (f : R -> R) (a : itv_bound R).
 
-Let FTC0 f a x (u : R) : (x < u)%R ->
-  mu.-integrable [set` Interval a (BRight u)] (EFin \o f) ->
-  let F y := (\int[mu]_(t in [set` Interval a (BRight y)]) f t)%R in
-  a < BRight x -> lebesgue_pt f x ->
+Let FTC0 f a : mu.-integrable setT (EFin \o f) ->
+  let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) f t)%R in
+  forall x, a < BRight x -> lebesgue_pt f x ->
     h^-1 *: (F (h + x) - F x) @[h --> 0%R^'] --> f x.
 Proof.
-move=> xz intf F ax fx.
+move=> intf F x ax fx.
+have locf : locally_integrable setT f.
+  by apply: open_integrable_locally => //; exact: openT.
 apply: cvg_at_right_left_dnbhs.
 - apply/cvg_at_rightP => d [d_gt0 d0].
   pose E x n := `[x, x + d n[%classic%R.
@@ -50,92 +51,39 @@ apply: cvg_at_right_left_dnbhs.
     by rewrite -EFinD addrAC subrr add0r.
   have nice_E y : nicely_shrinking y (E y).
     split=> [n|]; first exact: measurable_itv.
-    exists (2, fun n => PosNum (d_gt0 n)); split => //= [n z|n].
+    exists (2, (fun n => PosNum (d_gt0 n))); split => //= [n z|n].
       rewrite /E/= in_itv/= /ball/= ltr_distlC => /andP[yz ->].
       by rewrite (lt_le_trans _ yz)// ltrBlDr ltrDl.
     rewrite (lebesgue_measure_ball _ (ltW _))// -/mu muE -EFinM lee_fin.
     by rewrite mulr_natl.
-  have ixdf : {near \oo,
-      (fun n => \int[mu]_(t in [set` Interval a (BRight (x + d n))]) (f t)%:E -
-                \int[mu]_(t in [set` Interval a (BRight x)]) (f t)%:E) =1
-      (fun n => \int[mu]_(y in E x n) (f y)%:E)}.
-    move/cvgrPdist_le : d0 => /(_ (u - x)%R).
-    rewrite subr_gt0 => /(_ xz) [m _ d0].
-    near=> n.
-    have xdu : (x + d n <= u)%R.
-      rewrite -lerBrDl.
-      have /= := d0 n; rewrite sub0r normrN gtr0_norm//; apply.
-      by near: n; exists m.
+  have ixdf n : \int[mu]_(t in [set` Interval a (BRight (x + d n))]) (f t)%:E -
+                \int[mu]_(t in [set` Interval a (BRight x)]) (f t)%:E =
+                \int[mu]_(y in E x n) (f y)%:E.
     rewrite -[in X in X - _]integral_itv_bndo_bndc//=; last first.
-      apply: (@measurable_funS _ _ _ _ [set` Interval a (BRight u)]) => //.
-        by apply: subset_itvl; rewrite bnd_simp.
-      by move/integrableP : intf => [/EFin_measurable_fun].
+      by case: locf => + _ _; exact: measurable_funS.
     rewrite (@itv_bndbnd_setU _ _ _ (BLeft x))//=; last 2 first.
-      by case: a ax F {intf} => [[|] a|[|]]// /ltW.
+      by case: a ax F => [[|] a|[|]]// /ltW.
       by rewrite bnd_simp lerDl ltW.
     rewrite integral_setU_EFin//=.
-    + rewrite addeAC -[X in _ - X]integral_itv_bndo_bndc//=; last first.
-        apply (@measurable_funS _ _ _ _ [set` Interval a (BRight u)]) => //.
-          by apply: subset_itvl; rewrite bnd_simp ltW.
-        by move/integrableP : intf => [/EFin_measurable_fun].
-      rewrite subee ?add0e// integral_fune_fin_num//=.
-      apply: integrableS intf => //=.
-      by apply: subset_itvl; rewrite bnd_simp ltW.
-    + rewrite -itv_bndbnd_setU//; last 2 first.
-        exact/ltW/lt_ereal_bnd/(lt_le_trans ax).
-        by rewrite bnd_simp lerDl ltW.
-      apply (@measurable_funS _ _ _ _ [set` Interval a (BRight u)]) => //.
-        by apply: subset_itvl; rewrite bnd_simp.
-      by move/integrableP : intf => [/EFin_measurable_fun].
-    + apply/disj_setPRL; rewrite setCitv/=.
-      exact: subset_trans (subset_itvl _) (@subsetUr _ _ _).
-  suff: (d n)^-1 *: fine (\int[mu]_(t in E x n) (f t)%:E) @[n --> \oo] --> f x.
-    apply: cvg_trans; apply: near_eq_cvg.
-    move/cvgrPdist_le : d0 => /(_ (u - x)%R).
-    rewrite subr_gt0 => /(_ xz)[m /= _] H.
-    near=> n.
-    have dxu : ((d n + x)%E <= u)%R.
-      rewrite -lerBrDr.
-      have /= := H n; rewrite sub0r normrN gtr0_norm//; apply.
-      by near: n; exists m.
-    congr (_ *: _); rewrite -fineB/=;
-      [|apply: integral_fune_fin_num..] => //=; last 2 first.
-        apply: integrableS intf => //=.
-        by apply: subset_itvl; rewrite bnd_simp.
-        apply: integrableS intf => //=.
-        by apply: subset_itvl; rewrite bnd_simp ltW.
-    rewrite /= (addrC (d n) x).
-    by near: n; apply: filterS ixdf => k ->.
-  have {}locf : \forall r \near 0^'+,
-      locally_integrable [set: R] (f \_ (closed_ball x r)).
-    case: a intf F ax ixdf => [| [|//] intf _ ax ixdf]; last first.
-      near=> r; rewrite closed_ball_itv//.
-      apply: (@locally_integrableS _ _ `]-oo, u]) => //.
-        apply: (@subset_trans _ `]-oo, (x + r)]) => //; first exact: subset_itvr.
-        apply: subset_itvl; rewrite bnd_simp -lerBrDl.
-        by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-      exact: integrable_locally_restrict.
-    move=> b a intf _ ax ixdf.
-    case: b in intf ax ixdf *; rewrite /= lte_fin in ax.
-    + near=> r.
-      rewrite closed_ball_itv//.
-      apply: (@locally_integrableS _ _ `[a, (x + r)]) => //.
-        apply: subset_itvr; rewrite bnd_simp -lerBlDr opprK -lerBrDl.
-        by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-      apply: (@locally_integrableS _ _ `[a, u]) => //.
-        apply: subset_itvl; rewrite bnd_simp/= -lerBrDl.
-        by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-      exact: integrable_locally_restrict.
-    + near=> r.
-      apply: (@locally_integrableS _ _ `]a, (x + r)]) => //.
-        exact: measurable_closed_ball.
-        rewrite closed_ball_itv//; apply: subset_itvr.
-        rewrite bnd_simp -ltrBlDr opprK -ltrBrDl.
-        by near: r; apply: nbhs_right_lt; rewrite subr_gt0.
-      apply: (@locally_integrableS _ _ `]a, u]) => //.
-        apply: subset_itvl; rewrite bnd_simp/= -lerBrDl.
-        by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-      exact: integrable_locally_restrict.
+    - rewrite addeAC -[X in _ - X]integral_itv_bndo_bndc//=; last first.
+        by case: locf => + _ _; exact: measurable_funS.
+      rewrite subee ?add0e//.
+      by apply: integral_fune_fin_num => //; exact: integrableS intf.
+    - by case: locf => + _ _; exact: measurable_funS.
+    - apply/disj_setPRL => z/=.
+      rewrite /E /= !in_itv/= => /andP[xz zxdn].
+      move: a ax {F} => [[|] t/=|[_ /=|//]].
+      - rewrite lte_fin => tx.
+        by apply/negP; rewrite negb_and -leNgt xz orbT.
+      - rewrite lte_fin => tx.
+        by apply/negP; rewrite negb_and -!leNgt xz orbT.
+      - by apply/negP; rewrite -leNgt.
+  rewrite [f in f n @[n --> _] --> _](_ : _ =
+      fun n => (d n)^-1 *: fine (\int[mu]_(t in E x n) (f t)%:E)); last first.
+    apply/funext => n; congr (_ *: _); rewrite -fineB/=.
+    by rewrite /= (addrC (d n) x) ixdf.
+    by apply: integral_fune_fin_num => //; exact: integrableS intf.
+    by apply: integral_fune_fin_num => //; exact: integrableS intf.
   have := nice_lebesgue_differentiation nice_E locf fx.
   rewrite {ixdf} -/mu.
   rewrite [g in g n @[n --> _] --> _ -> _](_ : _ =
@@ -144,18 +92,11 @@ apply: cvg_at_right_left_dnbhs.
   move/fine_cvgP => [_ /=].
   set g := _ \o _ => gf.
   set h := (f in f n @[n --> \oo] --> _).
-  apply: cvg_trans gf; apply: near_eq_cvg.
-  move/cvgrPdist_le : d0 => /(_ (u - x)%R).
-  rewrite subr_gt0 => /(_ xz)[m /= _] H.
-  near=> n.
-  rewrite /g /h /= fineM// integral_fune_fin_num//; first exact: (nice_E _).1.
-  apply: integrableS intf => //=; first exact: (nice_E _).1.
-  apply: subset_trans (@subset_itvl _ _ _ (BLeft (x + d n)) _ _); last first.
-    rewrite bnd_simp -lerBrDl.
-    have /= := H n; rewrite sub0r normrN gtr0_norm//; apply.
-    by near: n; exists m.
-  apply: subset_itvr => //.
-  exact/ltW/lt_ereal_bnd/(lt_le_trans ax).
+  suff : g = h by move=> <-.
+  apply/funext => n.
+  rewrite /g /h /= fineM//.
+  apply: integral_fune_fin_num => //; first exact: (nice_E _).1.
+  by apply: integrableS intf => //; exact: (nice_E _).1.
 - apply/cvg_at_leftP => d [d_gt0 d0].
   have {}Nd_gt0 n : (0 < - d n)%R by rewrite ltrNr oppr0.
   pose E x n := `]x + d n, x]%classic%R.
@@ -165,174 +106,112 @@ apply: cvg_at_right_left_dnbhs.
   have nice_E y : nicely_shrinking y (E y).
     split=> [n|]; first exact: measurable_itv.
     exists (2, (fun n => PosNum (Nd_gt0 n))); split => //=.
-    + by rewrite -oppr0; exact: cvgN.
-    + move=> n; rewrite /E ball_itv opprK.
-      by apply: subset_itvl; rewrite bnd_simp ltrDl.
-    + move=> n; rewrite lebesgue_measure_ball//; last exact: ltW.
-      by rewrite -/mu muE -EFinM lee_fin mulr_natl.
+      by rewrite -oppr0; exact: cvgN.
+    move=> n z.
+      rewrite /E/= in_itv/= /ball/= => /andP[yz zy].
+      by rewrite ltr_distlC opprK yz /= (le_lt_trans zy)// ltrDl.
+    move=> n.
+    rewrite lebesgue_measure_ball//; last exact: ltW.
+    by rewrite -/mu muE -EFinM lee_fin mulr_natl.
   have ixdf : {near \oo,
       (fun n => \int[mu]_(t in [set` Interval a (BRight (x + d n))]) (f t)%:E -
                 \int[mu]_(t in [set` Interval a (BRight x)]) (f t)%:E) =1
       (fun n => - \int[mu]_(y in E x n) (f y)%:E)}.
-    case: a ax intf {F}; last first.
-      move=> [_ intf|//].
-      near=> n.
+    case: a ax {F}; last first.
+      move=> [_|//].
+      apply: nearW => n.
       rewrite -[in LHS]integral_itv_bndo_bndc//=; last first.
-         apply: (@measurable_funS _ _ _ _ `]-oo, u]) => //.
-           apply: subset_itvl; rewrite bnd_simp.
-           by rewrite -lerBrDl (@le_trans _ _ 0%R)// ?ltW// subr_gt0.
-         by move/integrableP : intf => [/EFin_measurable_fun].
+        by case: locf => + _ _; exact: measurable_funS.
       rewrite -/mu -[LHS]oppeK; congr oppe.
       rewrite oppeB; last first.
-        rewrite fin_num_adde_defl// fin_numN// integral_fune_fin_num//=.
-        apply: integrableS intf => //=.
-        by apply: subset_itvl => //=; rewrite bnd_simp ltW.
+        rewrite fin_num_adde_defl// fin_numN//.
+        by apply: integral_fune_fin_num => //; exact: integrableS intf.
       rewrite addeC.
       rewrite (_ : `]-oo, x] = `]-oo, (x + d n)%R] `|` E x n)%classic; last first.
         by rewrite -itv_bndbnd_setU//= bnd_simp ler_wnDr// ltW.
       rewrite integral_setU_EFin//=.
-      + rewrite addeAC -[X in X - _]integral_itv_bndo_bndc//; last first.
-          apply: (@measurable_funS _ _ _ _ `]-oo, u]) => //.
-            apply: subset_itvl; rewrite bnd_simp//.
-            by rewrite -lerBrDl (@le_trans _ _ 0%R)// ltW// subr_gt0.
-          by move/integrableP : intf => [/EFin_measurable_fun].
-        rewrite subee ?add0e// integral_fune_fin_num//=.
-        apply: integrableS intf => //=.
-        apply: subset_itvl; rewrite bnd_simp.
-        by rewrite -lerBrDl (@le_trans _ _ 0%R)// ltW// subr_gt0.
-      + exact: (nice_E _).1.
-      + rewrite -itv_bndbnd_setU//; last first.
-          by rewrite bnd_simp ler_wnDr// ltW.
-        apply: (@measurable_funS _ _ _ _ `]-oo, u]) => //.
-          by apply: subset_itvl; rewrite bnd_simp// ltW.
-        by move/integrableP : intf => [/EFin_measurable_fun].
-      + by apply/disj_setPLR; rewrite setCitv/=; exact: subsetUl.
-    move=> b a ax intf.
-    move/cvgrPdist_le : (d0) => /(_ (x - a)%R).
-    rewrite subr_gt0 => /(_ ax)[m /= _]d0xa.
-    move/cvgrPdist_le : d0 => /(_ (u - x)%R).
-    rewrite subr_gt0 => /(_ xz)[k /= _]d0ux.
+      - rewrite addeAC.
+        rewrite -[X in X - _]integral_itv_bndo_bndc//; last first.
+          by case: locf => + _ _; exact: measurable_funS.
+        rewrite subee ?add0e//.
+        by apply: integral_fune_fin_num => //; exact: integrableS intf.
+      - exact: (nice_E _).1.
+      - by case: locf => + _ _; exact: measurable_funS.
+      - apply/disj_setPLR => z/=.
+        rewrite /E /= !in_itv/= leNgt => xdnz.
+        by apply/negP; rewrite negb_and xdnz.
+    move=> b a ax.
+    move/cvgrPdist_le : d0.
+    move/(_ (x - a)%R); rewrite subr_gt0 => /(_ ax)[m _ /=] h.
     near=> n.
     have mn : (m <= n)%N by near: n; exists m.
     rewrite -[in X in X - _]integral_itv_bndo_bndc//=; last first.
-      apply: (@measurable_funS _ _ _ _ [set` Interval (BSide b a) (BRight u)]) => //.
-        apply: subset_itvl; rewrite bnd_simp.
-        by rewrite -lerBrDl (@le_trans _ _ 0%R)// ltW// subr_gt0.
-      by move/integrableP : intf => [/EFin_measurable_fun].
+      by case: locf => + _ _; exact: measurable_funS.
     rewrite -/mu -[LHS]oppeK; congr oppe.
     rewrite oppeB; last first.
-      rewrite fin_num_adde_defl// fin_numN// integral_fune_fin_num//=.
-      apply: integrableS intf => //.
-      by apply: subset_itvl; rewrite bnd_simp ltW.
+      rewrite fin_num_adde_defl// fin_numN//.
+      by apply: integral_fune_fin_num => //; exact: integrableS intf.
     rewrite addeC.
     rewrite (@itv_bndbnd_setU _ _ _ (BRight (x - - d n)%R))//; last 2 first.
-      case: b in ax intf * => /=; rewrite bnd_simp.
+      case: b in ax * => /=; rewrite bnd_simp.
         rewrite lerBrDl addrC -lerBrDl.
-        by have := d0xa _ mn; rewrite sub0r gtr0_norm.
+        by have := h _ mn; rewrite sub0r gtr0_norm.
       rewrite lerBrDl -lerBrDr.
-      by have := d0xa _ mn; rewrite sub0r gtr0_norm.
+      by have := h _ mn; rewrite sub0r gtr0_norm.
       by rewrite opprK bnd_simp -lerBrDl subrr ltW.
     rewrite integral_setU_EFin//=.
-    + rewrite addeAC -[X in X - _]integral_itv_bndo_bndc//; last first.
-        apply: (@measurable_funS _ _ _ _ [set` Interval (BSide b a) (BRight u)]) => //.
-          apply: subset_itvl; rewrite bnd_simp//.
-          by rewrite -lerBrDl opprK (@le_trans _ _ 0%R)// ltW// subr_gt0.
-        by move/integrableP : intf => [/EFin_measurable_fun].
-      rewrite opprK subee ?add0e// integral_fune_fin_num => //=.
-      apply: integrableS intf => //.
-      apply: subset_itvl.
-      by rewrite bnd_simp -lerBrDl (@le_trans _ _ 0%R)// ltW// subr_gt0.
-    + rewrite -itv_bndbnd_setU//; last 2 first.
-        case: b in ax intf * => /=; rewrite bnd_simp.
-          rewrite lerBrDl addrC -lerBrDl.
-          by have := d0xa _ mn; rewrite sub0r gtr0_norm.
-        rewrite lerBrDl -lerBrDr.
-        by have := d0xa _ mn; rewrite sub0r gtr0_norm.
-        by rewrite opprK bnd_simp -lerBrDl subrr ltW.
-      apply: (@measurable_funS _ _ _ _ [set` Interval (BSide b a) (BRight u)]) => //.
-        by apply: subset_itvl; rewrite bnd_simp ltW.
-      by move/integrableP : intf => [/EFin_measurable_fun].
-    + apply/disj_setPLR; rewrite opprK setCitv/=.
-      exact: subset_trans (subset_itvr _) (subsetUl _).
+    - rewrite addeAC -[X in X - _]integral_itv_bndo_bndc//; last first.
+        by case: locf => + _ _; exact: measurable_funS.
+      rewrite opprK subee ?add0e//.
+      by apply: integral_fune_fin_num => //; exact: integrableS intf.
+    - by case: locf => + _ _; exact: measurable_funS.
+    - apply/disj_setPLR => z/=.
+      rewrite /E /= !in_itv/= => /andP[az zxdn].
+      by apply/negP; rewrite negb_and -leNgt zxdn.
   suff: ((d n)^-1 * - fine (\int[mu]_(y in E x n) (f y)%:E))%R
           @[n --> \oo] --> f x.
     apply: cvg_trans; apply: near_eq_cvg; near=> n;  congr (_ *: _).
     rewrite /F -fineN -fineB; last 2 first.
-      apply: integral_fune_fin_num => //; apply: integrableS intf => //.
-      apply: subset_itvl; rewrite bnd_simp.
-      by rewrite -lerBrDr (@le_trans _ _ 0%R)// ltW// subr_gt0.
-      apply: integral_fune_fin_num => //; apply: integrableS intf => //.
-      by apply: subset_itvl; rewrite bnd_simp ltW.
+      by apply: integral_fune_fin_num => //; exact: integrableS intf.
+      by apply: integral_fune_fin_num => //; exact: integrableS intf.
     by congr fine => /=; apply/esym; rewrite (addrC _ x); near: n.
-  have {}locf : \forall r \near 0^'+,
-      locally_integrable [set: R] (f \_ (closed_ball x r)).
-    case: a intf F ax ixdf => [|[|//] intf _ _ ixdf]; last first.
-      near=> r.
-      rewrite closed_ball_itv//.
-      apply: (@locally_integrableS _ _ [set` `]-oo, (x + r)]]) => //.
-        exact: subset_itvr.
-      apply: (@locally_integrableS _ _ `]-oo, u]%classic) => //.
-        apply: subset_itvl; rewrite bnd_simp -lerBrDl.
-        by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-      exact: integrable_locally_restrict.
-    move=> b a intf _; rewrite /= lte_fin => ax ixdf.
-    case: b in intf ixdf *.
-      near=> r.
-      rewrite closed_ball_itv//.
-      apply: (@locally_integrableS _ _ `[a, (x + r)]) => //.
-        apply: subset_itvr; rewrite bnd_simp -lerBlDr opprK -lerBrDl.
-        by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-      apply: (@locally_integrableS _ _ `[a, u]) => //.
-        apply: subset_itvl; rewrite bnd_simp -lerBrDl.
-        by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-      exact: integrable_locally_restrict.
-    near=> r.
-    apply: (@locally_integrableS _ _ `]a, (x + r)]) => //.
-      exact: measurable_closed_ball.
-      rewrite closed_ball_itv//; apply: subset_itvr.
-      rewrite bnd_simp -ltrBlDr opprK -ltrBrDl.
-      by near: r; apply: nbhs_right_lt; rewrite subr_gt0.
-    apply: (@locally_integrableS _ _ `]a, u]) => //.
-      apply: subset_itvl; rewrite bnd_simp -lerBrDl.
-      by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
-    exact: integrable_locally_restrict.
   have := nice_lebesgue_differentiation nice_E locf fx.
   rewrite {ixdf} -/mu.
   move/fine_cvgP => [_ /=].
   set g := _ \o _ => gf.
-  apply: cvg_trans gf.
-  move: a ax intf {F} => [[t/=|t/=]|[|//]]; rewrite ?lte_fin => tx intf.
-  + move/cvgrPdist_le : d0 => /= /(_ (x - t)%R).
-    rewrite subr_gt0 => /(_ tx)[k /= _] H.
-    apply: near_eq_cvg; near=> n.
-    rewrite /g /= fineM//=; last first.
-      apply: integral_fune_fin_num => //=; first exact: (nice_E _).1.
-      apply: integrableS (intf)%R => //=; first exact: (nice_E _).1.
-      apply: (@subset_trans _ `[t, x]).
-        apply: subset_itvr; rewrite bnd_simp -lerBlDr addrC -(opprK t) lerBlDr.
-        have /= := H n; rewrite gtr0_norm ?sub0r//; apply.
-        by near: n; exists k.
-      by apply: subset_itvl; rewrite bnd_simp ltW.
-    by rewrite muE/= invrN mulNr -mulrN.
-  + move/cvgrPdist_le : d0 => /= /(_ (x - t)%R).
-    rewrite subr_gt0 => /(_ tx)[k /= _] H.
-    apply: near_eq_cvg; near=> n.
-    rewrite /g /= fineM//=; last first.
-      apply: integral_fune_fin_num => //=; first exact: (nice_E _).1.
-      apply: integrableS (intf)%R => //=; first exact: (nice_E _).1.
-      apply: (@subset_trans _ `]t, x]).
-        apply: subset_itvr; rewrite bnd_simp -lerBlDr addrC -(opprK t) lerBlDr.
-        have /= := H n; rewrite gtr0_norm ?sub0r//; apply.
-        by near: n; exists k.
-      by apply: subset_itvl; rewrite bnd_simp ltW.
-    by rewrite muE/= invrN mulNr -mulrN.
-  + rewrite (@eq_cvg _ _ _ _ g)// => n.
-    rewrite /g /= fineM//=; last first.
-      apply: integral_fune_fin_num => //=; first exact: (nice_E _).1.
-      apply: integrableS intf => //=; first exact: (nice_E _).1.
-      apply: (@subset_trans _ (`]-oo, x])); first exact: subset_itvr.
-      by apply: subset_itvl; rewrite bnd_simp ltW.
-    by rewrite muE/= invrN mulNr mulrN.
+  rewrite (@eq_cvg _ _ _ _ g)// => n.
+  rewrite /g /= fineM//=; last first.
+    apply: integral_fune_fin_num => //; first exact: (nice_E _).1.
+    by apply: integrableS intf => //; exact: (nice_E _).1.
+  by rewrite muE/= invrN mulNr -mulrN.
+Unshelve. all: by end_near. Qed.
+
+Let FTC0_restrict f a x (u : R) : (x < u)%R ->
+  mu.-integrable [set` Interval a (BRight u)] (EFin \o f) ->
+  let F y := (\int[mu]_(t in [set` Interval a (BRight y)]) f t)%R in
+  a < BRight x -> lebesgue_pt f x ->
+  h^-1 *: (F (h + x) - F x) @[h --> 0%R^'] --> f x.
+Proof.
+move=> xz + F ax fx.
+rewrite integrable_mkcond//= (restrict_EFin f) => intf.
+have /(@FTC0 _ a intf _ ax) : lebesgue_pt (f \_ [set` Interval a (BRight u)]) x.
+  exact: lebesgue_pt_restrict.
+rewrite patchE mem_set; last first.
+  rewrite /= in_itv/= (ltW xz) andbT.
+  move: a ax {F intf} => [[a|//]|[]//].
+  by rewrite lte_fin => /ltW.
+apply: cvg_trans; apply: near_eq_cvg; near=> r; congr (_ *: (_ - _)).
+- apply: eq_Rintegral => y yaxr.
+  rewrite patchE mem_set//=.
+  move: yaxr => /=; rewrite !in_itv/= inE/= in_itv/= => /andP[->/=].
+  move=> /le_trans; apply.
+  rewrite -lerBrDr.
+  have [r0|r0] := leP r 0%R; first by rewrite (le_trans r0)// subr_ge0 ltW.
+  rewrite -(gtr0_norm r0).
+  by near: r; apply: dnbhs0_le; rewrite subr_gt0.
+- apply: eq_Rintegral => y yaxr; rewrite patchE mem_set//=.
+  move: yaxr => /=; rewrite !in_itv/= inE/= in_itv/= => /andP[->/=].
+  by move=> /le_trans; apply; exact/ltW.
 Unshelve. all: by end_near. Qed.
 
 (* NB: right-closed interval *)
@@ -343,9 +222,9 @@ Lemma FTC1_lebesgue_pt f a x (u : R) : (x < u)%R ->
   derivable F x 1 /\ F^`() x = f x.
 Proof.
 move=> xu intf F ax fx; split; last first.
-  by apply/cvg_lim; [exact: Rhausdorff|exact: (@FTC0 _ _ _ u)].
+  by apply/cvg_lim; [exact: Rhausdorff|exact: (@FTC0_restrict _ _ _ u)].
 apply/cvg_ex; exists (f x).
-have /= := FTC0 xu intf ax fx.
+have /= := FTC0_restrict xu intf ax fx.
 set g := (f in f n @[n --> _] --> _ -> _).
 set h := (f in _ -> f n @[n --> _] --> _).
 suff : g = h by move=> <-.
