@@ -5817,7 +5817,7 @@ Local Notation mu := lebesgue_measure.
 Definition locally_integrable D f := [/\ measurable_fun D f, open D &
   forall K, K `<=` D -> compact K -> \int[mu]_(x in K) `|f x|%:E < +oo].
 
-Lemma integrable_locally D f : open D ->
+Lemma open_integrable_locally D f : open D ->
   mu.-integrable D (EFin \o f) -> locally_integrable D f.
 Proof.
 move=> oD /integrableP[mf foo]; split => //; first exact/EFin_measurable_fun.
@@ -5890,6 +5890,24 @@ apply: ge0_le_integral => //=; first exact: compact_measurable.
   case: ifPn => xA; case: ifPn => xB //; last by rewrite normr0.
   move: AB => /(_ x).
   by move/set_mem : xA => /[swap] /[apply] /mem_set; rewrite (negbTE xB).
+Qed.
+
+Lemma integrable_locally_restrict f (A : set R) : measurable A ->
+  mu.-integrable A (EFin \o f) -> locally_integrable [set: R] (f \_ A).
+Proof.
+move=> mA intf; split.
+- move/integrableP : intf => [mf _].
+  by apply/(measurable_restrictT _ _).1 => //; exact/EFin_measurable_fun.
+- exact: openT.
+- move=> K _ cK.
+  move/integrableP : intf => [mf].
+  rewrite integral_mkcond/=.
+  under eq_integral do rewrite restrict_EFin restrict_normr.
+  apply: le_lt_trans.
+  apply: ge0_subset_integral => //=; first exact: compact_measurable.
+  apply/EFin_measurable_fun/measurableT_comp/EFin_measurable_fun => //=.
+  move/(measurable_restrictT _ _).1 : mf => /=.
+  by rewrite restrict_EFin; exact.
 Qed.
 
 End locally_integrable.

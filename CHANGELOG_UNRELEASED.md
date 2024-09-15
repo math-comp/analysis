@@ -76,7 +76,8 @@
 - in `set_interval.v`:
   + lemma `subset_itvSoo`
 
-### Changed
+- in `lebesgue_integral.v`:
+  + lemma `integrable_locally_restrict`
 
 ### Changed
 - in `topology.v`:
@@ -135,6 +136,9 @@
 
 - in `set_interval.v`:
   + `subset_itvS` -> `subset_itvScc`
+
+- in `lebesgue_integral.v`
+  + lemma `integrable_locally` -> `open_integrable_locally`
 
 ### Generalized
 
