@@ -704,7 +704,7 @@ by apply/andP; split; apply: iF; rewrite // in_itv/= ?lexx !ltW.
 Qed.
 
 Lemma increasing_cvg_at_right_comp F G a b (l : R) : (a < b)%R ->
-  {in `[a, b] &, {homo F : x y / (x < y)%R}} ->
+  {in `[a, b[ &, {homo F : x y / (x < y)%R}} ->
   F x @[x --> a^'+] --> F a ->
   G x @[x --> (F a)^'+] --> l ->
   (G \o F) x @[x --> a^'+] --> l.
@@ -722,14 +722,14 @@ have/cvgrPdist_le /(_ e e0) [d /= d0 {}GFa] := GFa.
 have := cvg_at_right_within cFa.
 move=> /cvgrPdist_lt/(_ _ d0)[d' /= d'0 {}cFa].
 near=> t.
-apply: GFa; last by apply: incrF; rewrite //in_itv/= ?lexx !ltW.
+apply: GFa; last by apply: incrF; rewrite //in_itv/= ?lexx//; apply/andP; split.
 apply: cFa => //=.
 rewrite ltr0_norm// ?subr_lt0// opprB.
 by near: t; exact: nbhs_right_ltDr.
 Unshelve. all: end_near. Qed.
 
 Lemma increasing_cvg_at_left_comp F G a b (l : R) : (a < b)%R ->
-  {in `[a, b] &, {homo F : x y / (x < y)%R}} ->
+  {in `]a, b] &, {homo F : x y / (x < y)%R}} ->
   F x @[x --> b^'-] --> F b ->
   G x @[x --> (F b)^'-] --> l ->
   (G \o F) x @[x --> b^'-] --> l.
@@ -740,14 +740,14 @@ have/cvgrPdist_le /(_ e e0) [d /= d0 {}GFb] := GFb.
 have := cvg_at_left_within cFb.
 move/cvgrPdist_lt/(_ _ d0) => [d' /= d'0 {}cFb].
 near=> t.
-apply: GFb; last by apply: incrF; rewrite //in_itv/= ?lexx !ltW.
+apply: GFb; last by apply: incrF; rewrite //in_itv/= ?lexx//; apply/andP; split.
 apply: cFb => //=.
 rewrite gtr0_norm// ?subr_gt0//.
 by near: t; exact: nbhs_left_ltBl.
 Unshelve. all: end_near. Qed.
 
 Lemma decreasing_cvg_at_right_comp F G a b (l : R) : (a < b)%R ->
-  {in `[a, b] &, {homo F : x y /~ (x < y)%R}} ->
+  {in `[a, b[ &, {homo F : x y /~ (x < y)%R}} ->
   F x @[x --> a^'+] --> F a ->
   G x @[x --> (F a)^'-] --> l ->
   (G \o F) x @[x --> a^'+] --> l.
@@ -758,14 +758,14 @@ have/cvgrPdist_le /(_ e e0) [d' /= d'0 {}GFa] := GFa.
 have := cvg_at_right_within cFa.
 move/cvgrPdist_lt/(_ _ d'0) => [d'' /= d''0 {}cFa].
 near=> t.
-apply: GFa; last by apply: decrF; rewrite //in_itv/= ?lexx !ltW.
+apply: GFa; last by apply: decrF; rewrite //in_itv/= ?lexx//; apply/andP; split.
 apply: cFa => //=.
 rewrite ltr0_norm// ?subr_lt0// opprB.
 by near: t; exact: nbhs_right_ltDr.
 Unshelve. all: end_near. Qed.
 
 Lemma decreasing_cvg_at_left_comp F G a b (l : R) : (a < b)%R ->
-  {in `[a, b] &, {homo F : x y /~ (x < y)%R}} ->
+  {in `]a, b] &, {homo F : x y /~ (x < y)%R}} ->
   F x @[x --> b^'-] --> F b ->
   G x @[x --> (F b)^'+] --> l ->
   (G \o F) x @[x --> b^'-] --> l.
@@ -776,7 +776,7 @@ have/cvgrPdist_le /(_ e e0) [d' /= d'0 {}GFb] := GFb.
 have := cvg_at_left_within cFb. (* different point from gt0 version *)
 move/cvgrPdist_lt/(_ _ d'0) => [d'' /= d''0 {}cFb].
 near=> t.
-apply: GFb; last by apply: decrF; rewrite //in_itv/= ?lexx !ltW.
+apply: GFb; last by apply: decrF; rewrite //in_itv/= ?lexx//; apply/andP; split.
 apply: cFb => //=.
 rewrite gtr0_norm// ?subr_gt0//.
 by near: t; exact: nbhs_left_ltBl.
@@ -835,11 +835,13 @@ have ch : {within `[a, b], continuous h}.
     apply: continuous_comp; first exact: incF.
     by apply: incG; exact: increasing_image_oo.
   - apply: cvgM.
-      exact: (increasing_cvg_at_right_comp ab).
-    by move/(continuous_within_itvP _ ab) : cf => [].
+      apply: (increasing_cvg_at_right_comp ab) => //x y xab yab.
+      by apply: incrF; apply: subset_itv_co_cc.
+    by move /(continuous_within_itvP _ ab) : cf => [].
   - apply: cvgM.
-      exact: (increasing_cvg_at_left_comp ab).
-    by move/(continuous_within_itvP _ ab) : cf => [].
+      apply: (increasing_cvg_at_left_comp ab) => //x y xab yab.
+      by apply: incrF; apply: subset_itv_oc_cc.
+    by move /(continuous_within_itvP _ ab) : cf => [].
 have dcbH : derivable_oo_continuous_bnd H a b.
   have := derivable_oo_continuous_bnd_within dcbPG.
   move=> /(continuous_within_itvP _ FaFb)[_ PGFa PGFb].
@@ -926,11 +928,13 @@ have cNh : {within `[a, b], continuous (- h)%R}.
       exact: in_cF.
     by apply: in_cG; exact: decreasing_image_oo.
   - apply: cvgN; apply: cvgM.
-      exact: (decreasing_cvg_at_right_comp ab).
+      apply: (decreasing_cvg_at_right_comp ab) => //x y xab yab.
+      by apply: decrF; apply: subset_itv_co_cc.
     apply: (@cvgN _ _ _ _ _ f (f a)).
     by move /(continuous_within_itvP _ ab) : cf => [].
   - apply: cvgN; apply: cvgM.
-      exact: (decreasing_cvg_at_left_comp ab).
+      apply: (decreasing_cvg_at_left_comp ab) => //x y xab yab.
+      by apply: decrF; apply: subset_itv_oc_cc.
     apply: (@cvgN _ _ _ _ _ f (f b)).
     by move /(continuous_within_itvP _ ab) : cf => [].
 have dcbH : derivable_oo_continuous_bnd H a b.
