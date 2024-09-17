@@ -102,17 +102,16 @@ Lemma subset_itvScc (a b : itv_bound T) (c e : T) :
     (BLeft c <= a)%O -> (b <= BRight e)%O ->
   [set` Interval a b] `<=` [set` `[c, e]].
 Proof.
-move=> ca be z/=; rewrite !in_itv/= => /andP[az zb].
+move=> ca be z/=; rewrite !in_itv/==> /andP[az zb].
 case: a ca az => [[|]/=|[|]//] a; rewrite bnd_simp => ca az.
-  rewrite (le_trans ca az)/=.
+- rewrite (le_trans ca az)/=.
   move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
     by move=> /ltW/le_trans; exact.
   by move=> /le_trans; exact.
-move/ltW in az.
-rewrite (le_trans ca az)/=.
-move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
-  by move=> /ltW/le_trans; exact.
-by move=> /le_trans; exact.
+- rewrite (le_trans ca (ltW az))/=.
+  move: b be zb => [[|]/= b|[|]//]; rewrite bnd_simp => be.
+    by move=> /ltW/le_trans; exact.
+  by move=> /le_trans; exact.
 Qed.
 
 Lemma subset_itvSoo (a b : itv_bound T) (c e : T) :
