@@ -5817,7 +5817,7 @@ Local Notation mu := lebesgue_measure.
 Definition locally_integrable D f := [/\ measurable_fun D f, open D &
   forall K, K `<=` D -> compact K -> \int[mu]_(x in K) `|f x|%:E < +oo].
 
-Lemma integrable_locally D f : open D ->
+Lemma open_integrable_locally D f : open D ->
   mu.-integrable D (EFin \o f) -> locally_integrable D f.
 Proof.
 move=> oD /integrableP[mf foo]; split => //; first exact/EFin_measurable_fun.
@@ -5870,6 +5870,44 @@ apply: (@le_lt_trans _ _ (\int[mu]_(x in K) cst 1 x)).
     by case: (y \in A) => /=; rewrite ?(normr1,normr0,lexx,lee01).
 by rewrite integral_cst//= ?mul1e; [exact: compact_finite_measure|
                                     exact: compact_measurable].
+Qed.
+
+Lemma locally_integrableS (A B : set R) f :
+  measurable A -> measurable B -> A `<=` B ->
+  locally_integrable setT (f \_ B) -> locally_integrable setT (f \_ A).
+Proof.
+move=> mA mB AB [mfB oT ifB].
+have ? : measurable_fun [set: R] (f \_ A).
+  apply/(measurable_restrictT _ _).1 => //; apply: (measurable_funS _ AB) => //.
+  exact/(measurable_restrictT _ _).2.
+split => // K KT cK; apply: le_lt_trans (ifB _ KT cK).
+apply: ge0_le_integral => //=; first exact: compact_measurable.
+- apply/EFin_measurable_fun; apply/measurableT_comp => //.
+  exact/measurable_funTS.
+- apply/EFin_measurable_fun; apply/measurableT_comp => //.
+  exact/measurable_funTS.
+- move=> x Kx; rewrite lee_fin !patchE.
+  case: ifPn => xA; case: ifPn => xB //; last by rewrite normr0.
+  move: AB => /(_ x).
+  by move/set_mem : xA => /[swap] /[apply] /mem_set; rewrite (negbTE xB).
+Qed.
+
+Lemma integrable_locally_restrict f (A : set R) : measurable A ->
+  mu.-integrable A (EFin \o f) -> locally_integrable [set: R] (f \_ A).
+Proof.
+move=> mA intf; split.
+- move/integrableP : intf => [mf _].
+  by apply/(measurable_restrictT _ _).1 => //; exact/EFin_measurable_fun.
+- exact: openT.
+- move=> K _ cK.
+  move/integrableP : intf => [mf].
+  rewrite integral_mkcond/=.
+  under eq_integral do rewrite restrict_EFin restrict_normr.
+  apply: le_lt_trans.
+  apply: ge0_subset_integral => //=; first exact: compact_measurable.
+  apply/EFin_measurable_fun/measurableT_comp/EFin_measurable_fun => //=.
+  move/(measurable_restrictT _ _).1 : mf => /=.
+  by rewrite restrict_EFin; exact.
 Qed.
 
 End locally_integrable.
@@ -6143,6 +6181,34 @@ move=> mf mg; rewrite (le_trans _ (iavgD _ _ _ _)) //.
 - exact: measurable_funB.
 Qed.
 
+Lemma near_davg f (a : itv_bound R) x (u : R) : (x < u)%R -> (a < BRight x)%E ->
+  \forall r \near 0^'+,
+    davg f x r = davg (f \_ [set` Interval a (BRight u)]) x r.
+Proof.
+move=> xu; move: a => [b a /=|[_|//]].
+- move=> ax; near=> r.
+  have fauf : {in ball x r : set R,
+      f \_ [set` Interval (BSide b a) (BRight u)] =1 f}.
+    move=> y.
+    rewrite ball_itv/= inE/= => yxr; rewrite patchE/= mem_set//=.
+    apply: subset_itvW yxr.
+      rewrite lerBrDl -lerBrDr.
+      by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
+    rewrite -lerBrDl.
+    by near: r; apply: nbhs_right_le; rewrite subr_gt0.
+  congr *%E; apply: eq_integral => y yxr /=.
+  by rewrite fauf// fauf// inE; exact: ballxx.
+- near=> r.
+  have foouf : {in (ball x r : set R), f \_ `]-oo, u] =1 f}.
+    move=> y.
+    rewrite ball_itv/= inE/= => yxr; rewrite patchE/= mem_set//=.
+    move: yxr; rewrite !in_itv/= => /andP[_ /ltW/le_trans]; apply.
+    rewrite -lerBrDl.
+    by near: r; apply: nbhs_right_ltW; rewrite subr_gt0.
+  congr *%E; apply: eq_integral => y yxr /=.
+  by rewrite foouf// foouf// inE; exact: ballxx.
+Unshelve. all: by end_near. Qed.
+
 Section continuous_cvg_davg.
 Context f (x : R) (U : set R).
 Hypotheses (xU : open_nbhs x U) (mU : measurable U) (mUf : measurable_fun U f)
@@ -6336,6 +6402,13 @@ Proof.
 move=> xU mU mUf xf; rewrite /lebesgue_pt -[X in _ --> X](@davg0 _ f x 0)//.
 apply: cvg_at_right_filter; rewrite davg0//.
 exact: (continuous_cvg_davg xU mU mUf).
+Qed.
+
+Lemma lebesgue_pt_restrict {R : realType} (f : R -> R) (a : itv_bound R) x u :
+  (x < u)%R -> (a < BRight x)%E ->
+  lebesgue_pt f x -> lebesgue_pt (f \_ [set` Interval a (BRight u)]) x.
+Proof.
+by move=> xu ax; apply: cvg_trans; apply: near_eq_cvg; exact: near_davg.
 Qed.
 
 Section lebesgue_measure_integral.
@@ -6827,8 +6900,7 @@ Hypothesis hE : forall x, nicely_shrinking x (E x).
 Local Notation mu := lebesgue_measure.
 
 Lemma nice_lebesgue_differentiation (f : R -> R) :
-  locally_integrable setT f ->
-  forall x, lebesgue_pt f x ->
+  locally_integrable setT f -> forall x, lebesgue_pt f x ->
   (fine (mu (E x n)))^-1%:E * \int[mu]_(y in E x n) (f y)%:E
     @[n --> \oo] --> (f x)%:E.
 Proof.

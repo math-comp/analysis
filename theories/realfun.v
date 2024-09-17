@@ -2499,14 +2499,14 @@ Lemma total_variation_continuous a b (f : R -> R) : a < b ->
   BV a b f ->
   {within `[a,b], continuous (fine \o TV a ^~ f)}.
 Proof.
-move=> ab /(@continuous_within_itvP _ _ _ _ ab) [int [l r]] bdf.
-apply/continuous_within_itvP; (repeat split) => //.
+move=> ab /(@continuous_within_itvP _ _ _ _ ab) [int l r] bdf.
+apply/continuous_within_itvP => //; split.
 - move=> x /[dup] xab; rewrite in_itv /= => /andP [ax xb].
   apply/left_right_continuousP; split.
     apply: (total_variation_left_continuous _ (ltW xb)) => //.
-    by have /left_right_continuousP [] := int x xab.
+    by have /left_right_continuousP[] := int x xab.
   apply: (total_variation_right_continuous _ xb) => //; first exact: ltW.
-  by have /left_right_continuousP [] := int x xab.
+  by have /left_right_continuousP[] := int x xab.
 - exact: (total_variation_right_continuous _ ab).
 - exact: (total_variation_left_continuous ab).
 Qed.

@@ -5602,8 +5602,6 @@ have := ball_triangle yz_he (ball_sym zx_he).
 by rewrite -mulr2n -(mulr_natr (_ / _) 2) divfK// => /ltW.
 Qed.
 
-
-
 Definition dense (T : topologicalType) (S : set T) :=
   forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.
 

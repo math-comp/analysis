@@ -1330,6 +1330,11 @@ move=> xz; exists (z - x) => //=; first by rewrite subr_gt0.
 by move=> y /= + xy; rewrite distrC ?ger0_norm ?subr_ge0 1?ltW// ltrD2r.
 Qed.
 
+Lemma nbhs_right_ltW x z : x < z -> \forall y \near nbhs x^'+, y <= z.
+Proof.
+by move=> xz; near=> y; apply/ltW; near: y; exact: nbhs_right_lt.
+Unshelve. all: by end_near. Qed.
+
 Lemma nbhs_right_ltDr x e : 0 < e -> \forall y \near x ^'+, y - x < e.
 Proof.
 move=> e0; near=> y; rewrite ltrBlDr; near: y.
@@ -1639,7 +1644,6 @@ Arguments cvgr_neq0 {R V T F FF f}.
   H : x \is_near _ |- _ => near: x; exact: nbhs_right_ge end : core.
 #[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
-
 
 #[global] Hint Extern 0 (ProperFilter _^'-) =>
   (apply: at_left_proper_filter) : typeclass_instances.
@@ -2131,31 +2135,30 @@ Arguments cvg_at_leftE {R V} f x.
 
 Lemma continuous_within_itvP {R : realType } a b (f : R -> R) :
   a < b ->
-  {within `[a,b], continuous f} <->
-  {in `]a,b[, continuous f} /\ f @ a^'+ --> f a /\ f @b^'- --> f b.
+  {within `[a, b], continuous f} <->
+  [/\ {in `]a, b[, continuous f}, f @ a^'+ --> f a & f @b^'- --> f b].
 Proof.
 move=> ab; split=> [abf|].
-  split.
-    suff : {in `]a, b[%classic, continuous f}.
+  have [aab bab] : a \in `[a, b] /\ b \in `[a, b].
+    by rewrite !in_itv/= !lexx (ltW ab).
+  split; [|apply/cvgrPdist_lt => eps eps_gt0 /=..].
+  - suff : {in `]a, b[%classic, continuous f}.
       by move=> P c W; apply: P; rewrite inE.
     rewrite -continuous_open_subspace; last exact: interval_open.
     by move: abf; exact/continuous_subspaceW/subset_itvW.
-  have [aab bab] : a \in `[a, b] /\ b \in `[a, b].
-    by rewrite !in_itv/= !lexx (ltW ab).
-  split; apply/cvgrPdist_lt => eps eps_gt0 /=.
-  + move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (abf a).
+  - move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (abf a).
     rewrite /dnbhs/= near_withinE !near_simpl// /prop_near1 /nbhs/=.
     rewrite -nbhs_subspace_in// /within/= near_simpl.
     apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
     apply=> //; rewrite ?gt_eqF// !in_itv/= (ltW ac)/=; move: cba => /=.
     by rewrite ltr0_norm ?subr_lt0// opprB ltrD2r => /ltW.
-  + move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (abf b).
+  - move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (abf b).
     rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
     rewrite -nbhs_subspace_in// /within/= near_simpl.
     apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
     apply=> //; rewrite ?lt_eqF// !in_itv/= (ltW ac)/= andbT; move: cba => /=.
     by rewrite gtr0_norm ?subr_gt0// ltrD2l ltrNr opprK => /ltW.
-case=> ctsoo [ctsL ctsR]; apply/subspace_continuousP => x /andP[].
+case=> ctsoo ctsL ctsR; apply/subspace_continuousP => x /andP[].
 rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
 - by move/eqP; rewrite lt_eqF.
 - move=> _; apply/cvgrPdist_lt => eps eps_gt0 /=.
@@ -5329,6 +5332,27 @@ Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 Lemma near_in_itv {R : realFieldType} (a b : R) :
   {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
 Proof. exact: interval_open. Qed.
+
+Lemma cvg_patch {R : realType} (f : R -> R^o) (a b : R) (x : R) : (a < b)%R ->
+  x \in `]a, b[ ->
+  f @ (x : subspace `[a, b]) --> f x ->
+  (f \_ `[a, b] x) @[x --> x] --> f x.
+Proof.
+move=> ab xab xf; apply/cvgrPdist_lt => /= e e0.
+move/cvgrPdist_lt : xf => /(_ e e0) xf.
+near=> z.
+rewrite patchE ifT//; last first.
+  rewrite inE; apply: subset_itv_oo_cc.
+  by near: z; exact: near_in_itv.
+near: z.
+rewrite /prop_near1 /nbhs/= /nbhs_subspace ifT// in xf; last first.
+  by rewrite inE/=; exact: subset_itv_oo_cc xab.
+case: xf => x0 /= x00 xf.
+near=> z.
+apply: xf => //=.
+rewrite inE; apply: subset_itv_oo_cc.
+by near: z; exact: near_in_itv.
+Unshelve. all: by end_near. Qed.
 
 Notation "f @`[ a , b ]" :=
   (`[minr (f a) (f b), maxr (f a) (f b)]) : ring_scope.
