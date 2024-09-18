@@ -73,6 +73,130 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
+(* In this module, we use our lemma continuous_FTC2 to compute the value of
+ * integration of the indicator function over the interval [0, 1].
+ * we can use our lemma continuous_FTC2 because it requires continuous
+ * within [0, 1], which the indicator function satisfies.
+ * we also shows that the indicator function is not continuous in [0, 1],
+ * required by previous version of lemma continuous_FTC2. This shows that
+ * our lemma continuous_FTC2 is
+ * enough weak to be usable in practice.
+ *)
+Module integral_indicator_function.
+Section integral_indicator_function.
+
+Context {R : realType}.
+Notation mu := lebesgue_measure.
+Local Open Scope ereal_scope.
+Implicit Types (f : R -> R) (a b : R).
+
+Local Import set_interval.
+
+Let uni := @indic R R `[0%R, 1%R]%classic.
+
+Let integrable_uni : mu.-integrable setT (EFin \o uni).
+Proof.
+apply/integrableP; split.
+  apply: measurableT_comp => //.
+  exact: measurable_indic.
+apply/abse_integralP => //.
+  apply: measurableT_comp => //.
+  exact: measurable_indic.
+rewrite -ge0_fin_numE; last exact: abse_ge0.
+rewrite abse_fin_num integral_indic// setIT.
+by rewrite /= lebesgue_measure_itv ifT.
+Qed.
+
+Let cuni_within : {within `[0%R, 1%R], continuous uni}.
+Proof.
+apply/continuous_within_itvP => //; split; last split.
+- move=> x x01.
+  apply: (@near_cst_continuous R R 1%R).
+  near=> z.
+  rewrite /uni indic_restrict patchE ifT//.
+  rewrite inE/=.
+  apply: subset_itv_oo_cc.
+  near: z.
+  exact: near_in_itv.
+- rewrite (_:uni 0 = 1%R); last first.
+    rewrite /uni indic_restrict patchE ifT//.
+    by rewrite inE/= boundl_in_itv bnd_simp/=.
+  apply: cvg_near_cst.
+  near=> z.
+  rewrite /uni indic_restrict patchE ifT// inE/= in_itv/=; apply/andP; split => //.
+  near: z.
+  exact: nbhs_right_le.
+- rewrite (_:uni 1 = 1%R); last first.
+    rewrite /uni indic_restrict patchE ifT//.
+    by rewrite inE/= boundr_in_itv bnd_simp/=.
+  apply: cvg_near_cst.
+  near=> z.
+  rewrite /uni indic_restrict patchE ifT// inE/= in_itv/=; apply/andP; split => //.
+  near: z.
+  exact: nbhs_left_ge.
+Unshelve. all: end_near. Qed.
+
+Example cuni : ~ {in `[0%R, 1%R], continuous uni}.
+Proof.
+rewrite -existsNE/=.
+exists 0%R.
+rewrite not_implyE; split; first by rewrite boundl_in_itv/= bnd_simp.
+move/left_right_continuousP.
+apply/not_andP; left.
+move/cvgrPdist_le.
+apply/existsNP.
+exists (2%:R^-1).
+rewrite not_implyE; split; first by rewrite invr_gt0.
+move=> [e /= e0].
+move/(_ (-(e / 2))%R).
+apply/not_implyP; split.
+  rewrite /= sub0r opprK ger0_norm; last by rewrite divr_ge0// ltW.
+  rewrite -{1}(add0r e).
+  exact: (midf_lt e0).2.
+apply/not_implyP; split.
+  rewrite oppr_lt0.
+  exact: divr_gt0.
+apply/negP; rewrite -ltNge.
+rewrite /uni !indic_restrict !patchE.
+rewrite ifT; last by rewrite inE/= boundl_in_itv/= bnd_simp.
+rewrite ifF; last first.
+  apply: negbTE; apply/negP.
+  rewrite inE/= in_itv/=.
+  apply/negP; rewrite negb_and; apply/orP; left.
+  by rewrite -ltNge oppr_lt0 divr_gt0.
+rewrite /point/= {2}/1%R/= subr0.
+rewrite ger0_norm//.
+rewrite invf_lt1//.
+rewrite {1}(_:1%R = 1%:R)//; apply: ltr_nat.
+Qed.
+
+Let dintuni : derivable_oo_continuous_bnd (@id R) 0 1.
+Proof.
+split.
+- move=> x _.
+  exact: derivable_id.
+- exact: cvg_at_right_filter.
+- exact: cvg_at_left_filter.
+Qed.
+
+Let intuni'uni : {in `]0%R, 1%R[, (@id R)^`() =1 uni}.
+Proof.
+move=> x x01.
+rewrite derive1E derive_id.
+rewrite /uni indic_restrict patchE ifT// inE/=.
+exact: subset_itv_oo_cc.
+Qed.
+
+Lemma intuni1 : (\int[mu]_(x in `[0, 1]) uni x)%R = 1%R.
+Proof.
+rewrite [RHS](_:1%R = fine (1%:E))//; congr (fine _).
+rewrite (continuous_FTC2 ltr01 cuni_within dintuni intuni'uni).
+by rewrite sube0.
+Qed.
+
+End integral_indicator_function.
+End integral_indicator_function.
+
 Lemma RintegralZl d {T : measurableType d} {R : realType}
   {mu : measure T R} {D : set T} : d.-measurable D ->
   forall f : T -> R,
@@ -286,13 +410,11 @@ Let mu := (@lebesgue_measure R).
 
 Lemma onem_change (G : R -> R) (r : R) :
   (0 < r <= 1)%R ->
-  locally_integrable [set: R] G ->
   {within `[0%R, r], continuous G} ->
-  (forall r, lebesgue_measure.-integrable `[0%R, r] (EFin \o G)) ->
   (\int[mu]_(x in `[0%R, r]) (G x)%:E =
   \int[mu]_(x in `[(1 - r)%R, 1%R]) (G (1 - x))%:E).
 Proof.
-move=> r01 locG cG iG.
+move=> r01 cG.
 have := @decreasing_change R (fun x => 1 - x)%R G (1 - r) 1%R.
 rewrite opprB subrr addrCA subrr addr0.
 move=> ->//.
@@ -321,9 +443,7 @@ Qed.
 
 Lemma Ronem_change (G : R -> R) (r : R) :
   (0 < r <= 1)%R ->
-  locally_integrable [set: R] G ->
   {within `[0%R, r], continuous G} ->
-  (forall r, lebesgue_measure.-integrable `[0%R, r] (EFin \o G)) ->
   (\int[mu]_(x in `[0%R, r]) (G x) =
   \int[mu]_(x in `[(1 - r)%R, 1%R]) (G (1 - x)))%R.
 Proof.
@@ -1295,50 +1415,9 @@ Qed.
 
 Section beta_pdf_Beta.
 
-Lemma nondecreasing_Beta (a b : nat) :
-  {homo (fun z : R => fine (@Beta R a b `[0%R, z])) : x y / (x <= y)%R}.
-Proof.
-move=> x y xy.
-case: (ltP x 0%R) => x0.
-  rewrite [leLHS](_:_= 0)%R; last first.
-    rewrite set_interval.set_itv_ge; last by rewrite -leNgt.
-    rewrite -integral_beta_pdf//.
-    by rewrite integral_set0.
-  rewrite -integral_beta_pdf//.
-  apply: fine_ge0.
-  apply: integral_ge0 => /= z _.
-  exact: beta_pdf_ge0.
-rewrite /Beta/=.
-rewrite /mscale/=.
-rewrite !fineM//; last 2 first.
-  admit.
-  admit.
-apply: ler_pmul; rewrite //?lee_fin.
-    rewrite invr_ge0.
-    exact: int_ubeta_pdf_ge0.
-  apply: fine_ge0.
-  apply: integral_ge0 => ? _.
-  exact: ubeta_pdf_ge0.
-rewrite -subr_ge0.
-rewrite Rintegral_itvB//.
-  apply: fine_ge0.
-  apply: integral_ge0 => ? _.
-  exact: ubeta_pdf_ge0.
-apply: (integrableS measurableT) => //.
-exact: integrable_ubeta_pdf.
-Qed.
-
-Lemma right_continuous_Beta (a b : nat) :
-  right_continuous (fun z => (@Beta R a b `[0%R, z])).
-Proof.
-move=> x/=.
-apply: nondecreasing_at_right_is_cvge.
-
-case : (ltP x 0%R) => x0.
-  apply: cvg_nearW.
-
 Local Open Scope charge_scope.
 
+(* beta_pdf is almost density function of Beta *)
 Lemma beta_pdf_uniq_ae (a b : nat) :
   ae_eq mu `[0%R, 1%R]%classic
    ('d ((charge_of_finite_measure (@Beta R a b))) '/d mu)
@@ -1358,42 +1437,13 @@ apply: integral_ae_eq => //.
   exact: Beta_dom.
 Qed.
 
-Lemma in_continuous_restrictP (f : R -> R) (A B : set R) :
- open A -> A `<=` B -> {in A, continuous f} <-> {in A, continuous (f \_ B)}.
-Proof.
-Admitted.
-
-(* unprovable *)
+(* need to add lemma about radon-nikodym derivative of
+   lebesgue_stieltjes measure w.r.t. continuous density function *)
 Lemma beta_pdf_uniq (a b : nat) :
   {in `[0%R, 1%R]%classic,
    ('d ((charge_of_finite_measure (@Beta R a b))) '/d mu) =1
                (EFin \o (beta_pdf a b))}.
-Proof.
-move=> /= x.
-rewrite inE/= in_itv/= => /andP[].
-rewrite !le_eqVlt => /predU1P[<- _|x0 /predU1P[-> |x1]].
-- admit.
-- admit.
-(* Radon_Nikodym derivertive is derivertive for continuous function *)
-(* similar to FTC1 *)
-have := (@lebesgue_differentiation_continuous R (beta_pdf a b) `]0%R, 1%R[ x).
-have o01 : @open R^o `]0%R, 1%R[%classic.
-  exact: interval_open.
-move/(_ o01) => /=.
-have integrable_beta_pdf01 : mu.-integrable `]0%R, 1%R[ (EFin \o (@beta_pdf R a b)).
-  apply: (integrableS measurableT) => //=.
-  exact: integrable_beta_pdf.
-move/(_ integrable_beta_pdf01).
-have cbeta_pdf : {in `]0%R, 1%R[, continuous (@beta_pdf R a b)}. 
-  admit.
-have x01 : x \in `]0%R, 1%R[ by rewrite in_itv/= x0 x1.
-move/(_ (cbeta_pdf x x01) x01).
-move/cvg_lim=> <- //.
-apply/esym => /=.
-rewrite -[RHS]fineK; last first.
-  admit.
-congr (EFin _).
-Abort.
+Proof. Abort.
 
 End beta_pdf_Beta.
 
