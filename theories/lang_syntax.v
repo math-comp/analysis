@@ -110,7 +110,7 @@ Qed.
 
 Let cuni_within : {within `[0%R, 1%R], continuous uni}.
 Proof.
-apply/continuous_within_itvP => //; split => //.
+apply/continuous_within_itvP => //; split.
 - move=> x x01.
   apply: (@near_cst_continuous R R 1%R).
   near=> z.
