@@ -80,35 +80,6 @@ Definition dep_uncurry (A : Type) (B : A -> Type) (C : Type) :
     (forall a : A, B a -> C) -> {a : A & B a} -> C :=
   fun f p => let (a, Ba) := p in f a Ba.
 
-Section binomial_total.
-Local Open Scope ring_scope.
-Variables (R : realType) (n : nat).
-Implicit Type p : R.
-
-Lemma measurable_binomial_prob :
-  measurable_fun setT (binomial_prob n : R -> pprobability _ _).
-Proof.
-apply: (@measurability _ _ _ _ _ _
-  (@pset _ _ _ : set (set (pprobability _ R)))) => //.
-move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
-rewrite /binomial_prob/=.
-set f := (X in measurable_fun _ X).
-apply: measurable_fun_if => //=.
-  by apply: measurable_and => //; exact: measurable_fun_ler.
-apply: (eq_measurable_fun (fun t =>
-    \sum_(k <oo | k \in Ys) (binomial_pmf n t k)%:E)).
-  move=> x /set_mem[_/= x01].
-  rewrite nneseries_esum// -1?[in RHS](set_mem_set Ys)// => k kYs.
-  by rewrite lee_fin binomial_pmf_ge0.
-apply: ge0_emeasurable_sum.
-  by move=> k x/= [_ x01] _; rewrite lee_fin binomial_pmf_ge0.
-move=> k Ysk; apply/measurableT_comp => //.
-exact: measurable_binomial_pmf.
-Qed.
-
-End binomial_total.
-Arguments measurable_binomial_prob {R}.
-
 Section poisson_pdf.
 Variable R : realType.
 Local Open Scope ring_scope.
@@ -252,85 +223,6 @@ Arguments p12 {R}.
 Arguments p14 {R}.
 (*Arguments p27 {R}.*)
 Arguments p1S {R}.
-
-Section uniform_probability.
-Context (R : realType) (a b : R) (ab0 : (0 < b - a)%R).
-
-Definition uniform_probability (* : set _ -> \bar R *) :=
-  @mscale _ _ R (invr_nonneg (NngNum (ltW ab0)))
-    (mrestr lebesgue_measure (measurable_itv `[a, b])).
-
-(* NB: set R -> \bar R を書くとMeasure.onが通らない *)
-HB.instance Definition _ := Measure.on uniform_probability.
-
-(* Let uniform0 : uniform_probability set0 = 0.
-Proof. exact: measure0. Qed.
-
-Let uniform_ge0 U : 0 <= uniform_probability U.
-Proof. exact: measure_ge0. Qed.
-
-Let uniform_sigma_additive : semi_sigma_additive uniform_probability.
-Proof. move=> /= F mF tF mUF; exact: measure_semi_sigma_additive. Qed.
-
-HB.instance Definition _ := isMeasure.Build _ _ _ uniform_probability
-  uniform0 uniform_ge0 uniform_sigma_additive. *)
-
-Let uniform_probability_setT : uniform_probability [set: _] = 1%:E.
-Proof.
-rewrite /uniform_probability /mscale/= /mrestr/=.
-rewrite setTI lebesgue_measure_itv/= lte_fin.
-by rewrite -subr_gt0 ab0 -EFinD -EFinM mulVf// gt_eqF// subr_gt0.
-Qed.
-
-HB.instance Definition _ := @Measure_isProbability.Build _ _ R
-  uniform_probability uniform_probability_setT.
-
-End uniform_probability.
-
-Section integral_uniform.
-Context {R : realType}.
-
-Let integral_uniform_indic (a b : R) (ab0 : (0 < b - a)%R) E :
-    measurable E -> let m := uniform_probability ab0 in
-  \int[m]_x (\1_E x)%:E =
-  (b - a)^-1%:E * \int[lebesgue_measure]_(x in `[a, b]) (\1_E x)%:E.
-Proof.
-move=> mE m.
-by rewrite !integral_indic//= /uniform_probability/= /mscale/= /mrestr setIT.
-Qed.
-
-Import HBNNSimple.
-
-Let integral_uniform_nnsfun (f : {nnsfun measurableTypeR R >-> R})
-    (a b : R) (ab0 : (0 < b - a)%R) : let m := uniform_probability ab0 in
-  \int[m]_x (f x)%:E =
-  (b - a)^-1%:E * \int[lebesgue_measure]_(x in `[a, b]) (f x)%:E.
-Proof.
-move=> m.
-under [LHS]eq_integral do rewrite fimfunE -fsumEFin//.
-rewrite [LHS]ge0_integral_fsum//; last 2 first.
-  - by move=> r; exact/measurable_EFinP/measurableT_comp.
-  - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
-rewrite -[RHS]ge0_integralZl//; last 3 first.
-  - exact/measurable_EFinP/measurable_funTS.
-  - by move=> x _; rewrite lee_fin.
-  - by rewrite lee_fin invr_ge0// ltW.
-under [RHS]eq_integral.
-  move=> x xD; rewrite fimfunE -fsumEFin// ge0_mule_fsumr; last first.
-    by move=> r; rewrite EFinM nnfun_muleindic_ge0.
-  over.
-rewrite [RHS]ge0_integral_fsum//; last 2 first.
-  - by move=> r; apply/measurable_EFinP; do 2 apply/measurableT_comp => //.
-  - move=> n x _; rewrite EFinM mule_ge0//; last by rewrite nnfun_muleindic_ge0.
-    by rewrite lee_fin invr_ge0// ltW.
-apply: eq_fsbigr => r _; rewrite ge0_integralZl//.
-- by rewrite !integralZl_indic_nnsfun//= integral_uniform_indic// muleCA.
-- exact/measurable_EFinP/measurableT_comp.
-- by move=> t _; rewrite nnfun_muleindic_ge0.
-- by rewrite lee_fin invr_ge0// ltW.
-Qed.
-
-End integral_uniform.
 
 Section mscore.
 Context d (T : measurableType d) (R : realType).
