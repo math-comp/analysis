@@ -109,7 +109,7 @@ Qed.
 
 Let cuni_within : {within `[0%R, 1%R], continuous uni}.
 Proof.
-apply/continuous_within_itvP => //; split; last split.
+apply/continuous_within_itvP => //; split.
 - move=> x x01.
   apply: (@near_cst_continuous R R 1%R).
   near=> z.
@@ -447,7 +447,7 @@ Lemma Ronem_change (G : R -> R) (r : R) :
   (\int[mu]_(x in `[0%R, r]) (G x) =
   \int[mu]_(x in `[(1 - r)%R, 1%R]) (G (1 - x)))%R.
 Proof.
-move=> r01 locG cG iG.
+move=> r01 cG.
 rewrite [in LHS]/Rintegral.
 by rewrite onem_change.
 Qed.
@@ -907,19 +907,10 @@ Qed.
 Lemma betafun_sym (a b : nat) : betafun a b = betafun b a :> R.
 Proof.
 rewrite -[LHS]Rintegral_mkcond.
-rewrite Ronem_change//=; last 4 first.
-  by rewrite ltr01 lexx.
-  split.
-  - exact: measurable_fun_XMonemX.
-  - exact: openT.
-  - move=> K _ cK.
-    by have /integrableP[] := @continuous_compact_integrable R _ K cK
-         (@within_continuous_XMonemX R a.-1 b.-1 K).
+rewrite Ronem_change//=; last 2 first.
+- by rewrite ltr01 lexx.
   apply: continuous_subspaceT.
-  by move=> x x01; exact: continuous_XMonemX.
-  move=> r.
-  exact: (@continuous_compact_integrable R _ _
-         (@segment_compact _ _ _) (@within_continuous_XMonemX R a.-1 b.-1 `[0%R, r])).
+- by move=> x x01; exact: continuous_XMonemX.
 rewrite subrr.
 rewrite -[RHS]Rintegral_mkcond.
 apply: eq_Rintegral => x x01.
@@ -1420,36 +1411,35 @@ Local Open Scope charge_scope.
 (* beta_pdf is almost density function of Beta *)
 Lemma beta_pdf_uniq_ae (a b : nat) :
   ae_eq mu `[0%R, 1%R]%classic
-   ('d ((charge_of_finite_measure (@Beta R a b))) '/d mu)
+   ('d ((charge_of_finite_measure (@beta_prob R a b))) '/d mu)
                (EFin \o (beta_pdf a b)).
 Proof.
 apply: integral_ae_eq => //.
 - apply: integrableS (Radon_Nikodym_integrable _) => //.
-  exact: Beta_dom.
+  exact: beta_prob_dom.
 - apply/measurable_funTS/measurableT_comp => //.
   exact: measurable_beta_pdf.
 - move=> E E01 mE.
-  have mB : measurable_fun E (EFin \o ubeta_pdf a b).
-    by apply/measurable_funTS/measurableT_comp => //; exact: measurable_ubeta_pdf.
   rewrite integral_beta_pdf//.
   apply/esym.
   rewrite -Radon_Nikodym_integral//=.
-  exact: Beta_dom.
+  exact: beta_prob_dom.
 Qed.
 
 (* need to add lemma about radon-nikodym derivative of
    lebesgue_stieltjes measure w.r.t. continuous density function *)
+(*
 Lemma beta_pdf_uniq (a b : nat) :
   {in `[0%R, 1%R]%classic,
    ('d ((charge_of_finite_measure (@Beta R a b))) '/d mu) =1
                (EFin \o (beta_pdf a b))}.
 Proof. Abort.
-
+*)
 End beta_pdf_Beta.
 
-Lemma integral_Beta a b f U : measurable U -> measurable_fun U f ->
-  \int[Beta a b]_(x in U) `|f x| < +oo ->
-  \int[Beta a b]_(x in U) f x = \int[mu]_(x in U) (f x * (beta_pdf a b x)%:E) :> \bar R.
+Lemma integral_beta_prob a b f U : measurable U -> measurable_fun U f ->
+  \int[beta_prob a b]_(x in U) `|f x| < +oo ->
+  \int[beta_prob a b]_(x in U) f x = \int[mu]_(x in U) (f x * (beta_pdf a b x)%:E) :> \bar R.
 Proof.
 move=> mU mf finf.
 rewrite -(Radon_Nikodym_change_of_variables (beta_prob_dom a b)) //=; last first.
