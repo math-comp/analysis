@@ -4177,8 +4177,6 @@ Proof.
 by move=> ? ctsF ? ? ?; apply: (@nbhs_subspace_subset A B) => //; exact: ctsF.
 Qed.
 
-
-
 Lemma nbhs_subspaceT (x : T) : nbhs (x : subspace setT) = nbhs x.
 Proof.
 have [_|] := nbhs_subspaceP [set: T]; last by cbn.

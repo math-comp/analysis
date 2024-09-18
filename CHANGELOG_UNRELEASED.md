@@ -29,7 +29,6 @@
     `outer_measure_open`, `outer_measure_Gdelta`, `negligible_outer_measure`
 - in `ftc.v`:
   + lemmas `integration_by_parts`, `Rintegration_by_parts`
-  + lemma `continuous_integration_by_parts`
 
 - in `classical_sets.v`:
   + scope `relation_scope` with delimiter `relation`
@@ -57,29 +56,6 @@
     `PseudoPointedMetric`
 - in `measure.v`:
   + lemma `measurable_neg`, `measurable_or`
-- in `continuous_FTC1_closed`:
-  + corollary `continuous_FTC1_closed`
-
-- in `lebesgue_integral.v`:
-  + lemma `locally_integrableS`
-
-- in `normedtype.v`:
-  + lemmas `nbhs_right_ltW`, `cvg_patch`
-
-- in `set_interval.v`:
-  + lemma `subset_itvSoo`
-
-- in `normedtype.v`:
-  + lemma `nbhs_left_ltBl`
-  + lemma `within_continuous_continuous`
-
-- in `ftc.v`:
-  + lemma `increasing_image_oo`, `decreasing_image_oo`,
-    `increasing_cvg_at_right_comp`, `increasing_cvg_at_left_comp`,
-	`decreasing_cvg_at_right_comp`, `decreasing_cvg_at_left_comp`,
-	`increasing_change`, `decreasing_change`
-
-### Changed
 
 - in `lebesgue_measure.v`:
   + lemmas `measurable_fun_eqr`, `measurable_fun_indic`, `measurable_fun_dirac`,
@@ -103,21 +79,20 @@
   + lemma `subset_itvSoo`
 
 - in `lebesgue_integral.v`:
-  + lemma `locally_integrableS`
+  + lemma `integrable_locally_restrict`
+  + lemma `near_davg`
+  + lemma `lebesgue_pt_restrict`
 
 - in `normedtype.v`:
-  + lemmas `nbhs_right_ltW`, `cvg_patch`
+  + lemma `nbhs_left_ltBl`
+  + lemma `within_continuous_continuous`
 
-- in `set_interval.v`:
-  + lemma `subset_itvSoo`
+- in `ftc.v`:
+  + lemma `increasing_image_oo`, `decreasing_image_oo`,
+    `increasing_cvg_at_right_comp`, `increasing_cvg_at_left_comp`,
+	`decreasing_cvg_at_right_comp`, `decreasing_cvg_at_left_comp`,
+	`increasing_change`, `decreasing_change`
 
-- in `lebesgue_integral.v`:
-  + lemma `integrable_locally_restrict`
-  + lemma `near_davg`
-  + lemma `lebesgue_pt_restrict`
-  + lemma `integrable_locally_restrict`
-  + lemma `near_davg`
-  + lemma `lebesgue_pt_restrict`
 
 - in `filter.v` (new file):
   + lemma `in_nearW`
