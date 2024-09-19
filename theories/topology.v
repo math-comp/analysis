@@ -4079,7 +4079,6 @@ HB.structure Definition OrderNbhs d :=
 HB.structure Definition OrderTopological d := 
   { T of Topological T & Order.Total d T & Order_isNbhs d T } .
 
-From mathcomp Require Import set_interval.
 Section order_topologies.
 
 Local Open Scope order_scope.
