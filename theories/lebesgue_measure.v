@@ -1517,11 +1517,6 @@ Context {R : realType}.
 Implicit Types (A : set R).
 Local Open Scope ereal_scope.
 
-Definition is_open_itv A := exists ab, A = `]ab.1, ab.2[%classic.
-
-Definition open_itv_cover A := [set F : (set R)^nat |
-  (forall i, is_open_itv (F i)) /\ A `<=` \bigcup_k (F k)].
-
 Let l := (@wlength R idfun).
 
 Lemma outer_measure_open_itv_cover A : (l^* A)%mu =
