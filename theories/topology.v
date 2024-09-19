@@ -196,10 +196,7 @@ Require Import reals signed.
 (*                                     structure                              *)
 (*                                     the HB class is Topological.           *)
 (*                 ptopologicalType == a pointed topologicalType              *)
-<<<<<<< HEAD
-=======
 (*             orderTopologicalType == a topology built from intervals        *)
->>>>>>> 0c53f9bc (adding order topology and interval stuff)
 (*                             open == set of open sets                       *)
 (*                      open_nbhs p == set of open neighbourhoods of p        *)
 (*                          basis B == a family of open sets that converges   *)
@@ -235,10 +232,7 @@ Require Import reals signed.
 (*                                     It builds the mixin for a topological  *)
 (*                                     space from a subbase of open sets b    *)
 (*                                     indexed on domain D                    *)
-<<<<<<< HEAD
 (*                                                                            *)
-=======
->>>>>>> 0c53f9bc (adding order topology and interval stuff)
 (* We endow several standard types with the structure of topology, e.g.:      *)
 (* - products `(T * U)%type`                                                  *)
 (* - matrices `'M[T]_(m, n)`                                                  *)
@@ -250,10 +244,7 @@ Require Import reals signed.
 (*                                     topologicalType.                       *)
 (*                  sup_topology Tc == supremum topology of the family of     *)
 (*                                     topologicalType structures Tc on T     *)
-<<<<<<< HEAD
-=======
 (*                 order_topology T == the induced order topology on T        *)
->>>>>>> 0c53f9bc (adding order topology and interval stuff)
 (*              quotient_topology Q == the quotient topology corresponding to *)
 (*                                     quotient Q : quotType T where T has    *)
 (*                                     type topologicalType                   *)
@@ -4095,25 +4086,25 @@ Local Open Scope order_scope.
 Local Open Scope classical_set_scope.
 Context {d} {T : orderTopologicalType d}.
 
-Lemma open_rray (x : T) : open `]x,+oo[.
+Lemma rray_open (x : T) : open `]x,+oo[.
 Proof.
 rewrite openE /interior => z xoz; rewrite itv_nbhsE.
 by exists (`]x, +oo[)%O => //; split => //; left.
 Qed.
-Hint Resolve open_rray : core.
+Hint Resolve rray_open : core.
 
-Lemma open_lray (x : T) : open `]-oo,x[.
+Lemma lray_open (x : T) : open `]-oo,x[.
 Proof.
 rewrite openE /interior => z xoz; rewrite itv_nbhsE.
 by exists (`]-oo, x[)%O => //; split => //; left.
 Qed.
-Hint Resolve open_lray : core.
+Hint Resolve lray_open : core.
 
-Lemma open_itv (x y : T) : open `]x, y[.
+Lemma itv_open (x y : T) : open `]x, y[.
 Proof.
 by rewrite set_itv_splitI /=; apply: openI.
 Qed.
-Hint Resolve open_itv : core.
+Hint Resolve itv_open : core.
 
 Lemma itv_open_ends_open (i : interval T) : itv_open_ends i -> open [set` i].
 Proof.
@@ -4121,19 +4112,19 @@ case: i; rewrite /itv_open_ends => [[[]t1|[]]] [[]t2|[]] []? => //.
 by rewrite set_itvE; exact: openT.
 Qed.
 
-Lemma closed_rray (x : T) : closed `[x,+oo[.
+Lemma rray_closed (x : T) : closed `[x,+oo[.
 Proof. by rewrite -setCitvl closedC. Qed.
-Hint Resolve closed_rray : core.
+Hint Resolve rray_closed : core.
 
-Lemma closed_lray (x : T) : closed `]-oo,x].
+Lemma lray_closed (x : T) : closed `]-oo,x].
 Proof. by rewrite -setCitvr closedC. Qed.
-Hint Resolve closed_lray : core.
+Hint Resolve lray_closed : core.
 
-Lemma closed_itv (x y : T) : closed `[x, y].
+Lemma itv_closed (x y : T) : closed `[x, y].
 Proof.
 by rewrite set_itv_splitI; apply: closedI => /=. 
 Qed.
-Hint Resolve closed_itv : core.
+Hint Resolve itv_closed : core.
 
 Lemma itv_closure (x y : T) : closure `]x, y[ `<=` `[x,y].
 Proof.
@@ -4261,12 +4252,12 @@ by apply: (le_trans _ yq); rewrite bnd_simp.
 Qed.
 
 End order_topologies.
-Hint Resolve open_lray : core.
-Hint Resolve open_rray : core.
-Hint Resolve open_itv : core.
-Hint Resolve closed_lray : core.
-Hint Resolve closed_rray : core.
-Hint Resolve closed_itv : core.
+Hint Resolve lray_open : core.
+Hint Resolve rray_open : core.
+Hint Resolve itv_open : core.
+Hint Resolve lray_closed : core.
+Hint Resolve rray_closed : core.
+Hint Resolve itv_closed : core.
 
 Section bool_ord_topology.
 Local Open Scope classical_set_scope.
@@ -4385,13 +4376,13 @@ Proof.
 rewrite ?openE /= /interior => + x Ux => /(_ x Ux); rewrite itv_nbhsE /=.
 move=> [][][[]l|[]] [[]r|[]][][]//= _ xlr /filterS; apply.
 - exists (`]l, r[%classic); split => //=; exists `]\val l, \val r[%classic.
-    exact: open_itv.
+    exact: itv_open.
   rewrite eqEsubset; split => z; rewrite preimage_itv //=.
 - exists (`]l, +oo[%classic); split => //=; exists `]\val l, +oo[%classic.
-    exact: open_rray.
+    exact: rray_open.
   rewrite eqEsubset; split => z; rewrite preimage_itv //=.
 - exists (`]-oo, r[%classic); split => //=; exists `]-oo, \val r[%classic.
-    exact: open_lray.
+    exact: lray_open.
   rewrite eqEsubset; split => z; rewrite preimage_itv //=.
 - rewrite set_itvE; exact: filterT.
 Qed.

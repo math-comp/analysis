@@ -80,6 +80,19 @@
   + lemma `integrable_locally_restrict`
   + lemma `near_davg`
   + lemma `lebesgue_pt_restrict`
+- in file `set_interval.v`,
+  + new definitions `itv_is_ray`, `itv_is_bd_open`, and `itv_open_ends`.
+  + new lemmas `itv_open_ends_rside`, `itv_open_ends_rinfty`,
+    `itv_open_ends_lside`, `itv_open_ends_linfty`,
+    `is_open_itv_itv_is_bd_openP`, `itv_open_endsI`, `itv_setU`, and
+    `itv_setI`.
+- in file `topology.v`,
+  + new definition `order_topology`.
+  + new lemmas `discrete_nat`, `rray_open`, `lray_open`, `itv_open`,
+    `itv_open_ends_open`, `rray_closed`, `lray_closed`, `itv_closed`,
+    `itv_closure`, `itv_closed_infimums`, `itv_closed_supremums`,
+    `order_hausdorff`, `clopen_bigcup_clopen`, `zero_dimensional_ray`,
+    `order_nbhs_itv`, `open_order_weak`, and `real_order_nbhsE`.
 
 ### Changed
 - in `topology.v`:
@@ -113,6 +126,9 @@
 
 - in `normedtype.v`:
   + lemma `continuous_within_itvP`: change the statement to use the notation `[/\ _, _ & _]`
+
+- moved from `lebesgue_measure.v` to `set_interval.v`: `is_open_itv`, and
+    `open_itv_cover`
 
 ### Renamed
 
