@@ -94,6 +94,9 @@
     `order_hausdorff`, `clopen_bigcup_clopen`, `zero_dimensional_ray`,
     `order_nbhs_itv`, `open_order_weak`, and `real_order_nbhsE`.
 
+- in `numfun.v`:
+  + lemma `indicI`
+
 ### Changed
 - in `topology.v`:
   + removed the pointed assumptions from `FilteredType`, `Nbhs`, 

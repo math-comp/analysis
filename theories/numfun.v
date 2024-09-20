@@ -291,6 +291,9 @@ Proof. by apply/funext=> x; rewrite indicE in_setT. Qed.
 Lemma indic0 : \1_(@set0 T) = cst (0 : R).
 Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
 
+Lemma indicI A B : \1_(A `&` B) = \1_A \* \1_B :> (_ -> R).
+Proof. by apply/funext=> u/=; rewrite !indicE in_setI -natrM mulnb. Qed.
+
 Lemma image_indic D A :
   \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
               (if A `&` D != set0 then [set 1 : R] else set0).
