@@ -749,11 +749,12 @@ Definition open_itv_cover (A : set T) := [set F : nat -> set T |
 
 Definition itv_is_ray (i : interval T) : Prop :=
   match i with
-  | Interval (-oo)%O (BLeft _) => True
-  | Interval (BRight _) (+oo)%O => True
-  | Interval (-oo)%O (+oo)%O => True
+  | Interval -oo%O (BLeft _) => True
+  | Interval (BRight _) +oo%O => True
+  | Interval -oo%O +oo%O => True
   | _ => False
   end.
+
 Definition itv_is_bd_open (i : interval T) : Prop :=
   match i with
   | Interval (BRight _) (BLeft _) => True
@@ -767,15 +768,15 @@ Lemma itv_open_ends_rside l b (t : T) :
   itv_open_ends (Interval l (BSide b t)) -> b = true.
 Proof. by case: b; move: l => [[]?|[]] // [] //. Qed.
 
-Lemma itv_open_ends_rinfty l b : 
+Lemma itv_open_ends_rinfty l b :
   itv_open_ends (Interval l (BInfty T b)) -> b = false.
 Proof. by case: b => //; move: l => [[]?|[]] // []. Qed.
 
-Lemma itv_open_ends_lside l b (t : T) : 
+Lemma itv_open_ends_lside l b (t : T) :
   itv_open_ends (Interval (BSide b t) l) -> b = false.
 Proof. by case: b; move: l => [[]?|[]] // []. Qed.
 
-Lemma itv_open_ends_linfty l b : 
+Lemma itv_open_ends_linfty l b :
   itv_open_ends (Interval (BInfty T b) l) -> b = true.
 Proof. by case: b => //; move: l => [[]?|[]] // []. Qed.
 
@@ -785,51 +786,39 @@ Proof.
 by case: i=> [] [[]l|[]] // [[]r|[]] // ?; exists (l,r).
 Qed.
 
-
 End open_endpoints.
 
-Lemma itv_open_endsI {d} {T : orderType d} (i j : interval T) : 
+Lemma itv_open_endsI {d} {T : orderType d} (i j : interval T) :
   itv_open_ends i -> itv_open_ends j -> itv_open_ends (i `&` j)%O.
 Proof.
-by case: i=> [][[]a|[]] [[]b|[]] [] //= _;
-  case: j => [][[]x|[]] [[]y|[]] []//= _;
-  (try now left); (try now right);
-  rewrite /Order.meet /= /Order.meet /= /Order.join /= -?ltNge;
-  rewrite -?andb_orl -?orb_andl ?lte_anti ?le_total //=;
-  (try now left); (try now right).
+move: i => [][[]a|[]] [[]b|[]] []//= _; move: j => [][[]x|[]] [[]y|[]] []//= _;
+by rewrite /itv_open_ends/= ?orbF ?andbT -?negb_or ?le_total//=;
+  try ((by left)||(by right)).
 Qed.
 
-Lemma itv_setU {d} {T : orderType d} (i j : interval T) : 
-  [set` i] `&` [set` j]!=set0 -> [set` (i `|` j)%O] = [set` i] `|` [set` j].
+Lemma itv_setU {d} {T : orderType d} (i j : interval T) :
+  [set` i] `&` [set` j] !=set0 -> [set` (i `|` j)%O] = [set` i] `|` [set` j].
 Proof.
-case=> p [ip jp]; have pij : p \in (i `|` j)%O.
-  by apply: le_trans; first exact: ip; exact: leUl.
-move: ip jp pij; case: i; case: j => a b x y.
-move=> /andP [xp py] /andP [ap pb] pab; rewrite eqEsubset.
-split => /= r /=; first last.
-  case; first by move=> ra; apply: (le_trans ra); exact: leUl.
-  by move=> rb; apply: (le_trans rb); exact: leUr.
-rewrite (@itv_splitUeq _ T p (x `&` a)%O) => //.
-move/orP; case.
-  move=> /andP [xar rp]; have /orP [] := le_total a x.
-    move=> ax; right; apply/andP; split.
-      by apply: le_trans xar; rewrite leEmeet meetC in ax; move/eqP: ax => ->.
-    by apply: (le_trans rp); apply: (le_trans _ pb); rewrite /Order.le /=.
-  move=> xa; left; apply/andP; split.
-    by apply: le_trans xar; rewrite leEmeet in xa; move/eqP: xa => ->.
-  by apply: (le_trans rp); apply: (le_trans _ py); rewrite /Order.le /=.
-move=> /orP; case; first by move/eqP=> ->; left; apply/andP; split.
-move=> /andP [pr ryb]; have /orP [] := le_total b y.
-  move=> bly; left; apply/andP; split.
-    by apply: le_trans pr; apply: (le_trans xp); rewrite /Order.le /=.
-  by apply: (le_trans ryb); rewrite leEjoin joinC in bly; move/eqP: bly => ->.
-move=> yb; right; apply/andP; split.
-  by apply: (le_trans ap); apply: le_trans pr; rewrite /Order.le /=.
-by apply: (le_trans ryb); rewrite leEjoin in yb; move/eqP: yb => ->.
+case=> p [ip jp]; have pij : p \in (i `|` j)%O by exact/(le_trans ip)/leUl.
+move: i j ip jp pij => [x y] [a b] /andP[xp py] /andP[ap pb] pab.
+rewrite eqEsubset; split => /= r /=; first last.
+  by move=> -[ra|rb]; [exact/(le_trans ra)/leUl|exact/(le_trans rb)/leUr].
+rewrite (@itv_splitUeq _ T p (x `&` a)%O)// => /orP[].
+- move=> /andP[xar rp]; have /orP[ax|xa] := le_total a x.
+  + right; apply/andP; split; first by rewrite (le_trans _ xar)// leIidr.
+    by rewrite (le_trans rp)// (le_trans _ pb)// bnd_simp.
+  + left; apply/andP; split; first by rewrite (le_trans _ xar)// leIidl.
+    by rewrite (le_trans rp)// (le_trans _ py)//= bnd_simp.
+- move=> /predU1P[->|/andP[pr ryb]]; first by left; apply/andP.
+  have /orP[bly|ylb] := le_total b y.
+  + left; apply/andP; split; last by rewrite (le_trans ryb)// leUidr.
+    by rewrite (le_trans _ pr)// (le_trans xp)//= bnd_simp.
+  + right; apply/andP; split; last by rewrite (le_trans ryb)// leUidl.
+    by rewrite (le_trans ap)// (le_trans _ pr)//= bnd_simp.
 Qed.
 
-Lemma itv_setI {d} {T : orderType d} (i j : interval T) : 
+Lemma itv_setI {d} {T : orderType d} (i j : interval T) :
   [set` (i `&` j)%O] = [set` i] `&` [set` j].
 Proof.
-by rewrite eqEsubset; split => z; rewrite /in_mem/=/pred_of_itv/= lexI => /andP.
+by rewrite eqEsubset; split => z; rewrite /in_mem/= /pred_of_itv/= lexI=> /andP.
 Qed.
