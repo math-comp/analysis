@@ -81,13 +81,7 @@
   + lemma `integrable_locally_restrict`
   + lemma `near_davg`
   + lemma `lebesgue_pt_restrict`
-  + lemmas `not_near_inftyP` `not_near_ninftyP`
 
-- in `topology.v`:
-  + lemma `filterN`
-
-- in `normedtype.v`:
-  + lemma `ninftyN`
 - in `realfun.v`:
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
 
@@ -101,6 +95,35 @@
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
 
 ### Changed
+- in `topology.v`:
+  + removed the pointed assumptions from `FilteredType`, `Nbhs`, 
+    `TopologicalType`, `UniformType`, and `PseudoMetricType`.
+  + if you want the original pointed behavior, use the `p` variants
+    of the types, so `ptopologicalType` instead of `topologicalType`.
+  + generalized most lemmas to no longer depend on pointedness.
+    The main exception is for references to `cvg` and `lim` that depend
+    on `get` for their definition.
+  + `pointed_principal_filter` becomes `principle_filter_type` and 
+    requires only `choiceType` instead of `pointedType`
+  + `pointed_discrete_topology` becomes `discrete_topology_type` and 
+    requires only `choiceType` instead of `pointedType`
+  + renamed lemma `discrete_pointed`to `discrete_space_discrete` 
+- in `function_space.v`:
+  + generalized most lemmas to no longer depend on pointedness.
+
+- in `lebesgue_measure.v`:
+  + remove redundant hypothesis from lemma `pointwise_almost_uniform`
+
+- moved from `numfun.v` to `cardinality.v`:
+  + lemma `fset_set_comp`
+- in `ftc.v`:
+  + lemma `FTC1_lebesgue_pt`, corollaries `FTC1`, `FTC1Ny`: integrability hypothesis weakened
+
+- in `lebesgue_integral.v`:
+  + lemma `nice_lebesgue_differentiation`: change the local integrability hypothesis to easy application
+
+- in `normedtype.v`:
+  + lemma `continuous_within_itvP`: change the statement to use the notation `[/\ _, _ & _]`
 
 - in `normedtype.v`:
   + remove superflous parameters in lemmas `not_near_at_rightP` and `not_near_at_leftP`
