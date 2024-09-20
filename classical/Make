@@ -16,4 +16,5 @@ functions.v
 cardinality.v
 fsbigop.v
 set_interval.v
+classical_orders.v
 all_classical.v
