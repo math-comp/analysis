@@ -235,8 +235,8 @@ Context {d} {K : nat -> bPOrderType d}.
 
 Local Lemma big_lex_bot x : (@big_lexi_ord _ K) (fun=> \bot)%O x.
 Proof. 
-rewrite /big_lexi_ord/lexi_bigprod; case E: (first_diff _ _) => //.
-exact: Order.le0x.
+rewrite /big_lexi_ord/lexi_bigprod.
+by case E: (first_diff _ _); [exact: Order.le0x | done].
 Qed.
 
 HB.instance Definition _ := @Order.hasBottom.Build _ 
@@ -249,8 +249,8 @@ Context {d} {K : nat -> tPOrderType d}.
 
 Local Lemma big_lex_top x : (@big_lexi_ord _ K) x (fun=> \top)%O.
 Proof. 
-rewrite /big_lexi_ord/lexi_bigprod; case E: (first_diff _ _) => //.
-apply: Order.lex1.
+rewrite /big_lexi_ord/lexi_bigprod.
+by case E: (first_diff _ _); [exact: Order.lex1 | done].
 Qed.
 
 HB.instance Definition _ := @Order.hasTop.Build _ 
