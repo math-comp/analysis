@@ -81,6 +81,9 @@
   + lemma `near_davg`
   + lemma `lebesgue_pt_restrict`
 
+- in `numfun.v`:
+  + lemma `indicI`
+
 ### Changed
 - in `topology.v`:
   + removed the pointed assumptions from `FilteredType`, `Nbhs`, 
