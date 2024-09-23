@@ -482,3 +482,10 @@ Qed.
 
 End bijection_forall.
 
+Lemma and_prop_in (T : Type) (p : mem_pred T) (P Q : T -> Prop) :
+  {in p, forall x, P x /\ Q x} <->
+  {in p, forall x, P x} /\ {in p, forall x, Q x}.
+Proof.
+split=> [cnd|[cnd1 cnd2] x xin]; first by split=> x xin; case: (cnd x xin).
+by split; [apply: cnd1 | apply: cnd2].
+Qed.
