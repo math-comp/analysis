@@ -260,6 +260,43 @@ Qed.
 
 End cvge_fun_cvg_seq.
 
+Section cvgr_fun_dvg_seq.
+Context {R : realType}.
+
+Lemma cvg_pinftyP (f : R -> R) (l : R) :
+  f x @[x --> +oo] --> l <->
+    forall u : R^nat, (u n @[n --> \oo] --> +oo) -> f (u n) @[n --> \oo] --> l.
+Proof.
+split; first by move=> ? ? /cvg_comp; exact.
+apply: contraPP => noncvg_f; apply/existsNP.
+under eq_exists do rewrite not_implyE; apply/exists2P.
+suff [e e_sep] : exists e : {posnum R},
+    forall A, exists2 un, A < un & e%:num <= `|f un - l|.
+  exists (fun n => sval (cid2 (e_sep n%:R))).
+    apply/cvgryPgt => A; near=> n; case: cid2 => //= r nr _.
+    by rewrite (le_lt_trans _ nr)//; near: n; exact: nbhs_infty_ger.
+  apply/cvgrPdistC_lt => /= /(_ e%:num ltac:(by []))[N _ /(_ _ (leqnn N))].
+  by case: cid2 => uN/= _ /le_lt_trans /[apply]; rewrite ltxx.
+move: noncvg_f => /cvgrPdistC_lt /=; rewrite -existsPNP => -[eps eps_gt0].
+move=> /not_near_inftyP eps_sep; exists (PosNum eps_gt0) => A /=.
+have [x x_ltA /negP fxleps] := eps_sep _ (num_real A).
+by exists x => //; rewrite leNgt.
+Unshelve. all: by end_near. Qed.
+
+Lemma cvg_ninftyP (f : R -> R) (l : R) :
+  f x @[x --> -oo] --> l <->
+    forall u : R^nat, (u n @[n --> \oo] --> -oo) -> f (u n) @[n --> \oo] --> l.
+Proof.
+rewrite cvgyNP cvg_pinftyP/= (@bij_forall R^nat _ -%R)//.
+have u_opp (u : R^nat) :
+    ((- u) n @[n --> \oo] --> +oo) = (u n @[n --> \oo] --> -oo).
+  by rewrite propeqE cvgNry.
+by under eq_forall do
+  (rewrite u_opp; under (eq_cvg _ (nbhs l)) do rewrite opprK).
+Qed.
+
+End cvgr_fun_dvg_seq.
+
 Section fun_cvg_realType.
 Context {R : realType}.
 Implicit Types f : R -> R.
