@@ -77,6 +77,19 @@ From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 (*   nicely_shrinking x E == the sequence of sets E is nicely shrinking to x  *)
 (* ````                                                                       *)
 (*                                                                            *)
+(* About the use of simple functions:                                         *)
+(* Because of a limitation of HB <= 1.8.0, we need some care to be able to    *)
+(* use simple functions.                                                      *)
+(* The structure SimpleFun (resp. NonNegSimpleFun) is located inside the      *)
+(* module HBSimple (resp. HBNNSimple).                                        *)
+(* As a consequence, we need to import HBSimple (resp. HBNNSimple) to use the *)
+(* coercion from simple functions (resp. non-negative simple functions) to    *)
+(* Coq functions.                                                             *)
+(* Also, assume that f (e.g., cst, indic) is equipped with the structure of   *)
+(* MeasurableFun. For f to be equipped with the structure of SimpleFun        *)
+(* (resp. NonNegSimpleFun), one need locallu to import HBSimple (resp.        *)
+(* HBNNSimple) and to instantiate FiniteImage (resp. NonNegFun) locally.      *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -204,11 +217,8 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {mfun aT >-> rT} by <:].
 
-Lemma cst_mfun_subproof x : @measurable_fun d _ aT rT [set: aT] (cst x).
-Proof. by []. Qed.
-
 HB.instance Definition _ x := isMeasurableFun.Build d _ aT rT (cst x)
-  (@cst_mfun_subproof x).
+  (@measurable_cst _ _ aT rT setT x).
 
 End mfun.
 
@@ -245,8 +255,8 @@ split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_funB.
 - exact: measurable_funM.
 Qed.
-HB.instance Definition _ := GRing.isSubringClosed.Build _ (@mfun d default_measure_display aT rT)
-  mfun_subring_closed.
+HB.instance Definition _ := GRing.isSubringClosed.Build _
+  (@mfun d default_measure_display aT rT) mfun_subring_closed.
 HB.instance Definition _ := [SubChoice_isSubComRing of {mfun aT >-> rT} by <:].
 
 Implicit Types (f g : {mfun aT >-> rT}).
@@ -272,22 +282,13 @@ HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
 HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
 
 Definition mindic (D : set aT) of measurable D : aT -> rT := \1_D.
+
 Lemma mindicE (D : set aT) (mD : measurable D) :
   mindic mD = (fun x => (x \in D)%:R).
 Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
-HB.instance Definition _ (D : set aT) (mD : measurable D) :
-   @FImFun aT rT (mindic mD) := FImFun.on (mindic mD).
-Lemma indic_mfun_subproof (D : set aT) (mD : measurable D) :
-  @isMeasurableFun d _ aT rT (mindic mD).
-Proof.
-split=> mA /= B mB; rewrite preimage_indic.
-case: ifPn => B1; case: ifPn => B0 //.
-- by rewrite setIT.
-- exact: measurableI.
-- by apply: measurableI => //; apply: measurableC.
-- by rewrite setI0.
-Qed.
-HB.instance Definition _ D mD := @indic_mfun_subproof D mD.
+
+HB.instance Definition _ D mD := @isMeasurableFun.Build _ _ aT rT (mindic mD)
+  (@measurable_fun_indic _ aT rT setT D mD).
 
 Definition indic_mfun (D : set aT) (mD : measurable D) :=
   [the {mfun aT >-> rT} of mindic mD].
@@ -297,7 +298,9 @@ Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
 
 Lemma max_mfun_subproof f g : @isMeasurableFun d _ aT rT (f \max g).
 Proof. by split; apply: measurable_maxr. Qed.
+
 HB.instance Definition _ f g := max_mfun_subproof f g.
+
 Definition max_mfun f g := [the {mfun aT >-> _} of f \max g].
 
 End ring.
@@ -362,11 +365,8 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
 
-(* TODO: BUG: HB *)
-(* HB.instance Definition _ (x : rT) := @cst_mfun_subproof aT rT x. *)
-
-(* NB: duplicate from cardinality.v *)
-HB.instance Definition _ x := @cst_fimfun_subproof aT rT x.
+(* NB: already instantiated in cardinality.v *)
+HB.instance Definition _ x : @FImFun aT rT (cst x) := FImFun.on (cst x).
 
 Definition cst_sfun x := [the {sfun aT >-> rT} of cst x].
 
@@ -425,7 +425,7 @@ HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
 HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
 
 Import HBSimple.
-(* NB: duplicate from lebesgue_integral.v *)
+(* NB: already instantiated in lebesgue_integral.v *)
 HB.instance Definition _ (D : set aT) (mD : measurable D) :
    @FImFun aT rT (mindic _ mD) := FImFun.on (mindic _ mD).
 
@@ -495,23 +495,23 @@ Context d (T : measurableType d) (R : realType).
 
 Import HBNNSimple.
 
-Lemma cst_nnfun_subproof (x : {nonneg R}) : @isNonNegFun T R (cst x%:num).
-Proof. by split=> /=. Qed.
-HB.instance Definition _ x := @cst_nnfun_subproof x.
+Lemma cst_nnfun_subproof (x : {nonneg R}) : forall t : T, 0 <= cst x%:num t.
+Proof. by move=> /=. Qed.
+HB.instance Definition _ x := @isNonNegFun.Build T R (cst x%:num)
+  (cst_nnfun_subproof x).
 
-HB.instance Definition _ x := isMeasurableFun.Build d _ T R (cst x)
-  (@cst_mfun_subproof _ _ _ _ x).
-
-(* NB: duplicate from cardinality.v *)
-HB.instance Definition _ x := @cst_fimfun_subproof T R x.
+(* NB: already instantiated in cardinality.v *)
+HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).
 
 Definition cst_nnsfun (r : {nonneg R}) := [the {nnsfun T >-> R} of cst r%:num].
 
 Definition nnsfun0 : {nnsfun T >-> R} := cst_nnsfun 0%R%:nng.
 
-Lemma indic_nnfun_subproof (D : set T) : @isNonNegFun T R (\1_D).
-Proof. by split=> //=; rewrite /indic. Qed.
-HB.instance Definition _ D := @indic_nnfun_subproof D.
+Lemma indic_nnfun_subproof (D : set T) : forall x, 0 <= (\1_D) x :> R.
+Proof. by []. Qed.
+
+HB.instance Definition _ D := @isNonNegFun.Build T R \1_D
+  (indic_nnfun_subproof D).
 
 HB.instance Definition _ D (mD : measurable D) :
    @NonNegFun T R (mindic R mD) := NonNegFun.on (mindic R mD).
@@ -824,7 +824,7 @@ Qed.
 
 End le_sintegral.
 
-Section tmp.
+Section is_cvg_sintegral.
 Import HBNNSimple.
 
 Lemma is_cvg_sintegral d (T : measurableType d) (R : realType)
@@ -835,13 +835,13 @@ move=> nd_f; apply/cvg_ex; eexists; apply/ereal_nondecreasing_cvgn => a b ab.
 by apply: le_sintegral => // => x; exact/nd_f.
 Qed.
 
-End tmp.
+End is_cvg_sintegral.
 
 Definition proj_nnsfun d (T : measurableType d) (R : realType)
     (f : {nnsfun T >-> R}) (A : set T) (mA : measurable A) :=
   mul_nnsfun f (indic_nnsfun R mA).
 
-Section tmp.
+Section mrestrict.
 Import HBNNSimple.
 
 Definition mrestrict d (T : measurableType d) (R : realType) (f : {nnsfun T >-> R})
@@ -851,7 +851,7 @@ apply/funext => x /=; rewrite /patch mindicE.
 by case: ifP; rewrite (mulr0, mulr1).
 Qed.
 
-End tmp.
+End mrestrict.
 
 Definition scale_nnsfun d (T : measurableType d) (R : realType)
     (f : {nnsfun T >-> R}) (k : R) (k0 : 0 <= k) :=
@@ -1749,10 +1749,13 @@ Context d (T : measurableType d) (R : realType) (f : T -> \bar R).
 Variables (D : set T) (mD : measurable D) (mf : measurable_fun D f).
 
 Import HBSimple.
-(* duplicate *)
-HB.instance Definition _ x := @cst_fimfun_subproof T R x.
-HB.instance Definition _ x := isMeasurableFun.Build d _ T R (cst x)
-  (@cst_mfun_subproof _ _ _ _ x).
+(* NB: already instantiated in cardinality.v *)
+HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).
+
+Import HBNNSimple.
+(* NB: already instantiated in lebesgue_integral.v *)
+HB.instance Definition _ x : @NonNegFun T R (cst x%:num) :=
+  NonNegFun.on (cst x%:num).
 
 Lemma approximation_sfun :
   exists g : {sfun T >-> R}^nat, (forall x, D x -> EFin \o g ^~ x @ \oo --> f x).
@@ -1761,14 +1764,6 @@ have [fp_ [fp_nd fp_cvg]] :=
   approximation mD (measurable_funepos mf) (fun=> ltac:(by [])).
 have [fn_ [fn_nd fn_cvg]] :=
   approximation mD (measurable_funeneg mf) (fun=> ltac:(by [])).
-
-Import HBNNSimple.
-(* duplicate *)
-HB.instance Definition _ x := @cst_fimfun_subproof T R x.
-HB.instance Definition _ x := isMeasurableFun.Build d _ T R (cst x)
-  (@cst_mfun_subproof _ _ _ _ x).
-HB.instance Definition _ x := @cst_nnfun_subproof _ T R x.
-
 exists (fun n => [the {sfun T >-> R} of fp_ n \+ cst (-1) \* fn_ n]) => x /=.
 rewrite [X in X @ \oo --> _](_ : _ =
     EFin \o fp_^~ x \+ (-%E \o EFin \o fn_^~ x))%E; last first.
@@ -2790,8 +2785,7 @@ Qed.
 
 End integral_measure_sum_nnsfun.
 
-Section tmp.
-
+Section integral_measure_add_nnsfun.
 Import HBNNSimple.
 
 Lemma integral_measure_add_nnsfun d (T : measurableType d) (R : realType)
@@ -2804,7 +2798,7 @@ rewrite /measureD integral_measure_sum_nnsfun// 2!big_ord_recl/= big_ord0.
 by rewrite adde0.
 Qed.
 
-End tmp.
+End integral_measure_add_nnsfun.
 
 Section integral_mfun_measure_sum.
 Local Open Scope ereal_scope.
@@ -3824,20 +3818,6 @@ exists N; split => // t /= /not_implyP[_].
 by rewrite patchE; case: ifPn => //; rewrite inE.
 Qed.
 
-Import HBNNSimple.
-
-Lemma funID (N : set T) (mN : measurable N) (f : T -> \bar R) :
-  let oneCN := [the {nnsfun T >-> R} of mindic R (measurableC mN)] in
-  let oneN := [the {nnsfun T >-> R} of mindic R mN] in
-  f = (fun x => f x * (oneCN x)%:E) \+ (fun x => f x * (oneN x)%:E).
-Proof.
-move=> oneCN oneN; rewrite funeqE => x.
-rewrite /oneCN /oneN/= /mindic !indicE.
-have [xN|xN] := boolP (x \in N).
-  by rewrite mule1 in_setC xN mule0 add0e.
-by rewrite in_setC xN mule0 adde0 mule1.
-Qed.
-
 Lemma negligible_integrable (D N : set T) (f : T -> \bar R) :
   measurable N -> measurable D -> measurable_fun D f ->
   mu N = 0 -> mu.-integrable D f <-> mu.-integrable (D `\` N) f.
@@ -3860,7 +3840,7 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (f \_ ~` N).
     rewrite -integral_mkcondr; case: intf => _; apply: le_lt_trans.
     by apply: ge0_subset_integral => //=; [exact:measurableI|
                                            exact:measurableT_comp].
-  apply/integrableP; split => //; rewrite (ereal.funID N f).
+  apply/integrableP; split => //; rewrite (funID N f).
   have ? : measurable_fun D (f \_ ~` N).
     by apply/measurable_restrict => //; exact: measurable_funS mf.
   have ? : measurable_fun D (f \_ N).
@@ -3898,7 +3878,7 @@ Lemma ge0_negligible_integral (D N : set T) (f : T -> \bar R) :
   mu N = 0 -> \int[mu]_(x in D) f x = \int[mu]_(x in D `\` N) f x.
 Proof.
 move=> mN mD mf f0 muN0.
-rewrite {1}(ereal.funID N f) ge0_integralD//; last 4 first.
+rewrite {1}(funID N f) ge0_integralD//; last 4 first.
   - by move=> x Dx; rewrite patchE; case: ifPn => // _; exact: f0.
   - apply/measurable_restrict => //; first exact/measurableC.
     exact: measurable_funS mf.

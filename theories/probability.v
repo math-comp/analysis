@@ -1289,6 +1289,8 @@ move=> mE; rewrite integral_indic//= /uniform_prob setIT -ge0_integralZl//=.
 - by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 Qed.
 
+Import HBNNSimple.
+
 Let integral_uniform_nnsfun (f : {nnsfun _ >-> R}) :
   (\int[uniform_prob ab]_x (f x)%:E =
    (b - a)^-1%:E * \int[mu]_(x in `[a, b]) (f x)%:E)%E.

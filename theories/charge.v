@@ -1914,6 +1914,8 @@ Implicit Types f : T -> \bar R.
 
 Local Notation "'d nu '/d mu" := (f nu mu).
 
+Import HBNNSimple.
+
 Lemma change_of_variables f E : (forall x, 0 <= f x) ->
     measurable E -> measurable_fun E f ->
   \int[mu]_(x in E) (f x * ('d nu '/d mu) x) = \int[nu]_(x in E) f x.
