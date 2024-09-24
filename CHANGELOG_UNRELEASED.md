@@ -133,6 +133,8 @@
 - moved from `lebesgue_measure.v` to `set_interval.v`: `is_open_itv`, and
     `open_itv_cover`
 
+- moved `summability.v` from `theories` to `theories/showcase`
+
 ### Renamed
 
 - in `lebesgue_measure.v`:
