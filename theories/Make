@@ -34,7 +34,6 @@ ftc.v
 hoelder.v
 probability.v
 lebesgue_stieltjes_measure.v
-summability.v
 signed.v
 itv.v
 convex.v
@@ -42,6 +41,7 @@ charge.v
 kernel.v
 all_analysis.v
 showcase/uniform_bigO.v
+showcase/summability.v
 altreals/xfinmap.v
 altreals/discrete.v
 altreals/realseq.v

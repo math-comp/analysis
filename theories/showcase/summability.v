@@ -7,7 +7,8 @@ From mathcomp Require Import boolp classical_sets.
 Require Import ereal reals Rstruct signed topology normedtype.
 
 (**md**************************************************************************)
-(* (undocumented experiment)                                                  *)
+(* This file proposes a replacement for the definition `summable` (file       *)
+(* `realsum.v`).                                                              *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -17,16 +18,14 @@ Import GRing.Theory Num.Def Num.Theory.
 
 Local Open Scope classical_set_scope.
 
-(** For Pierre-Yves : definition of sums *)
-
 From mathcomp Require fintype bigop finmap.
 
 Section totally.
 
 Import fintype bigop finmap.
 Local Open Scope fset_scope.
-(* :TODO: when eventually is generalized to any lattice *)
-(* totally can just be replaced by eventually *)
+(* TODO: when eventually is generalized to any lattice, totally can
+   just be replaced by eventually *)
 Definition totally {I : choiceType} : set_system {fset I} :=
   filter_from setT (fun A => [set B | A `<=` B]).
 

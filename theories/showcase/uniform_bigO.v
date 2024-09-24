@@ -14,18 +14,13 @@ Local Open Scope ring_scope.
 
 Section UniformBigO.
 
-(*
-  This section shows how we can formalize the uniform bigO from:
-
-  Boldo, Clément, Filliâtre, Mayero, Melquiond, Weis.
-  Wave Equation Numerical Resolution: A Comprehensive Mechanized Proof of a C
-  Program.
-  Journal of Automated Reasoning 2013.
-
-  The corresponding source code is here:
-
-  http://fost.saclay.inria.fr/coq_total/BigO.html
-*)
+(**md**************************************************************************)
+(* This section shows how we can formalize the uniform bigO from:             *)
+(* Boldo, Clément, Filliâtre, Mayero, Melquiond, Weis,                        *)
+(* Wave Equation Numerical Resolution: A Comprehensive Mechanized Proof of a  *)
+(* C Program, Journal of Automated Reasoning 2013. The corresponding source   *)
+(* code is here: http://fost.saclay.inria.fr/coq_total/BigO.html.             *)
+(******************************************************************************)
 
 Context (A : Type) (P : set (R * R)).
 

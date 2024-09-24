@@ -25,7 +25,6 @@ From mathcomp Require Export ftc.
 From mathcomp Require Export hoelder.
 From mathcomp Require Export probability.
 From mathcomp Require Export lebesgue_stieltjes_measure.
-From mathcomp Require Export summability.
 From mathcomp Require Export signed.
 From mathcomp Require Export itv.
 From mathcomp Require Export convex.
