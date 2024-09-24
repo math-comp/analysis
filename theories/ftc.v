@@ -784,6 +784,70 @@ Unshelve. all: end_near. Qed.
 
 End integration_by_substitution_preliminaries.
 
+Section within_continuous_derive.
+Context {R : numFieldType} {V W : normedModType R}.
+
+Definition right_derive (f : V -> W) a v :=
+  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^'+).
+Definition left_derive (f : V -> W) a v :=
+  lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^'-).
+
+End within_continuous_derive.
+
+(* PR *)
+Lemma measurable_fun_set1 d d' (T : measurableType d) (U : measurableType d')
+   (a : T) (f : T -> U) :
+d.-measurable (set1 a) -> measurable_fun (set1 a) f.
+Proof.
+Admitted.
+
+(* PR *)
+Lemma in_nearW (R : realFieldType) (P : R -> Prop) (S : set R) :
+  @open R^o S ->
+ {in S, forall x, P x} ->
+  forall x, x \in S -> \forall y \near x, P y.
+Proof.
+move=> oS HP z.
+rewrite inE => Sz.
+have [e/= e0 He] := (open_subball oS Sz).
+exists (e / 2) => //=.
+  by rewrite -(add0r e) midf_lt.
+move=> t/= zte.
+apply: HP.
+move: He Sz zte.
+have [<- |zt He Sz zte] := eqVneq z t; first by rewrite inE.
+rewrite inE.
+apply: (He (e / 2)) => //=.
+rewrite sub0r normrN ger0_norm.
+    by rewrite -{1}(add0r e) midf_lt.
+  by rewrite -(add0r e) midf_le// ltW.
+by rewrite -(add0r e) midf_lt.
+Qed.
+
+Section integral_itv.
+Local Open Scope ereal_scope.
+Context {R : realType}.
+
+Local Notation mu := (@lebesgue_measure R).
+
+(* PR *)
+Lemma integral_itv_bndo_bndc' (a : itv_bound R) (r : R) (f : R -> R) :
+  measurable_fun [set` Interval a (BLeft r)] f ->
+   \int[mu]_(x in [set` Interval a (BLeft r)]) (f x)%:E =
+   \int[mu]_(x in [set` Interval a (BRight r)]) (f x)%:E.
+Proof.
+Admitted.
+
+(* PR *)
+Lemma integral_itv_obnd_cbnd' (r : R) (b : itv_bound R) (f : R -> R) :
+  measurable_fun [set` Interval (BRight r) b] f ->
+   \int[mu]_(x in [set` Interval (BRight r) b]) (f x)%:E =
+   \int[mu]_(x in [set` Interval (BLeft r) b]) (f x)%:E.
+Proof.
+Admitted.
+
+End integral_itv.
+
 Section integration_by_substitution.
 Local Open Scope ereal_scope.
 Context {R : realType}.
@@ -792,14 +856,17 @@ Implicit Types (F G f : R -> R) (a b : R).
 
 Lemma increasing_change F G a b : (a < b)%R ->
   {in `[a, b] &, {homo F : x y / (x < y)%R}} ->
-  {within `[a, b], continuous F^`()} ->
+  {in `]a, b[, continuous F^`()} ->
+  cvg ((F^`() : R -> R) x @[x --> a^'+]) ->
+  cvg ((F^`() : R -> R) x @[x --> b^'-]) ->
   derivable_oo_continuous_bnd F a b ->
-  {within `[F a, F b], continuous G} ->
+ {within `[F a, F b], continuous G} ->
   \int[mu]_(x in `[F a, F b]) (G x)%:E =
   \int[mu]_(x in `[a, b]) (((G \o F) * F^`()) x)%:E.
 Proof.
-set f : R -> R := F^`().
-move=> ab incrF cf dcbF cG.
+move=> ab incrF cf /cvg_ex[/= r F'ar] /cvg_ex[/= l F'bl] dcbF cG.
+set f : R -> R := fun x => if x == a then r else
+                            if x == b then l else F^`() x.
 have FaFb : (F a < F b)%R by apply: incrF; rewrite //= in_itv/= (ltW ab) lexx.
 pose PG x := parameterized_integral mu (F a) x G.
 have intGFb : mu.-integrable `[(F a), (F b)] (EFin \o G).
@@ -824,24 +891,54 @@ have dPGE : {in `](F a), (F b)[, PG^`() =1 G}.
     by move: (xFaFb); rewrite lte_fin in_itv/= => /andP[].
   exact: (within_continuous_continuous _ _ xFaFb).
 move/continuous_within_itvP : (cG) => /(_ FaFb)[incG GFa GFb].
-have : {within `[a, b], continuous F} :=
+have cF : {within `[a, b], continuous F} :=
   derivable_oo_continuous_bnd_within dcbF.
-move/continuous_within_itvP => /(_ ab)[incF cFa cFb].
+move/continuous_within_itvP : (cF) => /(_ ab)[incF cFa cFb].
 have ch : {within `[a, b], continuous h}.
   apply/(continuous_within_itvP _ ab); split.
   - move=> /= x xab.
-    apply: continuousM; last first.
-      by move/(continuous_within_itvP _ ab) : cf => [+ _ _]; exact.
+      apply: continuousM; last first.
+      have : F^`() y @[y --> x] --> f x.
+        rewrite /f.
+        rewrite ifF; last first.
+          apply: gt_eqF.
+          by move: xab; rewrite in_itv/= => /andP[].
+        rewrite ifF; last first.
+          apply: lt_eqF.
+          by move: xab; rewrite in_itv/= => /andP[].
+        exact: cf.
+      apply: cvg_trans.
+      apply: near_eq_cvg.
+      rewrite near_simpl.
+      apply: (@in_nearW _ _ `]a, b[%classic).
+      - exact: interval_open.
+      - move=> z; rewrite inE/= in_itv/= => /andP[az zb].
+        rewrite /f ifF; last by rewrite gt_eqF.
+        by rewrite ifF// lt_eqF.
+      by rewrite inE.
     apply: continuous_comp; first exact: incF.
     by apply: incG; exact: increasing_image_oo.
   - apply: cvgM.
       apply: (increasing_cvg_at_right_comp ab) => //x y xab yab.
       by apply: incrF; apply: subset_itv_co_cc.
-    by move /(continuous_within_itvP _ ab) : cf => [].
+    rewrite {2}/f eq_refl.
+    move: F'ar.
+    apply: cvg_trans.
+    apply: near_eq_cvg.
+    near=> z.
+    rewrite /f ifF; last by rewrite gt_eqF.
+    by rewrite ifF// lt_eqF.
   - apply: cvgM.
       apply: (increasing_cvg_at_left_comp ab) => //x y xab yab.
       by apply: incrF; apply: subset_itv_oc_cc.
-    by move /(continuous_within_itvP _ ab) : cf => [].
+    rewrite {2}/f ifF; last by rewrite gt_eqF.
+    rewrite eq_refl.
+    move: F'bl.
+    apply: cvg_trans.
+    apply: near_eq_cvg.
+    near=> z.
+    rewrite /f ifF; last by rewrite gt_eqF.
+    by rewrite ifF// lt_eqF.
 have dcbH : derivable_oo_continuous_bnd H a b.
   have := derivable_oo_continuous_bnd_within dcbPG.
   move=> /(continuous_within_itvP _ FaFb)[_ PGFa PGFb].
@@ -870,43 +967,83 @@ have dcbH : derivable_oo_continuous_bnd H a b.
     apply: cFb => //=.
     rewrite gtr0_norm// ?subr_gt0//.
     by near: t; exact: nbhs_left_ltBl.
-have ? : {in `]a, b[, H^`() =1 h}.
+have dHE : {in `]a, b[, H^`() =1 h}.
   move=> x xab; rewrite derive1_comp.
-  - by rewrite dPGE//; exact: increasing_image_oo.
+  - rewrite dPGE//; last exact: increasing_image_oo.
+    rewrite /h/f.
+    move: xab.
+    rewrite in_itv/= => /andP[ax xb].
+    rewrite mulrfctE ifF; last by rewrite gt_eqF.
+    by rewrite ifF// lt_eqF.
   - by have [+ _ _] := dcbF; apply.
   - by have [+ _ _] := dcbPG; apply; exact: increasing_image_oo.
 rewrite (continuous_FTC2 FaFb cG dcbPG dPGE).
-by rewrite (continuous_FTC2 ab ch dcbH).
+rewrite -(continuous_FTC2 ab ch dcbH dHE).
+have mGFF' : measurable_fun `]a, b[ ((G \o F) * F^`())%R.
+  apply: measurable_funM.
+  - apply: (measurable_comp (measurable_itv `]F a, F b[)).
+      exact: increasing_image_oo.
+    apply: subspace_continuous_measurable_fun => //.
+    apply: continuous_in_subspaceT => x; rewrite inE/=.
+    exact: incG.
+  - apply: subspace_continuous_measurable_fun => //.
+    apply: continuous_in_subspaceT => x; rewrite inE/=.
+    exact: incF.
+  - apply: subspace_continuous_measurable_fun; first by [].
+    apply: continuous_in_subspaceT => x.
+    rewrite inE/=.
+    exact: cf.
+rewrite -!integral_itv_bndo_bndc'; last 2 first.
+- rewrite -setU1itv ?bnd_simp//.
+  by rewrite measurable_funU//; split => //; apply: measurable_fun_set1.
+- apply: subspace_continuous_measurable_fun => //.
+  move: ch; apply: continuous_subspaceW.
+  exact: subset_itv_co_cc.
+rewrite -!integral_itv_obnd_cbnd'; last 2 first.
+- exact: mGFF'.
+- apply: subspace_continuous_measurable_fun => //.
+  move: ch; apply: continuous_subspaceW.
+  exact: subset_itv_oo_cc.
+apply: eq_integral => //.
+move=> x xab.
+rewrite /h/f.
+rewrite mulrfctE ifF; last first.
+  apply: gt_eqF.
+  by move: xab; rewrite inE/= in_itv/= => /andP[].
+rewrite ifF//.
+apply: lt_eqF.
+by move: xab; rewrite inE/= in_itv/= => /andP[].
 Unshelve. all: end_near. Qed.
 
-Lemma decreasing_change F G a b :
-    (a < b)%R ->
-    {in `[a, b]&, {homo F : x y /~ (x < y)%R}} ->
-    {within `[a, b], continuous F^`()} ->
-    derivable_oo_continuous_bnd F a b ->
-    {within `[F b, F a], continuous G} ->
+Lemma decreasing_change F G a b : (a < b)%R ->
+  {in `[a, b] &, {homo F : x y /~ (x < y)%R}} ->
+  {in `]a, b[, continuous F^`()} ->
+  cvg ((F^`() : R -> R) x @[x --> a^'+]) ->
+  cvg ((F^`() : R -> R) x @[x --> b^'-]) ->
+  derivable_oo_continuous_bnd F a b ->
+ {within `[F b, F a], continuous G} ->
   \int[mu]_(x in `[F b, F a]) (G x)%:E =
-  \int[mu]_(x in `[a, b]) (((G \o F) * - (F^`() : R -> R)) x)%:E.
+  \int[mu]_(x in `[a, b]) (((G \o F) * (- F^`())) x)%:E.
 Proof.
-set f : R -> R := F^`().
-move=> ab decrF cf dcbF cG.
-have FbFa : (F b < F a)%R by apply: decrF; rewrite //in_itv/= (ltW ab) lexx.
+move=> ab decrF cf /cvg_ex[/= r F'ar] /cvg_ex[/= l F'bl] dcbF cG.
+set f : R -> R := fun x => if x == a then r else
+                            if x == b then l else F^`() x.
+have FbFa : (F b < F a)%R by apply: decrF; rewrite //= in_itv/= (ltW ab) lexx.
 pose PG x := parameterized_integral mu (F b) x G.
 have intGFa : mu.-integrable `[(F b), (F a)] (EFin \o G).
   by apply: continuous_compact_integrable => //; exact: segment_compact.
 set H := PG \o F.
 set h : R -> R := ((G \o F) * (- f))%R.
 have dcbPG : derivable_oo_continuous_bnd PG (F b) (F a).
-  have [dF rF lF] := dcbF.
-  split.
+  have [/= dF rF lF] := dcbF.
+  split => /=.
   - move=> x xFbFa /=.
     have xFa : (x < F a)%R by move: xFbFa; rewrite in_itv/= => /andP[].
-    apply: (continuous_FTC1 xFa intGFa _ _).1 => //=.
+    apply: (continuous_FTC1 xFa intGFa _ _).1 => /=.
       by move: (xFbFa); rewrite lte_fin in_itv/= => /andP[].
     exact: (within_continuous_continuous _ _ xFbFa).
-  - move: intGFa.
-    move/(parameterized_integral_continuous FbFa).
-    by move/(continuous_within_itvP _ FbFa) => [_ + _].
+  - have := parameterized_integral_continuous FbFa intGFa.
+    by move=> /(continuous_within_itvP _ FbFa)[].
   - exact: parameterized_integral_cvg_at_left.
 have dPGE : {in `](F b), (F a)[, PG^`() =1 G}.
   move=> x xFbFa.
@@ -914,29 +1051,60 @@ have dPGE : {in `](F b), (F a)[, PG^`() =1 G}.
   apply: (continuous_FTC1 xFa intGFa _ _).2 => //=.
     by move: (xFbFa); rewrite lte_fin in_itv/= => /andP[].
   exact: (within_continuous_continuous _ _ xFbFa).
-move/continuous_within_itvP : (cG) => /(_ FbFa)[in_cG GFb GFa].
-have := derivable_oo_continuous_bnd_within dcbF.
-move=> /continuous_within_itvP => /(_ ab)[in_cF cFa cFb].
+move/continuous_within_itvP : (cG) => /(_ FbFa)[incG GFb GFa].
+have cF : {within `[a, b], continuous F} :=
+  derivable_oo_continuous_bnd_within dcbF.
+move/continuous_within_itvP : (cF) => /(_ ab)[incF cFa cFb].
 have cNh : {within `[a, b], continuous (- h)%R}.
+  move=> x; apply: continuousN; move: x.
   apply/(continuous_within_itvP _ ab); split.
-  - move=> /= x xab; apply: continuousN.
+  - move=> /= x xab.
     apply: continuousM; last first.
-      apply: continuousN.
-      move/(continuous_within_itvP _ ab) : cf => [+ _ _].
-      exact.
-    apply: continuous_comp.
-      exact: in_cF.
-    by apply: in_cG; exact: decreasing_image_oo.
-  - apply: cvgN; apply: cvgM.
+      have : (- F^`())%R y @[y --> x] --> (- f)%R x.
+        apply: cvgN => //.
+        rewrite /f.
+        rewrite ifF; last first.
+          apply: gt_eqF.
+          by move: xab; rewrite in_itv/= => /andP[].
+        rewrite ifF; last first.
+          apply: lt_eqF.
+          by move: xab; rewrite in_itv/= => /andP[].
+        exact: cf.
+      apply: cvg_trans.
+      apply: near_eq_cvg.
+      rewrite near_simpl.
+      apply: (@in_nearW _ _ `]a, b[%classic).
+      - exact: interval_open.
+      - move=> z; rewrite inE/= in_itv/= => /andP[az zb].
+        rewrite !fctE; congr (- _)%R.
+        rewrite /f ifF; last by rewrite gt_eqF.
+        by rewrite ifF// lt_eqF.
+      by rewrite inE.
+    apply: continuous_comp; first exact: incF.
+    by apply: incG; exact: decreasing_image_oo.
+  - apply: cvgM.
       apply: (decreasing_cvg_at_right_comp ab) => //x y xab yab.
       by apply: decrF; apply: subset_itv_co_cc.
-    apply: (@cvgN _ _ _ _ _ f (f a)).
-    by move /(continuous_within_itvP _ ab) : cf => [].
-  - apply: cvgN; apply: cvgM.
+    apply: cvgN.
+    rewrite {2}/f eq_refl.
+    move: F'ar.
+    apply: cvg_trans.
+    apply: near_eq_cvg.
+    near=> z.
+    rewrite /f ifF; last by rewrite gt_eqF.
+    by rewrite ifF// lt_eqF.
+  - apply: cvgM.
       apply: (decreasing_cvg_at_left_comp ab) => //x y xab yab.
       by apply: decrF; apply: subset_itv_oc_cc.
-    apply: (@cvgN _ _ _ _ _ f (f b)).
-    by move /(continuous_within_itvP _ ab) : cf => [].
+    apply: cvgN.
+    rewrite {2}/f ifF; last by rewrite gt_eqF.
+    rewrite eq_refl.
+    move: F'bl.
+    apply: cvg_trans.
+    apply: near_eq_cvg.
+    near=> z.
+    rewrite /f ifF; last by rewrite gt_eqF.
+    by rewrite ifF// lt_eqF.
 have dcbH : derivable_oo_continuous_bnd H a b.
   have := derivable_oo_continuous_bnd_within dcbPG.
   move=> /(continuous_within_itvP _ FbFa)[_ PGFb PGFa].
@@ -945,39 +1113,123 @@ have dcbH : derivable_oo_continuous_bnd H a b.
     apply/derivable1_diffP.
     apply: differentiable_comp; apply/derivable1_diffP.
       by have [+ _ _] := dcbF; apply.
-    have [dPG ? ?] := dcbPG.
-    by apply: dPG; exact: decreasing_image_oo.
+    have [+ _ _] := dcbPG.
+    by apply; exact: decreasing_image_oo.
   - apply/cvgrPdist_le => /= e e0.
-    have/cvgrPdist_le /(_ e e0) [d' /= d'0 {}PGFa] := PGFa.
+    have/cvgrPdist_le /(_ e e0) [d /= d0 {}PGFa] := PGFa.
     have := cvg_at_right_within cFa.
-    move/cvgrPdist_lt/(_ _ d'0) => [d'' /= d''0 {}cFa].
+    move/cvgrPdist_lt/(_ _ d0) => [d' /= d'0 {}cFa].
     near=> t.
     apply: PGFa; last by apply: decrF; rewrite //in_itv/= ?lexx !ltW.
     apply: cFa => //=.
     rewrite ltr0_norm// ?subr_lt0// opprB.
     by near: t; exact: nbhs_right_ltDr.
   - apply/cvgrPdist_le => /= e e0.
-    have/cvgrPdist_le /(_ e e0) [d' /= d'0 {}PGFb] := PGFb.
+    have/cvgrPdist_le /(_ e e0) [d /= d0 {}PGFb] := PGFb.
     have := cvg_at_left_within cFb.
-    move/cvgrPdist_lt/(_ _ d'0) => [d'' /= d''0 {}cFb].
+    move/cvgrPdist_lt/(_ _ d0) => [d' /= d'0 {}cFb].
     near=> t.
     apply: (PGFb); last by apply: decrF; rewrite //in_itv/= ?lexx !ltW.
     apply: cFb => //=.
     rewrite gtr0_norm// ?subr_gt0//.
     by near: t; exact: nbhs_left_ltBl.
-have dHE : {in `]a, b[, H^`() =1 (- h)%R}. (* difference from gt0 version *)
+have dHE : {in `]a, b[, H^`() =1 (- h)%R}.
   move=> x xab; rewrite derive1_comp.
-  - rewrite dPGE//; first by rewrite /h mulrN opprK//.
-    exact: decreasing_image_oo.
+  - rewrite dPGE//; last exact: decreasing_image_oo.
+    rewrite /h/f.
+    move: xab.
+    rewrite in_itv/= => /andP[ax xb].
+    rewrite mulrN opprK.
+    rewrite mulrfctE ifF; last by rewrite gt_eqF.
+    by rewrite ifF// lt_eqF.
   - by have [+ _ _] := dcbF; apply.
   - by have [+ _ _] := dcbPG; apply; exact: decreasing_image_oo.
 rewrite (continuous_FTC2 FbFa cG dcbPG dPGE).
-under eq_integral do rewrite -(opprK (h _)) EFinN.
-rewrite integralN/=; last first.
-  apply: integrable_add_def => //.
+apply: oppe_inj.
+rewrite oppeB// addeC.
+rewrite -(continuous_FTC2 ab cNh dcbH dHE).
+have mGFF' : measurable_fun `]a, b[ ((G \o F) * F^`())%R.
+  apply: measurable_funM.
+  - apply: (measurable_comp (measurable_itv `]F b, F a[)).
+      exact: decreasing_image_oo.
+    apply: subspace_continuous_measurable_fun => //.
+    apply: continuous_in_subspaceT => x; rewrite inE/=.
+    exact: incG.
+  - apply: subspace_continuous_measurable_fun => //.
+    apply: continuous_in_subspaceT => x; rewrite inE/=.
+    exact: incF.
+  - apply: subspace_continuous_measurable_fun; first by [].
+    apply: continuous_in_subspaceT => x.
+    rewrite inE/=.
+    exact: cf.
+rewrite -!integral_itv_bndo_bndc'; last 2 first.
+- rewrite -setU1itv ?bnd_simp//.
+  rewrite mulrN; apply: measurableT_comp => //.
+  by rewrite measurable_funU//; split => //; apply: measurable_fun_set1.
+- apply: subspace_continuous_measurable_fun => //.
+  move: cNh; apply: continuous_subspaceW.
+  exact: subset_itv_co_cc.
+rewrite -!integral_itv_obnd_cbnd'; last 2 first.
+- rewrite mulrN.
+  exact: measurableT_comp => //.
+- apply: subspace_continuous_measurable_fun => //.
+  move: cNh; apply: continuous_subspaceW.
+  exact: subset_itv_oo_cc.
+rewrite -[LHS]oppeK -integralN//=; last first.
+  apply: integrable_add_def => //=.
+  apply: (@integrableS _ _ _ mu `[a, b]) => //.
+    exact: subset_itv_oo_cc.
   apply: continuous_compact_integrable => //.
   exact: segment_compact.
-by rewrite (continuous_FTC2 ab cNh dcbH dHE) oppeB// EFinN addeC.
+congr (- _).
+apply: eq_integral => //.
+move=> x xab.
+rewrite mulrN; congr (- _)%:E.
+rewrite /h/f.
+rewrite mulrN opprK.
+rewrite mulrfctE ifF; last first.
+  apply: gt_eqF.
+  by move: xab; rewrite inE/= in_itv/= => /andP[].
+rewrite ifF//.
+apply: lt_eqF.
+by move: xab; rewrite inE/= in_itv/= => /andP[].
 Unshelve. all: end_near. Qed.
 
 End integration_by_substitution.
+
+Module old_integration_by_substitution.
+Section old_integration_by_substitution.
+Local Open Scope ereal_scope.
+Context {R : realType}.
+Notation mu := lebesgue_measure.
+Implicit Types (F G f : R -> R) (a b : R).
+
+Lemma increasing_change_old F G a b : (a < b)%R ->
+  {in `[a, b] &, {homo F : x y / (x < y)%R}} ->
+  {within `[a, b], continuous F^`()} ->
+  derivable_oo_continuous_bnd F a b ->
+ {within `[F a, F b], continuous G} ->
+  \int[mu]_(x in `[F a, F b]) (G x)%:E =
+  \int[mu]_(x in `[a, b]) (((G \o F) * F^`()) x)%:E.
+Proof.
+move=> ab incrF.
+move/(continuous_within_itvP _ ab) => [+ /cvgP + /cvgP].
+exact: (increasing_change ab incrF).
+Qed.
+
+Lemma decreasing_change_old F G a b :
+    (a < b)%R ->
+    {in `[a, b]&, {homo F : x y /~ (x < y)%R}} ->
+    {within `[a, b], continuous F^`()} ->
+    derivable_oo_continuous_bnd F a b ->
+    {within `[F b, F a], continuous G} ->
+  \int[mu]_(x in `[F b, F a]) (G x)%:E =
+  \int[mu]_(x in `[a, b]) (((G \o F) * - (F^`() : R -> R)) x)%:E.
+Proof.
+move=> ab decrF.
+move/(continuous_within_itvP _ ab) => [+ /cvgP + /cvgP].
+exact: decreasing_change.
+Qed.
+
+End old_integration_by_substitution.
+End old_integration_by_substitution.
