@@ -797,9 +797,11 @@ End within_continuous_derive.
 (* PR *)
 Lemma measurable_fun_set1 d d' (T : measurableType d) (U : measurableType d')
    (a : T) (f : T -> U) :
-d.-measurable (set1 a) -> measurable_fun (set1 a) f.
+measurable_fun (set1 a) f.
 Proof.
-Admitted.
+move=> ma S mS.
+by rewrite set1I; case: ifP.
+Qed.
 
 (* PR *)
 Lemma in_nearW (R : realFieldType) (P : R -> Prop) (S : set R) :
@@ -824,11 +826,33 @@ rewrite sub0r normrN ger0_norm.
 by rewrite -(add0r e) midf_lt.
 Qed.
 
+Lemma notin_setD1K (T : Type) (r : T) (D : set T) : r \notin D -> D `\ r = D.
+Proof.
+rewrite notin_setE => NDr.
+apply: setDidl.
+apply/disjoints_subset.
+apply/subsetCr.
+by move=> _ ->.
+Qed.
+
 Section integral_itv.
 Local Open Scope ereal_scope.
 Context {R : realType}.
 
 Local Notation mu := (@lebesgue_measure R).
+
+Lemma integral_setD1_EFin' (f : R -> R) r (D : set R) :
+  measurable (D `\ r) -> measurable_fun (D `\ r) f ->
+  \int[mu]_(x in D `\ r) (f x)%:E = \int[mu]_(x in D) (f x)%:E.
+Proof.
+move=> mD mf.
+have [Dr|NDr] := pselect (D r); last by rewrite notin_setD1K// notin_setE.
+rewrite -[in RHS](@setD1K _ r D)// integral_setU_EFin//.
+- by rewrite integral_set1// ?add0e.
+- apply/measurable_funU => //; split => //.
+  exact: measurable_fun_set1.
+- by rewrite disj_set2E; apply/eqP/seteqP; split => // x [? []].
+Qed.
 
 (* PR *)
 Lemma integral_itv_bndo_bndc' (a : itv_bound R) (r : R) (f : R -> R) :
@@ -836,7 +860,10 @@ Lemma integral_itv_bndo_bndc' (a : itv_bound R) (r : R) (f : R -> R) :
    \int[mu]_(x in [set` Interval a (BLeft r)]) (f x)%:E =
    \int[mu]_(x in [set` Interval a (BRight r)]) (f x)%:E.
 Proof.
-Admitted.
+move=> mf; have [ar|ar] := leP a (BLeft r).
+- by rewrite -[RHS](@integral_setD1_EFin' _ r) ?setDitv1r.
+- by rewrite !set_itv_ge// -leNgt// ltW.
+Qed.
 
 (* PR *)
 Lemma integral_itv_obnd_cbnd' (r : R) (b : itv_bound R) (f : R -> R) :
@@ -844,7 +871,10 @@ Lemma integral_itv_obnd_cbnd' (r : R) (b : itv_bound R) (f : R -> R) :
    \int[mu]_(x in [set` Interval (BRight r) b]) (f x)%:E =
    \int[mu]_(x in [set` Interval (BLeft r) b]) (f x)%:E.
 Proof.
-Admitted.
+move=> mf; have [rb|rb] := leP (BRight r) b.
+- rewrite -[RHS](@integral_setD1_EFin' _ r) ?setDitv1l//.
+- by rewrite !set_itv_ge// -leNgt -?ltBRight_leBLeft// ltW.
+Qed.
 
 End integral_itv.
 
