@@ -461,6 +461,7 @@ have [xz|xz|->] := ltgtP x z; last by rewrite subrr normr0 ltW.
     exact/ltW.
     exact/ltW.
   rewrite Rintegral_itv_obnd_cbnd//; last first.
+    apply: (@integrableS _ _ _ mu `[z, x]) => //; first exact: subset_itv_oc_cc.
     by apply: integrableS intf => //; apply: subset_itvScc => //; exact/ltW.
   have zxab : `[z, x] `<=` `[a, b].
     by apply: subset_itvScc; rewrite bnd_simp; exact/ltW.

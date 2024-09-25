@@ -1582,6 +1582,10 @@ apply/seteqP; split=> [t /=| t /= [] [] ->//].
 by case: ifPn => ft; [left|right].
 Qed.
 
+Lemma measurable_fun_set1 a (f : T1 -> T2) :
+measurable_fun (set1 a) f.
+Proof. by move=> ? ? ?; rewrite set1I; case: ifP. Qed.
+
 End measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ (fun=> _)) =>
   solve [apply: measurable_cst] : core.

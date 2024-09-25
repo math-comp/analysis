@@ -1192,6 +1192,9 @@ Proof. by rewrite /setY setDE setCK setIid setDE setIid setUv. Qed.
 Lemma setCYT A : ~` A `+` A = [set: T].
 Proof. by rewrite setYC setYCT. Qed.
 
+Lemma not_setD1 a A : ~ A a -> A `\ a = A.
+Proof. by move=> NDr; apply/setDidPl/disjoints_subset/subsetCr => _ ->. Qed.
+
 End basic_lemmas.
 #[global]
 Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
