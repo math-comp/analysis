@@ -2444,7 +2444,6 @@ Proof. by move=> x; have [//|] := leP x +oo; rewrite ltNge leey. Qed.
 Lemma miney : right_id (+oo : \bar R) mine.
 Proof. by move=> x; rewrite minC minye. Qed.
 
-
 Lemma oppe_max : {morph -%E : x y / maxe x y >-> mine x y : \bar R}.
 Proof.
 move=> [x| |] [y| |] //=.
@@ -2458,26 +2457,28 @@ Qed.
 Lemma oppe_min : {morph -%E : x y / mine x y >-> maxe x y : \bar R}.
 Proof. by move=> x y; rewrite -[RHS]oppeK oppe_max !oppeK. Qed.
 
-Lemma maxeMr z x y : z \is a fin_num -> 0 < z ->
+Lemma maxeMr z x y : z \is a fin_num -> 0 <= z ->
   z * maxe x y = maxe (z * x) (z * y).
 Proof.
-move=> + r0; have [xy|yx|->] := ltgtP x y; last by rewrite maxxx.
+move=> /[swap]; rewrite le_eqVlt => /predU1P[<- _|z0].
+  by rewrite !mul0e maxxx.
+have [xy|yx|->] := ltgtP x y; last by rewrite maxxx.
 - by move=> zfin; rewrite /maxe lte_pmul2l // xy.
 - by move=> zfin; rewrite maxC /maxe lte_pmul2l// yx.
 Qed.
 
-Lemma maxeMl z x y : z \is a fin_num -> 0 < z ->
+Lemma maxeMl z x y : z \is a fin_num -> 0 <= z ->
   maxe x y * z = maxe (x * z) (y * z).
 Proof. by move=> zfin z0; rewrite muleC maxeMr// !(muleC z). Qed.
 
-Lemma mineMr z x y : z \is a fin_num -> 0 < z ->
+Lemma mineMr z x y : z \is a fin_num -> 0 <= z ->
   z * mine x y = mine (z * x) (z * y).
 Proof.
-move=> fz zgt0.
+move=> fz zge0.
 by rewrite -eqe_oppP -muleN [in LHS]oppe_min maxeMr// !muleN -oppe_min.
 Qed.
 
-Lemma mineMl z x y : z \is a fin_num -> 0 < z ->
+Lemma mineMl z x y : z \is a fin_num -> 0 <= z ->
   mine x y * z = mine (x * z) (y * z).
 Proof. by move=> zfin z0; rewrite muleC mineMr// !(muleC z). Qed.
 

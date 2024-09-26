@@ -18,9 +18,23 @@
 
 ### Changed
 
+- in `numfun.v`:
+  + lemma `gt0_funeposM` renamed to `ge0_funeposM`
+    and hypothesis weakened from strict to large inequality
+  + lemma `gt0_funenegM` renamed to `ge0_funenegM`
+    and hypothesis weakened from strict to large inequality
+  + lemma `lt0_funeposM` renamed to `le0_funeposM`
+    and hypothesis weakened from strict to large inequality
+  + lemma `lt0_funenegM` renamed to `le0_funenegM`
+    and hypothesis weakened from strict to large inequality
+
 ### Renamed
 
 ### Generalized
+
+- in `constructive_ereal.v`:
+  + lemmas `maxeMr`, `maxeMl`, `mineMr`, `mineMr`:
+    hypothesis weakened from strict inequality to large inequality
 
 ### Deprecated
 
