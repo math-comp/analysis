@@ -3376,17 +3376,16 @@ Let mesf : measurable_fun D f. Proof. exact: measurable_int intf. Qed.
 Lemma integralZl r :
   \int[mu]_(x in D) (r%:E * f x) = r%:E * \int[mu]_(x in D) f x.
 Proof.
-have [r0|r0|->] := ltgtP r 0%R.
-- rewrite [in LHS]integralE// lt0_funeposM// lt0_funenegM//.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _)) ?oppr_ge0 ?ltW//.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _)) ?oppr_ge0 ?ltW//.
+have /orP[r0|r0] := le_total r 0%R.
+- rewrite [in LHS]integralE// le0_funeposM// le0_funenegM//.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _)) ?oppr_ge0//.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _)) ?oppr_ge0//.
   rewrite !EFinN addeC !mulNe oppeK -muleBr ?integrable_add_def//.
   by rewrite [in RHS]integralE.
-- rewrite [in LHS]integralE// gt0_funeposM// gt0_funenegM//.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _) (ltW r0))//.
-  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _) (ltW r0))//.
+- rewrite [in LHS]integralE// ge0_funeposM// ge0_funenegM//=.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funepos _) r0)//.
+  rewrite (ge0_integralZl_EFin _ _ _ (measurable_funeneg _) r0)//.
   by rewrite -muleBr 1?[in RHS]integralE// integrable_add_def.
-- by under eq_fun do rewrite mul0e; rewrite mul0e integral0.
 Qed.
 
 Lemma integralZr r :

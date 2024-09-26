@@ -181,28 +181,28 @@ Proof.
 by move=> f0 x; rewrite inE => Dx; apply/max_idPl; rewrite leeNr oppe0 f0.
 Qed.
 
-Lemma gt0_funeposM r f : (0 < r)%R ->
+Lemma ge0_funeposM r f : (0 <= r)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => r%:E * (f^\+ x)).
 Proof. by move=> ?; rewrite funeqE => x; rewrite /funepos maxeMr// mule0. Qed.
 
-Lemma gt0_funenegM r f : (0 < r)%R ->
+Lemma ge0_funenegM r f : (0 <= r)%R ->
   (fun x => r%:E * f x)^\- = (fun x => r%:E * (f^\- x)).
 Proof.
 by move=> r0; rewrite funeqE => x; rewrite /funeneg -muleN maxeMr// mule0.
 Qed.
 
-Lemma lt0_funeposM r f : (r < 0)%R ->
+Lemma le0_funeposM r f : (r <= 0)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => - r%:E * (f^\- x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funeposN gt0_funenegM -1?ltrNr ?oppr0.
+by rewrite funeposN ge0_funenegM ?oppr_ge0.
 Qed.
 
-Lemma lt0_funenegM r f : (r < 0)%R ->
+Lemma le0_funenegM r f : (r <= 0)%R ->
   (fun x => r%:E * f x)^\- = (fun x => - r%:E * (f^\+ x)).
 Proof.
 move=> r0; rewrite -[in LHS](opprK r); under eq_fun do rewrite EFinN mulNe.
-by rewrite funenegN gt0_funeposM -1?ltrNr ?oppr0.
+by rewrite funenegN ge0_funeposM ?oppr_ge0.
 Qed.
 
 Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.
