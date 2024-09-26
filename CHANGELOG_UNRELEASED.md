@@ -15,6 +15,12 @@
 
 - in `realfun.v`:
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
+- in `sequences.v`:
+  + lemma `nneseries_split_cond`
+  + lemma `subset_lee_nneseries`
+
+- in `lebesgue_measure.v`:
+  + lemma `vitali_theorem_corollary`
 
 - in `filter.v` (new file):
   + lemma `in_nearW`
@@ -212,6 +218,9 @@
 - in `exp.v`:
   + lemmas `expR_ge1Dx` and `expeR_ge1Dx` (remove hypothesis)
   + lemma `le_ln1Dx` (weaken hypothesis)
+- in `sequences.v`:
+  + lemma `eseries_mkcond`
+  + lemma `nneseries_tail_cvg`
 
 - in `derive.v`:
   + lemma `derivableX`
@@ -228,6 +237,8 @@
   + definition `fmap_proper_filter'`
   + definition `filter_map_proper_filter'`
   + definition `filter_prod_proper'`
+- in `sequences.v`:
+  + notation `nneseries_mkcond` (was deprecated since 0.6.0)
 
 ### Infrastructure
 
