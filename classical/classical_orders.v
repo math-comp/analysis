@@ -9,7 +9,7 @@ From mathcomp Require Import functions set_interval.
 (* This file provides some additional order theory that requires stronger     *)
 (* axioms than mathcomp's own orders expect                                   *)
 (* ```                                                                        *)
-(*    share_prefix n == two elements in a product space agree up n            *)
+(*    same_prefix n == two elements in a product space agree up n             *)
 (*    first_diff x y == the first occurrence where x n != y n, or None        *)
 (*      lexi_bigprod == the (countably) infinite lexicographical ordering     *)
 (*    big_lexi_order == an alias for attack this order type                   *)
@@ -28,43 +28,43 @@ Local Open Scope classical_set_scope.
 Section big_lexi_order.
 Context {K : nat -> eqType}.
 
-Definition share_prefix n (t1 t2 : forall n, K n) :=
+Definition same_prefix n (t1 t2 : forall n, K n) :=
   forall m, (m < n)%O -> t1 m = t2 m.
 
-Lemma share_prefix0 t1 t2 : share_prefix 0 t1 t2. Proof. by []. Qed.
-Hint Resolve share_prefix0 : core.
+Lemma same_prefix0 t1 t2 : same_prefix 0 t1 t2. Proof. by []. Qed.
+Hint Resolve same_prefix0 : core.
 
-Lemma share_prefixC n t1 t2 : share_prefix n t1 t2 <-> share_prefix n t2 t1.
-Proof. by rewrite /share_prefix; split => + m mn => /(_ m mn). Qed.
+Lemma same_prefix_sym n t1 t2 : same_prefix n t1 t2 <-> same_prefix n t2 t1.
+Proof. by rewrite /same_prefix; split => + m mn => /(_ m mn). Qed.
 
-Lemma share_prefixS n m t1 t2 :
-  n <= m -> share_prefix m t1 t2 -> share_prefix n t1 t2.
+Lemma same_prefix_leq n m t1 t2 :
+  n <= m -> same_prefix m t1 t2 -> same_prefix n t1 t2.
 Proof.
 move=> nm + r rn; apply.
 by move: nm; rewrite leq_eqVlt => /predU1P[<-//|]; exact: ltn_trans.
 Qed.
 
-Lemma share_prefix_refl n x : share_prefix n x x. Proof. by []. Qed.
+Lemma same_prefix_refl n x : same_prefix n x x. Proof. by []. Qed.
 
-Lemma share_prefix_trans n x y z :
-  share_prefix n x y ->
-  share_prefix n y z ->
-  share_prefix n x z.
+Lemma same_prefix_trans n x y z :
+  same_prefix n x y ->
+  same_prefix n y z ->
+  same_prefix n x z.
 Proof. by move=> + + m mn => /(_ _ mn) ->; exact. Qed.
 
 Definition first_diff (t1 t2 : forall n, K n) : option nat :=
-  xget None (Some @` [set n | share_prefix n t1 t2 /\ t1 n != t2 n]).
+  xget None (Some @` [set n | same_prefix n t1 t2 /\ t1 n != t2 n]).
 
-Lemma first_diffC t1 t2 : first_diff t1 t2 = first_diff t2 t1.
+Lemma first_diff_sym t1 t2 : first_diff t1 t2 = first_diff t2 t1.
 Proof.
 rewrite /first_diff /=; congr (xget _ (image _ _)).
 under eq_set do rewrite eq_sym.
-by apply/seteqP; split => z/= [] /share_prefixC.
+by apply/seteqP; split => z/= [] /same_prefix_sym.
 Qed.
 
 Lemma first_diff_unique (x y : forall n, K n) n m :
-  share_prefix n x y -> x n != y n ->
-  share_prefix m x y -> x m != y m ->
+  same_prefix n x y -> x n != y n ->
+  same_prefix m x y -> x m != y m ->
   n = m.
 Proof.
 move=> nfx xyn mfx xym; apply/eqP; rewrite eq_le 2!leNgt; apply/andP; split.
@@ -73,7 +73,7 @@ by apply/negP => /mfx; exact/eqP.
 Qed.
 
 Lemma first_diff_SomeP x y n :
-  first_diff x y = Some n <-> share_prefix n x y /\ x n != y n.
+  first_diff x y = Some n <-> same_prefix n x y /\ x n != y n.
 Proof.
 split.
   by rewrite /first_diff; case: xgetP=> //= -[m ->|//] [p + <-[]] => /[swap] ->.
@@ -137,7 +137,8 @@ Lemma lexi_bigprod_anti R : (forall n, antisymmetric (R n)) ->
   antisymmetric (lexi_bigprod R).
 Proof.
 move=> antiR x y /andP [xy yx]; apply/first_diff_NoneP; move: xy yx.
-rewrite /lexi_bigprod first_diffC; case E : (first_diff y x) => [n|]// Rxy Ryx.
+rewrite /lexi_bigprod first_diff_sym. 
+case E : (first_diff y x) => [n|]// Rxy Ryx.
 case/first_diff_SomeP : E => _ /eqP yxn.
 by have := antiR n (x n) (y n); rewrite Rxy Ryx => /(_ erefl)/esym.
 Qed.
@@ -154,13 +155,14 @@ case Eq: (first_diff y z) => [q|]; first last.
   by move: Ep Er; move/first_diff_NoneP: Eq => -> -> [->].
 have [pq|qp|pqE]:= ltgtP p q.
 - move: Er.
-  rewrite (@first_diff_lt y x z _ _ pq) ?[_ y x]first_diffC// => -[<-] ? _.
+  rewrite (@first_diff_lt y x z _ _ pq) ?[_ y x]first_diff_sym// => -[<-] ? _.
   by case/first_diff_SomeP:Eq => /(_ _ pq) <-.
 - move: Er.
-  rewrite first_diffC (@first_diff_lt y _ _ _ _ qp) // ?[_ y x]first_diffC//.
-  by move=> [<-] _ ?; case/first_diff_SomeP: Ep => /(_ _ qp) ->.
+  rewrite first_diff_sym (@first_diff_lt y _ _ _ _ qp) //. 
+    by move=> [<-] _ ?; case/first_diff_SomeP: Ep => /(_ _ qp) ->.
+  by rewrite ?[_ y x]first_diff_sym//.
 - move: Ep Eq; rewrite pqE => Eqx Eqz.
-  rewrite first_diffC in Eqx; have := first_diff_eq Eqx Eqz Er.
+  rewrite first_diff_sym in Eqx; have := first_diff_eq Eqx Eqz Er.
   rewrite leq_eqVlt => /predU1P[->|qr]; first exact: Rtrans.
   case/first_diff_SomeP : Er => /(_ _ qr) -> _ ? ?.
   have E : z q = y q by apply: Ranti; apply/andP; split.
@@ -172,13 +174,13 @@ Proof.
 move=> Rtotal x y.
 case E : (first_diff x y) => [n|]; first last.
   by move/first_diff_NoneP : E ->; rewrite lexi_bigprod_reflexive.
-by rewrite /lexi_bigprod E first_diffC E; exact: Rtotal.
+by rewrite /lexi_bigprod E first_diff_sym E; exact: Rtotal.
 Qed.
 
 Definition start_with n (t1 t2 : forall n, K n) (i : nat) : K i :=
   if (i < n)%O then t1 i else t2 i.
 
-Lemma start_with_prefix n x y : share_prefix n x (start_with n x y).
+Lemma start_with_prefix n x y : same_prefix n x (start_with n x y).
 Proof. by move=> r rn; rewrite /start_with rn. Qed.
 
 End big_lexi_order.
@@ -251,55 +253,55 @@ Context {d} {K : nat -> orderType d}.
 Lemma lexi_bigprod_prefix_lt (b a x: big_lexi_order K) n :
   (a < b)%O ->
   first_diff a b = Some n ->
-  share_prefix n.+1 x b ->
+  same_prefix n.+1 x b ->
   (a < x)%O.
 Proof.
 move=> + /[dup] abD /first_diff_SomeP [pfa abN].
 case E1 : (first_diff a x) => [m|]; first last.
-  by move/first_diff_NoneP:E1 <- => _ /(_ n (ltnSn _))/eqP; rewrite (negbTE abN).
+  by move/first_diff_NoneP:E1 <- => _/(_ n (ltnSn _))/eqP; rewrite (negbTE abN).
 move=> ab pfx; apply/andP; split.
-  by apply/eqP => /first_diff_NoneP; rewrite first_diffC E1.
+  by apply/eqP => /first_diff_NoneP; rewrite first_diff_sym E1.
 move: ab; rewrite /Order.lt/= => /andP[ba].
 rewrite /big_lexi_ord /lexi_bigprod E1 abD.
 suff : n = m by have := pfx n (ltnSn _) => /[swap] -> ->.
 apply: (@first_diff_unique _ a x) => //=; [| |by case/first_diff_SomeP : E1..].
-- by apply/(share_prefix_trans pfa)/share_prefixC; exact: share_prefixS.
+- by apply/(same_prefix_trans pfa)/same_prefix_sym; exact: same_prefix_leq.
 - by rewrite (pfx n (ltnSn _)).
 Qed.
 
 Lemma lexi_bigprod_prefix_gt (b a x : big_lexi_order K) n :
   (b < a)%O ->
   first_diff a b = Some n ->
-  share_prefix n.+1 x b ->
+  same_prefix n.+1 x b ->
   (x < a)%O.
 Proof.
 move=> + /[dup] abD /first_diff_SomeP[pfa /eqP abN].
 case E1 : (first_diff x a) => [m|]; first last.
   by move/first_diff_NoneP : E1 -> => _ /(_ n (ltnSn _)).
 move=> ab pfx; apply/andP; split.
-  by apply/negP => /eqP/first_diff_NoneP; rewrite first_diffC E1.
+  by apply/negP => /eqP/first_diff_NoneP; rewrite first_diff_sym E1.
 move: ab; rewrite /Order.lt/= => /andP [ab].
-rewrite /big_lexi_ord /lexi_bigprod [_ b a]first_diffC E1 abD.
+rewrite /big_lexi_ord /lexi_bigprod [_ b a]first_diff_sym E1 abD.
 suff : n = m by have := pfx n (ltnSn _) => /[swap] -> ->.
 apply: (@first_diff_unique _ x a) => //=; [| |by case/first_diff_SomeP : E1..].
-- apply/share_prefixC/(share_prefix_trans pfa)/share_prefixC.
-  exact: share_prefixS.
+- apply/same_prefix_sym/(same_prefix_trans pfa)/same_prefix_sym.
+  exact: same_prefix_leq.
 - by rewrite (pfx n (ltnSn _)) eq_sym; exact/eqP.
 Qed.
 
 Lemma lexi_bigprod_between (a x b : big_lexi_order K) n :
   (a <= x <= b)%O ->
-  share_prefix n a b ->
-  share_prefix n x a.
+  same_prefix n a b ->
+  same_prefix n x a.
 Proof.
 move=> axb; elim: n => // n IH pfxSn m mSn.
-have pfxA : share_prefix n a x.
-  exact/share_prefixC/IH/(share_prefixS _  pfxSn).
-have pfxB : share_prefix n x b.
-  apply: (@share_prefix_trans _ n x a b); first exact/share_prefixC.
-  exact: (share_prefixS _  pfxSn).
+have pfxA : same_prefix n a x.
+  exact/same_prefix_sym/IH/(same_prefix_leq _  pfxSn).
+have pfxB : same_prefix n x b.
+  apply: (@same_prefix_trans _ n x a b); first exact/same_prefix_sym.
+  exact: (same_prefix_leq _  pfxSn).
 move: mSn; rewrite /Order.lt/= ltnS leq_eqVlt => /predU1P[->|]; first last.
-  by move: pfxA; rewrite share_prefixC; exact.
+  by move: pfxA; rewrite same_prefix_sym; exact.
 apply: le_anti; apply/andP; split.
   case/andP: axb => ? +; rewrite {1}/Order.le/= /big_lexi_ord /lexi_bigprod.
   rewrite (pfxSn n (ltnSn _)).
@@ -322,7 +324,7 @@ Qed.
 Lemma big_lexi_interval_prefix (i : interval (big_lexi_order K))
     (x : big_lexi_order K) :
   itv_open_ends i -> x \in i ->
-  exists n, share_prefix n x `<=` [set` i].
+  exists n, same_prefix n x `<=` [set` i].
 Proof.
 move: i; case=> [][[]l|[]] [[]r|[]] [][]; rewrite ?in_itv /= ?andbT.
 - move=> /andP[lx xr].
@@ -334,7 +336,7 @@ move: i; case=> [][[]l|[]] [[]r|[]] [][]; rewrite ?in_itv /= ?andbT.
   apply/andP; split.
     apply: (lexi_bigprod_prefix_lt lx E1) => w wm; apply/esym/xppfx.
     by move/ltnSE/leq_ltn_trans : wm; apply; rewrite ltnS leq_max leqnn orbT.
-  rewrite first_diffC in E2.
+  rewrite first_diff_sym in E2.
   apply: (lexi_bigprod_prefix_gt xr E2) => w wm; apply/esym/xppfx.
   by move/ltnSE/leq_ltn_trans : wm; apply; rewrite ltnS leq_max leqnn.
 - move=> lx.
@@ -345,7 +347,7 @@ move: i; case=> [][[]l|[]] [[]r|[]] [][]; rewrite ?in_itv /= ?andbT.
 - move=> xr.
   case E2 : (first_diff x r) => [n|]; first last.
     by move: xr; move/first_diff_NoneP : E2 ->; rewrite bnd_simp.
-  exists n.+1; rewrite first_diffC in E2 => p xppfx.
+  exists n.+1; rewrite first_diff_sym in E2 => p xppfx.
   rewrite set_itvE /=.
   by apply: (lexi_bigprod_prefix_gt xr E2) => w wm; exact/esym/xppfx.
 by move=> _; exists 0 => ? ?; rewrite set_itvE.
@@ -353,17 +355,18 @@ Qed.
 End big_lexi_intervals.
 
 (** TODO: generalize to tbOrderType when that's available in mathcomp*)
-Lemma shared_prefix_closed_itv {d} {K : nat -> finOrderType d} n
+Lemma same_prefix_closed_itv {d} {K : nat -> finOrderType d} n
   (x : big_lexi_order K) :
-  share_prefix n x =
-    `[(start_with n x (fun=>\bot):big_lexi_order K)%O, (start_with n x (fun=>\top))%O].
+  same_prefix n x = `[
+    (start_with n x (fun=>\bot):big_lexi_order K)%O, 
+    (start_with n x (fun=>\top))%O].
 Proof.
 rewrite eqEsubset; split=> [z pfxz|z]; first last.
-  rewrite set_itvE /= => xbt; apply: share_prefix_trans.
+  rewrite set_itvE /= => xbt; apply: same_prefix_trans.
     exact: (@start_with_prefix _ _ _ (fun=> \bot)%O).
-  apply/share_prefixC/(lexi_bigprod_between xbt).
-  apply: share_prefix_trans; last exact: start_with_prefix.
-  exact/share_prefixC/start_with_prefix.
+  apply/same_prefix_sym/(lexi_bigprod_between xbt).
+  apply: same_prefix_trans; last exact: start_with_prefix.
+  exact/same_prefix_sym/start_with_prefix.
 rewrite set_itvE /= /Order.le /= /big_lexi_ord /= /lexi_bigprod.
 apply/andP; split;case E : (first_diff _ _ ) => [m|] //; rewrite /start_with /=.
 - by case: ifPn => [/pfxz -> //|]; rewrite le0x.
