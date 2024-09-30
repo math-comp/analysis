@@ -1565,7 +1565,7 @@ move=> A [n _]; elim: n A.
 by move=> n IH A /= [B snB [C snC <-]]; apply: finI_fromI; apply: IH.
 Qed.
 
-Lemma smallest_filter_finI {T : choiceType} (D : set T) f :
+Lemma smallest_filter_finI {I T : choiceType} (D : set I) (f : I -> set T) :
   filter_from (finI_from D f) id = smallest (@Filter T) (f @` D).
 Proof. by rewrite filterI_iter_finI filterI_iterE. Qed.
 
