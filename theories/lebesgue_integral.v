@@ -6450,35 +6450,33 @@ rewrite ge0_integral_setU//=.
 Qed.
 
 Lemma integral_setD1_EFin (f : R -> R) r (D : set R) :
-  measurable D -> measurable_fun D f -> D r ->
+  measurable (D `\ r) -> measurable_fun (D `\ r) f ->
   \int[mu]_(x in D `\ r) (f x)%:E = \int[mu]_(x in D) (f x)%:E.
 Proof.
-move=> mD mf Dr; rewrite -[in RHS](@setD1K _ r D)// integral_setU_EFin//.
-- by rewrite integral_set1// ?add0e.
-- exact: measurableD.
-- by rewrite setD1K.
-- by rewrite disj_set2E; apply/eqP/seteqP; split => // x [? []].
+move=> mD mfl; have [Dr|NDr] := pselect (D r); last by rewrite not_setD1.
+rewrite -[in RHS](@setD1K _ r D)// integral_setU_EFin//=.
+- by rewrite integral_set1// add0e.
+- by apply/measurable_funU => //; split => //; exact: measurable_fun_set1.
+- by rewrite disj_set2E setDIK.
 Qed.
 
 Lemma integral_itv_bndo_bndc (a : itv_bound R) (r : R) (f : R -> R) :
-  measurable_fun [set` Interval a (BRight r)] f ->
+  measurable_fun [set` Interval a (BLeft r)] f ->
    \int[mu]_(x in [set` Interval a (BLeft r)]) (f x)%:E =
    \int[mu]_(x in [set` Interval a (BRight r)]) (f x)%:E.
 Proof.
 move=> mf; have [ar|ar] := leP a (BLeft r).
-- rewrite -[RHS](@integral_setD1_EFin _ r) ?setDitv1r//.
-  by rewrite /= in_itv /= lexx andbT {mf}; case: a ar => -[].
+- by rewrite -[RHS](@integral_setD1_EFin _ r) ?setDitv1r.
 - by rewrite !set_itv_ge// -leNgt// ltW.
 Qed.
 
 Lemma integral_itv_obnd_cbnd (r : R) (b : itv_bound R) (f : R -> R) :
-  measurable_fun [set` Interval (BLeft r) b] f ->
+  measurable_fun [set` Interval (BRight r) b] f ->
    \int[mu]_(x in [set` Interval (BRight r) b]) (f x)%:E =
    \int[mu]_(x in [set` Interval (BLeft r) b]) (f x)%:E.
 Proof.
 move=> mf; have [rb|rb] := leP (BRight r) b.
-- rewrite -[RHS](@integral_setD1_EFin _ r) ?setDitv1l//.
-  by rewrite /= in_itv /= lexx/= {mf}; case: b rb => -[].
+- by rewrite -[RHS](@integral_setD1_EFin _ r) ?setDitv1l.
 - by rewrite !set_itv_ge// -leNgt -?ltBRight_leBLeft// ltW.
 Qed.
 
@@ -6491,7 +6489,7 @@ Notation mu := (@lebesgue_measure R).
 Implicit Type f : R -> R.
 
 Lemma Rintegral_itv_bndo_bndc (a : itv_bound R) (r : R) f :
-  mu.-integrable [set` Interval a (BRight r)] (EFin \o f) ->
+  mu.-integrable [set` Interval a (BLeft r)] (EFin \o f) ->
    \int[mu]_(x in [set` Interval a (BLeft r)]) (f x) =
    \int[mu]_(x in [set` Interval a (BRight r)]) (f x).
 Proof.
@@ -6500,7 +6498,7 @@ by apply/EFin_measurable_fun; exact: (measurable_int mu).
 Qed.
 
 Lemma Rintegral_itv_obnd_cbnd (r : R) (b : itv_bound R) f :
-  mu.-integrable [set` Interval (BLeft r) b] (EFin \o f) ->
+  mu.-integrable [set` Interval (BRight r) b] (EFin \o f) ->
   \int[mu]_(x in [set` Interval (BRight r) b]) (f x) =
   \int[mu]_(x in [set` Interval (BLeft r) b]) (f x).
 Proof.
@@ -6522,18 +6520,16 @@ move=> itf; rewrite le_eqVlt => /predU1P[ax|ax xb].
   rewrite ax => _; rewrite [in X in _ - X]set_itv_ge ?bnd_simp//.
   by rewrite Rintegral_set0 subr0.
 rewrite (@itv_bndbnd_setU _ _ _ (BLeft x)); last 2 first.
-  by case: a ax {itf} => -[]//.
+  by case: a ax {itf} => -[].
   by rewrite (le_trans _ xb)// bnd_simp.
 rewrite Rintegral_setU_EFin//=.
 - rewrite addrAC Rintegral_itv_bndo_bndc//; last first.
-    by apply: integrableS itf => //; exact: subset_itvl.
+    apply: integrableS itf => //; apply: subset_itvl.
+    by rewrite (le_trans _ xb)// bnd_simp.
   rewrite subrr add0r Rintegral_itv_obnd_cbnd//.
-  apply: integrableS itf => //; apply: subset_itvr.
-  by case: a ax => -[].
-- rewrite -itv_bndbnd_setU//.
-    by case: a ax {itf} => -[]//.
-  by rewrite (le_trans _ xb)// bnd_simp.
-- apply/disj_setPS => y; rewrite /= !in_itv/= => -[/andP[_ yx] /andP[]].
+  by apply: integrableS itf => //; exact/subset_itvr/ltW.
+- by rewrite -itv_bndbnd_setU -?ltBRight_leBLeft// ltW.
+- apply/disj_setPS => y [/=]; rewrite 2!in_itv/= => /andP[_ yx] /andP[].
   by rewrite leNgt yx.
 Qed.
 

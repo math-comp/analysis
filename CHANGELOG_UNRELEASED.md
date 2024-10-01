@@ -18,6 +18,11 @@
 
 - in `topology.v`:
   + lemmas `in_nearW`, `open_in_nearW`
+- in `classical_sets.v`:
+  + lemma `not_setD1`
+
+- in `measure.v`:
+  + lemma `measurable_fun_set1`
 
 ### Changed
 
@@ -38,6 +43,10 @@
 - in `constructive_ereal.v`:
   + lemmas `maxeMr`, `maxeMl`, `mineMr`, `mineMr`:
     hypothesis weakened from strict inequality to large inequality
+- in `lebesgue_integral.v`:
+  + lemma `integral_setD1_EFin`
+  + lemmas `integral_itv_bndo_bndc`, `integral_itv_obnd_cbnd`
+  + lemmas `Rintegral_itv_bndo_bndc`, `Rintegral_itv_obnd_cbnd`
 
 ### Deprecated
 

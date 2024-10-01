@@ -456,15 +456,13 @@ have [xz|xz|->] := ltgtP x z; last by rewrite subrr normr0 ltW.
     exists `|b - z|; first by rewrite /= gtr0_norm ?subr_gt0.
     move=> y /= + yz.
     by rewrite ltr0_norm ?subr_lt0// gtr0_norm ?subr_gt0// opprB ltrBlDr subrK.
-  rewrite -opprB normrN Rintegral_itvB ?bnd_simp; last 3 first.
+  rewrite -opprB normrN Rintegral_itvB ?bnd_simp; [| |exact/ltW..]; last first.
     by apply: integrableS intf => //; apply: subset_itvl; exact: ltW.
-    exact/ltW.
-    exact/ltW.
+  have zxab : `[z, x] `<=` `[a, b] by apply: subset_itvScc; exact/ltW.
+  have intzxf : mu.-integrable `[z, x] (EFin \o f) by exact: integrableS intf.
   rewrite Rintegral_itv_obnd_cbnd//; last first.
-    by apply: integrableS intf => //; apply: subset_itvScc => //; exact/ltW.
-  have zxab : `[z, x] `<=` `[a, b].
-    by apply: subset_itvScc; rewrite bnd_simp; exact/ltW.
-  apply: (le_trans (le_normr_integral _ _)) => //; first exact: integrableS intf.
+    by apply: (@integrableS _ _ _ mu `[z, x]) => //; exact: subset_itv_oc_cc.
+  apply: (le_trans (le_normr_integral _ _)) => //.
   rewrite -(setIidl zxab) Rintegral_mkcondr/=.
   under eq_Rintegral do rewrite restrict_normr.
   apply/ltW/int_normr_cont => //.
