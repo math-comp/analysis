@@ -782,6 +782,13 @@ Arguments filter_not_empty {T} F {_}.
 
 Notation ProperFilter := ProperFilter'.
 
+Lemma in_nearW {T : Type} (F : set_system T) (P : T -> Prop) (S : set T) :
+  Filter F -> F S -> {in S, forall x, P x} -> \near F, P F.
+Proof.
+move=> FF FS SP; rewrite -nbhs_nearE.
+by apply: (@filterS _ F _ S) => // x /mem_set /SP.
+Qed.
+
 Lemma filter_setT (T' : Type) : Filter [set: set T'].
 Proof. by constructor. Qed.
 
@@ -980,7 +987,7 @@ Arguments near {T F P} FP x Px.
 
 Lemma nearW {T : Type} {F : set_system T} (P : T -> Prop) :
   Filter F -> (forall x, P x) -> (\forall x \near F, P x).
-Proof. by move=> FF FP; apply: filterS filterT. Qed.
+Proof. by move=> FF FP; exact: (in_nearW _ filterT). Qed.
 
 Lemma filterE {T : Type} {F : set_system T} :
   Filter F -> forall P : set T, (forall x, P x) -> F P.
@@ -1799,16 +1806,22 @@ Qed.
 
 End Topological1.
 
+Lemma open_in_nearW {T : topologicalType} (P : T -> Prop) (S : set T) :
+  open S -> {in S, forall x, P x} -> {in S, forall x, \near x, P x}.
+Proof.
+by move=> oS SP z /set_mem Sz; apply: in_nearW SP => //=; exact: open_nbhs_nbhs.
+Qed.
+
 #[global] Hint Extern 0 (Filter (nbhs _)) =>
   solve [apply: nbhs_filter] : typeclass_instances.
 #[global] Hint Extern 0 (ProperFilter (nbhs _)) =>
   solve [apply: nbhs_pfilter] : typeclass_instances.
 
-Global Instance alias_nbhs_filter {T : topologicalType} x : 
+Global Instance alias_nbhs_filter {T : topologicalType} x :
   @Filter T^o (@nbhs T^o T x).
 Proof. apply: @nbhs_filter T x. Qed.
 
-Global Instance alias_nbhs_pfilter {T : topologicalType} x : 
+Global Instance alias_nbhs_pfilter {T : topologicalType} x :
   @ProperFilter T^o (@nbhs T^o T x).
 Proof. exact: @nbhs_pfilter T x. Qed.
 
