@@ -23,6 +23,18 @@
 
 - in `measure.v`:
   + lemma `measurable_fun_set1`
+- in file `classical_orders.v`,
+  + new definitions `big_lexi_order`, `same_prefix`, `first_diff`,
+    `big_lexi_le`, and `start_with`.
+  + new lemmas `same_prefix0`, `same_prefix_sym`, `same_prefix_leq`,
+    `same_prefix_refl`, `same_prefix_trans`, `first_diff_sym`,
+    `first_diff_unique`, `first_diff_SomeP`, `first_diff_NoneP`,
+    `first_diff_lt`, `first_diff_eq`, `first_diff_dfwith`,
+    `big_lexi_le_reflexive`, `big_lexi_le_anti`, `big_lexi_le_trans`,
+    `big_lexi_le_total`, `start_with_prefix`, `leEbig_lexi_order`,
+    `big_lexi_order_prefix_lt`, `big_lexi_order_prefix_gt`,
+    `big_lexi_order_between`, `big_lexi_order_interval_prefix`, and
+    `big_lexi_order_prefix_closed_itv`.
 
 ### Changed
 
