@@ -16,6 +16,9 @@
 - in `realfun.v`:
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
 
+- in `topology.v`:
+  + lemma `in_nearW`
+
 ### Changed
 
 ### Renamed

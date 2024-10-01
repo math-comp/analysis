@@ -7176,3 +7176,13 @@ Qed.
 Local Close Scope relation_scope.
 
 #[global] Hint Resolve uniform_regular : core.
+
+Lemma in_nearW (R : topologicalType) (P : R -> Prop) (S : set R) :
+  @open R^o S ->
+ {in S, forall x, P x} ->
+ {in S, forall x, \near x, P x}.
+Proof.
+move=> oS HP z /set_mem Sz.
+rewrite -nbhs_nearE nbhsE/=.
+by exists S; last move=> x /mem_set/HP.
+Qed.
