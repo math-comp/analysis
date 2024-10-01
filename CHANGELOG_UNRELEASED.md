@@ -34,8 +34,7 @@
     `lexi_bigprod_total`, `start_with_prefix`, `lexi_bigprod_prefix_lt`,
     `lexi_bigprod_prefix_gt`, `lexi_bigprod_between`,
     `big_lexi_interval_prefix`, and `same_prefix_closed_itv`.
-
-
+  + lemma `leEbig_lexi_order`
 
 ### Changed
 
