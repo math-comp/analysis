@@ -8,25 +8,19 @@ From mathcomp Require Import filter reals signed.
 From mathcomp Require Export filter.
 
 (**md**************************************************************************)
-(* # Filters and basic topological notions                                    *)
+(* # Basic topological notions                                                *)
 (*                                                                            *)
 (* This file develops tools for the manipulation of basic topological         *)
 (* notions. The development of topological notions builds on "filtered types" *)
 (* by extending the hierarchy.                                                *)
 (*                                                                            *)
-(* Basic topological notions                                                  *)
-(*    - Mathematical structures                                               *)
-(*      + Topology                                                            *)
-(*      + Uniform spaces                                                      *)
-(*      + Pseudometric spaces                                                 *)
-(*      + Complete uniform spaces                                             *)
-(*      + Complete pseudometric spaces                                        *)
-(*      + Subspaces of topological spaces                                     *)
-(*                                                                            *)
-(******************************************************************************)
-
-(**md**************************************************************************)
-(* # Basic topological notions                                                *)
+(* Table of contents of the documentation:                                    *)
+(* - Topology                                                                 *)
+(* - Uniform spaces                                                           *)
+(* - Pseudometric spaces                                                      *)
+(* - Complete uniform spaces                                                  *)
+(* - Complete pseudometric spaces                                             *)
+(* - Subspaces of topological spaces                                          *)
 (*                                                                            *)
 (* ## Mathematical structures                                                 *)
 (* ### Topology                                                               *)
@@ -73,11 +67,12 @@ From mathcomp Require Export filter.
 (*                                     It builds the mixin for a topological  *)
 (*                                     space from a subbase of open sets b    *)
 (*                                     indexed on domain D                    *)
-(*                                                                            *)
+(* ```                                                                        *)
 (* We endow several standard types with the structure of topology, e.g.:      *)
 (* - products `(T * U)%type`                                                  *)
 (* - matrices `'M[T]_(m, n)`                                                  *)
 (* - natural numbers `nat`                                                    *)
+(* ```                                                                        *)
 (*                              \oo == "eventually" filter on nat: set of     *)
 (*                                     predicates on natural numbers that are *)
 (*                                     eventually true                        *)
@@ -245,38 +240,6 @@ From mathcomp Require Export filter.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
-Reserved Notation "'\forall' x '\near' x_0 , P"
-  (at level 200, x name, P at level 200,
-   format "'\forall'  x  '\near'  x_0 ,  P").
-Reserved Notation "'\near' x , P"
-  (at level 200, x at level 99, P at level 200,
-   format "'\near'  x ,  P", only parsing).
-Reserved Notation "{ 'near' x & y , P }"
-  (at level 0, format "{ 'near'  x  &  y ,  P }").
-Reserved Notation "'\forall' x '\near' x_0 & y '\near' y_0 , P"
-  (at level 200, x name, y name, P at level 200,
-   format "'\forall'  x  '\near'  x_0  &  y  '\near'  y_0 ,  P").
-Reserved Notation "'\forall' x & y '\near' z , P"
-  (at level 200, x name, y name, P at level 200,
-   format "'\forall'  x  &  y  '\near'  z ,  P").
-Reserved Notation "'\near' x & y , P"
-  (at level 200, x, y at level 99, P at level 200,
-   format "'\near'  x  &  y ,  P", only parsing).
-(*Reserved Notation "[ 'filter' 'of' x ]" (format "[ 'filter'  'of'  x ]").*)
-Reserved Notation "F `=>` G" (at level 70, format "F  `=>`  G").
-Reserved Notation "F --> G" (at level 70, format "F  -->  G").
-Reserved Notation "[ 'lim' F 'in' T ]" (format "[ 'lim'  F  'in'  T ]").
-Reserved Notation "[ 'cvg' F 'in' T ]" (format "[ 'cvg'  F  'in'  T ]").
-Reserved Notation "x \is_near F" (at level 10, format "x  \is_near  F").
-Reserved Notation "E @[ x --> F ]"
-  (at level 60, x name, format "E  @[ x  -->  F ]").
-Reserved Notation "E @[ x \oo ]"
-  (at level 60, x name, format "E  @[ x  \oo ]").
-Reserved Notation "f @ F" (at level 60, format "f  @  F").
-Reserved Notation "E `@[ x --> F ]"
-  (at level 60, x name, format "E  `@[ x  -->  F ]").
-Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
 Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").

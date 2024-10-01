@@ -4,20 +4,23 @@ From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
+
 (**md**************************************************************************)
 (* # Filters                                                                  *)
+(*                                                                            *)
 (* The theory of (powerset) filters and tools for manipulating them.          *)
 (* This file introduces convergence for filters. It also provides the         *)
 (* interface of filtered types for associating a "canonical filter" to each   *)
 (* element. And lastly it provides typeclass instances for verifying when     *)
-(* a (set_system T) is really a filter in T, as a Filter or Properfilter      *)
+(* a (set_system T) is really a filter in T, as a Filter or Properfilter.     *)
+(*                                                                            *)
 (* Table of contents of the documentation:                                    *)
-(* Filters                                                                    *)
-(*    - Structure of filter                                                   *)
-(*    - Theory of filters                                                     *)
-(*    - Near notations and tactics                                            *)
-(*      + Notations                                                           *)
-(*      + Tactics                                                             *)
+(* - Structure of filter                                                      *)
+(* - Theory of filters                                                        *)
+(* - Near notations and tactics                                               *)
+(*   + Notations                                                              *)
+(*   + Tactics                                                                *)
+(*                                                                            *)
 (* ## Structure of filter                                                     *)
 (* ```                                                                        *)
 (*                   filteredType U == interface type for types whose         *)
@@ -28,7 +31,7 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*                                     It extends Pointed.                    *)
 (*                           nbhs p == set of sets associated to p (in a      *)
 (*                                     filtered type)                         *)
-(*                  pfilteredType U == a pointed and filtered type                                                        *)
+(*                  pfilteredType U == a pointed and filtered type            *)
 (*                          hasNbhs == factory for filteredType               *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -159,7 +162,6 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*   near: x, as for variables introduced by near=>.                          *)
 (*                                                                            *)
 (******************************************************************************)
-
 
 Set Implicit Arguments.
 Unset Strict Implicit.
