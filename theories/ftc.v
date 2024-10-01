@@ -798,19 +798,9 @@ Lemma in_nearW (R : topologicalType) (P : R -> Prop) (S : set R) :
 Proof.
 move=> oS HP z.
 rewrite inE => Sz.
-have [e/= e0 He] := (open_subball oS Sz).
-exists (e / 2) => //=.
-  by rewrite -(add0r e) midf_lt.
-move=> t/= zte.
-apply: HP.
-move: He Sz zte.
-have [<- |zt He Sz zte] := eqVneq z t; first by rewrite inE.
-rewrite inE.
-apply: (He (e / 2)) => //=.
-rewrite sub0r normrN ger0_norm.
-    by rewrite -{1}(add0r e) midf_lt.
-  by rewrite -(add0r e) midf_le// ltW.
-by rewrite -(add0r e) midf_lt.
+rewrite -nbhs_nearE nbhsE/=.
+exists S => //.
+by move=> x /mem_set/HP.
 Qed.
 
 (* PR#1327 *)
