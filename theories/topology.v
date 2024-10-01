@@ -7177,12 +7177,26 @@ Local Close Scope relation_scope.
 
 #[global] Hint Resolve uniform_regular : core.
 
-Lemma in_nearW (R : topologicalType) (P : R -> Prop) (S : set R) :
-  @open R^o S ->
+Lemma in_nearW (U : Type) (T : filteredType U) (F : set_system T)
+ (P : T -> Prop) (S : set T) :
+  Filter F ->
+  F S ->
+ {in S, forall x, P x} ->
+ \near F, P F.
+Proof.
+move=> filF FS HP.
+rewrite -nbhs_nearE.
+apply: (@filterS _ F _ S) => //.
+by move=> x /mem_set/HP.
+Qed.
+
+Lemma open_in_nearW (R : topologicalType) (P : R -> Prop) (S : set R) :
+  open S ->
  {in S, forall x, P x} ->
  {in S, forall x, \near x, P x}.
 Proof.
 move=> oS HP z /set_mem Sz.
-rewrite -nbhs_nearE nbhsE/=.
-by exists S; last move=> x /mem_set/HP.
+apply: in_nearW HP.
+rewrite /=.
+by apply: open_nbhs_nbhs; split.
 Qed.

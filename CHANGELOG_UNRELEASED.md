@@ -17,7 +17,7 @@
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
 
 - in `topology.v`:
-  + lemma `in_nearW`
+  + lemmas `in_nearW`, `open_in_nearW`
 
 ### Changed
 
