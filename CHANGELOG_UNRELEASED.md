@@ -16,8 +16,12 @@
 - in `realfun.v`:
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
 
+- in `filter.v` (new file):
+  + lemma `in_nearW`
+
 - in `topology.v`:
-  + lemmas `in_nearW`, `open_in_nearW`
+  + lemma `open_in_nearW`
+
 - in `classical_sets.v`:
   + lemma `not_setD1`
 
@@ -104,7 +108,7 @@
   + tactic notations `near=>`, `near:`, `near do _`
   + ltacs `just_discharge_near`, `near_skip`, `under_near`, `end_near`, `done`
   + lemmas `have_near`, `near`, `nearW`, `filterE`, `filter_app`, `filter_app2`,
-    `filter_app3`, `filterS2`, `filterS3`, `filter_const`, `in_filter_from`, `in_nearW`,
+    `filter_app3`, `filterS2`, `filterS3`, `filter_const`, `in_filter_from`,
     `near_andP`, `nearP_dep`, `filter2P`, `filter_ex2`, `filter_fromP`, `filter_fromTP`,
     `filter_from_filter`, `filter_fromT_filter`, `filter_from_proper`, `filter_bigI`,
     `filter_forall`, `filter_imply`
