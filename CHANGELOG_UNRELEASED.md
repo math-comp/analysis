@@ -37,8 +37,7 @@
     `big_lexi_le_reflexive`, `big_lexi_le_anti`, `big_lexi_le_trans`,
     `big_lexi_le_total`, `start_with_prefix`, `leEbig_lexi_order`,
     `big_lexi_order_prefix_lt`, `big_lexi_order_prefix_gt`,
-    `big_lexi_order_between`, `big_lexi_order_interval_prefix`, and
-    `big_lexi_order_prefix_closed_itv`.
+    `big_lexi_order_between`, and `big_lexi_order_interval_prefix`.
 
 ### Changed
 
