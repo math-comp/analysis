@@ -19,6 +19,7 @@ classical/cardinality.v
 classical/fsbigop.v
 classical/set_interval.v
 classical/classical_orders.v
+classical/filter.v
 theories/all_analysis.v
 theories/constructive_ereal.v
 theories/ereal.v

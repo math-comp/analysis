@@ -682,10 +682,10 @@ Global Instance ereal_dnbhs_filter :
 Proof.
 case=> [x||].
 - case: (Proper_dnbhs_numFieldType x) => x0 [//= xT xI xS].
-  apply Build_ProperFilter' => //=; apply Build_Filter => //=.
+  apply Build_ProperFilter => //=; apply Build_Filter => //=.
   move=> P Q lP lQ; exact: xI.
   by move=> P Q PQ /xS; apply => y /PQ.
-- apply Build_ProperFilter.
+- apply Build_ProperFilter_ex.
     move=> P [x [xr xP]] //; exists (x + 1)%:E; apply xP => /=.
     by rewrite lte_fin ltrDl.
   split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
@@ -711,7 +711,7 @@ case=> [x||].
       by apply/gtMQ; rewrite lte_fin (le_lt_trans _ MQx)// real_ler_normr ?lexx.
     * by move=> _; split; [apply/gtMP | apply/gtMQ].
   + by exists M; split => // ? /gtM /sPQ.
-- apply Build_ProperFilter.
+- apply Build_ProperFilter_ex.
   + move=> P [M [Mr ltMP]]; exists (M - 1)%:E.
     by apply: ltMP; rewrite lte_fin gtrDl oppr_lt0.
   + split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
@@ -751,7 +751,7 @@ Global Instance ereal_nbhs_filter : forall x, ProperFilter (@ereal_nbhs R x).
 Proof.
 case=> [r| |].
 - case: (ereal_dnbhs_filter r%:E) => r0 [//= nrT rI rS].
-  apply: Build_ProperFilter => P /nbhs_ballP[r2 r20 rr2].
+  apply: Build_ProperFilter_ex => P /nbhs_ballP[r2 r20 rr2].
   by exists r%:E; exact/rr2/ballxx.
 - exact: (ereal_dnbhs_filter +oo).
 - exact: (ereal_dnbhs_filter -oo).
@@ -762,7 +762,7 @@ End ereal_nbhs_instances.
 
 Section ereal_nbhs_infty.
 Context (R : numFieldType).
-Implicit Type (r : R).
+Implicit Type r : R.
 
 Lemma ereal_nbhs_pinfty_gt r : r \is Num.real -> \forall x \near +oo, r%:E < x.
 Proof. by exists r. Qed.
