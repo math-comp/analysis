@@ -356,22 +356,3 @@ move: i; case=> [][[]l|[]] [[]r|[]] [][]; rewrite ?in_itv /= ?andbT.
 by move=> _; exists 0 => ? ?; rewrite set_itvE.
 Qed.
 End big_lexi_intervals.
-
-(** TODO: generalize to tbOrderType when that's available in mathcomp *)
-Lemma big_lexi_order_prefix_closed_itv {d} {K : nat -> finOrderType d} n
-  (x : big_lexi_order K) :
-  same_prefix n x = `[
-    (start_with n x (fun=>\bot):big_lexi_order K)%O,
-    (start_with n x (fun=>\top))%O].
-Proof.
-rewrite eqEsubset; split=> [z pfxz|z]; first last.
-  rewrite set_itvE /= => xbt; apply: same_prefix_trans.
-    exact: (start_with_prefix _ (fun=> \bot)%O).
-  apply/same_prefix_sym/(big_lexi_order_between xbt).
-  apply: same_prefix_trans (start_with_prefix _ _).
-  exact/same_prefix_sym/start_with_prefix.
-rewrite set_itvE /= !leEbig_lexi_order; apply/andP; split;
-  case E : (first_diff _ _) => [m|] //; rewrite /start_with /=.
-- by case: ifPn => [/pfxz -> //|]; rewrite le0x.
-- by case: ifPn => [/pfxz -> //|]; rewrite lex1.
-Qed.
