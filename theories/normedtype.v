@@ -331,7 +331,7 @@ Qed.
 Global Instance Proper_dnbhs_numFieldType (R : numFieldType) (x : R) :
   ProperFilter x^'.
 Proof.
-apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
+apply: Build_ProperFilter_ex => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
 rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
@@ -372,7 +372,7 @@ Implicit Types r : R.
 
 Global Instance proper_pinfty_nbhs : ProperFilter (pinfty_nbhs R).
 Proof.
-apply Build_ProperFilter.
+apply Build_ProperFilter_ex.
   by move=> P [M [Mreal MP]]; exists (M + 1); apply MP; rewrite ltrDl.
 split=> /= [|P Q [MP [MPr gtMP]] [MQ [MQr gtMQ]] |P Q sPQ [M [Mr gtM]]].
 - by exists 0.
@@ -383,7 +383,7 @@ Qed.
 
 Global Instance proper_ninfty_nbhs : ProperFilter (ninfty_nbhs R).
 Proof.
-apply Build_ProperFilter.
+apply Build_ProperFilter_ex.
   move=> P [M [Mr ltMP]]; exists (M - 1).
   by apply: ltMP; rewrite gtrDl oppr_lt0.
 split=> /= [|P Q [MP [MPr ltMP]] [MQ [MQr ltMQ]] |P Q sPQ [M [Mr ltM]]].
@@ -1127,7 +1127,7 @@ eapply iff_trans; first exact: continuity_pt_nbhs.
 apply iff_sym.
 have FF : Filter (f @ x).
   by typeclasses eauto.
-  (*by apply fmap_filter; apply: @filter_filter' (locally_filter _).*)
+  (*by apply fmap_filter; apply: @filter_filter (locally_filter _).*)
 case: (@fcvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
 (* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
 split => [{H2} - /H1 {}H1 eps|{H1} H].
@@ -1276,17 +1276,17 @@ Local Notation "x ^'+" := (at_right x) : classical_set_scope.
 
 Global Instance at_right_proper_filter (x : R) : ProperFilter x^'+.
 Proof.
-apply: Build_ProperFilter' => -[_/posnumP[d] /(_ (x + d%:num / 2))].
-apply; last (by rewrite ltrDl); rewrite /=.
-rewrite opprD !addrA subrr add0r normrN normf_div !ger0_norm //.
+apply: Build_ProperFilter => -[_/posnumP[d] /(_ (x + d%:num / 2))].
+apply; last by rewrite ltrDl.
+rewrite /= opprD !addrA subrr add0r normrN normf_div !ger0_norm //.
 by rewrite ltr_pdivrMr // ltr_pMr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
 
 Global Instance at_left_proper_filter (x : R) : ProperFilter x^'-.
 Proof.
-apply: Build_ProperFilter' => -[_ /posnumP[d] /(_ (x - d%:num / 2))].
-apply; last (by rewrite ltrBlDl ltrDr); rewrite /=.
-rewrite opprD !addrA subrr add0r opprK normf_div !ger0_norm //.
+apply: Build_ProperFilter => -[_ /posnumP[d] /(_ (x - d%:num / 2))].
+apply; last by rewrite ltrBlDl ltrDr.
+rewrite /= opprD !addrA subrr add0r opprK normf_div !ger0_norm //.
 by rewrite ltr_pdivrMr // ltr_pMr // (_ : 1 = 1%:R) // ltr_nat.
 Qed.
 
@@ -5006,7 +5006,7 @@ have [f [Af clGf]] : [set f | forall i, A i (f i)] `&`
   suff GF : ProperFilter G.
     apply: Aco; exists [set v : 'rV[T]_n.+1 | forall i, A i (v ord0 i)] => //.
     by rewrite predeqE => f; split => Af i; [have := Af i|]; rewrite row_simpl'.
-  apply Build_ProperFilter.
+  apply Build_ProperFilter_ex.
     move=> _ [C FC <-]; have /filter_ex [v Cv] := FC.
     by exists (v ord0); rewrite /= row_simpl.
   split.

@@ -608,7 +608,7 @@ Let nbhsE_subproof (p : T) :
 Proof.
 rewrite predeqE => A; split=> [p_A|]; last first.
   move=> [B [Bop Bp sBA]]; apply: filterS sBA _; last exact: Bop.
-  exact/filter_filter'/nbhs_filter.
+  exact/nbhs_filter.
 exists (nbhs^~ A); split=> //; first by move=> ?; apply: nbhs_nbhs.
 by move=> q /nbhs_singleton.
 Qed.
@@ -640,7 +640,7 @@ HB.instance Definition _ := hasNbhs.Build T (nbhs_of_open op).
 
 Let nbhs_pfilter_subproof (p : T) : ProperFilter (nbhs p).
 Proof.
-apply: Build_ProperFilter.
+apply: Build_ProperFilter_ex.
   by move=> A [B [_ Bp sBA]]; exists p; apply: sBA.
 split; first by exists setT; split=> [|//|//]; exact: opT.
   move=> A B [C [Cop Cp sCA]] [D [Dop Dp sDB]].
@@ -1395,7 +1395,7 @@ Typeclasses Opaque within.
 Global Instance within_nbhs_proper (A : set T) p :
   infer (closure A p) -> ProperFilter (within A (nbhs p)).
 Proof.
-move=> clAp; apply: Build_ProperFilter => B.
+move=> clAp; apply: Build_ProperFilter_ex => B.
 by move=> /clAp [q [Aq AqsoBq]]; exists q; apply: AqsoBq.
 Qed.
 
@@ -1893,7 +1893,7 @@ Lemma cvgi_close T' {F} {FF : ProperFilter F} (f : T' -> set T) (l l' : T) :
   {near F, is_fun f} -> f `@ F --> l -> f `@ F --> l' -> close l l'.
 Proof.
 move=> f_prop fFl fFl'.
-suff f_totalfun: {near F, is_totalfun f}. 
+suff f_totalfun: {near F, is_totalfun f}.
   by apply: cvg_close fFl fFl'; exact: fmapi_proper_filter.
 apply: filter_app f_prop; near do split=> //=.
 have: (f `@ F) setT by apply: fFl; apply: filterT.
@@ -2911,7 +2911,7 @@ End uniformType1.
 
 Global Instance entourage_pfilter {M : puniformType} : ProperFilter (@entourage M).
 Proof.
-apply Build_ProperFilter; last exact: entourage_filter.
+apply Build_ProperFilter_ex; last exact: entourage_filter.
 by move=> A entA; exists (point, point); apply: entourage_refl.
 Qed.
 
@@ -3677,10 +3677,10 @@ Proof. by move/cvgi_ballP. Qed.
 
 End pseudoMetricType_numDomainType.
 
-Global Instance entourage_proper_filter {R : numDomainType} {M : pseudoPMetricType R} :
-  ProperFilter (@entourage M).
+Global Instance entourage_proper_filter {R : numDomainType}
+  {M : pseudoPMetricType R} : ProperFilter (@entourage M).
 Proof.
-apply: Build_ProperFilter; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
+apply: Build_ProperFilter_ex; rewrite -entourage_ballE => A [_/posnumP[e] sbeA].
 by exists (point, point); apply: sbeA; apply: ballxx.
 Qed.
 
@@ -4276,7 +4276,7 @@ Qed.
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.
 Proof.
-apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
+apply: Build_ProperFilter_ex => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2)%R; apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
 rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
@@ -4286,7 +4286,7 @@ Qed.
 Global Instance Proper_dnbhs_numFieldType (R : numFieldType) (x : R) :
   ProperFilter x^'.
 Proof.
-apply: Build_ProperFilter => A /nbhs_ballP[_/posnumP[e] Ae].
+apply: Build_ProperFilter_ex => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2)%R; apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
 rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.

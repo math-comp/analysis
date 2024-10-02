@@ -171,9 +171,10 @@ Unset Printing Implicit Defensive.
 Obligation Tactic := idtac.
 
 Import Order.TTheory GRing.Theory Num.Theory.
-From mathcomp Require Import mathcomp_extra.
+
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
 Reserved Notation "{ 'near' x , P }" (at level 0, format "{ 'near'  x ,  P }").
 Reserved Notation "'\forall' x '\near' x_0 , P"
   (at level 200, x name, P at level 200,
@@ -206,6 +207,7 @@ Reserved Notation "f @ F" (at level 60, format "f  @  F").
 Reserved Notation "E `@[ x --> F ]"
   (at level 60, x name, format "E  `@[ x  -->  F ]").
 Reserved Notation "f `@ F" (at level 60, format "f  `@  F").
+
 Definition set_system U := set (set U).
 Identity Coercion set_system_to_set : set_system >-> set.
 
@@ -219,9 +221,6 @@ HB.structure Definition Filtered (U : Type) := {T of Choice T & isFiltered U T}.
 #[short(type="pfilteredType")]
 HB.structure Definition PointedFiltered (U : Type) := {T of Pointed T & isFiltered U T}.
 Arguments nbhs {_ _} _ _ : simpl never.
-
-Notation "[ 'filteredType' U 'of' T ]" := (Filtered.clone U T _)
-  (at level 0, format "[ 'filteredType'  U  'of'  T ]") : form_scope.
 
 HB.instance Definition _ T := Equality.on (set_system T).
 HB.instance Definition _ T := Choice.on (set_system T).
@@ -294,15 +293,9 @@ Lemma nearE {T} {F : set_system T} (P : set T) :
 Proof. by []. Qed.
 
 Lemma eq_near {T} {F : set_system T} (P Q : set T) :
-   (forall x, P x <-> Q x) ->
-   (\forall x \near F, P x) = (\forall x \near F, Q x).
+  (forall x, P x <-> Q x) ->
+  (\forall x \near F, P x) = (\forall x \near F, Q x).
 Proof. by move=> /predeqP ->. Qed.
-
-(* Definition filter_of X (fX : filteredType X) (x : fX) of phantom fX x := *)
-(*    nbhs x. *)
-(* Notation "[ 'filter' 'of' x ]" := *)
-(*   (@filter_of _ _ _ (Phantom _ x)) : classical_set_scope. *)
-(* Arguments filter_of _ _ _ _ _ /. *)
 
 Lemma nbhs_filterE {T : Type} (F : set_system T) : nbhs F = F.
 Proof. by []. Qed.
@@ -313,8 +306,8 @@ End NbhsFilter.
 
 Definition cvg_to {T : Type} (F G : set_system T) := G `<=` F.
 Notation "F `=>` G" := (cvg_to F G) : classical_set_scope.
-Lemma cvg_refl T (F : set_system T) : F `=>` F.
-Proof. exact. Qed.
+
+Lemma cvg_refl T (F : set_system T) : F `=>` F. Proof. exact. Qed.
 Arguments cvg_refl {T F}.
 #[global] Hint Resolve cvg_refl : core.
 
@@ -361,14 +354,14 @@ Lemma cvg_ex (T : pnbhsType) (F : set_system T) :
 Proof. exact: cvg_in_ex. Qed.
 
 Lemma cvg_inP {U : Type} (T : pfilteredType U) (F : set_system U) (l : T) :
-   F --> l -> [cvg F in T].
+  F --> l -> [cvg F in T].
 Proof. by move=> Fl; apply/cvg_in_ex; exists l. Qed.
 
 Lemma cvgP (T : pnbhsType) (F : set_system T) (l : T) : F --> l -> cvg F.
 Proof. exact: cvg_inP. Qed.
 
 Lemma cvg_in_toP {U : Type} (T : pfilteredType U) (F : set_system U) (l : T) :
-   [cvg F in T] -> [lim F in T] = l -> F --> l.
+  [cvg F in T] -> [lim F in T] = l -> F --> l.
 Proof. by move=> /[swap]->. Qed.
 
 Lemma cvg_toP (T : pnbhsType) (F : set_system T) (l : T) :
@@ -439,17 +432,15 @@ Class Filter {T : Type} (F : set_system T) := {
 }.
 Global Hint Mode Filter - ! : typeclass_instances.
 
-Class ProperFilter' {T : Type} (F : set_system T) := {
+Class ProperFilter {T : Type} (F : set_system T) := {
   filter_not_empty : not (F (fun _ => False)) ;
-  filter_filter' : Filter F
+  filter_filter : Filter F
 }.
 (* TODO: Reuse :> above and remove the following line and the coercion below
    after 8.21 is the minimum required version for Coq *)
-Global Existing Instance filter_filter'.
-Global Hint Mode ProperFilter' - ! : typeclass_instances.
+Global Existing Instance filter_filter.
+Global Hint Mode ProperFilter - ! : typeclass_instances.
 Arguments filter_not_empty {T} F {_}.
-
-Notation ProperFilter := ProperFilter'.
 
 Lemma filter_setT (T' : Type) : Filter [set: set T'].
 Proof. by constructor. Qed.
@@ -470,7 +461,7 @@ Definition filter_class T (F : filter_on T) : Filter F :=
 Arguments FilterType {T} _ _.
 #[global] Existing Instance filter_class.
 (* Typeclasses Opaque filter. *)
-Coercion filter_filter' : ProperFilter >-> Filter.
+Coercion filter_filter : ProperFilter >-> Filter.
 
 Structure pfilter_on T := PFilterPack {
   pfilter :> (T -> Prop) -> Prop;
@@ -486,7 +477,7 @@ Canonical pfilter_filter_on T (F : pfilter_on T) :=
 Coercion pfilter_filter_on : pfilter_on >-> filter_on.
 Definition PFilterType {T} (F : (T -> Prop) -> Prop)
   {fF : Filter F} (fN0 : not (F set0)) :=
-  PFilterPack F (Build_ProperFilter' fN0 fF).
+  PFilterPack F (Build_ProperFilter fN0 fF).
 Arguments PFilterType {T} F {fF} fN0.
 
 HB.instance Definition _ T := gen_eqMixin (filter_on T).
@@ -526,16 +517,16 @@ Proof. by move=> FF; apply: filterT. Qed.
 #[global] Hint Resolve nearT : core.
 
 Lemma filter_not_empty_ex {T : Type} (F : set_system T) :
-    (forall P, F P -> exists x, P x) -> ~ F set0.
+  (forall P, F P -> exists x, P x) -> ~ F set0.
 Proof. by move=> /(_ set0) ex /ex []. Qed.
 
-Definition Build_ProperFilter {T : Type} (F : set_system T)
+Definition Build_ProperFilter_ex {T : Type} (F : set_system T)
   (filter_ex : forall P, F P -> exists x, P x)
-  (filter_filter : Filter F) :=
-  Build_ProperFilter' (filter_not_empty_ex filter_ex) (filter_filter).
+  (FF : Filter F) :=
+  Build_ProperFilter (filter_not_empty_ex filter_ex) FF.
 
 Lemma filter_ex_subproof {T : Type} (F : set_system T) :
-     ~ F set0 -> (forall P, F P -> exists x, P x).
+  ~ F set0 -> (forall P, F P -> exists x, P x).
 Proof.
 move=> NFset0 P FP; apply: contra_notP NFset0 => nex; suff <- : P = set0 by [].
 by rewrite funeqE => x; rewrite propeqE; split=> // Px; apply: nex; exists x.
@@ -546,7 +537,7 @@ Definition filter_ex {T : Type} (F : set_system T) {FF : ProperFilter F} :=
 Arguments filter_ex {T F FF _}.
 
 Lemma filter_getP {T : pointedType} (F : set_system T) {FF : ProperFilter F}
-      (P : set T) : F P -> P (get P).
+  (P : set T) : F P -> P (get P).
 Proof. by move=> /filter_ex /getPex. Qed.
 
 (* Near Tactic *)
@@ -765,7 +756,7 @@ Lemma filter_from_proper {I T : Type} (D : set I) (B : I -> set T) :
   (forall i, D i -> B i !=set0) ->
   ProperFilter (filter_from D B).
 Proof.
-move=> FF BN0; apply: Build_ProperFilter=> P [i Di BiP].
+move=> FF BN0; apply: Build_ProperFilter_ex => P [i Di BiP].
 by have [x Bix] := BN0 _ Di; exists x; apply: BiP.
 Qed.
 
@@ -832,10 +823,8 @@ Qed.
 Global Instance fmap_proper_filter T U (f : T -> U) (F : set_system T) :
   ProperFilter F -> ProperFilter (f @ F).
 Proof.
-move=> FF; apply: Build_ProperFilter';
-by rewrite fmapE; apply: filter_not_empty.
+by move=> FF; apply: Build_ProperFilter; rewrite fmapE; apply: filter_not_empty.
 Qed.
-Definition fmap_proper_filter' := fmap_proper_filter.
 
 Definition fmapi {T U : Type} (f : T -> set U) (F : set_system T) :
     set_system _ :=
@@ -871,11 +860,10 @@ Global Instance fmapi_proper_filter
   {near F, is_totalfun f} ->
   ProperFilter F -> ProperFilter (f `@ F).
 Proof.
-move=> f_totalfun FF; apply: Build_ProperFilter.
+move=> f_totalfun FF; apply: Build_ProperFilter_ex.
   by move=> P; rewrite /fmapi/= => /filter_ex [x [y [??]]]; exists y.
 exact: fmapi_filter.
 Qed.
-Definition filter_map_proper_filter' := fmapi_proper_filter.
 
 Lemma cvg_id T (F : set_system T) : x @[x --> F] --> F.
 Proof. exact. Qed.
@@ -966,7 +954,7 @@ Qed.
 
 Global Instance globally_properfilter {T : Type} (A : set T) a :
   (A a) -> ProperFilter (globally A).
-Proof. by move=> Aa; apply: Build_ProperFilter' => /(_ a). Qed.
+Proof. by move=> Aa; apply: Build_ProperFilter => /(_ a). Qed.
 
 (** Specific filters *)
 
@@ -1025,7 +1013,6 @@ Proof.
 apply: filter_from_proper => -[A B] [/=FA GB].
 by have [[x ?] [y ?]] := (filter_ex FA, filter_ex GB); exists (x, y).
 Qed.
-Definition filter_prod_proper' := @filter_prod_proper.
 
 Lemma filter_prod1 {T U} {F : set_system T} {G : set_system U}
   {FG : Filter G} (P : set T) :
@@ -1034,6 +1021,7 @@ Proof.
 move=> FP; exists (P, setT)=> //= [|[?? []//]].
 by split=> //; apply: filterT.
 Qed.
+
 Lemma filter_prod2 {T U} {F : set_system T} {G : set_system U}
   {FF : Filter F} (P : set U) :
   (\forall y \near G, P y) -> \forall _ \near F & y \near G, P y.
@@ -1224,7 +1212,7 @@ Lemma subset_filter_proper {T F} {FF : Filter F} (D : set T) :
   (forall P, F P -> ~ ~ exists x, D x /\ P x) ->
   ProperFilter (subset_filter F D).
 Proof.
-move=> DAP; apply: Build_ProperFilter'; rewrite /subset_filter => subFD.
+move=> DAP; apply: Build_ProperFilter; rewrite /subset_filter => subFD.
 by have /(_ subFD) := DAP (~` D); apply => -[x [dx /(_ dx)]].
 Qed.
 
@@ -1386,7 +1374,7 @@ apply: (ZL_preorder (existT _ F (conj FF sFF))).
       by move=> B FB; exists G => //; exact: sFG.
     exists (existT _ (\bigcup_(H in A) projT1 H) (conj UAF sFUA)) => H AH.
     by apply/asboolP => B HB /=; exists H.
-  apply: Build_ProperFilter.
+  apply: Build_ProperFilter_ex.
     by move=> B [H AH HB]; have [HF _] := projT2 H; exact: (@filter_ex _ _ HF).
   split; first by exists G => //; apply: filterT.
   + move=> B C [HB AHB HBB] [HC AHC HCC]; have [sHBC|sHCB] := Atot _ _ AHB AHC.
@@ -1416,7 +1404,7 @@ Qed.
 Lemma proper_image (T U : Type) (f : T -> U) (F : set_system T) :
   ProperFilter F -> f @` setT = setT -> ProperFilter [set f @` A | A in F].
 Proof.
-move=> FF fsurj; apply: Build_ProperFilter; last exact: filter_image.
+move=> FF fsurj; apply: Build_ProperFilter_ex; last exact: filter_image.
 by move=> _ [A FA <-]; have /filter_ex [p Ap] := FA; exists (f p); exists p.
 Qed.
 
