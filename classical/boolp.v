@@ -51,9 +51,16 @@ From mathcomp Require Import mathcomp_extra.
 (*                 See also the lemmas Peq and eqPchoice.                     *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* Functions into a porderType (resp. latticeType) are equipped with          *)
-(* a porderType (resp. latticeType), (f <= g)%O when f x <= g x for all x,    *)
-(* see lemma lefP.                                                            *)
+(* Functions onto a porderType (resp. latticeType) are equipped with          *)
+(* a porderType (resp. latticeType), so that the generic notation (_ <= _)%O  *)
+(* (resp. `&`, `|`) from `order.v` can be used.                               *)
+(* ```                                                                        *)
+(*     FunOrder.lef f g == pointwise large inequality between two functions   *)
+(*     FunOrder.ltf f g == pointwise strict inequality between two functions  *)
+(* FunLattice.meetf f g == pointwise meet between two functions               *)
+(* FunLattice.joinf f g == pointwise join between two functions               *)
+(* ```                                                                        *)
+(*                                                                            *)
 (******************************************************************************)
 
 Set   Implicit Arguments.
@@ -784,6 +791,57 @@ apply: (iffP idP)=> [/asboolPn NP x|NP].
 by apply/asboolP=> -[x Px Qx]; have /not_andP := NP x; exact.
 Qed.
 
+Section bigmaxmin.
+Local Notation max := Order.max.
+Local Notation min := Order.min.
+Local Open Scope order_scope.
+Variables (d : Order.disp_t) (T : orderType d).
+Variables (x : T) (I : finType) (P : pred I) (m : T) (F : I -> T).
+
+Import Order.TTheory.
+
+Lemma bigmax_geP : reflect (m <= x \/ exists2 i, P i & m <= F i)
+                           (m <= \big[max/x]_(i | P i) F i).
+Proof.
+apply: (iffP idP) => [|[mx|[i Pi mFi]]].
+- rewrite leNgt => /bigmax_ltP /not_andP[/negP|]; first by rewrite -leNgt; left.
+  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -leNgt; right; exists i.
+- by rewrite bigmax_idl le_max mx.
+- by rewrite (bigmaxD1 i)// le_max mFi.
+Qed.
+
+Lemma bigmax_gtP : reflect (m < x \/ exists2 i, P i & m < F i)
+                           (m < \big[max/x]_(i | P i) F i).
+Proof.
+apply: (iffP idP) => [|[mx|[i Pi mFi]]].
+- rewrite ltNge => /bigmax_leP /not_andP[/negP|]; first by rewrite -ltNge; left.
+  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -ltNge; right; exists i.
+- by rewrite bigmax_idl lt_max mx.
+- by rewrite (bigmaxD1 i)// lt_max mFi.
+Qed.
+
+Lemma bigmin_leP : reflect (x <= m \/ exists2 i, P i & F i <= m)
+                           (\big[min/x]_(i | P i) F i <= m).
+Proof.
+apply: (iffP idP) => [|[xm|[i Pi Fim]]].
+- rewrite leNgt => /bigmin_gtP /not_andP[/negP|]; first by rewrite -leNgt; left.
+  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -leNgt; right; exists i.
+- by rewrite bigmin_idl ge_min xm.
+- by rewrite (bigminD1 i)// ge_min Fim.
+Qed.
+
+Lemma bigmin_ltP : reflect (x < m \/ exists2 i, P i & F i < m)
+                           (\big[min/x]_(i | P i) F i < m).
+Proof.
+apply: (iffP idP) => [|[xm|[i Pi Fim]]].
+- rewrite ltNge => /bigmin_geP /not_andP[/negP|]; first by rewrite -ltNge; left.
+  by move=> /existsNP[i /not_implyP[Pi /negP]]; rewrite -ltNge; right; exists i.
+- by rewrite bigmin_idl gt_min xm.
+- by rewrite (bigminD1 _ _ _ Pi) gt_min Fim.
+Qed.
+
+End bigmaxmin.
+
 Module FunOrder.
 Section FunOrder.
 Import Order.TTheory.
@@ -875,7 +933,7 @@ Export FunOrder.Exports.
 
 Lemma lefP (aT : Type) d (T : porderType d) (f g : aT -> T) :
   reflect (forall x, (f x <= g x)%O) (f <= g)%O.
-Proof. by apply: (iffP idP) => [fg|fg]; [exact/asboolP | apply/asboolP]. Qed.
+Proof. by apply: (iffP idP) => [fg|fg]; [exact/asboolP | exact/asboolP]. Qed.
 
 Lemma meetfE (aT : Type) d (T : latticeType d) (f g : aT -> T) x :
   ((f `&` g) x = f x `&` g x)%O.

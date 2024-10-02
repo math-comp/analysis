@@ -489,3 +489,19 @@ Proof.
 split=> [cnd|[cnd1 cnd2] x xin]; first by split=> x xin; case: (cnd x xin).
 by split; [apply: cnd1 | apply: cnd2].
 Qed.
+
+Lemma mem_inc_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y / (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f a, f b]}.
+Proof.
+move=> fle x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fle ?(itvP xab).
+Qed.
+
+Lemma mem_dec_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y /~ (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f b, f a]}.
+Proof.
+move=> fge x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fge ?(itvP xab).
+Qed.

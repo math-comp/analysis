@@ -164,10 +164,10 @@
 
 - moved from `topology.v` to `mathcomp_extra.v`:
   + lemma `and_prop_in`
-
-- moved from `topology.v` to `set_interval.v`:
-  + lemmas `bigmax_geP`, `bigmax_gtP`, `bigmin_leP`, `bigmin_ltP`
   + lemmas `mem_inc_segment`, `mem_inc_segment`
+
+- moved from `topology.v` to `boolp.v`:
+  + lemmas `bigmax_geP`, `bigmax_gtP`, `bigmin_leP`, `bigmin_ltP`
 
 ### Renamed
 
