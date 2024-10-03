@@ -320,9 +320,9 @@ rewrite -addn1 series_addn series_exp_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /exp_coeff /= expr0n mul0r.
 Unshelve. all: by end_near. Qed.
 
-Lemma expR_ge1Dx x : 0 <= x -> 1 + x <= expR x.
+Local Lemma expR_ge1Dx_subproof x : 0 <= x -> 1 + x <= expR x.
 Proof.
-move=> x_gt0; rewrite /expR.
+move=> x_ge0; rewrite /expR.
 pose f (x : R) i := (i == 0%nat)%:R + x *+ (i == 1%nat).
 have F n : (1 < n)%nat -> \sum_(0 <= i < n) (f x i) = 1 + x.
   move=> /subnK<-.
@@ -387,7 +387,7 @@ Proof. by rewrite -[X in _ X * _ = _]addr0 expRxDyMexpx expR0. Qed.
 
 Lemma pexpR_gt1 x : 0 < x -> 1 < expR x.
 Proof.
-by move=> x_gt0; rewrite (lt_le_trans _ (expR_ge1Dx (ltW x_gt0)))// ltrDl.
+by move=> x0; rewrite (lt_le_trans _ (expR_ge1Dx_subproof (ltW x0)))// ltrDl.
 Qed.
 
 Lemma expR_gt0 x : 0 < expR x.
@@ -458,6 +458,28 @@ case: (ltrgtP x y) => [xLy|yLx|<-]; last by rewrite lexx.
 - by rewrite leNgt ltr_expR yLx.
 Qed.
 
+Lemma expR_gt1Dx x : x != 0 -> 1 + x < expR x.
+Proof.
+rewrite neq_lt => /orP[x0|x0].
+- have [?|_] := leP x (-1).
+    by rewrite (@le_lt_trans _ _ 0) ?expR_gt0// -lerBrDl sub0r.
+  have [] := @MVT R expR expR _ _ x0 (fun x _ => is_derive_expR x).
+    exact/continuous_subspaceT/continuous_expR.
+  move=> c; rewrite in_itv/= => /andP[xc c0].
+  rewrite expR0 sub0r => /eqP; rewrite subr_eq addrC -subr_eq => /eqP <-.
+  by rewrite mulrN opprK ltrD2l ltr_nMl// -expR0 ltr_expR.
+- have [] := @MVT R expR expR _ _ x0 (fun x _ => is_derive_expR x).
+    exact/continuous_subspaceT/continuous_expR.
+  move=> c; rewrite in_itv/= => /andP[c0 cx].
+  rewrite subr0 expR0 => /eqP /[!subr_eq] /eqP ->.
+  by rewrite addrC ltrD2r ltr_pMl// -expR0 ltr_expR.
+Qed.
+
+Lemma expR_ge1Dx x : 1 + x <= expR x.
+Proof.
+by have [->|/expR_gt1Dx/ltW//] := eqVneq x 0; rewrite expR0 addr0.
+Qed.
+
 Lemma expR_inj : injective (@expR R).
 Proof.
 move=> x y exE.
@@ -471,11 +493,11 @@ move=> x_ge1; have x_ge0 : 0 <= x by apply: le_trans x_ge1.
 have [x1 x1Ix| |x1 _ /eqP] := @IVT _ (fun y => expR y - x) _ _ 0 x_ge0.
 - apply: continuousB => // y1; last exact: cst_continuous.
   by apply/continuous_subspaceT=> ?; exact: continuous_expR.
-- rewrite expR0; have [_| |] := ltrgtP (1- x) (expR x - x).
+- rewrite expR0; have [_| |] := ltrgtP (1 - x) (expR x - x).
   + by rewrite subr_le0 x_ge1 subr_ge0 (le_trans _ (expR_ge1Dx _)) ?lerDr.
   + by rewrite ltrD2r expR_lt1 ltNge x_ge0.
   + rewrite subr_le0 x_ge1 => -> /=; rewrite subr_ge0.
-    by rewrite (le_trans _ (expR_ge1Dx x_ge0)) ?lerDr.
+    by rewrite (le_trans _ (expR_ge1Dx _)) ?lerDr.
 - rewrite subr_eq0 => /eqP x1_x; exists x1; split => //.
   + by rewrite -ler_expR expR0 x1_x.
   + by rewrite -x1_x expR_ge1Dx // -ler_expR x1_x expR0.
@@ -543,8 +565,11 @@ case: x => /= [r| |]; last by rewrite mul0e.
   + by rewrite mulyy.
 Qed.
 
-Lemma expeR_ge1Dx x : 0 <= x -> 1 + x <= expeR x.
-Proof. by case: x => //= r; rewrite -EFinD !lee_fin; exact: expR_ge1Dx. Qed.
+Lemma expeR_ge1Dx x : 1 + x <= expeR x.
+Proof.
+case : x => //= [r|]; last by rewrite addeNy.
+by rewrite -EFinD !lee_fin; exact: expR_ge1Dx.
+Qed.
 
 Lemma ltr_expeR : {mono expeR : x y / x < y}.
 Proof.
@@ -646,10 +671,10 @@ move=> x_gt0; elim: n => [|n ih] /=; first by rewrite expr0 ln1 mulr0n.
 by rewrite !exprS lnM ?qualifE//= ?exprn_gt0// mulrS ih.
 Qed.
 
-Lemma le_ln1Dx x : 0 <= x -> ln (1 + x) <= x.
+Lemma le_ln1Dx x : -1 < x -> ln (1 + x) <= x.
 Proof.
-move=> x_ge0; rewrite -ler_expR lnK ?expR_ge1Dx //.
-by apply: lt_le_trans (_ : 0 < 1) _; rewrite // lerDl.
+move=> N1x; rewrite -ler_expR lnK ?expR_ge1Dx //.
+by rewrite posrE addrC -ltrBlDr sub0r.
 Qed.
 
 Lemma ln_sublinear x : 0 < x -> ln x < x.
