@@ -153,8 +153,8 @@
 - in file `normedtype.v`,
   + new definition `type`.
   + new lemmas `normal_completely_regular`, `completely_reg_opc`,
-    `opc_weak_topology2`, `nbhs_opc_weakE`,
-    `locally_compact_completely_regular`, and `completely_regular_regular`.
+    `nbhs_opc_weakE`, `locally_compact_completely_regular`, and
+    `completely_regular_regular`.
 - in file `topology.v`,
   + new definitions `one_point_compactification`, and `one_point_nbhs`.
   + new lemmas `compact_normal_local`, `compact_normal`, `opc_compact`,
