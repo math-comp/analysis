@@ -118,7 +118,6 @@ Proof.
 by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
 Qed.
 
-
 Lemma compact_cluster_set1 (x : T) F V :
   hausdorff_space -> compact V -> nbhs x V ->
   ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
@@ -234,7 +233,6 @@ move=> npzq; exists (`]-oo, q[, `]p, +oo[)%classic; split => //=.
   by apply: npzq; exists r; rewrite rz zr.
 Qed.
 
-
 Section ball_hausdorff.
 Variables (R : numDomainType) (T : pseudoMetricType R).
 
@@ -329,8 +327,6 @@ Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 Lemma cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
   {near F, is_fun f} -> is_subset1 [set x : T | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
-
-
 End separated_topologicalType.
 
 Section separated_ptopologicalType.
@@ -370,7 +366,6 @@ Lemma cvgi_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
 Proof.
 move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
 Qed.
-
 End separated_ptopologicalType.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvg_lim`")]
@@ -410,7 +405,6 @@ apply/nbhsP; exists (split_ent A) => // z /xsectionP xz; apply: sAP.
 apply/xsectionP; apply: (entourage_split x) => //.
 by have := cxy _ (entourage_inv (entourage_split_ent entA)).
 Qed.
-
 
 Lemma cvg_closeP { U : puniformType} (F : set_system U) (l : U) : ProperFilter F ->
   F --> l <-> ([cvg F in U] /\ close (lim F) l).
@@ -487,8 +481,6 @@ Qed.
 Local Close Scope relation_scope.
 
 #[global] Hint Resolve uniform_regular : core.
-
-
 
 Section totally_disconnected.
 Implicit Types T : topologicalType.
@@ -574,6 +566,7 @@ exists V; split; first split.
 Qed.
 
 End totally_disconnected.
+
 (* This section proves that uniform spaces, with a countable base for their
    entourage, are metrizable. The definition of this metric is rather arcane,
    and the proof is tough. That's ok because the resulting metric is not
@@ -901,7 +894,6 @@ Qed.
 
 End countable_uniform.
 
-
 Module Exports. HB.reexport. End Exports.
 End countable_uniform.
 Export countable_uniform.Exports.
@@ -928,7 +920,6 @@ HB.instance Definition _ : PseudoMetric R S :=
   PseudoMetric.on (countable_uniform countable_uniformityT).
 
 End sup_pseudometric.
-
 
 Module gauge.
 Section gauge.
