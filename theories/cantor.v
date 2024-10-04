@@ -4,6 +4,7 @@ From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality.
 From mathcomp Require Import reals signed topology function_spaces.
+From mathcomp Require Import separation_axioms.
 From HB Require Import structures.
 
 (**md**************************************************************************)

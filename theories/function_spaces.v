@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop.
-Require Import reals signed topology.
+Require Import reals signed topology separation_axioms.
 
 (**md**************************************************************************)
 (* # The topology of functions spaces                                         *)
@@ -1421,7 +1421,7 @@ Lemma continuous_uncurry (f : U -> V -> W) :
 Proof.
 move=> lcV hsdf ctsf cf; apply: continuous_uncurry_regular => //.
 move=> v; have [B] := @lcV v I; rewrite withinET => Bv [cptB clB].
-by move=> z; exact: (@compact_regular V hsdf v B).
+by move=> z; exact: (compact_regular _ cptB).
 Qed.
 
 Lemma curry_continuous (f : (U * V)%type -> W) : continuous f -> @regular_space U ->
