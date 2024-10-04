@@ -3813,22 +3813,9 @@ Qed.
 HB.instance Definition _ := Uniform.copy opc 
   (completely_regular_uniformity.type completely_reg_opc).
 
-(* TODO : fix the original*)
-Lemma opc_weak_topology2 : 
-  @nbhs _ (@weak_topology X opc Some) = @nbhs _ X.
-Proof. 
-rewrite funeq2E => x U; apply/propeqP; split; rewrite /(@nbhs _ (weak_topology _)) /=.
-  case => V [[/= W] oW <- /= Ws] /filterS; apply; apply: opc_some_continuous.
-  exact: oW.
-rewrite nbhsE; case => V [? ? ?]; exists V; split => //.
-exists (Some @` V); first exact: opc_open_some.
-rewrite eqEsubset; split => z /=; first by case=> ? /[swap] /Some_inj ->.
-by move=> ?; exists z.
-Qed.
-
 Let X' := @weak_topology X opc Some.
 Lemma nbhs_opc_weakE : @nbhs X X = nbhs_ (@entourage X').
-Proof. by rewrite nbhs_entourageE opc_weak_topology2. Qed.
+Proof. by rewrite nbhs_entourageE opc_weak_topology. Qed.
 
 #[local, non_forgetful_inheritance]
 HB.instance Definition _ := @Nbhs_isUniform.Build 
