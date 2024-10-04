@@ -39,6 +39,9 @@
     `big_lexi_order_prefix_lt`, `big_lexi_order_prefix_gt`,
     `big_lexi_order_between`, and `big_lexi_order_interval_prefix`.
 
+- in `exp.v`:
+  + lemma `expR_gt1Dx`
+
 ### Changed
 
 - in `numfun.v`:
@@ -179,6 +182,10 @@
   + lemma `integral_setD1_EFin`
   + lemmas `integral_itv_bndo_bndc`, `integral_itv_obnd_cbnd`
   + lemmas `Rintegral_itv_bndo_bndc`, `Rintegral_itv_obnd_cbnd`
+
+- in `exp.v`:
+  + lemmas `expR_ge1Dx` and `expeR_ge1Dx` (remove hypothesis)
+  + lemma `le_ln1Dx` (weaken hypothesis)
 
 ### Deprecated
 
