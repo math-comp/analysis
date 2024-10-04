@@ -55,8 +55,6 @@ HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule
 HB.structure Definition Tvs (R : numDomainType) :=
   {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
-
-
 HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
     of Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
@@ -75,10 +73,9 @@ Definition entourage : set_system (E * E):=
 
 
 (* TODO: delete the next lemmas to better incorporate their proofs*)
-
 Lemma nbhs0N (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof. 
-move => U0.
+move => U0. 
 move: (@scale_continuous (-1,0) U); rewrite /= scaler0 => /(_ U0).
 move => [] //= [B] B12  [B1 B2] BU.
 near=> x; move =>  //=; exists (-x); last by rewrite opprK.
@@ -100,28 +97,24 @@ move: B1 => [] //= ? ?; apply => [] /=;  first by rewrite subrr normr0 //.
 Unshelve. all: by end_near. Qed.
 
 
-Lemma nbhsT :  forall (U : set E), forall (x : E), nbhs 0 U -> nbhs x (+%R x @`U).
+Lemma nbhsT (U : set E) (x : E) :  nbhs 0 U -> nbhs x (+%R x @`U).
 Proof.
-move => U x U0.
-move: (@add_continuous (x,-x) U) => /=; rewrite subrr => /(_ U0) //=.
-case=> //= [B] [B1 B2] BU. near=> x0.
+move => U0; move: (@add_continuous (x,-x) U) => /=; rewrite subrr => /(_ U0) //=.
+case=> //= [B] [B1 B2] BU; near=> x0.
 exists (x0-x); last by rewrite //= addrCA subrr addr0.
 apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton.
 by near: x0; rewrite nearE.
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhs_add : forall (U : set E) (z :E), forall (x : E), nbhs z U -> nbhs (x + z) (+%R x @`U).
+Lemma nbhs_add (U : set E) (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
 Proof.
-move => U z x U0. 
-move: (@add_continuous ((x+z)%E,-x) U) => /=. rewrite addrAC subrr add0r.
-move=> /(_ U0) //=.
-case=> //= [B] [B1 B2] BU. near=> x0.
+move => U0; move: (@add_continuous ((x+z)%E,-x) U); rewrite /= addrAC subrr add0r.
+move=> /(_ U0) //=; case=> //= [B] [B1 B2] BU;  near=> x0.
 exists (x0-x); last by rewrite //= addrCA subrr addr0.
 apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton. 
 by near: x0; rewrite nearE.  
 Unshelve. all: by end_near.
 Qed.
-
 
 Lemma entourage_filter : Filter entourage.
 Proof.
@@ -162,10 +155,10 @@ Lemma entourage_split_ex_subproof :
       entourage A -> exists2 B : set (E * E), entourage B & (B \; B)%relation `<=` A.
 Proof.
 move=> A [/= U] [U0 Uxy]; rewrite /entourage /=.
-move: add_continuous. rewrite /continuous_at /==> /(_ (0,0)) /=; rewrite addr0.
-move=> /(_ U U0) [] /= [W1 W2] []; rewrite nbhsE /==> [[U1 nU1 UW1] [U2 nU2 UW2]] Wadd.
+move: add_continuous; rewrite /continuous_at /==> /(_ (0,0)) /=; rewrite addr0.
+move=> /(_ U U0) [] /= [W1 W2] []; rewrite nbhsE /==> [[U1 nU1 UW1] [U2 nU2 UW2]] Wadd. 
 exists ([set w |(W1 `&` W2)  (w.1 - w.2) ]).
-exists (W1 `&` W2); split; last by [].
+  exists (W1 `&` W2); split; last by [].
   exists (U1 `&` U2); first by apply: open_nbhsI.
   move => t [U1t U2t]; split; first by apply: UW1.
   by apply: UW2.
@@ -181,14 +174,14 @@ have lem : -1 != 0 :> R by rewrite oppr_eq0 oner_eq0.
 rewrite /nbhs_  /=; apply: funext => x; rewrite /filter_from /=.
 apply: funext => U; apply: propext => /=; rewrite /entourage /=; split.
   pose V := [set v | (x-v) \in U] : set E.
-  move=> nU; exists [set xy |  (xy.1 - xy.2) \in V].
-  exists V;split.
-      move: (nbhs_add (x) (nbhsN nU)); rewrite /= subrr /= /V. 
+  move=> nU; exists [set xy |  (xy.1 - xy.2) \in V]. 
+  exists V;split => //=.
+      move: (nbhs_add (x) (nbhsN nU)); rewrite /= subrr /= /V.
       have -> : [set (x + x0)%E | x0 in [set - x | x in U]]
                 = [set v | x - v \in U].
-       apply: funext => /= v /=; rewrite inE; apply: propext; split.
+         apply: funext => /= v /=; rewrite inE; apply: propext; split.
          by move => [x0 [x1]] Ux1 <- <-; rewrite  opprB addrCA subrr addr0.
-      move=> Uxy. exists (v - x). exists (x -v) => //.
+      move=> Uxy. exists (v - x). exists (x -v) => //. 
       by rewrite opprB.
       by rewrite addrCA subrr addr0 //. 
       by [].
@@ -216,35 +209,15 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
     nbhsE_subproof.
 HB.end.
 
-Section prod_Tvs.
-Context (K : numDomainType) (U V : tvsType K).
 
-Lemma prod_add_continuous : continuous (fun x : (U * V) * (U * V) => x.1 + x.2).
+
+Section Tvs_numDomain.
+
+Context (R : numDomainType) (E : tvsType R) (U : set E).
+
+Lemma nbhs0N  : nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof.
-Admitted.
-
-Lemma  prod_scale_continuous : continuous (fun z : K^o * (U * V) => z.1 *: z.2).
-Proof.
-Admitted.
-
-Lemma prod_locally_convex : 
-exists2 B : set (set (U * V)), (forall b, b \in B -> convex b) & basis B.
-Proof.
-Admitted.
-
-HB.instance Definition _ :=
-  Uniform_isTvs.Build K (U * V)%type
-prod_add_continuous prod_scale_continuous prod_locally_convex.
-End prod_Tvs.
-
-
-Section FirstLemmas.
-
-  
-Lemma nbhs0N (R : numDomainType) (E : tvsType R) (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
-Proof.
-move => U0.
-move: (scale_continuous ((-1,0)) U); rewrite /= scaler0 => /(_ U0).
+move => U0; move: (scale_continuous ((-1,0)) U); rewrite /= scaler0 => /(_ U0).
 move => [] //= [B] B12  [B1 B2] BU.
 near=> x; move =>  //=; exists (-x); last by rewrite opprK.
 rewrite -scaleN1r; apply: (BU (-1,x)); split => //=; last first.
@@ -253,29 +226,28 @@ move: B1 => [] //= ? ?; apply => [] /=;  first by rewrite subrr normr0 //.
 Unshelve. all: by end_near. Qed.
 
 
-Lemma nbhsT  (R : numDomainType) (E : tvsType R) :
-  forall (U : set E), forall (x : E), nbhs 0 U -> nbhs x (+%R x @`U).
+Lemma nbhsT (x :E) : nbhs 0 U -> nbhs x (+%R x @`U).
 Proof.
-move => U x U0.
-move: (add_continuous (x,-x) U) => /=; rewrite subrr => /(_ U0) //=.
-case=> //= [B] [B1 B2] BU. near=> x0.
+move => U0;move: (add_continuous (x,-x) U); rewrite /= subrr => /(_ U0) //=.
+case=> //= [B] [B1 B2] BU; near=> x0.
 exists (x0-x); last by rewrite //= addrCA subrr addr0.
 apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton.
 by near: x0; rewrite nearE.
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhs_add  (R : numDomainType) (E : tvsType R) :
-  forall (U : set E) (z :E), forall (x : E), nbhs z U -> nbhs (x + z) (+%R x @`U).
+Lemma nbhs_add (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
 Proof.
-move => U z x U0. 
-move: (add_continuous ((x+z)%E,-x) U) => /=. rewrite addrAC subrr add0r.
-move=> /(_ U0) //=.
-case=> //= [B] [B1 B2] BU. near=> x0.
+move => U0; move: (add_continuous ((x+z)%E,-x) U); rewrite /= addrAC subrr add0r.
+move=> /(_ U0) //=; case=> //= [B] [B1 B2] BU; near=> x0.
 exists (x0-x); last by rewrite //= addrCA subrr addr0.
 apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton. 
 by near: x0; rewrite nearE.  
 Unshelve. all: by end_near.
 Qed.
+
+End Tvs_numDomain.
+
+Section Tvs_numField.
 
 Lemma nbhs0_scaler  (R : numFieldType) (E : tvsType R) (U : set E) (r : R) :
   r != 0 -> nbhs 0 U -> nbhs 0 ( *:%R r @` U).
@@ -300,8 +272,50 @@ by apply: nbhs_singleton.
 by rewrite scalerA divrr ?scale1r ?unitfE //=.
 Unshelve. all: by end_near. Qed.
 
+End Tvs_numField.
 
-End FirstLemmas.
+
+Section prod_Tvs.
+Context (K : numDomainType) (E F : tvsType K).
+
+Lemma prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
+Proof.
+move => [/= xy1 xy2] /= U /= [] [A B] /= [nA nB] nU.
+rewrite nbhs_simpl /=.
+move: (@add_continuous K E (xy1.1,xy2.1) _ nA); rewrite nbhs_simpl /= => [[]] /= A0 [A01 A02] nA1.
+move: (@add_continuous K F (xy1.2,xy2.2) _ nB); rewrite nbhs_simpl /= => [[]] /= B0 [B01 B02] nB1.
+exists ([set xy : (E*F) |( A0.1 xy.1) /\ (B0.1 xy.2) ], [set xy : (E*F) |( A0.2 xy.1) /\ (B0.2 xy.2) ]) => //=.
+  split; first by exists (A0.1,B0.1).
+  by exists (A0.2,B0.2).
+move => [[x1 y1][x2 y2]] /= [] [] a1 b1 [] a2 b2.
+apply: nU; split => /=; first by move : (nA1 (x1,x2)) => /=; apply.
+by move : (nB1 (y1,y2)) => /=; apply.
+Qed.
+
+Lemma  prod_scale_continuous : continuous (fun z : K^o * (E * F) => z.1 *: z.2).
+Proof.
+move => [/= r [x y]] /= U /= []/= [A B] /= [nA nB] nU. 
+rewrite nbhs_simpl /=.
+move: (@scale_continuous K E (r,x) _ nA); rewrite nbhs_simpl /= => [[]] /= A0 [A01 A02] nA1.
+move: (@scale_continuous K F (r,y) _ nB); rewrite nbhs_simpl /= => [[]] /= B0 [B01 B02] nB1.
+exists (A0.1 `&` B0.1,(A0.2 `*` B0.2)) => /=. 
+  split=> /=. apply: filterI => //. admit.
+exists (A0.2,B0.2); first by split => //=.
+  by [].  
+move=> [l [e f]] /= [] [Al Bl] [] Ae Be; apply: nU => /=; split.
+  by move : (nA1 (l,e)) => /=;  apply.
+by move : (nB1 (l,f)) => /=; apply.
+Admitted.
+
+Lemma prod_locally_convex : 
+exists2 B : set (set (E * F)), (forall b, b \in B -> convex b) & basis B.
+Proof.
+Admitted.
+
+HB.instance Definition _ :=
+  Uniform_isTvs.Build K (E * F)%type
+prod_add_continuous prod_scale_continuous prod_locally_convex.
+End prod_Tvs.
 
 Definition dual {R : ringType} (E : lmodType R) : Type := {scalar E}.
 (* Check fun {R : ringType} (E : lmodType R) => dual E : ringType. *)
