@@ -19,6 +19,7 @@ topology_theory/order_topology.v
 topology_theory/product_topology.v
 topology_theory/pseudometric_structure.v
 topology_theory/subspace_topology.v
+topology_theory/subtype_topology.v
 topology_theory/supremum_topology.v
 topology_theory/topology_structure.v
 topology_theory/uniform_structure.v

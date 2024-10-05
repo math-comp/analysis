@@ -151,8 +151,16 @@ HB.instance Definition _ (U : Type) (T : U -> topologicalType) :=
 HB.instance Definition _ (U : Type) (T : U -> uniformType) :=
   Uniform.copy (forall x : U, T x) (prod_topology T).
 
-HB.instance Definition _ (U : Type) R (T : U -> pseudoMetricType R) :=
-  Uniform.copy (forall x : U, T x) (prod_topology T).
+HB.instance Definition _ (U T : topologicalType) :=
+  Topological.copy 
+    (continuousType U T) 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
+HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
+  Uniform.copy 
+    (continuousType U T) 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
 End ArrowAsProduct.
 
 Section product_spaces.
@@ -544,6 +552,17 @@ HB.instance Definition _ (U : choiceType) (V : uniformType) :=
 HB.instance Definition _ (U : choiceType) (R : numFieldType)
     (V : pseudoMetricType R) :=
   PseudoMetric.copy (U -> V) (arrow_uniform_type U V).
+
+HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
+  Uniform.copy 
+    (continuousType U T) 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
+HB.instance Definition _ (U : topologicalType) (R : realType) 
+     (T : pseudoMetricType R) :=
+  PseudoMetric.on 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
 End ArrowAsUniformType.
 
 (** Limit switching *)
@@ -1044,6 +1063,10 @@ End compact_open_uniform.
 Module ArrowAsCompactOpen.
 HB.instance Definition _ (U : topologicalType) (V : topologicalType) :=
   Topological.copy (U -> V) {compact-open, U -> V}.
+
+HB.instance Definition _ (U : topologicalType) (V : topologicalType) :=
+  Topological.copy (continuousType U V) 
+    (weak_topology (id : (continuousType U V) -> (U -> V)) ).
 End ArrowAsCompactOpen.
 
 Definition compactly_in {U : topologicalType} (A : set U) :=
