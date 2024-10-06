@@ -1,12 +1,11 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
-From mathcomp Require Import filter reals signed topology.
-From mathcomp Require Export topology.
+Require Import filter reals signed.
+Require Export topology.
 
 (**md**************************************************************************)
 (* # Separation Axioms                                                        *)
@@ -17,7 +16,10 @@ From mathcomp Require Export topology.
 (* accessible, uniform, etc). This file also provides related topological     *)
 (* properties like zero dimensional and perfect, and discrete.                *)
 (*                                                                            *)
-(*              set_nbhs A == filter from open sets containing A              *)    
+(* ```                                                                        *)
+(*              set_nbhs A == filter from open sets containing A              *)
+(* ```                                                                        *)
+(*                                                                            *)
 (* ## The classic separation axioms                                           *)
 (* ```                                                                        *)
 (*      kolmogorov_space T == T is a Kolmogorov space (T0)                    *)
@@ -46,7 +48,6 @@ From mathcomp Require Export topology.
 (*        sup_pseudometric == the pseudometric induced for the supremum       *)
 (*                            of countably many pseudoMetrics                 *)
 (******************************************************************************)
-
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -96,7 +97,6 @@ End set_nbhs.
 
 Section point_separation_axioms.
 Context {T : topologicalType}.
-
 
 Definition accessible_space := forall x y, x != y ->
   exists A : set T, open A /\ x \in A /\ y \in ~` A.
@@ -174,7 +174,7 @@ rewrite setIC => /disjoints_subset VUc; exists U; repeat split => //.
 by rewrite inE; apply: VUc; rewrite -inE.
 Qed.
 
-Lemma accessible_closed_set1 : accessible_space -> forall (x : T), closed [set x].
+Lemma accessible_closed_set1 : accessible_space -> forall x : T, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
 rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
@@ -317,7 +317,6 @@ Qed.
 Lemma close_eq x y : close x y -> x = y.
 Proof. by rewrite closeE. Qed.
 
-
 Lemma cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : T | F --> x].
 Proof. move=> Fx Fy; rewrite -closeE //; exact: (@cvg_close F). Qed.
 
@@ -378,7 +377,9 @@ Arguments close_cvg {T} F1 F2 {FF2} _.
 
 Section close_uniform.
 Implicit Types (U : uniformType).
-Lemma entourage_close {U} (x y : U) : close x y = forall A, entourage A -> A (x, y).
+
+Lemma entourage_close {U} (x y : U) :
+  close x y = forall A, entourage A -> A (x, y).
 Proof.
 rewrite propeqE; split=> [cxy A entA|cxy].
   have /entourage_split_ent entsA := entA; rewrite closeEnbhs in cxy.
@@ -406,7 +407,8 @@ apply/xsectionP; apply: (entourage_split x) => //.
 by have := cxy _ (entourage_inv (entourage_split_ent entA)).
 Qed.
 
-Lemma cvg_closeP { U : puniformType} (F : set_system U) (l : U) : ProperFilter F ->
+Lemma cvg_closeP {U : puniformType} (F : set_system U) (l : U) :
+    ProperFilter F ->
   F --> l <-> ([cvg F in U] /\ close (lim F) l).
 Proof.
 move=> FF; split=> [Fl|[cvF]Cl].
@@ -437,7 +439,7 @@ Definition normal_space :=
 Definition regular_space :=
   forall a : T, filter_from (nbhs a) closure --> a.
 
-Lemma compact_regular (x : T) V : hausdorff_space T -> compact V -> 
+Lemma compact_regular (x : T) V : hausdorff_space T -> compact V ->
   nbhs x V -> {for x, regular_space}.
 Proof.
 move=> sep cptv Vx; apply: (@compact_cluster_set1 T x _ V) => //.
@@ -533,7 +535,7 @@ move=> /(_ _ _ setC (powerset_filter_from_filter PF))[].
 by move=> D [DF _ [C DC]]/(_ _ DC)/subsetC2/filterS; apply; exact: DF.
 Qed.
 
-Lemma zero_dimensional_ray {d} {T : orderTopologicalType d} (x y : T) : 
+Lemma zero_dimensional_ray {d} {T : orderTopologicalType d} (x y : T) :
   (x < y)%O -> zero_dimensional T ->
   exists U, [/\ clopen U, U y , ~ U x & forall l r, U r -> ~ U l -> l < r]%O.
 Proof.
@@ -695,7 +697,7 @@ Local Definition step_ball x e z := exists i, (n_step_ball i x e z).
 
 Local Lemma n_step_ball_pos n x e z : n_step_ball n x e z -> 0 < e.
 Proof.
-by case: n => [[]|] // n; case=> [?] [?] [?] [] ? ? ? ? <-; apply: addr_gt0.
+by case: n => [[]|] // n; case=> [?] [?] [?] [] ? ? ? ? <-; exact: addr_gt0.
 Qed.
 
 Local Lemma step_ball_pos x e z : step_ball x e z -> 0 < e.
@@ -880,11 +882,11 @@ Definition type : Type := let _ := countableBase in let _ := entF in T.
 #[export] HB.instance Definition _ := Uniform.on type.
 #[export] HB.instance Definition _ := Uniform_isPseudoMetric.Build R type
   step_ball_center step_ball_sym step_ball_triangle step_ball_entourage.
-#[export] HB.instance Definition _ {q : Pointed T} := Pointed.copy type (Pointed.Pack q).
+#[export] HB.instance Definition _ {q : Pointed T} :=
+  Pointed.copy type (Pointed.Pack q).
 
 Lemma countable_uniform_bounded (x y : T) :
-  let U := [the pseudoMetricType R of type]
-  in @ball _ U x 2 y.
+  let U := [the pseudoMetricType R of type] in @ball _ U x 2 y.
 Proof.
 rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
 rewrite [X in `|X|%N](_ : _ = 0) ?absz0//.
