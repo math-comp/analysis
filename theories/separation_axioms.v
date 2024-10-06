@@ -4,7 +4,8 @@ From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
-Require Import filter reals signed.
+From mathcomp Require Import filter.
+Require Import reals signed.
 Require Export topology.
 
 (**md**************************************************************************)
