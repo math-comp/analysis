@@ -1,11 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum interval rat.
 From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality.
-From mathcomp Require Import reals signed topology function_spaces.
-From mathcomp Require Import separation_axioms.
-From HB Require Import structures.
+Require Import reals signed topology function_spaces separation_axioms.
 
 (**md**************************************************************************)
 (* # The Cantor Space and Applications                                        *)

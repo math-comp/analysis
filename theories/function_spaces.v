@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop.
-From mathcomp Require Import reals signed topology separation_axioms.
+Require Import reals signed topology separation_axioms.
 
 (**md**************************************************************************)
 (* # The topology of functions spaces                                         *)

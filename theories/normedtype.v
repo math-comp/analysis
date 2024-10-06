@@ -6,7 +6,6 @@ From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule function_spaces.
-Require Import separation_axioms.
 Require Export separation_axioms.
 
 (**md**************************************************************************)
