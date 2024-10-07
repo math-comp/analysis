@@ -1,10 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum interval rat.
 From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality.
-From mathcomp Require Import reals signed topology function_spaces.
-From HB Require Import structures.
+Require Import reals signed topology function_spaces separation_axioms.
 
 (**md**************************************************************************)
 (* # The Cantor Space and Applications                                        *)
@@ -275,7 +275,7 @@ Let split_clopen' (U : set T) : exists V,
 Proof.
 have [oU|?] := pselect (open U); last by exists point.
 have [Un0|?] := pselect (U !=set0); last by exists point.
-have [x [y] [Ux] Uy xny] := (iffLR perfect_set2) pftT U oU Un0.
+have [x [y] [Ux] Uy xny] := (iffLR perfectTP_ex) pftT U oU Un0.
 have [V [clV Vx Vy]] := dsctT xny; exists V => _ _.
 by split => //; [exists x | exists y].
 Qed.
