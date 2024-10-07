@@ -56,7 +56,6 @@ HB.structure Definition Tvs (R : numDomainType) :=
   {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
 HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
-
     of Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
     (*continuous (uncurry (@GRing.add E))*)
@@ -138,7 +137,6 @@ Proof. (*why bother with \in ?*)
 rewrite /entourage => -[/=U [U0 Uxy]] xy //= /eqP; rewrite -subr_eq0 => /eqP xyE.
 by rewrite -in_setE; apply: Uxy; rewrite xyE in_setE; apply: nbhs_singleton.
 Qed.
-
 
 Lemma entourage_inv_subproof :
   forall A : set (E * E), entourage A -> entourage A^-1%relation.
@@ -274,8 +272,25 @@ Unshelve. all: by end_near. Qed.
 End Tvs_numField.
 
 
+Section regular_topology.
+Variable R : numFieldType.
+HB.instance Definition _ := Num.NormedZmodule.on R^o.
+
+Lemma regular_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
+  Admitted.
+Lemma regular_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
+  Admitted.
+Lemma regular_locally_convex :
+  exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
+  Admitted.                                                               
+
+HB.instance Definition _ :=
+  Uniform_isTvs.Build R (R^o)%type
+regular_add_continuous regular_scale_continuous regular_locally_convex.
+End regular_topology.
+
 Section prod_Tvs.
-Context (K : numDomainType) (E F : tvsType K).
+Context (K : numFieldType) (E F : tvsType K).
 
 Lemma prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
 Proof.
@@ -291,24 +306,40 @@ apply: nU; split => /=; first by move : (nA1 (x1,x2)) => /=; apply.
 by move : (nB1 (y1,y2)) => /=; apply.
 Qed.
 
-Lemma  prod_scale_continuous : continuous (fun z : K^o * (E * F) => z.1 *: z.2).
+Lemma prod_scale_continuous : continuous (fun z : K^o * (E * F) => z.1 *: z.2).
 Proof.
 move => [/= r [x y]] /= U /= []/= [A B] /= [nA nB] nU. 
 rewrite nbhs_simpl /=.
 move: (@scale_continuous K E (r,x) _ nA); rewrite nbhs_simpl /= => [[]] /= A0 [A01 A02] nA1.
 move: (@scale_continuous K F (r,y) _ nB); rewrite nbhs_simpl /= => [[]] /= B0 [B01 B02] nB1.
 exists (A0.1 `&` B0.1,(A0.2 `*` B0.2)) => /=. 
-  split=> /=. apply: filterI => //. admit.
+  split=> /=. apply: filterI => //.
 exists (A0.2,B0.2); first by split => //=.
   by [].  
 move=> [l [e f]] /= [] [Al Bl] [] Ae Be; apply: nU => /=; split.
   by move : (nA1 (l,e)) => /=;  apply.
-by move : (nB1 (l,f)) => /=; apply.
-Admitted.
+  by move : (nB1 (l,f)) => /=; apply.
+Qed.
 
 Lemma prod_locally_convex : 
 exists2 B : set (set (E * F)), (forall b, b \in B -> convex b) & basis B.
 Proof.
+move: (@locally_convex K E)=> [Be Bec Beb].  
+move: (@locally_convex K F)=> [Bf Bfc Bfb].
+exists [set ef : set (E*F) |
+    (exists be, exists2 bf, (be \in Be) & ((bf \in Bf) /\ (forall xy, (xy \in ef)<->(exists x, exists y, (x \in be) /\ (y \in bf) /\ (x,y)= xy))))].
+move=> b; rewrite inE /= => [[]] be [] bf Bee [] Bff H.
+rewrite /convex /= =>  ef1 ef2 l /H [x1 [y1]] [x1be] [y1bf] <- / H [x2 [y2]] [x2be] [y2bf] <- l0 l1.
+apply/H; exists (l*:x1 + (1-l)*:x2);exists (l*:y1 + (1-l)*:y2); split; first by apply: Bec.
+by split; first by apply: Bfc.
+split. move=> b /= => [[]]  be [] bf ; rewrite !inE => Bee [] Bff H.
+suff: ((open be)/\(open bf)). admit.
+split; first by  move: Beb => [] /= + _; apply.
+by move: Bfb => [] /= + _; apply.
+move => /= [x y] ef [[e f] /= [ne nf]] /= EF.
+exists [set z | (e z.1) /\ (f z.2)]; last by apply: EF.
+split; last by split; apply: nbhs_singleton.
+move: Beb=> [] _ /(_ x) /=.
 Admitted.
 
 HB.instance Definition _ :=

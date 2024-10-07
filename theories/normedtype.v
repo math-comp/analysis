@@ -913,29 +913,11 @@ HB.instance Definition _ :=
 HB.end.
 
 Section regular_topology.
-
 Variable R : numFieldType.
-
-HB.instance Definition _ := Num.NormedZmodule.on R^o.
+  
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R R^o (@normrM _).
-
-(*Let Ro_add_continuous : continuous (uncurry (@GRing.add R^o)).
-Proof.
-Admitted.
-
-Let Ro_scale_continuous :
-  continuous (uncurry (@GRing.scale R R^o) : R^o * R^o -> R^o).
-Admitted.
-
-Let Ro_locally_convex : exists2 B : set (set R^o),
-  (forall b, b \in B -> convex b) & basis B.
-Admitted.
-
-HB.instance Definition _ :=
-  TopologicalLmod_isTvs.Build R R^o Ro_add_continuous
-    Ro_scale_continuous Ro_locally_convex.*)
+  PseudoMetricNormedZmod_Tvs_isNormedModule.Build R R^o (@normrM _).
 
 End regular_topology.
 
@@ -2481,7 +2463,7 @@ HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
 End prod_PseudoMetricNormedZmodule.
 
 Section prod_NormedModule.
-Context {K : numDomainType} {U V : normedModType K}.
+Context {K : numFieldType} {U V : normedModType K}.
 
 Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
