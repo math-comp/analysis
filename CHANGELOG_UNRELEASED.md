@@ -157,9 +157,10 @@
     `completely_regular_regular`.
 - in file `topology.v`,
   + new definitions `one_point_compactification`, and `one_point_nbhs`.
-  + new lemmas `compact_normal_local`, `compact_normal`, `opc_compact`,
-    `opc_some_nbhs`, `opc_some_continuous`, `opc_open_some`,
-    `opc_weak_topology`, and `opc_hausdorff`.
+  + new lemmas `opc_compact`, `opc_some_nbhs`, `opc_some_continuous`, 
+    `opc_open_some`, `opc_weak_topology`, and `opc_hausdorff`.
+- in file `separation_axioms.v`
+  + new lemmas `compact_normal_local` and `compact_normal`.
 
 ### Changed
 
