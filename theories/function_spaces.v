@@ -1544,3 +1544,76 @@ Unshelve. all: by end_near. Qed.
 End cartesian_closed.
 
 End currying.
+
+Section sum_topology.
+Context {X Y : topologicalType}.
+
+Definition sum_nbhs (xy : X + Y) : set_system (X + Y) := 
+  match xy with 
+  | inl x => inl @ nbhs x 
+  | inr y => inr @ nbhs y
+  end.
+
+HB.instance Definition _ := hasNbhs.Build (X + Y)%type sum_nbhs.
+
+Local Lemma sum_nbhs_proper xy : ProperFilter (sum_nbhs xy).
+Proof. by case: xy => /= ?; exact: fmap_proper_filter. Qed.
+
+Local Lemma sum_nbhs_singleton xy A : sum_nbhs xy A -> A xy.
+Proof. by case: xy => ? /=; apply: nbhs_singleton. Qed.
+
+Local Lemma sum_nbhs_nbhs xy A: sum_nbhs xy A -> sum_nbhs xy (sum_nbhs^~ A).
+Proof. 
+case: xy => z /=; rewrite nbhs_simpl /=. 
+  rewrite nbhsE /=; case => W [oW Wz WlA].
+  exists W; first by split.
+  move=> x /= ?; rewrite nbhs_simpl /=; move/filterS: WlA; apply.
+  by apply: open_nbhs_nbhs.
+rewrite nbhsE /=; case => W [oW Wz WlA].
+exists W; first by split.
+move=> y /= ?; rewrite nbhs_simpl /=; move/filterS: WlA; apply.
+by apply: open_nbhs_nbhs.
+Qed.
+
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build (X + Y)%type 
+  sum_nbhs_proper sum_nbhs_singleton sum_nbhs_nbhs.
+
+Lemma inl_continuous : continuous inl. 
+Proof. by move=> ? ?. Qed.
+
+Lemma inr_continuous : continuous inr. 
+Proof. by move=> ? ?. Qed.
+
+Lemma inl_open_map (A : set X) : open A -> open (inl@` A).
+Proof. 
+move=> oA; rewrite openE=> ?; case=> x Ax <-; rewrite /interior /nbhs /=.
+rewrite nbhs_simpl /=.
+have /filterS := @preimage_image _ (X + Y) inl A; apply.
+exact: open_nbhs_nbhs.
+Qed.
+
+Lemma inr_open_map (A : set Y) : open A -> open (inr@` A).
+Proof. 
+move=> oA; rewrite openE=> ?; case=> y Ay <-; rewrite /interior /nbhs /=.
+rewrite nbhs_simpl /=.
+have /filterS := @preimage_image _ (X + Y) inr A; apply.
+exact: open_nbhs_nbhs.
+Qed.
+
+Lemma sum_open (xy : X + Y) (U : set (X + Y)) : 
+  open U <-> (open (inl@^-1` U) /\ open (inr@^-1` U)).
+Proof.
+split.
+  move=> oU.
+  split; first by have /continuousP := inl_continuous; apply.
+  by have /continuousP := inr_continuous; apply.
+case=> Ol Or.
+rewrite openE; case => z //= ?. 
+  apply: inl_continuous; rewrite /nbhs /= nbhs_simpl.
+  exact: open_nbhs_nbhs.
+apply: inr_continuous; rewrite /nbhs /= nbhs_simpl.
+exact: open_nbhs_nbhs.
+Qed.
+
+End sum_topology.
+
