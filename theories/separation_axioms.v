@@ -258,6 +258,8 @@ Import numFieldTopology.Exports.
 Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
 Proof. exact: order_hausdorff. Qed.
 
+Hint Extern 0 (hausdorff_space _) => (exact: Rhausdorff ) : core.
+
 Section separated_topologicalType.
 Variable T : topologicalType.
 Implicit Types x y : T.
