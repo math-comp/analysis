@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop .
-Require Import signed reals ereal topology normedtype sequences real_interval.
+Require Import signed reals ereal topology tvs normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure numfun realfun lebesgue_integral.
 Require Import derive charge.
 
@@ -204,7 +204,7 @@ apply: cvg_trans; apply: near_eq_cvg; near=> r; congr (_ *: (_ - _)).
   move: yaxr; rewrite /= !in_itv/= inE/= in_itv/= => /andP[->/=].
   move=> /le_trans; apply; rewrite -lerBrDr.
   have [r0|r0] := leP r 0%R; first by rewrite (le_trans r0)// subr_ge0 ltW.
-  rewrite -(gtr0_norm r0); near: r. Fail Check (@nbhs0_le R R^o (u-x)). admit.
+  rewrite -(gtr0_norm r0); near: r.  Fail check (@nbhs0_le R (R^o) (u-x)). admit.
 (* by rewrite -(gtr0_norm r0); near: r; apply: nbhs0_le; rewrite subr_gt0. *)
 - apply: eq_Rintegral => y yaxr; rewrite patchE mem_set//=.
   move: yaxr => /=; rewrite !in_itv/= inE/= in_itv/= => /andP[->/=].
@@ -615,9 +615,7 @@ Lemma integration_by_parts (F : R^o -> R^o) (G : R^o -> R^o) (f g : R^o -> R^o) 
 Proof.
 move=> ab cf Fab Ff cg Gab Gg.
 have cfg : {within `[a, b], continuous (f * G + F * g)%R}.
-apply/subspace_continuousP => x abx.
-Admitted.
-(*apply:cvD .
+apply/subspace_continuousP => x abx; apply:cvgD .
   - apply: cvgM.
     + by move/subspace_continuousP : cf; exact.
     + have := derivable_oo_continuous_bnd_within Gab.
@@ -648,7 +646,7 @@ rewrite /= integralD//=.
   + have := derivable_oo_continuous_bnd_within Fab.
     by move/subspace_continuousP; exact.
   + by move/subspace_continuousP : cg; exact.
-Qed. *)
+Qed.
 
 End integration_by_parts.
 
