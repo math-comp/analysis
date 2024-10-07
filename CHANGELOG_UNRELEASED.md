@@ -186,10 +186,11 @@
     `countable_uniform`, `sup_pseudometric`, `countable_uniformityT`, `gauge`,
     `iter_split_ent`, `gauge_ent`, `gauge_filter`, `gauge_refl`, `gauge_inv`,
     `gauge_split`, `gauge_countable_uniformity`, `uniform_pseudometric_sup`,
-    `perfect_set`, `perfectTP`, and `perfect_set2`.
+    `perfect_set`, `perfectTP`, and `perfectTP_ex`.
 ### Renamed
 - in file `topology.v` -> `separation_axioms.v`
   + `totally_disconnected_cvg` -> `zero_dimensional_cvg`.
+  + `perfect_set2` -> `perfectTP_ex`
 
 
 ### Generalized

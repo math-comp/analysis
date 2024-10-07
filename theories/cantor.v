@@ -275,7 +275,7 @@ Let split_clopen' (U : set T) : exists V,
 Proof.
 have [oU|?] := pselect (open U); last by exists point.
 have [Un0|?] := pselect (U !=set0); last by exists point.
-have [x [y] [Ux] Uy xny] := (iffLR perfect_set2) pftT U oU Un0.
+have [x [y] [Ux] Uy xny] := (iffLR perfectTP_ex) pftT U oU Un0.
 have [V [clV Vx Vy]] := dsctT xny; exists V => _ _.
 by split => //; [exists x | exists y].
 Qed.

@@ -918,7 +918,7 @@ Local Notation S := (sup_pseudometric Tc Icnt).
 
 Let TS := fun i => PseudoMetric.Pack (Tc i).
 
-Definition countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
+Let countable_uniformityT := @countable_sup_ent T Ii Tc Icnt
   (fun i => @countable_uniformity_metric _ (TS i)).
 
 HB.instance Definition _ : PseudoMetric R S :=
@@ -1039,7 +1039,7 @@ have /existsNP [y /existsNP [Vy Ynx]] : ~ forall y, V y -> y = x.
 by exists y; split => //; [exact/eqP | exact: VU].
 Qed.
 
-Lemma perfect_set2 {T} : perfect_set [set: T] <->
+Lemma perfectTP_ex {T} : perfect_set [set: T] <->
   forall (U : set T), open U -> U !=set0 ->
   exists x y, [/\ U x, U y & x != y] .
 Proof.
