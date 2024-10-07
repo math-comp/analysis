@@ -92,9 +92,6 @@ Require Import reals signed.
 (*                                     compact set                            *)
 (*                locally_compact A == every point in A has a compact         *)
 (*                                     (and closed) neighborhood              *)
-(*                discrete_space T <-> every nbhs is a principal filter       *)
-(*           discrete_topology dscT == the discrete topology on T, provided   *)
-(*                                     dscT : discrete_space T                *)
 (*        finite_subset_cover D F A == the family of sets F is a cover of A   *)
 (*                                     for a finite number of indices in D    *)
 (*                    cover_compact == set of compact sets w.r.t. the open    *)
@@ -739,125 +736,6 @@ HB.end.
 
 (** Topology on nat *)
 
-Section nat_topologicalType.
-
-Let D : set nat := setT.
-Let b : nat -> set nat := fun i => [set i].
-Let bT : \bigcup_(i in D) b i = setT.
-Proof. by rewrite predeqE => i; split => // _; exists i. Qed.
-
-Let bD : forall i j t, D i -> D j -> b i t -> b j t ->
-  exists k, [/\ D k, b k t & b k `<=` b i `&` b j].
-Proof. by move=> i j t _ _ -> ->; exists j. Qed.
-
-HB.instance Definition _ := isBaseTopological.Build nat bT bD.
-
-End nat_topologicalType.
-
-Global Instance eventually_filter : ProperFilter eventually.
-Proof.
-eapply @filter_from_proper; last by move=> i _; exists i => /=.
-apply: filter_fromT_filter; first by exists 0%N.
-move=> i j; exists (maxn i j) => n //=.
-by rewrite geq_max => /andP[ltin ltjn].
-Qed.
-
-Canonical eventually_filterType := FilterType eventually _.
-Canonical eventually_pfilterType := PFilterType eventually (filter_not_empty _).
-
-Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
-Proof. by exists N.+1. Qed.
-#[global] Hint Resolve nbhs_infty_gt : core.
-
-Lemma nbhs_infty_ge N : \forall n \near \oo, (N <= n)%N.
-Proof. by exists N. Qed.
-
-Lemma nbhs_infty_ger {R : realType} (r : R) :
-  \forall n \near \oo, (r <= n%:R)%R.
-Proof.
-exists `|Num.ceil r|%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
-by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
-Qed.
-
-Lemma cvg_addnl N : addn N @ \oo --> \oo.
-Proof.
-by move=> P [n _ Pn]; exists (n - N)%N => // m; rewrite /= leq_subLR => /Pn.
-Qed.
-
-Lemma cvg_addnr N : addn^~ N @ \oo --> \oo.
-Proof. by under [addn^~ N]funext => n do rewrite addnC; apply: cvg_addnl. Qed.
-
-Lemma cvg_subnr N : subn^~ N @ \oo --> \oo.
-Proof.
-move=> P [n _ Pn]; exists (N + n)%N => //= m le_m.
-by apply: Pn; rewrite /= leq_subRL// (leq_trans _ le_m)// leq_addr.
-Qed.
-
-Lemma cvg_mulnl N : (N > 0)%N -> muln N @ \oo --> \oo.
-Proof.
-case: N => N // _ P [n _ Pn]; exists (n %/ N.+1).+1 => // m.
-by rewrite /= ltn_divLR// => n_lt; apply: Pn; rewrite mulnC /= ltnW.
-Qed.
-
-Lemma cvg_mulnr N :(N > 0)%N -> muln^~ N @ \oo --> \oo.
-Proof.
-by move=> N_gt0; under [muln^~ N]funext => n do rewrite mulnC; apply: cvg_mulnl.
-Qed.
-
-Lemma cvg_divnr N : (N > 0)%N -> divn^~ N @ \oo --> \oo.
-Proof.
-move=> N_gt0 P [n _ Pn]; exists (n * N)%N => //= m.
-by rewrite /= -leq_divRL//; apply: Pn.
-Qed.
-
-Lemma near_inftyS (P : set nat) :
-  (\forall x \near \oo, P (S x)) -> (\forall x \near \oo, P x).
-Proof. case=> N _ NPS; exists (S N) => // [[]]; rewrite /= ?ltn0 //. Qed.
-
-Section infty_nat.
-Local Open Scope nat_scope.
-
-Let cvgnyP {F : set_system nat} {FF : Filter F} : [<->
-(* 0 *) F --> \oo;
-(* 1 *) forall A, \forall x \near F, A <= x;
-(* 2 *) forall A, \forall x \near F, A < x;
-(* 3 *) \forall A \near \oo, \forall x \near F, A < x;
-(* 4 *) \forall A \near \oo, \forall x \near F, A <= x ].
-Proof.
-tfae; first by move=> Foo A; apply: Foo; apply: nbhs_infty_ge.
-- move=> AF A; near \oo => B; near=> x.
-  suff : (B <= x)%N by apply: leq_trans; near: B; apply: nbhs_infty_gt.
-  by near: x; apply: AF; near: B.
-- by move=> Foo; near do apply: Foo.
-- by apply: filterS => ?; apply: filterS => ?; apply: ltnW.
-case=> [A _ AF] P [n _ Pn]; near \oo => B; near=> m; apply: Pn => /=.
-suff: (B <= m)%N by apply: leq_trans; near: B; apply: nbhs_infty_ge.
-by near: m; apply: AF; near: B; apply: nbhs_infty_ge.
-Unshelve. all: end_near. Qed.
-
-Section map.
-
-Context {I : Type} {F : set_system I} {FF : Filter F} (f : I -> nat).
-
-Lemma cvgnyPge :
-  f @ F --> \oo <-> forall A, \forall x \near F, A <= f x.
-Proof. exact: (cvgnyP 0%N 1%N). Qed.
-
-Lemma cvgnyPgt :
-  f @ F --> \oo <-> forall A, \forall x \near F, A < f x.
-Proof. exact: (cvgnyP 0%N 2%N). Qed.
-
-Lemma cvgnyPgty :
-  f @ F --> \oo <-> \forall A \near \oo, \forall x \near F, A < f x.
-Proof. exact: (cvgnyP 0%N 3%N). Qed.
-
-Lemma cvgnyPgey :
-  f @ F --> \oo <-> \forall A \near \oo, \forall x \near F, A <= f x.
-Proof. exact: (cvgnyP 0%N 4%N). Qed.
-
-End map.
-
-End infty_nat.
 
 (** Topology on the product of two spaces *)
 
@@ -1933,62 +1811,6 @@ End connected_sets.
 Arguments connected {T}.
 Arguments connected_component {T}.
 
-Section DiscreteTopology.
-Section DiscreteMixin.
-Context {X : Type}.
-
-Lemma discrete_sing (p : X) (A : set X) : principal_filter p A -> A p.
-Proof. by move=> /principal_filterP. Qed.
-
-Lemma discrete_nbhs (p : X) (A : set X) :
-  principal_filter p A -> principal_filter p (principal_filter^~ A).
-Proof. by move=> ?; exact/principal_filterP. Qed.
-
-End DiscreteMixin.
-
-Definition discrete_space (X : nbhsType) := @nbhs X _ = @principal_filter X.
-
-Context {X : topologicalType} {dsc : discrete_space X}.
-
-Lemma discrete_open (A : set X) : open A.
-Proof.
-by rewrite openE => ? ?; rewrite /interior dsc; exact/principal_filterP.
-Qed.
-
-Lemma discrete_set1 (x : X) : nbhs x [set x].
-Proof. by apply: open_nbhs_nbhs; split => //; exact: discrete_open. Qed.
-
-Lemma discrete_closed (A : set X) : closed A.
-Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.
-
-Lemma discrete_cvg (F : set_system X) (x : X) :
-  Filter F -> F --> x <-> F [set x].
-Proof.
-rewrite dsc nbhs_simpl; split; first by exact.
-by move=> Fx U /principal_filterP ?; apply: filterS Fx => ? ->.
-Qed.
-
-HB.instance Definition _ := Nbhs_isNbhsTopological.Build bool
-  principal_filter_proper discrete_sing discrete_nbhs.
-
-End DiscreteTopology.
-
-Lemma discrete_bool : discrete_space bool.
-Proof. by []. Qed.
-
-Lemma bool_compact : compact [set: bool].
-Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
-
-Lemma discrete_nat : discrete_space nat.
-Proof.
-rewrite /discrete_space predeq2E => n U; split.
-   by case => /= V [_ Vn VU]; exact/principal_filterP/VU.
-move/principal_filterP => Un; exists U; split => //=; exists U => //.
-by rewrite eqEsubset; split => [z [i Ui ->//]|z Uz]; exists z.
-Qed.
-
-#[global] Hint Resolve discrete_bool : core.
-
 (** TODO: generalize this to a preOrder once that's available *)
 HB.mixin Record Order_isNbhs d (T : Type) of Nbhs T & Order.Total d T := {
   (** Note that just the intervals `]a, b[ doesn't work when the order has a
@@ -2126,51 +1948,6 @@ Hint Resolve itv_open : core.
 Hint Resolve lray_closed : core.
 Hint Resolve rray_closed : core.
 Hint Resolve itv_closed : core.
-
-Section bool_ord_topology.
-Local Open Scope classical_set_scope.
-Local Open Scope order_scope.
-
-Local Lemma bool_nbhs_itv (b : bool) :
-  nbhs b = filter_from
-    (fun i => itv_open_ends i /\ b \in i)
-    (fun i => [set` i]).
-Proof.
-rewrite discrete_bool eqEsubset; split=> U; first last.
-  by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
-move/principal_filterP; case: b.
-  move=> Ut; exists `]false, +oo[; first split => //; first by left.
-  by move=> r /=; rewrite in_itv /=; case: r.
-move=> Ut; exists `]-oo, true[; first split => //; first by left.
-by move=> r /=; rewrite in_itv /=; case: r.
-Qed.
-
-HB.instance Definition _ := Order_isNbhs.Build _ bool bool_nbhs_itv.
-End bool_ord_topology.
-
-Section nat_ord_topology.
-Local Open Scope classical_set_scope.
-Local Open Scope order_scope.
-
-Local Lemma nat_nbhs_itv (n : nat) :
-  nbhs n = filter_from
-    (fun i => itv_open_ends i /\ n \in i)
-    (fun i => [set` i]).
-Proof.
-rewrite discrete_nat eqEsubset; split=> U; first last.
-  by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
-move/principal_filterP; case: n.
-  move=> U0; exists `]-oo, 1[; first split => //; first by left.
-  by move=> r /=; rewrite in_itv /=; case: r.
-move=> n USn; exists `]n, n.+2[; first split => //; first by right.
-  by rewrite in_itv; apply/andP;split => //=; rewrite /Order.lt //=.
-move=> r /=; rewrite in_itv /= => nr2; suff: r = n.+1 by move=> ->.
-exact/esym/le_anti.
-Qed.
-
-HB.instance Definition _ := Order_isNbhs.Build _ nat nat_nbhs_itv.
-
-End nat_ord_topology.
 
 Definition order_topology (T : Type) : Type := T.
 Section induced_order_topology.
@@ -2953,41 +2730,6 @@ HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
 HB.structure Definition OrderPseudoMetric d (R : numDomainType) :=
   {T of PseudoMetric R T & OrderTopological d T}.
 
-Definition discrete_topology T (dsc : discrete_space T) : Type := T.
-
-Section discrete_uniform.
-
-Context {T : nbhsType} {dsc: discrete_space T}.
-
-Definition discrete_ent : set (set (T * T)) :=
-  globally (range (fun x => (x, x))).
-
-Program Definition discrete_uniform_mixin :=
-  @isUniform.Build (discrete_topology dsc) discrete_ent _ _ _ _.
-Next Obligation.
-by move=> ? + x x12; apply; exists x.1; rewrite // {2}x12 -surjective_pairing.
-Qed.
-Next Obligation.
-by move=> ? dA x [i _ <-]; apply: dA; exists i.
-Qed.
-Next Obligation.
-move=> ? dA; exists (range (fun x => (x, x))) => //.
-by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
-Qed.
-
-HB.instance Definition _ := Choice.on (discrete_topology dsc).
-HB.instance Definition _ := discrete_uniform_mixin.
-End discrete_uniform.
-
-HB.instance Definition _ (P : pnbhsType) (dsc : discrete_space P) :=
-  Pointed.on (discrete_topology dsc).
-
-Lemma discrete_bool_compact : compact [set: discrete_topology discrete_bool].
-Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
-
-HB.instance Definition _ {T : pnbhsType} {dsc: discrete_space T} :=
-  Pointed.on (discrete_topology dsc).
-
 (* was uniformityOfBallMixin *)
 HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
   ent : set_system (M * M);
@@ -3402,64 +3144,6 @@ HB.instance Definition _ := isPointed.Build Q (\pi_Q point : Q).
 End pointed.
 End quotients.
 
-Section discrete_pseudoMetric.
-Context {R : numDomainType} {T : nbhsType} {dsc : discrete_space T}.
-
-Definition discrete_ball (x : T) (eps : R) y : Prop := x = y.
-
-Lemma discrete_ball_center x (eps : R) : 0 < eps -> discrete_ball x eps x.
-Proof. by []. Qed.
-
-Program Definition discrete_pseudometric_mixin :=
-  @Uniform_isPseudoMetric.Build R (discrete_topology dsc) discrete_ball
-    _ _ _ _.
-Next Obligation. by done. Qed.
-Next Obligation. by move=> ? ? ? ->. Qed.
-Next Obligation. by move=> ? ? ? ? ? -> ->. Qed.
-Next Obligation.
-rewrite predeqE => P; split; last first.
-  by case=> e _ leP; move=> [a b] [i _] [-> ->]; apply: leP.
-move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //.
-by rewrite {2}z12 -surjective_pairing.
-Qed.
-
-HB.instance Definition _ := discrete_pseudometric_mixin.
-End discrete_pseudoMetric.
-
-Definition pseudoMetric_bool {R : realType} :=
-  [the pseudoMetricType R of discrete_topology discrete_bool : Type].
-
-(** we use `discrete_topology` to equip choice types with a discrete topology *)
-Section discrete_topology.
-
-Let discrete_subproof (P : choiceType) :
-  discrete_space (principal_filter_type P).
-Proof. by []. Qed.
-
-Definition discrete_topology_type (P : Type) : Type := P.
-
-HB.instance Definition _ (P : choiceType) := Choice.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ (P : choiceType) := Filtered.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _  (P : choiceType) := Uniform.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ (P : pointedType) := Pointed.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ R (P : choiceType) : @PseudoMetric R _ :=
-  PseudoMetric.copy
-    (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-
-End discrete_topology.
-
-Lemma discrete_space_discrete (P : choiceType) :
-  discrete_space (discrete_topology_type P).
-Proof.
-apply/funext => /= x; apply/funext => A; apply/propext; split.
-- by move=> [E hE EA] _ ->; apply/EA/xsectionP/hE; exists x.
-- move=> h; exists diagonal; first by move=> -[a b] [t _] [<- <-].
-  by move=> y /xsectionP/= xy; exact: h.
-Qed.
 
 (** Complete uniform spaces *)
 
@@ -4503,3 +4187,345 @@ move=> U nbhsU wctsf; wlog oU : U wctsf nbhsU / open U.
 move/nbhs_singleton: nbhsU; move: x; apply/in_setP.
 by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
+
+Definition discrete_ent {T} : set (set (T * T)) :=
+  globally (range (fun x => (x, x))).
+
+(** Note: having the discrete topology does not guarantee the discrete 
+    uniformity. Likewise for the discrete metric. Consider [set 1/n | n in R] *)
+HB.mixin Record Discrete_ofUniform T of Uniform T := {
+  uniform_discrete : @entourage T = discrete_ent
+}.
+
+Definition discrete_ball {R : numDomainType} {T} (x : T) (eps : R) y : Prop := x = y.
+
+HB.mixin Record Discrete_ofPseudometric {R : numDomainType} T of 
+    PseudoMetric R T := {
+  metric_discrete : @ball R T = @discrete_ball R T
+}.
+
+#[short(type="discreteTopologicalType")]
+HB.structure Definition DiscreteTopology := 
+  { T of DiscreteNbhs T & Topological T}.
+
+#[short(type="discreteOrderTopologicalType")]
+HB.structure Definition DiscreteOrderTopology d := 
+  { T of Discrete_ofNbhs T & OrderTopological d T}.
+
+#[short(type="pdiscreteTopologicalType")]
+HB.structure Definition PointedDiscreteTopology := 
+  { T of DiscreteTopology T & Pointed T}.
+
+#[short(type="pdiscreteOrderTopologicalType")]
+HB.structure Definition PointedDiscreteOrderTopology d := 
+  { T of Discrete_ofNbhs T & OrderTopological d T & Pointed T}.
+
+#[short(type="discreteUniformType")]
+HB.structure Definition DiscreteUniform := 
+  { T of Discrete_ofUniform T & Uniform T & Discrete_ofNbhs T}.
+
+#[short(type="discretePseudoMetricType")]
+HB.structure Definition DiscretePseudoMetric {R : numDomainType} := 
+  { T of Discrete_ofPseudometric R T & PseudoMetric R T & DiscreteUniform T}.
+  
+HB.builders Context T of Discrete_ofNbhs T.
+
+Local Lemma principal_nbhs_filter (p : T) : ProperFilter (nbhs p).
+Proof. rewrite nbhs_principalE; exact: principal_filter_proper. Qed.
+
+Local Lemma principal_nbhs_singleton (p : T) (A : set T) : nbhs p A -> A p.
+Proof. by rewrite nbhs_principalE => /principal_filterP. Qed.
+  
+Local Lemma principal_nbhs_nbhs (p : T) (A : set T) : nbhs p A -> nbhs p (nbhs^~ A).
+Proof. by move=> ?; rewrite {1}nbhs_principalE; apply/principal_filterP. Qed.
+
+HB.instance Definition _ := @Nbhs_isNbhsTopological.Build T
+  principal_nbhs_filter principal_nbhs_singleton principal_nbhs_nbhs.
+
+HB.end.
+
+HB.factory Record DiscreteUniform_ofNbhs T of Discrete_ofNbhs T & Nbhs T := {}.
+HB.builders Context T of DiscreteUniform_ofNbhs T.
+
+Local Open Scope relation_scope.
+
+Local Notation d := (@discrete_ent T).
+
+Local Lemma discrete_entourage_filter : Filter d.
+Proof. exact: globally_filter. Qed.
+
+Local Lemma discrete_entourage_diagonal : forall A, d A -> diagonal `<=` A.
+Proof.
+by move=> ? + x x12; apply; exists x.1; rewrite // {2}x12 -surjective_pairing.
+Qed.
+
+Local Lemma discrete_entourage_inv : forall A, d A -> d A^-1.
+Proof. by move=> ? dA x [i _ <-]; apply: dA; exists i. Qed.
+
+Local Lemma discrete_entourage_split_ex :
+    forall A, d A -> exists2 B, d B & B \; B `<=` A.
+Proof.
+move=> ? dA; exists (range (fun x => (x, x))) => //.
+by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
+Qed.
+
+Local Lemma discrete_entourage_nbhsE : (@nbhs T _) = nbhs_ d.
+Proof.
+rewrite funeqE => x; rewrite nbhs_principalE eqEsubset; split => U.
+  move/principal_filterP => ?; exists diagonal; first by move=> ? [w _ <-]. 
+  by move=> z /= /set_mem; rewrite /diagonal /= => <-.
+case => w entW wU; apply/principal_filterP; apply: wU; apply/mem_set.
+exact: entW.
+Qed.
+
+HB.instance Definition _ := @Nbhs_isUniform.Build T
+  discrete_ent 
+  discrete_entourage_filter 
+  discrete_entourage_diagonal 
+  discrete_entourage_inv
+  discrete_entourage_split_ex
+  discrete_entourage_nbhsE.
+
+HB.instance Definition _ := @Discrete_ofUniform.Build T erefl.
+
+HB.end.
+
+HB.factory Record DiscretePseudoMetric_ofUniform (R : numDomainType) T of 
+  DiscreteUniform T := {}.
+
+HB.builders Context R T of DiscretePseudoMetric_ofUniform R T.
+
+Local Lemma discrete_ball_center x (eps : R) : 0 < eps -> 
+  @discrete_ball R T x eps x.
+Proof. by []. Qed.
+
+Local Lemma discrete_ball_sym (x y : T) (e : R) :
+  discrete_ball x e y -> discrete_ball y e x.
+Proof. by move=>->. Qed.
+Local Lemma discrete_ball_triangle (x y z:T) (e1 e2 : R) :
+  discrete_ball x e1 y -> discrete_ball y e2 z -> discrete_ball x (e1 + e2) z.
+Proof. by move=> -> ->. Qed.
+
+Local Lemma discrete_entourageE : entourage = entourage_ (@discrete_ball R T).
+Proof.
+rewrite predeqE => P; rewrite uniform_discrete; split; last first.
+  by move=> dbP ? [?] _ <-; move: dbP; case => /= ? ?; apply.
+move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //.
+by rewrite {2}z12 -surjective_pairing.
+Qed.
+
+HB.instance Definition _ := 
+  @Uniform_isPseudoMetric.Build R T (@discrete_ball R T) 
+    discrete_ball_center discrete_ball_sym discrete_ball_triangle 
+    discrete_entourageE.
+
+Local Lemma discrete_ballE : @ball R T = @discrete_ball R T.
+Proof. by rewrite funeq2E => ? ?. Qed.
+
+HB.instance Definition _ := @Discrete_ofPseudometric.Build R T discrete_ballE.
+
+HB.end.
+
+(** we introducing an alias attaching discrete structures for 
+    topology, uniformity, and pseudometric *)
+Definition discrete_topology (T : Type) : Type := T.
+HB.instance Definition _ (T : choiceType) :=
+  Choice.copy (discrete_topology T) T.
+HB.instance Definition _ (T : pointedType) :=
+  Pointed.on (discrete_topology T).
+HB.instance Definition _ (T : choiceType) :=
+  hasNbhs.Build (discrete_topology T) principal_filter.
+HB.instance Definition _ (T : choiceType) :=
+  Discrete_ofNbhs.Build (discrete_topology T) erefl.
+HB.instance Definition _ (T : choiceType) := 
+  DiscreteUniform_ofNbhs.Build (discrete_topology T).
+HB.instance Definition _ {R : numDomainType} (T : choiceType) := 
+  @DiscretePseudoMetric_ofUniform.Build R (discrete_topology T).
+
+Section discrete_topology.
+
+Lemma principal_filter_ultra {T : Type} (x : T) :
+  UltraFilter (principal_filter x).
+Proof.
+split=> [|G [G0 xG] FG]; first exact: principal_filter_proper.
+rewrite eqEsubset; split => // U GU; apply/principal_filterP.
+have /(filterI GU): G [set x] by exact/FG/principal_filterP.
+by rewrite setIC set1I; case: ifPn => // /[!inE].
+Qed.
+
+Context {X : discreteTopologicalType}.
+
+Lemma discrete_open (A : set X) : open A.
+Proof.
+rewrite openE => ? ?; rewrite /interior nbhs_principalE.
+exact/principal_filterP.
+Qed.
+
+Lemma discrete_set1 (x : X) : nbhs x [set x].
+Proof. by apply: open_nbhs_nbhs; split => //; exact: discrete_open. Qed.
+
+Lemma discrete_closed (A : set X) : closed A.
+Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.
+
+Lemma discrete_cvg (F : set_system X) (x : X) :
+  Filter F -> F --> x <-> F [set x].
+Proof.
+rewrite nbhs_principalE nbhs_simpl; split; first by exact.
+by move=> Fx U /principal_filterP ?; apply: filterS Fx => ? ->.
+Qed.
+
+End discrete_topology.
+
+HB.instance Definition _ := hasNbhs.Build bool principal_filter.
+HB.instance Definition _ := Discrete_ofNbhs.Build bool erefl.
+HB.instance Definition _ := DiscreteUniform_ofNbhs.Build bool.
+
+Lemma bool_compact : compact [set: bool].
+Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
+
+Local Lemma bool_nbhs_itv (b : bool) :
+  nbhs b = filter_from
+    (fun i => itv_open_ends i /\ b \in i)
+    (fun i => [set` i]).
+Proof.
+rewrite nbhs_principalE eqEsubset; split=> U; first last.
+  by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
+move/principal_filterP; case: b.
+  move=> Ut; exists `]false, +oo[; first split => //; first by left.
+  by move=> r /=; rewrite in_itv /=; case: r.
+move=> Ut; exists `]-oo, true[; first split => //; first by left.
+by move=> r /=; rewrite in_itv /=; case: r.
+Qed.
+
+HB.instance Definition _ := Order_isNbhs.Build _ bool bool_nbhs_itv.
+HB.instance Definition _ {R : numDomainType} := 
+  @DiscretePseudoMetric_ofUniform.Build R bool.
+
+HB.instance Definition _ := hasNbhs.Build nat principal_filter.
+HB.instance Definition _ := Discrete_ofNbhs.Build nat erefl.
+
+Local Lemma nat_nbhs_itv (n : nat) :
+  nbhs n = filter_from
+    (fun i => itv_open_ends i /\ n \in i)
+    (fun i => [set` i]).
+Proof.
+rewrite nbhs_principalE eqEsubset; split=> U; first last.
+  by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
+move/principal_filterP; case: n.
+  move=> U0; exists `]-oo, 1[; first split => //; first by left.
+  by move=> r /=; rewrite in_itv /=; case: r.
+move=> n USn; exists `]n, n.+2[; first split => //; first by right.
+  by rewrite in_itv; apply/andP;split => //=; rewrite /Order.lt //=.
+move=> r /=; rewrite in_itv /= => nr2; suff: r = n.+1 by move=> ->.
+exact/esym/le_anti.
+Qed.
+
+HB.instance Definition _ := Order_isNbhs.Build _ nat nat_nbhs_itv.
+HB.instance Definition _ := DiscreteUniform_ofNbhs.Build nat.
+HB.instance Definition _ {R : numDomainType} := 
+  @DiscretePseudoMetric_ofUniform.Build R nat.
+
+Global Instance eventually_filter : ProperFilter eventually.
+Proof.
+eapply @filter_from_proper; last by move=> i _; exists i => /=.
+apply: filter_fromT_filter; first by exists 0%N.
+move=> i j; exists (maxn i j) => n //=.
+by rewrite geq_max => /andP[ltin ltjn].
+Qed.
+
+Canonical eventually_filterType := FilterType eventually _.
+Canonical eventually_pfilterType := PFilterType eventually (filter_not_empty _).
+
+Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
+Proof. by exists N.+1. Qed.
+#[global] Hint Resolve nbhs_infty_gt : core.
+
+Lemma nbhs_infty_ge N : \forall n \near \oo, (N <= n)%N.
+Proof. by exists N. Qed.
+
+Lemma nbhs_infty_ger {R : realType} (r : R) :
+  \forall n \near \oo, (r <= n%:R)%R.
+Proof.
+exists `|Num.ceil r|%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
+by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
+Qed.
+
+Lemma cvg_addnl N : addn N @ \oo --> \oo.
+Proof.
+by move=> P [n _ Pn]; exists (n - N)%N => // m; rewrite /= leq_subLR => /Pn.
+Qed.
+
+Lemma cvg_addnr N : addn^~ N @ \oo --> \oo.
+Proof. by under [addn^~ N]funext => n do rewrite addnC; apply: cvg_addnl. Qed.
+
+Lemma cvg_subnr N : subn^~ N @ \oo --> \oo.
+Proof.
+move=> P [n _ Pn]; exists (N + n)%N => //= m le_m.
+by apply: Pn; rewrite /= leq_subRL// (leq_trans _ le_m)// leq_addr.
+Qed.
+
+Lemma cvg_mulnl N : (N > 0)%N -> muln N @ \oo --> \oo.
+Proof.
+case: N => N // _ P [n _ Pn]; exists (n %/ N.+1).+1 => // m.
+by rewrite /= ltn_divLR// => n_lt; apply: Pn; rewrite mulnC /= ltnW.
+Qed.
+
+Lemma cvg_mulnr N :(N > 0)%N -> muln^~ N @ \oo --> \oo.
+Proof.
+by move=> N_gt0; under [muln^~ N]funext => n do rewrite mulnC; apply: cvg_mulnl.
+Qed.
+
+Lemma cvg_divnr N : (N > 0)%N -> divn^~ N @ \oo --> \oo.
+Proof.
+move=> N_gt0 P [n _ Pn]; exists (n * N)%N => //= m.
+by rewrite /= -leq_divRL//; apply: Pn.
+Qed.
+
+Lemma near_inftyS (P : set nat) :
+  (\forall x \near \oo, P (S x)) -> (\forall x \near \oo, P x).
+Proof. case=> N _ NPS; exists (S N) => // [[]]; rewrite /= ?ltn0 //. Qed.
+
+Section infty_nat.
+Local Open Scope nat_scope.
+
+Let cvgnyP {F : set_system nat} {FF : Filter F} : [<->
+(* 0 *) F --> \oo;
+(* 1 *) forall A, \forall x \near F, A <= x;
+(* 2 *) forall A, \forall x \near F, A < x;
+(* 3 *) \forall A \near \oo, \forall x \near F, A < x;
+(* 4 *) \forall A \near \oo, \forall x \near F, A <= x ].
+Proof.
+tfae; first by move=> Foo A; apply: Foo; apply: nbhs_infty_ge.
+- move=> AF A; near \oo => B; near=> x.
+  suff : (B <= x)%N by apply: leq_trans; near: B; apply: nbhs_infty_gt.
+  by near: x; apply: AF; near: B.
+- by move=> Foo; near do apply: Foo.
+- by apply: filterS => ?; apply: filterS => ?; apply: ltnW.
+case=> [A _ AF] P [n _ Pn]; near \oo => B; near=> m; apply: Pn => /=.
+suff: (B <= m)%N by apply: leq_trans; near: B; apply: nbhs_infty_ge.
+by near: m; apply: AF; near: B; apply: nbhs_infty_ge.
+Unshelve. all: end_near. Qed.
+
+Section map.
+
+Context {I : Type} {F : set_system I} {FF : Filter F} (f : I -> nat).
+
+Lemma cvgnyPge :
+  f @ F --> \oo <-> forall A, \forall x \near F, A <= f x.
+Proof. exact: (cvgnyP 0%N 1%N). Qed.
+
+Lemma cvgnyPgt :
+  f @ F --> \oo <-> forall A, \forall x \near F, A < f x.
+Proof. exact: (cvgnyP 0%N 2%N). Qed.
+
+Lemma cvgnyPgty :
+  f @ F --> \oo <-> \forall A \near \oo, \forall x \near F, A < f x.
+Proof. exact: (cvgnyP 0%N 3%N). Qed.
+
+Lemma cvgnyPgey :
+  f @ F --> \oo <-> \forall A \near \oo, \forall x \near F, A <= f x.
+Proof. exact: (cvgnyP 0%N 4%N). Qed.
+
+End map.
+
+End infty_nat.
