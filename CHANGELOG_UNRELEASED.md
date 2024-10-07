@@ -58,16 +58,23 @@
   + lemma `nbhs_left_ltBl`
   + lemma `within_continuous_continuous`
 
+- in `measure.v`:
+  + lemma `measurable_fun_set0`
+
+- in `lebesgue_measure.v`:
+  + lemmas `measurable_fun_itv_co`, `measurable_fun_itv_oc`, `measurable_fun_itv_cc`
+
+- in `lebesgue_integral.v`:
+  + lemma `integral_itv_bndoo`
+
 - in `ftc.v`:
   + lemmas `increasing_image_oo`, `decreasing_image_oo`,
     `increasing_cvg_at_right_comp`, `increasing_cvg_at_left_comp`,
     `decreasing_cvg_at_right_comp`, `decreasing_cvg_at_left_comp`,
-  + lemmas `integral_itv_oo`, `eq_integral_itvoo`.
-  + lemma `measurable_fun_itv_cc`
-  + lemmas `decreasing_change`, `oppr_change`, `increasing_change`
-
-- in `measure.v`:
-  + lemma `measurable_fun_set0`
+  + lemma `eq_integral_itv_bounded`.
+  + lemmas `integration_by_substitution_decreasing`,
+    `integration_by_substitution_oppr`,
+    `integration_by_substitution_increasing`
 
 ### Changed
 

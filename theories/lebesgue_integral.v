@@ -6480,6 +6480,35 @@ move=> mf; have [rb|rb] := leP (BRight r) b.
 - by rewrite !set_itv_ge// -leNgt -?ltBRight_leBLeft// ltW.
 Qed.
 
+Lemma integral_itv_bndoo (x y : R) (f : R -> R) (b0 b1 : bool) :
+  measurable_fun `]x, y[ f ->
+  \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) (f z)%:E =
+  \int[mu]_(z in `]x, y[) (f z)%:E.
+Proof.
+have [xy|yx _|-> _] := ltgtP x y; last 2 first.
+- rewrite !set_itv_ge ?integral_set0//=.
+  + by rewrite bnd_simp le_gtF// ltW.
+  + by move: b0 b1 => [|] [|]; rewrite bnd_simp ?lt_geF// le_gtF// ltW.
+- by move: b0 b1 => [|] [|]; rewrite !set_itvE ?integral_set0 ?integral_set1.
+move=> mf.
+transitivity (\int[mu]_(z in [set` Interval (BSide b0 x) (BLeft y)]) (f z)%:E).
+  case: b1 => //; rewrite -integral_itv_bndo_bndc//.
+  case: b0 => //.
+  exact: measurable_fun_itv_co mf.
+by case: b0 => //; rewrite -integral_itv_obnd_cbnd.
+Qed.
+
+Lemma eq_integral_itv_bounded (x y : R) (g f : R -> R) (b0 b1 : bool) :
+  measurable_fun `]x, y[ f -> measurable_fun `]x, y[ g ->
+  {in `]x, y[, f =1 g} ->
+  \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) (f z)%:E =
+  \int[mu]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) (g z)%:E.
+Proof.
+move=> mf mg fg.
+rewrite integral_itv_bndoo// (@integral_itv_bndoo _ _ g)//.
+by apply: eq_integral => z; rewrite inE/= => zxy; congr EFin; exact: fg.
+Qed.
+
 End lebesgue_measure_integral.
 Arguments integral_Sset1 {R f A} r.
 
