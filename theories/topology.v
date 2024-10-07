@@ -70,7 +70,7 @@ Require Import reals signed.
 (*                                     eventually true                        *)
 (*                  weak_topology f == weak topology by a function f : S -> T *)
 (*                                     on S                                   *)
-(*                                     S must be a choiceType and T a        *)
+(*                                     S must be a choiceType and T a         *)
 (*                                     topologicalType.                       *)
 (*                  sup_topology Tc == supremum topology of the family of     *)
 (*                                     topologicalType structures Tc on T     *)
@@ -1524,7 +1524,6 @@ by move=> /(cvg_cluster sFG); exists p.
 Qed.
 
 Section Precompact.
-
 Context {X : topologicalType}.
 
 Lemma compactU (A B : set X) : compact A -> compact B -> compact (A `|` B).
@@ -1573,6 +1572,7 @@ Qed.
 Definition locally_compact (A : set X) := [locally precompact A].
 
 End Precompact.
+
 Definition finite_subset_cover (I : choiceType) (D : set I)
     U (F : I -> set U) (A : set U) :=
   exists2 D' : {fset I}, {subset D' <= D} & A `<=` cover [set` D'] F.
@@ -1833,7 +1833,7 @@ by move/separated_disjoint : sE; apply/eqP/set0P; exists d.
 Qed.
 
 Lemma connectedU A B : A `&` B !=set0 -> connected A -> connected B ->
-   connected (A `|` B).
+  connected (A `|` B).
 Proof.
 move=> [x [Ax Bx]] Ac Bc; rewrite -bigcup2inE; apply: bigcup_connected.
   by exists x => //= -[|[|[]]].
@@ -1989,7 +1989,6 @@ Qed.
 
 #[global] Hint Resolve discrete_bool : core.
 
-
 (** TODO: generalize this to a preOrder once that's available *)
 HB.mixin Record Order_isNbhs d (T : Type) of Nbhs T & Order.Total d T := {
   (** Note that just the intervals `]a, b[ doesn't work when the order has a
@@ -2119,7 +2118,6 @@ split; first by rewrite itv_setU ?{1}subUset //; exists w.
 by rewrite itv_setU ?{1}subUset //; [exact: openU | exists w].
 exact/(le_trans jy)/leUr.
 Qed.
-
 
 End order_topologies.
 Hint Resolve lray_open : core.
@@ -2521,7 +2519,6 @@ Proof.
 move=> entA; split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; apply: nbhs_entourage.
 Qed.
-
 
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
@@ -3217,11 +3214,11 @@ Lemma ball_splitl (z x y : M) (e : R) :
   ball x (e / 2) z -> ball y (e / 2) z -> ball x e y.
 Proof. by move=> bxz /ball_sym /(ball_split bxz). Qed.
 
-
 End pseudoMetricType_numFieldType.
 
 Section entourages.
 Variable R : numDomainType.
+
 Lemma unif_continuousP (U V : pseudoMetricType R) (f : U -> V) :
   unif_continuous f <->
   forall e, e > 0 -> exists2 d, d > 0 &
@@ -3231,6 +3228,7 @@ have fappF : Filter ((fun xy => (f xy.1, f xy.2)) @ entourage_ ball).
   by rewrite entourage_ballE; apply: fmap_filter.
 by rewrite /unif_continuous -!entourage_ballE filter_fromP.
 Qed.
+
 End entourages.
 
 Lemma countable_uniformity_metric {R : realType} {T : pseudoMetricType R} :
@@ -3404,7 +3402,6 @@ HB.instance Definition _ := isPointed.Build Q (\pi_Q point : Q).
 End pointed.
 End quotients.
 
-
 Section discrete_pseudoMetric.
 Context {R : numDomainType} {T : nbhsType} {dsc : discrete_space T}.
 
@@ -3441,22 +3438,22 @@ Proof. by []. Qed.
 
 Definition discrete_topology_type (P : Type) : Type := P.
 
-HB.instance Definition _ (P : choiceType) := Choice.copy 
+HB.instance Definition _ (P : choiceType) := Choice.copy
   (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ (P : choiceType) := Filtered.copy 
+HB.instance Definition _ (P : choiceType) := Filtered.copy
   (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _  (P : choiceType) := Uniform.copy 
+HB.instance Definition _  (P : choiceType) := Uniform.copy
   (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ (P : pointedType) := Pointed.copy 
+HB.instance Definition _ (P : pointedType) := Pointed.copy
   (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ R (P : choiceType) : @PseudoMetric R _ := 
-  PseudoMetric.copy 
+HB.instance Definition _ R (P : choiceType) : @PseudoMetric R _ :=
+  PseudoMetric.copy
     (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
 
 End discrete_topology.
 
-Lemma discrete_space_discrete (P : choiceType) : 
-  discrete_space (discrete_topology_type P). 
+Lemma discrete_space_discrete (P : choiceType) :
+  discrete_space (discrete_topology_type P).
 Proof.
 apply/funext => /= x; apply/funext => A; apply/propext; split.
 - by move=> [E hE EA] _ ->; apply/EA/xsectionP/hE; exists x.
@@ -3485,7 +3482,8 @@ HB.mixin Record Uniform_isComplete T of PointedUniform T := {
 }.
 
 #[short(type="completeType")]
-HB.structure Definition Complete := {T of Uniform T & Uniform_isComplete T & isPointed T}.
+HB.structure Definition Complete :=
+  {T of Uniform T & Uniform_isComplete T & isPointed T}.
 
 #[deprecated(since="mathcomp-analysis 2.0", note="use cauchy_cvg instead")]
 Notation complete_ax := cauchy_cvg (only parsing).
@@ -3505,8 +3503,10 @@ Section matrix_PointedTopology.
 Variables (m n : nat) .
 HB.instance Definition _ (T : ptopologicalType) := Filtered.on 'M[T]_(m, n).
 HB.instance Definition _ (T : ptopologicalType) := Pointed.on 'M[T]_(m, n).
-HB.instance Definition _ (T : ptopologicalType) := PointedFiltered.on 'M[T]_(m, n).
-HB.instance Definition _ (T : ptopologicalType) := PointedTopological.on 'M[T]_(m, n).
+HB.instance Definition _ (T : ptopologicalType) :=
+  PointedFiltered.on 'M[T]_(m, n).
+HB.instance Definition _ (T : ptopologicalType) :=
+  PointedTopological.on 'M[T]_(m, n).
 HB.instance Definition _ (T : uniformType) := Uniform.on 'M[T]_(m, n).
 HB.instance Definition _ (T : puniformType) := Pointed.on 'M[T]_(m, n).
 HB.instance Definition _ (T : puniformType) := PointedUniform.on 'M[T]_(m, n).
@@ -3719,7 +3719,8 @@ HB.instance Definition _ (R : archiFieldType) := PseudoPointedMetric.copy R R^o.
 HB.instance Definition _ (R : realFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : numClosedFieldType) := PseudoPointedMetric.copy R R^o.
+HB.instance Definition _ (R : numClosedFieldType) :=
+  PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : realFieldType) :=
@@ -4153,8 +4154,8 @@ Qed.
 
 End Subspace.
 
-HB.instance Definition _ {T : ptopologicalType} (A : set T) := isPointed.Build (subspace A) point.
-
+HB.instance Definition _ {T : ptopologicalType} (A : set T) :=
+  isPointed.Build (subspace A) point.
 
 Global Instance subspace_filter {T : topologicalType}
     (A : set T) (x : subspace A) :

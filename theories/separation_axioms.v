@@ -73,7 +73,7 @@ split => P Q; first by exact: filterT.
 by move=> PQ + x Ax => /(_ _ Ax)/filterS; exact.
 Qed.
 
-Global Instance set_nbhs_pfilter : A!=set0 -> ProperFilter set_nbhs.
+Global Instance set_nbhs_pfilter : A !=set0 -> ProperFilter set_nbhs.
 Proof.
 case=> x Ax; split; last exact: set_nbhs_filter.
 by move/(_ x Ax)/nbhs_singleton.
@@ -102,7 +102,7 @@ Definition kolmogorov_space := forall x y, x != y ->
   exists A : set T, (A \in nbhs x /\ y \in ~` A) \/ (A \in nbhs y /\ x \in ~` A).
 
 Definition accessible_space := forall x y, x != y ->
-  exists A : set T, open A /\ x \in A /\ y \in ~` A.
+  exists A : set T, [/\ open A, x \in A & y \in ~` A].
 
 Definition hausdorff_space := forall p q : T, cluster (nbhs p) q -> p = q.
 
@@ -194,8 +194,8 @@ Proof.
 split => [TT1 A fA|h x y xy].
   rewrite -(fsbig_setU_set1 fA) fsbig_finite//=.
   by apply: closed_bigsetU => x xA; exact: accessible_closed_set1.
-exists (~` [set y]); split; first by rewrite openC; exact: h.
-by rewrite !inE/=; split=> [|/eqP]; [exact/eqP|rewrite eqxx].
+by exists (~` [set y]); rewrite !inE/=; split;
+  [rewrite openC; exact: h|exact/eqP|].
 Qed.
 
 End point_separation_axioms.
