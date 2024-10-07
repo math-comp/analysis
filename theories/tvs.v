@@ -42,6 +42,18 @@ Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A -> 
   (0< lambda) -> (lambda < 1) -> lambda *: x + (1 - lambda) *: y \in A.
 
+
+Definition convex_hull  (R : numDomainType) (M : lmodType R) (A : set M) :=
+  [set z | exists2 l : R,(0 < l /\ (l < 1))&(exists2 x, (x \in A) &
+(exists2 y, (y \in A)&(z = (l *: x + (1 - l) *: y))))].
+
+Lemma convex_convexhull (R : numDomainType) (M : lmodType R) (A : set M) :
+  convex (convex_hull A).
+Proof.
+  move => x y l; rewrite !inE /convex_hull /= =>- [lx [lx0 lx1] [x1 x1a] [x2 x2a]] xc.
+  move => >- [ly [ly0 ly1] [y1 y1a] [y2 y2a]] yc l0 l1.
+Admitted.
+
 HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
     (*continuous (uncurry (@GRing.add E))*)
@@ -327,23 +339,30 @@ Qed.
 Lemma prod_locally_convex : 
 exists2 B : set (set (E * F)), (forall b, b \in B -> convex b) & basis B.
 Proof.
-move: (@locally_convex K E)=> [Be Bec Beb].  
-move: (@locally_convex K F)=> [Bf Bfc Bfb].
-exists [set ef : set (E*F) |
-    (exists be, exists2 bf, (be \in Be) & ((bf \in Bf) /\ (forall xy, (xy \in ef)<->(exists x, exists y, (x \in be) /\ (y \in bf) /\ (x,y)= xy))))].
-move=> b; rewrite inE /= => [[]] be [] bf Bee [] Bff H.
-rewrite /convex /= =>  ef1 ef2 l /H [x1 [y1]] [x1be] [y1bf] <- / H [x2 [y2]] [x2be] [y2bf] <- l0 l1.
-apply/H; exists (l*:x1 + (1-l)*:x2);exists (l*:y1 + (1-l)*:y2); split; first by apply: Bec.
-by split; first by apply: Bfc.
-split. move=> b /= => [[]]  be [] bf ; rewrite !inE => Bee [] Bff H.
-suff: ((open be)/\(open bf)). admit.
-split; first by  move: Beb => [] /= + _; apply.
-by move: Bfb => [] /= + _; apply.
-move => /= [x y] ef [[e f] /= [ne nf]] /= EF.
-exists [set z | (e z.1) /\ (f z.2)]; last by apply: EF.
-split; last by split; apply: nbhs_singleton.
-move: Beb=> [] _ /(_ x) /=.
-Admitted.
+move: (@locally_convex K E)=> [Be Bcb Beb].
+move: (@locally_convex K F)=> [Bf Bcf Bfb].
+pose B:=  [set ef : set (E*F) | open ef /\
+     (exists be, exists2 bf, (Be be) & (( Bf bf)/\ (be `*` bf = ef)))].
+exists B.
+  move=> b; rewrite inE /= => [[]] bo [] be [] bf Bee [] Bff <-.  
+  move => [x1 y1] [x2 y2] l; rewrite !inE =>- /= [xe1 yf1] [xe2 yf2] l0 l1.
+  split; rewrite -inE; first by apply: Bcb; rewrite ?inE.
+  by apply: Bcf; rewrite ?inE.
+rewrite /basis /=.
+split; first  by move=> b /= => [] [].
+move => /= [x y]; rewrite /filter_from /nbhs_simpl => ef [[ne nf]] /= [Ne Nf] Nef.
+rewrite nbhs_simpl /=. 
+move: Beb=> [] Beo /(_ x ne Ne) /=; rewrite !nbhs_simpl /= =>- [a] [] Bea ax ea.
+move: Bfb=> [] Bfo /(_ y nf Nf) /=; rewrite !nbhs_simpl /= =>- [b] [] Beb yb fb.
+exists [set z | (a z.1) /\ (b z.2)]; last first.
+  apply: subset_trans; last by apply:Nef.
+  by move=> [zx zy] /= [] /ea + /fb. 
+split => /=; last by split; rewrite /B /=.   
+split; last by exists a; exists b; rewrite ?inE //.  
+rewrite openE => [[z z'] /= [az bz]]; exists (a,b) => /=; last by [].
+rewrite !nbhsE /=; split; first by  exists a => //; split => //; apply: Beo.
+by exists b =>  //; split =>  // []; apply: Bfo.
+Qed.
 
 HB.instance Definition _ :=
   Uniform_isTvs.Build K (E * F)%type
