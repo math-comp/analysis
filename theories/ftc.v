@@ -710,15 +710,8 @@ Lemma increasing_cvg_at_right_comp F G a b (l : R) : (a < b)%R ->
   (G \o F) x @[x --> a^'+] --> l.
 Proof.
 move=> ab incrF cFa GFa.
-(* take arbitrary e > 0, find d s.t. `| G (F (a + d))) - G (F a)| < e *)
 apply/cvgrPdist_le => /= e e0.
-(* for this e,
-   there exists d s.t. `| G (F a + d) - G (F a)| < e by continuity of G *)
 have/cvgrPdist_le /(_ e e0) [d /= d0 {}GFa] := GFa.
-(* for this d,
-   there exists d' s.t. forall r, `| r - a | < d' implies F (a + d') - F a < d
-   by continuity of F at a *)
-(* apply a lemma for take r := (a + d') from `[a, b] *)
 have := cvg_at_right_within cFa.
 move=> /cvgrPdist_lt/(_ _ d0)[d' /= d'0 {}cFa].
 near=> t.
@@ -1079,40 +1072,3 @@ rewrite !fctE !opprK derive1E deriveN.
 Unshelve. all: end_near. Qed.
 
 End integration_by_substitution.
-
-Module old_integration_by_substitution.
-Section old_integration_by_substitution.
-Local Open Scope ereal_scope.
-Context {R : realType}.
-Notation mu := lebesgue_measure.
-Implicit Types (F G f : R -> R) (a b : R).
-
-Lemma increasing_change_old F G a b : (a < b)%R ->
-  {in `[a, b] &, {homo F : x y / (x < y)%R}} ->
-  {within `[a, b], continuous F^`()} ->
-  derivable_oo_continuous_bnd F a b ->
- {within `[F a, F b], continuous G} ->
-  \int[mu]_(x in `[F a, F b]) (G x)%:E =
-  \int[mu]_(x in `[a, b]) (((G \o F) * F^`()) x)%:E.
-Proof.
-move=> ab incrF.
-move/(continuous_within_itvP _ ab) => [+ /cvgP + /cvgP].
-exact: (increasing_change ab incrF).
-Qed.
-
-Lemma decreasing_change_old F G a b :
-    (a < b)%R ->
-    {in `[a, b]&, {homo F : x y /~ (x < y)%R}} ->
-    {within `[a, b], continuous F^`()} ->
-    derivable_oo_continuous_bnd F a b ->
-    {within `[F b, F a], continuous G} ->
-  \int[mu]_(x in `[F b, F a]) (G x)%:E =
-  \int[mu]_(x in `[a, b]) (((G \o F) * - (F^`() : R -> R)) x)%:E.
-Proof.
-move=> ab decrF.
-move/(continuous_within_itvP _ ab) => [+ /cvgP + /cvgP].
-exact: decreasing_change.
-Qed.
-
-End old_integration_by_substitution.
-End old_integration_by_substitution.
