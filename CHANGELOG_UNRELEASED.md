@@ -16,16 +16,6 @@
 - in `realfun.v`:
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
 
-- in `normedtype.v`:
-  + lemma `nbhs_left_ltBl`
-  + lemma `within_continuous_continuous`
-
-- in `ftc.v`:
-  + lemma `increasing_image_oo`, `decreasing_image_oo`,
-    `increasing_cvg_at_right_comp`, `increasing_cvg_at_left_comp`,
-	`decreasing_cvg_at_right_comp`, `decreasing_cvg_at_left_comp`,
-	`increasing_change`, `decreasing_change`
-
 - in `filter.v` (new file):
   + lemma `in_nearW`
 
@@ -64,6 +54,20 @@
 
 - in `normedtype.v`:
   + lemma `limf_esup_ge0`
+- in `normedtype.v`:
+  + lemma `nbhs_left_ltBl`
+  + lemma `within_continuous_continuous`
+
+- in `ftc.v`:
+  + lemmas `increasing_image_oo`, `decreasing_image_oo`,
+    `increasing_cvg_at_right_comp`, `increasing_cvg_at_left_comp`,
+    `decreasing_cvg_at_right_comp`, `decreasing_cvg_at_left_comp`,
+  + lemmas `integral_itv_oo`, `eq_integral_itvoo`.
+  + lemma `measurable_fun_itv_cc`
+  + lemmas `decreasing_change`, `oppr_change`, `increasing_change`
+
+- in `measure.v`:
+  + lemma `measurable_fun_set0`
 
 ### Changed
 

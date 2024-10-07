@@ -777,10 +777,11 @@ Unshelve. all: end_near. Qed.
 
 End integration_by_substitution_preliminaries.
 
+(* TODO: move? *)
 Lemma integral_itv_oo (R : realType) (f : R -> R) (b0 b1 : bool) (x y : R) :
   measurable_fun `]x, y[ f ->
   (\int[lebesgue_measure]_(z in [set` Interval (BSide b0 x) (BSide b1 y)]) (f z)%:E =
- \int[lebesgue_measure]_(z in `]x, y[) (f z)%:E)%E.
+  \int[lebesgue_measure]_(z in `]x, y[) (f z)%:E)%E.
 Proof.
 have [xy|yx _|-> _] := ltgtP x y; last 2 first.
     rewrite !set_itv_ge ?integral_set0//=.
@@ -797,6 +798,7 @@ transitivity (\int[lebesgue_measure]_(z in [set` Interval (BSide b0 x) (BLeft y)
 by case: b0 => //; rewrite -integral_itv_obnd_cbnd.
 Qed.
 
+(* TODO: move? *)
 Lemma eq_integral_itvoo (R : realType) (g f : R -> R) (b0 b1 : bool) (x y : R) :
   measurable_fun `]x, y[ f ->
   measurable_fun `]x, y[ g ->
@@ -809,21 +811,32 @@ rewrite integral_itv_oo// (@integral_itv_oo _ g)//.
 by apply: eq_integral => z; rewrite inE/= => zxy; congr EFin; exact: fg.
 Qed.
 
+(* TODO: move? *)
+Lemma measurable_fun_itv_cc {R : realType} (x y : R) b0 b1 (f : R -> R) :
+  measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
+  measurable_fun `[x, y] f.
+Proof.
+have [xy|] := ltP x y; last first.
+  rewrite le_eqVlt => /predU1P[-> _|ba _].
+    by rewrite set_itv1; exact: measurable_fun_set1.
+  rewrite set_itv_ge//; first exact: measurable_fun_set0.
+  by rewrite -leNgt bnd_simp.
+move: b0 b1 => [|] [|] // mf.
+- rewrite -setUitv1//=; last by rewrite bnd_simp ltW.
+  by rewrite measurable_funU//; split => //; exact: measurable_fun_set1.
+- rewrite -setU1itv//=; last by rewrite bnd_simp ltW.
+  rewrite measurable_funU//; split; first exact: measurable_fun_set1.
+  rewrite -setUitv1// measurable_funU//; split => //.
+  exact: measurable_fun_set1.
+- rewrite -setU1itv//=; last by rewrite bnd_simp ltW.
+  by rewrite measurable_funU//; split => //; exact: measurable_fun_set1.
+Qed.
+
 Section integration_by_substitution.
 Local Open Scope ereal_scope.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
 Implicit Types (F G f : R -> R) (a b : R).
-
-(* TODO: generalize *)
-Lemma measurable_fun_oo_cc a b (f : R -> R) : (a < b)%R ->
-  measurable_fun `]a, b[ f -> measurable_fun `[a, b] f.
-Proof.
-move=> mf; rewrite -setU1itv//; last by rewrite bnd_simp ltW.
-rewrite measurable_funU//; split; first exact: measurable_fun_set1.
-rewrite -setUitv1// measurable_funU//; split => //.
-exact: measurable_fun_set1.
-Qed.
 
 Lemma decreasing_change F G a b : (a < b)%R ->
   {in `[a, b] &, {homo F : x y /~ (x < y)%R}} ->
@@ -849,7 +862,7 @@ have mGFF' : measurable_fun `]a, b[ ((G \o F) * F^`())%R.
   - apply: subspace_continuous_measurable_fun; first by [].
     by apply: continuous_in_subspaceT => x; rewrite inE/= => /cF'.
 have {}mGFF' : measurable_fun `[a, b] ((G \o F) * F^`())%R.
-  exact: measurable_fun_oo_cc.
+  exact: measurable_fun_itv_cc mGFF'.
 have intGFa : mu.-integrable `[(F b), (F a)] (EFin \o G).
   by apply: continuous_compact_integrable => //; exact: segment_compact.
 pose PG x := parameterized_integral mu (F b) x G.
