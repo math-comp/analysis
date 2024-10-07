@@ -1600,20 +1600,208 @@ have /filterS := @preimage_image _ (X + Y) inr A; apply.
 exact: open_nbhs_nbhs.
 Qed.
 
+Lemma inl_nbhs (x : X) (U : set X) : nbhs x U -> nbhs (inl x) (inl @` U).
+Proof. 
+rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply.
+exact: preimage_image.
+Qed.
+
+Lemma inr_nbhs (y : Y) (U : set Y) : nbhs y U -> nbhs (inr y) (inr @` U).
+Proof. 
+rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply.
+exact: preimage_image.
+Qed.
+
 Lemma sum_open (xy : X + Y) (U : set (X + Y)) : 
   open U <-> (open (inl@^-1` U) /\ open (inr@^-1` U)).
 Proof.
 split.
-  move=> oU.
-  split; first by have /continuousP := inl_continuous; apply.
+  move=> oU; split; first by have /continuousP := inl_continuous; apply.
   by have /continuousP := inr_continuous; apply.
-case=> Ol Or.
-rewrite openE; case => z //= ?. 
+case=> Ol Or; rewrite openE; case => z //= ?. 
   apply: inl_continuous; rewrite /nbhs /= nbhs_simpl.
   exact: open_nbhs_nbhs.
 apply: inr_continuous; rewrite /nbhs /= nbhs_simpl.
 exact: open_nbhs_nbhs.
 Qed.
 
+Definition lift_sum {Z : topologicalType} (f : X -> Z) (g : Y -> Z) (xy : X + Y) := 
+  match xy with
+  | inl x => f x
+  | inr y => g y
+  end.
+
+Lemma sum_continuous {Z : topologicalType} (f : X -> Z) (g : Y -> Z) : 
+  continuous f -> continuous g -> continuous (lift_sum f g).
+Proof.
+move=> ctsf ctsg [x|y] U nU /=; rewrite nbhs_simpl/= /nbhs/= nbhs_simpl /=.
+  by apply: inl_continuous; exact: ctsf.
+by apply: inr_continuous; exact: ctsg.
+Qed.
+
 End sum_topology.
 
+Section sum_uniformity.
+Context {X Y : uniformType}.
+
+Local Open Scope relation_scope.
+Let sum_entourage : set_system ((X + Y) * (X + Y))  := 
+  filter_from (@entourage X `*` @entourage Y) 
+    (fun E => (map_pair inl @` E.1) `|` (map_pair inr @` E.2)).
+
+Local Lemma sum_entourage_filter : Filter sum_entourage.
+Proof.
+apply: filter_from_filter.
+  by exists (setT, setT); split => //; exact: entourageT.
+case=> A B [C D] /= [eA eB] [eC eD]; exists ((A `&` C), (B `&` D)).
+  by split; exact: filterI.
+case=> /= ? ? [][][].
+  move=> x1 x2 [] Ax Cx /=; rewrite /map_pair /=.
+  by move/pair_equal_spec; case=> <- <-; split; left => //=; exists (x1, x2).
+move=> y1 y2 [] By Dy /=; rewrite /map_pair /=.
+by move/pair_equal_spec; case=> <- <-; split; right => //=; exists (y1, y2).
+Qed.
+
+Local Lemma sum_entourage_diagonal A : sum_entourage A -> diagonal `<=` A.
+Proof.
+case; case=> U V [/= eU eV] /(subset_trans _); apply. 
+move=> [][x|y] [?|?] // [] <-; [left; exists (x,x)| right; exists (y,y)] => //.
+  exact: entourage_refl.
+exact: entourage_refl.
+Qed.
+
+Local Lemma sum_entourage_inv A : sum_entourage A -> sum_entourage A^-1.
+Proof.
+case; case=> U V [/= eU eV].
+move=> UVA; suff : 
+  ([set map_pair inl x | x in U] `|` [set map_pair inr y | y in V])^-1 `<=` A^-1.
+  move/filterS; apply; first exact: sum_entourage_filter.
+  exists (U^-1,V^-1) => //= [][][?|?][?|?][] [] []//=.
+  - by move=> x x' Ux /pair_equal_spec /= [] <- <-; left; exists (x',x).
+  - by move=> y y' Vy /pair_equal_spec /= [] <- <-; right; exists (y',y).
+move=> [][?|?][?|?][][][]//= a b ? /pair_equal_spec [] <- <-; apply: UVA.
+  by left; (exists (a,b)).
+by right; (exists (a,b)).
+Qed.
+
+Local Lemma sum_entourage_split_ex A:
+  sum_entourage A -> exists2 B, sum_entourage B & B \; B `<=` A.
+Proof.
+case; case=> U V [/= eU eV] UVA.
+exists (map_pair inl @` split_ent U `|` map_pair inr @` split_ent V).
+  by exists (split_ent U, split_ent V) => //=.
+by move=> [][?|?][x|y][][] //= ? [][][] //= b ? splt /pair_equal_spec [] /= <- <-;
+  move=> [][][] ? a + /pair_equal_spec [] //= => /[swap] [][ ->] Ul [<-];
+  apply: UVA => //=; [left | right]; exists (b,a) => //; 
+  apply: (entourage_split _ _ splt ).
+Qed.
+
+Local Lemma sum_entourage_nbhsE: nbhs = nbhs_ sum_entourage.
+Proof.
+rewrite funeq2E; case=> [x|y] U; rewrite /nbhs /= nbhs_simpl propeqE; split.
+- rewrite -nbhs_entourageE; case=> E entE xEU.
+  exists ((map_pair inl @` E) `|` (map_pair inr @` setT)) => //.
+    by exists (E, setT) => //=; split => //=; exact: entourageT.
+  case=> ? /set_mem [] []//= [y ?] ? [eE <-]; apply: xEU.
+  by apply/mem_set; rewrite -eE.
+- rewrite -nbhs_entourageE; case=> E [[L R] [/= eL eR]] /= LRE ExU.
+  exists L => // x' /= /set_mem ?; apply: ExU; apply/mem_set; apply: LRE.
+  by left; exists (x,x').
+- rewrite -nbhs_entourageE; case=> E entE xEU.
+  exists ((map_pair inl @` setT) `|` (map_pair inr @` E)) => //.
+    by exists (setT, E) => //=; split => //=; exact: entourageT.
+  case=> ? /set_mem [] [] //= [x ?] ? [eE <-]; apply: xEU.
+  by apply/mem_set; rewrite -eE.
+- rewrite -nbhs_entourageE; case=> E [[L R] [/= eL eR]] /= LRE ExU.
+  exists R => // y' /= /set_mem ?; apply: ExU; apply/mem_set; apply: LRE.
+  by right; exists (y,y').
+Qed.
+
+HB.instance Definition _ := @Nbhs_isUniform_mixin.Build (X + Y)%type _
+  sum_entourage_filter
+  sum_entourage_diagonal
+  sum_entourage_inv
+  sum_entourage_split_ex
+  sum_entourage_nbhsE.
+
+Lemma sum_unif_continuous {Z : uniformType} (f : X -> Z) (g : Y -> Z) : 
+  unif_continuous f -> unif_continuous g -> unif_continuous (lift_sum f g).
+Proof.
+move=> uf ug E; rewrite ?nbhs_simpl /= => entE.
+have  := uf _ entE; have  := ug _ entE; rewrite ?nbhs_simpl /=.
+set L := (L in @entourage X L); set R := (R in @entourage Y R).
+move=> eR eL; exists (L,R); first by split.
+by move=> [][x1|y1][x2|y2][][][]? ? + [] <- <- //=.
+Qed.
+
+End sum_uniformity.
+
+Section sum_pseudometric.
+Context {R : realType} {X Y : pseudoMetricType R}.
+
+Definition sum_ball (a : X+Y) (eps : R) (b : X + Y) := 
+  match (a,b) with 
+  | (inl x, inl x') => ball x eps x'
+  | (inr y, inr y') => ball y eps y'
+  | _ => False
+  end.
+
+Local Lemma sum_ball_center x (e : R) : 0 < e -> sum_ball x e x.
+Proof. move:e => _/posnumP[eps]; case: x => ?; apply: ball_center. Qed.
+
+Local Lemma sum_ball_sym x y (e : R) : sum_ball x e y -> sum_ball y e x.
+Proof. by case: x; case: y => //= ? ?; apply: ball_sym. Qed.
+Local Lemma sum_ball_triangle x y z e1 e2 : 
+  sum_ball x e1 y -> sum_ball y e2 z -> sum_ball x (e1 + e2) z.
+Proof. by case: x; case: y; case: z => //= ? ? ?; apply: ball_triangle. Qed.
+
+Local Lemma sum_entourageE : entourage = entourage_ sum_ball.
+Proof.
+rewrite eqEsubset; split => /= E.
+  case=> [[U V]] [/=]; rewrite -?entourage_ballE; case => _/posnumP[e1] e1U.
+  case => _/posnumP[e2] e2V UVE; exists (Order.min (e1%:num) (e2%:num)).
+    by rewrite /= num_lt_min; apply/andP; split => //=.
+  apply: (subset_trans _ UVE); case=> [][a|b][c|d] //= acE.
+    left; exists (a,c) => //=; apply: e1U => //=.
+    by move: acE; apply: le_ball; rewrite ge_min lexx.
+  right; exists (b,d) => //=; apply: e2V => //=.
+  by move: acE; apply: le_ball; rewrite ge_min lexx orbT.
+case=> _/posnumP[eps] /filterS; apply.
+exists ([set xy | ball xy.1 eps%:num xy.2], [set xy | ball xy.1 eps%:num xy.2]).
+  split => //=.
+by case=> [][a|b][c|d][][] //= [? ?] /= + [<- <-].
+Qed.
+    
+HB.instance Definition _ :=  
+  @Uniform_isPseudoMetric.Build R (X+Y)%type sum_ball
+  sum_ball_center
+  sum_ball_sym
+  sum_ball_triangle
+  sum_entourageE.
+
+End sum_pseudometric.
+
+Section sum_separations.
+Context {X Y : topologicalType}.
+
+Lemma sum_hausdorff : hausdorff_space X -> hausdorff_space Y -> 
+  hausdorff_space (X + Y)%type.
+Proof.
+move=> hX hY [a|b][c|d] cl.
+- congr(_ _); apply: hX => U V Ua Vc.
+  have [] := cl (inl @` U) (inl @` V); [exact/inl_nbhs | exact/inl_nbhs |].
+  by case => //= [?|?] [][] z ? <- [?] /[swap] [] [->] ?; exists z.
+- have [] := cl (inl @` setT) (inr @` setT). 
+  + by apply/inl_nbhs; exact: filterT.
+  + by apply/inr_nbhs; exact: filterT.
+  case=> [?|?] [] [?] //= _ [] ? [] ? ? //.
+- have [] := cl (inr @` setT) (inl @` setT). 
+  + by apply/inr_nbhs; exact: filterT.
+  + by apply/inl_nbhs; exact: filterT.
+  case=> [?|?] [] [?] //= _ [] ? [] ? ? //.
+- congr(_ _); apply: hY => U V Ub Vd.
+  have [] := cl (inr @` U) (inr @` V); [exact/inr_nbhs | exact/inr_nbhs |].
+  by case => //= [?|?] [][] z ? <- [?] /[swap] [] [->] ?; exists z.
+Qed.
+
+End sum_separations.
