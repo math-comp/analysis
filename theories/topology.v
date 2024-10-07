@@ -158,7 +158,6 @@ Require Import reals signed.
 (* - products `(U * V)%type`                                                  *)
 (* - matrices `'M[T]_(m, n)`                                                  *)
 (* - `weak_topology` (the metric space for weak topologies)                   *)
-(* - `sup_pseudoMetricType`                                                   *)
 (*                                                                            *)
 (* ### Complete uniform spaces                                                *)
 (* ```                                                                        *)
@@ -2983,12 +2982,14 @@ HB.instance Definition _ := Choice.on (discrete_topology dsc).
 HB.instance Definition _ := discrete_uniform_mixin.
 End discrete_uniform.
 
-HB.instance Definition _ (P : pnbhsType) (dsc : discrete_space P) := 
+HB.instance Definition _ (P : pnbhsType) (dsc : discrete_space P) :=
   Pointed.on (discrete_topology dsc).
 
 Lemma discrete_bool_compact : compact [set: discrete_topology discrete_bool].
 Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
-HB.instance Definition _ {T : pnbhsType} {dsc: discrete_space T} := Pointed.on (discrete_topology dsc).
+
+HB.instance Definition _ {T : pnbhsType} {dsc: discrete_space T} :=
+  Pointed.on (discrete_topology dsc).
 
 (* was uniformityOfBallMixin *)
 HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {

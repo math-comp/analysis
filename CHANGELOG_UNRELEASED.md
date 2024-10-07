@@ -204,6 +204,9 @@
 
 ### Deprecated
 
+- in `separation_axioms.v`:
+  + definition `cvg_toi_locally_close`
+
 ### Removed
 
 - in `topology.v`:

@@ -42,20 +42,19 @@ Require Export topology.
 (* ```                                                                        *)
 (*  countable_uniform.type == endows a pseudoMetric on a uniform type whose   *)
 (*                            entourage has a countable basis                 *)
+(*        sup_pseudometric == the pseudometric induced for the supremum       *)
+(*                            of countably many pseudoMetrics                 *)
 (*                 gauge E == for an entourage E, gauge E is a filter which   *)
 (*                            includes `iter n split_ent E`.                  *)
 (*                            Critically, `gauge E` forms a uniform space     *)
 (*                            with a countable uniformity.                    *)
-(*        sup_pseudometric == the pseudometric induced for the supremum       *)
-(*                            of countably many pseudoMetrics                 *)
+(*          perfect_set A  := closed A /\ limit_point A = A                   *)
+(* ```                                                                        *)
 (******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-
-(* Making sure that [Program] does not automatically introduce *)
-Obligation Tactic := idtac.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 From mathcomp Require Import mathcomp_extra.
@@ -99,11 +98,11 @@ End set_nbhs.
 Section point_separation_axioms.
 Context {T : topologicalType}.
 
-Definition accessible_space := forall x y, x != y ->
-  exists A : set T, open A /\ x \in A /\ y \in ~` A.
-
 Definition kolmogorov_space := forall x y, x != y ->
   exists A : set T, (A \in nbhs x /\ y \in ~` A) \/ (A \in nbhs y /\ x \in ~` A).
+
+Definition accessible_space := forall x y, x != y ->
+  exists A : set T, open A /\ x \in A /\ y \in ~` A.
 
 Definition hausdorff_space := forall p q : T, cluster (nbhs p) q -> p = q.
 
@@ -305,6 +304,8 @@ apply: filter_app f_prop; near do split=> //=.
 have: (f `@ F) setT by apply: fFl; apply: filterT.
 by rewrite fmapiE; apply: filterS => x [y []]; exists y.
 Unshelve. all: by end_near. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.5.0", note="use `cvgi_close` instead")]
 Definition cvg_toi_locally_close := @cvgi_close.
 
 Hypothesis sep : hausdorff_space T.
@@ -433,6 +434,7 @@ End close_uniform.
 
 Section set_separations.
 Context {T : topologicalType}.
+
 Definition normal_space :=
   forall A : set T, closed A ->
     filter_from (set_nbhs A) closure `=>` set_nbhs A.
