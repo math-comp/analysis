@@ -3683,6 +3683,18 @@ move: foo; rewrite integralE/= -fin_num_abs fin_numB => /andP[fpoo fnoo].
 by rewrite lte_add_pinfty// ltey_eq ?fpoo ?fnoo.
 Qed.
 
+Lemma integral_fin_num_abs d (T : measurableType d) (R : realType)
+    (mu : {measure set T -> \bar R}) (D : set T) (f : T -> R) :
+  measurable D -> measurable_fun D f ->
+  (\int[mu]_(x in D) `|(f x)%:E| < +oo)%E =
+  ((\int[mu]_(x in D) (f x)%:E)%E \is a fin_num).
+Proof.
+move=> mD mf; rewrite fin_num_abs; case H : LHS; apply/esym.
+- by move: H => /abse_integralP ->//; exact/measurable_EFinP.
+- apply: contraFF H => /abse_integralP; apply => //.
+  exact/measurable_EFinP.
+Qed.
+
 Section integral_patch.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
@@ -4641,6 +4653,32 @@ Qed.
 
 Lemma Rintegral_set0 f : \int[mu]_(x in set0) f x = 0.
 Proof. by rewrite /Rintegral integral_set0. Qed.
+
+Lemma Rintegral_cst D : d.-measurable D ->
+  forall r, \int[mu]_(x in D) (cst r) x = r * fine (mu D).
+Proof.
+move=> mD r; rewrite /Rintegral/= integral_cst//.
+have := leey (mu D); rewrite le_eqVlt => /predU1P[->/=|muy]; last first.
+  by rewrite fineM// ge0_fin_numE.
+rewrite mulr_infty/=; have [_|r0|r0] := sgrP r.
+- by rewrite mul0e/= mulr0.
+- by rewrite mul1e/= mulr0.
+- by rewrite mulN1e/= mulr0.
+Qed.
+
+Lemma le_Rintegral D f1 f2 : measurable D ->
+  mu.-integrable D (EFin \o f1) ->
+  mu.-integrable D (EFin \o f2) ->
+  (forall x, D x -> f1 x <= f2 x) ->
+  \int[mu]_(x in D) f1 x <= \int[mu]_(x in D) f2 x.
+Proof.
+move=> mD mf1 mf2 f12; rewrite /Rintegral fine_le//.
+- rewrite -integral_fin_num_abs//; first by case/integrableP : mf1.
+  by apply/measurable_EFinP; case/integrableP : mf1.
+- rewrite -integral_fin_num_abs//; first by case/integrableP : mf2.
+  by apply/measurable_EFinP; case/integrableP : mf2.
+- by apply/le_integral => // x xD; rewrite lee_fin f12//; exact/set_mem.
+Qed.
 
 End Rintegral.
 
@@ -5973,7 +6011,7 @@ Qed.
 
 Lemma lebesgue_differentiation_continuous (f : R -> rT^o) (A : set R) (x : R) :
   open A -> mu.-integrable A (EFin \o f) -> {for x, continuous f} -> A x ->
-  (fun r => 1 / (r *+ 2) * \int[mu]_(z in ball x r) f z) @ 0^'+ -->
+  (fun r => (r *+ 2)^-1 * \int[mu]_(z in ball x r) f z) @ 0^'+ -->
   (f x : R^o).
 Proof.
 have ball_itvr r : 0 < r -> `[x - r, x + r] `\` ball x r = [set x + r; x - r].
@@ -6004,10 +6042,10 @@ have -> : \int[mu]_(z in ball x r) f z = \int[mu]_(z in `[x - r, x + r]) f z.
   - by apply/measurableU; exact: measurable_set1.
   - exact: (integrableS mA).
   - by rewrite measureU0//; exact: lebesgue_measure_set1.
-have r20 : 0 <= 1 / (r *+ 2) by rewrite ?divr_ge0 // mulrn_wge0.
-have -> : f x = 1 / (r *+ 2) * \int[mu]_(z in `[x - r, x + r]) cst (f x) z.
-  rewrite /Rintegral /= integral_cst /= ?ritv // mulrC mul1r.
-  by rewrite -mulrA divff ?mulr1//; apply: lt0r_neq0; rewrite mulrn_wgt0.
+have r20 : 0 <= (r *+ 2)^-1 by rewrite invr_ge0 mulrn_wge0.
+have -> : f x = (r *+ 2)^-1 * \int[mu]_(z in `[x - r, x + r]) cst (f x) z.
+  rewrite Rintegral_cst// ritv//= mulrA mulrAC mulVf ?mul1r//.
+  by apply: lt0r_neq0; rewrite mulrn_wgt0.
 have intRf : mu.-integrable `[x - r, x + r] (EFin \o f).
   exact: (@integrableS _ _ _ mu _ _ _ _ _ xrA intf).
 rewrite /= -mulrBr -fineB; first last.
@@ -6021,7 +6059,7 @@ have int_fx : mu.-integrable `[x - r, x + r] (fun z => (f z - f x)%:E).
   under [fun z => (f z - _)%:E]eq_fun => ? do rewrite EFinB.
   rewrite integrableB// continuous_compact_integrable// => ?.
   exact: cvg_cst.
-rewrite normrM [ `|_/_| ]ger0_norm // -fine_abse //; first last.
+rewrite normrM ger0_norm // -fine_abse //; first last.
   by rewrite integral_fune_fin_num.
 suff : (\int[mu]_(z in `[(x - r)%R, (x + r)%R]) `|f z - f x|%:E <=
     (r *+ 2 * eps)%:E)%E.
@@ -6031,7 +6069,7 @@ suff : (\int[mu]_(z in `[(x - r)%R, (x + r)%R]) `|f z - f x|%:E <=
     - by rewrite abse_fin_num integral_fune_fin_num.
     - by rewrite integral_fune_fin_num// integrable_abse.
     - by case/integrableP : int_fx.
-  rewrite div1r ler_pdivrMl ?mulrn_wgt0 // -[_ * _]/(fine (_%:E)).
+  rewrite ler_pdivrMl ?mulrn_wgt0 // -[_ * _]/(fine (_%:E)).
   by rewrite fine_le// integral_fune_fin_num// integrable_abse.
 apply: le_trans.
 - apply: (@integral_le_bound _ _ _ _ _ (fun z => (f z - f x)%:E) eps%:E) => //.

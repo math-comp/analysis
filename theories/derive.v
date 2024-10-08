@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import reals signed topology prodnormedzmodule tvs.
-From mathcomp Require Import normedtype landau forms.
+From mathcomp Require Import normedtype landau forms poly.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)
@@ -389,8 +389,8 @@ Proof. exact: iterSr. Qed.
 
 End DifferentialR2.
 
-Notation "f ^` ()" := (derive1 f).
-Notation "f ^` ( n )" := (derive1n n f).
+Notation "f ^` ()" := (derive1 f) : classical_set_scope.
+Notation "f ^` ( n )" := (derive1n n f) : classical_set_scope.
 
 Section DifferentialR3.
 Variable R : numFieldType.
@@ -1037,8 +1037,8 @@ Qed.
 
 Lemma deriv1E f x : derivable f x 1 -> 'd f x = ( *:%R^~ (f^`() x)) :> (R -> U).
 Proof.
-pose d (h : R) := h *: f^`() x.
-move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
+pose d (h : R) := h *: (f^`() x)%classic.
+move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
 pose scalL : {linear _ -> _} := HB.pack d scallM.
 rewrite -/d -[d]/(scalL : _ -> _).
@@ -1046,13 +1046,13 @@ by apply: diff_unique; [apply: scalel_continuous|apply: der1].
 Qed.
 
 Lemma diff1E f x :
-  differentiable f x -> 'd f x = (fun h => h *: f^`() x) :> (R -> U).
+  differentiable f x -> 'd f x = (fun h => h *: f^`()%classic x) :> (R -> U).
 Proof.
 pose d (h : R) := h *: 'd f x 1.
 move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
 pose scalL : {linear _ -> _} := HB.pack d scallM.
-have -> : (fun h => h *: f^`() x) = scalL by rewrite derive1E'.
+have -> : (fun h => h *: f^`()%classic x) = scalL by rewrite derive1E'.
 apply: diff_unique; first exact: scalel_continuous.
 apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
 by rewrite funeqE => h /=; rewrite -{1}[h]mulr1 linearZ.
@@ -1635,7 +1635,7 @@ Qed.
 
 Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :
   derivable f x 1 -> derivable g (f x) 1 ->
-  (g \o f)^`() x = g^`() (f x) * f^`() x.
+  (g \o f)^`() x = g^`()%classic (f x) * f^`()%classic x.
 Proof.
 move=> /derivable1_diffP df /derivable1_diffP dg.
 rewrite derive1E'; last exact/differentiable_comp.
@@ -1647,3 +1647,56 @@ Qed.
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
   is_derive x (1 : R) f x1 -> x1 = y1 -> is_derive x 1 f y1.
 Proof. by move=> Hi <-. Qed.
+
+Section derive_horner.
+Variable (R : realFieldType).
+Local Open Scope ring_scope.
+
+Lemma horner0_ext : horner (0 : {poly R}) = 0.
+Proof. by apply/funext => y /=; rewrite horner0. Qed.
+
+Lemma hornerD_ext (p : {poly R}) r :
+  horner (p * 'X + r%:P) = horner (p * 'X) + horner (r%:P).
+Proof. by apply/funext => y /=; rewrite !(hornerE,fctE). Qed.
+
+Lemma horner_scale_ext (p : {poly R}) :
+  horner (p * 'X) = (fun x => p.[x] * x)%R.
+Proof. by apply/funext => y; rewrite !hornerE. Qed.
+
+Lemma hornerC_ext (r : R) : horner r%:P = cst r.
+Proof. by apply/funext => y /=; rewrite !hornerE. Qed.
+
+Lemma derivable_horner (p : {poly R}) x : derivable (horner p) x 1.
+Proof.
+elim/poly_ind: p => [|p r ih]; first by rewrite horner0_ext.
+rewrite hornerD_ext; apply: derivableD.
+- rewrite horner_scale_ext/=.
+  by apply: derivableM; [exact:ih|exact:derivable_id].
+- by rewrite hornerC_ext; exact: derivable_cst.
+Qed.
+
+Lemma derivE (p : {poly R}) : horner (p^`()) = (horner p)^`()%classic.
+Proof.
+apply/funext => x; elim/poly_ind: p => [|p r ih].
+  by rewrite deriv0 hornerC horner0_ext derive1_cst.
+rewrite derivD hornerD hornerD_ext.
+rewrite derive1E deriveD//; [|exact: derivable_horner..].
+rewrite -!derive1E hornerC_ext derive1_cst addr0.
+rewrite horner_scale_ext derive1E deriveM//; last exact: derivable_horner.
+rewrite derive_id -derive1E -ih derivC horner0 addr0 derivM hornerD !hornerE.
+by rewrite derivX hornerE mulr1 addrC mulrC scaler1.
+Qed.
+
+Global Instance is_derive_poly (p : {poly R}) (x : R) :
+  is_derive x (1:R) (horner p) p^`().[x].
+Proof.
+by apply: DeriveDef; [exact: derivable_horner|rewrite derivE derive1E].
+Qed.
+
+Lemma continuous_horner (p : {poly R}) : continuous (horner p).
+Proof.
+move=> /= x; apply/differentiable_continuous.
+exact/derivable1_diffP/derivable_horner.
+Qed.
+
+End derive_horner.
