@@ -242,6 +242,17 @@
 - in `sequences.v`:
   + notation `nneseries_mkcond` (was deprecated since 0.6.0)
 
+- in `constructive_ereal.v`:
+  + notation `lte_spaddr` (deprecated since 0.6)
+
+- in `normedtype.v`:
+  + notation `normmZ` (deprecated since 0.6.0)
+  + notation `nbhs_image_ERFin` (deprecated since 0.6.0)
+  + notations `ereal_limrM`, `ereal_limMr`, `ereal_limN` (deprecated since 0.6.0)
+  + notation `norm_cvgi_map_lim` (deprecated since 0.6.0)
+  + notations `ereal_cvgN`, `ereal_is_cvgN`, `ereal_cvgrM`, `ereal_is_cvgrM`,
+    `ereal_cvgMr`, `ereal_is_cvgMr`, `ereal_cvgM` (deprecated since 0.6.0)
+
 ### Infrastructure
 
 ### Misc

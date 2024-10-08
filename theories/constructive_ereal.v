@@ -2649,8 +2649,6 @@ Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
-#[deprecated(since="mathcomp-analysis 0.6", note="Use lte_spaddre instead.")]
-Notation lte_spaddr := lte_spaddre (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.5", note="Use leeN2 instead.")]
 Notation lee_opp := leeN2 (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.5", note="Use lteN2 instead.")]

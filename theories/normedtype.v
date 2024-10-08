@@ -904,9 +904,6 @@ Proof. by move=> nxu; rewrite normrZ normrV// normr_id mulVr. Qed.
 
 End NormedModule_numDomainType.
 
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `normrZ`")]
-Notation normmZ := normrZ (only parsing).
-
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
 
@@ -2064,9 +2061,6 @@ End PseudoNormedZMod_numFieldType.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="use `cvgrPdist_le` or a variation instead")]
 Notation cvg_distW := __deprecated__cvg_distW (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `norm_cvgi_lim`")]
-Notation norm_cvgi_map_lim := norm_cvgi_lim (only parsing).
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
@@ -3156,28 +3150,6 @@ Qed.
 
 End max_cts.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeN, and generalized to filter in Type")]
-Notation ereal_cvgN := cvgeN (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to is_cvgeN, and generalized to filter in Type")]
-Notation ereal_is_cvgN := is_cvgeN (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeMl, and generalized to filter in Type")]
-Notation ereal_cvgrM := cvgeMl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to is_cvgeMl, and generalized to filter in Type")]
-Notation ereal_is_cvgrM := is_cvgeMl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeMr, and generalized to filter in Type")]
-Notation ereal_cvgMr := cvgeMr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to is_cvgeMr, and generalized to filter in Type")]
-Notation ereal_is_cvgMr := is_cvgeMr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeM, and generalized to a realFieldType")]
-Notation ereal_cvgM := cvgeM (only parsing).
-
 Section pseudoMetricDist.
 Context {R : realType} {X : pseudoMetricType R}.
 Implicit Types r : R.
@@ -4216,10 +4188,6 @@ End ereal_is_hausdorff.
 #[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: ereal_hausdorff] : core.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `nbhs_image_EFin`")]
-Notation nbhs_image_ERFin := nbhs_image_EFin (only parsing).
-
 Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
   limn (EFin \o f) = (limn f)%:E.
 Proof.
@@ -4313,13 +4281,6 @@ Lemma lim_nnesum (J : Type) (r : seq J) (f : J -> I -> \bar R)
 Proof. by move=> ? ?; apply/cvg_lim => //; apply: cvg_nnesum. Qed.
 
 End ecvg_realFieldType_proper.
-
-#[deprecated(since="mathcomp-analysis 0.6.0", note="generalized to `limeMl`")]
-Notation ereal_limrM := limeMl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="generalized to `limeMr`")]
-Notation ereal_limMr := limeMr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="generalized to `limeN`")]
-Notation ereal_limN := limeN (only parsing).
 
 Section cvg_0_pinfty.
 Context {R : realFieldType} {I : Type} {a : set_system I} {FF : Filter a}.
