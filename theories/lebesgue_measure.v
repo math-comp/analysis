@@ -243,6 +243,52 @@ case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
 Qed.
 #[local] Hint Resolve measurable_itv : core.
 
+Lemma measurable_fun_itv_co (x y : R) b0 b1 (f : R -> R) :
+  measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
+  measurable_fun `[x, y[ f.
+Proof.
+have [xy|yx _] := ltP x y; last first.
+  by rewrite set_itv_ge -?leNgt ?bnd_simp//; exact: measurable_fun_set0.
+move: b0 b1 => [|] [|] // mf.
+- apply: measurable_funS mf => //; exact: subset_itv_co_cc.
+- rewrite -setU1itv//= measurable_funU//; split => //.
+  exact: measurable_fun_set1.
+- rewrite -setU1itv//= measurable_funU//; split.
+    exact: measurable_fun_set1.
+  by apply: measurable_funS mf => //; exact: subset_itv_oo_oc.
+Qed.
+
+Lemma measurable_fun_itv_oc (x y : R) b0 b1 (f : R -> R) :
+  measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
+  measurable_fun `]x, y] f.
+Proof.
+have [xy|yx _] := ltP x y; last first.
+  by rewrite set_itv_ge -?leNgt ?bnd_simp//; exact: measurable_fun_set0.
+move: b0 b1 => [|] [|] // mf.
+- rewrite -setUitv1//= measurable_funU//; split.
+    by apply: measurable_funS mf => //; exact: subset_itv_oo_co.
+  exact: measurable_fun_set1.
+- by apply: measurable_funS mf => //; exact: subset_itv_oc_cc.
+- rewrite -setUitv1//= measurable_funU//; split => //.
+  exact: measurable_fun_set1.
+Qed.
+
+Lemma measurable_fun_itv_cc (x y : R) b0 b1 (f : R -> R) :
+  measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
+  measurable_fun `[x, y] f.
+Proof.
+move=> mf.
+have [xy|] := ltP x y; last first.
+  rewrite le_eqVlt => /predU1P[->|ba].
+    by rewrite set_itv1; exact: measurable_fun_set1.
+  rewrite set_itv_ge//; first exact: measurable_fun_set0.
+  by rewrite -leNgt bnd_simp.
+rewrite -setUitv1//=; last by rewrite bnd_simp ltW.
+  rewrite measurable_funU//; split => //.
+  exact: measurable_fun_itv_co mf.
+exact: measurable_fun_set1.
+Qed.
+
 HB.instance Definition _ := (ereal_isMeasurable (R.-ocitv.-measurable)).
 (* NB: Until we dropped support for Coq 8.12, we were using
 HB.instance (\bar (Real.sort R))

@@ -1582,8 +1582,10 @@ apply/seteqP; split=> [t /=| t /= [] [] ->//].
 by case: ifPn => ft; [left|right].
 Qed.
 
-Lemma measurable_fun_set1 a (f : T1 -> T2) :
-measurable_fun (set1 a) f.
+Lemma measurable_fun_set0 (f : T1 -> T2) : measurable_fun set0 f.
+Proof. by move=> A B _; rewrite set0I. Qed.
+
+Lemma measurable_fun_set1 a (f : T1 -> T2) : measurable_fun [set a] f.
 Proof. by move=> ? ? ?; rewrite set1I; case: ifP. Qed.
 
 End measurable_fun.
