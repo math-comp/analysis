@@ -904,9 +904,6 @@ Proof. by move=> nxu; rewrite normrZ normrV// normr_id mulVr. Qed.
 
 End NormedModule_numDomainType.
 
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `normrZ`")]
-Notation normmZ := normrZ (only parsing).
-
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
 
@@ -992,13 +989,6 @@ Qed.
 Lemma cvgr_dist_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|y - f t| < eps.
 Proof. by move=> /cvgrPdist_lt. Qed.
-
-Lemma __deprecated__cvg_dist {F : set_system V} {FF : Filter F} (y : V) :
-  F --> y -> forall eps, eps > 0 -> \forall y' \near F, `|y - y'| < eps.
-Proof. exact: cvgr_dist_lt. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgr_dist_lt` or a variation instead")]
-Notation cvg_dist := __deprecated__cvg_dist (only parsing).
 
 Lemma cvgr_distC_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y -> forall eps, eps > 0 -> \forall t \near F, `|f t - y| < eps.
@@ -2064,9 +2054,6 @@ End PseudoNormedZMod_numFieldType.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="use `cvgrPdist_le` or a variation instead")]
 Notation cvg_distW := __deprecated__cvg_distW (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `norm_cvgi_lim`")]
-Notation norm_cvgi_map_lim := norm_cvgi_lim (only parsing).
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
@@ -2099,10 +2086,6 @@ Unshelve. all: by end_near. Qed.
 
 End cvgr_norm_infty.
 
-Lemma __deprecated__cvg_bounded_real {F : set_system V} {FF : Filter F} (y : V) :
-  F --> y -> \forall M \near +oo, \forall y' \near F, `|y'| < M.
-Proof. exact: cvgr_norm_lty. Qed.
-
 Lemma cvg_bounded {I} {F : set_system I} {FF : Filter F} (f : I -> V) (y : V) :
   f @ F --> y -> bounded_near f F.
 Proof. exact: cvgr_norm_ley. Qed.
@@ -2115,9 +2098,6 @@ Arguments cvgr_norm_geNy {R V I F FF}.
 Arguments cvg_bounded {R V I F FF}.
 #[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgr_norm_lty` or a variation instead")]
-Notation cvg_bounded_real := __deprecated__cvg_bounded_real (only parsing).
 
 Module Export NbhsNorm.
 Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
@@ -2408,16 +2388,6 @@ Lemma cvgr2dist_lt {I J} {F : set_system I} {G : set_system J}
    \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
 Proof. by rewrite cvgr2dist_ltP. Qed.
 
-Lemma __deprecated__cvg_dist2 {F : set_system U} {G : set_system V}
-  {FF : Filter F} {FG : Filter G} (y : U) (z : V):
-  (F, G) --> (y, z) ->
-  forall eps, 0 < eps ->
-   \forall y' \near F & z' \near G, `|(y, z) - (y', z')| < eps.
-Proof. exact: cvgr2dist_lt. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-note="use `cvgr2dist_lt` or a variant instead")]
-Notation cvg_dist2 := __deprecated__cvg_dist2 (only parsing).
-
 End prod_NormedModule_lemmas.
 Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
 Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
@@ -2586,15 +2556,6 @@ Lemma norm_cvg0 f : `|f x| @[x --> F] --> 0 -> f @ F --> 0.
 Proof. by rewrite norm_cvg0P. Qed.
 
 End cvg_composition_pseudometric.
-
-Lemma __deprecated__cvg_dist0 {U} {K : numFieldType} {V : normedModType K}
-  {F : set_system U} {FF : Filter F} (f : U -> V) :
-  (fun x => `|f x|) @ F --> (0 : K)
-  -> f @ F --> (0 : V).
-Proof. exact: norm_cvg0. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
- note="renamed to `norm_cvg0` and generalized to `pseudoMetricNormedZmodType`")]
-Notation cvg_dist0 := __deprecated__cvg_dist0 (only parsing).
 
 Section cvg_composition_normed.
 Context {K : numFieldType} {V : normedModType K} {T : Type}.
@@ -3155,28 +3116,6 @@ by apply: cvg_norm; apply: cvgB.
 Qed.
 
 End max_cts.
-
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeN, and generalized to filter in Type")]
-Notation ereal_cvgN := cvgeN (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to is_cvgeN, and generalized to filter in Type")]
-Notation ereal_is_cvgN := is_cvgeN (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeMl, and generalized to filter in Type")]
-Notation ereal_cvgrM := cvgeMl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to is_cvgeMl, and generalized to filter in Type")]
-Notation ereal_is_cvgrM := is_cvgeMl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeMr, and generalized to filter in Type")]
-Notation ereal_cvgMr := cvgeMr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to is_cvgeMr, and generalized to filter in Type")]
-Notation ereal_is_cvgMr := is_cvgeMr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to cvgeM, and generalized to a realFieldType")]
-Notation ereal_cvgM := cvgeM (only parsing).
 
 Section pseudoMetricDist.
 Context {R : realType} {X : pseudoMetricType R}.
@@ -4216,10 +4155,6 @@ End ereal_is_hausdorff.
 #[global]
 Hint Extern 0 (hausdorff_space _) => solve[apply: ereal_hausdorff] : core.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `nbhs_image_EFin`")]
-Notation nbhs_image_ERFin := nbhs_image_EFin (only parsing).
-
 Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
   limn (EFin \o f) = (limn f)%:E.
 Proof.
@@ -4313,13 +4248,6 @@ Lemma lim_nnesum (J : Type) (r : seq J) (f : J -> I -> \bar R)
 Proof. by move=> ? ?; apply/cvg_lim => //; apply: cvg_nnesum. Qed.
 
 End ecvg_realFieldType_proper.
-
-#[deprecated(since="mathcomp-analysis 0.6.0", note="generalized to `limeMl`")]
-Notation ereal_limrM := limeMl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="generalized to `limeMr`")]
-Notation ereal_limMr := limeMr (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="generalized to `limeN`")]
-Notation ereal_limN := limeN (only parsing).
 
 Section cvg_0_pinfty.
 Context {R : realFieldType} {I : Type} {a : set_system I} {FF : Filter a}.
@@ -4792,13 +4720,6 @@ by apply: ltr_distlCBl; rewrite distrC.
 Qed.
 
 End segment.
-
-Lemma __deprecated__ler0_addgt0P (R : numFieldType) (x : R) :
-  reflect (forall e, e > 0 -> x <= e) (x <= 0).
-Proof. exact: ler_gtP. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `ler_gtP` instead which generalizes it to any upper bound.")]
-Notation ler0_addgt0P := __deprecated__ler0_addgt0P (only parsing).
 
 Lemma IVT (R : realType) (f : R -> R) (a b v : R) :
   a <= b -> {within `[a, b], continuous f} ->
@@ -5486,10 +5407,6 @@ near do rewrite /= linearD (le_trans (ler_normD _ _))// -lerBrDl.
 by apply: cvgr0_norm_le; rewrite // subr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma __deprecated__linear_continuous0 (f : {linear V -> W}) :
-  {for 0, continuous f} -> bounded_near f (nbhs (0 : V)).
-Proof. exact: continuous_linear_bounded. Qed.
-
 Lemma bounded_linear_continuous (f : {linear V -> W}) :
   bounded_near f (nbhs (0 : V)) -> continuous f.
 Proof.
@@ -5527,9 +5444,6 @@ by rewrite ler_pM.
 Unshelve. all: by end_near. Qed.
 
 End LinearContinuousBounded.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="generalized to `continuous_linear_bounded`")]
-Notation linear_continuous0 := __deprecated__linear_continuous0 (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="generalized to `bounded_linear_continuous`")]
 Notation linear_bounded0 := __deprecated__linear_bounded0 (only parsing).

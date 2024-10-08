@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
-From mathcomp Require Import boolp classical_sets functions.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import set_interval.
 Require Import reals ereal signed topology normedtype landau.
 
@@ -113,7 +113,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldNormedType.Exports.
-From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -423,68 +422,6 @@ End sequences_patched.
 Section sequences_R_lemmas_realFieldType.
 Variable R : realFieldType.
 Implicit Types u v : R ^nat.
-
-Lemma __deprecated__squeeze T (f g h : T -> R) (a : filter_on T) :
-  (\forall x \near a, f x <= g x <= h x) -> forall (l : R),
-  f @ a --> l -> h @ a --> l -> g @ a --> l.
-Proof. exact: squeeze_cvgr. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `squeeze_cvgr`")]
-Notation squeeze := __deprecated__squeeze (only parsing).
-
-Lemma __deprecated__cvgPpinfty (u_ : R ^nat) :
-  u_ @ \oo --> +oo <-> forall A, \forall n \near \oo, A <= u_ n.
-Proof. exact: cvgryPge. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgryPge`, and generalized to any filter")]
-Notation cvgPpinfty := __deprecated__cvgPpinfty (only parsing).
-
-Lemma __deprecated__cvgNpinfty u_ : (- u_ @ \oo --> +oo) = (u_ @ \oo --> -oo).
-Proof. exact/propeqP/cvgNry. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgNry` instead")]
-Notation cvgNpinfty := __deprecated__cvgNpinfty (only parsing).
-
-Lemma __deprecated__cvgNninfty u_ : (- u_ @ \oo --> -oo) = (u_ @ \oo --> +oo).
-Proof. exact/propeqP/cvgNrNy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgNrNy` instead")]
-Notation cvgNninfty := __deprecated__cvgNninfty (only parsing).
-
-Lemma __deprecated__cvgPninfty (u_ : R ^nat) :
-  u_ @ \oo --> -oo <-> forall A, \forall n \near \oo, A >= u_ n.
-Proof. exact: cvgrNyPle. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrNyPle`, and generalized to any filter")]
-Notation cvgPninfty := __deprecated__cvgPninfty (only parsing).
-
-Lemma __deprecated__ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
-  u_ @ \oo --> +oo -> v_ @ \oo --> +oo.
-Proof. exact: ger_cvgy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `ger_cvgy`, and generalized to any filter")]
-Notation ger_cvg_pinfty := __deprecated__ger_cvg_pinfty (only parsing).
-
-Lemma __deprecated__ler_cvg_ninfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
-  v_ @ \oo --> -oo -> u_ @ \oo --> -oo.
-Proof. exact: ler_cvgNy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `ler_cvgNy`, and generalized to any filter")]
-Notation ler_cvg_ninfty := __deprecated__ler_cvg_ninfty (only parsing).
-
-Lemma __deprecated__lim_ge x u : cvg (u @ \oo) ->
-  (\forall n \near \oo, x <= u n) -> x <= lim (u @ \oo).
-Proof. exact: limr_ge. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `limr_ge`, and generalized to any proper filter")]
-Notation lim_ge := __deprecated__lim_ge (only parsing).
-
-Lemma __deprecated__lim_le x u : cvg (u @ \oo) ->
-  (\forall n \near \oo, x >= u n) -> x >= lim (u @ \oo).
-Proof. exact: limr_le. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `limr_le`, and generalized to any proper filter")]
-Notation lim_le := __deprecated__lim_le (only parsing).
 
 Lemma lt_lim u (M : R) : nondecreasing_seq u ->
   cvgn u -> M < limn u -> \forall n \near \oo, M <= u n.
@@ -1297,7 +1234,7 @@ rewrite /series; near \oo => N; have xN : x < N%:R; last first.
   rewrite -(@is_cvg_series_restrict N.+1).
   by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; apply: S1_sup.
 near: N; exists `|floor x|.+1 => // m; rewrite /mkset -(@ler_nat R).
-move/lt_le_trans => -> //; rewrite (lt_le_trans (lt_succ_floor x))//.
+move/lt_le_trans => -> //; rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor x))//.
 by rewrite -intrD1 -natr1 lerD2r -(@gez0_abs (floor x)) ?floor_ge0// ltW.
 Unshelve. all: by end_near. Qed.
 
@@ -1832,6 +1769,21 @@ move=> u0 Puv; apply: lee_lim.
 - by near=> n; apply: lee_sum => k; exact: Puv.
 Unshelve. all: by end_near. Qed.
 
+Lemma subset_lee_nneseries (R : realType) (u : (\bar R)^nat) (P Q : pred nat)
+    (N : nat) :
+  (forall i, Q i -> 0 <= u i) ->
+  (forall i, P i -> Q i) ->
+  \sum_(N <= i <oo | P i) u i <= \sum_(N <= i <oo | Q i) u i.
+Proof.
+move=> Pu PQ; apply: lee_lim.
+- apply: ereal_nondecreasing_is_cvgn => a b ab.
+  by apply: lee_sum_nneg_natr => // n Mn /PQ; exact: Pu.
+- apply: ereal_nondecreasing_is_cvgn => a b ab.
+  by apply: lee_sum_nneg_natr => // n Mn; exact: Pu.
+- near=> n; apply: lee_sum_nneg_subset => //.
+  by move=> i; rewrite inE => /andP[iP iQ]; exact: Pu.
+Unshelve. all: by end_near. Qed.
+
 Lemma lee_npeseries (R : realType) (u v : (\bar R)^nat) (P : pred nat) :
   (forall i, P i -> u i <= 0) -> (forall n, P n -> v n <= u n) ->
   \sum_(i <oo | P i) v i <= \sum_(i <oo | P i) u i.
@@ -1933,6 +1885,10 @@ rewrite ltninfty_adde_def// inE (@lt_le_trans _ _ 0)//.
 by apply: lime_ge => //; exact: nearW.
 Qed.
 
+Lemma eseries_mkcond [R : realFieldType] [P : pred nat] (f : nat -> \bar R) N :
+  \sum_(N <= i <oo | P i) f i = \sum_(N <= i <oo) if P i then f i else 0.
+Proof. by apply/congr_lim/eq_fun => n /=; apply: big_mkcond. Qed.
+
 Section nneseries_split.
 
 Let near_eq_lim (R : realFieldType) (f g : nat -> \bar R) :
@@ -1964,8 +1920,19 @@ rewrite -lim_shift_cst; last by rewrite (@lt_le_trans _ _ 0)// f0// leq_addr.
   by rewrite f0// (leq_trans _ Nnp)// -addnS leq_addr.
 Unshelve. all: by end_near. Qed.
 
+Lemma nneseries_split_cond (R : realType) (f : nat -> \bar R) N n (P : pred nat) :
+  (forall k, P k -> 0 <= f k)%E ->
+  \sum_(N <= k <oo | P k) f k =
+  \sum_(N <= k < N + n | P k) f k + \sum_(N + n <= k <oo | P k) f k.
+Proof.
+move=> NPf; rewrite eseries_mkcond [X in _ = (_ + X)]eseries_mkcond.
+rewrite big_mkcond/= (nneseries_split n)// => k Nk.
+by case: ifPn => //; exact: NPf.
+Qed.
+
 End nneseries_split.
 Arguments nneseries_split {R f} _ _.
+Arguments nneseries_split_cond {R f} _ _ _.
 
 Lemma nneseries_recl (R : realType) (f : nat -> \bar R) :
   (forall k, 0 <= f k) -> \sum_(k <oo) f k = f 0%N + \sum_(1 <= k <oo) f k.
@@ -1974,23 +1941,24 @@ move=> f0; rewrite [LHS](nneseries_split _ 1)// add0n.
 by rewrite /index_iota subn0/= big_cons big_nil addr0.
 Qed.
 
-Lemma nneseries_tail_cvg (R : realType) (f : (\bar R)^nat) :
-  \sum_(k <oo) f k < +oo -> (forall k, 0 <= f k) ->
-  \sum_(N <= k <oo) f k @[N --> \oo] --> 0.
+Lemma nneseries_tail_cvg (R : realType) (f : (\bar R)^nat) P :
+  (\sum_(0 <= k <oo | P k) f k < +oo -> (forall k, P k -> 0 <= f k) ->
+  \sum_(N <= k <oo | P k) f k @[N --> \oo] --> 0)%E.
 Proof.
 move=> foo f0.
-have : cvg (\sum_(0 <= k < n) f k @[n --> \oo]).
-  by apply: ereal_nondecreasing_is_cvgn; exact: lee_sum_nneg_natr.
+have : cvg (\sum_(0 <= k < n | P k) f k @[n --> \oo]).
+  apply: ereal_nondecreasing_is_cvgn.
+  by apply: lee_sum_nneg_natr => n _; exact: f0.
 move/cvg_ex => [[l fl||/cvg_lim fnoo]] /=; last 2 first.
   - by move/cvg_lim => fpoo; rewrite fpoo// in foo.
-  - have : 0 <= \sum_(k <oo) f k by exact: nneseries_ge0.
+  - have : 0 <= \sum_(k <oo | P k) f k by exact: nneseries_ge0.
     by rewrite fnoo.
-rewrite [X in X @ _ --> _](_ : _ = fun N => l%:E - \sum_(0 <= k < N) f k).
+rewrite [X in X @ _ --> _](_ : _ = fun N => l%:E - \sum_(0 <= k < N | P k) f k).
   apply/cvgeNP; rewrite oppe0.
   under eq_fun => ? do rewrite oppeD// oppeK addeC.
   exact/cvge_sub0.
 apply/funext => N; apply/esym/eqP; rewrite sube_eq//.
-  by rewrite addeC -nneseries_split//; exact/eqP/esym/cvg_lim.
+  by rewrite addeC -nneseries_split_cond//; exact/eqP/esym/cvg_lim.
 by rewrite ge0_adde_def//= ?inE; [exact: nneseries_ge0|exact: sume_ge0].
 Qed.
 
@@ -2056,10 +2024,6 @@ have {}Mu : forall x, M%:E > u x by move=> x; rewrite ltNge; apply/negP.
 have : limn u <= M%:E by apply lime_le => //; near=> m; apply/ltW/Mu.
 by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
-
-Lemma eseries_mkcond [R : realFieldType] [P : pred nat] (f : nat -> \bar R) :
-  \sum_(i <oo | P i) f i = \sum_(i <oo) if P i then f i else 0.
-Proof. by apply/congr_lim/eq_fun => n /=; apply: big_mkcond. Qed.
 
 End sequences_ereal.
 #[deprecated(since="mathcomp-analysis 0.6.0",
@@ -2141,8 +2105,6 @@ Notation nneseries0 := eseries0 (only parsing).
 Notation eq_nneseries := eq_eseriesr (only parsing).
 #[deprecated(since="analysis 0.6.0", note="Use eseries_pred0 instead.")]
 Notation nneseries_pred0 := eseries_pred0 (only parsing).
-#[deprecated(since="analysis 0.6.0", note="Use eseries_mkcond instead.")]
-Notation nneseries_mkcond := eseries_mkcond (only parsing).
 
 Arguments nneseries_split {R f} _ _.
 
@@ -3013,11 +2975,11 @@ have : cvg (a @ \oo).
   have [n rne] : exists n, 2 * (r n)%:num < e.
     pose eps := e / 2.
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
-      exists `|ceil eps^-1|%N.  
+      exists `|ceil eps^-1|%N.
       rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK -addn1 natrD.
-      rewrite natr_absz gtr0_norm. 
-      by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
-      by rewrite -ceil_gt0 invr_gt0 divr_gt0.                                                        
+      rewrite natr_absz gtr0_norm.
+        by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
+      by rewrite -ceil_gt0 invr_gt0 divr_gt0.
     exists n.+1; rewrite -ltr_pdivlMl //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
       have [_ ] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply: (Pf (n, ar n)).
@@ -3076,11 +3038,11 @@ Unshelve. all: by end_near. Qed.
 
 (* TODO: to be changed once PR#1107 is integrated, and the following put in evt.v *)
 
-(* Definition bounded_top (K: realType) (E : normedModType K) (B : set E) := 
-forall (U : set E), nbhs 0 U -> 
+(* Definition bounded_top (K: realType) (E : normedModType K) (B : set E) :=
+forall (U : set E), nbhs 0 U ->
 (exists (k:K), B `<=` (fun (x:E) => (k *: x) ) @` U).
 
-Definition pointwise_bounded (K : realType) (V : normedModType K) (W : normedModType K) 
+Definition pointwise_bounded (K : realType) (V : normedModType K) (W : normedModType K)
 (F : set (V -> W)) := bounded_top F {ptws V -> W}.
 
 Definition uniform_bounded (K : realType) (V : normedModType K) (W : normedModType K)
@@ -3127,7 +3089,7 @@ have ContraBaire : exists i, not (dense (O i)).
     - by move=> x; rewrite setI0.
     - by exists point.
     - exact: openT.
-  have /contra_not/(_ dOinf) : (forall i, open(O i) /\ dense (O i)) -> dense (O_inf).
+  have /contra_not/(_ dOinf) : (forall i, open (O i) /\ dense (O i)) -> dense (O_inf).
     exact: Baire.
   move=> /asboolPn /existsp_asboolPn[n /and_asboolP /nandP Hn].
   by exists n; case: Hn => /asboolPn.

@@ -2963,3 +2963,229 @@ by rewrite -EFinM mulrnAr.
 Qed.
 
 End vitali_theorem.
+
+Section vitali_theorem_corollary.
+Context {R : realType} (A : set R) (B : nat -> set R).
+
+Lemma vitali_coverS (F : set nat) (O : set R) : open O -> A `<=` O ->
+  vitali_cover A B F -> vitali_cover A B (F `&` [set k | B k `<=` O]).
+Proof.
+move=> oO AO [Bball ABF]; split => // x Ax r r0.
+have [d xdO] : exists d : {posnum R}, ball x d%:num `<=` O.
+  have [/= d d0 dxO] := open_subball oO (AO _ Ax).
+  have d20 : (0 < d / 2)%R by rewrite divr_gt0.
+  exists (PosNum d20) => z xdz.
+  apply: (dxO (PosNum d20)%:num) => //=.
+  by rewrite sub0r normrN gtr0_norm// gtr_pMr// invf_lt1// ltr1n.
+pose rd2 : R := minr r (d%:num / 2)%R.
+have rd2_gt0 : (0 < rd2)%R by rewrite lt_min r0//= divr_gt0.
+have [k [Vk Bkr Bkd]] := ABF _ Ax _ rd2_gt0.
+exists k => //; split => //; last by rewrite (lt_le_trans Bkd)// ge_min// lexx.
+split => //=.
+apply: subset_trans xdO => /= z Bkz.
+rewrite /ball/= -(addrKA (- cpoint (B k))).
+rewrite (le_lt_trans (ler_normB _ _))//= -(addrC z).
+rewrite (splitr d%:num) ltrD//.
+  rewrite distrC (lt_le_trans (is_ballP _ _))//.
+  by rewrite (le_trans (ltW Bkd))// ge_min lexx orbT.
+rewrite distrC (lt_le_trans (is_ballP _ _))//.
+by rewrite (le_trans (ltW Bkd))// ge_min lexx orbT.
+Qed.
+
+Let vitali_cover_mclosure (F : set nat) k :
+  vitali_cover A B F -> (R.-ocitv.-measurable).-sigma.-measurable (closure (B k)).
+Proof.
+case => + _ => /(_ k)/ballE ->.
+by rewrite closure_ball; exact: measurable_closed_ball.
+Qed.
+
+Let vitali_cover_measurable (F : set nat) k :
+  vitali_cover A B F -> (R.-ocitv.-measurable).-sigma.-measurable (B k).
+Proof. by case => + _ => /(_ k)/ballE ->; exact: measurable_ball. Qed.
+
+Let vitali_cover_ballE (F : set nat) n :
+  vitali_cover A B F -> B n = ball (cpoint (B n)) (radius (B n))%:num.
+Proof. by case => + _ => /(_ n)/ballE. Qed.
+
+Hypothesis B0 : forall i, (0 < (radius (B i))%:num)%R.
+Notation mu := (@lebesgue_measure R).
+Local Open Scope ereal_scope.
+
+Let bigB (G : set nat) c := G `&` [set k | (radius (B k))%:num >= c]%R.
+
+Let bigBS (G : set nat) r : bigB G r `<=` G.
+Proof. by move=> i []. Qed.
+
+Let bigB0 (G : set nat) : bigB G 0%R = G.
+Proof. by apply/seteqP; split => [//|x Gx]; split => //=. Qed.
+
+(* references:
+   - https://angyansheng.github.io/notes/measure-theory-xvi
+   - https://math.stackexchange.com/questions/4606604/a-proof-of-vitalis-covering-theorem
+   - https://math-wiki.com/images/2/2f/88341leb_fund_thm.pdf (p.9)
+*)
+Lemma vitali_theorem_corollary (F : set nat) :
+  mu A < +oo%E -> vitali_cover A B F ->
+  forall e, (e > 0)%R -> exists G' : {fset nat}, [/\ [set` G'] `<=` F,
+    trivIset [set` G'] (closure \o B) &
+    ((wlength idfun)^* (A `\` \big[setU/set0]_(k <- G') closure (B k)))%mu
+    < e%:E].
+Proof.
+move=> muAfin ABF e e0.
+have [O [oO AO OAoo]] :
+    exists O : set R, [/\ open O, A `<=` O & mu O < mu A + 1 < +oo].
+  have /(outer_measure_open_le A) : (0 < 1 / 2 :> R)%R by rewrite divr_gt0.
+  move=> [O [oA AO OAe]]; exists O; split => //.
+  rewrite lte_add_pinfty ?ltry// andbT.
+  rewrite (le_lt_trans OAe)// lteD2lE ?ge0_fin_numE ?outer_measure_ge0//.
+  by rewrite lte_fin ltr_pdivrMr// mul1r ltr1n.
+pose F' := F `&` [set k | B k `<=` O].
+have ABF' : vitali_cover A B F' by exact: vitali_coverS.
+have [G [cG GV' tB mAG0]] := vitali_theorem B0 ABF'.
+have muGSfin C : C `<=` G -> mu (\bigcup_(k in C) closure (B k)) \is a fin_num.
+  move=> CG; rewrite ge0_fin_numE// (@le_lt_trans _ _ (mu O))//; last first.
+    by move: OAoo => /andP[OA]; exact: lt_trans.
+  rewrite (@le_trans _ _ (mu (\bigcup_(k in G) B k)))//; last first.
+    by rewrite le_outer_measure//; apply: bigcup_sub => i /GV'[].
+  rewrite bigcup_mkcond [in leRHS]bigcup_mkcond measure_bigcup//=; last 2 first.
+    by move=> i _; case: ifPn => // iG; exact: vitali_cover_mclosure ABF.
+    by apply/(trivIset_mkcond _ _).1; apply: sub_trivIset tB.
+  rewrite measure_bigcup//=; last 2 first.
+    by move=> i _; case: ifPn => // _; exact: vitali_cover_measurable ABF.
+    apply/(trivIset_mkcond _ _).1/trivIsetP => /= i j  Gi Gj ij.
+    move/trivIsetP : tB => /(_ _ _ Gi Gj ij).
+    by apply: subsetI_eq0; exact: subset_closure.
+  apply: lee_nneseries => // n _.
+  case: ifPn => [/set_mem nC|]; last by rewrite measure0.
+  rewrite (vitali_cover_ballE _ ABF) ifT; last exact/mem_set/CG.
+  by rewrite closure_ball lebesgue_measure_closed_ball// lebesgue_measure_ball.
+have muGfin : mu (\bigcup_(k in G) closure (B k)) \is a fin_num.
+  by rewrite -(bigB0 G) muGSfin.
+have [c Hc] : exists c : {posnum R},
+    mu (\bigcup_(k in bigB G c%:num) closure (B k)) >
+    mu (\bigcup_(k in G) closure (B k)) - e%:E.
+  have : \sum_(N <= k <oo | k \in G) mu (closure (B k)) @[N --> \oo] --> 0%E.
+    have : \sum_(0 <= i <oo | i \in G) mu (closure (B i)) < +oo.
+      rewrite -measure_bigcup -?ge0_fin_numE//=.
+      by move=> i _; exact: vitali_cover_mclosure ABF.
+    by move/(@nneseries_tail_cvg _ _ (mem G)); exact.
+  move/fine_cvgP => [_] /cvgrPdist_lt /(_ _ e0)[n _ /=] nGe.
+  have [c nc] : exists c : {posnum R}, forall k,
+      (c%:num > (radius (B k))%:num)%R -> (k >= n)%N.
+    pose x := (\big[minr/(radius (B 0))%:num]_(i < n.+1) (radius (B i))%:num)%R.
+    have x_gt0 : (0 < x)%R by exact: lt_bigmin.
+    exists (PosNum x_gt0) => k /=; apply: contraPleq => kn.
+    apply/negP; rewrite -leNgt; apply/bigmin_leP => /=; right.
+    by exists (widen_ord (@leqnSn _) (Ordinal kn)).
+  exists c.
+  suff:  mu (\bigcup_(k in G `\` bigB G c%:num) closure (B k)) < e%:E.
+    rewrite EFinN lteBlDl// -lteBlDr//; last exact: muGSfin.
+    apply: le_lt_trans.
+    pose setDbigB := (\bigcup_(k in G) closure (B k)) `\`
+                     (\bigcup_(k in bigB G c%:num) closure (B k)).
+    have ? : setDbigB `<=` \bigcup_(k in G `\` bigB G c%:num) closure (B k).
+      move=> /= x [[k Gk Bkx]].
+      rewrite -[X in X -> _]/((~` _) x) setC_bigcup => abs.
+      by exists k => //; split=> // /abs.
+    apply: (@le_trans _ _ (mu setDbigB)); last first.
+      rewrite le_measure ?inE//.
+        by apply: measurableD;
+          apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+      by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+    rewrite measureD//=; last 3 first.
+      by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+      by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+      by rewrite -ge0_fin_numE.
+    rewrite leeB// le_measure ?inE//.
+      by apply: measurableI;
+        apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+    by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+  apply: (@le_lt_trans _ _ (normr (0 -
+     fine (\sum_(n <= k <oo | k \in G) mu (closure (B k)))))%:E); last first.
+    by rewrite lte_fin; apply: nGe => /=.
+  rewrite sub0r normrN ger0_norm/=; last by rewrite fine_ge0// nneseries_ge0.
+  rewrite fineK//; last first.
+    move: muGfin; rewrite measure_bigcup//=; last first.
+      by move=> i _; exact: vitali_cover_mclosure ABF.
+    do 2 (rewrite ge0_fin_numE//; last exact: nneseries_ge0).
+    apply: le_lt_trans.
+    by rewrite [leRHS](nneseries_split_cond 0%N n)// add0n leeDr// sume_ge0.
+  rewrite measure_bigcup//=; last 2 first.
+    by move=> i _; exact: vitali_cover_mclosure ABF.
+    by apply: sub_trivIset tB; exact: subDsetl.
+  rewrite [in leRHS]eseries_cond.
+  suff: forall i, i \in G `\` bigB G c%:num -> (n <= i)%N.
+    move=> GG'n; apply: subset_lee_nneseries => //= m mGG'.
+    by rewrite GG'n// andbT; case/set_mem: mGG' => /mem_set ->.
+  move=> i iGG'; rewrite nc//.
+  by move/set_mem: iGG' => [Gi] /not_andP[//|/negP]; rewrite -ltNge.
+have {}Hc : mu (\bigcup_(k in G) closure (B k) `\`
+                \bigcup_(k in bigB G c%:num) closure (B k)) < e%:E.
+  rewrite measureD//=; first last.
+  - by rewrite -ge0_fin_numE.
+  - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+  - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+  rewrite setIidr; last exact: bigcup_subset.
+  by rewrite lteBlDr-?lteBlDl//; exact: muGSfin.
+have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
+  pose M := `|ceil (fine (mu O) / r%:num)|.+1.
+  apply: contrapT => /infinite_set_fset /= /(_ M)[G0 G0G'r] MG0.
+  have : mu O < mu (\bigcup_(k in bigB G r%:num) closure (B k)).
+    apply: (@lt_le_trans _ _ (mu (\bigcup_(k in [set` G0]) closure (B k)))).
+      rewrite bigcup_fset measure_fbigsetU//=; last 2 first.
+        by move=> k _; exact: vitali_cover_mclosure ABF.
+        by apply: sub_trivIset tB => x /G0G'r[].
+      apply: (@lt_le_trans _ _ (\sum_(i <- G0) r%:num%:E)%R).
+        rewrite sumEFin big_const_seq iter_addr addr0 -mulr_natr.
+        apply: (@lt_le_trans _ _ (r%:num * M%:R)%:E); last first.
+          by rewrite lee_fin ler_wpM2l// ler_nat count_predT.
+        rewrite EFinM -lte_pdivrMl// muleC -(@fineK _ (mu O)); last first.
+          by rewrite ge0_fin_numE//; case/andP: OAoo => ?; exact: lt_trans.
+        rewrite -EFinM /M lte_fin (le_lt_trans (ceil_ge _))//.
+        rewrite -natr1 natr_absz ger0_norm ?ltrDl//.
+        by rewrite -ceil_ge0// (@lt_le_trans _ _ 0%R)// divr_ge0// fine_ge0.
+      rewrite big_seq [in leRHS]big_seq.
+      apply: lee_sum => //= i /G0G'r [iG rBi].
+      rewrite -[leRHS]fineK//; last first.
+        rewrite (vitali_cover_ballE _ ABF).
+        by rewrite closure_ball lebesgue_measure_closed_ball.
+      rewrite (vitali_cover_ballE _ ABF) closure_ball.
+      by rewrite lebesgue_measure_closed_ball// fineK// lee_fin mulr2n ler_wpDl.
+    rewrite le_measure? inE//; last exact: bigcup_subset.
+    - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+    - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
+  apply/negP; rewrite -leNgt.
+  apply: (@le_trans _ _ (mu (\bigcup_(k in bigB G r%:num) B k))).
+    rewrite measure_bigcup//; last 2 first.
+      by move=> k _; exact: vitali_cover_mclosure ABF.
+      exact: sub_trivIset tB.
+    rewrite /= measure_bigcup//; last 2 first.
+      by move=> k _; exact: vitali_cover_measurable ABF.
+      apply/trivIsetP => /= i j [Gi ri] [Gj rj] ij.
+      move/trivIsetP : tB => /(_ _ _ Gi Gj ij).
+      by apply: subsetI_eq0 => //=; exact: subset_closure.
+    rewrite /= lee_nneseries// => n _.
+    rewrite (vitali_cover_ballE _ ABF)// closure_ball.
+    by rewrite lebesgue_measure_closed_ball// lebesgue_measure_ball.
+  rewrite le_measure? inE//.
+  + by apply: bigcup_measurable => k _; exact: vitali_cover_measurable ABF.
+  + exact: open_measurable.
+  + by apply: bigcup_sub => i [/GV'[? ?] cBi].
+exists (fset_set (bigB G c%:num)); split.
+- by move=> /= k; rewrite in_fset_set// inE /bigB /= => -[] /GV'[].
+- by apply: sub_trivIset tB => k/=; rewrite in_fset_set// inE /bigB /= => -[].
+- pose UG : set R := \bigcup_(k in G) closure (B k).
+  rewrite bigsetU_fset_set//.
+  apply: (@le_lt_trans _ _ ((wlength idfun)^*%mu (A `\`UG) +
+       mu (UG `\` \bigcup_(k in bigB G c%:num) closure (B k)))); last first.
+    by rewrite -[(wlength idfun)^*%mu]/mu mAG0 add0e.
+  apply: (@le_trans _ _ ((wlength idfun)^*%mu
+      (A `&` (UG `\` \bigcup_(k in bigB G c%:num) closure (B k))) +
+      (wlength idfun)^*%mu (A `\` UG))); last first.
+    by rewrite addeC leeD2l// le_outer_measure.
+  apply: (le_trans _ (outer_measureU2 _ _ _)) => //=; apply: le_outer_measure.
+  rewrite !(setDE A) -setIUr; apply: setIS.
+  by rewrite setDE setUIl setUv setTI -setCI; exact: subsetC.
+Qed.
+
+End vitali_theorem_corollary.

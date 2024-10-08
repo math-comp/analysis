@@ -44,6 +44,13 @@
 
 - in `derive.v`:
   + lemma `exprn_derivable`
+- in `sequences.v`:
+  + lemma `nneseries_split_cond`
+  + lemma `subset_lee_nneseries`
+
+- in `lebesgue_measure.v`:
+  + lemma `vitali_coverS`
+  + lemma `vitali_theorem_corollary`
 
 ### Changed
 
@@ -213,6 +220,10 @@
   + lemmas `expR_ge1Dx` and `expeR_ge1Dx` (remove hypothesis)
   + lemma `le_ln1Dx` (weaken hypothesis)
 
+- in `sequences.v`:
+  + lemma `eseries_mkcond`
+  + lemma `nneseries_tail_cvg`
+
 - in `derive.v`:
   + lemma `derivableX`
 
@@ -228,6 +239,42 @@
   + definition `fmap_proper_filter'`
   + definition `filter_map_proper_filter'`
   + definition `filter_prod_proper'`
+- in `sequences.v`:
+  + notation `nneseries_mkcond` (was deprecated since 0.6.0)
+
+- in `constructive_ereal.v`:
+  + notation `lte_spaddr` (deprecated since 0.6)
+
+- in `normedtype.v`:
+  + notation `normmZ` (deprecated since 0.6.0)
+  + notation `nbhs_image_ERFin` (deprecated since 0.6.0)
+  + notations `ereal_limrM`, `ereal_limMr`, `ereal_limN` (deprecated since 0.6.0)
+  + notation `norm_cvgi_map_lim` (deprecated since 0.6.0)
+  + notations `ereal_cvgN`, `ereal_is_cvgN`, `ereal_cvgrM`, `ereal_is_cvgrM`,
+    `ereal_cvgMr`, `ereal_is_cvgMr`, `ereal_cvgM` (deprecated since 0.6.0)
+  + notation `cvg_dist`, lemma `__deprecated__cvg_dist` (deprecated since 0.6.0)
+  + notation `cvg_dist2`, lemma `__deprecated__cvg_dist2` (deprecated since 0.6.0)
+  + notation `cvg_dist0`, lemma `__deprecated__cvg_dist0` (deprecated since 0.6.0)
+  + notation `ler0_addgt0P`, lemma `__deprecated__ler0_addgt0P` (deprecated since 0.6.0)
+  + notation `cvg_bounded_real`, lemma `__deprecated__cvg_bounded_real` (deprecated since 0.6.0)
+  + notation `linear_continuous0`, lemma `__deprecated__linear_continuous0` (deprecated since 0.6.0)
+
+- in `constructive_ereal.v`:
+  + notation `gte_opp` (deprecated since 0.6.0)
+  + lemmas `daddooe`, `daddeoo`
+  + notations `desum_ninftyP`, `desum_ninfty`, `desum_pinftyP`, `desum_pinfty` (deprecated since 0.6.0)
+  + notation `eq_pinftyP` (deprecated since 0.6.0)
+
+- in `sequences.v`:
+  + notation `squeeze`, lemma `__deprecated__squeeze` (deprecated since 0.6.0)
+  + notation `cvgPpinfty`, lemma `__deprecated__cvgPpinfty` (deprecated since 0.6.0)
+  + notation `cvgNpinfty`, lemma `__deprecated__cvgNpinfty` (deprecated since 0.6.0)
+  + notation `cvgNninfty`, lemma `__deprecated__cvgNninfty` (deprecated since 0.6.0)
+  + notation `cvgPninfty`, lemma `__deprecated__cvgPninfty` (deprecated since 0.6.0)
+  + notation `ger_cvg_pinfty`, lemma `__deprecated__ger_cvg_pinfty` (deprecated since 0.6.0)
+  + notation `ler_cvg_ninfty`, lemma `__deprecated__ler_cvg_ninfty` (deprecated since 0.6.0)
+  + notation `lim_ge`, lemma `__deprecated__lim_ge` (deprecated since 0.6.0)
+  + notation `lim_le`, lemma `__deprecated__lim_le` (deprecated since 0.6.0)
 
 ### Infrastructure
 
