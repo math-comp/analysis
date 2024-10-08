@@ -204,12 +204,12 @@ apply: cvg_trans; apply: near_eq_cvg; near=> r; congr (_ *: (_ - _)).
   move: yaxr; rewrite /= !in_itv/= inE/= in_itv/= => /andP[->/=].
   move=> /le_trans; apply; rewrite -lerBrDr.
   have [r0|r0] := leP r 0%R; first by rewrite (le_trans r0)// subr_ge0 ltW.
-  rewrite -(gtr0_norm r0); near: r.  Fail check (@nbhs0_le R (R^o) (u-x)). admit.
-(* by rewrite -(gtr0_norm r0); near: r; apply: nbhs0_le; rewrite subr_gt0. *)
+  rewrite -(gtr0_norm r0); near: r.
+  by apply: (@dnbhs0_le _ R^o); rewrite subr_gt0.
 - apply: eq_Rintegral => y yaxr; rewrite patchE mem_set//=.
   move: yaxr => /=; rewrite !in_itv/= inE/= in_itv/= => /andP[->/=].
   by move=> /le_trans; apply; exact/ltW.
-Unshelve. all: by end_near. Admitted.
+Unshelve. all: by end_near. Qed.
 
 (* NB: right-closed interval *)
 Lemma FTC1_lebesgue_pt f a x (u : R) : (x < u)%R ->

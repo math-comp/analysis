@@ -38,7 +38,6 @@ HB.structure Definition UniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 HB.structure Definition UniformLmodule (K : numDomainType) :=
   {M of Uniform M & GRing.Lmodule K M}.
 
-
 Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A -> 
   (0< lambda) -> (lambda < 1) -> lambda *: x + (1 - lambda) *: y \in A.
@@ -55,6 +54,43 @@ HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule
 HB.structure Definition Tvs (R : numDomainType) :=
   {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
+Section properties_of_topologicallmodule.
+Context (R : numDomainType) (E : TopologicalLmodule.type R) (U : set E).
+
+Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2 : E)) :
+  nbhs 0 U -> nbhs 0 (-%R @` U).
+Proof.
+move=> U0; have /= := @f (-1, 0) U; rewrite scaler0 => /(_ U0).
+move=> [] /= [B] B12  [B1 B2] BU.
+near=> x => /=; exists (- x); last by rewrite opprK.
+rewrite -scaleN1r; apply: (BU (-1, x)); split => //=; last first.
+  by near:x; rewrite nearE.
+by move: B1 => [] //= ? ?; apply => [] /=; rewrite subrr normr0.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhsT_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (x : E) :
+  nbhs 0 U -> nbhs x (+%R x @`U).
+Proof.
+move => U0; move: (@f (x,-x) U) => /=; rewrite subrr => /(_ U0) //=.
+case=> //= [B] [B1 B2] BU; near=> x0.
+exists (x0-x); last by rewrite //= addrCA subrr addr0.
+apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton.
+by near: x0; rewrite nearE.
+Unshelve. all: by end_near. Qed.
+
+Lemma nbhs_add_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (z x : E) :
+  nbhs z U -> nbhs (x + z) (+%R x @`U).
+Proof.
+move => U0; move: (@f ((x+z)%E,-x) U); rewrite /= addrAC subrr add0r.
+move=> /(_ U0) //=; case=> //= [B] [B1 B2] BU;  near=> x0.
+exists (x0-x); last by rewrite //= addrCA subrr addr0.
+apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton.
+by near: x0; rewrite nearE.
+Unshelve. all: by end_near.
+Qed.
+
+End properties_of_topologicallmodule.
+
 HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
     of Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
@@ -69,18 +105,9 @@ HB.builders Context R E of TopologicalLmod_isTvs R E.
 Definition entourage : set_system (E * E):=
   fun P => exists U, nbhs 0 U /\ (forall xy : E * E, (xy.1 - xy.2) \in U -> xy \in P).
 
-
 (* TODO: delete the next lemmas to better incorporate their proofs*)
-Lemma nbhs0N (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
-Proof. 
-move => U0. 
-move: (@scale_continuous (-1,0) U); rewrite /= scaler0 => /(_ U0).
-move => [] //= [B] B12  [B1 B2] BU.
-near=> x; move =>  //=; exists (-x); last by rewrite opprK.
-rewrite -scaleN1r; apply: (BU (-1,x)); split => //=; last first.
-  by near:x; rewrite nearE.
-move: B1 => [] //= ? ?; apply => [] /=;  first by rewrite subrr normr0 //.
-Unshelve. all: by end_near. Qed. 
+Let nbhs0N (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
+Proof. by apply: nbhs0N_subproof; exact: scale_continuous. Qed.
 
 Lemma nbhsN (U : set E) (x : E) : nbhs x U -> nbhs (-x) (-%R @` U).
 Proof.
@@ -94,25 +121,11 @@ rewrite -scaleN1r; apply: (BU (-1,y)); split => //=; last first.
 move: B1 => [] //= ? ?; apply => [] /=;  first by rewrite subrr normr0 //.
 Unshelve. all: by end_near. Qed.
 
+Let nbhsT (U : set E) (x : E) : nbhs 0 U -> nbhs x (+%R x @`U).
+Proof. by apply: nbhsT_subproof; exact: add_continuous. Qed.
 
-Lemma nbhsT (U : set E) (x : E) :  nbhs 0 U -> nbhs x (+%R x @`U).
-Proof.
-move => U0; move: (@add_continuous (x,-x) U) => /=; rewrite subrr => /(_ U0) //=.
-case=> //= [B] [B1 B2] BU; near=> x0.
-exists (x0-x); last by rewrite //= addrCA subrr addr0.
-apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton.
-by near: x0; rewrite nearE.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_add (U : set E) (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
-Proof.
-move => U0; move: (@add_continuous ((x+z)%E,-x) U); rewrite /= addrAC subrr add0r.
-move=> /(_ U0) //=; case=> //= [B] [B1 B2] BU;  near=> x0.
-exists (x0-x); last by rewrite //= addrCA subrr addr0.
-apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton. 
-by near: x0; rewrite nearE.  
-Unshelve. all: by end_near.
-Qed.
+Let nbhs_add (U : set E) (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
+Proof. by apply: nbhs_add_subproof; exact: add_continuous. Qed.
 
 Lemma entourage_filter : Filter entourage.
 Proof.
@@ -142,7 +155,7 @@ Lemma entourage_inv_subproof :
   forall A : set (E * E), entourage A -> entourage A^-1%relation.
 Proof.
 move => A [/=U [U0 Uxy]]; rewrite /entourage /=.
-exists (-%R@`U); split; first by apply: nbhs0N.
+exists (-%R@`U); split; first exact: nbhs0N.
 move => xy; rewrite in_setE -opprB => [[yx] Uyx] => /oppr_inj H.
 by apply: Uxy; rewrite in_setE /= -H.
 Qed.
@@ -209,38 +222,16 @@ HB.end.
 
 
 Section Tvs_numDomain.
-
 Context (R : numDomainType) (E : tvsType R) (U : set E).
 
-Lemma nbhs0N  : nbhs 0 U -> nbhs 0 (-%R @` U).
-Proof.
-move => U0; move: (scale_continuous ((-1,0)) U); rewrite /= scaler0 => /(_ U0).
-move => [] //= [B] B12  [B1 B2] BU.
-near=> x; move =>  //=; exists (-x); last by rewrite opprK.
-rewrite -scaleN1r; apply: (BU (-1,x)); split => //=; last first.
-  by near:x; rewrite nearE.
-move: B1 => [] //= ? ?; apply => [] /=;  first by rewrite subrr normr0 //.
-Unshelve. all: by end_near. Qed.
-
+Lemma nbhs0N : nbhs 0 U -> nbhs 0 (-%R @` U).
+Proof. by apply: nbhs0N_subproof; exact: scale_continuous. Qed.
 
 Lemma nbhsT (x :E) : nbhs 0 U -> nbhs x (+%R x @`U).
-Proof.
-move => U0;move: (add_continuous (x,-x) U); rewrite /= subrr => /(_ U0) //=.
-case=> //= [B] [B1 B2] BU; near=> x0.
-exists (x0-x); last by rewrite //= addrCA subrr addr0.
-apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton.
-by near: x0; rewrite nearE.
-Unshelve. all: by end_near. Qed.
+Proof. by apply: nbhsT_subproof; exact: add_continuous. Qed.
 
 Lemma nbhs_add (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
-Proof.
-move => U0; move: (add_continuous ((x+z)%E,-x) U); rewrite /= addrAC subrr add0r.
-move=> /(_ U0) //=; case=> //= [B] [B1 B2] BU; near=> x0.
-exists (x0-x); last by rewrite //= addrCA subrr addr0.
-apply: (BU (x0,-x)); split => //=; last by apply: nbhs_singleton. 
-by near: x0; rewrite nearE.  
-Unshelve. all: by end_near.
-Qed.
+Proof. by apply: nbhs_add_subproof; exact: add_continuous. Qed.
 
 End Tvs_numDomain.
 
@@ -271,18 +262,30 @@ Unshelve. all: by end_near. Qed.
 
 End Tvs_numField.
 
-
 Section regular_topology.
 Variable R : numFieldType.
 HB.instance Definition _ := Num.NormedZmodule.on R^o.
 
 Lemma regular_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
-  Admitted.
+Proof.
+(* NB(rei): this duplicates code that is also in normedtype.v *)
+move=> [/= x y]; apply/cvg_ballP => e e0 /=.
+rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_ //=.
+exists ((ball x (e/2)),(ball y (e/2))).
+rewrite !nbhs_simpl /=; split; by apply: nbhsx_ballx; rewrite ?divr_gt0.
+rewrite /ball_ /= => xy /= [nx ny].
+by rewrite /ball/= opprD addrACA (le_lt_trans (ler_normD _ _)) // (@splitr R e) ltrD //=.
+Qed.
+
 Lemma regular_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
+Proof.
+(* NB(rei): cannot really copy-paste the proof from normedtype.v because it relies on pinfty_nbhs defined in normedtype.v *)
   Admitted.
 Lemma regular_locally_convex :
   exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
-  Admitted.                                                               
+Proof.
+(* NB(rei): cannot really copy-paste the proof from normedtype.v because it relies on normrZ defined in normedtype.v *)
+  Admitted.
 
 HB.instance Definition _ :=
   Uniform_isTvs.Build R (R^o)%type
