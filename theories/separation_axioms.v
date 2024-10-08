@@ -177,14 +177,14 @@ Qed.
 Lemma accessible_closed_set1 : accessible_space -> forall x : T, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
-rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
+rewrite openE => y /eqP /T1 [U [oU yU xU]].
 rewrite /interior nbhsE /=; exists U; last by rewrite subsetC1.
 by split=> //; exact: set_mem.
 Qed.
 
 Lemma accessible_kolmogorov : accessible_space -> kolmogorov_space.
 Proof.
-move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
+move=> T1 x y /T1 [A [oA xA yA]]; exists A; left; split=> //.
 by rewrite nbhsE inE; exists A => //; rewrite inE in xA.
 Qed.
 
