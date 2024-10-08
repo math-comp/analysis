@@ -1327,8 +1327,8 @@ rewrite scalerA -scalerDl mulrCA -[f x * _]exprS.
 by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
 Qed.
 
-Lemma derivableX f n (x v : V) : derivable f x v -> derivable (f ^+ n.+1) x v.
-Proof. by move/derivableP. Qed.
+Lemma derivableX f n (x v : V) : derivable f x v -> derivable (f ^+ n) x v.
+Proof. by case: n => [_|n /derivableP]; [rewrite expr0|]. Qed.
 
 Lemma deriveX f n (x v : V) : derivable f x v ->
   'D_v (f ^+ n.+1) x = (n.+1%:R * f x ^+ n) *: 'D_v f x.
@@ -1378,6 +1378,15 @@ End Derive_lemmasVR.
 
 Lemma derive1_cst {R : numFieldType} (k : R) t : (cst k)^`() t = 0.
 Proof. by rewrite derive1E derive_cst. Qed.
+
+Lemma exprn_derivable {R : numFieldType} n (x : R) v :
+  derivable (@GRing.exp R ^~ n) x v.
+Proof.
+elim: n => [/=|n ih]; first by rewrite (_ : _ ^~ _ = 1).
+rewrite (_ : _ ^~ _ = (fun x => x * x ^+ n)); last first.
+  by apply/funext => y; rewrite exprS.
+by apply: derivableM; first exact: derivable_id.
+Qed.
 
 Lemma exp_derive {R : numFieldType} n x v :
   'D_v (@GRing.exp R ^~ n.+1) x = n.+1%:R *: x ^+ n *: v.
