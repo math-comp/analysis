@@ -1379,7 +1379,7 @@ End Derive_lemmasVR.
 Lemma derive1_cst {R : numFieldType} (k : R) t : (cst k)^`() t = 0.
 Proof. by rewrite derive1E derive_cst. Qed.
 
-Lemma exp_derivable {R : numFieldType} n (x : R) v :
+Lemma exprn_derivable {R : numFieldType} n (x : R) v :
   derivable (@GRing.exp R ^~ n) x v.
 Proof.
 elim: n => [/=|n ih]; first by rewrite (_ : _ ^~ _ = 1).
