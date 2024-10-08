@@ -423,68 +423,6 @@ Section sequences_R_lemmas_realFieldType.
 Variable R : realFieldType.
 Implicit Types u v : R ^nat.
 
-Lemma __deprecated__squeeze T (f g h : T -> R) (a : filter_on T) :
-  (\forall x \near a, f x <= g x <= h x) -> forall (l : R),
-  f @ a --> l -> h @ a --> l -> g @ a --> l.
-Proof. exact: squeeze_cvgr. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `squeeze_cvgr`")]
-Notation squeeze := __deprecated__squeeze (only parsing).
-
-Lemma __deprecated__cvgPpinfty (u_ : R ^nat) :
-  u_ @ \oo --> +oo <-> forall A, \forall n \near \oo, A <= u_ n.
-Proof. exact: cvgryPge. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgryPge`, and generalized to any filter")]
-Notation cvgPpinfty := __deprecated__cvgPpinfty (only parsing).
-
-Lemma __deprecated__cvgNpinfty u_ : (- u_ @ \oo --> +oo) = (u_ @ \oo --> -oo).
-Proof. exact/propeqP/cvgNry. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgNry` instead")]
-Notation cvgNpinfty := __deprecated__cvgNpinfty (only parsing).
-
-Lemma __deprecated__cvgNninfty u_ : (- u_ @ \oo --> -oo) = (u_ @ \oo --> +oo).
-Proof. exact/propeqP/cvgNrNy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgNrNy` instead")]
-Notation cvgNninfty := __deprecated__cvgNninfty (only parsing).
-
-Lemma __deprecated__cvgPninfty (u_ : R ^nat) :
-  u_ @ \oo --> -oo <-> forall A, \forall n \near \oo, A >= u_ n.
-Proof. exact: cvgrNyPle. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgrNyPle`, and generalized to any filter")]
-Notation cvgPninfty := __deprecated__cvgPninfty (only parsing).
-
-Lemma __deprecated__ger_cvg_pinfty u_ v_ : (\forall n \near \oo, u_ n <= v_ n) ->
-  u_ @ \oo --> +oo -> v_ @ \oo --> +oo.
-Proof. exact: ger_cvgy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `ger_cvgy`, and generalized to any filter")]
-Notation ger_cvg_pinfty := __deprecated__ger_cvg_pinfty (only parsing).
-
-Lemma __deprecated__ler_cvg_ninfty v_ u_ : (\forall n \near \oo, u_ n <= v_ n) ->
-  v_ @ \oo --> -oo -> u_ @ \oo --> -oo.
-Proof. exact: ler_cvgNy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `ler_cvgNy`, and generalized to any filter")]
-Notation ler_cvg_ninfty := __deprecated__ler_cvg_ninfty (only parsing).
-
-Lemma __deprecated__lim_ge x u : cvg (u @ \oo) ->
-  (\forall n \near \oo, x <= u n) -> x <= lim (u @ \oo).
-Proof. exact: limr_ge. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `limr_ge`, and generalized to any proper filter")]
-Notation lim_ge := __deprecated__lim_ge (only parsing).
-
-Lemma __deprecated__lim_le x u : cvg (u @ \oo) ->
-  (\forall n \near \oo, x >= u n) -> x >= lim (u @ \oo).
-Proof. exact: limr_le. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `limr_le`, and generalized to any proper filter")]
-Notation lim_le := __deprecated__lim_le (only parsing).
-
 Lemma lt_lim u (M : R) : nondecreasing_seq u ->
   cvgn u -> M < limn u -> \forall n \near \oo, M <= u n.
 Proof.
