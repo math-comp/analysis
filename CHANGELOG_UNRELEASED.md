@@ -42,6 +42,9 @@
 - in `exp.v`:
   + lemma `expR_gt1Dx`
 
+- in `derive.v`:
+  + lemma `exprn_derivable`
+
 ### Changed
 
 - in `numfun.v`:
@@ -209,6 +212,9 @@
 - in `exp.v`:
   + lemmas `expR_ge1Dx` and `expeR_ge1Dx` (remove hypothesis)
   + lemma `le_ln1Dx` (weaken hypothesis)
+
+- in `derive.v`:
+  + lemma `derivableX`
 
 ### Deprecated
 
