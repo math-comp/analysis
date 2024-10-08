@@ -56,5 +56,6 @@ lebesgue_stieltjes_measure.v
 convex.v
 charge.v
 kernel.v
+pi_irrational.v
 all_analysis.v
 showcase/summability.v

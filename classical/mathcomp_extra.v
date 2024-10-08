@@ -501,6 +501,9 @@ End floor_ceil.
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to `ceil_gt_int`")]
 Notation ceil_lt_int := ceil_gt_int (only parsing).
 
+Lemma nat_int {R : archiNumDomainType} n : n%:R \is a @Num.int R.
+Proof. by rewrite Num.Theory.intrEge0. Qed.
+
 Section bijection_forall.
 
 Lemma bij_forall A B (f : A -> B) (P : B -> Prop) :
@@ -573,3 +576,15 @@ by apply: contraNeq (disjF _ _ iK jK) _; rewrite -fsetI_eq0 eqFij fsetIid.
 Qed.
 
 End FsetPartitions.
+
+(* TODO: move to ssrnum *)
+Lemma prodr_ile1 {R : realDomainType} (s : seq R) :
+  (forall x, x \in s -> 0 <= x <= 1)%R -> (\prod_(j <- s) j <= 1)%R.
+Proof.
+elim: s => [_ | y s ih xs01]; rewrite ?big_nil// big_cons.
+have /andP[y0 y1] : (0 <= y <= 1)%R by rewrite xs01// mem_head.
+rewrite mulr_ile1 ?andbT//.
+  rewrite big_seq prodr_ge0// => x xs.
+  by have := xs01 x; rewrite inE xs orbT => /(_ _)/andP[].
+by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
+Qed.
