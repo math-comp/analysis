@@ -859,7 +859,7 @@ Lemma lime_supN f a : lime_sup (\- f) a = - lime_inf f a.
 Proof. by rewrite /lime_inf oppeK. Qed.
 
 Lemma __deprecated__lime_sup_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_sup f a.
-Proof. by move=> f0; exact: limf_esup_ge0. Qed.
+Proof. by move=> f0; apply: limf_esup_ge0 => //; exact: filter_not_empty. Qed.
 
 Lemma lime_inf_ge0 f a : (forall x, 0 <= f x) -> 0 <= lime_inf f a.
 Proof.
