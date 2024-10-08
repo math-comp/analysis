@@ -5,7 +5,7 @@ From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 From mathcomp Require Import filter.
-Require Import reals signed.
+Require Import reals signed topology.
 Require Export topology.
 
 (**md**************************************************************************)
@@ -113,10 +113,6 @@ have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
-Lemma discrete_hausdorff {dsc: discrete_space T} : hausdorff_space.
-Proof.
-by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
-Qed.
 
 Lemma compact_cluster_set1 (x : T) F V :
   hausdorff_space -> compact V -> nbhs x V ->
@@ -177,14 +173,14 @@ Qed.
 Lemma accessible_closed_set1 : accessible_space -> forall x : T, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
-rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
+rewrite openE => y /eqP /T1 [U [oU yU xU]].
 rewrite /interior nbhsE /=; exists U; last by rewrite subsetC1.
 by split=> //; exact: set_mem.
 Qed.
 
 Lemma accessible_kolmogorov : accessible_space -> kolmogorov_space.
 Proof.
-move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
+move=> T1 x y /T1 [A [oA xA yA]]; exists A; left; split=> //.
 by rewrite nbhsE inE; exists A => //; rewrite inE in xA.
 Qed.
 
@@ -495,12 +491,6 @@ Definition totally_disconnected {T} (A : set T) :=
 
 Definition zero_dimensional T :=
   (forall x y, x != y -> exists U : set T, [/\ clopen U, U x & ~ U y]).
-
-Lemma discrete_zero_dimension {T} : discrete_space T -> zero_dimensional T.
-Proof.
-move=> dctT x y xny; exists [set x]; split => //; last exact/nesym/eqP.
-by split; [exact: discrete_open | exact: discrete_closed].
-Qed.
 
 Lemma zero_dimension_totally_disconnected {T} :
   zero_dimensional T -> totally_disconnected [set: T].
@@ -1054,3 +1044,19 @@ by move=> y [] ? [->] -> /eqP.
 Qed.
 
 End perfect_sets.
+
+Section discrete_separation.
+Context {X : discreteTopologicalType}.
+
+Lemma discrete_hausdorff : hausdorff_space X.
+Proof.
+by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q))[x [] -> ->].
+Qed.
+
+Lemma discrete_zero_dimension : zero_dimensional X.
+Proof.
+move=> x y xny; exists [set x]; split => //; last exact/nesym/eqP.
+by split; [exact: discrete_open | exact: discrete_closed].
+Qed.
+
+End discrete_separation.

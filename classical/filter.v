@@ -1311,26 +1311,20 @@ Section PrincipalFilters.
 Definition principal_filter {X : Type} (x : X) : set_system X :=
   globally [set x].
 
-(** we introducing an alias for pointed types with principal filters *)
-Definition principal_filter_type (P : Type) : Type := P.
-HB.instance Definition _ (P : choiceType) :=
-  Choice.copy (principal_filter_type P) P.
-HB.instance Definition _ (P : pointedType) :=
-  Pointed.on (principal_filter_type P).
-HB.instance Definition _ (P : choiceType) :=
-  hasNbhs.Build (principal_filter_type P) principal_filter.
-HB.instance Definition _ (P : pointedType) :=
-  Filtered.on (principal_filter_type P).
-
 Lemma principal_filterP {X} (x : X) (W : set X) : principal_filter x W <-> W x.
 Proof. by split=> [|? ? ->]; [exact|]. Qed.
 
 Lemma principal_filter_proper {X} (x : X) : ProperFilter (principal_filter x).
 Proof. exact: globally_properfilter. Qed.
 
-HB.instance Definition _ := hasNbhs.Build bool principal_filter.
-
 End PrincipalFilters.
+
+HB.mixin Record Discrete_ofNbhs T of Nbhs T := {
+  nbhs_principalE : (@nbhs T _) = principal_filter;
+}.
+
+#[short(type="discreteNbhsType")]
+HB.structure Definition DiscreteNbhs := {T of Nbhs T & Discrete_ofNbhs T}.
 
 Section UltraFilters.
 
