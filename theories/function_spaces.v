@@ -1805,3 +1805,152 @@ move=> hX hY [a|b][c|d] cl.
 Qed.
 
 End sum_separations.
+
+Section quotients.
+Local Open Scope quotient_scope.
+Context {T : topologicalType} {Q0 : quotType T}.
+
+Local Notation Q := (quotient_topology Q0).
+
+Lemma quotient_topology_piE : \pi_(Q) = \pi_(Q0).
+Proof. by rewrite ?unlock. Qed.
+
+Lemma quotient_topologyE (a b : T) : (a = b %[mod Q]) = (a = b %[mod Q0]).
+Proof. by rewrite ?unlock. Qed.
+
+Lemma repr_comp_continuousE (Z : topologicalType) (g : T -> Z) :
+  continuous g -> {homo g : a b / a = b %[mod Q0] >-> a = b} ->
+  continuous (g \o repr : Q -> Z).
+Proof.
+move=> /continuousP ctsG rgE; apply/continuousP => A oA.
+rewrite /open/= /quotient_open (_ : _ @^-1` _ = g @^-1` A); first exact: ctsG.
+by rewrite eqEsubset; split => x /=; have <- // := (rgE x);
+  rewrite -quotient_topologyE reprK.
+Qed.
+End quotients.
+
+Module QuotientTopologies.
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ {T : topologicalType} {Q : quotType T} := 
+  Topological.copy Q (quotient_topology Q).
+Module Exports. HB.reexport. End Exports.
+End QuotientTopologies.
+Import QuotientTopologies.Exports.
+
+Section wedge.
+Local Open Scope quotient_scope.
+Context {X Y : topologicalType} (x : X) (y : Y).
+
+Let wedge_rel' (a b : X + Y) := 
+  [|| a == b, 
+  (a == inl x) && (b == inr y) |
+  (b == inl x) && (a == inr y)].
+
+Local Lemma wedge_rel_refl : reflexive wedge_rel'.
+Proof. by move=> ?; rewrite /wedge_rel' eqxx. Qed.
+
+Local Lemma wedge_rel_sym : symmetric wedge_rel'.
+Proof. move=> a b.
+suff : (is_true (wedge_rel' a b) <-> is_true (wedge_rel' b a)).
+  case: (wedge_rel' a b) => //; case: (wedge_rel' b a) => // [].
+    by case=> ->.
+  by case=> _ ->.
+by split; rewrite /wedge_rel' {1}eq_sym => /orP [-> //|] /orP [-> /[!orbT] //|];
+  move=> -> /[!orbT].
+Qed.
+
+Local Lemma wedge_rel_trans : transitive wedge_rel'.
+Proof. move=> a b c.
+move => /orP [/eqP -> //|] + /orP [ /eqP <- // |] .
+case/orP=> /andP []/eqP -> /eqP -> /orP [] /andP [] // /eqP + /eqP.
+  by move=> -> _; exact: wedge_rel_refl.
+by move=> _ ->; exact: wedge_rel_refl.
+Qed.
+
+Let wedge_rel := EquivRel _ wedge_rel_refl wedge_rel_sym wedge_rel_trans.
+
+Definition wedge := quotient_topology {eq_quot wedge_rel}.
+HB.instance Definition _ := EqQuotient.on wedge.
+
+Definition wedge_fun {Z : topologicalType} f g : wedge -> Z := 
+  lift_sum f g \o repr.
+
+Lemma wedge_continuous {Z : topologicalType} (f : X -> Z) (g : Y -> Z) :
+  continuous f -> continuous g -> f x = g y -> continuous (wedge_fun f g).
+Proof.
+move=> cf cg fxgy; apply: repr_comp_continuousE.
+  exact: sum_continuous.
+by move=> /= a b /eqmodP /orP [/eqP -> //|] /orP [] /andP [/eqP ->] /eqP ->;
+  rewrite /lift_sum.
+Qed.
+
+Lemma wedge_reprl (a : X) : 
+  repr (\pi_wedge (inl a)) = inl a \/ (repr (\pi_wedge (inl a)) = inr y /\ a = x).
+Proof.
+case: piP; case=> [l|r] /eqmodP /orP []; first by case/eqP => ->; left.
+- by case/orP=> /andP [/eqP ->] /eqP -> //.
+- by move/eqP.
+case/orP => /andP [/eqP]; first by case=> -> /eqP ->; right.
+by move=> -> /eqP -> //.
+Qed.
+
+Lemma wedge_reprr (b : Y) : 
+  repr (\pi_wedge (inr b)) = inr b \/ (repr (\pi_wedge (inr b)) = inl x /\ b = y).
+Proof.
+case: piP; case=> [l|r] /eqmodP /orP []; first by move/eqP => ->; left.
+- by case/orP=> /andP []/eqP // [] -> /eqP [] ->; right.
+- by move/eqP ->; left.
+by case/orP => /andP [] /eqP //.
+Qed.
+
+Lemma wedge_funl {Z : topologicalType} (f : X -> Z) g a: 
+  f x = g y -> wedge_fun f g (\pi_wedge (inl a)) = f a.
+Proof. 
+move=> fxgy; rewrite /wedge_fun /=; case: (wedge_reprl a)=> [->|] //.
+by case => -> ->; rewrite /= -fxgy.
+Qed.
+
+Lemma wedge_funr {Z : topologicalType} (f : X -> Z) g b: 
+  f x = g y -> wedge_fun f g (\pi_wedge (inr b)) = g b.
+Proof. 
+move=> fxgy; rewrite /wedge_fun /=; case: (wedge_reprr b)=> [->|] //.
+by case => -> ->; rewrite /= -fxgy.
+Qed.
+
+Lemma wedgeTE : 
+  (\pi_wedge \o inl) @` setT `|` (\pi_wedge \o inr) @` setT = [set: wedge].
+Proof. 
+rewrite -subTset=> z; case E: (repr z) => [a | b] => //= _.
+  by left; exists a => //; rewrite -E reprK.
+by right; exists b => //; rewrite -E reprK.
+Qed.
+
+Lemma wedge_pointE : inr y  = inl x  %[mod wedge].
+Proof. by apply/eqmodP; apply/orP; right; apply/orP; right; rewrite ?eqxx. Qed.
+
+Lemma wedge_connected : connected [set: X] -> connected [set: Y] -> 
+  connected [set: wedge].
+Proof.
+move=> cX cY; rewrite -wedgeTE; apply: connectedU.
+- exists (\pi_wedge (inl x)); split => //=; first by exists x.
+  exists y => //; exact: wedge_pointE.
+- apply: connected_continuous_connected => //.
+  apply: continuous_subspaceT => z; apply: continuous_comp => //.
+  exact: pi_continuous.
+- apply: connected_continuous_connected => //.
+  apply: continuous_subspaceT => z; apply: continuous_comp => //.
+  exact: pi_continuous.
+Qed.
+
+End wedge.
+(*
+TODO: 
+sum of normal is normal
+closed continuous surjective f takes normal to normal
+quotient by closed preserves normal
+if [set ab | ab.1 = ab.2 %[mod Q]] is closed, the quotient is hausdorff
+sum commutes
+sum associates
+wedge commutes
+wedge associates
+*)
