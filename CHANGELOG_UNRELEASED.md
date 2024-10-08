@@ -51,7 +51,7 @@
 - in `lebesgue_measure.v`:
   + lemma `vitali_coverS`
   + lemma `vitali_theorem_corollary`
-  + lemma `ball_subspace_ball`
+
 - in `normedtype.v`:
   + lemma `limf_esup_ge0`
 
