@@ -65,9 +65,6 @@ Require Import reals signed.
 (* - matrices `'M[T]_(m, n)`                                                  *)
 (* - natural numbers `nat`                                                    *)
 (* ```                                                                        *)
-(*                              \oo == "eventually" filter on nat: set of     *)
-(*                                     predicates on natural numbers that are *)
-(*                                     eventually true                        *)
 (*                  weak_topology f == weak topology by a function f : S -> T *)
 (*                                     on S                                   *)
 (*                                     S must be a choiceType and T a         *)
@@ -754,17 +751,6 @@ HB.instance Definition _ := isBaseTopological.Build nat bT bD.
 
 End nat_topologicalType.
 
-Global Instance eventually_filter : ProperFilter eventually.
-Proof.
-eapply @filter_from_proper; last by move=> i _; exists i => /=.
-apply: filter_fromT_filter; first by exists 0%N.
-move=> i j; exists (maxn i j) => n //=.
-by rewrite geq_max => /andP[ltin ltjn].
-Qed.
-
-Canonical eventually_filterType := FilterType eventually _.
-Canonical eventually_pfilterType := PFilterType eventually (filter_not_empty _).
-
 Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
 Proof. by exists N.+1. Qed.
 #[global] Hint Resolve nbhs_infty_gt : core.
@@ -1427,7 +1413,7 @@ Definition near_covering (K : set X) :=
 Let near_covering_compact : near_covering `<=` compact.
 Proof.
 move=> K locK F PF FK; apply/set0P/eqP=> KclstF0; case: (PF) => + FF; apply.
-rewrite (_ : xpredp0 = set0)// -(setICr K); apply: filterI => //.
+rewrite -(setICr K); apply: filterI => //.
 have /locK : forall x, K x ->
     \forall x' \near x & i \near powerset_filter_from F, (~` i) x'.
   move=> x Kx; have : ~ cluster F x.
@@ -4487,7 +4473,6 @@ have : f @` closure (AfE b) `&` f @` AfE (~~ b) = set0.
   by rewrite fAfE; exact: subsetI_eq0 cEIE.
 by rewrite predeqE => /(_ (f t)) [fcAfEb] _; apply: fcAfEb; split; exists t.
 Qed.
-
 
 Lemma continuous_localP {X Y : topologicalType} (f : X -> Y) :
   continuous f <->

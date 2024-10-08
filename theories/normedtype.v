@@ -181,6 +181,21 @@ Proof. by rewrite /limf_einf; under eq_fun do rewrite oppeK. Qed.
 
 End limf_esup_einf.
 
+Section limf_esup_einf_realType.
+Variables (T : choiceType) (X : filteredType T) (R : realType).
+Implicit Types (f : X -> \bar R) (F : set (set X)).
+Local Open Scope ereal_scope.
+
+Lemma limf_esup_ge0 f F : ~ F set0 ->
+  (forall x, 0 <= f x) -> 0 <= limf_esup f F.
+Proof.
+move=> F0 f0; rewrite limf_esupE; apply: lb_ereal_inf => /= x [A].
+have [-> /F0//|/set0P[y Ay FA] <-{x}] := eqVneq A set0.
+by apply: ereal_sup_le; exists (f y).
+Qed.
+
+End limf_esup_einf_realType.
+
 Lemma nbhsN (R : numFieldType) (x : R) : nbhs (- x) = -%R @ x.
 Proof.
 rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.

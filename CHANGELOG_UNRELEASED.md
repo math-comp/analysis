@@ -52,6 +52,9 @@
   + lemma `vitali_coverS`
   + lemma `vitali_theorem_corollary`
 
+- in `normedtype.v`:
+  + lemma `limf_esup_ge0`
+
 ### Changed
 
 - in `numfun.v`:
@@ -231,6 +234,8 @@
 
 - in `separation_axioms.v`:
   + definition `cvg_toi_locally_close`
+- in `realfun.v`:
+  + lemma `lime_sup_ge0`
 
 ### Removed
 

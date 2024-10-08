@@ -43,6 +43,9 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*                  filter_prod F G == product of the filters F and G         *)
 (*                        F `=>` G <-> G is included in F                     *)
 (*                                     F and G are sets of sets.              *)
+(*                              \oo == "eventually" filter on nat: set of     *)
+(*                                     predicates on natural numbers that are *)
+(*                                     eventually true                        *)
 (*                         F --> G <-> the canonical filter associated to G   *)
 (*                                     is included in the canonical filter    *)
 (*                                     associated to F                        *)
@@ -210,17 +213,15 @@ HB.mixin Record isFiltered U T := {
 
 #[short(type="filteredType")]
 HB.structure Definition Filtered (U : Type) := {T of Choice T & isFiltered U T}.
+Arguments nbhs {_ _} _ _ : simpl never.
 
 #[short(type="pfilteredType")]
 HB.structure Definition PointedFiltered (U : Type) := {T of Pointed T & isFiltered U T}.
-Arguments nbhs {_ _} _ _ : simpl never.
 
 HB.instance Definition _ T := Equality.on (set_system T).
 HB.instance Definition _ T := Choice.on (set_system T).
 HB.instance Definition _ T := Pointed.on (set_system T).
 HB.instance Definition _ T := isFiltered.Build T (set_system T) id.
-
-Arguments nbhs {_ _} _ _ : simpl never.
 
 HB.mixin Record selfFiltered T := {}.
 
@@ -426,7 +427,7 @@ Class Filter {T : Type} (F : set_system T) := {
 Global Hint Mode Filter - ! : typeclass_instances.
 
 Class ProperFilter {T : Type} (F : set_system T) := {
-  filter_not_empty : not (F (fun _ => False)) ;
+  filter_not_empty : ~ F set0 ;
   filter_filter : Filter F
 }.
 (* TODO: Reuse :> above and remove the following line and the coercion below
@@ -434,8 +435,9 @@ Class ProperFilter {T : Type} (F : set_system T) := {
 Global Existing Instance filter_filter.
 Global Hint Mode ProperFilter - ! : typeclass_instances.
 Arguments filter_not_empty {T} F {_}.
+Hint Extern 0 (~ _ set0) => solve [apply: filter_not_empty] : core.
 
-Lemma filter_setT (T' : Type) : Filter [set: set T'].
+Lemma filter_setT (T : Type) : Filter [set: set T].
 Proof. by constructor. Qed.
 
 Lemma filterP_strong T (F : set_system T) {FF : Filter F} (P : set T) :
@@ -753,6 +755,17 @@ move=> FF BN0; apply: Build_ProperFilter_ex => P [i Di BiP].
 by have [x Bix] := BN0 _ Di; exists x; apply: BiP.
 Qed.
 
+Global Instance eventually_filter : ProperFilter eventually.
+Proof.
+eapply @filter_from_proper; last by move=> i _; exists i => /=.
+apply: filter_fromT_filter; first by exists 0%N.
+move=> i j; exists (maxn i j) => n //=.
+by rewrite geq_max => /andP[ltin ltjn].
+Qed.
+
+Canonical eventually_filterType := FilterType eventually _.
+Canonical eventually_pfilterType := PFilterType eventually (filter_not_empty _).
+
 Lemma filter_bigI T (I : choiceType) (D : {fset I}) (f : I -> set T)
   (F : set_system T) :
   Filter F -> (forall i, i \in D -> F (f i)) ->
@@ -816,7 +829,7 @@ Qed.
 Global Instance fmap_proper_filter T U (f : T -> U) (F : set_system T) :
   ProperFilter F -> ProperFilter (f @ F).
 Proof.
-by move=> FF; apply: Build_ProperFilter; rewrite fmapE; apply: filter_not_empty.
+by move=> FF; apply: Build_ProperFilter; rewrite fmapE preimage_set0.
 Qed.
 
 Definition fmapi {T U : Type} (f : T -> set U) (F : set_system T) :
@@ -946,8 +959,8 @@ by move=> AP AQ x Ax; split; [apply: AP|apply: AQ].
 Qed.
 
 Global Instance globally_properfilter {T : Type} (A : set T) a :
-  (A a) -> ProperFilter (globally A).
-Proof. by move=> Aa; apply: Build_ProperFilter => /(_ a). Qed.
+  A a -> ProperFilter (globally A).
+Proof. by move=> Aa; apply: Build_ProperFilter => /(_ a); exact. Qed.
 
 (** Specific filters *)
 
@@ -1222,7 +1235,6 @@ Definition powerset_filter_from : set_system (set Y) := filter_from
 Global Instance powerset_filter_from_filter : ProperFilter powerset_filter_from.
 Proof.
 split.
-  rewrite (_ : xpredp0 = set0); last by rewrite eqEsubset; split.
   by move=> [W [_ _ [N +]]]; rewrite subset0 => /[swap] ->; apply.
 apply: filter_from_filter.
   by exists F; split => //; exists setT; exact: filterT.
@@ -1601,4 +1613,4 @@ by rewrite AB0 in FAB.
 Qed.
 
 Lemma proper_meetsxx T (F : set_system T) (FF : ProperFilter F) : F `#` F.
-Proof. by rewrite meetsxx; apply: filter_not_empty. Qed.
+Proof. by rewrite meetsxx. Qed.

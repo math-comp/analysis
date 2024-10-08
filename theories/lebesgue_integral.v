@@ -6288,7 +6288,7 @@ Definition lim_sup_davg f x := lime_sup (davg f x) 0.
 Local Notation "f ^*" := (lim_sup_davg f).
 
 Lemma lim_sup_davg_ge0 f x : 0 <= f^* x.
-Proof. by apply: lime_sup_ge0 => y; rewrite /davg iavg_ge0. Qed.
+Proof. by apply: limf_esup_ge0 => // => y; exact: iavg_ge0. Qed.
 
 Lemma lim_sup_davg_le f g x (U : set R) : open_nbhs x U -> measurable U ->
   measurable_fun U f -> measurable_fun U g ->
@@ -6565,7 +6565,8 @@ move=> Ef; have {Ef} : mu.-negligible (E `&` [set x | 0 < f^* x]).
   by rewrite ltr_nat ltnS; near: m; exact: nbhs_infty_gt.
 apply: negligibleS => z /= /not_implyP[Ez H]; split => //.
 rewrite ltNge; apply: contra_notN H.
-rewrite le_eqVlt ltNge lime_sup_ge0 /= ?orbF; last by move=> x; exact: iavg_ge0.
+rewrite le_eqVlt ltNge limf_esup_ge0/= ?orbF//; last first.
+  by move=> x; exact: iavg_ge0.
 move=> /eqP fz0.
 suff: lime_inf (davg f z) 0 = 0 by exact: lime_sup_inf_at_right.
 apply/eqP; rewrite eq_le -[X in _ <= X <= _]fz0 lime_inf_sup/= fz0.
