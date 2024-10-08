@@ -986,6 +986,9 @@ Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
+Lemma scaler1 {R : numFieldType} h : h%:A = h :> R.
+Proof. by rewrite /GRing.scale/= mulr1. Qed.
+
 Lemma limf_esup_dnbhsN {R : realType} (f : R -> \bar R) (a : R) :
   limf_esup f a^' = limf_esup (fun x => f (- x)%R) (- a)%R^'.
 Proof.
