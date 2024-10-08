@@ -2967,7 +2967,7 @@ End vitali_theorem.
 Section vitali_theorem_corollary.
 Context {R : realType} (A : set R) (B : nat -> set R).
 
-Let vitali_coverS (F : set nat) (O : set R) : open O -> A `<=` O ->
+Lemma vitali_coverS (F : set nat) (O : set R) : open O -> A `<=` O ->
   vitali_cover A B F -> vitali_cover A B (F `&` [set k | B k `<=` O]).
 Proof.
 move=> oO AO [Bball ABF]; split => // x Ax r r0.
@@ -3004,7 +3004,7 @@ Let vitali_cover_measurable (F : set nat) k :
 Proof. by case => + _ => /(_ k)/ballE ->; exact: measurable_ball. Qed.
 
 Let vitali_cover_ballE (F : set nat) n :
-  vitali_cover A B F -> B n = (ball (cpoint (B n)) (radius (B n))%:num).
+  vitali_cover A B F -> B n = ball (cpoint (B n)) (radius (B n))%:num.
 Proof. by case => + _ => /(_ n)/ballE. Qed.
 
 Hypothesis B0 : forall i, (0 < (radius (B i))%:num)%R.

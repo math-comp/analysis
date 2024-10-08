@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
-From mathcomp Require Import boolp classical_sets functions.
+From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import set_interval.
 Require Import reals ereal signed topology normedtype landau.
 
@@ -113,7 +113,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldNormedType.Exports.
-From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.

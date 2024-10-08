@@ -15,12 +15,6 @@
 
 - in `realfun.v`:
   + lemmas `cvg_pinftyP`, `cvg_ninftyP`
-- in `sequences.v`:
-  + lemma `nneseries_split_cond`
-  + lemma `subset_lee_nneseries`
-
-- in `lebesgue_measure.v`:
-  + lemma `vitali_theorem_corollary`
 
 - in `filter.v` (new file):
   + lemma `in_nearW`
@@ -50,6 +44,13 @@
 
 - in `derive.v`:
   + lemma `exprn_derivable`
+- in `sequences.v`:
+  + lemma `nneseries_split_cond`
+  + lemma `subset_lee_nneseries`
+
+- in `lebesgue_measure.v`:
+  + lemma `vitali_coverS`
+  + lemma `vitali_theorem_corollary`
 
 ### Changed
 
@@ -218,6 +219,7 @@
 - in `exp.v`:
   + lemmas `expR_ge1Dx` and `expeR_ge1Dx` (remove hypothesis)
   + lemma `le_ln1Dx` (weaken hypothesis)
+
 - in `sequences.v`:
   + lemma `eseries_mkcond`
   + lemma `nneseries_tail_cvg`
