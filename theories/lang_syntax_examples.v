@@ -6,8 +6,8 @@ From mathcomp Require Import ring.
 From mathcomp Require Import classical_sets.
 From mathcomp.classical Require Import functions cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun lebesgue_integral kernel prob_lang.
-Require Import lang_syntax_util lang_syntax.
+Require Import lebesgue_measure numfun lebesgue_integral kernel probability.
+Require Import prob_lang lang_syntax_util lang_syntax.
 From mathcomp Require Import lra.
 
 (**md**************************************************************************)

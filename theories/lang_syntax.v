@@ -5,6 +5,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences esum exp.
 Require Import measure lebesgue_measure numfun lebesgue_integral itv kernel ftc.
+Require Import probability.
 Require Import derive realfun charge prob_lang lang_syntax_util.
 From mathcomp Require Import lra.
 
@@ -275,10 +276,12 @@ Proof.
 move=> ab cf.
 have dN : ((-%R : R -> R)^`() = cst (-1) :> (R -> R))%R. (* TODO: lemma? *)
   by apply/funext => x/=; rewrite derive1E deriveN// derive_id.
-rewrite decreasing_change//.
+rewrite integration_by_substitution_decreasing//.
 - by apply: eq_integral => /= x _; rewrite dN/= opprK mulr1 -compA/= opprK.
 - by move=> x y _ _ yx; rewrite ltrN2.
-- by apply: continuous_subspaceT; rewrite dN; exact: cst_continuous.
+- by move=> y yab; rewrite dN; exact: cvg_cst.
+- by rewrite dN; exact: is_cvg_cst.
+- by rewrite dN; exact: is_cvg_cst.
 - by apply: (@derivable_oo_bndN _ id) => //; exact: derivable_oo_bnd_id.
 - apply: continuous_withinN.
   + by rewrite ltrN2.
@@ -286,77 +289,6 @@ rewrite decreasing_change//.
       by apply/funext => y; rewrite /= opprK.
     by rewrite !opprK.
 Qed.
-
-Lemma increasing_change_alt F G a b : (a < b)%R ->
-  {in `[a, b]&, {homo F : x y / (x < y)%R}} ->
-  {within `[a, b], continuous F^`()} ->
-  derivable_oo_continuous_bnd F a b ->
-  {within `[F a, F b], continuous G} ->
-  \int[mu]_(x in `[F a, F b]) (G x)%:E =
-  \int[mu]_(x in `[a, b]) (((G \o F) * (F^`() : R -> R)) x)%:E.
-Proof.
-set nF : R -> R := (- F)%R.
-set Gn : R -> R := fun x => G (- x)%R.
-move=> ab incrF cf dcbF cG.
-have FbFa : (F a < F b)%R.
-  by apply: incrF => //=; rewrite in_itv/= !lexx (ltW ab).
-have decrnF : {in `[a, b]&, {homo nF : x y /~ (x < y)%R}}.
-  (* TODO: lemma? *)
-  by move=> x y xab yab xy; rewrite /nF/= ltrN2 incrF.
-have cnF : {within `[a, b], continuous nF^`()}.
-  (* TODO: lemma *)
-  apply/continuous_within_itvP => //; split.
-  + move=> x aab.
-    rewrite /continuous_at.
-    rewrite [X in _ --> X](_ : _ = - (F^`() x))%R; last first.
-      rewrite /nF derive1E deriveN.
-        by rewrite -derive1E.
-      by case: dcbF => + _ _; apply.
-    apply: (@cvg_trans _ (((- F^`()) x) @[x --> x]))%R => /=.
-      apply: near_eq_cvg.
-      rewrite near_simpl; near=> y.
-      rewrite /nF [RHS]derive1E deriveN.
-        by rewrite -derive1E.
-      case: dcbF => + _ _; apply.
-      by near: y; exact: near_in_itv.
-    apply: (@cvgN _ _ _ (nbhs x) _ (F^`()) (F^`() x)).
-    move/continuous_within_itvP : cf => /(_ ab)[+ _ _].
-    exact.
-  + move/continuous_within_itvP : cf => /(_ ab)[_ + _] => {}cf.
-    admit.
-  + admit.
-have dcbnF : derivable_oo_continuous_bnd nF a b.
-  split.
-  + move=> x xab.
-    case: dcbF => /(_ _ xab) dFx _ _.
-    exact: derivableN.
-  + apply: cvgN.
-    by case: dcbF.
-  + apply: cvgN.
-    by case: dcbF.
-have oppK : (-%R \o -%R) = @id R by apply/funext => x/=; rewrite opprK.
-have cGn : {within `[nF b, nF a], continuous Gn}.
-  apply: continuous_withinN.
-    by rewrite /nF ltrN2.
-  rewrite !opprK.
-  rewrite (_ : _ \o _ = G)//.
-  by rewrite -compA oppK.
-transitivity (\int[mu]_(x in `[(nF b), (nF a)]) (Gn x)%:E).
-  rewrite /nF/= /Gn/=.
-  rewrite [in RHS]oppr_change//=.
-    rewrite !opprK.
-    apply: eq_integral => x _.
-    by rewrite opprK.
-  by rewrite ltrN2.
-transitivity (\int[mu]_(x in `[a, b]) (((Gn \o nF) * (- nF^`())) x)%:E); last first.
-  rewrite (_ : Gn \o nF = G \o F); last first.
-    apply/funext => x /=.
-    by rewrite /Gn /nF/= opprK.
-  apply: eq_integral => /= x xab.
-  congr (_ * _)%:E.
-  admit.
-by rewrite(decreasing_change ab).
-Abort.
 
 End lt0.
 End increasing_change_of_variables_from_decreasing.
@@ -415,7 +347,7 @@ Lemma onem_change (G : R -> R) (r : R) :
   \int[mu]_(x in `[(1 - r)%R, 1%R]) (G (1 - x))%:E).
 Proof.
 move=> r01 cG.
-have := @decreasing_change R (fun x => 1 - x)%R G (1 - r) 1%R.
+have := @integration_by_substitution_decreasing R (fun x => 1 - x)%R G (1 - r) 1%R.
 rewrite opprB subrr addrCA subrr addr0.
 move=> ->//.
 - apply: eq_integral => x xr.
@@ -425,6 +357,8 @@ move=> ->//.
   by case/andP : r01.
 - by move=> x y _ _ xy; rewrite ler_ltB.
 - by rewrite derive1_onem; move=> ? ?; apply: cvg_cst.
+- by rewrite derive1_onem; exact: is_cvg_cst.
+- by rewrite derive1_onem; exact: is_cvg_cst.
 - split => /=.
   + move=> x xr1.
     by apply: derivableB => //.
@@ -601,15 +535,8 @@ rewrite /beta_nat_norm /ubeta_nat_pdf [in RHS]integral_mkcond/=; congr fine.
 by apply: eq_integral => /= x _; rewrite patchE mem_setE in_itv/=; case: ifPn.
 Qed.*)
 
-Lemma exprn_derivable {R : realType} (n : nat) (x : R):
-  derivable ((@GRing.exp R) ^~ n) x 1.
-Proof.
-move: n => [|n]; first by rewrite [X in derivable X _ _](_ : _ = cst 1%R).
-by rewrite -exprfctE; apply: derivableX; exact: derivable_id.
-Qed.
-
 Lemma onemXn_derivable {R : realType} n (x : R) :
-  derivable (fun y : R => `1-y ^+ n.+1)%R x 1.
+  derivable (fun y : R => `1-y ^+ n)%R x 1.
 Proof.
 have := @derivableX R R (@onem R) n x 1%R.
 rewrite fctE.
