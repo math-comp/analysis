@@ -1054,3 +1054,10 @@ by move=> y [] ? [->] -> /eqP.
 Qed.
 
 End perfect_sets.
+
+Section quotients.
+
+Local Open Scope quotient_scope.
+Context {T : topologicalType} {Q0 : quotType T}.
+Local Notation Q := (quotient_topology Q0).
+d
