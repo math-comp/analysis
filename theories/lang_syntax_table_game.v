@@ -5,6 +5,7 @@ From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
 From mathcomp.classical Require Import functions cardinality fsbigop.
 Require Import signed reals ereal topology normedtype sequences esum measure.
 Require Import charge lebesgue_measure numfun lebesgue_integral kernel.
+Require Import probability.
 Require Import prob_lang lang_syntax_util lang_syntax lang_syntax_examples.
 From mathcomp Require Import ring lra.
 
