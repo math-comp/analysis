@@ -1324,9 +1324,9 @@ suff -> : cst x @` [set: aT] = [set x] by apply: finite_set1.
 by apply/predeqP => y; split=> [[t' _ <-]//|->//] /=; exists point.
 Qed.
 
-Lemma cst_fimfun_subproof aT rT x : @FiniteImage aT rT (cst x).
-Proof. by split; exact: finite_image_cst. Qed.
-HB.instance Definition _ aT rT x := @cst_fimfun_subproof aT rT x.
+HB.instance Definition _ aT rT x :=
+  FiniteImage.Build aT rT (cst x) (@finite_image_cst aT rT x).
+
 Definition cst_fimfun {aT rT} x := [the {fimfun aT >-> rT} of cst x].
 
 Lemma fimfun_cst aT rT x : @cst_fimfun aT rT x =1 cst x. Proof. by []. Qed.
