@@ -82,7 +82,6 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import numFieldTopology.Exports.
 Import numFieldNormedType.Exports.
 From mathcomp Require Import mathcomp_extra.
 
