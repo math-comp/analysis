@@ -84,7 +84,7 @@ We try to preserve backward compatibility as best as we can.
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_4_0/index.html) (using [`coq2html`](https://github.com/xavierleroy/coq2html)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_5_0/index.html) (using [`coq2html`](https://github.com/xavierleroy/coq2html)).
 
 Overview presentations:
 - [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
