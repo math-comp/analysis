@@ -276,7 +276,6 @@ End Tvs_numField.
 
 Section regular_topology.
 Variable R : numFieldType.
-HB.instance Definition _ := Num.NormedZmodule.on R^o.
 
 Lemma regular_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
 Proof.

@@ -837,7 +837,7 @@ rewrite !nbhs_simpl /=; split; by apply: nbhsx_ballx; rewrite ?divr_gt0.
 rewrite -ball_normE /= /ball_ /= => xy /= [nx ny].
 rewrite opprD addrACA (le_lt_trans (ler_normD _ _)) // (@splitr K (e)) ltrD //=.
 Qed.
- 
+
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
 move=> [/= k x].
@@ -914,7 +914,8 @@ HB.end.
 
 Section regular_topology.
 Variable R : numFieldType.
-  
+HB.instance Definition _ := Num.NormedZmodule.on R^o.
+
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Tvs_isNormedModule.Build R R^o (@normrM _).
@@ -6098,4 +6099,3 @@ by have [j [Dj BiBj ij]] := maxD i Vi; move/(_ _ cBix) => ?; exists j.
 Qed.
 
 End vitali_lemma_infinite.
-
