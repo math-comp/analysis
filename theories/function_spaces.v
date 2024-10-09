@@ -1612,7 +1612,7 @@ rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply.
 exact: preimage_image.
 Qed.
 
-Lemma sum_open (xy : X + Y) (U : set (X + Y)) : 
+Lemma sum_openP (xy : X + Y) (U : set (X + Y)) : 
   open U <-> (open (inl@^-1` U) /\ open (inr@^-1` U)).
 Proof.
 split.
@@ -1637,6 +1637,16 @@ Proof.
 move=> ctsf ctsg [x|y] U nU /=; rewrite nbhs_simpl/= /nbhs/= nbhs_simpl /=.
   by apply: inl_continuous; exact: ctsf.
 by apply: inr_continuous; exact: ctsg.
+Qed.
+
+Lemma sum_compact : compact [set: X] -> compact [set: Y] -> 
+  compact [set: X + Y].
+Proof.
+have -> : ([set: X + Y] = inl @` setT `|` inr @` setT).
+  by rewrite eqEsubset; split=> + // _; case => z;[left | right]; exists z.
+move=> ? ?; apply: compactU; apply: continuous_compact =>//.
+- by apply: continuous_subspaceT => z.
+- by apply: continuous_subspaceT => z.
 Qed.
 
 End sum_topology.
@@ -1806,6 +1816,53 @@ Qed.
 
 End sum_separations.
 
+Section sum_associate.
+Context {X Y Z : Type}.
+Definition sum_left (a : (X + Y) + Z) : X + (Y + Z) := 
+  match a with  
+  | inl (inl x) => inl x
+  | inl (inr y) => inr (inl y)
+  | inr z => inr (inr z)
+  end.
+
+Definition sum_right (a : X + (Y + Z)) : (X + Y) + Z := 
+  match a with  
+  | inr (inr z) => inr z
+  | inr (inl y) => inl (inr y)
+  | inl x => inl (inl x)
+  end.
+
+Lemma sum_leftK : cancel sum_left sum_right.
+Proof. by case;[case |]. Qed.
+
+
+Lemma sum_rightK : cancel sum_right sum_left.
+Proof. by case;[| case]. Qed.
+
+End sum_associate.
+
+Section sum_associate_homeomorphism.
+Context {X Y Z : topologicalType}.
+
+Lemma continuous_sum_left : continuous (@sum_left X Y Z).
+Proof.
+have -> : @sum_left X Y Z = 
+        lift_sum (lift_sum (inl) (inr \o inl)) (inr \o inr).
+  exact/funext.
+apply: sum_continuous; last by move => ?.
+by apply: sum_continuous => ? //=.
+Qed.
+
+Lemma continuous_sum_right : continuous (@sum_right X Y Z).
+Proof.
+have -> : @sum_right X Y Z = 
+        lift_sum (inl \o inl) (lift_sum (inl \o inr) (inr)) .
+  exact/funext.
+apply: sum_continuous; first by move => ?.
+by apply: sum_continuous => ? //=.
+Qed.
+End sum_associate_homeomorphism.
+
 Section quotients.
 Local Open Scope quotient_scope.
 Context {T : topologicalType} {Q0 : quotType T}.
@@ -1867,10 +1924,12 @@ case/orP=> /andP []/eqP -> /eqP -> /orP [] /andP [] // /eqP + /eqP.
 by move=> _ ->; exact: wedge_rel_refl.
 Qed.
 
-Let wedge_rel := EquivRel _ wedge_rel_refl wedge_rel_sym wedge_rel_trans.
+Definition wedge_rel := EquivRel _ wedge_rel_refl wedge_rel_sym wedge_rel_trans.
 
-Definition wedge := quotient_topology {eq_quot wedge_rel}.
-HB.instance Definition _ := EqQuotient.on wedge.
+Definition wedge := {eq_quot wedge_rel}.
+HB.instance Definition _ := Topological.copy wedge (quotient_topology wedge).
+HB.instance Definition _ := isPointed.Build wedge (\pi_wedge (inl x)).
+HB.instance Definition _ := PointedTopological.on wedge.
 
 Definition wedge_fun {Z : topologicalType} f g : wedge -> Z := 
   lift_sum f g \o repr.
@@ -1942,15 +2001,99 @@ move=> cX cY; rewrite -wedgeTE; apply: connectedU.
   exact: pi_continuous.
 Qed.
 
+Lemma wedge_compact : compact [set: X] -> compact [set: Y] -> 
+  compact [set: wedge].
+Proof.
+rewrite -wedgeTE => cX cY; apply: compactU; apply: continuous_compact =>//.
+- apply: continuous_subspaceT => z; apply: continuous_comp => //.
+  exact: pi_continuous.
+- apply: continuous_subspaceT => z; apply: continuous_comp => //.
+  exact: pi_continuous.
+Qed.
+
 End wedge.
+
+Definition pwedge (X Y : ptopologicalType) : ptopologicalType := 
+  @wedge X Y point point.
+
+Section wedge_associate.
+Local Open Scope quotient_scope.
+Context {X Y Z : ptopologicalType}.
+
+Local Notation L := (pwedge (pwedge X Y) Z).
+Local Notation R := (pwedge X (pwedge Y Z)).
+
+Definition pwedge_left : L -> R :=
+  wedge_fun 
+    (wedge_fun (\pi_(R) \o inl) (\pi_(R) \o inr \o \pi_(pwedge Y Z) \o inl))
+    (\pi_(R) \o inr \o \pi_(pwedge Y Z) \o inr).
+
+Definition pwedge_right : R -> L :=
+  wedge_fun 
+    (\pi_(L) \o inl \o \pi_(pwedge X Y) \o inl)
+    (wedge_fun (\pi_(L) \o inl \o \pi_(pwedge X Y) \o inr) (\pi_(L) \o inr)).
+
+Lemma pwedge_leftK : cancel pwedge_left pwedge_right.
+Proof.
+move=> a; rewrite /pwedge_left/pwedge_right.
+rewrite -[a]reprK; case E1 : (repr a) => [xy|z].
+  repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+  rewrite -[xy]reprK; case E2 : (repr xy).
+    by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+  by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+Qed.
+
+Lemma pwedge_rightK : cancel pwedge_right pwedge_left.
+Proof.
+move=> a; rewrite /pwedge_left/pwedge_right.
+rewrite -[a]reprK; case E1 : (repr a) => [x|yz].
+  by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+rewrite -[yz]reprK; case E2 : (repr yz).
+  by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+Qed.
+
+Lemma continuous_pwedge_right : continuous pwedge_right.
+Proof.
+apply: wedge_continuous; first last.
+    by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+  apply: wedge_continuous; first last.
+      by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+    by move=> ?; apply: continuous_comp => //; exact: pi_continuous.
+  move=> ?; apply: continuous_comp => //.
+  apply: continuous_comp; first exact: pi_continuous. 
+  apply: continuous_comp; last exact: pi_continuous. 
+  exact: inl_continuous.
+move=> ?; apply: continuous_comp => //.
+apply: continuous_comp; first exact: pi_continuous.
+by apply: continuous_comp; last exact: pi_continuous.
+Qed.
+
+Lemma continuous_pwedge_left : continuous pwedge_left.
+Proof.
+apply: wedge_continuous; first last.
+    by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+  move=> ?; apply: continuous_comp => //.
+  apply: continuous_comp; first exact: pi_continuous.
+  by apply: continuous_comp; last exact: pi_continuous.
+apply: wedge_continuous; first last.
+    by repeat rewrite ?wedge_funl ?wedge_funr ?wedge_pointE //=.
+  move=> ?; apply: continuous_comp => //. 
+  apply: continuous_comp; first exact: pi_continuous. 
+  apply: continuous_comp; last exact: pi_continuous. 
+  exact: inr_continuous.
+by move=> ?; apply: continuous_comp => //; exact: pi_continuous.
+Qed.
+
+End wedge_associate.
+
 (*
 TODO: 
 sum of normal is normal
 closed continuous surjective f takes normal to normal
 quotient by closed preserves normal
-if [set ab | ab.1 = ab.2 %[mod Q]] is closed, the quotient is hausdorff
-sum commutes
-sum associates
 wedge commutes
 wedge associates
 *)
