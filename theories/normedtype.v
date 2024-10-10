@@ -827,7 +827,7 @@ HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldTyp
 HB.builders Context K V of PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
 
 
-(* These lemmas are done latter with more machinery. Can we move this factory down ?*)
+(* These lemmas are done latter with more machinery. They might be simplified once normedtype is split ?*)
 Lemma add_continuous : continuous (fun x : V * V => x.1 + x.2).
 Proof.
 move=> [/= x y]; apply/cvg_ballP => e e0 /=.

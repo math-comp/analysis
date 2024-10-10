@@ -283,17 +283,18 @@ Proof.
 move=> [/= k x]; apply/cvg_ballP => e le0 /=.
 have e0 : e != 0 by move: le0; rewrite lt0r => /andP [].
 rewrite nearE /= -nbhs_ballE /filter_from /ball //=.
-pose M := maxr `|e| `|k|.
+pose M := maxr (`|e| + 1) (maxr `|k|  (`|x| + `|x| + 2^-1 + 1)).
 have M0 : 0%R <M. rewrite (@lt_le_trans _ _ (`|e|)) //= ?normr_gt0 //=.
-About le_maxr. rewrite (@le_maxr _ _ (normr e)).  _ _ (`|e|)) .
- Fail rewrite le_maxr. admit.
+Fail rewrite le_maxr. admit.
+have Me: `|e| < M. rewrite (@lt_le_trans _ _ (`|e| + 1)) //; last by admit.
+by rewrite ltrDl ltr01.
 pose r := (`|e|/2/M).
 exists ((ball k r),(ball x r)).
   split.
-    exists r; last by move=> z /=; rewrite /ball /=.
-    by rewrite mulr_gt0 ?invr_gt0 ?divr_gt0 ?normr_gt0 //.
+    exists r; last by move=> z /=; rewrite /ball //=.
+    by rewrite /= mulr_gt0 ?invr_gt0 ?divr_gt0 ?normr_gt0 //.
   exists r; last by move=> z /=; rewrite /ball /=.
-  by rewrite mulr_gt0 ?invr_gt0 ?divr_gt0 ?normr_gt0 //.
+  by rewrite /= mulr_gt0 ?invr_gt0 ?divr_gt0 ?normr_gt0 //.
 move => /= [z1 z2]; rewrite /ball /=. 
 move=> [k1r k2r].
 have := @ball_split _ _ (k * z2)  (k* x)  (z1 * z2) `|e|.
@@ -302,7 +303,21 @@ have -> :  (normr (k *: x - z1 * z2) < - e) = false by rewrite ltr_nnorml // opp
 rewrite Bool.orb_false_r => T;apply: T; rewrite -?(mulrBr , mulrBl) normrM.
 rewrite (@le_lt_trans _ _ (M * `|x - z2|)) // ?ler_wpM2r//.  admit.
 by rewrite -ltr_pdivlMl ?(lt_le_trans k2r) // mulrC. 
-rewrite (@le_lt_trans _ _ (`|k - z1| * M))// ?ler_wpM2l //. admit.
+rewrite (@le_lt_trans _ _ (`|k - z1| * M))// ?ler_wpM2l //.
+rewrite (@le_trans _ _ (normr (z2) + normr x)) // ?lerDl ?normr_ge0 //.
+have H: normr z2 <= normr x + `|e|/2/M.
+   have -> : z2 = x - (x -z2) by rewrite opprB addrCA subrr addr0.
+   rewrite (@le_trans _ _ (normr (x) + normr (x - z2))) // ?ler_normB ?lerD // ltW //.
+rewrite (@le_trans _ _ ((normr x + `|e| / 2 / M) + (normr x))) ?lerD // addrC.
+have H0: M = M^-1 * (M *  M) by rewrite mulrA mulVf ?mul1r // ?lt0r_neq0 //.
+rewrite [X in (_ <= X)]H0.
+have -> : (normr x + (normr x + `|e| / 2 / M)) =
+           M^-1 * ( M * (normr x + normr x)  + `|e| / 2).
+   by rewrite mulrDr mulrA mulVf ?mul1r  ?lt0r_neq0 // mulrC addrA.
+rewrite  ler_wpM2l // ?invr_ge0 // ?ltW // -ltrBrDl -mulrBr. 
+apply: ltr_pM; rewrite ?ltrBrDl //.
+rewrite (@lt_le_trans _ _ ((normr x + normr x + 2^-1) + 1)) //; last by admit.
+by rewrite ltrDl ltr01.
 by rewrite -ltr_pdivlMr ?(lt_le_trans k1r) // ?normr_gt0 //.
 Admitted.
 
