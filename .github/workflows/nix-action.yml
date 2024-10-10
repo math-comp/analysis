@@ -1,0 +1,46 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+name: Nix CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+    - .github/workflows/**
+  pull_request_target:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        overrides:
+          - 'coq = "master"'
+      fail-fast: false
+    steps:
+      - name: Determine which commit to test
+        run: |
+          if [[ ${{ github.event_name }} =~ "pull_request" ]]; then
+            merge_commit=$(git ls-remote ${{ github.event.repository.html_url }} refs/pull/${{ github.event.number }}/merge | cut -f1)
+            if [ -z "$merge_commit" ]; then
+              echo "tested_commit=${{ github.event.pull_request.head.sha }}" >> $GITHUB_ENV
+            else
+              echo "tested_commit=$merge_commit" >> $GITHUB_ENV
+            fi
+          else
+            echo "tested_commit=${{ github.sha }}" >> $GITHUB_ENV
+          fi
+      - uses: cachix/install-nix-action@v14
+        with:
+          nix_path: nixpkgs=channel:nixpkgs-unstable
+      - uses: cachix/cachix-action@v10
+        with:
+          name: coq-community
+          extraPullNames: coq, math-comp
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ env.tested_ref }}
+      - run: >
+          nix-build https://coq.inria.fr/nix/toolbox --argstr job analysis --arg override '{ ${{ matrix.overrides }}; analysis = builtins.filterSource (path: _: baseNameOf path != ".git") ./.; }'
