@@ -2,9 +2,12 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
+From mathcomp Require Import boolp classical_sets functions.
+From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule function_spaces.
+Require Export separation_axioms.
+
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -277,12 +280,13 @@ Qed.
 
 Lemma regular_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
-move=> [/= k x].
-apply/cvg_ballP => e le0 /=.
+move=> [/= k x]; apply/cvg_ballP => e le0 /=.
 have e0 : e != 0 by move: le0; rewrite lt0r => /andP [].
-rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_  /filter_from /ball //=.
+rewrite nearE /= -nbhs_ballE /filter_from /ball //=.
 pose M := maxr `|e| `|k|.
-have M0 : 0 <M. rewrite (@lt_le_trans _ _ (`|e|)) //= ?normr_gt0 //=. Fail rewrite le_maxr. admit.
+have M0 : 0%R <M. rewrite (@lt_le_trans _ _ (`|e|)) //= ?normr_gt0 //=.
+About le_maxr. rewrite (@le_maxr _ _ (normr e)).  _ _ (`|e|)) .
+ Fail rewrite le_maxr. admit.
 pose r := (`|e|/2/M).
 exists ((ball k r),(ball x r)).
   split.
@@ -297,7 +301,7 @@ rewrite /ball /= /= real_lter_normr ?gtr0_real //.
 have -> :  (normr (k *: x - z1 * z2) < - e) = false by rewrite ltr_nnorml // oppr_le0 ltW.
 rewrite Bool.orb_false_r => T;apply: T; rewrite -?(mulrBr , mulrBl) normrM.
 rewrite (@le_lt_trans _ _ (M * `|x - z2|)) // ?ler_wpM2r//.  admit.
-by rewrite -ltr_pdivlMl ?(lt_le_trans k2r) // mulrC.
+by rewrite -ltr_pdivlMl ?(lt_le_trans k2r) // mulrC. 
 rewrite (@le_lt_trans _ _ (`|k - z1| * M))// ?ler_wpM2l //. admit.
 by rewrite -ltr_pdivlMr ?(lt_le_trans k1r) // ?normr_gt0 //.
 Admitted.

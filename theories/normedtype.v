@@ -841,30 +841,33 @@ Qed.
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
 move=> [/= k x].
-apply/cvg_ballP => e e0 /=.
-rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_ //=.
+apply/cvg_ballP => e e0 /=. 
+rewrite nearE /= -nbhs_ballE /nbhs_ball /nbhs_ball_ !nbhs_simpl /=.
 near +oo_K=> M.
 pose r := (`|e|/2/M).
 exists ((ball k r),(ball x r)).
-rewrite !nbhs_simpl /=; split; apply: nbhsx_ballx; rewrite ?divr_gt0 // ?normr_gt0 ?lt0r_neq0 //.
-rewrite -ball_normE /= /ball_ /= => lz /= [nk nx]. 
-rewrite -?(scalerBr, scalerBl). 
-have := @ball_split _ _ (k *: lz.2)  (k*: x)  (lz.1 *: lz.2) `|e|; rewrite -ball_normE /= real_lter_normr ?gtr0_real //. 
-have -> :  (normr (k *: x - lz.1 *: lz.2) < - e) = false by rewrite ltr_nnorml // oppr_le0 ltW.
-rewrite Bool.orb_false_r => T;apply: T; rewrite -?(scalerBr, scalerBl) normrZ. 
-rewrite (@le_lt_trans _ _ (M * `|x - lz.2|)) ?ler_wpM2r -?ltr_pdivlMl //  mulrC //.
+split; apply: nbhsx_ballx; rewrite ?divr_gt0 ?normr_gt0 ?lt0r_neq0 //.
+rewrite -ball_normE /ball /= => lz /= [nk nx]; rewrite -?(scalerBr, scalerBl).
+have := @ball_split _ _ (k *: lz.2)  (k*: x)  (lz.1 *: lz.2) `|e|.
+rewrite -ball_normE /= real_lter_normr ?gtr0_real //. 
+have -> :  (normr (k *: x - lz.1 *: lz.2) < - e) = false
+  by rewrite ltr_nnorml // oppr_le0 ltW.
+rewrite Bool.orb_false_r => T;apply: T; rewrite -?(scalerBr, scalerBl) normrZ.
+rewrite (@le_lt_trans _ _ (M * `|x - lz.2|)) ?ler_wpM2r -?ltr_pdivlMl //.
+rewrite mulrC //.
 rewrite (@le_lt_trans _ _ (`|k - lz.1| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
 rewrite (@le_trans _ _ (normr (lz.2) + normr x)) // ?lerDl ?normr_ge0 //.
 move: nx; rewrite /r => nx. 
 have H: normr lz.2 <= normr x + `|e|/2/M.
    have -> : lz.2 = x - (x -lz.2) by rewrite opprB addrCA subrr addr0.
-   by rewrite (@le_trans _ _ (normr (x) + normr (x - lz.2))) // ?ler_normB // ?lerD // ltW //.
-rewrite (@le_trans _ _ ((normr x + `|e| / 2 / M) + (normr x))) // ?lerD //.
-rewrite addrAC.
+   rewrite (@le_trans _ _ (normr (x) + normr (x - lz.2))) // ?ler_normB ?lerD // ltW //.
+rewrite (@le_trans _ _ ((normr x + `|e| / 2 / M) + (normr x))) ?lerD // addrC.
+(*rewrite addrAC.*)
 have H0: M = M^-1 * (M *  M). rewrite mulrA mulVf ?mul1r // ?lt0r_neq0 //.
 rewrite [X in (_ <= X)]H0.
-have -> :   (normr x + normr x + `|e| / 2 / M) =   M^-1 *  ( M* (normr x + normr x)  + `|e| / 2).
-   by rewrite mulrDr mulrA mulVf ?mul1r  ?lt0r_neq0 // mulrC.
+have -> : (normr x + (normr x + `|e| / 2 / M)) =
+           M^-1 * ( M * (normr x + normr x)  + `|e| / 2).
+   by rewrite mulrDr mulrA mulVf ?mul1r  ?lt0r_neq0 // mulrC addrA.
 rewrite  ler_wpM2l // ?invr_ge0 // ?ltW // -ltrBrDl -mulrBr. 
 apply: ltr_pM; rewrite ?ltrBrDl //.
 Unshelve. all: by end_near.
@@ -890,11 +893,10 @@ exists [set B | exists x, exists r, B = ball x r].
     by move/ltW/normr_idP: l0 => ->; move/ltW/normr_idP: l1 => ->.
   by rewrite -mulrDl addrCA subrr addr0 mul1r.
 split =>  /=.
-  move => B [x] [r] ->.
-  rewrite openE -!ball_normE /interior=> y /= bxy.
+  move => B [x] [r] ->; rewrite openE -!ball_normE /interior=> y /= bxy.
   rewrite -nbhs_ballE  /nbhs_ball /nbhs_ball_ /filter_from //=.
   exists (r - (normr (x - y) )); first by rewrite subr_gt0.
-  move=> z. rewrite -ball_normE /= ltrBrDr addrC => H.
+  move=> z; rewrite -ball_normE /= ltrBrDr addrC => H.
   rewrite /= (le_lt_trans (ler_distD y _ _)) //.
 rewrite /filter_from /= => x B.
 rewrite -nbhs_ballE  /nbhs_ball /nbhs_ball_ /filter_from //=.
