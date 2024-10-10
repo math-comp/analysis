@@ -277,7 +277,28 @@ Qed.
 
 Lemma regular_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
-(* NB(rei): cannot really copy-paste the proof from normedtype.v because it relies on pinfty_nbhs defined in normedtype.v *)
+move=> [/= k x].
+apply/cvg_ballP => e le0 /=.
+have e0 : e != 0 by move: le0; rewrite lt0r => /andP [].
+rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_  /filter_from /ball //=.
+pose M := maxr `|e| `|k|.
+have M0 : 0 <M. rewrite (@lt_le_trans _ _ (`|e|)) //= ?normr_gt0 //=. admit.
+pose r := (`|e|/2/M).
+exists ((ball k r),(ball x r)).
+  split.
+    exists r; last by move=> z /=; rewrite /ball /=.
+    by rewrite mulr_gt0 ?invr_gt0 ?divr_gt0 ?normr_gt0 //.
+  exists r; last by move=> z /=; rewrite /ball /=.
+  by rewrite mulr_gt0 ?invr_gt0 ?divr_gt0 ?normr_gt0 //.
+move => /= [z1 z2]; rewrite /ball /=. 
+move=> [k1r k2r].
+have := @ball_split _ _ (k * z2)  (k* x)  (z1 * z2) `|e|; rewrite /ball /= /= real_lter_normr ?gtr0_real //.
+have -> :  (normr (k *: x - z1 * z2) < - e) = false by rewrite ltr_nnorml // oppr_le0 ltW.
+rewrite Bool.orb_false_r => T;apply: T; rewrite -?(mulrBr , mulrBl) normrM. 
+rewrite (@le_lt_trans _ _ (M * `|x - z2|)) // ?ler_wpM2r//. admit. 
+rewrite -ltr_pdivlMl ?(lt_le_trans k2r) // /r.  admit.
+rewrite (@le_lt_trans _ _ (`|k - z1| * M)) ?ler_wpM2l //. admit.
+rewrite -ltr_pdivrMl ?(lt_le_trans k1r) // ?normr_gt0 //.  admit.
 Admitted.
 
 Lemma regular_locally_convex :
