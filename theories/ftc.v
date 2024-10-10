@@ -267,7 +267,7 @@ move: a fi => [b a fi /[1!(@lte_fin R)] ax|[|//] fi _].
     apply: subset_itvr; rewrite bnd_simp lerBrDr -lerBrDl.
     by near: e; apply: nbhs_right_ltW; rewrite subr_gt0.
 - near (0%R:R)^'+ => e; apply: (@continuous_lebesgue_pt _ _ _ (ball x e)) => //.
-  + exact: (ball_open_nbhs x).
+  + exact: ball_open_nbhs.
   + exact: measurable_ball.
   + apply: measurable_funS fi => //; rewrite ball_itv.
     apply: (@subset_trans _ `](x - e)%R, u]) => //.

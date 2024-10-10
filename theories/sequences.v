@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import set_interval.
-Require Import reals ereal signed topology normedtype landau.
+Require Import reals ereal signed topology tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Definitions and lemmas about sequences                                   *)
@@ -524,14 +524,14 @@ Notation nonincreasing_cvg_ge := nonincreasing_cvgn_ge (only parsing).
 Notation nondecreasing_cvg_le := nondecreasing_cvgn_le (only parsing).
 
 Lemma __deprecated__invr_cvg0 (R : realFieldType) (u : R^nat) :
-  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> (0:R)) <-> (u @ \oo --> +oo).
+  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> 0) <-> (u @ \oo --> +oo).
 Proof. by move=> ?; rewrite gtr0_cvgV0//; apply: nearW. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to `gtr0_cvgV0` and generalized")]
 Notation invr_cvg0 := __deprecated__invr_cvg0 (only parsing).
 
 Lemma __deprecated__invr_cvg_pinfty (R : realFieldType) (u : R^nat) :
-  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> +oo) <-> (u @ \oo--> (0:R)).
+  (forall i, 0 < u i) -> ((u i)^-1 @[i --> \oo] --> +oo) <-> (u @ \oo--> 0).
 Proof. by move=> ?; rewrite cvgrVy//; apply: nearW. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to `cvgrVy` and generalized")]
@@ -775,7 +775,7 @@ Proof. by rewrite /=. Qed.
 Lemma harmonic_ge0 {R : numFieldType} i : 0 <= harmonic i :> R.
 Proof. exact/ltW/harmonic_gt0. Qed.
 
-Lemma cvg_harmonic {R : archiFieldType} : @harmonic R @ \oo --> (0:R).
+Lemma cvg_harmonic {R : archiFieldType} : @harmonic R @ \oo --> 0.
 Proof.
 apply/cvgrPdist_le => _/posnumP[e]; near=> i.
 rewrite distrC subr0 ger0_norm//= -lef_pV2 ?qualifE//= invrK.
@@ -1114,7 +1114,7 @@ Qed.
 
 Lemma cvg_to_0_linear (R : realFieldType) (f : R -> R) K (k : R) :
   0 < k -> (forall r, 0 < `| r | < k -> `|f r| <= K * `| r |) ->
-    f x @[x --> (0:R)^'] --> (0:R).
+    f x @[x --> 0^'] --> 0.
 Proof.
 move=> k0 kfK; have [K0|K0] := lerP K 0.
 - apply/cvgrPdist_lt => _/posnumP[e]; near=> x.
@@ -1123,7 +1123,7 @@ move=> k0 kfK; have [K0|K0] := lerP K 0.
   near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
   move=> t /=; rewrite distrC subr0 => tk2 t0.
   by rewrite normr_gt0 t0 (lt_trans tk2) // -[in ltLHS](add0r k) midf_lt.
-- apply/(@eqolim0 _ _ R (0:R)^')/eqoP => _/posnumP[e]; near=> x.
+- apply/(@eqolim0 _ _ R 0^')/eqoP => _/posnumP[e]; near=> x.
   rewrite (le_trans (kfK _ _)) //=.
   + near: x; exists (k / 2); first by rewrite /mkset divr_gt0.
     move=> t /=; rewrite distrC subr0 => tk2 t0.
@@ -1136,7 +1136,7 @@ Unshelve. all: by end_near. Qed.
 Lemma lim_cvg_to_0_linear (R : realType) (f : nat -> R) (g : R -> nat -> R) k :
   0 < k -> cvgn (series f) ->
   (forall r, 0 < `|r| < k -> forall n, `|g r n| <= f n * `| r |) ->
-  limn (series (g x)) @[x --> (0:R)^'] --> (0:R).
+  limn (series (g x)) @[x --> 0^'] --> 0.
 Proof.
 move=> k_gt0 Cf Hg.
 apply: (@cvg_to_0_linear _ _ (limn (series f)) k) => // h hLk; rewrite mulrC.
@@ -2114,7 +2114,7 @@ Context {R : realFieldType}.
 Implicit Types (u : R^nat) (r : R).
 
 Lemma minr_cvg_0_cvg_0 u r : 0 < r -> (forall k, 0 <= u k) ->
-  minr (u n) r @[n --> \oo] --> (0:R) -> u n @[n --> \oo] --> (0:R).
+  minr (u n) r @[n --> \oo] --> 0 -> u n @[n --> \oo] --> 0.
 Proof.
 move=> r0 u0 minr_cvg; apply/cvgrPdist_lt => _ /posnumP[e].
 have : 0 < minr e%:num r by rewrite lt_min// r0 andbT.
@@ -2126,7 +2126,7 @@ by rewrite le_min u0 ltW.
 Unshelve. all: by end_near. Qed.
 
 Lemma maxr_cvg_0_cvg_0 u r : r < 0 -> (forall k, u k <= 0) ->
-  maxr (u n) r @[n --> \oo] --> (0:R) -> u n @[n --> \oo] --> (0:R).
+  maxr (u n) r @[n --> \oo] --> 0 -> u n @[n --> \oo] --> 0.
 Proof.
 rewrite -[in r < _]oppr0 ltrNr => r0 u0.
 under eq_fun do rewrite -(opprK (u _)) -[in maxr _ _](opprK r) -oppr_min.
@@ -2158,7 +2158,7 @@ Unshelve. all: by end_near. Qed.
 
 Lemma mine_cvg_minr_cvg u r : (0 < r)%R -> (forall k, 0 <= u k) ->
   mine (u n) r%:E @[n --> \oo] --> 0 ->
-  minr (fine (u n)) r @[n --> \oo] --> (0:R)%R.
+  minr (fine (u n)) r @[n --> \oo] --> 0%R.
 Proof.
 move=> r0 u0 mine_cvg; apply: (cvg_trans _ (fine_cvg mine_cvg)).
 move/fine_cvgP : mine_cvg => [_ /=] /cvgrPdist_lt.
@@ -2196,7 +2196,7 @@ Qed.
 
 Lemma maxe_cvg_maxr_cvg u r : (r < 0)%R -> (forall k, u k <= 0) ->
   maxe (u n) r%:E @[n --> \oo] --> 0 ->
-  maxr (fine (u n)) r @[n --> \oo] --> (0:R)%R.
+  maxr (fine (u n)) r @[n --> \oo] --> 0%R.
 Proof.
 rewrite -[in (r < _)%R]oppr0 ltrNr => r0 u0.
 under eq_fun do rewrite -(oppeK (u _)) -[in maxe _ _](oppeK r%:E) -oppe_min.

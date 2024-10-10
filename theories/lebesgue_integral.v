@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
-Require Import signed reals ereal topology normedtype sequences real_interval.
+Require Import signed reals ereal topology tvs normedtype sequences real_interval.
 Require Import esum measure lebesgue_measure numfun realfun function_spaces.
 
 (**md**************************************************************************)
@@ -6214,7 +6214,7 @@ Hypotheses (xU : open_nbhs x U) (mU : measurable U) (mUf : measurable_fun U f)
            (fx : {for x, continuous f}).
 
 Let continuous_integralB_fin_num :
-  \forall t \near (0:R)%R,
+  \forall t \near 0%R,
     \int[mu]_(y in ball x t) `|(f y)%:E - (f x)%:E| \is a fin_num.
 Proof.
 move: fx => /cvgrPdist_le /= fx'.
@@ -6237,7 +6237,7 @@ apply: ge0_le_integral => //=; first exact: measurable_ball.
 Unshelve. all: by end_near. Qed.
 
 Let continuous_davg_fin_num :
-  \forall A \near (0:R)%R, davg f x A \is a fin_num.
+  \forall A \near 0%R, davg f x A \is a fin_num.
 Proof.
 have [e /= e0 exf] := continuous_integralB_fin_num.
 move: fx => /cvgrPdist_le fx'.
@@ -6248,7 +6248,7 @@ near=> t; have [t0|t0] := leP t 0%R; first by rewrite davg0.
 by rewrite fin_numM// exf/=.
 Unshelve. all: by end_near. Qed.
 
-Lemma continuous_cvg_davg : davg f x r @[r --> (0:R)%R] --> 0.
+Lemma continuous_cvg_davg : davg f x r @[r --> 0%R] --> 0.
 Proof.
 apply/fine_cvgP; split; first exact: continuous_davg_fin_num.
 apply/cvgrPdist_le => e e0.
@@ -6893,7 +6893,7 @@ Local Notation mu := lebesgue_measure.
 Definition nicely_shrinking x E :=
   (forall n, measurable (E n)) /\
   exists Cr : R * {posnum R}^nat, [/\ Cr.1 > 0,
-    (Cr.2 n)%:num @[n --> \oo] --> (0:R),
+    (Cr.2 n)%:num @[n --> \oo] --> 0,
     (forall n, E n `<=` ball x (Cr.2 n)%:num) &
     (forall n, mu (ball x (Cr.2 n)%:num) <= Cr.1%:E * mu (E n))%E].
 
