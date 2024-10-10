@@ -1,10 +1,10 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.  *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality set_interval Rstruct.
-Require Import ereal reals signed topology prodnormedzmodule.
+Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -41,18 +41,6 @@ HB.structure Definition UniformLmodule (K : numDomainType) :=
 Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A -> 
   (0< lambda) -> (lambda < 1) -> lambda *: x + (1 - lambda) *: y \in A.
-
-
-Definition convex_hull  (R : numDomainType) (M : lmodType R) (A : set M) :=
-  [set z | exists2 l : R,(0 < l /\ (l < 1))&(exists2 x, (x \in A) &
-(exists2 y, (y \in A)&(z = (l *: x + (1 - l) *: y))))].
-
-Lemma convex_convexhull (R : numDomainType) (M : lmodType R) (A : set M) :
-  convex (convex_hull A).
-Proof.
-  move => x y l; rewrite !inE /convex_hull /= =>- [lx [lx0 lx1] [x1 x1a] [x2 x2a]] xc.
-  move => >- [ly [ly0 ly1] [y1 y1a] [y2 y2a]] yc l0 l1.
-Admitted.
 
 HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
@@ -231,9 +219,8 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
     nbhsE_subproof.
 HB.end.
 
-
-
 Section Tvs_numDomain.
+
 Context (R : numDomainType) (E : tvsType R) (U : set E).
 
 Lemma nbhs0N : nbhs 0 U -> nbhs 0 (-%R @` U).
@@ -291,12 +278,37 @@ Qed.
 Lemma regular_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
 (* NB(rei): cannot really copy-paste the proof from normedtype.v because it relies on pinfty_nbhs defined in normedtype.v *)
-  Admitted.
+Admitted.
+
 Lemma regular_locally_convex :
   exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
 Proof.
-(* NB(rei): cannot really copy-paste the proof from normedtype.v because it relies on normrZ defined in normedtype.v *)
-  Admitted.
+  exists [set B | exists x, exists r, B = ball x r].
+  move=> b; rewrite inE /= => [[x]] [r] -> z y l.
+  rewrite !inE /ball /= => zx yx l0; rewrite -subr_gt0 => l1.
+  have ->:  x = l *: x + (1-l) *: x by rewrite scalerBl addrCA subrr addr0 scale1r.
+  have -> : (l *: x + (1 - l) *: x) - (l *: z + (1 - l) *: y)
+           = (l *: (x-z) + (1 - l) *: (x - y)).
+  by rewrite opprD addrCA addrA addrA -!scalerN -scalerDr [X in l*:X]addrC -addrA -scalerDr.
+  rewrite (@le_lt_trans _ _ ( `|l| * `|x - z| + `|1 - l| * `|x - y|)) //.
+  by rewrite -!normrM ?ler_normD //.
+    rewrite (@lt_le_trans _ _ ( `|l| * r + `|1 - l| * r )) // ?ltr_leD //.
+    rewrite -ltr_pdivlMl ?mulrA ?mulVf ?mul1r // ?normrE ?lt0r_neq0 //.
+    rewrite -ler_pdivlMl ?mulrA ?mulVf ?mul1r ?ltW // ?normrE;
+    by apply/eqP =>  H; move: l1; rewrite H // lt_def => /andP [] /eqP //=.
+  have -> : normr (1 -l) = 1 - normr l.
+    by move/ltW/normr_idP: l0 => ->; move/ltW/normr_idP: l1 => ->.
+  by rewrite -mulrDl addrCA subrr addr0 mul1r.
+split =>  /=.
+  move => B [x] [r] ->; rewrite openE /ball /= /interior=> y /= bxy.
+  rewrite -nbhs_ballE  /nbhs_ball /nbhs_ball_ /filter_from //=.
+  exists (r - (normr (x - y) )); first by rewrite subr_gt0.
+  move=> z; rewrite /ball /= ltrBrDr addrC => H.
+  rewrite /= (le_lt_trans (ler_distD y _ _)) //.
+rewrite /filter_from /= => x B; rewrite -nbhs_ballE =>- [r] r0 Bxr /=.
+rewrite nbhs_simpl /=; exists (ball x r) => //; split; last by apply: ballxx.
+by exists x; exists r.
+Qed.
 
 HB.instance Definition _ :=
   Uniform_isTvs.Build R (R^o)%type
@@ -365,11 +377,15 @@ Qed.
 
 HB.instance Definition _ :=
   Uniform_isTvs.Build K (E * F)%type
-prod_add_continuous prod_scale_continuous prod_locally_convex.
+  prod_add_continuous prod_scale_continuous prod_locally_convex.
+
 End prod_Tvs.
 
+Section Function_space.
+  
+End Function_space.
+
 Definition dual {R : ringType} (E : lmodType R) : Type := {scalar E}.
-(* Check fun {R : ringType} (E : lmodType R) => dual E : ringType. *)
 
 HB.mixin Record hasDual (R : ringType) (E' : lmodType R) E of GRing.Lmodule R E :=  {
  dual_pair : E -> E' -> R;
@@ -377,17 +393,3 @@ HB.mixin Record hasDual (R : ringType) (E' : lmodType R) E of GRing.Lmodule R E 
  dual_pair_llinear : forall x, scalar (dual_pair^~ x);
  ipair : injective ( fun x =>  dual_pair^~ x)
 }.
-
-
-
-Section bacasable.
-
-Lemma add_continuousE (R : numDomainType) (E : tvsType R) :
-  continuous (fun xy : E * E => xy.1 + xy.2).
-Proof.
-apply: add_continuous.
-Qed.
-
-End bacasable.
-
-About opprB.
