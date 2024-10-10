@@ -8,7 +8,6 @@ From mathcomp Require Import reals ereal topology normedtype sequences exp.
 From mathcomp Require Import esum measure lebesgue_measure numfun derive realfun.
 From mathcomp Require Import lebesgue_integral probability ftc kernel charge.
 From mathcomp Require Import prob_lang lang_syntax_util.
-From mathcomp Require Import ring lra.
 
 (**md**************************************************************************)
 (* # Syntax and Evaluation for a Probabilistic Programming Language           *)
@@ -285,6 +284,7 @@ Qed.
 
 End lt0.
 End increasing_change_of_variables_from_decreasing.
+
 
 Lemma decreasing_nonincreasing {R : realType} (F : R -> R) (J : interval R) :
   {in J &, {homo F : x y /~ (x < y)%R}} ->

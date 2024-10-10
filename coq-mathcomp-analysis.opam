@@ -20,7 +20,6 @@ depends: [
   "coq-mathcomp-field"
   "coq-mathcomp-bigenough" { (>= "1.0.0") }
   "coq-mathcomp-algebra-tactics" { (>= "1.2.3") }
-  "coq-mathcomp-zify" { (>= "1.5.0") }
 ]
 
 tags: [

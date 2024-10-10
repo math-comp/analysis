@@ -114,6 +114,10 @@ Qed.
 Definition poisson3 {R : realType} := @poisson_pmf R 3%:R 4. (* 0.168 *)
 Definition poisson10 {R : realType} := @poisson_pmf R 10%:R 4. (* 0.019 *)
 
+Definition dep_uncurry (A : Type) (B : A -> Type) (C : Type) :
+    (forall a : A, B a -> C) -> {a : A & B a} -> C :=
+  fun f p => let (a, Ba) := p in f a Ba.
+
 (* TODO: move *)
 Lemma poisson_pmf_gt0 {R : realType} k (r : R) :
   (0 < r -> 0 < poisson_pmf r k.+1)%R.
@@ -190,7 +194,6 @@ Lemma invr_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
   (0 <= (p%:num)^-1)%R.
 Proof. by rewrite invr_ge0. Qed.
 
-(* TODO: move *)
 Definition invr_nonneg (R : numDomainType) (p : {nonneg R}) :=
   NngNum (invr_nonneg_proof p).
 
@@ -2185,7 +2188,7 @@ Section gauss_lebesgue.
 Context d (T : measurableType d) (R : realType).
 Notation mu := (@lebesgue_measure R).
 
-Let f1 (x : g_sigma_algebraType (R.-ocitv.-measurable)) := (gauss_pdf x)^-1%R.
+Let f1 (x : measurableTypeR R) := (gauss_pdf x)^-1%R.
 
 Let f1E (x : R) : f1 x = (Num.sqrt (pi *+ 2) * expR (- (- x ^+ 2 / 2)))%R.
 Proof.
