@@ -310,6 +310,7 @@ jobs:
     needs:
     - coq
     - mathcomp-finmap
+    - hierarchy-builder
     - mathcomp-bigenough
     - hierarchy-builder
     runs-on: ubuntu-latest
@@ -365,6 +366,10 @@ jobs:
       name: 'Building/fetching previous CI target: mathcomp-finmap'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "master"
         --argstr job "mathcomp-finmap"
+    - if: steps.stepCheck.outputs.status == 'built'
+      name: 'Building/fetching previous CI target: hierarchy-builder'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "master"
+        --argstr job "hierarchy-builder"
     - if: steps.stepCheck.outputs.status == 'built'
       name: 'Building/fetching previous CI target: mathcomp-field'
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "master"
