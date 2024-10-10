@@ -282,7 +282,7 @@ apply/cvg_ballP => e le0 /=.
 have e0 : e != 0 by move: le0; rewrite lt0r => /andP [].
 rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_  /filter_from /ball //=.
 pose M := maxr `|e| `|k|.
-have M0 : 0 <M. rewrite (@lt_le_trans _ _ (`|e|)) //= ?normr_gt0 //=. Fail rewrite le_maxr.
+have M0 : 0 <M. rewrite (@lt_le_trans _ _ (`|e|)) //= ?normr_gt0 //=. Fail rewrite le_maxr. admit.
 pose r := (`|e|/2/M).
 exists ((ball k r),(ball x r)).
   split.
