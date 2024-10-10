@@ -113,12 +113,15 @@ subst p2.
 by f_equal.
 Qed.
 
+Definition dep_uncurry (A : Type) (B : A -> Type) (C : Type) :
+    (forall a : A, B a -> C) -> {a : A & B a} -> C :=
+  fun f p => let (a, Ba) := p in f a Ba.
+
 (* NB: to be PRed to probability.v *)
 Section poisson_pdf.
 Variable R : realType.
 Local Open Scope ring_scope.
 
-(* density function for Poisson *)
 Definition poisson_pdf k r : R :=
   if r > 0 then r ^+ k / k`!%:R^-1 * expR (- r) else 1%:R.
 
@@ -227,7 +230,6 @@ Lemma invr_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
   (0 <= (p%:num)^-1)%R.
 Proof. by rewrite invr_ge0. Qed.
 
-(* TODO: move *)
 Definition invr_nonneg (R : numDomainType) (p : {nonneg R}) :=
   NngNum (invr_nonneg_proof p).
 
@@ -1796,7 +1798,6 @@ Qed.
 
 End staton_bus_exponential.
 
-
 Section von_neumann_trick.
 Context d {T : measurableType d} {R : realType}.
 
@@ -2218,7 +2219,7 @@ Section gauss_lebesgue.
 Context d (T : measurableType d) (R : realType).
 Notation mu := (@lebesgue_measure R).
 
-Let f1 (x : g_sigma_algebraType (R.-ocitv.-measurable)) := (gauss_pdf x)^-1%R.
+Let f1 (x : measurableTypeR R) := (gauss_pdf x)^-1%R.
 
 Let f1E (x : R) : f1 x = (Num.sqrt (pi *+ 2) * expR (- (- x ^+ 2 / 2)))%R.
 Proof.
