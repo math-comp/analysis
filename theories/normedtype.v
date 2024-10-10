@@ -7,6 +7,7 @@ From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval Rstruct.
 Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 Require Export separation_axioms.
+Require Import tvs.
 
 (**md**************************************************************************)
 (* # Norm-related Notions                                                     *)
@@ -799,26 +800,127 @@ Lemma cvgenyP {R : realType} {T} {F : set_system T} {FF : Filter F} (f : T -> na
    (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
 Proof. by rewrite cvgeryP cvgrnyP. Qed.
 
-(** Modules with a norm *)
+(** Modules with a norm depending on a numDomain*)
 
-HB.mixin Record PseudoMetricNormedZmod_Lmodule_isNormedModule K V
-    of PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
+HB.mixin Record PseudoMetricNormedZmod_Tvs_isNormedModule K V
+    of PseudoMetricNormedZmod K V & Tvs K V := {
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
+(*#[short(type="normedModType")]
+HB.structure Definition NormedModule (K : numDomainType) :=
+  {T of TopologicalLmodule K T & GRing.Lmodule K T
+   & PseudoMetricNormedZmod_Lmodule_isNormedModule K T}.*)
+
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
-  {T of PseudoMetricNormedZmod K T & GRing.Lmodule K T
-   & PseudoMetricNormedZmod_Lmodule_isNormedModule K T}.
+  {T of PseudoMetricNormedZmod K T & Tvs K T
+   & PseudoMetricNormedZmod_Tvs_isNormedModule K T}.
+
+
+
+HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldType) V
+    of PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
+ normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
+}.
+
+HB.builders Context K V of PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
+
+
+(* These lemmas are done latter with more machinery. They might be simplified once normedtype is split ?*)
+Lemma add_continuous : continuous (fun x : V * V => x.1 + x.2).
+Proof.
+move=> [/= x y]; apply/cvg_ballP => e e0 /=.
+rewrite nearE /= -nbhs_ballE  /nbhs_ball /nbhs_ball_ //=.
+exists ((ball x (e/2)),(ball y (e/2))).
+rewrite !nbhs_simpl /=; split; by apply: nbhsx_ballx; rewrite ?divr_gt0.
+rewrite -ball_normE /= /ball_ /= => xy /= [nx ny].
+rewrite opprD addrACA (le_lt_trans (ler_normD _ _)) // (@splitr K (e)) ltrD //=.
+Qed.
+
+Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
+Proof.
+move=> [/= k x].
+apply/cvg_ballP => e e0 /=. 
+rewrite nearE /= -nbhs_ballE /nbhs_ball /nbhs_ball_ !nbhs_simpl /=.
+near +oo_K=> M.
+pose r := (`|e|/2/M).
+exists ((ball k r),(ball x r)).
+split; apply: nbhsx_ballx; rewrite ?divr_gt0 ?normr_gt0 ?lt0r_neq0 //.
+rewrite -ball_normE /ball /= => lz /= [nk nx]; rewrite -?(scalerBr, scalerBl).
+have := @ball_split _ _ (k *: lz.2)  (k*: x)  (lz.1 *: lz.2) `|e|.
+rewrite -ball_normE /= real_lter_normr ?gtr0_real //. 
+have -> :  (normr (k *: x - lz.1 *: lz.2) < - e) = false
+  by rewrite ltr_nnorml // oppr_le0 ltW.
+rewrite Bool.orb_false_r => T;apply: T; rewrite -?(scalerBr, scalerBl) normrZ.
+rewrite (@le_lt_trans _ _ (M * `|x - lz.2|)) ?ler_wpM2r -?ltr_pdivlMl //.
+rewrite mulrC //.
+rewrite (@le_lt_trans _ _ (`|k - lz.1| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
+rewrite (@le_trans _ _ (normr (lz.2) + normr x)) // ?lerDl ?normr_ge0 //.
+move: nx; rewrite /r => nx. 
+have H: normr lz.2 <= normr x + `|e|/2/M.
+   have -> : lz.2 = x - (x -lz.2) by rewrite opprB addrCA subrr addr0.
+   rewrite (@le_trans _ _ (normr (x) + normr (x - lz.2))) // ?ler_normB ?lerD // ltW //.
+rewrite (@le_trans _ _ ((normr x + `|e| / 2 / M) + (normr x))) ?lerD // addrC.
+(*rewrite addrAC.*)
+have H0: M = M^-1 * (M *  M). rewrite mulrA mulVf ?mul1r // ?lt0r_neq0 //.
+rewrite [X in (_ <= X)]H0.
+have -> : (normr x + (normr x + `|e| / 2 / M)) =
+           M^-1 * ( M * (normr x + normr x)  + `|e| / 2).
+   by rewrite mulrDr mulrA mulVf ?mul1r  ?lt0r_neq0 // mulrC addrA.
+rewrite  ler_wpM2l // ?invr_ge0 // ?ltW // -ltrBrDl -mulrBr. 
+apply: ltr_pM; rewrite ?ltrBrDl //.
+Unshelve. all: by end_near.
+Qed.
+
+Lemma locally_convex : exists2 B : set (set V), (forall b, b \in B -> convex b) & basis B.
+Proof.
+exists [set B | exists x, exists r, B = ball x r].
+  move=> b; rewrite inE /= => [[x]] [r] -> z y l.
+  rewrite !inE -!ball_normE /= => zx yx l0; rewrite -subr_gt0 => l1.
+  have ->:  x = l *: x + (1-l) *: x by rewrite scalerBl addrCA subrr addr0 scale1r.
+    have -> :
+  (l *: x + (1 - l) *: x) - (l *: z + (1 - l) *: y) = (l *: (x-z) + (1 - l) *: (x - y)).
+  by rewrite opprD addrCA addrA addrA -!scalerN -scalerDr [X in l*:X]addrC -addrA -scalerDr.
+  rewrite (@le_lt_trans _ _ ( `|l| * `|x - z| + `|1 - l| * `|x - y|)) //.
+    by rewrite -!normrZ ?ler_normD //.
+    rewrite (@lt_le_trans _ _ ( `|l| * r + `|1 - l| * r )) //.
+    rewrite ltr_leD //.
+    rewrite -ltr_pdivlMl ?mulrA ?mulVf ?mul1r // ?normrE ?lt0r_neq0 //.
+    rewrite -ler_pdivlMl ?mulrA ?mulVf ?mul1r ?ltW // ?normrE;
+    by apply/eqP =>  H; move: l1; rewrite H // lt_def => /andP [] /eqP //=.
+  have -> : normr (1 -l) = 1 - normr l.
+    by move/ltW/normr_idP: l0 => ->; move/ltW/normr_idP: l1 => ->.
+  by rewrite -mulrDl addrCA subrr addr0 mul1r.
+split =>  /=.
+  move => B [x] [r] ->; rewrite openE -!ball_normE /interior=> y /= bxy.
+  rewrite -nbhs_ballE  /nbhs_ball /nbhs_ball_ /filter_from //=.
+  exists (r - (normr (x - y) )); first by rewrite subr_gt0.
+  move=> z; rewrite -ball_normE /= ltrBrDr addrC => H.
+  rewrite /= (le_lt_trans (ler_distD y _ _)) //.
+rewrite /filter_from /= => x B.
+rewrite -nbhs_ballE  /nbhs_ball /nbhs_ball_ /filter_from //=.
+move=> [r] r0 Bxr /=.
+rewrite nbhs_simpl /=; exists (ball x r) => //; split; last by apply: ballxx.
+by exists x; exists r.
+Qed.
+
+HB.instance Definition _ :=
+ Uniform_isTvs.Build K V add_continuous
+    scale_continuous locally_convex.
+
+HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Tvs_isNormedModule.Build K V normrZ.
+
+HB.end.
 
 Section regular_topology.
-
 Variable R : numFieldType.
-
 HB.instance Definition _ := Num.NormedZmodule.on R^o.
+
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R R^o (@normrM _).
+  PseudoMetricNormedZmod_Tvs_isNormedModule.Build R R^o (@normrM _).
 
 End regular_topology.
 
@@ -847,7 +949,7 @@ Variable (R : rcfType).
 HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := Vector.copy R R^o.
-#[export, non_forgetful_inheritance]
+ #[export, non_forgetful_inheritance]
 HB.instance Definition _ := NormedModule.copy R R^o.
 End rcfType.
 
@@ -2364,13 +2466,13 @@ HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
 End prod_PseudoMetricNormedZmodule.
 
 Section prod_NormedModule.
-Context {K : numDomainType} {U V : normedModType K}.
+Context {K : numFieldType} {U V : normedModType K}.
 
 Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
 Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K (U * V)%type
+  PseudoMetricNormedZmod_Tvs_isNormedModule.Build K (U * V)%type
     prod_norm_scale.
 
 End prod_NormedModule.

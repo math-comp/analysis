@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-Require Import reals signed topology prodnormedzmodule normedtype landau forms.
+Require Import reals signed topology prodnormedzmodule tvs normedtype landau forms.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)
@@ -232,6 +232,7 @@ Qed.
 
 End diff_locally_converse_tentative.
 
+Unset Printing All.
 Definition derive (f : V -> W) a v :=
   lim ((fun h => h^-1 *: ((f \o shift a) (h *: v) - f a)) @ 0^').
 
