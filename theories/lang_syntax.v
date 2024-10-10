@@ -280,6 +280,7 @@ Qed.
 End lt0.
 End increasing_change_of_variables_from_decreasing.
 
+
 Lemma decreasing_nonincreasing {R : realType} (F : R -> R) (J : interval R) :
   {in J &, {homo F : x y /~ (x < y)%R}} ->
   {in J &, {homo F : x y /~ (x <= y)%R}}.
