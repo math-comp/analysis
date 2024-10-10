@@ -1929,7 +1929,7 @@ Definition wedge_rel := EquivRel _ wedge_rel_refl wedge_rel_sym wedge_rel_trans.
 Definition wedge := {eq_quot wedge_rel}.
 HB.instance Definition _ := Topological.copy wedge (quotient_topology wedge).
 HB.instance Definition _ := isPointed.Build wedge (\pi_wedge (inl x)).
-HB.instance Definition _ := PointedTopological.on wedge.
+Global Opaque wedge.
 
 Definition wedge_fun {Z : topologicalType} f g : wedge -> Z := 
   lift_sum f g \o repr.
@@ -2011,14 +2011,22 @@ rewrite -wedgeTE => cX cY; apply: compactU; apply: continuous_compact =>//.
   exact: pi_continuous.
 Qed.
 
+Lemma wedge_comp {Z1 Z2 : topologicalType} (f : Z1 -> Z2) g h : 
+  g x = h y -> f \o wedge_fun g h = wedge_fun (f \o g) (f \o h).
+Proof.
+move=> ghE; apply/funext => z /=; rewrite -[z]reprK /=. 
+by case E: (repr z); rewrite ?wedge_funl ?wedge_funr //= ghE.
+Qed.
+
 End wedge.
 
-Definition pwedge (X Y : ptopologicalType) : ptopologicalType := 
-  @wedge X Y point point.
-
+(*
 Section wedge_associate.
 Local Open Scope quotient_scope.
 Context {X Y Z : ptopologicalType}.
+
+Definition pwedge (X Y : ptopologicalType) : ptopologicalType := 
+  @wedge X Y point point.
 
 Local Notation L := (pwedge (pwedge X Y) Z).
 Local Notation R := (pwedge X (pwedge Y Z)).
@@ -2027,7 +2035,6 @@ Definition pwedge_left : L -> R :=
   wedge_fun 
     (wedge_fun (\pi_(R) \o inl) (\pi_(R) \o inr \o \pi_(pwedge Y Z) \o inl))
     (\pi_(R) \o inr \o \pi_(pwedge Y Z) \o inr).
-
 Definition pwedge_right : R -> L :=
   wedge_fun 
     (\pi_(L) \o inl \o \pi_(pwedge X Y) \o inl)
@@ -2088,12 +2095,167 @@ by move=> ?; apply: continuous_comp => //; exact: pi_continuous.
 Qed.
 
 End wedge_associate.
-
-(*
-TODO: 
-sum of normal is normal
-closed continuous surjective f takes normal to normal
-quotient by closed preserves normal
-wedge commutes
-wedge associates
 *)
+
+HB.instance Definition _ {X : topologicalType} (A : set X) :=
+  Topological.copy (set_type A) (weak_topology set_val).
+
+Section path_join_assoc. 
+Context (i : topologicalType) (zero : i) (one : i).
+Let i_i := @wedge i i one zero.
+Context (wi : i -> i_i) (iw : i_i -> i).
+
+Local Open Scope quotient_scope.
+Hypothesis wiK : cancel wi iw.
+Hypothesis iwK : cancel iw wi.
+Hypothesis wi_cts : continuous wi.
+Hypothesis iw_cts : continuous iw.
+Hypothesis iwone : iw (\pi_(i_i) (inr one)) = one.
+Hypothesis iwzero : iw (\pi_(i_i) (inl zero)) = zero.
+Lemma wione : wi one =  \pi_(i_i) (inr one).
+Proof. by rewrite -[_ (inr one)]iwK iwone. Qed.
+Lemma wizero : wi zero = (\pi_(i_i) (inl zero)).
+Proof. by rewrite -[_ (inl zero)]iwK iwzero. Qed.
+
+Definition path_concat {T : topologicalType} (f g : i -> T) := wedge_fun f g \o wi.
+
+Notation "f '<>' g" := (path_concat f g).
+
+Lemma conacat_cts {T : topologicalType} (f g : i -> T) : 
+  f one = g zero -> continuous f -> continuous g -> 
+  continuous (f <> g).
+Proof.
+move=> ? ? ? ?; apply: continuous_comp; first exact: wi_cts.
+exact: wedge_continuous.
+Qed.
+
+Lemma conact_cstr {T : topologicalType} (f : i -> T) k : f one = k -> 
+  f <> (fun=> k) = f \o (wedge_fun id (fun=> one) \o wi).
+Proof.
+move=> f1k; rewrite compA wedge_comp // /path_concat.
+by congr(wedge_fun _ _ \o _); apply/funext=> ?; rewrite /= f1k.
+Qed.
+
+Lemma conact_cstl {T : topologicalType} (f : i -> T) k : f zero = k -> 
+  (fun=> k) <> f  = f \o (wedge_fun (fun=> zero) id \o wi).
+Proof.
+move=> f1k; rewrite compA wedge_comp // /path_concat.
+by congr(wedge_fun _ _ \o _); apply/funext=> ?; rewrite /= f1k.
+Qed.
+
+Let ii_i := (wedge (\pi_(i_i) (inr one)) zero).
+Let i_ii := (wedge one (\pi_(i_i) (inl zero))).
+Opaque ii_i.
+Opaque i_ii.
+
+
+Let unsplitl : ii_i -> i_i := 
+  wedge_fun (\pi_(i_i) \o inl \o iw) (\pi_(i_i) \o inr).
+Let unsplitl_unsplit : ii_i -> i := iw \o unsplitl.
+
+Let splitl : i_i -> ii_i := 
+  wedge_fun (\pi_(ii_i) \o inl \o wi) (\pi_(ii_i) \o inr).
+Let splitl_split : i -> ii_i := splitl \o wi.
+
+Let unsplitr : i_ii -> i_i := 
+  wedge_fun (\pi_(i_i) \o inl) (\pi_(i_i) \o inr \o iw) .
+Let unsplitr_unsplit : i_ii -> i := iw \o unsplitr.
+
+Let wedge_wedge_fun {T: topologicalType} (f g h : i -> T) : ii_i -> T := wedge_fun (wedge_fun f g) h.
+Let wedge_fun_wedge {T: topologicalType} (f g h : i -> T) : i_ii -> T := wedge_fun f (wedge_fun g h).
+
+Let associ : ii_i -> i_ii := 
+  wedge_wedge_fun 
+    (\pi_(i_ii) \o inl) 
+    (\pi_(i_ii) \o inr \o \pi_(i_i) \o inl)
+    (\pi_(i_ii) \o inr \o \pi_(i_i) \o inr).
+
+Section assoc.
+Context {T : topologicalType} (f g h : i -> T).
+Hypothesis fg : f one = g zero.
+Hypothesis gh : g one = h zero.
+
+Local Lemma concat_assocl : 
+  ((f <> g) <> h) \o unsplitl_unsplit = wedge_wedge_fun f g h.
+Proof.
+apply/funext => z /=.
+rewrite -[z](@reprK _ ii_i); case E: (repr z) => [ab|c]; first last.
+  rewrite /unsplitl_unsplit /unsplitl /comp. 
+  rewrite wedge_funr; first last.
+    by rewrite iwone wedge_pointE.
+  rewrite /path_concat [LHS]/= iwK wedge_funr; first last.
+    by rewrite /= wione wedge_funr. 
+  rewrite /wedge_wedge_fun wedge_funr // wedge_funr //.
+rewrite /unsplitl_unsplit /unsplitl/comp wedge_funl; first last.
+  by rewrite iwone wedge_pointE.
+rewrite /path_concat [LHS]/= iwK wedge_funl /comp ?iwK ?wione ?wedge_funr //.
+rewrite /wedge_wedge_fun wedge_funl //.
+rewrite wedge_funr //.
+Qed.
+
+Local Lemma concat_assocr : 
+  (f <> (g <> h)) \o unsplitr_unsplit  = 
+  wedge_fun_wedge f g h.
+Proof.
+apply/funext => z /=.
+rewrite -[z](@reprK _ i_ii); case E: (repr z) => [a|bc].
+  rewrite /unsplitr_unsplit /unsplitr /comp wedge_funl; first last.
+    by rewrite iwzero wedge_pointE. 
+  rewrite /path_concat [LHS]/= iwK wedge_funl; first last.
+    by rewrite /= wizero wedge_funl //. 
+  by rewrite /wedge_fun_wedge wedge_funl // wedge_funl //.
+rewrite /unsplitr_unsplit /unsplitr/comp wedge_funr; first last.
+  by rewrite iwzero wedge_pointE.
+rewrite /path_concat [LHS]/= iwK wedge_funr /comp ?iwK ?wizero ?wedge_funl //.
+rewrite /wedge_fun_wedge wedge_funr //.
+rewrite wedge_funl //.
+Qed.
+
+Local Lemma concat_associ : 
+  wedge_fun_wedge f g h  \o  associ = wedge_wedge_fun f g h.
+Proof.
+apply/funext => a /=; rewrite -[a](@reprK _ ii_i). 
+case E: (repr a) => [xy|z]; first last.
+  rewrite /associ /comp /wedge_wedge_fun.
+  rewrite wedge_funr; first last.
+    by rewrite wedge_funr /comp ?wedge_pointE //.
+  rewrite /wedge_wedge_fun wedge_funr; first last.
+    by rewrite wedge_funr /comp ?wedge_pointE //.
+  rewrite /wedge_fun_wedge wedge_funr; first last.
+    by rewrite wedge_funl /comp ?wedge_pointE //.
+  by rewrite wedge_funr.
+rewrite /associ /comp /wedge_wedge_fun wedge_funl; first last.
+  by rewrite wedge_funr /comp ?wedge_pointE //.
+rewrite /wedge_wedge_fun wedge_funl; first last.
+  by rewrite wedge_funr /comp ?wedge_pointE //.
+rewrite -[xy](@reprK _ i_i); case E2: (repr xy) => [x|y]; first last.
+  rewrite /wedge_fun_wedge wedge_funr ?wedge_pointE //. 
+  by rewrite ?wedge_funr ?wedge_funl.
+rewrite wedge_funl ?wedge_pointE // wedge_funl ?wedge_pointE //.
+by rewrite /wedge_fun_wedge wedge_funl // wedge_funl //.
+Qed.
+
+Local Lemma unsplitl_unsplitK : cancel splitl_split unsplitl_unsplit.
+Proof.
+move=> r; rewrite /splitl_split /splitl /comp.
+rewrite -[(wi r)](@reprK _ i_i). 
+case E: (repr (wi r)) => [xy|z]; first last.
+  rewrite wedge_funr ?wione ?wedge_pointE // /unsplitl_unsplit /unsplitl. 
+  rewrite /comp wedge_funr ?iwone ?wedge_pointE //.
+  by rewrite -E reprK wiK.
+rewrite wedge_funl ?wione ?wedge_pointE //.
+rewrite /unsplitl_unsplit /unsplitl /comp wedge_funl.  
+  by rewrite wiK -E reprK wiK.
+by rewrite iwone wedge_pointE. 
+Qed.
+
+Lemma concat_assoc: 
+  (f <> (g <> h)) \o unsplitr_unsplit \o associ \o splitl_split = 
+    ((f <> g) <> h).
+Proof.
+rewrite concat_assocr // concat_associ // -concat_assocl //.
+by apply/funext => ?; rewrite /comp unsplitl_unsplitK. 
+Qed.
+
+End assoc.
+End path_join_assoc.
