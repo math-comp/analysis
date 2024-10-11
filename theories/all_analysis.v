@@ -1,9 +1,5 @@
-From mathcomp Require Export constructive_ereal.
 From mathcomp Require Export ereal.
-From mathcomp Require Export reals.
 From mathcomp Require Export landau.
-From mathcomp Require Export Rstruct.
-From mathcomp Require Export Rstruct_topology.
 From mathcomp Require Export topology.
 From mathcomp Require Export function_spaces.
 From mathcomp Require Export cantor.
@@ -13,9 +9,7 @@ From mathcomp Require Export realfun.
 From mathcomp Require Export sequences.
 From mathcomp Require Export exp.
 From mathcomp Require Export trigo.
-From mathcomp Require Export nsatz_realtype.
 From mathcomp Require Export esum.
-From mathcomp Require Export real_interval.
 From mathcomp Require Export lebesgue_measure.
 From mathcomp Require Export forms.
 From mathcomp Require Export derive.
@@ -26,8 +20,6 @@ From mathcomp Require Export ftc.
 From mathcomp Require Export hoelder.
 From mathcomp Require Export probability.
 From mathcomp Require Export lebesgue_stieltjes_measure.
-From mathcomp Require Export signed.
-From mathcomp Require Export itv.
 From mathcomp Require Export convex.
 From mathcomp Require Export charge.
 From mathcomp Require Export kernel.
