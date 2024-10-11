@@ -6,7 +6,7 @@ From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval ereal reals.
 From mathcomp Require Import signed topology prodnormedzmodule function_spaces.
-From mathcomp Require Export separation_axioms.
+From mathcomp Require Export real_interval separation_axioms.
 
 (**md**************************************************************************)
 (* # Norm-related Notions                                                     *)
@@ -6049,3 +6049,116 @@ by have [j [Dj BiBj ij]] := maxD i Vi; move/(_ _ cBix) => ?; exists j.
 Qed.
 
 End vitali_lemma_infinite.
+
+Section set_itv_realType.
+Variable R : realType.
+Implicit Types x : R.
+
+Lemma set_itvK : {in neitv, cancel pred_set (@Rhull R)}.
+Proof.
+move=> [[[] x|[]] [[] y|[]]] /neitvP //;
+  rewrite /Rhull /= !(in_itv, inE)/= ?bnd_simp => xy.
+- rewrite asboolT// inf_itv// lexx/= xy asboolT// asboolT//=.
+  by rewrite asboolF//= sup_itv//= ltxx ?andbF.
+- by rewrite asboolT// inf_itv// ?asboolT// ?sup_itv// ?lexx ?xy.
+- by rewrite asboolT//= inf_itv// lexx asboolT// asboolF.
+- rewrite asboolT// inf_itv//= ltxx asboolF// asboolT//.
+  by rewrite sup_itv// ltxx andbF asboolF.
+  rewrite asboolT // inf_itv // ltxx asboolF // asboolT //.
+  by rewrite sup_itv // xy lexx asboolT.
+- by rewrite asboolT // inf_itv// ltxx asboolF // asboolF.
+- by rewrite asboolF // asboolT // sup_itv// ltxx asboolF.
+- by rewrite asboolF // asboolT // sup_itv// lexx asboolT.
+- by rewrite asboolF // asboolF.
+Qed.
+
+Lemma RhullT : Rhull setT = `]-oo, +oo[%R :> interval R.
+Proof. by rewrite /Rhull -set_itv_infty_infty asboolF// asboolF. Qed.
+
+Lemma RhullK : {in (@is_interval _ : set (set R)), cancel (@Rhull R) pred_set}.
+Proof. by move=> X /asboolP iX; apply/esym/is_intervalP. Qed.
+
+Lemma set_itv_setT (i : interval R) : [set` i] = setT -> i = `]-oo, +oo[.
+Proof.
+have [i0  /(congr1 (@Rhull _))|] := boolP (neitv i).
+  by rewrite set_itvK// => ->; exact: RhullT.
+by rewrite negbK => /eqP ->; rewrite predeqE => /(_ 0)[_]/(_ Logic.I).
+Qed.
+
+End set_itv_realType.
+
+Section Rhull_lemmas.
+Variable R : realType.
+Implicit Types (a b t r : R) (A : set R).
+
+Lemma Rhull_smallest A : [set` Rhull A] = smallest (@is_interval R) A.
+Proof.
+apply/seteqP; split; last first.
+  by apply: smallest_sub; [apply: interval_is_interval | apply: sub_Rhull].
+move=> x /= + I [Iitv AI]; rewrite /Rhull.
+have [|] := asboolP (has_lbound A) => lA; last first.
+  have /forallNP/(_ x)/existsNP[a] := lA.
+  move=> /existsNP[Aa /negP]; rewrite -ltNge => ax.
+  have [|]:= asboolP (has_ubound A) => uA; last first.
+    move=> ?; have /forallNP/(_ x)/existsNP[b] := uA.
+    move=> /existsNP[Ab /negP]; rewrite -ltNge => xb.
+    have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+    by rewrite ax xb.
+  have [As|NAs]/= := asboolP (A _) => xA.
+    by apply: (Iitv a (sup A)); by [apply: AI | rewrite ltW ?ax].
+  have [||b Ab xb] := @sup_gt _ A x; do ?by [exists a | rewrite (itvP xA)].
+  have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+  by rewrite ax xb.
+have [|]:= asboolP (has_ubound A) => uA; last first.
+  have /forallNP/(_ x)/existsNP[b] := uA.
+  move=> /existsNP[Ab /negP]; rewrite -ltNge => xb.
+  have [Ai|NAi]/= := asboolP (A _) => xA.
+    by apply: (Iitv (inf A) b); by [apply: AI | rewrite (ltW xb)].
+  have [||a Aa ax] := @inf_lt _ A x; do ?by [exists b | rewrite (itvP xA)].
+  have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+  by rewrite ax xb.
+have [Ai|NAi]/= := asboolP (A _); have [As|NAs]/= := asboolP (A _).
+- by apply: Iitv; apply: AI.
+- move=> xA.
+  have [||b Ab xb] := @sup_gt _ A x; do ?by [exists (inf A) | rewrite (itvP xA)].
+  have /(_ (inf A) b) := Iitv; apply; do ?by apply: AI.
+  by rewrite (itvP xA) (ltW xb).
+- move=> xA.
+  have [||a Aa ax] := @inf_lt _ A x; do ?by [exists (sup A) | rewrite (itvP xA)].
+  have /(_ a (sup A)) := Iitv; apply; do ?by apply: AI.
+  by rewrite (itvP xA) (ltW ax).
+have [->|/set0P AN0] := eqVneq A set0.
+  by rewrite inf0 sup0 itv_ge//= ltBSide/= ltxx.
+move=> xA.
+have [||a Aa ax] := @inf_lt _ A x; do ?by [|rewrite (itvP xA)].
+have [||b Ab xb] := @sup_gt _ A x; do ?by [|rewrite (itvP xA)].
+have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+by rewrite ax xb.
+Qed.
+
+Lemma le_Rhull : {homo (@Rhull R) : A B / (A `<=` B) >-> {subset A <= B}}.
+Proof.
+move=> A B AB; suff: [set` Rhull A] `<=` [set` Rhull B] by [].
+rewrite Rhull_smallest; apply: smallest_sub; first exact: interval_is_interval.
+by rewrite Rhull_smallest; apply: sub_smallest.
+Qed.
+
+Lemma neitv_Rhull A : ~~ neitv (Rhull A) -> A = set0.
+Proof.
+move/negPn/eqP => A0; rewrite predeqE => r; split => // /sub_Rhull.
+by rewrite A0.
+Qed.
+
+Lemma Rhull_involutive A : Rhull [set` Rhull A] = Rhull A.
+Proof.
+have [A0|/neitv_Rhull] := boolP (neitv (Rhull A)); first by rewrite set_itvK.
+by move=> ->; rewrite ?Rhull0 set_itvE Rhull0.
+Qed.
+
+End Rhull_lemmas.
+
+Lemma disj_itv_Rhull {R : realType} (A B : set R) : A `&` B = set0 ->
+  is_interval A -> is_interval B -> disjoint_itv (Rhull A) (Rhull B).
+Proof.
+by move=> AB0 iA iB; rewrite /disjoint_itv RhullK ?inE// RhullK ?inE.
+Qed.
