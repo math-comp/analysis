@@ -480,7 +480,7 @@ Lemma urysohn_ext_itv A B x y :
     f @` A `<=` [set x], f @` B `<=` [set y] & range f `<=` `[x, y]].
 Proof.
 move=> cA cB A0 xy; move/normal_separatorP : normalX => urysohn_ext.
-have /(@uniform_separatorP _ R)[f [cf f01 f0 f1]] := urysohn_ext _ _ cA cB A0.
+have /(@uniform_separatorP _ R)[f [cf f01 f0 f1]] := urysohn_ext R _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
   move=> t; apply: continuous_comp; first exact: cf.
   apply: (@continuousD R R^o).
