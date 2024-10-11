@@ -26,6 +26,7 @@ theories/ereal.v
 theories/reals.v
 theories/landau.v
 theories/Rstruct.v
+theories/Rstruct_topology.v
 theories/topology.v
 theories/separation_axioms.v
 theories/function_spaces.v

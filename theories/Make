@@ -12,6 +12,7 @@ ereal.v
 reals.v
 landau.v
 Rstruct.v
+Rstruct_topology.v
 topology.v
 separation_axioms.v
 function_spaces.v
