@@ -8,8 +8,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import fsbigop cardinality set_interval.
-Require Import reals signed topology.
-Require Export constructive_ereal.
+From mathcomp Require Import reals signed topology.
+From mathcomp Require Export constructive_ereal.
 
 (**md**************************************************************************)
 (* # Extended real numbers, classical part ($\overline{\mathbb{R}}$)          *)

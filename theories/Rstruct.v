@@ -25,9 +25,9 @@ liability. See the COPYING file for more details.
 (* # Compatibility with the real numbers of Coq                               *)
 (******************************************************************************)
 
-Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
-Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
-Require Import Rtrigo1 Reals.
+From Coq Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
+From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
+From Coq Require Import Rtrigo1 Reals.
 From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
 From mathcomp Require Import archimedean.
 From HB Require Import structures.
@@ -364,7 +364,7 @@ End ssreal_struct.
 
 Local Open Scope ring_scope.
 From mathcomp Require Import boolp classical_sets.
-Require Import reals.
+From mathcomp Require Import reals.
 
 Section ssreal_struct_contd.
 Implicit Type E : set R.
@@ -424,7 +424,7 @@ Implicit Types (x y : R) (m n : nat).
 
 (* equational lemmas about exp, sin and cos for mathcomp compat *)
 
-(* Require Import realsum. *)
+(* From mathcomp Require Import realsum. *)
 
 (* :TODO: One day, do this *)
 (* Notation "\Sum_ i E" := (psum (fun i => E)) *)
@@ -697,7 +697,7 @@ End bigmaxr.
 
 End ssreal_struct_contd.
 
-Require Import signed topology.
+From mathcomp Require Import signed topology.
 
 Section analysis_struct.
 

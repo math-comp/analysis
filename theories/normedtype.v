@@ -4,9 +4,9 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import cardinality set_interval.
-Require Import ereal reals signed topology prodnormedzmodule function_spaces.
-Require Export separation_axioms.
+From mathcomp Require Import cardinality set_interval ereal reals.
+From mathcomp Require Import signed topology prodnormedzmodule function_spaces.
+From mathcomp Require Export separation_axioms.
 
 (**md**************************************************************************)
 (* # Norm-related Notions                                                     *)

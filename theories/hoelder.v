@@ -2,10 +2,10 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop .
-Require Import signed reals ereal topology normedtype sequences real_interval.
-Require Import esum measure lebesgue_measure lebesgue_integral numfun exp.
-Require Import convex itv.
+From mathcomp Require Import cardinality fsbigop signed reals ereal.
+From mathcomp Require Import topology normedtype sequences real_interval.
+From mathcomp Require Import esum measure lebesgue_measure lebesgue_integral.
+From mathcomp Require Import numfun exp convex itv.
 
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)

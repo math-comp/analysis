@@ -3,8 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum interval rat.
 From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality.
-Require Import reals signed topology function_spaces separation_axioms.
+From mathcomp Require Import cardinality reals signed.
+From mathcomp Require Import topology function_spaces separation_axioms.
 
 (**md**************************************************************************)
 (* # The Cantor Space and Applications                                        *)

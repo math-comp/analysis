@@ -1,4 +1,4 @@
--R . mathcomp.classical
+-Q . mathcomp.classical
 
 -arg -w -arg -parsing
 -arg -w -arg +undeclared-scope

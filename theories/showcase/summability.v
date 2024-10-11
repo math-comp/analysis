@@ -1,10 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-Require Reals.
+From Coq Require Reals.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import interval zmodp.
 From mathcomp Require Import boolp classical_sets.
-Require Import ereal reals Rstruct signed topology normedtype.
+From mathcomp Require Import ereal reals Rstruct signed topology normedtype.
 
 (**md**************************************************************************)
 (* This file proposes a replacement for the definition `summable` (file       *)

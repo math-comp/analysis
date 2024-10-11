@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import set_interval.
-Require Import reals ereal signed topology normedtype landau.
+From mathcomp Require Import reals ereal signed topology normedtype landau.
 
 (**md**************************************************************************)
 (* # Definitions and lemmas about sequences                                   *)
