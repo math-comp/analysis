@@ -25,6 +25,7 @@ theories/constructive_ereal.v
 theories/reals.v
 theories/landau.v
 theories/Rstruct.v
+theories/Rstruct_topology.v
 
 theories/topology_theory/topology.v
 theories/topology_theory/bool_topology.v

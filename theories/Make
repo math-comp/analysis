@@ -11,6 +11,7 @@ constructive_ereal.v
 reals.v
 landau.v
 Rstruct.v
+Rstruct_topology.v
 
 topology_theory/topology.v
 topology_theory/bool_topology.v
