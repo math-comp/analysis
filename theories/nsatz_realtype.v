@@ -1,6 +1,6 @@
 From Coq Require Import Nsatz.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum.
-From mathcomp Require Import boolp reals ereal.
+From mathcomp Require Import boolp reals constructive_ereal.
 
 (**md**************************************************************************)
 (* # nsatz for realType                                                       *)
