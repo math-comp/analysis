@@ -1,0 +1,14 @@
+-Q . mathcomp.altreals
+
+-arg -w -arg -parsing
+-arg -w -arg +undeclared-scope
+-arg -w -arg +non-primitive-record
+-arg -w -arg -ambiguous-paths
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -projection-no-head-constant
+
+xfinmap.v
+discrete.v
+realseq.v
+realsum.v
+distr.v
