@@ -1545,13 +1545,20 @@ End cartesian_closed.
 
 End currying.
 
+(* TODO: move to mathcomp_extras along with associativity stuff*)
+Definition sum_fun {X Y Z : Type} (f : X -> Z) (g : Y -> Z) (xy : X + Y) := 
+  match xy with
+  | inl x => f x
+  | inr y => g y
+  end.
+
 Section sum_topology.
 Context {X Y : topologicalType}.
 
 Definition sum_nbhs (xy : X + Y) : set_system (X + Y) := 
   match xy with 
-  | inl x => inl @ nbhs x 
-  | inr y => inr @ nbhs y
+  | inl x => inl @ x 
+  | inr y => inr @ y
   end.
 
 HB.instance Definition _ := hasNbhs.Build (X + Y)%type sum_nbhs.
@@ -1564,19 +1571,29 @@ Proof. by case: xy => ? /=; apply: nbhs_singleton. Qed.
 
 Local Lemma sum_nbhs_nbhs xy A: sum_nbhs xy A -> sum_nbhs xy (sum_nbhs^~ A).
 Proof. 
-case: xy => z /=; rewrite nbhs_simpl /=. 
+case: xy => z /=.
   rewrite nbhsE /=; case => W [oW Wz WlA].
   exists W; first by split.
-  move=> x /= ?; rewrite nbhs_simpl /=; move/filterS: WlA; apply.
+  move=> x /= ?; move/filterS: WlA; apply.
   by apply: open_nbhs_nbhs.
 rewrite nbhsE /=; case => W [oW Wz WlA].
 exists W; first by split.
-move=> y /= ?; rewrite nbhs_simpl /=; move/filterS: WlA; apply.
+move=> y /= ?; move/filterS: WlA; apply.
 by apply: open_nbhs_nbhs.
 Qed.
 
 HB.instance Definition _ := Nbhs_isNbhsTopological.Build (X + Y)%type 
   sum_nbhs_proper sum_nbhs_singleton sum_nbhs_nbhs.
+
+Variant sum_nbhs_spec (xy : X + Y) : 
+  (X + Y) -> (set_system (X + Y)) -> Type :=
+  (* we include this _ = _ term in the spec so callers can automatically
+     eliminate (inl _ = inr _) terms*)
+    TopologicalSumIsL (x : X) : sum_nbhs_spec xy (inl x) (inl @ x)
+  | TopologicalSumIsR (y : Y) : sum_nbhs_spec xy (inr y) (inr @ y).
+
+Lemma sum_nbhs_specP (xy : X + Y) : sum_nbhs_spec xy xy (nbhs xy).
+Proof. by case: xy => // ?; constructor. Qed.
 
 Lemma inl_continuous : continuous inl. 
 Proof. by move=> ? ?. Qed.
@@ -1586,55 +1603,40 @@ Proof. by move=> ? ?. Qed.
 
 Lemma inl_open_map (A : set X) : open A -> open (inl@` A).
 Proof. 
-move=> oA; rewrite openE=> ?; case=> x Ax <-; rewrite /interior /nbhs /=.
-rewrite nbhs_simpl /=.
+move=> oA; rewrite openE /interior /= => ?. 
+case: sum_nbhs_specP => ? [] //= ? ? [<-].
 have /filterS := @preimage_image _ (X + Y) inl A; apply.
 exact: open_nbhs_nbhs.
 Qed.
 
 Lemma inr_open_map (A : set Y) : open A -> open (inr@` A).
 Proof. 
-move=> oA; rewrite openE=> ?; case=> y Ay <-; rewrite /interior /nbhs /=.
-rewrite nbhs_simpl /=.
+move=> oA; rewrite openE /interior /= => ?. 
+case: sum_nbhs_specP => ? [] //= ? ? [<-].
 have /filterS := @preimage_image _ (X + Y) inr A; apply.
 exact: open_nbhs_nbhs.
 Qed.
 
 Lemma inl_nbhs (x : X) (U : set X) : nbhs x U -> nbhs (inl x) (inl @` U).
-Proof. 
-rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply.
-exact: preimage_image.
-Qed.
+Proof. by move/filterS; apply; exact: preimage_image. Qed.
 
 Lemma inr_nbhs (y : Y) (U : set Y) : nbhs y U -> nbhs (inr y) (inr @` U).
-Proof. 
-rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply.
-exact: preimage_image.
-Qed.
+Proof. by move/filterS; apply; exact: preimage_image. Qed.
 
-Lemma sum_openP (xy : X + Y) (U : set (X + Y)) : 
+Lemma sum_openP (U : set (X + Y)) : 
   open U <-> (open (inl@^-1` U) /\ open (inr@^-1` U)).
 Proof.
 split.
   move=> oU; split; first by have /continuousP := inl_continuous; apply.
   by have /continuousP := inr_continuous; apply.
-case=> Ol Or; rewrite openE; case => z //= ?. 
-  apply: inl_continuous; rewrite /nbhs /= nbhs_simpl.
-  exact: open_nbhs_nbhs.
-apply: inr_continuous; rewrite /nbhs /= nbhs_simpl.
-exact: open_nbhs_nbhs.
+case=> Ol Or; rewrite openE /interior => ?. 
+case: sum_nbhs_specP => ? /= ?; exact: open_nbhs_nbhs.
 Qed.
 
-Definition lift_sum {Z : topologicalType} (f : X -> Z) (g : Y -> Z) (xy : X + Y) := 
-  match xy with
-  | inl x => f x
-  | inr y => g y
-  end.
-
 Lemma sum_continuous {Z : topologicalType} (f : X -> Z) (g : Y -> Z) : 
-  continuous f -> continuous g -> continuous (lift_sum f g).
+  continuous f -> continuous g -> continuous (sum_fun f g).
 Proof.
-move=> ctsf ctsg [x|y] U nU /=; rewrite nbhs_simpl/= /nbhs/= nbhs_simpl /=.
+move=> ctsf ctsg [x|y] U nU /=.
   by apply: inl_continuous; exact: ctsf.
 by apply: inr_continuous; exact: ctsg.
 Qed.
@@ -1708,7 +1710,7 @@ Qed.
 
 Local Lemma sum_entourage_nbhsE: nbhs = nbhs_ sum_entourage.
 Proof.
-rewrite funeq2E; case=> [x|y] U; rewrite /nbhs /= nbhs_simpl propeqE; split.
+rewrite funeq2E=> ? U; case: sum_nbhs_specP => [x|y] /=; rewrite propeqE; split.
 - rewrite -nbhs_entourageE; case=> E entE xEU.
   exists ((map_pair inl @` E) `|` (map_pair inr @` setT)) => //.
     by exists (E, setT) => //=; split => //=; exact: entourageT.
@@ -1735,9 +1737,9 @@ HB.instance Definition _ := @Nbhs_isUniform_mixin.Build (X + Y)%type _
   sum_entourage_nbhsE.
 
 Lemma sum_unif_continuous {Z : uniformType} (f : X -> Z) (g : Y -> Z) : 
-  unif_continuous f -> unif_continuous g -> unif_continuous (lift_sum f g).
+  unif_continuous f -> unif_continuous g -> unif_continuous (sum_fun f g).
 Proof.
-move=> uf ug E; rewrite ?nbhs_simpl /= => entE.
+move=> uf ug E entE.
 have  := uf _ entE; have  := ug _ entE; rewrite ?nbhs_simpl /=.
 set L := (L in @entourage X L); set R := (R in @entourage Y R).
 move=> eR eL; exists (L,R); first by split.
@@ -1797,7 +1799,7 @@ Context {X Y : topologicalType}.
 Lemma sum_hausdorff : hausdorff_space X -> hausdorff_space Y -> 
   hausdorff_space (X + Y)%type.
 Proof.
-move=> hX hY [a|b][c|d] cl.
+move=> hX hY => ? ?; rewrite/cluster /=; (do 2 case: sum_nbhs_specP) => ? ? cl.
 - congr(_ _); apply: hX => U V Ua Vc.
   have [] := cl (inl @` U) (inl @` V); [exact/inl_nbhs | exact/inl_nbhs |].
   by case => //= [?|?] [][] z ? <- [?] /[swap] [] [->] ?; exists z.
@@ -1847,7 +1849,7 @@ Context {X Y Z : topologicalType}.
 Lemma continuous_sum_left : continuous (@sum_left X Y Z).
 Proof.
 have -> : @sum_left X Y Z = 
-        lift_sum (lift_sum (inl) (inr \o inl)) (inr \o inr).
+        sum_fun (sum_fun (inl) (inr \o inl)) (inr \o inr).
   exact/funext.
 apply: sum_continuous; last by move => ?.
 by apply: sum_continuous => ? //=.
@@ -1856,7 +1858,7 @@ Qed.
 Lemma continuous_sum_right : continuous (@sum_right X Y Z).
 Proof.
 have -> : @sum_right X Y Z = 
-        lift_sum (inl \o inl) (lift_sum (inl \o inr) (inr)) .
+        sum_fun (inl \o inl) (sum_fun (inl \o inr) (inr)) .
   exact/funext.
 apply: sum_continuous; first by move => ?.
 by apply: sum_continuous => ? //=.
@@ -1886,22 +1888,25 @@ by rewrite eqEsubset; split => x /=; have <- // := (rgE x);
 Qed.
 End quotients.
 
-Module QuotientTopologies.
-#[export, non_forgetful_inheritance]
-HB.instance Definition _ {T : topologicalType} {Q : quotType T} := 
-  Topological.copy Q (quotient_topology Q).
-Module Exports. HB.reexport. End Exports.
-End QuotientTopologies.
-Import QuotientTopologies.Exports.
+HB.instance Definition _ {X : topologicalType} (A : set X) :=
+  Topological.copy (set_type A) (weak_topology set_val).
+
+Lemma openX {X Y : topologicalType} (A : set X) (B : set Y) : 
+  open A -> open B -> open (A `*` B).
+Proof.
+move=> oA oB; move=> [a b] [/= ? ?]; exists (A, B).
+  by split; apply: open_nbhs_nbhs.
+by case=> ? ? [] /=.
+Qed.
 
 Section wedge.
 Local Open Scope quotient_scope.
-Context {X Y : topologicalType} (x : X) (y : Y).
+Context {X Y : topologicalType} (x0 : X) (y0 : Y).
 
 Let wedge_rel' (a b : X + Y) := 
   [|| a == b, 
-  (a == inl x) && (b == inr y) |
-  (b == inl x) && (a == inr y)].
+  (a == inl x0) && (b == inr y0) |
+  (b == inl x0) && (a == inr y0)].
 
 Local Lemma wedge_rel_refl : reflexive wedge_rel'.
 Proof. by move=> ?; rewrite /wedge_rel' eqxx. Qed.
@@ -1925,26 +1930,156 @@ by move=> _ ->; exact: wedge_rel_refl.
 Qed.
 
 Definition wedge_rel := EquivRel _ wedge_rel_refl wedge_rel_sym wedge_rel_trans.
+Global Opaque wedge_rel.
 
 Definition wedge := {eq_quot wedge_rel}.
+Definition wedgel (x : X) : wedge := \pi_wedge (inl x).
+Definition wedger (y : Y) : wedge := \pi_wedge (inr y).
+
 HB.instance Definition _ := Topological.copy wedge (quotient_topology wedge).
-HB.instance Definition _ := isPointed.Build wedge (\pi_wedge (inl x)).
+HB.instance Definition _ := isPointed.Build wedge (wedgel x0).
 Global Opaque wedge.
 
-Definition wedge_fun {Z : topologicalType} f g : wedge -> Z := 
-  lift_sum f g \o repr.
+Lemma wedgel_continuous : continuous wedgel.
+Proof. by move=> ?; apply: continuous_comp => //; exact: pi_continuous. Qed.
+
+Lemma wedger_continuous : continuous wedger.
+Proof. by move=> ?; apply: continuous_comp => //; exact: pi_continuous. Qed.
+
+Lemma wedgel_nbhs (x : X) : 
+  closed [set x0] -> x != x0 -> wedgel @ x = nbhs (wedgel x).
+Proof.
+move=> clx0 xNx0; rewrite eqEsubset; split => U; first last.
+  by move=> ?; apply: wedgel_continuous.
+rewrite ?nbhsE /=; case => V [oV Vx VU].
+exists (wedgel @` (V `&` ~`[set x0])); first last.
+  by move=> ? /= [l] [Vl lx] <-; apply: VU.
+split; last by exists x => //; split => //=; apply/eqP.
+rewrite /open /= /quotient_open /wedgel /=.
+suff -> : \pi_wedge @^-1` (wedgel @` (V `&` ~`[set x0])) = 
+          inl @` (V `&` ~`[set x0]).
+  by apply: inl_open_map; apply: openI => //; exact: closed_openC.
+rewrite eqEsubset; split => ? /= [l [Vl] lNx0]; last by move=> <-; exists l.
+case/eqmodP/orP =>  [/eqP <- |]; first by exists l.
+case/orP => [/andP [/eqP []] |]; first by move: lNx0 => /[swap] <-.
+by case/andP => _ /eqP.
+Qed.
+
+Lemma wedger_nbhs (y : Y) : 
+  closed [set y0] -> y != y0 -> wedger @ y = nbhs (wedger y).
+Proof.
+move=> cly0 yNy0; rewrite eqEsubset; split => U; first last.
+  by move=> ?; apply: wedger_continuous.
+rewrite ?nbhsE /=; case => V [oV Vx VU].
+exists (wedger @` (V `&` ~`[set y0])); first last.
+  by move=> ? /= [l] [Vl ly] <-; apply: VU.
+split; last by exists y => //; split => //=; apply/eqP.
+rewrite /open /= /quotient_open /wedger /=.
+suff -> : \pi_wedge @^-1` (wedger @` (V `&` ~`[set y0])) = 
+          inr @` (V `&` ~`[set y0]).
+  by apply: inr_open_map; apply: openI => //; exact: closed_openC.
+rewrite eqEsubset; split => ? /= [l [Vl] lNy0]; last by move=> <-; exists l.
+case/eqmodP/orP =>  [/eqP <- |]; first by exists l.
+by case/andP => _ /eqP; case; move: lNy0 => /[swap] <-.
+Qed.
+
+Lemma wedge_openP (U : set wedge) :
+  open U <-> (open (wedgel @^-1` U) /\ open (wedger @^-1` U)).
+Proof.
+split.
+  by move=> oU; split; apply: open_comp => // ? _; 
+    apply: continuous_comp => //; apply: pi_continuous.
+case => olU orU.
+have : open (((inl @` (wedgel @^-1` U))) 
+    `|` ((@inr X Y) @` (wedger @^-1` U))).
+  apply: openU; apply/sum_openP => //; split.
+  - by (apply: open_comp; last (exact: inl_open_map)) => ? ?.
+  - by (apply: open_comp; last (exact: inl_open_map)) => ? ?.
+  - by (apply: open_comp; last (exact: inr_open_map)) => ? ?.
+  - by (apply: open_comp; last (exact: inr_open_map)) => ? ?.
+congr(open _).
+rewrite eqEsubset; split; case.
+- by move=> ? /= [][] a // Ua [] <-.
+- by move=> ? [][]b // ? [] <-.
+- by move=> a /= Ua; left; exists a.
+- by move=> a /= Ua; right; exists a.
+Qed.
+
+Lemma wedge_pointE : inr y0  = inl x0  %[mod wedge].
+Proof. by apply/eqmodP; apply/orP; right; apply/orP; right; rewrite ?eqxx. Qed.
+
+Lemma wedge_point_nbhs : 
+  nbhs (wedgel x0) = (wedgel @ x0) `&` (wedger @ y0).
+Proof.
+rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
+  rewrite ?nbhsE; case => /= V [/wedge_openP [oVl oVr] Vx0] VU; split.
+    by exists (wedgel @^-1` V) => //; apply: preimage_subset.
+  exists (wedger @^-1` V); last exact: preimage_subset.
+  by split => //; rewrite /= /wedger wedge_pointE.
+rewrite ?nbhsE /=; case; case=> P [oP Px0 PU] [Q [oQ Qy0 QU]].
+exists (wedgel @` P `|` wedger @` Q); first last.
+  by move=> q [] [] ? ? <-; [exact: PU | exact: QU].
+split; last by left; exists x0.
+apply/wedge_openP; split.
+  rewrite preimage_setU; have -> : wedgel @^-1` (wedgel @` P) = P.
+    rewrite eqEsubset; split => t; last by move => ?; exists t.
+    by case => ? ? /eqmodP /orP [/eqP [] <- | /orP [/andP [_ /eqP ]| /andP []]].
+  have -> : wedgel @^-1` (wedger @` Q) = [set x0].
+    rewrite eqEsubset; split => t.
+      by case=> ? ?/eqmodP /orP [ /eqP | /andP [/eqP [ ->]]].
+    by move=> ->; exists y0 => //; rewrite /wedgel/wedger wedge_pointE.
+  by rewrite setUidl => // => ? ->.
+rewrite preimage_setU; have -> : wedger @^-1` (wedger @` Q) = Q.
+  rewrite eqEsubset; split => t; last by move => ?; exists t.
+  by case => ? ? /eqmodP /orP [/eqP [] <- | /orP [/andP [_ /eqP ]| /andP []]]//.
+have -> : wedger @^-1` (wedgel @` P) = [set y0].
+  rewrite eqEsubset; split => t.
+    by case=> ? ?/eqmodP /orP [ /eqP | /andP [/andP [_ /eqP [ ->]]]].
+  by move=> ->; exists x0 => //; rewrite /wedgel/wedger wedge_pointE.
+by rewrite setUidr => // => ? ->.
+Qed.
+
+Variant wedge_nbhs_spec (z : wedge) : wedge -> set_system wedge -> Type := 
+  | WedgeIsL (x : X) of (x != x0):
+      wedge_nbhs_spec z (wedgel x) (wedgel @ x)
+  | WedgeIsR (y : Y) of (y != y0):
+      wedge_nbhs_spec z (wedger y) (wedger @ y)
+  | WedgePoint :
+      wedge_nbhs_spec z (wedgel x0) ((wedgel @ x0) `&` (wedger @ y0)).
+
+Lemma wedge_nbhs_specP (z : wedge) : closed [set x0] -> closed [set y0] -> 
+  wedge_nbhs_spec z z (nbhs z).
+Proof.
+move=> ? ?; rewrite -[z](@reprK _ wedge); case: (repr z).
+  move=> x; case : (pselect (x = x0)).
+    by move=> ->; rewrite wedge_point_nbhs; exact: WedgePoint.
+  by move=> /eqP xNx0; rewrite -wedgel_nbhs //; apply: WedgeIsL.
+move=> y; case : (pselect (y = y0)).
+  by move=> ->; rewrite wedge_pointE wedge_point_nbhs; exact: WedgePoint.
+by move=> /eqP yNy0; rewrite -wedger_nbhs //; apply: WedgeIsR.
+Qed.
+Lemma wedger_reprE (b : Y) : 
+  repr (wedger b) = inr b \/ (repr (wedger b) = inl x0 /\ b = y0).
+Proof.
+case: piP; case=> [l|r] /eqmodP /orP []; first by move/eqP => ->; left.
+- by case/orP=> /andP []/eqP // [] -> /eqP [] ->; right.
+- by move/eqP ->; left.
+by case/orP => /andP [] /eqP //.
+Qed.
+    
+Definition wedge_fun {Z : Type} f g : wedge -> Z := 
+  sum_fun f g \o repr.
 
 Lemma wedge_continuous {Z : topologicalType} (f : X -> Z) (g : Y -> Z) :
-  continuous f -> continuous g -> f x = g y -> continuous (wedge_fun f g).
+  continuous f -> continuous g -> f x0 = g y0 -> continuous (wedge_fun f g).
 Proof.
 move=> cf cg fxgy; apply: repr_comp_continuousE.
   exact: sum_continuous.
-by move=> /= a b /eqmodP /orP [/eqP -> //|] /orP [] /andP [/eqP ->] /eqP ->;
-  rewrite /lift_sum.
+by move=> /= a b /eqmodP /orP [/eqP -> //|] /orP [] /andP [/eqP ->] /eqP ->.
 Qed.
 
-Lemma wedge_reprl (a : X) : 
-  repr (\pi_wedge (inl a)) = inl a \/ (repr (\pi_wedge (inl a)) = inr y /\ a = x).
+Lemma wedgel_reprE (a : X) : 
+  repr (wedgel a) = inl a \/ (repr (wedgel a) = inr y0 /\ a = x0).
 Proof.
 case: piP; case=> [l|r] /eqmodP /orP []; first by case/eqP => ->; left.
 - by case/orP=> /andP [/eqP ->] /eqP -> //.
@@ -1953,46 +2088,33 @@ case/orP => /andP [/eqP]; first by case=> -> /eqP ->; right.
 by move=> -> /eqP -> //.
 Qed.
 
-Lemma wedge_reprr (b : Y) : 
-  repr (\pi_wedge (inr b)) = inr b \/ (repr (\pi_wedge (inr b)) = inl x /\ b = y).
-Proof.
-case: piP; case=> [l|r] /eqmodP /orP []; first by move/eqP => ->; left.
-- by case/orP=> /andP []/eqP // [] -> /eqP [] ->; right.
-- by move/eqP ->; left.
-by case/orP => /andP [] /eqP //.
-Qed.
-
-Lemma wedge_funl {Z : topologicalType} (f : X -> Z) g a: 
-  f x = g y -> wedge_fun f g (\pi_wedge (inl a)) = f a.
+Lemma wedge_funl {Z : Type} (f : X -> Z) g a: 
+  f x0 = g y0 -> wedge_fun f g (wedgel a) = f a.
 Proof. 
-move=> fxgy; rewrite /wedge_fun /=; case: (wedge_reprl a)=> [->|] //.
+move=> fxgy; rewrite /wedge_fun /=; case: (wedgel_reprE a)=> [->|] //.
 by case => -> ->; rewrite /= -fxgy.
 Qed.
 
-Lemma wedge_funr {Z : topologicalType} (f : X -> Z) g b: 
-  f x = g y -> wedge_fun f g (\pi_wedge (inr b)) = g b.
+Lemma wedge_funr {Z : Type} (f : X -> Z) g b: 
+  f x0 = g y0 -> wedge_fun f g (wedger b) = g b.
 Proof. 
-move=> fxgy; rewrite /wedge_fun /=; case: (wedge_reprr b)=> [->|] //.
+move=> fxgy; rewrite /wedge_fun /=; case: (wedger_reprE b)=> [->|] //.
 by case => -> ->; rewrite /= -fxgy.
 Qed.
 
-Lemma wedgeTE : 
-  (\pi_wedge \o inl) @` setT `|` (\pi_wedge \o inr) @` setT = [set: wedge].
+Lemma wedgeTE : wedgel @` setT `|` wedger @` setT = [set: wedge].
 Proof. 
 rewrite -subTset=> z; case E: (repr z) => [a | b] => //= _.
-  by left; exists a => //; rewrite -E reprK.
-by right; exists b => //; rewrite -E reprK.
+  by left; exists a => //; rewrite /wedgel -E reprK.
+by right; exists b => //; rewrite /wedger -E reprK.
 Qed.
-
-Lemma wedge_pointE : inr y  = inl x  %[mod wedge].
-Proof. by apply/eqmodP; apply/orP; right; apply/orP; right; rewrite ?eqxx. Qed.
 
 Lemma wedge_connected : connected [set: X] -> connected [set: Y] -> 
   connected [set: wedge].
 Proof.
 move=> cX cY; rewrite -wedgeTE; apply: connectedU.
-- exists (\pi_wedge (inl x)); split => //=; first by exists x.
-  exists y => //; exact: wedge_pointE.
+- exists (wedgel x0); split => //=; first by exists x0.
+  exists y0 => //; exact: wedge_pointE.
 - apply: connected_continuous_connected => //.
   apply: continuous_subspaceT => z; apply: continuous_comp => //.
   exact: pi_continuous.
@@ -2001,9 +2123,186 @@ move=> cX cY; rewrite -wedgeTE; apply: connectedU.
   exact: pi_continuous.
 Qed.
 
-Lemma wedge_compact : compact [set: X] -> compact [set: Y] -> 
-  compact [set: wedge].
+Lemma wedge_compact (A : set X) (B : set Y) : compact A -> compact B -> 
+  compact (wedgel @` A `|` wedger @` B).
 Proof.
+move=> cX cY; apply: compactU; apply: continuous_compact =>//.
+- apply: continuous_subspaceT => z; apply: continuous_comp => //.
+  exact: pi_continuous.
+- apply: continuous_subspaceT => z; apply: continuous_comp => //.
+  exact: pi_continuous.
+Qed.
+
+Definition wedge_prod : topologicalType := 
+  [set: X] `*` [set y0] `|` [set x0] `*` [set: Y].
+
+Lemma wedge_prodl (x : X) : (x,y0) \in
+  ([set: X] `*` [set y0] `|` [set x0] `*` [set: Y]).
+Proof. by apply/mem_set; left. Qed.
+
+Lemma wedge_prodr (y : Y) : (x0,y) \in
+  ([set: X] `*` [set y0] `|` [set x0] `*` [set: Y]).
+Proof. by apply/mem_set; right. Qed.
+
+Definition wedge_prod_fun : wedge -> wedge_prod :=
+  wedge_fun 
+    (fun x => @exist _ _ (x,y0) (wedge_prodl x)) 
+    (fun y => @exist _ _ (x0,y) (wedge_prodr y)).
+Lemma wedge_prod_fun_bij : bijective wedge_prod_fun.
+Proof.
+have pE : ((fun x => @exist _ _ (x,y0) (wedge_prodl x)) x0) =
+    ((fun y => @exist _ _ (x0,y) (wedge_prodr y))) y0 :> wedge_prod.
+    exact: eq_exist.
+rewrite -setTT_bijective; split => //.
+  move=> a b _ _; rewrite -[a](@reprK _ wedge) -[b](@reprK _ wedge). 
+  case Ea : (repr a) => [l1|r1]; case Eb : (repr b) => [l2|r2].
+  - rewrite /wedge_prod_fun /= ?wedge_funl //=.
+    by move=> R; have [ ->] := EqdepFacts.eq_sig_fst R. 
+  - rewrite /wedge_prod_fun /= ?wedge_funl //= ?wedge_funr //.
+    by move=> R; have [-> <-] := EqdepFacts.eq_sig_fst R; rewrite wedge_pointE. 
+  - rewrite /wedge_prod_fun /= ?wedge_funl //= ?wedge_funr //.
+    by move=> R; have [<- ->] := EqdepFacts.eq_sig_fst R; rewrite wedge_pointE.
+  - rewrite /wedge_prod_fun /= ?wedge_funr //=.
+    by move=> R; have [ ->] := EqdepFacts.eq_sig_fst R. 
+case=> /= [][x y] xyE _; have /set_mem [[_ ]|[ + _]] /= := xyE.
+  move=> yE; exists (wedgel x) => //; rewrite /wedge_prod_fun wedge_funl /=.
+    by apply: eq_exist; rewrite yE.
+  exact: eq_exist.
+move=> xE; exists (wedger y) => //; rewrite /wedge_prod_fun wedge_funr /=.
+  by apply: eq_exist; rewrite xE.
+exact: eq_exist.
+Qed.
+
+Lemma wedge_prod_continuous : continuous wedge_prod_fun.
+Proof.
+apply: wedge_continuous; last by exact: eq_exist.
+  apply/continuousP => ? [A oA <-]; rewrite -comp_preimage.
+  apply: open_comp => //;  set f := (set_val \o _).
+  have -> : (f = fun x => (x,y0)) by exact/funext. 
+  move=> ? ?; apply: continuous2_cvg => //; last exact: cvg_cst.
+  by have -> : (fun z => (z.1,z.2)) = (@id (X*Y)) by apply/funext; case.
+apply/continuousP => ? [A oA <-]; rewrite -comp_preimage.
+apply: open_comp => //;  set f := (set_val \o _).
+have -> : (f = fun y => (x0,y)) by exact/funext. 
+move=> ? ?; apply: continuous2_cvg => //; last exact: cvg_cst.
+by have -> : (fun z => (z.1,z.2)) = (@id (X*Y)) by apply/funext; case.
+Qed.
+
+Lemma wedge_prod_open (z : wedge) (A : set wedge) :
+  closed [set x0] -> closed [set y0] ->
+  nbhs z A -> nbhs (wedge_prod_fun z) (wedge_prod_fun @` A).
+Proof.
+move=> clx cly; case: wedge_nbhs_specP => //.
+- move=> x ? /=; rewrite nbhsE; case => B [? ? BA].
+  exists ((fun x => @exist _ _ (x,y0) (wedge_prodl x)) @` (B `&` ~`[set x0])).
+  split=> /=; first last.
+  + move=> ? /= [a] [? ?] <-; exists (wedgel a); first exact: BA.
+    by rewrite /wedge_prod_fun wedge_funl //; apply: eq_exist.
+  + exists x; first by split => //; exact/eqP. 
+    by rewrite // /wedge_prod_fun wedge_funl; apply:eq_exist.
+  exists ((B `&` ~`[set x0]) `*` setT).
+    by apply: openX; [apply: openI => //; exact: closed_openC | exact: openT].
+  rewrite eqEsubset; split; case; case=> a b /= p [].
+    case=> Ba ax0 _; exists a => //; apply: eq_exist; congr((_,_)).
+    by move:ax0; have /set_mem [[_ <- //] | [] <-] /= := p.
+  by move=> l [Bl lNx0] [<-]. 
+- move=> y ? /=; rewrite nbhsE; case => B [? ? BA].
+  exists ((fun y => @exist _ _ (x0,y) (wedge_prodr y)) @` (B `&` ~`[set y0])).
+  split=> /=; first last.
+  + move=> ? /= [b] [? ?] <-; exists (wedger b); first exact: BA.
+    by rewrite /wedge_prod_fun wedge_funr //; apply: eq_exist.
+  + exists y; first by split => //; exact/eqP. 
+    by rewrite // /wedge_prod_fun wedge_funr; apply:eq_exist.
+  exists (setT `*` (B `&` ~`[set y0])).
+    by apply: openX; [exact: openT | apply: openI => //; exact: closed_openC].
+  rewrite eqEsubset; split; case; case=> a b /= p [].
+    move=> _ [Bb by0]; exists b => //; apply: eq_exist; congr((_,_)).
+    by move:by0; have /set_mem [[_ <- //] | [] <-] /= := p.
+  by move=> ? [? ?] [_ <-].
+case; rewrite /= ?nbhsE;case=> L [oL Lx LA] [R [oR Ry RA]].
+exists ( ((fun x => @exist _ _ (x,y0) (wedge_prodl x)) @` L) `|` 
+    (fun y => @exist _ _ (x0,y) (wedge_prodr y)) @` R); first last.
+  case; case=> l r/= p [] /= []? ? [] E1 E2. 
+    exists (wedgel l); first by apply: LA; rewrite -E1.
+    by rewrite /wedge_prod_fun wedge_funl; apply: eq_exist; rewrite E2.
+  exists (wedger r); first by apply: RA; rewrite -E2.
+  by rewrite /wedge_prod_fun wedge_funr; apply: eq_exist; rewrite E1.
+split; first last.
+  by left; exists x0 => //; rewrite /wedge_prod_fun wedge_funl; apply:eq_exist.
+exists (L`*` R); first exact: openX.
+rewrite eqEsubset; split; case; case=> l r /= p [].
+- move=> Ll Rr; have /set_mem [[_] | [+ _]] /= := p.
+    by move=> E; left; exists l => //; apply: eq_exist; rewrite E.
+  by move=> E; right; exists r => //; apply: eq_exist; rewrite E.
+- by case=> ? ? [<-] <-; split => //.
+- by case=> ? ? [<-] <-; split => //.
+Qed.
+
+  
+    by rewrite /wedge_prod_fun wedge_funl //; apply: eq_exist.
+  split; first apply: openU.
+
+Lemma wedge_locally_compact : 
+  hausdorff_space X -> 
+  hausdorff_space Y ->
+  hausdorff_space wedge.
+Proof.
+rewrite ?open_hausdorff => hX hY => p q; rewrite -[p]reprK -[q]reprK. 
+case Ep: (repr p) => [l1|r1]; case Eq : (repr q) => [l2|r2].
+- move=> l1Nl2 ; have [] := hX l1 l2.
+    by move: l1Nl2; apply: contra_neq => ->.
+  case => U V [/set_mem] /= Ul1 /set_mem Ul2 [oU oV UV0].
+  exists (if U x then wedgel @` U `|` wedger @` setT, 
+         (if U x then wedgel @` U `|` wedger @` setT))
+    
+  
+move=> hX hY a b; rewrite -[a]reprK -[b]reprK; case:(repr a); case:(repr b).
+- move=> l1 l2 clsL; apply/eqmodP/orP; left; apply/eqP; congr(_ _).
+  apply: hX=> U V U1 V2.
+  have := clsL (wedgel @` U) (wedgel @` V).
+move=> lcX lcY z _. 
+have [U] := lcX x I; rewrite withinET => Ux [] cptU cU.
+have [V] := lcY y I; rewrite withinET => Vy [] cptV cV.
+have : compact((wedgel @` U) `|` (wedger @` V)) by exact : wedge_compact.
+have : compact((wedgel @` U) `|` (wedger @` V)) by exact : wedge_compact.
+rewrite -[z]reprK; case E : (repr z) => [a|b].
+  have [W] := lcX a I; rewrite withinET => Wa [] cptW cW.
+  rewrite withinET.
+  pose WUV := \pi_wedge @` ((inl @` W) `|` (inl @` U) `|` (inr @` V)).
+  exists WUV; last split. 
+  - rewrite /WUV ?image_setU.
+  
+
+case: (pselect (z = (\pi_wedge (inl x)))); first last.
+  move => ->; exists ((\pi_wedge \o inl) @` U `|` (\pi_wedge \o inr) @` V).
+    rewrite withinET; move: Ux Vy; rewrite nbhsE nbhsE.
+    case=> U' [oU Ux U'U] [V' [oV Vy V'V]].
+    exists ((\pi_wedge \o inl) @` U' `|` (\pi_wedge \o inr) @` V').
+    split; first last => /=.
+        move=> a /= [][e ?] <-; [left | right]; exists e => //.
+          exact: U'U.
+        exact: V'V.
+      by left; exists x => //.
+    have : open (inl @` U' `|` inr @` V').
+      by apply: openU; [exact: inl_open_map | exact: inr_open_map].
+    congr(open _).
+    rewrite eqEsubset; split; case => /=.
+    - by move=> ? [][a]// ? <-; left; exists a => //.
+    - by move=> ? [][b]// ? <-; right; exists b => //.
+    - move=> ? [][] a U'a /eqmodP /= /orP []/eqP //.
+
+
+      rewrite /quotient_open.
+      Search setU image.
+      have /continuousP := (@pi_continuous _ wedge); apply.
+      rewrite /open /= /quotient_open.
+      have /continuousP := (@pi_continuous _ wedge); apply.
+
+
+rewrite -[z]reprK withinET; case E: (repr z) => [l|r].
+    move=> ->.
+
+  
 rewrite -wedgeTE => cX cY; apply: compactU; apply: continuous_compact =>//.
 - apply: continuous_subspaceT => z; apply: continuous_comp => //.
   exact: pi_continuous.
@@ -2017,6 +2316,8 @@ Proof.
 move=> ghE; apply/funext => z /=; rewrite -[z]reprK /=. 
 by case E: (repr z); rewrite ?wedge_funl ?wedge_funr //= ghE.
 Qed.
+
+Lemma wedge_hausdorff
 
 End wedge.
 
@@ -2096,9 +2397,6 @@ Qed.
 
 End wedge_associate.
 *)
-
-HB.instance Definition _ {X : topologicalType} (A : set X) :=
-  Topological.copy (set_type A) (weak_topology set_val).
 
 Section path_join_assoc. 
 Context (i : topologicalType) (zero : i) (one : i).
