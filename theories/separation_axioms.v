@@ -177,7 +177,7 @@ Qed.
 Lemma accessible_closed_set1 : accessible_space -> forall x : T, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
-rewrite openE => y /eqP /T1 [U [oU yU xU]].
+rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
 rewrite /interior nbhsE /=; exists U; last by rewrite subsetC1.
 by split=> //; exact: set_mem.
 Qed.
@@ -1054,10 +1054,3 @@ by move=> y [] ? [->] -> /eqP.
 Qed.
 
 End perfect_sets.
-
-Section quotients.
-
-Local Open Scope quotient_scope.
-Context {T : topologicalType} {Q0 : quotType T}.
-Local Notation Q := (quotient_topology Q0).
-d
