@@ -1,3 +1,8 @@
+let
+  common-bundle = {
+    ssprove.job = false;
+  };
+in
 {
   ## DO NOT CHANGE THIS
   format = "1.0.0";
@@ -37,23 +42,25 @@
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
-  bundles."8.19".coqPackages = {
+  bundles."8.19".coqPackages = common-bundle // {
     coq.override.version = "8.19";
     mathcomp.override.version = "2.2.0";
   };
 
-  bundles."8.20".coqPackages = {
+  bundles."8.20".coqPackages = common-bundle // {
     coq.override.version = "8.20";
     mathcomp.override.version = "2.2.0";
+    ssprove.job = false;
   };
 
-  bundles."master" = { coqPackages = {
+  bundles."master" = { coqPackages = common-bundle // {
     coq.override.version = "master";
     coq-elpi.override.version = "master";
     hierarchy-builder.override.version = "master";
     mathcomp.override.version = "master";
     mathcomp-bigenough.override.version = "master";
     mathcomp-finmap.override.version = "master";
+    ssprove.job = false;
   }; ocamlPackages = { elpi.override.version = "1.19.2"; }; };
 
   ## Cachix caches to use in CI
