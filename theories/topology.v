@@ -4501,13 +4501,13 @@ Local Notation opc := (one_point_compactification X).
 HB.instance Definition _ := Choice.on opc.
 HB.instance Definition _ := Pointed.on opc.
 
-Definition one_point_nbhs (x : opc) : set_system opc := 
+Definition one_point_nbhs (x : opc) : set_system opc :=
   if x is Some x' then Some @ nbhs x' else
-     filter_from (compact `&` closed) (fun U => (Some @` ~`U) `|` [set None]).
+    filter_from (compact `&` closed) (fun U => (Some @` ~`U) `|` [set None]).
 
 Let one_point_filter (x : opc) : ProperFilter (one_point_nbhs x).
 Proof.
-case: x; first by move=>?; exact: fmap_proper_filter. 
+case: x; first by move=>?; exact: fmap_proper_filter.
 apply: filter_from_proper; last by move=> ? _; exists None; right.
 apply: filter_from_filter.
   by exists set0; split; [exact: compact0 | exact: closed0].
@@ -4523,7 +4523,7 @@ case: x; first by move=> x' /= /nbhs_singleton.
 by case=> W _; apply; right.
 Qed.
 
-Let one_point_nbhs_nbhs (p : opc) (A : set opc) : 
+Let one_point_nbhs_nbhs (p : opc) (A : set opc) :
   one_point_nbhs p A -> one_point_nbhs p (one_point_nbhs^~ A).
 Proof.
 case: p.
@@ -4537,7 +4537,7 @@ Qed.
 
 HB.instance Definition _ := hasNbhs.Build opc one_point_nbhs.
 
-HB.instance Definition _ := @Nbhs_isNbhsTopological.Build opc 
+HB.instance Definition _ := @Nbhs_isNbhsTopological.Build opc
   one_point_filter one_point_singleton one_point_nbhs_nbhs.
 
 Lemma opc_compact : compact [set: opc].
@@ -4550,18 +4550,18 @@ have P'F : forall x, W x -> \near x & F, P F (Some x).
   exact: FT (Some x) I.
 move/compact_near_coveringP/(_ _ F _ FF P'F):cptW => cWP.
 near=> j => z _; case: z; first last.
-  apply: (UIP (None,j)); split => //=; first by apply: WU; right.
+  apply: (UIP (None, j)); split => //=; first by apply: WU; right.
   exact: (near nfI _).
 move=> z; case: (pselect (W z)); first by move=> ?; exact: (near cWP).
-move=> ?; apply: (UIP (Some z,j)); split => //=. 
+move=> ?; apply: (UIP (Some z,j)); split => //=.
   by apply: WU; left; exists z.
 exact: (near nfI _).
 Unshelve. all: by end_near. Qed.
 
-Lemma opc_some_nbhs (x : X) (U : set X) : 
+Lemma opc_some_nbhs (x : X) (U : set X) :
   nbhs x U -> @nbhs _ opc (Some x) (Some @` U).
 Proof.
-rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply; exact: preimage_image.
+by rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply; exact: preimage_image.
 Qed.
 
 Lemma opc_some_continuous : continuous (Some : X -> opc).
@@ -4569,14 +4569,14 @@ Proof. by move=> x U. Qed.
 
 Lemma opc_open_some (U : set X) : open U -> @open opc (Some @` U).
 Proof.
-rewrite ?openE /= => Uo ? /= [x /[swap] <- Ux] /=. 
-by apply: opc_some_nbhs; apply: Uo.
+rewrite ?openE /= => Uo ? /= [x /[swap] <- Ux] /=.
+by apply: opc_some_nbhs; exact: Uo.
 Qed.
 
-Lemma opc_weak_topology : 
-  @nbhs _ (@weak_topology X opc Some) = @nbhs _ X.
-Proof. 
-rewrite funeq2E=> x U; apply/propeqP; split; rewrite /(@nbhs _ (weak_topology _)) /=.
+Lemma opc_weak_topology : @nbhs _ (@weak_topology X opc Some) = @nbhs _ X.
+Proof.
+rewrite funeq2E=> x U; apply/propeqP; split;
+    rewrite /(@nbhs _ (weak_topology _)) /=.
   case => V [[/= W] oW <- /= Ws] /filterS; apply; apply: opc_some_continuous.
   exact: oW.
 rewrite nbhsE; case => V [? ? ?]; exists V; split => //.
