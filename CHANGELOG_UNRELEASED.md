@@ -151,16 +151,16 @@
 - moved from `topology.v` to `boolp.v`:
   + lemmas `bigmax_geP`, `bigmax_gtP`, `bigmin_leP`, `bigmin_ltP`
 - in file `normedtype.v`,
-  + new definition `type`.
+  + new definition `type` (in module `completely_regular_uniformity`)
   + new lemmas `normal_completely_regular`, `completely_reg_opc`,
     `nbhs_opc_weakE`, `locally_compact_completely_regular`, and
     `completely_regular_regular`.
+
 - in file `topology.v`,
   + new definitions `one_point_compactification`, and `one_point_nbhs`.
-  + new lemmas `opc_compact`, `opc_some_nbhs`, `opc_some_continuous`, 
-    `opc_open_some`, `opc_weak_topology`, and `opc_hausdorff`.
-- in file `separation_axioms.v`
-  + new lemmas `compact_normal_local` and `compact_normal`.
+  + new lemmas `compact_normal_local`, `compact_normal`, `opc_compact`,
+    `opc_some_nbhs`, `opc_some_continuous`, `opc_open_some`,
+    `opc_weak_topology`, and `opc_hausdorff`.
 
 ### Changed
 
@@ -168,30 +168,14 @@
      changed `completely_regular_space` to depend on uniform separators
      which removes the dependency on R.  The old formulation can be 
      recovered easily with uniform_separatorP.
-- in file `filter.v` generalized `smallest_filter_finI`.
 
-- moved from `topology.v` to `separation_axioms.v`: `set_nbhs`, `set_nbhsP`,
-    `accessible_space`, `kolmogorov_space`, `hausdorff_space`,
-    `compact_closed`, `discrete_hausdorff`, `compact_cluster_set1`,
-    `compact_precompact`, `open_hausdorff`, `hausdorff_accessible`,
-    `accessible_closed_set1`, `accessible_kolmogorov`,
-    `accessible_finite_set_closed`, `subspace_hausdorff`, `order_hausdorff`,
-    `ball_hausdorff`, `Rhausdorff`, `close`, `closeEnbhs`, `closeEonbhs`,
-    `close_sym`, `cvg_close`, `close_refl`, `cvgx_close`, `cvgi_close`,
-    `cvg_toi_locally_close`, `closeE`, `close_eq`, `cvg_unique`, `cvg_eq`,
-    `cvgi_unique`, `close_cvg`, `lim_id`, `lim_near_cst`, `lim_cst`,
-    `entourage_close`, `close_trans`, `close_cvgxx`, `cvg_closeP`,
-    `ball_close`, `normal_space`, `regular_space`, `compact_regular`,
-    `uniform_regular`, `totally_disconnected`, `zero_dimensional`,
-    `discrete_zero_dimension`, `zero_dimension_totally_disconnected`,
-    `zero_dimensional_ray`, `type`, `countable_uniform_bounded`,
-    `countable_uniform`, `sup_pseudometric`, `countable_uniformityT`, `gauge`,
-    `iter_split_ent`, `gauge_ent`, `gauge_filter`, `gauge_refl`, `gauge_inv`,
-    `gauge_split`, `gauge_countable_uniformity`, `uniform_pseudometric_sup`,
-    `perfect_set`, `perfectTP`, and `perfectTP_ex`.
 ### Renamed
 
 ### Generalized
+
+- in `num_topology.v` (new file):
+  + lemma `nbhs0_lt` generalized from `realType` to `realFieldType`
+- in file `filter.v` generalized `smallest_filter_finI`.
 
 ### Deprecated
 
