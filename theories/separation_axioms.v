@@ -258,21 +258,22 @@ Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
 Proof. exact: order_hausdorff. Qed.
 
 Lemma opc_hausdorff {X : topologicalType} : locally_compact [set: X] ->
-   hausdorff_space X -> hausdorff_space (one_point_compactification X).
+  hausdorff_space X -> hausdorff_space (one_point_compactification X).
 Proof.
 move=> lcpt hsdfX [x|] [y|] //=.
-- move=> clxy; congr(_ _); apply: hsdfX=> U V Ux Vy.
+- move=> clxy; congr Some; apply: hsdfX => U V Ux Vy.
   have [] := clxy (Some @` U) (Some @` V).
-    by move/filterS: Ux; apply; apply: preimage_image.
-    by move/filterS: Vy; apply; apply: preimage_image.
+    by move/filterS: Ux; apply; exact: preimage_image.
+    by move/filterS: Vy; apply; exact: preimage_image.
   case=> [?|] [] /= [// p /[swap] /Some_inj <- ?] [q /[swap] /Some_inj -> ?].
   by exists p.
 - have [U] := lcpt x I; rewrite withinET => Ux [] cU clU.
-  case/(_ (Some @` U) ((Some @` (~` U)) `|` [set None])); first exact: opc_some_nbhs.
-    by exists U.
-  by case => [?|] [][]// z /[swap] /Some_inj <- ? [] //= [? /[swap] /Some_inj ->].
+  case/(_ (Some @` U) (Some @` (~` U) `|` [set None])).
+  + exact: opc_some_nbhs.
+  + by exists U.
+  + by move=> [?|] [][]// z /[swap]/Some_inj <- ? []//= [? /[swap]/Some_inj ->].
 - have [U] := lcpt y I; rewrite withinET => Uy [] cU clU.
-  case/(_ ((Some @` (~` U)) `|` [set None]) (Some @` U) ); first by exists U.
+  case/(_ (Some @` (~` U) `|` [set None]) (Some @` U) ); first by exists U.
     exact: opc_some_nbhs.
   case => [?|] [][]//= + [] ? // /[swap] /Some_inj ->.
   by case => ? /[swap] /Some_inj <-.
@@ -497,17 +498,17 @@ have snbC (U : set T) : Filter (filter_from (set_nbhs U) closure).
   by move=> P Q sAP sAQ; exists (P `&` Q); [apply filterI|exact: closureI].
 have [/(congr1 setC)|/set0P[b0 B0]] := eqVneq (~` B) set0.
   by rewrite setCK setC0 => ->; exact: filterT.
-have PsnA : ProperFilter (filter_from (set_nbhs (~`B)) closure).
+have PsnA : ProperFilter (filter_from (set_nbhs (~` B)) closure).
   apply: filter_from_proper => ? P.
-  by exists b0; apply/subset_closure; apply: nbhs_singleton; apply: P.
+  by exists b0; apply/subset_closure; apply: nbhs_singleton; exact: P.
 pose F := powerset_filter_from (filter_from (set_nbhs (~` B)) closure).
 have PF : Filter F by exact: powerset_filter_from_filter.
 have cvP (x : T) : A x -> \forall x' \near x & i \near F, (~` i) x'.
   move=> Ax; case/set_nbhsP: snAB => C [oC AC CB].
   have [] := @compact_regular x _ hT cptV _ C; first exact: AK.
-    by rewrite nbhsE /=; exists C => //; split => //; apply: AC.
+    by rewrite nbhsE /=; exists C => //; split => //; exact: AC.
   move=> D /nbhs_interior nD cDC.
-  have snBD : filter_from (set_nbhs (~` B)) closure (closure (~` (closure D))).
+  have snBD : filter_from (set_nbhs (~` B)) closure (closure (~` closure D)).
     exists (closure (~` closure D)) => [z|].
       move=> nBZ; apply: filterS; first exact: subset_closure.
       apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
@@ -517,7 +518,7 @@ have cvP (x : T) : A x -> \forall x' \near x & i \near F, (~` i) x'.
   have UclD : U `<=` closure (~` closure D).
     exact: (near (small_set_sub snBD) U).
   move=> Uy; have [z [/= + Dz]] := UclD _ Uy _ Dy.
-  by apply; apply: subset_closure.
+  by apply; exact: subset_closure.
 case/(_ _ _ _ _ cvP): cvA => R /= [RA Rmono [U RU] RBx].
 have [V /set_nbhsP [W [oW cBW WV] clVU]] := RA _ RU; exists (~` W).
   apply/set_nbhsP; exists (~` closure W); split.
@@ -525,7 +526,7 @@ have [V /set_nbhsP [W [oW cBW WV] clVU]] := RA _ RU; exists (~` W).
   - by move=> y /(RBx _ RU) + Wy; apply; exact/clVU/(closure_subset WV).
   - by apply: subsetC; exact/subset_closure.
 have : closed (~` W) by exact: open_closedC.
-by rewrite closure_id => <-; apply: subsetCl.
+by rewrite closure_id => <-; exact: subsetCl.
 Unshelve. all: by end_near. Qed.
 
 Lemma compact_normal : hausdorff_space T -> compact [set: T] -> normal_space.
