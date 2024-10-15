@@ -3807,19 +3807,23 @@ Hypothesis hsdf : hausdorff_space X.
 
 Let opc := @one_point_compactification X.
 
-Lemma completely_reg_opc : completely_regular_space opc.
+Lemma one_point_compactification_completely_reg : 
+  completely_regular_space opc.
 Proof.
-apply: normal_completely_regular.
-  by apply: compact_normal; [exact: opc_hausdorff|exact: opc_compact].
-by apply: hausdorff_accessible; exact: opc_hausdorff.
+apply: normal_completely_regular. 
+  apply: compact_normal.
+    exact: one_point_compactification_hausdorff.
+  exact: one_point_compactification_compact.
+by apply: hausdorff_accessible; exact: one_point_compactification_hausdorff.
 Qed.
 #[local]
-HB.instance Definition _ := Uniform.copy opc
-  (completely_regular_uniformity.type completely_reg_opc).
+HB.instance Definition _ := Uniform.copy opc 
+  (completely_regular_uniformity.type 
+    one_point_compactification_completely_reg).
 
 Let X' := @weak_topology X opc Some.
-Lemma nbhs_opc_weakE : @nbhs X X = nbhs_ (@entourage X').
-Proof. by rewrite nbhs_entourageE opc_weak_topology. Qed.
+Lemma nbhs_one_point_compactification_weakE : @nbhs X X = nbhs_ (@entourage X').
+Proof. by rewrite nbhs_entourageE one_point_compactification_weak_topology. Qed.
 
 #[local, non_forgetful_inheritance]
 HB.instance Definition _ := @Nbhs_isUniform.Build
@@ -3829,7 +3833,7 @@ HB.instance Definition _ := @Nbhs_isUniform.Build
   (@entourage_diagonal_subproof X')
   (@entourage_inv X')
   (@entourage_split_ex X')
-  nbhs_opc_weakE.
+  nbhs_one_point_compactification_weakE.
 
 Lemma locally_compact_completely_regular : completely_regular_space X.
 Proof. exact: uniform_completely_regular. Qed.

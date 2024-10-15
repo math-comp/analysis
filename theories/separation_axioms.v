@@ -257,8 +257,10 @@ Import numFieldTopology.Exports.
 Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
 Proof. exact: order_hausdorff. Qed.
 
-Lemma opc_hausdorff {X : topologicalType} : locally_compact [set: X] ->
-  hausdorff_space X -> hausdorff_space (one_point_compactification X).
+Lemma one_point_compactification_hausdorff {X : topologicalType} : 
+   locally_compact [set: X] ->
+   hausdorff_space X -> 
+   hausdorff_space (one_point_compactification X).
 Proof.
 move=> lcpt hsdfX [x|] [y|] //=.
 - move=> clxy; congr Some; apply: hsdfX => U V Ux Vy.
@@ -269,12 +271,12 @@ move=> lcpt hsdfX [x|] [y|] //=.
   by exists p.
 - have [U] := lcpt x I; rewrite withinET => Ux [] cU clU.
   case/(_ (Some @` U) (Some @` (~` U) `|` [set None])).
-  + exact: opc_some_nbhs.
+  + exact: one_point_compactification_some_nbhs.
   + by exists U.
   + by move=> [?|] [][]// z /[swap]/Some_inj <- ? []//= [? /[swap]/Some_inj ->].
 - have [U] := lcpt y I; rewrite withinET => Uy [] cU clU.
   case/(_ (Some @` (~` U) `|` [set None]) (Some @` U) ); first by exists U.
-    exact: opc_some_nbhs.
+    exact: one_point_compactification_some_nbhs.
   case => [?|] [][]//= + [] ? // /[swap] /Some_inj ->.
   by case => ? /[swap] /Some_inj <-.
 Qed.
