@@ -26,7 +26,9 @@
   + Section `prod_NormedModule` now depends on a `numFieldType`
   
 ### Renamed
-
+- in normedtype.v
+  + Section `regular_topology` to `standard_topology`
+  
 ### Generalized
 
 ### Deprecated

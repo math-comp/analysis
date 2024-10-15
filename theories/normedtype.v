@@ -895,7 +895,7 @@ HB.instance Definition _ :=
 
 HB.end.
 
-Section regular_topology.
+Section standard_topology.
 Variable R : numFieldType.
 HB.instance Definition _ := Num.NormedZmodule.on R^o.
 
@@ -903,7 +903,7 @@ HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Tvs_isNormedModule.Build R R^o (@normrM _).
 
-End regular_topology.
+End standard_topology.
 
 Lemma ball_itv {R : realFieldType} (x r : R) :
   ball x r = `]x - r, x + r[%classic.

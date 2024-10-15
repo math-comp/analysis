@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.  *)
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.  *)  
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
@@ -60,12 +60,11 @@ Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A -> 
   (0< lambda) -> (lambda < 1) -> lambda *: x + (1 - lambda) *: y \in A.
 
+
 HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
-    (*continuous (uncurry (@GRing.add E))*)
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
-    (* continuous (uncurry (@GRing.scale R E) : R^o * E -> E) *)
-  locally_convex : exists2 B : set (set E), (forall b, b \in B -> convex b) & basis B
+  locally_convex : exists2 B : set (set E), (forall b, b \in B -> convex b) & basis B;
 }.
 
 #[short(type="tvsType")]
@@ -159,14 +158,14 @@ move => P Q PQ; rewrite /entourage /= => [[U [HU Hxy]]]; exists U; split => //.
 by move => xy /Hxy /[!inE] /PQ.
 Qed.
 
-Lemma entourage_refl_subproof (A : set (E * E)) :
+Local Lemma entourage_refl (A : set (E * E)) :
   entourage A -> [set xy | xy.1 = xy.2] `<=` A.
 Proof.
 rewrite /entourage => -[/=U [U0 Uxy]] xy //= /eqP; rewrite -subr_eq0 => /eqP xyE.
 by rewrite -in_setE; apply: Uxy; rewrite xyE in_setE; apply: nbhs_singleton.
 Qed.
 
-Lemma entourage_inv_subproof :
+Local Lemma entourage_inv :
   forall A : set (E * E), entourage A -> entourage A^-1%relation.
 Proof.
 move => A [/=U [U0 Uxy]]; rewrite /entourage /=.
@@ -175,7 +174,7 @@ move => xy; rewrite in_setE -opprB => [[yx] Uyx] => /oppr_inj H.
 by apply: Uxy; rewrite in_setE /= -H.
 Qed.
 
-Lemma entourage_split_ex_subproof :
+Local Lemma entourage_split_ex :
       forall A : set (E * E),
       entourage A -> exists2 B : set (E * E), entourage B & (B \; B)%relation `<=` A.
 Proof.
@@ -193,7 +192,7 @@ have -> : xy.1 - xy.2= (xy.1 - z) + (z - xy.2).
 by apply: (Wadd( (xy.1 - z,z - xy.2))); split => //=.
 Qed.
 
-Lemma nbhsE_subproof : nbhs = nbhs_ entourage.
+Local Lemma nbhsE : nbhs = nbhs_ entourage.
 Proof.
 have lem : -1 != 0 :> R by rewrite oppr_eq0 oner_eq0.
 rewrite /nbhs_  /=; apply: funext => x; rewrite /filter_from /=.
@@ -222,9 +221,9 @@ Unshelve. all: by end_near.
 Qed.
 
 HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
-    entourage_filter entourage_refl_subproof
-    entourage_inv_subproof entourage_split_ex_subproof
-    nbhsE_subproof.
+    entourage_filter entourage_refl
+    entourage_inv entourage_split_ex
+    nbhsE.
 HB.end.
 
 Section Tvs_numDomain.
@@ -269,10 +268,10 @@ Unshelve. all: by end_near. Qed.
 
 End Tvs_numField.
 
-Section regular_topology.
+Section standard_topology.
 Variable R : numFieldType.
 
-Lemma regular_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
+Lemma standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
 Proof.
 (* NB(rei): this duplicates code that is also in normedtype.v *)
 move=> [/= x y]; apply/cvg_ballP => e e0 /=.
@@ -283,7 +282,7 @@ rewrite /ball_ /= => xy /= [nx ny].
 by rewrite /ball/= opprD addrACA (le_lt_trans (ler_normD _ _)) // (@splitr R e) ltrD //=.
 Qed.
 
-Lemma regular_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
+Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
 (* NB: This lemma is proved once again in normedtype, in a shorter way with much more machinery *)
 (*     To be rewritten once normedtype is split and tvs can depend on these lemmas *)  
@@ -337,7 +336,7 @@ rewrite (@le_lt_trans _ _ (`|k - z1| * M)) ?ler_wpM2l//.
 by rewrite -ltr_pdivlMr ?(lt_le_trans k1r) ?normr_gt0.
 Qed.
 
-Lemma regular_locally_convex :
+Lemma standard_locally_convex :
   exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
 Proof.
   exists [set B | exists x, exists r, B = ball x r].
@@ -369,8 +368,8 @@ Qed.
 
 HB.instance Definition _ :=
   Uniform_isTvs.Build R (R^o)%type
-regular_add_continuous regular_scale_continuous regular_locally_convex.
-End regular_topology.
+standard_add_continuous standard_scale_continuous standard_locally_convex.
+End standard_topology.
 
 Section prod_Tvs.
 Context (K : numFieldType) (E F : tvsType K).
