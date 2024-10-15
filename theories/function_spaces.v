@@ -1436,6 +1436,10 @@ move=> v Kv; have [[P Q] [Px Qv] PQfO] : nbhs (x, v) (f @^-1` O).
 by exists (Q, P) => // -[b a] /= [Qb Pa] Kb; exact: PQfO.
 Unshelve. all: by end_near. Qed.
 
+Lemma continuous_curryf (f : U * V -> W) : continuous f -> continuous (curry f).
+Proof. by case/continuous_curry. Qed.
+
+
 Lemma continuous_uncurry_regular (f : U -> V -> W) :
   locally_compact [set: V] -> @regular_space V -> continuous f ->
   (forall u, continuous (f u)) -> continuous (uncurry f).
@@ -2683,6 +2687,7 @@ HB.mixin Record isPathDomain {d} (X : Type) of
   flip_zero : flip zero = one;
   flip_involutive : involutive flip;
   flip_cts : continuous flip;
+  path_locally_compact : locally_compact [set: X];
   zero_bot : forall (y:X), (@Order.le d X zero y);
   one_top : forall (y:X), (@Order.le d X y one);
 }.
@@ -2834,8 +2839,7 @@ End i_path.
 Section fundamental_groupoid.
 Context {T: topologicalType}.
 (* arrows in the category of endpoint-preserving homotopies *)
-Definition fundamental_groupoid (x y : T) := 
-  path_components [set f : {compact-open, i -> T } | is_path x y f].
+Definition fundamental_groupoid (x y : T) := path_components (path_space x y).
 
 HB.instance Definition _ (x y : T) := EqQuotient.on (fundamental_groupoid x y).
 
@@ -2864,19 +2868,101 @@ Definition fdg_op {x y z : T} (l : fdg x y) (r : fdg y z) : fdg x z :=
 
 Notation "l '<.>' r" := (fdg_op l r) (at level 70).
 
-Lemma cst_is_path_sub (x : T) : 
-  (fun=> x) \in   [set f : {compact-open, i -> T } | is_path x x f].
-Proof. by apply/mem_set; split => // ? ; exact: cvg_cst. Qed.
-  
-Definition fdg_zero (x : T) : fdg x x := 
-  pi _ (@exist _ _ (fun=> x) (cst_is_path_sub x)).
+Definition fdg_zero (x : T) : fdg x x := pi _ (zero_path x).
 
-
-Lemma fdg_op_zerol (x y : T) (a : fdg x y) : (fdg_zero x) <.> a = a.
+Lemma fdg_op_zerol (x y : T) (a : fdg x y) : (a <.>(fdg_zero y)) = a.
 Proof.
-rewrite -[a]reprK -[fdg_zero x]reprK; apply/eqmodP; rewrite ?reprK.
+rewrite -[a]reprK -[fdg_zero y]reprK; apply/eqmodP; rewrite ?reprK.
+have [p [ap_cst cp p0 p1]] := conact_cstr (set_val (repr a)).
+have ppath : p \in [set f : {compact-open, i -> i } | is_path zero one f].
+  apply/mem_set; split => //.
+pose p' : path_space zero one := exist _ p ppath.
+have /asboolP [k [kcts kzero kone]] := reparam_path p'.
+pose h := (set_val (repr a)) \o (fun tu => ((set_val (k tu.1)) tu.2)).
+have htpath t : curry h t \in [set f : {compact-open, i -> T } | is_path x y f].
+  apply/mem_set; split.
+  - move=> u; rewrite /h /curry /=; apply: continuous_comp => //.
+      by have /set_mem [+ _ _] := svalP (k t); exact.
+    by have /set_mem [+ _ _] := svalP (repr a); exact.
+  - rewrite /h /= /curry /=.
+    rewrite (_ : set_val (k t) zero = sval (k t) zero) //.
+    have /set_mem [_ -> _] := svalP (k t).
+    rewrite (_ : set_val (repr a) zero = sval (repr a) zero) //.
+    by have /set_mem [_ -> _] := svalP (repr a).
+  - rewrite /h /curry /=. 
+    rewrite (_ : set_val (k t) one = sval (k t) one) //.
+    have /set_mem [_ _ ->] := svalP (k t).
+    rewrite (_ : set_val (repr a) one = sval (repr a) one) //.
+    by have /set_mem [_ _ ->] := svalP (repr a).
+apply/asboolP; exists (fun t => exist _ (curry h t) (htpath t)); split.
+- apply: continuous_set_type; rewrite set_valE /= /comp /= /h.
+  apply: continuous_curryf => tu. 
+  apply: continuous_comp; first last.
+    by have /set_mem [+ _ _] := svalP (repr a); exact.
+  have -> : (fun tu => set_val (k tu.1) tu.2) = 
+      uncurry (fun t u => set_val (k t) u).
+    by apply/funext; case => ? ? //=.
+  apply: continuous_uncurry.
+  + exact: path_locally_compact.
+  + exact: order_hausdorff.
+  + suff : continuous (set_val \o k) by exact.
+    move=> ?; apply: continuous_comp; first exact: kcts.
+    exact: weak_continuous.
+  + by move=> t u; have /set_mem [+ _ _] := svalP (k t); exact.
+- rewrite /curry /= /h /=; apply/eq_sig_hprop_iff => //.
+  rewrite /= kzero /p' ?set_valE /=.
+  rewrite (_ : (fun u => sval (repr a) (p u)) = set_val (repr a) \o p) //.
+  rewrite ap_cst ?set_valE //=.
+    have /set_mem [_ _ ->] := svalP (repr a).
+  congr( _ <> _).
+  rewrite 
+  Search sval.
+  apply: eq_exist; apply/funext => u; rewrite /h /curry /= kzero.
+  rewrite /p' /= ?set_valE /=.
+  have /set_mem [_ -> _] := svalP (k zero); exact.
+  
+  have /set_mem [+ _ _] := svalP (k a); exact.
+  apply: continuous2_cvg.
+    apply: (@continuous2_cvg _ _ _ _ _ _ 
+    (k \o fst) snd (fun l r => set_val (repr a) (set_val l r))).
+  + apply: continuous_cvg. 
+      have /set_mem [+ _ _] := svalP (repr a). 
+      by rewrite (_ : set_val (repr a) = sval (repr a)) //; apply.
+    apply: (@continuous2_cvg); last exact: cvg_snd; first last.
+      apply: kcts.
+      
+      rewrite ?nbhs_simpl /=.
+      move=> U /= /weak_continuous.
+      suff /(_ i) : (continuous set_val).
+      apply.
+    (@continuous2_cvg _ _ _ _ _ _ _ _ _ (set_val (repr a))).
+    apply: (@continuous2_cvg _ _ _ _ _ _ _ _ _ (set_val (repr a))).
+    
+  rewrite /comp /=.
+  apply: 
+    
+    apply: cvg_comp.
+  Search (_ * _)%type cvg_to.
+  apply: continuous2_cvg.
+      apply: cvg_comp => //.
+
+
+  
+  
+  move=> t; apply continuous_comp => //. 
+    apply: continuous2_cvg => //.
+    apply: continuous_comp; first exact: kcts.
+    exact: weak_continuous.
+  move=> t; apply continuous_comp => //; apply: continuous_comp => //.
+    apply: continuous_comp; first exact: kcts.
+    exact: weak_continuous.
+
 apply/asboolP.
-have [p [/= ap_cst cp p0 p1]] := conact_cstr (set_val (repr a)).
+have hpath : h \in .
+
+
+apply/asboolP.
+
 pose f t := fun j => (set_val (repr a)) (Order.min t (p j)).
 have is_pathf t : is_path x y (f t).
   split.
