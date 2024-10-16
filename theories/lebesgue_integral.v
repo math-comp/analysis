@@ -4347,13 +4347,11 @@ End dominated_convergence_theorem.
 Section Rintegral.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
+Implicit Types (D A B : set T) (f : T -> R).
 
 Lemma eq_Rintegral D g f : {in D, f =1 g} ->
   \int[mu]_(x in D) f x = \int[mu]_(x in D) g x.
-Proof.
-move=> fg; rewrite /Rintegral; congr fine.
-by apply: eq_integral => /= x xD; rewrite fg.
-Qed.
+Proof. by move=> fg; congr fine; apply: eq_integral => /= x xD; rewrite fg. Qed.
 
 Lemma Rintegral_mkcond D f : \int[mu]_(x in D) f x = \int[mu]_x (f \_ D) x.
 Proof.
@@ -4372,14 +4370,33 @@ Lemma Rintegral_mkcondl D P f :
   \int[mu]_(x in P `&` D) f x = \int[mu]_(x in D) (f \_ P) x.
 Proof. by rewrite setIC Rintegral_mkcondr. Qed.
 
-Lemma le_normr_integral A f : measurable A -> mu.-integrable A (EFin \o f) ->
-  (`|\int[mu]_(t in A) f t| <= \int[mu]_(t in A) `|f t|)%R.
+Lemma RintegralZl D f r : measurable D -> mu.-integrable D (EFin \o f) ->
+  \int[mu]_(x in D) (r * f x) = r * \int[mu]_(x in D) f x.
+Proof.
+move=> mD intf; rewrite (_ : r = fine r%:E)// -fineM//; last first.
+  exact: integral_fune_fin_num.
+by congr fine; under eq_integral do rewrite EFinM; exact: integralZl.
+Qed.
+
+Lemma RintegralZr D f r : measurable D -> mu.-integrable D (EFin \o f) ->
+  \int[mu]_(x in D) (f x * r) = \int[mu]_(x in D) f x * r.
+Proof.
+move=> mD intf; rewrite mulrC -RintegralZl//.
+by under eq_Rintegral do rewrite mulrC.
+Qed.
+
+Lemma Rintegral_ge0 D f : (forall x, D x -> 0 <= f x) ->
+  0 <= \int[mu]_(x in D) f x.
+Proof. by move=> f0; rewrite fine_ge0// integral_ge0. Qed.
+
+Lemma le_normr_integral D f : measurable D -> mu.-integrable D (EFin \o f) ->
+  `|\int[mu]_(t in D) f t| <= \int[mu]_(t in D) `|f t|.
 Proof.
 move=> mA /integrableP[mf ifoo].
 rewrite -lee_fin; apply: le_trans.
   apply: (le_trans _ (le_abse_integral mu mA mf)).
   rewrite /abse.
-  have [/fineK <-//|] := boolP (\int[mu]_(x in A) (EFin \o f) x \is a fin_num)%E.
+  have [/fineK <-//|] := boolP (\int[mu]_(x in D) (EFin \o f) x \is a fin_num)%E.
   by rewrite fin_numEn => /orP[|] /eqP ->; rewrite leey.
 rewrite /Rintegral.
 move: ifoo.
@@ -4407,7 +4424,7 @@ rewrite fineD//.
 - by rewrite fin_num_abs (le_lt_trans _ itBfoo)//; exact: le_abse_integral.
 Qed.
 
-Lemma Rintegral_set0 (f : T -> R) : (\int[mu]_(x in set0) f x = 0)%R.
+Lemma Rintegral_set0 f : \int[mu]_(x in set0) f x = 0.
 Proof. by rewrite /Rintegral integral_set0. Qed.
 
 End Rintegral.
