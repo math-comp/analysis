@@ -479,6 +479,21 @@ Proof.
 by have [->|/expR_gt1Dx/ltW//] := eqVneq x 0; rewrite expR0 addr0.
 Qed.
 
+Lemma cvgr_expR : @expR R (- x) @[x --> +oo] --> 0.
+Proof.
+apply/cvgrPdist_le => e e0; near=> x.
+rewrite sub0r normrN ger0_norm; last exact: expR_ge0.
+rewrite expRN -[leRHS]invrK lef_pV2 ?posrE ?expR_gt0 ?invr_gt0//.
+rewrite (le_trans _ (expR_ge1Dx _))// -lerBlDl.
+by near: x; apply: nbhs_pinfty_ge; exact: num_real.
+Unshelve. end_near. Qed.
+
+Lemma cvgn_expR : @expR R (- n%:R) @[n --> \oo] --> 0%R.
+Proof.
+under eq_cvg do rewrite -mulNrn -mulr_natr expRM_natr; apply: cvg_expr.
+by rewrite ger0_norm ?expR_ge0// expRN invf_lt1 ?expR_gt1// expR_gt0.
+Qed.
+
 Lemma expR_inj : injective (@expR R).
 Proof.
 move=> x y exE.
