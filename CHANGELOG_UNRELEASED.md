@@ -21,6 +21,8 @@
   + `weak_topology.v`
   + `num_topology.v`
   + `quotient_topology.v`
+- in `lebesgue_measure.v`:
+  + lemmas `RintegralZl`, `RintegralZr`, `Rintegral_ge0`
 
 ### Changed
 
