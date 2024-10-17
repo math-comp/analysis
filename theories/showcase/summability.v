@@ -4,7 +4,7 @@ Require Reals.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import interval zmodp.
 From mathcomp Require Import boolp classical_sets.
-Require Import ereal reals Rstruct signed topology normedtype.
+Require Import ereal reals Rstruct signed all_topology normedtype.
 
 (**md**************************************************************************)
 (* This file proposes a replacement for the definition `summable` (file       *)

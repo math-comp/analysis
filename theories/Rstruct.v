@@ -697,7 +697,7 @@ End bigmaxr.
 
 End ssreal_struct_contd.
 
-Require Import signed topology.
+Require Import signed all_topology.
 
 Section analysis_struct.
 

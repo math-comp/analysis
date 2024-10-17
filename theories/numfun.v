@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
 From mathcomp Require Import functions cardinality set_interval.
-Require Import signed reals ereal topology normedtype sequences function_spaces.
+Require Import signed reals ereal all_topology normedtype sequences function_spaces.
 
 (**md**************************************************************************)
 (* # Numerical functions                                                      *)

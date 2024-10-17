@@ -2,7 +2,7 @@
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
-Require Import reals ereal signed topology normedtype sequences esum numfun.
+Require Import reals ereal signed all_topology normedtype sequences esum numfun.
 From HB Require Import structures.
 
 (**md**************************************************************************)

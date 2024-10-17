@@ -8,11 +8,28 @@
 -arg -w -arg -projection-no-head-constant
 
 constructive_ereal.v
-ereal.v
 reals.v
 landau.v
 Rstruct.v
-topology.v
+
+topology/all_topology.v
+topology/bool_topology.v
+topology/compact.v
+topology/connected.v
+topology/matrix_topology.v
+topology/nat_topology.v
+topology/order_topology.v
+topology/product_topology.v
+topology/pseudometric_mixin.v
+topology/subspace_topology.v
+topology/supremum_topology.v
+topology/topology_mixin.v
+topology/uniform_mixin.v
+topology/weak_topology.v
+topology/num_topology.v
+topology/quotient_topology.v
+
+ereal.v
 separation_axioms.v
 function_spaces.v
 cantor.v

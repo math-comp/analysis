@@ -8,7 +8,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import fsbigop cardinality set_interval.
-Require Import reals signed topology.
+Require Import signed reals all_topology.
 Require Export constructive_ereal.
 
 (**md**************************************************************************)
