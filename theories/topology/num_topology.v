@@ -100,7 +100,7 @@ exists x => // y; rewrite /ball/= sub0r normrN => /ltW.
 by apply: le_trans; rewrite ler_norm.
 Qed.
 
-Lemma nbhs0_lt (R : realType) (x : R) : (0 < x)%R ->
+Lemma nbhs0_lt (R : realFieldType) (x : R) : (0 < x)%R ->
  \forall r \near nbhs (0%R:R), (r < x)%R.
 Proof.
 exists x => // z /=; rewrite sub0r normrN.
