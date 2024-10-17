@@ -5,7 +5,10 @@ Require Import signed topology_mixin uniform_mixin pseudometric_mixin.
 
 (**md**************************************************************************)
 (* # Matrix topology                                                          *)
-(*                                                                            *)
+(* ```                                                                        *)
+(*                  mx_ent m n A == entourages for the m x n matricies        *)
+(*                 mx_ball m n A == balls for the m x n matricies             *)
+(* ```                                                                        *)
 (* Matrices `'M[T]_(m, n)` are endowed with the structures of:                *)
 (* - topology                                                                 *)
 (* - uniform space                                                            *)

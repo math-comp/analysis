@@ -22,6 +22,11 @@ Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
 (*                               for a finite number of indices in D          *)
 (*              cover_compact == set of compact sets w.r.t. the open          *)
 (*                               cover-based definition of compactness        *)
+(*          open_fam_of A D f == the family of f indexed by D restricted to A *)
+(*                               is a family of open sets                     *)
+(*        closed_fam_of A D f == the family of f indexed by D restricted to A *)
+(*                               is a family of closed sets                   *)
+(*                                                                            *)
 (* ```                                                                        *)
 (******************************************************************************)
 

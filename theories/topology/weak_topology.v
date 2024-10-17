@@ -83,9 +83,6 @@ End Weak_Topology.
 HB.instance Definition _ (S : pointedType) (T : topologicalType) (f : S -> T) :=
   Pointed.on (weak_topology f).
 
-Definition map_pair {S U} (f : S -> U) (x : (S * S)) : (U * U) :=
-  (f x.1, f x.2).
-
 Section weak_uniform.
 Local Open Scope relation_scope.
 Variable (pS : choiceType) (U : uniformType) (f : pS -> U).

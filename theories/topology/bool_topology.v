@@ -6,7 +6,8 @@ Require Import order_topology compact.
 
 (**md**************************************************************************)
 (* # Topology for boolean numbers                                             *)
-(*                                                                            *)
+(*          pseudoMetric_bool == an alias for bool equipped with the trivial  *)
+(*                               pseudometric                                 *)
 (******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.

@@ -25,8 +25,9 @@ Require Import signed reals topology_mixin uniform_mixin.
 (*                nbhs_ball_ ball == nbhs defined using the given balls       *)
 (*                      nbhs_ball == nbhs defined using balls in a            *)
 (*                                   pseudometric space                       *)
-(*                  discrete_ball == singleton balls for the discrete         *)
+(*                   discrete_ent == entourages of the discrete uniformity    *)
 (*                                   topology                                 *)
+(*                  discrete_ball == singleton balls for the discrete metric  *)
 (*         discrete_topology_type == equip choice types with a discrete       *)
 (*                                   topology                                 *)
 (* ```                                                                        *)
@@ -57,6 +58,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 (* Making sure that [Program] does not automatically introduce *)
+#[local]
 Obligation Tactic := idtac.
 
 Local Open Scope classical_set_scope.

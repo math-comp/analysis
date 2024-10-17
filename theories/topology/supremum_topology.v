@@ -9,8 +9,9 @@ Require Import topology_mixin uniform_mixin.
 (* ```                                                                        *)
 (*                  sup_topology Tc == supremum topology of the family of     *)
 (*                                     topologicalType structures Tc on T     *)
+(*                        sup_ent E == the entourages of the supremum         *)
 (* ```                                                                        *)
-(* `sup_ent` is equipped with the `Uniform` structure                         *)
+(* `sup_topology` is equipped with the `Uniform` structure                         *)
 (******************************************************************************)
 
 Set Implicit Arguments.
