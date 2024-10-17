@@ -1,6 +1,46 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import topology_mixin.
+
+(**md**************************************************************************)
+(* # Uniform Spaces                                                           *)
+(* This file provides uniform spaces, and their theory. It also includes      *)
+(* complete spaces, which extends uniform in the hierarchy.                   *)
+(* ## Mathematical structures                                                 *)
+(* ### Uniform                                                                *)
+(* ```                                                                        *)
+(*                      nbhs_ ent == neighborhoods defined using entourages   *)
+(*                    uniformType == interface type for uniform spaces: a     *)
+(*                                   type equipped with entourages            *)
+(*                                   The HB class is Uniform.                 *)
+(*                   puniformType == a pointed and uniform space              *)
+(*                      entourage == set of entourages in a uniform space     *)
+(*                    split_ent E == when E is an entourage, split_ent E is   *)
+(*                                   an entourage E' such that E' \o E' is    *)
+(*                                   included in E when seen as a relation    *)
+(*         countable_uniformity T == T's entourage has a countable base       *)
+(*                                   This is equivalent to `T` being          *)
+(*                                   metrizable.                              *)
+(*              unif_continuous f == f is uniformly continuous                *)
+(*                entourage_ ball == entourages defined using balls           *)
+(* ```                                                                        *)
+(* ## Factories                                                               *)
+(* ```                                                                        *)
+(*                 Nbhs_isUniform == factory to build a topological space     *)
+(*                                   from a mixin for a uniform space         *)
+(*                                                                            *)
+(* ```                                                                        *)
+(* ### Complete uniform spaces                                                *)
+(* ```                                                                        *)
+(*                      cauchy F <-> the set of sets F is a cauchy filter     *)
+(*                                   (entourage definition)                   *)
+(*                   completeType == interface type for a complete uniform    *)
+(*                                   space structure                          *)
+(*                                   The HB class is Complete.                *)
+(* ```                                                                        *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -244,7 +284,7 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
-(* This property is primarily useful only for metrizability on uniform spaces *)
+(* This property is primarily useful for metrizability on uniform spaces *)
 Definition countable_uniformity (T : uniformType) :=
   exists R : set_system (T * T), [/\
     countable R,
@@ -275,13 +315,9 @@ Qed.
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=
   (fun xy => (f xy.1, f xy.2)) @ entourage --> entourage.
 
-
 Definition entourage_set (U : uniformType) (A : set ((set U) * (set U))) :=
   exists2 B, entourage B & forall PQ, A PQ -> forall p q,
     PQ.1 p -> PQ.2 q -> B (p,q).
-(* HB.instance Definition _ (U : uniformType) := isSource.Build Prop _ U *)
-(*   (fun A => nbhs_ (@entourage_set U) A). *)
-
 
 (** Complete uniform spaces *)
 

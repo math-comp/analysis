@@ -37,6 +37,8 @@ From mathcomp Require Export filter.
 (*         discrete_space T == every nbhs is a principal filter               *)
 (*                  dense S == the set (S : set T) is dense in T, with T of   *)
 (*                             type topologicalType                           *)
+(*      discrete_space dscT == the discrete topology on T, provided           *)
+(*                             a (dscT : discrete_space T)                    *)
 (*                                                                            *)
 (* ```                                                                        *)
 (* ### Factories                                                              *)
