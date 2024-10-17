@@ -1,4 +1,4 @@
--R . mathcomp.analysis
+-Q . mathcomp.analysis
 
 -arg -w -arg -parsing
 -arg -w -arg +undeclared-scope

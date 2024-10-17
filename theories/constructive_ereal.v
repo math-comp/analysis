@@ -11,8 +11,7 @@
    bounds of intervals*)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp Require Import mathcomp_extra.
-Require Import signed.
+From mathcomp Require Import mathcomp_extra signed.
 
 (**md**************************************************************************)
 (* # Extended real numbers $\overline{R}$                                     *)

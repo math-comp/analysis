@@ -1,5 +1,5 @@
--R classical mathcomp.classical
--R theories mathcomp.analysis
+-Q classical mathcomp.classical
+-Q theories mathcomp.analysis
 
 -arg -w -arg -parsing
 -arg -w -arg +undeclared-scope

@@ -6,8 +6,8 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.classical Require Import boolp classical_sets mathcomp_extra.
-Require Import xfinmap constructive_ereal reals discrete.
-Require Import realseq realsum.
+From mathcomp Require Import xfinmap constructive_ereal reals discrete.
+From mathcomp Require Import realseq realsum.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
