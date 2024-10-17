@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import cardinality set_interval Rstruct.
+From mathcomp Require Import cardinality set_interval.
 Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 Require Export separation_axioms.
 
@@ -1100,74 +1100,6 @@ Arguments cvgr0_norm_le {_ _ _ F FF}.
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="use `cvgrPdist_lt` or a variation instead")]
 Notation cvg_distP := fcvgrPdist_lt (only parsing).
-
-(* NB: the following section used to be in Rstruct.v *)
-Require Rstruct.
-
-Section analysis_struct.
-
-Import Rdefinitions.
-Import Rstruct.
-
-(* TODO: express using ball?*)
-Lemma continuity_pt_nbhs (f : R -> R) x :
-  Ranalysis1.continuity_pt f x <->
-  forall eps : {posnum R}, nbhs x (fun u => `|f u - f x| < eps%:num).
-Proof.
-split=> [fcont e|fcont _/RltP/posnumP[e]]; last first.
-  have [_/posnumP[d] xd_fxe] := fcont e.
-  exists d%:num; split; first by apply/RltP; have := [gt0 of d%:num].
-  by move=> y [_ /RltP yxd]; apply/RltP/xd_fxe; rewrite /= distrC.
-have /RltP egt0 := [gt0 of e%:num].
-have [_ [/RltP/posnumP[d] dx_fxe]] := fcont e%:num egt0.
-exists d%:num => //= y xyd; case: (eqVneq x y) => [->|xney].
-  by rewrite subrr normr0.
-apply/RltP/dx_fxe; split; first by split=> //; apply/eqP.
-by have /RltP := xyd; rewrite distrC.
-Qed.
-
-Lemma continuity_pt_cvg (f : R -> R) (x : R) :
-  Ranalysis1.continuity_pt f x <-> {for x, continuous f}.
-Proof.
-eapply iff_trans; first exact: continuity_pt_nbhs.
-apply iff_sym.
-have FF : Filter (f @ x).
-  by typeclasses eauto.
-  (*by apply fmap_filter; apply: @filter_filter (locally_filter _).*)
-case: (@fcvg_ballP _ _ (f @ x) FF (f x)) => {FF}H1 H2.
-(* TODO: in need for lemmas and/or refactoring of already existing lemmas (ball vs. Rabs) *)
-split => [{H2} - /H1 {}H1 eps|{H1} H].
-- have {H1} [//|_/posnumP[x0] Hx0] := H1 eps%:num.
-  exists x0%:num => //= Hx0' /Hx0 /=.
-  by rewrite /= distrC; apply.
-- apply H2 => _ /posnumP[eps]; move: (H eps) => {H} [_ /posnumP[x0] Hx0].
-  exists x0%:num => //= y /Hx0 /= {}Hx0.
-  by rewrite /ball /= distrC.
-Qed.
-
-Lemma continuity_ptE (f : R -> R) (x : R) :
-  Ranalysis1.continuity_pt f x <-> {for x, continuous f}.
-Proof. exact: continuity_pt_cvg. Qed.
-
-Local Open Scope classical_set_scope.
-
-Lemma continuity_pt_cvg' f x :
-  Ranalysis1.continuity_pt f x <-> f @ x^' --> f x.
-Proof. by rewrite continuity_ptE continuous_withinNx. Qed.
-
-Lemma continuity_pt_dnbhs f x :
-  Ranalysis1.continuity_pt f x <->
-  forall eps, 0 < eps -> x^' (fun u => `|f x - f u| < eps).
-Proof.
-rewrite continuity_pt_cvg' (@cvgrPdist_lt _ [the normedModType _ of R^o]).
-exact.
-Qed.
-
-Lemma nbhs_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
-  nbhs (f x) P -> Ranalysis1.continuity_pt f x -> \near x, P (f x).
-Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
-
-End analysis_struct.
 
 Section nbhs_lt_le.
 Context {R : realType}.
@@ -3708,8 +3640,10 @@ exists (Uniform.class T'), ([set xy | ball (f xy.1) 1 (f xy.2)]); split.
 Qed.
 
 Section normalP.
-Context {T : topologicalType}.
+Context {R : realType} {T : topologicalType}.
 
+(* Ideally, R should be an instance of realType here,
+   rather than a section variable. *)
 Let normal_spaceP : [<->
   (* 0 *) normal_space T;
   (* 1 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
@@ -3717,7 +3651,6 @@ Let normal_spaceP : [<->
   (* 2 *) forall (A B : set T), closed A -> closed B -> A `&` B = set0 ->
     exists U V, [/\ open U, open V, A `<=` U, B `<=` V & U `&` V = set0] ].
 Proof.
-pose R := Rdefinitions.R.
 tfae; first by move=> ?; exact: normal_uniform_separator.
 - move=> + A B clA clB AB0 => /(_ _ _ clA clB AB0) /(@uniform_separatorP _ R).
   case=> f [cf f01 /imsub1P/subset_trans fa0 /imsub1P/subset_trans fb1].
@@ -3755,25 +3688,29 @@ End normalP.
 
 Section completely_regular.
 
-Definition completely_regular_space {R : realType} {T : topologicalType} :=
+Context {R : realType}.
+
+Definition completely_regular_space {T : topologicalType} :=
   forall (a : T) (B : set T), closed B -> ~ B a -> exists f : T -> R, [/\
     continuous f,
     f a = 0 &
     f @` B `<=` [set 1] ].
 
+(* Ideally, R should be an instance of realType here,
+   rather than a section variable. *)
 Lemma point_uniform_separator {T : uniformType} (x : T) (B : set T) :
   closed B -> ~ B x -> uniform_separator [set x] B.
 Proof.
 move=> clB nBx; have : open (~` B) by rewrite openC.
 rewrite openE => /(_ _ nBx); rewrite /interior /= -nbhs_entourageE.
 case=> E entE EnB.
-pose T' := [the pseudoMetricType Rdefinitions.R of gauge.type entE].
+pose T' : pseudoMetricType R := gauge.type entE.
 exists (Uniform.class T); exists E; split => //; last by move => ?.
 by rewrite -subset0 => -[? w [/= [-> ? /xsectionP ?]]]; exact: (EnB w).
 Qed.
 
-Lemma uniform_completely_regular {R : realType} {T : uniformType} :
-   @completely_regular_space R T.
+Lemma uniform_completely_regular {T : uniformType} :
+  @completely_regular_space T.
 Proof.
 move=> x B clB Bx.
 have /(@uniform_separatorP _ R) [f] := point_uniform_separator clB Bx.
@@ -3815,7 +3752,7 @@ Qed.
 Lemma pseudometric_normal {R : realType} {X : pseudoMetricType R} :
   normal_space X.
 Proof.
-apply/normal_openP => A B clA clB AB0.
+apply/(@normal_openP R) => A B clA clB AB0.
 have eps' (D : set X) : closed D -> forall x, exists eps : {posnum R}, ~ D x ->
     ball x eps%:num `&` D = set0.
   move=> clD x; have [nDx|?] := pselect (~ D x); last by exists 1%:pos.
