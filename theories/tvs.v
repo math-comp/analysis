@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.  *)  
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
@@ -371,58 +371,46 @@ Context (K : numFieldType) (E F : tvsType K).
 Lemma prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
 Proof.
 move => [/= xy1 xy2] /= U /= [] [A B] /= [nA nB] nU.
-rewrite nbhs_simpl /=.
-move: (@add_continuous K E (xy1.1,xy2.1) _ nA); rewrite nbhs_simpl /= => [[]] /= A0 [A01 A02] nA1.
-move: (@add_continuous K F (xy1.2,xy2.2) _ nB); rewrite nbhs_simpl /= => [[]] /= B0 [B01 B02] nB1.
-exists ([set xy : (E*F) |( A0.1 xy.1) /\ (B0.1 xy.2) ], [set xy : (E*F) |( A0.2 xy.1) /\ (B0.2 xy.2) ]) => //=.
-  split; first by exists (A0.1,B0.1).
-  by exists (A0.2,B0.2).
+have [/= A0 [A01 A02] nA1] := @add_continuous K E (xy1.1, xy2.1) _ nA.
+have [/= B0 [B01 B02] nB1] := @add_continuous K F (xy1.2, xy2.2) _ nB.
+exists ([set xy | A0.1 xy.1 /\ B0.1 xy.2], [set xy | A0.2 xy.1 /\ B0.2 xy.2]).
+  by split; [exists (A0.1, B0.1)|exists (A0.2, B0.2)].
 move => [[x1 y1][x2 y2]] /= [] [] a1 b1 [] a2 b2.
-apply: nU; split => /=; first by move : (nA1 (x1,x2)) => /=; apply.
-by move : (nB1 (y1,y2)) => /=; apply.
+by apply: nU; split; [exact: (nA1 (x1, x2))|exact: (nB1 (y1, y2))].
 Qed.
 
 Lemma prod_scale_continuous : continuous (fun z : K^o * (E * F) => z.1 *: z.2).
 Proof.
-move => [/= r [x y]] /= U /= []/= [A B] /= [nA nB] nU. 
-rewrite nbhs_simpl /=.
-move: (@scale_continuous K E (r,x) _ nA); rewrite nbhs_simpl /= => [[]] /= A0 [A01 A02] nA1.
-move: (@scale_continuous K F (r,y) _ nB); rewrite nbhs_simpl /= => [[]] /= B0 [B01 B02] nB1.
-exists (A0.1 `&` B0.1,(A0.2 `*` B0.2)) => /=. 
-  split=> /=. apply: filterI => //.
-exists (A0.2,B0.2); first by split => //=.
-  by [].  
-move=> [l [e f]] /= [] [Al Bl] [] Ae Be; apply: nU => /=; split.
-  by move : (nA1 (l,e)) => /=;  apply.
-  by move : (nB1 (l,f)) => /=; apply.
+move => [/= r [x y]] /= U /= []/= [A B] /= [nA nB] nU.
+have [/= A0 [A01 A02] nA1] := @scale_continuous K E (r, x) _ nA.
+have [/= B0 [B01 B02] nB1] := @scale_continuous K F (r, y) _ nB .
+exists (A0.1 `&` B0.1, A0.2 `*` B0.2).
+  by split; [exact: filterI|exists (A0.2,B0.2)].
+by move=> [l [e f]] /= [] [Al Bl] [] Ae Be; apply: nU; split;
+  [exact: (nA1 (l, e))|exact: (nB1 (l, f))].
 Qed.
 
-Lemma prod_locally_convex : 
-exists2 B : set (set (E * F)), (forall b, b \in B -> convex b) & basis B.
+Lemma prod_locally_convex :
+  exists2 B : set (set (E * F)), (forall b, b \in B -> convex b) & basis B.
 Proof.
-move: (@locally_convex K E)=> [Be Bcb Beb].
-move: (@locally_convex K F)=> [Bf Bcf Bfb].
-pose B:=  [set ef : set (E*F) | open ef /\
-     (exists be, exists2 bf, (Be be) & (( Bf bf)/\ (be `*` bf = ef)))].
-exists B.
-  move=> b; rewrite inE /= => [[]] bo [] be [] bf Bee [] Bff <-.  
-  move => [x1 y1] [x2 y2] l; rewrite !inE =>- /= [xe1 yf1] [xe2 yf2] l0 l1.
-  split; rewrite -inE; first by apply: Bcb; rewrite ?inE.
-  by apply: Bcf; rewrite ?inE.
-rewrite /basis /=.
-split; first  by move=> b /= => [] [].
-move => /= [x y]; rewrite /filter_from /nbhs_simpl => ef [[ne nf]] /= [Ne Nf] Nef.
-rewrite nbhs_simpl /=. 
-move: Beb=> [] Beo /(_ x ne Ne) /=; rewrite !nbhs_simpl /= =>- [a] [] Bea ax ea.
-move: Bfb=> [] Bfo /(_ y nf Nf) /=; rewrite !nbhs_simpl /= =>- [b] [] Beb yb fb.
-exists [set z | (a z.1) /\ (b z.2)]; last first.
-  apply: subset_trans; last by apply:Nef.
-  by move=> [zx zy] /= [] /ea + /fb. 
-split => /=; last by split; rewrite /B /=.   
-split; last by exists a; exists b; rewrite ?inE //.  
-rewrite openE => [[z z'] /= [az bz]]; exists (a,b) => /=; last by [].
-rewrite !nbhsE /=; split; first by  exists a => //; split => //; apply: Beo.
-by exists b =>  //; split =>  // []; apply: Bfo.
+have [Be Bcb Beb] := @locally_convex K E.
+have [Bf Bcf Bfb] := @locally_convex K F.
+pose B := [set ef : set (E * F) | open ef /\
+  exists be, exists2 bf, Be be & Bf bf /\ be `*` bf = ef].
+have : basis B.
+  rewrite /basis/=; split; first by move=> b => [] [].
+  move=> /= [x y] ef [[ne nf]] /= [Ne Nf] Nef.
+  case: Beb => Beo /(_ x ne Ne) /= -[a] [] Bea ax ea.
+  case: Bfb => Bfo /(_ y nf Nf) /= -[b] [] Beb yb fb.
+  exists [set z | a z.1 /\ b z.2]; last first.
+    by apply: subset_trans Nef => -[zx zy] /= [] /ea + /fb.
+  split=> //=; split; last by exists a, b.
+  rewrite openE => [[z z'] /= [az bz]]; exists (a, b) => /=; last by [].
+  rewrite !nbhsE /=; split; first by exists a => //; split => //; exact: Beo.
+  by exists b => //; split => // []; exact: Bfo.
+exists B => // => b; rewrite inE /= => [[]] bo [] be [] bf Bee [] Bff <-.
+move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2] l0 l1.
+by split; rewrite -inE; [apply: Bcb; rewrite ?inE|apply: Bcf; rewrite ?inE].
 Qed.
 
 HB.instance Definition _ :=
