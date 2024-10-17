@@ -22,7 +22,6 @@ classical/classical_orders.v
 classical/filter.v
 theories/all_analysis.v
 theories/constructive_ereal.v
-theories/ereal.v
 theories/reals.v
 theories/landau.v
 theories/Rstruct.v
@@ -46,6 +45,7 @@ theories/topologies/quotient_topology.v
 
 theories/separation_axioms.v
 theories/function_spaces.v
+theories/ereal.v
 theories/cantor.v
 theories/prodnormedzmodule.v
 theories/normedtype.v

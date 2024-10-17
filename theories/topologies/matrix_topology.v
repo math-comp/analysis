@@ -1,14 +1,13 @@
-
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
+Require Import signed topology_mixin uniform_mixin pseudometric_mixin.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section matrix_Topology.
-
 Variables (m n : nat) (T : topologicalType).
 
 Implicit Types M : 'M[T]_(m, n).
@@ -19,7 +18,7 @@ apply: (filter_from_proper (filter_from_filter _ _)) => [|P Q M_P M_Q|P M_P].
 - by exists (fun i j => setT) => ??; apply: filterT.
 - exists (fun i j => P i j `&` Q i j) => [??|mx PQmx]; first exact: filterI.
   by split=> i j; have [] := PQmx i j.
-- exists (\matrix_(i, j) xget (M i j) (P i j)) => i j; rewrite mxE. 
+- exists (\matrix_(i, j) xget (M i j) (P i j)) => i j; rewrite mxE.
   by apply: xgetPex; exact: filter_ex (M_P i j).
 Qed.
 
@@ -38,14 +37,12 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build 'M[T]_(m, n)
 
 End matrix_Topology.
 
-
 Section matrix_PointedTopology.
-
 Variables (m n : nat) (T : pointedType).
 Implicit Types M : 'M[T]_(m, n).
 HB.instance Definition _ := Pointed.on 'M[T]_(m, n).
-End matrix_PointedTopology.
 
+End matrix_PointedTopology.
 
 Section matrix_Uniform.
 Local Open Scope relation_scope.
@@ -135,7 +132,6 @@ have -> : Q =
 by apply: filter_bigI => ??; apply: entP.
 Unshelve. all: by end_near. Qed.
 
-
 Section matrix_PointedTopology.
 Variables (m n : nat) .
 HB.instance Definition _ (T : ptopologicalType) := Filtered.on 'M[T]_(m, n).
@@ -216,4 +212,3 @@ End matrix_PseudoMetric.
 
 HB.instance Definition _ (R : numFieldType) (T : completePseudoMetricType R)
   (m n : nat) := Uniform_isComplete.Build 'M[T]_(m, n) cauchy_cvg.
-

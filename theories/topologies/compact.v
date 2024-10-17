@@ -1,6 +1,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
 Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Set Implicit Arguments.
@@ -102,7 +103,6 @@ move=> /[dup] clx; rewrite {1}clusterE => /(_ (closure B)); move: clB.
 by rewrite closure_id => /[dup] + <- => <- /(_ FB) Bx; exists x.
 Qed.
 End Compact.
-
 
 Section near_covering.
 Context {X : topologicalType}.
@@ -251,7 +251,6 @@ Definition finite_subset_cover (I : choiceType) (D : set I)
   exists2 D' : {fset I}, {subset D' <= D} & A `<=` cover [set` D'] F.
 
 Section Covers.
-
 Variable T : topologicalType.
 
 Definition cover_compact (A : set T) :=
@@ -288,8 +287,8 @@ Definition closed_fam_of (A : set T) I (D : set I) (f : I -> set T) :=
 End Covers.
 
 Section PCovers.
-
 Variable T : ptopologicalType.
+
 Lemma compact_In0 :
   compact = [set A | forall (I : choiceType) (D : set I) (f : I -> set T),
     closed_fam_of A D f -> finI D f -> \bigcap_(i in D) f i !=set0].
@@ -440,4 +439,3 @@ suff : @clopen T = set0 \/ $|{surjfun [set: nat] >-> @clopen T}|.
   by case => //; rewrite eqEsubset => -[/(_ _ clopenT)].
 exact/pfcard_geP/clopen_countable/compact_second_countable.
 Qed.
-

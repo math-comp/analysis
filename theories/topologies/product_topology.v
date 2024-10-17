@@ -1,8 +1,7 @@
-
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
-Require Import compact.
+From mathcomp Require Import all_ssreflect all_algebra all_classical.
+Require Import signed topology_mixin uniform_mixin pseudometric_mixin compact.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Set Implicit Arguments.
@@ -13,7 +12,6 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Section Prod_Topology.
-
 Context {T U : topologicalType}.
 
 Let prod_nbhs (p : T * U) := filter_prod (nbhs p.1) (nbhs p.2).

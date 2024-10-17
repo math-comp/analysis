@@ -2,6 +2,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import all_classical.
 Require Import signed reals topology_mixin uniform_mixin.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Set Implicit Arguments.
@@ -42,7 +43,6 @@ HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
 Definition discrete_topology T (dsc : discrete_space T) : Type := T.
 
 Section discrete_uniform.
-
 Context {T : nbhsType} {dsc: discrete_space T}.
 
 Definition discrete_ent : set (set (T * T)) :=
@@ -354,7 +354,6 @@ Qed.
 HB.instance Definition _ := discrete_pseudometric_mixin.
 End discrete_pseudoMetric.
 
-
 (** we use `discrete_topology` to equip choice types with a discrete topology *)
 Section discrete_topology.
 
@@ -387,13 +386,12 @@ apply/funext => /= x; apply/funext => A; apply/propext; split.
   by move=> y /xsectionP/= xy; exact: h.
 Qed.
 
-
 HB.instance Definition _ (R : zmodType) := isPointed.Build R 0.
 
 Definition ball_
   (R : numDomainType) (V : zmodType) (norm : V -> R) (x : V) (e : R) :=
   [set y | norm (x - y) < e].
-Arguments ball_ {R} {V} norm x e%R y /.
+Arguments ball_ {R} {V} norm x e%_R y /.
 
 Lemma subset_ball_prop_in_itv (R : realDomainType) (x : R) e P :
   ball_ Num.Def.normr x e `<=` P <->

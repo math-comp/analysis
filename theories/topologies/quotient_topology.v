@@ -1,6 +1,6 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
-Require Import signed reals topology_mixin.
+Require Import topology_mixin.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

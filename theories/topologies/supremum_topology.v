@@ -71,9 +71,9 @@ Proof.
 case: (pselect (exists t:T, True)).
   case => p _; apply: finI_filter; move=> J JsubEnt /=; exists (p, p).
   by IEntP => i b /= /entourage_refl ? ? _.
-move=> empT. 
+move=> empT.
 have TT0 (E : set (T*T)) : E = set0.
-  rewrite eqEsubset; split => //=; case=> t ? _; move: empT. 
+  rewrite eqEsubset; split => //=; case=> t ? _; move: empT.
   by apply: Logic.absurd; exists t.
 have ent0 : sup_ent set0.
   rewrite -(TT0 setT); exists set0 => //=; exists fset0 => //=.
@@ -203,4 +203,3 @@ exists (finI_from (\bigcup_n g n) id); split.
 Qed.
 
 End sup_uniform.
-

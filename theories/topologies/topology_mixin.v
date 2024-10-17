@@ -32,7 +32,6 @@ HB.structure Definition PointedTopological :=
   {T of PointedNbhs T & Nbhs_isTopological T}.
 
 Section Topological1.
-
 Context {T : topologicalType}.
 
 Definition open_nbhs (p : T) (A : set T) := open A /\ A p.

@@ -1,6 +1,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
+Require Import topology_mixin uniform_mixin pseudometric_mixin.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Set Implicit Arguments.

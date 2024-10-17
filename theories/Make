@@ -8,7 +8,6 @@
 -arg -w -arg -projection-no-head-constant
 
 constructive_ereal.v
-ereal.v
 reals.v
 landau.v
 Rstruct.v
@@ -30,7 +29,7 @@ topologies/weak_topology.v
 topologies/num_topology.v
 topologies/quotient_topology.v
 
-
+ereal.v
 separation_axioms.v
 function_spaces.v
 cantor.v

@@ -1,6 +1,6 @@
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
+From mathcomp Require Import all_ssreflect all_algebra all_classical.
+Require Import topology_mixin uniform_mixin pseudometric_mixin.
 Require Import compact connected weak_topology.
 
 Reserved Notation "{ 'within' A , 'continuous' f }"
@@ -12,8 +12,6 @@ Unset Printing Implicit Defensive.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
-
 
 Definition subspace {T : Type} (A : set T) := T.
 Arguments subspace {T} _ : simpl never.

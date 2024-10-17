@@ -1,13 +1,14 @@
-
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-From mathcomp Require Import archimedean.
+From mathcomp Require Import all_ssreflect all_algebra archimedean.
+From mathcomp Require Import all_classical.
 Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
 Require Import order_topology.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
 (** Topology on nat *)
 Section nat_topologicalType.
 

@@ -1,7 +1,8 @@
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
 Require Import order_topology compact.
+
 Import Order.TTheory GRing.Theory Num.Theory.
 
 Local Open Scope classical_set_scope.
@@ -15,7 +16,6 @@ Proof. by []. Qed.
 
 Lemma bool_compact : compact [set: bool].
 Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
-
 
 Section bool_ord_topology.
 Local Open Scope classical_set_scope.

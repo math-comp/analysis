@@ -1,5 +1,5 @@
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
+From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import topology_mixin.
 
 Set Implicit Arguments.
@@ -207,7 +207,8 @@ Qed.
 
 End uniformType1.
 
-Global Instance entourage_pfilter {M : puniformType} : ProperFilter (@entourage M).
+Global Instance entourage_pfilter {M : puniformType} :
+  ProperFilter (@entourage M).
 Proof.
 apply Build_ProperFilter_ex; last exact: entourage_filter.
 by move=> A entA; exists (point, point); apply: entourage_refl.
@@ -319,4 +320,3 @@ Proof. by split=> [/cauchy_cvg|/cvg_cauchy]. Qed.
 End completeType1.
 Arguments cauchy_cvg {T} F {FF} _ : rename.
 Arguments cauchy_cvgP {T} F {FF}.
-
