@@ -1,6 +1,6 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype ssrnat seq.
-Require Import boolp contra.
+From mathcomp Require Import boolp contra.
 
 (**md**************************************************************************)
 (* # Well-ordered choice                                                      *)

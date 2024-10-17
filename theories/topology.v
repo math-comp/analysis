@@ -5,7 +5,7 @@ From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 From mathcomp Require Export filter.
-Require Import reals signed.
+From mathcomp Require Import reals signed.
 
 (**md**************************************************************************)
 (* # Basic topological notions                                                *)

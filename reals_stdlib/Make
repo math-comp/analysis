@@ -1,4 +1,4 @@
--Q . mathcomp.classical
+-Q . mathcomp.reals_stdlib
 
 -arg -w -arg -parsing
 -arg -w -arg +undeclared-scope
@@ -7,15 +7,4 @@
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
 
-boolp.v
-contra.v
-wochoice.v
-classical_sets.v
-mathcomp_extra.v
-functions.v
-cardinality.v
-fsbigop.v
-set_interval.v
-classical_orders.v
-filter.v
-all_classical.v
+Rstruct.v

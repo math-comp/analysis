@@ -7,8 +7,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.classical Require Import boolp.
-Require Import xfinmap reals.
-(* ------- *) Require (*--*) Setoid.
+From mathcomp Require Import xfinmap reals.
+From Coq Require Setoid.
 
 (* -------------------------------------------------------------------- *)
 Set   Implicit Arguments.

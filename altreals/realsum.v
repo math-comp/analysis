@@ -5,7 +5,7 @@
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp.classical Require Import boolp.
-Require Import xfinmap constructive_ereal reals discrete realseq.
+From mathcomp Require Import xfinmap constructive_ereal reals discrete realseq.
 From mathcomp.classical Require Import classical_sets functions.
 
 Set Implicit Arguments.

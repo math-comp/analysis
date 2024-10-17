@@ -1,4 +1,4 @@
--R . mathcomp.analysis
+-Q . mathcomp.analysis
 
 -arg -w -arg -parsing
 -arg -w -arg +undeclared-scope
@@ -7,24 +7,18 @@
 -arg -w -arg -redundant-canonical-projection
 -arg -w -arg -projection-no-head-constant
 
-constructive_ereal.v
 ereal.v
-reals.v
 landau.v
-Rstruct.v
 topology.v
 separation_axioms.v
 function_spaces.v
 cantor.v
-prodnormedzmodule.v
 normedtype.v
 realfun.v
 sequences.v
 exp.v
 trigo.v
-nsatz_realtype.v
 esum.v
-real_interval.v
 lebesgue_measure.v
 forms.v
 derive.v
@@ -35,16 +29,8 @@ ftc.v
 hoelder.v
 probability.v
 lebesgue_stieltjes_measure.v
-signed.v
-itv.v
 convex.v
 charge.v
 kernel.v
 all_analysis.v
-showcase/uniform_bigO.v
 showcase/summability.v
-altreals/xfinmap.v
-altreals/discrete.v
-altreals/realseq.v
-altreals/realsum.v
-altreals/distr.v
