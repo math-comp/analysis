@@ -1239,7 +1239,7 @@ move: cos_gt0; rewrite cosE ltNge; case/negP.
 by rewrite oppr_le0 invr_ge0 sqrtr_ge0.
 Qed.
 
-Global Instance is_derive1_atan x : is_derive x 1 (@atan R) (1 + x ^+ 2)^-1.
+Global Instance is_derive1_atan x : is_derive x 1 atan (1 + x ^+ 2)^-1.
 Proof.
 rewrite -{1}[x]atanK.
 have cosD0 : cos (atan x) != 0.
@@ -1253,5 +1253,44 @@ apply: (@is_derive_inverse R tan).
 - by rewrite -[X in 1 + X ^+ 2]atanK -cos2_tan2 //; exact: is_derive_tan.
 by apply/lt0r_neq0/(@lt_le_trans _ _ 1) => //; rewrite lerDl sqr_ge0.
 Unshelve. all: by end_near. Qed.
+
+Lemma derive1_atan : atan^`() =1 (fun x => (1 + x ^+ 2)^-1).
+Proof. by move=> x; rewrite derive1E derive_val. Qed.
+
+Lemma lt_atan : {homo (@atan R) : x y / x < y}.
+Proof.
+move=> x y xy; rewrite -subr_gt0.
+have datan z : z \in `]x, y[ -> is_derive z 1 atan (1 + z ^+ 2)^-1.
+  by move=> _; exact: is_derive1_atan.
+have catan : {within `[x, y], continuous atan}.
+  by apply: derivable_within_continuous => z _; exact: ex_derive.
+have [c _ ->] := MVT xy datan catan.
+by rewrite mulr_gt0// ?subr_gt0// invr_gt0// ltr_wpDr// sqr_ge0.
+Qed.
+
+Lemma le_atan : {homo @atan R : x y / x <= y}.
+Proof.
+by move=> x y; rewrite le_eqVlt => /predU1P[-> //|xy]; exact/ltW/lt_atan.
+Qed.
+
+Lemma cvgy_atan : (@atan R) x @[x --> +oo] --> pi / 2.
+Proof.
+have ? : ubound (range (@atan R)) (pi / 2).
+  by move=> _ /= [x _ <-]; exact/ltW/atan_ltpi2.
+rewrite (_ : pi / 2 = sup (range atan)).
+  by apply/(nondecreasing_cvgr le_atan); exists (pi / 2).
+apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  by apply: sup_le_ub => //; exists 0, 0 => //; exact: atan0.
+have -> : pi / 2 = sup `[0, pi / 2[ :> R.
+  by rewrite real_interval.sup_itv// bnd_simp divr_gt0// pi_gt0.
+apply: le_sup; last 2 first.
+- by exists 0; rewrite /= in_itv/= lexx/= divr_gt0// pi_gt0.
+- split; first by exists 0, 0 => //; rewrite atan0.
+  by exists (pi / 2) => _ [x _ <-]; exact/ltW/atan_ltpi2.
+move=> x/= /[!in_itv]/= /andP[x0 xpi2].
+apply/downP; exists (atan (tan x)) => /=; first by exists (tan x).
+rewrite tanK// in_itv/= xpi2 andbT (lt_le_trans _ x0)//.
+by rewrite ltrNl oppr0 divr_gt0// pi_gt0.
+Qed.
 
 End Atan.
