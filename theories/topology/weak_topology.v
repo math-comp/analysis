@@ -34,15 +34,15 @@ Local Notation W := (weak_topology f).
 
 Definition wopen := [set f @^-1` A | A in open].
 
-Lemma wopT : wopen [set: W].
+Local Lemma wopT : wopen [set: W].
 Proof. by exists setT => //; apply: openT. Qed.
 
-Lemma wopI (A B : set W) : wopen A -> wopen B -> wopen (A `&` B).
+Local Lemma wopI (A B : set W) : wopen A -> wopen B -> wopen (A `&` B).
 Proof.
 by move=> [C Cop <-] [D Dop <-]; exists (C `&` D) => //; apply: openI.
 Qed.
 
-Lemma wop_bigU (I : Type) (g : I -> set W) :
+Local Lemma wop_bigU (I : Type) (g : I -> set W) :
   (forall i, wopen (g i)) -> wopen (\bigcup_i g i).
 Proof.
 move=> gop.

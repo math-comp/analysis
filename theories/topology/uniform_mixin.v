@@ -1,5 +1,4 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import topology_mixin.
@@ -8,6 +7,7 @@ Require Import topology_mixin.
 (* # Uniform Spaces                                                           *)
 (* This file provides uniform spaces, and their theory. It also includes      *)
 (* complete spaces, which extends uniform in the hierarchy.                   *)
+(*                                                                            *)
 (* ## Mathematical structures                                                 *)
 (* ### Uniform                                                                *)
 (* ```                                                                        *)

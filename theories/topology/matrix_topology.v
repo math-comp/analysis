@@ -12,6 +12,7 @@ Require Import signed topology_mixin uniform_mixin pseudometric_mixin.
 (* - pseudometric space                                                       *)
 (* - complete uniform space                                                   *)
 (* - complete pseudometric space                                              *)
+(*                                                                            *)
 (******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
@@ -189,19 +190,19 @@ Implicit Types (x y : 'M[T]_(m, n)) (e : R).
 
 Definition mx_ball x e y := forall i j, ball (x i j) e (y i j).
 
-Lemma mx_ball_center x e : 0 < e -> mx_ball x e x.
+Local Lemma mx_ball_center x e : 0 < e -> mx_ball x e x.
 Proof. by move=> ? ? ?; exact: ballxx. Qed.
 
-Lemma mx_ball_sym x y e : mx_ball x e y -> mx_ball y e x.
+Local Lemma mx_ball_sym x y e : mx_ball x e y -> mx_ball y e x.
 Proof. by move=> xe_y ? ?; apply/ball_sym/xe_y. Qed.
 
-Lemma mx_ball_triangle x y z e1 e2 :
+Local Lemma mx_ball_triangle x y z e1 e2 :
   mx_ball x e1 y -> mx_ball y e2 z -> mx_ball x (e1 + e2) z.
 Proof.
 by move=> xe1_y ye2_z ??; apply: ball_triangle; [exact: xe1_y|exact: ye2_z].
 Qed.
 
-Lemma mx_entourage : entourage = entourage_ mx_ball.
+Local Lemma mx_entourage : entourage = entourage_ mx_ball.
 Proof.
 rewrite predeqE=> A; split; last first.
   move=> [_/posnumP[e] sbeA].

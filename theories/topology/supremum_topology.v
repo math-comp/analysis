@@ -77,7 +77,7 @@ Definition sup_ent : set_system (T * T) :=
 
 Ltac IEntP := move=> [[ /= + + /[dup] /asboolP]].
 
-Definition sup_ent_filter : Filter sup_ent.
+Local Lemma sup_ent_filter : Filter sup_ent.
 Proof.
 case: (pselect (exists t:T, True)).
   case => p _; apply: finI_filter; move=> J JsubEnt /=; exists (p, p).
@@ -94,13 +94,13 @@ split.
 - by move=> P Q _ _; rewrite (TT0 Q).
 Qed.
 
-Lemma sup_ent_refl A : sup_ent A -> diagonal `<=` A.
+Local Lemma sup_ent_refl A : sup_ent A -> diagonal `<=` A.
 Proof.
 move=> [B [F ? <-] BA] [? ?]/diagonalP ->; apply/BA.
 by IEntP => i w /= /entourage_refl.
 Qed.
 
-Lemma sup_ent_inv A : sup_ent A -> sup_ent A^-1.
+Local Lemma sup_ent_inv A : sup_ent A -> sup_ent A^-1.
 Proof.
 move=> [B [F ? FB] BA]; exists B^-1; last by move=> ?; exact: BA.
 have inv : forall ie : IEnt, ent_of ((projT1 ie).1, (projT1 ie).2^-1).
@@ -112,7 +112,7 @@ rewrite -FB eqEsubset; split; case=> x y + ie.
 by move=> + /imfsetP [v vW ->]; exact.
 Qed.
 
-Lemma sup_ent_split A : sup_ent A -> exists2 B, sup_ent B & B \; B `<=` A.
+Local Lemma sup_ent_split A : sup_ent A -> exists2 B, sup_ent B & B \; B `<=` A.
 Proof.
 have spt : (forall ie : IEnt, ent_of ((projT1 ie).1,
     (@split_ent (TS (projT1 ie).1) (projT1 ie).2))).
@@ -130,7 +130,7 @@ apply: ((@entourage_split (TS i)) z) => //.
 exact: (Fzy _ eF).
 Qed.
 
-Lemma sup_ent_nbhs : @nbhs Tt Tt = nbhs_ sup_ent.
+Local Lemma sup_ent_nbhs : @nbhs Tt Tt = nbhs_ sup_ent.
 Proof.
 rewrite predeq2E => x V; split.
   move=> [/= X [[/= B + <-] [W BW Wx BV]]] => /(_ W BW) [] /=.

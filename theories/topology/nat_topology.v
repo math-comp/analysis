@@ -102,7 +102,6 @@ by near: m; apply: AF; near: B; apply: nbhs_infty_ge.
 Unshelve. all: end_near. Qed.
 
 Section map.
-
 Context {I : Type} {F : set_system I} {FF : Filter F} (f : I -> nat).
 
 Lemma cvgnyPge :

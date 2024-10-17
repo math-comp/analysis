@@ -7,9 +7,9 @@ Require Import topology_mixin.
 (* # quotient topology                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*              quotient_topology Q == the quotient topology corresponding to *)
-(*                                     quotient Q : quotType T where T has    *)
-(*                                     type topologicalType                   *)
+(*          quotient_topology Q == the quotient topology corresponding to     *)
+(*                                 quotient Q : quotType T where T has type   *)
+(*                                 topologicalType                            *)
 (* ```                                                                        *)
 (******************************************************************************)
 

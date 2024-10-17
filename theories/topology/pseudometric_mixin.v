@@ -38,15 +38,15 @@ Require Import signed reals topology_mixin uniform_mixin.
 (* ```                                                                        *)
 (* ### Complete Pseudometrics                                                 *)
 (* ```                                                                        *)
+(*                        ball_ N == balls defined by the norm/absolute       *)
+(*                                   value N                                  *)
+(*       completePseudoMetricType == interface type for a complete            *)
+(*                                   pseudometric space structure             *)
+(*                                   The HB class is CompletePseudoMetric.    *)
 (*                   cauchy_ex F <-> the set of sets F is a cauchy filter     *)
 (*                                   (epsilon-delta definition)               *)
 (*                 cauchy_ball F <-> the set of sets F is a cauchy filter     *)
 (*                                   (using the near notations)               *)
-(*       completePseudoMetricType == interface type for a complete            *)
-(*                                   pseudometric space structure             *)
-(*                                   The HB class is CompletePseudoMetric.    *)
-(*                        ball_ N == balls defined by the norm/absolute       *)
-(*                                   value N                                  *)
 (* ```                                                                        *)
 (******************************************************************************)
 
@@ -305,6 +305,8 @@ rewrite near_simpl near_mapi; near=> x.
 have [//|z [fxz yz]] := near (Fy _ (gt0 eps)) x.
 by exists z => //; split => //; apply: subP.
 Unshelve. all: end_near. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.6.0", note="use `cvgi_ballP` instead")]
 Definition cvg_toi_locally := @cvgi_ballP.
 
 Lemma cvgi_ball T {F} {FF : Filter F} (f : T -> M -> Prop) y :
