@@ -113,7 +113,7 @@ have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
-Lemma discrete_hausdorff {dsc: discrete_space T} : hausdorff_space.
+Lemma discrete_hausdorff {dsc : discrete_space T} : hausdorff_space.
 Proof.
 by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
 Qed.
@@ -167,6 +167,7 @@ rewrite !inE => - [xA yB] [Aopen Bopen /eqP AIB_eq0].
 move=> /(_ A B (open_nbhs_nbhs _) (open_nbhs_nbhs _)).
 by rewrite -set0P => /(_ _ _)/negP; apply.
 Qed.
+
 Lemma hausdorff_accessible : hausdorff_space -> accessible_space.
 Proof.
 rewrite open_hausdorff => hsdfT => x y /hsdfT [[U V] [xU yV]] [/= ? ? /eqP].
@@ -258,7 +259,7 @@ Import numFieldTopology.Exports.
 Lemma Rhausdorff (R : realFieldType) : hausdorff_space R.
 Proof. exact: order_hausdorff. Qed.
 
-Section separated_topologicalType.
+Section hausdorff_topologicalType.
 Variable T : topologicalType.
 Implicit Types x y : T.
 
@@ -328,9 +329,10 @@ Proof. by rewrite -closeE //; apply: cvg_close. Qed.
 Lemma cvgi_unique {U : Type} {F} {FF : ProperFilter F} (f : U -> set T) :
   {near F, is_fun f} -> is_subset1 [set x : T | f `@ F --> x].
 Proof. by move=> ffun fx fy; rewrite -closeE //; exact: cvgi_close. Qed.
-End separated_topologicalType.
 
-Section separated_ptopologicalType.
+End hausdorff_topologicalType.
+
+Section hausdorff_ptopologicalType.
 Variable T : ptopologicalType.
 Implicit Types x y : T.
 
@@ -367,7 +369,8 @@ Lemma cvgi_lim {U} {F} {FF : ProperFilter F} (f : U -> T -> Prop) (l : T) :
 Proof.
 move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
 Qed.
-End separated_ptopologicalType.
+
+End hausdorff_ptopologicalType.
 
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvg_lim`")]
 Notation cvg_map_lim := cvg_lim (only parsing).
