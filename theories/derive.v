@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-Require Import reals signed topology prodnormedzmodule normedtype landau forms.
+Require Import reals signed all_topology prodnormedzmodule normedtype landau forms.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)

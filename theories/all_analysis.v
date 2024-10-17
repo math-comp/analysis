@@ -3,7 +3,7 @@ From mathcomp Require Export ereal.
 From mathcomp Require Export reals.
 From mathcomp Require Export landau.
 From mathcomp Require Export Rstruct.
-From mathcomp Require Export topology.
+From mathcomp Require Export all_topology.
 From mathcomp Require Export function_spaces.
 From mathcomp Require Export cantor.
 From mathcomp Require Export prodnormedzmodule.

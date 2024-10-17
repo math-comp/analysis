@@ -208,7 +208,7 @@ Require Export quotient_topology.
 Require Export compact.
 Require Export connected.
 Require Export matrix_topology.
-Require Export nats_topology.
+Require Export nat_topology.
 Require Export order_topology.
 Require Export product_topology.
 Require Export pseudometric_mixin.
@@ -217,4 +217,3 @@ Require Export supremum_topology.
 Require Export topology_mixin.
 Require Export uniform_mixin.
 Require Export weak_topology.
-Require Export topology_mixin.

@@ -6,7 +6,7 @@ From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 From mathcomp Require Import filter.
 Require Import reals signed.
-Require Export topology.
+Require Export all_topology.
 
 (**md**************************************************************************)
 (* # Separation Axioms                                                        *)
