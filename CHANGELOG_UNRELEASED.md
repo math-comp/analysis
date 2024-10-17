@@ -39,6 +39,8 @@
   + lemmas `sup_ent_filter`, `sup_ent_refl`, `sup_ent_inv`, `sup_ent_split`,
     `sup_ent_nbhs` are now `Local`
 
+- Th function `map_pair` was moved from `topology.v` to `mathcomp_extras.v`.
+
 ### Renamed
 
 ### Generalized
