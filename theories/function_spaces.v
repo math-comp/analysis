@@ -2772,6 +2772,14 @@ HB.mixin Record isPathDomain {d} (i : Type) of
 HB.structure Definition PathDomain {d} := 
   { i of @OrderTopological d i & SelfSplit i & isPathDomain d i}.
 
+Lemma path_domain_set1 {d} {i : pathDomainType d} (x : i) : 
+  closed [set x].
+Proof.
+exact/accessible_closed_set1/hausdorff_accessible/order_hausdorff.
+Qed.
+
+#[global] Hint Resolve path_domain_set1 : core.
+
 Section path_flip.
 Context {d} {T : topologicalType} (i : pathDomainType d) (x y : T).
 Context (f : {path i from x to y}).
@@ -2972,50 +2980,52 @@ rewrite (_ : g = curry (fun tu => path_concat (h tu.1) (k tu.1) tu.2)) //.
 rewrite /path_concat/=.
 apply: continuous_curryf; case => t u U /=.
 rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)).
-+ exact/accessible_closed_set1/hausdorff_accessible/ order_hausdorff.
-+ exact/accessible_closed_set1/hausdorff_accessible/ order_hausdorff.
-+ move: u => _ u uNone /=; rewrite from_wedgeK.
-  rewrite wedge_funl; rewrite ?path_zero ?path_one //.
++ exact: path_domain_set1.
++ exact: path_domain_set1.
++ move: u => _ u ? /=; rewrite from_wedgeK wedge_funl ?path_zero ?path_one //.
   rewrite (_ : h t u = uncurry (fun l r => h l r) (t,u)) //.
-  move/(@path_uncurry_cts T); rewrite nbhs_simpl /= => Ntu.
-  have Lu : nbhs (from_wedge (bpwedgel u)) (to_wedge@^-1`(bpwedgel @` [set : i])).
+  move/(@path_uncurry_cts T); case;case => U1 U2 [U1t U2u] U12U. 
+  have U2TLu : nbhs (from_wedge (bpwedgel u)) (to_wedge@^-1` (bpwedgel @` U2)).
+    apply: to_wedge_cts; rewrite from_wedgeK. 
+    rewrite -wedgel_nbhs //=; last exact: path_domain_set1.
+    by move/filterS: U2u; apply; move=> l /= ?; exists l.
+  near_simpl; near=> t1 t2 => /=.
+  have [] // := near U2TLu t2 => l ? <-.
+  rewrite wedge_funl // ?path_zero? path_one //; apply: (U12U (t1,l)). 
+  split => //; have := near U1t t1; apply => //.
++ move: u => _ u ? /=; rewrite from_wedgeK wedge_funr ?path_zero ?path_one //.
+  rewrite (_ : k t u = uncurry (fun l r => k l r) (t,u)) //.
+  move/(@path_uncurry_cts T); case;case=> U1 U2 [U1t U2u] U12U. 
+  have U2TLu : nbhs (from_wedge (bpwedger u)) (to_wedge@^-1` (bpwedger @` U2)).
+    apply: to_wedge_cts; rewrite from_wedgeK. 
+    rewrite -wedger_nbhs //=; last exact: path_domain_set1.
+    by move/filterS: U2u; apply; move=> l /= ?; exists l.
+  near_simpl; near=> t1 t2 => /=.
+  have [] // := near U2TLu t2 => l ? <-.
+  rewrite wedge_funr // ?path_zero? path_one //; apply: (U12U (t1,l)). 
+  split => //=; have := near U1t t1; apply => //.
++ rewrite from_wedgeK wedge_funl; last by rewrite ?path_zero ?path_one // => Uy.
+  move=> /[dup] => Uny.
+  rewrite {1}(_ : h t one = uncurry (fun l r => h l r) (t,one)) //.
+  move/(@path_uncurry_cts T); case;case => /= U1 U2 [U1t U2u] U12U. 
+  move: Uny; rewrite path_one {1}(_ : y = k t zero); last by rewrite ?path_zero.
+  rewrite {1}(_ : k t zero = uncurry (fun l r => k l r) (t,zero)) //.
+  move/(@path_uncurry_cts T); case;case => /= V1 V2 [V1t V2u] V12U. 
+  have LRone : nbhs (from_wedge (bpwedgel one)) 
+      (to_wedge@^-1` (bpwedgel @` U2 `|` bpwedger @` V2)).
     apply: to_wedge_cts; rewrite from_wedgeK.
-    rewrite -wedgel_nbhs //=.
-      have /filterS : nbhs u setT by exact: filterT.
-      by apply => l _; exists l.
-    exact/accessible_closed_set1/hausdorff_accessible/ order_hausdorff.
-  rewrite nbhs_simpl /=; pose wbp (tu : i * i) := (tu.1, from_wedge (bpwedgel tu.2)).
-  have -> : (t, from_wedge (bpwedgel u)) = wbp (t,u) by done.
-  near_simpl. rewrite near_map.
-  have ct2 : continuous (fun (tu : i * _) => (tu.1, from_wedge tu.2)).
-    admit.
-  Check near_map.
+    rewrite wedge_point_nbhs /=; split => //.
+      by move/filterS: U2u; apply; move=> l /= ?; left; exists l.
+    by move/filterS: V2u; apply; move=> l /= ?; right; exists l.
+  near_simpl => /=; near=> t1 t2 => /=.
+  have [] // := near LRone t2; case=> l ? <-.
+    rewrite wedge_funl ?path_zero ?path_one //.
+    by apply: (U12U (t1,l)); split => //; have := near U1t t1; apply.
+  rewrite wedge_funr ?path_zero ?path_one //.
+  by apply: (V12U (t1,l)); split => //; have := near V1t t1; apply.
+Unshelve. all: by end_near. Qed.
   
   
-  near_simpl; rewrite /=. 
-  near=> t1 t2 => /=.
-  have [] // := near Lu t2 => l _.
-  rewrite wedge_funl => //; last rewrite path_zero path_one //.
-
-
-  near : t1.
-  rewrite /path
-  have := (@continuous2_cvg _ _ _ _ _ _ 
-      (fun x => (h x.1, k x.1)) (snd) (fun l r => path_concat l.1 l.2 r)) 
-      (h t, k t) (u).
-  apply => //=.
-  + move=> V nVU; rewrite nbhs_simpl /=.
-    have := h^@-1` ()
-    
-  + apply (@cvg_pair (i * i) _ _ _ _ _ _ _ _ (h \o fst) (k \o fst)).
-      by apply: cvg_comp; [exact: cvg_fst | exact: path_cts].
-    by apply: cvg_comp; [exact: cvg_fst | exact: path_cts].
-  + exact: cvg_snd.
-
-
-  
-  
-
 Section fundamental_groupoid.
 Context {T: topologicalType}.
 (* arrows in the category of endpoint-preserving homotopies *)
