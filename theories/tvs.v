@@ -9,14 +9,13 @@ Require Import ereal reals signed topology prodnormedzmodule function_spaces.
 Require Export separation_axioms.
 
 (**md**************************************************************************)
+(* # Topological vector spaces                                                *)
 (*                                                                            *)
-(* This file introduces locally convex topological vector spaces              *)
-(*                                                                            *)
-(* ## Topological vector spaces                                               *)
+(* This file introduces locally convex topological vector spaces.             *)
 (* ```                                                                        *)
 (*             tvsType R  == interface type for a locally convex topological  *)
-(*                           vector space on a numDomain R. A tvs is          *)
-(*                           constructed over a uniform space                 *)
+(*                           vector space on a numDomain R                    *)
+(*                           A tvs is constructed over a uniform space        *)
 (*  TopologicalLmod_isTvs == factory allowing the construction of a tvs from  *)
 (*                           a lmodule which is also a topological space.     *)
 (*  ```                                                                       *)
@@ -34,7 +33,8 @@ Local Open Scope ring_scope.
 
 HB.structure Definition PointedNmodule := {M of Pointed M & GRing.Nmodule M}.
 HB.structure Definition PointedZmodule := {M of Pointed M & GRing.Zmodule M}.
-HB.structure Definition PointedLmodule (K : numDomainType) := {M of Pointed M & GRing.Lmodule K M}.
+HB.structure Definition PointedLmodule (K : numDomainType) :=
+  {M of Pointed M & GRing.Lmodule K M}.
 
 HB.structure Definition FilteredNmodule := {M of Filtered M M & GRing.Nmodule M}.
 HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}.
@@ -59,10 +59,12 @@ Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   (0< lambda) -> (lambda < 1) -> lambda *: x + (1 - lambda) *: y \in A.
 
 
-HB.mixin Record Uniform_isTvs (R : numDomainType) E of Uniform E & GRing.Lmodule R E := {
+HB.mixin Record Uniform_isTvs (R : numDomainType) E
+    of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
-  locally_convex : exists2 B : set (set E), (forall b, b \in B -> convex b) & basis B;
+  locally_convex : exists2 B : set (set E),
+    (forall b, b \in B -> convex b) & basis B
 }.
 
 #[short(type="tvsType")]
@@ -116,13 +118,15 @@ HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
     (*continuous (uncurry (@GRing.add E))*)
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
     (* continuous (uncurry (@GRing.scale R E) : R^o * E -> E) *)
-  locally_convex : exists2 B : set (set E), (forall b, b \in B -> convex b) & basis B
+  locally_convex : exists2 B : set (set E),
+    (forall b, b \in B -> convex b) & basis B
   }.
 
 HB.builders Context R E of TopologicalLmod_isTvs R E.
 
-Definition entourage : set_system (E * E):=
-  fun P => exists U, nbhs 0 U /\ (forall xy : E * E, (xy.1 - xy.2) \in U -> xy \in P).
+Definition entourage : set_system (E * E) :=
+  fun P => exists U, nbhs 0 U /\
+                     (forall xy : E * E, (xy.1 - xy.2) \in U -> xy \in P).
 
 (* TODO: delete the next lemmas to better incorporate their proofs*)
 Let nbhs0N (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
@@ -141,82 +145,72 @@ Proof. by apply: nbhsB_subproof; exact: add_continuous. Qed.
 
 Lemma entourage_filter : Filter entourage.
 Proof.
-split.
-- exists [set: E]; split; first by apply: filter_nbhsT.
-  by move => xy //=.
-- move => P Q; rewrite /entourage nbhsE //=.
-  move => [U [[B B0] BU Bxy]]  [V [[C C0] CV Cxy]].
-  exists (U`&`V); split.
-    exists (B`&`C); first by apply/open_nbhsI.
-    by apply:setISS.
-  move => xy; rewrite !in_setI.
-  move/andP => [xyU xyV]; apply/andP;split; first by apply:Bxy.
-  by apply: Cxy.
-move => P Q PQ; rewrite /entourage /= => [[U [HU Hxy]]]; exists U; split => //.
-by move => xy /Hxy /[!inE] /PQ.
+split; first by exists [set: E]; split => //; exact: filter_nbhsT.
+- move=> P Q; rewrite /entourage nbhsE //=.
+  move=> [U [[B B0] BU Bxy]] [V [[C C0] CV Cxy]].
+  exists (U `&` V); split.
+    by exists (B `&` C); [exact: open_nbhsI|exact: setISS].
+  move=> xy; rewrite !in_setI => /andP[xyU xyV].
+  by apply/andP;split; [exact: Bxy|exact: Cxy].
+- move=> P Q PQ; rewrite /entourage /= => [[U [HU Hxy]]]; exists U; split=> //.
+  by move => xy /Hxy /[!inE] /PQ.
 Qed.
 
 Local Lemma entourage_refl (A : set (E * E)) :
   entourage A -> [set xy | xy.1 = xy.2] `<=` A.
 Proof.
-rewrite /entourage => -[/=U [U0 Uxy]] xy //= /eqP; rewrite -subr_eq0 => /eqP xyE.
-by rewrite -in_setE; apply: Uxy; rewrite xyE in_setE; apply: nbhs_singleton.
+rewrite /entourage => -[/= U [U0 Uxy]] xy /eqP; rewrite -subr_eq0 => /eqP xyE.
+by apply/set_mem/Uxy; rewrite xyE; apply/mem_set; exact: nbhs_singleton.
 Qed.
 
 Local Lemma entourage_inv :
   forall A : set (E * E), entourage A -> entourage A^-1%relation.
 Proof.
-move => A [/=U [U0 Uxy]]; rewrite /entourage /=.
-exists (-%R@`U); split; first exact: nbhs0N.
-move => xy; rewrite in_setE -opprB => [[yx] Uyx] => /oppr_inj H.
-by apply: Uxy; rewrite in_setE /= -H.
+move=> A [/= U [U0 Uxy]]; rewrite /entourage /=.
+exists (-%R @` U); split; first exact: nbhs0N.
+move=> xy /set_mem /=; rewrite -opprB => [[yx] Uyx] /oppr_inj yxE.
+by apply/Uxy/mem_set; rewrite /= -yxE.
 Qed.
 
-Local Lemma entourage_split_ex :
-      forall A : set (E * E),
-      entourage A -> exists2 B : set (E * E), entourage B & (B \; B)%relation `<=` A.
+Local Lemma entourage_split_ex (A : set (E * E)) : entourage A ->
+  exists2 B : set (E * E), entourage B & (B \; B)%relation `<=` A.
 Proof.
-move=> A [/= U] [U0 Uxy]; rewrite /entourage /=.
-move: add_continuous; rewrite /continuous_at /==> /(_ (0,0)) /=; rewrite addr0.
-move=> /(_ U U0) [] /= [W1 W2] []; rewrite nbhsE /==> [[U1 nU1 UW1] [U2 nU2 UW2]] Wadd.
-exists ([set w |(W1 `&` W2)  (w.1 - w.2) ]).
+move=> [/= U] [U0 Uxy]; rewrite /entourage /=.
+have := @add_continuous (0, 0); rewrite /continuous_at/= addr0 => /(_ U U0)[]/=.
+move=> [W1 W2] []; rewrite nbhsE/= => [[U1 nU1 UW1] [U2 nU2 UW2]] Wadd.
+exists [set w | (W1 `&` W2) (w.1 - w.2)].
   exists (W1 `&` W2); split; last by [].
-  exists (U1 `&` U2); first by apply: open_nbhsI.
-  move => t [U1t U2t]; split; first by apply: UW1.
-  by apply: UW2.
-move => xy /= [z [H _] [_ H']]; rewrite -inE; apply: (Uxy xy); rewrite inE.
-have -> : xy.1 - xy.2= (xy.1 - z) + (z - xy.2).
-  by rewrite addrA -[X in (_ = X + _)]addrA [X in (_ = (_ + X)+_)]addrC addrN addr0.
-by apply: (Wadd( (xy.1 - z,z - xy.2))); split => //=.
+  exists (U1 `&` U2); first exact: open_nbhsI.
+  by move=> t [U1t U2t]; split; [exact: UW1|exact: UW2].
+move => xy /= [z [H1 _] [_ H2]]; apply/set_mem/(Uxy xy)/mem_set.
+rewrite [_ - _](_ : _ = (xy.1 - z) + (z - xy.2)); last by rewrite addrA subrK.
+exact: (Wadd (xy.1 - z,z - xy.2)).
 Qed.
 
 Local Lemma nbhsE : nbhs = nbhs_ entourage.
 Proof.
 have lem : -1 != 0 :> R by rewrite oppr_eq0 oner_eq0.
-rewrite /nbhs_  /=; apply: funext => x; rewrite /filter_from /=.
-apply: funext => U; apply: propext => /=; rewrite /entourage /=; split.
-  pose V := [set v | (x-v) \in U] : set E.
-  move=> nU; exists [set xy |  (xy.1 - xy.2) \in V]. 
-  exists V;split => //=.
-      move: (nbhsB (x) (nbhsN nU)); rewrite /= subrr /= /V.
-      have -> // : [set (x + x0)%E | x0 in [set - x | x in U]]
-                = [set v | x - v \in U].
-         apply: funext => /= v /=; rewrite inE; apply: propext; split.
-         by move => [x0 [x1]] Ux1 <- <-; rewrite  opprB addrCA subrr addr0.
-       move=> Uxy; exists (v - x) => //; last by rewrite addrCA subrr addr0.
-       by exists (x -v) => //; rewrite opprB. 
-  by move=> xy; rewrite !inE=> Vxy; rewrite /= !inE.
-  by move=> y /xsectionP; rewrite /V /= !inE /= opprB addrCA subrr addr0 inE.
-move=> [A [U0 [nU UA]] H]; near=> z; apply: H => /=; apply/xsectionP; rewrite -inE; apply: UA => /=.
-near: z; rewrite nearE; move: (nbhsT x (nbhs0N nU))=> /=.
-suff -> : 
-[set (x + x0)%E | x0 in [set - x | x in U0]] = (fun x0 : E => x - x0 \in U0) by [].
-apply:funext => /= z /=; apply: propext; split.
-   move=> [x0] [x1 Ux1 <-] <-; rewrite -opprB addrAC subrr add0r inE opprK //.
-   rewrite inE => Uxz; exists (z-x); last by rewrite addrCA subrr addr0.
-   by exists (x-z); rewrite ?opprB.
-Unshelve. all: by end_near.
-Qed.
+rewrite /nbhs_ /=; apply/funext => x; rewrite /filter_from/=.
+apply/funext => U; apply/propext => /=; rewrite /entourage /=; split.
+- pose V : set E := [set v | x - v \in U].
+  move=> nU; exists [set xy | xy.1 - xy.2 \in V]; last first.
+    by move=> y /xsectionP; rewrite /V /= !inE /= opprB addrCA subrr addr0 inE.
+  exists V; split => /=; last first.
+    by move=> xy; rewrite !inE=> Vxy; rewrite /= !inE.
+  have /= := nbhsB x (nbhsN nU); rewrite subrr /= /V.
+  rewrite [X in nbhs _ X -> _](_ : _ = [set v | x - v \in U])//.
+  apply/funext => /= v /=; rewrite inE; apply/propext; split.
+    by move=> [x0 [x1]] Ux1 <- <-; rewrite opprB addrCA subrr addr0.
+  move=> Uxy; exists (v - x); last by rewrite addrCA subrr addr0.
+  by exists (x - v) => //; rewrite opprB.
+- move=> [A [U0 [nU UA]] H]; near=> z; apply: H; apply/xsectionP/set_mem/UA.
+  near: z; rewrite nearE; have := nbhsT x (nbhs0N nU).
+  rewrite [X in nbhs _ X -> _](_ : _ = [set v | x - v \in U0])//.
+  apply/funext => /= z /=; apply/propext; split.
+  move=> [x0] [x1 Ux1 <-] <-; rewrite -opprB addrAC subrr add0r inE opprK//.
+  rewrite inE => Uxz; exists (z - x); last by rewrite addrCA subrr addr0.
+  by exists (x - z); rewrite ?opprB.
+Unshelve. all: by end_near. Qed.
 
 HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
     entourage_filter entourage_refl
@@ -225,17 +219,16 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build E
 HB.end.
 
 Section Tvs_numDomain.
-
 Context (R : numDomainType) (E : tvsType R) (U : set E).
 
 Lemma nbhs0N : nbhs 0 U -> nbhs 0 (-%R @` U).
-Proof. by apply: nbhs0N_subproof; exact: scale_continuous. Qed.
+Proof. exact/nbhs0N_subproof/scale_continuous. Qed.
 
-Lemma nbhsT (x :E) : nbhs 0 U -> nbhs x (+%R x @`U).
-Proof. by apply: nbhsT_subproof; exact: add_continuous. Qed.
+Lemma nbhsT (x :E) : nbhs 0 U -> nbhs x (+%R x @` U).
+Proof. exact/nbhsT_subproof/add_continuous. Qed.
 
-Lemma nbhsB (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
-Proof. by apply: nbhsB_subproof; exact: add_continuous. Qed.
+Lemma nbhsB (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @` U).
+Proof. exact/nbhsB_subproof/add_continuous. Qed.
 
 End Tvs_numDomain.
 
@@ -244,24 +237,19 @@ Section Tvs_numField.
 Lemma nbhs0Z  (R : numFieldType) (E : tvsType R) (U : set E) (r : R) :
   r != 0 -> nbhs 0 U -> nbhs 0 ( *:%R r @` U).
 Proof.
-move => r0 U0; move: (scale_continuous ((r^-1,0)) U); rewrite /= scaler0 => /(_ U0).
-case=>//= [B] [B1 B2] BU.
-near=> x => //=; exists (r^-1*:x); last by rewrite scalerA divrr ?scale1r ?unitfE //=.
-apply: (BU (r^-1,x)); split => //=; last by near: x.
-by apply: nbhs_singleton.
+move=> r0 U0; have /= := scale_continuous (r^-1, 0) U.
+rewrite scaler0 => /(_ U0)[]/= B [B1 B2] BU.
+near=> x => //=; exists (r^-1 *: x); last by rewrite scalerA divff// scale1r.
+by apply: (BU (r^-1, x)); split => //=;[exact: nbhs_singleton|near: x].
 Unshelve. all: by end_near. Qed.
 
 Lemma nbhsZ  (R : numFieldType) (E : tvsType R) (U : set E) (r : R) (x :E) :
   r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U).
 Proof.
-move => r0 U0; move: (scale_continuous ((r^-1,r *:x)) U).
-rewrite /= scalerA mulrC divrr ?scale1r ?unitfE //= =>/(_ U0).
-case=>//= [B] [B1 B2] BU.
-near=> z => //=.
-exists (r^-1*:z).
-apply: (BU (r^-1,z)); split => //=; last by near: z.
-by apply: nbhs_singleton.
-by rewrite scalerA divrr ?scale1r ?unitfE //=.
+move => r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.
+rewrite scalerA mulVf// scale1r =>/(_ U0)[] /= B [B1 B2] BU.
+near=> z; exists (r^-1 *: z); last by rewrite scalerA divff// scale1r.
+by apply: (BU (r^-1,z)); split; [exact: nbhs_singleton|near: z].
 Unshelve. all: by end_near. Qed.
 
 End Tvs_numField.
