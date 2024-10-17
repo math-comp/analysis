@@ -1,7 +1,19 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import topology_mixin uniform_mixin pseudometric_mixin.
 Require Import compact connected weak_topology.
+
+(**md**************************************************************************)
+(* # Subspaces of topological spaces                                          *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*              subspace A == for (A : set T), this is a copy of T with a     *)
+(*                            topology that ignores points outside A          *)
+(*         incl_subspace x == with x of type subspace A with (A : set T),     *)
+(*                            inclusion of subspace A into T                  *)
+(* ```                                                                        *)
+(******************************************************************************)
 
 Reserved Notation "{ 'within' A , 'continuous' f }"
   (at level 70, A at level 69, format "{ 'within'  A ,  'continuous'  f }").

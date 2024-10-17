@@ -48,6 +48,7 @@ Require Import reals signed all_topology separation_axioms.
 (*                            Used together with join_product.                *)
 (*          join_product f == the function (x => f ^~ x)                      *)
 (*                            When the family f separates points from closed  *)
+(*                            sets, join_product is an embedding.             *)
 (*         {ptws, F --> f} == F converges to f in {ptws U -> V}               *)
 (*    {family fam, U -> V} == the supremum of {uniform A -> f} for each A in  *)
 (*                            `fam`                                           *)
@@ -61,6 +62,7 @@ Require Import reals signed all_topology separation_axioms.
 (* ## Ascoli's theorem notations                                              *)
 (* ```                                                                        *)
 (*      equicontinuous W x == the set (W : X -> Y) is equicontinuous at x     *)
+(*            singletons T := [set [set x] | x in [set: T]]                   *)
 (*  pointwise_precompact W == for each (x : X), the set of images             *)
 (*                            [f x | f in W] is precompact                    *)
 (* ```                                                                        *)
@@ -455,7 +457,7 @@ Definition arrow_uniform_type : Type := T -> U.
 
 End fct_Uniform.
 
-#[export] HB.instance Definition _ {T : choiceType} {U : puniformType} := 
+#[export] HB.instance Definition _ {T : choiceType} {U : puniformType} :=
   Pointed.on (arrow_uniform_type T U).
 
 Lemma cvg_fct_entourageP (T : choiceType) (U : uniformType)

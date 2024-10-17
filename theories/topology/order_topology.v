@@ -1,6 +1,16 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
 Require Import topology_mixin uniform_mixin pseudometric_mixin.
+
+(**md**************************************************************************)
+(* # Order topology                                                           *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*             orderTopologicalType == a topology built from intervals        *)
+(*                 order_topology T == the induced order topology on T        *)
+(* ```                                                                        *)
+(******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -158,6 +168,7 @@ Hint Resolve rray_closed : core.
 Hint Resolve itv_closed : core.
 
 Definition order_topology (T : Type) : Type := T.
+
 Section induced_order_topology.
 
 Context {d} {T : orderType d}.

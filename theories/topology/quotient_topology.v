@@ -1,6 +1,17 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import topology_mixin.
+
+(**md**************************************************************************)
+(* # quotient topology                                                        *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*              quotient_topology Q == the quotient topology corresponding to *)
+(*                                     quotient Q : quotType T where T has    *)
+(*                                     type topologicalType                   *)
+(* ```                                                                        *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.

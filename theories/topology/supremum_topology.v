@@ -1,6 +1,17 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
 Require Import topology_mixin uniform_mixin.
+
+(**md**************************************************************************)
+(* # Supremum topology                                                        *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*                  sup_topology Tc == supremum topology of the family of     *)
+(*                                     topologicalType structures Tc on T     *)
+(* ```                                                                        *)
+(* `sup_ent` is equipped with the `Uniform` structure                         *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.

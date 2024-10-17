@@ -73,7 +73,8 @@ Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
 
-Set Implicit Arguments Implicit.
+Set Implicit Arguments.
+Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Local Open Scope classical_set_scope.

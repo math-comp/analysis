@@ -1,6 +1,16 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import signed topology_mixin uniform_mixin pseudometric_mixin compact.
+
+(**md**************************************************************************)
+(* # Product topology                                                         *)
+(*                                                                            *)
+(* Product `(T * U)%type` are endowed with the structures of:                 *)
+(* - topology                                                                 *)
+(* - uniform space                                                            *)
+(* - pseudometric space                                                       *)
+(******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

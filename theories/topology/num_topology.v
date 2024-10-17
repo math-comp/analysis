@@ -1,8 +1,17 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import all_classical.
 Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
 Require Import order_topology.
+
+(**md**************************************************************************)
+(* # Topological notions for numerical types                                  *)
+(*                                                                            *)
+(* We endow `numFieldType` with the types of topological notions (accessible  *)
+(* with `Import numFieldTopology.Exports.                                     *)
+(*                                                                            *)
+(******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 Require Import topology_mixin.
@@ -5,12 +6,12 @@ Require Import topology_mixin.
 (**md**************************************************************************)
 (* # Connectedness                                                            *)
 (* This file provides connected and its related notions.                      *)
-(* ## Mathematical structures                                                 *)
+(*                                                                            *)
 (* ```                                                                        *)
-(*                     connected A <-> the only non empty subset of A which   *)
-(*                                     is both open and closed in A is A      *)
-(*                    separated A B == the two sets A and B are separated     *)
-(*            connected_component x == the connected component of point x     *)
+(*                   connected A <-> the only non empty subset of A which is  *)
+(*                                   both open and closed in A is A           *)
+(*                  separated A B == the two sets A and B are separated       *)
+(*          connected_component x == the connected component of point x       *)
 (* ```                                                                        *)
 (******************************************************************************)
 

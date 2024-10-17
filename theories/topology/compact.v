@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
 Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
@@ -5,24 +6,24 @@ Require Import signed reals topology_mixin uniform_mixin pseudometric_mixin.
 (**md**************************************************************************)
 (* # Compactness                                                              *)
 (* This file provides various formulations of compactness, and some theory.   *)
-(* ## Mathematical structures                                                 *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*                  cluster F == set of cluster points of F                   *)
-(*                    compact == set of compact sets w.r.t. the filter- based *)
+(*                    compact == set of compact sets w.r.t. the filter-based  *)
 (*                               definition of compactness                    *)
 (*              near_covering == a reformulation of covering compact better   *)
 (*                               suited for use with `near`                   *)
 (*       near_covering_within == equivalent definition of near_covering       *)
 (*             compact_near F == the filter F contains a closed compact set   *)
 (*               precompact A == A is contained in a closed compact set       *)
+(*          locally_compact A == every point in A has a compact (and closed)  *)
+(*                               neighborhood                                 *)
 (*  finite_subset_cover D F A == the family of sets F is a cover of A         *)
 (*                               for a finite number of indices in D          *)
 (*              cover_compact == set of compact sets w.r.t. the open          *)
 (*                               cover-based definition of compactness        *)
-(*                                                                            *)
 (* ```                                                                        *)
 (******************************************************************************)
-
 
 Import Order.TTheory GRing.Theory Num.Theory.
 

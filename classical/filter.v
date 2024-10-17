@@ -29,6 +29,8 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*                     continuous f == f is continuous w.r.t the topology     *)
 (*                 filterI_iter F n == nth stage of recursively building the  *)
 (*                                     filter of finite intersections of F    *)
+(*                    finI_from D f == set of \bigcap_(i in E) f i where E is *)
+(*                                     a finite subset of D                   *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* We endow several standard types with the structure of filter, e.g.:        *)

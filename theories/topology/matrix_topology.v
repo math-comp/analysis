@@ -1,6 +1,18 @@
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
 Require Import signed topology_mixin uniform_mixin pseudometric_mixin.
+
+(**md**************************************************************************)
+(* # Matrix topology                                                          *)
+(*                                                                            *)
+(* Matrices `'M[T]_(m, n)` are endowed with the structures of:                *)
+(* - topology                                                                 *)
+(* - uniform space                                                            *)
+(* - pseudometric space                                                       *)
+(* - complete uniform space                                                   *)
+(* - complete pseudometric space                                              *)
+(******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
@@ -144,8 +156,8 @@ HB.instance Definition _ (T : uniformType) := Uniform.on 'M[T]_(m, n).
 HB.instance Definition _ (T : puniformType) := Pointed.on 'M[T]_(m, n).
 HB.instance Definition _ (T : puniformType) := PointedUniform.on 'M[T]_(m, n).
 End matrix_PointedTopology.
-Section matrix_Complete.
 
+Section matrix_Complete.
 Variables (T : completeType) (m n : nat).
 
 Lemma mx_complete (F : set_system 'M[T]_(m, n)) :
