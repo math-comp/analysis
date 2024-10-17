@@ -3025,6 +3025,7 @@ rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)).
   by apply: (V12U (t1,l)); split => //; have := near V1t t1; apply.
 Unshelve. all: by end_near. Qed.
   
+End path_between_wedge.
   
 Section fundamental_groupoid.
 Context {T: topologicalType}.
@@ -3043,125 +3044,44 @@ Notation "l '<.>' r" := (fdg_op l r) (at level 70).
 
 Definition fdg_zero (x : T) : fdg x x := \pi_(fdg x x) (cst x).
 
-Lemma fdg_op_zeror (x y : T) (a : fdg x y) : a <.> fdg_zero y = a.
+Lemma fdg_op_zeror (x y : T) (a : fdg x y) : (a <.> fdg_zero y) = a.
 Proof.
-rewrite -[a]reprK -[fdg_zero y]reprK; apply/eqmodP; rewrite ?reprK.
-apply: (@path_between_trans {path i from x to y} (repr a <> cst y)); first last.
-pose rpath := (exist _ set_val (repr a) <> fun=> y).
-apply: (@path_between_trans _).
-apply/path_between_path.
-rewrite (_ :set_val _ = (set_val (repr a) <> set_val (repr (fdg_zero y)))) //.
-have [p [ap_cst cp p0 p1]] := conact_cstr (set_val (repr a)).
-have ppath : p \in [set f : {compact-open, i -> i } | is_path zero one f].
-  apply/mem_set; split => //.
-pose p' : path_space zero one := exist _ p ppath.
-have /asboolP [k [kcts kzero kone]] := reparam_path p'.
-pose h := (set_val (repr a)) \o (fun tu => ((set_val (k tu.1)) tu.2)).
-exists h; split.
-- admit.
-- admit.
-- admit.
-  admit.
-  
-  
-have htpath t : curry h t \in [set f : {compact-open, i -> T } | is_path x y f].
-  apply/mem_set; split.
-  - move=> u; rewrite /h /curry /=; apply: continuous_comp => //.
-      by have /set_mem [+ _ _] := svalP (k t); exact.
-    by have /set_mem [+ _ _] := svalP (repr a); exact.
-  - rewrite /h /= /curry /=.
-    rewrite (_ : set_val (k t) zero = sval (k t) zero) //.
-    have /set_mem [_ -> _] := svalP (k t).
-    rewrite (_ : set_val (repr a) zero = sval (repr a) zero) //.
-    by have /set_mem [_ -> _] := svalP (repr a).
-  - rewrite /h /curry /=. 
-    rewrite (_ : set_val (k t) one = sval (k t) one) //.
-    have /set_mem [_ _ ->] := svalP (k t).
-    rewrite (_ : set_val (repr a) one = sval (repr a) one) //.
-    by have /set_mem [_ _ ->] := svalP (repr a).
-apply/asboolP; exists (fun t => exist _ (curry h t) (htpath t)); split.
-- apply: continuous_set_type; rewrite set_valE /= /comp /= /h.
-  apply: continuous_curryf => tu. 
-  apply: continuous_comp; first last.
-    by have /set_mem [+ _ _] := svalP (repr a); exact.
-  have -> : (fun tu => set_val (k tu.1) tu.2) = 
-      uncurry (fun t u => set_val (k t) u).
-    by apply/funext; case => ? ? //=.
-  apply: continuous_uncurry.
-  + exact: path_locally_compact.
-  + exact: order_hausdorff.
-  + suff : continuous (set_val \o k) by exact.
-    move=> ?; apply: continuous_comp; first exact: kcts.
-    exact: weak_continuous.
-  + by move=> t u; have /set_mem [+ _ _] := svalP (k t); exact.
-- rewrite /curry /= /h /=; apply/eq_sig_hprop_iff => //.
-  rewrite /= kzero /p' ?set_valE /=.
-  rewrite (_ : (fun u => sval (repr a) (p u)) = set_val (repr a) \o p) //.
-  rewrite ap_cst ?set_valE //=.
-    have /set_mem [_ _ ->] := svalP (repr a).
-  congr( _ <> _).
-  rewrite 
-  Search sval.
-  apply: eq_exist; apply/funext => u; rewrite /h /curry /= kzero.
-  rewrite /p' /= ?set_valE /=.
-  have /set_mem [_ -> _] := svalP (k zero); exact.
-  
-  have /set_mem [+ _ _] := svalP (k a); exact.
-  apply: continuous2_cvg.
-    apply: (@continuous2_cvg _ _ _ _ _ _ 
-    (k \o fst) snd (fun l r => set_val (repr a) (set_val l r))).
-  + apply: continuous_cvg. 
-      have /set_mem [+ _ _] := svalP (repr a). 
-      by rewrite (_ : set_val (repr a) = sval (repr a)) //; apply.
-    apply: (@continuous2_cvg); last exact: cvg_snd; first last.
-      apply: kcts.
-      
-      rewrite ?nbhs_simpl /=.
-      move=> U /= /weak_continuous.
-      suff /(_ i) : (continuous set_val).
-      apply.
-    (@continuous2_cvg _ _ _ _ _ _ _ _ _ (set_val (repr a))).
-    apply: (@continuous2_cvg _ _ _ _ _ _ _ _ _ (set_val (repr a))).
-    
-  rewrite /comp /=.
-  apply: 
-    
-    apply: cvg_comp.
-  Search (_ * _)%type cvg_to.
-  apply: continuous2_cvg.
-      apply: cvg_comp => //.
+rewrite -[a]reprK -[fdg_zero y]reprK; apply/eqmodP; rewrite ?reprK /=.
+apply: (@path_between_trans {path i from x to y} (repr a <> cst y)).
+  apply: path_between_wedge => //.
+  rewrite /fdg_zero /=; case: piP=> r /eqmodP; rewrite path_between_sym; apply.
+rewrite path_between_sym.
+have [p /= E] := conact_cstr (repr a).
+have /= := (reparam_path_between p (repr a)).
+congr (path_between _ _); apply/path_eqP => //=.
+Qed.
 
+Lemma fdg_op_zerol (x y : T) (a : fdg x y) : (fdg_zero x <.> a) = a.
+Proof.
+rewrite -[a]reprK -[fdg_zero x]reprK; apply/eqmodP; rewrite ?reprK /=.
+apply: (@path_between_trans {path i from x to y} (cst x <> repr a)).
+  apply: path_between_wedge => //.
+  rewrite /fdg_zero /=; case: piP=> r /eqmodP; rewrite path_between_sym; apply.
+rewrite path_between_sym; have [p /= E] := conact_cstl (repr a).
+have /= := (reparam_path_between p (repr a)).
+congr (path_between _ _); apply/path_eqP => //=.
+Qed.
 
-  
-  
-  move=> t; apply continuous_comp => //. 
-    apply: continuous2_cvg => //.
-    apply: continuous_comp; first exact: kcts.
-    exact: weak_continuous.
-  move=> t; apply continuous_comp => //; apply: continuous_comp => //.
-    apply: continuous_comp; first exact: kcts.
-    exact: weak_continuous.
-
-apply/asboolP.
-have hpath : h \in .
-
-
-apply/asboolP.
-
-pose f t := fun j => (set_val (repr a)) (Order.min t (p j)).
-have is_pathf t : is_path x y (f t).
-  split.
-have : (fun=> x) <>  zero =  
-have : path_concatl  .
-pose f t := fun j => 
-have : fo
-suff : path_between (set_val (@exist _ _ (fun=> x) (cst_is_path_sub x)))
-  (set_val (repr a)).
-
-    
-apply/exist_sigP => /=.
-under
-
-
-case: a.
-Search (_ = _) pi.
+Lemma fdg_op_assoc (p1 p2 p3 p4 : T) (f : fdg p1 p2) 
+    (g : fdg p2 p3) (h : fdg p3 p4) : 
+  (f <.> (g <.> h)) = ((f <.> g) <.> h).
+Proof.
+rewrite -[f]reprK -[g]reprK -[h]reprK /=; apply/eqmodP. 
+rewrite /fdg_op ?reprK /=.
+apply: (@path_between_trans _ ((repr f) <> ((repr g) <> (repr h)))).
+  apply: path_between_wedge => //.
+  by case: piP => r /eqmodP; rewrite /= path_between_sym.
+apply: (@path_between_trans _ (((repr f) <> (repr g)) <> (repr h))).
+  have [] := @concat_assoc _ _ (repr f) (repr g) (repr h);
+     rewrite ?path_one ?path_zero //.
+  move=> p E.
+  have /= := (reparam_path_between p (repr f <> (repr g <> repr h))).
+  congr (path_between _ _); apply/path_eqP => //=.
+apply: path_between_wedge => //.
+by case: piP => r /eqmodP; rewrite /= path_between_sym.
+Qed.
