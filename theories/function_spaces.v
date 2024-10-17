@@ -2348,6 +2348,28 @@ HB.structure Definition Path {i : bpTopologicalType} {T: topologicalType}
 
 Notation "{ 'path' i 'from' x 'to' y }" := (pathType i x y) (at level 0) : type_scope.
 
+HB.instance Definition _ {i : bpTopologicalType} 
+    {T : topologicalType} (x y : T) := gen_eqMixin {path i from x to y}.
+HB.instance Definition _ {i : bpTopologicalType} 
+    {T : topologicalType} (x y : T) := gen_choiceMixin {path i from x to y}.
+HB.instance Definition _ {i : bpTopologicalType} 
+    {T : topologicalType} (x y : T) := 
+  Topological.copy {path i from x to y} 
+    (@weak_topology {path i from x to y} {compact-open, i -> T} id).
+
+Section path_eq.
+Context {T : topologicalType} {i : bpTopologicalType} (x y : T).
+
+Lemma path_eqP (a b : {path i from x to y}) : a = b <-> Path.sort a = Path.sort b.
+Proof.
+split; first by move => ->.
+case: a; case: b => //= f [[+ + +]] g [[+ + +]] fgE; rewrite fgE=> ? ? ? ? ? ?.
+do 2 congr (_ _ ).
+by congr{| isPath.path_zero := _; isPath.path_one:=_;isPath.path_cts:= _|};
+  exact: Prop_irrelevance.
+Qed.
+End path_eq.
+
 Section cst_path.
 Context {T : topologicalType} {i : bpTopologicalType} (x: T).
 
@@ -2727,8 +2749,9 @@ move=> fc gc z; apply: continuous2_cvg; first apply max_continuous.
 exact: gc.
 Qed.
 
-Lemma continuous_set_type {X Y : topologicalType} (A : set Y) (f : X -> A) :
-  continuous (set_val \o f) -> continuous f.
+Lemma continuous_comp_weak {Y : choiceType} {X Z : topologicalType} (w : Y -> Z) 
+  (f : X -> (weak_topology w)) :
+  continuous (w \o f) -> continuous f.
 Proof.
 move=> cf z U [?/= [[W oW <-]]] /= Wsfz /filterS; apply; apply: cf.
 by apply: open_nbhs_nbhs; split.
@@ -2736,11 +2759,11 @@ Qed.
 
 HB.mixin Record isPathDomain {d} (i : Type) of 
   OrderTopological d i & SelfSplit i := {
-  flip : i -> i;
-  flip_zero : flip zero = one;
-  flip_involutive : involutive flip;
-  flip_cts : continuous flip;
-  path_locally_compact : locally_compact [set: i];
+  (* this makes the path_between relation symmetric*)
+  flip : {path i from (@one i) to (@zero i)};
+  (* this lets us curry for paths between paths*)
+  domain_locally_compact : locally_compact [set: i];
+  (* this gives us homotopies between {path i from zero to one} and `idfun`*)
   zero_bot : forall (y:i), (@Order.le d i zero y);
   one_top : forall (y:i), (@Order.le d i y one);
 }.
@@ -2749,8 +2772,41 @@ HB.mixin Record isPathDomain {d} (i : Type) of
 HB.structure Definition PathDomain {d} := 
   { i of @OrderTopological d i & SelfSplit i & isPathDomain d i}.
 
-Lemma flip_one {d} {i : pathDomainType d} : (@flip _ i) one = zero.
-Proof. by rewrite -[zero]flip_involutive flip_zero. Qed.
+Section path_flip.
+Context {d} {T : topologicalType} (i : pathDomainType d) (x y : T).
+Context (f : {path i from x to y}).
+
+Local Lemma fflip_zero : (f \o flip) zero = y.
+Proof. by rewrite /= path_zero path_one. Qed.
+
+Local Lemma fflip_one : (f \o flip) one = x.
+Proof. by rewrite /= path_one path_zero. Qed.
+
+Local Lemma fflip_cts : continuous (f \o flip).
+Proof. by move=> ?; apply: continuous_comp; apply: path_cts. Qed.
+
+HB.instance Definition _ := isPath.Build i T y x (f \o flip) 
+  fflip_zero fflip_one fflip_cts.
+End path_flip.
+
+Section path_compose.
+Context {d} {T : topologicalType} (i : pathDomainType d) (x y : T).
+Context (f : {path i from x to y}) (phi : {path i from (@zero i) to one}).
+
+Local Lemma pflip_zero : (f \o phi) zero = x.
+Proof. by rewrite /= ?path_zero. Qed.
+
+Local Lemma pflip_one : (f \o phi) one = y.
+Proof. by rewrite /= ?path_one. Qed.
+
+Local Lemma pflip_cts : continuous (f \o phi).
+Proof. by move=> ?; apply: continuous_comp; apply: path_cts. Qed.
+
+Definition reparameterize := f \o phi.
+
+HB.instance Definition _ := isPath.Build i T x y (reparameterize) 
+  pflip_zero pflip_one pflip_cts.
+End path_compose.
 
 Lemma exist_sigP (A B : Type) (P : B -> Prop) 
   (Q : (A -> {y : B | P y}) -> Prop) : 
@@ -2763,20 +2819,18 @@ split; case=> f.
 by case=> pf Qseta; exists (fun a => exist [eta P] (f a) (pf a)).
 Qed.
 
-
 Section path_connected. 
 Context {d} {i : pathDomainType d}.
 Local Open Scope quotient_scope.
-Notation "f '<>' g" := (path_concat f g).
+Notation "f '<>' g" := (path_concat f g : {path i from _ to _}).
+
 Section path_component.
 Context {T : topologicalType}.
 
 Let path_between_sub (a b : T) := `[<$| {path i from a to b}|>].
 
 Lemma path_between_refl : reflexive path_between_sub.
-Proof. 
-by move=> x; apply/asboolP; exists (fun=> x); split => // ?; apply: cvg_cst. 
-Qed.
+Proof. by move=> x; apply/asboolP; apply: squash; exact: (cst x). Qed.
 
 Lemma path_between_sym : symmetric path_between_sub. 
 Proof.  
@@ -2785,22 +2839,13 @@ suff : (is_true (path_between_sub a b) <-> is_true (path_between_sub b a)).
   case: (path_between_sub a b) => //; case: (path_between_sub b a) => // [].
     by case=> ->.
   by case=> _ ->.
-split => /asboolP [f [fc ? ?]]; apply/asboolP; exists (f \o flip); split.
-- by move=> ?; apply:continuous_comp; [exact: flip_cts | exact: fc].
-- by rewrite /= flip_zero.
-- by rewrite /= flip_one.
-- by move=> ?; apply:continuous_comp; [exact: flip_cts | exact: fc].
-- by rewrite /= flip_zero.
-- by rewrite /= flip_one.
+by split => /asboolP /unsquash f; exact/asboolP/squash/(f \o flip).
 Qed.
 
 Lemma path_between_trans : transitive path_between_sub.
 Proof.  
-move=> x y z; case/asboolP => f [fc f0 f1]; case/asboolP => g [gc g0 g1].
-apply/asboolP; exists (f <> g); split.
-- by apply: path_concat_cts; rewrite ?g0.
-- by rewrite path_concatl // ?g0.
-- by rewrite path_concatr // ?g0.
+move=> x y z; case/asboolP=> f /asboolP [g].
+apply/asboolP/squash; exact: (f <> g).
 Qed.
 
 Definition path_between := EquivRel _ 
@@ -2811,153 +2856,187 @@ End path_component.
 
 Arguments path_components : clear implicits.
 
-Section path_space.
-Context {T : topologicalType}.
-Definition path_space (x y : T) : topologicalType := 
-  [set f : {compact-open, i -> T } | is_path x y f].
+Lemma path_uncurry_cts {U T : topologicalType} (x y : T)
+  (a b : {path i from x to y}) (f : {path i from a to b})  : 
+    continuous (uncurry (fun t u => f t u)).
+Proof.
+apply: continuous_uncurry.
+- exact: domain_locally_compact.
+- exact: order_hausdorff.
+- suff : continuous (@Path.sort i _ x y \o f : i -> {compact-open, i -> T}). 
+    by exact.
+  move=> ?; apply: continuous_comp; first exact: path_cts.
+  exact: weak_continuous.
+- by move=> t; exact: path_cts.
+Qed.
 
-Lemma cst_is_path_sub (x : T) : 
-  (fun=> x) \in  [set f : {compact-open, i -> T } | is_path x x f].
-Proof. by apply/mem_set; split => // ? ; exact: cvg_cst. Qed.
-  
-Definition zero_path (x : T) : path_space x x := 
-  @exist _ _ (fun=> x) (cst_is_path_sub x).
-
-End path_space.
+Lemma path_between_pathP {T : topologicalType} (x y : T) (a b : {path i from x to y}) : 
+  path_between a b <-> exists (f : i * i -> T), 
+    [/\continuous f, 
+       forall t, curry f t zero = x,
+       forall t, curry f t one = y,
+       curry f zero = a & 
+       curry f one = b].
+Proof.
+split.
+  case/asboolP => f; exists (uncurry (fun t u => f t u)); split.
+  - exact: path_uncurry_cts.
+  - by move=> t; exact: path_zero.
+  - by move=> t; exact: path_one.
+  - by apply/funext => ?; rewrite /curry /= path_zero.
+  - by apply/funext => ?; rewrite /curry /= path_one.
+case=> f [cf ft0 ft1 f0 f1]; apply/asboolP.
+have ftpath t : Path.axioms_ x y (curry f t).
+  split => //; by have [_ ] := continuous_curry cf; exact.
+apply: squash; exists (fun t => Path.Pack (ftpath t)); split; split.
+- apply/path_eqP => //=.
+- apply/path_eqP => //=.
+apply: continuous_comp_weak; rewrite /comp //=.
+exact: continuous_curryf.
+Qed.
 
 Section i_path.
 
-Lemma id_path_is_path_sub  :
-  (id : i -> i) \in [set f : {compact-open, i -> i } | is_path zero one f].
-Proof. by apply/mem_set; split => // ?; exact: cvg_id. Qed.
-
-Definition id_path : path_space zero one := @exist _ _ id id_path_is_path_sub.
-
-Local Lemma reparam_path_lt (p q: @path_space i zero one) :
-  (forall j, set_val p j <= set_val q j)%O ->
-  @path_between (path_space zero one) p q.
+Local Lemma reparam_path_lt (p q: {path i from (@zero i) to one}) :
+  (forall j, p j <= q j)%O ->
+  path_between p q.
 Proof.
-move=> svj; apply/asboolP.
-
-pose f := ((set_val q \o snd) \min (fst \max (set_val p \o snd))).
-have /continuous_curry [cts_cf cfu] : continuous f.
-  apply: min_fun_continuous => //. 
+move=> svj; apply/path_between_pathP.
+pose f := ((q \o snd) \min (fst \max (p \o snd))).
+exists f; split; rewrite /f/curry /=.
+- apply: min_fun_continuous => //. 
       move=>? ; apply:continuous_comp; first by move=> ?; exact: cvg_snd.
-      by have /set_mem [+ _ _] := svalP q; exact.
+      exact: path_cts.
   apply: max_fun_continuous => //; first by move=> ?; exact: cvg_fst.
   move=>? ; apply:continuous_comp; first by move=> ?; exact: cvg_snd.
-  by have /set_mem [+ _ _] := svalP p; exact.
-have cfu_cts t : curry f t \in [set f : {compact-open, i -> i } | is_path zero one f].
-  (apply/mem_set; split; first exact: cfu); rewrite /f /=/curry /Order.min_fun /=.
-  - rewrite (_ : set_val p = sval p) // (_ : set_val q = sval q) //.
-    have /set_mem [_ -> _] := svalP p; have /set_mem [_ -> _] := svalP q. 
-    rewrite min_l //; last exact: zero_bot.
-  - rewrite (_ : set_val p = sval p) // (_ : set_val q = sval q) //.
-    have /set_mem [_ _ ->] := svalP p; have /set_mem [_ _ ->] := svalP q. 
-    rewrite max_r //; last exact: one_top.
-    rewrite min_r //. 
-exists (fun t => exist _ (curry f t) (cfu_cts t)).
-split.
-- exact: continuous_set_type => //=.
-- apply: eq_exist_l; rewrite /f //= /curry /=.
-  by under eq_fun => j do rewrite max_r ?zero_bot // min_r //.
-- apply: eq_exist_l; rewrite /f //= /curry /=.
-  by under eq_fun => j do rewrite max_l ?one_top // min_l ?one_top //.
+  exact: path_cts.
+- by move=> t; rewrite min_l ?path_zero ?zero_bot.
+- by move=> t; rewrite min_r ?path_one ?one_top ?max_r ?one_top.
+- by apply/funext=> u; rewrite max_r ?zero_bot // min_r.
+- by apply/funext=> u; rewrite max_l ?one_top // min_l // one_top.
 Qed.
 
-Local Lemma reparam_path (p: @path_space i zero one) :
-  @path_between (path_space zero one) p id_path.
+Local Lemma reparam_path_id (p: {path i from (@zero i) to one}) :
+  path_between p idfun.
 Proof.
-pose q := id \min (set_val p).
-have qpath: q \in [set f : {compact-open, i -> i } | is_path zero one f].
-  apply/mem_set; split.
-  - apply: min_fun_continuous; first by move => ?.
-    by have /set_mem [+ _ _] := svalP p; exact.
-  - rewrite /q (_ : set_val p = sval p) //=; have /set_mem [_ ->] := svalP p.
-    rewrite min_l //.
-  - rewrite /q (_ : set_val p = sval p) //=; have /set_mem [_ _ ->] := svalP p.
-    rewrite min_l //.
-pose q' : path_space zero one := exist _ q qpath.
-apply: (@path_between_trans _ q').
+pose q := idfun \min p; have q_path : Path.axioms_ zero one q.
+  split; split; rewrite /q /=.
+  - by rewrite path_zero min_l.
+  - by rewrite path_one min_l.
+  - by apply: min_fun_continuous; [move=> ?; exact: cvg_id | exact: path_cts].
+apply: (@path_between_trans _ (Path.Pack q_path)). 
   rewrite path_between_sym; apply: reparam_path_lt; move=> j. 
-  by rewrite /q' set_valE /= /q /= ge_min lexx orbT.
-by apply: reparam_path_lt; move=> j; rewrite /q' set_valE /= /q /= ge_min lexx.
+  by rewrite /= /q /= ge_min lexx orbT.
+by apply: reparam_path_lt; move=> j; rewrite /q /= ge_min lexx.
+Qed.
+
+Lemma reparam_path (p q: {path i from (@zero i) to one}) :
+  path_between p q.
+Proof.
+apply: (@path_between_trans {path i from zero to one} idfun). 
+  exact: reparam_path_id.
+by rewrite path_between_sym; exact: reparam_path_id.
+Qed.
+
+Lemma reparam_path_between {T : topologicalType} (x y : T) 
+  (phi: {path i from (@zero i) to one}) (f : {path i from x to y}) :
+  path_between f (reparameterize f phi).
+Proof.
+apply/path_between_pathP.
+have /path_between_pathP [h [hcts ht0 ht1 h0 h1]] := reparam_path idfun phi.
+exists (f \o h); split.
+- by move=> ?; apply: continuous_comp; [exact: hcts | exact: path_cts].
+- by move=> t; move: (ht0 t); rewrite /curry /= => ->; rewrite path_zero.
+- by move=> t; move: (ht1 t); rewrite /curry /= => ->; rewrite path_one.
+- by apply/funext => u; move/funeqP/(_ u): h0;  rewrite /curry /= => ->.
+- by apply/funext => u; move/funeqP/(_ u): h1;  rewrite /curry /= => ->.
 Qed.
 
 End i_path.
 
+Section path_between_wedge.
+Context {T: topologicalType} (x y z : T).
+
+Lemma path_between_wedge (a a' : {path i from x to y}) 
+    (b b' : {path i from y to z}) :
+  path_between a a' -> path_between b b' ->
+  path_between (a <> b) (a' <> b').
+Proof.
+case/asboolP => h /asboolP [] k; apply/asboolP.
+apply: squash; exists (fun t => (h t) <> (k t)); split; split.
+- by rewrite ?path_zero.
+- by rewrite ?path_one.
+apply: continuous_comp_weak; rewrite /comp /=.
+set g := fun _ => _.
+rewrite (_ : g = curry (fun tu => path_concat (h tu.1) (k tu.1) tu.2)) //.
+rewrite /path_concat/=.
+apply: continuous_curryf; case => t u U /=.
+rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)).
++ exact/accessible_closed_set1/hausdorff_accessible/ order_hausdorff.
++ exact/accessible_closed_set1/hausdorff_accessible/ order_hausdorff.
++ move: u => _ u uNone /=; rewrite from_wedgeK.
+  rewrite wedge_funl; rewrite ?path_zero ?path_one //.
+  rewrite (_ : h t u = uncurry (fun l r => h l r) (t,u)) //.
+  move/(@path_uncurry_cts T); rewrite nbhs_simpl /= => Ntu.
+  have Lu : nbhs (from_wedge (bpwedgel u)) (to_wedge@^-1`(bpwedgel @` [set : i])).
+    apply: to_wedge_cts; rewrite from_wedgeK.
+    rewrite -wedgel_nbhs //=.
+      have /filterS : nbhs u setT by exact: filterT.
+      by apply => l _; exists l.
+    exact/accessible_closed_set1/hausdorff_accessible/ order_hausdorff.
+  rewrite nbhs_simpl /=; pose wbp (tu : i * i) := (tu.1, from_wedge (bpwedgel tu.2)).
+  have -> : (t, from_wedge (bpwedgel u)) = wbp (t,u) by done.
+  near_simpl. rewrite near_map.
+  have ct2 : continuous (fun (tu : i * _) => (tu.1, from_wedge tu.2)).
+    admit.
+  Check near_map.
+  
+  
+  near_simpl; rewrite /=. 
+  near=> t1 t2 => /=.
+  have [] // := near Lu t2 => l _.
+  rewrite wedge_funl => //; last rewrite path_zero path_one //.
+
+
+  near : t1.
+  rewrite /path
+  have := (@continuous2_cvg _ _ _ _ _ _ 
+      (fun x => (h x.1, k x.1)) (snd) (fun l r => path_concat l.1 l.2 r)) 
+      (h t, k t) (u).
+  apply => //=.
+  + move=> V nVU; rewrite nbhs_simpl /=.
+    have := h^@-1` ()
+    
+  + apply (@cvg_pair (i * i) _ _ _ _ _ _ _ _ (h \o fst) (k \o fst)).
+      by apply: cvg_comp; [exact: cvg_fst | exact: path_cts].
+    by apply: cvg_comp; [exact: cvg_fst | exact: path_cts].
+  + exact: cvg_snd.
+
+
+  
+  
+
 Section fundamental_groupoid.
 Context {T: topologicalType}.
 (* arrows in the category of endpoint-preserving homotopies *)
-Definition fundamental_groupoid (x y : T) := path_components (path_space x y).
+Definition fundamental_groupoid (x y : T) := 
+  path_components {path i from x to y}.
 
 HB.instance Definition _ (x y : T) := EqQuotient.on (fundamental_groupoid x y).
 
 Local Notation fdg := (fundamental_groupoid).
 
-Lemma fdg_op_sub {x y z : T} (l : fdg x y) (r : fdg y z) :
-  ((set_val (repr l)) <> (set_val (repr r))) \in   
-    [set f : {compact-open, i -> T } | is_path x z f].
-Proof.
-apply/mem_set => /=; have : set_val (repr l) one = set_val (repr r) zero.
-  case: (repr l) => /= f p; rewrite set_valE /=.
-  case: (repr r) => /= g q; rewrite set_valE /=.
-  by case/set_mem: p => ? _ ->; case/set_mem: q => ? <-.
-split.
-- apply: path_concat_cts => //.
-    by case: (repr l) => /= ? p; rewrite set_valE /=; case/set_mem: p.
-  by case: (repr r) => /= ? p; rewrite set_valE /=; case/set_mem: p.
-- rewrite path_concatl //.
-  by case: (repr l) => /= ? p; rewrite set_valE /=; case/set_mem: p.
-- rewrite path_concatr //.
-  by case: (repr r) => /= ? p; rewrite set_valE /=; case/set_mem: p.
-Qed.
-    
 Definition fdg_op {x y z : T} (l : fdg x y) (r : fdg y z) : fdg x z := 
-  pi _ (@exist _ _ (_ <> _) (fdg_op_sub l r)).
+  \pi_(fdg x z) (repr l <> repr r).
 
 Notation "l '<.>' r" := (fdg_op l r) (at level 70).
 
-Definition fdg_zero (x : T) : fdg x x := pi _ (zero_path x).
-
-Lemma path_between_path (x y : T) (a b : path_space x y) : 
-  path_between a b <-> exists (f : i * i -> T), 
-    [/\continuous f, 
-       forall t, curry f t zero = x,
-       forall t, curry f t one = y,
-       curry f zero = set_val a & 
-       curry f one = set_val b].
-Proof.
-split.
-  case/asboolP=> f [cf f0 f1]; exists (fun tu => set_val (f tu.1) tu.2); split.
-  - have -> : (fun tu => set_val (f tu.1) tu.2) = 
-        uncurry (fun t u => set_val (f t) u).
-      by apply/funext; case => ? ? //=.
-    apply: continuous_uncurry.
-    + exact: path_locally_compact.
-    + exact: order_hausdorff.
-    + suff : continuous (set_val \o f) by exact.
-      move=> ?; apply: continuous_comp; first exact: cf.
-      exact: weak_continuous.
-    + by move=> t u; have /set_mem [+ _ _] := svalP (f t); exact.
-  - by move=> t; have /set_mem [_ + _] := svalP (f t). 
-  - by move=> t; have /set_mem [_ _ +] := svalP (f t). 
-  - by apply/funext => ?; rewrite /curry /= f0.
-  - by apply/funext => ?; rewrite /curry /= f1.
-case=> f [cf ft0 ft1 f0 f1]; apply/asboolP.
-have ftpath t : curry f t \in [set f : {compact-open, i -> T } | is_path x y f].
-  apply/mem_set; split => //.
-  by have [_ ] := continuous_curry cf; exact.
-exists (fun t => exist _ (curry f t) (ftpath t)); split.
-- apply: continuous_set_type; rewrite /comp set_valE /=.
-  exact: continuous_curryf.
-- exact/eq_sig_hprop_iff.
-- exact/eq_sig_hprop_iff.
-Qed.
+Definition fdg_zero (x : T) : fdg x x := \pi_(fdg x x) (cst x).
 
 Lemma fdg_op_zeror (x y : T) (a : fdg x y) : a <.> fdg_zero y = a.
 Proof.
 rewrite -[a]reprK -[fdg_zero y]reprK; apply/eqmodP; rewrite ?reprK.
+apply: (@path_between_trans {path i from x to y} (repr a <> cst y)); first last.
 pose rpath := (exist _ set_val (repr a) <> fun=> y).
 apply: (@path_between_trans _).
 apply/path_between_path.
