@@ -2761,6 +2761,7 @@ HB.mixin Record isPathDomain {d} (i : Type) of
   OrderTopological d i & SelfSplit i := {
   (* this makes the path_between relation symmetric*)
   flip : {path i from (@one i) to (@zero i)};
+  flipK : involutive flip;
   (* this lets us curry for paths between paths*)
   domain_locally_compact : locally_compact [set: i];
   (* this gives us homotopies between {path i from zero to one} and `idfun`*)
@@ -2784,16 +2785,19 @@ Section path_flip.
 Context {d} {T : topologicalType} (i : pathDomainType d) (x y : T).
 Context (f : {path i from x to y}).
 
-Local Lemma fflip_zero : (f \o flip) zero = y.
-Proof. by rewrite /= path_zero path_one. Qed.
+Definition path_flip := f \o flip.
 
-Local Lemma fflip_one : (f \o flip) one = x.
-Proof. by rewrite /= path_one path_zero. Qed.
+Local Lemma fflip_zero : path_flip zero = y.
+Proof. by rewrite /path_flip /= path_zero path_one. Qed.
 
-Local Lemma fflip_cts : continuous (f \o flip).
+Local Lemma fflip_one : path_flip one = x.
+Proof. by rewrite /path_flip /= path_one path_zero. Qed.
+
+Local Lemma fflip_cts : continuous path_flip.
 Proof. by move=> ?; apply: continuous_comp; apply: path_cts. Qed.
 
-HB.instance Definition _ := isPath.Build i T y x (f \o flip) 
+
+HB.instance Definition _ := isPath.Build i T y x path_flip
   fflip_zero fflip_one fflip_cts.
 End path_flip.
 
@@ -2827,6 +2831,18 @@ split; case=> f.
 by case=> pf Qseta; exists (fun a => exist [eta P] (f a) (pf a)).
 Qed.
 
+Lemma continuous_uncurry_min {d} {T : orderTopologicalType d} : 
+  continuous (uncurry (@Order.min d T)). 
+Proof.
+by have := (@min_continuous d T); congr(continuous _); rewrite funeq2E => ? []. 
+Qed.
+
+Lemma continuous_uncurry_max {d} {T : orderTopologicalType d} : 
+  continuous (uncurry (@Order.max d T)). 
+Proof.
+by have := (@max_continuous d T); congr(continuous _); rewrite funeq2E => ? []. 
+Qed.
+
 Section path_connected. 
 Context {d} {i : pathDomainType d}.
 Local Open Scope quotient_scope.
@@ -2847,7 +2863,7 @@ suff : (is_true (path_between_sub a b) <-> is_true (path_between_sub b a)).
   case: (path_between_sub a b) => //; case: (path_between_sub b a) => // [].
     by case=> ->.
   by case=> _ ->.
-by split => /asboolP /unsquash f; exact/asboolP/squash/(f \o flip).
+by split => /asboolP /unsquash f; exact/asboolP/squash/(path_flip f).
 Qed.
 
 Lemma path_between_trans : transitive path_between_sub.
@@ -2864,7 +2880,7 @@ End path_component.
 
 Arguments path_components : clear implicits.
 
-Lemma path_uncurry_cts {U T : topologicalType} (x y : T)
+Lemma path_uncurry_cts {T : topologicalType} (x y : T)
   (a b : {path i from x to y}) (f : {path i from a to b})  : 
     continuous (uncurry (fun t u => f t u)).
 Proof.
@@ -2963,18 +2979,16 @@ Qed.
 End i_path.
 
 Section path_between_wedge.
+Local Import ArrowAsCompactOpen.
 Context {T: topologicalType} (x y z : T).
 
-Lemma path_between_wedge (a a' : {path i from x to y}) 
-    (b b' : {path i from y to z}) :
-  path_between a a' -> path_between b b' ->
-  path_between (a <> b) (a' <> b').
+Lemma path_concat_joint_continuous (h k : i -> i -> T) :
+  (forall t, h t one = k t zero) ->
+  continuous (uncurry h) ->
+  continuous (uncurry k) ->
+  continuous (fun t => wedge_fun (h t) (k t) \o to_wedge). 
 Proof.
-case/asboolP => h /asboolP [] k; apply/asboolP.
-apply: squash; exists (fun t => (h t) <> (k t)); split; split.
-- by rewrite ?path_zero.
-- by rewrite ?path_one.
-apply: continuous_comp_weak; rewrite /comp /=.
+move=> hkE hcts kcts.
 set g := fun _ => _.
 rewrite (_ : g = curry (fun tu => path_concat (h tu.1) (k tu.1) tu.2)) //.
 rewrite /path_concat/=.
@@ -2984,7 +2998,7 @@ rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)).
 + exact: path_domain_set1.
 + move: u => _ u ? /=; rewrite from_wedgeK wedge_funl ?path_zero ?path_one //.
   rewrite (_ : h t u = uncurry (fun l r => h l r) (t,u)) //.
-  move/(@path_uncurry_cts T); case;case => U1 U2 [U1t U2u] U12U. 
+  case/hcts => //; case=> U1 U2 [U1t U2u] U12U.
   have U2TLu : nbhs (from_wedge (bpwedgel u)) (to_wedge@^-1` (bpwedgel @` U2)).
     apply: to_wedge_cts; rewrite from_wedgeK. 
     rewrite -wedgel_nbhs //=; last exact: path_domain_set1.
@@ -2995,7 +3009,7 @@ rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)).
   split => //; have := near U1t t1; apply => //.
 + move: u => _ u ? /=; rewrite from_wedgeK wedge_funr ?path_zero ?path_one //.
   rewrite (_ : k t u = uncurry (fun l r => k l r) (t,u)) //.
-  move/(@path_uncurry_cts T); case;case=> U1 U2 [U1t U2u] U12U. 
+  case/kcts => //; case=> U1 U2 [U1t U2u] U12U.
   have U2TLu : nbhs (from_wedge (bpwedger u)) (to_wedge@^-1` (bpwedger @` U2)).
     apply: to_wedge_cts; rewrite from_wedgeK. 
     rewrite -wedger_nbhs //=; last exact: path_domain_set1.
@@ -3007,10 +3021,10 @@ rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)).
 + rewrite from_wedgeK wedge_funl; last by rewrite ?path_zero ?path_one // => Uy.
   move=> /[dup] => Uny.
   rewrite {1}(_ : h t one = uncurry (fun l r => h l r) (t,one)) //.
-  move/(@path_uncurry_cts T); case;case => /= U1 U2 [U1t U2u] U12U. 
-  move: Uny; rewrite path_one {1}(_ : y = k t zero); last by rewrite ?path_zero.
+  case/hcts => //; case => /= U1 U2 [U1t U2u] U12U. 
+  move: Uny; rewrite (hkE t).
   rewrite {1}(_ : k t zero = uncurry (fun l r => k l r) (t,zero)) //.
-  move/(@path_uncurry_cts T); case;case => /= V1 V2 [V1t V2u] V12U. 
+  case/kcts => //; case => /= V1 V2 [V1t V2u] V12U. 
   have LRone : nbhs (from_wedge (bpwedgel one)) 
       (to_wedge@^-1` (bpwedgel @` U2 `|` bpwedger @` V2)).
     apply: to_wedge_cts; rewrite from_wedgeK.
@@ -3024,7 +3038,31 @@ rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)).
   rewrite wedge_funr ?path_zero ?path_one //.
   by apply: (V12U (t1,l)); split => //; have := near V1t t1; apply.
 Unshelve. all: by end_near. Qed.
-  
+
+
+Lemma path_between_wedge (a a' : {path i from x to y}) 
+    (b b' : {path i from y to z}) :
+  path_between a a' -> path_between b b' ->
+  path_between (a <> b) (a' <> b').
+Proof.
+have ? := (@domain_locally_compact _ i).
+have ? : hausdorff_space i by exact: order_hausdorff.
+case/asboolP => h /asboolP [] k; apply/asboolP.
+apply: squash; exists (fun t => (h t) <> (k t)); split; split.
+- by rewrite ?path_zero.
+- by rewrite ?path_one.
+apply: continuous_comp_weak; rewrite /comp /=.
+apply: path_concat_joint_continuous.
+- by move=> ?; rewrite path_one path_zero.
+- apply: continuous_uncurry => //.
+    move=> ?; apply: continuous_comp; first exact: path_cts.
+    exact: weak_continuous.
+  by move=> ?; apply: path_cts.
+- apply: continuous_uncurry => //. 
+    move=> ?; apply: continuous_comp; first exact: path_cts.
+    exact: weak_continuous.
+  by move=> ?; apply: path_cts.
+Qed.
 End path_between_wedge.
   
 Section fundamental_groupoid.
@@ -3046,7 +3084,7 @@ Definition fdg_zero (x : T) : fdg x x := \pi_(fdg x x) (cst x).
 
 Lemma fdg_op_zeror (x y : T) (a : fdg x y) : (a <.> fdg_zero y) = a.
 Proof.
-rewrite -[a]reprK -[fdg_zero y]reprK; apply/eqmodP; rewrite ?reprK /=.
+rewrite -[a]reprK /fdg_zero; apply/eqmodP; rewrite ?reprK /=.
 apply: (@path_between_trans {path i from x to y} (repr a <> cst y)).
   apply: path_between_wedge => //.
   rewrite /fdg_zero /=; case: piP=> r /eqmodP; rewrite path_between_sym; apply.
@@ -3058,7 +3096,7 @@ Qed.
 
 Lemma fdg_op_zerol (x y : T) (a : fdg x y) : (fdg_zero x <.> a) = a.
 Proof.
-rewrite -[a]reprK -[fdg_zero x]reprK; apply/eqmodP; rewrite ?reprK /=.
+rewrite -[a]reprK; apply/eqmodP; rewrite ?reprK /=.
 apply: (@path_between_trans {path i from x to y} (cst x <> repr a)).
   apply: path_between_wedge => //.
   rewrite /fdg_zero /=; case: piP=> r /eqmodP; rewrite path_between_sym; apply.
@@ -3085,3 +3123,139 @@ apply: (@path_between_trans _ (((repr f) <> (repr g)) <> (repr h))).
 apply: path_between_wedge => //.
 by case: piP => r /eqmodP; rewrite /= path_between_sym.
 Qed.
+
+Definition fdg_op_inv (x y : T) (f : fdg x y) :=
+  \pi_(fdg y x) (path_flip (repr f)).
+
+Lemma fdg_op_invr (x y : T) (f : fdg x y) : 
+  fdg_zero x = (f <.> fdg_op_inv f).
+Proof.
+rewrite -[f]reprK; apply/eqmodP; rewrite ?reprK.
+apply: (@path_between_trans _ (repr f <> (path_flip (repr f)))); first last.
+  apply: path_between_wedge => //.
+  by case: piP => r /eqmodP; rewrite /= path_between_sym.
+apply/path_between_pathP.
+pose h t := wedge_fun 
+  ((repr f) \o (Order.min t)) 
+  ((repr f) \o (Order.min t) \o flip) \o to_wedge.
+have ? := @order_hausdorff _ i.
+have ? := @domain_locally_compact _ i.
+have ? : closed [set (@zero i)] by exact: path_domain_set1.
+have ? : closed [set (@one i)] by exact: path_domain_set1.
+exists (uncurry h); split => //; first last.
+- apply/funext => u; rewrite /curry/uncurry/h /=.
+  rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)) => //.
+  + move=> ? ?; rewrite /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funl /= ?min_r // ?one_top // ?min_r ?path_zero path_one.
+  + move=> ? ?; rewrite /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funr /= ?min_r // ?one_top // ?min_r ?path_zero path_one.
+  + rewrite /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funl /= ?min_r // ?one_top // ?min_r ?path_zero path_one.
+- apply/funext => u; rewrite /curry/uncurry/h /=.
+  rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)) => //.
+  + move=> ? ?; rewrite /= ?from_wedgeK. 
+    by rewrite wedge_funl /= ?min_l ?zero_bot ?path_zero.
+  + move=> ? ?; rewrite /= ?from_wedgeK. 
+    by rewrite wedge_funr /= ?min_l ?zero_bot ?path_zero.
+  + rewrite /= ?from_wedgeK. 
+    by rewrite ?wedge_funl /= ?min_l ?path_zero ?one_top.
+- move=> t; rewrite /uncurry/curry/h /= to_wedge_one.
+  rewrite wedge_funr /= ?path_one ?path_zero.
+    by rewrite min_r ?path_zero ?zero_bot.
+  by rewrite ?min_l // ?one_top.
+- move=> t; rewrite /uncurry/curry/h /= to_wedge_zero.
+  rewrite wedge_funl /= ?path_one ?path_zero.
+    by rewrite min_r ?path_zero ?zero_bot.
+  by rewrite ?min_l // ?one_top.
+apply: continuous_uncurry => //; first last.
+- move=> t u; apply: continuous_comp; first exact: to_wedge_cts.
+  apply: wedge_continuous.
+  + move=> z; apply: continuous_comp; last exact: path_cts.
+    by have /continuous_curry [?] := (@min_continuous _ i); exact.
+  + move=> ?; apply: continuous_comp; first exact: path_cts. 
+    move=> ?; apply: continuous_comp; last exact: path_cts. 
+    by have /continuous_curry [?] := (@min_continuous _ i); exact.
+  + by rewrite /= ?path_zero.
+apply: path_concat_joint_continuous.
+- by move=> t; rewrite /= min_l // ?path_zero ?min_l // ?one_top //.
+- rewrite ( _ : uncurry _ = (repr f \o (fun tu => @Order.min _ i tu.1 tu.2))) //.
+    move=> ?; apply: continuous_comp;[exact: min_continuous | exact: path_cts].
+  by apply/funext; case=> ? ?.
+rewrite ( _ : uncurry _ = 
+  (repr f \o (fun tu => @Order.min _ i tu.1 tu.2) \o (fun xy => (xy.1, flip xy.2)))) //; first last.
+    by apply/funext; case=> ? ?.
+move=> ?; apply: continuous_comp. 
+    apply: cvg_pair; first exact: cvg_fst.
+    apply: cvg_comp; first exact: cvg_snd.
+    exact: path_cts.
+move=> ?; apply: continuous_comp; first exact: min_continuous.
+exact: path_cts.
+Qed.
+
+Lemma fdg_op_invl (x y : T) (f : fdg x y) : 
+  fdg_zero y = (fdg_op_inv f <.> f).
+Proof.
+rewrite -[f]reprK; apply/eqmodP; rewrite ?reprK.
+apply: (@path_between_trans _ ((path_flip (repr f)) <> repr f)); first last.
+  apply: path_between_wedge => //.
+  by case: piP => r /eqmodP; rewrite /= path_between_sym.
+rewrite path_between_sym; apply/path_between_pathP.
+pose h t := wedge_fun 
+  ((repr f) \o (Order.max t) \o flip) 
+  ((repr f) \o (Order.max t)) \o to_wedge.
+have ? := @order_hausdorff _ i.
+have ? := @domain_locally_compact _ i.
+have ? : closed [set (@zero i)] by exact: path_domain_set1.
+have ? : closed [set (@one i)] by exact: path_domain_set1.
+exists (uncurry h); split => //; first last.
+- apply/funext => u; rewrite /curry/uncurry/h /=.
+  rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)) => //.
+  + move=> ? ?; rewrite /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funl /= ?max_l ?one_top ?max_l ?path_one ?path_zero.
+  + move=> ? ?; rewrite /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funr /= ?max_l ?one_top ?max_l ?path_one ?path_zero .
+  + rewrite /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funl /= ?max_l ?one_top ?max_l ?path_one ?path_zero.
+- apply/funext => u; rewrite /curry/uncurry/h /=.
+  rewrite -[u]to_wedgeK; case: (wedge_nbhs_specP (to_wedge u)) => //.
+  + move=> ? ?; rewrite /= /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funl/= ?max_r ?zero_bot ?path_one ?path_zero.
+  + move=> ? ?; rewrite /= /path_concat /= ?from_wedgeK. 
+    by rewrite ?wedge_funr /= ?max_r ?zero_bot ?path_one ?path_zero.
+  + rewrite /= ?from_wedgeK /path_concat /= from_wedgeK.  
+    by rewrite ?wedge_funl /= ?max_r ?path_one ?path_zero ?one_top.
+- move=> t; rewrite /uncurry/curry/h /= to_wedge_one.
+  rewrite wedge_funr /= ?path_one ?path_zero.
+    by rewrite max_r ?path_one ?one_top.
+  by rewrite ?min_l // ?one_top.
+- move=> t; rewrite /uncurry/curry/h /= to_wedge_zero.
+  rewrite wedge_funl /= ?path_one ?path_zero.
+    by rewrite max_r ?one_top ?path_one.
+  by rewrite ?min_l // ?one_top.
+apply: continuous_uncurry => //; first last.
+- move=> t u; apply: continuous_comp; first exact: to_wedge_cts.
+  apply: wedge_continuous.
+  + move=> ?; apply: continuous_comp; first exact: path_cts. 
+    move=> ?; apply: continuous_comp; last exact: path_cts. 
+    by have /continuous_curry [?] := (@max_continuous _ i); exact.
+  + move=> z; apply: continuous_comp; last exact: path_cts.
+    by have /continuous_curry [?] := (@max_continuous _ i); exact.
+  + by rewrite /= ?path_one.
+apply: path_concat_joint_continuous.
+- by move=> t; rewrite /= max_l ?path_zero ?max_l ?one_top ?path_one ?zero_bot. 
+- rewrite ( _ : uncurry _ = 
+    (repr f \o (fun tu => @Order.max _ i tu.1 tu.2) \o (fun xy => (xy.1, flip xy.2)))) //; first last.
+      by apply/funext; case=> ? ?.
+  move=> ?; apply: continuous_comp. 
+      apply: cvg_pair; first exact: cvg_fst.
+      apply: cvg_comp; first exact: cvg_snd.
+      exact: path_cts.
+  move=> ?; apply: continuous_comp; first exact: max_continuous.
+  exact: path_cts.
+- rewrite ( _ : uncurry _ = (repr f \o (fun tu => @Order.max _ i tu.1 tu.2))) //.
+    move=> ?; apply: continuous_comp;[exact: max_continuous | exact: path_cts].
+  by apply/funext; case=> ? ?.
+Qed.
+
+
+
