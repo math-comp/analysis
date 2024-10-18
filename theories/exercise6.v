@@ -94,6 +94,8 @@ Proof. by rewrite intrEge0. Qed.
 
 Import numFieldNormedType.
 
+Local Notation "f ^` ()" := (derive1 f) : classical_set_scope.
+
 (* connect MathComp's polynomials with analysis *)
 Section derive_horner.
 Variable (R : realFieldType).
@@ -122,7 +124,7 @@ rewrite hornerD_ext; apply: derivableD.
 - by rewrite hornerC_ext; exact: derivable_cst.
 Qed.
 
-Lemma derivE (p : {poly R}) : horner (deriv p) = derive1 (horner p).
+Lemma derivE (p : {poly R}) : horner (p^`()) = (horner p)^`()%classic.
 Proof.
 apply/funext => x; elim/poly_ind: p => [|p r ih].
   by rewrite deriv0 hornerC horner0_ext derive1_cst.
@@ -253,7 +255,7 @@ Qed.
 
 Definition pirat := a / b.
 
-Let pf_sym : f \Po (pirat%:P -'X) = f.
+Let pf_sym : f \Po (pirat%:P - 'X) = f.
 Proof.
 rewrite /f comp_polyZ; congr *:%R.
 rewrite comp_polyM !comp_poly_exprn comp_polyB comp_polyC !comp_polyZ.
@@ -269,7 +271,7 @@ suff -> : a%:P - (b *: pirat%:P - b *: 'X) = b%:P * 'X.
 by rewrite -mul_polyC bap opprB addrCA subrr addr0 mul_polyC.
 Qed.
 
-Let derivn_fpix i : f^`(i) \Po (pirat%:P -'X) = (-1) ^+ i *: f^`(i).
+Let derivn_fpix i : f^`(i) \Po (pirat%:P - 'X) = (-1) ^+ i *: f^`(i).
 Proof.
 elim:i ; first by rewrite /= expr0 scale1r pf_sym.
 move=> i Hi.
@@ -390,8 +392,8 @@ Let fsin n := fun x : R => (f n).[x] * sin x.
 Let F := @F R na nb.
 
 Lemma fsin_antiderivative n :
-  derive1 (fun x => derive1 (horner (F n)) x * sin x - ((F n).[x]) * cos x) =
-  fsin n :> (R -> R).
+  (fun x => (horner (F n))^`()%classic x * sin x - (F n).[x] * cos x)^`()%classic =
+  fsin n.
 Proof.
 apply/funext => x/=.
 rewrite derive1E/= deriveD//=; last first.
@@ -421,8 +423,6 @@ apply/continuous_subspaceT => /= x.
 by apply: cvgM => /=; [exact: cvg_poly|exact: continuous_sin].
 Qed.
 
-Hypothesis piratE : pirat = pi.
-
 Lemma intfsinE n : intfsin n = (F n).[pi] + (F n).[0].
 Proof.
 rewrite /intfsin /Rintegral.
@@ -451,6 +451,8 @@ rewrite (@continuous_FTC2 _ _ h).
 - by move=> x x0pi; rewrite fsin_antiderivative.
 Qed.
 
+Hypothesis piratE : pirat = pi.
+
 Lemma intfsin_int n : intfsin n \is a Num.int.
 Proof. by rewrite intfsinE rpredD ?F0_int -?piratE ?FPi_int. Qed.
 
@@ -472,7 +474,7 @@ rewrite /fsin !hornerE/= -2!mulrA mulrC ltr_pM2r ?invr_gt0 ?ltr0n ?fact_gt0//.
 rewrite -!exprMn [in ltRHS]mulrC mulrA -exprMn.
 have ? : 0 <= a na - b nb * x.
   by rewrite abx_ge0 ?piratE// (ltW x0) ltW.
-have H1 : x * (a na - b nb * x) < a na * pi.
+have ? : x * (a na - b nb * x) < a na * pi.
   rewrite [ltRHS]mulrC ltr_pM//; first exact/ltW.
   by rewrite ltrBlDl //ltrDr mulr_gt0// lt0r /b pnatr_eq0 nb0/=.
 have := sin_le1 x; rewrite le_eqVlt => /predU1P[x1|x1].
@@ -619,7 +621,7 @@ Local Open Scope classical_set_scope.
 
 (* TODO: what's the predicate for rationality? could be more elegant *)
 Lemma pi_is_irrationnal {R : realType} (a b : nat) :
-  b != 0 -> pi != a%:~R / b%:~R :> R.
+  b != 0 -> pi != a%:R / b%:R :> R.
 Proof.
 move=> b0; apply/negP => /eqP piratE.
 have [N _] := intfsin_small b0 (esym piratE) (@ltr01 R).
