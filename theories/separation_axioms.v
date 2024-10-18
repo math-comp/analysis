@@ -184,7 +184,7 @@ Qed.
 
 Lemma accessible_kolmogorov : accessible_space -> kolmogorov_space.
 Proof.
-move=> T1 x y /T1 [A [oA [xA yA]]]; exists A; left; split=> //.
+move=> T1 x y /T1 [A [oA xA yA]]; exists A; left; split=> //.
 by rewrite nbhsE inE; exists A => //; rewrite inE in xA.
 Qed.
 
