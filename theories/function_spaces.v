@@ -1550,171 +1550,175 @@ End cartesian_closed.
 End currying.
 
 (* TODO: move to mathcomp_extras along with associativity stuff*)
-Definition sum_fun {X Y Z : Type} (f : X -> Z) (g : Y -> Z) (xy : X + Y) := 
-  match xy with
-  | inl x => f x
-  | inr y => g y
-  end.
+Search sigT.
+Require Import EqdepFacts.
+
+Definition sum_fun {I : Type} {X : forall (i:I), Type} {T : Type}
+  (f : forall i, X i -> T) (x : {i & X i}) : T :=
+  (f (projT1 x) (projT2 x)).
 
 Section sum_topology.
-Context {X Y : topologicalType}.
+Context {I : choiceType} {X : forall (i : I), topologicalType}.
 
-Definition sum_nbhs (xy : X + Y) : set_system (X + Y) := 
-  match xy with 
-  | inl x => inl @ x 
-  | inr y => inr @ y
-  end.
+Definition sum_nbhs (x : {i & X i}) : set_system {i & X i} := 
+   (existT _ _) @ (nbhs (projT2 x)).
 
-HB.instance Definition _ := hasNbhs.Build (X + Y)%type sum_nbhs.
+Lemma sum_nbhsE (i : I) (x : X i) : 
+  sum_nbhs (existT _ i x) = (existT _ _) @ (nbhs x).
+Proof. by done. Qed.
 
-Local Lemma sum_nbhs_proper xy : ProperFilter (sum_nbhs xy).
-Proof. by case: xy => /= ?; exact: fmap_proper_filter. Qed.
+HB.instance Definition _ := hasNbhs.Build {i & X i} sum_nbhs.
 
-Local Lemma sum_nbhs_singleton xy A : sum_nbhs xy A -> A xy.
-Proof. by case: xy => ? /=; apply: nbhs_singleton. Qed.
+Local Lemma sum_nbhs_proper x : ProperFilter (sum_nbhs x).
+Proof. by case: x => i xi; exact: fmap_proper_filter. Qed.
 
-Local Lemma sum_nbhs_nbhs xy A: sum_nbhs xy A -> sum_nbhs xy (sum_nbhs^~ A).
+Local Lemma sum_nbhs_singleton x A : sum_nbhs x A -> A x.
+Proof. by case: x => ? ? /=; apply: nbhs_singleton. Qed.
+
+Local Lemma sum_nbhs_nbhs x A: sum_nbhs x A -> sum_nbhs x (sum_nbhs^~ A).
 Proof. 
-case: xy => z /=.
-  rewrite nbhsE /=; case => W [oW Wz WlA].
+case: x => i zi /=.
+  rewrite sum_nbhsE /= nbhsE /=; case => W [oW Wz WlA].
   exists W; first by split.
   move=> x /= ?; move/filterS: WlA; apply.
   by apply: open_nbhs_nbhs.
-rewrite nbhsE /=; case => W [oW Wz WlA].
-exists W; first by split.
-move=> y /= ?; move/filterS: WlA; apply.
-by apply: open_nbhs_nbhs.
 Qed.
 
-HB.instance Definition _ := Nbhs_isNbhsTopological.Build (X + Y)%type 
+HB.instance Definition _ := Nbhs_isNbhsTopological.Build {i & X i}
   sum_nbhs_proper sum_nbhs_singleton sum_nbhs_nbhs.
 
-Variant sum_nbhs_spec (xy : X + Y) : 
-  (X + Y) -> (set_system (X + Y)) -> Type :=
-  (* we include this _ = _ term in the spec so callers can automatically
-     eliminate (inl _ = inr _) terms*)
-    TopologicalSumIsL (x : X) : sum_nbhs_spec xy (inl x) (inl @ x)
-  | TopologicalSumIsR (y : Y) : sum_nbhs_spec xy (inr y) (inr @ y).
+Variant sum_nbhs_spec (xy : {i & X i}) : 
+    {i & X i} -> (set_system {i & X i}) -> Type :=
+  TopologicalSumNbhs i (x : X i) : 
+    sum_nbhs_spec xy (existT _ i x) ((existT _ _) @ x).
 
-Lemma sum_nbhs_specP (xy : X + Y) : sum_nbhs_spec xy xy (nbhs xy).
+Lemma sum_nbhs_specP (xy : {i & X i}) : sum_nbhs_spec xy xy (nbhs xy).
 Proof. by case: xy => // ?; constructor. Qed.
 
-Lemma inl_continuous : continuous inl. 
+Lemma existT_continuous (i : I) : continuous (existT X i). 
 Proof. by move=> ? ?. Qed.
 
-Lemma inr_continuous : continuous inr. 
-Proof. by move=> ? ?. Qed.
-
-Lemma inl_open_map (A : set X) : open A -> open (inl@` A).
+Lemma existT_open_map (i : I) (A : set (X i)): open A -> open (existT X i @` A).
 Proof. 
 move=> oA; rewrite openE /interior /= => ?. 
-case: sum_nbhs_specP => ? [] //= ? ? [<-].
-have /filterS := @preimage_image _ (X + Y) inl A; apply.
-exact: open_nbhs_nbhs.
+case=> x Ax <-; rewrite /nbhs /= sum_nbhsE /= nbhs_simpl /=.
+move: oA; rewrite openE => /(_ _ Ax); apply: filterS.
+by move=> z => Az; exists z.
 Qed.
 
-Lemma inr_open_map (A : set Y) : open A -> open (inr@` A).
-Proof. 
-move=> oA; rewrite openE /interior /= => ?. 
-case: sum_nbhs_specP => ? [] //= ? ? [<-].
-have /filterS := @preimage_image _ (X + Y) inr A; apply.
-exact: open_nbhs_nbhs.
-Qed.
-
-Lemma inl_nbhs (x : X) (U : set X) : nbhs x U -> nbhs (inl x) (inl @` U).
+Lemma existT_nbhs (i : I) (x : X i) (U : set (X i)) : 
+  nbhs x U -> nbhs (existT _ i x) (existT _ i @` U).
 Proof. by move/filterS; apply; exact: preimage_image. Qed.
 
-Lemma inr_nbhs (y : Y) (U : set Y) : nbhs y U -> nbhs (inr y) (inr @` U).
-Proof. by move/filterS; apply; exact: preimage_image. Qed.
-
-Lemma sum_openP (U : set (X + Y)) : 
-  open U <-> (open (inl@^-1` U) /\ open (inr@^-1` U)).
+Lemma sum_openP (U : set {i & X i}) : 
+  open U <-> (forall i, open (existT _ i@^-1` U)).
 Proof.
 split.
-  move=> oU; split; first by have /continuousP := inl_continuous; apply.
-  by have /continuousP := inr_continuous; apply.
-case=> Ol Or; rewrite openE /interior => ?. 
-case: sum_nbhs_specP => ? /= ?; exact: open_nbhs_nbhs.
+  by move=> ? i; apply: open_comp=> //; move=> y /= _; exact: existT_continuous. 
+move=> oU; rewrite openE /interior; case=> i x Uxi. 
+rewrite /nbhs /= sum_nbhsE; apply: open_nbhs_nbhs; split => //.
 Qed.
 
-Lemma sum_continuous {Z : topologicalType} (f : X -> Z) (g : Y -> Z) : 
-  continuous f -> continuous g -> continuous (sum_fun f g).
+Lemma sum_continuous {Z : topologicalType} (f : forall i, X i -> Z) : 
+  (forall i, continuous (f i)) -> continuous (sum_fun f).
+Proof. by move=> ctsf [] i x U nU; apply: existT_continuous; exact: ctsf. Qed.
+
+Lemma sum_setUE : [set: {i & X i}] = \bigcup_i (existT _ i @` [set: (X i)]).
 Proof.
-move=> ctsf ctsg [x|y] U nU /=.
-  by apply: inl_continuous; exact: ctsf.
-by apply: inr_continuous; exact: ctsg.
+by rewrite eqEsubset; split; case=> i x //=; first by move=> _; exists i.
 Qed.
 
-Lemma sum_compact : compact [set: X] -> compact [set: Y] -> 
-  compact [set: X + Y].
+Lemma sum_compact : finite_set [set: I] -> (forall i, compact [set: X i]) -> 
+  compact [set: {i&X i}].
 Proof.
-have -> : ([set: X + Y] = inl @` setT `|` inr @` setT).
-  by rewrite eqEsubset; split=> + // _; case => z;[left | right]; exists z.
-move=> ? ?; apply: compactU; apply: continuous_compact =>//.
-- by apply: continuous_subspaceT => z.
-- by apply: continuous_subspaceT => z.
+move=> fsetI cptX.
+rewrite sum_setUE -fsbig_setU //; apply: big_ind.
+- exact: compact0.
+- by move=> ? ? ? ?; exact: compactU.
+move=> i _; apply: continuous_compact; last exact: cptX.
+by apply: continuous_subspaceT; exact: existT_continuous.
 Qed.
 
 End sum_topology.
 
 Section sum_uniformity.
-Context {X Y : uniformType}.
+Context {I : choiceType} {X : forall (i : I), uniformType}.
 
 Local Open Scope relation_scope.
-Let sum_entourage : set_system ((X + Y) * (X + Y))  := 
-  filter_from (@entourage X `*` @entourage Y) 
-    (fun E => (map_pair inl @` E.1) `|` (map_pair inr @` E.2)).
+Let sum_entourage : set_system ({i & X i} * {i & X i}) := 
+    \bigcap_i ((map_pair (existT X i)) @ (@entourage (X i))).
 
 Local Lemma sum_entourage_filter : Filter sum_entourage.
 Proof.
-apply: filter_from_filter.
-  by exists (setT, setT); split => //; exact: entourageT.
-case=> A B [C D] /= [eA eB] [eC eD]; exists ((A `&` C), (B `&` D)).
-  by split; exact: filterI.
-case=> /= ? ? [][][].
-  move=> x1 x2 [] Ax Cx /=; rewrite /map_pair /=.
-  by move/pair_equal_spec; case=> <- <-; split; left => //=; exists (x1, x2).
-move=> y1 y2 [] By Dy /=; rewrite /map_pair /=.
-by move/pair_equal_spec; case=> <- <-; split; right => //=; exists (y1, y2).
+split.
+- by move => i _; exact: filterT.
+- by move=> ? ? + + i iI => /(_ _ iI) + /(_ _ iI); exact: filterI.
+- by move=> ? ? ? + i iI => /(_ _ iI); apply: filterS.
 Qed.
 
 Local Lemma sum_entourage_diagonal A : sum_entourage A -> diagonal `<=` A.
 Proof.
-case; case=> U V [/= eU eV] /(subset_trans _); apply. 
-move=> [][x|y] [?|?] // [] <-; [left; exists (x,x)| right; exists (y,y)] => //.
-  exact: entourage_refl.
-exact: entourage_refl.
+move=> entA [x y]; rewrite /diagonal /= => <-; case: x => i x.
+(have iI : [set: I] i by done); have := entA _ iI.
+by rewrite /= nbhs_simpl /= => /entourage_refl /= /(_ x); exact.
 Qed.
 
 Local Lemma sum_entourage_inv A : sum_entourage A -> sum_entourage A^-1.
 Proof.
-case; case=> U V [/= eU eV].
-move=> UVA; suff : 
-  ([set map_pair inl x | x in U] `|` [set map_pair inr y | y in V])^-1 `<=` A^-1.
-  move/filterS; apply; first exact: sum_entourage_filter.
-  exists (U^-1,V^-1) => //= [][][?|?][?|?][] [] []//=.
-  - by move=> x x' Ux /pair_equal_spec /= [] <- <-; left; exists (x',x).
-  - by move=> y y' Vy /pair_equal_spec /= [] <- <-; right; exists (y',y).
-move=> [][?|?][?|?][][][]//= a b ? /pair_equal_spec [] <- <-; apply: UVA.
-  by left; (exists (a,b)).
-by right; (exists (a,b)).
+by move=> + i iI => /(_ _ iI); rewrite nbhs_simpl /=; exact: entourage_inv.
 Qed.
 
 Local Lemma sum_entourage_split_ex A:
   sum_entourage A -> exists2 B, sum_entourage B & B \; B `<=` A.
 Proof.
-case; case=> U V [/= eU eV] UVA.
-exists (map_pair inl @` split_ent U `|` map_pair inr @` split_ent V).
-  by exists (split_ent U, split_ent V) => //=.
-by move=> [][?|?][x|y][][] //= ? [][][] //= b ? splt /pair_equal_spec [] /= <- <-;
-  move=> [][][] ? a + /pair_equal_spec [] //= => /[swap] [][ ->] Ul [<-];
-  apply: UVA => //=; [left | right]; exists (b,a) => //; 
-  apply: (entourage_split _ _ splt ).
+move=> entA.
+pose B i : set (X i * X i) := split_ent ((map_pair (existT X i) @^-1` A)).
+exists (\bigcup_i (map_pair (existT X i)) @`  B i).
+- move=> i iI; rewrite /= nbhs_simpl preimage_bigcup /=.
+  have /= := entA i iI; rewrite nbhs_simpl /=. 
+  move/entourage_split_ent; apply: filterS; case=> l r /=.
+  by move=> Alr; exists i => //; exists (l,r).
+- case; case=> i x [j y] [[k z]] [i1] /= _  [[a b]] Bi1ab.
+  rewrite /map_pair; case => ii1 az ki1 bz [i2] _ [[c d] Bi2cd] [ki2] cz ji2 dy.
+  (* TODO : eliminate the "bad" coq tactic destruct here with 
+     an appropriate ssreflect dependent destruction.
+   *)
+  destruct ii1, ki1, ki2, ji2, az, cz, dy.
+  suff : (map_pair (existT (fun i : I => X i) i2) @^-1` A) (a, d) by exact.
+  (apply: (entourage_split b); first exact: entA) => //.
+  have -> // := Eqdep_dec.inj_pair2_eq_dec I _ _ _ _ _ bz.
+  by move=> p q; case: (pselect (p = q)) => ?; [left | right].
 Qed.
 
 Local Lemma sum_entourage_nbhsE: nbhs = nbhs_ sum_entourage.
 Proof.
-rewrite funeq2E=> ? U; case: sum_nbhs_specP => [x|y] /=; rewrite propeqE; split.
+rewrite funeq2E; case=> i x U; rewrite propeqE; split.
+  move/existT_continuous; rewrite nbhs_simpl -nbhs_entourageE.
+  case=> E entE EU.
+  exists (\bigcup_j dfwith (fun j => (map_pair (existT X j)) @` [set: X j * X j])    
+            i ((map_pair (existT X i)) @` E) j
+    ).
+  - move=> j /= _; rewrite nbhs_simpl preimage_bigcup /=.
+    Search dfwith.
+    admit.
+  - move=> z /set_mem [j /= _]; case: dfwithP => //=.
+      case;case=> a b Eab; rewrite /map_pair /=; case=> R <-; apply: EU.
+      apply/mem_set; move: Eab; congr(E (_, _)).
+      have -> // := Eqdep_dec.inj_pair2_eq_dec I _ _ _ _ _ R.
+      by move=> p q; case: (pselect (p = q)) => ?; [left | right].
+    move=> k Kni [[p q] /=] _ [ + _ _]; move: Kni => /[swap] ->.
+    by rewrite eqxx.
+case=> E sE /filterS; apply.
+suff : nbhs x ((existT X i) @^-1` (xsection E (existT X i x))).
+  move/(@existT_nbhs I X i x)/filterS; apply;case=> j y /=[z].
+  by move/set_mem =>/= /[swap] -> ?; apply/mem_set.
+rewrite -nbhs_entourageE;  exists (map_pair (existT X i) @^-1` E).
+  exact: sE.
+by move=> y /= /set_mem; rewrite /map_pair /= => ?; apply/mem_set.
+(have iI : [set: I] i by done); have := sE i iI.
+rewrite /= nbhs_simpl.
+
+? U; case: sum_nbhs_specP => [x|y] /=; rewrite propeqE; split.
 - rewrite -nbhs_entourageE; case=> E entE xEU.
   exists ((map_pair inl @` E) `|` (map_pair inr @` setT)) => //.
     by exists (E, setT) => //=; split => //=; exact: entourageT.
@@ -1925,6 +1929,7 @@ apply: hY => U V ? ?; have [] := cl (setT `*` U) (setT `*` V).
 by move=> z [][]? ?[] ? ?; exists (z.2).
 Qed.
 
+(*
 Section wedge.
 Local Open Scope quotient_scope.
 Context {X Y : topologicalType} (x0 : X) (y0 : Y).
@@ -3257,5 +3262,7 @@ apply: path_concat_joint_continuous.
   by apply/funext; case=> ? ?.
 Qed.
 
+End fundamental_groupoid.
 
 
+i*)
