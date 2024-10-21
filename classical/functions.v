@@ -1253,7 +1253,7 @@ Lemma odflt_unbind : odflt x = unbind (fun=> x) idfun. Proof. by []. Qed.
 HB.instance Definition _ := Inv.Build _ _ (odflt x) some.
 
 HB.instance Definition _ := SplitBij.copy (odflt x)
-  [the {bij some @` A >-> A} of unbind (fun=> x) idfun].
+  [the {splitbij some @` A >-> A} of @unbind (option T) T (fun=> x) idfun].
 
 End Odflt.
 
