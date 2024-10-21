@@ -974,7 +974,7 @@ have ap0 : (0 < a `^ p)%R by rewrite powR_gt0.
 have bq0 : (0 < b `^ q)%R by rewrite powR_gt0.
 have := @concave_ln _ (@Itv.mk _ `[0, 1] _ q01)%R _ _ ap0 bq0.
 have pq' : (p^-1 = 1 - q^-1)%R by rewrite -pq addrK.
-rewrite !convRE/= /onem -pq' -ler_expR expRD (mulrC p^-1).
+rewrite !convRE/= /onem -pq' -[_ <= ln _]ler_expR expRD (mulrC p^-1).
 rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF// (mulrC q^-1).
 rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF//.
 rewrite lnK ?posrE// lnK ?posrE// => /le_trans; apply.

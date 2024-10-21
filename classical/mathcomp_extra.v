@@ -40,7 +40,7 @@ Lemma ler_sqrt {R : rcfType} (a b : R) :
   (0 <= b -> (Num.sqrt a <= Num.sqrt b) = (a <= b))%R.
 Proof.
 have [b_gt0 _|//|<- _] := ltgtP; last first.
-  by rewrite sqrtr0 -sqrtr_eq0 le_eqVlt ltNge sqrtr_ge0 orbF.
+  by rewrite sqrtr0 -[RHS]sqrtr_eq0 le_eqVlt ltNge sqrtr_ge0 orbF.
 have [a_le0|a_gt0] := ler0P a; last by rewrite ler_psqrt// ?qualifE/= ?ltW.
 by rewrite ler0_sqrtr // sqrtr_ge0 (le_trans a_le0) ?ltW.
 Qed.
