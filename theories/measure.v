@@ -277,6 +277,8 @@ From HB Require Import structures.
 (*  m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or m2 dominates m1     *)
 (*  ess_sup f == essential supremum of the function f : T -> R where T is a   *)
 (*               semiRingOfSetsType and R is a realType                       *)
+(*  ess_supe f == essential supremum of the function f : T -> \bar R where    *)
+(*                T is a semiRingOfSetsType and R is a realType               *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -5264,3 +5266,22 @@ by apply/seteqP; split => // x _ /=; rewrite in_itv/= (lt_le_trans _ (f0 x)).
 Qed.
 
 End essential_supremum.
+
+Section essential_supremum_ereal.
+Context d {T : semiRingOfSetsType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types f : T -> \bar R.
+
+Definition ess_supe f :=
+  ereal_inf ([set r | mu (f @^-1` `]r, +oo[) = 0]).
+
+Lemma ess_supe_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t) ->
+  0 <= ess_supe f.
+Proof.
+move=> muT f0; apply: lb_ereal_inf.
+by case=> //= [r|] /eqP rf; rewrite leNgt;
+  apply/negP => r0; apply/negP : rf; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//;
+  apply/seteqP; split => // x _ /=; rewrite in_itv/= (lt_le_trans _ (f0 x)).
+Qed.
+
+End essential_supremum_ereal.
