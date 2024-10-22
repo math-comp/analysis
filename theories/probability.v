@@ -134,7 +134,7 @@ End transfer_probability.
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
 Canonical expectation_unlockable := Unlockable expectation.unlock.
-Arguments expectation {d T R} P _%R.
+Arguments expectation {d T R} P _%_R.
 Notation "''E_' P [ X ]" := (@expectation _ _ _ P X) : ereal_scope.
 
 Section expectation_lemmas.
@@ -213,7 +213,7 @@ HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
     (P : probability T R) (X Y : T -> R) :=
   'E_P[(X \- cst (fine 'E_P[X])) * (Y \- cst (fine 'E_P[Y]))]%E.
 Canonical covariance_unlockable := Unlockable covariance.unlock.
-Arguments covariance {d T R} P _%R _%R.
+Arguments covariance {d T R} P _%_R _%_R.
 
 Section covariance_lemmas.
 Local Open Scope ereal_scope.

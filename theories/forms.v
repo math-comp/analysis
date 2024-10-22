@@ -29,7 +29,7 @@ Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui")
 
 Notation "u '``_' i" := (u (0 : 'I_1) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
- (format "''e_' i", at level 3) : ring_scope.
+  (at level 8, i at level 2, format "''e_' i") : ring_scope.
 
 Local Notation "M ^ phi" := (map_mx phi M).
 Local Notation "M ^t phi" := (map_mx phi (M ^T)) (phi at level 30, at level 30).
