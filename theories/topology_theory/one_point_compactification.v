@@ -1,7 +1,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import signed topology_structure uniform_structure.
-From mathcomp Require Import pseudometric_structure compact.
+From mathcomp Require Import pseudometric_structure compact weak_topology.
 
 (**md**************************************************************************)
 (* # One Point Compactifications                                              *)
@@ -13,6 +13,10 @@ From mathcomp Require Import pseudometric_structure compact.
 (*      one_point_compactification X == the one point compactification of `X` *)
 (*                                      as an alias of `option X`             *)
 (******************************************************************************)
+
+Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
+
 
 Definition one_point_compactification (X : Type) : Type := option X.
 
@@ -63,7 +67,7 @@ HB.instance Definition _ := hasNbhs.Build opc one_point_nbhs.
 HB.instance Definition _ := @Nbhs_isNbhsTopological.Build opc 
   one_point_filter one_point_singleton one_point_nbhs_nbhs.
 
-Lemma opc_compact : compact [set: opc].
+Lemma one_point_compactification_compact : compact [set: opc].
 Proof.
 apply/compact_near_coveringP => ? F /= P FF FT.
 have [//| [U i [[W /= [cptW cW WU nfI UIP]]]]] := FT None.
@@ -81,29 +85,30 @@ move=> ?; apply: (UIP (Some z,j)); split => //=.
 exact: (near nfI _).
 Unshelve. all: by end_near. Qed.
 
-Lemma opc_some_nbhs (x : X) (U : set X) : 
+Lemma one_point_compactification_some_nbhs (x : X) (U : set X) : 
   nbhs x U -> @nbhs _ opc (Some x) (Some @` U).
 Proof.
 rewrite {2}/nbhs /= nbhs_simpl /= => /filterS; apply; exact: preimage_image.
 Qed.
 
-Lemma opc_some_continuous : continuous (Some : X -> opc).
+Lemma one_point_compactification_some_continuous : continuous (Some : X -> opc).
 Proof. by move=> x U. Qed.
 
-Lemma opc_open_some (U : set X) : open U -> @open opc (Some @` U).
+Lemma one_point_compactification_open_some (U : set X) : 
+  open U -> @open opc (Some @` U).
 Proof.
 rewrite ?openE /= => Uo ? /= [x /[swap] <- Ux] /=. 
-by apply: opc_some_nbhs; apply: Uo.
+by apply: one_point_compactification_some_nbhs; apply: Uo.
 Qed.
 
-Lemma opc_weak_topology : 
+Lemma one_point_compactification_weak_topology : 
   @nbhs _ (@weak_topology X opc Some) = @nbhs _ X.
 Proof. 
 rewrite funeq2E=> x U; apply/propeqP; split; rewrite /(@nbhs _ (weak_topology _)) /=.
-  case => V [[/= W] oW <- /= Ws] /filterS; apply; apply: opc_some_continuous.
-  exact: oW.
+  case => V [[/= W] oW <- /= Ws] /filterS; apply. 
+  by apply: one_point_compactification_some_continuous; exact: oW.
 rewrite nbhsE; case => V [? ? ?]; exists V; split => //.
-exists (Some @` V); first exact: opc_open_some.
+exists (Some @` V); first exact: one_point_compactification_open_some.
 rewrite eqEsubset; split => z /=; first by case=> ? /[swap] /Some_inj ->.
 by move=> ?; exists z.
 Qed.

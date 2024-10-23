@@ -3692,6 +3692,7 @@ Proof. exact: (normal_spaceP 0%N 1%N). Qed.
 End normalP.
 
 Section completely_regular.
+Context {R : realType}.
 
 (**md This is equivalent to uniformizable. Note there is a subtle
    distinction between being uniformizable and being uniformType.
@@ -3704,8 +3705,6 @@ Section completely_regular.
 Definition completely_regular_space (T : topologicalType) :=
   forall (a : T) (B : set T), closed B -> ~ B a -> uniform_separator [set a] B.
 
-(* Ideally, R should be an instance of realType here,
-   rather than a section variable. *)
 Lemma point_uniform_separator {T : uniformType} (x : T) (B : set T) :
   closed B -> ~ B x -> uniform_separator [set x] B.
 Proof.
@@ -3719,13 +3718,7 @@ Qed.
 
 Lemma uniform_completely_regular {T : uniformType} :
   @completely_regular_space T.
-<<<<<<< HEAD
-Proof.
-by move=> x B clB Bx; exact: point_uniform_separator.
-Qed.
-=======
 Proof. by move=> x B clB Bx; exact: point_uniform_separator. Qed.
->>>>>>> 4b77400b (just linting)
 
 Lemma normal_completely_regular {T : topologicalType} :
   normal_space T -> accessible_space T -> completely_regular_space T.
@@ -3745,10 +3738,10 @@ End completely_regular.
 
 Module completely_regular_uniformity.
 Section completely_regular_uniformity.
-Context {X : topologicalType}.
+Context {R : realType} {X : topologicalType}.
 Hypothesis crs : completely_regular_space X.
 
-Let X' : uniformType := @sup_topology X {f : X -> Rdefinitions.R | continuous f}
+Let X' : uniformType := @sup_topology X {f : X -> R | continuous f}
   (fun f => Uniform.class (weak_topology (projT1 f))).
 
 Let completely_regular_nbhsE : @nbhs X X = nbhs_ (@entourage X').
@@ -3763,7 +3756,7 @@ move=> U; wlog oU : U / @open X U.
 move=> /[dup] nUx /nbhs_singleton Ux.
 have ufs : uniform_separator [set x] (~` U).
   by apply: crs; [exact: open_closedC | exact].
-have /uniform_separatorP := ufs => /(_ Rdefinitions.R)[f [ctsf f01 fx0 fU1]].
+have /uniform_separatorP := ufs => /(_ R)[f [ctsf f01 fx0 fU1]].
 rewrite -nbhs_entourageE /entourage /= /sup_ent /= smallest_filter_finI.
 pose E := map_pair f @^-1` (fun pq => ball pq.1 1 pq.2).
 exists E; first last.
@@ -3773,7 +3766,7 @@ exists E; first last.
   suff -> : f z = 1 by rewrite normr1 ltxx.
   by apply: fU1; exists z.
 move=> r /= [_]; apply => /=.
-pose f' : {classic {f : X -> Rdefinitions.R | continuous f}} := exist _ f ctsf.
+pose f' : {classic {f : X -> R | continuous f}} := exist _ f ctsf.
 suff /asboolP entE : @entourage (weak_topology f) (f', E).2.
   by exists (exist _ (f', E) entE).
 exists (fun pq => ball pq.1 1 pq.2) => //=.
@@ -3807,18 +3800,19 @@ Hypothesis hsdf : hausdorff_space X.
 
 Let opc := @one_point_compactification X.
 
-Lemma one_point_compactification_completely_reg : 
+Lemma one_point_compactification_completely_reg :
   completely_regular_space opc.
 Proof.
-apply: normal_completely_regular. 
+apply: (@normal_completely_regular R). 
   apply: compact_normal.
     exact: one_point_compactification_hausdorff.
   exact: one_point_compactification_compact.
 by apply: hausdorff_accessible; exact: one_point_compactification_hausdorff.
 Qed.
+
 #[local]
 HB.instance Definition _ := Uniform.copy opc 
-  (completely_regular_uniformity.type 
+  (@completely_regular_uniformity.type R _
     one_point_compactification_completely_reg).
 
 Let X' := @weak_topology X opc Some.
@@ -3840,11 +3834,11 @@ Proof. exact: uniform_completely_regular. Qed.
 
 End locally_compact_uniform.
 
-Lemma completely_regular_regular {X : topologicalType} :
+Lemma completely_regular_regular {R : realType} {X : topologicalType} :
   completely_regular_space X -> @regular_space X.
 Proof.
-move=> crsX; pose P' := completely_regular_uniformity.type crsX.
-exact: @uniform_regular P'.
+move=> crsX; pose P' := @completely_regular_uniformity.type R _ crsX.
+exact: (@uniform_regular P').
 Qed.
 
 Section pseudometric_normal.
