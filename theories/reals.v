@@ -42,7 +42,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import boolp classical_sets set_interval.
 
-Require Import Setoid.
+From Coq Require Import Setoid.
 
 Declare Scope real_scope.
 

@@ -2,10 +2,9 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import mathcomp_extra.
-Require Import reals ereal.
-Require Import signed topology normedtype landau sequences derive realfun.
-Require Import itv convex.
+From mathcomp Require Import mathcomp_extra reals ereal signed.
+From mathcomp Require Import topology normedtype landau sequences derive.
+From mathcomp Require Import realfun itv convex.
 
 (**md**************************************************************************)
 (* # Theory of exponential/logarithm functions                                *)

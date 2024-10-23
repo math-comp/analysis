@@ -3,8 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-Require Import reals ereal nsatz_realtype signed topology normedtype landau.
-Require Import sequences derive realfun exp.
+From mathcomp Require Import reals ereal nsatz_realtype signed topology.
+From mathcomp Require Import normedtype landau sequences derive realfun exp.
 
 (**md**************************************************************************)
 (* # Theory of trigonometric functions                                        *)

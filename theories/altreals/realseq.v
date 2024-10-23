@@ -5,10 +5,10 @@
 
 (* -------------------------------------------------------------------- *)
 From mathcomp Require Import all_ssreflect all_algebra.
-Require Import mathcomp.bigenough.bigenough.
+From mathcomp Require Import bigenough.
 From mathcomp.classical Require Import boolp classical_sets functions.
 From mathcomp.classical Require Import mathcomp_extra.
-Require Import xfinmap constructive_ereal reals discrete.
+From mathcomp Require Import xfinmap constructive_ereal reals discrete.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
