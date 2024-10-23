@@ -1,6 +1,7 @@
 (* mathcomp analysis (c) 2020 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
+From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum. 
+From mathcomp Require Import all_classical.
 From mathcomp Require Import signed.
 
 (**md**************************************************************************)
@@ -16,6 +17,17 @@ Unset Printing Implicit Defensive.
 
 Local Open Scope ring_scope.
 Import Order.TTheory GRing.Theory Num.Theory.
+
+Section Linear1.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : R -> V -> V).
+HB.instance Definition _ := gen_eqMixin {linear U -> V | s}.
+HB.instance Definition _ := gen_choiceMixin {linear U -> V | s}.
+End Linear1.
+Section Linear2.
+Context (R : ringType) (U : lmodType R) (V : zmodType) (s : GRing.Scale.law R V).
+HB.instance Definition _ :=
+  isPointed.Build {linear U -> V | GRing.Scale.Law.sort s} \0.
+End Linear2.
 
 Module ProdNormedZmodule.
 Section ProdNormedZmodule.
