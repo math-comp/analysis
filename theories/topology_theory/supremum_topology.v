@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-Require Import topology_structure uniform_structure.
+From mathcomp Require Import topology_structure uniform_structure.
 
 (**md**************************************************************************)
 (* # Supremum topology                                                        *)
