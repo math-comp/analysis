@@ -22,6 +22,27 @@
   + `num_topology.v`
   + `quotient_topology.v`
 
+- in file `separation_axioms.v`,
+  + new lemmas `compact_normal_local`, and `compact_normal`.
+
+- in file `topology_theory/one_point_compactification.v`,
+  + new definitions `one_point_compactification`, and `one_point_nbhs`.
+  + new lemmas `one_point_compactification_compact`,
+    `one_point_compactification_some_nbhs`,
+    `one_point_compactification_some_continuous`,
+    `one_point_compactification_open_some`,
+    `one_point_compactification_weak_topology`, and
+    `one_point_compactification_hausdorff`.
+
+- in file `normedtype.v`,
+  + new definition `type` (in module `completely_regular_uniformity`)
+  + new lemmas `normal_completely_regular`,
+    `one_point_compactification_completely_reg`,
+    `nbhs_one_point_compactification_weakE`,
+    `locally_compact_completely_regular`, and
+    `completely_regular_regular`.
+
+
 ### Changed
 
 - The file `topology.v` has been split into several files in the directory 
@@ -168,29 +189,6 @@
 
 - moved from `topology.v` to `boolp.v`:
   + lemmas `bigmax_geP`, `bigmax_gtP`, `bigmin_leP`, `bigmin_ltP`
-- in file `normedtype.v`,
-  + new definition `type` (in module `completely_regular_uniformity`)
-  + new lemmas `normal_completely_regular`, and
-    `locally_compact_completely_regular`.
-  + new definition `type`.
-  + new lemmas `normal_completely_regular`,
-    `one_point_compactification_completely_reg`,
-    `nbhs_one_point_compactification_weakE`,
-    `locally_compact_completely_regular`, and
-    `completely_regular_regular`.
-
-- in file `topology.v`,
-  + new definitions `one_point_compactification`, and `one_point_nbhs`.
-  + new lemmas `compact_normal_local`, and `compact_normal`.
-  + new lemmas `one_point_compactification_compact`,
-    `one_point_compactification_some_nbhs`,
-    `one_point_compactification_some_continuous`,
-    `one_point_compactification_open_some`,
-    `one_point_compactification_weak_topology`, and
-    `one_point_compactification_hausdorff`.
-- in file `separation_axioms.v`
-  + new lemmas `compact_normal_local` and `compact_normal`.
-
 ### Changed
 
 - in file `normedtype.v`,
