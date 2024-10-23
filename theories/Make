@@ -28,6 +28,7 @@ topology_theory/uniform_structure.v
 topology_theory/weak_topology.v
 topology_theory/num_topology.v
 topology_theory/quotient_topology.v
+topology_theory/one_point_compactification.v
 
 ereal.v
 separation_axioms.v
