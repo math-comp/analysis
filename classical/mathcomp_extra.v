@@ -13,6 +13,7 @@ From mathcomp Require Import finset interval.
 (*             dfwith f x == fun j => x if j = i, and f j otherwise           *)
 (*                           given x : T i                                    *)
 (*                 swap x := (x.2, x.1)                                       *)
+(*           map_pair f x := (f x.1, f x.2)                                       *)
 (*         monotonous A f := {in A &, {mono f : x y / x <= y}} \/             *)
 (*                           {in A &, {mono f : x y /~ x <= y}}               *)
 (* ```                                                                        *)
@@ -369,6 +370,9 @@ Lemma real_ltr_distlC [R : numDomainType] [x y : R] (e : R) :
 Proof. by move=> ?; rewrite distrC real_ltr_distl// -rpredN opprB. Qed.
 
 Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).
+
+Definition map_pair {S U : Type} (f : S -> U) (x : (S * S)) : (U * U) :=
+  (f x.1, f x.2).
 
 Section order_min.
 Variables (d : Order.disp_t) (T : orderType d).
