@@ -1,0 +1,17 @@
+-Q . mathcomp.reals
+
+-arg -w -arg -parsing
+-arg -w -arg +undeclared-scope
+-arg -w -arg +non-primitive-record
+-arg -w -arg -ambiguous-paths
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -projection-no-head-constant
+
+constructive_ereal.v
+reals.v
+real_interval.v
+signed.v
+itv.v
+prodnormedzmodule.v
+nsatz_realtype.v
+all_reals.v
