@@ -31,21 +31,21 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-HB.structure Definition PointedNmodule := {M of Pointed M & GRing.Nmodule M}.
-HB.structure Definition PointedZmodule := {M of Pointed M & GRing.Zmodule M}.
-HB.structure Definition PointedLmodule (K : numDomainType) :=
-  {M of Pointed M & GRing.Lmodule K M}.
+(* HB.structure Definition PointedNmodule := {M of Pointed M & GRing.Nmodule M}. *)
+(* HB.structure Definition PointedZmodule := {M of Pointed M & GRing.Zmodule M}. *)
+(* HB.structure Definition PointedLmodule (K : numDomainType) := *)
+(*   {M of Pointed M & GRing.Lmodule K M}. *)
 
-HB.structure Definition FilteredNmodule := {M of Filtered M M & GRing.Nmodule M}.
-HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}.
-HB.structure Definition FilteredLmodule (K : numDomainType) :=
-  {M of Filtered M M & GRing.Lmodule K M}.
+(* HB.structure Definition FilteredNmodule := {M of Filtered M M & GRing.Nmodule M}. *)
+(* HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}. *)
+(* HB.structure Definition FilteredLmodule (K : numDomainType) := *)
+(*   {M of Filtered M M & GRing.Lmodule K M}. *)
 HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
 HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
 HB.structure Definition NbhsLmodule (K : numDomainType) :=
   {M of Nbhs M & GRing.Lmodule K M}.
 
-(*HB.structure Definition TopologicalNmodule := {M of Topological M & GRing.Nmodule M}.*)
+HB.structure Definition TopologicalNmodule := {M of Topological M & GRing.Nmodule M}.
 HB.structure Definition TopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
 HB.structure Definition TopologicalLmodule (K : numDomainType) :=
@@ -72,37 +72,39 @@ HB.structure Definition Tvs (R : numDomainType) :=
   {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
 Section properties_of_topologicallmodule.
-Context (R : numDomainType) (E : TopologicalLmodule.type R) (U : set E).
+Context (R : numDomainType) (E : topologicalType)
+    (Me : GRing.Lmodule R E) (U : set E).
+Let ME := GRing.Lmodule.Pack Me.
 
-Lemma nbhsN_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2)) (x : E) :
-  nbhs x U -> nbhs (- x) (-%R @` U).
+Lemma nbhsN_subproof (f : continuous (fun z : R^o * E => z.1 *: (z.2 : ME))) (x : E) :
+  nbhs x U -> nbhs (-(x:ME)) (-%R @` (U : set ME)).
 Proof.
-move=> Ux; move: (f (-1, -x) U); rewrite /= scaleN1r opprK => /(_ Ux) [] /=.
-move=> [B] B12 [B1 B2] BU; near=> y; exists (- y); rewrite ?opprK// -scaleN1r//.
+move=> Ux; move: (f (-1, - (x:ME)) U); rewrite /= scaleN1r opprK => /(_ Ux) [] /=.
+move=> [B] B12 [B1 B2] BU; near=> y; exists (- (y:ME)); rewrite ?opprK// -scaleN1r//.
 apply: (BU (-1, y)); split => /=; last by near: y.
 by move: B1 => [] ? ?; apply => /=; rewrite subrr normr0.
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2 : E)) :
-  nbhs 0 U -> nbhs 0 (-%R @` U).
+Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: (z.2:ME) : E)) :
+  nbhs (0 :ME) (U : set ME) -> nbhs (0 : ME) (-%R @` (U : set ME)).
 Proof. by move => Ux; rewrite -oppr0; exact: nbhsN_subproof. Qed.
 
-Lemma nbhsT_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (x : E) :
-  nbhs 0 U -> nbhs x (+%R x @` U).
+Lemma nbhsT_subproof (f : continuous (fun x : E * E => (x.1 : ME) + (x.2 : ME))) (x : E) :
+  nbhs (0 : ME) U -> nbhs (x : ME) (+%R (x : ME) @` U).
 Proof.
-move => U0; have /= := f (x, -x) U; rewrite subrr => /(_ U0).
+move => U0; have /= := f (x, -(x : ME)) U; rewrite subrr => /(_ U0).
 move=> [B] [B1 B2] BU; near=> x0.
-exists (x0 - x); last by rewrite addrCA subrr addr0.
-by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+exists ((x0 : ME) - (x : ME)); last by rewrite addrCA subrr addr0.
+by apply: (BU ((x0 : ME), -(x : ME))); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhsB_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (z x : E) :
-  nbhs z U -> nbhs (x + z) (+%R x @` U).
+Lemma nbhsB_subproof (f : continuous (fun x : E * E => (x.1 : ME) + (x.2 : ME))) (z x : E) :
+  nbhs (z : ME) U -> nbhs ((x : ME) + (z : ME)) (+%R (x : ME) @` U).
 Proof.
-move=> U0; move: (@f (x + z, -x) U); rewrite /= addrAC subrr add0r.
+move=> U0; move: (@f ((x : ME) + (z : ME), -(x : ME)) U); rewrite /= addrAC subrr add0r.
 move=> /(_ U0)[B] [B1 B2] BU; near=> x0.
-exists (x0 - x); last by rewrite addrCA subrr addr0.
-by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+exists ((x0 : ME) - (x : ME)); last by rewrite addrCA subrr addr0.
+by apply: (BU ((x0 : ME), -(x : ME))); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
 End properties_of_topologicallmodule.
@@ -118,10 +120,10 @@ HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
 HB.builders Context R E of TopologicalLmod_isTvs R E.
 
 Definition entourage : set_system (E * E) :=
-  fun P => exists U, nbhs 0 U /\
-                     (forall xy : E * E, (xy.1 - xy.2) \in U -> xy \in P).
+  fun P => exists (U : set E), nbhs (0 : E) U  /\
+                     (forall xy : E * E,  (xy.1 - xy.2) \in U -> xy \in P).
 
-Let nbhs0N (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
+Let nbhs0N (U : set E) : nbhs (0 : E) U -> nbhs (0 : E) (-%R @` U).
 Proof. by apply: nbhs0N_subproof; exact: scale_continuous. Qed.
 
 Lemma nbhsN (U : set E) (x : E) : nbhs x U -> nbhs (-x) (-%R @` U).
@@ -129,7 +131,7 @@ Proof.
 by apply: nbhsN_subproof; exact: scale_continuous.
 Qed.
 
-Let nbhsT (U : set E) (x : E) : nbhs 0 U -> nbhs x (+%R x @`U).
+Let nbhsT (U : set E) (x : E) : nbhs (0 : E) U -> nbhs x (+%R x @`U).
 Proof. by apply: nbhsT_subproof; exact: add_continuous. Qed.
 
 Let nbhsB (U : set E) (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
