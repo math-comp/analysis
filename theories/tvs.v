@@ -110,9 +110,7 @@ End properties_of_topologicallmodule.
 HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
     of Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
-    (*continuous (uncurry (@GRing.add E))*)
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
-    (* continuous (uncurry (@GRing.scale R E) : R^o * E -> E) *)
   locally_convex : exists2 B : set (set E),
     (forall b, b \in B -> convex b) & basis B
   }.
@@ -123,7 +121,6 @@ Definition entourage : set_system (E * E) :=
   fun P => exists U, nbhs 0 U /\
                      (forall xy : E * E, (xy.1 - xy.2) \in U -> xy \in P).
 
-(* TODO: delete the next lemmas to better incorporate their proofs*)
 Let nbhs0N (U : set E) : nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof. by apply: nbhs0N_subproof; exact: scale_continuous. Qed.
 
