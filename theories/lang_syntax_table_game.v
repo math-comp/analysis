@@ -104,7 +104,7 @@ rewrite ler_norml (@le_trans _ _ 0%R)//=.
 by rewrite onem_ge0.
 Unshelve. all: by end_near. Qed.
 
-Lemma bounded_cst_01 (x : R) : [bounded x : R^o | _ in `[0%R, 1%R]%classic : set R].
+Lemma bounded_cst_01 (x : R^o) : [bounded x | _ in `[0%R, 1%R]%classic : set R].
 Proof.
 exists `|x|%R; split.
   by rewrite num_real.
