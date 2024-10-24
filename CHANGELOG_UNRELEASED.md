@@ -30,6 +30,17 @@
 - in `exp.v`:
   + lemmas `cvgr_expR`, `cvgn_expR`
 
+- in file `topology_structure.v`,
+  + new definition `mkcts`.
+  + new lemma `continuousEP`.
+- in file `subspace_topology.v`,
+  + new lemmas `continuous_subspace_setT`, `nbhs_prodX_subspace_inE`, and 
+    `continuous_subspace_prodP`.
+- in file `subtype_topology.v`,
+  + new lemmas `subspace_subtypeP`, `subspace_sigL_continuousP`, 
+    `subspace_valL_continuousP'`, `subspace_valL_continuousP`, `sigT_of_setXK`, 
+    `setX_of_sigTK`, `setX_of_sigT_continuous`, and `sigT_of_setX_continuous`.
+
 ### Changed
 
 - The file `topology.v` has been split into several files in the directory 
