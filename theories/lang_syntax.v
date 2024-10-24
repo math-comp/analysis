@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference.
 From mathcomp Require Import unstable mathcomp_extra boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop interval_inference.
+From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import reals ereal topology normedtype sequences.
 From mathcomp Require Import esum measure lebesgue_measure numfun derive realfun.
 From mathcomp Require Import lebesgue_integral probability ftc kernel charge.
@@ -304,7 +304,7 @@ move=> x y x01 y01.
 by rewrite le_eqVlt => /predU1P[->//|/dF] => /(_ x01 y01)/ltW.
 Qed.
 
-Lemma derive1_onem {R: realType} : (fun x0 : R => (1 - x0)%R : R^o)^`() = (cst (-1)%R).
+Lemma derive1_onem {R : realType} : (fun x0 : R => (1 - x0)%R : R^o)^`() = (cst (-1)%R).
 Proof.
 apply/funext => x.
 by rewrite derive1E deriveB// derive_id derive_cst sub0r.
