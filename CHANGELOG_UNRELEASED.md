@@ -105,6 +105,42 @@
            `closureEbigcap`, `interiorEbigcup`,
 	   `closure_open_regclosed`, `interior_closed_regopen`,
 	   `closure_interior_idem`, `interior_closure_idem`
+- new directory `theories/topology` with new files:
+  + `topology.v`
+  + `bool_topology.v`
+  + `compact.v`
+  + `connected.v`
+  + `matrix_topology.v`
+  + `nat_topology.v`
+  + `order_topology.v`
+  + `product_topology.v`
+  + `pseudometric_structure.v`
+  + `subspace_topology.v`
+  + `supremum_topology.v`
+  + `topology_structure.v`
+  + `uniform_structure.v`
+  + `weak_topology.v`
+  + `num_topology.v`
+  + `quotient_topology.v`
+- in `lebesgue_measure.v`:
+  + lemmas `RintegralZl`, `RintegralZr`, `Rintegral_ge0`
+
+- in `trigo.v`:
+  + lemmas `derive1_atan`, `lt_atan`, `le_atan`, `cvgy_atan`
+
+- in `exp.v`:
+  + lemmas `cvgr_expR`, `cvgn_expR`
+
+- in file `topology_structure.v`,
+  + new definition `mkcts`.
+  + new lemma `continuousEP`.
+- in file `subspace_topology.v`,
+  + new lemmas `continuous_subspace_setT`, `nbhs_prodX_subspace_inE`, and 
+    `continuous_subspace_prodP`.
+- in file `subtype_topology.v`,
+  + new lemmas `subspace_subtypeP`, `subspace_sigL_continuousP`, 
+    `subspace_valL_continuousP'`, `subspace_valL_continuousP`, `sigT_of_setXK`, 
+    `setX_of_sigTK`, `setX_of_sigT_continuous`, and `sigT_of_setX_continuous`.
 
 ### Changed
 
