@@ -286,7 +286,7 @@ move=> xu fi F ax fx; suff lfx : lebesgue_pt f x.
   have /(_ ax lfx)[dfx f'xE] := @FTC1_lebesgue_pt _ a _ _ xu fi.
   by split; [exact: dfx|rewrite f'xE].
 apply: itv_continuous_lebesgue_pt xu _ ax fx.
-by move/integrableP : fi => -[/EFin_measurable_fun].
+by move/integrableP : fi => -[/measurable_EFinP].
 Qed.
 
 Corollary continuous_FTC1_closed f (a x : R) (u : R) : (x < u)%R ->

@@ -1219,7 +1219,7 @@ rewrite /Rintegral fineK; last first.
   apply: le_lt_trans intfoo.
   apply: ge0_subset_integral => //=.
   apply: measurableT_comp => //.
-  by case/integrableP : intnf => /= /EFin_measurable_fun.
+  by case/integrableP : intnf => /= /measurable_EFinP.
 rewrite -[leLHS](gee0_abs)//; last exact: integral_ge0.
 exact: (le_trans _ (abse_charge_variation _ _)).
 Qed.
@@ -1926,7 +1926,7 @@ have -> : \int[nu]_(x in E) f x =
     by move=> Ex; apply/esym/cvg_lim => //; exact: hf.
   under eq_integral => x /[!inE] /fE -> //.
   apply: monotone_convergence => //.
-  - move=> n; apply/EFin_measurable_fun.
+  - move=> n; apply/measurable_EFinP.
     by apply: (measurable_funS measurableT) => //; exact/measurable_funP.
   - by move=> n x Ex //=; rewrite lee_fin.
   - by move=> x Ex a b /ndh /=; rewrite lee_fin => /lefP.
@@ -1938,7 +1938,7 @@ have -> : \int[mu]_(x in E) (f \* g) x =
   under eq_integral => x /[!inE] /fg -> //.
   apply: monotone_convergence => [//| | |].
   - move=> n; apply/emeasurable_funM; apply/measurable_funTS.
-      exact/EFin_measurable_fun.
+      exact/measurable_EFinP.
     exact: measurable_int (f_integrable _).
   - by move=> n x Ex //=; rewrite mule_ge0 ?lee_fin//=; exact: f_ge0.
   - by move=> x Ex a b /ndh /= /lefP hahb; rewrite lee_wpmul2r ?lee_fin// f_ge0.
@@ -1970,7 +1970,7 @@ rewrite ge0_integralZl//.
   rewrite (eq_integral (g \_ (h n @^-1` [set r]))); last first.
     by move=> x xE; rewrite epatch_indic.
   by rewrite -integral_mkcondr -f_integral// integral_indic// setIC.
-- apply: emeasurable_funM; first exact/EFin_measurable_fun.
+- apply: emeasurable_funM; first exact/measurable_EFinP.
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
 - by move=> t Et; rewrite mule_ge0// ?lee_fin//; exact: f_ge0.
 - by move: rhn; rewrite inE => -[t _ <-]; rewrite lee_fin.
