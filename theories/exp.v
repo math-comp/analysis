@@ -69,7 +69,7 @@ apply: series_le_cvg Kzxn _ _ => [//=| /= n|].
     rewrite !normrM normr_id mulrAC mulfK // normr_eq0 expf_eq0 andbC.
     by case: ltrgt0P zLx; rewrite //= normr_lt0.
   do! (apply: ler_pM || apply: mulr_ge0 || rewrite invr_ge0) => //.
-  by apply Kf => //; rewrite (lt_le_trans _ (ler_norm _))// ltrDl.
+  by apply Kf => //; rewrite (le_trans _ (ler_norm _))// lerDl.
 have F : `|z / x| < 1.
   by rewrite normrM normfV ltr_pdivrMr ?mul1r // (le_lt_trans _ zLx).
 rewrite (_ : (fun _ => _) = geometric `|K + 1| `|z / x|); last first.

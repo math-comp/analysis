@@ -96,7 +96,7 @@ Unshelve. all: by end_near. Qed.
 Lemma OuO_to_P f g : OuO f g -> OuP f g.
 Proof.
 move=> fOg; apply/Ouex_to_P; move: fOg => /eqOP [k [kreal hk]].
-have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite lt_max ltrDl orbC ltr01.
+have /hk [Q [->]] : k <= maxr 1 (k + 1) by rewrite le_max lerDl orbC ler01.
 move=> [R [[_/posnumP[e1] Re1] [_/posnumP[e2] Re2]] sRQ] fOg.
 exists (minr e1%:num e2%:num) => //.
 exists (maxr 1 (k + 1)); first by rewrite lt_max ltr01.
