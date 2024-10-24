@@ -1,13 +1,13 @@
 Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import unstable mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop interval_inference.
+From mathcomp Require Import ring lra.
+From mathcomp Require Import unstable mathcomp_extra boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop interval_inference.
 From mathcomp Require Import reals ereal topology normedtype sequences.
 From mathcomp Require Import esum measure charge lebesgue_measure numfun.
 From mathcomp Require Import lebesgue_integral probability kernel prob_lang.
 From mathcomp Require Import lang_syntax_util lang_syntax lang_syntax_examples.
-From mathcomp Require Import ring lra.
 
 (**md**************************************************************************)
 (* # Eddy's table game example                                                *)
@@ -100,7 +100,7 @@ rewrite ler_norml (@le_trans _ _ 0%R)//=.
 by rewrite onem_ge0.
 Unshelve. all: by end_near. Qed.
 
-Lemma bounded_cst_01 (x : R) : [bounded x : R^o | _ in `[0%R, 1%R]%classic : set R].
+Lemma bounded_cst_01 (x : R^o) : [bounded x | _ in `[0%R, 1%R]%classic : set R].
 Proof.
 exists `|x|%R; split.
   by rewrite num_real.

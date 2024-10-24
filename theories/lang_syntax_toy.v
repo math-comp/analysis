@@ -1,4 +1,4 @@
-Require Import String Classical.
+From Coq Require Import String Classical.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
 From mathcomp Require Import mathcomp_extra boolp.
