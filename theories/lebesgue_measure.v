@@ -1431,8 +1431,7 @@ Notation measurable_EFin := EFin_measurable (only parsing).
 Notation measurable_natmul := natmul_measurable (only parsing).
 
 (* NB: real-valued function *)
-(* TODO: rename to measurable_EFin after notation measurable_EFin is removed? *)
-Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
+Lemma measurable_EFinP d (T : measurableType d) (R : realType) (D : set T)
     (g : T -> R) :
   measurable_fun D (EFin \o g) <-> measurable_fun D g.
 Proof.
@@ -1442,11 +1441,13 @@ rewrite [X in measurable X](_ : _ = D `&` (EFin \o g) @^-1` (EFin @` A)).
 congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.6.0", note="use `measurable_EFinP` instead")]
+Notation EFin_measurable_fun := measurable_EFinP (only parsing).
 
 Lemma measurable_fun_dirac
     d {T : measurableType d} {R : realType} D (U : set T) :
   measurable U -> measurable_fun D (fun x => \d_x U : \bar R).
-Proof. by move=> /measurable_fun_indic/EFin_measurable_fun. Qed.
+Proof. by move=> /measurable_fun_indic/measurable_EFinP. Qed.
 
 Lemma measurable_er_map d (T : measurableType d) (R : realType) (f : R -> R) :
   measurable_fun setT f -> measurable_fun [set: \bar R] (er_map f).
@@ -1456,7 +1457,7 @@ move=> mf;rewrite (_ : er_map _ =
   by apply: funext=> -[].
 apply: measurable_fun_ifT => //=.
 + by apply: (measurable_fun_bool true); exact/emeasurable_fin_num.
-+ exact/EFin_measurable_fun/measurableT_comp.
++ exact/measurable_EFinP/measurableT_comp.
 Qed.
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_er_map`")]
 Notation measurable_fun_er_map := measurable_er_map (only parsing).

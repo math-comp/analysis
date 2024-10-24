@@ -175,9 +175,9 @@ Lemma expectation_le (X Y : T -> R) :
 Proof.
 move=> mX mY X0 Y0 XY; rewrite unlock ae_ge0_le_integral => //.
 - by move=> t _; apply: X0.
-- exact/EFin_measurable_fun.
+- exact/measurable_EFinP.
 - by move=> t _; apply: Y0.
-- exact/EFin_measurable_fun.
+- exact/measurable_EFinP.
 - move: XY => [N [mN PN XYN]]; exists N; split => // t /= h.
   by apply: XYN => /=; apply: contra_not h; rewrite lee_fin.
 Qed.
@@ -543,7 +543,7 @@ apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
 - by case => //= r _; exact: f0.
 - move=> [x| |] [y| |]; rewrite !inE/= !in_itv/= ?andbT ?lee_fin ?leey//.
   by move=> ? ? ?; rewrite f_nd.
-- exact/EFin_measurable_fun.
+- exact/measurable_EFinP.
 - by rewrite unlock.
 Qed.
 
@@ -651,7 +651,7 @@ have le (u : R) : (0 <= u)%R ->
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
     by apply: emeasurable_funB => //; exact: measurable_int X1.
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
-    rewrite EFin_measurable_fun [X in measurable_fun _ X](_ : _ =
+    rewrite measurable_EFinP [X in measurable_fun _ X](_ : _ =
       (fun x => x ^+ 2) \o (fun x => Y x + u))%R//.
     by apply/measurableT_comp => //; apply/measurable_funD.
   set eps := ((lambda + u) ^ 2)%R.
@@ -1266,7 +1266,7 @@ apply: (@le_trans _ _
 apply: ge0_le_integral => //=.
 - exact: measurableI.
 - by move=> x [Ax]; rewrite /= in_itv/= => axb; rewrite lee_fin uniform_pdf_ge0.
-- by apply/EFin_measurable_fun/measurable_funTS; exact: measurable_uniform_pdf.
+- by apply/measurable_EFinP/measurable_funTS; exact: measurable_uniform_pdf.
 - by move=> x [Ax _]; rewrite lee_fin invr_ge0// ltW// subr_gt0.
 - by move=> x [Ax]; rewrite in_itv/= /uniform_pdf => ->.
 Qed.
@@ -1284,7 +1284,7 @@ move=> mE; rewrite integral_indic//= /uniform_prob setIT -ge0_integralZl//=.
     by rewrite notin_setE/= in_itv/= => /negP/negbTE; rewrite /uniform_pdf => ->.
   case: ifPn => //.
   by rewrite inE/= in_itv/= => axb; rewrite indicE (negbTE xE) mule0.
-- exact/EFin_measurable_fun/measurable_indic.
+- exact/measurable_EFinP/measurable_indic.
 - by move=> x _; rewrite lee_fin.
 - by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 Qed.
@@ -1295,10 +1295,10 @@ Let integral_uniform_nnsfun (f : {nnsfun _ >-> R}) :
 Proof.
 under [LHS]eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite [LHS]ge0_integral_fsum//; last 2 first.
-  - by move=> r; exact/EFin_measurable_fun/measurableT_comp.
+  - by move=> r; exact/measurable_EFinP/measurableT_comp.
   - by move=> n x _; rewrite EFinM nnfun_muleindic_ge0.
 rewrite -[RHS]ge0_integralZl//; last 3 first.
-  - exact/EFin_measurable_fun/measurable_funTS.
+  - exact/measurable_EFinP/measurable_funTS.
   - by move=> x _; rewrite lee_fin.
   - by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 under [RHS]eq_integral.
@@ -1306,12 +1306,12 @@ under [RHS]eq_integral.
     by move=> r; rewrite EFinM nnfun_muleindic_ge0.
   over.
 rewrite [RHS]ge0_integral_fsum//; last 2 first.
-  - by move=> r; apply/EFin_measurable_fun; do 2 apply/measurableT_comp => //.
+  - by move=> r; apply/measurable_EFinP; do 2 apply/measurableT_comp => //.
   - move=> n x _; rewrite EFinM mule_ge0//; last by rewrite nnfun_muleindic_ge0.
     by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 apply: eq_fsbigr => r _; rewrite ge0_integralZl//.
 - by rewrite !integralZl_indic_nnsfun//= integral_uniform_indic// muleCA.
-- exact/EFin_measurable_fun/measurableT_comp.
+- exact/measurable_EFinP/measurableT_comp.
 - by move=> t _; rewrite nnfun_muleindic_ge0.
 - by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 Qed.
@@ -1326,23 +1326,23 @@ transitivity (lim (\int[uniform_prob ab]_x (f_ n x)%:E @[n --> \oo])%E).
   rewrite -monotone_convergence//=.
   - apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //=.
     exact: f_f.
-  - by move=> n; exact/EFin_measurable_fun/measurable_funTS.
+  - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n ? _; rewrite lee_fin.
   - by move=> ? _ ? ? mn; rewrite lee_fin; exact/lefP/ndf_.
 rewrite [X in _ = (_ * X)%E](_ : _ = lim
     (\int[mu]_(x in `[a, b]) (f_ n x)%:E @[n --> \oo])%E); last first.
   rewrite -monotone_convergence//=.
   - by apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //; exact: f_f.
-  - by move=> n; exact/EFin_measurable_fun/measurable_funTS.
+  - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n ? _; rewrite lee_fin.
   - by move=> ? _ ? ? /ndf_ /lefP; rewrite lee_fin.
 rewrite -limeMl//.
   by apply: congr_lim; apply/funext => n /=; exact: integral_uniform_nnsfun.
 apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
 - by move=> ? _; rewrite lee_fin.
-- exact/EFin_measurable_fun/measurable_funTS.
+- exact/measurable_EFinP/measurable_funTS.
 - by move=> ? _; rewrite lee_fin.
-- exact/EFin_measurable_fun/measurable_funTS.
+- exact/measurable_EFinP/measurable_funTS.
 - by move=> ? _; rewrite lee_fin; move/ndf_ : xy => /lefP.
 Qed.
 

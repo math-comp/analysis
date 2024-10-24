@@ -57,6 +57,9 @@
 
 ### Renamed
 
+- in `lebesgue_measure.v`:
+  + `EFin_measurable_fun` -> `measurable_EFinP`
+
 ### Generalized
 
 - in `num_topology.v` (new file):
