@@ -727,7 +727,7 @@ rewrite -(opprK u_); apply: is_cvgN; apply/(@near_nondecreasing_is_cvgn _ (- m))
 Qed.
 
 Lemma adjacent (u_ v_ : R ^nat) : nondecreasing_seq u_ -> nonincreasing_seq v_ ->
-  v_ - u_ @ \oo --> (0 : R) ->
+  v_ - u_ @ \oo --> 0 ->
   [/\ limn v_ = limn u_, cvgn u_ & cvgn v_].
 Proof.
 set w_ := v_ - u_ => iu dv w0; have vu n : v_ n >= u_ n.
@@ -854,8 +854,8 @@ Section cesaro_converse.
 Variable R : archiFieldType.
 
 Let cesaro_converse_off_by_one (u_ : R ^nat) :
-    [sequence n.+1%:R^-1 * series u_ n.+1]_n @ \oo --> (0 : R) ->
-  [sequence n.+1%:R^-1 * series u_ n]_n @ \oo --> (0 : R).
+    [sequence n.+1%:R^-1 * series u_ n.+1]_n @ \oo --> 0 ->
+  [sequence n.+1%:R^-1 * series u_ n]_n @ \oo --> 0.
 Proof.
 move=> H; apply/cvgrPdist_lt => _/posnumP[e].
 move/cvgrPdist_lt : H => /(_ _ (gt0 e)) -[m _ mu].
@@ -875,7 +875,7 @@ Proof.
 pose a_ := telescope u_ => a_o u_l.
 suff abel : forall n,
     u_ n - arithmetic_mean u_ n = \sum_(1 <= k < n.+1) k%:R / n.+1%:R * a_ k.-1.
-  suff K : u_ - arithmetic_mean u_ @ \oo --> (0 : R).
+  suff K : u_ - arithmetic_mean u_ @ \oo --> 0.
     rewrite -(add0r l).
     rewrite (_ : u_ = u_ - arithmetic_mean u_ + arithmetic_mean u_); last first.
       by rewrite funeqE => n; rewrite subrK.
@@ -887,7 +887,7 @@ suff abel : forall n,
       fun n => n.+1%:R^-1 * \sum_(0 <= k < n) k.+1%:R * a_ k); last first.
     rewrite funeqE => n; rewrite big_add1 /= /= big_distrr /=.
     by apply eq_bigr => i _; rewrite mulrCA mulrA.
-  have {}a_o : [sequence n.+1%:R * telescope u_ n]_n @ \oo --> (0 : R).
+  have {}a_o : [sequence n.+1%:R * telescope u_ n]_n @ \oo --> 0.
     apply: (@eqolim0 _ _ _ eventually_filterType).
     rewrite a_o.
     set h := 'o_\oo (@harmonic R).
@@ -942,7 +942,7 @@ End cesaro_converse.
 Section series_convergence.
 
 Lemma cvg_series_cvg_0 (K : numFieldType) (V : normedModType K) (u_ : V ^nat) :
-  cvgn (series u_) -> u_ @ \oo --> (0 : V).
+  cvgn (series u_) -> u_ @ \oo --> 0.
 Proof.
 move=> cvg_series.
 rewrite (_ : u_ = fun n => series u_ n.+1 - series u_ n); last first.
@@ -991,7 +991,7 @@ by near: n; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
 
 Lemma cvg_expr (R : archiFieldType) (z : R) :
-  `|z| < 1 -> (GRing.exp z : R ^nat) @ \oo --> (0 : R).
+  `|z| < 1 -> (GRing.exp z : R ^nat) @ \oo --> 0.
 Proof.
 move=> Nz_lt1; apply/norm_cvg0P; pose t := (1 - `|z|).
 apply: (@squeeze_cvgr _ _ _ _ (cst 0) (t^-1 *: @harmonic R)); last 2 first.
@@ -1042,7 +1042,7 @@ by rewrite (big_addn 0 _ m) addnC addnK; under eq_bigr do rewrite exprD mulrC.
 Qed.
 
 Lemma cvg_geometric (R : archiFieldType) (a z : R) : `|z| < 1 ->
-  geometric a z @ \oo --> (0 : R).
+  geometric a z @ \oo --> 0.
 Proof. by move=> /cvg_geometric_series/cvgP/cvg_series_cvg_0. Qed.
 
 Lemma is_cvg_geometric_series (R : archiFieldType) (a z : R) : `|z| < 1 ->
@@ -1257,7 +1257,7 @@ apply: normed_cvg; rewrite normed_series_exp_coeff.
 by apply: is_cvg_series_exp_coeff_pos; rewrite normr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_exp_coeff x : exp x @ \oo --> (0 : R).
+Lemma cvg_exp_coeff x : exp x @ \oo --> 0.
 Proof. exact: (cvg_series_cvg_0 (@is_cvg_series_exp_coeff x)). Qed.
 
 End exponential_series.
