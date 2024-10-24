@@ -1,14 +1,13 @@
-Require Import String.
+From Coq Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp.classical Require Import mathcomp_extra boolp.
-From mathcomp Require Import ring.
-From mathcomp Require Import classical_sets.
-From mathcomp.classical Require Import functions cardinality fsbigop.
-Require Import signed reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun lebesgue_integral kernel probability.
-Require Import prob_lang lang_syntax_util lang_syntax.
-From mathcomp Require Import lra.
+From mathcomp Require Import ring lra.
+From mathcomp Require Import classical_sets functions cardinality fsbigop.
+From mathcomp Require Import signed reals ereal topology normedtype sequences.
+From mathcomp Require Import esum measure lebesgue_measure numfun.
+From mathcomp Require Import lebesgue_integral kernel probability prob_lang.
+From mathcomp Require Import lang_syntax_util lang_syntax.
 
 (**md**************************************************************************)
 (* # Examples using the Probabilistic Programming Language of lang_syntax.v   *)

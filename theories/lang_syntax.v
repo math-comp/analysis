@@ -1,13 +1,13 @@
 Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
+From mathcomp Require Import lra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
-Require Import signed reals ereal topology normedtype sequences esum exp.
-Require Import measure lebesgue_measure numfun lebesgue_integral itv kernel ftc.
-Require Import probability.
-Require Import derive realfun charge prob_lang lang_syntax_util.
-From mathcomp Require Import lra.
+From mathcomp Require Import signed reals ereal topology normedtype sequences.
+From mathcomp Require Import esum exp derive realfun measure lebesgue_measure.
+From mathcomp Require Import numfun lebesgue_integral itv kernel ftc.
+From mathcomp Require Import probability charge prob_lang lang_syntax_util.
 
 (**md**************************************************************************)
 (* # Syntax and Evaluation for a Probabilistic Programming Language           *)

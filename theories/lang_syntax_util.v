@@ -1,8 +1,8 @@
-Require Import String.
+From Coq Require Import String.
 From HB Require Import structures.
 Require Import Classical_Prop. (* NB: to compile with Coq 8.17 *)
 From mathcomp Require Import all_ssreflect.
-Require Import signed.
+From mathcomp Require Import signed.
 
 (******************************************************************************)
 (*                  Shared by lang_syntax_*.v files                           *)

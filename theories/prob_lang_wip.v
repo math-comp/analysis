@@ -3,9 +3,9 @@ From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
-Require Import signed reals ereal topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun lebesgue_integral exp kernel trigo.
-Require Import realfun charge prob_lang.
+From mathcomp Require Import signed reals ereal topology normedtype sequences.
+From mathcomp Require Import esum measure lebesgue_measure numfun exp trigo.
+From mathcomp Require Import realfun lebesgue_integral kernel charge prob_lang.
 
 (******************************************************************************)
 (*  Semantics of a probabilistic programming language using s-finite kernels  *)

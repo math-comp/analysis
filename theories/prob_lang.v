@@ -2,12 +2,12 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat archimedean.
+From mathcomp Require Import lra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
-Require Import reals ereal signed topology normedtype sequences esum measure.
-Require Import lebesgue_measure numfun lebesgue_integral exp kernel.
-Require Import probability.
-From mathcomp Require Import lra.
+From mathcomp Require Import reals ereal signed topology normedtype sequences.
+From mathcomp Require Import esum measure lebesgue_measure numfun.
+From mathcomp Require Import lebesgue_integral exp kernel probability.
 
 (**md**************************************************************************)
 (* # Semantics of a probabilistic programming language using s-finite kernels *)
