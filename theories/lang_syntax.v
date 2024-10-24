@@ -288,7 +288,7 @@ move=> x y x01 y01.
 by rewrite le_eqVlt => /predU1P[->//|/dF] => /(_ x01 y01)/ltW.
 Qed.
 
-Lemma derive1_onem {R: realType} : (fun x0 : R => (1 - x0)%R : R^o)^`() = (cst (-1)%R).
+Lemma derive1_onem {R : realType} : (fun x0 : R => (1 - x0)%R : R^o)^`() = (cst (-1)%R).
 Proof.
 apply/funext => x.
 by rewrite derive1E deriveB// derive_id derive_cst sub0r.
