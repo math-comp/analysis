@@ -41,6 +41,11 @@
     `sup_ent_nbhs` are now `Local`
 
 - The function `map_pair` was moved from `topology.v` to `mathcomp_extra.v`.
+- in `forms.v`:
+  + notation `'e_`
+
+- in `lebesgue_integral.v`:
+  + notation `\x`
 
 ### Renamed
 
