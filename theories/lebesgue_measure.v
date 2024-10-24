@@ -1438,6 +1438,7 @@ Lemma EFin_measurable_fun d (T : measurableType d) (R : realType) (D : set T)
 Proof.
 split=> [mf mD A mA|]; last by move=> mg; exact: measurableT_comp.
 rewrite [X in measurable X](_ : _ = D `&` (EFin \o g) @^-1` (EFin @` A)).
+  (* TODO: use measurable_image_EFin? *)
   by apply: mf => //; exists A => //; exists set0; [constructor|rewrite setU0].
 congr (_ `&` _);rewrite eqEsubset; split=> [|? []/= _ /[swap] -[->//]].
 by move=> ? ?; exact: preimage_image.
