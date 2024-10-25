@@ -106,9 +106,6 @@
 
 ### Changed
 
-- in `topology_structure.v`:
-  + lemma `closureC`
-
 ### Renamed
 
 ### Generalized
@@ -121,6 +118,9 @@
     * lemmas `mfun_rect`, `mfun_valP`, `mfuneqP`
 
 ### Deprecated
+
+- in `topology_structure.v`:
+  + lemma `closureC`
 
 ### Removed
 
