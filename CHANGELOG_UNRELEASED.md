@@ -95,6 +95,15 @@
   + lemma `cst_nnfun_subproof` has now a different statement
   + lemma `indic_nnfun_subproof` has now a different statement
 
+- in `topology_structure.v`:
+  + lemmas `interiorC`, `closureU`, `interiorU`,
+           `closureEbigcap`, `interiorEbigcup`,
+	   `closure_interior_idem`, `interior_closure_idem`
+
+### Changed
+
+- in `topology_structure.v`:
+  + lemma `closureC`
 
 ### Renamed
 

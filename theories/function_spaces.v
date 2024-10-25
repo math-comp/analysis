@@ -341,7 +341,7 @@ apply: (wiFx i); have /= -> := @nbhsE (weak_topology (f_ i)) x.
 exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); [split=>//|].
   apply: open_comp; last by rewrite ?openC//; exact: closed_closure.
   by move=> + _; exact: (@weak_continuous _ _ (f_ i)).
-rewrite closureC preimage_bigcup => z [V [oV]] VnB => /VnB.
+rewrite -interiorC interiorEbigcup preimage_bigcup => z [V [oV]] VnB => /VnB.
 by move/forall2NP => /(_ z) [] // /contrapT.
 Qed.
 
@@ -382,7 +382,8 @@ have [// | i nAfiy] := @sepf (~` A) x (open_closedC oA).
 pose B : set PU := proj i @^-1` (~` closure (f_ i @` ~` A)).
 apply: (@filterS _ _ _ (range join_product `&` B)).
   move=> z [[w ?]] wzE Bz; exists w => //.
-  move: Bz; rewrite /B -wzE closureC; case=> K [oK KsubA] /KsubA.
+  move: Bz; rewrite /B -wzE -interiorC interiorEbigcup.
+  case=> K [oK KsubA] /KsubA.
   have -> : proj i (join_product w) = f_ i w by [].
   by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
 apply: open_nbhs_nbhs; split; last by rewrite -jxy.

@@ -28,6 +28,7 @@ From mathcomp Require Export filter.
 (*            finI_from D f == set of \bigcap_(i in E) f i where E is a       *)
 (*                             finite subset of D                             *)
 (*               interior U == all of the points which are locally in U       *)
+(*                             i.e. the largest open set contained in U       *)
 (*                closure U == the smallest closed set containing U           *)
 (*           open_of_nbhs B == the open sets induced by neighborhoods         *)
 (*           nbhs_of_open B == the neighborhoods induced by open sets         *)
@@ -804,14 +805,6 @@ rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closure_subset AB).
 exact: (smallest_sub (@closed_closure _ _) (@subset_closure _ _)).
 Qed.
 
-Lemma closureC E :
-  ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
-Proof.
-rewrite closureE setC_bigcap eqEsubset; split => t [U [? EU Ut]].
-  by exists (~` U) => //; split; [exact: closed_openC|exact: subsetC].
-by rewrite -(setCK E); exists (~` U)=> //; split; [exact:open_closedC|exact:subsetC].
-Qed.
-
 Lemma closure_id E : closed E <-> E = closure E.
 Proof.
 split=> [?|->]; last exact: closed_closure.
@@ -819,6 +812,74 @@ rewrite eqEsubset; split => //; exact: subset_closure.
 Qed.
 
 End closure_lemmas.
+
+Section closure_interior_lemmas.
+Variable T : topologicalType.
+
+Lemma interiorC (A : set T) : interior (~` A) = ~` closure A.
+Proof.
+rewrite eqEsubset; split=> x; rewrite /closure /interior nbhsE /= -existsNE.
+  case=> U ? /disjoints_subset UA; exists U; rewrite not_implyE.
+  split; first exact/open_nbhs_nbhs.
+  by rewrite setIC UA; apply/set0P; rewrite eqxx.
+case=> X; rewrite not_implyE nbhsE=> -[] -[] U ? UX ?.
+exists U=> //; apply/(subset_trans UX)/disjoints_subset; rewrite setIC.
+by apply/eqP/negbNE/negP; rewrite set0P.
+Qed.
+
+Lemma closureC (A : set T) : closure (~` A) = ~` interior A.
+Proof. by apply: setC_inj; rewrite -interiorC !setCK. Qed.
+
+Lemma closureU (A B : set T) : closure (A `|` B) = closure A `|` closure B.
+Proof. by apply: setC_inj; rewrite setCU -!interiorC -interiorI setCU. Qed.
+
+Lemma interiorU (A B : set T) :
+  interior A `|` interior B `<=` interior (A `|` B).
+Proof.
+by apply: subsetC2; rewrite setCU -!closureC setCU; exact: closureI.
+Qed.
+
+Lemma closureEbigcap (A : set T) :
+  closure A = \bigcap_(x in [set C | closed C /\ A `<=` C]) x.
+Proof. exact: closureE. Qed.
+
+Lemma interiorEbigcup (A : set T) :
+  interior A = \bigcup_(x in [set U | open U /\ U `<=` A]) x.
+Proof.
+apply: setC_inj; rewrite -closureC closureEbigcap setC_bigcup.
+rewrite -[RHS](bigcap_image _ setC idfun) /=.
+apply: eq_bigcapl; split=> X /=.
+  by rewrite -openC -setCS setCK; exists (~` X)=> //; rewrite setCK.
+by case=> Y + <-; rewrite closedC setCS.
+Qed.
+
+Lemma interior_closure_idem (A : set T) :
+  interior (closure (interior (closure A))) = interior (closure A).
+Proof.
+rewrite eqEsubset; split=> x.
+  rewrite {1}/closure {1}/interior nbhsE=> -[] U oxU UicA.
+  rewrite /closure /interior nbhsE.
+  exists U=>//; apply: (subset_trans UicA)=> y /= H B.
+  case/nbhs_interior/H=> z /= [].
+  rewrite {1}/interior nbhsE=> -[] V [] oV Vz.
+  by move/(_ z Vz)/[apply].
+rewrite {1}/interior nbhsE=> -[] U [] oU Ux UcA.
+rewrite {1}/interior nbhsE /=.
+exists U=> //.
+have: U `<=` interior (closure A).
+  move=> y; rewrite /interior nbhsE=> Uy /=.
+  by exists U=> //; split.
+move/subset_trans; apply.
+exact: subset_closure.
+Qed.
+
+Lemma closure_interior_idem (A : set T) :
+  closure (interior (closure (interior A))) = closure (interior A).
+Proof.
+by apply: setC_inj; rewrite -!(closureC, interiorC) interior_closure_idem.
+Qed.
+
+End closure_interior_lemmas.
 
 Section DiscreteTopology.
 Section DiscreteMixin.
