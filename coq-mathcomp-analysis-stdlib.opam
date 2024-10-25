@@ -1,0 +1,44 @@
+*# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+
+opam-version: "2.0"
+maintainer: "Reynald Affeldt <reynald.affeldt@aist.go.jp>"
+version: "dev"
+
+homepage: "https://github.com/math-comp/analysis"
+dev-repo: "git+https://github.com/math-comp/analysis.git"
+bug-reports: "https://github.com/math-comp/analysis/issues"
+license: "CECILL-C"
+
+synopsis: "A library to link real numbers from mathematical components and Stdlib"
+description: """
+This repository contains a library to link real numbers for
+the Coq proof-assistant using the Mathematical Components library and Stdlib."""
+
+build: [make "-C" "analysis_stdlib" "-j%{jobs}%"]
+install: [make "-C" "analysis_stdlib" "install"]
+depends: [
+  "coq-mathcomp-analysis" { = version}
+  "coq-mathcomp-reals-stdlib"
+]
+
+tags: [
+  "category:Mathematics/Real Numbers"
+  "keyword:real numbers"
+  "keyword:reals"
+  "logpath:mathcomp.reals_stdlib"
+]
+authors: [
+  "Reynald Affeldt"
+  "Alessandro Bruni"
+  "Yves Bertot"
+  "Cyril Cohen"
+  "Marie Kerjean"
+  "Assia Mahboubi"
+  "Damien Rouhling"
+  "Pierre Roux"
+  "Kazuhiko Sakaguchi"
+  "Zachary Stone"
+  "Pierre-Yves Strub"
+  "Laurent Théry"
+]
