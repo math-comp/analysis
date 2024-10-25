@@ -30,6 +30,8 @@ From mathcomp Require Export filter.
 (*               interior U == all of the points which are locally in U       *)
 (*                             i.e. the largest open set contained in U       *)
 (*                closure U == the smallest closed set containing U           *)
+(*                regopen U == U is equal to the interior of its closure      *)
+(*              regclosed U == U is equal to the closure of its interior      *)
 (*           open_of_nbhs B == the open sets induced by neighborhoods         *)
 (*           nbhs_of_open B == the neighborhoods induced by open sets         *)
 (*                      x^' == set of neighbourhoods of x where x is          *)
@@ -853,31 +855,36 @@ apply: eq_bigcapl; split=> X /=.
 by case=> Y + <-; rewrite closedC setCS.
 Qed.
 
-Lemma interior_closure_idem (A : set T) :
-  interior (closure (interior (closure A))) = interior (closure A).
+Definition regopen (A : set T) := interior (closure A) = A.
+Definition regclosed (A : set T) := closure (interior A) = A.
+
+Lemma interior_closed_regopen (A : set T) : closed A -> regopen (interior A).
 Proof.
-rewrite eqEsubset; split=> x.
-  rewrite {1}/closure {1}/interior nbhsE=> -[] U oxU UicA.
-  rewrite /closure /interior nbhsE.
-  exists U=>//; apply: (subset_trans UicA)=> y /= H B.
-  case/nbhs_interior/H=> z /= [].
-  rewrite {1}/interior nbhsE=> -[] V [] oV Vz.
-  by move/(_ z Vz)/[apply].
-rewrite {1}/interior nbhsE=> -[] U [] oU Ux UcA.
+move=> cA; rewrite /regopen eqEsubset; split=> x.
+  rewrite {1}/closure {1}/interior nbhsE=> -[] U oxU UciA.
+  rewrite /interior nbhsE /=.
+  exists U=> //; apply: (subset_trans UciA) => y /= H.
+  apply: cA; rewrite /closure /= => B /H; apply:subset_nonempty; apply: setSI.
+  exact: interior_subset.
+rewrite {1}/interior nbhsE=> -[] U [] oU Ux UA.
 rewrite {1}/interior nbhsE /=.
 exists U=> //.
-have: U `<=` interior (closure A).
-  move=> y; rewrite /interior nbhsE=> Uy /=.
-  by exists U=> //; split.
-move/subset_trans; apply.
+have:= UA; rewrite open_subsetE//; move/subset_trans; apply.
 exact: subset_closure.
 Qed.
 
-Lemma closure_interior_idem (A : set T) :
-  closure (interior (closure (interior A))) = closure (interior A).
+Lemma closure_open_regclosed (A : set T) : open A -> regclosed (closure A).
 Proof.
-by apply: setC_inj; rewrite -!(closureC, interiorC) interior_closure_idem.
+rewrite /regclosed -(setCK A) openC=> ?.
+rewrite closureC -[in RHS]interior_closed_regopen //.
+by rewrite !(closureC, interiorC).
 Qed.
+
+Lemma interior_closure_idem : @idempotent_fun (set T) (interior \o closure).  
+Proof. move=> ?; exact/interior_closed_regopen/closed_closure. Qed.
+
+Lemma closure_interior_idem : @idempotent_fun (set T) (closure \o interior).
+Proof. move=> ?; exact/closure_open_regclosed/open_interior. Qed.
 
 End closure_interior_lemmas.
 

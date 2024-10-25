@@ -117,6 +117,8 @@ Arguments dfwith {I T} f i x.
 (* not yet backported *)
 (**********************)
 
+Definition idempotent_fun (U : Type) (f : U -> U) := f \o f =1 f.
+
 From mathcomp Require Import poly.
 
 Lemma deg_le2_ge0 (F : rcfType) (a b c : F) :
