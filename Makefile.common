@@ -128,14 +128,15 @@ doc-clean:
 	rm -rf _build_doc/
 
 coq2html:
+	../coq2html/tools/generate-hierarchy-graph.sh
 	../coq2html/coq2html \
+  -hierarchy-graph hierarchy-graph.dot \
   -title "Mathcomp Analysis" \
   -d html/ -base mathcomp -Q theories analysis \
   -coqlib https://coq.inria.fr/doc/V8.19.2/stdlib/ \
   -external https://math-comp.github.io/htmldoc/ mathcomp.ssreflect \
   -external https://math-comp.github.io/htmldoc/ mathcomp.algebra \
-  classical/*.v classical/*.glob \
-  theories/*.v theories/*.glob
+  $(shell find . -not -path '*/.*' -name "*.v" -or -name "*.glob")
 
 coq2html-clean:
 	rm -f */*.glob
