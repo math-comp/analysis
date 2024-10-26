@@ -3774,10 +3774,9 @@ by rewrite /entourage /=; exists 1 => /=.
 Qed.
 
 Definition type : Type := let _ := completely_regular_nbhsE in X.
-#[export]
-HB.instance Definition _ := Topological.copy type X.
-#[export]
-HB.instance Definition _ := @Nbhs_isUniform.Build
+
+#[export] HB.instance Definition _ := Topological.copy type X.
+#[export] HB.instance Definition _ := @Nbhs_isUniform.Build
   type
   (@entourage X')
   (@entourage_filter X')
@@ -3785,9 +3784,8 @@ HB.instance Definition _ := @Nbhs_isUniform.Build
   (@entourage_inv X')
   (@entourage_split_ex X')
   completely_regular_nbhsE.
-#[export]
+#[export] HB.instance Definition _ := Uniform.on type.
 
-HB.instance Definition _ := Uniform.on type.
 End completely_regular_uniformity.
 Module Exports. HB.reexport. End Exports.
 End completely_regular_uniformity.
@@ -3803,7 +3801,7 @@ Let opc := @one_point_compactification X.
 Lemma one_point_compactification_completely_reg :
   completely_regular_space opc.
 Proof.
-apply: (@normal_completely_regular R). 
+apply: (@normal_completely_regular R).
   apply: compact_normal.
     exact: one_point_compactification_hausdorff.
   exact: one_point_compactification_compact.
@@ -3811,7 +3809,7 @@ by apply: hausdorff_accessible; exact: one_point_compactification_hausdorff.
 Qed.
 
 #[local]
-HB.instance Definition _ := Uniform.copy opc 
+HB.instance Definition _ := Uniform.copy opc
   (@completely_regular_uniformity.type R _
     one_point_compactification_completely_reg).
 
@@ -3850,12 +3848,12 @@ Proof.
 split.
   move=> + A clA nAx => /(_ (~` A)) [].
     by apply: open_nbhs_nbhs; split => //; exact: closed_openC.
-  move=> U Ux /subsetC; rewrite setCK => AclU; exists (interior U).
+  move=> U Ux /subsetC; rewrite setCK => AclU; exists U^°.
   exists (~` closure U) ; split => //; first exact: open_interior.
     exact/closed_openC/closed_closure.
   apply/disjoints_subset; rewrite setCK.
   exact: (subset_trans (@interior_subset _ _) (@subset_closure _ _)).
-move=> + A Ax => /(_ (~` interior A)) []; [|exact|].
+move=> + A Ax => /(_ (~` A^°)) []; [|exact|].
   exact/open_closedC/open_interior.
 move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
   exact/open_nbhs_nbhs.
