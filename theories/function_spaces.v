@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
-From mathcomp Require Import boolp classical_sets functions.
+From mathcomp Require Import boolp classical_sets functions set_interval.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop.
 From mathcomp Require Import reals signed topology separation_axioms.
 
@@ -1546,9 +1546,10 @@ by exists b.
 Unshelve. all: by end_near. Qed.
 
 End cartesian_closed.
+
 End currying.
 
-
+(*
 HB.mixin Record isContinuous {X Y : nbhsType} (f : X -> Y):= {
   cts_fun : continuous f
 }.
@@ -1574,7 +1575,34 @@ Definition mkcts {X Y : nbhsType} (f : X -> Y) (f_cts : continuous f) := f.
 HB.instance Definition _ {X Y : nbhsType} (f: X -> Y) (f_cts : continuous f) :=
   @isContinuous.Build X Y (mkcts f_cts) f_cts.
 
-Require Import set_interval.
+Section continuous_comp.
+Context {X Y Z : topologicalType}.
+Context (f : continuousType X Y) (g : continuousType Y Z).
+Local Lemma cts_fun_comp : continuous (g \o f).
+Proof. move=> x; apply: continuous_comp; exact: cts_fun. Qed.
+
+HB.instance Definition _ := @isContinuous.Build X Z (g \o f) cts_fun_comp.
+
+End continuous_comp.
+
+Section continuous_id.
+Context {X : topologicalType}.
+
+Local Lemma cts_id : continuous (@idfun X).
+Proof. by move=> ?. Qed.
+
+HB.instance Definition _ := @isContinuous.Build X X (@idfun X) cts_id.
+End continuous_id.
+
+Section continuous_const.
+Context {X Y : topologicalType} (y : Y).
+
+Local Lemma cts_const : continuous (@cst X Y y).
+Proof. by move=> ?; exact: cvg_cst. Qed.
+
+HB.instance Definition _ := @isContinuous.Build X Y (cst y) cts_const.
+End continuous_const.
+
 
 Lemma swap_continuous {X Y : topologicalType} : continuous (@swap X Y).
 Proof.
@@ -1886,6 +1914,9 @@ Global Opaque wedge.
 Lemma wedgei_continuous (i : I) : continuous (@wedgei i).
 Proof. by move=> ?; apply: continuous_comp => //; exact: pi_continuous. Qed.
 
+HB.instance Definition _ (i : I) := @isContinuous.Build _ _ 
+  (@wedgei i) (@wedgei_continuous i).
+
 Lemma wedgei_nbhs (i : I) (x : X i) : 
   closed [set p0 i] -> x != p0 _ -> (@wedgei i) @ x = nbhs (wedgei x).
 Proof.
@@ -2192,33 +2223,29 @@ HB.instance Definition _ {i : bpTopologicalType}
 Section path_eq.
 Context {T : topologicalType} {i : bpTopologicalType} (x y : T).
 
-Lemma path_eqP (a b : {path i from x to y}) : a = b <-> Path.sort a = Path.sort b.
+Lemma path_eqP (a b : {path i from x to y}) :   
+  a = b <-> Path.sort a = Path.sort b.
 Proof.
 split; first by move => ->.
 case: a; case: b => /= f [[+ +]] g [[+ +]] fgE. 
-rewrite fgE => /= ? [? ?] ? [? ?]. 
+rewrite fgE => /= a1 [b1 c1] a2 [b2 c2]. 
 congr (_ _ ).
-apply/continuousEP.
-by congr{| isPath.path_zero := _; isPath.path_one:=_;isPath.path_cts:= _|};
-  exact: Prop_irrelevance.
+have -> : a1 = a2 by exact: Prop_irrelevance.
+have -> : b1 = b2 by exact: Prop_irrelevance.
+have -> : c1 = c2 by exact: Prop_irrelevance.
+done.
 Qed.
 End path_eq.
 
 Section cst_path.
 Context {T : topologicalType} {i : bpTopologicalType} (x: T).
 
-HB.instance Definition _ := @isPath.Build i T x x (cst x) erefl erefl 
-    (fun _ => cvg_cst x).
+HB.instance Definition _ := @isPath.Build i T x x (cst x) erefl erefl.
 End cst_path.
 
 Section path_domain_path.
 Context {i : bpTopologicalType}.
-
-Local Lemma id_continuous : continuous (@id i).
-Proof. move=> ?; done. Qed.
-
-HB.instance Definition _ := @isPath.Build i i zero one idfun erefl erefl 
-    id_continuous.
+HB.instance Definition _ := @isPath.Build i i zero one idfun erefl erefl.
 End path_domain_path.
 
 Section path_compose.
@@ -2231,42 +2258,41 @@ Proof. by rewrite /= ?path_zero. Qed.
 Local Lemma fp_one : (f \o p) one = f y.
 Proof. by rewrite /= ?path_one. Qed.
 
-Local Lemma fp_cts : continuous (f \o p).
-Proof. 
-by move=> cf ?; apply: continuous_comp; [exact: path_cts | exact: cts_fun].
-Qed.
-
 HB.instance Definition _ := isPath.Build i U (f x) (f y) (f \o p)
-  fp_zero fp_one fp_cts.
+  fp_zero fp_one.
 
 End path_compose.
 
-(*
-Section path_precompose.
+Section path_reparameterize.
 Context {T : topologicalType} (i j: bpTopologicalType) (x y : T).
 Context (f : {path i from x to y}) (phi : {path j from (@zero i) to one}).
 
-Local Lemma fphi_zero : (f \o phi) zero = x.
-Proof. by rewrite /= ?path_zero. Qed.
+Definition reparameterize := f \o phi.
 
-Local Lemma fphi_one : (f \o phi) one = y.
-Proof. by rewrite /= ?path_one. Qed.
+Local Lemma fphi_zero : reparameterize zero = x.
+Proof. by rewrite /reparameterize /= ?path_zero. Qed.
 
-Local Lemma fphi_cts : continuous (f \o phi).
-Proof. by move=> ?; apply: continuous_comp; apply: path_cts. Qed.
+Local Lemma fphi_one : reparameterize one = y.
+Proof. by rewrite /reparameterize /= ?path_one. Qed.
 
-HB.instance Definition _ := isPath.Build j T x y (f \o phi) 
-  fphi_zero fphi_one fphi_cts.
-End path_precompose.
-*)
+Local Lemma fphi_cts : continuous reparameterize.
+Proof. by move=> ?; apply: continuous_comp; apply: cts_fun. Qed.
+
+HB.instance Definition _ := isContinuous.Build _ _ reparameterize fphi_cts.
+
+HB.instance Definition _ := isPath.Build j T x y reparameterize
+  fphi_zero fphi_one.
+End path_reparameterize.
 
 Section mk_path.
 Context {i : bpTopologicalType} {T : topologicalType}.
-Context {x y : T} {f : i -> T}.
-Context (cf : continuous f) (f0 : f zero = x) (f1 : f one = y).
+Context {x y : T} {f : continuousType i T}.
+Context (f0 : f zero = x) (f1 : f one = y).
 
-Definition mk_path : {path i from x to y} :=
-  @Path.Pack i T x y f (Path.Class (isPath.Axioms_ _ _ _ _ f0 f1 cf)).
+Definition mk_path : i -> T := let _ := (f0,f1) in f.
+
+HB.instance Definition _ := Continuous.on mk_path.
+HB.instance Definition _ := @isPath.Build i T x y mk_path f0 f1.
 End mk_path.
 
 Definition chain_path {i j : bpTopologicalType} {T : topologicalType} 
@@ -2291,15 +2317,15 @@ Qed.
 
 Local Lemma chain_path_cts : continuous (chain_path p q).
 Proof.
-by apply: wedge_fun_continuous; case; (try now (exact: path_cts));
+by apply: wedge_fun_continuous; case; (try now (exact: cts_fun));
   case => //=;rewrite ?path_one ?path_zero //.
 Qed.
 
+HB.instance Definition _ :=  @isContinuous.Build _ T (chain_path p q)
+  chain_path_cts.
 HB.instance Definition _ :=  @isPath.Build _ T x z (chain_path p q)
-  chain_path_zero chain_path_one chain_path_cts.
+  chain_path_zero chain_path_one.
 End chain_path.
-
-
 
 (* Such a structure is very much like [a,b] in that
    one can split it in half like `[0,1] \/ [0,1] ~ [0,2] ~ [0,1]
@@ -2321,14 +2347,16 @@ Context {T : topologicalType} {i : selfSplitType} (x y z: T).
 Context (p : {path i from x to y}) (q : {path i from y to z}).
 
 Definition path_concat : {path i from x to z} :=
-  chain_path p q \o to_wedge.
+  reparameterize (chain_path p q) (to_wedge).
+
+Check path_concat.
 
 End path_concat.
 
 Section self_wedge_path.
 Context {i : selfSplitType}.
 
-Let from_wedge_sub : bpwedge i i -> i  := 
+Definition from_wedge_sub : bpwedge i i -> i  := 
   ((bijection_of_bijective (@to_wedge_bij i))^-1)%FUN.
 
 Local Lemma from_wedge_zero : from_wedge_sub zero = zero.
@@ -2361,25 +2389,28 @@ have /= -> // := (@invK _ _ _ _ (bijection_of_bijective (@to_wedge_bij i))).
 exact/mem_set.
 Qed.
 
+HB.instance Definition _ := isContinuous.Build _ _ from_wedge_sub from_wedge_cts.
+
 HB.instance Definition _ := isPath.Build (bpwedge i i) i zero one from_wedge_sub
-  from_wedge_zero from_wedge_one from_wedge_cts.
+  from_wedge_zero from_wedge_one.
+End self_wedge_path.
 
-Definition from_wedge : {path (bpwedge i i) from (@zero i) to one} := 
+HB.lock Definition from_wedge {i : selfSplitType} : {path (bpwedge i i) from (@zero i) to one} := 
   [the pathType _ _ _ of from_wedge_sub].
+Canonical locked_from_wedge := Unlockable from_wedge.unlock.
 
-Lemma from_wedgeK : cancel from_wedge to_wedge.
+Lemma from_wedgeK {i : selfSplitType} : cancel from_wedge (@to_wedge i).
 Proof.
-move=> z; rewrite /from_wedge /= /from_wedge_sub.
+move=> z; rewrite unlock /= /from_wedge_sub.
 have /= -> // := (@invK _ _ _ _ (bijection_of_bijective (@to_wedge_bij i))).
 exact/mem_set.
 Qed.
 
-Lemma to_wedgeK : cancel to_wedge from_wedge.
+Lemma to_wedgeK {i : selfSplitType}: cancel (@to_wedge i) from_wedge.
 Proof.
-move=> z; rewrite /from_wedge /= /from_wedge_sub funK //. 
+move=> z; rewrite unlock /= /from_wedge_sub funK //. 
 exact/mem_set.
 Qed.
-End self_wedge_path.
 
 Section path_join_assoc. 
 Context (i : selfSplitType).
@@ -2410,34 +2441,42 @@ Qed.
 
 Let ii_i := (bpwedge i_i i).
 Let i_ii := (bpwedge i i_i).
-
+Check @wedgei.
 Let wedgel_i_i : {path i from zero to _} := 
-  mk_path (@wedgei_continuous bool (wedge2 i i) _ true) erefl 
-    (bpwedgeE _ _).
+  @mk_path _ _ _ _ 
+    [the continuousType _ _ of @wedgei _ (wedge2 i i) _ true]
+    erefl (bpwedgeE _ _).
 Let wedger_i_i : {path i from _ to one} :=
-  mk_path (@wedgei_continuous bool (wedge2 i i) _ false) erefl 
-    erefl.
+  @mk_path _ _ _ _ 
+    [the continuousType _ _ of @wedgei _ (wedge2 i i) _ false] 
+    erefl erefl.
 
 Let splitl_left : {path i_i from (@zero ii_i) to _} := 
-  (@mk_path _ _ _ _ (@bpwedgei i_i i true) (@wedgei_continuous _ _ _ true) erefl 
-    (@bpwedgeE _ _)).
+  (@mk_path _ _ _ _ 
+      [the continuousType _ _ of @bpwedgei i_i i true] 
+    erefl (@bpwedgeE _ _)).
 Let splitl_right : {path i from _ to (@one ii_i)} := 
-  @mk_path _ _ _ _ (@bpwedgei i_i i false) (@wedgei_continuous _ _ _ _)
+  @mk_path _ _ _ _ 
+      [the continuousType _ _ of @bpwedgei i_i i false] 
      erefl erefl.
 Let splitl : {path i from (@zero ii_i) to one} := 
-  (splitl_left \o to_wedge) <> splitl_right.
+  (reparameterize splitl_left to_wedge) <> splitl_right.
 
 Let splitr_right : {path i_i from _ to (@one i_ii)} := 
-  (@mk_path _ _ _ _ (@bpwedgei i i_i false) 
-    (@wedgei_continuous _ _ _ false) erefl erefl ).
+  @mk_path _ _ _ _ 
+    [the continuousType _ _ of @bpwedgei i i_i false]
+    erefl erefl.
 Let splitr_left : {path i from (@zero i_ii) to _} := 
-  @mk_path _ _ _ _ (@bpwedgei i i_i true) (@wedgei_continuous _ _ _ _)
+  @mk_path _ _ _ _ 
+    [the continuousType _ _ of @bpwedgei i i_i true]
      erefl (bpwedgeE _ _).
 
 Let unsplitr : {path i_ii from zero to one} := 
-  from_wedge \o chain_path wedgel_i_i (wedger_i_i \o from_wedge).
+  reparameterize 
+    from_wedge 
+    (chain_path wedgel_i_i (reparameterize wedger_i_i from_wedge)).
   
-Let associ : ii_i -> i_ii := 
+Let associ : continuousType ii_i i_ii := 
   chain_path 
     (chain_path 
       (splitr_left)
@@ -2449,20 +2488,6 @@ Context {T : topologicalType} {p1 p2 p3 p4: T}.
 Context (f : {path i from p1 to p2}).
 Context (g : {path i from p2 to p3}).
 Context (h : {path i from p3 to p4}).
-
-Local Lemma assoc_continuous : continuous associ.
-Proof.
-apply: wedge_fun_continuous; case. 
-- apply: wedge_fun_continuous; case; first exact: path_cts.
-  + move=> ?; apply: continuous_comp; exact: path_cts.
-  + by case; rewrite //= ?bpwedgeE //.
-  + by case; rewrite //= ?bpwedgeE.
-- by move=> ?; apply: continuous_comp; exact: path_cts.
-- case; rewrite //= /chain_path /= ?wedge_fun_wedgei /= ?bpwedgeE //.
-  by case; case; rewrite //= ?bpwedgeE.
-- case; rewrite //= /chain_path wedge_fun_wedgei //= ?bpwedgeE //.
-  by case; case; rewrite //= ?bpwedgeE.
-Qed.
 
 Local Lemma assoc0 : associ zero = zero.
 Proof.
@@ -2480,31 +2505,37 @@ case; case; rewrite //= ?bpwedgeE //= ?wedge_fun_wedgei /= ?bpwedgeE //=.
   by case; case; rewrite //= ?bpwedgeE.
 by case; case; rewrite //= ?bpwedgeE.
 Qed.
-
+ 
+(* not really non-forgetful, but we can make it local anyway so it's fine*)
+#[local, non_forgetful_inheritance]
 HB.instance Definition _ := isPath.Build ii_i _ _ _ associ
-  assoc0 assoc1 assoc_continuous .
+  assoc0 assoc1.
 
 Local Lemma concat_assocl : 
   (f <> (g <> h)) \o (unsplitr \o associ \o splitl) = 
     ((f <> g) <> h).
 Proof.
 Ltac wedge_simpl := repeat (
-    rewrite ?wedge_fun_wedgei ?path_one ?path_zero 
-      ?bpwedgeE ?reprK ?from_wedgeK ?to_wedgeK //=;
+    rewrite ?(wedge_fun_wedgei, path_one, path_zero, bpwedgeE, reprK) //=;
   (try (case;case))).
-apply/funext => z /=.
-rewrite from_wedgeK -[to_wedge z](@reprK _ i_i). 
-case E : (repr (to_wedge z)) => [b x] /=; rewrite /associ/chain_path.
+apply/funext => z; rewrite /= /reparameterize /=/associ/chain_path.
+rewrite -[to_wedge z](@reprK _ i_i). 
+case E : (repr (to_wedge z)) => [b x] /=.
+wedge_simpl;  rewrite /= ?from_wedgeK ?to_wedgeK.
+case: b x E => x E /=; wedge_simpl; first last.
+  by rewrite from_wedgeK; wedge_simpl.
+rewrite -[to_wedge x](@reprK _ i_i); case: (repr (to_wedge x)) => [b2 y] /=.
+case: b2 y => y; wedge_simpl; rewrite from_wedgeK.
 wedge_simpl.
-case: b x E => x E /=; wedge_simpl.
-rewrite -[to_wedge x](@reprK _ i_i); case: (repr (to_wedge x)) => [b2 y] /=. 
-case: b2 y => y; wedge_simpl.
 Qed.
   
 Lemma concat_assoc: 
   exists p : {path i from zero to one}, 
     (f <> (g <> h)) \o p = ((f <> g) <> h).
-Proof. by exists (unsplitr \o associ \o splitl); rewrite concat_assocl. Qed.
+Proof.
+exists (reparameterize unsplitr (reparameterize associ splitl)). 
+by rewrite concat_assocl. 
+Qed.
 
 End assoc.
 End path_join_assoc.
@@ -2546,11 +2577,12 @@ Local Lemma fflip_one : path_flip one = x.
 Proof. by rewrite /path_flip /= path_one path_zero. Qed.
 
 Local Lemma fflip_cts : continuous path_flip.
-Proof. by move=> ?; apply: continuous_comp; apply: path_cts. Qed.
+Proof. by move=> ?; apply: continuous_comp; apply: cts_fun. Qed.
 
+HB.instance Definition _ := isContinuous.Build _ _ path_flip fflip_cts.
 
 HB.instance Definition _ := isPath.Build i T y x path_flip
-  fflip_zero fflip_one fflip_cts.
+  fflip_zero fflip_one.
 End path_flip.
 
 
@@ -2612,9 +2644,9 @@ apply: continuous_uncurry.
 - exact: order_hausdorff.
 - suff : continuous (@Path.sort i _ x y \o f : i -> {compact-open, i -> T}). 
     by exact.
-  move=> ?; apply: continuous_comp; first exact: path_cts.
+  move=> ?; apply: continuous_comp; first exact: cts_fun.
   exact: weak_continuous.
-- by move=> t; exact: path_cts.
+- by move=> t; exact: cts_fun.
 Qed.
 
 Lemma path_between_pathP {T : topologicalType} (x y : T) (a b : {path i from x to y}) : 
@@ -2633,13 +2665,15 @@ split.
   - by apply/funext => ?; rewrite /curry /= path_zero.
   - by apply/funext => ?; rewrite /curry /= path_one.
 case=> f [cf ft0 ft1 f0 f1]; apply/asboolP.
+have ftcts t : Continuous.axioms_ (curry f t).
+  by have [_ ] := continuous_curry cf; exact.
 have ftpath t : Path.axioms_ x y (curry f t).
-  split => //; by have [_ ] := continuous_curry cf; exact.
-apply: squash; exists (fun t => Path.Pack (ftpath t)); split; split.
-- apply/path_eqP => //=.
-- apply/path_eqP => //=.
-apply: continuous_comp_weak; rewrite /comp //=.
-exact: continuous_curryf.
+  by exists (ftcts t); split => //.
+apply: squash; exists (fun t => Path.Pack (ftpath t)). 
+have cpf : Continuous.axioms_ (fun t => Path.Pack (ftpath t)).
+  split; split; apply: continuous_comp_weak; rewrite /comp //=.
+  exact: continuous_curryf.
+by exists cpf; split; apply/path_eqP => //=.
 Qed.
 
 Section i_path.
@@ -2653,10 +2687,10 @@ pose f := ((q \o snd) \min (fst \max (p \o snd))).
 exists f; split; rewrite /f/curry /=.
 - apply: min_fun_continuous => //. 
       move=>? ; apply:continuous_comp; first by move=> ?; exact: cvg_snd.
-      exact: path_cts.
+      exact: cts_fun.
   apply: max_fun_continuous => //; first by move=> ?; exact: cvg_fst.
   move=>? ; apply:continuous_comp; first by move=> ?; exact: cvg_snd.
-  exact: path_cts.
+  exact: cts_fun.
 - by move=> t; rewrite min_l ?path_zero ?zero_bot.
 - by move=> t; rewrite min_r ?path_one ?one_top ?max_r ?one_top.
 - by apply/funext=> u; rewrite max_r ?zero_bot // min_r.
@@ -2666,11 +2700,12 @@ Qed.
 Local Lemma reparam_path_id (p: {path i from (@zero i) to one}) :
   path_between p idfun.
 Proof.
-pose q := idfun \min p; have q_path : Path.axioms_ zero one q.
-  split; split; rewrite /q /=.
-  - by rewrite path_zero min_l.
-  - by rewrite path_one min_l.
-  - by apply: min_fun_continuous; [move=> ?; exact: cvg_id | exact: path_cts].
+pose q := idfun \min p.
+have cq : Continuous.axioms_ q.
+  split; split; apply: min_fun_continuous; first by move=> ?; exact: cvg_id. 
+  exact: cts_fun.
+have q_path : Path.axioms_ zero one q.
+  by exists cq; split; rewrite /q /= ?path_zero ?path_one ?min_l ?path_zero.
 apply: (@path_between_trans _ (Path.Pack q_path)). 
   rewrite path_between_sym; apply: reparam_path_lt; move=> j. 
   by rewrite /= /q /= ge_min lexx orbT.
@@ -2687,12 +2722,12 @@ Qed.
 
 Lemma reparam_path_between {T : topologicalType} (x y : T) 
   (phi: {path i from (@zero i) to one}) (f : {path i from x to y}) :
-  path_between f (f \o phi).
+  path_between f (reparameterize f phi).
 Proof.
 apply/path_between_pathP.
 have /path_between_pathP [h [hcts ht0 ht1 h0 h1]] := reparam_path idfun phi.
 exists (f \o h); split.
-- by move=> ?; apply: continuous_comp; [exact: hcts | exact: path_cts].
+- by move=> ?; apply: continuous_comp; [exact: hcts | exact: cts_fun].
 - by move=> t; move: (ht0 t); rewrite /curry /= => ->; rewrite path_zero.
 - by move=> t; move: (ht1 t); rewrite /curry /= => ->; rewrite path_one.
 - by apply/funext => u; move/funeqP/(_ u): h0;  rewrite /curry /= => ->.
@@ -2708,8 +2743,8 @@ Lemma path_bewteen_fun {f : continuousType T U} (p q : T):
   path_between p q -> path_between (f p) (f q).
 Proof.
 move/asboolP/unsquash => g; apply/asboolP/squash.
-pose h : {path i from f p to f q} := f \o g.
 apply: (f \o g).
+Qed.
 
 End path_between_functor.
 
@@ -2997,3 +3032,4 @@ End fundamental_groupoid.
 
 
 i*)
+*)
