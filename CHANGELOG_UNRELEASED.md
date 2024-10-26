@@ -99,7 +99,7 @@
 
 - in `topology_structure.v`:
   + definitions `regopen`, `regclosed`
-  + lemmas `interiorC`, `closureU`, `interiorU`,
+  + lemmas `closure_setC`, `interiorC`, `closureU`, `interiorU`,
            `closureEbigcap`, `interiorEbigcup`,
 	   `closure_open_regclosed`, `interior_closed_regopen`,
 	   `closure_interior_idem`, `interior_closure_idem`

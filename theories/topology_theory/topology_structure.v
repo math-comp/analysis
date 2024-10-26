@@ -817,6 +817,15 @@ Qed.
 
 End closure_lemmas.
 
+Section regular_open_closed.
+Variable T : topologicalType.
+
+Definition regopen (A : set T) := (closure A)^° = A.
+
+Definition regclosed (A : set T) := closure (A^°) = A.
+
+End regular_open_closed.
+
 Section closure_interior_lemmas.
 Variable T : topologicalType.
 
@@ -831,7 +840,8 @@ exists U=> //; apply/(subset_trans UX)/disjoints_subset; rewrite setIC.
 by apply/eqP/negbNE/negP; rewrite set0P.
 Qed.
 
-Let _to_be_closureC (A : set T) : closure (~` A) = ~` A^°.
+(* TODO: rename to closureC after removing the deprecated one *)
+Lemma closure_setC (A : set T) : closure (~` A) = ~` A^°.
 Proof. by apply: setC_inj; rewrite -interiorC !setCK. Qed.
 
 Lemma closureU (A B : set T) : closure (A `|` B) = closure A `|` closure B.
@@ -839,7 +849,7 @@ Proof. by apply: setC_inj; rewrite setCU -!interiorC -interiorI setCU. Qed.
 
 Lemma interiorU (A B : set T) : A^° `|` B^° `<=` (A `|` B)^°.
 Proof.
-by apply: subsetC2; rewrite setCU -!_to_be_closureC setCU; exact: closureI.
+by apply: subsetC2; rewrite setCU -!closure_setC setCU; exact: closureI.
 Qed.
 
 Lemma closureEbigcap (A : set T) :
@@ -849,15 +859,12 @@ Proof. exact: closureE. Qed.
 Lemma interiorEbigcup (A : set T) :
   A^° = \bigcup_(x in [set U | open U /\ U `<=` A]) x.
 Proof.
-apply: setC_inj; rewrite -_to_be_closureC closureEbigcap setC_bigcup.
+apply: setC_inj; rewrite -closure_setC closureEbigcap setC_bigcup.
 rewrite -[RHS](bigcap_image _ setC idfun) /=.
 apply: eq_bigcapl; split=> X /=.
   by rewrite -openC -setCS setCK; exists (~` X)=> //; rewrite setCK.
 by case=> Y + <-; rewrite closedC setCS.
 Qed.
-
-Definition regopen (A : set T) := (closure A)^° = A.
-Definition regclosed (A : set T) := closure (A^°) = A.
 
 Lemma interior_closed_regopen (A : set T) : closed A -> regopen A^°.
 Proof.
@@ -877,8 +884,8 @@ Qed.
 Lemma closure_open_regclosed (A : set T) : open A -> regclosed (closure A).
 Proof.
 rewrite /regclosed -(setCK A) openC=> ?.
-rewrite _to_be_closureC -[in RHS]interior_closed_regopen //.
-by rewrite !(_to_be_closureC, interiorC).
+rewrite closure_setC -[in RHS]interior_closed_regopen //.
+by rewrite !(closure_setC, interiorC).
 Qed.
 
 Lemma interior_closure_idem : @idempotent_fun (set T) (interior \o closure).  
