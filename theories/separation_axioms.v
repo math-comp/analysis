@@ -488,7 +488,7 @@ by apply/closure_subset/disjoints_subset; rewrite setIC.
 Qed.
 
 Lemma compact_normal_local (K : set T) : hausdorff_space T -> compact K ->
-  forall A : set T, A `<=` interior K -> {for A, normal_space}.
+  forall A : set T, A `<=` K^° -> {for A, normal_space}.
 Proof.
 move=> hT cptV A AK clA B snAB; have /compact_near_coveringP cvA : compact A.
   apply/(subclosed_compact clA cptV)/(subset_trans AK).
@@ -504,7 +504,7 @@ have PsnA : ProperFilter (filter_from (set_nbhs (~` B)) closure).
 pose F := powerset_filter_from (filter_from (set_nbhs (~` B)) closure).
 have PF : Filter F by exact: powerset_filter_from_filter.
 have cvP (x : T) : A x -> \forall x' \near x & i \near F, (~` i) x'.
-  move=> Ax; case/set_nbhsP: snAB => C [oC AC CB].
+  move=> Ax; case/set_nbhsP : snAB => C [oC AC CB].
   have [] := @compact_regular x _ hT cptV _ C; first exact: AK.
     by rewrite nbhsE /=; exists C => //; split => //; exact: AC.
   move=> D /nbhs_interior nD cDC.
@@ -514,12 +514,12 @@ have cvP (x : T) : A x -> \forall x' \near x & i \near F, (~` i) x'.
       apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
       exact/(subsetC _ nBZ)/(subset_trans cDC).
     by have := @closed_closure _ (~` closure D); rewrite closure_id => <-.
-  near=> y U => /=; have Dy : interior D y by exact: (near nD _).
+  near=> y U => /=; have Dy : D^° y by exact: (near nD _).
   have UclD : U `<=` closure (~` closure D).
     exact: (near (small_set_sub snBD) U).
   move=> Uy; have [z [/= + Dz]] := UclD _ Uy _ Dy.
   by apply; exact: subset_closure.
-case/(_ _ _ _ _ cvP): cvA => R /= [RA Rmono [U RU] RBx].
+case/(_ _ _ _ _ cvP) : cvA => R /= [RA Rmono [U RU] RBx].
 have [V /set_nbhsP [W [oW cBW WV] clVU]] := RA _ RU; exists (~` W).
   apply/set_nbhsP; exists (~` closure W); split.
   - exact/closed_openC/closed_closure.
