@@ -87,7 +87,7 @@ From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 (* Coq functions.                                                             *)
 (* Also, assume that f (e.g., cst, indic) is equipped with the structure of   *)
 (* MeasurableFun. For f to be equipped with the structure of SimpleFun        *)
-(* (resp. NonNegSimpleFun), one need locallu to import HBSimple (resp.        *)
+(* (resp. NonNegSimpleFun), one need locally to import HBSimple (resp.        *)
 (* HBNNSimple) and to instantiate FiniteImage (resp. NonNegFun) locally.      *)
 (*                                                                            *)
 (******************************************************************************)
