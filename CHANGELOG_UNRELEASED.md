@@ -28,7 +28,7 @@
 
 - in file `normedtype.v`,
      changed `completely_regular_space` to depend on uniform separators
-     which removes the dependency on R.  The old formulation can be
+     which removes the dependency on `R`.  The old formulation can be
      recovered easily with uniform_separatorP.
 
 ### Renamed
