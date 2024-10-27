@@ -1583,6 +1583,7 @@ HB.instance Definition _ {X Y : nbhsType} (f: X -> Y) (f_cts : continuous f) :=
 Section continuous_comp.
 Context {X Y Z : topologicalType}.
 Context (f : continuousType X Y) (g : continuousType Y Z).
+
 Local Lemma cts_fun_comp : continuous (g \o f).
 Proof. move=> x; apply: continuous_comp; exact: cts_fun. Qed.
 
@@ -1811,7 +1812,7 @@ have -> : uncurry F \o right_assoc_prod =
 apply: continuous_comp; first exact: swap_continuous.
 pose h (fxg : continuousType X Y * X * continuousType Y Z) : Z := 
   eval (fxg.2, ((eval fxg.1))).
-have <- : h = (uncurry F \o right_assoc_prod) \o (@swap _ _).
+have <- : h = uncurry F \o right_assoc_prod \o (@swap _ _).
   by rewrite /h/g/right_assoc_prod/uncurry/swap/F funeqE; case; case.
 rewrite /h.
 apply: (@continuous2_cvg _ _ _ _ _ _ (snd) (eval \o fst) (curry eval)).
@@ -1859,7 +1860,6 @@ move=> injf hY a b clA; apply: injf; apply: hY => U V Ufa Vfb.
 have [] := clA (f @^-1` U) (f @^-1` V); try exact: weak_continuous. 
 by move=> z [/= ? ?]; exists (f z).
 Qed.
-
 
 
 Require Import EqdepFacts.
@@ -2880,11 +2880,13 @@ End i_path.
 Section path_between_functor.
 Context {T U: topologicalType}.
 
-Lemma path_bewteen_fun {f : continuousType T U} (p q : T):
-  path_between p q -> path_between (f p) (f q).
+Lemma path_bewteen_fun {f : T -> U} (p q : T):
+  continuous f -> path_between p q -> path_between (f p) (f q).
 Proof.
-move/asboolP/unsquash => g; apply/asboolP/squash.
-apply: (f \o g).
+move=> cf /asboolP/unsquash => g; apply/asboolP/squash.
+have fg0 : (f \o g) zero = f p by rewrite /= path_zero.
+have fg1 : (f \o g) one = f q by rewrite /= path_one.
+apply: @mk_path _ _ _ _ (mkcts cf \o g) fg0 fg1.
 Qed.
 
 End path_between_functor.
@@ -2947,6 +2949,7 @@ End path_between_wedge.
   
 Section fundamental_groupoid.
 Context {T: topologicalType}.
+
 (* arrows in the category of endpoint-preserving homotopies *)
 Definition fundamental_groupoid (x y : T) := 
   path_components {path i from x to y}.
@@ -3097,3 +3100,66 @@ Qed.
 End fundamental_groupoid.
 
 
+Section fundamental_groupoid_functor.
+
+Implicit Types T U V: topologicalType.
+
+Notation "l '<.>' r" := (fdg_op l r) (at level 70).
+
+Local Notation fdg := (fundamental_groupoid).
+
+Definition fdg_lift {T U} (f : continuousType T U)  (x y : T) (a : fdg x y) : 
+    fdg (f x) (f y) :=
+  \pi_(fdg (f x) (f y)) (comp_cts f (repr a) : {path i from f x to f y}).
+
+Lemma fundamental_groupoid_functor {T U} (f : continuousType T U) (x y z : T)
+  (a : fdg x y) (b : fdg y z) : 
+  fdg_lift f a <.> fdg_lift f b = fdg_lift f (a <.> b).
+Proof.
+apply/eqmodP.
+case: piP => p1 /eqmodP; case: piP => p2 /eqmodP; case: piP => p3/eqmodP.
+move=> p3ab p2b p1a; apply: equiv_trans.
+  apply: path_between_wedge.
+    rewrite equiv_sym; exact: p1a.
+  rewrite equiv_sym; exact: p2b.
+have -> : comp_cts f (repr a) <> comp_cts f (repr b) = 
+    (comp_cts f (repr a <> repr b)).
+  apply/path_eqP; rewrite /= /comp_cts /path_concat /reparameterize /chain_path.
+  rewrite /chain_path [f \o (_ \o to_wedge)]compA.
+  rewrite wedge_fun_comp /= /chain_path /=.
+  congr (wedge_fun _ \o to_wedge). 
+  apply: functional_extensionality_dep; case => //.
+apply/path_between_pathP.
+case/path_between_pathP: p3ab => h [ch ht0 ht1 h0 h1].
+exists (f \o h); split.
+- by move=> ?; apply: continuous_comp; [exact: ch | exact: cts_fun].
+- by move=> t; move: (ht0 t); rewrite /curry/= => <-.
+- by move=> t; move: (ht1 t); rewrite /curry/= => <-.
+- apply/funext => t; move: h0; rewrite funeqE.
+  by move/(_ t); rewrite /curry/= => <-.
+- apply/funext => t; move: h1; rewrite funeqE.
+  by move/(_ t); rewrite /curry/= => <-.
+Qed.
+
+Lemma fdg_lift_comp {T U V} 
+  (f : continuousType T U) (g : continuousType U V) (x y : T) :
+  @fdg_lift _ _ (g \o f) x y = 
+  (@fdg_lift _ _ g (f x) (f y)) \o (@fdg_lift _ _ f x y).
+Proof.
+apply/funext=> a /=; apply/eqmodP.
+case: piP => p1 /eqmodP. 
+rewrite /comp_cts -[(g \o f) \o _]compA.
+case/path_between_pathP=> h [ch ht0 ht1 h0 h1].
+apply/path_between_pathP; exists (g \o h); split.
+- by move=> ?; apply: continuous_comp; [exact: ch | exact: cts_fun].
+- by move=> t; move: (ht0 t); rewrite /curry/= => <-.
+- by move=> t; move: (ht1 t); rewrite /curry/= => <-.
+- apply/funext => t; move: h0; rewrite funeqE.
+  by move/(_ t); rewrite /curry/= => <-.
+- apply/funext => t; move: h1; rewrite funeqE.
+  by move/(_ t); rewrite /curry/= => <-.
+Qed.
+
+
+End fundamental_groupoid_functor.
+End path_connected.
