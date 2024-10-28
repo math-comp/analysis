@@ -57,6 +57,17 @@
     `locally_compact_completely_regular`, and
     `completely_regular_regular`.
 
+- in file `mathcomp_extra.v`,
+  + new definition `sum_fun`.
+- in file `sum_topology.v`,
+  + new definition `sum_nbhs`.
+  + new lemmas `sum_nbhsE`, `existT_continuous`, `existT_open_map`,
+    `existT_nbhs`, `sum_openP`, `sum_continuous`, `sum_setUE`, and 
+    `sum_compact`.
+- in file `separation_axioms.v`,
+  + new lemma `sum_hausdorff`.
+
+
 ### Changed
 
 - in file `normedtype.v`,

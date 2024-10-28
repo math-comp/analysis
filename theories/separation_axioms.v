@@ -1125,3 +1125,26 @@ by move=> y [] ? [->] -> /eqP.
 Qed.
 
 End perfect_sets.
+
+Section sum_separations.
+Context {I : choiceType} {X : I -> topologicalType}.
+
+Lemma sum_hausdorff : 
+  (forall i, hausdorff_space (X i)) -> hausdorff_space {i & X i}.
+Proof.
+move=> hX [i x] [j y]; rewrite/cluster /= /nbhs /= ?sum_nbhsE /= => cl. 
+have [] := cl (existT X i @` [set: X i]) (existT X j @` [set: X j]).
+- by apply: existT_nbhs; exact: filterT.
+- by apply: existT_nbhs; exact: filterT.
+(* TODO: get rid of dependent destruct *)
+move=> p [/= [? _] <- [ ? _]] [] E; destruct E => _.
+congr( _ _); apply: hX => U V Ux Vy.
+have [] := cl (existT X j @` U) (existT X j @` V).
+- exact: existT_nbhs.
+- exact: existT_nbhs.
+move=> z [/= [l] ?] <- [r] Vr lr; exists l; split => //.
+move: Vr; have -> // := Eqdep_dec.inj_pair2_eq_dec _ _ _ _ _ _ lr.
+by move=> a b; case: (pselect (a = b)) => ?; [left | right].
+Qed. 
+
+End sum_separations.
