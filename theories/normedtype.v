@@ -6,7 +6,7 @@ From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval ereal reals.
 From mathcomp Require Import signed topology prodnormedzmodule function_spaces.
-From mathcomp Require Export separation_axioms.
+From mathcomp Require Export real_interval separation_axioms.
 
 (**md**************************************************************************)
 (* # Norm-related Notions                                                     *)
@@ -50,6 +50,11 @@ From mathcomp Require Export separation_axioms.
 (*                                   `uniform_separator A B`                  *)
 (*       completely_regular_space == a space where points and closed sets can *)
 (*                                   be separated by a function into R        *)
+(*  completely_regular_uniformity == equips a completely_regular_space with   *)
+(*                                   the uniformity induced by continuous     *)
+(*                                   functions into the reals                 *)
+(*                                   note this uniformity is always the only  *)
+(*                                   choice, so its placed in a module        *)
 (*          uniform_separator A B == there is a suitable uniform space and    *)
 (*                                   entourage separating A and B             *)
 (*                      nbhs_norm == neighborhoods defined by the norm        *)
@@ -3687,17 +3692,19 @@ Proof. exact: (normal_spaceP 0%N 1%N). Qed.
 End normalP.
 
 Section completely_regular.
-
 Context {R : realType}.
 
-Definition completely_regular_space {T : topologicalType} :=
-  forall (a : T) (B : set T), closed B -> ~ B a -> exists f : T -> R, [/\
-    continuous f,
-    f a = 0 &
-    f @` B `<=` [set 1] ].
+(**md This is equivalent to uniformizable. Note there is a subtle
+   distinction between being uniformizable and being uniformType.
+   There is often more than one possible uniformity, and being a
+   uniformType has a specific one.
 
-(* Ideally, R should be an instance of realType here,
-   rather than a section variable. *)
+   If you don't care, you can use the `completely_regular_uniformity.type`
+   which builds the uniformity.
+*)
+Definition completely_regular_space (T : topologicalType) :=
+  forall (a : T) (B : set T), closed B -> ~ B a -> uniform_separator [set a] B.
+
 Lemma point_uniform_separator {T : uniformType} (x : T) (B : set T) :
   closed B -> ~ B x -> uniform_separator [set x] B.
 Proof.
@@ -3711,15 +3718,14 @@ Qed.
 
 Lemma uniform_completely_regular {T : uniformType} :
   @completely_regular_space T.
+Proof. by move=> x B clB Bx; exact: point_uniform_separator. Qed.
+
+Lemma normal_completely_regular {T : topologicalType} :
+  normal_space T -> accessible_space T -> completely_regular_space T.
 Proof.
-move=> x B clB Bx.
-have /(@uniform_separatorP _ R) [f] := point_uniform_separator clB Bx.
-by case=> ? _; rewrite image_set1 => fx ?; exists f; split => //; exact: fx.
+move/normal_separatorP => + /accessible_closed_set1 cl1 x A ? ?; apply => //.
+by apply/disjoints_subset => ? ->.
 Qed.
-
-End completely_regular.
-
-Section pseudometric_normal.
 
 Lemma uniform_regular {X : uniformType} : @regular_space X.
 Proof.
@@ -3728,6 +3734,113 @@ move/(subset_trans (ent_closure entE)) => ExA.
 by exists (xsection (split_ent E) x) => //; exists (split_ent E).
 Qed.
 
+End completely_regular.
+
+Module completely_regular_uniformity.
+Section completely_regular_uniformity.
+Context {R : realType} {X : topologicalType}.
+Hypothesis crs : completely_regular_space X.
+
+Let X' : uniformType := @sup_topology X {f : X -> R | continuous f}
+  (fun f => Uniform.class (weak_topology (projT1 f))).
+
+Let completely_regular_nbhsE : @nbhs X X = nbhs_ (@entourage X').
+Proof.
+rewrite nbhs_entourageE; apply/funext => x; apply/seteqP; split; first last.
+  apply/cvg_sup => -[f ctsf] U [/= _ [[V /= oV <- /= Vfx]]] /filterS.
+  by apply; exact/ctsf/open_nbhs_nbhs.
+move=> U; wlog oU : U / @open X U.
+  move=> WH; rewrite nbhsE => -[V [oV Vx /filterS]].
+  apply; first exact: (@nbhs_filter X').
+  by apply: WH => //; move: oV; rewrite openE; exact.
+move=> /[dup] nUx /nbhs_singleton Ux.
+have ufs : uniform_separator [set x] (~` U).
+  by apply: crs; [exact: open_closedC | exact].
+have /uniform_separatorP := ufs => /(_ R)[f [ctsf f01 fx0 fU1]].
+rewrite -nbhs_entourageE /entourage /= /sup_ent /= smallest_filter_finI.
+pose E := map_pair f @^-1` (fun pq => ball pq.1 1 pq.2).
+exists E; first last.
+  move=> z /= /set_mem; rewrite /E /=.
+  have -> : f x = 0 by apply: fx0; exists x.
+  rewrite /ball /= sub0r normrN; apply: contraPP => cUz.
+  suff -> : f z = 1 by rewrite normr1 ltxx.
+  by apply: fU1; exists z.
+move=> r /= [_]; apply => /=.
+pose f' : {classic {f : X -> R | continuous f}} := exist _ f ctsf.
+suff /asboolP entE : @entourage (weak_topology f) (f', E).2.
+  by exists (exist _ (f', E) entE).
+exists (fun pq => ball pq.1 1 pq.2) => //=.
+by rewrite /entourage /=; exists 1 => /=.
+Qed.
+
+Definition type : Type := let _ := completely_regular_nbhsE in X.
+
+#[export] HB.instance Definition _ := Topological.copy type X.
+#[export] HB.instance Definition _ := @Nbhs_isUniform.Build
+  type
+  (@entourage X')
+  (@entourage_filter X')
+  (@entourage_diagonal_subproof X')
+  (@entourage_inv X')
+  (@entourage_split_ex X')
+  completely_regular_nbhsE.
+#[export] HB.instance Definition _ := Uniform.on type.
+
+End completely_regular_uniformity.
+Module Exports. HB.reexport. End Exports.
+End completely_regular_uniformity.
+Export completely_regular_uniformity.Exports.
+
+Section locally_compact_uniform.
+Context {X : topologicalType} {R : realType}.
+Hypothesis lcpt : locally_compact [set: X].
+Hypothesis hsdf : hausdorff_space X.
+
+Let opc := @one_point_compactification X.
+
+Lemma one_point_compactification_completely_reg :
+  completely_regular_space opc.
+Proof.
+apply: (@normal_completely_regular R).
+  apply: compact_normal.
+    exact: one_point_compactification_hausdorff.
+  exact: one_point_compactification_compact.
+by apply: hausdorff_accessible; exact: one_point_compactification_hausdorff.
+Qed.
+
+#[local]
+HB.instance Definition _ := Uniform.copy opc
+  (@completely_regular_uniformity.type R _
+    one_point_compactification_completely_reg).
+
+Let X' := @weak_topology X opc Some.
+Lemma nbhs_one_point_compactification_weakE : @nbhs X X = nbhs_ (@entourage X').
+Proof. by rewrite nbhs_entourageE one_point_compactification_weak_topology. Qed.
+
+#[local, non_forgetful_inheritance]
+HB.instance Definition _ := @Nbhs_isUniform.Build
+  X
+  (@entourage X')
+  (@entourage_filter X')
+  (@entourage_diagonal_subproof X')
+  (@entourage_inv X')
+  (@entourage_split_ex X')
+  nbhs_one_point_compactification_weakE.
+
+Lemma locally_compact_completely_regular : completely_regular_space X.
+Proof. exact: uniform_completely_regular. Qed.
+
+End locally_compact_uniform.
+
+Lemma completely_regular_regular {R : realType} {X : topologicalType} :
+  completely_regular_space X -> @regular_space X.
+Proof.
+move=> crsX; pose P' := @completely_regular_uniformity.type R _ crsX.
+exact: (@uniform_regular P').
+Qed.
+
+Section pseudometric_normal.
+
 Lemma regular_openP {T : topologicalType} (x : T) :
   {for x, @regular_space T} <-> forall A, closed A -> ~ A x ->
   exists U V : set T, [/\ open U, open V, U x, A `<=` V & U `&` V = set0].
@@ -3735,12 +3848,12 @@ Proof.
 split.
   move=> + A clA nAx => /(_ (~` A)) [].
     by apply: open_nbhs_nbhs; split => //; exact: closed_openC.
-  move=> U Ux /subsetC; rewrite setCK => AclU; exists (interior U).
+  move=> U Ux /subsetC; rewrite setCK => AclU; exists U^°.
   exists (~` closure U) ; split => //; first exact: open_interior.
     exact/closed_openC/closed_closure.
   apply/disjoints_subset; rewrite setCK.
   exact: (subset_trans (@interior_subset _ _) (@subset_closure _ _)).
-move=> + A Ax => /(_ (~` interior A)) []; [|exact|].
+move=> + A Ax => /(_ (~` A^°)) []; [|exact|].
   exact/open_closedC/open_interior.
 move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
   exact/open_nbhs_nbhs.
@@ -5936,3 +6049,116 @@ by have [j [Dj BiBj ij]] := maxD i Vi; move/(_ _ cBix) => ?; exists j.
 Qed.
 
 End vitali_lemma_infinite.
+
+Section set_itv_realType.
+Variable R : realType.
+Implicit Types x : R.
+
+Lemma set_itvK : {in neitv, cancel pred_set (@Rhull R)}.
+Proof.
+move=> [[[] x|[]] [[] y|[]]] /neitvP //;
+  rewrite /Rhull /= !(in_itv, inE)/= ?bnd_simp => xy.
+- rewrite asboolT// inf_itv// lexx/= xy asboolT// asboolT//=.
+  by rewrite asboolF//= sup_itv//= ltxx ?andbF.
+- by rewrite asboolT// inf_itv// ?asboolT// ?sup_itv// ?lexx ?xy.
+- by rewrite asboolT//= inf_itv// lexx asboolT// asboolF.
+- rewrite asboolT// inf_itv//= ltxx asboolF// asboolT//.
+  by rewrite sup_itv// ltxx andbF asboolF.
+  rewrite asboolT // inf_itv // ltxx asboolF // asboolT //.
+  by rewrite sup_itv // xy lexx asboolT.
+- by rewrite asboolT // inf_itv// ltxx asboolF // asboolF.
+- by rewrite asboolF // asboolT // sup_itv// ltxx asboolF.
+- by rewrite asboolF // asboolT // sup_itv// lexx asboolT.
+- by rewrite asboolF // asboolF.
+Qed.
+
+Lemma RhullT : Rhull setT = `]-oo, +oo[%R :> interval R.
+Proof. by rewrite /Rhull -set_itv_infty_infty asboolF// asboolF. Qed.
+
+Lemma RhullK : {in (@is_interval _ : set (set R)), cancel (@Rhull R) pred_set}.
+Proof. by move=> X /asboolP iX; apply/esym/is_intervalP. Qed.
+
+Lemma set_itv_setT (i : interval R) : [set` i] = setT -> i = `]-oo, +oo[.
+Proof.
+have [i0  /(congr1 (@Rhull _))|] := boolP (neitv i).
+  by rewrite set_itvK// => ->; exact: RhullT.
+by rewrite negbK => /eqP ->; rewrite predeqE => /(_ 0)[_]/(_ Logic.I).
+Qed.
+
+End set_itv_realType.
+
+Section Rhull_lemmas.
+Variable R : realType.
+Implicit Types (a b t r : R) (A : set R).
+
+Lemma Rhull_smallest A : [set` Rhull A] = smallest (@is_interval R) A.
+Proof.
+apply/seteqP; split; last first.
+  by apply: smallest_sub; [apply: interval_is_interval | apply: sub_Rhull].
+move=> x /= + I [Iitv AI]; rewrite /Rhull.
+have [|] := asboolP (has_lbound A) => lA; last first.
+  have /forallNP/(_ x)/existsNP[a] := lA.
+  move=> /existsNP[Aa /negP]; rewrite -ltNge => ax.
+  have [|]:= asboolP (has_ubound A) => uA; last first.
+    move=> ?; have /forallNP/(_ x)/existsNP[b] := uA.
+    move=> /existsNP[Ab /negP]; rewrite -ltNge => xb.
+    have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+    by rewrite ax xb.
+  have [As|NAs]/= := asboolP (A _) => xA.
+    by apply: (Iitv a (sup A)); by [apply: AI | rewrite ltW ?ax].
+  have [||b Ab xb] := @sup_gt _ A x; do ?by [exists a | rewrite (itvP xA)].
+  have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+  by rewrite ax xb.
+have [|]:= asboolP (has_ubound A) => uA; last first.
+  have /forallNP/(_ x)/existsNP[b] := uA.
+  move=> /existsNP[Ab /negP]; rewrite -ltNge => xb.
+  have [Ai|NAi]/= := asboolP (A _) => xA.
+    by apply: (Iitv (inf A) b); by [apply: AI | rewrite (ltW xb)].
+  have [||a Aa ax] := @inf_lt _ A x; do ?by [exists b | rewrite (itvP xA)].
+  have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+  by rewrite ax xb.
+have [Ai|NAi]/= := asboolP (A _); have [As|NAs]/= := asboolP (A _).
+- by apply: Iitv; apply: AI.
+- move=> xA.
+  have [||b Ab xb] := @sup_gt _ A x; do ?by [exists (inf A) | rewrite (itvP xA)].
+  have /(_ (inf A) b) := Iitv; apply; do ?by apply: AI.
+  by rewrite (itvP xA) (ltW xb).
+- move=> xA.
+  have [||a Aa ax] := @inf_lt _ A x; do ?by [exists (sup A) | rewrite (itvP xA)].
+  have /(_ a (sup A)) := Iitv; apply; do ?by apply: AI.
+  by rewrite (itvP xA) (ltW ax).
+have [->|/set0P AN0] := eqVneq A set0.
+  by rewrite inf0 sup0 itv_ge//= ltBSide/= ltxx.
+move=> xA.
+have [||a Aa ax] := @inf_lt _ A x; do ?by [|rewrite (itvP xA)].
+have [||b Ab xb] := @sup_gt _ A x; do ?by [|rewrite (itvP xA)].
+have /is_intervalPlt/(_ a b) := Iitv; apply; do ?by apply: AI.
+by rewrite ax xb.
+Qed.
+
+Lemma le_Rhull : {homo (@Rhull R) : A B / (A `<=` B) >-> {subset A <= B}}.
+Proof.
+move=> A B AB; suff: [set` Rhull A] `<=` [set` Rhull B] by [].
+rewrite Rhull_smallest; apply: smallest_sub; first exact: interval_is_interval.
+by rewrite Rhull_smallest; apply: sub_smallest.
+Qed.
+
+Lemma neitv_Rhull A : ~~ neitv (Rhull A) -> A = set0.
+Proof.
+move/negPn/eqP => A0; rewrite predeqE => r; split => // /sub_Rhull.
+by rewrite A0.
+Qed.
+
+Lemma Rhull_involutive A : Rhull [set` Rhull A] = Rhull A.
+Proof.
+have [A0|/neitv_Rhull] := boolP (neitv (Rhull A)); first by rewrite set_itvK.
+by move=> ->; rewrite ?Rhull0 set_itvE Rhull0.
+Qed.
+
+End Rhull_lemmas.
+
+Lemma disj_itv_Rhull {R : realType} (A B : set R) : A `&` B = set0 ->
+  is_interval A -> is_interval B -> disjoint_itv (Rhull A) (Rhull B).
+Proof.
+by move=> AB0 iA iB; rewrite /disjoint_itv RhullK ?inE// RhullK ?inE.
+Qed.

@@ -1,0 +1,86 @@
+#!/bin/bash
+set -e
+set -x
+
+if [ -z $1 ] || [ $1 == "--help" ] || [ $1 == "-h" ]
+then cat <<EOF
+usage : packager VERSION [BRANCH] [TAG]"
+- VERSION is the version number of the package to create, we expect
+    there is a tag named \$VERSION which archive we can
+    download from github
+- BRANCH is the name of a branch where we can find accurate local opam
+    files. Actually, this may only matter for the Coq version dependencies
+    located in the ssreflect package. Default value is "\$VERSION"
+- TAG is the name of the tag used to build the archive,
+    Default value is "\$VERSION"
+EOF
+     exit 0
+else
+VERSION=$1
+fi
+
+if [ -z $2 ]
+then BRANCH="$VERSION"
+else BRANCH=$2
+fi
+# verify whether $BRANCH exists
+git rev-parse --verify $BRANCH
+
+if [ -z $3 ]
+then TAG="$VERSION"
+else TAG=$3
+fi
+# verify whether $TAG exists
+git rev-parse --verify $TAG
+
+ARCHIVEURL="https://github.com/math-comp/analysis/archive/$TAG.tar.gz"
+GITROOT=$(git rev-parse --show-toplevel)
+
+# we build the url file content and the list of packages, and where to put them
+if [ $VERSION == "dev" ]
+then
+# variables useful for package construction
+  URLLINE="src: \"git+https://github.com/math-comp/analysis.git\""
+  PKGS=$(ls -fs -d -1 $GITROOT/*.opam \
+        | sed -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
+        | paste -sd " " -)
+  PKGPREFIX="$GITROOT/opam/extra-dev/packages"
+else
+  ARCHIVE=$(mktemp)
+  PREFIX=$(echo analysis-$TAG | sed "s/\+/-/")
+  git archive --format=tgz --output=$ARCHIVE \
+      --prefix=$PREFIX/ $TAG # reproduce github archive
+  SUM=$(sha256sum $ARCHIVE | cut -d " " -f 1)
+  EXTRACTED=$(mktemp -d)
+  tar -C $EXTRACTED -zxvf $ARCHIVE
+# variables useful for package construction
+  URLLINE="src: \"$ARCHIVEURL\""
+  CHECKSUMLINE="checksum: \"sha256=$SUM\""
+  PKGS=$(ls -fs -d -1 $EXTRACTED/*/*.opam \
+        | sed -r "s?.*coq-mathcomp-([^/]+).opam?\1?" \
+        | paste -sd " " -)
+  PKGPREFIX="$GITROOT/opam/released/packages"
+fi
+
+# for each package, we pick the corresponding opam and descr file and
+# rewrite them to adapt them to single package construction and
+# version numbers
+for pkg in $PKGS
+do pkgdir="$PKGPREFIX/coq-mathcomp-$pkg/coq-mathcomp-$pkg.$VERSION"
+   mkdir -p $pkgdir
+   if [ $VERSION == "dev" ]
+   then cp $GITROOT/coq-mathcomp-$pkg.opam $pkgdir/opam
+   else git show "$BRANCH:coq-mathcomp-$pkg.opam" > $pkgdir/opam
+        sed -r "/^version/d" -i $pkgdir/opam
+   fi
+   echo "" >> $pkgdir/opam
+   echo "url {" >> $pkgdir/opam
+   echo $URLLINE >> $pkgdir/opam
+   if [ $VERSION != "dev" ]
+   then echo $CHECKSUMLINE >> $pkgdir/opam
+   fi
+   echo "}" >> $pkgdir/opam
+done
+
+# finally test the existence of the archive
+wget --spider $ARCHIVEURL
