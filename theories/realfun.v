@@ -41,6 +41,9 @@ From mathcomp Require Import sequences real_interval.
 (*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
 (*                             valued function f at point a                   *)
 (* ```                                                                        *)
+(*               cauchy_MVT == Cauchy's mean value theorem                    *)
+(*           lhopital_right == L'Hopital rule (limit taken on the right)      *)
+(*            lhopital_left == L'Hopital rule (limit taken on the left)       *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -63,7 +66,7 @@ Notation "'nonincreasing_fun' f" := ({homo f : n m / (n <= m)%O >-> (n >= m)%O})
 Notation "'increasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n <= m)%O})
   (at level 10).
 Notation "'decreasing_fun' f" := ({mono f : n m / (n <= m)%O >-> (n >= m)%O})
-                                   (at level 10).
+  (at level 10).
 
 Lemma nondecreasing_funN {R : realType} a b (f : R -> R) :
   {in `[a, b] &, nondecreasing_fun f} <->
