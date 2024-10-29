@@ -1,6 +1,3 @@
-# This file was generated from `meta.yml`, please do not edit manually.
-# Follow the instructions on https://github.com/coq-community/templates to regenerate.
-
 opam-version: "2.0"
 maintainer: "Reynald Affeldt <reynald.affeldt@aist.go.jp>"
 version: "dev"
@@ -19,6 +16,7 @@ build: [make "-C" "altreals" "-j%{jobs}%"]
 install: [make "-C" "altreals" "install"]
 depends: [
   "coq-mathcomp-reals" { = version}
+  "coq-mathcomp-bigenough" { (>= "1.0.0") }
 ]
 
 tags: [
