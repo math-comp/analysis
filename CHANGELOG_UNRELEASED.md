@@ -30,6 +30,11 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
+- in file `realfun.v`,
+  + new lemmas `cauchy_MVT`,
+    `lhopital_right`, and
+    `lhopital_left`.
+
 ### Changed
 
 - in `lebesgue_integrale.v`
