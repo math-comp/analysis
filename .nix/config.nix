@@ -1,5 +1,11 @@
 let
   common-bundle = {
+    mathcomp-classical.job = true;
+    mathcomp-reals.job = true;
+    mathcomp-analysis.job = true;
+    mathcomp-altreals.job = true;
+    mathcomp-reals-stdlib.job = true;
+    mathcomp-analysis-stdlib.job = true;
     ssprove.job = false;
   };
 in
