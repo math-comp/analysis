@@ -19,19 +19,11 @@ From mathcomp Require Import signed reals topology_structure uniform_structure.
 (*                                   structure: a type equipped with balls    *)
 (*                                   The HB class is PseudoMetric.            *)
 (*              pseudoPMetricType == a pointed pseudoMetric space             *)
-(*         discrete_topology dscT == the discrete topology on T, provided     *)
-(*                                   dscT : discrete_space T                  *)
 (*                       ball x e == ball of center x and radius e            *)
 (*                nbhs_ball_ ball == nbhs defined using the given balls       *)
 (*                      nbhs_ball == nbhs defined using balls in a            *)
 (*                                   pseudometric space                       *)
-(*                   discrete_ent == entourages of the discrete uniformity    *)
-(*                                   topology                                 *)
-(*                  discrete_ball == singleton balls for the discrete metric  *)
-(*         discrete_topology_type == equip choice types with a discrete       *)
-(*                                   topology                                 *)
 (* ```                                                                        *)
-(* `discrete_ent` is equipped with the `Uniform` structure.                   *)
 (* ### Factories                                                              *)
 (* ```                                                                        *)
 (*            Nbhs_isPseudoMetric == factory to build a topological space     *)
@@ -88,37 +80,6 @@ HB.structure Definition PseudoMetric (R : numDomainType) :=
 #[short(type="pseudoPMetricType")]
 HB.structure Definition PseudoPointedMetric (R : numDomainType) :=
   {T of Pointed T & Uniform T & Uniform_isPseudoMetric R T}.
-
-Definition discrete_topology T (dsc : discrete_space T) : Type := T.
-
-Section discrete_uniform.
-Context {T : nbhsType} {dsc: discrete_space T}.
-
-Definition discrete_ent : set (set (T * T)) :=
-  globally (range (fun x => (x, x))).
-
-Program Definition discrete_uniform_structure :=
-  @isUniform.Build (discrete_topology dsc) discrete_ent _ _ _ _.
-Next Obligation.
-by move=> ? + x x12; apply; exists x.1; rewrite // {2}x12 -surjective_pairing.
-Qed.
-Next Obligation.
-by move=> ? dA x [i _ <-]; apply: dA; exists i.
-Qed.
-Next Obligation.
-move=> ? dA; exists (range (fun x => (x, x))) => //.
-by rewrite set_compose_diag => x [i _ <-]; apply: dA; exists i.
-Qed.
-
-HB.instance Definition _ := Choice.on (discrete_topology dsc).
-HB.instance Definition _ := discrete_uniform_structure.
-End discrete_uniform.
-
-HB.instance Definition _ (P : pnbhsType) (dsc : discrete_space P) :=
-  Pointed.on (discrete_topology dsc).
-
-HB.instance Definition _ {T : pnbhsType} {dsc: discrete_space T} :=
-  Pointed.on (discrete_topology dsc).
 
 (* was uniformityOfBallMixin *)
 HB.factory Record Nbhs_isPseudoMetric (R : numFieldType) M of Nbhs M := {
@@ -380,62 +341,6 @@ by rewrite intrD1 ltW// lt_succ_floor ?num_real.
 Qed.
 
 (** Specific pseudoMetric spaces *)
-
-Section discrete_pseudoMetric.
-Context {R : numDomainType} {T : nbhsType} {dsc : discrete_space T}.
-
-Definition discrete_ball (x : T) (eps : R) y : Prop := x = y.
-
-Lemma discrete_ball_center x (eps : R) : 0 < eps -> discrete_ball x eps x.
-Proof. by []. Qed.
-
-Program Definition discrete_pseudometric_structure :=
-  @Uniform_isPseudoMetric.Build R (discrete_topology dsc) discrete_ball
-    _ _ _ _.
-Next Obligation. by done. Qed.
-Next Obligation. by move=> ? ? ? ->. Qed.
-Next Obligation. by move=> ? ? ? ? ? -> ->. Qed.
-Next Obligation.
-rewrite predeqE => P; split; last first.
-  by case=> e _ leP; move=> [a b] [i _] [-> ->]; apply: leP.
-move=> entP; exists 1 => //= z z12; apply: entP; exists z.1 => //.
-by rewrite {2}z12 -surjective_pairing.
-Qed.
-
-HB.instance Definition _ := discrete_pseudometric_structure.
-End discrete_pseudoMetric.
-
-(** we use `discrete_topology` to equip choice types with a discrete topology *)
-Section discrete_topology.
-
-Let discrete_subproof (P : choiceType) :
-  discrete_space (principal_filter_type P).
-Proof. by []. Qed.
-
-Definition discrete_topology_type (P : Type) : Type := P.
-
-HB.instance Definition _ (P : choiceType) := Choice.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ (P : choiceType) := Filtered.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _  (P : choiceType) := Uniform.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ (P : pointedType) := Pointed.copy
-  (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-HB.instance Definition _ R (P : choiceType) : @PseudoMetric R _ :=
-  PseudoMetric.copy
-    (discrete_topology_type P) (discrete_topology (discrete_subproof P)).
-
-End discrete_topology.
-
-Lemma discrete_space_discrete (P : choiceType) :
-  discrete_space (discrete_topology_type P).
-Proof.
-apply/funext => /= x; apply/funext => A; apply/propext; split.
-- by move=> [E hE EA] _ ->; apply/EA/xsectionP/hE; exists x.
-- move=> h; exists diagonal; first by move=> -[a b] [t _] [<- <-].
-  by move=> y /xsectionP/= xy; exact: h.
-Qed.
 
 HB.instance Definition _ (R : zmodType) := isPointed.Build R 0.
 

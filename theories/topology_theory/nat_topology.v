@@ -4,6 +4,7 @@ From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import all_classical.
 From mathcomp Require Import signed reals topology_structure uniform_structure.
 From mathcomp Require Import pseudometric_structure order_topology.
+From mathcomp Require Import discrete_topology.
 
 (**md**************************************************************************)
 (* # Topology for natural numbers                                             *)
@@ -16,20 +17,29 @@ Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Section nat_topologicalType.
+HB.instance Definition _ := hasNbhs.Build nat principal_filter.
+HB.instance Definition _ := Discrete_ofNbhs.Build nat erefl.
 
-Let D : set nat := setT.
-Let b : nat -> set nat := fun i => [set i].
-Let bT : \bigcup_(i in D) b i = setT.
-Proof. by rewrite predeqE => i; split => // _; exists i. Qed.
+Local Lemma nat_nbhs_itv (n : nat) :
+  nbhs n = filter_from
+    (fun i => itv_open_ends i /\ n \in i)
+    (fun i => [set` i]).
+Proof.
+rewrite nbhs_principalE eqEsubset; split=> U; first last.
+  by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
+move/principal_filterP; case: n.
+  move=> U0; exists `]-oo, 1[; first split => //; first by left.
+  by move=> r /=; rewrite in_itv /=; case: r.
+move=> n USn; exists `]n, n.+2[; first split => //; first by right.
+  by rewrite in_itv; apply/andP;split => //=; rewrite /Order.lt //=.
+move=> r /=; rewrite in_itv /= => nr2; suff: r = n.+1 by move=> ->.
+exact/esym/le_anti.
+Qed.
 
-Let bD : forall i j t, D i -> D j -> b i t -> b j t ->
-  exists k, [/\ D k, b k t & b k `<=` b i `&` b j].
-Proof. by move=> i j t _ _ -> ->; exists j. Qed.
-
-HB.instance Definition _ := isBaseTopological.Build nat bT bD.
-
-End nat_topologicalType.
+HB.instance Definition _ := Order_isNbhs.Build _ nat nat_nbhs_itv.
+HB.instance Definition _ := DiscreteUniform_ofNbhs.Build nat.
+HB.instance Definition _ {R : numDomainType} := 
+  @DiscretePseudoMetric_ofUniform.Build R nat.
 
 Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
 Proof. by exists N.+1. Qed.
@@ -102,6 +112,7 @@ by near: m; apply: AF; near: B; apply: nbhs_infty_ge.
 Unshelve. all: end_near. Qed.
 
 Section map.
+
 Context {I : Type} {F : set_system I} {FF : Filter F} (f : I -> nat).
 
 Lemma cvgnyPge :
@@ -123,35 +134,3 @@ Proof. exact: (cvgnyP 0%N 4%N). Qed.
 End map.
 
 End infty_nat.
-
-Lemma discrete_nat : discrete_space nat.
-Proof.
-rewrite /discrete_space predeq2E => n U; split.
-   by case => /= V [_ Vn VU]; exact/principal_filterP/VU.
-move/principal_filterP => Un; exists U; split => //=; exists U => //.
-by rewrite eqEsubset; split => [z [i Ui ->//]|z Uz]; exists z.
-Qed.
-
-Section nat_ord_topology.
-Local Open Scope classical_set_scope.
-Local Open Scope order_scope.
-
-Local Lemma nat_nbhs_itv (n : nat) :
-  nbhs n = filter_from
-    (fun i => itv_open_ends i /\ n \in i)
-    (fun i => [set` i]).
-Proof.
-rewrite discrete_nat eqEsubset; split=> U; first last.
-  by case => V [_ Vb] VU; apply/principal_filterP/VU; apply: Vb.
-move/principal_filterP; case: n.
-  move=> U0; exists `]-oo, 1[; first split => //; first by left.
-  by move=> r /=; rewrite in_itv /=; case: r.
-move=> n USn; exists `]n, n.+2[; first split => //; first by right.
-  by rewrite in_itv; apply/andP;split => //=; rewrite /Order.lt //=.
-move=> r /=; rewrite in_itv /= => nr2; suff: r = n.+1 by move=> ->.
-exact/esym/le_anti.
-Qed.
-
-HB.instance Definition _ := Order_isNbhs.Build _ nat nat_nbhs_itv.
-
-End nat_ord_topology.

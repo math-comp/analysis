@@ -93,6 +93,9 @@
   + new lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
     `max_fun_continuous`.
 
+- in file `bool_topology.v`,
+  + new lemma `bool_compact`.
+
 ### Changed
 
 - in file `normedtype.v`,
@@ -146,6 +149,16 @@
 
 ### Changed
 
+- moved from `topology_structure.v` to `discrete_topology.v`: 
+  `discrete_open`, `discrete_set1`, `discrete_closed`, and `discrete_cvg`.
+
+- moved from `pseudometric_structure.v` to `discrete_topology.v`:
+    `discrete_ent`, `discrete_ball`, and `discrete_topology`.
+
+- in file `cantor.v`, `cantor_space` now defined in terms of `bool`.
+- in file `separation_axioms.v`, updated `discrete_hausdorff`, and
+    `discrete_zero_dimension` to take a `discreteTopologicalType`.
+
 ### Renamed
 
 - in `normedtype.v`:
@@ -178,6 +191,10 @@
   + lemma `cst_mfun_subproof` (use lemma `measurable_cst` instead)
   + lemma `cst_nnfun_subproof` (turned into a `Let`)
   + lemma `indic_mfun_subproof` (use lemma `measurable_fun_indic` instead)
+- in file `topology_structure.v`, removed `discrete_sing`, `discrete_nbhs`, and `discrete_space`.
+- in file `nat_topology.v`, removed `discrete_nat`.
+- in file `pseudometric_structure.v`, removed `discrete_ball_center`, `discrete_topology_type`, and 
+    `discrete_space_discrete`.
 
 ### Infrastructure
 
