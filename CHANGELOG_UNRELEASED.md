@@ -56,6 +56,7 @@
     `nbhs_one_point_compactification_weakE`,
     `locally_compact_completely_regular`, and
     `completely_regular_regular`.
+  + new lemmas `near_in_itvoy`, `near_in_itvyo`, `near_in_itvyy`
 
 ### Changed
 

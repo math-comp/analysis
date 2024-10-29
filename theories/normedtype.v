@@ -5336,9 +5336,46 @@ Lemma bound_itvE (R : numDomainType) (a b : R) :
   (a \in `]-oo, a]).
 Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 
-Lemma near_in_itv {R : realFieldType} (a b : R) :
+Section near_in_itv.
+Context {R : realFieldType} (a b : R).
+
+Lemma near_in_itv :
   {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
 Proof. exact: interval_open. Qed.
+
+Lemma near_in_itvoy :
+  {in `]a, +oo[, forall y, \forall z \near y, z \in `]a, +oo[}.
+Proof.
+move=> x ax.
+near=> z.
+suff : z \in `]a, +oo[%classic by rewrite inE.
+near: z.
+rewrite near_nbhs.
+apply: (@open_in_nearW _ _ `]a, +oo[%classic) => //.
+by rewrite inE/=.
+Unshelve. end_near. Qed.
+
+Lemma near_in_itvyo :
+  {in `]-oo, b[, forall y, \forall z \near y, z \in `]-oo, b[}.
+Proof.
+move=> x xb.
+near=> z.
+suff : z \in `]-oo, b[%classic by rewrite inE.
+near: z.
+rewrite near_nbhs.
+apply: (@open_in_nearW _ _ `]-oo, b[%classic) => //.
+by rewrite inE/=.
+Unshelve. end_near. Qed.
+
+Lemma near_in_itvyy :
+  {in `]-oo, +oo[, forall y : R, \forall z \near y, z \in `]-oo, +oo[}.
+Proof.
+move=> x _.
+rewrite -near_nbhs.
+exact: nearW => //.
+Qed.
+
+End near_in_itv.
 
 Lemma cvg_patch {R : realType} (f : R -> R^o) (a b : R) (x : R) : (a < b)%R ->
   x \in `]a, b[ ->
