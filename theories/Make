@@ -28,6 +28,7 @@ topology_theory/num_topology.v
 topology_theory/quotient_topology.v
 topology_theory/one_point_compactification.v
 topology_theory/sigT_topology.v
+topology_theory/discrete_topology.v
 
 homotopy_theory/homotopy.v
 homotopy_theory/wedge_sigT.v
