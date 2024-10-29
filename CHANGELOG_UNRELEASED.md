@@ -57,6 +57,11 @@
     `locally_compact_completely_regular`, and
     `completely_regular_regular`.
 
+- in file `realfun.v`,
+  + new lemmas `cauchy_MVT`,
+    `lhopital_right`, and
+    `lhopital_left`.
+
 ### Changed
 
 - in file `normedtype.v`,
