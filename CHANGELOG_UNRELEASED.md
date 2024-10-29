@@ -65,7 +65,7 @@
     `existT_nbhs`, `sigT_openP`, `sigT_continuous`, `sigT_setUE`, and 
     `sigT_compact`.
 - in file `separation_axioms.v`,
-  + new lemma `sum_hausdorff`.
+  + new lemma `sigT_hausdorff`.
 
 
 ### Changed
