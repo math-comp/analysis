@@ -13,9 +13,11 @@ From mathcomp Require Import finset interval.
 (*             dfwith f x == fun j => x if j = i, and f j otherwise           *)
 (*                           given x : T i                                    *)
 (*                 swap x := (x.2, x.1)                                       *)
-(*           map_pair f x := (f x.1, f x.2)                                       *)
+(*           map_pair f x := (f x.1, f x.2)                                   *)
 (*         monotonous A f := {in A &, {mono f : x y / x <= y}} \/             *)
 (*                           {in A &, {mono f : x y /~ x <= y}}               *)
+(*             sigT_fun f := lifts a family of functions f into a function on *)
+(*                           the dependent sum                                *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -509,3 +511,7 @@ Proof.
 move=> fge x xab; have leab : (a <= b)%O by rewrite (itvP xab).
 by rewrite in_itv/= !fge ?(itvP xab).
 Qed.
+
+Definition sigT_fun {I : Type} {X : I -> Type} {T : Type}
+  (f : forall i, X i -> T) (x : {i & X i}) : T :=
+  (f (projT1 x) (projT2 x)).

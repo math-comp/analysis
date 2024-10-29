@@ -1125,3 +1125,23 @@ by move=> y [] ? [->] -> /eqP.
 Qed.
 
 End perfect_sets.
+
+Section sigT_separations.
+Context {I : choiceType} {X : I -> topologicalType}.
+
+Lemma sigT_hausdorff :
+  (forall i, hausdorff_space (X i)) -> hausdorff_space {i & X i}.
+Proof.
+move=> hX [i x] [j y]; rewrite/cluster /= /nbhs /= 2!sigT_nbhsE /= => cl.
+have [] := cl (existT X i @` [set: X i]) (existT X j @` [set: X j]);
+  [by apply: existT_nbhs; exact: filterT..|].
+move=> p [/= [_ _ <-] [_ _ [ji]]] _.
+rewrite {}ji {j} in x y cl *.
+congr existT; apply: hX => U V Ux Vy.
+have [] := cl (existT X i @` U) (existT X i @` V); [exact: existT_nbhs..|].
+move=> z [] [l Ul <-] [r Vr lr]; exists l; split => //.
+rewrite (Eqdep_dec.inj_pair2_eq_dec _ _ _ _ _ _ lr)// in Vr.
+by move=> a b; exact: pselect.
+Qed.
+
+End sigT_separations.

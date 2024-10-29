@@ -57,6 +57,17 @@
     `locally_compact_completely_regular`, and
     `completely_regular_regular`.
 
+- in file `mathcomp_extra.v`,
+  + new definition `sigT_fun`.
+- in file `sigT_topology.v`,
+  + new definition `sigT_nbhs`.
+  + new lemmas `sigT_nbhsE`, `existT_continuous`, `existT_open_map`,
+    `existT_nbhs`, `sigT_openP`, `sigT_continuous`, `sigT_setUE`, and 
+    `sigT_compact`.
+- in file `separation_axioms.v`,
+  + new lemma `sigT_hausdorff`.
+
+
 ### Changed
 
 - in file `normedtype.v`,
