@@ -26,7 +26,7 @@ topology_theory/weak_topology.v
 topology_theory/num_topology.v
 topology_theory/quotient_topology.v
 topology_theory/one_point_compactification.v
-topology_theory/sum_topology.v
+topology_theory/sigT_topology.v
 
 separation_axioms.v
 function_spaces.v

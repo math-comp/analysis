@@ -1126,13 +1126,13 @@ Qed.
 
 End perfect_sets.
 
-Section sum_separations.
+Section sigT_separations.
 Context {I : choiceType} {X : I -> topologicalType}.
 
-Lemma sum_hausdorff :
+Lemma sigT_hausdorff :
   (forall i, hausdorff_space (X i)) -> hausdorff_space {i & X i}.
 Proof.
-move=> hX [i x] [j y]; rewrite/cluster /= /nbhs /= 2!sum_nbhsE /= => cl.
+move=> hX [i x] [j y]; rewrite/cluster /= /nbhs /= 2!sigT_nbhsE /= => cl.
 have [] := cl (existT X i @` [set: X i]) (existT X j @` [set: X j]);
   [by apply: existT_nbhs; exact: filterT..|].
 move=> p [/= [_ _ <-] [_ _ [ji]]] _.
@@ -1144,4 +1144,4 @@ rewrite (Eqdep_dec.inj_pair2_eq_dec _ _ _ _ _ _ lr)// in Vr.
 by move=> a b; exact: pselect.
 Qed.
 
-End sum_separations.
+End sigT_separations.

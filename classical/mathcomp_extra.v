@@ -16,7 +16,7 @@ From mathcomp Require Import finset interval.
 (*           map_pair f x := (f x.1, f x.2)                                   *)
 (*         monotonous A f := {in A &, {mono f : x y / x <= y}} \/             *)
 (*                           {in A &, {mono f : x y /~ x <= y}}               *)
-(*              sum_fun f := lifts a family of functions f into a function on *)
+(*             sigT_fun f := lifts a family of functions f into a function on *)
 (*                           the dependent sum                                *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -512,6 +512,6 @@ move=> fge x xab; have leab : (a <= b)%O by rewrite (itvP xab).
 by rewrite in_itv/= !fge ?(itvP xab).
 Qed.
 
-Definition sum_fun {I : Type} {X : I -> Type} {T : Type}
+Definition sigT_fun {I : Type} {X : I -> Type} {T : Type}
   (f : forall i, X i -> T) (x : {i & X i}) : T :=
   (f (projT1 x) (projT2 x)).
