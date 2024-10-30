@@ -504,6 +504,8 @@ Section measurable_fun_integral_finite_sfinite.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variable k : X * Y -> \bar R.
 
+Import HBNNSimple.
+
 Lemma measurable_fun_xsection_integral
     (l : X -> {measure set Y -> \bar R})
     (k_ : {nnsfun (X * Y) >-> R}^nat)
@@ -949,6 +951,7 @@ HB.export KCOMP_SFINITE_KERNEL.
 
 Section measurable_fun_preimage_integral.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
+Import HBNNSimple.
 Variables (k : Y -> \bar R)
   (k_ : ({nnsfun Y >-> R}) ^nat)
   (ndk_ : nondecreasing_seq (k_ : (Y -> R)^nat))
@@ -963,7 +966,7 @@ HB.instance Definition _ n := @isNonNegFun.Build _ _ _ (k_2_ge0 n).
 Let mk_2 n : measurable_fun [set: X * Y] (k_2 n).
 Proof. by apply: measurableT_comp => //; exact: measurable_snd. Qed.
 
-HB.instance Definition _ n := @isMeasurableFun.Build _ _ _ _ (mk_2 n).
+HB.instance Definition _ n := @isMeasurableFun.Build _ _ _ _ _ (mk_2 n).
 
 Let fk_2 n : finite_set (range (k_2 n)).
 Proof.
@@ -992,6 +995,10 @@ Qed.
 
 End measurable_fun_preimage_integral.
 
+Section measurable_fun_integral_kernel.
+
+Import HBNNSimple.
+
 Lemma measurable_fun_integral_kernel
     d d' (X : measurableType d) (Y : measurableType d') (R : realType)
     (l : X -> {measure set Y -> \bar R})
@@ -1003,6 +1010,8 @@ Proof.
 have [k_ [ndk_ k_k]] := approximation measurableT mk (fun x _ => k0 x).
 by apply: (measurable_fun_preimage_integral ndk_ k_k) => n r; exact/ml.
 Qed.
+
+End measurable_fun_integral_kernel.
 
 Section integral_kcomp.
 Context d d2 d3 (X : measurableType d) (Y : measurableType d2)
@@ -1016,6 +1025,8 @@ Proof.
 rewrite integral_indic//= /kcomp.
 by apply: eq_integral => y _; rewrite integral_indic.
 Qed.
+
+Import HBNNSimple.
 
 Let integral_kcomp_nnsfun x (f : {nnsfun Z >-> R}) :
   \int[kcomp l k x]_z (f z)%:E = \int[l x]_y (\int[k (x, y)]_z (f z)%:E).
