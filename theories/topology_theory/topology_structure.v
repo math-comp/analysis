@@ -899,7 +899,7 @@ End closure_interior_lemmas.
 Lemma closureC_deprecated (T : topologicalType) (E : set T) :
   ~` closure E = \bigcup_(x in [set U | open U /\ U `<=` ~` E]) x.
 Proof. by rewrite -interiorC interiorEbigcup. Qed.
-#[deprecated(since="mathcomp-analysis 1.6.1", note="use `interiorC` and `interiorEbigcup` instead")]
+#[deprecated(since="mathcomp-analysis 1.7.0", note="use `interiorC` and `interiorEbigcup` instead")]
 Notation closureC := closureC_deprecated (only parsing).
 
 Section DiscreteTopology.
