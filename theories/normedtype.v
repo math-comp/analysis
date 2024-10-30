@@ -2158,7 +2158,7 @@ by apply: xe_A => //; rewrite eq_sym.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
-Lemma continuous_within_itvP {R : realType } a b (f : R -> R) :
+Lemma continuous_within_itvP {R : realType} a b (f : R -> R) :
   a < b ->
   {within `[a, b], continuous f} <->
   [/\ {in `]a, b[, continuous f}, f @ a^'+ --> f a & f @b^'- --> f b].
@@ -2200,6 +2200,72 @@ rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
   rewrite within_interior; first exact: ctsoo.
   suff : `]a, b[ `<=` interior `[a, b] by exact.
   by rewrite -open_subsetE; [exact: subset_itvW| exact: interval_open].
+Qed.
+
+Lemma continuous_within_itvcyP {R : realType} a (f : R -> R) :
+  {within `[a, +oo[, continuous f} <->
+  {in `]a, +oo[, continuous f} /\ f x @[x --> a^'+] --> f a.
+Proof.
+split=> [af|].
+  have aa : a \in `[a, +oo[ by rewrite !in_itv/= lexx.
+  split; [|apply/cvgrPdist_lt => eps eps_gt0 /=].
+  - suff : {in `]a, +oo[%classic, continuous f}.
+      by move=> P c W; apply: P; rewrite inE.
+    rewrite -continuous_open_subspace; last exact: interval_open.
+    move: af; apply/continuous_subspaceW.
+    by move=> ?/=; rewrite !in_itv/= !andbT; exact: ltW.
+  - move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (af a).
+    rewrite /dnbhs/= near_withinE near_simpl /prop_near1/nbhs/=.
+    rewrite -nbhs_subspace_in// /within/= near_simpl.
+    apply: filter_app; exists 2%R => //= c ca1 + ac.
+    by apply; rewrite ?gt_eqF ?in_itv/= ?ltW.
+move=> [cf fa].
+apply/subspace_continuousP => x /andP[].
+rewrite bnd_simp/= le_eqVlt => /predU1P[<-{x}|ax] _.
+- apply/cvgrPdist_lt => eps eps_gt0/=.
+  move/cvgrPdist_lt/(_ _ eps_gt0) : fa.
+  rewrite /at_right !near_withinE.
+  apply: filter_app; exists 1%R => //= c c1a + ac.
+  rewrite in_itv/= andbT le_eqVlt in ac.
+  by case/predU1P : ac => [->|/[swap]/[apply]//]; rewrite subrr normr0.
+- have xaoo : x \in `]a, +oo[ by rewrite in_itv/= andbT.
+  rewrite within_interior; first exact: cf.
+  suff : `]a, +oo[ `<=` interior `[a, +oo[ by exact.
+  rewrite -open_subsetE; last exact: interval_open.
+  by move=> ?/=; rewrite !in_itv/= !andbT; exact: ltW.
+Qed.
+
+Lemma continuous_within_itvycP {R : realType} b (f : R -> R) :
+  {within `]-oo, b], continuous f} <->
+  {in `]-oo, b[, continuous f} /\ f x @[x --> b^'-] --> f b.
+Proof.
+split=> [bf|].
+  have bb : b \in `]-oo, b] by rewrite !in_itv/= lexx.
+  split; [|apply/cvgrPdist_lt => eps eps_gt0 /=].
+  - suff : {in `]-oo, b[%classic, continuous f}.
+      by move=> P c W; apply: P; rewrite inE.
+    rewrite -continuous_open_subspace; last exact: interval_open.
+    move: bf; apply/continuous_subspaceW.
+    by move=> ?/=; rewrite !in_itv/=; exact: ltW.
+  - move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (bf b).
+    rewrite /dnbhs/= near_withinE near_simpl /prop_near1/nbhs/=.
+    rewrite -nbhs_subspace_in// /within/= near_simpl.
+    apply: filter_app; exists 1%R => //= c cb1 + bc.
+    by apply; rewrite ?lt_eqF ?in_itv/= ?ltW.
+move=> [cf fb].
+apply/subspace_continuousP => x /andP[_].
+rewrite bnd_simp/= le_eqVlt=> /predU1P[->{x}|xb].
+- apply/cvgrPdist_lt => eps eps_gt0/=.
+  move/cvgrPdist_lt/(_ _ eps_gt0) : fb.
+  rewrite /at_right !near_withinE.
+  apply: filter_app; exists 1%R => //= c c1b + cb.
+  rewrite in_itv/= le_eqVlt in cb.
+- by case/predU1P : cb => [->|/[swap]/[apply]//]; rewrite subrr normr0.
+  have xb_i : x \in `]-oo, b[ by rewrite in_itv/=.
+  rewrite within_interior; first exact: cf.
+  suff : `]-oo, b[ `<=` interior `]-oo, b] by exact.
+  rewrite -open_subsetE; last exact: interval_open.
+  by move=> ?/=; rewrite !in_itv/=; exact: ltW.
 Qed.
 
 Lemma within_continuous_continuous {R : realType} a b (f : R -> R) x : (a < b)%R ->
