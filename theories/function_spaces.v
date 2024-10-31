@@ -2636,6 +2636,10 @@ Definition path_between := EquivRel _
   path_between_refl path_between_sym path_between_trans.
 
 Definition path_components := {eq_quot path_between}.
+
+Definition path_component_of (x : T) : path_components := pi _ x.
+
+HB.instance Definition _ (x y : T) := EqQuotient.on path_components.
 End path_component.
 
 Arguments path_components : clear implicits.
@@ -2963,12 +2967,12 @@ Qed.
 
 End fundamental_groupoid.
 
-
 Section fundamental_groupoid_functor.
 
 Implicit Types T U V: topologicalType.
 
 Notation "l '<.>' r" := (fdg_op l r) (at level 70).
+
 
 Local Notation fdg := (fundamental_groupoid).
 
@@ -2976,7 +2980,7 @@ Definition fdg_lift {T U} (f : continuousType T U)  (x y : T) (a : fdg x y) :
     fdg (f x) (f y) :=
   \pi_(fdg (f x) (f y)) (comp_cts f (repr a) : {path i from f x to f y}).
 
-Lemma fundamental_groupoid_functor {T U} (f : continuousType T U) (x y z : T)
+Lemma fdg_lift_opE {T U} (f : continuousType T U) (x y z : T)
   (a : fdg x y) (b : fdg y z) : 
   fdg_lift f a <.> fdg_lift f b = fdg_lift f (a <.> b).
 Proof.
@@ -3048,4 +3052,83 @@ by apply/path_eqP; apply/funext.
 Qed.
 
 End fundamental_groupoid_functor.
+
 End path_connected.
+
+HB.instance Definition _ {X : topologicalType} (A : set X) :=
+  Topological.copy (set_type A) (weak_topology set_val).
+
+HB.instance Definition _ {X : topologicalType} (A : set X) := 
+  isContinuous.Build A X set_val (@weak_continuous A X set_val).
+
+Section subspacesI.
+Context {X : topologicalType} (A B : set X).
+Lemma setIR_mem x : (x \in A `&` B) -> x \in B.
+Proof. by case/set_mem => _ /mem_set. Qed.
+
+Lemma setIL_mem x : (x \in A `&` B) -> x \in A.
+Proof. by case/set_mem => /mem_set. Qed.
+
+Definition set_valIR (x : A `&` B) : B := 
+  exist _ (projT1 x) (setIR_mem (projT2 x)).
+
+Definition set_valIL (x : A `&` B) : A := 
+  exist _ (projT1 x) (setIL_mem (projT2 x)).
+
+Lemma set_valIR_continuous : continuous set_valIR.
+Proof.
+apply: continuous_comp_weak; rewrite /comp /= /set_valIR /= set_valE /=.
+exact: weak_continuous.
+Qed.
+
+HB.instance Definition _ := isContinuous.Build _ _ set_valIR set_valIR_continuous.
+
+Lemma set_valIL_continuous : continuous set_valIL.
+Proof.
+apply: continuous_comp_weak; rewrite /comp /= /set_valIR /= set_valE /=.
+exact: weak_continuous.
+Qed.
+
+HB.instance Definition _ := isContinuous.Build _ _ set_valIL set_valIL_continuous.
+End subspacesI.
+
+
+Section van_kampen.
+Context {d} {i : pathDomainType d}.
+Local Open Scope quotient_scope.
+
+Local Notation fdg := (@fundamental_groupoid d i).
+Local Notation fdg_lift := (@fdg_lift _ i).
+
+Context {T : topologicalType} (L R : set T).
+Hypothesis oL : open L.
+Hypothesis oR : open R.
+
+Let lT := fdg_lift (set_val : L -> T).
+Let rT := fdg_lift (set_val : R -> T).
+
+Set Printing All.
+Check horner_comp.
+
+Lemma split_path (x y : L) (p : {path i from x to y}) : 
+
+
+Lemma van_kampen_simpleI  :
+  interior L `|` interior R = [set: T] ->
+  (forall (cmp : @path_components _ i L), 
+      exists (a : L), A (projT1 a) /\ path_component_of a = cmp) ->
+  (forall (cmp : @path_components _ i R), 
+      exists (a : R), A (projT1 a) /\ path_component_of a = cmp) -> 
+  (forall (cmp : @path_components _ i (L `&` R)), 
+      exists (a : (L `&` R)), A (projT1 a) /\ path_component_of a = cmp) ->
+  (
+    let l1 := fdg_lift (@set_valIL _ L R) in
+    let r1 := fdg_lift (@set_valIR _ L R) in
+    forall U : topologicalType,
+    forall (kobj : L -> U) k (hobj : R -> U) h,
+      fdg_functor kobj k -> 
+      fdg_functor hobj h
+    
+    True
+  )
+.
