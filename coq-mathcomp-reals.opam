@@ -9,7 +9,7 @@ license: "CECILL-C"
 
 synopsis: "A library for real numbers for mathematical components"
 description: """
-This repository contains a library for real numbers for
+This package contains a library for real numbers for
 the Coq proof-assistant and using the Mathematical Components library."""
 
 build: [make "-C" "reals" "-j%{jobs}%"]
@@ -22,6 +22,7 @@ tags: [
   "category:Mathematics/Real Numbers"
   "keyword:real numbers"
   "keyword:reals"
+  "keyword:extended real numbers"
   "logpath:mathcomp.reals"
 ]
 authors: [
