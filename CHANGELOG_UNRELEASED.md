@@ -20,7 +20,7 @@
 - in file `separation_axioms.v`,
   + new lemmas `compact_normal_local`, and `compact_normal`.
 
-- package `coq-mathcomp-altreals` depending on `coq-mathcomp-reals`
+- package `coq-mathcomp-experimental-reals` depending on `coq-mathcomp-reals`
   with files
   + `xfinmap.v`
   + `discrete.v`
