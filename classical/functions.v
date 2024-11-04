@@ -2568,60 +2568,131 @@ Qed.
 
 Obligation Tactic := idtac.
 
-Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @GRing.isZmodule.Build (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g)
+Definition add_fun {aT} {rT : aT -> nmodType} (f g : forall x, rT x) x := f x + g x.
+Definition opp_fun {aT} {rT : aT -> zmodType} (f : forall x, rT x) x := - f x.
+Definition sub_fun {aT} {rT : aT -> zmodType} (f g : forall x, rT x) x := f x - g x.
+Definition mul_fun {aT} {rT : aT -> semiRingType} (f g : forall x, rT x) x := f x * g x.
+Definition scale_fun {aT} {R} {rT : aT -> lmodType R} (k : R) (f : forall x, rT x) x := k *: f x.
+
+Notation "f \+ g" := (add_fun f g) : ring_scope.
+Notation "\- f" := (opp_fun f) : ring_scope.
+Notation "f \- g" := (sub_fun f g) : ring_scope.
+Notation "f \* g" := (mul_fun f g) : ring_scope.
+Notation "k \*: f" := (scale_fun k f) : ring_scope.
+
+Arguments add_fun {_ _} f g _ /.
+Arguments opp_fun {_ _} f _ /.
+Arguments sub_fun {_ _} f g _ /.
+Arguments mul_fun {_ _} f g _ /.
+Arguments scale_fun {_ _ _} k f _ /.
+
+Program Definition fct_zmodMixin (T : Type) (M : T -> zmodType) :=
+  @GRing.isZmodule.Build (forall t, M t) (fun=> 0) (fun f => \- f) (fun f g => f \+ g)
      _ _ _ _.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
-Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
-HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.
-
-Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @GRing.Zmodule_isRing.Build (T -> M) (cst 1) (fun f g => f \* g) _ _ _ _ _ _.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDl. Qed.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
 Next Obligation.
-by move=> T M ; apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
+by move=> T M f g h; apply/funext_dep => x /=; rewrite addrA.
 Qed.
-HB.instance Definition _ (T : pointedType) (M : ringType) := fct_ringMixin T M.
-
-Program Definition fct_comRingType (T : pointedType) (M : comRingType) :=
-  GRing.Ring_hasCommutativeMul.Build (T -> M) _.
 Next Obligation.
-by move=> T M f g; rewrite funeqE => x; rewrite /GRing.mul/= mulrC.
+by move=> T M f g; apply/funext_dep => x /=; rewrite addrC.
 Qed.
-HB.instance Definition _ (T : pointedType) (M : comRingType) :=
-  fct_comRingType T M.
+Next Obligation.
+by move=> T M f; apply/funext_dep => x /=; rewrite add0r.
+Qed.
+Next Obligation.
+by move=> T M f; apply/funext_dep => x /=; rewrite addNr.
+Qed.
+HB.instance Definition _ (T : Type) (M : T -> zmodType) := fct_zmodMixin M.
+
+Program Definition fct_ringMixin (T : pointedType) (M : T -> ringType) :=
+  @GRing.Zmodule_isRing.Build (forall t, M t) (fun=> 1) (fun f g => f \* g) _ _ _ _ _ _.
+Next Obligation.
+by move=> T M f g h; apply/funext_dep => x /=; rewrite mulrA.
+Qed.
+Next Obligation.
+by move=> T M f; apply/funext_dep => x /=; rewrite mul1r.
+Qed.
+Next Obligation.
+by move=> T M f; apply/funext_dep => x /=; rewrite mulr1.
+Qed.
+Next Obligation.
+by move=> T M f g h; apply/funext_dep => x/=; rewrite mulrDl.
+Qed.
+Next Obligation.
+by move=> T M f g h; apply/funext_dep => x/=; rewrite mulrDr.
+Qed.
+Next Obligation.
+by move=> T M ; apply/eqP => /(congr1 (fun f => f point)) /eqP; rewrite oner_eq0.
+Qed.
+HB.instance Definition _ (T : pointedType) (M : T -> ringType) := fct_ringMixin M.
+
+Program Definition fct_comRingType (T : pointedType) (M : T -> comRingType) :=
+  GRing.Ring_hasCommutativeMul.Build (forall t, M t) _.
+Next Obligation.
+by move=> T M f g; apply/funext_dep => x; apply/mulrC.
+Qed.
+HB.instance Definition _ (T : pointedType) (M : T -> comRingType) :=
+  fct_comRingType M.
 
 Section fct_lmod.
-Variables (U : Type) (R : ringType) (V : lmodType R).
-Program Definition fct_lmodMixin := @GRing.Zmodule_isLmodule.Build R (U -> V)
+Variables (U : Type) (R : ringType) (V : U -> lmodType R).
+Program Definition fct_lmodMixin := @GRing.Zmodule_isLmodule.Build R (forall u, V u)
   (fun k f => k \*: f) _ _ _ _.
-Next Obligation. by move=> k f v; rewrite funeqE=> x; exact: scalerA. Qed.
-Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite scale1r. Qed.
 Next Obligation.
-by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr.
+by move=> k f v; apply/funext_dep => x; exact: scalerA.
 Qed.
 Next Obligation.
-by move=> f g h; rewrite funeqE => x /=; rewrite scalerDl.
+by move=> f; apply/funext_dep => x /=; rewrite scale1r.
+Qed.
+Next Obligation.
+by move=> f g h; apply/funext_dep => x /=; rewrite scalerDr.
+Qed.
+Next Obligation.
+by move=> f g h; apply/funext_dep => x /=; rewrite scalerDl.
 Qed.
 HB.instance Definition _ := fct_lmodMixin.
 End fct_lmod.
 
-Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M)
+Lemma add_funE (T : pointedType) (M : T -> zmodType) (f g : forall t, M t) :
+  (f + g) = f \+ g.
+Proof. exact/funext_dep. Qed.
+
+Lemma opp_funE (T : Type) (M : T -> zmodType) (f : forall t, M t) : - f = \- f.
+Proof. exact/funext_dep. Qed.
+
+Lemma sub_funE (T : Type) (M : T -> zmodType) (f g : forall t, M t) :
+  (f - g) = f \- g.
+Proof. exact/funext_dep. Qed.
+
+Lemma fct_sumE (I T : Type) (M : T -> zmodType) r (P : {pred I}) (f : I -> forall t, M t)
     (x : T) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+
+Lemma mul_funE (T : pointedType) (M : T -> ringType) (f g : forall t, M t) :
+  (f * g) = f \* g.
+Proof. exact/funext_dep. Qed.
+
+Lemma scale_funE (T : Type) (R : ringType) (M : T -> lmodType R) (k : R) (f : forall t, M t) :
+  k *: f = k \*: f.
+Proof. exact/funext_dep. Qed.
 
 Lemma mul_funC (T : Type) {R : comSemiRingType} (f : T -> R) (r : R) :
   r \*o f = r \o* f.
 Proof. by apply/funext => x/=; rewrite mulrC. Qed.
 
 End function_space.
+
+Notation "f \+ g" := (add_fun f g) : ring_scope.
+Notation "\- f" := (opp_fun f) : ring_scope.
+Notation "f \- g" := (sub_fun f g) : ring_scope.
+Notation "f \* g" := (mul_fun f g) : ring_scope.
+Notation "k \*: f" := (scale_fun k f) : ring_scope.
+
+Arguments add_fun {_ _} f g _ /.
+Arguments opp_fun {_ _} f _ /.
+Arguments sub_fun {_ _} f g _ /.
+Arguments mul_fun {_ _} f g _ /.
+Arguments scale_fun {_ _ _} k f _ /.
 
 Section function_space_lemmas.
 Local Open Scope ring_scope.

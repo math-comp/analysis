@@ -224,7 +224,7 @@ Section diff_locally_converse_tentative.
 (* and thus a littleo of 1, and so is id *)
 (* This can be generalized to any dimension *)
 Lemma diff_locally_converse_part1 (f : R -> R) (a b x : R) :
-  f \o shift x = cst a + b *: idfun +o_ 0 id -> f x = a.
+  f \o shift x = cst a + b *: (@idfun R) +o_ 0 id -> f x = a.
 Proof.
 rewrite funeqE => /(_ 0) /=; rewrite add0r => ->.
 by rewrite -[LHS]/(_ 0 + _ 0 + _ 0) /cst [X in a + X]scaler0 littleo_lim0 ?addr0.
@@ -253,12 +253,12 @@ Lemma derivable_nbhs (f : V -> W) a v :
 Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
 rewrite -nbhs_nearE nbhs_simpl /= dnbhsE; split; last first.
-  rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
+  rewrite /at_point opprD !add_funE !opp_funE/= scale0r add0r.
   by rewrite addrA subrr add0r normrN scale0r !normr0 mulr0.
 have /eqolimP := df.
 move=> /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]).
 apply: filter_app; rewrite /= !near_simpl near_withinE; near=> h => hN0.
-rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
+rewrite /= opprD !add_funE !opp_funE.
 rewrite /cst /= [`|1|]normr1 mulr1 => dfv.
 rewrite addrA -[X in X + _]scale1r -(@mulVf _ h) //.
 rewrite mulrC -scalerA -scalerBr normrZ.
@@ -276,7 +276,7 @@ move=> df; apply/cvg_ex; exists ('D_v f a).
 apply/(@eqolimP _ _ _ (dnbhs_filter_on _))/eqaddoP => _/posnumP[e].
 have /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]) := df.
 rewrite /= !(near_simpl, near_withinE); apply: filter_app; near=> h.
-rewrite /= opprD -![(_ + _ : _ -> _) _]/(_ + _) -![(- _ : _ -> _) _]/(- _).
+rewrite /= opprD !add_funE !opp_funE.
 rewrite /cst /= [`|1|]normr1 mulr1 addrA => dfv hN0.
 rewrite -[X in _ - X]scale1r -(@mulVf _ h) //.
 rewrite -scalerA -scalerBr normrZ normfV ler_pdivrMl ?normr_gt0 //.
@@ -398,7 +398,7 @@ Variable R : numFieldType.
 Fact dcst (V W : normedModType R) (a : W) (x : V) : continuous (0 : V -> W) /\
   cst a \o shift x = cst (cst a x) + \0 +o_ 0 id.
 Proof.
-split; first exact: cst_continuous.
+split; first exact: (@cst_continuous _ _ 0).
 apply/eqaddoE; rewrite addr0 funeqE => ? /=; rewrite -[LHS]addr0; congr (_ + _).
 by rewrite littleoE; last exact: littleo0_subproof.
 Qed.
@@ -412,7 +412,7 @@ Fact dadd (f g : V -> W) x :
 Proof.
 move=> df dg; split => [?|]; do ?exact: continuousD.
 apply/(@eqaddoE R); rewrite funeqE => y /=; rewrite -[(f + g) _]/(_ + _).
-by rewrite ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
+by rewrite add_funE ![_ (_ + x)]diff_locallyx// addrACA addox addrACA.
 Qed.
 
 Fact dopp (f : V -> W) x :
@@ -521,8 +521,8 @@ Lemma diff_unique (V W : normedModType R) (f : V -> W)
   continuous df -> f \o shift x = cst (f x) + df +o_ 0 id ->
   'd f x = df :> (V -> W).
 Proof.
-move=> dfc dxf; apply/subr0_eq; rewrite -[LHS]/(_ \- _).
-apply/littleo_linear0/eqoP/eq_some_oP => /=; rewrite funeqE => y /=.
+move=> dfc dxf; apply/subr0_eq/(@littleo_linear0 _ _ (GRing.sub_fun _ _))/eqoP.
+apply/eq_some_oP => /=; rewrite funeqE => y /=.
 have hdf h : (f \o shift x = cst (f x) + h +o_ 0 id) ->
     h = f \o shift x - cst (f x) +o_ 0 id.
   move=> hdf; apply: eqaddoE.
@@ -544,7 +544,7 @@ by rewrite littleo_center0 (comp_centerK x id) -[- _ in RHS](comp_centerK x).
 Qed.
 
 Lemma diff_cst (V W : normedModType R) a x : ('d (cst a) x : V -> W) = 0.
-Proof. by apply/diff_unique; have [] := dcst a x. Qed.
+Proof. by apply/(@diff_unique _ _ _ \0); have [] := dcst a x. Qed.
 
 Variables (V W : normedModType R).
 
@@ -558,7 +558,10 @@ Proof. exact: DiffDef (differentiable_cst _ _) (diff_cst _ _). Qed.
 Lemma diffD (f g : V -> W) x :
   differentiable f x -> differentiable g x ->
   'd (f + g) x = 'd f x \+ 'd g x :> (V -> W).
-Proof. by move=> df dg; apply/diff_unique; have [] := dadd df dg. Qed.
+Proof.
+move=> df dg.
+by apply/(@diff_unique _ _ _ (GRing.add_fun _ _)); have [] := dadd df dg.
+Qed.
 
 Lemma differentiableD (f g : V -> W) x :
   differentiable f x -> differentiable g x -> differentiable (f + g) x.
@@ -576,7 +579,8 @@ Qed.
 Lemma differentiable_sum n (f : 'I_n -> V -> W) (x : V) :
   (forall i, differentiable (f i) x) -> differentiable (\sum_(i < n) f i) x.
 Proof.
-by elim/big_ind : _ => // ? ? g h ?; apply: differentiableD; [exact:g|exact:h].
+elim/big_ind : _ => //[_|? ? g h ?]; first exact/(@differentiable_cst _ 0).
+by apply: differentiableD; [exact:g|exact:h].
 Qed.
 
 Lemma diffN (f : V -> W) x :
@@ -614,7 +618,10 @@ Proof. by move=> /differentiableP df /differentiableP dg. Qed.
 
 Lemma diffZ (f : V -> W) k x :
   differentiable f x -> 'd (k *: f) x = k \*: 'd f x :> (V -> W).
-Proof. by move=> df; apply/diff_unique; have [] := dscale k df. Qed.
+Proof.
+move=> df.
+by apply/(@diff_unique _ _ _ (GRing.scale_fun _ _)); have [] := dscale k df.
+Qed.
 
 Lemma differentiableZ (f : V -> W) k x :
   differentiable f x -> differentiable (k *: f) x.
@@ -1152,7 +1159,7 @@ Global Instance is_derive_sum n (h : 'I_n -> V -> W) (x v : V)
   (dh : 'I_n -> W) : (forall i, is_derive x v (h i) (dh i)) ->
   is_derive x v (\sum_(i < n) h i) (\sum_(i < n) dh i).
 Proof.
-by elim/big_ind2 : _ => // [|] *; [exact: is_derive_cst|exact: is_deriveD].
+by elim/big_ind2 : _ => // [|] *; [exact/(is_derive_cst 0)|exact: is_deriveD].
 Qed.
 
 Lemma derivable_sum n (h : 'I_n -> V -> W) (x v : V) :
@@ -1324,7 +1331,10 @@ by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
 Qed.
 
 Lemma derivableX f n (x v : V) : derivable f x v -> derivable (f ^+ n) x v.
-Proof. by case: n => [_|n /derivableP]; [rewrite expr0|]. Qed.
+Proof.
+case: n => [_|n /derivableP]; last by [].
+by rewrite expr0; apply/(derivable_cst (1 : R)).
+Qed.
 
 Lemma deriveX f n (x v : V) : derivable f x v ->
   'D_v (f ^+ n.+1) x = (n.+1%:R * f x ^+ n) *: 'D_v f x.
@@ -1378,7 +1388,7 @@ Proof. by rewrite derive1E derive_cst. Qed.
 Lemma exprn_derivable {R : numFieldType} n (x : R) v :
   derivable (@GRing.exp R ^~ n) x v.
 Proof.
-elim: n => [/=|n ih]; first by rewrite (_ : _ ^~ _ = 1).
+elim: n => [/=|n ih]; first by rewrite (_ : _ ^~ _ = cst 1).
 rewrite (_ : _ ^~ _ = (fun x => x * x ^+ n)); last first.
   by apply/funext => y; rewrite exprS.
 by apply: derivableM; first exact: derivable_id.
@@ -1573,7 +1583,7 @@ have gcont : {within `[a, b], continuous g}.
   move=> x; apply: continuousD _ ; first by move=>?; exact: fcont.
   by apply/continuousN/continuous_subspaceT=> ?; exact: scalel_continuous.
 have gaegb : g a = g b.
-  rewrite /g -![(_ - _ : _ -> _) _]/(_ - _).
+  rewrite /g !add_funE !opp_funE.
   apply/eqP; rewrite -subr_eq /= opprK addrAC -addrA -scalerBl.
   rewrite [_ *: _]mulrA mulrC mulrA mulVf.
     by rewrite mul1r addrCA subrr addr0.
