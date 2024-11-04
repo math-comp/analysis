@@ -9,8 +9,11 @@ license: "CECILL-C"
 
 synopsis: "A library for alternative real numbers for mathematical components"
 description: """
-This repository contains a library for alternative real numbers for
-the Coq proof-assistant and using the Mathematical Components library."""
+This package contains an experiment along real numbers
+made at the beginning of the MathComp-Analysis library
+(which now offers the coq-mathcomp-reals package).
+
+Beware that this still contains a few Admitted."""
 
 build: [make "-C" "experimental_reals" "-j%{jobs}%"]
 install: [make "-C" "experimental_reals" "install"]

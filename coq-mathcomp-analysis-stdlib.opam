@@ -9,7 +9,7 @@ license: "CECILL-C"
 
 synopsis: "A library to link real numbers from mathematical components and Stdlib"
 description: """
-This repository contains a library to link real numbers for
+This package contains a library to link real numbers for
 the Coq proof-assistant using the Mathematical Components library and Stdlib."""
 
 build: [make "-C" "analysis_stdlib" "-j%{jobs}%"]

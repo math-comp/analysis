@@ -9,7 +9,7 @@ license: "CECILL-C"
 
 synopsis: "An analysis library for mathematical components"
 description: """
-This repository contains an experimental library for real analysis for
+This package contains a library for real analysis for
 the Coq proof-assistant and using the Mathematical Components library."""
 
 build: [make "-C" "theories" "-j%{jobs}%"]
@@ -24,8 +24,6 @@ depends: [
 tags: [
   "category:Mathematics/Real Calculus and Topology"
   "keyword:analysis"
-  "keyword:extended real numbers"
-  "keyword:filter"
   "keyword:Cantor"
   "keyword:topology"
   "keyword:real numbers"
