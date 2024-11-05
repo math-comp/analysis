@@ -766,24 +766,15 @@ HB.instance Definition _ := @Measure_isProbability.Build _ _ R (P \x P) PP.
 Lemma integrable_expectationM (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
   P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o Y) ->
-  'E_(P \x P) [(fun x => `|X x.1 * Y x.2|)%R] < +oo
-(*  `|'E_(P) [(fun x => X x * Y x)%R]| < +oo *) .
+  'E_(P \x P) [(fun x => `|X x.1 * Y x.2|)%R] < +oo.
 Proof.
 move=> indeXY iX iY.
-(*apply: (@le_lt_trans _ _ 'E_(P \x P)[(fun x => `|(X x.1 * Y x.2)|%R)]
-   (* 'E_(P)[(fun x => `|(X x * Y x)|%R)] *)  ).
-  rewrite unlock/=.
-  rewrite (le_trans (le_abse_integral _ _ _))//.
-  apply/measurable_EFinP/measurable_funM.
-    by apply/measurableT_comp => //.
-  by apply/measurableT_comp => //.*)
 rewrite unlock.
 rewrite [ltLHS](_ : _ =
     \int[distribution (P \x P) (pairRV X Y)%R]_x `|x.1 * x.2|%:E); last first.
-  rewrite integral_distribution//=; last first.
+  rewrite ge0_integral_distribution//=; last first.
     apply/measurable_EFinP => //=.
-    by apply/measurableT_comp => //=.
-(*  admit. (* NG *)*)
+    exact/measurableT_comp.
 rewrite [ltLHS](_ : _ =
     \int[distribution P X \x distribution P Y]_x `|x.1 * x.2|%:E); last first.
   apply: eq_measure_integral => // A mA _.
@@ -804,14 +795,14 @@ rewrite [ltLHS](_ : _ = \int[distribution P X]_x `|x|%:E *
   rewrite -ge0_integralZl//=.
     by under eq_integral do rewrite normrM.
   exact/measurable_EFinP.
-rewrite integral_distribution//=; last exact/measurable_EFinP.
-rewrite integral_distribution//=; last exact/measurable_EFinP.
+rewrite ge0_integral_distribution//=; last exact/measurable_EFinP.
+rewrite ge0_integral_distribution//=; last exact/measurable_EFinP.
 rewrite lte_mul_pinfty//.
-  by apply: integral_ge0 => //.
-  apply: integral_fune_fin_num => //=.
-  by move/integrable_abse : iX => //.
-apply: integral_fune_lt_pinfty => //.
-by move/integrable_abse : iY => //.
+- exact: integral_ge0.
+- apply: integral_fune_fin_num => //=.
+  by move/integrable_abse : iX.
+- apply: integral_fune_lt_pinfty => //.
+  by move/integrable_abse : iY.
 Qed.
 
 End product_expectation.

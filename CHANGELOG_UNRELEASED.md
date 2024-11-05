@@ -31,6 +31,22 @@
 - in `lebesgue_measure.v`:
   + lemmas `measurable_funrpos`, `measurable_funrneg`
 
+- in `numfun.v`:
+  + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
+  + lemmas `funrpos_ge0`, `funrneg_ge0`, `funrposN`, `funrnegN`, `ge0_funrposE`,
+    `ge0_funrnegE`, `le0_funrposE`, `le0_funrnegE`, `ge0_funrposM`, `ge0_funrnegM`,
+    `le0_funrposM`, `le0_funrnegM`, `funr_normr`, `funrposneg`, `funrD_Dpos`,
+    `funrD_posD`, `funrpos_le`, `funrneg_le`
+  + lemmas `funerpos`, `funerneg`
+
+- in `measure.v`:
+  + lemma `preimage_class_comp`
+  + defintions `mapping_display`, `g_sigma_algebra_mappingType`, `g_sigma_algebra_mapping`,
+    notations `.-mapping`, `.-mapping.-measurable`
+
+- in `lebesgue_measure.v`:
+  + lemmas `measurable_funrpos`, `measurable_funrneg`
+
 - in `lebesgue_integral.v`:
   + definition `dyadic_approx` (was `Let A`)
   + definition `integer_approx` (was `Let B`)
@@ -43,6 +59,28 @@
 - in `probability.v`:
   + lemma `expectation_def`
   + notation `'M_`
+
+- new file `independence.v`:
+  + lemma `expectationM_ge0`
+  + definition `independent_events`
+  + definition `mutual_independence`
+  + definition `independent_RVs`
+  + definition `independent_RVs2`
+  + lemmas `g_sigma_algebra_mapping_comp`, `g_sigma_algebra_mapping_funrpos`,
+    `g_sigma_algebra_mapping_funrneg`
+  + lemmas `independent_RVs2_comp`, `independent_RVs2_funrposneg`,
+    `independent_RVs2_funrnegpos`, `independent_RVs2_funrnegneg`,
+    `independent_RVs2_funrpospos`
+  + lemma `expectationM_ge0`, `integrable_expectationM`, `independent_integrableM`,
+    ` expectation_prod`
+- in `lebesgue_integral.v`:
+  + lemma `abse_integralP`
+- in `signed.v`:
+  + definition `onem_NngNum`
+- in `measure.v`:
+  + definition `bernoulli`, declared as a probability measure instance
+- in `itv.v`:
+  + canonical `onem_itv01`
 
 - new file `independence.v`:
   + lemma `expectationM_ge0`
@@ -94,6 +132,7 @@
 
 - in `probability.v`:
   + `integral_distribution` -> `ge0_integral_distribution`
+  + `expectationM` -> `expectationMl`
 
 ### Generalized
 
@@ -113,6 +152,14 @@
   + lemma `measurable_sfunP`
 
 ### Deprecated
+
+- in file `lebesgue_integral.v`:
+  + lemma `approximation`
+
+### Removed
+
+- in `topology_structure.v`:
+  + lemma `closureC`
 
 - in file `lebesgue_integral.v`:
   + lemma `approximation`
