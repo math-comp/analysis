@@ -784,6 +784,13 @@ rewrite /funrpos /funrneg/= !fctE; have [|/ltW] := leP (f x) 0.
 by rewrite -{1}oppr0 -lerNl => /max_idPr ->; rewrite subr0.
 Qed.
 
+Lemma funrD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
+Proof.
+apply/funext => x; rewrite /funrpos /funrneg/=; have [|/ltW] := lerP 0 (f x + g x).
+- by rewrite -{1}oppr0 -lerNl => /max_idPr ->; rewrite subr0.
+- by rewrite -{1}oppr0 -lerNr => /max_idPl ->; rewrite opprK add0r.
+Qed.
+
 Lemma funrDB f g : (f^\+ + g^\+) - (f^\- + g^\-) = f + g.
 Proof. by rewrite addBrfctE !funrposBneg. Qed.
 
@@ -988,6 +995,7 @@ Proof. by apply/funext => x; rewrite funenegE /funrneg/= EFin_max. Qed.
 End funrpos_funepos_lemmas.
 
 Definition indic {T} {R : pzRingType} (A : set T) (x : T) : R := (x \in A)%:R.
+
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
 Notation "'\1_' A" := (indic A) : ring_scope.
 
