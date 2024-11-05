@@ -1086,7 +1086,7 @@ rewrite [ltLHS](_ : _ =
     \int[distribution (P \x P) (pairRV X Y)%R]_x `|x.1 * x.2|%:E); last first.
   rewrite ge0_integral_distribution//=; last first.
     apply/measurable_EFinP => //=.
-    by apply/measurableT_comp => //=.
+    exact/measurableT_comp.
 rewrite [ltLHS](_ : _ =
     \int[distribution P X \x distribution P Y]_x `|x.1 * x.2|%:E); last first.
   apply: eq_measure_integral => // A mA _.

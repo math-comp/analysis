@@ -29,7 +29,6 @@ classical/filter.v
 reals/constructive_ereal.v
 reals/reals.v
 reals/real_interval.v
-reals/signed.v
 reals/interval_inference.v
 reals/prodnormedzmodule.v
 reals/all_reals.v
@@ -115,6 +114,7 @@ theories/ftc.v
 theories/hoelder.v
 theories/probability.v
 theories/independence.v
+theories/sampling.v
 theories/convex.v
 theories/charge.v
 theories/kernel.v
