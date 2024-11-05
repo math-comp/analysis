@@ -4,6 +4,9 @@
 
 ### Added
 
+- in file `cardinality.v`,
+  + lemmas `fiberwise_finite_preimage`, `fiberwise_countable_preimage`
+
 - file `Rstruct_topology.v`
 
 - package `coq-mathcomp-reals` depending on `coq-mathcomp-classical`
