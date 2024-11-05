@@ -67,6 +67,8 @@
 - in file `separation_axioms.v`,
   + new lemma `sigT_hausdorff`.
 
+- in `lebesgue_measure.v`:
+  + lemma `countable_measurable`
 
 ### Changed
 

@@ -215,6 +215,16 @@ by apply: sub_sigma_algebra; exact/is_ocitv.
 Qed.
 #[local] Hint Resolve measurable_set1 : core.
 
+Lemma countable_measurable (A : set R) : countable A -> measurable A.
+Proof.
+have [->//|/set0P[r Ar]/countable_injP[f injf]] := eqVneq A set0.
+rewrite -(injpinv_image (cst r) injf).
+rewrite [X in _ X](_ : _ = \bigcup_(x in f @` A) [set 'pinv_(cst r) A f x]).
+  by apply: bigcup_measurable => _ /= [s As <-].
+by rewrite eqEsubset; split=> [_ [_ [s As <-]] <-|_ [_ [s As <-]] ->];
+  exists (f s).
+Qed.
+
 Lemma measurable_itv (i : interval R) : measurable [set` i].
 Proof.
 have moc (a b : R) : measurable `]a, b].
