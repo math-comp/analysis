@@ -27,13 +27,13 @@ From mathcomp Require Export filter.
 (*                             is convertible to G (globally A)               *)
 (*            finI_from D f == set of \bigcap_(i in E) f i where E is a       *)
 (*                             finite subset of D                             *)
-(*               interior U == all of the points which are locally in U       *)
-(*                             i.e. the largest open set contained in U       *)
+(*               interior U == all of the points which are locally in U,      *)
+(*                             i.e., the largest open set contained in U      *)
 (*                closure U == the smallest closed set containing U           *)
-(*                regopen U == U is regular open                              *)
-(*                             i.e. equal to the interior of its closure      *)
-(*              regclosed U == U is regular closed                            *)
-(*                             i.e. equal to the closure of its interior      *)
+(*                regopen U == U is regular open,                             *)
+(*                             i.e., equal to the interior of its closure     *)
+(*              regclosed U == U is regular closed,                           *)
+(*                             i.e., equal to the closure of its interior     *)
 (*           open_of_nbhs B == the open sets induced by neighborhoods         *)
 (*           nbhs_of_open B == the neighborhoods induced by open sets         *)
 (*                      x^' == set of neighbourhoods of x where x is          *)
@@ -44,7 +44,6 @@ From mathcomp Require Export filter.
 (*                             type topologicalType                           *)
 (*      discrete_space dscT == the discrete topology on T, provided           *)
 (*                             a (dscT : discrete_space T)                    *)
-(*                                                                            *)
 (* ```                                                                        *)
 (* ### Factories                                                              *)
 (* ```                                                                        *)
@@ -835,9 +834,9 @@ rewrite eqEsubset; split=> x; rewrite /closure /interior nbhsE /= -existsNE.
   case=> U ? /disjoints_subset UA; exists U; rewrite not_implyE.
   split; first exact/open_nbhs_nbhs.
   by rewrite setIC UA; apply/set0P; rewrite eqxx.
-case=> X; rewrite not_implyE nbhsE=> -[] -[] U ? UX ?.
-exists U=> //; apply/(subset_trans UX)/disjoints_subset; rewrite setIC.
-by apply/eqP/negbNE/negP; rewrite set0P.
+case=> X; rewrite not_implyE nbhsE=> -[] -[] U xU UX AX0.
+exists U => //; apply/(subset_trans UX)/disjoints_subset; rewrite setIC.
+exact/eqP/negbNE/negP/set0P.
 Qed.
 
 (* TODO: rename to closureC after removing the deprecated one *)
@@ -861,7 +860,7 @@ Lemma interiorEbigcup (A : set T) :
 Proof.
 apply: setC_inj; rewrite -closure_setC closureEbigcap setC_bigcup.
 rewrite -[RHS](bigcap_image _ setC idfun) /=.
-apply: eq_bigcapl; split=> X /=.
+apply: eq_bigcapl; split => X /=.
   by rewrite -openC -setCS setCK; exists (~` X)=> //; rewrite setCK.
 by case=> Y + <-; rewrite closedC setCS.
 Qed.
@@ -869,26 +868,25 @@ Qed.
 Lemma interior_closed_regopen (A : set T) : closed A -> regopen A^°.
 Proof.
 move=> cA; rewrite /regopen eqEsubset; split=> x.
-  rewrite {1}/closure {1}/interior nbhsE=> -[] U oxU UciA.
-  rewrite /interior nbhsE /=.
-  exists U=> //; apply: (subset_trans UciA) => y /= H.
-  apply: cA; rewrite /closure /= => B /H; apply:subset_nonempty; apply: setSI.
+  rewrite /closure [X in X -> _]/interior nbhsE => -[] U oxU UciA.
+  rewrite /interior nbhsE /=; exists U => //.
+  apply: (subset_trans UciA) => y /= yA.
+  apply: cA => B /yA; apply/subset_nonempty; apply: setSI.
   exact: interior_subset.
 rewrite {1}/interior nbhsE=> -[] U [] oU Ux UA.
-rewrite {1}/interior nbhsE /=.
-exists U=> //.
-have:= UA; rewrite open_subsetE//; move/subset_trans; apply.
+rewrite {1}/interior nbhsE /=; exists U=> //.
+have:= UA; rewrite open_subsetE// => /subset_trans; apply.
 exact: subset_closure.
 Qed.
 
 Lemma closure_open_regclosed (A : set T) : open A -> regclosed (closure A).
 Proof.
-rewrite /regclosed -(setCK A) openC=> ?.
-rewrite closure_setC -[in RHS]interior_closed_regopen //.
+rewrite /regclosed -(setCK A) openC => cCA.
+rewrite closure_setC -[in RHS]interior_closed_regopen//.
 by rewrite !(closure_setC, interiorC).
 Qed.
 
-Lemma interior_closure_idem : @idempotent_fun (set T) (interior \o closure).  
+Lemma interior_closure_idem : @idempotent_fun (set T) (interior \o closure).
 Proof. move=> ?; exact/interior_closed_regopen/closed_closure. Qed.
 
 Lemma closure_interior_idem : @idempotent_fun (set T) (closure \o interior).
