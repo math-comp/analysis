@@ -77,6 +77,14 @@
   + new lemmas `swap_continuous`, `prodA_continuous`, and 
     `prodAr_continuous`.
 
+- file `homotopy_theory/homotopy.v`
+- file `homotopy_theory/wedge_sigT.v`
+- in file `homotopy_theory/wedge_sigT.v`
+  + new definitions `wedge_rel`, `wedge`, `wedgei`
+  + new lemmas `wedgei_continuous`, `wedgei_nbhs`, `wedge_openP`,
+    `wedge_pointE`, `wedge_point_nbhs`, `wedge_nbhs_specP`, `wedgeTE`,
+    `wedge_compact`, `wedge_connected`.
+
 ### Changed
 
 - in file `normedtype.v`,
