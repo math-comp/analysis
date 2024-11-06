@@ -12,14 +12,21 @@ Require Import EqdepFacts.
 (* is a fundamental group of some space. We also will use it as part of our   *)
 (* construction of paths and path concatenation.                              *)
 (*                                                                            *)
-(*      wedge_rel p0 x y == x and y are equal, or they are (p0 i) and         *)
-(*                          (p0 j) for some i and j.                          *)
-(*              wedge p0 == the quotient of {i : X i} along `wedge_rel p0`    *)
-(*              wedgei i == the lifting of elements of (X i) into the wedge   *)
+(*    wedge_rel p0 x y == x and y are equal, or they are (p0 i) and           *)
+(*                        (p0 j) for some i and j.                            *)
+(*            wedge p0 == the quotient of {i : X i} along `wedge_rel p0`      *)
+(*            wedgei i == the lifting of elements of (X i) into the wedge     *)
+(*           pwedge p0 == the wedge of ptopologicalTypes at their designated  *)
+(*                        point                                               *)
 (*                                                                            *)
-(* The structure `wedge p0` is endowed with the structures of:                *)
+(* The type `wedge p0` is endowed with the structures of:                     *)
 (* - topology via `quotient_topology`                                         *)
 (* - quotient                                                                 *)
+(*                                                                            *)
+(* The type `pwedge` is endowed with the structures of:                       *)
+(* - topology via `quotient_topology`                                         *)
+(* - quotient                                                                 *)
+(* - pointed                                                                  *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -190,3 +197,16 @@ by exact/continuous_subspaceT/wedgei_continuous.
 Qed.
 
 End wedge.
+
+Section pwedge.
+Context {I : pointedType} (X : I -> ptopologicalType).
+
+Definition pwedge := wedge (fun i => @point (X i)).
+
+Let pwedge_point : pwedge := wedgei _ (@point (X (@point I))).
+
+HB.instance Definition _ := Topological.on pwedge.
+HB.instance Definition _ := Quotient.on pwedge.
+HB.instance Definition _ := isPointed.Build pwedge pwedge_point.
+
+End pwedge.
