@@ -1367,6 +1367,17 @@ Proof. by move=> PF; apply: bigcap_measurable => //; exists 1. Qed.
 
 End sigmaring_lemmas.
 
+Lemma countable_measurable d (T : sigmaRingType d) (A : set T) :
+  (forall t : T, measurable [set t]) -> countable A -> measurable A.
+Proof.
+move=> m1; have [->//|/set0P[r Ar]/countable_injP[f injf]] := eqVneq A set0.
+rewrite -(injpinv_image (cst r) injf).
+rewrite [X in _ X](_ : _ = \bigcup_(x in f @` A) [set 'pinv_(cst r) A f x]).
+  by apply: bigcup_measurable => _ /= [s As <-].
+by rewrite eqEsubset; split=> [_ [_ [s As <-]] <-|_ [_ [s As <-]] ->];
+  exists (f s).
+Qed.
+
 Section sigma_ring_lambda_system.
 Context d (T : sigmaRingType d).
 
