@@ -2306,6 +2306,17 @@ Definition chain_path {i j : bpTopologicalType} {T : topologicalType}
     (f : i -> T) (g : j -> T) : bpwedge i j -> T :=
   wedge_fun (fun b => if b return wedge2 i j b -> T then f else g).
 
+Local Lemma chain_path_cts_point {i j : bpTopologicalType} {T : topologicalType} 
+    (f : i -> T) (g : j -> T) : 
+  continuous f ->
+  continuous g ->
+  f one = g zero ->
+  continuous (chain_path f g).
+Proof.
+move=> cf cg fgE; apply: wedge_fun_continuous => //; first by case. 
+by case; case; rewrite //=.
+Qed.
+
 Section chain_path.
 Context {T : topologicalType} {i j : bpTopologicalType} (x y z: T).
 Context (p : {path i from x to y}) (q : {path j from y to z}).
@@ -3093,12 +3104,36 @@ HB.instance Definition _ := isContinuous.Build _ _ set_valIL set_valIL_continuou
 End subspacesI.
 
 
-Section van_kampen.
+Section path_cutting.
 Context {d} {i : pathDomainType d}.
 Local Open Scope quotient_scope.
 
-Local Notation fdg := (@fundamental_groupoid d i).
-Local Notation fdg_lift := (@fdg_lift _ i).
+Notation "f '<>' g" := (@path_concat _ i _ _ _ f g).
+
+Context {T : topologicalType} (x y z : T).
+Context (p : {path i from x to z}).
+
+Lemma path_cut t : p t = y -> exists 
+  (l : {path i from x to y}) (r : {path i from y to z}) (phi : {path i from (zero : i) to one}),
+  l <> r = reparameterize p phi.
+Proof.
+pose phi := chain_path (Order.min t) (Order.max t) \o to_wedge.
+have : phi zero = zero.
+  rewrite /phi /chain_path /= ?path_zero ?wedge_fun_wedgei ?min_r ?zero_bot //.
+  case; case; rewrite //= ?path_zero /= ?min_l ?max_l ?one_top ?zero_bot //.
+have : phi one = one.
+  rewrite /phi /chain_path /= ?path_one ?wedge_fun_wedgei ?max_r ?one_top //.
+  case; case; rewrite //= ?path_zero /= ?min_l ?max_l ?one_top ?zero_bot //.
+have : continuous phi.
+  move=> ?; apply: continuous_comp; first exact: cts_fun.
+  apply: chain_path_cts_point.
+    move=> w; apply: continuous2_cvg => //. 
+
+
+  Search Order.min (continuous _).
+
+
+let l := 
 
 Context {T : topologicalType} (L R : set T).
 Hypothesis oL : open L.
@@ -3106,9 +3141,6 @@ Hypothesis oR : open R.
 
 Let lT := fdg_lift (set_val : L -> T).
 Let rT := fdg_lift (set_val : R -> T).
-
-Set Printing All.
-Check horner_comp.
 
 Lemma split_path (x y : L) (p : {path i from x to y}) : 
 
