@@ -3,6 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
 From mathcomp Require Import topology_structure uniform_structure compact .
 From mathcomp Require Import pseudometric_structure connected weak_topology.
+From mathcomp Require Import product_topology.
 
 (**md**************************************************************************)
 (* # Subspaces of topological spaces                                          *)
@@ -12,6 +13,12 @@ From mathcomp Require Import pseudometric_structure connected weak_topology.
 (*                            topology that ignores points outside A          *)
 (*         incl_subspace x == with x of type subspace A with (A : set T),     *)
 (*                            inclusion of subspace A into T                  *)
+(*         nbhs_subspace x == filter associated with x : subspace A           *)
+(*          subspace_ent A == subspace entourages                             *)
+(*         subspace_ball A == balls of the pseudometric subspace structure    *)
+(*   continuousFunType A B == type of continuous function from set A to set B *)
+(*                            with domain subspace A                          *)
+(*                            The HB structure is ContinuousFun.              *)
 (* ```                                                                        *)
 (******************************************************************************)
 
@@ -32,7 +39,6 @@ Definition incl_subspace {T A} (x : subspace A) : T := x.
 
 Section Subspace.
 Context {T : topologicalType} (A : set T).
-
 Definition nbhs_subspace (x : subspace A) : set_system (subspace A) :=
   if x \in A then within A (nbhs x) else globally [set x].
 
@@ -635,3 +641,55 @@ move=> U nbhsU wctsf; wlog oU : U wctsf nbhsU / open U.
 move/nbhs_singleton: nbhsU; move: x; apply/in_setP.
 by rewrite -continuous_open_subspace.
 Unshelve. end_near. Qed.
+
+Lemma continuous_subspace_setT {T U : topologicalType} (f : T -> U) :
+  continuous f <-> {within setT, continuous f}.
+Proof. by split => + x K nfK=> /(_ x K nfK); rewrite nbhs_subspaceT. Qed.
+
+Section subspace_product.
+Context {X Y Z : topologicalType} (A : set X) (B : set Y) .
+
+Lemma nbhs_prodX_subspace_inE x : (A `*` B) x ->
+  nbhs  (x : subspace (A `*` B)) = @nbhs _ (subspace A * subspace B)%type x.
+Proof.
+case: x => a b [/= Aa Bb]; rewrite /nbhs/= -nbhs_subspace_in//.
+rewrite funeqE => U /=; rewrite propeqE; split; rewrite /nbhs /=.
+  move=> [[P Q]] /= [nxP nyQ] PQABU; exists (P `&` A, Q `&` B).
+    by split; apply/nbhs_subspace_ex => //=; [exists P | exists Q];
+      rewrite // -setIA setIid.
+  by case=> p q [[/= Pp Ap [Qq Bq]]]; exact: PQABU.
+move=> [[P Q]] /= [/(nbhs_subspace_ex _ Aa) [P' P'a PPA]].
+move/(nbhs_subspace_ex _ Bb) => [Q' Q'a QQB PQU].
+exists (P', Q') => //= -[p q] [P'p Q'q] [Ap Bq]; apply: PQU; split => /=.
+  by have [] : (P `&` A) p by rewrite PPA.
+by have [] : (Q `&` B) q by rewrite QQB.
+Qed.
+
+Lemma continuous_subspace_prodP (f : X * Y -> Z) :
+  {in A `*` B, continuous (f : subspace A * subspace B -> Z)} <->
+  {within A `*` B, continuous f}.
+Proof.
+by split; rewrite continuous_subspace_in => + x ABx U nfxU => /(_ x ABx U nfxU);
+  rewrite nbhs_prodX_subspace_inE//; move/set_mem: ABx.
+Qed.
+End subspace_product.
+
+#[short(type = "continuousFunType")]
+HB.structure Definition ContinuousFun {X Y : topologicalType}
+    (A : set X) (B : set Y) :=
+  {f of @isFun (subspace A) Y A B f & @Continuous (subspace A) Y f }.
+
+Section continuous_fun_comp.
+Context {X Y Z : topologicalType} (A : set X) (B : set Y) (C : set Z).
+Context {f : continuousFunType A B} {g : continuousFunType B C}.
+
+Local Lemma continuous_comp_subproof : continuous (g \o f : subspace A -> Z).
+Proof.
+move=> x; apply: continuous_comp; last exact: cts_fun.
+exact/subspaceT_continuous/cts_fun.
+Qed.
+
+HB.instance Definition _ :=
+  @isContinuous.Build (subspace A) Z (g \o f) continuous_comp_subproof.
+
+End continuous_fun_comp.

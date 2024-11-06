@@ -40,10 +40,14 @@ From mathcomp Require Export filter.
 (*                             excluded (a "deleted neighborhood")            *)
 (*            limit_point E == the set of limit points of E                   *)
 (*         discrete_space T == every nbhs is a principal filter               *)
-(*                  dense S == the set (S : set T) is dense in T, with T of   *)
-(*                             type topologicalType                           *)
 (*      discrete_space dscT == the discrete topology on T, provided           *)
 (*                             a (dscT : discrete_space T)                    *)
+(*                  dense S == the set (S : set T) is dense in T, with T of   *)
+(*                             type topologicalType                           *)
+(*           continuousType == type of continuous functions                   *)
+(*                             The HB structures is Continuous.               *)
+(*              mkcts f_cts == object of type continuousType corresponding to *)
+(*                             the function f (f_cts : continuous f)          *)
 (* ```                                                                        *)
 (* ### Factories                                                              *)
 (* ```                                                                        *)
@@ -973,3 +977,63 @@ Lemma clopen_comp {T U : topologicalType} (f : T -> U) (A : set U) :
 Proof. by case=> ? ?; split; [ exact: open_comp | exact: closed_comp]. Qed.
 
 End ClopenSets.
+
+HB.mixin Record isContinuous {X Y : nbhsType} (f : X -> Y):= {
+  cts_fun : continuous f
+}.
+
+#[short(type = "continuousType")]
+HB.structure Definition Continuous {X Y : nbhsType} := {
+  f of @isContinuous X Y f
+}.
+
+HB.instance Definition _ {X Y : topologicalType} :=
+  gen_eqMixin (continuousType X Y).
+HB.instance Definition _ {X Y : topologicalType} :=
+  gen_choiceMixin (continuousType X Y).
+
+Lemma continuousEP {X Y : nbhsType} (f g : continuousType X Y) :
+  f = g <-> f =1 g.
+Proof.
+case: f g => [f [[ffun]]] [g [[gfun]]]/=; split=> [[->//]|/funext eqfg].
+rewrite eqfg in ffun *; congr {| Continuous.sort := _; Continuous.class := {|
+  Continuous.topology_structure_isContinuous_mixin :=
+    {|isContinuous.cts_fun := _|}|}|}.
+exact: Prop_irrelevance.
+Qed.
+
+Definition mkcts {X Y : nbhsType} (f : X -> Y) (f_cts : continuous f) := f.
+
+HB.instance Definition _ {X Y : nbhsType} (f: X -> Y) (f_cts : continuous f) :=
+  @isContinuous.Build X Y (mkcts f_cts) f_cts.
+
+Section continuous_comp.
+Context {X Y Z : topologicalType}.
+Context (f : continuousType X Y) (g : continuousType Y Z).
+
+Local Lemma cts_fun_comp : continuous (g \o f).
+Proof. move=> x; apply: continuous_comp; exact: cts_fun. Qed.
+
+HB.instance Definition _ := @isContinuous.Build X Z (g \o f) cts_fun_comp.
+
+End continuous_comp.
+
+Section continuous_id.
+Context {X : topologicalType}.
+
+Local Lemma cts_id : continuous (@idfun X).
+Proof. by move=> ?. Qed.
+
+HB.instance Definition _ := @isContinuous.Build X X (@idfun X) cts_id.
+
+End continuous_id.
+
+Section continuous_const.
+Context {X Y : topologicalType} (y : Y).
+
+Local Lemma cts_const : continuous (@cst X Y y).
+Proof. by move=> ?; exact: cvg_cst. Qed.
+
+HB.instance Definition _ := @isContinuous.Build X Y (cst y) cts_const.
+
+End continuous_const.
