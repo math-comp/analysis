@@ -1555,61 +1555,6 @@ End cartesian_closed.
 
 End currying.
 
-HB.mixin Record isContinuous {X Y : nbhsType} (f : X -> Y):= {
-  cts_fun : continuous f
-}.
-
-#[short(type = "continuousType")]
-HB.structure Definition Continuous {X Y : nbhsType} := {
-  f of @isContinuous X Y f
-}.
-
-HB.instance Definition _ {X Y : topologicalType} := gen_eqMixin (continuousType X Y).
-HB.instance Definition _ {X Y : topologicalType} := gen_choiceMixin (continuousType X Y).
-
-Lemma continuousEP {X Y : nbhsType} (f g : continuousType X Y) :
-  f = g <-> f =1 g.
-Proof.
-case: f g => [f [[ffun]]] [g [[gfun]]]/=; split=> [[->//]|/funext eqfg].
-rewrite eqfg in ffun *; congr {| Continuous.sort := _; Continuous.class := {|
-  Continuous.function_spaces_isContinuous_mixin := {|isContinuous.cts_fun := _|}|}|}.
-exact: Prop_irrelevance.
-Qed.
-
-Definition mkcts {X Y : nbhsType} (f : X -> Y) (f_cts : continuous f) := f.
-HB.instance Definition _ {X Y : nbhsType} (f: X -> Y) (f_cts : continuous f) :=
-  @isContinuous.Build X Y (mkcts f_cts) f_cts.
-
-Section continuous_comp.
-Context {X Y Z : topologicalType}.
-Context (f : continuousType X Y) (g : continuousType Y Z).
-
-Local Lemma cts_fun_comp : continuous (g \o f).
-Proof. move=> x; apply: continuous_comp; exact: cts_fun. Qed.
-
-HB.instance Definition _ := @isContinuous.Build X Z (g \o f) cts_fun_comp.
-
-End continuous_comp.
-
-Section continuous_id.
-Context {X : topologicalType}.
-
-Local Lemma cts_id : continuous (@idfun X).
-Proof. by move=> ?. Qed.
-
-HB.instance Definition _ := @isContinuous.Build X X (@idfun X) cts_id.
-End continuous_id.
-
-Section continuous_const.
-Context {X Y : topologicalType} (y : Y).
-
-Local Lemma cts_const : continuous (@cst X Y y).
-Proof. by move=> ?; exact: cvg_cst. Qed.
-
-HB.instance Definition _ := @isContinuous.Build X Y (cst y) cts_const.
-End continuous_const.
-
-
 Lemma swap_continuous {X Y : topologicalType} : continuous (@swap X Y).
 Proof.
 case=> a b W /=[[U V]][] /= Ua Vb UVW; exists (V, U); first by split.
@@ -3065,7 +3010,7 @@ Qed.
 End fundamental_groupoid_functor.
 
 End path_connected.
-
+(*
 HB.instance Definition _ {X : topologicalType} (A : set X) :=
   Topological.copy (set_type A) (weak_topology set_val).
 
@@ -3164,3 +3109,4 @@ Lemma van_kampen_simpleI  :
     True
   )
 .
+*)
