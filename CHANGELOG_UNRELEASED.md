@@ -132,11 +132,15 @@
   + lemmas `cvgr_expR`, `cvgn_expR`
 
 - in file `topology_structure.v`,
-  + new definition `mkcts`.
+  + mixin `isContinuous`, type `continuousType`, structure `Continuous`
   + new lemma `continuousEP`.
+  + new definition `mkcts`.
+
 - in file `subspace_topology.v`,
   + new lemmas `continuous_subspace_setT`, `nbhs_prodX_subspace_inE`, and 
     `continuous_subspace_prodP`.
+  + type `continuousFunType`, HB structure `ContinuousFun`
+
 - in file `subtype_topology.v`,
   + new lemmas `subspace_subtypeP`, `subspace_sigL_continuousP`, 
     `subspace_valL_continuousP'`, `subspace_valL_continuousP`, `sigT_of_setXK`, 
