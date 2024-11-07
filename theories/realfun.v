@@ -207,6 +207,20 @@ apply: pfl.
 by split; [move=> k; rewrite ltrNl//|apply/cvgNP => /=; rewrite opprK].
 Qed.
 
+Lemma cvg_dnbhsP (f : R -> R) (p l : R) :
+  f x @[x --> p^'] --> l <->
+  (forall u : R^nat, (forall n, u n != p) /\ (u n @[n --> \oo] --> p) ->
+    f (u n) @[n --> \oo] --> l).
+Proof.
+split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt put]|pfl].
+  apply/cvgrPdist_le => e /fpl [r /=] /put[n _ {}put] {}fpl.
+  near=> t; apply: fpl => //=; apply: put.
+  by near: t; exact: nbhs_infty_ge.
+apply: cvg_at_right_left_dnbhs.
+- by apply/cvg_at_rightP => u [pu ?]; apply: pfl; split => // n; rewrite gt_eqF.
+- by apply/cvg_at_leftP => u [pu ?]; apply: pfl; split => // n; rewrite lt_eqF.
+Unshelve. all: end_near. Qed.
+
 End cvgr_fun_cvg_seq.
 
 Section cvge_fun_cvg_seq.

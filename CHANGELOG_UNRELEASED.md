@@ -69,6 +69,8 @@
 
 - in `measure.v`:
   + lemma `countable_measurable`
+- in `realfun.v`:
+  + lemma `cvg_dnbhsP`
 
 ### Changed
 
