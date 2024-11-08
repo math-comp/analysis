@@ -207,7 +207,7 @@ apply: pfl.
 by split; [move=> k; rewrite ltrNl//|apply/cvgNP => /=; rewrite opprK].
 Qed.
 
-Lemma cvg_dnbhsP (f : R -> R) (p l : R) :
+Lemma cvgr_dnbhsP (f : R -> R) (p l : R) :
   f x @[x --> p^'] --> l <->
   (forall u : R^nat, (forall n, u n != p) /\ (u n @[n --> \oo] --> p) ->
     f (u n) @[n --> \oo] --> l).
