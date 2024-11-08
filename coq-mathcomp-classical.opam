@@ -24,8 +24,8 @@ depends: [
 ]
 
 tags: [
-  "category:Mathematics/Classical Logic"
-  "keyword:classical"
+  "category:Mathematics/Logic/Classical logic"
+  "keyword:classical logic"
   "keyword:logic"
   "keyword:sets"
   "keyword:set theory"
