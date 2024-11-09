@@ -18,8 +18,8 @@ From mathcomp Require Import finset interval.
 (*                           {in A &, {mono f : x y /~ x <= y}}               *)
 (*             sigT_fun f := lifts a family of functions f into a function on *)
 (*                           the dependent sum                                *)
-(*      left_assoc_prod x := sends (X * Y) * Z to X * (Y * Z)                 *)
-(*     right_assoc_prod x := sends X * (Y * Z) to (X * Y) * Z                 *)
+(*                prodA x := sends (X * Y) * Z to X * (Y * Z)                 *)
+(*               prodAr x := sends X * (Y * Z) to (X * Y) * Z                 *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -380,16 +380,16 @@ Definition swap {T1 T2 : Type} (x : T1 * T2) := (x.2, x.1).
 Section reassociate_products.
 Context {X Y Z : Type}.
 
-Definition left_assoc_prod (xyz : (X * Y) * Z) : X * (Y * Z) :=
+Definition prodA (xyz : (X * Y) * Z) : X * (Y * Z) :=
   (xyz.1.1, (xyz.1.2, xyz.2)).
 
-Definition right_assoc_prod (xyz : X * (Y * Z)) : (X * Y) * Z :=
+Definition prodAr (xyz : X * (Y * Z)) : (X * Y) * Z :=
   ((xyz.1, xyz.2.1), xyz.2.2).
 
-Lemma left_assoc_prodK : cancel left_assoc_prod right_assoc_prod.
+Lemma prodAK : cancel prodA prodAr.
 Proof. by case; case. Qed.
 
-Lemma right_assoc_prodK : cancel right_assoc_prod left_assoc_prod.
+Lemma prodArK : cancel prodAr prodA.
 Proof. by case => ? []. Qed.
 
 End reassociate_products.

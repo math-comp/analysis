@@ -241,7 +241,7 @@ Qed.
 Section reassociate_continuous.
 Context {X Y Z : topologicalType}.
 
-Lemma left_assoc_prod_continuous : continuous (@left_assoc_prod X Y Z).
+Lemma prodA_continuous : continuous (@prodA X Y Z).
 Proof.
 move=> [] [a b] c U [[/= P V]] [Pa] [][/= Q R][ Qb Rc] QRV PVU.
 exists ((P `*` Q), R); first split.
@@ -251,7 +251,7 @@ exists ((P `*` Q), R); first split.
 - by move=> [[x y] z] [] [] ? ? ?; apply: PVU; split => //; exact: QRV.
 Qed.
 
-Lemma right_assoc_prod_continuous : continuous (@right_assoc_prod X Y Z).
+Lemma prodAr_continuous : continuous (@prodAr X Y Z).
 Proof.
 case=> a [b c] U [[V R]] [/= [[P Q /=]]] [Pa Qb] PQV Rc VRU.
 exists (P, (Q `*` R)); first split => //.
