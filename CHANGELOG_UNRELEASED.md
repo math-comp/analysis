@@ -85,6 +85,9 @@
     `wedge_pointE`, `wedge_point_nbhs`, `wedge_nbhs_specP`, `wedgeTE`,
     `wedge_compact`, `wedge_connected`.
 
+- in `boolp.`:
+  + lemma `existT_inj`
+
 ### Changed
 
 - in file `normedtype.v`,

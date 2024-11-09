@@ -88,6 +88,13 @@ move=> PQA; suff: {x | P x /\ Q x} by move=> [a [*]]; exists a.
 by apply: cid; case: PQA => x; exists x.
 Qed.
 
+Lemma existT_inj (A : eqType) (P : A -> Type) (p : A) (x y : P p) :
+  existT P p x = existT P p y -> x = y.
+Proof.
+apply: Eqdep_dec.inj_pair2_eq_dec => a b.
+by have [|/eqP] := eqVneq a b; [left|right].
+Qed.
+
 Record mextensionality := {
   _ : forall (P Q : Prop), (P <-> Q) -> (P = Q);
   _ : forall {T U : Type} (f g : T -> U),
