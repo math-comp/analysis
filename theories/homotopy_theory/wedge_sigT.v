@@ -65,7 +65,7 @@ Definition wedge_rel := EquivRel _ wedge_rel_refl wedge_rel_sym wedge_rel_trans.
 Global Opaque wedge_rel.
 
 Definition wedge := {eq_quot wedge_rel}.
-Definition wedgei (i : I) : X i -> wedge := \pi_wedge \o existT X i.
+Definition wedgei i : X i -> wedge := \pi_wedge \o existT X i.
 
 HB.instance Definition _ := Topological.copy wedge (quotient_topology wedge).
 HB.instance Definition _ := Quotient.on wedge.
@@ -94,6 +94,9 @@ rewrite eqEsubset; split => t /= [l [Vl] lNx0]; last by move=> <-; exists l.
 by case/eqmodP/predU1P => [<-|/andP [/eqP]//]; exists l.
 Qed.
 
+Let wedgei_p0 i (x : X i) j (y : X j) : wedgei (p0 j) = wedgei (p0 i).
+Proof. by apply/eqmodP/orP; right; rewrite !eqxx. Qed.
+
 Lemma wedge_openP (U : set wedge) :
   open U <-> forall i, open (@wedgei i @^-1` U).
 Proof.
@@ -105,14 +108,13 @@ have : open (\bigcup_i (@wedgei i @` (@wedgei i @^-1` U))).
     by move=> Ux; exists i => //; exists x.
   case=> j _ /= [] y Uy /eqmodP /predU1P[R|].
     have E : j = i by move: R; exact: eq_sigT_fst.
-    rewrite -E in x R *; move: Uy; congr (U (_ _)).
-    exact: existT_inj R.
-  case/andP => /eqP/= + /eqP ->; move: Uy => /[swap] ->; congr (_ _).
-  by apply/eqmodP/orP; right; rewrite !eqxx.
+    by rewrite -E in x R *; rewrite -(existT_inj R).
+  case/andP => /eqP/= + /eqP -> => yj.
+  by rewrite yj (wedgei_p0 x y) in Uy.
 congr open; rewrite eqEsubset; split => /= z.
   by case=> i _ /= [x] Ux <-.
 move=> Uz; exists (projT1 (repr z)) => //=.
-by exists (projT2 (repr z)); rewrite /wedgei /= -?sigT_eta ?reprK.
+by exists (projT2 (repr z)); rewrite /wedgei /= -sigT_eta reprK.
 Qed.
 
 Lemma wedge_pointE i j : existT _ i (p0 i)  = existT _ j (p0 j) %[mod wedge].
@@ -124,8 +126,8 @@ Proof.
 rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
   case=> V [/= oV Vp] VU j _; apply: wedgei_continuous.
   apply: (filterS VU); first exact: (@nbhs_filter wedge).
-  apply: open_nbhs_nbhs; split => //; move: Vp; congr (_ _).
-  by rewrite /wedgei /=; exact: wedge_pointE.
+  apply: open_nbhs_nbhs; split => //.
+  by rewrite (wedgei_p0 (p0 i0)).
 move=> Uj; have V_ : forall i, {V : set (X i) |
     [/\ open V, V (p0 i) & V `<=` @wedgei i @^-1` U]}.
   move=> j; apply: cid; have /Uj : [set: I] j by [].
@@ -133,8 +135,8 @@ move=> Uj; have V_ : forall i, {V : set (X i) |
 pose W := \bigcup_i (@wedgei i) @` (projT1 (V_ i)).
 exists W; split.
 - apply/wedge_openP => i; rewrite /W; have [+ Vpj _] := projT2 (V_ i).
-  congr(_ _); rewrite eqEsubset; split => z; first by move=> Viz; exists i.
-  case => j _ /= [] w /= svw /eqmodP /predU1P[[E]| ].
+  congr (_ _); rewrite eqEsubset; split => z; first by move=> Viz; exists i.
+  case => j _ /= [] w /= svw /eqmodP /predU1P[[E]|].
     by rewrite E in w svw * => R; rewrite -(existT_inj R).
   by case/andP => /eqP /= _ /eqP ->.
 - by exists i0 => //=; exists (p0 i0) => //; have [_ + _] := projT2 (V_ i0).
@@ -143,7 +145,7 @@ Qed.
 
 Variant wedge_nbhs_spec (z : wedge) : wedge -> set_system wedge -> Type :=
   | WedgeIsPoint i0 :
-      wedge_nbhs_spec z (wedgei (p0 i0)) (\bigcap_i ((@wedgei i) @ p0 i))
+      wedge_nbhs_spec z (wedgei (p0 i0)) (\bigcap_i (@wedgei i @ p0 i))
   | WedgeNotPoint (i : I) (x : X i) of (x != p0 i):
       wedge_nbhs_spec z (wedgei x) (@wedgei i @ x).
 
@@ -159,7 +161,7 @@ Qed.
 Lemma wedgeTE : \bigcup_i (@wedgei i) @` setT = [set: wedge].
 Proof.
 rewrite -subTset => z _; rewrite -[z]reprK; exists (projT1 (repr z)) => //.
-by exists (projT2 (repr z)) => //; rewrite reprK /wedgei /= -sigT_eta reprK.
+by exists (projT2 (repr z)) => //; rewrite /wedgei/= -sigT_eta.
 Qed.
 
 Lemma wedge_compact : finite_set [set: I] -> (forall i, compact [set: X i]) ->
@@ -180,8 +182,7 @@ have [I0|/set0P[i0 Ii0]] := eqVneq [set: I] set0.
   rewrite [X in connected X](_ : _ = set0); first exact: connected0.
   by rewrite I0 bigcup_set0.
 apply: bigcup_connected.
-  exists (@wedgei i0 (p0 _)) => i Ii; exists (p0 i) => //.
-  by apply/eqmodP/orP; right; rewrite !eqxx.
+  by exists (@wedgei i0 (p0 _)) => i Ii; exists (p0 i) => //; exact: wedgei_p0.
 move=> i ? /=; apply: connected_continuous_connected => //.
 exact/continuous_subspaceT/wedgei_continuous.
 Qed.
