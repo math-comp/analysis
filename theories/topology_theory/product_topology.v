@@ -234,35 +234,30 @@ Notation compact_setM := compact_setX (only parsing).
 
 Lemma swap_continuous {X Y : topologicalType} : continuous (@swap X Y).
 Proof.
-case=> a b W /=[[U V]][] /= Ua Vb UVW; exists (V, U); first by split.
-by case => //= ? ? [] ? ?; apply: UVW.
+case=> a b W /= [[U V]][] /= Ub Va UVW; exists (V, U); first by split.
+by case => //= ? ? [] ? ?; exact: UVW.
 Qed.
 
 Section reassociate_continuous.
 Context {X Y Z : topologicalType}.
 
-Lemma left_assoc_prod_continuous : continuous (@left_assoc_prod X Y Z). 
+Lemma left_assoc_prod_continuous : continuous (@left_assoc_prod X Y Z).
 Proof.
-case;case=> a b c U [[/= P V]] [Pa] [][/= Q R][ Qb Rc] QRV PVU.
+move=> [] [a b] c U [[/= P V]] [Pa] [][/= Q R][ Qb Rc] QRV PVU.
 exists ((P `*` Q), R); first split.
-- exists (P, Q); first split => //=.
-  by case=> x y /= [Px Qy]; split => //.
-- done.
-- case; case=> x y z /= [][] ? ? ?; apply: PVU; split => //.
-  exact: QRV.
+- exists (P, Q); first by [].
+  by case=> x y /= [Px Qy].
+- by [].
+- by move=> [[x y] z] [] [] ? ? ?; apply: PVU; split => //; exact: QRV.
 Qed.
 
-Lemma right_assoc_prod_continuous : continuous (@right_assoc_prod X Y Z). 
+Lemma right_assoc_prod_continuous : continuous (@right_assoc_prod X Y Z).
 Proof.
 case=> a [b c] U [[V R]] [/= [[P Q /=]]] [Pa Qb] PQV Rc VRU.
-exists (P, (Q `*` R)); first split.
-- done. 
-- exists (Q, R); first split => //=.
-  by case=> ? ? /= [? ?]; split.
-- case=> x [y z] [? [? ?]]; apply: VRU; split => //.
-  exact: PQV.
+exists (P, (Q `*` R)); first split => //.
+- exists (Q, R); first by [].
+  by case=> ? ? /= [].
+- by case=> x [y z] [? [? ?]]; apply: VRU; split => //; exact: PQV.
 Qed.
 
 End reassociate_continuous.
-
-
