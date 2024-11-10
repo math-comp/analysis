@@ -224,97 +224,75 @@ End induced_order_topology.
 Lemma min_continuous {d} {T : orderTopologicalType d} :
   continuous (fun xy : T * T => Order.min xy.1 xy.2).
 Proof.
-case=> x y; case : (pselect (x = y)).
-  move=> <- U; rewrite /= min_l // => ux; exists (U, U) => //=.
-  case=> a b [/= ? ?]; case /orP : (le_total a b) => ?; first by rewrite min_l.
-  by rewrite min_r.
-move=>/eqP; wlog xy : x y / (x < y)%O.
-  move=> WH /[dup] /lt_total/orP []; first exact: WH.
-  rewrite eq_sym; move=> yx yNx. 
-  have -> : (fun (xy : T *T ) => Order.min xy.1 xy.2) = 
-      ((fun xy => Order.min xy.1 xy.2) \o @swap T T).
-    apply/funext; case => a b /=; have /orP [? | ?]  := le_total a b.
-      by rewrite min_l // min_r.
-    by rewrite min_r // min_l.
-  apply: continuous_comp; first exact: swap_continuous.
-  by apply: WH.
-move=> _ U /=; (rewrite min_l //; last exact: ltW) => Ux.
-case : (pselect (exists z, x < z < y)%O).
-  case=> z xzy; exists (U `&` `]-oo,z[, `]z,+oo[%classic) => //=.
-  - split; [apply: filterI =>// |]; apply: open_nbhs_nbhs; split.
-    + exact: lray_open.
-    + by rewrite set_itvE; case/andP: xzy.
-    + exact: rray_open.
-    + by rewrite set_itvE; case/andP: xzy.
-  - case=> a b /= [][Ua]; rewrite ?in_itv andbT /= => az ?.
-    by rewrite min_l //; apply: ltW; apply: (lt_trans az).
-move/forallNP => /= xNy.
-exists (U `&` `]-oo,y[, `]x,+oo[%classic) => //=.
-- split; [apply: filterI =>// |]; apply: open_nbhs_nbhs; split.
-  + exact: lray_open.
-  + by rewrite set_itvE.
-  + exact: rray_open.
-  + by rewrite set_itvE.
-- case=> a b /= [][Ua]; rewrite ?in_itv andbT /= => ay xb.
-  rewrite min_l //; rewrite leNgt; have := xNy b; apply: contra_notN.
-  move=> ba; apply/andP; split => //.
-  by apply: (lt_trans ba).
+case=> x y; have [<- U /=|]:= eqVneq x y.
+  rewrite min_l// => Ux; exists (U, U) => //= -[a b [Ua Ub]].
+  by have /orP[?|?]/= := le_total a b; [rewrite min_l|rewrite min_r].
+wlog xy : x y / (x < y)%O.
+  move=> WH /[dup] /lt_total/orP[|yx /eqP/nesym/eqP yNx]; first exact: WH.
+  rewrite (_ : (fun _ => _) = (fun xy => Order.min xy.1 xy.2) \o @swap T T).
+    by apply: continuous_comp; [exact: swap_continuous|exact: WH].
+  apply/funext => -[a b/=]; have /orP[ab|ba] := le_total a b.
+  - by rewrite min_l // min_r.
+  - by rewrite min_r // min_l.
+move=> _ U /=; rewrite (min_l (ltW xy)) => Ux.
+have [[z xzy]|/forallNP/= xNy] := pselect (exists z, x < z < y)%O.
+  exists (U `&` `]-oo, z[, `]z, +oo[%classic) => /=.
+    split; [apply: filterI =>//|]; apply: open_nbhs_nbhs.
+    - by split; [exact: lray_open|rewrite set_itvE; case/andP: xzy].
+    - by split; [exact: rray_open|rewrite set_itvE; case/andP: xzy].
+  case=> a b /= [[Ua]]; rewrite !in_itv andbT /= => az zb.
+  by rewrite min_l// (ltW (lt_trans az _)).
+exists (U `&` `]-oo, y[, `]x, +oo[%classic) => /=.
+  split; [apply: filterI => //|]; apply: open_nbhs_nbhs.
+  - by split; [exact: lray_open|rewrite set_itvE].
+  - by split; [exact: rray_open|rewrite set_itvE].
+case=> a b /= [[Ua]]; rewrite !in_itv andbT /= => ay xb.
+rewrite min_l// leNgt; apply: contra_notN (xNy b) => ba.
+by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma min_fun_continuous {d} {X : topologicalType} {T : orderTopologicalType d} 
-    (f g : X -> T):
+Lemma min_fun_continuous {d} {X : topologicalType} {T : orderTopologicalType d}
+    (f g : X -> T) :
   continuous f -> continuous g -> continuous (f \min g).
 Proof.
-move=> fc gc z; apply: continuous2_cvg; first apply min_continuous.
-  exact: fc.
-exact: gc.
+move=> fc gc z; apply: continuous2_cvg; [|exact: fc|exact: gc].
+by apply min_continuous.
 Qed.
 
 Lemma max_continuous {d} {T : orderTopologicalType d} :
   continuous (fun xy : T * T => Order.max xy.1 xy.2).
 Proof.
-case=> x y; case : (pselect (x = y)).
-  move=> <- U; rewrite /= max_r // => ux; exists (U, U) => //=.
-  case=> a b [/= ? ?]; case /orP : (le_total a b) => ?; first by rewrite max_r.
-  by rewrite max_l.
-move=>/eqP; wlog xy : x y / (x < y)%O.
-  move=> WH /[dup] /lt_total/orP []; first exact: WH.
-  rewrite eq_sym; move=> yx yNx. 
-  have -> : (fun (xy : T *T ) => Order.max xy.1 xy.2) = 
-      ((fun xy => Order.max xy.1 xy.2) \o @swap T T).
-    apply/funext; case => a b /=; have /orP [? | ?]  := le_total a b.
-      by rewrite max_r // max_l.
-    by rewrite max_l // max_r.
-  apply: continuous_comp; first exact: swap_continuous.
-  by apply: WH.
-move=> _ U /=; (rewrite max_r //; last exact: ltW) => Ux.
-case : (pselect (exists z, x < z < y)%O).
-  case=> z xzy; exists (`]-oo,z[%classic, U `&` `]z,+oo[%classic) => //=.
-  - split; [|apply: filterI =>//]; apply: open_nbhs_nbhs; split.
-    + exact: lray_open.
-    + by rewrite set_itvE; case/andP: xzy.
-    + exact: rray_open.
-    + by rewrite set_itvE; case/andP: xzy.
-  - case=> a b /= [] + []; rewrite ?in_itv andbT /= => az ? zb.
-    by rewrite max_r //; apply: ltW; apply: (lt_trans az).
-move/forallNP => /= xNy.
-exists (`]-oo,y[%classic, U `&` `]x,+oo[%classic) => //=.
-- split; [|apply: filterI =>//]; apply: open_nbhs_nbhs; split.
-  + exact: lray_open.
-  + by rewrite set_itvE.
-  + exact: rray_open.
-  + by rewrite set_itvE.
-- case=> a b /=; rewrite ?in_itv /= andbT => [/=] [ay] [?] xb. 
-  rewrite max_r //; rewrite leNgt; have := xNy b; apply: contra_notN.
-  move=> ba; apply/andP; split => //.
-  by apply: (lt_trans ba).
+case=> x y; have [<- U|] := eqVneq x y.
+  rewrite /= max_r // => ux; exists (U, U) => //= -[a b] [/= Ua Ub].
+  by have /orP[?|?]/= := le_total a b; [rewrite max_r|rewrite max_l].
+wlog xy : x y / (x < y)%O.
+  move=> WH /[dup] /lt_total/orP[|yx /eqP/nesym/eqP yNx]; first exact: WH.
+  rewrite (_ : (fun _ => _) = (fun xy => Order.max xy.1 xy.2) \o @swap T T).
+    by apply: continuous_comp; [exact: swap_continuous|exact: WH].
+  apply/funext => -[a b] /=; have /orP [ab|ba] := le_total a b.
+  - by rewrite max_r // max_l.
+  - by rewrite max_l // max_r.
+move=> _ U /=; rewrite (max_r (ltW xy)) => Ux.
+have [[z xzy]|/forallNP /= xNy] := pselect (exists z, x < z < y)%O.
+  exists (`]-oo, z[%classic, U `&` `]z, +oo[) => /=.
+    split; [|apply: filterI =>//]; apply: open_nbhs_nbhs.
+    - by split; [exact: lray_open|rewrite set_itvE; case/andP: xzy].
+    - by split; [exact: rray_open|rewrite set_itvE; case/andP: xzy].
+  case=> a b /= [] + []; rewrite !in_itv andbT /= => az Ub zb.
+  by rewrite (max_r (ltW (lt_trans az _))).
+exists (`]-oo, y[%classic, U `&` `]x, +oo[) => /=.
+  split; [|apply: filterI => //]; apply: open_nbhs_nbhs.
+  - by split; [exact: lray_open|rewrite set_itvE].
+  - by split; [exact: rray_open|rewrite set_itvE].
+case=> a b /=; rewrite !in_itv /= andbT => [/=] [ay] [Ub] xb.
+rewrite max_r// leNgt; apply: contra_notN (xNy b) => ba.
+by rewrite xb (lt_trans ba).
 Qed.
 
-Lemma max_fun_continuous {d} {X : topologicalType} {T : orderTopologicalType d} 
+Lemma max_fun_continuous {d} {X : topologicalType} {T : orderTopologicalType d}
     (f g : X -> T):
   continuous f -> continuous g -> continuous (f \max g).
 Proof.
-move=> fc gc z; apply: continuous2_cvg; first apply max_continuous.
-  exact: fc.
-exact: gc.
+move=> fc gc z; apply: continuous2_cvg; [|exact: fc|exact: gc].
+by apply max_continuous.
 Qed.
