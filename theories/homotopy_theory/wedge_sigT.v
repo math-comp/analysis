@@ -94,7 +94,7 @@ rewrite eqEsubset; split => t /= [l [Vl] lNx0]; last by move=> <-; exists l.
 by case/eqmodP/predU1P => [<-|/andP [/eqP]//]; exists l.
 Qed.
 
-Lemma wedge_lift_p0E i (x : X i) j (y : X j) : 
+Lemma wedge_liftE i (x : X i) j (y : X j) :
   wedge_lift (p0 j) = wedge_lift (p0 i).
 Proof. by apply/eqmodP/orP; right; rewrite !eqxx. Qed.
 
@@ -111,7 +111,7 @@ have : open (\bigcup_i (@wedge_lift i @` (@wedge_lift i @^-1` U))).
     have E : j = i by move: R; exact: eq_sigT_fst.
     by rewrite -E in x R *; rewrite -(existT_inj R).
   case/andP => /eqP/= + /eqP -> => yj.
-  by rewrite yj (wedge_lift_p0E x y) in Uy.
+  by rewrite yj (wedge_liftE x y) in Uy.
 congr open; rewrite eqEsubset; split => /= z.
   by case=> i _ /= [x] Ux <-.
 move=> Uz; exists (projT1 (repr z)) => //=.
@@ -125,7 +125,7 @@ rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
   case=> V [/= oV Vp] VU j _; apply: wedge_lift_continuous.
   apply: (filterS VU); first exact: (@nbhs_filter wedge).
   apply: open_nbhs_nbhs; split => //.
-  by rewrite (wedge_lift_p0E (p0 i0)).
+  by rewrite (wedge_liftE (p0 i0)).
 move=> Uj; have V_ : forall i, {V : set (X i) |
     [/\ open V, V (p0 i) & V `<=` @wedge_lift i @^-1` U]}.
   move=> j; apply: cid; have /Uj : [set: I] j by [].
@@ -180,8 +180,8 @@ have [I0|/set0P[i0 Ii0]] := eqVneq [set: I] set0.
   rewrite [X in connected X](_ : _ = set0); first exact: connected0.
   by rewrite I0 bigcup_set0.
 apply: bigcup_connected.
-  exists (@wedge_lift i0 (p0 _)) => i Ii; exists (p0 i) => //. 
-  exact: wedge_lift_p0E.
+  exists (@wedge_lift i0 (p0 _)) => i Ii; exists (p0 i) => //.
+  exact: wedge_liftE.
 move=> i ? /=; apply: connected_continuous_connected => //.
 exact/continuous_subspaceT/wedge_lift_continuous.
 Qed.
