@@ -1114,12 +1114,11 @@ Lemma perfectTP_ex {T} : perfect_set [set: T] <->
   forall (U : set T), open U -> U !=set0 ->
   exists x y, [/\ U x, U y & x != y] .
 Proof.
-apply: iff_trans; first exact: perfectTP; split.
+apply: (iff_trans perfectTP); split.
   move=> nx1 U oU [] x Ux; exists x.
   have : U <> [set x] by move=> Ux1; apply: (nx1 x); rewrite -Ux1.
-  apply: contra_notP; move/not_existsP/contrapT=> Uyx; rewrite eqEsubset.
-  (split => //; last by move=> ? ->); move=> y Uy; have  /not_and3P := Uyx y.
-  by case => // /negP; rewrite negbK => /eqP ->.
+  apply: contra_notP => /not_existsP/contrapT=> Uyx; rewrite eqEsubset.
+  by split => [y Uy|? ->//]; have /not_and3P[//|//|/negP/negPn/eqP] := Uyx y.
 move=> Unxy x Ox; have [] := Unxy _ Ox; first by exists x.
 by move=> y [] ? [->] -> /eqP.
 Qed.
@@ -1140,8 +1139,7 @@ rewrite {}ji {j} in x y cl *.
 congr existT; apply: hX => U V Ux Vy.
 have [] := cl (existT X i @` U) (existT X i @` V); [exact: existT_nbhs..|].
 move=> z [] [l Ul <-] [r Vr lr]; exists l; split => //.
-rewrite (Eqdep_dec.inj_pair2_eq_dec _ _ _ _ _ _ lr)// in Vr.
-by move=> a b; exact: pselect.
+by rewrite -(existT_inj lr).
 Qed.
 
 End sigT_separations.
