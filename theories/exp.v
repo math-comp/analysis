@@ -62,7 +62,7 @@ Fact is_cvg_pseries_inside_norm f (x z : R) :
   cvgn (pseries (fun i => `|f i|) z).
 Proof.
 move=> Cx zLx; have [K [Kreal Kf]] := cvg_series_bounded Cx.
-have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n|  by rewrite !mulr_ge0.
+have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n| by rewrite !mulr_ge0.
 apply: normed_cvg.
 apply: series_le_cvg Kzxn _ _ => [//=| /= n|].
   rewrite (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|); last first.
