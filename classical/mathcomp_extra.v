@@ -18,6 +18,8 @@ From mathcomp Require Import finset interval.
 (*                           {in A &, {mono f : x y /~ x <= y}}               *)
 (*             sigT_fun f := lifts a family of functions f into a function on *)
 (*                           the dependent sum                                *)
+(*                prodA x := sends (X * Y) * Z to X * (Y * Z)                 *)
+(*               prodAr x := sends X * (Y * Z) to (X * Y) * Z                 *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -373,7 +375,27 @@ Lemma real_ltr_distlC [R : numDomainType] [x y : R] (e : R) :
   x - y \is Num.real -> (`|x - y| < e) = (x - e < y < x + e).
 Proof. by move=> ?; rewrite distrC real_ltr_distl// -rpredN opprB. Qed.
 
-Definition swap (T1 T2 : Type) (x : T1 * T2) := (x.2, x.1).
+Definition swap {T1 T2 : Type} (x : T1 * T2) := (x.2, x.1).
+
+Section reassociate_products.
+Context {X Y Z : Type}.
+
+Definition prodA (xyz : (X * Y) * Z) : X * (Y * Z) :=
+  (xyz.1.1, (xyz.1.2, xyz.2)).
+
+Definition prodAr (xyz : X * (Y * Z)) : (X * Y) * Z :=
+  ((xyz.1, xyz.2.1), xyz.2.2).
+
+Lemma prodAK : cancel prodA prodAr.
+Proof. by case; case. Qed.
+
+Lemma prodArK : cancel prodAr prodA.
+Proof. by case => ? []. Qed.
+
+End reassociate_products.
+
+Lemma swapK {T1 T2 : Type} : cancel (@swap T1 T2) (@swap T2 T1).
+Proof. by case=> ? ?. Qed.
 
 Definition map_pair {S U : Type} (f : S -> U) (x : (S * S)) : (U * U) :=
   (f x.1, f x.2).

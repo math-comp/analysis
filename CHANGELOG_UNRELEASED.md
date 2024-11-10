@@ -71,6 +71,11 @@
   + lemma `countable_measurable`
 - in `realfun.v`:
   + lemma `cvgr_dnbhsP`
+  + new definitions `prodA`, and `prodAr`.
+  + new lemmas `prodAK`, `prodArK`, and `swapK`.
+- in file `product_topology.v`,
+  + new lemmas `swap_continuous`, `prodA_continuous`, and 
+    `prodAr_continuous`.
 
 ### Changed
 
