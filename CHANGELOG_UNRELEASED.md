@@ -80,8 +80,8 @@
 - file `homotopy_theory/homotopy.v`
 - file `homotopy_theory/wedge_sigT.v`
 - in file `homotopy_theory/wedge_sigT.v`
-  + new definitions `wedge_rel`, `wedge`, `wedgei`, `pwedge`.
-  + new lemmas `wedgei_continuous`, `wedgei_nbhs`, `wedge_openP`,
+  + new definitions `wedge_rel`, `wedge`, `wedge_lift`, `pwedge`.
+  + new lemmas `wedge_lift_continuous`, `wedge_lift_nbhs`, `wedge_openP`,
     `wedge_pointE`, `wedge_point_nbhs`, `wedge_nbhs_specP`, `wedgeTE`,
     `wedge_compact`, `wedge_connected`.
 

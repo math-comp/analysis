@@ -16,7 +16,7 @@ Require Import EqdepFacts.
 (*    wedge_rel p0 x y == x and y are equal, or they are (p0 i) and           *)
 (*                        (p0 j) for some i and j                             *)
 (*            wedge p0 == the quotient of {i : X i} along `wedge_rel p0`      *)
-(*            wedgei i == the lifting of elements of (X i) into the wedge     *)
+(*        wedge_lift i == the lifting of elements of (X i) into the wedge     *)
 (*           pwedge p0 == the wedge of ptopologicalTypes at their designated  *)
 (*                        point                                               *)
 (* ```                                                                        *)
@@ -65,44 +65,45 @@ Definition wedge_rel := EquivRel _ wedge_rel_refl wedge_rel_sym wedge_rel_trans.
 Global Opaque wedge_rel.
 
 Definition wedge := {eq_quot wedge_rel}.
-Definition wedgei i : X i -> wedge := \pi_wedge \o existT X i.
+Definition wedge_lift i : X i -> wedge := \pi_wedge \o existT X i.
 
 HB.instance Definition _ := Topological.copy wedge (quotient_topology wedge).
 HB.instance Definition _ := Quotient.on wedge.
 Global Opaque wedge.
 
-Lemma wedgei_continuous i : continuous (@wedgei i).
+Lemma wedge_lift_continuous i : continuous (@wedge_lift i).
 Proof. by move=> ?; apply: continuous_comp => //; exact: pi_continuous. Qed.
 
 HB.instance Definition _ i :=
-  @isContinuous.Build _ _ (@wedgei i) (@wedgei_continuous i).
+  @isContinuous.Build _ _ (@wedge_lift i) (@wedge_lift_continuous i).
 
-Lemma wedgei_nbhs i (x : X i) :
-  closed [set p0 i] -> x != p0 _ -> (@wedgei i) @ x = nbhs (@wedgei _ x).
+Lemma wedge_lift_nbhs i (x : X i) :
+  closed [set p0 i] -> x != p0 _ -> @wedge_lift i @ x = nbhs (@wedge_lift _ x).
 Proof.
 move=> clx0 xNx0; rewrite eqEsubset; split => U; first last.
-  by move=> ?; exact: wedgei_continuous.
+  by move=> ?; exact: wedge_lift_continuous.
 rewrite ?nbhsE /= => -[V [oV Vx VU]].
-exists (@wedgei i @` (V `&` ~` [set p0 i])); first last.
+exists (@wedge_lift i @` (V `&` ~` [set p0 i])); first last.
   by move=> ? /= [l] [Vl lx] <-; exact: VU.
 split; last by exists x => //; split => //=; exact/eqP.
-rewrite /open /= /quotient_open /wedgei /=.
-suff -> : \pi_wedge @^-1` (@wedgei i @` (V `&` ~`[set p0 i])) =
+rewrite /open /= /quotient_open /wedge_lift /=.
+suff -> : \pi_wedge @^-1` (@wedge_lift i @` (V `&` ~`[set p0 i])) =
           existT X i @` (V `&` ~` [set p0 i]).
   by apply: existT_open_map; apply: openI => //; exact: closed_openC.
 rewrite eqEsubset; split => t /= [l [Vl] lNx0]; last by move=> <-; exists l.
 by case/eqmodP/predU1P => [<-|/andP [/eqP]//]; exists l.
 Qed.
 
-Let wedgei_p0 i (x : X i) j (y : X j) : wedgei (p0 j) = wedgei (p0 i).
+Lemma wedge_lift_p0E i (x : X i) j (y : X j) : 
+  wedge_lift (p0 j) = wedge_lift (p0 i).
 Proof. by apply/eqmodP/orP; right; rewrite !eqxx. Qed.
 
 Lemma wedge_openP (U : set wedge) :
-  open U <-> forall i, open (@wedgei i @^-1` U).
+  open U <-> forall i, open (@wedge_lift i @^-1` U).
 Proof.
 split=> [oU i|oiU].
-  by apply: open_comp => // x _; exact: wedgei_continuous.
-have : open (\bigcup_i (@wedgei i @` (@wedgei i @^-1` U))).
+  by apply: open_comp => // x _; exact: wedge_lift_continuous.
+have : open (\bigcup_i (@wedge_lift i @` (@wedge_lift i @^-1` U))).
   apply/sigT_openP => i; move: (oiU i); congr open.
   rewrite eqEsubset; split => x /=.
     by move=> Ux; exists i => //; exists x.
@@ -110,29 +111,26 @@ have : open (\bigcup_i (@wedgei i @` (@wedgei i @^-1` U))).
     have E : j = i by move: R; exact: eq_sigT_fst.
     by rewrite -E in x R *; rewrite -(existT_inj R).
   case/andP => /eqP/= + /eqP -> => yj.
-  by rewrite yj (wedgei_p0 x y) in Uy.
+  by rewrite yj (wedge_lift_p0E x y) in Uy.
 congr open; rewrite eqEsubset; split => /= z.
   by case=> i _ /= [x] Ux <-.
 move=> Uz; exists (projT1 (repr z)) => //=.
-by exists (projT2 (repr z)); rewrite /wedgei /= -sigT_eta reprK.
+by exists (projT2 (repr z)); rewrite /wedge_lift /= -sigT_eta reprK.
 Qed.
 
-Lemma wedge_pointE i j : existT _ i (p0 i)  = existT _ j (p0 j) %[mod wedge].
-Proof. by apply/eqmodP; apply/orP; right; rewrite ?eqxx. Qed.
-
 Lemma wedge_point_nbhs i0 :
-  nbhs (wedgei (p0 i0)) = \bigcap_i (@wedgei i @ p0 i).
+  nbhs (wedge_lift (p0 i0)) = \bigcap_i (@wedge_lift i @ p0 i).
 Proof.
 rewrite eqEsubset; split => //= U /=; rewrite ?nbhs_simpl.
-  case=> V [/= oV Vp] VU j _; apply: wedgei_continuous.
+  case=> V [/= oV Vp] VU j _; apply: wedge_lift_continuous.
   apply: (filterS VU); first exact: (@nbhs_filter wedge).
   apply: open_nbhs_nbhs; split => //.
-  by rewrite (wedgei_p0 (p0 i0)).
+  by rewrite (wedge_lift_p0E (p0 i0)).
 move=> Uj; have V_ : forall i, {V : set (X i) |
-    [/\ open V, V (p0 i) & V `<=` @wedgei i @^-1` U]}.
+    [/\ open V, V (p0 i) & V `<=` @wedge_lift i @^-1` U]}.
   move=> j; apply: cid; have /Uj : [set: I] j by [].
   by rewrite nbhsE /= => -[B [? ? ?]]; exists B.
-pose W := \bigcup_i (@wedgei i) @` (projT1 (V_ i)).
+pose W := \bigcup_i (@wedge_lift i) @` (projT1 (V_ i)).
 exists W; split.
 - apply/wedge_openP => i; rewrite /W; have [+ Vpj _] := projT2 (V_ i).
   congr (_ _); rewrite eqEsubset; split => z; first by move=> Viz; exists i.
@@ -144,24 +142,24 @@ exists W; split.
 Qed.
 
 Variant wedge_nbhs_spec (z : wedge) : wedge -> set_system wedge -> Type :=
-  | WedgeIsPoint i0 :
-      wedge_nbhs_spec z (wedgei (p0 i0)) (\bigcap_i (@wedgei i @ p0 i))
+  | wedge_liftsPoint i0 :
+      wedge_nbhs_spec z (wedge_lift (p0 i0)) (\bigcap_i (@wedge_lift i @ p0 i))
   | WedgeNotPoint (i : I) (x : X i) of (x != p0 i):
-      wedge_nbhs_spec z (wedgei x) (@wedgei i @ x).
+      wedge_nbhs_spec z (wedge_lift x) (@wedge_lift i @ x).
 
 Lemma wedge_nbhs_specP (z : wedge) : (forall i, closed [set p0 i]) ->
   wedge_nbhs_spec z z (nbhs z).
 Proof.
 move=> clP; rewrite -[z](@reprK _ wedge); case: (repr z) => i x.
 have [->|xpi] := eqVneq x (p0 i).
-  by rewrite wedge_point_nbhs => /=; exact: WedgeIsPoint.
-by rewrite /= -wedgei_nbhs //; exact: WedgeNotPoint.
+  by rewrite wedge_point_nbhs => /=; exact: wedge_liftsPoint.
+by rewrite /= -wedge_lift_nbhs //; exact: WedgeNotPoint.
 Qed.
 
-Lemma wedgeTE : \bigcup_i (@wedgei i) @` setT = [set: wedge].
+Lemma wedgeTE : \bigcup_i (@wedge_lift i) @` setT = [set: wedge].
 Proof.
 rewrite -subTset => z _; rewrite -[z]reprK; exists (projT1 (repr z)) => //.
-by exists (projT2 (repr z)) => //; rewrite /wedgei/= -sigT_eta.
+by exists (projT2 (repr z)) => //; rewrite /wedge_lift/= -sigT_eta.
 Qed.
 
 Lemma wedge_compact : finite_set [set: I] -> (forall i, compact [set: X i]) ->
@@ -171,7 +169,7 @@ move=> fsetI cptX; rewrite -wedgeTE -fsbig_setU //; apply: big_ind.
 - exact: compact0.
 - by move=> ? ? ? ?; exact: compactU.
 move=> i _; apply: continuous_compact; last exact: cptX.
-exact/continuous_subspaceT/wedgei_continuous.
+exact/continuous_subspaceT/wedge_lift_continuous.
 Qed.
 
 Lemma wedge_connected : (forall i, connected [set: X i]) ->
@@ -182,9 +180,10 @@ have [I0|/set0P[i0 Ii0]] := eqVneq [set: I] set0.
   rewrite [X in connected X](_ : _ = set0); first exact: connected0.
   by rewrite I0 bigcup_set0.
 apply: bigcup_connected.
-  by exists (@wedgei i0 (p0 _)) => i Ii; exists (p0 i) => //; exact: wedgei_p0.
+  exists (@wedge_lift i0 (p0 _)) => i Ii; exists (p0 i) => //. 
+  exact: wedge_lift_p0E.
 move=> i ? /=; apply: connected_continuous_connected => //.
-exact/continuous_subspaceT/wedgei_continuous.
+exact/continuous_subspaceT/wedge_lift_continuous.
 Qed.
 
 End wedge.
@@ -194,7 +193,7 @@ Context {I : pointedType} (X : I -> ptopologicalType).
 
 Definition pwedge := wedge (fun i => @point (X i)).
 
-Let pwedge_point : pwedge := wedgei _ (@point (X (@point I))).
+Let pwedge_point : pwedge := wedge_lift _ (@point (X (@point I))).
 
 HB.instance Definition _ := Topological.on pwedge.
 HB.instance Definition _ := Quotient.on pwedge.
