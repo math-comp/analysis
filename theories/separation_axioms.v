@@ -176,7 +176,7 @@ Qed.
 Lemma accessible_closed_set1 : accessible_space -> forall x : T, closed [set x].
 Proof.
 move=> T1 x; rewrite -[X in closed X]setCK; apply: open_closedC.
-rewrite openE => y /eqP /T1 [U [oU yU xU]].
+rewrite openE => y /eqP /T1 [U [oU [yU xU]]].
 rewrite /interior nbhsE /=; exists U; last by rewrite subsetC1.
 by split=> //; exact: set_mem.
 Qed.
