@@ -93,6 +93,15 @@
   + new lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
     `max_fun_continuous`.
 
+- in file `functions.v`,
+  + new lemmas `uncurryK`, and `curryK`.
+- in file `weak_topology.v`,
+  + new lemma `continuous_comp_weak`.
+- in file `function_spaces.v`,
+  + new definitions `eval`, and `comp_cts`.
+  + new lemmas `continuous_curry_fun`, `continuous_curry_joint_cvg`, 
+    `eval_continuous`, and `compose_continuous`.
+
 ### Changed
 
 - in file `normedtype.v`,

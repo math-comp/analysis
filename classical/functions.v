@@ -2665,3 +2665,9 @@ End function_space_lemmas.
 
 Lemma inv_funK T (R : unitRingType) (f : T -> R) : f\^-1\^-1%R = f.
 Proof. by apply/funeqP => x; rewrite /inv_fun/= GRing.invrK. Qed.
+
+Lemma uncurryK  {X Y Z : Type} : cancel (@uncurry X Y Z) curry.
+Proof. by move=> f; rewrite funeq2E => ? ?. Qed.
+
+Lemma curryK  {X Y Z : Type} : cancel curry (@uncurry X Y Z).
+Proof. by move=> f; rewrite funeqE; case=> ? ?. Qed.
