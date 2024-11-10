@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import interval zmodp.
 From mathcomp Require Import boolp classical_sets.
-From mathcomp Require Import ereal reals signed topology normedtype.
+From mathcomp Require Import ereal reals topology normedtype.
 
 (**md**************************************************************************)
 (* This file proposes a replacement for the definition `summable` (file       *)
