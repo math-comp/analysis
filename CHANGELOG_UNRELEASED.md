@@ -88,6 +88,9 @@
 
 - in `boolp.`:
   + lemma `existT_inj`
+- in file `order_topology.v`
+  + new lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
+    `max_fun_continuous`.
 
 ### Changed
 
