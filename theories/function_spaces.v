@@ -71,7 +71,6 @@ From mathcomp Require Import reals signed topology separation_axioms.
 (*  {compact_open, U -> V} == compact-open topology                           *)
 (* {compact_open, F --> f} == F converges to f in {compact_open, U -> V}      *)
 (*                    eval == the evaluation map for continuous functions     *)
-(*                comp_cts == composition for continuous functions            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Ascoli's theorem notations                                              *)
@@ -1561,10 +1560,6 @@ End currying.
 Definition eval {X Y : topologicalType} : continuousType X Y * X -> Y  := 
   uncurry (id : continuousType X Y -> (X -> Y)).
 
-Definition comp_cts {X Y Z : topologicalType} (g : continuousType Y Z)
-    (f : continuousType X Y) : continuousType X Z :=
-  g \o f.
-
 Section composition.
 
 Local Import ArrowAsCompactOpen.
@@ -1580,7 +1575,8 @@ Qed.
 Lemma compose_continuous {X Y Z : topologicalType} : 
   locally_compact [set: X] -> @regular_space X ->
   locally_compact [set: Y] -> @regular_space Y ->
-  continuous (uncurry (@comp_cts X Y Z)).
+  continuous (uncurry 
+    (comp : continuousType Y Z -> continuousType X Y -> continuousType X Z)).
 Proof.
 move=> ? ? lY rY; apply: continuous_comp_weak.
 set F := _ \o _.
