@@ -118,10 +118,27 @@
 
 - new file `measurable_realfun.v`
   + with as contents the first half of the file `lebesgue_measure.v`
+
 - in `constructive_ereal.v`
   + lemmas `cmp0y`, `cmp0Ny`, `real_miney`, `real_minNye`,
     `real_maxey`, `real_maxNye`, `oppe_cmp0`, `real_fine`,
     `real_muleN`, `real_mulNe`, `real_muleNN`
+
+- in `interval_inference.v`
+  + definitions `Itv.t`, `Itv.sub`, `Itv.num_sem`, `Itv.nat_sem`,
+    `Itv.real1`, `Itv.real2`, `TypInstances.real_domain_typ`,
+    `TypInstances.real_field_typ`, `TypInstances.nat_typ`, `ItvNum`,
+    `ItvReal` and `Itv01`
+  + lemmas `Itv.spec_real1`, `Itv.spec_real2`,
+    `TypInstances.real_domain_typ_spec`,
+    `TypInstances.real_field_typ_spec`, `TypInstances.nat_typ_spec`,
+    `top_wider_anything`, `real_wider_anyreal`, `le_num_itv_bound`,
+    `num_itv_bound_le_BLeft`, `BRight_le_num_itv_bound`,
+    `num_spec_sub`, `cmp0`, `neq0`, `eq0F`, `map_itv_bound_comp`,
+    `map_itv_comp`, `inum_min`, `inum_max`, `num_le_max`,
+    `num_ge_max`, `num_le_min`, `num_ge_min`, `num_lt_max`,
+    `num_gt_max`, `num_lt_min`, `num_gt_min`, `itvnum_subdef`,
+    `itvreal_subdef`, `itv01_subdef`
 
 ### Changed
 
@@ -152,19 +169,50 @@
 - file `lebesgue_measure.v`
   + first half moved to a new file `measurable_realfun.v`
 
+- file `interval_inference.v`
+  + definitions `Itv.def`, `Itv.spec`, `Itv.typ`, `empty_itv`
+
 ### Renamed
 
 - file `itv.v` to `interval_inference.v`
 
 - in `interval_inference.v`
+  + `opp_itv_bound_subdef` -> `IntItv.opp_bound`
+  + `opp_itv_bound_subdef` -> `IntItv.opp_bound`
+  + `opp_itv_ge0_subproof` -> `IntItv.opp_bound_ge0`
+  + `opp_itv_gt0_subproof` -> `IntItv.opp_bound_gt0`
+  + `opp_itv_subdef` -> `IntItv.opp`
+  + `add_itv_boundl_subdef` -> `IntItv.add_boundl`
+  + `add_itv_boundr_subdef` -> `IntItv.add_boundr`
+  + `add_itv_subdef` -> `IntItv.add`
+  + `itv_bound_signl` -> `IntItv.sign_boundl`
+  + `itv_bound_signr` -> `IntItv.sign_boundr`
+  + `interval_sign` -> `IntItv.sign`
+  + `interval_sign` -> `IntItv.sign`
+  + `mul_itv_boundl_subdef` -> `IntItv.mul_boundl`
+  + `mul_itv_boundr_subdef` -> `IntItv.mul_boundr`
+  + `mul_itv_boundrC_subproof` -> `IntItv.mul_boundrC`
+  + `mul_itv_subdef` -> `IntItv.mul`
+  + `Itv.top_typ_subproof` -> `TypInstances.top_typ_spec`
   + `itv_top_typ` -> `TypInstances.itv_top_typ`
+  + `typ_inum_subproof` -> `TypInstances.typ_inum_spec`
   + `typ_inum` -> `TypInstances.typ_inum`
   + `zero_inum` -> `Instances.zero_inum`
   + `one_inum` -> `Instances.one_inum`
+  + `opp_itv_boundl_subproof` -> `Instances.one_boundl`
+  + `opp_itv_boundr_subproof` -> `Instances.one_boundr`
+  + `opp_inum_subproof` -> `Instances.num_spec_opp`
+  + `opp_inum` -> `Instances.opp_inum`
+  + `add_inum_subproof` -> `Instances.num_spec_add`
   + `add_inum` -> `Instances.add_inum`
-  + `interval_sign` -> `Instances.interval_sign`
-  + `interval_sign_spec` -> `Instances.interval_sign_spec`
-  + `interval_signP` -> `Instances.interval_signP`
+  + `interval_sign_spec` -> `Instances.sign_spec`
+  + `interval_signP` -> `Instances.signP`
+  + `mul_itv_boundl_subproof` -> `Instances.num_itv_mul_boundl`
+  + `mul_itv_boundr_subproof` -> `Instances.num_itv_mul_boundr`
+  + `mul_itv_boundr'_subproof` -> `Instances.BRight_le_mul_boundr`
+  + `map_itv_bound_min` -> `Instances.num_itv_bound_min`
+  + `map_itv_bound_max` -> `Instances.num_itv_bound_max`
+  + `mul_inum_subproof` -> `Instances.num_spec_mul`
   + `mul_inum` -> `Instances.mul_inum`
 
 - in `measure.v`
@@ -187,6 +235,20 @@
 
 - in `lebesgue_integral.v`:
   + `Rintegral_setU_EFin` -> `Rintegral_setU`
+  
+- in `interval_inference.v`
+  + `itv_bottom` -> `bottom`
+  + `itv_gt0` -> `gt0`
+  + `itv_le0F` -> `le0F`
+  + `itv_lt0` -> `lt0`
+  + `itv_ge0F` -> `ge0F`
+  + `itv_ge0` -> `ge0`
+  + `itv_lt0F` -> `lt0F`
+  + `itv_le0` -> `le0`
+  + `itv_gt0F` -> `gt0F`
+  + `itv_top_typ` -> `top_typ`
+  + `Itv.map_itv_bound` -> `map_itv_bound`
+  + `Itv.map_itv` -> `map_itv`
 
 ### Generalized
 
@@ -290,6 +352,14 @@
     `__deprecated__cvg_gt_ge`, `__deprecated__cvg_lt_le`,
     `__deprecated__linear_bounded0 `
     (deprecated since 0.6.0)
+
+- in `interval_inference.v`
+  + reserved notations `[lb of _]`, `[ub of _]`, `[lbe of _]` and `[ube of _]`
+    (they were unused)
+  + definitions `wider_itv`
+  + `Itv.subitv_map_itv` (use `num_spec_sub` instead)
+  + lemma `le_map_itv_bound` (use `le_num_itv_bound` instead)
+  + lemmas `opp_itv_le0_subproof`, `opp_itv_lt0_subproof`
 
 ### Infrastructure
 
