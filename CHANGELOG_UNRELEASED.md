@@ -10,6 +10,10 @@
     `comparable_min_le_min`, `comparable_max`, `min_le_min`,
     `max_le_max` and `real_sqrtC`
 
+- in `itv.v`
+  + lemmas `cmp0`, `neq0`, `eq0F`
+  + definitions `ItvReal` and `Itv01`
+
 - in `constructive_ereal.v`
   + lemmas `cmp0y`, `cmp0Ny`, `real_miney`, `real_minNye`,
     `real_maxey`, `real_maxNye`, `oppe_cmp0`, `real_fine`,
@@ -17,7 +21,22 @@
 
 ### Changed
   
+- in `itv.v`
+  + definition `ItvNum`
+
 ### Renamed
+
+- in `itv.v`
+  + `itv_bottom` -> `bottom`
+  + `itv_gt0` -> `gt0`
+  + `itv_le0F` -> `le0F`
+  + `itv_lt0` -> `lt0`
+  + `itv_ge0F` -> `ge0F`
+  + `itv_ge0` -> `ge0`
+  + `itv_lt0F` -> `lt0F`
+  + `itv_le0` -> `le0`
+  + `itv_gt0F` -> `gt0F`
+  + `itv_top_typ` -> `top_typ`
 
 ### Generalized
 

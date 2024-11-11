@@ -185,7 +185,7 @@ Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
   forall t, f (a <| t |> b) <= f a <| t |> f b.
 Proof.
 move=> ab h t; set x := a <| t |> b; have /h : a <= x <= b.
-  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= itv_ge0/=.
+  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= ge0/=.
 rewrite subr_ge0 => /le_trans; apply.
 by rewrite LE// /x line_pathK ?lt_eqF// convC line_pathK ?gt_eqF.
 Qed.
