@@ -1035,6 +1035,44 @@ Canonical max_typ_inum d (t : min_max_typ d) (xi yi : Itv.t)
 (* Instance of the above structure for numDomainType *)
 Canonical num_min_max_typ := MinMaxTyp num_spec_min num_spec_max.
 
+Lemma nat_num_spec (i : Itv.t) (n : nat) : nat_spec i n = num_spec i (n%:R : R).
+Proof.
+case: i => [//| [l u]]; rewrite /= /Itv.num_sem realn/=; congr (_ && _).
+- by case: l => [[] l |//]; rewrite !bnd_simp ?pmulrn ?ler_int ?ltr_int.
+- by case: u => [[] u |//]; rewrite !bnd_simp ?pmulrn ?ler_int ?ltr_int.
+Qed.
+
+Lemma num_spec_natmul (xi ni : Itv.t) (x : num_def R xi) (n : nat_def ni)
+    (r := Itv.real2 mul xi ni) :
+  num_spec r (x%:num *+ n%:num).
+Proof.
+have Pn : num_spec ni (n%:num%:R : R) by case: n => /= n; rewrite nat_num_spec.
+by rewrite -mulr_natr -[n%:num%:R]/((Itv.Def Pn)%:num) num_spec_mul.
+Qed.
+
+Canonical natmul_inum (xi ni : Itv.t) (x : num_def R xi) (n : nat_def ni) :=
+  Itv.mk (num_spec_natmul x n).
+
+Lemma num_spec_int (i : Itv.t) (n : int) :
+  num_spec i n = num_spec i (n%:~R : R).
+Proof.
+case: i => [//| [l u]]; rewrite /= /Itv.num_sem num_real realz/=.
+congr (andb _ _).
+- by case: l => [[] l |//]; rewrite !bnd_simp intz ?ler_int ?ltr_int.
+- by case: u => [[] u |//]; rewrite !bnd_simp intz ?ler_int ?ltr_int.
+Qed.
+
+Lemma num_spec_intmul (xi ii : Itv.t) (x : num_def R xi) (i : num_def int ii)
+    (r := Itv.real2 mul xi ii) :
+  num_spec r (x%:num *~ i%:num).
+Proof.
+have Pi : num_spec ii (i%:num%:~R : R) by case: i => /= i; rewrite num_spec_int.
+by rewrite -mulrzr -[i%:num%:~R]/((Itv.Def Pi)%:num) num_spec_mul.
+Qed.
+
+Canonical intmul_inum (xi ni : Itv.t) (x : num_def R xi) (n : num_def int ni) :=
+  Itv.mk (num_spec_intmul x n).
+
 End NumDomainInstances.
 
 End Instances.
