@@ -1155,6 +1155,46 @@ Qed.
 Canonical inv_inum (i : Itv.t) (x : num_def R i) :=
   Itv.mk (inv_inum_subproof x).
 
+Definition exprn_le1_itv_bound_subdef (l u : itv_bound int) : itv_bound int :=
+  if u isn't BSide _ (Posz 1) then +oo
+  else if (BLeft 0%Z <= l)%O then BRight 1%Z else +oo.
+Arguments exprn_le1_itv_bound_subdef /.
+
+Lemma exprn_le1_itv_bound_subproof (x : R) n l u :
+  (num_itv_bound R l <= BLeft x)%O ->
+  (BRight x <= num_itv_bound R u)%O ->
+  (BRight (x ^+ n) <= num_itv_bound R (exprn_le1_itv_bound_subdef l u))%O.
+Proof.
+case: u => [bu [[//|[|//]] |//] | []//].
+rewrite /exprn_le1_itv_bound_subdef; case: (leP _ l) => [lge1 /= |//] lx xu.
+rewrite bnd_simp; case: n => [| n]; rewrite ?expr0// expr_le1//.
+  by case: bu xu; rewrite bnd_simp//; apply: ltW.
+case: l lge1 lx => [[] l | []//]; rewrite !bnd_simp -(@ler_int R).
+- exact: le_trans.
+- by move=> + /ltW; apply: le_trans.
+Qed.
+
+Definition exprn_itv_subdef (i : interval int) : interval int :=
+  let: Interval l u := i in
+  Interval (keep_pos_itv_bound_subdef l) (exprn_le1_itv_bound_subdef l u).
+Arguments exprn_itv_subdef /.
+
+Lemma exprn_inum_subproof (i : Itv.t) (x : num_def R i) n
+    (r := itv_real1_subdef exprn_itv_subdef i) :
+  num_spec r (x%:num ^+ n).
+Proof.
+apply: (@itv_real1_subproof _ _ (fun x => x^+n) _ _ _ _ (Itv.P x)).
+case: x => x /= _ [l u] /and3P[xr /= lx xu].
+rewrite /Itv.num_sem realX//=; apply/andP; split.
+- apply: (@keep_pos_itv_bound_subproof (fun x => x^+n)) lx.
+  + exact: exprn_ge0.
+  + exact: exprn_gt0.
+- exact: exprn_le1_itv_bound_subproof lx xu.
+Qed.
+
+Canonical exprn_inum (i : Itv.t) (x : num_def R i) n :=
+  Itv.mk (exprn_inum_subproof x n).
+
 End NumDomainInstances.
 
 Section Morph.
