@@ -1195,6 +1195,13 @@ Qed.
 Canonical exprn_inum (i : Itv.t) (x : num_def R i) n :=
   Itv.mk (exprn_inum_subproof x n).
 
+Lemma norm_inum_subproof {V : normedZmodType R} (x : V) :
+  num_spec (Itv.Real `[0, +oo[) `|x|.
+Proof. by apply/and3P; split; rewrite //= ?normr_real ?bnd_simp ?normr_ge0. Qed.
+
+Canonical norm_inum {V : normedZmodType R} (x : V) :=
+  Itv.mk (norm_inum_subproof x).
+
 End NumDomainInstances.
 
 Section Morph.
@@ -1212,6 +1219,14 @@ Lemma num_max : {morph num : x y / Order.max x y}.
 Proof. by move=> x y; rewrite !maxEle num_le -fun_if. Qed.
 
 End Morph.
+
+Section MorphNum.
+Context {R : numDomainType}.
+
+Lemma num_abs_eq0 (a : R) : (`|a|%:nng == 0%:nng) = (a == 0).
+Proof. by rewrite -normr_eq0. Qed.
+
+End MorphNum.
 
 Section MorphReal.
 Context {R : numDomainType} {i : interval int}.
@@ -1252,6 +1267,19 @@ Lemma num_gt_min a x y :
 Proof. by rewrite -comparable_gt_min// real_comparable. Qed.
 
 End MorphReal.
+
+Section MorphGe0.
+Context {R : numDomainType}.
+Local Notation nR := (num_def R (Itv.Real `[0%Z, +oo[)).
+Implicit Type x y : nR.
+Local Notation num := (@num R (@Itv.num_sem R) (Itv.Real `[0%Z, +oo[)).
+
+Lemma num_abs_le a x : 0 <= a -> (`|a|%:nng <= x) = (a <= x%:num).
+Proof. by move=> a0; rewrite -num_le//= ger0_norm. Qed.
+
+Lemma num_abs_lt a x : 0 <= a -> (`|a|%:nng < x) = (a < x%:num).
+Proof. by move=> a0; rewrite -num_lt/= ger0_norm. Qed.
+End MorphGe0.
 
 Section ItvNum.
 Context (R : numDomainType).
