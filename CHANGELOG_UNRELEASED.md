@@ -99,7 +99,7 @@
   + new lemma `continuous_comp_weak`
 - in file `function_spaces.v`,
   + new definition `eval`
-  + new lemmas `continuous_curry_fun`, `continuous_curry_joint_cvg`, 
+  + new lemmas `continuous_curry_fun`, `continuous_curry_cvg`, 
     `eval_continuous`, and `compose_continuous`
 
 ### Changed
