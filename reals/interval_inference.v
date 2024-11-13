@@ -303,6 +303,16 @@ Definition inv i :=
   Interval (keep_pos_bound l) (keep_neg_bound u).
 Arguments inv /.
 
+Definition exprn_le1_bound b1 b2 :=
+  if b2 isn't BSide _ 1%Z then +oo
+  else if (BLeft 0%Z <= b1)%O then BRight 1%Z else +oo.
+Arguments exprn_le1_bound /.
+
+Definition exprn i :=
+  let: Interval l u := i in
+  Interval (keep_pos_bound l) (exprn_le1_bound l u).
+Arguments exprn /.
+
 End IntItv.
 
 Module Itv.
@@ -1135,6 +1145,35 @@ rewrite /Itv.num_sem/= realV xr/=; apply/andP; split.
 Qed.
 
 Canonical inv_inum (i : Itv.t) (x : num_def R i) := Itv.mk (num_spec_inv x).
+
+Lemma num_itv_bound_exprn_le1 (x : R) n l u :
+  (num_itv_bound R l <= BLeft x)%O ->
+  (BRight x <= num_itv_bound R u)%O ->
+  (BRight (x ^+ n) <= num_itv_bound R (exprn_le1_bound l u))%O.
+Proof.
+case: u => [bu [[//|[|//]] |//] | []//].
+rewrite /exprn_le1_bound; case: (leP _ l) => [lge1 /= |//] lx xu.
+rewrite bnd_simp; case: n => [| n]; rewrite ?expr0// expr_le1//.
+  by case: bu xu; rewrite bnd_simp//; apply: ltW.
+case: l lge1 lx => [[] l | []//]; rewrite !bnd_simp -(@ler_int R).
+- exact: le_trans.
+- by move=> + /ltW; apply: le_trans.
+Qed.
+
+Lemma num_spec_exprn (i : Itv.t) (x : num_def R i) n (r := Itv.real1 exprn i) :
+  num_spec r (x%:num ^+ n).
+Proof.
+apply: (@Itv.spec_real1 _ _ (fun x => x^+n) _ _ _ _ (Itv.P x)).
+case: x => x /= _ [l u] /and3P[xr /= lx xu].
+rewrite /Itv.num_sem realX//=; apply/andP; split.
+- apply: (@num_itv_bound_keep_pos (fun x => x^+n)) lx.
+  + exact: exprn_ge0.
+  + exact: exprn_gt0.
+- exact: num_itv_bound_exprn_le1 lx xu.
+Qed.
+
+Canonical exprn_inum (i : Itv.t) (x : num_def R i) n :=
+  Itv.mk (num_spec_exprn x n).
 
 End NumDomainInstances.
 
