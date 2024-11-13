@@ -140,7 +140,9 @@
     `Instances.intmul_inum`, `IntItv.keep_pos_bound`,
     `IntItv.keep_neg_bound`, `Instances.inv_inum`,
     `IntItv.exprn_le1_bound`, `IntItv.exprn`, `Instances.exprn_inum`,
-    `Instances.norm_inum`
+    `Instances.norm_inum`, `Instances.sqrt_itv`,
+    `Instances.sqrt_inum`, `Instances.sqrtC_itv`,
+    `Instances.sqrtC_inum`
   + lemmas `Itv.spec_real1`, `Itv.spec_real2`,
     `TypInstances.real_domain_typ_spec`,
     `TypInstances.real_field_typ_spec`, `TypInstances.nat_typ_spec`,
@@ -157,7 +159,8 @@
     `Instances.num_itv_bound_keep_pos`,
     `Instances.num_itv_bound_keep_neg`, `Instances.num_spec_inv`,
     `Instances.num_itv_bound_exprn`, `Instances.num_spec_exprn`,
-    `Instances.num_spec_norm`, `num_abs_le`, `num_abs_lt`
+    `Instances.num_spec_norm`, `num_abs_le`, `num_abs_lt`,
+    `Instances.num_spec_sqrt`, `Instances.num_spec_sqrtC`
   + notation `%:num`
   + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
     `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,
