@@ -1090,6 +1090,71 @@ Qed.
 Canonical intmul_inum (xi ni : Itv.t) (x : num_def R xi) (n : num_def int ni) :=
   Itv.mk (intmul_inum_subproof x n).
 
+Definition keep_pos_itv_bound_subdef (b : itv_bound int) : itv_bound int :=
+  match b with
+  | BSide b (Posz 0) => BSide b 0
+  | BSide _ (Posz (S _)) => BRight 0
+  | BSide _ (Negz _) => -oo
+  | BInfty _ => -oo
+  end.
+Arguments keep_pos_itv_bound_subdef /.
+
+Lemma keep_pos_itv_bound_subproof (op : R -> R) (x : R) b :
+  {homo op : x / 0 <= x} -> {homo op : x / 0 < x} ->
+  (num_itv_bound R b <= BLeft x)%O ->
+  (num_itv_bound R (keep_pos_itv_bound_subdef b) <= BLeft (op x))%O.
+Proof.
+case: b => [[] [] [| b] // | []//] hle hlt; rewrite !bnd_simp.
+- exact: hle.
+- by move=> blex; apply: le_lt_trans (hlt _ _) => //; apply: lt_le_trans blex.
+- exact: hlt.
+- by move=> bltx; apply: le_lt_trans (hlt _ _) => //; apply: le_lt_trans bltx.
+Qed.
+
+Definition keep_neg_itv_bound_subdef (b : itv_bound int) : itv_bound int :=
+  match b with
+  | BSide b (Posz 0) => BSide b 0
+  | BSide _ (Negz _) => BLeft 0
+  | BSide _ (Posz _) => +oo
+  | BInfty _ => +oo
+  end.
+Arguments keep_neg_itv_bound_subdef /.
+
+Lemma keep_neg_itv_bound_subproof (op : R -> R) (x : R) b :
+  {homo op : x / x <= 0} -> {homo op : x / x < 0} ->
+  (BRight x <= num_itv_bound R b)%O ->
+  (BRight (op x) <= num_itv_bound R (keep_neg_itv_bound_subdef b))%O.
+Proof.
+case: b => [[] [[|//] | b] | []//] hge hgt; rewrite !bnd_simp.
+- exact: hgt.
+- by move=> xltb; apply: hgt; apply: lt_le_trans xltb _; rewrite lerz0.
+- exact: hge.
+- by move=> xleb; apply: hgt; apply: le_lt_trans xleb _; rewrite ltrz0.
+Qed.
+
+Definition inv_itv_subdef (i : interval int) : interval int :=
+  let: Interval l u := i in
+  Interval (keep_pos_itv_bound_subdef l) (keep_neg_itv_bound_subdef u).
+Arguments inv_itv_subdef /.
+
+Lemma inv_inum_subproof (i : Itv.t) (x : num_def R i)
+    (r := itv_real1_subdef inv_itv_subdef i) :
+  num_spec r (x%:num^-1).
+Proof.
+apply: itv_real1_subproof (Itv.P x).
+case: x => x /= _ [l u] /and3P[xr /= lx xu].
+rewrite /Itv.num_sem/= realV xr/=; apply/andP; split.
+- apply: keep_pos_itv_bound_subproof lx.
+  + by move=> ?; rewrite invr_ge0.
+  + by move=> ?; rewrite invr_gt0.
+- apply: keep_neg_itv_bound_subproof xu.
+  + by move=> ?; rewrite invr_le0.
+  + by move=> ?; rewrite invr_lt0.
+Qed.
+
+Canonical inv_inum (i : Itv.t) (x : num_def R i) :=
+  Itv.mk (inv_inum_subproof x).
+
 End NumDomainInstances.
 
 Section Morph.
