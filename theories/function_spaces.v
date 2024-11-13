@@ -1441,11 +1441,11 @@ Lemma continuous_curry_fun (f : U * V -> W) :
   continuous f -> continuous (curry f).
 Proof. by case/continuous_curry. Qed.
 
-Lemma continuous_curry_joint_cvg (f : U * V -> W) (u : U) (v : V) : 
-  continuous f -> curry f z.1 z.2 @[z --> (u,v)] --> curry f u v.
-Proof. 
-move=> cf D /cf; rewrite ?nbhs_simpl /curry /=; apply: filterS => z.
-by move=> ?; rewrite /= -surjective_pairing.
+Lemma continuous_curry_joint_cvg (f : U * V -> W) (u : U) (v : V) :
+  continuous f -> curry f z.1 z.2 @[z --> (u, v)] --> curry f u v.
+Proof.
+move=> cf D /cf; rewrite !nbhs_simpl /curry /=; apply: filterS => z ? /=.
+by rewrite -surjective_pairing.
 Qed.
 
 Lemma continuous_uncurry_regular (f : U -> V -> W) :
@@ -1557,44 +1557,42 @@ End cartesian_closed.
 
 End currying.
 
-Definition eval {X Y : topologicalType} : continuousType X Y * X -> Y  := 
+Definition eval {X Y : topologicalType} : continuousType X Y * X -> Y :=
   uncurry (id : continuousType X Y -> (X -> Y)).
 
 Section composition.
 
 Local Import ArrowAsCompactOpen.
 
-Lemma eval_continuous {X Y : topologicalType} : 
+Lemma eval_continuous {X Y : topologicalType} :
   locally_compact [set: X] -> regular_space X -> continuous (@eval X Y).
 Proof.
-move=> ? ?; apply: continuous_uncurry_regular => //.
+move=> lcX rsX; apply: continuous_uncurry_regular => //.
   exact: weak_continuous.
 by move=> ?; exact: cts_fun.
 Qed.
 
-Lemma compose_continuous {X Y Z : topologicalType} : 
+Lemma compose_continuous {X Y Z : topologicalType} :
   locally_compact [set: X] -> @regular_space X ->
   locally_compact [set: Y] -> @regular_space Y ->
-  continuous (uncurry 
+  continuous (uncurry
     (comp : continuousType Y Z -> continuousType X Y -> continuousType X Z)).
 Proof.
-move=> ? ? lY rY; apply: continuous_comp_weak.
+move=> lX rX lY rY; apply: continuous_comp_weak.
 set F := _ \o _.
 rewrite -[F]uncurryK; apply: continuous_curry_fun.
-pose g := uncurry F \o prodAr \o (@swap _ _); simpl in *.
-have -> : uncurry F = uncurry F \o prodAr \o prodA.
-  by rewrite funeqE; case; case.
+pose g := uncurry F \o prodAr \o swap; rewrite /= in g *.
+have -> : uncurry F = uncurry F \o prodAr \o prodA by rewrite funeqE => -[[]].
 move=> z; apply: continuous_comp; first exact: prodA_continuous.
-have -> : uncurry F \o prodAr = 
-    uncurry F \o prodAr \o (@swap _ _) \o (@swap _ _).
-  by rewrite funeqE; case; case.
+have -> : uncurry F \o prodAr = uncurry F \o prodAr \o swap \o swap.
+  by rewrite funeqE => -[[]].
 apply: continuous_comp; first exact: swap_continuous.
-pose h (fxg : continuousType X Y * X * continuousType Y Z) : Z := 
-  eval (fxg.2, ((eval fxg.1))).
-have <- : h = uncurry F \o prodAr \o (@swap _ _).
-  by rewrite /h/g/uncurry/swap/F funeqE; case; case.
+pose h (fxg : continuousType X Y * X * continuousType Y Z) : Z :=
+  eval (fxg.2, (eval fxg.1)).
+have <- : h = uncurry F \o prodAr \o swap.
+  by rewrite /h/g/uncurry/swap/F funeqE => -[[]].
 rewrite /h.
-apply: (@continuous2_cvg _ _ _ _ _ _ (snd) (eval \o fst) (curry eval)).
+apply: (@continuous2_cvg _ _ _ _ _ _ snd (eval \o fst) (curry eval)).
 - by apply: continuous_curry_joint_cvg; exact: eval_continuous.
 - exact: cvg_snd.
 - by apply: cvg_comp; [exact: cvg_fst | exact: eval_continuous].
