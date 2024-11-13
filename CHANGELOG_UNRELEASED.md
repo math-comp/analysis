@@ -56,7 +56,7 @@
     `nbhs_one_point_compactification_weakE`,
     `locally_compact_completely_regular`, and
     `completely_regular_regular`.
-  + new lemmas `near_in_itvoy`, `near_in_itvyo`, `near_in_itvyy`
+  + new lemmas `near_in_itvoy`, `near_in_itvNyo`
 
 ### Changed
 
@@ -76,6 +76,9 @@
     `disj_itv_Rhull`
 
 ### Renamed
+
+- in `normedtype.v`:
+  + `near_in_itv` -> `near_in_itvoo`
 
 ### Generalized
 

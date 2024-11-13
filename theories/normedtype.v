@@ -5339,7 +5339,7 @@ Proof. by rewrite !(boundr_in_itv, boundl_in_itv). Qed.
 Section near_in_itv.
 Context {R : realFieldType} (a b : R).
 
-Lemma near_in_itv :
+Lemma near_in_itvoo :
   {in `]a, b[, forall y, \forall z \near y, z \in `]a, b[}.
 Proof. exact: interval_open. Qed.
 
@@ -5352,10 +5352,10 @@ suff : z \in `]a, +oo[%classic by rewrite inE.
 near: z.
 rewrite near_nbhs.
 apply: (@open_in_nearW _ _ `]a, +oo[%classic) => //.
-by rewrite inE/=.
+by rewrite inE.
 Unshelve. end_near. Qed.
 
-Lemma near_in_itvyo :
+Lemma near_in_itvNyo :
   {in `]-oo, b[, forall y, \forall z \near y, z \in `]-oo, b[}.
 Proof.
 move=> x xb.
@@ -5367,15 +5367,10 @@ apply: (@open_in_nearW _ _ `]-oo, b[%classic) => //.
 by rewrite inE/=.
 Unshelve. end_near. Qed.
 
-Lemma near_in_itvyy :
-  {in `]-oo, +oo[, forall y : R, \forall z \near y, z \in `]-oo, +oo[}.
-Proof.
-move=> x _.
-rewrite -near_nbhs.
-exact: nearW => //.
-Qed.
-
 End near_in_itv.
+#[deprecated(since="mathcomp-analysis 1.7.0",
+  note="use `near_in_itvoo` instead")]
+Notation near_in_itv := near_in_itvoo (only parsing).
 
 Lemma cvg_patch {R : realType} (f : R -> R^o) (a b : R) (x : R) : (a < b)%R ->
   x \in `]a, b[ ->
@@ -5387,7 +5382,7 @@ move/cvgrPdist_lt : xf => /(_ e e0) xf.
 near=> z.
 rewrite patchE ifT//; last first.
   rewrite inE; apply: subset_itv_oo_cc.
-  by near: z; exact: near_in_itv.
+  by near: z; exact: near_in_itvoo.
 near: z.
 rewrite /prop_near1 /nbhs/= /nbhs_subspace ifT// in xf; last first.
   by rewrite inE/=; exact: subset_itv_oo_cc xab.
@@ -5395,7 +5390,7 @@ case: xf => x0 /= x00 xf.
 near=> z.
 apply: xf => //=.
 rewrite inE; apply: subset_itv_oo_cc.
-by near: z; exact: near_in_itv.
+by near: z; exact: near_in_itvoo.
 Unshelve. all: by end_near. Qed.
 
 Notation "f @`[ a , b ]" :=

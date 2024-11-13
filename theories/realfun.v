@@ -1421,10 +1421,10 @@ have := xb; rewrite le_eqVlt => /orP[/eqP {}xb {ax}|{}xb].
 have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
 near=> y; suff: l <= f y <= u.
   by rewrite ge_max le_min -!andbA => /and4P[-> _ ->].
-have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
+have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; exact: near_in_itvoo.
 have fyab : f y \in `[f a, f b] by rewrite in_itv/= !fle// ?ltW.
 rewrite -[l <= _]gle -?[_ <= u]gle// ?fK //.
-apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv /=.
+apply: subset_itv_oo_cc; near: y; apply: near_in_itvoo; rewrite in_itv /=.
 rewrite -[x]fK // !glt//= lt_min gt_max ?andbT ltrBlDr ltr_pwDr //.
 by apply/and3P; split; rewrite // flt.
 Unshelve. all: by end_near. Qed.
