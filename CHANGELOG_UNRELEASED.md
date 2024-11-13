@@ -137,7 +137,8 @@
   + definitions `IntItv.min`, `IntItv.max`, `Instances.min_max_typ`,
     `Instances.min_typ_inum`, `Instances.max_typ_inum`,
     `Instances.num_min_max_typ`, `Instances.natmul_inum`,
-    `Instances.intmul_inum`
+    `Instances.intmul_inum`, `IntItv.keep_pos_bound`,
+    `IntItv.keep_neg_bound`, `Instances.inv_inum`
   + lemmas `Itv.spec_real1`, `Itv.spec_real2`,
     `TypInstances.real_domain_typ_spec`,
     `TypInstances.real_field_typ_spec`, `TypInstances.nat_typ_spec`,
@@ -150,7 +151,9 @@
     `itvreal_subdef`, `itv01_subdef`
   + lemmas `Instances.num_spec_min`, `Instances.num_spec_max`,
     `Instances.nat_num_spec`, `Instances.num_spec_natmul`,
-    `Instances.num_spec_int`, `Instances.num_spec_intmul`
+    `Instances.num_spec_int`, `Instances.num_spec_intmul`,
+    `Instances.num_itv_bound_keep_pos`,
+    `Instances.num_itv_bound_keep_neg`, `Instances.num_spec_inv`
   + notation `%:num`
   + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
     `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,

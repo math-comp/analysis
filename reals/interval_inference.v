@@ -280,6 +280,29 @@ Definition max i j :=
   Interval (Order.max li lj) (Order.max ui uj).
 Arguments max /.
 
+Definition keep_pos_bound b :=
+  match b with
+  | BSide b 0%Z => BSide b 0%Z
+  | BSide _ (Posz (S _)) => BRight 0%Z
+  | BSide _ (Negz _) => -oo
+  | BInfty _ => -oo
+  end.
+Arguments keep_pos_bound /.
+
+Definition keep_neg_bound b :=
+  match b with
+  | BSide b 0%Z => BSide b 0%Z
+  | BSide _ (Negz _) => BLeft 0%Z
+  | BSide _ (Posz _) => +oo
+  | BInfty _ => +oo
+  end.
+Arguments keep_neg_bound /.
+
+Definition inv i :=
+  let: Interval l u := i in
+  Interval (keep_pos_bound l) (keep_neg_bound u).
+Arguments inv /.
+
 End IntItv.
 
 Module Itv.
@@ -1072,6 +1095,46 @@ Qed.
 
 Canonical intmul_inum (xi ni : Itv.t) (x : num_def R xi) (n : num_def int ni) :=
   Itv.mk (num_spec_intmul x n).
+
+Lemma num_itv_bound_keep_pos (op : R -> R) (x : R) b :
+  {homo op : x / 0 <= x} -> {homo op : x / 0 < x} ->
+  (num_itv_bound R b <= BLeft x)%O ->
+  (num_itv_bound R (keep_pos_bound b) <= BLeft (op x))%O.
+Proof.
+case: b => [[] [] [| b] // | []//] hle hlt; rewrite !bnd_simp.
+- exact: hle.
+- by move=> blex; apply: le_lt_trans (hlt _ _) => //; apply: lt_le_trans blex.
+- exact: hlt.
+- by move=> bltx; apply: le_lt_trans (hlt _ _) => //; apply: le_lt_trans bltx.
+Qed.
+
+Lemma num_itv_bound_keep_neg (op : R -> R) (x : R) b :
+  {homo op : x / x <= 0} -> {homo op : x / x < 0} ->
+  (BRight x <= num_itv_bound R b)%O ->
+  (BRight (op x) <= num_itv_bound R (keep_neg_bound b))%O.
+Proof.
+case: b => [[] [[|//] | b] | []//] hge hgt; rewrite !bnd_simp.
+- exact: hgt.
+- by move=> xltb; apply: hgt; apply: lt_le_trans xltb _; rewrite lerz0.
+- exact: hge.
+- by move=> xleb; apply: hgt; apply: le_lt_trans xleb _; rewrite ltrz0.
+Qed.
+
+Lemma num_spec_inv (i : Itv.t) (x : num_def R i) (r := Itv.real1 inv i) :
+  num_spec r (x%:num^-1).
+Proof.
+apply: Itv.spec_real1 (Itv.P x).
+case: x => x /= _ [l u] /and3P[xr /= lx xu].
+rewrite /Itv.num_sem/= realV xr/=; apply/andP; split.
+- apply: num_itv_bound_keep_pos lx.
+  + by move=> ?; rewrite invr_ge0.
+  + by move=> ?; rewrite invr_gt0.
+- apply: num_itv_bound_keep_neg xu.
+  + by move=> ?; rewrite invr_le0.
+  + by move=> ?; rewrite invr_lt0.
+Qed.
+
+Canonical inv_inum (i : Itv.t) (x : num_def R i) := Itv.mk (num_spec_inv x).
 
 End NumDomainInstances.
 
