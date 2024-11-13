@@ -1183,6 +1183,65 @@ Canonical norm_inum {V : normedZmodType R} (x : V) := Itv.mk (num_spec_norm x).
 
 End NumDomainInstances.
 
+Section RcfInstances.
+Context {R : rcfType}.
+
+Definition sqrt_itv (i : Itv.t) : Itv.t :=
+  match i with
+  | Itv.Top => Itv.Real `[0%Z, +oo[
+  | Itv.Real (Interval l u) =>
+    match l with
+    | BSide b 0%Z => Itv.Real (Interval (BSide b 0%Z) +oo)
+    | BSide b (Posz (S _)) => Itv.Real `]0%Z, +oo[
+    | _ => Itv.Real `[0, +oo[
+    end
+  end.
+Arguments sqrt_itv /.
+
+Lemma num_spec_sqrt (i : Itv.t) (x : num_def R i) (r := sqrt_itv i) :
+  num_spec r (Num.sqrt x%:num).
+Proof.
+have: Itv.num_sem `[0%Z, +oo[ (Num.sqrt x%:num).
+  by apply/and3P; rewrite /= num_real !bnd_simp sqrtr_ge0.
+rewrite {}/r; case: i x => [//| [[bl [l |//] |//] u]] [x /= +] _.
+case: bl l => -[| l] /and3P[xr /= bx _]; apply/and3P; split=> //=;
+  move: bx; rewrite !bnd_simp ?sqrtr_ge0// sqrtr_gt0;
+  [exact: lt_le_trans | exact: le_lt_trans..].
+Qed.
+
+Canonical sqrt_inum (i : Itv.t) (x : num_def R i) := Itv.mk (num_spec_sqrt x).
+
+End RcfInstances.
+
+Section NumClosedFieldInstances.
+Context {R : numClosedFieldType}.
+
+Definition sqrtC_itv (i : Itv.t) : Itv.t :=
+  match i with
+  | Itv.Top => Itv.Top
+  | Itv.Real (Interval l u) =>
+    match l with
+    | BSide b (Posz _) => Itv.Real (Interval (BSide b 0%Z) +oo)
+    | _ => Itv.Top
+    end
+  end.
+Arguments sqrtC_itv /.
+
+Lemma num_spec_sqrtC (i : Itv.t) (x : num_def R i) (r := sqrtC_itv i) :
+  num_spec r (sqrtC x%:num).
+Proof.
+rewrite {}/r; case: i x => [//| [l u] [x /=/and3P[xr /= lx xu]]].
+case: l lx => [bl [l |//] |[]//] lx; apply/and3P; split=> //=.
+  by apply: real_sqrtC; case: bl lx => /[!bnd_simp] [|/ltW]; apply: le_trans.
+case: bl lx => /[!bnd_simp] lx.
+- by rewrite sqrtC_ge0; apply: le_trans lx.
+- by rewrite sqrtC_gt0; apply: le_lt_trans lx.
+Qed.
+
+Canonical sqrtC_inum (i : Itv.t) (x : num_def R i) := Itv.mk (num_spec_sqrtC x).
+
+End NumClosedFieldInstances.
+
 End Instances.
 Export (canonicals) Instances.
 
