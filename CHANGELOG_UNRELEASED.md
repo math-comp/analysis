@@ -137,7 +137,11 @@
     `IntItv.exprn_le1_bound`, `IntItv.exprn`, `Instances.exprn_inum`,
     `Instances.norm_inum`, `Instances.sqrt_itv`,
     `Instances.sqrt_inum`, `Instances.sqrtC_itv`,
-    `Instances.sqrtC_inum`
+    `Instances.sqrtC_inum`, `Instances.zero_inum`,
+    `Instances.succn_inum`, `Instances.addn_inum`,
+    `Instances.double_inum`, `Instances.muln_inum`,
+    `Instances.expn_inum`, `Instances.minn_inum`,
+    `Instances.maxn_inum`, `Instances.nat_min_max_typ`
   + lemmas `Itv.spec_real1`, `Itv.spec_real2`,
     `TypInstances.real_domain_typ_spec`,
     `TypInstances.real_field_typ_spec`, `TypInstances.nat_typ_spec`,
@@ -155,7 +159,11 @@
     `Instances.num_itv_bound_keep_neg`, `Instances.num_spec_inv`,
     `Instances.num_itv_bound_exprn`, `Instances.num_spec_exprn`,
     `Instances.num_spec_norm`, `num_abs_le`, `num_abs_lt`,
-    `Instances.num_spec_sqrt`, `Instances.num_spec_sqrtC`
+    `Instances.num_spec_sqrt`, `Instances.num_spec_sqrtC`,
+    `Instances.nat_spec_zero`, `Instances.nat_spec_succ`,
+    `Instances.nat_spec_add`, `Instances.nat_spec_double`,
+    `Instances.nat_spec_mul`, `Instances.nat_spec_exp`,
+    `Instances.nat_spec_min`, `Instances.nat_spec_max`
   + notation `%:num`
   + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
     `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,
