@@ -1242,6 +1242,103 @@ Canonical sqrtC_inum (i : Itv.t) (x : num_def R i) := Itv.mk (num_spec_sqrtC x).
 
 End NumClosedFieldInstances.
 
+Section NatInstances.
+Local Open Scope nat_scope.
+Implicit Type (n : nat).
+
+Lemma nat_spec_zero : nat_spec (Itv.Real `[0, 0]%Z) 0. Proof. by []. Qed.
+
+Canonical zeron_inum := Itv.mk nat_spec_zero.
+
+Lemma nat_spec_succ n : nat_spec (Itv.Real `[1, +oo[%Z) n.+1. Proof. by []. Qed.
+
+Canonical succn_inum n := Itv.mk (nat_spec_succ n).
+
+Lemma nat_spec_add (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi)
+    (r := Itv.real2 add xi yi) :
+  nat_spec r (x%:num + y%:num).
+Proof.
+have Px : num_spec xi (x%:num%:R : int).
+  by case: x => /= x; rewrite (@nat_num_spec int).
+have Py : num_spec yi (y%:num%:R : int).
+  by case: y => /= y; rewrite (@nat_num_spec int).
+rewrite (@nat_num_spec int) natrD.
+rewrite -[x%:num%:R]/((Itv.Def Px)%:num) -[y%:num%:R]/((Itv.Def Py)%:num).
+exact: num_spec_add.
+Qed.
+
+Canonical addn_inum (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi) :=
+  Itv.mk (nat_spec_add x y).
+
+Lemma nat_spec_double (i : Itv.t) (n : nat_def i) (r := Itv.real2 add i i) :
+  nat_spec r (n%:num.*2).
+Proof. by rewrite -addnn nat_spec_add. Qed.
+
+Canonical double_inum (i : Itv.t) (x : nat_def i) := Itv.mk (nat_spec_double x).
+
+Lemma nat_spec_mul (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi)
+    (r := Itv.real2 mul xi yi) :
+  nat_spec r (x%:num * y%:num).
+Proof.
+have Px : num_spec xi (x%:num%:R : int).
+  by case: x => /= x; rewrite (@nat_num_spec int).
+have Py : num_spec yi (y%:num%:R : int).
+  by case: y => /= y; rewrite (@nat_num_spec int).
+rewrite (@nat_num_spec int) natrM.
+rewrite -[x%:num%:R]/((Itv.Def Px)%:num) -[y%:num%:R]/((Itv.Def Py)%:num).
+exact: num_spec_mul.
+Qed.
+
+Canonical muln_inum (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi) :=
+  Itv.mk (nat_spec_mul x y).
+
+Lemma nat_spec_exp (i : Itv.t) (x : nat_def i) n (r := Itv.real1 exprn i) :
+  nat_spec r (x%:num ^ n).
+Proof.
+have Px : num_spec i (x%:num%:R : int).
+  by case: x => /= x; rewrite (@nat_num_spec int).
+rewrite (@nat_num_spec int) natrX -[x%:num%:R]/((Itv.Def Px)%:num).
+exact: num_spec_exprn.
+Qed.
+
+Canonical expn_inum (i : Itv.t) (x : nat_def i) n := Itv.mk (nat_spec_exp x n).
+
+Lemma nat_spec_min (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi)
+    (r := Itv.real2 min xi yi) :
+  nat_spec r (minn x%:num y%:num).
+Proof.
+have Px : num_spec xi (x%:num%:R : int).
+  by case: x => /= x; rewrite (@nat_num_spec int).
+have Py : num_spec yi (y%:num%:R : int).
+  by case: y => /= y; rewrite (@nat_num_spec int).
+rewrite (@nat_num_spec int) -minEnat natr_min.
+rewrite -[x%:num%:R]/((Itv.Def Px)%:num) -[y%:num%:R]/((Itv.Def Py)%:num).
+exact: num_spec_min.
+Qed.
+
+Canonical minn_inum (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi) :=
+  Itv.mk (nat_spec_min x y).
+
+Lemma nat_spec_max (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi)
+    (r := Itv.real2 max xi yi) :
+  nat_spec r (maxn x%:num y%:num).
+Proof.
+have Px : num_spec xi (x%:num%:R : int).
+  by case: x => /= x; rewrite (@nat_num_spec int).
+have Py : num_spec yi (y%:num%:R : int).
+  by case: y => /= y; rewrite (@nat_num_spec int).
+rewrite (@nat_num_spec int) -maxEnat natr_max.
+rewrite -[x%:num%:R]/((Itv.Def Px)%:num) -[y%:num%:R]/((Itv.Def Py)%:num).
+exact: num_spec_max.
+Qed.
+
+Canonical maxn_inum (xi yi : Itv.t) (x : nat_def xi) (y : nat_def yi) :=
+  Itv.mk (nat_spec_max x y).
+
+Canonical nat_min_max_typ := MinMaxTyp nat_spec_min nat_spec_max.
+
+End NatInstances.
+
 End Instances.
 Export (canonicals) Instances.
 
