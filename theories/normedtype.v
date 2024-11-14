@@ -2248,8 +2248,7 @@ split=> [cf|].
   - by apply: near_at_right => //; rewrite bnd_simp.
 move=> [cf fa]; apply/subspace_continuousP => x /andP[].
 rewrite bnd_simp/= le_eqVlt => /predU1P[<-{x}|ax] _.
-- apply/cvgrPdist_lt => eps eps_gt0/=.
-  move/cvgrPdist_lt/(_ _ eps_gt0) : fa.
+- apply/cvgrPdist_lt => eps eps_gt0/=; move/cvgrPdist_lt/(_ _ eps_gt0) : fa.
   rewrite /at_right !near_withinE; apply: filter_app.
   exists 1%R => //= c c1a /[swap]; rewrite in_itv/= andbT le_eqVlt.
   by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
@@ -2271,13 +2270,11 @@ split=> [cf|].
   - by apply: near_at_left => //; rewrite bnd_simp.
 move=> [cf fb]; apply/subspace_continuousP => x /andP[_].
 rewrite bnd_simp/= le_eqVlt=> /predU1P[->{x}|xb].
-- apply/cvgrPdist_lt => eps eps_gt0/=.
-  move/cvgrPdist_lt/(_ _ eps_gt0) : fb.
-  rewrite /at_right !near_withinE.
-  apply: filter_app; exists 1%R => //= c c1b + cb.
-  rewrite in_itv/= le_eqVlt in cb.
-- by case/predU1P : cb => [->|/[swap]/[apply]//]; rewrite subrr normr0.
-  have xb_i : x \in `]-oo, b[ by rewrite in_itv/=.
+- apply/cvgrPdist_lt => eps eps_gt0/=; move/cvgrPdist_lt/(_ _ eps_gt0) : fb.
+  rewrite /at_right !near_withinE; apply: filter_app.
+  exists 1%R => //= c c1b /[swap]; rewrite in_itv/= le_eqVlt.
+  by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
+- have xb_i : x \in `]-oo, b[ by rewrite in_itv/=.
   rewrite within_interior; first exact: cf.
   suff : `]-oo, b[ `<=` interior `]-oo, b] by exact.
   rewrite -open_subsetE; last exact: interval_open.
