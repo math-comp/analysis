@@ -17,3 +17,4 @@ From mathcomp Require Export uniform_structure.
 From mathcomp Require Export weak_topology.
 From mathcomp Require Export one_point_compactification.
 From mathcomp Require Export sigT_topology.
+From mathcomp Require Export discrete_topology.
