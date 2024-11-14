@@ -35,6 +35,9 @@
 - in `probability.v`
   + lemma `integral_distribution` (existsing lemma `integral_distribution` has been renamed)
 
+- in file `realfun.v`:
+  + lemma `cvg_nbhsP`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
