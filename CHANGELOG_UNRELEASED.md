@@ -67,8 +67,9 @@
 - in file `separation_axioms.v`,
   + new lemma `sigT_hausdorff`.
 
-- in file `normedtype.v`,
-  + new lemmas `continuous_within_itvcyP`, `continuous_within_itvycP`
+- in `normedtype.v`:
+  + lemma `in_continuous_mksetP`
+  + lemmas `continuous_within_itvcyP`, `continuous_within_itvycP`
 
 ### Changed
   
