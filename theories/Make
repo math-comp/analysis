@@ -35,6 +35,7 @@ homotopy_theory/wedge_sigT.v
 separation_axioms.v
 function_spaces.v
 cantor.v
+tvs.v
 normedtype.v
 realfun.v
 sequences.v
