@@ -840,6 +840,15 @@ have Gy : y \in G k by rewrite in_fset_set ?inE//; apply: Ffin.
 by exists (Tagged G [` Gy]%fset).
 Qed.
 
+Lemma fiberwise_finite_preimage {T U} (B : set U) (f : T -> U) :
+  finite_set B -> (forall b, B b -> finite_set (f @^-1` [set b])) ->
+  finite_set (f @^-1` B).
+Proof.
+move=> *.
+rewrite -(image_id B) -bigcup_imset1 preimage_bigcup.
+exact: bigcup_finite.
+Qed.
+
 Lemma trivIset_sum_card (T : choiceType) (F : nat -> set T) n :
   (forall n, finite_set (F n)) -> trivIset [set: nat] F ->
   (\sum_(i < n) #|` fset_set (F i)| =
@@ -1141,6 +1150,15 @@ suff: (\bigcup_i G i #<= [set: {i & G i}])%card.
   by move=> /sub_countable->//; rewrite (eq_fun GE).
 apply/pcard_geP/surjPex; exists (fun (k : {i & G i}) => val (projT2 k)).
 by move=> x [i _] Gix/=; exists (Tagged G (SigSub (mem_set Gix))).
+Qed.
+
+Lemma fiberwise_countable_preimage {T U} (B : set U) (f : T -> U) :
+  countable B -> (forall b, B b -> countable (f @^-1` [set b])) ->
+  countable (f @^-1` B).
+Proof.
+move=> *.
+rewrite -(image_id B) -bigcup_imset1 preimage_bigcup.
+exact: bigcup_countable.
 Qed.
 
 Lemma countableXR T T' (A : set T) (B : T -> set T') :
