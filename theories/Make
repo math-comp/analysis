@@ -29,6 +29,9 @@ topology_theory/quotient_topology.v
 topology_theory/one_point_compactification.v
 topology_theory/sigT_topology.v
 
+homotopy_theory/homotopy.v
+homotopy_theory/wedge_sigT.v
+
 separation_axioms.v
 function_spaces.v
 cantor.v

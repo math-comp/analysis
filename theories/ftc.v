@@ -979,7 +979,7 @@ rewrite (@integration_by_substitution_decreasing (- F)%R); first last.
   rewrite -derive1E.
   have /cvgN := cF' _ xab; apply: cvg_trans; apply: near_eq_cvg.
   rewrite near_simpl; near=> y; rewrite fctE !derive1E deriveN//.
-  by case: Fab => + _ _; apply; near: y; exact: near_in_itv.
+  by case: Fab => + _ _; apply; near: y; exact: near_in_itvoo.
 - by move=> x y xab yab yx; rewrite ltrN2 incrF.
 - by [].
 have mGF : measurable_fun `]a, b[ (G \o F).

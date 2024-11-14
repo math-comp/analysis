@@ -1003,7 +1003,7 @@ move=> /andP[x_gtN1 x_lt1]; rewrite -[x]acosK; first last.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
 apply: nbhs_singleton (near_can_continuous _ _); last first.
    by near=> z; apply: continuous_cos.
-have /near_in_itv aI : acos x \in `]0, pi[.
+have /near_in_itvoo aI : acos x \in `]0, pi[.
   suff : 0 < acos x < pi by [].
   by rewrite acos_gt0 ?ltW //= acos_ltpi // ltW ?andbT.
 near=> z; apply: cosK.
@@ -1016,7 +1016,7 @@ Lemma is_derive1_acos x :
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -sin_acos ?ltW // -invrN.
 rewrite -{1}[x]acosK; last by have : -1 <= x <= 1 by rewrite ltW // ltW.
-have /near_in_itv aI : acos x \in `]0, pi[.
+have /near_in_itvoo aI : acos x \in `]0, pi[.
   suff : 0 < acos x < pi by [].
   by rewrite acos_gt0 ?ltW //= acos_ltpi // ltW ?andbT.
 apply: (@is_derive_inverse R cos).
@@ -1103,7 +1103,7 @@ move=> /andP[x_gtN1 x_lt1]; rewrite -[x]asinK; first last.
   by have : -1 <= x <= 1 by rewrite !ltW //; case/andP: xB.
 apply: nbhs_singleton (near_can_continuous _ _); last first.
   by near=> z; apply: continuous_sin.
-have /near_in_itv aI : asin x \in `](-(pi/2)), (pi/2)[.
+have /near_in_itvoo aI : asin x \in `](-(pi/2)), (pi/2)[.
   suff : - (pi / 2) < asin x < pi / 2 by [].
   by rewrite asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
 near=> z; apply: sinK.
@@ -1117,7 +1117,7 @@ Lemma is_derive1_asin x :
 Proof.
 move=> /andP[x_gtN1 x_lt1]; rewrite -cos_asin ?ltW //.
 rewrite -{1}[x]asinK; last by have : -1 <= x <= 1 by rewrite ltW // ltW.
-have /near_in_itv aI : asin x \in `](-(pi/2)), (pi/2)[.
+have /near_in_itvoo aI : asin x \in `](-(pi/2)), (pi/2)[.
   suff : -(pi/2) < asin x < pi/2 by [].
   by rewrite asin_gtNpi2 ?ltW ?andbT //= asin_ltpi2 // ltW.
 apply: (@is_derive_inverse R sin).
@@ -1219,7 +1219,7 @@ Qed.
 Lemma continuous_atan x : {for x, continuous (@atan R)}.
 Proof.
 rewrite -[x]atanK.
-have /near_in_itv aI : atan x \in `](-(pi / 2)), (pi / 2)[.
+have /near_in_itvoo aI : atan x \in `](-(pi / 2)), (pi / 2)[.
   suff : - (pi / 2) < atan x < pi / 2 by [].
   by rewrite atan_gtNpi2 atan_ltpi2.
 apply: nbhs_singleton (near_can_continuous _ _); last first.
@@ -1244,7 +1244,7 @@ Proof.
 rewrite -{1}[x]atanK.
 have cosD0 : cos (atan x) != 0.
   by apply/lt0r_neq0/cos_gt0_pihalf; rewrite atan_gtNpi2 atan_ltpi2.
-have /near_in_itv aI : atan x \in `](-(pi/2)), (pi/2)[.
+have /near_in_itvoo aI : atan x \in `](-(pi/2)), (pi/2)[.
   suff : - (pi / 2) < atan x < pi / 2 by [].
   by rewrite atan_gtNpi2 atan_ltpi2.
 apply: (@is_derive_inverse R tan).

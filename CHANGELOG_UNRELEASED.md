@@ -56,6 +56,7 @@
     `nbhs_one_point_compactification_weakE`,
     `locally_compact_completely_regular`, and
     `completely_regular_regular`.
+  + new lemmas `near_in_itvoy`, `near_in_itvNyo`
 
 - in file `mathcomp_extra.v`,
   + new definition `sigT_fun`.
@@ -69,6 +70,28 @@
 
 - in `measure.v`:
   + lemma `countable_measurable`
+- in `realfun.v`:
+  + lemma `cvgr_dnbhsP`
+  + new definitions `prodA`, and `prodAr`.
+  + new lemmas `prodAK`, `prodArK`, and `swapK`.
+- in file `product_topology.v`,
+  + new lemmas `swap_continuous`, `prodA_continuous`, and 
+    `prodAr_continuous`.
+
+- file `homotopy_theory/homotopy.v`
+- file `homotopy_theory/wedge_sigT.v`
+- in file `homotopy_theory/wedge_sigT.v`
+  + new definitions `wedge_rel`, `wedge`, `wedge_lift`, `pwedge`.
+  + new lemmas `wedge_lift_continuous`, `wedge_lift_nbhs`,
+    `wedge_liftE`, `wedge_openP`,
+    `wedge_pointE`, `wedge_point_nbhs`, `wedge_nbhs_specP`, `wedgeTE`,
+    `wedge_compact`, `wedge_connected`.
+
+- in `boolp.`:
+  + lemma `existT_inj`
+- in file `order_topology.v`
+  + new lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
+    `max_fun_continuous`.
 
 ### Changed
 
@@ -124,6 +147,9 @@
 ### Changed
 
 ### Renamed
+
+- in `normedtype.v`:
+  + `near_in_itv` -> `near_in_itvoo`
 
 ### Generalized
 

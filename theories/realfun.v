@@ -207,6 +207,20 @@ apply: pfl.
 by split; [move=> k; rewrite ltrNl//|apply/cvgNP => /=; rewrite opprK].
 Qed.
 
+Lemma cvgr_dnbhsP (f : R -> R) (p l : R) :
+  f x @[x --> p^'] --> l <->
+  (forall u : R^nat, (forall n, u n != p) /\ (u n @[n --> \oo] --> p) ->
+    f (u n) @[n --> \oo] --> l).
+Proof.
+split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt put]|pfl].
+  apply/cvgrPdist_le => e /fpl [r /=] /put[n _ {}put] {}fpl.
+  near=> t; apply: fpl => //=; apply: put.
+  by near: t; exact: nbhs_infty_ge.
+apply: cvg_at_right_left_dnbhs.
+- by apply/cvg_at_rightP => u [pu ?]; apply: pfl; split => // n; rewrite gt_eqF.
+- by apply/cvg_at_leftP => u [pu ?]; apply: pfl; split => // n; rewrite lt_eqF.
+Unshelve. all: end_near. Qed.
+
 End cvgr_fun_cvg_seq.
 
 Section cvge_fun_cvg_seq.
@@ -1421,10 +1435,10 @@ have := xb; rewrite le_eqVlt => /orP[/eqP {}xb {ax}|{}xb].
 have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
 near=> y; suff: l <= f y <= u.
   by rewrite ge_max le_min -!andbA => /and4P[-> _ ->].
-have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
+have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; exact: near_in_itvoo.
 have fyab : f y \in `[f a, f b] by rewrite in_itv/= !fle// ?ltW.
 rewrite -[l <= _]gle -?[_ <= u]gle// ?fK //.
-apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv /=.
+apply: subset_itv_oo_cc; near: y; apply: near_in_itvoo; rewrite in_itv /=.
 rewrite -[x]fK // !glt//= lt_min gt_max ?andbT ltrBlDr ltr_pwDr //.
 by apply/and3P; split; rewrite // flt.
 Unshelve. all: by end_near. Qed.
