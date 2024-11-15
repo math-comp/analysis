@@ -4,6 +4,124 @@
 
 ### Added
 
+- in file `mathcomp_extra.v`,
+  + lemmas `eq_lt_total`, `le_lt_total`
+
+- file `Rstruct_topology.v`
+
+- package `coq-mathcomp-reals` depending on `coq-mathcomp-classical`
+  with files
+  + `constructive_ereal.v`
+  + `reals.v`
+  + `real_interval.v`
+  + `signed.v`
+  + `itv.v`
+  + `prodnormedzmodule.v`
+  + `nsatz_realtype.v`
+  + `all_reals.v`
+
+- in file `separation_axioms.v`,
+  + new lemmas `compact_normal_local`, and `compact_normal`.
+
+- package `coq-mathcomp-experimental-reals` depending on `coq-mathcomp-reals`
+  with files
+  + `xfinmap.v`
+  + `discrete.v`
+  + `realseq.v`
+  + `realsum.v`
+  + `distr.v`
+
+- package `coq-mathcomp-reals-stdlib` depending on `coq-mathcomp-reals`
+  with file
+  + `Rstruct.v`
+
+- package `coq-mathcomp-analysis-stdlib` depending on
+  `coq-mathcomp-analysis` and `coq-mathcomp-reals-stdlib` with files
+  + `Rstruct_topology.v`
+  + `showcase/uniform_bigO.v`
+
+- in file `separation_axioms.v`,
+  + new lemmas `compact_normal_local`, and `compact_normal`.
+
+- in file `topology_theory/one_point_compactification.v`,
+  + new definitions `one_point_compactification`, and `one_point_nbhs`.
+  + new lemmas `one_point_compactification_compact`,
+    `one_point_compactification_some_nbhs`,
+    `one_point_compactification_some_continuous`,
+    `one_point_compactification_open_some`,
+    `one_point_compactification_weak_topology`, and
+    `one_point_compactification_hausdorff`.
+
+- in file `normedtype.v`,
+  + new definition `type` (in module `completely_regular_uniformity`)
+  + new lemmas `normal_completely_regular`,
+    `one_point_compactification_completely_reg`,
+    `nbhs_one_point_compactification_weakE`,
+    `locally_compact_completely_regular`, and
+    `completely_regular_regular`.
+  + new lemmas `near_in_itvoy`, `near_in_itvNyo`
+
+- in file `mathcomp_extra.v`,
+  + new definition `sigT_fun`.
+- in file `sigT_topology.v`,
+  + new definition `sigT_nbhs`.
+  + new lemmas `sigT_nbhsE`, `existT_continuous`, `existT_open_map`,
+    `existT_nbhs`, `sigT_openP`, `sigT_continuous`, `sigT_setUE`, and 
+    `sigT_compact`.
+- in file `separation_axioms.v`,
+  + new lemma `sigT_hausdorff`.
+
+- in `measure.v`:
+  + lemma `countable_measurable`
+- in `realfun.v`:
+  + lemma `cvgr_dnbhsP`
+  + new definitions `prodA`, and `prodAr`.
+  + new lemmas `prodAK`, `prodArK`, and `swapK`.
+- in file `product_topology.v`,
+  + new lemmas `swap_continuous`, `prodA_continuous`, and 
+    `prodAr_continuous`.
+
+- file `homotopy_theory/homotopy.v`
+- file `homotopy_theory/wedge_sigT.v`
+- in file `homotopy_theory/wedge_sigT.v`
+  + new definitions `wedge_rel`, `wedge`, `wedge_lift`, `pwedge`.
+  + new lemmas `wedge_lift_continuous`, `wedge_lift_nbhs`,
+    `wedge_liftE`, `wedge_openP`,
+    `wedge_pointE`, `wedge_point_nbhs`, `wedge_nbhs_specP`, `wedgeTE`,
+    `wedge_compact`, `wedge_connected`.
+
+- in `boolp.`:
+  + lemma `existT_inj`
+- in file `order_topology.v`
+  + new lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
+    `max_fun_continuous`.
+
+### Changed
+
+- in file `normedtype.v`,
+     changed `completely_regular_space` to depend on uniform separators
+     which removes the dependency on `R`.  The old formulation can be
+     recovered easily with `uniform_separatorP`.
+
+- moved from `Rstruct.v` to `Rstruct_topology.v`
+  + lemmas `continuity_pt_nbhs`, `continuity_pt_cvg`,
+    `continuity_ptE`, `continuity_pt_cvg'`, `continuity_pt_dnbhs`
+    and `nbhs_pt_comp`
+
+- moved from `real_interval.v` to `normedtype.v`
+  + lemmas `set_itvK`, `RhullT`, `RhullK`, `set_itv_setT`,
+    `Rhull_smallest`, `le_Rhull`, `neitv_Rhull`, `Rhull_involutive`,
+    `disj_itv_Rhull`
+- in `topology.v`:
+  + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
+    `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
+	into local `Let`'s
+
+- in `lebesgue_integral.v`:
+  + structure `SimpleFun` now inside a module `HBSimple`
+  + structure `NonNegSimpleFun` now inside a module `HBNNSimple`
+  + lemma `cst_nnfun_subproof` has now a different statement
+  + lemma `indic_nnfun_subproof` has now a different statement
 - in `mathcomp_extra.v`:
   + lemmas `prodr_ile1`, `nat_int`
 
@@ -57,6 +175,14 @@
   + `preimage_classes_comp` -> `g_sigma_preimageU_comp`
 
 ### Generalized
+
+- in `sequences.v`,
+  + generalized indexing from zero-based ones (`0 <= k < n` and `k <oo`)
+    to `m <= k < n` and `m <= k <oo`
+    * lemmas `nondecreasing_series`, `ereal_nondecreasing_series`,
+             `eseries_mkcondl`, `eseries_mkcondr`, `eq_eseriesl`,
+	     `nneseries_lim_ge`, `adde_def_nneseries`,
+	     `nneseriesD`, `nneseries_sum_nat`, `nneseries_sum`
 
 ### Deprecated
 
