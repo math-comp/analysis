@@ -539,3 +539,12 @@ Qed.
 Definition sigT_fun {I : Type} {X : I -> Type} {T : Type}
   (f : forall i, X i -> T) (x : {i & X i}) : T :=
   (f (projT1 x) (projT2 x)).
+
+Lemma eq_lt_total {disp : unit} {T : orderType disp} (x y : T) :
+  [|| x == y, (x < y)%O | (y < x)%O].
+Proof. by case/boolP: (x == y)=> // ?; apply/orP; right; exact:lt_total. Qed.
+
+Lemma le_lt_total {disp : unit} {T : orderType disp} (x y : T) :
+  (x <= y)%O || (y < x)%O.
+Proof. by rewrite le_eqVlt -orbA eq_lt_total. Qed.
+
