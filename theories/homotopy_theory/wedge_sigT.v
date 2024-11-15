@@ -19,6 +19,14 @@ Require Import EqdepFacts.
 (*        wedge_lift i == the lifting of elements of (X i) into the wedge     *)
 (*           pwedge p0 == the wedge of ptopologicalTypes at their designated  *)
 (*                        point                                               *)
+(*         wedge_fun f == lifts a family of functions on each component into  *)
+(*                        a function on the wedge, when they all agree at the *)
+(*                        wedge point                                         *)
+(*          wedge_prod == the mapping from the wedge as a quotient of sums to *)
+(*                        the wedge as a subspace of the product topology.    *)
+(*                        It's an embedding when the index is finite.         *)
+(*                                                                            *)
+(*                                                                            *)
 (* ```                                                                        *)
 (* The type `wedge p0` is endowed with the structures of:                     *)
 (* - topology via `quotient_topology`                                         *)
@@ -347,8 +355,8 @@ case : (wedge_nbhs_specP u) => //.
     move: Ukp0; rewrite (@kE t i0 x).
     rewrite -[k x ]uncurryK /curry=> /kcts; case; case=> P Q /= [Pt Qp0 pqU].
     by exists (P,Q) => //.
-  have UPQ : nbhs (wedgei (p0 i0)) (
-      \bigcup_x (@wedgei x) @` (snd (projT1 (pq_ x)))).
+  have UPQ : nbhs (wedge_lift (p0 i0)) (
+      \bigcup_x (@wedge_lift x) @` (snd (projT1 (pq_ x)))).
     rewrite wedge_point_nbhs => r _.
     by case: (projT2 (pq_ r)) => /filterS + ? ?; apply => z /= ?; by exists r.
   have /finite_fsetP [fI fIE] := Ifin.
@@ -356,17 +364,17 @@ case : (wedge_nbhs_specP u) => //.
     by apply: filter_bigI => x ?; case: (projT2 (pq_ x)).
   near_simpl => /=; near=> t1 t2 => /=.
   have [] // := near UPQ t2 => x _ [w /=] ? <-.
-  rewrite wedge_fun_wedgei //.
+  rewrite wedge_lift_funE //.
   case: (projT2 (pq_ x)) => ? Npt /(_ (t1, w)) => /=; apply; split => //.
   by have := near UPt t1; apply; rewrite // -fIE.
-move: u => _ x u uNp0 /=; rewrite wedge_fun_wedgei //=.
+move: u => _ x u uNp0 /=; rewrite wedge_lift_funE //=.
 rewrite -[k x]uncurryK /curry => /kcts; rewrite nbhs_simpl /=.
 case; case => /= P Q [Pt Qu] PQU.
-have wQu : nbhs (wedgei u) ((@wedgei x) @` Q).
-  rewrite -wedgei_nbhs //=; move/filterS: Qu; apply.
+have wQu : nbhs (wedge_lift u) ((@wedge_lift x) @` Q).
+  rewrite -wedge_lift_nbhs //=; move/filterS: Qu; apply.
   by move=> z; exists z.
 near_simpl; near=> t1 t2 => /=.
-have [] // := near wQu t2 => l ? <-; rewrite wedge_fun_wedgei //.
+have [] // := near wQu t2 => l ? <-; rewrite wedge_lift_funE //.
 apply: (PQU (t1,l)); split => //.
 exact: (near Pt t1).
 Unshelve. all: by end_near. Qed.
