@@ -2600,12 +2600,17 @@ Hypotheses (fdf : forall x, x \in `]a, b[%R -> is_derive x 1 f (df x))
            (gdg : forall x, x \in `]a, b[%R -> is_derive x 1 g (dg x)).
 Hypotheses (dg0 : forall x, x \in `]a, b[%R -> dg x != 0).
 
+Lemma differentiable_subr_neq0 :
+   g b - g a != 0.
+Proof.
+have [r] := MVT ab gdg cg; rewrite in_itv/= => /andP[ar rb] dgg.
+by rewrite dgg mulf_neq0 ?dg0 ?in_itv/= ?ar//; rewrite subr_eq0 gt_eqF.
+Qed.
+
 Lemma cauchy_MVT :
   exists2 c, c \in `]a, b[%R & df c / dg c = (f b - f a) / (g b - g a).
 Proof.
 have [r] := MVT ab gdg cg; rewrite in_itv/= => /andP[ar rb] dgg.
-have gba0 : g b - g a != 0.
-  by rewrite dgg mulf_neq0 ?dg0 ?in_itv/= ?ar// subr_eq0 gt_eqF.
 pose h (x : R) := f x - ((f b - f a) / (g b - g a)) * g x.
 have hder x : x \in `]a, b[%R -> derivable h x 1.
   move=> xab; apply: derivableB => /=.
@@ -2617,7 +2622,9 @@ have ch : {within `[a, b], continuous h}.
 have /(Rolle ab hder ch)[x xab derh] : h a = h b.
   rewrite /h; apply/eqP; rewrite subr_eq eq_sym -addrA eq_sym addrC -subr_eq.
   rewrite -mulrN -mulrDr -(addrC (g a)) -[X in _ * X]opprB mulrN -mulrA.
-  by rewrite mulVf// mulr1 opprB.
+  rewrite mulVf//.
+    by rewrite mulr1 opprB.
+    by rewrite differentiable_subr_neq0.
 pose dh (x : R) := df x - (f b - f a) / (g b - g a) * dg x.
 have his_der y : y \in `]a, b[%R -> is_derive x 1 h (dh x).
   by move=> yab; apply: is_deriveB; [exact: fdf|apply: is_deriveZ; exact: gdg].
