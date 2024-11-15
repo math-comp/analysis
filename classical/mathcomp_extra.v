@@ -547,4 +547,3 @@ Proof. by case/boolP: (x == y)=> // ?; apply/orP; right; exact:lt_total. Qed.
 Lemma le_lt_total {disp : unit} {T : orderType disp} (x y : T) :
   (x <= y)%O || (y < x)%O.
 Proof. by rewrite le_eqVlt -orbA eq_lt_total. Qed.
-
