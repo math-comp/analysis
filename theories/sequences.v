@@ -951,13 +951,15 @@ rewrite -(subrr (limn (series u_))).
 by apply: cvgB => //; rewrite ?cvg_shiftS.
 Qed.
 
-Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) (P : pred nat) :
+Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) (P : pred nat) m :
   (forall n, P n -> 0 <= u_ n)%R ->
-  nondecreasing_seq (fun n=> \sum_(0 <= k < n | P k) u_ k)%R.
+  nondecreasing_seq (fun n=> \sum_(m <= k < n | P k) u_ k)%R.
 Proof.
 move=> u_ge0; apply/nondecreasing_seqP => n.
-rewrite [in leRHS]big_mkcond [in leRHS]big_nat_recr//=.
-by rewrite -[in leRHS]big_mkcond/= lerDl; case: ifPn => //; exact: u_ge0.
+have [mn|nm] := leqP m n.
+  rewrite [leRHS]big_mkcond [leRHS]big_nat_recr//=.
+  by rewrite -[in leRHS]big_mkcond/= lerDl; case: ifPn => //; exact: u_ge0.
+by rewrite (big_geq (ltnW _)) // big_geq.
 Qed.
 
 Lemma increasing_series (R : numFieldType) (u_ : R ^nat) :
@@ -1546,8 +1548,8 @@ Proof. by move=> ?; apply/cvg_ex; eexists; apply: ereal_nonincreasing_cvgn. Qed.
 
 (* NB: see also nondecreasing_series *)
 Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, P n -> 0 <= u_ n) ->
-  nondecreasing_seq (fun n => \sum_(0 <= i < n | P i) u_ i).
+  (P : pred nat) N : (forall n, P n -> 0 <= u_ n) ->
+  nondecreasing_seq (fun n => \sum_(N <= i < n | P i) u_ i).
 Proof. by move=> u_ge0 n m nm; rewrite lee_sum_nneg_natr// => k _ /u_ge0. Qed.
 
 Lemma congr_lim (R : numFieldType) (f g : nat -> \bar R) :
@@ -1558,12 +1560,14 @@ Lemma eseries_cond {R : numFieldType} (f : (\bar R)^nat) P N :
   \sum_(N <= i <oo | P i) f i = \sum_(i <oo | P i && (N <= i)%N) f i.
 Proof. by apply/congr_lim/eq_fun => n /=; apply: big_nat_widenl. Qed.
 
-Lemma eseries_mkcondl {R : numFieldType} (f : (\bar R)^nat) P Q :
-  \sum_(i <oo | P i && Q i) f i = \sum_(i <oo | Q i) if P i then f i else 0.
+Lemma eseries_mkcondl {R : numFieldType} (f : (\bar R)^nat) P Q N :
+  \sum_(N <= i <oo | P i && Q i) f i =
+  \sum_(N <= i <oo | Q i) if P i then f i else 0.
 Proof. by apply/congr_lim/funext => n; rewrite big_mkcondl. Qed.
 
-Lemma eseries_mkcondr {R : numFieldType} (f : (\bar R)^nat) P Q :
-  \sum_(i <oo | P i && Q i) f i = \sum_(i <oo | P i) if Q i then f i else 0.
+Lemma eseries_mkcondr {R : numFieldType} (f : (\bar R)^nat) P Q N :
+  \sum_(N <= i <oo | P i && Q i) f i =
+  \sum_(N <= i <oo | P i) if Q i then f i else 0.
 Proof. by apply/congr_lim/funext => n; rewrite big_mkcondr. Qed.
 
 Lemma eq_eseriesr (R : numFieldType) (f g : (\bar R)^nat) (P : pred nat) {N} :
@@ -1571,8 +1575,8 @@ Lemma eq_eseriesr (R : numFieldType) (f g : (\bar R)^nat) (P : pred nat) {N} :
   \sum_(N <= i <oo | P i) f i = \sum_(N <= i <oo | P i) g i.
 Proof. by move=> efg; apply/congr_lim/funext => n; exact: eq_bigr. Qed.
 
-Lemma eq_eseriesl (R : realFieldType) (P Q : pred nat) (f : (\bar R)^nat) :
-  P =1 Q -> \sum_(i <oo | P i) f i = \sum_(i <oo | Q i) f i.
+Lemma eq_eseriesl (R : realFieldType) (P Q : pred nat) (f : (\bar R)^nat) N :
+  P =1 Q -> \sum_(N <= i <oo | P i) f i = \sum_(N <= i <oo | Q i) f i.
 Proof. by move=> efg; apply/congr_lim/funext => n; apply: eq_bigl. Qed.
 Arguments eq_eseriesl {R P} Q.
 
@@ -1617,9 +1621,9 @@ Qed.
 
 End ereal_series.
 
-Lemma nneseries_lim_ge (R : realType) (u_ : (\bar R)^nat) (P : pred nat) k :
+Lemma nneseries_lim_ge (R : realType) (u_ : (\bar R)^nat) (P : pred nat) {m} k :
   (forall n, P n -> 0 <= u_ n) ->
-  \sum_(0 <= i < k | P i) u_ i <= \sum_(i <oo | P i) u_ i.
+  \sum_(m <= i < k | P i) u_ i <= \sum_(m <= i <oo | P i) u_ i.
 Proof.
 move/ereal_nondecreasing_series/ereal_nondecreasing_cvgn/cvg_lim => -> //.
 by apply: ereal_sup_ubound; exists k.
@@ -1723,13 +1727,13 @@ by apply/congr_lim/funext => /= n; rewrite ge0_sume_distrr.
 Qed.
 
 Lemma adde_def_nneseries (R : realType) (f g : (\bar R)^nat)
-    (P Q : pred nat) :
+    (P Q : pred nat) m :
   (forall n, P n -> 0 <= f n) -> (forall n, Q n -> 0 <= g n) ->
-  (\sum_(i <oo | P i) f i) +? (\sum_(i <oo | Q i) g i).
+  (\sum_(m <= i <oo | P i) f i) +? (\sum_(m <= i <oo | Q i) g i).
 Proof.
 move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split; apply/orP.
-- by right; apply/eqP => Qg; have := nneseries_ge0 0 g0; rewrite Qg.
-- by left; apply/eqP => Pf; have := nneseries_ge0 0 f0; rewrite Pf.
+- by right; apply/eqP => Qg; have := nneseries_ge0 m g0; rewrite Qg.
+- by left; apply/eqP => Pf; have := nneseries_ge0 m f0; rewrite Pf.
 Qed.
 
 Lemma __deprecated__ereal_cvgPpinfty (R : realFieldType) (u_ : (\bar R)^nat) :
@@ -1962,35 +1966,37 @@ apply/funext => N; apply/esym/eqP; rewrite sube_eq//.
 by rewrite ge0_adde_def//= ?inE; [exact: nneseries_ge0|exact: sume_ge0].
 Qed.
 
-Lemma nneseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) :
+Lemma nneseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) N :
   (forall i, P i -> 0 <= f i) -> (forall i, P i -> 0 <= g i) ->
-  \sum_(i <oo | P i) (f i + g i) =
-  \sum_(i <oo | P i) f i + \sum_(i <oo | P i) g i.
+  \sum_(N <= i <oo | P i) (f i + g i) =
+  \sum_(N <= i <oo | P i) f i + \sum_(N <= i <oo | P i) g i.
 Proof.
 move=> f_eq0 g_eq0.
-transitivity (limn (fun n => \sum_(0 <= i < n | P i) f i +
-                         \sum_(0 <= i < n | P i) g i)).
+transitivity (limn (fun n => \sum_(N <= i < n | P i) f i +
+                         \sum_(N <= i < n | P i) g i)).
   by apply/congr_lim/funext => n; rewrite big_split.
 rewrite limeD /adde_def //=; do ? exact: is_cvg_nneseries.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
            ?[_ < _]real0// nneseries_ge0.
 Qed.
 
-Lemma nneseries_sum_nat (R : realType) n (f : nat -> nat -> \bar R) :
+Lemma nneseries_sum_nat (R : realType) m n (f : nat -> nat -> \bar R) N :
   (forall i j, 0 <= f i j) ->
-  \sum_(j <oo) (\sum_(0 <= i < n) f i j) =
-  \sum_(0 <= i < n) (\sum_(j <oo) (f i j)).
+  \sum_(N <= j <oo) (\sum_(m <= i < n) f i j) =
+  \sum_(m <= i < n) (\sum_(N <= j <oo) f i j).
 Proof.
-move=> f0; elim: n => [|n IHn].
+move=> f0; elim: n => [|n ih].
   by rewrite big_geq// eseries0// => i; rewrite big_geq.
-rewrite big_nat_recr// -IHn/= -nneseriesD//; last by move=> i; rewrite sume_ge0.
-by apply/congr_lim/funext => m; apply: eq_bigr => i _; rewrite big_nat_recr.
+have [mn|nm] := leqP m n.
+  rewrite big_nat_recr// -ih/= -nneseriesD//; last by move=> i; rewrite sume_ge0.
+  by apply/congr_lim/funext => ?; apply: eq_bigr => i _; rewrite big_nat_recr.
+by rewrite big_geq// eseries0// => i; rewrite big_geq.
 Qed.
 
 Lemma nneseries_sum I (r : seq I) (P : {pred I}) [R : realType]
-    [f : I -> nat -> \bar R] : (forall i j, P i -> 0 <= f i j) ->
-  \sum_(j <oo) \sum_(i <- r | P i) f i j =
-  \sum_(i <- r | P i) \sum_(j <oo) f i j.
+    [f : I -> nat -> \bar R] N : (forall i j, P i -> 0 <= f i j) ->
+  \sum_(N <= j <oo) \sum_(i <- r | P i) f i j =
+  \sum_(i <- r | P i) \sum_(N <= j <oo) f i j.
 Proof.
 move=> f_ge0; case Dr : r => [|i r']; rewrite -?{}[_ :: _]Dr.
   by rewrite big_nil eseries0// => i; rewrite big_nil.
