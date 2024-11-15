@@ -969,3 +969,9 @@ Lemma inhabited_witness: inhabited T -> T.
 Proof. by rewrite inhabitedE => /cid[]. Qed.
 
 End Inhabited.
+
+Lemma uncurryK {X Y Z : Type} : cancel (@uncurry X Y Z) curry.
+Proof. by move=> f; rewrite funeq2E. Qed.
+
+Lemma curryK {X Y Z : Type} : cancel curry (@uncurry X Y Z).
+Proof. by move=> f; rewrite funeqE=> -[]. Qed.
