@@ -702,6 +702,12 @@ Lemma sumEFin I s P (F : I -> R) :
   \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%:E.
 Proof. by rewrite (big_morph _ EFinD erefl). Qed.
 
+Lemma EFin_min : {morph (@EFin R) : r s / Num.min r s >-> Order.min r s}.
+Proof. by move=> x y; rewrite !minElt lte_fin -fun_if. Qed.
+
+Lemma EFin_max : {morph (@EFin R) : r s / Num.max r s >-> Order.max r s}.
+Proof. by move=> x y; rewrite !maxElt lte_fin -fun_if. Qed.
+
 Definition adde_def x y :=
   ~~ ((x == +oo) && (y == -oo)) && ~~ ((x == -oo) && (y == +oo)).
 
@@ -2366,18 +2372,12 @@ by move=> [x| |] [y| |]//= _ _; apply/esym; have [ab|ba] := leP x y;
   [apply/max_idPr; rewrite lee_fin|apply/max_idPl; rewrite lee_fin ltW].
 Qed.
 
-Lemma EFin_max : {morph (@EFin R) : r s / Num.max r s >-> maxe r s}.
-Proof. by move=> a b /=; rewrite -fine_max. Qed.
-
 Lemma fine_min :
   {in fin_num &, {mono @fine R : x y / mine x y >-> (Num.min x y)%:E}}.
 Proof.
 by move=> [x| |] [y| |]//= _ _; apply/esym; have [ab|ba] := leP x y;
   [apply/min_idPl; rewrite lee_fin|apply/min_idPr; rewrite lee_fin ltW].
 Qed.
-
-Lemma EFin_min : {morph (@EFin R) : r s / Num.min r s >-> mine r s}.
-Proof. by move=> a b /=; rewrite -fine_min. Qed.
 
 Lemma adde_maxl : left_distributive (@GRing.add (\bar R)) maxe.
 Proof.
