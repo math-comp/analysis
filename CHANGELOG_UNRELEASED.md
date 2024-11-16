@@ -146,7 +146,8 @@
     `Instances.succn_inum`, `Instances.addn_inum`,
     `Instances.double_inum`, `Instances.muln_inum`,
     `Instances.expn_inum`, `Instances.minn_inum`,
-    `Instances.maxn_inum`, `Instances.nat_min_max_typ`
+    `Instances.maxn_inum`, `Instances.nat_min_max_typ`,
+    `Instances.Posz_inum`, `Instances.Negz_inum`
   + lemmas `Itv.spec_real1`, `Itv.spec_real2`,
     `TypInstances.real_domain_typ_spec`,
     `TypInstances.real_field_typ_spec`, `TypInstances.nat_typ_spec`,
@@ -168,7 +169,8 @@
     `Instances.nat_spec_zero`, `Instances.nat_spec_succ`,
     `Instances.nat_spec_add`, `Instances.nat_spec_double`,
     `Instances.nat_spec_mul`, `Instances.nat_spec_exp`,
-    `Instances.nat_spec_min`, `Instances.nat_spec_max`
+    `Instances.nat_spec_min`, `Instances.nat_spec_max`,
+    `Instances.num_spec_Posz`, `Instances.num_spec_Negz`
   + notation `%:num`
   + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
     `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,
