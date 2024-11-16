@@ -49,6 +49,7 @@ From mathcomp Require Import lebesgue_integral kernel.
 (*      uniform_pdf a b == uniform pdf                                        *)
 (*  uniform_prob a b ab == uniform probability over the interval [a,b]        *)
 (*                         with ab0 a proof that 0 < b - a                    *)
+(*              wgt P f == weighted probability measure of P with f           *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
