@@ -1349,3 +1349,69 @@ apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
 Qed.
 
 End uniform_probability.
+
+
+Section weighted.
+Local Open Scope ereal_scope.
+
+Context d (T : measurableType d) (R : realType) (mu : probability T R) (f : T -> \bar R).
+Context (f_nneg : forall x, 0 <= f x) (f_int : mu.-integrable [set: T] f).
+
+Definition nu A := \int[mu]_(x in A) f x.
+
+Lemma nu_sigma_additive : semi_sigma_additive nu.
+Proof.
+move=> /= F mF tF mUF; rewrite/nu; apply: cvg_toP.
+  apply: ereal_nondecreasing_is_cvgn => m n mn.
+  apply: lee_sum_nneg_natr => // k _ _.
+  exact: integral_ge0.
+rewrite ge0_integral_bigcup//=.
+move: f_int => /integrableP[mf _].
+exact: measurable_funS _ _ mf.
+Qed.
+
+Hypothesis (nu_pos : 0 < nu [set: T]).
+
+Definition wgt (A : set T) := (nu A * ((fine (nu [set: T]))^-1)%:E)%E.
+
+Lemma wgt0 : wgt set0 = 0.
+Proof. by rewrite /wgt /nu integral_set0 mul0e. Qed.
+
+Lemma wgt_ge0 : forall x : set T, 0 <= wgt x.
+Proof.
+by move=> x; rewrite /wgt mule_ge0// ?lee_fin ?invr_ge0 ?fine_ge0// integral_ge0//.
+Qed.
+
+Lemma wgt_sigma_additive : semi_sigma_additive wgt.
+Proof.
+move=> /= F mF tF mUF; rewrite/wgt.
+under eq_fun => n do (rewrite -ge0_sume_distrl//; last by move=> i _; apply: integral_ge0).
+apply: cvgeM.
+- apply: mule_def_fin => //.
+  apply: integral_fune_fin_num => //.
+  exact: integrableS _ _ _ f_int.
+- suff: semi_sigma_additive nu; first exact.
+  exact: nu_sigma_additive.
+- exact: cvg_cst.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ wgt
+  wgt0 wgt_ge0 wgt_sigma_additive.
+
+Lemma wgt_setT : wgt [set: T] = 1.
+Proof.
+rewrite /wgt.
+have -> : nu [set: T] = (\int[mu]_x `|f x|).
+  by rewrite /nu; under eq_integral => x _ do rewrite -(@gee0_abs _ (f x))//.
+have /integrableP[_ f_ley] := f_int.
+rewrite -[X in X * _]fineK; last first.
+  by rewrite fin_numElt f_ley (@lt_le_trans _ _ 0)// integral_ge0.
+rewrite -EFinM mulfV//.
+rewrite gt_eqF// fine_gt0// f_ley andbT.
+by under eq_integral => x _ do rewrite gee0_abs//.
+Qed.
+
+HB.instance Definition _ :=
+  @Measure_isProbability.Build _ _ R wgt wgt_setT.
+
+End weighted.
