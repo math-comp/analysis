@@ -181,6 +181,9 @@
     
 - in `normedtype.v`:
   + lemmas `not_near_at_rightP`, `not_near_at_leftP`
+- in `constructive_ereal.v`:
+  + generalized from `realDomainType` to `numDomainType`
+    * lemmas `EFin_min` and `EFin_max`
 
 - in `Rstruct.v`:
   + lemma `RsqrtE`
