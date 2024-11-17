@@ -5428,27 +5428,11 @@ Proof. exact: interval_open. Qed.
 
 Lemma near_in_itvoy :
   {in `]a, +oo[, forall y, \forall z \near y, z \in `]a, +oo[}.
-Proof.
-move=> x ax.
-near=> z.
-suff : z \in `]a, +oo[%classic by rewrite inE.
-near: z.
-rewrite near_nbhs.
-apply: (@open_in_nearW _ _ `]a, +oo[%classic) => //.
-by rewrite inE.
-Unshelve. end_near. Qed.
+Proof. exact: interval_open. Qed.
 
 Lemma near_in_itvNyo :
   {in `]-oo, b[, forall y, \forall z \near y, z \in `]-oo, b[}.
-Proof.
-move=> x xb.
-near=> z.
-suff : z \in `]-oo, b[%classic by rewrite inE.
-near: z.
-rewrite near_nbhs.
-apply: (@open_in_nearW _ _ `]-oo, b[%classic) => //.
-by rewrite inE/=.
-Unshelve. end_near. Qed.
+Proof. exact: interval_open. Qed.
 
 End near_in_itv.
 #[deprecated(since="mathcomp-analysis 1.7.0",
