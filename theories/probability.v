@@ -196,7 +196,7 @@ Lemma expectation_sum (X : seq {RV P >-> R}) :
     (forall Xi, Xi \in X -> P.-integrable [set: T] (EFin \o Xi)) ->
   'E_P[\sum_(Xi <- X) Xi] = \sum_(Xi <- X) 'E_P[Xi].
 Proof.
-elim: X => [|X0 X IHX] intX; first by rewrite !big_nil expectation_cst.
+elim: X => [|X0 X IHX] intX; first by rewrite !big_nil (expectation_cst 0).
 have intX0 : P.-integrable [set: T] (EFin \o X0).
   by apply: intX; rewrite in_cons eqxx.
 have {}intX Xi : Xi \in X -> P.-integrable [set: T] (EFin \o Xi).
@@ -331,7 +331,7 @@ Lemma covarianceDl (X Y Z : {RV P >-> R}) :
 Proof.
 move=> X1 X2 Y1 Y2 Z1 Z2 XZ1 YZ1.
 rewrite [LHS]covarianceE//= ?mulrDl ?compreDr// ?integrableD//.
-rewrite 2?expectationD//=.
+rewrite add_funE 2?expectationD//=.
 rewrite muleDl ?fin_num_adde_defr ?expectation_fin_num//.
 rewrite oppeD ?fin_num_adde_defr ?fin_numM ?expectation_fin_num//.
 by rewrite addeACA 2?covarianceE.
@@ -397,7 +397,7 @@ Proof. by move=> /[dup]; apply: covariance_fin_num. Qed.
 
 Lemma variance_ge0 (X : {RV P >-> R}) : (0 <= 'V_P[X])%E.
 Proof.
-by rewrite /variance unlock; apply: expectation_ge0 => x; apply: sqr_ge0.
+by rewrite /variance unlock mul_funE; apply: expectation_ge0 => x; apply: sqr_ge0.
 Qed.
 
 Lemma variance_cst r : 'V_P[cst r] = 0%E.
@@ -459,7 +459,7 @@ rewrite varianceD/= ?varianceN ?covarianceNr ?muleN//.
 - by rewrite mulrN compreN ?integrableN.
 Qed.
 
-Lemma varianceD_cst_l c (X : {RV P >-> R}) :
+Lemma varianceD_cst_l (c : R) (X : {RV P >-> R}) :
     P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
   'V_P[(cst c \+ X)%R] = 'V_P[X].
 Proof.
@@ -480,7 +480,7 @@ have -> : (X \+ cst c = cst c \+ X)%R by apply/funeqP => x /=; rewrite addrC.
 exact: varianceD_cst_l.
 Qed.
 
-Lemma varianceB_cst_l c (X : {RV P >-> R}) :
+Lemma varianceB_cst_l (c : R) (X : {RV P >-> R}) :
     P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
   'V_P[(cst c \- X)%R] = 'V_P[X].
 Proof.

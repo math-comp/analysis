@@ -838,7 +838,8 @@ set f  := fun x => if x == a then r else if x == b then l else F^`() x.
 have fE : {in `]a, b[, F^`() =1 f}.
   by move=> x; rewrite in_itv/= => /andP[ax xb]; rewrite /f gt_eqF// lt_eqF.
 have DPGFE : {in `]a, b[, (- (PG \o F))%R^`() =1 ((G \o F) * (- f))%R}.
-  move=> x /[dup]xab /andP[ax xb]; rewrite derive1_comp //; last first.
+  move=> x /[dup]xab /andP[ax xb].
+  rewrite (@derive1_comp _ _ (@GRing.opp R)) //; last first.
     apply: diff_derivable; apply: differentiable_comp; apply/derivable1_diffP.
       by case: Fab => + _ _; exact.
     by case: PGFbFa => + _ _; apply; exact: decreasing_image_oo.
@@ -885,7 +886,8 @@ rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE); last 2 first.
 - have [/= dF rF lF] := Fab.
   have := derivable_oo_continuous_bnd_within PGFbFa.
   move=> /(continuous_within_itvP _ FbFa)[_ PGFb PGFa]; split => /=.
-  - move=> x xab; apply/derivable1_diffP; apply: differentiable_comp => //.
+- move=> x xab; apply/derivable1_diffP.
+  apply: (differentiable_comp (g:=@GRing.opp R)) => //.
     apply: differentiable_comp; apply/derivable1_diffP.
       by case: Fab => + _ _; exact.
     by case: PGFbFa => + _ _; apply; exact: decreasing_image_oo.
@@ -908,7 +910,7 @@ rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE); last 2 first.
     rewrite gtr0_norm// ?subr_gt0//.
     by near: t; exact: nbhs_left_ltBl.
 apply: eq_integral_itv_bounded.
-- rewrite mulrN; apply: measurableT_comp => //.
+  - rewrite mulrN; apply: (measurableT_comp (f:=@GRing.opp R)) => //.
   apply: (eq_measurable_fun ((G \o F) * F^`())%R) => //.
     by move=> x; rewrite inE/= => xab; rewrite !fctE fE.
   by move: mGFF'; apply: measurable_funS => //; exact: subset_itv_oo_cc.
@@ -993,13 +995,14 @@ have mF' : measurable_fun `]a, b[ F^`().
   apply: subspace_continuous_measurable_fun => //.
   by apply: continuous_in_subspaceT => x /[!inE] xab; exact: cF'.
 rewrite integral_itv_bndoo//; last first.
-  rewrite compA -(compA G -%R) (_ : -%R \o -%R = id); last first.
+  rewrite (compA _ -%R) -(compA G -%R) (_ : -%R \o -%R = id); last first.
     by apply/funext => y; rewrite /= opprK.
-  apply: measurable_funM => //; apply: measurableT_comp => //.
+  apply: measurable_funM => //.
+  apply: (measurableT_comp (f:=@GRing.opp R)) => //.
   apply: (@eq_measurable_fun _ _ _ _ _ (- F^`())%R).
     move=> x /[!inE] xab; rewrite [in RHS]derive1E deriveN -?derive1E//.
     by case: Fab => + _ _; apply.
-  exact: measurableT_comp.
+  exact: (measurableT_comp (f:=@GRing.opp R)).
 rewrite [in RHS]integral_itv_bndoo//; last exact: measurable_funM.
 apply: eq_integral => x /[!inE] xab; rewrite !fctE !opprK derive1E deriveN.
 - by rewrite opprK -derive1E.

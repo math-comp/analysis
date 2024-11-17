@@ -414,7 +414,7 @@ Proof. by rewrite [RHS]littleoE. Qed.
 
 Lemma oppox (F : filter_on T) (f : T -> V) e x :
   - [o_F e of f] x = [o_F e of - [o_F e of f]] x.
-Proof. by move: x; rewrite -/(- _ =1 _) {1}oppo. Qed.
+Proof. by move: x; rewrite -/(- [o_F e of f] =1 _) {1}oppo. Qed.
 
 Lemma eqadd_some_oP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
   f = g + [o_F e of h] -> littleo_def F (f - g) e.
@@ -596,7 +596,7 @@ Proof. by rewrite [RHS]bigOE. Qed.
 
 Lemma oppOx (F : filter_on T) (f : T -> V) e x :
   - [O_F e of f] x = [O_F e of - [O_F e of f]] x.
-Proof. by move: x; rewrite -/(- _ =1 _) {1}oppO. Qed.
+Proof. by move: x; rewrite -/(- [O_F e of f] =1 _) {1}oppO. Qed.
 
 Lemma add_bigO_subproof (F : filter_on T) e (df dg : {O_F e}) :
   bigO_def F (df \+ dg) e.
@@ -618,7 +618,7 @@ Proof. by rewrite [RHS]bigOE. Qed.
 Lemma addOx (F : filter_on T) (f g: T -> V) e x :
   [O_F e of f] x + [O_F e of g] x =
   [O_F e of [O_F e of f] + [O_F e of g]] x.
-Proof. by move: x; rewrite -/(_ + _ =1 _) {1}addO. Qed.
+Proof. by move: x; rewrite -/([O_F e of f] + _ =1 _) {1}addO. Qed.
 
 Lemma eqadd_some_OP (F : filter_on T) (f g : T -> V) (e : T -> W) h :
   f = g + [O_F e of h] -> bigO_def F (f - g) e.
@@ -848,7 +848,7 @@ Proof. by rewrite [RHS]littleoE. Qed.
 Lemma addox (F : filter_on T) (f g: T -> V) (e : _ -> W) x :
   [o_F e of f] x + [o_F e of g] x =
   [o_F e of [o_F e of f] + [o_F e of g]] x.
-Proof. by move: x; rewrite -/(_ + _ =1 _) {1}addo. Qed.
+Proof. by move: x; rewrite -/([o_F e of f] + _ =1 _) {1}addo. Qed.
 
 (* duplicate from Section Domination *)
 Hint Extern 0 (littleo_def _ _ _) => solve[apply: littleoP] : core.
@@ -871,7 +871,7 @@ Proof. by rewrite [RHS]littleoE. Qed.
 
 Lemma scaleox (F : filter_on T) a (f : T -> V) (e : _ -> W) x :
   a *: ([o_F e of f] x) = [o_F e of a *: [o_F e of f]] x.
-Proof. by move: x; rewrite -/(_ *: _ =1 _) {1}scaleo. Qed.
+Proof. by move: x; rewrite -/(_ *: [o_F e of f] =1 _) {1}scaleo. Qed.
 
 End Domination_numFieldType.
 

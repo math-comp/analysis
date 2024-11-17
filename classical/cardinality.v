@@ -1340,7 +1340,7 @@ Section zmod.
 Context (aT : Type) (rT : zmodType).
 Lemma fimfun_zmod_closed : zmod_closed (@fimfun aT rT).
 Proof.
-split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
+split=> [|f g]; rewrite !inE/=; first exact: (finite_image_cst 0).
 by move=> fA gA; apply: (finite_image11 (fun x y => x - y)).
 Qed.
 HB.instance Definition _ :=

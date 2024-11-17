@@ -409,13 +409,15 @@ Context (aT : pointedType) (rT : ringType).
 
 Lemma fimfun_mulr_closed : mulr_closed (@fimfun aT rT).
 Proof.
-split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst.
+split=> [|f g]; rewrite !inE/=; first exact: finite_image_cst 1.
 by move=> fA gA; exact: (finite_image11 (fun x y => x * y)).
 Qed.
 
 HB.instance Definition _ :=
    @GRing.isMulClosed.Build _ (@fimfun aT rT) fimfun_mulr_closed.
-HB.instance Definition _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
+(* TODO: Why is this not known to HB? *)
+HB.instance Definition _ := @GRing.ZmodClosed.on (@fimfun aT rT).
+HB.instance Definition  _ := [SubZmodule_isSubRing of {fimfun aT >-> rT} by <:].
 
 Implicit Types f g : {fimfun aT >-> rT}.
 
@@ -575,7 +577,7 @@ have g_cts n : continuous (g_ n).
 have g_bd n : forall x, `|g_ n x| <= geometric ((1/3) * M%:num) (2/3) n.
   have [ctsN bdfN] := f_geo n; rewrite /geometric /= -[_ * M%:num * _]mulrA.
   by have [_ _] := projT2 (tietze_step (f_ n) _) ctsN (MN0 n) bdfN.
-pose h_ : nat -> arrow_uniform_type X R^o := @series {uniform X -> _} g_.
+pose h_ : nat -> arrow_uniform_type X R^o := @series {uniform X -> R^o} g_.
 have cvgh' : cvg (h_ @ \oo).
   apply/cauchy_cvgP/cauchy_ballP => eps epos; near_simpl.
   suff : \forall x & x' \near \oo, (x' <= x)%N -> ball (h_ x) eps (h_ x').

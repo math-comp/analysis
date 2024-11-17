@@ -251,7 +251,7 @@ Context d (aT : measurableType d) (rT : realType).
 Lemma mfun_subring_closed : subring_closed (@mfun _ _ aT rT).
 Proof.
 split=> [|f g|f g]; rewrite !inE/=.
-- exact: measurable_cst.
+- exact: measurable_cst (1 : rT).
 - exact: measurable_funB.
 - exact: measurable_funM.
 Qed.
@@ -5991,7 +5991,8 @@ Qed.
 Lemma locally_integrableN D f :
   locally_integrable D f -> locally_integrable D (\- f)%R.
 Proof.
-move=> [mf oD foo]; split => //; first exact: measurableT_comp.
+move=> [mf oD foo]; split => //.
+  exact: (measurableT_comp (f:=@GRing.opp R)).
 by move=> K KD cK; under eq_integral do rewrite normrN; exact: foo.
 Qed.
 
@@ -6482,10 +6483,10 @@ Proof.
 move=> xU mU mUf cg locg; apply/eqP; rewrite eq_le; apply/andP; split.
 - rewrite [leRHS](_ : _ = f^* x + (\- g)%R^* x).
     apply: (lim_sup_davg_le xU) => //.
-    apply/(measurable_comp measurableT) => //.
+    apply/(measurable_comp (f:=@GRing.opp R) measurableT) => //.
     by case: locg => + _ _; exact: measurable_funS.
   rewrite (@continuous_lim_sup_davg (- g)%R _ _ xU mU); first by rewrite adde0.
-  - apply/(measurable_comp measurableT) => //.
+  - apply/(measurable_comp (f:=@GRing.opp R) measurableT) => //.
     by case: locg => + _ _; apply: measurable_funS.
   + by move=> y; exact/continuousN/cg.
 - rewrite [leRHS](_ : _ = ((f \- g)%R^* \+ g^*) x)//.

@@ -113,8 +113,11 @@ Proof. by have [propext _] := extensionality; apply: propext. Qed.
 
 Ltac eqProp := apply: propext; split.
 
+Lemma funext_dep {T} {U : T -> Type} (f g : forall t, U t) : (forall t, f t = g t) -> f = g.
+Proof. exact/functional_extensionality_dep. Qed.
+
 Lemma funext {T U : Type} (f g : T -> U) : (f =1 g) -> f = g.
-Proof. by case: extensionality=> _; apply. Qed.
+Proof. exact/funext_dep. Qed.
 
 Lemma propeqE (P Q : Prop) : (P = Q) = (P <-> Q).
 Proof. by apply: propext; split=> [->|/propext]. Qed.

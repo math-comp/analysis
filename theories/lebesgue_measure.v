@@ -1002,7 +1002,9 @@ Qed.
 
 Lemma measurable_funB D f g : measurable_fun D f ->
   measurable_fun D g -> measurable_fun D (f \- g).
-Proof. by move=> ? ?; apply: measurable_funD =>//; exact: measurableT_comp. Qed.
+Proof.
+by move=> ? ?; apply: measurable_funD =>//; exact: measurableT_comp.
+Qed.
 
 Lemma measurable_funM D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \* g).
