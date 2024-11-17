@@ -88,7 +88,7 @@
     `wedge_compact`, `wedge_connected`.
 
 - in `boolp.`:
-  + lemma `existT_inj`
+  + lemma `existT_inj2`
 - in file `order_topology.v`
   + new lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
     `max_fun_continuous`.
@@ -101,6 +101,16 @@
   + new definition `eval`
   + new lemmas `continuous_curry_fun`, `continuous_curry_cvg`, 
     `eval_continuous`, and `compose_continuous`
+
+- in file `wedge_sigT.v`,
++ new definitions `wedge_fun`, and `wedge_prod`.
++ new lemmas `wedge_fun_continuous`, `wedge_lift_funE`, 
+  `wedge_fun_comp`, `wedge_prod_pointE`, `wedge_prod_inj`, 
+  `wedge_prod_continuous`, `wedge_prod_open`, `wedge_hausdorff`, and 
+  `wedge_fun_joint_continuous`.
+
+- in `boolp.v`:
+  + lemmas `existT_inj1`, `surjective_existT`
 
 ### Changed
 
