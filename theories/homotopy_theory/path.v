@@ -12,21 +12,31 @@ From mathcomp Require Import wedge_sigT.
 (*                                                                            *)
 (* ```                                                                        *)
 (*                                                                            *)
-(*  {path i from x to y} == The space of paths over the bipointed space `i`   *)
-(*                          from x to y through a space T. It is endowed with *)
-(*                          the compact-open topology.                        *)
 (*    mk_path ctsf f0 f1 == constructs a value in `pathType x y` given proofs *)
 (*                          that the endpoints of `f` are `x` and `y`.        *)
 (*  reparameterize f phi == the path `f` with a different parameterization    *)
 (*        chain_path f g == the path which follows f, then follows g. Only    *)
 (*                          makes sense when `f one = g zero`. The domain is  *)
 (*                          the wedge of domains of `f` and `g`.              *)
+(* ```                                                                        *)
+(* The type `{path i from x to y in T}` is the continuous functions on the    *)
+(* bipointed space i that go from x to y staying in T. It is endowed with     *)
+(* - Topology via the compact-open topology                                   *)
 (*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
+Reserved Notation "{ 'path' i 'from' x 'to' y }" (
+  at level 0, i at level 69, x at level 69, y at level 69,
+  only parsing,
+  format "{ 'path'  i  'from'  x  'to'  y }").
+
+Reserved Notation "{ 'path' i 'from' x 'to' y 'in' T }" (
+  at level 0, i at level 69, x at level 69, y at level 69, T at level 69, 
+  format "{ 'path'  i  'from'  x  'to'  y  'in'  T }").
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -42,9 +52,10 @@ HB.mixin Record isPath {i : bpTopologicalType} {T: topologicalType} (x y : T)
 HB.structure Definition Path {i : bpTopologicalType} {T: topologicalType} 
   (x y : T) := {f of isPath i T x y f & isContinuous i T f}.
 
-Notation "{ 'path' i 'from' x 'to' y }" := 
-  (pathType i x y) (at level 0) : type_scope.
-
+Notation "{ 'path' i 'from' x 'to' y }" := (pathType i x y) : type_scope.
+Notation "{ 'path' i 'from' x 'to' y 'in' T }" := 
+  (@pathType i T x y) : type_scope.
+  
 HB.instance Definition _ {i : bpTopologicalType} 
     {T : topologicalType} (x y : T) := gen_eqMixin {path i from x to y}.
 HB.instance Definition _ {i : bpTopologicalType} 
@@ -99,7 +110,7 @@ End path_compose.
 
 Section path_reparameterize.
 Context {T : topologicalType} (i j: bpTopologicalType) (x y : T).
-Context (f : {path i from x to y}) (phi : {path j from (@zero i) to one}).
+Context (f : {path i from x to y}) (phi : {path j from zero to one in i}).
 
 (* we use reparameterize, as opposed to just `\o` because we can simplify
    the endpoints. So we don't end up with `f \o p : {path j from f zero to f one}`
@@ -137,7 +148,7 @@ Definition chain_path {i j : bpTopologicalType} {T : topologicalType}
     (f : i -> T) (g : j -> T) : bpwedge i j -> T :=
   wedge_fun (fun b => if b return (if b then i else j) -> T then f else g).
 
-Local Lemma chain_path_cts_point {i j : bpTopologicalType} {T : topologicalType} 
+Lemma chain_path_cts_point {i j : bpTopologicalType} {T : topologicalType} 
     (f : i -> T) (g : j -> T) : 
   continuous f ->
   continuous g ->
@@ -166,8 +177,8 @@ Qed.
 
 Local Lemma chain_path_cts : continuous (chain_path p q).
 Proof.
-by apply: wedge_fun_continuous; case; (try now (exact: cts_fun));
-  case => //=;rewrite ?path_one ?path_zero //.
+apply: chain_path_cts_point; try exact: cts_fun.
+by rewrite path_zero path_one.
 Qed.
 
 HB.instance Definition _ :=  @isContinuous.Build _ T (chain_path p q)

@@ -112,6 +112,13 @@
 - in `boolp.v`:
   + lemmas `existT_inj1`, `surjective_existT`
 
+- in file `homotopy_theory/path.v`,
+  + new definitions `reparameterize`, `mk_path`, and `chain_path`.
+  + new lemmas `path_eqP`, and `chain_path_cts_point`.
+- in file `homotopy_theory/wedge_sigT.v`,
+  + new definition `wedge2p`.
+  + new notations `bpwedge`, and `bpwedge_lift`.
+
 ### Changed
 
 - in file `normedtype.v`,
