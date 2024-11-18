@@ -24,6 +24,9 @@ From mathcomp Require Import separation_axioms function_spaces.
 (*          wedge_prod == the mapping from the wedge as a quotient of sums to *)
 (*                        the wedge as a subspace of the product topology.    *)
 (*                        It's an embedding when the index is finite.         *)
+(*             bpwedge == wedge of two bipointed spaces gluing zero to one    *)
+(*             wedge2p == the shared point in the bpwedge                     *)
+(*        bpwedge_lift == wedge_lift specialized to the bipoitned wedge       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* The type `wedge p0` is endowed with the structures of:                     *)
@@ -35,6 +38,10 @@ From mathcomp Require Import separation_axioms function_spaces.
 (* - quotient                                                                 *)
 (* - pointed                                                                  *)
 (*                                                                            *)
+(* The type `bpwedge` is endowed with the structures of:                      *)
+(* - topology via `quotient_topology`                                         *)
+(* - quotient                                                                 *)
+(* - bipointed                                                                *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -379,3 +386,25 @@ HB.instance Definition _ := Quotient.on pwedge.
 HB.instance Definition _ := isPointed.Build pwedge pwedge_point.
 
 End pwedge.
+
+Section bpwedge.
+Context (X Y : bpTopologicalType).
+Definition wedge2p b := if b return (if b then X else Y) then (@one X) else (@zero Y).
+Local Notation bpwedge := (@wedge bool _ wedge2p).
+Local Notation bpwedge_lift := (@wedge_lift bool _ wedge2p).
+  
+Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one .
+Proof.
+apply/eqP => R; have /eqmodP/orP[/eqP //|/andP[ /= + _]] := R.
+by have := (@zero_one_neq X) => /[swap] ->.
+Qed.
+
+Local Lemma bpwedgeE : @bpwedge_lift true one = @bpwedge_lift false zero .
+Proof. by apply/eqmodP/orP; right; apply/andP; split. Qed.
+
+HB.instance Definition _ := @isBiPointed.Build 
+  bpwedge (@bpwedge_lift true zero) (@bpwedge_lift false one) wedge_neq.
+End bpwedge.
+
+Notation bpwedge X Y := (@wedge bool _ (wedge2p X Y)).
+Notation bpwedge_lift X Y := (@wedge_lift bool _ (wedge2p X Y)).
