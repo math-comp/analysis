@@ -72,39 +72,38 @@ HB.structure Definition Tvs (R : numDomainType) :=
   {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
 Section properties_of_topologicallmodule.
-Context (R : numDomainType) (E : topologicalType)
-    (Me : GRing.Lmodule R E) (U : set E).
-Let ME := GRing.Lmodule.Pack Me.
+Context (R : numDomainType) (E : TopologicalLmodule.type R)
+     (U : set E).
 
-Lemma nbhsN_subproof (f : continuous (fun z : R^o * E => z.1 *: (z.2 : ME))) (x : E) :
-  nbhs x U -> nbhs (-(x:ME)) (-%R @` (U : set ME)).
+Lemma nbhsN_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2)) (x : E) :
+  nbhs x U -> nbhs (-x) (-%R @` U).
 Proof.
-move=> Ux; move: (f (-1, - (x:ME)) U); rewrite /= scaleN1r opprK => /(_ Ux) [] /=.
-move=> [B] B12 [B1 B2] BU; near=> y; exists (- (y:ME)); rewrite ?opprK// -scaleN1r//.
+move=> Ux; move: (f (-1, -x) U); rewrite /= scaleN1r opprK => /(_ Ux) [] /=.
+move=> [B] B12 [B1 B2] BU; near=> y; exists (- y); rewrite ?opprK// -scaleN1r//.
 apply: (BU (-1, y)); split => /=; last by near: y.
 by move: B1 => [] ? ?; apply => /=; rewrite subrr normr0.
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: (z.2:ME) : E)) :
-  nbhs (0 :ME) (U : set ME) -> nbhs (0 : ME) (-%R @` (U : set ME)).
+Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2)) :
+  nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof. by move => Ux; rewrite -oppr0; exact: nbhsN_subproof. Qed.
 
-Lemma nbhsT_subproof (f : continuous (fun x : E * E => (x.1 : ME) + (x.2 : ME))) (x : E) :
-  nbhs (0 : ME) U -> nbhs (x : ME) (+%R (x : ME) @` U).
+Lemma nbhsT_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (x : E) :
+  nbhs 0 U -> nbhs x (+%R x @` U).
 Proof.
-move => U0; have /= := f (x, -(x : ME)) U; rewrite subrr => /(_ U0).
+move => U0; have /= := f (x, -x) U; rewrite subrr => /(_ U0).
 move=> [B] [B1 B2] BU; near=> x0.
-exists ((x0 : ME) - (x : ME)); last by rewrite addrCA subrr addr0.
-by apply: (BU ((x0 : ME), -(x : ME))); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+exists (x0 - x); last by rewrite addrCA subrr addr0.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhsB_subproof (f : continuous (fun x : E * E => (x.1 : ME) + (x.2 : ME))) (z x : E) :
-  nbhs (z : ME) U -> nbhs ((x : ME) + (z : ME)) (+%R (x : ME) @` U).
+Lemma nbhsB_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (z x : E) :
+  nbhs z U -> nbhs (x + z) (+%R x @` U).
 Proof.
-move=> U0; move: (@f ((x : ME) + (z : ME), -(x : ME)) U); rewrite /= addrAC subrr add0r.
+move=> U0; move: (@f (x + z, -x) U); rewrite /= addrAC subrr add0r.
 move=> /(_ U0)[B] [B1 B2] BU; near=> x0.
-exists ((x0 : ME) - (x : ME)); last by rewrite addrCA subrr addr0.
-by apply: (BU ((x0 : ME), -(x : ME))); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+exists (x0 - x); last by rewrite addrCA subrr addr0.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
 End properties_of_topologicallmodule.
