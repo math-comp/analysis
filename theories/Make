@@ -78,6 +78,7 @@ lebesgue_integral_theory/lebesgue_integral.v
 ftc.v
 hoelder.v
 probability.v
+independence.v
 lebesgue_stieltjes_measure.v
 convex.v
 charge.v
