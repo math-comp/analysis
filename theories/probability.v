@@ -1245,13 +1245,12 @@ Section independent_RVs.
 Context {R : realType} d d' (T : measurableType d) (T' : measurableType d').
 Variable P : probability T R.
 
-Definition independent_RVs (I0 : choiceType) (I : set I0)
-    (X : I0 -> {mfun T >-> T'}) : Prop :=
+Definition independent_RVs (I0 : choiceType)
+    (I : set I0) (X : I0 -> {mfun T >-> T'}) : Prop :=
   mutual_independence P I (fun i => g_sigma_algebra_mapping (X i)).
 
 Definition independent_RVs2 (X Y : {mfun T >-> T'}) :=
-  independent_RVs [set 0%N; 1%N]
-    [eta (fun=> cst point) with 0%N |-> X, 1%N |-> Y].
+  independent_RVs [set: bool] [eta (fun=> cst point) with false |-> X, true |-> Y].
 
 End independent_RVs.
 
@@ -1286,54 +1285,54 @@ Local Open Scope ring_scope.
 Lemma independent_RVs2_comp (X Y : {RV P >-> R}) (f g : {mfun R >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P (f \o X) (g \o Y).
 Proof.
-move=> indeXY; split => [i [|]->{i}/= Z/=|J J01 E JE].
-- by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
-    exact/measurableT_comp.
-- by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
-    exact/measurableT_comp.
-- apply indeXY => //= i iJ; have := JE _ iJ.
-  have : i \in [set 0%N; 1%N] by rewrite inE; apply: J01.
-  rewrite inE/= => -[|] /eqP ->/=; rewrite !inE.
-  + exact: g_sigma_algebra_mapping_comp.
-  + by case: ifPn => [/eqP ->|i0]; exact: g_sigma_algebra_mapping_comp.
+move=> indeXY; split => /=.
+- move=> [] _ /= A.
+  + by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
+      exact/measurableT_comp.
+  + by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
+      exact/measurableT_comp.
+- move=> J _ E JE.
+  apply indeXY => //= i iJ; have := JE _ iJ.
+  by move: i {iJ} =>[|]//=; rewrite !inE => Eg;
+    exact: g_sigma_algebra_mapping_comp Eg.
 Qed.
 
 Lemma independent_RVs2_funrposneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\-.
 Proof.
-move=> indeXY; split=> [/= i [|] -> /=|J J01 E JE].
-- exact: g_sigma_algebra_mapping_funrpos.
+move=> indeXY; split=> [[|]/= _|J J2 E JE].
 - exact: g_sigma_algebra_mapping_funrneg.
+- exact: g_sigma_algebra_mapping_funrpos.
 - apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J01 : (iJ) => /= -[|] ->//=; rewrite !inE.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R).
-    exact: measurable_funrpos.
+  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
     exact: measurable_funrneg.
+  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R) => //.
+    exact: measurable_funrpos.
 Qed.
 
 Lemma independent_RVs2_funrnegpos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\+.
 Proof.
-move=> indeXY; split=> [/= i [|] -> /=|J J01 E JE].
-- exact: g_sigma_algebra_mapping_funrneg.
+move=> indeXY; split=> [/= [|]// _ |J J2 E JE].
 - exact: g_sigma_algebra_mapping_funrpos.
+- exact: g_sigma_algebra_mapping_funrneg.
 - apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J01 : (iJ) => /= -[|] ->//=; rewrite !inE.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
-    exact: measurable_funrneg.
+  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R).
     exact: measurable_funrpos.
+  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
+    exact: measurable_funrneg.
 Qed.
 
 Lemma independent_RVs2_funrnegneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\-.
 Proof.
-move=> indeXY; split=> [/= i [|] -> /=|J J01 E JE].
+move=> indeXY; split=> [/= [|]// _ |J J2 E JE].
 - exact: g_sigma_algebra_mapping_funrneg.
 - exact: g_sigma_algebra_mapping_funrneg.
 - apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J01 : (iJ) => /= -[|] ->//=; rewrite !inE.
+  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
     exact: measurable_funrneg.
   + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
@@ -1343,11 +1342,11 @@ Qed.
 Lemma independent_RVs2_funrpospos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\+.
 Proof.
-move=> indeXY; split=> [/= i [|] -> /=|J J01 E JE].
+move=> indeXY; split=> [/= [|]//= _ |J J2 E JE].
 - exact: g_sigma_algebra_mapping_funrpos.
 - exact: g_sigma_algebra_mapping_funrpos.
 - apply indeXY => //= i iJ; have := JE _ iJ.
-  move/J01 : (iJ) => /= -[|] ->//=; rewrite !inE.
+  move/J2 : iJ; move: i => [|]// _; rewrite !inE.
   + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R).
     exact: measurable_funrpos.
   + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R).
@@ -1486,15 +1485,14 @@ have {EX EY}EXY' : 'E_P[X_ n] * 'E_P[Y_ n] @[n --> \oo] --> 'E_P[X] * 'E_P[Y].
 suff : forall n, 'E_P[X_ n \* Y_ n] = 'E_P[X_ n] * 'E_P[Y_ n].
   by move=> suf; apply: (cvg_unique _ EXY) => //=; under eq_fun do rewrite suf.
 move=> n; apply: expectationM_nnsfun => x y xX_ yY_.
-suff : P (\big[setI/setT]_(j <- [fset 0%N; 1%N]%fset)
+suff : P (\big[setI/setT]_(j <- [fset false; true]%fset)
     [eta fun=> set0 with 0%N |-> X_ n @^-1` [set x],
                        1%N |-> Y_ n @^-1` [set y]] j) =
-   \prod_(j <- [fset 0%N; 1%N]%fset)
+   \prod_(j <- [fset false; true]%fset)
       P ([eta fun=> set0 with 0%N |-> X_ n @^-1` [set x],
                             1%N |-> Y_ n @^-1` [set y]] j).
   by rewrite !big_fsetU1/= ?inE//= !big_seq_fset1/=.
 move: indeXY => [/= _]; apply => // i.
-  by rewrite /= !inE => /orP[|]/eqP ->; auto.
 pose AX := dyadic_approx setT (EFin \o X).
 pose AY := dyadic_approx setT (EFin \o Y).
 pose BX := integer_approx setT (EFin \o X).
@@ -1502,7 +1500,7 @@ pose BY := integer_approx setT (EFin \o Y).
 have mA (Z : {RV P >-> R}) m k : (k < m * 2 ^ m)%N ->
     g_sigma_algebra_mapping Z (dyadic_approx setT (EFin \o Z) m k).
   move=> mk; rewrite /g_sigma_algebra_mapping /dyadic_approx mk setTI.
-  rewrite /preimage_class/=; exists [set` dyadic_itv R m k] => //.
+  rewrite /preimage_set_system/=; exists [set` dyadic_itv R m k] => //.
   rewrite setTI/=; apply/seteqP; split => z/=.
     by rewrite inE/= => Zz; exists (Z z).
   by rewrite inE/= => -[r rmk] [<-].
