@@ -185,8 +185,6 @@
   + lemma `partition_disjoint_bigfcup`
 - in `lebesgue_measure.v`:
   + lemma `measurable_indicP`
-- in `constructive_ereal.v`:
-  + notation `\prod_( i <- r | P ) F` for extended real numbers and its variants
 
 - in `numfun.v`:
   + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
@@ -202,7 +200,6 @@
     notations `.-mapping`, `.-mapping.-measurable`
 
 - in `lebesgue_measure.v`:
-  + lemma `measurable_indicP`
   + lemmas `measurable_funrpos`, `measurable_funrneg`
 
 - in `lebesgue_integral.v`:
@@ -219,7 +216,8 @@
 - in `probability.v`:
   + lemma `expectation_def`
   + notation `'M_`
-- in `probability.v`:
+
+- new file `independence.v`:
   + lemma `expectationM_ge0`
   + definition `independent_events`
   + definition `mutual_independence`
@@ -374,61 +372,6 @@
   + `sigma_algebra_preimage_classE` -> `g_sigma_preimageE`
   + `preimage_classes_comp` -> `g_sigma_preimageU_comp`
   
-
-- in file `normedtype.v`,
-     changed `completely_regular_space` to depend on uniform separators
-     which removes the dependency on `R`.  The old formulation can be
-     recovered easily with `uniform_separatorP`.
-
-- moved from `Rstruct.v` to `Rstruct_topology.v`
-  + lemmas `continuity_pt_nbhs`, `continuity_pt_cvg`,
-    `continuity_ptE`, `continuity_pt_cvg'`, `continuity_pt_dnbhs`
-    and `nbhs_pt_comp`
-
-- moved from `real_interval.v` to `normedtype.v`
-  + lemmas `set_itvK`, `RhullT`, `RhullK`, `set_itv_setT`,
-    `Rhull_smallest`, `le_Rhull`, `neitv_Rhull`, `Rhull_involutive`,
-    `disj_itv_Rhull`
-- in `topology.v`:
-  + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
-    `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
-	into local `Let`'s
-
-- in `lebesgue_integral.v`:
-  + structure `SimpleFun` now inside a module `HBSimple`
-  + structure `NonNegSimpleFun` now inside a module `HBNNSimple`
-  + lemma `cst_nnfun_subproof` has now a different statement
-  + lemma `indic_nnfun_subproof` has now a different statement
-- in `mathcomp_extra.v`:
-  + definition `idempotent_fun`
-
-- in `topology_structure.v`:
-  + definitions `regopen`, `regclosed`
-  + lemmas `closure_setC`, `interiorC`, `closureU`, `interiorU`,
-           `closureEbigcap`, `interiorEbigcup`,
-	   `closure_open_regclosed`, `interior_closed_regopen`,
-	   `closure_interior_idem`, `interior_closure_idem`
-
-- in file `topology_structure.v`,
-  + mixin `isContinuous`, type `continuousType`, structure `Continuous`
-  + new lemma `continuousEP`.
-  + new definition `mkcts`.
-
-- in file `subspace_topology.v`,
-  + new lemmas `continuous_subspace_setT`, `nbhs_prodX_subspace_inE`, and
-    `continuous_subspace_prodP`.
-  + type `continuousFunType`, HB structure `ContinuousFun`
-
-- in file `subtype_topology.v`,
-  + new lemmas `subspace_subtypeP`, `subspace_sigL_continuousP`,
-    `subspace_valL_continuousP'`, `subspace_valL_continuousP`, `sigT_of_setXK`,
-    `setX_of_sigTK`, `setX_of_sigT_continuous`, and `sigT_of_setX_continuous`.
-
-- in `lebesgue_integrale.v`
-  + change implicits of `measurable_funP`
-
-### Changed
-
 ### Renamed
 
 - in `lebesgue_measure.v`:
@@ -453,7 +396,6 @@
 
 - in `probability.v`:
   + `integral_distribution` -> `ge0_integral_distribution`
-  + `expectationM` -> `expectationMl`
 
 - file `homotopy_theory/path.v` -> `homotopy_theory/continuous_path.v`
 
