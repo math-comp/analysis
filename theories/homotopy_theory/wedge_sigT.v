@@ -26,7 +26,7 @@ From mathcomp Require Import separation_axioms function_spaces.
 (*                        It's an embedding when the index is finite.         *)
 (*             bpwedge == wedge of two bipointed spaces gluing zero to one    *)
 (*             wedge2p == the shared point in the bpwedge                     *)
-(*        bpwedge_lift == wedge_lift specialized to the bipoitned wedge       *)
+(*        bpwedge_lift == wedge_lift specialized to the bipointed wedge       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* The type `wedge p0` is endowed with the structures of:                     *)
@@ -389,20 +389,21 @@ End pwedge.
 
 Section bpwedge.
 Context (X Y : bpTopologicalType).
-Definition wedge2p b := if b return (if b then X else Y) then (@one X) else (@zero Y).
+
+Definition wedge2p b :=
+  if b return (if b then X else Y) then @one X else @zero Y.
 Local Notation bpwedge := (@wedge bool _ wedge2p).
 Local Notation bpwedge_lift := (@wedge_lift bool _ wedge2p).
-  
-Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one .
+
+Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one.
 Proof.
-apply/eqP => R; have /eqmodP/orP[/eqP //|/andP[ /= + _]] := R.
-by have := (@zero_one_neq X) => /[swap] ->.
+by apply/eqP => /eqmodP/predU1P[//|/andP[/= + _]]; exact/negP/zero_one_neq.
 Qed.
 
 Local Lemma bpwedgeE : @bpwedge_lift true one = @bpwedge_lift false zero .
-Proof. by apply/eqmodP/orP; right; apply/andP; split. Qed.
+Proof. by apply/eqmodP/orP; rewrite !eqxx; right. Qed.
 
-HB.instance Definition _ := @isBiPointed.Build 
+HB.instance Definition _ := @isBiPointed.Build
   bpwedge (@bpwedge_lift true zero) (@bpwedge_lift false one) wedge_neq.
 End bpwedge.
 
