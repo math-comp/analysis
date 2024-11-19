@@ -1608,11 +1608,7 @@ move=> m n mn; rewrite (nnsfun_approxE n) (nnsfun_approxE m).
 exact: nd_approx.
 Qed.
 
-<<<<<<< HEAD
 #[deprecated(since="mathcomp-analysis 1.8.0", note="use `nnsfun_approx`, `cvg_nnsfun_approx`, and `nd_nnsfun_approx` instead")]
-=======
-#[deprecated(since="mathcomp-analysis 1.7.0", note="use `nnsfun_approx`, `cvg_nnsfun_approx`, and `nd_nnsfun_approx` instead")]
->>>>>>> da1f3437 (expectation of product)
 Lemma approximation : (forall t, D t -> (0 <= f t)%E) ->
   exists g : {nnsfun T >-> R}^nat, nondecreasing_seq (g : (T -> R)^nat) /\
                         (forall x, D x -> EFin \o g^~ x @ \oo --> f x).
