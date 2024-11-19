@@ -105,6 +105,8 @@ probability_theory/poisson_distribution.v
 probability_theory/beta_distribution.v
 probability_theory/probability.v
 
+independence.v
+
 convex.v
 charge.v
 kernel.v
