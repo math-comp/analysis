@@ -137,6 +137,8 @@ theories/probability_theory/poisson_distribution.v
 theories/probability_theory/beta_distribution.v
 theories/probability_theory/probability.v
 
+theories/independence.v
+
 theories/convex.v
 theories/charge.v
 theories/kernel.v
