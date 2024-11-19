@@ -38,10 +38,6 @@ From mathcomp Require Import ftc gauss_integral.
 (*              cdf X r == cumulative distribution function of X              *)
 (*                      := distribution P X `]-oo, r]                         *)
 (*        enum_prob X k == probability of the kth value in the range of X     *)
-(* independent_events I F == the events F indexed by I are independent        *)
-(* mutual_independence I F == the classes F indexed by I are independent      *)
-(* independent_RVs I X == the random variables X indexed by I are independent *)
-(* independent_RVs2 X Y == the random variables X and Y are independent       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
@@ -1163,7 +1159,7 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   ((y * y')%:E * \int[P]_w (\1_(f @^-1` [set y] `&` g @^-1` [set y']) w)%:E))).
   rewrite ge0_integral_fsum//=; last 2 first.
   - move=> r; under eq_fun do rewrite -fsumEFin//.
-    apply: emeasurable_fun_fsum => // s.
+    apply: emeasurable_fsum => // s.
     apply/measurable_EFinP/measurable_funM => //.
     exact/measurable_indic/measurableI.
   - move=> r t _; rewrite lee_fin sumr_ge0 // => s _; rewrite -lee_fin.
