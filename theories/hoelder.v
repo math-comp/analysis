@@ -95,7 +95,7 @@ Section Lnorm_properties.
   Qed.
 
   End Lnorm_properties.
-
+  Check Lnorm.
   #[global]
   Hint Extern 0 (0 <= Lnorm _ _ _) => solve [apply: Lnorm_ge0] : core.
 
