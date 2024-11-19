@@ -24,8 +24,9 @@ From mathcomp Require Import separation_axioms function_spaces.
 (*          wedge_prod == the mapping from the wedge as a quotient of sums to *)
 (*                        the wedge as a subspace of the product topology.    *)
 (*                        It's an embedding when the index is finite.         *)
+(* bpwedge_shared_pt b == the shared point in the bpwedge. Either zero or one *)
+(*                        depending on `b`.                                   *)
 (*             bpwedge == wedge of two bipointed spaces gluing zero to one    *)
-(*             wedge2p == the shared point in the bpwedge                     *)
 (*        bpwedge_lift == wedge_lift specialized to the bipointed wedge       *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -390,10 +391,10 @@ End pwedge.
 Section bpwedge.
 Context (X Y : bpTopologicalType).
 
-Definition wedge2p b :=
+Definition bpwedge_shared_pt b :=
   if b return (if b then X else Y) then @one X else @zero Y.
-Local Notation bpwedge := (@wedge bool _ wedge2p).
-Local Notation bpwedge_lift := (@wedge_lift bool _ wedge2p).
+Local Notation bpwedge := (@wedge bool _ bpwedge_shared_pt).
+Local Notation bpwedge_lift := (@wedge_lift bool _ bpwedge_shared_pt).
 
 Local Lemma wedge_neq : @bpwedge_lift true zero != @bpwedge_lift false one.
 Proof.
@@ -407,5 +408,5 @@ HB.instance Definition _ := @isBiPointed.Build
   bpwedge (@bpwedge_lift true zero) (@bpwedge_lift false one) wedge_neq.
 End bpwedge.
 
-Notation bpwedge X Y := (@wedge bool _ (wedge2p X Y)).
-Notation bpwedge_lift X Y := (@wedge_lift bool _ (wedge2p X Y)).
+Notation bpwedge X Y := (@wedge bool _ (bpwedge_shared_pt X Y)).
+Notation bpwedge_lift X Y := (@wedge_lift bool _ (bpwedge_shared_pt X Y)).

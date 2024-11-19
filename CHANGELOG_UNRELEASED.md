@@ -116,7 +116,7 @@
   + new definitions `reparameterize`, `mk_path`, and `chain_path`.
   + new lemmas `path_eqP`, and `chain_path_cts_point`.
 - in file `homotopy_theory/wedge_sigT.v`,
-  + new definition `wedge2p`.
+  + new definition `bpwedge_shared_pt`.
   + new notations `bpwedge`, and `bpwedge_lift`.
 
 ### Changed
