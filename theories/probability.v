@@ -1384,7 +1384,7 @@ transitivity (\sum_(y \in range f) (\sum_(y' \in range g)
   ((y * y')%:E * \int[P]_w (\1_(f @^-1` [set y] `&` g @^-1` [set y']) w)%:E))).
   rewrite ge0_integral_fsum//=; last 2 first.
   - move=> r; under eq_fun do rewrite -fsumEFin//.
-    apply: emeasurable_fun_fsum => // s.
+    apply: emeasurable_fsum => // s.
     apply/measurable_EFinP/measurable_funM => //.
     exact/measurable_indic/measurableI.
   - move=> r t _; rewrite lee_fin sumr_ge0 // => s _; rewrite -lee_fin.
