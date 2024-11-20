@@ -164,7 +164,13 @@
     `setX_of_sigTK`, `setX_of_sigT_continuous`, and `sigT_of_setX_continuous`.
 
 - in `tvs.v`:
-  + HB.structure `Tvs`
+  + HB structures `NbhsNmodule`, `NbhsZmodule`, `NbhsLmodule`, `TopologicalNmodule`,
+    `TopologicalZmodule`
+  + notation `topologicalLmoduleType`, HB structure `TopologicalLmodule`
+  + HB structures `UniformZmodule`, `UniformLmodule`
+  + definition `convex`
+  + mixin `Uniform_isTvs`
+  + type `tvsType`, HB.structure `Tvs`
   + HB.factory `TopologicalLmod_isTvs`
   + lemma `nbhs0N`
   + lemma `nbhsN`
@@ -172,8 +178,6 @@
   + lemma `nbhsB`
   + lemma `nbhs0Z`
   + lemma `nbhZ`
-  + HB.Instance of a Tvs od R^o
-  + HB.Instance of a Tvs on a product of Tvs
   
 ### Changed
 
