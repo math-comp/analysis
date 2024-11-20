@@ -13,12 +13,30 @@ From mathcomp Require Import separation_axioms.
 (*                                                                            *)
 (* This file introduces locally convex topological vector spaces.             *)
 (* ```                                                                        *)
+(*            NbhsNmodule == HB class, join of Nbhs and Nmodule               *)
+(*            NbhsZmodule == HB class, join of Nbhs and Zmodule               *)
+(*          NbhsLmodule K == HB class, join of Nbhs and Lmodule over K        *)
+(*                           K is a numDomainType.                            *)
+(*     TopologicalNmodule == HB class, joint of Topological and Nmodule       *)
+(*     TopologicalZmodule == HB class, joint of Topological and Zmodule       *)
+(*  topologicalLmodType K == topological space and Lmodule over K             *)
+(*                           K is a numDomainType.                            *)
+(*                           The HB class is TopologicalLmodule.              *)
+(*         UniformZmodule == HB class, joint of Uniform and Zmodule           *)
+(*       UniformLmodule K == HB class, joint of Uniform and Lmodule over K    *)
+(*                           K is a numDomainType.                            *)
+(*               convex A == A : set M is a convex set of elements of M       *)
+(*                           M is an Lmodule over R : numDomainType.          *)
 (*             tvsType R  == interface type for a locally convex topological  *)
 (*                           vector space on a numDomain R                    *)
-(*                           A tvs is constructed over a uniform space        *)
+(*                           A tvs is constructed over a uniform space.       *)
+(*                           The HB class is Tvs.                             *)
 (*  TopologicalLmod_isTvs == factory allowing the construction of a tvs from  *)
-(*                           a lmodule which is also a topological space.     *)
+(*                           an Lmodule which is also a topological space.    *)
 (*  ```                                                                       *)
+(* HB instances:                                                              *)
+(* - The type R^o (R : numFieldType) is endowed with the structure of Tvs.    *)
+(* - The product of two Tvs is endowed with the structure of Tvs.             *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -45,19 +63,22 @@ HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
 HB.structure Definition NbhsLmodule (K : numDomainType) :=
   {M of Nbhs M & GRing.Lmodule K M}.
 
-HB.structure Definition TopologicalNmodule := {M of Topological M & GRing.Nmodule M}.
+HB.structure Definition TopologicalNmodule :=
+  {M of Topological M & GRing.Nmodule M}.
 HB.structure Definition TopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
+
+#[short(type="topologicalLmodType")]
 HB.structure Definition TopologicalLmodule (K : numDomainType) :=
   {M of Topological M & GRing.Lmodule K M}.
+
 HB.structure Definition UniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 HB.structure Definition UniformLmodule (K : numDomainType) :=
   {M of Uniform M & GRing.Lmodule K M}.
 
 Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A ->
-  (0< lambda) -> (lambda < 1) -> lambda *: x + (1 - lambda) *: y \in A.
-
+  0 < lambda -> lambda < 1 -> lambda *: x + (1 - lambda) *: y \in A.
 
 HB.mixin Record Uniform_isTvs (R : numDomainType) E
     of Uniform E & GRing.Lmodule R E := {
@@ -71,43 +92,41 @@ HB.mixin Record Uniform_isTvs (R : numDomainType) E
 HB.structure Definition Tvs (R : numDomainType) :=
   {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
 
-Section properties_of_topologicallmodule.
-Context (R : numDomainType) (E : topologicalType)
-    (Me : GRing.Lmodule R E) (U : set E).
-Let ME := GRing.Lmodule.Pack Me.
+Section properties_of_topologicalLmodule.
+Context (R : numDomainType) (E : topologicalLmodType R) (U : set E).
 
-Lemma nbhsN_subproof (f : continuous (fun z : R^o * E => z.1 *: (z.2 : ME))) (x : E) :
-  nbhs x U -> nbhs (-(x:ME)) (-%R @` (U : set ME)).
+Lemma nbhsN_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2)) (x : E) :
+  nbhs x U -> nbhs (-x) (-%R @` U).
 Proof.
-move=> Ux; move: (f (-1, - (x:ME)) U); rewrite /= scaleN1r opprK => /(_ Ux) [] /=.
-move=> [B] B12 [B1 B2] BU; near=> y; exists (- (y:ME)); rewrite ?opprK// -scaleN1r//.
+move=> Ux; move: (f (-1, -x) U); rewrite /= scaleN1r opprK => /(_ Ux) [] /=.
+move=> [B] B12 [B1 B2] BU; near=> y; exists (- y); rewrite ?opprK// -scaleN1r//.
 apply: (BU (-1, y)); split => /=; last by near: y.
 by move: B1 => [] ? ?; apply => /=; rewrite subrr normr0.
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: (z.2:ME) : E)) :
-  nbhs (0 :ME) (U : set ME) -> nbhs (0 : ME) (-%R @` (U : set ME)).
+Lemma nbhs0N_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2)) :
+  nbhs 0 U -> nbhs 0 (-%R @` U).
 Proof. by move => Ux; rewrite -oppr0; exact: nbhsN_subproof. Qed.
 
-Lemma nbhsT_subproof (f : continuous (fun x : E * E => (x.1 : ME) + (x.2 : ME))) (x : E) :
-  nbhs (0 : ME) U -> nbhs (x : ME) (+%R (x : ME) @` U).
+Lemma nbhsT_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (x : E) :
+  nbhs 0 U -> nbhs x (+%R x @` U).
 Proof.
-move => U0; have /= := f (x, -(x : ME)) U; rewrite subrr => /(_ U0).
+move => U0; have /= := f (x, -x) U; rewrite subrr => /(_ U0).
 move=> [B] [B1 B2] BU; near=> x0.
-exists ((x0 : ME) - (x : ME)); last by rewrite addrCA subrr addr0.
-by apply: (BU ((x0 : ME), -(x : ME))); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+exists (x0 - x); last by rewrite addrCA subrr addr0.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
-Lemma nbhsB_subproof (f : continuous (fun x : E * E => (x.1 : ME) + (x.2 : ME))) (z x : E) :
-  nbhs (z : ME) U -> nbhs ((x : ME) + (z : ME)) (+%R (x : ME) @` U).
+Lemma nbhsB_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (z x : E) :
+  nbhs z U -> nbhs (x + z) (+%R x @` U).
 Proof.
-move=> U0; move: (@f ((x : ME) + (z : ME), -(x : ME)) U); rewrite /= addrAC subrr add0r.
+move=> U0; have /= := f (x + z, -x) U; rewrite addrAC subrr add0r.
 move=> /(_ U0)[B] [B1 B2] BU; near=> x0.
-exists ((x0 : ME) - (x : ME)); last by rewrite addrCA subrr addr0.
-by apply: (BU ((x0 : ME), -(x : ME))); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
+exists (x0 - x); last by rewrite addrCA subrr addr0.
+by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
-End properties_of_topologicallmodule.
+End properties_of_topologicalLmodule.
 
 HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
     of Topological E & GRing.Lmodule R E := {
@@ -127,9 +146,7 @@ Let nbhs0N (U : set E) : nbhs (0 : E) U -> nbhs (0 : E) (-%R @` U).
 Proof. by apply: nbhs0N_subproof; exact: scale_continuous. Qed.
 
 Lemma nbhsN (U : set E) (x : E) : nbhs x U -> nbhs (-x) (-%R @` U).
-Proof.
-by apply: nbhsN_subproof; exact: scale_continuous.
-Qed.
+Proof. by apply: nbhsN_subproof; exact: scale_continuous. Qed.
 
 Let nbhsT (U : set E) (x : E) : nbhs (0 : E) U -> nbhs x (+%R x @`U).
 Proof. by apply: nbhsT_subproof; exact: add_continuous. Qed.
@@ -228,8 +245,8 @@ End Tvs_numDomain.
 
 Section Tvs_numField.
 
-Lemma nbhs0Z  (R : numFieldType) (E : tvsType R) (U : set E) (r : R) :
-  r != 0 -> nbhs 0 U -> nbhs 0 ( *:%R r @` U).
+Lemma nbhs0Z (R : numFieldType) (E : tvsType R) (U : set E) (r : R) :
+  r != 0 -> nbhs 0 U -> nbhs 0 ( *:%R r @` U ).
 Proof.
 move=> r0 U0; have /= := scale_continuous (r^-1, 0) U.
 rewrite scaler0 => /(_ U0)[]/= B [B1 B2] BU.
@@ -238,9 +255,9 @@ by apply: (BU (r^-1, x)); split => //=;[exact: nbhs_singleton|near: x].
 Unshelve. all: by end_near. Qed.
 
 Lemma nbhsZ  (R : numFieldType) (E : tvsType R) (U : set E) (r : R) (x :E) :
-  r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U).
+  r != 0 -> nbhs x U -> nbhs (r *:x) ( *:%R r @` U ).
 Proof.
-move => r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.
+move=> r0 U0; have /= := scale_continuous ((r^-1, r *: x)) U.
 rewrite scalerA mulVf// scale1r =>/(_ U0)[] /= B [B1 B2] BU.
 near=> z; exists (r^-1 *: z); last by rewrite scalerA divff// scale1r.
 by apply: (BU (r^-1,z)); split; [exact: nbhs_singleton|near: z].
@@ -251,7 +268,7 @@ End Tvs_numField.
 Section standard_topology.
 Variable R : numFieldType.
 
-Lemma standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
+Local Lemma standard_add_continuous : continuous (fun x : R^o * R^o => x.1 + x.2).
 Proof.
 (* NB(rei): almost the same code as in normedtype.v *)
 move=> [/= x y]; apply/cvg_ballP => e e0 /=.
@@ -261,7 +278,7 @@ rewrite /ball /ball_/= => xy /= [nx ny].
 by rewrite opprD addrACA (le_lt_trans (ler_normD _ _)) // (splitr e) ltrD.
 Qed.
 
-Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
+Local Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
 (* NB: This lemma is proved once again in normedtype, in a shorter way with much more machinery *)
 (*     To be rewritten once normedtype is split and tvs can depend on these lemmas *)
@@ -312,7 +329,7 @@ rewrite -mulrBl normrM (@le_lt_trans _ _ (`|k - z1| * M)) ?ler_wpM2l//.
 by rewrite -ltr_pdivlMr ?(lt_le_trans k1r) ?normr_gt0.
 Qed.
 
-Lemma standard_locally_convex :
+Local Lemma standard_locally_convex :
   exists2 B : set (set R^o), (forall b, b \in B -> convex b) & basis B.
 Proof.
 (* NB(rei): almost the same code as in normedtype.v *)
@@ -342,7 +359,7 @@ move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
 Qed.
 
-HB.instance Definition _ := Uniform_isTvs.Build R (R^o)%type
+HB.instance Definition _ := Uniform_isTvs.Build R R^o
   standard_add_continuous standard_scale_continuous standard_locally_convex.
 
 End standard_topology.
@@ -350,7 +367,7 @@ End standard_topology.
 Section prod_Tvs.
 Context (K : numFieldType) (E F : tvsType K).
 
-Lemma prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
+Local Lemma prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
 Proof.
 move => [/= xy1 xy2] /= U /= [] [A B] /= [nA nB] nU.
 have [/= A0 [A01 A02] nA1] := @add_continuous K E (xy1.1, xy2.1) _ nA.
@@ -361,7 +378,7 @@ move => [[x1 y1][x2 y2]] /= [] [] a1 b1 [] a2 b2.
 by apply: nU; split; [exact: (nA1 (x1, x2))|exact: (nB1 (y1, y2))].
 Qed.
 
-Lemma prod_scale_continuous : continuous (fun z : K^o * (E * F) => z.1 *: z.2).
+Local Lemma prod_scale_continuous : continuous (fun z : K^o * (E * F) => z.1 *: z.2).
 Proof.
 move => [/= r [x y]] /= U /= []/= [A B] /= [nA nB] nU.
 have [/= A0 [A01 A02] nA1] := @scale_continuous K E (r, x) _ nA.
@@ -372,7 +389,7 @@ by move=> [l [e f]] /= [] [Al Bl] [] Ae Be; apply: nU; split;
   [exact: (nA1 (l, e))|exact: (nB1 (l, f))].
 Qed.
 
-Lemma prod_locally_convex :
+Local Lemma prod_locally_convex :
   exists2 B : set (set (E * F)), (forall b, b \in B -> convex b) & basis B.
 Proof.
 have [Be Bcb Beb] := @locally_convex K E.
