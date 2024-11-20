@@ -4,6 +4,9 @@
 
 ### Added
 
+- in file `mathcomp_extra.v`,
+  + lemmas `eq_lt_total`, `le_lt_total`
+
 - file `Rstruct_topology.v`
 
 - package `coq-mathcomp-reals` depending on `coq-mathcomp-classical`
@@ -204,6 +207,14 @@
     * structure `MeasurableFun`
 	* definition `mfun`
     * lemmas `mfun_rect`, `mfun_valP`, `mfuneqP`
+
+- in `sequences.v`,
+  + generalized indexing from zero-based ones (`0 <= k < n` and `k <oo`)
+    to `m <= k < n` and `m <= k <oo`
+    * lemmas `nondecreasing_series`, `ereal_nondecreasing_series`,
+             `eseries_mkcondl`, `eseries_mkcondr`, `eq_eseriesl`,
+	     `nneseries_lim_ge`, `adde_def_nneseries`,
+	     `nneseriesD`, `nneseries_sum_nat`, `nneseries_sum`
 
 ### Deprecated
 
