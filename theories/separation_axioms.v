@@ -1139,7 +1139,7 @@ rewrite {}ji {j} in x y cl *.
 congr existT; apply: hX => U V Ux Vy.
 have [] := cl (existT X i @` U) (existT X i @` V); [exact: existT_nbhs..|].
 move=> z [] [l Ul <-] [r Vr lr]; exists l; split => //.
-by rewrite -(existT_inj lr).
+by rewrite -(existT_inj2 lr).
 Qed.
 
 End sigT_separations.

@@ -63,11 +63,13 @@ theories/topology_theory/sigT_topology.v
 
 theories/homotopy_theory/homotopy.v
 theories/homotopy_theory/wedge_sigT.v
+theories/homotopy_theory/path.v
 
 theories/separation_axioms.v
 theories/function_spaces.v
 theories/ereal.v
 theories/cantor.v
+theories/tvs.v
 theories/normedtype.v
 theories/realfun.v
 theories/sequences.v

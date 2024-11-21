@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import mathcomp_extra reals ereal signed.
-From mathcomp Require Import topology normedtype landau sequences derive.
+From mathcomp Require Import topology tvs normedtype landau sequences derive.
 From mathcomp Require Import realfun itv convex.
 
 (**md**************************************************************************)
@@ -228,7 +228,7 @@ suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> limn (series s).
 apply: cvg_zero => /=.
 suff Cc : limn
     (series (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
-    @[h --> 0^'] --> (0 : R).
+    @[h --> 0^'] --> 0.
   apply: cvg_sub0 Cc.
   apply/cvgrPdist_lt => eps eps_gt0 /=.
   near=> h; rewrite sub0r normrN /=.
