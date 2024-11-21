@@ -407,3 +407,163 @@ HB.instance Definition _ :=
   prod_add_continuous prod_scale_continuous prod_locally_convex.
 
 End prod_Tvs.
+
+
+HB.structure Definition LinearContinuous (K : numDomainType) (E : NbhsLmodule.type K)
+  (F : NbhsZmodule.type) s :=
+  {f of @GRing.Linear K E F s f &  @Continuous E F f }.
+
+HB.factory Structure isLinearContinuous  (K : numDomainType) (E : NbhsLmodule.type K)
+  (F : NbhsZmodule.type) (s : GRing.Scale.law K F) (f : E -> F) := {
+    linearP : linear_for s f ;
+    continuousP : continuous f
+    }.
+
+HB.builders Context K E F s f of @isLinearContinuous K E F s f.
+
+HB.instance Definition _ := GRing.isLinear.Build K E F s f linearP.
+HB.instance Definition _ := isContinuous.Build E F f continuousP.
+
+HB.end.
+
+Section lcfun_pred.
+Context  {K : numDomainType} {E : NbhsLmodule.type K}  {F : NbhsZmodule.type} {s : K -> F -> F}.
+Definition lcfun : {pred E -> F} := mem [set f | linear_for s f /\ continuous f ].
+Definition lcfun_key : pred_key lcfun. Proof. exact. Qed.
+Canonical lcfun_keyed := KeyedPred lcfun_key.
+End lcfun_pred.
+
+Reserved Notation "'{' 'linear_continuous' U '->' V '|' s '}'"
+  (at level 0, U at level 98, V at level 99,
+   format "{ 'linear_continuous'  U  ->  V  |  s }").
+Reserved Notation "'{' 'linear_continuous' U '->' V '}'"
+  (at level 0, U at level 98, V at level 99,
+   format "{ 'linear_continuous'  U  ->  V }").
+Notation "{ 'linear_continuous' U -> V | s }" := (@LinearContinuous.type _ U%type V%type s)
+  : type_scope.
+Notation "{ 'linear_continuous' U -> V }" := {linear_continuous U%type -> V%type | *:%R}
+  : type_scope.
+
+Section lcfun.
+Context  {R : numDomainType} {E : NbhsLmodule.type R}  {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
+Notation T := {linear_continuous E -> F | s}.
+Notation lcfun := (@lcfun _ E F s).
+
+Section Sub.
+Context (f : E -> F) (fP : f \in lcfun).
+  
+Definition lcfun_Sub_subproof :=
+  @isLinearContinuous.Build _ E F s f (proj1 (set_mem fP)) (proj2 (set_mem fP)).
+#[local] HB.instance Definition _ := lcfun_Sub_subproof.
+Definition lcfun_Sub : {linear_continuous _  -> _ | _ } := f.
+End Sub.
+
+Lemma lcfun_rect (K : T -> Type) :
+  (forall f (Pf : f \in lcfun), K (lcfun_Sub Pf)) -> forall u : T, K u.
+Proof.
+move=> Ksub [f [[Pf]]]/=.
+Admitted.
+
+Lemma lcfun_valP f (Pf : f \in lcfun) : lcfun_Sub Pf = f :> (_ -> _).
+Proof. by []. Qed.
+
+HB.instance Definition _ := isSub.Build _ _ T lcfun_rect lcfun_valP.
+
+Lemma lcfuneqP (f g : {linear_continuous E -> F | s}) : f = g <-> f =1 g.
+Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
+
+HB.instance Definition _ := [Choice of {linear_continuous E -> F | s} by <:].
+
+End lcfun.
+
+(* Section lcfun_realType. *)
+(* Context  {E : sigmaRingType d} {F : realType}. *)
+
+(* HB.instance Definition _ := @isMeasurableFun.Build _ _ _ F *)
+(*   (@normr F F) (@normr_measurable F setT). *)
+
+(* HB.instance Definition _ := *)
+(*   isMeasurableFun.Build _ _ _ _ (@expR F) (@measurable_expR F). *)
+
+(* End lcfun_realType. *)
+
+Section lcfun_linearcontinuousType.
+Context  {R : numDomainType} {E : NbhsLmodule.type R}  {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
+
+Lemma measurableT_comp_subproof (f : {lcfun _ >-> F}) (g : {linear_continuous E -> F | s}) :
+  measurable_fun setT (f \o g).
+Proof. exact: measurableT_comp. Qed.
+
+HB.instance Definition _ (f : {lcfun _ >-> F}) (g : {linear_continuous E -> F | s}) :=
+  isMeasurableFun.Build _ _ _ _ (f \o g) (measurableT_comp_subproof _ _).
+
+End lcfun_measurableType.
+
+Section ring.
+Context d (E : measurableType d) (F : realType).
+
+Lemma lcfun_subring_closed : subring_closed (@lcfun _ _ E F).
+Proof.
+split=> [|f g|f g]; rewrite !inE/=.
+- exact: measurable_cst.
+- exact: measurable_funB.
+- exact: measurable_funM.
+Qed.
+HB.instance Definition _ := GRing.isSubringClosed.Build _
+  (@lcfun d default_measure_display E F) lcfun_subring_closed.
+HB.instance Definition _ := [SubChoice_isSubComRing of {linear_continuous E -> F | s} by <:].
+
+Implicit Types (f g : {linear_continuous E -> F | s}).
+
+Lemma lcfun0 : (0 : {linear_continuous E -> F | s}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
+Lemma lcfun1 : (1 : {linear_continuous E -> F | s}) =1 cst 1 :> (_ -> _). Proof. by []. Qed.
+Lemma lcfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
+Lemma lcfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
+Lemma lcfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
+Lemma lcfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
+Lemma lcfun_sum I r (P : {pred I}) (f : I -> {linear_continuous E -> F | s}) (x : E) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+Lemma lcfun_prod I r (P : {pred I}) (f : I -> {linear_continuous E -> F | s}) (x : E) :
+  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
+Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+Lemma lcfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
+Proof. by apply/funext=> x; elim: n => [|n IHn]//; rewrite !exprS lcfunM/= IHn. Qed.
+
+HB.instance Definition _ f g := MeasurableFun.copy (f \+ g) (f + g).
+HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
+HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
+HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
+
+Definition mindic (D : set E) of measurable D : E -> F := \1_D.
+
+Lemma mindicE (D : set E) (mD : measurable D) :
+  mindic mD = (fun x => (x \in D)%:R).
+Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
+
+HB.instance Definition _ D mD := @isMeasurableFun.Build _ _ E F (mindic mD)
+  (@measurable_fun_indic _ E F setT D mD).
+
+Definition indic_lcfun (D : set E) (mD : measurable D) :=
+  [the {linear_continuous E -> F | s} of mindic mD].
+
+HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst k).
+Definition scale_lcfun k f := [the {linear_continuous E -> F | s} of k \o* f].
+
+Lemma max_lcfun_subproof f g : @isMeasurableFun d _ E F (f \max g).
+Proof. by split; apply: measurable_maxr. Qed.
+
+HB.instance Definition _ f g := max_lcfun_subproof f g.
+
+Definition max_lcfun f g := [the {lcfun E >-> _} of f \max g].
+
+End ring.
+
+
+
+
+Section dual.
+
+Definition linear_continuous (f : E -> F) : linear f /\ continuous f.
+
+End dual.
