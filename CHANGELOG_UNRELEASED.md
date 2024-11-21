@@ -112,6 +112,11 @@
 - in `boolp.v`:
   + lemmas `existT_inj1`, `surjective_existT`
 
+- in file `realfun.v`,
+  + new lemmas `cauchy_MVT`,
+    `lhopital_right`, and
+    `lhopital_left`.
+
 ### Changed
 
 - in file `normedtype.v`,
