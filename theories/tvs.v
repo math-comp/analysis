@@ -445,7 +445,8 @@ Notation "{ 'linear_continuous' U -> V }" := {linear_continuous U%type -> V%type
   : type_scope.
 
 Section lcfun.
-Context  {R : numDomainType} {E : NbhsLmodule.type R}  {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
+Context {R : numDomainType} {E : NbhsLmodule.type R}
+  {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
 Notation T := {linear_continuous E -> F | s}.
 Notation lcfun := (@lcfun _ E F s).
 
@@ -488,21 +489,29 @@ End lcfun.
 (* End lcfun_realType. *)
 
 Section lcfun_linearcontinuousType.
-Context  {R : numDomainType} {E : NbhsLmodule.type R}  {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
+Context {R : numDomainType} {E F : NbhsLmodule.type R}
+  {S : NbhsZmodule.type} {s : GRing.Scale.law R S}
+  (f : {linear_continuous E -> F}) (g : {linear_continuous F -> S | s}).
 
-Lemma measurableT_comp_subproof (f : {lcfun _ >-> F}) (g : {linear_continuous E -> F | s}) :
-  measurable_fun setT (f \o g).
-Proof. exact: measurableT_comp. Qed.
+Lemma lcfun_comp_subproof1 : linear_for s (g \o f). 
+Proof. by move=> *; move=> */=; rewrite !linearP. Qed.
 
-HB.instance Definition _ (f : {lcfun _ >-> F}) (g : {linear_continuous E -> F | s}) :=
-  isMeasurableFun.Build _ _ _ _ (f \o g) (measurableT_comp_subproof _ _).
+(* TODO weaken proof continuous_comp to arbitrary nbhsType *)
+Lemma lcfun_comp_subproof2 : continuous (g \o f). 
+Proof. by move=> x; move=> A /cts_fun /cts_fun. Qed.
 
-End lcfun_measurableType.
+HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
+  lcfun_comp_subproof1 lcfun_comp_subproof2.
+
+(* TODO: do the identity? *)
+
+End lcfun_linearcontinuousType.
 
 Section ring.
-Context d (E : measurableType d) (F : realType).
+Context {R : numDomainType} {E : NbhsLmodule.type R}
+  {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
 
-Lemma lcfun_subring_closed : subring_closed (@lcfun _ _ E F).
+Lemma lcfun_submod_closed : submod_closed (@lcfun R E F s).
 Proof.
 split=> [|f g|f g]; rewrite !inE/=.
 - exact: measurable_cst.
