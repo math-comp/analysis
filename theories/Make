@@ -31,6 +31,7 @@ topology_theory/sigT_topology.v
 
 homotopy_theory/homotopy.v
 homotopy_theory/wedge_sigT.v
+homotopy_theory/path.v
 
 separation_axioms.v
 function_spaces.v

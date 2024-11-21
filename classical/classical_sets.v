@@ -2485,6 +2485,16 @@ Proof. by apply/eqP => /seteqP[] /(_ point) /(_ Logic.I). Qed.
 
 End PointedTheory.
 
+HB.mixin Record isBiPointed (X : Type) of Equality X := {
+  zero : X;
+  one : X;
+  zero_one_neq : zero != one;
+}.
+
+#[short(type="biPointedType")]
+HB.structure Definition BiPointed := 
+  { X of Choice X & isBiPointed X }.
+
 Variant squashed T : Prop := squash (x : T).
 Arguments squash {T} x.
 Notation "$| T |" := (squashed T) : form_scope.
