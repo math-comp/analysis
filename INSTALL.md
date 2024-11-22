@@ -48,7 +48,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.1.6.0
+$ opam install coq-mathcomp-analysis.1.7.0
 ```
 4. Everytime you want to work in this same context, you need to type
 ```

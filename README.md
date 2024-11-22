@@ -17,7 +17,11 @@ It is based on the [Mathematical Components](https://math-comp.github.io/) libra
 
 In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the following packages:
 - `coq-mathcomp-classical`: a layer for classical reasoning
+- `coq-mathcomp-reals`: real numbers for MathComp
+- `coq-mathcomp-reals-stdlib`: compatibility with the real numbers of the Coq standard library
+- `coq-mathcomp-analysis-stdlib`: compatibility with the Coq standard library (topology only)
 - `coq-mathcomp-analysis`: theories for real analysis
+- `coq-mathcomp-experimental-reals`: sequences of real numbers and distributions (experimental)
 
 ## Meta
 
@@ -56,7 +60,7 @@ via the [opam](https://opam.ocaml.org/doc/Install.html) package manager:
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-mathcomp-analysis
 ```
-Note that the package `coq-mathcomp-classical` will be installed as a dependency.
+Note that the package `coq-mathcomp-classical` among others will be installed as a dependency.
 
 ### Manual installation
 
