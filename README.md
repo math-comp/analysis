@@ -17,7 +17,11 @@ It is based on the [Mathematical Components](https://math-comp.github.io/) libra
 
 In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the following packages:
 - `coq-mathcomp-classical`: a layer for classical reasoning
+- `coq-mathcomp-reals`: real numbers for MathComp
+- `coq-mathcomp-reals-stdlib`: compatibility with the real numbers of the Coq standard library
+- `coq-mathcomp-analysis-stdlib`: compatibility with the Coq standard library (topology only)
 - `coq-mathcomp-analysis`: theories for real analysis
+- `coq-mathcomp-experimental-reals`: sequences of real numbers and distributions (experimental)
 
 ## Meta
 
@@ -56,7 +60,7 @@ via the [opam](https://opam.ocaml.org/doc/Install.html) package manager:
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-mathcomp-analysis
 ```
-Note that the package `coq-mathcomp-classical` will be installed as a dependency.
+Note that the packages `coq-mathcomp-classical` and `coq-mathcomp-reals` will be installed as dependencies.
 
 ### Manual installation
 
@@ -84,7 +88,7 @@ We try to preserve backward compatibility as best as we can.
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_6_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_7_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
 
 Overview presentations:
 - [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
