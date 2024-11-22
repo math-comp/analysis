@@ -34,8 +34,8 @@ Latest releases: [[1.7.0] - 2024-11-22](#170---2024-11-22) and [[1.6.0] - 2024-1
   + new file `Rstruct_topology.v`
   + `showcase/uniform_bigO.v`
 
-- in file `mathcomp_extra.v`,
-  + new definition `sigT_fun`.
+- in file `mathcomp_extra.v`:
+  + definition `sigT_fun`
   + definition `idempotent_fun`
 
 - in `boolp.v`:
@@ -43,31 +43,31 @@ Latest releases: [[1.7.0] - 2024-11-22](#170---2024-11-22) and [[1.6.0] - 2024-1
   + lemma `existT_inj2`
   + new lemmas `uncurryK`, and `curryK`
 
-- new file `topology_theory/one_point_compactification.v`,
-  + new definitions `one_point_compactification`, and `one_point_nbhs`.
-  + new lemmas `one_point_compactification_compact`,
+- new file `topology_theory/one_point_compactification.v`:
+  + definitions `one_point_compactification`, and `one_point_nbhs`.
+  + lemmas `one_point_compactification_compact`,
     `one_point_compactification_some_nbhs`,
     `one_point_compactification_some_continuous`,
     `one_point_compactification_open_some`,
     `one_point_compactification_weak_topology`, and
     `one_point_compactification_hausdorff`.
 
-- new file `topology_theory/sigT_topology.v`,
-  + new definition `sigT_nbhs`.
-  + new lemmas `sigT_nbhsE`, `existT_continuous`, `existT_open_map`,
+- new file `topology_theory/sigT_topology.v`:
+  + definition `sigT_nbhs`.
+  + lemmas `sigT_nbhsE`, `existT_continuous`, `existT_open_map`,
     `existT_nbhs`, `sigT_openP`, `sigT_continuous`, `sigT_setUE`, and
     `sigT_compact`.
 
-- in file `topology_theory/product_topology.v`,
-  + new lemmas `swap_continuous`, `prodA_continuous`, and
+- in file `topology_theory/product_topology.v`:
+  + lemmas `swap_continuous`, `prodA_continuous`, and
     `prodAr_continuous`.
 
-- in file `topology_theory/order_topology.v`
-  + new lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
+- in file `topology_theory/order_topology.v`:
+  + lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
     `max_fun_continuous`.
 
-- in file `topology_theory/weak_topology.v`,
-  + new lemma `continuous_comp_weak`
+- in file `topology_theory/weak_topology.v`:
+  + lemma `continuous_comp_weak`
 
 - in `topology_theory/topology_structure.v`:
   + definitions `regopen`, `regclosed`
@@ -76,26 +76,26 @@ Latest releases: [[1.7.0] - 2024-11-22](#170---2024-11-22) and [[1.6.0] - 2024-1
 	   `closure_open_regclosed`, `interior_closed_regopen`,
 	   `closure_interior_idem`, `interior_closure_idem`
   + mixin `isContinuous`, type `continuousType`, structure `Continuous`
-  + new lemma `continuousEP`.
-  + new definition `mkcts`.
+  + lemma `continuousEP`
+  + definition `mkcts`
 
 - in file `topology_theory/subspace_topology.v`,
-  + new lemmas `continuous_subspace_setT`, `nbhs_prodX_subspace_inE`, and
+  + lemmas `continuous_subspace_setT`, `nbhs_prodX_subspace_inE`, and
     `continuous_subspace_prodP`.
   + type `continuousFunType`, HB structure `ContinuousFun`
 
 - in file `topology_theory/subtype_topology.v`,
-  + new lemmas `subspace_subtypeP`, `subspace_sigL_continuousP`,
+  + lemmas `subspace_subtypeP`, `subspace_sigL_continuousP`,
     `subspace_valL_continuousP'`, `subspace_valL_continuousP`, `sigT_of_setXK`,
     `setX_of_sigTK`, `setX_of_sigT_continuous`, and `sigT_of_setX_continuous`.
 
-- in file `separation_axioms.v`,
-  + new lemmas `compact_normal_local`, and `compact_normal`.
-  + new lemma `sigT_hausdorff`.
+- in file `separation_axioms.v`
+  + lemmas `compact_normal_local`, and `compact_normal`.
+  + lemma `sigT_hausdorff`.
 
-- in file `function_spaces.v`,
-  + new definition `eval`
-  + new lemmas `continuous_curry_fun`, `continuous_curry_cvg`,
+- in file `function_spaces.v`:
+  + definition `eval`
+  + lemmas `continuous_curry_fun`, `continuous_curry_cvg`,
     `eval_continuous`, and `compose_continuous`
 
 - new file `tvs.v`:
@@ -114,14 +114,14 @@ Latest releases: [[1.7.0] - 2024-11-22](#170---2024-11-22) and [[1.6.0] - 2024-1
   + lemma `nbhs0Z`
   + lemma `nbhZ`
 
-- in file `normedtype.v`,
-  + new definition `type` (in module `completely_regular_uniformity`)
-  + new lemmas `normal_completely_regular`,
+- in file `normedtype.v`:
+  + definition `type` (in module `completely_regular_uniformity`)
+  + lemmas `normal_completely_regular`,
     `one_point_compactification_completely_reg`,
     `nbhs_one_point_compactification_weakE`,
     `locally_compact_completely_regular`, and
     `completely_regular_regular`.
-  + new lemmas `near_in_itvoy`, `near_in_itvNyo`
+  + lemmas `near_in_itvoy`, `near_in_itvNyo`
 
 - in `measure.v`:
   + lemma `countable_measurable`
@@ -131,23 +131,23 @@ Latest releases: [[1.7.0] - 2024-11-22](#170---2024-11-22) and [[1.6.0] - 2024-1
   + new definitions `prodA`, and `prodAr`.
   + new lemmas `prodAK`, `prodArK`, and `swapK`.
 
-- new file `homotopy_theory/path.v`,
-  + new definitions `reparameterize`, `mk_path`, and `chain_path`.
-  + new lemmas `path_eqP`, and `chain_path_cts_point`.
+- new file `homotopy_theory/path.v`:
+  + definitions `reparameterize`, `mk_path`, and `chain_path`.
+  + lemmas `path_eqP`, and `chain_path_cts_point`.
 
-- new file `homotopy_theory/wedge_sigT.v`,
+- new file `homotopy_theory/wedge_sigT.v`:
   + new definitions `wedge_rel`, `wedge`, `wedge_lift`, `pwedge`.
-  + new lemmas `wedge_lift_continuous`, `wedge_lift_nbhs`,
+  + lemmas `wedge_lift_continuous`, `wedge_lift_nbhs`,
     `wedge_liftE`, `wedge_openP`,
     `wedge_pointE`, `wedge_point_nbhs`, `wedge_nbhs_specP`, `wedgeTE`,
     `wedge_compact`, `wedge_connected`.
-  + new definitions `wedge_fun`, and `wedge_prod`.
-  + new lemmas `wedge_fun_continuous`, `wedge_lift_funE`,
+  + definitions `wedge_fun`, and `wedge_prod`.
+  + lemmas `wedge_fun_continuous`, `wedge_lift_funE`,
     `wedge_fun_comp`, `wedge_prod_pointE`, `wedge_prod_inj`,
     `wedge_prod_continuous`, `wedge_prod_open`, `wedge_hausdorff`, and
     `wedge_fun_joint_continuous`.
-  + new definition `bpwedge_shared_pt`.
-  + new notations `bpwedge`, and `bpwedge_lift`.
+  + definition `bpwedge_shared_pt`.
+  + notations `bpwedge`, and `bpwedge_lift`.
 
 - new file `homotopy_theory/homotopy.v`
 
