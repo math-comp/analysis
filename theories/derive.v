@@ -254,7 +254,7 @@ Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
 rewrite -nbhs_nearE nbhs_simpl /= dnbhsE; split; last first.
   rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
-  by rewrite addrA subrr add0r normrN scale0r !normr0 mulr0.
+  by rewrite addrCA addKr normrN scale0r !normr0 mulr0.
 have /eqolimP := df.
 move=> /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]).
 apply: filter_app; rewrite /= !near_simpl near_withinE; near=> h => hN0.
@@ -973,7 +973,7 @@ rewrite normrN [leRHS]ger0_norm; last first.
   rewrite subr_ge0; apply: ltW; apply: lt_le_trans lthhx _.
   by rewrite ler_pdivrMr // -{1}(mulr1 `|x|) ler_pM // ler1n.
 rewrite lerBrDr -lerBrDl (splitr `|x|).
-by rewrite normrM normfV (@ger0_norm _ 2) // -addrA subrr addr0; apply: ltW.
+by rewrite normrM normfV (@ger0_norm _ 2) // addrK; apply/ltW.
 Unshelve. all: by end_near. Qed.
 
 Lemma diff_Rinv (x : R) : x != 0 ->
@@ -1569,15 +1569,14 @@ Proof.
 move=> altb fdrvbl fcont.
 set g := f + (- ( *:%R^~ ((f b - f a) / (b - a)) : R -> R)).
 have gdrvbl x : x \in `]a, b[%R -> derivable g x 1.
-  by move=> /fdrvbl dfx; apply: derivableB => //; exact/derivable1_diffP.
+  by move=> /fdrvbl dfx; apply/derivableB/derivable1_diffP.
 have gcont : {within `[a, b], continuous g}.
-  move=> x; apply: continuousD _ ; first by move=>?; exact: fcont.
-  by apply/continuousN/continuous_subspaceT=> ?; exact: scalel_continuous.
+  move=> x; apply: continuousD _ ; first exact: fcont.
+  exact/continuousN/continuous_subspaceT/scalel_continuous.
 have gaegb : g a = g b.
   rewrite /g -![(_ - _ : _ -> _) _]/(_ - _).
   apply/eqP; rewrite -subr_eq /= opprK addrAC -addrA -scalerBl.
-  rewrite [_ *: _]mulrA mulrC mulrA mulVf.
-    by rewrite mul1r addrCA subrr addr0.
+  rewrite [_ *: _]mulrC divfK; first by rewrite addrC subrK.
   by apply: lt0r_neq0; rewrite subr_gt0.
 have [c cab dgc0] := Rolle altb gdrvbl gcont gaegb.
 exists c; first exact: cab.

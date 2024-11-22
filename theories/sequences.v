@@ -563,7 +563,7 @@ Proof. by rewrite seriesEnat/= -big_cat_nat// leq_addl. Qed.
 
 Lemma sub_series_geq m n : (m <= n)%N ->
   series n - series m = \sum_(m <= k < n) u_ k.
-Proof. by move=> /subnK<-; rewrite series_addn addrAC subrr add0r. Qed.
+Proof. by move=> /subnK<-; rewrite series_addn addrC addKr. Qed.
 
 Lemma sub_series m n :
   series n - series m = if (m <= n)%N then \sum_(m <= k < n) u_ k
@@ -3112,7 +3112,7 @@ have majball : forall f x, F f -> (ball x0 r%:num) x -> `|f (x - x0)| <= n%:R + 
   apply/(le_trans (ler_normB _ _))/lerD; first exact: majballi.
   by apply: majballi => //; exact/ball_center.
 have ballprop : ball x0 r%:num (2^-1 * (r%:num / `|y|) *: y  + x0).
-  rewrite -ball_normE /ball_ /= opprD addrCA subrr addr0 normrN normrZ.
+  rewrite -ball_normE /ball_ /= opprD addrC subrK normrN normrZ.
   rewrite 2!normrM -2!mulrA (@normfV _ `|y|) normr_id mulVf ?mulr1 ?normr_eq0//.
   by rewrite gtr0_norm // gtr0_norm // gtr_pMl // invf_lt1 // ltr1n.
 have := majball f (2^-1 * (r%:num / `|y|) *: y + x0) Ff ballprop.

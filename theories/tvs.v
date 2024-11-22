@@ -113,16 +113,16 @@ Lemma nbhsT_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (x : E) :
 Proof.
 move => U0; have /= := f (x, -x) U; rewrite subrr => /(_ U0).
 move=> [B] [B1 B2] BU; near=> x0.
-exists (x0 - x); last by rewrite addrCA subrr addr0.
+exists (x0 - x); last by rewrite addrC subrK.
 by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
 Lemma nbhsB_subproof (f : continuous (fun x : E * E => x.1 + x.2)) (z x : E) :
   nbhs z U -> nbhs (x + z) (+%R x @` U).
 Proof.
-move=> U0; have /= := f (x + z, -x) U; rewrite addrAC subrr add0r.
+move=> U0; have /= := f (x + z, -x) U; rewrite [x + z]addrC addrK.
 move=> /(_ U0)[B] [B1 B2] BU; near=> x0.
-exists (x0 - x); last by rewrite addrCA subrr addr0.
+exists (x0 - x); last by rewrite addrC subrK.
 by apply: (BU (x0, -x)); split; [near: x0; rewrite nearE|exact: nbhs_singleton].
 Unshelve. all: by end_near. Qed.
 
@@ -143,42 +143,39 @@ Definition entourage : set_system (E * E) :=
                      (forall xy : E * E,  (xy.1 - xy.2) \in U -> xy \in P).
 
 Let nbhs0N (U : set E) : nbhs (0 : E) U -> nbhs (0 : E) (-%R @` U).
-Proof. by apply: nbhs0N_subproof; exact: scale_continuous. Qed.
+Proof. exact/nbhs0N_subproof/scale_continuous. Qed.
 
 Lemma nbhsN (U : set E) (x : E) : nbhs x U -> nbhs (-x) (-%R @` U).
-Proof. by apply: nbhsN_subproof; exact: scale_continuous. Qed.
+Proof. exact/nbhsN_subproof/scale_continuous. Qed.
 
 Let nbhsT (U : set E) (x : E) : nbhs (0 : E) U -> nbhs x (+%R x @`U).
-Proof. by apply: nbhsT_subproof; exact: add_continuous. Qed.
+Proof. exact/nbhsT_subproof/add_continuous. Qed.
 
 Let nbhsB (U : set E) (z x : E) : nbhs z U -> nbhs (x + z) (+%R x @`U).
-Proof. by apply: nbhsB_subproof; exact: add_continuous. Qed.
+Proof. exact/nbhsB_subproof/add_continuous. Qed.
 
 Lemma entourage_filter : Filter entourage.
 Proof.
-split; first by exists [set: E]; split => //; exact: filter_nbhsT.
-- move=> P Q; rewrite /entourage nbhsE //=.
+split; first by exists [set: E]; split; first exact: filter_nbhsT.
+  move=> P Q; rewrite /entourage nbhsE /=.
   move=> [U [[B B0] BU Bxy]] [V [[C C0] CV Cxy]].
-  exists (U `&` V); split.
+  exists (U `&` V); split => [|xy].
     by exists (B `&` C); [exact: open_nbhsI|exact: setISS].
-  move=> xy; rewrite !in_setI => /andP[xyU xyV].
-  by apply/andP;split; [exact: Bxy|exact: Cxy].
-- move=> P Q PQ; rewrite /entourage /= => [[U [HU Hxy]]]; exists U; split=> //.
-  by move => xy /Hxy /[!inE] /PQ.
+  by rewrite !in_setI => /andP[/Bxy-> /Cxy->].
+by move=> P Q PQ [U [HU Hxy]]; exists U; split=> [|xy /Hxy /[!inE] /PQ].
 Qed.
 
 Local Lemma entourage_refl (A : set (E * E)) :
   entourage A -> [set xy | xy.1 = xy.2] `<=` A.
 Proof.
-rewrite /entourage => -[/= U [U0 Uxy]] xy /eqP; rewrite -subr_eq0 => /eqP xyE.
-by apply/set_mem/Uxy; rewrite xyE; apply/mem_set; exact: nbhs_singleton.
+move=> [U [U0 Uxy]] xy eq_xy; apply/set_mem/Uxy; rewrite eq_xy subrr.
+apply/mem_set; exact: nbhs_singleton.
 Qed.
 
-Local Lemma entourage_inv :
-  forall A : set (E * E), entourage A -> entourage A^-1%relation.
+Local Lemma entourage_inv (A : set (E * E)) :
+  entourage A -> entourage A^-1%relation.
 Proof.
-move=> A [/= U [U0 Uxy]]; rewrite /entourage /=.
-exists (-%R @` U); split; first exact: nbhs0N.
+move=> [/= U [U0 Uxy]]; exists (-%R @` U); split; first exact: nbhs0N.
 move=> xy /set_mem /=; rewrite -opprB => [[yx] Uyx] /oppr_inj yxE.
 by apply/Uxy/mem_set; rewrite /= -yxE.
 Qed.
@@ -205,21 +202,20 @@ rewrite /nbhs_ /=; apply/funext => x; rewrite /filter_from/=.
 apply/funext => U; apply/propext => /=; rewrite /entourage /=; split.
 - pose V : set E := [set v | x - v \in U].
   move=> nU; exists [set xy | xy.1 - xy.2 \in V]; last first.
-    by move=> y /xsectionP; rewrite /V /= !inE /= opprB addrCA subrr addr0 inE.
-  exists V; split => /=; last first.
-    by move=> xy; rewrite !inE=> Vxy; rewrite /= !inE.
+    by move=> y /xsectionP; rewrite /V /= !inE /= opprB addrC subrK inE.
+  exists V; split; last by move=> xy; rewrite !inE /= inE.
   have /= := nbhsB x (nbhsN nU); rewrite subrr /= /V.
   rewrite [X in nbhs _ X -> _](_ : _ = [set v | x - v \in U])//.
   apply/funext => /= v /=; rewrite inE; apply/propext; split.
-    by move=> [x0 [x1]] Ux1 <- <-; rewrite opprB addrCA subrr addr0.
-  move=> Uxy; exists (v - x); last by rewrite addrCA subrr addr0.
-  by exists (x - v) => //; rewrite opprB.
+    by move=> [x0 [x1]] Ux1 <- <-; rewrite opprB addrC subrK.
+  move=> Uxy; exists (v - x); last by rewrite addrC subrK.
+  by exists (x - v); rewrite ?opprB.
 - move=> [A [U0 [nU UA]] H]; near=> z; apply: H; apply/xsectionP/set_mem/UA.
   near: z; rewrite nearE; have := nbhsT x (nbhs0N nU).
   rewrite [X in nbhs _ X -> _](_ : _ = [set v | x - v \in U0])//.
   apply/funext => /= z /=; apply/propext; split.
-  move=> [x0] [x1 Ux1 <-] <-; rewrite -opprB addrAC subrr add0r inE opprK//.
-  rewrite inE => Uxz; exists (z - x); last by rewrite addrCA subrr addr0.
+    by move=> [x0] [x1 Ux1 <-] <-; rewrite opprB addrC subrK inE.
+  rewrite inE => Uxz; exists (z - x); last by rewrite addrC subrK.
   by exists (x - z); rewrite ?opprB.
 Unshelve. all: by end_near. Qed.
 
@@ -286,22 +282,18 @@ move=> [k x]; apply/cvg_ballP => e le0 /=.
 pose M : R := maxr (`|e| + 1) (maxr `|k| (`|x| + `|x| + 2^-1 + 1)).
 have M0l : 0 < `|e| + 1 by rewrite ltr_wpDl.
 have M0r : 0 < maxr `|k| (`|x| + `|x| + 2^-1 + 1).
-  rewrite /maxr; case: ifPn => //.
-  have [->|k0 _] := eqVneq k 0; last by rewrite normr_gt0.
-  rewrite normr0 -ltrBlDr sub0r ltxx => /negbTE <-.
-  by rewrite (lt_le_trans (@ltrN10 _)).
-have M0 : 0 < M.
-  by have /= -> := num_lt_max 0 (PosNum M0l) (PosNum M0r); rewrite M0l.
+  rewrite comparable_lt_max; last exact/real_comparable.
+  by rewrite normr_gt0; case: eqP => /=.
 have Me : `|e| < M.
   rewrite (@lt_le_trans _ _ (`|e| + 1)) ?ltrDl//.
   have /= -> := num_le_max (`|e| + 1) (PosNum M0l) (PosNum M0r).
   by rewrite lexx.
+have M0 : 0 < M by apply: le_lt_trans Me.
 pose r := `|e| / 2 / M.
-exists (ball k r, ball x r).
-  by split; exists r => //=; rewrite !divr_gt0// normr_gt0 gt_eqF.
-move=> /= [z1 z2] [k1r k2r].
+exists (ball k r, ball x r) => [|[z1 z2] [k1r k2r]].
+  by split; exists r; rewrite //= ?divr_gt0 //= normr_gt0 gt_eqF.
 have := @ball_split _ _ (k * z2)  (k * x)  (z1 * z2) `|e|.
-rewrite /ball /= /= real_lter_normr ?gtr0_real//.
+rewrite /ball/= real_lter_normr ?gtr0_real//.
 rewrite (_ : _ < - e = false) ?orbF; last by rewrite ltr_nnorml// oppr_le0 ltW.
 apply.
   rewrite -mulrBr normrM (@le_lt_trans _ _ (M * `|x - z2|)) ?ler_wpM2r//.
@@ -336,8 +328,7 @@ Proof.
 exists [set B | exists x r, B = ball x r].
   move=> b; rewrite inE /= => [[x]] [r] -> z y l.
   rewrite !inE /ball /= => zx yx l0; rewrite -subr_gt0 => l1.
-  have -> : x = l *: x + (1 - l) *: x.
-    by rewrite scalerBl addrCA subrr addr0 scale1r.
+  have -> : x = l *: x + (1 - l) *: x by rewrite scalerBl addrC subrK scale1r.
   rewrite [X in `|X|](_ : _ = l *: (x - z) + (1 - l) *: (x - y)); last first.
     by rewrite opprD addrACA -mulrBr -mulrBr.
   rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
@@ -346,9 +337,8 @@ exists [set B | exists x r, B = ball x r].
     rewrite ltr_leD//.
       by rewrite -ltr_pdivlMl ?mulrA ?mulVf ?mul1r // ?normrE ?gt_eqF.
     by rewrite -ler_pdivlMl ?mulrA ?mulVf ?mul1r ?ltW // ?normrE ?gt_eqF.
-  have -> : `|1 - l| = 1 - `| l |.
-    by move: l0 l1 => /ltW/normr_idP -> /ltW/normr_idP ->.
-  by rewrite -mulrDl addrCA subrr addr0 mul1r.
+  suff-> : `|1 - l| = 1 - `|l| by rewrite -mulrDl addrC subrK mul1r.
+  by move: l0 l1 => /ltW/normr_idP -> /ltW/normr_idP ->.
 split.
   move=> B [x] [r] ->.
   rewrite openE/= /ball/= /interior => y /= bxy; rewrite -nbhs_ballE.

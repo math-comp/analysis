@@ -44,21 +44,18 @@ case => [][[[]l|[]]] [[]r|[]] [[]]//= _.
   apply/(subset_trans _ lrU)/subset_ball_prop_in_itv.
   suff : (`]x - Order.min (x - l) (r - x), x + Order.min (x - l) (r - x)[
           <= `]l, r[)%O by move/subitvP => H ? ?; exact: H.
-  apply/andP; rewrite lteBSide; split => /=.
-    apply: (@le_trans _ _ (x - (x - l))); last by rewrite lerB // ge_min lexx.
-    by rewrite opprB addrCA subrr addr0.
-  apply: (@le_trans _ _ (x + (r - x))); last by rewrite addrCA subrr addr0.
-  by rewrite lerD // ge_min lexx orbT.
+  rewrite subitvE 2!lteBSide/=.
+  by rewrite lerBrDl [_ + l]addrC -2!lerBrDl 2!ge_min 2!lexx orbT.
 - move=> xl lU; exists (x - l) => /=; first by rewrite lterBDr add0r (itvP xl).
   apply/(subset_trans _ lU)/subset_ball_prop_in_itv.
   suff : (`]x - (x - l), x + (x - l)[ <= `]l, +oo[)%O.
     by move/subitvP => H ?; exact: H.
-  by apply/andP; rewrite lteBSide/=; split; rewrite // opprB addrCA subrr addr0.
+  by rewrite subitvE lteBSide/= subKr lexx.
 - move=> xr rU; exists (r - x) => /=; first by rewrite lterBDr add0r (itvP xr).
   apply/(subset_trans _ rU)/subset_ball_prop_in_itv.
   suff : (`]x - (r - x), x + (r - x)[ <= `]-oo, r[)%O.
     by move/subitvP => H ?; exact: H.
-  by apply/andP; rewrite lteBSide/=; split; rewrite // addrCA subrr addr0.
+  by rewrite subitvE lteBSide/= addrC subrK.
 - by move=> _; rewrite set_itvE subTset => ->; exists 1 => /=.
 Qed.
 
