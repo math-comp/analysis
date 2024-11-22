@@ -60,7 +60,7 @@ via the [opam](https://opam.ocaml.org/doc/Install.html) package manager:
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-mathcomp-analysis
 ```
-Note that the package `coq-mathcomp-classical` among others will be installed as a dependency.
+Note that the package `coq-mathcomp-classical` and `coq-mathcomp-reals` will be installed as dependencies.
 
 ### Manual installation
 
