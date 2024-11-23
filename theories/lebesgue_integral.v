@@ -348,8 +348,8 @@ Lemma sfun_rect (K : T -> Type) :
   (forall f (Pf : f \in sfun), K (sfun_Sub Pf)) -> forall u : T, K u.
 Proof.
 move=> Ksub [f [[Pf1] [Pf2]]]; have Pf : f \in sfun by apply/andP; rewrite ?inE.
-have -> : Pf1 = (set_mem (sub_sfun_mfun Pf)) by [].
-have -> : Pf2 = (set_mem (sub_sfun_fimfun Pf)) by [].
+have -> : Pf1 = set_mem (sub_sfun_mfun Pf) by [].
+have -> : Pf2 = set_mem (sub_sfun_fimfun Pf) by [].
 exact: Ksub.
 Qed.
 
@@ -451,24 +451,18 @@ Qed.
 Lemma preimage_cstM T (R : realFieldType) (x y : R) (f : T -> R) :
   x != 0 -> (cst x \* f) @^-1` [set y] = f @^-1` [set y / x].
 Proof.
-move=> x0; apply/seteqP; rewrite /preimage; split => [z/= <-|z/= ->].
-  by rewrite mulrAC divrr ?mul1r// unitfE.
-by rewrite mulrCA divrr ?mulr1// unitfE.
+move=> x0; apply/seteqP.
+by split=> [z/= <-|z/= ->]; rewrite [x * _]mulrC (mulfK, divfK).
 Qed.
 
 Lemma preimage_add T (R : numDomainType) (f g : T -> R) z :
   (f \+ g) @^-1` [set z] = \bigcup_(a in f @` setT)
     ((f @^-1` [set a]) `&` (g @^-1` [set z - a])).
 Proof.
-apply/seteqP; split=> [x /= fgz|x [_ /= [y _ <-]] []].
-  have : z - f x \in g @` setT.
-    by rewrite inE /=; exists x=> //; rewrite -fgz addrC addKr.
-  rewrite inE /= => -[x' _ gzf]; exists (z - g x')%R => /=.
-    by exists x => //; rewrite gzf opprB addrC subrK.
-  rewrite /preimage /=; split; first by rewrite gzf opprB addrC subrK.
-  by rewrite gzf opprB addrC subrK -fgz addrC addKr.
-rewrite /preimage /= => [fxfy gzf].
-by rewrite gzf -fxfy addrC subrK.
+apply/seteqP; split=> [x /= fgz|x [_ /= [y _ <-]] [fxfy gzf]]; last first.
+  by rewrite gzf -fxfy addrC subrK.
+exists (z - g x); first by exists x; rewrite // -fgz addrK.
+by split; rewrite 1?subKr // -fgz addrK.
 Qed.
 
 Section simple_bounded.
@@ -483,6 +477,7 @@ exists (fine (\big[maxe/-oo%E]_(i <- r) `|i|%:E)).
 split; rewrite ?num_real// => x mx z _; apply/ltW/(le_lt_trans _ mx).
 have ? : f z \in r by have := imageT f z; rewrite fr.
 rewrite -[leLHS]/(fine `|f z|%:E) fine_le//.
+  (* TODO: generalize the statement of bigmaxe_fin_num *)
   have := @bigmaxe_fin_num _ (map normr r) `|f z|.
   by rewrite big_map => ->//; apply/mapP; exists (f z).
 by rewrite (bigmax_sup_seq _ _ (lexx _)).
@@ -586,14 +581,14 @@ Import HBNNSimple.
 Lemma nnsfun_cover : \big[setU/set0]_(i \in range f) (f @^-1` [set i]) = setT.
 Proof. by rewrite fsbig_setU//= -subTset => x _; exists (f x). Qed.
 
-Lemma nnsfun_coverT :
-  \big[setU/set0]_(i \in [set: R]) (f @^-1` [set i]) = setT.
+Lemma nnsfun_coverT : \big[setU/set0]_(i \in [set: R]) f @^-1` [set i] = setT.
 Proof.
-by rewrite -(fsbig_widen (range f)) ?nnsfun_cover//= => x [_ /= /preimage10->].
+by rewrite -(fsbig_widen (range f)) ?nnsfun_cover//= => x [_ /preimage10].
 Qed.
 
 End nnsfun_cover.
 
+(* FIXME: shouldn't we avoid calling [done] in a hint? *)
 #[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
   solve [apply: measurable_sfunP; exact: measurable_set1] : core.
 
@@ -626,8 +621,8 @@ Lemma additive_nnsfunr (g f : {nnsfun T >-> R}) x :
   m (f @^-1` [set x] `&` \big[setU/set0]_(i \in range g) (g @^-1` [set i])).
 Proof.
 rewrite -?measure_fsbig//.
-- by rewrite !fsbig_finite//= big_distrr//.
-- by move=> i Ai; apply: measurableI => //.
+- by rewrite !fsbig_finite//= big_distrr.
+- by move=> i Ai; apply: measurableI.
 - exact/trivIset_setIl/trivIset_preimage1.
 Qed.
 
@@ -644,8 +639,8 @@ Local Open Scope ereal_scope.
 Let mulef_ge0 (R : realDomainType) x (f : R -> \bar R) :
   0 <= f x -> ((x < 0)%R -> f x = 0) -> 0 <= x%:E * f x.
 Proof.
-move=> A0 xA /=; have [x0|x0] := ltP x 0%R; first by rewrite (xA x0) mule0.
-by rewrite mule_ge0.
+case: (ltP x 0%R) => [x_lt0 ? ->|x_ge0 fx_ge0 _] //; last exact: mule_ge0.
+by rewrite mule0.
 Qed.
 
 Lemma nnfun_muleindic_ge0 d (T : sigmaRingType d) (R : realDomainType)
@@ -717,11 +712,11 @@ Proof. by rewrite sintegralE fsume_ge0// => r _; exact: nnsfun_mulemu_ge0. Qed.
 
 Lemma sintegral_indic (A : set T) : sintegral mu \1_A = mu A.
 Proof.
-rewrite sintegralE (fsbig_widen _ [set 0%R; 1%R]) => //; last 2 first.
+rewrite sintegralE (fsbig_widen _ [set 0%R; 1%R]) => //=; last 2 first.
   - exact: image_indic_sub.
   - by move=> t [[] -> /= /preimage10->]; rewrite measure0 mule0.
-have N01 : (0 <> 1:> R)%R by move=> /esym/eqP; rewrite oner_eq0.
-rewrite fsbigU//=; last by move=> t [->]//.
+have N01 : (0 <> 1:> R)%R by apply/eqP; rewrite eq_sym oner_eq0.
+rewrite fsbigU//=; last by move=> t [->].
 rewrite !fsbig_set1 mul0e add0e mul1e.
 by rewrite preimage_indic ifT ?inE// ifN ?notin_setE.
 Qed.
@@ -732,8 +727,8 @@ Lemma sintegralEnnsfun (f : {nnsfun T >-> R}) : sintegral mu f =
 Proof.
 rewrite (fsbig_widen _ setT) ?sintegralET//.
 move=> x [_ /=]; case: ltgtP => //= [xlt0 _|<-]; last by rewrite mul0e.
-rewrite preimage10 ?measure0 ?mule0//= => -[t _].
-by apply/eqP; apply: contra_ltN xlt0 => /eqP<-.
+rewrite preimage10 ?measure0 ?mule0//= => -[t _ xE].
+by apply/negP: xlt0; rewrite -leNgt -xE.
 Qed.
 
 End sintegral_lemmas.
@@ -755,14 +750,10 @@ Lemma sintegralrM : sintegral m (cst r \* f)%R = r%:E * sintegral m f.
 Proof.
 have [->|r0] := eqVneq r 0%R.
   by rewrite mul0e (eq_sintegral (cst 0%R)) ?sintegral0// => x/=; rewrite mul0r.
-rewrite !sintegralET.
-transitivity (\sum_(x \in [set: R]) x%:E * m (f @^-1` [set x / r])).
-  by under eq_fsbigr do rewrite preimage_cstM//.
-transitivity (\sum_(x \in [set: R]) r%:E * (x%:E * m (f @^-1` [set x]))).
-  rewrite (reindex_fsbigT (fun x => r * x)%R)//; last first.
-    by exists ( *%R r ^-1)%R; [exact: mulKf|exact: mulVKf].
-  by apply: eq_fsbigr => x; rewrite mulrAC divrr ?unitfE// mul1r muleA EFinM.
-by rewrite ge0_mule_fsumr// => x; exact: nnsfun_mulemu_ge0.
+rewrite !sintegralET ge0_mule_fsumr; last exact: nnsfun_mulemu_ge0.
+rewrite (reindex_fsbigT ( *%R r))/=; last first.
+  by exists ( *%R r^-1); [exact: mulKf|exact: mulVKf].
+by apply: eq_fsbigr => x; rewrite preimage_cstM// [_ / r]mulrC mulKf// muleA.
 Qed.
 
 End sintegralrM.
@@ -783,7 +774,7 @@ transitivity (\sum_(z \in FG) z%:E * \sum_(a \in F) m (pf a `&` pg (z - a)%R)).
   apply: eq_fsbigr => z _; rewrite preimage_add -fsbig_setU// measure_fsbig//.
     by move=> x Fx; exact: measurableI.
   exact/trivIset_setIr/trivIset_preimage1.
-under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsbig//.
+under eq_fsbigr do rewrite ge0_mule_fsumr//; rewrite exchange_fsbig//=.
 transitivity (\sum_(x \in F) \sum_(y \in G) (x + y)%:E * m (pf x `&` pg y)).
   apply: eq_fsbigr => x _; rewrite /pf /pg (fsbig_widen G setT)//=; last first.
     by move=> y [_ /= /preimage10->]; rewrite setI0 measure0 mule0.

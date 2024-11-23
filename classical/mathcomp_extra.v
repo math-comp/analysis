@@ -156,14 +156,14 @@ Lemma maxr_absE (x y : R) : Num.max x y = (x + y + `|x - y|) / 2%:R.
 Proof.
 apply: canRL (mulfK _) _ => //; rewrite ?pnatr_eq0//.
 case: lerP => _; (* TODO: ring *) rewrite [2%:R]mulr2n mulrDr mulr1.
-  by rewrite addrACA subrr addr0.
+  by rewrite addrCA addrK.
 by rewrite addrCA addrAC subrr add0r.
 Qed.
 
 Lemma minr_absE (x y : R) : Num.min x y = (x + y - `|x - y|) / 2%:R.
 Proof.
 apply: (addrI (Num.max x y)); rewrite addr_max_min maxr_absE. (* TODO: ring *)
-by rewrite -mulrDl addrACA subrr addr0 mulrDl -splitr.
+by rewrite -mulrDl addrCA addrK mulrDl -splitr.
 Qed.
 
 End max_min.
@@ -304,8 +304,7 @@ Lemma onem0 : `1-0 = 1. Proof. by rewrite /onem subr0. Qed.
 
 Lemma onem1 : `1-1 = 0. Proof. by rewrite /onem subrr. Qed.
 
-Lemma onemK r : `1-(`1-r) = r.
-Proof. by rewrite /onem opprB addrCA subrr addr0. Qed.
+Lemma onemK r : `1-(`1-r) = r. Proof. exact: subKr. Qed.
 
 Lemma add_onemK r : r + `1- r = 1.
 Proof. by rewrite /onem addrC subrK. Qed.

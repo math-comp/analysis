@@ -81,8 +81,7 @@ Proof. by rewrite predeqE => r; split => // _. Qed.
 Lemma lboundT : lbound [set: R] = set0.
 Proof.
 rewrite predeqE => r; split => // /(_ (r - 1) Logic.I).
-rewrite lerBrDl addrC -lerBrDl subrr.
-by rewrite real_leNgt ?realE ?ler01// ?lexx// ltr01.
+by rewrite addrC -subr_ge0 addrK ler0N1.
 Qed.
 
 End subr_image.
@@ -277,8 +276,7 @@ Proof.
 move=> has_supE; rewrite orC.
 case: (lerP (sup E) x)=> hx /=; [by left|right].
 have /sup_adherent/(_  has_supE) : 0 < sup E - x by rewrite subr_gt0.
-case=> e Ee hlte; apply/downP; exists e => //; move: hlte.
-by rewrite opprB addrCA subrr addr0 => /ltW.
+by case=> e Ee; rewrite subKr => /ltW hlte; apply/downP; exists e.
 Qed.
 
 Lemma sup_le_ub {E} x : E !=set0 -> (ubound E) x -> sup E <= x.
@@ -452,7 +450,7 @@ rewrite le_eqVlt=> /orP[/eqP<-//| lt_yFx].
 rewrite ltrBlDr -ltrBlDl => lt1_FxBy.
 pose e := sup (floor_set x) - y; have := has_sup_floor_set x.
 move/sup_adherent=> -/(_ e) []; first by rewrite subr_gt0.
-move=> z Fz; rewrite /e opprB addrCA subrr addr0 => lt_yz.
+move=> z Fz; rewrite /= subKr => lt_yz.
 have /sup_upper_bound /ubP /(_ _ Fz) := has_sup_floor_set x.
 rewrite -(lerD2r (-y)) => /le_lt_trans /(_ lt1_FxBy).
 case/andP: Fy Fz lt_yz=> /RintP[yi -> _].
@@ -644,7 +642,7 @@ Lemma lt_inf_imfset {T : Type} (F : T -> R) l :
   exists2 x, F x < l & inf [set y | exists x, y = F x] <= F x.
 Proof.
 set P := [set y | _]; move=> hs; rewrite -subr_gt0.
-move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrCA subrr addr0 => ltFxl.
+move=> /inf_adherent/(_ hs)[_ [x ->]]; rewrite addrC subrK => ltFxl.
 by exists x => //; rewrite (inf_lbound hs.2)//; exists x.
 Qed.
 

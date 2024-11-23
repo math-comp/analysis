@@ -888,10 +888,7 @@ Definition s_of_pq (p q : {i01 R}) : {i01 R} :=
   (1 - ((1 - p%:inum)%:i01%:inum * (1 - q%:inum)%:i01%:inum))%:i01.
 
 Lemma s_of_p0 (p : {i01 R}) : s_of_pq p 0%:i01 = p.
-Proof.
-apply/val_inj => /=.
-by rewrite subr0 mulr1 opprB addrCA subrr addr0.
-Qed.
+Proof. by apply/val_inj; rewrite /= subr0 mulr1 subKr. Qed.
 
 Canonical onem_itv01 (p : {i01 R}) : {i01 R} :=
   @Itv.mk _ _ (onem p%:inum) [itv of 1 - p%:inum].

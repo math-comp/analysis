@@ -838,7 +838,7 @@ Lemma cos2_tan2 x : cos x != 0 -> (cos x) ^- 2 = 1 + (tan x) ^+ 2.
 Proof.
 move=> cosx.
 rewrite /tan exprMn [X in _ = 1 + X * _]sin2cos2 mulrBl -exprMn divff //.
-by rewrite expr1n addrCA subrr addr0 mul1r exprVn.
+by rewrite expr1n addrC subrK mul1r exprVn.
 Qed.
 
 Lemma tan_pihalf : tan (pi / 2) = 0.
