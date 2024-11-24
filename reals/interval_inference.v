@@ -27,6 +27,8 @@ From mathcomp Require Import mathcomp_extra.
 (*                  Allows to solve automatically goals of the form x >= 0    *)
 (*                  and x <= 1 when x is canonically a {i01 R}.               *)
 (*                  {i01 R} is canonically stable by common operations.       *)
+(*    {posnum R} := {itv R & `]0, +oo[)                                       *)
+(*    {nonneg R} := {itv R & `[0, +oo[)                                       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## casts from/to values within known interval                              *)
@@ -36,17 +38,27 @@ From mathcomp Require Import mathcomp_extra.
 (* ```                                                                        *)
 (*        x%:itv == cast to the most precisely known {itv R & i}              *)
 (*        x%:i01 == cast to {i01 R}, or fail                                  *)
+(*        x%:pos == cast to {posnum R}, or fail                               *)
+(*        x%:nng == cast to {nonneg R}, or fail                               *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* Explicit casts of x from some {itv R & i} to R:                            *)
 (* ```                                                                        *)
 (*        x%:num == cast from {itv R & i}                                     *)
+(*     x%:posnum == cast from {posnum R}                                      *)
+(*     x%:nngnum == cast from {nonneg R}                                      *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## sign proofs                                                             *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*    [itv of x] == proof that x is in the interval inferred by x%:itv        *)
+(*    [gt0 of x] == proof that x > 0                                          *)
+(*    [lt0 of x] == proof that x < 0                                          *)
+(*    [ge0 of x] == proof that x >= 0                                         *)
+(*    [le0 of x] == proof that x <= 0                                         *)
+(*   [cmp0 of x] == proof that 0 >=< x                                        *)
+(*   [neq0 of x] == proof that x != 0                                         *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## constructors                                                            *)
@@ -64,6 +76,8 @@ From mathcomp Require Import mathcomp_extra.
 (*                    and l u : itv_bound int                                 *)
 (*     Itv01 x0 x1 == builds a {i01 R} from proofs x0 : 0 <= x and x1 : x <= 1*)
 (*                    where x : R with R : numDomainType                      *)
+(*       PosNum x0 == builds a {posnum R} from a proof x0 : x > 0 where x : R *)
+(*       NngNum x0 == builds a {posnum R} from a proof x0 : x >= 0 where x : R*)
 (* ```                                                                        *)
 (*                                                                            *)
 (* A number of canonical instances are provided for common operations, if     *)
@@ -81,13 +95,25 @@ Reserved Notation "{ 'itv' R & i }"
   (at level 0, R at level 200, i at level 200, format "{ 'itv'  R  &  i }").
 Reserved Notation "{ 'i01' R }"
   (at level 0, R at level 200, format "{ 'i01'  R }").
+Reserved Notation "{ 'posnum' R }" (at level 0, format "{ 'posnum'  R }").
+Reserved Notation "{ 'nonneg' R }" (at level 0, format "{ 'nonneg'  R }").
 
 Reserved Notation "x %:itv" (at level 2, format "x %:itv").
 Reserved Notation "x %:i01" (at level 2, format "x %:i01").
+Reserved Notation "x %:pos" (at level 2, format "x %:pos").
+Reserved Notation "x %:nng" (at level 2, format "x %:nng").
 Reserved Notation "x %:inum" (at level 2, format "x %:inum").
 Reserved Notation "x %:num" (at level 2, format "x %:num").
+Reserved Notation "x %:posnum" (at level 2, format "x %:posnum").
+Reserved Notation "x %:nngnum" (at level 2, format "x %:nngnum").
 
 Reserved Notation "[ 'itv' 'of' x ]" (format "[ 'itv' 'of'  x ]").
+Reserved Notation "[ 'gt0' 'of' x ]" (format "[ 'gt0' 'of'  x ]").
+Reserved Notation "[ 'lt0' 'of' x ]" (format "[ 'lt0' 'of'  x ]").
+Reserved Notation "[ 'ge0' 'of' x ]" (format "[ 'ge0' 'of'  x ]").
+Reserved Notation "[ 'le0' 'of' x ]" (format "[ 'le0' 'of'  x ]").
+Reserved Notation "[ 'cmp0' 'of' x ]" (format "[ 'cmp0' 'of'  x ]").
+Reserved Notation "[ 'neq0' 'of' x ]" (format "[ 'neq0' 'of'  x ]").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -289,6 +315,12 @@ Definition num_sem (R : numDomainType) (i : interval int) (x : R) : bool :=
 
 Definition nat_sem (i : interval int) (x : nat) : bool := Posz x \in i.
 
+Definition posnum (R : numDomainType) of phant R :=
+  def (@num_sem R) (Real `]0, +oo[).
+
+Definition nonneg (R : numDomainType) of phant R :=
+  def (@num_sem R) (Real `[0, +oo[).
+
 (* a few lifting helper functions *)
 Definition real1 (op1 : interval int -> interval int) (x : Itv.t) : Itv.t :=
   match x with Itv.Top => Itv.Top | Itv.Real x => Itv.Real (op1 x) end.
@@ -317,11 +349,15 @@ Module Exports.
 Arguments r {T sem i}.
 Notation "{ 'itv' R & i }" := (def (@num_sem R) (Itv.Real i%Z)) : type_scope.
 Notation "{ 'i01' R }" := {itv R & `[0, 1]} : type_scope.
+Notation "{ 'posnum' R }" := (@posnum _ (Phant R))  : ring_scope.
+Notation "{ 'nonneg' R }" := (@nonneg _ (Phant R))  : ring_scope.
 Notation "x %:itv" := (from (Phantom _ x)) : ring_scope.
 Notation "[ 'itv' 'of' x ]" := (fromP (Phantom _ x)) : ring_scope.
 Notation num := r.
 Notation "x %:inum" := (r x) (only parsing) : ring_scope.
 Notation "x %:num" := (r x) : ring_scope.
+Notation "x %:posnum" := (@r _ _ (Real `]0%Z, +oo[) x) : ring_scope.
+Notation "x %:nngnum" := (@r _ _ (Real `[0%Z, +oo[) x) : ring_scope.
 End Exports.
 End Itv.
 Export Itv.Exports.
@@ -550,6 +586,14 @@ Definition widen_itv x i' (uni : unify_itv i i') :=
 Lemma widen_itvE x (uni : unify_itv i i) : @widen_itv x i uni = x.
 Proof. exact/val_inj. Qed.
 
+Lemma posE x (uni : unify_itv i (Itv.Real `]0%Z, +oo[)) :
+  (widen_itv x%:num%:itv uni)%:num = x%:num.
+Proof. by []. Qed.
+
+Lemma nngE x (uni : unify_itv i (Itv.Real `[0%Z, +oo[)) :
+  (widen_itv x%:num%:itv uni)%:num = x%:num.
+Proof. by []. Qed.
+
 End NumDomainTheory.
 
 Arguments bottom {R i} _ {_}.
@@ -570,6 +614,15 @@ Arguments le1 {R i} _ {_}.
 Arguments gt1F {R i} _ {_}.
 Arguments widen_itv {R i} _ {_ _}.
 Arguments widen_itvE {R i} _ {_}.
+Arguments posE {R i} _ {_}.
+Arguments nngE {R i} _ {_}.
+
+Notation "[ 'gt0' 'of' x ]" := (ltac:(refine (gt0 x%:itv))).
+Notation "[ 'lt0' 'of' x ]" := (ltac:(refine (lt0 x%:itv))).
+Notation "[ 'ge0' 'of' x ]" := (ltac:(refine (ge0 x%:itv))).
+Notation "[ 'le0' 'of' x ]" := (ltac:(refine (le0 x%:itv))).
+Notation "[ 'cmp0' 'of' x ]" := (ltac:(refine (cmp0 x%:itv))).
+Notation "[ 'neq0' 'of' x ]" := (ltac:(refine (neq0 x%:itv))).
 
 #[export] Hint Extern 0 (is_true (0%R < _)%R) => solve [apply: gt0] : core.
 #[export] Hint Extern 0 (is_true (_ < 0%R)%R) => solve [apply: lt0] : core.
@@ -585,6 +638,16 @@ Arguments widen_itvE {R i} _ {_}.
 Notation "x %:i01" := (widen_itv x%:itv : {i01 _}) (only parsing) : ring_scope.
 Notation "x %:i01" := (@widen_itv _ _
     (@Itv.from _ _ _ (Phantom _ x)) (Itv.Real `[0, 1]%Z) _)
+  (only printing) : ring_scope.
+Notation "x %:pos" := (widen_itv x%:itv : {posnum _}) (only parsing)
+  : ring_scope.
+Notation "x %:pos" := (@widen_itv _ _
+    (@Itv.from _ _ _ (Phantom _ x)) (Itv.Real `]0%Z, +oo[) _)
+  (only printing) : ring_scope.
+Notation "x %:nng" := (widen_itv x%:itv : {nonneg _}) (only parsing)
+  : ring_scope.
+Notation "x %:nng" := (@widen_itv _ _
+    (@Itv.from _ _ _ (Phantom _ x)) (Itv.Real `[0%Z, +oo[) _)
   (only printing) : ring_scope.
 
 Local Open Scope ring_scope.
@@ -989,6 +1052,37 @@ Lemma itv01_subdef : num_spec (Itv.Real `[0%Z, 1%Z]) x.
 Proof. by apply/and3P; split; rewrite ?bnd_simp// ger0_real. Qed.
 Definition Itv01 : num_def R (Itv.Real `[0%Z, 1%Z]) := Itv.mk itv01_subdef.
 End Itv01.
+
+Section Posnum.
+Context (R : numDomainType) (x : R) (x_gt0 : 0 < x).
+Lemma posnum_subdef : num_spec (Itv.Real `]0, +oo[) x.
+Proof. by apply/and3P; rewrite /= gtr0_real. Qed.
+Definition PosNum : {posnum R} := Itv.mk posnum_subdef.
+End Posnum.
+
+Section Nngnum.
+Context (R : numDomainType) (x : R) (x_ge0 : 0 <= x).
+Lemma nngnum_subdef : num_spec (Itv.Real `[0, +oo[) x.
+Proof. by apply/and3P; rewrite /= ger0_real. Qed.
+Definition NngNum : {nonneg R} := Itv.mk nngnum_subdef.
+End Nngnum.
+
+Variant posnum_spec (R : numDomainType) (x : R) :
+  R -> bool -> bool -> bool -> Type :=
+| IsPosnum (p : {posnum R}) : posnum_spec x (p%:num) false true true.
+
+Lemma posnumP (R : numDomainType) (x : R) : 0 < x ->
+  posnum_spec x x (x == 0) (0 <= x) (0 < x).
+Proof.
+move=> x_gt0; case: real_ltgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _.
+by rewrite -[x]/(PosNum x_gt0)%:num; constructor.
+Qed.
+
+Variant nonneg_spec (R : numDomainType) (x : R) : R -> bool -> Type :=
+| IsNonneg (p : {nonneg R}) : nonneg_spec x (p%:num) true.
+
+Lemma nonnegP (R : numDomainType) (x : R) : 0 <= x -> nonneg_spec x x (0 <= x).
+Proof. by move=> xge0; rewrite xge0 -[x]/(NngNum xge0)%:num; constructor. Qed.
 
 Section Test1.
 
