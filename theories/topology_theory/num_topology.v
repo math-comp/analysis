@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import all_classical.
-From mathcomp Require Import signed reals topology_structure uniform_structure.
+From mathcomp Require Import itv reals topology_structure uniform_structure.
 From mathcomp Require Import pseudometric_structure order_topology.
 
 (**md**************************************************************************)

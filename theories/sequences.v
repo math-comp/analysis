@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import set_interval reals ereal signed topology.
+From mathcomp Require Import set_interval reals itv ereal topology.
 From mathcomp Require Import tvs normedtype landau.
 
 (**md**************************************************************************)
@@ -892,7 +892,7 @@ suff abel : forall n,
     rewrite a_o.
     set h := 'o_\oo (@harmonic R).
     apply/eqoP => _/posnumP[e] /=.
-    near=> n; rewrite normr1 mulr1 normrM -ler_pdivlMl// ?normr_gt0//.
+    near=> n; rewrite normr1 mulr1 normrM -ler_pdivlMl ?normr_gt0//.
     rewrite mulrC -normrV ?unitfE //.
     near: n.
     by case: (eqoP eventually_filterType (@harmonic R) h) => Hh _; apply Hh.
@@ -2855,8 +2855,9 @@ have /le_trans -> // : `| y n - y (n + m)| <=
   rewrite (le_trans (ler_distD (y (n + m)%N) _ _))//.
   apply: (le_trans (lerD ih _)); first by rewrite distrC addnS; exact: f1.
   rewrite [_ * `|_|]mulrC exprD mulrA geometric_seriesE ?lt_eqF//=.
-  rewrite -!/(`1-_) (onem_PosNum ctrf.1) (onemX_NngNum (ltW ctrf.1)).
-  rewrite -!mulrA -mulrDr ler_pM// -mulrDr exprSr onemM -addrA.
+  pose q' := Itv01 (!! ge0 q) (ltW q1).
+  rewrite -[q%:num]/(q'%:num) -!mulrA -mulrDr ler_pM// {}/q'/=.
+  rewrite -!/(`1-_) -mulrDr exprSr onemM -addrA.
   rewrite -[in leRHS](mulrC _ `1-(_ ^+ m)) -onemMr onemK.
   by rewrite [in leRHS]mulrDl mulrAC mulrV ?mul1r// unitf_gt0// onem_gt0.
 rewrite geometric_seriesE ?lt_eqF//= -[leRHS]mulr1 (ACl (1*4*2*3))/= -/C.
@@ -2951,7 +2952,7 @@ have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
   have /open_nbhs_nbhs/nbhs_closedballP[rn01 Ball_an1] :
     open_nbhs an1 ((closed_ball an rn%:num)^° `&` F n.+1) by [].
   have n31_gt0 : n.+3%:R^-1 > 0 :> K by [].
-  have majr : minr (PosNum n31_gt0)%:num rn01%:num > 0 by [].
+  have majr : minr (PosNum n31_gt0)%:num rn01%:num > 0 by exact/gt0/K.
   exists (an1, PosNum majr); split.
     apply/(subset_trans _ Ball_an1)/le_closed_ball => /=.
     by rewrite ge_min lexx orbT.
