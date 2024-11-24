@@ -396,6 +396,12 @@ Lemma le0y : (0 : \bar R) <= +oo. Proof. exact: real0. Qed.
 
 Lemma leNy0 : -oo <= (0 : \bar R). Proof. exact: real0. Qed.
 
+Lemma cmp0y : ((0 : \bar R) >=< +oo%E)%O.
+Proof. by rewrite /Order.comparable le0y. Qed.
+
+Lemma cmp0Ny : ((0 : \bar R) >=< -oo%E)%O.
+Proof. by rewrite /Order.comparable leNy0 orbT. Qed.
+
 Lemma lt0e x : (0 < x) = (x != 0) && (0 <= x).
 Proof. by case: x => [r| |]//; rewrite lte_fin lee_fin lt0r. Qed.
 
@@ -415,6 +421,38 @@ Proof. by case: x => //=; rewrite real0. Qed.
 
 Lemma real_leNye x : (-oo <= x) = (fine x \is Num.real).
 Proof. by case: x => //=; rewrite real0. Qed.
+
+Lemma minye : left_id (+oo : \bar R) Order.min.
+Proof. by case. Qed.
+
+Lemma real_miney (x : \bar R) : (0 >=< x)%O -> Order.min x +oo = x.
+Proof.
+by case: x => [x |//|//] rx; rewrite minEle real_leey [_ \in Num.real]rx.
+Qed.
+
+Lemma real_minNye (x : \bar R) : (0 >=< x)%O -> Order.min -oo%E x = -oo%E.
+Proof.
+by case: x => [x |//|//] rx; rewrite minEle real_leNye [_ \in Num.real]rx.
+Qed.
+
+Lemma mineNy : right_zero (-oo : \bar R) Order.min.
+Proof. by case=> [x |//|//]; rewrite minElt. Qed.
+
+Lemma maxye : left_zero (+oo : \bar R) Order.max.
+Proof. by case. Qed.
+
+Lemma real_maxey (x : \bar R) : (0 >=< x)%O -> Order.max x +oo = +oo.
+Proof.
+by case: x => [x |//|//] rx; rewrite maxEle real_leey [_ \in Num.real]rx.
+Qed.
+
+Lemma real_maxNye (x : \bar R) : (0 >=< x)%O -> Order.max -oo%E x = x.
+Proof.
+by case: x => [x |//|//] rx; rewrite maxEle real_leNye [_ \in Num.real]rx.
+Qed.
+
+Lemma maxeNy : right_id (-oo : \bar R) Order.max.
+Proof. by case=> [x |//|//]; rewrite maxElt. Qed.
 
 Lemma gee0P x : 0 <= x <-> x = +oo \/ exists2 r, (r >= 0)%R & x = r%:E.
 Proof.
@@ -1162,6 +1200,9 @@ Proof. move: x => [x||] //; exact: oppr_ge0. Qed.
 Lemma oppe_le0 x : (- x <= 0) = (0 <= x).
 Proof. move: x => [x||] //; exact: oppr_le0. Qed.
 
+Lemma oppe_cmp0 x : (0 >=< - x)%O = (0 >=< x)%O.
+Proof. by rewrite /Order.comparable oppe_ge0 oppe_le0 orbC. Qed.
+
 Lemma sume_ge0 T (f : T -> \bar R) (P : pred T) :
   (forall t, P t -> 0 <= f t) -> forall l, 0 <= \sum_(i <- l | P i) f i.
 Proof. by move=> f0 l; elim/big_rec : _ => // t x Pt; apply/adde_ge0/f0. Qed.
@@ -1290,6 +1331,34 @@ case: x y => [x||] [y||]// rx ry;
           rewrite ?mulN1e ?leNy0 ?mul1e ?le0y
       |by rewrite mulNyNy /Order.comparable le0y].
 Qed.
+
+Lemma real_fine (x : \bar R) : (0 >=< x)%O = (fine x \in Num.real).
+Proof. by case: x => [x //||//]; rewrite /= real0 /Order.comparable le0y. Qed.
+
+Lemma real_muleN (x y : \bar R) : (0 >=< x)%O -> (0 >=< y)%O ->
+  x * - y = - (x * y).
+Proof.
+rewrite !real_fine; case: x y => [x||] [y||] /= xr yr; rewrite /mule/=.
+- by rewrite mulrN.
+- by case: ifP; rewrite ?oppe0//; case: ifP.
+- by case: ifP; rewrite ?oppe0//; case: ifP.
+- rewrite EFinN oppe_eq0; case: ifP; rewrite ?oppe0// oppe_gt0 !lte_fin.
+  by case: (real_ltgtP xr yr) => // <-; rewrite eqxx.
+- by case: ifP.
+- by case: ifP.
+- rewrite EFinN oppe_eq0; case: ifP; rewrite ?oppe0// oppe_gt0 !lte_fin.
+  by case: (real_ltgtP xr yr) => // <-; rewrite eqxx.
+- by rewrite lt0y.
+- by rewrite lt0y.
+Qed.
+
+Lemma real_mulNe (x y : \bar R) : (0 >=< x)%O -> (0 >=< y)%O ->
+  - x * y = - (x * y).
+Proof. by move=> rx ry; rewrite muleC real_muleN 1?muleC. Qed.
+
+Lemma real_muleNN (x y : \bar R) : (0 >=< x)%O -> (0 >=< y)%O ->
+  - x * - y = x * y.
+Proof. by move=> rx ry; rewrite real_muleN ?real_mulNe ?oppeK ?oppe_cmp0. Qed.
 
 Lemma sqreD x y : x + y \is a fin_num ->
   (x + y) ^+ 2 = x ^+ 2 + x * y *+ 2 + y ^+ 2.
@@ -1684,16 +1753,7 @@ by move: x y => [r0| |] [r1| |] //=; rewrite ?(leey, leNye)// !lee_fin lerNl.
 Qed.
 
 Lemma muleN x y : x * - y = - (x * y).
-Proof.
-move: x y => [x| |] [y| |] //=; rewrite /mule/=; try by rewrite ltry.
-- by rewrite mulrN.
-- by rewrite !eqe !lte_fin; case: ltrgtP => //; rewrite oppe0.
-- by rewrite !eqe !lte_fin; case: ltrgtP => //; rewrite oppe0.
-- rewrite !eqe oppr_eq0 eq_sym; case: ifP; rewrite ?oppe0// => y0.
-  by rewrite [RHS]fun_if ltNge if_neg EFinN leeNl oppe0 le_eqVlt eqe y0.
-- rewrite !eqe oppr_eq0 eq_sym; case: ifP; rewrite ?oppe0// => y0.
-  by rewrite [RHS]fun_if ltNge if_neg EFinN leeNl oppe0 le_eqVlt eqe y0.
-Qed.
+Proof. by rewrite real_muleN ?real_fine ?num_real. Qed.
 
 Lemma mulNe x y : - x * y = - (x * y). Proof. by rewrite muleC muleN muleC. Qed.
 
@@ -2460,29 +2520,17 @@ move=> x y z; have [yz|zy] := leP y z.
 by apply/esym/max_idPl; rewrite leeD2l// ltW.
 Qed.
 
-Lemma maxye : left_zero (+oo : \bar R) maxe.
-Proof. by move=> x; have [|//] := leP +oo x; rewrite leye_eq => /eqP. Qed.
-
 Lemma maxey : right_zero (+oo : \bar R) maxe.
 Proof. by move=> x; rewrite maxC maxye. Qed.
 
 Lemma maxNye : left_id (-oo : \bar R) maxe.
 Proof. by move=> x; have [//|] := leP -oo x; rewrite ltNge leNye. Qed.
 
-Lemma maxeNy : right_id (-oo : \bar R) maxe.
-Proof. by move=> x; rewrite maxC maxNye. Qed.
-
 HB.instance Definition _ :=
   Monoid.isLaw.Build (\bar R) -oo maxe maxA maxNye maxeNy.
 
 Lemma minNye : left_zero (-oo : \bar R) mine.
 Proof. by move=> x; have [|//] := leP x -oo; rewrite leeNy_eq => /eqP. Qed.
-
-Lemma mineNy : right_zero (-oo : \bar R) mine.
-Proof. by move=> x; rewrite minC minNye. Qed.
-
-Lemma minye : left_id (+oo : \bar R) mine.
-Proof. by move=> x; have [//|] := leP x +oo; rewrite ltNge leey. Qed.
 
 Lemma miney : right_id (+oo : \bar R) mine.
 Proof. by move=> x; rewrite minC minye. Qed.
