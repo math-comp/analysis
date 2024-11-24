@@ -3,8 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import set_interval reals ereal signed topology.
-From mathcomp Require Import tvs normedtype landau.
+From mathcomp Require Import set_interval reals interval_inference ereal.
+From mathcomp Require Import topology tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Definitions and lemmas about sequences                                   *)
@@ -850,7 +850,7 @@ suff abel : forall n,
     rewrite a_o.
     set h := 'o_\oo (@harmonic R).
     apply/eqoP => _/posnumP[e] /=.
-    near=> n; rewrite normr1 mulr1 normrM -ler_pdivlMl// ?normr_gt0//.
+    near=> n; rewrite normr1 mulr1 normrM -ler_pdivlMl ?normr_gt0//.
     rewrite mulrC -normrV ?unitfE //.
     near: n.
     by case: (eqoP eventually_filterType (@harmonic R) h) => Hh _; apply Hh.
@@ -1027,7 +1027,7 @@ Lemma cauchy_seriesP {R : numFieldType} (V : normedModType R) (u_ : V ^nat) :
     \forall n \near (\oo, \oo), `|\sum_(n.1 <= k < n.2) u_ k| < e.
 Proof.
 rewrite -cauchy_ballP; split=> su_cv _/posnumP[e];
-have {}su_cv := !! su_cv _ (gt0 e);
+have {}su_cv := [elaborate su_cv _ (gt0 e)];
 rewrite -near2_pair -ball_normE !near_simpl/= in su_cv *.
   apply: filterS su_cv => -[/= m n]; rewrite distrC sub_series.
   by have [|/ltnW]:= leqP m n => mn//; rewrite (big_geq mn) ?normr0.
@@ -2646,8 +2646,9 @@ have /le_trans -> // : `| y n - y (n + m)| <=
   rewrite (le_trans (ler_distD (y (n + m)%N) _ _))//.
   apply: (le_trans (lerD ih _)); first by rewrite distrC addnS; exact: f1.
   rewrite [_ * `|_|]mulrC exprD mulrA geometric_seriesE ?lt_eqF//=.
-  rewrite -!/(`1-_) (onem_PosNum ctrf.1) (onemX_NngNum (ltW ctrf.1)).
-  rewrite -!mulrA -mulrDr ler_pM// -mulrDr exprSr onemM -addrA.
+  pose q' := Itv01 [elaborate ge0 q] (ltW q1).
+  rewrite -[q%:num]/(q'%:num) -!mulrA -mulrDr ler_pM// {}/q'/=.
+  rewrite -!/(`1-_) -mulrDr exprSr onemM -addrA.
   rewrite -[in leRHS](mulrC _ `1-(_ ^+ m)) -onemMr onemK.
   by rewrite [in leRHS]mulrDl mulrAC mulrV ?mul1r// unitf_gt0// onem_gt0.
 rewrite geometric_seriesE ?lt_eqF//= -[leRHS]mulr1 (ACl (1*4*2*3))/= -/C.

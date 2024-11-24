@@ -2,8 +2,9 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import all_classical.
-From mathcomp Require Import signed reals topology_structure uniform_structure.
-From mathcomp Require Import pseudometric_structure order_topology.
+From mathcomp Require Import interval_inference reals topology_structure.
+From mathcomp Require Import uniform_structure pseudometric_structure.
+From mathcomp Require Import order_topology.
 
 (**md**************************************************************************)
 (* # Topological notions for numerical types                                  *)

@@ -11,7 +11,7 @@
    bounds of intervals*)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp Require Import mathcomp_extra signed.
+From mathcomp Require Import mathcomp_extra interval_inference.
 
 (**md**************************************************************************)
 (* # Extended real numbers $\overline{R}$                                     *)
@@ -83,9 +83,11 @@ From mathcomp Require Import mathcomp_extra signed.
 (* ## Signed extended real numbers                                            *)
 (* ```                                                                        *)
 (*    {posnum \bar R} == interface type for elements in \bar R that are       *)
-(*                       positive, c.f., signed.v, notation in scope %E       *)
+(*                       positive, c.f., interval_inference.v,                *)
+(*                       notation in scope %E                                 *)
 (*    {nonneg \bar R} == interface types for elements in \bar R that are      *)
-(*                       non-negative, c.f. signed.v, notation in scope %E    *)
+(*                       non-negative, c.f. interval_inference.v,             *)
+(*                       notation in scope %E                                 *)
 (*             x%:pos == explicitly casts x to {posnum \bar R}, in scope %E   *)
 (*             x%:nng == explicitly casts x to {nonneg \bar R}, in scope %E   *)
 (* ```                                                                        *)
@@ -3533,201 +3535,667 @@ Module ConstructiveDualAddTheory.
 Export DualAddTheory.
 End ConstructiveDualAddTheory.
 
-Definition posnume (R : numDomainType) of phant R := {> 0 : \bar R}.
-Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R)) : type_scope.
-Definition nonnege (R : numDomainType) of phant R := {>= 0 : \bar R}.
-Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R)) : type_scope.
-
-Notation "x %:pos" := (widen_signed x%:sgn : {posnum \bar _}) (only parsing)
-  : ereal_dual_scope.
-Notation "x %:pos" := (widen_signed x%:sgn : {posnum \bar _}) (only parsing)
-  : ereal_scope.
-Notation "x %:nng" := (widen_signed x%:sgn : {nonneg \bar _}) (only parsing)
-  : ereal_dual_scope.
-Notation "x %:nng" := (widen_signed x%:sgn : {nonneg \bar _}) (only parsing)
-  : ereal_scope.
-Notation "x %:pos" := (@widen_signed ereal_display _ _ _ _
-    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
-    !=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
-  (only printing) : ereal_dual_scope.
-Notation "x %:pos" := (@widen_signed ereal_display _ _ _ _
-    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
-    !=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
-  (only printing) : ereal_scope.
-Notation "x %:nng" := (@widen_signed ereal_display _ _ _ _
-    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
-    ?=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
-  (only printing) : ereal_dual_scope.
-Notation "x %:nng" := (@widen_signed ereal_display _ _ _ _
-    (@Signed.from _ _ _ _ _ _ (Phantom _ x))
-    ?=0 (KnownSign.Real (KnownSign.Sign >=0)) _ _)
-  (only printing) : ereal_scope.
-
-#[global] Hint Extern 0 (is_true (0%E < _)%O) => solve [apply: gt0] : core.
-#[global] Hint Extern 0 (is_true (_ < 0%E)%O) => solve [apply: lt0] : core.
-#[global] Hint Extern 0 (is_true (0%E <= _)%O) => solve [apply: ge0] : core.
-#[global] Hint Extern 0 (is_true (_ <= 0%E)%O) => solve [apply: le0] : core.
-#[global] Hint Extern 0 (is_true (0%E >=< _)%O) => solve [apply: cmp0] : core.
-#[global] Hint Extern 0 (is_true (_ != 0%E)%O) => solve [apply: neq0] : core.
-
-Section SignedNumDomainStability.
+Section Itv.
 Context {R : numDomainType}.
 
-Lemma pinfty_snum_subproof : Signed.spec 0 !=0 >=0 (+oo : \bar R).
-Proof. by rewrite /= le0y. Qed.
+Definition ext_num_sem (i : interval int) (x : \bar R) :=
+  (0 >=< x)%O && (x \in map_itv (EFin \o intr) i).
 
-Canonical pinfty_snum := Signed.mk (pinfty_snum_subproof).
+Local Notation num_spec := (Itv.spec (@Itv.num_sem _)).
+Local Notation num_def R := (Itv.def (@Itv.num_sem R)).
+Local Notation num_itv_bound R := (@map_itv_bound _ R intr).
 
-Lemma ninfty_snum_subproof : Signed.spec 0 !=0 <=0 (-oo : \bar R).
-Proof. by rewrite /= leNy0. Qed.
+Local Notation ext_num_spec := (Itv.spec ext_num_sem).
+Local Notation ext_num_def := (Itv.def ext_num_sem).
+Local Notation ext_num_itv_bound :=
+  (@map_itv_bound _ (\bar R) (EFin \o intr)).
 
-Canonical ninfty_snum := Signed.mk (ninfty_snum_subproof).
+Lemma ext_num_num_sem i (x : R) : Itv.ext_num_sem i x%:E = Itv.num_sem i x.
+Proof. by case: i => [l u]; do 2![congr (_ && _)]; [case: l | case: u]. Qed.
 
-Lemma EFin_snum_subproof nz cond (x : {num R & nz & cond}) :
-  Signed.spec 0 nz cond x%:num%:E.
+Lemma ext_num_num_spec i (x : R) : ext_num_spec i x%:E = num_spec i x.
+Proof. by case: i => [//| i]; apply: ext_num_num_sem. Qed.
+
+Lemma le_map_itv_bound_EFin (x y : itv_bound R) :
+  (map_itv_bound EFin x <= map_itv_bound EFin y)%O = (x <= y)%O.
+Proof. by case: x y => [xb x | x] [yb y | y]. Qed.
+
+Lemma map_itv_bound_EFin_le_BLeft (x : itv_bound R) (y : R) :
+  (map_itv_bound EFin x <= BLeft y%:E)%O = (x <= BLeft y)%O.
 Proof.
-apply/andP; split.
-  case: cond nz x => [[[]|]|] [] x //=;
-    do ?[by case: (bottom x)|by rewrite eqe eq0F].
-case: cond nz x => [[[]|]|] [] x //=;
-  do ?[by case: (bottom x)|by rewrite ?lee_fin ?(eq0, ge0, le0) ?[_ || _]cmp0].
+rewrite -[BLeft y%:E]/(map_itv_bound EFin (BLeft y)).
+by rewrite le_map_itv_bound_EFin.
 Qed.
 
-Canonical EFin_snum nz cond (x : {num R & nz & cond}) :=
-  Signed.mk (EFin_snum_subproof x).
-
-Lemma fine_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr}) :
-  Signed.spec 0%R ?=0 xr (fine x%:num).
+Lemma BRight_le_map_itv_bound_EFin (x : R) (y : itv_bound R) :
+  (BRight x%:E <= map_itv_bound EFin y)%O = (BRight x <= y)%O.
 Proof.
-case: xr x => [[[]|]|]//= [x /andP[_]]/=.
-- by move=> /eqP ->.
-- by case: x.
-- by case: x.
-- by move=> /orP[]; case: x => [x||]//=; rewrite lee_fin => ->; rewrite ?orbT.
+rewrite -[BRight x%:E]/(map_itv_bound EFin (BRight x)).
+by rewrite le_map_itv_bound_EFin.
 Qed.
 
-Canonical fine_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr}) :=
-  Signed.mk (fine_snum_subproof x).
-
-Lemma oppe_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr}) (r := opp_reality_subdef xnz xr) :
-  Signed.spec 0 xnz r (- x%:num).
+Lemma le_ext_num_itv_bound (x y : itv_bound int) :
+  (ext_num_itv_bound x <= ext_num_itv_bound y)%O = (x <= y)%O.
 Proof.
-rewrite {}/r; case: xr xnz x => [[[]|]|] [] x //=;
-  do ?[by case: (bottom x)
-      |by rewrite ?eqe_oppLR ?oppe0 1?eq0//;
-          rewrite ?oppe_le0 ?oppe_ge0 ?(eq0, eq0F, ge0, le0)//;
-          rewrite orbC [_ || _]cmp0].
+rewrite !(map_itv_bound_comp EFin intr)/=.
+by rewrite le_map_itv_bound_EFin le_num_itv_bound.
 Qed.
 
-Canonical oppe_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr}) :=
-  Signed.mk (oppe_snum_subproof x).
-
-Lemma adde_snum_subproof (xnz ynz : KnownSign.nullity)
-    (xr yr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr})
-    (y : {compare (0 : \bar R) & ynz & yr})
-    (rnz := add_nonzero_subdef xnz ynz xr yr)
-    (rrl := add_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (adde x%:num y%:num).
+Lemma ext_num_spec_sub (x y : Itv.t) : Itv.sub x y ->
+  forall z : \bar R, ext_num_spec x z -> ext_num_spec y z.
 Proof.
-rewrite {}/rnz {}/rrl; apply/andP; split.
-  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-  by rewrite 1?adde_ss_eq0 ?(eq0F, ge0, le0, andbF, orbT).
-move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-  do ?[by case: (bottom x)|by case: (bottom y)
-      |by rewrite adde_ge0|by rewrite adde_le0
-      |exact: realDe|by rewrite 2!eq0 /adde/= addr0].
+case: x y => [| x] [| y] //= x_sub_y z /andP[rz]; rewrite /Itv.ext_num_sem rz/=.
+move: x y x_sub_y => [lx ux] [ly uy] /andP[lel leu] /=.
+move=> /andP[lxz zux]; apply/andP; split.
+- by apply: le_trans lxz; rewrite le_ext_num_itv_bound.
+- by apply: le_trans zux _; rewrite le_ext_num_itv_bound.
 Qed.
 
-Canonical adde_snum (xnz ynz : KnownSign.nullity)
-    (xr yr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr})
-    (y : {compare (0 : \bar R) & ynz & yr}) :=
-  Signed.mk (adde_snum_subproof x y).
+Section ItvTheory.
+Context {i : Itv.t}.
+Implicit Type x : ext_num_def i.
+
+Lemma ext_widen_itv_subproof x i' : Itv.sub i i' ->
+  ext_num_spec i' x%:inum.
+Proof. by case: x => x /= /[swap] /ext_num_spec_sub; apply. Qed.
+
+Definition ext_widen_itv x i' (uni : unify_itv i i') :=
+  Itv.mk (ext_widen_itv_subproof x uni).
+
+Lemma gt0e x : unify_itv i (Itv.Real `]0%Z, +oo[) -> 0%E < x%:inum :> \bar R.
+Proof.
+case: x => x /= /[swap] /ext_num_spec_sub /[apply] /andP[_].
+by rewrite /= in_itv/= andbT.
+Qed.
+
+Lemma lte0 x : unify_itv i (Itv.Real `]-oo, 0%Z[) -> x%:inum < 0%E :> \bar R.
+Proof.
+by case: x => x /=/[swap] /ext_num_spec_sub /[apply] /andP[_]/=; rewrite in_itv.
+Qed.
+
+Lemma ge0e x : unify_itv i (Itv.Real `[0%Z, +oo[) -> 0%E <= x%:inum :> \bar R.
+Proof.
+case: x => x /= /[swap] /ext_num_spec_sub /[apply] /andP[_] /=.
+by rewrite in_itv/= andbT.
+Qed.
+
+Lemma lee0 x : unify_itv i (Itv.Real `]-oo, 0%Z]) -> x%:inum <= 0%E :> \bar R.
+Proof.
+by case: x => x /=/[swap] /ext_num_spec_sub /[apply] /andP[_]/=; rewrite in_itv.
+Qed.
+
+Lemma cmp0e x : unify_itv i (Itv.Real `]-oo, +oo[) -> (0%E >=< x%:inum)%O.
+Proof. by case: i x => [//| [l u] [[x||//] /=/andP[/= xr _]]]. Qed.
+
+Lemma neqe0 x :
+  unify (fun ix iy => ~~ Itv.sub ix iy) (Itv.Real `[0%Z, 0%Z]) i ->
+  x%:inum != 0 :> \bar R.
+Proof.
+case: i x => [//| [l u] [x /= Px]]; apply: contra => /eqP x0 /=.
+move: Px; rewrite x0 => /and3P[_ /= l0 u0]; apply/andP; split.
+- by case: l l0 => [[] l |]; rewrite ?bnd_simp ?lee_fin ?lte_fin ?lerz0 ?ltrz0.
+- by case: u u0 => [[] u |]; rewrite ?bnd_simp ?lee_fin ?lte_fin ?ler0z ?ltr0z.
+Qed.
+
+End ItvTheory.
+
+End Itv.
+
+Arguments gt0e {R i} _ {_}.
+Arguments lte0 {R i} _ {_}.
+Arguments ge0e {R i} _ {_}.
+Arguments lee0 {R i} _ {_}.
+Arguments cmp0e {R i} _ {_}.
+Arguments neqe0 {R i} _ {_}.
+Arguments ext_widen_itv {R i} _ {_ _}.
+
+Definition posnume (R : numDomainType) of phant R :=
+  Itv.def (@ext_num_sem R) (Itv.Real `]0%Z, +oo[).
+Notation "{ 'posnum' '\bar' R }" := (@posnume _ (Phant R)) : type_scope.
+Definition nonnege (R : numDomainType) of phant R :=
+  Itv.def (@ext_num_sem R) (Itv.Real `[0%Z, +oo[).
+Notation "{ 'nonneg' '\bar' R }" := (@nonnege _ (Phant R)) : type_scope.
+Notation "x %:pos" := (ext_widen_itv x%:itv : {posnum \bar _}) (only parsing)
+  : ereal_dual_scope.
+Notation "x %:pos" := (ext_widen_itv x%:itv : {posnum \bar _}) (only parsing)
+  : ereal_scope.
+Notation "x %:pos" := (@ext_widen_itv _ _
+    (@Itv.from _ _ _ (Phantom _ x)) (Itv.Real `]Posz 0, +oo[) _)
+  (only printing) : ereal_dual_scope.
+Notation "x %:pos" := (@ext_widen_itv _ _
+    (@Itv.from _ _ _ (Phantom _ x)) (Itv.Real `]Posz 0, +oo[) _)
+  (only printing) : ereal_scope.
+Notation "x %:nng" := (ext_widen_itv x%:itv : {nonneg \bar _}) (only parsing)
+  : ereal_dual_scope.
+Notation "x %:nng" := (ext_widen_itv x%:itv : {nonneg \bar _}) (only parsing)
+  : ereal_scope.
+Notation "x %:nng" := (@ext_widen_itv _ _
+    (@Itv.from _ _ _ (Phantom _ x)) (Itv.Real `[Posz 0, +oo[) _)
+  (only printing) : ereal_dual_scope.
+Notation "x %:nng" := (@ext_widen_itv _ _
+    (@Itv.from _ _ _ (Phantom _ x)) (Itv.Real `[Posz 0, +oo[) _)
+  (only printing) : ereal_scope.
+
+#[export] Hint Extern 0 (is_true (0%R < _)%E) => solve [apply: gt0e] : core.
+#[export] Hint Extern 0 (is_true (_ < 0%R)%E) => solve [apply: lte0] : core.
+#[export] Hint Extern 0 (is_true (0%R <= _)%E) => solve [apply: ge0e] : core.
+#[export] Hint Extern 0 (is_true (_ <= 0%R)%E) => solve [apply: lee0] : core.
+#[export] Hint Extern 0 (is_true (0%R >=< _)%O) => solve [apply: cmp0e] : core.
+#[export] Hint Extern 0 (is_true (_ != 0%R)%O) => solve [apply: neqe0] : core.
+
+Module ItvInstances.
+
+Import IntItv.
+Import Instances.
+
+Section Itv.
+Context {R : numDomainType}.
+
+Local Notation num_spec := (Itv.spec (@Itv.num_sem _)).
+Local Notation num_def R := (Itv.def (@Itv.num_sem R)).
+Local Notation num_itv_bound R := (@map_itv_bound _ R intr).
+
+Local Notation ext_num_spec := (Itv.spec ext_num_sem).
+Local Notation ext_num_def := (Itv.def ext_num_sem).
+Local Notation ext_num_itv_bound := (@map_itv_bound _ (\bar R) (EFin \o intr)).
+
+Lemma ext_num_spec_pinfty : ext_num_spec (Itv.Real `]1%Z, +oo[) (+oo : \bar R).
+Proof. by apply/and3P; rewrite /= cmp0y !bnd_simp real_ltry. Qed.
+
+Canonical pinfty_inum := Itv.mk (ext_num_spec_pinfty).
+
+Lemma ext_num_spec_ninfty :
+  ext_num_spec (Itv.Real `]-oo, (-1)%Z[) (-oo : \bar R).
+Proof. by apply/and3P; rewrite /= cmp0Ny !bnd_simp real_ltNyr. Qed.
+
+Canonical ninfty_snum := Itv.mk (ext_num_spec_ninfty).
+
+Lemma ext_num_spec_EFin i (x : num_def R i) : ext_num_spec i x%:num%:E.
+Proof.
+case: i x => [//| [l u] [x /=/and3P[xr /= lx xu]]].
+by apply/and3P; split=> [//||]; [case: l lx | case: u xu].
+Qed.
+
+Canonical EFin_inum i (x : num_def R i) := Itv.mk (ext_num_spec_EFin x).
+
+Lemma num_spec_fine i (x : ext_num_def i) (r := Itv.real1 keep_sign i) :
+  num_spec r (fine x%:num : R).
+Proof.
+rewrite {}/r; case: i x => [//| [l u] [x /=/and3P[xr /= lx xu]]].
+apply/and3P; split; rewrite -?real_fine//.
+- case: x lx {xu xr} => [x||]/=; [|by case: l => [? []|]..].
+  by case: l => [[] [l |//] |//] /[!bnd_simp] => [|/ltW]/=; rewrite lee_fin;
+     apply: le_trans.
+- case: x xu {lx xr} => [x||]/=; [|by case: u => [? [[]|] |]..].
+  by case: u => [bu [[|//] | u] |//]; case: bu => /[!bnd_simp] [/ltW|]/=;
+     rewrite lee_fin// => /le_trans; apply; rewrite lerz0.
+Qed.
+
+Canonical fine_inum i (x : ext_num_def i) := Itv.mk (num_spec_fine x).
+
+Lemma ext_num_sem_y l u :
+  ext_num_sem (Interval l u) (+oo : \bar R) = ((l != +oo%O) && (u == +oo%O)).
+Proof.
+apply/and3P/andP => [[_ ly uy] | [ly uy]]; split.
+- by case: l ly => -[].
+- by case: u uy => -[].
+- exact: cmp0y.
+- case: l ly => [|[]//].
+  by case=> l _ /=; rewrite bnd_simp ?real_leey ?real_ltry /= realz.
+- by case: u uy => -[].
+Qed.
+
+Lemma ext_num_sem_Ny l u :
+  ext_num_sem (Interval l u) (-oo : \bar R) = ((l == -oo%O) && (u != -oo%O)).
+Proof.
+apply/and3P/andP => [[_ ly uy] | [ly uy]]; split.
+- by case: l ly => -[].
+- by case: u uy => -[].
+- exact: real0.
+- by case: l ly => -[].
+- case: u uy => [|[]//].
+  by case=> u _ /=; rewrite bnd_simp ?real_leNye ?real_ltNyr /= realz.
+Qed.
+
+Lemma oppe_boundr (x : \bar R) b :
+  (BRight (- x) <= ext_num_itv_bound (opp_bound b))%O
+  = (ext_num_itv_bound b <= BLeft x)%O.
+Proof.
+by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz EFinN ?leeN2 // lteN2.
+Qed.
+
+Lemma oppe_boundl (x : \bar R) b :
+  (ext_num_itv_bound (opp_bound b) <= BLeft (- x))%O
+  = (BRight x <= ext_num_itv_bound b)%O.
+Proof.
+by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz EFinN ?leeN2 // lteN2.
+Qed.
+
+Lemma ext_num_spec_opp i (x : ext_num_def i) (r := Itv.real1 opp i) :
+  ext_num_spec r (- x%:inum : \bar R).
+Proof.
+rewrite {}/r; case: x => -[x||]/=;
+  [|by case: i => [//| [l u]]; rewrite /= ext_num_sem_y ext_num_sem_Ny;
+       case: l u => [[] ?|[]] [[] ?|[]]..].
+rewrite !ext_num_num_spec => Px.
+by rewrite -[x]/(Itv.mk Px)%:inum num_spec_opp.
+Qed.
+
+Canonical oppe_inum i (x : ext_num_def i) := Itv.mk (ext_num_spec_opp x).
+
+Lemma ext_num_spec_add xi yi (x : ext_num_def xi) (y : ext_num_def yi)
+    (r := Itv.real2 add xi yi) :
+  ext_num_spec r (adde x%:inum y%:inum : \bar R).
+Proof.
+rewrite {}/r; case: x y => -[x||] + [[y||]]/=;
+  [|by case: xi yi => [//| [xl xu]] [//| [yl yu]];
+       rewrite /adde/= ?ext_num_sem_y ?ext_num_sem_Ny;
+       case: xl xu yl yu => [[] ?|[]] [[] ?|[]] [[] ?|[]] [[] ?|[]]..].
+rewrite !ext_num_num_spec => Px Py.
+by rewrite -[x]/(Itv.mk Px)%:inum -[y]/(Itv.mk Py)%:inum num_spec_add.
+Qed.
+
+Canonical adde_inum xi yi (x : ext_num_def xi) (y : ext_num_def yi) :=
+  Itv.mk (ext_num_spec_add x y).
 
 Import DualAddTheory.
 
-Lemma dEFin_snum_subproof nz cond (x : {num R & nz & cond}) :
-  Signed.spec 0 nz cond (dEFin x%:num).
-Proof. exact: EFin_snum_subproof. Qed.
-
-Canonical dEFin_snum nz cond (x : {num R & nz & cond}) :=
-  Signed.mk (dEFin_snum_subproof x).
-
-Lemma dadde_snum_subproof (xnz ynz : KnownSign.nullity)
-    (xr yr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr})
-    (y : {compare (0 : \bar R) & ynz & yr})
-    (rnz := add_nonzero_subdef xnz ynz xr yr)
-    (rrl := add_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (dual_adde x%:num y%:num)%dE.
+Lemma ext_num_spec_dEFin i (x : num_def R i) : ext_num_spec i (dEFin x%:num).
 Proof.
-rewrite {}/rnz {}/rrl; apply/andP; split.
-  move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-  by rewrite 1?dadde_ss_eq0 ?(eq0F, ge0, le0, andbF, orbT).
-move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []//= x y;
-  do ?[by case: (bottom x)|by case: (bottom y)
-      |by rewrite dadde_ge0|by rewrite dadde_le0
-      |exact: realDed|by rewrite 2!eq0 /dual_adde/= addr0].
+case: i x => [//| [l u] [x /=/and3P[xr /= lx xu]]].
+by apply/and3P; split=> [//||]; [case: l lx | case: u xu].
 Qed.
 
-Canonical dadde_snum (xnz ynz : KnownSign.nullity)
-    (xr yr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr})
-    (y : {compare (0 : \bar R) & ynz & yr}) :=
-  Signed.mk (dadde_snum_subproof x y).
+Canonical dEFin_inum i (x : num_def R i) := Itv.mk (ext_num_spec_dEFin x).
 
-Lemma mule_snum_subproof (xnz ynz : KnownSign.nullity)
-    (xr yr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr})
-    (y : {compare (0 : \bar R) & ynz & yr})
-    (rnz := mul_nonzero_subdef xnz ynz xr yr)
-    (rrl := mul_reality_subdef xnz ynz xr yr) :
-  Signed.spec 0 rnz rrl (x%:num * y%:num).
+Lemma ext_num_spec_dadd xi yi (x : ext_num_def xi) (y : ext_num_def yi)
+    (r := Itv.real2 add xi yi) :
+  ext_num_spec r (dual_adde x%:inum y%:inum : \bar^d R).
 Proof.
-rewrite {}/rnz {}/rrl; apply/andP; split.
-  by move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []// x y;
-     rewrite mule_neq0.
-by move: xr yr xnz ynz x y => [[[]|]|] [[[]|]|] [] []/= x y //;
-  do ?[by case: (bottom x)|by case: (bottom y)
-      |by rewrite mule_ge0|by rewrite mule_le0_ge0
-      |by rewrite mule_ge0_le0|by rewrite mule_le0|exact: realMe
-      |by rewrite eq0 ?mule0// mul0e].
+rewrite {}/r; case: x y => -[x||] + [[y||]]/=;
+  [|by case: xi yi => [//| [xl xu]] [//| [yl yu]];
+       rewrite /dual_adde/= ?ext_num_sem_y ?ext_num_sem_Ny;
+       case: xl xu yl yu => [[] ?|[]] [[] ?|[]] [[] ?|[]] [[] ?|[]]..].
+rewrite !ext_num_num_spec => Px Py.
+by rewrite -[x]/(Itv.mk Px)%:inum -[y]/(Itv.mk Py)%:inum num_spec_add.
 Qed.
 
-Canonical mule_snum (xnz ynz : KnownSign.nullity) (xr yr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr})
-    (y : {compare (0 : \bar R) & ynz & yr}) :=
-  Signed.mk (mule_snum_subproof x y).
+Canonical dadde_inum xi yi (x : ext_num_def xi) (y : ext_num_def yi) :=
+  Itv.mk (ext_num_spec_dadd x y).
 
-Definition abse_reality_subdef (xnz : KnownSign.nullity)
-    (xr : KnownSign.reality) := (if xr is =0 then =0 else >=0)%snum_sign.
-Arguments abse_reality_subdef /.
+Variant ext_sign_spec (l u : itv_bound int) (x : \bar R) : signi -> Set :=
+  | ISignEqZero : l = BLeft 0%Z -> u = BRight 0%Z -> x = 0 ->
+                  ext_sign_spec l u x (Known EqZero)
+  | ISignNonNeg : (BLeft 0%:Z <= l)%O -> (BRight 0%:Z < u)%O -> 0 <= x ->
+                  ext_sign_spec l u x (Known NonNeg)
+  | ISignNonPos : (l < BLeft 0%:Z)%O -> (u <= BRight 0%:Z)%O -> x <= 0 ->
+                  ext_sign_spec l u x (Known NonPos)
+  | ISignBoth : (l < BLeft 0%:Z)%O -> (BRight 0%:Z < u)%O ->
+                (0 >=< x)%O -> ext_sign_spec l u x Unknown.
 
-Lemma abse_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr}) (r := abse_reality_subdef xnz xr) :
-  Signed.spec 0 xnz r `|x%:num|.
+Lemma ext_signP (l u : itv_bound int) (x : \bar R) :
+    (ext_num_itv_bound l <= BLeft x)%O -> (BRight x <= ext_num_itv_bound u)%O ->
+    (0 >=< x)%O ->
+  ext_sign_spec l u x (sign (Interval l u)).
 Proof.
-rewrite {}/r; case: xr xnz x => [[[]|]|] [] x //=;
-  do ?[by case: (bottom x)|by rewrite eq0 abse0
-      |by rewrite abse_ge0// andbT gee0_abs
-      |by rewrite abse_ge0// andbT lee0_abs
-      |by rewrite abse_ge0// andbT abse_eq0].
+case: x => [x||] xl xu xs.
+- case: (@signP R l u x _ _ xs).
+  + by case: l xl => -[].
+  + by case: u xu => -[].
+  + by move=> l0 u0 x0; apply: ISignEqZero => //; rewrite x0.
+  + by move=> l0 u0 x0; apply: ISignNonNeg.
+  + by move=> l0 u0 x0; apply: ISignNonPos.
+  + by move=> l0 u0 x0; apply: ISignBoth.
+- have uy : u = +oo%O by case: u xu => -[].
+  have u0 : (BRight 0%:Z < u)%O by rewrite uy.
+  case: (leP (BLeft 0%Z) l) => l0.
+  + suff -> : sign (Interval l u) = Known NonNeg.
+      by apply: ISignNonNeg => //; apply: le0y.
+    rewrite /=/sign_boundl /sign_boundr uy/=.
+    by case: eqP => [//| /eqP lneq0]; case: ltgtP l0 lneq0.
+  + suff -> : sign (Interval l u) = Unknown by exact: ISignBoth.
+    rewrite /=/sign_boundl /sign_boundr uy/=.
+    by case: eqP l0 => [->//| /eqP leq0] /ltW->.
+- have ly : l = -oo%O by case: l xl => -[].
+  have l0 : (l < BLeft 0%:Z)%O by rewrite ly.
+  case: (leP u (BRight 0%Z)) => u0.
+  + suff -> : sign (Interval l u) = Known NonPos by exact: ISignNonPos.
+    rewrite /=/sign_boundl /sign_boundr ly/=.
+    by case: eqP => [//| /eqP uneq0]; case: ltgtP u0 uneq0.
+  + suff -> : sign (Interval l u) = Unknown by exact: ISignBoth.
+    rewrite /=/sign_boundl /sign_boundr ly/=.
+    by case: eqP u0 => [->//| /eqP ueq0]; rewrite ltNge => /negbTE->.
 Qed.
 
-Canonical abse_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (x : {compare (0 : \bar R) & xnz & xr}) :=
-  Signed.mk (abse_snum_subproof x).
+Lemma ext_num_itv_mul_boundl b1 b2 (x1 x2 : \bar R) :
+  (BLeft 0%:Z <= b1 -> BLeft 0%:Z <= b2 ->
+   ext_num_itv_bound b1 <= BLeft x1 ->
+   ext_num_itv_bound b2 <= BLeft x2 ->
+   ext_num_itv_bound (mul_boundl b1 b2) <= BLeft (x1 * x2))%O.
+Proof.
+move=> b10 b20 b1x1 b2x2.
+have x10 : 0 <= x1.
+  by case: x1 b1x1 (le_trans (eqbRL (le_ext_num_itv_bound _ _) b10) b1x1).
+have x20 : 0 <= x2.
+  by case: x2 b2x2 (le_trans (eqbRL (le_ext_num_itv_bound _ _) b20) b2x2).
+have x1r : (0 >=< x1)%O by rewrite real_fine; exact/ger0_real/fine_ge0.
+have x2r : (0 >=< x2)%O by rewrite real_fine; exact/ger0_real/fine_ge0.
+have ley b1' b2' :
+    (map_itv_bound EFin (num_itv_bound R (mul_boundl b1' b2'))
+     <= BLeft +oo%E)%O.
+  by case: b1' b2' => [[] [[| ?] | ?] | []] [[] [[| ?] | ?] | []]//=;
+     rewrite bnd_simp ?real_leey ?real_ltry/= ?realz.
+case: x1 x2 x10 x20 x1r x2r b1x1 b2x2 => [x1||] [x2||] //= x10 x20 x1r x2r.
+- rewrite !(map_itv_bound_comp, map_itv_bound_EFin_le_BLeft)/=.
+  exact: num_itv_mul_boundl.
+- rewrite !(map_itv_bound_comp EFin intr) real_mulry//= => b1x1 _.
+  case: (comparable_ltgtP x1r) x10 => [x10 |//| [x10]] _.
+    by rewrite gtr0_sg ?mul1e ?bnd_simp.
+  rewrite -x10 sgr0 mul0e/= map_itv_bound_EFin_le_BLeft.
+  suff -> : b1 = BLeft 0%Z by case: b2 {b20}.
+  apply/le_anti; rewrite b10 andbT.
+  move: b1x1; rewrite map_itv_bound_EFin_le_BLeft.
+  by rewrite -x10 -(mulr0z 1) num_itv_bound_le_BLeft.
+- rewrite !(map_itv_bound_comp EFin intr) real_mulyr//= => _ b2x2.
+  case: (comparable_ltgtP x2r) x20 => [x20 |//| [x20]] _.
+    by rewrite gtr0_sg ?mul1e ?bnd_simp.
+  rewrite -x20 sgr0 mul0e/= map_itv_bound_EFin_le_BLeft.
+  suff -> : b2 = BLeft 0%Z by case: b1 {b10} => [[] [] []|].
+  apply/le_anti; rewrite b20 andbT.
+  move: b2x2; rewrite map_itv_bound_EFin_le_BLeft.
+  by rewrite -x20 -(mulr0z 1) num_itv_bound_le_BLeft.
+- by rewrite mulyy/= 3!map_itv_bound_comp.
+Qed.
 
-End SignedNumDomainStability.
+Lemma ext_num_itv_mul_boundr_pos b1 b2 (x1 x2 : \bar R) :
+  (0 <= x1 -> 0 <= x2 ->
+   BRight x1 <= ext_num_itv_bound b1 ->
+   BRight x2 <= ext_num_itv_bound b2 ->
+   BRight (x1 * x2) <= ext_num_itv_bound (mul_boundr b1 b2))%O.
+Proof.
+move=> x10 x20 b1x1 b2x2.
+have x1r : (0 >=< x1)%O by rewrite real_fine; exact/ger0_real/fine_ge0.
+have x2r : (0 >=< x2)%O by rewrite real_fine; exact/ger0_real/fine_ge0.
+case: x1 x2 x10 x20 x1r x2r b1x1 b2x2 => [x1||] [x2||] //= x10 x20 x1r x2r.
+- rewrite !(map_itv_bound_comp, BRight_le_map_itv_bound_EFin)/=.
+  exact: num_itv_mul_boundr.
+- rewrite real_mulry// => b1x1 b2x2.
+  have -> : b2 = +oo%O by case: b2 b2x2 => -[].
+  rewrite mul_boundrC/= map_itv_bound_comp.
+  case: (comparable_ltgtP x1r) x10 => [x10 |//| [x10]] _.
+  + rewrite gtr0_sg ?mul1e ?bnd_simp//.
+    suff: (BRight 0%Z < b1)%O by case: b1 b1x1 => [[] [] [] |].
+    move: b1x1; rewrite map_itv_bound_comp BRight_le_map_itv_bound_EFin.
+    case: b1 => [[] b1 |//]; rewrite !bnd_simp -(@ltr0z R).
+    * exact/le_lt_trans/ltW.
+    * exact/lt_le_trans.
+  + rewrite -x10 sgr0 mul0e/= BRight_le_map_itv_bound_EFin.
+    suff: (BRight 0%Z <= b1)%O by case: b1 b1x1 => [[] [] [] |].
+    move: b1x1; rewrite map_itv_bound_comp BRight_le_map_itv_bound_EFin.
+    by rewrite -x10 -(@mulr0z R 1) BRight_le_num_itv_bound.
+- rewrite real_mulyr// => b1x1 b2x2.
+  have -> : b1 = +oo%O by case: b1 b1x1 => -[].
+  rewrite /= map_itv_bound_comp.
+  case: (comparable_ltgtP x2r) x20 => [x20 |//| [x20]] _.
+  + rewrite gtr0_sg ?mul1e ?bnd_simp//.
+    suff: (BRight 0%Z < b2)%O by case: b2 b2x2 => [[] [] [] |].
+    move: b2x2; rewrite map_itv_bound_comp BRight_le_map_itv_bound_EFin.
+    case: b2 => [[] b2 |//]; rewrite !bnd_simp -(@ltr0z R).
+    * exact/le_lt_trans/ltW.
+    * exact/lt_le_trans.
+  + rewrite -x20 sgr0 mul0e/= BRight_le_map_itv_bound_EFin.
+    suff: (BRight 0%Z <= b2)%O by case: b2 b2x2 => [[] [] [] |].
+    move: b2x2; rewrite map_itv_bound_comp BRight_le_map_itv_bound_EFin.
+    by rewrite -x20 -(@mulr0z R 1) BRight_le_num_itv_bound.
+- rewrite mulyy/= => b1x1 b2x2.
+  have -> : b1 = +oo%O by case: b1 b1x1 => -[].
+  by have -> : b2 = +oo%O by case: b2 b2x2 => -[].
+Qed.
+
+Lemma ext_num_itv_mul_boundr b1 b2 (x1 x2 : \bar R) :
+  (0 <= x1 -> (0 >=< x2)%O -> BRight 0%Z <= b2 ->
+   BRight x1 <= ext_num_itv_bound b1 ->
+   BRight x2 <= ext_num_itv_bound b2 ->
+   BRight (x1 * x2) <= ext_num_itv_bound (mul_boundr b1 b2))%O.
+Proof.
+move=> x1ge0 x2r b2ge0 lex1b1 lex2b2.
+have /orP[x2ge0 | x2le0] : (0 <= x2) || (x2 <= 0).
+- by case: x2 x2r {lex2b2} => [x2 /=|_|_]; rewrite ?lee_fin ?le0y ?leNy0.
+- exact: ext_num_itv_mul_boundr_pos.
+have : (BRight (x1 * x2) <= BRight 0%R)%O.
+  by have:= mule_ge0_le0 x1ge0 x2le0; case: mule.
+move/le_trans; apply.
+rewrite map_itv_bound_comp BRight_le_map_itv_bound_EFin/=.
+rewrite -(@mulr0z R 1) BRight_le_num_itv_bound.
+apply: mul_boundr_gt0 => //.
+move: x1 x1ge0 lex1b1 => [x1||//]/= x1ge0; last by case: b1 => -[].
+rewrite map_itv_bound_comp BRight_le_map_itv_bound_EFin.
+rewrite -(@BRight_le_num_itv_bound R)/=.
+by apply: le_trans; rewrite bnd_simp -lee_fin.
+Qed.
+
+Lemma comparable_ext_num_itv_bound (x y : itv_bound int) :
+  (ext_num_itv_bound x >=< ext_num_itv_bound y)%O.
+Proof.
+apply/orP; rewrite !(map_itv_bound_comp EFin intr)/= !le_map_itv_bound_EFin.
+exact/orP/comparable_num_itv_bound.
+Qed.
+
+Lemma ext_num_itv_bound_min (x y : itv_bound int) :
+  ext_num_itv_bound (Order.min x y)
+  = Order.min (ext_num_itv_bound x) (ext_num_itv_bound y).
+Proof.
+have [lexy | ltyx] := leP x y; [by rewrite !minEle le_ext_num_itv_bound lexy|].
+rewrite minElt -if_neg -comparable_leNgt ?le_ext_num_itv_bound ?ltW//.
+exact: comparable_ext_num_itv_bound.
+Qed.
+
+Lemma ext_num_itv_bound_max (x y : itv_bound int) :
+  ext_num_itv_bound (Order.max x y)
+  = Order.max (ext_num_itv_bound x) (ext_num_itv_bound y).
+Proof.
+have [lexy | ltyx] := leP x y; [by rewrite !maxEle le_ext_num_itv_bound lexy|].
+rewrite maxElt -if_neg -comparable_leNgt ?le_ext_num_itv_bound ?ltW//.
+exact: comparable_ext_num_itv_bound.
+Qed.
+
+Lemma ext_num_spec_mul xi yi (x : ext_num_def xi) (y : ext_num_def yi)
+    (r := Itv.real2 mul xi yi) :
+  ext_num_spec r (x%:inum * y%:inum : \bar R).
+Proof.
+rewrite {}/r; case: xi yi x y => [//| [xl xu]] [//| [yl yu]].
+case=> [x /=/and3P[xr /= xlx xxu]] [y /=/and3P[yr /= yly yyu]].
+rewrite -/(sign (Interval xl xu)) -/(sign (Interval yl yu)).
+have ns000 : ext_num_sem `[0%Z, 0%Z] (0 : \bar R).
+  by apply/and3P; rewrite ?comparablexx.
+have xyr : (0 >=< (x * y)%E)%O by exact: realMe.
+case: (ext_signP xlx xxu xr) => xlb xub xs.
+- by rewrite xs mul0e; case: (ext_signP yly yyu yr).
+- case: (ext_signP yly yyu yr) => ylb yub ys.
+  + by rewrite ys mule0.
+  + apply/and3P; split=> //=.
+    * exact: ext_num_itv_mul_boundl.
+    * exact: ext_num_itv_mul_boundr_pos.
+  + apply/and3P; split=> //=; rewrite -[x * y]oppeK -real_muleN//.
+    * by rewrite oppe_boundl ext_num_itv_mul_boundr_pos ?oppe_ge0 ?oppe_boundr.
+    * rewrite oppe_boundr ext_num_itv_mul_boundl ?oppe_boundl//.
+      by rewrite opp_bound_ge0.
+  + apply/and3P; split=> //=.
+    * rewrite -[x * y]oppeK -real_muleN// oppe_boundl.
+      rewrite ext_num_itv_mul_boundr -?real_fine ?oppe_cmp0 ?oppe_boundr//.
+      by rewrite opp_bound_gt0 ltW.
+    * by rewrite ext_num_itv_mul_boundr// ltW.
+- case: (ext_signP yly yyu yr) => ylb yub ys.
+  + by rewrite ys mule0.
+  + apply/and3P; split=> //=; rewrite -[x * y]oppeK -real_mulNe//.
+    * by rewrite oppe_boundl ext_num_itv_mul_boundr_pos ?oppe_ge0 ?oppe_boundr.
+    * rewrite oppe_boundr ext_num_itv_mul_boundl ?oppe_boundl//.
+      by rewrite opp_bound_ge0.
+  + apply/and3P; split=> //=; rewrite -real_muleNN//.
+    * by rewrite ext_num_itv_mul_boundl ?opp_bound_ge0 ?oppe_boundl.
+    * by rewrite ext_num_itv_mul_boundr_pos ?oppe_ge0 ?oppe_boundr.
+  + apply/and3P; split=> //=; rewrite -[x * y]oppeK.
+    * rewrite -real_mulNe// oppe_boundl.
+      by rewrite ext_num_itv_mul_boundr ?oppe_ge0 ?oppe_boundr// ltW.
+    * rewrite oppeK -real_muleNN//.
+      by rewrite ext_num_itv_mul_boundr ?oppe_boundr
+                 ?oppe_ge0 ?oppe_cmp0 ?opp_bound_gt0// ltW.
+case: (ext_signP yly yyu yr) => ylb yub ys.
+- by rewrite ys mule0.
+- apply/and3P; split=> //=; rewrite muleC mul_boundrC.
+  + rewrite -[y * x]oppeK -real_muleN// oppe_boundl.
+    rewrite ext_num_itv_mul_boundr ?oppe_ge0 ?oppe_cmp0 ?oppe_boundr//.
+    by rewrite opp_bound_gt0 ltW.
+  + by rewrite ext_num_itv_mul_boundr// ltW.
+- apply/and3P; split=> //=; rewrite muleC mul_boundrC.
+  + rewrite -[y * x]oppeK -real_mulNe// oppe_boundl.
+    by rewrite ext_num_itv_mul_boundr ?oppe_ge0 ?oppe_boundr// ltW.
+  + rewrite -real_muleNN// ext_num_itv_mul_boundr ?oppe_ge0
+            ?oppe_cmp0 ?oppe_boundr//.
+    by rewrite opp_bound_gt0 ltW.
+apply/and3P; rewrite xyr/= ext_num_itv_bound_min ext_num_itv_bound_max.
+rewrite (comparable_ge_min _ (comparable_ext_num_itv_bound _ _)).
+rewrite (comparable_le_max _ (comparable_ext_num_itv_bound _ _)).
+have [x0 | /ltW x0] : 0 <= x \/ x < 0; [|split=> //..].
+  case: x xr {xlx xxu xyr xs} => [x||] /= xr.
+  - by case: (comparable_leP xr) => x0; [left | right].
+  - by left; rewrite le0y.
+  - by right; rewrite ltNy0.
+- apply/orP; right; rewrite -[x * y]oppeK -real_muleN// oppe_boundl.
+  by rewrite ext_num_itv_mul_boundr ?oppe_cmp0 ?oppe_boundr// opp_bound_gt0 ltW.
+- by apply/orP; right; rewrite ext_num_itv_mul_boundr// ltW.
+- apply/orP; left; rewrite -[x * y]oppeK -real_mulNe// oppe_boundl.
+  by rewrite ext_num_itv_mul_boundr ?oppe_ge0 ?oppe_boundr// ltW.
+- apply/orP; left; rewrite -real_muleNN//.
+  rewrite ext_num_itv_mul_boundr ?oppe_ge0 ?oppe_cmp0 ?oppe_boundr//.
+  by rewrite opp_bound_gt0 ltW.
+Qed.
+
+Canonical mule_inum xi yi (x : ext_num_def xi) (y : ext_num_def yi) :=
+  Itv.mk (ext_num_spec_mul x y).
+
+Definition abse_itv (i : Itv.t) : Itv.t :=
+  match i with
+  | Itv.Top => Itv.Real `[0%Z, +oo[
+  | Itv.Real (Interval l u) =>
+    match l with
+    | BRight (Posz _) | BLeft (Posz (S _)) => Itv.Real `]0%Z, +oo[
+    | _ => Itv.Real `[0%Z, +oo[
+    end
+  end.
+Arguments abse_itv /.
+
+Lemma ext_num_spec_abse i (x : ext_num_def i) (r := abse_itv i) :
+  ext_num_spec r (`|x%:inum| : \bar R).
+Proof.
+have: ext_num_sem `[0%Z, +oo[ `|x%:inum|.
+  apply/and3P; split; rewrite ?bnd_simp ?abse_ge0//.
+  by case: x%:inum => [x'||]; rewrite ?cmp0y// le_comparable ?abse_ge0.
+have: 0 < x%:inum -> ext_num_sem `]0%Z, +oo[ `|x%:inum|.
+  move=> xgt0; apply/and3P; split; rewrite ?bnd_simp//.
+  - by case: x%:num => [x'||]; rewrite ?cmp0y// le_comparable ?abse_ge0.
+  - case: x%:inum xgt0 => [x'|//|//]/=.
+    by rewrite !lte_fin normr_gt0; apply: lt0r_neq0.
+rewrite {}/r; case: i x => [//| [[[] [[//| l] | //] | //] u]] [x /=] + + _;
+    move/and3P => [xr /= /[!bnd_simp]lx _]; apply.
+- by apply: lt_le_trans lx; rewrite lte_fin ltr0z.
+- by apply: le_lt_trans lx; rewrite lee_fin ler0z.
+- by apply: lt_trans lx; rewrite lte_fin ltr0z.
+Qed.
+
+Canonical abse_inum i (x : ext_num_def i) := Itv.mk (ext_num_spec_abse x).
+
+Lemma ext_min_itv_boundl_spec x1 x2 b1 b2 :
+  (ext_num_itv_bound b1 <= BLeft x1)%O ->
+  (ext_num_itv_bound b2 <= BLeft x2)%O ->
+  (ext_num_itv_bound (Order.min b1 b2) <= BLeft (Order.min x1 x2))%O.
+Proof.
+case: (leP b1 b2) => [b1_le_b2 | /ltW b2_le_b1].
+- have sb1_le_sb2 := eqbRL (le_ext_num_itv_bound _ _) b1_le_b2.
+  by rewrite minElt; case: (x1 < x2)%O => [//|_]; apply: le_trans.
+- have sb2_le_sb1 := eqbRL (le_ext_num_itv_bound _ _) b2_le_b1.
+  by rewrite minElt; case: (x1 < x2)%O => [+ _|//]; apply: le_trans.
+Qed.
+
+Lemma ext_min_itv_boundr_spec x1 x2 b1 b2 : (x1 >=< x2)%O ->
+  (BRight x1 <= ext_num_itv_bound b1)%O ->
+  (BRight x2 <= ext_num_itv_bound b2)%O ->
+  (BRight (Order.min x1 x2) <= ext_num_itv_bound (Order.min b1 b2))%O.
+Proof.
+move=> x1_cmp_x2; case: (leP b1 b2) => [b1_le_b2 | /ltW b2_le_b1].
+- have sb1_le_sb2 := eqbRL (le_ext_num_itv_bound _ _) b1_le_b2.
+  by case: (comparable_leP x1_cmp_x2) => [//| /ltW ? + _]; apply: le_trans.
+- have sb2_le_sb1 := eqbRL (le_ext_num_itv_bound _ _) b2_le_b1.
+  by case: (comparable_leP x1_cmp_x2) => [? _ |//]; apply: le_trans.
+Qed.
+
+Lemma ext_num_spec_min (xi yi : Itv.t) (x : ext_num_def xi) (y : ext_num_def yi)
+    (r := Itv.real2 min xi yi) :
+  ext_num_spec r (Order.min x%:inum y%:inum : \bar R).
+Proof.
+apply: Itv.spec_real2 (Itv.P x) (Itv.P y).
+case: x y => [x /= _] [y /= _] => {xi yi r} -[lx ux] [ly uy]/=.
+move=> /andP[xr /=/andP[lxx xux]] /andP[yr /=/andP[lyy yuy]].
+apply/and3P; split.
+- case: x y xr yr {lxx xux lyy yuy} => [x||] [y||]//=.
+  + by move=> ? ?; apply: comparable_minr.
+  + by move=> ? ?; rewrite real_miney.
+  + by move=> ? ?; rewrite real_minNye.
+- exact: ext_min_itv_boundl_spec.
+- by apply: ext_min_itv_boundr_spec => //; apply: ereal_comparable.
+Qed.
+
+Lemma ext_max_itv_boundl_spec x1 x2 b1 b2 : (x1 >=< x2)%O ->
+  (ext_num_itv_bound b1 <= BLeft x1)%O ->
+  (ext_num_itv_bound b2 <= BLeft x2)%O ->
+  (ext_num_itv_bound (Order.max b1 b2) <= BLeft (Order.max x1 x2))%O.
+Proof.
+move=> x1_cmp_x2.
+case: (leP b1 b2) => [b1_le_b2 | /ltW b2_le_b1].
+- case: (comparable_leP x1_cmp_x2) => [//| /ltW ? _ sb2_x2].
+  exact: le_trans sb2_x2 _.
+- case: (comparable_leP x1_cmp_x2) => [? sb1_x1 _ |//].
+  exact: le_trans sb1_x1 _.
+Qed.
+
+Lemma ext_max_itv_boundr_spec x1 x2 b1 b2 :
+  (BRight x1 <= ext_num_itv_bound b1)%O ->
+  (BRight x2 <= ext_num_itv_bound b2)%O ->
+  (BRight (Order.max x1 x2) <= ext_num_itv_bound (Order.max b1 b2))%O.
+Proof.
+case: (leP b1 b2) => [b1_le_b2 | /ltW b2_le_b1].
+- have sb1_le_sb2 := eqbRL (@le_ext_num_itv_bound R _ _) b1_le_b2.
+  by rewrite maxElt; case: ifP => [//|_ ? _]; apply: le_trans sb1_le_sb2.
+- have sb2_le_sb1 := eqbRL (@le_ext_num_itv_bound R _ _) b2_le_b1.
+  by rewrite maxElt; case: ifP => [_ _ ?|//]; apply: le_trans sb2_le_sb1.
+Qed.
+
+Lemma ext_num_spec_max (xi yi : Itv.t) (x : ext_num_def xi) (y : ext_num_def yi)
+    (r := Itv.real2 max xi yi) :
+  ext_num_spec r (Order.max x%:inum y%:inum : \bar R).
+Proof.
+apply: Itv.spec_real2 (Itv.P x) (Itv.P y).
+case: x y => [x /= _] [y /= _] => {xi yi r} -[lx ux] [ly uy]/=.
+move=> /andP[xr /=/andP[lxx xux]] /andP[yr /=/andP[lyy yuy]].
+apply/and3P; split.
+- case: x y xr yr {lxx xux lyy yuy} => [x||] [y||]//=.
+  + by move=> ? ?; apply: comparable_maxr.
+  + by move=> ? ?; rewrite real_maxey.
+  + by move=> ? ?; rewrite real_maxNye.
+- by apply: ext_max_itv_boundl_spec => //; apply: ereal_comparable.
+- exact: ext_max_itv_boundr_spec.
+Qed.
+
+Canonical ext_min_max_typ := MinMaxTyp ext_num_spec_min ext_num_spec_max.
+
+End Itv.
+
+End ItvInstances.
+Export (canonicals) ItvInstances.
 
 Section MorphNum.
-Context {R : numDomainType} {nz : KnownSign.nullity} {cond : KnownSign.reality}.
-Local Notation nR := {compare (0 : \bar R) & nz & cond}.
+Context {R : numDomainType} {i : Itv.t}.
+Local Notation nR := (Itv.def (@ext_num_sem R) i).
 Implicit Types (a : \bar R).
 
 Lemma num_abse_eq0 a : (`|a|%:nng == 0%:E%:nng) = (a == 0).
@@ -3736,10 +4204,9 @@ Proof. by rewrite -abse_eq0. Qed.
 End MorphNum.
 
 Section MorphReal.
-Context {R : numDomainType} {nz : KnownSign.nullity} {r : KnownSign.real}.
-Local Notation nR := {compare (0 : \bar R) & nz & r}.
-Implicit Type x y : nR.
-Local Notation num := (@num _ _ (0 : R) nz r).
+Context {R : numDomainType} {xi yi : interval int}.
+Implicit Type x : (Itv.def (@ext_num_sem R) (Itv.Real xi)).
+Implicit Type y : (Itv.def (@ext_num_sem R) (Itv.Real yi)).
 
 Lemma num_lee_max a x y :
   a <= maxe x%:num y%:num = (a <= x%:num) || (a <= y%:num).
@@ -3774,35 +4241,6 @@ Lemma num_gte_min a x y :
 Proof. by rewrite -comparable_gt_min// ereal_comparable. Qed.
 
 End MorphReal.
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lee_max`")]
-Notation num_lee_maxr := num_lee_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gee_max`")]
-Notation num_lee_maxl := num_gee_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lee_min`")]
-Notation num_lee_minr := num_lee_min (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gee_min`")]
-Notation num_lee_minl := num_gee_min (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lte_max`")]
-Notation num_lte_maxr := num_lte_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gte_max`")]
-Notation num_lte_maxl := num_gte_max (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_lte_min`")]
-Notation num_lte_minr := num_lte_min (only parsing).
-#[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `num_gte_min`")]
-Notation num_lte_minl := num_gte_min (only parsing).
-
-Section MorphGe0.
-Context {R : numDomainType} {nz : KnownSign.nullity}.
-Local Notation nR := {compare (0 : \bar R) & ?=0 & >=0}.
-Implicit Type x y : nR.
-Local Notation num := (@num _ _ (0 : \bar R) ?=0 >=0).
-
-Lemma num_abse_le a x : 0 <= a -> (`|a|%:nng <= x)%O = (a <= x%:num).
-Proof. by move=> a0; rewrite -num_le//= gee0_abs. Qed.
-
-Lemma num_abse_lt a x : 0 <= a -> (`|a|%:nng < x)%O = (a < x%:num).
-Proof. by move=> a0; rewrite -num_lt/= gee0_abs. Qed.
-End MorphGe0.
 
 Variant posnume_spec (R : numDomainType) (x : \bar R) :
   \bar R -> bool -> bool -> bool -> Type :=
@@ -3927,7 +4365,6 @@ apply: le_mono; move=> -[r0 | | ] [r1 | _ | _] //=.
 - by rewrite ltr_pdivrMr ?ltr_wpDr// mul1r ltr_pwDl // ler_norm.
 - rewrite ltr_pdivlMr ?mulN1r ?ltr_wpDr// => _.
   by rewrite ltrNl ltr_pwDl // ler_normr lexx orbT.
-- by rewrite -subr_gt0 opprK.
 Qed.
 
 Definition lt_contract := leW_mono le_contract.

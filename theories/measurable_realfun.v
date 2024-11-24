@@ -2,7 +2,7 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal signed.
+From mathcomp Require Import cardinality fsbigop reals ereal interval_inference.
 From mathcomp Require Import topology numfun tvs normedtype function_spaces.
 From HB Require Import structures.
 From mathcomp Require Import sequences esum measure real_interval realfun exp.

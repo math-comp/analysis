@@ -1,13 +1,13 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-From mathcomp Require Import signed topology_structure uniform_structure.
-From mathcomp Require Import pseudometric_structure.
+From mathcomp Require Import interval_inference topology_structure.
+From mathcomp Require Import uniform_structure pseudometric_structure.
 (**md**************************************************************************)
 (* # Matrix topology                                                          *)
 (* ```                                                                        *)
-(*                  mx_ent m n A == entourages for the m x n matrices        *)
-(*                 mx_ball m n A == balls for the m x n matrices             *)
+(*                  mx_ent m n A == entourages for the m x n matrices         *)
+(*                 mx_ball m n A == balls for the m x n matrices              *)
 (* ```                                                                        *)
 (* Matrices `'M[T]_(m, n)` are endowed with the structures of:                *)
 (* - topology                                                                 *)
