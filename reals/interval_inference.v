@@ -12,8 +12,8 @@ From mathcomp Require Import mathcomp_extra.
 (* a known interval easier, thanks to canonical structures. This adds types   *)
 (* like {itv R & `[a, b]}, a notation e%:itv that infers an enclosing         *)
 (* interval for expression e according to existing canonical instances and    *)
-(* %:inum to cast back from type {itv R & i} to R.                            *)
-(* For instance, for x : {i01 R}, we have (1 - x%:inum)%:itv : {i01 R}        *)
+(* %:num to cast back from type {itv R & i} to R.                             *)
+(* For instance, for x : {i01 R}, we have (1 - x%:num)%:itv : {i01 R}         *)
 (* automatically inferred.                                                    *)
 (*                                                                            *)
 (* ## types for values within known interval                                  *)
@@ -40,7 +40,7 @@ From mathcomp Require Import mathcomp_extra.
 (*                                                                            *)
 (* Explicit casts of x from some {itv R & i} to R:                            *)
 (* ```                                                                        *)
-(*       x%:inum == cast from {itv R & i}                                     *)
+(*        x%:num == cast from {itv R & i}                                     *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## sign proofs                                                             *)
@@ -85,6 +85,7 @@ Reserved Notation "{ 'i01' R }"
 Reserved Notation "x %:itv" (at level 2, format "x %:itv").
 Reserved Notation "x %:i01" (at level 2, format "x %:i01").
 Reserved Notation "x %:inum" (at level 2, format "x %:inum").
+Reserved Notation "x %:num" (at level 2, format "x %:num").
 
 Reserved Notation "[ 'itv' 'of' x ]" (format "[ 'itv' 'of'  x ]").
 
@@ -318,8 +319,9 @@ Notation "{ 'itv' R & i }" := (def (@num_sem R) (Itv.Real i%Z)) : type_scope.
 Notation "{ 'i01' R }" := {itv R & `[0, 1]} : type_scope.
 Notation "x %:itv" := (from (Phantom _ x)) : ring_scope.
 Notation "[ 'itv' 'of' x ]" := (fromP (Phantom _ x)) : ring_scope.
-Notation inum := r.
-Notation "x %:inum" := (r x) : ring_scope.
+Notation num := r.
+Notation "x %:inum" := (r x) (only parsing) : ring_scope.
+Notation "x %:num" := (r x) : ring_scope.
 End Exports.
 End Itv.
 Export Itv.Exports.
@@ -453,58 +455,58 @@ case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= => /andP[] /le_trans /[apply]; rewrite ler10.
 Qed.
 
-Lemma gt0 x : unify_itv i (Itv.Real `]0%Z, +oo[) -> 0 < x%:inum :> R.
+Lemma gt0 x : unify_itv i (Itv.Real `]0%Z, +oo[) -> 0 < x%:num :> R.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_].
 by rewrite /= in_itv/= andbT.
 Qed.
 
-Lemma le0F x : unify_itv i (Itv.Real `]0%Z, +oo[) -> x%:inum <= 0 :> R = false.
+Lemma le0F x : unify_itv i (Itv.Real `]0%Z, +oo[) -> x%:num <= 0 :> R = false.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= andbT => /lt_geF.
 Qed.
 
-Lemma lt0 x : unify_itv i (Itv.Real `]-oo, 0%Z[) -> x%:inum < 0 :> R.
+Lemma lt0 x : unify_itv i (Itv.Real `]-oo, 0%Z[) -> x%:num < 0 :> R.
 Proof.
 by case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=; rewrite in_itv.
 Qed.
 
-Lemma ge0F x : unify_itv i (Itv.Real `]-oo, 0%Z[) -> 0 <= x%:inum :> R = false.
+Lemma ge0F x : unify_itv i (Itv.Real `]-oo, 0%Z[) -> 0 <= x%:num :> R = false.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= => /lt_geF.
 Qed.
 
-Lemma ge0 x : unify_itv i (Itv.Real `[0%Z, +oo[) -> 0 <= x%:inum :> R.
+Lemma ge0 x : unify_itv i (Itv.Real `[0%Z, +oo[) -> 0 <= x%:num :> R.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= andbT.
 Qed.
 
-Lemma lt0F x : unify_itv i (Itv.Real `[0%Z, +oo[) -> x%:inum < 0 :> R = false.
+Lemma lt0F x : unify_itv i (Itv.Real `[0%Z, +oo[) -> x%:num < 0 :> R = false.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= andbT => /le_gtF.
 Qed.
 
-Lemma le0 x : unify_itv i (Itv.Real `]-oo, 0%Z]) -> x%:inum <= 0 :> R.
+Lemma le0 x : unify_itv i (Itv.Real `]-oo, 0%Z]) -> x%:num <= 0 :> R.
 Proof.
 by case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=; rewrite in_itv.
 Qed.
 
-Lemma gt0F x : unify_itv i (Itv.Real `]-oo, 0%Z]) -> 0 < x%:inum :> R = false.
+Lemma gt0F x : unify_itv i (Itv.Real `]-oo, 0%Z]) -> 0 < x%:num :> R = false.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= => /le_gtF.
 Qed.
 
-Lemma cmp0 x : unify_itv i (Itv.Real `]-oo, +oo[) -> 0 >=< x%:inum.
+Lemma cmp0 x : unify_itv i (Itv.Real `]-oo, +oo[) -> 0 >=< x%:num.
 Proof. by case: i x => [//| i' [x /=/andP[]]]. Qed.
 
 Lemma neq0 x :
   unify (fun ix iy => ~~ Itv.sub ix iy) (Itv.Real `[0%Z, 0%Z]) i ->
-  x%:inum != 0 :> R.
+  x%:num != 0 :> R.
 Proof.
 case: i x => [//| [l u] [x /= Px]]; apply: contra => /eqP x0 /=.
 move: Px; rewrite x0 => /and3P[_ /= l0 u0]; apply/andP; split.
@@ -514,32 +516,32 @@ Qed.
 
 Lemma eq0F x :
   unify (fun ix iy => ~~ Itv.sub ix iy) (Itv.Real `[0%Z, 0%Z]) i ->
-  x%:inum == 0 :> R = false.
+  x%:num == 0 :> R = false.
 Proof. by move=> u; apply/negbTE/neq0. Qed.
 
-Lemma lt1 x : unify_itv i (Itv.Real `]-oo, 1%Z[) -> x%:inum < 1 :> R.
+Lemma lt1 x : unify_itv i (Itv.Real `]-oo, 1%Z[) -> x%:num < 1 :> R.
 Proof.
 by case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=; rewrite in_itv.
 Qed.
 
-Lemma ge1F x : unify_itv i (Itv.Real `]-oo, 1%Z[) -> 1 <= x%:inum :> R = false.
+Lemma ge1F x : unify_itv i (Itv.Real `]-oo, 1%Z[) -> 1 <= x%:num :> R = false.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= => /lt_geF.
 Qed.
 
-Lemma le1 x : unify_itv i (Itv.Real `]-oo, 1%Z]) -> x%:inum <= 1 :> R.
+Lemma le1 x : unify_itv i (Itv.Real `]-oo, 1%Z]) -> x%:num <= 1 :> R.
 Proof.
 by case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=; rewrite in_itv.
 Qed.
 
-Lemma gt1F x : unify_itv i (Itv.Real `]-oo, 1%Z]) -> 1 < x%:inum :> R = false.
+Lemma gt1F x : unify_itv i (Itv.Real `]-oo, 1%Z]) -> 1 < x%:num :> R = false.
 Proof.
 case: x => x /= /[swap] /num_spec_sub /[apply] /andP[_] /=.
 by rewrite in_itv/= => /le_gtF.
 Qed.
 
-Lemma widen_itv_subproof x i' : Itv.sub i i' -> num_spec i' x%:inum.
+Lemma widen_itv_subproof x i' : Itv.sub i i' -> num_spec i' x%:num.
 Proof. by case: x => x /= /[swap] /num_spec_sub; apply. Qed.
 
 Definition widen_itv x i' (uni : unify_itv i i') :=
@@ -619,7 +621,7 @@ by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz ?lerN2 // ltrN2.
 Qed.
 
 Lemma num_spec_opp (i : Itv.t) (x : num_def R i) (r := Itv.real1 opp i) :
-  num_spec r (- x%:inum).
+  num_spec r (- x%:num).
 Proof.
 apply: Itv.spec_real1 (Itv.P x).
 case: x => x /= _ [l u] /and3P[xr lx xu].
@@ -655,7 +657,7 @@ Qed.
 
 Lemma num_spec_add (xi yi : Itv.t) (x : num_def R xi) (y : num_def R yi)
     (r := Itv.real2 add xi yi) :
-  num_spec r (x%:inum + y%:inum).
+  num_spec r (x%:num + y%:num).
 Proof.
 apply: Itv.spec_real2 (Itv.P x) (Itv.P y).
 case: x y => [x /= _] [y /= _] => {xi yi r} -[lx ux] [ly uy]/=.
@@ -832,7 +834,7 @@ Qed.
 
 Lemma num_spec_mul (xi yi : Itv.t) (x : num_def R xi) (y : num_def R yi)
     (r := Itv.real2 mul xi yi) :
-  num_spec r (x%:inum * y%:inum).
+  num_spec r (x%:num * y%:num).
 Proof.
 rewrite {}/r; case: xi yi x y => [//| [xl xu]] [//| [yl yu]].
 case=> [x /=/and3P[xr /= xlx xxu]] [y /=/and3P[yr /= yly yyu]].
@@ -906,15 +908,15 @@ Section Morph.
 Context {R : numDomainType} {i : Itv.t}.
 Local Notation nR := (num_def R i).
 Implicit Types x y : nR.
-Local Notation inum := (@inum R (@Itv.num_sem R) i).
+Local Notation num := (@num R (@Itv.num_sem R) i).
 
-Lemma inum_eq : {mono inum : x y / x == y}. Proof. by []. Qed.
-Lemma inum_le : {mono inum : x y / (x <= y)%O}. Proof. by []. Qed.
-Lemma inum_lt : {mono inum : x y / (x < y)%O}. Proof. by []. Qed.
-Lemma inum_min : {morph inum : x y / Order.min x y}.
-Proof. by move=> x y; rewrite !minEle inum_le -fun_if. Qed.
-Lemma inum_max : {morph inum : x y / Order.max x y}.
-Proof. by move=> x y; rewrite !maxEle inum_le -fun_if. Qed.
+Lemma num_eq : {mono num : x y / x == y}. Proof. by []. Qed.
+Lemma num_le : {mono num : x y / (x <= y)%O}. Proof. by []. Qed.
+Lemma num_lt : {mono num : x y / (x < y)%O}. Proof. by []. Qed.
+Lemma num_min : {morph num : x y / Order.min x y}.
+Proof. by move=> x y; rewrite !minEle num_le -fun_if. Qed.
+Lemma num_max : {morph num : x y / Order.max x y}.
+Proof. by move=> x y; rewrite !maxEle num_le -fun_if. Qed.
 
 End Morph.
 
@@ -922,38 +924,38 @@ Section MorphReal.
 Context {R : numDomainType} {i : interval int}.
 Local Notation nR := (num_def R (Itv.Real i)).
 Implicit Type x y : nR.
-Local Notation num := (@inum R (@Itv.num_sem R) i).
+Local Notation num := (@num R (@Itv.num_sem R) i).
 
 Lemma num_le_max a x y :
-  a <= Num.max x%:inum y%:inum = (a <= x%:inum) || (a <= y%:inum).
+  a <= Num.max x%:num y%:num = (a <= x%:num) || (a <= y%:num).
 Proof. by rewrite -comparable_le_max// real_comparable. Qed.
 
 Lemma num_ge_max a x y :
-  Num.max x%:inum y%:inum <= a = (x%:inum <= a) && (y%:inum <= a).
+  Num.max x%:num y%:num <= a = (x%:num <= a) && (y%:num <= a).
 Proof. by rewrite -comparable_ge_max// real_comparable. Qed.
 
 Lemma num_le_min a x y :
-  a <= Num.min x%:inum y%:inum = (a <= x%:inum) && (a <= y%:inum).
+  a <= Num.min x%:num y%:num = (a <= x%:num) && (a <= y%:num).
 Proof. by rewrite -comparable_le_min// real_comparable. Qed.
 
 Lemma num_ge_min a x y :
-  Num.min x%:inum y%:inum <= a = (x%:inum <= a) || (y%:inum <= a).
+  Num.min x%:num y%:num <= a = (x%:num <= a) || (y%:num <= a).
 Proof. by rewrite -comparable_ge_min// real_comparable. Qed.
 
 Lemma num_lt_max a x y :
-  a < Num.max x%:inum y%:inum = (a < x%:inum) || (a < y%:inum).
+  a < Num.max x%:num y%:num = (a < x%:num) || (a < y%:num).
 Proof. by rewrite -comparable_lt_max// real_comparable. Qed.
 
 Lemma num_gt_max a x y :
-  Num.max x%:inum  y%:inum < a = (x%:inum < a) && (y%:inum < a).
+  Num.max x%:num  y%:num < a = (x%:num < a) && (y%:num < a).
 Proof. by rewrite -comparable_gt_max// real_comparable. Qed.
 
 Lemma num_lt_min a x y :
-  a < Num.min x%:inum y%:inum = (a < x%:inum) && (a < y%:inum).
+  a < Num.min x%:num y%:num = (a < x%:num) && (a < y%:num).
 Proof. by rewrite -comparable_lt_min// real_comparable. Qed.
 
 Lemma num_gt_min a x y :
-  Num.min x%:inum y%:inum < a = (x%:inum < a) || (y%:inum < a).
+  Num.min x%:num y%:num < a = (x%:num < a) || (y%:num < a).
 Proof. by rewrite -comparable_gt_min// real_comparable. Qed.
 
 End MorphReal.
@@ -997,11 +999,11 @@ Goal 0%:i01 = 1%:i01 :> {i01 R}.
 Proof.
 Abort.
 
-Goal (- x%:inum)%:itv = (- x%:inum)%:itv :> {itv R & `[-1, 0]}.
+Goal (- x%:num)%:itv = (- x%:num)%:itv :> {itv R & `[-1, 0]}.
 Proof.
 Abort.
 
-Goal (1 - x%:inum)%:i01 = x.
+Goal (1 - x%:num)%:i01 = x.
 Proof.
 Abort.
 
@@ -1012,7 +1014,7 @@ Section Test2.
 Variable R : realDomainType.
 Variable x y : {i01 R}.
 
-Goal (x%:inum * y%:inum)%:i01 = x%:inum%:i01.
+Goal (x%:num * y%:num)%:i01 = x%:num%:i01.
 Proof.
 Abort.
 
@@ -1023,16 +1025,16 @@ Section Test3.
 Variable R : realDomainType.
 
 Definition s_of_pq (p q : {i01 R}) : {i01 R} :=
-  (1 - ((1 - p%:inum)%:i01%:inum * (1 - q%:inum)%:i01%:inum))%:i01.
+  (1 - ((1 - p%:num)%:i01%:num * (1 - q%:num)%:i01%:num))%:i01.
 
 Lemma s_of_p0 (p : {i01 R}) : s_of_pq p 0%:i01 = p.
 Proof. by apply/val_inj; rewrite /= subr0 mulr1 subKr. Qed.
 
 Canonical onem_itv01 (p : {i01 R}) : {i01 R} :=
-  @Itv.mk _ _ _ (onem p%:inum) [itv of 1 - p%:inum].
+  @Itv.mk _ _ _ (onem p%:num) [itv of 1 - p%:num].
 
 Definition s_of_pq' (p q : {i01 R}) : {i01 R} :=
-  (`1- (`1-(p%:inum) * `1-(q%:inum)))%:i01.
+  (`1- (`1-(p%:num) * `1-(q%:num)))%:i01.
 
 End Test3.
 End Test3.
