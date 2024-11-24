@@ -613,3 +613,77 @@ Proof.
 move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
 by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
 Qed.
+
+(* To backport to interval *)
+Lemma comparable_BSide_min d (T : porderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.min x y) = Order.min (BSide b x) (BSide b y).
+Proof. by rewrite !minEle bnd_simp => /comparable_leP[]. Qed.
+
+(* To backport to interval *)
+Lemma comparable_BSide_max d (T : porderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.max x y) = Order.max (BSide b x) (BSide b y).
+Proof. by rewrite !maxEle bnd_simp => /comparable_leP[]. Qed.
+
+(* To backport to interval *)
+Lemma BSide_min d (T : orderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.min x y) = Order.min (BSide b x) (BSide b y).
+Proof. exact: comparable_BSide_min. Qed.
+
+(* To backport to interval *)
+Lemma BSide_max d (T : orderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.max x y) = Order.max (BSide b x) (BSide b y).
+Proof. exact: comparable_BSide_max. Qed.
+
+Section NumDomainType.
+
+Variable (R : numDomainType).
+
+(* To backport to interval *)
+Lemma real_BSide_min b (x y : R) : x \in Num.real -> y \in Num.real ->
+  BSide b (Order.min x y) = Order.min (BSide b x) (BSide b y).
+Proof. by move=> xr yr; apply/comparable_BSide_min/real_comparable. Qed.
+
+(* To backport to interval *)
+Lemma real_BSide_max b (x y : R) : x \in Num.real -> y \in Num.real ->
+  BSide b (Order.max x y) = Order.max (BSide b x) (BSide b y).
+Proof. by move=> xr yr; apply/comparable_BSide_max/real_comparable. Qed.
+
+(* To backport to ssralg.v *)
+Lemma natr_min (m n : nat) : (Order.min m n)%:R = Order.min m%:R n%:R :> R.
+Proof. by rewrite !minElt ltr_nat /Order.lt/= -fun_if. Qed.
+
+(* To backport to ssralg.v *)
+Lemma natr_max (m n : nat) : (Order.max m n)%:R = Order.max m%:R n%:R :> R.
+Proof. by rewrite !maxElt ltr_nat /Order.lt/= -fun_if. Qed.
+
+End NumDomainType.
+
+(* To backport to order.v *)
+Lemma comparable_min_le_min d (T : porderType d) (x y z t : T) :
+    (x >=< y)%O -> (z >=< t)%O ->
+  (x <= z)%O -> (y <= t)%O -> (Order.min x y <= Order.min z t)%O.
+Proof.
+move=> + + xz yt => /comparable_leP[] xy /comparable_leP[] zt //.
+- exact: le_trans xy yt.
+- exact: le_trans (ltW xy) xz.
+Qed.
+
+(* To backport to order.v *)
+Lemma comparable_max_le_max d (T : porderType d) (x y z t : T) :
+    (x >=< y)%O -> (z >=< t)%O ->
+  (x <= z)%O -> (y <= t)%O -> (Order.max x y <= Order.max z t)%O.
+Proof.
+move=> + + xz yt => /comparable_leP[] xy /comparable_leP[] zt //.
+- exact: le_trans yt (ltW zt).
+- exact: le_trans xz zt.
+Qed.
+
+(* To backport to order.v *)
+Lemma min_le_min d (T : orderType d) (x y z t : T) :
+  (x <= z)%O -> (y <= t)%O -> (Order.min x y <= Order.min z t)%O.
+Proof. exact: comparable_min_le_min. Qed.
+
+(* To backport to order.v *)
+Lemma max_le_max d (T : orderType d) (x y z t : T) :
+  (x <= z)%O -> (y <= t)%O -> (Order.max x y <= Order.max z t)%O.
+Proof. exact: comparable_max_le_max. Qed.
