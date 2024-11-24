@@ -13,6 +13,8 @@
 - in `itv.v`
   + lemmas `cmp0`, `neq0`, `eq0F`
   + definitions `ItvReal` and `Itv01`
+  + lemmas `cmp0`, `neq0`, `eq0F`, `num_min`, `num_max`
+  + notation `%:num`
 
 - in `constructive_ereal.v`
   + lemmas `cmp0y`, `cmp0Ny`, `real_miney`, `real_minNye`,
@@ -37,6 +39,9 @@
   + `itv_le0` -> `le0`
   + `itv_gt0F` -> `gt0F`
   + `itv_top_typ` -> `top_typ`
+  + `inum_eq` -> `num_eq`
+  + `inum_le` -> `num_le`
+  + `inum_lt` -> `num_lt`
 
 ### Generalized
 
@@ -46,6 +51,9 @@
     * lemmas `maxye`, `maxeNy`, `mineNy`, `minye`
 
 ### Deprecated
+
+- in `itv.v`:
+  + notation `%:inum` (use `%:num` instead)
 
 ### Removed
 
