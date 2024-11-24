@@ -109,6 +109,8 @@ Reserved Notation "[ 'le0' 'of' x ]" (format "[ 'le0' 'of'  x ]").
 Reserved Notation "[ 'cmp0' 'of' x ]" (format "[ 'cmp0' 'of'  x ]").
 Reserved Notation "[ 'neq0' 'of' x ]" (format "[ 'neq0' 'of'  x ]").
 
+Reserved Notation "!! x" (at level 100, only parsing).
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -117,6 +119,13 @@ Import GRing.Theory Num.Theory.
 
 Local Open Scope ring_scope.
 Local Open Scope order_scope.
+
+Notation "!! x" := (ltac:(refine x)) (only parsing).
+(* infer class to help typeclass inference on the fly *)
+Class infer (P : Prop) := Infer : P.
+#[export] Hint Mode infer ! : typeclass_instances.
+#[export] Hint Extern 0 (infer _) => (exact) : typeclass_instances.
+Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Module Itv.
 
