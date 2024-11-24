@@ -37,6 +37,8 @@
   + `emeasurable_fun_sum` -> `emeasurable_sum`
   + `emeasurable_fun_fsum` -> `emeasurable_fsum`
   + `ge0_emeasurable_fun_sum` -> `ge0_emeasurable_sum`
+- in `measure.v`:
+  + `dynkin_setI_bigsetI` -> `setT_setI_bigsetI`
 
 ### Generalized
 

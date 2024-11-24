@@ -866,11 +866,12 @@ case=> ? DC DU; split => [| |? ? ?]; last exact: DU.
 - by move=> A GA; rewrite -setTD; apply: DC.
 Qed.
 
-Lemma dynkin_setI_bigsetI G (F : (set T)^nat) : dynkin G -> setI_closed G ->
-  (forall n, G (F n)) -> forall n, G (\big[setI/setT]_(i < n) F i).
+Lemma setT_setI_bigsetI (I0 : choiceType) (J : seq I0) G (F : I0 -> set T) :
+  G [set: T] -> setI_closed G -> (forall i, i \in J -> G (F i)) ->
+  G (\big[setI/setT]_(i <- J) F i).
 Proof.
-move=> dG GI GF; elim => [|n ih]; last by rewrite big_ord_recr /=; apply: GI.
-by rewrite big_ord0; exact: (dynkinT dG).
+move=> GT GI; rewrite big_seq; elim/big_rec : _ => //.
+by move=> i A iJ ih GF; apply: GI => //; [exact: GF|exact: ih].
 Qed.
 
 Lemma dynkin_setI_sigma_algebra G : dynkin G -> setI_closed G ->
@@ -882,7 +883,8 @@ move=> dG GI; split => [|//|F DF].
 - rewrite seqDU_bigcup_eq; apply/(dynkinU dG) => //.
   move=> n; rewrite /seqDU setDE; apply GI => //.
   rewrite -bigcup_mkord setC_bigcup bigcap_mkord.
-  by apply: (@dynkin_setI_bigsetI _ (fun x => ~` F x)) => // ?; exact/(dynkinC dG).
+  apply: setT_setI_bigsetI => //=; first by case: dG.
+  by move=> i _; exact/(dynkinC dG).
 Qed.
 
 Lemma setI_closed_g_dynkin_g_sigma_algebra G :
