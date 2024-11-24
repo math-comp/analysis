@@ -144,6 +144,7 @@
     `num_ge_max`, `num_le_min`, `num_ge_min`, `num_lt_max`,
     `num_gt_max`, `num_lt_min`, `num_gt_min`, `itvnum_subdef`,
     `itvreal_subdef`, `itv01_subdef`
+  + notation `%:num`
 
 ### Changed
 
@@ -254,6 +255,11 @@
   + `itv_top_typ` -> `top_typ`
   + `Itv.map_itv_bound` -> `map_itv_bound`
   + `Itv.map_itv` -> `map_itv`
+  + `inum_eq` -> `num_eq`
+  + `inum_le` -> `num_le`
+  + `inum_lt` -> `num_lt`
+  + `inum_min` -> `num_min`
+  + `inum_max` -> `num_max`
 
 ### Generalized
 
@@ -293,6 +299,9 @@
 ### Deprecated
 - in `Rstruct.v`
   + lemma `Rinvx`
+
+- in `interval_inference.v`:
+  + notation `%:inum` (use `%:num` instead)
 
 ### Removed
 
