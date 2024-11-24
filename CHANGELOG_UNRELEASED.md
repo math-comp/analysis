@@ -15,6 +15,10 @@
   + definitions `ItvReal` and `Itv01`
   + lemmas `cmp0`, `neq0`, `eq0F`, `num_min`, `num_max`
   + notation `%:num`
+  + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
+    `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,
+    `[le0 of _]`, `[cmp0 of _]`, `[neq0 of _]`
+  + definitions `PosNum` and `NngNum`
 
 - in `constructive_ereal.v`
   + lemmas `cmp0y`, `cmp0Ny`, `real_miney`, `real_minNye`,
