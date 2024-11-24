@@ -134,6 +134,9 @@
     `Itv.real1`, `Itv.real2`, `TypInstances.real_domain_typ`,
     `TypInstances.real_field_typ`, `TypInstances.nat_typ`, `ItvNum`,
     `ItvReal` and `Itv01`
+  + definitions `IntItv.min`, `IntItv.max`, `Instances.min_max_typ`,
+    `Instances.min_typ_inum`, `Instances.max_typ_inum`,
+    `Instances.num_min_max_typ`
   + lemmas `Itv.spec_real1`, `Itv.spec_real2`,
     `TypInstances.real_domain_typ_spec`,
     `TypInstances.real_field_typ_spec`, `TypInstances.nat_typ_spec`,
@@ -144,6 +147,7 @@
     `num_ge_max`, `num_le_min`, `num_ge_min`, `num_lt_max`,
     `num_gt_max`, `num_lt_min`, `num_gt_min`, `itvnum_subdef`,
     `itvreal_subdef`, `itv01_subdef`
+  + lemmas `Instances.num_spec_min`, `Instances.num_spec_max`
   + notation `%:num`
   + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
     `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,
