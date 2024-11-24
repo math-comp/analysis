@@ -118,11 +118,42 @@
 
 - new file `measurable_realfun.v`
   + with as contents the first half of the file `lebesgue_measure.v`
+- in `interval_inference.v`
+  + definitions `ItvReal` and `Itv01`
+  + lemmas `cmp0`, `neq0`, `eq0F`, `num_min`, `num_max`
+  + notation `%:num`
+  + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
+    `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,
+    `[le0 of _]`, `[cmp0 of _]`, `[neq0 of _]`
+  + definitions `PosNum` and `NngNum`
 
 - in `constructive_ereal.v`
-  + lemmas `cmp0y`, `cmp0Ny`, `real_miney`, `real_minNye`,
-    `real_maxey`, `real_maxNye`, `oppe_cmp0`, `real_fine`,
-    `real_muleN`, `real_mulNe`, `real_muleNN`
+  + lemmas `cmp0y`, `cmp0Ny`, `real_miney`, `real_minNye`, `real_maxey`, `real_maxNye`,
+    `oppe_cmp0`, `real_fine`, `real_muleN`, `real_mulNe`, `real_muleNN`
+  + definition `ext_num_sem`
+  + lemmas `ext_num_num_sem`, `ext_num_num_spec`, `le_map_itv_bound_EFin`,
+    `map_itv_bound_EFin_le_BLeft`, `BRight_le_map_itv_bound_EFin`,
+    `le_ext_num_itv_bound`, `ext_num_spec_sub`
+  + definition `ext_widen_itv`
+  + lemmas `gt0e`, `lte0`, `ge0e`, `lee0`, `cmp0e`, `neqe0`
+  + lemmas `ext_num_spec_pinfty`
+  + canonicals `pinfty_inum`, `oppe_inum`, `EFin_inum`, `fine_inum`,
+    `oppe_inum`, `adde_inum`, `dEFin_inum`, `dadde_inum`
+  + lemmas `ext_num_spec_ninfty`, `ext_num_spec_EFin`, `num_spec_fine`,
+    `ext_num_sem_y`, `ext_num_sem_Ny`, `oppe_boundr`, `oppe_boundl`,
+    `ext_num_spec_opp`, `ext_num_spec_add`, `ext_num_spec_dEFin`,
+    `ext_num_spec_dadd`
+  + variant `ext_sign_spec`
+  + lemmas `ext_signP`, `ext_num_itv_mul_boundl`, `ext_num_itv_mul_boundr_pos`,
+    `ext_num_itv_mul_boundr`, `comparable_ext_num_itv_bound`,
+    `ext_num_itv_bound_min`, `ext_num_itv_bound_max`, `ext_num_spec_mul`
+  + canonicals `mule_inum`, `abse_inum`, `ext_min_max_typ`
+  + definition `abse_itv`
+  + lemmas `ext_num_spec_abse`, `ext_min_itv_boundr_spec`, `ext_num_spec_min`,
+    `ext_max_itv_boundl_spec`, `ext_max_itv_boundr_spec`, `ext_num_spec_max`
+- in `ereal.v`:
+  + lemmas `ext_num_spec_ereal_sup`, `ext_num_spec_ereal_inf`
+  + canonicals `ereal_sup_inum`, `ereal_inf_inum`
 
 - in `interval_inference.v`
   + definitions `Itv.t`, `Itv.sub`, `Itv.num_sem`, `Itv.nat_sem`,
@@ -142,7 +173,9 @@
     `Instances.double_inum`, `Instances.muln_inum`,
     `Instances.expn_inum`, `Instances.minn_inum`,
     `Instances.maxn_inum`, `Instances.nat_min_max_typ`,
-    `Instances.Posz_inum`, `Instances.Negz_inum`
+    `Instances.Posz_inum`, `Instances.Negz_inum`,
+    `IntItv.keep_nonneg_bound`, `IntItv.keep_nonpos_bound`,
+    `IntItv.keep_sign`, `IntItv.keep_nonpos`, `IntItv.keep_nonneg`
   + lemmas `Itv.spec_real1`, `Itv.spec_real2`,
     `TypInstances.real_domain_typ_spec`,
     `TypInstances.real_field_typ_spec`, `TypInstances.nat_typ_spec`,
@@ -204,6 +237,9 @@
 
 - file `interval_inference.v`
   + definitions `Itv.def`, `Itv.spec`, `Itv.typ`, `empty_itv`
+- in `measure.v`:
+  + `content_snum` -> `content_inum`
+  + `measure_snum` -> `measure_inum`
 
 ### Renamed
 
@@ -326,6 +362,9 @@
 ### Deprecated
 
 - in `interval_inference.v`:
+- file `signed.v` (use `interval_inference.v` instead)
+
+- in `itv.v`:
   + notation `%:inum` (use `%:num` instead)
 
 ### Removed
@@ -401,6 +440,12 @@
   + `Itv.subitv_map_itv` (use `num_spec_sub` instead)
   + lemma `le_map_itv_bound` (use `le_num_itv_bound` instead)
   + lemmas `opp_itv_le0_subproof`, `opp_itv_lt0_subproof`
+
+- in `constructive_ereal.v`:
+  + lemmas `num_abse_le`, `num_abse_lt`
+  + canonicals `abse_snum`, `mule_snum`, `dadde_snum`, `dEFin_snum`,
+    `adde_snum`, `oppe_snum`, `fine_snum`, `EFin_snum`, `ninfty_snum`,
+    `pinfty_snum`
 
 ### Infrastructure
 

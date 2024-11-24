@@ -2,7 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import all_classical.
-From mathcomp Require Import signed reals topology_structure uniform_structure.
+From mathcomp Require Import interval_inference reals topology_structure.
+From mathcomp Require Import uniform_structure.
 
 (**md**************************************************************************)
 (* # PseudoMetric Spaces                                                      *)
@@ -189,7 +190,7 @@ Proof. by rewrite nbhs_simpl. Qed.
 Lemma ball_center {R : numDomainType} (M : pseudoMetricType R) (x : M)
   (e : {posnum R}) : ball x e%:num x.
 Proof. exact: ball_center_subproof. Qed.
-#[global] Hint Resolve ball_center : core.
+#[global] Hint Extern 0 (ball _ _ _) => solve[apply: ball_center] : core.
 
 Section pseudoMetricType_numDomainType.
 Context {R : numDomainType} {M : pseudoMetricType R}.

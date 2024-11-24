@@ -2,10 +2,11 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop signed reals ereal.
+From mathcomp Require Import cardinality fsbigop reals interval_inference ereal.
 From mathcomp Require Import topology tvs normedtype sequences real_interval.
 From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
-From mathcomp Require Import itv real_interval lebesgue_integral derive charge.
+From mathcomp Require Import interval_inference real_interval lebesgue_integral.
+From mathcomp Require Import derive charge.
 
 (**md**************************************************************************)
 (* # Fundamental Theorem of Calculus and Consequences                         *)

@@ -280,6 +280,14 @@ Definition max i j :=
   Interval (Order.max li lj) (Order.max ui uj).
 Arguments max /.
 
+Definition keep_nonneg_bound b :=
+  match b with
+  | BSide _ (Posz _) => BLeft 0%Z
+  | BSide _ (Negz _) => -oo%O
+  | BInfty _ => -oo%O
+  end.
+Arguments keep_nonneg_bound /.
+
 Definition keep_pos_bound b :=
   match b with
   | BSide b 0%Z => BSide b 0%Z
@@ -288,6 +296,14 @@ Definition keep_pos_bound b :=
   | BInfty _ => -oo
   end.
 Arguments keep_pos_bound /.
+
+Definition keep_nonpos_bound b :=
+  match b with
+  | BSide _ (Negz _) | BSide _ (Posz 0) => BRight 0%Z
+  | BSide _ (Posz (S _)) => +oo%O
+  | BInfty _ => +oo%O
+  end.
+Arguments keep_nonpos_bound /.
 
 Definition keep_neg_bound b :=
   match b with
@@ -312,6 +328,22 @@ Definition exprn i :=
   let: Interval l u := i in
   Interval (keep_pos_bound l) (exprn_le1_bound l u).
 Arguments exprn /.
+
+Definition keep_sign i :=
+  let: Interval l u := i in
+  Interval (keep_nonneg_bound l) (keep_nonpos_bound u).
+
+(* used in ereal.v *)
+Definition keep_nonpos i :=
+  let 'Interval l u := i in
+  Interval -oo%O (keep_nonpos_bound u).
+Arguments keep_nonpos /.
+
+(* used in ereal.v *)
+Definition keep_nonneg i :=
+  let 'Interval l u := i in
+  Interval (keep_nonneg_bound l) +oo%O.
+Arguments keep_nonneg /.
 
 End IntItv.
 

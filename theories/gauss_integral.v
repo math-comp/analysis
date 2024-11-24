@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop signed reals ereal.
+From mathcomp Require Import cardinality fsbigop reals interval_inference ereal.
 From mathcomp Require Import topology tvs normedtype sequences real_interval.
 From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
 From mathcomp Require Import exp trigo lebesgue_integral derive charge ftc.
@@ -34,10 +34,8 @@ Proof. by rewrite lerDl sqr_ge0. Qed.
 #[local]
 Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve[apply: oneDsqr_ge1] : core.
 
-Lemma oneDsqr_gt0_subproof x : Signed.spec 0 !=0 >=0 (oneDsqr x).
-Proof. by rewrite /= -lt_def (@lt_le_trans _ _ 1). Qed.
-
-Canonical oneDsqr_ge0_snum x := Signed.mk (oneDsqr_gt0_subproof x).
+Canonical oneDsqr_inum x : {itv R & `[1, +oo[} := @ItvReal R (oneDsqr x)
+  (BLeft 1%Z) (BInfty _ false) (oneDsqr_ge1 x) erefl.
 
 Lemma oneDsqrV_le1 x : oneDsqr\^-1 x <= 1. Proof. by rewrite invf_le1. Qed.
 
