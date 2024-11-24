@@ -975,6 +975,82 @@ Qed.
 Canonical mul_inum (xi yi : Itv.t) (x : num_def R xi) (y : num_def R yi) :=
   Itv.mk (mul_inum_subproof x y).
 
+Definition min_itv_subdef (x y : interval int) : interval int :=
+  let: Interval lx ux := x in
+  let: Interval ly uy := y in
+  Interval (Order.min lx ly) (Order.min ux uy).
+Arguments min_itv_subdef /.
+
+Lemma num_min_inum_subproof (xi yi : Itv.t) (x : num_def R xi) (y : num_def R yi)
+    (r := itv_real2_subdef min_itv_subdef xi yi) :
+  num_spec r (Order.min x%:num y%:num).
+Proof.
+apply: itv_real2_subproof (Itv.P x) (Itv.P y).
+case: x y => [x /= _] [y /= _] => {xi yi r} -[lx ux] [ly uy]/=.
+move=> /andP[xr /=/andP[lxx xux]] /andP[yr /=/andP[lyy yuy]].
+apply/and3P; split; rewrite ?min_real//= map_itv_bound_min real_BSide_min//.
+- apply: (comparable_min_le_min (comparable_num_itv_bound_subproof _ _)) => //.
+  exact: real_comparable.
+- apply: (comparable_min_le_min _ (comparable_num_itv_bound_subproof _ _)) => //.
+  exact: real_comparable.
+Qed.
+
+Definition max_itv_subdef (x y : interval int) : interval int :=
+  let: Interval lx ux := x in
+  let: Interval ly uy := y in
+  Interval (Order.max lx ly) (Order.max ux uy).
+Arguments max_itv_subdef /.
+
+Lemma num_max_inum_subproof (xi yi : Itv.t) (x : num_def R xi) (y : num_def R yi)
+    (r := itv_real2_subdef max_itv_subdef xi yi) :
+  num_spec r (Order.max x%:num y%:num).
+Proof.
+apply: itv_real2_subproof (Itv.P x) (Itv.P y).
+case: x y => [x /= _] [y /= _] => {xi yi r} -[lx ux] [ly uy]/=.
+move=> /andP[xr /=/andP[lxx xux]] /andP[yr /=/andP[lyy yuy]].
+apply/and3P; split; rewrite ?max_real//= map_itv_bound_max real_BSide_max//.
+- apply: (comparable_max_le_max (comparable_num_itv_bound_subproof _ _)) => //.
+  exact: real_comparable.
+- apply: (comparable_max_le_max _ (comparable_num_itv_bound_subproof _ _)) => //.
+  exact: real_comparable.
+Qed.
+
+(* We can't directly put an instance on Order.min for R : numDomainType
+   since we may want instances for other porderType
+   (typically \bar R or even nat). So we resort on this additional
+   canonical structure. *)
+Record min_max_typ d := MinMaxTyp {
+  min_max_sort : porderType d;
+  #[canonical=no]
+  min_max_sem : interval int -> min_max_sort -> bool;
+  #[canonical=no]
+  min_max_minP : forall (xi yi : Itv.t) (x : Itv.def min_max_sem xi)
+    (y : Itv.def min_max_sem yi),
+    let: r := itv_real2_subdef min_itv_subdef xi yi in
+    Itv.spec min_max_sem r (Order.min x%:num y%:num);
+  #[canonical=no]
+  min_max_maxP : forall (xi yi : Itv.t) (x : Itv.def min_max_sem xi)
+    (y : Itv.def min_max_sem yi),
+    let: r := itv_real2_subdef max_itv_subdef xi yi in
+    Itv.spec min_max_sem r (Order.max x%:num y%:num);
+}.
+
+(* The default instances on porderType, for min... *)
+Canonical min_typ_inum d (t : min_max_typ d) (xi yi : Itv.t)
+    (x : Itv.def (@min_max_sem d t) xi) (y : Itv.def (@min_max_sem d t) yi)
+    (r := itv_real2_subdef min_itv_subdef xi yi) :=
+  Itv.mk (min_max_minP x y).
+
+(* ...and for max *)
+Canonical max_typ_inum d (t : min_max_typ d) (xi yi : Itv.t)
+    (x : Itv.def (@min_max_sem d t) xi) (y : Itv.def (@min_max_sem d t) yi)
+    (r := itv_real2_subdef min_itv_subdef xi yi) :=
+  Itv.mk (min_max_maxP x y).
+
+(* Instance of the above structure for numDomainType *)
+Canonical num_min_max_typ (R : numDomainType) :=
+  MinMaxTyp num_min_inum_subproof num_max_inum_subproof.
+
 End NumDomainInstances.
 
 Section Morph.
