@@ -140,6 +140,11 @@
     `num_gt_max`, `num_lt_min`, `num_gt_min`, `itvnum_subdef`,
     `itvreal_subdef`, `itv01_subdef`
   + notation `%:num`
+  + notations `{posnum R}`, `{nonneg R}`, `%:pos`, `%:nng`,
+    `%:posnum`, `%:nngnum`, `[gt0 of _]`, `[lt0 of _]`, `[ge0 of _]`,
+    `[le0 of _]`, `[cmp0 of _]`, `[neq0 of _]`
+  + definitions `PosNum`, `NngNum`, `posnum_spec` and `nonneg_spec`
+  + lemmas `posnumP` and `nonnegP`
 
 ### Changed
 
