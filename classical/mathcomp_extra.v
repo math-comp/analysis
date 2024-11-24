@@ -687,3 +687,8 @@ Proof. exact: comparable_min_le_min. Qed.
 Lemma max_le_max d (T : orderType d) (x y z t : T) :
   (x <= z)%O -> (y <= t)%O -> (Order.max x y <= Order.max z t)%O.
 Proof. exact: comparable_max_le_max. Qed.
+
+(* To backport to ssrnum.v *)
+Lemma real_sqrtC {R : numClosedFieldType} (x : R) : 0 <= x ->
+  sqrtC x \in Num.real.
+Proof. by rewrite -sqrtC_ge0; apply: ger0_real. Qed.
