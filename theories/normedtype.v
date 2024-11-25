@@ -244,11 +244,11 @@ Proof.
 apply/seteqP; split=> [A [e/= e0 reA]|_/= [A [e/= e0 reA <-]]].
   exists (-%R @` A).
     exists e => // x/= rxe xr; exists (- x)%R; rewrite ?opprK//.
-    by apply: reA; rewrite ?eqr_opp//= opprK addrC distrC.
+    by apply: reA; rewrite ?(@eqr_opp R)//= opprK addrC distrC.
   rewrite image_comp (_ : _ \o _ = idfun) ?image_id// funeqE => x/=.
   by rewrite opprK.
 exists e => //= x/=; rewrite -opprD normrN => axe xa.
-exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?eqr_oppLR//=.
+exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?(@eqr_oppLR R)//=.
 by rewrite opprK.
 Qed.
 
