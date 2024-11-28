@@ -356,7 +356,7 @@ Proof.
 apply: Build_ProperFilter_ex => A /nbhs_ballP[_/posnumP[e] Ae].
 exists (x + e%:num / 2); apply: Ae; last first.
   by rewrite eq_sym addrC -subr_eq subrr eq_sym.
-rewrite /ball /= opprD addrA subrr distrC subr0 ger0_norm //.
+rewrite /ball /= opprD addrCA addKr normrN ger0_norm //.
 by rewrite {2}(splitr e%:num) ltr_pwDl.
 Qed.
 
@@ -869,8 +869,7 @@ Proof.
 exists [set B | exists x r, B = ball x r].
   move=> b; rewrite inE /= => [[x]] [r] -> z y l.
   rewrite !inE -!ball_normE /= => zx yx l0; rewrite -subr_gt0 => l1.
-  have -> : x = l *: x + (1 - l) *: x.
-    by rewrite scalerBl addrCA subrr addr0 scale1r.
+  have -> : x = l *: x + (1 - l) *: x by rewrite addrC scalerBl subrK scale1r.
   rewrite [X in `|X|](_ : _ = l *: (x - z) + (1 - l) *: (x - y)); last first.
     by rewrite opprD addrACA -scalerBr -scalerBr.
   rewrite (@le_lt_trans _ _ (`|l| * `|x - z| + `|1 - l| * `|x - y|))//.
@@ -879,9 +878,7 @@ exists [set B | exists x r, B = ball x r].
     rewrite ltr_leD//.
       by rewrite -ltr_pdivlMl ?mulrA ?mulVf ?mul1r // ?normrE ?gt_eqF.
     by rewrite -ler_pdivlMl ?mulrA ?mulVf ?mul1r ?ltW // ?normrE ?gt_eqF.
-  have -> : `|1 - l| = 1 - `| l |.
-    by move: l0 l1 => /ltW/normr_idP -> /ltW/normr_idP ->.
-  by rewrite -mulrDl addrCA subrr addr0 mul1r.
+  by rewrite !gtr0_norm// -mulrDl addrC subrK mul1r.
 split.
   move=> B [x] [r] ->.
   rewrite openE/= -ball_normE/= /interior => y /= bxy; rewrite -nbhs_ballE.
@@ -1152,7 +1149,7 @@ Lemma nbhsDl (P : set V) (x y : V) :
   (\forall z \near (x + y), P z) <-> (\near x, P (x + y)).
 Proof.
 split=> /nbhs_normP[_/posnumP[e]/= Px]; apply/nbhs_normP; exists e%:num => //=.
-  by move=> z /= xze; apply: Px; rewrite /= opprD addrACA subrr addr0.
+  by move=> z /= xze; apply: Px; rewrite /= [z + y]addrC addrKA.
 by move=> z /= xyz; rewrite -[z](addrNK y); apply: Px; rewrite /= opprB addrA.
 Qed.
 
@@ -1225,15 +1222,15 @@ Hint Resolve open_lt : core.
 Lemma open_gt (y : R) : open [set x : R | x > y].
 Proof.
 move=> x /=; rewrite -subr_gt0 => xDy_gt0; exists (x - y) => // z.
-by rewrite /= ltr_distlC opprB addrCA subrr addr0 => /andP[].
+by rewrite /= ltr_distlC subKr => /andP[].
 Qed.
 Hint Resolve open_gt : core.
 
 Lemma open_neq (y : R) : open [set x : R | x != y].
 Proof.
 rewrite (_ : mkset _ = [set x | x < y] `|` [set x | x > y]); first exact: openU.
-rewrite predeqE => x /=; rewrite eq_le !leNgt negb_and !negbK orbC.
-by symmetry; apply (rwP orP).
+rewrite predeqE => x /=.
+by rewrite eq_le negb_and -!ltNge orbC; symmetry; apply (rwP orP).
 Qed.
 
 Lemma interval_open a b : ~~ bound_side true a -> ~~ bound_side false b ->
@@ -1304,16 +1301,14 @@ Global Instance at_right_proper_filter (x : R) : ProperFilter x^'+.
 Proof.
 apply: Build_ProperFilter => -[_/posnumP[d] /(_ (x + d%:num / 2))].
 apply; last by rewrite ltrDl.
-rewrite /= opprD !addrA subrr add0r normrN normf_div !ger0_norm //.
-by rewrite ltr_pdivrMr // ltr_pMr // (_ : 1 = 1%:R) // ltr_nat.
+by rewrite /= opprD addNKr normrN ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
 Global Instance at_left_proper_filter (x : R) : ProperFilter x^'-.
 Proof.
 apply: Build_ProperFilter => -[_ /posnumP[d] /(_ (x - d%:num / 2))].
-apply; last by rewrite ltrBlDl ltrDr.
-rewrite /= opprD !addrA subrr add0r opprK normf_div !ger0_norm //.
-by rewrite ltr_pdivrMr // ltr_pMr // (_ : 1 = 1%:R) // ltr_nat.
+apply; last by rewrite gtrBl.
+by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
 Lemma nbhs_right0P x (P : set R) :
@@ -1534,7 +1529,7 @@ split=> /nbhs_norm0P[/= _/posnumP[e] /(_ _) Px]; apply/nbhs_norm0P.
   exists e%:num => //= r /= re yr y xyr; rewrite -[y](addrNK x) addrC.
   by apply: Px; rewrite /= distrC (le_lt_trans _ re)// gtr0_norm.
 exists (e%:num / 2) => //= r /= re; apply: (Px (e%:num / 2)) => //=.
-   by rewrite gtr0_norm// ltr_pdivrMr// ltr_pMr// ?(ltr_nat _ 1 2).
+  by rewrite gtr0_norm// ltr_pdivrMr// ltr_pMr// ltr1n.
 by rewrite opprD addNKr normrN ltW.
 Qed.
 
@@ -4621,8 +4616,8 @@ rewrite le_eqVlt => /orP[/eqP supXr|]; last first.
 suff : ~ X^° (sup X) by rewrite supXr.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (sup X + f%:num).
-  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addrA subrr.
-  by rewrite sub0r normrN gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
+  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addNKr normrN.
+  by rewrite gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
 have : sup X + f%:num <= sup X by exact: sup_ubound.
 by apply/negP; rewrite -ltNge; rewrite ltrDl.
 Qed.
@@ -4636,8 +4631,8 @@ rewrite le_eqVlt => /orP[/eqP rinfX|]; last first.
 suff : ~ X^° (inf X) by rewrite -rinfX.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
-  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrCA subrr.
-  by rewrite addr0 gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
+  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrC subrK.
+  by rewrite gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
 have : inf X <= inf X - f%:num by exact: inf_lbound.
 by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
 Qed.
@@ -4662,7 +4657,7 @@ rewrite -(open_subsetE _ (@open_lt _ _)) => r rsupX.
 move/has_lbPn : lX => /(_ r)[y Xy yr].
 have hsX : has_sup X by split => //; exists y.
 have /sup_adherent/(_ hsX)[e Xe] : 0 < sup X - r by rewrite subr_gt0.
-by rewrite opprB addrCA subrr addr0 => re; apply: (iX y e); rewrite ?ltW.
+by rewrite subKr => re; apply: (iX y e); rewrite ?ltW.
 Qed.
 
 Lemma interval_right_unbounded_interior (X : set R) : is_interval X ->
@@ -4673,7 +4668,7 @@ rewrite -(open_subsetE _ (@open_gt _ _)) => r infXr.
 move/has_ubPn : uX => /(_ r)[y Xy yr].
 have hiX : has_inf X by split => //; exists y.
 have /inf_adherent/(_ hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
-by rewrite addrCA subrr addr0 => er; apply: (iX e y); rewrite ?ltW.
+by rewrite addrC subrK => er; apply: (iX e y); rewrite ?ltW.
 Qed.
 
 Lemma interval_bounded_interior (X : set R) : is_interval X ->
@@ -4688,10 +4683,10 @@ have [X0|/set0P X0] := eqVneq X set0.
   by move: (lt_trans iXr rsX); rewrite X0 inf_out ?sup_out ?ltxx // => - [[]].
 have hiX : has_inf X by split.
 have /inf_adherent/(_ hiX)[e Xe] : 0 < r - inf X by rewrite subr_gt0.
-rewrite addrCA subrr addr0 => er.
+rewrite addrC subrK => er.
 have hsX : has_sup X by split.
 have /sup_adherent/(_ hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
-by rewrite opprB addrCA subrr addr0 => rf; apply: (iX e f); rewrite ?ltW.
+by rewrite subKr => rf; apply: (iX e f); rewrite ?ltW.
 Qed.
 
 Definition Rhull (X : set R) : interval R := Interval
@@ -4811,7 +4806,7 @@ split => [cE x y Ex Ey z /andP[xz zy]|].
     by rewrite ltr_pdivrMr // ltr_pMr // ltr1n.
   rewrite z1y andbT lerDl; split => //.
   have ncA1z1 : (~` closure (A true)) z1.
-    apply zcA1; rewrite /ball /= /z1 opprD addrA subrr add0r normrN.
+    apply zcA1; rewrite /ball /= /z1 opprD addNKr normrN.
     by rewrite ger0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
   have nA0z1 : ~ (A false) z1.
     move=> A0z1; have : z < z1 by rewrite /z1 ltrDl.
@@ -5177,10 +5172,8 @@ Proof.
 (* by apply: eq_near => e; rewrite ![_ + e]addrC addrACA subrr addr0. *)
 rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
 apply/nbhs_normP; exists e%:num => //= t et.
-  apply: ye; rewrite /= !opprD addrA addrACA subrr add0r.
-  by rewrite opprK addrC.
-have /= := ye (t - (x - y)); rewrite addrNK; apply.
-by rewrite /= opprB addrCA addrA subrK.
+  by apply: ye; rewrite /= distrC addrCA [x + _]addrC addrK distrC.
+by have /= := ye (t - (x - y)); rewrite opprB addrCA subrKA addrNK; exact.
 Qed.
 
 Lemma cvg_comp_shift {T : Type} {K : numDomainType} {R : normedModType K}
