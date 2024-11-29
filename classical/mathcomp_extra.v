@@ -522,6 +522,24 @@ Section floor_ceil.
 Context {R : archiDomainType}.
 Implicit Type x : R.
 
+Lemma ge_trunc x : ((Num.trunc x)%:R <= x) = (0 <= x).
+Proof.
+by have [/Num.Theory.trunc_itv/andP[]//|] := leP 0 x; exact/contra_ltF/le_trans.
+Qed.
+
+Lemma lt_succ_trunc x : x < (Num.trunc x).+1%:R.
+Proof. by have [/Num.Theory.trunc_itv/andP[]|/lt_le_trans->] := leP 0 x. Qed.
+
+Lemma trunc_ge_nat x (n : nat) : 0 <= x -> (n%:R <= x) = (n <= Num.trunc x)%N.
+Proof.
+move=> /Num.Theory.trunc_itv /andP[letx ltxt1]; apply/idP/idP => lenx.
+  by rewrite -ltnS -(ltr_nat R); apply: le_lt_trans ltxt1.
+by apply: le_trans letx; rewrite ler_nat.
+Qed.
+
+Lemma trunc_lt_nat x (n : nat) : 0 <= x -> (x < n%:R) = (Num.trunc x < n)%N.
+Proof. by rewrite ltNge ltnNge => /trunc_ge_nat ->. Qed.
+
 Lemma floor_lt_int x (z : int) : (x < z%:~R) = (Num.floor x < z).
 Proof. by rewrite ltNge floor_ge_int -ltNge. Qed.
 
@@ -541,7 +559,7 @@ by rewrite Num.Theory.ge_floor//= Num.Theory.lt_succ_floor.
 Qed.
 
 Lemma floor_neq0 x : (Num.floor x != 0) = (x < 0) || (x >= 1).
-Proof. by rewrite neq_lt -floor_lt_int gtz0_ge1 -floor_ge_int. Qed.
+Proof. by rewrite floor_eq negb_and -ltNge -leNgt. Qed.
 
 Lemma ceil_gt_int x (z : int) : (z%:~R < x) = (z < Num.ceil x).
 Proof. by rewrite ltNge Num.Theory.ceil_le_int// -ltNge. Qed.

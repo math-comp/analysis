@@ -4,6 +4,9 @@
 
 ### Added
 
+- file `mathcomp_extra.v`
+  + lemmas `ge_trunc`, `lt_succ_trunc`, `trunc_ge_nat`, `trunc_lt_nat`
+
 - file `Rstruct.v`
   + lemma `Pos_to_natE` (from `mathcomp_extra.v`)
 
