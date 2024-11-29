@@ -1247,33 +1247,26 @@ Local Notation I := dyadic_itv.
 Lemma dyadic_itv_subU n k : [set` I n k] `<=`
   [set` I n.+1 k.*2] `|` [set` I n.+1 k.*2.+1].
 Proof.
-move=> r /=; rewrite in_itv /= => /andP[Ir rI].
-have [rk|rk] := ltP r (k.*2.+1%:R * (2%:R ^- n.+1)); [left|right].
-- rewrite in_itv /= rk andbT (le_trans _ Ir)// -muln2.
-  rewrite natrM exprS invrM ?unitfE// ?expf_neq0// -mulrA (mulrCA 2).
-  by rewrite divrr ?unitfE// mulr1.
-- rewrite in_itv /= rk /= (lt_le_trans rI)// -doubleS.
-  rewrite -muln2 natrM exprS invrM ?unitfE// ?expf_neq0// -mulrA (mulrCA 2).
-  by rewrite divrr ?unitfE// mulr1.
+move=> r Hr; apply/orP; rewrite -itv_splitU ?bnd_simp/=; last first.
+  by rewrite !ler_pM2r// !ler_nat leqW//=.
+move: Hr; apply/subitvP; rewrite {r}!subitvE !bnd_simp exprSr -muln2.
+rewrite ler_pdivrMr// mulrA divfK// -natrM lexx/=.
+by rewrite ler_pdivlMr// mulrA divfK// -natrM ler_nat.
 Qed.
 
 Lemma bigsetU_dyadic_itv n : `[n%:R, n.+1%:R[%classic =
   \big[setU/set0]_(n * 2 ^ n.+1 <= k < n.+1 * 2 ^ n.+1) [set` I n.+1 k].
 Proof.
 rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|]; last first.
-  rewrite -bigcup_seq => -[/= k] /[!mem_index_iota] /andP[nk kn].
-  rewrite !in_itv /= => /andP[knr rkn]; apply/andP; split.
-    by rewrite (le_trans _ knr)// ler_pdivlMr// -natrX -natrM ler_nat.
-  by rewrite (lt_le_trans rkn)// ler_pdivrMr// -natrX -natrM ler_nat.
-rewrite -bigcup_seq /=; exists `|floor (r * 2 ^+ n.+1)|%N.
-  rewrite /= mem_index_iota -ltz_nat -lez_nat gez0_abs; last first.
-    by rewrite floor_ge0 mulr_ge0// (le_trans _ nr).
-  rewrite -floor_ge_int -floor_lt_int.
-  by rewrite !PoszM -!natrXE !rmorphM !rmorphXn /= ler_wpM2r ?ltr_pM2r.
-rewrite /= in_itv /= ler_pdivrMr// ltr_pdivlMr//.
-rewrite pmulrn [(`|_|.+1%:R)]pmulrn intS addrC gez0_abs; last first.
-  by rewrite floor_ge0 mulr_ge0 ?exprn_ge0 // (le_trans _ nr).
-by rewrite ge_floor lt_succ_floor.
+  rewrite -bigcup_seq => -[/= k] /[!mem_index_iota] nkn; apply: subitvP.
+  rewrite subitvE !bnd_simp ler_pdivlMr// ler_pdivrMr//.
+  by rewrite -natrX -2!natrM 2!ler_nat.
+have ?: 0 <= r * 2 ^+ n.+1 by rewrite mulr_ge0// (le_trans _ nr).
+rewrite -bigcup_seq /=; exists (trunc (r * 2 ^+ n.+1)).
+  rewrite /= mem_index_iota -trunc_ge_nat// -trunc_lt_nat//.
+  by rewrite !natrM natrX ler_pM2r// ltr_pM2r// nr.
+rewrite /= in_itv/= ler_pdivrMr// ltr_pdivlMr//.
+by rewrite trunc_ge_nat// trunc_lt_nat// !leqnn.
 Qed.
 
 Lemma dyadic_itv_image n T (f : T -> \bar R) x :
@@ -1406,14 +1399,10 @@ have K : (`|floor (fine (f x) * 2 ^+ n)| < n * 2 ^ n)%N.
 have /[!mem_index_enum]/(_ isT) := An0 (Ordinal K).
 rewrite implyTb indicE mem_set ?mulr1; last first.
   rewrite /A K /= inE; split=> //=; exists (fine (f x)); last by rewrite fineK.
-  rewrite in_itv /=; apply/andP; split.
-    rewrite ler_pdivrMr// (le_trans _ (ge_floor _))//.
-    by rewrite -(@gez0_abs (floor _))// floor_ge0 mulr_ge0// ltW.
-  rewrite ltr_pdivlMr// (lt_le_trans (lt_succ_floor _))//.
-  rewrite -[in leRHS]natr1 -intrD1 lerD2r// -{1}(@gez0_abs (floor _))//.
-  by rewrite floor_ge0// mulr_ge0// ltW.
-rewrite mulf_eq0// -exprVn; apply/negP; rewrite negb_or expf_neq0//= andbT.
-rewrite pnatr_eq0 -lt0n absz_gt0 floor_neq0// -ler_pdivrMr//.
+  rewrite in_itv/= ler_pdivrMr// ltr_pdivlMr// [leLHS]pmulrn [ltRHS]pmulrn intS.
+  by rewrite [1 + _]addrC gez0_abs ?floor_ge0 ?pmulr_rge0// floor_itv/=.
+apply/negP; rewrite mulf_eq0 -exprVn negb_or expf_neq0//= andbT.
+rewrite pnatr_eq0 absz_eq0 floor_neq0 -ler_pdivrMr//.
 apply/orP; right; apply/ltW; near: n.
 exact: near_infty_natSinv_expn_lt (PosNum fx_gt0).
 Unshelve. all: by end_near. Qed.
