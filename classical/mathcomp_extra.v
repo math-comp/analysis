@@ -433,6 +433,9 @@ Section floor_ceil.
 Context {R : archiDomainType}.
 Implicit Type x : R.
 
+Lemma lt_succ_trunc x : x < (Num.trunc x).+1%:R.
+Proof. by have [/Num.Theory.trunc_itv/andP[]//|/lt_le_trans->] := leP 0 x. Qed.
+
 Lemma ge_floor x : (Num.floor x)%:~R <= x.
 Proof. exact: Num.Theory.ge_floor. Qed.
 
