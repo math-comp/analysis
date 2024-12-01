@@ -4,7 +4,7 @@ From mathcomp Require Import fingroup perm rat archimedean finmap.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Export set_interval.
 From HB Require Import structures.
-From mathcomp Require Import reals constructive_ereal signed.
+From mathcomp Require Import reals itv constructive_ereal.
 
 (**md**************************************************************************)
 (* # Sets and intervals on $\overline{\mathbb{R}}$                            *)

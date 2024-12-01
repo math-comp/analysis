@@ -12,7 +12,7 @@ From mathcomp Require Import archimedean.
 From HB Require Import structures.
 From mathcomp Require Import mathcomp_extra.
 From mathcomp Require Import boolp classical_sets.
-From mathcomp Require Import reals signed.
+From mathcomp Require Import reals itv.
 From mathcomp Require Import topology.
 From mathcomp Require Export Rstruct.
 

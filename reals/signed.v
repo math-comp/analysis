@@ -4,6 +4,9 @@ From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
 From mathcomp Require Import mathcomp_extra.
 
+Attributes deprecated(since="mathcomp-analysis 1.8.0",
+                      note="Use itv.v instead.").
+
 (**md**************************************************************************)
 (* # Positive, non-negative numbers, etc.                                     *)
 (*                                                                            *)
