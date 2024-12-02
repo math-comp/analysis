@@ -65,10 +65,10 @@ Proof.
 apply: continuousM => //=; first exact: cvg_cst.
 apply: continuous_comp => /=; last exact: continuous_expR.
 apply: continuousM => //=; last exact: cvg_cst.
-apply: continuous_comp => //=; last exact: continuousN.
+apply: continuous_comp => //=; last exact: (@continuousN _ R^o).
 apply: (@continuous_comp _ _ _ _ (fun x : R => x ^+ 2)%R); last exact: exprn_continuous.
 apply: continuousM => //=; last exact: cvg_cst.
-by apply: continuousD => //=; exact: cvg_cst.
+by apply: (@continuousD _ R^o) => //=; exact: cvg_cst.
 Qed.
 
 End gauss_pdf.

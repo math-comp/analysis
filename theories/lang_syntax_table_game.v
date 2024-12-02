@@ -77,7 +77,7 @@ Local Open Scope lang_scope.
 Local Open Scope ereal_scope.
 Context {R : realType}.
 
-Lemma bounded_id_01 : [bounded x0 | x0 in `[0%R, 1%R]%classic : set R].
+Lemma bounded_id_01 : [bounded x0 | x0 in `[0%R, 1%R]%classic : set R^o].
 Proof.
 exists 1%R; split => // y y1.
 near=> M => /=.
@@ -88,7 +88,7 @@ rewrite in_itv/= => /andP[M0 M1].
 by rewrite ler_norml M1 andbT (le_trans _ M0).
 Unshelve. all: by end_near. Qed.
 
-Lemma bounded_onem_01 : [bounded (`1- x : R) | x in `[0%R, 1%R]%classic : set R].
+Lemma bounded_onem_01 : [bounded (`1- x : R^o) | x in `[0%R, 1%R]%classic : set R].
 Proof.
 exists 1%R; split => // y y1.
 near=> M => /=.
@@ -101,7 +101,7 @@ rewrite ler_norml (@le_trans _ _ 0%R)//=.
 by rewrite onem_ge0.
 Unshelve. all: by end_near. Qed.
 
-Lemma bounded_cst_01 (x : R) : [bounded x | _ in `[0%R, 1%R]%classic : set R].
+Lemma bounded_cst_01 (x : R^o) : [bounded x | _ in `[0%R, 1%R]%classic : set R].
 Proof.
 exists `|x|%R; split.
   by rewrite num_real.
@@ -111,8 +111,8 @@ by rewrite (le_trans _ (ltW y1)).
 Qed.
 
 Lemma bounded_norm (f : R -> R) :
-  [bounded f x | x in (`[0%R, 1%R]%classic : set R)] <->
-  [bounded normr (f x) | x in (`[0%R, 1%R]%classic : set R)].
+  [bounded f x : R^o | x in (`[0%R, 1%R]%classic : set R)] <->
+  [bounded normr (f x) : R^o | x in (`[0%R, 1%R]%classic : set R)].
 Proof.
 split.
   move=> [M [Mreal HM]].
@@ -127,8 +127,8 @@ by rewrite (le_lt_trans _ Mr)// ler_norm.
 Qed.
 
 Lemma boundedMl k (f : R -> R) :
-  [bounded f x | x in (`[0%R, 1%R]%classic : set R)] ->
-  [bounded (k * f x)%R | x in (`[0%R, 1%R]%classic : set R)].
+  [bounded f x : R^o | x in (`[0%R, 1%R]%classic : set R)] ->
+  [bounded (k * f x)%R : R^o | x in (`[0%R, 1%R]%classic : set R)].
 Proof.
 move=> [M [Mreal HM]].
 exists `|k * M|%R; split; first by rewrite normr_real.
@@ -394,7 +394,7 @@ by apply: measurable_funX; exact: measurable_funB.
 Qed.
 
 Lemma bounded_norm_XnonemXn {R : realType} :
-  [bounded normr (56 * XMonemX 5 3 x)%R : R | x in `[0%R, 1%R] : set R].
+  [bounded normr (56 * XMonemX 5 3 x)%R : R^o | x in `[0%R, 1%R] : set R].
 Proof. exact/(bounded_norm _).1/boundedMl/bounded_XMonemX. Qed.
 
 Lemma integrable_bernoulli_XMonemX {R : realType} U :

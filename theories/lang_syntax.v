@@ -144,7 +144,7 @@ exists 0%R.
 rewrite not_implyE; split; first by rewrite boundl_in_itv/= bnd_simp.
 move/left_right_continuousP.
 apply/not_andP; left.
-move/cvgrPdist_le.
+move/(@cvgrPdist_le _ R^o).
 apply/existsNP.
 exists (2%:R^-1).
 rewrite not_implyE; split; first by rewrite invr_gt0.
@@ -171,7 +171,7 @@ rewrite invf_lt1//.
 rewrite {1}(_:1%R = 1%:R)//; apply: ltr_nat.
 Qed.
 
-Let dintuni : derivable_oo_continuous_bnd (@id R) 0 1.
+Let dintuni : derivable_oo_continuous_bnd (@id R^o) 0 1.
 Proof.
 split.
 - move=> x _.
@@ -180,7 +180,7 @@ split.
 - exact: cvg_at_left_filter.
 Qed.
 
-Let intuni'uni : {in `]0%R, 1%R[, (@id R)^`() =1 uni}.
+Let intuni'uni : {in `]0%R, 1%R[, (@id R^o)^`() =1 uni}.
 Proof.
 move=> x x01.
 rewrite derive1E derive_id.
@@ -258,7 +258,7 @@ move=> ab cf.
     move/continuous_within_itvP : cf => /(_ ab) [cf _ _].
     rewrite (_ : f = (f \o -%R) \o -%R); last first.
       by apply/funext => y; rewrite /= opprK.
-    apply: continuous_comp; first exact: opp_continuous.
+    apply: continuous_comp; first exact: (@opp_continuous _ R^o).
     by apply: cf; rewrite -oppr_itvoo opprK.
   + move/continuous_within_itvP : cf => /(_ ab) [_ _ cf].
     apply/cvg_at_rightNP.
@@ -274,7 +274,7 @@ Lemma oppr_change (f : R -> R) a b : (a < b)%R ->
   \int[mu]_(x in `[-%R b, -%R a]) ((f \o -%R) x)%:E.
 Proof.
 move=> ab cf.
-have dN : ((-%R : R -> R)^`() = cst (-1) :> (R -> R))%R. (* TODO: lemma? *)
+have dN : ((-%R : R -> R^o)^`() = cst (-1) :> (R -> R))%R. (* TODO: lemma? *)
   by apply/funext => x/=; rewrite derive1E deriveN// derive_id.
 rewrite integration_by_substitution_decreasing//.
 - by apply: eq_integral => /= x _; rewrite dN/= opprK mulr1 -compA/= opprK.
@@ -302,7 +302,7 @@ move=> x y x01 y01.
 by rewrite le_eqVlt => /predU1P[->//|/dF] => /(_ x01 y01)/ltW.
 Qed.
 
-Lemma derive1_onem {R: realType} : (fun x0 : R => (1 - x0)%R)^`() = (cst (-1)%R).
+Lemma derive1_onem {R: realType} : (fun x0 : R^o => (1 - x0)%R)^`() = (cst (-1)%R).
 Proof.
 apply/funext => x.
 by rewrite derive1E deriveB// derive_id derive_cst sub0r.
@@ -315,11 +315,11 @@ Lemma cvg_comp_filter {R : realType} (f g : R -> R) (r l : R) :
   f x @[x --> g r] --> l.
 Proof.
 move=> cf fgrl.
-apply/cvgrPdist_le => /= e e0.
+apply/(@cvgrPdist_le _ R^o) => /= e e0.
 have e20 : 0 < e / 2 by rewrite divr_gt0.
-move/cvgrPdist_le : fgrl => /(_ _ e20) fgrl.
+move/(@cvgrPdist_le _ R^o) : fgrl => /(_ _ e20) fgrl.
 have := cf (g r).
-move=> /cvgrPdist_le => /(_ _ e20)[x x0]H.
+move=> /(@cvgrPdist_le _ R^o) => /(_ _ e20)[x x0]H.
 exists (minr x (e/2)).
   by rewrite lt_min x0.
 move=> z.
@@ -366,12 +366,12 @@ move=> ->//.
     rewrite opprB addrCA addrA addrK.
     apply: (@cvg_comp_filter _ _ (fun x => 1 - x)%R)=> //=.
       move=> x.
-      apply: continuousB => //.
+      apply: (@continuousB _ R^o)  => //.
       exact: cvg_cst.
     under eq_fun do rewrite opprD addrA subrr add0r opprK.
     apply: cvg_id.
     apply: cvg_at_left_filter.
-    apply: cvgB => //.
+    apply: (@cvgB _ R^o) => //.
     exact: cvg_cst.
 Qed.
 
@@ -436,7 +436,7 @@ exact: leq_prod2.
 Qed.
 
 Lemma bounded_norm_expn_onem {R : realType} (a b : nat) :
-  [bounded `|x ^+ a * (1 - x) ^+ b|%R : R | x in (`[0%R, 1%R]%classic : set R)].
+  [bounded `|x ^+ a * (1 - x) ^+ b|%R : R^o | x in (`[0%R, 1%R]%classic : set R)].
 Proof.
 exists 1%R; split; [by rewrite num_real|move=> x x1 /= y].
 rewrite in_itv/= => /andP[y0 y1].
@@ -536,22 +536,17 @@ by apply: eq_integral => /= x _; rewrite patchE mem_setE in_itv/=; case: ifPn.
 Qed.*)
 
 Lemma onemXn_derivable {R : realType} n (x : R) :
-  derivable (fun y : R => `1-y ^+ n)%R x 1.
+  derivable (fun y : R^o => `1-y ^+ n : R^o)%R x 1.
 Proof.
-have := @derivableX R R (@onem R) n x 1%R.
+have := @derivableX R R^o (@onem R) n x 1%R.
 rewrite fctE.
 apply.
 exact: derivableB.
 Qed.
 
 Lemma deriveX_idfun {R : realType} n x :
-  'D_1 (@GRing.exp R ^~ n.+1) x = n.+1%:R *: (x ^+ n)%R.
-Proof.
-rewrite exp_derive.
-rewrite -scalerA.
-congr (_ *: _).
-by rewrite [LHS]mulr1.
-Qed.
+  'D_1 (@GRing.exp R^o ^~ n.+1) x = n.+1%:R *: (x ^+ n)%R.
+Proof. by rewrite exp_derive /GRing.scale/= mulr1. Qed.
 
 Lemma derive1Mr [R : realFieldType] [f : R^o -> R^o] [x r : R^o] :
   derivable f x 1 -> ((fun x => f x * r)^`() x = (r * f^`() x)%R :> R)%R.
@@ -578,7 +573,7 @@ Lemma continuous_onemXn {R : realType} (n : nat) x :
   {for x, continuous (fun y : R => `1-y ^+ n)%R}.
 Proof.
 apply: (@continuous_comp _ _ _ (@onem R) (fun x => GRing.exp x n)).
-  by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
+  by apply: (@cvgB _ R^o); [exact: cvg_cst|exact: cvg_id].
 exact: exprn_continuous.
 Qed.
 
@@ -625,7 +620,7 @@ by apply: continuous_in_subspaceT => x _; exact: continuous_XMonemX.
 Qed.
 
 Lemma bounded_XMonemX {R : realType} (a b : nat) :
-  [bounded XMonemX a b x : R | x in (`[0, 1]%classic : set R)].
+  [bounded XMonemX a b x : R^o | x in (`[0, 1]%classic : set R)].
 Proof.
 exists 1%R; split; [by rewrite num_real|move=> x x1 /= y y01].
 rewrite ger0_norm//; last by rewrite XMonemX_ge0.
@@ -648,7 +643,7 @@ Local Open Scope ereal_scope.
 Lemma integral_exprn {R : realType} (n : nat) :
   fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x ^+ n)%:E) = n.+1%:R^-1 :> R.
 Proof.
-pose F (x : R) := (n.+1%:R^-1 * x ^+ n.+1)%R.
+pose F (x : R) : R^o := (n.+1%:R^-1 * x ^+ n.+1)%R.
 have cX m : {in `[0%R, 1%R], continuous (fun x : R => x ^+ m)%R}.
   by move=> x x01; exact: exprn_continuous.
 have cF0 : {for 0%R, continuous F}.
@@ -664,7 +659,7 @@ have dcF : derivable_oo_continuous_bnd F 0 1.
     by apply/cvg_at_right_filter/cX; rewrite in_itv/= lexx ler01.
   - apply: continuous_cvg; first exact: mulrl_continuous.
     by apply/cvg_at_left_filter/cX; rewrite in_itv/= lexx ler01.
-have dFE : {in `]0%R, 1%R[, F^`() =1 (fun x : R => x ^+ n)%R}.
+have dFE : {in `]0%R, 1%R[, F^`() =1 (fun x : R => x ^+ n : R)%R}.
   move=> x x01.
   rewrite derive1Ml; last exact: exprn_derivable.
   by rewrite derive1E deriveX_idfun mulrA mulVf// mul1r.
@@ -674,24 +669,24 @@ by apply: continuous_subspaceT; exact: exprn_continuous.
 Qed.
 
 Lemma derivable_oo_continuous_bnd_onemXnMr {R : realType} (n : nat) (r : R) :
-  derivable_oo_continuous_bnd (fun x : R => `1-x ^+ n.+1 * r)%R 0 1.
+  derivable_oo_continuous_bnd (fun x : R => `1-x ^+ n.+1 * r : R^o)%R 0 1.
 Proof.
 split.
 - by move=> x x01; apply: derivableM => //=; exact: onemXn_derivable.
 - apply: cvgM; last exact: cvg_cst.
   apply: cvg_at_right_filter.
   apply: (@cvg_comp _ _ _ (fun x => 1 - x)%R (fun x => GRing.exp x n.+1)%R).
-    by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
+    by apply: (@cvgB _ R^o); [exact: cvg_cst|exact: cvg_id].
   exact: exprn_continuous.
 - apply: cvg_at_left_filter.
   apply: cvgM; last exact: cvg_cst.
   apply: (@cvg_comp _ _ _ (fun x => 1 - x)%R (fun x => GRing.exp x n.+1)%R).
-    by apply: cvgB; [exact: cvg_cst|exact: cvg_id].
+    by apply: (@cvgB _ R^o); [exact: cvg_cst|exact: cvg_id].
   exact: exprn_continuous.
 Qed.
 
 Lemma derive_onemXn {R : realType} (n : nat) x :
-  ((fun y : R => `1-y ^+ n.+1)^`() x = - n.+1%:R * `1-x ^+ n)%R.
+  ((fun y : R => `1-y ^+ n.+1 : R^o)^`() x = - n.+1%:R * `1-x ^+ n)%R.
 Proof.
 rewrite (@derive1_comp _ (@onem R) (fun x => GRing.exp x n.+1))//; last first.
   exact: exprn_derivable.
@@ -1071,7 +1066,7 @@ Qed.
 
 Local Open Scope ring_scope.
 Lemma bounded_beta_pdf_01 :
-  [bounded beta_pdf x | x in `[0%R, 1%R]%classic : set R].
+  [bounded beta_pdf x : R^o | x in `[0%R, 1%R]%classic : set R].
 Proof.
 exists (betafun a b)^-1; split; first by rewrite num_real.
 move=> // y y1.
