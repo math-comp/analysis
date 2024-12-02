@@ -90,6 +90,13 @@ End numFieldTopology.
 
 Import numFieldTopology.Exports.
 
+Lemma in_continuous_mksetP {T : realFieldType} {U : realFieldType}
+    (i : interval T) (f : T -> U) :
+  {in i, continuous f} <-> {in [set` i], continuous f}.
+Proof.
+by split => [fi x /set_mem/=|fi x xi]; [exact: fi|apply: fi; rewrite inE].
+Qed.
+
 Lemma nbhs0_ltW (R : realFieldType) (x : R) : (0 < x)%R ->
  \forall r \near nbhs (0%R:R), (r <= x)%R.
 Proof.
