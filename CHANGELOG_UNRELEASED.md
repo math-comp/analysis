@@ -12,6 +12,9 @@
 
 - in `mathcomp_extra.v`:
   + lemma `partition_disjoint_bigfcup`
+- in `constructive_ereal.v`:
+  + notations `\prod` in scope ereal_scope
+  + lemmas `prode_ge0`, `prode_fin_num`
 
 ### Changed
   
