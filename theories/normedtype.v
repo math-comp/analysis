@@ -8,7 +8,6 @@ From mathcomp Require Import cardinality set_interval ereal reals.
 From mathcomp Require Import signed topology prodnormedzmodule function_spaces.
 From mathcomp Require Export real_interval separation_axioms tvs.
 
-
 (**md**************************************************************************)
 (* # Norm-related Notions                                                     *)
 (*                                                                            *)
@@ -2158,14 +2157,6 @@ by apply: xe_A => //; rewrite eq_sym.
 Qed.
 Arguments cvg_at_leftE {R V} f x.
 
-(* TODO: move earlier *)
-Lemma in_continuous_mksetP {T : realFieldType} {U : realFieldType}
-    (i : interval T) (f : T -> U) :
-  {in i, continuous f} <-> {in [set` i], continuous f}.
-Proof.
-by split => [fi x /set_mem/=|fi x xi]; [exact: fi|apply: fi; rewrite inE].
-Qed.
-
 Section continuous_within_itvP.
 Context {R : realType}.
 Implicit Type f : R -> R.
@@ -2259,7 +2250,7 @@ rewrite bnd_simp/= le_eqVlt => /predU1P[<-{x}|ax] _.
   by move=> ?/=; rewrite !in_itv/= !andbT; exact: ltW.
 Qed.
 
-Lemma continuous_within_itvycP b (f : R -> R) :
+Lemma continuous_within_itvNycP b (f : R -> R) :
   {within `]-oo, b], continuous f} <->
   {in `]-oo, b[, continuous f} /\ f x @[x --> b^'-] --> f b.
 Proof.
