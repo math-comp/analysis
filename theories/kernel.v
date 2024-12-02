@@ -644,7 +644,7 @@ Let measurable_fun_kprobability U : measurable U ->
 Proof.
 move=> mU.
 apply: (measurability (ErealGenInftyO.measurableE R)) => _ /= -[_ [r ->] <-].
-rewrite setTI preimage_itv_infty_o -/(P @^-1` mset U r).
+rewrite setTI preimage_itvNyo -/(P @^-1` mset U r).
 have [r0|r0] := leP 0%R r; last by rewrite lt0_mset// preimage_set0.
 have [r1|r1] := leP r 1%R; last by rewrite gt1_mset// preimage_setT.
 move: mP => /(_ measurableT (mset U r)); rewrite setTI; apply.

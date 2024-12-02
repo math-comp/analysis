@@ -40,6 +40,12 @@
 - in `measure.v`:
   + `dynkin_setI_bigsetI` -> `setT_setI_bigsetI`
 
+- in `classical_sets.v`:
+  + `preimage_itv_o_infty` -> `preimage_itvoy`
+  + `preimage_itv_c_infty` -> `preimage_itvcy`
+  + `preimage_itv_infty_o` -> `preimage_itvNyo`
+  + `preimage_itv_infty_c` -> `preimage_itvNyc`
+
 ### Generalized
 
 ### Deprecated

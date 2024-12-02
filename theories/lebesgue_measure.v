@@ -434,16 +434,16 @@ Hypotheses (mD : measurable D) (mf : measurable_fun D f).
 Implicit Types y : \bar R.
 
 Lemma emeasurable_fun_c_infty y : measurable (D `&` [set x | y <= f x]).
-Proof. by rewrite -preimage_itv_c_infty; exact/mf/emeasurable_itv. Qed.
+Proof. by rewrite -preimage_itvcy; exact/mf/emeasurable_itv. Qed.
 
 Lemma emeasurable_fun_o_infty y :  measurable (D `&` [set x | y < f x]).
-Proof. by rewrite -preimage_itv_o_infty; exact/mf/emeasurable_itv. Qed.
+Proof. by rewrite -preimage_itvoy; exact/mf/emeasurable_itv. Qed.
 
 Lemma emeasurable_fun_infty_o y : measurable (D `&` [set x | f x < y]).
-Proof. by rewrite -preimage_itv_infty_o; exact/mf/emeasurable_itv. Qed.
+Proof. by rewrite -preimage_itvNyo; exact/mf/emeasurable_itv. Qed.
 
 Lemma emeasurable_fun_infty_c y : measurable (D `&` [set x | f x <= y]).
-Proof. by rewrite -preimage_itv_infty_c; exact/mf/emeasurable_itv. Qed.
+Proof. by rewrite -preimage_itvNyc; exact/mf/emeasurable_itv. Qed.
 
 Lemma emeasurable_fin_num : measurable (D `&` [set x | f x \is a fin_num]).
 Proof.
@@ -908,7 +908,7 @@ Lemma lower_semicontinuous_measurable {R : realType} (f : R -> \bar R) :
 Proof.
 move=> scif; apply: (measurability (ErealGenOInfty.measurableE R)).
 move=> /= _ [_ [a ->]] <-; apply: measurableI => //; apply: open_measurable.
-by rewrite preimage_itv_o_infty; move/lower_semicontinuousP : scif; exact.
+by rewrite preimage_itvoy; move/lower_semicontinuousP : scif; exact.
 Qed.
 
 Section standard_measurable_fun.
@@ -986,12 +986,12 @@ Lemma measurable_funD D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \+ g).
 Proof.
 move=> mf mg mD; apply: (measurability (RGenOInfty.measurableE R)) => //.
-move=> /= _ [_ [a ->] <-]; rewrite preimage_itv_o_infty.
+move=> /= _ [_ [a ->] <-]; rewrite preimage_itvoy.
 rewrite [X in measurable X](_ : _ = \bigcup_(q : rat)
   ((D `&` [set x | ratr q < f x]) `&` (D `&` [set x | a - ratr q < g x]))).
   apply: bigcupT_measurable_rat => q; apply: measurableI.
-  - by rewrite -preimage_itv_o_infty; apply: mf => //; apply: measurable_itv.
-  - by rewrite -preimage_itv_o_infty; apply: mg => //; apply: measurable_itv.
+  - by rewrite -preimage_itvoy; apply: mf => //; exact: measurable_itv.
+  - by rewrite -preimage_itvoy; apply: mg => //; exact: measurable_itv.
 rewrite predeqE => x; split => [|[r _] []/= [Dx rfx]] /= => [[Dx]|[_]].
   rewrite -ltrBlDr => /rat_in_itvoo[r]; rewrite inE /= => /itvP h.
   exists r => //; rewrite setIACA setIid; split => //; split => /=.
@@ -1026,7 +1026,7 @@ Lemma measurable_fun_ltr D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg mD; apply: (measurable_fun_bool true) => //.
 under eq_fun do rewrite -subr_gt0.
-by rewrite preimage_true -preimage_itv_o_infty; exact: measurable_funB.
+by rewrite preimage_true -preimage_itvoy; exact: measurable_funB.
 Qed.
 
 Lemma measurable_fun_ler D f g : measurable_fun D f -> measurable_fun D g ->
@@ -1034,7 +1034,7 @@ Lemma measurable_fun_ler D f g : measurable_fun D f -> measurable_fun D g ->
 Proof.
 move=> mf mg mD; apply: (measurable_fun_bool true) => //.
 under eq_fun do rewrite -subr_ge0.
-by rewrite preimage_true -preimage_itv_c_infty; exact: measurable_funB.
+by rewrite preimage_true -preimage_itvcy; exact: measurable_funB.
 Qed.
 
 Lemma measurable_fun_eqr D f g : measurable_fun D f -> measurable_fun D g ->
@@ -1257,12 +1257,12 @@ Lemma measurable_fun_addn D f g : measurable_fun D f -> measurable_fun D g ->
   measurable_fun D (fun x => f x + g x)%N.
 Proof.
 move=> mf mg mD; apply: (measurability NGenCInfty.measurableE) => //.
-move=> /= _ [_ [a ->] <-]; rewrite preimage_itv_c_infty.
+move=> /= _ [_ [a ->] <-]; rewrite preimage_itvcy.
 rewrite [X in measurable X](_ : _ = \bigcup_q
   ((D `&` [set x | q <= f x]%O) `&` (D `&` [set x | (a - q)%N <= g x]%O))).
   apply: bigcupT_measurable => q; apply: measurableI.
-  - by rewrite -preimage_itv_c_infty; exact: mf.
-  - by rewrite -preimage_itv_c_infty; exact: mg.
+  - by rewrite -preimage_itvcy; exact: mf.
+  - by rewrite -preimage_itvcy; exact: mg.
 rewrite predeqE => x; split => [|[r ?] []/= [Dx rfx]] /= => [[Dx]|[?]].
 - move=> afxgx; exists (a - g x)%N => //=; split; split => //.
     by rewrite leEnat leq_subLR// addnC -leEnat.
@@ -1279,8 +1279,8 @@ move=> mf mg mD; apply: (measurability NGenCInfty.measurableE) => //.
 move=> /= _ [_ [a ->] <-]; rewrite [X in measurable X](_ : _ =
   ((D `&` [set x | a <= f x]%O) `|` (D `&` [set x | a <= g x]%O))).
   apply: measurableU.
-  - by rewrite -preimage_itv_c_infty; exact: mf.
-  - by rewrite -preimage_itv_c_infty; exact: mg.
+  - by rewrite -preimage_itvcy; exact: mf.
+  - by rewrite -preimage_itvcy; exact: mg.
 rewrite predeqE => x; split => [[Dx /=]|].
 - by rewrite in_itv/= andbT; have [fg agx|gf afx] := leqP (f x) (g x); tauto.
 - move=> [[Dx /= afx]|[Dx /= agx]].
@@ -1295,13 +1295,13 @@ Let measurable_fun_subn' D f g : (forall t, g t <= f t)%N ->
   measurable_fun D (fun x => f x - g x)%N.
 Proof.
 move=> gf mf mg mD; apply: (measurability NGenCInfty.measurableE) => //.
-move=> /= _ [_ [a ->] <-]; rewrite preimage_itv_c_infty.
+move=> /= _ [_ [a ->] <-]; rewrite preimage_itvcy.
 rewrite [X in measurable X](_ : _ = \bigcup_q
   ((D `&` [set x | maxn a q <= f x]%O) `&`
    (D `&` [set x | g x <= (q - a)%N]%O))).
   apply: bigcupT_measurable => q; apply: measurableI.
-  - by rewrite -preimage_itv_c_infty; exact: mf.
-  - by rewrite -preimage_itv_infty_c; exact: mg.
+  - by rewrite -preimage_itvcy; exact: mf.
+  - by rewrite -preimage_itvNyc; exact: mg.
 rewrite predeqE => x; split => [|[r ?] []/= [Dx rfx]] /= => [[Dx]|[_]].
 - move=> afxgx; exists (g x + a)%N => //; split; split => //=.
     rewrite leEnat; have /maxn_idPr -> := leq_addl (g x) a.
@@ -1335,15 +1335,15 @@ move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
     apply/funext => n; apply/idP/idP.
       by rewrite !ltEnat /ltn/= => fg; rewrite subn_gt0.
     by rewrite !ltEnat /ltn/= => fg; rewrite -subn_gt0.
-  by rewrite preimage_true -preimage_itv_o_infty; exact: measurable_fun_subn.
+  by rewrite preimage_true -preimage_itvoy; exact: measurable_fun_subn.
 - under eq_fun do rewrite ltnNge.
   rewrite preimage_false set_predC setCK.
   rewrite [X in _ `&` X](_ : _ = \bigcup_(i in range f)
       ([set y | g y <= i]%O `&` [set t | i <= f t]%O)).
     rewrite setI_bigcupr; apply: bigcup_measurable => k fk.
     rewrite setIIr; apply: measurableI => //.
-    + by rewrite -preimage_itv_infty_c; exact: mg.
-    + by rewrite -preimage_itv_c_infty; exact: mf.
+    + by rewrite -preimage_itvNyc; exact: mg.
+    + by rewrite -preimage_itvcy; exact: mf.
   apply/funext => n/=.
   suff : (g n <= f n)%N <->
       (\bigcup_(i in range f) ([set y | g y <= i]%O `&` [set t | i <= f t]%O)) n.
@@ -1363,8 +1363,8 @@ move=> mf mg mD Y mY; have [| | |] := set_bool Y => /eqP ->.
       \bigcup_(i in range g) ([set y | f y <= i]%O `&` [set t | i <= g t]%O)).
     rewrite setI_bigcupr; apply: bigcup_measurable => k fk.
     rewrite setIIr; apply: measurableI => //.
-    + by rewrite -preimage_itv_infty_c; exact: mf.
-    + by rewrite -preimage_itv_c_infty; exact: mg.
+    + by rewrite -preimage_itvNyc; exact: mf.
+    + by rewrite -preimage_itvcy; exact: mg.
   apply/funext => n/=.
   suff : (f n <= g n)%N <->
     (\bigcup_(i in range g) ([set y | f y <= i]%O `&` [set t | i <= g t]%O)) n.
@@ -1396,7 +1396,7 @@ Lemma EFin_measurable (D : set R) : measurable_fun D EFin.
 Proof.
 move=> mD; apply: (measurability (ErealGenOInfty.measurableE R)) => //.
 move=> /= _ [_ [x ->]] <-; apply: measurableI => //.
-by rewrite preimage_itv_o_infty EFin_itv; exact: measurable_itv.
+by rewrite preimage_itvoy EFin_itv; exact: measurable_itv.
 Qed.
 
 Lemma abse_measurable (D : set (\bar R)) : measurable_fun D abse.

@@ -1516,7 +1516,7 @@ have fwcte : {within `[x - e, x + e], continuous f}.
 have fKe : {in `[x - e, x + e], cancel f g}
   by near: e; apply/at_right_in_segment.
 have nearfx : \forall y \near f x, y \in f @`](x - e), (x + e)[.
-  apply: near_in_itv; apply: mono_mem_image_itvoo; last first.
+  apply: near_in_itvoo; apply: mono_mem_image_itvoo; last first.
     by rewrite in_itv/= -ltr_distlC subrr normr0.
   apply: itv_continuous_inj_mono => //.
   by apply: (@can_in_inj _ _ _ _ g); near: e; apply/at_right_in_segment.
