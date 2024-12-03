@@ -538,3 +538,38 @@ Qed.
 Definition sigT_fun {I : Type} {X : I -> Type} {T : Type}
   (f : forall i, X i -> T) (x : {i & X i}) : T :=
   (f (projT1 x) (projT2 x)).
+
+(* PR 114 to finmap in progress *)
+Section FsetPartitions.
+Variables T I : choiceType.
+Implicit Types (x y z : T) (A B D X : {fset T}) (P Q : {fset {fset T}}).
+Implicit Types (J : pred I) (F : I -> {fset T}).
+
+Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
+Let rhs_cond P K E :=
+  (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A | K x) E x)%fset.
+Let rhs P E := (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A) E x)%fset.
+
+Lemma partition_disjoint_bigfcup (f : T -> R) (F : I -> {fset T})
+  (K : {fset I}) :
+  (forall i j, i \in K -> j \in K -> i != j -> [disjoint F i & F j])%fset ->
+  \big[op/idx]_(i <- \big[fsetU/fset0]_(x <- K) (F x)) f i =
+  \big[op/idx]_(k <- K) (\big[op/idx]_(i <- F k) f i).
+Proof.
+move=> disjF; pose P := [fset F i | i in K & F i != fset0]%fset.
+have trivP : trivIfset P.
+  apply/trivIfsetP => _ _ /imfsetP[i iK ->] /imfsetP[j jK ->] neqFij.
+  move: iK; rewrite !inE/= => /andP[iK Fi0].
+  move: jK; rewrite !inE/= => /andP[jK Fj0].
+  by apply: (disjF _ _ iK jK); apply: contraNneq neqFij => ->.
+have -> : (\bigcup_(i <- K) F i)%fset = fcover P.
+  apply/esym; rewrite /P fcover_imfset big_mkcond /=; apply eq_bigr => i _.
+  by case: ifPn => // /negPn/eqP.
+rewrite big_trivIfset // /rhs big_imfset => [|i j iK /andP[jK notFj0] eqFij] /=.
+  rewrite big_filter big_mkcond; apply eq_bigr => i _.
+  by case: ifPn => // /negPn /eqP ->;  rewrite big_seq_fset0.
+move: iK; rewrite !inE/= => /andP[iK Fi0].
+by apply: contraNeq (disjF _ _ iK jK) _; rewrite -fsetI_eq0 eqFij fsetIid.
+Qed.
+
+End FsetPartitions.
