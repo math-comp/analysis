@@ -981,8 +981,7 @@ apply: (eq_measurable_fun (fun t =>
     \sum_(b <- fset_set Ys) (bernoulli_pmf t b)%:E)).
   move=> x /set_mem[_/= x01].
   by rewrite fsbig_finite//=.
-apply: emeasurable_fun_sum => n.
-move=> k Ysk; apply/measurableT_comp => //.
+apply: emeasurable_sum => n; move=> k Ysk; apply/measurableT_comp => //.
 exact: measurable_bernoulli_pmf.
 Qed.
 
@@ -1161,7 +1160,7 @@ apply: (eq_measurable_fun (fun t =>
   move=> x /set_mem[_/= x01].
   rewrite nneseries_esum// -1?[in RHS](set_mem_set Ys)// => k kYs.
   by rewrite lee_fin binomial_pmf_ge0.
-apply: ge0_emeasurable_fun_sum.
+apply: ge0_emeasurable_sum.
   by move=> k x/= [_ x01] _; rewrite lee_fin binomial_pmf_ge0.
 move=> k Ysk; apply/measurableT_comp => //.
 exact: measurable_binomial_pmf.
@@ -1323,21 +1322,22 @@ Lemma integral_uniform (f : _ -> \bar R) :
   (\int[uniform_prob ab]_x f x = (b - a)^-1%:E * \int[mu]_(x in `[a, b]) f x)%E.
 Proof.
 move=> mf f0.
-have [f_ [ndf_ f_f]] := approximation measurableT mf (fun y _ => f0 y).
+pose f_ := nnsfun_approx measurableT mf.
 transitivity (lim (\int[uniform_prob ab]_x (f_ n x)%:E @[n --> \oo])%E).
   rewrite -monotone_convergence//=.
   - apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //=.
-    exact: f_f.
+    exact: cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n ? _; rewrite lee_fin.
-  - by move=> ? _ ? ? mn; rewrite lee_fin; exact/lefP/ndf_.
+  - by move=> ? _ ? ? mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 rewrite [X in _ = (_ * X)%E](_ : _ = lim
     (\int[mu]_(x in `[a, b]) (f_ n x)%:E @[n --> \oo])%E); last first.
   rewrite -monotone_convergence//=.
-  - by apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //; exact: f_f.
+  - apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //.
+    exact: cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n ? _; rewrite lee_fin.
-  - by move=> ? _ ? ? /ndf_ /lefP; rewrite lee_fin.
+  - by move=> ? _ ? ? ?; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 rewrite -limeMl//.
   by apply: congr_lim; apply/funext => n /=; exact: integral_uniform_nnsfun.
 apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
@@ -1345,7 +1345,7 @@ apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
 - exact/measurable_EFinP/measurable_funTS.
 - by move=> ? _; rewrite lee_fin.
 - exact/measurable_EFinP/measurable_funTS.
-- by move=> ? _; rewrite lee_fin; move/ndf_ : xy => /lefP.
+- by move=> ? _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
 
 End uniform_probability.
