@@ -1837,7 +1837,7 @@ have int_f_nuT : \int[mu]_x f x = nu setT.
     by apply: eq_eseriesr => i _; rewrite int_f_E// setTI.
   rewrite -UET measure_bigcup//.
   by apply: eq_eseriesl => // x; rewrite in_setT.
-have mf : measurable_fun setT f by exact: ge0_emeasurable_fun_sum.
+have mf : measurable_fun setT f by exact: ge0_emeasurable_sum.
 have fi : mu.-integrable setT f.
   apply/integrableP; split => //.
   under eq_integral do (rewrite gee0_abs; last exact: nneseries_ge0).
@@ -1921,29 +1921,29 @@ Lemma change_of_variables f E : (forall x, 0 <= f x) ->
   \int[mu]_(x in E) (f x * ('d nu '/d mu) x) = \int[nu]_(x in E) f x.
 Proof.
 move=> f0 mE mf; set g := 'd nu '/d mu.
-have [h [ndh hf]] := approximation mE mf (fun x _ => f0 x).
+pose h := nnsfun_approx mE mf.
 have -> : \int[nu]_(x in E) f x =
     lim (\int[nu]_(x in E) (EFin \o h n) x @[n --> \oo]).
   have fE x : E x -> f x = lim ((EFin \o h n) x @[n --> \oo]).
-    by move=> Ex; apply/esym/cvg_lim => //; exact: hf.
+    by move=> Ex; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
   under eq_integral => x /[!inE] /fE -> //.
   apply: monotone_convergence => //.
   - move=> n; apply/measurable_EFinP.
     by apply: (measurable_funS measurableT) => //; exact/measurable_funP.
   - by move=> n x Ex //=; rewrite lee_fin.
-  - by move=> x Ex a b /ndh /=; rewrite lee_fin => /lefP.
+  - by move=> x Ex a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 have -> : \int[mu]_(x in E) (f \* g) x =
     lim (\int[mu]_(x in E) ((EFin \o h n) \* g) x @[n --> \oo]).
   have fg x :E x -> f x * g x = lim (((EFin \o h n) \* g) x @[n --> \oo]).
     by move=> Ex; apply/esym/cvg_lim => //; apply: cvgeMr;
-      [exact: f_fin_num|exact: hf].
+      [exact: f_fin_num|exact: cvg_nnsfun_approx].
   under eq_integral => x /[!inE] /fg -> //.
   apply: monotone_convergence => [//| | |].
   - move=> n; apply/emeasurable_funM; apply/measurable_funTS.
       exact/measurable_EFinP.
     exact: measurable_int (f_integrable _).
   - by move=> n x Ex //=; rewrite mule_ge0 ?lee_fin//=; exact: f_ge0.
-  - by move=> x Ex a b /ndh /= /lefP hahb; rewrite lee_wpmul2r ?lee_fin// f_ge0.
+  - by move=> x Ex a b ab/=; rewrite lee_wpmul2r ?lee_fin ?f_ge0//; exact/lefP/nd_nnsfun_approx.
 suff suf n : \int[mu]_(x in E) ((EFin \o h n) x * g x) =
     \int[nu]_(x in E) (EFin \o h n) x.
   by under eq_fun do rewrite suf.
@@ -2005,18 +2005,16 @@ Local Notation "'d nu '/d mu" := (f nu mu).
 Lemma chain_rule E : nu `<< mu -> mu `<< la -> measurable E ->
   ae_eq la E ('d nu '/d la) ('d nu '/d mu \* 'd mu '/d la).
 Proof.
-move=> numu mula mE; have nula := measure_dominates_trans numu mula.
+move=> numu mula mE.
 have mf : measurable_fun E ('d nu '/d mu).
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
-have [h [ndh hf]] := approximation mE mf (fun x _ => f_ge0 numu x).
 apply: integral_ae_eq => //.
-- apply: (integrableS measurableT) => //.
-  apply: f_integrable.
-  exact: (measure_dominates_trans numu mula).
+- apply: (integrableS measurableT) => //; apply: f_integrable.
+  exact: measure_dominates_trans numu mula.
 - apply: emeasurable_funM => //.
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
 - move=> A AE mA; rewrite change_of_variables//.
-  + by rewrite -!f_integral.
+  + by rewrite -!f_integral//; exact: measure_dominates_trans numu mula.
   + exact: f_ge0.
   + exact: measurable_funS mf.
 Qed.

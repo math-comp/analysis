@@ -131,8 +131,7 @@ Definition kseries : X -> {measure set Y -> \bar R} :=
 Lemma measurable_fun_kseries (U : set Y) :
   measurable U -> measurable_fun [set: X] (kseries ^~ U).
 Proof.
-move=> mU.
-by apply: ge0_emeasurable_fun_sum => // n _; exact/measurable_kernel.
+by move=> mU; apply: ge0_emeasurable_sum => // n _; exact/measurable_kernel.
 Qed.
 
 HB.instance Definition _ :=
@@ -546,7 +545,7 @@ rewrite [X in measurable_fun _ X](_ : _ = (fun x => \sum_(r \in range (k_ n))
     apply/measurable_EFinP/measurableT_comp => [//|].
     exact/measurableT_comp.
   - by move=> m y _; rewrite nnfun_muleindic_ge0.
-apply: emeasurable_fun_fsum => // r.
+apply: emeasurable_fsum => // r.
 rewrite [X in measurable_fun _ X](_ : _ = fun x => r%:E *
     \int[l x]_y (\1_(k_ n @^-1` [set r]) (x, y))%:E); last first.
   apply/funext => x; under eq_integral do rewrite EFinM.
@@ -571,24 +570,30 @@ Lemma measurable_fun_integral_finite_kernel (l : R.-fker X ~> Y)
     (k0 : forall z, 0 <= k z) (mk : measurable_fun [set: X * Y] k) :
   measurable_fun [set: X] (fun x => \int[l x]_y k (x, y)).
 Proof.
-have [k_ [ndk_ k_k]] := approximation measurableT mk (fun x _ => k0 x).
-apply: (measurable_fun_xsection_integral ndk_ (k_k ^~ Logic.I)) => n r.
-have [l_ hl_] := measure_uub l.
-by apply: measurable_fun_xsection_finite_kernel => // /[!inE].
+pose k_ := nnsfun_approx measurableT mk.
+apply: (@measurable_fun_xsection_integral _ k_).
+- by move=> a b ab; exact/nd_nnsfun_approx.
+- by move=> z; exact/cvg_nnsfun_approx.
+- move => n r.
+  have [l_ hl_] := measure_uub l.
+  by apply: measurable_fun_xsection_finite_kernel => // /[!inE].
 Qed.
 
 Lemma measurable_fun_integral_sfinite_kernel (l : R.-sfker X ~> Y)
     (k0 : forall t, 0 <= k t) (mk : measurable_fun [set: X * Y] k) :
   measurable_fun [set: X] (fun x => \int[l x]_y k (x, y)).
 Proof.
-have [k_ [ndk_ k_k]] := approximation measurableT mk (fun xy _ => k0 xy).
-apply: (measurable_fun_xsection_integral ndk_ (k_k ^~ Logic.I)) => n r.
-have [l_ hl_] := sfinite_kernel l.
-rewrite (_ : (fun x => _) = (fun x =>
-    mseries (l_ ^~ x) 0 (xsection (k_ n @^-1` [set r]) x))); last first.
-  by apply/funext => x; rewrite hl_//; exact/measurable_xsection.
-apply: ge0_emeasurable_fun_sum => // m _.
-by apply: measurable_fun_xsection_finite_kernel => // /[!inE].
+pose k_ := nnsfun_approx measurableT mk.
+apply: (@measurable_fun_xsection_integral _ k_).
+- by move=> a b ab; exact/nd_nnsfun_approx.
+- by move=> z; exact/cvg_nnsfun_approx.
+- move => n r.
+  have [l_ hl_] := sfinite_kernel l.
+  rewrite (_ : (fun x => _) = (fun x =>
+      mseries (l_ ^~ x) 0 (xsection (k_ n @^-1` [set r]) x))); last first.
+    by apply/funext => x; rewrite hl_//; exact/measurable_xsection.
+  apply: ge0_emeasurable_sum => // m _.
+  by apply: measurable_fun_xsection_finite_kernel => // /[!inE].
 Qed.
 
 End measurable_fun_integral_finite_sfinite.
@@ -1007,8 +1012,11 @@ Lemma measurable_fun_integral_kernel
     (k : Y -> \bar R) (k0 : forall z, 0 <= k z) (mk : measurable_fun [set: Y] k) :
   measurable_fun [set: X] (fun x => \int[l x]_y k y).
 Proof.
-have [k_ [ndk_ k_k]] := approximation measurableT mk (fun x _ => k0 x).
-by apply: (measurable_fun_preimage_integral ndk_ k_k) => n r; exact/ml.
+pose k_ := nnsfun_approx measurableT mk.
+apply: (@measurable_fun_preimage_integral _ _ _ _ _ _ k_) => //.
+- by move=> a b ab; exact/nd_nnsfun_approx.
+- by move=> z _; exact/cvg_nnsfun_approx.
+- by move=> n r; exact/ml.
 Qed.
 
 End measurable_fun_integral_kernel.
@@ -1077,13 +1085,13 @@ Lemma integral_kcomp x f : (forall z, 0 <= f z) -> measurable_fun [set: Z] f ->
   \int[kcomp l k x]_z f z = \int[l x]_y (\int[k (x, y)]_z f z).
 Proof.
 move=> f0 mf.
-have [f_ [ndf_ f_f]] := approximation measurableT mf (fun z _ => f0 z).
+pose f_ := nnsfun_approx measurableT mf.
 transitivity (\int[kcomp l k x]_z (lim ((f_ n z)%:E @[n --> \oo]))).
-  by apply/eq_integral => z _; apply/esym/cvg_lim => //=; exact: f_f.
+  by apply/eq_integral => z _; apply/esym/cvg_lim => //=; exact: cvg_nnsfun_approx.
 rewrite monotone_convergence//; last 3 first.
   by move=> n; exact/measurable_EFinP.
   by move=> n z _; rewrite lee_fin.
-  by move=> z _ a b /ndf_ /lefP ab; rewrite lee_fin.
+  by move=> z _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 rewrite (_ : (fun _ => _) =
     (fun n => \int[l x]_y (\int[k (x, y)]_z (f_ n z)%:E)))//; last first.
   by apply/funext => n; rewrite integral_kcomp_nnsfun.
@@ -1099,12 +1107,12 @@ transitivity (\int[l x]_y lim ((\int[k (x, y)]_z (f_ n z)%:E) @[n --> \oo])).
     + exact/measurable_EFinP.
     + by move=> z _; rewrite lee_fin.
     + exact/measurable_EFinP.
-    + by move: ab => /ndf_ /lefP ab z _; rewrite lee_fin.
+    + by move=> z _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 apply: eq_integral => y _; rewrite -monotone_convergence//; last 3 first.
   - by move=> n; exact/measurable_EFinP.
   - by move=> n z _; rewrite lee_fin.
-  - by move=> z _ a b /ndf_ /lefP; rewrite lee_fin.
-by apply: eq_integral => z _; apply/cvg_lim => //; exact: f_f.
+  - by move=> z _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+by apply: eq_integral => z _; apply/cvg_lim => //; exact: cvg_nnsfun_approx.
 Qed.
 
 End integral_kcomp.

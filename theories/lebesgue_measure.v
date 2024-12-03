@@ -1113,7 +1113,7 @@ apply: (@measurable_fun_limn_sup _ h) => // t Dt.
 - by apply/bounded_fun_has_lbound/cvg_seq_bounded/cvg_ex; eexists; exact: f_f.
 Qed.
 
-Lemma measurable_fun_indic D (U : set T) : measurable U ->
+Lemma measurable_indic D (U : set T) : measurable U ->
   measurable_fun D (\1_U : _ -> R).
 Proof.
 move=> mU mD /= Y mY.
@@ -1131,6 +1131,16 @@ have [Y0|Y0] := pselect (Y 0%R); have [Y1|Y1] := pselect (Y 1%R).
   by rewrite mem_set.
 - rewrite [X in measurable X](_ : _ = set0)//.
   by apply/seteqP; split => // r /= -[_]; rewrite indicE; case: (_ \in _).
+Qed.
+
+Lemma measurable_indicP D : measurable D <-> measurable_fun setT (\1_D : _ -> R).
+Proof.
+split=> [|m1]; first exact: measurable_indic.
+have -> : D = (\1_D : _ -> R) @^-1` `]0, +oo[.
+  apply/seteqP; split => t/=.
+    by rewrite indicE => /mem_set ->; rewrite in_itv/= ltr01.
+  by rewrite in_itv/= andbT indicE ltr0n; have [/set_mem|//] := boolP (t \in D).
+by rewrite -[_ @^-1` _]setTI; exact: m1.
 Qed.
 
 End measurable_fun_realType.
@@ -1447,7 +1457,7 @@ Notation EFin_measurable_fun := measurable_EFinP (only parsing).
 Lemma measurable_fun_dirac
     d {T : measurableType d} {R : realType} D (U : set T) :
   measurable U -> measurable_fun D (fun x => \d_x U : \bar R).
-Proof. by move=> /measurable_fun_indic/measurable_EFinP. Qed.
+Proof. by move=> /measurable_indic/measurable_EFinP. Qed.
 
 Lemma measurable_er_map d (T : measurableType d) (R : realType) (f : R -> R) :
   measurable_fun setT f -> measurable_fun [set: \bar R] (er_map f).

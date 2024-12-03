@@ -53,6 +53,10 @@ From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 (*                           `[(k%:R * 2 ^- n), (k.+1%:R * 2 ^- n)[           *)
 (*             approx D f == nondecreasing sequence of functions that         *)
 (*                           approximates f over D using dyadic intervals     *)
+(*                           It uses the sets dyadic_approx and               *)
+(*                           integer_approx.                                  *)
+(*      nnsfun_approx D f == same as approx D f but as a nnsfun               *)
+(*                           approximates f over D using dyadic intervals     *)
 (*       Rintegral mu D f := fine (\int[mu]_(x in D) f x).                    *)
 (*     mu.-integrable D f == f is measurable over D and the integral of f     *)
 (*                           w.r.t. D is < +oo                                *)
@@ -121,6 +125,7 @@ HB.mixin Record isMeasurableFun d d' (aT : sigmaRingType d) (rT : sigmaRingType 
 }.
 HB.structure Definition MeasurableFun d d' aT rT :=
   {f of @isMeasurableFun d d' aT rT f}.
+Arguments measurable_funP {d d' aT rT} s.
 
 (* #[global] Hint Resolve fimfun_inP : core. *)
 
@@ -223,7 +228,7 @@ HB.instance Definition _ x := isMeasurableFun.Build d _ aT rT (cst x)
 End mfun.
 
 Section mfun_realType.
-Context {d} {aT : sigmaRingType d} {rT : realType}.
+Context {rT : realType}.
 
 HB.instance Definition _ := @isMeasurableFun.Build _ _ _ rT
   (@normr rT rT) (@normr_measurable rT setT).
@@ -288,7 +293,7 @@ Lemma mindicE (D : set aT) (mD : measurable D) :
 Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
 
 HB.instance Definition _ D mD := @isMeasurableFun.Build _ _ aT rT (mindic mD)
-  (@measurable_fun_indic _ aT rT setT D mD).
+  (@measurable_indic _ aT rT setT D mD).
 
 Definition indic_mfun (D : set aT) (mD : measurable D) :=
   [the {mfun aT >-> rT} of mindic mD].
@@ -305,17 +310,9 @@ Definition max_mfun f g := [the {mfun aT >-> _} of f \max g].
 
 End ring.
 Arguments indic_mfun {d aT rT} _.
-
-Lemma measurable_indic d (T : measurableType d) (R : realType)
-    (D A : set T) : measurable A ->
-  measurable_fun D (\1_A : T -> R).
-Proof.
-by move=> mA; apply/measurable_funTS; rewrite (_ : \1__ = mindic R mA).
-Qed.
+(* TODO: move earlier?*)
 #[global] Hint Extern 0  (measurable_fun _ (\1__ : _ -> _)) =>
   (exact: measurable_indic ) : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_indic` instead")]
-Notation measurable_fun_indic := measurable_indic (only parsing).
 
 Section sfun_pred.
 Context {d} {aT : sigmaRingType d} {rT : realType}.
@@ -1033,7 +1030,7 @@ apply/eqP; rewrite eq_le; apply/andP; split.
 by apply: ereal_sup_ubound => /=; exists h.
 Qed.
 
-Local Notation "\int_ ( x 'in' D ) F" := (integral mu D (fun x => F))
+Local Notation "\int_ ( x 'in' D ) F" := (integral mu D (fun x => F)%E)
   (at level 36, F at level 36, x, D at level 50,
   format "'[' \int_ ( x  'in'  D ) '/  '  F ']'").
 
@@ -1086,9 +1083,9 @@ Qed.
 End integral.
 
 Notation "\int [ mu ]_ ( x 'in' D ) f" :=
-  (integral mu D (fun x => f)) : ereal_scope.
+  (integral mu D (fun x => f)%E) : ereal_scope.
 Notation "\int [ mu ]_ x f" :=
-  ((integral mu setT (fun x => f)))%E : ereal_scope.
+  ((integral mu setT (fun x => f)%E))%E : ereal_scope.
 Arguments eq_integral {d T R mu D} g.
 
 Section eq_measure_integral.
@@ -1303,10 +1300,13 @@ Variables (f : T -> \bar R) (mf : measurable_fun D f).
 
 Local Notation I := (@dyadic_itv R).
 
-Let A n k := if (k < n * 2 ^ n)%N then
+Definition dyadic_approx n k := if (k < n * 2 ^ n)%N then
   D `&` [set x | f x \in EFin @` [set` I n k]] else set0.
 
-Let B n := D `&` [set x | n%:R%:E <= f x]%E.
+Definition integer_approx n := D `&` [set x | n%:R%:E <= f x]%E.
+
+Local Notation A := dyadic_approx.
+Local Notation B := integer_approx.
 
 Definition approx : (T -> R)^nat := fun n x =>
   \sum_(k < n * 2 ^ n) k%:R * 2 ^- n * \1_(A n k) x + n%:R * \1_(B n) x.
@@ -1608,6 +1608,7 @@ move=> m n mn; rewrite (nnsfun_approxE n) (nnsfun_approxE m).
 exact: nd_approx.
 Qed.
 
+#[deprecated(since="mathcomp-analysis 1.8.0", note="use `nnsfun_approx`, `cvg_nnsfun_approx`, and `nd_nnsfun_approx` instead")]
 Lemma approximation : (forall t, D t -> (0 <= f t)%E) ->
   exists g : {nnsfun T >-> R}^nat, nondecreasing_seq (g : (T -> R)^nat) /\
                         (forall x, D x -> EFin \o g^~ x @ \oo --> f x).
@@ -1635,21 +1636,21 @@ rewrite integral_mkcond erestrict_scale [in RHS]integral_mkcond => k0.
 set h1 := f1 \_ D.
 have h10 x : 0 <= h1 x by apply: erestrict_ge0.
 have mh1 : measurable_fun setT h1 by exact/(measurable_restrictT _ _).1.
-have [g [nd_g gh1]] := approximation measurableT mh1 (fun x _ => h10 x).
+pose g := nnsfun_approx measurableT mh1.
 pose kg := fun n => scale_nnsfun (g n) k0.
 rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
 - rewrite (_ : _ \o _ = fun n => sintegral mu (scale_nnsfun (g n) k0))//.
   rewrite (_ : (fun _ => _) = (fun n => k%:E * sintegral mu (g n))).
     rewrite limeMl //; last first.
-      by apply: is_cvg_sintegral => // x m n mn; apply/(lef_at x nd_g).
-    by rewrite -(nd_ge0_integral_lim mu h10) // => x;
-      [exact/(lef_at x nd_g)|exact: gh1].
+      by apply: is_cvg_sintegral => // x m n mn; exact/lefP/nd_nnsfun_approx.
+    by rewrite -(nd_ge0_integral_lim mu h10)// => [x m n mn|x];
+      [exact/lefP/nd_nnsfun_approx|exact: cvg_nnsfun_approx].
   by under eq_fun do rewrite (sintegralrM mu k (g _)).
 - by move=> t; rewrite mule_ge0.
-- by move=> x m n mn; rewrite /kg ler_pM//; exact/lefP/nd_g.
+- by move=> x m n mn; rewrite /kg ler_pM//; exact/lefP/nd_nnsfun_approx.
 - move=> x.
   rewrite [X in X @ \oo --> _](_ : _ = (fun n => k%:E * (g n x)%:E)) ?funeqE//.
-  by apply: cvgeMl => //; exact: gh1.
+  by apply: cvgeMl => //; exact: cvg_nnsfun_approx.
 Qed.
 
 End ge0_linearityZ.
@@ -1677,29 +1678,28 @@ have h10 x : 0 <= h1 x by apply: erestrict_ge0.
 have h20 x : 0 <= h2 x by apply: erestrict_ge0.
 have mh1 : measurable_fun setT h1 by exact/(measurable_restrictT _ _).1.
 have mh2 : measurable_fun setT h2 by exact/(measurable_restrictT _ _).1.
-have [g1 [nd_g1 gh1]] := approximation measurableT mh1 (fun x _ => h10 x).
-have [g2 [nd_g2 gh2]] := approximation measurableT mh2 (fun x _ => h20 x).
+pose g1 := nnsfun_approx measurableT mh1.
+pose g2 := nnsfun_approx measurableT mh2.
 pose g12 := fun n => add_nnsfun (g1 n) (g2 n).
 rewrite (@nd_ge0_integral_lim _ _ _ mu _ g12) //; last 3 first.
   - by move=> x; rewrite adde_ge0.
-  - by apply: nondecreasing_seqD => // x;
-      [exact/(lef_at x nd_g1)|exact/(lef_at x nd_g2)].
+  - by apply: nondecreasing_seqD => // x m n mn;
+      [exact/lefP/nd_nnsfun_approx|exact/lefP/nd_nnsfun_approx].
   - move=> x; rewrite (_ : _ \o _ = (fun n => (g1 n x)%:E + (g2 n x)%:E))//.
-    apply: cvgeD => //; [|exact: gh1|exact: gh2].
+    apply: cvgeD => //; [|exact: cvg_nnsfun_approx..].
     by apply: ge0_adde_def => //; rewrite !inE; [exact: h10|exact: h20].
 under [_ \o _]eq_fun do rewrite sintegralD.
-rewrite (nd_ge0_integral_lim _ _ (fun x => lef_at x nd_g1)) //; last first.
-  by move=> x; exact: gh1.
-rewrite (nd_ge0_integral_lim _ _ (fun x => lef_at x nd_g2)) //; last first.
-  by move=> x; exact: gh2.
-rewrite limeD //.
-  by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g1).
-  by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g2).
-rewrite ge0_adde_def => //; rewrite inE; apply: lime_ge.
-- by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g1).
-- by apply: nearW => n; exact: sintegral_ge0.
-- by apply: is_cvg_sintegral => // x Dx; exact/(lef_at x nd_g2).
-- by apply: nearW => n; exact: sintegral_ge0.
+rewrite (@nd_ge0_integral_lim _ _ _ _ _ g1)//; last 2 first.
+  by move=> x m n mn; exact/lefP/nd_nnsfun_approx.
+  by move=> x; exact/cvg_nnsfun_approx.
+rewrite (@nd_ge0_integral_lim _ _ _ _ _ g2)//; last 2 first.
+  by move=> x m n mn; exact/lefP/nd_nnsfun_approx.
+  by move=> x; exact/cvg_nnsfun_approx.
+rewrite limeD//; [
+  by apply: is_cvg_sintegral => // x m n mn; exact/lefP/nd_nnsfun_approx..|].
+by rewrite ge0_adde_def => //; rewrite inE; apply: lime_ge; solve[
+  (by apply: is_cvg_sintegral => // x m n mn; exact/lefP/nd_nnsfun_approx) ||
+  (by apply: nearW => n; exact: sintegral_ge0)].
 Qed.
 
 Lemma ge0_le_integral : (forall x, D x -> f1 x <= f2 x) ->
@@ -1712,24 +1712,24 @@ have h20 x : 0 <= h2 x by apply: erestrict_ge0.
 have mh1 : measurable_fun setT h1 by exact/(measurable_restrictT _ _).1.
 have mh2 : measurable_fun setT h2 by exact/(measurable_restrictT _ _).1.
 have h12 x : h1 x <= h2 x by apply: lee_restrict.
-have [g1 [nd_g1 /(_ _ Logic.I) gh1]] :=
-  approximation measurableT mh1 (fun x _ => h10 _).
-rewrite (nd_ge0_integral_lim _ h10 (fun x => lef_at x nd_g1) gh1)//.
+pose g1 := nnsfun_approx measurableT mh1.
+rewrite (@nd_ge0_integral_lim _ _ _ _ _ g1)//; last 2 first.
+  by move=> x m n mn; exact/lefP/nd_nnsfun_approx.
+  by move=> x; exact: cvg_nnsfun_approx.
 apply: lime_le.
-  by apply: is_cvg_sintegral => // t Dt; exact/(lef_at t nd_g1).
+  by apply: is_cvg_sintegral => // t m n mn; exact/lefP/nd_nnsfun_approx.
 near=> n; rewrite ge0_integralTE//; apply: ereal_sup_ubound => /=.
-exists (g1 n) => // t; rewrite (le_trans _ (h12 _)) //.
-have := gh1 t.
+exists (g1 n) => // t; rewrite (le_trans _ (h12 _))//.
 have := leey (h1 t); rewrite le_eqVlt => /predU1P[->|ftoo].
   by rewrite leey.
 have h1tfin : h1 t \is a fin_num.
   by rewrite fin_numE gt_eqF/= ?lt_eqF// (lt_le_trans _ (h10 t)).
-have := gh1 t.
+have /= := @cvg_nnsfun_approx _ _ _ _ measurableT _ mh1 (fun x _ => h10 x) t Logic.I.
 rewrite -(fineK h1tfin) => /fine_cvgP[ft_near].
-set u_ := (X in X --> _) => u_h1 g1h1.
+set u_ := (X in X --> _) => u_h1.
 have <- : lim u_ = fine (h1 t) by exact/cvg_lim.
 rewrite lee_fin; apply: nondecreasing_cvgn_le.
-  by move=> // a b ab; rewrite /u_ /=; exact/lefP/nd_g1.
+  by move=> // a b ab; rewrite /u_ /=; exact/lefP/nd_nnsfun_approx.
 by apply/cvg_ex; eexists; exact: u_h1.
 Unshelve. all: by end_near. Qed.
 
@@ -1751,16 +1751,14 @@ HB.instance Definition _ x : @NonNegFun T R (cst x%:num) :=
 Lemma approximation_sfun :
   exists g : {sfun T >-> R}^nat, (forall x, D x -> EFin \o g ^~ x @ \oo --> f x).
 Proof.
-have [fp_ [fp_nd fp_cvg]] :=
-  approximation mD (measurable_funepos mf) (fun=> ltac:(by [])).
-have [fn_ [fn_nd fn_cvg]] :=
-  approximation mD (measurable_funeneg mf) (fun=> ltac:(by [])).
+pose fp_ := nnsfun_approx mD (measurable_funepos mf).
+pose fn_ := nnsfun_approx mD (measurable_funeneg mf).
 exists (fun n => [the {sfun T >-> R} of fp_ n \+ cst (-1) \* fn_ n]) => x /=.
 rewrite [X in X @ \oo --> _](_ : _ =
     EFin \o fp_^~ x \+ (-%E \o EFin \o fn_^~ x))%E; last first.
   by apply/funext => n/=; rewrite EFinD mulN1r.
 by move=> Dx; rewrite (funeposneg f); apply: cvgeD;
-  [exact: add_def_funeposneg|apply: fp_cvg|apply:cvgeN; exact: fn_cvg].
+  [exact: add_def_funeposneg|apply: cvg_nnsfun_approx|apply:cvgeN; apply: cvg_nnsfun_approx].
 Qed.
 
 End approximation_sfun.
@@ -1940,7 +1938,7 @@ apply: hwlogD => //.
 - by move=> ? [].
 Qed.
 
-Lemma emeasurable_fun_sum D I s (h : I -> (T -> \bar R)) :
+Lemma emeasurable_sum D I s (h : I -> (T -> \bar R)) :
   (forall n, measurable_fun D (h n)) ->
   measurable_fun D (fun x => \sum_(i <- s) h i x).
 Proof.
@@ -1950,16 +1948,16 @@ under eq_fun do rewrite big_cons //=; apply: emeasurable_funD => //.
 exact: ih.
 Qed.
 
-Lemma emeasurable_fun_fsum D (I : choiceType) (A : set I)
+Lemma emeasurable_fsum D (I : choiceType) (A : set I)
     (h : I -> (T -> \bar R)) : finite_set A ->
     (forall n, measurable_fun D (h n)) ->
   measurable_fun D (fun x => \sum_(i \in A) h i x).
 Proof.
 move=> fs mh; under eq_fun do rewrite fsbig_finite//.
-exact: emeasurable_fun_sum.
+exact: emeasurable_sum.
 Qed.
 
-Lemma ge0_emeasurable_fun_sum D (h : nat -> (T -> \bar R)) (P : pred nat) :
+Lemma ge0_emeasurable_sum D (h : nat -> (T -> \bar R)) (P : pred nat) :
     (forall k x, D x -> P k -> 0 <= h k x) ->
     (forall k, P k -> measurable_fun D (h k)) ->
   measurable_fun D (fun x => \sum_(i <oo | i \in P) h i x).
@@ -1976,7 +1974,7 @@ rewrite [X in measurable_fun _ X](_ : _ =
   by case: ifPn => // xD; rewrite h0//; exact/set_mem.
 apply: measurable_fun_limn_esup => k.
 under eq_fun do rewrite big_mkcond.
-apply: emeasurable_fun_sum => n.
+apply: emeasurable_sum => n.
 have [|] := boolP (n \in P); last by rewrite /in_mem/= => /negbTE ->.
 rewrite /in_mem/= => Pn; rewrite Pn.
 by apply/(measurable_restrictT _ _).1 => //; exact: mh.
@@ -2045,6 +2043,28 @@ Lemma measurable_funeM D (f : T -> \bar R) (k : \bar R) :
 Proof. by move=> mf; exact/(emeasurable_funM _ mf). Qed.
 
 End emeasurable_fun.
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `emeasurable_sum`")]
+Notation emeasurable_fun_sum := emeasurable_sum (only parsing).
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `emeasurable_fsum`")]
+Notation emeasurable_fun_fsum := emeasurable_fsum (only parsing).
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `ge0_emeasurable_sum`")]
+Notation ge0_emeasurable_fun_sum := ge0_emeasurable_sum (only parsing).
+
+Section measurable_fun.
+Context d (T : measurableType d) (R : realType).
+Implicit Types (D : set T) (f g : T -> R).
+
+Lemma measurable_sum D I s (h : I -> (T -> R)) :
+  (forall n, measurable_fun D (h n)) ->
+  measurable_fun D (fun x => \sum_(i <- s) h i x).
+Proof.
+move=> mh; apply/measurable_EFinP.
+rewrite (_ : _ \o _ = (fun t => \sum_(i <- s) (h i t)%:E)); last first.
+  by apply/funext => t/=; rewrite -sumEFin.
+by apply/emeasurable_sum => i; exact/measurable_EFinP.
+Qed.
+
+End measurable_fun.
 
 Section measurable_fun_measurable2.
 Local Open Scope ereal_scope.
@@ -2100,7 +2120,7 @@ rewrite big_cons /= -ih -ge0_integralD//.
 - by apply: eq_integral => x Dx; rewrite big_cons.
 - by move=> *; exact: f0.
 - by move=> *; apply: sume_ge0 => // k _; exact: f0.
-- exact: emeasurable_fun_sum.
+- exact: emeasurable_sum.
 Qed.
 
 End ge0_integral_sum.
@@ -2296,7 +2316,7 @@ Lemma integral_nneseries : \int[mu]_(x in D) (\sum_(n <oo) f n x) =
 Proof.
 rewrite monotone_convergence //.
 - by rewrite -lim_mkord; under eq_fun do rewrite ge0_integral_sum// big_mkord.
-- by move=> n; exact: emeasurable_fun_sum.
+- by move=> n; exact: emeasurable_sum.
 - by move=> n x Dx; apply: sume_ge0 => m _; exact: f0.
 - by move=> x Dx m n mn; apply: lee_sum_nneg_natr => // k _ _; exact: f0.
 Qed.
@@ -2387,13 +2407,14 @@ Section integral_indic.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
         (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Implicit Type A : set T.
 
 Import HBNNSimple.
 
-Lemma integral_indic (E : set T) : measurable E ->
-  \int[mu]_(x in D) (\1_E x)%:E = mu (E `&` D).
+Lemma integral_indic A : measurable A ->
+  \int[mu]_(x in D) (\1_A x)%:E = mu (A `&` D).
 Proof.
-move=> mE; rewrite (_ : \1_E = indic_nnsfun R mE)// integral_nnsfun//=.
+move=> mA; rewrite (_ : \1_A = indic_nnsfun R mA)// integral_nnsfun//=.
 by rewrite restrict_indic sintegral_indic//; exact: measurableI.
 Qed.
 
@@ -2474,20 +2495,20 @@ Lemma ge0_integral_mscale (mf : measurable_fun D f) :
     (forall x, D x -> 0 <= f x) ->
   \int[mscale k m]_(x in D) f x = k%:num%:E * \int[m]_(x in D) f x.
 Proof.
-move=> f0; have [f_ [ndf_ f_f]] := approximation mD mf f0.
+move=> f0; pose f_ := nnsfun_approx mD mf.
 transitivity (limn (fun n => \int[mscale k m]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//=.
-  - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //=; exact: f_f.
+  - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //=; exact: cvg_nnsfun_approx.
   - by move=> n; apply: measurableT_comp => //; exact: measurable_funTS.
   - by move=> n x _; rewrite lee_fin.
-  - by move=> x _ a b /ndf_ /lefP; rewrite lee_fin.
+  - by move=> x _ a b ab; rewrite lee_fin//; exact/lefP/nd_nnsfun_approx.
 rewrite (_ : \int[m]_(x in D) _ =
     limn (fun n => \int[m]_(x in D) (f_ n x)%:E)); last first.
   rewrite -monotone_convergence//=.
-  - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //; exact: f_f.
+  - by apply: eq_integral => x /[!inE] xD; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n x _; rewrite lee_fin.
-  - by move=> x _ a b /ndf_ /lefP; rewrite lee_fin.
+  - by move=> x _ a b ab; rewrite lee_fin//; exact/lefP/nd_nnsfun_approx.
 rewrite -limeMl//.
   by congr (limn _); apply/funext => n /=; rewrite integral_mscale_nnsfun.
 apply/ereal_nondecreasing_is_cvgn => a b ab; apply: ge0_le_integral => //.
@@ -2495,7 +2516,7 @@ apply/ereal_nondecreasing_is_cvgn => a b ab; apply: ge0_le_integral => //.
 - exact/measurable_EFinP/measurable_funTS.
 - by move=> x _; rewrite lee_fin.
 - exact/measurable_EFinP/measurable_funTS.
-- by move=> x _; rewrite lee_fin; move/ndf_ : ab => /lefP.
+- by move=> x _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
 
 End integral_mscale.
@@ -2644,19 +2665,19 @@ Lemma ge0_integral_pushforward (f : Y -> \bar R) :
   \int[pushforward mu mphi]_y f y = \int[mu]_x (f \o phi) x.
 Proof.
 move=> mf f0.
-have [f_ [ndf_ f_f]] := approximation measurableT mf (fun t _ => f0 t).
+pose f_ := nnsfun_approx measurableT mf.
 transitivity (limn (fun n => \int[pushforward mu mphi]_x (f_ n x)%:E)).
   rewrite -monotone_convergence//.
-  - by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: f_f.
+  - by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP.
   - by move=> n y _; rewrite lee_fin.
-  - by move=> y _ m n mn; rewrite lee_fin; apply/lefP/ndf_.
+  - by move=> y _ m n mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 rewrite (_ : (fun _ => _) = (fun n => \int[mu]_x (EFin \o f_ n \o phi) x)).
   rewrite -monotone_convergence//; last 3 first.
     - by move=> n /=; apply: measurableT_comp => //; exact: measurableT_comp.
     - by move=> n x _ /=; rewrite lee_fin.
-    - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/ndf_.
-  by apply: eq_integral => x _ /=; apply/cvg_lim => //; exact: f_f.
+    - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+  by apply: eq_integral => x _ /=; apply/cvg_lim => //; exact: cvg_nnsfun_approx.
 apply/funext => n.
 have mfnphi r : measurable (f_ n @^-1` [set r] \o phi).
   rewrite -[_ \o _]/(phi @^-1` (f_ n @^-1` [set r])) -(setTI (_ @^-1` _)).
@@ -2690,16 +2711,15 @@ Let ge0_integral_dirac (f : T -> \bar R) (mf : measurable_fun D f)
     (f0 : forall x, D x -> 0 <= f x) :
   D a -> \int[\d_a]_(x in D) (f x) = f a.
 Proof.
-move=> Da; have [f_ [ndf_ f_f]] := approximation mD mf f0.
+move=> Da; pose f_ := nnsfun_approx mD mf.
 transitivity (limn (fun n => \int[\d_ a]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//.
-  - apply: eq_integral => x Dx; apply/esym/cvg_lim => //; apply: f_f.
-    by rewrite inE in Dx.
+  - by apply: eq_integral => x /set_mem Dx; apply/esym/cvg_lim => //; apply: cvg_nnsfun_approx.
   - by move=> n; apply/measurable_EFinP; exact/measurable_funTS.
   - by move=> *; rewrite lee_fin.
-  - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/ndf_.
+  - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 rewrite (_ : (fun _ => _) = (fun n => (f_ n a)%:E)).
-  by apply/cvg_lim => //; exact: f_f.
+  by apply/cvg_lim => //; exact: cvg_nnsfun_approx.
 apply/funext => n.
 under eq_integral do rewrite fimfunE// -fsumEFin//.
 rewrite ge0_integral_fsum//.
@@ -2803,8 +2823,7 @@ Lemma ge0_integral_measure_sum (D : set T) (mD : measurable D)
     (forall x, D x -> 0 <= f x) -> measurable_fun D f -> forall N,
   \int[msum m_ N]_(x in D) f x = \sum_(n < N) \int[m_ n]_(x in D) f x.
 Proof.
-move=> f0 mf.
-have [f_ [f_nd f_f]] := approximation mD mf f0.
+move=> f0 mf; pose f_ := nnsfun_approx mD mf.
 elim => [|N ih]; first by rewrite big_ord0 msum_mzero integral_measure_zero.
 rewrite big_ord_recr/= -ih.
 rewrite (_ : _ m_ N.+1 = measure_add (msum m_ N) (m_ N)); last first.
@@ -2816,12 +2835,12 @@ have cvg_f_ (m : {measure set T -> \bar R}) :
     cvgn (fun x => \int[m]_(x0 in D) (f_ x x0)%:E).
   apply: ereal_nondecreasing_is_cvgn => a b ab.
   apply: ge0_le_integral => //; [exact: f_ge0|exact: f_ge0|].
-  by move=> t Dt; rewrite lee_fin; apply/lefP/f_nd.
+  by move=> t Dt; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 transitivity (limn (fun n =>
     \int[measure_add (msum m_ N) (m_ N)]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//; last first.
-    by move=> t Dt a b ab; rewrite lee_fin; exact/lefP/f_nd.
-  by apply: eq_integral => t /[!inE] Dt; apply/esym/cvg_lim => //; exact: f_f.
+    by move=> t Dt a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+  by apply: eq_integral => t /[!inE] Dt; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
 transitivity (limn (fun n =>
   \int[msum m_ N]_(x in D) (f_ n x)%:E + \int[m_ N]_(x in D) (f_ n x)%:E)).
   by congr (limn _); apply/funext => n; by rewrite integral_measure_add_nnsfun.
@@ -2829,8 +2848,8 @@ rewrite limeD//; do?[exact: cvg_f_]; last first.
   by apply: ge0_adde_def; rewrite inE; apply: lime_ge => //; do?[exact: cvg_f_];
       apply: nearW => n;  apply: integral_ge0 => //; exact: f_ge0.
 by congr (_ + _); (rewrite -monotone_convergence//; [
-    apply: eq_integral => t /[!inE] Dt; apply/cvg_lim => //; exact: f_f |
-    move=> t Dt a b ab; rewrite lee_fin; exact/lefP/f_nd]).
+    apply: eq_integral => t /[!inE] Dt; apply/cvg_lim => //; exact: cvg_nnsfun_approx |
+    move=> t Dt a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx]).
 Qed.
 
 End integral_mfun_measure_sum.
@@ -3045,9 +3064,9 @@ Definition Rintegral (D : set T) (f : T -> R) :=
 End Rintegral.
 
 Notation "\int [ mu ]_ ( x 'in' D ) f" :=
-  (Rintegral mu D (fun x => f)) : ring_scope.
+  (Rintegral mu D (fun x => f)%R) : ring_scope.
 Notation "\int [ mu ]_ x f" :=
-  (Rintegral mu setT (fun x => f)) : ring_scope.
+  (Rintegral mu setT (fun x => f)%R) : ring_scope.
 
 HB.lock Definition integrable {d} {T : measurableType d} {R : realType}
     (mu : set T -> \bar R) D f :=
@@ -3280,6 +3299,24 @@ End integrable_theory.
 Notation "mu .-integrable" := (integrable mu) : type_scope.
 Arguments eq_integrable {d T R mu D} mD f.
 
+Section integrable_theory_finite_measure.
+Context {R : realType} d (T : measurableType d).
+Variable mu : {finite_measure set T -> \bar R}.
+Local Open Scope ereal_scope.
+
+Lemma integrable_indic A : measurable A ->
+  mu.-integrable [set: T] (fun x : T => (\1_A x)%:E).
+Proof.
+move=> mA; apply/integrableP; split; first exact/measurable_EFinP.
+rewrite (eq_integral (fun x => (\1_A x)%:E)); last first.
+  by move=> t _; rewrite gee0_abs// lee_fin.
+rewrite integral_indic// setIT.
+rewrite (@le_lt_trans _ _ (mu setT)) ?le_measure ?inE//.
+by rewrite ?ltry ?fin_num_fun_lty//; exact: fin_num_measure.
+Qed.
+
+End integrable_theory_finite_measure.
+
 Section sequence_measure.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
@@ -3296,7 +3333,7 @@ Proof.
 move=> fi mf fmoo fpoo; rewrite integralE.
 rewrite ge0_integral_measure_series//; last exact/measurable_funepos.
 rewrite ge0_integral_measure_series//; last exact/measurable_funeneg.
-transitivity (\sum_(n <oo) (fine (\int[m_ n]_(x in D) f^\+ x))%:E -
+transitivity (\sum_(n <oo) (fine (\int[m_ n]_(x in D) f^\+ x)%E)%:E -
               \sum_(n <oo) (fine (\int[m_ n]_(x in D) f^\- x))%:E).
   by congr (_ - _); apply: eq_eseriesr => n _; rewrite fineK//;
     [exact: integrable_pos_fin_num|exact: integrable_neg_fin_num].
@@ -5404,7 +5441,7 @@ Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_F : measurable_fun [set: T1] F.
 Proof.
-rewrite sfun_fubini_tonelli_FE//; apply: emeasurable_fun_fsum => // r.
+rewrite sfun_fubini_tonelli_FE//; apply: emeasurable_fsum => // r.
 exact/measurable_funeM/measurable_fun_xsection.
 Qed.
 
@@ -5427,7 +5464,7 @@ Qed.
 
 Lemma sfun_measurable_fun_fubini_tonelli_G : measurable_fun setT G.
 Proof.
-rewrite sfun_fubini_tonelli_GE//; apply: emeasurable_fun_fsum => // r.
+rewrite sfun_fubini_tonelli_GE//; apply: emeasurable_fsum => // r.
 exact/measurable_funeM/measurable_fun_ysection.
 Qed.
 
@@ -5514,49 +5551,49 @@ Let G_ (g : {nnsfun T >-> R}^nat) n y := \int[m1]_x (g n (x, y))%:E.
 
 Lemma measurable_fun_fubini_tonelli_F : measurable_fun setT F.
 Proof.
-have [g [g_nd /= g_f]] := approximation measurableT mf (fun x _ => f0 x).
+pose g := nnsfun_approx measurableT mf.
 apply: (emeasurable_fun_cvg (F_ g)) => //.
 - by move=> n; exact: sfun_measurable_fun_fubini_tonelli_F.
 - move=> x _.
   rewrite /F_ /F /fubini_F [in X in _ --> X](_ : (fun _ => _) =
       fun y => limn (EFin \o g ^~ (x, y))); last first.
-    by rewrite funeqE => y; apply/esym/cvg_lim => //; exact: g_f.
+    by rewrite funeqE => y; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
   apply: cvg_monotone_convergence => //.
   - by move=> n; apply/measurable_EFinP => //; exact/measurableT_comp.
   - by move=> n y _; rewrite lee_fin//; exact: fun_ge0.
-  - by move=> y _ a b ab; rewrite lee_fin; exact/lefP/g_nd.
+  - by move=> y _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
 
 Lemma measurable_fun_fubini_tonelli_G : measurable_fun setT G.
 Proof.
-have [g [g_nd /= g_f]] := approximation measurableT mf (fun x _ => f0 x).
+pose g := nnsfun_approx measurableT mf.
 apply: (emeasurable_fun_cvg (G_ g)) => //.
 - by move=> n; exact: sfun_measurable_fun_fubini_tonelli_G.
 - move=> y _; rewrite /G_ /G /fubini_G [in X in _ --> X](_ : (fun _ => _) =
       fun x => limn (EFin \o g ^~ (x, y))); last first.
-    by rewrite funeqE => x; apply/esym/cvg_lim => //; exact: g_f.
+    by rewrite funeqE => x; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
   apply: cvg_monotone_convergence => //.
   - by move=> n; apply/measurable_EFinP => //; exact/measurableT_comp.
   - by move=> n x _; rewrite lee_fin; exact: fun_ge0.
-  - by move=> x _ a b ab; rewrite lee_fin; exact/lefP/g_nd.
+  - by move=> x _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
 
 Lemma fubini_tonelli1 : \int[m1 \x m2]_z f z = \int[m1]_x F x.
 Proof.
-have [g [g_nd /= g_f]] := approximation measurableT mf (fun x _ => f0 x).
+pose g := nnsfun_approx measurableT mf.
 have F_F x : F x = limn (F_ g ^~ x).
   rewrite [RHS](_ : _ = limn (fun n => \int[m2]_y (EFin \o g n) (x, y)))//.
   rewrite -monotone_convergence//; last 3 first.
     - by move=> n; exact/measurable_EFinP/measurableT_comp.
     - by move=> n /= y _; rewrite lee_fin; exact: fun_ge0.
-    - by move=> y /= _ a b; rewrite lee_fin => /g_nd/lefP; exact.
-  by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: g_f.
+    - by move=> y /= _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+  by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
 rewrite [RHS](_ : _ = limn (fun n => \int[m1 \x m2]_z (EFin \o g n) z)).
   rewrite -monotone_convergence //; last 3 first.
     - by move=> n; exact/measurable_EFinP.
     - by move=> n /= x _; rewrite lee_fin; exact: fun_ge0.
-    - by move=> y /= _ a b; rewrite lee_fin => /g_nd/lefP; exact.
-  by apply: eq_integral => /= x _; apply/esym/cvg_lim => //; exact: g_f.
+    - by move=> y /= _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+  by apply: eq_integral => /= x _; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
 rewrite [LHS](_ : _ =
     limn (fun n => \int[m1]_x (\int[m2]_y (EFin \o g n) (x, y)))).
   set r := fun _ => _; set l := fun _ => _; have -> // : l = r.
@@ -5571,26 +5608,26 @@ rewrite -monotone_convergence //; first exact: eq_integral.
   + exact/measurable_EFinP/measurableT_comp.
   + by move=> *; rewrite lee_fin; exact: fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
-  + by move=> y _; rewrite lee_fin; move/g_nd : ab => /lefP; exact.
+  + by move=> y _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
 
 Lemma fubini_tonelli2 : \int[m1 \x m2]_z f z = \int[m2]_y G y.
 Proof.
-have [g [g_nd /= g_f]] := approximation measurableT mf (fun x _ => f0 x).
+pose g := nnsfun_approx measurableT mf.
 have G_G y : G y = limn (G_ g ^~ y).
   rewrite /G /fubini_G.
   rewrite [RHS](_ : _ = limn (fun n => \int[m1]_x (EFin \o g n) (x, y)))//.
   rewrite -monotone_convergence//; last 3 first.
     - by move=> n; exact/measurable_EFinP/measurableT_comp.
     - by move=> n /= x _; rewrite lee_fin; exact: fun_ge0.
-    - by move=> x /= _ a b; rewrite lee_fin => /g_nd/lefP; exact.
-  by apply: eq_integral => x _; apply/esym/cvg_lim => //; exact: g_f.
+    - by move=> x /= _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+  by apply: eq_integral => x _; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
 rewrite [RHS](_ : _ = limn (fun n => \int[m1 \x m2]_z (EFin \o g n) z)).
   rewrite -monotone_convergence //; last 3 first.
     - by move=> n; exact/measurable_EFinP.
     - by move=> n /= x _; rewrite lee_fin; exact: fun_ge0.
-    - by move=> y /= _ a b; rewrite lee_fin => /g_nd/lefP; exact.
-  by apply: eq_integral => /= x _; apply/esym/cvg_lim => //; exact: g_f.
+    - by move=> y /= _ a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
+  by apply: eq_integral => /= x _; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
 rewrite [LHS](_ : _ = limn
     (fun n => \int[m2]_y (\int[m1]_x (EFin \o g n) (x, y)))).
   set r := fun _ => _; set l := fun _ => _; have -> // : l = r.
@@ -5604,7 +5641,7 @@ rewrite -monotone_convergence //; first exact: eq_integral.
   + exact/measurable_EFinP/measurableT_comp.
   + by move=> *; rewrite lee_fin fun_ge0.
   + exact/measurable_EFinP/measurableT_comp.
-  + by move=> x _; rewrite lee_fin; move/g_nd : ab => /lefP; exact.
+  + by move=> x _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
 
 Lemma fubini_tonelli :
@@ -5843,7 +5880,7 @@ transitivity (\sum_(n <oo) \int[s1 n]_x \sum_(m <oo) \int[s2 m]_y f (x, y)).
         fun x => \sum_(n <oo) \int[s2 n]_y f (x, y)); last first.
       apply/funext => x.
       by rewrite ge0_integral_measure_series//; exact/measurableT_comp.
-    apply: ge0_emeasurable_fun_sum; first by move=> k x *; exact: integral_ge0.
+    apply: ge0_emeasurable_sum; first by move=> k x *; exact: integral_ge0.
     by move=> k _; exact: measurable_fun_fubini_tonelli_F.
   apply: eq_eseriesr => n _; apply: eq_integral => x _.
   by rewrite ge0_integral_measure_series//; exact/measurableT_comp.
