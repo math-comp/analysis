@@ -167,7 +167,7 @@ move: iX => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
 exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
-Lemma expectationMl (X : {RV P >-> R}) (iX : P.-integrable [set: T] (EFin \o X))
+Lemma expectationZl (X : {RV P >-> R}) (iX : P.-integrable [set: T] (EFin \o X))
   (k : R) : 'E_P[k \o* X] = k%:E * 'E_P [X].
 Proof. by rewrite unlock muleC -integralZr. Qed.
 
@@ -217,8 +217,8 @@ by apply/funext => t/=; rewrite big_map sumEFin mfun_sum.
 Qed.
 
 End expectation_lemmas.
-#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `expectationMl`")]
-Notation expectationM := expectationMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `expectationZl`")]
+Notation expectationM := expectationZl (only parsing).
 
 HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
     (P : probability T R) (X Y : T -> R) :=
@@ -249,7 +249,7 @@ rewrite expectationD/=; last 2 first.
   - by rewrite compreBr// integrableB// compre_scale ?integrableZl.
   - by rewrite compre_scale// integrableZl// finite_measure_integrable_cst.
 rewrite 2?expectationB//= ?compre_scale// ?integrableZl//.
-rewrite 3?expectationMl//= ?finite_measure_integrable_cst//.
+rewrite 3?expectationZl//= ?finite_measure_integrable_cst//.
 by rewrite expectation_cst mule1 fineM// EFinM !fineK// muleC subeK ?fin_numM.
 Qed.
 
@@ -289,7 +289,7 @@ have aXY : (a \o* X * Y = a \o* (X * Y))%R.
 rewrite [LHS]covarianceE => [||//|] /=; last 2 first.
 - by rewrite compre_scale ?integrableZl.
 - by rewrite aXY compre_scale ?integrableZl.
-rewrite covarianceE// aXY !expectationMl//.
+rewrite covarianceE// aXY !expectationZl//.
 by rewrite -muleA -muleBr// fin_num_adde_defr// expectation_fin_num.
 Qed.
 
