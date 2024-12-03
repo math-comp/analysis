@@ -16,23 +16,24 @@ From mathcomp Require Import lebesgue_integral kernel.
 (* the type probability T R (a measure that sums to 1).                       *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*         {RV P >-> R} == real random variable: a measurable function from   *)
-(*                         the measurableType of the probability P to R       *)
+(*        {RV P >-> T'} == random variable: a measurable function to the      *)
+(*                         measurableType T' from the measured space          *)
+(*                         characterized by the probability P                 *)
 (*     distribution P X == measure image of the probability measure P by the  *)
-(*                         random variable X : {RV P -> R}                    *)
+(*                         random variable X : {RV P -> T'}                   *)
 (*                         P as type probability T R with T of type           *)
 (*                         measurableType.                                    *)
 (*                         Declared as an instance of probability measure.    *)
 (*              'E_P[X] == expectation of the real measurable function X      *)
 (*       covariance X Y == covariance between real random variable X and Y    *)
 (*              'V_P[X] == variance of the real random variable X             *)
-(*        mmt_gen_fun X == moment generating function of the random variable  *)
+(*                'M_ X == moment generating function of the random variable  *)
 (*                         X                                                  *)
 (*      {dmfun T >-> R} == type of discrete real-valued measurable functions  *)
 (*        {dRV P >-> R} == real-valued discrete random variable               *)
 (*            dRV_dom X == domain of the discrete random variable X           *)
 (*           dRV_enum X == bijection between the domain and the range of X    *)
-(*             pmf X r := fine (P (X @^-1` [set r]))                          *)
+(*              pmf X r := fine (P (X @^-1` [set r]))                         *)
 (*        enum_prob X k == probability of the kth value in the range of X     *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -57,6 +58,8 @@ Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
 Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]", at level 5).
 Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]", at level 5).
+Reserved Notation "'M_ X t" (format "''M_' X  t",
+  at level 5, t, X at next level).
 Reserved Notation "{ 'dmfun' aT >-> T }"
   (at level 0, format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'"
@@ -556,9 +559,10 @@ apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
 Qed.
 
 Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
+Local Notation "'M_ X t" := (mmt_gen_fun X t).
 
 Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
-  P [set x | X x >= a]%R <= mmt_gen_fun X r * (expR (- (r * a)))%:E.
+  P [set x | X x >= a]%R <= 'M_X r * (expR (- (r * a)))%:E.
 Proof.
 move=> t0.
 rewrite /mmt_gen_fun; have -> : expR \o r \o* X =

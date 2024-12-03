@@ -26,6 +26,7 @@
   + lemmas `prode_ge0`, `prode_fin_num`
 - in `probability.v`:
   + lemma `expectation_def`
+  + notation `'M_`
 
 ### Changed
 
