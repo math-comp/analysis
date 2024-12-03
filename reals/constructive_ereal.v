@@ -46,6 +46,7 @@ From mathcomp Require Import mathcomp_extra signed.
 (*  (_ <= _)%E, (_ < _)%E, == comparison relations for extended reals         *)
 (*  (_ >= _)%E, (_ > _)%E                                                     *)
 (*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
+(*  (\prod_(i in A) f i)%E == bigop-like notation in scope %E                 *)
 (*      maxe x y, mine x y == notation for the maximum/minimum of two         *)
 (*                            extended real numbers                           *)
 (* ```                                                                        *)
@@ -551,6 +552,31 @@ Notation "\sum_ ( i 'in' A ) F" :=
 Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%E/0%E]_(i in A) F%E) : ereal_scope.
 
+Notation "\prod_ ( i <- r | P ) F" :=
+  (\big[*%E/1%:E]_(i <- r | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( i <- r ) F" :=
+  (\big[*%E/1%:E]_(i <- r) F%E) : ereal_scope.
+Notation "\prod_ ( m <= i < n | P ) F" :=
+  (\big[*%E/1%:E]_(m <= i < n | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( m <= i < n ) F" :=
+  (\big[*%E/1%:E]_(m <= i < n) F%E) : ereal_scope.
+Notation "\prod_ ( i | P ) F" :=
+  (\big[*%E/1%:E]_(i | P%B) F%E) : ereal_scope.
+Notation "\prod_ i F" :=
+  (\big[*%E/1%:E]_i F%E) : ereal_scope.
+Notation "\prod_ ( i : t | P ) F" :=
+  (\big[*%E/1%:E]_(i : t | P%B) F%E) (only parsing) : ereal_scope.
+Notation "\prod_ ( i : t ) F" :=
+  (\big[*%E/1%:E]_(i : t) F%E) (only parsing) : ereal_scope.
+Notation "\prod_ ( i < n | P ) F" :=
+  (\big[*%E/1%:E]_(i < n | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( i < n ) F" :=
+  (\big[*%E/1%:E]_(i < n) F%E) : ereal_scope.
+Notation "\prod_ ( i 'in' A | P ) F" :=
+  (\big[*%E/1%:E]_(i in A | P%B) F%E) : ereal_scope.
+Notation "\prod_ ( i 'in' A ) F" :=
+  (\big[*%E/1%:E]_(i in A) F%E) : ereal_scope.
+
 Section ERealOrderTheory.
 Context {R : numDomainType}.
 Implicit Types x y z : \bar R.
@@ -928,6 +954,11 @@ Lemma fin_numM x y : x \is a fin_num -> y \is a fin_num ->
   x * y \is a fin_num.
 Proof. by move: x y => [x| |] [y| |]. Qed.
 
+Lemma prode_fin_num (I : Type) (s : seq I) (P : pred I) (f : I -> \bar R) :
+  (forall i, P i -> f i \is a fin_num) ->
+  \prod_(i <- s | P i) f i \is a fin_num.
+Proof. by move=> ffin; elim/big_ind : _ => // x y x0 y0; rewrite fin_numM. Qed.
+
 Lemma fin_numX x n : x \is a fin_num -> x ^+ n \is a fin_num.
 Proof. by elim: n x => // n ih x finx; rewrite expeS fin_numM// ih. Qed.
 
@@ -1163,6 +1194,10 @@ move: x y => [x||] [y||]//=; rewrite /mule/= ?(lee_fin, eqe, lte_fin, lt0y)//.
 - move=> _; rewrite le_eqVlt => /predU1P[<-|y0]; first by rewrite eqxx.
   by rewrite gt_eqF // y0 le0y.
 Qed.
+
+Lemma prode_ge0 (I : Type) (s : seq I) (P : pred I) (f : I -> \bar R) :
+  (forall i, P i -> 0 <= f i) -> 0 <= \prod_(i <- s | P i) f i.
+Proof. by move=> f0; elim/big_ind : _ => // x y x0 y0; rewrite mule_ge0. Qed.
 
 Lemma mule_gt0 x y : 0 < x -> 0 < y -> 0 < x * y.
 Proof.
