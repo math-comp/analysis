@@ -37,8 +37,6 @@
   + `emeasurable_fun_sum` -> `emeasurable_sum`
   + `emeasurable_fun_fsum` -> `emeasurable_fsum`
   + `ge0_emeasurable_fun_sum` -> `ge0_emeasurable_sum`
-- in `measure.v`:
-  + `dynkin_setI_bigsetI` -> `setT_setI_bigsetI`
 
 - in `classical_sets.v`:
   + `preimage_itv_o_infty` -> `preimage_itvoy`
@@ -67,6 +65,8 @@
 - in `constructive_ereal.v`
   + notation `lee_opp` (deprecated since 0.6.5)
   + notation `lte_opp` (deprecated since 0.6.5)
+- in `measure.v`:
+  + `dynkin_setI_bigsetI` (use `big_ind` instead)
 
 ### Infrastructure
 
