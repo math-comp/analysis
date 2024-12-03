@@ -3405,7 +3405,7 @@ Let fin_num_restr : fin_num_fun restr.
 Proof.
 move=> A mA; have := fin_num_measure mu A mA.
 rewrite !ge0_fin_numE//=; apply: le_lt_trans.
-by apply: le_measure => //; rewrite inE//=; exact: measurableI.
+by rewrite /mrestr; apply: le_measure => //; rewrite inE//=; exact: measurableI.
 Qed.
 
 HB.instance Definition _ := @Measure_isFinite.Build _ T _ restr fin_num_restr.
