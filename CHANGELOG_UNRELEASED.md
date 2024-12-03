@@ -41,7 +41,7 @@
   + `emeasurable_fun_fsum` -> `emeasurable_fsum`
   + `ge0_emeasurable_fun_sum` -> `ge0_emeasurable_sum`
 - in `probability.v`:
-  + `expectationM` -> `expectationMl`
+  + `expectationM` -> `expectationZl`
 
 - in `classical_sets.v`:
   + `preimage_itv_o_infty` -> `preimage_itvoy`
