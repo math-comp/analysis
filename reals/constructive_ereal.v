@@ -2468,7 +2468,7 @@ Qed.
 Lemma oppe_min : {morph -%E : x y / mine x y >-> maxe x y : \bar R}.
 Proof. by move=> x y; rewrite -[RHS]oppeK oppe_max !oppeK. Qed.
 
-Lemma maxeMr z x y : z \is a fin_num -> 0 <= z ->
+Lemma maxe_pMr z x y : z \is a fin_num -> 0 <= z ->
   z * maxe x y = maxe (z * x) (z * y).
 Proof.
 move=> /[swap]; rewrite le_eqVlt => /predU1P[<- _|z0].
@@ -2478,20 +2478,20 @@ have [xy|yx|->] := ltgtP x y; last by rewrite maxxx.
 - by move=> zfin; rewrite maxC /maxe lte_pmul2l// yx.
 Qed.
 
-Lemma maxeMl z x y : z \is a fin_num -> 0 <= z ->
+Lemma maxe_pMl z x y : z \is a fin_num -> 0 <= z ->
   maxe x y * z = maxe (x * z) (y * z).
-Proof. by move=> zfin z0; rewrite muleC maxeMr// !(muleC z). Qed.
+Proof. by move=> zfin z0; rewrite muleC maxe_pMr// !(muleC z). Qed.
 
-Lemma mineMr z x y : z \is a fin_num -> 0 <= z ->
+Lemma mine_pMr z x y : z \is a fin_num -> 0 <= z ->
   z * mine x y = mine (z * x) (z * y).
 Proof.
 move=> fz zge0.
-by rewrite -eqe_oppP -muleN [in LHS]oppe_min maxeMr// !muleN -oppe_min.
+by rewrite -eqe_oppP -muleN [in LHS]oppe_min maxe_pMr// !muleN -oppe_min.
 Qed.
 
-Lemma mineMl z x y : z \is a fin_num -> 0 <= z ->
+Lemma mine_pMl z x y : z \is a fin_num -> 0 <= z ->
   mine x y * z = mine (x * z) (y * z).
-Proof. by move=> zfin z0; rewrite muleC mineMr// !(muleC z). Qed.
+Proof. by move=> zfin z0; rewrite muleC mine_pMr// !(muleC z). Qed.
 
 Lemma bigmaxe_fin_num (s : seq R) r : r \in s ->
   \big[maxe/-oo%E]_(i <- s) i%:E \is a fin_num.
@@ -2660,10 +2660,6 @@ Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
-#[deprecated(since="mathcomp-analysis 0.6.5", note="Use leeN2 instead.")]
-Notation lee_opp := leeN2 (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.5", note="Use lteN2 instead.")]
-Notation lte_opp := lteN2 (only parsing).
 #[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeDl instead.")]
 Notation lee_addl := leeDl (only parsing).
 #[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeDr instead.")]
@@ -2730,6 +2726,14 @@ Notation lte_le_sub := lte_leB (only parsing).
 Notation lee_opp2 := leeN2 (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="Use lteN2 instead.")]
 Notation lte_opp2 := lteN2 (only parsing).
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to maxe_pMr")]
+Notation maxeMr := maxe_pMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to maxe_pMl")]
+Notation maxeMl := maxe_pMl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to mine_pMr")]
+Notation mineMr := mine_pMr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to mine_pMl")]
+Notation mineMl := mine_pMl (only parsing).
 
 Module DualAddTheoryRealDomain.
 

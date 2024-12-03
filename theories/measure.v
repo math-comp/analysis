@@ -866,13 +866,6 @@ case=> ? DC DU; split => [| |? ? ?]; last exact: DU.
 - by move=> A GA; rewrite -setTD; apply: DC.
 Qed.
 
-Lemma dynkin_setI_bigsetI G (F : (set T)^nat) : dynkin G -> setI_closed G ->
-  (forall n, G (F n)) -> forall n, G (\big[setI/setT]_(i < n) F i).
-Proof.
-move=> dG GI GF; elim => [|n ih]; last by rewrite big_ord_recr /=; apply: GI.
-by rewrite big_ord0; exact: (dynkinT dG).
-Qed.
-
 Lemma dynkin_setI_sigma_algebra G : dynkin G -> setI_closed G ->
   sigma_algebra setT G.
 Proof.
@@ -882,7 +875,8 @@ move=> dG GI; split => [|//|F DF].
 - rewrite seqDU_bigcup_eq; apply/(dynkinU dG) => //.
   move=> n; rewrite /seqDU setDE; apply GI => //.
   rewrite -bigcup_mkord setC_bigcup bigcap_mkord.
-  by apply: (@dynkin_setI_bigsetI _ (fun x => ~` F x)) => // ?; exact/(dynkinC dG).
+  apply: big_ind => //; first by case: dG.
+  by move=> i _; exact/(dynkinC dG).
 Qed.
 
 Lemma setI_closed_g_dynkin_g_sigma_algebra G :
@@ -1070,7 +1064,7 @@ HB.mixin Record isSemiRingOfSets (d : measure_display) T := {
 HB.structure Definition SemiRingOfSets d :=
   {T of Pointed T & isSemiRingOfSets d T}.
 
-Arguments measurable {d}%measure_display_scope {s} _%classical_set_scope.
+Arguments measurable {d}%_measure_display_scope {s} _%_classical_set_scope.
 
 Lemma measurable_curry (T1 T2 : Type) d (T : semiRingOfSetsType d)
     (G : T1 * T2 -> set T) (x : T1 * T2) :

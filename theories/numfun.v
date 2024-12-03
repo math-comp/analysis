@@ -184,12 +184,12 @@ Qed.
 
 Lemma ge0_funeposM r f : (0 <= r)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => r%:E * (f^\+ x)).
-Proof. by move=> ?; rewrite funeqE => x; rewrite /funepos maxeMr// mule0. Qed.
+Proof. by move=> ?; rewrite funeqE => x; rewrite /funepos maxe_pMr// mule0. Qed.
 
 Lemma ge0_funenegM r f : (0 <= r)%R ->
   (fun x => r%:E * f x)^\- = (fun x => r%:E * (f^\- x)).
 Proof.
-by move=> r0; rewrite funeqE => x; rewrite /funeneg -muleN maxeMr// mule0.
+by move=> r0; rewrite funeqE => x; rewrite /funeneg -muleN maxe_pMr// mule0.
 Qed.
 
 Lemma le0_funeposM r f : (r <= 0)%R ->

@@ -38,6 +38,18 @@
   + `emeasurable_fun_fsum` -> `emeasurable_fsum`
   + `ge0_emeasurable_fun_sum` -> `ge0_emeasurable_sum`
 
+- in `classical_sets.v`:
+  + `preimage_itv_o_infty` -> `preimage_itvoy`
+  + `preimage_itv_c_infty` -> `preimage_itvcy`
+  + `preimage_itv_infty_o` -> `preimage_itvNyo`
+  + `preimage_itv_infty_c` -> `preimage_itvNyc`
+
+- in `constructive_ereal.v`:
+  + `maxeMr` -> `maxe_pMr`
+  + `maxeMl` -> `maxe_pMl`
+  + `mineMr` -> `mine_pMr`
+  + `mineMl` -> `mine_pMl`
+
 ### Generalized
 
 ### Deprecated
@@ -50,6 +62,11 @@
 - in `lebesgue_integral.v`:
   + lemma `measurable_indic` (was uselessly specializing `measurable_fun_indic` (now `measurable_indic`) from `lebesgue_measure.v`)
   + notation `measurable_fun_indic` (deprecation since 0.6.3)
+- in `constructive_ereal.v`
+  + notation `lee_opp` (deprecated since 0.6.5)
+  + notation `lte_opp` (deprecated since 0.6.5)
+- in `measure.v`:
+  + `dynkin_setI_bigsetI` (use `big_ind` instead)
 
 ### Infrastructure
 
