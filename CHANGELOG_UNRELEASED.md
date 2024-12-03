@@ -24,6 +24,8 @@
 - in `constructive_ereal.v`:
   + notations `\prod` in scope ereal_scope
   + lemmas `prode_ge0`, `prode_fin_num`
+- in `probability.v`:
+  + lemma `expectation_def`
 
 ### Changed
 
@@ -37,6 +39,8 @@
   + `emeasurable_fun_sum` -> `emeasurable_sum`
   + `emeasurable_fun_fsum` -> `emeasurable_fsum`
   + `ge0_emeasurable_fun_sum` -> `ge0_emeasurable_sum`
+- in `probability.v`:
+  + `expectationM` -> `expectationMl`
 
 - in `classical_sets.v`:
   + `preimage_itv_o_infty` -> `preimage_itvoy`
@@ -51,6 +55,18 @@
   + `mineMl` -> `mine_pMl`
 
 ### Generalized
+
+- in `probability.v`:
+  + definition `random_variable`
+  + lemmas `notin_range_measure`, `probability_range`
+  + definition `distribution`
+  + lemma `probability_distribution`, `integral_distribution`
+  + mixin `MeasurableFun_isDiscrete`
+  + structure `discreteMeasurableFun`
+  + definition `discrete_random_variable`
+  + lemma `dRV_dom_enum`
+  + definitions `dRV_dom`, `dRV_enum`, `enum_prob`
+  + lemmas `distribution_dRV`, `sum_enum_prob`
 
 ### Deprecated
 
