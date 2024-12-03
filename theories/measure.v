@@ -3394,6 +3394,39 @@ HB.instance Definition _ := @isFinite.Build d T R k finite.
 
 HB.end.
 
+Section finite_restr.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {finite_measure set T -> \bar R}) (D : set T).
+Hypothesis mD : measurable D.
+
+Local Notation restr := (mrestr mu mD).
+
+Let fin_num_restr : fin_num_fun restr.
+Proof.
+move=> A mA; have := fin_num_measure mu A mA.
+rewrite !ge0_fin_numE//=; apply: le_lt_trans.
+by rewrite /mrestr; apply: le_measure => //; rewrite inE//=; exact: measurableI.
+Qed.
+
+HB.instance Definition _ := @Measure_isFinite.Build _ T _ restr fin_num_restr.
+
+End finite_restr.
+
+Section finite_mscale.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {finite_measure set T -> \bar R}) (r : {nonneg R}).
+
+Local Notation scale := (mscale r mu).
+
+Let fin_num_scale : fin_num_fun scale.
+Proof.
+by move=> A mA; have muA := fin_num_measure mu A mA; rewrite fin_numM.
+Qed.
+
+HB.instance Definition _ := @Measure_isFinite.Build _ T _ scale fin_num_scale.
+
+End finite_mscale.
+
 HB.factory Record Measure_isSFinite d (T : sigmaRingType d)
     (R : realType) (k : set T -> \bar R) of isMeasure _ _ _ k := {
   s_finite : exists s : {finite_measure set T -> \bar R}^nat,
