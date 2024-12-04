@@ -28,6 +28,13 @@
   + lemma `expectation_def`
   + notation `'M_`
 
+- in `lebesgue_integral.v`:
+  + lemmas `integrable_pushforward`, `integral_pushforward`
+  + lemma `integral_measure_add`
+
+- in `probability.v`
+  + lemma `integral_distribution` (existsing lemma `integral_distribution` has been renamed)
+
 ### Changed
 
 - in `lebesgue_integrale.v`
@@ -55,6 +62,9 @@
   + `mineMr` -> `mine_pMr`
   + `mineMl` -> `mine_pMl`
 
+- in `probability.v`:
+  + `integral_distribution` -> `ge0_integral_distribution`
+
 ### Generalized
 
 - in `probability.v`:
@@ -68,6 +78,9 @@
   + lemma `dRV_dom_enum`
   + definitions `dRV_dom`, `dRV_enum`, `enum_prob`
   + lemmas `distribution_dRV`, `sum_enum_prob`
+
+- in `lebesgue_integral.v`:
+  + lemma `measurable_sfunP`
 
 ### Deprecated
 

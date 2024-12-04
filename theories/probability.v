@@ -130,10 +130,15 @@ Lemma probability_distribution (X : {RV P >-> T'}) r :
   P [set x | X x = r] = distribution P X [set r].
 Proof. by []. Qed.
 
-Lemma integral_distribution (X : {RV P >-> T'}) (f : T' -> \bar R) :
+Lemma ge0_integral_distribution (X : {RV P >-> T'}) (f : T' -> \bar R) :
     measurable_fun [set: T'] f -> (forall y, 0 <= f y) ->
   \int[distribution P X]_y f y = \int[P]_x (f \o X) x.
 Proof. by move=> mf f0; rewrite ge0_integral_pushforward. Qed.
+
+Lemma integral_distribution (X : {RV P >-> T'}) (f : T' -> \bar R) :
+    measurable_fun [set: T'] f -> P.-integrable [set: T] (f \o X) ->
+  \int[distribution P X]_y f y = \int[P]_x (f \o X) x.
+Proof. by move=> mf intf; rewrite integral_pushforward. Qed.
 
 End transfer_probability.
 
