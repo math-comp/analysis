@@ -153,7 +153,7 @@ End HBSimple.
 Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 
-Lemma measurable_sfunP {d} {aT : measurableType d} {rT : realType}
+Lemma measurable_sfunP {d d'} {aT : measurableType d} {rT : measurableType d'}
   (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
 Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 
@@ -2652,7 +2652,7 @@ Qed.
 
 End integral_cst.
 
-Section transfer.
+Section ge0_transfer.
 Local Open Scope ereal_scope.
 Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
 Variables (phi : X -> Y) (mphi : measurable_fun setT phi).
@@ -2698,7 +2698,7 @@ rewrite -ge0_integral_fsum//; last 2 first.
 by apply: eq_integral => x _; rewrite fsumEFin// -fimfunE.
 Qed.
 
-End transfer.
+End ge0_transfer.
 
 Section integral_dirac.
 Local Open Scope ereal_scope.
@@ -4101,6 +4101,70 @@ Qed.
 
 End integralB.
 
+Section transfer.
+Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
+Variable phi : X -> Y.
+Hypothesis mphi : measurable_fun [set: X] phi.
+Variable mu : {measure set X -> \bar R}.
+Variables f : Y -> \bar R.
+Hypotheses (mf : measurable_fun [set: Y] f)
+  (intf : mu.-integrable [set: X] (f \o phi)).
+
+Lemma integrable_pushforward :
+  (pushforward mu mphi).-integrable [set: Y] f.
+Proof.
+apply/integrableP; split => //.
+move/integrableP : (intf) => [_]; apply: le_lt_trans.
+by rewrite ge0_integral_pushforward//=; exact: measurableT_comp.
+Qed.
+
+Local Open Scope ereal_scope.
+
+Lemma integral_pushforward :
+  \int[pushforward mu mphi]_y f y = \int[mu]_x (f \o phi) x.
+Proof.
+transitivity (\int[mu]_y ((f^\+ \o phi) \- (f^\- \o phi)) y); last first.
+  by apply: eq_integral => x _; rewrite [in RHS](funeposneg (f \o phi)).
+rewrite integralB//; [|exact: integrable_funepos|exact: integrable_funeneg].
+rewrite -[X in _ = X - _]ge0_integral_pushforward//; last first.
+  exact: measurable_funepos.
+rewrite -[X in _ = _ - X]ge0_integral_pushforward//; last first.
+  exact: measurable_funeneg.
+rewrite -integralB//=; last first.
+- by apply: integrable_funeneg => //=; exact: integrable_pushforward.
+- by apply: integrable_funepos => //=; exact: integrable_pushforward.
+- by apply/eq_integral => x _; rewrite /= [in LHS](funeposneg f).
+Qed.
+
+End transfer.
+
+Section integral_measure_add.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType)
+  (m1 m2 : {measure set T -> \bar R}) (D : set T).
+Hypothesis mD : measurable D.
+Variable f : T -> \bar R.
+Hypothesis intf1 : m1.-integrable D f.
+Hypothesis intf2 : m2.-integrable D f.
+Hypothesis mf : measurable_fun D f.
+
+Lemma integral_measure_add : \int[measure_add m1 m2]_(x in D) f x =
+  \int[m1]_(x in D) f x + \int[m2]_(x in D) f x.
+Proof.
+transitivity (\int[m1]_(x in D) (f^\+ \- f^\-) x +
+              \int[m2]_(x in D) (f^\+ \- f^\-) x); last first.
+  by congr +%E; apply: eq_integral => x _; rewrite [in RHS](funeposneg f).
+rewrite integralB//; [|exact: integrable_funepos|exact: integrable_funeneg].
+rewrite integralB//; [|exact: integrable_funepos|exact: integrable_funeneg].
+rewrite addeACA -ge0_integral_measure_add//; last first.
+  by apply: measurable_funepos; exact: measurable_int intf1.
+rewrite -oppeD; last by rewrite ge0_adde_def// inE integral_ge0.
+rewrite -ge0_integral_measure_add// 1?integralE//.
+by apply: measurable_funeneg; exact: measurable_int intf1.
+Qed.
+
+End integral_measure_add.
+
 Section negligible_integral.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
@@ -4956,19 +5020,16 @@ Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
 Implicit Types A : set (T1 * T2).
 
 Let pm10 : (m1 \x m2) set0 = 0.
-Proof. by rewrite [LHS]integral0_eq// => x/= _; rewrite xsection0 measure0. Qed.
+Proof. by rewrite [LHS]integral0_eq// => x/= _; rewrite xsection0. Qed.
 
 Let pm1_ge0 A : 0 <= (m1 \x m2) A.
-Proof.
-by apply: integral_ge0 => // *; exact/measure_ge0/measurable_xsection.
-Qed.
+Proof. by apply: integral_ge0 => // *. Qed.
 
 Let pm1_sigma_additive : semi_sigma_additive (m1 \x m2).
 Proof.
 move=> F mF tF mUF.
 rewrite [X in _ --> X](_ : _ = \sum_(n <oo) (m1 \x m2) (F n)).
-  apply/cvg_closeP; split; last by rewrite closeE.
-  by apply: is_cvg_nneseries => *; exact: integral_ge0.
+  by apply/cvg_closeP; split; [exact: is_cvg_nneseries|rewrite closeE].
 rewrite -integral_nneseries//; last by move=> n; exact: measurable_fun_xsection.
 apply: eq_integral => x _; apply/esym/cvg_lim => //=; rewrite xsection_bigcup.
 apply: (measure_sigma_additive _ (trivIset_xsection tF)) => ?.
@@ -5027,8 +5088,7 @@ HB.instance Definition _ := Measure_isSigmaFinite.Build _ _ _ (m1 \x m2)
 
 Lemma product_measure_unique
     (m' : {measure set [the semiRingOfSetsType _ of T1 * T2] -> \bar R}) :
-    (forall A1 A2, measurable A1 -> measurable A2 ->
-      m' (A1 `*` A2) = m1 A1 * m2 A2) ->
+    (forall A B, measurable A -> measurable B -> m' (A `*` B) = m1 A * m2 B) ->
   forall X : set (T1 * T2), measurable X -> (m1 \x m2) X = m' X.
 Proof.
 move=> m'E.
