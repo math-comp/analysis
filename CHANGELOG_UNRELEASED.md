@@ -65,6 +65,8 @@
 - in `probability.v`:
   + `integral_distribution` -> `ge0_integral_distribution`
 
+- file `homotopy_theory/path.v` -> `homotopy_theory/continuous_path.v`
+
 ### Generalized
 
 - in `probability.v`:
