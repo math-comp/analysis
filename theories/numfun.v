@@ -440,11 +440,11 @@ Qed.
 
 HB.instance Definition _ X := indic_fimfun_subproof X.
 
-Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
+Definition indic_fimfun (X : set aT) : {fimfun aT >-> rT} := \1_X.
 
 HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
 
-Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
+Definition scale_fimfun k f : {fimfun aT >-> rT} := k \o* f.
 
 End ring.
 Arguments indic_fimfun {aT rT} _.
@@ -598,8 +598,7 @@ exists (lim (h_ @ \oo)); split.
 - move=> t /set_mem At; have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
     !! pointwise_uniform_cvg _ cvgh.
   rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ (@Rhausdorff R)).
-  apply: (@cvg_zero R [the pseudoMetricNormedZmodType R of R^o]).
-  apply: norm_cvg0; under eq_fun => n.
+  apply: (@cvg_zero R R^o); apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
     under [fun _ : nat => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
     rewrite telescope_sumr //= addrCA subrr addr0.

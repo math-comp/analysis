@@ -48,7 +48,7 @@ End bool_ord_topology.
 Lemma discrete_bool_compact : compact [set: discrete_topology discrete_bool].
 Proof. by rewrite setT_bool; apply/compactU; exact: compact_set1. Qed.
 
-Definition pseudoMetric_bool {R : realType} :=
-  [the pseudoMetricType R of discrete_topology discrete_bool : Type].
+Definition pseudoMetric_bool {R : realType} : pseudoMetricType R :=
+  discrete_topology discrete_bool.
 
 #[global] Hint Resolve discrete_bool : core.

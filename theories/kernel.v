@@ -125,8 +125,7 @@ Section kseries.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variable k : (R.-ker X ~> Y)^nat.
 
-Definition kseries : X -> {measure set Y -> \bar R} :=
-  fun x => [the measure _ _ of mseries (k ^~ x) 0].
+Definition kseries (x : X) : {measure set Y -> \bar R} := mseries (k ^~ x) 0.
 
 Lemma measurable_fun_kseries (U : set Y) :
   measurable U -> measurable_fun [set: X] (kseries ^~ U).
@@ -209,8 +208,7 @@ HB.factory Record Kernel_isFinite d d'
 Section kzero.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 
-Definition kzero : X -> {measure set Y -> \bar R} :=
-  fun _ : X => [the measure _ _ of mzero].
+Definition kzero (_ : X) : {measure set Y -> \bar R} := mzero.
 
 Let measurable_fun_kzero U : measurable U ->
   measurable_fun [set: X] (kzero ^~ U).
@@ -231,8 +229,7 @@ Let sfinite_finite :
   exists2 k_ : (R.-ker _ ~> _)^nat, forall n, measure_fam_uub (k_ n) &
     forall x U, measurable U -> k x U = mseries (k_ ^~ x) 0 U.
 Proof.
-exists (fun n => if n is O then [the _.-ker _ ~> _ of k] else
-  [the _.-ker _ ~> _ of @kzero _ _ X Y R]).
+exists (fun n => if n is O return R.-ker X ~> Y then k else @kzero _ _ X Y R).
   by case => [|_]; [exact: measure_uub|exact: kzero_uub].
 move=> t U mU/=; rewrite /mseries.
 rewrite (nneseries_split _ 1%N)// big_mkord big_ord_recl/= big_ord0 adde0.
@@ -270,10 +267,7 @@ HB.instance Definition _ n := @Kernel_isFinite.Build d d' X Y R (s n) (s_uub n).
 
 Lemma sfinite_kernel : exists s : (R.-fker X ~> Y)^nat,
   forall x U, measurable U -> k x U = kseries s x U.
-Proof.
-exists (fun n => [the _.-fker _ ~> _ of s n]) => x U mU.
-by rewrite /s /= /s; by case: cid2 => ? ? ->.
-Qed.
+Proof. by exists s => x U mU; rewrite /s /= /s; case: cid2 => ? ? ->. Qed.
 
 End sfinite.
 
@@ -605,9 +599,8 @@ Section kdirac.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variable f : X -> Y.
 
-Definition kdirac (mf : measurable_fun [set: X] f)
-    : X -> {measure set Y -> \bar R} :=
-  fun x => [the measure _ _ of dirac (f x)].
+Definition kdirac (mf : measurable_fun [set: X] f) (x : X) :
+  {measure set Y -> \bar R} := dirac (f x).
 
 Hypothesis mf : measurable_fun [set: X] f.
 
@@ -666,11 +659,10 @@ Section kadd.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variables k1 k2 : R.-ker X ~> Y.
 
-Definition kadd : X -> {measure set Y -> \bar R} :=
-  fun x => [the measure _ _ of measure_add (k1 x) (k2 x)].
+Definition kadd (x : X) : {measure set Y -> \bar R} :=
+  measure_add (k1 x) (k2 x).
 
-Let measurable_fun_kadd U : measurable U ->
-  measurable_fun [set: X] (kadd ^~ U).
+Let measurable_fun_kadd U : measurable U -> measurable_fun [set: X] (kadd ^~ U).
 Proof.
 move=> mU; rewrite /kadd.
 rewrite (_ : (fun _ => _) = (fun x => k1 x U + k2 x U)); last first.
@@ -692,7 +684,7 @@ Let sfinite_kadd : exists2 k_ : (R.-ker _ ~> _)^nat,
     kadd k1 k2 x U = mseries (k_ ^~ x) 0 U.
 Proof.
 have [f1 hk1] := sfinite_kernel k1; have [f2 hk2] := sfinite_kernel k2.
-exists (fun n => [the _.-ker _ ~> _ of kadd (f1 n) (f2 n)]).
+exists (fun n => kadd (f1 n) (f2 n)).
   move=> n.
   have [r1 f1r1] := measure_uub (f1 n).
   have [r2 f2r2] := measure_uub (f2 n).
@@ -775,8 +767,7 @@ End knormalize.
 (* TODO: useful? *)
 Lemma measurable_fun_mnormalize d d' (X : measurableType d)
     (Y : measurableType d') (R : realType) (k : R.-ker X ~> Y) :
-  measurable_fun [set: X] (fun x =>
-    [the probability _ _ of mnormalize (k x) point] : pprobability Y R).
+  measurable_fun [set: X] (fun x => mnormalize (k x) point : pprobability Y R).
 Proof.
 apply: (@measurability _ _ _ _ _ _
   (@pset _ _ _ : set (set (pprobability Y R)))) => //.
@@ -807,7 +798,7 @@ Section kcomp_def.
 Context d1 d2 d3 (X : measurableType d1) (Y : measurableType d2)
   (Z : measurableType d3) (R : realType).
 Variable l : X -> {measure set Y -> \bar R}.
-Variable k : (X * Y)%type -> {measure set Z -> \bar R}.
+Variable k : X * Y -> {measure set Z -> \bar R}.
 
 Definition kcomp x U := \int[l x]_y k (x, y) U.
 
@@ -816,8 +807,7 @@ End kcomp_def.
 Section kcomp_is_measure.
 Context d1 d2 d3 (X : measurableType d1) (Y : measurableType d2)
  (Z : measurableType d3) (R : realType).
-Variable l : R.-ker X ~> Y.
-Variable k : R.-ker [the measurableType _ of X * Y] ~> Z.
+Variables (l : R.-ker X ~> Y) (k : R.-ker (X * Y) ~> Z).
 
 Let kcomp0 x : kcomp l k x set0 = 0.
 Proof.
@@ -841,8 +831,7 @@ Qed.
 HB.instance Definition _ x := isMeasure.Build _ _ R
   (kcomp l k x) (kcomp0 x) (kcomp_ge0 x) (@kcomp_sigma_additive x).
 
-Definition mkcomp : X -> {measure set Z -> \bar R} := fun x =>
-  [the measure _ _ of kcomp l k x].
+Definition mkcomp : X -> {measure set Z -> \bar R} := kcomp l k.
 
 End kcomp_is_measure.
 
@@ -853,7 +842,7 @@ Module KCOMP_FINITE_KERNEL.
 Section kcomp_finite_kernel_kernel.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType) (l : R.-fker X ~> Y)
-  (k : R.-ker [the measurableType _ of X * Y] ~> Z).
+  (k : R.-ker (X * Y) ~> Z).
 
 Lemma measurable_fun_kcomp_finite U :
   measurable U -> measurable_fun [set: X] ((l \; k) ^~ U).
@@ -870,8 +859,7 @@ End kcomp_finite_kernel_kernel.
 Section kcomp_finite_kernel_finite.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
-Variable l : R.-fker X ~> Y.
-Variable k : R.-fker [the measurableType _ of X * Y] ~> Z.
+Variables (l : R.-fker X ~> Y) (k : R.-fker (X * Y) ~> Z).
 
 Let mkcomp_finite : measure_fam_uub (kcomp l k).
 Proof.
@@ -894,8 +882,7 @@ End KCOMP_FINITE_KERNEL.
 Section kcomp_sfinite_kernel.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
-Variable l : R.-sfker X ~> Y.
-Variable k : R.-sfker [the measurableType _ of X * Y] ~> Z.
+Variable (l : R.-sfker X ~> Y) (k : R.-sfker (X * Y) ~> Z).
 
 Import KCOMP_FINITE_KERNEL.
 
@@ -907,11 +894,10 @@ have [kl hkl] : exists kl : (R.-fker X ~> Z) ^nat, forall x U,
     \esum_(i in setT) (l_ i.2 \; k_ i.1) x U = \sum_(i <oo) kl i x U.
   have /ppcard_eqP[f] : ([set: nat] #= [set: nat * nat])%card.
     by rewrite card_eq_sym; exact: card_nat2.
-  exists (fun i => [the _.-fker _ ~> _ of l_ (f i).2 \; k_ (f i).1]) => x U.
+  exists (fun i => l_ (f i).2 \; k_ (f i).1) => x U.
   by rewrite (reindex_esum [set: nat] _ f)// nneseries_esum// fun_true.
 exists kl => x U mU.
-transitivity (([the _.-ker _ ~> _ of kseries l_] \;
-               [the _.-ker _ ~> _ of kseries k_]) x U).
+transitivity ((kseries l_ \; kseries k_) x U).
   rewrite /= /kcomp [in RHS](eq_measure_integral (l x)); last first.
     by move=> *; rewrite hl_.
   by apply: eq_integral => y _; rewrite hk_.
@@ -940,8 +926,7 @@ Module KCOMP_SFINITE_KERNEL.
 Section kcomp_sfinite_kernel.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
-Variable l : R.-sfker X ~> Y.
-Variable k : R.-sfker [the measurableType _ of X * Y] ~> Z.
+Variables (l : R.-sfker X ~> Y) (k : R.-sfker (X * Y) ~> Z).
 
 HB.instance Definition _ :=
   isKernel.Build _ _ X Z R (l \; k) (measurable_fun_mkcomp_sfinite l k).
@@ -986,8 +971,7 @@ Lemma measurable_fun_preimage_integral (l : X -> {measure set Y -> \bar R}) :
   (forall n r, measurable_fun [set: X] (l ^~ (k_ n @^-1` [set r]))) ->
   measurable_fun [set: X] (fun x => \int[l x]_z k z).
 Proof.
-move=> h; apply: (measurable_fun_xsection_integral (k \o snd) l
-  (fun n => [the {nnsfun _ >-> _} of k_2 n])) => /=.
+move=> h; apply: (measurable_fun_xsection_integral (k \o snd) l k_2) => /=.
 - by rewrite /k_2 => m n mn; apply/lefP => -[x y] /=; exact/lefP/ndk_.
 - by move=> [x y]; exact: k_k.
 - move=> n r _ /= B mB.
@@ -1024,8 +1008,7 @@ End measurable_fun_integral_kernel.
 Section integral_kcomp.
 Context d d2 d3 (X : measurableType d) (Y : measurableType d2)
   (Z : measurableType d3) (R : realType).
-Variables (l : R.-sfker X ~> Y)
-          (k : R.-sfker [the measurableType _ of X * Y] ~> Z).
+Variables (l : R.-sfker X ~> Y) (k : R.-sfker (X * Y) ~> Z).
 
 Let integral_kcomp_indic x E (mE : measurable E) :
   \int[kcomp l k x]_z (\1_E z)%:E = \int[l x]_y (\int[k (x, y)]_z (\1_E z)%:E).

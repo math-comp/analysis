@@ -200,8 +200,7 @@ Qed.
 
 HB.instance Definition _ (R : comRingType) m n p :=
   bilinear_isBilinear.Build R
-    [the lmodType R of 'M[R]_(m, n)] [the lmodType R of 'M[R]_(n, p)]
-    [the zmodType of 'M[R]_(m, p)] _ _ (@mulmx R m n p)
+    'M[R]_(m, n) 'M[R]_(n, p) 'M[R]_(m, p) _ _ (@mulmx R m n p)
     (mulmx_is_bilinear R m n p).
 
 (* Section classfun. *)

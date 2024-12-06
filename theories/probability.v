@@ -569,9 +569,8 @@ Local Notation "'M_ X t" := (mmt_gen_fun X t).
 Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
   P [set x | X x >= a]%R <= 'M_X r * (expR (- (r * a)))%:E.
 Proof.
-move=> t0.
-rewrite /mmt_gen_fun; have -> : expR \o r \o* X =
-    (normr \o normr) \o [the {mfun _ >-> _} of expR \o r \o* X].
+move=> t0; rewrite /mmt_gen_fun.
+have -> : expR \o r \o* X = (normr \o normr) \o (expR \o r \o* X).
   by apply: funext => t /=; rewrite normr_id ger0_norm ?expR_ge0.
 rewrite expRN lee_pdivlMr ?expR_gt0//.
 rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
@@ -600,7 +599,7 @@ have h (Y : {RV P >-> R}) :
   - by move=> x /=; exact: sqr_ge0.
   - by move=> x /=; exact: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.
-have := h [the {mfun T >-> R} of (X \- cst (fine ('E_P[X])))%R].
+have := h (X \- cst (fine ('E_P[X])))%R.
 by move=> /le_trans; apply; rewrite /variance [in leRHS]unlock.
 Qed.
 

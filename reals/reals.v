@@ -116,9 +116,9 @@ End has_bound_lemmas.
 (* -------------------------------------------------------------------- *)
 
 HB.mixin Record ArchimedeanField_isReal R of Num.ArchiField R := {
-  sup_upper_bound_subdef : forall E : set [the archiFieldType of R],
+  sup_upper_bound_subdef : forall E : set R,
     has_sup E -> ubound E (supremum 0 E) ;
-  sup_adherent_subdef : forall (E : set [the archiFieldType of R]) (eps : R),
+  sup_adherent_subdef : forall (E : set R) (eps : R),
     0 < eps -> has_sup E -> exists2 e : R, E e & (supremum 0 E - eps) < e
 }.
 

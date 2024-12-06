@@ -250,8 +250,7 @@ Qed.
 
 HB.instance Definition _ := Order.POrder_isTotal.Build _ R R_total.
 
-Lemma Rarchimedean_axiom :
-  Num.archimedean_axiom [the numDomainType of R : Type].
+Lemma Rarchimedean_axiom : Num.archimedean_axiom R.
 Proof.
 move=> x; exists (Z.abs_nat (up x) + 2)%N.
 have [Hx1 Hx2]:= (archimed x).
@@ -269,7 +268,7 @@ apply/RltbP/Rabs_def1.
     apply/Rplus_le_compat_r/IHz; split; first exact: Zlt_le_weak.
     exact: Zlt_pred.
   apply: (Rle_trans _ (IZR 0)); first exact: IZR_le.
-  by apply/RlebP/(ler0n [the numDomainType of R : Type] (Z.abs_nat z)).
+  by apply/RlebP/(ler0n R (Z.abs_nat z)).
 apply: (Rlt_le_trans _ (IZR (up x) - 1)).
   apply: Ropp_lt_cancel; rewrite Ropp_involutive.
   rewrite Ropp_minus_distr /Rminus -opp_IZR -{2}(Z.opp_involutive (up x)).
@@ -287,7 +286,7 @@ apply: (Rlt_le_trans _ (IZR (up x) - 1)).
   rewrite mulrnDr; apply: (Rlt_le_trans _ 2).
     by rewrite -{1}[1]Rplus_0_r; apply/Rplus_lt_compat_l/Rlt_0_1.
   rewrite -[2]Rplus_0_l; apply: Rplus_le_compat_r.
-  by apply/RlebP/(ler0n [the numDomainType of R : Type] (Z.abs_nat _)).
+  by apply/RlebP/(ler0n R (Z.abs_nat _)).
 apply: Rminus_le.
 rewrite /Rminus Rplus_assoc [- _ + _]Rplus_comm -Rplus_assoc -!/(Rminus _ _).
 exact: Rle_minus.
@@ -334,8 +333,7 @@ have Hg: (fun x=> f x * f x ^+ n)%R =1 g.
 by apply: (continuity_eq Hg); exact: continuity_mult.
 Qed.
 
-Lemma Rreal_closed_axiom :
-  Num.real_closed_axiom [the numDomainType of R : Type].
+Lemma Rreal_closed_axiom : Num.real_closed_axiom R.
 Proof.
 move=> p a b; rewrite !le_eqVlt.
 case Hpa: ((p.[a])%R == 0%R).
