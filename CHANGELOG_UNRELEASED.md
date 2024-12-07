@@ -72,6 +72,9 @@
 
 ### Generalized
 
+- in `sequences.v`:
+  + lemmas `cvg_restrict`, `cvg_centern`, `cvg_shiftn cvg_shiftS`
+
 - in `probability.v`:
   + definition `random_variable`
   + lemmas `notin_range_measure`, `probability_range`
