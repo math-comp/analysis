@@ -1473,8 +1473,8 @@ Lemma open_itvoo_subset :
 Proof.
 move=> /[apply] -[] _/posnumP[r] /subset_ball_prop_in_itv xrA.
 exists r%:num => //= k; rewrite /= distrC subr0 set_itvoo => /ltr_normlW kr k0.
-by apply/(subset_trans _ xrA)/subset_itvW;
-  [rewrite lerB//; exact: ltW | rewrite lerD//; exact: ltW].
+by apply/(subset_trans _ xrA)/subset_itvW; apply/ltW;
+  [rewrite ler_ltB | rewrite ler_ltD].
 Qed.
 
 Lemma open_itvcc_subset :
@@ -2398,8 +2398,7 @@ Variables (K : numFieldType) (m n : nat).
 Local Lemma ball_gt0 (x y : 'M[K]_(m.+1, n.+1)) e : ball x e y -> 0 < e.
 Proof. by move/(_ ord0 ord0); apply: le_lt_trans. Qed.
 
-Lemma mx_norm_ball :
-  @ball _ [the pseudoMetricType K of 'M[K]_(m.+1, n.+1)] = ball_ (fun x => `| x |).
+Lemma mx_norm_ball : @ball _ 'M[K]_(m.+1, n.+1) = ball_ (fun x => `| x |).
 Proof.
 rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split => xey.
 - have e_gt0 : 0 < e := ball_gt0 xey.
@@ -2441,8 +2440,7 @@ rewrite /ball /= /prod_ball -!ball_normE /ball_ /=.
 by rewrite comparable_gt_max// ?real_comparable//; split=> /andP.
 Qed.
 
-Lemma prod_norm_ball :
-  @ball _ [the pseudoMetricType K of (U * V)%type] = ball_ (fun x => `|x|).
+Lemma prod_norm_ball : @ball _ (U * V)%type = ball_ (fun x => `|x|).
 Proof. by rewrite /= - ball_prod_normE. Qed.
 
 HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
@@ -3041,7 +3039,7 @@ Qed.
 Lemma abse_continuous : continuous (@abse R).
 Proof.
 case=> [r|A /= [r [rreal rA]]|A /= [r [rreal rA]]]/=.
-- exact/(cvg_comp (@norm_continuous _ [the normedModType R of R^o] r)).
+- exact/(cvg_comp (@norm_continuous _ R r)).
 - by exists r; split => // y ry; apply: rA; rewrite (lt_le_trans ry)// lee_abs.
 - exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -lteNr => yr.
   by apply: rA; rewrite (lt_le_trans yr)// -abseN lee_abs.
@@ -4207,8 +4205,7 @@ Unshelve. all: by end_near. Qed.
 HB.instance Definition _ (R : realType) := Uniform_isComplete.Build R^o
   (@R_complete R). (* todo : delete *)
 
-HB.instance Definition _ (R : realType) := Complete.copy R
-  [the completeType of R^o].
+HB.instance Definition _ (R : realType) := Complete.copy R R^o.
 (* new *)
 
 Section cvg_seq_bounded.
@@ -4794,27 +4791,27 @@ case: (asboolP (has_lbound _)) => ?; case: (asboolP (has_ubound _)) => ? //=.
     rewrite !(lteifF, lteifT).
   + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx].
     rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-    apply: (@interior_subset [the topologicalType of R : Type]).
+    apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
   + move=> /andP[]; rewrite le_eqVlt => /orP[/eqP <- //|infXx supXx].
-    apply: (@interior_subset [the topologicalType of R : Type]).
+    apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
   + move=> /andP[infXx]; rewrite le_eqVlt => /orP[/eqP -> //|xsupX].
-    apply: (@interior_subset [the topologicalType of R : Type]).
+    apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
-  + move=> ?; apply: (@interior_subset [the topologicalType of R : Type]).
+  + move=> ?; apply: (@interior_subset R).
     by rewrite interval_bounded_interior // /mkset infXx.
 - case: asboolP => XinfX; rewrite !(lteifF, lteifT, andbT).
   + rewrite le_eqVlt => /orP[/eqP<-//|infXx].
-    apply: (@interior_subset [the topologicalType of R : Type]).
+    apply: (@interior_subset R).
     by rewrite interval_right_unbounded_interior.
-  + move=> infXx; apply: (@interior_subset [the topologicalType of R : Type]).
+  + move=> infXx; apply: (@interior_subset R).
     by rewrite interval_right_unbounded_interior.
 - case: asboolP => XsupX /=.
   + rewrite le_eqVlt => /orP[/eqP->//|xsupX].
-    apply: (@interior_subset [the topologicalType of R : Type]).
+    apply: (@interior_subset R).
     by rewrite interval_left_unbounded_interior.
-  + move=> xsupX; apply: (@interior_subset [the topologicalType of R : Type]).
+  + move=> xsupX; apply: (@interior_subset R).
     by rewrite interval_left_unbounded_interior.
 - by move=> _; rewrite (interval_unbounded_setT iX).
 Qed.

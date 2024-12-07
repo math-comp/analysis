@@ -3256,7 +3256,7 @@ move=> [F UF mF]; rewrite /sfinite_measure.
 have mDF k : measurable (seqDU F k).
   apply: measurableD; first exact: (mF k).1.
   by apply: bigsetU_measurable => i _; exact: (mF i).1.
-exists (fun k => [the measure _ _ of mrestr mu (mDF k)]) => [n|U mU].
+exists (fun k => mrestr mu (mDF k)) => [n|U mU].
 - apply: lty_fin_num_fun => //=.
   rewrite /mrestr setTI (@le_lt_trans _ _ (mu (F n)))//.
   + apply: le_measure; last exact: subDsetl.
@@ -3320,7 +3320,7 @@ HB.builders Context d (T : measurableType d) (R : realType)
   mu of @Measure_isSigmaFinite d T R mu.
 
 Lemma sfinite : sfinite_measure mu.
-Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finiteT. Qed.
+Proof. exact/sfinite_measure_sigma_finite/sigma_finiteT. Qed.
 
 HB.instance Definition _ := @isSFinite.Build _ _ _ mu sfinite.
 
@@ -3337,7 +3337,7 @@ HB.instance Definition _ d (T : measurableType d) (R : realFieldType) :=
 
 Lemma sfinite_mzero d (T : measurableType d) (R : realType) :
   sfinite_measure (@mzero d T R).
-Proof. by apply: sfinite_measure_sigma_finite; exact: sigma_finite_mzero. Qed.
+Proof. exact/sfinite_measure_sigma_finite/sigma_finite_mzero. Qed.
 
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
   @isSFinite.Build d T R mzero (@sfinite_mzero d T R).
@@ -3464,8 +3464,7 @@ Proof. by rewrite /s; case: cid2 => F finF muE; exact: finF. Qed.
 
 HB.instance Definition _ n := @Measure_isFinite.Build d T R (s n) (s_fin n).
 
-Definition sfinite_measure_seq : {finite_measure set T -> \bar R}^nat :=
-  fun n => [the {finite_measure set T -> \bar R} of s n].
+Definition sfinite_measure_seq : {finite_measure set T -> \bar R}^nat := s.
 
 Lemma sfinite_measure_seqP U : measurable U ->
   mu U = mseries sfinite_measure_seq O U.
@@ -3627,7 +3626,7 @@ HB.instance Definition _ x :=
 End pdirac.
 
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
-  isPointed.Build (probability T R) [the probability _ _ of dirac point].
+  isPointed.Build (probability T R) (dirac point).
 
 Section dist_sigma_algebra_instance.
 Context d (T : measurableType d) (R : realType).
@@ -3651,7 +3650,7 @@ Definition pset : set (set (probability T R)) :=
   [set mset U r | r in `[0%R,1%R] & U in measurable].
 
 Definition pprobability : measurableType pset.-sigma :=
-  [the measurableType _ of g_sigma_algebraType pset].
+  g_sigma_algebraType pset.
 
 End dist_sigma_algebra_instance.
 
@@ -4946,7 +4945,7 @@ near=> n; apply: lee_sum => i _; rewrite -measure_semi_additive2.
 - by rewrite setIACA setICr setI0.
 Unshelve. all: by end_near. Qed.
 
-Let I := [the measurableType _ of g_sigma_algebraType (@measurable _ T)].
+Let I : measurableType _ := g_sigma_algebraType (@measurable _ T).
 
 Definition measure_extension : set I -> \bar R := mu^*.
 
@@ -4984,7 +4983,7 @@ Lemma measure_extension_unique : sigma_finite [set: T] mu ->
       measure_extension X = mu' X)).
 Proof.
 move=> [F TF /all_and2[Fm muF]] mu' mu'mu X mX.
-apply: (@measure_unique _ _ [the measurableType _ of I] d.-measurable F) => //.
+apply: (@measure_unique _ _ I d.-measurable F) => //.
 - by move=> A B Am Bm; apply: measurableI.
 - by move=> A Am; rewrite /= /measure_extension measurable_mu_extE// mu'mu.
 - by move=> k; rewrite /= /measure_extension measurable_mu_extE.
@@ -5006,7 +5005,7 @@ Variable mu : {measure set T -> \bar R}.
 Notation rT := (SetRing.type T).
 Let Rmu : set rT -> \bar R := SetRing.measure mu.
 
-Let I := [the measurableType _ of caratheodory_type (mu^*)%mu].
+Let I : measurableType _ := caratheodory_type (mu^*)%mu.
 
 Definition completed_measure_extension : set I -> \bar R := (mu^*)%mu.
 
@@ -5140,7 +5139,7 @@ Hypothesis setTC2 : setT `<=` C2.
 
 (* NB: useful? *)
 Lemma measurable_prod_g_measurableTypeR :
-  @measurable _ [the measurableType _ of T1 * g_sigma_algebraType C2 : Type]
+  @measurable _ (T1 * g_sigma_algebraType C2)%type
   = <<s [set A `*` B | A in measurable & B in C2] >>.
 Proof.
 rewrite measurable_prod_measurableType //; congr (<<s _ >>).
@@ -5198,15 +5197,13 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
 
 Lemma measurable_fst : measurable_fun [set: T1 * T2] fst.
 Proof.
-by have /prod_measurable_funP[] :=
-  @measurable_id _ [the measurableType _ of (T1 * T2)%type] setT.
+by have /prod_measurable_funP[] := @measurable_id _ (T1 * T2)%type setT.
 Qed.
 #[local] Hint Resolve measurable_fst : core.
 
 Lemma measurable_snd : measurable_fun [set: T1 * T2] snd.
 Proof.
-by have /prod_measurable_funP[] :=
-  @measurable_id _ [the measurableType _ of (T1 * T2)%type] setT.
+by have /prod_measurable_funP[] := @measurable_id _ (T1 * T2)%type setT.
 Qed.
 #[local] Hint Resolve measurable_snd : core.
 

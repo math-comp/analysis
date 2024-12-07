@@ -340,7 +340,7 @@ Lemma homeomorphism_cantor_like :
   exists f : {splitbij [set: cantor_space] >-> [set: T]},
     continuous f /\ (forall A, closed A -> closed (f @` A)).
 Proof.
-exists [the {splitbij _ >-> _} of tree_map] => /=.
+exists tree_map => /=.
 have [cts surj inje] := projT2 (cid cantor_map); split; first exact: cts.
 move=> A clA; apply: (compact_closed hsdfT).
 apply: (@continuous_compact _ _ tree_map); first exact: continuous_subspaceT.
@@ -527,7 +527,7 @@ have [//| | |? []//| |? []// | |] := @tree_map_props
   have [z [Dz DzE]] := Csub _ cbD.
   have /ent_closure := DzE _ Dx => /(_ (ent_count_unif n))/xsectionP/ctE [_ /= Exz].
   have /ent_closure := DzE _ Dy => /(_ (ent_count_unif n))/xsectionP/ctE [Ezy _].
-  exact: (@entourage_split _ (*[the uniformType of T]*) z).
+  exact: (@entourage_split T z).
 by move=> f [ctsf surjf _]; exists f.
 Qed.
 

@@ -671,7 +671,7 @@ Qed.
 Global Instance is_diff_scalel (k : R) (x : V) :
   is_diff k ( *:%R ^~ x) ( *:%R ^~ x).
 Proof.
-have sx_lin : linear ( *:%R ^~ x : [the lmodType R of R : Type] -> _).
+have sx_lin : linear ( *:%R ^~ x : R -> _).
   by move=> u y z; rewrite scalerDl scalerA.
 pose sxlM := GRing.isLinear.Build _ _ _ _ _ sx_lin.
 pose sxL : {linear _ -> _} := HB.pack ( *:%R ^~ x) sxlM.

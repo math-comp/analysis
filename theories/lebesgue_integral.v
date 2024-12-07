@@ -295,18 +295,18 @@ Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
 HB.instance Definition _ D mD := @isMeasurableFun.Build _ _ aT rT (mindic mD)
   (@measurable_indic _ aT rT setT D mD).
 
-Definition indic_mfun (D : set aT) (mD : measurable D) :=
-  [the {mfun aT >-> rT} of mindic mD].
+Definition indic_mfun (D : set aT) (mD : measurable D) : {mfun aT >-> rT} :=
+  mindic mD.
 
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst k).
-Definition scale_mfun k f := [the {mfun aT >-> rT} of k \o* f].
+Definition scale_mfun k f : {mfun aT >-> rT} := k \o* f.
 
 Lemma max_mfun_subproof f g : @isMeasurableFun d _ aT rT (f \max g).
 Proof. by split; apply: measurable_maxr. Qed.
 
 HB.instance Definition _ f g := max_mfun_subproof f g.
 
-Definition max_mfun f g := [the {mfun aT >-> _} of f \max g].
+Definition max_mfun f g : {mfun aT >-> _} := f \max g.
 
 End ring.
 Arguments indic_mfun {d aT rT} _.
@@ -365,7 +365,7 @@ HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
 (* NB: already instantiated in cardinality.v *)
 HB.instance Definition _ x : @FImFun aT rT (cst x) := FImFun.on (cst x).
 
-Definition cst_sfun x := [the {sfun aT >-> rT} of cst x].
+Definition cst_sfun x : {sfun aT >-> rT} := cst x.
 
 Lemma cst_sfunE x : @cst_sfun x =1 cst x. Proof. by []. Qed.
 
@@ -426,14 +426,14 @@ Import HBSimple.
 HB.instance Definition _ (D : set aT) (mD : measurable D) :
    @FImFun aT rT (mindic _ mD) := FImFun.on (mindic _ mD).
 
-Definition indic_sfun (D : set aT) (mD : measurable D) :=
-  [the {sfun aT >-> rT} of mindic rT mD].
+Definition indic_sfun (D : set aT) (mD : measurable D) : {sfun aT >-> rT} :=
+  mindic rT mD.
 
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_sfun k).
-Definition scale_sfun k f := [the {sfun aT >-> rT} of k \o* f].
+Definition scale_sfun k f : {sfun aT >-> rT} := k \o* f.
 
 HB.instance Definition _ f g := max_mfun_subproof f g.
-Definition max_sfun f g := [the {sfun aT >-> _} of f \max g].
+Definition max_sfun f g : {sfun aT >-> _} := f \max g.
 
 End ring.
 Arguments indic_sfun {d aT rT} _.
@@ -495,7 +495,7 @@ HB.instance Definition _ x := @isNonNegFun.Build T R (cst x%:num)
 (* NB: already instantiated in cardinality.v *)
 HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).
 
-Definition cst_nnsfun (r : {nonneg R}) := [the {nnsfun T >-> R} of cst r%:num].
+Definition cst_nnsfun (r : {nonneg R}) : {nnsfun T >-> R} := cst r%:num.
 
 Definition nnsfun0 : {nnsfun T >-> R} := cst_nnsfun 0%R%:nng.
 
@@ -535,15 +535,15 @@ Variables f g : {nnsfun T >-> R}.
 Import HBNNSimple.
 
 HB.instance Definition _ := MeasurableFun.on (f \+ g).
-Definition add_nnsfun := [the {nnsfun T >-> R} of f \+ g].
+Definition add_nnsfun : {nnsfun T >-> R} := f \+ g.
 
 HB.instance Definition _ := MeasurableFun.on (f \* g).
-Definition mul_nnsfun := [the {nnsfun T >-> R} of f \* g].
+Definition mul_nnsfun : {nnsfun T >-> R} := f \* g.
 
 HB.instance Definition _ := MeasurableFun.on (f \max g).
-Definition max_nnsfun := [the {nnsfun T >-> R} of f \max g].
+Definition max_nnsfun : {nnsfun T >-> R} := f \max g.
 
-Definition indic_nnsfun A (mA : measurable A) := [the {nnsfun T >-> R} of mindic R mA].
+Definition indic_nnsfun A (mA : measurable A) : {nnsfun T >-> R} := mindic R mA.
 
 End nnsfun_bin.
 Arguments add_nnsfun {d T R} _ _.
@@ -1500,7 +1500,7 @@ Lemma cvg_approx x (f0 : forall x, D x -> (0 <= f x)%E) : D x ->
   (f x < +oo)%E -> approx^~ x @ \oo --> fine (f x).
 Proof.
 move=> Dx fxoo; have fxfin : f x \is a fin_num by rewrite ge0_fin_numE// f0.
-apply/(@cvgrPdist_lt _ [the normedModType R of R^o]) => _/posnumP[e].
+apply/(@cvgrPdist_lt _ R^o) => _/posnumP[e].
 have [fx0|fx0] := eqVneq (f x) 0%E.
   by near=> n; rewrite f0_approx0 // fx0 /= subrr normr0.
 have /(fpos_approx_neq0 Dx)[m _ Hm] : (0 < f x < +oo)%E by rewrite lt0e fx0 f0.
@@ -1753,7 +1753,7 @@ Lemma approximation_sfun :
 Proof.
 pose fp_ := nnsfun_approx mD (measurable_funepos mf).
 pose fn_ := nnsfun_approx mD (measurable_funeneg mf).
-exists (fun n => [the {sfun T >-> R} of fp_ n \+ cst (-1) \* fn_ n]) => x /=.
+exists (fun n => fp_ n \+ cst (-1) \* fn_ n) => x /=.
 rewrite [X in X @ \oo --> _](_ : _ =
     EFin \o fp_^~ x \+ (-%E \o EFin \o fn_^~ x))%E; last first.
   by apply/funext => n/=; rewrite EFinD mulN1r.
@@ -1767,8 +1767,8 @@ Section lusin.
 Hint Extern 0 (hausdorff_space _) => (exact: Rhausdorff) : core.
 Local Open Scope ereal_scope.
 Context (rT : realType) (A : set rT).
-Let mu := [the measure _ _ of @lebesgue_measure rT].
-Let R  := [the measurableType _ of measurableTypeR rT].
+Let mu : measure _ _ := @lebesgue_measure rT.
+Let R  : measurableType _ := measurableTypeR rT.
 Hypothesis mA : measurable A.
 Hypothesis finA : mu A < +oo.
 
@@ -4254,10 +4254,10 @@ Lemma integral_count (a : nat -> \bar R) : summable setT a ->
   \int[counting]_t (a t) = \sum_(k <oo) (a k).
 Proof.
 move=> sa.
-transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
+transitivity (\int[mseries (fun n => \d_ n) O]_t a t).
   congr (integral _ _ _); apply/funext => A.
   by rewrite /= counting_dirac.
-rewrite (@integral_measure_series _ _ R (fun n => [the measure _ _ of \d_ n]) setT)//=.
+rewrite (@integral_measure_series _ _ R (fun n => \d_ n) setT)//=.
 - by apply: eq_eseriesr=> i _; rewrite integral_dirac//= diracT mul1e.
 - move=> n; apply/integrableP; split=> [//|].
   by rewrite integral_dirac//= diracT mul1e (summable_pinfty sa).
@@ -4269,7 +4269,7 @@ Lemma ge0_integral_count (a : nat -> \bar R) : (forall k, 0 <= a k) ->
   \int[counting]_t (a t) = \sum_(k <oo) (a k).
 Proof.
 move=> sa.
-transitivity (\int[mseries (fun n => [the measure _ _ of \d_ n]) O]_t a t).
+transitivity (\int[mseries (fun n => \d_ n) O]_t a t).
   congr (integral _ _ _); apply/funext => A.
   by rewrite /= counting_dirac.
 rewrite (@ge0_integral_measure_series _ _ R (fun n => \d_ n) setT)//=.
@@ -5087,7 +5087,7 @@ HB.instance Definition _ := Measure_isSigmaFinite.Build _ _ _ (m1 \x m2)
   product_measure_sigma_finite.
 
 Lemma product_measure_unique
-    (m' : {measure set [the semiRingOfSetsType _ of T1 * T2] -> \bar R}) :
+    (m' : {measure set (T1 * T2) -> \bar R}) :
     (forall A B, measurable A -> measurable B -> m' (A `*` B) = m1 A * m2 B) ->
   forall X : set (T1 * T2), measurable X -> (m1 \x m2) X = m' X.
 Proof.
@@ -5283,8 +5283,8 @@ End simple_density_L1.
 
 Section continuous_density_L1.
 Context (rT : realType).
-Let mu := [the measure _ _ of @lebesgue_measure rT].
-Let R  := [the measurableType _ of measurableTypeR rT].
+Let mu : measure _ _ := @lebesgue_measure rT.
+Let R  : measurableType _ := measurableTypeR rT.
 Local Open Scope ereal_scope.
 
 Lemma compact_finite_measure (A : set R^o) : compact A -> mu A < +oo.
@@ -5475,7 +5475,7 @@ Qed.
 End indic_fubini_tonelli.
 
 Section sfun_fubini_tonelli.
-Variable f : {nnsfun [the measurableType _ of T1 * T2 : Type] >-> R}.
+Variable f : {nnsfun T1 * T2 >-> R}.
 
 Import HBNNSimple.
 
@@ -5599,7 +5599,7 @@ Section fubini_tonelli.
 Variable f : T1 * T2 -> \bar R.
 Hypothesis mf : measurable_fun setT f.
 Hypothesis f0 : forall x, 0 <= f x.
-Let T := [the measurableType _ of T1 * T2 : Type].
+Let T : measurableType _ := (T1 * T2)%type.
 
 Let F := fubini_F m2 f.
 Let G := fubini_G m1 f.
@@ -5928,7 +5928,7 @@ Lemma sfinite_Fubini :
 Proof.
 pose s1 := sfinite_measure_seq m1.
 pose s2 := sfinite_measure_seq m2.
-rewrite [LHS](eq_measure_integral [the measure _ _ of mseries s1 0]); last first.
+rewrite [LHS](eq_measure_integral (mseries s1 0)); last first.
   by move=> A mA _; rewrite /=; exact: sfinite_measure_seqP.
 transitivity (\int[mseries s1 0]_x \int[mseries s2 0]_y f (x, y)).
   apply: eq_integral => x _; apply: eq_measure_integral => ? ? _.
@@ -5973,8 +5973,8 @@ Arguments sfinite_Fubini {d d' X Y R} m1 m2 f.
 
 Section lebesgue_differentiation_continuous.
 Context (rT : realType).
-Let mu := [the measure _ _ of @lebesgue_measure rT].
-Let R  := [the measurableType _ of measurableTypeR rT].
+Let mu : measure _ _ := @lebesgue_measure rT.
+Let R  : measurableType _ := measurableTypeR rT.
 
 Let ballE (x : R) (r : {posnum rT}) :
   ball x r%:num = `](x - r%:num), (x + r%:num)[%classic :> set rT.

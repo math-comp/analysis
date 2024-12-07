@@ -520,8 +520,7 @@ Let mu0 : mu set0 = 0.
 Proof. by apply: measure0. Qed.
 
 HB.instance Definition _ := isCharge.Build _ _ _
-  mu (measure0 [the content _ _ of mu])
-    fin_num_measure measure_semi_sigma_additive.
+  mu (measure0 mu) fin_num_measure measure_semi_sigma_additive.
 
 HB.end.
 
@@ -917,8 +916,7 @@ Let mP : measurable P. Proof. by have [[mP _] _ _ _] := nuPN. Qed.
 
 Let mN : measurable N. Proof. by have [_ [mN _] _ _] := nuPN. Qed.
 
-Local Definition cjordan_pos : {charge set T -> \bar R} :=
-  [the charge _ _ of crestr0 nu mP].
+Local Definition cjordan_pos : {charge set T -> \bar R} := crestr0 nu mP.
 
 Lemma cjordan_posE A : cjordan_pos A = crestr0 nu mP A.
 Proof. by []. Qed.
@@ -944,7 +942,7 @@ HB.instance Definition _ := @Measure_isFinite.Build _ _ _
   jordan_pos finite_jordan_pos.
 
 Local Definition cjordan_neg : {charge set T -> \bar R} :=
-  [the charge _ _ of cscale (-1) [the charge _ _ of crestr0 nu mN]].
+  cscale (-1) (crestr0 nu mN).
 
 Lemma cjordan_negE A : cjordan_neg A = - crestr0 nu mN A.
 Proof. by rewrite /= /cscale/= EFinN mulN1e. Qed.
@@ -970,8 +968,7 @@ HB.instance Definition _ := @Measure_isFinite.Build _ _ _
   jordan_neg finite_jordan_neg.
 
 Lemma jordan_decomp (A : set T) : measurable A ->
-  nu A = (cadd [the charge _ _ of jordan_pos]
-           ([the charge _ _ of cscale (-1) [the charge _ _ of jordan_neg]])) A.
+  nu A = cadd jordan_pos (cscale (-1) jordan_neg) A.
 Proof.
 move=> mA.
 rewrite /cadd cjordan_posE /= /cscale EFinN mulN1e cjordan_negE oppeK.
@@ -1684,8 +1681,7 @@ move=> nu_mu; exists f; split.
   - by apply/integrableP; split; [exact: mf|exact: int_fRN_lty].
 move=> // A mA.
 apply/eqP; rewrite eq_le int_fRN_ub// andbT leNgt; apply/negP => abs.
-pose sigma : {charge set T -> \bar R} :=
-  [the {charge set T -> \bar R} of sigmaRN mA abs].
+pose sigma : {charge set T -> \bar R} := sigmaRN mA abs.
 have [P [N [[mP posP] [mN negN] PNX PN0]]] := Hahn_decomposition sigma.
 pose AP := A `&` P.
 have mAP : measurable AP by exact: measurableI.
@@ -1781,11 +1777,9 @@ have muEoo k : mu (E k) < +oo.
   by rewrite (le_lt_trans _ (muFoo k))// le_measure ?inE//; exact: subDsetl.
 have UET : \bigcup_i E i = [set: T] by rewrite TF [RHS]seqDU_bigcup_eq.
 have tE := trivIset_seqDU F.
-pose mu_ j : {finite_measure set T -> \bar R} :=
-  [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (muEoo j)].
+pose mu_ j : {finite_measure set T -> \bar R} := mfrestr (mE j) (muEoo j).
 have nuEoo i : nu (E i) < +oo by rewrite ltey_eq fin_num_measure.
-pose nu_ j : {finite_measure set T -> \bar R} :=
-  [the {finite_measure set _ -> \bar _} of mfrestr (mE j) (nuEoo j)].
+pose nu_ j : {finite_measure set T -> \bar R} := mfrestr (mE j) (nuEoo j).
 have nu_mu_ k : nu_ k `<< mu_ k.
   by move=> S mS mu_kS0; apply: nu_mu => //; exact: measurableI.
 have [g_] := choice (fun j => radon_nikodym_finite (nu_mu_ j)).
@@ -2034,11 +2028,9 @@ Local Lemma Radon_Nikodym0 : nu `<< mu ->
 Proof.
 move=> nu_mu; have [P [N nuPN]] := Hahn_decomposition nu.
 have [fp [fp0 fpfin intfp fpE]] := @radon_nikodym_sigma_finite _ _ _ mu
-  [the {finite_measure set _ -> \bar _} of jordan_pos nuPN]
-  (jordan_pos_dominates nuPN nu_mu).
+  (jordan_pos nuPN) (jordan_pos_dominates nuPN nu_mu).
 have [fn [fn0 fnfin intfn fnE]] := @radon_nikodym_sigma_finite _ _ _ mu
-  [the {finite_measure set _ -> \bar _} of jordan_neg nuPN]
-  (jordan_neg_dominates nuPN nu_mu).
+  (jordan_neg nuPN) (jordan_neg_dominates nuPN nu_mu).
 exists (fp \- fn); split; first by move=> x; rewrite fin_numB// fpfin fnfin.
   exact: integrableB.
 move=> E mE; rewrite [LHS](jordan_decomp nuPN mE)// integralB//;
@@ -2091,7 +2083,7 @@ Implicit Types f : T -> \bar R.
 
 Lemma ae_eq_Radon_Nikodym_SigmaFinite E : measurable E ->
   ae_eq mu E (Radon_Nikodym_SigmaFinite.f nu mu)
-             ('d [the charge _ _ of charge_of_finite_measure nu] '/d mu).
+             ('d (charge_of_finite_measure nu) '/d mu).
 Proof.
 move=> mE; apply: integral_ae_eq => //.
 - apply: (integrableS measurableT) => //.
@@ -2103,8 +2095,7 @@ Qed.
 
 Lemma Radon_Nikodym_change_of_variables f E : measurable E ->
     nu.-integrable E f ->
-  \int[mu]_(x in E)
-    (f x * ('d [the charge _ _ of charge_of_finite_measure nu] '/d mu) x) =
+  \int[mu]_(x in E) (f x * ('d (charge_of_finite_measure nu) '/d mu) x) =
   \int[nu]_(x in E) f x.
 Proof.
 move=> mE mf; rewrite [in RHS](funeposneg f) integralB //; last 2 first.
@@ -2140,8 +2131,7 @@ Implicit Types (nu : {charge set T -> \bar R})
                (mu : {sigma_finite_measure set T -> \bar R}).
 
 Lemma Radon_Nikodym_cscale mu nu c E : measurable E -> nu `<< mu ->
-  ae_eq mu E ('d [the charge _ _ of cscale c nu] '/d mu)
-             (fun x => c%:E * 'd nu '/d mu x).
+  ae_eq mu E ('d (cscale c nu) '/d mu) (fun x => c%:E * 'd nu '/d mu x).
 Proof.
 move=> mE numu; apply: integral_ae_eq => [//| | |A AE mA].
 - apply: (integrableS measurableT) => //.
@@ -2155,8 +2145,7 @@ Qed.
 
 Lemma Radon_Nikodym_cadd mu nu0 nu1 E : measurable E ->
   nu0 `<< mu -> nu1 `<< mu ->
-  ae_eq mu E ('d [the charge _ _ of cadd nu0 nu1] '/d mu)
-             ('d nu0 '/d mu \+ 'd nu1 '/d mu).
+  ae_eq mu E ('d (cadd nu0 nu1) '/d mu) ('d nu0 '/d mu \+ 'd nu1 '/d mu).
 Proof.
 move=> mE nu0mu nu1mu; apply: integral_ae_eq => [//| | |A AE mA].
 - apply: (integrableS measurableT) => //.
@@ -2177,8 +2166,7 @@ Variables (nu : {charge set T -> \bar R})
 
 Lemma Radon_Nikodym_chain_rule : nu `<< mu -> mu `<< la ->
   ae_eq la setT ('d nu '/d la)
-                ('d nu '/d mu \*
-                  'd [the charge _ _ of charge_of_finite_measure mu] '/d la).
+                ('d nu '/d mu \* 'd (charge_of_finite_measure mu) '/d la).
 Proof.
 have [Pnu [Nnu nuPN]] := Hahn_decomposition nu.
 move=> numu mula; have nula := measure_dominates_trans numu mula.

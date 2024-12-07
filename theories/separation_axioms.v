@@ -955,8 +955,7 @@ Definition type : Type := let _ := countableBase in let _ := entF in T.
 #[export] HB.instance Definition _ {q : Pointed T} :=
   Pointed.copy type (Pointed.Pack q).
 
-Lemma countable_uniform_bounded (x y : T) :
-  let U := [the pseudoMetricType R of type] in @ball _ U x 2 y.
+Lemma countable_uniform_bounded (x y : T) : @ball _ type x 2 y.
 Proof.
 rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
 rewrite [X in `|X|%N](_ : _ = 0) ?absz0//.
