@@ -2351,7 +2351,7 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
     rewrite natr_absz ger0_norm ?ceil_ge//.
-    by rewrite-(ceil0 R) ceil_le// divr_ge0// ltW.
+    by rewrite -(ceil0 R) ceil_le// divr_ge0// ltW.
   - rewrite lt0_mulye//; apply/cvgeNyPleNy; near=> M;
     have M0 : (M <= 0)%R by [].
     rewrite /g; case: (f x) fx0 => [r r0|//|_]; last first.
