@@ -1548,19 +1548,15 @@ move=> Dx fxoo; have approx_x n : approx n x = n%:R.
   by rewrite fgen_A0 // ?mulr0 // fxoo leey.
 case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
 - move=> /cvgrPdist_lt/(_ _ ltr01) -[n _].
-  move=> /(_ (`|ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)).
-  rewrite approx_x.
-  apply/negP; rewrite -leNgt distrC (le_trans _ (lerB_normD _ _)) //.
-  rewrite normrN lerBrDl addSnnS [leRHS]ger0_norm ?ler0n//.
-  rewrite natrD lerD// ?ler1n// ger0_norm // (le_trans (ceil_ge _)) //.
-  by rewrite -(@gez0_abs (ceil _)) // -ceil_ge0 (lt_le_trans _ l0).
+  move=> /(_ (`|ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)); apply/negP.
+  rewrite -leNgt approx_x distrC (le_trans _ (lerB_normD _ _))// normrN.
+  rewrite lerBrDl addSnnS natrD [leRHS]ger0_norm// lerD ?ler1n// natr_absz.
+  by rewrite !ger0_norm ?le_ceil// -ceil_ge0; apply: lt_le_trans l0.
 - move=> /cvgrPdist_lt/(_ _ ltr01)[n _].
   move=> /(_ (`|floor l|.+1 + n)%N)/(_ (leq_addl _ _)); apply/negP.
-  rewrite approx_x -leNgt distrC (le_trans _ (lerB_normD _ _))//.
-  rewrite normrN lerBrDl addSnnS [leRHS]ger0_norm ?ler0n//.
-  rewrite natrD lerD ?ler1n// ltr0_norm// (@le_trans _ _ (- floor l)%:~R)//.
-    by rewrite mulrNz lerNl opprK ge_floor.
-  by rewrite -(@lez0_abs (floor _))// -floor_le0// (lt_le_trans l0).
+  rewrite approx_x -leNgt distrC (le_trans _ (lerB_normD _ _))// normrN.
+  rewrite lerBrDl addSnnS natrD [leRHS]ger0_norm// lerD ?ler1n// natr_absz.
+  by rewrite !ltr0_norm -?floor_lt0// mulrNz lerN2 ge_floor.
 Qed.
 
 Lemma ecvg_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
@@ -2350,23 +2346,20 @@ transitivity (\int[mu]_(x in D) limn (g^~ x)).
   - rewrite gt0_mulye//; apply/cvgeyPgey; near=> M.
     have M0 : (0 <= M)%R by [].
     rewrite /g; case: (f x) fx0 => [r r0|_|//]; last first.
-      exists 1%N => // m /= m0.
-      by rewrite mulry gtr0_sg// ?mul1e ?leey// ltr0n.
+      by exists 1%N => // m /= m0; rewrite mulry gtr0_sg// ?ltr0n// mul1e leey.
     near=> n; rewrite lee_fin -ler_pdivrMr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
-    rewrite natr_absz ger0_norm ?ceil_ge// -ceil_ge0// (lt_le_trans (ltrN10 _))//.
-    by rewrite divr_ge0// ?ltW.
+    rewrite natr_absz ger0_norm ?ceil_ge//.
+    by rewrite -(ceil0 R) ceil_le// divr_ge0// ltW.
   - rewrite lt0_mulye//; apply/cvgeNyPleNy; near=> M;
     have M0 : (M <= 0)%R by [].
     rewrite /g; case: (f x) fx0 => [r r0|//|_]; last first.
-      exists 1%N => // m /= m0.
-      by rewrite mulrNy gtr0_sg// ?ltr0n// mul1e ?leNye.
+      by exists 1%N => // m /= m0; rewrite mulrNy gtr0_sg// ?ltr0n// mul1e leNye.
     near=> n; rewrite lee_fin -ler_ndivrMr//.
     near: n; exists `|ceil (M / r)|%N => // m /=.
     rewrite -(ler_nat R); apply: le_trans.
-    rewrite natr_absz ger0_norm ?ceil_ge// -ceil_ge0// (lt_le_trans (ltrN10 _))//.
-    by rewrite -mulrNN mulr_ge0// lerNr oppr0// ltW// invr_lt0.
+    by rewrite pmulrn abszE ceil_ge_int ler_norm.
   - rewrite -fx0 mule0 /g -fx0.
     under eq_fun do rewrite mule0/=. (*TODO: notation broken*)
     exact: cvg_cst.
@@ -2387,9 +2380,8 @@ rewrite -lee_pdivrMr//; last first.
 near: n.
 exists `|ceil (M * (fine (\int[mu]_(x in D) f x))^-1)|%N => //.
 move=> n /=; rewrite -(@ler_nat R) -lee_fin; apply: le_trans.
-rewrite lee_fin natr_absz ger0_norm ?ceil_ge// -ceil_ge0//.
-rewrite (lt_le_trans (ltrN10 _))//.
-by rewrite mulr_ge0// ?invr_ge0//; exact/fine_ge0/integral_ge0.
+rewrite lee_fin natr_absz ger0_norm ?ceil_ge//.
+by rewrite -(ceil0 R) ceil_le// divr_ge0//; exact/fine_ge0/integral_ge0.
 Unshelve. all: by end_near. Qed.
 
 Lemma ge0_integralZr k : (forall x, D x -> 0 <= f x) ->
@@ -2627,8 +2619,7 @@ move=> muD0; pose g : (T -> \bar R)^nat := fun n => cst n%:R%:E.
 have <- : (fun t => limn (g^~ t)) = cst +oo.
   rewrite funeqE => t; apply/cvg_lim => //=.
   apply/cvgeryP/cvgryPge => M; exists `|ceil M|%N => //= m.
-  rewrite /= -(ler_nat R); apply: le_trans.
-  by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
+  by rewrite /= pmulrn ceil_ge_int// -lez_nat abszE; apply/le_trans/ler_norm.
 rewrite monotone_convergence //.
 - under [in LHS]eq_fun do rewrite integral_cstr.
   apply/cvg_lim => //; apply/cvgeyPge => M.
@@ -2636,10 +2627,9 @@ rewrite monotone_convergence //.
     exists 1%N => // m /= m0; move: muDoo; rewrite leye_eq => /eqP ->.
     by rewrite mulry gtr0_sg ?mul1e ?leey// ltr0n.
   exists `|ceil (M / fine (mu D))|%N => // m /=.
-  rewrite -(ler_nat R) => MDm; rewrite -(@fineK _ (mu D)) ?ge0_fin_numE//.
+  rewrite -lez_nat abszE => MDm; rewrite -(@fineK _ (mu D)) ?ge0_fin_numE//.
   rewrite -lee_pdivrMr; last by rewrite fine_gt0// lt0e muD0 measure_ge0.
-  rewrite lee_fin (le_trans _ MDm)//.
-  by rewrite natr_absz (le_trans (ceil_ge _))// ler_int ler_norm.
+  by rewrite lee_fin pmulrn ceil_ge_int// (le_trans _ MDm)// ler_norm.
 - by move=> n; exact: measurable_cst.
 - by move=> n x Dx; rewrite lee_fin.
 - by move=> t Dt n m nm; rewrite /g lee_fin ler_nat.
@@ -3515,9 +3505,8 @@ apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
   by rewrite fin_numElt muEDoo (lt_le_trans _ (measure_ge0 _ _)).
 rewrite lte_fin -ltr_pdivrMr.
-  rewrite -natr1 natr_absz ger0_norm.
-    by rewrite (le_lt_trans (ceil_ge _))// ltrDl.
-  by rewrite -ceil_ge0// (lt_le_trans (ltrN10 _))// divr_ge0.
+  rewrite pmulrn floor_lt_int intS ltz1D abszE.
+  by apply: le_trans (ler_norm _); rewrite ceil_floor//= lerDl.
 rewrite -lte_fin fineK.
   rewrite lt0e measure_ge0 andbT.
   suff: E `&` D = E by move=> ->; exact/eqP.
@@ -3780,9 +3769,8 @@ move=> mf; split=> [iDf0|Df0].
           by rewrite lt0e abse_ge0 abse_eq0 ft0 ltey.
         - by rewrite inE unitfE invr_eq0 pnatr_eq0 /= invr_gt0.
       rewrite invrK /m -natr1 natr_absz ger0_norm; last first.
-        by rewrite -ceil_ge0// (lt_le_trans (ltrN10 _)).
-      rewrite (@le_trans _ _ ((fine `|f t|)^-1 + 1)%R) ?lerDl//.
-      by rewrite lerD2r// ceil_ge.
+        by rewrite -(ceil0 R) ceil_le.
+      by rewrite intrD1 ceil_ge_int lerDl.
     by split => //; apply: contraTN nft => /eqP ->; rewrite abse0 -ltNge.
   transitivity (limn (fun n => mu (D `&` [set x | `|f x| >= n.+1%:R^-1%:E]))).
     apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.

@@ -274,7 +274,7 @@ rewrite in_itv/= => /andP[sx xs]; exists `|ceil (s - x)^-1|%N => //=.
 rewrite in_itv/= sx/= lerBrDl addrC -lerBrDl.
 rewrite -[in X in _ <= X](invrK (s - x)) ler_pV2.
 - rewrite -natr1 natr_absz ger0_norm; last first.
-    by rewrite -ceil_ge0 (lt_le_trans (ltrN10 R))// invr_ge0 subr_ge0 ltW.
+    by rewrite -(ceil0 R) ceil_le// invr_ge0 subr_ge0 ltW.
   by rewrite (@le_trans _ _ (ceil (s - x)^-1)%:~R)// ?lerDl// ceil_ge.
 - by rewrite inE unitfE ltr0n andbT pnatr_eq0.
 - by rewrite inE invr_gt0 subr_gt0 xs andbT unitfE invr_eq0 subr_eq0 gt_eqF.
@@ -298,9 +298,8 @@ Proof.
 apply/seteqP; split=> y; rewrite /= !in_itv/= andbT; last first.
   by move=> [k _ /=]; move: b => [|] /=; rewrite in_itv/= => /andP[//] /ltW.
 move=> xy; exists `|ceil (y - x)|%N => //=; rewrite in_itv/= xy/= -lerBlDl.
-rewrite !natr_absz/= ger0_norm -?ceil_ge0 ?ceil_ge//.
-rewrite (lt_le_trans (ltrN10 R))// subr_ge0.
-by case: b xy => //= /ltW.
+rewrite natr_absz ger0_norm ?ceil_ge//.
+by rewrite -(ceil0 R) ceil_le// subr_ge0 (lteifW xy).
 Qed.
 
 Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
@@ -310,7 +309,7 @@ Proof.
 have /(congr1 (fun x => -%R @` x)) := itv_bnd_infty_bigcup (~~ b) (- x).
 rewrite opp_itv_bnd_infty negbK opprK => ->; rewrite image_bigcup.
 apply eq_bigcupr => k _; apply/seteqP; split=> [_ /= -[r rbxk <-]|y/= yxkb].
-   by rewrite oppr_itv/= opprB addrC.
+  by rewrite oppr_itv/= opprB addrC.
 by exists (- y); [rewrite oppr_itv/= negbK opprD opprK|rewrite opprK].
 Qed.
 

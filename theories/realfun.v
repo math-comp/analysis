@@ -246,13 +246,11 @@ have y_p : y_ n @[n --> \oo] --> p.
   apply/cvgrPdist_lt => e e0; near=> t.
   rewrite ltr0_norm// ?subr_lt0// opprB.
   rewrite /y_ /sval/=; case: cid2 => //= x /andP[_ + _].
-  rewrite ltrBlDr => /lt_le_trans; apply.
-  rewrite addrC lerD2r -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
+  rewrite -ltrBlDl => /lt_le_trans; apply.
+  rewrite -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
   near: t.
-  exists `|ceil e^-1|%N => // k /= ek.
-  rewrite (le_trans (ceil_ge _))// (@le_trans _ _ `|ceil e^-1|%:~R)//.
-    by rewrite ger0_norm -?ceil_ge0// (lt_le_trans (ltrN10 _))// invr_ge0// ltW.
-  by move: ek;rewrite -(leq_add2r 1) !addn1 -(ltr_nat R) => /ltW.
+  exists `|ceil e^-1|%N => // k /=; rewrite pmulrn ceil_ge_int// -lez_nat abszE.
+  by move=> /(le_trans (ler_norm _)) /le_trans; apply; rewrite lez_nat leqnSn.
 have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
 have mn : (m <= n)%N by near: n; exists m.
