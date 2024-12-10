@@ -33,7 +33,10 @@
   + lemma `integral_measure_add`
 
 - in `probability.v`
-  + lemma `integral_distribution` (existsing lemma `integral_distribution` has been renamed)
+  + lemma `integral_distribution` (existing lemma `integral_distribution` has been renamed)
+
+- in `measure.v`:
+  + lemma `countable_bigcupT_measurable`
 
 - in file `realfun.v`:
   + lemma `cvg_nbhsP`
