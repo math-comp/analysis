@@ -2602,6 +2602,7 @@ Proof.
 by apply: qcanon; elim/eqPchoice; elim/choicePpointed => [[T F]|T];
    [left; exists (Empty.Pack F) | right; exists T].
 Qed.
+
 Lemma Ppointed : quasi_canonical Type pointedType.
 Proof.
 by apply: qcanon; elim/Peq; elim/eqPpointed => [[T F]|T];
