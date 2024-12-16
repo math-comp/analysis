@@ -61,13 +61,14 @@ in
 
   bundles."master" = { coqPackages = common-bundle // {
     coq.override.version = "master";
+    stdlib.override.version = "master";
     coq-elpi.override.version = "master";
     hierarchy-builder.override.version = "master";
     mathcomp.override.version = "master";
     mathcomp-bigenough.override.version = "master";
     mathcomp-finmap.override.version = "master";
     ssprove.job = false;
-  }; ocamlPackages = { elpi.override.version = "1.19.2"; }; };
+  }; ocamlPackages = { elpi.override.version = "2.0.6"; }; };
 
   ## Cachix caches to use in CI
   ## Below we list some standard ones
