@@ -35,6 +35,9 @@
 - in `probability.v`
   + lemma `integral_distribution` (existsing lemma `integral_distribution` has been renamed)
 
+- in `lebesgue_measure.v`:
+  + lemma `measurable_powRr`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
@@ -99,6 +102,10 @@
   + notation `lte_opp` (deprecated since 0.6.5)
 - in `measure.v`:
   + `dynkin_setI_bigsetI` (use `big_ind` instead)
+
+- in `lebesgue_measurable.v`:
+  + notation `measurable_fun_power_pos` (deprecated since 0.6.3)
+  + notation `measurable_power_pos` (deprecated since 0.6.4)
 
 ### Infrastructure
 
