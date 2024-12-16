@@ -4706,6 +4706,15 @@ move=> mD mf1 mf2 f12; rewrite /Rintegral fine_le//.
 - by apply/le_integral => // x xD; rewrite lee_fin f12//; exact/set_mem.
 Qed.
 
+Lemma RintegralB D f1 f2 : measurable D ->
+  mu.-integrable D (EFin \o f1) -> mu.-integrable D (EFin \o f2) ->
+  \int[mu]_(x in D) (f1 x - f2 x) =
+  \int[mu]_(x in D) f1 x - \int[mu]_(x in D) f2 x.
+Proof.
+move=> mD if1 if2.
+by rewrite /Rintegral integralB_EFin// fineB//; exact: integral_fune_fin_num.
+Qed.
+
 End Rintegral.
 
 Section ae_ge0_le_integral.
@@ -4728,7 +4737,7 @@ apply: ge0_le_integral; first exact: measurableD.
 - exact: measurable_funS mf1.
 - by move=> t [Dt _]; exact: f20.
 - exact: measurable_funS mf2.
-- by move=> t [Dt Nt]; move/subsetCl : f1f2N; apply.
+- by move=> t [Dt Nt]; move/subsetCl : f1f2N; exact.
 Qed.
 
 End ae_ge0_le_integral.

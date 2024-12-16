@@ -1909,6 +1909,13 @@ Notation "[ 'bounded' E | x 'in' A ]" :=
 Notation bounded_set := [set A | [bounded x | x in A]].
 Notation bounded_fun := [set f | [bounded f x | x in setT]].
 
+Lemma bounded_cst (K : numFieldType) {V : pseudoMetricNormedZmodType K}
+  (k : V) T (A : set T) : [bounded k | _ in A].
+Proof.
+rewrite /bounded_near; near=> M => t At /=.
+by near: M; exact: nbhs_pinfty_ge.
+Unshelve. all: end_near. Qed.
+
 Lemma bounded_fun_has_ubound (T : Type) (R : realFieldType) (a : T -> R) :
   bounded_fun a -> has_ubound (range a).
 Proof.
@@ -2619,7 +2626,6 @@ Unshelve. all: by end_near. Qed.
 End NVS_continuity_mul.
 
 Section cvg_composition_pseudometric.
-
 Context {K : numFieldType} {V : pseudoMetricNormedZmodType K} {T : Type}.
 Context (F : set_system T) {FF : Filter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
@@ -2670,6 +2676,12 @@ Qed.
 
 Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
 Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
+
+Lemma cvgr_sub0 f a : (fun x => f x - a) @ F --> 0 <-> f @ F --> a.
+Proof.
+split=> [?|fFk]; first exact: cvg_zero.
+by rewrite -(@subrr _ a)//; apply: cvgB => //; exact: cvg_cst.
+Qed.
 
 Lemma cvg_norm f a : f @ F --> a -> `|f x| @[x --> F] --> (`|a| : K).
 Proof. by apply: continuous_cvg; apply: norm_continuous. Qed.
