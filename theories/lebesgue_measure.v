@@ -1180,9 +1180,10 @@ Proof.
 move=> mf.
 exact: (@measurable_comp _ _ _ _ _ _ setT (fun x : R => x ^+ n) _ f).
 Qed.
+#[deprecated(since="mathcomp-analysis 1.4.0", note="use `measurable_funX` instead")]
+Notation measurable_fun_pow := measurable_funX (only parsing).
 
-Lemma measurable_powR (R : realType) p :
-  measurable_fun [set: R] (@powR R ^~ p).
+Lemma measurable_powR (R : realType) p : measurable_fun [set: R] (@powR R ^~ p).
 Proof.
 apply: measurable_fun_if => //.
 - apply: (measurable_fun_bool true).
@@ -1194,14 +1195,20 @@ apply: measurable_fun_if => //.
 Qed.
 #[global] Hint Extern 0 (measurable_fun _ (@powR _ ^~ _)) =>
   solve [apply: measurable_powR] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_powR` instead")]
-Notation measurable_fun_power_pos := measurable_powR (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `measurable_powR` instead")]
-Notation measurable_power_pos := measurable_powR (only parsing).
+
+Lemma measurable_powRr {R : realType} b : measurable_fun [set: R] (@powR R b).
+Proof.
+rewrite /powR; apply: measurable_fun_if => //.
+- rewrite preimage_true setTI/=.
+  case: (b == 0); rewrite ?set_true ?set_false.
+  + by apply: measurableT_comp => //; exact: measurable_fun_eqr.
+  + exact: measurable_fun_set0.
+- rewrite preimage_false setTI; apply: measurableT_comp => //.
+  exact: mulrr_measurable.
+Qed.
+
 #[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxr` instead")]
 Notation measurable_fun_max := measurable_maxr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.4.0", note="use `measurable_funX` instead")]
-Notation measurable_fun_pow := measurable_funX (only parsing).
 
 Module NGenCInfty.
 Section ngencinfty.
