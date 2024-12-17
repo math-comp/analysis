@@ -6,7 +6,7 @@ let
     mathcomp-experimental-reals.job = true;
     mathcomp-reals-stdlib.job = true;
     mathcomp-analysis-stdlib.job = true;
-    ssprove.job = false;
+    ssprove.override.version = "main";
   };
 in
 {
@@ -56,7 +56,6 @@ in
   bundles."8.20".coqPackages = common-bundle // {
     coq.override.version = "8.20";
     mathcomp.override.version = "2.2.0";
-    ssprove.job = false;
   };
 
   bundles."master".coqPackages = common-bundle // {
