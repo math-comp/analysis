@@ -35,6 +35,11 @@
 - in `probability.v`
   + lemma `integral_distribution` (existsing lemma `integral_distribution` has been renamed)
 
+- in file `realfun.v`,
+  + new lemmas `cauchy_MVT`,
+    `lhopital_right`, and
+    `lhopital_left`.
+
 ### Changed
 
 - in `lebesgue_integrale.v`
