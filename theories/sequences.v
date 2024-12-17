@@ -372,7 +372,7 @@ Section sequences_patched.
 Section NatShift.
 
 Variables (N : nat) (V : ptopologicalType).
-Implicit Types (f : nat -> V) (u : V ^nat)  (l : V).
+Implicit Types (f : nat -> V) (u : V ^nat)  (l : set_system V).
 
 Lemma cvg_restrict f u_ l :
   ([sequence if (n <= N)%N then f n else u_ n]_n @ \oo --> l) =
@@ -410,7 +410,7 @@ End NatShift.
 
 Variables (V : ptopologicalType).
 
-Lemma cvg_shiftS u_ (l : V) :
+Lemma cvg_shiftS u_ (l : set_system V) :
   ([sequence u_ n.+1]_n @ \oo --> l) = (u_ @ \oo --> l).
 Proof.
 suff -> : [sequence u_ n.+1]_n = [sequence u_(n + 1)%N]_n by rewrite cvg_shiftn.
@@ -645,7 +645,7 @@ Proof. by rewrite telescopeK/= addrC addrNK. Qed.
 
 Section series_patched.
 Variables (N : nat) (K : numFieldType) (V : normedModType K).
-Implicit Types (f : nat -> V) (u : V ^nat)  (l : V).
+Implicit Types (f : nat -> V) (u : V ^nat)  (l : set_system V).
 
 Lemma is_cvg_series_restrict u_ :
   cvgn [sequence \sum_(N <= k < n) u_ k]_n = cvgn (series u_).
@@ -3002,7 +3002,7 @@ rewrite cvg_ex //= => -[l Hl]; exists l; split.
   by move: Ball_a0; rewrite closed_ballE //= subsetI; apply: proj1.
 - move=> i _.
   have : closed_ball (a i) (r i)%:num l.
-    rewrite -(@cvg_shiftn i _ a l) /= in Hl.
+    rewrite -(@cvg_shiftn i _ a _) /= in Hl.
     apply: (@closed_cvg _ _ \oo eventually_filter (fun n => a (n + i)%N)) => //=.
     + exact: closed_ball_closed.
     + by apply: nearW; move=> n; exact/(Suite_ball _ _ (leq_addl n i))/closed_ballxx.
