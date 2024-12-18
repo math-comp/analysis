@@ -88,7 +88,7 @@ We try to preserve backward compatibility as best as we can.
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_7_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_8_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
 It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
 
 Overview presentations:
