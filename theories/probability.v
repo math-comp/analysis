@@ -541,6 +541,24 @@ Qed.
 End variance.
 Notation "'V_ P [ X ]" := (variance P X).
 
+(* TODO: move earlier *)
+Section mfun_measurable_realType.
+Context {d} {aT : measurableType d} {rT : realType}.
+
+HB.instance Definition _ (f : {mfun aT >-> rT}) :=
+  @isMeasurableFun.Build d _ _ _ f^\+
+    (measurable_funrpos (@measurable_funP _ _ _ _ f)).
+
+HB.instance Definition _ (f : {mfun aT >-> rT}) :=
+  @isMeasurableFun.Build d _ _ _ f^\-
+    (measurable_funrneg (@measurable_funP _ _ _ _ f)).
+
+HB.instance Definition _ (f : {mfun aT >-> rT}) :=
+  @isMeasurableFun.Build d _ _ _ (@normr _ _ \o f)
+    (measurableT_comp (@normr_measurable _ _) (@measurable_funP _ _ _ _ f)).
+
+End mfun_measurable_realType.
+
 Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
