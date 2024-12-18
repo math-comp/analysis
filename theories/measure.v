@@ -1390,12 +1390,19 @@ Qed.
 
 End sigma_ring_lambda_system.
 
-Lemma bigcupT_measurable_rat d (T : sigmaRingType d) (F : rat -> set T) :
+Lemma countable_bigcupT_measurable d (T : sigmaRingType d) U
+    (F : U -> set T) : countable [set: U] ->
   (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
 Proof.
-move=> Fm; have /ppcard_eqP[f] := card_rat.
-by rewrite (reindex_bigcup f^-1%FUN setT)//=; exact: bigcupT_measurable.
+elim/Ppointed: U => U in F *; first by move=> *; rewrite empty_eq0 bigcup0.
+move=> /countable_bijP[B] /ppcard_eqP[f] Fm.
+rewrite (reindex_bigcup f^-1%FUN setT)//=; first exact: bigcupT_measurable.
+exact: (@subl_surj _ _ B).
 Qed.
+
+Lemma bigcupT_measurable_rat d (T : sigmaRingType d) (F : rat -> set T) :
+  (forall i, measurable (F i)) -> measurable (\bigcup_i F i).
+Proof. exact/countable_bigcupT_measurable. Qed.
 
 Section measurable_lemmas.
 Context d (T : measurableType d).
