@@ -44,6 +44,10 @@
 - in `lebesgue_measure.v`:
   + lemma `measurable_powRr`
 
+- in `measure.v`:
+  + definition `discrete_measurable`
+  + lemmas `discrete_measurable0`, `discrete_measurableC`, `discrete_measurableU`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
