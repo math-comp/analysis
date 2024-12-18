@@ -3468,6 +3468,77 @@ Qed.
 End integrable_lemmas.
 Arguments integrable_mkcond {d T R mu D} f.
 
+Section ge0_cvg_integral.
+Local Open Scope ereal_scope.
+Context {R : realType}.
+Variable mu : {measure set (@measurableTypeR R) -> \bar R}.
+Variable f : R -> R.
+Hypothesis f0 : (forall x, 0 <= f x)%R.
+Hypothesis mf : measurable_fun setT f.
+
+Let ge0_integral_ereal_sup :
+  \int[mu]_(x in `[0%R, +oo[) (f x)%:E =
+  ereal_sup [set \int[mu]_(x in `[0%R, i.+1%:R]) (f x)%:E | i in [set: nat]].
+Proof.
+apply/eqP; rewrite eq_le; apply/andP; split; last first.
+  apply: ub_ereal_sup => /=_ [n _ <-].
+  apply: ge0_subset_integral => //=.
+  - by apply/measurable_EFinP; exact: measurable_funS mf.
+  - by move=> ? _; rewrite lee_fin f0.
+  - exact: subset_itvl.
+rewrite itv_bnd_infty_bigcup0S.
+rewrite seqDU_bigcup_eq ge0_integral_bigcup//; last 3 first.
+- by move=> ?; apply: measurableD => //; exact: bigsetU_measurable.
+- by apply: measurable_funTS; exact/measurable_EFinP.
+- by move=> x; rewrite lee_fin f0//.
+apply: lime_le => /=.
+  apply: is_cvg_nneseries => n _.
+  by apply: integral_ge0 => k _; exact: f0.
+apply: nearW => n.
+rewrite -ge0_integral_bigsetU//=; first last.
+- by move=> ? _; rewrite lee_fin ?expR_ge0.
+- by apply/measurable_EFinP; exact: measurableT_comp.
+- exact: (@sub_trivIset _ _ _ [set: nat]).
+- exact: iota_uniq.
+- by move=> k; apply: measurableD => //; exact: bigsetU_measurable.
+rewrite big_mkord -bigsetU_seqDU.
+move: n => [|n].
+  rewrite big_ord0 integral_set0.
+  apply: ereal_sup_le.
+  exists (\int[mu]_(x in `[0%R, 1%:R]) (f x)%:E) => //.
+  apply: integral_ge0.
+  by move=> ? _; rewrite lee_fin f0.
+rewrite [X in \int[_]_(_ in X) _](_ : _ = `[0%R, n.+1%:R]%classic); last first.
+  rewrite eqEsubset; split => x/=; rewrite in_itv/=.
+    rewrite -(bigcup_mkord _ (fun k => `[0%R, k.+1%:R]%classic)).
+    move=> [k /= kSn].
+    rewrite in_itv/= => /andP[-> xSk]/=.
+    by rewrite (le_trans xSk)// ler_nat.
+  move=> /andP[x0 Snx].
+  rewrite -(bigcup_mkord _ (fun k => `[0%R, k.+1%:R]%classic)).
+  exists n => //=.
+  by rewrite in_itv/= x0 Snx.
+apply: ereal_sup_le.
+exists (\int[mu]_(x in `[0%R, n.+1%:R]) (f x)%:E); first by exists n.
+apply: ge0_subset_integral => //=.
+  by apply/measurable_EFinP; exact: measurableT_comp.
+by move=> ? _; rewrite lee_fin f0.
+Qed.
+
+Lemma ge0_cvg_integral :
+  (fun n => \int[mu]_(x in `[0%R, n%:R]) (f x)%:E) @ \oo -->
+  \int[mu]_(x in `[0%R, +oo[) (f x)%:E.
+Proof.
+rewrite -cvg_shiftS/= ge0_integral_ereal_sup//.
+apply/ereal_nondecreasing_cvgn/nondecreasing_seqP => n.
+apply: (@ge0_subset_integral _ _ _ mu) => //.
+- by apply: measurable_funTS; exact: measurableT_comp.
+- by move => ? _; exact: f0.
+- by apply: subset_itvl; rewrite bnd_simp ler_nat.
+Qed.
+
+End ge0_cvg_integral.
+
 Lemma finite_measure_integrable_cst d (T : measurableType d) (R : realType)
     (mu : {finite_measure set T -> \bar R}) k :
   mu.-integrable [set: T] (EFin \o cst k).

@@ -16,9 +16,13 @@ From mathcomp Require Import lebesgue_integral derive charge.
 (* for the Lebesgue integral. We derive from this theorem a corollary to      *)
 (* compute the definite integral of continuous functions.                     *)
 (*                                                                            *)
+(*             'd1 f == first partial derivative of f                         *)
+(*                      f has type R -> T -> R for R : realType               *)
 (* parameterized_integral mu a x f := \int[mu]_(t \in `[a, x] f t)            *)
 (*                                                                            *)
 (******************************************************************************)
+
+Reserved Notation "'d1 f" (at level 10, f at next level, format "''d1'  f").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -31,9 +35,7 @@ Local Open Scope ring_scope.
 
 Section differentiation_under_integral.
 
-Reserved Notation "'d1 f" (at level 10, f at next level, format "''d1'  f").
-
-Let partial1 {R : realType} {T : Type} (f : R -> T -> R) y : R -> R :=
+Definition partial1 {R : realType} {T : Type} (f : R -> T -> R) y : R -> R :=
   (f ^~ y)^`().
 
 Local Notation "'d1 f" := (partial1 f).
@@ -199,6 +201,7 @@ exact: cvg_differentiation_under_integral.
 Qed.
 
 End differentiation_under_integral.
+Notation "'d1 f" := (partial1 f).
 
 Section FTC.
 Context {R : realType}.

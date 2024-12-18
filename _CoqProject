@@ -91,6 +91,7 @@ theories/convex.v
 theories/charge.v
 theories/kernel.v
 theories/pi_irrational.v
+theories/gauss_integral.v
 theories/showcase/summability.v
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v

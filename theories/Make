@@ -58,5 +58,6 @@ convex.v
 charge.v
 kernel.v
 pi_irrational.v
+gauss_integral.v
 all_analysis.v
 showcase/summability.v

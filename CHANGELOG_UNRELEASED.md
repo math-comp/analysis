@@ -4,54 +4,6 @@
 
 ### Added
 
-- in `num_topology.v`:
-  + lemma `in_continuous_mksetP`
-
-- in `normedtype.v`:
-  + lemmas `continuous_within_itvcyP`, `continuous_within_itvNycP`
-
-- in `mathcomp_extra.v`:
-  + lemma `partition_disjoint_bigfcup`
-- in `lebesgue_measure.v`:
-  + lemma `measurable_indicP`
-
-- in `lebesgue_integral.v`:
-  + definition `dyadic_approx` (was `Let A`)
-  + definition `integer_approx` (was `Let B`)
-  + lemma `measurable_sum`
-  + lemma `integrable_indic`
-
-- in `constructive_ereal.v`:
-  + notations `\prod` in scope ereal_scope
-  + lemmas `prode_ge0`, `prode_fin_num`
-- in `probability.v`:
-  + lemma `expectation_def`
-  + notation `'M_`
-
-- in `lebesgue_integral.v`:
-  + lemmas `integrable_pushforward`, `integral_pushforward`
-  + lemma `integral_measure_add`
-
-- in `probability.v`
-  + lemma `integral_distribution` (existsing lemma `integral_distribution` has been renamed)
-
-- in `constructive_ereal.v`:
-  + lemma `abse_EFin`
-
-- in `normedtype.v`:
-  + lemma `scaler1`
-
-- in `normedtype.v`:
-  + lemmas `bounded_cst`, `cvgr_sub0`
-
-- in `lebesgue_integral.v`:
-  + lemma `RintegralB`
-
-- in `ftc.v`:
-  + lemmas `differentiation_under_integral`, `derivable_under_integral`
-
-### Changed
-
 - in `mathcomp_extra.v`:
   + lemmas `prodr_ile1`, `nat_int`
 
@@ -108,6 +60,38 @@
 - in `realfun.v`:
   + definition `discontinuity`
   + lemmas `nondecreasing_fun_sum_le`, `discontinuty_countable`
+- in `constructive_ereal.v`:
+  + lemma `abse_EFin`
+
+- in `normedtype.v`:
+  + lemmas `bounded_cst`, `cvgr_sub0`
+
+- in `lebesgue_integral.v`:
+  + lemma `RintegralB`
+
+- in `ftc.v`:
+  + lemmas `differentiation_under_integral`, `derivable_under_integral`
+  + definition `partial1`, notation `'d1`
+
+- in `real_interval.v`:
+  + lemma `itv_bnd_infty_bigcup0S`
+
+- in `lebesgue_integral.v`:
+  + lemma `ge0_cvg_integral`
+
+- in `trigo.v`:
+  + lemma `derivable_atan`
+
+- new file `gauss_integral.v`:
+  + definition `oneDsqr`
+  + lemmas `oneDsqr_gt0`, `oneDsqr_ge0`, `oneDsqr_ge1`, `oneDsqr_neq0`,
+    `oneDsqrV_le1`, `continuous_oneDsqr`, `continuous_oneDsqrV`,
+    `integral01_atan`
+  + definition `gauss`
+  + lemmas `gauss_ge0`, `gauss_le1`, `cvg_gauss`, `measurable_gauss`,
+    `continuous_gauss`
+  + module `gauss_integral_proof`
+  + lemma `integral0y_gauss_pi2`
 
 ### Changed
 
