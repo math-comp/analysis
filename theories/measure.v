@@ -45,12 +45,7 @@ From HB Require Import structures.
 (*                                                                            *)
 (* ## Instances of mathematical structures                                    *)
 (* ```                                                                        *)
-(* discrete_measurable_unit == the measurableType corresponding to            *)
-(*                             [set: set unit]                                *)
-(* discrete_measurable_bool == the measurableType corresponding to            *)
-(*                             [set: set bool]                                *)
-(*  discrete_measurable_nat == the measurableType corresponding to            *)
-(*                             [set: set nat]                                 *)
+(*    discrete_measurable T == alias for the sigma-algebra [set: set T]       *)
 (*                setring G == the set of sets G contains the empty set, is   *)
 (*                             closed by union, and difference (it is a ring  *)
 (*                             of sets in the sense of ringOfSetsType)        *)
@@ -1420,67 +1415,35 @@ Qed.
 
 End measurable_lemmas.
 
-Section discrete_measurable_unit.
+Section discrete_measurable.
+Context {T : Type}.
 
-Definition discrete_measurable_unit : set (set unit) := [set: set unit].
+Definition discrete_measurable : set (set T) := [set: set T].
 
-Let discrete_measurable0 : discrete_measurable_unit set0. Proof. by []. Qed.
+Lemma discrete_measurable0 : discrete_measurable set0. Proof. by []. Qed.
 
-Let discrete_measurableC X :
-  discrete_measurable_unit X -> discrete_measurable_unit (~` X).
+Lemma discrete_measurableC X :
+  discrete_measurable X -> discrete_measurable (~` X).
 Proof. by []. Qed.
 
-Let discrete_measurableU (F : (set unit)^nat) :
-  (forall i, discrete_measurable_unit (F i)) ->
-  discrete_measurable_unit (\bigcup_i F i).
+Lemma discrete_measurableU (F : (set T)^nat) :
+  (forall i, discrete_measurable (F i)) ->
+  discrete_measurable (\bigcup_i F i).
 Proof. by []. Qed.
 
-HB.instance Definition _ := @isMeasurable.Build default_measure_display unit
-  discrete_measurable_unit discrete_measurable0
+End discrete_measurable.
+
+HB.instance Definition _ := @isMeasurable.Build default_measure_display
+  unit discrete_measurable discrete_measurable0
   discrete_measurableC discrete_measurableU.
 
-End discrete_measurable_unit.
-
-Section discrete_measurable_bool.
-
-Definition discrete_measurable_bool : set (set bool) := [set: set bool].
-
-Let discrete_measurable0 : discrete_measurable_bool set0. Proof. by []. Qed.
-
-Let discrete_measurableC X :
-  discrete_measurable_bool X -> discrete_measurable_bool (~` X).
-Proof. by []. Qed.
-
-Let discrete_measurableU (F : (set bool)^nat) :
-  (forall i, discrete_measurable_bool (F i)) ->
-  discrete_measurable_bool (\bigcup_i F i).
-Proof. by []. Qed.
-
-HB.instance Definition _ := @isMeasurable.Build default_measure_display bool
-  discrete_measurable_bool discrete_measurable0
+HB.instance Definition _ := @isMeasurable.Build default_measure_display
+  bool discrete_measurable discrete_measurable0
   discrete_measurableC discrete_measurableU.
 
-End discrete_measurable_bool.
-
-Section discrete_measurable_nat.
-
-Definition discrete_measurable_nat : set (set nat) := [set: set nat].
-
-Let discrete_measurable_nat0 : discrete_measurable_nat set0. Proof. by []. Qed.
-
-Let discrete_measurable_natC X :
-  discrete_measurable_nat X -> discrete_measurable_nat (~` X).
-Proof. by []. Qed.
-
-Let discrete_measurable_natU (F : (set nat)^nat) :
-  (forall i, discrete_measurable_nat (F i)) ->
-  discrete_measurable_nat (\bigcup_i F i).
-Proof. by []. Qed.
-
-HB.instance Definition _ := isMeasurable.Build default_measure_display nat
-  discrete_measurable_nat0 discrete_measurable_natC discrete_measurable_natU.
-
-End discrete_measurable_nat.
+HB.instance Definition _ := @isMeasurable.Build default_measure_display
+  nat discrete_measurable discrete_measurable0
+  discrete_measurableC discrete_measurableU.
 
 Definition sigma_display {T} : set (set T) -> measure_display.
 Proof. exact. Qed.
