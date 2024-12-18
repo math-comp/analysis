@@ -956,7 +956,7 @@ Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) (P : pred nat) m :
   nondecreasing_seq (fun n=> \sum_(m <= k < n | P k) u_ k)%R.
 Proof.
 move=> u_ge0; apply/nondecreasing_seqP => n.
-have/orP[mn|] := le_lt_total m n.
+have[mn|] := leP m n.
   rewrite [in leRHS]big_mkcond [in leRHS]big_nat_recr//=.
   by rewrite -[in leRHS]big_mkcond/= lerDl; case: ifPn => //; exact: u_ge0.
 by move=> /[dup] /ltW *; rewrite !big_geq.
@@ -1987,7 +1987,7 @@ Lemma nneseries_sum_nat (R : realType) m n (f : nat -> nat -> \bar R) N :
 Proof.
 move=> f0; elim: n => [|n IHn].
   by rewrite big_geq// eseries0// => i; rewrite big_geq.
-have/orP[mn|nm]:= le_lt_total m n.
+have[mn|nm]:= leP m n.
   rewrite big_nat_recr// -IHn/= -nneseriesD//; last by move=> i; rewrite sume_ge0.
   by apply/congr_lim/funext => ?; apply: eq_bigr => i _; rewrite big_nat_recr.
 by rewrite big_geq// eseries0// => i; rewrite big_geq.

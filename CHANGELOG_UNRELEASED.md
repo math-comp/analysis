@@ -4,9 +4,6 @@
 
 ### Added
 
-- in file `mathcomp_extra.v`,
-  + lemmas `eq_lt_total`, `le_lt_total`
-
 - file `Rstruct_topology.v`
 
 - package `coq-mathcomp-reals` depending on `coq-mathcomp-classical`
