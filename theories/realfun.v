@@ -2454,7 +2454,7 @@ case=> ? [l + <- <-]; rewrite -/(total_variation x b f).
 move: l => [|i j].
   by move=> /itv_partition_nil /eqP; rewrite lt_eqF.
 move=> [/= /andP[xi ij /eqP ijb]] tv_eps.
-apply: filter_app (nbhs_right_ge _).
+apply: (filter_app _ _ (nbhs_right_ge _)).
 apply: filter_app (nbhs_right_lt xi).
 have e20 : 0 < eps%:num / 2 by [].
 move/cvgrPdist_lt/(_ (eps%:num/2) e20) : ctsf; apply: filter_app.
@@ -2552,7 +2552,7 @@ have /near_eq_cvg/cvg_trans : {near (- x)^'+,
     (fun t => fine (TV (- b) (- a) (f \o -%R)) - fine (TV (- b) t (f \o -%R))) =1
     (fine \o (TV a)^~ f) \o -%R}.
   apply: filter_app (nbhs_right_lt xa).
-  apply: filter_app (nbhs_right_ge _).
+  apply: (filter_app _ _ (nbhs_right_ge _)).
   near=> t => xt ta; have ? : -b <= t by exact: (le_trans bx).
   have ? : t <= -a by exact: ltW.
   apply/eqP; rewrite eq_sym -subr_eq opprK addrC.
