@@ -28,7 +28,7 @@
   + lemma `abse_EFin`
 
 - in `normedtype.v`:
-  + lemmas `bounded_cst`, `cvgr_sub0`
+  + lemmas `bounded_cst`, `subr_cvg0`
 
 - in `lebesgue_integral.v`:
   + lemma `RintegralB`
@@ -66,6 +66,9 @@
   + put the notation ``` ^`() ``` and ``` ^`( _ ) ``` in scope `classical_set_scope`
 
 ### Renamed
+
+- in `normedtype.v`:
+  + `cvge_sub0` -> `sube_cvg0`
 
 ### Generalized
 
