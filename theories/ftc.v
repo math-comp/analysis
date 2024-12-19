@@ -151,7 +151,7 @@ have g_cvg_d1f : forall y, B y -> (g_ n y)%:E @[n --> \oo] --> (('d1 f) y a)%:E.
     apply/cvg_lim => //.
     by move: fayl; under eq_fun do rewrite scaler1.
   have xa0 : (forall n, x_ n - a != 0) /\ x_ n - a @[n --> \oo] --> 0.
-    by split=> [x|]; [rewrite subr_eq0|exact/cvgr_sub0].
+    by split=> [x|]; [rewrite subr_eq0|exact/subr_cvg0].
   move: fayl => /cvgr_dnbhsP/(_ _ xa0).
   under [in X in X -> _]eq_fun do rewrite scaler1 subrK.
   move=> xa_l.
@@ -171,7 +171,7 @@ rewrite [X in X @ _ --> _](_ : _ =
   - by apply: eq_Rintegral => y _; rewrite mulrC.
   - rewrite /comp; under eq_fun do rewrite EFinB.
     by apply: integrableB => //; exact: intf.
-apply/cvgr_sub0.
+apply/subr_cvg0.
 rewrite [X in X @ _ --> _](_ : _ =
     (fun x => \int[mu]_(z in B) (g_ x z - ('d1 f) z a)))%R; last first.
   by apply/funext => n; rewrite RintegralB.
