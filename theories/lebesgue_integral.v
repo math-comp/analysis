@@ -4489,7 +4489,7 @@ Let cvg_g_ x : D x -> g_ ^~ x @ \oo --> 0.
 Proof.
 move=> Dx; rewrite -abse0; apply: cvg_abse.
 move: (f_f Dx); case: (f x) => [r|/=|/=].
-- by move=> f_r; apply/cvge_sub0.
+- by move=> f_r; exact/sube_cvg0.
 - move/cvgeyPge/(_ (fine (g x) + 1)%R) => [n _]/(_ _ (leqnn n))/= h.
   have : (fine (g x) + 1)%:E <= g x.
     by rewrite (le_trans h)// (le_trans _ (absfg n Dx))// lee_abs.
@@ -4572,7 +4572,7 @@ have h n : `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |
     by apply: le_integrable ig => // x Dx /=; rewrite (gee0_abs (g0 Dx)) absfg.
   by apply: le_abse_integral => //; exact: emeasurable_funB.
 suff: `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x | @[n \oo] --> 0.
-   move/cvg_abse0P/cvge_sub0; apply.
+   move/cvg_abse0P/sube_cvg0; apply.
    rewrite fin_numElt (_ : -oo = - +oo)// -lte_absl.
    move: dominated_integrable => /integrableP[?]; apply: le_lt_trans.
    by apply: (le_trans _ (@le_abse_integral _ _ _ mu D f mD _)).
@@ -7214,7 +7214,7 @@ Proof.
 move=> mA; have := lebesgue_differentiation (locally_integrable_indic openT mA).
 apply: filter_app; first exact: (ae_filter_ringOfSetsType mu).
 apply: aeW => /= x Ax.
-apply: (cvge_sub0 _ _).1 => //.
+apply: (sube_cvg0 _ _).1 => //.
 move: Ax; rewrite /lebesgue_pt /davg /= -/mu => Ax.
 have : (fine (mu (ball x r)))^-1%:E *
        `|\int[mu]_(y in ball x r) (\1_A y - \1_A x)%:E | @[r --> 0^'+] --> 0.
@@ -7316,7 +7316,7 @@ Lemma nice_lebesgue_differentiation (f : R -> R) :
   (fine (mu (E x n)))^-1%:E * \int[mu]_(y in E x n) (f y)%:E
     @[n --> \oo] --> (f x)%:E.
 Proof.
-move=> locf x fx; apply: (cvge_sub0 _ _).1 => //=; apply/cvg_abse0P.
+move=> locf x fx; apply: (sube_cvg0 _ _).1 => //=; apply/cvg_abse0P.
 pose r_ x : {posnum R} ^nat := (sval (cid (hE x).2)).2.
 pose C := (sval (cid (hE x).2)).1.
 have C_gt0 : (0 < C)%R by rewrite /C /sval/=; case: cid => -[? ?] [].

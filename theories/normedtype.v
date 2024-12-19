@@ -2677,7 +2677,7 @@ Qed.
 Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
 Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
 
-Lemma cvgr_sub0 f a : (fun x => f x - a) @ F --> 0 <-> f @ F --> a.
+Lemma subr_cvg0 f a : (fun x => f x - a) @ F --> 0 <-> f @ F --> a.
 Proof.
 split=> [?|fFk]; first exact: cvg_zero.
 by rewrite -(@subrr _ a)//; apply: cvgB => //; exact: cvg_cst.
@@ -3058,7 +3058,7 @@ Lemma cvgeB f g a b :
   a +? - b -> f @ F --> a -> g @ F --> b -> f \- g @ F --> a - b.
 Proof. by move=> ab fa gb; apply: cvgeD => //; exact: cvgeN. Qed.
 
-Lemma cvge_sub0 f (k : \bar R) :
+Lemma sube_cvg0 f (k : \bar R) :
   k \is a fin_num -> (fun x => f x - k) @ F --> 0 <-> f @ F --> k.
 Proof.
 move=> kfin; split.
@@ -3235,6 +3235,8 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
 Unshelve. all: end_near. Qed.
 
 End ecvg_realFieldType.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `sube_cvg0`")]
+Notation cvge_sub0 := sube_cvg0 (only parsing).
 
 Section max_cts.
 Context {R : realType} {T : topologicalType}.
