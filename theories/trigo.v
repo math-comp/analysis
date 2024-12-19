@@ -482,7 +482,7 @@ rewrite -seriesN lt_sum_lim_series //.
 move=> d.
 rewrite /cos_coeff' 2!exprzD_nat (exprSz _ d.*2) -[in (-1) ^ d.*2](muln2 d).
 rewrite -(exprnP _ (d * 2)) (exprM (-1)) sqrr_sign 2!mulr1 -exprSzr.
-rewrite (_ : 4 = 2 * 2)%N // -(exprnP _ (2 * 2)) (exprM (-1)) sqrr_sign.
+rewrite -[4%Z]/(_ (2 * 2))%N -(exprnP _ (2 * 2)) (exprM (-1)) sqrr_sign.
 rewrite mul1r [(-1) ^ 3](_ : _ = -1) ?mulN1r ?mulNr ?opprK; last first.
   by rewrite -exprnP 2!exprS expr1 mulrN1 opprK mulr1.
 rewrite subr_gt0.
