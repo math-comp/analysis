@@ -1516,11 +1516,14 @@ Qed.
 
 Lemma measurable_funepos D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\+.
-Proof. by move=> mf; exact: measurable_maxe. Qed.
+Proof. by move=> mf; rewrite unlock; exact: measurable_maxe. Qed.
 
 Lemma measurable_funeneg D (f : T -> \bar R) :
   measurable_fun D f -> measurable_fun D f^\-.
-Proof. by move=> mf; apply: measurable_maxe => //; exact: measurableT_comp. Qed.
+Proof.
+move=> mf; rewrite unlock; apply: measurable_maxe => //.
+exact: measurableT_comp.
+Qed.
 
 Lemma measurable_mine D (f g : T -> \bar R) :
   measurable_fun D f -> measurable_fun D g ->
