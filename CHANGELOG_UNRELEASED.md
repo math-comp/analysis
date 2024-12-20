@@ -26,6 +26,9 @@
   + module `pi_irrational`
   + lemma `pi_irrationnal`
 
+- in `numfun.v`
+	+ lemmas `funeposE`, `funenegE`, `funepos_comp`, `funeneg_comp`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
@@ -34,6 +37,9 @@
 - in `derive.v`:
   + put the notation ``` ^`() ``` and ``` ^`( _ ) ``` in scope `classical_set_scope`
 
+- in `numfun.v`
+	+ lock `funepos`, `funeneg`
+  
 ### Renamed
 
 ### Generalized

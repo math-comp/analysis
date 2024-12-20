@@ -600,10 +600,8 @@ Unshelve. all: by end_near. Qed.
 Lemma summable_eseries_esum  (f : nat -> \bar R) (P : pred nat) :
   summable P f -> \sum_(i <oo | P i) f i = esum P f^\+ - esum P f^\-.
 Proof.
-move=> Pfoo; rewrite -nneseries_esum; last first.
-  by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite -leNgt.
-rewrite -nneseries_esum ?[LHS]summable_eseries//.
-by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite leNgt.
+move=> Pfoo.
+by rewrite -nneseries_esum// -nneseries_esum// [LHS]summable_eseries.
 Qed.
 
 End summable_nat.
@@ -620,7 +618,7 @@ Let ge0_esum_posneg D f : (forall x, D x -> 0 <= f x) ->
 Proof.
 move=> Sa; rewrite /esum_posneg [X in _ - X](_ : _ = 0) ?sube0; last first.
   by rewrite esum1// => x Sx; rewrite -[LHS]/(f^\- x) (ge0_funenegE Sa)// inE.
-by apply: eq_esum => t St; apply/max_idPl; exact: Sa.
+apply: eq_esum => t St; rewrite funeposE; apply/max_idPl; exact: Sa.
 Qed.
 
 Lemma esumB D f g : summable D f -> summable D g ->
@@ -630,10 +628,9 @@ Lemma esumB D f g : summable D f -> summable D g ->
 Proof.
 move=> Df Dg f0 g0.
 have /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_posneg D f.
-  rewrite !ge0_esum_posneg// -!esumD//; last 2 first.
-    by move=> t Dt; rewrite le_max lexx orbT.
-    by move=> t Dt; rewrite le_max lexx orbT.
-  apply eq_esum => i Di; have [fg|fg] := leP 0 (f i - g i).
+  rewrite !ge0_esum_posneg// -!esumD//.
+  apply eq_esum => i Di; rewrite funeposE funenegE.
+  have [fg|fg] := leP 0 (f i - g i).
     rewrite max_r 1?leeNl ?oppe0// add0e subeK//.
     by rewrite fin_num_abs (summable_pinfty Dg).
   rewrite add0e max_l; last by rewrite leeNr oppe0 ltW.

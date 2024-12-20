@@ -4105,7 +4105,9 @@ Proof. by apply: filterS => x /[apply] /= ->. Qed.
 Lemma ae_eq_funeposneg f g : ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
 Proof.
 split=> [fg|[]].
-  by rewrite /funepos /funeneg; split; apply: filterS fg => x /[apply] ->.
+  split; apply: filterS fg => x /[apply].
+    by rewrite !funeposE => ->.
+  by rewrite !funenegE => ->.
 apply: filterS2 => x + + Dx => /(_ Dx) fg /(_ Dx) gf.
 by rewrite (funeposneg f) (funeposneg g) fg gf.
 Qed.
