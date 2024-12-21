@@ -4890,20 +4890,20 @@ apply: (@le_trans _ _ (limn BA + limn BNA)); [apply: leeD|].
     apply: (@le_trans _ _ (mu_ext mu (\bigcup_k (B k `\` A)))).
       by apply: le_mu_ext; rewrite -setI_bigcupl; exact: setISS.
     exact: outer_measure_sigma_subadditive.
-have ? : cvg (BNA @ \oo) by exact: is_cvg_nneseries.
-have ? : cvg (BA @ \oo) by exact: is_cvg_nneseries.
-have ? : cvg (eseries (Rmu \o B) @ \oo) by exact: is_cvg_nneseries.
+have cBNA : cvg (BNA @ \oo) by exact: is_cvg_nneseries.
+have cBA : cvg (BA @ \oo) by exact: is_cvg_nneseries.
+have cB : cvg (eseries (Rmu \o B) @ \oo) by exact: is_cvg_nneseries.
 have [def|] := boolP (lim (BA @ \oo) +? lim (BNA @ \oo)); last first.
   rewrite /adde_def negb_and !negbK=> /orP[/andP[BAoo BNAoo]|/andP[BAoo BNAoo]].
   - suff -> : limn (eseries (Rmu \o B)) = +oo by rewrite leey.
-    apply/eqP; rewrite -leye_eq -(eqP BAoo); apply/lee_lim => //.
+    apply/eqP; rewrite -leye_eq -(eqP BAoo); apply/(lee_lim cBA cB).
     near=> n; apply: lee_sum => m _; apply: le_measure; rewrite /mkset; by
       [rewrite inE; exact: measurableI | rewrite inE | apply: subIset; left].
   - suff -> : limn (eseries (Rmu \o B)) = +oo by rewrite leey.
-    apply/eqP; rewrite -leye_eq -(eqP BNAoo); apply/lee_lim => //.
+    apply/eqP; rewrite -leye_eq -(eqP BNAoo); apply/(lee_lim cBNA cB).
     by near=> n; apply: lee_sum => m _; rewrite -setDE; apply: le_measure;
        rewrite /mkset ?inE//; apply: measurableD.
-rewrite -limeD // (_ : (fun _ => _) =
+rewrite -(limeD cBA cBNA) // (_ : (fun _ => _) =
     eseries (fun k => Rmu (B k `&` A) + Rmu (B k `&` ~` A))); last first.
   by rewrite funeqE => n; rewrite -big_split /=; exact: eq_bigr.
 apply/lee_lim => //.
