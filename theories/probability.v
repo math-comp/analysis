@@ -594,8 +594,9 @@ have h (Y : {RV P >-> R}) :
     - by move=> r _; exact: sqr_ge0.
     - move=> x y; rewrite !nnegrE => x0 y0.
       by rewrite ler_sqr.
-  apply: expectation_le => //.
+  apply: expectation_le.
     - by apply: measurableT_comp => //; exact: measurableT_comp.
+  - by [].
   - by move=> x /=; exact: sqr_ge0.
   - by move=> x /=; exact: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.

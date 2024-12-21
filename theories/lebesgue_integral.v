@@ -3586,14 +3586,13 @@ suff: \int[mu]_(x in D) ((g1 \+ g2)^\+ x) + \int[mu]_(x in D) (g1^\- x) +
         apply: lte_add_pinfty; last exact: integral_funeneg_lt_pinfty.
         apply: lte_add_pinfty; last exact: integral_funeneg_lt_pinfty.
         exact: integral_funepos_lt_pinfty (integrableD _ _ _).
-      rewrite adde_ge0//; last exact: integral_ge0.
-      by rewrite adde_ge0// integral_ge0.
-    - by rewrite fin_num_adde_defr.
-  rewrite -(addeA (\int[mu]_(x in D) (g1 \+ g2)^\+ x)).
-  rewrite (addeC (\int[mu]_(x in D) (g1 \+ g2)^\+ x)) -[eqbLHS]addeA.
-  rewrite (addeC (\int[mu]_(x in D) g1^\- x + \int[mu]_(x in D) g2^\- x)).
-  rewrite eq_sym -(sube_eq g12pos) ?fin_num_adde_defl// => /eqP <-.
-  rewrite fin_num_oppeD; last first.
+      apply: adde_ge0; last exact: integral_ge0.
+      by apply: adde_ge0; apply: integral_ge0.
+    - exact/fin_num_adde_defr/g12pos.
+  rewrite -[X in X - _ == _]addeA [X in X - _ == _]addeC -[eqbLHS]addeA.
+  rewrite [eqbLHS]addeC eq_sym.
+  rewrite -(sube_eq g12pos) ?fin_num_adde_defl// => /eqP g12E.
+  rewrite -{}[LHS]g12E fin_num_oppeD; last first.
     rewrite ge0_fin_numE; first exact: integral_funeneg_lt_pinfty if2.
     exact: integral_ge0.
   by rewrite addeACA (integralE _ _ g1) (integralE _ _ g2).
@@ -3620,7 +3619,7 @@ rewrite (ge0_integralD mu mD); last 4 first.
   - exact/measurable_funepos/emeasurable_funD.
   - by [].
   - exact/measurable_funeneg.
-move=> ->.
+move=> g12E; rewrite {}[LHS]g12E.
 rewrite (ge0_integralD mu mD); last 4 first.
   - by move=> x _; exact: adde_ge0.
   - apply: emeasurable_funD; last exact: measurable_funepos.
@@ -5294,6 +5293,7 @@ have mfn : mu.-integrable E (fun z => `|f^\- z - (n_ n z)%:E|).
   apply/integrable_abse/integrableB => //; first exact: integrable_funeneg.
   exact: intn.
 rewrite -[x in (_ <= `|x|)%R]fineD // -integralD //.
+move: finfn finfp => _ _.
 rewrite !ger0_norm ?fine_ge0 ?integral_ge0 ?fine_le//.
 - by apply: integral_fune_fin_num => //; exact/integrable_abse/mfpn.
 - by apply: integral_fune_fin_num => //; exact: integrableD.
@@ -5397,8 +5397,9 @@ exists h; split => //; rewrite [eps%:num]splitr; apply: le_lt_trans.
   - apply: (measurable_funS mE) => //; do 2 apply: measurableT_comp => //.
     exact: measurable_funB.
   - by move=> z _; rewrite adde_ge0.
-  - apply: measurableT_comp => //; apply: measurable_funD => //;
-      apply: (measurable_funS mE) => //; (apply: measurableT_comp => //);
+  - apply: measurableT_comp => //; apply: measurable_funD;
+      apply: (measurable_funS mE (@subset_refl _ E));
+      (apply: measurableT_comp => //);
       exact: measurable_funB.
   - move=> x _; rewrite -(subrK (g x) (f x)) -(addrA (_ + _)%R) lee_fin.
     by rewrite ler_normD.
@@ -5573,15 +5574,16 @@ transitivity (\sum_(k \in range f)
   rewrite indic_fubini_tonelli1// -ge0_integralZl//; last by rewrite lee_fin.
   - exact: indic_measurable_fun_fubini_tonelli_F.
   - by move=> /= x _; exact: indic_fubini_tonelli_F_ge0.
-rewrite -ge0_integral_fsum //; last 2 first.
+rewrite -ge0_integral_fsum; last by [].
+  - apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
+    by under eq_fsbigr do rewrite indic_fubini_tonelli_FE//.
+  - by [].
   - by move=> r; apply/measurable_funeM/indic_measurable_fun_fubini_tonelli_F.
-  - move=> r x _; rewrite /fubini_F.
-    have [r0|r0] := leP 0%R r.
-      by rewrite mule_ge0//; exact: indic_fubini_tonelli_F_ge0.
-    rewrite integral0_eq ?mule0// => y _.
-    by rewrite preimage_nnfun0//= indicE in_set0.
-apply: eq_integral => x _; rewrite sfun_fubini_tonelli_FE.
-by under eq_fsbigr do rewrite indic_fubini_tonelli_FE//.
+move=> r x _; rewrite /fubini_F.
+have [r0|r0] := leP 0%R r.
+  by rewrite mule_ge0//; exact: indic_fubini_tonelli_F_ge0.
+rewrite integral0_eq ?mule0// => y _.
+by rewrite preimage_nnfun0//= indicE in_set0.
 Qed.
 
 Lemma sfun_fubini_tonelli2 : \int[m1 \x^ m2]_z (f z)%:E = \int[m2]_y G y.
@@ -5600,15 +5602,16 @@ transitivity (\sum_(k \in range f)
   rewrite indic_fubini_tonelli2// -ge0_integralZl//; last by rewrite lee_fin.
   - exact: indic_measurable_fun_fubini_tonelli_G.
   - by move=> /= x _; exact: indic_fubini_tonelli_G_ge0.
-rewrite -ge0_integral_fsum //; last 2 first.
+rewrite -ge0_integral_fsum; last by [].
+  - apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
+    by under eq_fsbigr do rewrite indic_fubini_tonelli_GE//.
+  - by [].
   - by move=> r; apply/measurable_funeM/indic_measurable_fun_fubini_tonelli_G.
-  - move=> r y _; rewrite /fubini_G.
-    have [r0|r0] := leP 0%R r.
-      by rewrite mule_ge0//; exact: indic_fubini_tonelli_G_ge0.
-    rewrite integral0_eq ?mule0// => x _.
-    by rewrite preimage_nnfun0//= indicE in_set0.
-apply: eq_integral => x _; rewrite sfun_fubini_tonelli_GE.
-by under eq_fsbigr do rewrite indic_fubini_tonelli_GE//.
+move=> r y _; rewrite /fubini_G.
+have [r0|r0] := leP 0%R r.
+  by rewrite mule_ge0//; exact: indic_fubini_tonelli_G_ge0.
+rewrite integral0_eq ?mule0// => x _.
+by rewrite preimage_nnfun0//= indicE in_set0.
 Qed.
 
 Lemma sfun_fubini_tonelli :
@@ -5841,9 +5844,12 @@ Qed.
 Let integrable_Fplus : m1.-integrable setT Fplus.
 Proof.
 apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1a.1 imf); apply: ge0_le_integral => //.
-- exact: measurableT_comp.
+apply: le_lt_trans (fubini1a.1 imf); apply: ge0_le_integral.
+- by [].
+- by [].
+- by apply: measurableT_comp; last apply: measurable_Fplus.
 - by move=> x _; exact: integral_ge0.
+- exact: measurable_fun1.
 - move=> x _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funepos.
@@ -5901,9 +5907,12 @@ Proof. by rewrite GE; exact: emeasurable_funB. Qed.
 Let integrable_Gplus : m2.-integrable setT Gplus.
 Proof.
 apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1b.1 imf); apply: ge0_le_integral => //.
-- exact: measurableT_comp.
+apply: le_lt_trans (fubini1b.1 imf). apply: ge0_le_integral.
+- by [].
+- by [].
+- by apply: measurableT_comp; last apply: measurable_Gplus.
 - by move=> *; exact: integral_ge0.
+- exact: measurable_fun2.
 - move=> y _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funepos.
@@ -5917,9 +5926,12 @@ Qed.
 Let integrable_Gminus : m2.-integrable setT Gminus.
 Proof.
 apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1b.1 imf); apply: ge0_le_integral => //.
+apply: le_lt_trans (fubini1b.1 imf); apply: ge0_le_integral.
+- by [].
+- by [].
 - exact: measurableT_comp.
 - by move=> *; exact: integral_ge0.
+- exact: measurable_fun2.
 - move=> y _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funeneg.
@@ -6351,12 +6363,13 @@ have ? : k <= \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
   by apply: measurable_funTS; do 2 apply: measurableT_comp => //.
 have afxrdi : a%:E < (fine (mu (ball x (r + d))))^-1%:E *
     \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
-  by rewrite (lt_le_trans axrdk)// lee_wpmul2l// lee_fin invr_ge0// fine_ge0.
+  apply/(lt_le_trans axrdk)/lee_wpmul2l => //.
+  by rewrite lee_fin invr_ge0 fine_ge0.
 have /lt_le_trans : a%:E < iavg f (ball y (r + d)).
   apply: (lt_le_trans afxrdi); rewrite /iavg.
   do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
-  rewrite lee_wpmul2l// lee_fin invr_ge0// fine_ge0//= lee_fin pmulrn_rge0//.
-  by rewrite addr_gt0.
+  rewrite lee_wpmul2l ?lexx// lee_fin invr_ge0// fine_ge0//= lee_fin.
+  by rewrite pmulrn_rge0// addr_gt0.
 apply; apply: ereal_sup_ubound => /=.
 by exists (r + d)%R => //; rewrite in_itv/= andbT addr_gt0.
 Unshelve. all: by end_near. Qed.

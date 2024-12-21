@@ -563,14 +563,14 @@ Proof. by move=> df dg; apply/diff_unique; have [] := dadd df dg. Qed.
 Lemma differentiableD (f g : V -> W) x :
   differentiable f x -> differentiable g x -> differentiable (f + g) x.
 Proof.
-by move=> df dg; apply/diff_locallyP; rewrite diffD //; have := dadd df dg.
+by move=> df dg; apply/diff_locallyP; rewrite diffD; have := dadd df dg.
 Qed.
 
 Global Instance is_diffD (f g df dg : V -> W) x :
   is_diff x f df -> is_diff x g dg -> is_diff x (f + g) (df + dg).
 Proof.
 move=> dfx dgx; apply: DiffDef; first exact: differentiableD.
-by rewrite diffD // !diff_val.
+by rewrite diffD; first (congr (_ + _); apply: diff_val).
 Qed.
 
 Lemma differentiable_sum n (f : 'I_n -> V -> W) (x : V) :
@@ -606,7 +606,9 @@ Proof. by move=> dfx dgx; apply: is_diff_eq. Qed.
 Lemma diffB (f g : V -> W) x :
   differentiable f x -> differentiable g x ->
   'd (f - g) x = 'd f x \- 'd g x :> (V -> W).
-Proof. by move=> /differentiableP df /differentiableP dg; rewrite diff_val. Qed.
+Proof.
+by move=> /differentiableP df /differentiableP dg; rewrite [LHS]diff_val.
+Qed.
 
 Lemma differentiableB (f g : V -> W) x :
   differentiable f x -> differentiable g x -> differentiable (f \- g) x.
@@ -920,7 +922,9 @@ Qed.
 Lemma diffM (f g : V -> R) x :
   differentiable f x -> differentiable g x ->
   'd (f * g) x = f x \*: 'd g x + g x \*: 'd f x :> (V -> R).
-Proof. by move=> /differentiableP df /differentiableP dg; rewrite diff_val. Qed.
+Proof.
+by move=> /differentiableP df /differentiableP dg; rewrite [LHS]diff_val.
+Qed.
 
 Lemma differentiableM (f g : V -> R) x :
   differentiable f x -> differentiable g x -> differentiable (f * g) x.
@@ -1279,7 +1283,7 @@ evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
   rewrite scalerDr scalerA mulrC -scalerA.
   by rewrite [_ *: (g x *: _)]scalerA mulrC -scalerA /fg.
 apply: cvgD; last exact: cvgZr df.
-apply: cvg_comp2 (@mul_continuous _ (_, _)) => /=; last exact: dg.
+apply: cvg_comp2 (@scale_continuous _ _ (_, _)) => /=; last exact: dg.
 suff : {for 0, continuous (fun h : R => f(h *: v + x))}.
   by move=> /continuous_withinNx; rewrite scale0r add0r.
 exact/differentiable_continuous/derivable1_diffP/(derivable1P _ _ _).1.
