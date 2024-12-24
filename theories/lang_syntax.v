@@ -642,7 +642,7 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-Lemma integral_exprn {R : realType} (n : nat) :
+Lemma integral_exprn {R : realType} n :
   fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x ^+ n)%:E) = n.+1%:R^-1%R :> R.
 Proof.
 pose F (x : R) : R^o := (n.+1%:R^-1 * x ^+ n.+1)%R.
@@ -696,7 +696,7 @@ rewrite derive1E deriveX_idfun derive1E deriveB//.
 by rewrite -derive1E derive1_cst derive_id sub0r mulrN1 [in RHS]mulNr.
 Qed.
 
-Lemma integral_onemXn {R : realType} (n : nat) :
+Lemma integral_onemXn {R : realType} n :
   fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x.~ ^+ n)%:E) = n.+1%:R^-1%R :> R.
 Proof.
 rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=.
@@ -719,7 +719,7 @@ apply: continuous_in_subspaceT => x _.
 exact: continuous_XMonemX.
 Qed.
 
-Lemma Rintegral_onemXn {R : realType} (n : nat) :
+Lemma Rintegral_onemXn {R : realType} n :
   (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x.~ ^+ n))%R = n.+1%:R^-1%R :> R.
 Proof.
 rewrite /Rintegral.

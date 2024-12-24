@@ -64,10 +64,6 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope string_scope.
 
-Local Open Scope lang_scope.
-
-Local Close Scope lang_scope.
-
 (* simple tests to check bidirectional hints *)
 Module bidi_tests.
 Section bidi_tests.

@@ -33,6 +33,8 @@ Local Open Scope ring_scope.
 Local Open Scope string_scope.
 
 Local Open Scope ereal_scope.
+Local Open Scope string_scope.
+
 Lemma letin'_sample_uniform {R : realType} d d' (T : measurableType d)
     (T' : measurableType d') (a b : R) (ab : (a < b)%R)
     (u : R.-sfker [the measurableType _ of (_ * T)%type] ~> T') x y :
