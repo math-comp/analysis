@@ -36,6 +36,8 @@ Local Open Scope ring_scope.
 Local Open Scope string_scope.
 
 Local Open Scope ereal_scope.
+Local Open Scope string_scope.
+
 Lemma letin'_sample_uniform {R : realType} d d' (T : measurableType d)
     (T' : measurableType d') (a b : R) (ab : (a < b)%R)
     (u : R.-sfker [the measurableType _ of (_ * T)%type] ~> T') x y :
@@ -184,7 +186,7 @@ apply: (@le_lt_trans _ _ (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (beta_pdf 6 
           by rewrite ge0_fin_numE// (le_lt_trans (probability_le1 _ _))// ltry.
         by rewrite lee_fin beta_pdf_ge0.
       by rewrite mule_ge0// lee_fin beta_pdf_ge0.
-    by rewrite /beta_pdf /XMonemX01 patchE (negbTE x01) mul0r mule0 abse0.
+    by rewrite /beta_pdf patchE (negbTE x01) mul0r mule0 abse0.
 apply: (@le_lt_trans _ _
     (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (beta_fun 6 4)^-1%:E)%E); last first.
   by rewrite integral_cst//= lebesgue_measure_itv/= lte01 EFinN sube0 mule1 ltry.
@@ -498,7 +500,7 @@ rewrite integral_beta_prob/=; [|by []|exact: measurable_bernoulli_onemXn
 rewrite -integralZl//=; last exact: integrable_bernoulli_beta_pdf.
 apply: eq_integral => y _.
 rewrite [in RHS]muleCA -[in LHS]muleA; congr *%E.
-rewrite /beta_pdf /XMonemX01 2!patchE; case: ifPn => [y01|_]; last first.
+rewrite /beta_pdf 2!patchE; case: ifPn => [y01|_]; last first.
   by rewrite !mul0r 2!mule0.
 rewrite ger0_norm; last first.
   by rewrite mulr_ge0// XMonemX_ge0//; rewrite inE in y01.
@@ -530,7 +532,7 @@ rewrite [RHS]integral_beta_prob//; last 2 first.
   by apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
 rewrite [RHS]integral_mkcond/=; apply: eq_integral => x _ /=.
 rewrite !patchE; case: ifPn => // x01.
-by rewrite /beta_pdf /XMonemX01 patchE (negbTE x01) mul0r mule0.
+by rewrite /beta_pdf patchE (negbTE x01) mul0r mule0.
 Qed.
 
 Lemma expr_onem_01 {R : realType} (x : R) : x \in `[0%R, 1%R] ->
@@ -552,7 +554,7 @@ have := @beta_prob_bernoulli_probE R 6 4 0 3 U isT isT.
 rewrite /beta_prob_bernoulli_prob.
 under eq_integral.
   move=> x x0.
-  rewrite /XMonemX01 patchE x0 XMonemX0n.
+  rewrite patchE x0 XMonemX0n.
   over.
 rewrite /= => ->; congr bernoulli_prob.
 by rewrite /div_beta_fun addn0 !beta_funE/=; repeat rewrite !factE/=; field.

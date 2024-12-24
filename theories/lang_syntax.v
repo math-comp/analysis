@@ -461,7 +461,7 @@ move=> b a ab.
 by rewrite -ltrN2 !opprB ltr_leB.
 Qed.
 
-Lemma integral_exprn {R : realType} (n : nat) :
+Lemma integral_exprn {R : realType} n :
   fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x ^+ n)%:E) = n.+1%:R^-1%R :> R.
 Proof.
 pose F (x : R) : R^o := (n.+1%:R^-1 * x ^+ n.+1)%R.
@@ -489,7 +489,7 @@ rewrite (@continuous_FTC2 _ (fun x : R => x ^+ n)%R F)//.
 by apply: continuous_subspaceT; exact: exprn_continuous.
 Qed.
 
-Lemma integral_onemXn {R : realType} (n : nat) :
+Lemma integral_onemXn {R : realType} n :
   fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x.~ ^+ n)%:E) = n.+1%:R^-1%R :> R.
 Proof.
 rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=.
@@ -499,70 +499,13 @@ rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=
   by move=> x x01; exact: continuous_onemXn.
 - exact: derivable_oo_continuous_bnd_onemXnMr.
 - move=> x x01.
-  rewrite derive1Mr//; last  exact: onemXn_derivable.
+  rewrite derive1Mr//; last exact: onemXn_derivable.
   by rewrite derive_onemXn mulrC mulrA mulVf// mul1r.
 Qed.
 
 Local Open Scope ereal_scope.
 
 Local Open Scope ring_scope.
-
-Section XMonemX01.
-Local Open Scope ring_scope.
-Context {R : realType}.
-Variables a b : nat.
-
-Definition XMonemX01 := (@XMonemX R a.-1 b.-1) \_ `[0, 1].
-
-Lemma XMonemX01_ge0 t : 0 <= XMonemX01 t.
-Proof.
-rewrite /XMonemX01 patchE ; case: ifPn => //.
-rewrite inE/= in_itv/= => /andP[t0 t1].
-by rewrite mulr_ge0// exprn_ge0// onem_ge0.
-Qed.
-
-Lemma XMonemX01_le1 t : XMonemX01 t <= 1.
-Proof.
-rewrite /XMonemX01 patchE ; case: ifPn => //.
-rewrite inE/= in_itv/= => /andP[t0 t1].
-by rewrite mulr_ile1// ?(exprn_ge0,onem_ge0,exprn_ile1,onem_le1).
-Qed.
-
-Lemma measurable_XMonemX01 : measurable_fun [set: R] XMonemX01.
-Proof.
-rewrite /XMonemX01 /=; apply/(measurable_restrictT _ _).1 => //.
-exact: measurable_XMonemX.
-Qed.
-
-Local Notation mu := lebesgue_measure.
-
-(* TODO: maybe not that useful *)
-Lemma integral_XMonemX01 U :
-  (\int[mu]_(x in U) (XMonemX01 x)%:E =
-   \int[mu]_(x in U `&` `[0%R, 1%R]) (XMonemX01 x)%:E)%E.
-Proof.
-rewrite [RHS]integral_mkcondr /=; apply: eq_integral => x xU /=.
-by rewrite /XMonemX01/= restrict_EFin -patch_setI setIid.
-Qed.
-
-End XMonemX01.
-
-Lemma XMonemX_XMonemX01 {R : realType} a b a' b' (x : R) : (0 < a)%N -> (0 < b)%N ->
-  x \in `[0%R, 1%R]%classic ->
-  (XMonemX a' b' x * XMonemX01 a b x = XMonemX01 (a + a') (b + b') x :> R)%R.
-Proof.
-move=> a0 b0 x01; rewrite /XMonemX01 /= !patchE x01.
-rewrite mulrCA -mulrA -exprD mulrA -exprD.
-congr (_ ^+ _ * _ ^+ _)%R.
-  by rewrite addnC -!subn1 subDnCA.
-by rewrite -!subn1 subDnCA.
-Qed.
-
-Lemma XMonemX01_11 {R : realType} (x : R) : (0 <= x <= 1)%R ->
-  XMonemX01 1 1 x = 1%R.
-Proof.
-by move=> x01; rewrite /XMonemX01 patchE mem_setE in_itv/= x01/= XMonemX00.
-Qed.
 
 Declare Scope lang_scope.
 Delimit Scope lang_scope with P.
