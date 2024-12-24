@@ -555,6 +555,7 @@ Qed.
 Notation setTP := setTPn (only parsing).
 
 Lemma in_set0 (x : T) : (x \in set0) = false. Proof. by rewrite memNset. Qed.
+
 Lemma in_setT (x : T) : x \in setT. Proof. by rewrite mem_set. Qed.
 
 Lemma in_setC (x : T) A : (x \in ~` A) = (x \notin A).
@@ -2228,6 +2229,9 @@ Notation bigcup_set_cond := bigcup_seq_cond (only parsing).
 Notation bigcap_set := bigcap_seq (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcap_seq_cond instead")]
 Notation bigcap_set_cond := bigcap_seq_cond (only parsing).
+
+Lemma in_set1 [T : finType] (x y : T) : (x \in [set y]) = (x \in [set y]%SET).
+Proof. by apply/idP/idP; rewrite !inE /= => /eqP. Qed.
 
 Lemma bigcup_pred [T : finType] [U : Type] (P : {pred T}) (f : T -> set U) :
   \bigcup_(t in [set` P]) f t = \big[setU/set0]_(t in P) f t.

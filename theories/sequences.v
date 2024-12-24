@@ -964,6 +964,10 @@ rewrite exprDn (bigD1 (inord 1)) ?inordK// subn1 expr1 bin1 lerDl sumr_ge0//.
 by move=> i; rewrite ?(mulrn_wge0, mulr_ge0, exprn_ge0, subr_ge0)// ltW.
 Unshelve. all: by end_near. Qed.
 
+Lemma geometric_ge0 (R : numFieldType) (a z : R) n :
+  0 <= a -> 0 <= z -> geometric a z n >= 0.
+Proof. by move=> *; rewrite mulr_ge0// exprn_ge0. Qed.
+
 Lemma geometric_seriesE (R : numFieldType) (a z : R) : z != 1 ->
   series (geometric a z) = [sequence a * (1 - z ^+ n) / (1 - z)]_n.
 Proof.
