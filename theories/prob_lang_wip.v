@@ -142,7 +142,7 @@ apply: ge0_le_integral => //=.
 - by move=> x _; rewrite lee_fin gauss_pdf01_ub.
 Qed.
 
-Let f1 (x : g_sigma_algebraType (R.-ocitv.-measurable)) := (gauss_pdf01 x) ^-1.
+Let f1 (x : g_sigma_algebraType (R.-ocitv.-measurable)) := ((gauss_pdf01 x) ^-1)%R.
 
 Lemma measurable_fun_f1 : measurable_fun setT f1.
 Proof.
@@ -176,7 +176,7 @@ apply: ae_eq_integral => //=.
     exact: measurable_fun_f1.
   apply/measurable_funTS/measurableT_comp => //.
   exact: measurable_gauss_pdf.
-- apply: ae_eq_mul2l => /=.
+- apply: ae_eqe_mul2l => /=.
   rewrite Radon_NikodymE//=.
     exact: gauss01_dom.
   move=> gauss01_dom'.
@@ -308,7 +308,7 @@ Import Notations.
 Hypothesis integral_poisson_density : forall k,
   (\int[mu]_x (@poisson_pdf R k x)%:E = 1%E)%E.
 
-Let f1 x := (poisson1 (x : R)) ^-1.
+Let f1 x := ((poisson1 (x : R)) ^-1)%R.
 
 Let mf1 : measurable_fun setT f1.
 rewrite /f1 /poisson1 /poisson_pdf.

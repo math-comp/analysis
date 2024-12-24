@@ -30,8 +30,9 @@ Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-
 Local Open Scope ereal_scope.
+Local Open Scope string_scope.
+
 Lemma letin'_sample_uniform {R : realType} d d' (T : measurableType d)
     (T' : measurableType d') (a b : R) (ab : (a < b)%R)
     (u : R.-sfker [the measurableType _ of (_ * T)%type] ~> T') x y :
@@ -317,7 +318,7 @@ Let prog12_subproof (y : @mctx R [::]) (V : set (@mtyp R Bool))
   \int[binomial_prob 8 p]_y0
      execP [let "_" := {guard "x" 5} in {tail1}]
        (y0, (p, x)) U =
-  \int[mscale (NngNum (normr_ge0 (56 * XMonemX 5 3 p))) \d_tt]_y0
+  \int[mscale (NngNum (normr_ge0 (56 * XMonemX 5 3 p)%R)) \d_tt]_y0
      execP tail2 (y0, (p, x)) U.
 Proof.
 rewrite integral_binomial//=.
@@ -503,7 +504,7 @@ rewrite ger0_norm; last first.
   by rewrite mulr_ge0// XMonemX_ge0//; rewrite inE in y01.
 rewrite [X in _ = _ * X]EFinM [in RHS]muleCA.
 rewrite /= XMonemX00 mul1r [in LHS](mulrC 56) [in LHS]EFinM -[in LHS]muleA; congr *%E.
-by rewrite !betafunE/= !factE/= -EFinM; congr EFin; lra.
+by rewrite !betafunE/=; repeat rewrite !factE/=; rewrite -EFinM; congr EFin; lra.
 
 Qed.
 
@@ -554,7 +555,7 @@ under eq_integral.
   rewrite /XMonemX01 patchE x0 XMonemX0.
   over.
 rewrite /= => ->; congr bernoulli.
-by rewrite /div_betafun addn0 !betafunE/= !factE/= !factE; field.
+by rewrite /div_betafun addn0 !betafunE/=; repeat rewrite !factE/=; field.
 Qed.
 
 Lemma dirac_bool {R : realType} (U : set bool) :

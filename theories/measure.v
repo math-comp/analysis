@@ -3648,6 +3648,12 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Lemma probability_le1 (A : set T) : measurable A -> P A <= 1.
 Proof. by move=> mA; rewrite -(probability_setT P) ?le_measure ?in_setE. Qed.
 
+Lemma probability_fin (A : set T) : measurable A -> P A \is a fin_num.
+Proof.
+move=> Ameas; rewrite ge0_fin_numE//.
+by rewrite (@le_lt_trans _ _ 1)// ?measure_ge0 ?probability_le1// ?ltey.
+Qed.
+
 Lemma probability_setC (A : set T) : measurable A -> P (~` A) = 1 - P A.
 Proof.
 move=> mA; rewrite -(probability_setT P) -(setvU A) measureU ?addeK ?setICl//.

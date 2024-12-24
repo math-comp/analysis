@@ -30,6 +30,7 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
+Local Open Scope string_scope.
 
 Section type.
 Variables (R : realType).

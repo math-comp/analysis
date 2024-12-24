@@ -147,7 +147,7 @@ move/left_right_continuousP.
 apply/not_andP; left.
 move/(@cvgrPdist_le _ R^o).
 apply/existsNP.
-exists (2%:R^-1).
+exists (2%:R^-1)%R.
 rewrite not_implyE; split; first by rewrite invr_gt0.
 move=> [e /= e0].
 move/(_ (-(e / 2))%R).
@@ -259,7 +259,7 @@ move=> ab cf.
     move/continuous_within_itvP : cf => /(_ ab) [cf _ _].
     rewrite (_ : f = (f \o -%R) \o -%R); last first.
       by apply/funext => y; rewrite /= opprK.
-    apply: continuous_comp; first exact: (@opp_continuous _ R^o).
+    apply: continuous_comp; first exact: (@opp_continuous R^o).
     by apply: cf; rewrite -oppr_itvoo opprK.
   + move/continuous_within_itvP : cf => /(_ ab) [_ _ cf].
     apply/cvg_at_rightNP.
@@ -641,8 +641,8 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-Lemma integral_exprn {R : realType} (n : nat) :
-  fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x ^+ n)%:E) = n.+1%:R^-1 :> R.
+Lemma integral_exprn {R : realType} n :
+  fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x ^+ n)%:E) = n.+1%:R^-1%R :> R.
 Proof.
 pose F (x : R) : R^o := (n.+1%:R^-1 * x ^+ n.+1)%R.
 have cX m : {in `[0%R, 1%R], continuous (fun x : R => x ^+ m)%R}.
@@ -695,8 +695,8 @@ rewrite derive1E deriveX_idfun derive1E deriveB//.
 by rewrite -derive1E derive1_cst derive_id sub0r mulrN1 [in RHS]mulNr.
 Qed.
 
-Lemma integral_onemXn {R : realType} (n : nat) :
-  fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n)%:E) = n.+1%:R^-1 :> R.
+Lemma integral_onemXn {R : realType} n :
+  fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n)%:E) = n.+1%:R^-1%R :> R.
 Proof.
 rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=.
 - rewrite subrr subr0 expr0n/= mul0r expr1n mul1r sub0r.
@@ -718,8 +718,8 @@ apply: continuous_in_subspaceT => x _.
 exact: continuous_XMonemX.
 Qed.
 
-Lemma Rintegral_onemXn {R : realType} (n : nat) :
-  (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n))%R = n.+1%:R^-1 :> R.
+Lemma Rintegral_onemXn {R : realType} n :
+  (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n))%R = n.+1%:R^-1%R :> R.
 Proof.
 rewrite /Rintegral.
 rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=.
@@ -942,7 +942,7 @@ case: a => [|a].
   by rewrite betafun00 eqxx ltnn/= fact0 mul1r divr1.
 case: b => [|b].
   by rewrite betafun_sym betafun0// fact0 addn0/= mulr1 divff.
-by rewrite betafun_fact/= natrM// -addnE addnS.
+by rewrite betafun_fact/= natrM// addnS.
 Qed.
 
 Lemma betafun_gt0 (a b : nat) : (0 < betafun a b :> R)%R.
@@ -1263,7 +1263,7 @@ Qed.
 
 Lemma beta_prob_integrable_onem {R : realType} a b a' b' :
   (beta_prob a b).-integrable `[0, 1]
-    (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => `1-(XMonemX a' b' x)%:E).
+    (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (`1-(XMonemX a' b' x))%:E).
 Proof.
 apply: (eq_integrable _ (cst 1 \- (fun x : g_sigma_algebraType (R.-ocitv.-measurable) =>
   (XMonemX a' b' x)%:E))%E) => //.
@@ -1296,7 +1296,7 @@ Qed.
 
 Lemma beta_prob_integrable_onem_dirac {R : realType} a b a' b' (c : bool) U :
   (beta_prob a b).-integrable `[0, 1]
-    (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => `1-(XMonemX a' b' x)%:E * \d_c U)%E.
+    (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => (`1-(XMonemX a' b' x))%:E * \d_c U)%E.
 Proof.
 apply: integrableMl => //=; last first.
   exists 1; split => // x x1/= _ _; rewrite (le_trans _ (ltW x1))//.
@@ -1371,7 +1371,7 @@ apply: ae_eq_integral => //.
   exact: beta_prob_dom.
 - apply: emeasurable_funM => //=; apply/measurableT_comp => //=.
   by apply/measurable_funTS; exact: measurable_beta_pdf.
-- apply: ae_eq_mul2l => /=.
+- apply: ae_eqe_mul2l => /=.
   rewrite Radon_NikodymE//=; first exact: beta_prob_dom.
   move=> ?.
   case: cid => /= h [h1 h2 h3].

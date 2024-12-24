@@ -62,10 +62,7 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
-
-Local Open Scope lang_scope.
-
-Local Close Scope lang_scope.
+Local Open Scope string_scope.
 
 (* simple tests to check bidirectional hints *)
 Module bidi_tests.
@@ -648,7 +645,7 @@ rewrite beta_prob_bernoulliE// !bernoulliE//=; last 2 first.
   lra.
   by rewrite div_betafun_ge0 div_betafun_le1.
 by congr (_ * _ + _ * _)%:E;
-  rewrite /div_betafun/= /onem !betafunE/= !factE/= !factE; field.
+  rewrite /div_betafun/= /onem !betafunE/=; repeat rewrite !factE/=; field.
 Qed.
 
 End beta_bernoulli_bernoulli.
