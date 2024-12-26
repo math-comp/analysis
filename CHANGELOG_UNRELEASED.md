@@ -29,6 +29,11 @@
 - in `numfun.v`
 	+ lemmas `funeposE`, `funenegE`, `funepos_comp`, `funeneg_comp`
 
+- in file `realfun.v`,
+  + new lemmas `cauchy_MVT`,
+    `lhopital_right`, and
+    `lhopital_left`.
+
 ### Changed
 
 - in `lebesgue_integrale.v`
