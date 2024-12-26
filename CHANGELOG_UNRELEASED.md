@@ -174,17 +174,6 @@
   + lemmas `RabsE`, `RdistE`, `sum_f_R0E`, `factE`
 
 - new file `internal_Eqdep_dec.v` (don't use, internal, to be removed)
-- in `normedtype.v`:
-  + lemma `scaler1`
-
-- in `derive.v`:
-  + lemmas `horner0_ext`, `hornerD_ext`, `horner_scale_ext`, `hornerC_ext`,
-    `derivable_horner`, `derivE`, `continuous_horner`
-  + instance `is_derive_poly`
-- in `mathcomp_extra.v`:
-  + lemma `partition_disjoint_bigfcup`
-- in `lebesgue_measure.v`:
-  + lemma `measurable_indicP`
 
 - in `numfun.v`:
   + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
@@ -196,26 +185,11 @@
 
 - in `measure.v`:
   + lemma `preimage_class_comp`
-  + defintions `mapping_display`, `g_sigma_algebra_mappingType`, `g_sigma_algebra_mapping`,
-    notations `.-mapping`, `.-mapping.-measurable`
+  + defintions `preimage_display`, `g_sigma_algebra_preimageType`, `g_sigma_algebra_preimage`,
+    notations `.-preimage`, `.-preimage.-measurable`
 
-- in `lebesgue_measure.v`:
+- in `measurable_realfun.v`:
   + lemmas `measurable_funrpos`, `measurable_funrneg`
-
-- in `lebesgue_integral.v`:
-  + lemmas `integral_fin_num_abs`, `Rintegral_cst`, `le_Rintegral`
-
-- new file `pi_irrational.v`:
-  + lemmas `measurable_poly`
-  + definition `rational`
-  + module `pi_irrational`
-  + lemma `pi_irrationnal`
-- in `constructive_ereal.v`:
-  + notations `\prod` in scope ereal_scope
-  + lemmas `prode_ge0`, `prode_fin_num`
-- in `probability.v`:
-  + lemma `expectation_def`
-  + notation `'M_`
 
 - new file `independence.v`:
   + lemma `expectationM_ge0`
@@ -223,8 +197,8 @@
   + definition `mutual_independence`
   + definition `independent_RVs`
   + definition `independent_RVs2`
-  + lemmas `g_sigma_algebra_mapping_comp`, `g_sigma_algebra_mapping_funrpos`,
-    `g_sigma_algebra_mapping_funrneg`
+  + lemmas `g_sigma_algebra_preimage_comp`, `g_sigma_algebra_preimage_funrpos`,
+    `g_sigma_algebra_preimage_funrneg`
   + lemmas `independent_RVs2_comp`, `independent_RVs2_funrposneg`,
     `independent_RVs2_funrnegpos`, `independent_RVs2_funrnegneg`,
     `independent_RVs2_funrpospos`
