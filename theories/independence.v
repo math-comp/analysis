@@ -2,7 +2,7 @@
 From mathcomp Require Import all_ssreflect interval_inference.
 From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop.
+From mathcomp Require Import cardinality fsbigop interval_inference.
 From HB Require Import structures.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import reals ereal topology normedtype sequences.
@@ -214,7 +214,7 @@ Section mutual_independence_properties.
 Context {R : realType} d {T : measurableType d} (P : probability T R).
 Local Open Scope ereal_scope.
 
-(**md see Achim Klenke's Probability Thery, Ch.2, sec.2.1, thm.2.13(i) *)
+(**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.13(i) *)
 Lemma mutual_independence_fset {I0 : choiceType} (I : {fset I0})
     (F : I0 -> set_system T) :
   (forall i, i \in I -> F i `<=` measurable /\ (F i) [set: T]) ->
@@ -238,7 +238,7 @@ rewrite -big_seq => ->.
 by rewrite !big_seq; apply: eq_bigr => i iJ; rewrite /E' iJ.
 Qed.
 
-(**md see Achim Klenke's Probability Thery, Ch.2, sec.2.1, thm.2.13(ii) *)
+(**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.13(ii) *)
 Lemma mutual_independence_finiteS {I0 : choiceType} (I : set I0)
     (F : I0 -> set_system T) :
   mutual_independence P I F <->
@@ -256,7 +256,7 @@ split=> [i Ii|J JI E EF].
 by have [_] := indeF _ JI; exact.
 Qed.
 
-(**md see Achim Klenke's Probability Thery, Ch.2, sec.2.1, thm.2.13(iii) *)
+(**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.13(iii) *)
 Theorem mutual_independence_finite_g_sigma {I0 : choiceType} (I : set I0)
     (F : I0 -> set_system T) :
   (forall i, i \in I -> setI_closed (F i `|` [set set0])) ->
@@ -438,7 +438,7 @@ apply/negP/set0P; exists j; split => //.
 exact/set_mem.
 Qed.
 
-(**md see Achim Klenke's Probability Thery, Ch.2, sec.2.1, thm.2.13(iv) *)
+(**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.13(iv) *)
 Lemma mutual_independence_bigcup (K0 I0 : pointedType) (K : {fset K0})
     (I_ : K0 -> set I0) (I : set I0) (F : I0 -> set_system T) :
   trivIset [set` K] (fun i => I_ i) ->
@@ -489,38 +489,38 @@ End mutual_independence_properties.
 (*                             This is an HB alias.                           *)
 (* f.-mapping.-measurable A == A is measurable for g_sigma_algebra_mapping f  *)
 
-Definition mapping_display {T T'} : (T -> T') -> measure_display.
+Definition preimage_display {T T'} : (T -> T') -> measure_display.
 Proof. exact. Qed.
 
-Definition g_sigma_algebra_mappingType d' (T : pointedType)
+Definition g_sigma_algebra_preimageType d' (T : pointedType)
   (T' : measurableType d') (f : T -> T') : Type := T.
 
-Definition g_sigma_algebra_mapping d' (T : pointedType)
+Definition g_sigma_algebra_preimage d' (T : pointedType)
     (T' : measurableType d') (f : T -> T') :=
   preimage_set_system setT f (@measurable _ T').
 
-Section mapping_generated_sigma_algebra.
+Section preimage_generated_sigma_algebra.
 Context {d'} (T : pointedType) (T' : measurableType d').
 Variable f : T -> T'.
 
-Let mapping_set0 : g_sigma_algebra_mapping f set0.
+Let preimage_set0 : g_sigma_algebra_preimage f set0.
 Proof.
-rewrite /g_sigma_algebra_mapping /preimage_set_system/=.
+rewrite /g_sigma_algebra_preimage /preimage_set_system/=.
 by exists set0 => //; rewrite preimage_set0 setI0.
 Qed.
 
-Let mapping_setC A :
-  g_sigma_algebra_mapping f A -> g_sigma_algebra_mapping f (~` A).
+Let preimage_setC A :
+  g_sigma_algebra_preimage f A -> g_sigma_algebra_preimage f (~` A).
 Proof.
-rewrite /g_sigma_algebra_mapping /preimage_set_system/= => -[B mB] <-{A}.
+rewrite /g_sigma_algebra_preimage /preimage_set_system/= => -[B mB] <-{A}.
 by exists (~` B); [exact: measurableC|rewrite !setTI preimage_setC].
 Qed.
 
-Let mapping_bigcup (F : (set T)^nat) :
-  (forall i, g_sigma_algebra_mapping f (F i)) ->
-  g_sigma_algebra_mapping f (\bigcup_i (F i)).
+Let preimage_bigcup (F : (set T)^nat) :
+  (forall i, g_sigma_algebra_preimage f (F i)) ->
+  g_sigma_algebra_preimage f (\bigcup_i (F i)).
 Proof.
-move=> mF; rewrite /g_sigma_algebra_mapping /preimage_set_system/=.
+move=> mF; rewrite /g_sigma_algebra_preimage /preimage_set_system/=.
 pose g := fun i => sval (cid2 (mF i)).
 pose mg := fun i => svalP (cid2 (mF i)).
 exists (\bigcup_i g i).
@@ -529,48 +529,40 @@ rewrite setTI /g preimage_bigcup; apply: eq_bigcupr => k _.
 by case: (mg k) => _; rewrite setTI.
 Qed.
 
-HB.instance Definition _ := Pointed.on (g_sigma_algebra_mappingType f).
+HB.instance Definition _ := Pointed.on (g_sigma_algebra_preimageType f).
 
-HB.instance Definition _ := @isMeasurable.Build (mapping_display f)
-  (g_sigma_algebra_mappingType f) (g_sigma_algebra_mapping f)
-  mapping_set0 mapping_setC mapping_bigcup.
+HB.instance Definition _ := @isMeasurable.Build (preimage_display f)
+  (g_sigma_algebra_preimageType f) (g_sigma_algebra_preimage f)
+  preimage_set0 preimage_setC preimage_bigcup.
 
-End mapping_generated_sigma_algebra.
+End preimage_generated_sigma_algebra.
 
-Notation "f .-mapping" := (mapping_display f) : measure_display_scope.
-Notation "f .-mapping.-measurable" :=
-  (measurable : set (set (g_sigma_algebra_mappingType f))) : classical_set_scope.
+Notation "f .-preimage" := (preimage_display f) : measure_display_scope.
+Notation "f .-preimage.-measurable" :=
+  (measurable : set (set (g_sigma_algebra_preimageType f))) : classical_set_scope.
 
-Section g_sigma_algebra_mapping_lemmas.
+Section g_sigma_algebra_preimage_lemmas.
 Context d {T : measurableType d} {R : realType}.
 
-Lemma g_sigma_algebra_mapping_comp (X : {mfun T >-> R}) (f : R -> R) :
+Lemma g_sigma_algebra_preimage_comp (X : {mfun T >-> R}) (f : R -> R) :
   measurable_fun setT f ->
-  g_sigma_algebra_mapping (f \o X)%R `<=` g_sigma_algebra_mapping X.
-Proof.
-move=> mf.
-rewrite /g_sigma_algebra_mapping.
-rewrite preimage_set_system_comp.
-move=> A /= [] B [C mC <-{B}] <-{A}.
-red.
-exists ([set: R] `&` f @^-1` C) => //.
-by apply: mf.
-Qed.
+  g_sigma_algebra_preimage (f \o X)%R `<=` g_sigma_algebra_preimage X.
+Proof. exact: preimage_set_system_compS. Qed.
 
-Lemma g_sigma_algebra_mapping_funrpos (X : {mfun T >-> R}) :
-  g_sigma_algebra_mapping X^\+%R `<=` d.-measurable.
+Lemma g_sigma_algebra_preimage_funrpos (X : {mfun T >-> R}) :
+  g_sigma_algebra_preimage X^\+%R `<=` d.-measurable.
 Proof.
 by move=> A/= -[B mB] <-; have := measurable_funrpos (measurable_funP X); exact.
 Qed.
 
-Lemma g_sigma_algebra_mapping_funrneg (X : {mfun T >-> R}) :
-  g_sigma_algebra_mapping X^\-%R `<=` d.-measurable.
+Lemma g_sigma_algebra_preimage_funrneg (X : {mfun T >-> R}) :
+  g_sigma_algebra_preimage X^\-%R `<=` d.-measurable.
 Proof.
 by move=> A/= -[B mB] <-; have := measurable_funrneg (measurable_funP X); exact.
 Qed.
 
-End g_sigma_algebra_mapping_lemmas.
-Arguments g_sigma_algebra_mapping_comp {d T R X} f.
+End g_sigma_algebra_preimage_lemmas.
+Arguments g_sigma_algebra_preimage_comp {d T R X} f.
 
 Section independent_RVs.
 Context {R : realType} d (T : measurableType d).
@@ -580,7 +572,7 @@ Variable P : probability T R.
 
 Definition independent_RVs (I : set I0)
   (X : forall i : I0, {mfun T >-> T' i}) : Prop :=
-  mutual_independence P I (fun i => g_sigma_algebra_mapping (X i)).
+  mutual_independence P I (fun i => g_sigma_algebra_preimage (X i)).
 
 End independent_RVs.
 
@@ -599,7 +591,7 @@ Context {I0 : choiceType}.
 Context {d' : I0 -> _} (T' : forall i : I0, measurableType (d' i)).
 Variable P : probability T R.
 
-(**md see Achim Klenke's Probability Thery, Ch.2, sec.2.1, thm.2.16 *)
+(**md see Achim Klenke's Probability Theory, Ch.2, sec.2.1, thm.2.16 *)
 Theorem independent_generators (I : set I0) (F : forall i : I0, set_system (T' i))
     (X : forall i, {RV P >-> T' i}) :
   (forall i, i \in I -> setI_closed (F i)) ->
@@ -617,9 +609,9 @@ have closed_preimage i : I i -> setI_closed (preimage_set_system setT (X i) (F i
   - exact/mem_set.
   - by rewrite setTI.
 have gen_preimage i : I i ->
-    <<s preimage_set_system setT (X i) (F i) >> = g_sigma_algebra_mapping (X i).
+    <<s preimage_set_system setT (X i) (F i) >> = g_sigma_algebra_preimage (X i).
   move=> Ii.
-  rewrite /g_sigma_algebra_mapping AsF; last exact/mem_set.
+  rewrite /g_sigma_algebra_preimage AsF; last exact/mem_set.
   by rewrite -g_sigma_preimageE.
 rewrite /independent_RVs.
 suff: mutual_independence P I (fun i => <<s preimage_set_system setT (X i) (F i) >>).
@@ -661,27 +653,27 @@ Lemma independent_RVs2_comp (X Y : {RV P >-> R}) (f g : {mfun R >-> R}) :
 Proof.
 move=> indeXY; split => /=.
 - move=> [] _ /= A.
-  + by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
+  + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
       exact/measurableT_comp.
-  + by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
+  + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
       exact/measurableT_comp.
 - move=> J _ E JE.
   apply indeXY => //= i iJ; have := JE _ iJ.
   by move: i {iJ} =>[|]//=; rewrite !inE => Eg;
-    exact: g_sigma_algebra_mapping_comp Eg.
+    exact: g_sigma_algebra_preimage_comp Eg.
 Qed.
 
 Lemma independent_RVs2_funrposneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\-.
 Proof.
 move=> indeXY; split=> [[|]/= _|J J2 E JE].
-- exact: g_sigma_algebra_mapping_funrneg.
-- exact: g_sigma_algebra_mapping_funrpos.
+- exact: g_sigma_algebra_preimage_funrneg.
+- exact: g_sigma_algebra_preimage_funrpos.
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
     exact: measurable_funrneg.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R) => //.
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R) => //.
     exact: measurable_funrpos.
 Qed.
 
@@ -689,13 +681,13 @@ Lemma independent_RVs2_funrnegpos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\+.
 Proof.
 move=> indeXY; split=> [/= [|]// _ |J J2 E JE].
-- exact: g_sigma_algebra_mapping_funrpos.
-- exact: g_sigma_algebra_mapping_funrneg.
+- exact: g_sigma_algebra_preimage_funrpos.
+- exact: g_sigma_algebra_preimage_funrneg.
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R).
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
     exact: measurable_funrpos.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
     exact: measurable_funrneg.
 Qed.
 
@@ -703,13 +695,13 @@ Lemma independent_RVs2_funrnegneg (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\- Y^\-.
 Proof.
 move=> indeXY; split=> [/= [|]// _ |J J2 E JE].
-- exact: g_sigma_algebra_mapping_funrneg.
-- exact: g_sigma_algebra_mapping_funrneg.
+- exact: g_sigma_algebra_preimage_funrneg.
+- exact: g_sigma_algebra_preimage_funrneg.
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
     exact: measurable_funrneg.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr (- x) 0)%R).
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr (- x) 0)%R).
     exact: measurable_funrneg.
 Qed.
 
@@ -717,22 +709,23 @@ Lemma independent_RVs2_funrpospos (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y -> independent_RVs2 P X^\+ Y^\+.
 Proof.
 move=> indeXY; split=> [/= [|]//= _ |J J2 E JE].
-- exact: g_sigma_algebra_mapping_funrpos.
-- exact: g_sigma_algebra_mapping_funrpos.
+- exact: g_sigma_algebra_preimage_funrpos.
+- exact: g_sigma_algebra_preimage_funrpos.
 - apply indeXY => //= i iJ; have := JE _ iJ.
   move/J2 : iJ; move: i => [|]// _; rewrite !inE.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R).
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
     exact: measurable_funrpos.
-  + apply: (g_sigma_algebra_mapping_comp (fun x => maxr x 0)%R).
+  + apply: (g_sigma_algebra_preimage_comp (fun x => maxr x 0)%R).
     exact: measurable_funrpos.
 Qed.
 
 End independent_RVs_lemmas.
 
-Definition preimage_classes I (d : I -> measure_display)
-    (Tn : forall k, semiRingOfSetsType (d k)) (T : Type) (fn : forall k, T -> Tn k) :=
-  <<s \bigcup_k preimage_set_system setT (fn k) measurable >>.
-Arguments preimage_classes {I} d Tn {T} fn.
+Definition preimage_classes I0 (I : set I0) (d_ : forall i : I, measure_display)
+    (T_ : forall k : I, semiRingOfSetsType (d_ k)) (T : Type)
+    (f_ : forall k : I, T -> T_ k) :=
+  <<s \bigcup_(k : I) preimage_set_system setT (f_ k) measurable >>.
+Arguments preimage_classes {I0} I d_ T_ {T} f_.
 
 Lemma measurable_prod d [T : measurableType d] [R : realType] [D : set T] [I : eqType]
     (s : seq I) [h : I -> T -> R] :
@@ -802,7 +795,7 @@ rewrite /independent_RVs2 /independent_RVs /mutual_independence /= => -[_].
 move/(_ [fset false; true]%fset (@subsetT _ _)
   (fun b => if b then Y @^-1` B2 else X @^-1` B1)).
 rewrite !big_fsetU1 ?inE//= !big_seq_fset1/=.
-apply => -[|] /= _; rewrite !inE; rewrite /g_sigma_algebra_mapping.
+apply => -[|] /= _; rewrite !inE; rewrite /g_sigma_algebra_preimage.
 by exists B2 => //; rewrite setTI.
 by exists B1 => //; rewrite setTI.
 Qed.
@@ -1043,23 +1036,23 @@ pose AY := dyadic_approx setT (EFin \o Y).
 pose BX := integer_approx setT (EFin \o X).
 pose BY := integer_approx setT (EFin \o Y).
 have mA (Z : {RV P >-> R}) m k : (k < m * 2 ^ m)%N ->
-    g_sigma_algebra_mapping Z (dyadic_approx setT (EFin \o Z) m k).
-  move=> mk; rewrite /g_sigma_algebra_mapping /dyadic_approx mk setTI.
+    g_sigma_algebra_preimage Z (dyadic_approx setT (EFin \o Z) m k).
+  move=> mk; rewrite /g_sigma_algebra_preimage /dyadic_approx mk setTI.
   rewrite /preimage_set_system/=; exists [set` dyadic_itv R m k] => //.
   rewrite setTI/=; apply/seteqP; split => z/=.
     by rewrite inE/= => Zz; exists (Z z).
   by rewrite inE/= => -[r rmk] [<-].
 have mB (Z : {RV P >-> R}) k :
-    g_sigma_algebra_mapping Z (integer_approx setT (EFin \o Z) k).
-  rewrite /g_sigma_algebra_mapping /integer_approx setTI /preimage_set_system/=.
+    g_sigma_algebra_preimage Z (integer_approx setT (EFin \o Z) k).
+  rewrite /g_sigma_algebra_preimage /integer_approx setTI /preimage_set_system/=.
   by exists `[k%:R, +oo[%classic => //; rewrite setTI preimage_itvcy.
 have m1A (Z : {RV P >-> R}) : forall k, (k < n * 2 ^ n)%N ->
     measurable_fun setT
-    (\1_(dyadic_approx setT (EFin \o Z) n k) : g_sigma_algebra_mappingType Z -> R).
+    (\1_(dyadic_approx setT (EFin \o Z) n k) : g_sigma_algebra_preimageType Z -> R).
   move=> k kn.
-  exact/(@measurable_indicP _ (g_sigma_algebra_mappingType Z))/mA.
+  exact/(@measurable_indicP _ (g_sigma_algebra_preimageType Z))/mA.
 rewrite !inE => /orP[|]/eqP->{i} //=.
-  have : @measurable_fun _ _ (g_sigma_algebra_mappingType X) _ setT (X_ n).
+  have : @measurable_fun _ _ (g_sigma_algebra_preimageType X) _ setT (X_ n).
     rewrite nnsfun_approxE//.
     apply: measurable_funD => //=.
       apply: measurable_sum => //= k'; apply: measurable_funM => //.
@@ -1068,7 +1061,7 @@ rewrite !inE => /orP[|]/eqP->{i} //=.
     by apply: measurable_indic; exact: mB.
   rewrite /measurable_fun => /(_ measurableT _ (measurable_set1 x)).
   by rewrite setTI.
-have : @measurable_fun _ _ (g_sigma_algebra_mappingType Y) _ setT (Y_ n).
+have : @measurable_fun _ _ (g_sigma_algebra_preimageType Y) _ setT (Y_ n).
   rewrite nnsfun_approxE//.
   apply: measurable_funD => //=.
     apply: measurable_sum => //= k'; apply: measurable_funM => //.
@@ -1128,7 +1121,7 @@ exact/measurable_EFinP/measurable_funM.
 Qed.
 
 (* TODO: rename to expectationM when deprecation is removed  *)
-Lemma expectation_prod (X Y : {RV P >-> R}) :
+Lemma expectation_mul (X Y : {RV P >-> R}) :
   independent_RVs2 P X Y ->
   (X : _ -> _) \in Lfun P 1 -> (Y : _ -> _) \in Lfun P 1 ->
   'E_P [X * Y] = 'E_P [X] * 'E_P [Y].
