@@ -644,10 +644,732 @@ Qed.
 
 End independent_RVs_lemmas.
 
-Definition preimage_classes I (d : I -> measure_display)
-    (Tn : forall k, semiRingOfSetsType (d k)) (T : Type) (fn : forall k, T -> Tn k) :=
-  <<s \bigcup_k preimage_class setT (fn k) measurable >>.
-Arguments preimage_classes {I} d Tn {T} fn.
+Definition preimage_classes I0 (I : set I0) (d_ : forall i : I, measure_display)
+    (T_ : forall k : I, semiRingOfSetsType (d_ k)) (T : Type)
+    (f_ : forall k : I, T -> T_ k) :=
+  <<s \bigcup_(k : I) preimage_class setT (f_ k) measurable >>.
+Arguments preimage_classes {I0} I d_ T_ {T} f_.
+
+(* composition of kernels *)
+
+(* TODO: move *)
+Lemma nneseriesD1 {R : realType} [P : pred nat] [F : nat -> \bar R] (j : nat) :
+  P j ->
+  (forall i, 0 <= F i)%E ->
+  (\big[+%E/0%E]_(0 <= i <oo | P i) F i =
+  F j + (\big[+%E/0%E]_(0 <= i <oo | P i && (i != j)) F i))%E.
+Proof.
+move=> Pj F0.
+rewrite (@nneseries_split_cond _ F 0%N j.+1 P)// add0n.
+rewrite big_mkcond/= big_nat_recr//= Pj -big_mkcond/=.
+rewrite -addrA addrCA; congr +%E.
+rewrite [RHS]eseries_mkcondr.
+rewrite [in RHS](@nneseries_split_cond _ _ 0%N j.+1 P)//; last first.
+  by move=> k Pk; case: ifPn.
+rewrite add0n.
+rewrite [X in _ = X + _]big_mkcond/=.
+rewrite big_nat_recr//= Pj eqxx/= adde0 -big_mkcond//=.
+congr +%E.
+  rewrite big_seq_cond [RHS]big_seq_cond.
+  apply: eq_bigr => /= i.
+  rewrite mem_index_iota leq0n/= => /andP[ij Pi].
+  by rewrite lt_eqF.
+rewrite eseries_cond [RHS]eseries_cond.
+apply: eq_eseriesr => i /andP[Pi ji].
+by rewrite gt_eqF.
+Qed.
+
+Lemma nneseries_recl {R : realType} [P : pred nat] [F : nat -> \bar R] :
+  P 0%N ->
+  (forall i, 0 <= F i)%E ->
+  (\big[+%E/0%E]_(0 <= i <oo | P i) F i =
+  F 0%N + (\big[+%E/0%E]_(1 <= i <oo | P i) F i))%E.
+Proof.
+move=> P0 F0.
+rewrite (nneseriesD1 P0)//; congr +%E.
+rewrite [RHS]eseries_cond.
+apply: eq_eseriesl => n.
+by rewrite lt0n.
+Qed.
+
+Lemma indicC {R : realType} T (A : set T) :
+  \1_(~` A) = (fun x => (~~ (x \in A))%:R) :> (_ -> R).
+Proof. by apply/funext=> u/=; rewrite indicE in_setC. Qed.
+
+Lemma indicbigcup {R : realType} T (A : (set T)^nat) (xy : T) :
+  trivIset [set: nat] A ->
+  (\1_(\bigcup_n A n) xy)%:E =
+   \big[+%R/0]_(0 <= n <oo) (\1_(A n) xy)%:E :> \bar R.
+Proof.
+move=> tA.
+have [Axy|Axy] := eqVneq (\1_(\bigcup_n A n) xy) (1 : R).
+  move: (Axy) => /eqP.
+  rewrite pnatr_eq1 eqb1 => /asboolP[i _] xyAi.
+  rewrite Axy.
+  apply/esym.
+  rewrite (@nneseriesD1 _ _ _ i)//; last by move=> j; rewrite lee_fin.
+  rewrite indicE mem_set//.
+  rewrite eseries0 ?adde0// => j _/= ji.
+  rewrite indicE.
+  rewrite memNset// => Ajxy.
+  move/trivIsetP : tA => /(_ j i Logic.I Logic.I ji).
+  by apply/eqP/set0P; exists xy.
+have {}Axy : \1_(\bigcup_n A n) xy = 0 :> R.
+  apply/eqP.
+  move: Axy.
+  by rewrite pnatr_eq1 eqb1 pnatr_eq0 eqb0.
+move: (Axy) => /eqP.
+rewrite pnatr_eq0 eqb0 notin_setE => Axy'.
+rewrite Axy eseries0// => j _ _.
+rewrite indicE.
+rewrite memNset// => Ajxy.
+apply: Axy'.
+by exists j.
+Qed.
+(* /TODO: move *)
+
+(* klenke 1.82 *)
+Lemma measurability_comp I0 (I : set I0) (d_ : forall i : I, measure_display)
+   (T_ : forall i : I, measurableType (d_ i)) d (T : measurableType d)
+   d' (T' : measurableType d')
+   (X_ : forall i : I, T' -> T_ i) :
+  (forall i : I, measurable_fun [set: T'] (X_ i)) ->
+  @measurable _ T' = preimage_classes I d_ T_ X_ ->
+  forall Y : T -> T',
+    measurable_fun setT Y <-> forall i : I, measurable_fun setT (X_ i \o Y).
+Proof.
+move=> mX_ T'E Y.
+split=> [mY i|mXY]; first exact: measurableT_comp.
+set E' := \bigcup_(i : I) preimage_class setT (X_ i) (@measurable _ (T_ i)).
+apply: (@measurability _ _ _ _ _ _ E'); first exact: T'E.
+move=> _ [B [i _] mB] <-.
+case: mB => Ai mAi <-{B}.
+have := mXY i measurableT _ mAi.
+by rewrite comp_preimage !setTI.
+Qed.
+
+Lemma finite_sigma_finite [d : measure_display] [T : measurableType d]
+    [R : realType] [mu : {measure set T -> \bar R}] :
+  fin_num_fun mu -> sigma_finite setT mu.
+Proof.
+move=> fmu.
+apply: fin_num_fun_sigma_finite => //.
+by rewrite measure0.
+Qed.
+
+Lemma finite_sfinite_measure [d : measure_display] [T : measurableType d]
+  [R : realType] [mu : {measure set T -> \bar R}] :
+  fin_num_fun mu -> sfinite_measure mu.
+Proof.
+move=> fmu.
+exists (fun n => if n is O then mu else mzero).
+  by case.
+move=> U mU.
+rewrite /mseries.
+rewrite nneseries_recl//.
+by rewrite eseries0 ?adde0// => -[|].
+Qed.
+
+(* lem 14.13 *)
+Section measurability_prod.
+Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
+
+Let di := (fun b : [set false; true] => if val b then d2 else d1).
+
+Let T (i : [set false; true]) : measurableType (di i).
+Proof.
+destruct i as [b]; destruct b; [exact: T2|exact: T1].
+Defined.
+
+Let X (i : [set false; true]) : T1 * T2 -> T i.
+Proof.
+destruct i as [b]; destruct b; [exact: snd|exact: fst].
+Defined.
+
+Let mX (i : [set false; true]) : measurable_fun [set: T1 * T2] (X i).
+Proof.
+destruct i as [b]; destruct b; [exact: measurable_snd|exact: measurable_fst].
+Defined.
+
+Let preimage_class2 :
+  \bigcup_k preimage_class [set: T1 * T2] (X k) (di k).-measurable =
+    preimage_class [set: T1 * T2] fst d1.-measurable
+    `|` preimage_class [set: T1 * T2] snd d2.-measurable.
+Proof.
+apply/seteqP; split => [B [x]|B/= [|]?].
+- destruct x as [b].
+  by destruct b => /= [_|_]; by rewrite /di/=; auto.
+- have @j : [set false; true] by exists false; rewrite inE/=; left.
+  by exists j.
+- have @j : [set false; true] by exists true; rewrite inE/=; right.
+  by exists j.
+Qed.
+
+(* PR in progress *)
+Lemma xsectionE (A : set (T1 * T2)) (x : T1) :
+  xsection A x = (fun y => (x, y)) @^-1` A.
+Proof. by apply/seteqP; split => [y|y] /xsectionP. Qed.
+
+(* PR in progress *)
+Lemma ysectionE (A : set (T1 * T2)) (y : T2) :
+  ysection A y = (fun x => (x, y)) @^-1` A.
+Proof. by apply/seteqP; split => [x|x] /ysectionP. Qed.
+
+(* PR in progress *)
+Lemma measurable_xsection (A : set (T1 * T2)) (x : T1) :
+  measurable A -> measurable (xsection A x).
+Proof.
+move=> mA; pose i (y : T2) := (x, y).
+have mi : measurable_fun setT i by exact: measurable_pair1.
+by rewrite xsectionE -[X in measurable X]setTI; exact: mi.
+Qed.
+
+(* PR in progress *)
+Lemma measurable_ysection (A : set (T1 * T2)) (y : T2) :
+  measurable A -> measurable (ysection A y).
+Proof.
+move=> mA; pose i (x : T1) := (x, y).
+have mi : measurable_fun setT i by exact: measurable_pair2.
+by rewrite ysectionE -[X in measurable X]setTI; exact: mi.
+Qed.
+
+Lemma measurability_prod2 {R : realType} (f : T1 * T2 -> \bar R) (w1 : T1) :
+  measurable_fun setT f -> measurable_fun setT (fun w2 => f (w1, w2)).
+Proof.
+move=> mf.
+(*by apply: measurableT_comp.*)
+pose i (w2 : T2) := (w1, w2).
+have f1 : fst \o i = cst w1 by exact/funext.
+have f2 : snd \o i = id by exact/funext.
+suff: measurable_fun setT i.
+  exact: measurableT_comp.
+apply/(@measurability_comp _ [set false; true] di T _ T2 _ (T1 * T2)%type X).
+- exact: mX.
+- by rewrite /preimage_classes preimage_class2.
+- move=> i0.
+  apply: measurableT_comp => //.
+  exact: measurable_pair1.
+Qed.
+
+Lemma measurability_prod1 {R : realType} (f : T1 * T2 -> \bar R) (w2 : T2) :
+  measurable_fun setT f -> measurable_fun setT (fun w1 => f (w1, w2)).
+Proof.
+move=> mf.
+pose i (w1 : T1) := (w1, w2).
+have f2 : snd \o i = cst w2 by exact/funext.
+have f1 : fst \o i = id by exact/funext.
+suff: measurable_fun setT i by exact: measurableT_comp.
+apply/(@measurability_comp bool [set false; true] di T _ T1 _ (T1 * T2)%type X).
+- exact: mX.
+- by rewrite /preimage_classes preimage_class2.
+- move=> i0.
+  apply: measurableT_comp => //.
+  exact: measurable_pair2.
+Qed.
+
+End measurability_prod.
+
+(* klenke def 8.25 *)
+HB.mixin Record isFiniteTransitionKernel
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
+  finite_finite_transition_kernel : forall x, fin_num_fun (k x) }.
+
+#[short(type=finite_transition_kernel)]
+HB.structure Definition FiniteTransitionKernel
+    d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
+  { k of @Kernel _ _ _ _ _ k & isFiniteTransitionKernel _ _ X Y R k }.
+
+Reserved Notation "R .-ftker X ~> Y"
+  (at level 42, format "R .-ftker  X  ~>  Y").
+Notation "R .-ftker X ~> Y" := (finite_transition_kernel X%type Y R).
+
+HB.mixin Record isSigmaFiniteTransitionKernel
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
+  sigma_finite_finite_transition_kernel : forall x, sigma_finite setT (k x) }.
+
+#[short(type=sigma_finite_transition_kernel)]
+HB.structure Definition SigmaFiniteTransitionKernel
+    d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
+  { k of @Kernel _ _ _ _ _ k & isSigmaFiniteTransitionKernel _ _ X Y R k }.
+
+Reserved Notation "R .-sigmaftker X ~> Y"
+  (at level 42, format "R .-sigmaftker  X  ~>  Y").
+Notation "R .-sigmaftker X ~> Y" := (sigma_finite_transition_kernel X%type Y R).
+
+HB.mixin Record isMarkovKernel
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
+  markov_transition_kernel : forall x, k x setT = 1%E }.
+
+#[short(type=markov_kernel)]
+HB.structure Definition MarkovKernel
+    d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
+  { k of @Kernel _ _ _ _ _ k & isMarkovKernel _ _ X Y R k }.
+
+Reserved Notation "R .-mker X ~> Y"
+  (at level 42, format "R .-mker  X  ~>  Y").
+Notation "R .-mker X ~> Y" := (markov_kernel X%type Y R).
+
+HB.mixin Record isSubMarkovKernel
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
+  submarkov_transition_kernel : forall x, (k x setT <= 1)%E }.
+
+#[short(type=submarkov_kernel)]
+HB.structure Definition SubMarkovKernel
+    d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
+  { k of @Kernel _ _ _ _ _ k & isSubMarkovKernel _ _ X Y R k }.
+
+Reserved Notation "R .-submker X ~> Y"
+  (at level 42, format "R .-submker  X  ~>  Y").
+Notation "R .-submker X ~> Y" := (submarkov_kernel X%type Y R).
+
+(* composition of a finite transition kernel and a function, as in def 14.20 *)
+Definition kfcomp d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
+    (R : realType) (k : R.-ftker T1 ~> T2) (f : T1 * T2 -> \bar R) : T1 -> \bar R :=
+  fun x => (\int[k x]_y f (x, y))%E.
+
+Import HBNNSimple.
+
+(* lem 14.20 *)
+Lemma measurable_kfcomp d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
+    (R : realType) (k : R.-ftker T1 ~> T2)
+    (f : T1 * T2 -> \bar R) : measurable_fun [set: (T1 * T2)%type] f ->
+  (forall t, (0 <= f t)%E) ->
+  measurable_fun [set: T1] (kfcomp k f).
+Proof.
+move=> mf f0.
+rewrite /kfcomp.
+pose I (f : T1 * T2 -> \bar R) w1 := (\int[k w1]_w2 f (w1, w2))%E.
+have mf1 x : measurable_fun setT (fun z => f (x, z)).
+  exact/measurability_prod2.
+(* therefore If is well defined *)
+pose g (A1 : set T1) (A2 : set T2) : T1 * T2 -> \bar R := EFin \o \1_(A1 `*` A2).
+have IgE (A1 : set T1) (A2 : set T2) w1 : measurable A1 -> measurable A2 ->
+    I (g A1 A2) w1 = ((\1_A1 w1)%:E * k w1 A2)%E.
+  move=> mA1 mA2.
+  rewrite /I /g/= integral_indic//; last first.
+    rewrite [X in measurable X](_ : _ = xsection (A1 `*` A2) w1); last first.
+      by apply/seteqP; split=> [y [A1w1 A2y]|y]; rewrite /xsection/= inE.
+    apply: measurable_xsection.
+    exact: measurableX.
+  have [w1A1|w1A1] := boolP (w1 \in A1).
+    rewrite indicE w1A1 mul1e; congr (k _ _).
+    by rewrite setIT/=; apply/seteqP; split => [y []//|y]; move/set_mem: w1A1.
+  rewrite indicE (negbTE w1A1) mul0e [X in k _ X = _](_ : _ = set0)//.
+  by rewrite setIT/=; apply/seteqP; split => [y []//|y]; rewrite notin_setE in w1A1.
+suff: measurable_fun [set: T1] (I f) by [].
+pose f_ := nnsfun_approx measurableT mf.
+have If_cvg w1 : I (EFin \o (f_ n)) w1 @[n --> \oo] --> I f w1.
+  rewrite /I.
+  pose g' := (fun n y => (EFin \o f_ n) (w1, y)).
+  rewrite [X in _ --> X](_ : _ =
+      (\int[k w1]_w2 (fun t => limn (g' ^~ t)) w2)%E); last first.
+    apply: eq_integral => y _.
+    by apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
+  apply: cvg_monotone_convergence => //.
+  - by move=> n; apply/measurable_EFinP; exact: measurableT_comp.
+  - by move=> n y _; rewrite /= lee_fin.
+  - move=> y _ a b ab /=; rewrite lee_fin.
+    by have /lefP/(_ (w1, y)) := nd_nnsfun_approx measurableT mf ab.
+apply: (emeasurable_fun_cvg (fun n => I (EFin \o f_ n))).
+  move=> m.
+  pose D := [set A | measurable A /\ measurable_fun setT (I (EFin \o \1_A))].
+  have setSD_D : setSD_closed D.
+    move=> B A AB; rewrite /D/= => -[mB mIB] [mA mIA].
+    have IE : (I (EFin \o \1_(B `\` A)) = I (EFin \o \1_B) \- I (EFin \o \1_A))%E.
+      apply/funext => x/=.
+      rewrite /I.
+      pose kx : {measure set T2 -> \bar R} := k x.
+      pose H1 := isFinite.Build _ _ _ _
+        (@finite_finite_transition_kernel _ _ _ _ R k x).
+      pose H2 := isSFinite.Build _ _ _ _
+        (finite_sfinite_measure (@finite_finite_transition_kernel _ _ _ _ R k x)).
+      pose H3 := isSigmaFinite.Build _ _ _ _
+        (finite_sigma_finite (@finite_finite_transition_kernel _ _ _ _ R k x)).
+      pose kx' := HB.pack_for (FiniteMeasure.type T2 R) (Measure.sort kx) H1 H2 H3.
+      have kxE : kx = kx' by exact: eq_measure.
+      rewrite (*TODO: use RintegralB when merged*) -integralB_EFin//; last 2 first.
+        rewrite -/kx kxE; apply: integrable_indic => //.
+        rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
+        exact: measurable_xsection.
+        rewrite -/kx kxE; apply: integrable_indic => //.
+        rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
+        exact: measurable_xsection.
+      apply: eq_integral => y _/=.
+      rewrite setDE indicI indicC/=.
+      have [/= xyA|/= xyA] := boolP ((x, y) \in _).
+        rewrite mulr0 EFinN !indicE xyA/= EFinN.
+        move/set_mem : xyA => /AB /mem_set ->.
+        by rewrite subee.
+      by rewrite mulr1 EFinN !indicE (negbTE xyA)/= oppr0 adde0.
+    split; first exact: measurableD.
+    by rewrite IE; exact: emeasurable_funB.
+  have lambda_D : lambda_system setT D.
+    split => //.
+    - rewrite /D/= indicT/=; split => //.
+      rewrite [X in measurable_fun _ X](_ : _ = (fun x => k x setT)); last first.
+        rewrite /I; apply/funext => x/=.
+        by rewrite integral_cst// mul1e.
+      exact: measurable_kernel.
+    - suff: D = [set A | (d1, d2).-prod.-measurable A /\
+             measurable_fun [set: T1] ((fun C x => k x (xsection C x)) A)].
+        by move=> ->; exact: xsection_ndseq_closed.
+      apply/seteqP; split=> [/= A [mA /= mIA]|/= A [/= mA mIA]].
+        split => //.
+          rewrite [X in measurable_fun _ X](_ : _ = I (EFin \o \1_A))//.
+          apply/funext => x.
+          rewrite /I/= integral_indic// ?setIT//.
+          by rewrite -[X in _ = k x X]/(_ @^-1` _) -xsectionE.
+        rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
+        exact: measurable_xsection.
+      split => //.
+      rewrite /I [X in measurable_fun _ X](_ : _ = (fun x => k x (xsection A x)))//.
+      apply/funext => x.
+      rewrite integral_indic//; last first.
+        rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
+        exact: measurable_xsection.
+      by rewrite setIT xsectionE.
+  rewrite /= in lambda_D.
+  have DE : D = @measurable _ (T1 * T2)%type.
+    (* NB: setI_closed_g_dynkin_g_sigma_algebra is not exactly Dynkin' pi-lambda theorem
+       because it should not be closed under setI but contain a generator that is closed
+       under setI *)
+    apply/seteqP; split => [/= A []//|].
+    rewrite measurable_prod_measurableType. (* IMP *)
+    apply: lambda_system_subset => //.
+      (* replay of a proof in Section xsection *)
+      move=> X Y [X1 mX1 [X2 mX2 <-{X}]] [Y1 mY1 [Y2 mY2 <-{Y}]].
+      exists (X1 `&` Y1); first exact: measurableI.
+      by exists (X2 `&` Y2); [exact: measurableI|rewrite setXI].
+    move=> /= C [A mA [B mB] <-].
+    split; first exact: measurableX.
+    rewrite [X in measurable_fun _ X](_ : _ =
+        (fun s => ((\1_A s)%:E * k s B)%E)); last first.
+        by apply/funext => s; rewrite IgE.
+      apply: emeasurable_funM; first exact/measurable_EFinP.
+      exact: measurable_kernel.
+  have mI1 (A : set (T1 * T2)) : measurable A ->
+      measurable_fun setT (I (EFin \o \1_A)).
+    by rewrite -DE => -[].
+  rewrite [X in measurable_fun _ X](_ : _ = I
+    (EFin \o (fun x => \sum_(y \in range (f_ m)) y *
+                       \1_(f_ m @^-1` [set y]) x))); last first.
+    apply/funext => x/=.
+    apply: eq_integral => y _ /=.
+    by rewrite fimfunE.
+  rewrite /I/=.
+  rewrite [X in measurable_fun _ X](_ : _ = (fun x =>
+     \sum_(y \in range (f_ m))
+       (\int[k x]_w2 (y * \1_(f_ m @^-1` [set y]) (x, w2))%:E)%E)); last first.
+    apply/funext => x.
+    under eq_integral.
+      move=> y _.
+      rewrite -fsumEFin//.
+      over.
+    rewrite /= ge0_integral_fsum//=.
+      move=> r.
+      under eq_fun do rewrite EFinM.
+      apply: emeasurable_funM => //.
+      by apply/measurable_EFinP; exact: measurableT_comp.
+    by move=> r y _; rewrite EFinM nnfun_muleindic_ge0.
+  apply: emeasurable_fsum => // r.
+  rewrite [X in measurable_fun _ X](_ : _ = (fun x =>
+      (r%:E * \int[k x]_w2 (\1_(f_ m @^-1` [set r]) (x, w2))%:E)%E)); last first.
+    apply/funext => x.
+    under eq_integral do rewrite EFinM.
+    rewrite integralZl//.
+      pose kx : {measure set T2 -> \bar R} := k x.
+      pose H1 := isFinite.Build _ _ _ _
+        (@finite_finite_transition_kernel _ _ _ _ R k x).
+      pose H2 := isSFinite.Build _ _ _ _
+        (finite_sfinite_measure (@finite_finite_transition_kernel _ _ _ _ R k x)).
+      pose H3 := isSigmaFinite.Build _ _ _ _
+        (finite_sigma_finite (@finite_finite_transition_kernel _ _ _ _ R k x)).
+      pose kx' := HB.pack_for (FiniteMeasure.type T2 R) (Measure.sort kx)H1 H2 H3.
+      have kxE : kx = kx' by apply: eq_measure.
+      rewrite -/kx kxE; apply: integrable_indic => //.
+    rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
+    exact: measurable_xsection.
+  by apply: emeasurable_funM => //; exact: mI1.
+by move=> ? _; exact: If_cvg.
+Qed.
+
+(* intermediate function used in thm 14.22 *)
+Definition k1comp d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k : (T0 * T1)%type -> {measure set T2 -> \bar R}(*R.-ftker (T0 * T1) ~> T2*)) A
+  := fun xy => (\int[k xy]_z (\1_A (xy.2, z))%:E)%E.
+
+Lemma measurable_k1comp d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k2 : R.-ftker (T0 * T1) ~> T2) A : measurable A ->
+  measurable_fun setT (k1comp k2 A).
+Proof.
+move=> mA.
+apply: (@measurable_kfcomp _ _ (T0 * T1)%type T2 R k2
+  (fun abc => (\1_A (abc.1.2, abc.2))%:E)) => //.
+  apply/measurable_EFinP => //=.
+  apply: measurableT_comp => //=.
+  apply/prod_measurable_funP; split => /=.
+    rewrite [X in measurable_fun _ X](_ : _ = snd \o fst)//.
+    exact: measurableT_comp.
+  by rewrite [X in measurable_fun _ X](_ : _ = snd).
+by move=> t; rewrite lee_fin.
+Qed.
+
+(* composition of two finite transition kernels in thm 14.22 *)
+Definition kkcomp_dep d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : T0 -> {measure set T1 -> \bar R})
+    (k2 : T0 * T1 -> {measure set T2 -> \bar R}) : T0 -> set (T1 * T2) -> \bar R
+     := (* NB: not exactly kcomp k1 k2 because of the return type*)
+  fun (x : T0) (A : set (T1 * T2)) =>
+  (\int[k1 x]_w1 (k1comp k2 A (x, w1)))%E.
+
+Definition kkcomp_undep d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : T0 -> {measure set T1 -> \bar R})
+    (k2 : T1 -> {measure set T2 -> \bar R}) : T0 -> set (T1 * T2) -> \bar R
+     := kkcomp_dep k1 (fun x01 => k2 x01.2).
+
+Lemma kkcomp_depE d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2) A :
+  (kkcomp_dep k1 k2) ^~ A =
+    (fun w0 => \int[k1 w0]_w1 (k1comp k2 A) (w0, w1))%E.
+Proof. by apply/funext => w0. Qed.
+
+(* thm 14.22 b *)
+Theorem semi_sigma_additive_kkcomp_dep d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2) w0 :
+  semi_sigma_additive (kkcomp_dep k1 k2 w0).
+Proof.
+move=> /= A mA tA mbigcup.
+have := kkcomp_depE k1 k2 (\bigcup_n A n).
+move=> /(congr1 (fun x => x w0)) ->.
+rewrite (_ : (fun n => _) = (fun n =>
+  \int[k1 w0]_w1
+    (\sum_(0 <= i < n) k1comp k2 (A i) (w0, w1))))%E; last first.
+  apply/funext => n.
+  rewrite ge0_integral_sum//.
+    move=> m.
+    have := measurable_k1comp k2 (mA m).
+    exact: measurability_prod2.
+  move=> m x _.
+  apply: integral_ge0 => y _.
+  by rewrite lee_fin.
+pose g' : nat -> T1 -> \bar R := fun n =>
+  (fun w1 => \sum_(0 <= i < n) (k1comp k2 (A i) (w0, w1)))%E.
+rewrite [X in _ --> X](_ : _ = (\int[k1 w0]_x limn (g'^~ x))%E); last first.
+  apply: eq_integral => x _.
+  rewrite /g' /k1comp.
+  rewrite -(@integral_nneseries _ _ R (k2 (w0, x)) _ measurableT
+    (fun i z => (\1_(A i) (x, z))%:E))//.
+  - by apply: eq_integral => y _ /=; rewrite indicbigcup.
+  - move=> n.
+    apply/measurable_EFinP => //.
+    apply: measurable_indic.
+    rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
+    exact: measurable_xsection.
+  - by move=> n y _; rewrite lee_fin.
+apply: (@cvg_monotone_convergence _ _ _ (k1 w0) _ measurableT g') => //.
+- move=> n.
+  rewrite /g'.
+  apply: (@emeasurable_sum _ _ R setT _ _ (fun i t => k1comp k2 (A i) (w0, t))) => m.
+  have := measurable_k1comp k2 (mA m).
+  by apply: measurability_prod2.
+- move=> n x _.
+  rewrite /g'.
+  apply: sume_ge0 => m _.
+  by apply: integral_ge0 => y _; rewrite lee_fin.
+- move=> x _ a b ab.
+  rewrite /g'.
+  apply: lee_sum_nneg_natr => // m _ _.
+  by apply: integral_ge0 => y _; rewrite lee_fin.
+Qed.
+
+Section kkcomp_dep_measure.
+Context d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2).
+
+Let kkcomp_dep0 (x : T0) : kkcomp_dep k1 k2 x set0 = 0.
+Proof.
+apply: integral0_eq => y _.
+apply: integral0_eq => z _.
+by rewrite indic0.
+Qed.
+
+Let kkcomp_dep_ge0 (x : T0) A : (0 <= kkcomp_dep k1 k2 x A)%E.
+Proof.
+apply: integral_ge0 => y _.
+apply: integral_ge0 => z _.
+by rewrite lee_fin.
+Qed.
+
+Let kkcomp_dep_additive (x : T0) : semi_sigma_additive (kkcomp_dep k1 k2 x).
+Proof. exact: semi_sigma_additive_kkcomp_dep. Qed.
+
+HB.instance Definition _ (x : T0) := isMeasure.Build
+  (measure_prod_display (d1, d2)) (T1 * T2)%type R (kkcomp_dep k1 k2 x)
+  (kkcomp_dep0 x) (kkcomp_dep_ge0 x) (@kkcomp_dep_additive x).
+
+End kkcomp_dep_measure.
+
+Section mkkcomp_dep.
+Context d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2).
+
+Definition mkkcomp_dep := (kkcomp_dep k1 k2 : T0 -> {measure set (T1 * T2) -> \bar R}).
+
+End mkkcomp_dep.
+
+(* thm 14.22 a *)
+Theorem measurable_kkcomp_dep d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2)
+    A : measurable A ->
+  measurable_fun [set: T0] ((kkcomp_dep k1 k2) ^~ A).
+Proof.
+move=> mA; rewrite kkcomp_depE; apply: measurable_kfcomp => // t.
+  exact: measurable_k1comp.
+by apply: integral_ge0 => y _; rewrite lee_fin.
+Qed.
+
+HB.instance Definition _ d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2) :=
+  @isKernel.Build _ _ T0 (T1 * T2)%type R
+    (mkkcomp_dep k1 k2) (measurable_kkcomp_dep k1 k2).
+
+From mathcomp Require Import archimedean.
+
+Section sigma_finite_kkcomp_dep.
+Context d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2).
+
+(* thm 14.22 c *)
+Theorem sigma_finite_kkcomp_dep w0 : sigma_finite setT (kkcomp_dep k1 k2 w0).
+Proof.
+pose A n := [set w1 | k2 (w0, w1) setT < n%:R%:E]%E.
+have mA n : measurable (A n).
+  rewrite /A -[X in measurable X]setTI.
+  apply: emeasurable_fun_infty_o => //.
+  have := @measurable_kernel _ _ _ _ R k2 _ measurableT.
+  exact: measurability_prod2.
+have bigcupA : \bigcup_n A n = setT.
+  have Hk2 : forall w0w1, fin_num_fun (k2 w0w1).
+    move=> w0w1.
+    by apply: finite_finite_transition_kernel.
+  apply/seteqP; split => // x _.
+  have {}Hk2 := Hk2 (w0, x) _ measurableT.
+  exists (Num.trunc (fine (k2 (w0, x) setT))).+1 => //=.
+  rewrite /A/=.
+  have : 0 <= fine (k2 (w0, x) [set: T2]) by rewrite fine_ge0//.
+  move=> /Num.Theory.trunc_itv/andP[_].
+  by rewrite -lte_fin fineK//.
+have lty n : (kkcomp_dep k1 k2 w0 (A n `*` setT) < +oo)%E.
+  have Hk1 : fin_num_fun (k1 w0) by apply: finite_finite_transition_kernel.
+  apply: (@le_lt_trans _ _ (n%:R%:E * k1 w0 (A n))%E) => /=.
+    rewrite /kkcomp_dep.
+    rewrite [leLHS](_ : _ = \int[k1 w0]_(x in A n) k2 (w0, x) setT)%E; last first.
+      under eq_integral.
+        move=> x _.
+        rewrite /k1comp(*NB:lemma?*) integral_indic//; last first.
+          rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
+          by apply: measurable_xsection; exact: measurableX.
+        rewrite setIT.
+        over.
+      rewrite [RHS]integral_mkcond.
+      apply: eq_integral => x _.
+      rewrite patchE.
+      case: ifPn => Anx.
+        congr (k2 _ _).
+        apply/funext => y/=.
+        apply/propext; split => // _; split => //.
+        exact/set_mem.
+      rewrite [X in k2 _ X = _](_ : _ = set0) ?measure0//.
+      rewrite -subset0// => y/= [].
+      move: Anx.
+      by rewrite notin_setE.
+    apply: (@le_trans _ _ (\int[k1 w0]_(x in A n) n%:R%:E)%E).
+      apply: ge0_le_integral => //.
+      apply: measurable_funTS.
+      have := @measurable_kernel _ _ _ _ _ k2 _ measurableT.
+      exact: measurability_prod2.
+      by move=> x; rewrite /A/= => /ltW.
+    by rewrite integral_cst.
+  by rewrite lte_mul_pinfty// ltey_eq Hk1//.
+exists (fun n => A n `*` setT) => /=.
+  by rewrite -setX_bigcupl bigcupA setXTT.
+move=> n; split => //.
+exact: measurableX.
+Qed.
+
+HB.instance Definition _ (x : T0) := @isSigmaFiniteTransitionKernel.Build d0
+  (measure_prod_display (d1, d2)) T0 (T1 * T2)%type R
+    (mkkcomp_dep k1 k2) sigma_finite_kkcomp_dep.
+
+End sigma_finite_kkcomp_dep.
+
+Definition kkcomp d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-submker T0 ~> T1)
+    (k2 : R.-submker T1 ~> T2) : T0 -> set T2 -> \bar R
+     :=
+  fun (w0 : T0) (A : set T2) => (\int[k1 w0]_w1 (k2 w1 A))%E.
+
+(* thm 14.26 a *)
+Lemma kkcompE d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-submker T0 ~> T1)
+    (k2 : R.-submker T1 ~> T2) w0 A :
+  measurable A ->
+  kkcomp k1 k2 w0 A = kkcomp_undep k1 k2 w0 (snd @^-1` A).
+Proof.
+move=> mA.
+rewrite /kkcomp /kkcomp_undep /kkcomp_dep.
+apply: eq_integral => x _ /=.
+rewrite /k1comp/=(*NB:lemma?*) integral_indic//; last first.
+congr (k2 x _).
+by rewrite setIT.
+Qed.
+
+(* thm 14.26 b *)
+Lemma submarkov_kkcomp d0 d1 d2 (T0 : measurableType d0)
+    (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
+    (k1 : R.-submker T0 ~> T1)
+    (k2 : R.-submker T1 ~> T2) :
+  forall x, (kkcomp k1 k2 x setT <= 1)%E.
+Proof.
+move=> x.
+rewrite kkcompE//.
+rewrite preimage_setT.
+have H1 := @submarkov_transition_kernel _ _ _ _ _ k1.
+have H2 := @submarkov_transition_kernel _ _ _ _ _ k2.
+rewrite /kkcomp_undep.
+rewrite /kkcomp_dep.
+rewrite /k1comp/=.
+rewrite [leLHS](_ : _ = \int[k1 x]_w1 (k2 w1 setT))%E; last first.
+  apply: eq_integral => y _.
+  rewrite integral_indic//; last first.
+    rewrite [X in measurable X](_ : _ = ysection setT y).
+      exact: measurable_ysection.
+    by rewrite ysectionE.
+  by rewrite setIT.
+apply: (@le_trans _ _ (\int[k1 x]_w1 1)%E).
+  apply: ge0_le_integral => //.
+  exact: measurable_kernel.
+by rewrite integral_cst// mul1e.
+Qed.
+
+(* xxx *)
 
 Lemma measurable_prod d [T : measurableType d] [R : realType] [D : set T] [I : eqType]
     (s : seq I) [h : I -> T -> R] :
