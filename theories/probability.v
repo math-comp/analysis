@@ -1065,7 +1065,7 @@ Variable P : probability T R.
 
 Definition independent_RVs (I0 : choiceType)
     (I : set I0) (X : I0 -> {mfun T >-> T'}) : Prop :=
-  mutual_independence P I (fun i => g_sigma_algebra_mapping (X i)).
+  mutual_independence P I (fun i => g_sigma_algebra_preimage (X i)).
 
 Definition independent_RVs2 (X Y : {mfun T >-> T'}) :=
   independent_RVs [set: bool] [eta (fun=> cst point) with false |-> X, true |-> Y].
@@ -1077,17 +1077,17 @@ Context d {T : measurableType d} {R : realType}.
 
 Lemma g_sigma_algebra_mapping_comp (X : {mfun T >-> R}) (f : R -> R) :
   measurable_fun setT f ->
-  g_sigma_algebra_mapping (f \o X)%R `<=` g_sigma_algebra_mapping X.
+  g_sigma_algebra_preimage (f \o X)%R `<=` g_sigma_algebra_preimage X.
 Proof. exact: preimage_set_system_compS. Qed.
 
 Lemma g_sigma_algebra_mapping_funrpos (X : {mfun T >-> R}) :
-  g_sigma_algebra_mapping X^\+%R `<=` d.-measurable.
+  g_sigma_algebra_preimage X^\+%R `<=` d.-measurable.
 Proof.
 by move=> A/= -[B mB] <-; have := measurable_funrpos (measurable_funP X); exact.
 Qed.
 
 Lemma g_sigma_algebra_mapping_funrneg (X : {mfun T >-> R}) :
-  g_sigma_algebra_mapping X^\-%R `<=` d.-measurable.
+  g_sigma_algebra_preimage X^\-%R `<=` d.-measurable.
 Proof.
 by move=> A/= -[B mB] <-; have := measurable_funrneg (measurable_funP X); exact.
 Qed.
@@ -1105,9 +1105,9 @@ Lemma independent_RVs2_comp (X Y : {RV P >-> R}) (f g : {mfun R >-> R}) :
 Proof.
 move=> indeXY; split => /=.
 - move=> [] _ /= A.
-  + by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
+  + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
       exact/measurableT_comp.
-  + by rewrite /g_sigma_algebra_mapping/= /preimage_set_system/= => -[B mB <-];
+  + by rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => -[B mB <-];
       exact/measurableT_comp.
 - move=> J _ E JE.
   apply indeXY => //= i iJ; have := JE _ iJ.
@@ -1316,23 +1316,23 @@ pose AY := dyadic_approx setT (EFin \o Y).
 pose BX := integer_approx setT (EFin \o X).
 pose BY := integer_approx setT (EFin \o Y).
 have mA (Z : {RV P >-> R}) m k : (k < m * 2 ^ m)%N ->
-    g_sigma_algebra_mapping Z (dyadic_approx setT (EFin \o Z) m k).
-  move=> mk; rewrite /g_sigma_algebra_mapping /dyadic_approx mk setTI.
+    g_sigma_algebra_preimage Z (dyadic_approx setT (EFin \o Z) m k).
+  move=> mk; rewrite /g_sigma_algebra_preimage /dyadic_approx mk setTI.
   rewrite /preimage_set_system/=; exists [set` dyadic_itv R m k] => //.
   rewrite setTI/=; apply/seteqP; split => z/=.
     by rewrite inE/= => Zz; exists (Z z).
   by rewrite inE/= => -[r rmk] [<-].
 have mB (Z : {RV P >-> R}) k :
-    g_sigma_algebra_mapping Z (integer_approx setT (EFin \o Z) k).
-  rewrite /g_sigma_algebra_mapping /integer_approx setTI /preimage_set_system/=.
+    g_sigma_algebra_preimage Z (integer_approx setT (EFin \o Z) k).
+  rewrite /g_sigma_algebra_preimage /integer_approx setTI /preimage_set_system/=.
   by exists `[k%:R, +oo[%classic => //; rewrite setTI preimage_itvcy.
 have m1A (Z : {RV P >-> R}) : forall k, (k < n * 2 ^ n)%N ->
     measurable_fun setT
-    (\1_(dyadic_approx setT (EFin \o Z) n k) : g_sigma_algebra_mappingType Z -> R).
+    (\1_(dyadic_approx setT (EFin \o Z) n k) : g_sigma_algebra_preimageType Z -> R).
   move=> k kn.
-  exact/(@measurable_indicP _ (g_sigma_algebra_mappingType Z))/mA.
+  exact/(@measurable_indicP _ (g_sigma_algebra_preimageType Z))/mA.
 rewrite !inE => /orP[|]/eqP->{i} //=.
-  have : @measurable_fun _ _ (g_sigma_algebra_mappingType X) _ setT (X_ n).
+  have : @measurable_fun _ _ (g_sigma_algebra_preimageType X) _ setT (X_ n).
     rewrite nnsfun_approxE//.
     apply: measurable_funD => //=.
       apply: measurable_sum => //= k'; apply: measurable_funM => //.
@@ -1341,7 +1341,7 @@ rewrite !inE => /orP[|]/eqP->{i} //=.
     by apply: measurable_indic; exact: mB.
   rewrite /measurable_fun => /(_ measurableT _ (measurable_set1 x)).
   by rewrite setTI.
-have : @measurable_fun _ _ (g_sigma_algebra_mappingType Y) _ setT (Y_ n).
+have : @measurable_fun _ _ (g_sigma_algebra_preimageType Y) _ setT (Y_ n).
   rewrite nnsfun_approxE//.
   apply: measurable_funD => //=.
     apply: measurable_sum => //= k'; apply: measurable_funM => //.
