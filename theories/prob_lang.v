@@ -314,7 +314,7 @@ rewrite (_ : (fun x => _) = (fun x => x *
   apply/funext => x; case: ifPn => ix; first by rewrite indicE/= mem_set ?mule1.
   by rewrite indicE/= memNset ?mule0// /= in_itv/=; exact/negP.
 apply: emeasurable_funM => //=; apply/measurable_EFinP.
-by rewrite (_ : \1__ = mindic R (emeasurable_itv `[(i%:R)%:E, (i.+1%:R)%:E[)).
+by rewrite (_ : \1__ = mindic R (emeasurable_itv `[i%:R%:E, i.+1%:R%:E[)).
 Qed.
 
 Definition mk i t := [the measure _ _ of k mf i t].
@@ -1396,14 +1396,14 @@ Let q : R := p * (1 - p).
 Let r : R := p ^+ 2 + (1 - p) ^+ 2.
 
 Let Dtrue : D [set true] = p%:E.
-Proof. by rewrite fineK//= probability_fin. Qed.
+Proof. by rewrite fineK//= fin_num_measure. Qed.
 
 Let Dfalse : D [set false] = 1 - (p%:E).
 Proof.
 rewrite -Dtrue; have <- : D [set: bool] = 1 := probability_setT.
 rewrite setT_bool measureU//=; last first.
   by rewrite disjoints_subset => -[]//.
-by rewrite addeAC subee ?probability_fin ?add0e.
+by rewrite addeAC subee ?fin_num_measure ?add0e.
 Qed.
 
 Let p_ge0 : (0 <= p)%R.
@@ -1511,7 +1511,7 @@ by rewrite sumgE ltey.
 Unshelve. all: end_near. Qed.
 
 Lemma von_neumann_trick_prob_kernelT gamma :
-   von_neumann_trick gamma [set: bool] = 1.
+  von_neumann_trick gamma [set: bool] = 1.
 Proof.
 rewrite setT_bool measureU//=; last first.
   by rewrite disjoints_subset => -[].
