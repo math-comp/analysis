@@ -4,8 +4,6 @@
 
 ### Added
 
-### Changed
-
 - in `mathcomp_extra.v`:
   + lemmas `prodr_ile1`, `nat_int`
 
@@ -27,7 +25,10 @@
   + lemma `pi_irrationnal`
 
 - in `numfun.v`
-	+ lemmas `funeposE`, `funenegE`, `funepos_comp`, `funeneg_comp`
+  + lemmas `funeposE`, `funenegE`, `funepos_comp`, `funeneg_comp`
+
+- in `classical_sets.v`:
+  + lemmas `xsectionE`, `ysectionE`
 
 ### Changed
 
@@ -38,9 +39,22 @@
   + put the notation ``` ^`() ``` and ``` ^`( _ ) ``` in scope `classical_set_scope`
 
 - in `numfun.v`
-	+ lock `funepos`, `funeneg`
-  
+  + lock `funepos`, `funeneg`
+
+- moved from `lebesgue_integral.v` to `measure.v` and generalized
+  + lemmas `measurable_xsection`, `measurable_ysection`
+
 ### Renamed
+
+- in `measure.v`
+  + `preimage_class` -> `preimage_set_system`
+  + `image_class` -> `image_set_system`
+  + `preimage_classes` -> `g_sigma_preimageU`
+  + `preimage_class_measurable_fun` -> `preimage_set_system_measurable_fun`
+  + `sigma_algebra_preimage_class` -> `sigma_algebra_preimage`
+  + `sigma_algebra_image_class` -> `sigma_algebra_image`
+  + `sigma_algebra_preimage_classE` -> `g_sigma_preimageE`
+  + `preimage_classes_comp` -> `g_sigma_preimageU_comp`
 
 ### Generalized
 

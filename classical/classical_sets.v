@@ -3263,11 +3263,17 @@ Proof. by apply/idP/idP => [|]; [rewrite inE|rewrite /ysection !inE /= inE]. Qed
 Lemma ysectionP x y A : ysection A y x <-> A (x, y).
 Proof. by rewrite /ysection/= inE. Qed.
 
+Lemma xsectionE A x : xsection A x = (fun y => (x, y)) @^-1` A.
+Proof. by apply/seteqP; split => [y|y] /xsectionP. Qed.
+
+Lemma ysectionE A y : ysection A y = (fun x => (x, y)) @^-1` A.
+Proof. by apply/seteqP; split => [x|x] /ysectionP. Qed.
+
 Lemma xsection0 x : xsection set0 x = set0.
-Proof. by rewrite predeqE /xsection => y; split => //=; rewrite inE. Qed.
+Proof. by rewrite xsectionE preimage_set0. Qed.
 
 Lemma ysection0 y : ysection set0 y = set0.
-Proof. by rewrite predeqE /ysection => x; split => //=; rewrite inE. Qed.
+Proof. by rewrite ysectionE preimage_set0. Qed.
 
 Lemma in_xsectionX X1 X2 x : x \in X1 -> xsection (X1 `*` X2) x = X2.
 Proof.
