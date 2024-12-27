@@ -3554,12 +3554,6 @@ move=> mA; rewrite -(@probability_setT _ _ _ P).
 by apply: le_measure => //; rewrite ?in_setE.
 Qed.
 
-Lemma probability_fin (A : set T) : measurable A -> P A \is a fin_num.
-Proof.
-move=> Ameas; rewrite ge0_fin_numE//.
-by rewrite (@le_lt_trans _ _ 1)// ?measure_ge0 ?probability_le1// ?ltey.
-Qed.
-
 Lemma probability_setC (A : set T) : measurable A -> P (~` A) = 1 - P A.
 Proof.
 move=> mA.
