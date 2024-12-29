@@ -4799,24 +4799,6 @@ End integral_ae_eq.
 
 (** Product measure *)
 
-Section measurable_section.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
-Implicit Types (A : set (T1 * T2)).
-
-Lemma measurable_xsection A x : measurable A -> measurable (xsection A x).
-Proof.
-move=> mA; rewrite (xsection_indic R) -(setTI (_ @^-1` _)).
-exact: measurableT_comp.
-Qed.
-
-Lemma measurable_ysection A y : measurable A -> measurable (ysection A y).
-Proof.
-move=> mA; rewrite (ysection_indic R) -(setTI (_ @^-1` _)).
-exact: measurableT_comp.
-Qed.
-
-End measurable_section.
-
 Section ndseq_closed_B.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 Implicit Types A : set (T1 * T2).
