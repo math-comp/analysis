@@ -4226,7 +4226,7 @@ Lemma le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B}.
 Proof.
 move=> A B AB; pose B_ k := if k is 0%N then B else set0.
 have -> : mu B = \sum_(n <oo) mu (B_ n).
-  rewrite nneseries_recl; last by move=> ?; rewrite outer_measure_ge0.
+  rewrite nneseries_recl//; last by move=> ? ?; rewrite outer_measure_ge0.
   rewrite eseries_cond/= eseries0 ?adde0// => -[|]//= k _ _.
   by rewrite outer_measure0.
 apply: subset_outer_measure_sigma_subadditive => //.
