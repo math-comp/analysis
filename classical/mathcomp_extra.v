@@ -464,3 +464,9 @@ End trunc_floor_ceil.
 
 Lemma natr_int {R : archiNumDomainType} n : n%:R \is a @Num.int R.
 Proof. by rewrite Num.Theory.intrEge0. Qed.
+
+Lemma inr_inj {A B} : injective (@inr A B).
+Proof. by move=>  ? ? []. Qed.
+
+Lemma inl_inj {A B} : injective (@inl A B).
+Proof. by move=>  ? ? []. Qed.
