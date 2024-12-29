@@ -1444,8 +1444,14 @@ Implicit Types (A B : set aT) (f : aT -> rT) (Y : set rT).
 
 Lemma imageP f A a : A a -> (f @` A) (f a). Proof. by exists a. Qed.
 
+Lemma image_f f A a : a \in A -> f a \in [set f x | x in A].
+Proof. by rewrite !inE; apply/imageP. Qed.
+
 Lemma imageT (f : aT -> rT) (a : aT) : range f (f a).
 Proof. by apply: imageP. Qed.
+
+Lemma mem_range f a : f a \in range f.
+Proof. by rewrite !inE; apply/imageT. Qed.
 
 End base_image_lemmas.
 #[global]
@@ -1460,6 +1466,10 @@ Lemma image_inj {f A a} : injective f -> (f @` A) (f a) = A a.
 Proof.
 by move=> f_inj; rewrite propeqE; split => [[b Ab /f_inj <-]|/(imageP f)//].
 Qed.
+
+Lemma mem_image {f A a} : injective f ->
+   (f a \in [set f x | x in A]) = (a \in A).
+Proof. by move=> /image_inj finj; apply/idP/idP; rewrite !inE finj. Qed.
 
 Lemma image_id A : id @` A = A.
 Proof. by rewrite eqEsubset; split => a; [case=> /= x Ax <-|exists a]. Qed.
@@ -1734,6 +1744,15 @@ Lemma disj_set_some {T} {A B : set T} :
 Proof.
 by apply/disj_setPS/disj_setPS; rewrite -some_setI -some_set0 sub_image_someP.
 Qed.
+
+
+Lemma inl_in_set_inr A B (x : A) (Y : set B) :
+  inl x \in [set inr y | y in Y] = false.
+Proof. by apply/negP; rewrite inE/= => -[]. Qed.
+
+Lemma inr_in_set_inr A B (y : B) (Y : set B) :
+  inr y \in [set @inr A B y | y in Y] = (y \in Y).
+Proof. by apply/idP/idP => [/[!inE][/= [x ? [<-]]]|/[!inE]]//; exists y. Qed.
 
 Section bigop_lemmas.
 Context {T I : Type}.

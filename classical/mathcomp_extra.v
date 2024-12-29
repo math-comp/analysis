@@ -697,3 +697,9 @@ Proof.
 move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
 by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
 Qed.
+
+Lemma inr_inj {A B} : injective (@inr A B).
+Proof. by move=>  ? ? []. Qed.
+
+Lemma inl_inj {A B} : injective (@inl A B).
+Proof. by move=>  ? ? []. Qed.

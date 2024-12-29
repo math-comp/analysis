@@ -1320,6 +1320,131 @@ Definition iterate : R.-sfker G ~> B := case_nat (kcounting R) iterate_.
 
 End iterate.
 
+Section iterate_unit.
+
+Let unit := measurableTypeUnit.
+Let bool := measurableTypeBool.
+Context d {G : measurableType d} {R : realType}.
+Context dB (B : measurableFinType dB).
+
+Section iterate_elim.
+Variables (t : R.-sfker (G * unit) ~> (unit + B)%type)
+          (u : G -> unit) (mu : measurable_fun setT u).
+Variables (r : R) (tlE : forall gamma, t (gamma, tt) [set inl tt] = r%:E).
+
+Variables (gamma : G) (X : set B) (q : R).
+Hypothesis trE : t (gamma, tt) [set inr x | x in X] = q%:E.
+
+Let q_ge0 : (0 <= q)%R. Proof. by rewrite -lee_fin -trE measure_ge0. Qed.
+Let r_ge0 : (0 <= r)%R.
+Proof. by rewrite -lee_fin -(tlE gamma) measure_ge0. Qed.
+
+Lemma iterate_E n : iterate_ t mu n gamma X = (geometric q r n)%:E.
+Proof.
+elim: n => [|n IHn] //=;
+    rewrite /kcomp; rewrite integral_kcomp//=;
+    rewrite /= integral_dirac//= ?diracT ?mul1e ?expr0 ?exprS ?mulr1.
+  rewrite (eq_integral (EFin \o \1_[set inr x | x in X]))//=; last first.
+    move=> [a' _|b _]//=; last first.
+      by rewrite diracE indicE/= (mem_image inr_inj).
+    rewrite /kcomp/= indicE /= ge0_integral_mscale//= normr0 mul0e.
+    by rewrite [_ \in _](introF idP)// inE /= => -[].
+  by rewrite ?unitE integral_indic//= setIT.
+pose g : unit + B -> R^o := (geometric q r n \o* \1_[set inl tt])%R.
+rewrite (eq_integral (EFin \o g))//=; last first.
+  move=> [[] _|b _]//=.
+     by rewrite /g/= indicE//= in_set1 inE eqxx mul1r.
+  rewrite /kcomp/= ge0_integral_mscale//= normr0 mul0e.
+  by rewrite /g /= indicE//= in_set1 inE mul0r.
+rewrite /g /=; under eq_integral do rewrite EFinM.
+rewrite integralZr//=; last first.
+  apply/integrableP; split=> //.
+  under eq_integral => x.
+    rewrite gee0_abs//=; last first.
+      by rewrite indicE lee_fin natr_ge0//.
+  over.
+  by rewrite /= integral_indic// setIT [u gamma]unitE tlE ltey.
+by rewrite integral_indic//= [u gamma]unitE setIT tlE -EFinM mulrCA.
+Qed.
+
+Hypothesis r_lt1 : (r < 1)%R.
+
+Lemma iterateE : iterate t mu gamma X = (q / (1 - r))%:E.
+Proof.
+rewrite /= /kcomp/= /case_nat_/= /mseries.
+under eq_integral => n _.
+  under (@congr_lim _ _ _ \o @eq_fun _ _ _ _) => k.
+    under eq_bigr do rewrite fun_if/= (fun_if (@^~ _))/mzero eq_sym.
+    rewrite -big_mkcond/= big_nat1_eq.
+  over.
+over.
+rewrite /= (eq_integral (EFin \o geometric q r))//=; last first.
+  move=> k _; apply/lim_near_cst => //; rewrite iterate_E ?r_ge0 ?r_lt1//.
+  by near do rewrite ifT//.
+have cvgg: series (geometric q r) x @[x --> \oo] --> (q / (1 - r))%R.
+  by apply/cvg_geometric_series; rewrite ger0_norm ?r_lt1//.
+have limgg := cvg_lim (@Rhausdorff R) cvgg.
+have sumgE : \big[+%R/0%R]_(0 <= k <oo) (geometric q r k)%:E = (q / (1 - r))%:E.
+  under (@congr_lim _ _ _ \o @eq_fun _ _ _ _) do rewrite sumEFin.
+  by rewrite /= EFin_lim ?limgg ?ltey.
+  suff summableg : summable setT (EFin \o geometric q r)
+  by rewrite integral_count.
+rewrite /summable /=.
+rewrite (_ : [set: nat] = [set x | x \in predT]); last first.
+  by apply/eq_set => x; rewrite inE trueE.
+rewrite -(@nneseries_esum _ _ predT)//=.
+under eq_eseriesr do rewrite ger0_norm// ?geometric_ge0//.
+by rewrite sumgE ltey.
+Unshelve. all: end_near. Qed.
+
+End iterate_elim.
+
+Import CASE_SUM.
+
+Variables (t : R.-pker (G * unit) ~> (unit + B)%type)
+          (u : G -> unit) (mu : measurable_fun setT u).
+Variables (r : R) (r_lt1 : (r < 1)%R).
+Hypothesis (tlE : forall gamma, t (gamma, tt) [set inl tt] = r%:E).
+
+Let trE gamma X : t (gamma, tt) [set inr x | x in X] \in fin_num.
+Proof.
+apply/fin_numPlt; rewrite (@lt_le_trans _ _ 0)//=.
+rewrite (@le_lt_trans _ _ 1)//= ?ltey//.
+rewrite -( @prob_kernel _ _ _ _ _ t (gamma, tt) ).
+by apply/le_measure => //=; rewrite inE//=.
+Qed.
+
+Lemma iterate_normalize p :
+  iterate t mu = knormalize (case_sum (letin (ret mu) t)
+                  (fun u' => fail)
+                  (fun v => ret (measurable_cst v))) p.
+Proof.
+apply/eq_sfkernel => gamma U.
+have /fin_numP_EFin[q trE'] := trE gamma U.
+rewrite (iterateE mu tlE trE')//; symmetry.
+rewrite /= /mnormalize/= (fun_if (@^~ U))/=.
+set m := kcomp _ _ _.
+have mE V : m V = t (gamma, tt) [set inr x | x in V].
+  rewrite /m/= /kcomp/= integral_kcomp//= integral_dirac//= diracT mul1e.
+  rewrite (eq_integral (EFin \o \1_[set inr x | x in V])).
+    by rewrite integral_indic ?setIT ?unitE.
+  move=> [x|x] xV /=; rewrite indicE.
+    rewrite ?inl_in_set_inr /kcomp/=.
+    by rewrite ge0_integral_mscale//= ?normr0 mul0e.
+  by rewrite inr_in_set_inr// indicE.
+rewrite !mE trE'.
+suff -> : t (gamma, tt) (range inr) = 1 - t (gamma, tt) [set inl tt].
+  by rewrite tlE -EFinB/= orbF eqe subr_eq0 eq_sym lt_eqF.
+rewrite -( @prob_kernel _ _ _ _ _ t (gamma, tt) ).
+have -> : [set: unit + B] = [set inl tt] `|` (range inr).
+  symmetry; apply/eq_set => -[[]|b]//=; apply/propT; first by left.
+  by right; exists b.
+rewrite measureU//=; first by rewrite addeAC subee ?add0e// ?tlE//.
+by apply/eq_set => -[[]|b]//=; apply/propF; case=> []// _ [].
+Qed.
+
+End iterate_unit.
+
 (* an s-finite kernel to test that two expressions are different *)
 Section lift_neq.
 Context {R : realType} d (G : measurableType d).
@@ -1378,16 +1503,14 @@ Definition trick : R.-sfker (T * unit) ~> (unit + bool)%type :=
            (letin (ret macc1of4) (ret minrb))
            (ret minltt)))).
 
-Definition von_neumann_trick_kernel : _ -> _ :=
+Definition kvon_neumann_trick : _ -> _ :=
   (@iterate _ _ R _ unit _ bool trick _ ktt).
-Definition von_neumann_trick x : _ -> _ := von_neumann_trick_kernel x.
+Definition von_neumann_trick x : _ -> _ := kvon_neumann_trick x.
 
-HB.instance Definition _ := SFiniteKernel.on von_neumann_trick_kernel.
+HB.instance Definition _ := SFiniteKernel.on kvon_neumann_trick.
 HB.instance Definition _ x := Measure.on (von_neumann_trick x).
 
 Section von_neumann_trick_proof.
-
-Hypothesis D_nontrivial : 0 < D [set true] < 1.
 
 Let p : R := fine (D [set true]).
 Let q : R := p * (1 - p).
@@ -1431,6 +1554,30 @@ by case: (set_bool A) => /eqP->/=;
      -EFinD addrNK.
 Qed.
 
+Lemma trick_bool gamma b : trick gamma [set inr b] = q%:E.
+Proof.
+rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
+rewrite !integral_dirac ?diracT//= ?mul1e.
+rewrite !iteE//= ?diracE/= /kcomp/=.
+rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
+rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr !in_set1 !inE.
+rewrite /q -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E.
+by case: b => //=; ring.
+Qed.
+
+Lemma trick_unit gamma : trick gamma [set inl tt] = r%:E.
+Proof.
+rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
+rewrite !integral_dirac ?diracT//= ?mul1e.
+rewrite !iteE//= ?diracE/= /kcomp/=.
+rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
+rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr.
+rewrite !in_set1 !inE/=.
+by rewrite /r -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E; ring.
+Qed.
+
+Hypothesis D_nontrivial : 0 < D [set true] < 1.
+
 Let p_gt0 : (0 < p)%R.
 Proof. by rewrite -lte_fin -Dtrue; case/andP : D_nontrivial. Qed.
 
@@ -1445,74 +1592,23 @@ rewrite /r -subr_gt0 [ltRHS](_ : _ = 2 * p * (1 - p))%R; last by ring.
 by rewrite !mulr_gt0.
 Qed.
 
-Lemma iterate_trick gamma n (b : bool) :
-  @iterate_ _ _ R _ unit _ bool trick _ ktt n gamma [set b]
-    = (geometric q r n)%:E.
-Proof.
-elim: n => [|n IHn] //=; rewrite /kcomp; rewrite integral_kcomp//=;
-    rewrite integral_dirac//= ?diracT ?mul1e integral_kcomp//=;
-    under eq_integral do [rewrite integral_kcomp//=;
-      under eq_integral do rewrite integral_kcomp//=
-        ?integral_dirac//= ?diracT ?mul1e];
-    do ![rewrite intDE//=; last by
-       [move=> b'; do !rewrite integral_ge0//= => *]];
-    rewrite !iteE//= ?integral_kcomp//=
-      ?integral_dirac//= ?diracT ?mul1e/=;
-    rewrite /acc1of4/= /kcomp ?ge0_integral_mscale //=
-      ?diracE/= ?in_set1 ?inE/=
-      ?(mule0, mul0e, adde0, add0e, mule1, normr0)//=;
-    rewrite -?(EFinB, EFinN, EFinM, EFinD) ?lee_fin ?expr0 ?mulr1//.
-  by case: b => //=; rewrite ?(mulr0, mulr1, add0r, addr0)// ?[(_ * p)%R]mulrC.
-rewrite IHn -?(EFinB, EFinN, EFinM, EFinD) ?lee_fin ?expr0 ?mulr1//.
-rewrite [geometric _ _ _]lock !mulrA -mulrDl addrC.
-by rewrite /geometric/= -/r -lock mulrCA exprS.
-Qed.
-
-Lemma iterate_trickT gamma n :
-  @iterate_ _ _ R _ unit _ bool trick _ ktt n gamma [set: bool] =
-     (2 * geometric q r n)%:E.
-Proof.
-rewrite setT_bool measureU//=; last first.
-  by rewrite disjoints_subset => -[]//.
-by rewrite !iterate_trick -EFinD -mulr2n mulr_natl.
-Qed.
-
 Lemma von_neumann_trick_prob_kernel gamma b :
-   von_neumann_trick_kernel gamma [set b] = 2^-1%:E.
+   kvon_neumann_trick gamma [set b] = 2^-1%:E.
 Proof.
-rewrite /= /kcomp/= /case_nat_/= /mseries.
-under eq_integral => n _.
-  under (@congr_lim _ _ _ \o @eq_fun _ _ _ _) => k.
-    under eq_bigr do rewrite fun_if/= (fun_if (@^~ _))/mzero eq_sym.
-    rewrite -big_mkcond/= big_nat1_eq iterate_trick.
-  over.
-over.
-rewrite /= (eq_integral (EFin \o geometric q r))//=; last first.
-  by move=> k _; apply/lim_near_cst => //; near do rewrite ifT//.
-have cvgg: series (geometric q r) x @[x --> \oo] --> (q / (1 - r))%R.
-  by apply/cvg_geometric_series; rewrite ger0_norm ?r_lt1.
-have limgg := cvg_lim (@Rhausdorff R) cvgg.
-have sumgE : \big[+%R/0%R]_(0 <= k <oo) (geometric q r k)%:E = (2^-1)%:E.
-  under (@congr_lim _ _ _ \o @eq_fun _ _ _ _) do rewrite sumEFin.
-  rewrite /= EFin_lim ?limgg ?ltey// /q /r; congr (_%:E).
+rewrite [LHS](@iterateE _ _ _ _ _ _ _ _ r _ _ _ q)//=.
+- rewrite /r /q; congr (_)%:E.
   suff: (1 - ((p ^+ 2)%R + ((1 - p) ^+ 2)%R)%E)%R != 0%R by move=> *; field.
   rewrite [X in X != _](_ : _ = 2 * (p * (1 - p)))%R; last by ring.
-  by rewrite mulf_eq0 ?pnatr_eq0/= mulf_neq0// gt_eqF ?p_gt0 ?p'_gt0//.
-suff summableg : summable setT (EFin \o geometric q r)
-  by rewrite integral_count.
-rewrite /summable /=.
-rewrite (_ : [set: nat] = [set x | x \in predT]); last first.
-  by apply/eq_set => x; rewrite inE trueE.
-rewrite -(@nneseries_esum _ _ predT)//=.
-under eq_eseriesr do rewrite ger0_norm// ?geometric_ge0//.
-by rewrite sumgE ltey.
-Unshelve. all: end_near. Qed.
+  by rewrite mulf_eq0 ?pnatr_eq0/= mulf_neq0// gt_eqF ?p_gt0 ?p'_gt0.
+- by move=> gamma'; exact: trick_unit.
+- suff -> : [set inr x | x in [set b]] = [set inr b] by exact: trick_bool.
+  by move=> A; apply/seteqP; split=> [a [_ ->]|_ ->]//=; exists b.
+Qed.
 
 Lemma von_neumann_trick_prob_kernelT gamma :
   von_neumann_trick gamma [set: bool] = 1.
 Proof.
-rewrite setT_bool measureU//=; last first.
-  by rewrite disjoints_subset => -[].
+rewrite setT_bool measureU//=; last by rewrite disjoints_subset => -[].
 rewrite !von_neumann_trick_prob_kernel -EFinD.
 by have := splitr (1 : R); rewrite mul1r => <-.
 Qed.
@@ -1521,7 +1617,7 @@ HB.instance Definition _ gamma := Measure.on (von_neumann_trick gamma).
 HB.instance Definition _ gamma := Measure_isProbability.Build _ _ _
   (von_neumann_trick gamma) (von_neumann_trick_prob_kernelT gamma).
 HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
-  von_neumann_trick_kernel von_neumann_trick_prob_kernelT.
+  kvon_neumann_trick von_neumann_trick_prob_kernelT.
 
 Theorem von_neumann_trickP gamma : von_neumann_trick gamma =1 bernoulli 2^-1.
 Proof. by apply: eq_bernoulli; rewrite von_neumann_trick_prob_kernel. Qed.
