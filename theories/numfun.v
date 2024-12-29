@@ -381,7 +381,7 @@ Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
   xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
 apply/seteqP; split => [y/mem_set/=|y/=]; rewrite indicE.
-by rewrite mem_xsection => ->.
+  by rewrite mem_xsection => ->.
 by rewrite /xsection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
 Qed.
 
@@ -389,7 +389,7 @@ Lemma ysection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) y :
   ysection A y = (fun x => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
 apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
-by rewrite mem_ysection => ->.
+  by rewrite mem_ysection => ->.
 by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
 Qed.
 
