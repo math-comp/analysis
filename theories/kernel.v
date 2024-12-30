@@ -190,8 +190,24 @@ have ? : m1 = m2.
 by subst m1; f_equal; f_equal; f_equal; apply/Prop_irrelevance.
 Qed.
 
+(* interface for sigma-finite kernel *)
+HB.mixin Record SFiniteKernel_isSigmaFinite
+    d d' (X : measurableType d) (Y : measurableType d')
+    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
+  sigma_finite_finite_transition_kernel : forall x, sigma_finite setT (k x) }.
+
+#[short(type=sigma_finite_kernel)]
+HB.structure Definition SigmaFiniteKernel
+    d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
+  { k of @SFiniteKernel _ _ _ _ _ k &
+         SFiniteKernel_isSigmaFinite _ _ X Y R k }.
+
+Reserved Notation "R .-sigmafinker X ~> Y"
+  (at level 42, format "R .-sigmafinker  X  ~>  Y").
+Notation "R .-sigmafinker X ~> Y" := (sigma_finite_kernel X%type Y R).
+
 (* interface for finite transition kernel *)
-HB.mixin Record SFiniteKernel_isFiniteTransition
+HB.mixin Record SigmaFiniteKernel_isFiniteTransition
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) := {
   finite_finite_transition_kernel : forall x, fin_num_fun (k x) }.
@@ -199,8 +215,8 @@ HB.mixin Record SFiniteKernel_isFiniteTransition
 #[short(type=finite_transition_kernel)]
 HB.structure Definition FiniteTransitionKernel
     d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
-  { k of @SFiniteKernel _ _ _ _ _ k &
-         SFiniteKernel_isFiniteTransition _ _ X Y R k }.
+  { k of @SigmaFiniteKernel _ _ _ _ _ k &
+         SigmaFiniteKernel_isFiniteTransition _ _ X Y R k }.
 
 Notation "R .-ftker X ~> Y" := (finite_transition_kernel X%type Y R).
 
@@ -257,6 +273,18 @@ Qed.
 HB.instance Definition _ :=
   @Kernel_isSFinite_subdef.Build d d' X Y R k sfinite_finite.
 
+(* TODO: renamed *)
+Let sigma_finite_finite_transition_kernel x : sigma_finite setT (k x).
+Proof.
+apply: fin_num_fun_sigma_finite; first by rewrite measure0.
+apply: lty_fin_num_fun.
+have [r kr] := measure_uub.
+by rewrite (lt_trans (kr x)) ?ltry.
+Qed.
+
+HB.instance Definition _ :=
+  @SFiniteKernel_isSigmaFinite.Build d d' X Y R k sigma_finite_finite_transition_kernel.
+
 Let finite_transition_finite : forall x, fin_num_fun (k x).
 Proof.
 move=> x U mU.
@@ -267,7 +295,7 @@ by rewrite (lt_trans (kr x)) ?ltry.
 Qed.
 
 HB.instance Definition _ :=
-  @SFiniteKernel_isFiniteTransition.Build d d' X Y R k finite_transition_finite.
+  @SigmaFiniteKernel_isFiniteTransition.Build d d' X Y R k finite_transition_finite.
 
 HB.instance Definition _ :=
   @FiniteTransitionKernel_isFinite.Build  d d' X Y R k measure_uub.
@@ -1154,20 +1182,6 @@ Proof. by move=> mf; exact: measurableT_comp. Qed.
 
 End measurable_fun_prod.
 
-HB.mixin Record isSigmaFiniteTransitionKernel
-    d d' (X : measurableType d) (Y : measurableType d')
-    (R : realType) (k : X -> {measure set Y -> \bar R}) := {
-  sigma_finite_finite_transition_kernel : forall x, sigma_finite setT (k x) }.
-
-#[short(type=sigma_finite_transition_kernel)]
-HB.structure Definition SigmaFiniteTransitionKernel
-    d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
-  { k of @Kernel _ _ _ _ _ k & isSigmaFiniteTransitionKernel _ _ X Y R k }.
-
-Reserved Notation "R .-sftker X ~> Y"
-  (at level 42, format "R .-sftker  X  ~>  Y").
-Notation "R .-sftker X ~> Y" := (sigma_finite_transition_kernel X%type Y R).
-
 Lemma sprob_kernel_le1 d d' (X : measurableType d)
   (Y : measurableType d') (R : realType) (k : R.-spker X ~> Y) x :
   k x [set: Y] <= 1.
@@ -1384,8 +1398,7 @@ Definition kkcomp_dep d0 d1 d2 (T0 : measurableType d0)
     (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
     (k1 : T0 -> {measure set T1 -> \bar R})
     (k2 : T0 * T1 -> {measure set T2 -> \bar R}) : T0 -> set (T1 * T2) -> \bar R
-  := fun (x : T0) (A : set (T1 * T2)) =>
-  (\int[k1 x]_w1 (k1comp k2 A (x, w1)))%E.
+  := fun x (A : set (T1 * T2)) => \int[k1 x]_y (k1comp k2 A (x, y)).
 
 (* (unparameterized) composition of two finite transition kernels *)
 Definition kkcomp_undep d0 d1 d2 (T0 : measurableType d0)
@@ -1536,7 +1549,7 @@ exists (fun n => A n `*` setT) => /=.
 by move=> n; split => //; exact: measurableX.
 Qed.
 
-HB.instance Definition _ x := @isSigmaFiniteTransitionKernel.Build d0
+HB.instance Definition _ x := @SFiniteKernel_isSigmaFinite.Build d0
   (measure_prod_display (d1, d2)) T0 (T1 * T2)%type R
     (mkkcomp_dep k1 k2) sigma_finite_kkcomp_dep.
 
@@ -1547,7 +1560,7 @@ Definition kkcomp d0 d1 d2 (T0 : measurableType d0)
     (k1 : (*T0 -> {measure set T1 -> \bar R}*)R.-spker T0 ~> T1)
     (k2 : (*T1 -> {measure set T2 -> \bar R}*)R.-spker T1 ~> T2)
   : T0 -> set T2 -> \bar R :=
-  fun x A => \int[k1 x]_w1 (k2 w1 A).
+  fun x A => \int[k1 x]_y (k2 y A).
 
 Section spker_snd.
 Context d0 d1 d2 (T0 : measurableType d0)
