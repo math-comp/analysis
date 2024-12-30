@@ -220,16 +220,28 @@ HB.structure Definition FiniteTransitionKernel
 
 Notation "R .-ftker X ~> Y" := (finite_transition_kernel X%type Y R).
 
-HB.mixin Record FiniteTransitionKernel_isFinite d d'
+HB.mixin Record isMeasureFamUub d d'
     (X : measurableType d) (Y : measurableType d') (R : realType)
     (k : X -> {measure set Y -> \bar R}) := {
   measure_uub : measure_fam_uub k }.
+
+#[deprecated(since="mathcomp-analysis 1.9.0",
+             note="Use isMeasureFamUub instead.")]
+Notation SFiniteKernel_isFinite x1 x2 x3 x4 x5 x6 :=
+  (isMeasureFamUub x1 x2 x3 x4 x5 x6).
+
+Module SFiniteKernel_isFinite.
+#[deprecated(since="mathcomp-analysis 1.9.0",
+             note="Use isMeasureFamUub.Build instead.")]
+Notation Build x1 x2 x3 x4 x5 x6 :=
+  (isMeasureFamUub.Build x1 x2 x3 x4 x5 x6) (only parsing).
+End SFiniteKernel_isFinite.
 
 #[short(type=finite_kernel)]
 HB.structure Definition FiniteKernel d d'
     (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k of @FiniteTransitionKernel _ _ _ _ _ k &
-         FiniteTransitionKernel_isFinite _ _ X Y R k }.
+         isMeasureFamUub _ _ X Y R k }.
 Notation "R .-fker X ~> Y" := (finite_kernel X%type Y R).
 Arguments measure_uub {_ _ _ _ _} _.
 
@@ -298,7 +310,7 @@ HB.instance Definition _ :=
   @SigmaFiniteKernel_isFiniteTransition.Build d d' X Y R k finite_transition_finite.
 
 HB.instance Definition _ :=
-  @FiniteTransitionKernel_isFinite.Build  d d' X Y R k measure_uub.
+  @isMeasureFamUub.Build  d d' X Y R k measure_uub.
 
 HB.end.
 
@@ -1590,10 +1602,8 @@ Definition mkernel_snd : (T0 * T1)%type -> {measure set T2 -> \bar R} :=
 Let measurable_kernel U : measurable U ->
   measurable_fun [set: _] (mkernel_snd ^~ U).
 Proof.
-move=> mU.
-have /= mk1 := measurable_kernel k1 _ mU.
-move=> _ /= Y mY.
-have {}mk1 := mk1 measurableT _ mY.
+move=> mU; have /= mk1 := measurable_kernel k1 _ mU.
+move=> _ /= Y mY; have {}mk1 := mk1 measurableT _ mY.
 have -> : ([set: T0 * T1] `&` (fun x => mkernel_snd x U) @^-1` Y) =
   (setT `*` ([set: T1] `&` (k1 ^~ U) @^-1` Y)).
   by rewrite !setTI setTX.
