@@ -269,12 +269,12 @@ move=> /= F mF tF mUF.
 rewrite /mpoisson1/= integral_bigcup//=; last first.
   apply/integrableP; split.
     apply/measurable_EFinP.
-    exact: measurable_funS (measurable_poisson _).
+    exact: measurable_funS (measurable_poisson_pdf _).
   rewrite (_ : (fun x => _) = (EFin \o poisson1)); last first.
     by apply/funext => x; rewrite gee0_abs// lee_fin poisson1_ge0//.
   apply: le_lt_trans.
     apply: (@ge0_subset_integral _ _ _ _ _ setT) => //=.
-      by apply/measurable_EFinP; exact: measurable_poisson.
+      by apply/measurable_EFinP; exact: measurable_poisson_pdf.
     by move=> ? _; rewrite lee_fin poisson1_ge0//.
   by rewrite /= integral_poisson_density// ltry.
 apply: is_cvg_ereal_nneg_natsum_cond => n _ _.
@@ -285,11 +285,7 @@ HB.instance Definition _ := isMeasure.Build _ _ _
   mpoisson1 mpoisson10 mpoisson1_ge0 mpoisson1_sigma_additive.
 
 Let mpoisson1_setT : mpoisson1 [set: _] = 1%E.
-Proof.
-rewrite /mpoisson1.
-rewrite /poisson1.
-by rewrite integral_poisson_density.
-Qed.
+Proof. exact: integral_poisson_density. Qed.
 
 HB.instance Definition _ := @Measure_isProbability.Build _ _ R
   mpoisson1 mpoisson1_setT.
