@@ -1921,7 +1921,7 @@ rewrite -lim_shift_cst; last by rewrite (@lt_le_trans _ _ 0)// f0// leq_addr.
 Unshelve. all: by end_near. Qed.
 
 Lemma nneseries_split_cond (R : realType) (f : nat -> \bar R) N n (P : pred nat) :
-  (forall k, P k -> 0 <= f k)%E ->
+  (forall k, P k -> 0 <= f k) ->
   \sum_(N <= k <oo | P k) f k =
   \sum_(N <= k < N + n | P k) f k + \sum_(N + n <= k <oo | P k) f k.
 Proof.
@@ -1930,15 +1930,36 @@ rewrite big_mkcond/= (nneseries_split n)// => k Nk.
 by case: ifPn => //; exact: NPf.
 Qed.
 
+Lemma nneseriesD1 {R : realType} (f : nat -> \bar R) n (P : pred nat) :
+  (forall k, P k -> 0 <= f k) -> P n ->
+  \sum_(0 <= k <oo | P k) f k =
+  f n + \sum_(0 <= k <oo | P k && (k != n)) f k.
+Proof.
+move=> f0 Pn.
+rewrite (@nneseries_split_cond _ f 0%N n.+1 P)// add0n big_mkcond/=.
+rewrite big_nat_recr//= Pn -big_mkcond/= -addrA addrCA; congr +%E.
+rewrite [RHS]eseries_mkcondr.
+rewrite [in RHS](@nneseries_split_cond _ _ _ n.+1 P)//; last first.
+  by move=> k Pk; case: ifPn => // _; exact: f0.
+rewrite add0n [X in _ = X + _]big_mkcond/= big_nat_recr//= Pn eqxx/= adde0.
+rewrite -big_mkcond//=; congr +%E.
+  rewrite big_seq_cond [RHS]big_seq_cond; apply: eq_bigr => /= i.
+  by rewrite mem_index_iota leq0n/= => /andP[ij Pi]; rewrite lt_eqF.
+rewrite eseries_cond [RHS]eseries_cond; apply: eq_eseriesr => i /andP[Pi ji].
+by rewrite gt_eqF.
+Qed.
+
 End nneseries_split.
 Arguments nneseries_split {R f} _ _.
 Arguments nneseries_split_cond {R f} _ _ _.
+Arguments nneseriesD1 {R f} n {P}.
 
-Lemma nneseries_recl (R : realType) (f : nat -> \bar R) :
-  (forall k, 0 <= f k) -> \sum_(k <oo) f k = f 0%N + \sum_(1 <= k <oo) f k.
+Lemma nneseries_recl {R : realType} (P : pred nat) (f : nat -> \bar R) :
+  (forall k, P k -> 0 <= f k) -> P 0%N ->
+  \sum_(0 <= k <oo | P k) f k = f 0%N + \sum_(1 <= k <oo | P k) f k.
 Proof.
-move=> f0; rewrite [LHS](nneseries_split _ 1)// add0n.
-by rewrite /index_iota subn0/= big_cons big_nil addr0.
+move=> F0 P0; rewrite (nneseriesD1 0%N)//; congr +%E.
+by rewrite [RHS]eseries_cond; apply: eq_eseriesl => n; rewrite lt0n.
 Qed.
 
 Lemma nneseries_tail_cvg (R : realType) (f : (\bar R)^nat) P :
