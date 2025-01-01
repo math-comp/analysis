@@ -14,26 +14,62 @@ From mathcomp Require Import lebesgue_integral probability exp kernel charge.
 (* Reference:                                                                 *)
 (* - R. Affeldt, C. Cohen, A. Saito. Semantics of probabilistic programs      *)
 (*   using s-finite kernels in Coq. CPP 2023                                  *)
+(* - S. Staton. Commutative Semantics for Probabilistic Programming.          *)
+(*   ESOP 2017                                                                *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*          poisson_pdf == Poisson pdf                                        *)
 (*      exponential_pdf == exponential distribution pdf                       *)
+(*   measurable_sum X Y == the type X + Y, as a measurable type               *)
 (*                                                                            *)
-(*            sample mP == sample according to the probability P where mP is  *)
-(*                         a proof that P is a measurable function            *)
-(*         sample_cst P == sample according to the probability P              *)
-(*            letin l k == execute l, augment the context, and execute k      *)
+(*           mscore f t := mscale `|f t| \d_tt                                *)
+(*             kscore f := fun=> mscore f                                     *)
+(*                         This is an s-finite kernel.                        *)
+(*        kite k1 k2 mf := kdirac mf \; kadd (kiteT k1) (kiteF k2).           *)
+(*                         k1 has type R.-sfker T ~> T'.                      *)
+(*                         k2 has type R.-sfker T ~> T'.                      *)
+(*                         mf is a proof that f : T -> bool is measurable.    *)
+(*                         KITE.kiteT k1 is k1 \o fst if f returne true       *)
+(*                         and zero otherwise.                                *)
+(*                         KITE.kiteF k2 is k2 \o fst if f returne false      *)
+(*                         and zero otherwise.                                *)
+(*                                                                            *)
 (*               ret mf == access the context with f and return the result    *)
+(*                         mf is a proof that f is measurable.                *)
+(*                         This is a probability kernel.                      *)
+(*            sample mP == sample according to the probability measure P      *)
+(*                         mP is a proof that P is a measurable function.     *)
+(*         sample_cst P == same as sample with a constant probability measure *)
+(*        normalize k P == normalize the kernel k into a probability kernel   *)
+(*                         P is a default probability in case normalization   *)
+(*                         is not possible.                                   *)
+(*       normalize_pt k := normalize k point                                  *)
+(*         ite mf k1 k2 == access the context with the boolean function f and *)
+(*                         behaves as k1 or k2 according to the result        *)
+(*            letin l k == execute l, augment the context, and execute k      *)
+(*                 fail := let _ := score 0 in ret point                      *)
 (*             score mf == observe t from d, where f is the density of d and  *)
 (*                         t occurs in f                                      *)
 (*                         e.g., score (r e^(-r * t)) = observe t from exp(r) *)
-(*        normalize k P == normalize the kernel k into a probability kernel,  *)
-(*                         P is a default probability in case normalization   *)
-(*                         is not possible                                    *)
-(*         ite mf k1 k2 == access the context with the boolean function f and *)
-(*                         behaves as k1 or k2 according to the result        *)
-(*             case_nat == case analysis on the nat datatype                  *)
+(*        acc0of2, acc1of2, etc. == accessor function                         *)
+(*        case_nat t u_ == case analysis on natural numbers                   *)
+(*                         t has type R.-sfker T ~> nat                       *)
+(*                         u_ has type nat -> R.-sfker T ~> T'                *)
+(* CASE_SUM.case_sum g k1 k2 == case analysis on a sum type                   *)
+(*                         g has type R.-sfker X ~> (A + B).                  *)
+(*                         k1 has type A -> R.-sfker X ~> Y.                  *)
+(*                         k2 has type B -> R.-sfker X ~> Y.                  *)
+(*            kcounting == the counting measure as a kernel                   *)
+(*         iterate k mu == iteration                                          *)
+(*                         k has type R.-sfker G * A ~> (A + B).              *)
+(*                         mu is a proof that u : G -> A is measurable.       *)
+(*            flift_neq ==  an s-finite kernel to test that two expressions   *)
+(*                          are different                                     *)
+(* ```                                                                        *)
 (*                                                                            *)
+(* Examples: Staton's bus, von Neumann's trick, etc.                          *)
+(*                                                                            *)
+(* ```                                                                        *)
 (*            mkswap k == given a kernel k : (Y * X) ~> Z,                    *)
 (*                        returns a kernel of type (X * Y) ~> Z               *)
 (*              letin' := mkcomp \o mkswap                                    *)
@@ -75,14 +111,12 @@ subst p2.
 by f_equal.
 Qed.
 
-Definition dep_uncurry (A : Type) (B : A -> Type) (C : Type) :
-    (forall a : A, B a -> C) -> {a : A & B a} -> C :=
-  fun f p => let (a, Ba) := p in f a Ba.
-
+(* NB: to be PRed to probability.v *)
 Section poisson_pdf.
 Variable R : realType.
 Local Open Scope ring_scope.
 
+(* density function for Poisson *)
 Definition poisson_pdf k r : R :=
   if r > 0 then r ^+ k / k`!%:R^-1 * expR (- r) else 1%:R.
 
@@ -106,12 +140,16 @@ by apply: measurable_funM => /=;
   [exact: measurable_funM|exact: measurableT_comp].
 Qed.
 
+Definition poisson3 := poisson_pdf 4 3%:R. (* 0.168 *)
+Definition poisson10 := poisson_pdf 4 10%:R. (* 0.019 *)
+
 End poisson_pdf.
 
 Section exponential_pdf.
 Variable R : realType.
 Local Open Scope ring_scope.
 
+(* density function for exponential *)
 Definition exponential_pdf x r : R := r * expR (- r * x).
 
 Lemma exponential_pdf_gt0 x r : 0 < r -> 0 < exponential_pdf x r.
@@ -145,8 +183,8 @@ Let sumU (F : (set (X + Y))^nat) : (forall i, measurable_sum (F i)) ->
   measurable_sum (\bigcup_i F i).
 Proof. by []. Qed.
 
-HB.instance Definition _ := @isMeasurable.Build default_measure_display (X + Y)%type
-  measurable_sum sum0 sumC sumU.
+HB.instance Definition _ := @isMeasurable.Build default_measure_display
+  (X + Y)%type measurable_sum sum0 sumC sumU.
 
 End measurable_sum.
 
@@ -177,11 +215,6 @@ move=> mx my; apply: measurable_fun_ifT => //=.
 - exact: measurableT_comp.
 Qed.
 
-(* Definition mR (R : realType) : Type := R.
-HB.instance Definition _ (R : realType) := Measurable.on (mR R).
-(* [the measurableType (R.-ocitv.-measurable).-sigma of
-                 salgebraType (R.-ocitv.-measurable)]. *) *)
-
 Module Notations.
 Notation munit := Datatypes_unit__canonical__measure_Measurable.
 Notation mbool := Datatypes_bool__canonical__measure_Measurable.
@@ -192,6 +225,7 @@ Lemma invr_nonneg_proof (R : numDomainType) (p : {nonneg R}) :
   (0 <= (p%:num)^-1)%R.
 Proof. by rewrite invr_ge0. Qed.
 
+(* TODO: move *)
 Definition invr_nonneg (R : numDomainType) (p : {nonneg R}) :=
   NngNum (invr_nonneg_proof p).
 
@@ -247,7 +281,7 @@ Qed.
 
 End mscore.
 
-(* decomposition of score into finite kernels *)
+(* decomposition of score into finite kernels [Section 3.2, Staton ESOP 2017] *)
 Module SCORE.
 Section score.
 Context d (T : measurableType d) (R : realType).
@@ -387,7 +421,7 @@ HB.instance Definition _ :=
 
 End kscore.
 
-(* decomposition of ite into s-finite kernels *)
+(* decomposition of ite into s-finite kernels [Section 3.2, Staton ESOP 2017] *)
 Module ITE.
 Section ite.
 Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
@@ -534,10 +568,6 @@ HB.instance Definition _ t := isMeasure.Build _ _ _ (mite mf t)
 
 Import ITE.
 
-(*
-Definition kite : R.-sfker T ~> T' :=
-  kdirac mf \; kadd (kiteT u1) (kiteF u2).
-*)
 Definition kite : R.-sfker T ~> T' :=
   kdirac mf \; kadd (kiteT u1) (kiteF u2).
 
@@ -629,7 +659,7 @@ Section insn3.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
   (Z : measurableType d3) (R : realType).
 
-Definition letin (l : R.-sfker X ~> Y) (k : R.-sfker [the measurableType _ of (X * Y)%type] ~> Z)
+Definition letin (l : R.-sfker X ~> Y) (k : R.-sfker (X * Y) ~> Z)
    : R.-sfker X ~> Z :=
   [the R.-sfker X ~> Z of l \; k].
 
@@ -675,8 +705,7 @@ End letin_return.
 Section insn1.
 Context d (X : measurableType d) (R : realType).
 
-Definition score (f : X -> R) (mf : measurable_fun setT f)
-    : R.-sfker X ~> _ :=
+Definition score (f : X -> R) (mf : measurable_fun setT f) : R.-sfker X ~> _ :=
   [the R.-sfker X ~> _ of kscore mf].
 
 End insn1.
@@ -702,7 +731,6 @@ Definition k3 : measurable_fun _ _ := kr 3%:R.
 Definition k10 : measurable_fun _ _ := kr 10%:R.
 Definition ktt := @measurable_cst _ _ T _ setT tt.
 Definition kb (b : bool) := @measurable_cst _ _ T _ setT b.
-
 Definition kn (n : nat) := @measurable_cst _ _ T _ setT n.
 
 End cst_fun.
@@ -835,7 +863,7 @@ Import Notations.
 Context d0 d1 d2 d3 (T0 : measurableType d0) (T1 : measurableType d1)
   (T2 : measurableType d2) (T3 : measurableType d3) (R : realType).
 
-Definition T01 : seq {d & measurableType d} := [:: existT _ _ T0; existT _ _ T1].
+Let T01 : seq {d & measurableType d} := [:: existT _ _ T0; existT _ _ T1].
 
 Definition acc0of2 : T0 * T1 -> T0 :=
   acc T01 0 \o pairAr unit tt.
@@ -853,7 +881,7 @@ Proof.
 by apply: measurableT_comp; [exact: (measurable_acc T01 1)|exact: mpairAr].
 Qed.
 
-Definition T02 := [:: existT _ _ T0; existT _ _ T1; existT _ _ T2].
+Let T02 := [:: existT _ _ T0; existT _ _ T1; existT _ _ T2].
 
 Definition acc1of3 : T0 * T1 * T2 -> T1 :=
   acc T02 1 \o pairAAr.
@@ -895,8 +923,7 @@ Proof.
 by apply: measurableT_comp; [exact: (measurable_acc T02 2)|exact: mpairAArAi].
 Qed.
 
-Definition T03 :=
-  [:: existT _ _ T0; existT _ _ T1; existT _ d2 T2; existT _ d3 T3].
+Let T03 := [:: existT _ _ T0; existT _ _ T1; existT _ d2 T2; existT _ d3 T3].
 
 Definition acc1of4 : T0 * T1 * T2 * T3 -> T1 :=
   acc T03 1 \o pairAAAr.
@@ -933,61 +960,6 @@ Arguments macc2of3' {d0 d1 d2 _ _ _}.
 Arguments macc1of4 {d0 d1 d2 d3 _ _ _ _}.
 Arguments macc2of4' {d0 d1 d2 d3 _ _ _ _}.
 Arguments macc3of4 {d0 d1 d2 d3 _ _ _ _}.
-
-(* sample programs *)
-Section poisson.
-Variable R : realType.
-Local Open Scope ring_scope.
-
-(* density function for Poisson *)
-Definition poisson k r : R :=
-  if r > 0 then r ^+ k / k`!%:R^-1 * expR (- r) else 1%:R.
-
-Lemma poisson_ge0 k r : 0 <= poisson k r.
-Proof.
-rewrite /poisson; case: ifPn => r0//.
-by rewrite mulr_ge0 ?expR_ge0// mulr_ge0// exprn_ge0 ?ltW.
-Qed.
-
-Lemma poisson_gt0 k r : 0 < r -> 0 < poisson k.+1 r.
-Proof.
-move=> r0; rewrite /poisson r0 mulr_gt0  ?expR_gt0//.
-by rewrite divr_gt0// ?exprn_gt0// invr_gt0 ltr0n fact_gt0.
-Qed.
-
-Lemma measurable_poisson k : measurable_fun setT (poisson k).
-Proof.
-rewrite /poisson; apply: measurable_fun_if => //.
-  exact: measurable_fun_ltr.
-by apply: measurable_funM => /=;
-  [exact: measurable_funM|exact: measurableT_comp].
-Qed.
-
-Definition poisson3 := poisson 4 3%:R. (* 0.168 *)
-Definition poisson10 := poisson 4 10%:R. (* 0.019 *)
-
-End poisson.
-
-Section exponential.
-Variable R : realType.
-Local Open Scope ring_scope.
-
-(* density function for exponential *)
-Definition exp_density x r : R := r * expR (- r * x).
-
-Lemma exp_density_gt0 x r : 0 < r -> 0 < exp_density x r.
-Proof. by move=> r0; rewrite /exp_density mulr_gt0// expR_gt0. Qed.
-
-Lemma exp_density_ge0 x r : 0 <= r -> 0 <= exp_density x r.
-Proof. by move=> r0; rewrite /exp_density mulr_ge0// expR_ge0. Qed.
-
-Lemma mexp_density x : measurable_fun setT (exp_density x).
-Proof.
-apply: measurable_funM => //=; apply: measurableT_comp => //.
-exact: measurable_funM.
-Qed.
-
-End exponential.
 
 Module CASE_NAT.
 Section case_nat.
@@ -1069,10 +1041,10 @@ Definition case_nat (t : R.-sfker T ~> nat) (u_ : (R.-sfker T ~> T')^nat)
 End case_nat.
 
 Definition measure_sum_display :
-  (measure_display * measure_display) -> measure_display.
+  measure_display * measure_display -> measure_display.
 Proof. exact. Qed.
 
-Definition image_classes d1 d2
+Definition g_sigma_imageU d1 d2
     (T1 : measurableType d1) (T2 : measurableType d2) (T : Type)
     (f1 : T1 -> T) (f2 : T2 -> T)  :=
   <<s image_set_system setT f1 measurable `|`
@@ -1083,20 +1055,20 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
 Let f1 : T1 -> T1 + T2 := @inl T1 T2.
 Let f2 : T2 -> T1 + T2 := @inr T1 T2.
 
-Lemma sum_salgebra_set0 : image_classes f1 f2 (set0 : set (T1 + T2)).
+Lemma sum_salgebra_set0 : g_sigma_imageU f1 f2 (set0 : set (T1 + T2)).
 Proof. exact: sigma_algebra0. Qed.
 
-Lemma sum_salgebra_setC A : image_classes f1 f2 A ->
-  image_classes f1 f2 (~` A).
+Lemma sum_salgebra_setC A : g_sigma_imageU f1 f2 A ->
+  g_sigma_imageU f1 f2 (~` A).
 Proof. exact: sigma_algebraC. Qed.
 
-Lemma sum_salgebra_bigcup (F : _^nat) : (forall i, image_classes f1 f2 (F i)) ->
-  image_classes f1 f2 (\bigcup_i (F i)).
+Lemma sum_salgebra_bigcup (F : _^nat) : (forall i, g_sigma_imageU f1 f2 (F i)) ->
+  g_sigma_imageU f1 f2 (\bigcup_i (F i)).
 Proof. exact: sigma_algebra_bigcup. Qed.
 
 HB.instance Definition sum_salgebra_mixin :=
   @isMeasurable.Build (measure_sum_display (d1, d2))
-    (T1 + T2)%type (image_classes f1 f2)
+    (T1 + T2)%type (g_sigma_imageU f1 f2)
     sum_salgebra_set0 sum_salgebra_setC sum_salgebra_bigcup.
 
 End sum_salgebra_instance.
@@ -1107,13 +1079,6 @@ Notation "p .-sum" := (measure_sum_display p) : measure_display_scope.
 Notation "p .-sum.-measurable" :=
   ((p.-sum).-measurable : set (set (_ + _))) :
     classical_set_scope.
-
-(* TODO: move *)
-Lemma bigmaxEFin {R : realDomainType} {I : Type} (s : seq I) (P : I -> bool)
-    (F : I -> R) (x : R) :
-  (\big[Order.max/x%:E]_(i <- s | P i) (F i)%:E)%R =
-  (\big[Order.max/x]_(i <- s | P i) F i)%:E.
-Proof. by rewrite (big_morph _ EFin_max erefl). Qed.
 
 #[short(type="measurableCountType")]
 HB.structure Definition MeasurableCountable d :=
@@ -1232,14 +1197,14 @@ exists (fun n => case_sum' (f1 ^~ n) (f2 ^~ n)).
   move=> /= [x [a|b]].
   - have [bnd Hbnd] := measure_uub (f1 a n).
     rewrite EFin_max lt_max; apply/orP; left.
-    rewrite /case_sum' -bigmaxEFin.
+    rewrite /case_sum' -EFin_bigmax.
     apply: lt_le_trans; last exact: le_bigmax_cond.
     by rewrite /f1'; case: cid => /=.
   - have [bnd Hbnd] := measure_uub (f2 b n).
     rewrite EFin_max lt_max; apply/orP; right.
-    rewrite /case_sum' -bigmaxEFin.
+    rewrite /case_sum' -EFin_bigmax.
     apply: lt_le_trans; last exact: le_bigmax_cond.
-    by rewrite /f2'; case: cid => /=.
+    by rewrite /f2'; case: cid => /=C.
 move=> [x [a|b]] U mU/=-.
 - by rewrite (Hf1 a x _ mU).
 - by rewrite (Hf2 b x _ mU).
@@ -1290,7 +1255,7 @@ HB.instance Definition _ :=
 
 End kcounting.
 
-(* formalization of the iterate construct of Staton ESOP 2017, Sect. 4.2 *)
+(* formalization of the iterate construct [Section 4.2, Staton ESOP 2017] *)
 Section iterate.
 Context d {G : measurableType d} {R : realType}.
 Context dA (A : measurableFinType dA) dB (B : measurableFinType dB).
@@ -1445,7 +1410,6 @@ Qed.
 
 End iterate_unit.
 
-(* an s-finite kernel to test that two expressions are different *)
 Section lift_neq.
 Context {R : realType} d (G : measurableType d).
 Variables (f : G -> bool) (g : G -> bool).
@@ -1476,155 +1440,6 @@ Qed.
 Definition lift_neq : R.-sfker G ~> bool := ret measurable_fun_flift_neq.
 
 End lift_neq.
-
-Section von_neumann_trick.
-Context d {T : measurableType d} {R : realType}.
-
-Definition minltt {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} :=
-  @measurable_cst _ _ T1 _ setT (@inl _ T2 tt).
-
-Definition finrb d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) :
-  T1 * bool -> T2 + bool := fun t1b => inr t1b.2.
-
-Lemma minrb {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} :
-  measurable_fun setT (@finrb _ _ T1 T2).
-Proof. exact: measurableT_comp. Qed.
-
-(* biased coin *)
-Variable (D : pprobability bool R).
-Let unit := measurableTypeUnit.
-Let bool := measurableTypeBool.
-
-Definition trick : R.-sfker (T * unit) ~> (unit + bool)%type :=
-  letin (sample_cst D)
-    (letin (sample_cst D)
-      (letin (lift_neq macc1of3 macc2of3)
-        (ite macc3of4
-           (letin (ret macc1of4) (ret minrb))
-           (ret minltt)))).
-
-Definition kvon_neumann_trick : _ -> _ :=
-  (@iterate _ _ R _ unit _ bool trick _ ktt).
-Definition von_neumann_trick x : _ -> _ := kvon_neumann_trick x.
-
-HB.instance Definition _ := SFiniteKernel.on kvon_neumann_trick.
-HB.instance Definition _ x := Measure.on (von_neumann_trick x).
-
-Section von_neumann_trick_proof.
-
-Let p : R := fine (D [set true]).
-Let q : R := p * (1 - p).
-Let r : R := p ^+ 2 + (1 - p) ^+ 2.
-
-Let Dtrue : D [set true] = p%:E.
-Proof. by rewrite fineK//= fin_num_measure. Qed.
-
-Let Dfalse : D [set false] = 1 - (p%:E).
-Proof.
-rewrite -Dtrue; have <- : D [set: bool] = 1 := probability_setT.
-rewrite setT_bool measureU//=; last first.
-  by rewrite disjoints_subset => -[]//.
-by rewrite addeAC subee ?fin_num_measure ?add0e.
-Qed.
-
-Let p_ge0 : (0 <= p)%R.
-Proof. by rewrite fine_ge0 ?measure_ge0. Qed.
-
-Let p'_ge0 : (1 - p >= 0)%R.
-Proof. by rewrite -lee_fin EFinB -Dfalse measure_ge0. Qed.
-
-Let q_ge0 : (q >= 0)%R. Proof. by rewrite mulr_ge0 ?p_ge0 ?p'_ge0. Qed.
-
-Let r_ge0 : (r >= 0)%R.
-Proof. by rewrite addr_ge0// exprn_ge0 ?p_ge0 ?p'_ge0. Qed.
-
-Let intDE f : (forall x, 0 <= f x) ->
-  \int[D]_x (f x) = (1 - (p%:E)) * f false + p%:E * f true.
-Proof.
-move=> f_ge0.
-pose M := measure_add (mscale (NngNum p'_ge0) \d_false)
-                          (mscale (NngNum p_ge0) \d_true).
-rewrite (eq_measure_integral M) => [|A Ameas _].
-  rewrite ge0_integral_measure_add//.
-  by rewrite !ge0_integral_mscale ?integral_dirac ?diracT ?mul1e.
-rewrite /M/= /msum/= !big_ord_recl/= big_ord0 addr0 /mscale/=.
-by case: (set_bool A) => /eqP->/=;
-   rewrite ?measure0 ?probability_setT ?Dtrue ?Dfalse//=
-     ?diracE/= ?in_set1 ?inE/= ?(mule0, mul0e, adde0, add0e, mule1)//
-     -EFinD addrNK.
-Qed.
-
-Lemma trick_bool gamma b : trick gamma [set inr b] = q%:E.
-Proof.
-rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
-rewrite !integral_dirac ?diracT//= ?mul1e.
-rewrite !iteE//= ?diracE/= /kcomp/=.
-rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
-rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr !in_set1 !inE.
-rewrite /q -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E.
-by case: b => //=; ring.
-Qed.
-
-Lemma trick_unit gamma : trick gamma [set inl tt] = r%:E.
-Proof.
-rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
-rewrite !integral_dirac ?diracT//= ?mul1e.
-rewrite !iteE//= ?diracE/= /kcomp/=.
-rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
-rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr.
-rewrite !in_set1 !inE/=.
-by rewrite /r -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E; ring.
-Qed.
-
-Hypothesis D_nontrivial : 0 < D [set true] < 1.
-
-Let p_gt0 : (0 < p)%R.
-Proof. by rewrite -lte_fin -Dtrue; case/andP : D_nontrivial. Qed.
-
-Let p_lt1 : (p < 1)%R.
-Proof. by rewrite -lte_fin -Dtrue; case/andP : D_nontrivial. Qed.
-
-Let p'_gt0 : (0 < 1 - p)%R. Proof. by rewrite subr_gt0. Qed.
-
-Let r_lt1 : (r < 1)%R.
-Proof.
-rewrite /r -subr_gt0 [ltRHS](_ : _ = 2 * p * (1 - p))%R; last by ring.
-by rewrite !mulr_gt0.
-Qed.
-
-Lemma von_neumann_trick_prob_kernel gamma b :
-   kvon_neumann_trick gamma [set b] = 2^-1%:E.
-Proof.
-rewrite [LHS](@iterateE _ _ _ _ _ _ _ _ r _ _ _ q)//=.
-- rewrite /r /q; congr (_)%:E.
-  suff: (1 - ((p ^+ 2)%R + ((1 - p) ^+ 2)%R)%E)%R != 0%R by move=> *; field.
-  rewrite [X in X != _](_ : _ = 2 * (p * (1 - p)))%R; last by ring.
-  by rewrite mulf_eq0 ?pnatr_eq0/= mulf_neq0// gt_eqF ?p_gt0 ?p'_gt0.
-- by move=> gamma'; exact: trick_unit.
-- suff -> : [set inr x | x in [set b]] = [set inr b] by exact: trick_bool.
-  by move=> A; apply/seteqP; split=> [a [_ ->]|_ ->]//=; exists b.
-Qed.
-
-Lemma von_neumann_trick_prob_kernelT gamma :
-  von_neumann_trick gamma [set: bool] = 1.
-Proof.
-rewrite setT_bool measureU//=; last by rewrite disjoints_subset => -[].
-rewrite !von_neumann_trick_prob_kernel -EFinD.
-by have := splitr (1 : R); rewrite mul1r => <-.
-Qed.
-
-HB.instance Definition _ gamma := Measure.on (von_neumann_trick gamma).
-HB.instance Definition _ gamma := Measure_isProbability.Build _ _ _
-  (von_neumann_trick gamma) (von_neumann_trick_prob_kernelT gamma).
-HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
-  kvon_neumann_trick von_neumann_trick_prob_kernelT.
-
-Theorem von_neumann_trickP gamma : von_neumann_trick gamma =1 bernoulli 2^-1.
-Proof. by apply: eq_bernoulli; rewrite von_neumann_trick_prob_kernel. Qed.
-
-End von_neumann_trick_proof.
-
-End von_neumann_trick.
 
 Section insn1_lemmas.
 Import Notations.
@@ -1695,6 +1510,7 @@ Qed.
 
 End letin_ite.
 
+(* associativity of let [Section 4.2, Staton ESOP 2017] *)
 Section letinA.
 Context d d' d1 d2 d3 (X : measurableType d) (Y : measurableType d')
   (T1 : measurableType d1) (T2 : measurableType d2) (T3 : measurableType d3)
@@ -1723,6 +1539,7 @@ Qed.
 
 End letinA.
 
+(* commutativity of let [Section 4.2, Staton ESOP 2017] *)
 Section letinC.
 Context d d1 d' (X : measurableType d) (Y : measurableType d1)
   (Z : measurableType d') (R : realType).
@@ -1821,7 +1638,6 @@ Context d (T : measurableType d) (R : realType).
 (* let x = sample (bernoulli (2/7)) in
    let r = case x of {(1, _) => return (k3()), (2, _) => return (k10())} in
    return r *)
-
 Definition sample_and_branch : R.-sfker T ~> _ :=
   letin
     (sample_cst (bernoulli (2 / 7))) (* T -> B *)
@@ -1976,6 +1792,155 @@ by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exponential_pdf_gt0 ?ltr0
 Qed.
 
 End staton_bus_exponential.
+
+
+Section von_neumann_trick.
+Context d {T : measurableType d} {R : realType}.
+
+Definition minltt {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} :=
+  @measurable_cst _ _ T1 _ setT (@inl _ T2 tt).
+
+Definition finrb d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) :
+  T1 * bool -> T2 + bool := fun t1b => inr t1b.2.
+
+Lemma minrb {d1 d2} {T1 : measurableType d1} {T2 : measurableType d2} :
+  measurable_fun setT (@finrb _ _ T1 T2).
+Proof. exact: measurableT_comp. Qed.
+
+Variable (D : pprobability bool R). (* biased coin *)
+Let unit := measurableTypeUnit.
+Let bool := measurableTypeBool.
+
+Definition trick : R.-sfker (T * unit) ~> (unit + bool)%type :=
+  letin (sample_cst D)
+    (letin (sample_cst D)
+      (letin (lift_neq macc1of3 macc2of3)
+        (ite macc3of4
+           (letin (ret macc1of4) (ret minrb))
+           (ret minltt)))).
+
+Definition kvon_neumann_trick : _ -> _ :=
+  (@iterate _ _ R _ unit _ bool trick _ ktt).
+Definition von_neumann_trick x : _ -> _ := kvon_neumann_trick x.
+
+HB.instance Definition _ := SFiniteKernel.on kvon_neumann_trick.
+HB.instance Definition _ x := Measure.on (von_neumann_trick x).
+
+Section von_neumann_trick_proof.
+
+Let p : R := fine (D [set true]).
+Let q : R := p * (1 - p).
+Let r : R := p ^+ 2 + (1 - p) ^+ 2.
+
+Let Dtrue : D [set true] = p%:E.
+Proof. by rewrite fineK//= fin_num_measure. Qed.
+
+Let Dfalse : D [set false] = 1 - (p%:E).
+Proof.
+rewrite -Dtrue; have <- : D [set: bool] = 1 := probability_setT.
+rewrite setT_bool measureU//=; last first.
+  by rewrite disjoints_subset => -[]//.
+by rewrite addeAC subee ?fin_num_measure ?add0e.
+Qed.
+
+Let p_ge0 : (0 <= p)%R.
+Proof. by rewrite fine_ge0 ?measure_ge0. Qed.
+
+Let p'_ge0 : (1 - p >= 0)%R.
+Proof. by rewrite -lee_fin EFinB -Dfalse measure_ge0. Qed.
+
+Let q_ge0 : (q >= 0)%R. Proof. by rewrite mulr_ge0 ?p_ge0 ?p'_ge0. Qed.
+
+Let r_ge0 : (r >= 0)%R.
+Proof. by rewrite addr_ge0// exprn_ge0 ?p_ge0 ?p'_ge0. Qed.
+
+Let intDE f : (forall x, 0 <= f x) ->
+  \int[D]_x (f x) = (1 - (p%:E)) * f false + p%:E * f true.
+Proof.
+move=> f_ge0.
+pose M := measure_add (mscale (NngNum p'_ge0) \d_false)
+                          (mscale (NngNum p_ge0) \d_true).
+rewrite (eq_measure_integral M) => [|A Ameas _].
+  rewrite ge0_integral_measure_add//.
+  by rewrite !ge0_integral_mscale ?integral_dirac ?diracT ?mul1e.
+rewrite /M/= /msum/= !big_ord_recl/= big_ord0 addr0 /mscale/=.
+by case: (set_bool A) => /eqP->/=;
+   rewrite ?measure0 ?probability_setT ?Dtrue ?Dfalse//=
+     ?diracE/= ?in_set1 ?inE/= ?(mule0, mul0e, adde0, add0e, mule1)//
+     -EFinD addrNK.
+Qed.
+
+Lemma trick_bool gamma b : trick gamma [set inr b] = q%:E.
+Proof.
+rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
+rewrite !integral_dirac ?diracT//= ?mul1e.
+rewrite !iteE//= ?diracE/= /kcomp/=.
+rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
+rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr !in_set1 !inE.
+rewrite /q -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E.
+by case: b => //=; ring.
+Qed.
+
+Lemma trick_unit gamma : trick gamma [set inl tt] = r%:E.
+Proof.
+rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
+rewrite !integral_dirac ?diracT//= ?mul1e.
+rewrite !iteE//= ?diracE/= /kcomp/=.
+rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
+rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr.
+rewrite !in_set1 !inE/=.
+by rewrite /r -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E; ring.
+Qed.
+
+Hypothesis D_nontrivial : 0 < D [set true] < 1.
+
+Let p_gt0 : (0 < p)%R.
+Proof. by rewrite -lte_fin -Dtrue; case/andP : D_nontrivial. Qed.
+
+Let p_lt1 : (p < 1)%R.
+Proof. by rewrite -lte_fin -Dtrue; case/andP : D_nontrivial. Qed.
+
+Let p'_gt0 : (0 < 1 - p)%R. Proof. by rewrite subr_gt0. Qed.
+
+Let r_lt1 : (r < 1)%R.
+Proof.
+rewrite /r -subr_gt0 [ltRHS](_ : _ = 2 * p * (1 - p))%R; last by ring.
+by rewrite !mulr_gt0.
+Qed.
+
+Lemma von_neumann_trick_prob_kernel gamma b :
+   kvon_neumann_trick gamma [set b] = 2^-1%:E.
+Proof.
+rewrite [LHS](@iterateE _ _ _ _ _ _ _ _ r _ _ _ q)//=.
+- rewrite /r /q; congr (_)%:E.
+  suff: (1 - ((p ^+ 2)%R + ((1 - p) ^+ 2)%R)%E)%R != 0%R by move=> *; field.
+  rewrite [X in X != _](_ : _ = 2 * (p * (1 - p)))%R; last by ring.
+  by rewrite mulf_eq0 ?pnatr_eq0/= mulf_neq0// gt_eqF ?p_gt0 ?p'_gt0.
+- by move=> gamma'; exact: trick_unit.
+- suff -> : [set inr x | x in [set b]] = [set inr b] by exact: trick_bool.
+  by move=> A; apply/seteqP; split=> [a [_ ->]|_ ->]//=; exists b.
+Qed.
+
+Lemma von_neumann_trick_prob_kernelT gamma :
+  von_neumann_trick gamma [set: bool] = 1.
+Proof.
+rewrite setT_bool measureU//=; last by rewrite disjoints_subset => -[].
+rewrite !von_neumann_trick_prob_kernel -EFinD.
+by have := splitr (1 : R); rewrite mul1r => <-.
+Qed.
+
+HB.instance Definition _ gamma := Measure.on (von_neumann_trick gamma).
+HB.instance Definition _ gamma := Measure_isProbability.Build _ _ _
+  (von_neumann_trick gamma) (von_neumann_trick_prob_kernelT gamma).
+HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
+  kvon_neumann_trick von_neumann_trick_prob_kernelT.
+
+Theorem von_neumann_trickP gamma : von_neumann_trick gamma =1 bernoulli 2^-1.
+Proof. by apply: eq_bernoulli; rewrite von_neumann_trick_prob_kernel. Qed.
+
+End von_neumann_trick_proof.
+
+End von_neumann_trick.
 
 (**md
   letin' variants
