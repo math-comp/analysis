@@ -1821,6 +1821,9 @@ Definition trick : R.-sfker (T * unit) ~> (unit + bool)%type :=
            (letin (ret macc1of4) (ret minrb))
            (ret minltt)))).
 
+HB.instance Definition _ := SFiniteKernel.on trick.
+HB.instance Definition _ x := Measure.on (trick x).
+
 Definition kvon_neumann_trick : _ -> _ :=
   (@iterate _ _ R _ unit _ bool trick _ ktt).
 Definition von_neumann_trick x : _ -> _ := kvon_neumann_trick x.
@@ -1837,62 +1840,32 @@ Let r : R := p ^+ 2 + (1 - p) ^+ 2.
 Let Dtrue : D [set true] = p%:E.
 Proof. by rewrite fineK//= fin_num_measure. Qed.
 
-Let Dfalse : D [set false] = 1 - (p%:E).
+Lemma trickE gamma X : trick gamma X =
+  (r *+ (inl tt \in X) +
+   q *+ ((inr true \in X) + (inr false \in X)))%:E.
 Proof.
-rewrite -Dtrue; have <- : D [set: bool] = 1 := probability_setT _.
-rewrite setT_bool measureU//=; last first.
-  by rewrite disjoints_subset => -[]//.
-by rewrite addeAC subee ?fin_num_measure ?add0e.
-Qed.
-
-Let p_ge0 : (0 <= p)%R.
-Proof. by rewrite fine_ge0 ?measure_ge0. Qed.
-
-Let p'_ge0 : (1 - p >= 0)%R.
-Proof. by rewrite -lee_fin EFinB -Dfalse measure_ge0. Qed.
-
-Let q_ge0 : (q >= 0)%R. Proof. by rewrite mulr_ge0 ?p_ge0 ?p'_ge0. Qed.
-
-Let r_ge0 : (r >= 0)%R.
-Proof. by rewrite addr_ge0// exprn_ge0 ?p_ge0 ?p'_ge0. Qed.
-
-Let intDE f : (forall x, 0 <= f x) ->
-  \int[D]_x (f x) = (1 - (p%:E)) * f false + p%:E * f true.
-Proof.
-move=> f_ge0.
-pose M := measure_add (mscale (NngNum p'_ge0) \d_false)
-                          (mscale (NngNum p_ge0) \d_true).
-rewrite (eq_measure_integral M) => [|A Ameas _].
-  rewrite ge0_integral_measure_add//.
-  by rewrite !ge0_integral_mscale ?integral_dirac ?diracT ?mul1e.
-rewrite /M/= /msum/= !big_ord_recl/= big_ord0 addr0 /mscale/=.
-by case: (set_bool A) => /eqP->/=;
-   rewrite ?measure0 ?probability_setT ?Dtrue ?Dfalse//=
-     ?diracE/= ?in_set1 ?inE/= ?(mule0, mul0e, adde0, add0e, mule1)//
-     -EFinD addrNK.
-Qed.
-
-Lemma trick_bool gamma b : trick gamma [set inr b] = q%:E.
-Proof.
-rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
+have Dbernoulli : D =1 bernoulli p by exact/eq_bernoulli/Dtrue.
+have p_itv01 : (0 <= p <= 1)%R.
+  by rewrite -2!lee_fin -Dtrue?measure_ge0 ?probability_le1.
+pose eqbern := eq_measure_integral _ (fun x _ _ => Dbernoulli x).
+rewrite /trick/= /kcomp.
+do 2?rewrite ?eqbern ?integral_bernoulli//= /kcomp/=.
 rewrite !integral_dirac ?diracT//= ?mul1e.
 rewrite !iteE//= ?diracE/= /kcomp/=.
-rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
-rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr !in_set1 !inE.
-rewrite /q -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E.
-by case: b => //=; ring.
+rewrite !integral_dirac /acc1of4/= ?diracT ?diracE ?mul1e//.
+rewrite /finrb /acc1of4/= -?(EFinB, EFinN, EFinM, EFinD) /q /r /onem.
+by congr (_)%:E; do 3!move: (_ \in _) => ? /=; ring.
 Qed.
 
-Lemma trick_unit gamma : trick gamma [set inl tt] = r%:E.
+Lemma trick_prob_kernelT gamma : trick gamma setT = 1.
 Proof.
-rewrite /trick/= /kcomp /= intDE//= /kcomp/= !intDE//= /kcomp.
-rewrite !integral_dirac ?diracT//= ?mul1e.
-rewrite !iteE//= ?diracE/= /kcomp/=.
-rewrite !integral_dirac ?diracT ?diracE ?mul1e//=.
-rewrite /finrb ?inl_in_set_inr//= /acc1of4/= ?inr_in_set_inr.
-rewrite !in_set1 !inE/=.
-by rewrite /r -?(EFinB, EFinN, EFinM, EFinD); congr (_)%:E; ring.
+by rewrite trickE !mem_setT mulr2n mulr1n /r /q; congr (_)%:E; ring.
 Qed.
+
+HB.instance Definition _ gamma := Measure_isProbability.Build _ _ _
+  (trick gamma) (trick_prob_kernelT gamma).
+HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
+  trick trick_prob_kernelT.
 
 Hypothesis D_nontrivial : 0 < D [set true] < 1.
 
@@ -1918,9 +1891,9 @@ rewrite [LHS](@iterateE _ _ _ _ _ _ _ _ r _ _ _ q)//=.
   suff: (1 - ((p ^+ 2)%R + ((1 - p) ^+ 2)%R)%E)%R != 0%R by move=> *; field.
   rewrite [X in X != _](_ : _ = 2 * (p * (1 - p)))%R; last by ring.
   by rewrite mulf_eq0 ?pnatr_eq0/= mulf_neq0// gt_eqF ?p_gt0 ?p'_gt0.
-- by move=> gamma'; exact: trick_unit.
-- suff -> : [set inr x | x in [set b]] = [set inr b] by exact: trick_bool.
-  by move=> A; apply/seteqP; split=> [a [_ ->]|_ ->]//=; exists b.
+- by move=> gamma'; rewrite trickE//= ?in_set1 ?inE//= addr0.
+- rewrite trickE/= ?inl_in_set_inr ?inr_in_set_inr// add0r !in_set1 !inE.
+  by case: b.
 Qed.
 
 Lemma von_neumann_trick_prob_kernelT gamma :
