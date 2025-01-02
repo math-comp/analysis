@@ -1337,7 +1337,8 @@ Lemma beta_pdf_uniq_ae (a b : nat) :
                (EFin \o (beta_pdf a b)).
 Proof.
 apply: integral_ae_eq => //.
-- apply: integrableS (Radon_Nikodym_integrable _) => //.
+- apply: (integrableS _ _ (@subsetT _ _)) => //=.
+  apply: (Radon_Nikodym_integrable _) => //=.
   exact: beta_prob_dom.
 - apply/measurable_funTS/measurableT_comp => //.
   exact: measurable_beta_pdf.
@@ -1367,7 +1368,8 @@ rewrite -(Radon_Nikodym_change_of_variables (beta_prob_dom a b)) //=; last first
   by apply/integrableP; split.
 apply: ae_eq_integral => //.
 - apply: emeasurable_funM => //; apply: measurable_int.
-  apply: integrableS (Radon_Nikodym_integrable _) => //=.
+  apply: (integrableS _ _ (@subsetT _ _)) => //=.
+  apply: (Radon_Nikodym_integrable _) => //=.
   exact: beta_prob_dom.
 - apply: emeasurable_funM => //=; apply/measurableT_comp => //=.
   by apply/measurable_funTS; exact: measurable_beta_pdf.
