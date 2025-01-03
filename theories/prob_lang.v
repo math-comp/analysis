@@ -1,12 +1,12 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat archimedean ring lra.
 From mathcomp Require Import unstable mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop interval_inference.
 From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import esum measure lebesgue_measure numfun.
-From mathcomp Require Import lebesgue_integral probability exp kernel charge.
+From mathcomp Require Import esum measure lebesgue_measure numfun exp.
+From mathcomp Require Import lebesgue_integral trigo probability kernel charge.
 
 (**md**************************************************************************)
 (* # Semantics of a probabilistic programming language using s-finite kernels *)
@@ -21,7 +21,9 @@ From mathcomp Require Import lebesgue_integral probability exp kernel charge.
 (*          poisson_pdf == Poisson pdf                                        *)
 (*      exponential_pdf == exponential distribution pdf                       *)
 (*   measurable_sum X Y == the type X + Y, as a measurable type               *)
+(* ```                                                                        *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*           mscore f t := mscale `|f t| \d_tt                                *)
 (*             kscore f := fun=> mscore f                                     *)
 (*                         This is an s-finite kernel.                        *)
@@ -1466,8 +1468,8 @@ by rewrite /score/= /mscale/= ger0_norm//= f0.
 Qed.
 
 Lemma score_score (f : R -> R) (g : R * unit -> R)
-    (mf : measurable_fun setT f)
-    (mg : measurable_fun setT g) :
+    (mf : measurable_fun [set: R] f)
+    (mg : measurable_fun [set: R * unit] g) :
   letin (score mf) (score mg) =
   score (measurable_funM mf (measurableT_comp mg (pair2_measurable tt))).
 Proof.
@@ -1916,359 +1918,6 @@ End von_neumann_trick_proof.
 
 End von_neumann_trick.
 
-Section insn1_lemmas.
-Import Notations.
-Context d (T : measurableType d) (R : realType).
-
-Let kcomp_scoreE d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
-  (g : R.-sfker [the measurableType _ of (T1 * unit)%type] ~> T2)
-  f (mf : measurable_fun setT f) r U :
-  (score mf \; g) r U = `|f r|%:E * g (r, tt) U.
-Proof.
-rewrite /= /kcomp /kscore /= ge0_integral_mscale//=.
-by rewrite integral_dirac// diracT mul1e.
-Qed.
-
-Lemma scoreE d' (T' : measurableType d') (x : T * T') (U : set T') (f : R -> R)
-    (r : R) (r0 : (0 <= r)%R)
-    (f0 : (forall r, 0 <= r -> 0 <= f r)%R) (mf : measurable_fun setT f) :
-  score (measurableT_comp mf (@macc1of2 _ _ _ _))
-    (x, r) (curry (snd \o fst) x @^-1` U) =
-  (f r)%:E * \d_x.2 U.
-Proof.
-by rewrite /score/= /mscale/= ger0_norm//= f0.
-Qed.
-
-Lemma score_score (f : R -> R) (g : R * unit -> R)
-    (mf : measurable_fun setT f)
-    (mg : measurable_fun setT g) :
-  letin (score mf) (score mg) =
-  score (measurable_funM mf (measurableT_comp mg (measurable_pair2 tt))).
-Proof.
-apply/eq_sfkernel => x U.
-rewrite {1}/letin; unlock.
-by rewrite kcomp_scoreE/= /mscale/= diracE normrM muleA EFinM.
-Qed.
-
-(* hard constraints to express score below 1 *)
-Lemma score_fail (r : R) : (0 <= r <= 1)%R ->
-  score (kr r) =
-  letin (sample_cst (bernoulli r) : R.-pker T ~> _)
-        (ite (@macc1of2 _ _ _ _) (ret ktt) fail).
-Proof.
-move=> /andP[r0 r1]; apply/eq_sfkernel => x U.
-rewrite letinE/= /sample; unlock.
-by rewrite /mscale/= ger0_norm// integral_bernoulli ?r0//= 2!iteE//= failE mule0 adde0.
-Qed.
-
-End insn1_lemmas.
-
-Section letin_ite.
-Context d d2 d3 (T : measurableType d) (T2 : measurableType d2)
-  (Z : measurableType d3) (R : realType).
-Variables (k1 k2 : R.-sfker T ~> Z)
-  (u : R.-sfker [the measurableType _ of (T * Z)%type] ~> T2)
-  (f : T -> bool) (mf : measurable_fun setT f)
-  (t : T) (U : set T2).
-
-Lemma letin_iteT : f t -> letin (ite mf k1 k2) u t U = letin k1 u t U.
-Proof.
-move=> ftT; rewrite !letinE/=; apply: eq_measure_integral => V mV _.
-by rewrite iteE ftT.
-Qed.
-
-Lemma letin_iteF : ~~ f t -> letin (ite mf k1 k2) u t U = letin k2 u t U.
-Proof.
-move=> ftF; rewrite !letinE/=; apply: eq_measure_integral => V mV _.
-by rewrite iteE (negbTE ftF).
-Qed.
-
-End letin_ite.
-
-Section letinA.
-Context d d' d1 d2 d3 (X : measurableType d) (Y : measurableType d')
-  (T1 : measurableType d1) (T2 : measurableType d2) (T3 : measurableType d3)
-  (R : realType).
-Import Notations.
-Variables (t : R.-sfker X ~> T1)
-          (u : R.-sfker (X * T1) ~> T2)
-          (v : R.-sfker (X * T2) ~> Y)
-          (v' : R.-sfker (X * T1 * T2) ~> Y)
-          (vv' : forall y, v =1 fun xz => v' (xz.1, y, xz.2)).
-
-Lemma letinA x A : measurable A ->
-  letin t (letin u v') x A
-  =
-  (letin (letin t u) v) x A.
-Proof.
-move=> mA.
-rewrite !letinE.
-under eq_integral do rewrite letinE.
-rewrite integral_kcomp; [|by []|].
-- apply: eq_integral => y _.
-  apply: eq_integral => z _.
-  by rewrite (vv' y).
-- exact: (measurableT_comp (measurable_kernel v _ mA)).
-Qed.
-
-End letinA.
-
-Section letinC.
-Context d d1 d' (X : measurableType d) (Y : measurableType d1)
-  (Z : measurableType d') (R : realType).
-
-Import Notations.
-
-Variables (t : R.-sfker Z ~> X)
-          (t' : R.-sfker [the measurableType _ of (Z * Y)%type] ~> X)
-          (tt' : forall y, t =1 fun z => t' (z, y))
-          (u : R.-sfker Z ~> Y)
-          (u' : R.-sfker [the measurableType _ of (Z * X)%type] ~> Y)
-          (uu' : forall x, u =1 fun z => u' (z, x)).
-
-Definition T z : set X -> \bar R := t z.
-Let T0 z : (T z) set0 = 0. Proof. by []. Qed.
-Let T_ge0 z x : 0 <= (T z) x. Proof. by []. Qed.
-Let T_semi_sigma_additive z : semi_sigma_additive (T z).
-Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ X R (T z) (T0 z) (T_ge0 z)
-  (@T_semi_sigma_additive z).
-
-Let sfinT z : sfinite_measure (T z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @isSFinite.Build _ X R (T z) (sfinT z).
-
-Definition U z : set Y -> \bar R := u z.
-Let U0 z : (U z) set0 = 0. Proof. by []. Qed.
-Let U_ge0 z x : 0 <= (U z) x. Proof. by []. Qed.
-Let U_semi_sigma_additive z : semi_sigma_additive (U z).
-Proof. exact: measure_semi_sigma_additive. Qed.
-HB.instance Definition _ z := @isMeasure.Build _ Y R (U z) (U0 z) (U_ge0 z)
-  (@U_semi_sigma_additive z).
-
-Let sfinU z : sfinite_measure (U z). Proof. exact: sfinite_kernel_measure. Qed.
-HB.instance Definition _ z := @isSFinite.Build _ Y R (U z) (sfinU z).
-
-Lemma letinC z A : measurable A ->
-  letin t
-  (letin u'
-  (ret (measurable_fun_prod macc1of3 macc2of3))) z A =
-  letin u
-  (letin t'
-  (ret (measurable_fun_prod macc2of3 macc1of3))) z A.
-Proof.
-move=> mA.
-rewrite !letinE.
-under eq_integral.
-  move=> x _.
-  rewrite letinE -uu'.
-  under eq_integral do rewrite retE /=.
-  over.
-rewrite (sfinite_Fubini
-  [the {sfinite_measure set X -> \bar R} of T z]
-  [the {sfinite_measure set Y -> \bar R} of U z]
-  (fun x => \d_(x.1, x.2) A ))//; last first.
-  apply/measurable_EFinP => /=; rewrite (_ : (fun x => _) = mindic R mA)//.
-  by apply/funext => -[].
-rewrite /=.
-apply: eq_integral => y _.
-by rewrite letinE/= -tt'; apply: eq_integral => // x _; rewrite retE.
-Qed.
-
-End letinC.
-
-(* examples *)
-
-Lemma letin_sample_bernoulli d d' (T : measurableType d)
-    (T' : measurableType d') (R : realType) (r : R)
-    (u : R.-sfker [the measurableType _ of (T * bool)%type] ~> T') x y :
-  (0 <= r <= 1)%R ->
-  letin (sample_cst (bernoulli r)) u x y =
-  r%:E * u (x, true) y + (`1- r)%:E * u (x, false) y.
-Proof. by move=> r01; rewrite letinE/= integral_bernoulli. Qed.
-
-Section sample_and_return.
-Import Notations.
-Context d (T : measurableType d) (R : realType).
-
-Definition sample_and_return : R.-sfker T ~> _ :=
-  letin
-    (sample_cst (bernoulli (2 / 7))) (* T -> B *)
-    (ret macc1of2) (* T * B -> B *).
-
-Lemma sample_and_returnE t U : sample_and_return t U =
-  (2 / 7%:R)%:E * \d_true U + (5%:R / 7%:R)%:E * \d_false U.
-Proof.
-rewrite /sample_and_return letin_sample_bernoulli; last lra.
-by rewrite !retE onem27.
-Qed.
-
-End sample_and_return.
-
-Section sample_and_branch.
-Import Notations.
-Context d (T : measurableType d) (R : realType).
-
-(* let x = sample (bernoulli (2/7)) in
-   let r = case x of {(1, _) => return (k3()), (2, _) => return (k10())} in
-   return r *)
-
-Definition sample_and_branch : R.-sfker T ~> _ :=
-  letin
-    (sample_cst (bernoulli (2 / 7))) (* T -> B *)
-    (ite macc1of2 (ret (@k3 _ _ R)) (ret k10)).
-
-Lemma sample_and_branchE t U : sample_and_branch t U =
-  (2 / 7)%:E * \d_(3 : R) U + (5 / 7)%:E * \d_(10 : R) U.
-Proof.
-rewrite /sample_and_branch letin_sample_bernoulli/=; last lra.
-by rewrite !iteE/= onem27.
-Qed.
-
-End sample_and_branch.
-
-Section bernoulli_and.
-Context d (T : measurableType d) (R : realType).
-Import Notations.
-
-Definition bernoulli_and : R.-sfker T ~> mbool :=
-    (letin (sample_cst (bernoulli (1 / 2)))
-     (letin (sample_cst (bernoulli (1 / 2)))
-        (ret (measurable_and macc1of3 macc2of3)))).
-
-Lemma bernoulli_andE t U :
-  bernoulli_and t U = sample_cst (bernoulli (1 / 4)) t U.
-Proof.
-rewrite /bernoulli_and.
-rewrite letin_sample_bernoulli; last lra.
-rewrite (letin_sample_bernoulli (r := 1 / 2)); last lra.
-rewrite (letin_sample_bernoulli (r := 1 / 2)); last lra.
-rewrite muleDr//= -muleDl//.
-rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
-have -> : (1 / 2 * (1 / 2) = 1 / 4%:R :> R)%R by rewrite mulf_div mulr1// -natrM.
-rewrite [in RHS](_ : 1 / 4 = (1 / 4)%:nng%:num)%R//.
-rewrite (bernoulli_dirac p14).
-rewrite measure_addE/= /mscale/= -!EFinM; congr( _ + (_ * _)%:E).
-have -> : (1 / 2 = 2 / 4%:R :> R)%R.
-  by apply/eqP; rewrite eqr_div// ?pnatr_eq0// mul1r -natrM.
-by rewrite onem1S// -mulrDl.
-Qed.
-
-End bernoulli_and.
-
-Section staton_bus.
-Import Notations.
-Context d (T : measurableType d) (R : realType) (h : R -> R).
-Hypothesis mh : measurable_fun setT h.
-Definition kstaton_bus : R.-sfker T ~> mbool :=
-  letin (sample_cst (bernoulli (2 / 7)))
-  (letin
-    (letin (ite macc1of2 (ret k3) (ret k10))
-      (score (measurableT_comp mh macc2of3)))
-    (ret macc1of3)).
-
-Definition staton_bus := normalize kstaton_bus.
-
-End staton_bus.
-
-(* let x = sample (bernoulli (2/7)) in
-   let r = case x of {(1, _) => return (k3()), (2, _) => return (k10())} in
-   let _ = score (1/4! r^4 e^-r) in
-   return x *)
-Section staton_bus_poisson.
-Import Notations.
-Context d (T : measurableType d) (R : realType).
-Let poisson4 := @poisson_pdf R 4%N.
-Let mpoisson4 := @measurable_poisson_pdf R 4%N.
-
-Definition kstaton_bus_poisson : R.-sfker R ~> mbool :=
-  kstaton_bus _ mpoisson4.
-
-Let kstaton_bus_poissonE t U : kstaton_bus_poisson t U =
-  (2 / 7)%:E * (poisson4 3)%:E * \d_true U +
-  (5 / 7)%:E * (poisson4 10)%:E * \d_false U.
-Proof.
-rewrite /kstaton_bus_poisson /kstaton_bus.
-rewrite letin_sample_bernoulli; last lra.
-rewrite -!muleA; congr (_ * _ + _ * _).
-- rewrite letin_kret//.
-  rewrite letin_iteT//.
-  rewrite letin_retk//.
-  by rewrite scoreE//= => r r0; exact: poisson_pdf_ge0.
-- by rewrite onem27.
-  rewrite letin_kret//.
-  rewrite letin_iteF//.
-  rewrite letin_retk//.
-  by rewrite scoreE//= => r r0; exact: poisson_pdf_ge0.
-Qed.
-
-(* true -> 2/7 * 0.168 = 2/7 * 3^4 e^-3 / 4! *)
-(* false -> 5/7 * 0.019 = 5/7 * 10^4 e^-10 / 4! *)
-
-Lemma staton_busE P (t : R) U :
-  let N := ((2 / 7) * poisson4 3 +
-            (5 / 7) * poisson4 10)%R in
-  staton_bus mpoisson4 P t U =
-  ((2 / 7)%:E * (poisson4 3)%:E * \d_true U +
-   (5 / 7)%:E * (poisson4 10)%:E * \d_false U) * N^-1%:E.
-Proof.
-rewrite /staton_bus normalizeE !kstaton_bus_poissonE !diracT !mule1 ifF //.
-apply/negbTE; rewrite gt_eqF// lte_fin.
-by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// poisson_pdf_gt0// ltr0n.
-Qed.
-
-End staton_bus_poisson.
-
-(* let x = sample (bernoulli (2/7)) in
-   let r = case x of {(1, _) => return (k3()), (2, _) => return (k10())} in
-   let _ = score (r e^-(15/60 r)) in
-   return x *)
-Section staton_bus_exponential.
-Import Notations.
-Context d (T : measurableType d) (R : realType).
-Let exp1560 := @exponential_pdf R (ratr (15%:Q / 60%:Q)).
-Let mexp1560 := @measurable_exponential_pdf R (ratr (15%:Q / 60%:Q)).
-
-(* 15/60 = 0.25 *)
-
-Definition kstaton_bus_exponential : R.-sfker R ~> mbool :=
-  kstaton_bus _ mexp1560.
-
-Let kstaton_bus_exponentialE t U : kstaton_bus_exponential t U =
-  (2 / 7)%:E * (exp1560 3)%:E * \d_true U +
-  (5 / 7)%:E * (exp1560 10)%:E * \d_false U.
-Proof.
-rewrite /kstaton_bus.
-rewrite letin_sample_bernoulli; last lra.
-rewrite -!muleA; congr (_ * _ + _ * _).
-- rewrite letin_kret//.
-  rewrite letin_iteT//.
-  rewrite letin_retk//.
-  rewrite scoreE//= => r r0; exact: exponential_pdf_ge0.
-- by rewrite onem27.
-  rewrite letin_kret//.
-  rewrite letin_iteF//.
-  rewrite letin_retk//.
-  by rewrite scoreE//= => r r0; exact: exponential_pdf_ge0.
-Qed.
-
-(* true -> 5/7 * 0.019 = 5/7 * 10^4 e^-10 / 4! *)
-(* false -> 2/7 * 0.168 = 2/7 * 3^4 e^-3 / 4! *)
-
-Lemma staton_bus_exponentialE P (t : R) U :
-  let N := ((2 / 7) * exp1560 3 +
-            (5 / 7) * exp1560 10)%R in
-  staton_bus mexp1560 P t U =
-  ((2 / 7)%:E * (exp1560 3)%:E * \d_true U +
-   (5 / 7)%:E * (exp1560 10)%:E * \d_false U) * N^-1%:E.
-Proof.
-rewrite /staton_bus.
-rewrite normalizeE /= !kstaton_bus_exponentialE !diracT !mule1 ifF //.
-apply/negbTE; rewrite gt_eqF// lte_fin.
-by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exponential_pdf_gt0 ?ltr0n.
-Qed.
-
-End staton_bus_exponential.
-
 (**md
   letin' variants
 *)
@@ -2534,3 +2183,134 @@ rewrite letin'E/= /sample; unlock.
 rewrite integral_bernoulli ?r0//=.
 by rewrite /mscale/= iteE//= iteE//= fail'E mule0 adde0 ger0_norm.
 Qed.
+
+(* TODO: move to probability.v? *)
+Section gauss.
+Variable R : realType.
+Local Open Scope ring_scope.
+
+Definition gauss_pdf := @normal_pdf R 0 1.
+
+Lemma normal_pdf_gt0 m s x : 0 < s -> 0 < normal_pdf m s x :> R.
+Proof.
+move=> s0; rewrite /normal_pdf gt_eqF// mulr_gt0 ?expR_gt0// invr_gt0.
+by rewrite sqrtr_gt0 pmulrn_rgt0// mulr_gt0 ?pi_gt0 ?exprn_gt0.
+Qed.
+
+Lemma gauss_pdf_gt0 x : 0 < gauss_pdf x.
+Proof. exact: normal_pdf_gt0. Qed.
+
+Definition gauss_prob := @normal_prob R 0 1.
+
+HB.instance Definition _ := Probability.on gauss_prob.
+
+Lemma gauss_prob_dominates : gauss_prob `<< lebesgue_measure.
+Proof. exact: normal_prob_dominates. Qed.
+
+Lemma continuous_gauss_pdf x : {for x, continuous gauss_pdf}.
+Proof. exact: continuous_normal_pdf. Qed.
+
+End gauss.
+
+(* the Lebesgue measure is definable in Staton's language
+  [equation (10), Section 4.1, Staton ESOP 2017] *)
+Section gauss_lebesgue.
+Context d (T : measurableType d) (R : realType).
+Notation mu := (@lebesgue_measure R).
+
+Let f1 (x : g_sigma_algebraType (R.-ocitv.-measurable)) := (gauss_pdf x)^-1.
+
+Let f1E (x : R) : f1 x = (Num.sqrt (pi *+ 2) * expR (- (- x ^+ 2 / 2)))%R.
+Proof.
+rewrite /f1 /gauss_pdf /normal_pdf oner_eq0.
+rewrite /normal_peak expr1n mul1r.
+by rewrite /normal_fun subr0 expr1n invfM invrK expRN.
+Qed.
+
+Let f1_gt0 (x : R) : (0 < f1 x)%R.
+Proof. by rewrite f1E mulr_gt0 ?expR_gt0// sqrtr_gt0 mulrn_wgt0// pi_gt0. Qed.
+
+Lemma measurable_fun_f1 : measurable_fun setT f1.
+Proof.
+apply: continuous_measurable_fun => x.
+apply: (@continuousV _ _ (@gauss_pdf R)).
+  by rewrite gt_eqF// gauss_pdf_gt0.
+exact: continuous_gauss_pdf.
+Qed.
+
+Lemma integral_mgauss01 : forall U, measurable U ->
+  \int[(@gauss_prob R)]_(y in U) (f1 y)%:E =
+  \int[mu]_(x0 in U) (gauss_pdf x0 * f1 x0)%:E.
+Proof.
+move=> U mU.
+under [in RHS]eq_integral do rewrite EFinM/= muleC.
+rewrite /=.
+rewrite -(@Radon_Nikodym_SigmaFinite.change_of_variables
+    _ _ _ _ (@lebesgue_measure R))//=; last 3 first.
+  exact: gauss_prob_dominates.
+  by move=> /= x; rewrite lee_fin ltW.
+  apply/measurable_EFinP.
+  apply: measurable_funTS.
+  exact: measurable_fun_f1.
+apply: ae_eq_integral => //=.
+- apply: emeasurable_funM => //.
+    apply/measurable_funTS/measurableT_comp => //.
+    exact: measurable_fun_f1.
+  apply: (measurable_int mu).
+  apply: (integrableS _ _ (@subsetT _ _)) => //=.
+  apply: Radon_Nikodym_SigmaFinite.f_integrable => /=.
+  exact: gauss_prob_dominates.
+- apply: emeasurable_funM => //.
+    apply/measurable_funTS/measurableT_comp => //.
+    exact: measurable_fun_f1.
+  apply/measurable_funTS/measurableT_comp => //.
+  exact: measurable_normal_pdf.
+- apply: ae_eq_mul2l => /=.
+  rewrite /Radon_Nikodym_SigmaFinite.f/=.
+  case: pselect => [gauss_prob_dom|]; last first.
+    by move=> /(_ (@gauss_prob_dominates R)).
+  case: cid => //= h [h1 h2 h3] gauss_probE.
+  apply: integral_ae_eq => //=.
+  + exact: integrableS h3.
+  + apply/measurable_funTS/measurableT_comp => //.
+    exact: measurable_normal_pdf.
+  + move=> E EU mE.
+    by rewrite -gauss_probE.
+Qed.
+
+Let mf1 : measurable_fun setT f1.
+Proof.
+apply: (measurable_comp (F := [set r : R | r != 0%R])) => //.
+- exact: open_measurable.
+- by move=> /= r [t _ <-]; rewrite gt_eqF// gauss_pdf_gt0.
+- apply: open_continuous_measurable_fun => //.
+  by apply/in_setP => x /= x0; exact: inv_continuous.
+- exact: measurable_normal_pdf.
+Qed.
+
+Definition staton_lebesgue : R.-sfker T ~> _ :=
+  letin (sample_cst (@gauss_prob R : pprobability _ _))
+  (letin
+    (score (measurableT_comp mf1 macc1of2))
+    (ret macc1of3)).
+
+Lemma staton_lebesgueE x U : measurable U ->
+  staton_lebesgue x U = lebesgue_measure U.
+Proof.
+move=> mU; rewrite [in LHS]/staton_lebesgue/=.
+rewrite [in LHS]letinE /=.
+transitivity (\int[(@gauss_prob R)]_(y in U) (f1 y)%:E).
+  rewrite -[in RHS](setTI U) integral_mkcondr/=.
+  apply: eq_integral => //= r _.
+  rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
+    by rewrite invr_ge0// normal_pdf_ge0.
+  rewrite integral_dirac// diracT mul1e/= diracE epatch_indic/=.
+  by rewrite indicE.
+rewrite integral_mgauss01//.
+transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
+  apply: eq_integral => /= y yU.
+  by rewrite /f1 divrr ?indicE ?yU// unitfE gt_eqF// gauss_pdf_gt0.
+by rewrite integral_indic//= setIid.
+Qed.
+
+End gauss_lebesgue.

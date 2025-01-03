@@ -18,10 +18,13 @@ From mathcomp Require Import ring lra.
 (*   Probabilistic Programming Language in Coq using s-finite kernels in Coq. *)
 (*   APLAS 2023                                                               *)
 (*                                                                            *)
-(* beta distribution specialized to nat                                       *)
+(* beta distribution                                                          *)
+(* ```                                                                        *)
 (*            beta_pdf == probability density function for beta               *)
 (*           beta_prob == beta probability measure                            *)
+(* ```                                                                        *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*                 typ == syntax for types of data structures                 *)
 (* measurable_of_typ t == the measurable type corresponding to type t         *)
 (*                        It is of type {d & measurableType d}                *)
@@ -58,6 +61,7 @@ From mathcomp Require Import ring lra.
 (*                        measurable                                          *)
 (*             execP e == a s-finite kernel corresponding to the evaluation   *)
 (*                        of the probabilistic expression e                   *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -1337,7 +1341,8 @@ Lemma beta_pdf_uniq_ae (a b : nat) :
                (EFin \o (beta_pdf a b)).
 Proof.
 apply: integral_ae_eq => //.
-- apply: integrableS (Radon_Nikodym_integrable _) => //.
+- apply: (@integrableS _ _ _ _ setT) => //=.
+  apply: Radon_Nikodym_integrable => //=.
   exact: beta_prob_dom.
 - apply/measurable_funTS/measurableT_comp => //.
   exact: measurable_beta_pdf.
@@ -1366,9 +1371,9 @@ move=> mU mf finf.
 rewrite -(Radon_Nikodym_change_of_variables (beta_prob_dom a b)) //=; last first.
   by apply/integrableP; split.
 apply: ae_eq_integral => //.
-- apply: emeasurable_funM => //; apply: measurable_int.
-  apply: integrableS (Radon_Nikodym_integrable _) => //=.
-  exact: beta_prob_dom.
+- apply: emeasurable_funM => //; apply: (measurable_int mu).
+  apply: (integrableS _ _ (@subsetT _ _)) => //=.
+  by apply: Radon_Nikodym_integrable; exact: beta_prob_dom.
 - apply: emeasurable_funM => //=; apply/measurableT_comp => //=.
   by apply/measurable_funTS; exact: measurable_beta_pdf.
 - apply: ae_eq_mul2l => /=.

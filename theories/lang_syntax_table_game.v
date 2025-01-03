@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
@@ -554,7 +555,7 @@ under eq_integral.
   rewrite /XMonemX01 patchE x0 XMonemX0.
   over.
 rewrite /= => ->; congr bernoulli.
-by rewrite /div_betafun addn0 !betafunE/= !factE/= !factE; field.
+by rewrite /div_betafun addn0 !betafunE/= !factE/= ?factE; field.
 Qed.
 
 Lemma dirac_bool {R : realType} (U : set bool) :
