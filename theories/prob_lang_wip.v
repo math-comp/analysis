@@ -168,8 +168,9 @@ apply: ae_eq_integral => //=.
 - apply: emeasurable_funM => //.
     apply/measurable_funTS/measurableT_comp => //.
     exact: measurable_fun_f1.
-  apply: measurable_int.
-  apply: integrableS (Radon_Nikodym_integrable _) => //=.
+  apply: (measurable_int mu).
+  apply: (integrableS _ _ (@subsetT _ _)) => //=.
+  apply: Radon_Nikodym_integrable => //=.
   exact: gauss01_dom.
 - apply: emeasurable_funM => //.
     apply/measurable_funTS/measurableT_comp => //.
