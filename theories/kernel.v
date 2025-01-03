@@ -1566,14 +1566,14 @@ Definition mkproduct :=
 
 End kproduct_measure.
 
-(* [Theorem 14.22, Klenke 2014] (3/3): the composition of finite transition
-  kernels is sigma-finite *)
 HB.instance Definition _ d0 d1 d2 (T0 : measurableType d0)
     (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}
     (k1 : R.-ftker T0 ~> T1) (k2 : R.-ftker (T0 * T1) ~> T2) :=
   @isKernel.Build _ _ T0 (T1 * T2)%type R
     (mkproduct k1 k2) (measurable_kproduct k1 k2).
 
+(* [Theorem 14.22, Klenke 2014] (3/3): the composition of finite transition
+  kernels is sigma-finite *)
 Section sigma_finite_kproduct.
 Context d0 d1 d2 (T0 : measurableType d0)
   (T1 : measurableType d1) (T2 : measurableType d2) {R : realType}

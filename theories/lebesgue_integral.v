@@ -6069,7 +6069,7 @@ Context d d' (X : measurableType d) (Y : measurableType d') (R : realType).
 Variables (m1 : {sfinite_measure set X -> \bar R}).
 Variables (m2 : {sfinite_measure set Y -> \bar R}).
 Variables (f : X * Y -> \bar R) (f0 : forall xy, 0 <= f xy).
-Hypothesis mf : measurable_fun setT f.
+Hypothesis mf : measurable_fun [set: X * Y] f.
 
 Lemma sfinite_Fubini :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
