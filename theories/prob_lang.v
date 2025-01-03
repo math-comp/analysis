@@ -1,12 +1,12 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import rat archimedean ring lra.
 From mathcomp Require Import unstable mathcomp_extra boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop interval_inference.
 From mathcomp Require Import reals ereal topology normedtype sequences.
-From mathcomp Require Import esum measure lebesgue_measure numfun.
-From mathcomp Require Import lebesgue_integral probability exp kernel charge.
+From mathcomp Require Import esum measure lebesgue_measure numfun exp.
+From mathcomp Require Import lebesgue_integral trigo probability kernel charge.
 
 (**md**************************************************************************)
 (* # Semantics of a probabilistic programming language using s-finite kernels *)
@@ -21,7 +21,9 @@ From mathcomp Require Import lebesgue_integral probability exp kernel charge.
 (*          poisson_pdf == Poisson pdf                                        *)
 (*      exponential_pdf == exponential distribution pdf                       *)
 (*   measurable_sum X Y == the type X + Y, as a measurable type               *)
+(* ```                                                                        *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*           mscore f t := mscale `|f t| \d_tt                                *)
 (*             kscore f := fun=> mscore f                                     *)
 (*                         This is an s-finite kernel.                        *)
@@ -1466,8 +1468,8 @@ by rewrite /score/= /mscale/= ger0_norm//= f0.
 Qed.
 
 Lemma score_score (f : R -> R) (g : R * unit -> R)
-    (mf : measurable_fun setT f)
-    (mg : measurable_fun setT g) :
+    (mf : measurable_fun [set: R] f)
+    (mg : measurable_fun [set: R * unit] g) :
   letin (score mf) (score mg) =
   score (measurable_funM mf (measurableT_comp mg (pair2_measurable tt))).
 Proof.
@@ -1844,12 +1846,12 @@ Lemma trickE gamma X : trick gamma X =
   (r *+ (inl tt \in X) +
    q *+ ((inr true \in X) + (inr false \in X)))%:E.
 Proof.
-have Dbernoulli : D =1 bernoulli p by exact/eq_bernoulli/Dtrue.
+have Dbernoulli : D =1 bernoulli_prob p by exact/eq_bernoulli/Dtrue.
 have p_itv01 : (0 <= p <= 1)%R.
   by rewrite -2!lee_fin -Dtrue?measure_ge0 ?probability_le1.
 pose eqbern := eq_measure_integral _ (fun x _ _ => Dbernoulli x).
 rewrite /trick/= /kcomp.
-do 2?rewrite ?eqbern ?integral_bernoulli//= /kcomp/=.
+do 2?rewrite ?eqbern ?integral_bernoulli_prob//= /kcomp/=.
 rewrite !integral_dirac ?diracT//= ?mul1e.
 rewrite !iteE//= ?diracE/= /kcomp/=.
 rewrite !integral_dirac /acc1of4/= ?diracT ?diracE ?mul1e//.
@@ -2182,3 +2184,134 @@ rewrite letin'E/= /sample; unlock.
 rewrite integral_bernoulli_prob ?r0//=.
 by rewrite /mscale/= iteE//= iteE//= fail'E mule0 adde0 ger0_norm.
 Qed.
+
+(* TODO: move to probability.v? *)
+Section gauss.
+Variable R : realType.
+Local Open Scope ring_scope.
+
+Definition gauss_pdf := @normal_pdf R 0 1.
+
+Lemma normal_pdf_gt0 m s x : 0 < s -> 0 < normal_pdf m s x :> R.
+Proof.
+move=> s0; rewrite /normal_pdf gt_eqF// mulr_gt0 ?expR_gt0// invr_gt0.
+by rewrite sqrtr_gt0 pmulrn_rgt0// mulr_gt0 ?pi_gt0 ?exprn_gt0.
+Qed.
+
+Lemma gauss_pdf_gt0 x : 0 < gauss_pdf x.
+Proof. exact: normal_pdf_gt0. Qed.
+
+Definition gauss_prob := @normal_prob R 0 1.
+
+HB.instance Definition _ := Probability.on gauss_prob.
+
+Lemma gauss_prob_dominates : gauss_prob `<< lebesgue_measure.
+Proof. exact: normal_prob_dominates. Qed.
+
+Lemma continuous_gauss_pdf x : {for x, continuous gauss_pdf}.
+Proof. exact: continuous_normal_pdf. Qed.
+
+End gauss.
+
+(* the Lebesgue measure is definable in Staton's language
+  [equation (10), Section 4.1, Staton ESOP 2017] *)
+Section gauss_lebesgue.
+Context d (T : measurableType d) (R : realType).
+Notation mu := (@lebesgue_measure R).
+
+Let f1 (x : g_sigma_algebraType (R.-ocitv.-measurable)) := (gauss_pdf x)^-1%R.
+
+Let f1E (x : R) : f1 x = (Num.sqrt (pi *+ 2) * expR (- (- x ^+ 2 / 2)))%R.
+Proof.
+rewrite /f1 /gauss_pdf /normal_pdf oner_eq0.
+rewrite /normal_peak expr1n mul1r.
+by rewrite /normal_fun subr0 expr1n invfM invrK expRN.
+Qed.
+
+Let f1_gt0 (x : R) : (0 < f1 x)%R.
+Proof. by rewrite f1E mulr_gt0 ?expR_gt0// sqrtr_gt0 mulrn_wgt0// pi_gt0. Qed.
+
+Lemma measurable_fun_f1 : measurable_fun setT f1.
+Proof.
+apply: continuous_measurable_fun => x.
+apply: (@continuousV _ _ (@gauss_pdf R)).
+  by rewrite gt_eqF// gauss_pdf_gt0.
+exact: continuous_gauss_pdf.
+Qed.
+
+Lemma integral_mgauss01 : forall U, measurable U ->
+  \int[(@gauss_prob R)]_(y in U) (f1 y)%:E =
+  \int[mu]_(x0 in U) (gauss_pdf x0 * f1 x0)%:E.
+Proof.
+move=> U mU.
+under [in RHS]eq_integral do rewrite EFinM/= muleC.
+rewrite /=.
+rewrite -(@Radon_Nikodym_SigmaFinite.change_of_variables
+    _ _ _ _ (@lebesgue_measure R))//=; last 3 first.
+  exact: gauss_prob_dominates.
+  by move=> /= x; rewrite lee_fin ltW.
+  apply/measurable_EFinP.
+  apply: measurable_funTS.
+  exact: measurable_fun_f1.
+apply: ae_eq_integral => //=.
+- apply: emeasurable_funM => //.
+    apply/measurable_funTS/measurableT_comp => //.
+    exact: measurable_fun_f1.
+  apply: (measurable_int mu).
+  apply: (integrableS _ _ (@subsetT _ _)) => //=.
+  apply: Radon_Nikodym_SigmaFinite.f_integrable => /=.
+  exact: gauss_prob_dominates.
+- apply: emeasurable_funM => //.
+    apply/measurable_funTS/measurableT_comp => //.
+    exact: measurable_fun_f1.
+  apply/measurable_funTS/measurableT_comp => //.
+  exact: measurable_normal_pdf.
+- apply: ae_eqe_mul2l => /=.
+  rewrite /Radon_Nikodym_SigmaFinite.f/=.
+  case: pselect => [gauss_prob_dom|]; last first.
+    by move=> /(_ (@gauss_prob_dominates R)).
+  case: cid => //= h [h1 h2 h3] gauss_probE.
+  apply: integral_ae_eq => //=.
+  + exact: integrableS h3.
+  + apply/measurable_funTS/measurableT_comp => //.
+    exact: measurable_normal_pdf.
+  + move=> E EU mE.
+    by rewrite -gauss_probE.
+Qed.
+
+Let mf1 : measurable_fun setT f1.
+Proof.
+apply: (measurable_comp (F := [set r : R | r != 0%R])) => //.
+- exact: open_measurable.
+- by move=> /= r [t _ <-]; rewrite gt_eqF// gauss_pdf_gt0.
+- apply: open_continuous_measurable_fun => //.
+  by apply/in_setP => x /= x0; exact: inv_continuous.
+- exact: measurable_normal_pdf.
+Qed.
+
+Definition staton_lebesgue : R.-sfker T ~> _ :=
+  letin (sample_cst (@gauss_prob R : pprobability _ _))
+  (letin
+    (score (measurableT_comp mf1 macc1of2))
+    (ret macc1of3)).
+
+Lemma staton_lebesgueE x U : measurable U ->
+  staton_lebesgue x U = lebesgue_measure U.
+Proof.
+move=> mU; rewrite [in LHS]/staton_lebesgue/=.
+rewrite [in LHS]letinE /=.
+transitivity (\int[(@gauss_prob R)]_(y in U) (f1 y)%:E).
+  rewrite -[in RHS](setTI U) integral_mkcondr/=.
+  apply: eq_integral => //= r _.
+  rewrite letinE/= ge0_integral_mscale//= ger0_norm//; last first.
+    by rewrite invr_ge0// normal_pdf_ge0.
+  rewrite integral_dirac// diracT mul1e/= diracE epatch_indic/=.
+  by rewrite indicE.
+rewrite integral_mgauss01//.
+transitivity (\int[lebesgue_measure]_(x in U) (\1_U x)%:E).
+  apply: eq_integral => /= y yU.
+  by rewrite /f1 divrr ?indicE ?yU// unitfE gt_eqF// gauss_pdf_gt0.
+by rewrite integral_indic//= setIid.
+Qed.
+
+End gauss_lebesgue.
