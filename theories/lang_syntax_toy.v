@@ -1,3 +1,4 @@
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From Coq Require Import String Classical.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg.
@@ -5,8 +6,8 @@ From mathcomp Require Import mathcomp_extra boolp.
 From mathcomp Require Import signed reals topology normedtype.
 From mathcomp Require Import lang_syntax_util.
 
-(******************************************************************************)
-(*           Intrinsically-typed concrete syntax for a toy language           *)
+(**md**************************************************************************)
+(* # Intrinsically-typed concrete syntax for a toy language                   *)
 (*                                                                            *)
 (* The main module provided by this file is "lang_intrinsic_tysc" which       *)
 (* provides an example of intrinsically-typed concrete syntax for a toy       *)
@@ -14,10 +15,12 @@ From mathcomp Require Import lang_syntax_util.
 (* lang_syntax.v). Other modules provide even more simplified language for    *)
 (* pedagogical purposes.                                                      *)
 (*                                                                            *)
+(* ```                                                                        *)
 (*      lang_extrinsic == non-intrinsic definition of expression              *)
 (*   lang_intrinsic_ty == intrinsically-typed syntax                          *)
 (*   lang_intrinsic_sc == intrinsically-scoped syntax                         *)
 (* lang_intrinsic_tysc == intrinsically-typed/scoped syntax                   *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
