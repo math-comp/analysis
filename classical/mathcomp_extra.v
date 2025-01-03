@@ -588,3 +588,9 @@ rewrite mulr_ile1 ?andbT//.
   by have := xs01 x; rewrite inE xs orbT => /(_ _)/andP[].
 by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
 Qed.
+
+Lemma inr_inj {A B} : injective (@inr A B).
+Proof. by move=>  ? ? []. Qed.
+
+Lemma inl_inj {A B} : injective (@inl A B).
+Proof. by move=>  ? ? []. Qed.
