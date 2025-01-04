@@ -401,7 +401,7 @@ Proof.
 by apply/eqP => /eqmodP/predU1P[//|/andP[/= + _]]; exact/negP/zero_one_neq.
 Qed.
 
-Lemma bpwedgeE : @bpwedge_lift true one = @bpwedge_lift false zero .
+Lemma bpwedgeE : @bpwedge_lift true one = @bpwedge_lift false zero.
 Proof. by apply/eqmodP/orP; rewrite !eqxx; right. Qed.
 
 HB.instance Definition _ := @isBiPointed.Build
