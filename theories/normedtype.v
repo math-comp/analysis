@@ -1416,22 +1416,41 @@ by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
 Lemma not_near_at_rightP (p : R) (P : pred R) :
-  ~ (\forall x \near p^'+, P x) ->
+  ~ (\forall x \near p^'+, P x) <->
   forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
 Proof.
-move=> pPf e; apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
-apply: contrapT; apply: peP; apply/andP; split.
-- by near: t; exact: nbhs_right_gt.
-- by near: t; apply: nbhs_right_lt; rewrite ltrDl.
+split.
+- move=> pPf e; apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
+  apply: contrapT; apply: peP; apply/andP; split.
+  + by near: t; exact: nbhs_right_gt.
+  + by near: t; apply: nbhs_right_lt; rewrite ltrDl.
+- move=> ex_notPx; rewrite /at_right near_withinE nearE.
+  rewrite /nbhs /= /nbhs_ball_ /ball_ /filter_from /= -forallPNP => d d_pos.
+  rewrite /subset /= -existsNP.
+  move: (ex_notPx (PosNum d_pos)) => /=; case=> x x_p notPx; exists x.
+  move: notPx; apply: contra_not; apply; [| by move: x_p => /andP; case].
+  rewrite distrC; move: x_p; case /andP; rewrite -(subr_gt0 p) => xp_gt0.
+  by rewrite -ltrBlDl; apply: le_lt_trans; rewrite gtr0_norm.
 Unshelve. all: by end_near. Qed.
 
 Lemma not_near_at_leftP (p : R) (P : pred R) :
-  ~ (\forall x \near p^'-, P x) ->
+  ~ (\forall x \near p^'-, P x) <->
   forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P x.
 Proof.
-move=> pPf e; have := @not_near_at_rightP (- p) (P \o -%R).
-rewrite at_rightN => /(_ _ e)[|x pxe Pfx]; first by rewrite filterN.
-by exists (- x) => //; rewrite ltrNl ltrNr opprB addrC andbC.
+split.
+- move=> pPf e; have := iffLR (@not_near_at_rightP (- p) (P \o -%R)).
+  rewrite at_rightN => /(_ _ e)[|x pxe Pfx]; first by rewrite filterN.
+  by exists (- x) => //; rewrite ltrNl ltrNr opprB addrC andbC.
+- move=> ex_notPx.
+  suff: ~ (\forall x \near (- p)^'+, (P \o -%R) x).
+  + apply: contra_not => leftpP.
+    rewrite at_rightN /comp /=; near_simpl.
+    by under eq_near do rewrite opprK.
+  rewrite not_near_at_rightP => e.
+  case: (ex_notPx e) => x /andP; case=> x_gtpe x_ltp notPx.
+  exists (-x); [| by rewrite /comp opprK].
+  by apply/andP; split;
+  [move: x_ltp; rewrite ltrN2 | rewrite -(opprK e%:num) -opprD ltrN2].
 Qed.
 
 End at_left_right.
