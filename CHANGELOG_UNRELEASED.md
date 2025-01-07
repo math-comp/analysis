@@ -30,6 +30,18 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
+- in `normedtype.v`
+  + global hint to automatically apply `interval_open`
+
+- in `sequences.v`:
+  + lemma `seqDUE`
+  + lemma `nondecreasing_telescope_sumey`
+
+- in `ftc.v`:
+  + lemma `ge0_continuous_FTC2y`
+  + lemma `Rintegral_ge0_continuous_FTC2y`
+  + lemma `le0_continuous_FTC2y`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
