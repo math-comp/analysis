@@ -823,7 +823,7 @@ move=> U mU tU mUU; rewrite [X in _ --> X](_ : _ =
   apply: eq_integral => V _.
   by apply/esym/cvg_lim => //; exact/measure_semi_sigma_additive.
 apply/cvg_closeP; split.
-  by apply: is_cvg_nneseries => n _; exact: integral_ge0.
+  by apply: is_cvg_nneseries => n _ _; exact: integral_ge0.
 rewrite closeE// integral_nneseries// => n.
 exact: measurableT_comp (measurable_kernel k _ (mU n)) _.
 Qed.

@@ -695,7 +695,7 @@ exists (D `\` Aoo).
 have cvg_nuA : (\sum_(0 <= i < n) nu (A_ (v i))) @[n --> \oo]--> nu Aoo.
   exact: charge_semi_sigma_additive.
 have nuAoo : 0 <= nu Aoo.
-  move/cvg_lim : cvg_nuA => <-//=; apply: nneseries_ge0 => n _.
+  move/cvg_lim : cvg_nuA => <-//=; apply: nneseries_ge0 => n _ _.
   exact: nuA_ge0.
 have A_cvg_0 : nu (A_ (v n)) @[n --> \oo] --> 0.
   rewrite [X in X @ _ --> _](_ : _ = (fun n => (fine (nu (A_ (v n))))%:E)); last first.
@@ -853,7 +853,7 @@ move=> /cvg_ex[[l| |]]; first last.
     by rewrite leNgt => /negP; apply; rewrite ltNye_eq fin_num_measure.
   - move/cvg_lim => limoo.
     have := @npeseries_le0 _ (fun n => maxe (z_ (v n) * 2^-1%:E) (- 1%E)) xpredT 0.
-    by rewrite limoo// leNgt => /(_ (fun n _ => max_le0 n))/negP; apply.
+    by rewrite limoo// leNgt => /(_ (fun n _ _ => max_le0 n))/negP; exact.
 move/fine_cvgP => [Hfin cvgl].
 have : cvg (series (fun n => fine (maxe (z_ (v n) * 2^-1%:E) (- 1%E))) n @[n --> \oo]).
   apply/cvg_ex; exists l; move: cvgl.

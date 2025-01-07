@@ -58,9 +58,24 @@
 
 ### Generalized
 
+- in `sequences.v`,
+  + generalized indexing from zero-based ones (`0 <= k < n` and `k <oo`)
+    to `m <= k < n` and `m <= k <oo`
+    * lemmas `nondecreasing_series`, `ereal_nondecreasing_series`,
+             `eseries_mkcondl`, `eseries_mkcondr`, `eq_eseriesl`,
+	     `nneseries_lim_ge`, `adde_def_nneseries`,
+	     `nneseriesD`, `nneseries_sum_nat`, `nneseries_sum`,
+  + lemmas `nneseries_ge0`, `is_cvg_nneseries_cond`, `is_cvg_npeseries_cond`,
+    `is_cvg_nneseries`, `is_cvg_npeseries`, `nneseries_ge0`, `npeseries_le0`,
+    `lee_nneseries`
+    
 ### Deprecated
 
 ### Removed
+
+- in `sequences.v`:
+  + notations `nneseries_pred0`, `eq_nneseries`, `nneseries0`,
+    `ereal_cvgPpinfty`, `ereal_cvgPninfty` (were deprecated since 0.6.0)
 
 ### Infrastructure
 
