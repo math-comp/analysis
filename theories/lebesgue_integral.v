@@ -1966,7 +1966,7 @@ rewrite [X in measurable_fun _ X](_ : _ =
 rewrite [X in measurable_fun _ X](_ : _ =
     (fun x => limn_esup (fun n => \sum_(0 <= i < n | P i) (h i) \_ D x))); last first.
   apply/funext=> x; rewrite is_cvg_limn_esupE//.
-  apply: is_cvg_nneseries_cond => n Pn; rewrite patchE.
+  apply: is_cvg_nneseries_cond => n _ Pn; rewrite patchE.
   by case: ifPn => // xD; rewrite h0//; exact/set_mem.
 apply: measurable_fun_limn_esup => k.
 under eq_fun do rewrite big_mkcond.
@@ -2926,7 +2926,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
   by apply: leeDl; exact: integral_ge0.
 rewrite ge0_integralE//=; apply: ub_ereal_sup => /= _ [g /= gf] <-.
 rewrite -integralT_nnsfun (integral_measure_series_nnsfun _ mD).
-apply: lee_nneseries => n _.
+apply: lee_nneseries => [n _ _|n _].
   by apply: integral_ge0 => // x _; rewrite lee_fin.
 rewrite [leRHS]integral_mkcond; apply: ge0_le_integral => //.
 - by move=> x _; rewrite lee_fin.

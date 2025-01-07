@@ -3021,7 +3021,7 @@ apply: (@le_trans _ _
   move=> XD; have Xm := decomp_measurable Dm XD.
   by apply: muS => // [i|]; [exact: mfD|exact: DXsub].
 apply: lee_lim => /=; do ?apply: is_cvg_nneseries=> //.
-  by move=> n _; exact: sume_ge0.
+  by move=> n _ _; exact: sume_ge0.
 near=> n; rewrite [n in _ <= n]big_mkcond; apply: lee_sum => i _.
 rewrite ifT ?inE//.
 under eq_big_seq.
@@ -4230,7 +4230,7 @@ have := outer_measure_sigma_subadditive mu
   (fun n => if n \in ~` `I_N then F n else set0).
 move/le_trans; apply.
 rewrite [in leRHS]eseries_cond [in leRHS]eseries_mkcondr; apply: lee_nneseries.
-- by move=> k _; exact: outer_measure_ge0.
+- by move=> k _ _; exact: outer_measure_ge0.
 - move=> k _; rewrite fun_if; case: ifPn => Nk; first by rewrite mem_not_I Nk.
   by rewrite mem_not_I (negbTE Nk) outer_measure0.
 Qed.
@@ -4510,7 +4510,8 @@ suff : forall X, mu X = \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` B).
   rewrite (_ : (fun n => _) = fun n => \sum_(k < n) mu (A k)); last first.
     rewrite funeqE => n; rewrite big_mkord; apply: eq_bigr => i _; congr (mu _).
     by rewrite setIC; apply/setIidPl; exact: bigcup_sup.
-  move=> ->; have := fun n (_ : xpredT n) => outer_measure_ge0 mu (A n).
+  move=> ->.
+  have := fun n (_ : xpredT n) (_ : xpredT n) => outer_measure_ge0 mu (A n).
   move/(@is_cvg_nneseries _ _ _ 0) => /cvg_ex[l] hl.
   under [in X in _ --> X]eq_fun do rewrite -(big_mkord xpredT (mu \o A)).
   by move/cvg_lim : (hl) => ->.
@@ -4687,9 +4688,9 @@ rewrite (_ : esum _ _ = \sum_(i <oo) \sum_(j <oo ) mu (G i j)); last first.
     by move=> ? ? _ _; exact: (@can_inj _ _ _ snd).
   by congr esum; rewrite predeqE => -[a b]; split; move=> [i _ <-]; exists i.
 apply: lee_lim.
-- apply: is_cvg_nneseries => n _.
-  by apply: nneseries_ge0 => m _; exact: (muG_ge0 (n, m)).
-- by apply: is_cvg_nneseries => n _; apply: adde_ge0 => //; exact: mu_ext_ge0.
+- apply: is_cvg_nneseries => n *.
+  by apply: nneseries_ge0 => m *; exact: (muG_ge0 (n, m)).
+- by apply: is_cvg_nneseries => n *; apply: adde_ge0 => //; exact: mu_ext_ge0.
 - by near=> n; apply: lee_sum => i _; exact: (PG i).2.
 Unshelve. all: by end_near. Qed.
 
@@ -4923,7 +4924,7 @@ rewrite -(limeD cBA cBNA) // (_ : (fun _ => _) =
     eseries (fun k => Rmu (B k `&` A) + Rmu (B k `&` ~` A))); last first.
   by rewrite funeqE => n; rewrite -big_split /=; exact: eq_bigr.
 apply/lee_lim => //.
-  by apply/is_cvg_nneseries => // n _; exact: adde_ge0.
+  by apply/is_cvg_nneseries => // n *; exact: adde_ge0.
 near=> n; apply: lee_sum => i _; rewrite -measure_semi_additive2.
 - apply: le_measure; rewrite /mkset ?inE//; [|by rewrite -setIUr setUCr setIT].
   by apply: measurableU; [exact:measurableI|rewrite -setDE; exact:measurableD].
