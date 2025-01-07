@@ -30,6 +30,9 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
+- in `lebesgue_integral.v`:
+  + lemma `integral_bigsetU_EFin`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
