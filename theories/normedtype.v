@@ -1329,6 +1329,13 @@ rewrite !near_withinE !near_simpl nbhs0P; split=> Px.
 by rewrite -oppr0 nearN; near=> e; rewrite gtrDl oppr_lt0; apply: (near Px).
 Unshelve. all: by end_near. Qed.
 
+Lemma nbhs_right_leftP (p : R) (P : pred R) :
+  (\forall x \near (- p)^'+, (P \o -%R) x) <-> (\forall x \near p^'-, P x).
+Proof.
+by rewrite nbhs_right0P nbhs_left0P; split;
+  apply: filterS=> r/=; rewrite opprD opprK.
+Qed.
+
 Lemma nbhs_right_gt x : \forall y \near x^'+, x < y.
 Proof. by rewrite near_withinE; apply: nearW. Qed.
 
@@ -1375,7 +1382,8 @@ by apply: nbhs_right_lt; rewrite subr_gt0.
 Unshelve. all: by end_near. Qed.
 
 Lemma nbhs_left_ge x z : z < x -> \forall y \near x^'-, z <= y.
-Proof. by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
+Proof.
+by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
 Unshelve. all: by end_near. Qed.
 
 Lemma nbhs_left_ltBl x e : 0 < e -> \forall y \near x^'-, x - y < e.
@@ -1419,38 +1427,25 @@ Lemma not_near_at_rightP (p : R) (P : pred R) :
   ~ (\forall x \near p^'+, P x) <->
   forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
 Proof.
-split.
-- move=> pPf e; apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
+split=> [pPf e|ex_notPx].
+- apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
   apply: contrapT; apply: peP; apply/andP; split.
   + by near: t; exact: nbhs_right_gt.
   + by near: t; apply: nbhs_right_lt; rewrite ltrDl.
-- move=> ex_notPx; rewrite /at_right near_withinE nearE.
-  rewrite /nbhs /= /nbhs_ball_ /ball_ /filter_from /= -forallPNP => d d_pos.
-  rewrite /subset /= -existsNP.
-  move: (ex_notPx (PosNum d_pos)) => /=; case=> x x_p notPx; exists x.
-  move: notPx; apply: contra_not; apply; [| by move: x_p => /andP; case].
-  rewrite distrC; move: x_p; case /andP; rewrite -(subr_gt0 p) => xp_gt0.
-  by rewrite -ltrBlDl; apply: le_lt_trans; rewrite gtr0_norm.
+- rewrite /at_right near_withinE nearE.
+  rewrite -filter_from_ballE /filter_from/= -forallPNP => _ /posnumP[d].
+  have [x /andP[px xpd] notPx] := ex_notPx d; rewrite -existsNP; exists x => /=.
+  apply: contra_not notPx; apply => //.
+  by rewrite /ball/= ltr0_norm ?subr_lt0// opprB ltrBlDl.
 Unshelve. all: by end_near. Qed.
 
 Lemma not_near_at_leftP (p : R) (P : pred R) :
   ~ (\forall x \near p^'-, P x) <->
   forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P x.
 Proof.
-split.
-- move=> pPf e; have := iffLR (@not_near_at_rightP (- p) (P \o -%R)).
-  rewrite at_rightN => /(_ _ e)[|x pxe Pfx]; first by rewrite filterN.
-  by exists (- x) => //; rewrite ltrNl ltrNr opprB addrC andbC.
-- move=> ex_notPx.
-  suff: ~ (\forall x \near (- p)^'+, (P \o -%R) x).
-  + apply: contra_not => leftpP.
-    rewrite at_rightN /comp /=; near_simpl.
-    by under eq_near do rewrite opprK.
-  rewrite not_near_at_rightP => e.
-  case: (ex_notPx e) => x /andP; case=> x_gtpe x_ltp notPx.
-  exists (-x); [| by rewrite /comp opprK].
-  by apply/andP; split;
-  [move: x_ltp; rewrite ltrN2 | rewrite -(opprK e%:num) -opprD ltrN2].
+rewrite -nbhs_right_leftP not_near_at_rightP; split => + e => /(_ e)[r pre Pr].
+- by exists (- r) => //; rewrite ltrNr andbC ltrNl opprB addrC.
+- by exists (- r) => /=; rewrite ?opprK// ltrN2 ltrNl opprD opprK andbC.
 Qed.
 
 End at_left_right.

@@ -30,6 +30,9 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
+- in `normedtype.v`:
+  + lemma `nbhs_right_leftP`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
@@ -70,7 +73,7 @@
     `lee_nneseries`
     
 - in `normedtype.v`:
-	+ lemmas `not_near_at_rightP`, `not_near_at_leftP`
+  + lemmas `not_near_at_rightP`, `not_near_at_leftP`
 
 ### Deprecated
 
