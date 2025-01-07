@@ -951,13 +951,15 @@ rewrite -(subrr (limn (series u_))).
 by apply: cvgB => //; rewrite ?cvg_shiftS.
 Qed.
 
-Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) (P : pred nat) :
-  (forall n, P n -> 0 <= u_ n)%R ->
-  nondecreasing_seq (fun n=> \sum_(0 <= k < n | P k) u_ k)%R.
+Lemma nondecreasing_series (R : numFieldType) (u_ : R ^nat) (P : pred nat) m :
+  (forall n, (m <= n)%N -> P n -> 0 <= u_ n)%R ->
+  nondecreasing_seq (fun n=> \sum_(m <= k < n | P k) u_ k)%R.
 Proof.
 move=> u_ge0; apply/nondecreasing_seqP => n.
-rewrite [in leRHS]big_mkcond [in leRHS]big_nat_recr//=.
-by rewrite -[in leRHS]big_mkcond/= lerDl; case: ifPn => //; exact: u_ge0.
+have [mn|nm] := leqP m n.
+  rewrite [leRHS]big_mkcond/= [leRHS]big_nat_recr//=.
+  by rewrite -[in leRHS]big_mkcond/= lerDl; case: ifPn => //; exact: u_ge0.
+by rewrite (big_geq (ltnW _)) // big_geq.
 Qed.
 
 Lemma increasing_series (R : numFieldType) (u_ : R ^nat) :
@@ -1546,9 +1548,9 @@ Proof. by move=> ?; apply/cvg_ex; eexists; apply: ereal_nonincreasing_cvgn. Qed.
 
 (* NB: see also nondecreasing_series *)
 Lemma ereal_nondecreasing_series (R : realDomainType) (u_ : (\bar R)^nat)
-  (P : pred nat) : (forall n, P n -> 0 <= u_ n) ->
-  nondecreasing_seq (fun n => \sum_(0 <= i < n | P i) u_ i).
-Proof. by move=> u_ge0 n m nm; rewrite lee_sum_nneg_natr// => k _ /u_ge0. Qed.
+  (P : pred nat) N : (forall n, (N <= n)%N -> P n -> 0 <= u_ n) ->
+  nondecreasing_seq (fun n => \sum_(N <= i < n | P i) u_ i).
+Proof. by move=> u_ge0 n m nm; rewrite lee_sum_nneg_natr. Qed.
 
 Lemma congr_lim (R : numFieldType) (f g : nat -> \bar R) :
   f = g -> limn f = limn g.
@@ -1558,12 +1560,14 @@ Lemma eseries_cond {R : numFieldType} (f : (\bar R)^nat) P N :
   \sum_(N <= i <oo | P i) f i = \sum_(i <oo | P i && (N <= i)%N) f i.
 Proof. by apply/congr_lim/eq_fun => n /=; apply: big_nat_widenl. Qed.
 
-Lemma eseries_mkcondl {R : numFieldType} (f : (\bar R)^nat) P Q :
-  \sum_(i <oo | P i && Q i) f i = \sum_(i <oo | Q i) if P i then f i else 0.
+Lemma eseries_mkcondl {R : numFieldType} (f : (\bar R)^nat) P Q N :
+  \sum_(N <= i <oo | P i && Q i) f i =
+  \sum_(N <= i <oo | Q i) if P i then f i else 0.
 Proof. by apply/congr_lim/funext => n; rewrite big_mkcondl. Qed.
 
-Lemma eseries_mkcondr {R : numFieldType} (f : (\bar R)^nat) P Q :
-  \sum_(i <oo | P i && Q i) f i = \sum_(i <oo | P i) if Q i then f i else 0.
+Lemma eseries_mkcondr {R : numFieldType} (f : (\bar R)^nat) P Q N :
+  \sum_(N <= i <oo | P i && Q i) f i =
+  \sum_(N <= i <oo | P i) if Q i then f i else 0.
 Proof. by apply/congr_lim/funext => n; rewrite big_mkcondr. Qed.
 
 Lemma eq_eseriesr (R : numFieldType) (f g : (\bar R)^nat) (P : pred nat) {N} :
@@ -1571,8 +1575,8 @@ Lemma eq_eseriesr (R : numFieldType) (f g : (\bar R)^nat) (P : pred nat) {N} :
   \sum_(N <= i <oo | P i) f i = \sum_(N <= i <oo | P i) g i.
 Proof. by move=> efg; apply/congr_lim/funext => n; exact: eq_bigr. Qed.
 
-Lemma eq_eseriesl (R : realFieldType) (P Q : pred nat) (f : (\bar R)^nat) :
-  P =1 Q -> \sum_(i <oo | P i) f i = \sum_(i <oo | Q i) f i.
+Lemma eq_eseriesl (R : realFieldType) (P Q : pred nat) (f : (\bar R)^nat) N :
+  P =1 Q -> \sum_(N <= i <oo | P i) f i = \sum_(N <= i <oo | Q i) f i.
 Proof. by move=> efg; apply/congr_lim/funext => n; apply: eq_bigl. Qed.
 Arguments eq_eseriesl {R P} Q.
 
@@ -1617,9 +1621,9 @@ Qed.
 
 End ereal_series.
 
-Lemma nneseries_lim_ge (R : realType) (u_ : (\bar R)^nat) (P : pred nat) k :
-  (forall n, P n -> 0 <= u_ n) ->
-  \sum_(0 <= i < k | P i) u_ i <= \sum_(i <oo | P i) u_ i.
+Lemma nneseries_lim_ge (R : realType) (u_ : (\bar R)^nat) (P : pred nat) {m} k :
+  (forall n, (m <= n)%N -> P n -> 0 <= u_ n) ->
+  \sum_(m <= i < k | P i) u_ i <= \sum_(m <= i <oo | P i) u_ i.
 Proof.
 move/ereal_nondecreasing_series/ereal_nondecreasing_cvgn/cvg_lim => -> //.
 by apply: ereal_sup_ubound; exists k.
@@ -1663,36 +1667,36 @@ Lemma is_cvg_ereal_npos_natsum m : (forall n, (m <= n)%N -> u_ n <= 0) ->
   cvgn (fun n => \sum_(m <= i < n) u_ i).
 Proof. by move=> u_le0; apply: is_cvg_ereal_npos_natsum_cond => n /u_le0. Qed.
 
-Lemma is_cvg_nneseries_cond P N : (forall n, P n -> 0 <= u_ n) ->
+Lemma is_cvg_nneseries_cond P N : (forall n, (N <= n)%N -> P n -> 0 <= u_ n) ->
   cvgn (fun n => \sum_(N <= i < n | P i) u_ i).
 Proof.
-by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n _; exact: u_ge0.
+by move=> u_ge0; apply: is_cvg_ereal_nneg_natsum_cond => n Nn; exact: u_ge0.
 Qed.
 
-Lemma is_cvg_npeseries_cond P N : (forall n, P n -> u_ n <= 0) ->
+Lemma is_cvg_npeseries_cond P N : (forall n, (N <= n)%N -> P n -> u_ n <= 0) ->
   cvgn (fun n => \sum_(N <= i < n | P i) u_ i).
-Proof. by move=> u_le0; apply: is_cvg_ereal_npos_natsum_cond => n _ /u_le0. Qed.
+Proof. by move=> u_le0; exact: is_cvg_ereal_npos_natsum_cond. Qed.
 
-Lemma is_cvg_nneseries P N : (forall n, P n -> 0 <= u_ n) ->
+Lemma is_cvg_nneseries P N : (forall n, (N <= n)%N -> P n -> 0 <= u_ n) ->
   cvgn (fun n => \sum_(N <= i < n | P i) u_ i).
 Proof. by move=> ?; exact: is_cvg_nneseries_cond. Qed.
 
-Lemma is_cvg_npeseries P N : (forall n, P n -> u_ n <= 0) ->
+Lemma is_cvg_npeseries P N : (forall n, (N <= n)%N -> P n -> u_ n <= 0) ->
   cvgn (fun n => \sum_(N <= i < n | P i) u_ i).
 Proof. by move=> ?; exact: is_cvg_npeseries_cond. Qed.
 
-Lemma nneseries_ge0 P N : (forall n, P n -> 0 <= u_ n) ->
+Lemma nneseries_ge0 P N : (forall n, (N <= n)%N -> P n -> 0 <= u_ n) ->
   0 <= \sum_(N <= i <oo | P i) u_ i.
 Proof.
-move=> u0; apply: (lime_ge (is_cvg_nneseries u0)).
-by apply: nearW => k; rewrite sume_ge0.
+move=> u0; apply: (lime_ge (is_cvg_nneseries u0)); apply: nearW => k.
+by rewrite big_nat_cond sume_ge0// => n /andP[/andP[+ _]]; exact: u0.
 Qed.
 
-Lemma npeseries_le0 P N : (forall n : nat, P n -> u_ n <= 0) ->
+Lemma npeseries_le0 P N : (forall n : nat, (N <= n)%N -> P n -> u_ n <= 0) ->
   \sum_(N <= i <oo | P i) u_ i <= 0.
 Proof.
-move=> u0; apply: (lime_le (is_cvg_npeseries u0)).
-by apply: nearW => k; rewrite sume_le0.
+move=> u0; apply: (lime_le (is_cvg_npeseries u0)); apply: nearW => k.
+by rewrite big_nat_cond sume_le0// => n /andP[/andP[+ _]]; exact: u0.
 Qed.
 
 End cvg_eseries.
@@ -1718,31 +1722,20 @@ Lemma nneseriesZl (R : realType) (f : nat -> \bar R) (P : pred nat) x N :
   (forall i, P i -> 0 <= f i) ->
   (\sum_(N <= i <oo | P i) (x%:E * f i) = x%:E * \sum_(N <= i <oo | P i) f i).
 Proof.
-move=> f0; rewrite -limeMl//; last exact: is_cvg_nneseries.
+move=> f0; rewrite -limeMl//; last by apply: is_cvg_nneseries => n _; exact: f0.
 by apply/congr_lim/funext => /= n; rewrite ge0_sume_distrr.
 Qed.
 
 Lemma adde_def_nneseries (R : realType) (f g : (\bar R)^nat)
-    (P Q : pred nat) :
-  (forall n, P n -> 0 <= f n) -> (forall n, Q n -> 0 <= g n) ->
-  (\sum_(i <oo | P i) f i) +? (\sum_(i <oo | Q i) g i).
+    (P Q : pred nat) m :
+  (forall n, (m <= n)%N -> P n -> 0 <= f n) ->
+  (forall n, (m <= n)%N -> Q n -> 0 <= g n) ->
+  (\sum_(m <= i <oo | P i) f i) +? (\sum_(m <= i <oo | Q i) g i).
 Proof.
 move=> f0 g0; rewrite /adde_def !negb_and; apply/andP; split; apply/orP.
-- by right; apply/eqP => Qg; have := nneseries_ge0 0 g0; rewrite Qg.
-- by left; apply/eqP => Pf; have := nneseries_ge0 0 f0; rewrite Pf.
+- by right; apply/eqP => Qg; have := nneseries_ge0 m g0; rewrite Qg.
+- by left; apply/eqP => Pf; have := nneseries_ge0 m f0; rewrite Pf.
 Qed.
-
-Lemma __deprecated__ereal_cvgPpinfty (R : realFieldType) (u_ : (\bar R)^nat) :
-  u_ @ \oo --> +oo <-> (forall A, (0 < A)%R -> \forall n \near \oo, A%:E <= u_ n).
-Proof.
-by split=> [/cvgeyPge//|u_ge]; apply/cvgeyPgey; near=> x; apply: u_ge.
-Unshelve. all: by end_near. Qed.
-
-Lemma __deprecated__ereal_cvgPninfty (R : realFieldType) (u_ : (\bar R)^nat) :
-  u_ @ \oo --> -oo <-> (forall A, (A < 0)%R -> \forall n \near \oo, u_ n <= A%:E).
-Proof.
-by split=> [/cvgeNyPle//|u_ge]; apply/cvgeNyPleNy; near=> x; apply: u_ge.
-Unshelve. all: by end_near. Qed.
 
 Lemma __deprecated__ereal_squeeze (R : realType) (f g h : (\bar R)^nat) :
   (\forall x \near \oo, f x <= g x <= h x) -> forall (l : \bar R),
@@ -1758,13 +1751,13 @@ by rewrite gt_eqF// (lt_le_trans _ (u_ge0 _ Pn)).
 Qed.
 
 Lemma lee_nneseries (R : realType) (u v : (\bar R)^nat) (P : pred nat) N :
-  (forall i, P i -> 0 <= u i) ->
+  (forall i, (N <= i)%N -> P i -> 0 <= u i) ->
   (forall n, P n -> u n <= v n) ->
   \sum_(N <= i <oo | P i) u i <= \sum_(N <= i <oo | P i) v i.
 Proof.
 move=> u0 Puv; apply: lee_lim.
-- by apply: is_cvg_ereal_nneg_natsum_cond => n ? /u0; exact.
-- apply: is_cvg_ereal_nneg_natsum_cond => n _ Pn.
+- by apply: is_cvg_ereal_nneg_natsum_cond => n Nn /u0; exact.
+- apply: is_cvg_ereal_nneg_natsum_cond => n Nn Pn.
   by rewrite (le_trans _ (Puv _ Pn))// u0.
 - by near=> n; apply: lee_sum => k; exact: Puv.
 Unshelve. all: by end_near. Qed.
@@ -1777,9 +1770,9 @@ Lemma subset_lee_nneseries (R : realType) (u : (\bar R)^nat) (P Q : pred nat)
 Proof.
 move=> Pu PQ; apply: lee_lim.
 - apply: ereal_nondecreasing_is_cvgn => a b ab.
-  by apply: lee_sum_nneg_natr => // n Mn /PQ; exact: Pu.
+  by apply: lee_sum_nneg_natr => // n Mn Pn; apply: Pu => //; exact: PQ.
 - apply: ereal_nondecreasing_is_cvgn => a b ab.
-  by apply: lee_sum_nneg_natr => // n Mn; exact: Pu.
+  by apply: lee_sum_nneg_natr => // n Mn Pn; apply: Pu => //; exact: PQ.
 - near=> n; apply: lee_sum_nneg_subset => //.
   by move=> i; rewrite inE => /andP[iP iQ]; exact: Pu.
 Unshelve. all: by end_near. Qed.
@@ -1951,7 +1944,8 @@ have : cvg (\sum_(0 <= k < n | P k) f k @[n --> \oo]).
   by apply: lee_sum_nneg_natr => n _; exact: f0.
 move/cvg_ex => [[l fl||/cvg_lim fnoo]] /=; last 2 first.
   - by move/cvg_lim => fpoo; rewrite fpoo// in foo.
-  - have : 0 <= \sum_(k <oo | P k) f k by exact: nneseries_ge0.
+  - have : 0 <= \sum_(k <oo | P k) f k.
+      by apply: nneseries_ge0 => n _; exact: f0.
     by rewrite fnoo.
 rewrite [X in X @ _ --> _](_ : _ = fun N => l%:E - \sum_(0 <= k < N | P k) f k).
   apply/cvgeNP; rewrite oppe0.
@@ -1959,38 +1953,42 @@ rewrite [X in X @ _ --> _](_ : _ = fun N => l%:E - \sum_(0 <= k < N | P k) f k).
   exact/cvge_sub0.
 apply/funext => N; apply/esym/eqP; rewrite sube_eq//.
   by rewrite addeC -nneseries_split_cond//; exact/eqP/esym/cvg_lim.
-by rewrite ge0_adde_def//= ?inE; [exact: nneseries_ge0|exact: sume_ge0].
+rewrite ge0_adde_def//= ?inE; last exact: sume_ge0.
+by apply: nneseries_ge0 => n Nn; exact: f0.
 Qed.
 
-Lemma nneseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) :
-  (forall i, P i -> 0 <= f i) -> (forall i, P i -> 0 <= g i) ->
-  \sum_(i <oo | P i) (f i + g i) =
-  \sum_(i <oo | P i) f i + \sum_(i <oo | P i) g i.
+Lemma nneseriesD (R : realType) (f g : nat -> \bar R) (P : pred nat) N :
+  (forall i, (N <= i)%N -> P i -> 0 <= f i) ->
+  (forall i, (N <= i)%N -> P i -> 0 <= g i) ->
+  \sum_(N <= i <oo | P i) (f i + g i) =
+  \sum_(N <= i <oo | P i) f i + \sum_(N <= i <oo | P i) g i.
 Proof.
 move=> f_eq0 g_eq0.
-transitivity (limn (fun n => \sum_(0 <= i < n | P i) f i +
-                         \sum_(0 <= i < n | P i) g i)).
+transitivity (limn (fun n => \sum_(N <= i < n | P i) f i +
+                         \sum_(N <= i < n | P i) g i)).
   by apply/congr_lim/funext => n; rewrite big_split.
 rewrite limeD /adde_def //=; do ? exact: is_cvg_nneseries.
 by rewrite ![_ == -oo]gt_eqF ?andbF// (@lt_le_trans _ _ 0)
            ?[_ < _]real0// nneseries_ge0.
 Qed.
 
-Lemma nneseries_sum_nat (R : realType) n (f : nat -> nat -> \bar R) :
+Lemma nneseries_sum_nat (R : realType) m n (f : nat -> nat -> \bar R) N :
   (forall i j, 0 <= f i j) ->
-  \sum_(j <oo) (\sum_(0 <= i < n) f i j) =
-  \sum_(0 <= i < n) (\sum_(j <oo) (f i j)).
+  \sum_(N <= j <oo) (\sum_(m <= i < n) f i j) =
+  \sum_(m <= i < n) (\sum_(N <= j <oo) f i j).
 Proof.
-move=> f0; elim: n => [|n IHn].
+move=> f0; elim: n => [|n ih].
   by rewrite big_geq// eseries0// => i; rewrite big_geq.
-rewrite big_nat_recr// -IHn/= -nneseriesD//; last by move=> i; rewrite sume_ge0.
-by apply/congr_lim/funext => m; apply: eq_bigr => i _; rewrite big_nat_recr.
+have [mn|nm] := leqP m n.
+  rewrite big_nat_recr// -ih/= -nneseriesD//; last by move=> i; rewrite sume_ge0.
+  by apply/congr_lim/funext => ?; apply: eq_bigr => i _; rewrite big_nat_recr.
+by rewrite big_geq// eseries0// => i; rewrite big_geq.
 Qed.
 
 Lemma nneseries_sum I (r : seq I) (P : {pred I}) [R : realType]
-    [f : I -> nat -> \bar R] : (forall i j, P i -> 0 <= f i j) ->
-  \sum_(j <oo) \sum_(i <- r | P i) f i j =
-  \sum_(i <- r | P i) \sum_(j <oo) f i j.
+    [f : I -> nat -> \bar R] N : (forall i j, P i -> 0 <= f i j) ->
+  \sum_(N <= j <oo) \sum_(i <- r | P i) f i j =
+  \sum_(i <- r | P i) \sum_(N <= j <oo) f i j.
 Proof.
 move=> f_ge0; case Dr : r => [|i r']; rewrite -?{}[_ :: _]Dr.
   by rewrite big_nil eseries0// => i; rewrite big_nil.
@@ -2026,12 +2024,6 @@ by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
 
 End sequences_ereal.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgeyPge` or a variant instead")]
-Notation ereal_cvgPpinfty := __deprecated__ereal_cvgPpinfty (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgeNyPle` or a variant instead")]
-Notation ereal_cvgPninfty := __deprecated__ereal_cvgPninfty (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.0",
   note="renamed to `squeeze_cvge` and generalized")]
 Notation ereal_squeeze := __deprecated__ereal_squeeze (only parsing).
@@ -2099,12 +2091,6 @@ Notation ereal_nonincreasing_cvg := ereal_nonincreasing_cvgn (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.6",
   note="renamed to `ereal_nonincreasing_is_cvgn`")]
 Notation ereal_nonincreasing_is_cvg := ereal_nonincreasing_is_cvgn (only parsing).
-#[deprecated(since="analysis 0.6.0", note="Use eseries0 instead.")]
-Notation nneseries0 := eseries0 (only parsing).
-#[deprecated(since="analysis 0.6.0", note="Use eq_eseriesr instead.")]
-Notation eq_nneseries := eq_eseriesr (only parsing).
-#[deprecated(since="analysis 0.6.0", note="Use eseries_pred0 instead.")]
-Notation nneseries_pred0 := eseries_pred0 (only parsing).
 
 Arguments nneseries_split {R f} _ _.
 

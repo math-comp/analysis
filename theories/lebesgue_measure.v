@@ -2920,7 +2920,7 @@ have [N F5e] : exists N, \sum_(N <= n <oo) \esum_(i in F n) mu (closure (B i)) <
     apply: le_lt_trans foo.
     by rewrite (nneseries_split _ N)// leeDr//; exact: sume_ge0.
   rewrite fineK ?ge0_fin_numE//; last exact: nneseries_ge0.
-  apply: lee_nneseries => //; first by move=> i _; exact: esum_ge0.
+  apply: lee_nneseries => //; first by move=> i *; exact: esum_ge0.
   move=> n Nn; rewrite measure_bigcup//=.
   - by rewrite nneseries_esum// set_mem_set.
   - by move=> i _; exact: measurable_closure.
