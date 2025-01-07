@@ -213,7 +213,7 @@ have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
   have [|z zxb fbfx] := MVT xb derivef.
     apply/(derivable_oo_continuous_bnd_within (And3 xbf _ cvg_left))/cvg_at_right_filter.
     have := derivable_within_continuous HDf.
-    rewrite continuous_open_subspace//; last exact: interval_open.
+    rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
   by exists z => //; rewrite fbfx -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
@@ -224,11 +224,10 @@ have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
   have [|z zax fxfa] := MVT ax derivef.
     apply/(derivable_oo_continuous_bnd_within (And3 axf cvg_right _))/cvg_at_left_filter.
     have := derivable_within_continuous HDf.
-    rewrite continuous_open_subspace//; last exact: interval_open.
+    rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
   exists z; first by [].
-  rewrite fxfa -mulrA divff; first exact: mulr1.
-  by rewrite subr_eq0 gt_eqF.
+  by rewrite fxfa -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have c1c2 : c1 < c2.
   by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
 have [d Id h] :
@@ -242,10 +241,10 @@ have [d Id h] :
   have [|z zc1c2 {}h] := MVT c1c2 derivef.
     apply: (derivable_oo_continuous_bnd_within (And3 h _ _)).
     + apply: cvg_at_right_filter.
-      move: cDf; rewrite continuous_open_subspace//; last exact: interval_open.
+      move: cDf; rewrite continuous_open_subspace//.
       by apply; rewrite inE/= in_itv/= (andP Ic1).1 (lt_trans _ (andP Ic2).2).
     + apply: cvg_at_left_filter.
-      move: cDf; rewrite continuous_open_subspace//; last exact: interval_open.
+      move: cDf; rewrite continuous_open_subspace//.
       by apply; rewrite inE/= in_itv/= (andP Ic2).2 (lt_trans (andP Ic1).1).
   exists z; first by [].
   rewrite h -mulrA divff; first exact: mulr1.
