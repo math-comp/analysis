@@ -34,6 +34,11 @@
   + lemma `nbhs_right_leftP`
 - in `lebesgue_integral.v`:
   + lemma `integral_bigsetU_EFin`
+  + lemmas `interior_itv_bnd`, `interior_itv_bndy`, `interior_itv_Nybnd`,
+    definition `interior_itv`
+
+- in `derive.v`:
+  + lemmas `decr_derive1_le0`, `decr_derive1_le0_itv`
 
 ### Changed
 

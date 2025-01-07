@@ -1637,6 +1637,49 @@ apply (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
 by apply: continuousN; exact: fcont.
 Qed.
 
+Lemma decr_derive1_le0 {R : realType} (f : R -> R) (D : set R) (x : R) :
+  {in D^° : set R, forall x, derivable f x 1%R} ->
+  {in D &, {homo f : x y /~ x < y}} ->
+  D^° x -> f^`() x <= 0.
+Proof.
+move=> df decrf Dx.
+apply: limr_le.
+  under eq_fun.
+    move=> h; rewrite {2}(_ : h = h%:A); last by rewrite scaler1.
+    over.
+  by apply: df; rewrite inE.
+have [e /= e0 Hball] := open_subball (open_interior D) Dx.
+near=> h.
+have h0 : h != 0%R by near: h; exact: nbhs_dnbhs_neq.
+have Dhx : D^° (h + x).
+  apply: (Hball (`|2 * h|%R)) => //.
+  - rewrite /= sub0r normrN normr_id normrM ger0_norm// -ltr_pdivlMl//.
+      by near: h; apply: dnbhs0_lt; exact: mulr_gt0.
+    by rewrite normrM ger0_norm// mulr_gt0// normr_gt0.
+  apply: ball_sym; rewrite /ball/= addrK.
+  by rewrite normrM ger0_norm// ltr_pMl ?normr_gt0// ltr1n.
+move: h0; rewrite neq_lt => /orP[h0|h0].
+- rewrite nmulr_rle0 ?invr_lt0// subr_ge0 ltW//.
+  by apply: decrf; rewrite ?in_itv ?andbT ?gtrDr// inE; exact: interior_subset.
+- rewrite pmulr_rle0 ?invr_gt0// subr_le0 ltW//.
+  by apply: decrf; rewrite ?in_itv ?andbT ?ltrDr// inE; exact: interior_subset.
+Unshelve. end_near. Qed.
+
+Lemma decr_derive1_le0_itv {R : realType} (f : R -> R)
+    (b0 b1 : bool) (a b : R) (z : R) :
+  {in `]a, b[, forall x : R, derivable f x 1%R} ->
+  {in Interval (BSide b0 a) (BSide b1 b) &, {homo f : x y /~ (x < y)%R}} ->
+  z \in `]a, b[%R -> f^`() z <= 0.
+Proof.
+have [ba|ab] := leP b a.
+  by move=> _ _ /lt_in_itv; rewrite bnd_simp le_gtF.
+move=> df decrf zab.
+apply: (@decr_derive1_le0 _ _ [set` Interval (BSide b0 a) (BSide b1 b)]).
+- by rewrite interior_itv.
+- by move=> x y; rewrite !inE/= => xab yab; exact: decrf.
+- by rewrite interior_itv.
+Qed.
+
 Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :
   derivable f x 1 -> derivable g (f x) 1 ->
   (g \o f)^`() x = g^`()%classic (f x) * f^`()%classic x.
