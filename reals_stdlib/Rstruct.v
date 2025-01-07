@@ -25,7 +25,7 @@ liability. See the COPYING file for more details.
 (* # Compatibility with the real numbers of Coq                               *)
 (******************************************************************************)
 
-From Coq Require Import Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
+From Coq Require Import ZArith Rdefinitions Raxioms RIneq Rbasic_fun Zwf.
 From Coq Require Import Epsilon FunctionalExtensionality Ranalysis1 Rsqrt_def.
 From Coq Require Import Rtrigo1 Reals.
 From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
