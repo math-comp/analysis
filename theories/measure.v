@@ -2286,7 +2286,7 @@ Lemma infinite_card_dirac (A : set T) : infinite_set A ->
   \esum_(i in A) \d_ i A = +oo :> \bar R.
 Proof.
 move=> infA; apply/eqyP => r r0.
-have [B BA Br] := infinite_set_fset `|ceil r| infA.
+have [B [BA B0 Br]] := infinite_set_fset `|ceil r| infA.
 apply: esum_ge; exists [set` B] => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
   by rewrite lee_fin natr_absz gtr0_norm -?ceil_gt0// ceil_ge.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
