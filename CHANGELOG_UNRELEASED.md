@@ -30,6 +30,16 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
+- in `mathcomp_extra.v`:
+  + lemma `ltr_sum`
+
+- in `classical_sets.v`:
+  + lemma `itv_sub_in2`
+
+- in `realfun.v`:
+  + definition `discontinuity`
+  + lemmas `nondecreasing_fun_sum_le`, `discontinuty_countable`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
@@ -68,6 +78,9 @@
   + lemmas `nneseries_ge0`, `is_cvg_nneseries_cond`, `is_cvg_npeseries_cond`,
     `is_cvg_nneseries`, `is_cvg_npeseries`, `nneseries_ge0`, `npeseries_le0`,
     `lee_nneseries`
+
+- in `cardinality.v`:
+  + lemma `infinite_set_fset`
     
 ### Deprecated
 

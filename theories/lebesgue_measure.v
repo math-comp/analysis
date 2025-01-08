@@ -2824,7 +2824,7 @@ have {}EBr2 : \esum_(i in E) mu (closure (B i)) <=
 have finite_set_F i : finite_set (F i).
   apply: contrapT.
   pose M := `|ceil ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))|.+1.
-  move/(infinite_set_fset M) => [/= C] CsubFi McardC.
+  move/(infinite_set_fset M) => [/= C [CsubFi _ McardC]].
   have MC : (M%:R * (1 / (2 ^ i.+1)%:R))%:E <=
             mu (\bigcup_(j in [set` C]) closure (B j)).
     rewrite (measure_bigcup _ [set` C])//; last 2 first.
@@ -3185,7 +3185,7 @@ have {}Hc : mu (\bigcup_(k in G) closure (B k) `\`
   by rewrite lteBlDr-?lteBlDl//; exact: muGSfin.
 have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
   pose M := `|ceil (fine (mu O) / r%:num)|.+1.
-  apply: contrapT => /infinite_set_fset /= /(_ M)[G0 G0G'r] MG0.
+  apply: contrapT => /infinite_set_fset /= /(_ M)[G0 [G0G'r _ MG0]].
   have : mu O < mu (\bigcup_(k in bigB G r%:num) closure (B k)).
     apply: (@lt_le_trans _ _ (mu (\bigcup_(k in [set` G0]) closure (B k)))).
       rewrite bigcup_fset measure_fbigsetU//=; last 2 first.
