@@ -1605,7 +1605,7 @@ Qed.
 Lemma ler0_derive1_nincr (R : realType) (f : R -> R) (a b : R) :
   (forall x, x \in `]a, b[%R -> derivable f x 1) ->
   (forall x, x \in `]a, b[%R -> f^`() x <= 0) ->
-  {within `[a,b], continuous f} ->
+  {within `[a, b], continuous f} ->
   forall x y, a <= x -> x <= y -> y <= b -> f y <= f x.
 Proof.
 move=> fdrvbl dfle0 ctsf x y leax lexy leyb; rewrite -subr_ge0.
@@ -1618,11 +1618,31 @@ have fdrv z : z \in `]x, y[%R -> is_derive z 1 f (f^`()z).
   rewrite in_itv/= => /andP[xz zy]; apply: DeriveDef; last by rewrite derive1E.
   by apply: fdrvbl; rewrite in_itv/= (le_lt_trans _ xz)// (lt_le_trans zy).
 have [] := @MVT _ f (f^`()) x y xlty fdrv.
-  apply: (@continuous_subspaceW _ _ _ `[a,b]); first exact: itvW.
+  apply: (@continuous_subspaceW _ _ _ `[a, b]); first exact: itvW.
   by rewrite continuous_subspace_in.
 move=> t /itvWlt dft dftxy _; rewrite -oppr_le0 opprB dftxy.
 by apply: mulr_le0_ge0 => //; [exact: dfle0|by rewrite subr_ge0 ltW].
 Qed.
+
+Lemma ler0_derive1_nincry {R : realType} (f : R -> R) (a : R) :
+  (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
+  (forall x, x \in `]a, +oo[%R -> f^`() x <= 0) ->
+  {within `[a, +oo[, continuous f} ->
+  forall x y, a <= x -> x <= y -> f y <= f x.
+Proof.
+move=> fdrvbl dfge0 fcont x y ax xy.
+near (pinfty_nbhs R)%R => N.
+apply: (@ler0_derive1_nincr _ _ a N) => //.
+- move=> r /[!in_itv]/= /andP[ar rN].
+  by apply: fdrvbl; rewrite !in_itv/= andbT ar.
+- move=> r /[!in_itv]/= /andP[ar rN].
+  by apply: dfge0; rewrite !in_itv/= andbT ar.
+- apply: continuous_subspaceW fcont.
+  exact: subset_itvl.
+- near: N.
+  apply: nbhs_pinfty_ge.
+  by rewrite num_real.
+Unshelve. all: end_near. Qed.
 
 Lemma le0r_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
   (forall x, x \in `]a, b[%R -> derivable f x 1) ->
@@ -1636,6 +1656,26 @@ apply (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
   by rewrite oppr_le0 -derive1E; apply: dfge0.
 by apply: continuousN; exact: fcont.
 Qed.
+
+Lemma le0r_derive1_ndecry {R : realType} (f : R -> R) (a b : R) :
+  (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
+  (forall x, x \in `]a, +oo[%R -> 0 <= f^`() x) ->
+  {within `[a, +oo[, continuous f} ->
+  forall x y, a <= x -> x <= y -> f x <= f y.
+Proof.
+move=> fdrvbl dfge0 fcont x y ax xy.
+near (pinfty_nbhs R)%R => N.
+apply: (@le0r_derive1_ndecr _ _ a N) => //.
+- move=> r /[!in_itv]/= /andP[ar rN].
+  by apply: fdrvbl; rewrite !in_itv/= andbT ar.
+- move=> r /[!in_itv]/= /andP[ar rN].
+  by apply: dfge0; rewrite !in_itv/= andbT ar.
+- apply: continuous_subspaceW fcont.
+  exact: subset_itvl.
+- near: N.
+  apply: nbhs_pinfty_ge.
+  by rewrite num_real.
+Unshelve. all: end_near. Qed.
 
 Lemma decr_derive1_le0 {R : realType} (f : R -> R) (D : set R) (x : R) :
   {in D^° : set R, forall x, derivable f x 1%R} ->
