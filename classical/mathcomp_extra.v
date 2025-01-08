@@ -588,3 +588,13 @@ rewrite mulr_ile1 ?andbT//.
   by have := xs01 x; rewrite inE xs orbT => /(_ _)/andP[].
 by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
 Qed.
+
+(* TODO: move to ssrnum *)
+Lemma ltr_sum {R : numDomainType} I (r : seq I) (F G : I -> R) :
+  (0 < size r)%N -> (forall i, F i < G i) ->
+  \sum_(i <- r) F i < \sum_(i <- r) G i.
+Proof.
+elim: r => // h [|a t] ih ? FG.
+  by rewrite !big_cons !big_nil !addr0.
+by rewrite [ltLHS]big_cons [ltRHS]big_cons ltrD// ih.
+Qed.
