@@ -30,10 +30,9 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
-- in file `realfun.v`,
-  + new lemmas `cauchy_MVT`,
-    `lhopital_right`, and
-    `lhopital_left`.
+- in `derive.v`:
+  + lemmas `differentiable_subr_neq0`, `cauchy_MVT`,
+    `lhopital_right`, `lhopital_left`
 
 ### Changed
 
