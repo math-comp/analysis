@@ -41,7 +41,6 @@ From mathcomp Require Import sequences real_interval.
 (*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
 (*                             valued function f at point a                   *)
 (* ```                                                                        *)
-(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.

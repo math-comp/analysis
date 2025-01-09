@@ -30,6 +30,10 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
+- in `derive.v`:
+  + lemmas `differentiable_subr_neq0`, `cauchy_MVT`,
+    `lhopital_right`, `lhopital_left`
+
 ### Changed
 
 - in `lebesgue_integrale.v`
