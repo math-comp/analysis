@@ -4761,6 +4761,39 @@ have /sup_adherent/(_ hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
 by rewrite subKr => rf; apply: (iX e f); rewrite ?ltW.
 Qed.
 
+Lemma interior_itv_bnd (x y : R) (a b : bool) : x < y ->
+  [set` Interval (BSide a x) (BSide b y)]^° = `]x, y[%classic.
+Proof.
+move=> xy.
+rewrite interval_bounded_interior//; last exact: interval_is_interval.
+rewrite inf_itv; last by case: a; case b; rewrite bnd_simp ?ltW.
+rewrite sup_itv; last by case: a; case b; rewrite bnd_simp ?ltW.
+exact: set_itvoo.
+Qed.
+
+Lemma interior_itv_bndy (x : R) (b : bool) :
+  [set` Interval (BSide b x) (BInfty _ false)]^° = `]x, +oo[%classic.
+Proof.
+rewrite interval_right_unbounded_interior//; first last.
+    by apply: hasNubound_itv; rewrite lt_eqF.
+  exact: interval_is_interval.
+rewrite inf_itv; last by case: b; rewrite bnd_simp ?ltW.
+by rewrite set_itv_o_infty.
+Qed.
+
+Lemma interior_itv_Nybnd (y : R) (b : bool) :
+  [set` Interval (BInfty _ true) (BSide b y)]^° = `]-oo, y[%classic.
+Proof.
+rewrite interval_left_unbounded_interior//; first last.
+    by apply: hasNlbound_itv; rewrite gt_eqF.
+  exact: interval_is_interval.
+rewrite sup_itv; last by case b; rewrite bnd_simp ?ltW.
+by apply: set_itv_infty_o.
+Qed.
+
+Definition interior_itv :=
+  (interior_itv_bnd, interior_itv_bndy, interior_itv_Nybnd).
+
 Definition Rhull (X : set R) : interval R := Interval
   (if `[< has_lbound X >] then BSide `[< X (inf X) >] (inf X)
                           else BInfty _ true)
