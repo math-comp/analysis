@@ -30,9 +30,6 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
-- in file `bool_topology.v`,
-  + new lemma `bool_compact`.
-
 ### Changed
 
 - in `lebesgue_integrale.v`
