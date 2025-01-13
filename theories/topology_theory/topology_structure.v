@@ -39,15 +39,13 @@ From mathcomp Require Export filter.
 (*                      x^' == set of neighbourhoods of x where x is          *)
 (*                             excluded (a "deleted neighborhood")            *)
 (*            limit_point E == the set of limit points of E                   *)
-(*         discrete_space T == every nbhs is a principal filter               *)
-(*      discrete_space dscT == the discrete topology on T, provided           *)
-(*                             a (dscT : discrete_space T)                    *)
 (*                  dense S == the set (S : set T) is dense in T, with T of   *)
 (*                             type topologicalType                           *)
 (*           continuousType == type of continuous functions                   *)
 (*                             The HB structures is Continuous.               *)
 (*              mkcts f_cts == object of type continuousType corresponding to *)
 (*                             the function f (f_cts : continuous f)          *)
+(*                                                                            *)
 (* ```                                                                        *)
 (* ### Factories                                                              *)
 (* ```                                                                        *)
@@ -908,42 +906,6 @@ Proof. by rewrite -interiorC interiorEbigcup. Qed.
 #[deprecated(since="mathcomp-analysis 1.7.0", note="use `interiorC` and `interiorEbigcup` instead")]
 Notation closureC := closureC_deprecated (only parsing).
 
-Section DiscreteTopology.
-Section DiscreteMixin.
-Context {X : Type}.
-
-Lemma discrete_sing (p : X) (A : set X) : principal_filter p A -> A p.
-Proof. by move=> /principal_filterP. Qed.
-
-Lemma discrete_nbhs (p : X) (A : set X) :
-  principal_filter p A -> principal_filter p (principal_filter^~ A).
-Proof. by move=> ?; exact/principal_filterP. Qed.
-
-End DiscreteMixin.
-
-Definition discrete_space (X : nbhsType) := @nbhs X _ = @principal_filter X.
-
-Context {X : topologicalType} {dsc : discrete_space X}.
-
-Lemma discrete_open (A : set X) : open A.
-Proof.
-by rewrite openE => ? ?; rewrite /interior dsc; exact/principal_filterP.
-Qed.
-
-Lemma discrete_set1 (x : X) : nbhs x [set x].
-Proof. by apply: open_nbhs_nbhs; split => //; exact: discrete_open. Qed.
-
-Lemma discrete_closed (A : set X) : closed A.
-Proof. by rewrite -[A]setCK closedC; exact: discrete_open. Qed.
-
-Lemma discrete_cvg (F : set_system X) (x : X) :
-  Filter F -> F --> x <-> F [set x].
-Proof.
-rewrite dsc nbhs_simpl; split; first by exact.
-by move=> Fx U /principal_filterP ?; apply: filterS Fx => ? ->.
-Qed.
-
-End DiscreteTopology.
 
 Definition dense (T : topologicalType) (S : set T) :=
   forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.

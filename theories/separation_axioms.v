@@ -111,11 +111,6 @@ have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
-Lemma discrete_hausdorff {dsc : discrete_space T} : hausdorff_space.
-Proof.
-by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
-Qed.
-
 Lemma compact_cluster_set1 (x : T) F V :
   hausdorff_space -> compact V -> nbhs x V ->
   ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
@@ -210,6 +205,12 @@ rewrite ?open_hausdorff => + x y xNy => /(_ x y xNy).
 move=> [[P Q]] /= [Px Qx] /= [/open_subspaceW oP /open_subspaceW oQ].
 by move=> ?; exists (P, Q); split => //=; [exact: oP | exact: oQ].
 Qed.
+
+Lemma discrete_hausdorff {T : discreteTopologicalType} : hausdorff_space T.
+Proof.
+by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
+Qed.
+
 
 Lemma order_hausdorff {d} {T : orderTopologicalType d} : hausdorff_space T.
 Proof.
@@ -567,9 +568,9 @@ Definition totally_disconnected {T} (A : set T) :=
 Definition zero_dimensional T :=
   (forall x y, x != y -> exists U : set T, [/\ clopen U, U x & ~ U y]).
 
-Lemma discrete_zero_dimension {T} : discrete_space T -> zero_dimensional T.
+Lemma discrete_zero_dimension {T : discreteTopologicalType} : zero_dimensional T.
 Proof.
-move=> dctT x y xny; exists [set x]; split => //; last exact/nesym/eqP.
+move=> x y xny; exists [set x]; split => //; last exact/nesym/eqP.
 by split; [exact: discrete_open | exact: discrete_closed].
 Qed.
 
