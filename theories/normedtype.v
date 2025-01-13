@@ -1423,6 +1423,9 @@ rewrite (@fun_predC _ -%R)/=; last exact: opprK.
 by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
 Qed.
 
+(* NB: In not_near_at_rightP (and not_near_at_rightP), R has type numFieldType.
+  It is possible realDomainType could make the proof simpler and at least as
+  useful. *)
 Lemma not_near_at_rightP (p : R) (P : pred R) :
   ~ (\forall x \near p^'+, P x) <->
   forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
