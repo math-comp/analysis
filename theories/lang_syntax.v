@@ -201,7 +201,6 @@ Qed.
 End integral_indicator_function.
 End integral_indicator_function.
 
-(* TODO: move? *)
 Lemma derivable_oo_bnd_id {R : numFieldType} (a b : R) :
   derivable_oo_LRcontinuous (@id R^o) a b.
 Proof.
@@ -252,6 +251,54 @@ End continuous_withinN.
 
 Section integral_exprn.
 Import MeasurableR.
+
+(* duplicated? *)
+Lemma decreasing_nonincreasing {R : realType} (F : R -> R) (J : interval R) :
+  {in J &, {homo F : x y /~ (x < y)%R}} ->
+  {in J &, {homo F : x y /~ (x <= y)%R}}.
+Proof.
+move=> dF.
+move=> x y x01 y01.
+by rewrite le_eqVlt => /predU1P[->//|/dF] => /(_ x01 y01)/ltW.
+Qed.
+
+Local Close Scope ereal_scope.
+Lemma cvg_comp_filter {R : realType} (f g : R -> R) (r l : R) :
+  continuous f ->
+  (f \o g) x @[x --> r] --> l ->
+  f x @[x --> g r] --> l.
+Proof.
+move=> cf fgrl.
+apply/(@cvgrPdist_le _ R^o) => /= e e0.
+have e20 : 0 < e / 2 by rewrite divr_gt0.
+move/(@cvgrPdist_le _ R^o) : fgrl => /(_ _ e20) fgrl.
+have := cf (g r).
+move=> /(@cvgrPdist_le _ R^o) => /(_ _ e20)[x x0]H.
+exists (minr x (e/2)).
+  by rewrite lt_min x0.
+move=> z.
+rewrite /ball_ /= => grze.
+rewrite -[X in X - _](subrK (f (g r))).
+rewrite -(addrA _ _ (- f z)).
+apply: (le_trans (ler_normD _ _)).
+rewrite (splitr e) lerD//.
+  case: fgrl => d /= d0 K.
+  apply: K.
+  by rewrite /ball_/= subrr normr0.
+apply: H => /=.
+by rewrite (lt_le_trans grze)// ge_min lexx.
+Qed.
+Local Open Scope ereal_scope.
+
+Lemma deriveX_idfun {R : realType} n x :
+  'D_1 (@GRing.exp R^o ^~ n.+1) x = n.+1%:R *: (x ^+ n)%R.
+Proof. by rewrite exp_derive /GRing.scale/= mulr1. Qed.
+
+Lemma decreasing_onem {R : numDomainType} : {homo (fun x : R => (1 - x)%R) : x y /~ (x < y)%R}.
+Proof.
+move=> b a ab.
+by rewrite -ltrN2 !opprB ltr_leB.
+Qed.
 
 Lemma integral_exprn {R : realType} n :
   fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x ^+ n)%:E) = n.+1%:R^-1%R :> R.
@@ -462,7 +509,6 @@ Defined.
 
 End binop.
 
-(* TODO: rename, generalize? *)
 Section relop.
 Inductive relop :=
 | relop_le | relop_lt | relop_eq .
@@ -591,6 +637,8 @@ Notation "n ':N'" := (@exp_nat _ _ n%N)
 Notation "r ':R'" := (@exp_real _ _ r%R)
   (in custom expr at level 1, format "r :R") : lang_scope.
 Notation "e ^+ n" := (exp_pow e n)
+  (in custom expr at level 1) : lang_scope.
+Notation "e `^ r" := (exp_pow_real e r)
   (in custom expr at level 1) : lang_scope.
 Notation "e `^ r" := (exp_pow_real e r)
   (in custom expr at level 1) : lang_scope.
@@ -829,9 +877,7 @@ Qed.
 Lemma pushforward_shift_measurable (mu : measure R R) (x : R)
     (U : set R) :
   pushforward mu (fun z => z + x) U = mu ((center x) @` U).
-Proof.
-by rewrite /pushforward shift_preimage.
-Qed.
+Proof. by rewrite /pushforward shift_preimage. Qed.
 
 (* TODO: move to master *)
 Lemma measurable_normal_prob2 :
@@ -861,6 +907,21 @@ Implicit Type (g : ctx) (str : string).
 Local Open Scope lang_scope.
 Import MeasurableR.
 
+(* TODO: PR *)
+Lemma measurable_powRr b : measurable_fun setT (@powR R b).
+Proof.
+rewrite /powR.
+apply: measurable_fun_if => //.
+  rewrite preimage_true setTI/=.
+   case: (b == 0); rewrite ?set_true ?set_false.
+     apply: measurableT_comp => //.
+     exact: measurable_fun_eqr.
+   exact: measurable_fun_set0.
+rewrite preimage_false setTI.
+apply: measurableT_comp => //.
+exact: mulrr_measurable.
+Qed.
+
 Inductive evalD : forall g t, exp D g t ->
   forall f : dval R g t, measurable_fun setT f -> Prop :=
 | eval_unit g : ([TT] : exp D g _) -D> cst tt ; ktt
@@ -875,7 +936,7 @@ Inductive evalD : forall g t, exp D g t ->
   [e ^+ {n}] -D> (fun x => (f x ^+ n)%R) ; (measurable_funX n mf)
 
 | eval_pow_real g (e : exp D g _) r f mf : e -D> f ; mf ->
-  [{r} `^ e] -D> (fun x => (r `^ (f x))%R) ; measurableT_comp (measurable_powRr r) mf
+  [{r} `^ e] -D> (fun x => r `^ (f x)) ; measurableT_comp (measurable_powRr r) mf
 
 | eval_bin g bop (e1 : exp D g _) f1 mf1 e2 f2 mf2 :
   e1 -D> f1 ; mf1 -> e2 -D> f2 ; mf2 ->
