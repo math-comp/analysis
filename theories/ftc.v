@@ -1499,6 +1499,80 @@ rewrite !derive1E deriveN ?opprK//.
 exact: dF.
 Unshelve. all: end_near. Qed.
 
+(* move to PR *)
+Lemma incr_derive1_ge0 (f : R -> R) (D : set R) (x : R):
+  {in (interior D) : set R, forall x : R, derivable f x 1%R} ->
+  {in D &, {homo f : x y / (x < y)%R}} ->
+  (interior D) x -> (0 <= f^`() x)%R.
+Proof.
+move=> df incrf Dx.
+rewrite -[leRHS]opprK oppr_ge0.
+have dfx : derivable f x 1 by apply: df; rewrite inE.
+rewrite derive1E -deriveN// -derive1E.
+apply: (@decr_derive1_le0 _ _ D).
+- move=> y Dy.
+  apply: derivableN.
+  exact: df.
+- move=> y z Dy Dz yz.
+  rewrite ltrN2.
+  exact: incrf.
+- exact: Dx.
+Qed.
+
+Lemma incr_derive1_ge0_itv (f : R^o -> R^o) (z : R) (x0 x1 : R) (b0 b1 : bool) :
+  {in `]x0, x1[, forall x : R, derivable f x 1%R} ->
+  {in (Interval (BSide b0 x0) (BSide b1 x1)) &, {homo f : x y / (x < y)%R}} ->
+  z \in `]x0, x1[ -> (0 <= f^`() z)%R.
+Proof.
+have [x10|x01] := leP x1 x0.
+  move=> _ _.
+  by move/lt_in_itv; rewrite bnd_simp le_gtF.
+set itv := Interval (BSide b0 x0) (BSide b1 x1).
+move=> df incrf xx0x1.
+apply: (@incr_derive1_ge0 _ [set` itv]).
+    rewrite itv_interior//.
+    by move=> ?; rewrite inE/=; apply: df.
+  move=> ? ?; rewrite !inE/=; apply: incrf.
+by rewrite itv_interior/=.
+Qed.
+
+(* PR? *)
+Lemma interiorT {T : topologicalType} : interior (@setT T) = setT.
+Proof.
+rewrite eqEsubset; split; first exact: interior_subset.
+rewrite -open_subsetE//.
+exact: openT.
+Qed.
+
+Lemma derivable_within_continuousT (f : R -> R) :
+  (forall x, derivable f x 1) -> continuous f.
+Proof.
+move=> df.
+apply/continuous_subspace_setT.
+rewrite -(@RhullK _ setT); last by rewrite inE.
+apply: derivable_within_continuous.
+move=> x _.
+exact: df.
+Qed.
+
+Definition derivable_yo_continuous_bnd {R' : numFieldType}
+    (f : R' -> R') (x : R') :=
+  {in `]-oo, x[, forall x, derivable f x 1} /\ f @ x^'- --> f x.
+
+Lemma increasing_ge0_integration_by_substitutionNy F G b :
+  {in `]-oo, b] &, {homo F : x y / (x < y)%R}} ->
+  {in `]-oo, b[, continuous F^`()} ->
+  cvg (F^`() x @[x --> -oo%R]) ->
+  cvg (F^`() x @[x --> b^'-]) ->
+  derivable_yo_continuous_bnd F b -> F x @[x --> -oo%R] --> -oo%R->
+  {within `]-oo, F b], continuous G} ->
+  {in `]-oo, F b], forall x, (0 <= G x)%R} ->
+  \int[mu]_(x in `]-oo, F b]) (G x)%:E =
+  \int[mu]_(x in `]-oo, b]) (((G \o F) * F^`()) x)%:E.
+Proof.
+move=> ndF cdF cvgFNy cvgFb [dF Fb] FNyNy cG G0.
+Admitted.
+
 Lemma increasing_ge0_integration_by_substitution F G a :
   {homo F : x y / (x < y)%R} ->
   continuous F^`() ->
@@ -1513,6 +1587,58 @@ Lemma increasing_ge0_integration_by_substitution F G a :
   \int[mu]_x (((G \o F) * F^`()) x)%:E.
 Proof.
 move=> ndF cdF cvgFNy cvgFy dF FNyNy Fyy cG G0.
+have mGFF' : measurable_fun setT ((G \o F) * F^`())%R.
+  apply: measurable_funM.
+    apply: measurableT_comp.
+      exact: continuous_measurable_fun.
+    apply: continuous_measurable_fun.
+    exact: derivable_within_continuousT.
+  exact: continuous_measurable_fun cdF.
+rewrite -{2}setC0 -(set_itvoc0 0%R) setCitv/=.
+rewrite ge0_integral_setU//=; first last.
+- rewrite -(@RhullK _ `]-oo, 0%R]%classic); last first.
+    by rewrite inE/=; apply: interval_is_interval.
+  rewrite -(@RhullK _ `]0%R, +oo[%classic)//; last first.
+    by rewrite inE/=; apply: interval_is_interval.
+  apply: disj_itv_Rhull; first last.
+    1, 2: apply: interval_is_interval.
+  rewrite eqEsubset; split => x//= []; rewrite !in_itv/= andbT => x0.
+  move/(le_lt_trans x0).
+  by rewrite ltxx.
+- move=> x _.
+  apply: mulr_ge0; last first.
+  apply: (@incr_derive1_ge0 _ setT).
+  - by move=> ? _; apply: dF.
+  - by move=> ? ? _ _; apply: ndF.
+  - by rewrite interiorT.
+- exact: G0.
+- apply/measurable_EFinP.
+  rewrite -setCitvr setvU.
+  exact: mGFF'.
+rewrite integral_itv_obnd_cbnd; last by apply: measurable_funTS; apply: mGFF'.
+rewrite -(increasing_ge0_integration_by_substitutiony _ _ _ cvgFy); first last.
+- admit.
+- admit.
+- admit.
+- admit.
+- admit.
+- admit.
+- admit.
+rewrite -(increasing_ge0_integration_by_substitutionNy _ _ cvgFNy); first last.
+- admit.
+- admit.
+- admit.
+- admit.
+- admit.
+- admit.
+- admit.
+rewrite -integral_itv_obnd_cbnd; last first.
+  admit.
+rewrite -ge0_integral_setU//=; first last.
+- admit.
+- admit.
+- admit.
+by rewrite -setCitvr setvU.
 Abort.
 
 End integration_by_substitution.
