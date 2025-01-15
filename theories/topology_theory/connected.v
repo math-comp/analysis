@@ -69,7 +69,8 @@ exists (fun i => if i is false then A `\` C else A `&` C); split.
   by apply: AF; rewrite BAC; exact/setIidPl.
 - by rewrite setDE -setIUr setUCl setIT.
 - split.
-  + rewrite setIC; apply/disjoints_subset; rewrite closureC => x [? ?].
+  + rewrite setIC; apply/disjoints_subset.
+    rewrite -interiorC interiorEbigcup => x [? ?].
     by exists C => //; split=> //; rewrite setDE setCI setCK; right.
   + apply/disjoints_subset => y -[Ay Cy].
     rewrite -BAC BAD => /closureI[_]; move/closure_id : cD => <- Dy.

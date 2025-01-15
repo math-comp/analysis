@@ -1,6 +1,335 @@
 # Changelog
 
-Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-10-09](#150---2024-10-09)
+Latest releases: [[1.8.0] - 2024-12-19](#180---2024-12-19), [[1.7.0] - 2024-11-22](#170---2024-11-22) and [[1.6.0] - 2024-10-25](#160---2024-10-25)
+
+## [1.8.0] - 2024-12-19
+
+### Added
+
+- in `mathcomp_extra.v`:
+  + lemma `partition_disjoint_bigfcup`
+
+- in `constructive_ereal.v`:
+  + notations `\prod` in scope ereal_scope
+  + lemmas `prode_ge0`, `prode_fin_num`
+
+- in `num_topology.v`:
+  + lemma `in_continuous_mksetP`
+
+- in `normedtype.v`:
+  + lemmas `continuous_within_itvcyP`, `continuous_within_itvNycP`
+
+- in file `realfun.v`:
+  + lemma `cvg_nbhsP`
+
+- in `measure.v`:
+  + lemma `countable_bigcupT_measurable`
+  + definition `discrete_measurable`
+  + lemmas `discrete_measurable0`, `discrete_measurableC`, `discrete_measurableU`
+
+- in `lebesgue_measure.v`:
+  + lemma `measurable_indicP`
+  + lemma `measurable_powRr`
+
+- in `lebesgue_integral.v`:
+  + definition `dyadic_approx` (was `Let A`)
+  + definition `integer_approx` (was `Let B`)
+  + lemma `measurable_sum`
+  + lemma `integrable_indic`
+  + lemmas `integrable_pushforward`, `integral_pushforward`
+  + lemma `integral_measure_add`
+
+- in `probability.v`:
+  + lemma `expectation_def`
+  + notation `'M_`
+  + lemma `integral_distribution` (existing lemma `integral_distribution` has been renamed)
+
+### Changed
+
+- in `lebesgue_integrale.v`
+  + change implicits of `measurable_funP`
+
+### Renamed
+
+- in `classical_sets.v`:
+  + `preimage_itv_o_infty` -> `preimage_itvoy`
+  + `preimage_itv_c_infty` -> `preimage_itvcy`
+  + `preimage_itv_infty_o` -> `preimage_itvNyo`
+  + `preimage_itv_infty_c` -> `preimage_itvNyc`
+
+- in `constructive_ereal.v`:
+  + `maxeMr` -> `maxe_pMr`
+  + `maxeMl` -> `maxe_pMl`
+  + `mineMr` -> `mine_pMr`
+  + `mineMl` -> `mine_pMl`
+
+- file `homotopy_theory/path.v` -> `homotopy_theory/continuous_path.v`
+
+- in `lebesgue_measure.v`:
+  + `measurable_fun_indic` -> `measurable_indic`
+  + `emeasurable_fun_sum` -> `emeasurable_sum`
+  + `emeasurable_fun_fsum` -> `emeasurable_fsum`
+  + `ge0_emeasurable_fun_sum` -> `ge0_emeasurable_sum`
+
+- in `probability.v`:
+  + `expectationM` -> `expectationZl`
+  + `integral_distribution` -> `ge0_integral_distribution`
+
+### Generalized
+
+- in `sequences.v`:
+  + lemmas `cvg_restrict`, `cvg_centern`, `cvg_shiftn cvg_shiftS`
+
+- in `lebesgue_integral.v`:
+  + lemma `measurable_sfunP`
+
+- in `probability.v`:
+  + definition `random_variable`
+  + lemmas `notin_range_measure`, `probability_range`
+  + definition `distribution`
+  + lemma `probability_distribution`, `integral_distribution`
+  + mixin `MeasurableFun_isDiscrete`
+  + structure `discreteMeasurableFun`
+  + definition `discrete_random_variable`
+  + lemma `dRV_dom_enum`
+  + definitions `dRV_dom`, `dRV_enum`, `enum_prob`
+  + lemmas `distribution_dRV`, `sum_enum_prob`
+
+### Deprecated
+
+- in file `lebesgue_integral.v`:
+  + lemma `approximation`
+
+### Removed
+
+- in `constructive_ereal.v`
+  + notation `lee_opp` (deprecated since 0.6.5)
+  + notation `lte_opp` (deprecated since 0.6.5)
+
+- in `measure.v`:
+  + `dynkin_setI_bigsetI` (use `big_ind` instead)
+
+- in `lebesgue_measurable.v`:
+  + notation `measurable_fun_power_pos` (deprecated since 0.6.3)
+  + notation `measurable_power_pos` (deprecated since 0.6.4)
+
+- in `lebesgue_integral.v`:
+  + lemma `measurable_indic` (was uselessly specializing `measurable_fun_indic` (now `measurable_indic`) from `lebesgue_measure.v`)
+  + notation `measurable_fun_indic` (deprecation since 0.6.3)
+
+## [1.7.0] - 2024-11-22
+
+### Added
+
+- package `coq-mathcomp-reals` depending on `coq-mathcomp-classical`
+  with files
+  + `constructive_ereal.v`
+  + `reals.v`
+  + `real_interval.v`
+  + `signed.v`
+  + `itv.v`
+  + `prodnormedzmodule.v`
+  + `nsatz_realtype.v`
+  + `all_reals.v`
+
+- package `coq-mathcomp-experimental-reals` depending on `coq-mathcomp-reals`
+  with files
+  + `xfinmap.v`
+  + `discrete.v`
+  + `realseq.v`
+  + `realsum.v`
+  + `distr.v`
+
+- package `coq-mathcomp-reals-stdlib` depending on `coq-mathcomp-reals`
+  with file
+  + `Rstruct.v`
+
+- package `coq-mathcomp-analysis-stdlib` depending on
+  `coq-mathcomp-analysis` and `coq-mathcomp-reals-stdlib` with files
+  + new file `Rstruct_topology.v`
+  + `showcase/uniform_bigO.v`
+
+- in file `mathcomp_extra.v`:
+  + definition `sigT_fun`
+  + definition `idempotent_fun`
+
+- in `boolp.v`:
+  + lemmas `existT_inj1`, `surjective_existT`
+  + lemma `existT_inj2`
+  + new lemmas `uncurryK`, and `curryK`
+
+- new file `topology_theory/one_point_compactification.v`:
+  + definitions `one_point_compactification`, and `one_point_nbhs`.
+  + lemmas `one_point_compactification_compact`,
+    `one_point_compactification_some_nbhs`,
+    `one_point_compactification_some_continuous`,
+    `one_point_compactification_open_some`,
+    `one_point_compactification_weak_topology`, and
+    `one_point_compactification_hausdorff`.
+
+- new file `topology_theory/sigT_topology.v`:
+  + definition `sigT_nbhs`.
+  + lemmas `sigT_nbhsE`, `existT_continuous`, `existT_open_map`,
+    `existT_nbhs`, `sigT_openP`, `sigT_continuous`, `sigT_setUE`, and
+    `sigT_compact`.
+
+- in file `topology_theory/product_topology.v`:
+  + lemmas `swap_continuous`, `prodA_continuous`, and
+    `prodAr_continuous`.
+
+- in file `topology_theory/order_topology.v`:
+  + lemmas `min_continuous`, `min_fun_continuous`, `max_continuous`, and
+    `max_fun_continuous`.
+
+- in file `topology_theory/weak_topology.v`:
+  + lemma `continuous_comp_weak`
+
+- in `topology_theory/topology_structure.v`:
+  + definitions `regopen`, `regclosed`
+  + lemmas `closure_setC`, `interiorC`, `closureU`, `interiorU`,
+           `closureEbigcap`, `interiorEbigcup`,
+	   `closure_open_regclosed`, `interior_closed_regopen`,
+	   `closure_interior_idem`, `interior_closure_idem`
+  + mixin `isContinuous`, type `continuousType`, structure `Continuous`
+  + lemma `continuousEP`
+  + definition `mkcts`
+
+- in file `topology_theory/subspace_topology.v`:
+  + lemmas `continuous_subspace_setT`, `nbhs_prodX_subspace_inE`, and
+    `continuous_subspace_prodP`.
+  + type `continuousFunType`, HB structure `ContinuousFun`
+
+- in file `topology_theory/subtype_topology.v`:
+  + lemmas `subspace_subtypeP`, `subspace_sigL_continuousP`,
+    `subspace_valL_continuousP'`, `subspace_valL_continuousP`, `sigT_of_setXK`,
+    `setX_of_sigTK`, `setX_of_sigT_continuous`, and `sigT_of_setX_continuous`.
+
+- in file `separation_axioms.v`:
+  + lemmas `compact_normal_local`, and `compact_normal`.
+  + lemma `sigT_hausdorff`.
+
+- in file `function_spaces.v`:
+  + definition `eval`
+  + lemmas `continuous_curry_fun`, `continuous_curry_cvg`,
+    `eval_continuous`, and `compose_continuous`
+
+- new file `tvs.v`:
+  + HB structures `NbhsNmodule`, `NbhsZmodule`, `NbhsLmodule`, `TopologicalNmodule`,
+    `TopologicalZmodule`
+  + notation `topologicalLmoduleType`, HB structure `TopologicalLmodule`
+  + HB structures `UniformZmodule`, `UniformLmodule`
+  + definition `convex`
+  + mixin `Uniform_isTvs`
+  + type `tvsType`, HB structure `Tvs`
+  + HB factory `TopologicalLmod_isTvs`
+  + lemma `nbhs0N`
+  + lemma `nbhsN`
+  + lemma `nbhsT`
+  + lemma `nbhsB`
+  + lemma `nbhs0Z`
+  + lemma `nbhZ`
+
+- in file `normedtype.v`:
+  + definition `type` (in module `completely_regular_uniformity`)
+  + lemmas `normal_completely_regular`,
+    `one_point_compactification_completely_reg`,
+    `nbhs_one_point_compactification_weakE`,
+    `locally_compact_completely_regular`, and
+    `completely_regular_regular`.
+  + lemmas `near_in_itvoy`, `near_in_itvNyo`
+
+- in `measure.v`:
+  + lemma `countable_measurable`
+
+- in `realfun.v`:
+  + lemma `cvgr_dnbhsP`
+  + definitions `prodA`, and `prodAr`
+  + lemmas `prodAK`, `prodArK`, and `swapK`
+
+- new file `homotopy_theory/path.v`:
+  + definitions `reparameterize`, `mk_path`, and `chain_path`.
+  + lemmas `path_eqP`, and `chain_path_cts_point`.
+
+- new file `homotopy_theory/wedge_sigT.v`:
+  + definitions `wedge_rel`, `wedge`, `wedge_lift`, `pwedge`.
+  + lemmas `wedge_lift_continuous`, `wedge_lift_nbhs`,
+    `wedge_liftE`, `wedge_openP`,
+    `wedge_pointE`, `wedge_point_nbhs`, `wedge_nbhs_specP`, `wedgeTE`,
+    `wedge_compact`, `wedge_connected`.
+  + definitions `wedge_fun`, and `wedge_prod`.
+  + lemmas `wedge_fun_continuous`, `wedge_lift_funE`,
+    `wedge_fun_comp`, `wedge_prod_pointE`, `wedge_prod_inj`,
+    `wedge_prod_continuous`, `wedge_prod_open`, `wedge_hausdorff`, and
+    `wedge_fun_joint_continuous`.
+  + definition `bpwedge_shared_pt`.
+  + notations `bpwedge`, and `bpwedge_lift`.
+
+- new file `homotopy_theory/homotopy.v`
+
+### Changed
+
+- moved from `Rstruct.v` to `Rstruct_topology.v`
+  + lemmas `continuity_pt_nbhs`, `continuity_pt_cvg`,
+    `continuity_ptE`, `continuity_pt_cvg'`, `continuity_pt_dnbhs`
+    and `nbhs_pt_comp`
+
+- moved from `real_interval.v` to `normedtype.v`
+  + lemmas `set_itvK`, `RhullT`, `RhullK`, `set_itv_setT`,
+    `Rhull_smallest`, `le_Rhull`, `neitv_Rhull`, `Rhull_involutive`,
+    `disj_itv_Rhull`
+
+- in `topology.v`:
+  + lemmas `subspace_pm_ball_center`, `subspace_pm_ball_sym`,
+    `subspace_pm_ball_triangle`, `subspace_pm_entourage` turned
+	into local `Let`'s
+
+- in file `normedtype.v`:
+  + changed `completely_regular_space` to depend on uniform separators
+    which removes the dependency on `R`.  The old formulation can be
+    recovered easily with `uniform_separatorP`.
+  + HB structure `normedModule` now depends on a Tvs
+    instead of a Lmodule
+  + Factory `PseudoMetricNormedZmod_Lmodule_isNormedModule` becomes
+    `PseudoMetricNormedZmod_Tvs_isNormedModule`
+  + Section `prod_NormedModule` now depends on a `numFieldType`
+
+- in `lebesgue_integral.v`:
+  + structure `SimpleFun` now inside a module `HBSimple`
+  + structure `NonNegSimpleFun` now inside a module `HBNNSimple`
+  + lemma `cst_nnfun_subproof` has now a different statement
+  + lemma `indic_nnfun_subproof` has now a different statement
+
+### Renamed
+
+- in `normedtype.v`:
+  + `near_in_itv` -> `near_in_itvoo`
+  + Section `regular_topology` to `standard_topology`
+
+### Generalized
+
+- in `lebesgue_integral.v`:
+  + generalized from `sigmaRingType`/`realType` to `sigmaRingType`/`sigmaRingType`
+    * mixin `isMeasurableFun`
+    * structure `MeasurableFun`
+	* definition `mfun`
+    * lemmas `mfun_rect`, `mfun_valP`, `mfuneqP`
+
+### Deprecated
+
+- in `topology_theory/topology_structure.v`:
+  + lemma `closureC`
+
+### Removed
+
+- in `cardinality.v`:
+  + lemma `cst_fimfun_subproof`
+
+- in `lebesgue_integral.v`:
+  + definition `cst_mfun`
+  + lemma `mfun_cst`
+  + lemma `cst_mfun_subproof` (use lemma `measurable_cst` instead)
+  + lemma `cst_nnfun_subproof` (turned into a `Let`)
+  + lemma `indic_mfun_subproof` (use lemma `measurable_fun_indic` instead)
 
 ## [1.6.0] - 2024-10-25
 
@@ -89,9 +418,9 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + lemma `not_setD1`
 
 - in file `classical_orders.v` (new file),
-  + new definitions `big_lexi_order`, `same_prefix`, `first_diff`,
+  + definitions `big_lexi_order`, `same_prefix`, `first_diff`,
     `big_lexi_le`, and `start_with`.
-  + new lemmas `same_prefix0`, `same_prefix_sym`, `same_prefix_leq`,
+  + lemmas `same_prefix0`, `same_prefix_sym`, `same_prefix_leq`,
     `same_prefix_refl`, `same_prefix_trans`, `first_diff_sym`,
     `first_diff_unique`, `first_diff_SomeP`, `first_diff_NoneP`,
     `first_diff_lt`, `first_diff_eq`, `first_diff_dfwith`,
@@ -393,8 +722,8 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
 
 - in `set_interval.v`:
   + lemma `subset_itvSoo`
-  + new definitions `itv_is_ray`, `itv_is_bd_open`, and `itv_open_ends`
-  + new lemmas `itv_open_ends_rside`, `itv_open_ends_rinfty`,
+  + definitions `itv_is_ray`, `itv_is_bd_open`, and `itv_open_ends`
+  + lemmas `itv_open_ends_rside`, `itv_open_ends_rinfty`,
     `itv_open_ends_lside`, `itv_open_ends_linfty`,
     `is_open_itv_itv_is_bd_openP`, `itv_open_endsI`, `itv_setU`,
     `itv_setI`
@@ -403,8 +732,8 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + lemma `filterN`
   + Structures `PointedFiltered`, `PointedNbhs`, `PointedUniform`,
     `PseudoPointedMetric`
-  + new definition `order_topology`
-  + new lemmas `discrete_nat`, `rray_open`, `lray_open`, `itv_open`,
+  + definition `order_topology`
+  + lemmas `discrete_nat`, `rray_open`, `lray_open`, `itv_open`,
     `itv_open_ends_open`, `rray_closed`, `lray_closed`, `itv_closed`,
     `itv_closure`, `itv_closed_infimums`, `itv_closed_supremums`,
     `order_hausdorff`, `clopen_bigcup_clopen`, `zero_dimensional_ray`,
@@ -1155,8 +1484,8 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
 - in `normedtype.v`
   + lemma `closed_ball_ball`
   + lemma `ball_open_nbhs`
-  + new definition `completely_regular_space`.
-  + new lemmas `point_uniform_separator`, and
+  + definition `completely_regular_space`
+  + lemmas `point_uniform_separator`, and
     `uniform_completely_regular`.
 
 - in `exp.v`
@@ -1991,7 +2320,7 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + new lemma `continuous_within_itvP`.
 
 - in file `realfun.v`,
-  + new definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`,
+  + definitions `itv_partition`, `itv_partitionL`, `itv_partitionR`,
     `variation`, `variations`, `bounded_variation`, `total_variation`,
     `neg_tv`, and `pos_tv`.
 
@@ -2098,7 +2427,7 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + lemmas `limn_esup_lim`, `limn_einf_lim`
 
 - in file `cantor.v`,
-  + new definitions `cantor_space`, `cantor_like`, `pointed_discrete`, and
+  + definitions `cantor_space`, `cantor_like`, `pointed_discrete`, and
     `tree_of`.
   + new lemmas `cantor_space_compact`, `cantor_space_hausdorff`,
     `cantor_zero_dimensional`, `cantor_perfect`, `cantor_like_cantor_space`,
@@ -2485,8 +2814,8 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + lemma `eqe_pdivr_mull`
   + lemma `bigmaxe_fin_num`
 - in file `topology.v`,
-  + new definition `regular_space`.
-  + new lemma `ent_closure`.
+  + definition `regular_space`.
+  + lemma `ent_closure`.
 - in `normedtype.v`:
   + lemmas `open_itvoo_subset`, `open_itvcc_subset`
   + new lemmas `normal_openP`, `uniform_regular`,
@@ -2592,23 +2921,23 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + canonical instances `Posz_snum` and `Negz_snum`
 - in file `topology.v`,
   + new lemma `uniform_nbhsT`.
-  + new definition `set_nbhs`.
+  + definition `set_nbhs`.
   + new lemmas `filterI_iter_sub`, `filterI_iterE`, `finI_fromI`,
     `filterI_iter_finI`, `smallest_filter_finI`, and `set_nbhsP`.
   + lemma `bigsetU_compact`
   + lemma `ball_symE`
   + new lemma `pointwise_cvgP`.
   + lemma `closed_bigcup`
-  + new definition `normal_space`.
+  + definition `normal_space`.
   + new lemmas `filter_inv`, and `countable_uniform_bounded`.
 - in file `normedtype.v`,
-  + new definition `edist`.
-  + new lemmas `edist_ge0`, `edist_neqNy`, `edist_lt_ball`,
+  + definition `edist`.
+  + lemmas `edist_ge0`, `edist_neqNy`, `edist_lt_ball`,
     `edist_fin`, `edist_pinftyP`, `edist_finP`, `edist_fin_open`,
     `edist_fin_closed`, `edist_pinfty_open`, `edist_sym`, `edist_triangle`,
     `edist_continuous`, `edist_closeP`, and `edist_refl`.
-  + new definitions `edist_inf`, `uniform_separator`, and `Urysohn`.
-  + new lemmas `continuous_min`, `continuous_max`, `edist_closel`,
+  + definitions `edist_inf`, `uniform_separator`, and `Urysohn`.
+  + lemmas `continuous_min`, `continuous_max`, `edist_closel`,
     `edist_inf_ge0`, `edist_inf_neqNy`, `edist_inf_triangle`,
     `edist_inf_continuous`, `edist_inf0`, `Urysohn_continuous`,
     `Urysohn_range`, `Urysohn_sub0`, `Urysohn_sub1`, `Urysohn_eq0`,
@@ -2779,8 +3108,8 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + lemma `set_lte_bigcup`
 - in `topology.v`:
   + lemma `globally0`
-  + new definitions `basis`, and `second_countable`.
-  + new lemmas `clopen_countable` and `compact_countable_base`.
+  + definitions `basis`, and `second_countable`.
+  + lemmas `clopen_countable` and `compact_countable_base`.
 - in `ereal.v`:
   + lemmas `compreDr`, `compreN`
 - in `constructive_ereal.v`:
@@ -2807,10 +3136,10 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + lemma `integrable_sum`
   + lemmas `integrableP`, `measurable_int`
 - in file `kernel.v`,
-  + new definitions `kseries`, `measure_fam_uub`, `kzero`, `kdirac`,
+  + definitions `kseries`, `measure_fam_uub`, `kzero`, `kdirac`,
     `prob_pointed`, `mset`, `pset`, `pprobability`, `kprobability`, `kadd`,
     `mnormalize`, `knormalize`, `kcomp`, and `mkcomp`.
-  + new lemmas `eq_kernel`, `measurable_fun_kseries`, `integral_kseries`,
+  + lemmas `eq_kernel`, `measurable_fun_kseries`, `integral_kseries`,
     `measure_fam_uubP`, `eq_sfkernel`, `kzero_uub`,
     `sfinite_kernel`, `sfinite_kernel_measure`, `finite_kernel_measure`,
     `measurable_prod_subset_xsection_kernel`,
@@ -2945,20 +3274,20 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
   + lemma `onem_factor`
   + lemmas `in1_subset_itv`, `subset_itvW`
 - in `topology.v`,
-  + new definitions `totally_disconnected`, and `zero_dimensional`.
-  + new lemmas `component_closed`, `zero_dimension_prod`,
+  + definitions `totally_disconnected`, and `zero_dimensional`.
+  + lemmas `component_closed`, `zero_dimension_prod`,
     `discrete_zero_dimension`, `zero_dimension_totally_disconnected`,
     `totally_disconnected_cvg`, and `totally_disconnected_prod`.
-  + new definitions `split_sym`, `gauge`, `gauge_uniformType_mixin`,
+  + definitions `split_sym`, `gauge`, `gauge_uniformType_mixin`,
     `gauge_topologicalTypeMixin`, `gauge_filtered`, `gauge_topologicalType`,
     `gauge_uniformType`, `gauge_pseudoMetric_mixin`, and
     `gauge_pseudoMetricType`.
-  + new lemmas `iter_split_ent`, `gauge_ent`, `gauge_filter`,
+  + lemmas `iter_split_ent`, `gauge_ent`, `gauge_filter`,
     `gauge_refl`, `gauge_inv`, `gauge_split`, `gauge_countable_uniformity`, and
     `uniform_pseudometric_sup`.
-  + new definitions `discrete_ent`, `discrete_uniformType`, `discrete_ball`,
+  + definitions `discrete_ent`, `discrete_uniformType`, `discrete_ball`,
     `discrete_pseudoMetricType`, and `pseudoMetric_bool`.
-  + new lemmas `finite_compact`, `discrete_ball_center`, `compact_cauchy_cvg`
+  + lemmas `finite_compact`, `discrete_ball_center`, `compact_cauchy_cvg`
 - in `normedtype.v`:
   + lemmas `cvg_at_right_filter`, `cvg_at_left_filter`,
     `cvg_at_right_within`, `cvg_at_left_within`
@@ -3208,23 +3537,23 @@ Latest releases: [[1.6.0] - 2024-10-25](#160---2024-10-25) and [[1.5.0] - 2024-1
 - in `numfun.v`:
   + lemmas `xsection_indic`, `ysection_indic`
 - in file `topology.v`,
-  + new definition `perfect_set`.
-  + new lemmas `perfectTP`, `perfect_prod`, and `perfect_diagonal`.
-  + new definitions `countable_uniformity`, `countable_uniformityT`,
+  + definition `perfect_set`.
+  + lemmas `perfectTP`, `perfect_prod`, and `perfect_diagonal`.
+  + definitions `countable_uniformity`, `countable_uniformityT`,
     `sup_pseudoMetric_mixin`, `sup_pseudoMetricType`, and
     `product_pseudoMetricType`.
-  + new lemmas `countable_uniformityP`, `countable_sup_ent`, and
+  + lemmas `countable_uniformityP`, `countable_sup_ent`, and
     `countable_uniformity_metric`.
-  + new definitions `quotient_topology`, and `quotient_open`.
-  + new lemmas `pi_continuous`, `quotient_continuous`, and
+  + definitions `quotient_topology`, and `quotient_open`.
+  + lemmas `pi_continuous`, `quotient_continuous`, and
     `repr_comp_continuous`.
-  + new definitions `hausdorff_accessible`, `separate_points_from_closed`, and
+  + definitions `hausdorff_accessible`, `separate_points_from_closed`, and
     `join_product`.
-  + new lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`,
+  + lemmas `weak_sep_cvg`, `weak_sep_nbhsE`, `weak_sep_openE`,
     `join_product_continuous`, `join_product_open`, `join_product_inj`, and
     `join_product_weak`.
-  + new definition `clopen`.
-  + new lemmas `clopenI`, `clopenU`, `clopenC`, `clopen0`, `clopenT`,
+  + definition `clopen`.
+  + lemmas `clopenI`, `clopenU`, `clopenC`, `clopen0`, `clopenT`,
     `clopen_comp`, `connected_closure`, `clopen_separatedP`, and
     `clopen_connectedP`.
   + new lemmas `powerset_filter_fromP` and `compact_cluster_set1`.

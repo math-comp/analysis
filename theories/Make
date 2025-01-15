@@ -19,6 +19,7 @@ topology_theory/order_topology.v
 topology_theory/product_topology.v
 topology_theory/pseudometric_structure.v
 topology_theory/subspace_topology.v
+topology_theory/subtype_topology.v
 topology_theory/supremum_topology.v
 topology_theory/topology_structure.v
 topology_theory/uniform_structure.v
@@ -26,9 +27,16 @@ topology_theory/weak_topology.v
 topology_theory/num_topology.v
 topology_theory/quotient_topology.v
 topology_theory/one_point_compactification.v
+topology_theory/sigT_topology.v
+
+homotopy_theory/homotopy.v
+homotopy_theory/wedge_sigT.v
+homotopy_theory/continuous_path.v
+
 separation_axioms.v
 function_spaces.v
 cantor.v
+tvs.v
 normedtype.v
 realfun.v
 sequences.v
@@ -48,5 +56,6 @@ lebesgue_stieltjes_measure.v
 convex.v
 charge.v
 kernel.v
+pi_irrational.v
 all_analysis.v
 showcase/summability.v

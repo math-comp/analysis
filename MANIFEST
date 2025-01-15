@@ -10,18 +10,42 @@ NIX.md
 Licence_CeCILL-C_V1-en.txt
 
 # Build and meta data 
+reals_stdlib/Make
+reals_stdlib/Makefile
+analysis_stdlib/Make
+analysis_stdlib/Makefile
+classical/Make
+classical/Makefile
+Makefile.common
+experimental_reals/Make
+experimental_reals/Makefile
+theories/Make
+theories/Makefile
+reals/Make
+reals/Makefile
 Makefile
 Makefile.common
 _CoqProject
 .gitignore
 .travis.yml
-opam
-shell.nix
+coq-mathcomp-analysis-stdlib.opam
+coq-mathcomp-analysis.opam
+coq-mathcomp-classical.opam
+coq-mathcomp-experimental-reals.opam
+coq-mathcomp-reals-stdlib.opam
+coq-mathcomp-reals.opam
+default.nix
 
 # Theory files
+analysis_stdlib/*.v
+analysis_stdlib/showcase/*.v
+classical/*.v
+experimental_reals/*.v
+reals/*.v
+reals_stdlib/*.v
 theories/*.v
-theories/altreals/*.v
-theories/misc/*.v
+theories/showcase/*.v
+theories/topology_theory/*.v
 
 # Build scripts
 scripts/install-sh

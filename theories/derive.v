@@ -2,8 +2,8 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals signed topology prodnormedzmodule normedtype.
-From mathcomp Require Import landau forms.
+From mathcomp Require Import reals signed topology prodnormedzmodule tvs.
+From mathcomp Require Import normedtype landau forms poly.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)
@@ -11,7 +11,8 @@ From mathcomp Require Import landau forms.
 (* This file provides a theory of differentiation. It includes the standard   *)
 (* rules of differentiation (differential of a sum, of a product, of          *)
 (* exponentiation, of the inverse, etc.) as well as standard theorems (the    *)
-(* Extreme Value Theorem, Rolle's theorem, the Mean Value Theorem).           *)
+(* Extreme Value Theorem, Rolle's theorem, the Mean Value Theorem, Cauchy's   *)
+(* mean value theorem, L'Hopital's rule).                                     *)
 (*                                                                            *)
 (* Parsable notations (in all of the following, f is not supposed to be       *)
 (* differentiable):                                                           *)
@@ -254,7 +255,7 @@ Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
 rewrite -nbhs_nearE nbhs_simpl /= dnbhsE; split; last first.
   rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
-  by rewrite addrA subrr add0r normrN scale0r !normr0 mulr0.
+  by rewrite addrCA addKr normrN scale0r !normr0 mulr0.
 have /eqolimP := df.
 move=> /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]).
 apply: filter_app; rewrite /= !near_simpl near_withinE; near=> h => hN0.
@@ -389,8 +390,8 @@ Proof. exact: iterSr. Qed.
 
 End DifferentialR2.
 
-Notation "f ^` ()" := (derive1 f).
-Notation "f ^` ( n )" := (derive1n n f).
+Notation "f ^` ()" := (derive1 f) : classical_set_scope.
+Notation "f ^` ( n )" := (derive1n n f) : classical_set_scope.
 
 Section DifferentialR3.
 Variable R : numFieldType.
@@ -563,14 +564,14 @@ Proof. by move=> df dg; apply/diff_unique; have [] := dadd df dg. Qed.
 Lemma differentiableD (f g : V -> W) x :
   differentiable f x -> differentiable g x -> differentiable (f + g) x.
 Proof.
-by move=> df dg; apply/diff_locallyP; rewrite diffD //; have := dadd df dg.
+by move=> df dg; apply/diff_locallyP; rewrite diffD; have := dadd df dg.
 Qed.
 
 Global Instance is_diffD (f g df dg : V -> W) x :
   is_diff x f df -> is_diff x g dg -> is_diff x (f + g) (df + dg).
 Proof.
 move=> dfx dgx; apply: DiffDef; first exact: differentiableD.
-by rewrite diffD // !diff_val.
+by rewrite diffD; first (congr (_ + _); apply: diff_val).
 Qed.
 
 Lemma differentiable_sum n (f : 'I_n -> V -> W) (x : V) :
@@ -606,7 +607,9 @@ Proof. by move=> dfx dgx; apply: is_diff_eq. Qed.
 Lemma diffB (f g : V -> W) x :
   differentiable f x -> differentiable g x ->
   'd (f - g) x = 'd f x \- 'd g x :> (V -> W).
-Proof. by move=> /differentiableP df /differentiableP dg; rewrite diff_val. Qed.
+Proof.
+by move=> /differentiableP df /differentiableP dg; rewrite [LHS]diff_val.
+Qed.
 
 Lemma differentiableB (f g : V -> W) x :
   differentiable f x -> differentiable g x -> differentiable (f \- g) x.
@@ -671,7 +674,7 @@ Qed.
 Global Instance is_diff_scalel (k : R) (x : V) :
   is_diff k ( *:%R ^~ x) ( *:%R ^~ x).
 Proof.
-have sx_lin : linear ( *:%R ^~ x : [the lmodType R of R : Type] -> _).
+have sx_lin : linear ( *:%R ^~ x : R -> _).
   by move=> u y z; rewrite scalerDl scalerA.
 pose sxlM := GRing.isLinear.Build _ _ _ _ _ sx_lin.
 pose sxL : {linear _ -> _} := HB.pack ( *:%R ^~ x) sxlM.
@@ -788,13 +791,14 @@ by rewrite prod_normE/= !normrZ !normfV !normr_id !mulVf ?gt_eqF// maxxx ltr1n.
 Qed.
 
 Lemma bilinear_eqo (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) :
-  continuous (fun p => f p.1 p.2) -> (fun p => f p.1 p.2) =o_ 0 id.
+  continuous (fun p => f p.1 p.2) -> (fun p => f p.1 p.2) =o_ (0 : U * V') id.
 Proof.
 move=> fc; have [_ /posnumP[k] fschwarz] := bilinear_schwarz fc.
 apply/eqoP=> _ /posnumP[e]; near=> x; rewrite (le_trans (fschwarz _ _))//.
 rewrite ler_pM ?pmulr_rge0 //; last by rewrite num_le_max /= lexx orbT.
 rewrite -ler_pdivlMl //.
-suff : `|x| <= k%:num ^-1 * e%:num by apply: le_trans; rewrite num_le_max /= lexx.
+suff : `|x| <= k%:num ^-1 * e%:num.
+  by apply: le_trans; rewrite num_le_max /= lexx.
 near: x; rewrite !near_simpl; apply/nbhs_le_nbhs_norm.
 by exists (k%:num ^-1 * e%:num) => //= ? /=; rewrite /= distrC subr0 => /ltW.
 Unshelve. all: by end_near. Qed.
@@ -803,7 +807,7 @@ Fact dbilin (U V' W' : normedModType R) (f : {bilinear U -> V' -> W'}) p :
   continuous (fun p => f p.1 p.2) ->
   continuous (fun q => (f p.1 q.2 + f q.1 p.2)) /\
   (fun q => f q.1 q.2) \o shift p = cst (f p.1 p.2) +
-    (fun q => f p.1 q.2 + f q.1 p.2) +o_ 0 id.
+    (fun q => f p.1 q.2 + f q.1 p.2) +o_ (0 : U * V') id.
 Proof.
 move=> fc; split=> [q|].
   by apply: (@continuousD _ _ _ (fun q => f p.1 q.2) (fun q => f q.1 p.2));
@@ -919,7 +923,9 @@ Qed.
 Lemma diffM (f g : V -> R) x :
   differentiable f x -> differentiable g x ->
   'd (f * g) x = f x \*: 'd g x + g x \*: 'd f x :> (V -> R).
-Proof. by move=> /differentiableP df /differentiableP dg; rewrite diff_val. Qed.
+Proof.
+by move=> /differentiableP df /differentiableP dg; rewrite [LHS]diff_val.
+Qed.
 
 Lemma differentiableM (f g : V -> R) x :
   differentiable f x -> differentiable g x -> differentiable (f * g) x.
@@ -972,7 +978,7 @@ rewrite normrN [leRHS]ger0_norm; last first.
   rewrite subr_ge0; apply: ltW; apply: lt_le_trans lthhx _.
   by rewrite ler_pdivrMr // -{1}(mulr1 `|x|) ler_pM // ler1n.
 rewrite lerBrDr -lerBrDl (splitr `|x|).
-by rewrite normrM normfV (@ger0_norm _ 2) // -addrA subrr addr0; apply: ltW.
+by rewrite normrM normfV (@ger0_norm _ 2) // addrK; apply/ltW.
 Unshelve. all: by end_near. Qed.
 
 Lemma diff_Rinv (x : R) : x != 0 ->
@@ -1036,8 +1042,8 @@ Qed.
 
 Lemma deriv1E f x : derivable f x 1 -> 'd f x = ( *:%R^~ (f^`() x)) :> (R -> U).
 Proof.
-pose d (h : R) := h *: f^`() x.
-move=> df; have lin_scal : linear d by move=> ???; rewrite /d scalerDl scalerA.
+pose d (h : R) := h *: (f^`() x)%classic.
+move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
 pose scalL : {linear _ -> _} := HB.pack d scallM.
 rewrite -/d -[d]/(scalL : _ -> _).
@@ -1045,13 +1051,13 @@ by apply: diff_unique; [apply: scalel_continuous|apply: der1].
 Qed.
 
 Lemma diff1E f x :
-  differentiable f x -> 'd f x = (fun h => h *: f^`() x) :> (R -> U).
+  differentiable f x -> 'd f x = (fun h => h *: f^`()%classic x) :> (R -> U).
 Proof.
 pose d (h : R) := h *: 'd f x 1.
 move=> df; have lin_scal : linear d by move=> ? ? ?; rewrite /d scalerDl scalerA.
 pose scallM := GRing.isLinear.Build _ _ _ _ _ lin_scal.
 pose scalL : {linear _ -> _} := HB.pack d scallM.
-have -> : (fun h => h *: f^`() x) = scalL by rewrite derive1E'.
+have -> : (fun h => h *: f^`()%classic x) = scalL by rewrite derive1E'.
 apply: diff_unique; first exact: scalel_continuous.
 apply/eqaddoE; have /diff_locally -> := df; congr (_ + _ + _).
 by rewrite funeqE => h /=; rewrite -{1}[h]mulr1 linearZ.
@@ -1278,7 +1284,7 @@ evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
   rewrite scalerDr scalerA mulrC -scalerA.
   by rewrite [_ *: (g x *: _)]scalerA mulrC -scalerA /fg.
 apply: cvgD; last exact: cvgZr df.
-apply: cvg_comp2 (@mul_continuous _ (_, _)) => /=; last exact: dg.
+apply: cvg_comp2 (@scale_continuous _ _ (_, _)) => /=; last exact: dg.
 suff : {for 0, continuous (fun h : R => f(h *: v + x))}.
   by move=> /continuous_withinNx; rewrite scale0r add0r.
 exact/differentiable_continuous/derivable1_diffP/(derivable1P _ _ _).1.
@@ -1568,15 +1574,14 @@ Proof.
 move=> altb fdrvbl fcont.
 set g := f + (- ( *:%R^~ ((f b - f a) / (b - a)) : R -> R)).
 have gdrvbl x : x \in `]a, b[%R -> derivable g x 1.
-  by move=> /fdrvbl dfx; apply: derivableB => //; exact/derivable1_diffP.
+  by move=> /fdrvbl dfx; apply/derivableB/derivable1_diffP.
 have gcont : {within `[a, b], continuous g}.
-  move=> x; apply: continuousD _ ; first by move=>?; exact: fcont.
-  by apply/continuousN/continuous_subspaceT=> ?; exact: scalel_continuous.
+  move=> x; apply: continuousD _ ; first exact: fcont.
+  exact/continuousN/continuous_subspaceT/scalel_continuous.
 have gaegb : g a = g b.
   rewrite /g -![(_ - _ : _ -> _) _]/(_ - _).
   apply/eqP; rewrite -subr_eq /= opprK addrAC -addrA -scalerBl.
-  rewrite [_ *: _]mulrA mulrC mulrA mulVf.
-    by rewrite mul1r addrCA subrr addr0.
+  rewrite [_ *: _]mulrC divfK; first by rewrite addrC subrK.
   by apply: lt0r_neq0; rewrite subr_gt0.
 have [c cab dgc0] := Rolle altb gdrvbl gcont gaegb.
 exists c; first exact: cab.
@@ -1597,6 +1602,246 @@ move=> leab fdrvbl fcont; case: ltgtP leab => // [altb|aeb]; last first.
 have [c cab D] := MVT altb fdrvbl fcont.
 by exists c => //; rewrite in_itv /= ltW (itvP cab).
 Qed.
+
+Section Cauchy_MVT.
+Context {R : realType}.
+Variables (f df g dg : R -> R) (a b c : R).
+Hypothesis ab : a < b.
+Hypotheses (cf : {within `[a, b], continuous f})
+           (cg : {within `[a, b], continuous g}).
+Hypotheses (fdf : forall x, x \in `]a, b[%R -> is_derive x 1 f (df x))
+           (gdg : forall x, x \in `]a, b[%R -> is_derive x 1 g (dg x)).
+Hypotheses (dg0 : forall x, x \in `]a, b[%R -> dg x != 0).
+
+Lemma differentiable_subr_neq0 : g b - g a != 0.
+Proof.
+have [r] := MVT ab gdg cg; rewrite in_itv/= => /andP[ar rb] dgg.
+by rewrite dgg mulf_neq0 ?dg0 ?in_itv/= ?ar//; rewrite subr_eq0 gt_eqF.
+Qed.
+
+Lemma cauchy_MVT :
+  exists2 c, c \in `]a, b[%R & df c / dg c = (f b - f a) / (g b - g a).
+Proof.
+pose h x := f x - ((f b - f a) / (g b - g a)) * g x.
+have hder x : x \in `]a, b[%R -> derivable h x 1.
+  move=> xab; apply: derivableB => /=.
+    exact: (@ex_derive _ _ _ _ _ _ _ (fdf xab)).
+  by apply: derivableM => //; exact: (@ex_derive _ _ _ _ _ _ _ (gdg xab)).
+have ch : {within `[a, b], continuous h}.
+  rewrite continuous_subspace_in => x xab.
+  by apply: cvgB; [exact: cf|apply: cvgM; [exact: cvg_cst|exact: cg]].
+have /(Rolle ab hder ch)[x xab derh] : h a = h b.
+  rewrite /h; apply/eqP; rewrite subr_eq eq_sym -addrA eq_sym addrC -subr_eq.
+  rewrite -mulrN -mulrDr -(addrC (g a)) -[X in _ * X]opprB mulrN -mulrA.
+  by rewrite mulVf ?differentiable_subr_neq0// mulr1 opprB.
+pose dh x := df x - (f b - f a) / (g b - g a) * dg x.
+have his_der y : y \in `]a, b[%R -> is_derive x 1 h (dh x).
+  by move=> yab; apply: is_deriveB; [exact: fdf|apply: is_deriveZ; exact: gdg].
+exists x => //.
+have := @derive_val _ R _ _ _ _ _ (his_der _ xab).
+rewrite (@derive_val _ R _ _ _ _ _ derh) => /esym/eqP.
+by rewrite subr_eq add0r => /eqP ->; rewrite -mulrA divff ?mulr1//; exact: dg0.
+Qed.
+
+End Cauchy_MVT.
+
+Section lhopital.
+Context {R : realType}.
+Variables (f df g dg : R -> R) (a : R) (U : set R) (Ua : nbhs a U)
+          (Uar : a^'+ U) (Ual : nbhs a^'- U).
+Hypotheses (fdf : forall x, x \in U -> is_derive x 1 f (df x))
+           (gdg : forall x, x \in U -> is_derive x 1 g (dg x)).
+Hypotheses (fa0 : f a = 0) (ga0 : g a = 0)
+           (cdg : \forall x \near a^', dg x != 0).
+
+Lemma lhopital_right (l : R) :
+  df x / dg x @[x --> a^'+] --> l -> f x / g x @[x --> a^'+] --> l.
+Proof.
+case: cdg => r/= r0 cdg'.
+move: Uar => -[D /= D0 aDU].
+near a^'+ => b.
+have abf x : x \in `]a, b[%R -> {within `[a, x], continuous f}.
+  rewrite in_itv/= => /andP[ax xb].
+  apply/continuous_within_itvP => //.
+  (*apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[ay yx].*)
+  split.
+    admit.
+  (*apply: ex_derive.*)
+  (*apply: fdf.
+  rewrite inE; apply: aDU => /=.
+  rewrite ler0_norm? subr_le0//.
+  rewrite opprD opprK addrC ltrBlDr (le_lt_trans yx)// (lt_trans xb)//.*)
+  (*near: b; apply: nbhs_right_le.*)
+  (*by rewrite ltrDr.*)
+  admit.
+  admit.
+have abg x : x \in `]a, b[%R -> {within `[a, x], continuous g}.
+  rewrite in_itv/= => /andP[ax xb].
+  apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[ay yx].
+  apply: ex_derive.
+  apply: gdg.
+  rewrite inE; apply: aDU => /=.
+  rewrite ler0_norm? subr_le0//.
+  rewrite opprD opprK addrC ltrBlDr (le_lt_trans yx)// (lt_trans xb)//.
+  near: b; apply: nbhs_right_lt.
+  by rewrite ltrDr.
+  admit.
+have fdf' y : y \in `]a, b[%R -> is_derive y 1 f (df y).
+  rewrite in_itv/= => /andP[ay yb]; apply: fdf.
+  rewrite inE; apply: aDU => /=.
+  rewrite ltr0_norm ?subr_lt0//.
+  rewrite opprD opprK addrC ltrBlDr (lt_le_trans yb)//.
+  near: b; apply: nbhs_right_le.
+  by rewrite ltrDr.
+  admit.
+have gdg' y : y \in `]a, b[%R -> is_derive y 1 g (dg y).
+  rewrite in_itv/= => /andP[ay yb]; apply: gdg.
+  rewrite inE; apply: aDU => /=.
+  rewrite ltr0_norm ?subr_lt0//.
+  rewrite opprD opprK addrC ltrBlDr (lt_le_trans yb)//.
+  near: b; apply: nbhs_right_le.
+  by rewrite ltrDr.
+  admit.
+have {}dg0 y : y \in `]a, b[%R -> dg y != 0.
+  rewrite in_itv/= => /andP[ay yb].
+  apply: (cdg' y) => /=; last by rewrite gt_eqF.
+  rewrite ltr0_norm; last by rewrite subr_lt0.
+  rewrite opprB ltrBlDl (lt_trans yb)//.
+  near: b; apply: nbhs_right_lt.
+  by rewrite ltrDl.
+move=> fgal.
+have L : \forall x \near a^'+,
+  exists2 c, c \in `]a, x[%R & df c / dg c = f x / g x.
+  near=> x.
+  have /andP[ax xb] : a < x < b by exact/andP.
+  have {}fdf' y : y \in `]a, x[%R -> is_derive y 1 f (df y).
+    rewrite !in_itv/= => /andP[ay yx].
+    by apply: fdf'; rewrite in_itv/= ay/= (lt_trans yx).
+  have {}gdg' y : y \in `]a, x[%R -> is_derive y 1 g (dg y).
+    rewrite !in_itv/= => /andP[ay yx].
+    by apply: gdg'; rewrite in_itv/= ay/= (lt_trans yx).
+  have {}dg0 y : y \in `]a, x[%R -> dg y != 0.
+    rewrite in_itv/= => /andP[ya yx].
+    by apply: dg0; rewrite in_itv/= ya/= (lt_trans yx).
+  have {}axf : {within `[a, x], continuous f}.
+    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[ay yx].
+    by apply: abf; rewrite in_itv/= xb andbT.
+  have {}axg : {within `[a, x], continuous g}.
+    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[ay yx].
+    by apply: abg; rewrite in_itv/= xb andbT.
+  have := @cauchy_MVT _ f df g dg _ _ ax axf axg fdf' gdg' dg0.
+  by rewrite fa0 ga0 2!subr0.
+apply/cvgrPdist_le => /= e e0.
+move/cvgrPdist_le : fgal.
+move=> /(_ _ e0)[r'/= r'0 fagl].
+case: L => d /= d0 L.
+near=> t.
+have /= := L t.
+have atd : `|a - t| < d.
+  rewrite ltr0_norm; last by rewrite subr_lt0.
+  rewrite opprB ltrBlDl.
+  near: t; apply: nbhs_right_lt.
+  by rewrite ltrDl.
+have at_ : a < t by [].
+move=> /(_ atd)/(_ at_)[c]; rewrite in_itv/= => /andP[ac ct <-].
+apply: fagl => //=.
+rewrite ltr0_norm; last by rewrite subr_lt0.
+rewrite opprB ltrBlDl (lt_trans ct)//.
+near: t; apply: nbhs_right_lt.
+by rewrite ltrDl.
+Unshelve. all: by end_near. Admitted.
+
+Lemma lhopital_left (l : R) :
+  df x / dg x @[x --> a^'-] --> l -> f x / g x @[x --> a^'-] --> l.
+Proof.
+case: cdg => r/= r0 cdg'.
+move: Ua; rewrite filter_of_nearI => -[D /= D0 aDU].
+near a^'- => b.
+have baf x : x \in `]b, a[%R -> {within `[x, a], continuous f}.
+  rewrite in_itv/= => /andP[bx xa].
+  apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[xy ya].
+  apply: ex_derive.
+  apply: fdf.
+  rewrite inE; apply: aDU => /=.
+  rewrite ger0_norm ?subr_ge0//.
+  rewrite ltrBlDr -ltrBlDl (lt_le_trans _ xy)// (le_lt_trans _ bx)//.
+  near: b; apply: nbhs_left_ge.
+  by rewrite ltrBlDl ltrDr.
+have bag x : x \in `]b, a[%R -> {within `[x, a], continuous g}.
+  rewrite in_itv/= => /andP[bx xa].
+  apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[xy ya].
+  apply: ex_derive.
+  apply: gdg.
+  rewrite inE; apply: aDU => /=.
+  rewrite ger0_norm ?subr_ge0//.
+  rewrite ltrBlDr -ltrBlDl (lt_le_trans _ xy)// (lt_trans _ bx)//.
+  near: b; apply: nbhs_left_gt.
+  by rewrite ltrBlDl ltrDr.
+have fdf' y : y \in `]b, a[%R -> is_derive y 1 f (df y).
+  rewrite in_itv/= => /andP[by_ ya]; apply: fdf.
+  rewrite inE.
+  apply: aDU => /=.
+  rewrite gtr0_norm ?subr_gt0//.
+  rewrite ltrBlDl -ltrBlDr (le_lt_trans _ by_)//.
+  near: b; apply: nbhs_left_ge.
+  by rewrite ltrBlDr ltrDl.
+have gdg' y : y \in `]b, a[%R -> is_derive y 1 g (dg y).
+  rewrite in_itv/= => /andP[by_ ya]; apply: gdg.
+  rewrite inE; apply: aDU => /=.
+  rewrite gtr0_norm ?subr_gt0//.
+  rewrite ltrBlDl -ltrBlDr (le_lt_trans _ by_)//.
+  near: b; apply: nbhs_left_ge.
+  by rewrite ltrBlDr ltrDl.
+have {}dg0 y : y \in `]b, a[%R -> dg y != 0.
+  rewrite in_itv/= => /andP[by_ ya].
+  apply: (cdg' y) => /=; last by rewrite lt_eqF.
+  rewrite gtr0_norm; last by rewrite subr_gt0.
+  rewrite ltrBlDr -ltrBlDl (lt_trans _ by_)//.
+  near: b; apply: nbhs_left_gt.
+  by rewrite ltrBlDl ltrDr.
+move=> fgal.
+have L : \forall x \near a^'-,
+  exists2 c, c \in `]x, a[%R & df c / dg c = f x / g x.
+  near=> x.
+  have /andP[bx xa] : b < x < a by exact/andP.
+  have {}fdf' y : y \in `]x, a[%R -> is_derive y 1 f (df y).
+    rewrite in_itv/= => /andP[xy ya].
+    by apply: fdf'; rewrite in_itv/= ya andbT (lt_trans bx).
+  have {}gdg' y : y \in `]x, a[%R -> is_derive y 1 g (dg y).
+    rewrite in_itv/= => /andP[xy ya].
+    by apply: gdg'; rewrite in_itv/= ya andbT (lt_trans _ xy).
+  have {}dg0 y : y \in `]x, a[%R -> dg y != 0.
+    rewrite in_itv/= => /andP[xy ya].
+    by apply: dg0; rewrite in_itv/= ya andbT (lt_trans bx).
+  have {}xaf : {within `[x, a], continuous f}.
+    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[xy ya].
+    by apply: baf; rewrite in_itv/= bx.
+  have {}xag : {within `[x, a], continuous g}.
+    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[xy ya].
+    by apply: bag; rewrite in_itv/= bx.
+  have := @cauchy_MVT _ f df g dg _ _ xa xaf xag fdf' gdg' dg0.
+  by rewrite fa0 ga0 !sub0r divrN mulNr opprK.
+apply/cvgrPdist_le => /= e e0.
+move/cvgrPdist_le : fgal.
+move=> /(_ _ e0)[r'/= r'0 fagl].
+case: L => d /= d0 L.
+near=> t.
+have /= := L t.
+have atd : `|a - t| < d.
+  rewrite gtr0_norm; last by rewrite subr_gt0.
+  rewrite ltrBlDr -ltrBlDl.
+  near: t; apply: nbhs_left_gt.
+  by rewrite ltrBlDl ltrDr.
+have ta : t < a by [].
+move=> /(_ atd)/(_ ta)[c]; rewrite in_itv/= => /andP[tc ca <-].
+apply: fagl => //=.
+rewrite gtr0_norm; last by rewrite subr_gt0.
+rewrite ltrBlDr -ltrBlDl (lt_trans _ tc)//.
+near: t; apply: nbhs_left_gt.
+by rewrite ltrBlDl ltrDr.
+Unshelve. all: by end_near. Qed.
+
+End lhopital.
 
 Lemma ler0_derive1_nincr (R : realType) (f : R -> R) (a b : R) :
   (forall x, x \in `]a, b[%R -> derivable f x 1) ->
@@ -1635,7 +1880,7 @@ Qed.
 
 Lemma derive1_comp (R : realFieldType) (f g : R -> R) x :
   derivable f x 1 -> derivable g (f x) 1 ->
-  (g \o f)^`() x = g^`() (f x) * f^`() x.
+  (g \o f)^`() x = g^`()%classic (f x) * f^`()%classic x.
 Proof.
 move=> /derivable1_diffP df /derivable1_diffP dg.
 rewrite derive1E'; last exact/differentiable_comp.
@@ -1647,3 +1892,56 @@ Qed.
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
   is_derive x (1 : R) f x1 -> x1 = y1 -> is_derive x 1 f y1.
 Proof. by move=> Hi <-. Qed.
+
+Section derive_horner.
+Variable (R : realFieldType).
+Local Open Scope ring_scope.
+
+Lemma horner0_ext : horner (0 : {poly R}) = 0.
+Proof. by apply/funext => y /=; rewrite horner0. Qed.
+
+Lemma hornerD_ext (p : {poly R}) r :
+  horner (p * 'X + r%:P) = horner (p * 'X) + horner (r%:P).
+Proof. by apply/funext => y /=; rewrite !(hornerE,fctE). Qed.
+
+Lemma horner_scale_ext (p : {poly R}) :
+  horner (p * 'X) = (fun x => p.[x] * x)%R.
+Proof. by apply/funext => y; rewrite !hornerE. Qed.
+
+Lemma hornerC_ext (r : R) : horner r%:P = cst r.
+Proof. by apply/funext => y /=; rewrite !hornerE. Qed.
+
+Lemma derivable_horner (p : {poly R}) x : derivable (horner p) x 1.
+Proof.
+elim/poly_ind: p => [|p r ih]; first by rewrite horner0_ext.
+rewrite hornerD_ext; apply: derivableD.
+- rewrite horner_scale_ext/=.
+  by apply: derivableM; [exact:ih|exact:derivable_id].
+- by rewrite hornerC_ext; exact: derivable_cst.
+Qed.
+
+Lemma derivE (p : {poly R}) : horner (p^`()) = (horner p)^`()%classic.
+Proof.
+apply/funext => x; elim/poly_ind: p => [|p r ih].
+  by rewrite deriv0 hornerC horner0_ext derive1_cst.
+rewrite derivD hornerD hornerD_ext.
+rewrite derive1E deriveD//; [|exact: derivable_horner..].
+rewrite -!derive1E hornerC_ext derive1_cst addr0.
+rewrite horner_scale_ext derive1E deriveM//; last exact: derivable_horner.
+rewrite derive_id -derive1E -ih derivC horner0 addr0 derivM hornerD !hornerE.
+by rewrite derivX hornerE mulr1 addrC mulrC scaler1.
+Qed.
+
+Global Instance is_derive_poly (p : {poly R}) (x : R) :
+  is_derive x (1:R) (horner p) p^`().[x].
+Proof.
+by apply: DeriveDef; [exact: derivable_horner|rewrite derivE derive1E].
+Qed.
+
+Lemma continuous_horner (p : {poly R}) : continuous (horner p).
+Proof.
+move=> /= x; apply/differentiable_continuous.
+exact/derivable1_diffP/derivable_horner.
+Qed.
+
+End derive_horner.

@@ -300,7 +300,8 @@ Lemma lee_sum_fset_lim (R : realType) (f : (\bar R)^nat) (F : {fset nat})
   \sum_(i <- F | P i) f i <= \sum_(i <oo | P i) f i.
 Proof.
 move=> f0; pose n := (\max_(k <- F) k).+1.
-rewrite (le_trans (lee_sum_fset_nat F n _ _ _))//; last exact: nneseries_lim_ge.
+rewrite (le_trans (lee_sum_fset_nat F n _ _ _))//; last first.
+  by apply: nneseries_lim_ge => i _; exact: f0.
 move=> k /= kF; rewrite /n big_seq_fsetE/=.
 by rewrite -[k]/(val [`kF]%fset) ltnS leq_bigmax.
 Qed.
@@ -311,7 +312,7 @@ Lemma nneseries_esum (R : realType) (a : nat -> \bar R) (P : pred nat) :
   \sum_(i <oo | P i) a i = \esum_(i in [set x | P x]) a i.
 Proof.
 move=> a0; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: (lime_le (is_cvg_nneseries_cond a0)); apply: nearW => n.
+  apply: (lime_le (is_cvg_nneseries_cond (fun n _ => a0 n))); apply: nearW => n.
   apply: ereal_sup_ubound; exists [set` [fset val i | i in 'I_n & P i]%fset].
     split; first exact: finite_fset.
     by move=> /= k /imfsetP[/= i]; rewrite inE => + ->.
@@ -536,7 +537,7 @@ Lemma summable_cvg (P : pred nat) (f : (\bar R)^nat) :
   cvg ((fun n => \sum_(0 <= k < n | P k) fine (f k))%R @ \oo).
 Proof.
 move=> f0 Pf; apply: nondecreasing_is_cvgn.
-  by apply: nondecreasing_series => n Pn; exact/fine_ge0/f0.
+  by apply: nondecreasing_series => n _ Pn; exact/fine_ge0/f0.
 exists (fine (\sum_(i <oo | P i) `|f i|)) => x /= [n _ <-].
 rewrite summable_fine_sum// -lee_fin fineK//; last first.
   by apply/sum_fin_numP => i ni Pi; rewrite fin_num_abs (summable_pinfty Pf).
@@ -600,10 +601,8 @@ Unshelve. all: by end_near. Qed.
 Lemma summable_eseries_esum  (f : nat -> \bar R) (P : pred nat) :
   summable P f -> \sum_(i <oo | P i) f i = esum P f^\+ - esum P f^\-.
 Proof.
-move=> Pfoo; rewrite -nneseries_esum; last first.
-  by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite -leNgt.
-rewrite -nneseries_esum ?[LHS]summable_eseries//.
-by move=> n Pn; rewrite /maxe; case: ifPn => //; rewrite leNgt.
+move=> Pfoo.
+by rewrite -nneseries_esum// -nneseries_esum// [LHS]summable_eseries.
 Qed.
 
 End summable_nat.
@@ -620,7 +619,7 @@ Let ge0_esum_posneg D f : (forall x, D x -> 0 <= f x) ->
 Proof.
 move=> Sa; rewrite /esum_posneg [X in _ - X](_ : _ = 0) ?sube0; last first.
   by rewrite esum1// => x Sx; rewrite -[LHS]/(f^\- x) (ge0_funenegE Sa)// inE.
-by apply: eq_esum => t St; apply/max_idPl; exact: Sa.
+apply: eq_esum => t St; rewrite funeposE; apply/max_idPl; exact: Sa.
 Qed.
 
 Lemma esumB D f g : summable D f -> summable D g ->
@@ -629,11 +628,11 @@ Lemma esumB D f g : summable D f -> summable D g ->
   \esum_(i in D) f i - \esum_(i in D) g i.
 Proof.
 move=> Df Dg f0 g0.
-have /eqP : esum D (f \- g)^\+ + esum_posneg D g = esum D (f \- g)^\- + esum_posneg D f.
-  rewrite !ge0_esum_posneg// -!esumD//; last 2 first.
-    by move=> t Dt; rewrite le_max lexx orbT.
-    by move=> t Dt; rewrite le_max lexx orbT.
-  apply eq_esum => i Di; have [fg|fg] := leP 0 (f i - g i).
+have /eqP : esum D (f \- g)^\+ + esum_posneg D g =
+            esum D (f \- g)^\- + esum_posneg D f.
+  rewrite !ge0_esum_posneg// -!esumD//.
+  apply eq_esum => i Di; rewrite funeposE funenegE.
+  have [fg|fg] := leP 0 (f i - g i).
     rewrite max_r 1?leeNl ?oppe0// add0e subeK//.
     by rewrite fin_num_abs (summable_pinfty Dg).
   rewrite add0e max_l; last by rewrite leeNr oppe0 ltW.
@@ -651,7 +650,8 @@ rewrite [X in _ == X -> _]addeC -sube_eq; last 2 first.
     rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
     by rewrite /= gee0_abs// f0.
 rewrite -addeA addeCA eq_sym [X in _ == X -> _]addeC -sube_eq; last 2 first.
-  - rewrite ge0_esum_posneg// (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
+  - rewrite ge0_esum_posneg//.
+    rewrite (@eq_esum _ _ _ _ (abse \o f))// -?summableE// => i Di.
     by rewrite /= gee0_abs// f0.
   - rewrite fin_num_adde_defl// ge0_esum_posneg//.
     rewrite (@eq_esum _ _ _ _ (abse \o g))// -?summableE// => i Di.

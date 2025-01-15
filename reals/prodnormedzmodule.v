@@ -57,8 +57,7 @@ Proof. by rewrite /norm/= !normrN. Qed.
 HB.instance Definition _ := Num.Zmodule_isNormed.Build R (U * V)%type
   normD norm_eq0 normMn normrN.
 
-Lemma prod_normE (x : [the normedZmodType R of (U * V)%type]) :
-  `|x| = Num.max `|x.1| `|x.2|.
+Lemma prod_normE (x : U * V) : `|x| = Num.max `|x.1| `|x.2|.
 Proof. by []. Qed.
 
 End ProdNormedZmodule.

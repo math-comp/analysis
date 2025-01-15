@@ -76,8 +76,7 @@ Lemma nondecreasing_right_continuousP (R : numFieldType) (a : R) (e : R)
   e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
 Proof.
 move=> e0; move: (cumulative_is_right_continuous f).
-move=> /(_ a)/(@cvgr_dist_lt _ [the normedModType R of R^o]).
-move=> /(_ _ e0)[] _ /posnumP[d] => h.
+move=> /(_ a) /(@cvgr_dist_lt _ R^o) /(_ _ e0)[] _ /posnumP[d] => h.
 exists (PosNum [gt0 of (d%:num / 2)]) => //=.
 move: h => /(_ (a + d%:num / 2)) /=.
 rewrite opprD addrA subrr distrC subr0 ger0_norm //.
@@ -397,11 +396,9 @@ move=> Dab h; have [ab|ab] := leP a0 b0; last first.
   by rewrite subr_ge0 cumulative_is_nondecreasing// Dab.
 have mab k : [set` D] k -> R.-ocitv.-measurable `]a k, b k]%classic by [].
 move: h; rewrite -bigcup_fset.
-move/(@content_sub_fsum _ R _ [the content _ _ of wlength f] _ [set` D]
-    `]a0, b0]%classic (fun x => `](a x), (b x)]%classic) (finite_fset D) mab
-  (is_ocitv _ _)) => /=.
+move/(content_sub_fsum (wlength f) (finite_fset D) mab (is_ocitv a0 b0)) => /=.
 rewrite wlength_itv_bnd// -lee_fin => /le_trans; apply.
-rewrite -sumEFin fsbig_finite//= set_fsetK// big_seq [in X in (_ <= X)%E]big_seq.
+rewrite -sumEFin fsbig_finite//= set_fsetK// big_seq [in leRHS]big_seq.
 by apply: lee_sum => i iD; rewrite wlength_itv_bnd// Dab.
 Qed.
 
@@ -495,7 +492,7 @@ by case: ifP; rewrite ltey.
 Qed.
 
 Definition lebesgue_stieltjes_measure (f : cumulative R) :=
-  measure_extension [the measure _ _ of wlength f].
+  measure_extension (wlength f).
 HB.instance Definition _ (f : cumulative R) :=
   Measure.on (lebesgue_stieltjes_measure f).
 
@@ -514,7 +511,7 @@ Notation wlength_sigma_sub_additive := wlength_sigma_subadditive (only parsing).
 
 Section lebesgue_stieltjes_measure.
 Variable R : realType.
-Let gitvs := [the measurableType _ of g_sigma_algebraType (@ocitv R)].
+Let gitvs : measurableType _ := g_sigma_algebraType (@ocitv R).
 
 Lemma lebesgue_stieltjes_measure_unique (f : cumulative R)
     (mu : {measure set gitvs -> \bar R}) :
@@ -532,7 +529,7 @@ Section completed_lebesgue_stieltjes_measure.
 Context {R : realType}.
 
 Definition completed_lebesgue_stieltjes_measure (f : cumulative R) :=
-  @completed_measure_extension _ _ _ [the measure _ _ of wlength f].
+  @completed_measure_extension _ _ _ (wlength f).
 
 HB.instance Definition _ (f : cumulative R) :=
   Measure.on (@completed_lebesgue_stieltjes_measure f).

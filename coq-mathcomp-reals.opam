@@ -1,6 +1,3 @@
-# This file was generated from `meta.yml`, please do not edit manually.
-# Follow the instructions on https://github.com/coq-community/templates to regenerate.
-
 opam-version: "2.0"
 maintainer: "Reynald Affeldt <reynald.affeldt@aist.go.jp>"
 version: "dev"
@@ -12,7 +9,7 @@ license: "CECILL-C"
 
 synopsis: "A library for real numbers for mathematical components"
 description: """
-This repository contains a library for real numbers for
+This package contains a library for real numbers for
 the Coq proof-assistant and using the Mathematical Components library."""
 
 build: [make "-C" "reals" "-j%{jobs}%"]
@@ -25,6 +22,7 @@ tags: [
   "category:Mathematics/Real Numbers"
   "keyword:real numbers"
   "keyword:reals"
+  "keyword:extended real numbers"
   "logpath:mathcomp.reals"
 ]
 authors: [

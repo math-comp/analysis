@@ -231,3 +231,33 @@ by apply: (ngPr (b, a, i)); split => //; exact: N1N2N.
 Unshelve. all: by end_near. Qed.
 #[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `compact_setX`")]
 Notation compact_setM := compact_setX (only parsing).
+
+Lemma swap_continuous {X Y : topologicalType} : continuous (@swap X Y).
+Proof.
+case=> a b W /= [[U V]][] /= Ub Va UVW; exists (V, U); first by split.
+by case => //= ? ? [] ? ?; exact: UVW.
+Qed.
+
+Section reassociate_continuous.
+Context {X Y Z : topologicalType}.
+
+Lemma prodA_continuous : continuous (@prodA X Y Z).
+Proof.
+move=> [] [a b] c U [[/= P V]] [Pa] [][/= Q R][ Qb Rc] QRV PVU.
+exists ((P `*` Q), R); first split.
+- exists (P, Q); first by [].
+  by case=> x y /= [Px Qy].
+- by [].
+- by move=> [[x y] z] [] [] ? ? ?; apply: PVU; split => //; exact: QRV.
+Qed.
+
+Lemma prodAr_continuous : continuous (@prodAr X Y Z).
+Proof.
+case=> a [b c] U [[V R]] [/= [[P Q /=]]] [Pa Qb] PQV Rc VRU.
+exists (P, (Q `*` R)); first split => //.
+- exists (Q, R); first by [].
+  by case=> ? ? /= [].
+- by case=> x [y z] [? [? ?]]; apply: VRU; split => //; exact: PQV.
+Qed.
+
+End reassociate_continuous.

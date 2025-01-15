@@ -1,12 +1,12 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum archimedean.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp Require Import finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality ereal reals signed.
-From mathcomp Require Import topology prodnormedzmodule normedtype derive.
+From mathcomp Require Import topology prodnormedzmodule tvs normedtype derive.
 From mathcomp Require Import sequences real_interval.
-From HB Require Import structures.
 
 (**md**************************************************************************)
 (* # Real-valued functions over reals                                         *)
@@ -41,10 +41,6 @@ From HB Require Import structures.
 (*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
 (*                             valued function f at point a                   *)
 (* ```                                                                        *)
-(*               cauchy_MVT == Cauchy's mean value theorem                    *)
-(*           lhopital_right == L'Hopital rule (limit taken on the right)      *)
-(*            lhopital_left == L'Hopital rule (limit taken on the left)       *)
-(*                                                                            *)
 (******************************************************************************)
 
 Set Implicit Arguments.
@@ -157,9 +153,9 @@ End fun_cvg_realFieldType.
 
 Section cvgr_fun_cvg_seq.
 Context {R : realType}.
+Implicit Types (f : R -> R) (p l : R).
 
-Lemma cvg_at_rightP (f : R -> R) (p l : R) :
-  f x @[x --> p^'+] --> l <->
+Lemma cvg_at_rightP f p l : f x @[x --> p^'+] --> l <->
   (forall u : R^nat, (forall n, u n > p) /\ (u n @[n --> \oo] --> p) ->
     f (u n) @[n --> \oo] --> l).
 Proof.
@@ -196,8 +192,7 @@ rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite leNgt distrC => /negP.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_at_leftP (f : R -> R) (p l : R) :
-  f x @[x --> p^'-] --> l <->
+Lemma cvg_at_leftP f p l : f x @[x --> p^'-] --> l <->
   (forall u : R^nat, (forall n, u n < p) /\ u n @[n --> \oo] --> p ->
     f (u n) @[n --> \oo] --> l).
 Proof.
@@ -209,6 +204,51 @@ split=> [pfl u [pu up]|pfl u [pu up]].
 apply: pfl.
 by split; [move=> k; rewrite ltrNl//|apply/cvgNP => /=; rewrite opprK].
 Qed.
+
+Lemma cvgr_dnbhsP f p l : f x @[x --> p^'] --> l <->
+  (forall u : R^nat, (forall n, u n != p) /\ (u n @[n --> \oo] --> p) ->
+    f (u n) @[n --> \oo] --> l).
+Proof.
+split=> [/cvgrPdist_le fpl u [up /cvgrPdist_lt put]|pfl].
+  apply/cvgrPdist_le => e /fpl [r /=] /put[n _ {}put] {}fpl.
+  near=> t; apply: fpl => //=; apply: put.
+  by near: t; exact: nbhs_infty_ge.
+apply: cvg_at_right_left_dnbhs.
+- by apply/cvg_at_rightP => u [pu ?]; apply: pfl; split => // n; rewrite gt_eqF.
+- by apply/cvg_at_leftP => u [pu ?]; apply: pfl; split => // n; rewrite lt_eqF.
+Unshelve. all: end_near. Qed.
+
+Lemma cvg_nbhsP f p l : f x @[x --> p] --> l <->
+  (forall u : R^nat, (u n @[n --> \oo] --> p) -> f (u n) @[n --> \oo] --> l).
+Proof.
+split=> [/cvgrPdist_le /= fpl u /cvgrPdist_lt /= uyp|pfl].
+  apply/cvgrPdist_le => e /fpl[d d0 pdf].
+  by apply: filterS (uyp d d0) => t /pdf.
+apply: contrapT => fpl; move: pfl; apply/existsNP.
+suff: exists2 x : R ^nat,
+    x n @[n --> \oo] --> p & ~ f (x n) @[n --> \oo] --> l.
+  by move=> [x_] hp; exists x_; exact/not_implyP.
+have [e He] : exists e : {posnum R}, forall d : {posnum R},
+    exists xn, `|xn - p| < d%:num /\ `|f xn - l| >= e%:num.
+  apply: contrapT; apply: contra_not fpl => /forallNP h.
+  apply/cvgrPdist_le => e e0; have /existsNP[d] := h (PosNum e0).
+  move/forallNP => {}h; near=> t.
+  have /not_andP[abs|/negP] := h t.
+  - exfalso; apply: abs.
+    by near: t; exists d%:num => //= z/=; rewrite distrC.
+  - by rewrite -ltNge distrC => /ltW.
+have invn n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
+exists (fun n => sval (cid (He (PosNum (invn n))))).
+  apply/cvgrPdist_lt => r r0; near=> t.
+  rewrite /sval/=; case: cid => x [xpt _].
+  rewrite distrC (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
+  near: t; exists `|ceil r^-1|%N => // s /=.
+  rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
+  by rewrite natr_absz gtr0_norm -?ceil_gt0 ?invr_gt0 ?le_ceil ?num_real.
+move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
+rewrite /sval/=; case: cid => // x [px xpn].
+by rewrite ltNge distrC => /negP.
+Unshelve. all: end_near. Qed.
 
 End cvgr_fun_cvg_seq.
 
@@ -235,13 +275,11 @@ have y_p : y_ n @[n --> \oo] --> p.
   apply/cvgrPdist_lt => e e0; near=> t.
   rewrite ltr0_norm// ?subr_lt0// opprB.
   rewrite /y_ /sval/=; case: cid2 => //= x /andP[_ + _].
-  rewrite ltrBlDr => /lt_le_trans; apply.
-  rewrite addrC lerD2r -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
+  rewrite -ltrBlDl => /lt_le_trans; apply.
+  rewrite -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
   near: t.
-  exists `|ceil e^-1|%N => // k /= ek.
-  rewrite (le_trans (ceil_ge _))// (@le_trans _ _ `|ceil e^-1|%:~R)//.
-    by rewrite ger0_norm -?ceil_ge0// (lt_le_trans (ltrN10 _))// invr_ge0// ltW.
-  by move: ek;rewrite -(leq_add2r 1) !addn1 -(ltr_nat R) => /ltW.
+  exists `|ceil e^-1|%N => // k /=; rewrite pmulrn ceil_ge_int// -lez_nat abszE.
+  by move=> /(le_trans (ler_norm _)) /le_trans; apply; rewrite lez_nat leqnSn.
 have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
 have mn : (m <= n)%N by near: n; exists m.
@@ -1424,10 +1462,10 @@ have := xb; rewrite le_eqVlt => /orP[/eqP {}xb {ax}|{}xb].
 have xoab : x \in `]a, b[ by rewrite in_itv /=; apply/andP; split.
 near=> y; suff: l <= f y <= u.
   by rewrite ge_max le_min -!andbA => /and4P[-> _ ->].
-have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; apply: near_in_itv.
+have ? : y \in `[a, b] by apply: subset_itv_oo_cc; near: y; exact: near_in_itvoo.
 have fyab : f y \in `[f a, f b] by rewrite in_itv/= !fle// ?ltW.
 rewrite -[l <= _]gle -?[_ <= u]gle// ?fK //.
-apply: subset_itv_oo_cc; near: y; apply: near_in_itv; rewrite in_itv /=.
+apply: subset_itv_oo_cc; near: y; apply: near_in_itvoo; rewrite in_itv /=.
 rewrite -[x]fK // !glt//= lt_min gt_max ?andbT ltrBlDr ltr_pwDr //.
 by apply/and3P; split; rewrite // flt.
 Unshelve. all: by end_near. Qed.
@@ -1505,7 +1543,7 @@ have fwcte : {within `[x - e, x + e], continuous f}.
 have fKe : {in `[x - e, x + e], cancel f g}
   by near: e; apply/at_right_in_segment.
 have nearfx : \forall y \near f x, y \in f @`](x - e), (x + e)[.
-  apply: near_in_itv; apply: mono_mem_image_itvoo; last first.
+  apply: near_in_itvoo; apply: mono_mem_image_itvoo; last first.
     by rewrite in_itv/= -ltr_distlC subrr normr0.
   apply: itv_continuous_inj_mono => //.
   by apply: (@can_in_inj _ _ _ _ g); near: e; apply/at_right_in_segment.
@@ -2415,7 +2453,7 @@ case=> ? [l + <- <-]; rewrite -/(total_variation x b f).
 move: l => [|i j].
   by move=> /itv_partition_nil /eqP; rewrite lt_eqF.
 move=> [/= /andP[xi ij /eqP ijb]] tv_eps.
-apply: filter_app (nbhs_right_ge _).
+apply: (filter_app _ _ (nbhs_right_ge _)).
 apply: filter_app (nbhs_right_lt xi).
 have e20 : 0 < eps%:num / 2 by [].
 move/cvgrPdist_lt/(_ (eps%:num/2) e20) : ctsf; apply: filter_app.
@@ -2513,7 +2551,7 @@ have /near_eq_cvg/cvg_trans : {near (- x)^'+,
     (fun t => fine (TV (- b) (- a) (f \o -%R)) - fine (TV (- b) t (f \o -%R))) =1
     (fine \o (TV a)^~ f) \o -%R}.
   apply: filter_app (nbhs_right_lt xa).
-  apply: filter_app (nbhs_right_ge _).
+  apply: (filter_app _ _ (nbhs_right_ge _)).
   near=> t => xt ta; have ? : -b <= t by exact: (le_trans bx).
   have ? : t <= -a by exact: ltW.
   apply/eqP; rewrite eq_sym -subr_eq opprK addrC.
@@ -2547,239 +2585,3 @@ apply/continuous_within_itvP => //; split.
 Qed.
 
 End variation_continuity.
-
-Section Cauchy_MVT.
-Context {R : realType}.
-Variables (f df g dg : R -> R) (a b c : R).
-Hypothesis ab : a < b.
-Hypotheses (cf : {within `[a, b], continuous f})
-           (cg : {within `[a, b], continuous g}).
-Hypotheses (fdf : forall x, x \in `]a, b[%R -> is_derive x 1 f (df x))
-           (gdg : forall x, x \in `]a, b[%R -> is_derive x 1 g (dg x)).
-Hypotheses (dg0 : forall x, x \in `]a, b[%R -> dg x != 0).
-
-Lemma differentiable_subr_neq0 :
-   g b - g a != 0.
-Proof.
-have [r] := MVT ab gdg cg; rewrite in_itv/= => /andP[ar rb] dgg.
-by rewrite dgg mulf_neq0 ?dg0 ?in_itv/= ?ar//; rewrite subr_eq0 gt_eqF.
-Qed.
-
-Lemma cauchy_MVT :
-  exists2 c, c \in `]a, b[%R & df c / dg c = (f b - f a) / (g b - g a).
-Proof.
-have [r] := MVT ab gdg cg; rewrite in_itv/= => /andP[ar rb] dgg.
-pose h (x : R) := f x - ((f b - f a) / (g b - g a)) * g x.
-have hder x : x \in `]a, b[%R -> derivable h x 1.
-  move=> xab; apply: derivableB => /=.
-    exact: (@ex_derive _ _ _ _ _ _ _ (fdf xab)).
-  by apply: derivableM => //; exact: (@ex_derive _ _ _ _ _ _ _ (gdg xab)).
-have ch : {within `[a, b], continuous h}.
-  rewrite continuous_subspace_in => x xab.
-  by apply: cvgB; [exact: cf|apply: cvgM; [exact: cvg_cst|exact: cg]].
-have /(Rolle ab hder ch)[x xab derh] : h a = h b.
-  rewrite /h; apply/eqP; rewrite subr_eq eq_sym -addrA eq_sym addrC -subr_eq.
-  rewrite -mulrN -mulrDr -(addrC (g a)) -[X in _ * X]opprB mulrN -mulrA.
-  rewrite mulVf//.
-    by rewrite mulr1 opprB.
-    by rewrite differentiable_subr_neq0.
-pose dh (x : R) := df x - (f b - f a) / (g b - g a) * dg x.
-have his_der y : y \in `]a, b[%R -> is_derive x 1 h (dh x).
-  by move=> yab; apply: is_deriveB; [exact: fdf|apply: is_deriveZ; exact: gdg].
-exists x => //.
-have := @derive_val _ R _ _ _ _ _ (his_der _ xab).
-have -> := @derive_val _ R _ _ _ _ _ derh.
-move=> /eqP; rewrite eq_sym subr_eq add0r => /eqP ->.
-by rewrite -mulrA divff ?mulr1//; exact: dg0.
-Qed.
-
-End Cauchy_MVT.
-
-Section lhopital.
-Context {R : realType}.
-Variables (f df g dg : R -> R) (a : R) (U : set R) (Ua : nbhs a U).
-Hypotheses (fdf : forall x, x \in U -> is_derive x 1 f (df x))
-           (gdg : forall x, x \in U -> is_derive x 1 g (dg x)).
-Hypotheses (fa0 : f a = 0) (ga0 : g a = 0)
-           (cdg : \forall x \near a^', dg x != 0).
-
-Lemma lhopital_right (l : R) :
-  df x / dg x @[x --> a^'+] --> l -> f x / g x @[x --> a^'+] --> l.
-Proof.
-case: cdg => r/= r0 cdg'.
-move: Ua; rewrite filter_of_nearI => -[D /= D0 aDU].
-near a^'+ => b.
-have abf x : x \in `]a, b[%R -> {within `[a, x], continuous f}.
-  rewrite in_itv/= => /andP[ax xb].
-  apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[ay yx].
-  apply: ex_derive.
-  apply: fdf.
-  rewrite inE; apply: aDU => /=.
-  rewrite ler0_norm? subr_le0//.
-  rewrite opprD opprK addrC ltrBlDr (le_lt_trans yx)// (lt_trans xb)//.
-  near: b; apply: nbhs_right_lt.
-  by rewrite ltrDr.
-have abg x : x \in `]a, b[%R -> {within `[a, x], continuous g}.
-  rewrite in_itv/= => /andP[ax xb].
-  apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[ay yx].
-  apply: ex_derive.
-  apply: gdg.
-  rewrite inE; apply: aDU => /=.
-  rewrite ler0_norm? subr_le0//.
-  rewrite opprD opprK addrC ltrBlDr (le_lt_trans yx)// (lt_trans xb)//.
-  near: b; apply: nbhs_right_lt.
-  by rewrite ltrDr.
-have fdf' y : y \in `]a, b[%R -> is_derive y 1 f (df y).
-  rewrite in_itv/= => /andP[ay yb]; apply: fdf.
-  rewrite inE; apply: aDU => /=.
-  rewrite ltr0_norm ?subr_lt0//.
-  rewrite opprD opprK addrC ltrBlDr (lt_le_trans yb)//.
-  near: b; apply: nbhs_right_le.
-  by rewrite ltrDr.
-have gdg' y : y \in `]a, b[%R -> is_derive y 1 g (dg y).
-  rewrite in_itv/= => /andP[ay yb]; apply: gdg.
-  rewrite inE; apply: aDU => /=.
-  rewrite ltr0_norm ?subr_lt0//.
-  rewrite opprD opprK addrC ltrBlDr (lt_le_trans yb)//.
-  near: b; apply: nbhs_right_le.
-  by rewrite ltrDr.
-have {}dg0 y : y \in `]a, b[%R -> dg y != 0.
-  rewrite in_itv/= => /andP[ay yb].
-  apply: (cdg' y) => /=; last by rewrite gt_eqF.
-  rewrite ltr0_norm; last by rewrite subr_lt0.
-  rewrite opprB ltrBlDl (lt_trans yb)//.
-  near: b; apply: nbhs_right_lt.
-  by rewrite ltrDl.
-move=> fgal.
-have L : \forall x \near a^'+,
-  exists2 c, c \in `]a, x[%R & df c / dg c = f x / g x.
-  near=> x.
-  have /andP[ax xb] : a < x < b by exact/andP.
-  have {}fdf' y : y \in `]a, x[%R -> is_derive y 1 f (df y).
-    rewrite !in_itv/= => /andP[ay yx].
-    by apply: fdf'; rewrite in_itv/= ay/= (lt_trans yx).
-  have {}gdg' y : y \in `]a, x[%R -> is_derive y 1 g (dg y).
-    rewrite !in_itv/= => /andP[ay yx].
-    by apply: gdg'; rewrite in_itv/= ay/= (lt_trans yx).
-  have {}dg0 y : y \in `]a, x[%R -> dg y != 0.
-    rewrite in_itv/= => /andP[ya yx].
-    by apply: dg0; rewrite in_itv/= ya/= (lt_trans yx).
-  have {}axf : {within `[a, x], continuous f}.
-    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[ay yx].
-    by apply: abf; rewrite in_itv/= xb andbT.
-  have {}axg : {within `[a, x], continuous g}.
-    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[ay yx].
-    by apply: abg; rewrite in_itv/= xb andbT.
-  have := @cauchy_MVT _ f df g dg _ _ ax axf axg fdf' gdg' dg0.
-  by rewrite fa0 ga0 2!subr0.
-apply/cvgrPdist_le => /= e e0.
-move/cvgrPdist_le : fgal.
-move=> /(_ _ e0)[r'/= r'0 fagl].
-case: L => d /= d0 L.
-near=> t.
-have /= := L t.
-have atd : `|a - t| < d.
-  rewrite ltr0_norm; last by rewrite subr_lt0.
-  rewrite opprB ltrBlDl.
-  near: t; apply: nbhs_right_lt.
-  by rewrite ltrDl.
-have at_ : a < t by [].
-move=> /(_ atd)/(_ at_)[c]; rewrite in_itv/= => /andP[ac ct <-].
-apply: fagl => //=.
-rewrite ltr0_norm; last by rewrite subr_lt0.
-rewrite opprB ltrBlDl (lt_trans ct)//.
-near: t; apply: nbhs_right_lt.
-by rewrite ltrDl.
-Unshelve. all: by end_near. Qed.
-
-Lemma lhopital_left (l : R) :
-  df x / dg x @[x --> a^'-] --> l -> f x / g x @[x --> a^'-] --> l.
-Proof.
-case: cdg => r/= r0 cdg'.
-move: Ua; rewrite filter_of_nearI => -[D /= D0 aDU].
-near a^'- => b.
-have baf x : x \in `]b, a[%R -> {within `[x, a], continuous f}.
-  rewrite in_itv/= => /andP[bx xa].
-  apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[xy ya].
-  apply: ex_derive.
-  apply: fdf.
-  rewrite inE; apply: aDU => /=.
-  rewrite ger0_norm ?subr_ge0//.
-  rewrite ltrBlDr -ltrBlDl (lt_le_trans _ xy)// (le_lt_trans _ bx)//.
-  near: b; apply: nbhs_left_ge.
-  by rewrite ltrBlDl ltrDr.
-have bag x : x \in `]b, a[%R -> {within `[x, a], continuous g}.
-  rewrite in_itv/= => /andP[bx xa].
-  apply: derivable_within_continuous => y; rewrite in_itv/= => /andP[xy ya].
-  apply: ex_derive.
-  apply: gdg.
-  rewrite inE; apply: aDU => /=.
-  rewrite ger0_norm ?subr_ge0//.
-  rewrite ltrBlDr -ltrBlDl (lt_le_trans _ xy)// (lt_trans _ bx)//.
-  near: b; apply: nbhs_left_gt.
-  by rewrite ltrBlDl ltrDr.
-have fdf' y : y \in `]b, a[%R -> is_derive y 1 f (df y).
-  rewrite in_itv/= => /andP[by_ ya]; apply: fdf.
-  rewrite inE.
-  apply: aDU => /=.
-  rewrite gtr0_norm ?subr_gt0//.
-  rewrite ltrBlDl -ltrBlDr (le_lt_trans _ by_)//.
-  near: b; apply: nbhs_left_ge.
-  by rewrite ltrBlDr ltrDl.
-have gdg' y : y \in `]b, a[%R -> is_derive y 1 g (dg y).
-  rewrite in_itv/= => /andP[by_ ya]; apply: gdg.
-  rewrite inE; apply: aDU => /=.
-  rewrite gtr0_norm ?subr_gt0//.
-  rewrite ltrBlDl -ltrBlDr (le_lt_trans _ by_)//.
-  near: b; apply: nbhs_left_ge.
-  by rewrite ltrBlDr ltrDl.
-have {}dg0 y : y \in `]b, a[%R -> dg y != 0.
-  rewrite in_itv/= => /andP[by_ ya].
-  apply: (cdg' y) => /=; last by rewrite lt_eqF.
-  rewrite gtr0_norm; last by rewrite subr_gt0.
-  rewrite ltrBlDr -ltrBlDl (lt_trans _ by_)//.
-  near: b; apply: nbhs_left_gt.
-  by rewrite ltrBlDl ltrDr.
-move=> fgal.
-have L : \forall x \near a^'-,
-  exists2 c, c \in `]x, a[%R & df c / dg c = f x / g x.
-  near=> x.
-  have /andP[bx xa] : b < x < a by exact/andP.
-  have {}fdf' y : y \in `]x, a[%R -> is_derive y 1 f (df y).
-    rewrite in_itv/= => /andP[xy ya].
-    by apply: fdf'; rewrite in_itv/= ya andbT (lt_trans bx).
-  have {}gdg' y : y \in `]x, a[%R -> is_derive y 1 g (dg y).
-    rewrite in_itv/= => /andP[xy ya].
-    by apply: gdg'; rewrite in_itv/= ya andbT (lt_trans _ xy).
-  have {}dg0 y : y \in `]x, a[%R -> dg y != 0.
-    rewrite in_itv/= => /andP[xy ya].
-    by apply: dg0; rewrite in_itv/= ya andbT (lt_trans bx).
-  have {}xaf : {within `[x, a], continuous f}.
-    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[xy ya].
-    by apply: baf; rewrite in_itv/= bx.
-  have {}xag : {within `[x, a], continuous g}.
-    rewrite continuous_subspace_in => y; rewrite inE/= in_itv/= => /andP[xy ya].
-    by apply: bag; rewrite in_itv/= bx.
-  have := @cauchy_MVT _ f df g dg _ _ xa xaf xag fdf' gdg' dg0.
-  by rewrite fa0 ga0 !sub0r divrN mulNr opprK.
-apply/cvgrPdist_le => /= e e0.
-move/cvgrPdist_le : fgal.
-move=> /(_ _ e0)[r'/= r'0 fagl].
-case: L => d /= d0 L.
-near=> t.
-have /= := L t.
-have atd : `|a - t| < d.
-  rewrite gtr0_norm; last by rewrite subr_gt0.
-  rewrite ltrBlDr -ltrBlDl.
-  near: t; apply: nbhs_left_gt.
-  by rewrite ltrBlDl ltrDr.
-have ta : t < a by [].
-move=> /(_ atd)/(_ ta)[c]; rewrite in_itv/= => /andP[tc ca <-].
-apply: fagl => //=.
-rewrite gtr0_norm; last by rewrite subr_gt0.
-rewrite ltrBlDr -ltrBlDl (lt_trans _ tc)//.
-near: t; apply: nbhs_left_gt.
-by rewrite ltrBlDl ltrDr.
-Unshelve. all: by end_near. Qed.
-
-End lhopital.

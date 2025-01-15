@@ -540,7 +540,7 @@ Lemma line_path1 a b : line_path a b 1 = b.
 Proof. by rewrite /line_path subrr mul0r add0r mul1r. Qed.
 
 Lemma line_path_sym a b t : line_path a b t = line_path b a (1 - t).
-Proof. by rewrite /line_path opprB addrCA subrr addr0 addrC. Qed.
+Proof. by rewrite /line_path subKr addrC. Qed.
 
 Lemma line_path_flat a : line_path a a = cst a.
 Proof. by apply/funext => t; rewrite line_pathEl subrr mulr0 add0r. Qed.

@@ -128,15 +128,25 @@ doc-clean:
 	rm -rf _build_doc/
 
 coq2html:
+	coqdep -f _CoqProject > depend.d
+	../coq2html/ocamldot/ocamldot depend.d > depend.dot
+	gsed -i 's/Classical/mathcomp\.classical/' depend.dot
+	gsed -i 's/Theories/mathcomp\.analysis/' depend.dot
+	gsed -i 's/Reals_stdlib/mathcomp\.reals_stdlib/' depend.dot
+	gsed -i 's/Experimental_reals/mathcomp\.experimental_reals/' depend.dot
+	gsed -i 's/Reals/mathcomp\.reals/' depend.dot
+	gsed -i 's/Analysis_stdlib/mathcomp\.analysis_stdlib/' depend.dot
+	gsed -i 's/\//\./g' depend.dot
 	../coq2html/tools/generate-hierarchy-graph.sh
 	../coq2html/coq2html \
   -hierarchy-graph hierarchy-graph.dot \
+  -dependency-graph depend.dot \
   -title "Mathcomp Analysis" \
   -d html/ -base mathcomp -Q theories analysis \
   -coqlib https://coq.inria.fr/doc/V8.19.2/stdlib/ \
   -external https://math-comp.github.io/htmldoc/ mathcomp.ssreflect \
   -external https://math-comp.github.io/htmldoc/ mathcomp.algebra \
-  $(shell find . -not -path '*/.*' -name "*.v" -or -name "*.glob")
+  $(find . -not -path '*/.*' -name "*.v" -or -name "*.glob")
 
 coq2html-clean:
 	rm -f */*.glob

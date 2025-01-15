@@ -211,3 +211,11 @@ move=> [][][[]l|[]] [[]r|[]][][]//= _ xlr /filterS; apply.
 Qed.
 
 End weak_order_refine.
+
+Lemma continuous_comp_weak {Y : choiceType} {X Z : topologicalType} (w : Y -> Z)
+  (f : X -> weak_topology w) :
+  continuous (w \o f) -> continuous f.
+Proof.
+move=> cf z U [?/= [[W oW <-]]] /= Wsfz /filterS; apply; apply: cf.
+exact: open_nbhs_nbhs.
+Qed.

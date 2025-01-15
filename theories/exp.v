@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import mathcomp_extra reals ereal signed.
-From mathcomp Require Import topology normedtype landau sequences derive.
+From mathcomp Require Import topology tvs normedtype landau sequences derive.
 From mathcomp Require Import realfun itv convex.
 
 (**md**************************************************************************)
@@ -228,7 +228,7 @@ suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> limn (series s).
 apply: cvg_zero => /=.
 suff Cc : limn
     (series (fun n => c n * (((h + x) ^+ n - x ^+ n) / h - n%:R * x ^+ n.-1)))
-    @[h --> 0^'] --> (0 : R).
+    @[h --> 0^'] --> 0.
   apply: cvg_sub0 Cc.
   apply/cvgrPdist_lt => eps eps_gt0 /=.
   near=> h; rewrite sub0r normrN /=.
@@ -974,7 +974,7 @@ have ap0 : (0 < a `^ p)%R by rewrite powR_gt0.
 have bq0 : (0 < b `^ q)%R by rewrite powR_gt0.
 have := @concave_ln _ (@Itv.mk _ `[0, 1] _ q01)%R _ _ ap0 bq0.
 have pq' : (p^-1 = 1 - q^-1)%R by rewrite -pq addrK.
-rewrite !convRE/= /onem -pq' -ler_expR expRD (mulrC p^-1).
+rewrite !convRE/= /onem -pq' -[_ <= ln _]ler_expR expRD (mulrC p^-1).
 rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF// (mulrC q^-1).
 rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF//.
 rewrite lnK ?posrE// lnK ?posrE// => /le_trans; apply.

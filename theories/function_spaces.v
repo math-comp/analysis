@@ -70,6 +70,7 @@ From mathcomp Require Import reals signed topology separation_axioms.
 (*   {family fam, F --> f} == F converges to f in {family fam, U -> V}        *)
 (*  {compact_open, U -> V} == compact-open topology                           *)
 (* {compact_open, F --> f} == F converges to f in {compact_open, U -> V}      *)
+(*                    eval == the evaluation map for continuous functions     *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Ascoli's theorem notations                                              *)
@@ -123,20 +124,19 @@ Variable I : Type.
 
 Definition product_topology_def (T : I -> topologicalType) :=
   sup_topology (fun i => Topological.class
-    (weak_topology (fun f : [the choiceType of forall i, T i] => f i))).
+    (weak_topology (fun f : (forall i, T i) => f i))).
 
 HB.instance Definition _ (T : I -> topologicalType) :=
   Topological.copy (prod_topology T) (product_topology_def T).
 
 HB.instance Definition _ (T : I -> uniformType) :=
   Uniform.copy (prod_topology T)
-    (sup_topology (fun i => Uniform.class
-      [the uniformType of weak_topology (@proj _ T i)])).
+    (sup_topology (fun i => Uniform.class (weak_topology (@proj _ T i)))).
 
 HB.instance Definition _ (R : realType) (Ii : countType)
     (Tc : Ii -> pseudoMetricType R) := PseudoMetric.copy (prod_topology Tc)
-  (sup_pseudometric (fun i => PseudoMetric.class
-     [the pseudoMetricType R of weak_topology (@proj _ Tc i)]) (countableP _)).
+  (sup_pseudometric (fun i => PseudoMetric.class (weak_topology (@proj _ Tc i)))
+    (countableP _)).
 
 End Product_Topology.
 
@@ -151,8 +151,16 @@ HB.instance Definition _ (U : Type) (T : U -> topologicalType) :=
 HB.instance Definition _ (U : Type) (T : U -> uniformType) :=
   Uniform.copy (forall x : U, T x) (prod_topology T).
 
-HB.instance Definition _ (U : Type) R (T : U -> pseudoMetricType R) :=
-  Uniform.copy (forall x : U, T x) (prod_topology T).
+HB.instance Definition _ (U T : topologicalType) :=
+  Topological.copy 
+    (continuousType U T) 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
+HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
+  Uniform.copy 
+    (continuousType U T) 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
 End ArrowAsProduct.
 
 Section product_spaces.
@@ -318,10 +326,10 @@ Definition separate_points_from_closed := forall (U : set T) x,
 Hypothesis sepf : separate_points_from_closed.
 Hypothesis ctsf : forall i, continuous (f_ i).
 
-Let weakT := [the topologicalType of
-  sup_topology (fun i => Topological.on (weak_topology (f_ i)))].
+Let weakT : topologicalType :=
+  sup_topology (fun i => Topological.on (weak_topology (f_ i))).
 
-Let PU := [the topologicalType of prod_topology U_].
+Let PU : topologicalType := prod_topology U_.
 
 Local Notation sup_open := (@open weakT).
 Local Notation "'weak_open' i" := (@open weakT) (at level 0).
@@ -341,7 +349,7 @@ apply: (wiFx i); have /= -> := @nbhsE (weak_topology (f_ i)) x.
 exists (f_ i @^-1` (~` closure [set f_ i x | x in ~` B])); [split=>//|].
   apply: open_comp; last by rewrite ?openC//; exact: closed_closure.
   by move=> + _; exact: (@weak_continuous _ _ (f_ i)).
-rewrite closureC preimage_bigcup => z [V [oV]] VnB => /VnB.
+rewrite -interiorC interiorEbigcup preimage_bigcup => z [V [oV]] VnB => /VnB.
 by move/forall2NP => /(_ z) [] // /contrapT.
 Qed.
 
@@ -382,7 +390,8 @@ have [// | i nAfiy] := @sepf (~` A) x (open_closedC oA).
 pose B : set PU := proj i @^-1` (~` closure (f_ i @` ~` A)).
 apply: (@filterS _ _ _ (range join_product `&` B)).
   move=> z [[w ?]] wzE Bz; exists w => //.
-  move: Bz; rewrite /B -wzE closureC; case=> K [oK KsubA] /KsubA.
+  move: Bz; rewrite /B -wzE -interiorC interiorEbigcup.
+  case=> K [oK KsubA] /KsubA.
   have -> : proj i (join_product w) = f_ i w by [].
   by move=> /exists2P/forallNP/(_ w)/not_andP [] // /contrapT.
 apply: open_nbhs_nbhs; split; last by rewrite -jxy.
@@ -543,6 +552,17 @@ HB.instance Definition _ (U : choiceType) (V : uniformType) :=
 HB.instance Definition _ (U : choiceType) (R : numFieldType)
     (V : pseudoMetricType R) :=
   PseudoMetric.copy (U -> V) (arrow_uniform_type U V).
+
+HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
+  Uniform.copy 
+    (continuousType U T) 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
+HB.instance Definition _ (U : topologicalType) (R : realType) 
+     (T : pseudoMetricType R) :=
+  PseudoMetric.on 
+    (weak_topology (id : continuousType U T -> (U -> T))).
+
 End ArrowAsUniformType.
 
 (** Limit switching *)
@@ -639,7 +659,7 @@ by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
 Unshelve. all: by end_near. Qed.
 
 Lemma uniform_entourage :
-  @entourage [the uniformType of {uniform` A -> V}] =
+  @entourage {uniform` A -> V} =
   filter_from
     (@entourage V)
     (fun P => [set fg | forall t : U, A t -> P (fg.1 t, fg.2 t)]).
@@ -677,7 +697,7 @@ Notation "{ 'family' fam , F --> f }" :=
 HB.instance Definition _ {U : choiceType} {V : uniformType}
     (fam : set U -> Prop) :=
   Uniform.copy {family fam, U -> V} (sup_topology (fun k : sigT fam =>
-       Uniform.class [the uniformType of {uniform` projT1 k -> V}])).
+       Uniform.class {uniform` projT1 k -> V})).
 
 Section UniformCvgLemmas.
 Context {U : choiceType} {V : uniformType}.
@@ -1043,6 +1063,10 @@ End compact_open_uniform.
 Module ArrowAsCompactOpen.
 HB.instance Definition _ (U : topologicalType) (V : topologicalType) :=
   Topological.copy (U -> V) {compact-open, U -> V}.
+
+HB.instance Definition _ (U : topologicalType) (V : topologicalType) :=
+  Topological.copy (continuousType U V) 
+    (weak_topology (id : (continuousType U V) -> (U -> V)) ).
 End ArrowAsCompactOpen.
 
 Definition compactly_in {U : topologicalType} (A : set U) :=
@@ -1412,6 +1436,17 @@ move=> v Kv; have [[P Q] [Px Qv] PQfO] : nbhs (x, v) (f @^-1` O).
 by exists (Q, P) => // -[b a] /= [Qb Pa] Kb; exact: PQfO.
 Unshelve. all: by end_near. Qed.
 
+Lemma continuous_curry_fun (f : U * V -> W) :
+  continuous f -> continuous (curry f).
+Proof. by case/continuous_curry. Qed.
+
+Lemma continuous_curry_cvg (f : U * V -> W) (u : U) (v : V) :
+  continuous f -> curry f z.1 z.2 @[z --> (u, v)] --> curry f u v.
+Proof.
+move=> cf D /cf; rewrite !nbhs_simpl /curry /=; apply: filterS => z ? /=.
+by rewrite -surjective_pairing.
+Qed.
+
 Lemma continuous_uncurry_regular (f : U -> V -> W) :
   locally_compact [set: V] -> @regular_space V -> continuous f ->
   (forall u, continuous (f u)) -> continuous (uncurry f).
@@ -1520,3 +1555,46 @@ Unshelve. all: by end_near. Qed.
 End cartesian_closed.
 
 End currying.
+
+Definition eval {X Y : topologicalType} : continuousType X Y * X -> Y :=
+  uncurry (id : continuousType X Y -> (X -> Y)).
+
+Section composition.
+
+Local Import ArrowAsCompactOpen.
+
+Lemma eval_continuous {X Y : topologicalType} :
+  locally_compact [set: X] -> regular_space X -> continuous (@eval X Y).
+Proof.
+move=> lcX rsX; apply: continuous_uncurry_regular => //.
+  exact: weak_continuous.
+by move=> ?; exact: cts_fun.
+Qed.
+
+Lemma compose_continuous {X Y Z : topologicalType} :
+  locally_compact [set: X] -> @regular_space X ->
+  locally_compact [set: Y] -> @regular_space Y ->
+  continuous (uncurry
+    (comp : continuousType Y Z -> continuousType X Y -> continuousType X Z)).
+Proof.
+move=> lX rX lY rY; apply: continuous_comp_weak.
+set F := _ \o _.
+rewrite -[F]uncurryK; apply: continuous_curry_fun.
+pose g := uncurry F \o prodAr \o swap; rewrite /= in g *.
+have -> : uncurry F = uncurry F \o prodAr \o prodA by rewrite funeqE => -[[]].
+move=> z; apply: continuous_comp; first exact: prodA_continuous.
+have -> : uncurry F \o prodAr = uncurry F \o prodAr \o swap \o swap.
+  by rewrite funeqE => -[[]].
+apply: continuous_comp; first exact: swap_continuous.
+pose h (fxg : continuousType X Y * X * continuousType Y Z) : Z :=
+  eval (fxg.2, (eval fxg.1)).
+have <- : h = uncurry F \o prodAr \o swap.
+  by rewrite /h/g/uncurry/swap/F funeqE => -[[]].
+rewrite /h.
+apply: (@continuous2_cvg _ _ _ _ _ _ snd (eval \o fst) (curry eval)).
+- by apply: continuous_curry_cvg; exact: eval_continuous.
+- exact: cvg_snd.
+- by apply: cvg_comp; [exact: cvg_fst | exact: eval_continuous].
+Qed.
+
+End composition.

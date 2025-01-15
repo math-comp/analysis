@@ -33,7 +33,7 @@ Definition OuP (f : A -> R * R -> R) (g : R * R -> R) :=
 
 (* first we replace sig with ex and the l^2 norm with the l^oo norm *)
 
-Let normedR2 := [the normedModType _ of (R^o * R^o)%type].
+Let normedR2 : normedModType _ := (R^o * R^o)%type.
 
 Definition OuPex (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
   exists2 alp, 0 < alp & exists2 C, 0 < C &

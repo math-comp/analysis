@@ -45,7 +45,7 @@ move=> Ffilt; split=> cvFt.
   move=> _ ->; exists [fset B]%fset.
     by move=> ?; rewrite inE inE => /eqP->; exists i.
   by rewrite predeqE=> ?; split=> [|??]; [apply|]; rewrite /= inE // =>/eqP->.
-move=> A /=; rewrite (@nbhsE [the topologicalType of S]).
+move=> A /=; rewrite (@nbhsE S).
 move=> [_ [[B sB <-] [C BC Ct] sUBA]].
 rewrite nbhs_filterE; apply: filterS sUBA _; apply: (@filterS _ _ _ C).
   by move=> ? ?; exists C.
