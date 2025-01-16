@@ -224,6 +224,12 @@ rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
   [exact: open_nbhsI | rewrite subsetI; split; apply: subIset; [left|right]].
 Qed.
 
+Lemma interiorT : (@setT T)^° = setT.
+Proof.
+rewrite eqEsubset; split; first exact: interior_subset.
+by rewrite -open_subsetE//; apply: openT.
+Qed.
+
 End Topological1.
 
 Lemma open_in_nearW {T : topologicalType} (P : T -> Prop) (S : set T) :

@@ -4791,6 +4791,13 @@ rewrite sup_itv; last by case b; rewrite bnd_simp ?ltW.
 by apply: set_itv_infty_o.
 Qed.
 
+Lemma interior_itv_Nyy :
+  [set` Interval (BInfty R true) (BInfty _ false)]^° = `]-oo, +oo[%classic.
+Proof.
+rewrite set_itv_infty_infty.
+exact: interiorT.
+Qed.
+
 Definition interior_itv :=
   (interior_itv_bnd, interior_itv_bndy, interior_itv_Nybnd).
 
