@@ -230,6 +230,12 @@ rewrite eqEsubset; split; first exact: interior_subset.
 by rewrite -open_subsetE//; apply: openT.
 Qed.
 
+Lemma interior0 : (@set0 T)^° = set0.
+Proof.
+rewrite eqEsubset; split; first exact: interior_subset.
+rewrite -open_subsetE//; apply: open0.
+Qed.
+
 End Topological1.
 
 Lemma open_in_nearW {T : topologicalType} (P : T -> Prop) (S : set T) :
