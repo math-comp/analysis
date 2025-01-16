@@ -214,6 +214,11 @@ rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.
 by rewrite -opprD normrN => ?; rewrite -[y]opprK; apply: xeA; rewrite /= opprK.
 Qed.
 
+Lemma cvg_compNP {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R)
+    (l : T) :
+  (f \o -%R) x @[x --> a] --> l <-> f x @[x --> (- a)] --> l.
+Proof. by rewrite nbhsN. Qed.
+
 Lemma nbhsNimage (R : numFieldType) (x : R) :
   nbhs (- x) = [set -%R @` A | A in nbhs x].
 Proof.
@@ -659,6 +664,76 @@ apply/cvgryPgey; near=> A; near=> n.
 rewrite pmulrn ceil_le_int// [ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat -?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
+
+Section monotonic_itv_bigcup.
+Context {R : realType}.
+Implicit Types (F : R -> R) (a : R).
+
+Lemma decreasing_itvNyo_bigcup F a :
+  {in `[a, +oo[ &, {homo F : x y /~ x < y}} ->
+  F x @[x --> +oo] --> -oo ->
+  (`]-oo, F a[ = \bigcup_i `]F (a + i.+1%:R), F a[)%classic.
+Proof.
+move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
+- move=> y/= [n _]/=; rewrite in_itv/= => /andP[Fany yFa].
+  have [i iFan] : exists i, F (a + i.+1%:R) < F a - n%:R.
+    move/cvgrNy_lt : nyF.
+    move/(_ (F a - n%:R)) => [z [zreal zFan]].
+    exists `|ceil (z - a)|%N.
+    rewrite zFan// -ltrBlDl (le_lt_trans (le_ceil _))//.
+    by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
+  by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
+- move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
+  exists `| ceil (F (a + n.+1%:R) - F a)%R |.+1 => //=.
+  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
+  by rewrite ler_normr orbC opprB lerB// ltW.
+Qed.
+
+Lemma decreasing_itvoo_bigcup F a n :
+  {in `[a, +oo[ &, {homo F : x y /~ x < y}} ->
+  (`]F (a + n%:R), F a[ = \bigcup_(i < n) `]F (a + i.+1%:R), F a[)%classic.
+Proof.
+move=> decrF; rewrite eqEsubset; split.
+- move: n => [|n]; first by rewrite addr0 set_itvoo0.
+  by apply: (@bigcup_sup _ _ n) => /=.
+- apply: bigcup_sub => k/= kn; apply: subset_itvr; rewrite bnd_simp.
+  move: kn; rewrite leq_eqVlt => /predU1P[<-//|kn].
+  by rewrite ltW// decrF ?in_itv/= ?andbT ?lerDl//= ltrD2l ltr_nat.
+Qed.
+
+Lemma increasing_itvNyo_bigcup F a :
+  {in `]-oo, a] &, {homo F : x y / x < y}} ->
+  F x @[x --> -oo] --> -oo ->
+ (`]-oo, F a] = \bigcup_i `]F (a - i.+1%:R), F a])%classic.
+Proof.
+move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
+- move=> y/= [n _]/=; rewrite in_itv/= => /andP[Fany yFa].
+  have [i iFan] : exists i, F (a - i.+1%:R) < F a - n%:R.
+    move/cvgrNy_lt : nyF.
+    move/(_ (F a - n%:R)) => [z [zreal zFan]].
+    exists `|ceil (a - z)|%N.
+    rewrite zFan// ltrBlDr -ltrBlDl (le_lt_trans (le_ceil _))//.
+    by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
+  by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
+- move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
+  exists `| ceil (F (a - n.+1%:R) - F a)%R |.+1 => //=.
+  rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
+  by rewrite ler_normr orbC opprB lerB// ltW.
+Qed.
+
+Lemma increasing_itvoc_bigcup F a n :
+  {in `]-oo, a] &, {homo F : x y / x < y}} ->
+  (`]F (a - n%:R), F a] = \bigcup_(i < n) `]F (a - i.+1%:R), F a])%classic.
+Proof.
+move=> incrF; rewrite eqEsubset; split.
+- move: n => [|n]; first by rewrite subr0 set_itvoc0.
+  by apply: (@bigcup_sup _ _ n) => /=.
+- apply: bigcup_sub => k/= kn; apply: subset_itvr; rewrite bnd_simp.
+  move: kn; rewrite leq_eqVlt => /predU1P[<-//|kn].
+  by rewrite ltW// incrF ?in_itv/= ?andbT ?gerBl ?ler_ltB ?ltr_nat.
+Qed.
+
+End monotonic_itv_bigcup.
 
 Section ecvg_infty_numField.
 Local Open Scope ereal_scope.

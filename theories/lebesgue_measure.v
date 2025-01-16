@@ -697,7 +697,7 @@ Proof. by apply/cvg_lim => //; apply/cvgenyP. Qed.
 Let lebesgue_measure_itv_bnd_infty x (a : R) :
   lebesgue_measure ([set` Interval (BSide x a) +oo%O] : set R) = +oo%E.
 Proof.
-rewrite itv_bnd_infty_bigcup; transitivity (limn (lebesgue_measure \o
+rewrite itv_bndy_bigcup_BRight; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BSide x a) (BRight (a + k%:R))] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.
@@ -713,7 +713,7 @@ Qed.
 Let lebesgue_measure_itv_infty_bnd y (b : R) :
   lebesgue_measure ([set` Interval -oo%O (BSide y b)] : set R) = +oo%E.
 Proof.
-rewrite itv_infty_bnd_bigcup; transitivity (limn (lebesgue_measure \o
+rewrite itvNy_bnd_bigcup_BLeft; transitivity (limn (lebesgue_measure \o
     (fun k => [set` Interval (BLeft (b - k%:R)) (BSide y b)] : set R))).
   apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.
   + by move=> k; exact: measurable_itv.

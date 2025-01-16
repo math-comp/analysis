@@ -442,7 +442,7 @@ Hint Extern 0 (~ has_lbound _) => solve[by apply: hasNlbound_itv] : core.
 #[global]
 Hint Extern 0 (~ has_ubound _) => solve[by apply: hasNubound_itv] : core.
 
-Lemma opp_itv_bnd_infty (R : numDomainType) (x : R) b :
+Lemma opp_itv_bndy (R : numDomainType) (x : R) b :
   -%R @` [set` Interval (BSide b x) +oo%O] =
   [set` Interval -oo%O (BSide (negb b) (- x))].
 Proof.
@@ -451,8 +451,10 @@ rewrite predeqE => /= r; split=> [[y xy <-]|xr].
 exists (- r); rewrite ?opprK //.
 by case: b xr; rewrite !in_itv/= andbT (lerNr, ltrNr).
 Qed.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `opp_itv_bndy`")]
+Notation opp_itv_bnd_infty := opp_itv_bndy (only parsing).
 
-Lemma opp_itv_infty_bnd (R : numDomainType) (x : R) b :
+Lemma opp_itvNy_bnd (R : numDomainType) (x : R) b :
   -%R @` [set` Interval -oo%O (BSide b x)] =
   [set` Interval (BSide (negb b) (- x)) +oo%O].
 Proof.
@@ -461,6 +463,8 @@ rewrite predeqE => /= r; split=> [[y xy <-]|xr].
 exists (- r); rewrite ?opprK //.
 by case: b xr; rewrite !in_itv/= andbT (lerNl, ltrNl).
 Qed.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `opp_itvNy_bnd`")]
+Notation opp_itv_infty_bnd := opp_itvNy_bnd (only parsing).
 
 Lemma opp_itv_bnd_bnd (R : numDomainType) a b (x y : R) :
   -%R @` [set` Interval (BSide a x) (BSide b y)] =

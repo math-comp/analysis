@@ -3486,7 +3486,7 @@ apply/eqP; rewrite eq_le; apply/andP; split; last first.
   - by apply/measurable_EFinP; exact: measurable_funS mf.
   - by move=> ? _; rewrite lee_fin f0.
   - exact: subset_itvl.
-rewrite itv_bnd_infty_bigcup0S.
+rewrite itv0y_bigcup0S.
 rewrite seqDU_bigcup_eq ge0_integral_bigcup//; last 3 first.
 - by move=> ?; apply: measurableD => //; exact: bigsetU_measurable.
 - by apply: measurable_funTS; exact/measurable_EFinP.
@@ -4420,11 +4420,11 @@ have ? : \int[mu]_(x in \bigcup_i F i) g x \is a fin_num.
   exact: measurable_int fi.
 transitivity (\int[mu]_(x in \bigcup_i F i) g^\+ x -
               \int[mu]_(x in \bigcup_i F i) g^\- x)%E.
-  rewrite -integralB; last 3 first.
-    - exact: bigcupT_measurable.
-    - by apply: integrable_funepos => //; exact: bigcupT_measurable.
-    - by apply: integrable_funeneg => //; exact: bigcupT_measurable.
-  by apply: eq_integral => t Ft; rewrite [in LHS](funeposneg g).
+  rewrite -integralB.
+  - by apply: eq_integral => t Ft; rewrite [in LHS](funeposneg g).
+  - exact: bigcupT_measurable.
+  - by apply: integrable_funepos => //; exact: bigcupT_measurable.
+  - by apply: integrable_funeneg => //; exact: bigcupT_measurable.
 transitivity (\sum_(i <oo) (\int[mu]_(x in F i) g^\+ x -
                             \int[mu]_(x in F i) g^\- x)); last first.
   by apply: eq_eseriesr => // i; rewrite [RHS]integralE.
@@ -4433,8 +4433,7 @@ transitivity ((\sum_(i <oo) \int[mu]_(x in F i) g^\+ x) -
   rewrite ge0_integral_bigcup//; last first.
     by apply: measurable_funepos; case/integrableP : fi.
   rewrite ge0_integral_bigcup//.
-    apply: measurable_funeneg.
-    by case/integrableP : fi.
+  by apply: measurable_funeneg; case/integrableP : fi.
 rewrite [X in X - _]nneseries_esum; last by move=> n _; exact: integral_ge0.
 rewrite [X in _ - X]nneseries_esum; last by move=> n _; exact: integral_ge0.
 rewrite set_true -esumB//=; last 4 first.
@@ -6882,8 +6881,7 @@ have [xy|yx _|-> _] := ltgtP x y; last 2 first.
 move=> mf.
 transitivity (\int[mu]_(z in [set` Interval (BSide b0 x) (BLeft y)]) (f z)%:E).
   case: b1 => //; rewrite -integral_itv_bndo_bndc//.
-  case: b0 => //.
-  exact: measurable_fun_itv_co mf.
+  by case: b0 => //; exact: measurable_fun_itv_obnd_cbnd.
 by case: b0 => //; rewrite -integral_itv_obnd_cbnd.
 Qed.
 

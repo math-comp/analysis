@@ -23,6 +23,10 @@ From mathcomp Require Import sequences real_interval.
 (*   derivable_oo_continuous_bnd f x y == f is derivable in `]x, y[ and       *)
 (*                             continuous up to the boundary, i.e.,           *)
 (*                             f @ x^'+ --> f x  and  f @ y^'- --> f y        *)
+(*     derivable_oy_continuous_bnd f x == f is derivable in `]x, +oo[ and     *)
+(*                             f @ x^'+ --> f x                               *)
+(*    derivable_Nyo_continuous_bnd f x == f is derivable in `]-oo, x[ and     *)
+(*                             f @ x^'- --> f x                               *)
 (*                                                                            *)
 (*      itv_partition a b s == s is a partition of the interval `[a, b]       *)
 (*       itv_partitionL s c == the left side of splitting a partition at c    *)
@@ -1128,6 +1132,12 @@ apply: cvg_within_filter.
 apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: fxy; rewrite in_itv/= xz zy.
 Qed.
+
+Definition derivable_Nyo_continuous_bnd (f : R -> V) (x : R) :=
+  {in `]-oo, x[, forall x, derivable f x 1} /\ f @ x^'- --> f x.
+
+Definition derivable_oy_continuous_bnd (f : R -> V) (x : R) :=
+  {in `]x, +oo[, forall x, derivable f x 1} /\ f @ x^'+ --> f x.
 
 End derivable_oo_continuous_bnd.
 
