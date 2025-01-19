@@ -1820,7 +1820,7 @@ Proof. exact: is_cvgeD. Qed.
 
 Lemma __deprecated__ereal_cvg_sub0 (R : realFieldType) (f : (\bar R)^nat) (k : \bar R) :
   k \is a fin_num -> (fun x => f x - k) @ \oo --> 0 <-> f @ \oo --> k.
-Proof. exact: cvge_sub0. Qed.
+Proof. exact: sube_cvg0. Qed.
 
 Lemma __deprecated__ereal_limD (R : realFieldType) (f g : (\bar R)^nat) :
   cvgn f -> cvgn g -> limn f +? limn g ->
@@ -1950,7 +1950,7 @@ move/cvg_ex => [[l fl||/cvg_lim fnoo]] /=; last 2 first.
 rewrite [X in X @ _ --> _](_ : _ = fun N => l%:E - \sum_(0 <= k < N | P k) f k).
   apply/cvgeNP; rewrite oppe0.
   under eq_fun => ? do rewrite oppeD// oppeK addeC.
-  exact/cvge_sub0.
+  exact/sube_cvg0.
 apply/funext => N; apply/esym/eqP; rewrite sube_eq//.
   by rewrite addeC -nneseries_split_cond//; exact/eqP/esym/cvg_lim.
 rewrite ge0_adde_def//= ?inE; last exact: sume_ge0.

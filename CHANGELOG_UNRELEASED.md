@@ -29,6 +29,38 @@
 
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
+- in `constructive_ereal.v`:
+  + lemma `abse_EFin`
+
+- in `normedtype.v`:
+  + lemmas `bounded_cst`, `subr_cvg0`
+
+- in `lebesgue_integral.v`:
+  + lemma `RintegralB`
+
+- in `ftc.v`:
+  + lemmas `differentiation_under_integral`, `derivable_under_integral`
+  + definition `partial1`, notation `'d1`
+
+- in `real_interval.v`:
+  + lemma `itv_bnd_infty_bigcup0S`
+
+- in `lebesgue_integral.v`:
+  + lemma `ge0_cvg_integral`
+
+- in `trigo.v`:
+  + lemma `derivable_atan`
+
+- new file `gauss_integral.v`:
+  + definition `oneDsqr`
+  + lemmas `oneDsqr_gt0`, `oneDsqr_ge0`, `oneDsqr_ge1`, `oneDsqr_neq0`,
+    `oneDsqrV_le1`, `continuous_oneDsqr`, `continuous_oneDsqrV`,
+    `integral01_atan`
+  + definition `gauss`
+  + lemmas `gauss_ge0`, `gauss_le1`, `cvg_gauss`, `measurable_gauss`,
+    `continuous_gauss`
+  + module `gauss_integral_proof`
+  + lemma `integral0y_gauss_pi2`
 
 - in `normedtype.v`:
   + lemma `nbhs_right_leftP`
@@ -67,6 +99,8 @@
   + `sigma_algebra_image_class` -> `sigma_algebra_image`
   + `sigma_algebra_preimage_classE` -> `g_sigma_preimageE`
   + `preimage_classes_comp` -> `g_sigma_preimageU_comp`
+- in `normedtype.v`:
+  + `cvge_sub0` -> `sube_cvg0`
 
 ### Generalized
 

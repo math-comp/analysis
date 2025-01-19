@@ -700,6 +700,9 @@ Proof. by move=> [? [?| |]| |]. Qed.
 Lemma fine_lt : {in fin_num &, {homo @fine R : x y / x < y >-> (x < y)%R}}.
 Proof. by move=> [? [?| |]| |]. Qed.
 
+Lemma abse_EFin r : `|r%:E|%E = `|r|%:E.
+Proof. by []. Qed.
+
 Lemma fine_abse : {in fin_num, {morph @fine R : x / `|x| >-> `|x|%R}}.
 Proof. by case. Qed.
 
