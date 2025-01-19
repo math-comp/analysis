@@ -311,6 +311,9 @@ Proof. by apply/funext=> x; rewrite indicE in_set0. Qed.
 Lemma indicI A B : \1_(A `&` B) = \1_A \* \1_B :> (_ -> R).
 Proof. by apply/funext=> u/=; rewrite !indicE in_setI -natrM mulnb. Qed.
 
+Lemma indicC A : \1_(~` A) = (fun x => (~~ (x \in A))%:R) :> (_ -> R).
+Proof. by apply/funext=> u/=; rewrite indicE in_setC. Qed.
+
 Lemma image_indic D A :
   \1_D @` A = (if A `\` D != set0 then [set 0] else set0) `|`
               (if A `&` D != set0 then [set 1 : R] else set0).
@@ -362,6 +365,25 @@ exact: eq_bigr.
 Qed.
 
 End indic_lemmas.
+
+Lemma indic_bigcup T {R : realType} (A : (set T)^nat) (t : T) :
+  trivIset [set: nat] A ->
+  (\1_(\bigcup_n A n) t)%:E = (\sum_(0 <= n <oo) (\1_(A n) t)%:E)%E :> \bar R.
+Proof.
+move=> tA.
+have [At|At] := eqVneq (\1_(\bigcup_n A n) t) (1%R : R).
+- move: (At) => /eqP; rewrite pnatr_eq1 eqb1 => /asboolP[i _] Ait.
+  rewrite At (@nneseriesD1 _ _ i)//; last by move=> j; rewrite lee_fin.
+  rewrite indicE mem_set// eseries0 ?adde0// => j _/= ji.
+  rewrite indicE memNset// => Ajt.
+  move/trivIsetP : tA => /(_ j i Logic.I Logic.I ji).
+  by apply/eqP/set0P; exists t.
+- have {}At : \1_(\bigcup_n A n) t = 0%R :> R.
+    by apply/eqP; move: At; rewrite pnatr_eq1 eqb1 pnatr_eq0 eqb0.
+  move: (At) => /eqP; rewrite pnatr_eq0 eqb0 notin_setE => AtC.
+  rewrite At eseries0// => j _ _.
+  by rewrite indicE memNset// => Ajt; apply: AtC; exists j.
+Qed.
 
 Lemma patch_indic T {R : numFieldType} (f : T -> R) (D : set T) :
   f \_ D = (f \* \1_D)%R.
