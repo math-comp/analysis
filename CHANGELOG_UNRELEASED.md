@@ -31,7 +31,7 @@
   + lemmas `xsectionE`, `ysectionE`
 
 - in `topology_theory/topological_structure.v`
-  + lemmas `interiorT`, `interior0`
+  + lemmas `interior_id`, `interiorT`, `interior0`, `closureT`
 
 - in `normedtype.v`:
   + lemma `nbhs_right_leftP`
