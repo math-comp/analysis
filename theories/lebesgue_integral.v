@@ -3051,7 +3051,7 @@ Lemma integral_bigsetU_EFin (I : eqType) (F : I -> set T) (f : T -> R)
   uniq s -> trivIset [set` s] F ->
   let D := \big[setU/set0]_(i <- s) F i in
   measurable_fun D (EFin \o f) ->
-  \int[mu]_(x in D) (f x)%:E = (\sum_(i <- s) (\int[mu]_(x in F i) (f x)%:E)).
+  \int[mu]_(x in D) (f x)%:E = \sum_(i <- s) \int[mu]_(x in F i) (f x)%:E.
 Proof.
 move=> mF; elim: s => [|h t ih] us tF D mf.
   by rewrite /D 2!big_nil integral_set0.
