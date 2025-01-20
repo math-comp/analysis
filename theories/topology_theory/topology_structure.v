@@ -214,6 +214,14 @@ Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
 Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
 Proof. by rewrite nbhsE => p_A; exists A. Qed.
 
+Lemma interiorI (A B : set T) : (A `&` B)^° = A^° `&` B^°.
+Proof.
+rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
+- by rewrite subsetI => // -[? ?]; split; exists B0.
+- by move=> -[B0 ? ?] [B1 ? ?]; exists (B0 `&` B1);
+  [exact: open_nbhsI | rewrite subsetI; split; apply: subIset; [left|right]].
+Qed.
+
 End Topological1.
 
 Lemma open_in_nearW {T : topologicalType} (P : T -> Prop) (S : set T) :
@@ -821,14 +829,6 @@ End regular_open_closed.
 Section closure_interior_lemmas.
 Variable T : topologicalType.
 Implicit Types (A B : set T).
-
-Lemma interiorI A B : (A `&` B)^° = A^° `&` B^°.
-Proof.
-rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
-- by rewrite subsetI => // -[? ?]; split; exists B0.
-- by move=> -[B0 ? ?] [B1 ? ?]; exists (B0 `&` B1);
-  [exact: open_nbhsI | rewrite subsetI; split; apply: subIset; [left|right]].
-Qed.
 
 Lemma interiorC A : (~` A)^° = ~` closure A.
 Proof.
