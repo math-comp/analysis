@@ -164,7 +164,6 @@ Section Lnorme_properties.
     (forall E, E `<=` [set -oo; 0%R; +oo] ->  d.-measurable (f @^-1` E)) -> 
     measurable_fun D f.
   Proof.
-<<<<<<< Updated upstream
     move => H HE H0 //= Y H1.
     rewrite 
     (_ : (f @^-1` Y) =  
@@ -241,110 +240,6 @@ Section Lnorme_properties.
     rewrite image_set1 => //=. 
     apply measurableI => //=.
     apply : HE => //=.
-=======
-  move => _ /= B H.
-  rewrite setIidr; last first. 
-    apply subsetT.
-  rewrite [X in measurable X]
-  (_ : (poweR^~ r @^-1` B) = 
-  if (r == 0%R) then 
-    (if 1 \in B then [set : \bar R] else set0) 
-  else
-    EFin @` ( @powR R ^~ r @^-1` (fine @` (B `\` [set -oo; +oo])))  
-    `|` (B `&` [set +oo])
-    `|` (if 0 \in B then [set -oo] else set0)
-  ); last first.
-  case (r == 0%R) eqn:H0; apply/seteqP; 
-  split => [a //= H1 //= | a //= H1 //=];
-  move : H1; rewrite ?(eqP H0) //= ?poweRe0; 
-  rewrite /poweR ?H0 => H1.
-  - (*r == 0*) 
-  -- by case : ifPn => //=; rewrite notin_setE.
-  -- by move : H1; case : ifPn => //=; rewrite in_setE.
-  - (*r != 0*)
-  -- 
-  case a as [s | | ]. 
-  ---
-  repeat left. exists s; last first => //;
-  exists (s `^ r)%:E; last first => //=; split => //=; 
-  rewrite not_orE; split => //=.
-  ---
-  left; right => //=.
-  ---
-  right. rewrite -in_setE in H1. rewrite H1 //=.
-  --
-  case H1 as [H1 | H1].
-  ---
-  case H1 as [H1 | H1].
-  ----
-  destruct H1 as [b [c [H1 H2]] H3];
-  rewrite not_orE in H2; destruct H2 as [H2 H5].
-  case a as [s | | ] => //=; 
-  move : H4 H3; case c as [s' | | ] => //=; congruence.
-  ----
-  by case H1 as [H1 H2]; move : H1; rewrite H2. 
-  ----
-  move : H1; 
-  case : ifPn => //= => H1 H2; rewrite H2 -in_setE => //=.
-  case : ifP => [_ | ]. case : ifP => //=.
-  move => H0. repeat apply : measurableU.
-  apply : measurable_image_EFin. rewrite -[_ :  /\ ]setTI.
-
-  
-
-
-
-
-
-
-
-  (*
-  (B `&` [set +oo]) `|` (if 0 \in B then [set -oo] else set0) `|`
-  EFin @` (
-    @powR R ^~ r @^-1` (fine @` (B `\` [set -oo; +oo]))
-          )
-  ); last first. 
-  case (r == 0%R) eqn:H0; apply/seteqP; 
-  split => [a //= H1 //= | a //= H1 //=];
-  move : H1; rewrite ?(eqP H0) //= ?poweRe0 => H1.
-  -- by case : ifPn => //=; rewrite notin_setE.
-  -- move : H1; case : ifPn => //= H1 _.    
-  --- Search (_ \notin _).
-     split => //=; apply poweRe0.
-  -- destruct H1 as [H1 H2]; apply H1.
-  - (*r != 0*)
-  -- (*B <= B*)
-     move : H1; rewrite /poweR H0 => H1.
-     case a as [s| | ].
-  --- (*a = s %:E*) 
-      right. 
-      exists s; last first => //=. 
-      exists (s%:E `^ r); last first =>  //=.
-      split => //=. rewrite not_orE //=.
-  --- (*a = +oo*)
-      repeat left; split => //=; rewrite not_orE //=.
-  --- (*a = -oo*)
-      left. right. case : ifPn => //=. move => H2.
-      rewrite notin_setE in H2. contradiction.
-  -- (*B <= A*)
-  --- case H1.
-  ---- case.
-  ----- move => H2. destruct H2 as [H2 H3]. 
-       by move : H2; rewrite H3 //= H0.
-  ----- case : ifPn => //=. move => H2 H3.
-       rewrite H3 //= H0. by rewrite in_setE in H2.
-  ---- move => H2. destruct H2 as [b [c [H2 H3]] H4].
-       rewrite not_orE in H3. destruct H3 as [H3 H6].
-       case c as [s | | ]. 
-  ----- move : H5 H2 => //= => H5. 
-        by rewrite H5 -H4 poweR_EFin.
-  ----- contradiction.
-  ----- contradiction.
-  
-       
-
-    
->>>>>>> Stashed changes
   Qed.
 
   Lemma measurable_poweR r :
