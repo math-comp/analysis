@@ -51,7 +51,6 @@ in
 
   bundles."8.20".coqPackages = common-bundle // {
     coq.override.version = "8.20";
-    mathcomp.override.version = "2.2.0";
   };
 
   bundles."9.0".coqPackages = common-bundle // {
@@ -70,7 +69,7 @@ in
     coq-elpi.override.version = "master";
     coq-elpi.override.elpi-version = "2.0.7";
     hierarchy-builder.override.version = "master";
-    mathcomp.override.version = "master";
+    mathcomp.override.version = "CohenCyril:seminorm";
     mathcomp-bigenough.override.version = "master";
     mathcomp-finmap.override.version = "master";
     ssprove.job = false;
