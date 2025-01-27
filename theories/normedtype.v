@@ -263,9 +263,19 @@ by rewrite opprK.
 Qed.
 
 HB.mixin Record NormedZmod_PseudoMetric_eq (R : numDomainType) T
-    of Num.NormedZmodule R T & PseudoPointedMetric R T := {
+    of Num.SemiNormedZmodule R T & PseudoPointedMetric R T := {
   pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |)
 }.
+
+(* HB.factory Record NormedZmod_PseudoMetric_eq (R : numDomainType) T *)
+(*     of Num.SemiNormedZmodule R T & PseudoPointedMetric R T := { *)
+(*   pseudo_metric_ball_norm : ball = ball_ (fun x : T => `| x |) *)
+(* }. *)
+
+#[short(type="pseudoMetricSemiNormedZmodType")]
+HB.structure Definition PseudoMetricSemiNormedZmod (R : numDomainType) :=
+  {T of Num.SemiNormedZmodule R T & PseudoMetric R T
+   & NormedZmod_PseudoMetric_eq R T & isPointed T}.
 
 #[short(type="pseudoMetricNormedZmodType")]
 HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
@@ -273,7 +283,7 @@ HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
    & NormedZmod_PseudoMetric_eq R T & isPointed T}.
 
 Section pseudoMetricnormedzmodule_lemmas.
-Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
+Context {K : numDomainType} {V : pseudoMetricSemiNormedZmodType K}.
 
 Local Notation ball_norm := (ball_ (@normr K V)).
 
@@ -913,21 +923,27 @@ Qed.
 (** Modules with a norm depending on a numDomain*)
 
 HB.mixin Record PseudoMetricNormedZmod_Tvs_isNormedModule K V
-    of PseudoMetricNormedZmod K V & Tvs K V := {
+    of PseudoMetricSemiNormedZmod K V & Tvs K V := {
   normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
+
+#[short(type="semiNormedModType")]
+HB.structure Definition SemiNormedModule (K : numDomainType) :=
+  {T of PseudoMetricSemiNormedZmod K T & Tvs K T
+   & PseudoMetricNormedZmod_Tvs_isNormedModule K T}.
+
 
 #[short(type="normedModType")]
 HB.structure Definition NormedModule (K : numDomainType) :=
   {T of PseudoMetricNormedZmod K T & Tvs K T
    & PseudoMetricNormedZmod_Tvs_isNormedModule K T}.
 
-HB.factory Record PseudoMetricNormedZmod_Lmodule_isNormedModule (K : numFieldType) V
-    of PseudoMetricNormedZmod K V & GRing.Lmodule K V := {
+HB.factory Record PseudoMetricSemiNormedZmod_Lmodule_isSemiNormedModule (K : numFieldType) V
+    of PseudoMetricSemiNormedZmod K V & GRing.Lmodule K V := {
  normrZ : forall (l : K) (x : V), `| l *: x | = `| l | * `| x |;
 }.
 
-HB.builders Context K V of PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
+HB.builders Context K V of PseudoMetricSemiNormedZmod_Lmodule_isSemiNormedModule K V.
 
 (* NB: These lemmas are done later with more machinery. They should
    be simplified once normedtype is split, and the present section can
@@ -965,7 +981,9 @@ rewrite [leRHS](_ : _ = M^-1 * (M *  M)); last first.
   by rewrite mulrA mulVf ?mul1r// gt_eqF.
 rewrite [leLHS](_ : _ = M^-1 * (M * (`|x| + `|x|) + `|e| / 2)); last first.
   by rewrite mulrDr mulrA mulVf ?mul1r ?gt_eqF// mulrC addrA.
-by rewrite ler_wpM2l ?invr_ge0// ?ltW// -ltrBrDl -mulrBr ltr_pM// ltrBrDl.
+rewrite ler_wpM2l ?invr_ge0// ?ltW// -ltrBrDl -mulrBr ltr_pM// ltrBrDl.
+near: M; apply: nbhs_pinfty_gt.
+Search "nbhs" (_ < _).
 Unshelve. all: by end_near. Qed.
 
 Lemma locally_convex :
