@@ -3,9 +3,9 @@ From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import boolp reals ereal.
 From HB Require Import structures.
-Require Import classical_sets signed functions topology normedtype cardinality.
-Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
-Require Import exp hoelder.
+From mathcomp Require Import classical_sets signed functions topology normedtype cardinality.
+From mathcomp Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
+From mathcomp Require Import exp hoelder.
 
 (******************************************************************************)
 (*                                                                            *)
