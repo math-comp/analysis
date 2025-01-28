@@ -4111,8 +4111,8 @@ by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
 Qed.
 
 Section ae_eq.
-Local Open Scope ereal_scope.
-Context d (T : sigmaRingType d) (R : realType) (U V : Type).
+Local Open Scope ring_scope.
+Context d (T : sigmaRingType d) (R : realType) (U V : Type) (W : ringType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
 Local Notation ae_eq f g := (\forall x \ae mu, D x -> f x = g x).
 
@@ -4131,28 +4131,27 @@ split=> [fg|[pfg nfg]].
 by near=> x => Dx; rewrite (funeposneg f) (funeposneg g) ?(near pfg, near nfg).
 Unshelve. all: by end_near. Qed.
 
-Implicit Types (f g : T -> U).
-Lemma ae_eq_refl f : ae_eq f f. Proof. exact/aeW. Qed.
+Lemma ae_eq_refl (f : T -> U) : ae_eq f f. Proof. exact/aeW. Qed.
 
-Lemma ae_eq_sym f g : ae_eq f g -> ae_eq g f.
+Lemma ae_eq_sym (f g : T -> U) : ae_eq f g -> ae_eq g f.
 Proof. by apply: filterS => x + Dx => /(_ Dx). Qed.
 
-Lemma ae_eq_trans f g h : ae_eq f g -> ae_eq g h -> ae_eq f h.
+Lemma ae_eq_trans (f g h : T -> U) : ae_eq f g -> ae_eq g h -> ae_eq f h.
 Proof. by apply: filterS2 => x + + Dx => /(_ Dx) ->; exact. Qed.
 
-Lemma ae_eq_sub f g h i : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
-Proof. by apply: filterS2 => x + + Dx => /(_ Dx) -> /(_ Dx) ->. Qed.
+Lemma ae_eq_sub (f g h i : T -> W) : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
+Proof. by apply: filterS2 => x + + Dx => /= /(_ Dx) -> /(_ Dx) ->. Qed.
 
-Lemma ae_eq_mul2r f g h : ae_eq f g -> ae_eq (f \* h) (g \* h).
-Proof. by apply: filterS => x /[apply] ->. Qed.
+Lemma ae_eq_mul2r (f g h : T -> W) : ae_eq f g -> ae_eq (f \* h) (g \* h).
+Proof. by apply: filterS => x /= /[apply] ->. Qed.
 
-Lemma ae_eq_mul2l f g h : ae_eq f g -> ae_eq (h \* f) (h \* g).
-Proof. by apply: filterS => x /[apply] ->. Qed.
+Lemma ae_eq_mul2l (f g h : T -> W) : ae_eq f g -> ae_eq (h \* f)%R (h \* g).
+Proof. by apply: filterS => x /= /[apply] ->. Qed.
 
-Lemma ae_eq_mul1l f g : ae_eq f (cst 1) -> ae_eq g (g \* f).
-Proof. by apply: filterS => x /[apply] ->; rewrite mule1. Qed.
+Lemma ae_eq_mul1l (f g : T -> W) : ae_eq f (cst 1) -> ae_eq g (g \* f).
+Proof. by apply: filterS => x /= /[apply] ->; rewrite mulr1. Qed.
 
-Lemma ae_eq_abse f g : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
+Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
 Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
 End ae_eq.
@@ -5291,7 +5290,7 @@ End absolute_continuity.
 Notation "m1 `<< m2" := (measure_dominates m1 m2).
 
 Section absolute_continuity_lemmas.
-Context d (T : measurableType d) (R : realType).
+Context d (T : measurableType d) (R : realType) (U : Type).
 Implicit Types (m : {measure set T -> \bar R}) (f g : T -> U).
 
 Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
