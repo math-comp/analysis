@@ -1866,6 +1866,9 @@ have nuf A : d.-measurable A -> nu A = \int[mu]_(x in A) f x.
 move=> A mA; rewrite nuf ?inE//; apply: ae_eq_integral => //.
 - exact/measurable_funTS.
 - exact/measurable_funTS.
+- move: ff'.
+  have := @ae_eq_subset _ _ _ mu setT A f f'.
+  apply: ae_eq_subset.
 - exact: ae_eq_subset ff'.
 Qed.
 

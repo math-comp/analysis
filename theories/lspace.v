@@ -56,7 +56,7 @@ Section Lequiv.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
 
-Definition Lequiv (f g : LfunType mu p) := `[< {ae mu, forall x, f x = g x} >].
+Definition Lequiv (f g : LfunType mu p) := `[< f = g [%ae mu] >].
 
 Let Lequiv_refl : reflexive Lequiv.
 Proof.
@@ -85,7 +85,7 @@ Canonical LspaceType_choiceType := [the choiceType of LspaceType].
 Canonical LspaceType_eqQuotType := [the eqQuotType Lequiv of LspaceType].
 
 Lemma LequivP (f g : LfunType mu p) :
-  reflect {ae mu, forall x, f x = g x} (f == g %[mod LspaceType]).
+  reflect (f = g %[ae mu]) (f == g %[mod LspaceType]).
 Proof. by apply/(iffP idP); rewrite eqmodE// => /asboolP. Qed.
 
 Record LType := MemLType { Lfun_class : LspaceType }.
