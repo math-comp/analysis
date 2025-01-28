@@ -4064,7 +4064,6 @@ Proof.
 by rewrite /almost_everywhere => mA mB; rewrite setCI; exact: negligibleU.
 Qed.
 
-HB.about semiRingOfSetsType.
 Definition ae_filter_ringOfSetsType d {T : ringOfSetsType d} (R : realFieldType)
   (mu : {measure set T -> \bar R}) : Filter (almost_everywhere mu).
 Proof.
@@ -4094,10 +4093,18 @@ End ae.
   (apply: ae_properfilter_algebraOfSetsType) : typeclass_instances.
 
 Notation "{ 'ae' m , P }" := {near almost_everywhere m, P} : type_scope.
+Notation "\forall x \ae mu , P" := (\forall x \near almost_everywhere mu, P)
+  (format "\forall  x  \ae  mu ,  P",
+  x name, P at level 200, at level 200): type_scope.
+Notation ae_eq mu D f g := (\forall x \ae mu, D x -> f x = g x).
+Notation "f = g %[ae mu 'in' D ]" := (\forall x \ae mu, D x -> f x = g x)
+  (format "f  =  g  '%[ae'  mu  'in'  D ]", g at next level, D at level 200, at level 70).
+Notation "f = g %[ae mu ]" := (f = g %[ae mu in setT ])
+  (format "f  =  g  '%[ae'  mu  ]", g at next level, at level 70).
 
 Lemma aeW {d} {T : ringOfSetsType d} {R : realFieldType}
     (mu : {measure set _ -> \bar R}) (P : T -> Prop) :
-  (forall x, P x) -> {ae mu, forall x, P x}.
+  (forall x, P x) -> \forall x \ae mu, P x.
 Proof.
 move=> aP; have -> : P = setT by rewrite predeqE => t; split.
 by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
@@ -4108,10 +4115,9 @@ Local Open Scope ereal_scope.
 Context d (T : sigmaRingType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
 Implicit Types f g h i : T -> \bar R.
+Local Notation ae_eq f g := (\forall x \ae mu, D x -> f x = g x).
 
-Definition ae_eq f g := {ae mu, forall x, D x -> f x = g x}.
-
-Lemma ae_eq0 f g : measurable D -> mu D = 0 -> ae_eq f g.
+Lemma ae_eq0 f g : measurable D -> mu D = 0 -> f = g %[ae mu in D].
 Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
 
 Lemma ae_eq_comp (j : \bar R -> \bar R) f g :
@@ -4152,7 +4158,7 @@ End ae_eq.
 
 Section ae_eq_lemmas.
 Context d (T : sigmaRingType d) (R : realType).
-Implicit Types mu : {measure set T -> \bar R}.
+Implicit Types (mu : {measure set T -> \bar R}) (A : set T) (f g : T -> R).
 
 Lemma ae_eq_subset mu A B f g : B `<=` A -> ae_eq mu A f g -> ae_eq mu B f g.
 Proof. by move=> BA; apply: filterS => x + /BA; apply. Qed.
@@ -5285,7 +5291,7 @@ Notation "m1 `<< m2" := (measure_dominates m1 m2).
 
 Section absolute_continuity_lemmas.
 Context d (T : measurableType d) (R : realType).
-Implicit Types m : {measure set T -> \bar R}.
+Implicit Types (m : {measure set T -> \bar R}) (f g : T -> R).
 
 Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
   m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
