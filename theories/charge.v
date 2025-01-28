@@ -1866,10 +1866,7 @@ have nuf A : d.-measurable A -> nu A = \int[mu]_(x in A) f x.
 move=> A mA; rewrite nuf ?inE//; apply: ae_eq_integral => //.
 - exact/measurable_funTS.
 - exact/measurable_funTS.
-- move: ff'.
-  have := @ae_eq_subset _ _ _ mu setT A f f'.
-  apply: ae_eq_subset.
-- exact: ae_eq_subset ff'.
+- exact: (@ae_eq_subset _ _ _ _ mu setT A f f' (@subsetT _ A)).
 Qed.
 
 End radon_nikodym_sigma_finite.
@@ -2094,6 +2091,10 @@ move=> mE; apply: integral_ae_eq => //.
 - move=> A AE mA; rewrite -Radon_Nikodym_integral//.
   by rewrite -Radon_Nikodym_SigmaFinite.f_integral.
 Qed.
+
+(* TODO: move back to measure.v, current version incompatible *)
+Lemma ae_eq_mul2l (f g h : T -> \bar R) D : f = g %[ae mu in D] -> (h \* f) = (h \* g) %[ae mu in D].
+Proof. by apply: filterS => x /= /[apply] ->. Qed.
 
 Lemma Radon_Nikodym_change_of_variables f E : measurable E ->
     nu.-integrable E f ->
