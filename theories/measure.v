@@ -4100,7 +4100,7 @@ Notation ae_eq mu D f g := (\forall x \ae mu, D x -> f x = g x).
 Notation "f = g %[ae mu 'in' D ]" := (\forall x \ae mu, D x -> f x = g x)
   (format "f  =  g  '%[ae'  mu  'in'  D ]", g at next level, D at level 200, at level 70).
 Notation "f = g %[ae mu ]" := (f = g %[ae mu in setT ])
-  (format "f  =  g  '%[ae'  mu  ]", g at next level, at level 70).
+  (format "f  =  g  '%[ae'  mu ]", g at next level, at level 70).
 
 Lemma aeW {d} {T : ringOfSetsType d} {R : realFieldType}
     (mu : {measure set _ -> \bar R}) (P : T -> Prop) :
@@ -4112,25 +4112,26 @@ Qed.
 
 Section ae_eq.
 Local Open Scope ereal_scope.
-Context d (T : sigmaRingType d) (R : realType).
+Context d (T : sigmaRingType d) (R : realType) (U V : Type).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
-Implicit Types f g h i : T -> \bar R.
 Local Notation ae_eq f g := (\forall x \ae mu, D x -> f x = g x).
 
-Lemma ae_eq0 f g : measurable D -> mu D = 0 -> f = g %[ae mu in D].
+Lemma ae_eq0 (f g : T -> U) : measurable D -> mu D = 0 -> f = g %[ae mu in D].
 Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
 
-Lemma ae_eq_comp (j : \bar R -> \bar R) f g :
+Lemma ae_eq_comp (j : U -> V) f g :
   ae_eq f g -> ae_eq (j \o f) (j \o g).
 Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
-Lemma ae_eq_funeposneg f g : ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
+Lemma ae_eq_funeposneg (f g : T -> \bar R) :
+  ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
 Proof.
 split=> [fg|[pfg nfg]].
   by split; near=> x => Dx; rewrite !(funeposE,funenegE) (near fg).
 by near=> x => Dx; rewrite (funeposneg f) (funeposneg g) ?(near pfg, near nfg).
 Unshelve. all: by end_near. Qed.
 
+Implicit Types (f g : T -> U).
 Lemma ae_eq_refl f : ae_eq f f. Proof. exact/aeW. Qed.
 
 Lemma ae_eq_sym f g : ae_eq f g -> ae_eq g f.
@@ -4157,8 +4158,8 @@ Proof. by apply: filterS => x /[apply] /= ->. Qed.
 End ae_eq.
 
 Section ae_eq_lemmas.
-Context d (T : sigmaRingType d) (R : realType).
-Implicit Types (mu : {measure set T -> \bar R}) (A : set T) (f g : T -> R).
+Context d (T : sigmaRingType d) (R : realType) (U : Type).
+Implicit Types (mu : {measure set T -> \bar R}) (A : set T) (f g : T -> U).
 
 Lemma ae_eq_subset mu A B f g : B `<=` A -> ae_eq mu A f g -> ae_eq mu B f g.
 Proof. by move=> BA; apply: filterS => x + /BA; apply. Qed.
@@ -5291,7 +5292,7 @@ Notation "m1 `<< m2" := (measure_dominates m1 m2).
 
 Section absolute_continuity_lemmas.
 Context d (T : measurableType d) (R : realType).
-Implicit Types (m : {measure set T -> \bar R}) (f g : T -> R).
+Implicit Types (m : {measure set T -> \bar R}) (f g : T -> U).
 
 Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
   m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
