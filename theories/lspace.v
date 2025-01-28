@@ -3,9 +3,9 @@ From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import boolp reals ereal.
 From HB Require Import structures.
-Require Import classical_sets signed functions topology normedtype cardinality.
-Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
-Require Import exp hoelder.
+From mathcomp Require Import classical_sets signed functions topology normedtype cardinality.
+From mathcomp Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
+From mathcomp Require Import exp hoelder.
 
 (******************************************************************************)
 (*                                                                            *)
@@ -254,8 +254,8 @@ Admitted.
 *)
 
 HB.instance Definition _ :=
-  @Num.Zmodule_isNormed.Build R (*LType mu p%:E*) ty
-    nm ler_Lnorm_add Lnorm_eq0 Lnorm_natmul LnormN.
+  @Num.Zmodule_isSemiNormed.Build R (*LType mu p%:E*) ty
+    nm ler_Lnorm_add Lnorm_natmul LnormN.
 
 (* todo: add equivalent of mx_normZ and HB instance *)
 
