@@ -877,7 +877,7 @@ rewrite [leLHS](_ : _ = M^-1 * (M * (`|x| + `|x|) + `|e| / 2)); last first.
   by rewrite mulrDr mulrA mulVf ?mul1r ?gt_eqF// mulrC addrA.
 rewrite ler_wpM2l ?invr_ge0// ?ltW// -ltrBrDl -mulrBr ltr_pM// ltrBrDl.
 near: M; apply: nbhs_pinfty_gt.
-Search "nbhs" (_ < _).
+rewrite !realD// normr_real//.
 Unshelve. all: by end_near. Qed.
 
 Lemma locally_convex :
@@ -2462,7 +2462,7 @@ by rewrite !num_max bE dE maxr_pMr.
 Qed.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K 'M[K]_(m.+1, n.+1)
+  PseudoMetricSemiNormedZmod_Lmodule_isSemiNormedModule.Build K 'M[K]_(m.+1, n.+1)
     mx_normZ.
 
 End matrix_NormedModule.
