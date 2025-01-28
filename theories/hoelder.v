@@ -93,6 +93,26 @@ move=> r0; rewrite unlock (negbTE r0) -poweRrM mulVf// poweRe1//.
 by apply: integral_ge0 => x _; rewrite lee_fin// powR_ge0.
 Qed.
 
+Lemma opp_Lnorm f p :
+  'N_p[-%R \o f] = 'N_p[f].
+Proof.
+rewrite unlock /Lnorm.
+case: p => /= [r||//].
+  case: eqP => _. congr (mu _).
+    rewrite !preimage_setI.
+    congr (_ `&` _).
+    rewrite -!preimage_setC.
+    congr (~` _).
+    rewrite /preimage.
+    apply: funext => x/=.
+    rewrite -{1}oppr0.
+    apply: propext. split; last by move=> ->.
+    by move/oppr_inj.
+  by under eq_integral => x _ do rewrite normrN.
+rewrite compA (_ : normr \o -%R = normr)//.
+apply: funext => x/=; exact: normrN.
+Qed.
+
 End Lnorm_properties.
 
 #[global]
@@ -502,4 +522,54 @@ congr (_ * _); rewrite poweRN.
 - by rewrite -powR_Lnorm ?gt_eqF// fin_num_poweR// ge0_fin_numE ?Lnorm_ge0.
 Qed.
 
+Lemma minkowski' f g p :
+  measurable_fun setT f -> measurable_fun setT g -> (1 <= p)%R ->
+  'N_p%:E[f] <= 'N_p%:E[f \+ g] + 'N_p%:E[g].
+Proof.
+move=> mf mg p1.
+rewrite (_ : f = ((f \+ g) \+ (-%R \o g))%R); last admit.
+rewrite [X in _ <= 'N__[X] + _](_ : ((f \+ g \- g) \+ g)%R = (f \+ g)%R); last admit.
+rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last admit.
+apply: minkowski => //.
+  apply: measurable_funD => //.
+apply: measurableT_comp => //.
+Admitted.
+
 End minkowski.
+
+Section Lnorm_properties.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Local Open Scope ereal_scope.
+Implicit Types (p : \bar R) (f g : T -> R) (r : R).
+
+Lemma LnormD_fin_num p f g :
+  1 <= p ->
+  measurable_fun setT f -> measurable_fun setT g ->
+    'N[mu]_p[f] \is a fin_num -> 'N[mu]_p[g] \is a fin_num ->
+      'N[mu]_p[f \+ g] \is a fin_num.
+Proof.
+case: p => [p|_|].
+- move=> p1 mf mg Nffin Ngfin.
+  rewrite fin_numElt (@lt_le_trans _ _ 0)//= ?Lnorm_ge0//.
+  rewrite (@le_lt_trans _ _ ('N[mu]_p%:E[f] + 'N[mu]_p%:E[g]))//.
+    apply: minkowski => //.
+  by rewrite lte_add_pinfty// -ge0_fin_numE// Lnorm_ge0.
+- move=> mf mg.
+  rewrite unlock /Lnorm.
+  case: ifPn => // mu_ge0.
+  rewrite !fin_numElt => /andP[_ fley] /andP[_ gley].
+  rewrite (@lt_le_trans _ _ 0)//= ?ess_sup_ge0//; last first.
+    move=> t/=; exact: normr_ge0.
+  admit.
+- by rewrite leeNy_eq => /eqP.
+Admitted.
+
+Lemma LnormD_pinfty p f g :
+  1 <= p -> measurable_fun setT f -> measurable_fun setT g ->
+    'N[mu]_p[f] = +oo -> 'N[mu]_p[f \+ g] = +oo.
+Proof.
+case: p => [p||].
+- move=> p1 mf mg.
+
+End Lnorm_properties.
