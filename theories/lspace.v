@@ -1,11 +1,11 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import ssralg ssrnum ssrint interval finmap.
-Require Import boolp reals ereal.
+From mathcomp Require Import boolp reals ereal.
 From HB Require Import structures.
-Require Import classical_sets signed functions topology normedtype cardinality.
-Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
-Require Import exp hoelder.
+From mathcomp Require Import classical_sets signed functions topology normedtype cardinality.
+From mathcomp Require Import sequences esum measure numfun lebesgue_measure lebesgue_integral.
+From mathcomp Require Import exp hoelder.
 
 (******************************************************************************)
 (*                                                                            *)
@@ -119,10 +119,12 @@ rewrite (@lty_poweRy _ _ (2^-1))//.
 rewrite (le_lt_trans _ (lfuny f))//.
 rewrite unlock /Lnorm ifF ?gt_eqF//.
 rewrite gt0_ler_poweR//.
-- by rewrite in_itv/= integral_ge0// leey.
+- rewrite in_itv/= integral_ge0//= ?leey//.
+  by move=> x _; rewrite lee_fin.
 - rewrite in_itv/= leey integral_ge0// => x _.
   by rewrite lee_fin powR_ge0.
 rewrite ge0_le_integral//.
+- by move=> x _; rewrite lee_fin.
 - apply: measurableT_comp => //.
   exact/EFin_measurable_fun/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f)/measurable_lfun.
 - by move=> x _; rewrite lee_fin powR_ge0.
@@ -253,9 +255,11 @@ Lemma LnormN f : 'N[mu]_p%:E [- f]%R = 'N[mu]_p%:E [f].
 Admitted.
 *)
 
+(* recover me
 HB.instance Definition _ :=
-  @Num.Zmodule_isNormed.Build R (*LType mu p%:E*) ty
-    nm ler_Lnorm_add Lnorm_eq0 Lnorm_natmul LnormN.
+  @Num.Zmodule_isSemiNormed.Build R (*LType mu p%:E*) ty
+    nm ler_Lnorm_add Lnorm_natmul LnormN.
+*)
 
 (* todo: add equivalent of mx_normZ and HB instance *)
 
