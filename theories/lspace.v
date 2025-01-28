@@ -254,8 +254,8 @@ Admitted.
 *)
 
 HB.instance Definition _ :=
-  @Num.Zmodule_isNormed.Build R (*LType mu p%:E*) ty
-    nm ler_Lnorm_add Lnorm_eq0 Lnorm_natmul LnormN.
+  @Num.Zmodule_isSemiNormed.Build R (*LType mu p%:E*) ty
+    nm ler_Lnorm_add Lnorm_natmul LnormN.
 
 (* todo: add equivalent of mx_normZ and HB instance *)
 
