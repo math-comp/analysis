@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *) 
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
@@ -58,23 +58,27 @@ Local Open Scope ring_scope.
 (* HB.structure Definition FilteredZmodule := {M of Filtered M M & GRing.Zmodule M}. *)
 (* HB.structure Definition FilteredLmodule (K : numDomainType) := *)
 (*   {M of Filtered M M & GRing.Lmodule K M}. *)
-HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
-HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
-HB.structure Definition NbhsLmodule (K : numDomainType) :=
-  {M of Nbhs M & GRing.Lmodule K M}.
 
-HB.structure Definition TopologicalNmodule :=
-  {M of Topological M & GRing.Nmodule M}.
-HB.structure Definition TopologicalZmodule :=
-  {M of Topological M & GRing.Zmodule M}.
+(** Due to a bug of HB.saturate, we need to define these instances
+right after the definition of the topological instances **)
 
-#[short(type="topologicalLmodType")]
+(* HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}. *)
+(* HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}. *)
+(* HB.structure Definition NbhsLmodule (K : numDomainType) := *)
+(*   {M of Nbhs M & GRing.Lmodule K M}. *)
+
+(* HB.structure Definition TopologicalNmodule := *)
+(*   {M of Topological M & GRing.Nmodule M}. *)
+(* HB.structure Definition TopologicalZmodule := *)
+(*   {M of Topological M & GRing.Zmodule M}. *)
+
+(*#[short(type="topologicalLmodType")]
 HB.structure Definition TopologicalLmodule (K : numDomainType) :=
-  {M of Topological M & GRing.Lmodule K M}.
+  {M of Topological M & GRing.Lmodule K M}.*)
 
-HB.structure Definition UniformZmodule := {M of Uniform M & GRing.Zmodule M}.
-HB.structure Definition UniformLmodule (K : numDomainType) :=
-  {M of Uniform M & GRing.Lmodule K M}.
+(* HB.structure Definition UniformZmodule := {M of Uniform M & GRing.Zmodule M}. *)
+(* HB.structure Definition UniformLmodule (K : numDomainType) := *)
+(*   {M of Uniform M & GRing.Lmodule K M}. *)
 
 Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A ->
@@ -507,66 +511,84 @@ HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
 
 End lcfun_linearcontinuousType.
 
-Section ring.
-Context {R : numDomainType} {E : NbhsLmodule.type R}
-  {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
+(*TODO lcfun_lmodType  and lcfun_ringType (for F: numFieldType)*)
 
-Lemma lcfun_submod_closed : submod_closed (@lcfun R E F s).
-Proof.
-split=> [|f g|f g]; rewrite !inE/=.
-- exact: measurable_cst.
-- exact: measurable_funB.
-- exact: measurable_funM.
-Qed.
-HB.instance Definition _ := GRing.isSubringClosed.Build _
-  (@lcfun d default_measure_display E F) lcfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubComRing of {linear_continuous E -> F | s} by <:].
+Section test.
 
-Implicit Types (f g : {linear_continuous E -> F | s}).
+Import GRing.
+Context {F : numFieldType}. 
+Check (F : Nbhs.type).
+Check (F : Zmodule.type).
+(*HB.saturate F.*)  (*numFieldType. *) (*hypothese : on a créé les
+instances de nbhs et zmodtype sur F : numFieldType avant de créer le
+join entre les deux structures *)
+Check (F : NbhsZmodule.type).
 
-Lemma lcfun0 : (0 : {linear_continuous E -> F | s}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
-Lemma lcfun1 : (1 : {linear_continuous E -> F | s}) =1 cst 1 :> (_ -> _). Proof. by []. Qed.
-Lemma lcfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
-Lemma lcfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
-Lemma lcfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
-Lemma lcfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
-Lemma lcfun_sum I r (P : {pred I}) (f : I -> {linear_continuous E -> F | s}) (x : E) :
-  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
-Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-Lemma lcfun_prod I r (P : {pred I}) (f : I -> {linear_continuous E -> F | s}) (x : E) :
-  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
-Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-Lemma lcfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
-Proof. by apply/funext=> x; elim: n => [|n IHn]//; rewrite !exprS lcfunM/= IHn. Qed.
+End test.
 
-HB.instance Definition _ f g := MeasurableFun.copy (f \+ g) (f + g).
-HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
-HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
-HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
+(* Section ring. *)
+(* Import GRing. *)
+(* Context {R : numDomainType} {E : NbhsLmodule.type R} *)
+(*   {F : numFieldType} {s : GRing.Scale.law R F}. *)
 
-Definition mindic (D : set E) of measurable D : E -> F := \1_D.
+(* HB.instance Definition _ := NbhsZmodule.on F.  *)
 
-Lemma mindicE (D : set E) (mD : measurable D) :
-  mindic mD = (fun x => (x \in D)%:R).
-Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
+(* Lemma lcfun_submod_closed : submod_closed (@lcfun R E F s). *)
+(* Proof. *)
+(* split=> [|f g|f g]; rewrite !inE/=. *)
+(* - exact: measurable_cst. *)
+(* - exact: measurable_funB. *)
+(* - exact: measurable_funM. *)
+(* Qed. *)
+(* HB.instance Definition _ := GRing.isSubringClosed.Build _ *)
+(*   (@lcfun d default_measure_display E F) lcfun_subring_closed. *)
+(* HB.instance Definition _ := [SubChoice_isSubComRing of {linear_continuous E -> F | s} by <:]. *)
 
-HB.instance Definition _ D mD := @isMeasurableFun.Build _ _ E F (mindic mD)
-  (@measurable_fun_indic _ E F setT D mD).
+(* Implicit Types (f g : {linear_continuous E -> F | s}). *)
 
-Definition indic_lcfun (D : set E) (mD : measurable D) :=
-  [the {linear_continuous E -> F | s} of mindic mD].
+(* Lemma lcfun0 : (0 : {linear_continuous E -> F | s}) =1 cst 0 :> (_ -> _). Proof. by []. Qed. *)
+(* Lemma lcfun1 : (1 : {linear_continuous E -> F | s}) =1 cst 1 :> (_ -> _). Proof. by []. Qed. *)
+(* Lemma lcfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed. *)
+(* Lemma lcfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed. *)
+(* Lemma lcfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed. *)
+(* Lemma lcfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed. *)
+(* Lemma lcfun_sum I r (P : {pred I}) (f : I -> {linear_continuous E -> F | s}) (x : E) : *)
+(*   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x. *)
+(* Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed. *)
+(* Lemma lcfun_prod I r (P : {pred I}) (f : I -> {linear_continuous E -> F | s}) (x : E) : *)
+(*   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x. *)
+(* Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed. *)
+(* Lemma lcfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _). *)
+(* Proof. by apply/funext=> x; elim: n => [|n IHn]//; rewrite !exprS lcfunM/= IHn. Qed. *)
 
-HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst k).
-Definition scale_lcfun k f := [the {linear_continuous E -> F | s} of k \o* f].
+(* HB.instance Definition _ f g := MeasurableFun.copy (f \+ g) (f + g). *)
+(* HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f). *)
+(* HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g). *)
+(* HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g). *)
 
-Lemma max_lcfun_subproof f g : @isMeasurableFun d _ E F (f \max g).
-Proof. by split; apply: measurable_maxr. Qed.
+(* Definition mindic (D : set E) of measurable D : E -> F := \1_D. *)
 
-HB.instance Definition _ f g := max_lcfun_subproof f g.
+(* Lemma mindicE (D : set E) (mD : measurable D) : *)
+(*   mindic mD = (fun x => (x \in D)%:R). *)
+(* Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed. *)
 
-Definition max_lcfun f g := [the {lcfun E >-> _} of f \max g].
+(* HB.instance Definition _ D mD := @isMeasurableFun.Build _ _ E F (mindic mD) *)
+(*   (@measurable_fun_indic _ E F setT D mD). *)
 
-End ring.
+(* Definition indic_lcfun (D : set E) (mD : measurable D) := *)
+(*   [the {linear_continuous E -> F | s} of mindic mD]. *)
+
+(* HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst k). *)
+(* Definition scale_lcfun k f := [the {linear_continuous E -> F | s} of k \o* f]. *)
+
+(* Lemma max_lcfun_subproof f g : @isMeasurableFun d _ E F (f \max g). *)
+(* Proof. by split; apply: measurable_maxr. Qed. *)
+
+(* HB.instance Definition _ f g := max_lcfun_subproof f g. *)
+
+(* Definition max_lcfun f g := [the {lcfun E >-> _} of f \max g]. *)
+
+(* End ring. *)
 
 
 

@@ -243,6 +243,11 @@ HB.structure Definition Nbhs := {T of Choice T & hasNbhs T}.
 #[short(type="pnbhsType")]
 HB.structure Definition PointedNbhs := {T of Pointed T & hasNbhs T}.
 
+HB.structure Definition NbhsNmodule := {M of Nbhs M & GRing.Nmodule M}.
+HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
+HB.structure Definition NbhsLmodule (K : numDomainType) :=
+  {M of Nbhs M & GRing.Lmodule K M}.
+
 Definition filter_from {I T : Type} (D : set I) (B : I -> set T) :
   set_system T := [set P | exists2 i, D i & B i `<=` P].
 

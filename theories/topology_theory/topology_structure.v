@@ -109,6 +109,15 @@ HB.structure Definition PointedTopological :=
 HB.structure Definition BiPointedTopological :=
   { X of BiPointed X & Topological X }.
 
+HB.structure Definition TopologicalNmodule :=
+  {M of Topological M & GRing.Nmodule M}.
+HB.structure Definition TopologicalZmodule :=
+  {M of Topological M & GRing.Zmodule M}.
+
+#[short(type="topologicalLmodType")]
+HB.structure Definition TopologicalLmodule (K : numDomainType) :=
+  {M of Topological M & GRing.Lmodule K M}.
+
 Section Topological1.
 Context {T : topologicalType}.
 
