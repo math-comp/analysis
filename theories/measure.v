@@ -4112,7 +4112,7 @@ Qed.
 
 Section ae_eq.
 Local Open Scope ring_scope.
-Context d (T : sigmaRingType d) (R : realType) (U V : Type) (W : ringType).
+Context d (T : sigmaRingType d) (R : realType) (U V : Type) (W : nzRingType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
 Local Notation ae_eq f g := (\forall x \ae mu, D x -> f x = g x).
 
@@ -4145,7 +4145,7 @@ Proof. by apply: filterS2 => x + + Dx => /= /(_ Dx) -> /(_ Dx) ->. Qed.
 Lemma ae_eq_mul2r (f g h : T -> W) : ae_eq f g -> ae_eq (f \* h) (g \* h).
 Proof. by apply: filterS => x /= /[apply] ->. Qed.
 
-Lemma ae_eq_mul2l (f g h : T -> W) : ae_eq f g -> ae_eq (h \* f)%R (h \* g).
+Lemma ae_eq_mul2l (f g h : T -> W) : ae_eq f g -> ae_eq (h \* f) (h \* g).
 Proof. by apply: filterS => x /= /[apply] ->. Qed.
 
 Lemma ae_eq_mul1l (f g : T -> W) : ae_eq f (cst 1) -> ae_eq g (g \* f).

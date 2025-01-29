@@ -56,7 +56,7 @@ Section Lequiv.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
 
-Definition Lequiv (f g : LfunType mu p) := `[< f = g [%ae mu] >].
+Definition Lequiv (f g : LfunType mu p) := `[< f = g %[ae mu] >].
 
 Let Lequiv_refl : reflexive Lequiv.
 Proof.
@@ -65,12 +65,12 @@ Qed.
 
 Let Lequiv_sym : symmetric Lequiv.
 Proof.
-by move=> f g; apply/idP/idP => /asboolP h; apply/asboolP; exact: filterS h.
+by move=> f g; apply/idP/idP => /asboolP h; apply/asboolP/ae_eq_sym.
 Qed.
 
 Let Lequiv_trans : transitive Lequiv.
 Proof.
-by move=> f g h /asboolP gf /asboolP fh; apply/asboolP/(filterS2 _ _ gf fh) => x ->.
+by move=> f g h /asboolP gf /asboolP fh; apply/asboolP/(ae_eq_trans gf fh).
 Qed.
 
 Canonical Lequiv_canonical :=
@@ -136,7 +136,7 @@ Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
 Section Lspace_norm.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
-Variable (p : R). (* add hypothesis p > 1 *)
+Variable (p : R) (p1 : 1 <= p).
 
 (* 0 - + should come with proofs that they are in LfunType mu p *)
 
@@ -159,28 +159,17 @@ Proof.
 rewrite /nm.
 have : (-oo < 'N[mu]_p%:E[f])%E by exact: (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)). 
 have : (-oo < 'N[mu]_p%:E[g])%E by exact: (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)). 
-rewrite !ltNye_eq => /orP[f_fin /orP[g_fin|/eqP foo]|/eqP goo].
+rewrite !ltNye_eq => /orP[f_fin /orP[g_fin|/eqP foo]|/eqP goo /orP[f_fin|/eqP foo]].
 - rewrite -fineD ?fine_le//.
-  - admit.
+  - apply: LnormD_fin_num => //. admit. admit.
   - by rewrite fin_numD f_fin g_fin//.
-  rewrite minkowski//. admit. admit. admit.
-- rewrite foo/= add0r.
-  have : ('N[mu]_p%:E[f] <= 'N[mu]_p%:E[(f \+ g)])%E.
-  rewrite unlock /Lnorm.
-  rewrite {1}(@ifF _ (p == 0)).
-  rewrite {1}(@ifF _ (p == 0)).
-  rewrite gt0_ler_poweR.
-  - by [].
-  - admit.
-  - admit.
-  - admit.
-  rewrite ge0_le_integral//.
-  - move => x _. rewrite lee_fin powR_ge0//.
-  - admit.
-  - move => x _. rewrite lee_fin powR_ge0//.
-  - admit.
-  - move => x _. rewrite lee_fin gt0_ler_powR//. admit. (* rewrite normr_le. *)
-
+  rewrite minkowski//. admit. admit.
+- rewrite foo/= add0r (_ : 'N[mu]_p%:E[(f \+ g)] = +oo%E) ?fine_ge0 ?Lnorm_ge0//.
+  admit.
+- rewrite goo/= addr0 (_ : 'N[mu]_p%:E[(f \+ g)] = +oo%E) ?fine_ge0 ?Lnorm_ge0//.
+  admit.
+- rewrite foo goo/= add0r (_ : 'N[mu]_p%:E[(f \+ g)] = +oo%E)//=.
+  admit.
 Admitted.
 
 Lemma natmulfctE (U : pointedType) (K : ringType) (f : U -> K) n :
@@ -188,7 +177,7 @@ Lemma natmulfctE (U : pointedType) (K : ringType) (f : U -> K) n :
 Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
 
 
-Lemma Lnorm_eq0 f : nm f = 0 -> {ae mu, f =1 0}.
+Lemma Lnorm_eq0 f : nm f = 0 -> f = 0 %[ae mu]. (* we need to get rid of fine *)
 rewrite /nm => /eqP.
 rewrite fine_eq0; last first. admit.
 move/eqP/Lnorm_eq0_eq0.
