@@ -477,11 +477,21 @@ Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
 Lemma IZRposE (p : positive) : IZR (Z.pos p) = INR (nat_of_pos p).
 Proof. by rewrite -Pos_to_natE INR_IPR. Qed.
 
-Lemma RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
+Let ge0_RsqrtE x : 0 <= x -> sqrt x = Num.sqrt x.
 Proof.
 move => x0; apply/eqP; have [t1 t2] := conj (sqrtr_ge0 x) (sqrt_pos x).
 rewrite eq_sym -(eqrXn2 (_: 0 < 2)%N t1) //; last exact/RleP.
 by rewrite sqr_sqrtr // !exprS expr0 mulr1 -RmultE ?sqrt_sqrt //; exact/RleP.
+Qed.
+
+Lemma RsqrtE x : sqrt x = Num.sqrt x.
+Proof.
+set Rx := Rbasic_fun.Rcase_abs x.
+have RxE : Rx = Rbasic_fun.Rcase_abs x by [].
+rewrite /R_sqrt.sqrt -RxE.
+move: RxE; case: Rbasic_fun.Rcase_abs => x0 RxE.
+  by rewrite RxE ler0_sqrtr//; exact/ltW/RltP.
+by rewrite /Rx -/(R_sqrt.sqrt _) ge0_RsqrtE //; exact/RleP/Rge_le.
 Qed.
 
 Lemma RpowE x n : pow x n = x ^+ n.
