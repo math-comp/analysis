@@ -84,6 +84,9 @@
 - in `normedtype.v`:
   + lemmas `not_near_at_rightP`, `not_near_at_leftP`
 
+- in `Rstruct.v`:
+  + lemma `RsqrtE`
+
 ### Deprecated
 
 ### Removed
