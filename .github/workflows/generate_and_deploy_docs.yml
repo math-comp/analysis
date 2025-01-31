@@ -1,31 +1,27 @@
 on:
   push:
-#    branches: ["master"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    branches-ignore: ["gh-pages"]
+  pull_request:
 
 jobs:
-  generate-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  generate-artifacts:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set the variables for push event
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          branch_name=${{ github.ref_name }}
+          short_sha=$(git rev-parse --short ${{ github.sha }})
+          echo "destination_dir=sample_"$branch_name_$short_sha >> $GITHUB_ENV
+
+      - name: Set the variables for PR event
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          branch_name=${{ github.head_ref }}
+          echo "destination_dir=sample_$branch_name" >> $GITHUB_ENV
 
       - name: Clone Coq2html
         uses: actions/checkout@v4
@@ -49,17 +45,11 @@ jobs:
 
       - name: Generate Documents
         run: |
-          mkdir html
-          coq2html/coq2html -title "Mathcomp Analysis" -d html -base mathcomp -Q theories analysis -coqlib https://coq.inria.fr/doc/V8.18.0/stdlib/ -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.ssreflect -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.algebra classical/*.glob classical/*.v theories/*.glob theories/*.v
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
+          mkdir -p artifact/${{ env.destination_dir }}
+          coq2html/coq2html -title "Mathcomp Analysis" -d artifact/${{ env.destination_dir }} -base mathcomp -Q theories analysis -coqlib https://coq.inria.fr/doc/V8.18.0/stdlib/ -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.ssreflect -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.algebra classical/*.glob classical/*.v theories/*.glob theories/*.v
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          # Upload entire repository
-          path: 'html/'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+          name: ${{ env.destination_dir }}
+          path: artifact
