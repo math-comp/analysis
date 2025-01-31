@@ -90,11 +90,7 @@ by rewrite rpredB ?polyOverC ?polyOverZ ?polyOverX//= nat_int.
 Qed.
 
 Let f_small_coef0 i : (i < n)%N -> f`_i = 0.
-Proof.
-move=> ni; rewrite /f coefZ; apply/eqP.
-rewrite mulf_eq0 invr_eq0 pnatr_eq0 gtn_eqF ?fact_gt0//=.
-by rewrite coefXnM ni.
-Qed.
+Proof. by move=> ni; rewrite /f coefZ coefXnM ni mulr0. Qed.
 
 Let derive_f_0_int i : f^`(i).[0] \is a Num.int.
 Proof.
@@ -136,31 +132,42 @@ rewrite [in RHS]derivnS exprS mulN1r scaleNr -(derivZ ((-1) ^+ i)) -Hi.
 by rewrite deriv_comp derivB derivX -derivnS derivC sub0r mulrN1 opprK.
 Qed.
 
-Lemma FPi_int : F.[pirat] \is a Num.int.
+Let derivn_f_pi_int i : f^`(i).[pirat] \is a Num.int.
 Proof.
-rewrite /F horner_sum rpred_sum // => i _ ; rewrite !hornerE rpredM //=.
-  by rewrite -exprnP rpredX// (_ : -1 = (-1)%:~R)// intr_int.
-move: (derivn_fpix i.*2).
-rewrite -mul2n mulnC exprM sqrr_sign scale1r => <-.
-by rewrite horner_comp !hornerE subrr derive_f_0_int.
+rewrite -pf_sym.
+have := derivn_fpix i.
+rewrite -signr_odd.
+have [oi|ei] := boolP (odd i).
+  rewrite expr1 scaleN1r => /eqP; rewrite -eqr_oppLR => /eqP.
+  rewrite -[in X in _ = X -> _]pf_sym => <-.
+  by rewrite hornerN rpredN/= horner_comp/= !hornerE subrr derive_f_0_int.
+rewrite expr0 scale1r.
+rewrite -[in X in _ = X -> _]pf_sym => <-.
+by rewrite horner_comp/= !hornerE subrr derive_f_0_int.
+Qed.
+
+Lemma Fpi_int : F.[pirat] \is a Num.int.
+Proof.
+rewrite /F horner_sum rpred_sum // => i _; rewrite !hornerE rpredM //=.
+by rewrite -exprnP rpredX// (_ : -1 = (-1)%:~R)// intr_int.
 Qed.
 
 Lemma D2FDF : F^`(2) + F = f.
 Proof.
 rewrite /F linear_sum /=.
-rewrite (eq_bigr (fun i : 'I_n.+1 => ((-1)^i *: f^`(i.+1.*2)%N))); last first.
-  by move=> i _ ;rewrite !derivZ.
-rewrite [X in _ + X]big_ord_recl/=.
-rewrite -exprnP expr0 scale1r (addrC f) addrA -[X in _ = X]add0r.
+rewrite (eq_bigr (fun i : 'I_n.+1 => (-1)^i *: f^`(i.*2.+2))); last first.
+  by move=> i _; rewrite !derivZ.
+rewrite [X in _ + X]big_ord_recl.
+rewrite -exprnP expr0 scale1r (addrC f) addrA -[RHS]add0r.
 congr (_ + _).
-rewrite big_ord_recr addrC addrA -big_split big1=>[| i _].
+rewrite big_ord_recr addrC addrA -big_split big1=>[|i _].
   rewrite add0r /=; apply/eqP; rewrite scaler_eq0 -derivnS derivn_poly0.
     by rewrite deriv0 eqxx orbT.
   suff -> : size f = (n + n.+1)%N by rewrite addnS addnn.
   rewrite /f size_scale; last first.
     by rewrite invr_neq0 // pnatr_eq0 -lt0n (fact_gt0 n).
   rewrite size_monicM ?monicXn //; last by rewrite -size_poly_eq0 P_size.
-  by rewrite  size_polyXn P_size.
+  by rewrite size_polyXn P_size.
 rewrite /bump /= -scalerDl.
 apply/eqP; rewrite scaler_eq0 /bump -exprnP add1n exprSr.
 by rewrite mulrN1 addrC subr_eq0 eqxx orTb.
@@ -201,25 +208,16 @@ Let fsin n := fun x : R => (f n).[x] * sin x.
 Let F := @F R na nb.
 
 Let fsin_antiderivative n :
-  (fun x => (horner (F n))^`()%classic x * sin x - (F n).[x] * cos x)^`()%classic =
+  'D_1 (fun x => (F n)^`().[x] * sin x - (F n).[x] * cos x) =
   fsin n.
 Proof.
 apply/funext => x/=.
-rewrite derive1E/= deriveD//=; last first.
-  apply: derivableM; last exact: ex_derive.
-  by rewrite -derivE; exact: derivable_horner.
-rewrite deriveM//; last by rewrite -derivE; exact: derivable_horner.
-rewrite deriveN//= deriveM// !derive_val opprD -addrA addrC !addrA.
-rewrite scalerN opprK -addrA [X in (_ + X = _)%R](_ : _ = 0%R); last first.
-  rewrite addrC derivE.
-  by apply/eqP; rewrite subr_eq0 [eqbLHS]mulrC.
-rewrite addr0 -derive1E.
-have := @D2FDF R na _ n nb0.
-rewrite -/F derivSn /fsin -/f => <-.
-rewrite -!derivE derivn1.
-rewrite [X in (X + _ = _)%R](_ : _ = (F n)^`()^`().[x]%R * sin x)%R; last first.
-  by rewrite mulrC.
-by rewrite -mulrDl hornerD.
+rewrite deriveB//= !deriveM// !derive_val.
+rewrite opprD scalerN opprK.
+rewrite -addrA addrC -!addrA [X in - X]mulrC !addrA subrK [X in X + _]mulrC.
+rewrite -derivn1 -derivSn.
+(* ((F n)^`(2)).[x] * sin x + (F n).[x] * sin x *)
+by rewrite -mulrDl -hornerD (@D2FDF R na _ n nb0).
 Qed.
 
 Definition intfsin n := \int[mu]_(x in `[0, pi]) (fsin n x).
@@ -239,7 +237,7 @@ Qed.
 Let intfsinE n : intfsin n = (F n).[pi] + (F n).[0].
 Proof.
 rewrite /intfsin /Rintegral.
-set h := fun x => (derive1 (fun x => (F n).[x]) x * sin x - (F n).[x] * cos x).
+set h := fun x => ((F n)^`()).[x] * sin x - (F n).[x] * cos x.
 rewrite (@continuous_FTC2 _ _ h).
 - rewrite /h sin0 cospi cos0 sinpi !mulr0 !add0r mulr1 mulrN1 !opprK EFinN.
   by rewrite oppeK -EFinD.
@@ -247,23 +245,17 @@ rewrite (@continuous_FTC2 _ _ h).
 - exact: cfsin.
 - split=> [x x0pi| |].
   + by apply: derivableB => //; apply: derivableM => //; rewrite -derivE.
-  + apply: cvgB.
-      by rewrite -derivE; apply: cvgM => //; apply: cvg_at_right_filter;
-        [exact: continuous_horner|exact: continuous_sin].
-    by apply: cvgM => //; apply: cvg_at_right_filter;
-      [exact: continuous_horner|exact: continuous_cos].
-  + apply: cvgB => //.
-      by rewrite -derivE; apply: cvgM => //; apply: cvg_at_left_filter;
-        [exact: continuous_horner|exact: continuous_sin].
-    by apply: cvgM => //; apply: cvg_at_left_filter;
-      [exact: continuous_horner|exact: continuous_cos].
-- by move=> x x0pi; rewrite fsin_antiderivative.
+  + by apply: cvgB; apply: cvgM => //; apply: cvg_at_right_filter;
+      (exact: continuous_horner||exact: continuous_sin||exact: continuous_cos).
+  + by apply: cvgB; apply: cvgM => //; apply: cvg_at_left_filter;
+      (exact: continuous_horner||exact: continuous_sin||exact: continuous_cos).
+- by move=> x x0pi; rewrite -fsin_antiderivative derive1E.
 Qed.
 
 Hypothesis piratE : pirat = pi.
 
 Lemma intfsin_int n : intfsin n \is a Num.int.
-Proof. by rewrite intfsinE rpredD ?F0_int -?piratE ?FPi_int. Qed.
+Proof. by rewrite intfsinE rpredD ?F0_int -?piratE ?Fpi_int. Qed.
 
 Let f0 x : (f 0).[x] = 1.
 Proof. by rewrite /f /pi_irrational.f fact0 !expr0 invr1 mulr1 !hornerE. Qed.
@@ -282,7 +274,7 @@ rewrite -!exprMn [in ltRHS]mulrC mulrA -exprMn.
 have ? : 0 <= a - b * x by rewrite abx_ge0 ?piratE// (ltW x0) ltW.
 have ? : x * (a - b * x) < a * pi.
   rewrite [ltRHS]mulrC ltr_pM//; first exact/ltW.
-  by rewrite ltrBlDl //ltrDr mulr_gt0// lt0r /b pnatr_eq0 nb0/=.
+  by rewrite ltrBlDl// ltrDr mulr_gt0// lt0r /b pnatr_eq0 nb0/=.
 have := sin_le1 x; rewrite le_eqVlt => /predU1P[x1|x1].
 - by rewrite x1 mulr1 ltrXn2r ?gtn_eqF// mulr_ge0//; exact/ltW.
 - rewrite -[ltRHS]mulr1 ltr_pM//.
@@ -383,7 +375,7 @@ Proof.
 move=> e0; near=> n.
 rewrite intfsin_gt0/=.
 apply: (@le_lt_trans _ _
-    (\int[mu]_(x in `[0, pi]) ((pi ^+ n * a ^+ n) / n`!%:R))).
+    (\int[mu]_(x in `[0, pi]) (pi ^+ n * a ^+ n / n`!%:R))).
   apply: le_Rintegral => //=.
   - apply/continuous_compact_integrable; first exact: segment_compact.
     by apply/continuous_subspaceT => x; exact: cvg_cst.
@@ -400,17 +392,15 @@ apply: (@le_lt_trans _ _
 rewrite Rintegral_cst//= lebesgue_measure_itv/= lte_fin pi_gt0/=.
 rewrite subr0 mulrAC -exprMn (mulrC _ pi) -mulrA.
 near: n.
-have : pi * (pi * a) ^+ n / n`!%:R @[n --> \oo] --> (0:R).
+have : pi * (pi * a) ^+ n / n`!%:R @[n --> \oo] --> 0.
   rewrite -[X in _ --> X](mulr0 pi).
   under eq_fun do rewrite -mulrA.
   by apply: cvgMr; exact: exp_fact.
-move/cvgrPdist_lt => /(_ e e0)[k _]H.
-near=> n.
-have {H} := H n.
+move/cvgrPdist_lt => /(_ e e0).
+apply: filterS => n.
 rewrite sub0r normrN ger0_norm; last first.
   by rewrite !mulr_ge0 ?pi_ge0// exprn_ge0// mulr_ge0// pi_ge0.
-rewrite mulrA; apply.
-by near: n; exists k.
+by rewrite mulrA; exact.
 Unshelve. all: by end_near. Qed.
 
 End analytic_part.
