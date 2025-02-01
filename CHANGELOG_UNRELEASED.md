@@ -32,6 +32,8 @@
 
 - in `normedtype.v`:
   + lemma `nbhs_right_leftP`
+- in `lebesgue_integral.v`:
+  + lemma `integral_bigsetU_EFin`
 
 ### Changed
 

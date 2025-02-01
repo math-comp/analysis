@@ -3021,9 +3021,12 @@ End subset_integral.
 #[deprecated(since="mathcomp-analysis 1.0.1", note="use `ge0_integral_setU` instead")]
 Notation integral_setU := ge0_integral_setU (only parsing).
 
+Section integral_setU_EFin.
 Local Open Scope ereal_scope.
-Lemma integral_setU_EFin d (T : measurableType d) (R : realType)
-  (mu : {measure set T -> \bar R}) (A B : set T) (f : T -> R) :
+Context d (T : measurableType d) (R : realType)
+        (mu : {measure set T -> \bar R}).
+
+Lemma integral_setU_EFin (A B : set T) (f : T -> R) :
   measurable A -> measurable B ->
   measurable_fun (A `|` B) f ->
   [disjoint A & B] ->
@@ -3041,7 +3044,32 @@ set bp : \bar R := \int[mu]_(x in B) _; set bn : \bar R := \int[mu]_(x in B) _.
 rewrite oppeD 1?addeACA//.
 by rewrite ge0_adde_def// inE integral_ge0.
 Qed.
-Local Close Scope ereal_scope.
+
+Lemma integral_bigsetU_EFin (I : eqType) (F : I -> set T) (f : T -> R)
+    (s : seq I) :
+  (forall i, d.-measurable (F i)) ->
+  uniq s -> trivIset [set` s] F ->
+  let D := \big[setU/set0]_(i <- s) F i in
+  measurable_fun D (EFin \o f) ->
+  \int[mu]_(x in D) (f x)%:E = \sum_(i <- s) \int[mu]_(x in F i) (f x)%:E.
+Proof.
+move=> mF; elim: s => [|h t ih] us tF D mf.
+  by rewrite /D 2!big_nil integral_set0.
+rewrite /D big_cons integral_setU_EFin//.
+- rewrite big_cons ih//.
+  + by move: us => /= /andP[].
+  + by apply: sub_trivIset tF => /= i /= it; rewrite inE it orbT.
+  + apply: measurable_funS mf => //; first exact: bigsetU_measurable.
+    by rewrite /D big_cons; exact: subsetUr.
+- exact: bigsetU_measurable.
+- by move/measurable_EFinP : mf; rewrite /D big_cons.
+- apply/eqP; rewrite big_distrr/= big_seq big1// => i it.
+  move/trivIsetP : tF; apply => //=; rewrite ?mem_head//.
+  + by rewrite inE it orbT.
+  + by apply/eqP => hi; move: us => /=; rewrite hi it.
+Qed.
+
+End integral_setU_EFin.
 
 Section Rintegral.
 Local Open Scope ereal_scope.
