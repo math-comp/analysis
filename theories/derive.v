@@ -1624,6 +1624,45 @@ move=> t /itvWlt dft dftxy _; rewrite -oppr_le0 opprB dftxy.
 by apply: mulr_le0_ge0 => //; [exact: dfle0|by rewrite subr_ge0 ltW].
 Qed.
 
+Lemma ltr0_derive1_decr (R : realType) (f : R -> R) (a b : R) :
+  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
+  (forall x, x \in `]a, b[%R -> f^`() x < 0) ->
+  {within `[a, b], continuous f}%classic ->
+  forall x y, a <= x -> x < y -> y <= b -> f y < f x.
+Proof.
+move=> fdrvbl dflt0 ctsf x y leax ltxy leyb; rewrite -subr_gt0.
+case: ltgtP ltxy => // xlty _.
+have itvW : {subset `[x, y]%R <= `[a, b]%R}.
+  by apply/subitvP; rewrite /<=%O /= /<=%O /= leyb leax.
+have itvWlt : {subset `]x, y[%R <= `]a, b[%R}.
+  by apply subitvP; rewrite /<=%O /= /<=%O /= leyb leax.
+have fdrv z : z \in `]x, y[%R -> is_derive z 1 f (f^`()z).
+  rewrite in_itv/= => /andP[xz zy]; apply: DeriveDef; last by rewrite derive1E.
+  by apply: fdrvbl; rewrite in_itv/= (le_lt_trans _ xz)// (lt_le_trans zy).
+have [] := @MVT _ f (f^`()) x y xlty fdrv.
+  apply: (@continuous_subspaceW _ _ _ `[a, b]); first exact: itvW.
+  by rewrite continuous_subspace_in.
+move=> t /itvWlt dft dftxy; rewrite -oppr_lt0 opprB dftxy.
+by rewrite pmulr_llt0 ?subr_gt0// dflt0.
+Qed.
+
+Lemma gtr0_derive1_incr (R : realType) (f : R -> R) (a b : R) :
+  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
+  (forall x, x \in `]a, b[%R -> 0 < f^`() x) ->
+  {within `[a, b], continuous f}%classic ->
+  forall x y, a <= x -> x < y -> y <= b -> f x < f y.
+Proof.
+move=> fdrvbl dfgt0 ctsf x y leax ltxy leyb.
+rewrite -ltrN2; apply: (@ltr0_derive1_decr _ (\- f) a b).
+- by move=> z zab; apply: derivableN; exact: fdrvbl.
+- move=> z zab; rewrite derive1E deriveN; last exact: fdrvbl.
+  by rewrite ltrNl oppr0 -derive1E dfgt0.
+- by move=> z; apply: continuousN; exact: ctsf.
+- exact: leax.
+- exact: ltxy.
+- exact: leyb.
+Qed.
+
 Lemma ler0_derive1_nincry {R : realType} (f : R -> R) (a : R) :
   (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
   (forall x, x \in `]a, +oo[%R -> f^`() x <= 0) ->
@@ -1664,7 +1703,7 @@ apply: (@ler0_derive1_nincr _ _ N b) => //.
   by rewrite num_real.
 Unshelve. all: end_near. Qed.
 
-Lemma le0r_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
+Lemma ge0r_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
   (forall x, x \in `]a, b[%R -> derivable f x 1) ->
   (forall x, x \in `]a, b[%R -> 0 <= f^`() x) ->
   {within `[a,b], continuous f} ->
@@ -1676,8 +1715,11 @@ apply (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
   by rewrite oppr_le0 -derive1E; apply: dfge0.
 by apply: continuousN; exact: fcont.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.9.0",
+  note="renamed to `ge0r_derive1_ndecr`")]
+Notation le0r_derive1_ndecr := ge0r_derive1_ndecr (only parsing).
 
-Lemma le0r_derive1_ndecry {R : realType} (f : R -> R) (a : R) :
+Lemma ge0r_derive1_ndecry {R : realType} (f : R -> R) (a b : R) :
   (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
   (forall x, x \in `]a, +oo[%R -> 0 <= f^`() x) ->
   {within `[a, +oo[, continuous f} ->
