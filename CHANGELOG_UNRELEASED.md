@@ -30,10 +30,27 @@
 - in `classical_sets.v`:
   + lemmas `xsectionE`, `ysectionE`
 
+- in `topology_theory/topological_structure.v`
+  + lemmas `interior_id`, `interiorT`, `interior0`, `closureT`
+
 - in `normedtype.v`:
   + lemma `nbhs_right_leftP`
 - in `lebesgue_integral.v`:
   + lemma `integral_bigsetU_EFin`
+  + lemmas `interior_itv_bnd`, `interior_itv_bndy`, `interior_itv_Nybnd`,
+    definition `interior_itv`
+  + lemma `interior_set1`
+  + lemmas `interior_itv_bnd`, `interior_itv_bndy`, `interior_itv_Nybnd`, `interior_itv_Nyy`
+  + definition `interior_itv`
+
+- in `derive.v`:
+  + lemmas `decr_derive1_le0`, `decr_derive1_le0_itv`,
+           `decr_derive1_le0_itvy`, `decr_derive1_le0_itvNy`,
+           `incr_derive1_ge0`, `incr_derive1_ge0_itv`,
+           `incr_derive1_ge0_itvy`, `incr_derive1_ge0_itvNy`,
+  + lemmas `ler0_derive1_nincry`, `ger0_derive1_ndecry`,
+           `ler0_derive1_nincrNy`, `ger0_derive1_ndecrNy`
+  + lemmas `ltr0_derive1_decr`, `gtr0_derive1_incr`
 
 ### Changed
 

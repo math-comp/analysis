@@ -4778,6 +4778,58 @@ have /sup_adherent/(_ hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
 by rewrite subKr => rf; apply: (iX e f); rewrite ?ltW.
 Qed.
 
+Lemma interior_set1 (a : R) : [set a]^° = set0.
+Proof.
+rewrite interval_bounded_interior; first last.
+- by exists a => [?]/= ->; apply: lexx.
+- by exists a => [?]/= ->; apply: lexx.
+- by move=> ? ?/= -> -> r; rewrite -eq_le; move/eqP <-.
+- rewrite inf1 sup1 eqEsubset; split => // => x/=.
+  by rewrite ltNge => /andP[/negP + ?]; apply; apply/ltW.
+Qed.
+
+Lemma interior_itv_bnd (x y : R) (a b : bool) :
+  [set` Interval (BSide a x) (BSide b y)]^° = `]x, y[%classic.
+Proof.
+have [|xy] := leP y x.
+  rewrite le_eqVlt => /predU1P[-> |yx].
+    by case: a; case: b; rewrite set_itvoo0 ?set_itvE ?interior_set1 ?interior0.
+  rewrite !set_itv_ge ?interior0//.
+  - by rewrite bnd_simp -leNgt ltW.
+  - by case: a; case: b; rewrite bnd_simp -?leNgt -?ltNge ?ltW.
+rewrite interval_bounded_interior//; last exact: interval_is_interval.
+rewrite inf_itv; last by case: a; case b; rewrite bnd_simp ?ltW.
+rewrite sup_itv; last by case: a; case b; rewrite bnd_simp ?ltW.
+exact: set_itvoo.
+Qed.
+
+Lemma interior_itv_bndy (x : R) (b : bool) :
+  [set` Interval (BSide b x) (BInfty _ false)]^° = `]x, +oo[%classic.
+Proof.
+rewrite interval_right_unbounded_interior//; first last.
+    by apply: hasNubound_itv; rewrite lt_eqF.
+  exact: interval_is_interval.
+rewrite inf_itv; last by case: b; rewrite bnd_simp ?ltW.
+by rewrite set_itv_o_infty.
+Qed.
+
+Lemma interior_itv_Nybnd (y : R) (b : bool) :
+  [set` Interval (BInfty _ true) (BSide b y)]^° = `]-oo, y[%classic.
+Proof.
+rewrite interval_left_unbounded_interior//; first last.
+    by apply: hasNlbound_itv; rewrite gt_eqF.
+  exact: interval_is_interval.
+rewrite sup_itv; last by case b; rewrite bnd_simp ?ltW.
+by apply: set_itv_infty_o.
+Qed.
+
+Lemma interior_itv_Nyy :
+  [set` Interval (BInfty R true) (BInfty _ false)]^° = `]-oo, +oo[%classic.
+Proof. by rewrite set_itv_infty_infty; apply: interiorT. Qed.
+
+Definition interior_itv :=
+  (interior_itv_bnd, interior_itv_bndy, interior_itv_Nybnd, interior_itv_Nyy).
+
 Definition Rhull (X : set R) : interval R := Interval
   (if `[< has_lbound X >] then BSide `[< X (inf X) >] (inf X)
                           else BInfty _ true)

@@ -214,7 +214,7 @@ Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
 Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
 Proof. by rewrite nbhsE => p_A; exists A. Qed.
 
-Lemma interiorI (A B:set T): (A `&` B)^° = A^° `&` B^°.
+Lemma interiorI (A B : set T) : (A `&` B)^° = A^° `&` B^°.
 Proof.
 rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
 - by rewrite subsetI => // -[? ?]; split; exists B0.
@@ -647,12 +647,6 @@ Context {T : topologicalType}.
 Definition closure (A : set T) :=
   [set p : T | forall B, nbhs p B -> A `&` B !=set0].
 
-Lemma closure0 : closure set0 = set0 :> set T.
-Proof.
-rewrite predeqE => x; split => // /(_ _ (filter_nbhsT _))/set0P.
-by rewrite set0I eqxx.
-Qed.
-
 Lemma closureEnbhs A : closure A = [set p | globally A `#` nbhs p].
 Proof. by under eq_fun do rewrite meets_globallyl. Qed.
 
@@ -814,6 +808,7 @@ rewrite eqEsubset; split=> [x ? B [cB AB]|]; first exact/cB/(closure_subset AB).
 exact: (smallest_sub (@closed_closure _ _) (@subset_closure _ _)).
 Qed.
 
+(* TODO: the LHS and RHS of the equality should be swapped *)
 Lemma closure_id E : closed E <-> E = closure E.
 Proof.
 split=> [?|->]; last exact: closed_closure.
@@ -833,8 +828,9 @@ End regular_open_closed.
 
 Section closure_interior_lemmas.
 Variable T : topologicalType.
+Implicit Types (A B : set T).
 
-Lemma interiorC (A : set T) : (~` A)^° = ~` closure A.
+Lemma interiorC A : (~` A)^° = ~` closure A.
 Proof.
 rewrite eqEsubset; split=> x; rewrite /closure /interior nbhsE /= -existsNE.
   case=> U ? /disjoints_subset UA; exists U; rewrite not_implyE.
@@ -846,22 +842,39 @@ exact/eqP/negbNE/negP/set0P.
 Qed.
 
 (* TODO: rename to closureC after removing the deprecated one *)
-Lemma closure_setC (A : set T) : closure (~` A) = ~` A^°.
+Lemma closure_setC A : closure (~` A) = ~` A^°.
 Proof. by apply: setC_inj; rewrite -interiorC !setCK. Qed.
 
-Lemma closureU (A B : set T) : closure (A `|` B) = closure A `|` closure B.
+Lemma interior_id A : open A <-> interior A = A.
+Proof.
+by rewrite -(setCK A) openC interiorC closure_id; split => [ <- | /setC_inj->].
+Qed.
+
+Lemma closureT : closure [set: T] = [set: T].
+Proof. exact/esym/closure_id/closedT. Qed.
+
+Lemma closure0 : closure (@set0 T) = set0.
+Proof. exact/esym/closure_id/closed0. Qed.
+
+Lemma interiorT : (@setT T)^° = setT.
+Proof. exact/interior_id/openT. Qed.
+
+Lemma interior0 : (@set0 T)^° = set0.
+Proof. exact/interior_id/open0. Qed.
+
+Lemma closureU A B : closure (A `|` B) = closure A `|` closure B.
 Proof. by apply: setC_inj; rewrite setCU -!interiorC -interiorI setCU. Qed.
 
-Lemma interiorU (A B : set T) : A^° `|` B^° `<=` (A `|` B)^°.
+Lemma interiorU A B : A^° `|` B^° `<=` (A `|` B)^°.
 Proof.
 by apply: subsetC2; rewrite setCU -!closure_setC setCU; exact: closureI.
 Qed.
 
-Lemma closureEbigcap (A : set T) :
+Lemma closureEbigcap A :
   closure A = \bigcap_(x in [set C | closed C /\ A `<=` C]) x.
 Proof. exact: closureE. Qed.
 
-Lemma interiorEbigcup (A : set T) :
+Lemma interiorEbigcup A :
   A^° = \bigcup_(x in [set U | open U /\ U `<=` A]) x.
 Proof.
 apply: setC_inj; rewrite -closure_setC closureEbigcap setC_bigcup.
@@ -871,7 +884,7 @@ apply: eq_bigcapl; split => X /=.
 by case=> Y + <-; rewrite closedC setCS.
 Qed.
 
-Lemma interior_closed_regopen (A : set T) : closed A -> regopen A^°.
+Lemma interior_closed_regopen A : closed A -> regopen A^°.
 Proof.
 move=> cA; rewrite /regopen eqEsubset; split=> x.
   rewrite /closure [X in X -> _]/interior nbhsE => -[] U oxU UciA.
@@ -885,7 +898,7 @@ have:= UA; rewrite open_subsetE// => /subset_trans; apply.
 exact: subset_closure.
 Qed.
 
-Lemma closure_open_regclosed (A : set T) : open A -> regclosed (closure A).
+Lemma closure_open_regclosed A : open A -> regclosed (closure A).
 Proof.
 rewrite /regclosed -(setCK A) openC => cCA.
 rewrite closure_setC -[in RHS]interior_closed_regopen//.
