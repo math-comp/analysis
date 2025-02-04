@@ -127,69 +127,85 @@ Proof. by apply/funext=> x; rewrite /patch/=; case: ifP; rewrite ?mule0. Qed.
 
 End erestrict_lemmas.
 
-Section funposneg.
-Local Open Scope ereal_scope.
-
+HB.lock
 Definition funepos T (R : realDomainType) (f : T -> \bar R) :=
   fun x => maxe (f x) 0.
+HB.lock
 Definition funeneg T (R : realDomainType) (f : T -> \bar R) :=
-  fun x => maxe (- f x) 0.
-
-End funposneg.
+  fun x => maxe (oppe (f x)) 0.
 
 Notation "f ^\+" := (funepos f) : ereal_scope.
 Notation "f ^\-" := (funeneg f) : ereal_scope.
 
 Section funposneg_lemmas.
 Local Open Scope ereal_scope.
-Variables (T : Type) (R : realDomainType) (D : set T).
-Implicit Types (f g : T -> \bar R) (r : R).
+Variables (T U : Type) (R : realDomainType) (D : set T).
+Implicit Types (f g : T -> \bar R) (h : U -> T) (r : R).
+
+Lemma funeposE f x : f^\+ x = maxe (f x) 0.
+Proof. by rewrite unlock. Qed.
+
+Lemma funenegE f x : f^\- x = maxe (- f x) 0.
+Proof. by rewrite unlock. Qed.
 
 Lemma funepos_ge0 f x : 0 <= f^\+ x.
-Proof. by rewrite /funepos /= le_max lexx orbT. Qed.
+Proof. by rewrite funeposE le_max lexx orbT. Qed.
 
 Lemma funeneg_ge0 f x : 0 <= f^\- x.
-Proof. by rewrite /funeneg le_max lexx orbT. Qed.
+Proof. by rewrite funenegE le_max lexx orbT. Qed.
 
-Lemma funeposN f : (\- f)^\+ = f^\-. Proof. exact/funext. Qed.
+Lemma funeposN f : (\- f)^\+ = f^\-.
+Proof. by apply/funext => x; rewrite funeposE funenegE. Qed.
 
 Lemma funenegN f : (\- f)^\- = f^\+.
-Proof. by apply/funext => x; rewrite /funeneg oppeK. Qed.
+Proof. by apply/funext => x; rewrite funeposE funenegE oppeK. Qed.
+
+Lemma funepos_comp f h : (f \o h)^\+ = f^\+ \o h.
+Proof. by rewrite !unlock. Qed.
+
+Lemma funeneg_comp f h : (f \o h)^\- = f^\- \o h.
+Proof. by rewrite !unlock. Qed.
 
 Lemma funepos_restrict f : (f \_ D)^\+ = (f^\+) \_ D.
 Proof.
-by apply/funext => x; rewrite /patch/_^\+; case: ifP; rewrite //= maxxx.
+by apply/funext => x; rewrite /patch !funeposE; case: ifP; rewrite //= maxxx.
 Qed.
 
 Lemma funeneg_restrict f : (f \_ D)^\- = (f^\-) \_ D.
 Proof.
-by apply/funext => x; rewrite /patch/_^\-; case: ifP; rewrite //= oppr0 maxxx.
+apply/funext => x; rewrite /patch !funenegE.
+by case: ifP; rewrite //= oppr0 maxxx.
 Qed.
 
 Lemma ge0_funeposE f : (forall x, D x -> 0 <= f x) -> {in D, f^\+ =1 f}.
-Proof. by move=> f0 x; rewrite inE => Dx; apply/max_idPl/f0. Qed.
+Proof. by move=> f0 x; rewrite inE funeposE => Dx; apply/max_idPl/f0. Qed.
 
 Lemma ge0_funenegE f : (forall x, D x -> 0 <= f x) -> {in D, f^\- =1 cst 0}.
 Proof.
-by move=> f0 x; rewrite inE => Dx; apply/max_idPr; rewrite leeNl oppe0 f0.
+move=> f0 x; rewrite inE funenegE => Dx; apply/max_idPr.
+by rewrite leeNl oppe0 f0.
 Qed.
 
 Lemma le0_funeposE f : (forall x, D x -> f x <= 0) -> {in D, f^\+ =1 cst 0}.
-Proof. by move=> f0 x; rewrite inE => Dx; exact/max_idPr/f0. Qed.
+Proof. by move=> f0 x; rewrite inE funeposE => Dx; exact/max_idPr/f0. Qed.
 
 Lemma le0_funenegE f : (forall x, D x -> f x <= 0) -> {in D, f^\- =1 \- f}.
 Proof.
-by move=> f0 x; rewrite inE => Dx; apply/max_idPl; rewrite leeNr oppe0 f0.
+move=> f0 x; rewrite inE funenegE => Dx; apply/max_idPl.
+by rewrite leeNr oppe0 f0.
 Qed.
 
 Lemma ge0_funeposM r f : (0 <= r)%R ->
   (fun x => r%:E * f x)^\+ = (fun x => r%:E * (f^\+ x)).
-Proof. by move=> ?; rewrite funeqE => x; rewrite /funepos maxeMr// mule0. Qed.
+Proof.
+move=> ?; rewrite funeqE => x.
+by rewrite !funeposE maxe_pMr// mule0.
+Qed.
 
 Lemma ge0_funenegM r f : (0 <= r)%R ->
   (fun x => r%:E * f x)^\- = (fun x => r%:E * (f^\- x)).
 Proof.
-by move=> r0; rewrite funeqE => x; rewrite /funeneg -muleN maxeMr// mule0.
+by move=> r0; rewrite funeqE => x; rewrite !funenegE -muleN maxe_pMr// mule0.
 Qed.
 
 Lemma le0_funeposM r f : (r <= 0)%R ->
@@ -209,36 +225,36 @@ Qed.
 Lemma fune_abse f : abse \o f = f^\+ \+ f^\-.
 Proof.
 rewrite funeqE => x /=; have [fx0|/ltW fx0] := leP (f x) 0.
-- rewrite lee0_abs// /funepos /funeneg.
+- rewrite lee0_abs// funeposE funenegE.
   move/max_idPr : (fx0) => ->; rewrite add0e.
   by move: fx0; rewrite -{1}oppe0 leeNr => /max_idPl ->.
-- rewrite gee0_abs// /funepos /funeneg; move/max_idPl : (fx0) => ->.
+- rewrite gee0_abs// funeposE funenegE; move/max_idPl : (fx0) => ->.
   by move: fx0; rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0.
 Qed.
 
 Lemma funeposneg f : f = (fun x => f^\+ x - f^\- x).
 Proof.
-rewrite funeqE => x; rewrite /funepos /funeneg; have [|/ltW] := leP (f x) 0.
+rewrite funeqE => x; rewrite funeposE funenegE; have [|/ltW] := leP (f x) 0.
   by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
 by rewrite -{1}oppe0 -leeNl => /max_idPr ->; rewrite sube0.
 Qed.
 
 Lemma add_def_funeposneg f x : (f^\+ x +? - f^\- x).
 Proof.
-by rewrite /funeneg /funepos; case: (f x) => [r| |];
+by rewrite funenegE funeposE; case: (f x) => [r| |];
   [rewrite -fine_max/=|rewrite /maxe /= ltNyr|rewrite /maxe /= ltNyr].
 Qed.
 
 Lemma funeD_Dpos f g : f \+ g = (f \+ g)^\+ \- (f \+ g)^\-.
 Proof.
-apply/funext => x; rewrite /funepos /funeneg; have [|/ltW] := leP 0 (f x + g x).
+apply/funext => x; rewrite funeposE funenegE; have [|/ltW] := leP 0 (f x + g x).
 - by rewrite -{1}oppe0 -leeNl => /max_idPr ->; rewrite sube0.
 - by rewrite -{1}oppe0 -leeNr => /max_idPl ->; rewrite oppeK add0e.
 Qed.
 
 Lemma funeD_posD f g : f \+ g = (f^\+ \+ g^\+) \- (f^\- \+ g^\-).
 Proof.
-apply/funext => x; rewrite /funepos /funeneg.
+apply/funext => x; rewrite !funeposE !funenegE.
 have [|fx0] := leP 0 (f x); last rewrite add0e.
 - rewrite -{1}oppe0 leeNl => /max_idPr ->; have [|/ltW] := leP 0 (g x).
     by rewrite -{1}oppe0 leeNl => /max_idPr ->; rewrite adde0 sube0.
@@ -255,7 +271,7 @@ Qed.
 Lemma funepos_le f g :
   {in D, forall x, f x <= g x} -> {in D, forall x, f^\+ x <= g^\+ x}.
 Proof.
-move=> fg x Dx; rewrite /funepos /maxe; case: ifPn => fx; case: ifPn => gx //.
+move=> fg x Dx; rewrite !funeposE /maxe; case: ifPn => fx; case: ifPn => gx //.
 - by rewrite leNgt.
 - by move: fx; rewrite -leNgt => /(lt_le_trans gx); rewrite ltNge fg.
 - exact: fg.
@@ -264,7 +280,7 @@ Qed.
 Lemma funeneg_le f g :
   {in D, forall x, f x <= g x} -> {in D, forall x, g^\- x <= f^\- x}.
 Proof.
-move=> fg x Dx; rewrite /funeneg /maxe; case: ifPn => gx; case: ifPn => fx //.
+move=> fg x Dx; rewrite !funenegE /maxe; case: ifPn => gx; case: ifPn => fx //.
 - by rewrite leNgt.
 - by move: gx; rewrite -leNgt => /(lt_le_trans fx); rewrite lteN2 ltNge fg.
 - by rewrite leeN2; exact: fg.
@@ -365,7 +381,7 @@ Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
   xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
 apply/seteqP; split => [y/mem_set/=|y/=]; rewrite indicE.
-by rewrite mem_xsection => ->.
+  by rewrite mem_xsection => ->.
 by rewrite /xsection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
 Qed.
 
@@ -373,7 +389,7 @@ Lemma ysection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) y :
   ysection A y = (fun x => (\1_A (x, y) : R)) @^-1` [set 1].
 Proof.
 apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
-by rewrite mem_ysection => ->.
+  by rewrite mem_ysection => ->.
 by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
 Qed.
 
@@ -440,11 +456,11 @@ Qed.
 
 HB.instance Definition _ X := indic_fimfun_subproof X.
 
-Definition indic_fimfun (X : set aT) := [the {fimfun aT >-> rT} of \1_X].
+Definition indic_fimfun (X : set aT) : {fimfun aT >-> rT} := \1_X.
 
 HB.instance Definition _ k f := FImFun.copy (k \o* f) (f * cst_fimfun k).
 
-Definition scale_fimfun k f := [the {fimfun aT >-> rT} of k \o* f].
+Definition scale_fimfun k f : {fimfun aT >-> rT} := k \o* f.
 
 End ring.
 Arguments indic_fimfun {aT rT} _.
@@ -598,8 +614,7 @@ exists (lim (h_ @ \oo)); split.
 - move=> t /set_mem At; have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
     !! pointwise_uniform_cvg _ cvgh.
   rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ (@Rhausdorff R)).
-  apply: (@cvg_zero R [the pseudoMetricNormedZmodType R of R^o]).
-  apply: norm_cvg0; under eq_fun => n.
+  apply: (@cvg_zero R R^o); apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
     under [fun _ : nat => _]eq_fun => ? do rewrite mulN1r -fgE opprB.
     rewrite telescope_sumr //= addrCA subrr addr0.

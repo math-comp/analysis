@@ -226,7 +226,9 @@ have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
     have := derivable_within_continuous HDf.
     rewrite continuous_open_subspace//; last exact: interval_open.
     by apply; rewrite inE/= in_itv/= ax.
-  by exists z => //; rewrite fxfa -mulrA divff ?mulr1// subr_eq0 gt_eqF.
+  exists z; first by [].
+  rewrite fxfa -mulrA divff; first exact: mulr1.
+  by rewrite subr_eq0 gt_eqF.
 have c1c2 : c1 < c2.
   by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
 have [d Id h] :
@@ -245,7 +247,9 @@ have [d Id h] :
     + apply: cvg_at_left_filter.
       move: cDf; rewrite continuous_open_subspace//; last exact: interval_open.
       by apply; rewrite inE/= in_itv/= (andP Ic2).2 (lt_trans (andP Ic1).1).
-  by exists z => //; rewrite h -mulrA divff ?mulr1// subr_eq0 gt_eqF.
+  exists z; first by [].
+  rewrite h -mulrA divff; first exact: mulr1.
+  by rewrite subr_eq0 gt_eqF.
 have LfE : L x - f x =
     ((x - a) * (b - x)) / (b - a) * ((f b - f x) / (b - x)) -
     ((b - x) * factor a b x) * ((f x - f a) / (x - a)).

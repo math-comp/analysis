@@ -111,11 +111,6 @@ have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
 by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
-Lemma discrete_hausdorff {dsc : discrete_space T} : hausdorff_space.
-Proof.
-by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
-Qed.
-
 Lemma compact_cluster_set1 (x : T) F V :
   hausdorff_space -> compact V -> nbhs x V ->
   ProperFilter F -> F V -> cluster F = [set x] -> F --> x.
@@ -210,6 +205,12 @@ rewrite ?open_hausdorff => + x y xNy => /(_ x y xNy).
 move=> [[P Q]] /= [Px Qx] /= [/open_subspaceW oP /open_subspaceW oQ].
 by move=> ?; exists (P, Q); split => //=; [exact: oP | exact: oQ].
 Qed.
+
+Lemma discrete_hausdorff {T : discreteTopologicalType} : hausdorff_space T.
+Proof.
+by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
+Qed.
+
 
 Lemma order_hausdorff {d} {T : orderTopologicalType d} : hausdorff_space T.
 Proof.
@@ -567,9 +568,9 @@ Definition totally_disconnected {T} (A : set T) :=
 Definition zero_dimensional T :=
   (forall x y, x != y -> exists U : set T, [/\ clopen U, U x & ~ U y]).
 
-Lemma discrete_zero_dimension {T} : discrete_space T -> zero_dimensional T.
+Lemma discrete_zero_dimension {T : discreteTopologicalType} : zero_dimensional T.
 Proof.
-move=> dctT x y xny; exists [set x]; split => //; last exact/nesym/eqP.
+move=> x y xny; exists [set x]; split => //; last exact/nesym/eqP.
 by split; [exact: discrete_open | exact: discrete_closed].
 Qed.
 
@@ -845,12 +846,10 @@ move: x e1 e2; elim: n.
   move=> x e1 e2 e1e2 y [?] gxy; split; first exact: (lt_le_trans _ e1e2).
   by apply: descendG; last (exact: gxy); exact: distN_le.
 move=> n IH x e1 e2 e1e2 z [y] [d1] [d2] [] /IH P d1pos d2pos gyz d1d2e1.
-have d1e1d2 : d1 = e1 - d2 by rewrite -d1d2e1 -addrA subrr addr0.
-have e2d2le : e1 - d2 <= e2 - d2 by exact: lerB.
 exists y, (e2 - d2), d2; split => //.
-- by apply: P; apply: le_trans e2d2le; rewrite d1e1d2.
-- by apply: lt_le_trans e2d2le; rewrite -d1e1d2.
-- by rewrite -addrA [-_ + _]addrC subrr addr0.
+- by apply: P; rewrite lerBrDr d1d2e1.
+- by apply: lt_le_trans d1pos _; rewrite lerBrDr d1d2e1.
+- by rewrite subrK.
 Qed.
 
 Local Lemma step_ball_le x e1 e2 :
@@ -901,15 +900,13 @@ case: (pselect (e2 <= d2)).
     by rewrite -deE lerDr; exact: ltW.
   - exact: n_step_ball_center.
   - by rewrite addn0.
-have d1E' : d1 = e1 + (e2 - d2).
-  by move: deE; rewrite addrA [e1 + _]addrC => <-; rewrite -addrA subrr addr0.
+have d1E' : d1 = e1 + (e2 - d2) by rewrite addrA -deE addrK.
 move=> /negP; rewrite -ltNge// => d2lee2.
   case: (IH e1 (e2 - d2) x y); rewrite ?subr_gt0 // -d1E' //.
   move=> t1 [t2] [c1] [c2] [] Oxy1 gt1t2 t2y <-.
   exists t1, t2, c1, c2.+1; split => //.
   - by apply: (@n_step_ball_le _ _ d1); rewrite -?deE // ?lerDl; exact: ltW.
-  - exists y, (e2 - d2), d2; split; rewrite // ?subr_gt0//.
-    by rewrite -addrA [-_ + _]addrC subrr addr0.
+  - by exists y, (e2 - d2), d2; split; rewrite // ?subr_gt0// subrK.
   - by rewrite addnS.
 Qed.
 
@@ -959,8 +956,7 @@ Definition type : Type := let _ := countableBase in let _ := entF in T.
 #[export] HB.instance Definition _ {q : Pointed T} :=
   Pointed.copy type (Pointed.Pack q).
 
-Lemma countable_uniform_bounded (x y : T) :
-  let U := [the pseudoMetricType R of type] in @ball _ U x 2 y.
+Lemma countable_uniform_bounded (x y : T) : @ball _ type x 2 y.
 Proof.
 rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
 rewrite [X in `|X|%N](_ : _ = 0) ?absz0//.

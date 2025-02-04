@@ -1327,7 +1327,7 @@ Qed.
 HB.instance Definition _ aT rT x :=
   FiniteImage.Build aT rT (cst x) (@finite_image_cst aT rT x).
 
-Definition cst_fimfun {aT rT} x := [the {fimfun aT >-> rT} of cst x].
+Definition cst_fimfun {aT rT} x : {fimfun aT >-> rT} := cst x.
 
 Lemma fimfun_cst aT rT x : @cst_fimfun aT rT x =1 cst x. Proof. by []. Qed.
 

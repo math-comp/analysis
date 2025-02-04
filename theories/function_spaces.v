@@ -124,20 +124,19 @@ Variable I : Type.
 
 Definition product_topology_def (T : I -> topologicalType) :=
   sup_topology (fun i => Topological.class
-    (weak_topology (fun f : [the choiceType of forall i, T i] => f i))).
+    (weak_topology (fun f : (forall i, T i) => f i))).
 
 HB.instance Definition _ (T : I -> topologicalType) :=
   Topological.copy (prod_topology T) (product_topology_def T).
 
 HB.instance Definition _ (T : I -> uniformType) :=
   Uniform.copy (prod_topology T)
-    (sup_topology (fun i => Uniform.class
-      [the uniformType of weak_topology (@proj _ T i)])).
+    (sup_topology (fun i => Uniform.class (weak_topology (@proj _ T i)))).
 
 HB.instance Definition _ (R : realType) (Ii : countType)
     (Tc : Ii -> pseudoMetricType R) := PseudoMetric.copy (prod_topology Tc)
-  (sup_pseudometric (fun i => PseudoMetric.class
-     [the pseudoMetricType R of weak_topology (@proj _ Tc i)]) (countableP _)).
+  (sup_pseudometric (fun i => PseudoMetric.class (weak_topology (@proj _ Tc i)))
+    (countableP _)).
 
 End Product_Topology.
 
@@ -327,10 +326,10 @@ Definition separate_points_from_closed := forall (U : set T) x,
 Hypothesis sepf : separate_points_from_closed.
 Hypothesis ctsf : forall i, continuous (f_ i).
 
-Let weakT := [the topologicalType of
-  sup_topology (fun i => Topological.on (weak_topology (f_ i)))].
+Let weakT : topologicalType :=
+  sup_topology (fun i => Topological.on (weak_topology (f_ i))).
 
-Let PU := [the topologicalType of prod_topology U_].
+Let PU : topologicalType := prod_topology U_.
 
 Local Notation sup_open := (@open weakT).
 Local Notation "'weak_open' i" := (@open weakT) (at level 0).
@@ -660,7 +659,7 @@ by move: rBrE; rewrite eqEsubset; case => [+ _]; apply; exists g.
 Unshelve. all: by end_near. Qed.
 
 Lemma uniform_entourage :
-  @entourage [the uniformType of {uniform` A -> V}] =
+  @entourage {uniform` A -> V} =
   filter_from
     (@entourage V)
     (fun P => [set fg | forall t : U, A t -> P (fg.1 t, fg.2 t)]).
@@ -698,7 +697,7 @@ Notation "{ 'family' fam , F --> f }" :=
 HB.instance Definition _ {U : choiceType} {V : uniformType}
     (fam : set U -> Prop) :=
   Uniform.copy {family fam, U -> V} (sup_topology (fun k : sigT fam =>
-       Uniform.class [the uniformType of {uniform` projT1 k -> V}])).
+       Uniform.class {uniform` projT1 k -> V})).
 
 Section UniformCvgLemmas.
 Context {U : choiceType} {V : uniformType}.

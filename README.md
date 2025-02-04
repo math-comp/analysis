@@ -17,7 +17,11 @@ It is based on the [Mathematical Components](https://math-comp.github.io/) libra
 
 In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the following packages:
 - `coq-mathcomp-classical`: a layer for classical reasoning
+- `coq-mathcomp-reals`: real numbers for MathComp
+- `coq-mathcomp-reals-stdlib`: compatibility with the real numbers of the Coq standard library
+- `coq-mathcomp-analysis-stdlib`: compatibility with the Coq standard library (topology only)
 - `coq-mathcomp-analysis`: theories for real analysis
+- `coq-mathcomp-experimental-reals`: sequences of real numbers and distributions (experimental)
 
 ## Meta
 
@@ -56,7 +60,7 @@ via the [opam](https://opam.ocaml.org/doc/Install.html) package manager:
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-mathcomp-analysis
 ```
-Note that the package `coq-mathcomp-classical` will be installed as a dependency.
+Note that the packages `coq-mathcomp-classical` and `coq-mathcomp-reals` will be installed as dependencies.
 
 ### Manual installation
 
@@ -84,7 +88,8 @@ We try to preserve backward compatibility as best as we can.
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_6_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_8_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
+It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
 
 Overview presentations:
 - [Classical Analysis with Coq](https://perso.crans.org/cohen/CoqWS2018.pdf) (2018)
@@ -105,24 +110,6 @@ Other work using MathComp-Analysis:
 - [CoqQ: Foundational Verification of Quantum Programs](https://arxiv.org/pdf/2207.11350.pdf) (2023)
 - [Experimenting with an intrinsically-typed probabilistic programming language in Coq](https://staff.aist.go.jp/reynald.affeldt/documents/syntax-aplas2023.pdf) (2023)
 - [Taming Differentiable Logics with Coq Formalisation](https://drops.dagstuhl.de/storage/00lipics/lipics-vol309-itp2024/LIPIcs.ITP.2024.4/LIPIcs.ITP.2024.4.pdf) (2024)
-
-## Mathematical structures
-
-MathComp-Analysis adds mathematical structures on top of MathComp's ones.
-The following inheritance diagram displays the resulting hierarchy as of version 1.1.0
-(excluding most MathComp structures).
-The structures introduced by MathComp-Analysis are highlighted.
-(See `topology.v`, `normedtype.v`, `reals.v`, `measure.v`.)
-
-<img width="600" alt="Main_inheritance_graph" src="etc/hierarchy_main.1.1.0.png">
-
-
-### Hierarchies of functions
-
-| Functions | Functions with a finite image | Measures | Kernels |
-|:----------:|:-----------------------------:|:--------:|:-------:|
-| <img width="300" alt="Functions" src="etc/hierarchy_functions.1.1.0.png"> | <img width="200" alt="Functions_with_a_finite_image" src="etc/hierarchy_fimfun.1.1.0.png"> | <img width="300" alt="Measures" src="etc/hierarchy_measure.1.1.0.png"> | <img width="200" alt="Kernels" src="etc/hierarchy_kernel.1.1.0.png"> |
-| (see `functions.v`) | (see `cardinality.v`, `lebesgue_integral.v`) | (see `measure.v`, `charge.v`) | (see `kernel.v`) |
 
 ## Development information
 

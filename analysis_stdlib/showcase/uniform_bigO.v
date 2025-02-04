@@ -33,7 +33,7 @@ Definition OuP (f : A -> R * R -> R) (g : R * R -> R) :=
 
 (* first we replace sig with ex and the l^2 norm with the l^oo norm *)
 
-Let normedR2 := [the normedModType _ of (R^o * R^o)%type].
+Let normedR2 : normedModType _ := (R^o * R^o)%type.
 
 Definition OuPex (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
   exists2 alp, 0 < alp & exists2 C, 0 < C &
@@ -43,8 +43,7 @@ Definition OuPex (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
 Lemma ler_norm2 (x : normedR2) :
   `|x| <= sqrt (Rsqr (fst x) + Rsqr (snd x)) <= Num.sqrt 2 * `|x|.
 Proof.
-rewrite RsqrtE; last by rewrite addr_ge0 //; apply/RleP/Rle_0_sqr.
-rewrite !Rsqr_pow2 !RpowE; apply/andP; split.
+rewrite RsqrtE !Rsqr_pow2 !RpowE; apply/andP; split.
   by rewrite ge_max; apply/andP; split;
     rewrite -[`|_|]sqrtr_sqr ler_wsqrtr // (lerDl, lerDr) sqr_ge0.
 wlog lex12 : x / (`|x.1| <= `|x.2|).
@@ -79,7 +78,7 @@ Qed.
 
 Definition OuO (f : A -> R * R -> R^o) (g : R * R -> R^o) :=
   (fun x => f x.1 x.2) =O_ (filter_prod [set setT]%classic
-  (within P (nbhs (0%R:R^o,0%R:R^o))(*[filter of 0 : R^o * R^o]*))) (fun x => g x.2).
+  (within P (nbhs (0%R:R^o, 0%R:R^o))(*[filter of 0 : R^o * R^o]*))) (fun x => g x.2).
 
 Lemma OuP_to_O f g : OuP f g -> OuO f g.
 Proof.
