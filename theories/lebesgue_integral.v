@@ -272,7 +272,7 @@ Lemma mfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
 Lemma mfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
-Lemma mfunMn f n : (f *+ n : {mfun aT >-> rT}) = (fun x => f x *+ n) :> (_ -> _).
+Lemma mfunMn f n : (f *+ n) = (fun x => f x *+ n) :> (_ -> _).
 Proof. by apply/funext=> x; elim: n => //= n; rewrite !mulrS !mfunD /= => ->. Qed.
 Lemma mfun_sum I r (P : {pred I}) (f : I -> {mfun aT >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
@@ -287,6 +287,7 @@ HB.instance Definition _ f g := MeasurableFun.copy (f \+ g) (f + g).
 HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
 HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
 HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
+(* TODO: fix this: HB.instance Definition _ f (n : nat) := MeasurableFun.copy (fun x => f x *+ n) (f *+ n). *)
 
 Definition mindic (D : set aT) of measurable D : aT -> rT := \1_D.
 

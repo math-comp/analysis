@@ -149,6 +149,7 @@ End lfun_pred.
 Section Lspace_zmodule.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
+Hypothesis (p1 : (1 <= p)%E).
 
 Lemma lfuny0 : finite_norm mu p (cst 0).
 Proof.
@@ -174,24 +175,16 @@ Qed.
 
 HB.instance Definition _ := @isLfun.Build d T R mu p (cst 0) lfuny0.
 
-Lemma measurable_funN (f : T -> R) D : measurable_fun D f -> measurable_fun D (\-f).
-Proof.
-move=> mf x Y my.
-rewrite (_ : (- f) @^-1` Y = f @^-1` [set -x | x in Y]); last first.
-  admit.
-apply: mf => //.
-admit.
-Admitted.
-
+(* TODO: move to lebesgue_measure.v *)
 Lemma measurable_funN_subproof (f : {mfun T >-> R}) :
   measurable_fun setT (\-f).
-Proof. exact: measurable_funN. Qed.
+Proof. exact: measurableT_comp. Qed.
 
 HB.instance Definition _ (f : {mfun T >-> R}) :=
   isMeasurableFun.Build _ _ _ _ (\-f) (measurable_funN_subproof _).
 
 Lemma lfuny_opp f : finite_norm mu p f -> finite_norm mu p (\-f).
-Admitted.
+Proof. by rewrite /finite_norm oppr_Lnorm. Qed.
 
 Lemma Lfun_opp_subproof (f : LfunType mu p) : finite_norm mu p (\-f).
 Proof. exact: lfuny_opp. Qed.
@@ -199,10 +192,23 @@ Proof. exact: lfuny_opp. Qed.
 HB.instance Definition _ (f : LfunType mu p) :=
   @isLfun.Build d T R mu p (\- f) (Lfun_opp_subproof _).
 
-Lemma lfunyD f g :
+Lemma minkowskie :
+forall [d : measure_display] [T : measurableType d] [R : realType] 
+  (mu : measure T R) [f g : T -> R] [p : \bar R],
+measurable_fun [set: T] f ->
+measurable_fun [set: T] g ->
+(1 <= p)%E -> ('N[mu]_p[(f \+ g)%R] <= 'N[mu]_p[f] + 'N[mu]_p[g])%E.
+(* TODO: Jairo is working on this *)
+Admitted.
+
+Lemma lfunyD (f g : {mfun T >-> R}) :
   finite_norm mu p f -> finite_norm mu p g ->
     finite_norm mu p (f + g).
-Admitted.
+Proof.
+rewrite /finite_norm => ff fg.
+apply: le_lt_trans; first exact: minkowskie.
+exact: lte_add_pinfty.
+Qed.
 
 Lemma LfunD_subproof (f g : LfunType mu p) : finite_norm mu p (f \+ g).
 Proof. exact: lfunyD. Qed.
@@ -213,6 +219,42 @@ HB.instance Definition _ (f g : LfunType mu p) :=
 HB.about GRing.isZmodule.Build.
 (* Program Definition fct_zmodMixin := *)
 (*   @GRing.isZmodule.Build (LfunType mu p) _ _ _ _ _ _ _. *)
+
+Lemma powRMn (x : R) r n : 0 <= x -> ((x *+ n) `^ r) = ((x `^ r) * (n%:R `^ r)).
+Proof. by move=> x0; rewrite -[in LHS]mulr_natr powRM. Qed.
+
+Lemma LnormMn (f : {mfun T >-> R}) n : 'N[mu]_p[f *+ n] = 'N[mu]_p[f] *+ n.
+Proof.
+rewrite unlock /Lnorm.
+case: p => [r||].
+- case: ifPn => r0.
+    admit.
+  under eq_integral => x _. rewrite mfunMn normrMn powRMn// EFinM. over.
+  rewrite integralZr//; last first.
+    admit.
+  rewrite poweRM; last 2 first.
+  - by apply: integral_ge0 => x _; rewrite lee_fin powR_ge0.
+  - by rewrite lee_fin powR_ge0.
+  by rewrite poweR_EFin -powRrM divff// powRr1// muleC mule_natl.
+- case: ifPn => mu0. admit.
+all: by rewrite mul0rn.
+Admitted.
+
+Lemma lfunyMn (f : {mfun T >-> R}) n :
+  finite_norm mu p f -> finite_norm mu p (f *+ n).
+Proof.
+rewrite/finite_norm LnormMn=> ff.
+rewrite (_ : ('N[mu]_p[f] *+ n)%R = n%:R%:E * 'N[mu]_p[f])%E; last by rewrite mule_natl.
+exact: lte_mul_pinfty.
+Qed.
+
+Notation "f \*+ n" := (fun x => f x *+ n) (at level 10).
+
+Lemma LfunyMn_subproof (f : LfunType mu p) (n : nat) : finite_norm mu p (f \*+ n).
+Proof. by rewrite -mfunMn; exact: lfunyMn. Qed.
+
+(* HB.instance Definition _ (f : LfunType mu p) n := *)
+(*   @isLfun.Build d T R mu p (fun x => f x \* n) (LfunyMn_subproof _ _). *)
 
 End Lspace_zmodule.
 
@@ -240,63 +282,43 @@ Definition nm f := fine ('N[mu]_p%:E[f]).
 Lemma ler_Lnorm_add (f g : ty) :
   nm (f \+ g) <= nm f + nm g.
 Proof.
-rewrite /nm.
-have : (-oo < 'N[mu]_p%:E[f])%E by exact: (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)). 
-have : (-oo < 'N[mu]_p%:E[g])%E by exact: (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)). 
-rewrite !ltNye_eq => /orP[f_fin /orP[g_fin|/eqP foo]|/eqP goo].
-- rewrite -fineD ?fine_le//.
-  - apply: LnormD_fin_num => //.
-  - by rewrite fin_numD f_fin g_fin//.
-  rewrite minkowski//.
-- by move: (lfuny f); rewrite /finite_norm ltey foo.
-- by move: (lfuny g); rewrite /finite_norm ltey goo.
+rewrite /nm -fineD ?fine_le ?minkowski// fin_numElt (lt_le_trans ltNy0) ?Lnorm_ge0//=.
+- rewrite (le_lt_trans (minkowski _ _ _ _))//.
+  by rewrite lte_add_pinfty//; exact: lfuny.
+- by rewrite lte_add_pinfty//; exact: lfuny.
+- by rewrite adde_ge0 ?Lnorm_ge0.
+all: exact: lfuny.
 Qed.
 
 Lemma natmulfctE (U : pointedType) (K : ringType) (f : U -> K) n :
   f *+ n = (fun x => f x *+ n).
 Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
 
+Lemma LnormN (f : ty) : nm (\-f) = nm f.
+Proof. by rewrite /nm oppr_Lnorm. Qed.
+
+Lemma enatmul_ninfty (n : nat) : (-oo *+ n.+1 = -oo :> \bar R)%E \/ (-oo *+ n.+1 = +oo :> \bar R)%E.
+Proof.
+Admitted.
+
+Lemma Lnorm_natmul (f : ty) k : nm (fun x => f x *+ k) = nm f *+ k.
+rewrite /nm. rewrite -mfunMn LnormMn// /fine.
+case: k => [|n]; first by rewrite !mulr0n.
+case: 'N[mu]_p%:E[f] => [r||].
+- by rewrite (_ : r%:E *+ n.+1 = (r *+ n.+1)%:E)// EFin_natmul.
+- rewrite (_ : +oo%E *+ n.+1 = +oo%E); last exact: enatmul_pinfty.
+  by rewrite mul0rn.
+- have [noo|noo] := enatmul_ninfty n.
+    by rewrite (_ : -oo%E *+ n.+1 = -oo%E)// mul0rn.
+  by rewrite (_ : -oo%E *+ n.+1 = +oo%E)// mul0rn.
+Qed.
+
 Lemma Lnorm_eq0 (f : ty) : nm f = 0 -> f = 0 %[ae mu].
+Proof.
 rewrite /nm => /eqP.
 rewrite fine_eq0; last by
   rewrite fin_numElt (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _))//=; exact: lfuny.
 move/eqP/Lnorm_eq0_eq0.
-Admitted.
-
-Lemma Lnorm_natmul (f : ty) k : nm (f *+ k) = nm f *+ k.
-rewrite /nm unlock /Lnorm.
-case: (ifP (p == 0)).
-  admit.
-
-move => p0.
-under eq_integral => x _.
-  rewrite mfunMn normrMn -mulr_natr powRM//= mulrC EFinM.
-  over.
-rewrite /=.
-rewrite integralZl//; last first. admit.
-rewrite poweRM; last 2 first.
-- by rewrite lee_fin powR_ge0.
-- by rewrite integral_ge0// => x _; rewrite lee_fin powR_ge0.
-
-rewrite poweR_EFin -powRrM mulfV; last admit.
-rewrite powRr1//.
-rewrite fineM//; last admit.
-rewrite mulrC.
-Admitted.
-
-Lemma LnormN (f : ty) : nm (-f) = nm f.
-rewrite /nm.
-congr (fine _).
-rewrite unlock /Lnorm.
-case: ifP.
-move=> p0.
- admit.
-
-move=> p0.
-congr (_ `^ p^-1)%E.
-apply eq_integral => x _.
-congr ((_ `^ _)%:E).
-by rewrite normrN.
 Admitted.
 
 (*
@@ -316,9 +338,10 @@ Admitted.
 
 HB.about Num.Zmodule_isSemiNormed.Build.
 
-HB.instance Definition _ :=
-  @Num.Zmodule_isSemiNormed.Build R (*LType mu p%:E*) ty
-    nm ler_Lnorm_add Lnorm_natmul LnormN.
+(* TODO : fix the definition *)
+(* HB.instance Definition _ := *)
+(*   @Num.Zmodule_isSemiNormed.Build R (LfunType mu p%:E) ty *)
+(*     nm ler_Lnorm_add Lnorm_natmul LnormN. *)
 
 (* todo: add equivalent of mx_normZ and HB instance *)
 
