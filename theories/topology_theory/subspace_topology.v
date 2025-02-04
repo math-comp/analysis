@@ -249,8 +249,7 @@ Lemma closure_subspaceW (U : set T) :
   U `<=` A -> closure (U : set (subspace A)) = closure (U : set T) `&` A.
 Proof.
 have /closed_subspaceP := (@closed_closure _ (U : set (subspace A))).
-move=> [V] [clV VAclUA].
-move=> /[dup] /(@closure_subset [the topologicalType of subspace _]).
+move=> [V] [clV VAclUA] /[dup] /(@closure_subset (subspace _)).
 have /closure_id <- := closed_subspaceT => /setIidr <-; rewrite setIC.
 move=> UsubA; rewrite eqEsubset; split.
   apply: setSI; rewrite closureE; apply: smallest_sub (@subset_closure _ U).

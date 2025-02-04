@@ -101,11 +101,11 @@ Section Lnorm_properties.
 
   Notation "'N[ mu ]_ p [ f ]" := (Lnorm mu p f).
 
-  Section lnorm.
-  (* l-norm is just L-norm applied to counting *)
-  Context d {T : measurableType d} {R : realType}.
-  Local Open Scope ereal_scope.
-  Local Notation "'N_ p [ f ]" := (Lnorm [the measure _ _ of counting] p f).
+Section lnorm.
+(* l-norm is just L-norm applied to counting *)
+Context d {T : measurableType d} {R : realType}.
+Local Open Scope ereal_scope.
+Local Notation "'N_ p [ f ]" := (Lnorm counting p f).
 
   Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
     'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
@@ -255,34 +255,34 @@ Section Lnorm_properties.
   Context {R : realType}.
   Local Open Scope ring_scope.
 
-  Lemma hoelder2 (a1 a2 b1 b2 : R) (p q : R) :
-    0 <= a1 -> 0 <= a2 -> 0 <= b1 -> 0 <= b2 ->
-    0 < p -> 0 < q -> p^-1 + q^-1 = 1 ->
-    a1 * b1 + a2 * b2 <= (a1 `^ p + a2 `^ p) `^ p^-1 *
-                        (b1 `^ q + b2 `^ q) `^ q^-1.
-  Proof.
-  move=> a10 a20 b10 b20 p0 q0 pq.
-  pose f a b n : R := match n with 0%nat => a | 1%nat => b | _ => 0 end.
-  have mf a b : measurable_fun setT (f a b) by [].
-  have := hoelder [the measure _ _ of counting] (mf a1 a2) (mf b1 b2) p0 q0 pq.
-  rewrite !Lnorm_counting//.
-  rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
-  rewrite add0n ereal_series_cond eseries0 ?adde0; last first.
-    by move=> [//|] [//|n _]; rewrite /f /= mulr0 normr0 powR0.
-  rewrite big_mkord 2!big_ord_recr/= big_ord0 add0e.
-  rewrite powRr1 ?normr_ge0 ?powRr1 ?normr_ge0//.
-  rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
-  rewrite ereal_series_cond eseries0 ?adde0; last first.
-    by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
-  rewrite big_mkord 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
-  rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
-  rewrite ereal_series_cond eseries0 ?adde0; last first.
-    by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
-  rewrite big_mkord 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
-  rewrite -EFinM invr1 powRr1; last by rewrite addr_ge0.
-  do 2 (rewrite ger0_norm; last by rewrite mulr_ge0).
-  by do 4 (rewrite ger0_norm; last by []).
-  Qed.
+Lemma hoelder2 (a1 a2 b1 b2 : R) (p q : R) :
+  0 <= a1 -> 0 <= a2 -> 0 <= b1 -> 0 <= b2 ->
+  0 < p -> 0 < q -> p^-1 + q^-1 = 1 ->
+  a1 * b1 + a2 * b2 <= (a1 `^ p + a2 `^ p) `^ p^-1 *
+                       (b1 `^ q + b2 `^ q) `^ q^-1.
+Proof.
+move=> a10 a20 b10 b20 p0 q0 pq.
+pose f a b n : R := match n with 0%nat => a | 1%nat => b | _ => 0 end.
+have mf a b : measurable_fun setT (f a b) by [].
+have := hoelder counting (mf a1 a2) (mf b1 b2) p0 q0 pq.
+rewrite !Lnorm_counting//.
+rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
+rewrite add0n ereal_series_cond eseries0 ?adde0; last first.
+  by move=> [//|] [//|n _]; rewrite /f /= mulr0 normr0 powR0.
+rewrite big_mkord 2!big_ord_recr/= big_ord0 add0e.
+rewrite powRr1 ?normr_ge0 ?powRr1 ?normr_ge0//.
+rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
+rewrite ereal_series_cond eseries0 ?adde0; last first.
+  by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
+rewrite big_mkord 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
+rewrite (nneseries_split 0 2); last by move=> k; rewrite lee_fin powR_ge0.
+rewrite ereal_series_cond eseries0 ?adde0; last first.
+  by move=> [//|] [//|n _]; rewrite /f /= normr0 powR0// gt_eqF.
+rewrite big_mkord 2!big_ord_recr /= big_ord0 add0e -EFinD poweR_EFin.
+rewrite -EFinM invr1 powRr1; last by rewrite addr_ge0.
+do 2 (rewrite ger0_norm; last by rewrite mulr_ge0).
+by do 4 (rewrite ger0_norm; last by []).
+Qed.
 
   End hoelder2.
 

@@ -156,14 +156,14 @@ Lemma maxr_absE (x y : R) : Num.max x y = (x + y + `|x - y|) / 2%:R.
 Proof.
 apply: canRL (mulfK _) _ => //; rewrite ?pnatr_eq0//.
 case: lerP => _; (* TODO: ring *) rewrite [2%:R]mulr2n mulrDr mulr1.
-  by rewrite addrACA subrr addr0.
+  by rewrite addrCA addrK.
 by rewrite addrCA addrAC subrr add0r.
 Qed.
 
 Lemma minr_absE (x y : R) : Num.min x y = (x + y - `|x - y|) / 2%:R.
 Proof.
 apply: (addrI (Num.max x y)); rewrite addr_max_min maxr_absE. (* TODO: ring *)
-by rewrite -mulrDl addrACA subrr addr0 mulrDl -splitr.
+by rewrite -mulrDl addrCA addrK mulrDl -splitr.
 Qed.
 
 End max_min.
@@ -304,8 +304,7 @@ Lemma onem0 : `1-0 = 1. Proof. by rewrite /onem subr0. Qed.
 
 Lemma onem1 : `1-1 = 0. Proof. by rewrite /onem subrr. Qed.
 
-Lemma onemK r : `1-(`1-r) = r.
-Proof. by rewrite /onem opprB addrCA subrr addr0. Qed.
+Lemma onemK r : `1-(`1-r) = r. Proof. exact: subKr. Qed.
 
 Lemma add_onemK r : r + `1- r = 1.
 Proof. by rewrite /onem addrC subrK. Qed.
@@ -502,6 +501,9 @@ End floor_ceil.
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to `ceil_gt_int`")]
 Notation ceil_lt_int := ceil_gt_int (only parsing).
 
+Lemma nat_int {R : archiNumDomainType} n : n%:R \is a @Num.int R.
+Proof. by rewrite Num.Theory.intrEge0. Qed.
+
 Section bijection_forall.
 
 Lemma bij_forall A B (f : A -> B) (P : B -> Prop) :
@@ -539,3 +541,50 @@ Qed.
 Definition sigT_fun {I : Type} {X : I -> Type} {T : Type}
   (f : forall i, X i -> T) (x : {i & X i}) : T :=
   (f (projT1 x) (projT2 x)).
+
+(* PR 114 to finmap in progress *)
+Section FsetPartitions.
+Variables T I : choiceType.
+Implicit Types (x y z : T) (A B D X : {fset T}) (P Q : {fset {fset T}}).
+Implicit Types (J : pred I) (F : I -> {fset T}).
+
+Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
+Let rhs_cond P K E :=
+  (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A | K x) E x)%fset.
+Let rhs P E := (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A) E x)%fset.
+
+Lemma partition_disjoint_bigfcup (f : T -> R) (F : I -> {fset T})
+  (K : {fset I}) :
+  (forall i j, i \in K -> j \in K -> i != j -> [disjoint F i & F j])%fset ->
+  \big[op/idx]_(i <- \big[fsetU/fset0]_(x <- K) (F x)) f i =
+  \big[op/idx]_(k <- K) (\big[op/idx]_(i <- F k) f i).
+Proof.
+move=> disjF; pose P := [fset F i | i in K & F i != fset0]%fset.
+have trivP : trivIfset P.
+  apply/trivIfsetP => _ _ /imfsetP[i iK ->] /imfsetP[j jK ->] neqFij.
+  move: iK; rewrite !inE/= => /andP[iK Fi0].
+  move: jK; rewrite !inE/= => /andP[jK Fj0].
+  by apply: (disjF _ _ iK jK); apply: contraNneq neqFij => ->.
+have -> : (\bigcup_(i <- K) F i)%fset = fcover P.
+  apply/esym; rewrite /P fcover_imfset big_mkcond /=; apply eq_bigr => i _.
+  by case: ifPn => // /negPn/eqP.
+rewrite big_trivIfset // /rhs big_imfset => [|i j iK /andP[jK notFj0] eqFij] /=.
+  rewrite big_filter big_mkcond; apply eq_bigr => i _.
+  by case: ifPn => // /negPn /eqP ->;  rewrite big_seq_fset0.
+move: iK; rewrite !inE/= => /andP[iK Fi0].
+by apply: contraNeq (disjF _ _ iK jK) _; rewrite -fsetI_eq0 eqFij fsetIid.
+Qed.
+
+End FsetPartitions.
+
+(* TODO: move to ssrnum *)
+Lemma prodr_ile1 {R : realDomainType} (s : seq R) :
+  (forall x, x \in s -> 0 <= x <= 1)%R -> (\prod_(j <- s) j <= 1)%R.
+Proof.
+elim: s => [_ | y s ih xs01]; rewrite ?big_nil// big_cons.
+have /andP[y0 y1] : (0 <= y <= 1)%R by rewrite xs01// mem_head.
+rewrite mulr_ile1 ?andbT//.
+  rewrite big_seq prodr_ge0// => x xs.
+  by have := xs01 x; rewrite inE xs orbT => /(_ _)/andP[].
+by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
+Qed.

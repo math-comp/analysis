@@ -16,23 +16,24 @@ From mathcomp Require Import lebesgue_integral kernel.
 (* the type probability T R (a measure that sums to 1).                       *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*         {RV P >-> R} == real random variable: a measurable function from   *)
-(*                         the measurableType of the probability P to R       *)
+(*        {RV P >-> T'} == random variable: a measurable function to the      *)
+(*                         measurableType T' from the measured space          *)
+(*                         characterized by the probability P                 *)
 (*     distribution P X == measure image of the probability measure P by the  *)
-(*                         random variable X : {RV P -> R}                    *)
+(*                         random variable X : {RV P -> T'}                   *)
 (*                         P as type probability T R with T of type           *)
 (*                         measurableType.                                    *)
 (*                         Declared as an instance of probability measure.    *)
 (*              'E_P[X] == expectation of the real measurable function X      *)
 (*       covariance X Y == covariance between real random variable X and Y    *)
 (*              'V_P[X] == variance of the real random variable X             *)
-(*        mmt_gen_fun X == moment generating function of the random variable  *)
+(*                'M_ X == moment generating function of the random variable  *)
 (*                         X                                                  *)
 (*      {dmfun T >-> R} == type of discrete real-valued measurable functions  *)
 (*        {dRV P >-> R} == real-valued discrete random variable               *)
 (*            dRV_dom X == domain of the discrete random variable X           *)
 (*           dRV_enum X == bijection between the domain and the range of X    *)
-(*             pmf X r := fine (P (X @^-1` [set r]))                          *)
+(*              pmf X r := fine (P (X @^-1` [set r]))                         *)
 (*        enum_prob X k == probability of the kth value in the range of X     *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -57,6 +58,8 @@ Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
 Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]", at level 5).
 Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]", at level 5).
+Reserved Notation "'M_ X t" (format "''M_' X  t",
+  at level 5, t, X at next level).
 Reserved Notation "{ 'dmfun' aT >-> T }"
   (at level 0, format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'"
@@ -72,27 +75,29 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Definition random_variable (d : _) (T : measurableType d) (R : realType)
-  (P : probability T R) := {mfun T >-> R}.
+Definition random_variable d d' (T : measurableType d) (T' : measurableType d')
+  (R : realType) (P : probability T R) := {mfun T >-> T'}.
 
-Notation "{ 'RV' P >-> R }" := (@random_variable _ _ R P) : form_scope.
+Notation "{ 'RV' P >-> T' }" := (@random_variable _ _ _ T' _ P) : form_scope.
 
-Lemma notin_range_measure d (T : measurableType d) (R : realType)
-    (P : {measure set T -> \bar R}) (X : T -> R) r :
+Lemma notin_range_measure d d' (T : measurableType d) (T' : measurableType d')
+    (R : realType) (P : {measure set T -> \bar R}) (X : T -> R) r :
   r \notin range X -> P (X @^-1` [set r]) = 0%E.
 Proof. by rewrite notin_setE => hr; rewrite preimage10. Qed.
 
-Lemma probability_range d (T : measurableType d) (R : realType)
-  (P : probability T R) (X : {RV P >-> R}) : P (X @^-1` range X) = 1%E.
+Lemma probability_range d d' (T : measurableType d) (T' : measurableType d')
+    (R : realType) (P : probability T R) (X : {RV P >-> R}) :
+  P (X @^-1` range X) = 1%E.
 Proof. by rewrite preimage_range probability_setT. Qed.
 
-Definition distribution d (T : measurableType d) (R : realType)
-    (P : probability T R) (X : {mfun T >-> R}) :=
+Definition distribution d d' (T : measurableType d) (T' : measurableType d')
+    (R : realType) (P : probability T R) (X : {mfun T >-> T'}) :=
   pushforward P (@measurable_funP _ _ _ _ X).
 
 Section distribution_is_probability.
-Context d (T : measurableType d) (R : realType) (P : probability T R)
-        (X : {mfun T >-> R}).
+Context d d' {T : measurableType d} {T' : measurableType d'} {R : realType}
+  {P : probability T R}.
+Variable X : {mfun T >-> T'}.
 
 Let distribution0 : distribution P X set0 = 0%E.
 Proof. exact: measure0. Qed.
@@ -103,7 +108,7 @@ Proof. exact: measure_ge0. Qed.
 Let distribution_sigma_additive : semi_sigma_additive (distribution P X).
 Proof. exact: measure_semi_sigma_additive. Qed.
 
-HB.instance Definition _ := isMeasure.Build _ _ R (distribution P X)
+HB.instance Definition _ := isMeasure.Build _ _ _ (distribution P X)
   distribution0 distribution_ge0 distribution_sigma_additive.
 
 Let distribution_is_probability : distribution P X [set: _] = 1%:E.
@@ -111,23 +116,29 @@ Proof.
 by rewrite /distribution /= /pushforward /= preimage_setT probability_setT.
 Qed.
 
-HB.instance Definition _ := Measure_isProbability.Build _ _ R
+HB.instance Definition _ := Measure_isProbability.Build _ _ _
   (distribution P X) distribution_is_probability.
 
 End distribution_is_probability.
 
 Section transfer_probability.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
+Context d d' {T : measurableType d} {T' : measurableType d'} {R : realType}
+  (P : probability T R).
 
-Lemma probability_distribution (X : {RV P >-> R}) r :
+Lemma probability_distribution (X : {RV P >-> T'}) r :
   P [set x | X x = r] = distribution P X [set r].
 Proof. by []. Qed.
 
-Lemma integral_distribution (X : {RV P >-> R}) (f : R -> \bar R) :
-    measurable_fun [set: R] f -> (forall y, 0 <= f y) ->
+Lemma ge0_integral_distribution (X : {RV P >-> T'}) (f : T' -> \bar R) :
+    measurable_fun [set: T'] f -> (forall y, 0 <= f y) ->
   \int[distribution P X]_y f y = \int[P]_x (f \o X) x.
 Proof. by move=> mf f0; rewrite ge0_integral_pushforward. Qed.
+
+Lemma integral_distribution (X : {RV P >-> T'}) (f : T' -> \bar R) :
+    measurable_fun [set: T'] f -> P.-integrable [set: T] (f \o X) ->
+  \int[distribution P X]_y f y = \int[P]_x (f \o X) x.
+Proof. by move=> mf intf; rewrite integral_pushforward. Qed.
 
 End transfer_probability.
 
@@ -140,6 +151,9 @@ Notation "''E_' P [ X ]" := (@expectation _ _ _ P X) : ereal_scope.
 Section expectation_lemmas.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Lemma expectation_def (X : {RV P >-> R}) : 'E_P[X] = (\int[P]_w (X w)%:E)%E.
+Proof. by rewrite unlock. Qed.
 
 Lemma expectation_fin_num (X : {RV P >-> R}) : P.-integrable setT (EFin \o X) ->
   'E_P[X] \is a fin_num.
@@ -158,7 +172,7 @@ move: iX => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
 exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
-Lemma expectationM (X : {RV P >-> R}) (iX : P.-integrable [set: T] (EFin \o X))
+Lemma expectationZl (X : {RV P >-> R}) (iX : P.-integrable [set: T] (EFin \o X))
   (k : R) : 'E_P[k \o* X] = k%:E * 'E_P [X].
 Proof. by rewrite unlock muleC -integralZr. Qed.
 
@@ -208,6 +222,8 @@ by apply/funext => t/=; rewrite big_map sumEFin mfun_sum.
 Qed.
 
 End expectation_lemmas.
+#[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `expectationZl`")]
+Notation expectationM := expectationZl (only parsing).
 
 HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
     (P : probability T R) (X Y : T -> R) :=
@@ -238,7 +254,7 @@ rewrite expectationD/=; last 2 first.
   - by rewrite compreBr// integrableB// compre_scale ?integrableZl.
   - by rewrite compre_scale// integrableZl// finite_measure_integrable_cst.
 rewrite 2?expectationB//= ?compre_scale// ?integrableZl//.
-rewrite 3?expectationM//= ?finite_measure_integrable_cst//.
+rewrite 3?expectationZl//= ?finite_measure_integrable_cst//.
 by rewrite expectation_cst mule1 fineM// EFinM !fineK// muleC subeK ?fin_numM.
 Qed.
 
@@ -278,7 +294,7 @@ have aXY : (a \o* X * Y = a \o* (X * Y))%R.
 rewrite [LHS]covarianceE => [||//|] /=; last 2 first.
 - by rewrite compre_scale ?integrableZl.
 - by rewrite aXY compre_scale ?integrableZl.
-rewrite covarianceE// aXY !expectationM//.
+rewrite covarianceE// aXY !expectationZl//.
 by rewrite -muleA -muleBr// fin_num_adde_defr// expectation_fin_num.
 Qed.
 
@@ -548,13 +564,13 @@ apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
 Qed.
 
 Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
+Local Notation "'M_ X t" := (mmt_gen_fun X t).
 
 Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
-  P [set x | X x >= a]%R <= mmt_gen_fun X r * (expR (- (r * a)))%:E.
+  P [set x | X x >= a]%R <= 'M_X r * (expR (- (r * a)))%:E.
 Proof.
-move=> t0.
-rewrite /mmt_gen_fun; have -> : expR \o r \o* X =
-    (normr \o normr) \o [the {mfun T >-> R} of expR \o r \o* X].
+move=> t0; rewrite /mmt_gen_fun.
+have -> : expR \o r \o* X = (normr \o normr) \o (expR \o r \o* X).
   by apply: funext => t /=; rewrite normr_id ger0_norm ?expR_ge0.
 rewrite expRN lee_pdivlMr ?expR_gt0//.
 rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
@@ -578,12 +594,13 @@ have h (Y : {RV P >-> R}) :
     - by move=> r _; exact: sqr_ge0.
     - move=> x y; rewrite !nnegrE => x0 y0.
       by rewrite ler_sqr.
-  apply: expectation_le => //.
+  apply: expectation_le.
     - by apply: measurableT_comp => //; exact: measurableT_comp.
+  - by [].
   - by move=> x /=; exact: sqr_ge0.
   - by move=> x /=; exact: sqr_ge0.
   - by apply/aeW => t /=; rewrite real_normK// num_real.
-have := h [the {mfun T >-> R} of (X \- cst (fine ('E_P[X])))%R].
+have := h (X \- cst (fine ('E_P[X])))%R.
 by move=> /le_trans; apply; rewrite /variance [in leRHS]unlock.
 Qed.
 
@@ -679,50 +696,53 @@ Qed.
 
 End markov_chebyshev_cantelli.
 
-HB.mixin Record MeasurableFun_isDiscrete d (T : measurableType d) (R : realType)
-    (X : T -> R) of @MeasurableFun d _ T R X := {
+HB.mixin Record MeasurableFun_isDiscrete d d' (T : measurableType d)
+    (T' : measurableType d') (X : T -> T') of @MeasurableFun d d' T T' X := {
   countable_range : countable (range X)
 }.
 
-HB.structure Definition discreteMeasurableFun d (T : measurableType d)
-    (R : realType) := {
-  X of isMeasurableFun d _ T R X & MeasurableFun_isDiscrete d T R X
+HB.structure Definition discreteMeasurableFun d d' (T : measurableType d)
+    (T' : measurableType d') := {
+  X of isMeasurableFun d d' T T' X & MeasurableFun_isDiscrete d d' T T' X
 }.
 
 Notation "{ 'dmfun' aT >-> T }" :=
-  (@discreteMeasurableFun.type _ aT T) : form_scope.
+  (@discreteMeasurableFun.type _ _ aT T) : form_scope.
 
-Definition discrete_random_variable (d : _) (T : measurableType d)
-  (R : realType) (P : probability T R) := {dmfun T >-> R}.
+Definition discrete_random_variable d d' (T : measurableType d)
+    (T' : measurableType d') (R : realType) (P : probability T R) :=
+  {dmfun T >-> T'}.
 
-Notation "{ 'dRV' P >-> R }" :=
-  (@discrete_random_variable _ _ R P) : form_scope.
+Notation "{ 'dRV' P >-> T }" :=
+  (@discrete_random_variable _ _ _ T _ P) : form_scope.
 
 Section dRV_definitions.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
+Context {d} {d'} {T : measurableType d} {T' : measurableType d'} {R : realType}
+  (P : probability T R).
 
-Definition dRV_dom_enum (X : {dRV P >-> R}) :
+Lemma dRV_dom_enum (X : {dRV P >-> T'}) :
   { B : set nat & {splitbij B >-> range X}}.
 Proof.
-have /countable_bijP/cid[B] := @countable_range _ _ _ X.
+have /countable_bijP/cid[B] := @countable_range _ _ _ _ X.
 move/card_esym/ppcard_eqP/unsquash => f.
 exists B; exact: f.
 Qed.
 
-Definition dRV_dom (X : {dRV P >-> R}) : set nat := projT1 (dRV_dom_enum X).
+Definition dRV_dom (X : {dRV P >-> T'}) : set nat := projT1 (dRV_dom_enum X).
 
-Definition dRV_enum (X : {dRV P >-> R}) : {splitbij (dRV_dom X) >-> range X} :=
+Definition dRV_enum (X : {dRV P >-> T'}) : {splitbij (dRV_dom X) >-> range X} :=
   projT2 (dRV_dom_enum X).
 
-Definition enum_prob (X : {dRV P >-> R}) :=
+Definition enum_prob (X : {dRV P >-> T'}) :=
   (fun k => P (X @^-1` [set dRV_enum X k])) \_ (dRV_dom X).
 
 End dRV_definitions.
 
 Section distribution_dRV.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType) (P : probability T R).
-Variable X : {dRV P >-> R}.
+Context d d' (T : measurableType d) (T' : measurableType d') (R : realType)
+  (P : probability T R).
+Variable X : {dRV P >-> T'}.
 
 Lemma distribution_dRV_enum (n : nat) : n \in dRV_dom X ->
   distribution P X [set dRV_enum X n] = enum_prob X n.
@@ -730,13 +750,15 @@ Proof.
 by move=> nX; rewrite /distribution/= /enum_prob/= patchE nX.
 Qed.
 
+Hypothesis measurable_set1T' : forall x : T', measurable [set x].
+
 Lemma distribution_dRV A : measurable A ->
   distribution P X A = \sum_(k <oo) enum_prob X k * \d_ (dRV_enum X k) A.
 Proof.
 move=> mA; rewrite /distribution /pushforward.
 have mAX i : dRV_dom X i -> measurable (X @^-1` (A `&` [set dRV_enum X i])).
-  move=> _; rewrite preimage_setI; apply: measurableI => //.
-  exact/measurable_sfunP.
+  move=> domXi; rewrite preimage_setI.
+  by apply: measurableI; rewrite //-[X in _ X]setTI; exact/measurable_funP.
 have tAX : trivIset (dRV_dom X) (fun k => X @^-1` (A `&` [set dRV_enum X k])).
   under eq_fun do rewrite preimage_setI; rewrite -/(trivIset _ _).
   apply: trivIset_setIl; apply/trivIsetP => i j iX jX /eqP ij.
@@ -746,13 +768,11 @@ have := measure_bigcup P _ (fun k => X @^-1` (A `&` [set dRV_enum X k])) mAX tAX
 rewrite -preimage_bigcup => {mAX tAX}PXU.
 rewrite -{1}(setIT A) -(setUv (\bigcup_(i in dRV_dom X) [set dRV_enum X i])).
 rewrite setIUr preimage_setU measureU; last 3 first.
-  - rewrite preimage_setI; apply: measurableI => //.
-      exact: measurable_sfunP.
-    by apply: measurable_sfunP; exact: bigcup_measurable.
-  - apply: measurable_sfunP; apply: measurableI => //.
-    by apply: measurableC; exact: bigcup_measurable.
-  - rewrite 2!preimage_setI setIACA -!setIA -preimage_setI.
-    by rewrite setICr preimage_set0 2!setI0.
+  - by rewrite preimage_setI; apply: measurableI; rewrite //-[X in _ X]setTI;
+      apply/measurable_funP => //; exact: bigcup_measurable.
+  - by rewrite preimage_setI; apply: measurableI; rewrite //-[X in _ X]setTI;
+      apply/measurable_funP => //; apply: measurableC; exact: bigcup_measurable.
+  - by rewrite -preimage_setI -setIIr setIA setICK preimage_set0.
 rewrite [X in _ + X = _](_ : _ = 0) ?adde0; last first.
   rewrite (_ : _ @^-1` _ = set0) ?measure0//; apply/disjoints_subset => x AXx.
   rewrite setCK /bigcup /=; exists ((dRV_enum X)^-1 (X x))%function.
@@ -981,8 +1001,7 @@ apply: (eq_measurable_fun (fun t =>
     \sum_(b <- fset_set Ys) (bernoulli_pmf t b)%:E)).
   move=> x /set_mem[_/= x01].
   by rewrite fsbig_finite//=.
-apply: emeasurable_fun_sum => n.
-move=> k Ysk; apply/measurableT_comp => //.
+apply: emeasurable_sum => n; move=> k Ysk; apply/measurableT_comp => //.
 exact: measurable_bernoulli_pmf.
 Qed.
 
@@ -1161,7 +1180,7 @@ apply: (eq_measurable_fun (fun t =>
   move=> x /set_mem[_/= x01].
   rewrite nneseries_esum// -1?[in RHS](set_mem_set Ys)// => k kYs.
   by rewrite lee_fin binomial_pmf_ge0.
-apply: ge0_emeasurable_fun_sum.
+apply: ge0_emeasurable_sum.
   by move=> k x/= [_ x01] _; rewrite lee_fin binomial_pmf_ge0.
 move=> k Ysk; apply/measurableT_comp => //.
 exact: measurable_binomial_pmf.
@@ -1323,21 +1342,22 @@ Lemma integral_uniform (f : _ -> \bar R) :
   (\int[uniform_prob ab]_x f x = (b - a)^-1%:E * \int[mu]_(x in `[a, b]) f x)%E.
 Proof.
 move=> mf f0.
-have [f_ [ndf_ f_f]] := approximation measurableT mf (fun y _ => f0 y).
+pose f_ := nnsfun_approx measurableT mf.
 transitivity (lim (\int[uniform_prob ab]_x (f_ n x)%:E @[n --> \oo])%E).
   rewrite -monotone_convergence//=.
   - apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //=.
-    exact: f_f.
+    exact: cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n ? _; rewrite lee_fin.
-  - by move=> ? _ ? ? mn; rewrite lee_fin; exact/lefP/ndf_.
+  - by move=> ? _ ? ? mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 rewrite [X in _ = (_ * X)%E](_ : _ = lim
     (\int[mu]_(x in `[a, b]) (f_ n x)%:E @[n --> \oo])%E); last first.
   rewrite -monotone_convergence//=.
-  - by apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //; exact: f_f.
+  - apply: eq_integral => ? /[!inE] xD; apply/esym/cvg_lim => //.
+    exact: cvg_nnsfun_approx.
   - by move=> n; exact/measurable_EFinP/measurable_funTS.
   - by move=> n ? _; rewrite lee_fin.
-  - by move=> ? _ ? ? /ndf_ /lefP; rewrite lee_fin.
+  - by move=> ? _ ? ? ?; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 rewrite -limeMl//.
   by apply: congr_lim; apply/funext => n /=; exact: integral_uniform_nnsfun.
 apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
@@ -1345,7 +1365,7 @@ apply/ereal_nondecreasing_is_cvgn => x y xy; apply: ge0_le_integral => //=.
 - exact/measurable_EFinP/measurable_funTS.
 - by move=> ? _; rewrite lee_fin.
 - exact/measurable_EFinP/measurable_funTS.
-- by move=> ? _; rewrite lee_fin; move/ndf_ : xy => /lefP.
+- by move=> ? _; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 Qed.
 
 End uniform_probability.

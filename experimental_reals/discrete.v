@@ -169,7 +169,7 @@ Variables (T : eqType) (E F : pred T).
 Lemma countable_sub: {subset E <= F} -> countable F -> countable E.
 Proof.
 move=> le_EF [f g fgK]; pose f' (x : [psub E]) := f (pincl le_EF x).
-pose g' x := obind (insub (sT := [the subType _ of [psub E]])) (omap val (g x)).
+pose g' x := obind (insub (sT := [psub E])) (omap val (g x)).
 by exists f' g' => x; rewrite /f' /g' fgK /= valK.
 Qed.
 End CountSub.

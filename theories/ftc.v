@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop signed reals ereal.
-From mathcomp Require Import topology normedtype sequences real_interval.
+From mathcomp Require Import topology tvs normedtype sequences real_interval.
 From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
 From mathcomp Require Import lebesgue_integral derive charge.
 
@@ -24,7 +24,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import numFieldTopology.Exports.
+Import numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -358,7 +358,7 @@ Proof.
 move=> ab intf; pose fab := f \_ `[a, b].
 have intfab : mu.-integrable `[a, b] (EFin \o fab).
   by rewrite -restrict_EFin; apply/integrable_restrict => //=; rewrite setIidr.
-apply/cvgrPdist_le => /= e e0; rewrite near_simpl; near=> x.
+apply/cvgrPdist_le => /= e e0; near=> x.
 rewrite {1}/int /parameterized_integral sub0r normrN.
 have [|xa] := leP a x.
   move=> ax; apply/ltW; move: ax.
@@ -423,7 +423,6 @@ have intfab : mu.-integrable `[a, b] (EFin \o fab).
   by rewrite -restrict_EFin; apply/integrable_restrict => //=; rewrite setIidr.
 rewrite /int /parameterized_integral => z; rewrite in_itv/= => /andP[az zb].
 apply/cvgrPdist_le => /= e e0.
-rewrite near_simpl.
 have [d [d0 /= {}int_normr_cont]] := int_normr_cont _ e0.
 near=> x.
 have [xz|xz|->] := ltgtP x z; last by rewrite subrr normr0 ltW.
@@ -501,7 +500,7 @@ Corollary continuous_FTC2 f F a b : (a < b)%R ->
 Proof.
 move=> ab cf dF F'f.
 pose fab := f \_ `[a, b].
-pose G x : R := (\int[mu]_(t in `[a, x]) fab t)%R.
+pose G x := (\int[mu]_(t in `[a, x]) fab t)%R.
 have iabf : mu.-integrable `[a, b] (EFin \o f).
   by apply: continuous_compact_integrable => //; exact: segment_compact.
 have G'f : {in `]a, b[, forall x, G^`() x = fab x /\ derivable G x 1}.
@@ -730,7 +729,7 @@ Lemma increasing_cvg_at_left_comp F G a b (l : R) : (a < b)%R ->
 Proof.
 move=> ab incrF cFb GFb.
 apply/cvgrPdist_le => /= e e0.
-have/cvgrPdist_le /(_ e e0) [d /= d0 {}GFb] := GFb.
+have /cvgrPdist_le /(_ e e0) [d /= d0 {}GFb] := GFb.
 have := cvg_at_left_within cFb.
 move/cvgrPdist_lt/(_ _ d0) => [d' /= d'0 {}cFb].
 near=> t.
@@ -748,7 +747,7 @@ Lemma decreasing_cvg_at_right_comp F G a b (l : R) : (a < b)%R ->
 Proof.
 move=> ab decrF cFa GFa.
 apply/cvgrPdist_le => /= e e0.
-have/cvgrPdist_le /(_ e e0) [d' /= d'0 {}GFa] := GFa.
+have /cvgrPdist_le /(_ e e0) [d' /= d'0 {}GFa] := GFa.
 have := cvg_at_right_within cFa.
 move/cvgrPdist_lt/(_ _ d'0) => [d'' /= d''0 {}cFa].
 near=> t.
@@ -766,7 +765,7 @@ Lemma decreasing_cvg_at_left_comp F G a b (l : R) : (a < b)%R ->
 Proof.
 move=> ab decrF cFb GFb.
 apply/cvgrPdist_le => /= e e0.
-have/cvgrPdist_le /(_ e e0) [d' /= d'0 {}GFb] := GFb.
+have /cvgrPdist_le /(_ e e0) [d' /= d'0 {}GFb] := GFb.
 have := cvg_at_left_within cFb. (* different point from gt0 version *)
 move/cvgrPdist_lt/(_ _ d'0) => [d'' /= d''0 {}cFb].
 near=> t.
@@ -863,7 +862,7 @@ rewrite oppeD//= -(continuous_FTC2 ab _ _ DPGFE); last 2 first.
       exact: decreasing_image_oo.
     * have : -%R F^`() @ x --> (- f x)%R.
         by rewrite -fE//; apply: cvgN; exact: cF'.
-      apply: cvg_trans; apply: near_eq_cvg; rewrite near_simpl.
+      apply: cvg_trans; apply: near_eq_cvg.
       apply: (@open_in_nearW _ _ `]a, b[) ; last by rewrite inE.
         exact: interval_open.
       by move=> z; rewrite inE/= => zab; rewrite fctE fE.
@@ -978,7 +977,7 @@ rewrite (@integration_by_substitution_decreasing (- F)%R); first last.
     by case: Fab => + _ _; exact.
   rewrite -derive1E.
   have /cvgN := cF' _ xab; apply: cvg_trans; apply: near_eq_cvg.
-  rewrite near_simpl; near=> y; rewrite fctE !derive1E deriveN//.
+  near=> y; rewrite fctE !derive1E deriveN//.
   by case: Fab => + _ _; apply; near: y; exact: near_in_itvoo.
 - by move=> x y xab yab yx; rewrite ltrN2 incrF.
 - by [].

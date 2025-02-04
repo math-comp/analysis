@@ -88,12 +88,20 @@ move=> PQA; suff: {x | P x /\ Q x} by move=> [a [*]]; exists a.
 by apply: cid; case: PQA => x; exists x.
 Qed.
 
-Lemma existT_inj (A : eqType) (P : A -> Type) (p : A) (x y : P p) :
-  existT P p x = existT P p y -> x = y.
+Lemma existT_inj1 (T : Type) (P : T -> Type) (x y : T) (Px : P x) (Py : P y) :
+  existT P x Px = existT P y Py -> x = y.
+Proof. by case. Qed.
+
+Lemma existT_inj2 (T : eqType) (P : T -> Type) (x : T) (Px1 Px2 : P x) :
+  existT P x Px1 = existT P x Px2 -> Px1 = Px2.
 Proof.
-apply: Eqdep_dec.inj_pair2_eq_dec => a b.
-by have [|/eqP] := eqVneq a b; [left|right].
+apply: Eqdep_dec.inj_pair2_eq_dec => y z.
+by have [|/eqP] := eqVneq y z; [left|right].
 Qed.
+
+Lemma surjective_existT (T : Type) (P : T -> Type) (p : {x : T & P x}):
+  existT [eta P] (projT1 p) (projT2 p) = p.
+Proof. by case: p. Qed.
 
 Record mextensionality := {
   _ : forall (P Q : Prop), (P <-> Q) -> (P = Q);
@@ -969,3 +977,9 @@ Lemma inhabited_witness: inhabited T -> T.
 Proof. by rewrite inhabitedE => /cid[]. Qed.
 
 End Inhabited.
+
+Lemma uncurryK {X Y Z : Type} : cancel (@uncurry X Y Z) curry.
+Proof. by move=> f; rewrite funeq2E. Qed.
+
+Lemma curryK {X Y Z : Type} : cancel curry (@uncurry X Y Z).
+Proof. by move=> f; rewrite funeqE=> -[]. Qed.
