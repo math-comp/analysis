@@ -124,6 +124,10 @@ HB.instance Definition _ := Nbhs_isUniform_mixin.Build M
 
 HB.end.
 
+HB.structure Definition UniformZmodule := {M of Uniform M & GRing.Zmodule M}.
+HB.structure Definition UniformLmodule (K : numDomainType) :=
+  {M of Uniform M & GRing.Lmodule K M}.
+
 Local Open Scope relation_scope.
 
 HB.factory Record isUniform M of Choice M := {
