@@ -2783,7 +2783,7 @@ have FrBFl (x : elt_type) : exists m, m.+1%:R ^-1 < Fr (sval x) - Fl (sval x).
   exists (`|floor (Fr (sval x) - Fl (sval x))^-1|)%N.
   rewrite invf_plt ?posrE ?subr_gt0// -natr1 natr_absz ger0_norm; last first.
     by rewrite floor_ge0 invr_ge0// subr_ge0 ltW.
-  by rewrite intrD1 lt_succ_floor// realE.
+  by rewrite intrD1 mathcomp_extra.lt_succ_floor// realE.
 pose S m := [set x | x \in `]a, b[ /\ m.+1%:R ^-1 < Fr x - Fl x].
 have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
   path <%R a s ->
