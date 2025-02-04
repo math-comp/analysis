@@ -1703,7 +1703,7 @@ apply: (@ler0_derive1_nincr _ _ N b) => //.
   by rewrite num_real.
 Unshelve. all: end_near. Qed.
 
-Lemma ge0r_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
+Lemma ger0_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
   (forall x, x \in `]a, b[%R -> derivable f x 1) ->
   (forall x, x \in `]a, b[%R -> 0 <= f^`() x) ->
   {within `[a,b], continuous f} ->
@@ -1716,10 +1716,10 @@ apply (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
 by apply: continuousN; exact: fcont.
 Qed.
 #[deprecated(since="mathcomp-analysis 1.9.0",
-  note="renamed to `ge0r_derive1_ndecr`")]
-Notation le0r_derive1_ndecr := ge0r_derive1_ndecr (only parsing).
+  note="renamed to `ger0_derive1_ndecr`")]
+Notation le0r_derive1_ndecr := ger0_derive1_ndecr (only parsing).
 
-Lemma ge0r_derive1_ndecry {R : realType} (f : R -> R) (a b : R) :
+Lemma ger0_derive1_ndecry {R : realType} (f : R -> R) (a b : R) :
   (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
   (forall x, x \in `]a, +oo[%R -> 0 <= f^`() x) ->
   {within `[a, +oo[, continuous f} ->
@@ -1737,7 +1737,7 @@ apply: (@ler0_derive1_nincry _ (- f)) => //.
   exact: subset_itvr.
 Qed.
 
-Lemma le0r_derive1_ndecrNy {R : realType} (f : R -> R) (b : R) :
+Lemma ger0_derive1_ndecrNy {R : realType} (f : R -> R) (b : R) :
   (forall x, x \in `]-oo, b[%R -> derivable f x 1) ->
   (forall x, x \in `]-oo, b[%R -> 0 <= f^`() x) ->
   {within `]-oo, b], continuous f} ->

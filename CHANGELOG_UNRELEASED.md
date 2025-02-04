@@ -48,12 +48,9 @@
            `decr_derive1_le0_itvy`, `decr_derive1_le0_itvNy`,
            `incr_derive1_ge0`, `incr_derive1_ge0_itv`,
            `incr_derive1_ge0_itvy`, `incr_derive1_ge0_itvNy`,
-  + lemmas `ler0_derive1_nincry`, `le0r_derive1_ndecry`,
-           `ler0_derive1_nincrNy`, `le0r_derive1_ndecrNy`
- 
+  + lemmas `ler0_derive1_nincry`, `ger0_derive1_ndecry`,
+           `ler0_derive1_nincrNy`, `ger0_derive1_ndecrNy`
   + lemmas `ltr0_derive1_decr`, `gtr0_derive1_incr`
-  + lemmas `decr_derive1_le0`, `decr_derive1_le0_itv`
-  + lemmas `ler0_derive1_nincry`, `ge0r_derive1_ndecry`
 
 ### Changed
 
