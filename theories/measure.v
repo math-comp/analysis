@@ -4172,9 +4172,9 @@ Lemma ae_eq_comp U V (j : U -> V) f g :
   ae_eq f g -> ae_eq (j \o f) (j \o g).
 Proof. by move->. Qed.
 
-(* Lemma ae_eq_comp2 U V (j : T -> U -> V) f g : *)
-(*   ae_eq f g -> ae_eq (fun x => j x (f x)) (fun x => j x (g x)). *)
-(* Proof. move=> eqfg. Fail setoid_rewrite eqfg. *)
+Lemma ae_eq_comp2 U V (j : T -> U -> V) f g :
+  ae_eq f g -> ae_eq (fun x => j x (f x)) (fun x => j x (g x)).
+Proof. by apply: filterS => x /[swap] + ->. Qed.
 
 Lemma ae_eq_funeposneg (f g : T -> \bar R) :
   ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
@@ -4190,21 +4190,16 @@ Proof. by symmetry. Qed.
 Lemma ae_eq_trans U (f g h : T -> U) : ae_eq f g -> ae_eq g h -> ae_eq f h.
 Proof. by apply transitivity. Qed.
 
-Set Typeclasses Debug.
 Lemma ae_eq_sub W (f g h i : T -> W) : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
-Proof. Fail move=> ->.
-
-by apply: filterS2 => x + + Dx => /= /(_ Dx) -> /(_ Dx) ->. Qed.
+Proof. by apply: filterS2 => x + + Dx => /= /(_ Dx) -> /(_ Dx) ->. Qed.
 
 Lemma ae_eq_mul2r W (f g h : T -> W) : ae_eq f g -> ae_eq (f \* h) (g \* h).
-Proof. move=>/(ae_eq_comp2 (fun x y => y * h x)). apply.
+Proof. by move=>/(ae_eq_comp2 (fun x y => y * h x)). Qed.
 
-by apply: filterS => x /= /[apply] ->. Qed.
+Lemma ae_eq_mul2l W (f g h : T -> W) : ae_eq f g -> ae_eq (h \* f) (h \* g).
+Proof. by move=>/(ae_eq_comp2 (fun x y => h x * y)). Qed.
 
-Lemma ae_eq_mul2l (f g h : T -> W) : ae_eq f g -> ae_eq (h \* f) (h \* g).
-Proof. by apply: filterS => x /= /[apply] ->. Qed.
-
-Lemma ae_eq_mul1l (f g : T -> W) : ae_eq f (cst 1) -> ae_eq g (g \* f).
+Lemma ae_eq_mul1l W (f g : T -> W) : ae_eq f (cst 1) -> ae_eq g (g \* f).
 Proof. by apply: filterS => x /= /[apply] ->; rewrite mulr1. Qed.
 
 Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
