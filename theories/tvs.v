@@ -528,9 +528,29 @@ End lcfun_linearcontinuousType.
 
 (*TODO lcfun_lmodType  and lcfun_ringType (for F: numFieldType)*)
 
+
+(* TODO : define bornology and topology of uniform convergence,  show it's a tvstype *)
+
+
+HB.mixin Record setsystem_isBornology (B : set_system T)  := {
+covering: forall x : T, exists b, (B b) /\ (b x);
+  }.
+
+HB.end 
+
+Section lctype_topology.
+
+End lctype_topology.
+
+
 Section dual.
-  
+Context {R : numDomainType} {E : tvsType R}.
+
+(* Reserved Notation " E ''' " (at level 80, format "E ''' "). *)
+
+Notation " E ''' ":= {linear_continuous E -> R^o} (at level 80). 
+
+Check (E)'.
+Notation " E ''' ":= {linear_continuous E -> R^o} (at level 80). 
+
 End dual.
-
-
-
