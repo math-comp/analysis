@@ -2830,9 +2830,8 @@ have fin_S m : finite_set (S m).
     by rewrite ltr_pdivlMl// -natrM ltr_nat.
   rewrite card_fset_sum1 natr_sum mulr_sumr mulr1 big_tnth cardfE.
   rewrite -(big_mkord xpredT (fun=> m.+1%:R^-1)) size_sort cardfE.
-  apply: ltr_sum.
-    by rewrite size_iota subn0 -cardfE (leq_trans _ mFbFaB).
-  move=> /= k; rewrite mem_index_iota leq0n/= => kB.
+  rewrite ltr_sum_nat//; first by rewrite -cardfE (leq_trans _ mFbFaB).
+  move=> k; rewrite leq0n/= => kB.
   have : nth b s k \in S m.
     apply/mem_set/BSm => /=; rewrite -(@mem_sort _ <=%R).
     by apply/mem_nth; rewrite size_sort cardfE.

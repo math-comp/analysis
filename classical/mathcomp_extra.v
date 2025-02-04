@@ -590,13 +590,26 @@ by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
 Qed.
 
 (* TODO: move to ssrnum *)
-Lemma ltr_sum {R : numDomainType} {I : eqType} (r : seq I) (F G : I -> R) :
-  (0 < size r)%N -> (forall i, i \in r -> F i < G i) ->
-  \sum_(i <- r) F i < \sum_(i <- r) G i.
+
+Lemma size_filter_gt0 T P (r : seq T) : (size (filter P r) > 0)%N = (has P r).
+Proof. by elim: r => //= x r; case: ifP. Qed.
+
+Lemma ltr_sum [R : numDomainType] [I : Type] (r : seq I)
+    [P : pred I] [F G : I -> R] :
+  has P r ->
+  (forall i : I, P i -> F i < G i) ->
+  \sum_(i <- r | P i) F i < \sum_(i <- r | P i) G i.
 Proof.
-elim: r => // h [|a t] ih _ FG.
-  by rewrite !big_cons !big_nil !addr0 FG// mem_head.
-rewrite [ltLHS]big_cons [ltRHS]big_cons ltrD//.
-  by rewrite FG// mem_head.
-by rewrite ih// => i iat; rewrite FG// inE iat orbT.
+rewrite -big_filter -[ltRHS]big_filter -size_filter_gt0.
+case: filter (filter_all P r) => //= x {}r /andP[Px Pr] _ ltFG.
+rewrite !big_cons ltr_leD// ?ltFG// -(all_filterP Pr) !big_filter.
+by rewrite ler_sum => // i Pi; rewrite ltW ?ltFG.
+Qed.
+
+Lemma ltr_sum_nat [R : numDomainType] [m n : nat] [F G : nat -> R] :
+  (m < n)%N -> (forall i : nat, (m <= i < n)%N -> F i < G i) ->
+  \sum_(m <= i < n) F i < \sum_(m <= i < n) G i.
+Proof.
+move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
+by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
 Qed.

@@ -52,7 +52,7 @@
            `ler0_derive1_nincrNy`, `ger0_derive1_ndecrNy`
   + lemmas `ltr0_derive1_decr`, `gtr0_derive1_incr`
 - in `mathcomp_extra.v`:
-  + lemma `ltr_sum`
+  + lemmas `size_filter_gt0`, `ltr_sum`, `ltr_sum_nat`
 
 - in `classical_sets.v`:
   + lemma `itv_sub_in2`
