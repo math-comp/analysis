@@ -1004,27 +1004,21 @@ Qed.
 
 Lemma infinite_set_fset {T : choiceType} (A : set T) n :
   infinite_set A ->
-    exists B : {fset T}, [/\ [set` B] `<=` A, B != fset0 & (#|` B| >= n)%N].
+    exists2 B : {fset T}, [set` B] `<=` A & (#|` B| >= n)%N.
 Proof.
 elim/choicePpointed: T => T in A *; first by rewrite emptyE.
-move=> /infiniteP/ppcard_leP[f]; exists (fset_set [set f i | i in `I_n.+1]).
-rewrite fset_setK//; last exact: finite_image.
-split.
-- by apply: subset_trans (fun_image_sub f); exact: image_subset.
-- apply/eqP => /fsetP /(_ (f ord0)) => /(_ n).
-  rewrite !inE -falseE => <-.
-  rewrite in_fset_set//; last exact: finite_image.
-  by rewrite inE/=; exists 0.
-- rewrite fset_set_image// card_imfset//= fset_set_II/=.
-  by rewrite card_imfset//= ?size_enum_ord//; exact: val_inj.
+move=> /infiniteP/ppcard_leP[f]; exists (fset_set [set f i | i in `I_n]).
+  rewrite fset_setK//; last exact: finite_image.
+  by apply: subset_trans (fun_image_sub f); apply: image_subset.
+rewrite fset_set_image// card_imfset//= fset_set_II/=.
+by rewrite card_imfset//= ?size_enum_ord//; apply: val_inj.
 Qed.
 
 Lemma infinite_set_fsetP {T : choiceType} (A : set T) :
   infinite_set A <->
    forall n, exists2 B : {fset T}, [set` B] `<=` A & (#|` B| >= n)%N.
 Proof.
-split.
-  by move=> + n => /infinite_set_fset => /(_ n)[B [? ? ?]]; exists B.
+split; first by move=> ? ?; apply: infinite_set_fset.
 elim/choicePpointed: T => T in A *.
   move=> /(_ 1%N)[B _]; rewrite cardfs_gt0 => /fset0Pn[x xB].
   by have: [set` B] x by []; rewrite emptyE.

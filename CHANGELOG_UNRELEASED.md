@@ -108,9 +108,6 @@
   + lemmas `nneseries_ge0`, `is_cvg_nneseries_cond`, `is_cvg_npeseries_cond`,
     `is_cvg_nneseries`, `is_cvg_npeseries`, `nneseries_ge0`, `npeseries_le0`,
     `lee_nneseries`
-
-- in `cardinality.v`:
-  + lemma `infinite_set_fset`
     
 - in `normedtype.v`:
   + lemmas `not_near_at_rightP`, `not_near_at_leftP`
