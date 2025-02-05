@@ -3492,7 +3492,7 @@ rewrite seqDU_bigcup_eq ge0_integral_bigcup//; last 3 first.
 - by apply: measurable_funTS; exact/measurable_EFinP.
 - by move=> x; rewrite lee_fin f0//.
 apply: lime_le => /=.
-  apply: is_cvg_nneseries => n _.
+  apply: is_cvg_nneseries => n _ _.
   by apply: integral_ge0 => k _; exact: f0.
 apply: nearW => n.
 rewrite -ge0_integral_bigsetU//=; first last.

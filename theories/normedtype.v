@@ -1804,18 +1804,21 @@ Definition strictly_dominated_by {T : Type} {K : numDomainType} {V W : pseudoMet
   (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
   F [set x | `|f x| < k * `|h x|].
 
-Lemma sub_dominatedl (T : Type) (K : numDomainType) (V W : pseudoMetricNormedZmodType K)
-   (h : T -> V) (k : K) (F G : set_system T) : F `=>` G ->
+Lemma sub_dominatedl (T : Type) (K : numDomainType)
+    (V W : pseudoMetricNormedZmodType K)
+    (h : T -> V) (k : K) (F G : set_system T) : F `=>` G ->
   (@dominated_by T K V W h k)^~ G `<=` (dominated_by h k)^~ F.
 Proof. by move=> FG f; exact: FG. Qed.
 
-Lemma sub_dominatedr (T : Type) (K : numDomainType) (V : pseudoMetricNormedZmodType K)
+Lemma sub_dominatedr (T : Type) (K : numDomainType)
+    (V : pseudoMetricNormedZmodType K)
     (h : T -> V) (k : K) (f g : T -> V) (F : set_system T) (FF : Filter F) :
    (\forall x \near F, `|f x| <= `|g x|) ->
    dominated_by h k g F -> dominated_by h k f F.
 Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
 
-Lemma dominated_by1 {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K} :
+Lemma dominated_by1 {T : Type} {K : numFieldType}
+    {V : pseudoMetricNormedZmodType K} :
   @dominated_by T K _ V fun1 = fun k f F => F [set x | `|f x| <= k].
 Proof.
 rewrite funeq3E => k f F.
@@ -1830,7 +1833,8 @@ rewrite funeq3E => k f F.
 by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
 Qed.
 
-Lemma ex_dom_bound {T : Type} {K : numFieldType} {V W : pseudoMetricNormedZmodType K}
+Lemma ex_dom_bound {T : Type} {K : numFieldType}
+    {V W : pseudoMetricNormedZmodType K}
     (h : T -> V) (f : T -> W) (F : set_system T) {PF : ProperFilter F}:
   (\forall M \near +oo, dominated_by h M f F) <->
   exists M, dominated_by h M f F.
@@ -2700,6 +2704,16 @@ Lemma norm_cvg0 f : `|f x| @[x --> F] --> 0 -> f @ F --> 0.
 Proof. by rewrite norm_cvg0P. Qed.
 
 End cvg_composition_pseudometric.
+
+Lemma cvgr_expr2 {R : realFieldType} : (x ^+ 2 : R) @[x --> +oo] --> +oo.
+Proof.
+by apply/cvgryPge => M; near=> x; rewrite (@le_trans _ _ x)// expr2 ler_peMl.
+Unshelve. all: end_near. Qed.
+
+Lemma cvgr_idn {R : realType} : (n%:R : R) @[n --> \oo] --> +oo.
+Proof.
+by apply/cvgryPge => M; exact: nbhs_infty_ger.
+Unshelve. all: end_near. Qed.
 
 Section cvg_composition_normed.
 Context {K : numFieldType} {V : normedModType K} {T : Type}.

@@ -71,7 +71,7 @@
 
 - in `ftc.v`:
   + lemmas `differentiation_under_integral`, `derivable_under_integral`
-  + definition `partial1`, notation `'d1`
+  + definition `partial1of2`, lemma `partial1of2E`
 
 - in `real_interval.v`:
   + lemma `itv_bnd_infty_bigcup0S`
@@ -82,16 +82,20 @@
 - in `trigo.v`:
   + lemma `derivable_atan`
 
+- in `normedtype.v`:
+  + lemma `cvgr_expr2`, `cvgr_idn`
+
 - new file `gauss_integral.v`:
   + definition `oneDsqr`
   + lemmas `oneDsqr_gt0`, `oneDsqr_ge0`, `oneDsqr_ge1`, `oneDsqr_neq0`,
     `oneDsqrV_le1`, `continuous_oneDsqr`, `continuous_oneDsqrV`,
-    `integral01_atan`
-  + definition `gauss`
-  + lemmas `gauss_ge0`, `gauss_le1`, `cvg_gauss`, `measurable_gauss`,
-    `continuous_gauss`
+    `integral01_oneDsqr`
+  + canonical `oneDsqr_ge0_snum`
+  + definition `gauss_fun`
+  + lemmas `gauss_fun_ge0`, `gauss_le1`, `cvg_gauss_fun`, `measurable_gauss_fun`,
+    `continuous_gauss_fun`
   + module `gauss_integral_proof`
-  + lemma `integral0y_gauss_pi2`
+  + lemma `integral0y_gauss`
 
 ### Changed
 

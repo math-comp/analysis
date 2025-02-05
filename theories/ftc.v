@@ -16,8 +16,8 @@ From mathcomp Require Import lebesgue_integral derive charge.
 (* for the Lebesgue integral. We derive from this theorem a corollary to      *)
 (* compute the definite integral of continuous functions.                     *)
 (*                                                                            *)
-(*             'd1 f == first partial derivative of f                         *)
-(*                      f has type R -> T -> R for R : realType               *)
+(*                   partial1of2 f == first partial derivative of f           *)
+(*                                    f has type R -> T -> R for R : realType *)
 (* parameterized_integral mu a x f := \int[mu]_(t \in `[a, x] f t)            *)
 (*                                                                            *)
 (******************************************************************************)
@@ -35,10 +35,14 @@ Local Open Scope ring_scope.
 
 Section differentiation_under_integral.
 
-Definition partial1 {R : realType} {T : Type} (f : R -> T -> R) y : R -> R :=
+Definition partial1of2 {R : realType} {T : Type} (f : R -> T -> R) y : R -> R :=
   (f ^~ y)^`().
 
-Local Notation "'d1 f" := (partial1 f).
+Local Notation "'d1 f" := (partial1of2 f).
+
+Lemma partial1of2E {R : realType} {T : Type} (f : R -> T -> R) y x :
+  ('d1 f) y x = 'D_1 (f^~ y) x.
+Proof. by rewrite /partial1of2 derive1E. Qed.
 
 Local Open Scope ring_scope.
 Context {R : realType} d {Y : measurableType d}
@@ -117,7 +121,7 @@ have Bg_G : {ae mu, forall y n, B y -> (`|(g_ n y)%:E| <= (EFin \o G) y)%E}.
     have x_fd1f x : x \in `]a, (x_ n)[ -> is_derive x 1 (f^~ y) (('d1 f) y x).
       move=> xax_n; apply: DeriveDef.
         by apply: derf1 => //; exact/axnI/subset_itv_oo_cc.
-      by rewrite /partial1 derive1E.
+      by rewrite /partial1of2 derive1E.
     have cf : {within `[a, (x_ n)], continuous (f^~ y)}.
       have : {within I, continuous (f^~ y)}.
         by apply: derivable_within_continuous => /= r Ir; exact: derf1.
@@ -132,7 +136,7 @@ have Bg_G : {ae mu, forall y n, B y -> (`|(g_ n y)%:E| <= (EFin \o G) y)%E}.
     have x_fd1f x : x \in `](x_ n), a[ -> is_derive x 1 (f^~ y) (('d1 f) y x).
       move=> xax_n; apply: DeriveDef.
         by apply: derf1 => //; exact/xnaI/subset_itv_oo_cc.
-      by rewrite /partial1 derive1E.
+      by rewrite partial1of2E.
     have cf : {within `[(x_ n), a], continuous (f^~ y)}.
       have : {within I, continuous (f^~ y)}.
         by apply: derivable_within_continuous => /= r Ir; exact: derf1.
@@ -201,7 +205,6 @@ exact: cvg_differentiation_under_integral.
 Qed.
 
 End differentiation_under_integral.
-Notation "'d1 f" := (partial1 f).
 
 Section FTC.
 Context {R : realType}.
