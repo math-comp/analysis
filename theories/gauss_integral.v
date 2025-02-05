@@ -28,28 +28,18 @@ Implicit Type x : R.
 
 Definition oneDsqr x : R := 1 + x ^+ 2.
 
-Lemma oneDsqr_gt0 x : 0 < oneDsqr x :> R.
-Proof. by rewrite ltr_pwDl// sqr_ge0. Qed.
-
-Lemma oneDsqr_ge0 x : 0 <= oneDsqr x :> R.
-Proof. by rewrite ltW// oneDsqr_gt0. Qed.
-
 Lemma oneDsqr_ge1 x : 1 <= oneDsqr x :> R.
 Proof. by rewrite lerDl sqr_ge0. Qed.
 
 #[local]
-Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve[exact: oneDsqr_ge1] : core.
-
-Lemma oneDsqr_neq0 x : oneDsqr x != 0.
-Proof. by rewrite gt_eqF// oneDsqr_gt0. Qed.
+Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve[apply: oneDsqr_ge1] : core.
 
 Lemma oneDsqr_gt0_subproof x : Signed.spec 0 !=0 >=0 (oneDsqr x).
-Proof. by rewrite /= oneDsqr_neq0/= oneDsqr_ge0. Qed.
+Proof. by rewrite /= -lt_def (@lt_le_trans _ _ 1). Qed.
 
 Canonical oneDsqr_ge0_snum x := Signed.mk (oneDsqr_gt0_subproof x).
 
-Lemma oneDsqrV_le1 x : oneDsqr\^-1 x <= 1.
-Proof. by rewrite invr_le1// ?unitf_gt0. Qed.
+Lemma oneDsqrV_le1 x : oneDsqr\^-1 x <= 1. Proof. by rewrite invf_le1. Qed.
 
 Lemma continuous_oneDsqr : continuous oneDsqr.
 Proof. by move=> x; apply: cvgD; [exact: cvg_cst|exact: exprn_continuous]. Qed.
@@ -73,7 +63,7 @@ Qed.
 
 End oneDsqr.
 #[global]
-Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve[exact: oneDsqr_ge1] : core.
+Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve [apply: oneDsqr_ge1] : core.
 
 Section gauss_fun.
 Context {R : realType}.
