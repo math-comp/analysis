@@ -3525,8 +3525,8 @@ apply: ge0_subset_integral => //=.
 by move=> ? _; rewrite lee_fin f0.
 Qed.
 
-Lemma ge0_cvg_integral :
-  (fun n => \int[mu]_(x in `[0%R, n%:R]) (f x)%:E) @ \oo -->
+Lemma ge0_cvgn_integral :
+  \int[mu]_(x in `[0%R, n%:R]) (f x)%:E @[n --> \oo] -->
   \int[mu]_(x in `[0%R, +oo[) (f x)%:E.
 Proof.
 rewrite -cvg_shiftS/= ge0_integral_ereal_sup//.
