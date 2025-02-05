@@ -10,10 +10,10 @@ From mathcomp Require Import numfun exp convex itv.
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
 (*                                                                            *)
-(* This file provides Hoelder's inequality.                                   *)
+(* This file provides Hoelder's inequality and its consequences, most notably *)
+(* Minkowski's inequality and the convexity of the power function.            *)
 (* ```                                                                        *)
-(*           'N[mu]_p[f] := (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1             *)
-(*                          The corresponding definition is Lnorm.            *)
+(*           'N[mu]_p[f] == the p-norm of f with measure mu                   *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -539,34 +539,3 @@ apply: measurableT_comp => //.
 Qed.
 
 End minkowski.
-
-Section Lnorm_properties.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Local Open Scope ereal_scope.
-Implicit Types (p : \bar R) (f g : T -> R) (r : R).
-
-Lemma LnormD_fin_num p f g :
-  1 <= p ->
-  measurable_fun setT f -> measurable_fun setT g ->
-    'N[mu]_p[f] \is a fin_num -> 'N[mu]_p[g] \is a fin_num ->
-      'N[mu]_p[f \+ g] \is a fin_num.
-Proof.
-case: p => [p|_|].
-- move=> p1 mf mg Nffin Ngfin.
-  rewrite fin_numElt (@lt_le_trans _ _ 0)//= ?Lnorm_ge0//.
-  rewrite (@le_lt_trans _ _ ('N[mu]_p%:E[f] + 'N[mu]_p%:E[g]))//.
-    apply: minkowski => //.
-  by rewrite lte_add_pinfty// -ge0_fin_numE// Lnorm_ge0.
-- move=> mf mg.
-  rewrite unlock /Lnorm.
-  case: ifPn => // mu_ge0.
-  rewrite !fin_numElt => /andP[_ fley] /andP[_ gley].
-  rewrite (@lt_le_trans _ _ 0)//= ?ess_sup_ge0//; last first.
-    by move=> t/=; exact: normr_ge0.
-  admit.
-- by rewrite leeNy_eq => /eqP.
-Admitted.
-
-
-End Lnorm_properties.

@@ -33,14 +33,15 @@ Definition finite_norm d (T : measurableType d) (R : realType)
   ('N[ mu ]_p [ f ] < +oo)%E.
 
 HB.mixin Record isLfun d (T : measurableType d) (R : realType)
-    (mu : {measure set T -> \bar R}) (p : \bar R) (f : {mfun T >-> R}) := {
+    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R)
+  of @MeasurableFun d _ T R f := {
   lfuny : finite_norm mu p f
 }.
 
 #[short(type=LfunType)]
 HB.structure Definition Lfun d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) :=
-  {f : {mfun T >-> R} & isLfun d T R mu p f}.
+  {f of @MeasurableFun d _ T R f & isLfun d T R mu p f}.
 
 Arguments lfuny {d} {T} {R} {mu} {p} _.
 #[global] Hint Resolve lfuny : core.
@@ -138,7 +139,7 @@ End Lspace.
 Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
 
 
-Section lfun_pred.
+Section lfun_pred. (* find a good name *)
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
 Definition lfun : {pred (LType mu p)} := topred (mu.-Lspace p).
@@ -201,9 +202,9 @@ measurable_fun [set: T] g ->
 (* TODO: Jairo is working on this *)
 Admitted.
 
-Lemma lfunyD (f g : {mfun T >-> R}) :
+Lemma lfunyD (f g : LfunType mu p) :
   finite_norm mu p f -> finite_norm mu p g ->
-    finite_norm mu p (f + g).
+    finite_norm mu p (f \+ g).
 Proof.
 rewrite /finite_norm => ff fg.
 apply: le_lt_trans; first exact: minkowskie.
@@ -353,9 +354,9 @@ Qed.
 HB.about Num.Zmodule_isSemiNormed.Build.
 
 (* TODO : fix the definition *)
-(* HB.instance Definition _ := *)
-(*   @Num.Zmodule_isSemiNormed.Build R (LfunType mu p%:E) ty *)
-(*     nm ler_Lnorm_add Lnorm_natmul LnormN. *)
+HB.instance Definition _ :=
+  @Num.Zmodule_isSemiNormed.Build R (LfunType mu p%:E) ty
+    nm ler_Lnorm_add Lnorm_natmul LnormN.
 
 (* todo: add equivalent of mx_normZ and HB instance *)
 
