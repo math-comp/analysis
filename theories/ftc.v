@@ -772,7 +772,7 @@ exact: integral_fune_fin_num.
 Unshelve. all: by end_near. Qed.
 
 (* TODO: move? *)
-Let in_continuous_mkseP {T : realFieldType} {U : realFieldType}
+Let in_continuous_mksetP {T : realFieldType} {U : realFieldType}
     (i : interval T) (f : T -> U) :
   {in i, continuous f} <-> {in [set` i], continuous f}.
 Proof.
@@ -791,7 +791,7 @@ Proof.
 move=> f_ge0 Fxl cf dF Fa dFE.
 have mf : measurable_fun `]a, +oo[ f.
   apply: open_continuous_measurable_fun => //.
-  by move: cf => /continuous_within_itvcyP[/in_continuous_mkseP cf _].
+  by move: cf => /continuous_within_itvcyP[/in_continuous_mksetP cf _].
 rewrite -integral_itv_obnd_cbnd// itv_bnd_infty_bigcup seqDU_bigcup_eq.
 rewrite ge0_integral_bigcup//=; last 3 first.
 - by move=> k; apply: measurableD => //; exact: bigsetU_measurable.
