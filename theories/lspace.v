@@ -138,14 +138,76 @@ Qed.
 End Lspace.
 Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
 
-
-Section lfun_pred. (* find a good name *)
+(* move to hoelder.v *)
+Section conjugate.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
-Definition lfun : {pred (LType mu p)} := topred (mu.-Lspace p).
+Hypothesis (p1 : (1 <= p)%E).
+
+Local Open Scope classical_set_scope.
+Local Open Scope ereal_scope.
+
+Definition conjugate :=
+  match p with
+  | r%:E => [get q : R | r^-1 + q^-1 = 1]%:E
+  | +oo  => 1
+  | -oo  => 0
+  end.
+
+Lemma conjugateE :
+  conjugate = if p is r%:E then (r * (r-1)^-1)%:E
+              else if p == +oo then 1 else 0.
+Proof.
+rewrite /conjugate.
+move: p1.
+case: p => [r|//=|//].
+rewrite lee_fin => r1.
+have r0 : r != 0%R by rewrite gt_eqF// (lt_le_trans _ r1).
+congr (_%:E).
+apply: get_unique.
+  by rewrite invf_div mulrBl divff// mul1r addrCA subrr addr0.
+move=> /= y h0.
+suffices -> : y = (1 - r^-1)^-1.
+  by rewrite -(mul1r r^-1) -{1}(divff r0) -mulrBl invf_div.
+by rewrite -h0 -addrAC subrr add0r invrK.
+Qed.
+
+End conjugate.
+
+
+Section lfun_pred.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
+
+Definition finlfun : {pred _ -> _} := mem [set f | finite_norm mu p f].
+Definition lfun : {pred _ -> _} := [predI @mfun _ _ T R & finlfun].
 Definition lfun_key : pred_key lfun. Proof. exact. Qed.
 Canonical lfun_keyed := KeyedPred lfun_key.
+Lemma sub_lfun_mfun : {subset lfun <= mfun}. Proof. by move=> x /andP[]. Qed.
+Lemma sub_lfun_finlfun : {subset lfun <= finlfun}. Proof. by move=> x /andP[]. Qed.
 End lfun_pred.
+
+Section lfun.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
+
+Notation lfun := (@lfun _ T R mu p).
+Section Sub.
+Context (f : T -> R) (fP : f \in lfun).
+Definition lfun_Sub1_subproof :=
+  @isMeasurableFun.Build d _ T R f (set_mem (sub_lfun_mfun fP)).
+#[local] HB.instance Definition _ := lfun_Sub1_subproof.
+Definition lfun_Sub2_subproof :=
+  @isLfun.Build d T R mu p f (set_mem (sub_lfun_finlfun fP)).
+
+Import HBSimple.
+
+#[local] HB.instance Definition _ := lfun_Sub2_subproof.
+End Sub.
+
+
+End lfun.
+
 
 Section Lspace_zmodule.
 Context d (T : measurableType d) (R : realType).
@@ -218,8 +280,12 @@ HB.instance Definition _ (f g : LfunType mu p) :=
   @isLfun.Build d T R mu p (f \+ g) (LfunD_subproof _ _).
 
 HB.about GRing.isZmodule.Build.
-(* Program Definition fct_zmodMixin := *)
-(*   @GRing.isZmodule.Build (LfunType mu p) _ _ _ _ _ _ _. *)
+Program Definition fct_zmodMixin :=
+  @GRing.isZmodule.Build (LfunType mu p) (cst 0) (fun f => \- f) (fun f g => f \+ g) _ _ _ _.
+Next Obligation. move=> f g h; rewrite -!fctD addrA !fctD. Admitted.
+Next Obligation. move=> f g; rewrite -!fctD addrC !fctD. Admitted.
+Next Obligation. move=> f; rewrite -fctD. Admitted.
+Next Obligation. move=> f. Admitted.
 
 Lemma powRMn (x : R) r n : 0 <= x -> ((x *+ n) `^ r) = ((x `^ r) * (n%:R `^ r)).
 Proof. by move=> x0; rewrite -[in LHS]mulr_natr powRM. Qed.
@@ -278,7 +344,6 @@ Proof. exact: lfunyMn. Qed.
 (*   @isLfun.Build d T R mu p (f \*+ n) (LfunyMn_subproof _ _). *)
 
 End Lspace_zmodule.
-Notation "f \*+ n" := (fun x => f x *+ n) (at level 10).
 
 Section Lspace_norm.
 Context d (T : measurableType d) (R : realType).
@@ -301,7 +366,7 @@ Definition nm f := fine ('N[mu]_p%:E[f]).
 (* HB.instance Definition _ := GRing.Zmodule.on ty. *)
 
 Lemma ler_Lnorm_add (f g : ty) :
-  nm (f \+ g) <= nm f + nm g.
+  nm (f + g) <= nm f + nm g.
 Proof.
 rewrite /nm -fineD ?fine_le ?minkowski// fin_numElt (lt_le_trans ltNy0) ?Lnorm_ge0//=.
 - rewrite (le_lt_trans (minkowski _ _ _ _))//.
