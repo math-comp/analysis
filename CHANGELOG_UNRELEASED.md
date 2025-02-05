@@ -51,6 +51,15 @@
   + lemmas `ler0_derive1_nincry`, `ger0_derive1_ndecry`,
            `ler0_derive1_nincrNy`, `ger0_derive1_ndecrNy`
   + lemmas `ltr0_derive1_decr`, `gtr0_derive1_incr`
+- in `mathcomp_extra.v`:
+  + lemmas `size_filter_gt0`, `ltr_sum`, `ltr_sum_nat`
+
+- in `classical_sets.v`:
+  + lemma `itv_sub_in2`
+
+- in `realfun.v`:
+  + definition `discontinuity`
+  + lemmas `nondecreasing_fun_sum_le`, `discontinuty_countable`
 
 ### Changed
 

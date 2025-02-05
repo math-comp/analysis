@@ -1002,7 +1002,7 @@ move=> /finite_setP[m Am]; rewrite (card_fset_set Am).
 by rewrite (card_le_eqr Am) card_le_II.
 Qed.
 
-Lemma infinite_set_fset {T : choiceType} (A : set T) (n : nat) :
+Lemma infinite_set_fset {T : choiceType} (A : set T) n :
   infinite_set A ->
     exists2 B : {fset T}, [set` B] `<=` A & (#|` B| >= n)%N.
 Proof.
