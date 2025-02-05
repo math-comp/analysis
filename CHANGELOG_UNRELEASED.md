@@ -77,7 +77,7 @@
   + lemma `itv_bnd_infty_bigcup0S`
 
 - in `lebesgue_integral.v`:
-  + lemma `ge0_cvg_integral`
+  + lemma `ge0_cvgn_integral`
 
 - in `trigo.v`:
   + lemma `derivable_atan`
@@ -99,7 +99,7 @@
 
 ### Changed
 
-- in `lebesgue_integrale.v`
+- in `lebesgue_integral.v`
   + change implicits of `measurable_funP`
 
 - in `derive.v`:

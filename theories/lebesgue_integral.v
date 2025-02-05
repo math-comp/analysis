@@ -3468,7 +3468,7 @@ Qed.
 End integrable_lemmas.
 Arguments integrable_mkcond {d T R mu D} f.
 
-Section ge0_cvg_integral.
+Section ge0_cvgn_integral.
 Local Open Scope ereal_scope.
 Context {R : realType}.
 Variable mu : {measure set (@measurableTypeR R) -> \bar R}.
@@ -3537,7 +3537,7 @@ apply: (@ge0_subset_integral _ _ _ mu) => //.
 - by apply: subset_itvl; rewrite bnd_simp ler_nat.
 Qed.
 
-End ge0_cvg_integral.
+End ge0_cvgn_integral.
 
 Lemma finite_measure_integrable_cst d (T : measurableType d) (R : realType)
     (mu : {finite_measure set T -> \bar R}) k :
