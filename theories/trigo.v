@@ -1187,6 +1187,9 @@ apply: (@is_derive_inverse R tan).
 exact/lt0r_neq0/ltr_pwDl/sqr_ge0.
 Unshelve. all: by end_near. Qed.
 
+Lemma derivable_atan x : derivable atan x 1.
+Proof. exact: ex_derive. Qed.
+
 Lemma derive1_atan : atan^`() =1 (fun x => (1 + x ^+ 2)^-1).
 Proof. by move=> x; rewrite derive1E derive_val. Qed.
 

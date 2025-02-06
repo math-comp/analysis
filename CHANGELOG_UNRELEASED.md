@@ -60,10 +60,46 @@
 - in `realfun.v`:
   + definition `discontinuity`
   + lemmas `nondecreasing_fun_sum_le`, `discontinuty_countable`
+- in `constructive_ereal.v`:
+  + lemma `abse_EFin`
+
+- in `normedtype.v`:
+  + lemmas `bounded_cst`, `subr_cvg0`
+
+- in `lebesgue_integral.v`:
+  + lemma `RintegralB`
+
+- in `ftc.v`:
+  + lemmas `differentiation_under_integral`, `derivable_under_integral`
+  + definition `partial1of2`, lemma `partial1of2E`
+
+- in `real_interval.v`:
+  + lemma `itv_bnd_infty_bigcup0S`
+
+- in `lebesgue_integral.v`:
+  + lemma `ge0_cvgn_integral`
+
+- in `trigo.v`:
+  + lemma `derivable_atan`
+
+- in `normedtype.v`:
+  + lemma `cvgr_expr2`, `cvgr_idn`
+
+- new file `gauss_integral.v`:
+  + definition `oneDsqr`
+  + lemmas `oneDsqr_gt0`, `oneDsqr_ge0`, `oneDsqr_ge1`, `oneDsqr_neq0`,
+    `oneDsqrV_le1`, `continuous_oneDsqr`, `continuous_oneDsqrV`,
+    `integral01_oneDsqr`
+  + canonical `oneDsqr_ge0_snum`
+  + definition `gauss_fun`
+  + lemmas `gauss_fun_ge0`, `gauss_le1`, `cvg_gauss_fun`, `measurable_gauss_fun`,
+    `continuous_gauss_fun`
+  + module `gauss_integral_proof`
+  + lemma `integral0y_gauss`
 
 ### Changed
 
-- in `lebesgue_integrale.v`
+- in `lebesgue_integral.v`
   + change implicits of `measurable_funP`
 
 - in `derive.v`:
@@ -95,6 +131,8 @@
   + `sigma_algebra_image_class` -> `sigma_algebra_image`
   + `sigma_algebra_preimage_classE` -> `g_sigma_preimageE`
   + `preimage_classes_comp` -> `g_sigma_preimageU_comp`
+- in `normedtype.v`:
+  + `cvge_sub0` -> `sube_cvg0`
 
 ### Generalized
 

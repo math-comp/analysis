@@ -302,6 +302,17 @@ rewrite natr_absz ger0_norm ?ceil_ge//.
 by rewrite -(ceil0 R) ceil_le// subr_ge0 (lteifW xy).
 Qed.
 
+Lemma itv_bnd_infty_bigcup0S (R : realType) :
+  `[0%R, +oo[%classic = \bigcup_i `[0%R, i.+1%:R]%classic :> set R.
+Proof.
+rewrite eqEsubset; split; last first.
+  by move=> /= x [n _]/=; rewrite !in_itv/= => /andP[->].
+rewrite itv_bnd_infty_bigcup => z [i _ /= zi].
+exists i => //=.
+apply: subset_itvl zi.
+by rewrite bnd_simp/= add0r ler_nat.
+Qed.
+
 Lemma itv_infty_bnd_bigcup (R : realType) b (x : R) :
   [set` Interval -oo%O (BSide b x)] =
   \bigcup_i [set` Interval (BLeft (x - i%:R)) (BSide b x)].

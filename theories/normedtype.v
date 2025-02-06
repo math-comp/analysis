@@ -1804,18 +1804,21 @@ Definition strictly_dominated_by {T : Type} {K : numDomainType} {V W : pseudoMet
   (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
   F [set x | `|f x| < k * `|h x|].
 
-Lemma sub_dominatedl (T : Type) (K : numDomainType) (V W : pseudoMetricNormedZmodType K)
-   (h : T -> V) (k : K) (F G : set_system T) : F `=>` G ->
+Lemma sub_dominatedl (T : Type) (K : numDomainType)
+    (V W : pseudoMetricNormedZmodType K)
+    (h : T -> V) (k : K) (F G : set_system T) : F `=>` G ->
   (@dominated_by T K V W h k)^~ G `<=` (dominated_by h k)^~ F.
 Proof. by move=> FG f; exact: FG. Qed.
 
-Lemma sub_dominatedr (T : Type) (K : numDomainType) (V : pseudoMetricNormedZmodType K)
+Lemma sub_dominatedr (T : Type) (K : numDomainType)
+    (V : pseudoMetricNormedZmodType K)
     (h : T -> V) (k : K) (f g : T -> V) (F : set_system T) (FF : Filter F) :
    (\forall x \near F, `|f x| <= `|g x|) ->
    dominated_by h k g F -> dominated_by h k f F.
 Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
 
-Lemma dominated_by1 {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K} :
+Lemma dominated_by1 {T : Type} {K : numFieldType}
+    {V : pseudoMetricNormedZmodType K} :
   @dominated_by T K _ V fun1 = fun k f F => F [set x | `|f x| <= k].
 Proof.
 rewrite funeq3E => k f F.
@@ -1830,7 +1833,8 @@ rewrite funeq3E => k f F.
 by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
 Qed.
 
-Lemma ex_dom_bound {T : Type} {K : numFieldType} {V W : pseudoMetricNormedZmodType K}
+Lemma ex_dom_bound {T : Type} {K : numFieldType}
+    {V W : pseudoMetricNormedZmodType K}
     (h : T -> V) (f : T -> W) (F : set_system T) {PF : ProperFilter F}:
   (\forall M \near +oo, dominated_by h M f F) <->
   exists M, dominated_by h M f F.
@@ -1908,6 +1912,13 @@ Notation "[ 'bounded' E | x 'in' A ]" :=
   (bounded_near (fun x => E) (globally A)).
 Notation bounded_set := [set A | [bounded x | x in A]].
 Notation bounded_fun := [set f | [bounded f x | x in setT]].
+
+Lemma bounded_cst (K : numFieldType) {V : pseudoMetricNormedZmodType K}
+  (k : V) T (A : set T) : [bounded k | _ in A].
+Proof.
+rewrite /bounded_near; near=> M => t At /=.
+by near: M; exact: nbhs_pinfty_ge.
+Unshelve. all: end_near. Qed.
 
 Lemma bounded_fun_has_ubound (T : Type) (R : realFieldType) (a : T -> R) :
   bounded_fun a -> has_ubound (range a).
@@ -2619,7 +2630,6 @@ Unshelve. all: by end_near. Qed.
 End NVS_continuity_mul.
 
 Section cvg_composition_pseudometric.
-
 Context {K : numFieldType} {V : pseudoMetricNormedZmodType K} {T : Type}.
 Context (F : set_system T) {FF : Filter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
@@ -2671,6 +2681,12 @@ Qed.
 Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
 Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
 
+Lemma subr_cvg0 f a : (fun x => f x - a) @ F --> 0 <-> f @ F --> a.
+Proof.
+split=> [?|fFk]; first exact: cvg_zero.
+by rewrite -(@subrr _ a)//; apply: cvgB => //; exact: cvg_cst.
+Qed.
+
 Lemma cvg_norm f a : f @ F --> a -> `|f x| @[x --> F] --> (`|a| : K).
 Proof. by apply: continuous_cvg; apply: norm_continuous. Qed.
 
@@ -2688,6 +2704,16 @@ Lemma norm_cvg0 f : `|f x| @[x --> F] --> 0 -> f @ F --> 0.
 Proof. by rewrite norm_cvg0P. Qed.
 
 End cvg_composition_pseudometric.
+
+Lemma cvgr_expr2 {R : realFieldType} : (x ^+ 2 : R) @[x --> +oo] --> +oo.
+Proof.
+by apply/cvgryPge => M; near=> x; rewrite (@le_trans _ _ x)// expr2 ler_peMl.
+Unshelve. all: end_near. Qed.
+
+Lemma cvgr_idn {R : realType} : (n%:R : R) @[n --> \oo] --> +oo.
+Proof.
+by apply/cvgryPge => M; exact: nbhs_infty_ger.
+Unshelve. all: end_near. Qed.
 
 Section cvg_composition_normed.
 Context {K : numFieldType} {V : normedModType K} {T : Type}.
@@ -3046,7 +3072,7 @@ Lemma cvgeB f g a b :
   a +? - b -> f @ F --> a -> g @ F --> b -> f \- g @ F --> a - b.
 Proof. by move=> ab fa gb; apply: cvgeD => //; exact: cvgeN. Qed.
 
-Lemma cvge_sub0 f (k : \bar R) :
+Lemma sube_cvg0 f (k : \bar R) :
   k \is a fin_num -> (fun x => f x - k) @ F --> 0 <-> f @ F --> k.
 Proof.
 move=> kfin; split.
@@ -3223,6 +3249,8 @@ move=> [:apoo] [:bnoo] [:poopoo] [:poonoo]; move: a b => [a| |] [b| |] //.
 Unshelve. all: end_near. Qed.
 
 End ecvg_realFieldType.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `sube_cvg0`")]
+Notation cvge_sub0 := sube_cvg0 (only parsing).
 
 Section max_cts.
 Context {R : realType} {T : topologicalType}.
