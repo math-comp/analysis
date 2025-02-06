@@ -493,7 +493,6 @@ Lemma lcfuneqP (f g : {linear_continuous E -> F | s}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {linear_continuous E -> F | s} by <:].
-
 End lcfun.
 
 
@@ -563,49 +562,61 @@ Fail HB.instance Definition _ := @isLinearContinuous.Build R E F s (\0 : E -> F)
 (* End fct_lmod. *)
 
   
-End lcfun_linearcontinuousType.
+End lcfun_lmodtype.
+
+(* make use of  {family fam, U -> V}  *)
 
 
-Section lcfun_topologicaltype.
-Context (R : numDomainType) (E F : tvsType R) (f g : ({linear_continuous E -> F})) (r : R).
 
 
-End lcfun_topologicaltype.
-
-
-(* TODO : define bornology and topology of uniform convergence,  show it's a tvstype *)
+(* TODO : define bornology and topology of uniform convergence, show it's a
+tvstype *)
 (* Not used in the following *)
-Class Bornology {T : Type} (B : set_system T) := {
-  bornoC : forall x, exists b,  (B b) /\ (b x) ;
-  bornoU : forall P Q  : set T, B P -> B Q -> B (P `|` Q) ;
-  bornoS : forall P Q : set T, P `<=` Q -> B Q -> B  P
-  }.
+(* Class Bornology {T : Type} (B : set_system T) := { *)
+(*   bornoC : forall x, exists b,  (B b) /\ (b x) ; *)
+(*   bornoU : forall P Q  : set T, B P -> B Q -> B (P `|` Q) ; *)
+(*   bornoS : forall P Q : set T, P `<=` Q -> B Q -> B  P *)
+(*   }. *)
 
-Global Hint Mode Bornology - ! : typeclass_instances.
+(* Global Hint Mode Bornology - ! : typeclass_instances. *)
 
-(*why with typeclasses and not with HB ? *)
+(* (*why with typeclasses and not with HB ? *) *)
+ 
+(*What follows is adapted from {family fam, U -> V} in
+function_space.v. Should we copy instances from family fam to family_lcfun fam ? *)
+Definition uniform_lcfun_family R {E : tvsType R} (F : tvsType R) (s : GRing.Scale.law R F)
+  (fam : set E -> Prop) :=
+  {linear_continuous E -> F | s}.
 
-
-HB.factory Record UniformLinCont_isTvs (R : numDomainType) (E : tvsType R) (F : tvsType R) (B : set_system  E) := {
-  bornoC : forall x : E, exists b : set E,  (B b) /\ (b x) ;
-  bornoU : forall P Q  : set E, B P -> B Q -> B (P `|` Q) ;
-  bornoS : forall P Q : set E, P `<=` Q -> B Q -> B  P
-  }.
-
-HB.builders Context R E F B of UniformLinCont_isTvs R E F B.
-
-
-HB.instance Definition _ := TopologicalLmod_isTvs {linearcontinuous E -> F}
-    entourage_filter entourage_refl
-    entourage_inv entourage_split_ex
-    nbhsE.
-HB.end.
+Notation "{ 'family_lcfun' fam , U -> V '|' s }" :=  (@uniform_lcfun_family _ U V s fam).
+Notation "{ 'family_lcfun' fam , U -> V }" :=  (@uniform_lcfun_family _ U V ( *:%R) fam).
+(* Notation "{ 'family_lcfun' fam , F --> f '|' s }" := *)
+(*   (cvg_to F (@nbhs _ {family_lcfun fam, _ -> _ | _ } f)) : type_scope. *)
+(* Notation "{ 'family_lcfun' fam , F --> f }" := *)
+(*   (cvg_to F (@nbhs _ {family_lcfun fam, _ -> _ } f)) : type_scope. *)
 
 
 
-Section lctype_topology.
+HB.instance Definition _ {R} {U V : tvsType R} (s : GRing.Scale.law R V)
+    (fam : set U -> Prop) :=
+  Uniform.copy {family_lcfun fam, U -> V | s} (sup_topology (fun k : sigT fam =>
+       Uniform.class {uniform` projT1 k -> V})).
 
-End lctype_topology.
+(* HB.factory Record UniformLinCont_isTvs (R : numDomainType) (E : tvsType R) (F : tvsType R) (B : set_system  E) of Topological {family_lcfun B , E -> F} & GRing.Lmodule {linear_continuous E -> F}  := { *)
+(*   bornoC : forall x : E, exists b : set E,  (B b) /\ (b x) ; *)
+(*   bornoU : forall P Q  : set E, B P -> B Q -> B (P `|` Q) ; *)
+(*   bornoS : forall P Q : set E, P `<=` Q -> B Q -> B  P *)
+(*   }. *)
+
+(* HB.builders Context R E F B of UniformLinCont_isTvs R E F B. *)
+
+
+(* (* HB.instance Definition _ := TopologicalLmod_isTvs {linearcontinuous E -> F} *) *)
+(* (*     entourage_filter entourage_refl *) *)
+(* (*     entourage_inv entourage_split_ex *) *)
+(* (*     nbhsE. *) *)
+(* (* HB.end. *) *)
+
 
 
 Section dual.
