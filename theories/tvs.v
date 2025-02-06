@@ -496,18 +496,10 @@ HB.instance Definition _ := [Choice of {linear_continuous E -> F | s} by <:].
 
 End lcfun.
 
-(* Section lcfun_realType. *)
-(* Context  {E : sigmaRingType d} {F : realType}. *)
-
-(* HB.instance Definition _ := @isMeasurableFun.Build _ _ _ F *)
-(*   (@normr F F) (@normr_measurable F setT). *)
-
-(* HB.instance Definition _ := *)
-(*   isMeasurableFun.Build _ _ _ _ (@expR F) (@measurable_expR F). *)
-
-(* End lcfun_realType. *)
 
 Section lcfun_linearcontinuousType.
+
+
 Context {R : numDomainType} {E F : NbhsLmodule.type R}
   {S : NbhsZmodule.type} {s : GRing.Scale.law R S}
   (f : {linear_continuous E -> F}) (g : {linear_continuous F -> S | s}).
@@ -526,17 +518,90 @@ HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
 
 End lcfun_linearcontinuousType.
 
-(*TODO lcfun_lmodType  and lcfun_ringType (for F: numFieldType)*)
+
+Section lcfun_lmodtype.
+Context  {R : numDomainType}  {E F : tvsType R} {s : GRing.Scale.law R F}.
+
+Import GRing.Theory.
+
+Lemma null_fun_continuous : continuous (\0 : E -> F).
+Proof.
+by apply: cst_continuous.
+Qed.  
+
+
+Lemma null_fun_is_linear: linear_for s (\0 : E -> F).
+Proof.
+by move => r x y /=; rewrite raddf0 addr0. 
+Qed.
+(*Where is that defined in ssralg? I have additive and scalable, but not
+linear *)
+
+Fail HB.instance Definition _ := @isLinearContinuous.Build R E F s (\0 : E -> F)
+ null_fun_is_linear null_fun_continuous.
+
+(* Program Definition lcfun_zmodMixin (R : numDomainType) (E F : NbhsLmodule.type R) := *)
+(*   @GRing.isZmodule.Build {linear_continuous E -> F} \0 (fun f x => - f x) (fun f g => f \+ g) *)
+(*      _ _ _ _. *)
+(* Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed. *)
+(* Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed. *)
+(* Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed. *)
+(* Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed. *)
+(* HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M. *)
+
+(* Program Definition lcfun_lmodMixin := @GRing.Zmodule_isLmodule.Build R {linear_continuous E -> F} *)
+(*   (fun k f => k \*: f) _ _ _ _. *)
+(* Next Obligation. by move=> k f v; rewrite funeqE=> x; exact: scalerA. Qed. *)
+(* Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite scale1r. Qed. *)
+(* Next Obligation. *)
+(* by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. *)
+(* Qed. *)
+(* Next Obligation. *)
+(* by move=> f g h; rewrite funeqE => x /=; rewrite scalerDl. *)
+(* Qed. *)
+(* HB.instance Definition _ := lcfun_lmodMixin. *)
+(* End fct_lmod. *)
+
+  
+End lcfun_linearcontinuousType.
+
+
+Section lcfun_topologicaltype.
+Context (R : numDomainType) (E F : tvsType R) (f g : ({linear_continuous E -> F})) (r : R).
+
+
+End lcfun_topologicaltype.
 
 
 (* TODO : define bornology and topology of uniform convergence,  show it's a tvstype *)
-
-
-HB.mixin Record setsystem_isBornology (B : set_system T)  := {
-covering: forall x : T, exists b, (B b) /\ (b x);
+(* Not used in the following *)
+Class Bornology {T : Type} (B : set_system T) := {
+  bornoC : forall x, exists b,  (B b) /\ (b x) ;
+  bornoU : forall P Q  : set T, B P -> B Q -> B (P `|` Q) ;
+  bornoS : forall P Q : set T, P `<=` Q -> B Q -> B  P
   }.
 
-HB.end 
+Global Hint Mode Bornology - ! : typeclass_instances.
+
+(*why with typeclasses and not with HB ? *)
+
+
+HB.factory Record UniformLinCont_isTvs (R : numDomainType) (E : tvsType R) (F : tvsType R) (B : set_system  E) := {
+  bornoC : forall x : E, exists b : set E,  (B b) /\ (b x) ;
+  bornoU : forall P Q  : set E, B P -> B Q -> B (P `|` Q) ;
+  bornoS : forall P Q : set E, P `<=` Q -> B Q -> B  P
+  }.
+
+HB.builders Context R E F B of UniformLinCont_isTvs R E F B.
+
+
+HB.instance Definition _ := TopologicalLmod_isTvs {linearcontinuous E -> F}
+    entourage_filter entourage_refl
+    entourage_inv entourage_split_ex
+    nbhsE.
+HB.end.
+
+
 
 Section lctype_topology.
 
