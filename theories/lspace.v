@@ -33,15 +33,15 @@ Definition finite_norm d (T : measurableType d) (R : realType)
   ('N[ mu ]_p [ f ] < +oo)%E.
 
 HB.mixin Record isLfun d (T : measurableType d) (R : realType)
-    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R)
+    (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) (f : T -> R)
   of @MeasurableFun d _ T R f := {
   lfuny : finite_norm mu p f
 }.
 
 #[short(type=LfunType)]
 HB.structure Definition Lfun d (T : measurableType d) (R : realType)
-    (mu : {measure set T -> \bar R}) (p : \bar R) :=
-  {f of @MeasurableFun d _ T R f & isLfun d T R mu p f}.
+    (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) :=
+  {f of @MeasurableFun d _ T R f & isLfun d T R mu p p1 f}.
 
 Arguments lfuny {d} {T} {R} {mu} {p} _.
 #[global] Hint Resolve lfuny : core.
@@ -50,18 +50,18 @@ Arguments lfuny {d} {T} {R} {mu} {p} _.
 
 Section Lfun_canonical.
 Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
 
-HB.instance Definition _ := gen_eqMixin (LfunType mu p).
-HB.instance Definition _ := gen_choiceMixin (LfunType mu p).
+HB.instance Definition _ := gen_eqMixin (LfunType mu p1).
+HB.instance Definition _ := gen_choiceMixin (LfunType mu p1).
 
 End Lfun_canonical.
 
 Section Lequiv.
 Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
 
-Definition Lequiv (f g : LfunType mu p) := `[< f = g %[ae mu] >].
+Definition Lequiv (f g : LfunType mu p1) := `[< f = g %[ae mu] >].
 
 Let Lequiv_refl : reflexive Lequiv.
 Proof.
@@ -89,12 +89,12 @@ Canonical LspaceType_eqType := [the eqType of LspaceType].
 Canonical LspaceType_choiceType := [the choiceType of LspaceType].
 Canonical LspaceType_eqQuotType := [the eqQuotType Lequiv of LspaceType].
 
-Lemma LequivP (f g : LfunType mu p) :
+Lemma LequivP (f g : LfunType mu p1) :
   reflect (f = g %[ae mu]) (f == g %[mod LspaceType]).
 Proof. by apply/(iffP idP); rewrite eqmodE// => /asboolP. Qed.
 
 Record LType := MemLType { Lfun_class : LspaceType }.
-Coercion LfunType_of_LType (f : LType) : LfunType mu p :=
+Coercion LfunType_of_LType (f : LType) : LfunType mu p1 :=
   repr (Lfun_class f).
 
 End Lequiv.
@@ -103,25 +103,31 @@ Section Lspace.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
 
-Definition Lspace p := [set: LType mu p].
+Definition Lspace p (p1 : (1 <= p)%E) := [set: LType mu p1].
 Arguments Lspace : clear implicits.
 
-Lemma LType1_integrable (f : LType mu 1) : mu.-integrable setT (EFin \o f).
+Lemma LType1_integrable (f : LType mu (@lexx _ _ 1%E)) : mu.-integrable setT (EFin \o f).
 Proof.
 apply/integrableP; split; first exact/EFin_measurable_fun.
-have := lfuny f.
+have := lfuny _ f.
 rewrite /finite_norm unlock /Lnorm ifF ?oner_eq0// invr1 poweRe1; last first.
   by apply integral_ge0 => x _; rewrite lee_fin powRr1//.
 by under eq_integral => i _ do rewrite powRr1//.
 Qed.
 
-Lemma LType2_integrable_sqr (f : LType mu 2%:E) :
+Let le12 : (1 <= 2%:E :> \bar R)%E.
+rewrite lee_fin.
+rewrite (ler_nat _ 1 2).
+by [].
+Qed.
+
+Lemma LType2_integrable_sqr (f : LType mu le12) :
   mu.-integrable [set: T] (EFin \o (fun x => f x ^+ 2)).
 Proof.
 apply/integrableP; split.
   exact/EFin_measurable_fun/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f).
 rewrite (@lty_poweRy _ _ (2^-1))//.
-rewrite (le_lt_trans _ (lfuny f))//.
+rewrite (le_lt_trans _ (lfuny _ f))//.
 rewrite unlock /Lnorm ifF ?gt_eqF//.
 rewrite gt0_ler_poweR//.
 - by rewrite in_itv/= integral_ge0// leey.
@@ -177,7 +183,7 @@ End conjugate.
 
 Section lfun_pred.
 Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R).
 
 Definition finlfun : {pred _ -> _} := mem [set f | finite_norm mu p f].
 Definition lfun : {pred _ -> _} := [predI @mfun _ _ T R & finlfun].
@@ -186,6 +192,17 @@ Canonical lfun_keyed := KeyedPred lfun_key.
 Lemma sub_lfun_mfun : {subset lfun <= mfun}. Proof. by move=> x /andP[]. Qed.
 Lemma sub_lfun_finlfun : {subset lfun <= finlfun}. Proof. by move=> x /andP[]. Qed.
 End lfun_pred.
+
+
+Lemma minkowskie :
+forall [d : measure_display] [T : measurableType d] [R : realType] 
+  (mu : measure T R) [f g : T -> R] [p : \bar R],
+measurable_fun [set: T] f ->
+measurable_fun [set: T] g ->
+(1 <= p)%E -> ('N[mu]_p[(f \+ g)%R] <= 'N[mu]_p[f] + 'N[mu]_p[g])%E.
+(* TODO: Jairo is working on this *)
+Admitted.
+
 
 Section lfun.
 Context d (T : measurableType d) (R : realType).
@@ -198,162 +215,136 @@ Definition lfun_Sub1_subproof :=
   @isMeasurableFun.Build d _ T R f (set_mem (sub_lfun_mfun fP)).
 #[local] HB.instance Definition _ := lfun_Sub1_subproof.
 Definition lfun_Sub2_subproof :=
-  @isLfun.Build d T R mu p f (set_mem (sub_lfun_finlfun fP)).
+  @isLfun.Build d T R mu p p1 f (set_mem (sub_lfun_finlfun fP)).
 
 Import HBSimple.
 
 #[local] HB.instance Definition _ := lfun_Sub2_subproof.
+Definition lfun_Sub : LfunType mu p1 := f.
 End Sub.
 
-
-End lfun.
-
-
-Section Lspace_zmodule.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R).
-Hypothesis (p1 : (1 <= p)%E).
-
-Lemma lfuny0 : finite_norm mu p (cst 0).
+Lemma lfun_rect (K : LfunType mu p1 -> Type) :
+  (forall f (Pf : f \in lfun), K (lfun_Sub Pf)) -> forall u, K u.
 Proof.
-rewrite /finite_norm unlock /Lnorm.
-case: p => //[r|].
-- case: ifPn => r0.
-    rewrite preimage_cst ifF ?measure0// in_setD in_setT/=.
-    by apply /negP; rewrite in_setE/=.
-  under eq_integral => x _ do rewrite /= normr0 powR0//.
-  by rewrite integral0 poweR0r// invr_neq0.
-case: ifPn => //mu0.
-rewrite (_ : normr \o _ = cst 0); last by apply: funext => x/=; rewrite normr0.
-rewrite /ess_sup.
+move=> Ksub [f [[Pf1] [Pf2]]].
+have Pf : f \in lfun by apply/andP; rewrite ?inE.
+have -> : Pf1 = set_mem (sub_lfun_mfun Pf) by [].
+have -> : Pf2 = set_mem (sub_lfun_finlfun Pf) by [].
+exact: Ksub.
+Qed.
+
+Lemma lfun_valP f (Pf : f \in lfun) : lfun_Sub Pf = f :> (_ -> _).
+Proof. by []. Qed.
+
+HB.instance Definition _ := isSub.Build _ _ (LfunType mu p1) lfun_rect lfun_valP.
+
+Lemma lfuneqP (f g : LfunType mu p1) : f = g <-> f =1 g.
+Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
+
+HB.instance Definition _ := [Choice of LfunType mu p1 by <:].
+
+Import numFieldNormedType.Exports.
+
+Lemma ess_sup0_lty : (0 < mu setT)%E -> (ess_sup mu 0%R < +oo)%E.
+Proof.
+rewrite /ess_sup => mu0.
 under eq_set do rewrite preimage_cst/=.
 rewrite ereal_inf_EFin ?ltry//.
-rewrite /has_lbound/lbound.
-- exists 0 => /= x.
-  case: ifPn => [_|]; first by move: mu0 => /[swap] ->; rewrite ltNge lexx.
+- exists 0 => x/=; case: ifPn => [_|].
+    by move: mu0 => /[swap] ->; rewrite ltNge lexx.
   by rewrite set_itvE notin_setE//= ltNge => /negP/negbNE.
 by exists 0 => /=; rewrite ifF//; rewrite set_itvE;
   rewrite memNset //=; apply/negP; rewrite -real_leNgt.
 Qed.
 
-HB.instance Definition _ := @isLfun.Build d T R mu p (cst 0) lfuny0.
-
-(* TODO: move to lebesgue_measure.v *)
-Lemma measurable_funN_subproof (f : {mfun T >-> R}) :
-  measurable_fun setT (\-f).
-Proof. exact: measurableT_comp. Qed.
-
-HB.instance Definition _ (f : {mfun T >-> R}) :=
-  isMeasurableFun.Build _ _ _ _ (\-f) (measurable_funN_subproof _).
-
-Lemma lfuny_opp f : finite_norm mu p f -> finite_norm mu p (\-f).
-Proof. by rewrite /finite_norm oppr_Lnorm. Qed.
-
-Lemma Lfun_opp_subproof (f : LfunType mu p) : finite_norm mu p (\-f).
-Proof. exact: lfuny_opp. Qed.
-
-HB.instance Definition _ (f : LfunType mu p) :=
-  @isLfun.Build d T R mu p (\- f) (Lfun_opp_subproof _).
-
-Lemma minkowskie :
-forall [d : measure_display] [T : measurableType d] [R : realType] 
-  (mu : measure T R) [f g : T -> R] [p : \bar R],
-measurable_fun [set: T] f ->
-measurable_fun [set: T] g ->
-(1 <= p)%E -> ('N[mu]_p[(f \+ g)%R] <= 'N[mu]_p[f] + 'N[mu]_p[g])%E.
-(* TODO: Jairo is working on this *)
-Admitted.
-
-Lemma lfunyD (f g : LfunType mu p) :
-  finite_norm mu p f -> finite_norm mu p g ->
-    finite_norm mu p (f \+ g).
+Lemma ess_sup0 : (0 < mu setT)%E -> (ess_sup mu 0%R = 0)%E.
 Proof.
-rewrite /finite_norm => ff fg.
-apply: le_lt_trans; first exact: minkowskie.
-exact: lte_add_pinfty.
+rewrite /ess_sup => mu0.
+under eq_set do rewrite preimage_cst/=.
+rewrite ereal_inf_EFin.
+- congr (_%:E).
+  rewrite [X in inf X](_ : _ = `[0, +oo[%classic); last first.
+    apply/seteqP; split => /=x/=.
+      case: ifPn => [_|]; first by move: mu0=> /[swap] ->; rewrite ltNge lexx.
+      by rewrite set_itvE notin_setE/= ltNge in_itv andbT/= => /negP /negPn.
+    rewrite in_itv/= => /andP[x0 _].
+    by rewrite ifF// set_itvE; apply/negP; rewrite in_setE/= ltNge => /negP.
+  by rewrite inf_itv.
+- exists 0 => x/=; case: ifPn => [_|].
+    by move: mu0 => /[swap] ->; rewrite ltNge lexx.
+  by rewrite set_itvE notin_setE//= ltNge => /negP/negbNE.
+by exists 0 => /=; rewrite ifF//; rewrite set_itvE;
+  rewrite memNset //=; apply/negP; rewrite -real_leNgt.
 Qed.
 
-Lemma LfunD_subproof (f g : LfunType mu p) : finite_norm mu p (f \+ g).
-Proof. exact: lfunyD. Qed.
-
-HB.instance Definition _ (f g : LfunType mu p) :=
-  @isLfun.Build d T R mu p (f \+ g) (LfunD_subproof _ _).
-
-HB.about GRing.isZmodule.Build.
-Program Definition fct_zmodMixin :=
-  @GRing.isZmodule.Build (LfunType mu p) (cst 0) (fun f => \- f) (fun f g => f \+ g) _ _ _ _.
-Next Obligation. move=> f g h; rewrite -!fctD addrA !fctD. Admitted.
-Next Obligation. move=> f g; rewrite -!fctD addrC !fctD. Admitted.
-Next Obligation. move=> f; rewrite -fctD. Admitted.
-Next Obligation. move=> f. Admitted.
-
-Lemma powRMn (x : R) r n : 0 <= x -> ((x *+ n) `^ r) = ((x `^ r) * (n%:R `^ r)).
-Proof. by move=> x0; rewrite -[in LHS]mulr_natr powRM. Qed.
-
-Local Notation "f \*+ n" := (fun x => f x *+ n) (at level 10).
-
-Lemma ess_sup0 : (ess_sup mu (cst 0)%R = 0)%E.
-Admitted.
-
-Lemma ess_supMn f n : (ess_sup mu (f \*+ n) = ess_sup mu f *+ n)%E.
-Admitted.
-
-Lemma mule0n n : (0 *+ n = 0 :> \bar R)%E.
-Proof. by rewrite -mule_natl mule0. Qed.
-
-
-Lemma LnormMn (f : LfunType mu p) n : ('N[mu]_p[f \*+ n] = 'N[mu]_p[f] *+ n)%E.
+Lemma Lnorm0 : 'N[mu]_p[cst 0] = 0.
 Proof.
 rewrite unlock /Lnorm.
-move: p1 f.
-case: p => [r||].
-- rewrite lee_fin => r1 f.
-  have r0 : 0 < r by rewrite (lt_le_trans _ r1).
-  under eq_integral => x _ do rewrite normrMn powRMn// EFinM.
-  rewrite (gt_eqF r0) integralZr//; last first.
-    apply/integrableP; split.
-      apply: measurable_funT_comp => //.
-      apply: (measurable_funT_comp (measurable_powR _)) => //.
-      exact: measurable_funT_comp.
-    under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
-    apply: (@lty_poweRy _ _ (r^-1)); first by rewrite invr_neq0// gt_eqF.
-    have := lfuny f.
-    by rewrite /finite_norm unlock /Lnorm gt_eqF.
-  rewrite poweRM; last 2 first.
-  - by apply: integral_ge0 => x _; rewrite lee_fin powR_ge0.
-  - by rewrite lee_fin powR_ge0.
-  by rewrite poweR_EFin -powRrM divff// ?gt_eqF// powRr1// muleC mule_natl.
-- move=> _ f; case: ifPn => mu0.
-  rewrite (_ : normr \o f \*+ n = (normr \o f) \*+ n); last first.
-    by apply: funext => x/=; rewrite normrMn.
-  exact: ess_supMn.
-- by rewrite mule0n.
-by rewrite leeNy_eq => /eqP.
+move: p1.
+case: p => [r||//].
+- rewrite lee_fin => r1.
+  have r0: r != 0 by rewrite gt_eqF// (lt_le_trans _ r1).
+  rewrite gt_eqF ?(lt_le_trans _ r1)//.
+  under eq_integral => x _ do rewrite /= normr0 powR0//.
+  by rewrite integral0 poweR0r// invr_neq0.
+case: ifPn => //mu0 _.
+rewrite (_ : normr \o _ = 0); last by apply: funext => x/=; rewrite normr0.
+exact: ess_sup0.
 Qed.
 
-Lemma lfunyMn (f : LfunType mu p) n :
-  finite_norm mu p f -> finite_norm mu p (f \*+ n)%E.
+Lemma lfuny0 : finite_norm mu p (cst 0).
+Proof. by rewrite /finite_norm Lnorm0. Qed.
+
+HB.instance Definition _ := @isLfun.Build d T R mu p p1 (cst 0) lfuny0.
+
+Lemma mfunP (f : {mfun T >-> R}) : (f : T -> R) \in mfun.
+Proof. exact: valP. Qed.
+
+Lemma lfunP (f : LfunType mu p1) : (f : T -> R) \in lfun.
+Proof. exact: valP. Qed.
+
+Lemma mfun_scaler_closed : scaler_closed (@mfun _ _ T R).
+Proof. move=> a/= f; rewrite !inE; exact: measurable_funM. Qed.
+
+HB.instance Definition _ := GRing.isScaleClosed.Build _ _ (@mfun _ _ T R)
+  mfun_scaler_closed.
+HB.instance Definition _ := [SubZmodule_isSubLmodule of {mfun T >-> R} by <:].
+
+Lemma LnormZ (f : LfunType mu p1) a : ('N[mu]_p[a \*: f] = `|a|%:E * 'N[mu]_p[f])%E.
+Admitted.
+
+Lemma lfun_submod_closed : submod_closed (lfun).
 Proof.
-by rewrite/finite_norm LnormMn => ff; rewrite -mule_natl; exact: lte_mul_pinfty.
+split.
+  rewrite -[0]/(cst 0). exact: lfunP.
+move=> a/= f g fP gP.
+rewrite -[f]lfun_valP -[g]lfun_valP.
+move: (lfun_Sub _) (lfun_Sub _) => {fP} f {gP} g.
+rewrite !inE rpredD ?rpredZ ?mfunP//=.
+apply: mem_set => /=.
+rewrite /finite_norm.
+apply: (le_lt_trans (minkowskie _ _ _ _)) => //=.
+  suff: a *: (g : T -> R) \in mfun by exact: set_mem.
+  by rewrite rpredZ//; exact: mfunP.
+rewrite lte_add_pinfty//; last exact: lfuny.
+by rewrite LnormZ lte_mul_pinfty//; exact: lfuny.
 Qed.
 
-Lemma LfunyMn_subproof (f : LfunType mu p) (n : nat) : finite_norm mu p (f \*+ n).
-Proof. exact: lfunyMn. Qed.
+HB.instance Definition _ := GRing.isSubmodClosed.Build _ _ lfun
+  lfun_submod_closed.
+HB.instance Definition _ := [SubChoice_isSubLmodule of LfunType mu p1 by <:].
 
-(* HB.instance Definition _ (f : LfunType mu p) n := *)
-(*   @isLfun.Build d T R mu p (f \*+ n) (LfunyMn_subproof _ _). *)
-
-End Lspace_zmodule.
+End lfun.
 
 Section Lspace_norm.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
-Variable (p : R) (p1 : 1 <= p).
+Variable (p : \bar R) (p1 : (1 <= p)%E).
 
 (* 0 - + should come with proofs that they are in LfunType mu p *)
 
-Notation ty := (LType mu (p%:E)).
-Definition nm f := fine ('N[mu]_p%:E[f]).
+Notation ty := (LfunType mu p1).
+Definition nm f := fine ('N[mu]_p[f]).
 
 
 (* HB.instance Definition _ := GRing.Zmodule.on ty. *)
@@ -368,8 +359,8 @@ Definition nm f := fine ('N[mu]_p%:E[f]).
 Lemma ler_Lnorm_add (f g : ty) :
   nm (f + g) <= nm f + nm g.
 Proof.
-rewrite /nm -fineD ?fine_le ?minkowski// fin_numElt (lt_le_trans ltNy0) ?Lnorm_ge0//=.
-- rewrite (le_lt_trans (minkowski _ _ _ _))//.
+rewrite /nm -fineD ?fine_le ?minkowskie// fin_numElt (lt_le_trans ltNy0) ?Lnorm_ge0//=.
+- rewrite (le_lt_trans (minkowskie _ _ _ _))//.
   by rewrite lte_add_pinfty//; exact: lfuny.
 - by rewrite lte_add_pinfty//; exact: lfuny.
 - by rewrite adde_ge0 ?Lnorm_ge0.
@@ -386,44 +377,71 @@ Proof. by rewrite /nm oppr_Lnorm. Qed.
 Lemma enatmul_ninfty (n : nat) : (-oo *+ n.+1 = -oo :> \bar R)%E \/ (-oo *+ n.+1 = +oo :> \bar R)%E.
 Proof. by elim: n => //=[|n []->]; rewrite ?addNye; left. Qed.
 
-Lemma Lnorm0 : ('N[mu]_p%:E[0%R] = 0)%E.
+Lemma Lnorm_natmul (f : ty) k : nm (f *+ k) = nm f *+ k.
 Proof.
-rewrite unlock /Lnorm.
-case: ifPn => _.
-  by rewrite preimage_cst ifF//=; apply/negP; rewrite in_setE/=; case.
-under eq_integral => x _ do rewrite normr0 powR0 ?gt_eqF// ?(lt_le_trans _ p1)//.
-by rewrite integral0 poweR0r// gt_eqF// invr_gt0 (lt_le_trans _ p1).
-Qed.
-
-Lemma Lnorm_natmul (f : ty) k : nm (f \*+ k) = nm f *+ k.
-Proof.
-rewrite /nm LnormMn// -mule_natl -[RHS]mulr_natl fineM// fin_numElt.
-have := lfuny f.
+rewrite /nm.
+rewrite -scaler_nat LnormZ fineM//= ?normr_nat ?mulr_natl// fin_numElt.
+have := lfuny p1 f.
 by rewrite /finite_norm (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)) => ->.
 Qed.
 
-Lemma Lnorm_eq0 (f : ty) : nm f = 0 -> f = 0 %[ae mu].
-Proof.
-rewrite /nm => /eqP.
-rewrite fine_eq0; last by
-  rewrite fin_numElt (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _))//=; exact: lfuny.
-have p0 : 0 < p by exact: lt_le_trans.
-move/eqP/Lnorm_eq0_eq0 => /(_ p0 (measurable_funP _)) eqnorm.
-near=> x => Dx.
-suffices: ((`|f x| `^ p)%:E = cst 0 x)%E.
-  by rewrite (_ : 0 x = 0)//=; case; move/powR_eq0_eq0/normr0_eq0.
-apply: (near eqnorm x) => //.
-Unshelve. all: by end_near.
-Qed.
 
 HB.about Num.Zmodule_isSemiNormed.Build.
 
 (* TODO : fix the definition *)
 HB.instance Definition _ :=
-  @Num.Zmodule_isSemiNormed.Build R (LfunType mu p%:E) ty
-    nm ler_Lnorm_add Lnorm_natmul LnormN.
+  @Num.Zmodule_isSemiNormed.Build R (LfunType mu p1)
+     nm ler_Lnorm_add Lnorm_natmul LnormN.
 
 (* todo: add equivalent of mx_normZ and HB instance *)
+
+(* ess_sup mu (normr \o f) = 0 -> ae_eq mu [set: T] f (cst 0) *)
+
+(* TODO: move to hoelder *)
+Lemma Lnorm_eq0_eq0 (f : {mfun T >-> R}) : (0 < p)%E ->
+  'N[mu]_p[f] = 0 -> ae_eq mu [set: T] f (cst 0).
+Proof.
+rewrite unlock /Lnorm => p0.
+move: p0.
+case: p => [r r0||].
+- case: ifPn => _.
+    rewrite preimage_setI preimage_setT setTI -preimage_setC => /negligibleP.
+    move/(_ (measurableC _)); rewrite -[X in d.-measurable X]setTI.
+    move/(_ (measurable_funP _ measurableT _ (measurable_set1 _))) => /=.
+    by case => A [mA muA0 fA]; exists A; split => // x/= ?; exact: fA.
+  move=> /poweR_eq0_eq0.
+  move=> /(_ (integral_ge0 _ _)) h.
+  have: (\int[mu]_x (`|f x| `^ r)%:E)%E = 0 by apply: h => x _; rewrite lee_fin powR_ge0.
+  under eq_integral => x _ do rewrite -[_%:E]gee0_abs ?lee_fin ?powR_ge0//.
+  have mp: measurable_fun [set: T] (fun x : T => (`|f x| `^ r)%:E).
+    apply: measurableT_comp => //.
+    apply (measurableT_comp (measurable_powR _)) => //.
+    apply: measurableT_comp => //.
+  move/(ae_eq_integral_abs _ measurableT mp).
+  apply: filterS => x/= /[apply].
+  by case=> /powR_eq0_eq0 /eqP; rewrite normr_eq0 => /eqP.
+- case: ifPn => [mu0 _|].
+    admit.
+  rewrite ltNge => /negbNE mu0 _ _.
+  suffices mueq0: mu setT = 0 by exact: ae_eq0.
+  move: mu0 (measure_ge0 mu setT) => mu0 mu1.
+  suffices: (mu setT <= 0 <= mu setT)%E by move/le_anti.
+  by rewrite mu0 mu1.
+by [].
+Admitted.
+
+
+Lemma Lnorm_eq0 (f : ty) : nm f = 0 -> f = 0 %[ae mu].
+Proof.
+have: 'N[mu]_p[f] \is a fin_num by
+  rewrite fin_numElt (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _))//=; exact: lfuny.
+have p0 : (0 < p)%E by exact: lt_le_trans.
+rewrite /nm => h /eqP.
+rewrite fine_eq0//.
+move/eqP.
+exact: Lnorm_eq0_eq0.
+Qed.
+
 
 End Lspace_norm.
 
