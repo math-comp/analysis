@@ -245,36 +245,36 @@ HB.instance Definition _ := [Choice of LfunType mu p1 by <:].
 
 Import numFieldNormedType.Exports.
 
-Lemma ess_sup0_lty : (0 < mu setT)%E -> (ess_sup mu 0%R < +oo)%E.
+Lemma ess_sup_cst_lty r : (0 < mu setT)%E -> (ess_sup mu (cst r) < +oo)%E.
 Proof.
 rewrite /ess_sup => mu0.
 under eq_set do rewrite preimage_cst/=.
 rewrite ereal_inf_EFin ?ltry//.
-- exists 0 => x/=; case: ifPn => [_|].
+- exists r => x/=; case: ifPn => [_|].
     by move: mu0 => /[swap] ->; rewrite ltNge lexx.
   by rewrite set_itvE notin_setE//= ltNge => /negP/negbNE.
-by exists 0 => /=; rewrite ifF//; rewrite set_itvE;
-  rewrite memNset //=; apply/negP; rewrite -real_leNgt.
+by exists r => /=; rewrite ifF//; rewrite set_itvE;
+  rewrite memNset //=; apply/negP; rewrite -real_leNgt ?num_real.
 Qed.
 
-Lemma ess_sup0 : (0 < mu setT)%E -> (ess_sup mu 0%R = 0)%E.
+Lemma ess_sup_cst r : (0 < mu setT)%E -> (ess_sup mu (cst r) = r%:E)%E.
 Proof.
 rewrite /ess_sup => mu0.
 under eq_set do rewrite preimage_cst/=.
 rewrite ereal_inf_EFin.
 - congr (_%:E).
-  rewrite [X in inf X](_ : _ = `[0, +oo[%classic); last first.
+  rewrite [X in inf X](_ : _ = `[r, +oo[%classic); last first.
     apply/seteqP; split => /=x/=.
       case: ifPn => [_|]; first by move: mu0=> /[swap] ->; rewrite ltNge lexx.
       by rewrite set_itvE notin_setE/= ltNge in_itv andbT/= => /negP /negPn.
     rewrite in_itv/= => /andP[x0 _].
     by rewrite ifF// set_itvE; apply/negP; rewrite in_setE/= ltNge => /negP.
   by rewrite inf_itv.
-- exists 0 => x/=; case: ifPn => [_|].
+- exists r => x/=; case: ifPn => [_|].
     by move: mu0 => /[swap] ->; rewrite ltNge lexx.
   by rewrite set_itvE notin_setE//= ltNge => /negP/negbNE.
-by exists 0 => /=; rewrite ifF//; rewrite set_itvE;
-  rewrite memNset //=; apply/negP; rewrite -real_leNgt.
+by exists r => /=; rewrite ifF//; rewrite set_itvE;
+  rewrite memNset //=; apply/negP; rewrite -real_leNgt ?num_real.
 Qed.
 
 Lemma Lnorm0 : 'N[mu]_p[cst 0] = 0.
@@ -289,7 +289,7 @@ case: p => [r||//].
   by rewrite integral0 poweR0r// invr_neq0.
 case: ifPn => //mu0 _.
 rewrite (_ : normr \o _ = 0); last by apply: funext => x/=; rewrite normr0.
-exact: ess_sup0.
+exact: ess_sup_cst.
 Qed.
 
 Lemma lfuny0 : finite_norm mu p (cst 0).
@@ -379,8 +379,7 @@ Proof. by elim: n => //=[|n []->]; rewrite ?addNye; left. Qed.
 
 Lemma Lnorm_natmul (f : ty) k : nm (f *+ k) = nm f *+ k.
 Proof.
-rewrite /nm.
-rewrite -scaler_nat LnormZ fineM//= ?normr_nat ?mulr_natl// fin_numElt.
+rewrite /nm -scaler_nat LnormZ fineM//= ?normr_nat ?mulr_natl// fin_numElt.
 have := lfuny p1 f.
 by rewrite /finite_norm (lt_le_trans ltNy0 (Lnorm_ge0 _ _ _)) => ->.
 Qed.
@@ -395,11 +394,31 @@ HB.instance Definition _ :=
 
 (* todo: add equivalent of mx_normZ and HB instance *)
 
-(* ess_sup mu (normr \o f) = 0 -> ae_eq mu [set: T] f (cst 0) *)
+Lemma ess_sup_ger f (r : R) : (forall x, f x <= r) -> (ess_sup mu f <= r%:E)%E.
+Proof.
+move=> fr.
+rewrite /ess_sup.
+apply: ereal_inf_le.
+apply/exists2P.
+exists r%:E => /=; split => //.
+apply/exists2P.
+exists r; split => //.
+rewrite preimage_itvoy.
+suffices -> : [set x | r < f x] = set0 by [].
+apply/seteqP; split => x //=.
+rewrite lt_neqAle => /andP[rneqfx rlefx].
+move: (fr x) => fxler.
+have: (f x <= r <= f x) by rewrite rlefx fxler.
+by move/le_anti; move: rneqfx => /[swap] -> /eqP.
+Qed.
+
+Lemma ess_sup_eq0 (f : {mfun T >-> R}) : ess_sup mu (normr \o f) = 0 -> f = 0 %[ae mu].
+Admitted.
+
 
 (* TODO: move to hoelder *)
 Lemma Lnorm_eq0_eq0 (f : {mfun T >-> R}) : (0 < p)%E ->
-  'N[mu]_p[f] = 0 -> ae_eq mu [set: T] f (cst 0).
+  'N[mu]_p[f] = 0 -> f = 0 %[ae mu].
 Proof.
 rewrite unlock /Lnorm => p0.
 move: p0.
@@ -421,14 +440,14 @@ case: p => [r r0||].
   apply: filterS => x/= /[apply].
   by case=> /powR_eq0_eq0 /eqP; rewrite normr_eq0 => /eqP.
 - case: ifPn => [mu0 _|].
-    admit.
+    exact: ess_sup_eq0.
   rewrite ltNge => /negbNE mu0 _ _.
   suffices mueq0: mu setT = 0 by exact: ae_eq0.
   move: mu0 (measure_ge0 mu setT) => mu0 mu1.
   suffices: (mu setT <= 0 <= mu setT)%E by move/le_anti.
   by rewrite mu0 mu1.
 by [].
-Admitted.
+Qed.
 
 
 Lemma Lnorm_eq0 (f : ty) : nm f = 0 -> f = 0 %[ae mu].
