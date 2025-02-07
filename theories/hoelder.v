@@ -10,10 +10,10 @@ From mathcomp Require Import numfun exp convex itv.
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
 (*                                                                            *)
-(* This file provides Hoelder's inequality.                                   *)
+(* This file provides Hoelder's inequality and its consequences, most notably *)
+(* Minkowski's inequality and the convexity of the power function.            *)
 (* ```                                                                        *)
-(*           'N[mu]_p[f] := (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1             *)
-(*                          The corresponding definition is Lnorm.            *)
+(*           'N[mu]_p[f] == the p-norm of f with measure mu                   *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -91,6 +91,26 @@ Lemma powR_Lnorm f r : r != 0%R ->
 Proof.
 move=> r0; rewrite unlock (negbTE r0) -poweRrM mulVf// poweRe1//.
 by apply: integral_ge0 => x _; rewrite lee_fin// powR_ge0.
+Qed.
+
+Lemma oppr_Lnorm f p :
+  'N_p[-%R \o f] = 'N_p[f].
+Proof.
+rewrite unlock /Lnorm.
+case: p => /= [r||//].
+  case: eqP => _. congr (mu _).
+    rewrite !preimage_setI.
+    congr (_ `&` _).
+    rewrite -!preimage_setC.
+    congr (~` _).
+    rewrite /preimage.
+    apply: funext => x/=.
+    rewrite -{1}oppr0.
+    apply: propext. split; last by move=> ->.
+    by move/oppr_inj.
+  by under eq_integral => x _ do rewrite normrN.
+rewrite compA (_ : normr \o -%R = normr)//.
+apply: funext => x/=; exact: normrN.
 Qed.
 
 End Lnorm_properties.
@@ -500,6 +520,22 @@ rewrite poweRe1; last by apply: integral_ge0 => x _; rewrite lee_fin powR_ge0.
 congr (_ * _); rewrite poweRN.
 - by rewrite unlock gt_eqF// fine_poweR.
 - by rewrite -powR_Lnorm ?gt_eqF// fin_num_poweR// ge0_fin_numE ?Lnorm_ge0.
+Qed.
+
+Lemma minkowski' f g p :
+  measurable_fun setT f -> measurable_fun setT g -> (1 <= p)%R ->
+  'N_p%:E[f] <= 'N_p%:E[f \+ g] + 'N_p%:E[g].
+Proof.
+move=> mf mg p1.
+rewrite (_ : f = ((f \+ g) \+ (-%R \o g))%R); last first.
+  by apply: funext => x /=; rewrite -addrA subrr addr0.
+rewrite [X in _ <= 'N__[X] + _](_ : ((f \+ g \- g) \+ g)%R = (f \+ g)%R); last first.
+  by apply: funext => x /=; rewrite -addrA [X in _ + _ + X]addrC subrr addr0.
+rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last first.
+  by rewrite oppr_Lnorm.
+apply: minkowski => //.
+  apply: measurable_funD => //.
+apply: measurableT_comp => //.
 Qed.
 
 End minkowski.
