@@ -277,22 +277,17 @@ by exists r => /=; rewrite ifF//; rewrite set_itvE;
   rewrite memNset //=; apply/negP; rewrite -real_leNgt ?num_real.
 Qed.
 
-Lemma Lnorm0 : 'N[mu]_p[cst 0] = 0.
+Lemma Lnorm0 : 'N[mu]_p[0] = 0.
 Proof.
-rewrite unlock /Lnorm.
-move: p1.
-case: p => [r||//].
-- rewrite lee_fin => r1.
-  have r0: r != 0 by rewrite gt_eqF// (lt_le_trans _ r1).
-  rewrite gt_eqF ?(lt_le_trans _ r1)//.
-  under eq_integral => x _ do rewrite /= normr0 powR0//.
-  by rewrite integral0 poweR0r// invr_neq0.
-case: ifPn => //mu0 _.
-rewrite (_ : normr \o _ = 0); last by apply: funext => x/=; rewrite normr0.
-exact: ess_sup_cst.
+rewrite unlock /Lnorm; case: p p1 => [r| |//]; last first.
+  case: ifPn => // *; under [_ \o _]funext do rewrite /= normr0.
+  exact: ess_sup_cst.
+rewrite lee_fin => r1; have r0 : r != 0 by rewrite gt_eqF// (lt_le_trans _ r1).
+rewrite (negPf r0) integral0_eq ?poweR0r ?invr_eq0// => *.
+by rewrite normr0 powR0.
 Qed.
 
-Lemma lfuny0 : finite_norm mu p (cst 0).
+Lemma lfuny0 : finite_norm mu p 0.
 Proof. by rewrite /finite_norm Lnorm0. Qed.
 
 HB.instance Definition _ := @isLfun.Build d T R mu p p1 (cst 0) lfuny0.
