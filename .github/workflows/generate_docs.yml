@@ -15,13 +15,13 @@ jobs:
         run: |
           branch_name=${{ github.ref_name }}
           short_sha=$(git rev-parse --short ${{ github.sha }})
-          echo "destination_dir=sample_"$branch_name_$short_sha >> $GITHUB_ENV
+          echo "destination_dir=mathcomp-analysis_"$branch_name_$short_sha >> $GITHUB_ENV
 
       - name: Set the variables for PR event
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           branch_name=${{ github.head_ref }}
-          echo "destination_dir=sample_$branch_name" >> $GITHUB_ENV
+          echo "destination_dir=mathcomp-analysis_$branch_name" >> $GITHUB_ENV
 
       - name: Clone Coq2html
         uses: actions/checkout@v4
