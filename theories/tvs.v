@@ -528,25 +528,28 @@ Proof.
 by apply: cst_continuous.
 Qed.  
 
+(* Lemma null_fun_is_linear: linear_for s (\0 : E -> F). *)
+(* Proof. *)
+(* by move => r x y /=; rewrite raddf0 addr0.  *)
+(* Qed. *)
+(* (*Where is that defined in ssralg? I have additive and scalable, but not *)
+(* linear *) *)
 
-Lemma null_fun_is_linear: linear_for s (\0 : E -> F).
-Proof.
-by move => r x y /=; rewrite raddf0 addr0. 
-Qed.
-(*Where is that defined in ssralg? I have additive and scalable, but not
-linear *)
+HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
-Fail HB.instance Definition _ := @isLinearContinuous.Build R E F s (\0 : E -> F)
- null_fun_is_linear null_fun_continuous.
+Check (\0 : {linear_continuous E -> F}).
 
-(* Program Definition lcfun_zmodMixin (R : numDomainType) (E F : NbhsLmodule.type R) := *)
-(*   @GRing.isZmodule.Build {linear_continuous E -> F} \0 (fun f x => - f x) (fun f g => f \+ g) *)
-(*      _ _ _ _. *)
-(* Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed. *)
-(* Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed. *)
-(* Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed. *)
-(* Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed. *)
-(* HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M. *)
+(* Fail HB.instance Definition _ := @isLinearContinuous.Build R E F s (\0 : E -> F) *)
+(*  null_fun_is_linear null_fun_continuous. *)
+
+Fail Program Definition lcfun_zmodMixin (R : numDomainType) (E F : tvsType R):=
+  @GRing.isZmodule.Build {linear_continuous E -> F}  (\0 : {linear_continuous E -> F})  (fun f x => - f x) (fun f g => f \+ g)
+     _ _ _ _.
+(*Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
+Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
+HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.*)
 
 (* Program Definition lcfun_lmodMixin := @GRing.Zmodule_isLmodule.Build R {linear_continuous E -> F} *)
 (*   (fun k f => k \*: f) _ _ _ _. *)
@@ -561,7 +564,7 @@ Fail HB.instance Definition _ := @isLinearContinuous.Build R E F s (\0 : E -> F)
 (* HB.instance Definition _ := lcfun_lmodMixin. *)
 (* End fct_lmod. *)
 
-  
+ 
 End lcfun_lmodtype.
 
 (* make use of  {family fam, U -> V}  *)
@@ -597,10 +600,10 @@ Notation "{ 'family_lcfun' fam , U -> V }" :=  (@uniform_lcfun_family _ U V ( *:
 
 
 
-HB.instance Definition _ {R} {U V : tvsType R} (s : GRing.Scale.law R V)
-    (fam : set U -> Prop) :=
-  Uniform.copy {family_lcfun fam, U -> V | s} (sup_topology (fun k : sigT fam =>
-       Uniform.class {uniform` projT1 k -> V})).
+(* HB.instance Definition _ {R} {U V : tvsType R} (s : GRing.Scale.law R V) *)
+(*     (fam : set U -> Prop) := *)
+(*   Uniform.copy {family_lcfun fam, U -> V | s} (sup_topology (fun k : sigT fam => *)
+(*        Uniform.class {uniform` projT1 k -> V})). *)
 
 (* HB.factory Record UniformLinCont_isTvs (R : numDomainType) (E : tvsType R) (F : tvsType R) (B : set_system  E) of Topological {family_lcfun B , E -> F} & GRing.Lmodule {linear_continuous E -> F}  := { *)
 (*   bornoC : forall x : E, exists b : set E,  (B b) /\ (b x) ; *)
