@@ -49,8 +49,6 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build (T * U)%type
 
 End Prod_Topology.
 
-(** Topology on matrices *)
-
 Lemma fst_open {U V : topologicalType} (A : set (U * V)) :
   open A -> open (fst @` A).
 Proof.

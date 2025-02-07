@@ -66,8 +66,7 @@ Variables (m n : nat) (T : uniformType).
 
 Implicit Types A : set ('M[T]_(m, n) * 'M[T]_(m, n)).
 
-Definition mx_ent :=
-  filter_from
+Definition mx_ent := filter_from
   [set P : 'I_m -> 'I_n -> set (T * T) | forall i j, entourage (P i j)]
   (fun P => [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
     forall i j, P i j (MN.1 i j, MN.2 i j)]).
