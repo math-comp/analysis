@@ -371,7 +371,8 @@ Section Lspace_inclusion.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
 
-Lemma foo (x y : \bar R) : (x \is a fin_num -> 0 < x -> x * y < +oo -> y < +oo)%E.
+(* the following lemma is not needed, but looks useful, should we include it anyways? *)
+Lemma mul_lte_pinfty (x y : \bar R) : (x \is a fin_num -> 0 < x -> x * y < +oo -> y < +oo)%E.
 Proof. rewrite fin_numE => /andP[/eqP xNoo /eqP xoo].
 move: x xNoo xoo.
 case => // r _ _ rgt0.
@@ -382,50 +383,54 @@ case: ifP => //. by move: rgt0 => /[swap] /eqP -> /eqP; rewrite ltxx.
 case: ifP => //. by rewrite rgt0.
 Qed.
 
-Lemma Lspace_inclusion (p q : \bar R) (p1 : (1 <= p)%E) (q1 : (1 <= q)%E) :
-  (0 < mu [set: T] < +oo)%E -> (p < q) %E-> forall (f : LfunType mu q1), finite_norm mu p f.
+Local Open Scope ereal_scope.
+
+Lemma Lspace_inclusion (p q : \bar R) :
+  forall (p1 : 1 <= p) (q1 : 1 <= q),
+    0 < mu [set: T] < +oo -> p < q -> forall (f : LfunType mu q1), finite_norm mu p f.
 Proof.
-move: p q p1 q1.
+move: p q.
 case=> //[p|]; case=> //[q|] p1 q1; last first.
   move=> /andP[mu0 muoo] _ f.
-  have p0 : 0 < p by rewrite ?(lt_le_trans ltr01).
-  rewrite /finite_norm unlock /Lnorm gt_eqF//.
-  rewrite poweR_lty//.
-  apply: integral_fune_lt_pinfty => //.
+  have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
+  have := lfuny _ f.
+  rewrite /finite_norm unlock /Lnorm mu0 gt_eqF// => supf_lty.
+  rewrite poweR_lty// integral_fune_lt_pinfty => //.
   apply: measurable_bounded_integrable => //.
-    rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)//.
+    rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)%R//.
     apply: measurableT_comp => //=.
     exact: measurableT_comp.
   rewrite boundedE.
-  near=> A.
+  near=> A=> x/= _.
+  rewrite norm_powR// normr_id normr1 mulr1.
   admit.
 move=> /andP[mu_pos mu_fin] pleq f.
 have := lfuny q1 f.
 rewrite /finite_norm.
-have p0 : 0 < p by rewrite ?(lt_le_trans ltr01).
-have q0 : 0 < q by rewrite ?(lt_le_trans ltr01).
-have qinv0 : q^-1 != 0 by rewrite invr_neq0// gt_eqF.
+have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
+have q0 : (0 < q)%R by rewrite ?(lt_le_trans ltr01).
+have qinv0 : q^-1 != 0%R by rewrite invr_neq0// gt_eqF.
 pose r := q/p.
 pose r' := (1 - r^-1)^-1.
-have := (@hoelder _ _ _ mu (fun x => `|f x| `^ p) (cst 1)%R r r').
-rewrite (_ : (_ \* cst 1)%R = (fun x : T => `|f x| `^ p)) -?fctM ?mulr1//.
+have := (@hoelder _ _ _ mu (fun x => `|f x| `^ p) (cst 1)%R r r')%R.
+rewrite (_ : (_ \* cst 1)%R = (fun x : T => `|f x| `^ p))%R -?fctM ?mulr1//.
 rewrite Lnorm_cst1 unlock /Lnorm invr1.
 rewrite !ifF; last 4 first.
 - by apply/eqP => p0'; rewrite p0' ltxx in p0.
 - by apply/eqP => q0'; rewrite q0' ltxx in q0.
 - by rewrite /r gt_eqF// divr_gt0// (lt_le_trans ltr01).
 - exact/negP/negP.
-under [X in (X `^ 1 <= _)%E] eq_integral => x _ do
+under [X in X `^ 1 <= _] eq_integral => x _ do
   rewrite powRr1// norm_powR// normrE.
-under [X in (X`^ r^-1 * mu _ `^_)%E]eq_integral => x _ do
+under [X in X`^ r^-1 * mu _ `^_]eq_integral => x _ do
   rewrite /r norm_powR normrE ?powR_ge0// -powRrM mulrCA mulfV ?mulr1// ?gt_eqF//.
-rewrite [X in (X <= _)%E]poweRe1; last
+rewrite [X in X <= _]poweRe1; last
   by apply: integral_ge0 => x _; rewrite lee_fin powR_ge0.
 move=> h1 /lty_poweRy h2.
 apply: poweR_lty.
 apply: le_lt_trans.
   apply: h1.
-  - rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)//.
+  - rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)%R//.
     apply: measurableT_comp => //=.
     exact: measurableT_comp => //=.
   - exact: measurable_cst.
