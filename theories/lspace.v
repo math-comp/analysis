@@ -382,9 +382,23 @@ case: ifP => //. by move: rgt0 => /[swap] /eqP -> /eqP; rewrite ltxx.
 case: ifP => //. by rewrite rgt0.
 Qed.
 
-Lemma Lspace_inclusion (p q : R) (p1 : 1 <= p) (q1 : (1 <= q%:E)%E) :
-  (0 < mu [set: T] < +oo)%E -> (p < q) -> forall (f : LfunType mu q1), finite_norm mu (p%:E) f.
+Lemma Lspace_inclusion (p q : \bar R) (p1 : (1 <= p)%E) (q1 : (1 <= q)%E) :
+  (0 < mu [set: T] < +oo)%E -> (p < q) %E-> forall (f : LfunType mu q1), finite_norm mu p f.
 Proof.
+move: p q p1 q1.
+case=> //[p|]; case=> //[q|] p1 q1; last first.
+  move=> /andP[mu0 muoo] _ f.
+  have p0 : 0 < p by rewrite ?(lt_le_trans ltr01).
+  rewrite /finite_norm unlock /Lnorm gt_eqF//.
+  rewrite poweR_lty//.
+  apply: integral_fune_lt_pinfty => //.
+  apply: measurable_bounded_integrable => //.
+    rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)//.
+    apply: measurableT_comp => //=.
+    exact: measurableT_comp.
+  rewrite boundedE.
+  near=> A.
+  admit.
 move=> /andP[mu_pos mu_fin] pleq f.
 have := lfuny q1 f.
 rewrite /finite_norm.
@@ -425,6 +439,6 @@ rewrite poweR_lty// (lty_poweRy qinv0)//.
 have := lfuny q1 f.
 rewrite /finite_norm unlock/Lnorm ifF//.
 by apply/eqP => q0'; rewrite q0' ltxx in q0.
-Qed.
+Admitted.
 
 End Lspace_inclusion.
