@@ -5404,7 +5404,11 @@ have: (f x <= r <= f x)%R by rewrite rlefx fxler.
 by move/le_anti; move: rneqfx => /[swap] -> /eqP.
 Qed.
 
-Lemma ess_sup_eq0 (f : T -> R) : ess_sup (normr \o f) = 0 -> f = 0%R %[ae mu].
+Lemma ess_sup_eq0 f : ess_sup (normr \o f) = 0 -> f = 0%R %[ae mu].
+Admitted.
+
+Lemma ess_supM (f : T -> R) (a : R) : (0 <= a)%R -> (\forall x \ae mu, 0 <= f x)%R ->
+  (ess_sup (cst a \* f)%R = a%:E * ess_sup f)%E.
 Admitted.
 
 End essential_supremum.

@@ -285,9 +285,14 @@ case=> //[r r1 f|].
   rewrite poweRM ?integral_ge0=> //[||x _]; rewrite ?lee_fin ?powR_ge0//.
   by rewrite poweR_EFin -powRrM mulfV ?gt_eqF ?(lt_le_trans ltr01)// powRr1.
 move=> p0 f.
-case: ifP => mu0. admit.
+case: ifP => mu0.
+  rewrite (_ : normr \o a \*: f = (`|a|) \*: (normr \o f)); last first.
+    by apply: funext => x/=; rewrite normrZ.
+  rewrite ess_supM//.
+  by near=> x=> /=.
 by rewrite mule0.
-Admitted.
+Unshelve. end_near.
+Qed.
 
 Lemma lfun_submod_closed : submod_closed (lfun).
 Proof.
