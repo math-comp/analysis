@@ -390,16 +390,24 @@ Qed.
 
 Local Open Scope ereal_scope.
 
+Lemma measure_is_zero : mu [set: T] = 0%E -> mu = mzero.
+Admitted.
+
 Lemma Lspace_inclusion (p q : \bar R) :
   forall (p1 : 1 <= p) (q1 : 1 <= q),
-    0 < mu [set: T] < +oo -> p < q -> forall (f : LfunType mu q1), finite_norm mu p f.
+    mu [set: T] < +oo -> p < q -> forall (f : {mfun T >-> R}), finite_norm mu q f -> finite_norm mu p f.
 Proof.
+have := measure_ge0 mu [set: T]; rewrite le_eqVlt => /orP[/eqP mu0 p1 q1 _ _ f _|mu_pos].
+  rewrite /finite_norm unlock /Lnorm.
+  move: p p1; case=> //; last by rewrite -mu0 ltxx.
+  move=> r r1; rewrite gt_eqF ?(lt_le_trans ltr01)//.
+  rewrite measure_is_zero// integral_measure_zero.
+  by rewrite poweR0r// gt_eqF// invr_gt0 (lt_le_trans ltr01).
 move: p q.
 case=> //[p|]; case=> //[q|] p1 q1; last first.
-  move=> /andP[mu0 muoo] _ f.
   have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
-  have := lfuny _ f.
-  rewrite /finite_norm unlock /Lnorm mu0 gt_eqF// => supf_lty.
+  move=> muoo _ f.
+  rewrite /finite_norm unlock /Lnorm mu_pos gt_eqF// => supf_lty.
   rewrite poweR_lty// integral_fune_lt_pinfty => //.
   apply: measurable_bounded_integrable => //.
     rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)%R//.
@@ -409,9 +417,8 @@ case=> //[p|]; case=> //[q|] p1 q1; last first.
   near=> A=> x/= _.
   rewrite norm_powR// normr_id normr1 mulr1.
   admit.
-move=> /andP[mu_pos mu_fin] pleq f.
-have := lfuny q1 f.
-rewrite /finite_norm.
+move=> mu_fin pleq f ffin.
+have:= ffin; rewrite /finite_norm.
 have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
 have q0 : (0 < q)%R by rewrite ?(lt_le_trans ltr01).
 have qinv0 : q^-1 != 0%R by rewrite invr_neq0// gt_eqF.
@@ -446,8 +453,7 @@ apply: le_lt_trans.
 rewrite muleC lte_mul_pinfty ?fin_numElt?poweR_ge0//.
   by rewrite (lt_le_trans _ (poweR_ge0 _ _)) ?poweR_lty.
 rewrite poweR_lty// (lty_poweRy qinv0)//.
-have := lfuny q1 f.
-rewrite /finite_norm unlock/Lnorm ifF//.
+have:= ffin; rewrite /finite_norm unlock/Lnorm ifF//.
 by apply/eqP => q0'; rewrite q0' ltxx in q0.
 Admitted.
 
