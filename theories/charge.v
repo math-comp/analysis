@@ -50,7 +50,6 @@ From mathcomp Require Import lebesgue_integral.
 (*                                                                            *)
 (* ## Theory                                                                  *)
 (* ```                                                                        *)
-
 (*         nu.-positive_set P == P is a positive set with nu a charge         *)
 (*         nu.-negative_set N == N is a negative set with nu a charge         *)
 (* hahn_decomposition nu P N == the full set can be decomposed in P and N,    *)
