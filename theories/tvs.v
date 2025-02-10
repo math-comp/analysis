@@ -528,23 +528,18 @@ Proof.
 by apply: cst_continuous.
 Qed.  
 
-(* Lemma null_fun_is_linear: linear_for s (\0 : E -> F). *)
-(* Proof. *)
-(* by move => r x y /=; rewrite raddf0 addr0.  *)
-(* Qed. *)
-(* (*Where is that defined in ssralg? I have additive and scalable, but not *)
-(* linear *) *)
-
 HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
 Check (\0 : {linear_continuous E -> F}).
+
+Lemma lcfun0 : (\0 : {linear_continuous E -> F}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
+
 
 (* Fail HB.instance Definition _ := @isLinearContinuous.Build R E F s (\0 : E -> F) *)
 (*  null_fun_is_linear null_fun_continuous. *)
 
 Fail Program Definition lcfun_zmodMixin (R : numDomainType) (E F : tvsType R):=
-  @GRing.isZmodule.Build {linear_continuous E -> F}  (\0 : {linear_continuous E -> F})  (fun f x => - f x) (fun f g => f \+ g)
-     _ _ _ _.
+  @GRing.isZmodule.Build {linear_continuous E -> F}   (\0 : {linear_continuous E -> F})  (fun f x => - f x) (fun f g => f \+ g)    _ _ _ _.
 (*Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
 Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
