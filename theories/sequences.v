@@ -837,7 +837,7 @@ suff abel : forall n,
     rewrite -(add0r l).
     rewrite (_ : u_ = u_ - arithmetic_mean u_ + arithmetic_mean u_); last first.
       by rewrite funeqE => n; rewrite subrK.
-    exact: cvgD.
+    exact: pseudometric_normed_Zmodule.cvgD.
   rewrite (_ : _ - arithmetic_mean u_ =
       (fun n => \sum_(1 <= k < n.+1) k%:R / n.+1%:R * a_ k.-1)); last first.
     by rewrite funeqE.

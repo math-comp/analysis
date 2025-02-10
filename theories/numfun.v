@@ -1095,10 +1095,10 @@ move=> cA cB A0 xy; move/normal_separatorP : normalX => urysohn_ext.
 have /(@uniform_separatorP _ R)[f [cf f01 f0 f1]] := urysohn_ext R _ _ cA cB A0.
 pose g : X -> R := line_path x y \o f; exists g; split; rewrite /g /=.
   move=> t; apply: continuous_comp; first exact: cf.
-  apply: (@continuousD R R^o).
-    apply: continuousM; last exact: cvg_cst.
-    by apply: (@continuousB R R^o) => //; exact: cvg_cst.
-  by apply: continuousM; [exact: cvg_id|exact: cvg_cst].
+  apply: (@normed_module.continuousD R R^o).
+    apply: normed_module.continuousM; last exact: cvg_cst.
+    by apply: (@normed_module.continuousB R R^o) => //; exact: cvg_cst.
+  by apply: normed_module.continuousM; [exact: cvg_id|exact: cvg_cst].
 - by rewrite -image_comp => z /= [? /f0 -> <-]; rewrite line_path0.
 - by rewrite -image_comp => z /= [? /f1 -> <-]; rewrite line_path1.
 - rewrite -image_comp; apply: (subset_trans (image_subset _ f01)).
@@ -1224,7 +1224,7 @@ exists (lim (h_ @ \oo)); split.
   near_simpl; apply: nearW; elim.
     by rewrite /h_ /series /= big_geq// => ?; exact: cvg_cst.
   move=> n; rewrite /h_ /series /= big_nat_recr /= // => IH t.
-  by apply: continuousD; [exact: IH|exact: g_cts].
+  by apply: normed_module.continuousD; [exact: IH|exact: g_cts].
 - move=> t.
   have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
     [elaborate pointwise_uniform_cvg _ cvgh].
