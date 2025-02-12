@@ -4206,7 +4206,7 @@ Lemma le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B}.
 Proof.
 move=> A B AB; pose B_ k := if k is 0%N then B else set0.
 have -> : mu B = \sum_(n <oo) mu (B_ n).
-  rewrite nneseries_recl; last by move=> ?; rewrite outer_measure_ge0.
+  rewrite nneseries_recl//; last by move=> ? ?; rewrite outer_measure_ge0.
   rewrite eseries_cond/= eseries0 ?adde0// => -[|]//= k _ _.
   by rewrite outer_measure0.
 apply: subset_outer_measure_sigma_subadditive => //.
@@ -5253,8 +5253,10 @@ End partial_measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ (pair^~ _)) =>
   solve [apply: measurable_pair2] : core.
 
+(* [Lemma 14.13, Klenke 2014] *)
 Section measurable_section.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
+Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
+  (T3 : measurableType d3).
 
 Lemma measurable_xsection (A : set (T1 * T2)) (x : T1) :
   measurable A -> measurable (xsection A x).
@@ -5271,6 +5273,14 @@ move=> mA; pose i (x : T1) := (x, y).
 have mi : measurable_fun setT i by exact: measurable_pair2.
 by rewrite ysectionE -[X in measurable X]setTI; exact: mi.
 Qed.
+
+Lemma measurable_prod1 (f : T1 * T2 -> T3) (y : T2) :
+  measurable_fun setT f -> measurable_fun setT (fun x => f (x, y)).
+Proof. by move=> mf; exact: measurableT_comp. Qed.
+
+Lemma measurable_prod2 (f : T1 * T2 -> T3) (x : T1) :
+  measurable_fun setT f -> measurable_fun setT (fun y => f (x, y)).
+Proof. by move=> mf; exact: measurableT_comp. Qed.
 
 End measurable_section.
 
