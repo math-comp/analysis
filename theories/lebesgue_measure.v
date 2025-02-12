@@ -320,27 +320,6 @@ case: x => [r| |].
 Qed.
 #[local] Hint Resolve emeasurable_set1 : core.
 
-Lemma __deprecated__itv_cpinfty_pinfty : `[+oo%E, +oo[%classic = [set +oo%E] :> set (\bar R).
-Proof. by rewrite itv_cyy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_cyy`")]
-Notation itv_cpinfty_pinfty := __deprecated__itv_cpinfty_pinfty (only parsing).
-
-Lemma __deprecated__itv_opinfty_pinfty : `]+oo%E, +oo[%classic = set0 :> set (\bar R).
-Proof. by rewrite itv_oyy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_oyy`")]
-Notation itv_opinfty_pinfty := __deprecated__itv_opinfty_pinfty (only parsing).
-
-Lemma __deprecated__itv_cninfty_pinfty : `[-oo%E, +oo[%classic = setT :> set (\bar R).
-Proof. by rewrite itv_cNyy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_cNyy`")]
-Notation itv_cninfty_pinfty := __deprecated__itv_cninfty_pinfty (only parsing).
-
-Lemma __deprecated__itv_oninfty_pinfty :
-  `]-oo%E, +oo[%classic = ~` [set -oo]%E :> set (\bar R).
-Proof. by rewrite itv_oNyy. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `itv_oNyy`")]
-Notation itv_oninfty_pinfty := __deprecated__itv_oninfty_pinfty (only parsing).
-
 Let emeasurable_itv_bndy b (y : \bar R) :
   measurable [set` Interval (BSide b y) +oo%O].
 Proof.

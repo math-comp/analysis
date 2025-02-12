@@ -185,7 +185,7 @@ From HB Require Import structures.
 (*      setC_closed G == the set of sets G is closed under complement         *)
 (*     setSD_closed G == the set of sets G is closed under proper             *)
 (*                       difference                                           *)
-(*     setDI_closed G == the set of sets G is closed under difference         *)
+(*      setD_closed G == the set of sets G is closed under difference         *)
 (*      setY_closed G == the set of sets G is closed under symmetric          *)
 (*                       difference                                           *)
 (*     ndseq_closed G == the set of sets G is closed under non-decreasing     *)
@@ -354,7 +354,7 @@ Definition setC_closed := forall A, G A -> G (~` A).
 Definition setI_closed := forall A B, G A -> G B -> G (A `&` B).
 Definition setU_closed := forall A B, G A -> G B -> G (A `|` B).
 Definition setSD_closed := forall A B, B `<=` A -> G A -> G B -> G (A `\` B).
-Definition setDI_closed := forall A B, G A -> G B -> G (A `\` B).
+Definition setD_closed := forall A B, G A -> G B -> G (A `\` B).
 Definition setY_closed := forall A B, G A -> G B -> G (A `+` B).
 
 Definition fin_bigcap_closed :=
@@ -373,7 +373,7 @@ Definition fin_bigcup_closed :=
 Definition semi_setD_closed := forall A B, G A -> G B -> exists D,
   [/\ finite_set D, D `<=` G, A `\` B = \bigcup_(X in D) X & trivIset D id].
 
-Lemma setDI_semi_setD_closed : setDI_closed -> semi_setD_closed.
+Lemma setD_semi_setD_closed : setD_closed -> semi_setD_closed.
 Proof.
 move=> mD A B Am Bm; exists [set A `\` B]; split; rewrite ?bigcup_set1//.
   by move=> X ->; apply: mD.
@@ -394,9 +394,9 @@ Definition fin_trivIset_closed :=
   forall I (D : set I) (F : I -> set T), finite_set D -> trivIset D F ->
    (forall i, D i -> G (F i)) -> G (\bigcup_(k in D) F k).
 
-Definition setring := [/\ G set0, setU_closed & setDI_closed].
+Definition setring := [/\ G set0, setU_closed & setD_closed].
 
-Definition sigma_ring := [/\ G set0, setDI_closed &
+Definition sigma_ring := [/\ G set0, setD_closed &
    (forall A : (set T)^nat, (forall n, G (A n)) -> G (\bigcup_k A k))].
 
 Definition sigma_algebra :=
@@ -416,8 +416,12 @@ Definition monotone := ndseq_closed /\ niseq_closed.
 End set_systems.
 #[deprecated(since="mathcomp-analysis 1.2.0", note="renamed `lambda_system`")]
 Notation monotone_class := lambda_system (only parsing).
-#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `setSD_closed`")]
-Notation setD_closed := setSD_closed (only parsing).
+(*#[deprecated(since="mathcomp-analysis 1.3.0", note="renamed `setSD_closed`")]
+Notation setD_closed := setSD_closed (only parsing).*)
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_closed`")]
+Notation setDI_closed := setD_closed (only parsing).
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_semi_setD_closed`")]
+Notation setDI_semi_setD_closed := setD_semi_setD_closed (only parsing).
 
 Lemma powerset_sigma_ring (T : Type) (D : set T) :
   sigma_ring [set X | X `<=` D].
@@ -485,8 +489,8 @@ rewrite in_fset_set// inE => -[Dj /eqP nij] GAB.
 by rewrite setICA; apply: GI => //; apply: GA.
 Qed.
 
-Lemma sedDI_closedP T (G : set (set T)) :
-  setDI_closed G <-> (setI_closed G /\ setSD_closed G).
+Lemma setD_closedP T (G : set (set T)) :
+  setD_closed G <-> (setI_closed G /\ setSD_closed G).
 Proof.
 split=> [GDI|[GI GD]].
   by split=> A B => [|AB] => GA GB; rewrite -?setDD//; do ?apply: (GDI).
@@ -494,6 +498,8 @@ move=> A B GA GB; suff <- : A `\` (A `&` B) = A `\` B.
   by apply: GD => //; apply: GI.
 by rewrite setDE setCI setIUr -setDE setDv set0U.
 Qed.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setD_closed`")]
+Notation sedDI_closedP := setD_closed (only parsing).
 
 Lemma sigma_algebra_bigcap T (I : choiceType) (D : set T)
     (F : I -> set (set T)) (J : set I) :
@@ -594,7 +600,7 @@ Lemma sub_setring : G `<=` <<r G >>. Proof. exact: sub_smallest. Qed.
 Lemma setring0 : <<r G >> set0.
 Proof. by case: smallest_setring. Qed.
 
-Lemma setringDI : setDI_closed <<r G>>.
+Lemma setringD : setD_closed <<r G>>.
 Proof. by case: smallest_setring. Qed.
 
 Lemma setringU : setU_closed <<r G>>.
@@ -607,6 +613,8 @@ Qed.
 
 End generated_setring.
 #[global] Hint Resolve smallest_setring setring0 : core.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed `setringD`")]
+Notation setringDI := setringD (only parsing).
 
 Lemma g_sigma_algebra_lambda_system T (G : set (set T)) (D : set T) :
   (forall X, <<s D, G >> X -> X `<=` D) ->
@@ -1112,7 +1120,7 @@ HB.structure Definition SigmaRing d :=
 HB.factory Record isSigmaRing (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
-  measurableD : setDI_closed measurable ;
+  measurableD : setD_closed measurable ;
   bigcupT_measurable : forall F : (set T)^nat, (forall i, measurable (F i)) ->
     measurable (\bigcup_i (F i))
 }.
@@ -1122,10 +1130,10 @@ HB.builders Context d T of isSigmaRing d T.
 Let m0 : measurable set0. Proof. exact: measurable0. Qed.
 
 Let mI : setI_closed measurable.
-Proof. by have [] := (sedDI_closedP measurable).1 measurableD. Qed.
+Proof. by have [] := (setD_closedP measurable).1 measurableD. Qed.
 
 Let mD : semi_setD_closed measurable.
-Proof. by apply: setDI_semi_setD_closed; exact: measurableD. Qed.
+Proof. by apply: setD_semi_setD_closed; exact: measurableD. Qed.
 
 HB.instance Definition _ := isSemiRingOfSets.Build d T m0 mI mD.
 
@@ -1141,17 +1149,17 @@ HB.factory Record isRingOfSets (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
   measurable0 : measurable set0 ;
   measurableU : setU_closed measurable;
-  measurableD : setDI_closed measurable;
+  measurableD : setD_closed measurable;
 }.
 
 HB.builders Context d T of isRingOfSets d T.
 Implicit Types (A B C D : set T).
 
 Lemma mI : setI_closed measurable.
-Proof. by have [] := (sedDI_closedP measurable).1 measurableD. Qed.
+Proof. by have [] := (setD_closedP measurable).1 measurableD. Qed.
 
 Lemma mD : semi_setD_closed measurable.
-Proof. by apply: setDI_semi_setD_closed; exact: measurableD. Qed.
+Proof. by apply: setD_semi_setD_closed; exact: measurableD. Qed.
 
 HB.instance Definition _ :=
   @isSemiRingOfSets.Build d T measurable measurable0 mI mD.
@@ -1182,7 +1190,7 @@ move=> A B mA mB; rewrite -setYU.
 by apply: measurable_setY; [exact: measurable_setY|exact: measurable_setI].
 Qed.
 
-Let mD : setDI_closed measurable.
+Let mD : setD_closed measurable.
 Proof.
 move=> A B mA mB; rewrite -setYD.
 by apply: measurable_setY => //; exact: measurable_setI.
@@ -1201,7 +1209,7 @@ HB.factory Record isAlgebraOfSets (d : measure_display) T of Pointed T := {
 
 HB.builders Context d T of isAlgebraOfSets d T.
 
-Lemma mD : setDI_closed measurable.
+Lemma mD : setD_closed measurable.
 Proof.
 move=> A B mA mB; rewrite setDE -[A]setCK -setCU.
 by do ?[apply: measurableU | apply: measurableC].
@@ -1220,7 +1228,7 @@ HB.end.
 HB.factory Record isAlgebraOfSets_setD (d : measure_display) T of Pointed T := {
   measurable : set (set T) ;
   measurableT : measurable [set: T] ;
-  measurableD : setDI_closed measurable
+  measurableD : setD_closed measurable
 }.
 
 HB.builders Context d T of isAlgebraOfSets_setD d T.
@@ -1291,7 +1299,7 @@ rewrite -bigsetU_fset_set// big_seq; apply: bigsetU_measurable => i.
 by rewrite in_fset_set ?inE// => *; apply: Fm.
 Qed.
 
-Lemma measurableD : setDI_closed (@measurable d T).
+Lemma measurableD : setD_closed (@measurable d T).
 Proof.
 move=> A B mA mB; case: (semi_measurableD A B) => // [D [Dfin Dl -> _]].
 by apply: fin_bigcup_measurable.
@@ -2632,7 +2640,7 @@ Notation rT := (type T).
 HB.instance Definition _ := Pointed.on rT.
 #[export]
 HB.instance Definition _ := isRingOfSets.Build (display d) rT
-  (@setring0 T measurable) (@setringU T measurable) (@setringDI T measurable).
+  (@setring0 T measurable) (@setringU T measurable) (@setringD T measurable).
 
 Local Notation "d .-ring" := (display d) (at level 1, format "d .-ring").
 Local Notation "d .-ring.-measurable" :=
@@ -2681,7 +2689,7 @@ have mdU : fin_trivIset_closed measurable_fin_trivIset.
     by rewrite {i}eqij in Di Gi *; have [_ _ _ /(_ _ _ _ _ XYN0)->] := GP j Dj.
   apply: Ftriv => //; have [-> _ _ _] := GP j Dj; have [-> _ _ _] := GP i Di.
   by case: XYN0 => [x [Xx Yx]]; exists x; split; [exists X|exists Y].
-have mdDI : setDI_closed measurable_fin_trivIset.
+have mdDI : setD_closed measurable_fin_trivIset.
   move=> A B mA mB; have [F [-> Fm Ffin Ftriv]] := mA.
   have [F' [-> F'm F'fin F'triv]] := mB.
   have [->|/set0P F'N0] := eqVneq F' set0.
@@ -4444,9 +4452,6 @@ apply: (@le_trans _ _ (\sum_(k < n) mu (X `&` A k) + mu (X `&` ~` B n))).
 rewrite [in leRHS](caratheodory_measurable_bigsetU MA n) leeD2r//.
 by rewrite caratheodory_additive.
 Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-      note="renamed `caratheodory_lime_le`")]
-Notation caratheodory_lim_lee := caratheodory_lime_le (only parsing).
 
 Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) :
   (forall n, M (A n)) -> trivIset setT A -> M (\bigcup_k (A k)).

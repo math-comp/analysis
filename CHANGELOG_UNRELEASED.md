@@ -140,6 +140,12 @@
 - in `normedtype.v`:
   + `cvge_sub0` -> `sube_cvg0`
 
+- in `measure.v`:
+  + `setDI_closed` -> `setD_closed`
+  + `setDI_semi_setD_closed` -> `setD_semi_setD_closed`
+  + `sedDI_closedP` -> `setD_closedP`
+  + `setringDI` -> `setringD`
+
 ### Generalized
 
 - in `sequences.v`,
@@ -183,6 +189,45 @@
 - in file `nat_topology.v`, removed `discrete_nat`.
 - in file `pseudometric_structure.v`, removed `discrete_ball_center`, `discrete_topology_type`, and 
     `discrete_space_discrete`.
+
+- in `measure.v`:
+  + notation `caratheodory_lim_lee` (was deprecated since 0.6.0)
+
+- in `lebesgue_measure.v`:
+  + notations `itv_cpinfty_pinfty`, `itv_opinfty_pinfty`, `itv_cninfty_pinfty`,
+    `itv_oninfty_pinfty` (were deprecated since 0.6.0)
+  + lemmas `__deprecated__itv_cpinfty_pinfty`, `__deprecated__itv_opinfty_pinfty`,
+    `__deprecated__itv_cninfty_pinfty`, `__deprecated__itv_oninfty_pinfty`
+    (were deprecated since 0.6.0)
+
+- in `sequences.v`:
+  + notations `cvgPpinfty_lt`, `cvgPninfty_lt`, `cvgPpinfty_near`,
+    `cvgPninfty_near`, `cvgPpinfty_lt_near`, `cvgPninfty_lt_near`,
+    `ereal_cvgD_ninfty_ninfty`, `invr_cvg0`, `invr_cvg_pinfty`,
+    `nat_dvg_real`, `nat_cvgPpinfty`, `ereal_squeeze`, `ereal_cvgD_pinfty_fin`,
+    `ereal_cvgD_ninfty_fin`, `ereal_cvgD_pinfty_pinfty`, `ereal_cvgD`,
+    `ereal_cvgB`, `ereal_is_cvgD`, `ereal_cvg_sub0`, `ereal_limD`,
+    `ereal_cvgM_gt0_pinfty`, `ereal_cvgM_lt0_pinfty`, `ereal_cvgM_gt0_ninfty`,
+    `ereal_cvgM_lt0_ninfty`, `ereal_cvgM`, `ereal_lim_sum`, `ereal_cvg_abs0`,
+    `ereal_cvg_ge0`, `ereal_lim_ge`, `ereal_lim_le`, `dvg_ereal_cvg`,
+    `ereal_cvg_real`
+    (were deprecated since 0.6.0)
+  + lemmas `__deprecated__cvgPpinfty_lt`, `__deprecated__cvgPninfty_lt`,
+    `__deprecated__cvgPpinfty_near`, `__deprecated__cvgPninfty_near`,
+    `__deprecated__cvgPpinfty_lt_near`, `__deprecated__cvgPninfty_lt_near`,
+    `__deprecated__invr_cvg0`, `__deprecated__invr_cvg_pinfty`,
+    `__deprecated__nat_dvg_real`, `__deprecated__nat_cvgPpinfty`,
+    `__deprecated__ereal_squeeze`, `__deprecated__ereal_cvgD_pinfty_fin`,
+    `__deprecated__ereal_cvgD_ninfty_fin`, `__deprecated__ereal_cvgD_pinfty_pinfty`,
+    `__deprecated__ereal_cvgD`, `__deprecated__ereal_cvgB`, `__deprecated__ereal_is_cvgD`,
+    `__deprecated__ereal_cvg_sub0`, `__deprecated__ereal_limD`,
+    `__deprecated__ereal_cvgM_gt0_pinfty`, `__deprecated__ereal_cvgM_lt0_pinfty`,
+    `__deprecated__ereal_cvgM_gt0_ninfty`, `__deprecated__ereal_cvgM_lt0_ninfty`,
+    `__deprecated__ereal_cvgM`, `__deprecated__ereal_lim_sum`,
+    `__deprecated__ereal_cvg_abs0`, `__deprecated__ereal_cvg_ge0`,
+    `__deprecated__ereal_lim_ge`, `__deprecated__ereal_lim_le`,
+    `__deprecated__dvg_ereal_cvg`, `__deprecated__ereal_cvg_real`
+    (were deprecated since 0.6.0)
 
 ### Infrastructure
 
