@@ -155,6 +155,15 @@
 
 - in `normedtype.v`:
   + `cvg_at_right_filter`, `cvg_at_left_filter`
+- in `normedtype.v`
+  + lemma `open_subball`
+  + lemma `interval_unbounded_setT`
+
+- in `derive.v`:
+  + lemmas `decr_derive1_le0`, `incr_derive1_ge0`
+
+- in `lebesgue_measure.v`:
+  + definition `vitali_cover`, lemma `vitali_coverS`
 
 ### Deprecated
 
