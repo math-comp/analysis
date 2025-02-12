@@ -387,6 +387,14 @@ apply/seteqP; split => [A [M [Mreal MA]]|A [M [Mreal MA]]].
 by exists (- M); rewrite ?realN; split=> // x; rewrite ltrNr => /MA.
 Qed.
 
+Lemma ninfty {R : numFieldType} : (- x : R)%R @[x --> +oo] = -oo.
+Proof.
+apply/seteqP; split => [A [M [Mreal MA]]|A [M [Mreal MA]]].
+  exists (- M); rewrite realN; split => // x.
+  by rewrite -ltrNr => /MA/=; rewrite opprK.
+by exists (- M); rewrite ?realN; split=> // x; rewrite ltrNl => /MA.
+Qed.
+
 Section infty_nbhs_instances.
 Context {R : numFieldType}.
 Implicit Types r : R.
@@ -1476,12 +1484,22 @@ Proof.
 by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
 Qed.
 
-Lemma cvgyNP {T : topologicalType} {R : numFieldType}
-    (f : R -> T) (l : T) :
+Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
+    (l : set_system T) :
   f x @[x --> -oo] --> l <-> (f \o -%R) x @[x --> +oo] --> l.
 Proof.
 have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
 by rewrite (eq_cvg -oo _ f_opp) fmap_comp ninftyN.
+Qed.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `cvgNy_compNP`")]
+Notation cvgyNP := cvgNy_compNP (only parsing).
+
+Lemma cvgy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
+    (l : set_system T) :
+  f x @[x --> +oo] --> l <-> (f \o -%R) x @[x --> -oo] --> l.
+Proof.
+have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
+by rewrite (eq_cvg +oo _ f_opp) fmap_comp ninfty.
 Qed.
 
 Section open_itv_subset.

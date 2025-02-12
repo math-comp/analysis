@@ -97,6 +97,9 @@
   + module `gauss_integral_proof`
   + lemma `integral0y_gauss`
 
+- in `normedtype.v`:
+  + lemmas `ninfty`, `cvgy_compNP`
+
 ### Changed
 
 - in `lebesgue_integral.v`
@@ -119,6 +122,9 @@
 - in file `cantor.v`, `cantor_space` now defined in terms of `bool`.
 - in file `separation_axioms.v`, updated `discrete_hausdorff`, and
     `discrete_zero_dimension` to take a `discreteTopologicalType`.
+
+- in `normedtype.v`:
+  + lemma `cvgyNP` renamed to `cvgNy_compN` and generalized
 
 ### Renamed
 
