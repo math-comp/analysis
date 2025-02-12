@@ -919,7 +919,6 @@ Proof. by rewrite -interiorC interiorEbigcup. Qed.
 #[deprecated(since="mathcomp-analysis 1.7.0", note="use `interiorC` and `interiorEbigcup` instead")]
 Notation closureC := closureC_deprecated (only parsing).
 
-
 Definition dense (T : topologicalType) (S : set T) :=
   forall (O : set T), O !=set0 -> open O -> O `&` S !=set0.
 

@@ -1514,10 +1514,12 @@ End open_itv_subset.
 Section at_left_right_topologicalType.
 Variables (R : numFieldType) (V : topologicalType) (f : R -> V) (x : R).
 
-Lemma cvg_at_right_filter : f z @[z --> x] --> f x -> f z @[z --> x^'+] --> f x.
+Lemma cvg_at_right_filter (l : V) :
+  f z @[z --> x] --> l -> f z @[z --> x^'+] --> l.
 Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
 
-Lemma cvg_at_left_filter : f z @[z --> x] --> f x -> f z @[z --> x^'-] --> f x.
+Lemma cvg_at_left_filter (l : V) :
+  f z @[z --> x] --> l -> f z @[z --> x^'-] --> l.
 Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
 
 Lemma cvg_at_right_within : f x @[x --> x^'+] --> f x ->
@@ -2494,7 +2496,7 @@ End prod_NormedModule.
 Section example_of_sharing.
 Variables (K : numDomainType).
 
-Example matrix_triangke m n (M N : 'M[K]_(m.+1, n.+1)) :
+Example matrix_triangle m n (M N : 'M[K]_(m.+1, n.+1)) :
   `|M + N| <= `|M| + `|N|.
 Proof. exact: ler_normD. Qed.
 

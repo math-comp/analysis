@@ -153,6 +153,9 @@
 - in `Rstruct.v`:
   + lemma `RsqrtE`
 
+- in `normedtype.v`:
+  + `cvg_at_right_filter`, `cvg_at_left_filter`
+
 ### Deprecated
 
 ### Removed
