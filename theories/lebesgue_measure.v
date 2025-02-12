@@ -2751,7 +2751,7 @@ Qed.
 
 End lebesgue_regularity.
 
-Definition vitali_cover {R : realType} (E : set R) I
+Definition vitali_cover {R : numFieldType} (E : set R) I
     (B : I -> set R) (D : set I) :=
   (forall i, is_ball (B i)) /\
   forall x, E x -> forall e : R, 0 < e -> exists i,
@@ -3020,10 +3020,8 @@ Qed.
 
 End vitali_theorem.
 
-Section vitali_theorem_corollary.
-Context {R : realType} (A : set R) (B : nat -> set R).
-
-Lemma vitali_coverS (F : set nat) (O : set R) : open O -> A `<=` O ->
+Lemma vitali_coverS {R : realFieldType} (A : set R) (B : nat -> set R)
+    (F : set nat) (O : set R) : open O -> A `<=` O ->
   vitali_cover A B F -> vitali_cover A B (F `&` [set k | B k `<=` O]).
 Proof.
 move=> oO AO [Bball ABF]; split => // x Ax r r0.
@@ -3047,6 +3045,9 @@ rewrite (splitr d%:num) ltrD//.
 rewrite distrC (lt_le_trans (is_ballP _ _))//.
 by rewrite (le_trans (ltW Bkd))// ge_min lexx orbT.
 Qed.
+
+Section vitali_theorem_corollary.
+Context {R : realType} (A : set R) (B : nat -> set R).
 
 Let vitali_cover_mclosure (F : set nat) k :
   vitali_cover A B F -> (R.-ocitv.-measurable).-sigma.-measurable (closure (B k)).

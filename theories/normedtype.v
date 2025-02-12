@@ -4756,10 +4756,7 @@ have : inf X <= inf X - f%:num by exact: inf_lbound.
 by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
 Qed.
 
-Section interval_realType.
-Variable R : realType.
-
-Lemma interval_unbounded_setT (X : set R) : is_interval X ->
+Lemma interval_unbounded_setT {R : realFieldType} (X : set R) : is_interval X ->
   ~ has_lbound X -> ~ has_ubound X -> X = setT.
 Proof.
 move=> iX lX uX; rewrite predeqE => x; split => // _.
@@ -4767,6 +4764,9 @@ move/has_lbPn : lX => /(_ x) [y Xy xy].
 move/has_ubPn : uX => /(_ x) [z Xz xz].
 by apply: (iX y z); rewrite ?ltW.
 Qed.
+
+Section interval_realType.
+Variable R : realType.
 
 Lemma interval_left_unbounded_interior (X : set R) : is_interval X ->
   ~ has_lbound X -> has_ubound X -> X^° = [set r | r < sup X].
@@ -5503,15 +5503,13 @@ Lemma subset_closed_ball (R : realFieldType) (V : pseudoMetricType R) (x : V)
   (r : R) : ball x r `<=` closed_ball x r.
 Proof. exact: subset_closure. Qed.
 
-Lemma open_subball {R : realFieldType} {M : normedModType R} (A : set M)
+Lemma open_subball {R : numFieldType} {M : normedModType R} (A : set M)
   (x : M) : open A -> A x -> \forall e \near 0^'+, ball x e `<=` A.
 Proof.
-move=> aA Ax.
-have /(@nbhs_closedballP R M _ x)[r xrA]: nbhs x A by rewrite nbhsE/=; exists A.
-near=> e.
-apply/(subset_trans _ xrA)/(subset_trans _ (@subset_closed_ball _ _ _ _)) => //.
-by apply: le_ball; near: e; apply: nbhs_right_le.
-Unshelve. all: by end_near. Qed.
+move=> oA Ax; have /nbhsr0P/= : nbhs x A by exact/open_nbhs_nbhs.
+apply: filterS => e xeA y exy; apply: xeA.
+by rewrite -ball_normE/= in exy; exact: ltW.
+Qed.
 
 Lemma closed_disjoint_closed_ball {R : realFieldType} {M : normedModType R}
     (K : set M) z : closed K -> ~ K z ->

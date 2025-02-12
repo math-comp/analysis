@@ -1755,7 +1755,7 @@ apply: (@ler0_derive1_nincrNy _ (- f)) => //.
   exact: subset_itvl.
 Qed.
 
-Lemma decr_derive1_le0 {R : realType} (f : R -> R) (D : set R) (x : R) :
+Lemma decr_derive1_le0 {R : realFieldType} (f : R -> R) (D : set R) (x : R) :
   {in D^° : set R, forall x, derivable f x 1%R} ->
   {in D &, {homo f : x y /~ x < y}} ->
   D^° x -> f^`() x <= 0.
@@ -1821,7 +1821,7 @@ apply: decr_derive1_le0 zNyb; first by rewrite interior_itv.
 by move=> x y /[!inE]/=; apply/decrf.
 Qed.
 
-Lemma incr_derive1_ge0 {R : realType} (f : R -> R)
+Lemma incr_derive1_ge0 {R : realFieldType} (f : R -> R)
    (D : set R) (x : R):
   {in D^° : set R, forall x : R, derivable f x 1%R} ->
   {in D &, {homo f : x y / (x < y)%R}} ->
@@ -1851,7 +1851,7 @@ Qed.
 Lemma incr_derive1_ge0_itvy {R : realType} (f : R -> R)
     (b0 : bool) (a : R) (z : R) :
   {in `]a, +oo[, forall x : R, derivable f x 1%R} ->
-  {in Interval (BSide b0 a) (BInfty _ false) &, {homo f : x y / (x < y)%R}} ->
+  {in Interval (BSide b0 a) +oo%O &, {homo f : x y / (x < y)%R}} ->
   z \in `]a, +oo[%R -> 0 <= f^`() z.
 Proof.
 move=> df incrf zay; rewrite -[leRHS]opprK oppr_ge0.
