@@ -681,10 +681,11 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
     exists `|ceil (z - a)|%N.
     rewrite zFan// -ltrBlDl (le_lt_trans (le_ceil _))//.
-    by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
+    apply: (le_lt_trans (ler_norm _)).
+    by rewrite -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
-  exists `| ceil (F (a + n.+1%:R) - F a)%R |.+1 => //=.
+  exists `|ceil (F (a + n.+1%:R) - F a)%R|.+1 => //=.
   rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
   by rewrite ler_normr orbC opprB lerB// ltW.
 Qed.
@@ -713,7 +714,8 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
     exists `|ceil (a - z)|%N.
     rewrite zFan// ltrBlDr -ltrBlDl (le_lt_trans (le_ceil _))//.
-    by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
+    apply: (le_lt_trans (ler_norm _)).
+    by rewrite -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
   exists `| ceil (F (a - n.+1%:R) - F a)%R |.+1 => //=.
