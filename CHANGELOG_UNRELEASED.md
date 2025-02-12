@@ -229,6 +229,15 @@
 - in file `pseudometric_structure.v`, removed `discrete_ball_center`, `discrete_topology_type`, and 
     `discrete_space_discrete`.
 
+- in `normedtype.v`:
+  + notations `cvg_distP`, `cvg_distW`, `continuous_cvg_dist`, `cvg_dist2P`,
+    `cvg_gt_ge`, `cvg_lt_le_`, `linear_bounded0`
+    (were deprecated since 0.6.0)
+  + lemmas `__deprecated__cvg_distW`, `__deprecated__continuous_cvg_dist`,
+    `__deprecated__cvg_gt_ge`, `__deprecated__cvg_lt_le`,
+    `__deprecated__linear_bounded0`
+    (were deprecated since 0.6.0)
+
 ### Infrastructure
 
 ### Misc
