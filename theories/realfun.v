@@ -333,7 +333,7 @@ Lemma cvg_ninftyP (f : R -> R) (l : R) :
   f x @[x --> -oo] --> l <->
     forall u : R^nat, (u n @[n --> \oo] --> -oo) -> f (u n) @[n --> \oo] --> l.
 Proof.
-rewrite cvgyNP cvg_pinftyP/= (@bij_forall R^nat _ -%R)//.
+rewrite cvgNy_compNP cvg_pinftyP/= (@bij_forall R^nat _ -%R)//.
 have u_opp (u : R^nat) :
     ((- u) n @[n --> \oo] --> +oo) = (u n @[n --> \oo] --> -oo).
   by rewrite propeqE cvgNry.
