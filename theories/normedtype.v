@@ -680,7 +680,8 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     move/cvgrNy_lt : nyF.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
     exists `|ceil (z - a)|%N.
-    rewrite zFan// -ltrBlDl (le_lt_trans (le_ceil _))//.
+    rewrite zFan// -ltrBlDl.
+    apply: (le_lt_trans (le_ceil _)).
     apply: (le_lt_trans (ler_norm _)).
     by rewrite -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
@@ -713,7 +714,8 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     move/cvgrNy_lt : nyF.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
     exists `|ceil (a - z)|%N.
-    rewrite zFan// ltrBlDr -ltrBlDl (le_lt_trans (le_ceil _))//.
+    rewrite zFan// ltrBlDr -ltrBlDl.
+    apply: (le_lt_trans (le_ceil _)).
     apply: (le_lt_trans (ler_norm _)).
     by rewrite -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
