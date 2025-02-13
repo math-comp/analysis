@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import BinPos.
+From Coq Require Import BinPos Pnat.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
