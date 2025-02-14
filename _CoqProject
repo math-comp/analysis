@@ -77,6 +77,7 @@ theories/sequences.v
 theories/exp.v
 theories/trigo.v
 theories/esum.v
+theories/measurable_realfun.v
 theories/lebesgue_measure.v
 theories/lebesgue_stieltjes_measure.v
 theories/forms.v

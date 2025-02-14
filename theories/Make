@@ -44,6 +44,7 @@ sequences.v
 exp.v
 trigo.v
 esum.v
+measurable_realfun.v
 lebesgue_measure.v
 forms.v
 derive.v
