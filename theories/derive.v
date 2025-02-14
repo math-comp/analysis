@@ -1861,6 +1861,53 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
+Lemma near_derive (R : numFieldType) (V W : normedModType R)
+    (f g : V -> W) (a v : V) : v != 0 -> {near a, f =1 g} ->
+  {near 0^', (fun h => h^-1 *: (f (h *: v + a) - f a)) =1
+             (fun h => h^-1 *: (g (h *: v + a) - g a))}.
+Proof.
+move=> v0 nfg; near=> t; congr (_ *: _).
+near: t.
+move: nfg; rewrite {1}/prop_near1/= nbhsE/= => -[B [oB Ba] /[dup] Bfg Bfg'].
+have [e /= e0 eB] := open_subball oB Ba.
+have vv0 : 0 < `|2 *: v| by rewrite normrZ mulr_gt0 ?normr_gt0.
+near=> x.
+have x0 : 0 < `|x| by rewrite normr_gt0//; near: x; exact: nbhs_dnbhs_neq.
+congr (_ - _); last exact: Bfg'.
+apply: Bfg; apply: (eB (`|x| * `|2 *: v|)).
+- rewrite /ball_/= sub0r normrN normrM !normr_id -ltr_pdivlMr//.
+  by near: x; apply: dnbhs0_lt; rewrite divr_gt0.
+- by rewrite mulr_gt0.
+- rewrite -ball_normE/= opprD addrCA subrr addr0 normrN normrZ ltr_pM2l//.
+  by rewrite normrZ ltr_pMl ?normr_gt0// gtr0_norm ?ltr1n.
+Unshelve. all: by end_near. Qed.
+
+Lemma near_eq_derivable (R : numFieldType) (V W : normedModType R)
+    (f g : V -> W) (a v : V) : v != 0 ->
+  {near a, f =1 g} -> derivable f a v -> derivable g a v.
+Proof.
+move=> vn0 nfg /cvg_ex[/= l fl]; apply/cvg_ex; exists l => /=.
+by apply: cvg_trans fl; apply: near_eq_cvg; exact: near_derive.
+Qed.
+
+Lemma near_eq_derive (R : numFieldType) (V W : normedModType R)
+  (f g : V -> W) (a v : V) :
+  v != 0 -> (\near a, f a = g a) -> 'D_v f a = 'D_v g a.
+Proof.
+move=> v0 fg; rewrite /derive; congr (lim _).
+have {}fg := near_derive v0 fg.
+rewrite eqEsubset; split; apply: near_eq_cvg=> //.
+by move/filterS : fg; apply => ? /esym.
+Qed.
+
+Lemma near_eq_is_derive (R : numFieldType) (V W : normedModType R)
+    (f g : V -> W) (a v : V) (df : W) : v != 0 ->
+  (\near a, f a = g a) -> is_derive a v f df -> is_derive a v g df.
+Proof.
+move=> v0 fg [fav <-]; rewrite (near_eq_derive v0 fg).
+by apply: DeriveDef => //; exact: near_eq_derivable fav.
+Qed.
+
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
   is_derive x (1 : R) f x1 -> x1 = y1 -> is_derive x 1 f y1.
