@@ -9,7 +9,7 @@ From mathcomp Require Import pseudometric_structure order_topology.
 (* # Topological notions for numerical types                                  *)
 (*                                                                            *)
 (* We endow `numFieldType` with the types of topological notions (accessible  *)
-(* with `Import numFieldTopology.Exports.                                     *)
+(* with `Import numFieldTopology.Exports).                                    *)
 (*                                                                            *)
 (******************************************************************************)
 
