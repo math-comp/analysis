@@ -1231,3 +1231,21 @@ by rewrite ltrNl oppr0 divr_gt0// pi_gt0.
 Qed.
 
 End Atan.
+
+Section lhopital_examples.
+Variable R : realType.
+
+Example cvg_mulsinV0 : sin x / x @[x --> 0^'] --> (1:R).
+Proof.
+apply: (@lhopital _ sin cos id 1 (-1) 1 0 1).
+- by rewrite in_itv/= ltrN10 ltr01.
+- rewrite -[X in _ --> X]sin0.
+  exact: continuous_sin.
+- exact: cvg_id.
+- by move=> ? _; exact: oner_neq0.
+- rewrite -[X in _ --> X]cos0.
+  under eq_fun do rewrite invr1 mulr1.
+  exact: continuous_cos.
+Qed.
+
+End lhopital_examples.
