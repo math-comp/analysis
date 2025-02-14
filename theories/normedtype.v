@@ -1192,10 +1192,6 @@ Arguments cvgr0_norm_le {_ _ _ F FF}.
 #[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_le end : core.
 
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgrPdist_lt` or a variation instead")]
-Notation cvg_distP := fcvgrPdist_lt (only parsing).
-
 Section nbhs_lt_le.
 Context {R : realType}.
 Implicit Types x z : R.
@@ -2131,15 +2127,7 @@ Proof.
 by move=> xlt ylt; rewrite -[y]opprK (@distm_lt_split 0) ?subr0 ?opprK ?add0r.
 Qed.
 
-Lemma __deprecated__cvg_distW {F : set_system V} {FF : Filter F} (y : V) :
-  (forall eps, 0 < eps -> \forall y' \near F, `|y - y'| <= eps) ->
-  F --> y.
-Proof. by move=> /cvgrPdist_le. Qed.
-
 End PseudoNormedZMod_numFieldType.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use `cvgrPdist_le` or a variation instead")]
-Notation cvg_distW := __deprecated__cvg_distW (only parsing).
 
 Section NormedModule_numFieldType.
 Variables (R : numFieldType) (V : normedModType R).
@@ -2357,14 +2345,6 @@ Definition near_simpl := (@near_simpl, @nbhs_normE, @filter_from_normE,
 Ltac near_simpl := rewrite ?near_simpl.
 End NearNorm.
 
-Lemma __deprecated__continuous_cvg_dist {R : numFieldType}
-  (V W : pseudoMetricNormedZmodType R) (f : V -> W) x l :
-  continuous f -> x --> l -> forall e : {posnum R}, `|f l - f x| < e%:num.
-Proof. by move=> cf /cvg_eq->// e; rewrite subrr normr0. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="simply use the fact that `(x --> l) -> (x = l)`")]
-Notation continuous_cvg_dist := __deprecated__continuous_cvg_dist (only parsing).
-
 (** Matrices *)
 Section mx_norm.
 Variables (K : numDomainType) (m n : nat).
@@ -2554,10 +2534,6 @@ Proof. by rewrite cvgr2dist_ltP. Qed.
 End prod_NormedModule_lemmas.
 Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
 Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
-
-#[deprecated(since="mathcomp-analysis 0.6.0",
-note="use `fcvgr2dist_ltP` or a variant instead")]
-Notation cvg_dist2P := fcvgr2dist_ltP (only parsing).
 
 (** Normed vector spaces have some continuous functions that are in fact
 continuous on pseudoMetricNormedZmodType *)
@@ -2907,21 +2883,7 @@ Proof. exact: cvgr_to_ge. Qed.
 Lemma limr_le x f : cvg (f @ F) -> (\near F, x >= f F) -> x >= lim (f @ F).
 Proof. exact: cvgr_to_le. Qed.
 
-Lemma __deprecated__cvg_gt_ge (u : T -> R) a b :
-  u @ F --> b -> a < b -> \forall n \near F, a <= u n.
-Proof. by move=> ?; apply: cvgr_ge. Qed.
-
-Lemma __deprecated__cvg_lt_le (u : T -> R) c b :
-  u @ F --> b -> b < c -> \forall n \near F, u n <= c.
-Proof. by move=> ?; apply: cvgr_le. Qed.
-
 End ProperFilterRealType.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgr_ge` and generalized to a `Filter`")]
-Notation cvg_gt_ge := __deprecated__cvg_gt_ge (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="renamed to `cvgr_le` and generalized to a `Filter`")]
-Notation cvg_lt_le_:= __deprecated__cvg_lt_le (only parsing).
 
 Section local_continuity.
 
@@ -5772,10 +5734,6 @@ rewrite (le_lt_trans (fr r _ _))// -?ltr_pdivlMl//.
 by near: z; apply: cvgr_dist_lt => //; rewrite mulrC divr_gt0.
 Unshelve. all: by end_near. Qed.
 
-Lemma __deprecated__linear_bounded0 (f : {linear V -> W}) :
-  bounded_near f (nbhs (0 : V)) -> {for 0, continuous f}.
-Proof. by move=> ? ?; exact: bounded_linear_continuous. Qed.
-
 Lemma continuousfor0_continuous (f : {linear V -> W}) :
   {for 0, continuous f} -> continuous f.
 Proof. by move=> /continuous_linear_bounded/bounded_linear_continuous. Qed.
@@ -5800,9 +5758,6 @@ by rewrite ler_pM.
 Unshelve. all: by end_near. Qed.
 
 End LinearContinuousBounded.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="generalized to `bounded_linear_continuous`")]
-Notation linear_bounded0 := __deprecated__linear_bounded0 (only parsing).
 
 Section center_radius.
 Context {R : numDomainType} {M : pseudoPMetricType R}.
