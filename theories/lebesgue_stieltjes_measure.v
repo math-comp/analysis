@@ -4,7 +4,7 @@ From mathcomp Require Import finmap fingroup perm rat archimedean.
 From HB Require Import structures.
 From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
 From mathcomp.classical Require Import functions fsbigop cardinality.
-From mathcomp Require Import reals ereal signed topology numfun normedtype.
+From mathcomp Require Import reals ereal itv topology numfun normedtype.
 From mathcomp Require Import sequences esum real_interval measure realfun.
 
 (**md**************************************************************************)

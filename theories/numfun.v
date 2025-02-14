@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets fsbigop.
-From mathcomp Require Import functions cardinality set_interval signed reals.
+From mathcomp Require Import functions cardinality set_interval itv reals.
 From mathcomp Require Import ereal topology normedtype sequences.
 From mathcomp Require Import function_spaces.
 
@@ -612,7 +612,7 @@ have cvgh : {uniform, h_ @ \oo --> lim (h_ @ \oo)}.
   by move=> ?; rewrite /= uniform_nbhsT; exact: cvgh'.
 exists (lim (h_ @ \oo)); split.
 - move=> t /set_mem At; have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
-    !! pointwise_uniform_cvg _ cvgh.
+    [elaborate pointwise_uniform_cvg _ cvgh].
   rewrite -fmap_comp /comp /h_ => <-; apply/esym/(@cvg_lim _ (@Rhausdorff R)).
   apply: (@cvg_zero R R^o); apply: norm_cvg0; under eq_fun => n.
     rewrite distrC /series /cst /= -mulN1r fct_sumE mulr_sumr.
@@ -631,7 +631,7 @@ exists (lim (h_ @ \oo)); split.
   by apply: continuousD; [exact: IH|exact: g_cts].
 - move=> t.
   have /pointwise_cvgP/(_ t)/(cvg_lim (@Rhausdorff _)) :=
-    !! pointwise_uniform_cvg _ cvgh.
+    [elaborate pointwise_uniform_cvg _ cvgh].
   rewrite -fmap_comp /comp /h_ => <-.
   under [fun _ : nat => _]eq_fun => ? do rewrite /series /= fct_sumE.
   have cvg_gt : cvgn [normed series (g_^~ t)].

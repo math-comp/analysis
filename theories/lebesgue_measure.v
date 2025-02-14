@@ -2,7 +2,7 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat archimedean.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal signed.
+From mathcomp Require Import cardinality fsbigop reals itv ereal.
 From mathcomp Require Import topology numfun tvs normedtype function_spaces.
 From HB Require Import structures.
 From mathcomp Require Import sequences esum measure real_interval realfun exp.
@@ -1688,7 +1688,8 @@ apply/uniform_restrict_cvg => /= U /=; rewrite !uniform_nbhsT.
 case/nbhs_ex => del /= ballU; apply: filterS; first by move=> ?; exact: ballU.
 have [N _ /(_ N)/(_ (leqnn _)) Ndel] := near_infty_natSinv_lt del.
 exists (badn N) => // r badNr x.
-rewrite /patch; case: ifPn => // /set_mem xAB; apply: (lt_trans _ Ndel).
+rewrite /patch; case: ifPn; last by move=> ?; apply: ballxx.
+move=> /[!inE] xAB; apply: (lt_trans _ Ndel).
 move: xAB; rewrite setDE => -[Ax]; rewrite setC_bigcup => /(_ N I).
 rewrite /E setC_bigcup => /(_ r) /=; rewrite /h => /(_ badNr) /not_andP[]//.
 by move/negP; rewrite ltNge // distrC.
@@ -2481,7 +2482,7 @@ have [|Aoo e0] := leP +oo (l^* A)%mu.
   by exists [set: R]; split => //; [exact: openT|rewrite Aoo leey].
 have [F AF Fe] : exists2 I_, open_itv_cover A I_ &
     \sum_(0 <= k <oo) l (I_ k) <= (l^* A)%mu + e%:E.
-  have : (l^* A)%mu\is a fin_num by rewrite ge0_fin_numE// outer_measure_ge0.
+  have : (l^* A)%mu\is a fin_num by rewrite ge0_fin_numE ?outer_measure_ge0.
   rewrite outer_measure_open_itv_cover.
   move=> /lb_ereal_inf_adherent-/(_ _ e0)[_/= [F]] AF <- Fe.
   by exists F => //; exact/ltW.
@@ -2843,7 +2844,7 @@ have finite_set_F i : finite_set (F i).
   have {CFi Fir2} := le_trans MC (le_trans CFi Fir2).
   apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
   rewrite -[M%:R]natr1 natr_absz ger0_norm; last first.
-    by rewrite -(ceil0 R) ceil_le.
+    by rewrite -[leLHS](ceil0 R) ceil_le.
   by rewrite -ltr_pdivrMr// intrD1 floor_lt_int ltzD1 ceil_floor// lerDl.
 have mur2_fin_num_ : mu (ball (0:R) (r%:num + 2))%R < +oo.
   by rewrite lebesgue_measure_ball// ltry.

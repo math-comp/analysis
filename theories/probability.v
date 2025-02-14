@@ -5,7 +5,7 @@ From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
 From mathcomp Require Import cardinality fsbigop.
 From HB Require Import structures.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
-From mathcomp Require Import reals ereal signed topology normedtype sequences.
+From mathcomp Require Import reals itv ereal topology normedtype sequences.
 From mathcomp Require Import esum measure exp numfun lebesgue_measure.
 From mathcomp Require Import lebesgue_integral kernel.
 
@@ -944,7 +944,7 @@ Context {R : realType}.
 Variables (p : R) (p0 : (0 <= p)%R) (p1 : ((NngNum p0)%:num <= 1)%R).
 
 Lemma bernoulli_dirac : bernoulli p = measure_add
-  (mscale (NngNum p0) \d_true) (mscale (onem_nonneg p1) \d_false).
+  (mscale (NngNum p0) \d_true) (mscale (1 - (Itv01 p0 p1)%:num)%:nng \d_false).
 Proof.
 apply/funext => U; rewrite /bernoulli; case: ifPn => [p01|]; last first.
   by rewrite p0/= p1.

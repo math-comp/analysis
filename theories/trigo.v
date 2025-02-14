@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals ereal nsatz_realtype signed topology.
+From mathcomp Require Import reals ereal nsatz_realtype itv topology.
 From mathcomp Require Import normedtype landau sequences derive realfun exp.
 
 (**md**************************************************************************)
@@ -48,7 +48,7 @@ Lemma cvg_series_cvg_series_group (R : realFieldType) (f : R ^nat) k :
   [series \sum_(n * k <= i < n.+1 * k) f i]_n @ \oo --> lim (series f @ \oo).
 Proof.
 move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
-have := !! cf _ (gt0 e) => -[n _ nl]; near=> m.
+have := [elaborate cf _ (gt0 e)] => -[n _ nl]; near=> m.
 rewrite /ball /= [in X in `|_ - X|]/series [in X in `|_ - X|]/= -big_nat_mul.
 have /nl : (n <= m * k)%N.
   by near: m; exists n.+1 => //= p /ltnW /leq_trans /(_ (leq_pmulr _ k0)).

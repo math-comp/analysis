@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import ereal reals signed topology normedtype.
+From mathcomp Require Import ereal reals itv topology normedtype.
 From mathcomp Require Import prodnormedzmodule.
 
 (**md**************************************************************************)
@@ -480,7 +480,7 @@ Proof.
 split=> [[k k0 fOg] | [k [kreal fOg]]].
   exists k; rewrite realE (ltW k0) /=; split=> // l ltkl; move: fOg.
   by apply: filter_app; near=> x => /le_trans; apply; rewrite ler_wpM2r // ltW.
-exists (Num.max 1 `|k + 1|) => //.
+exists (Num.max 1 `|k + 1|); first exact/gt0/K.
 apply: fOg; rewrite (@lt_le_trans _ _ `|k + 1|) //.
   by rewrite (@lt_le_trans _ _ (k + 1)) ?ltrDl // real_ler_norm ?realD.
 by rewrite comparable_le_max ?real_comparable// lexx orbT.

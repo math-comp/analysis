@@ -8,7 +8,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import fsbigop cardinality set_interval.
-From mathcomp Require Import reals signed topology.
+From mathcomp Require Import reals itv topology.
 From mathcomp Require Export constructive_ereal.
 
 (**md**************************************************************************)
@@ -610,47 +610,54 @@ Proof. by apply/funext => x; rewrite /= !patchE; case: ifPn. Qed.
 Section SignedRealFieldStability.
 Context {R : realFieldType}.
 
-Definition ereal_sup_reality_subdef (xnz : KnownSign.nullity)
-    (xr : KnownSign.reality) :=
-  (if KnownSign.wider_reality <=0 xr then KnownSign.Real <=0
-   else >=<0)%snum_sign.
-Arguments ereal_sup_reality_subdef /.
+Definition ereal_sup_itv_subdef (i : interval int) : interval int :=
+  let 'Interval l u := i in
+  Interval -oo%O (keep_nonpos_itv_bound_subdef u).
+Arguments ereal_sup_itv_subdef /.
 
-Lemma ereal_sup_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (S : {compare (0 : \bar R) & xnz & xr} -> Prop)
-    (r := ereal_sup_reality_subdef xnz xr) :
-  Signed.spec 0 ?=0 r (ereal_sup [set x%:num | x in S]%classic).
+Lemma ereal_sup_inum_subproof i
+    (S : Itv.def (@ext_num_sem R) i -> Prop)
+    (r := itv_real1_subdef ereal_sup_itv_subdef i) :
+  Itv.spec (@ext_num_sem R) r (ereal_sup [set x%:num | x in S]%classic).
 Proof.
-rewrite {}/r; move: xr S => [[[]|]|] S /=;
-  do ?[by apply: ub_ereal_sup => _ [? _ <-]
-      |by case: ereal_sup => [s||];
-          rewrite ?leey ?leNye// !lee_fin -realE num_real].
+rewrite {}/r; case: i S => [//| [l u]] S /=.
+apply/and3P; split.
+- rewrite real_fine -real_leey.
+  by rewrite ub_ereal_sup// => _ [[[x||] /=/and3P[? ? ?]] _ <-].
+- by case: ereal_sup.
+- case: u S => [[] [[| u] | u] S |//]; rewrite /= bnd_simp//;
+     apply: ub_ereal_sup => _ [[x /=/and3P[_ _ /= +]] _ <-]; rewrite bnd_simp//.
+  + by move/ltW.
+  + by move=> /ltW xu; apply: le_trans xu _; rewrite lee_fin lerz0.
+  + by move=> xu; apply: le_trans xu _; rewrite lee_fin lerz0.
 Qed.
 
-Canonical ereal_sup_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (S : {compare (0 : \bar R) & xnz & xr} -> Prop) :=
-  Signed.mk (ereal_sup_snum_subproof S).
+Canonical ereal_sup_inum i (S : Itv.def (@ext_num_sem R) i -> Prop) :=
+  Itv.mk (ereal_sup_inum_subproof S).
 
-Definition ereal_inf_reality_subdef (xnz : KnownSign.nullity)
-    (xr : KnownSign.reality) :=
-  (if KnownSign.wider_reality >=0 xr then KnownSign.Real >=0
-   else >=<0)%snum_sign.
-Arguments ereal_inf_reality_subdef /.
+Definition ereal_inf_itv_subdef (i : interval int) : interval int :=
+  let 'Interval l u := i in
+  Interval (keep_nonneg_itv_bound_subdef l) +oo%O.
+Arguments ereal_inf_itv_subdef /.
 
-Lemma ereal_inf_snum_subproof (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (S : {compare (0 : \bar R) & xnz & xr} -> Prop)
-    (r := ereal_inf_reality_subdef xnz xr) :
-  Signed.spec 0 ?=0 r (ereal_inf [set x%:num | x in S]%classic).
+Lemma ereal_inf_inum_subproof i
+    (S : Itv.def (@ext_num_sem R) i -> Prop)
+    (r := itv_real1_subdef ereal_inf_itv_subdef i) :
+  Itv.spec (@ext_num_sem R) r (ereal_inf [set x%:num | x in S]%classic).
 Proof.
-rewrite {}/r; move: xr S => [[[]|]|] S /=;
-  do ?[by apply: lb_ereal_inf => _ [? _ <-]
-      |by case: ereal_inf => [s||];
-          rewrite ?leey ?leNye// !lee_fin -realE num_real].
+rewrite {}/r; case: i S => [//| [l u]] S /=.
+apply/and3P; split.
+- rewrite real_fine -real_leNye.
+  by rewrite lb_ereal_inf// => _ [[[x||] /=/and3P[? ? ?]] _ <-].
+- case: l S => [[] [l | l] S |//]; rewrite /= bnd_simp//;
+     apply: lb_ereal_inf => _ [[x /=/and3P[_ /= + _]] _ <-]; rewrite bnd_simp.
+  + by apply: le_trans; rewrite lee_fin ler0z.
+  + by move=> /ltW; apply: le_trans; rewrite lee_fin ler0z.
+- by case: ereal_inf.
 Qed.
 
-Canonical ereal_inf_snum (xnz : KnownSign.nullity) (xr : KnownSign.reality)
-    (S : {compare (0 : \bar R) & xnz & xr} -> Prop) :=
-  Signed.mk (ereal_inf_snum_subproof S).
+Canonical ereal_inf_inum i (S : Itv.def (@ext_num_sem R) i -> Prop) :=
+  Itv.mk (ereal_inf_inum_subproof S).
 
 End SignedRealFieldStability.
 

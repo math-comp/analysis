@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions cardinality.
-From mathcomp Require Import fsbigop signed reals ereal topology tvs.
+From mathcomp Require Import fsbigop reals itv ereal topology tvs.
 From mathcomp Require Import normedtype sequences real_interval esum measure.
 From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 
@@ -1677,7 +1677,7 @@ have mh2 : measurable_fun setT h2 by exact/(measurable_restrictT _ _).1.
 pose g1 := nnsfun_approx measurableT mh1.
 pose g2 := nnsfun_approx measurableT mh2.
 pose g12 := fun n => add_nnsfun (g1 n) (g2 n).
-rewrite (@nd_ge0_integral_lim _ _ _ mu _ g12) //; last 3 first.
+rewrite (@nd_ge0_integral_lim _ _ _ mu _ g12); last 3 first.
   - by move=> x; rewrite adde_ge0.
   - by apply: nondecreasing_seqD => // x m n mn;
       [exact/lefP/nd_nnsfun_approx|exact/lefP/nd_nnsfun_approx].
@@ -1779,7 +1779,7 @@ pose Af x : set R := A `&` f @^-1` [set x].
 have mAf x : measurable (Af x) by exact: measurableI.
 have finAf x : mu (Af x) < +oo.
   by rewrite (le_lt_trans _ finA)// le_measure// ?inE//; exact: subIsetl.
-have eNpos : (0 < eps%:num/N.+1%:R)%R by [].
+have eNpos : (0 < eps%:num / N.+1%:R)%R by [].
 have dK' x := lebesgue_regularity_inner (mAf x) (finAf x) eNpos.
 pose dK x : set R := projT1 (cid (dK' x)); pose J i : set R := Af i `\` dK i.
 have dkP x := projT2 (cid (dK' x)).
@@ -3927,7 +3927,8 @@ have if_0 n : \int[mu]_(x in D) `|f_ n x| = 0.
     by apply: measurable_mine => //; exact: measurableT_comp.
   exact: f_bounded.
 rewrite (_ : (fun _ => _) = cst 0) // ?lim_cst// funeqE => n.
-by rewrite -(if_0 n); apply: eq_integral => x _; rewrite gee0_abs// /f_.
+rewrite -(if_0 n); apply: eq_integral => x _; rewrite gee0_abs// /f_.
+exact/ge0e/R.
 Unshelve. all: by end_near. Qed.
 
 Lemma integral_abs_eq0 D (N : set T) (f : T -> \bar R) :
@@ -5335,7 +5336,7 @@ have [] // := @dominated_convergence _ _ _ mu _ mE (fun n => EFin \o g_ n) f f.
 move=> _ /= fg0 gfcvg; exists g_; split.
 - move=> n; apply: (le_integrable mE _ _ intf).
     exact/measurable_EFinP/measurable_funTS.
-  move=> ? ?; rewrite /g_ !gee0_abs ?lee_fin//; last exact: fpos.
+  move=> ? ?; rewrite /g_ !gee0_abs ?lee_fin ?fpos//.
   by rewrite /= nnsfun_approxE le_approx.
 - exact: cvg_nnsfun_approx.
 - by apply: cvg_trans fg0; under eq_fun => ? do under eq_fun => t do
@@ -5779,7 +5780,7 @@ rewrite [LHS](_ : _ =
   set r := fun _ => _; set l := fun _ => _; have -> // : l = r.
   by apply/funext  => n; rewrite /l /r sfun_fubini_tonelli1.
 rewrite [RHS](_ : _ = limn (fun n => \int[m1]_x F_ g n x))//.
-rewrite -monotone_convergence //; first exact: eq_integral.
+rewrite -monotone_convergence => [|//|||]; first exact: eq_integral.
 - by move=> n; exact: sfun_measurable_fun_fubini_tonelli_F.
 - move=> n x _; apply: integral_ge0 => // y _ /=; rewrite lee_fin.
   exact: fun_ge0.
@@ -5813,7 +5814,7 @@ rewrite [LHS](_ : _ = limn
   set r := fun _ => _; set l := fun _ => _; have -> // : l = r.
   by apply/funext => n; rewrite /l /r sfun_fubini_tonelli sfun_fubini_tonelli2.
 rewrite [RHS](_ : _ = limn (fun n => \int[m2]_y G_ g n y))//.
-rewrite -monotone_convergence //; first exact: eq_integral.
+rewrite -monotone_convergence => [|//|||]; first exact: eq_integral.
 - by move=> n; exact: sfun_measurable_fun_fubini_tonelli_G.
 - by move=> n y _; apply: integral_ge0 => // x _ /=; rewrite lee_fin fun_ge0.
 - move=> y /= _ a b ab; apply: ge0_le_integral => //.
@@ -5955,7 +5956,7 @@ Qed.
 Let integrable_Fminus : m1.-integrable setT Fminus.
 Proof.
 apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1a.1 imf); apply: ge0_le_integral => //.
+apply: le_lt_trans (fubini1a.1 imf); apply: ge0_le_integral => [//|//|||//|].
 - exact: measurableT_comp.
 - by move=> *; exact: integral_ge0.
 - move=> x _; apply: le_trans.
@@ -6084,18 +6085,18 @@ transitivity (\sum_(n <oo) \int[s1 n]_x \sum_(m <oo) \int[s2 m]_y f (x, y)).
   apply: eq_eseriesr => n _; apply: eq_integral => x _.
   by rewrite ge0_integral_measure_series//; exact/measurableT_comp.
 transitivity (\sum_(n <oo) \sum_(m <oo) \int[s1 n]_x \int[s2 m]_y f (x, y)).
-  apply: eq_eseriesr => n _; rewrite integral_nneseries//.
+  apply: eq_eseriesr => n _; rewrite integral_nneseries => [//|//||].
     by move=> m; exact: measurable_fun_fubini_tonelli_F.
   by move=> m x _; exact: integral_ge0.
 transitivity (\sum_(n <oo) \sum_(m <oo) \int[s2 m]_y \int[s1 n]_x f (x, y)).
   apply: eq_eseriesr => n _; apply: eq_eseriesr => m _.
   by rewrite fubini_tonelli//; exact: finite_measure_sigma_finite.
 transitivity (\sum_(n <oo) \int[mseries s2 0]_y \int[s1 n]_x f (x, y)).
-  apply: eq_eseriesr => n _; rewrite ge0_integral_measure_series//.
+  apply: eq_eseriesr => n _; rewrite ge0_integral_measure_series => [//|//||].
     by move=> y _; exact: integral_ge0.
   exact: measurable_fun_fubini_tonelli_G.
 transitivity (\int[mseries s2 0]_y \sum_(n <oo) \int[s1 n]_x f (x, y)).
-  rewrite integral_nneseries//.
+  rewrite integral_nneseries => [//|//||].
     by move=> n; apply: measurable_fun_fubini_tonelli_G.
   by move=> n y _; exact: integral_ge0.
 transitivity (\int[mseries s2 0]_y \int[mseries s1 0]_x f (x, y)).
@@ -6361,7 +6362,7 @@ Proof.
 move=> Df x; apply: ereal_sup_le => //=.
 pose k := \int[mu]_(x in D `&` ball x 1) `|f x|%:E.
 exists ((fine (mu (ball x 1)))^-1%:E * k); last first.
-  rewrite mule_ge0//; last exact: integral_ge0.
+  rewrite mule_ge0 ?integral_ge0//.
   by rewrite lee_fin// invr_ge0// fine_ge0.
 exists 1%R; first by rewrite in_itv/= ltr01.
 rewrite iavg_restrict//; last exact: measurable_ball.
@@ -6426,7 +6427,7 @@ move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
 have ka_pos : fine k / a \is Num.pos.
   by rewrite posrE divr_gt0// fine_gt0 // k_gt0/= locally_integrable_ltbally.
 have k_fin_num : k \is a fin_num.
-  by rewrite ge0_fin_numE ?locally_integrable_ltbally// integral_ge0.
+  by rewrite ge0_fin_numE ?locally_integrable_ltbally ?integral_ge0.
 have kar : (0 < 2^-1 * (fine k / a) - r)%R.
   move: afxr; rewrite -{1}(fineK k_fin_num) -lte_pdivrMr; last first.
     by rewrite fine_gt0// k_gt0/= ltey_eq k_fin_num.
@@ -6529,7 +6530,7 @@ apply: (@le_trans _ _
     (\sum_(i <- E) c^-1%:E * \int[mu]_(y in B i) `|(f y)|%:E)).
   rewrite [in leLHS]big_seq [in leRHS]big_seq; apply: lee_sum => r /ED /Dsub /[!inE] rD.
   by rewrite -lee_pdivrMl ?invr_gt0// invrK /B/=; exact/ltW/cMfx_int.
-rewrite -ge0_sume_distrr//; last by move=> x _; rewrite integral_ge0.
+rewrite -ge0_sume_distrr; last by move=> x _; rewrite integral_ge0.
 rewrite lee_wpmul2l//; first by rewrite lee_fin invr_ge0 ltW.
 rewrite -ge0_integral_bigsetU//=.
 - apply: ge0_subset_integral => //.

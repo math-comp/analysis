@@ -2,7 +2,7 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
-From mathcomp Require Import functions cardinality ereal reals signed.
+From mathcomp Require Import functions cardinality ereal reals.
 From mathcomp Require Import topology prodnormedzmodule normedtype derive.
 From mathcomp Require Import realfun itv.
 From HB Require Import structures.
@@ -185,7 +185,7 @@ Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
   forall t, f (a <| t |> b) <= f a <| t |> f b.
 Proof.
 move=> ab h t; set x := a <| t |> b; have /h : a <= x <= b.
-  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= itv_ge0/=.
+  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= ge0/=.
 rewrite subr_ge0 => /le_trans; apply.
 by rewrite LE// /x line_pathK ?lt_eqF// convC line_pathK ?gt_eqF.
 Qed.

@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal signed.
+From mathcomp Require Import cardinality fsbigop reals itv ereal.
 From mathcomp Require Import topology normedtype sequences esum numfun.
 From HB Require Import structures.
 
@@ -1955,10 +1955,16 @@ Context d (T : semiRingOfSetsType d) (R : numFieldType).
 
 Variable mu : {content set T -> \bar R}.
 
-Lemma content_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
-Proof. exact: measure_ge0. Qed.
+Lemma content_inum_subproof S :
+  Itv.spec (@ext_num_sem R) (Itv.Real `[0%Z, +oo[) (mu S).
+Proof.
+apply/and3P; split.
+- by rewrite real_fine -real_leNye; apply: le_trans (measure_ge0 _ _).
+- by rewrite /= bnd_simp measure_ge0.
+- by rewrite bnd_simp.
+Qed.
 
-Canonical content_snum S := Signed.mk (content_snum_subproof S).
+Canonical content_inum S := Itv.mk (content_inum_subproof S).
 
 End content_signed.
 
@@ -2109,10 +2115,16 @@ Context d (R : numFieldType) (T : semiRingOfSetsType d).
 
 Variable mu : {measure set T -> \bar R}.
 
-Lemma measure_snum_subproof S : Signed.spec 0 ?=0 >=0 (mu S).
-Proof. exact: measure_ge0. Qed.
+Lemma measure_inum_subproof S :
+  Itv.spec (@ext_num_sem R) (Itv.Real `[0%Z, +oo[) (mu S).
+Proof.
+apply/and3P; split.
+- by rewrite real_fine -real_leNye; apply: le_trans (measure_ge0 _ _).
+- by rewrite /= bnd_simp measure_ge0.
+- by rewrite bnd_simp.
+Qed.
 
-Canonical measure_snum S := Signed.mk (measure_snum_subproof S).
+Canonical measure_inum S := Itv.mk (measure_inum_subproof S).
 
 End measure_signed.
 
@@ -3583,7 +3595,7 @@ by rewrite /mnormalize; case: ifPn => // _; rewrite measure0 mul0e.
 Qed.
 
 Let mnormalize_ge0 U : 0 <= mnormalize U.
-Proof. by rewrite /mnormalize; case: ifPn => //; case: ifPn. Qed.
+Proof. by rewrite /mnormalize; case: ifPn. Qed.
 
 Let mnormalize_sigma_additive : semi_sigma_additive mnormalize.
 Proof.

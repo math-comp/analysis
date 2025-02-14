@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal signed.
+From mathcomp Require Import cardinality fsbigop reals ereal itv.
 From mathcomp Require Import topology sequences normedtype numfun.
 
 (**md**************************************************************************)
@@ -256,7 +256,7 @@ apply: (@le_trans _ _
   rewrite (fsetIidPr _).
     rewrite fsbig_finite// leeDl// big_seq sume_ge0//=.
     move=> [x y] /imfsetP[[x1 y1]] /[!inE] /andP[] /imfset2P[x2]/= /[!inE].
-    rewrite andbT in_fset_set//; last exact: finite_set_fst.
+    rewrite andbT in_fset_set; last exact: finite_set_fst.
     move=> /[!inE] x2X [y2] /[!inE] /andP[] /[!in_fset_set]; last first.
       exact: finite_set_snd.
     move=> /[!inE] y2X y2J [-> ->] _ [-> ->]; rewrite a_ge0//.

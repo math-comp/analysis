@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2020 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum. 
+From mathcomp Require Import all_ssreflect fingroup ssralg poly ssrnum.
 From mathcomp Require Import all_classical.
-From mathcomp Require Import signed.
+From mathcomp Require Import itv.
 
 (**md**************************************************************************)
 (* This file equips the product of two normedZmodTypes with a canonical       *)

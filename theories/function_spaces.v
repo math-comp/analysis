@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop.
-From mathcomp Require Import reals signed topology separation_axioms.
+From mathcomp Require Import reals itv topology separation_axioms.
 
 (**md**************************************************************************)
 (* # The topology of functions spaces                                         *)
@@ -610,7 +610,7 @@ Lemma cvg_switch {U : completeType}
   f @ F1 --> g -> (forall x1, f x1 @ F2 --> h x1) ->
   exists l : U, h @ F1 --> l /\ g @ F2 --> l.
 Proof.
-move=> Hfg Hfh; have hcv := !! cvg_switch_2 Hfg Hfh.
+move=> Hfg Hfh; have hcv := [elaborate cvg_switch_2 Hfg Hfh].
 by exists (lim (h @ F1)); split=> //; apply: cvg_switch_1 Hfg Hfh hcv.
 Qed.
 

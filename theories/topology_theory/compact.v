@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-From mathcomp Require Import signed reals topology_structure uniform_structure.
+From mathcomp Require Import itv reals topology_structure uniform_structure.
 From mathcomp Require Import pseudometric_structure.
 
 (**md**************************************************************************)
@@ -39,6 +39,12 @@ Unset Printing Implicit Defensive.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
+
+(* infer class to help typeclass inference on the fly *)
+Class infer (P : Prop) := Infer : P.
+#[export] Hint Mode infer ! : typeclass_instances.
+#[export] Hint Extern 0 (infer _) => (exact) : typeclass_instances.
+Lemma inferP (P : Prop) : P -> infer P. Proof. by []. Qed.
 
 Section Compact.
 Context {T : topologicalType}.

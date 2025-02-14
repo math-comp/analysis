@@ -4,7 +4,7 @@ From mathcomp Require Import finmap fingroup perm rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets cardinality.
 From mathcomp Require Import functions fsbigop set_interval.
 From HB Require Import structures.
-From mathcomp Require Import reals ereal signed topology numfun normedtype.
+From mathcomp Require Import reals itv ereal topology numfun normedtype.
 From mathcomp Require Import sequences esum measure realfun lebesgue_measure.
 From mathcomp Require Import lebesgue_integral.
 
@@ -1282,7 +1282,7 @@ Qed.
 
 Lemma sup_int_approxRN_fin_num : M \is a fin_num.
 Proof.
-rewrite ge0_fin_numE//; first exact: sup_int_approxRN_lty.
+rewrite ge0_fin_numE; first exact: sup_int_approxRN_lty.
 exact: sup_int_approxRN_ge0.
 Qed.
 
@@ -1333,7 +1333,7 @@ Qed.
 
 Lemma max_approxRN_seq_ge0 n x : 0 <= F_ n x.
 Proof.
-by apply/bigmax_geP; right => /=; exists ord0 => //; exact: approxRN_seq_ge0.
+by apply/bigmax_geP; right => /=; exists ord0; [|exact: approxRN_seq_ge0].
 Qed.
 
 Lemma max_approxRN_seq_ge n x : F_ n x >= g_ n x.
@@ -1492,7 +1492,7 @@ Qed.
 
 Let F_G m : F m \in G.
 Proof.
-rewrite inE /G/=; split => //.
+rewrite inE /G/=; split.
 - by move=> ?; exact: max_approxRN_seq_ge0.
 - apply/integrableP; split; first exact: measurable_max_approxRN_seq.
   under eq_integral.
@@ -1565,7 +1565,7 @@ have [muA0|] := eqVneq (mu A) 0.
   exists (PosNum ltr01).
   under eq_integral.
     move=> x _; rewrite -(@gee0_abs _ (_ + _)); last first.
-      by rewrite adde_ge0// fRN_ge0.
+      by rewrite adde_ge0 ?fRN_ge0.
     over.
   rewrite (@integral_abs_eq0 _ _ _ _ setT)//.
     by rewrite (le_lt_trans _ h)// integral_ge0// => x Ax; exact: fRN_ge0.
@@ -1610,7 +1610,7 @@ move=> mB; rewrite ge0_integralD//; last 2 first.
   by move=> x Bx; exact: fRN_ge0.
   exact: measurable_funS measurable_fun_fRN.
 rewrite fin_numD integral_cst// fin_numM ?fin_num_measure// andbT.
-rewrite ge0_fin_numE ?measure_ge0//; last first.
+rewrite ge0_fin_numE ?measure_ge0; last first.
   by apply: integral_ge0 => x Bx; exact: fRN_ge0.
 rewrite (le_lt_trans _ int_fRN_lty)//.
 under [in leRHS]eq_integral.
@@ -1641,11 +1641,11 @@ apply: cvgeB.
   + have /cvg_ex[/= l hl] : cvg ((fun n =>
         \sum_(0 <= i < n) \int[mu]_(y in H i) (fRN y + epsRN%:num%:E)) @ \oo).
       apply: is_cvg_ereal_nneg_natsum => n _.
-      by apply: integral_ge0 => x _; rewrite adde_ge0//; exact: fRN_ge0.
+      by apply: integral_ge0 => x _; rewrite adde_ge0 ?fRN_ge0.
     by rewrite (@cvg_lim _ _ _ _ _ _ l).
   + apply: emeasurable_funD => //=; apply: measurable_funTS.
     exact: measurable_fun_fRN.
-  + by move=> x _; rewrite adde_ge0//; exact: fRN_ge0.
+  + by move=> x _; rewrite adde_ge0 ?fRN_ge0.
 Qed.
 
 HB.instance Definition _ := @isCharge.Build _ _ _ sigmaRN
@@ -1701,7 +1701,7 @@ have mh : measurable_fun setT h.
   - by apply: measurable_funTS; apply: emeasurable_funD => //; exact: mf.
   - by apply: measurable_funTS; exact: mf.
 have hge0 x : 0 <= h x.
-  by rewrite /h; case: ifPn => [_|?]; [rewrite adde_ge0// f_ge0|exact: f_ge0].
+  by rewrite /h; case: ifPn => [_|?]; rewrite ?adde_ge0 ?f_ge0.
 have hnuP S : measurable S -> S `<=` AP -> \int[mu]_(x in S) h x <= nu S.
   move=> mS SAP.
   have : 0 <= sigma S.
@@ -1741,7 +1741,7 @@ have int_h_M : \int[mu]_x h x > M.
     by rewrite setUv//; exact: mf.
     by move=> x _; exact: f_ge0.
   rewrite setUv int_fRNE -lte_subel_addl; last first.
-    rewrite ge0_fin_numE// ?sup_int_approxRN_lty//.
+    rewrite ge0_fin_numE ?sup_int_approxRN_lty.
       exact: approxRN_seq.sup_int_approxRN_lty.
     exact: sup_int_approxRN_ge0.
   by rewrite /M subee ?mule_gt0// approxRN_seq.sup_int_approxRN_fin_num.
@@ -1935,7 +1935,7 @@ have -> : \int[mu]_(x in E) (f \* g) x =
   - move=> n; apply/emeasurable_funM; apply/measurable_funTS.
       exact/measurable_EFinP.
     exact: measurable_int (f_integrable _).
-  - by move=> n x Ex //=; rewrite mule_ge0 ?lee_fin//=; exact: f_ge0.
+  - by move=> n x Ex /=; rewrite mule_ge0 ?lee_fin ?f_ge0.
   - by move=> x Ex a b ab/=; rewrite lee_wpmul2r ?lee_fin ?f_ge0//; exact/lefP/nd_nnsfun_approx.
 suff suf n : \int[mu]_(x in E) ((EFin \o h n) x * g x) =
     \int[nu]_(x in E) (EFin \o h n) x.
@@ -1967,7 +1967,7 @@ rewrite ge0_integralZl//.
   by rewrite -integral_mkcondr -f_integral// integral_indic// setIC.
 - apply: emeasurable_funM; first exact/measurable_EFinP.
   exact/measurable_funTS/(measurable_int _ (f_integrable _)).
-- by move=> t Et; rewrite mule_ge0// ?lee_fin//; exact: f_ge0.
+- by move=> t Et; rewrite mule_ge0 ?lee_fin ?f_ge0.
 - by move: rhn; rewrite inE => -[t _ <-]; rewrite lee_fin.
 Qed.
 

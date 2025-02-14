@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval.
+From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals signed topology prodnormedzmodule tvs.
-From mathcomp Require Import normedtype landau forms poly.
+From mathcomp Require Import reals itv topology prodnormedzmodule tvs.
+From mathcomp Require Import normedtype landau forms.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)
@@ -505,7 +505,7 @@ rewrite funeqE => x; apply/eqP; have [|xn0] := real_le0P (normr_real x).
   by rewrite normr_le0 => /eqP ->; rewrite linear0.
 rewrite -normr_le0 -(mul0r `|x|) -ler_pdivrMr //.
 apply/ler_gtP => _ /posnumP[e]; rewrite ler_pdivrMr //.
-have /oid /nbhs_ballP [_ /posnumP[d] dfe] := !! gt0 e.
+have /oid /nbhs_ballP [_ /posnumP[d] dfe] := [elaborate gt0 e].
 set k := ((d%:num / 2) / (PosNum xn0)%:num)^-1.
 rewrite -{1}(@scalerKV _ _ k _ x) /k // linearZZ normrZ.
 rewrite -ler_pdivlMl; last by rewrite gtr0_norm.

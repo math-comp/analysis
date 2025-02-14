@@ -1,6 +1,6 @@
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop signed reals ereal topology.
+From mathcomp Require Import cardinality fsbigop itv reals ereal topology.
 From mathcomp Require Import normedtype sequences real_interval esum measure.
 From mathcomp Require Import lebesgue_measure numfun realfun lebesgue_integral.
 From mathcomp Require Import derive charge ftc trigo.

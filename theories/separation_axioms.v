@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
-From mathcomp Require Import filter reals signed topology.
+From mathcomp Require Import filter reals itv topology.
 
 (**md**************************************************************************)
 (* # Separation Axioms                                                        *)
@@ -106,8 +106,8 @@ Definition hausdorff_space := forall p q : T, cluster (nbhs p) q -> p = q.
 
 Lemma compact_closed (A : set T) : hausdorff_space -> compact A -> closed A.
 Proof.
-move=> hT Aco p clAp; have pA := !! @withinT _ (nbhs p) A _.
-have [q [Aq clsAp_q]] := !! Aco _ _ pA; rewrite (hT p q) //.
+move=> hT Aco p clAp; have pA := [elaborate @withinT _ (nbhs p) A _].
+have [q [Aq clsAp_q]] := [elaborate Aco _ _ pA]; rewrite (hT p q) //.
 by apply: cvg_cluster clsAp_q; apply: cvg_within.
 Qed.
 
@@ -446,7 +446,7 @@ Lemma ball_close {R : numFieldType} {M : pseudoMetricType R} (x y : M) :
   close x y = forall eps : {posnum R}, ball x eps%:num y.
 Proof.
 rewrite propeqE; split => [cxy eps|cxy].
-  have := !! cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos).
+  have := [elaborate cxy _ (open_nbhs_ball _ (eps%:num/2)%:pos)].
   rewrite closureEonbhs/= meetsC meets_globallyr.
   move/(_ _ (open_nbhs_ball _ (eps%:num/2)%:pos)) => [z [zx zy]].
   by apply: (@ball_splitl _ _ z); apply: interior_subset.

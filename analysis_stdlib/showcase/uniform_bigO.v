@@ -3,7 +3,7 @@ From Coq Require Import Reals.
 From Coq Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg ssrnum.
 From mathcomp Require Import boolp reals Rstruct_topology ereal.
-From mathcomp Require Import classical_sets signed topology normedtype landau.
+From mathcomp Require Import classical_sets itv topology normedtype landau.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -97,7 +97,7 @@ Proof.
 move=> fOg; apply/Ouex_to_P; move: fOg => /eqOP [k [kreal hk]].
 have /hk [Q [->]] : k < maxr 1 (k + 1) by rewrite lt_max ltrDl orbC ltr01.
 move=> [R [[_/posnumP[e1] Re1] [_/posnumP[e2] Re2]] sRQ] fOg.
-exists (minr e1%:num e2%:num) => //.
+exists (minr e1%:num e2%:num); first by apply: gt0; exact: RbaseSymbolsImpl.R.
 exists (maxr 1 (k + 1)); first by rewrite lt_max ltr01.
 move=> x dx dxe Pdx; apply: (fOg (x, dx)); split=> //=.
 move: dxe; rewrite gt_max !lt_min => /andP[/andP [dxe11 _] /andP [_ dxe22]].

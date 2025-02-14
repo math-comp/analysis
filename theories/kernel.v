@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal signed.
+From mathcomp Require Import cardinality fsbigop reals itv ereal.
 From mathcomp Require Import topology normedtype sequences esum measure.
 From mathcomp Require Import numfun lebesgue_measure lebesgue_integral.
 

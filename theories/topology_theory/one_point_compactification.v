@@ -1,6 +1,6 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
-From mathcomp Require Import signed topology_structure uniform_structure.
+From mathcomp Require Import topology_structure uniform_structure.
 From mathcomp Require Import pseudometric_structure compact weak_topology.
 
 (**md**************************************************************************)

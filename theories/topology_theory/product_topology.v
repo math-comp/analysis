@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
-From mathcomp Require Import signed topology_structure uniform_structure.
+From mathcomp Require Import itv topology_structure uniform_structure.
 From mathcomp Require Import pseudometric_structure compact.
 
 (**md**************************************************************************)
