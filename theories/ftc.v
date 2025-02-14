@@ -8,17 +8,36 @@ From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
 From mathcomp Require Import itv real_interval lebesgue_integral derive charge.
 
 (**md**************************************************************************)
-(* # Fundamental Theorem of Calculus for the Lebesgue Integral                *)
+(* # Fundamental Theorem of Calculus and Consequences                         *)
 (*                                                                            *)
-(* NB: See CONTRIBUTING.md for an introduction to HB concepts and commands.   *)
+(* This file provides lemmas about derivation and integration. It contains in *)
+(* particular a proof of the first fundamental theorem of calculus for the    *)
+(* Lebesgue integral and its consequences, in particular a corollary to       *)
+(* compute the integral of continuous functions, integration by parts, by     *)
+(* substitution, etc.                                                         *)
 (*                                                                            *)
-(* This file provides a proof of the first fundamental theorem of calculus    *)
-(* for the Lebesgue integral. We derive from this theorem a corollary to      *)
-(* compute the definite integral of continuous functions.                     *)
+(* Reference:                                                                 *)
+(* - R. Affeldt, Z. Stone. A Comprehensive Overview of the Lebesgue           *)
+(*   Differentiation Theorem in Coq. ITP 2024                                 *)
 (*                                                                            *)
+(* Examples of lemmas (with `F` and `G` antiderivatives of `f` and `g`):      *)
+(* - `continuous_FTC2`: $\int_a^b f(x)dx = F(b) - F(a)$                       *)
+(* - `{ge0,le0}_continuous_FTC2y`: $\int_a^\infty f(x)dx = \ell - F(a)$ with  *)
+(*   $\lim_{x\to\infty}F(x)=\ell$ and $f$ non-negative or non-positive        *)
+(* - `integration_by_parts`:                                                  *)
+(*   $\int_a^b F(x)g(x)dx = F(b)G(b) - F(a)G(a) - \int_a^b f(x)G(x)dx$        *)
+(* - `integration_by_substitution_{decreasing,increasing}`:                   *)
+(*   $\int_{F(b)}^{F(a)} G(x)dx = \int_a^b -G(F(x))f(x)dx$                    *)
+(*   with $F$ decreasing,                                                     *)
+(*   $\int_{F(a)}^{F(b)} G(x)dx = \int_a^b G(F(x))f(x)dx$                     *)
+(*   with $F$ increasing                                                      *)
+(*                                                                            *)
+(* Detailed documentation:                                                    *)
+(* ```                                                                        *)
 (*                   partial1of2 f == first partial derivative of f           *)
 (*                                    f has type R -> T -> R for R : realType *)
 (* parameterized_integral mu a x f := \int[mu]_(t \in `[a, x] f t)            *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -771,24 +790,15 @@ rewrite -EFinB -cE -GbFbc /G /Rintegral/= fineK//.
 exact: integral_fune_fin_num.
 Unshelve. all: by end_near. Qed.
 
-(* TODO: move? *)
-Let in_continuous_mksetP {T : realFieldType} {U : realFieldType}
-    (i : interval T) (f : T -> U) :
-  {in i, continuous f} <-> {in [set` i], continuous f}.
-Proof.
-split=> [fi x|fi x xi]; first by rewrite inE/=; exact: fi.
-by apply: fi; rewrite inE.
-Qed.
-
 Lemma ge0_continuous_FTC2y (f F : R -> R) a (l : R) :
   (forall x, a <= x -> 0 <= f x)%R ->
-  F x @[x --> +oo%R] --> l ->
   {within `[a, +oo[, continuous f} ->
+  F x @[x --> +oo%R] --> l ->
   (forall x, a < x -> derivable F x 1)%R -> F x @[x --> a^'+] --> F a ->
   {in `]a, +oo[, F^`() =1 f} ->
   (\int[mu]_(x in `[a, +oo[) (f x)%:E = l%:E - (F a)%:E)%E.
 Proof.
-move=> f_ge0 Fxl cf dF Fa dFE.
+move=> f_ge0 cf Fxl dF Fa dFE.
 have mf : measurable_fun `]a, +oo[ f.
   apply: open_continuous_measurable_fun => //.
   by move: cf => /continuous_within_itvcyP[/in_continuous_mksetP cf _].
@@ -877,26 +887,26 @@ Unshelve. end_near. Qed.
 
 Lemma Rintegral_ge0_continuous_FTC2y (f F : R -> R) a (l : R) :
   (forall x, a <= x -> 0 <= f x)%R ->
-  F x @[x --> +oo%R] --> l ->
   {within `[a, +oo[, continuous f} ->
+  F x @[x --> +oo%R] --> l ->
   (forall x, a < x -> derivable F x 1)%R -> F x @[x --> a^'+] --> F a ->
   {in `]a, +oo[, F^`() =1 f} ->
   (\int[mu]_(x in `[a, +oo[) (f x) = l - F a)%R.
 Proof.
-move=> f_ge0 Fxl cf dF Fa dFE.
-by rewrite /Rintegral (ge0_continuous_FTC2y f_ge0 Fxl cf dF Fa dFE) -EFinD.
+move=> f_ge0 cf Fxl dF Fa dFE.
+by rewrite /Rintegral (ge0_continuous_FTC2y f_ge0 cf Fxl dF Fa dFE) -EFinD.
 Qed.
 
 Lemma le0_continuous_FTC2y (f F : R -> R) a (l : R) :
   (forall x, a <= x -> f x <= 0)%R ->
-  F x @[x --> +oo%R] --> l ->
   {within `[a, +oo[, continuous f} ->
+  F x @[x --> +oo%R] --> l ->
   (F x @[x --> a^'+] --> F a) ->
   (forall x, (a < x)%R -> derivable F x 1) ->
   {in `]a, +oo[, F^`() =1 f} ->
   \int[mu]_(x in `[a, +oo[) (f x)%:E = l%:E - (F a)%:E.
 Proof.
-move=> f_ge0 Fl cf Fa dF dFE; rewrite -[LHS]oppeK -integralN/=; last first.
+move=> f_ge0 cf Fl Fa dF dFE; rewrite -[LHS]oppeK -integralN/=; last first.
   rewrite adde_defN ge0_adde_def => //=; rewrite inE.
     rewrite oppe_ge0 le_eqVlt; apply/predU1P; left.
     apply: integral0_eq => /= x; rewrite in_itv/= => /andP[ax _].
@@ -906,15 +916,15 @@ move=> f_ge0 Fl cf Fa dF dFE; rewrite -[LHS]oppeK -integralN/=; last first.
 rewrite (@ge0_continuous_FTC2y (- f)%R (- F)%R _ (- l)%R).
 - by rewrite oppeB// EFinN oppeK.
 - by move=> x ax; rewrite oppr_ge0 f_ge0.
-- exact: cvgN.
 - move: cf => /continuous_within_itvcyP[cf fa].
   rewrite continuous_within_itvcyP; split; last exact: cvgN.
   by move=> x ax; exact/continuousN/cf.
+- exact: cvgN.
 - by move=> x ax; exact/derivableN/dF.
 - exact: cvgN.
-- move=> x ax; rewrite derive1E deriveN; last first.
-    by apply: dF; move: ax; rewrite in_itv/= andbT.
-  by rewrite -derive1E dFE.
+- move=> x ax; rewrite derive1E deriveN.
+    by rewrite -derive1E dFE.
+  by apply: dF; move: ax; rewrite in_itv/= andbT.
 Qed.
 
 End corollary_FTC1.
