@@ -560,7 +560,7 @@ have [d [d0 /= {}int_normr_cont]] := int_normr_cont _ e0.
 near=> x.
 rewrite [in X in X - _](@itv_bndbnd_setU _ _ _ (BRight x))//;
   [|by rewrite bnd_simp ltW..].
-rewrite Rintegral_setU_EFin//=; last 2 first.
+rewrite Rintegral_setU//=; last 2 first.
   rewrite -itv_bndbnd_setU// ?bnd_simp; last 2 first.
     by near: x; exact: nbhs_left_ge.
     exact/ltW.
