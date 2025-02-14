@@ -364,6 +364,20 @@ End seqD.
 #[deprecated(since="mathcomp-analysis 1.2.0", note="renamed to `nondecreasing_bigsetU_seqD`")]
 Notation eq_bigsetU_seqD := nondecreasing_bigsetU_seqD (only parsing).
 
+Lemma seqDUE {R : realDomainType} n (r : R) :
+  (seqDU (fun n => `]r, r + n%:R]) n = `]r + n.-1%:R, r + n%:R])%classic.
+Proof.
+rewrite seqDU_seqD; last first.
+  apply/nondecreasing_seqP => k; apply/subsetPset/subset_itvl.
+  by rewrite bnd_simp lerD2l ler_nat.
+move: n => [/=|n]; first by rewrite addr0.
+rewrite eqEsubset; split => x /= /[!in_itv] /=.
+- by move=> [] /andP[-> ->] /[!andbT] /= /negP; rewrite -ltNge.
+- move=> /andP[rnx ->].
+  rewrite andbT; split; first by rewrite (le_lt_trans _ rnx)// lerDl.
+  by apply/negP; rewrite negb_and -ltNge rnx orbT.
+Qed.
+
 (** Convergence of patched sequences *)
 
 Section sequences_patched.
@@ -1460,6 +1474,32 @@ Proof. by move=> u_ge0 n m nm; rewrite lee_sum_nneg_natr. Qed.
 Lemma congr_lim (R : numFieldType) (f g : nat -> \bar R) :
   f = g -> limn f = limn g.
 Proof. by move=> ->. Qed.
+
+Lemma nondecreasing_telescope_sumey (R : realType) n (f : nat -> R) :
+  limn (EFin \o f) \is a fin_num ->
+  {homo f : x y / (x <= y)%N >-> (x <= y)%R} ->
+  \sum_(n <= k <oo) ((f k.+1)%:E - (f k)%:E) = limn (EFin \o f) - (f n)%:E.
+Proof.
+move=> fin_limf ndf.
+have nd_sumf : {homo (fun i => \sum_(n <= k < i) ((f k.+1)%:E - (f k)%:E)) :
+    k m / (k <= m)%N >-> k <= m}.
+  apply/nondecreasing_seqP => m; apply: lee_sum_nneg_natr => // k _ _.
+  by rewrite -EFinB lee_fin subr_ge0 ndf.
+transitivity
+    (ereal_sup (range (fun m => \sum_(n <= k < m) ((f k.+1)%:E - (f k)%:E)%E))).
+  by apply/cvg_lim => //; exact: ereal_nondecreasing_cvgn.
+transitivity (limn ((EFin \o f) \- cst (f n)%:E)); last first.
+  apply/cvg_lim => //; apply: cvgeB.
+  - exact: fin_num_adde_defl.
+  - by apply: ereal_nondecreasing_is_cvgn => x y xy; rewrite lee_fin ndf.
+  - exact: cvg_cst.
+have := @ereal_nondecreasing_cvgn _ _ nd_sumf.
+rewrite -(cvg_restrict n (EFin \o f \- cst (f n)%:E)) => /cvg_lim <-//.
+apply: congr_lim; apply/funext => k/=.
+case: ifPn => //; rewrite -ltnNge => nk.
+under eq_bigr do rewrite EFinN.
+by rewrite telescope_sume// ltnW.
+Qed.
 
 Lemma eseries_cond {R : numFieldType} (f : (\bar R)^nat) P N :
   \sum_(N <= i <oo | P i) f i = \sum_(i <oo | P i && (N <= i)%N) f i.
