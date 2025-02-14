@@ -169,13 +169,14 @@ HB.instance Definition _ := [SubChoice_isSubPOrder of nR by <:
 End POrder.
 (* TODO: numDomainType on sT ? *)
 
-Lemma itv_top_typ_subproof (R : numDomainType) (x : R) :
-  Itv.spec `]-oo, +oo[ x.
+Module TypInstances.
+
+Lemma itv_top_typ_spec (R : numDomainType) (x : R) : Itv.spec `]-oo, +oo[ x.
 Proof. by []. Qed.
 
-Canonical itv_top_typ (R : numDomainType) := Itv.Typ (@itv_top_typ_subproof R).
+Canonical itv_top_typ (R : numDomainType) := Itv.Typ (@itv_top_typ_spec R).
 
-Lemma typ_inum_subproof (xt : Itv.typ) (x : Itv.sort xt) :
+Lemma typ_inum_spec (xt : Itv.typ) (x : Itv.sort xt) :
   Itv.spec (Itv.sort_itv xt) x.
 Proof. by move: xt x => []. Qed.
 
@@ -184,8 +185,10 @@ Proof. by move: xt x => []. Qed.
    Itv.r) meaning that if no other canonical instance (with a
    registered head symbol) is found, a canonical instance of
    Itv.typ, like the ones above, will be looked for. *)
-Canonical typ_inum (xt : Itv.typ) (x : Itv.sort xt) :=
-  Itv.mk (typ_inum_subproof x).
+Canonical typ_inum (xt : Itv.typ) (x : Itv.sort xt) := Itv.mk (typ_inum_spec x).
+
+End TypInstances.
+Export (canonicals) TypInstances.
 
 Notation unify_itv ix iy := (unify wider_itv ix iy).
 
@@ -320,67 +323,63 @@ Notation "x %:i01" := (@widen_itv _ _
 
 Local Open Scope ring_scope.
 
+Module Instances.
+
 Section NumDomainStability.
 Context {R : numDomainType}.
 
-Lemma zero_inum_subproof : Itv.spec `[0, 0] (0 : R).
+Lemma zero_spec : Itv.spec `[0, 0] (0 : R).
 Proof. by rewrite /Itv.itv_cond/= inE. Qed.
 
-Canonical zero_inum := Itv.mk zero_inum_subproof.
+Canonical zero_inum := Itv.mk zero_spec.
 
-Lemma one_inum_subproof : Itv.spec `[1, 1] (1 : R).
+Lemma one_spec : Itv.spec `[1, 1] (1 : R).
 Proof. by rewrite /Itv.itv_cond/= inE. Qed.
 
-Canonical one_inum := Itv.mk one_inum_subproof.
+Canonical one_inum := Itv.mk one_spec.
 
-Definition opp_itv_bound_subdef (b : itv_bound int) : itv_bound int :=
+Definition opp_itv_bound (b : itv_bound int) : itv_bound int :=
   match b with
   | BSide b x => BSide (~~ b) (intZmod.oppz x)
   | BInfty b => BInfty _ (~~ b)
   end.
-Arguments opp_itv_bound_subdef /.
+Arguments opp_itv_bound /.
 
-Lemma opp_itv_ge0_subproof b :
-  (BLeft 0%R <= opp_itv_bound_subdef b)%O = (b <= BRight 0%R)%O.
+Lemma opp_itv_ge0 b : (BLeft 0%R <= opp_itv_bound b)%O = (b <= BRight 0%R)%O.
 Proof. by case: b => [[] b | []//]; rewrite /= !bnd_simp oppr_ge0. Qed.
 
-Lemma opp_itv_gt0_subproof b :
-  (BLeft 0%R < opp_itv_bound_subdef b)%O = (b < BRight 0%R)%O.
+Lemma opp_itv_gt0 b : (BLeft 0%R < opp_itv_bound b)%O = (b < BRight 0%R)%O.
 Proof.
 by case: b => [[] b | []//]; rewrite /= !bnd_simp ?oppr_ge0 // oppr_gt0.
 Qed.
 
-Lemma opp_itv_boundr_subproof (x : R) b :
-  (BRight (- x)%R <= Itv.map_itv_bound intr (opp_itv_bound_subdef b))%O
+Lemma opp_itv_boundr (x : R) b :
+  (BRight (- x)%R <= Itv.map_itv_bound intr (opp_itv_bound b))%O
   = (Itv.map_itv_bound intr b <= BLeft x)%O.
 Proof.
 by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz ?lerN2 // ltrN2.
 Qed.
 
-Lemma opp_itv_le0_subproof b :
-  (opp_itv_bound_subdef b <= BRight 0%R)%O = (BLeft 0%R <= b)%O.
+Lemma opp_itv_le0 b : (opp_itv_bound b <= BRight 0%R)%O = (BLeft 0%R <= b)%O.
 Proof. by case: b => [[] b | []//]; rewrite /= !bnd_simp oppr_le0. Qed.
 
-Lemma opp_itv_lt0_subproof b :
-  (opp_itv_bound_subdef b < BRight 0%R)%O = (BLeft 0%R < b)%O.
+Lemma opp_itv_lt0 b : (opp_itv_bound b < BRight 0%R)%O = (BLeft 0%R < b)%O.
 Proof.
 by case: b => [[] b | []//]; rewrite /= !bnd_simp ?oppr_le0 // oppr_lt0.
 Qed.
 
-Lemma opp_itv_boundl_subproof (x : R) b :
-  (Itv.map_itv_bound intr (opp_itv_bound_subdef b) <= BLeft (- x)%R)%O
+Lemma opp_itv_boundl (x : R) b :
+  (Itv.map_itv_bound intr (opp_itv_bound b) <= BLeft (- x)%R)%O
   = (BRight x <= Itv.map_itv_bound intr b)%O.
 Proof.
 by case: b => [[] b | []//]; rewrite /= !bnd_simp mulrNz ?lerN2 // ltrN2.
 Qed.
 
-Definition opp_itv_subdef (i : interval int) : interval int :=
-  let 'Interval l u := i in
-  Interval (opp_itv_bound_subdef u) (opp_itv_bound_subdef l).
-Arguments opp_itv_subdef /.
+Definition opp_itv (i : interval int) : interval int :=
+  let 'Interval l u := i in Interval (opp_itv_bound u) (opp_itv_bound l).
+Arguments opp_itv /.
 
-Lemma opp_inum_subproof (i : interval int)
-    (x : {itv R & i}) (r := opp_itv_subdef i) :
+Lemma opp_spec (i : interval int) (x : {itv R & i}) (r := opp_itv i) :
   Itv.spec r (- x%:inum).
 Proof.
 rewrite {}/r; move: i x => [l u] [x /= /andP[xl xu]]; apply/andP; split.
@@ -390,32 +389,30 @@ rewrite {}/r; move: i x => [l u] [x /= /andP[xl xu]]; apply/andP; split.
     do ?[by rewrite ltrNl opprK|by rewrite lerNl opprK].
 Qed.
 
-Canonical opp_inum (i : interval int) (x : {itv R & i}) :=
-  Itv.mk (opp_inum_subproof x).
+Canonical opp_inum (i : interval int) (x : {itv R & i}) := Itv.mk (opp_spec x).
 
-Definition add_itv_boundl_subdef (b1 b2 : itv_bound int) : itv_bound int :=
+Definition add_itv_boundl (b1 b2 : itv_bound int) : itv_bound int :=
   match b1, b2 with
   | BSide b1 x1, BSide b2 x2 => BSide (b1 && b2) (intZmod.addz x1 x2)
   | _, _ => BInfty _ true
   end.
-Arguments add_itv_boundl_subdef /.
+Arguments add_itv_boundl /.
 
-Definition add_itv_boundr_subdef (b1 b2 : itv_bound int) : itv_bound int :=
+Definition add_itv_boundr (b1 b2 : itv_bound int) : itv_bound int :=
   match b1, b2 with
   | BSide b1 x1, BSide b2 x2 => BSide (b1 || b2) (intZmod.addz x1 x2)
   | _, _ => BInfty _ false
   end.
-Arguments add_itv_boundr_subdef /.
+Arguments add_itv_boundr /.
 
-Definition add_itv_subdef (i1 i2 : interval int) : interval int :=
+Definition add_itv (i1 i2 : interval int) : interval int :=
   let 'Interval l1 u1 := i1 in
   let 'Interval l2 u2 := i2 in
-  Interval (add_itv_boundl_subdef l1 l2) (add_itv_boundr_subdef u1 u2).
-Arguments add_itv_subdef /.
+  Interval (add_itv_boundl l1 l2) (add_itv_boundr u1 u2).
+Arguments add_itv /.
 
-Lemma add_inum_subproof (xi yi : interval int)
-    (x : {itv R & xi}) (y : {itv R & yi})
-    (r := add_itv_subdef xi yi) :
+Lemma add_spec (xi yi : interval int) (x : {itv R & xi}) (y : {itv R & yi})
+    (r := add_itv xi yi) :
   Itv.spec r (x%:inum + y%:inum).
 Proof.
 rewrite {}/r.
@@ -429,9 +426,8 @@ rewrite /Itv.itv_cond in_itv; apply/andP; split.
     do ?[exact: lerD|exact: ler_ltD|exact: ltr_leD|exact: ltrD].
 Qed.
 
-Canonical add_inum (xi yi : interval int)
-    (x : {itv R & xi}) (y : {itv R & yi}) :=
-  Itv.mk (add_inum_subproof x y).
+Canonical add_inum (xi yi : interval int) (x : {itv R & xi}) (y : {itv R & yi})
+  := Itv.mk (add_spec x y).
 
 End NumDomainStability.
 
@@ -487,7 +483,7 @@ have [lneg|lpos|->] := ltgtP l; have [uneg|upos|->] := ltgtP u.
 - exact: ISignEqZero.
 Qed.
 
-Definition mul_itv_boundl_subdef (b1 b2 : itv_bound int) : itv_bound int :=
+Definition mul_itv_boundl (b1 b2 : itv_bound int) : itv_bound int :=
   match b1, b2 with
   | BSide true 0%Z, BSide _ _
   | BSide _ _, BSide true 0%Z => BSide true 0%Z
@@ -495,9 +491,9 @@ Definition mul_itv_boundl_subdef (b1 b2 : itv_bound int) : itv_bound int :=
   | _, BInfty _
   | BInfty _, _ => BInfty _ false
   end.
-Arguments mul_itv_boundl_subdef /.
+Arguments mul_itv_boundl /.
 
-Definition mul_itv_boundr_subdef (b1 b2 : itv_bound int) : itv_bound int :=
+Definition mul_itv_boundr (b1 b2 : itv_bound int) : itv_bound int :=
   match b1, b2 with
   | BSide true 0%Z, _
   | _, BSide true 0%Z => BSide true 0%Z
@@ -507,13 +503,13 @@ Definition mul_itv_boundr_subdef (b1 b2 : itv_bound int) : itv_bound int :=
   | _, BInfty _
   | BInfty _, _ => BInfty _ false
   end.
-Arguments mul_itv_boundr_subdef /.
+Arguments mul_itv_boundr /.
 
-Lemma mul_itv_boundl_subproof b1 b2 (x1 x2 : R) :
+Lemma mul_itv_boundl_spec b1 b2 (x1 x2 : R) :
   (BLeft 0%:Z <= b1 -> BLeft 0%:Z <= b2 ->
    Itv.map_itv_bound intr b1 <= BLeft x1 ->
    Itv.map_itv_bound intr b2 <= BLeft x2 ->
-   Itv.map_itv_bound intr (mul_itv_boundl_subdef b1 b2) <= BLeft (x1 * x2))%O.
+   Itv.map_itv_bound intr (mul_itv_boundl b1 b2) <= BLeft (x1 * x2))%O.
 Proof.
 move: b1 b2 => [[] b1 | []//] [[] b2 | []//] /=; rewrite 4!bnd_simp.
 - set bl := match b1 with 0%Z => _ | _ => _ end.
@@ -535,17 +531,17 @@ move: b1 b2 => [[] b1 | []//] [[] b2 | []//] /=; rewrite 4!bnd_simp.
 - rewrite -2!(ler0z R) bnd_simp intrM; exact: ltr_pM.
 Qed.
 
-Lemma mul_itv_boundrC_subproof b1 b2 :
-  mul_itv_boundr_subdef b1 b2 = mul_itv_boundr_subdef b2 b1.
+Lemma mul_itv_boundrC b1 b2 :
+  mul_itv_boundr b1 b2 = mul_itv_boundr b2 b1.
 Proof.
 by move: b1 b2 => [[] [[|?]|?] | []] [[] [[|?]|?] | []] //=; rewrite mulnC.
 Qed.
 
-Lemma mul_itv_boundr_subproof b1 b2 (x1 x2 : R) :
+Lemma mul_itv_boundr_spec b1 b2 (x1 x2 : R) :
   (BLeft 0%R <= BLeft x1 -> BLeft 0%R <= BLeft x2 ->
    BRight x1 <= Itv.map_itv_bound intr b1 ->
    BRight x2 <= Itv.map_itv_bound intr b2 ->
-   BRight (x1 * x2) <= Itv.map_itv_bound intr (mul_itv_boundr_subdef b1 b2))%O.
+   BRight (x1 * x2) <= Itv.map_itv_bound intr (mul_itv_boundr b1 b2))%O.
 Proof.
 move: b1 b2 => [b1b b1 | []] [b2b b2 | []] //=; last first.
 - move: b2 b2b => [[|p2]|p2] [] // _ + _ +; rewrite !bnd_simp => le1 le2.
@@ -585,14 +581,14 @@ case: b1 => [[|p1]|p1].
   by move: (le_trans l l'); rewrite ler0z.
 Qed.
 
-Lemma mul_itv_boundr'_subproof b1 b2 (x1 x2 : R) :
+Lemma mul_itv_boundr'_spec b1 b2 (x1 x2 : R) :
   (BLeft 0%:R <= BLeft x1 -> BRight 0%:Z <= b2 ->
    BRight x1 <= Itv.map_itv_bound intr b1 ->
    BRight x2 <= Itv.map_itv_bound intr b2 ->
-   BRight (x1 * x2) <= Itv.map_itv_bound intr (mul_itv_boundr_subdef b1 b2))%O.
+   BRight (x1 * x2) <= Itv.map_itv_bound intr (mul_itv_boundr b1 b2))%O.
 Proof.
 move=> x1ge0 b2ge0 lex1b1 lex2b2.
-have [x2ge0 | x2lt0] := leP 0 x2; first exact: mul_itv_boundr_subproof.
+have [x2ge0 | x2lt0] := leP 0 x2; first exact: mul_itv_boundr_spec.
 have lem0 : (BRight (x1 * x2) <= BRight 0%R)%O.
   by rewrite bnd_simp mulr_ge0_le0 // ltW.
 apply: le_trans lem0 _.
@@ -610,12 +606,12 @@ case: b1 => [[|p1]|p1].
   by case: b1b; rewrite bnd_simp ?ltr0z // ler0z.
 Qed.
 
-Definition mul_itv_subdef (i1 i2 : interval int) : interval int :=
+Definition mul_itv (i1 i2 : interval int) : interval int :=
   let 'Interval l1 u1 := i1 in
   let 'Interval l2 u2 := i2 in
-  let opp := opp_itv_bound_subdef in
-  let mull := mul_itv_boundl_subdef in
-  let mulr := mul_itv_boundr_subdef in
+  let opp := opp_itv_bound in
+  let mull := mul_itv_boundl in
+  let mulr := mul_itv_boundr in
   match interval_sign i1, interval_sign i2 with
   | None, _ | _, None => `[1, 0]
   | some s1, Some s2 =>
@@ -637,7 +633,7 @@ Definition mul_itv_subdef (i1 i2 : interval int) : interval int :=
                           (mulr u1 u2))
      end)%snum_sign
   end.
-Arguments mul_itv_subdef /.
+Arguments mul_itv /.
 
 Lemma map_itv_bound_min (x y : itv_bound int) :
   Itv.map_itv_bound (fun x => x%:~R : R) (Order.min x y)
@@ -655,9 +651,8 @@ have [lexy|ltyx] := leP x y; first by rewrite !maxEle Itv.le_map_itv_bound.
 by rewrite maxElt -if_neg -leNgt Itv.le_map_itv_bound // ltW.
 Qed.
 
-Lemma mul_inum_subproof (xi yi : interval int)
-    (x : {itv R & xi}) (y : {itv R & yi})
-    (r := mul_itv_subdef xi yi) :
+Lemma mul_spec (xi yi : interval int) (x : {itv R & xi}) (y : {itv R & yi})
+    (r := mul_itv xi yi) :
   Itv.spec r (x%:inum * y%:inum).
 Proof.
 rewrite {}/r.
@@ -671,9 +666,9 @@ have empty10 (z : R) l u : (u <= l)%O ->
   rewrite lt_def => /andP[/[swap]] => + /ltac:(apply/negP).
   rewrite negbK; move: leul => /(Itv.le_map_itv_bound R) le1 le2.
   by apply/eqP/le_anti; rewrite le1.
-pose opp := opp_itv_bound_subdef.
-pose mull := mul_itv_boundl_subdef.
-pose mulr := mul_itv_boundr_subdef.
+pose opp := opp_itv_bound.
+pose mull := mul_itv_boundl.
+pose mulr := mul_itv_boundr.
 have [leuxlx|-> ->|lxneg uxneg|lxpos uxpos|lxneg uxpos] := interval_signP.
 - move=> + + /ltac:(exfalso); exact: empty10.
 - rewrite 2!bnd_simp => lex1 lex2 ley1 ley2.
@@ -697,15 +692,15 @@ have [leuxlx|-> ->|lxneg uxneg|lxpos uxpos|lxneg uxpos] := interval_signP.
     rewrite -[Interval _ _]/(Interval (mull (opp ux) (opp uy))
                                (mulr (opp lx) (opp ly))).
     rewrite -mulrNN /Itv.itv_cond itv_boundlr.
-    rewrite mul_itv_boundl_subproof ?mul_itv_boundr_subproof //.
+    rewrite mul_itv_boundl_spec ?mul_itv_boundr_spec //.
     * by rewrite bnd_simp oppr_ge0.
     * by rewrite bnd_simp oppr_ge0.
-    * by rewrite opp_itv_boundr_subproof.
-    * by rewrite opp_itv_boundr_subproof.
-    * by rewrite opp_itv_ge0_subproof.
-    * by rewrite opp_itv_ge0_subproof.
-    * by rewrite opp_itv_boundl_subproof.
-    * by rewrite opp_itv_boundl_subproof.
+    * by rewrite opp_itv_boundr.
+    * by rewrite opp_itv_boundr.
+    * by rewrite opp_itv_ge0.
+    * by rewrite opp_itv_ge0.
+    * by rewrite opp_itv_boundl.
+    * by rewrite opp_itv_boundl.
   + move=> lelyy leyuy.
     have ypos : 0 <= y.
       move: (le_trans (Itv.le_map_itv_bound R lypos) lelyy).
@@ -713,25 +708,25 @@ have [leuxlx|-> ->|lxneg uxneg|lxpos uxpos|lxneg uxpos] := interval_signP.
     rewrite -[Interval _ _]/(Interval (opp (mulr (opp lx) uy))
                                (opp (mull (opp ux) ly))).
     rewrite -[x * y]opprK -mulNr /Itv.itv_cond itv_boundlr.
-    rewrite opp_itv_boundl_subproof opp_itv_boundr_subproof.
-    rewrite mul_itv_boundl_subproof ?mul_itv_boundr_subproof //.
+    rewrite opp_itv_boundl opp_itv_boundr.
+    rewrite mul_itv_boundl_spec ?mul_itv_boundr_spec //.
     * by rewrite bnd_simp oppr_ge0.
-    * by rewrite opp_itv_boundr_subproof.
-    * by rewrite opp_itv_ge0_subproof.
-    * by rewrite opp_itv_boundl_subproof.
+    * by rewrite opp_itv_boundr.
+    * by rewrite opp_itv_ge0.
+    * by rewrite opp_itv_boundl.
   + move=> lelyy leyuy.
     rewrite -[Interval _ _]/(Interval (opp (mulr (opp lx) uy))
                                (mulr (opp lx) (opp ly))).
     rewrite -[x * y]opprK -mulNr /Itv.itv_cond itv_boundlr.
-    rewrite opp_itv_boundl_subproof -mulrN.
-    rewrite 2?mul_itv_boundr'_subproof //.
+    rewrite opp_itv_boundl -mulrN.
+    rewrite 2?mul_itv_boundr'_spec //.
     * by rewrite bnd_simp oppr_ge0.
-    * by rewrite leBRight_ltBLeft opp_itv_gt0_subproof ltBRight_leBLeft ltW.
-    * by rewrite opp_itv_boundr_subproof.
-    * by rewrite opp_itv_boundr_subproof.
+    * by rewrite leBRight_ltBLeft opp_itv_gt0 ltBRight_leBLeft ltW.
+    * by rewrite opp_itv_boundr.
+    * by rewrite opp_itv_boundr.
     * by rewrite bnd_simp oppr_ge0.
     * by rewrite ltW.
-    * by rewrite opp_itv_boundr_subproof.
+    * by rewrite opp_itv_boundr.
 - move=> lelxx lexux.
   have xpos : 0 <= x.
     move: (le_trans (Itv.le_map_itv_bound R lxpos) lelxx).
@@ -748,27 +743,27 @@ have [leuxlx|-> ->|lxneg uxneg|lxpos uxpos|lxneg uxpos] := interval_signP.
     rewrite -[Interval _ _]/(Interval (opp (mulr ux (opp ly)))
                                (opp (mull lx (opp uy)))).
     rewrite -[x * y]opprK -mulrN /Itv.itv_cond itv_boundlr.
-    rewrite opp_itv_boundl_subproof opp_itv_boundr_subproof.
-    rewrite mul_itv_boundr_subproof ?mul_itv_boundl_subproof //.
-    * by rewrite opp_itv_ge0_subproof.
-    * by rewrite opp_itv_boundl_subproof.
+    rewrite opp_itv_boundl opp_itv_boundr.
+    rewrite mul_itv_boundr_spec ?mul_itv_boundl_spec //.
+    * by rewrite opp_itv_ge0.
+    * by rewrite opp_itv_boundl.
     * by rewrite bnd_simp oppr_ge0.
-    * by rewrite opp_itv_boundr_subproof.
+    * by rewrite opp_itv_boundr.
   + move=> lelyy leyuy.
     have ypos : 0 <= y.
       move: (le_trans (Itv.le_map_itv_bound R lypos) lelyy).
       by rewrite /= bnd_simp.
       rewrite -[Interval _ _]/(Interval (mull lx ly) (mulr ux uy)).
     rewrite /Itv.itv_cond itv_boundlr.
-    by rewrite mul_itv_boundr_subproof ?mul_itv_boundl_subproof.
+    by rewrite mul_itv_boundr_spec ?mul_itv_boundl_spec.
   + move=> lelyy leyuy.
     rewrite -[Interval _ _]/(Interval (opp (mulr ux (opp ly))) (mulr ux uy)).
     rewrite -[x * y]opprK -mulrN /Itv.itv_cond itv_boundlr.
-    rewrite opp_itv_boundl_subproof -mulrN opprK.
-    rewrite 2?mul_itv_boundr'_subproof //.
+    rewrite opp_itv_boundl -mulrN opprK.
+    rewrite 2?mul_itv_boundr'_spec //.
     * by rewrite ltW.
-    * by rewrite leBRight_ltBLeft opp_itv_gt0_subproof ltBRight_leBLeft ltW.
-    * by rewrite opp_itv_boundr_subproof.
+    * by rewrite leBRight_ltBLeft opp_itv_gt0 ltBRight_leBLeft ltW.
+    * by rewrite opp_itv_boundr.
 - move=> lelxx lexux.
   have [leuyly|-> ->|lyneg uyneg|lypos uypos|lyneg uypos] := interval_signP.
   + move=> + + /ltac:(exfalso); exact: empty10.
@@ -782,28 +777,28 @@ have [leuxlx|-> ->|lxneg uxneg|lxpos uxpos|lxneg uxpos] := interval_signP.
     rewrite -[Interval _ _]/(Interval (opp (mulr ux (opp ly)))
                                (mulr (opp lx) (opp ly))).
     rewrite -[x * y]opprK -mulrN /Itv.itv_cond itv_boundlr.
-    rewrite /mulr mul_itv_boundrC_subproof mulrC opp_itv_boundl_subproof.
-    rewrite [in X in _ && X]mul_itv_boundrC_subproof -mulrN.
-    rewrite mul_itv_boundr'_subproof ?mul_itv_boundr'_subproof //.
+    rewrite /mulr mul_itv_boundrC mulrC opp_itv_boundl.
+    rewrite [in X in _ && X]mul_itv_boundrC -mulrN.
+    rewrite mul_itv_boundr'_spec ?mul_itv_boundr'_spec //.
     * by rewrite bnd_simp oppr_ge0.
-    * by rewrite leBRight_ltBLeft opp_itv_gt0_subproof ltBRight_leBLeft ltW.
-    * by rewrite opp_itv_boundr_subproof.
-    * by rewrite opp_itv_boundr_subproof.
+    * by rewrite leBRight_ltBLeft opp_itv_gt0 ltBRight_leBLeft ltW.
+    * by rewrite opp_itv_boundr.
+    * by rewrite opp_itv_boundr.
     * by rewrite bnd_simp oppr_ge0.
     * by rewrite ltW.
-    * by rewrite opp_itv_boundr_subproof.
+    * by rewrite opp_itv_boundr.
   + move=> lelyy leyuy.
     have ypos : 0 <= y.
       move: (le_trans (Itv.le_map_itv_bound R lypos) lelyy).
       by rewrite /= bnd_simp.
     rewrite -[Interval _ _]/(Interval (opp (mulr (opp lx) uy)) (mulr ux uy)).
     rewrite -[x * y]opprK -mulNr /Itv.itv_cond itv_boundlr.
-    rewrite /mulr mul_itv_boundrC_subproof mulrC opp_itv_boundl_subproof.
-    rewrite [in X in _ && X]mul_itv_boundrC_subproof -mulrN opprK.
-    rewrite mul_itv_boundr'_subproof ?mul_itv_boundr'_subproof //.
+    rewrite /mulr mul_itv_boundrC mulrC opp_itv_boundl.
+    rewrite [in X in _ && X]mul_itv_boundrC -mulrN opprK.
+    rewrite mul_itv_boundr'_spec ?mul_itv_boundr'_spec //.
     * by rewrite ltW.
-    * by rewrite leBRight_ltBLeft opp_itv_gt0_subproof ltBRight_leBLeft ltW.
-    * by rewrite opp_itv_boundr_subproof.
+    * by rewrite leBRight_ltBLeft opp_itv_gt0 ltBRight_leBLeft ltW.
+    * by rewrite opp_itv_boundr.
   + move=> lelyy leyuy.
     rewrite -[Interval _ _]/(Interval
                                (Order.min (opp (mulr (opp lx) uy))
@@ -812,31 +807,33 @@ have [leuxlx|-> ->|lxneg uxneg|lxpos uxpos|lxneg uxpos] := interval_signP.
                                   (mulr ux uy))).
     rewrite /Itv.itv_cond itv_boundlr.
     rewrite map_itv_bound_min map_itv_bound_max ge_min le_max.
-    rewrite -[x * y]opprK !opp_itv_boundl_subproof.
+    rewrite -[x * y]opprK !opp_itv_boundl.
     rewrite -[in X in ((X || _) && _)]mulNr -[in X in ((_ || X) && _)]mulrN.
     rewrite -[in X in (_ && (X || _))]mulrNN !opprK.
     have [xpos|xneg] := leP 0 x.
-    * rewrite [in X in ((_ || X) && _)]mul_itv_boundr'_subproof ?orbT //=;
-        rewrite ?[in X in (_ || X)]mul_itv_boundr'_subproof ?orbT //.
+    * rewrite [in X in ((_ || X) && _)]mul_itv_boundr'_spec ?orbT //=;
+        rewrite ?[in X in (_ || X)]mul_itv_boundr'_spec ?orbT //.
       - by rewrite ltW.
-      - by rewrite leBRight_ltBLeft opp_itv_gt0_subproof ltBRight_leBLeft ltW.
-      - by rewrite opp_itv_boundr_subproof.
-    * rewrite [in X in ((X || _) && _)]mul_itv_boundr'_subproof //=;
-        rewrite ?[in X in (X || _)]mul_itv_boundr'_subproof //.
+      - by rewrite leBRight_ltBLeft opp_itv_gt0 ltBRight_leBLeft ltW.
+      - by rewrite opp_itv_boundr.
+    * rewrite [in X in ((X || _) && _)]mul_itv_boundr'_spec //=;
+        rewrite ?[in X in (X || _)]mul_itv_boundr'_spec //.
       - by rewrite bnd_simp oppr_ge0 ltW.
-      - by rewrite leBRight_ltBLeft opp_itv_gt0_subproof ltBRight_leBLeft ltW.
-      - by rewrite opp_itv_boundr_subproof.
-      - by rewrite opp_itv_boundr_subproof.
+      - by rewrite leBRight_ltBLeft opp_itv_gt0 ltBRight_leBLeft ltW.
+      - by rewrite opp_itv_boundr.
+      - by rewrite opp_itv_boundr.
       - by rewrite bnd_simp oppr_ge0 ltW.
       - by rewrite ltW.
-      - by rewrite opp_itv_boundr_subproof.
+      - by rewrite opp_itv_boundr.
 Qed.
 
-Canonical mul_inum (xi yi : interval int)
-    (x : {itv R & xi}) (y : {itv R & yi}) :=
-  Itv.mk (mul_inum_subproof x y).
+Canonical mul_inum (xi yi : interval int) (x : {itv R & xi}) (y : {itv R & yi})
+  := Itv.mk (mul_spec x y).
 
 End RealDomainStability.
+
+End Instances.
+Export (canonicals) Instances.
 
 Section Morph.
 Context {R : numDomainType} {i : interval int}.

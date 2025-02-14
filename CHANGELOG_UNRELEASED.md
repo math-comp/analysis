@@ -161,6 +161,17 @@
 
 - file `itv.v` to `interval_inference.v`
 
+- in `interval_inference.v`
+  + `itv_top_typ` -> `TypInstances.itv_top_typ`
+  + `typ_inum` -> `TypInstances.typ_inum`
+  + `zero_inum` -> `Instances.zero_inum`
+  + `one_inum` -> `Instances.one_inum`
+  + `add_inum` -> `Instances.add_inum`
+  + `interval_sign` -> `Instances.interval_sign`
+  + `interval_sign_spec` -> `Instances.interval_sign_spec`
+  + `interval_signP` -> `Instances.interval_signP`
+  + `mul_inum` -> `Instances.mul_inum`
+
 - in `measure.v`
   + `preimage_class` -> `preimage_set_system`
   + `image_class` -> `image_set_system`
