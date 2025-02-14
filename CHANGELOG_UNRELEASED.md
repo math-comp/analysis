@@ -146,6 +146,9 @@
   + `sedDI_closedP` -> `setD_closedP`
   + `setringDI` -> `setringD`
 
+- in `lebesgue_integral.v`:
+  + `Rintegral_setU_EFin` -> `Rintegral_setU`
+
 ### Generalized
 
 - in `sequences.v`,

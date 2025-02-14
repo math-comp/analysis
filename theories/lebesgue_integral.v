@@ -4730,7 +4730,7 @@ by apply: ge0_le_integral => //=; do 2 apply: measurableT_comp => //;
   exact/measurable_EFinP.
 Qed.
 
-Lemma Rintegral_setU_EFin (A B : set T) (f : T -> R) :
+Lemma Rintegral_setU (A B : set T) (f : T -> R) :
     d.-measurable A -> d.-measurable B ->
     mu.-integrable (A `|` B) (EFin \o f) -> [disjoint A & B] ->
   \int[mu]_(x in (A `|` B)) f x = \int[mu]_(x in A) f x + \int[mu]_(x in B) f x.
@@ -4787,6 +4787,8 @@ by rewrite /Rintegral integralB_EFin// fineB//; exact: integral_fune_fin_num.
 Qed.
 
 End Rintegral.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `Rintegral_setU`")]
+Notation Rintegral_setU_EFin := Rintegral_setU (only parsing).
 
 Section ae_ge0_le_integral.
 Local Open Scope ereal_scope.
@@ -6938,7 +6940,7 @@ move=> itf; rewrite le_eqVlt => /predU1P[ax|ax xb].
 rewrite (@itv_bndbnd_setU _ _ _ (BLeft x)); last 2 first.
   by case: a ax {itf} => -[].
   by rewrite (le_trans _ xb)// bnd_simp.
-rewrite Rintegral_setU_EFin//=.
+rewrite Rintegral_setU//=.
 - rewrite addrAC Rintegral_itv_bndo_bndc//; last first.
     apply: integrableS itf => //; apply: subset_itvl.
     by rewrite (le_trans _ xb)// bnd_simp.
