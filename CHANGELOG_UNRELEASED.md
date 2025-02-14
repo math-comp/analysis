@@ -100,6 +100,9 @@
 - in `normedtype.v`:
   + lemmas `ninfty`, `cvgy_compNP`
 
+- new file `measurable_realfun.v`
+  + with as contents the first half of the file `lebesgue_measure.v`
+
 ### Changed
 
 - in `lebesgue_integral.v`
@@ -125,6 +128,9 @@
 
 - in `normedtype.v`:
   + lemma `cvgyNP` renamed to `cvgNy_compN` and generalized
+
+- file `lebesgue_measure.v`
+  + first half moved to a new file `measurable_realfun.v`
 
 ### Renamed
 
@@ -228,6 +234,22 @@
     `__deprecated__ereal_lim_ge`, `__deprecated__ereal_lim_le`,
     `__deprecated__dvg_ereal_cvg`, `__deprecated__ereal_cvg_real`
     (were deprecated since 0.6.0)
+
+- in `derive.v`:
+  + notations `le0r_cvg_map`, `ler0_cvg_map`, `ler_cvg_map`
+    (deprecated since 0.6.0)
+  + lemmas `__deprecated__le0r_cvg_map`, `__deprecated__ler0_cvg_map`,
+    `__deprecated__ler_cvg_map`
+    (deprecated since 0.6.0)
+
+- in `normedtype.v`
+  + notations `cvg_distP`, `cvg_distW`, `continuous_cvg_dist`, `cvg_dist2P`,
+    `cvg_gt_ge`, `cvg_lt_le_`, `linear_bounded0`
+    (deprecated since 0.6.0)
+  + lemmas `__deprecated__cvg_distW`, `__deprecated__continuous_cvg_dist`,
+    `__deprecated__cvg_gt_ge`, `__deprecated__cvg_lt_le`,
+    `__deprecated__linear_bounded0 `
+    (deprecated since 0.6.0)
 
 ### Infrastructure
 
