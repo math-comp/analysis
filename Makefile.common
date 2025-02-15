@@ -138,15 +138,14 @@ coq2html:
 	gsed -i 's/Analysis_stdlib/mathcomp\.analysis_stdlib/' depend.dot
 	gsed -i 's/\//\./g' depend.dot
 	../coq2html/tools/generate-hierarchy-graph.sh
-	../coq2html/coq2html \
+	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs ../coq2html/coq2html \
   -hierarchy-graph hierarchy-graph.dot \
   -dependency-graph depend.dot \
   -title "Mathcomp Analysis" \
   -d html/ -base mathcomp -Q theories analysis \
   -coqlib https://coq.inria.fr/doc/V8.19.2/stdlib/ \
   -external https://math-comp.github.io/htmldoc/ mathcomp.ssreflect \
-  -external https://math-comp.github.io/htmldoc/ mathcomp.algebra \
-  $(find . -not -path '*/.*' -name "*.v" -or -name "*.glob")
+  -external https://math-comp.github.io/htmldoc/ mathcomp.algebra
 
 coq2html-clean:
 	rm -f */*.glob
