@@ -3,9 +3,8 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals ereal nsatz_realtype interval_inference.
-From mathcomp Require Import topology normedtype landau sequences derive.
-From mathcomp Require Import realfun exp.
+From mathcomp Require Import reals ereal interval_inference topology.
+From mathcomp Require Import normedtype landau sequences derive realfun exp.
 
 (**md**************************************************************************)
 (* # Theory of trigonometric functions                                        *)
@@ -367,7 +366,9 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last first.
   by rewrite /f cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
 apply: is_derive_0_is_cst => {}x.
-by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
+apply: trigger_derive; rewrite /GRing.scale /= !mulr0 !add0r addr0 !mulr1.
+rewrite -!mulr2n  -mulrnDl mulrC !(mulrC (cos y)) !(mulrC (sin y)).
+by rewrite mulNr -mulrDr mulNr -!opprD subrr mulr0 mul0rn.
 Qed.
 
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
@@ -403,7 +404,9 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last first.
   by rewrite /f oppr0 cos0 sin0 !(addr0, subrr, expr0n).
 apply: is_derive_0_is_cst => {}x.
-by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
+apply: trigger_derive; rewrite /GRing.scale /=.
+rewrite !mulrN1 !opprK -!mulr2n -mulrnDl mulrC.
+by rewrite -opprB mulNr (addrC (cos x)) subrr mul0rn.
 Qed.
 
 Lemma sinN x : sin (- x) = - sin x.
