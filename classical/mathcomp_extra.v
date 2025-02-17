@@ -1,5 +1,4 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import BinPos Pnat.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
@@ -410,16 +409,6 @@ rewrite /Order.min/=; case: ifPn => xz; case: ifPn => yz; rewrite ?ltxx//.
 Qed.
 
 End order_min.
-
-Section positive.
-
-Lemma Pos_to_natE p : Pos.to_nat p = nat_of_pos p.
-Proof.
-by elim: p => //= p <-;
-  rewrite ?(Pnat.Pos2Nat.inj_xI,Pnat.Pos2Nat.inj_xO) NatTrec.doubleE -mul2n.
-Qed.
-
-End positive.
 
 Lemma intrD1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
 Proof. by rewrite intrD. Qed.

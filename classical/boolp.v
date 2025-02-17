@@ -7,6 +7,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import mathcomp_extra.
+From mathcomp Require internal_Eqdep_dec.
 
 (**md**************************************************************************)
 (* # Classical Logic                                                          *)
@@ -95,7 +96,7 @@ Proof. by case. Qed.
 Lemma existT_inj2 (T : eqType) (P : T -> Type) (x : T) (Px1 Px2 : P x) :
   existT P x Px1 = existT P x Px2 -> Px1 = Px2.
 Proof.
-apply: Eqdep_dec.inj_pair2_eq_dec => y z.
+apply: internal_Eqdep_dec.inj_pair2_eq_dec => y z.
 by have [|/eqP] := eqVneq y z; [left|right].
 Qed.
 

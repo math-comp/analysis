@@ -481,6 +481,12 @@ Lemma RdivE x y : Rdiv x y = x / y. Proof. by rewrite /Rdiv. Qed.
 Lemma INRE n : INR n = n%:R.
 Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
 
+Lemma Pos_to_natE p : Pos.to_nat p = nat_of_pos p.
+Proof.
+by elim: p => //= p <-;
+  rewrite ?(Pnat.Pos2Nat.inj_xI,Pnat.Pos2Nat.inj_xO) NatTrec.doubleE -mul2n.
+Qed.
+
 (**md Note that rewrites using the following lemma `IZRposE` are
   systematically followed by a rewrite using the lemma `INRE`. *)
 Lemma IZRposE (p : positive) : IZR (Z.pos p) = INR (nat_of_pos p).
