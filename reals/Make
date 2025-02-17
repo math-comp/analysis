@@ -11,7 +11,7 @@ constructive_ereal.v
 reals.v
 real_interval.v
 signed.v
-itv.v
+interval_inference.v
 prodnormedzmodule.v
 nsatz_realtype.v
 all_reals.v

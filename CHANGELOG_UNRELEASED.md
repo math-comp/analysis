@@ -159,6 +159,8 @@
 
 ### Renamed
 
+- file `itv.v` to `interval_inference.v`
+
 - in `measure.v`
   + `preimage_class` -> `preimage_set_system`
   + `image_class` -> `image_set_system`
