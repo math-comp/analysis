@@ -31,7 +31,6 @@ reals/real_interval.v
 reals/signed.v
 reals/interval_inference.v
 reals/prodnormedzmodule.v
-reals/nsatz_realtype.v
 reals/all_reals.v
 experimental_reals/xfinmap.v
 experimental_reals/discrete.v
@@ -39,6 +38,7 @@ experimental_reals/realseq.v
 experimental_reals/realsum.v
 experimental_reals/distr.v
 reals_stdlib/Rstruct.v
+reals_stdlib/nsatz_realtype.v
 theories/all_analysis.v
 theories/landau.v
 

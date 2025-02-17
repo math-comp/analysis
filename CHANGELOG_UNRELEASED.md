@@ -11,6 +11,8 @@
 
 ### Changed
 
+- file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
+
 ### Renamed
 
 ### Generalized
