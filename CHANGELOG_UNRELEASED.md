@@ -103,6 +103,9 @@
 - new file `measurable_realfun.v`
   + with as contents the first half of the file `lebesgue_measure.v`
 
+- file `Rstruct.v`
+  + lemma `Pos_to_natE` (from `mathcomp_extra.v`)
+
 ### Changed
 
 - in `lebesgue_integral.v`
@@ -253,6 +256,9 @@
     `__deprecated__cvg_gt_ge`, `__deprecated__cvg_lt_le`,
     `__deprecated__linear_bounded0 `
     (deprecated since 0.6.0)
+
+- file `mathcomp_extra.v`
+  + lemma `Pos_to_natE` (moved to `Rstruct.v`)
 
 ### Infrastructure
 
