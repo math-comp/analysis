@@ -13,5 +13,4 @@ real_interval.v
 signed.v
 itv.v
 prodnormedzmodule.v
-nsatz_realtype.v
 all_reals.v
