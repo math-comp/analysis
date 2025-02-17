@@ -4,7 +4,7 @@ From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
 From mathcomp Require Import functions cardinality ereal reals signed.
 From mathcomp Require Import topology prodnormedzmodule normedtype derive.
-From mathcomp Require Import realfun itv.
+From mathcomp Require Import realfun interval_inference.
 From HB Require Import structures.
 
 (**md**************************************************************************)

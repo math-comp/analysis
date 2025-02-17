@@ -4,7 +4,7 @@ From mathcomp Require Import interval rat.
 From mathcomp Require Import boolp classical_sets functions.
 From mathcomp Require Import mathcomp_extra reals ereal signed.
 From mathcomp Require Import topology tvs normedtype landau sequences derive.
-From mathcomp Require Import realfun itv convex.
+From mathcomp Require Import realfun interval_inference convex.
 
 (**md**************************************************************************)
 (* # Theory of exponential/logarithm functions                                *)
