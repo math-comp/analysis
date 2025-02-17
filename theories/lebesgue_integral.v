@@ -1572,15 +1572,14 @@ rewrite -(@fineK _ (f x)); first exact: (cvg_comp (cvg_approx f0 Dx fxoo)).
 by rewrite ge0_fin_numE// f0.
 Qed.
 
-Let k2n_ge0 n (k : 'I_(n * 2 ^ n)) : 0 <= k%:R * 2 ^- n :> R.
+Let k2n_ge0 n (k : nat) : 0 <= k%:R * 2 ^- n :> R.
 Proof. by []. Qed.
 
 Definition nnsfun_approx : {nnsfun T >-> R}^nat := fun n => locked (add_nnsfun
   (sum_nnsfun
-    (fun k => match Bool.bool_dec (k < (n * 2 ^ n))%N true with
-      | left h => scale_nnsfun (indic_nnsfun _ (mA n k)) (k2n_ge0 (Ordinal h))
-      | right _ => nnsfun0
-     end) (n * 2 ^ n)%N)
+    (fun k => if (k < (n * 2 ^ n))%N then
+        scale_nnsfun (indic_nnsfun _ (mA n k)) (k2n_ge0 n k)
+      else nnsfun0) (n * 2 ^ n)%N)
   (scale_nnsfun (indic_nnsfun _ (mB n)) (ler0n _ n))).
 
 Import HBNNSimple.
@@ -1589,7 +1588,7 @@ Lemma nnsfun_approxE n : nnsfun_approx n = approx n :> (T -> R).
 Proof.
 rewrite funeqE => t /=; rewrite /nnsfun_approx; unlock; rewrite /=.
 rewrite sum_nnsfunE; congr (_ + _).
-by apply: eq_bigr => i _; case: Bool.bool_dec => [h|/negP]; [|rewrite ltn_ord].
+by apply: eq_bigr => i _; case: ltnP => [//|]; rewrite leqNgt ltn_ord.
 Qed.
 
 Lemma cvg_nnsfun_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
