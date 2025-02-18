@@ -99,6 +99,17 @@
 
 - in `normedtype.v`:
   + lemmas `ninfty`, `cvgy_compNP`
+- in `normedtype.v`
+  + global hint to automatically apply `interval_open`
+
+- in `sequences.v`:
+  + lemma `seqDUE`
+  + lemma `nondecreasing_telescope_sumey`
+
+- in `ftc.v`:
+  + lemma `ge0_continuous_FTC2y`
+  + lemma `Rintegral_ge0_continuous_FTC2y`
+  + lemma `le0_continuous_FTC2y`
 
 - new file `measurable_realfun.v`
   + with as contents the first half of the file `lebesgue_measure.v`

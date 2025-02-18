@@ -1294,6 +1294,7 @@ End open_closed_sets.
 #[global] Hint Extern 0 (closed _) => now apply: closed_ge : core.
 #[global] Hint Extern 0 (closed _) => now apply: closed_le : core.
 #[global] Hint Extern 0 (closed _) => now apply: closed_eq : core.
+#[global] Hint Extern 0 (open _) => now apply: interval_open : core.
 
 Section at_left_right.
 Variable R : numFieldType.
