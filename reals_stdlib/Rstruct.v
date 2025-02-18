@@ -136,29 +136,20 @@ rewrite RinvImpl.Rinv_def; case: Req_appart_dec => //.
 by move=> /[dup] -[] /Rlt_irrefl.
 Qed.
 
-Let RmultRinvx : {in unit_R, left_inverse 1 Rinvx Rmult}.
+Lemma RmultRinv : {in unit_R, left_inverse 1 Rinv Rmult}.
 Proof.
-move=> r; rewrite -topredE /unit_R /Rinvx => /= rNZ /=.
+move=> r; rewrite RinvxE -topredE /unit_R /Rinvx => /= rNZ /=.
 by rewrite rNZ Rinv_l //; apply/eqP.
 Qed.
 
-Let RinvxRmult : {in unit_R, right_inverse 1 Rinvx Rmult}.
+Lemma RinvRmult : {in unit_R, right_inverse 1 Rinv Rmult}.
 Proof.
-move=> r; rewrite -topredE /unit_R /Rinvx => /= rNZ /=.
+move=> r; rewrite RinvxE -topredE /unit_R /Rinvx => /= rNZ /=.
 by rewrite rNZ Rinv_r //; apply/eqP.
 Qed.
 
-Let Rinvx_out : {in predC unit_R, Rinvx =1 id}.
-Proof. by move=> x; rewrite inE/= /Rinvx -if_neg => ->. Qed.
-
-Lemma RmultRinv : {in unit_R, left_inverse 1 Rinv Rmult}.
-Proof. move=> r; rewrite RinvxE; exact: RmultRinvx. Qed.
-
-Lemma RinvRmult : {in unit_R, right_inverse 1 Rinv Rmult}.
-Proof. move=> r; rewrite RinvxE; exact: RinvxRmult. Qed.
-
 Lemma Rinv_out : {in predC unit_R, Rinv =1 id}.
-Proof. by move=> x; rewrite RinvxE; exact: Rinvx_out. Qed.
+Proof. by move=> x; rewrite inE/= RinvxE /Rinvx -if_neg => ->. Qed.
 
 End Rinvx.
 
@@ -483,10 +474,9 @@ Lemma RmultE x y : Rmult x y = x * y. Proof. by []. Qed.
 
 Lemma RoppE x : Ropp x = - x. Proof. by []. Qed.
 
-Lemma RinvE x : Rinv x = x^-1.
-Proof. by []. Qed.
+Lemma RinvE x : Rinv x = x^-1. Proof. by []. Qed.
 
-Lemma RdivE x y : Rdiv x y = x / y. Proof. by rewrite /Rdiv RinvE. Qed.
+Lemma RdivE x y : Rdiv x y = x / y. Proof. by rewrite /Rdiv. Qed.
 
 Lemma INRE n : INR n = n%:R.
 Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
