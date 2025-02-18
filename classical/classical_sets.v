@@ -34,7 +34,7 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*   set (i.e., of type set rT)                                               *)
 (* - indexed sets are rather named F                                          *)
 (*                                                                            *)
-(* Example of notations:                                                      *)
+(* Examples of notations:                                                     *)
 (* | Coq notations                |   | Meaning                             | *)
 (* |-----------------------------:|---|:------------------------------------  *)
 (* |                         set0 |==| $\emptyset$                            *)
