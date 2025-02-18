@@ -4,6 +4,11 @@
 
 ### Added
 
+### Changed
+
+- in `Rstruct.v`
+  + instantiate `GRinv.inv` by `Rinv` instead of `Rinvx`
+
 - in `mathcomp_extra.v`:
   + lemmas `prodr_ile1`, `nat_int`
 
@@ -198,6 +203,8 @@
   + definition `vitali_cover`, lemma `vitali_coverS`
 
 ### Deprecated
+- in `Rstruct.v`
+  + lemma `Rinvx`
 
 ### Removed
 
