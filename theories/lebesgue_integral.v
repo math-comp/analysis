@@ -4039,7 +4039,7 @@ Qed.
 
 Lemma ae_eq_integral (D : set T) (g f : T -> \bar R) :
   measurable D -> measurable_fun D f -> measurable_fun D g ->
-  ae_eq D f g -> integral mu D f = integral mu D g.
+  ae_eq D f g -> \int[mu]_(x in D) f x = \int[mu]_(x in D) g x.
 Proof.
 move=> mD mf mg /ae_eq_funeposneg[Dfgp Dfgn].
 rewrite integralE// [in RHS]integralE//; congr (_ - _).
