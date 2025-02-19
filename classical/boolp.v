@@ -7,6 +7,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
 From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Eqdep_dec.
 
 (**md**************************************************************************)
 (* # Classical Logic                                                          *)
