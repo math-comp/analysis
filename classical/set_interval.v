@@ -234,7 +234,7 @@ Notation subset_itvS := subset_itvScc (only parsing).
 
 Section set_itv_orderType.
 Variables (d : Order.disp_t) (T : orderType d).
-Implicit Types a x y : itv_bound T.
+Implicit Types a b x y : itv_bound T.
 
 Lemma itv_bndbnd_setU a x y : (a <= x)%O -> (x <= y)%O ->
   ([set` Interval a y] = [set` Interval a x] `|` [set` Interval x y])%classic.
@@ -291,6 +291,26 @@ move: a ax => [b t /= tx| [/= oox|/= oox]].
     by move=> /le_trans; apply; exact/ltW.
   + by move=> /andP[].
 - by move: x => [[|] x|[|]//]/= in xy oox *.
+Qed.
+
+Lemma set_itv_splitU a b (c : T) : c \in Interval a b ->
+  [set` Interval a b] `\ c =
+    [set` Interval a (BLeft c)] `|` [set` Interval (BRight c) b].
+Proof.
+move=> cab; apply/seteqP; split => [x /= [xab /eqP]|x[|]]/=.
+- rewrite neq_lt => /orP[xc|cx]; [left|right].
+  + move: cab xab; rewrite !itv_boundlr => /andP[ac cb] /andP[ax xb].
+    by rewrite ax/= bnd_simp.
+  + move: cab xab; rewrite !itv_boundlr => /andP[ac cb] /andP[ax xb].
+    by rewrite xb andbT bnd_simp.
+- move: cab; rewrite !itv_boundlr => /andP[ac cb] /andP[ax].
+  rewrite bnd_simp => xc.
+  rewrite ax/= (le_trans _ cb) ?bnd_simp ?(ltW xc)//; split => //.
+  by apply/eqP; rewrite lt_eqF.
+- move: cab; rewrite !itv_boundlr => /andP[ac cb] /andP[+ xb].
+  rewrite bnd_simp => cx.
+  rewrite xb/= andbT (le_trans ac)/= ?bnd_simp ?(ltW cx)//; split => //.
+  by apply/eqP; rewrite gt_eqF.
 Qed.
 
 End set_itv_orderType.

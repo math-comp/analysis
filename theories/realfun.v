@@ -12,7 +12,8 @@ From mathcomp Require Import sequences real_interval.
 (* # Real-valued functions over reals                                         *)
 (*                                                                            *)
 (* This file provides properties of standard real-valued functions over real  *)
-(* numbers (e.g., the continuity of the inverse of a continuous function).    *)
+(* numbers (e.g., the continuity of the inverse of a continuous function,     *)
+(* L'Hopital's rule).                                                         *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*      nondecreasing_fun f == the function f is non-decreasing               *)
@@ -45,9 +46,6 @@ From mathcomp Require Import sequences real_interval.
 (*   lime_sup f a/lime_inf f a == limit sup/inferior of the extended real-    *)
 (*                             valued function f at point a                   *)
 (* ```                                                                        *)
-(*               cauchy_MVT == Cauchy's mean value theorem                    *)
-(*           lhopital_right == L'Hopital rule (limit taken on the right)      *)
-(*            lhopital_left == L'Hopital rule (limit taken on the left)       *)
 (*                                                                            *)
 (* Discontinuities:                                                           *)
 (* ```                                                                        *)
@@ -2892,6 +2890,7 @@ Unshelve. all: end_near. Qed.
 
 End discontinuity_countable.
 
+(** Cauchy's mean value theorem *)
 Section Cauchy_MVT.
 Context {R : realType}.
 Variables (f df g dg : R -> R) (a b c : R).
@@ -2987,22 +2986,6 @@ by apply: DeriveDef => //; exact: near_eq_derivable fav.
 Qed.
 (* /NB: PR in progress *)
 
-(* TODO: rename, move *)
-Lemma nbhs_lt' {R : realType} (a z : R) : a < z -> \forall x \near nbhs z, a < x.
-Proof.
-rewrite -subr_gt0 => za0.
-exists (z - a) => //=.
-move=> u/=.
-rewrite ltrBrDl addrC -ltrBrDl.
-move=> /lt_le_trans; apply.
-rewrite lerBlDl.
-have [uz|uz] := leP u z.
-  rewrite ger0_norm ?subr_ge0//.
-  by rewrite subrK.
-rewrite ltr0_norm ?subr_lt0//.
-by rewrite opprB addrAC -lerBlDr opprK lerD// ?ltW.
-Qed.
-
 Section lhopital_at_right.
 Context {R : realType}.
 Variables (f df g dg : R -> R) (a b : R) (l : R) (ab : a < b).
@@ -3051,7 +3034,7 @@ Proof.
 move=> yb zay; apply: (@near_eq_is_derive _ _ _ g) => //; last first.
   by apply: gdg; move: z zay; apply: subset_itvSoo; rewrite bnd_simp.
 near=> u do rewrite /g0 gt_eqF//.
-by move: zay; rewrite in_itv/= => /andP[+ _]; exact: nbhs_lt'.
+by move: zay; rewrite in_itv/= => /andP[+ _]; exact: lt_nbhsr.
 Unshelve. all: by end_near. Qed.
 
 Let wcont_g0 y : a < y -> y < b -> {within `[a, y], continuous g0}.
@@ -3238,28 +3221,6 @@ Unshelve. all: by end_near. Qed.
 
 End lhopital_at_left.
 
-(* TODO: move *)
-Lemma set_itv_splitU {R : realType} (a b : itv_bound R) (c : R) :
-  c \in Interval a b ->
-  [set` Interval a b] `\ c =
-    [set` Interval a (BLeft c)] `|` [set` Interval (BRight c) b].
-Proof.
-move=> cab; apply/seteqP; split => [x /= [xab /eqP]|x[|]]/=.
-- rewrite neq_lt => /orP[xc|cx]; [left|right].
-  + move: cab xab; rewrite !itv_boundlr=> /andP[ac cb] /andP[ax xb].
-    by rewrite ax/= bnd_simp.
-  + move: cab xab; rewrite !itv_boundlr=> /andP[ac cb] /andP[ax xb].
-    by rewrite xb andbT bnd_simp.
-- move: cab; rewrite !itv_boundlr => /andP[ac cb] /andP[ax].
-  rewrite bnd_simp => xc.
-  rewrite ax/= (le_trans _ cb) ?bnd_simp ?(ltW xc)//; split => //.
-  by apply/eqP; rewrite lt_eqF.
-- move: cab; rewrite !itv_boundlr => /andP[ac cb] /andP[+ xb].
-  rewrite bnd_simp => cx.
-  rewrite xb/= andbT (le_trans ac)/= ?bnd_simp ?(ltW cx)//; split => //.
-  by apply/eqP; rewrite gt_eqF.
-Qed.
-
 Section lhopital.
 Context {R : realType}.
 Variables (f df g dg : R -> R) (a b c : R) (l : R).
@@ -3292,99 +3253,3 @@ move=> fgcl; apply/cvg_at_right_left_dnbhs.
 Qed.
 
 End lhopital.
-
-Section lhopital0.
-Context {R : realType}.
-Variables (f df g dg : R -> R) (a : R) (U : set R) (Ua : nbhs a U).
-Hypotheses (fdf : forall x, x \in U -> is_derive x 1 f (df x))
-           (gdg : forall x, x \in U -> is_derive x 1 g (dg x)).
-Hypotheses (fa0 : f a = 0) (ga0 : g a = 0)
-           (cdg : \forall x \near a^', dg x != 0).
-
-Lemma lhopital_right (l : R) :
-  df x / dg x @[x --> a^'+] --> l -> f x / g x @[x --> a^'+] --> l.
-Proof.
-case: Ua => e/= e0 aeU.
-case: cdg => d/= d0 cdg'.
-pose D := minr e d.
-have := @lhopital_at_right R f df g dg a (a + D).
-rewrite ltrDl.
-have D0 : 0 < D by rewrite lt_min e0 d0.
-move=> /(_ _ D0).
-have H (x : R) (G : R) : 0 < G -> x \in `]a, (a + G)%E[ -> `|a - x| < G.
-  move=> G0 xae.
-  rewrite ltr_norml; apply/andP; split.
-    move: xae; rewrite in_itv/= => /andP[_].
-    by rewrite ltrBrDl ltrBlDl addrC.
-  move: xae; rewrite in_itv/= => /andP[+ _].
-  rewrite -subr_lt0 => /lt_le_trans; apply.
-  exact: ltW.
-apply.
-- move=> x xae; apply: fdf.
-  rewrite inE; apply: aeU => /=; apply: H => //.
-  by move: x xae; apply: subset_itvl; rewrite bnd_simp lerD2l ge_min lexx.
-- move=> x xae; apply: gdg.
-  rewrite inE; apply: aeU => /=; apply: H => //.
-  by move: x xae; apply: subset_itvl; rewrite bnd_simp lerD2l ge_min lexx.
-- rewrite -fa0; apply: cvg_at_right_filter.
-  suff : {for a, continuous f} by [].
-  apply/differentiable_continuous/derivable1_diffP.
-  apply: ex_derive; apply: fdf.
-  rewrite inE.
-  by case: Ua => r /= r0; apply; rewrite /= subrr normr0.
-- rewrite -ga0.
-  apply: cvg_at_right_filter.
-  suff : {for a, continuous g} by [].
-  apply/differentiable_continuous/derivable1_diffP.
-  apply: ex_derive; apply: gdg.
-  rewrite inE.
-  by case: Ua => r /= r0; apply; rewrite /= subrr normr0.
-- move=> x xae; apply: cdg' => /=.
-    apply: H => //.
-    by move: x xae; apply: subset_itvl; rewrite bnd_simp lerD2l ge_min lexx orbT.
-  rewrite gt_eqF//.
-  by move: xae; rewrite in_itv/= => /andP[].
-Qed.
-
-End lhopital0.
-
-Section lhopital1.
-Context {R : realType}.
-Variables (f df g dg : R -> R) (a : R) (U : set R) (Ua : nbhs a U).
-Hypotheses (fdf : forall x, x \in U -> is_derive x 1 f (df x))
-           (gdg : forall x, x \in U -> is_derive x 1 g (dg x)).
-Hypotheses (fa0 : f a = 0) (ga0 : g a = 0)
-           (cdg : \forall x \near a^', dg x != 0).
-
-Lemma lhopital_left (l : R) :
-  df x / dg x @[x --> a^'-] --> l -> f x / g x @[x --> a^'-] --> l.
-Proof.
-move=> fgbl; apply/cvg_at_leftNP.
-set h := (X in X x @[x --> _]).
-rewrite (_ : h = (fun x => (fun y => (f \o -%R) y / (g \o -%R) y) x))//.
-have := @lhopital_right R (f \o -%R) (fun x => (df (- x)) * -1)
-  (g \o -%R) (fun x => (dg (- x)) * -1) (- a) (-%R @` U).
-apply.
-- by rewrite nbhsNimage/=; exists U.
-- move=> x; rewrite inE/= => -[r Ur] <-{x}.
-  rewrite opprK; apply: is_derive1_comp.
-  by rewrite opprK; apply: fdf; exact: mem_set.
-- move=> x; rewrite inE/= => -[r Ur] <-{x}.
-  rewrite opprK; apply: is_derive1_comp.
-  by rewrite opprK; apply: gdg; exact: mem_set.
-- by rewrite /= opprK.
-- by rewrite /= opprK.
-- case: cdg => e/= e0 H; near=> x.
-  rewrite mulrN1 oppr_eq0.
-  apply: H => /=.
-    rewrite -normrN opprB addrC.
-    by near: x; exists e.
-  rewrite eqr_oppLR.
-  by near: x; exact: nbhs_dnbhs_neq.
-- apply/cvg_at_rightNP.
-  rewrite opprK/=; apply: cvg_trans fgbl.
-  apply: near_eq_cvg; near=> x.
-  by rewrite /= opprK !mulrN1 mulNr invrN mulrN opprK.
-Unshelve. all: by end_near. Qed.
-
-End lhopital1.

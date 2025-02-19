@@ -533,7 +533,8 @@ have /ifab : (mu `[a, c] < d%:E)%E.
 move=> /(_ (measurable_itv _)) {ifab}.
 apply: le_lt_trans.
 have acbc : `[a, c] `<=` `[a, b].
-  by apply: subset_itvl; rewrite bnd_simp; move: ac; near: c; exact: nbhs_le.
+  apply: subset_itvl; rewrite bnd_simp; move: ac; near: c.
+  exact: lt_nbhsl_le.
 rewrite -lee_fin fineK; last first.
   apply: integral_fune_fin_num => //=.
   rewrite (_ : (fun _ => _) = abse \o ((EFin \o f) \_ `[a, b])); last first.
