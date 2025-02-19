@@ -153,7 +153,7 @@ Proof. by move=> x; rewrite inE/= RinvxE /Rinvx -if_neg => ->. Qed.
 
 End Rinvx.
 
-#[deprecated(note="To be removed. Use GRinv.inv instead.")]
+#[deprecated(note="To be removed. Use GRing.inv instead.")]
 Definition Rinvx := Rinv.
 
 #[hnf]
