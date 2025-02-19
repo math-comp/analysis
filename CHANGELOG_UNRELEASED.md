@@ -221,7 +221,7 @@
     `increasing_itvNyo_bigcup`, `increasing_itvoc_bigcup`
 
 - in `num_topology.v`:
-  + lemmas `nbhs_lt_trans`, `nbhs_lt_transN`
+  + lemmas `lt_nbhsl`, `Nlt_nbhsl`
 
 - in `measurable_realfun.v`:
   + lemmas `measurable_fun_itv_bndo_bndc`, `measurable_fun_itv_obnd_cbnd`

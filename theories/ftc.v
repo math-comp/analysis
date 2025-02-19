@@ -1750,11 +1750,11 @@ rewrite (@increasing_ge0_integration_by_substitutiony (\- (F \o -%R))%R); last 8
   apply: near_eq_cvg; rewrite near_simpl; near=> z.
   rewrite derive1N; last first.
     apply: dFcompN.
-    by near: z; exact: nbhs_lt_transN.
+    by near: z; exact: Nlt_nbhsl.
   rewrite [in RHS]derive1_comp; last 2 first.
     exact: derivable_opp.
     apply: dFN.
-    by near: z; exact: nbhs_lt_transN.
+    by near: z; exact: Nlt_nbhsl.
   rewrite derive1N; last exact: derivable_id.
   by rewrite derive1_id mulrN1 opprK.
 - move: cvgFb => /cvg_at_leftNP cvgFbl.
