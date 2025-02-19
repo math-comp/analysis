@@ -104,7 +104,7 @@ HB.structure Definition PointedTopological :=
   {T of PointedNbhs T & Nbhs_isTopological T}.
 
 #[short(type="bpTopologicalType")]
-HB.structure Definition BiPointedTopological := 
+HB.structure Definition BiPointedTopological :=
   { X of BiPointed X & Topological X }.
 
 Section Topological1.

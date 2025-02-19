@@ -1861,14 +1861,17 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
-Lemma near_derive (R : numFieldType) (V W : normedModType R)
-    (f g : V -> W) (a v : V) : v != 0 -> {near a, f =1 g} ->
+Section near_derive.
+Context (R : numFieldType) (V W : normedModType R).
+Variables (f g : V -> W) (a v : V).
+Hypotheses (v0 : v != 0) (afg : {near a, f =1 g}).
+
+Let near_derive :
   {near 0^', (fun h => h^-1 *: (f (h *: v + a) - f a)) =1
              (fun h => h^-1 *: (g (h *: v + a) - g a))}.
 Proof.
-move=> v0 nfg; near=> t; congr (_ *: _).
-near: t.
-move: nfg; rewrite {1}/prop_near1/= nbhsE/= => -[B [oB Ba] /[dup] Bfg Bfg'].
+near do congr (_ *: _).
+move: afg; rewrite {1}/prop_near1/= nbhsE/= => -[B [oB Ba] /[dup] Bfg Bfg'].
 have [e /= e0 eB] := open_subball oB Ba.
 have vv0 : 0 < `|2 *: v| by rewrite normrZ mulr_gt0 ?normr_gt0.
 near=> x.
@@ -1882,31 +1885,27 @@ apply: Bfg; apply: (eB (`|x| * `|2 *: v|)).
   by rewrite normrZ ltr_pMl ?normr_gt0// gtr0_norm ?ltr1n.
 Unshelve. all: by end_near. Qed.
 
-Lemma near_eq_derivable (R : numFieldType) (V W : normedModType R)
-    (f g : V -> W) (a v : V) : v != 0 ->
-  {near a, f =1 g} -> derivable f a v -> derivable g a v.
+Lemma near_eq_derivable : derivable f a v -> derivable g a v.
 Proof.
-move=> vn0 nfg /cvg_ex[/= l fl]; apply/cvg_ex; exists l => /=.
+move=> /cvg_ex[/= l fl]; apply/cvg_ex; exists l => /=.
 by apply: cvg_trans fl; apply: near_eq_cvg; exact: near_derive.
 Qed.
 
-Lemma near_eq_derive (R : numFieldType) (V W : normedModType R)
-  (f g : V -> W) (a v : V) :
-  v != 0 -> (\near a, f a = g a) -> 'D_v f a = 'D_v g a.
+Lemma near_eq_derive : 'D_v f a = 'D_v g a.
 Proof.
-move=> v0 fg; rewrite /derive; congr (lim _).
-have {}fg := near_derive v0 fg.
+rewrite /derive; congr (lim _).
+have {}fg := near_derive.
 rewrite eqEsubset; split; apply: near_eq_cvg=> //.
 by move/filterS : fg; apply => ? /esym.
 Qed.
 
-Lemma near_eq_is_derive (R : numFieldType) (V W : normedModType R)
-    (f g : V -> W) (a v : V) (df : W) : v != 0 ->
-  (\near a, f a = g a) -> is_derive a v f df -> is_derive a v g df.
+Lemma near_eq_is_derive (df : W) : is_derive a v f df -> is_derive a v g df.
 Proof.
-move=> v0 fg [fav <-]; rewrite (near_eq_derive v0 fg).
+move=> [fav <-]; rewrite near_eq_derive.
 by apply: DeriveDef => //; exact: near_eq_derivable fav.
 Qed.
+
+End near_derive.
 
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :

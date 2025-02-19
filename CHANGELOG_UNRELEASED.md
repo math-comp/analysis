@@ -120,7 +120,7 @@
   + with as contents the first half of the file `lebesgue_measure.v`
 
 - in `derive.v`:
-  + lemmas `near_derive`, `near_eq_derivable`, `near_eq_derive`, `near_eq_is_derive`
+  + lemmas `near_eq_derivable`, `near_eq_derive`, `near_eq_is_derive`
 
 ### Changed
 
