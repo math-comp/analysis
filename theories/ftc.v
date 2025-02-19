@@ -1893,7 +1893,7 @@ rewrite derive1N; last exact: derivable_id.
 by rewrite derive1_id mulrN1 opprK.
 Unshelve. all: end_near. Qed.
 
-Lemma increasing_ge0_integration_by_substitutionT F G a :
+Lemma increasing_ge0_integration_by_substitutionT F G :
   {homo F : x y / (x < y)%R} ->
   continuous F^`() ->
   cvg (F^`() x @[x --> -oo%R]) ->

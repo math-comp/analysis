@@ -106,6 +106,13 @@ Qed.
 Lemma cvg_addrr (M : R) : (r + M) @[r --> +oo] --> +oo.
 Proof. by under [X in X @ _]funext => n do rewrite addrC; exact: cvg_addrl. Qed.
 
+Lemma cvg_addrr_Ny (M : R) : r + M @[r --> -oo] --> -oo.
+Proof.
+move=> P [r [rreal rP]]; exists (r - M); split.
+  by rewrite realB// num_real.
+by move=> m/=; rewrite ltrBrDr => /rP.
+Qed.
+
 (* NB: see cvg_centern in sequences.v *)
 Lemma cvg_centerr (M : R) (T : topologicalType) (f : R -> T) (l : T) :
   (f (n - M) @[n --> +oo] --> l) = (f r @[r --> +oo] --> l).

@@ -393,7 +393,7 @@ Import gauss_integral_proof.
 Let mu := @lebesgue_measure R.
 
 Lemma integral0y_gauss :
-  \int[mu]_(x in `[0%R, +oo[) gauss_fun x = Num.sqrt pi / 2.
+  (\int[mu]_(x in `[0%R, +oo[) (gauss_fun x)%:E)%E = (Num.sqrt pi / 2)%:E.
 Proof.
 have cvg_Ig : @integral0_gauss R x @[x --> +oo] --> Num.sqrt pi / 2.
   have : Num.sqrt (@integral0_gauss R x ^+ 2) @[x --> +oo]
@@ -407,7 +407,7 @@ have cvg_Ig : @integral0_gauss R x @[x --> +oo] --> Num.sqrt pi / 2.
   apply/funext => r; rewrite sqrtr_sqr// ger0_norm//.
   exact: integral0_gauss_ge0.
 have /cvg_lim := @ge0_cvgn_integral R mu _ gauss_fun_ge0 measurable_gauss_fun.
-rewrite /integral0y_gauss /Rintegral => <-//.
+rewrite /integral0y_gauss => <-//.
 suff: limn (fun n => (\int[mu]_(x in `[0%R, n%:R]) (gauss_fun x)%:E)%E) =
     (Num.sqrt pi / 2)%:E.
   by move=> ->.
@@ -415,6 +415,26 @@ apply/cvg_lim => //.
 move/cvg_pinftyP : cvg_Ig => /(_ _ cvgr_idn).
 move/neq0_fine_cvgP; apply.
 by rewrite gt_eqF// divr_gt0// sqrtr_gt0 pi_gt0.
+Qed.
+
+Theorem integralT_gauss : (\int[mu]_x (gauss_fun x)%:E)%E = (Num.sqrt pi)%:E.
+Proof.
+rewrite ge0_symfun_integralT//=.
+- rewrite (_ : [set x | _] = `[0, +oo[%classic); last first.
+    by apply/seteqP; split => x/=; rewrite in_itv/= andbT.
+  by rewrite integral0y_gauss -EFinM mulrCA divff// mulr1.
+- by move=> x; exact: gauss_fun_ge0.
+- exact: continuous_gauss_fun.
+- by move=> x/=; rewrite /gauss_fun sqrrN.
+Qed.
+
+Lemma integrableT_gauss : mu.-integrable setT (EFin \o gauss_fun).
+Proof.
+apply/integrableP; split.
+  by apply/measurable_EFinP/measurable_funTS; exact: measurable_gauss_fun.
+apply/abse_integralP => //=.
+  by apply/measurable_EFinP/measurable_funTS; exact: measurable_gauss_fun.
+by rewrite integralT_gauss/= ltry.
 Qed.
 
 End gauss_integral.

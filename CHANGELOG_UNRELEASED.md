@@ -241,6 +241,22 @@
     `increasing_ge0_integration_by_substitutionT`,
     `ge0_symfun_integralT`
 
+- in `gauss_integral`:
+  + lemmas `integralT_gauss`, `integrableT_gauss`
+
+- in `probability.v`:
+  + definition `normal_pdf`
+  + lemmas `normal_pdf_ge0`, `normal_pdf_gt0`, `measurable_normal_pdf`,
+    `continuous_normal_pdf`, `normal_pdf_ub`
+  + definition `normal_prob`, equipped with the structure of probability measure
+  + lemmas `integral_normal_pdf`, `normal_prob_dom`
+
+- in `realfun.v`:
+  + lemma `cvg_addrr_Ny`
+
+- in `normedtype.v`:
+  + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
+
 ### Changed
 
 - in `lebesgue_integral.v`
