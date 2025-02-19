@@ -1290,41 +1290,6 @@ Arguments cvgr0_norm_le {_ _ _ F FF}.
 #[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_le end : core.
 
-Section nbhs_lt_le.
-Context {R : numFieldType}.
-Implicit Types x z : R.
-
-Lemma lt_nbhsl_lt x z : x < z -> \forall y \near x, x <= y -> y < z.
-Proof.
-move=> xz; near=> y.
-rewrite le_eqVlt => /predU1P[<-//|].
-near: y; exists (z - x) => /=; first by rewrite subr_gt0.
-move=> y/= /[swap] xy; rewrite ltr0_norm ?subr_lt0//.
-by rewrite opprD addrC ltrBlDr subrK opprK.
-Unshelve. all: by end_near. Qed.
-
-Lemma lt_nbhsl_le x z : x < z -> \forall y \near x, x <= y -> y <= z.
-Proof.
-by move=> xz; apply: filterS (lt_nbhsl_lt xz) => y /[apply] /ltW.
-Qed.
-
-End nbhs_lt_le.
-(*#[deprecated(since="mathcomp-analysis 1.9.0", note="use `lt_nbhsl_lt` instead")]
-Notation nbhs_lt := lt_nbhsl_lt (only parsing).
-#[deprecated(since="mathcomp-analysis 1.9.0", note="use `lt_nbhsl_le` instead")]
-Notation nbhs_le := lt_nbhsl_le (only parsing).*)
-
-Lemma lt_nbhsr {R : realFieldType} (a z : R) : a < z ->
-  \forall x \near z, a < x.
-Proof.
-rewrite -subr_gt0 => za0; exists (z - a) => //= u/=.
-rewrite ltrBrDl addrC -ltrBrDl => /lt_le_trans; apply.
-rewrite lerBlDl.
-have [uz|uz] := leP u z.
-  by rewrite ger0_norm ?subr_ge0// subrK.
-by rewrite ltr0_norm ?subr_lt0// opprB addrAC -lerBlDr opprK lerD// ?ltW.
-Qed.
-
 Section open_closed_sets.
 (* TODO: duplicate theory within the subspace topology of Num.real
          in a numDomainType *)

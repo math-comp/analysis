@@ -255,7 +255,7 @@
 - in `set_interval.v`:
   + lemma `set_itv_splitU`
 
-- in `normedtype.v`:
+- in `num_topology.v`:
   + lemma `lt_nbhsr`
 
 - in `realfun.v`:
@@ -297,6 +297,10 @@
   + `measure_snum` -> `measure_inum`
 - in `Rstruct.v`
   + instantiate `GRinv.inv` by `Rinv` instead of `Rinvx`
+
+- moved from `normedtype.v` to `num_topology.v` and renamed:
+  + `nbhs_lt` -> `lt_nbhsl_lt`
+  + `nbhs_le` -> `lt_nbhsl_le`
 
 ### Renamed
 
@@ -388,10 +392,6 @@
 - in `set_interval.v`:
   + `opp_itv_bnd_infty` -> `opp_itv_bndy`
   + `opp_itv_infty_bnd` -> `opp_itvNy_bnd`
-
-- in `normedtype.v`:
-  + `nbhs_lt` -> `lt_nbhsl_lt`
-  + `nbhs_le` -> `lt_nbhsl_le`
 
 ### Generalized
 
