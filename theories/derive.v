@@ -1907,6 +1907,16 @@ Qed.
 
 End near_derive.
 
+Lemma derive1N {R : realFieldType} (f : R -> R) (x : R) :
+  derivable f x 1 -> (- f)^`() x = (- f^`()%classic x).
+Proof. by move=> fx; rewrite !derive1E deriveN. Qed.
+
+Lemma derivable_opp {R : realFieldType} (x : R) v : derivable -%R x v.
+Proof. by apply: derivableN; exact: derivable_id. Qed.
+
+Lemma derive1_id {R : realFieldType} (x : R) : id^`() x = 1.
+Proof. by rewrite derive1E derive_id. Qed.
+
 (* Trick to trigger type class resolution *)
 Lemma trigger_derive (R : realType) (f : R -> R) x x1 y1 :
   is_derive x (1 : R) f x1 -> x1 = y1 -> is_derive x 1 f y1.

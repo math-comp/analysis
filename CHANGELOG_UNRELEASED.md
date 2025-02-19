@@ -213,6 +213,49 @@
 
 - in `derive.v`:
   + lemmas `near_eq_derivable`, `near_eq_derive`, `near_eq_is_derive`
+- in `derive.v`:
+  + lemmas `derive1N`, `derivable_opp`, `derive1_id`
+
+- in `normedtype.v`:
+  + lemmas `cvg_compNP`, `decreasing_itvNyo_bigcup`, `decreasing_itvoo_bigcup`,
+    `increasing_itvNyo_bigcup`, `increasing_itvoc_bigcup`
+
+- in `num_topology.v`:
+  + lemmas `lt_nbhsl`, `Nlt_nbhsl`
+
+- in `measurable_realfun.v`:
+  + lemmas `measurable_fun_itv_bndo_bndc`, `measurable_fun_itv_obnd_cbnd`
+
+- in `real_interval.v`:
+  + lemma `itv_bndy_bigcup_BLeft_shift`
+
+- in `realfun.v`:
+  + definitions `derivable_Nyo_continuous_bnd`, `derivable_oy_continuous_bnd `
+
+- in `ftc.v`:
+  + lemmas
+    `decreasing_ge0_integration_by_substitutiony`,
+    `ge0_integration_by_substitutionNy`,
+    `increasing_ge0_integration_by_substitutiony`,
+    `ge0_integration_by_substitutionNy`,
+    `increasing_ge0_integration_by_substitutionT`,
+    `ge0_symfun_integralT`
+
+- in `gauss_integral`:
+  + lemmas `integralT_gauss`, `integrableT_gauss`
+
+- in `probability.v`:
+  + definition `normal_pdf`
+  + lemmas `normal_pdf_ge0`, `normal_pdf_gt0`, `measurable_normal_pdf`,
+    `continuous_normal_pdf`, `normal_pdf_ub`
+  + definition `normal_prob`, equipped with the structure of probability measure
+  + lemmas `integral_normal_pdf`, `normal_prob_dom`
+
+- in `realfun.v`:
+  + lemma `cvg_addrr_Ny`
+
+- in `normedtype.v`:
+  + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
 
 ### Changed
 
@@ -331,6 +374,14 @@
   + `inum_lt` -> `num_lt`
   + `inum_min` -> `num_min`
   + `inum_max` -> `num_max`
+- in `real_interval.v`:
+  + `itv_bnd_infty_bigcup` -> `itv_bndy_bigcup_BRight`
+  + `itv_bnd_infty_bigcup0S` -> `itv0y_bigcup0S`
+  + `itv_infty_bnd_bigcup` -> `itvNy_bnd_bigcup_BLeft`
+
+- in `set_interval.v`:
+  + `opp_itv_bnd_infty` -> `opp_itv_bndy`
+  + `opp_itv_infty_bnd` -> `opp_itvNy_bnd`
 
 ### Generalized
 
@@ -367,6 +418,12 @@
 - in `lebesgue_measure.v`:
   + definition `vitali_cover`, lemma `vitali_coverS`
 
+- in `ftc.v`:
+  + lemmas `increasing_cvg_at_right_comp`,
+    `increasing_cvg_at_left_comp`,
+    `decreasing_cvg_at_right_comp`,
+    `decreasing_cvg_at_left_comp`
+
 ### Deprecated
 - in `Rstruct.v`
   + lemma `Rinvx`
@@ -376,6 +433,9 @@
 
 - in `itv.v`:
   + notation `%:inum` (use `%:num` instead)
+
+- in `lebesgue_measure.v`:
+  + lemmas `measurable_fun_itv_co`, `measurable_fun_itv_oc`
 
 ### Removed
 
@@ -442,6 +502,14 @@
     `__deprecated__cvg_gt_ge`, `__deprecated__cvg_lt_le`,
     `__deprecated__linear_bounded0 `
     (deprecated since 0.6.0)
+- in `normedtype.v`:
+  + notations `cvg_distP`, `cvg_distW`, `continuous_cvg_dist`, `cvg_dist2P`,
+    `cvg_gt_ge`, `cvg_lt_le_`, `linear_bounded0`
+    (were deprecated since 0.6.0)
+  + lemmas `__deprecated__cvg_distW`, `__deprecated__continuous_cvg_dist`,
+    `__deprecated__cvg_gt_ge`, `__deprecated__cvg_lt_le`,
+    `__deprecated__linear_bounded0`
+    (were deprecated since 0.6.0)
 
 - in `interval_inference.v`
   + reserved notations `[lb of _]`, `[ub of _]`, `[lbe of _]` and `[ube of _]`

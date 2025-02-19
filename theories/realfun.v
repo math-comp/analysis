@@ -23,6 +23,10 @@ From mathcomp Require Import sequences real_interval.
 (*   derivable_oo_continuous_bnd f x y == f is derivable in `]x, y[ and       *)
 (*                             continuous up to the boundary, i.e.,           *)
 (*                             f @ x^'+ --> f x  and  f @ y^'- --> f y        *)
+(*     derivable_oy_continuous_bnd f x == f is derivable in `]x, +oo[ and     *)
+(*                             f @ x^'+ --> f x                               *)
+(*    derivable_Nyo_continuous_bnd f x == f is derivable in `]-oo, x[ and     *)
+(*                             f @ x^'- --> f x                               *)
 (*                                                                            *)
 (*      itv_partition a b s == s is a partition of the interval `[a, b]       *)
 (*       itv_partitionL s c == the left side of splitting a partition at c    *)
@@ -101,6 +105,13 @@ Qed.
 (* NB: see cvg_addnr in topology.v *)
 Lemma cvg_addrr (M : R) : (r + M) @[r --> +oo] --> +oo.
 Proof. by under [X in X @ _]funext => n do rewrite addrC; exact: cvg_addrl. Qed.
+
+Lemma cvg_addrr_Ny (M : R) : r + M @[r --> -oo] --> -oo.
+Proof.
+move=> P [r [rreal rP]]; exists (r - M); split.
+  by rewrite realB// num_real.
+by move=> m/=; rewrite ltrBrDr => /rP.
+Qed.
 
 (* NB: see cvg_centern in sequences.v *)
 Lemma cvg_centerr (M : R) (T : topologicalType) (f : R -> T) (l : T) :
@@ -1128,6 +1139,12 @@ apply: cvg_within_filter.
 apply/differentiable_continuous; rewrite -derivable1_diffP.
 by apply: fxy; rewrite in_itv/= xz zy.
 Qed.
+
+Definition derivable_Nyo_continuous_bnd (f : R -> V) (x : R) :=
+  {in `]-oo, x[, forall x, derivable f x 1} /\ f @ x^'- --> f x.
+
+Definition derivable_oy_continuous_bnd (f : R -> V) (x : R) :=
+  {in `]x, +oo[, forall x, derivable f x 1} /\ f @ x^'+ --> f x.
 
 End derivable_oo_continuous_bnd.
 

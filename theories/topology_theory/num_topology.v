@@ -112,6 +112,23 @@ exists x => // z /=; rewrite sub0r normrN.
 by apply: le_lt_trans; rewrite ler_norm.
 Qed.
 
+Lemma lt_nbhsl {R : realType} (x a : R) : x < a ->
+  \forall y \near nbhs x, y < a.
+Proof.
+move=> xb; exists ((a - x) / 2) => /=; first by rewrite divr_gt0// subr_gt0.
+move=> r/=; rewrite ltr_pdivlMr// ltrBrDr; apply: le_lt_trans.
+by rewrite -lerBlDr -normrN opprB (le_trans (ler_norm _))// ler_peMr// ler1n.
+Qed.
+
+Lemma Nlt_nbhsl {R : realType} (x a : R) :
+  - x < a -> \forall y \near nbhs x, - y < a.
+Proof.
+move=> xb; exists ((a + x) / 2) => /=.
+  by rewrite divr_gt0// -(opprK x) subr_gt0.
+move=> r/=; rewrite ltr_pdivlMr// -ltrBlDr; apply: le_lt_trans.
+by rewrite -lerBlDr opprK addrC (le_trans (ler_norm _))// ler_peMr// ler1n.
+Qed.
+
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :
   ProperFilter x^'.
 Proof.
