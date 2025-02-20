@@ -127,6 +127,7 @@ move=> xb; exists ((a + x) / 2) => /=.
   by rewrite divr_gt0// -(opprK x) subr_gt0.
 move=> r/=; rewrite ltr_pdivlMr// -ltrBlDr; apply: le_lt_trans.
 by rewrite -lerBlDr opprK addrC (le_trans (ler_norm _))// ler_peMr// ler1n.
+Qed.
 
 Section nbhs_lt_le.
 Context {R : numFieldType}.
