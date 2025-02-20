@@ -1542,7 +1542,7 @@ Proof. by rewrite /normal_prob integral_normal_pdf. Qed.
 HB.instance Definition _ :=
   @Measure_isProbability.Build _ _ R normal_prob normal_setT.
 
-Lemma normal_prob_dom : normal_prob `<< mu.
+Lemma normal_prob_dominates : normal_prob `<< mu.
 Proof.
 move=> A mA muA0; rewrite /normal_prob /normal_pdf.
 have [s0|s0] := eqVneq sigma 0.
