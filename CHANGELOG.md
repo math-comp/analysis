@@ -68,7 +68,6 @@ Latest releases: [[1.9.0] - 2025-02-20](#190---2025-02-20), [[1.8.0] - 2024-12-1
     `[le0 of _]`, `[cmp0 of _]`, `[neq0 of _]`
   + definitions `PosNum`, `NngNum`, `posnum_spec` and `nonneg_spec`
   + lemmas `posnumP` and `nonnegP`
-- in `interval_inference.v`
   + definitions `ItvReal` and `Itv01`
   + lemmas `cmp0`, `neq0`, `eq0F`, `num_min`, `num_max`
   + notation `%:num`
@@ -228,13 +227,13 @@ Latest releases: [[1.9.0] - 2025-02-20](#190---2025-02-20), [[1.8.0] - 2024-12-1
 - moved from `topology_structure.v` to `discrete_topology.v`:
   `discrete_open`, `discrete_set1`, `discrete_closed`, and `discrete_cvg`.
 
-- in file `cantor.v`, `cantor_space` now defined in terms of `bool`.
+- in `cantor.v`, `cantor_space` now defined in terms of `bool`
 
 - moved from `pseudometric_structure.v` to `discrete_topology.v`:
     `discrete_ent`, `discrete_ball`, and `discrete_topology`.
 
-- in file `separation_axioms.v`, updated `discrete_hausdorff`, and
-    `discrete_zero_dimension` to take a `discreteTopologicalType`.
+- in `separation_axioms.v`, updated `discrete_hausdorff`, and
+    `discrete_zero_dimension` to take a `discreteTopologicalType`
 
 - moved from `normedtype.v` to `num_topology.v` and renamed:
   + `nbhs_lt` -> `lt_nbhsl_lt`
@@ -405,11 +404,11 @@ Latest releases: [[1.9.0] - 2025-02-20](#190---2025-02-20), [[1.8.0] - 2024-12-1
 
 ### Removed
 
-- in file `topology_structure.v`, removed `discrete_sing`, `discrete_nbhs`, and `discrete_space`.
+- in `topology_structure.v`, removed `discrete_sing`, `discrete_nbhs`, and `discrete_space`
 
-- in file `nat_topology.v`, removed `discrete_nat`.
+- in `nat_topology.v`, removed `discrete_nat`
 
-- in file `pseudometric_structure.v`, removed `discrete_ball_center`, `discrete_topology_type`,
+- in `pseudometric_structure.v`, removed `discrete_ball_center`, `discrete_topology_type`,
   and `discrete_space_discrete`.
 
 - in `signed.v/interval_inference.v`
@@ -507,7 +506,7 @@ Latest releases: [[1.9.0] - 2025-02-20](#190---2025-02-20), [[1.8.0] - 2024-12-1
 - in `normedtype.v`:
   + lemmas `continuous_within_itvcyP`, `continuous_within_itvNycP`
 
-- in file `realfun.v`:
+- in `realfun.v`:
   + lemma `cvg_nbhsP`
 
 - in `measure.v`:
@@ -585,7 +584,7 @@ Latest releases: [[1.9.0] - 2025-02-20](#190---2025-02-20), [[1.8.0] - 2024-12-1
 
 ### Deprecated
 
-- in file `lebesgue_integral.v`:
+- in `lebesgue_integral.v`:
   + lemma `approximation`
 
 ### Removed
