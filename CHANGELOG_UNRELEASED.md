@@ -4,11 +4,6 @@
 
 ### Added
 
-### Changed
-
-- in `Rstruct.v`
-  + instantiate `GRinv.inv` by `Rinv` instead of `Rinvx`
-
 - in `mathcomp_extra.v`:
   + lemmas `prodr_ile1`, `nat_int`
 
@@ -257,6 +252,15 @@
 - in `normedtype.v`:
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
 
+- in `set_interval.v`:
+  + lemma `set_itv_splitU`
+
+- in `num_topology.v`:
+  + lemma `lt_nbhsr`
+
+- in `realfun.v`:
+  + lemmas `lhopital_at_left`, `lhopital_at_left`, `lhopital`,
+
 ### Changed
 
 - in `lebesgue_integral.v`
@@ -291,6 +295,12 @@
 - in `measure.v`:
   + `content_snum` -> `content_inum`
   + `measure_snum` -> `measure_inum`
+- in `Rstruct.v`
+  + instantiate `GRinv.inv` by `Rinv` instead of `Rinvx`
+
+- moved from `normedtype.v` to `num_topology.v` and renamed:
+  + `nbhs_lt` -> `lt_nbhsl_lt`
+  + `nbhs_le` -> `lt_nbhsl_le`
 
 ### Renamed
 

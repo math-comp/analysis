@@ -1290,26 +1290,6 @@ Arguments cvgr0_norm_le {_ _ _ F FF}.
 #[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
   H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_le end : core.
 
-Section nbhs_lt_le.
-Context {R : realType}.
-Implicit Types x z : R.
-
-Lemma nbhs_lt x z : x < z -> \forall y \near x, x <= y -> y < z.
-Proof.
-move=> xz; near=> y.
-rewrite le_eqVlt => /predU1P[<-//|].
-near: y; exists (z - x) => /=; first by rewrite subr_gt0.
-move=> y/= /[swap] xy; rewrite ltr0_norm ?subr_lt0//.
-by rewrite opprD addrC ltrBlDr subrK opprK.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_le x z : x < z -> \forall y \near x, x <= y -> y <= z.
-Proof.
-by move=> xz; apply: filterS (nbhs_lt xz) => y /[apply] /ltW.
-Qed.
-
-End nbhs_lt_le.
-
 Section open_closed_sets.
 (* TODO: duplicate theory within the subspace topology of Num.real
          in a numDomainType *)
