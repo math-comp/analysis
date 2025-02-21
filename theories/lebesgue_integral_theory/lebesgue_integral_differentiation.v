@@ -95,9 +95,9 @@ suff apxf eps : exists h : rT -> rT, (eps > 0)%R ->
     [/\ continuous h,
         mu.-integrable E (EFin \o h) &
         \int[mu]_(z in E) `|(f z - h z)%:E| < eps%:E].
-  pose g_ n := projT1 (cid (apxf n.+1%:R^-1)); exists g_; split.
-  - by move=> n; have [] := projT2 (cid (apxf n.+1%:R^-1)).
-  - by move=> n; have [] := projT2 (cid (apxf n.+1%:R^-1)).
+  pose g_ n := projT1 (cid (apxf n.+1%:R^-1)%R); exists g_; split.
+  - by move=> n; have [] := projT2 (cid (apxf n.+1%:R^-1%R)).
+  - by move=> n; have [] := projT2 (cid (apxf n.+1%:R^-1%R)).
   apply/cvg_ballP => eps epspos.
   have /cvg_ballP/(_ eps epspos)[N _ Nball] := @cvge_harmonic rT.
   exists N => //; apply: (subset_trans Nball) => n.
@@ -105,7 +105,7 @@ suff apxf eps : exists h : rT -> rT, (eps > 0)%R ->
   rewrite ?ger0_norm; first last.
   - by rewrite -le_expandLR // ?inE ?normr0// expand0 integral_ge0.
   - by rewrite -le_expandLR // ?inE ?normr0// expand0.
-  have [] := projT2 (cid (apxf n.+1%:R^-1)) => // _ _ ipaxfn.
+  have [] := projT2 (cid (apxf n.+1%:R^-1%R)) => // _ _ ipaxfn.
   by rewrite -lt_expandRL ?contractK// inE contract_le1.
 have [|] := ltP 0%R eps; last by exists point.
 move: eps => _/posnumP[eps].
@@ -113,7 +113,7 @@ have [g [gfe2 ig]] : exists g : {sfun R >-> rT},
     \int[mu]_(z in E) `|(f z - g z)%:E| < (eps%:num / 2)%:E /\
     mu.-integrable E (EFin \o g).
   have [g_ [intG ?]] := approximation_sfun_integrable mE intf.
-  move/fine_fcvg/cvg_ballP/(_ (eps%:num / 2)) => -[] // n _ Nb; exists (g_ n).
+  move/fine_fcvg/cvg_ballP/(_ (eps%:num / 2)%R) => -[] // n _ Nb; exists (g_ n).
   have fg_fin_num : \int[mu]_(z in E) `|(f z - g_ n z)%:E| \is a fin_num.
     rewrite integral_fune_fin_num// integrable_abse//.
     by under eq_fun do rewrite EFinB; apply: integrableB => //; exact: intG.
@@ -487,7 +487,7 @@ move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
   do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
   rewrite lee_wpmul2l// lee_fin invr_ge0// fine_ge0// lee_fin pmulrn_rge0//.
   by rewrite addr_gt0.
-have ka_pos : fine k / a \is Num.pos.
+have ka_pos : (fine k / a)%R \is Num.pos.
   by rewrite posrE divr_gt0// fine_gt0 // k_gt0/= locally_integrable_ltbally.
 have k_fin_num : k \is a fin_num.
   by rewrite ge0_fin_numE ?locally_integrable_ltbally ?integral_ge0.
@@ -887,7 +887,7 @@ move=> Ef; have {Ef} : mu.-negligible (E `&` [set x | 0 < f^* x]).
   near \oo => m; exists m => //=.
   rewrite -(@fineK _ (f^* x)) ?gt0_fin_numE ?ltey// lte_fin.
   rewrite invf_plt ?posrE//; last by rewrite fine_gt0// ltey fx0.
-  set r := _^-1; rewrite (lt_le_trans (truncnS_gt _))//.
+  set r := _^-1%R; rewrite (lt_le_trans (truncnS_gt _))//.
   by rewrite ler_nat ltnS; near: m; exact: nbhs_infty_ge.
 apply: negligibleS => z /= /not_implyP[Ez H]; split => //.
 rewrite ltNge; apply: contra_notN H.
@@ -919,7 +919,7 @@ have {ex_g_} ex_gn n : exists gn : R -> R,
         mu.-integrable (B k) (EFin \o gn) &
         \int[mu]_(z in B k) `|f_ k z - gn z|%:E <= n.+1%:R^-1%:E].
   case: ex_g_ => g_ [cg intg] /fine_cvgP[] [m _ fgfin] /cvgrPdist_le.
-  move=> /(_ n.+1%:R^-1 ltac:(by []))[p _] /(_ _ (leq_addr m p)).
+  move=> /(_ n.+1%:R^-1%R ltac:(by []))[p _] /(_ _ (leq_addr m p)).
   rewrite sub0r normrN -lee_fin => /= fg0.
   exists (g_ (p + m)%N); split => //.
   rewrite (le_trans _ fg0)// ger0_norm ?fine_ge0 ?integral_ge0// fineK//.
@@ -1013,7 +1013,7 @@ have fgn_null n : mu [set x | `|(f_ k \- g_B n) x|%:E >= (e / 2)%:E] <=
   rewrite lee_pdivlMl ?invr_gt0 ?divr_gt0// -[X in mu X]setTI.
   apply: le_trans.
     apply: (@le_integral_comp_abse _ _ _ mu _ measurableT
-        (EFin \o (f_ k \- g_B n)%R) (e / 2) id) => //=.
+        (EFin \o (f_ k \- g_B n)%R) (e / 2)%R id) => //=.
       by apply: measurableT_comp => //; case: (locf_g_B n).
     by rewrite divr_gt0.
   set h := (fun x => `|(f_ k \- g_ n) x|%:E) \_ (B k).
@@ -1036,7 +1036,7 @@ rewrite (@le_trans _ _ ((4 / (e / 2))%:E * n.+1%:R^-1%:E))//.
     by apply: measurableU => //; [exact: mEHL|exact: mfge].
   rewrite (le_trans (measureU2 _ _ _))//=; [exact: mEHL|exact: mfge|].
   apply: le_trans; first by apply: leeD; [exact: HL_null|exact: fgn_null].
-  rewrite -muleDl// lee_pmul2r// -EFinD lee_fin -{2}(mul1r (_^-1)).
+  rewrite -muleDl// lee_pmul2r// -EFinD lee_fin -{2}(mul1r (_^-1)%R).
   by rewrite -mulrDl natr1.
 rewrite -lee_pdivlMl ?divr_gt0// -EFinM lee_fin -(@invrK _ r).
 rewrite -invfM lef_pV2 ?posrE ?divr_gt0// -(@natr1 _ n) -lerBlDr.
@@ -1238,8 +1238,8 @@ apply: (@squeeze_cvge _ _ _ _ (cst 0) _
   (fun n => C%:E * davg f x (r_ x n)%:num)); last 2 first.
   exact: cvg_cst.
   move/cvge_at_rightP: fx => /(_ (fun r => (r_ x r)%:num)) fx.
-  by rewrite -(mule0 C%:E); apply: cvgeM => //;[exact: mule_def_fin |
-    exact: cvg_cst | apply: fx; split => //; exact: r_0].
+  by rewrite -(mule0 C%:E); apply: cvgeM => //;
+    [exact: cvg_cst | apply: fx; split => //; exact: r_0].
 near=> n.
 apply/andP; split => //=.
 apply: (@le_trans _ _ ((fine (mu (E x n)))^-1%:E *

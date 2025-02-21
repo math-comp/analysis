@@ -1543,7 +1543,7 @@ have cvgM : (M - m.+1%:R^-1%:E) @[m --> \oo] --> M.
   + by rewrite fin_num_adde_defl.
   + exact: cvg_cst.
   + apply/fine_cvgP; split; first exact: nearW.
-    rewrite [X in X @ _ --> _](_ : _ = (fun x => x.+1%:R^-1))//.
+    rewrite [X in X @ _ --> _](_ : _ = (fun x => x.+1%:R^-1)%R)//.
     apply/gtr0_cvgV0; first exact: nearW.
     apply/cvgrnyP.
     rewrite [X in X @ _](_ : _ = fun n => n + 1)%N; first exact: cvg_addnr.
