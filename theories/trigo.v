@@ -3,8 +3,9 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals ereal interval_inference topology.
-From mathcomp Require Import normedtype landau sequences derive realfun exp.
+From mathcomp Require Import reals ereal interval_inference topology normedtype.
+From mathcomp Require Import landau sequences derive realfun exp realfun.
+From mathcomp Require Import measure lebesgue_measure lebesgue_integral ftc.
 
 (**md**************************************************************************)
 (* # Theory of trigonometric functions                                        *)
@@ -1086,6 +1087,33 @@ HB.lock Definition atan {R : realType} (x : R) : R :=
   get [set y | -(pi / 2) < y < pi / 2 /\ tan y = x].
 Canonical locked_atan := Unlockable atan.unlock.
 
+Section oneDsqr.
+Context {R : realType}.
+Implicit Type x : R.
+
+Definition oneDsqr x : R := 1 + x ^+ 2.
+
+Lemma oneDsqr_ge1 x : 1 <= oneDsqr x :> R.
+Proof. by rewrite lerDl sqr_ge0. Qed.
+
+#[local]
+Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve[apply: oneDsqr_ge1] : core.
+
+Canonical oneDsqr_inum x : {itv R & `[1, +oo[} := @ItvReal R (oneDsqr x)
+  (BLeft 1%Z) (BInfty _ false) (oneDsqr_ge1 x) erefl.
+
+Lemma oneDsqrV_le1 x : oneDsqr\^-1 x <= 1. Proof. by rewrite invf_le1. Qed.
+
+Lemma continuous_oneDsqr : continuous oneDsqr.
+Proof. by move=> x; apply: cvgD; [exact: cvg_cst|exact: exprn_continuous]. Qed.
+
+Lemma continuous_oneDsqrV : continuous (oneDsqr\^-1).
+Proof. by move=> x; apply: cvgV => //; exact: continuous_oneDsqr. Qed.
+
+End oneDsqr.
+#[global]
+Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve [apply: oneDsqr_ge1] : core.
+
 Section Atan.
 Variable R : realType.
 Implicit Type x : R.
@@ -1231,6 +1259,37 @@ move=> x/= /[!in_itv]/= /andP[x0 xpi2].
 apply/downP; exists (atan (tan x)) => /=; first by exists (tan x).
 rewrite tanK// in_itv/= xpi2 andbT (lt_le_trans _ x0)//.
 by rewrite ltrNl oppr0 divr_gt0// pi_gt0.
+Qed.
+
+Let mu := @lebesgue_measure R.
+
+Lemma integral0_oneDsqr b : 0 <= b ->
+  \int[mu]_(x in `[0, b]) (oneDsqr x)^-1 = atan b.
+Proof.
+rewrite le_eqVlt => /predU1P[<-|b0].
+  by rewrite set_itv1 Rintegral_set1 atan0.
+rewrite /Rintegral (@continuous_FTC2 _ _ atan)//.
+- by rewrite atan0 sube0.
+- by apply: continuous_in_subspaceT => x ?; exact: continuous_oneDsqrV.
+- split.
+  + by move=> x _; exact: derivable_atan.
+  + by apply: cvg_at_right_filter; exact: continuous_atan.
+  + by apply: cvg_at_left_filter; exact: continuous_atan.
+- by move=> x x01; rewrite derive1_atan// mul1r.
+Qed.
+
+Lemma integral0y_oneDsqr :
+  (\int[mu]_(x in `[0%R, +oo[) (oneDsqr x)^-1%:E = (pi / 2)%:E)%E.
+Proof.
+rewrite (ge0_continuous_FTC2y _ _ cvgy_atan)/=.
+- by rewrite atan0 oppr0 addr0.
+- by move=> x _; rewrite invr_ge0.
+- apply/continuous_within_itvcyP; split.
+    by move=> x x0; apply: continuous_oneDsqrV.
+  by apply: cvg_at_right_filter; exact: continuous_oneDsqrV.
+- move=> x x0; apply: ex_derive.
+- by apply: cvg_at_right_filter; exact: continuous_atan.
+- by move=> x _; rewrite derive1E; exact: derive_val.
 Qed.
 
 End Atan.

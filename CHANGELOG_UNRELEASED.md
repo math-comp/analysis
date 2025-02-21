@@ -22,9 +22,17 @@
 - file `lebesgue_integral.v`:
   + lemma `measurable_fun_le`
 
+- in `trigo.v`:
+  + lemma `integral0oo_atan`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
+- moved from `gauss_integral` to `trigo.v`:
+  + `oneDsqr`, `oneDsqr_ge1`, `oneDsqr_inum`, `oneDsqrV_le1`,
+    `continuous_oneDsqr`, `continuous_oneDsqr`
+- moved, generalized, and renamed from `gauss_integral` to `trigo.v`:
+  + `integral01_oneDsqr` -> `integral0_oneDsqr`
 
 ### Renamed
 
