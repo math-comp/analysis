@@ -24,6 +24,7 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports.
 
+(*
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
@@ -504,3 +505,4 @@ Qed.
   Qed.
 
 End minkowski.
+*)
