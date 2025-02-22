@@ -648,7 +648,7 @@ rewrite beta_prob_bernoulliE// !bernoulliE//=; last 2 first.
   lra.
   by rewrite div_betafun_ge0 div_betafun_le1.
 by congr (_ * _ + _ * _)%:E;
-  rewrite /div_betafun/= /onem !betafunE/= !factE/= !factE; field.
+  rewrite /div_betafun/= /onem !betafunE/= !factE/= ?factE; field.
 Qed.
 
 End beta_bernoulli_bernoulli.
