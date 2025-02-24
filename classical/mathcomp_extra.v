@@ -681,3 +681,9 @@ Proof. exact: comparable_max_le_max. Qed.
 Lemma real_sqrtC {R : numClosedFieldType} (x : R) : 0 <= x ->
   sqrtC x \in Num.real.
 Proof. by rewrite -sqrtC_ge0; apply: ger0_real. Qed.
+
+Lemma inr_inj {A B} : injective (@inr A B).
+Proof. by move=>  ? ? []. Qed.
+
+Lemma inl_inj {A B} : injective (@inl A B).
+Proof. by move=>  ? ? []. Qed.

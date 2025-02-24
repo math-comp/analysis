@@ -739,6 +739,9 @@ Definition fin_num := [qualify a x : \bar R | (x != -oo) && (x != +oo)].
 Fact fin_num_key : pred_key fin_num. Proof. by []. Qed.
 (*Canonical fin_num_keyd := KeyedQualifier fin_num_key.*)
 
+Lemma fin_numP_EFin x : reflect (exists r, x = r%:E) (x \in fin_num).
+Proof. by case: x => [r'||]//=; constructor; [exists r'| case | case ]. Qed.
+
 Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
 Proof. by []. Qed.
 
@@ -2500,6 +2503,11 @@ Proof.
 by move=> [x| |] [y| |]//= _ _; apply/esym; have [ab|ba] := leP x y;
   [apply/max_idPr; rewrite lee_fin|apply/max_idPl; rewrite lee_fin ltW].
 Qed.
+
+Lemma EFin_bigmax  {I : Type} (s : seq I) (P : I -> bool) (F : I -> R) r :
+  \big[maxe/r%:E]_(i <- s | P i) (F i)%:E =
+  (\big[Num.max/r]_(i <- s | P i) F i)%:E.
+Proof. by rewrite (big_morph _ EFin_max erefl). Qed.
 
 Lemma fine_min :
   {in fin_num &, {mono @fine R : x y / mine x y >-> (Num.min x y)%:E}}.
