@@ -440,9 +440,72 @@ Qed.
 HB.instance Definition _ :=
   isMeasurableFun.Build _ _ _ _ bool_to_real measurable_bool_to_real.
 
+HB.instance Definition _ := MeasurableFun.on bool_to_real.
+
 Definition btr : {RV P >-> R} := bool_to_real.
 
 End bool_to_real.
+
+Section independent_RVs_btr.
+Context {R : realType} d (T : measurableType d).
+Variable P : probability T R.
+Local Open Scope ring_scope.
+
+Lemma independent_RVs_btr
+    (I : set nat) (X : nat -> {mfun T >-> bool}) :
+  independent_RVs P I X -> independent_RVs P I (fun i : nat => btr P (X i)).
+Proof.
+move=> PIX; split.
+- move=> i Ii.
+  rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => _ [A mA <-].
+  by rewrite setTI; exact/measurable_sfunP.
+- move=> J JI E/= JEfX; apply PIX => // j jJ.
+  have := JEfX _ jJ; rewrite !inE.
+  rewrite /g_sigma_algebra_preimage /preimage_set_system/= => -[A mA <-].
+  by exists ((fun x => x%:R) @^-1` A).
+Qed.
+
+End independent_RVs_btr.
+
+Section mfunM.
+Context {d} (T : measurableType d) {R : realType}.
+
+HB.instance Definition _ (f g : {mfun T >-> R}) :=
+  @isMeasurableFun.Build d _ _ _ (f \* g)%R (measurable_funM (@measurable_funP _ _ _ _ f) ((@measurable_funP _ _ _ _ g))).
+
+End mfunM.
+
+Section move.
+
+Lemma sumr_map {R : realType} U d (T : measurableType d) (l : seq U) Q
+    (f : U -> {mfun T >-> R}) (x : T) :
+  (\sum_(i <- l | Q i) f i) x = \sum_(i <- l | Q i) f i x.
+Proof. by elim/big_ind2 : _ => //= _ g _ h <- <-. Qed.
+
+Lemma prodr_map {R : realType} U d (T : measurableType d) (l : seq U) Q
+    (f : U -> {mfun T >-> R}) (x : T) :
+  (\prod_(i <- l | Q i) f i) x = \prod_(i <- l | Q i) f i x.
+Proof. by elim/big_ind2 : _ => //= _ h _ g <- <-. Qed.
+
+Definition sumrfct {R : realType} d {T : measurableType d} (s : seq {mfun T >-> R}) : T -> R :=
+  fun x => \sum_(f <- s) f x.
+
+Lemma measurable_sumrfct {R : realType} d {T : measurableType d} (s : seq {mfun T >-> R}) :
+  measurable_fun setT (sumrfct s).
+Proof.
+apply/measurable_EFinP => /=; apply/measurableT_comp => //.
+exact: measurable_sum.
+Qed.
+
+HB.instance Definition _ {R : realType} d {T : measurableType d} (s : seq {mfun T >-> R}) :=
+  isMeasurableFun.Build _ _ _ _ (sumrfct s) (measurable_sumrfct s).
+
+Lemma sum_mfunE {R : realType} d {T : measurableType d} (s : seq {mfun T >-> R}) x :
+  ((\sum_(f <- s) f) x = sumrfct s x)%R.
+Proof. by rewrite/sumrfct; elim/big_ind2 : _ => //= u a v b <- <-. Qed.
+
+
+End move.
 
 Section bernoulli.
 
@@ -549,32 +612,6 @@ transitivity (\sum_(i < n) p%:E).
 by rewrite sumEFin big_const_ord iter_addr addr0 mulrC mulr_natr.
 Qed.
 
-Definition sumrfct (s : seq {mfun T >-> R}) := (fun x => \sum_(f <- s) f x)%R.
-
-Lemma measurable_sumrfct s : measurable_fun setT (sumrfct s).
-Proof.
-rewrite /sumrfct.
-pose n := size s.
-apply/measurable_EFinP => /=.
-have -> : (EFin \o (fun x : T => (\sum_(f <- s) f x)%R)) = (fun x : T => \sum_(i < n) (s`_i x)%:E)%R.
-  apply: funext => x /=.
-  rewrite sumEFin.
-  congr (_%:E).
-  rewrite big_tnth//.
-  apply: eq_bigr => i _ /=.
-  by rewrite (tnth_nth 0%R).
-apply: emeasurable_sum => i.
-by apply/measurable_EFinP.
-Qed.
-
-HB.about isMeasurableFun.Build.
-HB.instance Definition _ s :=
-  isMeasurableFun.Build _ _ _ _ (sumrfct s) (measurable_sumrfct s).
-
-Lemma sumrfctE' (s : seq {mfun T >-> R}) x :
-  ((\sum_(f <- s) f) x = sumrfct s x)%R.
-Proof. by rewrite/sumrfct; elim/big_ind2 : _ => //= u a v b <- <-. Qed.
-
 Lemma bernoulli_trial_ge0 (X : {dRV P >-> bool}^nat) n : is_bernoulli_trial n X ->
   (forall t, 0 <= bernoulli_trial n X t)%R.
 Proof.
@@ -583,7 +620,7 @@ rewrite /bernoulli_trial.
 have -> : (\sum_(i < n) btr P (X i))%R = (\sum_(s <- map (btr P \o X) (iota 0 n)) s)%R.
   by rewrite big_map -[in RHS](subn0 n) big_mkord.
 have -> : (\sum_(s <- [seq (btr P \o X) i | i <- iota 0 n]) s)%R t = (\sum_(s <- [seq (btr P \o X) i | i <- iota 0 n]) s t)%R.
-  by rewrite sumrfctE'.
+  by rewrite sum_mfunE.
 rewrite big_map.
 by apply: sumr_ge0 => i _/=; rewrite /bool_to_real/= ler0n.
 Qed.
@@ -591,47 +628,15 @@ Qed.
 (* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65 *)
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
 
-Lemma expR_prod d' {U : measurableType d'} (X : seq {mfun U >-> R}) (f : {mfun U >-> R} -> R) :
-  (\prod_(x <- X) expR (f x) = expR (\sum_(x <- X) f x))%R.
-Proof.
-elim: X => [|h t ih]; first by rewrite !big_nil expR0.
-by rewrite !big_cons ih expRD.
-Qed.
-
-Lemma expR_sum U l Q (f : U -> R) : (expR (\sum_(i <- l | Q i) f i) = \prod_(i <- l | Q i) expR (f i))%R.
-Proof.
-elim: l; first by rewrite !big_nil expR0.
-move=> a l ih.
-rewrite !big_cons.
-case: ifP => //= aQ.
-by rewrite expRD ih.
-Qed.
-
-Lemma sumr_map U d' (V : measurableType d') (l : seq U) Q (f : U -> {mfun V >-> R}) (x : V) :
-  ((\sum_(i <- l | Q i) f i) x = \sum_(i <- l | Q i) f i x)%R.
-Proof.
-elim: l; first by rewrite !big_nil.
-move=> a l ih.
-rewrite !big_cons.
-case: ifP => aQ//=.
-by rewrite -ih.
-Qed.
-
-Lemma prodr_map U d' (V : measurableType d') (l : seq U) Q (f : U -> {mfun V >-> R}) (x : V) :
-  ((\prod_(i <- l | Q i) f i) x = \prod_(i <- l | Q i) f i x)%R.
-Proof.
-elim: l; first by rewrite !big_nil.
-move=> a l ih.
-rewrite !big_cons.
-case: ifP => aQ//=.
-by rewrite -ih.
-Qed.
-
 Lemma independent_mmt_gen_fun (X : {dRV P >-> bool}^nat) n t :
   let mmtX (i : nat) : {RV P >-> R} := expR \o t \o* (btr P (X i)) in
   independent_RVs P `I_n X -> independent_RVs P `I_n mmtX.
 Proof.
-Admitted. (* from Reynald's PR, independent_RVs2_comp, "when applying a function, the sigma algebra only gets smaller" *)
+rewrite /= => PnX.
+apply: independent_RVs_comp => //.
+apply: independent_RVs_scale => //=.
+exact: independent_RVs_btr.
+Qed.
 
 Lemma expectation_prod_independent_RVs (X : {RV P >-> R}^nat) n :
   independent_RVs P `I_n X ->
@@ -695,9 +700,6 @@ rewrite -EFinD; congr (_ + _)%:E; rewrite mulrC//.
 by rewrite expR0 mulr1.
 Qed.
 
-Lemma iter_mule (n : nat) (x y : \bar R) : iter n ( *%E x) y = (x ^+ n * y)%E.
-Proof. by elim: n => [|n ih]; rewrite ?mul1e// [LHS]/= ih expeS muleA. Qed.
-
 Lemma binomial_mmt_gen_fun (X_ : {dRV P >-> bool}^nat) n (t : R) :
   is_bernoulli_trial n X_ ->
   let X := bernoulli_trial n X_ : {RV P >-> R} in
@@ -710,16 +712,6 @@ under eq_bigr => i _.
   over.
 rewrite big_const iter_mule mule1 cardT size_enum_ord -EFin_expe powR_mulrn//.
 by rewrite addr_ge0// ?subr_ge0// mulr_ge0// expR_ge0.
-Qed.
-
-(* TODO: add to the PR by reynald that adds the \prod notation to master *)
-Lemma prod_EFin U l Q (f : U -> R) : \prod_(i <- l | Q i) ((f i)%:E) = (\prod_(i <- l | Q i) f i)%:E.
-Proof.
-elim: l; first by rewrite !big_nil.
-move=> a l ih.
-rewrite !big_cons.
-case: ifP => //= aQ.
-by rewrite EFinM ih.
 Qed.
 
 Lemma mmt_gen_fun_expectation (X_ : {dRV P >-> bool}^nat) (t : R) n :
@@ -801,12 +793,6 @@ apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   exact: taylor_ln_le.
 rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (expR _)%:E.
 by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
-Qed.
-
-(* TODO: move *)
-Lemma ln_div : {in Num.pos &, {morph ln (R:=R) : x y / (x / y)%R >-> (x - y)%R}}.
-Proof.
-by move=> x y; rewrite !posrE => x0 y0; rewrite lnM ?posrE ?invr_gt0// lnV ?posrE.
 Qed.
 
 Lemma norm_expR : normr \o expR = (expR : R -> R).
@@ -909,14 +895,6 @@ rewrite -mulrN -mulrA [in leRHS]mulrC expRM ge0_ler_powR// ?nnegrE.
   - by move: x01; rewrite in_itv=> /= /andP [] _ /ltW.
 Qed.
 Local Open Scope ereal_scope.
-
-Lemma measurable_fun_le D (f g : T -> R) : d.-measurable D -> measurable_fun D f ->
-  measurable_fun D g -> measurable (D `&` [set x | f x <= g x]%R).
-Proof.
-move=> mD mf mg.
-under eq_set => x do rewrite -lee_fin.
-apply: emeasurable_fun_le => //; apply: measurableT_comp => //.
-Qed.
 
 (* Rajani -> corollary 2.7 / mu-book -> corollary 4.7 *)
 Corollary bernoulli_trial_inequality4 (X : {dRV P >-> bool}^nat) (delta : R) n :
