@@ -239,14 +239,15 @@ HB.instance Definition _ :=
 End mfun_realType.
 
 Section mfun_measurableType.
-Context {d d'} {aT : measurableType d} {rT : measurableType d'}.
+Context {d1 d2 d3} {T1 : measurableType d1} {T2 : measurableType d2}
+  {T3 : measurableType d3}.
+Variables (f : {mfun T2 >-> T3}) (g : {mfun T1 >-> T2}).
 
-Lemma measurableT_comp_subproof (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :
-  measurable_fun setT (f \o g).
+Lemma measurableT_comp_subproof : measurable_fun setT (f \o g).
 Proof. exact: measurableT_comp. Qed.
 
-HB.instance Definition _ (f : {mfun _ >-> rT}) (g : {mfun aT >-> rT}) :=
-  isMeasurableFun.Build _ _ _ _ (f \o g) (measurableT_comp_subproof _ _).
+HB.instance Definition _ := isMeasurableFun.Build _ _ _ _ (f \o g)
+  measurableT_comp_subproof.
 
 End mfun_measurableType.
 
