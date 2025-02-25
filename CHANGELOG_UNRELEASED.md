@@ -9,6 +9,13 @@
 
 - new file `internal_Eqdep_dec.v` (don't use, internal, to be removed)
 
+- in `realfun.v`:
+  + lemmas `cvge_pinftyP`, `nonincreasing_cvge`
+
+- in `probability.v`:
+  + definition `cdf`
+  + lemmas `cdf_ge0`, `cdf_le1`, `cdf_nondecreasing`, `cdf_cvgr1_pinfty`, `cdf_cvg0_ninfty`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package

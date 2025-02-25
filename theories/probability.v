@@ -143,6 +143,96 @@ Proof. by move=> mf intf; rewrite integral_pushforward. Qed.
 
 End transfer_probability.
 
+Definition cdf d (T : measurableType d) (R : realType) (P : probability T R)
+  (X : {RV P >-> R}) (r : R) := distribution P X (`]-oo, r]).
+
+Section cumulative_districution_function.
+
+Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
+
+Context d (T : measurableType d) (R : realType) (P : probability T R)
+  (X : {RV P >-> R}).
+
+Lemma cdf_ge0 r : (0 <= cdf X r)%E.
+Proof. by []. Qed.
+
+Lemma cdf_le1 r : (cdf X r <= 1)%E.
+Proof. rewrite /cdf; exact: probability_le1. Qed.
+
+Lemma cdf_nondecreasing : nondecreasing (cdf X).
+Proof.
+rewrite /cdf=> r s ?.
+by apply: le_measure; rewrite ?inE; [apply: measurable_itv ..| apply: subitvPr].
+Qed.
+
+Lemma cdf_cvgr1_pinfty : (cdf X r)@[r --> +oo%R] --> 1%E.
+Proof.
+pose s := ereal_sup (range (cdf X)).
+have cdf_s : (cdf X r)@[r --> +oo%R] --> s.
+- by apply: realfun.nondecreasing_cvge cdf_nondecreasing.
+have cdf_ns : (cdf X n%:R)@[n --> \oo] --> s.
+- rewrite cvge_pinftyP in cdf_s.
+  by apply: cdf_s; rewrite cvgryPge; apply: nbhs_infty_ger.
+have cdf_n1 : (cdf X n%:R)@[n --> \oo] --> 1%E.
+- pose F (n : nat) : set T := X @^-1` `]-oo, n%:R].
+  have U_F : \bigcup_n F n = setT.
+  + rewrite /F -preimage_bigcup -subTset => t _ /=.
+    exists `|Rtoint (Rceil (X t))|%N => //.
+    rewrite set_itvE /= natr_absz intr_norm /= RtointK; [| by apply: isint_Rceil].
+    by apply /(le_trans (Rceil_ge (X t))) /ler_norm.
+  rewrite /cdf /distribution /pushforward.
+  move: (@nondecreasing_cvg_mu d T R P F); rewrite U_F /F /= probability_setT.
+  apply=> //; [by move=> ?; apply: measurable_sfunP | move=> n m n_lem //=].
+  apply /subsetPset; apply: preimage_subset=> x; rewrite !set_itvE /=.
+  by move: n_lem => /[swap]; rewrite -(ler_nat R); apply: le_trans.
+rewrite (_ : 1%E = s) //.
+move: (@cvg_unique _ (@ereal_hausdorff R)
+    (nbhs (fmap (fun n:nat => cdf X n%:R) \oo))).
+by rewrite /is_subset1; apply.
+Qed.
+
+Lemma cdf_cvgr0_ninfty: (cdf X r)@[r --> -oo%R] --> 0%E.
+Proof.
+rewrite cvgNy_compNP.
+have cdf_opp_noninc : {homo (cdf X \o -%R) : x y / x <= y >-> (x >= y)%E}.
+- by move=> x y; rewrite -lterN2 /comp; apply: cdf_nondecreasing.
+pose s := ereal_inf (range (cdf X \o -%R)).
+have cdf_opp_s : ((cdf X \o -%R) r)@[r --> +oo%R] --> s.
+- by apply: nonincreasing_cvge cdf_opp_noninc.
+have cdf_opp_ns : ((cdf X \o -%R) n%:R)@[n --> \oo] --> s.
+- rewrite cvge_pinftyP in cdf_opp_s.
+  by apply: cdf_opp_s; rewrite cvgryPge; apply: nbhs_infty_ger.
+have cdf_opp_n0 : ((cdf X \o -%R) n%:R)@[n --> \oo] --> 0%E.
+- pose F (n : nat) : set T := X @^-1` `]-oo, -n%:R].
+  have I_F : \bigcap_n F n = set0.
+  + rewrite -subset0 => t.
+    set m : nat := `|Rtoint (Rceil (`|X t|))| + 1.
+    have mXt : - m%:R < X t.
+    * rewrite -ltrN2 /= /m -mulr_natl opprK /= natrD mulr1.
+      rewrite natr_absz intr_norm /= RtointK; [| by apply: isint_Rceil].
+      rewrite ger0_norm; [| apply/Rceil_ge0/normr_ge0].
+      apply: (@le_lt_trans _ _ (`|X t|)); [rewrite -normrN ler_norm //|].
+      by apply: ltr_pwDr; [| apply: Rceil_ge].
+    rewrite /bigcap /F => /(_ m); rewrite set_itvE /= => /(_ I).
+    by rewrite -falseE -(@lt_irreflexive _ R (1*-m)); apply: (lt_le_trans mXt).
+  rewrite /cdf /distribution /pushforward.
+  move: (@nonincreasing_cvg_mu d T R P F).
+  rewrite I_F /F /= -(@measure0 d T R P); apply=> //.
+  + by apply: (@le_lt_trans _ _ 1%E);
+      [apply/probability_le1/measurable_sfunP | apply: ltry].
+  + move=> ?; by apply: measurable_sfunP.
+  + move=> n m n_lem.
+    apply /subsetPset; apply: preimage_subset=> x; rewrite !set_itvE /=.
+    by move: n_lem; rewrite -(ler_nat R) -lerN2 => /[swap]; apply: le_trans.
+rewrite (_ : 0%E = s) //.
+move: (@cvg_unique _ (@ereal_hausdorff R)
+    (nbhs (fmap (fun n:nat => (cdf X \o -%R) n%:R) \oo))).
+by rewrite /is_subset1; apply.
+Qed.
+
+End cumulative_districution_function.
+
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
 Canonical expectation_unlockable := Unlockable expectation.unlock.
