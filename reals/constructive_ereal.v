@@ -796,6 +796,10 @@ Lemma EFinB r r' : (r - r')%:E = r%:E - r'%:E. Proof. by []. Qed.
 
 Lemma EFinM r r' : (r * r')%:E = r%:E * r'%:E. Proof. by []. Qed.
 
+Lemma prodEFin T s (P : pred T) (f : T -> R) :
+  \prod_(i <- s | P i) (f i)%:E = (\prod_(i <- s | P i) f i)%:E.
+Proof. by elim/big_ind2 : _ => // _ x _ y -> ->; rewrite EFinM. Qed.
+
 Lemma sumEFin I s P (F : I -> R) :
   \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%:E.
 Proof. by rewrite (big_morph _ EFinD erefl). Qed.
@@ -2272,7 +2276,8 @@ case: z z0 => [z z0| |//]; last by rewrite !gt0_muley ?mule_gt0.
 by rewrite /mule/= mulrA.
 Qed.
 
-Local Open Scope ereal_scope.
+Lemma iter_mule n x y : iter n ( *%E x) y = x ^+ n * y.
+Proof. by elim: n => [|n ih]; rewrite ?mul1e// [LHS]/= ih expeS muleA. Qed.
 
 HB.instance Definition _ := Monoid.isComLaw.Build (\bar R) 1%E mule
   muleA muleC mul1e.
@@ -4273,7 +4278,6 @@ Qed.
 Section contract_expand.
 Variable R : realFieldType.
 Implicit Types (x : \bar R) (r : R).
-Local Open Scope ereal_scope.
 
 Definition contract x : R :=
   match x with
