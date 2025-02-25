@@ -681,3 +681,7 @@ Proof. exact: comparable_max_le_max. Qed.
 Lemma real_sqrtC {R : numClosedFieldType} (x : R) : 0 <= x ->
   sqrtC x \in Num.real.
 Proof. by rewrite -sqrtC_ge0; apply: ger0_real. Qed.
+
+Lemma mulr_funEcomp (R : semiRingType) (T : Type) (x : R) (f : T -> R) :
+  x \o* f = *%R^~ x \o f.
+Proof. by []. Qed.
