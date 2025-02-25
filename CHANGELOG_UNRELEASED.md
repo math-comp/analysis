@@ -9,6 +9,16 @@
 
 - new file `internal_Eqdep_dec.v` (don't use, internal, to be removed)
 
+- file `constructive_ereal.v`:
+  + definition `iter_mule`
+  + lemma `prodEFin`
+
+- file `exp.v`:
+  + lemma `expR_sum`
+
+- file `lebesgue_integral.v`:
+  + lemma `measurable_fun_le`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package

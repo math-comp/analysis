@@ -2046,25 +2046,9 @@ Notation emeasurable_fun_fsum := emeasurable_fsum (only parsing).
 #[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `ge0_emeasurable_sum`")]
 Notation ge0_emeasurable_fun_sum := ge0_emeasurable_sum (only parsing).
 
-Section measurable_fun.
-Context d (T : measurableType d) (R : realType).
-Implicit Types (D : set T) (f g : T -> R).
-
-Lemma measurable_sum D I s (h : I -> (T -> R)) :
-  (forall n, measurable_fun D (h n)) ->
-  measurable_fun D (fun x => \sum_(i <- s) h i x).
-Proof.
-move=> mh; apply/measurable_EFinP.
-rewrite (_ : _ \o _ = (fun t => \sum_(i <- s) (h i t)%:E)); last first.
-  by apply/funext => t/=; rewrite -sumEFin.
-by apply/emeasurable_sum => i; exact/measurable_EFinP.
-Qed.
-
-End measurable_fun.
-
-Section measurable_fun_measurable2.
+Section emeasurable_fun_cmp.
 Local Open Scope ereal_scope.
-Context d (T : measurableType d) (R : realType).
+Context d {T : measurableType d} {R : realType}.
 Variables (D : set T) (mD : measurable D).
 Implicit Types f g : T -> \bar R.
 
@@ -2096,7 +2080,31 @@ move=> mf mg; rewrite set_neq_lt setIUr.
 by apply: measurableU; exact: emeasurable_fun_lt.
 Qed.
 
-End measurable_fun_measurable2.
+End emeasurable_fun_cmp.
+
+Section measurable_fun.
+Context d (T : measurableType d) (R : realType).
+Implicit Types (D : set T) (f g : T -> R).
+
+Lemma measurable_sum D I s (h : I -> (T -> R)) :
+  (forall n, measurable_fun D (h n)) ->
+  measurable_fun D (fun x => \sum_(i <- s) h i x).
+Proof.
+move=> mh; apply/measurable_EFinP.
+rewrite (_ : _ \o _ = (fun t => \sum_(i <- s) (h i t)%:E)); last first.
+  by apply/funext => t/=; rewrite -sumEFin.
+by apply/emeasurable_sum => i; exact/measurable_EFinP.
+Qed.
+
+Lemma measurable_fun_le D f g :
+  d.-measurable D -> measurable_fun D f -> measurable_fun D g ->
+  measurable (D `&` [set x | f x <= g x]).
+Proof.
+move=> mD mf mg; under eq_set => x do rewrite -lee_fin.
+by apply: emeasurable_fun_le => //; exact: measurableT_comp.
+Qed.
+
+End measurable_fun.
 
 Section ge0_integral_sum.
 Local Open Scope ereal_scope.
