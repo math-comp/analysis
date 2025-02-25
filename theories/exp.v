@@ -415,6 +415,10 @@ rewrite expRxDyMexpx expRN [_ * expR y]mulrC mulfK //.
 by case: ltrgt0P (expR_gt0 x).
 Qed.
 
+Lemma expR_sum T s (P : pred T) (f : T -> R) :
+  expR (\sum_(i <- s | P i) f i) = \prod_(i <- s | P i) expR (f i).
+Proof. by elim/big_ind2 : _ => [|? ? ? ? <- <-|]; rewrite ?expR0// expRD. Qed.
+
 Lemma expRM_natl n x : expR (n%:R * x) = expR x ^+ n.
 Proof.
 elim: n x => [x|n IH x] /=; first by rewrite mul0r expr0 expR0.
