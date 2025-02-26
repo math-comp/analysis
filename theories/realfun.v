@@ -354,6 +354,30 @@ Qed.
 
 End cvgr_fun_dvg_seq.
 
+Section cvge_fun_dvg_seq.
+Context {R : realType}.
+
+Lemma cvge_pinftyP (f : R -> \bar R) (l : \bar R) :
+  f x @[x --> +oo] --> l <->
+    forall u : R^nat, (u n @[n --> \oo] --> +oo) -> f (u n) @[n --> \oo] --> l.
+Proof. (* almost the same as cvg_pinftyP *)
+split; first by move=> ? ? /cvg_comp; exact.
+apply: contraPP => noncvg_f; apply/existsNP.
+under eq_exists do rewrite not_implyE; apply/exists2P.
+suff [e e_sep]: exists e : {posnum R},
+    forall A, exists2 un, A < un & ~ ball l e%:num (f un).
+- exists (fun n => sval (cid2 (e_sep n%:R))).
+  + apply/cvgryPgt=> A; near=> n; case: cid2 => //= r nr _.
+    by rewrite (le_lt_trans _ nr)//; near: n; exact: nbhs_infty_ger.
+  apply/cvg_ballP => /= /(_ e%:num ltac:(by[])) [N _ /(_ _ (leqnn N))].
+  by case: cid2 => uN/= _; apply.
+move: noncvg_f => /cvg_ballP; rewrite -existsPNP => -[eps eps_gt0].
+move /not_near_inftyP => eps_sep; exists (PosNum eps_gt0) => A /=.
+by case: (eps_sep _ (num_real A)) => x ? ?; exists x.
+Unshelve. all: by end_near. Qed.
+
+End cvge_fun_dvg_seq.
+
 Section fun_cvg_realType.
 Context {R : realType}.
 Implicit Types f : R -> R.
@@ -796,6 +820,15 @@ move=> ndf; apply/cvg_ex; near a^'+ => b.
 by eexists; apply: (@nondecreasing_at_right_cvge _ _ (BLeft b));
   [rewrite bnd_simp|near: b..].
 Unshelve. all: by end_near. Qed.
+
+Lemma nonincreasing_cvge (f : R -> \bar R) :
+  nonincreasing_fun f -> f r @[r --> +oo%R] --> ereal_inf (range f).
+Proof.
+move=> f_Ninc.
+rewrite -cvgeNP /ereal_inf oppeK image_comp /comp.
+apply: nondecreasing_cvge=> x y x_ley.
+by rewrite leeN2; apply/f_Ninc/x_ley.
+Qed.
 
 Lemma nonincreasing_at_right_cvge (f : R -> \bar R) a (b : itv_bound R) :
     (BRight a < b)%O -> {in Interval (BRight a) b &, nonincreasing_fun f} ->
