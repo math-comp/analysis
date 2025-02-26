@@ -934,9 +934,9 @@ apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
 - by rewrite unlock.
 Qed.
 
-Definition mmt_gen_fun (X : T -> R) (t : R) := 'E_P[expR \o t \o* X].
-Local Notation "'M_ X t" := (mmt_gen_fun X t).
+Definition mmt_gen_fun0 (X : {RV P >-> R}) (t : R) := [the {mfun T >-> R} of expR \o t \o* X].
 
+Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[mmt_gen_fun0 X t].
 Local Notation "'M_ X t" := (mmt_gen_fun X t).
 
 Definition nth_mmt (X : {RV P >-> R}) (n : nat) := 'E_P[X^+n].
@@ -945,7 +945,8 @@ Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
   P [set x | X x >= a]%R <= 'M_X r * (expR (- (r * a)))%:E.
 Proof.
 move=> t0; rewrite /mmt_gen_fun.
-have -> : expR \o r \o* X = (normr \o normr) \o (expR \o r \o* X).
+have -> : mmt_gen_fun0 X r = (normr \o normr) \o (expR \o r \o* X) :> (T -> R).
+  (* TODO: lemmas *)
   by apply: funext => t /=; rewrite normr_id ger0_norm ?expR_ge0.
 rewrite expRN lee_pdivlMr ?expR_gt0//.
 rewrite (le_trans _ (markov _ (expR_gt0 (r * a)) _ _ _))//; last first.
@@ -1049,7 +1050,7 @@ End markov_chebyshev_cantelli.
 Notation "'M_ X t" := (mmt_gen_fun X t) : ereal_scope.
 
 HB.mixin Record MeasurableFun_isDiscrete d d' (T : measurableType d)
-    (T' : measurableType d') (X : T -> T') of @MeasurableFun d d' T T' X := {
+    (T' : measurableType d') (X : T -> T') (*of @MeasurableFun d d' T T' X*) := {
   countable_range : countable (range X)
 }.
 
