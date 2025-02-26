@@ -406,7 +406,7 @@ move=> mX mY X0 Y0 XY; rewrite unlock ae_ge0_le_integral => //.
   by apply: XYN => /=; apply: contra_not h; rewrite lee_fin.
 Qed.
 
-Lemma expectationD (X Y : {RV P >-> R}) :
+Lemma expectationD (X Y : {mfun T >-> R}) :
     P.-integrable [set: T] (EFin \o X) -> P.-integrable [set: T] (EFin \o Y) ->
   'E_P[X \+ Y] = 'E_P[X] + 'E_P[Y].
 Proof. by move=> ? ?; rewrite unlock integralD_EFin. Qed.
