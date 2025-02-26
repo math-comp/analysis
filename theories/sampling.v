@@ -511,8 +511,8 @@ Definition measure_tuple_display : measure_display -> measure_display.
 Proof. exact. Qed.
 
 Definition g_sigma_preimage d (rT : semiRingOfSetsType d) (aT : Type)
-  (n : nat) (f : 'I_n -> aT -> rT) : set (set aT).
-Admitted.
+    (n : nat) (f : 'I_n -> aT -> rT) : set (set aT) :=
+  <<s \big[setU/set0]_(i < n) preimage_set_system setT (f i) measurable >>.
 
 HB.instance Definition _ (n : nat) (T : pointedType) :=
   isPointed.Build (n.-tuple T) (nseq n point).
@@ -521,15 +521,12 @@ Definition mtuple (n : nat) d (T : measurableType d) : Type := n.-tuple T.
 
 HB.instance Definition _ (n : nat) d (T : measurableType d) := Pointed.on (mtuple n T).
 
-
-
-Lemma countable_range_bool d (T : measurableType d) (b : bool)
-   : countable (range (@cst T _ b)).
-Admitted.
+Lemma countable_range_bool d (T : measurableType d) (b : bool) :
+  countable (range (@cst T _ b)).
+Proof. exact: countableP. Qed.
 
 HB.instance Definition _ d (T : measurableType d) b :=
   MeasurableFun_isDiscrete.Build d _ T _  (cst b) (countable_range_bool T b).
-
 
 Section measurable_tuple.
 Context {d} {T : measurableType d}.
@@ -538,15 +535,15 @@ Variable n : nat.
 Let coors := (fun i x => @tnth n T x i).
 
 Let prod_salgebra_set0 : g_sigma_preimage coors set0.
-Admitted.
+Proof. exact: sigma_algebra0. Qed.
 
 Let prod_salgebra_setC A : g_sigma_preimage coors A -> g_sigma_preimage coors (~` A).
-Admitted.
+Proof. exact: sigma_algebraC. Qed.
 
 Let prod_salgebra_bigcup (F : _^nat) :
   (forall i, g_sigma_preimage coors (F i)) ->
   g_sigma_preimage coors (\bigcup_i (F i)).
-Admitted.
+Proof. exact: sigma_algebra_bigcup. Qed.
 
 HB.instance Definition _ :=
   @isMeasurable.Build (measure_tuple_display d)
@@ -555,7 +552,6 @@ HB.instance Definition _ :=
 
 End measurable_tuple.
 
-
 Section bernoulli.
 
 Local Open Scope ereal_scope.
@@ -563,10 +559,10 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Variable p : R.
 Hypothesis p01 : (0 <= p <= 1)%R.
 
-Definition bernoulli_RV (X : {dRV P >-> bool}) :=
+Definition bernoulli_RV (X : {RV P >-> bool}) :=
   distribution P X = bernoulli p.
 
-Lemma bernoulli_RV1 (X : {dRV P >-> bool}) : bernoulli_RV X ->
+Lemma bernoulli_RV1 (X : {RV P >-> bool}) : bernoulli_RV X ->
   P [set i | X i == 1%R] = p%:E.
 Proof.
 move=> [[/(congr1 (fun f => f [set 1%:R]))]].
@@ -580,7 +576,7 @@ rewrite /preimage/=.
 by apply/seteqP; split => [x /eqP H//|x /eqP].
 Qed.
 
-Lemma bernoulli_RV2 (X : {dRV P >-> bool}) : bernoulli_RV X ->
+Lemma bernoulli_RV2 (X : {RV P >-> bool}) : bernoulli_RV X ->
   P [set i | X i == 0%R] = (`1-p)%:E.
 Proof.
 move=> [[/(congr1 (fun f => f [set 0%:R]))]].
@@ -594,7 +590,7 @@ rewrite /preimage/=.
 by apply/seteqP; split => [x /eqP H//|x /eqP].
 Qed.
 
-Lemma bernoulli_expectation (X : {dRV P >-> bool}) :
+Lemma bernoulli_expectation (X : {RV P >-> bool}) :
   bernoulli_RV X -> 'E_P[btr P X] = p%:E.
 Proof.
 move=> bX.
@@ -608,7 +604,7 @@ rewrite integral_bernoulli//=.
 by rewrite -!EFinM -EFinD mulr0 addr0 mulr1.
 Qed.
 
-Lemma integrable_bernoulli (X : {dRV P >-> bool}) :
+Lemma integrable_bernoulli (X : {RV P >-> bool}) :
   bernoulli_RV X -> P.-integrable [set: T] (EFin \o btr P X).
 Proof.
 move=> bX.
@@ -639,7 +635,7 @@ by rewrite expe2 -EFinD onemMr.
 Qed.
 
 (* TODO: define a mixin *)
-Program Definition is_bernoulli_trial n (X : n.-tuple {dRV P >-> bool}) :=
+Program Definition is_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :=
   (forall i : 'I_n, bernoulli_RV (tnth X i)) /\
   independent_RVs P `I_n (fun i => nth _ X i).
 Next Obligation.
@@ -656,6 +652,7 @@ Definition sumrfct_tuple n (s : n.-tuple {mfun T >-> R}) : mtuple n T -> R :=
 
 Lemma measurable_sumrfct_tuple n (s : n.-tuple {mfun T >-> R}) :
   measurable_fun setT (sumrfct_tuple s).
+Proof.
 Admitted.
 
 HB.instance Definition _ n (s : n.-tuple {mfun T >-> R}) :=
@@ -671,9 +668,24 @@ Admitted.
 HB.instance Definition _ n (s : n.-tuple {mfun T >-> R}) :=
   isMeasurableFun.Build _ _ _ _ (prodrfct_tuple s) (measurable_prodrfct_tuple s).
 
-Definition bernoulli_trial n (X : n.-tuple {dRV P >-> bool}) : {RV (pro n P) >-> R} :=
+Lemma measurable_tnth n (i : 'I_n.+1) :
+  measurable_fun [set: mtuple n.+1 T] (@tnth _ T ^~ i).
+Proof.
+move=> _ Y mY.
+rewrite setTI.
+have -> : (@tnth _ T)^~ i @^-1` Y
+    = \bigcup_(t in [set t : n.+1.-tuple T| @tnth n.+1 T t i \in Y]) [set t].
+  apply/seteqP; split=> [t/= Yti|t].
+  - exists t => //=.
+    by rewrite inE.
+  - move=> [t' /= t'iY] tt'.
+    subst t'.
+    by move/set_mem in t'iY.
+Abort.
+
+Definition bernoulli_trial n (X : n.-tuple {RV P >-> bool}) : {RV (pro n P) >-> R} :=
   sumrfct_tuple [the n.-tuple _ of (map (btr P)
-   (map (fun t : {dRV P >-> bool} => t : {mfun T >-> bool}) X))].
+   (map (fun t : {RV P >-> bool} => t : {mfun T >-> bool}) X))].
 
 (*
 was wrong
@@ -698,27 +710,34 @@ have {}intX Xi : Xi \in X -> P.-integrable [set: T] (EFin \o Xi).
 rewrite big_ord_recr/=.
 rewrite /sumrfct_tuple/=.
 under eq_fun do rewrite big_ord_recr/=.
-Set Printing Coercions.
 pose X1 := fun x : mtuple n.+1 T =>
                 (\sum_(i < n) MeasurableFun.sort (tnth X (widen_ord (leqnSn n) i)) (tnth x (widen_ord (leqnSn n) i)))%R.
-have mX1 : measurable_fun setT X1. admit.
+have mX1 : measurable_fun setT X1.
+  apply: measurable_sum => /= i.
+  admit.
 pose build_mX1 := isMeasurableFun.Build _ _ _ _ _ mX1.
 pose Y1 : {mfun mtuple n.+1 T >-> R} := HB.pack X1 build_mX1.
 pose X2 := fun x : mtuple n.+1 T =>
                 MeasurableFun.sort (tnth X ord_max) (tnth x ord_max).
-have mX2 : measurable_fun setT X2. admit.
+have mX2 : measurable_fun setT X2.
+  rewrite /X2 /=.
+  admit.
 pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
 pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
 rewrite [X in 'E__[X]](_ : _ = Y1 \+ Y2)//.
-rewrite expectationD; last 2 first. admit. admit.
-Unset Printing Coercions.
+rewrite expectationD; last 2 first.
+  admit.
+  admit.
 congr (_ + _); last first.
 - rewrite /Y1/X1/=.
   rewrite unlock /expectation.
   pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w ord_max).
-  have mphi : measurable_fun setT phi. admit.
+  have mphi : measurable_fun setT phi.
+    rewrite /phi.
+    admit.
   rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _ (fun w => (tnth X ord_max w)%:E)); last 2 first.
-    admit. admit.
+    admit.
+    admit.
   congr (\int[_]__ _).
   rewrite /pushforward.
   apply: funext => x.
@@ -726,10 +745,28 @@ congr (_ + _); last first.
 rewrite /Y2/X2/=.
 Admitted.
 
-Lemma expectation_bernoulli_trial n (X : n.-tuple {dRV P >-> bool}) :
+Lemma expectation_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :
   is_bernoulli_trial X -> 'E_(pro n P)[bernoulli_trial X] = (n%:R * p)%:E.
 Proof.
-rewrite /is_bernoulli_trial /bernoulli_RV.
+move=> bRV. rewrite /bernoulli_trial.
+transitivity ('E_(pro n P)[sumrfct_tuple (map (btr P) X)]).
+  (*by rewrite big_map -[in RHS](subn0 n) big_mkord.*) admit.
+rewrite expectation_sum_pro; last first.
+  move=> Xi.
+  move=> /mapP[/= k kn] ->.
+  have [i ki] : exists i : 'I_n, k = tnth X i.
+    by apply/tnthP.
+  apply: integrable_bernoulli.
+  rewrite ki.
+  by apply bRV.
+(*rewrite big_map -[in LHS](subn0 n) big_mkord.*)
+transitivity (\sum_(i < n) p%:E).
+  apply: eq_bigr => k _.
+  (*rewrite bernoulli_expectation//.
+  apply bRV.
+  by [].*) admit.
+by rewrite sumEFin big_const_ord iter_addr addr0 mulrC mulr_natr.
+(*rewrite /is_bernoulli_trial /bernoulli_RV.
 move=> [bRV iRV].
 rewrite /bernoulli_trial.
 rewrite expectation_sum_pro; last first.
@@ -740,10 +777,10 @@ rewrite expectation_sum_pro; last first.
   apply: integrable_bernoulli.
   admit.
 under eq_bigr do rewrite !tnth_map/= bernoulli_expectation//.
-by rewrite sumr_const card_ord EFinM mule_natl.
-Qed.
+by rewrite sumr_const card_ord EFinM mule_natl.*)
+Admitted.
 
-Lemma bernoulli_trial_ge0 n (X : n.-tuple {dRV P >-> bool}) : is_bernoulli_trial X ->
+Lemma bernoulli_trial_ge0 n (X : n.-tuple {RV P >-> bool}) : is_bernoulli_trial X ->
   (forall t, 0 <= bernoulli_trial X t)%R.
 Proof.
 move=> [bRV Xn] t.
@@ -759,7 +796,7 @@ Qed.*) Admitted.
 (* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65 *)
 Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
 
-Lemma independent_mmt_gen_fun (X : {dRV P >-> bool}^nat) n t :
+Lemma independent_mmt_gen_fun (X : {RV P >-> bool}^nat) n t :
   let mmtX (i : nat) : {RV P >-> R} := expR \o t \o* (btr P (X i)) in
   independent_RVs P `I_n X -> independent_RVs P `I_n mmtX.
 Proof.
@@ -778,7 +815,7 @@ Proof.
 Admitted.
 
 (* wrong lemma *)
-Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple {dRV P >-> bool}) (t : R) :
+Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   is_bernoulli_trial X_ ->
   let X := bernoulli_trial X_ in
   'M_X t = \prod_(i < n) 'M_(btr P (tnth X_ i)) t.
@@ -786,7 +823,7 @@ Proof.
 move=> []bRVX iRVX /=.
 rewrite /bernoulli_trial/mmt_gen_fun.
 pose mmtX : n.-tuple {mfun T >-> R} := map (fun X => mmt_gen_fun0 X t)
-  (map (fun x : {dRV P >-> bool} => btr P x : {RV P >-> R} )  X_).
+  (map (btr P)  X_).
 (*pose mmtX (i : 'I_n) : {RV P >-> R} := expR \o t \o* (btr P (tnth X_ i)).*)
 have iRV_mmtX : independent_RVs P setT (fun i => tnth mmtX i).
   (*exact: independent_mmt_gen_fun.*) admit.
@@ -808,7 +845,7 @@ Admitted.
 Arguments sub_countable [T U].
 Arguments card_le_finite [T U].
 
-Lemma bernoulli_mmt_gen_fun (X : {dRV P >-> bool}) (t : R) :
+Lemma bernoulli_mmt_gen_fun (X : {RV P >-> bool}) (t : R) :
   bernoulli_RV X -> 'M_(btr P X : {RV P >-> R}) t = (p * expR t + (1-p))%:E.
 Proof.
 move=> bX. rewrite/mmt_gen_fun.
@@ -844,7 +881,7 @@ by rewrite expR0 mulr1.
 Qed.
 
 (* wrong lemma *)
-Lemma binomial_mmt_gen_fun n (X_ : n.-tuple {dRV P >-> bool}) (t : R) :
+Lemma binomial_mmt_gen_fun n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   is_bernoulli_trial X_ ->
   let X := bernoulli_trial X_ : {RV pro n P >-> R} in
   'M_X t = ((p * expR t + (1-p))`^(n%:R))%:E.
@@ -858,7 +895,7 @@ rewrite big_const iter_mule mule1 cardT size_enum_ord -EFin_expe powR_mulrn//.
 by rewrite addr_ge0// ?subr_ge0// mulr_ge0// expR_ge0.
 Qed.
 
-Lemma mmt_gen_fun_expectation n (X_ : n.-tuple {dRV P >-> bool}) (t : R) :
+Lemma mmt_gen_fun_expectation n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   (0 <= t)%R ->
   is_bernoulli_trial X_ ->
   let X := bernoulli_trial X_ : {RV pro n P >-> R} in
@@ -874,7 +911,7 @@ rewrite -mulrA (mulrC (n%:R)) expRM ge0_ler_powR// ?nnegrE ?expR_ge0//.
 exact: expR_ge1Dx.
 Qed.
 
-Lemma end_thm24 n (X_ : n.-tuple {dRV P >-> bool}) (t delta : R) :
+Lemma end_thm24 n (X_ : n.-tuple {RV P >-> bool}) (t delta : R) :
   is_bernoulli_trial X_ ->
   (0 < delta)%R ->
   let X := @bernoulli_trial n X_ in
@@ -894,7 +931,7 @@ rewrite -EFinM lee_fin -powRM ?expR_ge0// ge0_ler_powR ?nnegrE//.
 Qed.
 
 (* theorem 2.4 Rajani / thm 4.4.(2) mu-book *)
-Theorem bernoulli_trial_inequality1 n (X_ : n.-tuple {dRV P >-> bool}) (delta : R) :
+Theorem bernoulli_trial_inequality1 n (X_ : n.-tuple {RV P >-> bool}) (delta : R) :
   is_bernoulli_trial X_ ->
   (0 < delta)%R ->
   let X := @bernoulli_trial n X_ in
@@ -917,7 +954,7 @@ exact: (end_thm24 _ bX).
 Qed.
 
 (* theorem 2.5 *)
-Theorem bernoulli_trial_inequality2 n (X : n.-tuple {dRV P >-> bool}) (delta : R) :
+Theorem bernoulli_trial_inequality2 n (X : n.-tuple {RV P >-> bool}) (delta : R) :
   is_bernoulli_trial X ->
   let X' := @bernoulli_trial n X in
   let mu := 'E_(pro n P)[X'] in
@@ -943,7 +980,7 @@ Lemma norm_expR : normr \o expR = (expR : R -> R).
 Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 
 (* Rajani thm 2.6 / mu-book thm 4.5.(2) *)
-Theorem bernoulli_trial_inequality3 n (X : n.-tuple {dRV P >-> bool}) (delta : R) :
+Theorem bernoulli_trial_inequality3 n (X : n.-tuple {RV P >-> bool}) (delta : R) :
   is_bernoulli_trial X -> (0 < delta < 1)%R ->
   let X' := @bernoulli_trial n X : {RV pro n P >-> R} in
   let mu := 'E_(pro n P)[X'] in
@@ -1041,7 +1078,7 @@ Qed.
 Local Open Scope ereal_scope.
 
 (* Rajani -> corollary 2.7 / mu-book -> corollary 4.7 *)
-Corollary bernoulli_trial_inequality4 n (X : n.-tuple {dRV P >-> bool}) (delta : R) :
+Corollary bernoulli_trial_inequality4 n (X : n.-tuple {RV P >-> bool}) (delta : R) :
   is_bernoulli_trial X -> (0 < delta < 1)%R ->
   (0 < n)%nat ->
   (0 < p)%R ->
@@ -1088,7 +1125,7 @@ rewrite mulr2n EFinD lee_add//=.
 Qed.
 
 (* Rajani thm 3.1 / mu-book thm 4.7 *)
-Theorem sampling n (X : n.-tuple {dRV P >-> bool}) (theta delta : R) :
+Theorem sampling n (X : n.-tuple {RV P >-> bool}) (theta delta : R) :
   let X_sum := bernoulli_trial X in
   let X' x := (X_sum x) / n%:R in
   (0 < p)%R ->
@@ -1122,7 +1159,7 @@ have step1 : (pro n P) [set i | `| X' i - p | >= epsilon * p]%R <=
   rewrite -mulrA.
   have -> : (p * n%:R)%R = fine (p * n%:R)%:E by [].
   rewrite -E_X_sum.
-(*  by apply: (@bernoulli_trial_inequality4 X epsilon _ bX).*) admit.
+  exact: (@bernoulli_trial_inequality4 _ X epsilon bX).
 have step2 : (pro n P) [set i | `| X' i - p | >= theta]%R <=
     ((expR (- (n%:R * theta ^+ 2) / 3)) *+ 2)%:E.
   rewrite thetaE; move/le_trans : step1; apply.
