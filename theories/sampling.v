@@ -649,8 +649,7 @@ have @h : {RV P >-> bool}.
 exact: h.
 Defined.
 
-Axiom pro : forall (n : nat) (P : probability T R),
-  probability (mtuple n T) R.
+Axiom pro : forall (n : nat) (P : probability T R), probability (mtuple n T) R.
 
 Definition sumrfct_tuple n (s : n.-tuple {mfun T >-> R}) : mtuple n T -> R :=
   (fun x => \sum_(i < n) (tnth s i) (tnth x i))%R.
@@ -682,22 +681,67 @@ Definition bernoulli_trial n (X : {dRV P >-> bool}^nat) : {RV (pro n P) >-> R} :
   (\sum_(i<n) (btr P (X i)))%R. (* TODO: add HB instance measurablefun sum*)
 *)
 
+Lemma expectation_sum_pro n (X : n.-tuple {RV P >-> R}) :
+    (forall Xi, Xi \in X -> P.-integrable [set: T] (EFin \o Xi)) ->
+  'E_(pro n P)[sumrfct_tuple X] = \sum_(i < n) ('E_P[(tnth X i)]).
+Proof.
+move: n X.
+elim => [X|n IH X] /= intX.
+- rewrite /sumrfct_tuple.
+  under eq_fun do rewrite big_ord0.
+  by rewrite big_ord0 expectation_cst.
+pose X0 := tnth X ord0.
+have intX0 : P.-integrable [set: T] (EFin \o X0).
+  by apply: intX; rewrite mem_tnth.
+have {}intX Xi : Xi \in X -> P.-integrable [set: T] (EFin \o Xi).
+  by move=> XiX; exact: intX.
+rewrite big_ord_recr/=.
+rewrite /sumrfct_tuple/=.
+under eq_fun do rewrite big_ord_recr/=.
+Set Printing Coercions.
+pose X1 := fun x : mtuple n.+1 T =>
+                (\sum_(i < n) MeasurableFun.sort (tnth X (widen_ord (leqnSn n) i)) (tnth x (widen_ord (leqnSn n) i)))%R.
+have mX1 : measurable_fun setT X1. admit.
+pose build_mX1 := isMeasurableFun.Build _ _ _ _ _ mX1.
+pose Y1 : {mfun mtuple n.+1 T >-> R} := HB.pack X1 build_mX1.
+pose X2 := fun x : mtuple n.+1 T =>
+                MeasurableFun.sort (tnth X ord_max) (tnth x ord_max).
+have mX2 : measurable_fun setT X2. admit.
+pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
+pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
+rewrite [X in 'E__[X]](_ : _ = Y1 \+ Y2)//.
+rewrite expectationD; last 2 first. admit. admit.
+Unset Printing Coercions.
+congr (_ + _); last first.
+- rewrite /Y1/X1/=.
+  rewrite unlock /expectation.
+  pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w ord_max).
+  have mphi : measurable_fun setT phi. admit.
+  rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _ (fun w => (tnth X ord_max w)%:E)); last 2 first.
+    admit. admit.
+  congr (\int[_]__ _).
+  rewrite /pushforward.
+  apply: funext => x.
+  admit.
+rewrite /Y2/X2/=.
+Admitted.
+
 Lemma expectation_bernoulli_trial n (X : n.-tuple {dRV P >-> bool}) :
   is_bernoulli_trial X -> 'E_(pro n P)[bernoulli_trial X] = (n%:R * p)%:E.
 Proof.
-move=> bRV. rewrite /bernoulli_trial.
-(*transitivity ('E_(pro n P)[\sum_(s <- map (btr P \o X) (iota 0 n)) s]).
-  by rewrite big_map -[in RHS](subn0 n) big_mkord.*) (* TODO *)
-(*rewrite expectation_sum; last first.
-  by move=> Xi; move/mapP=> [k kn] ->; apply: integrable_bernoulli; apply bRV; rewrite mem_iota leq0n in kn.
-rewrite big_map -[in LHS](subn0 n) big_mkord.
-transitivity (\sum_(i < n) p%:E).
-  apply: eq_bigr => k _.
-  rewrite bernoulli_expectation//.
-  apply bRV.
-  by [].
-by rewrite sumEFin big_const_ord iter_addr addr0 mulrC mulr_natr.
-Qed.*) Admitted.
+rewrite /is_bernoulli_trial /bernoulli_RV.
+move=> [bRV iRV].
+rewrite /bernoulli_trial.
+rewrite expectation_sum_pro; last first.
+  move=> /= Xi.
+  rewrite map_f.
+  move/mapP => []Xj /=+ ->.
+  rewrite /mem/=/in_mem/=.
+  apply: integrable_bernoulli.
+  admit.
+under eq_bigr do rewrite !tnth_map/= bernoulli_expectation//.
+by rewrite sumr_const card_ord EFinM mule_natl.
+Qed.
 
 Lemma bernoulli_trial_ge0 n (X : n.-tuple {dRV P >-> bool}) : is_bernoulli_trial X ->
   (forall t, 0 <= bernoulli_trial X t)%R.
