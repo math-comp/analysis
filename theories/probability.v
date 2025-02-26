@@ -163,7 +163,7 @@ Proof. by []. Qed.
 Lemma cdf_le1 r : (cdf X r <= 1)%E.
 Proof. rewrite /cdf; exact: probability_le1. Qed.
 
-Lemma cdf_nondecreasing : nondecreasing (cdf X).
+Lemma cdf_nondecreasing : nondecreasing_fun (cdf X).
 Proof.
 rewrite /cdf=> r s ?.
 by apply: le_measure; rewrite ?inE; [apply: measurable_itv ..| apply: subitvPr].
