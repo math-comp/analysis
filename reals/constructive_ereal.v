@@ -707,8 +707,8 @@ Proof. by elim: n => //= n ->. Qed.
 Lemma enatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar R.
 Proof. by elim: n => //= n ->. Qed.
 
-Lemma EFin_natmul (r : R) n : (r *+ n.+1)%:E = r%:E *+ n.+1.
-Proof. by elim: n => //= n <-. Qed.
+Lemma EFin_natmul (r : R) n : (r *+ n)%:E = r%:E *+ n.
+Proof. by case: n => //; elim => //= n <-. Qed.
 
 Lemma mule2n x : x *+ 2 = x + x. Proof. by []. Qed.
 

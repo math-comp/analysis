@@ -27,6 +27,9 @@
 
 ### Generalized
 
+- in `constructive_ereal.v`:
+  + lemma `EFin_natmul`
+
 ### Deprecated
 
 ### Removed
