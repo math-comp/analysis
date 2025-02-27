@@ -565,18 +565,64 @@ Definition Z d {T : measurableType d} m
 Section pro.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
-Definition mpro (n : nat) : set (mtuple n T) -> \bar R.
-induction n.
-  apply: @dirac _ (mtuple 0 T) _ R.
-  exact: [::].
-move=> A.
-pose A' := (fun x => (thead x, [tuple of behead x])) @` A.
-apply: (@product_measure1 _ _ _ _ _ P IHn).
-exact: A'.
-Defined.
+Fixpoint mpro (n : nat) : set (mtuple n T) -> \bar R :=
+  match n with
+  | 0%N => \d_([::] : mtuple 0 T)
+  | m.+1 => fun A => (P \x @mpro m)%E [set (thead x, [tuple of behead x]) | x in A]
+  end.
 
-Definition pro (n : nat) : probability (mtuple n T) R.
+Lemma mpro0 n : @mpro n set0 = 0.
+Proof.
+elim: n => //= n ih.
+rewrite image_set0 /product_measure1/=.
+under eq_fun do rewrite xsection0 ih.
+by rewrite integral_cst// mul0e.
+Qed.
+
+Lemma mpro_ge0 n : forall A, (0 <= @mpro n A)%E.
+Proof.
+by elim: n => //= n ih A; rewrite /product_measure1 integral_ge0/=.
+Qed.
+
+Lemma mpro_sigma_additive n : semi_sigma_additive (@mpro n).
+Proof.
+elim: n => /= [|n ih] F mF dF mUF.
+  (* either there exists an i such that [::] \in F i or all of the F i are the empty set, in both cases the limit matches *)
+  admit.
+admit.
 Admitted.
+
+HB.instance Definition _ n :=
+  isMeasure.Build _ _ _ (@mpro n) (@mpro0 n) (@mpro_ge0 n) (@mpro_sigma_additive n).
+
+Lemma mpro_setT n : @mpro n setT = 1%E.
+Proof.
+elim: n => //=; first by rewrite diracT.
+move=> n ih.
+rewrite /product_measure1/xsection/=.
+under eq_fun => x.
+  rewrite [X in mpro X](_ : _ = [set: mtuple n T]); last first.
+    under eq_fun => y. rewrite [X in _ \in X](_ : _ = setT); last first.
+      apply: funext=> z/=.
+      apply: propT.
+      exists [tuple of z.1 :: z.2] => //=.
+      rewrite theadE.
+      rewrite [X in (_, X)](_ : _ = z.2); last first.
+        rewrite -[RHS]tupleE.
+        admit.
+      by rewrite -surjective_pairing.
+      over.
+    by apply: funext => y/=; rewrite in_setT trueE.
+  rewrite ih.
+  over.
+rewrite integral_cst// mul1e.
+exact:  probability_setT.
+Admitted.
+
+HB.instance Definition _ n :=
+  Measure_isProbability.Build _ _ _ (@mpro n) (@mpro_setT n).
+
+Definition pro (n : nat) : probability (mtuple n T) R := @mpro n.
 
 End pro.
 Arguments pro {d T R} P n.
