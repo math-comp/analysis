@@ -6,6 +6,7 @@ From mathcomp Require Import cardinality fsbigop.
 From HB Require Import structures.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import reals ereal interval_inference topology normedtype sequences.
+From mathcomp Require Import realfun convex.
 From mathcomp Require Import derive esum measure exp numfun lebesgue_measure.
 From mathcomp Require Import lebesgue_integral kernel probability.
 From mathcomp Require Import independence.
@@ -17,7 +18,7 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import numFieldTopology.Exports.
+Import numFieldTopology.Exports numFieldNormedType.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -793,8 +794,67 @@ rewrite big_map.
 by apply: sumr_ge0 => i _/=; rewrite /bool_to_real/= ler0n.
 Qed.*) Admitted.
 
-(* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65 *)
-Axiom taylor_ln_le : forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.
+(* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65
+taylor_ln_le :
+  forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.  *)
+Section taylor_ln_le.
+Local Open Scope ring_scope.
+
+Axiom expR2_lt8 : expR 2 <= 8 :> R.
+
+Lemma taylor_ln_le (x : R) : x \in `]0, 1[ -> (1 + x) * ln (1 + x) >= x + x^+2 / 3.
+Proof.
+move=> x01; rewrite -subr_ge0.
+pose f (x : R) := (1 + x) * ln (1 + x) - (x + x ^+ 2 / 3).
+have f0 : f 0 = 0 by rewrite /f expr0n /= mul0r !addr0 ln1 mulr0 subr0.
+rewrite [leRHS](_ : _ = f x) // -f0.
+evar (df0 : R -> R); evar (df : R -> R).
+have idf (y : R) : 0 < 1 + y -> is_derive y (1:R) f (df y).
+  move=> y1.
+  rewrite (_ : df y = df0 y).
+    apply: is_deriveB; last exact: is_deriveD.
+    apply: is_deriveM=> //.
+    apply: is_derive1_comp=> //.
+    exact: is_derive1_ln.
+  rewrite /df0.
+  rewrite deriveD// derive_cst derive_id.
+  rewrite /GRing.scale /= !(mulr0,add0r,mulr1).
+  rewrite divff ?lt0r_neq0// opprD addrAC addrA subrr add0r.
+  instantiate (df := fun y : R => - (3^-1 * (y + y)) + ln (1 + y)).
+  reflexivity.
+clear df0.
+have y1cc y : y \in `[0, 1] -> 0 < 1 + y.
+  rewrite in_itv /= => /andP [] y0 ?.
+  by have y1: 0 < 1 + y by apply: (le_lt_trans y0); rewrite ltrDr.
+have y1oo y : y \in `]0, 1[ -> 0 < 1 + y by move/subset_itv_oo_cc/y1cc.
+have dfge0 y : y \in `]0, 1[ -> 0 <= df y.
+  move=> y01.
+  have:= y01.
+  rewrite /df in_itv /= => /andP [] y0 y1.
+  rewrite -lerBlDl opprK add0r -mulr2n -(mulr_natl _ 2) mulrA.
+  rewrite [in leLHS](_ : y = 1 + y - 1); last by rewrite addrAC subrr add0r.
+  pose iy:= Itv01 (ltW y0) (ltW y1).
+  have y1E: 1 + y = @convex.conv _ R^o iy 1 2.
+    rewrite convRE /= /onem mulr1 (mulr_natr _ 2) mulr2n.
+    by rewrite addrACA (addrC (- y)) subrr addr0.
+  rewrite y1E; apply: (le_trans _ (concave_ln _ _ _))=> //.
+  rewrite -y1E addrAC subrr add0r convRE ln1 mulr0 add0r /=.
+  rewrite mulrC ler_pM// ?(@ltW _ _ 0)// mulrC.
+  rewrite ler_pdivrMr//.
+  rewrite -[leLHS]expRK -[leRHS]expRK ler_ln ?posrE ?expR_gt0//.
+  rewrite expRM/= powR_mulrn ?expR_ge0// lnK ?posrE//.
+  rewrite !exprS expr0 mulr1 -!natrM mulnE /=.
+  by rewrite expR2_lt8.
+apply: (@ger0_derive1_homo R f 0 1 true false).
+- by move=> y /y1oo /idf /@ex_derive.
+- by move=> y /[dup] /y1oo /idf /@derive_val ->; exact: dfge0.
+- by apply: derivable_within_continuous=> y /y1cc /idf /@ex_derive.
+- by rewrite bound_itvE.
+- exact: subset_itv_oo_cc.
+- by have:= x01; rewrite in_itv=> /andP /= [] /ltW.
+Qed.
+
+End taylor_ln_le.
 
 Lemma independent_mmt_gen_fun (X : {RV P >-> bool}^nat) n t :
   let mmtX (i : nat) : {RV P >-> R} := expR \o t \o* (btr P (X i)) in
@@ -963,7 +1023,7 @@ Theorem bernoulli_trial_inequality2 n (X : n.-tuple {RV P >-> bool}) (delta : R)
   (pro n P) [set i | X' i >= (1 + delta) * fine mu]%R <=
   (expR (- (fine mu * delta ^+ 2) / 3))%:E.
 Proof.
-move=> bX X' mu n0 /andP[delta0 _].
+move=> bX X' mu n0 /[dup] delta01 /andP[delta0 _].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
   rewrite expRM expRB (mulrC _ (ln _)) expRM lnK; last rewrite posrE addr_gt0//.
   apply: (bernoulli_trial_inequality1 bX) => //.
@@ -971,7 +1031,8 @@ apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   rewrite lee_fin ler_expR ler_wpM2r//.
     by rewrite fine_ge0//; apply: expectation_ge0 => t; exact: (bernoulli_trial_ge0 bX).
   rewrite lerB//.
-  exact: taylor_ln_le.
+  apply: taylor_ln_le.
+  by rewrite in_itv /=.
 rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (expR _)%:E.
 by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
 Qed.
