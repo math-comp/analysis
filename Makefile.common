@@ -43,6 +43,24 @@ all: config build
 .PHONY: pre-makefile
 
 Makefile.coq: pre-makefile $(COQPROJECT) Makefile
+	(echo "From mathcomp.algebra Require Import interval_inference." > test_interval_inference.v \
+	 && (rocq c test_interval_inference.v > /dev/null 2>&1) \
+	 && touch rm_interval_inference) || true
+	$(RM) test_interval_inference.v
+	test -f rm_interval_inference \
+	  && sed -i.bak '/interval_inference/ d' $(COQPROJECT) \
+	  && $(RM) $(COQPROJECT).bak || true
+	test -f rm_interval_inference \
+	  && sed -i.bak '/interval_inference/ d' all_reals.v \
+	  && $(RM) all_reals.v.bak || true
+	test -f rm_interval_inference \
+	  && sed -i.bak '/interval_inference/ d' reals/all_reals.v \
+	  && $(RM) reals/all_reals.v.bak || true
+	test -f rm_interval_inference && $(RM) interval_inference.v || true
+	test -f rm_interval_inference && $(RM) reals/interval_inference.v || true
+	$(RM) rm_interval_inference
+	# Remove everything above when requiring mathcomp >= 2.4.0
+	# (also remove file reals/interval_inference.v and references to it)
 	$(COQMAKEFILE) $(COQMAKEFILEOPTIONS) -f $(COQPROJECT) -o Makefile.coq
 
 # Global config, build, clean and distclean --------------------------
