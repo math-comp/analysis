@@ -568,56 +568,59 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Fixpoint mpro (n : nat) : set (mtuple n T) -> \bar R :=
   match n with
   | 0%N => \d_([::] : mtuple 0 T)
-  | m.+1 => fun A => (P \x @mpro m)%E [set (thead x, [tuple of behead x]) | x in A]
+  | m.+1 => fun A => (P \x^ @mpro m)%E [set (thead x, [tuple of behead x]) | x in A]
   end.
 
-Lemma mpro0 n : @mpro n set0 = 0.
+Lemma mpro_measure n : @mpro n set0 = 0 /\ (forall A, (0 <= @mpro n A)%E) /\ semi_sigma_additive (@mpro n).
 Proof.
-elim: n => //= n ih.
-rewrite image_set0 /product_measure1/=.
-under eq_fun do rewrite xsection0 ih.
-by rewrite integral_cst// mul0e.
-Qed.
-
-Lemma mpro_ge0 n : forall A, (0 <= @mpro n A)%E.
-Proof.
-by elim: n => //= n ih A; rewrite /product_measure1 integral_ge0/=.
-Qed.
-
-Lemma mpro_sigma_additive n : semi_sigma_additive (@mpro n).
-Proof.
-elim: n => /= [|n ih] F mF dF mUF.
-  (* either there exists an i such that [::] \in F i or all of the F i are the empty set, in both cases the limit matches *)
+elim: n => //= [|n ih]; first by repeat split => //; exact: measure_semi_sigma_additive.
+pose build_Mpro := isMeasure.Build _ _ _ (@mpro n) ih.1 ih.2.1 ih.2.2.
+pose Mpro : measure _ R := HB.pack (@mpro n) build_Mpro.
+pose ppro : measure _ R := (P \x^ Mpro)%E.
+split.
+  rewrite image_set0 /product_measure2/=.
+  under eq_fun => x do rewrite ysection0 measure0 (_ : 0 = cst 0 x)//.
+  rewrite (_ : @mpro n = Mpro)//.
+  by rewrite integral_cst// mul0e.
+split.
+  by move => A; rewrite (_ : @mpro n = Mpro).
+rewrite (_ : @mpro n = Mpro)// (_ : (P \x^ Mpro)%E = ppro)//.
+move=> F mF dF mUF.
+rewrite image_bigcup.
+apply: measure_semi_sigma_additive.
+- move=> i.
   admit.
+- apply/trivIsetP => i j _ _ ineqj.
+  have := dF.
+  move/trivIsetP/(_ i j Logic.I Logic.I ineqj).
+  admit.
+apply: bigcup_measurable => j _.
 admit.
 Admitted.
 
 HB.instance Definition _ n :=
-  isMeasure.Build _ _ _ (@mpro n) (@mpro0 n) (@mpro_ge0 n) (@mpro_sigma_additive n).
+  isMeasure.Build _ _ _ (@mpro n) (@mpro_measure n).1 (@mpro_measure n).2.1 (@mpro_measure n).2.2.
 
 Lemma mpro_setT n : @mpro n setT = 1%E.
 Proof.
 elim: n => //=; first by rewrite diracT.
 move=> n ih.
-rewrite /product_measure1/xsection/=.
+rewrite /product_measure2/ysection/=.
 under eq_fun => x.
-  rewrite [X in mpro X](_ : _ = [set: mtuple n T]); last first.
+  rewrite [X in P X](_ : _ = [set: T]); last first.
     under eq_fun => y. rewrite [X in _ \in X](_ : _ = setT); last first.
       apply: funext=> z/=.
       apply: propT.
-      exists [tuple of z.1 :: z.2] => //=.
-      rewrite theadE.
-      rewrite [X in (_, X)](_ : _ = z.2); last first.
-        rewrite -[RHS]tupleE.
-        admit.
-      by rewrite -surjective_pairing.
+      exists (z.1 :: z.2) => //=.
+      case: z => z1 z2/=.
+      congr pair.
+      exact/val_inj.
       over.
     by apply: funext => y/=; rewrite in_setT trueE.
-  rewrite ih.
+  rewrite probability_setT.
   over.
-rewrite integral_cst// mul1e.
-exact:  probability_setT.
-Admitted.
+by rewrite integral_cst// mul1e.
+Qed.
 
 HB.instance Definition _ n :=
   Measure_isProbability.Build _ _ _ (@mpro n) (@mpro_setT n).
