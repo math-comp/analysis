@@ -40,11 +40,11 @@ HB.lock Definition Lnorm {d} {T : measurableType d} {R : realType}
     (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
   match p with
   | p%:E => (if p == 0%R then
-              (mu (f @^-1` (setT `\ 0%R))) `^ p^-1
+              (mu (f @^-1` (setT `\ 0%R)))
             else
               (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1)%E
   | +oo%E => (if mu [set: T] > 0 then ess_sup mu (normr \o f) else 0)%E
-  | -oo%E => 0%E
+  | -oo%E => (if mu [set: T] > 0 then ess_inf mu (normr \o f) else 0)%E
   end.
 Canonical locked_Lnorm := Unlockable Lnorm.unlock.
 Arguments Lnorm {d T R} mu p f.
