@@ -2,10 +2,10 @@
 
 ## Requirements
 
-- [The Coq Proof Assistant version ≥ 8.19](https://coq.inria.fr)
-- [Mathematical Components version ≥ 2.1.0](https://github.com/math-comp/math-comp)
-- [Finmap library version ≥ 2.0.0](https://github.com/math-comp/finmap)
-- [Hierarchy builder version >= 1.4.0](https://github.com/math-comp/hierarchy-builder)
+- [The Coq Proof Assistant version ≥ 8.20](https://coq.inria.fr)
+- [Mathematical Components version ≥ 2.2.0](https://github.com/math-comp/math-comp)
+- [Finmap library version ≥ 2.1.0](https://github.com/math-comp/finmap)
+- [Hierarchy builder version >= 1.7.0](https://github.com/math-comp/hierarchy-builder)
 - [bigenough >= 1.0.0](https://github.com/math-comp/bigenough)
 
 These requirements can be installed in a custom way, or through
@@ -71,28 +71,28 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.19.0 and MathComp 2.1.0. For other versions, update the
+With the example of Coq 8.20.0 and MathComp 2.3.0. For other versions, update the
 version numbers accordingly.
 
-1. Install Coq 8.19.0
+1. Install Coq 8.20.1
 ```
-$ opam install coq.8.19.0
+$ opam install coq.8.20.1
 ```
 2. Install the Mathematical Components
 ```
-$ opam install coq-mathcomp-ssreflect.2.1.0
-$ opam install coq-mathcomp-fingroup.2.1.0
-$ opam install coq-mathcomp-algebra.2.1.0
-$ opam install coq-mathcomp-solvable.2.1.0
-$ opam install coq-mathcomp-field.2.1.0
+$ opam install coq-mathcomp-ssreflect.2.3.0
+$ opam install coq-mathcomp-fingroup.2.3.0
+$ opam install coq-mathcomp-algebra.2.3.0
+$ opam install coq-mathcomp-solvable.2.3.0
+$ opam install coq-mathcomp-field.2.3.0
 ```
 3. Install the Finite maps library
 ```
-$ opam install coq-mathcomp-finmap.2.0.0
+$ opam install coq-mathcomp-finmap.2.1.0
 ```
 4. Install the Hierarchy Builder
 ```
-$ opam install coq-hierarchy-builder.1.6.0
+$ opam install coq-hierarchy-builder.1.8.0
 ```
 5. Download and compile `coq-mathcomp-analysis` without installing
 ```
