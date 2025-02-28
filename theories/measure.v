@@ -5405,39 +5405,41 @@ by exists r => /=; rewrite ifF//; rewrite set_itvE;
   rewrite memNset //=; apply/negP; rewrite -real_leNgt ?num_real.
 Qed.
 
-Lemma ereal_inf_real : ereal_inf [set r%:E | r in [set:R]] = +oo.
-Admitted.
+Lemma nonempty_range (aT rT : Type) (F : aT -> rT) :
+  [set: aT] !=set0 -> [set F x | x in [set: aT]] !=set0.
+Proof. by move=> [x] _; exists (F x). Qed.
+
+Lemma ereal_sup_real : @ereal_sup R (range EFin) = +oo.
+Proof. 
+rewrite hasNub_ereal_sup//; last by exists 0%R.
+by apply/has_ubPn => x; exists (x+1)%R => //; rewrite ltrDl.
+Qed.
+
+Lemma ereal_inf_real : @ereal_inf R (range EFin) = -oo.
+Proof.
+rewrite /ereal_inf.
+rewrite [X in ereal_sup X](_ : _ = range EFin); last first.
+  apply/seteqP; split => x/=[y].
+    by move=> [z] _ <- <-; exists (-z)%R.
+  by move=> _ <-; exists (-y%:E); first (by exists (-y)%R); rewrite oppeK.
+by rewrite ereal_sup_real.
+Qed.
 
 Lemma ess_sup_ler f r : ess_sup f = r%:E -> {ae mu, forall x, f x <= r}%R.
 Proof.
-  have := measure_ge0 mu setT.
-  rewrite le_eqVlt =>/orP [/eqP mu0|mu0].
-    rewrite /ess_sup.
-    rewrite (_: [set _ |_] = setT).
-    rewrite ereal_inf_real.
-    by [].
-  apply/seteqP. split.
-    exact:subsetT.  
-  move=> x _/=. apply/eqP.
-  rewrite eq_le.
-  rewrite measure_ge0.
-  rewrite (@le_trans _ _ (mu setT))// ?mu0//.
-  Search "measure" (_<=_).
-  rewrite le_measure//. admit. admit.
-Search ereal_inf.
-  
-  rewrite /ess_sup.
-  rewrite ereal_inf_EFin; last 2 first. admit. admit.
-  case=> <-.
-  red. red. simpl. red.
- Search inf. 
-  ereal_inf _ <= _).
-rewrite ereal_inf_EFin.
-case=> <-.
-
-Search inf.
-move=> supfr.
-move=> x.
+have := measure_ge0 mu setT.
+rewrite le_eqVlt =>/orP [/eqP mu0|mu0].
+  rewrite /ess_sup (_: [set _ |_] = setT) ?ereal_inf_real//.
+  apply/seteqP; split; first exact: subsetT.  
+  move=> x _/=; apply/eqP.
+  rewrite eq_le measure_ge0 (@le_trans _ _ (mu setT))// ?mu0// le_measure//.
+    admit. admit.
+move=> h.
+apply/negligibleP.
+  admit.
+rewrite /setC/=.
+under eq_set => x do rewrite -lee_fin -h.
+Admitted.
 
 Lemma ess_sup_ger f (r : R) : (forall x, f x <= r)%R -> (ess_sup f <= r%:E).
 Proof.
