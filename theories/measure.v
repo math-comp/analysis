@@ -5375,8 +5375,7 @@ move=> h.
 exists (-y)%R => //.
 rewrite -h.
 congr (_ _).
-Search set (-%R).
-rewrite -preimage_comp.
+Admitted.
 
 Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
   0 <= ess_sup f.
@@ -5405,6 +5404,40 @@ rewrite ereal_inf_EFin.
 by exists r => /=; rewrite ifF//; rewrite set_itvE;
   rewrite memNset //=; apply/negP; rewrite -real_leNgt ?num_real.
 Qed.
+
+Lemma ereal_inf_real : ereal_inf [set r%:E | r in [set:R]] = +oo.
+Admitted.
+
+Lemma ess_sup_ler f r : ess_sup f = r%:E -> {ae mu, forall x, f x <= r}%R.
+Proof.
+  have := measure_ge0 mu setT.
+  rewrite le_eqVlt =>/orP [/eqP mu0|mu0].
+    rewrite /ess_sup.
+    rewrite (_: [set _ |_] = setT).
+    rewrite ereal_inf_real.
+    by [].
+  apply/seteqP. split.
+    exact:subsetT.  
+  move=> x _/=. apply/eqP.
+  rewrite eq_le.
+  rewrite measure_ge0.
+  rewrite (@le_trans _ _ (mu setT))// ?mu0//.
+  Search "measure" (_<=_).
+  rewrite le_measure//. admit. admit.
+Search ereal_inf.
+  
+  rewrite /ess_sup.
+  rewrite ereal_inf_EFin; last 2 first. admit. admit.
+  case=> <-.
+  red. red. simpl. red.
+ Search inf. 
+  ereal_inf _ <= _).
+rewrite ereal_inf_EFin.
+case=> <-.
+
+Search inf.
+move=> supfr.
+move=> x.
 
 Lemma ess_sup_ger f (r : R) : (forall x, f x <= r)%R -> (ess_sup f <= r%:E).
 Proof.
