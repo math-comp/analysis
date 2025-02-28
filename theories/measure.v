@@ -5358,9 +5358,25 @@ Implicit Types f : T -> R.
 Definition ess_sup f :=
   ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
 
-Definition ess_inf f := -ess_sup (-f).
+Definition ess_inf f := -ess_sup (-f)%R.
 
-Lemma ess_infE f : ess_inf f f = ereal_sup (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
+Lemma ess_infE f : ess_inf f = ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).
+Proof.
+rewrite /ess_inf /ess_sup.
+rewrite /ereal_inf.
+rewrite oppeK.
+congr ereal_sup.
+rewrite image_comp.
+apply/seteqP.
+split.
+move=> x/=.
+case=> y /[swap] <-.
+move=> h.
+exists (-y)%R => //.
+rewrite -h.
+congr (_ _).
+Search set (-%R).
+rewrite -preimage_comp.
 
 Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
   0 <= ess_sup f.
