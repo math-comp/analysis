@@ -4189,12 +4189,10 @@ split.
 - by move=> f g h eqfg eqgh; near=> x => Dx; rewrite (near eqfg) ?(near eqgh).
 Unshelve. all: by end_near. Qed.
 
-
-
 Section ae_eq.
 Local Open Scope ring_scope.
 Context d (T : sigmaRingType d) (R : realType).
-Implicit Types (U V : Type) (W : nzRingType).
+Implicit Types (U V : Type) (W : ringType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
 Local Notation ae_eq := (ae_eq mu D).
 
@@ -5413,9 +5411,14 @@ Implicit Types f : T -> R.
 Definition ess_sup f :=
   ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
 
-Definition ess_inf f := -ess_sup (-f).
+Definition ess_inf f := -ess_sup (-f)%R.
 
-Lemma ess_infE f : ess_inf f f = ereal_sup (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
+Lemma ess_infE f :
+  ess_inf f = ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).
+Proof.
+rewrite /ess_inf /ess_sup /ereal_inf oppeK; congr ereal_sup.
+rewrite !image_comp.
+Admitted.
 
 Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
   0 <= ess_sup f.
