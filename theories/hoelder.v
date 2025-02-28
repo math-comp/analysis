@@ -83,7 +83,8 @@ Proof.
 rewrite unlock; move: p => [r/=|/=|//].
   by case: ifPn => // r0; exact: poweR_ge0.
 by case: ifPn => // /ess_sup_ge0; apply => t/=.
-Admitted. (* FIXME *)
+case: ifPn => // muT0.
+Admitted.
 
 Lemma eq_Lnorm p f g : f =1 g -> 'N_p[f] = 'N_p[g].
 Proof. by move=> fg; congr Lnorm; exact/funext. Qed.
@@ -95,8 +96,7 @@ rewrite unlock /Lnorm => mf.
 case: p => [r r0||].
 - case: ifPn => _.
     rewrite preimage_setI preimage_setT setTI -preimage_setC.
-(* FIXME
-    move=> /poweR_eq0_eq0 /negligibleP.
+(*    move=> /poweR_eq0_eq0 /negligibleP.
     move/(_ (measurableC _)); rewrite -[X in d.-measurable X]setTI.
     move/(_ (mf _ _ _)).
     by case=> // A [mA muA0 fA]; exists A; split => // x/= ?; exact: fA.

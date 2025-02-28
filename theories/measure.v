@@ -4199,8 +4199,6 @@ split.
 - by move=> f g h eqfg eqgh; near=> x => Dx; rewrite (near eqfg) ?(near eqgh).
 Unshelve. all: by end_near. Qed.
 
-
-
 Section ae_eq.
 Local Open Scope ring_scope.
 Context d (T : sigmaRingType d) (R : realType).
@@ -5425,7 +5423,12 @@ Definition ess_sup f :=
 
 Definition ess_inf f := -ess_sup (- f)%R.
 
-Fail Lemma ess_infE f : ess_inf f f = ereal_sup (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
+Lemma ess_infE f :
+  ess_inf f = ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).
+Proof.
+rewrite /ess_inf /ess_sup /ereal_inf oppeK; congr ereal_sup.
+rewrite !image_comp.
+Admitted.
 
 Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
   0 <= ess_sup f.
