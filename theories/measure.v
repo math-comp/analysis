@@ -5430,6 +5430,9 @@ rewrite /ess_inf /ess_sup /ereal_inf oppeK; congr ereal_sup.
 rewrite !image_comp.
 Admitted.
 
+(*Definition ess_inf f :=
+  ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).*)
+
 Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
   0 <= ess_sup f.
 Proof.
