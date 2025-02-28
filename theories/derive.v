@@ -59,8 +59,8 @@ Reserved Notation "''D_' v f" (at level 10, v, f at next level,
   format "''D_' v  f").
 Reserved Notation "''D_' v f c" (at level 10, v, f at next level,
   format "''D_' v  f  c"). (* printing *)
-Reserved Notation "f ^` ()" (at level 8, format "f ^` ()").
-Reserved Notation "f ^` ( n )" (at level 8, format "f ^` ( n )").
+Reserved Notation "f ^` ()" (format "f ^` ()").
+Reserved Notation "f ^` ( n )" (format "f ^` ( n )").
 
 Section Differential.
 Context {K : numDomainType} {V W : normedModType K}.
