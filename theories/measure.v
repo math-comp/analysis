@@ -275,6 +275,7 @@ From mathcomp Require Import sequences esum numfun.
 (*  m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or m2 dominates m1     *)
 (*  ess_sup f == essential supremum of the function f : T -> R where T is a   *)
 (*               semiRingOfSetsType and R is a realType                       *)
+(*  ess_inf f == essential infimum                                            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -5433,57 +5434,39 @@ Admitted.
 (*Definition ess_inf f :=
   ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).*)
 
-Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
-  0 <= ess_sup f.
+Lemma ess_sup_ger f x : 0 < mu [set: T] -> (forall t, x <= f t)%R ->
+  x%:E <= ess_sup f.
 Proof.
 move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP rf <-]; rewrite leNgt.
 apply/negP => r0; apply/negP : rf; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
-by apply/seteqP; split => // x _ /=; rewrite in_itv/= (lt_le_trans _ (f0 x)).
+by apply/seteqP; split => // t _ /=; rewrite in_itv/= (lt_le_trans _ (f0 t)).
+Qed.
+
+Lemma ess_sup_ler f (r : R) : (forall x, f x <= r)%R -> ess_sup f <= r%:E.
+Proof.
+move=> fr; apply: ereal_inf_le; apply/exists2P.
+exists r%:E => /=; split => //; apply/exists2P; exists r; split => //.
+rewrite preimage_itvoy [X in mu X](_ : _ = set0)// -subset0 => x //=.
+rewrite lt_neqAle => /andP[+ rlefx].
+by apply/negP/negPn; rewrite eq_le rlefx fr.
 Qed.
 
 Lemma ess_sup_cst r : (0 < mu setT)%E -> (ess_sup (cst r) = r%:E)%E.
 Proof.
-rewrite /ess_sup => mu0.
-under eq_set do rewrite preimage_cst/=.
-rewrite ereal_inf_EFin.
-- congr (_%:E).
-  rewrite [X in inf X](_ : _ = `[r, +oo[%classic); last first.
-    apply/seteqP; split => /=x/=.
-      case: ifPn => [_|]; first by move: mu0=> /[swap] ->; rewrite ltNge lexx.
-      by rewrite set_itvE notin_setE/= ltNge in_itv andbT/= => /negP /negPn.
-    rewrite in_itv/= => /andP[x0 _].
-    by rewrite ifF// set_itvE; apply/negP; rewrite in_setE/= ltNge => /negP.
-  by rewrite inf_itv.
-- exists r => x/=; case: ifPn => [_|].
-    by move: mu0 => /[swap] ->; rewrite ltNge lexx.
-  by rewrite set_itvE notin_setE//= ltNge => /negP/negbNE.
-by exists r => /=; rewrite ifF//; rewrite set_itvE;
-  rewrite memNset //=; apply/negP; rewrite -real_leNgt ?num_real.
+move => mu0.
+by apply/eqP; rewrite eq_le; apply/andP; split;
+  [exact: ess_sup_ler|exact: ess_sup_ger].
 Qed.
 
-Lemma ess_sup_ger f (r : R) : (forall x, f x <= r)%R -> (ess_sup f <= r%:E).
+(*Definition ess_inf f :=
+  ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).*)
+
+Lemma ess_inf_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
+  0 <= ess_inf f.
 Proof.
-move=> fr.
-rewrite /ess_sup.
-apply: ereal_inf_le.
-apply/exists2P.
-exists r%:E => /=; split => //.
-apply/exists2P.
-exists r; split => //.
-rewrite preimage_itvoy.
-suffices -> : [set x | r < f x]%R = set0 by [].
-apply/seteqP; split => x //=.
-rewrite lt_neqAle => /andP[rneqfx rlefx].
-move: (fr x) => fxler.
-have: (f x <= r <= f x)%R by rewrite rlefx fxler.
-by move/le_anti; move: rneqfx => /[swap] -> /eqP.
-Qed.
-
-Lemma ess_sup_eq0 f : ess_sup (normr \o f) = 0 -> f = 0%R %[ae mu].
-Admitted.
-
-Lemma ess_supM (f : T -> R) (a : R) : (0 <= a)%R -> (\forall x \ae mu, 0 <= f x)%R ->
-  (ess_sup (cst a \* f)%R = a%:E * ess_sup f)%E.
-Admitted.
+(*move=> muT f0; apply: ereal_sup_e; exists 0 => //=; exists 0%R => //=.
+rewrite [X in mu X](_ : _ = set0)// -subset0 => x/=.
+by rewrite in_itv/= ltNge => /negP; exact.
+Qed.*) Admitted.
 
 End essential_supremum.
