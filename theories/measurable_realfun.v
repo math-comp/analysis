@@ -1633,10 +1633,102 @@ Qed.
 
 End open_itv_cover.
 
+Section essential_supremum.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types f : T -> R.
+Local Open Scope ereal_scope.
+
+Lemma ess_sup_max f : measurable_fun setT f ->
+  ess_sup mu (normr \o f) != -oo ->
+  mu [set r | ess_sup mu (normr \o f) < `|f r|%:E] = 0.
+Proof.
+move=> mf fNy.
+move hm : (ess_sup mu (normr \o f)) => m.
+case: m hm => [m| |] hm.
+- pose x_ n := m%:E + n.+1%:R^-1%:E.
+  have -> : [set r | m%:E < `|f r|%:E] = \bigcup_n [set r | x_ n < `|f r|%:E].
+    apply/seteqP; split => [r /= mfr|r/=].
+      near \oo => n.
+      suff : x_ n < `|f r|%:E by move=> ?; exists n.
+      rewrite /x_ -EFinD lte_fin -ltrBrDl.
+      rewrite invf_plt ?posrE//; last by rewrite subr_gt0 -lte_fin.
+      by rewrite -natr1 -ltrBlDr; near: n; exact: nbhs_infty_gtr.
+    by move=> [n _/=]; apply: le_lt_trans;rewrite /x_ -EFinD lee_fin lerDl.
+  have H n : mu [set r | x_ n < `|f r|%:E] = 0%R.
+    have : ess_sup mu (normr \o f) \is a fin_num by rewrite hm.
+    move/lb_ereal_inf_adherent => /(_ n.+1%:R^-1).
+    rewrite invr_gt0// ltr0n => /(_ erefl)[_ /= [r/= mufr0] <-].
+    rewrite -/(ess_sup mu _) hm /x_ => rmn.
+    apply/eqP; rewrite eq_le measure_ge0 andbT.
+    rewrite -mufr0 le_measure// ?inE//.
+    + rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+      by apply/measurable_EFinP; exact/measurableT_comp.
+    + rewrite (_ : _ @^-1` _ = [set t | r%:E < `|f t|%:E]); last first.
+        by apply/seteqP; split => [x|x]/=; rewrite in_itv/= andbT.
+      rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+      by apply/measurable_EFinP; exact/measurableT_comp.
+    + move=> x/=; rewrite in_itv/= andbT.
+      rewrite -EFinD lte_fin; apply/le_lt_trans.
+      by move: rmn; rewrite -EFinD lte_fin => /ltW.
+  apply/eqP; rewrite eq_le measure_ge0 andbT.
+  have <- : \sum_(0 <= i <oo) mu [set r | x_ i < `|f r|%:E] = 0.
+    by rewrite eseries0.
+  apply: generalized_Boole_inequality => [i|].
+  + rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+    by apply/measurable_EFinP; exact/measurableT_comp.
+  + apply: bigcup_measurable => i _.
+    rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+    by apply/measurable_EFinP; exact/measurableT_comp.
+- rewrite (_ : [set r | +oo < `|f r|%:E] = set0)// -subset0 => x/=.
+  by rewrite ltNge leey.
+- by rewrite hm in fNy.
+Unshelve. all: by end_near. Qed.
+
+Lemma ess_sup_eq0 f : measurable_fun setT f ->
+  f = 0%R %[ae mu] <-> mu [set r | (0%R < `|f r|)%R] = 0.
+Proof.
+move=> mf; split=> [|f0].
+- case => N [mN N0 fN].
+  apply/eqP; rewrite eq_le measure_ge0 andbT -N0.
+  rewrite le_measure ?inE//.
+    rewrite [X in measurable X](_ : _ = [set t | 0 < `|f t|%:E]); last first.
+      by apply/seteqP; split => [x|x]/=; rewrite lte_fin.
+    rewrite -[X in measurable X]setTI.
+    apply: emeasurable_fun_o_infty => //.
+    by apply/measurable_EFinP; exact/measurableT_comp.
+  apply: subset_trans fN => t/= ft0.
+  apply/not_implyP; split => //.
+  apply/eqP.
+  by rewrite -normr_eq0 gt_eqF.
+- exists [set r | (0 < `|f r|)%R]; split => //.
+    rewrite [X in measurable X](_ : _ = [set t | 0 < `|f t|%:E]); last first.
+      by apply/seteqP; split => [x|x]/=; rewrite lte_fin.
+    rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+    by apply/measurable_EFinP; exact/measurableT_comp.
+  move=> t/= /not_implyP[_ /eqP]; rewrite -normr_eq0 => ft0.
+  by rewrite lt_neqAle eq_sym ft0/=.
+Qed.
+
+Lemma ess_sup_eq0_ae f : measurable_fun setT f ->
+  ess_sup mu (normr \o f) = 0 -> f = 0%R %[ae mu].
+Proof.
+move=> mf f0; apply/ess_sup_eq0 => //.
+rewrite [X in mu X](_ : _ = [set r | (0 < `|f r|%:E)%E]); last first.
+  by apply/seteqP; split => [x|x]/=; rewrite lte_fin.
+by rewrite -f0 ess_sup_max// f0.
+Qed.
+
+Lemma ess_supMr f (r : R) : (0 <= r)%R -> (\forall x \ae mu, 0 <= f x)%R ->
+  ess_sup mu (cst r \* f)%R = r%:E * ess_sup mu f.
+Proof.
+Admitted.
+
+End essential_supremum.
+
 Section egorov.
 Context d {R : realType} {T : measurableType d}.
 Context (mu : {measure set T -> \bar R}).
-
 Local Open Scope ereal_scope.
 
 (*TODO : this generalizes to any metric space with a borel measure*)

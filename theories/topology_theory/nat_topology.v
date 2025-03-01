@@ -38,7 +38,7 @@ Qed.
 
 HB.instance Definition _ := Order_isNbhs.Build _ nat nat_nbhs_itv.
 HB.instance Definition _ := DiscreteUniform_ofNbhs.Build nat.
-HB.instance Definition _ {R : numDomainType} := 
+HB.instance Definition _ {R : numDomainType} :=
   @DiscretePseudoMetric_ofUniform.Build R nat.
 
 Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
@@ -48,12 +48,15 @@ Proof. by exists N.+1. Qed.
 Lemma nbhs_infty_ge N : \forall n \near \oo, (N <= n)%N.
 Proof. by exists N. Qed.
 
-Lemma nbhs_infty_ger {R : realType} (r : R) :
-  \forall n \near \oo, (r <= n%:R)%R.
+Lemma nbhs_infty_gtr {R : realType} (r : R) : \forall n \near \oo, r < n%:R.
 Proof.
-exists `|Num.ceil r|%N => // n /=; rewrite -(ler_nat R); apply: le_trans.
-by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
+exists `|Num.ceil r|.+1%N => // n /=; rewrite -(ler_nat R); apply: lt_le_trans.
+rewrite (le_lt_trans (ceil_ge _))// -natr1 natr_absz ltr_pwDr// ler_int.
+exact: ler_norm.
 Qed.
+
+Lemma nbhs_infty_ger {R : realType} (r : R) : \forall n \near \oo, r <= n%:R.
+Proof. by apply: filterS (nbhs_infty_gtr r) => x /ltW. Qed.
 
 Lemma cvg_addnl N : addn N @ \oo --> \oo.
 Proof.
