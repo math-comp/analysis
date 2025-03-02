@@ -5412,21 +5412,25 @@ Implicit Types f : T -> R.
 Definition ess_sup f :=
   ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
 
-Lemma ess_sup_ger f x : 0 < mu [set: T] -> (forall t, x <= f t)%R ->
-  x%:E <= ess_sup f.
+Lemma ess_sup_ger f x : 0 < mu [set: T] -> (forall t, x <= (f t)%:E) ->
+  x <= ess_sup f.
 Proof.
-move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP rf <-]; rewrite leNgt.
-apply/negP => r0; apply/negP : rf; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
-by apply/seteqP; split => // t _ /=; rewrite in_itv/= (lt_le_trans _ (f0 t)).
+move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP fr0 <-]; rewrite leNgt.
+apply/negP => rx; apply/negP : fr0; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
+apply/seteqP; split => // t _ /=; rewrite in_itv/= andbT.
+by rewrite -lte_fin (lt_le_trans _ (f0 t)).
 Qed.
 
-Lemma ess_sup_ler f (r : R) : (forall x, f x <= r)%R -> ess_sup f <= r%:E.
+Lemma ess_sup_ler f r : (forall t, (f t)%:E <= r) -> ess_sup f <= r.
 Proof.
-move=> fr; apply: ereal_inf_le; apply/exists2P.
+case: r => [r| |] fr; last 2 first.
+  by rewrite leey.
+  by have := fr point; rewrite leNgt ltNye.
+apply: ereal_inf_le; apply/exists2P.
 exists r%:E => /=; split => //; apply/exists2P; exists r; split => //.
 rewrite preimage_itvoy [X in mu X](_ : _ = set0)// -subset0 => x //=.
 rewrite lt_neqAle => /andP[+ rlefx].
-by apply/negP/negPn; rewrite eq_le rlefx fr.
+by apply/negP/negPn; rewrite eq_le rlefx/= -lee_fin.
 Qed.
 
 Lemma ess_sup_cst r : (0 < mu setT)%E -> (ess_sup (cst r) = r%:E)%E.
