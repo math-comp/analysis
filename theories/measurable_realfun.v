@@ -1633,6 +1633,58 @@ Qed.
 
 End open_itv_cover.
 
+Section ereal_supZ.
+Context {R : realType}.
+Implicit Types (r s : R) (A : set R).
+Local Open Scope ereal_scope.
+
+Lemma ereal_supZl A r : (0 < r)%R ->
+  ereal_sup [set r%:E * x%:E | x in A] = r%:E * ereal_sup (EFin @` A).
+Proof.
+move=> r0.
+apply/eqP; rewrite eq_le; apply/andP; split.
+  (*TODO: should be ereal_sup_le and the current ereal_sup_le should be named something else*)
+  apply: ub_ereal_sup => /= _ [s As <-].
+  rewrite -lee_pdivlMl// muleA -EFinM mulVf ?gt_eqF// mul1e.
+  by apply: ereal_sup_le; exists s%:E => //=; exists s.
+rewrite -lee_pdivlMl//.
+apply: ub_ereal_sup => /= _ [s As <-].
+rewrite lee_pdivlMl//.
+apply: ereal_sup_le; exists (r * s)%:E => //=.
+by exists s => //; rewrite EFinM.
+Qed.
+
+Let ereal_infZl' A r : (0 < r)%R ->
+  ereal_sup [set - x | x in [set r%:E * x%:E | x in A]] =
+  r%:E * ereal_sup [set - x | x in [set x%:E | x in A]].
+Proof.
+move=> r0.
+apply/eqP; rewrite eq_le; apply/andP; split.
+  apply: ub_ereal_sup => /= _ [_ [s As <-]] <-.
+  rewrite -muleN -lee_pdivlMl// muleA -EFinM mulVf ?gt_eqF// mul1e.
+  apply: ereal_sup_le; exists (- s%:E) => //=.
+  exists s%:E.
+    by exists s.
+  by rewrite EFinN.
+rewrite -lee_pdivlMl//.
+apply: ub_ereal_sup => /= _ [_ [s As <-]] <-.
+rewrite lee_pdivlMl//.
+apply: ereal_sup_le; exists (- (r * s)%:E) => //=.
+  exists (r * s)%:E.
+    by exists s => //; rewrite EFinM.
+  by rewrite EFinN.
+by rewrite EFinN muleN -EFinM EFinN.
+Qed.
+
+Lemma ereal_infZl A r : (0 < r)%R ->
+  ereal_inf [set r%:E * x%:E | x in A] = r%:E * ereal_inf (EFin @` A).
+Proof.
+move=> r0; rewrite /ereal_inf muleN; congr -%E.
+exact: ereal_infZl'.
+Qed.
+
+End ereal_supZ.
+
 Section essential_supremum.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
@@ -1719,10 +1771,22 @@ rewrite [X in mu X](_ : _ = [set r | (0 < `|f r|%:E)%E]); last first.
 by rewrite -f0 ess_sup_max// f0.
 Qed.
 
-Lemma ess_supMr f (r : R) : (0 <= r)%R -> (\forall x \ae mu, 0 <= f x)%R ->
+Lemma ess_supMl f (r : R) : mu setT > 0 -> (0 <= r)%R ->
   ess_sup mu (cst r \* f)%R = r%:E * ess_sup mu f.
 Proof.
-Admitted.
+move=> muT0; rewrite le_eqVlt => /predU1P[<-|r0].
+  rewrite mul0e (_ : _ \* f = cst 0)%R; first by rewrite ess_sup_cst.
+  by apply/funext => ?; rewrite /= mul0r.
+rewrite -ereal_infZl//.
+have rf s : (cst r \* f)%R @^-1` `]s, +oo[ = f%R @^-1` `]s / r, +oo[.
+  by apply/seteqP; split => [y|y]/=; rewrite !in_itv/= !andbT;
+    rewrite ltr_pdivrMr// mulrC.
+congr ereal_inf; apply/seteqP; split => [_ [s /= M <-]|_ [s /= M <-]]/=.
+- exists (s / r)%R; first by rewrite -rf.
+  by rewrite EFinM muleCA -EFinM divff ?mulr1// gt_eqF.
+- exists (r * s)%R; last by rewrite EFinM.
+  by rewrite rf mulrAC divff ?mul1r// gt_eqF.
+Qed.
 
 End essential_supremum.
 

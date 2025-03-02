@@ -148,7 +148,7 @@ Qed.
 End Lspace.
 Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
 
-(* move to hoelder.v *)
+(* TODO: move to hoelder.v *)
 Section conjugate.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
@@ -169,21 +169,18 @@ Lemma conjugateE :
               else if p == +oo then 1 else 0.
 Proof.
 rewrite /conjugate.
-move: p1.
-case: p => [r|//=|//].
+case: p p1 => [r|//=|//].
 rewrite lee_fin => r1.
 have r0 : r != 0%R by rewrite gt_eqF// (lt_le_trans _ r1).
-congr (_%:E).
-apply: get_unique.
+congr EFin; apply: get_unique.
   by rewrite invf_div mulrBl divff// mul1r addrCA subrr addr0.
-move=> /= y h0.
-suffices -> : y = (1 - r^-1)^-1.
+move=> /= y ry1.
+suff -> : y = (1 - r^-1)^-1.
   by rewrite -(mul1r r^-1) -{1}(divff r0) -mulrBl invf_div.
-by rewrite -h0 -addrAC subrr add0r invrK.
+by rewrite -ry1 -addrAC subrr add0r invrK.
 Qed.
 
 End conjugate.
-
 
 Section lfun_pred.
 Context d (T : measurableType d) (R : realType).
@@ -269,14 +266,13 @@ Lemma LnormZ (f : LfunType mu p1) a :
   ('N[mu]_p[a \*: f] = `|a|%:E * 'N[mu]_p[f])%E.
 Proof.
 rewrite unlock /Lnorm.
-move: p p1 f.
-case=> //[r r1 f|].
+case: p p1 f => //[r r1 f|].
 - under eq_integral => x _/= do rewrite -mulr_algl scaler1 normrM powRM ?EFinM//.
   rewrite integralZl//; last first.
     apply /integrableP; split.
       apply: measurableT_comp => //.
-      rewrite (_ : (fun x : T => `|f x| `^ r) = (@powR R)^~ r \o normr \o f)//.
-      by repeat apply: measurableT_comp => //.
+      rewrite [X in measurable_fun _ X](_ : _ = (@powR R)^~ r \o normr \o f)//.
+      by apply: measurableT_comp => //; apply: measurableT_comp.
     apply: (@lty_poweRy _ _ r^-1).
       by rewrite gt_eqF// invr_gt0 ?(lt_le_trans ltr01).
     have -> : ((\int[mu]_x `|(`|f x| `^ r)%:E|) `^ r^-1 = 'N[mu]_r%:E[f])%E.
@@ -285,14 +281,11 @@ case=> //[r r1 f|].
     exact: (lfuny r1 f).
   rewrite poweRM ?integral_ge0=> //[||x _]; rewrite ?lee_fin ?powR_ge0//.
   by rewrite poweR_EFin -powRrM mulfV ?gt_eqF ?(lt_le_trans ltr01)// powRr1.
-- move=> p0 f.
-  case: ifP => mu0.
-    rewrite (_ : normr \o a \*: f = (`|a|) \*: (normr \o f)); last first.
-      by apply: funext => x/=; rewrite normrZ.
-    rewrite ess_supMr//.
-    by near=> x=> /=.
-  by rewrite mule0.
-Unshelve. end_near. Qed.
+- move=> p0 f; case: ifP => mu0; last by rewrite mule0.
+  rewrite (_ : normr \o a \*: f = `|a| \*: (normr \o f)); last first.
+    by apply: funext => x/=; rewrite normrZ.
+  by rewrite ess_supMl.
+Qed.
 
 Lemma lfun_submod_closed : submod_closed (lfun).
 Proof.
