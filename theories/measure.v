@@ -5358,6 +5358,15 @@ Implicit Types f : T -> R.
 Definition ess_sup f :=
   ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
 
+Lemma ess_supP f a :
+  ess_sup f = a <-> \forall x \ae mu, (f x)%:E <= a.
+Proof.
+rewrite /ess_sup; under eq_set do rewrite preimage_itvoy.
+split => h.
+  rewrite -h.
+  apply/negligibleP. admit.
+Admitted.
+
 Definition ess_inf f := -ess_sup (-f)%R.
 
 Lemma ess_infE f : ess_inf f = ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).
@@ -5434,11 +5443,7 @@ rewrite le_eqVlt =>/orP [/eqP mu0|mu0].
   move=> x _/=; apply/eqP.
   rewrite eq_le measure_ge0 (@le_trans _ _ (mu setT))// ?mu0// le_measure//.
     admit. admit.
-move=> h.
-apply/negligibleP.
-  admit.
-rewrite /setC/=.
-under eq_set => x do rewrite -lee_fin -h.
+by move/ess_supP.
 Admitted.
 
 Lemma ess_sup_ger f (r : R) : (forall x, f x <= r)%R -> (ess_sup f <= r%:E).
@@ -5460,7 +5465,16 @@ by move/le_anti; move: rneqfx => /[swap] -> /eqP.
 Qed.
 
 Lemma ess_sup_eq0 f : ess_sup (normr \o f) = 0 -> f = 0%R %[ae mu].
-Admitted.
+Proof.
+move=> f0.
+suffices: \forall x \ae mu, ((normr \o f) x <= 0)%R.
+  move=> [A [mA muA0 nA]].
+  exists A; split => //.
+  rewrite [X in X `<=` _](_ : _ = ~` [set x | (normr \o f) x <= 0]%R)//.
+  congr (~` _); apply/seteqP; split => x/=h; first by rewrite h// normr0 lexx.
+  by rewrite (@normr0_eq0 _ _ (f x))//; apply/eqP; rewrite eq_le h normr_ge0.
+exact: ess_sup_ler.
+Qed.
 
 Lemma ess_supM (f : T -> R) (a : R) : (0 <= a)%R -> (\forall x \ae mu, 0 <= f x)%R ->
   (ess_sup (cst a \* f)%R = a%:E * ess_sup f)%E.
