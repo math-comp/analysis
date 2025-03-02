@@ -117,6 +117,7 @@ by under eq_integral => i _ do rewrite powRr1//.
 Qed.
 
 Let le12 : (1 <= 2%:E :> \bar R)%E.
+Proof.
 rewrite lee_fin.
 rewrite (ler_nat _ 1 2).
 by [].
@@ -355,7 +356,7 @@ HB.instance Definition _ :=
      nm ler_Lnorm_add Lnorm_natmul LnormN.
 *)
 
-(* todo: add equivalent of mx_normZ and HB instance *)
+(* TODO: add equivalent of mx_normZ and HB instance *)
 
 Lemma nm_eq0 (f : ty) : nm f = 0 -> f = 0 %[ae mu].
 Proof.
@@ -410,14 +411,20 @@ case=> //[p|]; case=> //[q|] p1 q1; last first.
   have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
   move=> muoo _ f.
   rewrite /finite_norm unlock /Lnorm mu_pos => supf_lty.
-  rewrite poweR_lty// integral_fune_lt_pinfty => //.
-  apply: measurable_bounded_integrable => //.
+  rewrite poweR_lty//.
+  have : measurable_fun setT (normr \o f) by exact/measurableT_comp.
+  move/ess_sup_bounded => /(_ _ supf_lty)[M fM].
+  rewrite (@le_lt_trans _ _ (\int[mu]_x (M `^ p)%:E)); [by []| |]; last first.
+    by rewrite integral_cst// lte_mul_pinfty// lee_fin powR_ge0.
+  apply: ae_ge0_le_integral => //.
+  - by move=> x _; rewrite lee_fin powR_ge0.
+    apply/measurable_EFinP.
     apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)) => //.
     exact: measurableT_comp.
-  rewrite boundedE.
-  near=> A=> x/= _.
-  rewrite norm_powR// normr_id normr1 mulr1.
-  admit.
+  - by move=> x _; rewrite lee_fin powR_ge0.
+    apply: filterS fM => t/= ftM _.
+    rewrite lee_fin ge0_ler_powR//; first exact: ltW.
+    by rewrite nnegrE (le_trans _ ftM).
 move=> mu_fin pleq f ffin.
 have:= ffin; rewrite /finite_norm.
 have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
@@ -453,6 +460,6 @@ rewrite muleC lte_mul_pinfty ?fin_numElt?poweR_ge0//.
   by rewrite (lt_le_trans _ (poweR_ge0 _ _)) ?ltNyr// ?poweR_lty.
 rewrite poweR_lty// (lty_poweRy qinv0)//.
 by have:= ffin; rewrite /finite_norm unlock /Lnorm.
-Admitted.
+Qed.
 
 End Lspace_inclusion.

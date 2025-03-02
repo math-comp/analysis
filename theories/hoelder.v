@@ -189,7 +189,7 @@ rewrite -lte_fin.
 move=> mf mg p0 q0 pq f0; rewrite f0 mul0e Lnorm1 [leLHS](_ : _ = 0)//.
 rewrite (ae_eq_integral (cst 0)) => [|//||//|]; first by rewrite integral0.
 - by do 2 apply: measurableT_comp => //; exact: measurable_funM.
-- apply: filterS (Lnorm_eq0_eq0 mf p0 f0) => x /(_ I)[] + _.
+- apply: filterS (Lnorm_eq0_eq0 mf p0 f0) => x /(_ I) + _.
   by rewrite normrM => ->; rewrite normr0 mul0r.
 Qed.
 

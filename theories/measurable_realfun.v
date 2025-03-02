@@ -303,7 +303,7 @@ HB.instance Definition _ := (ereal_isMeasurable (R.-ocitv.-measurable)).
 (* NB: Until we dropped support for Coq 8.12, we were using
 HB.instance (\bar (Real.sort R))
   (ereal_isMeasurable (@measurable (@itvs_semiRingOfSets R))).
-This was producing a warning but the alternative was failing with Coq 8.12 with
+This was producing as warning but the alternative was failing with Coq 8.12 with
   the following message (according to the CI):
   # [redundant-canonical-projection,typechecker]
   # forall (T : measurableType) (f : T -> R), measurable_fun setT f
@@ -1690,6 +1690,18 @@ Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Implicit Types f : T -> R.
 Local Open Scope ereal_scope.
+
+Lemma ess_sup_bounded f : measurable_fun setT f -> ess_sup mu f < +oo ->
+  exists M, \forall x \ae mu, (f x <= M)%R.
+Proof.
+move=> mf /ereal_inf_lt[_ /= [r fr0] <-] _.
+exists r, (f @^-1` `]r, +oo[); split => //.
+  rewrite (_ : _ @^-1` _ = [set t | r%:E < (f t)%:E]); last first.
+    by apply/seteqP; split => [x|x]/=; rewrite in_itv/= andbT.
+  rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+  by apply/measurable_EFinP; exact/measurableT_comp.
+by move=> t/= ftr; rewrite in_itv/= andbT ltNge; exact/negP.
+Qed.
 
 Lemma ess_sup_max f : measurable_fun setT f ->
   ess_sup mu (normr \o f) != -oo ->
