@@ -271,8 +271,8 @@ case: p p1 f => //[r r1 f|].
   rewrite integralZl//; last first.
     apply /integrableP; split.
       apply: measurableT_comp => //.
-      rewrite [X in measurable_fun _ X](_ : _ = (@powR R)^~ r \o normr \o f)//.
-      by apply: measurableT_comp => //; apply: measurableT_comp.
+      apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)) => //.
+      exact: measurableT_comp.
     apply: (@lty_poweRy _ _ r^-1).
       by rewrite gt_eqF// invr_gt0 ?(lt_le_trans ltr01).
     have -> : ((\int[mu]_x `|(`|f x| `^ r)%:E|) `^ r^-1 = 'N[mu]_r%:E[f])%E.
@@ -384,11 +384,6 @@ Qed.
 
 Local Open Scope ereal_scope.
 
-Lemma measure_is_zero : mu [set: T] = 0%E -> mu = mzero.
-Proof.
-move=> mu0.
-Admitted.
-
 Lemma Lspace_inclusion (p q : \bar R) :
   forall (p1 : 1 <= p) (q1 : 1 <= q),
     mu [set: T] < +oo -> p < q ->
@@ -399,8 +394,17 @@ rewrite le_eqVlt => /predU1P[mu0 p1 q1 _ _ f _|mu_pos].
   rewrite /finite_norm unlock /Lnorm.
   move: p p1; case=> //; last by rewrite -mu0 ltxx ltry.
   move=> r r1.
-  rewrite measure_is_zero// integral_measure_zero.
-  by rewrite poweR0r ?ltry// gt_eqF// invr_gt0 (lt_le_trans ltr01).
+  under eq_integral.
+    move=> x _.
+    have -> : (`|f x| `^ r)%:E = `| (`|f x| `^ r) |%:E.
+      by rewrite ger0_norm//  powR_ge0.
+    over.
+  rewrite /=.
+  rewrite (@integral_abs_eq0 _ _ _ _ setT setT (fun x => (`|f x| `^ r)%:E))//.
+    by rewrite poweR0r// invr_neq0// gt_eqF// -lte_fin (lt_le_trans _ r1).
+  apply/measurable_EFinP.
+  apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)) => //.
+  exact: measurableT_comp.
 move: p q.
 case=> //[p|]; case=> //[q|] p1 q1; last first.
   have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
@@ -408,8 +412,7 @@ case=> //[p|]; case=> //[q|] p1 q1; last first.
   rewrite /finite_norm unlock /Lnorm mu_pos => supf_lty.
   rewrite poweR_lty// integral_fune_lt_pinfty => //.
   apply: measurable_bounded_integrable => //.
-    rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)%R//.
-    apply: measurableT_comp => //=.
+    apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)) => //.
     exact: measurableT_comp.
   rewrite boundedE.
   near=> A=> x/= _.
@@ -426,9 +429,8 @@ have := (@hoelder _ _ _ mu (fun x => `|f x| `^ p) (cst 1)%R r r')%R.
 rewrite (_ : (_ \* cst 1)%R = (fun x : T => `|f x| `^ p))%R -?fctM ?mulr1//.
 rewrite Lnorm_cst1 unlock /Lnorm invr1.
 have mfp : measurable_fun [set: T] (fun x : T => (`|f x| `^ p)%R).
-  rewrite (_ : (fun x : T => `|f x| `^ p) = (@powR R)^~ p \o normr \o f)%R//.
-  apply: measurableT_comp => //=.
-  exact: measurableT_comp => //=.
+  apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)) => //.
+  exact: measurableT_comp.
 have m1 : measurable_fun [set: T] (@cst _ R 1%R).
   exact: measurable_cst.
 have r0 : (0 < r)%R by rewrite/r divr_gt0.
