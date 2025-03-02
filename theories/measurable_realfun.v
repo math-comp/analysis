@@ -303,7 +303,7 @@ HB.instance Definition _ := (ereal_isMeasurable (R.-ocitv.-measurable)).
 (* NB: Until we dropped support for Coq 8.12, we were using
 HB.instance (\bar (Real.sort R))
   (ereal_isMeasurable (@measurable (@itvs_semiRingOfSets R))).
-This was producing as warning but the alternative was failing with Coq 8.12 with
+This was producing a warning but the alternative was failing with Coq 8.12 with
   the following message (according to the CI):
   # [redundant-canonical-projection,typechecker]
   # forall (T : measurableType) (f : T -> R), measurable_fun setT f
