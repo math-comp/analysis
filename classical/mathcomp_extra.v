@@ -1,5 +1,4 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import BinPos.
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
 
@@ -411,16 +410,6 @@ Qed.
 
 End order_min.
 
-Section positive.
-
-Lemma Pos_to_natE p : Pos.to_nat p = nat_of_pos p.
-Proof.
-by elim: p => //= p <-;
-  rewrite ?(Pnat.Pos2Nat.inj_xI,Pnat.Pos2Nat.inj_xO) NatTrec.doubleE -mul2n.
-Qed.
-
-End positive.
-
 Lemma intrD1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
@@ -588,3 +577,107 @@ rewrite mulr_ile1 ?andbT//.
   by have := xs01 x; rewrite inE xs orbT => /(_ _)/andP[].
 by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
 Qed.
+
+(* TODO: move to ssrnum *)
+
+Lemma size_filter_gt0 T P (r : seq T) : (size (filter P r) > 0)%N = (has P r).
+Proof. by elim: r => //= x r; case: ifP. Qed.
+
+Lemma ltr_sum [R : numDomainType] [I : Type] (r : seq I)
+    [P : pred I] [F G : I -> R] :
+  has P r ->
+  (forall i : I, P i -> F i < G i) ->
+  \sum_(i <- r | P i) F i < \sum_(i <- r | P i) G i.
+Proof.
+rewrite -big_filter -[ltRHS]big_filter -size_filter_gt0.
+case: filter (filter_all P r) => //= x {}r /andP[Px Pr] _ ltFG.
+rewrite !big_cons ltr_leD// ?ltFG// -(all_filterP Pr) !big_filter.
+by rewrite ler_sum => // i Pi; rewrite ltW ?ltFG.
+Qed.
+
+Lemma ltr_sum_nat [R : numDomainType] [m n : nat] [F G : nat -> R] :
+  (m < n)%N -> (forall i : nat, (m <= i < n)%N -> F i < G i) ->
+  \sum_(m <= i < n) F i < \sum_(m <= i < n) G i.
+Proof.
+move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
+by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
+Qed.
+
+(* To backport to interval *)
+Lemma comparable_BSide_min d (T : porderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.min x y) = Order.min (BSide b x) (BSide b y).
+Proof. by rewrite !minEle bnd_simp => /comparable_leP[]. Qed.
+
+(* To backport to interval *)
+Lemma comparable_BSide_max d (T : porderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.max x y) = Order.max (BSide b x) (BSide b y).
+Proof. by rewrite !maxEle bnd_simp => /comparable_leP[]. Qed.
+
+(* To backport to interval *)
+Lemma BSide_min d (T : orderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.min x y) = Order.min (BSide b x) (BSide b y).
+Proof. exact: comparable_BSide_min. Qed.
+
+(* To backport to interval *)
+Lemma BSide_max d (T : orderType d) b (x y : T) : (x >=< y)%O ->
+  BSide b (Order.max x y) = Order.max (BSide b x) (BSide b y).
+Proof. exact: comparable_BSide_max. Qed.
+
+Section NumDomainType.
+
+Variable (R : numDomainType).
+
+(* To backport to interval *)
+Lemma real_BSide_min b (x y : R) : x \in Num.real -> y \in Num.real ->
+  BSide b (Order.min x y) = Order.min (BSide b x) (BSide b y).
+Proof. by move=> xr yr; apply/comparable_BSide_min/real_comparable. Qed.
+
+(* To backport to interval *)
+Lemma real_BSide_max b (x y : R) : x \in Num.real -> y \in Num.real ->
+  BSide b (Order.max x y) = Order.max (BSide b x) (BSide b y).
+Proof. by move=> xr yr; apply/comparable_BSide_max/real_comparable. Qed.
+
+(* To backport to ssralg.v *)
+Lemma natr_min (m n : nat) : (Order.min m n)%:R = Order.min m%:R n%:R :> R.
+Proof. by rewrite !minElt ltr_nat /Order.lt/= -fun_if. Qed.
+
+(* To backport to ssralg.v *)
+Lemma natr_max (m n : nat) : (Order.max m n)%:R = Order.max m%:R n%:R :> R.
+Proof. by rewrite !maxElt ltr_nat /Order.lt/= -fun_if. Qed.
+
+End NumDomainType.
+
+(* To backport to order.v *)
+Lemma comparable_min_le_min d (T : porderType d) (x y z t : T) :
+    (x >=< y)%O -> (z >=< t)%O ->
+  (x <= z)%O -> (y <= t)%O -> (Order.min x y <= Order.min z t)%O.
+Proof.
+move=> + + xz yt => /comparable_leP[] xy /comparable_leP[] zt //.
+- exact: le_trans xy yt.
+- exact: le_trans (ltW xy) xz.
+Qed.
+
+(* To backport to order.v *)
+Lemma comparable_max_le_max d (T : porderType d) (x y z t : T) :
+    (x >=< y)%O -> (z >=< t)%O ->
+  (x <= z)%O -> (y <= t)%O -> (Order.max x y <= Order.max z t)%O.
+Proof.
+move=> + + xz yt => /comparable_leP[] xy /comparable_leP[] zt //.
+- exact: le_trans yt (ltW zt).
+- exact: le_trans xz zt.
+Qed.
+
+(* To backport to order.v *)
+Lemma min_le_min d (T : orderType d) (x y z t : T) :
+  (x <= z)%O -> (y <= t)%O -> (Order.min x y <= Order.min z t)%O.
+Proof. exact: comparable_min_le_min. Qed.
+
+(* To backport to order.v *)
+Lemma max_le_max d (T : orderType d) (x y z t : T) :
+  (x <= z)%O -> (y <= t)%O -> (Order.max x y <= Order.max z t)%O.
+Proof. exact: comparable_max_le_max. Qed.
+
+(* To backport to ssrnum.v *)
+Lemma real_sqrtC {R : numClosedFieldType} (x : R) : 0 <= x ->
+  sqrtC x \in Num.real.
+Proof. by rewrite -sqrtC_ge0; apply: ger0_real. Qed.

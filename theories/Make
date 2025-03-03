@@ -44,6 +44,7 @@ sequences.v
 exp.v
 trigo.v
 esum.v
+measurable_realfun.v
 lebesgue_measure.v
 forms.v
 derive.v
@@ -58,5 +59,6 @@ convex.v
 charge.v
 kernel.v
 pi_irrational.v
+gauss_integral.v
 all_analysis.v
 showcase/summability.v

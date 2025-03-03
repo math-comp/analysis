@@ -1,13 +1,13 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap all_classical.
-From mathcomp Require Import signed topology_structure uniform_structure.
-From mathcomp Require Import pseudometric_structure.
+From mathcomp Require Import interval_inference topology_structure.
+From mathcomp Require Import uniform_structure pseudometric_structure.
 (**md**************************************************************************)
 (* # Matrix topology                                                          *)
 (* ```                                                                        *)
-(*                  mx_ent m n A == entourages for the m x n matrices        *)
-(*                 mx_ball m n A == balls for the m x n matrices             *)
+(*                  mx_ent m n A == entourages for the m x n matrices         *)
+(*                 mx_ball m n A == balls for the m x n matrices              *)
 (* ```                                                                        *)
 (* Matrices `'M[T]_(m, n)` are endowed with the structures of:                *)
 (* - topology                                                                 *)
@@ -66,8 +66,7 @@ Variables (m n : nat) (T : uniformType).
 
 Implicit Types A : set ('M[T]_(m, n) * 'M[T]_(m, n)).
 
-Definition mx_ent :=
-  filter_from
+Definition mx_ent := filter_from
   [set P : 'I_m -> 'I_n -> set (T * T) | forall i j, entourage (P i j)]
   (fun P => [set MN : 'M[T]_(m, n) * 'M[T]_(m, n) |
     forall i j, P i j (MN.1 i j, MN.2 i j)]).

@@ -34,7 +34,7 @@ From mathcomp Require Import mathcomp_extra boolp wochoice.
 (*   set (i.e., of type set rT)                                               *)
 (* - indexed sets are rather named F                                          *)
 (*                                                                            *)
-(* Example of notations:                                                      *)
+(* Examples of notations:                                                     *)
 (* | Coq notations                |   | Meaning                             | *)
 (* |-----------------------------:|---|:------------------------------------  *)
 (* |                         set0 |==| $\emptyset$                            *)
@@ -464,6 +464,11 @@ Notation "`] -oo , '+oo' [" :=
 Lemma nat_nonempty : [set: nat] !=set0. Proof. by exists 1%N. Qed.
 
 #[global] Hint Resolve nat_nonempty : core.
+
+Lemma itv_sub_in2 d (T : porderType d) (P : T -> T -> Prop) (i j : interval T) :
+  [set` j] `<=` [set` i] ->
+  {in i &, forall x y, P x y} -> {in j &, forall x y, P x y}.
+Proof. by move=> ji + x y xj yj; apply; exact: ji. Qed.
 
 Lemma preimage_itv T d (rT : porderType d) (f : T -> rT) (i : interval rT) (x : T) :
   ((f @^-1` [set` i]) x) = (f x \in i).

@@ -20,6 +20,13 @@ Reference: [How to document](https://github.com/math-comp/math-comp/wiki/How-to-
 
 <!-- Cross-out the above items using ~crossed out item~ when irrelevant -->
 
+##### Merge policy
+
+As a rule of thumb:
+- PRs with several commits that make sense individually and that
+  all compile are preferentially merged into master.
+- PRs with disorganized commits are very likely to be squash-rebased.
+
 ##### Reminder to reviewers
 
 - Read [this Checklist](https://github.com/math-comp/math-comp/wiki/Checklist-for-creating-and-review-PRs)

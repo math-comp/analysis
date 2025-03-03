@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals ereal nsatz_realtype signed topology.
+From mathcomp Require Import reals ereal interval_inference topology.
 From mathcomp Require Import normedtype landau sequences derive realfun exp.
 
 (**md**************************************************************************)
@@ -48,7 +48,7 @@ Lemma cvg_series_cvg_series_group (R : realFieldType) (f : R ^nat) k :
   [series \sum_(n * k <= i < n.+1 * k) f i]_n @ \oo --> lim (series f @ \oo).
 Proof.
 move=> /cvg_ballP cf k0; apply/cvg_ballP => _/posnumP[e].
-have := !! cf _ (gt0 e) => -[n _ nl]; near=> m.
+have := [elaborate cf _ (gt0 e)] => -[n _ nl]; near=> m.
 rewrite /ball /= [in X in `|_ - X|]/series [in X in `|_ - X|]/= -big_nat_mul.
 have /nl : (n <= m * k)%N.
   by near: m; exists n.+1 => //= p /ltnW /leq_trans /(_ (leq_pmulr _ k0)).
@@ -366,7 +366,9 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last first.
   by rewrite /f cos0 sin0 !(mul1r, mul0r, add0r, subr0, subrr, expr0n).
 apply: is_derive_0_is_cst => {}x.
-by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
+apply: trigger_derive; rewrite /GRing.scale /= !mulr0 !add0r addr0 !mulr1.
+rewrite -!mulr2n  -mulrnDl mulrC !(mulrC (cos y)) !(mulrC (sin y)).
+by rewrite mulNr -mulrDr mulNr -!opprD subrr mulr0 mul0rn.
 Qed.
 
 Lemma sinD x y : sin (x + y) = sin x * cos y + cos x * sin y.
@@ -402,7 +404,9 @@ set v := LHS; pattern x in v; move: @v; set f := (X in let _ := X x in _) => /=.
 apply: (@eq_trans _ _ (f 0)); last first.
   by rewrite /f oppr0 cos0 sin0 !(addr0, subrr, expr0n).
 apply: is_derive_0_is_cst => {}x.
-by apply: trigger_derive; rewrite /GRing.scale /=; nsatz.
+apply: trigger_derive; rewrite /GRing.scale /=.
+rewrite !mulrN1 !opprK -!mulr2n -mulrnDl mulrC.
+by rewrite -opprB mulNr (addrC (cos x)) subrr mul0rn.
 Qed.
 
 Lemma sinN x : sin (- x) = - sin x.
@@ -1186,6 +1190,9 @@ apply: (@is_derive_inverse R tan).
 - by rewrite -[X in 1 + X ^+ 2]atanK -cos2_tan2 //; exact: is_derive_tan.
 exact/lt0r_neq0/ltr_pwDl/sqr_ge0.
 Unshelve. all: by end_near. Qed.
+
+Lemma derivable_atan x : derivable atan x 1.
+Proof. exact: ex_derive. Qed.
 
 Lemma derive1_atan : atan^`() =1 (fun x => (1 + x ^+ 2)^-1).
 Proof. by move=> x; rewrite derive1E derive_val. Qed.

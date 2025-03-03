@@ -113,21 +113,7 @@ HB.instance Definition _ := isMulLaw.Build R 0 Rmult Rmult_0_l Rmult_0_r.
 HB.instance Definition _ := isAddLaw.Build R Rmult Rplus
   Rmult_plus_distr_r Rmult_plus_distr_l.
 
-Definition Rinvx r := if (r != 0) then / r else r.
-
 Definition unit_R r := r != 0.
-
-Lemma RmultRinvx : {in unit_R, left_inverse 1 Rinvx Rmult}.
-Proof.
-move=> r; rewrite -topredE /unit_R /Rinvx => /= rNZ /=.
-by rewrite rNZ Rinv_l //; apply/eqP.
-Qed.
-
-Lemma RinvxRmult : {in unit_R, right_inverse 1 Rinvx Rmult}.
-Proof.
-move=> r; rewrite -topredE /unit_R /Rinvx => /= rNZ /=.
-by rewrite rNZ Rinv_r //; apply/eqP.
-Qed.
 
 Lemma intro_unit_R x y : y * x = 1 /\ x * y = 1 -> unit_R x.
 Proof.
@@ -135,12 +121,44 @@ move=> [yx_eq1 _]; apply: contra_eqN yx_eq1 => /eqP->.
 by rewrite Rmult_0_r eq_sym R1_neq_0.
 Qed.
 
-Lemma Rinvx_out : {in predC unit_R, Rinvx =1 id}.
-Proof. by move=> x; rewrite inE/= /Rinvx -if_neg => ->. Qed.
+Section Rinvx.
+
+Let Rinvx r := if (r != 0) then / r else r.
+
+Let neq0_RinvxE x : x != 0 -> Rinv x = Rinvx x.
+Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
+
+Let RinvxE x : Rinv x = Rinvx x.
+Proof.
+have [->| ] := eqVneq x R0; last exact: neq0_RinvxE.
+rewrite /GRing.inv /GRing.mul /= /Rinvx eqxx /=.
+rewrite RinvImpl.Rinv_def; case: Req_appart_dec => //.
+by move=> /[dup] -[] /Rlt_irrefl.
+Qed.
+
+Lemma RmultRinv : {in unit_R, left_inverse 1 Rinv Rmult}.
+Proof.
+move=> r; rewrite RinvxE -topredE /unit_R /Rinvx => /= rNZ /=.
+by rewrite rNZ Rinv_l //; apply/eqP.
+Qed.
+
+Lemma RinvRmult : {in unit_R, right_inverse 1 Rinv Rmult}.
+Proof.
+move=> r; rewrite RinvxE -topredE /unit_R /Rinvx => /= rNZ /=.
+by rewrite rNZ Rinv_r //; apply/eqP.
+Qed.
+
+Lemma Rinv_out : {in predC unit_R, Rinv =1 id}.
+Proof. by move=> x; rewrite inE/= RinvxE /Rinvx -if_neg => ->. Qed.
+
+End Rinvx.
+
+#[deprecated(note="To be removed. Use GRing.inv instead.")]
+Definition Rinvx := Rinv.
 
 #[hnf]
 HB.instance Definition _ := GRing.Ring_hasMulInverse.Build R
-  RmultRinvx RinvxRmult intro_unit_R Rinvx_out.
+  RmultRinv RinvRmult intro_unit_R Rinv_out.
 
 Lemma R_idomainMixin x y : x * y = 0 -> (x == 0) || (y == 0).
 Proof. by move=> /Rmult_integral []->; rewrite eqxx ?orbT. Qed.
@@ -456,21 +474,18 @@ Lemma RmultE x y : Rmult x y = x * y. Proof. by []. Qed.
 
 Lemma RoppE x : Ropp x = - x. Proof. by []. Qed.
 
-Let neq0_RinvE x : x != 0 -> Rinv x = x^-1.
-Proof. by move=> x_neq0; rewrite -[RHS]/(if _ then _ else _) x_neq0. Qed.
+Lemma RinvE x : Rinv x = x^-1. Proof. by []. Qed.
 
-Lemma RinvE x : Rinv x = x^-1.
-Proof.
-have [->| ] := eqVneq x R0; last exact: neq0_RinvE.
-rewrite /GRing.inv /GRing.mul /= /Rinvx eqxx /=.
-rewrite RinvImpl.Rinv_def; case: Req_appart_dec => //.
-by move=> /[dup] -[] /RltP; rewrite Order.POrderTheory.ltxx.
-Qed.
-
-Lemma RdivE x y : Rdiv x y = x / y. Proof. by rewrite /Rdiv RinvE. Qed.
+Lemma RdivE x y : Rdiv x y = x / y. Proof. by rewrite /Rdiv. Qed.
 
 Lemma INRE n : INR n = n%:R.
 Proof. elim: n => // n IH; by rewrite S_INR IH RplusE -addn1 natrD. Qed.
+
+Lemma Pos_to_natE p : Pos.to_nat p = nat_of_pos p.
+Proof.
+by elim: p => //= p <-;
+  rewrite ?(Pnat.Pos2Nat.inj_xI,Pnat.Pos2Nat.inj_xO) NatTrec.doubleE -mul2n.
+Qed.
 
 (**md Note that rewrites using the following lemma `IZRposE` are
   systematically followed by a rewrite using the lemma `INRE`. *)

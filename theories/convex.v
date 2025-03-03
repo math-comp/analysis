@@ -2,9 +2,9 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp Require Import mathcomp_extra boolp classical_sets set_interval.
-From mathcomp Require Import functions cardinality ereal reals signed.
+From mathcomp Require Import functions cardinality ereal reals.
 From mathcomp Require Import topology prodnormedzmodule normedtype derive.
-From mathcomp Require Import realfun itv.
+From mathcomp Require Import realfun interval_inference.
 From HB Require Import structures.
 
 (**md**************************************************************************)
@@ -33,7 +33,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -185,7 +184,7 @@ Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
   forall t, f (a <| t |> b) <= f a <| t |> f b.
 Proof.
 move=> ab h t; set x := a <| t |> b; have /h : a <= x <= b.
-  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= itv_ge0/=.
+  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= ge0/=.
 rewrite subr_ge0 => /le_trans; apply.
 by rewrite LE// /x line_pathK ?lt_eqF// convC line_pathK ?gt_eqF.
 Qed.
@@ -213,7 +212,7 @@ have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
   have [|z zxb fbfx] := MVT xb derivef.
     apply/(derivable_oo_continuous_bnd_within (And3 xbf _ cvg_left))/cvg_at_right_filter.
     have := derivable_within_continuous HDf.
-    rewrite continuous_open_subspace//; last exact: interval_open.
+    rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
   by exists z => //; rewrite fbfx -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
@@ -224,11 +223,10 @@ have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
   have [|z zax fxfa] := MVT ax derivef.
     apply/(derivable_oo_continuous_bnd_within (And3 axf cvg_right _))/cvg_at_left_filter.
     have := derivable_within_continuous HDf.
-    rewrite continuous_open_subspace//; last exact: interval_open.
+    rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
   exists z; first by [].
-  rewrite fxfa -mulrA divff; first exact: mulr1.
-  by rewrite subr_eq0 gt_eqF.
+  by rewrite fxfa -mulrA divff ?mulr1// subr_eq0 gt_eqF.
 have c1c2 : c1 < c2.
   by move: Ic2 Ic1 => /andP[+ _] => /[swap] /andP[_] /lt_trans; apply.
 have [d Id h] :
@@ -242,10 +240,10 @@ have [d Id h] :
   have [|z zc1c2 {}h] := MVT c1c2 derivef.
     apply: (derivable_oo_continuous_bnd_within (And3 h _ _)).
     + apply: cvg_at_right_filter.
-      move: cDf; rewrite continuous_open_subspace//; last exact: interval_open.
+      move: cDf; rewrite continuous_open_subspace//.
       by apply; rewrite inE/= in_itv/= (andP Ic1).1 (lt_trans _ (andP Ic2).2).
     + apply: cvg_at_left_filter.
-      move: cDf; rewrite continuous_open_subspace//; last exact: interval_open.
+      move: cDf; rewrite continuous_open_subspace//.
       by apply; rewrite inE/= in_itv/= (andP Ic2).2 (lt_trans (andP Ic1).1).
   exists z; first by [].
   rewrite h -mulrA divff; first exact: mulr1.

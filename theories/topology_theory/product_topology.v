@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical.
-From mathcomp Require Import signed topology_structure uniform_structure.
-From mathcomp Require Import pseudometric_structure compact.
+From mathcomp Require Import interval_inference topology_structure.
+From mathcomp Require Import uniform_structure pseudometric_structure compact.
 
 (**md**************************************************************************)
 (* # Product topology                                                         *)
@@ -48,8 +48,6 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build (T * U)%type
   prod_nbhs_filter prod_nbhs_singleton prod_nbhs_nbhs.
 
 End Prod_Topology.
-
-(** Topology on matrices *)
 
 Lemma fst_open {U V : topologicalType} (A : set (U * V)) :
   open A -> open (fst @` A).

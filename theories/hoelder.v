@@ -2,10 +2,10 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop signed reals ereal.
+From mathcomp Require Import cardinality fsbigop reals ereal.
 From mathcomp Require Import topology normedtype sequences real_interval.
 From mathcomp Require Import esum measure lebesgue_measure lebesgue_integral.
-From mathcomp Require Import numfun exp convex itv.
+From mathcomp Require Import numfun exp convex interval_inference.
 
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
@@ -347,8 +347,8 @@ move=> p1; rewrite (@le_trans _ _ ((2^-1 * `| f x | + 2^-1 * `| g x |) `^ p))//.
   rewrite ge0_ler_powR ?nnegrE ?(le_trans _ p1)//.
   by rewrite (le_trans (ler_normD _ _))// 2!normrM ger0_norm.
 rewrite {1 3}(_ : 2^-1 = 1 - 2^-1); last by rewrite {2}(splitr 1) div1r addrK.
-rewrite (@convex_powR _ _ p1 (@Itv.mk _ _ _ _)) ?inE/= ?in_itv/= ?normr_ge0//.
-by rewrite /Itv.itv_cond/= in_itv/= invr_ge0 ler0n invf_le1 ?ler1n.
+rewrite (@convex_powR _ _ p1 (Itv01 _ _))// ?inE/= ?in_itv/= ?normr_ge0 ?invr_ge0//.
+by rewrite invf_le1 ?ler1n.
 Qed.
 
 Let measurableT_comp_powR f p :
@@ -365,7 +365,7 @@ move=> mf mg.
 rewrite !Lnorm1 -ge0_integralD//; [|by do 2 apply: measurableT_comp..].
 rewrite ge0_le_integral//.
 - by do 2 apply: measurableT_comp => //; exact: measurable_funD.
-- by move=> x _; rewrite lee_fin.
+- by move=> x _; rewrite adde_ge0.
 - by apply/measurableT_comp/measurable_funD; exact/measurableT_comp.
 - by move=> x _; rewrite lee_fin ler_normD.
 Qed.

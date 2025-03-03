@@ -24,3 +24,4 @@ From mathcomp Require Export convex.
 From mathcomp Require Export charge.
 From mathcomp Require Export kernel.
 From mathcomp Require Export pi_irrational.
+From mathcomp Require Export gauss_integral.

@@ -2,9 +2,9 @@
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import mathcomp_extra reals ereal signed.
+From mathcomp Require Import mathcomp_extra reals ereal interval_inference.
 From mathcomp Require Import topology tvs normedtype landau sequences derive.
-From mathcomp Require Import realfun itv convex.
+From mathcomp Require Import realfun interval_inference convex.
 
 (**md**************************************************************************)
 (* # Theory of exponential/logarithm functions                                *)
@@ -62,7 +62,7 @@ Fact is_cvg_pseries_inside_norm f (x z : R) :
   cvgn (pseries (fun i => `|f i|) z).
 Proof.
 move=> Cx zLx; have [K [Kreal Kf]] := cvg_series_bounded Cx.
-have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n|  by rewrite !mulr_ge0.
+have Kzxn n : 0 <= `|K + 1| * `|z ^+ n| / `|x ^+ n| by rewrite !mulr_ge0.
 apply: normed_cvg.
 apply: series_le_cvg Kzxn _ _ => [//=| /= n|].
   rewrite (_ : `|_ * _| = `|f n * x ^+ n| * `|z ^+ n| / `|x ^+ n|); last first.
@@ -414,6 +414,10 @@ apply: (mulIf (lt0r_neq0 (expR_gt0 (- x)))).
 rewrite expRxDyMexpx expRN [_ * expR y]mulrC mulfK //.
 by case: ltrgt0P (expR_gt0 x).
 Qed.
+
+Lemma expR_sum T s (P : pred T) (f : T -> R) :
+  expR (\sum_(i <- s | P i) f i) = \prod_(i <- s | P i) expR (f i).
+Proof. by elim/big_ind2 : _ => [|? ? ? ? <- <-|]; rewrite ?expR0// expRD. Qed.
 
 Lemma expRM_natl n x : expR (n%:R * x) = expR x ^+ n.
 Proof.
@@ -968,11 +972,10 @@ rewrite le_eqVlt => /predU1P[<- b0 p0 q0 _|a0].
   by rewrite mul0r powR0 ?gt_eqF// mul0r add0r divr_ge0 ?powR_ge0 ?ltW.
 rewrite le_eqVlt => /predU1P[<-|b0] p0 q0 pq.
   by rewrite mulr0 powR0 ?gt_eqF// mul0r addr0 divr_ge0 ?powR_ge0 ?ltW.
-have q01 : (q^-1 \in `[0, 1])%R.
-  by rewrite in_itv/= invr_ge0 (ltW q0)/= -pq ler_wpDl// invr_ge0 ltW.
+have iq1 : q^-1 <= 1 by rewrite -pq ler_wpDl// invr_ge0 ltW.
 have ap0 : (0 < a `^ p)%R by rewrite powR_gt0.
 have bq0 : (0 < b `^ q)%R by rewrite powR_gt0.
-have := @concave_ln _ (@Itv.mk _ `[0, 1] _ q01)%R _ _ ap0 bq0.
+have := @concave_ln _ (Itv01 (eqbRL (invr_ge0 _) (ltW q0)) iq1) _ _ ap0 bq0.
 have pq' : (p^-1 = 1 - q^-1)%R by rewrite -pq addrK.
 rewrite !convRE/= /onem -pq' -[_ <= ln _]ler_expR expRD (mulrC p^-1).
 rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF// (mulrC q^-1).

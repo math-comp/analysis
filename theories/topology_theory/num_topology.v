@@ -2,14 +2,15 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import all_classical.
-From mathcomp Require Import signed reals topology_structure uniform_structure.
-From mathcomp Require Import pseudometric_structure order_topology.
+From mathcomp Require Import interval_inference reals topology_structure.
+From mathcomp Require Import uniform_structure pseudometric_structure.
+From mathcomp Require Import order_topology.
 
 (**md**************************************************************************)
 (* # Topological notions for numerical types                                  *)
 (*                                                                            *)
 (* We endow `numFieldType` with the types of topological notions (accessible  *)
-(* with `Import numFieldTopology.Exports.                                     *)
+(* with `Import numFieldTopology.Exports).                                    *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -109,6 +110,58 @@ Lemma nbhs0_lt (R : realFieldType) (x : R) : (0 < x)%R ->
 Proof.
 exists x => // z /=; rewrite sub0r normrN.
 by apply: le_lt_trans; rewrite ler_norm.
+Qed.
+
+Lemma lt_nbhsl {R : realType} (x a : R) : x < a ->
+  \forall y \near nbhs x, y < a.
+Proof.
+move=> xb; exists ((a - x) / 2) => /=; first by rewrite divr_gt0// subr_gt0.
+move=> r/=; rewrite ltr_pdivlMr// ltrBrDr; apply: le_lt_trans.
+by rewrite -lerBlDr -normrN opprB (le_trans (ler_norm _))// ler_peMr// ler1n.
+Qed.
+
+Lemma Nlt_nbhsl {R : realType} (x a : R) :
+  - x < a -> \forall y \near nbhs x, - y < a.
+Proof.
+move=> xb; exists ((a + x) / 2) => /=.
+  by rewrite divr_gt0// -(opprK x) subr_gt0.
+move=> r/=; rewrite ltr_pdivlMr// -ltrBlDr; apply: le_lt_trans.
+by rewrite -lerBlDr opprK addrC (le_trans (ler_norm _))// ler_peMr// ler1n.
+Qed.
+
+Section nbhs_lt_le.
+Context {R : numFieldType}.
+Implicit Types x z : R.
+
+Lemma lt_nbhsl_lt x z : x < z -> \forall y \near x, x <= y -> y < z.
+Proof.
+move=> xz; near=> y.
+rewrite le_eqVlt => /predU1P[<-//|].
+near: y; exists (z - x) => /=; first by rewrite subr_gt0.
+move=> y/= /[swap] xy; rewrite ltr0_norm ?subr_lt0//.
+by rewrite opprD addrC ltrBlDr subrK opprK.
+Unshelve. all: by end_near. Qed.
+
+Lemma lt_nbhsl_le x z : x < z -> \forall y \near x, x <= y -> y <= z.
+Proof.
+by move=> xz; apply: filterS (lt_nbhsl_lt xz) => y /[apply] /ltW.
+Qed.
+
+End nbhs_lt_le.
+#[deprecated(since="mathcomp-analysis 1.9.0", note="use `lt_nbhsl_lt` instead")]
+Notation nbhs_lt := lt_nbhsl_lt (only parsing).
+#[deprecated(since="mathcomp-analysis 1.9.0", note="use `lt_nbhsl_le` instead")]
+Notation nbhs_le := lt_nbhsl_le (only parsing).
+
+Lemma lt_nbhsr {R : realFieldType} (a z : R) : a < z ->
+  \forall x \near z, a < x.
+Proof.
+rewrite -subr_gt0 => za0; exists (z - a) => //= u/=.
+rewrite ltrBrDl addrC -ltrBrDl => /lt_le_trans; apply.
+rewrite lerBlDl.
+have [uz|uz] := leP u z.
+  by rewrite ger0_norm ?subr_ge0// subrK.
+by rewrite ltr0_norm ?subr_lt0// opprB addrAC -lerBlDr opprK lerD// ?ltW.
 Qed.
 
 Global Instance Proper_dnbhs_regular_numFieldType (R : numFieldType) (x : R^o) :

@@ -11,7 +11,7 @@ From mathcomp Require Import topology_structure uniform_structure.
 (*                                     topologicalType structures Tc on T     *)
 (*                        sup_ent E == the entourages of the supremum         *)
 (* ```                                                                        *)
-(* `sup_topology` is equipped with the `Uniform` structure                         *)
+(* `sup_topology` is equipped with the `Uniform` structure                    *)
 (******************************************************************************)
 
 Set Implicit Arguments.

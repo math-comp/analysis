@@ -13,6 +13,7 @@
 -arg -w -arg -projection-no-head-constant
 
 classical/all_classical.v
+classical/internal_Eqdep_dec.v
 classical/boolp.v
 classical/contra.v
 classical/wochoice.v
@@ -28,9 +29,8 @@ reals/constructive_ereal.v
 reals/reals.v
 reals/real_interval.v
 reals/signed.v
-reals/itv.v
+reals/interval_inference.v
 reals/prodnormedzmodule.v
-reals/nsatz_realtype.v
 reals/all_reals.v
 experimental_reals/xfinmap.v
 experimental_reals/discrete.v
@@ -38,6 +38,7 @@ experimental_reals/realseq.v
 experimental_reals/realsum.v
 experimental_reals/distr.v
 reals_stdlib/Rstruct.v
+reals_stdlib/nsatz_realtype.v
 theories/all_analysis.v
 theories/landau.v
 
@@ -77,6 +78,7 @@ theories/sequences.v
 theories/exp.v
 theories/trigo.v
 theories/esum.v
+theories/measurable_realfun.v
 theories/lebesgue_measure.v
 theories/lebesgue_stieltjes_measure.v
 theories/forms.v
@@ -91,6 +93,7 @@ theories/convex.v
 theories/charge.v
 theories/kernel.v
 theories/pi_irrational.v
+theories/gauss_integral.v
 theories/showcase/summability.v
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v

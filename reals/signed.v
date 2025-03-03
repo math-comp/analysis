@@ -1,8 +1,11 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From Coq Require Import ssreflect ssrfun ssrbool.
+From mathcomp Require Import ssreflect ssrfun ssrbool.
 From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
 From mathcomp Require Import mathcomp_extra.
+
+Attributes deprecated(since="mathcomp-analysis 1.9.0",
+  note="Use ""From mathcomp Require Import interval_inference."" instead.").
 
 (**md**************************************************************************)
 (* # Positive, non-negative numbers, etc.                                     *)
