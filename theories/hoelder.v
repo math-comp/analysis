@@ -560,4 +560,32 @@ apply: minkowski => //.
 apply: measurableT_comp => //.
 Qed.
 
+Lemma le_ess_sup (f g : T -> R) :
+  measurable_fun setT f -> measurable_fun setT g ->
+    (forall x, f x <= g x)%R -> ess_sup mu f <= ess_sup mu g.
+Proof.
+rewrite /ess_sup => mf mg h.
+apply: le_ereal_inf => x [r]/= mu0 rx.
+exists r => //.
+move: mu0.
+apply: subset_measure0.
+- by rewrite -[X in _ X]setTI; exact: mf.
+- by rewrite -[X in _ X]setTI; exact: mg.
+move=> t/=.
+rewrite !in_itv !andbT/= => fgtt.
+by rewrite (lt_le_trans fgtt)//.
+Qed.
+
+Lemma minkowskie (f g : T -> R) (p : \bar R) :
+  measurable_fun setT f -> measurable_fun setT g -> 1 <= p ->
+  'N_p[(f \+ g)%R] <= 'N_p[f] + 'N_p[g].
+Proof.
+case: p => //[r|]; first exact: minkowski.
+move=> mf mg _.
+rewrite unlock /Lnorm.
+case: ifPn => mugt0; last by rewrite adde0 lexx.
+apply: ess_supD => //.
+all: by rewrite gt_eqF// (lt_le_trans ltNy0)// ess_sup_ger// => x/=; rewrite lee_fin normr_ge0.
+Qed.
+
 End minkowski.

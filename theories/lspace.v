@@ -195,15 +195,6 @@ Lemma sub_lfun_mfun : {subset lfun <= mfun}. Proof. by move=> x /andP[]. Qed.
 Lemma sub_lfun_finlfun : {subset lfun <= finlfun}. Proof. by move=> x /andP[]. Qed.
 End lfun_pred.
 
-Lemma minkowskie [d : measure_display] [T : measurableType d] [R : realType]
-    (mu : measure T R) [f g : T -> R] [p : \bar R] :
-  measurable_fun [set: T] f ->
-  measurable_fun [set: T] g ->
-  (1 <= p)%E -> ('N[mu]_p[(f \+ g)%R] <= 'N[mu]_p[f] + 'N[mu]_p[g])%E.
-Proof.
-(* TODO: Jairo is working on this *)
-Admitted.
-
 Section lfun.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
@@ -298,7 +289,8 @@ move: (lfun_Sub _) (lfun_Sub _) => {fP} f {gP} g.
 rewrite !inE rpredD ?rpredZ ?mfunP//=.
 apply: mem_set => /=.
 rewrite /finite_norm.
-apply: (le_lt_trans (minkowskie _ _ _ _)) => //=.
+apply: le_lt_trans.
+  apply: minkowskie => //.
   suff: a *: (g : T -> R) \in mfun by exact: set_mem.
   by rewrite rpredZ//; exact: mfunP.
 rewrite lte_add_pinfty//; last exact: lfuny.
