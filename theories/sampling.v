@@ -571,8 +571,127 @@ rewrite -bigcup_seq/=; exists i => //=; first by rewrite mem_index_enum.
 by exists Y => //; rewrite setTI.
 Qed.
 
+Lemma g_sigma_preimage_comp
+ [d1 : measure_display] [T1 : semiRingOfSetsType d1] n
+  [T : pointedType] (f1 : 'I_n -> T -> T1) [T3 : Type] (g : T3 -> T) :
+g_sigma_preimage (fun i => (f1 i \o g)) =
+preimage_set_system [set: T3] g (g_sigma_preimage f1).
+Proof.
+rewrite {1}/g_sigma_preimage.
+rewrite  -g_sigma_preimageE; congr (<<s _ >>).
+rewrite predeqE => C; split.
+- (*move=> [i A mA <-{C}].
+  + by exists (f1 @^-1` A) => //; left; exists A => //; rewrite setTI.
+  + by exists (f2 @^-1` A) => //; right; exists A => //; rewrite setTI.*) admit.
+- move=> [A mA <-{C}].
+(*  [A [[B mB <-{A} <-{C}]]].
+  + by left; rewrite !setTI; exists B => //; rewrite setTI.
+  + by right; rewrite !setTI; exists B => //; rewrite setTI.
+*)
+Admitted.
+
+Section prod_measurable_fun.
+Context d d1 (T : measurableType d) (T1 : measurableType d1).
+
+Lemma prod_measurable_funP (n : nat) (h : T -> mtuple n T1) : measurable_fun setT h <->
+  forall i : 'I_n,  measurable_fun setT ((@tnth _ T1 ^~ i) \o h).
+Proof.
+apply: (@iff_trans _ (g_sigma_preimage
+  (fun i : 'I_n  => (@tnth _ T1 ^~ i) \o h) `<=` measurable)).
+- rewrite g_sigma_preimage_comp; split=> [mf A [C HC <-]|f12].
+    by apply: mf => //.
+  by move=> _ A mA; apply: f12; exists A => //.
+- split=> [h12|mh].
+    move=> i _ A mA.
+    apply: h12.
+    apply: sub_sigma_algebra.
+    suff:
+        (\bigcup_(i0 < n) preimage_set_system [set: T]
+                              ((nth point (T:=T1))^~ i0 \o h) d1.-measurable)
+    ([set: T] `&` ((tnth (T:=T1))^~ i \o h) @^-1` A).
+      admit.
+    exists i => //.
+      by red.
+    exists A => //.
+    rewrite !setTI.
+    rewrite /tnth.
+    congr (_ @^-1` A).
+    apply/funext => x.
+    rewrite /=.
+    apply: set_nth_default => //.
+    by rewrite size_tuple.
+  apply: smallest_sub; first exact: sigma_algebra_measurable.
+  suff:
+  \bigcup_(i < n) preimage_set_system [set: T] 
+                            ((nth point (T:=T1))^~ i \o h) d1.-measurable
+  `<=` d.-measurable.
+   admit.
+  apply: bigcup_sub => i Ii.
+  move=> A [C mC <-].
+  have := mh (Ordinal Ii).
+  rewrite /measurable_fun.
+  admit.
+Admitted.
+
+Lemma measurable_fun_prod (f : T -> T1) n (g : T -> mtuple n T1) :
+  measurable_fun setT f -> measurable_fun setT g ->
+  measurable_fun setT (fun x : T => [the mtuple n.+1 T1 of (f x) :: (g x)]).
+Proof.
+move=> mf mg.
+apply/prod_measurable_funP => /= i.
+have [->|i0] := eqVneq i ord0.
+  by rewrite (_ : _ \o _ = f)//.
+have @j : 'I_n.
+  apply: (@Ordinal _ i.-1).
+  rewrite prednK//.
+    have := ltn_ord i.
+    by rewrite ltnS.
+  by rewrite lt0n.
+rewrite (_ : _ \o _ = (fun x => tnth (g x) j))//.
+  apply: (@measurableT_comp _ _ _ _ _ _ (fun x : mtuple n T1 => tnth x j) _ g) => //.
+  by apply: measurable_tnth.
+apply/funext => t/=.
+rewrite (_ : i = lift ord0 j)//.
+by rewrite tnthS.
+apply/val_inj => /=.
+by rewrite /bump/= add1n prednK// lt0n.
+
+Qed.
+
+End prod_measurable_fun.
+
+
+Lemma measurable_cons d (T : measurableType d) n : measurable_fun [set: T * mtuple n T]
+  (fun x : T * mtuple n T => [the mtuple n.+1 T of x.1 :: x.2]).
+Proof.
+move=> _ /= Y mY; rewrite setTI.
+red.
+simpl.
+red.
+apply: sub_sigma_algebra.
+red.
+simpl.
+rewrite /preimage_set_system/=.
+
+
+Lemma measurable_cons d (T : measurableType d) n : measurable_fun [set: T * mtuple n T]
+  (fun x : T * mtuple n T => [the mtuple n.+1 T of x.1 :: x.2]).
+Proof.
+move=> _ /= Y mY; rewrite setTI.
+red.
+simpl.
+red.
+apply: sub_sigma_algebra.
+red.
+simpl.
+rewrite /preimage_set_system/=.
+
+
+
+
 Section pro.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
+
 
 Fixpoint mpro (n : nat) : set (mtuple n T) -> \bar R :=
   match n with
@@ -824,32 +943,9 @@ rewrite [X in 'E__[X]](_ : _ = Y2 \+ Y1)//.
 rewrite expectationD; last 2 first.
   admit.
   admit.
-congr (_ + _); last first.
-- rewrite /Y1 /X1/=.
-  rewrite unlock /expectation.
-  transitivity (\sum_(i < n) (\int[\X_n.+1 P]_w (tnth X (lift ord0 i) (tnth w (lift ord0 i)))%:E)).
-    (* NB: almost ge0_integral_sum *)
-    admit.
-  apply: eq_bigr => /= i _.
-  pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w (lift ord0 i)).
-  have mphi : measurable_fun setT phi.
-    exact: measurable_tnth.
-  rewrite -(@integral_pushforward _ _ _ _ _ phi mphi (\X__ P)
-    (fun w => (tnth X (lift ord0 i) w)%:E)); last 2 first.
-    admit.
-    admit.
-  apply: eq_measure_integral => //= A mA _.
-  rewrite /pushforward.
-  rewrite /pro/= /phi.
-  rewrite [X in (_ \x^ _) X = _](_ :
-    [set (thead x, [tuple of behead x]) | x in (tnth (T:=T))^~ (lift ord0 i) @^-1` A]
-    = A `*` setT); last first.
-    apply/seteqP; split => [[x1 x2]/= [t At [<- _]]//|].
-(*\int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E*)
-  admit.
-  admit.
-  admit.
+congr (_ + _).
 - rewrite /Y2 /X2/= unlock /expectation.
+  (* \int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E *)
   pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w ord0).
   have mphi : measurable_fun setT phi.
     exact: measurable_tnth.
@@ -868,6 +964,22 @@ congr (_ + _); last first.
     exists [the mtuple _ _ of x1 :: x2] => //=.
     by rewrite theadE; congr pair => //; exact/val_inj.
   by rewrite product_measure2E//= mpro_setT mule1.
+- rewrite /Y1 /X1/=.
+  transitivity ((\sum_(i < n) 'E_ P [(tnth (behead X) i)] )%R); last first.
+    apply: eq_bigr => /= i _.
+    congr expectation.
+    rewrite tnth_behead.
+    congr (tnth X).
+    apply/val_inj => /=.
+    by rewrite /bump/= add1n/= inordK// ltnS.
+  rewrite -IH; last first.
+    move=> Xi XiX.
+    admit.
+  transitivity ('E_\X_n P[(fun x : mtuple n T =>
+      (\sum_(i < n) tnth (behead X) i (tnth x i))%R)]).
+    rewrite unlock /expectation.
+    admit.
+  by [].
 Admitted.
 
 Lemma expectation_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :
@@ -993,6 +1105,8 @@ pose mmtX : n.-tuple {mfun T >-> R} := map (fun X => mmt_gen_fun0 X t)
   (map (btr P)  X_).
 (*pose mmtX (i : 'I_n) : {RV P >-> R} := expR \o t \o* (btr P (tnth X_ i)).*)
 have iRV_mmtX : independent_RVs P setT (fun i => tnth mmtX i).
+  have f0 : {mfun T >-> bool}.  admit.
+  have := @independent_mmt_gen_fun ([sequence (nth f0 X_ k) ]_k) n t.
   (*exact: independent_mmt_gen_fun.*) admit.
 transitivity ('E_(\X_n P)[ tuple_prod mmtX ])%R.
   congr expectation => /=; apply: funext => x/=.
