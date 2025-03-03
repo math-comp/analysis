@@ -520,7 +520,8 @@ HB.instance Definition _ (n : nat) (T : pointedType) :=
 
 Definition mtuple (n : nat) d (T : measurableType d) : Type := n.-tuple T.
 
-HB.instance Definition _ (n : nat) d (T : measurableType d) := Pointed.on (mtuple n T).
+HB.instance Definition _ (n : nat) d (T : measurableType d) :=
+  Pointed.on (mtuple n T).
 
 Lemma countable_range_bool d (T : measurableType d) (b : bool) :
   countable (range (@cst T _ b)).
@@ -562,6 +563,14 @@ Definition Z d {T : measurableType d} m
     (J : {fset 'I_m}%fset) : set_system (m.-tuple T) :=
   [set B | exists A, B = cylinder A J].
 
+Lemma measurable_tnth d (T : measurableType d) n (i : 'I_n) :
+  measurable_fun [set: mtuple n T] (@tnth _ T ^~ i).
+Proof.
+move=> _ Y mY; rewrite setTI; apply: sub_sigma_algebra => /=.
+rewrite -bigcup_seq/=; exists i => //=; first by rewrite mem_index_enum.
+by exists Y => //; rewrite setTI.
+Qed.
+
 Section pro.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
@@ -571,14 +580,16 @@ Fixpoint mpro (n : nat) : set (mtuple n T) -> \bar R :=
   | m.+1 => fun A => (P \x^ @mpro m)%E [set (thead x, [tuple of behead x]) | x in A]
   end.
 
-Lemma mpro_measure n : @mpro n set0 = 0 /\ (forall A, (0 <= @mpro n A)%E) /\ semi_sigma_additive (@mpro n).
+Lemma mpro_measure n : @mpro n set0 = 0 /\ (forall A, (0 <= @mpro n A)%E)
+  /\ semi_sigma_additive (@mpro n).
 Proof.
-elim: n => //= [|n ih]; first by repeat split => //; exact: measure_semi_sigma_additive.
+elim: n => //= [|n ih].
+  by repeat split => //; exact: measure_semi_sigma_additive.
 pose build_Mpro := isMeasure.Build _ _ _ (@mpro n) ih.1 ih.2.1 ih.2.2.
 pose Mpro : measure _ R := HB.pack (@mpro n) build_Mpro.
 pose ppro : measure _ R := (P \x^ Mpro)%E.
 split.
-  rewrite image_set0 /product_measure2/=.
+  rewrite image_set0 /product_measure2 /=.
   under eq_fun => x do rewrite ysection0 measure0 (_ : 0 = cst 0 x)//.
   rewrite (_ : @mpro n = Mpro)//.
   by rewrite integral_cst// mul0e.
@@ -589,11 +600,28 @@ move=> F mF dF mUF.
 rewrite image_bigcup.
 apply: measure_semi_sigma_additive.
 - move=> i.
+  pose f (t : n.+1.-tuple T) := (@thead n T t, [the mtuple _ T of behead t]).
+  pose f' (x : T * mtuple n T) := [the mtuple n.+1 T of x.1 :: x.2].
+  rewrite [X in measurable X](_ : _ = f' @^-1` F i); last first.
+    apply/seteqP; split=> [x/= [t Fit] <-{x}|[x1 x2] /= Fif'].
+    rewrite /f'/=.
+    by rewrite (tuple_eta t) in Fit.
+  exists (f' (x1, x2)) => //.
+  rewrite /f' /= theadE//; congr pair.
+  exact/val_inj.
+  rewrite -[X in measurable X]setTI.
+  suff: measurable_fun setT f' by exact.
+  rewrite /= /f'.
   admit.
-- apply/trivIsetP => i j _ _ ineqj.
-  have := dF.
-  move/trivIsetP/(_ i j Logic.I Logic.I ineqj).
-  admit.
+- (* TODO: lemma? *)
+  apply/trivIsetP => i j _ _ ij.
+  move/trivIsetP : dF => /(_ i j Logic.I Logic.I ij).
+  rewrite -!subset0 => ij0 /= [_ _] [[t Fit] [<- <-]]/=.
+  move=> [u Fju [hut tut]].
+  have := ij0 t; apply; split => //.
+  suff: t = u by move=> ->.
+  rewrite (tuple_eta t) (tuple_eta u) hut.
+  by apply/val_inj => /=; rewrite tut.
 apply: bigcup_measurable => j _.
 admit.
 Admitted.
@@ -730,14 +758,6 @@ Defined.
 Definition tuple_sum n (s : n.-tuple {mfun T >-> R}) : mtuple n T -> R :=
   (fun x => \sum_(i < n) (tnth s i) (tnth x i))%R.
 
-Lemma measurable_tnth n (i : 'I_n) :
-  measurable_fun [set: mtuple n T] (@tnth _ T ^~ i).
-Proof.
-move=> _ Y mY; rewrite setTI; apply: sub_sigma_algebra => /=.
-rewrite -bigcup_seq/=; exists i => //=; first by rewrite mem_index_enum.
-by exists Y => //; rewrite setTI.
-Qed.
-
 Lemma measurable_tuple_sum n (s : n.-tuple {mfun T >-> R}) :
   measurable_fun setT (tuple_sum s).
 Proof.
@@ -775,51 +795,79 @@ Lemma expectation_sum_pro n (X : n.-tuple {RV P >-> R}) :
     (forall Xi, Xi \in X -> P.-integrable [set: T] (EFin \o Xi)) ->
   'E_(\X_n P)[tuple_sum X] = \sum_(i < n) ('E_P[(tnth X i)]).
 Proof.
-move: n X.
-elim => [X|n IH X] /= intX.
-- rewrite /tuple_sum.
+elim: n X => [X|n IH X] /= intX.
+  rewrite /tuple_sum.
   under eq_fun do rewrite big_ord0.
   by rewrite big_ord0 expectation_cst.
-pose X0 := tnth X ord0.
+pose X0 := thead X.
 have intX0 : P.-integrable [set: T] (EFin \o X0).
   by apply: intX; rewrite mem_tnth.
 have {}intX Xi : Xi \in X -> P.-integrable [set: T] (EFin \o Xi).
   by move=> XiX; exact: intX.
-rewrite big_ord_recr/=.
+rewrite big_ord_recl/=.
 rewrite /tuple_sum/=.
-under eq_fun do rewrite big_ord_recr/=.
-pose X1 := fun x : mtuple n.+1 T =>
-                (\sum_(i < n) MeasurableFun.sort (tnth X (widen_ord (leqnSn n) i)) (tnth x (widen_ord (leqnSn n) i)))%R.
+under eq_fun do rewrite big_ord_recl/=.
+pose X1 (x : mtuple n.+1 T) :=
+  (\sum_(i < n) (tnth X (lift ord0 i)) (tnth x (lift ord0 i)))%R.
 have mX1 : measurable_fun setT X1.
   apply: measurable_sum => /= i; apply: measurableT_comp => //.
   exact: measurable_tnth.
 pose build_mX1 := isMeasurableFun.Build _ _ _ _ _ mX1.
 pose Y1 : {mfun mtuple n.+1 T >-> R} := HB.pack X1 build_mX1.
-pose X2 := fun x : mtuple n.+1 T =>
-                MeasurableFun.sort (tnth X ord_max) (tnth x ord_max).
+pose X2 (x : mtuple n.+1 T) := (thead X) (thead x).
 have mX2 : measurable_fun setT X2.
 rewrite /X2 /=.
   by apply: measurableT_comp => //; exact: measurable_tnth.
 pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
 pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
-rewrite [X in 'E__[X]](_ : _ = Y1 \+ Y2)//.
+rewrite [X in 'E__[X]](_ : _ = Y2 \+ Y1)//.
 rewrite expectationD; last 2 first.
   admit.
   admit.
 congr (_ + _); last first.
-- rewrite /Y1/X1/=.
+- rewrite /Y1 /X1/=.
   rewrite unlock /expectation.
-  pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w ord_max).
+  transitivity (\sum_(i < n) (\int[\X_n.+1 P]_w (tnth X (lift ord0 i) (tnth w (lift ord0 i)))%:E)).
+    (* NB: almost ge0_integral_sum *)
+    admit.
+  apply: eq_bigr => /= i _.
+  pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w (lift ord0 i)).
   have mphi : measurable_fun setT phi.
     exact: measurable_tnth.
-  rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _ (fun w => (tnth X ord_max w)%:E)); last 2 first.
+  rewrite -(@integral_pushforward _ _ _ _ _ phi mphi (\X__ P)
+    (fun w => (tnth X (lift ord0 i) w)%:E)); last 2 first.
+    admit.
+    admit.
+  apply: eq_measure_integral => //= A mA _.
+  rewrite /pushforward.
+  rewrite /pro/= /phi.
+  rewrite [X in (_ \x^ _) X = _](_ :
+    [set (thead x, [tuple of behead x]) | x in (tnth (T:=T))^~ (lift ord0 i) @^-1` A]
+    = A `*` setT); last first.
+    apply/seteqP; split => [[x1 x2]/= [t At [<- _]]//|].
+(*\int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E*)
+  admit.
+  admit.
+  admit.
+- rewrite /Y2 /X2/= unlock /expectation.
+  pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w ord0).
+  have mphi : measurable_fun setT phi.
+    exact: measurable_tnth.
+  rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _
+      (fun w => (tnth X ord0 w)%:E)); last 2 first.
     exact/measurable_EFinP.
     admit.
-  congr (\int[_]__ _).
+  apply: eq_measure_integral => //= A mA _.
   rewrite /pushforward.
-  apply: funext => x.
-  admit. (* priority? *)
-rewrite /Y2/X2/=.
+  rewrite /pro/= /phi.
+  rewrite [X in (_ \x^ _) X = _](_ :
+    [set (thead x, [tuple of behead x]) | x in (tnth (T:=T))^~ ord0 @^-1` A]
+    = A `*` setT); last first.
+    apply/seteqP; split => [[x1 x2]/= [t At [<- _]]//|].
+    move=> [x1 x2]/= [Ax1 _].
+    exists [the mtuple _ _ of x1 :: x2] => //=.
+    by rewrite theadE; congr pair => //; exact/val_inj.
+  by rewrite product_measure2E//= mpro_setT mule1.
 Admitted.
 
 Lemma expectation_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :
