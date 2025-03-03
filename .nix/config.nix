@@ -6,7 +6,7 @@ let
     mathcomp-experimental-reals.job = true;
     mathcomp-reals-stdlib.job = true;
     mathcomp-analysis-stdlib.job = true;
-    ssprove.override.version = "main";
+    ssprove.job = false;
   };
 in
 {
@@ -42,7 +42,7 @@ in
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.20";
+  default-bundle = "8.19";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
@@ -56,19 +56,10 @@ in
   bundles."8.20".coqPackages = common-bundle // {
     coq.override.version = "8.20";
     mathcomp.override.version = "2.2.0";
+    ssprove.job = false;
   };
 
-  bundles."9.0".coqPackages = common-bundle // {
-    coq.override.version = "9.0";
-    mathcomp.override.version = "2.3.0";
-  };
-
-  bundles."master" = { rocqPackages = {
-    rocq-core.override.version = "master";
-    stdlib.override.version = "master";
-    rocq-elpi.override.version = "master";
-    rocq-elpi.override.elpi-version = "2.0.7";
-  }; coqPackages = common-bundle // {
+  bundles."master".coqPackages = common-bundle // {
     coq.override.version = "master";
     stdlib.override.version = "master";
     coq-elpi.override.version = "master";
@@ -78,7 +69,7 @@ in
     mathcomp-bigenough.override.version = "master";
     mathcomp-finmap.override.version = "master";
     ssprove.job = false;
-  }; };
+  };
 
   ## Cachix caches to use in CI
   ## Below we list some standard ones
