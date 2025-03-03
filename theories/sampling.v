@@ -472,7 +472,9 @@ Section mfunM.
 Context {d} (T : measurableType d) {R : realType}.
 
 HB.instance Definition _ (f g : {mfun T >-> R}) :=
-  @isMeasurableFun.Build d _ _ _ (f \* g)%R (measurable_funM (@measurable_funP _ _ _ _ f) ((@measurable_funP _ _ _ _ g))).
+  @isMeasurableFun.Build d _ _ _ (f \* g)%R
+    (measurable_funM (@measurable_funP _ _ _ _ f)
+                     ((@measurable_funP _ _ _ _ g))).
 
 End mfunM.
 
@@ -571,6 +573,19 @@ rewrite -bigcup_seq/=; exists i => //=; first by rewrite mem_index_enum.
 by exists Y => //; rewrite setTI.
 Qed.
 
+Section move_to_bigop_nat_lemmas.
+Context {T : Type}.
+Implicit Types (A : set T).
+
+Lemma bigcup_mkord_ord n (F : 'I_n.+1 -> set T) :
+  \bigcup_(i < n.+1) F (inord i) = \big[setU/set0]_(i < n.+1) F i.
+Proof.
+rewrite bigcup_mkord; apply: eq_bigr => /= i _; congr F.
+by apply/val_inj => /=;rewrite inordK.
+Qed.
+
+End move_to_bigop_nat_lemmas.
+
 Lemma g_sigma_preimage_comp
  [d1 : measure_display] [T1 : semiRingOfSetsType d1] n
   [T : pointedType] (f1 : 'I_n -> T -> T1) [T3 : Type] (g : T3 -> T) :
@@ -578,69 +593,65 @@ g_sigma_preimage (fun i => (f1 i \o g)) =
 preimage_set_system [set: T3] g (g_sigma_preimage f1).
 Proof.
 rewrite {1}/g_sigma_preimage.
-rewrite  -g_sigma_preimageE; congr (<<s _ >>).
+rewrite -g_sigma_preimageE; congr (<<s _ >>).
+destruct n as [|n].
+  rewrite !big_ord0 /preimage_set_system/=.
+  by apply/esym; rewrite -subset0 => t/= [].
 rewrite predeqE => C; split.
-- (*move=> [i A mA <-{C}].
-  + by exists (f1 @^-1` A) => //; left; exists A => //; rewrite setTI.
-  + by exists (f2 @^-1` A) => //; right; exists A => //; rewrite setTI.*) admit.
-- move=> [A mA <-{C}].
-(*  [A [[B mB <-{A} <-{C}]]].
-  + by left; rewrite !setTI; exists B => //; rewrite setTI.
-  + by right; rewrite !setTI; exists B => //; rewrite setTI.
-*)
-Admitted.
+- rewrite -bigcup_mkord_ord => -[i Ii [A mA <-{C}]].
+  exists (f1 (Ordinal Ii) @^-1` A).
+    rewrite -bigcup_mkord_ord; exists i => //.
+    exists A => //; rewrite setTI// (_ : Ordinal _ = inord i)//.
+    by apply/val_inj => /=;rewrite inordK.
+  rewrite !setTI// -comp_preimage// (_ : Ordinal _ = inord i)//.
+  by apply/val_inj => /=;rewrite inordK.
+- move=> [A].
+  rewrite -bigcup_mkord_ord => -[i Ii [B mB <-{A}]] <-{C}.
+  rewrite -bigcup_mkord_ord.
+  exists i => //.
+  by exists B => //; rewrite !setTI -comp_preimage.
+Qed.
 
-Section prod_measurable_fun.
+Section cons_measurable_fun.
 Context d d1 (T : measurableType d) (T1 : measurableType d1).
 
-Lemma prod_measurable_funP (n : nat) (h : T -> mtuple n T1) : measurable_fun setT h <->
+Lemma cons_measurable_funP (n : nat) (h : T -> mtuple n T1) :
+  measurable_fun setT h <->
   forall i : 'I_n,  measurable_fun setT ((@tnth _ T1 ^~ i) \o h).
 Proof.
 apply: (@iff_trans _ (g_sigma_preimage
   (fun i : 'I_n  => (@tnth _ T1 ^~ i) \o h) `<=` measurable)).
 - rewrite g_sigma_preimage_comp; split=> [mf A [C HC <-]|f12].
-    by apply: mf => //.
-  by move=> _ A mA; apply: f12; exists A => //.
+    exact: mf.
+  by move=> _ A mA; apply: f12; exists A.
 - split=> [h12|mh].
     move=> i _ A mA.
     apply: h12.
     apply: sub_sigma_algebra.
-    suff:
-        (\bigcup_(i0 < n) preimage_set_system [set: T]
-                              ((nth point (T:=T1))^~ i0 \o h) d1.-measurable)
-    ([set: T] `&` ((tnth (T:=T1))^~ i \o h) @^-1` A).
-      admit.
-    exists i => //.
-      by red.
+    destruct n as [|n].
+      by case: i => [] [].
+    rewrite -bigcup_mkord_ord.
+    exists i => //; first by red.
     exists A => //.
     rewrite !setTI.
-    rewrite /tnth.
-    congr (_ @^-1` A).
-    apply/funext => x.
-    rewrite /=.
-    apply: set_nth_default => //.
-    by rewrite size_tuple.
+    rewrite (_ : inord i = i)//.
+    by apply/val_inj => /=; rewrite inordK.
   apply: smallest_sub; first exact: sigma_algebra_measurable.
-  suff:
-  \bigcup_(i < n) preimage_set_system [set: T] 
-                            ((nth point (T:=T1))^~ i \o h) d1.-measurable
-  `<=` d.-measurable.
-   admit.
+  destruct n as [|n].
+    by rewrite big_ord0.
+  rewrite -bigcup_mkord_ord.
   apply: bigcup_sub => i Ii.
   move=> A [C mC <-].
-  have := mh (Ordinal Ii).
-  rewrite /measurable_fun.
-  admit.
-Admitted.
+  exact: mh.
+Qed.
 
-Lemma measurable_fun_prod (f : T -> T1) n (g : T -> mtuple n T1) :
+Lemma measurable_fun_cons (f : T -> T1) n (g : T -> mtuple n T1) :
   measurable_fun setT f -> measurable_fun setT g ->
   measurable_fun setT (fun x : T => [the mtuple n.+1 T1 of (f x) :: (g x)]).
 Proof.
-move=> mf mg.
-apply/prod_measurable_funP => /= i.
+move=> mf mg; apply/cons_measurable_funP => /= i.
 have [->|i0] := eqVneq i ord0.
-  by rewrite (_ : _ \o _ = f)//.
+  by rewrite (_ : _ \o _ = f).
 have @j : 'I_n.
   apply: (@Ordinal _ i.-1).
   rewrite prednK//.
@@ -648,50 +659,37 @@ have @j : 'I_n.
     by rewrite ltnS.
   by rewrite lt0n.
 rewrite (_ : _ \o _ = (fun x => tnth (g x) j))//.
-  apply: (@measurableT_comp _ _ _ _ _ _ (fun x : mtuple n T1 => tnth x j) _ g) => //.
-  by apply: measurable_tnth.
+  apply: (@measurableT_comp _ _ _ _ _ _
+    (fun x : mtuple n T1 => tnth x j) _ g) => //.
+  exact: measurable_tnth.
 apply/funext => t/=.
-rewrite (_ : i = lift ord0 j)//.
-by rewrite tnthS.
+rewrite (_ : i = lift ord0 j) ?tnthS//.
 apply/val_inj => /=.
 by rewrite /bump/= add1n prednK// lt0n.
-
 Qed.
 
-End prod_measurable_fun.
+End cons_measurable_fun.
 
+Section pro2.
+Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
+  (R : realType) (P1 : probability T1 R) (P2 : probability T2 R).
 
-Lemma measurable_cons d (T : measurableType d) n : measurable_fun [set: T * mtuple n T]
-  (fun x : T * mtuple n T => [the mtuple n.+1 T of x.1 :: x.2]).
+Definition pro2 := product_measure2 P1 P2.
+
+HB.instance Definition _ := Measure.on pro2.
+
+Lemma pro2_setT : pro2 setT = 1%E.
 Proof.
-move=> _ /= Y mY; rewrite setTI.
-red.
-simpl.
-red.
-apply: sub_sigma_algebra.
-red.
-simpl.
-rewrite /preimage_set_system/=.
+rewrite /pro2 -setXTT product_measure2E// -[RHS]mule1.
+by rewrite -{1}(@probability_setT _ _ _ P1) -(@probability_setT _ _ _ P2).
+Qed.
 
-
-Lemma measurable_cons d (T : measurableType d) n : measurable_fun [set: T * mtuple n T]
-  (fun x : T * mtuple n T => [the mtuple n.+1 T of x.1 :: x.2]).
-Proof.
-move=> _ /= Y mY; rewrite setTI.
-red.
-simpl.
-red.
-apply: sub_sigma_algebra.
-red.
-simpl.
-rewrite /preimage_set_system/=.
-
-
-
+HB.instance Definition _ :=
+  Measure_isProbability.Build _ _ _ pro2 pro2_setT.
+End pro2.
 
 Section pro.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
-
 
 Fixpoint mpro (n : nat) : set (mtuple n T) -> \bar R :=
   match n with
@@ -717,8 +715,10 @@ split.
 rewrite (_ : @mpro n = Mpro)// (_ : (P \x^ Mpro)%E = ppro)//.
 move=> F mF dF mUF.
 rewrite image_bigcup.
+move=> [:save].
 apply: measure_semi_sigma_additive.
-- move=> i.
+- abstract: save.
+  move=> i.
   pose f (t : n.+1.-tuple T) := (@thead n T t, [the mtuple _ T of behead t]).
   pose f' (x : T * mtuple n T) := [the mtuple n.+1 T of x.1 :: x.2].
   rewrite [X in measurable X](_ : _ = f' @^-1` F i); last first.
@@ -731,7 +731,7 @@ apply: measure_semi_sigma_additive.
   rewrite -[X in measurable X]setTI.
   suff: measurable_fun setT f' by exact.
   rewrite /= /f'.
-  admit.
+  exact: measurable_fun_cons.
 - (* TODO: lemma? *)
   apply/trivIsetP => i j _ _ ij.
   move/trivIsetP : dF => /(_ i j Logic.I Logic.I ij).
@@ -741,12 +741,12 @@ apply: measure_semi_sigma_additive.
   suff: t = u by move=> ->.
   rewrite (tuple_eta t) (tuple_eta u) hut.
   by apply/val_inj => /=; rewrite tut.
-apply: bigcup_measurable => j _.
-admit.
-Admitted.
+- apply: bigcup_measurable => j _.
+  exact: save.
+Qed.
 
-HB.instance Definition _ n :=
-  isMeasure.Build _ _ _ (@mpro n) (@mpro_measure n).1 (@mpro_measure n).2.1 (@mpro_measure n).2.2.
+HB.instance Definition _ n := isMeasure.Build _ _ _ (@mpro n)
+  (@mpro_measure n).1 (@mpro_measure n).2.1 (@mpro_measure n).2.2.
 
 Lemma mpro_setT n : @mpro n setT = 1%E.
 Proof.
@@ -779,6 +779,55 @@ Arguments pro {d T R} P n.
 
 Notation "\X_ n P" := (pro P n) (at level 10, n, P at next level,
   format "\X_ n  P").
+
+Section proS.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Local Open Scope ereal_scope.
+
+Lemma integral_mpro n (f : n.+1.-tuple T -> R) :
+  \int[\X_n.+1 P]_w (f w)%:E =
+  \int[pro2 P (\X_n P)]_w (f (w.1 :: w.2))%:E.
+Proof.
+set phi := fun (w : T * mtuple n T) => [the mtuple _ _ of w.1 :: w.2].
+have mphi : measurable_fun setT phi.
+  admit.
+rewrite -(@integral_pushforward _ _ _ _ R _ mphi _
+    (fun x : mtuple n.+1 T => (f x)%:E)).
+  apply: eq_measure_integral => A mA _.
+  rewrite /=.
+  rewrite /pushforward.
+  rewrite /pro2.
+  rewrite /phi/=.
+  rewrite /preimage/=.
+  congr (_ _).
+  apply/seteqP; split => [x/= [t At <-/=]|x/= Ax].
+    move: At.
+    by rewrite {1}(tuple_eta t)//.
+  exists (x.1 :: x.2) => //=.
+  destruct x as [x1 x2] => //=.
+  congr pair.
+  by apply/val_inj.
+admit.
+rewrite /=.
+Admitted.
+
+End proS.
+
+Lemma fubini2' :
+forall [d1 d2 : measure_display] [T1 : measurableType d1]
+  [T2 : measurableType d2] [R : realType]
+  [m1 : {sigma_finite_measure set T1 -> \bar R}]
+  [m2 : {sigma_finite_measure set T2 -> \bar R}] [f : T1 * T2 -> \bar R],
+(m1 \x m2)%E.-integrable [set: Datatypes_prod__canonical__measure_Measurable T1 T2]
+  f -> (\int[m2]_x fubini_G m1 f x = \int[(m1 \x^ m2)%E]_z f z)%E.
+Proof.
+move=> d1 d2 T1 T2 R m1 m2 f intf.
+rewrite fubini2//.
+apply: eq_measure_integral => //= A mA _.
+apply: product_measure_unique => // B C mB mC.
+rewrite /=.
+by rewrite product_measure2E.
+Qed.
 
 Section bernoulli.
 
@@ -978,7 +1027,29 @@ congr (_ + _).
   transitivity ('E_\X_n P[(fun x : mtuple n T =>
       (\sum_(i < n) tnth (behead X) i (tnth x i))%R)]).
     rewrite unlock /expectation.
-    admit.
+    transitivity (\int[(pro2 P (\X_n P))]_w (\sum_(i < n) tnth X (lift ord0 i) (tnth w.2 i))%:E).
+      rewrite integral_mpro//.
+      apply: eq_integral => /= -[w1 w2] _.
+      rewrite -!sumEFin.
+      apply: eq_bigr => i _ /=.
+      by rewrite tnthS//.
+    rewrite /pro2.
+    rewrite -fubini2'/=; last first.
+      admit.
+    apply: eq_integral => t _.
+    rewrite /fubini_G.
+    transitivity (\sum_(i < n)
+      (\int[P]_x (tnth X (lift ord0 i) (tnth (x, t).2 i))%:E)).
+      (* TODO: prove ge0_integral_sum for integrable *)
+      admit.
+    rewrite -sumEFin.
+    apply: eq_bigr => /= i _.
+    rewrite integral_cst//.
+    rewrite [X in _ * X]probability_setT mule1.
+    rewrite tnth_behead//=.
+    congr (tnth X _ _)%:E.
+    apply/val_inj => /=.
+    by rewrite inordK// ltnS.
   by [].
 Admitted.
 
