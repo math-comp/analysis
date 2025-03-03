@@ -1688,7 +1688,7 @@ End ereal_supZ.
 Section essential_supremum.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
-Implicit Types f : T -> R.
+Implicit Types f g : T -> R.
 Local Open Scope ereal_scope.
 
 Lemma ess_sup_bounded f : measurable_fun setT f -> ess_sup mu f < +oo ->
@@ -1798,6 +1798,76 @@ congr ereal_inf; apply/seteqP; split => [_ [s /= M <-]|_ [s /= M <-]]/=.
   by rewrite EFinM muleCA -EFinM divff ?mulr1// gt_eqF.
 - exists (r * s)%R; last by rewrite EFinM.
   by rewrite rf mulrAC divff ?mul1r// gt_eqF.
+Qed.
+
+Lemma ess_sup_ub f : measurable_fun setT f -> ess_sup mu (normr \o f) != -oo ->
+  {ae mu, forall x, `|f x|%:E <= ess_sup mu (normr \o f)}.
+Proof.
+move=> mf fNy.
+have [->|] := eqVneq (ess_sup mu (normr \o f)) +oo.
+  by apply/nearW => ?; rewrite leey.
+rewrite -ltey => fy.
+exists [set r | ess_sup mu (normr \o f) < `|f r|%:E].
+split.
+- rewrite -[X in measurable X]setTI; apply: emeasurable_fun_o_infty => //.
+  by apply/measurable_EFinP; exact/measurableT_comp.
+- exact: ess_sup_max.
+- by move=> t/= /negP; rewrite -ltNge.
+Qed.
+
+Lemma ess_supD f g :
+  measurable_fun setT f -> measurable_fun setT g ->
+  ess_sup mu (normr \o f) != -oo -> ess_sup mu (normr \o g) != -oo ->
+  ess_sup mu (normr \o (f \+ g)) <=
+  ess_sup mu (normr \o f) + ess_sup mu (normr \o g).
+Proof.
+move=> mf mg fNy gNy.
+have [->|] := eqVneq (ess_sup mu (normr \o f)) +oo.
+  by rewrite addye// leey.
+rewrite -ltey => fy.
+have [->|] := eqVneq (ess_sup mu (normr \o g)) +oo.
+  by rewrite addey// leey.
+rewrite -ltey => gy.
+pose a := ess_sup mu (normr \o f); pose b := ess_sup mu (normr \o g).
+have a_fin_num : a \is a fin_num by rewrite fin_real// fy andbT ltNye.
+have b_fin_num : b \is a fin_num by rewrite fin_real// gy andbT ltNye.
+have fa : {ae mu, forall x, `|f x|%:E <= a}.
+  exact: ess_sup_ub.
+have gb : {ae mu, forall x, `|g x|%:E <= b}.
+  exact: ess_sup_ub.
+have {fa gb}fg :
+    {ae mu, forall x, (((normr \o f) \+ (normr \o g)) x)%:E <= a + b}.
+  case: fa => A [mA A0 Af].
+  case: gb => B [mB B0 Bg].
+  exists (A `|` B); split; first exact: measurableU.
+  by rewrite measureU0.
+  move=> t/= /negP; rewrite -ltNge => abfg.
+  have [At|At] := pselect (A t); [by left|right].
+  apply: Bg => //=.
+  apply: contra_not At => gb.
+  apply: Af => /= fa.
+  have : (`|f t|%R + `|g t|%R)%E%:E <= a + b.
+    by rewrite EFinD leeD.
+  by rewrite leNgt abfg.
+apply: ereal_inf_lbound => /=.
+exists (fine a + fine b).
+  case: fg => N [mN N0 fgN].
+  apply/eqP; rewrite eq_le measure_ge0 andbT -N0.
+  rewrite le_measure ?inE//.
+    rewrite -[X in measurable X]setTI.
+    have : measurable_fun setT (normr \o (f \+ g)).
+      apply: measurableT_comp => //.
+      exact: measurable_funD.
+    exact.
+  apply: subset_trans fgN => t/=.
+  rewrite in_itv/= andbT => abfg.
+  apply/negP; rewrite -ltNge.
+  rewrite -lte_fin in abfg.
+  (* TODO: we don't have lee_absD? *)
+  rewrite (@lt_le_trans _ _ `|(f t + g t)|%:E)%R//.
+    by move: abfg; rewrite EFinD !fineK.
+  exact: ler_normD.
+by rewrite EFinD !fineK.
 Qed.
 
 End essential_supremum.
