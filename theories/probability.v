@@ -35,6 +35,8 @@ From mathcomp Require Import ftc gauss_integral.
 (*            dRV_dom X == domain of the discrete random variable X           *)
 (*           dRV_enum X == bijection between the domain and the range of X    *)
 (*              pmf X r := fine (P (X @^-1` [set r]))                         *)
+(*              cdf X r := cumulative distribution function of X              *)
+(*                         (= distribution P X (`]-oo, r]))                   *)
 (*        enum_prob X k == probability of the kth value in the range of X     *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -146,10 +148,10 @@ Proof. by move=> mf intf; rewrite integral_pushforward. Qed.
 
 End transfer_probability.
 
+Section cumulative_distribution_function.
+
 Definition cdf d (T : measurableType d) (R : realType) (P : probability T R)
   (X : {RV P >-> R}) (r : R) := distribution P X (`]-oo, r]).
-
-Section cumulative_districution_function.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -169,10 +171,10 @@ rewrite /cdf=> r s ?.
 by apply: le_measure; rewrite ?inE; [apply: measurable_itv ..| apply: subitvPr].
 Qed.
 
-Lemma cdf_cvgr1_pinfty : (cdf X r)@[r --> +oo%R] --> 1%E.
+Lemma cdf_cvgr1y : (cdf X r)@[r --> +oo] --> 1%E.
 Proof.
 pose s := ereal_sup (range (cdf X)).
-have cdf_s : (cdf X r)@[r --> +oo%R] --> s.
+have cdf_s : (cdf X r)@[r --> +oo] --> s.
 - by apply: realfun.nondecreasing_cvge cdf_nondecreasing.
 have cdf_ns : (cdf X n%:R)@[n --> \oo] --> s.
 - rewrite cvge_pinftyP in cdf_s.
@@ -195,7 +197,7 @@ move: (@cvg_unique _ (@ereal_hausdorff R)
 by rewrite /is_subset1; apply.
 Qed.
 
-Lemma cdf_cvgr0_ninfty: (cdf X r)@[r --> -oo%R] --> 0%E.
+Lemma cdf_cvgr0Ny: (cdf X r)@[r --> -oo] --> 0%E.
 Proof.
 rewrite cvgNy_compNP.
 have cdf_opp_noninc : {homo (cdf X \o -%R) : x y / x <= y >-> (x >= y)%E}.
@@ -234,7 +236,7 @@ move: (@cvg_unique _ (@ereal_hausdorff R)
 by rewrite /is_subset1; apply.
 Qed.
 
-End cumulative_districution_function.
+End cumulative_distribution_function.
 
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
