@@ -22,6 +22,7 @@ From mathcomp Require Import realfun interval_inference convex.
 (*                                                                            *)
 (*             expeR x == extended real number-valued exponential function    *)
 (*                ln x == the natural logarithm                               *)
+(*               lne x == extended real numer-valued natural logarithm        *)
 (*              s `^ r == power function, in ring_scope (assumes s >= 0)      *)
 (*              e `^ r == power function, in ereal_scope (assumes e >= 0)     *)
 (*          riemannR a == sequence n |-> 1 / (n.+1) `^ a where a has a type   *)
