@@ -8,7 +8,7 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [![Chat][chat-shield]][chat-link]
 
 [nix-action-shield]: https://github.com/math-comp/analysis/actions/workflows/nix-action-master.yml/badge.svg?branch=master
-[nix-action-link]: https://github.com/math-comp/analysis/actions/workflows/nix-action-master.yml?query=branch:%22master%22
+[nix-action-link]: https://github.com/math-comp/analysis/actions?query=branch%3Amaster+event%3Apush
 
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
 [chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
