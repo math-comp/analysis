@@ -645,6 +645,7 @@ apply: (@iff_trans _ (g_sigma_preimage
   exact: mh.
 Qed.
 
+(* TODO: rename to measurable_cons *)
 Lemma measurable_fun_cons (f : T -> T1) n (g : T -> mtuple n T1) :
   measurable_fun setT f -> measurable_fun setT g ->
   measurable_fun setT (fun x : T => [the mtuple n.+1 T1 of (f x) :: (g x)]).
@@ -785,14 +786,15 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 
 Lemma integral_mpro n (f : n.+1.-tuple T -> R) :
+  measurable_fun [set: mtuple n.+1 T] f ->
   \int[\X_n.+1 P]_w (f w)%:E =
   \int[pro2 P (\X_n P)]_w (f (w.1 :: w.2))%:E.
 Proof.
+move=> mf.
 set phi := fun (w : T * mtuple n T) => [the mtuple _ _ of w.1 :: w.2].
-have mphi : measurable_fun setT phi.
-  admit.
+have mphi : measurable_fun [set: T * mtuple _ _] phi by exact: measurable_fun_cons.
 rewrite -(@integral_pushforward _ _ _ _ R _ mphi _
-    (fun x : mtuple n.+1 T => (f x)%:E)).
+    (fun x : mtuple n.+1 T => (f x)%:E)); [|exact: (measurable_comp measurableT)|].
   apply: eq_measure_integral => A mA _.
   rewrite /=.
   rewrite /pushforward.
@@ -807,8 +809,15 @@ rewrite -(@integral_pushforward _ _ _ _ R _ mphi _
   destruct x as [x1 x2] => //=.
   congr pair.
   by apply/val_inj.
-admit.
 rewrite /=.
+set psi := fun (w : mtuple n.+1 T) => (thead w, [tuple of behead w]) : T * mtuple n T.
+have mpsi : measurable_fun [set: mtuple n.+1 T] psi.
+  apply: measurable_fun_prod=> //=.
+(*
+under [X in _ (_ X)]funext=> x /= do idtac.
+  simpl. *)
+
+admit.
 Admitted.
 
 End proS.
