@@ -787,10 +787,11 @@ Local Open Scope ereal_scope.
 
 Lemma integral_mpro n (f : n.+1.-tuple T -> R) :
   measurable_fun [set: mtuple n.+1 T] f ->
+  (\X_n.+1 P).-integrable [set: mtuple n.+1 T] (EFin \o f) ->
   \int[\X_n.+1 P]_w (f w)%:E =
   \int[pro2 P (\X_n P)]_w (f (w.1 :: w.2))%:E.
 Proof.
-move=> mf.
+move=> mf intf.
 set phi := fun (w : T * mtuple n T) => [the mtuple _ _ of w.1 :: w.2].
 have mphi : measurable_fun [set: T * mtuple _ _] phi by exact: measurable_fun_cons.
 rewrite -(@integral_pushforward _ _ _ _ R _ mphi _
@@ -1038,10 +1039,11 @@ congr (_ + _).
     rewrite unlock /expectation.
     transitivity (\int[(pro2 P (\X_n P))]_w (\sum_(i < n) tnth X (lift ord0 i) (tnth w.2 i))%:E).
       rewrite integral_mpro//.
-      apply: eq_integral => /= -[w1 w2] _.
-      rewrite -!sumEFin.
-      apply: eq_bigr => i _ /=.
-      by rewrite tnthS//.
+        apply: eq_integral => /= -[w1 w2] _.
+        rewrite -!sumEFin.
+        apply: eq_bigr => i _ /=.
+        by rewrite tnthS//.
+      admit. (* TODO: lemma to reduce this subgoal to intX *)
     rewrite /pro2.
     rewrite -fubini2'/=; last first.
       admit.
