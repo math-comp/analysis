@@ -1000,8 +1000,9 @@ pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
 pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
 rewrite [X in 'E__[X]](_ : _ = Y2 \+ Y1)//.
 rewrite expectationD; last 2 first.
-  admit.
-  admit.
+  simpl in Y2.
+  admit. (* TODO (1): reduce the integrability of thead X to intX *)
+  admit. (* TODO (2): reduce \sum (behead X) (?) to intX *)
 congr (_ + _).
 - rewrite /Y2 /X2/= unlock /expectation.
   (* \int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E *)
@@ -1011,7 +1012,7 @@ congr (_ + _).
   rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _
       (fun w => (tnth X ord0 w)%:E)); last 2 first.
     exact/measurable_EFinP.
-    admit.
+    admit. (* TODO: (1) *)
   apply: eq_measure_integral => //= A mA _.
   rewrite /pushforward.
   rewrite /pro/= /phi.
@@ -1033,7 +1034,7 @@ congr (_ + _).
     by rewrite /bump/= add1n/= inordK// ltnS.
   rewrite -IH; last first.
     move=> Xi XiX.
-    admit.
+    admit. (* TODO (3): looks like (2), for behead X *)
   transitivity ('E_\X_n P[(fun x : mtuple n T =>
       (\sum_(i < n) tnth (behead X) i (tnth x i))%R)]).
     rewrite unlock /expectation.
@@ -1043,16 +1044,16 @@ congr (_ + _).
         rewrite -!sumEFin.
         apply: eq_bigr => i _ /=.
         by rewrite tnthS//.
-      admit. (* TODO: lemma to reduce this subgoal to intX *)
+      admit. (* TODO: (2) *)
     rewrite /pro2.
     rewrite -fubini2'/=; last first.
-      admit.
+      admit. (* TODO(2'): (2) *)
     apply: eq_integral => t _.
     rewrite /fubini_G.
     transitivity (\sum_(i < n)
       (\int[P]_x (tnth X (lift ord0 i) (tnth (x, t).2 i))%:E)).
       (* TODO: prove ge0_integral_sum for integrable *)
-      admit.
+      admit. (* TODO: (2') *)
     rewrite -sumEFin.
     apply: eq_bigr => /= i _.
     rewrite integral_cst//.
