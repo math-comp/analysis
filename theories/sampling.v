@@ -1023,7 +1023,7 @@ congr (_ + _).
     move=> [x1 x2]/= [Ax1 _].
     exists [the mtuple _ _ of x1 :: x2] => //=.
     by rewrite theadE; congr pair => //; exact/val_inj.
-  by rewrite product_measure2E//= mpro_setT mule1.
+  by rewrite product_measure2E//= probability_setT mule1.
 - rewrite /Y1 /X1/=.
   transitivity ((\sum_(i < n) 'E_ P [(tnth (behead X) i)] )%R); last first.
     apply: eq_bigr => /= i _.
@@ -1182,13 +1182,16 @@ Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   let X := bernoulli_trial X_ in
   'M_X t = \prod_(i < n) 'M_(btr P (tnth X_ i)) t.
 Proof.
-move=> []bRVX iRVX /=.
-rewrite /bernoulli_trial/mmt_gen_fun.
-pose mmtX : n.-tuple {mfun T >-> R} := map (fun X => mmt_gen_fun0 X t)
+move: X_; case: n => [|n] X_ []bRVX iRVX /=; rewrite /bernoulli_trial/mmt_gen_fun/=.
+  under [X in 'E__[X]]eq_fun => x/= do rewrite /tuple_sum big_ord0 mul0r expR0.
+  by rewrite big_ord0 expectation_cst.
+pose mmtX : n.+1.-tuple {mfun T >-> R} := map (fun X => mmt_gen_fun0 X t)
   (map (btr P)  X_).
 (*pose mmtX (i : 'I_n) : {RV P >-> R} := expR \o t \o* (btr P (tnth X_ i)).*)
 have iRV_mmtX : independent_RVs P setT (fun i => tnth mmtX i).
-  have f0 : {mfun T >-> bool}.  admit.
+  have f0 : {mfun T >-> bool}.
+    move: bRVX iRVX mmtX => _ _ _.
+    exact: tnth X_ ord0.
   have := @independent_mmt_gen_fun ([sequence (nth f0 X_ k) ]_k) n t.
   (*exact: independent_mmt_gen_fun.*) admit.
 transitivity ('E_(\X_n P)[ tuple_prod mmtX ])%R.
