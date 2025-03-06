@@ -1267,19 +1267,20 @@ pose mmtX : 'I_n.+1 -> {RV P >-> R} := fun i => expR \o t \o* btr P (tnth X_ i).
 (*pose mmtX (i : 'I_n) : {RV P >-> R} := expR \o t \o* (btr P (tnth X_ i)).*)
 have iRV_mmtX : independent_RVs P setT mmtX.
   exact: independent_mmt_gen_fun.
-transitivity ('E_(\X_n P)[ tuple_prod mmtX ])%R.
-  congr expectation => /=; apply: funext => x/=.
-  rewrite /tuple_sum big_distrl/= expR_sum; apply: eq_bigr => i _.
-  by rewrite !tnth_map.
-rewrite /mmtX.
-rewrite expectation_prod_independent_RVs; last first.
-  admit.
-apply: eq_bigr => /= i _.
-congr expectation.
-rewrite /=.
-rewrite tnth_map/=.
-by rewrite tnth_map/=.
 Admitted.
+(* transitivity ('E_(\X_n P)[ tuple_prod mmtX ])%R. *)
+(*   congr expectation => /=; apply: funext => x/=. *)
+(*   rewrite /tuple_sum big_distrl/= expR_sum; apply: eq_bigr => i _. *)
+(*   by rewrite !tnth_map. *)
+(* rewrite /mmtX. *)
+(* rewrite expectation_prod_independent_RVs; last first. *)
+(*   admit. *)
+(* apply: eq_bigr => /= i _. *)
+(* congr expectation. *)
+(* rewrite /=. *)
+(* rewrite tnth_map/=. *)
+(* by rewrite tnth_map/=. *)
+(* Admitted. *)
 
 Arguments sub_countable [T U].
 Arguments card_le_finite [T U].
