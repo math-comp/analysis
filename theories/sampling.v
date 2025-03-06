@@ -993,7 +993,7 @@ Qed.
 (* TODO: define a mixin *)
 Definition is_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :=
   (forall i : 'I_n, bernoulli_RV (tnth X i)) /\
-  independent_RVs P [set: 'I_n] [eta tnth X].
+  independent_RVs P [set: 'I_n] (tnth X).
 
 Definition tuple_sum n (s : n.-tuple {mfun T >-> R}) : mtuple n T -> R :=
   (fun x => \sum_(i < n) (tnth s i) (tnth x i))%R.
@@ -1247,12 +1247,11 @@ exact: independent_RVs_btr.
 Qed.
 
 Lemma expectation_prod_independent_RVs n (X : n.-tuple {RV P >-> R}) :
-  independent_RVs P `I_n (fun i => nth (@cst T R 0%R : {mfun T >-> R})
-      (map (fun x : {RV P >-> R} => x : {mfun T >-> R}) X)
-    i) ->
-  'E_(\X_n P)[ tuple_prod X  ] = \prod_(i < n) 'E_P[ (tnth X i) ].
+  independent_RVs P [set: 'I_n] (tnth X) ->
+  'E_(\X_n P)[ tuple_prod X ] = \prod_(i < n) 'E_P[ (tnth X i) ].
 Proof.
 Admitted.
+
 
 (* wrong lemma *)
 Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
@@ -1260,27 +1259,24 @@ Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   let X := bernoulli_trial X_ in
   'M_X t = \prod_(i < n) 'M_(btr P (tnth X_ i)) t.
 Proof.
-move: X_; case: n => [|n] X_ /=[]bRVX iRVX; rewrite /bernoulli_trial/mmt_gen_fun/=.
-  under [X in 'E__[X]]eq_fun => x/= do rewrite /tuple_sum big_ord0 mul0r expR0.
-  by rewrite big_ord0 expectation_cst.
-pose mmtX : 'I_n.+1 -> {RV P >-> R} := fun i => expR \o t \o* btr P (tnth X_ i).
-(*pose mmtX (i : 'I_n) : {RV P >-> R} := expR \o t \o* (btr P (tnth X_ i)).*)
-have iRV_mmtX : independent_RVs P setT mmtX.
+move=> []bRVX iRVX/=.
+pose mmtX : 'I_n -> {RV P >-> R} := fun i => expR \o t \o* btr P (tnth X_ i).
+have /=iRV_mmtX : independent_RVs P setT mmtX.
   exact: independent_mmt_gen_fun.
-Admitted.
-(* transitivity ('E_(\X_n P)[ tuple_prod mmtX ])%R. *)
-(*   congr expectation => /=; apply: funext => x/=. *)
-(*   rewrite /tuple_sum big_distrl/= expR_sum; apply: eq_bigr => i _. *)
-(*   by rewrite !tnth_map. *)
-(* rewrite /mmtX. *)
-(* rewrite expectation_prod_independent_RVs; last first. *)
-(*   admit. *)
-(* apply: eq_bigr => /= i _. *)
-(* congr expectation. *)
-(* rewrite /=. *)
-(* rewrite tnth_map/=. *)
-(* by rewrite tnth_map/=. *)
-(* Admitted. *)
+transitivity ('E_(\X_n P)[ tuple_prod (mktuple mmtX) ])%R.
+  congr expectation => /=; apply: funext => x/=.
+  rewrite /tuple_sum big_distrl/= expR_sum; apply: eq_bigr => i _.
+  by rewrite !tnth_map /mmtX/= tnth_ord_tuple.
+rewrite /mmtX.
+rewrite expectation_prod_independent_RVs; last first.
+  rewrite [X in independent_RVs _ _ X](_ : _ = mmtX)//.
+  apply: funext => i.
+  by rewrite /mmtX/= tnth_map tnth_ord_tuple.
+apply: eq_bigr => /= i _.
+congr expectation.
+rewrite /=.
+by rewrite tnth_map/= tnth_ord_tuple.
+Qed.
 
 Arguments sub_countable [T U].
 Arguments card_le_finite [T U].
