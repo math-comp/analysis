@@ -453,8 +453,8 @@ Variable P : probability T R.
 Local Open Scope ring_scope.
 
 Lemma independent_RVs_btr
-    (I : set nat) (X : nat -> {mfun T >-> bool}) :
-  independent_RVs P I X -> independent_RVs P I (fun i : nat => btr P (X i)).
+    n (X : n.-tuple {mfun T >-> bool}) :
+  independent_RVs P [set: 'I_n] (fun i => tnth X i) -> independent_RVs P [set: 'I_n] (fun i => btr P (tnth X i)).
 Proof.
 move=> PIX; split.
 - move=> i Ii.
@@ -991,15 +991,9 @@ by rewrite expe2 -EFinD onemMr.
 Qed.
 
 (* TODO: define a mixin *)
-Program Definition is_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :=
+Definition is_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :=
   (forall i : 'I_n, bernoulli_RV (tnth X i)) /\
-  independent_RVs P `I_n (fun i => nth _ X i).
-Next Obligation.
-move=> n X i.
-have @h : {RV P >-> bool}.
-  exact: (cst false).
-exact: h.
-Defined.
+  independent_RVs P [set: 'I_n] [eta tnth X].
 
 Definition tuple_sum n (s : n.-tuple {mfun T >-> R}) : mtuple n T -> R :=
   (fun x => \sum_(i < n) (tnth s i) (tnth x i))%R.
@@ -1242,9 +1236,9 @@ Qed.
 
 End taylor_ln_le.
 
-Lemma independent_mmt_gen_fun (X : {RV P >-> bool}^nat) n t :
-  let mmtX (i : nat) : {RV P >-> R} := expR \o t \o* (btr P (X i)) in
-  independent_RVs P `I_n X -> independent_RVs P `I_n mmtX.
+Lemma independent_mmt_gen_fun n (X : n.-tuple {RV P >-> bool}) t :
+  let mmtX : 'I_n -> {RV P >-> R} := fun i => expR \o t \o* (btr P (tnth X i)) in
+  independent_RVs P [set: 'I_n] (fun i => tnth X i) -> independent_RVs P [set: 'I_n] mmtX.
 Proof.
 rewrite /= => PnX.
 apply: independent_RVs_comp => //.
@@ -1266,18 +1260,13 @@ Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   let X := bernoulli_trial X_ in
   'M_X t = \prod_(i < n) 'M_(btr P (tnth X_ i)) t.
 Proof.
-move: X_; case: n => [|n] X_ []bRVX iRVX /=; rewrite /bernoulli_trial/mmt_gen_fun/=.
+move: X_; case: n => [|n] X_ /=[]bRVX iRVX; rewrite /bernoulli_trial/mmt_gen_fun/=.
   under [X in 'E__[X]]eq_fun => x/= do rewrite /tuple_sum big_ord0 mul0r expR0.
   by rewrite big_ord0 expectation_cst.
-pose mmtX : n.+1.-tuple {mfun T >-> R} := map (fun X => mmt_gen_fun0 X t)
-  (map (btr P)  X_).
+pose mmtX : 'I_n.+1 -> {RV P >-> R} := fun i => expR \o t \o* btr P (tnth X_ i).
 (*pose mmtX (i : 'I_n) : {RV P >-> R} := expR \o t \o* (btr P (tnth X_ i)).*)
-have iRV_mmtX : independent_RVs P setT (fun i => tnth mmtX i).
-  have f0 : {mfun T >-> bool}.
-    move: bRVX iRVX mmtX => _ _ _.
-    exact: tnth X_ ord0.
-  have := @independent_mmt_gen_fun ([sequence (nth f0 X_ k) ]_k) n t.
-  (*exact: independent_mmt_gen_fun.*) admit.
+have iRV_mmtX : independent_RVs P setT mmtX.
+  exact: independent_mmt_gen_fun.
 transitivity ('E_(\X_n P)[ tuple_prod mmtX ])%R.
   congr expectation => /=; apply: funext => x/=.
   rewrite /tuple_sum big_distrl/= expR_sum; apply: eq_bigr => i _.
