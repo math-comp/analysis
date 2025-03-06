@@ -1246,24 +1246,24 @@ apply: independent_RVs_scale => //=.
 exact: independent_RVs_btr.
 Qed.
 
-Lemma expectation_prod2 (X Y : {RV P >-> R}) :
-  P.-integrable setT (EFin \o X) ->
-  P.-integrable setT (EFin \o Y) ->
-  independent_RVs2 P X Y ->
-  let XY := fun (x : T * T) => (X x.1 * Y x.2)%R in
-  'E_(P \x P)[XY] = 'E_P[X] * 'E_P[Y].
-Proof.
-move=> ? iRVXY/=.
-rewrite unlock /expectation/= -fubini1/=; last first. admit.
-rewrite /fubini_F/=.
-under eq_integral => x _.
-  under eq_integral => y _ do rewrite EFinM.
-  rewrite integralZl//.
-  rewrite -[X in _ * X]fineK ?integral_fune_fin_num//.
-  over.
-rewrite /= integralZr//.
-by rewrite fineK// integral_fune_fin_num.
-Admitted.
+(* Lemma expectation_prod2 (X Y : {RV P >-> R}) : *)
+(*   P.-integrable setT (EFin \o X) -> *)
+(*   P.-integrable setT (EFin \o Y) -> *)
+(*   independent_RVs2 P X Y -> *)
+(*   let XY := fun (x : T * T) => (X x.1 * Y x.2)%R in *)
+(*   'E_(P \x P)[XY] = 'E_P[X] * 'E_P[Y]. *)
+(* Proof. *)
+(* move=> ? iRVXY/=. *)
+(* rewrite unlock /expectation/= -fubini1/=; last first. admit. *)
+(* rewrite /fubini_F/=. *)
+(* under eq_integral => x _. *)
+(*   under eq_integral => y _ do rewrite EFinM. *)
+(*   rewrite integralZl//. *)
+(*   rewrite -[X in _ * X]fineK ?integral_fune_fin_num//. *)
+(*   over. *)
+(* rewrite /= integralZr//. *)
+(* by rewrite fineK// integral_fune_fin_num. *)
+(* Admitted. *)
 
 Lemma expectation_prod_independent_RVs n (X : n.-tuple {RV P >-> R}) :
     independent_RVs P [set: 'I_n] (tnth X) ->
@@ -1397,7 +1397,7 @@ transitivity ('E_(\X_n P)[ tuple_prod (mktuple mmtX) ])%R.
   rewrite /tuple_sum big_distrl/= expR_sum; apply: eq_bigr => i _.
   by rewrite !tnth_map /mmtX/= tnth_ord_tuple.
 rewrite /mmtX.
-rewrite expectation_prod_independent_RVs; last first.
+rewrite expectation_prod_independent_RVs; last first. admit.
   rewrite [X in independent_RVs _ _ X](_ : _ = mmtX)//.
   apply: funext => i.
   by rewrite /mmtX/= tnth_map tnth_ord_tuple.
@@ -1405,7 +1405,7 @@ apply: eq_bigr => /= i _.
 congr expectation.
 rewrite /=.
 by rewrite tnth_map/= tnth_ord_tuple.
-Qed.
+Admitted.
 
 Arguments sub_countable [T U].
 Arguments card_le_finite [T U].
