@@ -839,6 +839,74 @@ rewrite /=.
 by rewrite product_measure2E.
 Qed.
 
+Section integrable_theory.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}).
+Variables (D : set T) (mD : measurable D).
+Implicit Type f g : T -> \bar R.
+
+Let ltnP_sumbool (a b : nat) : {(a < b)%N} + {(a >= b)%N}.
+Proof. by case: ltnP => _; [left|right]. Qed.
+
+(* TODO: clean, move near integrable_sum, refactor *)
+Lemma integrable_sum_ord n (t : 'I_n -> (T -> \bar R)) :
+  (forall i, mu.-integrable D (t i)) ->
+  mu.-integrable D (fun x => \sum_(i < n) t i x).
+Proof.
+move=> intt.
+pose s0 := fun k => match ltnP_sumbool k n with
+  | left kn => t (Ordinal kn)
+  | right _ => cst 0%E
+  end.
+pose s := [tuple of map s0 (index_iota 0 n)].
+suff: mu.-integrable D (fun x => (\sum_(i <- s) i x)%R).
+  apply: eq_integrable => // i iT.
+  rewrite big_map/=.
+  rewrite big_mkord.
+  apply: eq_bigr => /= j _.
+  rewrite /s0.
+  case: ltnP_sumbool => // jn.
+  f_equal.
+  exact/val_inj.
+  have := ltn_ord j.
+  by rewrite ltnNge jn.
+apply: (@integrable_sum d T R mu D mD s) => /= h /mapP[/= k].
+rewrite mem_index_iota leq0n/= => kn ->{h}.
+have := intt (Ordinal kn).
+rewrite /s0.
+case: ltnP_sumbool => //.
+by rewrite leqNgt kn.
+Qed.
+
+End integrable_theory.
+
+(* TODO: clean, move near integrableD, refactor *)
+Section integral_sum.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (I : eqType) (f : I -> (T -> \bar R)).
+Hypothesis intf : forall n, mu.-integrable D (f n).
+
+Lemma integral_sum (s : seq I) :
+  \int[mu]_(x in D) (\sum_(k <- s) f k x) =
+  \sum_(k <- s) \int[mu]_(x in D) (f k x).
+Proof.
+elim: s => [|h t ih].
+  under eq_integral do rewrite big_nil.
+  by rewrite integral0 big_nil.
+rewrite big_cons -ih -integralD//.
+  by apply: eq_integral => x xD; rewrite big_cons.
+rewrite [X in _.-integrable _ X](_ : _ =
+    (fun x => (\sum_(h0 <- [seq f i | i <- t]) h0 x))); last first.
+  by apply/funext => x; rewrite big_map.
+apply: integrable_sum => //= g /mapP[i ti ->{g}].
+exact: intf.
+Qed.
+
+End integral_sum.
+
 Section bernoulli.
 
 Local Open Scope ereal_scope.
@@ -1002,7 +1070,13 @@ rewrite [X in 'E__[X]](_ : _ = Y2 \+ Y1)//.
 rewrite expectationD; last 2 first.
   simpl in Y2.
   admit. (* TODO (1): reduce the integrability of thead X to intX *)
-  admit. (* TODO (2): reduce \sum (behead X) (?) to intX *)
+  (* TODO (2): reduce \sum (behead X) (?) to intX *)
+  rewrite (_ : _ \o _ = fun x => (\sum_(i < n)
+      (tnth X (lift ord0 i) (tnth x (lift ord0 i)))%:E)); last first.
+    by apply/funext => t/=; rewrite sumEFin.
+  apply: integrable_sum_ord => // i.
+  (* TODO: similar to (1)? integrability of tnth *)
+  admit.
 congr (_ + _).
 - rewrite /Y2 /X2/= unlock /expectation.
   (* \int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E *)
@@ -1044,16 +1118,26 @@ congr (_ + _).
         rewrite -!sumEFin.
         apply: eq_bigr => i _ /=.
         by rewrite tnthS//.
-      admit. (* TODO: (2) *)
+      rewrite (_ : _ \o _ = (fun w => (\sum_(i < n)
+        (tnth X (lift ord0 i) (tnth w (lift ord0 i)))%:E))); last first.
+        by apply/funext => t/=; rewrite sumEFin.
+      apply: integrable_sum_ord => // i.
+      admit. (* TODO: (2) integrability of tnth *)
     rewrite /pro2.
     rewrite -fubini2'/=; last first.
-      admit. (* TODO(2'): (2) *)
+      rewrite [X in integrable _ _ X](_ : _ = (fun z => (\sum_(i < n)
+          (tnth X (lift ord0 i) (tnth z.2 i))%:E))); last first.
+        by apply/funext => t/=; rewrite sumEFin.
+      apply: integrable_sum_ord => //= i.
+      admit. (* TODO: integrability of tnth (2') *)
     apply: eq_integral => t _.
     rewrite /fubini_G.
     transitivity (\sum_(i < n)
       (\int[P]_x (tnth X (lift ord0 i) (tnth (x, t).2 i))%:E)).
-      (* TODO: prove ge0_integral_sum for integrable *)
-      admit. (* TODO: (2') *)
+      rewrite -[RHS]integral_sum//.
+        by apply: eq_integral => x _; rewrite sumEFin.
+      move=> /= i.
+      admit. (* TODO: (2') integrability tnth *)
     rewrite -sumEFin.
     apply: eq_bigr => /= i _.
     rewrite integral_cst//.
