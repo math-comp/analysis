@@ -671,6 +671,24 @@ Qed.
 
 End cons_measurable_fun.
 
+Section pro1.
+Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
+  (R : realType) (P1 : probability T1 R) (P2 : probability T2 R).
+
+Definition pro1 := product_measure1 P1 P2.
+
+HB.instance Definition _ := Measure.on pro1.
+
+Lemma pro1_setT : pro1 setT = 1%E.
+Proof.
+rewrite /pro1 -setXTT product_measure1E// -[RHS]mule1.
+by rewrite -{1}(@probability_setT _ _ _ P1) -(@probability_setT _ _ _ P2).
+Qed.
+
+HB.instance Definition _ :=
+  Measure_isProbability.Build _ _ _ pro1 pro1_setT.
+End pro1.
+
 Section pro2.
 Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
   (R : realType) (P1 : probability T1 R) (P2 : probability T2 R).
@@ -943,21 +961,21 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 Variable n : nat.
 
-Let phi := fun (w : T * mtuple n T) => [the mtuple _ _ of w.1 :: w.2].
+Definition phi := fun (w : T * mtuple n T) => [the mtuple _ _ of w.1 :: w.2].
 
-Let mphi : measurable_fun [set: T * mtuple _ _] phi.
+Lemma mphi : measurable_fun [set: T * mtuple _ _] phi.
 Proof. exact: measurable_fun_cons. Qed.
 
-Let psi := fun (w : mtuple n.+1 T) => (thead w, [the mtuple _ _ of behead w]).
+Definition psi := fun (w : mtuple n.+1 T) => (thead w, [the mtuple _ _ of behead w]).
 
-Let mpsi : measurable_fun [set: mtuple _ _] psi.
+Lemma mpsi : measurable_fun [set: mtuple _ _] psi.
 Proof.
 apply/measurable_fun_prod => /=.
   exact: measurable_tnth.
-apply: measurable_behead.
+exact: measurable_behead.
 Qed.
 
-Let phiK : cancel phi psi.
+Lemma phiK : cancel phi psi.
 Proof.
 by move=> [x1 x2]; rewrite /psi /phi/=; congr pair => /=; exact/val_inj.
 Qed.
@@ -966,14 +984,13 @@ Let psiK : cancel psi phi.
 Proof. by move=> x; rewrite /psi /phi/= [RHS]tuple_eta. Qed.
 
 Lemma integral_mpro (f : n.+1.-tuple T -> R) :
-  measurable_fun [set: mtuple n.+1 T] f ->
   (\X_n.+1 P).-integrable [set: mtuple n.+1 T] (EFin \o f) ->
   \int[\X_n.+1 P]_w (f w)%:E =
   \int[pro2 P (\X_n P)]_w (f (w.1 :: w.2))%:E.
 Proof.
-move=> mf intf.
+move=> /integrableP[mf intf].
 rewrite -(@integral_pushforward _ _ _ _ R _ mphi _
-    (fun x : mtuple n.+1 T => (f x)%:E)); [|exact: measurableT_comp|].
+    (fun x : mtuple n.+1 T => (f x)%:E)); [|by []|].
   apply: eq_measure_integral => A mA _.
   rewrite /=.
   rewrite /pushforward.
@@ -992,9 +1009,9 @@ rewrite /=.
 apply/integrable_prodP.
 rewrite /=.
 apply/integrableP; split => /=.
-  by apply: measurableT_comp => //=; exact/measurable_EFinP.
-move/integrableP : (intf) => [_ intfoo].
-apply: le_lt_trans (intfoo).
+  apply: measurableT_comp => //=.
+  exact: mphi.
+apply: le_lt_trans (intf).
 rewrite [leRHS](_ : _ = \int[\X_n.+1 P]_x
     ((((abse \o (@EFin R \o (f \o phi)))) \o psi) x)); last first.
   by apply: eq_integral => x _ /=; rewrite psiK.
@@ -1017,12 +1034,17 @@ rewrite -[RHS](@integral_pushforward _ _ _ _ R _ mpsi _
   exact/val_inj.
 - apply/measurable_EFinP => //=.
   apply: measurableT_comp => //=.
-  exact: measurableT_comp.
-- apply: le_integrable intf => //=.
-  + apply: measurableT_comp => //=.
+  apply: measurableT_comp => //=.
+    by apply/measurable_EFinP.
+  exact: mphi.
+- have : (\X_n.+1 P).-integrable [set: mtuple n.+1 T] (EFin \o f).
+    exact/integrableP.
+- apply: le_integrable => //=.
+  + apply: measurableT_comp => //=; last exact: mpsi.
     apply/measurable_EFinP => //=.
     apply: measurableT_comp => //=.
-    by apply: measurableT_comp => //=.
+    apply: measurableT_comp => //=; last exact: mphi.
+    by apply/measurable_EFinP => //=.
   + move=> x _.
     by rewrite normr_id// psiK.
 Qed.
@@ -1097,6 +1119,8 @@ Qed.
 
 End integral_sum.
 
+(* TODO: integral_fune_lt_pinfty does not look useful a lemma *)
+
 Section integrable_thead.
 Context d (T : measurableType d) (R : realType).
 Variables (P : probability T R) (n : nat) (X : n.+1.-tuple {RV P >-> R}).
@@ -1105,14 +1129,15 @@ Lemma integrable_thead : P.-integrable setT (EFin \o thead X) ->
   (\X_n.+1 P).-integrable [set: mtuple n.+1 T]
     (EFin \o (fun x => thead X (thead x))).
 Proof.
-move=> /integrableP[mX intX].
+move=> intX.
 apply/integrableP; split.
   apply: measurableT_comp => //.
   apply: measurableT_comp => //.
   exact: measurable_tnth.
 rewrite integral_mpro.
 - rewrite -fubini1'//=.
-  + apply: le_lt_trans intX.
+  + move/integrableP : (intX) => [_].
+  + apply: le_lt_trans.
     rewrite le_eqVlt; apply/orP; left; apply/eqP.
     apply: eq_integral => x _.
     rewrite /fubini_F/=.
@@ -1120,12 +1145,29 @@ rewrite integral_mpro.
   + apply/fubini1b => //=.
     * admit.
     * admit.
-- apply: measurableT_comp => //=.
-  apply: measurableT_comp => //=.
-  exact: measurable_tnth.
-Admitted.
+- apply/integrableP; split.
+  + admit.
+  + rewrite integral_mpro.
+Abort.
 
 End integrable_thead.
+
+Lemma bounded_RV_integrable d (T : measurableType d) (R : realType)
+    (P : probability T R) (X : T -> R) M :
+  measurable_fun setT X ->
+  (forall t, (0 <= X t <= M)%R) -> P.-integrable setT (EFin \o X).
+Proof.
+move=> mf XM.
+apply: (@le_integrable _ T R _ _ measurableT _ (EFin \o cst M)).
+- exact/measurable_EFinP.
+- move=> t _ /=; rewrite lee_fin/=.
+  rewrite !ger0_norm//.
+  + by have /andP[] := XM t.
+  + by rewrite (@le_trans _ _ (X t))//; have /andP[] := XM t.
+  + by have /andP[] := XM t.
+- exact: finite_measure_integrable_cst.
+Qed.
+Arguments bounded_RV_integrable {d T R P X} M.
 
 Section bernoulli.
 
@@ -1251,19 +1293,23 @@ Definition bernoulli_trial n (X : {dRV P >-> bool}^nat) : {RV (pro n P) >-> R} :
   (\sum_(i<n) (btr P (X i)))%R. (* TODO: add HB instance measurablefun sum*)
 *)
 
-Lemma expectation_sum_pro n (X : n.-tuple {RV P >-> R}) :
-    (forall Xi, Xi \in X -> P.-integrable [set: T] (EFin \o Xi)) ->
+Lemma expectation_sum_pro n (X : n.-tuple {RV P >-> R}) M :
+    (forall i t, (0 <= tnth X i t <= M)%R) ->
   'E_(\X_n P)[tuple_sum X] = \sum_(i < n) ('E_P[(tnth X i)]).
 Proof.
-elim: n X => [X|n IH X] /= intX.
+elim: n X => [X|n IH X] /= XM.
   rewrite /tuple_sum.
   under eq_fun do rewrite big_ord0.
   by rewrite big_ord0 expectation_cst.
 pose X0 := thead X.
 have intX0 : P.-integrable [set: T] (EFin \o X0).
-  by apply: intX; rewrite mem_tnth.
+  apply: (bounded_RV_integrable M) => // t.
+  exact: XM.
 have {}intX Xi : Xi \in X -> P.-integrable [set: T] (EFin \o Xi).
-  by move=> XiX; exact: intX.
+  move=> /tnthP[i XiXi].
+  apply: (bounded_RV_integrable M) => // t.
+  rewrite XiXi.
+  exact: XM.
 rewrite big_ord_recl/=.
 rewrite /tuple_sum/=.
 under eq_fun do rewrite big_ord_recl/=.
@@ -1282,16 +1328,17 @@ pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
 pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
 rewrite [X in 'E__[X]](_ : _ = Y2 \+ Y1)//.
 rewrite expectationD; last 2 first.
-  apply: integrable_thead.
-  apply: intX.
-  exact: mem_tnth.
-  (* TODO (2): reduce \sum (behead X) (?) to intX *)
+  apply: (bounded_RV_integrable M) => // t.
+  exact: XM.
   rewrite (_ : _ \o _ = fun x => (\sum_(i < n)
       (tnth X (lift ord0 i) (tnth x (lift ord0 i)))%:E)); last first.
     by apply/funext => t/=; rewrite sumEFin.
   apply: integrable_sum_ord => // i.
-  (* TODO: similar to (1)? integrability of tnth *)
-  admit.
+  have : measurable_fun setT (fun x : mtuple n.+1 T =>
+      (tnth X (lift ord0 i) (tnth x (lift ord0 i)))).
+    apply/measurableT_comp => //=.
+    exact: measurable_tnth.
+  by move/(bounded_RV_integrable M); exact.
 congr (_ + _).
 - rewrite /Y2 /X2/= unlock /expectation.
   (* \int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E *)
@@ -1301,7 +1348,10 @@ congr (_ + _).
   rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _
       (fun w => (tnth X ord0 w)%:E)); last 2 first.
     exact/measurable_EFinP.
-    admit. (* TODO: (1) *)
+    apply: (bounded_RV_integrable M).
+      by [].
+    move=> t.
+    by apply: XM.
   apply: eq_measure_integral => //= A mA _.
   rewrite /pushforward.
   rewrite /pro/= /phi.
@@ -1322,8 +1372,9 @@ congr (_ + _).
     apply/val_inj => /=.
     by rewrite /bump/= add1n/= inordK// ltnS.
   rewrite -IH; last first.
-    move=> Xi XiX.
-    by apply: intX => //; exact: mem_behead.
+    move=> i t.
+    rewrite tnth_behead.
+    exact: XM.
   transitivity ('E_\X_n P[(fun x : mtuple n T =>
       (\sum_(i < n) tnth (behead X) i (tnth x i))%R)]).
     rewrite unlock /expectation.
@@ -1337,14 +1388,24 @@ congr (_ + _).
         (tnth X (lift ord0 i) (tnth w (lift ord0 i)))%:E))); last first.
         by apply/funext => t/=; rewrite sumEFin.
       apply: integrable_sum_ord => // i.
-      admit. (* TODO: (2) integrability of tnth *)
+      have : measurable_fun setT (fun x : mtuple n.+1 T =>
+          (tnth X (lift ord0 i) (tnth x (lift ord0 i)))).
+        apply/measurableT_comp => //=.
+        exact: measurable_tnth.
+      by move/(bounded_RV_integrable M); exact.
     rewrite /pro2.
     rewrite -fubini2'/=; last first.
       rewrite [X in integrable _ _ X](_ : _ = (fun z => (\sum_(i < n)
           (tnth X (lift ord0 i) (tnth z.2 i))%:E))); last first.
         by apply/funext => t/=; rewrite sumEFin.
       apply: integrable_sum_ord => //= i.
-      admit. (* TODO: integrability of tnth (2') *)
+      have : measurable_fun setT (fun x : T * mtuple n T => (tnth X (lift ord0 i) (tnth x.2 i))).
+        apply/measurableT_comp => //=.
+        apply: (@measurableT_comp _ _ _ _ _ _ (fun x : mtuple n _ => tnth x i) _ snd) => //=.
+        exact: measurable_tnth.
+      move/(@bounded_RV_integrable _ _ R (pro1 P (mpro P (n:=n)))%E _ M) => /=.
+      apply => t.
+      by apply: XM.
     apply: eq_integral => t _.
     rewrite /fubini_G.
     transitivity (\sum_(i < n)
@@ -1362,7 +1423,7 @@ congr (_ + _).
     apply/val_inj => /=.
     by rewrite inordK// ltnS.
   by [].
-Admitted.
+Qed.
 
 Lemma expectation_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :
   is_bernoulli_trial X -> 'E_(\X_n P)[bernoulli_trial X] = (n%:R * p)%:E.
@@ -1371,14 +1432,11 @@ move=> bRV. rewrite /bernoulli_trial.
 transitivity ('E_(\X_n P)[tuple_sum (map (btr P) X)]).
   congr expectation; apply/funext => t.
   by apply: eq_bigr => /= i _; rewrite !tnth_map.
-rewrite expectation_sum_pro; last first.
-  move=> Xi.
-  move=> /mapP[/= k kn] ->.
-  have [i ki] : exists i : 'I_n, k = tnth X i.
-    by apply/tnthP.
-  apply: integrable_bernoulli.
-  rewrite ki.
-  by apply bRV.
+rewrite (@expectation_sum_pro _ _ 1%R); last first.
+  move=> i t.
+  rewrite tnth_map//.
+  rewrite /btr/= /bool_to_real/=.
+  by case: (tnth X i t) => /=; rewrite !lexx !ler01.
 transitivity (\sum_(i < n) p%:E).
   apply: eq_bigr => k _.
   rewrite tnth_map bernoulli_expectation//.
@@ -1618,7 +1676,13 @@ transitivity ('E_(\X_n P)[ tuple_prod (mktuple mmtX) ])%R.
   rewrite /tuple_sum big_distrl/= expR_sum; apply: eq_bigr => i _.
   by rewrite !tnth_map /mmtX/= tnth_ord_tuple.
 rewrite /mmtX.
-rewrite expectation_prod_independent_RVs; last first. admit.
+rewrite expectation_prod_independent_RVs; last first.
+  move=> _ /mapP[/= i _ ->].
+  apply: (bounded_RV_integrable (expR `|t|)) => //= t0.
+  rewrite expR_ge0/= ler_expR/=.
+  rewrite /bool_to_real/=.
+  case: (tnth X_ i t0) => //=; rewrite ?mul1r ?mul0r//.
+  by rewrite ler_norm.
   rewrite [X in independent_RVs _ _ X](_ : _ = mmtX)//.
   apply: funext => i.
   by rewrite /mmtX/= tnth_map tnth_ord_tuple.
@@ -1626,7 +1690,7 @@ apply: eq_bigr => /= i _.
 congr expectation.
 rewrite /=.
 by rewrite tnth_map/= tnth_ord_tuple.
-Admitted.
+Qed.
 
 Arguments sub_countable [T U].
 Arguments card_le_finite [T U].
@@ -1675,7 +1739,8 @@ Proof.
 move: p01 => /andP[p0 p1] bX/=.
 rewrite bernoulli_trial_mmt_gen_fun//.
 under eq_bigr => i _.
-  rewrite bernoulli_mmt_gen_fun; last exact: bX.1.
+  rewrite bernoulli_mmt_gen_fun; last first.
+    by apply: bX.1.
   over.
 rewrite big_const iter_mule mule1 cardT size_enum_ord -EFin_expe powR_mulrn//.
 by rewrite addr_ge0// ?subr_ge0// mulr_ge0// expR_ge0.
@@ -1687,7 +1752,7 @@ Lemma mmt_gen_fun_expectation n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   let X := bernoulli_trial X_ : {RV \X_n P >-> R} in
   'M_X t <= (expR (fine 'E_(\X_n P)[X] * (expR t - 1)))%:E.
 Proof.
-move=> t0 bX/=.
+move=> t_ge0 bX/=.
 have /andP[p0 p1] := p01.
 rewrite binomial_mmt_gen_fun// lee_fin.
 rewrite expectation_bernoulli_trial//.
@@ -1734,7 +1799,7 @@ apply: (le_trans (chernoff _ _ t0)).
 apply: (@le_trans _ _ ((expR (fine mu * (expR t - 1)))%:E *
                        (expR (- (t * ((1 + delta) * fine mu))))%:E)).
   rewrite lee_pmul2r ?lte_fin ?expR_gt0//.
-  by apply: (mmt_gen_fun_expectation _ bX); rewrite le_eqVlt t0 orbT.
+  by apply: (mmt_gen_fun_expectation _ bX); rewrite ltW.
 rewrite mulrC expRM -mulNr mulrA expRM.
 exact: (end_thm24 _ bX).
 Qed.
@@ -1793,10 +1858,10 @@ apply: (@le_trans _ _ (((expR (- delta) / ((1 - delta) `^ (1 - delta))) `^ (fine
   apply: (@le_trans _ _ (((fine 'E_(\X_n P)[normr \o expR \o t \o* X']) / (expR (t * (1 - delta) * fine mu))))%:E).
     rewrite EFinM lee_pdivlMr ?expR_gt0// muleC fineK.
     apply: (@markov _ _ _ (\X_n P) (expR \o t \o* X' : {RV (\X_n P) >-> R}) id (expR (t * (1 - delta) * fine mu))%R _ _ _ _) => //.
-    - apply: expR_gt0.
+    - by apply: expR_gt0.
     - rewrite norm_expR.
       have -> : 'E_(\X_n P)[expR \o t \o* X'] = 'M_X' t by [].
-      by rewrite (binomial_mmt_gen_fun _ bX).
+      by rewrite (binomial_mmt_gen_fun _ bX)//.
   apply: (@le_trans _ _ (((expR ((expR t - 1) * fine mu)) / (expR (t * (1 - delta) * fine mu))))%:E).
     rewrite norm_expR lee_fin ler_wpM2r ?invr_ge0 ?expR_ge0//.
     have -> : 'E_(\X_n P)[expR \o t \o* X'] = 'M_X' t by [].
@@ -1985,6 +2050,6 @@ rewrite ler_expR mulNr lerNl -lnV; last by rewrite posrE divr_gt0.
 rewrite invf_div ler_pdivlMr// mulrC.
 rewrite -ler_pdivrMr; last by rewrite exprn_gt0.
 by rewrite mulrAC.
-Admitted.
+Qed.
 
 End bernoulli.
