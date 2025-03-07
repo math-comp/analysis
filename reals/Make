@@ -10,7 +10,6 @@
 constructive_ereal.v
 reals.v
 real_interval.v
-signed.v
 interval_inference.v
 prodnormedzmodule.v
 all_reals.v
