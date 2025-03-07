@@ -885,7 +885,7 @@ Lemma preimage_set_system_funcomp
   {aT arT rT : Type} {f : aT -> arT} {g : arT -> rT} {F : set_system rT} :
   preimage_set_system setT f (preimage_set_system setT g F) =
     preimage_set_system setT (g \o f) F.
-Proof.    
+Proof.
 apply/seteqP; split=> A.
   case=> B [] C FC <- <-.
   exists C=> //.
@@ -1020,10 +1020,9 @@ rewrite -[RHS](@integral_pushforward _ _ _ _ R _ mpsi _
   exact: measurableT_comp.
 - apply: le_integrable intf => //=.
   + apply: measurableT_comp => //=.
-    * apply/measurable_EFinP => //=.
-      apply: measurableT_comp => //=.
-      by apply: measurableT_comp => //=.
-    * exact: mpsi.
+    apply/measurable_EFinP => //=.
+    apply: measurableT_comp => //=.
+    by apply: measurableT_comp => //=.
   + move=> x _.
     by rewrite normr_id// psiK.
 Qed.
@@ -1112,6 +1111,18 @@ apply/integrableP; split.
   apply: measurableT_comp => //.
   exact: measurable_tnth.
 rewrite integral_mpro.
+- rewrite -fubini1'//=.
+  + apply: le_lt_trans intX.
+    rewrite le_eqVlt; apply/orP; left; apply/eqP.
+    apply: eq_integral => x _.
+    rewrite /fubini_F/=.
+    admit.
+  + apply/fubini1b => //=.
+    * admit.
+    * admit.
+- apply: measurableT_comp => //=.
+  apply: measurableT_comp => //=.
+  exact: measurable_tnth.
 Admitted.
 
 End integrable_thead.
@@ -1274,7 +1285,6 @@ rewrite expectationD; last 2 first.
   apply: integrable_thead.
   apply: intX.
   exact: mem_tnth.
-  admit. (* TODO (1): reduce the integrability of thead X to intX *)
   (* TODO (2): reduce \sum (behead X) (?) to intX *)
   rewrite (_ : _ \o _ = fun x => (\sum_(i < n)
       (tnth X (lift ord0 i) (tnth x (lift ord0 i)))%:E)); last first.
@@ -1313,7 +1323,7 @@ congr (_ + _).
     by rewrite /bump/= add1n/= inordK// ltnS.
   rewrite -IH; last first.
     move=> Xi XiX.
-    admit. (* TODO (3): looks like (2), for behead X *)
+    by apply: intX => //; exact: mem_behead.
   transitivity ('E_\X_n P[(fun x : mtuple n T =>
       (\sum_(i < n) tnth (behead X) i (tnth x i))%R)]).
     rewrite unlock /expectation.
@@ -1342,7 +1352,7 @@ congr (_ + _).
       rewrite -[RHS]integral_sum//.
         by apply: eq_integral => x _; rewrite sumEFin.
       move=> /= i.
-      admit. (* TODO: (2') integrability tnth *)
+      exact: finite_measure_integrable_cst.
     rewrite -sumEFin.
     apply: eq_bigr => /= i _.
     rewrite integral_cst//.
