@@ -1525,24 +1525,47 @@ apply: independent_RVs_scale => //=.
 exact: independent_RVs_btr.
 Qed.
 
-(* Lemma expectation_prod2 (X Y : {RV P >-> R}) : *)
-(*   P.-integrable setT (EFin \o X) -> *)
-(*   P.-integrable setT (EFin \o Y) -> *)
-(*   independent_RVs2 P X Y -> *)
-(*   let XY := fun (x : T * T) => (X x.1 * Y x.2)%R in *)
-(*   'E_(P \x P)[XY] = 'E_P[X] * 'E_P[Y]. *)
-(* Proof. *)
-(* move=> ? iRVXY/=. *)
-(* rewrite unlock /expectation/= -fubini1/=; last first. admit. *)
-(* rewrite /fubini_F/=. *)
-(* under eq_integral => x _. *)
-(*   under eq_integral => y _ do rewrite EFinM. *)
-(*   rewrite integralZl//. *)
-(*   rewrite -[X in _ * X]fineK ?integral_fune_fin_num//. *)
-(*   over. *)
-(* rewrite /= integralZr//. *)
-(* by rewrite fineK// integral_fune_fin_num. *)
-(* Admitted. *)
+Lemma expectation_prod2 (X Y : {RV P >-> R}) :
+  P.-integrable setT (EFin \o X) ->
+  P.-integrable setT (EFin \o Y) ->
+  independent_RVs2 P X Y ->
+  let XY := fun (x : T * T) => (X x.1 * Y x.2)%R in
+  'E_(P \x P)[XY] = 'E_P[X] * 'E_P[Y].
+Proof.
+move=> intX intY/=.
+rewrite unlock /expectation/= -fubini1/=; last first.
+  apply/fubini1b.
+  - apply/measurable_EFinP => //=.
+    by apply: measurable_funM => //=; apply: measurableT_comp.
+  - under eq_integral.
+      move=> t _.
+      under eq_integral.
+        move=> x _.
+        rewrite /= normrM EFinM muleC.
+        over.
+      rewrite /= integralZl//; last first.
+        by move/integrable_abse : intX.
+      over.
+    rewrite /=.
+    rewrite ge0_integralZr//; last 2 first.
+      apply/measurable_EFinP => //.
+      by apply/measurableT_comp => //.
+      by apply: integral_ge0 => //.
+    rewrite lte_mul_pinfty//.
+      by apply: integral_ge0 => //.
+      apply: integral_fune_fin_num => //.
+      by move/integrable_abse : intY.
+      by move/integrableP : intX => [].
+move=> _ (* NB: don't need independence! *).
+rewrite /fubini_F/=.
+under eq_integral => x _.
+  under eq_integral => y _ do rewrite EFinM.
+  rewrite integralZl//.
+  rewrite -[X in _ * X]fineK ?integral_fune_fin_num//.
+  over.
+rewrite /= integralZr//.
+by rewrite fineK// integral_fune_fin_num.
+Qed.
 
 Lemma expectation_prod_independent_RVs n (X : n.-tuple {RV P >-> R}) :
     independent_RVs P [set: 'I_n] (tnth X) ->
