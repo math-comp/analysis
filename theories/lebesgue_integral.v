@@ -5851,47 +5851,48 @@ Variable m1 : {sigma_finite_measure set T1 -> \bar R}.
 Variable m2 : {sigma_finite_measure set T2 -> \bar R}.
 Variable f : T1 * T2 -> \bar R.
 
-Hypothesis imf : (m1 \x m2).-integrable setT f.
-Let mf : measurable_fun setT f. Proof. exact: measurable_int imf. Qed.
-
-(* NB: only relies on mf *)
-Lemma fubini1a :
+Lemma integrable12ltyP : measurable_fun setT f ->
   (m1 \x m2).-integrable setT f <-> \int[m1]_x \int[m2]_y `|f (x, y)| < +oo.
 Proof.
-split=> [/integrableP[_]|] ioo; [|apply/integrableP; split=> [//|]].
+move=> mf; split=> [/integrableP[_]|] ioo; [|apply/integrableP; split=> [//|]].
 - by rewrite -(fubini_tonelli1 (abse \o f))//=; exact: measurableT_comp.
 - by rewrite fubini_tonelli1//; exact: measurableT_comp.
 Qed.
 
-Lemma fubini1b :
+Lemma integrable21ltyP : measurable_fun setT f ->
   (m1 \x m2).-integrable setT f <-> \int[m2]_y \int[m1]_x `|f (x, y)| < +oo.
 Proof.
-split=> [/integrableP[_]|] ioo; [|apply/integrableP; split=> [//|]].
+move=> mf; split=> [/integrableP[_]|] ioo; [|apply/integrableP; split=> [//|]].
 - by rewrite -(fubini_tonelli2 (abse \o f))//=; exact: measurableT_comp.
 - by rewrite fubini_tonelli2//; exact: measurableT_comp.
 Qed.
 
-Let measurable_fun1 : measurable_fun setT (fun x => \int[m2]_y `|f (x, y)|).
+Let measurable_fun1 : measurable_fun setT f ->
+  measurable_fun setT (fun x => \int[m2]_y `|f (x, y)|).
 Proof.
-apply: (measurable_fun_fubini_tonelli_F (abse \o f)) => //=.
+move=> mf; apply: (measurable_fun_fubini_tonelli_F (abse \o f)) => //=.
 exact: measurableT_comp.
 Qed.
 
-Let measurable_fun2 : measurable_fun setT (fun y => \int[m1]_x `|f (x, y)|).
+Let measurable_fun2 : measurable_fun setT f ->
+  measurable_fun setT (fun y => \int[m1]_x `|f (x, y)|).
 Proof.
-apply: (measurable_fun_fubini_tonelli_G (abse \o f)) => //=.
+move=> mf; apply: (measurable_fun_fubini_tonelli_G (abse \o f)) => //=.
 exact: measurableT_comp.
 Qed.
-(* /NB: only relies on mf *)
+
+Hypothesis imf : (m1 \x m2).-integrable setT f.
+Let mf : measurable_fun setT f. Proof. exact: measurable_int imf. Qed.
 
 Lemma ae_integrable1 :
   {ae m1, forall x, m2.-integrable setT (fun y => f (x, y))}.
 Proof.
 have : m1.-integrable setT (fun x => \int[m2]_y `|f (x, y)|).
-  apply/integrableP; split => //.
-  rewrite (le_lt_trans _  (fubini1a.1 imf))// ge0_le_integral //.
-  - exact: measurableT_comp.
+  apply/integrableP; split; first exact/measurable_fun1.
+  rewrite (le_lt_trans _  ((integrable12ltyP mf).1 imf))// ge0_le_integral //.
+  - by apply: measurableT_comp => //; exact: measurable_fun1.
   - by move=> *; exact: integral_ge0.
+  - exact: measurable_fun1.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
 move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
 apply/integrableP; split; first exact/measurableT_comp.
@@ -5902,10 +5903,11 @@ Lemma ae_integrable2 :
   {ae m2, forall y, m1.-integrable setT (fun x => f (x, y))}.
 Proof.
 have : m2.-integrable setT (fun y => \int[m1]_x `|f (x, y)|).
-  apply/integrableP; split => //.
-  rewrite (le_lt_trans _ (fubini1b.1 imf))// ge0_le_integral //.
-  - exact: measurableT_comp.
+  apply/integrableP; split; first exact/measurable_fun2.
+  rewrite (le_lt_trans _ ((integrable21ltyP mf).1 imf))// ge0_le_integral //.
+  - by apply: measurableT_comp => //; exact: measurable_fun2.
   - by move=> *; exact: integral_ge0.
+  - exact: measurable_fun2.
   - by move=> *; rewrite gee0_abs//; exact: integral_ge0.
 move/integrable_ae => /(_ measurableT); apply: filterS => x /= /(_ I) im2f.
 apply/integrableP; split; first exact/measurableT_comp.
@@ -5943,9 +5945,8 @@ Qed.
 Let integrable_Fplus : m1.-integrable setT Fplus.
 Proof.
 apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1a.1 imf); apply: ge0_le_integral.
-- by [].
-- by [].
+apply: le_lt_trans ((integrable12ltyP mf).1 imf).
+apply: ge0_le_integral; [by []|by []|..].
 - by apply: measurableT_comp; last apply: measurable_Fplus.
 - by move=> x _; exact: integral_ge0.
 - exact: measurable_fun1.
@@ -5962,9 +5963,11 @@ Qed.
 Let integrable_Fminus : m1.-integrable setT Fminus.
 Proof.
 apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1a.1 imf); apply: ge0_le_integral => [//|//|||//|].
+apply: le_lt_trans ((integrable12ltyP mf).1 imf).
+apply: ge0_le_integral; [by []|by []|..].
 - exact: measurableT_comp.
 - by move=> *; exact: integral_ge0.
+- exact: measurable_fun1.
 - move=> x _; apply: le_trans.
     apply: le_abse_integral => //; apply: measurableT_comp => //.
     exact: measurable_funeneg.
@@ -6005,11 +6008,8 @@ Proof. by rewrite GE; exact: emeasurable_funB. Qed.
 
 Let integrable_Gplus : m2.-integrable setT Gplus.
 Proof.
-apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1b.1 imf). apply: ge0_le_integral.
-- by [].
-- by [].
-- by apply: measurableT_comp; last apply: measurable_Gplus.
+apply/integrableP; split=> //; apply: le_lt_trans ((integrable21ltyP mf).1 imf).
+apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
 - by move=> *; exact: integral_ge0.
 - exact: measurable_fun2.
 - move=> y _; apply: le_trans.
@@ -6024,11 +6024,8 @@ Qed.
 
 Let integrable_Gminus : m2.-integrable setT Gminus.
 Proof.
-apply/integrableP; split=> //.
-apply: le_lt_trans (fubini1b.1 imf); apply: ge0_le_integral.
-- by [].
-- by [].
-- exact: measurableT_comp.
+apply/integrableP; split=> //; apply: le_lt_trans ((integrable21ltyP mf).1 imf).
+apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
 - by move=> *; exact: integral_ge0.
 - exact: measurable_fun2.
 - move=> y _; apply: le_trans.
@@ -6060,6 +6057,10 @@ Theorem Fubini :
 Proof. by rewrite fubini1 -fubini2. Qed.
 
 End fubini.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `integrable12ltyP`")]
+Notation fubini1a := integrable12ltyP (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `integrable21ltyP`")]
+Notation fubini1b := integrable21ltyP (only parsing).
 
 Section sfinite_fubini.
 Local Open Scope ereal_scope.

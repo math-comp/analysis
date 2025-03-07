@@ -25,6 +25,10 @@
 
 ### Renamed
 
+- in `lebesgue_integral.v`:
+  + `fubini1a` -> `integrable12ltyP`
+  + `fubini1b` -> `integrable21ltyP`
+
 ### Generalized
 
 - in `constructive_ereal.v`:
