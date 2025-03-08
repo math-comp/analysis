@@ -1398,46 +1398,48 @@ congr (_ + _).
   by [].
 Qed.
 
-Lemma expectation_prod2 (X Y : {mfun T >-> R}) :
-  P.-integrable setT (EFin \o X) ->
-  P.-integrable setT (EFin \o Y) ->
-(*  independent_RVs2 P X Y -> NB: independence not used *)
-  let XY := fun (x : T * T) => (X x.1 * Y x.2)%R in
-  'E_(P \x P)[XY] = 'E_P[X] * 'E_P[Y].
-Proof.
-move=> intX intY/=.
-rewrite unlock /expectation/= -fubini1/=; last first.
-  apply/fubini1b.
-  - apply/measurable_EFinP => //=.
-    by apply: measurable_funM => //=; apply: measurableT_comp.
-  - under eq_integral.
-      move=> t _.
-      under eq_integral.
-        move=> x _.
-        rewrite /= normrM EFinM muleC.
-        over.
-      rewrite /= integralZl//; last first.
-        by move/integrable_abse : intX.
-      over.
-    rewrite /=.
-    rewrite ge0_integralZr//; last 2 first.
-      apply/measurable_EFinP => //.
-      by apply/measurableT_comp => //.
-      by apply: integral_ge0 => //.
-    rewrite lte_mul_pinfty//.
-      by apply: integral_ge0 => //.
-      apply: integral_fune_fin_num => //.
-      by move/integrable_abse : intY.
-      by move/integrableP : intX => [].
-rewrite /fubini_F/=.
-under eq_integral => x _.
-  under eq_integral => y _ do rewrite EFinM.
-  rewrite integralZl//.
-  rewrite -[X in _ * X]fineK ?integral_fune_fin_num//.
-  over.
-rewrite /= integralZr//.
-by rewrite fineK// integral_fune_fin_num.
-Qed.
+(* Lemma expectation_prod2 d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) *)
+(*   (P1 : probability T1 R) (P2 : probability T2 R) *)
+(*   (X : {mfun T1 >-> R}) (Y : {mfun T2 >-> R}) : *)
+(*   P1.-integrable setT (EFin \o X) -> *)
+(*   P2.-integrable setT (EFin \o Y) -> *)
+(* (*  independent_RVs2 P X Y -> NB: independence not used *) *)
+(*   let XY := fun (x : T1 * T2) => (X x.1 * Y x.2)%R in *)
+(*   'E_(P1 \x P2)[XY] = 'E_P1[X] * 'E_P2[Y]. *)
+(* Proof. *)
+(* move=> intX intY/=. *)
+(* rewrite unlock /expectation/= -fubini1/=; last first. *)
+(*   apply/fubini1b. *)
+(*   - apply/measurable_EFinP => //=. *)
+(*     by apply: measurable_funM => //=; apply: measurableT_comp. *)
+(*   - under eq_integral. *)
+(*       move=> t _. *)
+(*       under eq_integral. *)
+(*         move=> x _. *)
+(*         rewrite /= normrM EFinM muleC. *)
+(*         over. *)
+(*       rewrite /= integralZl//; last first. *)
+(*         by move/integrable_abse : intX. *)
+(*       over. *)
+(*     rewrite /=. *)
+(*     rewrite ge0_integralZr//; last 2 first. *)
+(*       apply/measurable_EFinP => //. *)
+(*       by apply/measurableT_comp => //. *)
+(*       by apply: integral_ge0 => //. *)
+(*     rewrite lte_mul_pinfty//. *)
+(*       by apply: integral_ge0 => //. *)
+(*       apply: integral_fune_fin_num => //. *)
+(*       by move/integrable_abse : intY. *)
+(*       by move/integrableP : intX => []. *)
+(* rewrite /fubini_F/=. *)
+(* under eq_integral => x _. *)
+(*   under eq_integral => y _ do rewrite EFinM. *)
+(*   rewrite integralZl//. *)
+(*   rewrite -[X in _ * X]fineK ?integral_fune_fin_num//. *)
+(*   over. *)
+(* rewrite /= integralZr//. *)
+(* by rewrite fineK// integral_fune_fin_num. *)
+(* Qed. *)
 
 End properties_of_expectation.
 
@@ -1490,8 +1492,8 @@ rewrite /X2 /=.
 pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
 pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
 rewrite [X in 'E__[X]](_ : _ = (Y2 \* Y1)%R)//.
-have := @expectation_prod2 _ _ _ _ Y2 Y1.
-(* rewrite expectationD; last 2 first. *)
+simpl in Y1, Y2.
+rewrite expectation_prod; last 3 first. admit. admit. admit.
 (*   simpl in Y2. *)
 (*   admit. (* TODO (1): reduce the integrability of thead X to intX *) *)
 (*   (* TODO (2): reduce \sum (behead X) (?) to intX *) *)
@@ -1501,76 +1503,77 @@ have := @expectation_prod2 _ _ _ _ Y2 Y1.
 (*   apply: integrable_sum_ord => // i. *)
 (*   (* TODO: similar to (1)? integrability of tnth *) *)
 (*   admit. *)
-(* congr (_ + _). *)
-(* - rewrite /Y2 /X2/= unlock /expectation. *)
-(*   (* \int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E *) *)
-(*   pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w ord0). *)
-(*   have mphi : measurable_fun setT phi. *)
-(*     exact: measurable_tnth. *)
-(*   rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _ *)
-(*       (fun w => (tnth X ord0 w)%:E)); last 2 first. *)
-(*     exact/measurable_EFinP. *)
-(*     admit. (* TODO: (1) *) *)
-(*   apply: eq_measure_integral => //= A mA _. *)
-(*   rewrite /pushforward. *)
-(*   rewrite /pro/= /phi. *)
-(*   rewrite [X in (_ \x^ _) X = _](_ : *)
-(*     [set (thead x, [tuple of behead x]) | x in (tnth (T:=T))^~ ord0 @^-1` A] *)
-(*     = A `*` setT); last first. *)
-(*     apply/seteqP; split => [[x1 x2]/= [t At [<- _]]//|]. *)
-(*     move=> [x1 x2]/= [Ax1 _]. *)
-(*     exists [the mtuple _ _ of x1 :: x2] => //=. *)
-(*     by rewrite theadE; congr pair => //; exact/val_inj. *)
-(*   by rewrite product_measure2E//= probability_setT mule1. *)
-(* - rewrite /Y1 /X1/=. *)
-(*   transitivity ((\sum_(i < n) 'E_ P [(tnth (behead X) i)] )%R); last first. *)
-(*     apply: eq_bigr => /= i _. *)
-(*     congr expectation. *)
-(*     rewrite tnth_behead. *)
-(*     congr (tnth X). *)
-(*     apply/val_inj => /=. *)
-(*     by rewrite /bump/= add1n/= inordK// ltnS. *)
-(*   rewrite -IH; last first. *)
-(*     move=> Xi XiX. *)
-(*     admit. (* TODO (3): looks like (2), for behead X *) *)
-(*   transitivity ('E_\X_n P[(fun x : mtuple n T => *)
-(*       (\sum_(i < n) tnth (behead X) i (tnth x i))%R)]). *)
-(*     rewrite unlock /expectation. *)
-(*     transitivity (\int[(pro2 P (\X_n P))]_w (\sum_(i < n) tnth X (lift ord0 i) (tnth w.2 i))%:E). *)
-(*       rewrite integral_mpro//. *)
-(*         apply: eq_integral => /= -[w1 w2] _. *)
-(*         rewrite -!sumEFin. *)
-(*         apply: eq_bigr => i _ /=. *)
-(*         by rewrite tnthS//. *)
-(*       rewrite (_ : _ \o _ = (fun w => (\sum_(i < n) *)
-(*         (tnth X (lift ord0 i) (tnth w (lift ord0 i)))%:E))); last first. *)
-(*         by apply/funext => t/=; rewrite sumEFin. *)
-(*       apply: integrable_sum_ord => // i. *)
-(*       admit. (* TODO: (2) integrability of tnth *) *)
-(*     rewrite /pro2. *)
-(*     rewrite -fubini2'/=; last first. *)
-(*       rewrite [X in integrable _ _ X](_ : _ = (fun z => (\sum_(i < n) *)
-(*           (tnth X (lift ord0 i) (tnth z.2 i))%:E))); last first. *)
-(*         by apply/funext => t/=; rewrite sumEFin. *)
-(*       apply: integrable_sum_ord => //= i. *)
-(*       admit. (* TODO: integrability of tnth (2') *) *)
-(*     apply: eq_integral => t _. *)
-(*     rewrite /fubini_G. *)
-(*     transitivity (\sum_(i < n) *)
-(*       (\int[P]_x (tnth X (lift ord0 i) (tnth (x, t).2 i))%:E)). *)
-(*       rewrite -[RHS]integral_sum//. *)
-(*         by apply: eq_integral => x _; rewrite sumEFin. *)
-(*       move=> /= i. *)
-(*       admit. (* TODO: (2') integrability tnth *) *)
-(*     rewrite -sumEFin. *)
-(*     apply: eq_bigr => /= i _. *)
-(*     rewrite integral_cst//. *)
-(*     rewrite [X in _ * X]probability_setT mule1. *)
-(*     rewrite tnth_behead//=. *)
-(*     congr (tnth X _ _)%:E. *)
-(*     apply/val_inj => /=. *)
-(*     by rewrite inordK// ltnS. *)
-(*   by []. *)
+congr (_ * _).
+- rewrite /Y2 /X2/= unlock /expectation.
+  (* \int[\X_n.+1 P]_w (thead X (thead w))%:E = \int[P]_w (tnth X ord0 w)%:E *)
+  pose phi : mtuple n.+1 T -> T := (fun w => @tnth n.+1 T w ord0).
+  have mphi : measurable_fun setT phi.
+    exact: measurable_tnth.
+  rewrite -(@integral_pushforward _ _ _ _ _ phi mphi _
+      (fun w => (tnth X ord0 w)%:E)); last 2 first.
+    exact/measurable_EFinP.
+    admit. (* TODO: (1) *)
+  apply: eq_measure_integral => //= A mA _.
+  rewrite /pushforward.
+  rewrite /pro/= /phi.
+  rewrite [X in (_ \x^ _) X = _](_ :
+    [set (thead x, [tuple of behead x]) | x in (tnth (T:=T))^~ ord0 @^-1` A]
+    = A `*` setT); last first.
+    apply/seteqP; split => [[x1 x2]/= [t At [<- _]]//|].
+    move=> [x1 x2]/= [Ax1 _].
+    exists [the mtuple _ _ of x1 :: x2] => //=.
+    by rewrite theadE; congr pair => //; exact/val_inj.
+  by rewrite product_measure2E//= probability_setT mule1.
+- rewrite /Y1 /X1/=.
+  transitivity ((\prod_(i < n) 'E_ P [(tnth (behead X) i)] )); last first.
+    apply: eq_bigr => /= i _.
+    congr expectation.
+    rewrite tnth_behead.
+    congr (tnth X).
+    apply/val_inj => /=.
+    by rewrite /bump/= add1n/= inordK// ltnS.
+  rewrite -IH; last 2 first.
+  - admit.
+  - move=> Xi XiX.
+    admit. (* TODO (3): looks like (2), for behead X *)
+  transitivity ('E_\X_n P[(fun x : mtuple n T =>
+      (\prod_(i < n) tnth (behead X) i (tnth x i))%R)]).
+    rewrite unlock /expectation.
+    transitivity (\int[(pro2 P (\X_n P))]_w (\prod_(i < n) tnth X (lift ord0 i) (tnth w.2 i))%:E).
+      rewrite integral_mpro//.
+        apply: eq_integral => /= -[w1 w2] _.
+        congr EFin.
+        apply: eq_bigr => i _ /=.
+        by rewrite tnthS//.
+      rewrite (_ : _ \o _ = (fun w => (\prod_(i < n)
+        (tnth X (lift ord0 i) (tnth w (lift ord0 i)))%:E))); last first.
+        by apply/funext => t/=; rewrite prodEFin.
+      (* apply: integrable_sum_ord => // i. *)
+      admit. (* TODO: (2) integrability of tnth *)
+    rewrite /pro2.
+  (*   rewrite -fubini2'/=; last first. *)
+  (*     rewrite [X in integrable _ _ X](_ : _ = (fun z => (\sum_(i < n) *)
+  (*         (tnth X (lift ord0 i) (tnth z.2 i))%:E))); last first. *)
+  (*       by apply/funext => t/=; rewrite prodEFin. *)
+  (*     apply: integrable_sum_ord => //= i. *)
+  (*     admit. (* TODO: integrability of tnth (2') *) *)
+  (*   apply: eq_integral => t _. *)
+  (*   rewrite /fubini_G. *)
+  (*   transitivity (\sum_(i < n) *)
+  (*     (\int[P]_x (tnth X (lift ord0 i) (tnth (x, t).2 i))%:E)). *)
+  (*     rewrite -[RHS]integral_sum//. *)
+  (*       by apply: eq_integral => x _; rewrite sumEFin. *)
+  (*     move=> /= i. *)
+  (*     admit. (* TODO: (2') integrability tnth *) *)
+  (*   rewrite -sumEFin. *)
+  (*   apply: eq_bigr => /= i _. *)
+  (*   rewrite integral_cst//. *)
+  (*   rewrite [X in _ * X]probability_setT mule1. *)
+  (*   rewrite tnth_behead//=. *)
+  (*   congr (tnth X _ _)%:E. *)
+  (*   apply/val_inj => /=. *)
+  (*   by rewrite inordK// ltnS. *)
+  (* by []. *)
 Admitted.
 
 End properties_of_independence.
