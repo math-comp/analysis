@@ -1551,29 +1551,29 @@ congr (_ * _).
       (* apply: integrable_sum_ord => // i. *)
       admit. (* TODO: (2) integrability of tnth *)
     rewrite /pro2.
-  (*   rewrite -fubini2'/=; last first. *)
-  (*     rewrite [X in integrable _ _ X](_ : _ = (fun z => (\sum_(i < n) *)
-  (*         (tnth X (lift ord0 i) (tnth z.2 i))%:E))); last first. *)
-  (*       by apply/funext => t/=; rewrite prodEFin. *)
-  (*     apply: integrable_sum_ord => //= i. *)
-  (*     admit. (* TODO: integrability of tnth (2') *) *)
-  (*   apply: eq_integral => t _. *)
-  (*   rewrite /fubini_G. *)
-  (*   transitivity (\sum_(i < n) *)
-  (*     (\int[P]_x (tnth X (lift ord0 i) (tnth (x, t).2 i))%:E)). *)
-  (*     rewrite -[RHS]integral_sum//. *)
-  (*       by apply: eq_integral => x _; rewrite sumEFin. *)
-  (*     move=> /= i. *)
-  (*     admit. (* TODO: (2') integrability tnth *) *)
-  (*   rewrite -sumEFin. *)
-  (*   apply: eq_bigr => /= i _. *)
-  (*   rewrite integral_cst//. *)
-  (*   rewrite [X in _ * X]probability_setT mule1. *)
-  (*   rewrite tnth_behead//=. *)
-  (*   congr (tnth X _ _)%:E. *)
-  (*   apply/val_inj => /=. *)
-  (*   by rewrite inordK// ltnS. *)
-  (* by []. *)
+    rewrite -fubini2'/=; last first.
+      rewrite [X in integrable _ _ X](_ : _ = (fun z => (\prod_(i < n)
+          (tnth X (lift ord0 i) (tnth z.2 i))%:E))); last first.
+        by apply/funext => t/=; rewrite prodEFin.
+      (* apply: integrable_prod_ord => //= i. *)
+      admit. (* TODO: integrability of tnth (2') *)
+    apply: eq_integral => t _.
+    rewrite /fubini_G.
+    transitivity (\prod_(i < n)
+      (\int[P]_x (tnth X (lift ord0 i) (tnth (x, t).2 i))%:E)).
+      (* rewrite -[RHS]integral_sum//. *)
+        (* by apply: eq_integral => x _; rewrite prodEFin. *)
+      (* move=> /= i. *)
+      admit. (* TODO: (2') integrability tnth *)
+    rewrite -prodEFin.
+    apply: eq_bigr => /= i _.
+    rewrite integral_cst//.
+    rewrite [X in _ * X]probability_setT mule1.
+    rewrite tnth_behead//=.
+    congr (tnth X _ _)%:E.
+    apply/val_inj => /=.
+    by rewrite inordK// ltnS.
+  by [].
 Admitted.
 
 End properties_of_independence.
