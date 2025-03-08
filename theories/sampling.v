@@ -586,9 +586,8 @@ Qed.
 
 End move_to_bigop_nat_lemmas.
 
-Lemma g_sigma_preimage_comp
- [d1 : measure_display] [T1 : semiRingOfSetsType d1] n
-  [T : pointedType] (f1 : 'I_n -> T -> T1) [T3 : Type] (g : T3 -> T) :
+Lemma g_sigma_preimage_comp d1 {T1 : semiRingOfSetsType d1} n
+  {T : pointedType} (f1 : 'I_n -> T -> T1) [T3 : Type] (g : T3 -> T) :
 g_sigma_preimage (fun i => (f1 i \o g)) =
 preimage_set_system [set: T3] g (g_sigma_preimage f1).
 Proof.
@@ -1169,93 +1168,71 @@ apply: (@le_integrable _ T R _ _ measurableT _ (EFin \o cst M)).
 Qed.
 Arguments bounded_RV_integrable {d T R P X} M.
 
-Section bernoulli.
+(* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65
+taylor_ln_le :
+  forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.  *)
+Section taylor_ln_le.
+Context {R : realType}.
+Local Open Scope ring_scope.
 
-Local Open Scope ereal_scope.
+Axiom expR2_lt8 : expR 2 <= 8 :> R.
+
+Lemma taylor_ln_le (x : R) : x \in `]0, 1[ -> (1 + x) * ln (1 + x) >= x + x^+2 / 3.
+Proof.
+move=> x01; rewrite -subr_ge0.
+pose f (x : R) := (1 + x) * ln (1 + x) - (x + x ^+ 2 / 3).
+have f0 : f 0 = 0 by rewrite /f expr0n /= mul0r !addr0 ln1 mulr0 subr0.
+rewrite [leRHS](_ : _ = f x) // -f0.
+evar (df0 : R -> R); evar (df : R -> R).
+have idf (y : R) : 0 < 1 + y -> is_derive y (1:R) f (df y).
+  move=> y1.
+  rewrite (_ : df y = df0 y).
+    apply: is_deriveB; last exact: is_deriveD.
+    apply: is_deriveM=> //.
+    apply: is_derive1_comp=> //.
+    exact: is_derive1_ln.
+  rewrite /df0.
+  rewrite deriveD// derive_cst derive_id.
+  rewrite /GRing.scale /= !(mulr0,add0r,mulr1).
+  rewrite divff ?lt0r_neq0// opprD addrAC addrA subrr add0r.
+  instantiate (df := fun y : R => - (3^-1 * (y + y)) + ln (1 + y)).
+  reflexivity.
+clear df0.
+have y1cc y : y \in `[0, 1] -> 0 < 1 + y.
+  rewrite in_itv /= => /andP [] y0 ?.
+  by have y1: 0 < 1 + y by apply: (le_lt_trans y0); rewrite ltrDr.
+have y1oo y : y \in `]0, 1[ -> 0 < 1 + y by move/subset_itv_oo_cc/y1cc.
+have dfge0 y : y \in `]0, 1[ -> 0 <= df y.
+  move=> y01.
+  have:= y01.
+  rewrite /df in_itv /= => /andP [] y0 y1.
+  rewrite -lerBlDl opprK add0r -mulr2n -(mulr_natl _ 2) mulrA.
+  rewrite [in leLHS](_ : y = 1 + y - 1); last by rewrite addrAC subrr add0r.
+  pose iy:= Itv01 (ltW y0) (ltW y1).
+  have y1E: 1 + y = @convex.conv _ R^o iy 1 2.
+    rewrite convRE /= /onem mulr1 (mulr_natr _ 2) mulr2n.
+    by rewrite addrACA (addrC (- y)) subrr addr0.
+  rewrite y1E; apply: (le_trans _ (concave_ln _ _ _))=> //.
+  rewrite -y1E addrAC subrr add0r convRE ln1 mulr0 add0r /=.
+  rewrite mulrC ler_pM// ?(@ltW _ _ 0)// mulrC.
+  rewrite ler_pdivrMr//.
+  rewrite -[leLHS]expRK -[leRHS]expRK ler_ln ?posrE ?expR_gt0//.
+  rewrite expRM/= powR_mulrn ?expR_ge0// lnK ?posrE//.
+  rewrite !exprS expr0 mulr1 -!natrM mulnE /=.
+  by rewrite expR2_lt8.
+apply: (@ger0_derive1_homo R f 0 1 true false).
+- by move=> y /y1oo /idf /@ex_derive.
+- by move=> y /[dup] /y1oo /idf /@derive_val ->; exact: dfge0.
+- by apply: derivable_within_continuous=> y /y1cc /idf /@ex_derive.
+- by rewrite bound_itvE.
+- exact: subset_itv_oo_cc.
+- by have:= x01; rewrite in_itv=> /andP /= [] /ltW.
+Qed.
+
+End taylor_ln_le.
+
+Section tuple_sum.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
-Variable p : R.
-Hypothesis p01 : (0 <= p <= 1)%R.
-
-Definition bernoulli_RV (X : {RV P >-> bool}) :=
-  distribution P X = bernoulli p.
-
-Lemma bernoulli_RV1 (X : {RV P >-> bool}) : bernoulli_RV X ->
-  P [set i | X i == 1%R] = p%:E.
-Proof.
-move=> /(congr1 (fun f => f [set 1%:R])).
-rewrite bernoulliE//.
-rewrite /mscale/=.
-rewrite diracE/= mem_set// mule1// diracE/= memNset//.
-rewrite mule0 adde0.
-rewrite /distribution /= => <-.
-congr (P _).
-rewrite /preimage/=.
-by apply/seteqP; split => [x /eqP H//|x /eqP].
-Qed.
-
-Lemma bernoulli_RV2 (X : {RV P >-> bool}) : bernoulli_RV X ->
-  P [set i | X i == 0%R] = (`1-p)%:E.
-Proof.
-move=> /(congr1 (fun f => f [set 0%:R])).
-rewrite bernoulliE//.
-rewrite /mscale/=.
-rewrite diracE/= memNset//.
-rewrite mule0// diracE/= mem_set// add0e mule1.
-rewrite /distribution /= => <-.
-congr (P _).
-rewrite /preimage/=.
-by apply/seteqP; split => [x /eqP H//|x /eqP].
-Qed.
-
-Lemma bernoulli_expectation (X : {RV P >-> bool}) :
-  bernoulli_RV X -> 'E_P[btr P X] = p%:E.
-Proof.
-move=> bX.
-rewrite unlock /btr.
-rewrite -(@ge0_integral_distribution _ _ _ _ _ _ X (EFin \o [eta GRing.natmul 1]))//; last first.
-  by move=> y //=.
-rewrite /bernoulli/=.
-rewrite (@eq_measure_integral _ _ _ _ (bernoulli p)); last first.
-  by move=> A mA _/=; rewrite (_ : distribution P X = bernoulli p).
-rewrite integral_bernoulli//=.
-by rewrite -!EFinM -EFinD mulr0 addr0 mulr1.
-Qed.
-
-Lemma integrable_bernoulli (X : {RV P >-> bool}) :
-  bernoulli_RV X -> P.-integrable [set: T] (EFin \o btr P X).
-Proof.
-move=> bX.
-apply/integrableP; split.
-  by apply: measurableT_comp => //; exact: measurable_bool_to_real.
-have -> : \int[P]_x `|(EFin \o btr P X) x| = 'E_P[btr P X].
-  rewrite unlock /expectation.
-  apply: eq_integral => x _.
-  by rewrite gee0_abs //= lee_fin.
-by rewrite bernoulli_expectation// ltry.
-Qed.
-
-Lemma bool_RV_sqr (X : {dRV P >-> bool}) :
-  ((btr P X ^+ 2) = btr P X :> (T -> R))%R.
-Proof.
-apply: funext => x /=.
-rewrite /GRing.exp /btr/bool_to_real /GRing.mul/=.
-by case: (X x) => /=; rewrite ?mulr1 ?mulr0.
-Qed.
-
-Lemma bernoulli_variance (X : {dRV P >-> bool}) :
-  bernoulli_RV X -> 'V_P[btr P X] = (p * (`1-p))%:E.
-Proof.
-move=> b.
-rewrite (@varianceE _ _ _ _ (btr P X));
-  [|rewrite ?[X in _ \o X]bool_RV_sqr; exact: integrable_bernoulli..].
-rewrite [X in 'E_P[X]]bool_RV_sqr !bernoulli_expectation//.
-by rewrite expe2 -EFinD onemMr.
-Qed.
-
-(* TODO: define a mixin *)
-Definition is_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :=
-  (forall i : 'I_n, bernoulli_RV (tnth X i)) /\
-  independent_RVs P [set: 'I_n] (tnth X).
 
 Definition tuple_sum n (s : n.-tuple {mfun T >-> R}) : mtuple n T -> R :=
   (fun x => \sum_(i < n) (tnth s i) (tnth x i))%R.
@@ -1283,15 +1260,11 @@ Qed.
 HB.instance Definition _ n (s : n.-tuple {mfun T >-> R}) :=
   isMeasurableFun.Build _ _ _ _ (tuple_prod s) (measurable_tuple_prod s).
 
-Definition bernoulli_trial n (X : n.-tuple {RV P >-> bool}) : {RV (\X_n P) >-> R} :=
-  tuple_sum [the n.-tuple _ of (map (btr P)
-   (map (fun t : {RV P >-> bool} => t : {mfun T >-> bool}) X))].
+End tuple_sum.
 
-(*
-was wrong
-Definition bernoulli_trial n (X : {dRV P >-> bool}^nat) : {RV (pro n P) >-> R} :=
-  (\sum_(i<n) (btr P (X i)))%R. (* TODO: add HB instance measurablefun sum*)
-*)
+Section properties_of_expectation.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Local Open Scope ereal_scope.
 
 Lemma expectation_sum_pro n (X : n.-tuple {RV P >-> R}) M :
     (forall i t, (0 <= tnth X i t <= M)%R) ->
@@ -1425,110 +1398,10 @@ congr (_ + _).
   by [].
 Qed.
 
-Lemma expectation_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :
-  is_bernoulli_trial X -> 'E_(\X_n P)[bernoulli_trial X] = (n%:R * p)%:E.
-Proof.
-move=> bRV. rewrite /bernoulli_trial.
-transitivity ('E_(\X_n P)[tuple_sum (map (btr P) X)]).
-  congr expectation; apply/funext => t.
-  by apply: eq_bigr => /= i _; rewrite !tnth_map.
-rewrite (@expectation_sum_pro _ _ 1%R); last first.
-  move=> i t.
-  rewrite tnth_map//.
-  rewrite /btr/= /bool_to_real/=.
-  by case: (tnth X i t) => /=; rewrite !lexx !ler01.
-transitivity (\sum_(i < n) p%:E).
-  apply: eq_bigr => k _.
-  rewrite tnth_map bernoulli_expectation//.
-  by apply bRV.
-by rewrite sumEFin big_const_ord iter_addr addr0 mulrC mulr_natr.
-Qed.
-
-Lemma bernoulli_trial_ge0 n (X : n.-tuple {RV P >-> bool}) : is_bernoulli_trial X ->
-  (forall t, 0 <= bernoulli_trial X t)%R.
-Proof.
-move=> [bRV Xn] t.
-rewrite /bernoulli_trial.
-apply/sumr_ge0 => /= i _.
-by rewrite !tnth_map.
-Qed.
-
-(* this seems to be provable like in https://www.cs.purdue.edu/homes/spa/courses/pg17/mu-book.pdf page 65
-taylor_ln_le :
-  forall (delta : R), ((1 + delta) * ln (1 + delta) >= delta + delta^+2 / 3)%R.  *)
-Section taylor_ln_le.
-Local Open Scope ring_scope.
-
-Axiom expR2_lt8 : expR 2 <= 8 :> R.
-
-Lemma taylor_ln_le (x : R) : x \in `]0, 1[ -> (1 + x) * ln (1 + x) >= x + x^+2 / 3.
-Proof.
-move=> x01; rewrite -subr_ge0.
-pose f (x : R) := (1 + x) * ln (1 + x) - (x + x ^+ 2 / 3).
-have f0 : f 0 = 0 by rewrite /f expr0n /= mul0r !addr0 ln1 mulr0 subr0.
-rewrite [leRHS](_ : _ = f x) // -f0.
-evar (df0 : R -> R); evar (df : R -> R).
-have idf (y : R) : 0 < 1 + y -> is_derive y (1:R) f (df y).
-  move=> y1.
-  rewrite (_ : df y = df0 y).
-    apply: is_deriveB; last exact: is_deriveD.
-    apply: is_deriveM=> //.
-    apply: is_derive1_comp=> //.
-    exact: is_derive1_ln.
-  rewrite /df0.
-  rewrite deriveD// derive_cst derive_id.
-  rewrite /GRing.scale /= !(mulr0,add0r,mulr1).
-  rewrite divff ?lt0r_neq0// opprD addrAC addrA subrr add0r.
-  instantiate (df := fun y : R => - (3^-1 * (y + y)) + ln (1 + y)).
-  reflexivity.
-clear df0.
-have y1cc y : y \in `[0, 1] -> 0 < 1 + y.
-  rewrite in_itv /= => /andP [] y0 ?.
-  by have y1: 0 < 1 + y by apply: (le_lt_trans y0); rewrite ltrDr.
-have y1oo y : y \in `]0, 1[ -> 0 < 1 + y by move/subset_itv_oo_cc/y1cc.
-have dfge0 y : y \in `]0, 1[ -> 0 <= df y.
-  move=> y01.
-  have:= y01.
-  rewrite /df in_itv /= => /andP [] y0 y1.
-  rewrite -lerBlDl opprK add0r -mulr2n -(mulr_natl _ 2) mulrA.
-  rewrite [in leLHS](_ : y = 1 + y - 1); last by rewrite addrAC subrr add0r.
-  pose iy:= Itv01 (ltW y0) (ltW y1).
-  have y1E: 1 + y = @convex.conv _ R^o iy 1 2.
-    rewrite convRE /= /onem mulr1 (mulr_natr _ 2) mulr2n.
-    by rewrite addrACA (addrC (- y)) subrr addr0.
-  rewrite y1E; apply: (le_trans _ (concave_ln _ _ _))=> //.
-  rewrite -y1E addrAC subrr add0r convRE ln1 mulr0 add0r /=.
-  rewrite mulrC ler_pM// ?(@ltW _ _ 0)// mulrC.
-  rewrite ler_pdivrMr//.
-  rewrite -[leLHS]expRK -[leRHS]expRK ler_ln ?posrE ?expR_gt0//.
-  rewrite expRM/= powR_mulrn ?expR_ge0// lnK ?posrE//.
-  rewrite !exprS expr0 mulr1 -!natrM mulnE /=.
-  by rewrite expR2_lt8.
-apply: (@ger0_derive1_homo R f 0 1 true false).
-- by move=> y /y1oo /idf /@ex_derive.
-- by move=> y /[dup] /y1oo /idf /@derive_val ->; exact: dfge0.
-- by apply: derivable_within_continuous=> y /y1cc /idf /@ex_derive.
-- by rewrite bound_itvE.
-- exact: subset_itv_oo_cc.
-- by have:= x01; rewrite in_itv=> /andP /= [] /ltW.
-Qed.
-
-End taylor_ln_le.
-
-Lemma independent_mmt_gen_fun n (X : n.-tuple {RV P >-> bool}) t :
-  let mmtX : 'I_n -> {RV P >-> R} := fun i => expR \o t \o* (btr P (tnth X i)) in
-  independent_RVs P [set: 'I_n] (fun i => tnth X i) -> independent_RVs P [set: 'I_n] mmtX.
-Proof.
-rewrite /= => PnX.
-apply: independent_RVs_comp => //.
-apply: independent_RVs_scale => //=.
-exact: independent_RVs_btr.
-Qed.
-
-Lemma expectation_prod2 (X Y : {RV P >-> R}) :
+Lemma expectation_prod2 (X Y : {mfun T >-> R}) :
   P.-integrable setT (EFin \o X) ->
   P.-integrable setT (EFin \o Y) ->
-  independent_RVs2 P X Y ->
+(*  independent_RVs2 P X Y -> NB: independence not used *)
   let XY := fun (x : T * T) => (X x.1 * Y x.2)%R in
   'E_(P \x P)[XY] = 'E_P[X] * 'E_P[Y].
 Proof.
@@ -1556,7 +1429,6 @@ rewrite unlock /expectation/= -fubini1/=; last first.
       apply: integral_fune_fin_num => //.
       by move/integrable_abse : intY.
       by move/integrableP : intX => [].
-move=> _ (* NB: don't need independence! *).
 rewrite /fubini_F/=.
 under eq_integral => x _.
   under eq_integral => y _ do rewrite EFinM.
@@ -1565,6 +1437,22 @@ under eq_integral => x _.
   over.
 rewrite /= integralZr//.
 by rewrite fineK// integral_fune_fin_num.
+Qed.
+
+End properties_of_expectation.
+
+Section properties_of_independence.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Local Open Scope ereal_scope.
+
+Lemma independent_mmt_gen_fun n (X : n.-tuple {RV P >-> bool}) t :
+  let mmtX : 'I_n -> {RV P >-> R} := fun i => expR \o t \o* (btr P (tnth X i)) in
+  independent_RVs P [set: 'I_n] (fun i => tnth X i) -> independent_RVs P [set: 'I_n] mmtX.
+Proof.
+rewrite /= => PnX.
+apply: independent_RVs_comp => //.
+apply: independent_RVs_scale => //=.
+exact: independent_RVs_btr.
 Qed.
 
 Lemma expectation_prod_independent_RVs n (X : n.-tuple {RV P >-> R}) :
@@ -1602,7 +1490,7 @@ rewrite /X2 /=.
 pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
 pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
 rewrite [X in 'E__[X]](_ : _ = (Y2 \* Y1)%R)//.
-(* rewrite expectation_prod2. *)
+have := @expectation_prod2 _ _ _ _ Y2 Y1.
 (* rewrite expectationD; last 2 first. *)
 (*   simpl in Y2. *)
 (*   admit. (* TODO (1): reduce the integrability of thead X to intX *) *)
@@ -1684,6 +1572,134 @@ rewrite [X in 'E__[X]](_ : _ = (Y2 \* Y1)%R)//.
 (*     by rewrite inordK// ltnS. *)
 (*   by []. *)
 Admitted.
+
+End properties_of_independence.
+
+Section bernoulli.
+
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Variable p : R.
+Hypothesis p01 : (0 <= p <= 1)%R.
+
+Definition bernoulli_RV (X : {RV P >-> bool}) :=
+  distribution P X = bernoulli p.
+
+Lemma bernoulli_RV1 (X : {RV P >-> bool}) : bernoulli_RV X ->
+  P [set i | X i == 1%R] = p%:E.
+Proof.
+move=> /(congr1 (fun f => f [set 1%:R])).
+rewrite bernoulliE//.
+rewrite /mscale/=.
+rewrite diracE/= mem_set// mule1// diracE/= memNset//.
+rewrite mule0 adde0.
+rewrite /distribution /= => <-.
+congr (P _).
+rewrite /preimage/=.
+by apply/seteqP; split => [x /eqP H//|x /eqP].
+Qed.
+
+Lemma bernoulli_RV2 (X : {RV P >-> bool}) : bernoulli_RV X ->
+  P [set i | X i == 0%R] = (`1-p)%:E.
+Proof.
+move=> /(congr1 (fun f => f [set 0%:R])).
+rewrite bernoulliE//.
+rewrite /mscale/=.
+rewrite diracE/= memNset//.
+rewrite mule0// diracE/= mem_set// add0e mule1.
+rewrite /distribution /= => <-.
+congr (P _).
+rewrite /preimage/=.
+by apply/seteqP; split => [x /eqP H//|x /eqP].
+Qed.
+
+Lemma bernoulli_expectation (X : {RV P >-> bool}) :
+  bernoulli_RV X -> 'E_P[btr P X] = p%:E.
+Proof.
+move=> bX.
+rewrite unlock /btr.
+rewrite -(@ge0_integral_distribution _ _ _ _ _ _ X (EFin \o [eta GRing.natmul 1]))//; last first.
+  by move=> y //=.
+rewrite /bernoulli/=.
+rewrite (@eq_measure_integral _ _ _ _ (bernoulli p)); last first.
+  by move=> A mA _/=; rewrite (_ : distribution P X = bernoulli p).
+rewrite integral_bernoulli//=.
+by rewrite -!EFinM -EFinD mulr0 addr0 mulr1.
+Qed.
+
+Lemma integrable_bernoulli (X : {RV P >-> bool}) :
+  bernoulli_RV X -> P.-integrable [set: T] (EFin \o btr P X).
+Proof.
+move=> bX.
+apply/integrableP; split.
+  by apply: measurableT_comp => //; exact: measurable_bool_to_real.
+have -> : \int[P]_x `|(EFin \o btr P X) x| = 'E_P[btr P X].
+  rewrite unlock /expectation.
+  apply: eq_integral => x _.
+  by rewrite gee0_abs //= lee_fin.
+by rewrite bernoulli_expectation// ltry.
+Qed.
+
+Lemma bool_RV_sqr (X : {dRV P >-> bool}) :
+  ((btr P X ^+ 2) = btr P X :> (T -> R))%R.
+Proof.
+apply: funext => x /=.
+rewrite /GRing.exp /btr/bool_to_real /GRing.mul/=.
+by case: (X x) => /=; rewrite ?mulr1 ?mulr0.
+Qed.
+
+Lemma bernoulli_variance (X : {dRV P >-> bool}) :
+  bernoulli_RV X -> 'V_P[btr P X] = (p * (`1-p))%:E.
+Proof.
+move=> b.
+rewrite (@varianceE _ _ _ _ (btr P X));
+  [|rewrite ?[X in _ \o X]bool_RV_sqr; exact: integrable_bernoulli..].
+rewrite [X in 'E_P[X]]bool_RV_sqr !bernoulli_expectation//.
+by rewrite expe2 -EFinD onemMr.
+Qed.
+
+(* TODO: define a mixin *)
+Definition is_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :=
+  (forall i : 'I_n, bernoulli_RV (tnth X i)) /\
+  independent_RVs P [set: 'I_n] (tnth X).
+
+Definition bernoulli_trial n (X : n.-tuple {RV P >-> bool}) : {RV (\X_n P) >-> R} :=
+  tuple_sum [the n.-tuple _ of (map (btr P)
+   (map (fun t : {RV P >-> bool} => t : {mfun T >-> bool}) X))].
+
+(*
+was wrong
+Definition bernoulli_trial n (X : {dRV P >-> bool}^nat) : {RV (pro n P) >-> R} :=
+  (\sum_(i<n) (btr P (X i)))%R. (* TODO: add HB instance measurablefun sum*)
+*)
+
+Lemma expectation_bernoulli_trial n (X : n.-tuple {RV P >-> bool}) :
+  is_bernoulli_trial X -> 'E_(\X_n P)[bernoulli_trial X] = (n%:R * p)%:E.
+Proof.
+move=> bRV. rewrite /bernoulli_trial.
+transitivity ('E_(\X_n P)[tuple_sum (map (btr P) X)]).
+  congr expectation; apply/funext => t.
+  by apply: eq_bigr => /= i _; rewrite !tnth_map.
+rewrite (@expectation_sum_pro _ _ _ _ _ _ 1%R); last first.
+  move=> i t.
+  rewrite tnth_map//.
+  rewrite /btr/= /bool_to_real/=.
+  by case: (tnth X i t) => /=; rewrite !lexx !ler01.
+transitivity (\sum_(i < n) p%:E).
+  apply: eq_bigr => k _.
+  rewrite tnth_map bernoulli_expectation//.
+  by apply bRV.
+by rewrite sumEFin big_const_ord iter_addr addr0 mulrC mulr_natr.
+Qed.
+
+Lemma bernoulli_trial_ge0 n (X : n.-tuple {RV P >-> bool}) : is_bernoulli_trial X ->
+  (forall t, 0 <= bernoulli_trial X t)%R.
+Proof.
+move=> [bRV Xn] t.
+rewrite /bernoulli_trial.
+apply/sumr_ge0 => /= i _.
+by rewrite !tnth_map.
+Qed.
 
 Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple {RV P >-> bool}) (t : R) :
   is_bernoulli_trial X_ ->
