@@ -463,6 +463,21 @@ rewrite lteNl => /ereal_sup_gt[_ [y Sy <-]].
 by rewrite lteNl oppeK => xlty; exists y.
 Qed.
 
+Lemma ereal_infEN S : ereal_inf S = - ereal_sup [set - x | x in S].
+Proof. by []. Qed.
+
+Lemma ereal_supN S : ereal_sup [set - x | x in S] = - ereal_inf S.
+Proof. by rewrite oppeK. Qed.
+
+Lemma ereal_infN S : ereal_inf [set - x | x in S] = - ereal_sup S.
+Proof.
+rewrite /ereal_inf; congr (- ereal_sup _) => /=.
+by rewrite image_comp/=; under eq_imagel do rewrite /= oppeK; rewrite image_id.
+Qed.
+
+Lemma ereal_supEN S : ereal_sup S = - ereal_inf [set - x | x in S].
+Proof. by rewrite ereal_infN oppeK. Qed.
+
 End ereal_supremum.
 
 Section ereal_supremum_realType.
@@ -523,7 +538,7 @@ Proof.
 by move=> Soo; apply/eqP; rewrite eq_le leey/=; exact: ereal_sup_ubound.
 Qed.
 
-Lemma ereal_sup_le S x : (exists2 y, S y & x <= y) -> x <= ereal_sup S.
+Lemma ereal_sup_ge S x : (exists2 y, S y & x <= y) -> x <= ereal_sup S.
 Proof. by move=> [y Sy] /le_trans; apply; exact: ereal_sup_ubound. Qed.
 
 Lemma ereal_sup_ninfty S : ereal_sup S = -oo <-> S `<=` [set -oo].
@@ -591,11 +606,84 @@ rewrite -ereal_sup_EFin; [|exact/has_lb_ubN|exact/nonemptyN].
 by rewrite !image_comp.
 Qed.
 
+Lemma ereal_supP S x :
+  reflect (forall y : \bar R, S y -> y <= x) (ereal_sup S <= x).
+Proof.
+apply/(iffP idP) => [+ y Sy|].
+  by move=> /(le_trans _)->//; rewrite ereal_sup_ge//; exists y.
+apply: contraPP => /negP; rewrite -ltNge -existsPNP.
+by move=> /ereal_sup_gt[y Sy ltyx]; exists y => //; rewrite lt_geF.
+Qed.
+
+Lemma ereal_infP S x :
+  reflect (forall y : \bar R, S y -> x <= y) (x <= ereal_inf S).
+Proof.
+rewrite leeNr; apply/(equivP (ereal_supP _ _)); setoid_rewrite leeNr.
+split=> [ge_x y Sy|ge_x _ [y Sy <-]]; rewrite ?oppeK// ?ge_x//.
+by rewrite -[y]oppeK ge_x//; exists y.
+Qed.
+
+Lemma ereal_sup_gtP S x :
+  reflect (exists2 y : \bar R, S y & x < y) (x < ereal_sup S).
+Proof.
+rewrite ltNge; apply/(equivP negP); rewrite -(rwP (ereal_supP _ _)) -existsPNP.
+by apply/eq_exists2r => y; rewrite (rwP2 negP idP) -ltNge.
+Qed.
+
+Lemma ereal_inf_ltP S x :
+  reflect (exists2 y : \bar R, S y & y < x) (ereal_inf S < x).
+Proof.
+rewrite ltNge; apply/(equivP negP); rewrite -(rwP (ereal_infP _ _)) -existsPNP.
+by apply/eq_exists2r => y; rewrite (rwP2 negP idP) -ltNge.
+Qed.
+
+Lemma ereal_inf_leP S x : S (ereal_inf S) ->
+  reflect (exists2 y : \bar R, S y & y <= x) (ereal_inf S <= x).
+Proof.
+move=> Sinf; apply: (iffP idP); last exact: ereal_inf_le.
+by move=> Sx; exists (ereal_inf S).
+Qed.
+
+Lemma ereal_sup_geP S x : S (ereal_sup S) ->
+  reflect (exists2 y : \bar R, S y & x <= y) (x <= ereal_sup S).
+Proof.
+move=> Ssup; apply: (iffP idP); last exact: ereal_sup_ge.
+by move=> Sx; exists (ereal_sup S).
+Qed.
+
+Lemma lb_ereal_infNy_adherent S e :
+  ereal_inf S = -oo -> exists2 x : \bar R, S x & x < e%:E.
+Proof. by move=> infNy; apply/ereal_inf_ltP; rewrite infNy ltNyr. Qed.
+
+Lemma ereal_sup_real : @ereal_sup R (range EFin) = +oo.
+Proof.
+rewrite hasNub_ereal_sup//; last by exists 0%R.
+by apply/has_ubPn => x; exists (x+1)%R => //; rewrite ltrDl.
+Qed.
+
+Lemma ereal_inf_real : @ereal_inf R (range EFin) = -oo.
+Proof.
+rewrite /ereal_inf [X in ereal_sup X](_ : _ = range EFin); last first.
+  apply/seteqP; split => x/=[y].
+    by move=> [z] _ <- <-; exists (-z)%R.
+  by move=> _ <-; exists (-y%:E); first (by exists (-y)%R); rewrite oppeK.
+by rewrite ereal_sup_real.
+Qed.
+
 End ereal_supremum_realType.
 #[deprecated(since="mathcomp-analysis 1.3.0", note="Renamed `ereal_sup_ubound`.")]
 Notation ereal_sup_ub := ereal_sup_ubound (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="Renamed `ereal_inf_lbound`.")]
 Notation ereal_inf_lb := ereal_inf_lbound (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="Renamed `ereal_sup_ge`.")]
+Notation ereal_sup_le := ereal_sup_ge.
+
+Arguments ereal_supP {R S x}.
+Arguments ereal_infP {R S x}.
+Arguments ereal_sup_gtP {R S x}.
+Arguments ereal_inf_ltP {R S x}.
+Arguments ereal_sup_geP {R S x}.
+Arguments ereal_inf_leP {R S x}.
 
 Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
   (abse \o f) \_ D = abse \o (f \_ D).
