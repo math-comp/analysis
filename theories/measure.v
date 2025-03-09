@@ -273,9 +273,6 @@ From mathcomp Require Import sequences esum numfun.
 (* ## More measure-theoretic definitions                                      *)
 (* ```                                                                        *)
 (*  m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or m2 dominates m1     *)
-(*  ess_sup f == essential supremum of the function f : T -> R where T is a   *)
-(*               semiRingOfSetsType and R is a realType                       *)
-(*  ess_inf f == essential infimum                                            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -1307,6 +1304,10 @@ move=> A B mA mB; case: (semi_measurableD A B) => // [D [Dfin Dl -> _]].
 by apply: fin_bigcup_measurable.
 Qed.
 
+Lemma seqDU_measurable (F : sequence (set T)) :
+   (forall n, measurable (F n)) -> forall n, measurable (seqDU F n).
+Proof. by move=> Fmeas n; apply/measurableD/bigsetU_measurable. Qed.
+
 End ringofsets_lemmas.
 
 Section algebraofsets_lemmas.
@@ -2008,6 +2009,10 @@ Proof.
 have /[!big_ord0] ->// := @measure_semi_additive _ _ _ mu (fun=> set0) 0%N.
 exact: trivIset_set0.
 Qed.
+
+Lemma measure_gt0 x : (0%R < mu x) = (mu x != 0).
+Proof. by rewrite lt_def measure_ge0 andbT. Qed.
+
 
 Hint Resolve measure0 : core.
 
@@ -4262,6 +4267,19 @@ Proof. by apply: filterS => x /= /[apply] ->; rewrite mulr1. Qed.
 Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
 Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
+Lemma ae_foralln (P : nat -> T -> Prop) : (forall n, \forall x \ae mu, P n x) -> \forall x \ae mu, forall n, P n x.
+Proof.
+move=> /(_ _)/cid - /all_sig[A /all_and3[Ameas muA0 NPA]].
+have seqDUAmeas := seqDU_measurable Ameas.
+exists (\bigcup_n A n); split => //.
+- exact/bigcup_measurable.
+- rewrite seqDU_bigcup_eq measure_bigcup//.
+  rewrite eseries0// => i _ _.
+  rewrite (@subset_measure0 _ _ _ _ _ (A i))//=.
+  exact: subset_seqDU.
+- by move=> x /=; rewrite -existsNP => -[n NPnx]; exists n => //; apply: NPA.
+Qed.
+
 End ae_eq.
 
 Section ae_eq_lemmas.
@@ -5413,64 +5431,3 @@ Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
 Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
 
 End absolute_continuity_lemmas.
-
-Section essential_supremum.
-Context d {T : semiRingOfSetsType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Implicit Types f : T -> R.
-
-Definition ess_sup f :=
-  ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
-
-Definition ess_inf f := -ess_sup (- f)%R.
-
-Lemma ess_infE f :
-  ess_inf f = ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).
-Proof.
-rewrite /ess_inf /ess_sup /ereal_inf oppeK; congr ereal_sup.
-rewrite !image_comp.
-Admitted.
-
-(*Definition ess_inf f :=
-  ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).*)
-
-Lemma ess_sup_ger f x : 0 < mu [set: T] -> (forall t, x <= (f t)%:E) ->
-  x <= ess_sup f.
-Proof.
-move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP fr0 <-]; rewrite leNgt.
-apply/negP => rx; apply/negP : fr0; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
-apply/seteqP; split => // t _ /=; rewrite in_itv/= andbT.
-by rewrite -lte_fin (lt_le_trans _ (f0 t)).
-Qed.
-
-Lemma ess_sup_ler f r : (forall t, (f t)%:E <= r) -> ess_sup f <= r.
-Proof.
-case: r => [r| |] fr; last 2 first.
-  by rewrite leey.
-  by have := fr point; rewrite leNgt ltNye.
-apply: ereal_inf_le; apply/exists2P.
-exists r%:E => /=; split => //; apply/exists2P; exists r; split => //.
-rewrite preimage_itvoy [X in mu X](_ : _ = set0)// -subset0 => x //=.
-rewrite lt_neqAle => /andP[+ rlefx].
-by apply/negP/negPn; rewrite eq_le rlefx/= -lee_fin.
-Qed.
-
-Lemma ess_sup_cst r : (0 < mu setT)%E -> (ess_sup (cst r) = r%:E)%E.
-Proof.
-move => mu0.
-by apply/eqP; rewrite eq_le; apply/andP; split;
-  [exact: ess_sup_ler|exact: ess_sup_ger].
-Qed.
-
-(*Definition ess_inf f :=
-  ereal_sup (EFin @` [set r | mu (f @^-1` `]-oo, r[) = 0]).*)
-
-Lemma ess_inf_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
-  0 <= ess_inf f.
-Proof.
-(*move=> muT f0; apply: ereal_sup_ge; exists 0 => //=; exists 0%R => //=.
-rewrite [X in mu X](_ : _ = set0)// -subset0 => x/=.
-by rewrite in_itv/= ltNge => /negP; exact.
-Qed.*) Admitted.
-
-End essential_supremum.

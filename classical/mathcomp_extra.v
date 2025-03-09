@@ -470,3 +470,17 @@ Proof. by move=>  ? ? []. Qed.
 
 Lemma inl_inj {A B} : injective (@inl A B).
 Proof. by move=>  ? ? []. Qed.
+
+Lemma eq_exists2l (A : Type) (P P' Q : A -> Prop) :
+  (forall x, P x <-> P' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P' x & Q x).
+Proof.
+by move=> eqQ; split=> -[x p q]; exists x; move: p q; rewrite ?eqQ.
+Qed.
+
+Lemma eq_exists2r (A : Type) (P Q Q' : A -> Prop) :
+  (forall x, Q x <-> Q' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P x & Q' x).
+Proof.
+by move=> eqP; split=> -[x p q]; exists x; move: p q; rewrite ?eqP.
+Qed.

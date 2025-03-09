@@ -1,11 +1,11 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality fsbigop reals ereal.
-From mathcomp Require Import topology normedtype sequences real_interval.
-From mathcomp Require Import esum measure lebesgue_measure lebesgue_integral.
-From mathcomp Require Import numfun exp convex interval_inference.
+From mathcomp Require Import mathcomp_extra unstable boolp interval_inference.
+From mathcomp Require Import classical_sets functions cardinality fsbigop reals.
+From mathcomp Require Import ereal topology normedtype sequences real_interval.
+From mathcomp Require Import esum measure ess_sup_inf lebesgue_measure.
+From mathcomp Require Import lebesgue_integral numfun exp convex.
 
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
@@ -38,12 +38,12 @@ Declare Scope Lnorm_scope.
 
 Local Open Scope ereal_scope.
 HB.lock Definition Lnorm {d} {T : measurableType d} {R : realType}
-    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
+    (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> \bar R) :=
   match p with
-  | p%:E => (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1
+  | p%:E => (\int[mu]_x `|f x| `^ p) `^ p^-1
     (* (mu (f @^-1` (setT `\ 0%R))) when p = 0? *)
-  | +oo%E => if mu [set: T] > 0 then ess_sup mu (normr \o f) else 0
-  | -oo%E => if mu [set: T] > 0 then ess_inf mu (normr \o f) else 0
+  | +oo%E => if mu [set: T] > 0 then ess_sup mu (abse \o f) else 0
+  | -oo%E => if mu [set: T] > 0 then ess_inf mu (abse \o f) else 0
   end.
 Canonical locked_Lnorm := Unlockable Lnorm.unlock.
 Arguments Lnorm {d T R} mu p f.
@@ -55,7 +55,7 @@ Variable mu : {measure set T -> \bar R}.
 Local Open Scope ereal_scope.
 Implicit Types (p : \bar R) (f g : T -> R) (r : R).
 
-Local Notation "'N_ p [ f ]" := (Lnorm mu p f).
+Local Notation "'N_ p [ f ]" := (Lnorm mu p (EFin \o f)).
 
 Lemma Lnorm0 p : 1 <= p -> 'N_p[cst 0%R] = 0.
 Proof.
@@ -65,27 +65,25 @@ case: p => [r||//].
   have r0 : r != 0%R by rewrite gt_eqF// (lt_le_trans _ r1).
   under eq_integral => x _ do rewrite /= normr0 powR0//.
   by rewrite integral0 poweR0r// invr_neq0.
-case: ifPn => //mu0 _.
-rewrite (_ : normr \o _ = 0%R); last by apply: funext => x/=; rewrite normr0.
-exact: ess_sup_cst.
+case: ifPn => //mu0 _; rewrite (ess_sup_ae_cst 0)//.
+by apply: nearW => x; rewrite /= normr0.
 Qed.
 
 Lemma Lnorm1 f : 'N_1[f] = \int[mu]_x `|f x|%:E.
 Proof.
-rewrite unlock invr1// poweRe1//.
-  by apply: eq_integral => t _; rewrite powRr1.
-by apply: integral_ge0 => t _; rewrite powRr1.
+rewrite unlock invr1// poweRe1//; under eq_integral do [rewrite poweRe1//=] => //.
+exact: integral_ge0.
 Qed.
 
 Lemma Lnorm_ge0 p f : 0 <= 'N_p[f].
 Proof.
 rewrite unlock; move: p => [r/=|/=|//]; first exact: poweR_ge0.
 - by case: ifPn => // /ess_sup_ger; apply => t/=.
-- by case: ifPn => // muT0; apply: ess_inf_ge0 => //=.
+- by case: ifPn => // muT0; apply/ess_infP/nearW => x /=.
 Qed.
 
 Lemma eq_Lnorm p f g : f =1 g -> 'N_p[f] = 'N_p[g].
-Proof. by move=> fg; congr Lnorm; exact/funext. Qed.
+Proof. by move=> fg; congr Lnorm; apply/eq_fun => ?; rewrite /= fg. Qed.
 
 Lemma Lnorm_eq0_eq0 (f : T -> R) p :
   measurable_fun setT f -> (0 < p)%E -> 'N_p[f] = 0 -> f = 0%R %[ae mu].
@@ -103,7 +101,9 @@ case: p => [r||//].
   move/(ae_eq_integral_abs _ measurableT mp).
   apply: filterS => x/= /[apply].
   by case=> /powR_eq0_eq0 /eqP; rewrite normr_eq0 => /eqP.
-- case: ifPn => [mu0 _|]; first exact: ess_sup_eq0_ae.
+- case: ifPn => [mu0 _|].
+    move=> /abs_sup_eq0_ae_eq/=.
+    by apply: filterS => x/= /(_ I) /eqP + _; rewrite eqe => /eqP.
   rewrite ltNge => /negbNE mu0 _ _.
   suffices mueq0: mu setT = 0 by exact: ae_eq0.
   by apply/eqP; rewrite eq_le mu0/=.
@@ -118,19 +118,16 @@ Qed.
 
 Lemma oppr_Lnorm f p : 'N_p[\- f]%R = 'N_p[f].
 Proof.
-rewrite unlock /Lnorm; case: p => /= [r||//].
-- by under eq_integral => x _ do rewrite normrN.
-- rewrite compA (_ : normr \o -%R = normr)//.
-  by apply: funext => x/=; exact: normrN.
-- rewrite compA (_ : normr \o -%R = normr)//.
-  by apply: funext => x/=; exact: normrN.
+have NfE : abse \o (EFin \o (\- f)%R) = abse \o EFin \o f.
+  by apply/funext => x /=; rewrite normrN.
+rewrite unlock /Lnorm NfE; case: p => /= [r|//|//].
+by under eq_integral => x _ do rewrite normrN.
 Qed.
 
 Lemma Lnorm_cst1 r : ('N_r%:E[cst 1%R] = (mu setT)`^(r^-1)).
 Proof.
-rewrite unlock /Lnorm.
-under eq_integral => x _ do rewrite normr1 powR1 (_ : 1 = cst 1 x)%R// -indicT.
-by rewrite integral_indic// setTI.
+rewrite unlock /Lnorm; under eq_integral do rewrite /= normr1 powR1.
+by rewrite integral_cst// mul1e.
 Qed.
 
 End Lnorm_properties.
@@ -145,11 +142,13 @@ Section lnorm.
 (* l-norm is just L-norm applied to counting *)
 Context d {T : measurableType d} {R : realType}.
 Local Open Scope ereal_scope.
-Local Notation "'N_ p [ f ]" := (Lnorm counting p f).
+Local Notation "'N_ p [ f ]" := (Lnorm counting p (EFin \o f)).
 
 Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
   'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
-Proof. by move=> p0; rewrite unlock ge0_integral_count. Qed.
+Proof.
+by move=> p0; rewrite unlock ge0_integral_count// => k; rewrite poweR_ge0.
+Qed.
 
 End lnorm.
 
@@ -163,7 +162,7 @@ Let measurableT_comp_powR f p :
   measurable_fun [set: T] f -> measurable_fun setT (fun x => f x `^ p)%R.
 Proof. exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)). Qed.
 
-Local Notation "'N_ p [ f ]" := (Lnorm mu p f).
+Local Notation "'N_ p [ f ]" := (Lnorm mu p (EFin \o f)).
 
 Let integrable_powR f p : (0 < p)%R ->
     measurable_fun [set: T] f -> 'N_p%:E[f] != +oo ->
@@ -394,7 +393,7 @@ Let measurableT_comp_powR f p :
   measurable_fun setT f -> measurable_fun setT (fun x => f x `^ p)%R.
 Proof. exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)). Qed.
 
-Local Notation "'N_ p [ f ]" := (Lnorm mu p f).
+Local Notation "'N_ p [ f ]" := (Lnorm mu p (EFin \o f)).
 Local Open Scope ereal_scope.
 
 Let minkowski1 f g p : measurable_fun setT f -> measurable_fun setT g ->
@@ -548,32 +547,14 @@ apply: minkowski => //.
 apply: measurableT_comp => //.
 Qed.
 
-Lemma le_ess_sup (f g : T -> R) :
-  measurable_fun setT f -> measurable_fun setT g ->
-    (forall x, f x <= g x)%R -> ess_sup mu f <= ess_sup mu g.
-Proof.
-rewrite /ess_sup => mf mg h.
-apply: le_ereal_inf => x [r]/= mu0 rx.
-exists r => //.
-move: mu0.
-apply: subset_measure0.
-- by rewrite -[X in _ X]setTI; exact: mf.
-- by rewrite -[X in _ X]setTI; exact: mg.
-move=> t/=.
-rewrite !in_itv !andbT/= => fgtt.
-by rewrite (lt_le_trans fgtt)//.
-Qed.
-
 Lemma minkowskie (f g : T -> R) (p : \bar R) :
   measurable_fun setT f -> measurable_fun setT g -> 1 <= p ->
   'N_p[(f \+ g)%R] <= 'N_p[f] + 'N_p[g].
 Proof.
 case: p => //[r|]; first exact: minkowski.
-move=> mf mg _.
-rewrite unlock /Lnorm.
+move=> mf mg _; rewrite unlock /Lnorm.
 case: ifPn => mugt0; last by rewrite adde0 lexx.
-apply: ess_supD => //.
-all: by rewrite gt_eqF// (lt_le_trans ltNy0)// ess_sup_ger// => x/=; rewrite lee_fin normr_ge0.
+exact: ess_sup_normD.
 Qed.
 
 End minkowski.
@@ -587,13 +568,13 @@ Implicit Types (p : \bar R) (f g : T -> R) (r : R).
 Lemma LnormD_fin_num p f g :
   1 <= p ->
   measurable_fun setT f -> measurable_fun setT g ->
-    'N[mu]_p[f] \is a fin_num -> 'N[mu]_p[g] \is a fin_num ->
-      'N[mu]_p[f \+ g] \is a fin_num.
+    'N[mu]_p[EFin \o f] \is a fin_num -> 'N[mu]_p[EFin \o g] \is a fin_num ->
+      'N[mu]_p[EFin \o (f \+ g)] \is a fin_num.
 Proof.
 case: p => [p|_|].
 - move=> p1 mf mg Nffin Ngfin.
   rewrite fin_numElt (@lt_le_trans _ _ 0)//= ?Lnorm_ge0//.
-  rewrite (@le_lt_trans _ _ ('N[mu]_p%:E[f] + 'N[mu]_p%:E[g]))//.
+  rewrite (@le_lt_trans _ _ ('N[mu]_p%:E[EFin \o f] + 'N[mu]_p%:E[EFin \o g]))//.
     apply: minkowski => //.
   by rewrite lte_add_pinfty// -ge0_fin_numE// Lnorm_ge0.
 - move=> mf mg.
@@ -608,7 +589,7 @@ Admitted.
 
 Lemma LnormD_pinfty p f g :
   1 <= p -> measurable_fun setT f -> measurable_fun setT g ->
-    'N[mu]_p[f] = +oo -> 'N[mu]_p[f \+ g] = +oo.
+    'N[mu]_p[EFin \o f] = +oo -> 'N[mu]_p[EFin \o (f \+ g)] = +oo.
 Proof.
 case: p => [p||].
 - move=> p1 mf mg.
