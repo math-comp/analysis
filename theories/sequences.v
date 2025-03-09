@@ -282,6 +282,9 @@ apply/funext => n; rewrite -setIDA; apply/seteqP; split; last first.
 by rewrite /seqDU -setIDA bigcup_mkord -big_distrr/= setDIr setIUr setDIK set0U.
 Qed.
 
+Lemma subset_seqDU (A : (set T)^nat) (i : nat) : seqDU A i `<=` A i.
+Proof. by move=> ?; apply: subDsetl. Qed.
+
 End seqDU.
 Arguments trivIset_seqDU {T} F.
 #[global] Hint Resolve trivIset_seqDU : core.

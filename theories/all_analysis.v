@@ -25,3 +25,4 @@ From mathcomp Require Export charge.
 From mathcomp Require Export kernel.
 From mathcomp Require Export pi_irrational.
 From mathcomp Require Export gauss_integral.
+From mathcomp Require Export ess_sup_inf.

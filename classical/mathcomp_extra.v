@@ -470,3 +470,127 @@ Proof. by move=>  ? ? []. Qed.
 
 Lemma inl_inj {A B} : injective (@inl A B).
 Proof. by move=>  ? ? []. Qed.
+
+Section bijection_forall.
+
+Lemma bij_forall A B (f : A -> B) (P : B -> Prop) :
+  bijective f -> (forall y, P y) <-> (forall x, P (f x)).
+Proof.
+by case; rewrite /cancel => g _ cangf; split => // => ? y; rewrite -(cangf y).
+Qed.
+
+End bijection_forall.
+
+Lemma and_prop_in (T : Type) (p : mem_pred T) (P Q : T -> Prop) :
+  {in p, forall x, P x /\ Q x} <->
+  {in p, forall x, P x} /\ {in p, forall x, Q x}.
+Proof.
+split=> [cnd|[cnd1 cnd2] x xin]; first by split=> x xin; case: (cnd x xin).
+by split; [apply: cnd1 | apply: cnd2].
+Qed.
+
+Lemma mem_inc_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y / (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f a, f b]}.
+Proof.
+move=> fle x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fle ?(itvP xab).
+Qed.
+
+Lemma mem_dec_segment d (T : porderType d) (a b : T) (f : T -> T) :
+    {in `[a, b] &, {mono f : x y /~ (x <= y)%O}} ->
+  {homo f : x / x \in `[a, b] >-> x \in `[f b, f a]}.
+Proof.
+move=> fge x xab; have leab : (a <= b)%O by rewrite (itvP xab).
+by rewrite in_itv/= !fge ?(itvP xab).
+Qed.
+
+Definition sigT_fun {I : Type} {X : I -> Type} {T : Type}
+  (f : forall i, X i -> T) (x : {i & X i}) : T :=
+  (f (projT1 x) (projT2 x)).
+
+(* PR 114 to finmap in progress *)
+Section FsetPartitions.
+Variables T I : choiceType.
+Implicit Types (x y z : T) (A B D X : {fset T}) (P Q : {fset {fset T}}).
+Implicit Types (J : pred I) (F : I -> {fset T}).
+
+Variables (R : Type) (idx : R) (op : Monoid.com_law idx).
+Let rhs_cond P K E :=
+  (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A | K x) E x)%fset.
+Let rhs P E := (\big[op/idx]_(A <- P) \big[op/idx]_(x <- A) E x)%fset.
+
+Lemma partition_disjoint_bigfcup (f : T -> R) (F : I -> {fset T})
+  (K : {fset I}) :
+  (forall i j, i \in K -> j \in K -> i != j -> [disjoint F i & F j])%fset ->
+  \big[op/idx]_(i <- \big[fsetU/fset0]_(x <- K) (F x)) f i =
+  \big[op/idx]_(k <- K) (\big[op/idx]_(i <- F k) f i).
+Proof.
+move=> disjF; pose P := [fset F i | i in K & F i != fset0]%fset.
+have trivP : trivIfset P.
+  apply/trivIfsetP => _ _ /imfsetP[i iK ->] /imfsetP[j jK ->] neqFij.
+  move: iK; rewrite !inE/= => /andP[iK Fi0].
+  move: jK; rewrite !inE/= => /andP[jK Fj0].
+  by apply: (disjF _ _ iK jK); apply: contraNneq neqFij => ->.
+have -> : (\bigcup_(i <- K) F i)%fset = fcover P.
+  apply/esym; rewrite /P fcover_imfset big_mkcond /=; apply eq_bigr => i _.
+  by case: ifPn => // /negPn/eqP.
+rewrite big_trivIfset // /rhs big_imfset => [|i j iK /andP[jK notFj0] eqFij] /=.
+  rewrite big_filter big_mkcond; apply eq_bigr => i _.
+  by case: ifPn => // /negPn /eqP ->;  rewrite big_seq_fset0.
+move: iK; rewrite !inE/= => /andP[iK Fi0].
+by apply: contraNeq (disjF _ _ iK jK) _; rewrite -fsetI_eq0 eqFij fsetIid.
+Qed.
+
+End FsetPartitions.
+
+(* TODO: move to ssrnum *)
+Lemma prodr_ile1 {R : realDomainType} (s : seq R) :
+  (forall x, x \in s -> 0 <= x <= 1)%R -> (\prod_(j <- s) j <= 1)%R.
+Proof.
+elim: s => [_ | y s ih xs01]; rewrite ?big_nil// big_cons.
+have /andP[y0 y1] : (0 <= y <= 1)%R by rewrite xs01// mem_head.
+rewrite mulr_ile1 ?andbT//.
+  rewrite big_seq prodr_ge0// => x xs.
+  by have := xs01 x; rewrite inE xs orbT => /(_ _)/andP[].
+by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
+Qed.
+
+(* TODO: move to ssrnum *)
+
+Lemma size_filter_gt0 T P (r : seq T) : (size (filter P r) > 0)%N = (has P r).
+Proof. by elim: r => //= x r; case: ifP. Qed.
+
+Lemma ltr_sum [R : numDomainType] [I : Type] (r : seq I)
+    [P : pred I] [F G : I -> R] :
+  has P r ->
+  (forall i : I, P i -> F i < G i) ->
+  \sum_(i <- r | P i) F i < \sum_(i <- r | P i) G i.
+Proof.
+rewrite -big_filter -[ltRHS]big_filter -size_filter_gt0.
+case: filter (filter_all P r) => //= x {}r /andP[Px Pr] _ ltFG.
+rewrite !big_cons ltr_leD// ?ltFG// -(all_filterP Pr) !big_filter.
+by rewrite ler_sum => // i Pi; rewrite ltW ?ltFG.
+Qed.
+
+Lemma ltr_sum_nat [R : numDomainType] [m n : nat] [F G : nat -> R] :
+  (m < n)%N -> (forall i : nat, (m <= i < n)%N -> F i < G i) ->
+  \sum_(m <= i < n) F i < \sum_(m <= i < n) G i.
+Proof.
+move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
+by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
+Qed.
+
+Lemma eq_exists2l (A : Type) (P P' Q : A -> Prop) :
+  (forall x, P x <-> P' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P' x & Q x).
+Proof.
+by move=> eqQ; split=> -[x p q]; exists x; move: p q; rewrite ?eqQ.
+Qed.
+
+Lemma eq_exists2r (A : Type) (P Q Q' : A -> Prop) :
+  (forall x, Q x <-> Q' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P x & Q' x).
+Proof.
+by move=> eqP; split=> -[x p q]; exists x; move: p q; rewrite ?eqP.
+Qed.
