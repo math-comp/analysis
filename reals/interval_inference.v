@@ -5,6 +5,11 @@ From mathcomp Require Import ssrnat eqtype choice order ssralg ssrnum ssrint.
 From mathcomp Require Import interval.
 From mathcomp Require Import mathcomp_extra.
 
+(* N.B.: This file has been backported in mathcomp-algebra 2.4.0, when
+performing changes here, be careful to keep both files reasonnably in
+sync during the transition period before we can remove the current
+file (i.e. the day we'll require mathcomp >= 2.4.0). *)
+
 (**md**************************************************************************)
 (* # Numbers within an interval                                               *)
 (*                                                                            *)
