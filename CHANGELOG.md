@@ -1,6 +1,22 @@
 # Changelog
 
-Latest releases: [[1.9.0] - 2025-02-20](#190---2025-02-20), [[1.8.0] - 2024-12-19](#180---2024-12-19), and [[1.7.0] - 2024-11-22](#170---2024-11-22)
+Latest releases: [[1.9.1] - 2025-03-04](#191---2025-03-04), [[1.9.0] - 2025-02-20](#190---2025-02-20), [[1.8.0] - 2024-12-19](#180---2024-12-19), and [[1.7.0] - 2024-11-22](#170---2024-11-22)
+
+## [1.9.1] - 2025-04-04
+
+### Added
+
+- in `constructive_ereal.v`:
+  + lemmas `expe_ge0`, `expe_eq0` and `expe_gt0`
+
+- in `constructive_ereal.v`:
+  + definitions `lne`
+  + lemmas `lne0`, `lner`, `expeRK`
+    `lneK`, `lneK_eq`, `lne1`, `lneM`,
+    `lne_inj`, `lneV`, `lne_div`, `ltr_lne`,
+    `ler_lne`, `lneXn`, `le_lne1Dx`, `lne_sublinear`,
+    `lne_ge0`, `lne_lt0`, `lne_gt0` and `lne_le0_le0`
+
 
 ## [1.9.0] - 2025-02-20
 
