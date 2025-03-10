@@ -357,20 +357,21 @@ End cvgr_fun_dvg_seq.
 Section cvge_fun_dvg_seq.
 Context {R : realType}.
 
+(* NB: almost the same proof as cvg_pinftyP *)
 Lemma cvge_pinftyP (f : R -> \bar R) (l : \bar R) :
   f x @[x --> +oo] --> l <->
     forall u : R^nat, (u n @[n --> \oo] --> +oo) -> f (u n) @[n --> \oo] --> l.
-Proof. (* almost the same as cvg_pinftyP *)
+Proof.
 split; first by move=> ? ? /cvg_comp; exact.
 apply: contraPP => noncvg_f; apply/existsNP.
 under eq_exists do rewrite not_implyE; apply/exists2P.
-suff [e e_sep]: exists e : {posnum R},
-    forall A, exists2 un, A < un & ~ ball l e%:num (f un).
-- exists (fun n => sval (cid2 (e_sep n%:R))).
-  + apply/cvgryPgt=> A; near=> n; case: cid2 => //= r nr _.
+suff [e e_sep] : exists e : {posnum R}, forall A,
+    exists2 un, A < un & ~ ball l e%:num (f un).
+  exists (fun n => sval (cid2 (e_sep n%:R))).
+    apply/cvgryPgt=> A; near=> n; case: cid2 => //= r nr _.
     by rewrite (le_lt_trans _ nr)//; near: n; exact: nbhs_infty_ger.
   apply/cvg_ballP => /= /(_ e%:num ltac:(by[])) [N _ /(_ _ (leqnn N))].
-  by case: cid2 => uN/= _; apply.
+  by case: cid2 => uN/= _; exact.
 move: noncvg_f => /cvg_ballP; rewrite -existsPNP => -[eps eps_gt0].
 move /not_near_inftyP => eps_sep; exists (PosNum eps_gt0) => A /=.
 by case: (eps_sep _ (num_real A)) => x ? ?; exists x.
@@ -561,9 +562,10 @@ Arguments nondecreasing_at_right_cvgr {R f a} b.
 Section fun_cvg_ereal.
 Context {R : realType}.
 Local Open Scope ereal_scope.
+Implicit Type f : R -> \bar R.
 
 (* NB: see ereal_nondecreasing_cvgn in sequences.v *)
-Lemma nondecreasing_cvge (f : R -> \bar R) :
+Lemma nondecreasing_cvge f :
   nondecreasing_fun f -> f r @[r --> +oo%R] --> ereal_sup (range f).
 Proof.
 move=> ndf; set S := range f; set l := ereal_sup S.
@@ -644,11 +646,11 @@ apply: nondecreasing_cvgr.
 Unshelve. all: by end_near. Qed.
 
 (* NB: see ereal_nondecreasing_is_cvgn in sequences.v *)
-Lemma nondecreasing_is_cvge (f : R -> \bar R) :
-  nondecreasing_fun f -> (cvg (f r @[r --> +oo]))%R.
+Lemma nondecreasing_is_cvge f :
+  nondecreasing_fun f -> cvg (f r @[r --> +oo]%R).
 Proof. by move=> u_nd u_ub; apply: cvgP; exact: nondecreasing_cvge. Qed.
 
-Lemma nondecreasing_at_right_cvge (f : R -> \bar R) a (b : itv_bound R) :
+Lemma nondecreasing_at_right_cvge f a (b : itv_bound R) :
     (BRight a < b)%O ->
     {in Interval (BRight a) b &, nondecreasing_fun f} ->
   f x @[x --> a ^'+] --> ereal_inf (f @` [set` Interval (BRight a) b]).
@@ -812,7 +814,7 @@ apply: nondecreasing_at_right_cvgr => //.
   by rewrite fineK// ?f_fin_num ?inE//; exists x => //=; rewrite in_itv/= ax.
 Unshelve. all: by end_near. Qed.
 
-Lemma nondecreasing_at_right_is_cvge (f : R -> \bar R) (a : R) :
+Lemma nondecreasing_at_right_is_cvge f (a : R) :
     (\forall x \near a^'+, {in `]a, x[ &, nondecreasing_fun f}) ->
   cvg (f x @[x --> a ^'+]).
 Proof.
@@ -821,16 +823,14 @@ by eexists; apply: (@nondecreasing_at_right_cvge _ _ (BLeft b));
   [rewrite bnd_simp|near: b..].
 Unshelve. all: by end_near. Qed.
 
-Lemma nonincreasing_cvge (f : R -> \bar R) :
+Lemma nonincreasing_cvge f :
   nonincreasing_fun f -> f r @[r --> +oo%R] --> ereal_inf (range f).
 Proof.
-move=> f_Ninc.
-rewrite -cvgeNP /ereal_inf oppeK image_comp /comp.
-apply: nondecreasing_cvge=> x y x_ley.
-by rewrite leeN2; apply/f_Ninc/x_ley.
+move=> f_Ninc; rewrite -cvgeNP /ereal_inf oppeK image_comp.
+by apply: nondecreasing_cvge => x y xy; rewrite leeN2; exact/f_Ninc/xy.
 Qed.
 
-Lemma nonincreasing_at_right_cvge (f : R -> \bar R) a (b : itv_bound R) :
+Lemma nonincreasing_at_right_cvge f a (b : itv_bound R) :
     (BRight a < b)%O -> {in Interval (BRight a) b &, nonincreasing_fun f} ->
   f x @[x --> a ^'+] --> ereal_sup (f @` [set` Interval (BRight a) b]).
 Proof.
@@ -845,7 +845,7 @@ rewrite {}/rhs {}/lhs; rewrite /ereal_inf oppeK; congr ereal_sup.
 by rewrite image_comp/=; apply: eq_imagel => x _ /=; rewrite oppeK.
 Qed.
 
-Lemma nonincreasing_at_right_is_cvge (f : R -> \bar R) a :
+Lemma nonincreasing_at_right_is_cvge f a :
     (\forall x \near a^'+, {in `]a, x[ &, nonincreasing_fun f}) ->
   cvg (f x @[x --> a ^'+]).
 Proof.
