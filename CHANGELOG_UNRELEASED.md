@@ -29,6 +29,13 @@
   + `fubini1a` -> `integrable12ltyP`
   + `fubini1b` -> `integrable21ltyP`
 
+- in `mathcomp_extra.v`
+  + `comparable_min_le_min` -> `comparable_le_min2`
+  + `comparable_max_le_max` -> `comparable_le_max2`
+  + `min_le_min` -> `le_min2`
+  + `max_le_max` -> `le_max2`
+  + `real_sqrtC` -> `sqrtC_real`
+
 ### Generalized
 
 - in `constructive_ereal.v`:
