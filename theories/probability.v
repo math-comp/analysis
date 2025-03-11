@@ -535,17 +535,13 @@ rewrite -subr_le0.
 set a := fine (variance X).
 set b := (2 * fine (covariance P X Y))%R.
 set c := fine (variance Y).
-pose p := (a *: 'X^2 + b *: 'X + c%:P)%R.
-have -> : a = p`_2 by rewrite !coefE !Monoid.simpm.
-have -> : b = p`_1 by rewrite !coefE !Monoid.simpm.
-have -> : c = p`_0 by rewrite !coefE !Monoid.simpm.
-apply: deg_le2_poly_ge0.
-  rewrite (leq_trans (size_add _ _))// geq_max.
-  rewrite (leq_trans (size_polyC_leq1 _))// andbT.
-  rewrite (leq_trans (size_add _ _))// geq_max.
-  by rewrite !(leq_trans (size_scale_leq _ _)) ?size_polyX ?size_polyXn.
-move=> r; rewrite !hornerE/= -mulrA -expr2 -lee_fin !EFinD.
-rewrite EFinM fineK ?variance_fin_num// muleC -varianceZ//.
+pose p := Poly [:: c; b; a].
+have -> : a = p`_2 by rewrite !coefE.
+have -> : b = p`_1 by rewrite !coefE.
+have -> : c = p`_0 by rewrite !coefE.
+rewrite deg_le2_poly_ge0 ?size_Poly// => r.
+rewrite horner_Poly/= mul0r add0r mulrDl -mulrA -expr2.
+rewrite -lee_fin !EFinD EFinM fineK ?variance_fin_num// muleC -varianceZ//.
 rewrite 2!EFinM ?fineK ?variance_fin_num// ?covariance_fin_num//.
 rewrite -muleA [_ * r%:E]muleC -covarianceZl//.
 rewrite addeAC -varianceD ?variance_ge0//=.
