@@ -116,6 +116,37 @@ Arguments dfwith {I T} f i x.
 
 Definition idempotent_fun (U : Type) (f : U -> U) := f \o f =1 f.
 
+From mathcomp Require Import archimedean.
+
+Section floor_ceil.
+Context {R : archiDomainType}.
+Implicit Type x : R.
+
+Lemma ge_floor x : (Num.floor x)%:~R <= x.
+Proof. exact: Num.Theory.ge_floor. Qed.
+
+Lemma floor_ge_int x (z : int) : (z%:~R <= x) = (z <= Num.floor x).
+Proof. exact: Num.Theory.floor_ge_int. Qed.
+
+Lemma lt_succ_floor x : x < (Num.floor x + 1)%:~R.
+Proof. exact: Num.Theory.lt_succ_floor. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.le_ceil` instead")]
+Lemma ceil_ge x : x <= (Num.ceil x)%:~R.
+Proof. exact: Num.Theory.le_ceil. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le_int`")]
+Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (Num.ceil x <= z).
+Proof. exact: Num.Theory.ceil_le_int. Qed.
+
+Lemma ceilN x : Num.ceil (- x) = - Num.floor x.
+Proof. by rewrite /Num.ceil opprK. Qed.
+
+Lemma floorN x : Num.floor (- x) = - Num.ceil x.
+Proof. by rewrite /Num.ceil opprK. Qed.
+
+End floor_ceil.
+
 (**************************)
 (* MathComp 2.4 additions *)
 (**************************)
@@ -487,17 +518,9 @@ Proof. by rewrite intrD. Qed.
 Lemma intr1D {R : ringType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
-From mathcomp Require Import archimedean.
-
 Section floor_ceil.
 Context {R : archiDomainType}.
 Implicit Type x : R.
-
-Lemma ge_floor x : (Num.floor x)%:~R <= x.
-Proof. exact: Num.Theory.ge_floor. Qed.
-
-Lemma floor_ge_int x (z : int) : (z%:~R <= x) = (z <= Num.floor x).
-Proof. exact: Num.Theory.floor_ge_int. Qed.
 
 Lemma floor_lt_int x (z : int) : (x < z%:~R) = (Num.floor x < z).
 Proof. by rewrite ltNge floor_ge_int -ltNge. Qed.
@@ -511,9 +534,6 @@ Proof. by rewrite -ltzD1 add0r -floor_lt_int. Qed.
 Lemma floor_lt0 x : (x < 0) = (Num.floor x < 0).
 Proof. by rewrite -floor_lt_int. Qed.
 
-Lemma lt_succ_floor x : x < (Num.floor x + 1)%:~R.
-Proof. exact: Num.Theory.lt_succ_floor. Qed.
-
 Lemma floor_eq x m : (Num.floor x == m) = (m%:~R <= x < (m + 1)%:~R).
 Proof.
 apply/eqP/idP; [move=> <-|by move=> /Num.Theory.floor_def ->].
@@ -523,22 +543,8 @@ Qed.
 Lemma floor_neq0 x : (Num.floor x != 0) = (x < 0) || (x >= 1).
 Proof. by rewrite neq_lt -floor_lt_int gtz0_ge1 -floor_ge_int. Qed.
 
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.le_ceil` instead")]
-Lemma ceil_ge x : x <= (Num.ceil x)%:~R.
-Proof. exact: Num.Theory.le_ceil. Qed.
-
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le_int`")]
-Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (Num.ceil x <= z).
-Proof. exact: Num.Theory.ceil_le_int. Qed.
-
 Lemma ceil_gt_int x (z : int) : (z%:~R < x) = (z < Num.ceil x).
 Proof. by rewrite ltNge Num.Theory.ceil_le_int// -ltNge. Qed.
-
-Lemma ceilN x : Num.ceil (- x) = - Num.floor x.
-Proof. by rewrite /Num.ceil opprK. Qed.
-
-Lemma floorN x : Num.floor (- x) = - Num.ceil x.
-Proof. by rewrite /Num.ceil opprK. Qed.
 
 Lemma ceil_ge0 x : (- 1 < x) = (0 <= Num.ceil x).
 Proof. by rewrite ltrNl floor_le0 floorN lerNl oppr0. Qed.
