@@ -47,6 +47,8 @@
 
 - file `mathcomp_extra.v`
   + lemma `Pos_to_natE` (moved to `Rstruct.v`)
+  + lemma `deg_le2_ge0` (available as `deg_le2_poly_ge0` in `ssrnum.v`
+    since MathComp 2.1.0)
 
 ### Infrastructure
 

@@ -114,6 +114,8 @@ Proof. by move=> z; rewrite /proj dfwithin. Qed.
 End DFunWith.
 Arguments dfwith {I T} f i x.
 
+Definition idempotent_fun (U : Type) (f : U -> U) := f \o f =1 f.
+
 (**************************)
 (* MathComp 2.4 additions *)
 (**************************)
@@ -199,19 +201,6 @@ Notation real_sqrtC := sqrtC_real.
 (**********************)
 (* not yet backported *)
 (**********************)
-
-Definition idempotent_fun (U : Type) (f : U -> U) := f \o f =1 f.
-
-From mathcomp Require Import poly.
-
-Lemma deg_le2_ge0 (F : rcfType) (a b c : F) :
-  (forall x, 0 <= a * x ^+ 2 + b * x + c)%R -> (b ^+ 2 - 4%:R * a * c <= 0)%R.
-Proof.
-move=> pge0; pose p := \poly_(i < 3) [:: c; b; a]`_i.
-have := @deg_le2_poly_ge0 _ p (size_poly _ _); rewrite !coef_poly/=; apply=> r.
-rewrite horner_poly !big_ord_recr !big_ord0/= !Monoid.simpm/= expr1.
-by rewrite -mulrA -expr2 addrC addrA addrAC.
-Qed.
 
 (* NB: Coq 8.17.0 generalizes dependent_choice from Set to Type
    making the following lemma redundant *)
