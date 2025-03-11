@@ -1524,7 +1524,7 @@ by apply: eq_fsbigr => y fy; rewrite -integralZl//; exact/integrable_indic.
 Qed.
 
 Lemma expectationM_ge0' (X Y : {RV P >-> R}) :
-  independent_RVs2 P X Y ->
+  independent_RVs2 (P := P) X Y ->
   'E_P[X] *? 'E_P[Y] ->
   (forall t, 0 <= X t)%R -> (forall t, 0 <= Y t)%R ->
   'E_P [X * Y] = 'E_P [X] * 'E_P [Y].
@@ -1619,7 +1619,7 @@ by rewrite setTI.
 Qed.
 
 Lemma integrable_expectationM' (X Y : {RV P >-> R}) :
-  independent_RVs2 P X Y ->
+  independent_RVs2 (P := P) X Y ->
   P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o Y) ->
   `|'E_P [X * Y]| < +oo.
 Proof.
@@ -1648,7 +1648,7 @@ rewrite expectationM_ge0//=.
 Qed.
 
 Lemma independent_integrableM' (X Y : {RV P >-> R}) :
-  independent_RVs2 P X Y ->
+  independent_RVs2 (P := P) X Y ->
   P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o Y) ->
   P.-integrable setT (EFin \o (X \* Y)%R).
 Proof.
@@ -1661,7 +1661,7 @@ Qed.
 
 (* TODO: rename to expectationM when deprecation is removed  *)
 Lemma expectation_prod (X Y : {RV P >-> R}) :
-  independent_RVs2 P X Y ->
+  independent_RVs2 (P := P) X Y ->
   P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o Y) ->
   'E_P [X * Y] = 'E_P [X] * 'E_P [Y].
 Proof.
