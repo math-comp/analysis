@@ -121,11 +121,11 @@ Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 
 HB.mixin Record isMeasurableFun d d' (aT : sigmaRingType d) (rT : sigmaRingType d')
     (f : aT -> rT) := {
-  measurable_funP : measurable_fun [set: aT] f
+  measurable_funPT : measurable_fun [set: aT] f
 }.
 HB.structure Definition MeasurableFun d d' aT rT :=
   {f of @isMeasurableFun d d' aT rT f}.
-Arguments measurable_funP {d d' aT rT} s.
+Arguments measurable_funPT {d d' aT rT} s.
 
 (* #[global] Hint Resolve fimfun_inP : core. *)
 
@@ -136,12 +136,23 @@ Reserved Notation "[ 'mfun' 'of' f ]"
 Notation "{ 'mfun' aT >-> T }" := (@MeasurableFun.type _ _ aT T) : form_scope.
 Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
 #[global] Hint Extern 0 (measurable_fun [set: _] _) =>
-  solve [apply: measurable_funP] : core.
+  solve [apply: measurable_funPT] : core.
 
 Reserved Notation "{ 'sfun' aT >-> T }"
   (at level 0, format "{ 'sfun'  aT  >->  T }").
 Reserved Notation "[ 'sfun' 'of' f ]"
   (at level 0, format "[ 'sfun'  'of'  f ]").
+
+Lemma measurable_funP {d d' : measure_display}
+  {aT : measurableType d} {rT : sigmaRingType d'}
+  (D : set aT) (s : {mfun aT >-> rT}) : measurable_fun D s.
+Proof.
+move=> mD Y mY; apply: measurableI=> //.
+by rewrite -[X in measurable X]setTI; exact: measurable_funPT.
+Qed.
+Arguments measurable_funP {d d' aT rT D} s.
+(*#[global] Hint Extern 0 (measurable_fun _ _) =>
+  solve [apply: measurable_funPT] : core.*)
 
 Module HBSimple.
 
@@ -2655,40 +2666,50 @@ Local Open Scope ereal_scope.
 Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
 Variables (phi : X -> Y) (mphi : measurable_fun setT phi).
 Variables (mu : {measure set X -> \bar R}).
+Let mphi_mixin := isMeasurableFun.Build _ _ _ _ _ mphi.
+Let mphi_pack := MeasurableFun.Pack (MeasurableFun.Class mphi_mixin).
 
 Import HBNNSimple.
 
-Lemma ge0_integral_pushforward (f : Y -> \bar R) :
-  measurable_fun setT f -> (forall y, 0 <= f y) ->
-  \int[pushforward mu mphi]_y f y = \int[mu]_x (f \o phi) x.
+Lemma ge0_integral_pushforward D (f : Y -> \bar R) :
+  measurable D -> measurable_fun D f -> {in D, forall y, 0 <= f y} ->
+  \int[pushforward mu mphi]_(y in D) f y =
+  \int[mu]_(x in phi @^-1` D) (f \o phi) x.
 Proof.
-move=> mf f0.
-pose f_ := nnsfun_approx measurableT mf.
-transitivity (limn (fun n => \int[pushforward mu mphi]_x (f_ n x)%:E)).
+move=> mD mf f0.
+have mphiD: measurable (phi @^-1` D).
+  by rewrite -[X in measurable X]setTI; exact: (measurable_funP mphi_pack).
+pose f_ := nnsfun_approx mD mf.
+transitivity (limn (fun n => \int[pushforward mu mphi]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//.
-  - by apply: eq_integral => y _; apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
-  - by move=> n; exact/measurable_EFinP.
+  - apply: eq_integral => y /[!inE] yD; apply/esym/cvg_lim => //.
+    by apply: cvg_nnsfun_approx=> // *; apply: f0; rewrite inE.
+  - by move=> n; apply/measurable_EFinP; exact: measurable_funP.
   - by move=> n y _; rewrite lee_fin.
   - by move=> y _ m n mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
-rewrite (_ : (fun _ => _) = (fun n => \int[mu]_x (EFin \o f_ n \o phi) x)).
+rewrite (_ : (fun _ => _) =
+             (fun n => \int[mu]_(x in phi @^-1` D) (EFin \o f_ n \o phi) x)).
   rewrite -monotone_convergence//; last 3 first.
-    - by move=> n /=; apply: measurableT_comp => //; exact: measurableT_comp.
+    - move=> n /=; apply: measurableT_comp=> //; apply: measurableT_comp=> //.
+      exact: (measurable_funP mphi_pack).
     - by move=> n x _ /=; rewrite lee_fin.
     - by move=> x _ m n mn; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
-  by apply: eq_integral => x _ /=; apply/cvg_lim => //; exact: cvg_nnsfun_approx.
+  apply: eq_integral => x /[!inE] phiDx /=; apply/cvg_lim => //.
+  apply: cvg_nnsfun_approx=> //.
+  by move=> *; apply: f0; rewrite inE.
 apply/funext => n.
 have mfnphi r : measurable (f_ n @^-1` [set r] \o phi).
   rewrite -[_ \o _]/(phi @^-1` (f_ n @^-1` [set r])) -(setTI (_ @^-1` _)).
   exact/mphi.
 transitivity (\sum_(k \in range (f_ n))
-    \int[mu]_x (k * \1_((f_ n @^-1` [set k]) \o phi) x)%:E).
+    \int[mu]_(x in phi @^-1` D) (k * \1_((f_ n @^-1` [set k]) \o phi) x)%:E).
   under eq_integral do rewrite fimfunE -fsumEFin//.
   rewrite ge0_integral_fsum//; last 2 first.
     - by move=> y; apply/measurable_EFinP; exact: measurable_funM.
     - by move=> y x _; rewrite nnfun_muleindic_ge0.
   apply: eq_fsbigr => r _; rewrite integralZl_indic_nnsfun// integral_indic//=.
   rewrite (integralZl_indic _ (fun r => f_ n @^-1` [set r] \o phi))//.
-    by congr (_ * _); rewrite [RHS](@integral_indic).
+    congr (_ * _); rewrite [RHS](@integral_indic)//.
   by move=> r0; rewrite preimage_nnfun0.
 rewrite -ge0_integral_fsum//; last 2 first.
   - by move=> r; apply/measurable_EFinP; exact: measurable_funM.
@@ -4212,30 +4233,38 @@ Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
 Variable phi : X -> Y.
 Hypothesis mphi : measurable_fun [set: X] phi.
 Variable mu : {measure set X -> \bar R}.
+Variables D : set Y.
 Variables f : Y -> \bar R.
 Hypotheses (mf : measurable_fun [set: Y] f)
-  (intf : mu.-integrable [set: X] (f \o phi)).
+  (intf : mu.-integrable (phi @^-1` D) (f \o phi)).
+Let mf_mixin := isMeasurableFun.Build _ _ _ _ _ mf.
+Let mf_pack := MeasurableFun.Pack (MeasurableFun.Class mf_mixin).
 
 Lemma integrable_pushforward :
-  (pushforward mu mphi).-integrable [set: Y] f.
+  measurable D -> (pushforward mu mphi).-integrable D f.
 Proof.
-apply/integrableP; split => //.
+move=> mD; apply/integrableP; split; first exact: (measurable_funP mf_pack).
 move/integrableP : (intf) => [_]; apply: le_lt_trans.
-by rewrite ge0_integral_pushforward//=; exact: measurableT_comp.
+rewrite ge0_integral_pushforward//.
+apply: measurableT_comp=> //.
+exact: (measurable_funS measurableT).
 Qed.
 
 Local Open Scope ereal_scope.
 
 Lemma integral_pushforward :
-  \int[pushforward mu mphi]_y f y = \int[mu]_x (f \o phi) x.
+  measurable D ->
+  \int[pushforward mu mphi]_(y in D) f y =
+  \int[mu]_(x in phi @^-1` D) (f \o phi) x.
 Proof.
+move=> mD.
 rewrite integralE.
 under [X in X - _]eq_integral do rewrite funepos_comp.
 under [X in _ - X]eq_integral do rewrite funeneg_comp.
 rewrite -[X in _ = X - _]ge0_integral_pushforward//; last first.
-  exact/measurable_funepos.
+  exact/measurable_funepos/(measurable_funS measurableT).
 rewrite -[X in _ = _ - X]ge0_integral_pushforward//; last first.
-  exact: measurable_funeneg.
+  exact/measurable_funeneg/(measurable_funS measurableT).
 rewrite -integralB//=; last first.
 - by apply: integrable_funeneg => //=; exact: integrable_pushforward.
 - by apply: integrable_funepos => //=; exact: integrable_pushforward.
