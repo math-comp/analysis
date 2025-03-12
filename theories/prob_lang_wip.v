@@ -11,6 +11,8 @@ From mathcomp Require Import gauss_integral.
 
 (**md**************************************************************************)
 (* wip waiting for the Poisson distribution                                   *)
+(*                                                                            *)
+(* Another example from Section 4.2 in [Equation (13), Staton, ESOP 2017].    *)
 (******************************************************************************)
 
 Set Implicit Arguments.
