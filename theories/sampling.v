@@ -25,6 +25,23 @@ Import numFieldTopology.Exports numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Section product_probability2.
+Local Open Scope ereal_scope.
+Lemma product_probability2_setT :
+  forall (d1 d2 : measure_display) (T1 : measurableType d1) (T2 : measurableType d2) (R : realType) (P1 : probability T1 R) (P2 : probability T2 R), (P1 \x^ P2) setT = 1%E.
+Proof.
+move=> ? ? ? ? ? P1 P2.
+rewrite -setXTT product_measure2E// -[RHS]mul1e.
+congr mule.
+all: rewrite -[LHS]fineK ?fin_num_measure//.
+all: congr EFin=> /=.
+all: by rewrite probability_setT.
+Qed.
+
+HB.instance Definition _ (d1 d2 : measure_display) (T1 : measurableType d1) (T2 : measurableType d2) (R : realType) (P1 : probability T1 R) (P2 : probability T2 R):=
+  Measure_isProbability.Build _ _ _ (P1 \x^ P2) (product_probability2_setT P1 P2).
+End product_probability2.
+
 Section independent_events.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
@@ -1565,6 +1582,20 @@ congr EFin.
 by rewrite [in RHS](tuple_eta X) tnthS.
 Qed.
 
+Section fset.
+Local Open Scope fset_scope.
+Lemma fset_bool : forall B : {fset bool},
+    [\/ B == [fset true], B == [fset false], B == fset0 | B == [fset true; false]].
+Proof.
+move=> B.
+have:= set_bool [set` B].
+rewrite -!set_fset1 -set_fset0.
+rewrite (_ : [set: bool] = [set` [fset true; false]]); last first.
+  by apply/seteqP; split=> -[]; rewrite /= !inE eqxx.
+by case=> /eqP /(congr1 (@fset_set _)) /[!set_fsetK] /eqP H;
+   [apply: Or41|apply: Or42|apply: Or43|apply: Or44].
+Qed.
+End fset.
 
 Lemma expectation_prod_independent_RVs n (X : n.-tuple {RV P >-> R}) :
     independent_RVs (P := P) [set: 'I_n] (tnth X) ->
@@ -1600,7 +1631,97 @@ rewrite [X in 'E__[X]](_ : _ = (Y2 \* Y1)%R)//.
 simpl in Y1, Y2.
 
 rewrite expectation_prod; last 3 first.
-- admit. (* HARD *)
+- split.
+    move=> i /= _ A.
+    case: ifP=> Hi /=.
+      by case=> B mB <-; exact: (mX1).
+    by case=> B mB <-; exact: (mX2).
+  move=> /= J ? E Ei.
+  case: (fset_bool J)=> /eqP HJ; rewrite -> HJ in * |- *; clear J HJ.
+  + by rewrite !big_seq_fset1.
+  + by rewrite !big_seq_fset1.
+  + rewrite !big_seq_fset0.
+    suff-> : [set (thead x, [tuple of behead x]) | x in [set: mtuple n.+1 T]] = setT.
+      by rewrite probability_setT.
+    apply/seteqP; split=> -[t1 t2] //= _.
+    exists [tuple of t1 :: t2] => //=.
+    by rewrite theadE; congr pair; exact/val_inj.
+  + rewrite !big_fsetU1 ?inE//= !big_seq_fset1.
+    set E1 := E true.
+    set E2 := E false.
+    have EX1 : E1 \in g_sigma_algebra_preimage X1.
+      by have:= Ei true; rewrite !inE eqxx=> /(_ erefl).
+    have EX2 : E2 \in g_sigma_algebra_preimage X2.
+      by have:= Ei false; rewrite !inE eqxx orbT=> /(_ erefl).
+    clear Ei X0 intX0 intX Y1 Y2 build_mX1 build_mX2.
+    (* analyze EX2 *)
+    have:= EX2.
+    rewrite /g_sigma_algebra_preimage /preimage_set_system /preimage /=.
+    under [f in image _ f]funext=> /= B do rewrite setTI.
+    rewrite inE/=.
+    case=> B2 mB2.
+    move=> /[dup] EX2' <-.
+    (* analyze EX1 *)
+    have:= EX1.
+    rewrite /g_sigma_algebra_preimage /preimage_set_system /preimage /=.
+    under [f in image _ f]funext=> /= B.
+      rewrite setTI.
+      rewrite (_ : mkset _ = [set t | B (\prod_(i < n) tnth (behead_tuple X) i (tnth (behead_tuple t) (i : 'I_n.+1.-1)))%R]); last first.
+        apply/eq_set=> t.
+        rewrite /X1 [in LHS](tuple_eta t) [in LHS](tuple_eta X).
+        by under eq_bigr do rewrite !tnthS.
+      rewrite
+        (_ :
+          mkset _ = 
+          image (setT `*`
+                 [set t | B (\prod_(i < n) tnth (behead_tuple X) i (tnth t i))%R])
+                (fun t => [tuple of t.1 :: t.2]) ); last first.
+        apply/seteqP; split=> t; rewrite (tuple_eta t) /=.
+          have-> : behead_tuple [tuple of thead t :: behead t] = behead_tuple t by exact/val_inj.
+          by move=> H; exists (thead t, behead_tuple t) => //; split.
+        case=> -[x0 x] [] _ /= H <-.
+        by have-> :  behead_tuple [tuple of x0 :: x] = x by exact/val_inj.
+      over.
+    set X' : n.-tuple _ := behead_tuple X.
+    rewrite inE /=.
+    case=> B' mB'.
+    move<-.
+    (* simplify LHS *)
+    set E1'' := mkset _.
+    have mE1'' : measurable (E1'' : set (mtuple _ _)).
+      rewrite /E1'' -/(preimage _ _).
+      set f : mtuple n T -> R := (f in preimage f).
+      suff: measurable_fun setT f by rewrite -[preimage _ _]setTI; exact.
+      rewrite /f.
+      apply: measurable_prod=> /= i _.
+      apply: (measurable_comp measurableT)=> //=.
+      exact: measurable_tnth.
+    (* simplify LHS *)
+    rewrite [image _ _](_ : _ = (thead X @^-1` B2) `*` E1''); last first.
+      apply/seteqP; split=> -[x0 x] /=.
+        case=> x1 [] [] [y0 y] /= [] _ ? <- /[!theadE] ? /eqP /[!xpair_eqE] /andP [] /eqP <- /eqP /= <-.
+        rewrite [y in E1'' y](_ : _ = y)//.
+        exact/val_inj.
+      case=> ? ?.
+      exists [tuple of x0 :: x]; last by congr pair; apply/val_inj.
+      split=> //.
+      by exists (x0, x).
+    rewrite product_measure2E//=; last first.
+      by rewrite -[preimage _ _]setTI; exact: measurable_funP.
+    (* simplify RHS *)
+    rewrite image_comp [f in image _ f](_ : _ = idfun); last first.
+      by apply/funext=> -[t0 t] /=; congr pair; exact/val_inj.
+    rewrite image_id product_measure2E//.
+    rewrite [X in _ = X * _ * _]probability_setT mul1e /=.
+    rewrite muleC; congr mule.
+    rewrite (_ : image _ _ = thead X @^-1` B2 `*` setT); last first.
+      apply/seteqP; split=> /= -[t0 t] /=.
+        by case=> x ? /eqP /[!xpair_eqE] /andP [] /eqP <- _.
+      case=> ? _; exists [tuple of t0 :: t]; rewrite ?theadE//.
+      by congr pair; exact/val_inj.
+    rewrite product_measure2E//; last first.
+      by rewrite -[preimage _ _]setTI; exact: measurable_funP.
+    by rewrite [X in _ = _ * X]probability_setT mule1.
 - admit.
 - admit.
 rewrite big_ord_recl.
