@@ -25,6 +25,9 @@
 - in `trigo.v`:
   + lemma `integral0oo_atan`
 
+- in `measure.v`:
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_comp`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
