@@ -243,6 +243,24 @@ Notation mu := (@lebesgue_measure R).
 Local Open Scope ereal_scope.
 Implicit Types (f : R -> R) (a : itv_bound R).
 
+Let integrable_locally f (A : set R) : measurable A ->
+  mu.-integrable A (EFin \o f) -> locally_integrable [set: R] (f \_ A).
+Proof.
+move=> mA intf; split.
+- move/integrableP : intf => [mf _].
+  by apply/(measurable_restrictT _ _).1 => //; exact/EFin_measurable_fun.
+- exact: openT.
+- move=> K _ cK.
+  move/integrableP : intf => [mf].
+  rewrite integral_mkcond/=.
+  under eq_integral do rewrite restrict_EFin restrict_normr.
+  apply: le_lt_trans.
+  apply: ge0_subset_integral => //=; first exact: compact_measurable.
+  apply/EFin_measurable_fun/measurableT_comp/EFin_measurable_fun => //=.
+  move/(measurable_restrictT _ _).1 : mf => /=.
+  by rewrite restrict_EFin; exact.
+Qed.
+
 Let FTC0 f a : mu.-integrable setT (EFin \o f) ->
   let F x := (\int[mu]_(t in [set` Interval a (BRight x)]) f t)%R in
   forall x, a < BRight x -> lebesgue_pt f x ->
@@ -1025,7 +1043,6 @@ Qed.
 
 End Rintegration_by_parts.
 
-(* TODO: move to realfun.v? *)
 Section integration_by_substitution_preliminaries.
 Context {R : realType}.
 Notation mu := lebesgue_measure.

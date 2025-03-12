@@ -950,6 +950,23 @@ Qed.
 HB.instance Definition _ :=
   @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
 
+Lemma eq_bernoulli (P : probability bool R) :
+  P [set true] = p%:E -> P =1 bernoulli.
+Proof.
+move=> Ptrue sb; rewrite /bernoulli /bernoulli_pmf.
+have Pfalse: P [set false] = (1 - p%:E)%E.
+  rewrite -Ptrue -(@probability_setT _ _ _ P) setT_bool measureU//; last first.
+    by rewrite disjoints_subset => -[]//.
+  by rewrite addeAC subee ?add0e//= Ptrue.
+have: (0 <= p%:E <= 1)%E by rewrite -Ptrue measure_ge0 probability_le1.
+rewrite !lee_fin => ->.
+have eq_sb := etrans (bigcup_imset1 (_ : set bool) id) (image_id _).
+rewrite -[in LHS](eq_sb sb)/= measure_fin_bigcup//; last 2 first.
+- exact: finite_finset.
+- by move=> [] [] _ _ [[]]//= [].
+- by apply: eq_fsbigr => /= -[].
+Qed.
+
 End bernoulli.
 
 Section bernoulli_measure.
@@ -978,6 +995,17 @@ Qed.
 
 End bernoulli_measure.
 Arguments bernoulli {R}.
+
+Lemma eq_bernoulliV2 {R : realType} (P : probability bool R) :
+  P [set true] = P [set false] -> P =1 bernoulli 2^-1.
+Proof.
+move=> Ptrue_eq_false; apply/eq_bernoulli.
+have : P [set: bool] = 1%E := probability_setT.
+rewrite setT_bool measureU//=; last first.
+  by rewrite disjoints_subset => -[]//.
+rewrite Ptrue_eq_false -mule2n; move/esym/eqP.
+by rewrite -mule_natl -eqe_pdivrMl// mule1 => /eqP<-.
+Qed.
 
 Section integral_bernoulli.
 Context {R : realType}.
