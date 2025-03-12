@@ -509,15 +509,80 @@ Lemma sum_mfunE {R : realType} d {T : measurableType d} (s : seq {mfun T >-> R})
   ((\sum_(f <- s) f) x = sumrfct s x)%R.
 Proof. by rewrite/sumrfct; elim/big_ind2 : _ => //= u a v b <- <-. Qed.
 
-
 End move.
 
-Definition measure_tuple_display : measure_display -> measure_display.
-Proof. exact. Qed.
+Section move_to_bigop_nat_lemmas.
+Context {T : Type}.
+Implicit Types (A : set T).
+
+Lemma bigcup_mkord_ord n (F : 'I_n.+1 -> set T) :
+  \bigcup_(i < n.+1) F (inord i) = \big[setU/set0]_(i < n.+1) F i.
+Proof.
+rewrite bigcup_mkord; apply: eq_bigr => /= i _; congr F.
+by apply/val_inj => /=;rewrite inordK.
+Qed.
+
+End move_to_bigop_nat_lemmas.
+
+(* MathComp-Analysis PR in progress *)
+Lemma preimage_set_systemU {aT rT : Type} {X : set aT} {f : aT -> rT} :
+  {morph preimage_set_system X f : x y / x `|` y >-> x `|` y}.
+Proof.
+move=> F G; apply/seteqP; split=> A; rewrite /preimage_set_system /=.
+  by case=> B + <- => -[? | ?]; [left | right]; exists B.
+by case=> -[] B FGB <-; exists B=> //; [left | right].
+Qed.
+
+(* MathComp-Analysis PR in progress *)
+Lemma preimage_set_system0 {aT rT : Type} {X : set aT} {f : aT -> rT} :
+  preimage_set_system X f set0 = set0.
+Proof. by apply/seteqP; split=> A // []. Qed.
+
+(* MathComp-Analysis PR in progress *)
+Lemma preimage_set_system_funcomp
+  {aT arT rT : Type} {f : aT -> arT} {g : arT -> rT} {F : set_system rT} D :
+  preimage_set_system D (g \o f) F =
+  preimage_set_system D f (preimage_set_system setT g F).
+Proof.
+apply/seteqP; split=> A.
+  case=> B FB <-.
+  exists (g @^-1` B)=> //.
+  exists B=> //.
+  by rewrite setTI.
+case=> B [] C FC <- <-.
+exists C=> //.
+rewrite !setTI.
+by rewrite comp_preimage.
+Qed.
 
 Definition g_sigma_preimage d (rT : semiRingOfSetsType d) (aT : Type)
     (n : nat) (f : 'I_n -> aT -> rT) : set (set aT) :=
   <<s \big[setU/set0]_(i < n) preimage_set_system setT (f i) measurable >>.
+
+Lemma g_sigma_preimage_comp d1 {T1 : semiRingOfSetsType d1} n
+  {T : pointedType} (f1 : 'I_n -> T -> T1) [T3 : Type] (g : T3 -> T) :
+g_sigma_preimage (fun i => (f1 i \o g)) =
+preimage_set_system [set: T3] g (g_sigma_preimage f1).
+Proof.
+rewrite {1}/g_sigma_preimage.
+rewrite -g_sigma_preimageE; congr (<<s _ >>).
+destruct n as [|n].
+  rewrite !big_ord0 /preimage_set_system/=.
+  by apply/esym; rewrite -subset0 => t/= [].
+rewrite predeqE => C; split.
+- rewrite -bigcup_mkord_ord => -[i Ii [A mA <-{C}]].
+  exists (f1 (Ordinal Ii) @^-1` A).
+    rewrite -bigcup_mkord_ord; exists i => //.
+    exists A => //; rewrite setTI// (_ : Ordinal _ = inord i)//.
+    by apply/val_inj => /=;rewrite inordK.
+  rewrite !setTI// -comp_preimage// (_ : Ordinal _ = inord i)//.
+  by apply/val_inj => /=;rewrite inordK.
+- move=> [A].
+  rewrite -bigcup_mkord_ord => -[i Ii [B mB <-{A}]] <-{C}.
+  rewrite -bigcup_mkord_ord.
+  exists i => //.
+  by exists B => //; rewrite !setTI -comp_preimage.
+Qed.
 
 HB.instance Definition _ (n : nat) (T : pointedType) :=
   isPointed.Build (n.-tuple T) (nseq n point).
@@ -533,6 +598,9 @@ Proof. exact: countableP. Qed.
 
 HB.instance Definition _ d (T : measurableType d) b :=
   MeasurableFun_isDiscrete.Build d _ T _  (cst b) (countable_range_bool T b).
+
+Definition measure_tuple_display : measure_display -> measure_display.
+Proof. exact. Qed.
 
 Section measurable_tuple.
 Context {d} {T : measurableType d}.
@@ -573,44 +641,6 @@ Proof.
 move=> _ Y mY; rewrite setTI; apply: sub_sigma_algebra => /=.
 rewrite -bigcup_seq/=; exists i => //=; first by rewrite mem_index_enum.
 by exists Y => //; rewrite setTI.
-Qed.
-
-Section move_to_bigop_nat_lemmas.
-Context {T : Type}.
-Implicit Types (A : set T).
-
-Lemma bigcup_mkord_ord n (F : 'I_n.+1 -> set T) :
-  \bigcup_(i < n.+1) F (inord i) = \big[setU/set0]_(i < n.+1) F i.
-Proof.
-rewrite bigcup_mkord; apply: eq_bigr => /= i _; congr F.
-by apply/val_inj => /=;rewrite inordK.
-Qed.
-
-End move_to_bigop_nat_lemmas.
-
-Lemma g_sigma_preimage_comp d1 {T1 : semiRingOfSetsType d1} n
-  {T : pointedType} (f1 : 'I_n -> T -> T1) [T3 : Type] (g : T3 -> T) :
-g_sigma_preimage (fun i => (f1 i \o g)) =
-preimage_set_system [set: T3] g (g_sigma_preimage f1).
-Proof.
-rewrite {1}/g_sigma_preimage.
-rewrite -g_sigma_preimageE; congr (<<s _ >>).
-destruct n as [|n].
-  rewrite !big_ord0 /preimage_set_system/=.
-  by apply/esym; rewrite -subset0 => t/= [].
-rewrite predeqE => C; split.
-- rewrite -bigcup_mkord_ord => -[i Ii [A mA <-{C}]].
-  exists (f1 (Ordinal Ii) @^-1` A).
-    rewrite -bigcup_mkord_ord; exists i => //.
-    exists A => //; rewrite setTI// (_ : Ordinal _ = inord i)//.
-    by apply/val_inj => /=;rewrite inordK.
-  rewrite !setTI// -comp_preimage// (_ : Ordinal _ = inord i)//.
-  by apply/val_inj => /=;rewrite inordK.
-- move=> [A].
-  rewrite -bigcup_mkord_ord => -[i Ii [B mB <-{A}]] <-{C}.
-  rewrite -bigcup_mkord_ord.
-  exists i => //.
-  by exists B => //; rewrite !setTI -comp_preimage.
 Qed.
 
 Section cons_measurable_fun.
@@ -672,6 +702,69 @@ Qed.
 
 End cons_measurable_fun.
 
+Lemma behead_mktuple n {T : eqType} (t : n.+1.-tuple T) :
+  behead t = [tuple (tnth t (lift ord0 i)) | i < n].
+Proof.
+destruct n as [|n].
+  rewrite !tuple0.
+  apply: size0nil.
+  by rewrite size_behead size_tuple.
+apply: (@eq_from_nth _ (tnth_default t ord0)).
+  by rewrite size_behead !size_tuple.
+move=> i ti.
+rewrite nth_behead/= (nth_map ord0); last first.
+  rewrite size_enum_ord.
+  by rewrite size_behead size_tuple in ti.
+rewrite (tnth_nth (tnth_default t ord0)).
+congr nth.
+rewrite /= /bump/= add1n; congr S.
+apply/esym.
+rewrite size_behead size_tuple in ti.
+have := @nth_ord_enum _ ord0 (Ordinal ti).
+by move=> ->.
+Qed.
+
+Lemma measurable_behead d (T : measurableType d) n :
+  measurable_fun setT (fun x : mtuple n.+1 T => [tuple of behead x] : mtuple n T).
+Proof.
+red=> /=.
+move=> _ Y mY.
+rewrite setTI.
+set bh := (bh in preimage bh).
+have bhYE : (bh @^-1` Y) = [set x :: y | x in setT & y in Y].
+  rewrite /bh.
+  apply/seteqP; split=> x /=.
+    move=> ?; exists (thead x)=> //.
+    exists [tuple of behead x] => //=.
+    by rewrite [in RHS](tuple_eta x).
+  case=> x0 _ [] y Yy xE.
+  suff->: [tuple of behead x] = y by [].
+  apply/val_inj=> /=.
+  by rewrite -xE.
+have:= mY.
+rewrite /measurable/= => + F [] sF.
+pose F' := image_set_system setT bh F.
+move=> /(_ F') /=.
+have-> : F' Y = F (bh @^-1` Y) by rewrite /F' /image_set_system /= setTI.
+move=> /[swap] H; apply; split; first exact: sigma_algebra_image.
+move=> A; rewrite /= /F' /image_set_system /= setTI.
+set X := (X in X A).
+move => XA.
+apply: H; rewrite big_ord_recl /=; right.
+set X' := (X' in X' (preimage _ _)).
+have-> : X' = preimage_set_system setT bh X.
+  rewrite /X.
+  rewrite (big_morph _ preimage_set_systemU preimage_set_system0).
+  apply: eq_bigr=> i _.
+  rewrite -preimage_set_system_funcomp.
+  congr preimage_set_system.
+  apply: funext=> t.
+  rewrite (tuple_eta t) /bh /= tnthS.
+  by congr tnth; apply/val_inj.
+exists A=> //.
+by rewrite setTI.
+Qed.
+
 Section pro1.
 Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
   (R : realType) (P1 : probability T1 R) (P2 : probability T2 R).
@@ -707,19 +800,6 @@ Qed.
 HB.instance Definition _ :=
   Measure_isProbability.Build _ _ _ pro2 pro2_setT.
 End pro2.
-
-(*Lemma measurable_drop d (T : measurableType d) n k :
-  measurable_fun [set: mtuple n.+1 T]
-    (fun x : mtuple n.+1 T => [the mtuple (n.+1 - k) T of drop (T := T) k x]).
-Proof.
-elim: k n => [|k ihk n].
-  admit.
-rewrite /=.
-set f := (X in measurable_fun _ X).
-rewrite (_ : f =
-  (fun x : mtuple n.+1 T =>
-    [the mtuple (n.+1 - k.+1) T of tnth x ord0 :: drop (n.+1 - k) x])).
-Admitted.*)
 
 Section pro.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
@@ -861,100 +941,6 @@ move=> d1 d2 T1 T2 R m1 m2 f /integrableP[mf intf]; apply/integrableP; split => 
   apply/integrableP; split => //.
     by apply/measurableT_comp => //.
   by under eq_integral do rewrite abse_id.
-Qed.
-
-Lemma behead_mktuple n {T : eqType} (t : n.+1.-tuple T) :
-  behead t = [tuple (tnth t (lift ord0 i)) | i < n].
-Proof.
-destruct n as [|n].
-  rewrite !tuple0.
-  apply: size0nil.
-  by rewrite size_behead size_tuple.
-apply: (@eq_from_nth _ (tnth_default t ord0)).
-  by rewrite size_behead !size_tuple.
-move=> i ti.
-rewrite nth_behead/= (nth_map ord0); last first.
-  rewrite size_enum_ord.
-  by rewrite size_behead size_tuple in ti.
-rewrite (tnth_nth (tnth_default t ord0)).
-congr nth.
-rewrite /= /bump/= add1n; congr S.
-apply/esym.
-rewrite size_behead size_tuple in ti.
-have := @nth_ord_enum _ ord0 (Ordinal ti).
-by move=> ->.
-Qed.
-
-Lemma preimage_set_systemU {aT rT : Type} {X : set aT} {f : aT -> rT} :
-  {morph preimage_set_system X f : x y / x `|` y >-> x `|` y}.
-Proof.
-move=> F G; apply/seteqP; split=> A; rewrite /preimage_set_system /=.
-  by case=> B + <- => -[? | ?]; [left | right]; exists B.
-by case=> -[] B FGB <-; exists B=> //; [left | right].
-Qed.
-
-Lemma preimage_set_system0 {aT rT : Type} {X : set aT} {f : aT -> rT} :
-  preimage_set_system X f set0 = set0.
-Proof. by apply/seteqP; split=> A // []. Qed.
-
-(* The appropriate name `preimage_set_system_comp` is already occupied by
-   something different *)
-(* TODO: generalize `setT`s in the statement *)
-Lemma preimage_set_system_funcomp
-  {aT arT rT : Type} {f : aT -> arT} {g : arT -> rT} {F : set_system rT} :
-  preimage_set_system setT f (preimage_set_system setT g F) =
-    preimage_set_system setT (g \o f) F.
-Proof.
-apply/seteqP; split=> A.
-  case=> B [] C FC <- <-.
-  exists C=> //.
-  rewrite !setTI.
-  by rewrite comp_preimage.
-case=> B FB <-.
-exists (g @^-1` B)=> //.
-exists B=> //.
-by rewrite setTI.
-Qed.
-
-Lemma measurable_behead d (T : measurableType d) n :
-  measurable_fun setT (fun x : mtuple n.+1 T => [tuple of behead x] : mtuple n T).
-Proof.
-red=> /=.
-move=> _ Y mY.
-rewrite setTI.
-set bh := (bh in preimage bh).
-have bhYE : (bh @^-1` Y) = [set x :: y | x in setT & y in Y].
-  rewrite /bh.
-  apply/seteqP; split=> x /=.
-    move=> ?; exists (thead x)=> //.
-    exists [tuple of behead x] => //=.
-    by rewrite [in RHS](tuple_eta x).
-  case=> x0 _ [] y Yy xE.
-  suff->: [tuple of behead x] = y by [].
-  apply/val_inj=> /=.
-  by rewrite -xE.
-have:= mY.
-rewrite /measurable/= => + F [] sF.
-pose F' := image_set_system setT bh F.
-move=> /(_ F') /=.
-have-> : F' Y = F (bh @^-1` Y) by rewrite /F' /image_set_system /= setTI.
-move=> /[swap] H; apply; split; first exact: sigma_algebra_image.
-move=> A; rewrite /= /F' /image_set_system /= setTI.
-set X := (X in X A).
-move => XA.
-apply: H; rewrite big_ord_recl /=; right.
-set X' := (X' in X' (preimage _ _)).
-have-> : X' = preimage_set_system setT bh X.
-  rewrite /X.
-  rewrite (big_morph _ preimage_set_systemU preimage_set_system0).
-  apply: eq_bigr=> i _.
-  rewrite preimage_set_system_funcomp.
-  congr preimage_set_system.
-  apply: funext=> t.
-  rewrite (tuple_eta t) /bh /= tnthS.
-  by congr tnth; apply/val_inj.
-exists A=> //.
-by rewrite setTI.
 Qed.
 
 Section proS.
