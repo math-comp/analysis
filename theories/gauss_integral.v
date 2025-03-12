@@ -21,48 +21,6 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* NB: move to trigo.v? *)
-Section oneDsqr.
-Context {R : realType}.
-Implicit Type x : R.
-
-Definition oneDsqr x : R := 1 + x ^+ 2.
-
-Lemma oneDsqr_ge1 x : 1 <= oneDsqr x :> R.
-Proof. by rewrite lerDl sqr_ge0. Qed.
-
-#[local]
-Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve[apply: oneDsqr_ge1] : core.
-
-Canonical oneDsqr_inum x : {itv R & `[1, +oo[} := @ItvReal R (oneDsqr x)
-  (BLeft 1%Z) (BInfty _ false) (oneDsqr_ge1 x) erefl.
-
-Lemma oneDsqrV_le1 x : oneDsqr\^-1 x <= 1. Proof. by rewrite invf_le1. Qed.
-
-Lemma continuous_oneDsqr : continuous oneDsqr.
-Proof. by move=> x; apply: cvgD; [exact: cvg_cst|exact: exprn_continuous]. Qed.
-
-Lemma continuous_oneDsqrV : continuous (oneDsqr\^-1).
-Proof. by move=> x; apply: cvgV => //; exact: continuous_oneDsqr. Qed.
-
-Lemma integral01_oneDsqr :
-  \int[@lebesgue_measure R]_(x in `[0, 1]) (oneDsqr x)^-1 = atan 1.
-Proof.
-rewrite /Rintegral (@continuous_FTC2 _ _ atan)//.
-- by rewrite atan0 sube0.
-- by apply: continuous_in_subspaceT => x ?; exact: continuous_oneDsqrV.
-- split.
-  + by move=> x _; exact: derivable_atan.
-  + by apply: cvg_at_right_filter; exact: continuous_atan.
-  + by apply: cvg_at_left_filter; exact: continuous_atan.
-- move=> x x01.
-  by rewrite derive1_atan// mul1r.
-Qed.
-
-End oneDsqr.
-#[global]
-Hint Extern 0 (is_true (1 <= oneDsqr _)) => solve [apply: oneDsqr_ge1] : core.
-
 Section gauss_fun.
 Context {R : realType}.
 Local Open Scope ring_scope.
@@ -316,7 +274,7 @@ Proof.
 rewrite /h /integral0_gauss set_itv1 Rintegral_set1 expr0n addr0.
 rewrite -atan1 /integral01_u.
 under eq_Rintegral do rewrite /u expr0n/= oppr0 mul0r expR0 mul1r.
-exact: integral01_oneDsqr.
+exact: integral0_oneDsqr.
 Qed.
 
 Let u_gauss_fun t x : u x t <= gauss_fun x.
