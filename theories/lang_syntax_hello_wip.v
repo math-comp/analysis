@@ -518,15 +518,24 @@ transitivity (\int[mu]_(z in V)
   by move/mem_set.
 apply: eq_integral.
 move=> x _.
-transitivity ((2 * pi * (Num.sqrt 2))^-1%:E *
-                \int[mu]_x0 ((expR (- (x - x0) ^+ 2 / 2))%R * expR (- (x0 - (y.1 / 2)) ^+ 2 ))%:E).
-  under eq_integral.
-    move=> z _.
-    rewrite !normal_pdfE//.
-    rewrite /normal_pdf0.
-
-    over.
-  admit.
+transitivity ((pi * (Num.sqrt 2))^-1%:E *
+    \int[mu]_z (expR (- (x - z) ^+ 2 / 2) * expR (- (z - y.1 / 2) ^+ 2))%:E).
+  rewrite -ge0_integralZl//=; last 3 first.
+  - apply/measurable_EFinP => //=; apply: measurable_funM => //=.
+    + apply: measurableT_comp => //=; apply: measurable_funM => //=.
+      apply/measurableT_comp => //; apply: measurable_funX.
+      exact: measurable_funB.
+    + do 2 apply: measurableT_comp => //=.
+      by apply: measurable_funX; exact: measurable_funD.
+  - by move=> z _; rewrite lee_fin mulr_ge0// expR_ge0.
+  - by rewrite lee_fin// invr_ge0// mulr_ge0// pi_ge0.
+  apply: eq_integral => /= z _.
+  rewrite /normal_pdf oner_eq0 gt_eqF; last by rewrite invr_gt0.
+  rewrite /normal_pdf0 expr1n mul1r exprVn sqr_sqrtr//.
+  rewrite -mulrnAr -(mulr_natr pi) -(mulr_natr 2^-1).
+  rewrite (mulrCA _ pi) mulVf ?mulr1 ?divr1// mulrACA; congr ((_ * _)%:E).
+  rewrite sqrtrM ?pi_ge0// !invfM// mulrAC; congr (_ / _).
+  by rewrite -[LHS]invfM -expr2 sqr_sqrtr ?pi_ge0.
 rewrite normal_pdfE// /normal_pdf0.
 evar (C : Real.sort R).
 transitivity (((2 * pi * Num.sqrt 2)^-1)%:E *
@@ -535,7 +544,6 @@ transitivity (((2 * pi * Num.sqrt 2)^-1)%:E *
 (* gauss integral *)
 admit.
 Admitted.
-
 
 End helloRight_subproofs.
 
