@@ -404,6 +404,53 @@ Qed.
 
 End sample_binomial.
 
+Section nondeterminism_and_weights.
+Context {R : realType}.
+Open Scope lang_scope.
+Open Scope ring_scope.
+
+Definition binomial2p (p : R) : @exp R _ [::] _ :=
+  [let "x" := Sample {exp_binomial 2 [{p}:R]} in return #{"x"}].
+
+Definition return2 (p : R) : @exp R _ [::] _ :=
+  [let "_" := Score {p ^+ 2}:R in return {2}:N].
+
+Definition return1 (p : R) : @exp R _ [::] _ :=
+  [let "_" := Score {p * `1-p *+ 2}:R in return {1}:N].
+
+Definition return0 (p : R) : @exp R _ [::] _ :=
+  [let "_" := Score {`1-p^+2}:R in return {0}:N].
+
+Lemma exec_binomial2p (p : R) t U : 0 <= p <= 1 -> measurable U ->
+  execP (binomial2p p) t U =
+  execP (return2 p) t U +
+  execP (return1 p) t U +
+  execP (return0 p) t U.
+Proof.
+move=> /= /andP[p0 p1] mU.
+(* simplify the lhs *)
+rewrite [in LHS]execP_letin execP_sample/= execD_binomial/=.
+rewrite execP_return/= !execD_real/= exp_var'E (execD_var_erefl "x")/=.
+rewrite letin'E/= integral_binomial//=.
+rewrite !big_ord_recr big_ord0//=.
+rewrite !(bin0,bin1,bin2).
+rewrite !(add0r,expr0,mul1r,mulr1,subn0,mulr1n,expr1).
+(* simplify the rhs *)
+rewrite /return2 /return1 /return0.
+rewrite ![in RHS]execP_letin !execP_score/= !execD_real/=.
+rewrite !execP_return/= !execD_nat/=.
+rewrite !letin'E/=.
+rewrite !ge0_integral_mscale//=.
+rewrite !integral_dirac//=.
+rewrite !diracT.
+rewrite !(mul1e) ger0_norm ?sqr_ge0//.
+rewrite ger0_norm ?mulrn_wge0 ?mulr_ge0 ?onem_ge0//.
+rewrite ger0_norm ?sqr_ge0//.
+by rewrite -addeA addeC -addeA addeCA addeA.
+Qed.
+
+End nondeterminism_and_weights.
+
 Section hard_constraint.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.
@@ -977,3 +1024,4 @@ Example letinC_ground (g := [:: ("a", Unit); ("b", Bool)]) t1 t2
 Proof. move=> U mU; exact: letinC. Qed.
 
 End letinC.
+

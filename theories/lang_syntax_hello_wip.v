@@ -563,19 +563,24 @@ rewrite ge0_integralZr//; first last.
 rewrite [in RHS]sqr_sqrtr//.
 rewrite -[in RHS]mulr_natr [in RHS]mulrAC divfK//.
 rewrite mulNr EFinM muleA; congr *%E.
-rewrite (_: \int[mu]_x0 (expR (- (3 / 2) * (x0 - (x + y.1)%E / 3) ^+ 2))%:E
-  = (Num.sqrt ((3 / 2) ^+ 2 * pi *+ 2))%:E *
- \int[mu]_x0 (normal_pdf (x + y.1)%R (Num.sqrt (3 / 2)) x0)%:E); last first.
-  admit.
-rewrite integral_normal_pdf mule1.
-rewrite -EFinM; congr EFin.
-rewrite -(mulr_natr (_ * pi)).
-rewrite -mulrA.
-rewrite sqrtrM//.
-rewrite -mulrA.
-xxx
-admit.
-Admitted.
+rewrite [X in _ * X = _](_ : _ = (Num.sqrt ((1 / 3) * pi *+ 2))%:E *
+   \int[mu]_z (normal_pdf ((x + y.1) / 3) (Num.sqrt (1 / 3)) z)%:E); last first.
+  rewrite -ge0_integralZl//=; last 2 first.
+    by apply/measurable_EFinP; exact: measurable_normal_pdf.
+    by move=> /= z _; rewrite lee_fin normal_pdf_ge0.
+  apply: eq_integral => /= z _.
+  rewrite /normal_pdf gt_eqF// /normal_pdf0 sqr_sqrtr// -EFinM; congr EFin.
+  rewrite [RHS]mulrA -[LHS]mul1r; congr (_ * expR _)%R.
+    by rewrite divff// gt_eqF// sqrtr_gt0 pmulrn_rgt0// mulr_gt0// pi_gt0.
+  rewrite -(mulr_natl (1 / 3)) mul1r.
+  by rewrite !mulNr (mulrC (3 / 2)) invfM invrK (mulrC (2^-1)).
+rewrite integral_normal_pdf mule1 -EFinM mul1r; congr EFin.
+rewrite -(mulr_natr (_ * pi)) sqrtrM ?mulr_ge0 ?pi_ge0//.
+rewrite invfM mulrCA -mulrA mulVf ?mulr1 ?gt_eqF//.
+rewrite !sqrtrM// invfM sqrtrV// -mulrA; congr *%R.
+rewrite -[X in _ / X]sqr_sqrtr ?pi_ge0//.
+by rewrite -exprVn expr2 mulrCA divff ?mulr1// sqrtr_eq0 leNgt pi_gt0.
+Qed.
 
 End helloRight_subproofs.
 
