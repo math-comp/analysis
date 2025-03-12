@@ -25,6 +25,9 @@
 - in `trigo.v`:
   + lemma `integral0oo_atan`
 
+- in `classical_sets.v`
+  + lemma `sigT_sequence` and `sig_sequence`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package

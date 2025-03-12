@@ -2420,6 +2420,30 @@ have Au : A u by rewrite inE in a.
 by rewrite (Prop_irrelevance a (mem_set Au)); apply: PA.
 Qed.
 
+Lemma sigT_sequence T (P : forall n, ('I_n -> T) -> Type)
+    (f : forall n, {u : 'I_n -> T & P n u}) :
+    (forall n (i : 'I_n), tag (f n.+1) (lift ord_max i) = tag (f n) i) ->
+  {u : nat -> T & forall n, P n u}.
+Proof.
+move=> compat; exists (fun n => tag (f n.+1) ord_max) => n.
+rewrite (@eq_fun _ _ _ (tag (f n))); first by case: (f).
+elim: n => [[]//|n IHn] i.
+have [/= j {i}-> /=|->//] := unliftP ord_max i.
+by rewrite /bump/= ltn_geF// add0n IHn compat.
+Qed.
+
+Lemma sig_sequence T (P : forall n, ('I_n -> T) -> Prop)
+    (f : forall n, {u : 'I_n -> T | P n u}) :
+    (forall n (i : 'I_n), sval (f n.+1) (lift ord_max i) = sval (f n) i) ->
+  {u : nat -> T | forall n, P n u}.
+Proof.
+move=> compat; exists (fun n => sval (f n.+1) ord_max) => n.
+rewrite (@eq_fun _ _ _ (sval (f n))); first by case: (f).
+elim: n => [[]//|n IHn] i.
+have [/= j {i}-> /=|->//] := unliftP ord_max i.
+by rewrite /bump/= ltn_geF// add0n IHn compat.
+Qed.
+
 Lemma in_setP {U} (A : set U) (P : U -> Prop) :
   {in A, forall x, P x} <-> forall x, A x -> P x.
 Proof. by split=> AP x; have := AP x; rewrite inE. Qed.
