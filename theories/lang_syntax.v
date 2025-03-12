@@ -2097,7 +2097,7 @@ Inductive evalD : forall g t, exp D g t ->
   e -D> r ; mr ->
   (exp_normal s0 e : exp D g _) -D>
      (fun x => @normal_prob _ (r x) s) ;
- measurableT_comp (measurable_normal_prob2 s0 ) mr
+ measurableT_comp (measurable_normal_prob2 s0) mr
 
 | eval_normalize g t (e : exp P g t) k :
   e -P> k ->
