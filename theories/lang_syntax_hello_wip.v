@@ -537,11 +537,43 @@ transitivity ((pi * (Num.sqrt 2))^-1%:E *
   rewrite sqrtrM ?pi_ge0// !invfM// mulrAC; congr (_ / _).
   by rewrite -[LHS]invfM -expr2 sqr_sqrtr ?pi_ge0.
 rewrite normal_pdfE// /normal_pdf0.
-evar (C : Real.sort R).
-transitivity (((2 * pi * Num.sqrt 2)^-1)%:E *
-  \int[mu]_x0 (expR (- (3 / 2)%R * (x0 - C) ^+ 2 - (x - y.1 / 2) ^+ 2 / (3 / 2 *+ 2)))%:E).
-  admit.
+transitivity (((pi * Num.sqrt 2)^-1)%:E *
+  \int[mu]_x0 (expR (- (3 / 2)%R * (x0 - (x + y.1) / 3) ^+ 2 - (x - y.1 / 2) ^+ 2 / (3 / 2 *+ 2)))%:E).
+  congr *%E.
+  apply: eq_integral.
+  move=> z _.
+  rewrite -expRD.
+  congr EFin.
+  congr expR.
+  rewrite !sqrrD.
+  lra.
 (* gauss integral *)
+under eq_integral do rewrite expRD EFinM.
+rewrite ge0_integralZr//; first last.
+      rewrite lee_fin.
+      exact: expR_ge0.
+    move=> z _.
+    rewrite lee_fin.
+    exact: expR_ge0.
+  apply/measurable_EFinP.
+  apply: measurableT_comp => //.
+  apply: measurable_funM => //.
+  apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => t ^+ 2)%R) => //.
+  exact: measurable_funD.
+rewrite [in RHS]sqr_sqrtr//.
+rewrite -[in RHS]mulr_natr [in RHS]mulrAC divfK//.
+rewrite mulNr EFinM muleA; congr *%E.
+rewrite (_: \int[mu]_x0 (expR (- (3 / 2) * (x0 - (x + y.1)%E / 3) ^+ 2))%:E
+  = (Num.sqrt ((3 / 2) ^+ 2 * pi *+ 2))%:E *
+ \int[mu]_x0 (normal_pdf (x + y.1)%R (Num.sqrt (3 / 2)) x0)%:E); last first.
+  admit.
+rewrite integral_normal_pdf mule1.
+rewrite -EFinM; congr EFin.
+rewrite -(mulr_natr (_ * pi)).
+rewrite -mulrA.
+rewrite sqrtrM//.
+rewrite -mulrA.
+xxx
 admit.
 Admitted.
 
