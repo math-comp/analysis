@@ -31,6 +31,7 @@
 - in `lebesgue_integral.v`:
   + `fubini1a` -> `integrable12ltyP`
   + `fubini1b` -> `integrable21ltyP`
+  + `measurable_funP` -> `measurable_funPT` (field of `isMeasurableFun` mixin)
 
 - in `mathcomp_extra.v`
   + `comparable_min_le_min` -> `comparable_le_min2`
@@ -43,6 +44,10 @@
 
 - in `constructive_ereal.v`:
   + lemma `EFin_natmul`
+
+- in `lebesgue_integral.v`
+  + lemmas `measurable_funP`, `ge0_integral_pushforward`,
+    `integrable_pushforward`, `integral_pushforward`
 
 ### Deprecated
 
