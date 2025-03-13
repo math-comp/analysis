@@ -1400,7 +1400,6 @@ Proof. by move=> y0 z0; rewrite -!poweRrML_gtr0// muleC. Qed.
 (* by rewrite powRD//; apply/implyP => /cnd[]. *)
 (* Qed. *)
 
-Search "powRD".
 
 Definition poweRD_def x y z : bool :=
   match x, y, z with
@@ -1446,95 +1445,8 @@ all: try by rewrite ?addeNy ?addNye poweRyNe ?mule0.
 all: by rewrite addNye poweRyNe // ?mul0e.
 Qed.
 
-
-(* Lemma poweRD x y z : x `^?(y +? z) -> x `^ (y + z) = x `^ y * x `^ z. *)
-(* Proof. *)
-(* rewrite /poweRD_def. *)
-(* have [->|r0]/= := eqVneq r 0%R; first by rewrite add0r poweRe0 mul1e. *)
-(* have [->|s0]/= := eqVneq s 0%R; first by rewrite addr0 poweRe0 mule1. *)
-(* case: x => // [t|/=|/=]; rewrite ?(negPf r0, negPf s0, implybF); last 2 first. *)
-(* - move=> /negPf->; rewrite mulyy. *)
-(* - by move=> /negPf->; rewrite mule0. *)
-(* rewrite !poweR_EFin eqe => /implyP/(_ _)/andP cnd. *)
-(* by rewrite powRD//; apply/implyP => /cnd[]. *)
-(* Qed. *)
-
 (*
-Lemma poweRD x y z : x `^ (y + z) = x `^ y * x `^ z.
-Proof.
-case : x; case : y; case : z => //=; last first.
-all: try move => a b c; try move => a b; try move => a; try by rewrite ?lt0_poweR //= ?mul1e //.
-all: try by rewrite ?addeNy ?addNye poweReNy_gt1 ?ltry ?mule0 ?mul0e.
-by rewrite addye ?poweRyPe ?gt0_muley.
-(*x = +oo , y = +oo , z = a%:E -> a%:E > 0*)
-(*x = +oo , y = a%:E , z = +oo -> a%:E > 0*)
-1,2: try 
-  by rewrite ?addye ?poweRey_gt1 ?ltry ?gt0_mulye ?poweRyPe ?gt0_muley //;
-  have gta0 : (0 < a%:E); rewrite ?gta0; first by admit. 
-(*x = +oo , y = b%:E , z = a%:E -> ?*)
-rewrite -EFinD; case: (ltrgtP (b + a) 0) => addba0.
-  (*x = +oo , y = b%:E , z = a%:E* , b + a < 0 -> b,a <= 0*)
-  - admit.
-  (*x = +oo , y = b%:E , z = a%:E* , b + a > 0 -> 0 <= b,a*)
-  - admit.
-  (*x = +oo , y = b%:E , z = a%:E* , b + a = 0 -> 0 = b,a*)
-  - admit.
-(*x = a%:E , y = -oo , z = -oo -> true*)
-rewrite addNye.
-case: (ltrgtP a 0); case: (ltrgtP a 1) => a1 a0.
-  (*x = a%:E , y = -oo , z = -oo , a < 0 -> true*)
-  - admit.
-  (*contradiction*)
-  - admit.
-  (*contradiction*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, 0 < a < 1 -> true*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, 1 < a -> true*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, a = 1 -> true*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, a = 0 -> true*)
-  - admit.
-  (*contradiction*)
-  - admit.
-  (*contradiction*)
-  - admit.
-(*x = a%:E , y = -oo , z = +oo -> not 0 < a < 1*)
-rewrite addNye.
-case: (ltrgtP a 0); case: (ltrgtP a 1) => a1 a0.
-  (*x = a%:E , y = -oo , z = -oo , a < 0 -> true*)
-  - admit.
-  (*contradiction*)
-  - admit.
-  (*contradiction*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, 0 < a < 1 -> FALSE*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, 1 < a -> true*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, a = 1 -> true*)
-  - admit.
-  (*x = a%:E , y = -oo , z = -oo, a = 0 -> true*)
-  - admit.
-  (*contradiction*)
-  - admit.
-  (*contradiction*)
-  - admit. 
-(*x = b%:E , y = -oo , z = a%:E -> a = 0*)
-rewrite addNye. admit.
-(*x = b%:E , y = +oo , z = -oo -> not 0 < b < 1*)
-admit.
-(*x = a%:E , y = +oo , z = +oo -> true*)
-admit.
-(*x = b%:E , y = +oo , z = a%:E -> a = 0*)
-rewrite addye //. admit.
-(*x = b%:E , y = a%:E , z = -oo -> a = 0*)
-admit.
-(*x = b%:E , y = a%:E , z = +oo -> a = 0*)
-admit.
-(*x = b%:E , y = a%:E , z = c%:E -> true*)
-admit.
+
 
 Lemma poweRD x y z : 0 <= y -> 0 <= z -> 0 <= x -> ((y + z == 0) ==> (x != 0)) -> x `^ (y + z) = x `^ y * x `^ z.
 Proof.
@@ -1571,9 +1483,16 @@ all: rewrite ?poweRyy ?mulyy//.
 Admitted.
 *)
 
+(*
 Lemma poweRB x y z : (* x `^?(r +? - s) -> *)
   0 <= y -> 0 <= - z -> 0 <= x -> ((y + - z == 0) ==> (x != 0)) -> x `^ (y - z) = x `^ y * x `^ (- z).
+Proof.
+move=> y0 z0 x0 h. rewrite poweRD //.
 Proof. by move=> y0 z0 x0 h; rewrite poweRD. Qed.
+  *)
+
+Lemma poweRB x y z : x `^?(y +? - z) -> x `^ (y - z) = x `^ y * x `^ (- z).
+Proof. by move=> rs; rewrite poweRD. Qed.
 
   
 Lemma poweR12_sqrt x : 0 <= x -> x `^ (2^-1%:E) = sqrte x.
