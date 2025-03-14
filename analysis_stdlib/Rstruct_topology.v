@@ -90,7 +90,7 @@ Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
 End analysis_struct.
 
 Module RexpE.
-Import topology normedtype sequences.
+Import normedtype sequences.
 
 (* proof by comparing the defining power series *)
 Lemma RexpE (x : R) : Rtrigo_def.exp x = expR x.
