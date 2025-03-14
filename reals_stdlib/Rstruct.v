@@ -525,6 +525,24 @@ case: (lerP x y) => H; first by rewrite Rmin_left //; apply: RlebP.
 by rewrite ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
 
+Lemma RabsE x : Rabs x = `|x|.
+Proof.
+by rewrite /Rabs; case: Rcase_abs => [/RltP x0|/Rge_le/RleP x0];
+  [rewrite ltr0_norm|rewrite ger0_norm].
+Qed.
+
+Lemma RdistE x y : Rdist x y = `|x - y|.
+Proof. by rewrite /Rdist RabsE RminusE. Qed.
+
+Lemma sum_f_R0E f n : sum_f_R0 f n = \sum_(0 <= k < n.+1) f k.
+Proof.
+elim: n => [|n ih/=]; first by rewrite big_nat1.
+by rewrite RplusE big_nat_recr//= ih.
+Qed.
+
+Lemma factE n : fact n = n`!.
+Proof. by elim: n => //= n ih; rewrite factS mulSn ih. Qed.
+
 Section bigmaxr.
 Context {R : realDomainType}.
 
