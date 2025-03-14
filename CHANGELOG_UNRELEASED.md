@@ -54,6 +54,16 @@
 - file `lebesgue_integral.v`:
   + lemma `measurable_fun_le`
 
+- in `trigo.v`:
+  + lemma `integral0oo_atan`
+
+- in `measure.v`:
+  + lemmas `preimage_set_system0`, `preimage_set_systemU`, `preimage_set_system_compS`
+  + lemma `preimage_set_system_id`
+
+- in `Rstruct_topology.v`:
+  + lemma `RexpE`
+
 - file `mathcomp_extra.v`:
   + lemma `mulr_funEcomp`
 
@@ -324,15 +334,6 @@
   + `min_le_min` -> `le_min2`
   + `max_le_max` -> `le_max2`
   + `real_sqrtC` -> `sqrtC_real`
-- in `measure.v`
-  + `preimage_class` -> `preimage_set_system`
-  + `image_class` -> `image_set_system`
-  + `preimage_classes` -> `g_sigma_preimageU`
-  + `preimage_class_measurable_fun` -> `preimage_set_system_measurable_fun`
-  + `sigma_algebra_preimage_class` -> `sigma_algebra_preimage`
-  + `sigma_algebra_image_class` -> `sigma_algebra_image`
-  + `sigma_algebra_preimage_classE` -> `g_sigma_preimageE`
-  + `preimage_classes_comp` -> `g_sigma_preimageU_comp`
   
 ### Renamed
 

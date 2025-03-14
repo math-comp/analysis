@@ -863,6 +863,58 @@ Qed.
 
 End independent_RVs_lemmas.
 
+Local Open Scope ereal_scope.
+(**md see Achim Klenke's Probability Theory, Ch.2, remark 2.15 *)
+Lemma independence_RVsP {R : realType} d (T : measurableType d)
+    {I0 : choiceType} {d'} (T' : measurableType d') (P : probability T R)
+    (I : set I0) (X : I0 -> {mfun T >-> T'}) :
+  independent_RVs (P := P) I X <->
+  forall J : {fset I0}, [set` J] `<=` I ->
+    forall A : I0  -> set T', (forall j, I j -> A j \in measurable) ->
+      P (\big[setI/setT]_(j <- J) (X j @^-1` A j))
+      = \prod_(j <- J) P (X j @^-1` A j).
+Proof.
+split.
+  move=> [H1 +] J JI A IA.
+  apply => // j jJ /=.
+  rewrite inE/=.
+  exists (A j).
+    exact/set_mem/IA/JI.
+  by rewrite setTI.
+move=> H; split.
+  move=> j Ij _ [B mB] <-.
+  rewrite setTI.
+  exact: measurable_sfunP.
+move=> J JI E JE.
+pose A : I0 -> set T' := fun i => match pselect (i \in J) with
+  left H => sval (cid2 (set_mem (JE i H))) | right _ => setT end.
+have H1 (j : I0) : I j -> A j \in d'.-measurable.
+  move=> Ij.
+  rewrite /A.
+  case: pselect => [|]; last by rewrite inE.
+  move=> jJ.
+  rewrite inE.
+  by case: cid2.
+have := H _ JI A H1 => {}H.
+apply: eq_trans.
+  apply: eq_trans; last exact: H.
+  congr (P _).
+  rewrite big_seq [RHS]big_seq.
+  apply: eq_bigr => j jJ.
+  rewrite /A.
+  case: pselect; last by [].
+  move=> jJ'.
+  case: cid2 => //= ? ?.
+  by rewrite setTI.
+rewrite big_seq [RHS]big_seq.
+apply: eq_bigr => j jJ.
+rewrite /A.
+case: pselect; last by [].
+move=> jJ'.
+case: cid2 => //= ?.
+by rewrite setTI => ? ->.
+Qed.
+
 Section independent_generators.
 Context {R : realType} d (T : measurableType d).
 Context {I0 : choiceType}.
