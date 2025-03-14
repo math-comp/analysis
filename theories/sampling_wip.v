@@ -7,8 +7,8 @@ Require Reals Interval.Tactic.
 From mathcomp Require Import (canonicals) Rstruct Rstruct_topology.
 From HB Require Import structures.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
-From mathcomp Require Import reals ereal interval_inference topology normedtype.
-From mathcomp Require Import sequences realfun convex.
+From mathcomp Require Import reals ereal interval_inference topology normedtype sequences.
+From mathcomp Require Import realfun convex.
 From mathcomp Require Import derive esum measure exp numfun lebesgue_measure.
 From mathcomp Require Import lebesgue_integral kernel probability.
 From mathcomp Require Import independence.
@@ -18,8 +18,11 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 (**md**************************************************************************)
-(* This file contains the formalization of a sampling theorem                 *)
+(* This file copies most of the file sampling.v, to serve as an experiment    *)
+(* for the formalization of a variant of the sampling theorem                 *)
 (******************************************************************************)
+
+Reserved Notation "' P [ A | B ]".
 
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldTopology.Exports numFieldNormedType.Exports.
@@ -48,7 +51,387 @@ HB.instance Definition _ (d1 d2 : measure_display) (T1 : measurableType d1)
   Measure_isProbability.Build _ _ _ (P1 \x^ P2) (product_probability2_setT P1 P2).
 End product_probability2.
 
+(* NB: most of the contents of this section is in PR 1391 and can soon be removed *)
+Section independent_events.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Local Open Scope ereal_scope.
+
+Lemma sub_independent_events (I0 : choiceType) (A B : set I0) (E : I0 -> set T) :
+  A `<=` B -> independent_events P B E -> independent_events P A E.
+Proof.
+by move=> AB [mE h]; split=> [i /AB/mE//|C CA]; apply: h; apply: subset_trans AB.
+Qed.
+
+Definition kwise_independent (I : choiceType) (A : set I) (E : I -> set T) k :=
+  (forall i, A i -> measurable (E i)) /\
+  forall B : {fset I}, [set` B] `<=` A -> (#|` B | <= k)%nat ->
+    P (\bigcap_(i in [set` B]) E i) = \prod_(i <- B) P (E i).
+
+Lemma sub_kwise_independent (I : choiceType) (A B : set I) (E : I -> set T) k :
+  A `<=` B -> kwise_independent B E k -> kwise_independent A E k.
+Proof.
+by move=> AB [mE h]; split=> [i /AB/mE//|C CA]; apply: h; apply: subset_trans AB.
+Qed.
+
+Lemma mutual_indep_is_kwise_indep (I : choiceType) (A : set I) (E : I -> set T) k :
+  independent_events P A E -> kwise_independent A E k.
+Proof.
+rewrite /independent_events /kwise_independent.
+move=> [mE miE]; split=> // B BleA _.
+exact: miE.
+Qed.
+
+Lemma nwise_indep_is_mutual_indep (I : choiceType) (A : {fset I}) (E : I -> set T) n :
+  #|` A | = n -> kwise_independent [set` A] E n -> independent_events P [set` A] E.
+Proof.
+rewrite /independent_events /kwise_independent.
+move=> nA [mE miE]; split=> // B BleA.
+apply: miE => //; rewrite -nA fsubset_leq_card//.
+by apply/fsubsetP => x xB; exact: (BleA x).
+Qed.
+
+Lemma mutually_independent_weak (I : choiceType) (E : I -> set T) (B : set I) :
+  (forall b, ~ B b -> E b = setT) ->
+  independent_events P [set: I] E <->
+  independent_events P B E.
+Proof.
+move=> BE; split; first exact: sub_independent_events.
+move=> [mE h]; split=> [i _|C _].
+  by have [Bi|Bi] := pselect (B i); [exact: mE|rewrite BE].
+have [CB|CB] := pselect ([set` C] `<=` B); first by rewrite h.
+rewrite -(setIT [set` C]) -(setUv B) setIUr bigcap_setU.
+rewrite (@bigcapT _ _ (_ `&` ~` _)) ?setIT//; last by move=> i [_ /BE].
+have [D CBD] : exists D : {fset I}, [set` C] `&` B = [set` D].
+  exists (fset_set ([set` C] `&` B)).
+  by rewrite fset_setK//; exact: finite_setIl.
+rewrite CBD h; last first.
+  rewrite -CBD; exact: subIsetr.
+rewrite [RHS]fsbig_seq//= [RHS](fsbigID B)//=.
+rewrite [X in _ * X](_ : _ = 1) ?mule1; last first.
+  by rewrite fsbig1// => m [_ /BE] ->; rewrite probability_setT.
+by rewrite CBD -fsbig_seq.
+Qed.
+
+Lemma kwise_independent_weak (I : choiceType) (E : I -> set T) (B : set I) k :
+  (forall b, ~ B b -> E b = setT) ->
+  kwise_independent [set: I] E k <->
+  kwise_independent B E k.
+Proof.
+move=> BE; split; first exact: sub_kwise_independent.
+move=> [mE h]; split=> [i _|C _ Ck].
+  by have [Bi|Bi] := pselect (B i); [exact: mE|rewrite BE].
+have [CB|CB] := pselect ([set` C] `<=` B); first by rewrite h.
+rewrite -(setIT [set` C]) -(setUv B) setIUr bigcap_setU.
+rewrite (@bigcapT _ _ (_ `&` ~` _)) ?setIT//; last by move=> i [_ /BE].
+have [D CBD] : exists D : {fset I}, [set` C] `&` B = [set` D].
+  exists (fset_set ([set` C] `&` B)).
+  by rewrite fset_setK//; exact: finite_setIl.
+rewrite CBD h; last 2 first.
+  - rewrite -CBD; exact: subIsetr.
+  - rewrite (leq_trans _ Ck)// fsubset_leq_card// -(set_fsetK D) -(set_fsetK C).
+    by rewrite -fset_set_sub// -CBD; exact: subIsetl.
+rewrite [RHS]fsbig_seq//= [RHS](fsbigID B)//=.
+rewrite [X in _ * X](_ : _ = 1) ?mule1; last first.
+  by rewrite fsbig1// => m [_ /BE] ->; rewrite probability_setT.
+by rewrite CBD -fsbig_seq.
+Qed.
+
+Lemma kwise_independent_weak01 E1 E2 :
+  kwise_independent [set: nat] (bigcap2 E1 E2) 2%N <->
+  kwise_independent [set 0%N; 1%N] (bigcap2 E1 E2) 2%N.
+Proof.
+apply: kwise_independent_weak.
+by move=> n /= /not_orP[/eqP /negbTE -> /eqP /negbTE ->].
+Qed.
+
+Lemma independent_events_weak' (I : choiceType) (E : I -> set T) (B : set I) :
+  (forall b, ~ B b -> E b = setT) ->
+  independent_events P [set: I] E <->
+  independent_events P B E.
+Proof.
+move=> BE; split; first exact: sub_independent_events.
+move=> [mE h]; split=> [i _|C CI].
+  by have [Bi|Bi] := pselect (B i); [exact: mE|rewrite BE].
+have [CB|CB] := pselect ([set` C] `<=` B); first by rewrite h.
+rewrite -(setIT [set` C]) -(setUv B) setIUr bigcap_setU.
+rewrite (@bigcapT _ _ (_ `&` ~` _)) ?setIT//; last by move=> i [_ /BE].
+have [D CBD] : exists D : {fset I}, [set` C] `&` B = [set` D].
+  exists (fset_set ([set` C] `&` B)).
+  by rewrite fset_setK//; exact: finite_setIl.
+rewrite CBD h; last first.
+  - rewrite -CBD; exact: subIsetr.
+rewrite [RHS]fsbig_seq//= [RHS](fsbigID B)//=.
+rewrite [X in _ * X](_ : _ = 1) ?mule1; last first.
+  by rewrite fsbig1// => m [_ /BE] ->; rewrite probability_setT.
+by rewrite CBD -fsbig_seq.
+Qed.
+
+Definition pairwise_independent E1 E2 :=
+  kwise_independent [set 0; 1]%N (bigcap2 E1 E2) 2.
+
+Lemma pairwise_independentM_old (E1 E2 : set T) :
+  pairwise_independent E1 E2 <->
+  [/\ d.-measurable E1, d.-measurable E2 & P (E1 `&` E2) = P E1 * P E2].
+Proof.
+split.
+- move=> [mE1E2 /(_ [fset 0%N; 1%N]%fset)].
+  rewrite bigcap_fset !big_fsetU1 ?inE//= !big_seq_fset1/= => ->; last 2 first.
+  + by rewrite set_fsetU !set_fset1; exact: subset_refl.
+  + rewrite cardfs2//.
+  split => //.
+  + by apply: (mE1E2 0%N) => /=; left.
+  + by apply: (mE1E2 1%N) => /=; right.
+- move=> [mE1 mE2 E1E2M].
+  split => //=.
+  + by move=> [| [| [|]]]//=.
+  + move=> B _; have [B0|B0] := boolP (0%N \in B); last first.
+      have [B1|B1] := boolP (1%N \in B); last first.
+        rewrite big1_fset; last first.
+          move=> k kB _; rewrite /bigcap2.
+          move: kB B0; case: ifPn => [/eqP -> ->//|k0 kB B0].
+          move: kB B1; case: ifPn => [/eqP -> ->//|_ _ _].
+          by rewrite probability_setT.
+        rewrite bigcapT ?probability_setT// => k/= kB.
+        move: kB B0 B1; case: ifPn => [/eqP -> ->//|k0].
+        by case: ifPn => [/eqP -> ->|].
+      rewrite (bigcap_setD1 1%N _ [set` B])//=.
+      rewrite bigcapT ?setIT; last first.
+        move=> k [/= kB /eqP /negbTE ->].
+        by move: kB B0; case: ifPn => [/eqP -> ->|].
+      rewrite (big_fsetD1 1%N)//= big1_fset ?mule1// => k.
+      rewrite !inE => /andP[/negbTE -> kB] _.
+      move: kB B0; case: ifPn => [/eqP -> ->//|k0 kB B0].
+      by rewrite probability_setT.
+    rewrite (bigcap_setD1 0%N _ [set` B])//.
+    have [B1|B1] := boolP (1%N \in B); last first.
+      rewrite bigcapT ?setIT; last first.
+        move=> k [/= kB /eqP /negbTE ->].
+        by move: kB B1; case: ifPn => [/eqP -> ->|].
+      rewrite (big_fsetD1 0%N)//= big1_fset ?mule1// => k.
+      rewrite !inE => /andP[/negbTE -> kB] _.
+      move: kB B1; case: ifPn => [/eqP -> ->//|k1 kB B1].
+      by rewrite probability_setT.
+    rewrite (bigcap_setD1 1%N _ ([set` B] `\ 0%N))// bigcapT ?setIT; last first.
+      by move=> n/= [[nB]/eqP/negbTE -> /eqP/negbTE ->].
+    rewrite E1E2M (big_fsetD1 0%N)//= (big_fsetD1 1%N)/=; last by rewrite !inE B1.
+    rewrite big1_fset ?mule1//= => k.
+    rewrite !inE => -/and3P[/negbTE -> /negbTE -> kB] _;
+    by rewrite probability_setT.
+Qed.
+
+Lemma pairwise_independentM (E1 E2 : set T) :
+  pairwise_independent E1 E2 <->
+  [/\ d.-measurable E1, d.-measurable E2 & P (E1 `&` E2) = P E1 * P E2].
+Proof.
+split.
+- move=> [mE1E2 /(_ [fset 0%N; 1%N]%fset)].
+  rewrite bigcap_fset !big_fsetU1 ?inE//= !big_seq_fset1/= => ->; last 2 first.
+  + by rewrite set_fsetU !set_fset1; exact: subset_refl.
+  + by rewrite cardfs2.
+  split => //.
+  + by apply: (mE1E2 0%N) => /=; left.
+  + by apply: (mE1E2 1%N) => /=; right.
+- move=> [mE1 mE2 E1E2M].
+  rewrite /pairwise_independent.
+  split.
+  + by move=> [| [| [|]]]//=.
+  + move=> B B01 B2.
+    have [B_set0|B_set0|B_set1|B_set01] := subset_set2 B01.
+    * rewrite B_set0.
+      move: B_set0 => /eqP; rewrite set_fset_eq0 => /eqP ->.
+      by rewrite big_nil bigcap_set0 probability_setT.
+    * rewrite B_set0 bigcap_set1 /=.
+      by rewrite fsbig_seq//= B_set0 fsbig_set1/=.
+    * rewrite B_set1 bigcap_set1 /=.
+      by rewrite fsbig_seq//= B_set1 fsbig_set1/=.
+    * rewrite B_set01 bigcap_setU1 bigcap_set1/=.
+      rewrite fsbig_seq//= B_set01.
+      rewrite fsbigU//=; last first.
+        by move=> n [/= ->].
+      by rewrite !fsbig_set1//=.
+Qed.
+
+Lemma pairwise_independent_setC (E1 E2 : set T) :
+  pairwise_independent E1 E2 -> pairwise_independent E1 (~` E2).
+Proof.
+rewrite/pairwise_independent.
+move/pairwise_independentM=> [mE1 mE2 h].
+apply/pairwise_independentM; split=> //.
+- exact: measurableC.
+- rewrite -setDE measureD//; last first.
+    exact: (le_lt_trans (probability_le1 P mE1) (ltry _)).
+  rewrite probability_setC// muleBr// ?mule1 -?h//.
+  by rewrite fin_num_measure.
+Qed.
+
+Lemma pairwise_independentC (E1 E2 : set T) :
+  pairwise_independent E1 E2 -> pairwise_independent E2 E1.
+Proof.
+rewrite/pairwise_independent/kwise_independent; move=> [mE1E2 /(_ [fset 0%N; 1%N]%fset)].
+rewrite bigcap_fset !big_fsetU1 ?inE//= !big_seq_fset1/= => h.
+split.
+- case=> [_|[_|]]//=.
+  + by apply: (mE1E2 1%N) => /=; right.
+  + by apply: (mE1E2 0%N) => /=; left.
+- move=> B B01 B2.
+  have [B_set0|B_set0|B_set1|B_set01] := subset_set2 B01.
+  + rewrite B_set0.
+    move: B_set0 => /eqP; rewrite set_fset_eq0 => /eqP ->.
+    by rewrite big_nil bigcap_set0 probability_setT.
+  + rewrite B_set0 bigcap_set1 /=.
+    by rewrite fsbig_seq//= B_set0 fsbig_set1/=.
+  + rewrite B_set1 bigcap_set1 /=.
+    by rewrite fsbig_seq//= B_set1 fsbig_set1/=.
+  + rewrite B_set01 bigcap_setU1 bigcap_set1/=.
+    rewrite fsbig_seq//= B_set01.
+    rewrite fsbigU//=; last first.
+    by move=> n [/= ->].
+    rewrite !fsbig_set1//= muleC setIC.
+    apply: h.
+    * by rewrite set_fsetU !set_fset1; exact: subset_refl.
+    * by rewrite cardfs2.
+Qed.
+(* ale: maybe interesting is thm 8.3 and exercise 8.6 from shoup/ntb at this point *)
+
+End independent_events.
+
+Section conditional_probability.
+Context d (T : measurableType d) (R : realType).
+Local Open Scope ereal_scope.
+
+Definition conditional_probability (P : probability T R) E1 E2 :=
+  (fine (P (E1 `&` E2)) / fine (P E2))%:E.
+Local Notation "' P [ E1 | E2 ]" := (conditional_probability P E1 E2).
+
+Lemma conditional_independence (P : probability T R) E1 E2 :
+  P E2 != 0 -> pairwise_independent P E1 E2 -> 'P [ E1 | E2 ] = P E1.
+Proof.
+move=> PE2ne0 iE12.
+have /= mE1 := (iE12.1 0%N).
+have /= mE2 := (iE12.1 1%N).
+rewrite/conditional_probability.
+have [_ _ ->] := (pairwise_independentM _ _ _).1 iE12.
+rewrite fineM ?fin_num_measure//; [|apply: mE1; left=>//|apply: mE2; right=>//].
+rewrite -mulrA mulfV ?mulr1 ?fineK// ?fin_num_measure//; first by apply: mE1; left.
+by rewrite fine_eq0// fin_num_measure//; apply: mE2; right.
+Qed.
+
+(* TODO (klenke thm 8.4): if P B > 0 then 'P[.|B] is a probability measure *)
+
+Lemma conditional_independent_is_pairwise_independent (P : probability T R) E1 E2 :
+  d.-measurable E1 -> d.-measurable E2 ->
+  P E2 != 0 ->
+    'P[E1 | E2] = P E1 -> pairwise_independent P E1 E2.
+Proof.
+rewrite /conditional_probability/pairwise_independent=> mE1 mE2 pE20 pE1E2.
+split.
+- by case=> [|[|]]//=.
+- move=> B B01 B2; have [B_set0|B_set0|B_set1|B_set01] := subset_set2 B01.
+  + rewrite B_set0.
+    move: B_set0 => /eqP; rewrite set_fset_eq0 => /eqP ->.
+    by rewrite big_nil bigcap_set0 probability_setT.
+  + rewrite B_set0 bigcap_set1 /=.
+    by rewrite fsbig_seq//= B_set0 fsbig_set1/=.
+  + rewrite B_set1 bigcap_set1 /=.
+    by rewrite fsbig_seq//= B_set1 fsbig_set1/=.
+  + rewrite B_set01 bigcap_setU1 bigcap_set1/=.
+    rewrite fsbig_seq//= B_set01.
+    rewrite fsbigU//=; last first.
+    by move=> n [/= ->].
+    rewrite !fsbig_set1//= -pE1E2 -{2}(@fineK _ (P E2)).
+    rewrite -EFinM -mulrA mulVf ?mulr1 ?fine_eq0// ?fineK//.
+    all: by apply: fin_num_measure => //; apply: measurableI.
+Qed.
+
+Lemma conditional_independentC (P : probability T R) E1 E2 :
+  d.-measurable E1 -> d.-measurable E2 ->
+  P E1 != 0 -> P E2 != 0 ->
+    reflect ('P[E1 | E2] == P E1) ('P[E2 | E1] == P E2).
+Proof.
+move=> mE1 mE2 pE10 pE20.
+apply/(iffP idP)=>/eqP.
++ move/(@conditional_independent_is_pairwise_independent _ _ _ mE2 mE1 pE10).
+  move/pairwise_independentC.
+  by move/(conditional_independence pE20)/eqP.
++ move/(@conditional_independent_is_pairwise_independent _ _ _ mE1 mE2 pE20).
+  move/pairwise_independentC.
+  by move/(conditional_independence pE10)/eqP.
+Qed.
+
+(* Lemma summation (I : choiceType) (A : {fset I}) E F (P : probability T R) : *)
+(*   (* the sets are disjoint *) *)
+(*   P (\bigcap_(i in [set` A]) F i) = 1 -> P E = \prod_(i <- A) ('P [E | F i] * P (F i)). *)
+(* Proof. *)
+(* move=> pF1. *)
+
+Lemma bayes (P : probability T R) E F :
+  d.-measurable E -> d.-measurable F ->
+  'P[ E | F ] = ((fine ('P[F | E] * P E)) / (fine (P F)))%:E.
+Proof.
+rewrite /conditional_probability => mE mF.
+have [PE0|PE0] := eqVneq (P E) 0.
+  have -> : P (E `&` F) = 0.
+    by apply/eqP; rewrite eq_le -{1}PE0 (@measureIl _ _ _ P E F mE mF)/= measure_ge0.
+  by rewrite PE0 fine0 invr0 mulr0 mule0 mul0r.
+by rewrite -{2}(@fineK _ (P E)) -?EFinM -?(mulrA (fine _)) ?mulVf ?fine_eq0 ?fin_num_measure// mul1r setIC//.
+Qed.
+
+End conditional_probability.
+Notation "' P [ E1 | E2 ]" := (conditional_probability P E1 E2).
+
 From mathcomp Require Import real_interval.
+
+Section independent_RVs.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Local Open Scope ereal_scope.
+
+Definition pairwise_independent_RV (X Y : {RV P >-> R}) :=
+  forall s t, pairwise_independent P (X @^-1` s) (Y @^-1` t).
+
+Lemma conditional_independent_RV (X Y : {RV P >-> R}) :
+  pairwise_independent_RV X Y ->
+  forall s t, P (Y @^-1` t) != 0 -> 'P [X @^-1` s | Y @^-1` t] = P (X @^-1` s).
+Proof.
+move=> iRVXY s t PYtne0.
+exact: conditional_independence.
+Qed.
+
+Definition mutually_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
+  forall x_ : I -> R, independent_events P A (fun i => X i @^-1` `[(x_ i), +oo[%classic).
+
+Definition kwise_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) k :=
+  forall x_ : I -> R, kwise_independent P A (fun i => X i @^-1` `[(x_ i), +oo[%classic) k.
+
+Lemma nwise_indep_is_mutual_indep_RV (I : choiceType) (A : {fset I}) (X : I -> {RV P >-> R}) n :
+  #|` A | = n -> kwise_independent_RV [set` A] X n -> mutually_independent_RV [set` A] X.
+Proof.
+rewrite/mutually_independent_RV/kwise_independent_RV=> nA kwX s.
+by apply: nwise_indep_is_mutual_indep; rewrite ?nA.
+Qed.
+
+(* alternative formalization
+Definition inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :=
+  forall (s : I -> set R), mutually_independent P A (fun i => X i @^-1` s i).
+
+Definition kwise_independent_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) k :=
+  forall (s : I -> set R), kwise_independent P A (fun i => X i @^-1` s i) k.
+
+this should be equivalent according to wikipedia https://en.wikipedia.org/wiki/Independence_(probability_theory)#For_real_valued_random_variables
+*)
+
+(* Remark 2.15 (i) *)
+Lemma prob_inde_RV (I : choiceType) (A : set I) (X : I -> {RV P >-> R}) :
+  mutually_independent_RV A X ->
+    forall J : {fset I}, [set` J] `<=` A ->
+      forall x_ : I -> R,
+        P (\bigcap_(i in [set` J]) X i @^-1` `[(x_ i), +oo[%classic) =
+          \prod_(i <- J) P (X i @^-1` `[(x_ i), +oo[%classic).
+Proof.
+move=> iRVX J JleA x_.
+apply: (iRVX _).2 => //.
+Qed.
+
+End independent_RVs.
 
 Section bool_to_real.
 Context d (T : measurableType d) (R : realType) (P : probability T R) (f : {mfun T >-> bool}).
@@ -69,6 +452,27 @@ HB.instance Definition _ := MeasurableFun.on bool_to_real.
 Definition btr : {RV P >-> R} := bool_to_real.
 
 End bool_to_real.
+
+Section independent_RVs_btr.
+Context {R : realType} d (T : measurableType d).
+Variable P : probability T R.
+Local Open Scope ring_scope.
+
+Lemma independent_RVs_btr
+    n (X : n.-tuple {mfun T >-> bool}) :
+  independent_RVs (P := P) [set: 'I_n] (fun i => tnth X i) -> independent_RVs (P := P) [set: 'I_n] (fun i => btr P (tnth X i)).
+Proof.
+move=> PIX; split.
+- move=> i Ii.
+  rewrite /g_sigma_algebra_preimage/= /preimage_set_system/= => _ [A mA <-].
+  by rewrite setTI; exact/measurable_sfunP.
+- move=> J JI E/= JEfX; apply PIX => // j jJ.
+  have := JEfX _ jJ; rewrite !inE.
+  rewrite /g_sigma_algebra_preimage /preimage_set_system/= => -[A mA <-].
+  by exists ((fun x => x%:R) @^-1` A).
+Qed.
+
+End independent_RVs_btr.
 
 Section mfunM.
 Context {d} (T : measurableType d) {R : realType}.
@@ -710,6 +1114,37 @@ End integral_sum.
 
 (* TODO: integral_fune_lt_pinfty does not look useful a lemma *)
 
+Section integrable_thead.
+Context d (T : measurableType d) (R : realType).
+Variables (P : probability T R) (n : nat) (X : n.+1.-tuple {RV P >-> R}).
+
+Lemma integrable_thead : P.-integrable setT (EFin \o thead X) ->
+  (\X_n.+1 P).-integrable [set: mtuple n.+1 T]
+    (EFin \o (fun x => thead X (thead x))).
+Proof.
+move=> intX.
+apply/integrableP; split.
+  apply: measurableT_comp => //.
+  apply: measurableT_comp => //.
+  exact: measurable_tnth.
+rewrite integral_mpro.
+- rewrite -fubini1'//=.
+  + move/integrableP : (intX) => [_].
+  + apply: le_lt_trans.
+    rewrite le_eqVlt; apply/orP; left; apply/eqP.
+    apply: eq_integral => x _.
+    rewrite /fubini_F/=.
+    admit.
+  + apply/fubini1b => //=.
+    * admit.
+    * admit.
+- apply/integrableP; split.
+  + admit.
+  + rewrite integral_mpro.
+Abort.
+
+End integrable_thead.
+
 Lemma bounded_RV_integrable d (T : measurableType d) (R : realType)
     (P : probability T R) (X : T -> R) M :
   measurable_fun setT X ->
@@ -730,7 +1165,7 @@ Arguments bounded_RV_integrable {d T R P X} M.
 Module with_interval.
 Declare Scope bigQ_scope.
 Import Reals.
-Import Rstruct Rstruct_topology.
+Import Rstruct.
 Import Interval.Tactic.
 
 Section expR2_le8.
@@ -744,7 +1179,7 @@ rewrite exp.expRD -RmultE.
 rewrite (_ : 8 = 8%R); last first.
   by rewrite !mulrS -!RplusE Rplus_0_r !RplusA !IZRposE/=.
 rewrite (_ : 1 = INR 1%N)//=.
-rewrite -RexpE.
+rewrite -Rstruct_topology.RexpE.
 apply/RleP.
 by interval.
 Qed.
@@ -983,6 +1418,7 @@ Lemma expectation_prod2 d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
   (X : {mfun T1 >-> R}) (Y : {mfun T2 >-> R}) :
   P1.-integrable setT (EFin \o X) ->
   P2.-integrable setT (EFin \o Y) ->
+(*  independent_RVs2 P X Y -> NB: independence not used *)
   let XY := fun (x : T1 * T2) => (X x.1 * Y x.2)%R in
   'E_(pro2 P1 P2)[XY] = 'E_P1[X] * 'E_P2[Y].
 Proof.
@@ -1022,9 +1458,37 @@ Qed.
 
 End properties_of_expectation.
 
+Section mv_to_inde.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+Variable n : nat.
+
+Lemma independent_RVsD1_ord (*(I : {fset 'I_n.+1})*) (X : n.+1.-tuple {RV P >-> R}) :
+  independent_RVs (P := P) [set: 'I_n.+1] (tnth X) -> independent_RVs (P := P) ([set: 'I_n.+1] `\ ord0) (tnth X).
+Proof.
+move=> H.
+split => [/= i|/= J JIi0 E EK].
+  case=> // ii0 iI.
+  by apply H.
+by apply H => //.
+(*move=> /= x /JIi0 /=.
+by case.*)
+Qed.
+
+End mv_to_inde.
+
 Section properties_of_independence.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
+
+Lemma independent_mmt_gen_fun n (X : n.-tuple {RV P >-> bool}) t :
+  let mmtX : 'I_n -> {RV P >-> R} := fun i => expR \o t \o* (btr P (tnth X i)) in
+  independent_RVs (P := P) [set: 'I_n] (fun i => tnth X i) -> independent_RVs (P := P) [set: 'I_n] mmtX.
+Proof.
+rewrite /= => PnX.
+apply: independent_RVs_comp => //.
+apply: independent_RVs_scale => //=.
+exact: independent_RVs_btr.
+Qed.
 
 Lemma boundedM U (f g : U -> R) (A : set U) :
   [bounded f x | x in A] ->
@@ -1044,6 +1508,7 @@ rewrite ler_pM//.
 by rewrite M2g// (lt_le_trans _ (ler_norm _))// ltrDl.
 Unshelve. all: by end_near.
 Qed.
+
 
 Lemma expectation_prod_nondep n (X : n.-tuple {RV P >-> R}) M :
     (forall i t, (0 <= tnth X i t <= M)%R) ->
@@ -1139,6 +1604,332 @@ by case=> /eqP /(congr1 (@fset_set _)) /[!set_fsetK] /eqP H;
 Qed.
 End fset.
 
+Section tmp.
+Variable n : nat.
+
+Definition In1 := 'I_n.+1.
+HB.instance Definition _ := Choice.on In1.
+HB.instance Definition _ := isPointed.Build In1 ord0.
+
+Variable X : n.+1.-tuple {RV P >-> R}.
+
+Lemma expectation_prod_independent_RVs :
+  independent_RVs (P := P) [set: 'I_n.+1] (tnth X) ->
+  independent_RVs2 (P := P) (thead X) (\prod_(i < n) (tnth (behead_tuple X) i))%R.
+Proof.
+rewrite /independent_RVs2.
+rewrite /independent_RVs.
+move=> H.
+pose I_ (b : bool) : set 'I_n.+1 := if b then setT `\ ord0 else [set ord0].
+have H1 : trivIset [set` [fset false; true]%fset] I_.
+  admit.
+have H2 : (forall k : bool, k \in [fset false; true]%fset -> I_ k `<=` [set: 'I_n.+1]).
+  admit.
+evar (h : 'I_n.+1 -> set_system T).
+rewrite /=.
+have := @mutual_independence_bigcup R _ T P bool In1 [fset false; true]%fset I_ [set: 'I_n.+1]
+  h H1 H2 H.
+rewrite (_ : [set` [fset false; true]%fset] = setT); last admit.
+rewrite /=.
+suff: (fun k : bool => \bigcup_(i in I_ k) h i) =
+  (fun i : Datatypes_bool__canonical__choice_Choice =>
+     g_sigma_algebra_preimage
+       (if i then (\prod_(i0 < n) tnth (behead_tuple X) i0)%R else thead X)).
+    by move=> ->.
+rewrite /=.
+apply/funext => -[|].
+  rewrite /I_.
+  rewrite /g_sigma_algebra_preimage.
+  rewrite /preimage_set_system.
+  apply/seteqP; split.
+    move=> A [i/= [_ /eqP i0]] hiA.
+    rewrite /h in hiA.
+    case: hiA => Y mY.
+    rewrite setTI => <-.
+    set x := [set r | exists t, A t /\ r = (\prod_(i < n) tnth (behead_tuple X) i t)%R].
+    exists x.
+      admit.
+    rewrite setTI.
+    apply/seteqP; split => [z|z].
+      rewrite /= => -[t [At]].
+      admit.
+(*
+elim: n X => [|n ih X].
+  admit.
+move=> H.
+split.
+  admit.
+move=> /= J _ A JA.
+have [| | |/eqP JE]:= fset_bool J.
+  admit.
+  admit.
+  admit.
+set X' := behead_tuple X.
+have @X'' : n.+1.-tuple {RV P >-> R}.
+  admit.
+have X''E : forall (i : 'I_n.+1) t,
+    (tnth X'' i) t = if i == ord_max then ((tnth X' i t) * (thead X') t)%R else (tnth X' i) t.
+  admit.
+have ih' : independent_RVs P [set: 'I_n.+1] (tnth X'').
+(*  have H1 : independent_RVs P ([set: 'I_n.+2] `\ ord0) (tnth X).
+    by apply: independent_RVsD1_ord => //.*)
+  split => /=.
+    admit.
+  move=> K _ E KE.
+  case: H => /= H1 H2.
+  pose K' : {fset 'I_n.+2} := ((fun x : 'I_n.+1 => lift ord0 x) @` K)%fset.
+  pose E' (i : 'I_n.+2) := if i == inord ((@ord_max n.+1)) then setT else E (inord i.-1).
+  have K'E' : (forall i : 'I_n.+2, i \in K' -> E' i \in g_sigma_algebra_preimage (tnth X i)).
+    move=> _ /imfsetP[/= j jK ->].
+    rewrite /E' /=.
+    case: ifPn => [_|j0].
+      rewrite inE.
+      exists setT => //.
+      by rewrite preimage_setT setTI.
+    rewrite inE.
+    have := KE _ jK.
+    rewrite inE => -[Y mY YEj].
+    exists Y => //.
+    rewrite setTI.
+    rewrite setTI in YEj.
+    have : forall t, tnth X'' j t = tnth X (lift ord0 j) t.
+      move=> r.
+      rewrite X''E.
+      rewrite ifF; last first.
+        apply/negbTE.
+        apply: contra j0 => /eqP jE.
+        rewrite jE.
+        apply/eqP/val_inj => /=.
+        by rewrite /bump/= inordK//.
+      rewrite tnth_behead/=.
+      congr (tnth X _ r).
+      apply/val_inj => /=.
+      rewrite inordK; last first.
+        by rewrite ltnS.
+      by rewrite /bump/= add1n.
+    move/funext.
+    move=> <-.
+    rewrite YEj.
+    congr E.
+    apply/val_inj => /=.
+    by rewrite inordK.
+  have {}H2 := H2 K' (@subsetT _ _) E' K'E'.
+
+  admit.
+have {}ih := ih X'' ih'.
+case: ih => /= ih1 ih2.
+
+case: H => /= H1 H2.
+have : (g_sigma_algebra_preimage (thead X)) (A false).
+  admit.
+case=> Y1 mY1.
+rewrite setTI => AfalseE.
+have : (g_sigma_algebra_preimage (\prod_(i0 < n.+1) tnth (behead_tuple X) i0)%R) (A true).
+  admit.
+case=> /= Y2 mY2.
+rewrite setTI => AtrueE.
+
+apply ih2 => //.
+case => _.
+  rewrite inE.
+  exists Y2 => //=.
+  rewrite setTI.
+  rewrite big_ord_recl /= in AtrueE.
+  rewrite -AtrueE.
+  congr (_ @^-1` Y2).
+  apply/funext => t.
+  rewrite /= fctE.
+  destruct n.
+    admit.
+  rewrite [in LHS]big_ord_recr/=.
+  rewrite [in RHS]big_ord_recr/=.
+  rewrite mulrCA; congr *%R.
+    admit.
+  rewrite tnth_behead.
+  rewrite [in LHS]X''E/= ifT//; last first.
+    apply/eqP.
+    apply: val_inj => /=.
+    by rewrite inordK.
+  rewrite /X' mulrC.
+  rewrite !tnth_behead.
+  congr *%R.
+  rewrite /thead.
+  by rewrite tnth_behead//.
+  congr (tnth X _ t).
+  apply/val_inj => /=.
+  by rewrite !inordK//.
+rewrite inE.
+exists Y1 => //.
+rewrite setTI.
+rewrite /thead.
+have : forall t, thead X t = tnth X'' ord0 t.
+  move=> t.
+  rewrite X''E.
+  rewrite ifF; last first.
+    apply/negbTE.
+    apply/eqP.
+    move=> /(congr1 val) /=.
+    admit.
+  rewrite tnth_behead//.
+  rewrite /thead.
+Abort.
+*)
+Abort.
+
+End tmp.
+
+Lemma expectation_prod_independent_RVs n (X : n.-tuple {RV P >-> R}) :
+    independent_RVs (P := P) [set: 'I_n] (tnth X) ->
+    (forall Xi, Xi \in X -> P.-integrable [set: T] (EFin \o Xi)) ->
+  'E_(\X_n P)[ tuple_prod X ] = \prod_(i < n) 'E_P[ (tnth X i) ].
+Proof.
+elim: n X => [X|n IH X] /= iRVX intX.
+  rewrite /tuple_prod.
+  under eq_fun do rewrite big_ord0.
+  by rewrite big_ord0 expectation_cst.
+pose X0 := thead X.
+have intX0 : P.-integrable [set: T] (EFin \o X0).
+  by apply: intX; rewrite mem_tnth.
+have {}intX Xi : Xi \in X -> P.-integrable [set: T] (EFin \o Xi).
+  by move=> XiX; exact: intX.
+
+pose X1 (x : mtuple n.+1 T) :=
+  (\prod_(i < n) tnth X (lift ord0 i) (tnth x (lift ord0 i)))%R.
+have mX1 : measurable_fun setT X1.
+  apply: measurable_prod => /= i ?. apply: measurableT_comp => //.
+  exact: measurable_tnth.
+pose build_mX1 := isMeasurableFun.Build _ _ _ _ _ mX1.
+pose Y1 : {mfun mtuple n.+1 T >-> R} := HB.pack X1 build_mX1.
+pose X2 (x : mtuple n.+1 T) := (thead X) (thead x).
+have mX2 : measurable_fun setT X2.
+rewrite /X2 /=.
+  by apply: measurableT_comp => //; exact: measurable_tnth.
+pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
+pose Y2 : {mfun mtuple n.+1 T >-> R} := HB.pack X2 build_mX2.
+rewrite /tuple_prod.
+under eq_fun => x /=. rewrite big_ord_recl/=. over.
+rewrite [X in 'E__[X]](_ : _ = (Y2 \* Y1)%R)//.
+simpl in Y1, Y2.
+
+rewrite expectation_prod; last 3 first.
+- split.
+    move=> i /= _ A.
+    case: ifP=> Hi /=.
+      by case=> B mB <-; exact: (mX1).
+    by case=> B mB <-; exact: (mX2).
+  move=> /= J ? E Ei.
+  case: (fset_bool J)=> /eqP HJ; rewrite -> HJ in * |- *; clear J HJ.
+  + by rewrite !big_seq_fset1.
+  + by rewrite !big_seq_fset1.
+  + rewrite !big_seq_fset0.
+    suff-> : [set (thead x, [tuple of behead x]) | x in [set: mtuple n.+1 T]] = setT.
+      by rewrite probability_setT.
+    apply/seteqP; split=> -[t1 t2] //= _.
+    exists [tuple of t1 :: t2] => //=.
+    by rewrite theadE; congr pair; exact/val_inj.
+  + rewrite !big_fsetU1 ?inE//= !big_seq_fset1.
+    set E1 := E true.
+    set E2 := E false.
+    have EX1 : E1 \in g_sigma_algebra_preimage X1.
+      by have:= Ei true; rewrite !inE eqxx=> /(_ erefl).
+    have EX2 : E2 \in g_sigma_algebra_preimage X2.
+      by have:= Ei false; rewrite !inE eqxx orbT=> /(_ erefl).
+    clear Ei X0 intX0 intX Y1 Y2 build_mX1 build_mX2.
+    (* analyze EX2 *)
+    have:= EX2.
+    rewrite /g_sigma_algebra_preimage /preimage_set_system /preimage /=.
+    under [f in image _ f]funext=> /= B do rewrite setTI.
+    rewrite inE/=.
+    case=> B2 mB2.
+    move=> /[dup] EX2' <-.
+    (* analyze EX1 *)
+    have:= EX1.
+    rewrite /g_sigma_algebra_preimage /preimage_set_system /preimage /=.
+    under [f in image _ f]funext=> /= B.
+      rewrite setTI.
+      rewrite (_ : mkset _ = [set t | B (\prod_(i < n) tnth (behead_tuple X) i (tnth (behead_tuple t) (i : 'I_n.+1.-1)))%R]); last first.
+        apply/eq_set=> t.
+        rewrite /X1 [in LHS](tuple_eta t) [in LHS](tuple_eta X).
+        by under eq_bigr do rewrite !tnthS.
+      rewrite
+        (_ :
+          mkset _ = 
+          image (setT `*`
+                 [set t | B (\prod_(i < n) tnth (behead_tuple X) i (tnth t i))%R])
+                (fun t => [tuple of t.1 :: t.2]) ); last first.
+        apply/seteqP; split=> t; rewrite (tuple_eta t) /=.
+          have-> : behead_tuple [tuple of thead t :: behead t] = behead_tuple t by exact/val_inj.
+          by move=> H; exists (thead t, behead_tuple t) => //; split.
+        case=> -[x0 x] [] _ /= H <-.
+        by have-> :  behead_tuple [tuple of x0 :: x] = x by exact/val_inj.
+      over.
+    set X' : n.-tuple _ := behead_tuple X.
+    rewrite inE /=.
+    case=> B' mB'.
+    move<-.
+    (* simplify LHS *)
+    set E1'' := mkset _.
+    have mE1'' : measurable (E1'' : set (mtuple _ _)).
+      rewrite /E1'' -/(preimage _ _).
+      set f : mtuple n T -> R := (f in preimage f).
+      suff: measurable_fun setT f by rewrite -[preimage _ _]setTI; exact.
+      rewrite /f.
+      apply: measurable_prod=> /= i _.
+      apply: (measurable_comp measurableT)=> //=.
+      exact: measurable_tnth.
+    (* simplify LHS *)
+    rewrite [image _ _](_ : _ = (thead X @^-1` B2) `*` E1''); last first.
+      apply/seteqP; split=> -[x0 x] /=.
+        case=> x1 [] [] [y0 y] /= [] _ ? <- /[!theadE] ? /eqP /[!xpair_eqE] /andP [] /eqP <- /eqP /= <-.
+        rewrite [y in E1'' y](_ : _ = y)//.
+        exact/val_inj.
+      case=> ? ?.
+      exists [tuple of x0 :: x]; last by congr pair; apply/val_inj.
+      split=> //.
+      by exists (x0, x).
+    rewrite product_measure2E//=; last first.
+      by rewrite -[preimage _ _]setTI; exact: measurable_funP.
+    (* simplify RHS *)
+    rewrite image_comp [f in image _ f](_ : _ = idfun); last first.
+      by apply/funext=> -[t0 t] /=; congr pair; exact/val_inj.
+    rewrite image_id product_measure2E//.
+    rewrite [X in _ = X * _ * _]probability_setT mul1e /=.
+    rewrite muleC; congr mule.
+    rewrite (_ : image _ _ = thead X @^-1` B2 `*` setT); last first.
+      apply/seteqP; split=> /= -[t0 t] /=.
+        by case=> x ? /eqP /[!xpair_eqE] /andP [] /eqP <- _.
+      case=> ? _; exists [tuple of t0 :: t]; rewrite ?theadE//.
+      by congr pair; exact/val_inj.
+    rewrite product_measure2E//; last first.
+      by rewrite -[preimage _ _]setTI; exact: measurable_funP.
+    by rewrite [X in _ = _ * X]probability_setT mule1.
+- admit.
+- admit.
+rewrite big_ord_recl.
+congr (_ * _).
+  admit.
+
+under eq_bigr => i _ do rewrite [X in tnth X]tuple_eta tnthS.
+rewrite -IH; last 2 first.
+- admit.
+- admit.
+rewrite /Y1/X1/tuple_prod/=.
+under eq_fun => x. under eq_bigr => i _. rewrite [X in tnth X]tuple_eta [X in _ (tnth X _)]tuple_eta !tnthS. over. over.
+rewrite /=.
+rewrite unlock /expectation integral_mpro//.
+  under eq_fun => x. under eq_bigr => i _.
+    rewrite (tnth_behead (x.1 :: x.2)) (_ : inord i.+1 = lift ord0 i) ?tnthS; last first.
+    by apply: val_inj; rewrite /=inordK// ltnS.
+    over.
+    over.
+  simpl.
+  rewrite -fubini2'/fubini_G/=.
+    apply: eq_integral => x _/=.
+    by rewrite integral_cst//= probability_setT mule1.
+  admit.
+admit.
+Abort.
+
 Lemma finite_prod n (F : 'I_n -> \bar R) :
   (forall i, 0 <= F i < +oo) -> \prod_(i < n) F i < +oo.
 Proof.
@@ -1151,6 +1942,174 @@ rewrite big_ord_recl lte_mul_pinfty//.
   by rewrite (@lt_le_trans _ _ 0).
 by rewrite ih.
 Qed.
+
+Lemma sub_independent_RVs d' [T' : measurableType d'] [I : choiceType] [A B : set I]
+  [X : I -> {RV P >-> T'}]:
+  A `<=` B -> independent_RVs (P := P) B X -> independent_RVs (P := P) A X.
+Proof.
+move=> AB [h1 h2]. split.
+  by move=> i Ai; apply: h1; exact: AB.
+move=> J JA E h3.
+by apply: h2 => //; apply: subset_trans; first apply: JA.
+Qed.
+
+Lemma expectation_prod_independent_RVs n (X : n.-tuple {RV P >-> R}) M:
+    independent_RVs (P := P) [set: 'I_n] (tnth X) ->
+    (forall i t, (0 <= tnth X i t <= M)%R) ->
+    (forall Xi, Xi \in X -> P.-integrable [set: T] (EFin \o Xi)) ->
+  'E_P[ \prod_(i < n) (tnth X i) ] = \prod_(i < n) 'E_P[ (tnth X i) ].
+Proof.
+elim: n X => [X|n ih X].
+  by rewrite !big_ord0 expectation_cst.
+move=> /=iRVs boundedX intX.
+
+rewrite [RHS]big_ord_recl/=.
+rewrite [X in _ * X](_ : _ = \prod_(i < n) ('E_P [ (tnth (behead_tuple X) i) ])); last first.
+  by apply: eq_bigr => i _; congr expectation; apply funext => x; rewrite [in LHS](tuple_eta X) tnthS.
+rewrite -ih; last 3 first.
+- suffices: independent_RVs (P := P) [set` behead_tuple (ord_tuple n.+1)] (fun i => tnth X i).
+    rewrite /independent_RVs. move=> [/=h1 h2]. split => /=.
+      move=> i _.
+      have := h1 (lift ord0 i). rewrite {1}(tuple_eta X) tnthS. apply.
+      apply/tnthP. exists i.
+      rewrite tnth_behead/= tnth_ord_tuple.
+      by apply: ord_inj; rewrite lift0 inordK// ltnS.
+    move=> J JIn E h3.
+    have /=J' := ((@widen_ord n n.+1 (leqnSn n)) @` J)%fset.
+    have J'In1 : [set` J'] `<=` [set: 'I_n.+1] by exact: subsetT.
+    (* have := h2 J' J'In1. *)
+    admit.
+  exact: (@sub_independent_RVs _ _ _ _ [set: 'I_n.+1]).
+- by move=> i t; rewrite tnth_behead boundedX.
+- by move=> Xi XiX; rewrite intX// mem_behead.
+
+pose X1 := (fun x : mtuple n.+1 R => \prod_(i < n.+1) tnth x i)%R.
+pose X2 := (fun t : T => [the mtuple n.+1 R of [tuple of [seq tnth X i t | i <- ord_tuple n.+1]]])%R.
+have mX1 : measurable_fun setT X1. admit.
+have mX2 : measurable_fun setT X2. admit.
+pose build_mX1 := isMeasurableFun.Build _ _ _ _ _ mX1.
+pose build_mX2 := isMeasurableFun.Build _ _ _ _ _ mX2.
+pose Y1 : {mfun mtuple n.+1 R >-> R} := HB.pack X1 build_mX1.
+pose Y2 : {mfun T >-> mtuple n.+1 R} := HB.pack X2 build_mX2.
+rewrite [X in 'E_P[X]](_ : _ = Y1 \o Y2)%R; last first. 
+  apply: funext => t.
+  rewrite /Y1/Y2/X1/X2/=.
+  under [RHS]eq_bigr => i _ do rewrite tnth_map tnth_ord_tuple.
+  admit.
+
+rewrite unlock/expectation -(@integral_pushforward _ _ _ _ _ _ _ _ setT (EFin \o Y1))//=; last first.
+- admit.
+- exact: measurableT_comp.
+pose X3 := (fun t : T => (tnth X ord0 t,[the mtuple n R of [tuple of [seq tnth (behead_tuple X) i t | i <- ord_tuple n]]]))%R.
+have mX3 : measurable_fun setT X3. admit.
+pose build_mX3 := isMeasurableFun.Build _ _ _ _ _ mX3.
+pose Y3 : {mfun T >-> _} := HB.pack X3 build_mX3.
+rewrite /X1.
+rewrite [LHS](_ : _ = \int[pushforward P mX3]_y (y.1 * \prod_(i < n) tnth y.2 i)%:E); last first.
+  under eq_integral => y _.
+    rewrite big_ord_recl/=.
+    rewrite [X in (_ * X)%R](_ : _ = \prod_(i < n) tnth (behead_tuple y) i )%R; last first.
+      by apply eq_bigr => j _; rewrite [in LHS](tuple_eta y) tnthS.
+    over.
+  simpl.
+  admit.
+rewrite [in LHS]/pushforward/=.
+
+(*
+case: n X => [X|n X].
+  by rewrite !big_ord0 expectation_cst.
+elim: n X => [X|n IH X] /= iRVX intX.
+  admit.
+rewrite big_ord_recl [in RHS] big_ord_recl.
+rewrite expectation_prod; last 3 first.
+- apply: (@independent_generators _ _ _ _ _ _ _ _ (fun i => @RGenOInfty.G R)) => //=.
+  - move=> i _. admit.
+  - move=> i _. admit.
+  - admit.
+  split => /=.
+    case => _//= A/= []B nB <-.
+      have : measurable_fun setT (\prod_(i < n.+1) tnth X (lift ord0 i))%R by [].
+      apply => //. admit.
+    have : measurable_fun setT (tnth X ord0) by [].
+    apply => //. admit.
+  move=> J _ E JE.
+  have [|||] := set_bool [set` J]; move=> /eqP h; rewrite -bigcap_fset -[in RHS](set_fsetK J) !h.
+  - by rewrite bigcap_set1 fset_set1 big_seq_fset1.
+  - by rewrite bigcap_set1 fset_set1 big_seq_fset1.
+  - by rewrite bigcap_set0 probability_setT fset_set0 big_seq_fset0.
+  rewrite setT_bool.
+  rewrite bigcap_setU1 bigcap_set1.
+  rewrite fset_setU// !fset_set1 big_fsetU1 ?inE//= big_seq_fset1.
+  case: iRVX => /=H1 H2.
+  pose E' := fun i : 'I_n.+2 => if i == ord0 then E false else
+                                  if i == lift ord0 ord0 then E true
+                                  else setT.
+  pose J' : {fset 'I_n.+2} := [fset ord0; lift ord0 ord0]%fset.
+  (* have K1 : (forall i : 'I_n.+2, i \in J' -> E' i \in g_sigma_algebra_preimage (tnth X i)). *)
+  (*   case. case. *)
+  (*   - move=> i _. rewrite /E'/=. have := JE false. admit. *)
+  (*   - case. move=> i iJ'. rewrite /E'/=. (* have := JE true. *) *)
+  (*     have : E true \in g_sigma_algebra_preimage (\prod_(i0 < n.+1) tnth X (lift ord0 i0))%R. admit. *)
+  (*     rewrite !inE. case=> B mB h1. red. red. simpl. exists B => //. rewrite /=. *)
+  (*   admit. *)
+  (* (* have := H2 _ _ _ K1. *) *)
+  have : P (\big[setI/[set: T]]_(j <- J') E' j) = \prod_(j <- J') P (E' j).
+    apply: H2 => //.
+    case. case.
+    - move=> i _. rewrite /E'/=. have := JE false. admit.
+    - case. move=> i iJ'. rewrite /E'/= inE/=. red. red. simpl.
+  by rewrite /J' !big_fsetU1 ?inE//= !big_seq_fset1 /E'/= setIC muleC.
+- split => /=.
+    case => _//= A/= []B nB <-.
+      have : measurable_fun setT (\prod_(i < n.+1) tnth X (lift ord0 i))%R by [].
+      exact.
+    have : measurable_fun setT (tnth X ord0) by [].
+    exact.
+  move=> J _ E JE.
+  
+  
+  have [|||] := set_bool [set` J]; move=> /eqP h; rewrite -bigcap_fset -[in RHS](set_fsetK J) !h.
+  - by rewrite bigcap_set1 fset_set1 big_seq_fset1.
+  - by rewrite bigcap_set1 fset_set1 big_seq_fset1.
+  - by rewrite bigcap_set0 probability_setT fset_set0 big_seq_fset0.
+  rewrite setT_bool.
+  rewrite bigcap_setU1 bigcap_set1.
+  rewrite fset_setU// !fset_set1 big_fsetU1 ?inE//= big_seq_fset1.
+  case: iRVX => /=H1 H2.
+  pose E' := fun i : 'I_n.+2 => if i == ord0 then E false else
+                                  if i == lift ord0 ord0 then E true
+                                  else setT.
+  pose J' : {fset 'I_n.+2} := [fset ord0; lift ord0 ord0]%fset.
+  (* have K1 : (forall i : 'I_n.+2, i \in J' -> E' i \in g_sigma_algebra_preimage (tnth X i)). *)
+  (*   case. case. *)
+  (*   - move=> i _. rewrite /E'/=. have := JE false. admit. *)
+  (*   - case. move=> i iJ'. rewrite /E'/=. (* have := JE true. *) *)
+  (*     have : E true \in g_sigma_algebra_preimage (\prod_(i0 < n.+1) tnth X (lift ord0 i0))%R. admit. *)
+  (*     rewrite !inE. case=> B mB h1. red. red. simpl. exists B => //. rewrite /=. *)
+  (*   admit. *)
+  (* (* have := H2 _ _ _ K1. *) *)
+  have : P (\big[setI/[set: T]]_(j <- J') E' j) = \prod_(j <- J') P (E' j).
+    apply: H2 => //.
+    case. case.
+    - move=> i _. rewrite /E'/=. have := JE false. admit.
+    - case. move=> i iJ'. rewrite /E'/= inE/=. red. red. simpl.
+  by rewrite /J' !big_fsetU1 ?inE//= !big_seq_fset1 /E'/= setIC muleC.
+- by rewrite intX// mem_tnth.
+- rewrite (_ : (\prod_(i < n) tnth X (lift ord0 i))%R = (\prod_(i < n) tnth (behead_tuple X) i)%R); last first.
+    by apply: eq_bigr => i _; rewrite [in LHS](tuple_eta X) tnthS.
+  apply: integrable_prod => i.
+  by rewrite intX// tnth_behead mem_tnth.
+rewrite (_ : \prod_(i < n) tnth X (lift ord0 i) = \prod_(i < n) tnth (behead X) i)%R; last first.
+  apply: eq_bigr => /=i _. rewrite tnth_behead (_ : inord i.+1 = lift ord0 i)//=.
+  by apply: val_inj; rewrite /=inordK// ltnS.
+rewrite IH//=.
+- congr (_ * _).
+  apply: eq_bigr=> i _.
+  congr expectation.
+  by rewrite [in RHS](tuple_eta X) tnthS.
+- admit.
+- by move=> Xi XiX; rewrite intX// mem_behead.*)
+Abort.
 
 End properties_of_independence.
 
@@ -1307,6 +2266,9 @@ rewrite (@expectation_prod_nondep _ _ _ _ _ _ (expR (`|t|))%R); last 2 first.
   rewrite /bool_to_real/=.
   case: (tnth X_ i t0) => //=; rewrite ?mul1r ?mul0r//.
   by rewrite ler_norm.
+  (* rewrite [X in independent_RVs _ _ X](_ : _ = mmtX)//. *)
+  (* apply: funext => i. *)
+  (* by rewrite /mmtX/= tnth_map tnth_ord_tuple. *)
 apply: eq_bigr => /= i _.
 congr expectation.
 rewrite /=.
