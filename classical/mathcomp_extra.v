@@ -697,3 +697,7 @@ Proof.
 move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
 by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
 Qed.
+
+Lemma mulr_funEcomp (R : semiRingType) (T : Type) (x : R) (f : T -> R) :
+  x \o* f = *%R^~ x \o f.
+Proof. by []. Qed.
