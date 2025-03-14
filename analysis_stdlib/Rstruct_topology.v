@@ -10,11 +10,12 @@ Require Import Rtrigo1 Reals.
 From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
 From mathcomp Require Import archimedean.
 From HB Require Import structures.
-From mathcomp Require Import mathcomp_extra.
-From mathcomp Require Import boolp classical_sets.
+From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From mathcomp Require Import reals interval_inference.
-From mathcomp Require Import topology.
 From mathcomp Require Export Rstruct.
+From mathcomp Require Import topology.
+(* The following line is for RexpE. *)
+From mathcomp Require normedtype sequences.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -87,3 +88,24 @@ Lemma nbhs_pt_comp (P : R -> Prop) (f : R -> R) (x : R) :
 Proof. by move=> Lf /continuity_pt_cvg; apply. Qed.
 
 End analysis_struct.
+
+Module RexpE.
+Import topology normedtype sequences.
+
+(* proof by comparing the defining power series *)
+Lemma RexpE (x : R) : Rtrigo_def.exp x = expR x.
+Proof.
+apply/esym; rewrite /exp /exist_exp; case: Alembert_C3 => y.
+rewrite /Pser /infinite_sum /= => exp_ub.
+rewrite /expR /exp_coeff /series/=; apply: (@cvg_lim R^o) => //.
+rewrite -cvg_shiftS /=; apply/cvgrPdist_lt => /= e /RltP /exp_ub[N Nexp_ub].
+near=> n.
+have nN : (n >= N)%coq_nat by apply/ssrnat.leP; near: n; exact: nbhs_infty_ge.
+move: Nexp_ub => /(_ _ nN) /[!RdistE] /RltP /=.
+rewrite distrC sum_f_R0E; congr (`| _ - _ | < e).
+by apply: eq_bigr=> k _; rewrite RinvE RpowE mulrC factE INRE.
+Unshelve. all: by end_near. Qed.
+
+End RexpE.
+
+Definition RexpE := RexpE.RexpE.
