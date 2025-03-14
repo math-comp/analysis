@@ -9,6 +9,7 @@
 
 - file `Rstruct.v`
   + lemma `Pos_to_natE` (from `mathcomp_extra.v`)
+  + lemmas `RabsE`, `RdistE`, `sum_f_R0E`, `factE`, `RexpE`
 
 - new file `internal_Eqdep_dec.v` (don't use, internal, to be removed)
 

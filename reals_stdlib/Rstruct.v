@@ -32,6 +32,9 @@ From mathcomp Require Import all_ssreflect ssralg poly mxpoly ssrnum.
 From mathcomp Require Import archimedean.
 From HB Require Import structures.
 From mathcomp Require Import mathcomp_extra.
+(* The following two lines are for RexpE *)
+From mathcomp Require functions filter topology separation_axioms.
+From mathcomp Require normedtype sequences.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -525,6 +528,27 @@ case: (lerP x y) => H; first by rewrite Rmin_left //; apply: RlebP.
 by rewrite ?ltW // Rmin_right //;  apply/RlebP; move/ltW : H.
 Qed.
 
+Lemma RabsE x : Rabs x = Num.norm x.
+Proof.
+rewrite /Rabs.
+case: Rcase_abs.
+  by move/RltP/ltW; rewrite -eqr_normN=> /eqP.
+by move/Rge_le/RleP; rewrite -eqr_norm_id=> /eqP.
+Qed.
+
+Lemma RdistE x y : Rdist x y = Num.norm (x - y).
+Proof. by rewrite /Rdist RabsE RminusE. Qed.
+
+Lemma sum_f_R0E f n : sum_f_R0 f n = \sum_(0 <= k < n.+1) f k.
+Proof.
+elim: n; first by rewrite big_nat1.
+move=> n IHn /=.
+by rewrite RplusE big_nat_recr//= IHn.
+Qed.
+
+Lemma factE n : fact n = factorial n.
+Proof. by elim: n=> //= n IHn; rewrite factS mulSn IHn. Qed.
+
 Section bigmaxr.
 Context {R : realDomainType}.
 
@@ -719,3 +743,53 @@ Qed.
 End bigmaxr.
 
 End ssreal_struct_contd.
+
+Module RexpE.
+Import functions filter topology separation_axioms.
+Import normedtype sequences.
+Import Order.TTheory GRing.Theory Num.Def Num.Theory.
+Import numFieldTopology.Exports numFieldNormedType.Exports.
+Local Open Scope classical_set_scope.
+
+(* proof by comparing the defining power series *)
+Lemma RexpE (x : R) : Rtrigo_def.exp x = expR x.
+Proof.
+move: x; change R with R^o; move=> z.
+apply/esym.
+rewrite /exp /exist_exp.
+case: Alembert_C3; change R with R^o; move=> x /=.
+rewrite /Pser /infinite_sum /=.
+move=> Hexp.
+rewrite /expR /exp_coeff.
+rewrite /series /mk_sequence.
+apply: (@cvg_lim R^o _ nat \oo _ _ x)=> //.
+suff: \sum_(0 <= k < n.+1) z ^+ k / k`!%:R @[n --> \oo] --> (x : R^o).
+  set f' : nat -> R^o := (f in fmap f); move=> H.
+  set f : nat -> R^o := (f in fmap f); move: H.
+  have->: f' = fun n=> f n.+1 by [].
+  clear f'; move=> fx.
+  have:= (cvgB fx (cvg_exp_coeff z)).
+  have->: (fun n : nat => f n.+1) - exp_coeff z = f.
+    apply: funext=> n.
+    rewrite /GRing.add/= /f big_nat_recr//=.
+    by rewrite -addrA subrr addr0.
+  by rewrite subr0; exact.
+rewrite /nbhs /= => A.
+rewrite /nbhs_ball_ /=.
+case=> eps /= /RltP /Rlt_gt eps0.
+rewrite /ball_ => xyA.
+rewrite /filter.eventually/= /filter_from/=.
+move: Hexp=> /(_ eps eps0) -[] i Hexp.
+exists i=> // n /= /ssrnat.leP ni.
+apply: xyA=> /=.
+move: Hexp=> /(_ n ni) /[!RdistE] /RltP /=.
+rewrite distrC.
+suff->: sum_f_R0 (fun n0 : nat => (/ INR (fact n0) * z ^ n0)%R) n =
+        \sum_(0 <= k < n.+1) z ^+ k / k`!%:R by [].
+rewrite sum_f_R0E.
+apply: eq_bigr=> k _.
+by rewrite RinvE RpowE mulrC factE INRE.
+Qed.
+End RexpE.
+
+Definition RexpE := RexpE.RexpE.
