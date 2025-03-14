@@ -124,7 +124,7 @@ by rewrite -[0]ess_sup_cst// le_ess_sup//=; near=> x; rewrite abse_ge0.
 Unshelve. all: by end_near. Qed.
 
 Lemma ess_sup_pZl f (a : R) : (0 < a)%R ->
-  (ess_sup (cst a%:E \* f) = a%:E * ess_sup f).
+  ess_sup (cst a%:E \* f) = a%:E * ess_sup f.
 Proof.
 move=> /[dup] /ltW a_ge0 a_gt0.
 gen have esc_le : a f a_ge0 a_gt0 /
@@ -136,9 +136,8 @@ by under eq_fun do rewrite muleA -EFinM mulVf ?mul1e ?gt_eqF//.
 Unshelve. all: by end_near. Qed.
 
 Lemma ess_supZl f (a : R) : mu [set: T] > 0 -> (0 <= a)%R ->
-  (ess_sup (cst a%:E \* f) = a%:E * ess_sup f).
+  ess_sup (cst a%:E \* f) = a%:E * ess_sup f.
 Proof.
-
 move=> muTN0; case: ltgtP => // [a_gt0|<-] _; first exact: ess_sup_pZl.
 by under eq_fun do rewrite mul0e; rewrite mul0e ess_sup_cst.
 Qed.
