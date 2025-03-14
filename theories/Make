@@ -80,6 +80,7 @@ hoelder.v
 probability.v
 independence.v
 sampling.v
+sampling_wip.v
 lebesgue_stieltjes_measure.v
 convex.v
 charge.v
