@@ -31,6 +31,7 @@ From mathcomp Require Import function_spaces.
 (* ````                                                                       *)
 (*       {mfun aT >-> rT} == type of measurable functions                     *)
 (*                           aT and rT are sigmaRingType's.                   *)
+(*             f \in mfun == holds for f : {mfun _ >-> _}                     *)
 (*         {sfun T >-> R} == type of simple functions                         *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
 (*              mindic mD := \1_D where mD is a proof that D is measurable    *)
@@ -218,6 +219,8 @@ Lemma mfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
 Lemma mfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
+Lemma mfunMn f n : (f *+ n) = (fun x => f x *+ n) :> (_ -> _).
+Proof. by apply/funext=> x; elim: n => //= n; rewrite !mulrS !mfunD /= => ->. Qed.
 Lemma mfun_sum I r (P : {pred I}) (f : I -> {mfun aT >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
