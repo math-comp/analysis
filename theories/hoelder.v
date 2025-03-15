@@ -10,10 +10,15 @@ From mathcomp Require Import lebesgue_integral numfun exp convex.
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
 (*                                                                            *)
-(* This file provides Hoelder's inequality and its consequences, most notably *)
-(* Minkowski's inequality and the convexity of the power function.            *)
+(* This file provides the Lp-norm, Hoelder's inequality and its consequences, *)
+(* most notably Minkowski's inequality and the convexity of the power         *)
+(* function.                                                                  *)
+(*                                                                            *)
 (* ```                                                                        *)
-(*           'N[mu]_p[f] == the p-norm of f with measure mu                   *)
+(*         'N[mu]_p[f] == the Lp-norm of f with measure mu                    *)
+(*         conjugate p == a real number q such that p^-1 + q^-1 = 1 when      *)
+(*                        p is real, otherwise conjugate +oo = 1 and          *)
+(*                        conjugate -oo = 0                                   *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -139,9 +144,9 @@ Hint Extern 0 (0 <= Lnorm _ _ _) => solve [apply: Lnorm_ge0] : core.
 Notation "'N[ mu ]_ p [ f ]" := (Lnorm mu p f).
 
 Section lnorm.
-(* l-norm is just L-norm applied to counting *)
 Context d {T : measurableType d} {R : realType}.
 Local Open Scope ereal_scope.
+(** lp-norm is just Lp-norm applied to counting *)
 Local Notation "'N_ p [ f ]" := (Lnorm counting p (EFin \o f)).
 
 Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
@@ -151,6 +156,39 @@ by move=> p0; rewrite unlock ge0_integral_count// => k; rewrite poweR_ge0.
 Qed.
 
 End lnorm.
+
+Section conjugate.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (p : \bar R).
+Hypothesis (p1 : (1 <= p)%E).
+
+Local Open Scope classical_set_scope.
+Local Open Scope ereal_scope.
+
+Definition conjugate :=
+  match p with
+  | r%:E => [get q : R | r^-1 + q^-1 = 1]%:E
+  | +oo  => 1
+  | -oo  => 0
+  end.
+
+Lemma conjugateE :
+  conjugate = if p is r%:E then (r * (r-1)^-1)%:E
+              else if p == +oo then 1 else 0.
+Proof.
+rewrite /conjugate.
+case: p p1 => [r|//=|//].
+rewrite lee_fin => r1.
+have r0 : r != 0%R by rewrite gt_eqF// (lt_le_trans _ r1).
+congr EFin; apply: get_unique.
+  by rewrite invf_div mulrBl divff// mul1r addrCA subrr addr0.
+move=> /= y ry1.
+suff -> : y = (1 - r^-1)^-1.
+  by rewrite -(mul1r r^-1) -{1}(divff r0) -mulrBl invf_div.
+by rewrite -ry1 -addrAC subrr add0r invrK.
+Qed.
+
+End conjugate.
 
 Section hoelder.
 Context d {T : measurableType d} {R : realType}.
@@ -385,7 +423,7 @@ move=> p1; rewrite (@le_trans _ _ ((2^-1 * `| f x | + 2^-1 * `| g x |) `^ p))//.
   rewrite ge0_ler_powR ?nnegrE ?(le_trans _ p1)//.
   by rewrite (le_trans (ler_normD _ _))// 2!normrM ger0_norm.
 rewrite {1 3}(_ : 2^-1 = 1 - 2^-1); last by rewrite {2}(splitr 1) div1r addrK.
-rewrite (@convex_powR _ _ p1 (Itv01 _ _))// ?inE/= ?in_itv/= ?normr_ge0 ?invr_ge0//.
+rewrite (@convex_powR _ _ _ (Itv01 _ _))// ?inE/= ?in_itv/= ?normr_ge0 ?invr_ge0//.
 by rewrite invf_le1 ?ler1n.
 Qed.
 
@@ -396,7 +434,7 @@ Proof. exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)). Qed.
 Local Notation "'N_ p [ f ]" := (Lnorm mu p (EFin \o f)).
 Local Open Scope ereal_scope.
 
-Let minkowski1 f g p : measurable_fun setT f -> measurable_fun setT g ->
+Let minkowski1 f g p : measurable_fun [set: T] f -> measurable_fun [set: T] g ->
   'N_1[(f \+ g)%R] <= 'N_1[f] + 'N_1[g].
 Proof.
 move=> mf mg.
@@ -409,7 +447,7 @@ rewrite ge0_le_integral//.
 Qed.
 
 Let minkowski_lty f g p :
-  measurable_fun setT f -> measurable_fun setT g -> (1 <= p)%R ->
+  measurable_fun [set: T] f -> measurable_fun [set: T] g -> (1 <= p)%R ->
   'N_p%:E[f] < +oo -> 'N_p%:E[g] < +oo -> 'N_p%:E[(f \+ g)%R] < +oo.
 Proof.
 move=> mf mg p1 Nfoo Ngoo.
@@ -441,8 +479,8 @@ rewrite ge0_integralD//; last 2 first.
 by rewrite lte_add_pinfty// -powR_Lnorm ?(gt_eqF (lt_trans _ p1))// poweR_lty.
 Qed.
 
-Lemma minkowski f g p :
-  measurable_fun setT f -> measurable_fun setT g -> (1 <= p)%R ->
+Lemma minkowski_EFin f g p :
+  measurable_fun [set: T] f -> measurable_fun [set: T] g -> (1 <= p)%R ->
   'N_p%:E[(f \+ g)%R] <= 'N_p%:E[f] + 'N_p%:E[g].
 Proof.
 move=> mf mg; rewrite le_eqVlt => /predU1P[<-|p1]; first exact: minkowski1.
@@ -531,27 +569,37 @@ congr (_ * _); rewrite poweRN.
 - by rewrite -powR_Lnorm ?gt_eqF// fin_num_poweR// ge0_fin_numE ?Lnorm_ge0.
 Qed.
 
-Lemma minkowski' f g p :
-  measurable_fun setT f -> measurable_fun setT g -> (1 <= p)%R ->
+Lemma lerB_DLnorm f g p :
+  measurable_fun [set: T] f -> measurable_fun [set: T] g -> (1 <= p)%R ->
   'N_p%:E[f] <= 'N_p%:E[f \+ g] + 'N_p%:E[g].
 Proof.
 move=> mf mg p1.
 rewrite (_ : f = ((f \+ g) \+ (-%R \o g))%R); last first.
   by apply: funext => x /=; rewrite -addrA subrr addr0.
-rewrite [X in _ <= 'N__[X] + _](_ : ((f \+ g \- g) \+ g)%R = (f \+ g)%R); last first.
+rewrite [X in _ <= 'N__[X] + _](_ : _ = (f \+ g)%R); last first.
   by apply: funext => x /=; rewrite -addrA [X in _ + _ + X]addrC subrr addr0.
-rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last first.
-  by rewrite oppr_Lnorm.
-apply: minkowski => //.
-  apply: measurable_funD => //.
-apply: measurableT_comp => //.
+rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last by rewrite oppr_Lnorm.
+by apply: minkowski_EFin => //;
+  [exact: measurable_funD|exact: measurableT_comp].
 Qed.
 
-Lemma minkowskie (f g : T -> R) (p : \bar R) :
-  measurable_fun setT f -> measurable_fun setT g -> 1 <= p ->
+Lemma lerB_LnormD f g p :
+  measurable_fun [set: T] f -> measurable_fun [set: T] g -> (1 <= p)%R ->
+  'N_p%:E[f] - 'N_p%:E[g] <= 'N_p%:E[f \+ g].
+Proof.
+move=> mf mg p1.
+set rhs := (leRHS); have [?|] := boolP (rhs \is a fin_num).
+  by rewrite lee_subel_addr//; exact: lerB_DLnorm.
+rewrite fin_numEn => /orP[|/eqP ->]; last by rewrite leey.
+by rewrite gt_eqF// (lt_le_trans _ (Lnorm_ge0 _ _ _)).
+Qed.
+
+(* TODO: rename to minkowski after version 1.12.0 *)
+Lemma eminkowski f g (p : \bar R) :
+  measurable_fun [set: T] f -> measurable_fun [set: T] g -> 1 <= p ->
   'N_p[(f \+ g)%R] <= 'N_p[f] + 'N_p[g].
 Proof.
-case: p => //[r|]; first exact: minkowski.
+case: p => //[r|]; first exact: minkowski_EFin.
 move=> mf mg _; rewrite unlock /Lnorm.
 case: ifPn => mugt0; last by rewrite adde0 lexx.
 exact: ess_sup_normD.
@@ -575,7 +623,7 @@ case: p => [p|_|].
 - move=> p1 mf mg Nffin Ngfin.
   rewrite fin_numElt (@lt_le_trans _ _ 0)//= ?Lnorm_ge0//.
   rewrite (@le_lt_trans _ _ ('N[mu]_p%:E[EFin \o f] + 'N[mu]_p%:E[EFin \o g]))//.
-    apply: minkowski => //.
+    apply: eminkowski => //.
   by rewrite lte_add_pinfty// -ge0_fin_numE// Lnorm_ge0.
 - move=> mf mg.
   rewrite unlock /Lnorm.
@@ -596,3 +644,7 @@ case: p => [p||].
 Abort.
 
 End Lnorm_properties.
+
+#[deprecated(since="mathcomp-analysis 1.10.0",
+  note="use `minkowski_EFin` or `eminkowski` instead")]
+Notation minkowski := minkowski_EFin (only parsing).

@@ -2661,6 +2661,10 @@ Proof. by []. Qed.
 Definition fctE :=
   (cstE, compE, opprfctE, addrfctE, mulrfctE, scalrfctE, exprfctE).
 
+Lemma natmulfctE (U : pointedType) (K : ringType) (f : U -> K) n :
+  f *+ n = (fun x => f x *+ n).
+Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
+
 End function_space_lemmas.
 
 Lemma inv_funK T (R : unitRingType) (f : T -> R) : f\^-1\^-1%R = f.

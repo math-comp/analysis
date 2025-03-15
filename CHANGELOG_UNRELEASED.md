@@ -149,13 +149,18 @@
 
 - in `hoelder.v`
   + lemmas `Lnorm0`, `oppr_Lnorm`, `Lnorm_cst1`
-  + lemmas `minkowski'`, `minkowskie`
+  + definition `conjugate`
+  + lemma `conjugateE`
+  + lemmas `lerB_DLnorm`, `lerB_LnormD`, `eminkowski`
 
 - in `lebesgue_integral.v`:
   + lemma `mfunMn`
 
+- in `classical_sets.v`:
+  + lemma `set_cst`
+
 - in `measurable_realfun.v`:
-  + lemmas `ereal_inf_seq`, `ereal_sup_seq`, `set_cst`,
+  + lemmas `ereal_inf_seq`, `ereal_sup_seq`,
     `ereal_sup_cst`, `ereal_inf_cst`, `ereal_sup_pZl`,
     `ereal_supZl`, `ereal_inf_pZl`, `ereal_infZl`
 
@@ -166,6 +171,9 @@
   + module `ProperNotations` with notations `++>`, `==>`, `~~>`
   + instances `comp_ae_eq`, `comp_ae_eq2`, `comp_ae_eq2'`, `sub_ae_eq2`
   + lemmas `ae_eq_comp2`, `ae_foralln`
+
+- in `functions.v`:
+  + lemma `natmulfctE`
 
 - new file `ess_sup_inf.v`:
   + lemma `measure0_ae`
@@ -201,8 +209,6 @@
   + coercion `LfunType_of_LType`
   + definition `Lspace` with notation `mu.-Lspace p`
   + lemma `LType1_integrable`, `LType2_integrable_sqr`
-  + definition `conjugate`
-  + lemma `conjugateE`
   + definitions `finlfun`, `lfun`, `lfun_key`
   + canonical `lfun_keyed`
   + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
@@ -210,10 +216,8 @@
   + lemmas `lfun_rect`, `lfun_valP`, `lfuneqP`, `lfuny0`, `mfunP`, `lfunP`,
     `mfun_scaler_closed`
   + lemmas `LnormZ`, `lfun_submod_closed`
-  + definition `nm`
-  + lemmas `finite_norm_fine`, `ler_Lnorm_add`, `natmulfctE`,
-    `LnormN`, `enatmul_ninfty`, `Lnorm_natmul`, `nm_eq0`
-  + lemma `mul_lte_pinfty`
+  + lemmas `finite_norm_fine`, `ler_LnormD`,
+    `LnormN`, `Lnorm_natmul`, `fine_Lnorm_eq0`
   + lemma `Lspace_inclusion`
 
 - in `nat_topology.v`:
@@ -277,6 +281,9 @@
   + `eq_forall3` -> `eq3_forall`
 - in `ereal.v`:
   + `ereal_sup_le` -> `ereal_sup_ge`
+
+- in `hoelder.v`:
+  + `minkowski` -> `minkowski_EFin`
 
 ### Generalized
 

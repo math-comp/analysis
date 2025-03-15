@@ -1242,6 +1242,13 @@ Notation bigcupM1l := bigcupX1l (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to bigcupX1r.")]
 Notation bigcupM1r := bigcupX1r (only parsing).
 
+Lemma set_cst {T I} (x : T) (A : set I) :
+   [set x | _ in A] = if A == set0 then set0 else [set x].
+Proof.
+apply/seteqP; split=> [_ [i +] <-|t]; first by case: ifPn => // /eqP ->.
+by case: ifPn => // /set0P[i Ai ->{t}]; exists i.
+Qed.
+
 Section set_order.
 Import Order.TTheory.
 

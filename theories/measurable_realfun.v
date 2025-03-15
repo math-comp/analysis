@@ -1673,19 +1673,10 @@ Qed.
 
 End open_itv_cover.
 
-
 Section ereal_supZ.
 Context {R : realType}.
 Implicit Types (r s : R) (A : set R) (X : set (\bar R)).
 Local Open Scope ereal_scope.
-
-Lemma set_cst I T (x : T) (A : set I) :
-   [set x | _ in A] = if A == set0 then set0 else [set x].
-Proof.
-apply/seteqP; split=> y /=.
-  by case=> i Ai ->; case: ifP => //= /eqP A0; rewrite A0 in Ai.
-by case: ifPn => //= /set0P[i Ai ->]; exists i.
-Qed.
 
 Lemma ereal_sup_cst T x (A : set T) : A != set0 ->
    ereal_sup [set x | _ in A] = x :> \bar R.
@@ -1694,12 +1685,12 @@ Proof. by move=> AN0; rewrite set_cst ifN// ereal_sup1. Qed.
 Lemma ereal_inf_cst T x (A : set T) : A != set0 ->
    ereal_inf [set x | _ in A] = x :> \bar R.
 Proof. by move=> AN0; rewrite set_cst ifN// ereal_inf1. Qed.
-  
+
 Lemma ereal_sup_pZl X r : (0 < r)%R ->
   ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
 Proof.
 move=> /[dup] r_gt0; rewrite lt0r => /andP[r_neq0 r_ge0].
- gen have gen : r r_gt0 {r_ge0 r_neq0} X /
+gen have gen : r r_gt0 {r_ge0 r_neq0} X /
     ereal_sup [set r%:E * x | x in X] <= r%:E * ereal_sup X.
   apply/ereal_supP => y/= [x Ax <-]; rewrite lee_pmul2l//=.
   by apply/ereal_supP => //=; exists x.
@@ -1714,7 +1705,7 @@ Proof.
 move=> AN0; have [r_gt0|//|<-] := ltgtP => _; first by rewrite ereal_sup_pZl.
 by rewrite mul0e; under eq_imagel do rewrite mul0e/=; rewrite ereal_sup_cst.
 Qed.
-  
+
 Lemma ereal_inf_pZl X r : (0 < r)%R ->
   ereal_inf [set r%:E * x | x in X] = r%:E * ereal_inf X.
 Proof.
