@@ -329,6 +329,30 @@ Proof. by rewrite /asbool; case: pselect=> h; constructor. Qed.
 Lemma asboolW (P : Prop) : `[<P>] -> P.
 Proof. by case: asboolP. Qed.
 
+Lemma orW A B : A \/ B -> A + B.
+Proof.
+have [|NA] := asboolP A; first by left.
+have [|NB] := asboolP B; first by right.
+by move=> AB; exfalso; case: AB.
+Qed.
+
+Lemma or3W A B C : [\/ A, B | C] -> A + B + C.
+Proof.
+have [|NA] := asboolP A; first by left; left.
+have [|NB] := asboolP B; first by left; right.
+have [|NC] := asboolP C; first by right.
+by move=> ABC; exfalso; case: ABC.
+Qed.
+
+Lemma or4W A B C D : [\/ A, B, C | D] -> A + B + C + D.
+Proof.
+have [|NA] := asboolP A; first by left; left; left.
+have [|NB] := asboolP B; first by left; left; right.
+have [|NC] := asboolP C; first by left; right.
+have [|ND] := asboolP D; first by right.
+by move=> ABCD; exfalso; case: ABCD.
+Qed.
+
 (* Shall this be a coercion ?*)
 Lemma asboolT (P : Prop) : P -> `[<P>].
 Proof. by case: asboolP. Qed.

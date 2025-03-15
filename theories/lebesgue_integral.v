@@ -41,6 +41,7 @@ From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 (* ````                                                                       *)
 (*       {mfun aT >-> rT} == type of measurable functions                     *)
 (*                           aT and rT are sigmaRingType's.                   *)
+(*             f \in mfun == holds for f : {mfun _ >-> _}                     *)
 (*         {sfun T >-> R} == type of simple functions                         *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
 (*           cst_nnsfun r == constant simple function                         *)
@@ -282,6 +283,8 @@ Lemma mfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
 Lemma mfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
 Lemma mfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
+Lemma mfunMn f n : (f *+ n) = (fun x => f x *+ n) :> (_ -> _).
+Proof. by apply/funext=> x; elim: n => //= n; rewrite !mulrS !mfunD /= => ->. Qed.
 Lemma mfun_sum I r (P : {pred I}) (f : I -> {mfun aT >-> rT}) (x : aT) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
@@ -295,6 +298,7 @@ HB.instance Definition _ f g := MeasurableFun.copy (f \+ g) (f + g).
 HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
 HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
 HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
+(* TODO: fix this: HB.instance Definition _ f (n : nat) := MeasurableFun.copy (fun x => f x *+ n) (f *+ n). *)
 
 Definition mindic (D : set aT) of measurable D : aT -> rT := \1_D.
 
@@ -3829,11 +3833,9 @@ Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType)
         (mu : {measure set T -> \bar R}).
 
-Local Notation ae_eq := (ae_eq mu).
-
 Let ae_eq_integral_abs_bounded (D : set T) (mD : measurable D) (f : T -> \bar R)
     M : measurable_fun D f -> (forall x, D x -> `|f x| <= M%:E) ->
-  ae_eq D f (cst 0) -> \int[mu]_(x in D) `|f x|%E  = 0.
+  (\forall x \ae mu, D x -> f x = 0) -> \int[mu]_(x in D) `|f x|%E  = 0.
 Proof.
 move=> mf fM [N [mA mN0 Df0N]].
 pose Df_neq0 := D `&` [set x | f x != 0].
@@ -3862,7 +3864,8 @@ by rewrite mule0 -eq_le => /eqP.
 Qed.
 
 Lemma ae_eq_integral_abs (D : set T) (mD : measurable D) (f : T -> \bar R) :
-  measurable_fun D f -> \int[mu]_(x in D) `|f x| = 0 <-> ae_eq D f (cst 0).
+    measurable_fun D f ->
+  \int[mu]_(x in D) `|f x| = 0 <-> (\forall x \ae mu, D x -> f x = 0).
 Proof.
 move=> mf; split=> [iDf0|Df0].
   exists (D `&` [set x | f x != 0]); split;
@@ -3915,7 +3918,7 @@ transitivity (limn (fun n => \int[mu]_(x in D) (f_ n x) )).
     have [ftm|ftm] := leP `|f t|%E m%:R%:E.
       by rewrite lexx /= (le_trans ftm)// lee_fin ler_nat.
     by rewrite (ltW ftm) /= lee_fin ler_nat.
-have ae_eq_f_ n : ae_eq D (f_ n) (cst 0).
+have ae_eq_f_ n : (f_ n) = (cst 0) %[ae mu in D].
   case: Df0 => N [mN muN0 DfN].
   exists N; split => // t /= /not_implyP[Dt fnt0].
   apply: DfN => /=; apply/not_implyP; split => //.
@@ -4024,7 +4027,7 @@ Qed.
 Lemma ge0_ae_eq_integral (D : set T) (f g : T -> \bar R) :
   measurable D -> measurable_fun D f -> measurable_fun D g ->
   (forall x, D x -> 0 <= f x) -> (forall x, D x -> 0 <= g x) ->
-  ae_eq D f g -> \int[mu]_(x in D) (f x) = \int[mu]_(x in D) (g x).
+  f = g %[ae mu in D] -> \int[mu]_(x in D) (f x) = \int[mu]_(x in D) (g x).
 Proof.
 move=> mD mf mg f0 g0 [N [mN N0 subN]].
 rewrite integralEpatch// [RHS]integralEpatch//.
@@ -4042,7 +4045,7 @@ Qed.
 
 Lemma ae_eq_integral (D : set T) (g f : T -> \bar R) :
   measurable D -> measurable_fun D f -> measurable_fun D g ->
-  ae_eq D f g -> \int[mu]_(x in D) f x = \int[mu]_(x in D) g x.
+  f = g %[ae mu in D] -> \int[mu]_(x in D) f x = \int[mu]_(x in D) g x.
 Proof.
 move=> mD mf mg /ae_eq_funeposneg[Dfgp Dfgn].
 rewrite integralE// [in RHS]integralE//; congr (_ - _).

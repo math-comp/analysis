@@ -697,3 +697,17 @@ Proof.
 move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
 by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
 Qed.
+
+Lemma eq_exists2l (A : Type) (P P' Q : A -> Prop) :
+  (forall x, P x <-> P' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P' x & Q x).
+Proof.
+by move=> eqQ; split=> -[x p q]; exists x; move: p q; rewrite ?eqQ.
+Qed.
+
+Lemma eq_exists2r (A : Type) (P Q Q' : A -> Prop) :
+  (forall x, Q x <-> Q' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P x & Q' x).
+Proof.
+by move=> eqP; split=> -[x p q]; exists x; move: p q; rewrite ?eqP.
+Qed.
