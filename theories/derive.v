@@ -1377,6 +1377,16 @@ Qed.
 
 End Derive_lemmasVR.
 
+Lemma derive_shift {R : numFieldType} (v k : R) :
+  'D_v (shift k : R^o -> R^o) = cst v.
+Proof.
+by apply/funext => x/=; rewrite deriveD// derive_id derive_cst addr0.
+Qed.
+
+Lemma is_derive_shift {R : numFieldType} x v (k : R) :
+  is_derive x v (shift k : R^o -> R^o) v.
+Proof. by apply: DeriveDef => //; rewrite derive_val addr0. Qed.
+
 Lemma derive1_cst {R : numFieldType} (k : R) t : (cst k)^`() t = 0.
 Proof. by rewrite derive1E derive_cst. Qed.
 

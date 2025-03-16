@@ -33,6 +33,9 @@
 - in `Rstruct_topology.v`:
   + lemma `RexpE`
 
+- in `derive.v`:
+  + lemmas `derive_shift`, `is_derive_shift`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
