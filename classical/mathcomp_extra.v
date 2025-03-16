@@ -509,3 +509,7 @@ Notation " R ~~> R' " := (@respectful _ _ (Program.Basics.flip (R%signature)) (R
 
 Export -(notations) Morphisms.
 End ProperNotations.
+
+Lemma mulr_funEcomp (R : semiRingType) (T : Type) (x : R) (f : T -> R) :
+  x \o* f = *%R^~ x \o f.
+Proof. by []. Qed.

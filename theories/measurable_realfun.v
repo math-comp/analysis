@@ -1034,6 +1034,12 @@ by move=> mf mg mD; move: (mD); apply: measurable_fun_if => //;
   [exact: measurable_fun_ltr|exact: measurable_funS mg|exact: measurable_funS mf].
 Qed.
 
+Lemma measurable_funrpos D f : measurable_fun D f -> measurable_fun D f^\+.
+Proof. by move=> mf; exact: measurable_maxr. Qed.
+
+Lemma measurable_funrneg D f : measurable_fun D f -> measurable_fun D f^\-.
+Proof. by move=> mf; apply: measurable_maxr => //; exact: measurableT_comp. Qed.
+
 Lemma measurable_minr D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \min g).
 Proof.
