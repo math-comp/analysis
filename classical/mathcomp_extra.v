@@ -484,3 +484,24 @@ Lemma eq_exists2r (A : Type) (P Q Q' : A -> Prop) :
 Proof.
 by move=> eqP; split=> -[x p q]; exists x; move: p q; rewrite ?eqP.
 Qed.
+
+Declare Scope signature_scope.
+Delimit Scope signature_scope with signature.
+
+Import -(notations) Morphisms.
+Arguments Proper {A}%_type R%_signature m.
+Arguments respectful {A B}%_type (R R')%_signature _ _.
+
+Module ProperNotations.
+
+Notation " R ++> R' " := (@respectful _ _ (R%signature) (R'%signature))
+  (right associativity, at level 55) : signature_scope.
+
+Notation " R ==> R' " := (@respectful _ _ (R%signature) (R'%signature))
+  (right associativity, at level 55) : signature_scope.
+
+Notation " R ~~> R' " := (@respectful _ _ (Program.Basics.flip (R%signature)) (R'%signature))
+  (right associativity, at level 55) : signature_scope.
+
+Export -(notations) Morphisms.
+End ProperNotations.

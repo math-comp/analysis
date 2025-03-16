@@ -280,6 +280,7 @@ From mathcomp Require Import sequences esum numfun.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+Import ProperNotations.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Reserved Notation "'s<|' D , G '|>'" (at level 40, G, D at next level).
@@ -4175,29 +4176,8 @@ move=> aP; have -> : P = setT by rewrite predeqE => t; split.
 by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
 Qed.
 
-Require Import -(notations) Setoid.
-
-Declare Scope signature_scope.
-Delimit Scope signature_scope with signature.
-Import -(notations) Morphisms.
-Module ProperNotations.
-
-  Notation " R ++> R' " := (@respectful _ _ (R%signature) (R'%signature))
-    (right associativity, at level 55) : signature_scope.
-
-  Notation " R ==> R' " := (@respectful _ _ (R%signature) (R'%signature))
-    (right associativity, at level 55) : signature_scope.
-
-  Notation " R ~~> R' " := (@respectful _ _ (Program.Basics.flip (R%signature)) (R'%signature))
-    (right associativity, at level 55) : signature_scope.
-
-End ProperNotations.
-Import ProperNotations.
-
-Arguments Proper {A}%_type R%_signature m.
-Arguments respectful {A B}%_type (R R')%_signature _ _.
-
-Instance ae_eq_equiv d (T : ringOfSetsType d) R mu V D: Equivalence (@ae_eq d T R mu V D).
+Instance ae_eq_equiv d (T : ringOfSetsType d) R mu V D :
+  Equivalence (@ae_eq d T R mu V D).
 Proof.
 split.
 - by move=> f; near=> x.
@@ -4215,13 +4195,16 @@ Local Notation ae_eq := (ae_eq mu D).
 Lemma ae_eq0 U (f g : T -> U) : measurable D -> mu D = 0 -> f = g %[ae mu in D].
 Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
 
-Instance comp_ae_eq U V (j : T -> U -> V) : Proper (ae_eq ==> ae_eq) (fun f x => j x (f x)).
+Instance comp_ae_eq U V (j : T -> U -> V) :
+  Proper (ae_eq ==> ae_eq) (fun f x => j x (f x)).
 Proof. by move=> f g; apply: filterS => x /[apply] /= ->. Qed.
 
-Instance comp_ae_eq2 U U' V (j : T -> U -> U' -> V) : Proper (ae_eq ==> ae_eq ==> ae_eq) (fun f g x => j x (f x) (g x)).
+Instance comp_ae_eq2 U U' V (j : T -> U -> U' -> V) :
+  Proper (ae_eq ==> ae_eq ==> ae_eq) (fun f g x => j x (f x) (g x)).
 Proof. by move=> f f' + g g'; apply: filterS2 => x + + Dx => -> // ->. Qed.
 
-Instance comp_ae_eq2' U U' V (j : U -> U' -> V) : Proper (ae_eq ==> ae_eq ==> ae_eq) (fun f g x => j (f x) (g x)).
+Instance comp_ae_eq2' U U' V (j : U -> U' -> V) :
+  Proper (ae_eq ==> ae_eq ==> ae_eq) (fun f g x => j (f x) (g x)).
 Proof. by move=> f f' + g g'; apply: filterS2 => x + + Dx => -> // ->. Qed.
 
 Instance sub_ae_eq2 : Proper (ae_eq ==> ae_eq ==> ae_eq) (@GRing.sub_fun T R).
