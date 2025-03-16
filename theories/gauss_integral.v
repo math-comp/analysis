@@ -95,7 +95,7 @@ Qed.
 
 Local Notation "'d1 f" := (partial1of2 f).
 
-Let partial1_u x t : ('d1 u t) x = - 2 * x * gauss_fun x * gauss_fun (t * x).
+Let partial1_u x t : ('d1 u) x t = - 2 * x * gauss_fun x * gauss_fun (t * x).
 Proof.
 rewrite partial1of2E /u /= deriveMr//= -derive1E.
 rewrite derive1_comp// [in X in _ * (_ * X)]derive1E deriveMr//=.
@@ -140,7 +140,7 @@ Qed.
 
 Let partial1_u_local_ub c (e : R) : 0 < e ->
   exists2 M : R, 0 < M &
-    forall x0 y, x0 \in `](c - e), (c + e)[ -> `|('d1 u) y x0| <= M.
+    forall x0 y, x0 \in `](c - e), (c + e)[ -> `|('d1 u) x0 y| <= M.
 Proof.
 move=> e0 /=.
 near (pinfty_nbhs R) => M.
@@ -180,7 +180,7 @@ have [c [e e0 cex]] : exists c : R, exists2 e : R, 0 < e & ball c e x.
   exact: ballxx.
 have [M M0 HM] := partial1_u_local_ub c e0.
 rewrite [X in _ --> X](_ : _ =
-    \int[mu]_(y in `[0, 1]) ('d1 u) y x)//; last first.
+    \int[mu]_(y in `[0, 1]) ('d1 u) x y)//; last first.
   rewrite /= -RintegralZl//; last first.
     apply: continuous_compact_integrable => /=; first exact: segment_compact.
     by apply/continuous_subspaceT => x0; exact: continuous_gaussM.
