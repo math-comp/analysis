@@ -67,6 +67,7 @@ theories/homotopy_theory/homotopy.v
 theories/homotopy_theory/wedge_sigT.v
 theories/homotopy_theory/continuous_path.v
 
+theories/ess_sup_inf.v
 theories/separation_axioms.v
 theories/function_spaces.v
 theories/ereal.v
@@ -97,3 +98,4 @@ theories/gauss_integral.v
 theories/showcase/summability.v
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
+theories/lspace.v

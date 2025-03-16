@@ -2294,7 +2294,7 @@ have BVabfg : BV a b (f \+ g).
 apply: ub_ereal_sup => y /= [r' [s' abs <-{r'} <-{y}]].
 apply: (@le_trans _ _ (variation a b f s' + variation a b g s')%:E).
   exact: variation_le.
-by rewrite EFinD leeD// ereal_sup_le//;
+by rewrite EFinD leeD// ereal_sup_ge//;
   (eexists; last exact: lexx); (eexists; last reflexivity);
   exact: variations_variation.
 Qed.
@@ -2309,7 +2309,7 @@ have [abf|abf] := pselect (BV a b f); last first.
   by apply: variations_neq0 => //; rewrite (lt_trans ac).
 have H s t : itv_partition a c s -> itv_partition c b t ->
     (TV a b f >= (variation a c f s)%:E + (variation c b f t)%:E)%E.
-  move=> acs cbt; rewrite -EFinD; apply: ereal_sup_le.
+  move=> acs cbt; rewrite -EFinD; apply: ereal_sup_ge.
   exists (variation a b f (s ++ t))%:E.
     eexists; last reflexivity.
     by exists (s ++ t) => //; exact: itv_partition_cat acs cbt.
