@@ -48,6 +48,20 @@ Import numFieldTopology.Exports numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+Lemma memB_itv (R : numDomainType) (b0 b1 : bool) (x y z : R) :
+  (y - z \in Interval (BSide b0 x) (BSide b1 y)) =
+  (x + z \in Interval (BSide (~~ b1) x) (BSide (~~ b0) y)).
+Proof.
+rewrite !in_itv /= /Order.lteif !if_neg.
+by rewrite gerBl gtrBl lerDl ltrDl lerBrDr ltrBrDr andbC.
+Qed.
+
+(* generalizes mem_1B_itvcc *)
+Lemma memB_itv0 (R : numDomainType) (b0 b1 : bool) (x y : R) :
+  (y - x \in Interval (BSide b0 0) (BSide b1 y)) =
+  (x \in Interval (BSide (~~ b1) 0) (BSide (~~ b0) y)).
+Proof. by rewrite memB_itv add0r. Qed.
+
 Section bool_to_real.
 Context d (T : measurableType d) (R : realType) (P : probability T R) (f : {mfun T >-> bool}).
 Definition bool_to_real : T -> R := (fun x => x%:R) \o (f : T -> bool).
@@ -170,6 +184,61 @@ rewrite big_ord_recl lte_mul_pinfty//.
   have /andP[F0 ->] := Foo ord0.
   by rewrite (@lt_le_trans _ _ 0%E).
 by rewrite ih.
+Qed.
+
+(* TODO: this generalize subset_itv! *)
+Lemma subset_itvW_bound (d : Order.disp_t) (T : porderType d)
+  (x y z u : itv_bound T) :
+  (x <= y)%O -> (z <= u)%O -> [set` Interval y z] `<=` [set` Interval x u].
+Proof.
+move=> xy zu.
+by apply: (@subset_trans _ [set` Interval x z]);
+  [exact: subset_itvr | exact: subset_itvl].
+Qed.
+
+Lemma gtr0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
+  (forall x : R, x \in `]a, b[ -> derivable f x 1) ->
+  (forall x : R, x \in `]a, b[ -> 0 < 'D_1 f x) ->
+  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
+  {in (Interval (BSide sa a) (BSide sb b)) &, {homo f : x y / x < y >-> x < y}}.
+Proof.
+move=> df dfgt0 cf x y + + xy.
+rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
+have HMVT1: {within `[x, y], continuous f}%classic.
+  exact/(continuous_subspaceW _ cf)/subset_itvW_bound.
+have zab z : z \in `]x, y[ -> z \in `]a, b[.
+  apply: subset_itvW_bound.
+    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
+  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
+have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
+  by move=> zxy; exact/derivableP/df/zab.
+rewrite -subr_gt0.
+have[z zxy ->]:= MVT xy HMVT0 HMVT1.
+rewrite mulr_gt0// ?subr_gt0// dfgt0//.
+exact: zab.
+Qed.
+
+Lemma ger0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
+  (forall x : R, x \in `]a, b[ -> derivable f x 1) ->
+  (forall x : R, x \in `]a, b[ -> 0 <= 'D_1 f x) ->
+  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
+  {in (Interval (BSide sa a) (BSide sb b)) &, {homo f : x y / x <= y >-> x <= y}}.
+Proof.
+move=> df dfge0 cf x y + + xy.
+rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
+have HMVT1: {within `[x, y], continuous f}%classic.
+  exact/(continuous_subspaceW _ cf)/subset_itvW_bound.
+have zab z : z \in `]x, y[ -> z \in `]a, b[.
+  apply: subset_itvW_bound.
+    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
+  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
+have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
+  by move=> zxy; exact/derivableP/df/zab.
+rewrite -subr_ge0.
+move: (xy); rewrite le_eqVlt=> /orP [/eqP-> | xy']; first by rewrite subrr.
+have[z zxy ->]:= MVT xy' HMVT0 HMVT1.
+rewrite mulr_ge0// ?subr_ge0// dfge0//.
+exact: zab.
 Qed.
 
 Section integrable_theory.
@@ -1370,7 +1439,7 @@ rewrite -mulrN -mulrA [in leRHS]mulrC expRM ge0_ler_powR// ?nnegrE.
   rewrite -(@ler_pM2r _ 2)// -mulrA mulVf// mulr1 mulrDl.
   rewrite -subr_le0 mulNr opprK.
   rewrite addrC !addrA.
-  have->: delta ^+ 2 - delta * 2 = (1 - delta)^+2 - 1.
+  have -> : delta ^+ 2 - delta * 2 = (1 - delta)^+2 - 1.
     rewrite sqrrB expr1n mul1r [RHS]addrC !addrA addNr add0r addrC -mulNrn.
     by rewrite -(mulr_natr (- delta) 2) mulNr.
   rewrite addrAC subr_le0.
