@@ -1415,23 +1415,21 @@ Import Reals.
 Import Rstruct Rstruct_topology.
 Import Interval.Tactic.
 
-Section expR2_le8.
+Section exp2_le8.
 Let R := Rdefinitions.R.
 Local Open Scope ring_scope.
 
-Lemma expR2_le8 : expR 2 <= 8 :> R.
+Lemma exp2_le8 : (exp 2 <= 8)%R.
+Proof. interval. Qed.
+
+Lemma exp2_le8_conversion : reflect (exp 2 <= 8)%R (expR 2 <= 8 :> R).
 Proof.
-rewrite (_ : 2 = 1 + 1)//.
-rewrite exp.expRD -RmultE.
-rewrite (_ : 8 = 8%R); last first.
+rewrite RexpE (_ : 8%R = 8); last
   by rewrite !mulrS -!RplusE Rplus_0_r !RplusA !IZRposE/=.
-rewrite (_ : 1 = INR 1%N)//=.
-rewrite -RexpE.
-apply/RleP.
-by interval.
+by apply: (iffP idP) => /RleP.
 Qed.
 
-End expR2_le8.
+End exp2_le8.
 End with_interval.
 
 Section taylor_ln_le.
@@ -1480,7 +1478,7 @@ have dfge0 y : y \in `]0, 1[ -> 0 <= df y.
   rewrite -[leLHS]expRK -[leRHS]expRK ler_ln ?posrE ?expR_gt0//.
   rewrite expRM/= powR_mulrn ?expR_ge0// lnK ?posrE//.
   rewrite !exprS expr0 mulr1 -!natrM mulnE /=.
-  by rewrite with_interval.expR2_le8.
+  exact/with_interval.exp2_le8_conversion/with_interval.exp2_le8.
 apply: (@ger0_derive1_homo R f 0 1 true false).
 - by move=> y /y1oo /idf /@ex_derive.
 - by move=> y /[dup] /y1oo /idf /@derive_val ->; exact: dfge0.
