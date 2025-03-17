@@ -93,41 +93,10 @@ Definition random_variable d d' (T : measurableType d) (T' : measurableType d')
 
 Notation "{ 'RV' P >-> T' }" := (@random_variable _ _ _ T' _ P) : form_scope.
 
-Section move_to_somewhere.
-
-Lemma mulr_funEcomp (R : semiRingType) (T : Type) (x : R) (f : T -> R) :
-  x \o* f = *%R^~ x \o f.
-Proof. by []. Qed.
-
-Lemma bounded_image (T : Type) (K : numFieldType)
-  (V : pseudoMetricNormedZmodType K) (E : T -> V) (A : set T) :
-  [bounded y | y in E @` A] = [bounded E x | x in A].
-Proof.
-rewrite /bounded_near !nearE.
-congr (+oo _); apply: funext=> M.
-apply: propext; split => /=.
-  by move=> + x Ax => /(_ (E x)); apply; exists x.
-by move=> H x [] y Ay <-; exact: H.
-Qed.
-
-Lemma finite_bounded (K : realFieldType) (V : pseudoMetricNormedZmodType K)
-  (A : set V) : finite_set A -> bounded_set A.
-Proof.
-move=> fA.
-exists (\big[Order.max/0]_(y <- fset_set A) normr y).
-split=> //.
-  apply: (big_ind (fun x => x \is Num.real))=> //.
-  by move=> *; exact: max_real.
-move=> x ltx v Av /=.
-apply/ltW/(le_lt_trans _ ltx)/le_bigmax_seq=> //.
-by rewrite in_fset_set// inE.
-Qed.
+(* TODO: move elsewhere *)
+Section todo_move.
 
 Arguments sub_countable [T U].
-Arguments card_le_finite [T U].
-(* naming inconsistency: there is also `sub_finite_set`:
-   sub_finite_set :
-     forall [T : Type] [A B : set T], A `<=` B -> finite_set B -> finite_set A *)
 
 Lemma countable_range_comp (T0 T1 T2 : Type) (f : T0 -> T1) (g : T1 -> T2) :
   countable (range f) \/ countable (range g) -> countable (range (g \o f)).
@@ -140,162 +109,13 @@ move=> cg; apply: (sub_countable _ (range g))=> //.
 exact/subset_card_le/image_subset.
 Qed.
 
-Lemma finite_range_comp (T0 T1 T2 : Type) (f : T0 -> T1) (g : T1 -> T2) :
-  finite_set (range f) \/ finite_set (range g) -> finite_set (range (g \o f)).
-Proof.
-rewrite -(image_comp f g).
-case.
-  move=> cf; apply: (card_le_finite _ (range f))=> //.
-  exact: card_image_le.
-move=> cg; apply: (card_le_finite _ (range g))=> //.
-exact/subset_card_le/image_subset.
-Qed.
-
-(* generalizations with an additional predicate (m <= i)%N as in big_geq_mkord *)
-Lemma lee_sum_fset_nat_geq (R : realDomainType) (f : sequence \bar R)
-  (F : {fset nat}) (m n : nat) (P : pred nat) :
-  (forall i : nat, P i -> (0%R <= f i)%E) ->
-  [set` F] `<=` `I_n ->
-  ((\sum_(i <- F | P i && (m <= i)%N) f i)%R
-   <= (\sum_(m <= i < n | P i) f i)%R)%E.
-Proof.
-move=> f0 Fn.
-rewrite big_geq_mkord/= -(big_mkord (fun i => P i && (m <= i)%N)).
-apply: lee_sum_fset_nat=> //.
-by move=> ? /andP [] *; exact: f0.
-Qed.
-Arguments lee_sum_fset_nat_geq {R f} F m n P.
-
-Lemma lee_sum_fset_lim_geq (R : realType) (f : sequence \bar R)
-  (F : {fset nat}) m (P : pred nat) :
-  (forall i : nat, P i -> (0%R <= f i)%E) ->
-  ((\sum_(i <- F | P i && (m <= i)%N) f i)%R
-   <= \big[+%R/0%R]_(m <= i <oo | P i) f i)%E.
-Proof.
-move=> f0; pose n := (\max_(k <- F) k).+1.
-rewrite (le_trans (lee_sum_fset_nat_geq F m n _ _ _))//; last first.
-  by apply: nneseries_lim_ge => // k _; exact: f0.
-move=> k /= kF; rewrite /n big_seq_fsetE/=.
-by rewrite -[k]/(val [`kF]%fset) ltnS leq_bigmax.
-Qed.
-Arguments lee_sum_fset_lim_geq {R f} F m P.
-
-Lemma nneseries_esum_geq (R : realType) (a : nat -> \bar R) m (P : pred nat) :
-  (forall n : nat, P n -> (0%R <= a n)%E) ->
-  \big[+%R/0]_(m <= i <oo | P i) a i = \esum_(i in [set x | P x && (m <= x)%N]) a i.
-Proof.
-move=> a0; apply/eqP; rewrite eq_le; apply/andP; split.
-  apply: lime_le.
-    by apply: is_cvg_nneseries_cond => n _; exact: a0.
-  apply: nearW=> n.
-  apply: ereal_sup_ubound; exists [set` [fset val i | i in 'I_n & P i && (m <= i)%N]%fset].
-    split; first exact: finite_fset.
-    by move=> /= k /imfsetP[/= i]; rewrite inE => + ->.
-  rewrite fsbig_finite//= set_fsetK big_imfset/=; last first.
-    by move=> ? ? ? ? /val_inj.
-  by rewrite big_filter big_enum_cond/= big_geq_mkord.
-apply: ub_ereal_sup => _ [/= F [finF PF] <-].
-rewrite fsbig_finite//= -(big_rmcond_in (fun i=> P i && (m <= i)%N))/=.
-  exact: lee_sum_fset_lim_geq.
-by move=> k; rewrite in_fset_set// inE => /PF ->.
-Qed.
-
-Lemma nneseriesID (R : realType) m (a P : pred nat) (f : nat -> \bar R):
-  (forall k : nat, P k -> (0%R <= f k)%E) ->
-  \big[+%R/0]_(m <= k <oo | P k) f k =
-  (\big[+%R/0%R]_(m <= k <oo | P k && a k) f k)%E
-  + (\big[+%R/0%R]_(m <= k <oo | P k && ~~ a k) f k)%E.
-Proof.
-move=> nn.
-rewrite nneseries_esum_geq//.
-rewrite (esumID a)/=; last by move=> ? /andP [] *; exact: nn.
-have->: [set x | P x && (m <= x)%N] `&` (fun x : nat => a x) =
-        [set x | (P x && a x) && (m <= x)%N].
-  by apply: funext=> x /=; rewrite (propext (rwP andP)) andbAC.
-have->: [set x | P x && (m <= x)%N] `&` ~` (fun x : nat => a x) =
-        [set x | (P x && ~~ a x) && (m <= x)%N].
-  apply: funext=> x /=.
-  by rewrite (propext (rwP negP)) (propext (rwP andP)) andbAC.
-by rewrite -!nneseries_esum_geq//; move=> ? /andP [] *; exact: nn.
-Qed.
-
-(* TODO: this generalize subset_itv! *)
-Lemma subset_itvW_bound (d : Order.disp_t) (T : porderType d)
-  (x y z u : itv_bound T) :
-  (x <= y)%O -> (z <= u)%O -> [set` Interval y z] `<=` [set` Interval x u].
-Proof.
-move=> xy zu.
-by apply: (@subset_trans _ [set` Interval x z]);
-  [exact: subset_itvr | exact: subset_itvl].
-Qed.
-
-Lemma gtr0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
-  (forall x : R, x \in `]a, b[ -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[ -> 0 < 'D_1 f x) ->
-  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in (Interval (BSide sa a) (BSide sb b)) &, {homo f : x y / x < y >-> x < y}}.
-Proof.
-move=> df dfgt0 cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
-have HMVT1: {within `[x, y], continuous f}%classic.
-  exact/(continuous_subspaceW _ cf)/subset_itvW_bound.
-have zab z : z \in `]x, y[ -> z \in `]a, b[.
-  apply: subset_itvW_bound.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
-have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
-  by move=> zxy; exact/derivableP/df/zab.
-rewrite -subr_gt0.
-have[z zxy ->]:= MVT xy HMVT0 HMVT1.
-rewrite mulr_gt0// ?subr_gt0// dfgt0//.
-exact: zab.
-Qed.
-
-Lemma ger0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
-  (forall x : R, x \in `]a, b[ -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[ -> 0 <= 'D_1 f x) ->
-  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in (Interval (BSide sa a) (BSide sb b)) &, {homo f : x y / x <= y >-> x <= y}}.
-Proof.
-move=> df dfge0 cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
-have HMVT1: {within `[x, y], continuous f}%classic.
-  exact/(continuous_subspaceW _ cf)/subset_itvW_bound.
-have zab z : z \in `]x, y[ -> z \in `]a, b[.
-  apply: subset_itvW_bound.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
-have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
-  by move=> zxy; exact/derivableP/df/zab.
-rewrite -subr_ge0.
-move: (xy); rewrite le_eqVlt=> /orP [/eqP-> | xy']; first by rewrite subrr.
-have[z zxy ->]:= MVT xy' HMVT0 HMVT1.
-rewrite mulr_ge0// ?subr_ge0// dfge0//.
-exact: zab.
-Qed.
-
-Lemma memB_itv (R : numDomainType) (b0 b1 : bool) (x y z : R) :
-  (y - z \in Interval (BSide b0 x) (BSide b1 y)) =
-  (x + z \in Interval (BSide (~~ b1) x) (BSide (~~ b0) y)).
-Proof.
-rewrite !in_itv /= /Order.lteif !if_neg.
-by rewrite gerBl gtrBl lerDl ltrDl lerBrDr ltrBrDr andbC.
-Qed.
-
-(* generalizes mem_1B_itvcc *)
-Lemma memB_itv0 (R : numDomainType) (b0 b1 : bool) (x y : R) :
-  (y - x \in Interval (BSide b0 0) (BSide b1 y)) =
-  (x \in Interval (BSide (~~ b1) 0) (BSide (~~ b0) y)).
-Proof. by rewrite memB_itv add0r. Qed.
-
-End move_to_somewhere.
-Arguments countable_range_comp [T0 T1 T2].
-Arguments finite_range_comp [T0 T1 T2].
-
 Lemma notin_range_measure d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (P : {measure set T -> \bar R}) (X : T -> R) r :
   r \notin range X -> P (X @^-1` [set r]) = 0%E.
 Proof. by rewrite notin_setE => hr; rewrite preimage10. Qed.
+
+End todo_move.
+Arguments countable_range_comp [T0 T1 T2].
 
 Lemma probability_range d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (P : probability T R) (X : {RV P >-> R}) :
