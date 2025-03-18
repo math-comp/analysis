@@ -119,7 +119,7 @@
   + record `LType`
   + coercion `LfunType_of_LType`
   + definition `Lspace` with notation `mu.-Lspace p`
-  + lemma `LType1_integrable`, `LType2_integrable_sqr`
+  + lemma `lfun1_integrable`, `lfun2_integrable_sqr`, `lfun2M2_1`
   + definitions `finlfun`, `lfun`, `lfun_key`
   + canonical `lfun_keyed`
   + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
@@ -130,6 +130,8 @@
   + lemmas `finite_norm_fine`, `ler_LnormD`,
     `LnormrN`, `Lnormr_natmul`, `fine_Lnormr_eq0`
   + lemma `Lspace_inclusion`
+    `LnormN`, `Lnorm_natmul`, `fine_Lnorm_eq0`
+  + lemma `lfun_inclusion`, `lfun_inclusion12`
 
 - in `lebesgue_integral.v`:
   + lemma `mfunMn`
@@ -177,6 +179,8 @@
 
 - in `hoelder.v`:
   + lemmas `poweR_Lnorm`, `oppe_Lnorm`
+- in `probability.v`:
+  + lemma `lfun1_expectation_lty`
 
 ### Changed
 
@@ -277,6 +281,9 @@
   + definition `Lnorm` generalized to functions with codomain `\bar R`
     (this impacts the notation `'N_p[f]`)
   + lemmas `Lnorm1`, `eq_Lnorm` (from `f : _ -> R` to `f : _ -> \bar R`)
+
+- in `probability.v`
+  + lemma `cantelli`
 
 ### Deprecated
 
