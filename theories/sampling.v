@@ -1378,6 +1378,111 @@ rewrite mulrC expRM -mulNr mulrA expRM.
 exact: end_thm24.
 Qed.
 
+Section xlnx_bounding.
+Local Open Scope ring_scope.
+Local Arguments derive_val {R V W a v f df}.
+
+Let f (x : R) := x ^+ 2 - 2 * x * ln x.
+Let idf (x : R) : 0 < x -> {df : R | is_derive x 1 f df}.
+Proof.
+move=> x0.
+evar (df : (R : Type)); exists df.
+apply: is_deriveD; first by [].
+apply: is_deriveN.
+apply: is_deriveM; first by [].
+exact: is_derive1_ln.
+Defined.
+Let f1E : f 1 = 1. Proof. by rewrite /f expr1n ln1 !mulr0 subr0. Qed.
+Let Df_gt0 (x : R) : 0 < x -> x != 1 -> 0 < 'D_1 f x.
+Proof.
+move=> x0 x1.
+rewrite (derive_val (svalP (idf x0))) /=.
+clear idf.
+rewrite exp_derive deriveM// derive_cst derive_id .
+rewrite scaler0 addr0 /GRing.scale /= !mulr1 expr1.
+rewrite -mulrA divff ?lt0r_neq0//.
+rewrite (mulrC _ 2) -mulrDr -mulrBr mulr_gt0//.
+rewrite opprD addrA subr_gt0 -ltr_expR.
+have:= x0; rewrite -lnK_eq => /eqP ->.
+rewrite -[ltLHS]addr0 -(subrr 1) addrCA expR_gt1Dx//.
+by rewrite subr_eq0.
+Qed.
+
+Let sqrxB2xlnx_lt1 (c x : R) :
+  x \in `]0, 1[ -> x ^+ 2 - 2 * x * ln x < 1.
+Proof.
+rewrite in_itv=> /andP [] x0 x1.
+fold (f x).
+simpl in idf.
+rewrite -f1E.
+apply: (@gtr0_derive1_homo _ f 0 1 false false).
+- move=> t /[!in_itv] /= /andP [] + _.
+  by case/idf=> ? /@ex_derive.
+- move=> t /[!in_itv] /= /andP [] t0 t1.
+  apply: Df_gt0=> //.
+  by rewrite (lt_eqF t1).
+- apply: derivable_within_continuous => t /[!in_itv] /= /andP [] + _.
+  by case/idf=> ? /@ex_derive.
+- by rewrite in_itv/=; apply/andP; split=> //; apply/ltW.
+- by rewrite in_itv /= ltr01 lexx.
+- assumption.
+Qed.
+
+Let sqrxB2xlnx_gt1 (c x : R) :
+  1 < x -> 1 < x ^+ 2 - 2 * x * ln x.
+Proof.
+move=> x1.
+have x0 : 0 < x by rewrite (lt_trans _ x1).
+fold (f x).
+simpl in idf.
+rewrite -f1E.
+apply: (@gtr0_derive1_homo _ f 1 x true false).
+- move=> t /[!in_itv] /= /andP [] + _ => t1.
+  have: 0 < t by rewrite (lt_trans _ t1).
+  by case/idf=> ? /@ex_derive.
+- move=> t /[!in_itv] /= /andP [] t1 tx.
+  have t0: 0 < t by rewrite (lt_trans _ t1).
+  apply: Df_gt0=> //.
+  by rewrite (gt_eqF t1).
+- apply: derivable_within_continuous => t /[!in_itv] /= /andP [] + _ => t1.
+  have: 0 < t by rewrite (lt_le_trans _ t1).
+  by case/idf=> ? /@ex_derive.
+- by rewrite in_itv/=; apply/andP; split=> //; apply/ltW.
+- by rewrite in_itv /= lexx andbT ltW.
+- assumption.
+Qed.
+
+Lemma xlnx_lbound_i01 (c x : R) :
+  c <= 2 -> x \in `]0, 1[ -> x ^+ 2 - 1 < c * x * ln x.
+Proof.
+pose c' := c - 2.
+have-> : c = c' + 2 by rewrite /c' addrAC -addrA subrr addr0.
+rewrite -lerBrDr subrr.
+move: c'; clear c => c.
+rewrite ltrBlDr -ltrBlDl.
+rewrite le_eqVlt=> /orP [/eqP-> |]; first by rewrite add0r; exact: sqrxB2xlnx_lt1.
+move=> c0 /[dup] x01 /[!in_itv] /andP [] x0 x1.
+rewrite -mulrA (addrC c) mulrDl !mulrA opprD addrA.
+rewrite -[ltRHS]addr0 ltrD// ?sqrxB2xlnx_lt1// oppr_lt0.
+by rewrite -mulrA nmulr_lgt0// nmulr_llt0// ln_lt0.
+Qed.
+
+Lemma xlnx_ubound_i1y (c x : R) :
+  c <= 2 -> 1 < x -> c * x * ln x < x ^+ 2 - 1.
+Proof.
+pose c' := c - 2.
+have-> : c = c' + 2 by rewrite /c' addrAC -addrA subrr addr0.
+rewrite -lerBrDr subrr.
+move: c'; clear c => c.
+rewrite ltrBrDr -ltrBrDl.
+rewrite le_eqVlt=> /orP [/eqP-> |]; first by rewrite add0r; exact: sqrxB2xlnx_gt1.
+move=> c0 x1.
+rewrite -mulrA (addrC c) mulrDl !mulrA opprD addrA.
+rewrite -[ltLHS]addr0 ltrD// ?sqrxB2xlnx_gt1// oppr_gt0.
+by rewrite nmulr_rlt0 ?ln_gt0// nmulr_rlt0 ?(lt_trans _ x1).
+Qed.
+End xlnx_bounding.
+
 (* [Theorem 2.6, Rajani] / [thm 4.5.(2), MU] *)
 Theorem bernoulli_trial_inequality3 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
   (0 < delta < 1)%R ->
@@ -1434,47 +1539,13 @@ rewrite -mulrN -mulrA [in leRHS]mulrC expRM ge0_ler_powR// ?nnegrE.
   rewrite expRK// ln_div ?posrE ?expR_gt0 ?powR_gt0 ?subr_gt0//.
   rewrite expRK//.
   rewrite /powR (*TODO: lemma ln of powR*) gt_eqF ?subr_gt0// expRK.
-  (* requires analytical argument: see p.66 of mu's book *)
-  Local Open Scope ring_scope.
-  rewrite -(@ler_pM2r _ 2)// -mulrA mulVf// mulr1 mulrDl.
-  rewrite -subr_le0 mulNr opprK.
-  rewrite addrC !addrA.
-  have -> : delta ^+ 2 - delta * 2 = (1 - delta)^+2 - 1.
-    rewrite sqrrB expr1n mul1r [RHS]addrC !addrA addNr add0r addrC -mulNrn.
-    by rewrite -(mulr_natr (- delta) 2) mulNr.
-  rewrite addrAC subr_le0.
-  set f := fun (x : R) => x ^+ 2 + - (x * ln x) * 2.
-  have @idf (x : R^o) : 0 < x -> {df | is_derive x 1 (f : R^o -> R^o) df}.
-    move=> x0; evar (df : (R : Type)); exists df.
-    apply: is_deriveD; first by [].
-    apply: is_deriveM; last by [].
-    apply: is_deriveN.
-    apply: is_deriveM; first by [].
-    exact: is_derive1_ln.
-  suff: forall x : R, x \in `]0, 1[ -> f x <= 1.
-    by apply; rewrite memB_itv0 in_itv /= delta0 delta1.
-  move=> x x01.
-  have->: 1 = f 1 by rewrite /f expr1n ln1 mulr0 oppr0 mul0r addr0.
-  apply: (@ger0_derive1_homo _ f 0 1 false false)=> //.
-  - move=> t /[!in_itv] /= /andP [] + _.
-    by case/idf=> ? /@ex_derive.
-  - move=> t /[!in_itv] /= /andP [] t0 t1.
-    Local Arguments derive_val {R V W a v f df}.
-    rewrite (derive_val (svalP (idf _ t0))) /=.
-    clear idf.
-    rewrite exp_derive derive_cst derive_id .
-    rewrite scaler0 add0r /GRing.scale /= !mulr1 expr1.
-    rewrite -mulrDr mulr_ge0// divff ?lt0r_neq0//.
-    rewrite opprD addrA subr_ge0 -ler_expR.
-    have:= t0; rewrite -lnK_eq => /eqP ->.
-    by rewrite -[leLHS]addr0 -(subrr 1) addrCA expR_ge1Dx.
-  - apply: derivable_within_continuous => t /[!in_itv] /= /andP [] + _.
-    by case/idf=> ? /@ex_derive.
-  - by apply: (subset_itvW_bound _ _ x01); rewrite bnd_simp.
-  - by rewrite in_itv /= ltr01 lexx.
-  - by move: x01; rewrite in_itv=> /= /andP [] _ /ltW.
+  (* analytical argument reduced to xlnx_lbound_i01; p.66 of mu's book *)
+  rewrite ler_pdivlMr// mulrDl.
+  rewrite -lerBrDr -lerBlDl !mulNr !opprK [in leRHS](mulrC _ 2) mulrA.
+  rewrite ltW// (le_lt_trans _ (xlnx_lbound_i01 _ _))//; last first.
+    by rewrite memB_itv add0r in_itv/=; apply/andP; split.
+  by rewrite addrC lerBrDr mulr_natr -[in leRHS]sqrrN opprB sqrrB1.
 Qed.
-
 End sampling_theorem_part1.
 
 (* this is a preliminary for the second part of the proof of the sampling lemma *)
@@ -1501,11 +1572,11 @@ Qed.
 End exp2_le8.
 End with_interval.
 
-Section taylor_ln_le.
+Section xlnx_bounding_with_interval.
 Let R := Rdefinitions.R.
 Local Open Scope ring_scope.
 
-Lemma taylor_ln_le (x : R) : x \in `]0, 1[ -> (1 + x) * ln (1 + x) >= x + x^+2 / 3.
+Lemma xlnx_lbound_i12 (x : R) : x \in `]0, 1[ -> x + x^+2 / 3 <= (1 + x) * ln (1 + x).
 Proof.
 move=> x01; rewrite -subr_ge0.
 pose f (x : R^o) := (1 + x) * ln (1 + x) - (x + x ^+ 2 / 3).
@@ -1557,7 +1628,7 @@ apply: (@ger0_derive1_homo R f 0 1 true false).
 - by have:= x01; rewrite in_itv=> /andP /= [] /ltW.
 Qed.
 
-End taylor_ln_le.
+End xlnx_bounding_with_interval.
 
 (* the rest of the sampling theorem including lemmas relying on the Rocq standard library *)
 Section sampling_theorem_part2.
@@ -1585,7 +1656,7 @@ apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   rewrite lee_fin ler_expR ler_wpM2r//.
     by rewrite fine_ge0//; apply: expectation_ge0 => t; exact: bernoulli_trial_ge0.
   rewrite lerB//.
-  apply: taylor_ln_le.
+  apply: xlnx_lbound_i12.
   by rewrite in_itv /=.
 rewrite le_eqVlt; apply/orP; left; apply/eqP; congr (expR _)%:E.
 by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
