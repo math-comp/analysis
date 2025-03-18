@@ -1671,38 +1671,4 @@ apply: eq_kernel => y V.
 exact: He.
 Qed.
 
-Lemma congr_letinl_new {R : realType} g t1 t2 str (e1 e2 : @exp _ _ g t1)
-    (e : @exp _ _ (_ :: g) t2) x U :
-    (forall y V, measurable V -> execP e1 y V = execP e2 y V) ->
-  measurable U ->
-  @execP R g t2 [let str := e1 in e] x U =
-  @execP R g t2 [let str := e2 in e] x U.
-Proof.
-Abort.
-(* by move=> + mU; move/eq_sfkernel => He; rewrite !execP_letin He. Qed. *)
-
-Lemma congr_letinr_new {R : realType} g t1 t2 str (e : @exp _ _ _ t1)
-  (e1 e2 : @exp _ _ (_ :: g) t2) x U :
-  (forall y V, measurable V -> execP e1 (y, x) V = execP e2 (y, x) V) ->
-  @execP R g t2 [let str := e in e1] x U = @execP R g t2 [let str := e in e2] x U.
-Proof.
-Abort.
-(*
- by move=> He; rewrite !execP_letin !letin'E; apply: eq_integral => ? _; exact: He.
-Qed.
-*)
-Lemma congr_normalize_new {R : realType} g t (e1 e2 : @exp R _ g t) :
-  (forall x U, measurable U -> execP e1 x U = execP e2 x U) ->
-  execD [Normalize e1] = execD [Normalize e2].
-Proof.
-Abort.
-(*
-move=> He; apply: eq_execD.
-rewrite !execD_normalize_pt /=.
-f_equal.
-apply: eq_kernel => y V.
-exact: He.
-Qed.
-*)
-
 Local Close Scope lang_scope.

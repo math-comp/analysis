@@ -1024,4 +1024,3 @@ Example letinC_ground (g := [:: ("a", Unit); ("b", Bool)]) t1 t2
 Proof. move=> U mU; exact: letinC. Qed.
 
 End letinC.
-

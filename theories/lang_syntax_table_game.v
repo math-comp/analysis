@@ -13,12 +13,21 @@ From mathcomp Require Import lang_syntax_util lang_syntax lang_syntax_examples.
 (**md**************************************************************************)
 (* # Eddy's table game example                                                *)
 (*                                                                            *)
+(* Formalization of the Eddy's table game by equational reasoning. See        *)
+(* Sections 2.1, 3.2, 3.4, 3.5 of [Shan, POPL 2018]. The final statement of   *)
+(* equivalence is Lemma from_prog0_to_prog5. Intermediate steps are lemmas    *)
+(* named progij that turn the program progi into the program progj.           *)
+(*                                                                            *)
 (* ref:                                                                       *)
 (* - Chung-chieh Shan, Equational reasoning for probabilistic programming,    *)
 (*   POPL TutorialFest 2018                                                   *)
 (*   https://homes.luddy.indiana.edu/ccshan/rational/equational-handout.pdf   *)
 (* - Sean R Eddy, What is Bayesian statistics?, Nature Biotechnology 22(9),   *)
 (*   1177--1178 (2004)                                                        *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*  prog0 == Eddy's table game represented as a probabilistic program         *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -586,7 +595,7 @@ transitivity (\d_false U + \d_true U - bernoulli_prob (1 / 11) U : \bar R)%E; la
     rewrite -EFinD /bernoulli_pmf [X in X%:E](_ : _ = 1%R); last first.
       case: x => //; lra.
     over.
-  by rewrite /= dirac_bool.
+    by rewrite /= dirac_bool.
 rewrite -int_beta_prob_bernoulli.
 apply/esym/eqP; rewrite sube_eq//; last first.
   by rewrite ge0_adde_def// inE; exact: integral_ge0.
