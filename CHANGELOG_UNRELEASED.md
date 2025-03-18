@@ -119,7 +119,8 @@
   + record `LType`
   + coercion `LfunType_of_LType`
   + definition `Lspace` with notation `mu.-Lspace p`
-  + lemma `lfun1_integrable`, `lfun2_integrable_sqr`, `lfun2M2_1`
+  + lemma `lfun_integrable`, `lfun1_integrable`, `lfun2_integrable_sqr`, `lfun2M2_1`
+  + lemma `lfunp_scale`, `lfunN`, `lfunD`, `lfunB`, `lfun_cst`, `lfun_sum`
   + definitions `finlfun`, `lfun`, `lfun_key`
   + canonical `lfun_keyed`
   + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
@@ -218,6 +219,13 @@
   + from instance to definitions: `ae_filter_ringOfSetsType`, `ae_properfilter_algebraOfSetsType`
   + definiton `ae_eq`
   + definition `ess_sup` moved to `ess_sup_inf.v`
+
+- in `probability.v`
+  + lemma `expectation_fin_num`, `expectationZl`, `expectationD`, `expectationB`, `expectation_sum`,
+    `covarianceE`, `covariance_fin_num`, `covarianceZl`, `covarianceZr`, `covarianceNl`,
+    `covarianceNr`, `covarianceNN`, `covarianceDl`, `covarianceDr`, `covarianceBl`, `covarianceBr`,
+     `varianceE`, `variance_fin_num`, `varianceZ`, `varianceN`, `varianceD`, `varianceB`,
+     `varianceD_cst_l`, `varianceD_cst_r`, `varianceB_cst_l`, `varianceB_cst_r`, `covariance_le`
 
 ### Renamed
 

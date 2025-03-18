@@ -901,14 +901,35 @@ Proof. by rewrite lee_fin (ler_nat _ 1 2). Qed.
 
 Definition LType2 := LType mu le12.
 
+Lemma lfun_integrable (f : {mfun T >-> R}) r :
+  1 <= r -> (f : T -> R) \in lfun mu r%:E -> mu.-integrable setT (fun x => (`|f x| `^ r)%:E).
+Proof.
+rewrite inE => r0 /andP[_]; rewrite inE/= => lpf.
+have ? : measurable_fun [set: T] (fun x : T => (`|f x| `^ r)%:E).
+  apply: measurableT_comp => //.
+  apply: (measurableT_comp (measurable_powR _)) => //.
+  exact: measurableT_comp.
+apply/integrableP; split => //.
+apply/abse_integralP => //.
+move: lpf.
+rewrite /finite_norm => /(poweR_lty r); rewrite powR_Lnorm// ?gt_eqF// ?(lt_le_trans ltr01)//.
+move=> ?.
+apply/abse_integralP => //.
+under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
+by [].
+Qed.
+
 Lemma lfun1_integrable (f : {mfun T >-> R}) :
   (f : T -> R) \in lfun mu 1 -> mu.-integrable setT (EFin \o f).
 Proof.
-rewrite inE => /andP[_]; rewrite inE/= => l1f.
-apply/integrableP; split; first exact/measurable_EFinP.
-move: l1f; rewrite /finite_norm unlock /Lnorm invr1 poweRe1; last first.
-  by apply integral_ge0 => x _; rewrite lee_fin powRr1.
-by under eq_integral => i _ do rewrite poweRe1//.
+move=> /lfun_integrable => /(_ (lexx _)).
+under eq_fun => x do rewrite powRr1//.
+move/integrableP => [? fley].
+apply/integrableP; split.
+  exact: measurableT_comp.
+rewrite (le_lt_trans _ fley)//=.
+under [leRHS]eq_integral => x _ do rewrite normr_id.
+exact: lexx.
 Qed.
 
 Lemma lfun2_integrable_sqr (f : {mfun T >-> R}) :
@@ -947,6 +968,75 @@ apply: le_lt_trans.
 rewrite lte_mul_pinfty// ?ge0_fin_numE ?Lnormr_ge0//.
 by move: l2f; rewrite inE => /andP[_]; rewrite inE/=.
 by move: l2g; rewrite inE => /andP[_]; rewrite inE/=.
+Qed.
+
+Lemma lfunp_scale (f : {mfun T >-> R}) a r :
+  1 <= r -> (f : T -> R) \in lfun mu r%:E -> (a \o* f) \in lfun mu r%:E.
+Proof.
+move=> r1 lpf.
+rewrite inE; apply/andP; split; rewrite inE//=.
+rewrite /finite_norm unlock /Lnorm.
+rewrite poweR_lty//=.
+under eq_integral => x _ do rewrite normrM powRM// EFinM.
+rewrite integralZr// ?lfun_integrable//.
+rewrite muleC lte_mul_pinfty// ?lee_fin ?powR_ge0//.
+move: lpf => /(lfun_integrable r1) /integrableP [_].
+under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
+by [].
+Qed.
+
+Lemma lfunN (f : {mfun T >-> R}) r :
+  (f : T -> R) \in lfun mu r%:E -> (\- f : T -> R) \in lfun mu r%:E.
+Proof.
+move=> lpf.
+rewrite inE; apply/andP; split; rewrite inE//= /finite_norm.
+rewrite unlock /Lnorm.
+under eq_integral => x _/= do rewrite normrN.
+move: lpf.
+rewrite inE; move/andP => [_]. rewrite inE/=/finite_norm unlock/Lnorm/=.
+exact.
+Qed.
+
+Lemma lfunD (f g : {mfun T >-> R}) r :
+    1 <= r -> (f : T -> R) \in lfun mu r%:E -> (g : T -> R) \in lfun mu r%:E ->
+  (f \+ g : T -> R) \in lfun mu r%:E.
+Proof.
+rewrite !inE => r1 /andP[_] +/andP[_]; rewrite !inE/= /finite_norm => lpf lpg.
+apply/andP; split; rewrite inE//= /finite_norm.
+apply: (le_lt_trans (minkowski mu _ _ r1)) => //.
+by rewrite lte_add_pinfty.
+Qed.
+
+Lemma lfunB (f g : {mfun T >-> R}) r :
+    1 <= r -> (f : T -> R) \in lfun mu r%:E -> (g : T -> R) \in lfun mu r%:E ->
+  (f \- g : T -> R) \in lfun mu r%:E.
+Proof.
+by move=> r1 lpf lpg; rewrite (_ : f \- g = f \+ (\- g))// lfunD//= lfunN.
+Qed.
+
+End Lspace.
+
+Section Lspace.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {finite_measure set T -> \bar R}.
+
+Lemma lfun_cst c r : cst c \in lfun mu r%:E.
+Proof.
+rewrite inE; apply/andP; split; rewrite inE//= /finite_norm unlock/Lnorm poweR_lty//.
+under eq_integral => x _/= do rewrite (_ : `|c| `^ r = cst (`|c| `^ r) x)//.
+have /integrableP[_/=] := finite_measure_integrable_cst mu (`|c| `^ r).
+under eq_integral => x _ do rewrite ger0_norm ?powR_ge0//.
+by [].
+Qed.
+
+Lemma lfun_sum (F : seq {mfun T >-> R}) r :
+    (forall Fi, Fi \in F -> (Fi : T -> R) \in lfun mu r%:E) ->
+    (1 <= r)%R ->
+  (\sum_(Fi <- F) Fi : T -> R) \in lfun mu r%:E.
+Proof.
+elim: F => //=[_|F0 F ih lpF r1]; first by rewrite big_nil lfun_cst.
+rewrite big_cons lfunD//; first by rewrite lpF ?mem_head.
+by rewrite ih// => Fi FiF; rewrite lpF ?in_cons ?FiF ?orbT.
 Qed.
 
 End Lspace.
