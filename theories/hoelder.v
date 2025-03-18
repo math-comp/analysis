@@ -721,55 +721,6 @@ Coercion LfunType_of_LType (f : LType) : LfunType mu p1 :=
 
 End Lequiv.
 
-Section Lspace.
-Context d (T : measurableType d) (R : realType).
-Variable mu : {measure set T -> \bar R}.
-
-Definition Lspace p (p1 : (1 <= p)%E) := [set: LType mu p1].
-Arguments Lspace : clear implicits.
-
-Lemma LType1_integrable (f : LType mu (@lexx _ _ 1%E)) :
-  mu.-integrable setT (EFin \o f).
-Proof.
-apply/integrableP; split; first exact/measurable_EFinP.
-have := lfuny _ f.
-rewrite /finite_norm unlock /Lnorm invr1 poweRe1; last first.
-  by apply integral_ge0 => x _; rewrite lee_fin powRr1.
-by under eq_integral => i _ do rewrite poweRe1//.
-Qed.
-
-Let le12 : (1 <= 2%:E :> \bar R)%E.
-Proof.
-rewrite lee_fin.
-rewrite (ler_nat _ 1 2).
-by [].
-Qed.
-
-Lemma LType2_integrable_sqr (f : LType mu le12) :
-  mu.-integrable [set: T] (EFin \o (fun x => f x ^+ 2)).
-Proof.
-apply/integrableP; split.
-  apply/measurable_EFinP.
-  exact/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f).
-rewrite (@lty_poweRy _ _ 2^-1)//.
-rewrite (le_lt_trans _ (lfuny _ f))//.
-rewrite unlock.
-rewrite gt0_ler_poweR//.
-- by rewrite in_itv/= leey integral_ge0.
-- by rewrite in_itv/= leey integral_ge0.
-- rewrite ge0_le_integral//.
-  + apply: measurableT_comp => //; apply/measurable_EFinP.
-    exact/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f).
-  + by move=> x _; rewrite lee_fin powR_ge0.
-  + apply/measurable_EFinP.
-    apply/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x `^ 2)%R) => //.
-    exact/measurableT_comp.
-  + by move=> t _/=; rewrite lee_fin normrX powR_mulrn.
-Qed.
-
-End Lspace.
-Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
-
 Section lfun_pred.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
@@ -935,18 +886,86 @@ Qed.
 
 End Lspace_norm.
 
-Section Lspace_inclusion.
+
+Section Lspace.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+
+Definition Lspace p (p1 : (1 <= p)%E) := [set: LType mu p1].
+Arguments Lspace : clear implicits.
+
+Definition LType1 := LType mu (@lexx _ _ 1%E).
+
+Let le12 : (1 <= 2%:E :> \bar R)%E.
+Proof. by rewrite lee_fin (ler_nat _ 1 2). Qed.
+
+Definition LType2 := LType mu le12.
+
+Lemma lfun1_integrable (f : {mfun T >-> R}) :
+  (f : T -> R) \in lfun mu 1 -> mu.-integrable setT (EFin \o f).
+Proof.
+rewrite inE => /andP[_]; rewrite inE/= => l1f.
+apply/integrableP; split; first exact/measurable_EFinP.
+move: l1f; rewrite /finite_norm unlock /Lnorm invr1 poweRe1; last first.
+  by apply integral_ge0 => x _; rewrite lee_fin powRr1.
+by under eq_integral => i _ do rewrite poweRe1//.
+Qed.
+
+Lemma lfun2_integrable_sqr (f : {mfun T >-> R}) :
+  (f : T -> R) \in lfun mu 2%:E ->
+    mu.-integrable [set: T] (EFin \o (fun x => f x ^+ 2)).
+Proof.
+rewrite inE => /andP[_]; rewrite inE/= => l2f.
+apply/integrableP; split.
+  apply/measurable_EFinP.
+  exact/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f).
+rewrite (@lty_poweRy _ _ 2^-1)//.
+rewrite (le_lt_trans _ l2f)//.
+rewrite unlock.
+rewrite gt0_ler_poweR//.
+- by rewrite in_itv/= leey integral_ge0.
+- by rewrite in_itv/= leey integral_ge0.
+- rewrite ge0_le_integral//.
+  + apply: measurableT_comp => //; apply/measurable_EFinP.
+    exact/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x ^+ 2)%R _ f).
+  + by move=> x _; rewrite lee_fin powR_ge0.
+  + apply/measurable_EFinP.
+    apply/(@measurableT_comp _ _ _ _ _ _ (fun x : R => x `^ 2)%R) => //.
+    exact/measurableT_comp.
+  + by move=> t _/=; rewrite lee_fin normrX powR_mulrn.
+Qed.
+
+Lemma lfun2M2_1 (f g : {mfun T >-> R}) :
+    (f : T -> R) \in lfun mu 2%:E -> (g : T -> R) \in lfun mu 2%:E ->
+  (f \* g : T -> R) \in lfun mu 1.
+Proof.
+move=> l2f l2g.
+rewrite inE; apply/andP; split; rewrite inE//=.
+rewrite /finite_norm.
+apply: le_lt_trans.
+  by apply: (@hoelder _ _ _ _ _ _ 2 2) => //; rewrite [RHS]splitr !div1r.
+rewrite lte_mul_pinfty// ?ge0_fin_numE ?Lnormr_ge0//.
+by move: l2f; rewrite inE => /andP[_]; rewrite inE/=.
+by move: l2g; rewrite inE => /andP[_]; rewrite inE/=.
+Qed.
+
+End Lspace.
+Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
+
+Section lfun_inclusion.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
 Local Open Scope ereal_scope.
 
-Lemma Lspace_inclusion (p q : \bar R) :
+Lemma lfun_inclusion (p q : \bar R) :
   forall (p1 : 1 <= p) (q1 : 1 <= q),
     mu [set: T] < +oo -> p < q ->
-    forall f : {mfun T >-> R}, finite_norm mu q f -> finite_norm mu p f.
+    forall f : {mfun T >-> R},
+      (f : T -> R) \in lfun mu q -> (f : T -> R) \in lfun mu p.
 Proof.
 have := measure_ge0 mu [set: T].
 rewrite le_eqVlt => /predU1P[mu0 p1 q1 _ _ f _|mu_pos].
+  rewrite inE; apply/andP; split; rewrite inE//=.
   rewrite /finite_norm unlock /Lnorm.
   move: p p1; case=> //; last by rewrite -mu0 ltxx ltry.
   move=> r r1.
@@ -960,7 +979,9 @@ move: p q.
 case=> //[p|]; case=> //[q|] p1 q1; last first.
   have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
   move=> muoo _ f.
-  rewrite /finite_norm unlock /Lnorm mu_pos => supf_lty.
+  rewrite !inE => /andP[_].
+  rewrite !inE/= /finite_norm unlock /Lnorm mu_pos => supf_lty.
+  apply/andP; split; rewrite inE//= /finite_norm unlock /Lnorm.
   rewrite poweR_lty//; move: supf_lty => /ess_supr_bounded[M fM].
   rewrite (@le_lt_trans _ _ (\int[mu]_x (M `^ p)%:E)); [by []| |]; last first.
     by rewrite integral_cst// lte_mul_pinfty// lee_fin powR_ge0.
@@ -973,7 +994,9 @@ case=> //[p|]; case=> //[q|] p1 q1; last first.
     apply: filterS fM => t/= ftM _.
     rewrite lee_fin ge0_ler_powR//; first exact: ltW.
     by rewrite nnegrE (le_trans _ ftM).
-move=> mu_fin pleq f ffin.
+move=> mu_fin pleq f.
+rewrite inE/= => /andP[_]; rewrite inE/= => ffin.
+rewrite inE/=; apply/andP; split; rewrite inE//=.
 have:= ffin; rewrite /finite_norm.
 have p0 : (0 < p)%R by rewrite ?(lt_le_trans ltr01).
 have pN0 : p != 0%R by rewrite gt_eqF.
@@ -1010,4 +1033,13 @@ rewrite poweR_lty// (lty_poweRy qinv0)//.
 by have:= ffin; rewrite /finite_norm unlock /Lnorm.
 Qed.
 
-End Lspace_inclusion.
+Lemma lfun_inclusion12 (f : {mfun T >-> R}) :
+  mu [set: T] < +oo -> (f : T -> R) \in lfun mu (2%:E) -> (f : T -> R) \in lfun mu 1.
+Proof.
+move => muoo f2.
+have le12 : (1 <= 2%:E :> \bar R) by rewrite lee_fin (ler_nat _ 1 2).
+have lte12 : (1 < 2%:E :> \bar R) by rewrite lte_fin (ltr_nat _ 1 2).
+exact: (@lfun_inclusion 1 (2%:E) (lexx _) le12 _ lte12).
+Qed.
+
+End lfun_inclusion.

@@ -1083,7 +1083,7 @@ rewrite -ge0_integral_bigsetU//=; first last.
 rewrite big_mkord -bigsetU_seqDU.
 move: n => [|n].
   rewrite big_ord0 integral_set0.
-  apply: ereal_sup_le.
+  apply: ereal_sup_ge.
   exists (\int[mu]_(x in `[0%R, 1%:R]) (f x)%:E) => //.
   apply: integral_ge0.
   by move=> ? _; rewrite lee_fin f0.

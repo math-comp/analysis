@@ -8,7 +8,7 @@ From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import reals interval_inference ereal topology normedtype.
 From mathcomp Require Import sequences derive esum measure exp trigo realfun.
 From mathcomp Require Import numfun lebesgue_measure lebesgue_integral kernel.
-From mathcomp Require Import ftc gauss_integral.
+From mathcomp Require Import ftc gauss_integral hoelder.
 
 (**md**************************************************************************)
 (* # Probability                                                              *)
@@ -176,6 +176,10 @@ move: iX => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
 exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
+Lemma finite_norm_expectation (X : {RV P >-> R}) :
+  (X : T -> R) \in lfun P 1 -> `| 'E_P[X] | < +oo. 
+Proof. by move/lfun1_integrable; exact: integrable_expectation. Qed.
+
 Lemma expectationZl (X : {RV P >-> R}) (iX : P.-integrable [set: T] (EFin \o X))
   (k : R) : 'E_P[k \o* X] = k%:E * 'E_P [X].
 Proof. by rewrite unlock muleC -integralZr. Qed.
@@ -234,6 +238,9 @@ HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
   'E_P[(X \- cst (fine 'E_P[X])) * (Y \- cst (fine 'E_P[Y]))]%E.
 Canonical covariance_unlockable := Unlockable covariance.unlock.
 Arguments covariance {d T R} P _%_R _%_R.
+
+Hint Extern 0 (fin_num_fun _) =>
+  (apply: fin_num_measure) : core.
 
 Section covariance_lemmas.
 Local Open Scope ereal_scope.
@@ -618,12 +625,12 @@ by move=> /le_trans; apply; rewrite /variance [in leRHS]unlock.
 Qed.
 
 Lemma cantelli (X : {RV P >-> R}) (lambda : R) :
-    P.-integrable setT (EFin \o X) -> P.-integrable setT (EFin \o (X ^+ 2)%R) ->
-    (0 < lambda)%R ->
+    (X : T -> R) \in lfun P 2%:E -> (0 < lambda)%R ->
   P [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
   <= (fine 'V_P[X] / (fine 'V_P[X] + lambda^2))%:E.
 Proof.
-move=> X1 X2 lambda_gt0.
+move=>/[dup] /lfun2_integrable_sqr X2 /lfun_inclusion12 /lfun1_integrable.
+rewrite fin_num_fun_lty// => /(_ isT) X1 lambda_gt0.
 have finEK : (fine 'E_P[X])%:E = 'E_P[X].
   by rewrite fineK ?unlock ?integral_fune_fin_num.
 have finVK : (fine 'V_P[X])%:E = 'V_P[X] by rewrite fineK ?variance_fin_num.
