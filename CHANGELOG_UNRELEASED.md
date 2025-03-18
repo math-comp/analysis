@@ -128,7 +128,7 @@
     `mfun_scaler_closed`
   + lemmas `LnormZ`, `lfun_submod_closed`
   + lemmas `finite_norm_fine`, `ler_LnormD`,
-    `LnormN`, `Lnorm_natmul`, `fine_Lnorm_eq0`
+    `LnormrN`, `Lnormr_natmul`, `fine_Lnormr_eq0`
   + lemma `Lspace_inclusion`
 
 - in `lebesgue_integral.v`:
@@ -174,6 +174,9 @@
 
 - in `nat_topology.v`:
   + lemma `nbhs_infty_gtr`
+
+- in `hoelder.v`:
+  + lemmas `poweR_Lnorm`, `oppe_Lnorm`
 
 ### Changed
 
@@ -256,6 +259,8 @@
 
 - in `hoelder.v`:
   + `minkowski` -> `minkowski_EFin`
+  + `Lnorm_ge0` -> `Lnormr_ge0`
+  + `Lnorm_eq0_eq0` -> `Lnormr_eq0_eq0`
 
 ### Generalized
 
@@ -271,6 +276,7 @@
 - in `hoelder.v`:
   + definition `Lnorm` generalized to functions with codomain `\bar R`
     (this impacts the notation `'N_p[f]`)
+  + lemmas `Lnorm1`, `eq_Lnorm` (from `f : _ -> R` to `f : _ -> \bar R`)
 
 ### Deprecated
 
