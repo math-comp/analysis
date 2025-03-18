@@ -114,3 +114,65 @@ Definition staton_counting : R.-sfker X ~> _ :=
     (ret macc1of3)).
 
 End staton_counting.
+
+Section exponential_pdf.
+Context {R : realType}.
+Notation mu := lebesgue_measure.
+Variable (mean : R).
+Hypothesis mean0 : (0 < mean)%R.
+
+Definition exponential_pdf' (x : R) := (mean^-1 * expR (- x / mean))%R.
+Definition exponential_pdf := exponential_pdf' \_ `[0%R, +oo[.
+
+Lemma exponential_pdf_ge0 (x : R) : (0 <= exponential_pdf x)%R.
+Proof.
+apply: restrict_ge0 => {}x _.
+apply: mulr_ge0; last exact: expR_ge0.
+by rewrite invr_ge0 ltW.
+Qed.
+
+End exponential_pdf.
+
+Definition exponential {R : realType} (m : R)
+  of \int[@lebesgue_measure R]_x (exponential_pdf m x)%:E = 1%E : set _ -> \bar R :=
+  fun V => (\int[lebesgue_measure]_(x in V) (exponential_pdf m x)%:E)%E.
+
+Section exponential.
+Context {R : realType}.
+Local Open Scope ring_scope.
+
+Notation mu := lebesgue_measure.
+Variable (mean : R).
+Hypothesis mean0 : (0 < mean)%R.
+
+Hypothesis integrable_exponential : forall (m : R), (0 < m)%R ->
+  mu.-integrable [set: _] (EFin \o (exponential_pdf m)).
+
+Hypothesis integral_exponential_pdf : forall (m : R), (0 < m)%R ->
+  (\int[mu]_x (exponential_pdf m x)%:E = 1)%E.
+
+Local Notation exponential := (exponential (integral_exponential_pdf mean0)).
+
+Let exponential0 : exponential set0 = 0%E.
+Proof. by rewrite /exponential integral_set0. Qed.
+
+Let exponential_ge0 A : (0 <= exponential A)%E.
+Proof.
+rewrite /exponential integral_ge0//= => x _.
+by rewrite lee_fin exponential_pdf_ge0.
+Qed.
+
+Let exponential_sigma_additive : semi_sigma_additive exponential.
+Proof.
+Admitted.
+
+HB.instance Definition _ := isMeasure.Build _ _ _
+  exponential exponential0 exponential_ge0 exponential_sigma_additive.
+
+Let exponential_setT : exponential [set: _] = 1%E.
+Proof. by rewrite /exponential integral_exponential_pdf. Qed.
+
+HB.instance Definition _ :=
+  @Measure_isProbability.Build _ _ R exponential exponential_setT.
+
+End exponential.
