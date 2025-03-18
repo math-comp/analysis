@@ -106,6 +106,30 @@
   + definition `conjugate`
   + lemma `conjugateE`
   + lemmas `lerB_DLnorm`, `lerB_LnormD`, `eminkowski`
+  + definition `finite_norm`
+  + mixin `isLfun` with field `lfuny`
+  + structure `Lfun`
+  + notation `LfunType`
+  + definition `Lequiv`
+  + canonical `Lequiv_canonical`
+  + definition `LspaceType`
+  + canonicals `LspaceType_quotType`, `LspaceType_eqType`, `LspaceType_choiceType`,
+    `LspaceType_eqQuotType`
+  + lemma `LequivP`
+  + record `LType`
+  + coercion `LfunType_of_LType`
+  + definition `Lspace` with notation `mu.-Lspace p`
+  + lemma `LType1_integrable`, `LType2_integrable_sqr`
+  + definitions `finlfun`, `lfun`, `lfun_key`
+  + canonical `lfun_keyed`
+  + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
+  + definition `lfun_Sub`
+  + lemmas `lfun_rect`, `lfun_valP`, `lfuneqP`, `lfuny0`, `mfunP`, `lfunP`,
+    `mfun_scaler_closed`
+  + lemmas `LnormZ`, `lfun_submod_closed`
+  + lemmas `finite_norm_fine`, `ler_LnormD`,
+    `LnormN`, `Lnorm_natmul`, `fine_Lnorm_eq0`
+  + lemma `Lspace_inclusion`
 
 - in `lebesgue_integral.v`:
   + lemma `mfunMn`
@@ -147,32 +171,6 @@
   + notation `ess_infr`
   + lemmas `ess_infr_bounded`, `ess_infrZl`, `ess_inf_ger`, `ess_inf_ler`,
     `ess_inf_cstr`
-
-- new file `lspace.v`:
-  + definition `finite_norm`
-  + mixin `isLfun` with field `lfuny`
-  + structure `Lfun`
-  + notation `LfunType`
-  + definition `Lequiv`
-  + canonical `Lequiv_canonical`
-  + definition `LspaceType`
-  + canonicals `LspaceType_quotType`, `LspaceType_eqType`, `LspaceType_choiceType`,
-    `LspaceType_eqQuotType`
-  + lemma `LequivP`
-  + record `LType`
-  + coercion `LfunType_of_LType`
-  + definition `Lspace` with notation `mu.-Lspace p`
-  + lemma `LType1_integrable`, `LType2_integrable_sqr`
-  + definitions `finlfun`, `lfun`, `lfun_key`
-  + canonical `lfun_keyed`
-  + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
-  + definition `lfun_Sub`
-  + lemmas `lfun_rect`, `lfun_valP`, `lfuneqP`, `lfuny0`, `mfunP`, `lfunP`,
-    `mfun_scaler_closed`
-  + lemmas `LnormZ`, `lfun_submod_closed`
-  + lemmas `finite_norm_fine`, `ler_LnormD`,
-    `LnormN`, `Lnorm_natmul`, `fine_Lnorm_eq0`
-  + lemma `Lspace_inclusion`
 
 - in `nat_topology.v`:
   + lemma `nbhs_infty_gtr`
