@@ -13,12 +13,21 @@ From mathcomp Require Import lang_syntax_util lang_syntax lang_syntax_examples.
 (**md**************************************************************************)
 (* # Eddy's table game example                                                *)
 (*                                                                            *)
+(* Formalization of the Eddy's table game by equational reasoning. See        *)
+(* Sections 2.1, 3.2, 3.4, 3.5 of [Shan, POPL 2018]. The final statement of   *)
+(* equivalence is Lemma from_prog0_to_prog5. Intermediate steps are lemmas    *)
+(* named progij that turn the program progi into the program progj.           *)
+(*                                                                            *)
 (* ref:                                                                       *)
 (* - Chung-chieh Shan, Equational reasoning for probabilistic programming,    *)
 (*   POPL TutorialFest 2018                                                   *)
 (*   https://homes.luddy.indiana.edu/ccshan/rational/equational-handout.pdf   *)
 (* - Sean R Eddy, What is Bayesian statistics?, Nature Biotechnology 22(9),   *)
 (*   1177--1178 (2004)                                                        *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*  prog0 == Eddy's table game represented as a probabilistic program         *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -489,14 +498,14 @@ under [in RHS]eq_integral => y _.
 rewrite /=.
 rewrite [RHS]ge0_integral_mscale//=; last first.
   by move=> _ _; rewrite integral_ge0.
-rewrite integral_Beta//=; last 2 first.
+rewrite integral_beta_prob//=; last 2 first.
   - apply: emeasurable_funM => //=.
       exact: measurable_bernoulli_onemXn.
     apply/measurable_EFinP; apply: measurableT_comp => //.
     by apply: measurable_funM => //; exact: measurable_fun_XMonemX.
   - by have /integrableP[] := @integrable_bernoulli_XMonemX R U.
 rewrite ger0_norm// integral_dirac// diracT mul1e.
-rewrite integral_Beta/=; [|by []|exact: measurable_bernoulli_onemXn
+rewrite integral_beta_prob/=; [|by []|exact: measurable_bernoulli_onemXn
     |exact: integral_beta_prob_bernoulli_onem_lty].
 rewrite -integralZl//=; last exact: integrable_bernoulli_beta_pdf.
 apply: eq_integral => y _.
@@ -521,11 +530,11 @@ Lemma int_beta_prob01 {R : realType} (f : R -> R) a b U :
   \int[beta_prob a b]_(y in `[0%R, 1%R] : set R) bernoulli (f y) U.
 Proof.
 move=> mf f01.
-rewrite [LHS]integral_Beta//=; last 2 first.
+rewrite [LHS]integral_beta_prob//=; last 2 first.
   apply: measurable_funTS.
   by apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
   exact: integral_beta_prob_bernoulli_lty.
-rewrite [RHS]integral_Beta//; last 2 first.
+rewrite [RHS]integral_beta_prob//; last 2 first.
   apply/measurable_funTS => //=.
   by apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
   apply: (le_lt_trans _ (lang_syntax.integral_beta_prob_bernoulli_lty a b U mf f01)).
@@ -574,7 +583,8 @@ Qed.
 Lemma int_beta_prob_bernoulli_onem {R : realType} (U : set (@mtyp R Bool)) :
  \int[beta_prob 6 4]_y bernoulli (`1-(`1-y ^+ 3)) U = bernoulli (10 / 11) U :> \bar R.
 Proof.
-transitivity (\d_false U + \d_true U - bernoulli (1 / 11) U : \bar R)%E; last first.
+transitivity
+    (\d_false U + \d_true U - bernoulli (1 / 11) U : \bar R)%E; last first.
   rewrite /bernoulli ifT; last lra.
   rewrite ifT; last lra.
   apply/eqP; rewrite sube_eq//; last first.
@@ -587,7 +597,7 @@ transitivity (\d_false U + \d_true U - bernoulli (1 / 11) U : \bar R)%E; last fi
     rewrite -EFinD /bernoulli_pmf [X in X%:E](_ : _ = 1%R); last first.
       case: x => //; lra.
     over.
-  by rewrite /= dirac_bool.
+    by rewrite /= dirac_bool.
 rewrite -int_beta_prob_bernoulli.
 apply/esym/eqP; rewrite sube_eq//; last first.
   by rewrite ge0_adde_def// inE; exact: integral_ge0.
