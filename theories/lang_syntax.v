@@ -1348,17 +1348,9 @@ apply: integral_ae_eq => //.
   exact: beta_prob_dom.
 Qed.
 
-(* need to add lemma about radon-nikodym derivative of
-   lebesgue_stieltjes measure w.r.t. continuous density function *)
-(*Lemma beta_pdf_uniq (a b : nat) :
-  {in `[0%R, 1%R]%classic,
-   ('d ((charge_of_finite_measure (@Beta R a b))) '/d mu) =1
-               (EFin \o (beta_pdf a b))}.
-Proof. Abort.*)
-
 End beta_pdf_Beta.
 
-Lemma integral_Beta a b f U : measurable U -> measurable_fun U f ->
+Lemma integral_beta_prob a b f U : measurable U -> measurable_fun U f ->
   \int[beta_prob a b]_(x in U) `|f x| < +oo ->
   \int[beta_prob a b]_(x in U) f x = \int[mu]_(x in U) (f x * (beta_pdf a b x)%:E) :> \bar R.
 Proof.
@@ -1449,7 +1441,7 @@ rewrite integralD//=; last 2 first.
 congr (_ + _).
   rewrite integralZr//=; last exact: beta_prob_integrable.
   congr (_ * _)%E.
-  rewrite integral_Beta//; last 2 first.
+  rewrite integral_beta_prob//; last 2 first.
     by apply/measurableT_comp => //; exact: measurable_fun_XMonemX.
     by have /integrableP[_] := @beta_prob_integrable R a b c d.
   rewrite /beta_pdf.
@@ -1476,7 +1468,7 @@ under eq_integral do rewrite muleC.
 rewrite /=.
 rewrite integralZl//=; last exact: beta_prob_integrable_onem.
 rewrite muleC; congr (_ * _)%E.
-rewrite integral_Beta//=; last 2 first.
+rewrite integral_beta_prob//=; last 2 first.
   apply/measurableT_comp => //=.
   by apply/measurable_funB => //; exact: measurable_fun_XMonemX.
   by have /integrableP[] := @beta_prob_integrable_onem R a b c d.
@@ -2812,39 +2804,5 @@ f_equal.
 apply: eq_kernel => y V.
 exact: He.
 Qed.
-
-Lemma congr_letinl_new {R : realType} g t1 t2 str (e1 e2 : @exp _ _ g t1)
-    (e : @exp _ _ (_ :: g) t2) x U :
-    (forall y V, measurable V -> execP e1 y V = execP e2 y V) ->
-  measurable U ->
-  @execP R g t2 [let str := e1 in e] x U =
-  @execP R g t2 [let str := e2 in e] x U.
-Proof.
-Abort.
-(* by move=> + mU; move/eq_sfkernel => He; rewrite !execP_letin He. Qed. *)
-
-Lemma congr_letinr_new {R : realType} g t1 t2 str (e : @exp _ _ _ t1)
-  (e1 e2 : @exp _ _ (_ :: g) t2) x U :
-  (forall y V, measurable V -> execP e1 (y, x) V = execP e2 (y, x) V) ->
-  @execP R g t2 [let str := e in e1] x U = @execP R g t2 [let str := e in e2] x U.
-Proof.
-Abort.
-(*
- by move=> He; rewrite !execP_letin !letin'E; apply: eq_integral => ? _; exact: He.
-Qed.
-*)
-Lemma congr_normalize_new {R : realType} g t (e1 e2 : @exp R _ g t) :
-  (forall x U, measurable U -> execP e1 x U = execP e2 x U) ->
-  execD [Normalize e1] = execD [Normalize e2].
-Proof.
-Abort.
-(*
-move=> He; apply: eq_execD.
-rewrite !execD_normalize_pt /=.
-f_equal.
-apply: eq_kernel => y V.
-exact: He.
-Qed.
-*)
 
 Local Close Scope lang_scope.

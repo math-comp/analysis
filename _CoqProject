@@ -129,3 +129,4 @@ theories/lang_syntax_toy.v
 theories/lang_syntax.v
 theories/lang_syntax_examples.v
 theories/lang_syntax_table_game.v
+theories/lang_syntax_noisy.v
