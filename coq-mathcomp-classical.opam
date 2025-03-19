@@ -15,13 +15,13 @@ the Coq proof-assistant and using the Mathematical Components library."""
 build: [make "-C" "classical" "-j%{jobs}%"]
 install: [make "-C" "classical" "install"]
 depends: [
-  ("coq" {>= "8.19" & < "8.21~"}
+  ("coq" {>= "8.20" & < "8.21~"}
   | "rocq-core" { (>= "9.0" & < "9.1~") | (= "dev") })
-  "coq-mathcomp-ssreflect" { (>= "2.1.0") }
+  "coq-mathcomp-ssreflect" { (>= "2.2.0") }
   "coq-mathcomp-fingroup"
   "coq-mathcomp-algebra"
-  "coq-mathcomp-finmap" { (>= "2.0.0") }
-  "coq-hierarchy-builder" { (>= "1.4.0") }
+  "coq-mathcomp-finmap" { (>= "2.1.0") }
+  "coq-hierarchy-builder" { (>= "1.7.0") }
 ]
 
 tags: [
