@@ -343,7 +343,7 @@ Proof.
 rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
 rewrite in_itv/= !natr_absz intr_norm intrD.
 have : `|x| < `|(floor `|x|)%:~R + 1|.
-  by rewrite [ltRHS]ger0_norm ?intrD1 ?lt_succ_floor// ler0z addr_ge0 ?floor_ge0.
+  by rewrite [ltRHS]ger0_norm ?intr1 ?lt_succ_floor// ler0z addr_ge0 ?floor_ge0.
 case: b => /=.
 - by move/ltW; rewrite ler_norml => /andP[-> ->].
 - by rewrite ltr_norml => /andP[-> /ltW->].

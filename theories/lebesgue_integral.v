@@ -1500,7 +1500,7 @@ have : fine (f x) < n%:R.
   rewrite -(@ler_nat R); apply: lt_le_trans.
   rewrite -natr1 (_ : `| _ |%:R  = (floor (fine (f x)))%:~R); last first.
     by rewrite -[in RHS](@gez0_abs (floor _))// floor_ge0//; exact/fine_ge0/f0.
-  by rewrite intrD1 lt_succ_floor.
+  by rewrite intr1 lt_succ_floor.
 rewrite -lte_fin (fineK fxfin) => fxn.
 have [approx_nx0|[k [/andP[k0 kn2n] ? ->]]] := f_ub_approx fxn.
   by have := Hm _ mn; rewrite approx_nx0.
@@ -3883,7 +3883,7 @@ move=> mf; split=> [iDf0|Df0].
       - by apply/fine_gt0; rewrite lt0e abse_ge0 abse_eq0 ft0 ltey.
       rewrite /m -natr1 natr_absz ger0_norm; last first.
         by rewrite -(ceil0 R) ceil_le.
-      by rewrite intrD1 ceil_ge_int lerDl.
+      by rewrite intr1 ceil_ge_int lerDl.
     by split => //; apply: contraTN nft => /eqP ->; rewrite abse0 -ltNge.
   transitivity (limn (fun n => mu (D `&` [set x | `|f x| >= n.+1%:R^-1%:E]))).
     apply/esym/cvg_lim => //; apply: nondecreasing_cvg_mu.

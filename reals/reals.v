@@ -466,7 +466,7 @@ Lemma RfloorE x : Rfloor x = (floor x)%:~R.
 Proof. by []. Qed.
 
 Lemma mem_rg1_floor x : (range1 (floor x)%:~R) x.
-Proof. by rewrite /range1 /mkset intrD1 ge_floor lt_succ_floor. Qed.
+Proof. by rewrite /range1 /mkset intr1 ge_floor lt_succ_floor. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
 Proof. exact: mem_rg1_floor. Qed.
@@ -497,7 +497,7 @@ Proof. by rewrite /range1/mkset lexx /= ltrDl ltr01. Qed.
 Lemma range1zP (m : int) x : Rfloor x = m%:~R <-> (range1 m%:~R) x.
 Proof.
 split=> [<-|h]; first exact/mem_rg1_Rfloor.
-by congr intmul; apply/floor_def; rewrite -intrD1.
+by congr intmul; apply/floor_def; rewrite -intr1.
 Qed.
 
 Lemma Rfloor_natz (z : int) : Rfloor z%:~R = z%:~R :> R.

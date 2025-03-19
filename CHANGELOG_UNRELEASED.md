@@ -58,6 +58,8 @@
   + `min_le_min` -> `le_min2`
   + `max_le_max` -> `le_max2`
   + `real_sqrtC` -> `sqrtC_real`
+  + `intrD1` -> `intr1`
+  + `intr1D` -> `int1r`
 
 ### Generalized
 
@@ -69,6 +71,10 @@
     `integrable_pushforward`, `integral_pushforward`
 
 ### Deprecated
+
+- in `mathcomp_extra.v`
+  + `intrD1` (renamed `intr1`)
+  + `intr1D` (renamed `int1r`)
 
 ### Removed
 

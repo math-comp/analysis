@@ -512,11 +512,16 @@ Qed.
 
 End order_min.
 
-Lemma intrD1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
+Lemma intr1 {R : ringType} (i : int) : i%:~R + 1 = (i + 1)%:~R :> R.
 Proof. by rewrite intrD. Qed.
 
-Lemma intr1D {R : ringType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
+Lemma int1r {R : ringType} (i : int) : 1 + i%:~R = (1 + i)%:~R :> R.
 Proof. by rewrite intrD. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.10.0", note="use intr1 instead")]
+Notation intrD1 := intr1.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="use int1r instead")]
+Notation intr1D := int1r.
 
 Section floor_ceil.
 Context {R : archiDomainType}.
@@ -577,7 +582,7 @@ Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
 rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
   by rewrite !gtr0_norm// -?ceil_gt0// (le_trans (Num.Theory.le_ceil _))// lerDl.
-by rewrite !ler0_norm -?ceil_le0// opprK intrD1 ltW// lt_succ_floor.
+by rewrite !ler0_norm -?ceil_le0// opprK intr1 ltW// lt_succ_floor.
 Qed.
 
 End floor_ceil.
