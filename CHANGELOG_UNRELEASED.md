@@ -36,6 +36,17 @@
 - in `derive.v`:
   + lemmas `derive_shift`, `is_derive_shift`
 
+- in `mathcomp_extra.v`
+  + lemmas `real_lt_succ_trunc`, `trunc_gt_nat`, `real_trunc_le_nat`,
+    `trunc_eq`, `trunc_le`, `natrKtrunc`, `natrEtrunc`,
+    `real_floor_ge_int_tmp`, `real_floor_ge_int`, `real_floor_lt_int`,
+    `real_floor_eq`, `real_floor_ge0`, `real_floor_le0`, `floor_gt0`,
+    `real_abs_floor_ge`, `real_ceil_le_int_tmp`, `real_ceil_le_int`,
+    `real_ceil_gt_int`, `real_ceil_eq`, `real_ceil_ge0`, `ceil_lt0`,
+    `real_ceil_le0`, `ceil_neq0`, `real_abs_ceil_ge`, `trunc_le_nat`,
+    `floor_ge_int_tmp`, `abs_floor_ge`, `ceil_le_int`,
+    `ceil_le_int_tmp`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
@@ -44,6 +55,10 @@
     `continuous_oneDsqr`, `continuous_oneDsqr`
 - moved, generalized, and renamed from `gauss_integral` to `trigo.v`:
   + `integral01_oneDsqr` -> `integral0_oneDsqr`
+
+- in `mathcomp_extra.v`:
+  + `floor_lt_int`, `floor_le0`, `floor_lt0`, `ceil_gt_int`,
+    `ceil_ge0`, `ceil_le0`, `ceil_gt0` (equality direction)
 
 ### Renamed
 
@@ -71,12 +86,18 @@
   + lemmas `measurable_funP`, `ge0_integral_pushforward`,
     `integrable_pushforward`, `integral_pushforward`
 
+- in `mathcomp_extra.v`
+  + lemmas `ge_trunc`, `trunc_ge_nat`, `floor_lt0`, `floor_neq0`,
+    `ceil_gt0` (from `archiRealDomainType` to `archiNumDomainType`)
+
 ### Deprecated
 
 - in `mathcomp_extra.v`
   + `intrD1` (renamed `intr1`)
   + `intr1D` (renamed `int1r`)
   + `nat_int` (renamed `natr_int`)
+  + `real_floor_ge_int` (use `real_floor_ge_int_tmp` instead)
+  + `floor_ge_int` (use `floor_ge_int_tmp` instead)
 
 ### Removed
 

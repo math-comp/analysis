@@ -294,7 +294,7 @@ rewrite in_itv/= xy/= natrD -natr1 natr_absz intr_norm -addrA nat1r addrA.
 apply: ltr_pwDr; first by rewrite ltr0n.
 rewrite -lterBDl (le_trans (le_ceil _)) //= le_eqVlt; apply/predU1P; left.
 apply/esym/normr_idP.
-rewrite ler0z -ceil_ge0 (lt_le_trans (@ltrN10 R))// subr_ge0.
+rewrite ler0z ceil_ge0 (lt_le_trans (@ltrN10 R))// subr_ge0.
 by case: b xy => //= /ltW.
 Qed.
 
