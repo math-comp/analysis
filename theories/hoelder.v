@@ -1014,6 +1014,18 @@ Proof.
 by move=> r1 lpf lpg; rewrite (_ : f \- g = f \+ (\- g))// lfunD//= lfunN.
 Qed.
 
+Lemma lfun_sum (F : seq {mfun T >-> R}) r :
+    1 <= r -> (forall Fi, Fi \in F -> (Fi : T -> R) \in lfun mu r%:E) ->
+  (\sum_(Fi <- F) Fi : T -> R) \in lfun mu r%:E.
+Proof.
+elim: F => //=[r1 _|F0 F ih r1 lpF].
+  rewrite big_nil inE/=; apply/andP; split; rewrite inE /finite_norm/=.
+    exact: measurable_cst.
+  by rewrite [X in Lnorm _ _ X](_ : _ = cst 0)%E ?Lnorm0 ?lee_fin.
+rewrite big_cons lfunD//; first by rewrite lpF ?mem_head.
+by rewrite ih// => Fi FiF; rewrite lpF ?in_cons ?FiF ?orbT.
+Qed.
+
 End Lspace.
 
 Section Lspace.
@@ -1027,16 +1039,6 @@ under eq_integral => x _/= do rewrite (_ : `|c| `^ r = cst (`|c| `^ r) x)//.
 have /integrableP[_/=] := finite_measure_integrable_cst mu (`|c| `^ r).
 under eq_integral => x _ do rewrite ger0_norm ?powR_ge0//.
 by [].
-Qed.
-
-Lemma lfun_sum (F : seq {mfun T >-> R}) r :
-    (forall Fi, Fi \in F -> (Fi : T -> R) \in lfun mu r%:E) ->
-    (1 <= r)%R ->
-  (\sum_(Fi <- F) Fi : T -> R) \in lfun mu r%:E.
-Proof.
-elim: F => //=[_|F0 F ih lpF r1]; first by rewrite big_nil lfun_cst.
-rewrite big_cons lfunD//; first by rewrite lpF ?mem_head.
-by rewrite ih// => Fi FiF; rewrite lpF ?in_cons ?FiF ?orbT.
 Qed.
 
 End Lspace.
