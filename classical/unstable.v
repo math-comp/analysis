@@ -387,7 +387,7 @@ End floor_ceil.
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to `ceil_gt_int`")]
 Notation ceil_lt_int := ceil_gt_int (only parsing).
 
-Lemma nat_int {R : archiNumDomainType} n : n%:R \is a @Num.int R.
+Lemma natr_int {R : archiNumDomainType} n : n%:R \is a @Num.int R.
 Proof. by rewrite Num.Theory.intrEge0. Qed.
 
 Section bijection_forall.
