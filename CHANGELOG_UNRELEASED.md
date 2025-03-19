@@ -60,6 +60,7 @@
   + `real_sqrtC` -> `sqrtC_real`
   + `intrD1` -> `intr1`
   + `intr1D` -> `int1r`
+  + `nat_int` -> `natr_int`
 
 ### Generalized
 
@@ -75,6 +76,7 @@
 - in `mathcomp_extra.v`
   + `intrD1` (renamed `intr1`)
   + `intr1D` (renamed `int1r`)
+  + `nat_int` (renamed `natr_int`)
 
 ### Removed
 

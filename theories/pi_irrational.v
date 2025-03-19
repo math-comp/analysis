@@ -86,7 +86,7 @@ Let f_int i : n`!%:R * f`_i \is a Num.int.
 Proof.
 rewrite /f coefZ mulrA divff ?mul1r ?pnatr_eq0 ?gtn_eqF ?fact_gt0//.
 apply/polyOverP => /=; rewrite rpredM ?rpredX ?polyOverX//=.
-by rewrite rpredB ?polyOverC ?polyOverZ ?polyOverX//= nat_int.
+by rewrite rpredB ?polyOverC ?polyOverZ ?polyOverX//= natr_int.
 Qed.
 
 Let f_small_coef0 i : (i < n)%N -> f`_i = 0.
@@ -97,7 +97,7 @@ Proof.
 rewrite horner_coef0 coef_derivn addn0 ffactnn.
 have [/f_small_coef0 ->|/bin_fact <-] := ltnP i n.
   by rewrite mul0rn // int_Qint.
-by rewrite mulnCA -mulr_natl natrM mulrAC rpredM ?f_int ?nat_int.
+by rewrite mulnCA -mulr_natl natrM mulrAC rpredM ?f_int ?natr_int.
 Qed.
 
 Lemma F0_int : F.[0] \is a Num.int.
