@@ -202,7 +202,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists `|ceil r^-1|%N => // s /=.
   rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
-  by rewrite natr_absz gtr0_norm -?ceil_gt0 ?invr_gt0// ceil_ge.
+  by rewrite natr_absz gtr0_norm ?ceil_gt0 ?invr_gt0// ceil_ge.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite leNgt distrC => /negP.
@@ -260,7 +260,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite distrC (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists `|ceil r^-1|%N => // s /=.
   rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
-  by rewrite natr_absz gtr0_norm -?ceil_gt0 ?invr_gt0 ?le_ceil ?num_real.
+  by rewrite natr_absz gtr0_norm ?ceil_gt0 ?invr_gt0 ?le_ceil ?num_real.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge distrC => /negP.

@@ -2331,7 +2331,7 @@ Proof.
 move=> infA; apply/eqyP => r r0.
 have [B BA Br] := infinite_set_fset `|ceil r| infA.
 apply: esum_ge; exists [set` B] => //; apply: (@le_trans _ _ `|ceil r|%:R%:E).
-  by rewrite lee_fin natr_absz gtr0_norm -?ceil_gt0// ceil_ge.
+  by rewrite lee_fin natr_absz gtr0_norm ?ceil_gt0// ceil_ge.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite (eq_fsbigr (cst 1))/=; last first.
   by move=> i /[!inE] /BA /mem_set iA; rewrite diracE iA.

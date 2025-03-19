@@ -694,7 +694,7 @@ move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
   by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
 rewrite lerNl -abszN natr_absz gtr0_norm; last first.
-  by rewrite ltrNr oppr0 -floor_lt0.
+  by rewrite ltrNr oppr0 floor_lt0.
 by rewrite mulrNz lerNl opprK ge_floor.
 Qed.
 
@@ -704,7 +704,7 @@ rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
 move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
-by rewrite natr_absz gtr0_norm// ?le_ceil// -ceil_gt0.
+by rewrite natr_absz gtr0_norm// ?le_ceil// ceil_gt0.
 Qed.
 
 End erealwithrays.

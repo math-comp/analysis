@@ -287,10 +287,10 @@ Proof.
 apply/seteqP; split => // x _; have [x0|x0] := ltP 0%R x.
   exists `|ceil x|.+1 => //.
   rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
-  by rewrite -natr1 natr_absz -abszE gtz0_abs// -?ceil_gt0// ltr_pwDr.
+  by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_pwDr.
 exists `|ceil (- x)|.+1 => //.
 rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
-rewrite -natr1 natr_absz -abszE gez0_abs ?ltr_pwDr// -ceil_ge0 ltrNl opprK.
+rewrite -natr1 natr_absz -abszE gez0_abs ?ltr_pwDr// ceil_ge0 ltrNl opprK.
 by rewrite (le_lt_trans x0).
 Qed.
 
@@ -662,7 +662,7 @@ split=> [/cvgryPge|/cvgnyPge] Foo.
   by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
 apply/cvgryPgey; near=> A; near=> n.
 rewrite pmulrn ceil_le_int// [ceil _]intEsign.
-by rewrite le_gtF ?expr0 ?mul1r ?lez_nat -?ceil_ge0//; near: n; apply: Foo.
+by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
 Section monotonic_itv_bigcup.
@@ -5282,7 +5282,7 @@ Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
 Proof.
 rewrite compact_cover => Aco.
 have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (floor `|p| + 1) => //=; rewrite lt_succ_floor.
+  by move=> p _; exists (floor `|p| + 1) => //=; rewrite lt_floorD1.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
   apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.

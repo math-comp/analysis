@@ -2771,7 +2771,7 @@ have : cvg (a @ \oo).
       rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK -addn1 natrD.
       rewrite natr_absz gtr0_norm.
         by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
-      by rewrite -ceil_gt0 invr_gt0 divr_gt0.
+      by rewrite ceil_gt0 invr_gt0 divr_gt0.
     exists n.+1; rewrite -ltr_pdivlMl //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
       have [_ ] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply: (Pf (n, ar n)).

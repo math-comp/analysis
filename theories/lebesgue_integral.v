@@ -1273,10 +1273,10 @@ rewrite predeqE => r; split => [/= /[!in_itv]/= /andP[nr rn1]|]; last first.
   by rewrite -natrX -2!natrM 2!ler_nat.
 have ?: 0 <= r * 2 ^+ n.+1 by rewrite mulr_ge0// (le_trans _ nr).
 rewrite -bigcup_seq /=; exists (trunc (r * 2 ^+ n.+1)).
-  rewrite /= mem_index_iota -trunc_ge_nat// -trunc_lt_nat//.
+  rewrite /= mem_index_iota trunc_ge_nat// trunc_lt_nat//.
   by rewrite !natrM natrX ler_pM2r// ltr_pM2r// nr.
 rewrite /= in_itv/= ler_pdivrMr// ltr_pdivlMr//.
-by rewrite trunc_ge_nat// trunc_lt_nat// !leqnn.
+by rewrite -trunc_ge_nat// -trunc_lt_nat// !leqnn.
 Qed.
 
 Lemma dyadic_itv_image n T (f : T -> \bar R) x :
@@ -1394,7 +1394,7 @@ apply/negP => /andP[/allP An0]; rewrite mulf_eq0 => /orP[|].
 rewrite pnatr_eq0 eqb0 notin_setE /B => /not_andP[] // /negP.
 rewrite -ltNge => fxn.
 have K : (trunc (fine (f x) * 2 ^+ n) < n * 2 ^ n)%N.
-  rewrite -trunc_lt_nat; last by rewrite mulr_ge0// ltW.
+  rewrite trunc_lt_nat; last by rewrite mulr_ge0// ltW.
   by rewrite natrM natrX ltr_pM2r// -lte_fin (fineK fxfin).
 have /[!mem_index_enum]/(_ isT) := An0 (Ordinal K).
 rewrite implyTb indicE mem_set ?mulr1; last first.
@@ -1536,12 +1536,12 @@ case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
   move=> /(_ (`|ceil l|.+1 + n)%N) /= /(_ (leq_addl _ _)); apply/negP.
   rewrite -leNgt approx_x distrC (le_trans _ (lerB_normD _ _))// normrN.
   rewrite lerBrDl addSnnS natrD [leRHS]ger0_norm// lerD ?ler1n// natr_absz.
-  by rewrite !ger0_norm ?le_ceil// -ceil_ge0; apply: lt_le_trans l0.
+  by rewrite !ger0_norm ?le_ceil// ceil_ge0; apply: lt_le_trans l0.
 - move=> /cvgrPdist_lt/(_ _ ltr01)[n _].
   move=> /(_ (`|floor l|.+1 + n)%N)/(_ (leq_addl _ _)); apply/negP.
   rewrite approx_x -leNgt distrC (le_trans _ (lerB_normD _ _))// normrN.
   rewrite lerBrDl addSnnS natrD [leRHS]ger0_norm// lerD ?ler1n// natr_absz.
-  by rewrite !ltr0_norm -?floor_lt0// mulrNz lerN2 ge_floor.
+  by rewrite !ltr0_norm ?floor_lt0// mulrNz lerN2 ge_floor.
 Qed.
 
 Lemma ecvg_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
@@ -3602,7 +3602,7 @@ apply/negP; rewrite -ltNge.
 rewrite -[X in _ * X](@fineK _ (mu (E `&` D))); last first.
   by rewrite fin_numElt muEDoo (lt_le_trans _ (measure_ge0 _ _)).
 rewrite lte_fin -ltr_pdivrMr.
-  rewrite pmulrn floor_lt_int intS ltz1D abszE.
+  rewrite pmulrn -floor_lt_int intS ltz1D abszE.
   by apply: le_trans (ler_norm _); rewrite ceil_floor//= lerDl.
 rewrite -lte_fin fineK.
   rewrite lt0e measure_ge0 andbT.

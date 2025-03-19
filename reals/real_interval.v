@@ -151,7 +151,7 @@ Proof.
 rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[xy yn]; rewrite in_itv /= xy.
 rewrite in_itv /= andbT => xy; exists (trunc y).+1 => //=.
-by rewrite in_itv /= xy /= lt_succ_trunc.
+by rewrite in_itv /= xy /= ltStrunc.
 Qed.
 
 Lemma itv_o_inftyEbigcup x :
@@ -239,7 +239,7 @@ move gxE : (g x) => gx; case: gx gxE => [gx| |gxoo fxoo]; last 2 first.
 move fxE : (f x) => fx; case: fx fxE => [fx fxE gxE|fxoo gxE _|//]; last first.
   by exists 0%N => //; rewrite /E/= fxoo gxE// addye// leey.
 rewrite lte_fin -subr_gt0 => fgx; exists (trunc (fx - gx)^-1) => //.
-by rewrite /E/= fxE gxE lee_fin invf_ple ?posrE//; apply/ltW/lt_succ_trunc.
+by rewrite /E/= fxE gxE lee_fin invf_ple ?posrE//; apply/ltW/ltStrunc.
 Qed.
 
 End set_ereal.
@@ -252,7 +252,7 @@ apply/seteqP; split=> [x ->|].
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
 apply/ler_addgt0Pl => e e_gt0; rewrite -lerBlDl ltW//.
 have := rx (trunc e^-1) I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-by rewrite lerB// invf_ple ?posrE//; apply/ltW/lt_succ_trunc.
+by rewrite lerB// invf_ple ?posrE//; apply/ltW/ltStrunc.
 Qed.
 
 Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :
@@ -294,7 +294,7 @@ rewrite in_itv/= xy/= natrD -natr1 natr_absz intr_norm -addrA nat1r addrA.
 apply: ltr_pwDr; first by rewrite ltr0n.
 rewrite -lterBDl (le_trans (le_ceil _)) //= le_eqVlt; apply/predU1P; left.
 apply/esym/normr_idP.
-rewrite ler0z -ceil_ge0 (lt_le_trans (@ltrN10 R))// subr_ge0.
+rewrite ler0z ceil_ge0 (lt_le_trans (@ltrN10 R))// subr_ge0.
 by case: b xy => //= /ltW.
 Qed.
 

@@ -56,6 +56,9 @@
   + lemmas `num_spec_sin`, `num_spec_cos`
   + canonical instances `sin_inum`, `cos_inum`
 
+- in `mathcomp_extra.v`:
+  + lemmas `intrN`, `real_floor_itv`, `real_ge_floor`, `real_ceil_itv`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package

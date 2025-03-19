@@ -1170,7 +1170,7 @@ have finite_set_F i : finite_set (F i).
   apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
   rewrite -[M%:R]natr1 natr_absz ger0_norm; last first.
     by rewrite -[leLHS](ceil0 R) ceil_le.
-  by rewrite -ltr_pdivrMr// intrD1 floor_lt_int ltzD1 ceil_floor// lerDl.
+  by rewrite -ltr_pdivrMr// intrD1 -floor_lt_int ltzD1 ceil_floor// lerDl.
 have mur2_fin_num_ : mu (ball (0:R) (r%:num + 2))%R < +oo.
   by rewrite lebesgue_measure_ball// ltry.
 have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =
@@ -1505,7 +1505,7 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
           by rewrite ge0_fin_numE//; case/andP: OAoo => ?; exact: lt_trans.
         rewrite -EFinM /M lte_fin (le_lt_trans (ceil_ge _))//.
         rewrite -natr1 natr_absz ger0_norm ?ltrDl//.
-        by rewrite -ceil_ge0// (@lt_le_trans _ _ 0%R)// divr_ge0// fine_ge0.
+        by rewrite ceil_ge0// (@lt_le_trans _ _ 0%R)// divr_ge0// fine_ge0.
       rewrite big_seq [in leRHS]big_seq.
       apply: lee_sum => //= i /G0G'r [iG rBi].
       rewrite -[leRHS]fineK//; last first.

@@ -466,7 +466,7 @@ Lemma RfloorE x : Rfloor x = (floor x)%:~R.
 Proof. by []. Qed.
 
 Lemma mem_rg1_floor x : (range1 (floor x)%:~R) x.
-Proof. by rewrite /range1 /mkset intrD1 ge_floor lt_succ_floor. Qed.
+Proof. by rewrite /range1 /mkset intrD1 ge_floor lt_floorD1. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
 Proof. exact: mem_rg1_floor. Qed.
@@ -510,7 +510,7 @@ Lemma Rfloor_ge_int x (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
 Proof. by rewrite ler_int floor_ge_int. Qed.
 
 Lemma Rfloor_lt_int x (z : int) : (x < z%:~R) = (Rfloor x < z%:~R).
-Proof. by rewrite ltr_int floor_lt_int. Qed.
+Proof. by rewrite ltr_int -floor_lt_int. Qed.
 
 Lemma Rfloor_le0 x : x <= 0 -> Rfloor x <= 0.
 Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
@@ -521,7 +521,7 @@ Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
 move=> yx; exists (trunc (x - y)^-1).
-by rewrite -ltrBrDl invf_plt 1?posrE 1?subr_gt0// lt_succ_trunc.
+by rewrite -ltrBrDl invf_plt 1?posrE 1?subr_gt0// ltStrunc.
 Qed.
 
 End FloorTheory.
@@ -538,7 +538,7 @@ Lemma Rceil0 : Rceil 0 = 0 :> R.
 Proof. by rewrite /Rceil ceil0. Qed.
 
 Lemma Rceil_ge x : x <= Rceil x.
-Proof. by rewrite /Rceil le_ceil// num_real. Qed.
+Proof. by rewrite Num.Theory.le_ceil ?num_real. Qed.
 
 Lemma le_Rceil : {homo (@Rceil R) : x y / x <= y}.
 Proof. by move=> x y ?; rewrite /Rceil ler_int ceil_le. Qed.
