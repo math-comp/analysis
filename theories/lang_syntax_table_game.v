@@ -26,7 +26,7 @@ From mathcomp Require Import lang_syntax_util lang_syntax lang_syntax_examples.
 (*   1177--1178 (2004)                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*  prog0 == Eddy's table game represented as a probabilistic program         *)
+(*   table0 == Eddy's table game represented as a probabilistic program       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -43,7 +43,10 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope string_scope.
 
-Lemma letin'_sample_uniform {R : realType} d d' (T : measurableType d)
+Section execP_letin_uniform.
+Local Open Scope ereal_scope.
+
+Let letin'_sample_uniform {R : realType} d d' (T : measurableType d)
     (T' : measurableType d') (a b : R) (ab : (a < b)%R)
     (u : R.-sfker [the measurableType _ of (_ * T)%type] ~> T') x y :
   measurable y ->
@@ -67,8 +70,8 @@ Lemma execP_letin_uniform {R : realType}
   (forall (p : R) x U, (0 <= p <= 1)%R ->
     execP s0 (p, x) U = execP s1 (p, x) U) ->
   forall x U, measurable U ->
-  execP [let str := Sample {@exp_uniform _ g 0 1 (@ltr01 R)} in {s0}] x U =
-  execP [let str := Sample {@exp_uniform _ g 0 1 (@ltr01 R)} in {s1}] x U.
+  execP [let str := Sample Uniform {0%R} {1%R} {@ltr01 R} in {s0}] x U =
+  execP [let str := Sample Uniform {0%R} {1%R} {@ltr01 R} in {s1}] x U.
 Proof.
 move=> s01 x U mU.
 rewrite !execP_letin execP_sample execD_uniform/=.
@@ -78,9 +81,10 @@ apply: eq_integral => p p01.
 apply: s01.
 by rewrite inE in p01.
 Qed.
-Local Close Scope lang_scope.
-Local Close Scope ereal_scope.
 
+End execP_letin_uniform.
+
+(* NB: generic lemmas about bouned, to be moved *)
 Section bounded.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.
@@ -155,22 +159,23 @@ Qed.
 
 End bounded.
 
+(* TODO: move? *)
 Lemma measurable_bernoulli_expn {R : realType} U n :
   measurable_fun [set: g_sigma_algebraType R.-ocitv.-measurable]
-    (fun x : g_sigma_algebraType (R.-ocitv.-measurable) => bernoulli (`1-x ^+ n) U).
+    (fun x : R => bernoulli_prob (`1-x ^+ n) U).
 Proof.
-apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
+apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
 by apply: measurable_funX => //=; exact: measurable_funB.
 Qed.
 
 Lemma integrable_bernoulli_beta_pdf {R : realType} U : measurable U ->
   (@lebesgue_measure R).-integrable [set: g_sigma_algebraType R.-ocitv.-measurable]
-    (fun x => bernoulli (1 - `1-x ^+ 3) U * (beta_pdf 6 4 x)%:E)%E.
+    (fun x => bernoulli_prob (1 - `1-x ^+ 3) U * (beta_pdf 6 4 x)%:E)%E.
 Proof.
 move=> mU.
 have ? : measurable_fun [set: g_sigma_algebraType R.-ocitv.-measurable]
-    (fun x => bernoulli (1 - `1-x ^+ 3) U).
-  apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
+    (fun x => bernoulli_prob (1 - `1-x ^+ 3) U).
+  apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
   apply: measurable_funB => //; apply: measurable_funX => //.
   exact: measurable_funB.
 apply/integrableP; split => /=.
@@ -195,18 +200,17 @@ apply: (@le_lt_trans _ _ (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (beta_pdf 6 
       by rewrite mule_ge0// lee_fin beta_pdf_ge0.
     by rewrite /beta_pdf /XMonemX01 patchE (negbTE x01) mul0r mule0 abse0.
 apply: (@le_lt_trans _ _
-    (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (betafun 6 4)^-1%:E)%E); last first.
+    (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (beta_fun 6 4)^-1%:E)%E); last first.
   by rewrite integral_cst//= lebesgue_measure_itv/= lte01 EFinN sube0 mule1 ltry.
 apply: ge0_le_integral => //=.
 - by move=> ? _; rewrite lee_fin beta_pdf_ge0.
 - by apply/measurable_funTS/measurableT_comp => //; exact: measurable_beta_pdf.
-- by move=> ? _; rewrite lee_fin invr_ge0// betafun_ge0.
-- by move=> x _; rewrite lee_fin beta_pdf_le_betafunV.
+- by move=> ? _; rewrite lee_fin invr_ge0// beta_fun_ge0.
+- by move=> x _; rewrite lee_fin beta_pdf_le_beta_funV.
 Qed.
 
-Section game_programs.
+Section table_game_programs.
 Local Open Scope ring_scope.
-Local Open Scope ereal_scope.
 Local Open Scope lang_scope.
 Context (R : realType).
 Local Notation mu := lebesgue_measure.
@@ -214,74 +218,67 @@ Local Notation mu := lebesgue_measure.
 Definition guard {g} str n : @exp R P [:: (str, _) ; g] _ :=
   [if #{str} == {n}:N then return TT else Score {0}:R].
 
-Definition prog0 : @exp R _ [::] _ :=
- [Normalize
-  let "p" := Sample {exp_uniform 0 1 (@ltr01 R)} in
-  let "x" := Sample {exp_binomial 8 [#{"p"}]} in
+Definition table0 : @exp R _ [::] _ := [Normalize
+  let "p" := Sample Uniform {0} {1} {ltr01} in
+  let "x" := Sample Binomial {8} #{"p"} in
   let "_" := {guard "x" 5} in
-  let "y" := Sample {exp_binomial 3 [#{"p"}]} in
+  let "y" := Sample Binomial {3} #{"p"} in
   return {1}:N <= #{"y"}].
 
 Definition tail1 : @exp R _ [:: ("_", Unit); ("x", Nat) ; ("p", Real)] _ :=
-  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%R}]}].
+  [Sample Bernoulli {1}:R - {[{1}:R - #{"p"}]} ^+ {3}].
 
 Definition tail2 : @exp R _ [:: ("_", Unit); ("p", Real)] _ :=
-  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%R}]}].
+  [Sample Bernoulli {1}:R - {[{1}:R - #{"p"}]} ^+ {3}].
 
 Definition tail3 : @exp R _ [:: ("p", Real); ("_", Unit)] _ :=
-  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%R}]}].
+  [Sample Bernoulli {1}:R - {[{1}:R - #{"p"}]} ^+ {3}].
 
-Definition prog1 : @exp R _ [::] _ :=
- [Normalize
-  let "p" := Sample {exp_uniform 0 1 (@ltr01 R)} in
-  let "x" := Sample {exp_binomial 8 [#{"p"}]} in
+Definition table1 : @exp R _ [::] _ := [Normalize
+  let "p" := Sample Uniform {0} {1} {ltr01} in
+  let "x" := Sample Binomial {8} #{"p"} in
   let "_" := {guard "x" 5} in
   {tail1}].
 
-Definition prog2 : @exp R _ [::] _ :=
- [Normalize
-  let "p" := Sample {exp_uniform 0 1 (@ltr01 R)} in
+Definition table2 : @exp R _ [::] _ := [Normalize
+  let "p" := Sample Uniform {0} {1} {ltr01} in
   let "_" :=
     Score {[{56}:R * #{"p"} ^+ {5%R} * {[{1}:R - #{"p"}]} ^+ {3%R}]} in
   {tail2}].
 
-Definition prog2' : @exp R _ [::] _ :=
- [Normalize
-  let "p" := Sample {exp_beta 1 1} in
+Definition table2' : @exp R _ [::] _ := [Normalize
+  let "p" := Sample Beta {1} {1} in
   let "_" := Score
     {[{56}:R * #{"p"} ^+ {5%R} * {[{1}:R - #{"p"}]} ^+ {3%R}]} in
   {tail2}].
 
-Definition prog3 : @exp R _ [::] _ :=
- [Normalize
+Definition table3 : @exp R _ [::] _ := [Normalize
   let "_" := Score {1 / 9}:R in
-  let "p" := Sample {exp_beta 6 4} in
+  let "p" := Sample Beta {6} {4} in
   {tail3}].
 
-Definition prog4 : @exp R _ [::] _ :=
- [Normalize
+Definition table4 : @exp R _ [::] _ := [Normalize
   let "_" := Score {1 / 9}:R in
-  Sample {exp_bernoulli [{10 / 11}:R]}].
+  Sample Bernoulli {10 / 11}:R].
 
-Definition prog5 : @exp R _ [::] _ :=
-  [Normalize Sample {exp_bernoulli [{10 / 11}:R]}].
+Definition table5 : @exp R _ [::] _ := [Normalize Sample Bernoulli {10 / 11}:R].
 
-End game_programs.
+End table_game_programs.
 Arguments tail1 {R}.
 Arguments tail2 {R}.
 Arguments guard {R g}.
 
-Section from_prog0_to_prog1.
+Section from_table0_to_table1.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope lang_scope.
 Context (R : realType).
 Local Notation mu := lebesgue_measure.
 
-Let prog01_subproof
+Let table01_subproof
   (x : mctx (untag (ctx_of (recurse Unit (recurse Nat (found "p" Real [::]))))))
   U : (0 <= x.2.2.1 <= 1)%R ->
-  execP [let "y" := Sample {exp_binomial 3 [#{"p"}]} in
+  execP [let "y" := Sample Binomial {3%R} #{"p"} in
          return {1}:N <= #{"y"}] x U =
   execP (@tail1 R) x U.
 Proof.
@@ -300,26 +297,26 @@ rewrite (execD_var_erefl "p")/=.
 exact/integral_binomial_prob.
 Qed.
 
-Lemma prog01 : execD (@prog0 R) = execD (@prog1 R).
+Lemma table01 : execD (@table0 R) = execD (@table1 R).
 Proof.
-rewrite /prog0 /prog1.
+rewrite /table0 /table1.
 apply: congr_normalize => y A.
 apply: execP_letin_uniform => // p [] B p01.
 apply: congr_letinr => a1 V0.
 apply: congr_letinr => -[] V1.
-exact: prog01_subproof.
+exact: table01_subproof.
 Qed.
 
-End from_prog0_to_prog1.
+End from_table0_to_table1.
 
-Section from_prog1_to_prog2.
+Section from_table1_to_table2.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope lang_scope.
 Context (R : realType).
 Local Notation mu := lebesgue_measure.
 
-Let prog12_subproof (y : @mctx R [::]) (V : set (@mtyp R Bool))
+Let table12_subproof (y : @mctx R [::]) (V : set (@mtyp R Bool))
   (p : R)
   (x : projT2 (existT measurableType default_measure_display unit))
   (U : set (mtyp Bool))
@@ -367,7 +364,7 @@ rewrite !(@execD_bin _ _ binop_minus)/=.
 by rewrite !execD_real/= !exp_var'E/= !(execD_var_erefl "p")/=.
 Qed.
 
-Lemma prog12 : execD (@prog1 R) = execD (@prog2 R).
+Lemma table12 : execD (@table1 R) = execD (@table2 R).
 Proof.
 apply: congr_normalize => y V.
 apply: execP_letin_uniform => // p x U /andP[p0 p1].
@@ -387,18 +384,18 @@ rewrite (@execD_bin _ _ binop_minus)/=/=.
 rewrite 2!execD_real/=.
 rewrite (execD_var_erefl "p")/=.
 rewrite -(mulrA 56%R).
-exact: prog12_subproof.
+exact: table12_subproof.
 Qed.
 
-End from_prog1_to_prog2.
+End from_table1_to_table2.
 
 Local Open Scope ereal_scope.
 
 Lemma measurable_bernoulli_onemXn {R : realType} U :
   measurable_fun [set: g_sigma_algebraType R.-ocitv.-measurable]
-    (fun x => bernoulli (1 - `1-x ^+ 3) U).
+    (fun x => bernoulli_prob (1 - `1-x ^+ 3) U).
 Proof.
-apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
+apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
 apply: measurable_funB => //.
 by apply: measurable_funX; exact: measurable_funB.
 Qed.
@@ -409,7 +406,7 @@ Proof. exact/(bounded_norm _).1/boundedMl/bounded_XMonemX. Qed.
 
 Lemma integrable_bernoulli_XMonemX {R : realType} U :
   (beta_prob 1 1).-integrable [set: R]
-    (fun x => bernoulli (1 - `1-x ^+ 3) U * (normr (56 * XMonemX 5 3 x))%:E).
+    (fun x => bernoulli_prob (1 - `1-x ^+ 3) U * (normr (56 * XMonemX 5 3 x))%:E).
 Proof.
 apply/integrableP; split.
   apply: emeasurable_funM; first exact: measurable_bernoulli_onemXn.
@@ -418,12 +415,12 @@ apply/integrableP; split.
 rewrite beta_prob_uniform integral_uniform//=.
   rewrite subr0 invr1 mul1e.
   suff : lebesgue_measure.-integrable `[0%R, 1%R]
-    (fun y : R => bernoulli (1 - `1-y ^+ 3) U * (normr (56 * XMonemX 5 3 y))%:E).
+    (fun y : R => bernoulli_prob (1 - `1-y ^+ 3) U * (normr (56 * XMonemX 5 3 y))%:E).
     by move=> /integrableP[].
   apply: integrableMl => //=.
   - apply/integrableP; split.
       by apply: measurable_funTS; exact: measurable_bernoulli_onemXn.
-    have := @integral_beta_prob_bernoulli_onem_lty R 3 1%N 1%N U.
+    have := @integral_beta_prob_bernoulli_prob_onem_lty R 3 1%N 1%N U.
     rewrite beta_prob_uniform integral_uniform//=; last first.
       by apply: measurableT_comp => //=; exact: measurable_bernoulli_onemXn.
     by rewrite subr0 invr1 mul1e.
@@ -436,14 +433,14 @@ do 2 apply: @measurableT_comp => //=.
 by apply: measurable_funM => //; exact: measurable_fun_XMonemX.
 Qed.
 
-Section from_prog2_to_prog3.
+Section from_table2_to_table3.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope lang_scope.
 Context (R : realType).
 Local Notation mu := lebesgue_measure.
 
-Lemma prog22' : execD (@prog2 R) = execD (@prog2' R).
+Lemma table22' : execD (@table2 R) = execD (@table2' R).
 Proof.
 apply: congr_normalize => // x U.
 apply: congr_letinl => // y V.
@@ -451,7 +448,7 @@ rewrite !execP_sample execD_uniform/= execD_beta/=.
 by rewrite beta_prob_uniform.
 Qed.
 
-Lemma prog23 : execD (@prog2' R) = execD (@prog3 R).
+Lemma table23 : execD (@table2' R) = execD (@table3 R).
 Proof.
 apply: congr_normalize => x U.
 (* reduce the LHS *)
@@ -504,7 +501,7 @@ rewrite integral_beta_prob//=; last 2 first.
   - by have /integrableP[] := @integrable_bernoulli_XMonemX R U.
 rewrite ger0_norm// integral_dirac// diracT mul1e.
 rewrite integral_beta_prob/=; [|by []|exact: measurable_bernoulli_onemXn
-    |exact: integral_beta_prob_bernoulli_onem_lty].
+    |exact: integral_beta_prob_bernoulli_prob_onem_lty].
 rewrite -integralZl//=; last exact: integrable_bernoulli_beta_pdf.
 apply: eq_integral => y _.
 rewrite [in RHS]muleCA -[in LHS]muleA; congr *%E.
@@ -514,30 +511,30 @@ rewrite ger0_norm; last first.
   by rewrite mulr_ge0// XMonemX_ge0//; rewrite inE in y01.
 rewrite [X in _ = _ * X]EFinM [in RHS]muleCA.
 rewrite /= XMonemX00 mul1r [in LHS](mulrC 56%R) [in LHS]EFinM -[in LHS]muleA; congr *%E.
-by rewrite !betafunE/=; repeat rewrite !factE/=; rewrite -EFinM; congr EFin; lra.
+by rewrite !beta_funE/=; repeat rewrite !factE/=; rewrite -EFinM; congr EFin; lra.
 Qed.
 
-End from_prog2_to_prog3.
+End from_table2_to_table3.
 
 Local Open Scope ereal_scope.
 (* TODO: move? *)
 Lemma int_beta_prob01 {R : realType} (f : R -> R) a b U :
   measurable_fun [set: R] f ->
   (forall x, x \in `[0%R, 1%R] -> 0 <= f x <= 1)%R ->
-  \int[beta_prob a b]_y bernoulli (f y) U =
-  \int[beta_prob a b]_(y in `[0%R, 1%R] : set R) bernoulli (f y) U.
+  \int[beta_prob a b]_y bernoulli_prob (f y) U =
+  \int[beta_prob a b]_(y in `[0%R, 1%R] : set R) bernoulli_prob (f y) U.
 Proof.
 move=> mf f01.
 rewrite [LHS]integral_beta_prob//=; last 2 first.
   apply: measurable_funTS.
-  by apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-  exact: integral_beta_prob_bernoulli_lty.
+  by apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
+  exact: integral_beta_prob_bernoulli_prob_lty.
 rewrite [RHS]integral_beta_prob//; last 2 first.
   apply/measurable_funTS => //=.
-  by apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
-  apply: (le_lt_trans _ (lang_syntax.integral_beta_prob_bernoulli_lty a b U mf f01)).
+  by apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
+  apply: (le_lt_trans _ (integral_beta_prob_bernoulli_prob_lty a b U mf f01)).
   apply: ge0_subset_integral => //=; apply: measurableT_comp => //=.
-  by apply: (measurableT_comp (measurable_bernoulli2 _)) => //=.
+  by apply: (measurableT_comp (measurable_bernoulli_prob2 _)) => //=.
 rewrite [RHS]integral_mkcond/=; apply: eq_integral => x _ /=.
 rewrite !patchE; case: ifPn => // x01.
 by rewrite /beta_pdf /XMonemX01 patchE (negbTE x01) mul0r mule0.
@@ -552,19 +549,19 @@ by rewrite lerBlDl -lerBlDr subrr.
 Qed.
 
 Lemma int_beta_prob_bernoulli {R : realType} (U : set (@mtyp R Bool)) :
- \int[beta_prob 6 4]_y bernoulli (`1-y ^+ 3) U = bernoulli (1 / 11) U :> \bar R.
+ \int[beta_prob 6 4]_y bernoulli_prob (`1-y ^+ 3) U = bernoulli_prob (1 / 11) U :> \bar R.
 Proof.
 rewrite int_beta_prob01//; last 2 first.
   by apply: measurable_funX => //; exact: measurable_funB.
   exact: expr_onem_01.
-have := @beta_prob_bernoulliE R 6 4 0 3 U isT isT.
-rewrite /beta_prob_bernoulli.
+have := @beta_prob_bernoulli_probE R 6 4 0 3 U isT isT.
+rewrite /beta_prob_bernoulli_prob.
 under eq_integral.
   move=> x x0.
   rewrite /XMonemX01 patchE x0 XMonemX0.
   over.
-rewrite /= => ->; congr bernoulli.
-by rewrite /div_betafun addn0 !betafunE/=; repeat rewrite !factE/=; field.
+rewrite /= => ->; congr bernoulli_prob.
+by rewrite /div_beta_fun addn0 !beta_funE/=; repeat rewrite !factE/=; field.
 Qed.
 
 Lemma dirac_bool {R : realType} (U : set bool) :
@@ -579,11 +576,11 @@ have [| | |] := set_bool U => /eqP ->; rewrite !diracE.
 Qed.
 
 Lemma int_beta_prob_bernoulli_onem {R : realType} (U : set (@mtyp R Bool)) :
- \int[beta_prob 6 4]_y bernoulli (`1-(`1-y ^+ 3)) U = bernoulli (10 / 11) U :> \bar R.
+ \int[beta_prob 6 4]_y bernoulli_prob (`1-(`1-y ^+ 3)) U = bernoulli_prob (10 / 11) U :> \bar R.
 Proof.
 transitivity
-    (\d_false U + \d_true U - bernoulli (1 / 11) U : \bar R)%E; last first.
-  rewrite /bernoulli ifT; last lra.
+    (\d_false U + \d_true U - bernoulli_prob (1 / 11) U : \bar R)%E; last first.
+  rewrite /bernoulli_prob ifT; last lra.
   rewrite ifT; last lra.
   apply/eqP; rewrite sube_eq//; last first.
     rewrite ge0_adde_def// inE.
@@ -608,18 +605,18 @@ rewrite [X in _ == _ + X]int_beta_prob01; last 2 first.
   by apply: measurable_funX => //; exact: measurable_funB.
   exact: expr_onem_01.
 rewrite -ge0_integralD//=; last 2 first.
-  apply: (@measurableT_comp _ _ _ _ _ _ (bernoulli ^~ U)) => /=.
-    exact: measurable_bernoulli2.
+  apply: (@measurableT_comp _ _ _ _ _ _ (bernoulli_prob ^~ U)) => /=.
+    exact: measurable_bernoulli_prob2.
   apply: measurable_funB => //=; apply: measurable_funX => //=.
   exact: measurable_funB.
-  apply: (@measurableT_comp _ _ _ _ _ _ (bernoulli ^~ U)) => /=.
-    exact: measurable_bernoulli2.
+  apply: (@measurableT_comp _ _ _ _ _ _ (bernoulli_prob ^~ U)) => /=.
+    exact: measurable_bernoulli_prob2.
   by apply: measurable_funX => //=; exact: measurable_funB.
 apply/eqP; transitivity
     (\int[beta_prob 6 4]_(x in `[0%R, 1%R]) (\d_false U + \d_true U) : \bar R).
   by rewrite integral_cst//= beta_prob01 mule1 EFinD.
 apply: eq_integral => /= x x01.
-rewrite /bernoulli subr_ge0 lerBlDr -lerBlDl subrr andbC.
+rewrite /bernoulli_prob subr_ge0 lerBlDr -lerBlDl subrr andbC.
 rewrite (_ : (_ <= _ <= _)%R); last first.
   by apply: expr_onem_01; rewrite inE in x01.
 rewrite -fsbig_split//=.
@@ -634,16 +631,16 @@ Qed.
 
 Local Close Scope ereal_scope.
 
-Section from_prog3_to_prog4.
+Section from_table3_to_table4.
 Local Open Scope ereal_scope.
 Local Open Scope lang_scope.
 Context (R : realType).
 
 (* NB: not used *)
-Lemma prog34' U :
-  @execP R [::] _ [let "p" := Sample {exp_beta 6 4} in
-         Sample {exp_bernoulli [{[{1}:R - #{"p"}]} ^+ {3%N}]}] tt U =
-  @execP R [::] _ [Sample {exp_bernoulli [{1 / 11}:R]}] tt U.
+Lemma table34' U :
+  @execP R [::] _ [let "p" := Sample Beta {6%R} {4%R} in
+         Sample Bernoulli {[{1}:R - #{"p"}]} ^+ {3%N}] tt U =
+  @execP R [::] _ [Sample Bernoulli {1 / 11}:R] tt U.
 Proof.
 (* reduce the lhs *)
 rewrite execP_letin.
@@ -658,10 +655,10 @@ rewrite letin'E/=.
 exact: int_beta_prob_bernoulli.
 Qed.
 
-Lemma prog34 l u U :
-  @execP R l _ [let "p" := Sample {exp_beta 6 4} in
-         Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%N}]}] u U =
-  @execP R l _ [Sample {exp_bernoulli [{10 / 11}:R]}] u U.
+Lemma table34 l u U :
+  @execP R l _ [let "p" := Sample Beta {6%R} {4%R} in
+         Sample Bernoulli {1}:R - {[{1}:R - #{"p"}]} ^+ {3%N}] u U =
+  @execP R l _ [Sample Bernoulli {10 / 11}:R] u U.
 Proof.
 (* reduce the lhs *)
 rewrite execP_letin.
@@ -677,9 +674,9 @@ rewrite letin'E/=.
 exact: int_beta_prob_bernoulli_onem.
 Qed.
 
-End from_prog3_to_prog4.
+End from_table3_to_table4.
 
-Section from_prog4_to_prog5.
+Section from_table4_to_table5.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope lang_scope.
@@ -688,8 +685,8 @@ Local Notation mu := lebesgue_measure.
 
 Lemma normalize_score_bernoulli g p q (p0 : (0 < p)%R) (q01 : (0 <= q <= 1)%R) :
   @execD R g _ [Normalize let "_" := Score {p}:R in
-                Sample {exp_bernoulli [{q}:R]}] =
-  execD [Normalize Sample {exp_bernoulli [{q}:R]}].
+                Sample Bernoulli {q}:R] =
+  execD [Normalize Sample Bernoulli {q}:R].
 Proof.
 apply: eq_execD.
 rewrite !execD_normalize_pt/= !execP_letin !execP_score.
@@ -697,12 +694,12 @@ rewrite !execP_sample !execD_bernoulli !execD_real/=.
 apply: funext=> x.
 apply: eq_probability=> /= U.
 rewrite !normalizeE/=.
-rewrite !bernoulliE//=; [|lra..].
+rewrite !bernoulli_probE//=; [|lra..].
 rewrite !diracT !mule1 -EFinD add_onemK onee_eq0/=.
 rewrite !letin'E.
 under eq_integral.
   move=> A _ /=.
-  rewrite !bernoulliE//=; [|lra..].
+  rewrite !bernoulli_probE//=; [|lra..].
   rewrite !diracT !mule1 -EFinD add_onemK.
   over.
 rewrite !ge0_integral_mscale//= (ger0_norm (ltW p0))//.
@@ -710,19 +707,19 @@ rewrite integral_dirac// !diracT !indicT /= !mule1 !mulr1.
 rewrite add_onemK invr1 mule1.
 rewrite gt_eqF ?lte_fin//=.
 rewrite integral_dirac//= diracT mul1e.
-by rewrite muleAC -EFinM divff ?gt_eqF// mul1e bernoulliE.
+by rewrite muleAC -EFinM divff ?gt_eqF// mul1e bernoulli_probE.
 Qed.
 
-Lemma prog45 : execD (@prog4 R) = execD (@prog5 R).
+Lemma table45 : execD (@table4 R) = execD (@table5 R).
 Proof. by rewrite normalize_score_bernoulli//; lra. Qed.
 
-End from_prog4_to_prog5.
+End from_table4_to_table5.
 
-Lemma from_prog0_to_prog5 {R : realType} : execD (@prog0 R) = execD (@prog5 R).
+Lemma from_table0_to_table5 {R : realType} : execD (@table0 R) = execD (@table5 R).
 Proof.
-rewrite prog01 prog12 prog22' prog23.
-rewrite -prog45.
+rewrite table01 table12 table22' table23.
+rewrite -table45.
 apply: congr_normalize => y V.
 apply: congr_letinr => x U.
-by rewrite -prog34.
+by rewrite -table34.
 Qed.
