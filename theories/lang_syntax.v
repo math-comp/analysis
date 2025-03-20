@@ -17,12 +17,6 @@ From mathcomp Require Import prob_lang lang_syntax_util.
 (*   Probabilistic Programming Language in Coq using s-finite kernels in Coq. *)
 (*   APLAS 2023                                                               *)
 (*                                                                            *)
-(* beta distribution                                                          *)
-(* ```                                                                        *)
-(*            beta_pdf == probability density function for beta               *)
-(*           beta_prob == beta probability measure                            *)
-(* ```                                                                        *)
-(*                                                                            *)
 (* ```                                                                        *)
 (*                 typ == syntax for types of data structures                 *)
 (* measurable_of_typ t == the measurable type corresponding to type t         *)
@@ -76,7 +70,6 @@ Reserved Notation "e -P> k" (at level 40).
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
-Local Open Scope ereal_scope.
 
 (* In this module, we use our lemma continuous_FTC2 to compute the value of
  * integration of the indicator function over the interval [0, 1].
@@ -202,18 +195,7 @@ Qed.
 End integral_indicator_function.
 End integral_indicator_function.
 
-(* TODO: naming *)
-(* duplicated, cvg_compNP *)
-(*
-Lemma cvg_atNP {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R) (l : T) :
-  f x @[x --> a] --> l <-> (f \o -%R) x @[x --> (- a)%R] --> l.
-Proof.
-rewrite nbhsN.
-have <-// : f x @[x --> a] = fmap [eta f \o -%R] ((- x)%R @[x --> a]).
-by apply/seteqP; split=> A; move=> [/= e e0 H]; exists e => //= B /H/=; rewrite opprK.
-Qed.
-*)
-
+(* TODO: move? *)
 Lemma derivable_oo_bnd_id {R : numFieldType} (a b : R) :
   derivable_oo_LRcontinuous (@id R^o) a b.
 Proof.
@@ -235,13 +217,8 @@ split.
 - by apply/cvg_at_leftNP; rewrite -compA oppK.
 Qed.
 
-Module increasing_change_of_variables_from_decreasing.
-Section lt0.
-Context {R : realType}.
-Notation mu := lebesgue_measure.
-Implicit Types (F G f : R -> R) (a b : R).
-
-Lemma continuous_withinN f a b : (a < b)%R ->
+(* NB: not used *)
+Lemma continuous_withinN {R : realType} (f : R -> R) a b : (a < b)%R ->
   {within `[(- b)%R, (- a)%R], continuous (f \o -%R)} ->
   {within `[a, b], continuous f}.
 Proof.
@@ -260,83 +237,6 @@ move=> ab cf.
   + move/continuous_within_itvP : cf => /(_ ab) [_ cf _].
     apply/cvg_at_leftNP.
     by rewrite /= opprK in cf.
-Qed.
-
-(* duplicated, integration_by_substitution_oppr *)
-(*
-Lemma oppr_change (f : R -> R) a b : (a < b)%R ->
-  {within `[a, b], continuous f} ->
-  \int[mu]_(x in `[a, b]) (f x)%:E =
-  \int[mu]_(x in `[-%R b, -%R a]) ((f \o -%R) x)%:E.
-Proof.
-move=> ab cf.
-have dN : ((-%R : R -> R^o)^`() = cst (-1) :> (R -> R))%R. (* TODO: lemma? *)
-  by apply/funext => x/=; rewrite derive1E deriveN// derive_id.
-rewrite integration_by_substitution_decreasing//.
-- by apply: eq_integral => /= x _; rewrite dN/= opprK mulr1 -compA/= opprK.
-- exact/ltW.
-- by move=> x y _ _ yx; rewrite ltrN2.
-- by move=> y yab; rewrite dN; exact: cvg_cst.
-- by rewrite dN; exact: is_cvg_cst.
-- by rewrite dN; exact: is_cvg_cst.
-- by apply: (@derivable_oo_bndN _ id) => //; exact: derivable_oo_bnd_id.
-- apply: continuous_withinN.
-  + by rewrite ltrN2.
-  + rewrite -(_ : f = (f \o -%R) \o -%R)//; last first.
-      by apply/funext => y; rewrite /= opprK.
-    by rewrite !opprK.
-Qed.
-*)
-
-End lt0.
-End increasing_change_of_variables_from_decreasing.
-
-(* duplicated? *)
-Lemma decreasing_nonincreasing {R : realType} (F : R -> R) (J : interval R) :
-  {in J &, {homo F : x y /~ (x < y)%R}} ->
-  {in J &, {homo F : x y /~ (x <= y)%R}}.
-Proof.
-move=> dF.
-move=> x y x01 y01.
-by rewrite le_eqVlt => /predU1P[->//|/dF] => /(_ x01 y01)/ltW.
-Qed.
-
-Local Close Scope ereal_scope.
-Lemma cvg_comp_filter {R : realType} (f g : R -> R) (r l : R) :
-  continuous f ->
-  (f \o g) x @[x --> r] --> l ->
-  f x @[x --> g r] --> l.
-Proof.
-move=> cf fgrl.
-apply/(@cvgrPdist_le _ R^o) => /= e e0.
-have e20 : 0 < e / 2 by rewrite divr_gt0.
-move/(@cvgrPdist_le _ R^o) : fgrl => /(_ _ e20) fgrl.
-have := cf (g r).
-move=> /(@cvgrPdist_le _ R^o) => /(_ _ e20)[x x0]H.
-exists (minr x (e/2)).
-  by rewrite lt_min x0.
-move=> z.
-rewrite /ball_ /= => grze.
-rewrite -[X in X - _](subrK (f (g r))).
-rewrite -(addrA _ _ (- f z)).
-apply: (le_trans (ler_normD _ _)).
-rewrite (splitr e) lerD//.
-  case: fgrl => d /= d0 K.
-  apply: K.
-  by rewrite /ball_/= subrr normr0.
-apply: H => /=.
-by rewrite (lt_le_trans grze)// ge_min lexx.
-Qed.
-Local Open Scope ereal_scope.
-
-Lemma deriveX_idfun {R : realType} n x :
-  'D_1 (@GRing.exp R^o ^~ n.+1) x = n.+1%:R *: (x ^+ n)%R.
-Proof. by rewrite exp_derive /GRing.scale/= mulr1. Qed.
-
-Lemma decreasing_onem {R : numDomainType} : {homo (fun x : R => (1 - x)%R) : x y /~ (x < y)%R}.
-Proof.
-move=> b a ab.
-by rewrite -ltrN2 !opprB ltr_leB.
 Qed.
 
 Lemma integral_exprn {R : realType} n :
@@ -361,7 +261,7 @@ have dcF : derivable_oo_LRcontinuous F 0 1.
 have dFE : {in `]0%R, 1%R[, F^`() =1 (fun x : R => x ^+ n : R)%R}.
   move=> x x01.
   rewrite derive1Ml; last exact: exprn_derivable.
-  by rewrite derive1E deriveX_idfun mulrA mulVf// mul1r.
+  by rewrite derive1E exp_derive !mulrA mulVf// mulr1 mul1r.
 rewrite (@continuous_FTC2 _ (fun x : R => x ^+ n)%R F)//.
   by rewrite /F/= expr1n expr0n/= mulr1 mulr0 subr0.
 by apply: continuous_subspaceT; exact: exprn_continuous.
@@ -605,7 +505,7 @@ Inductive exp : flag -> ctx -> typ -> Type :=
 | exp_bool g : bool -> exp D g Bool
 | exp_nat g : nat -> exp D g Nat
 | exp_real g : R -> exp D g Real
-| exp_pow g : nat -> exp D g Real -> exp D g Real (* TODO: nat should be at second *)
+| exp_pow g : exp D g Real -> nat -> exp D g Real
 | exp_pow_real g : R (* base *) -> exp D g Real -> exp D g Real
 | exp_bin (b : binop) g : exp D g (type_of_binop b) ->
     exp D g (type_of_binop b) -> exp D g (type_of_binop b)
@@ -620,10 +520,9 @@ Inductive exp : flag -> ctx -> typ -> Type :=
 | exp_bernoulli g : exp D g Real -> exp D g (Prob Bool)
 | exp_binomial g (n : nat) : exp D g Real -> exp D g (Prob Nat)
 | exp_uniform g (a b : R) (ab : (a < b)%R) : exp D g (Prob Real)
-| exp_beta g (a b : nat) (* NB: should be R *) : exp D g (Prob Real)
+| exp_beta g (a b : nat) : exp D g (Prob Real)
 | exp_poisson g : nat -> exp D g Real -> exp D g Real
-| exp_normal g (s : R) (s0 : (s != 0)%R)
-    : exp D g Real -> exp D g (Prob Real) (* NB: 0 < s *)
+| exp_normal g : exp D g Real -> forall (s : R), (s != 0)%R -> exp D g (Prob Real)
 | exp_normalize g t : exp P g t -> exp D g (Prob t)
 | exp_letin g t1 t2 str : exp P g t1 -> exp P ((str, t1) :: g) t2 ->
     exp P g t2
@@ -661,7 +560,7 @@ Arguments exp_binomial {R g} &.
 Arguments exp_uniform {R g} &.
 Arguments exp_beta {R g} &.
 Arguments exp_poisson {R g}.
-Arguments exp_normal {R g _} &.
+Arguments exp_normal {R g} &.
 Arguments exp_normalize {R g _}.
 Arguments exp_letin {R g} & {_ _}.
 Arguments exp_sample {R g} & {t}.
@@ -680,7 +579,7 @@ Notation "n ':N'" := (@exp_nat _ _ n%N)
   (in custom expr at level 1) : lang_scope.
 Notation "r ':R'" := (@exp_real _ _ r%R)
   (in custom expr at level 1, format "r :R") : lang_scope.
-Notation "e ^+ n" := (exp_pow n e)
+Notation "e ^+ n" := (exp_pow e n)
   (in custom expr at level 1) : lang_scope.
 Notation "e `^ r" := (exp_pow_real e r)
   (in custom expr at level 1) : lang_scope.
@@ -732,6 +631,16 @@ Notation "'Score' e" := (exp_score e)
   (in custom expr at level 6) : lang_scope.
 Notation "'Normalize' e" := (exp_normalize e)
   (in custom expr at level 0) : lang_scope.
+Notation "'Bernoulli' p" := (exp_bernoulli p)
+  (in custom expr at level 6) : lang_scope.
+Notation "'Binomial' n k" := (exp_binomial n k)
+  (in custom expr at level 6) : lang_scope.
+Notation "'Uniform' a b ab" := (exp_uniform a b ab)
+  (in custom expr at level 6) : lang_scope.
+Notation "'Beta' a b" := (exp_beta a b)
+  (in custom expr at level 6) : lang_scope.
+Notation "'Normal' m s s0" := (exp_normal m s s0)
+  (in custom expr at level 6) : lang_scope.
 Notation "'if' e1 'then' e2 'else' e3" := (exp_if e1 e2 e3)
   (in custom expr at level 7) : lang_scope.
 Notation "( e )" := e
@@ -746,21 +655,21 @@ Fixpoint free_vars k g t (e : @exp R k g t) : seq string :=
   | exp_bool _ _            => [::]
   | exp_nat _ _             => [::]
   | exp_real _ _            => [::]
-  | exp_pow _ _ e           => free_vars e
+  | exp_pow _ e _           => free_vars e
   | exp_pow_real _ _ e      => free_vars e
-  | exp_bin _ _ e1 e2    => free_vars e1 ++ free_vars e2
-  | exp_rel _ _ e1 e2    => free_vars e1 ++ free_vars e2
-  | exp_rel_real _ _ e1 e2    => free_vars e1 ++ free_vars e2
+  | exp_bin _ _ e1 e2       => free_vars e1 ++ free_vars e2
+  | exp_rel _ _ e1 e2       => free_vars e1 ++ free_vars e2
+  | exp_rel_real _ _ e1 e2  => free_vars e1 ++ free_vars e2
   | exp_pair _ _ _ e1 e2    => free_vars e1 ++ free_vars e2
   | exp_proj1 _ _ _ e       => free_vars e
   | exp_proj2 _ _ _ e       => free_vars e
   | exp_var _ x _ _         => [:: x]
-  | exp_bernoulli _ e     => free_vars e
-  | exp_binomial _ _ e     => free_vars e
+  | exp_bernoulli _ e       => free_vars e
+  | exp_binomial _ _ e      => free_vars e
   | exp_uniform _ _ _ _     => [::]
-  | exp_beta _ _ _ => [::]
+  | exp_beta _ _ _          => [::]
   | exp_poisson _ _ e       => free_vars e
-  | exp_normal _ _ _ e          => free_vars e
+  | exp_normal _ e _ _      => free_vars e
   | exp_normalize _ _ e     => free_vars e
   | exp_letin _ _ _ x e1 e2 => free_vars e1 ++ rem x (free_vars e2)
   | exp_sample _ _ _        => [::]
@@ -775,11 +684,9 @@ End free_vars.
 Definition dval R g t := @mctx R g -> @mtyp R t.
 Definition pval R g t := R.-sfker @mctx R g ~> @mtyp R t.
 
-
 Section weak.
 Context {R : realType}.
 Implicit Types (g h : ctx) (x : string * typ).
-Local Open Scope ring_scope.
 
 Fixpoint mctx_strong g h x (f : @mctx R (g ++ x :: h)) : @mctx R (g ++ h) :=
   match g as g0 return mctx (g0 ++ x :: h) -> mctx (g0 ++ h) with
@@ -866,23 +773,6 @@ Context {R : realType}.
 Implicit Type (g : ctx) (str : string).
 Local Open Scope lang_scope.
 
-Local Open Scope ring_scope.
-
-(* TODO: PR *)
-Lemma measurable_powRr b : measurable_fun setT (@powR R b).
-Proof.
-rewrite /powR.
-apply: measurable_fun_if => //.
-  rewrite preimage_true setTI/=.
-   case: (b == 0); rewrite ?set_true ?set_false.
-     apply: measurableT_comp => //.
-     exact: measurable_fun_eqr.
-   exact: measurable_fun_set0.
-rewrite preimage_false setTI.
-apply: measurableT_comp => //.
-exact: mulrr_measurable.
-Qed.
-
 Inductive evalD : forall g t, exp D g t ->
   forall f : dval R g t, measurable_fun setT f -> Prop :=
 | eval_unit g : ([TT] : exp D g _) -D> cst tt ; ktt
@@ -894,10 +784,10 @@ Inductive evalD : forall g t, exp D g t ->
 | eval_real g r : ([r:R] : exp D g _) -D> cst r ; kr r
 
 | eval_pow g n (e : exp D g _) f mf : e -D> f ; mf ->
-  [e ^+ {n}] -D> (fun x => f x ^+ n) ; (measurable_funX n mf)
+  [e ^+ {n}] -D> (fun x => (f x ^+ n)%R) ; (measurable_funX n mf)
 
 | eval_pow_real g (e : exp D g _) r f mf : e -D> f ; mf ->
-  [{r} `^ e] -D> (fun x => r `^ (f x)) ; measurableT_comp (measurable_powRr r) mf
+  [{r} `^ e] -D> (fun x => (r `^ (f x))%R) ; measurableT_comp (measurable_powRr r) mf
 
 | eval_bin g bop (e1 : exp D g _) f1 mf1 e2 f2 mf2 :
   e1 -D> f1 ; mf1 -> e2 -D> f2 ; mf2 ->
@@ -934,26 +824,24 @@ Inductive evalD : forall g t, exp D g t ->
                   measurableT_comp measurable_bernoulli_prob mr
 
 | eval_binomial g n e r mr :
-  e -D> r ; mr -> (exp_binomial n e : exp D g _) -D> binomial_prob n \o r ;
+  e -D> r ; mr -> ([Binomial n e] : exp _ g _) -D> binomial_prob n \o r ;
                    measurableT_comp (measurable_binomial_prob n) mr
 
 | eval_uniform g (a b : R) (ab : (a < b)%R) :
-  (exp_uniform a b ab : exp D g _) -D> cst (uniform_prob ab) ;
+  ([Uniform a b ab] : exp D g _) -D> cst (uniform_prob ab) ;
                                        measurable_cst _
 
 | eval_beta g (a b : nat) :
-  (exp_beta a b : exp D g _) -D> cst (beta_prob a b) ; measurable_cst _
+  ([Beta a b] : exp D g _) -D> cst (beta_prob a b) ; measurable_cst _
 
 | eval_poisson g n (e : exp D g _) f mf :
   e -D> f ; mf ->
   exp_poisson n e -D> poisson_pmf ^~ n \o f ;
                       measurableT_comp (measurable_poisson_pmf n measurableT) mf
 
-(* TODO *)
 | eval_normal g s (s0 : (s != 0)%R) (e : exp D g _) r mr :
   e -D> r ; mr ->
-  (exp_normal s0 e : exp D g _) -D>
-     (fun x => @normal_prob _ (r x) s) ;
+  ([Normal e s s0] : exp D g _) -D> (fun x => @normal_prob _ (r x) s) ;
  measurableT_comp (measurable_normal_prob2 s0) mr
 
 | eval_normalize g t (e : exp P g t) k :
@@ -1037,7 +925,7 @@ all: (rewrite {g t e u v mu mv hu}).
 - move=> g n e f mf ev IH {}v {}mv.
   inversion 1; subst g0 n0.
   inj_ex H4; subst v.
-  inj_ex H2; subst e0.
+  inj_ex H0; subst e0.
   by move: H3 => /IH <-.
 - move=> g e r f mf ev IH {}v {}mv.
   inversion 1; subst g0 r0.
@@ -1110,7 +998,7 @@ all: (rewrite {g t e u v mu mv hu}).
   by rewrite (IH _ _ H3).
 - move=> g s s0 e r mr ev IH {}v {}mv.
   inversion 1; subst g0 s1.
-  inj_ex H2; subst e0.
+  inj_ex H0; subst e0.
   inj_ex H3; subst v.
   by rewrite (IH _ _ H5).
 - move=> g t e k ev IH f mf.
@@ -1201,7 +1089,7 @@ all: rewrite {g t e u v eu}.
 - move=> g n e f mf ev IH {}v {}mv.
   inversion 1; subst g0 n0.
   inj_ex H4; subst v.
-  inj_ex H2; subst e0.
+  inj_ex H0; subst e0.
   by move: H3 => /IH <-.
 - move=> g e b f mf ev IH {}v {}mv.
   inversion 1; subst g0 r.
@@ -1276,7 +1164,7 @@ all: rewrite {g t e u v eu}.
   by rewrite (IH _ _ H3).
 - move=> g s s0 e r mr ev IH {}v {}mv.
   inversion 1; subst g0 s1.
-  inj_ex H2; subst e0.
+  inj_ex H0; subst e0.
   inj_ex H3; subst v.
   by rewrite (IH _ _ H5).
 - move=> g t e k ev IH {}v {}mv.
@@ -1353,7 +1241,7 @@ all: rewrite {z g t}.
 - by do 2 eexists; exact: eval_bool.
 - by do 2 eexists; exact: eval_nat.
 - by do 2 eexists; exact: eval_real.
-- move=> g n e [f [mf H]].
+- move=> g e [f [mf H]] n.
   by exists (fun x => (f x ^+ n)%R); eexists; exact: eval_pow.
 - move=> g r e [f [mf H]].
   by exists (fun x => (r `^ (f x))%R); eexists; exact: eval_pow_real.
@@ -1380,7 +1268,7 @@ all: rewrite {z g t}.
 - by eexists; eexists; exact: eval_beta.
 - move=> g h e [f [mf H]].
   by exists (poisson_pmf ^~ h \o f); eexists; exact: eval_poisson.
-- move=> g s s0 e [r [mr H]].
+- move=> g e [r [mr H]] s s0.
   exists (fun x => @normal_prob _ (r x) s : pprobability _ _).
   by eexists; exact: eval_normal.
 - move=> g t e [k ek].
@@ -1484,11 +1372,10 @@ Proof. exact/execD_evalD/eval_nat. Qed.
 Lemma execD_real g r : @execD g _ [r:R] = existT _ (cst r) (kr r).
 Proof. exact/execD_evalD/eval_real. Qed.
 
-Local Open Scope ring_scope.
 Lemma execD_pow g (e : exp D g _) n :
   let f := projT1 (execD e) in let mf := projT2 (execD e) in
-  execD (exp_pow n e) =
-  @existT _ _ (fun x => f x ^+ n) (measurable_funX n mf).
+  execD (exp_pow e n) =
+  @existT _ _ (fun x => (f x ^+ n)%R) (measurable_funX n mf).
 Proof.
 by move=> f mf; apply/execD_evalD/eval_pow/evalD_execD.
 Qed.
@@ -1496,7 +1383,7 @@ Qed.
 Lemma execD_pow_real g r (e : exp D g _) :
   let f := projT1 (execD e) in let mf := projT2 (execD e) in
   execD (exp_pow_real r e) =
-  @existT _ _ (fun x => r `^ f x) (measurableT_comp (measurable_powRr r) mf).
+  @existT _ _ (fun x => (r `^ f x)%R) (measurableT_comp (measurable_powRr r) mf).
 Proof.
 by move=> f mf; apply/execD_evalD/eval_pow_real/evalD_execD.
 Qed.
@@ -1574,25 +1461,25 @@ Lemma execD_bernoulli g e :
 Proof. exact/execD_evalD/eval_bernoulli/evalD_execD. Qed.
 
 Lemma execD_binomial g n e :
-  @execD g _ (exp_binomial n e) =
+  @execD g _ [Binomial n e] =
     existT _ ((binomial_prob n : R -> pprobability nat R) \o projT1 (execD e))
              (measurableT_comp (measurable_binomial_prob n) (projT2 (execD e))).
 Proof. exact/execD_evalD/eval_binomial/evalD_execD. Qed.
 
 Lemma execD_uniform g a b ab0 :
-  @execD g _ (exp_uniform a b ab0) =
-    existT _ (cst [the probability _ _ of uniform_prob ab0]) (measurable_cst _).
+  @execD g _ [Uniform a b ab0] =
+    existT _ (cst (uniform_prob ab0 : pprobability _ R)) (measurable_cst _).
 Proof. exact/execD_evalD/eval_uniform. Qed.
 
 Lemma execD_beta g a b :
-  @execD g _ (exp_beta a b) =
-    existT _ (cst [the probability _ _ of beta_prob a b]) (measurable_cst _).
+  @execD g _ [Beta a b] =
+    existT _ (cst (beta_prob a b : pprobability _ R)) (measurable_cst _).
 Proof. exact/execD_evalD/eval_beta. Qed.
 
 Lemma execD_normal g s s0 e :
   let f := projT1 (execD e) in let mf := projT2 (execD e) in
-  @execD g _ (@exp_normal _ _ s s0 e) =
-    existT _ (fun x => [the probability _ _ of @normal_prob _ (f x) s])
+  @execD g _ [Normal e s s0] =
+    existT _ (fun x => @normal_prob _ (f x) s : pprobability _ R)
        (measurableT_comp (measurable_normal_prob2 s0) mf).
 Proof. exact/execD_evalD/eval_normal/evalD_execD. Qed.
 
@@ -1670,5 +1557,4 @@ f_equal.
 apply: eq_kernel => y V.
 exact: He.
 Qed.
-
 Local Close Scope lang_scope.

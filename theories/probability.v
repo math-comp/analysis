@@ -1169,7 +1169,7 @@ Definition bernoulli_prob {R : realType} (p : R) : set bool -> \bar R :=
   else
     \d_false A.
 
-Section bernoulli.
+Section bernoulli_prob.
 Context {R : realType} (p : R).
 
 Local Notation bernoulli := (bernoulli_prob p).
@@ -1215,7 +1215,7 @@ Qed.
 HB.instance Definition _ :=
   @Measure_isProbability.Build _ _ R bernoulli bernoulli_setT.
 
-Lemma eq_bernoulli (P : probability bool R) :
+Lemma eq_bernoulli_prob (P : probability bool R) :
   P [set true] = p%:E -> P =1 bernoulli.
 Proof.
 move=> Ptrue sb; rewrite /bernoulli /bernoulli_pmf.
@@ -1232,7 +1232,7 @@ rewrite -[in LHS](eq_sb sb)/= measure_fin_bigcup//; last 2 first.
 - by apply: eq_fsbigr => /= -[].
 Qed.
 
-End bernoulli.
+End bernoulli_prob.
 
 Section bernoulli_measure.
 Context {R : realType}.
@@ -1264,15 +1264,15 @@ Arguments bernoulli_prob {R}.
 Lemma eq_bernoulliV2 {R : realType} (P : probability bool R) :
   P [set true] = P [set false] -> P =1 bernoulli_prob 2^-1.
 Proof.
-move=> Ptrue_eq_false; apply/eq_bernoulli.
-have : P [set: bool] = 1%E := probability_setT P.
+move=> Ptrue_eq_false; apply/eq_bernoulli_prob.
+have : P [set: bool] = 1%E := probability_setT _.
 rewrite setT_bool measureU//=; last first.
   by rewrite disjoints_subset => -[]//.
 rewrite Ptrue_eq_false -mule2n; move/esym/eqP.
 by rewrite -mule_natl -eqe_pdivrMl// mule1 => /eqP<-.
 Qed.
 
-Section integral_bernoulli.
+Section integral_bernoulli_prob.
 Context {R : realType}.
 Variables (p : R) (p01 : (0 <= p <= 1)%R).
 Local Open Scope ereal_scope.
@@ -1289,9 +1289,9 @@ rewrite ge0_integral_measure_sum// 2!big_ord_recl/= big_ord0 adde0/=.
 by rewrite !ge0_integral_mscale//= !integral_dirac//= !diracT !mul1e.
 Qed.
 
-End integral_bernoulli.
+End integral_bernoulli_prob.
 
-Section measurable_bernoulli.
+Section measurable_bernoulli_prob.
 Local Open Scope ring_scope.
 Variable R : realType.
 Implicit Type p : R.
@@ -1318,7 +1318,7 @@ move=> mU.
 exact: (measurable_kernel (kprobability measurable_bernoulli_prob)).
 Qed.
 
-End measurable_bernoulli.
+End measurable_bernoulli_prob.
 Arguments measurable_bernoulli_prob {R}.
 
 Section binomial_pmf.
@@ -3067,16 +3067,21 @@ rewrite near_monotone_convergence.
 apply: near_ereal_nondecreasing_is_cvgn.
 exists N => //.
 move=> k/= Nk n m; rewrite !inE/= => kn km nm.
-apply: ge0_le_integral => // t Dt; [| |].
+apply: ge0_le_integral => // t Dt; [|].
 - apply: g'_ge0 => //.
   exact: leq_trans kn.
-- apply: g'_ge0 => //.
-  exact: leq_trans km.
 - apply: ndg' => //.
   exact: leq_trans kn.
 Qed.
 
 End near_monotone_convergence.
+
+Lemma abs_ceil_ge (R : realType) (x : R) : `|x| <= `|ceil x|.+1%:R.
+Proof.
+rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
+  by rewrite !gtr0_norm ?ceil_gt0// ler_wpDr// ceil_ge.
+by rewrite !ler0_norm ?ceil_le0// ceilNfloor opprK -intrD1 ltW// floorD1_gt.
+Qed.
 
 Section exp_coeff_properties.
 Context {R : realType}.
@@ -3262,9 +3267,9 @@ by rewrite add0r derive_id derive_cst addr0 scaler1.
 Qed.
 
 Let int_gaussFE : sigma != 0 ->
-    (\int[mu]_x ((((gauss_fun \o F) *
-       (F^`())%classic) x)%:E * (Num.sqrt (sigma ^+ 2 *+ 2))%:E))%E =
-(Num.sqrt (sigma ^+ 2 * pi *+ 2))%:E.
+  (\int[mu]_x ((((gauss_fun \o F) *
+     (F^`())%classic) x)%:E * (Num.sqrt (sigma ^+ 2 *+ 2))%:E))%E =
+  (Num.sqrt (sigma ^+ 2 * pi *+ 2))%:E.
 Proof.
 move=> s0.
 rewrite -mulrnAr -[in RHS]mulr_natr sqrtrM ?(sqrtrM 2) ?sqr_ge0 ?pi_ge0// !EFinM.
@@ -3352,35 +3357,19 @@ Qed.
 
 End normal_probability.
 
-(* TODO: PR *)
+(* TODO: move *)
 Section shift_properties.
-
 Variable R : realType.
 
 Local Open Scope ring_scope.
 
 Notation mu := lebesgue_measure.
 
-(* PR in progress *)
-Lemma derive_shift (v k : R) : 'D_v (shift k : R^o -> R^o) = cst v.
-Proof.
-apply/funext => x/=.
-by rewrite deriveD// derive_id derive_cst addr0.
-Qed.
-
-(* PR in progress *)
-Lemma is_derive_shift x v (k : R) : is_derive x v (shift k : R^o -> R^o) v.
-Proof.
-split => //.
-by rewrite derive_val addr0.
-Qed.
-
-(* TODO: In integration_by_substitution, (f : R -> R) => (f : R -> \bar R) *)
 Lemma ge0_integration_by_substitution_shift_itvNy (f : R -> R) (r e : R) :
-{within `]-oo, r + e], continuous f} ->
-{in `]-oo, r + e[, forall x : R, 0 <= f x} ->
-(\int[mu]_(x in `]-oo, (r + e)%R]) (f x)%:E =
-\int[mu]_(x in `]-oo, r]) ((f \o (shift e)) x)%:E)%E.
+  {within `]-oo, r + e], continuous f} ->
+  {in `]-oo, r + e[, forall x : R, 0 <= f x} ->
+  (\int[mu]_(x in `]-oo, (r + e)%R]) (f x)%:E =
+  \int[mu]_(x in `]-oo, r]) ((f \o (shift e)) x)%:E)%E.
 Proof.
 move=> cf f0.
 have := (derive_shift 1 e).
@@ -3405,10 +3394,10 @@ by rewrite dshiftE mulr1/=.
 Qed.
 
 Lemma ge0_integration_by_substitution_shift_itvy (f : R -> R) (r e : R) :
-{within `[r + e, +oo[, continuous f} ->
-{in `]r + e, +oo[, forall x : R, 0 <= f x} ->
-(\int[mu]_(x in `[r + e, +oo[) (f x)%:E =
-\int[mu]_(x in `[r, +oo[) ((f \o (shift e)) x)%:E)%E.
+  {within `[r + e, +oo[, continuous f} ->
+  {in `]r + e, +oo[, forall x : R, 0 <= f x} ->
+  (\int[mu]_(x in `[r + e, +oo[) (f x)%:E =
+  \int[mu]_(x in `[r, +oo[) ((f \o (shift e)) x)%:E)%E.
 Proof.
 move=> cf f0.
 have := (derive_shift 1 e).
@@ -3968,14 +3957,12 @@ move=> mV a.
 near (0 : R)^'+ => e.
 set g := g' a e.
 have mg := mg' a e.
-apply: (@continuity_under_integral _ _ _ mu _ _ _ _ (a - e) (a + e) _ _ _ g) => //=.
-- rewrite in_itv/=.
-  by rewrite ltrDl gtrBl andbb.
+apply: (@continuity_under_integral _ _ _ mu _ _ _ (a - e) (a + e) _ _ g) => //=.
 - move=> x _.
   apply: (integrableS measurableT) => //.
   exact: integrable_normal_pdf.
 - apply/aeW => y _.
-  move=> x.
+  move=> x _.
   under [X in _ _ X]eq_fun.
     move=> x0.
     rewrite normal_pdfE// /normal_pdf0 /normal_fun -(sqrrN (y - _)) opprB.
@@ -4020,30 +4007,32 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ _ (a - e) (a + e) _ _ _ g) => 
   apply/abse_integralP => //=.
     by apply/measurable_EFinP; exact: measurable_normal_pdf.
   by rewrite integral_normal_pdf ltry.
-move=> x ax.
-apply/aeW => y Vy.
-rewrite ger0_norm; last exact: normal_pdf_ge0.
-rewrite normal_pdfE// /g /g'.
-case: ifPn => [_|]; first exact: normal_pdf0_ub.
-rewrite notin_setE/= ball_itv/= in_itv/= => aey.
-rewrite /normal_pdf0 ler_pM//.
-rewrite ler_expR !mulNr lerN2 ler_pM //.
-  exact: sqr_ge0.
-  by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
-move: ax; rewrite in_itv/= => /andP[aex xae].
-move: aey; move/negP/nandP; rewrite -!leNgt => -[yae|aey].
-  rewrite -normrN opprB ger0_norm; last first.
-    by rewrite subr_ge0 (le_trans yae)// gerBl.
-  rewrite -[leRHS]sqrrN opprB ler_sqr ?nnegrE; first last.
-    rewrite subr_ge0 ltW// (le_lt_trans yae)//.
-    by rewrite addrAC subr_ge0.
-  by rewrite addrAC lerD2r ltW.
-rewrite ger0_norm; last first.
-  by rewrite subr_ge0 (le_trans _ aey)// lerDl.
-rewrite ler_sqr ?nnegrE; last 2 first.
-  by rewrite -addrA -opprD subr_ge0.
-  by rewrite subr_ge0 (le_trans _ aey)// ltW.
-by rewrite -addrA -opprD lerD2l lerN2 ltW.
+- move=> x ax.
+  apply/aeW => y Vy.
+  rewrite ger0_norm; last exact: normal_pdf_ge0.
+  rewrite normal_pdfE// /g /g'.
+  case: ifPn => [_|]; first exact: normal_pdf0_ub.
+  rewrite notin_setE/= ball_itv/= in_itv/= => aey.
+  rewrite /normal_pdf0 ler_pM//.
+  rewrite ler_expR !mulNr lerN2 ler_pM //.
+    exact: sqr_ge0.
+    by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
+  move: ax; rewrite in_itv/= => /andP[aex xae].
+  move: aey; move/negP/nandP; rewrite -!leNgt => -[yae|aey].
+    rewrite -normrN opprB ger0_norm; last first.
+      by rewrite subr_ge0 (le_trans yae)// gerBl.
+    rewrite -[leRHS]sqrrN opprB ler_sqr ?nnegrE; first last.
+      rewrite subr_ge0 ltW// (le_lt_trans yae)//.
+      by rewrite addrAC subr_ge0.
+    by rewrite addrAC lerD2r ltW.
+  rewrite ger0_norm; last first.
+    by rewrite subr_ge0 (le_trans _ aey)// lerDl.
+  rewrite ler_sqr ?nnegrE; last 2 first.
+    by rewrite -addrA -opprD subr_ge0.
+    by rewrite subr_ge0 (le_trans _ aey)// ltW.
+  by rewrite -addrA -opprD lerD2l lerN2 ltW.
+rewrite inE/= in_itv/=.
+by rewrite ltrBlDr ltrDl andbb.
 Unshelve. end_near. Qed.
 
 Lemma measurable_normal_prob2 :
@@ -4067,54 +4056,32 @@ Qed.
 
 End normal_kernel.
 
-Section normal_probability.
-Context {R : realType}.
+Section move.
 
-Lemma measurable_normal_s_prob (s : R) :
-  measurable_fun setT
-  (fun m : R => normal_prob m s : pprobability _ _).
+Lemma cvg_comp_filter {R : realType} (f g : R -> R) (r l : R) :
+  continuous f ->
+  (f \o g) x @[x --> r] --> l ->
+  f x @[x --> g r] --> l.
 Proof.
-apply: (@measurability _ _ _ _ _ _
-  (@pset _ _ _ : set (set (pprobability _ R)))) => //.
-move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
-Abort.
-(*
-have := measurable_normal_prob2 (integral_normal^~ s) mYs.
+move=> cf fgrl.
+apply/(@cvgrPdist_le _ R^o) => /= e e0.
+have e20 : 0 < e / 2 by rewrite divr_gt0.
+move/(@cvgrPdist_le _ R^o) : fgrl => /(_ _ e20) fgrl.
+have := cf (g r).
+move=> /(@cvgrPdist_le _ R^o) => /(_ _ e20)[x x0]H.
+exists (minr x (e/2)).
+  by rewrite lt_min x0.
+move=> z.
+rewrite /ball_ /= => grze.
+rewrite -[X in X - _](subrK (f (g r))).
+rewrite -(addrA _ _ (- f z)).
+apply: (le_trans (ler_normD _ _)).
+rewrite (splitr e) lerD//.
+  case: fgrl => d /= d0 K.
+  apply: K.
+  by rewrite /ball_/= subrr normr0.
+apply: H => /=.
+by rewrite (lt_le_trans grze)// ge_min lexx.
 Qed.
-*)
 
-End normal_probability.
-
-Section dirac_delta.
-Local Open Scope ereal_scope.
-Context {R: realType}.
-Local Notation mu := lebesgue_measure.
-
-Hypothesis integral_normal : forall (m : R) (s : {posnum R}),
-  (\int[@lebesgue_measure R]_x (normal_pdf m s%:num x)%:E = 1%E)%E.
-
-Definition dirac_delta (m x : R) : \bar R := lim ((normal_pdf m s x)%:E @[s --> 0^'+]).
-
-Lemma integralT_dirac_delta m :
-  \int[mu]_x dirac_delta m x = 1.
-Proof.
-rewrite [LHS](_:_= lim ((\int[mu]_x (normal_pdf m s x)%:E) @[s --> 0^'+])); last first.
-  rewrite /dirac_delta.
-  (* rewrite monotone_convergence *)
-  admit.
-apply: lim_near_cst => //.
-near=> s.
-have [s0 s0s]: exists s' : {posnum R}, s'%:num = s.
-  have s0 : (0 < s)%R by [].
-  by exists (PosNum s0).
-rewrite -s0s.
-apply: integral_normal.
-Abort.
-
-Lemma dirac_deltaE x A :
-  \int[mu]_(y in A) dirac_delta x y = \d_x A.
-Proof.
-rewrite diracE.
-Abort.
-
-End dirac_delta.
+End move.

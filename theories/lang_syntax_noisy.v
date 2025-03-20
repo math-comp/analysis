@@ -23,9 +23,8 @@ From mathcomp Require Import lang_syntax_util lang_syntax lang_syntax_examples.
 (*   Indiana University, 2019.                                                *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*   noisy0 == distribution of the next noisy measurement of a normally       *)
+(*   noisyA == distribution of the next noisy measurement of a normally       *)
 (*             distributed quantity                                           *)
-(*   noisy *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -57,10 +56,9 @@ move=> f0 [M fleM] mf.
 apply/integrableP; split => //.
 apply (@le_lt_trans _ _ (\int[p]_x M%:E)).
   apply: ge0_le_integral => //=.
-      exact: measurableT_comp.
-    move=> t _.
-    exact: (@le_trans _ _ (f t)).
+    exact: measurableT_comp.
   move=> t _.
+  apply: (@le_trans _ _ (f t)) => //.
   by rewrite gee0_abs.
 by rewrite integral_cst// probability_setT mule1 ltry.
 Qed.
@@ -204,156 +202,9 @@ Qed.
 
 End normal_prob_lemmas.
 
-Section noisy_programs.
-Local Open Scope lang_scope.
-Context {R : realType}.
-Local Notation mu := lebesgue_measure.
-
-Definition exp_normal1 {R g} := @exp_normal R g _ (@oner_neq0 R).
-
-(* NB: exp_powR level setting is mistaken? *)
-(*     ((_ `^ _) * _) cannot write as (_ `^ _ * _) *)
-Definition noisy0' : @exp R P [:: ("y0", Real)] Real :=
-  [let "x" := Sample {exp_normal1 [{0}:R]} in
-   let "_" := Score ({expR 1} `^
-                       ({0}:R - (#{"y0"} - #{"x"}) ^+ {2%R} * {2^-1}:R))
-                     * {(Num.sqrt (2 * pi))^-1}:R in
-   let "z" := Sample {exp_normal1 [#{"x"}]} in
-   return #{"z"}].
-
-Definition noisy0 : @exp R _ [:: ("y0", Real)] _ := [Normalize {noisy0'}].
-
-(* other programs from Sect. 2.3 of [Shan, POPL 2018],
-   nothing proved about them yet, just for the sake of completeness *)
-Definition guard_real {g} str (r : R) :
- @exp R P [:: (str, _) ; g] _ :=
-  [if #{str} ==R {r}:R then return TT else Score {0}:R].
-
-Definition helloWrong (y0 : R) : @exp R _ [::] _ :=
- [Normalize
-  let "x" := Sample {exp_normal1 (exp_real 0)} in
-  let "y" := Sample {exp_normal1 [#{"x"}]} in
-  let "_" := {guard_real "y" y0} in
-  let "z" := Sample {exp_normal1 [#{"x"}]} in
-  return #{"z"}].
-
-Definition helloJoint : @exp R _ [::] _ :=
- [Normalize
-  let "x" := Sample {exp_normal1 (exp_real 0)} in
-  let "y" := Sample {exp_normal1 [#{"x"}]} in
-  let "z" := Sample {exp_normal1 [#{"x"}]} in
- return (#{"y"}, #{"z"})].
-
-End noisy_programs.
-
-(* The following section contains the mathematical facts that are used
-   to verify the noisy program. They are proved beforehand to
-   optimize the time spent by the Qed command of Rocq. *)
-Section noisy_subproofs.
-Local Open Scope lang_scope.
-Context {R : realType}.
-Local Notation mu := lebesgue_measure.
-
-Local Definition int_normal_noisy0
-    (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
-  \int[normal_prob 0 1]_x (fun z =>
-    `|expR (- ((y.1 - z) ^+ 2%R / 2)) / Num.sqrt (2 * pi)|%:E *
-     normal_prob z 1 V) x.
-
-Local Definition int_mu_noisy0
-    (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
-  \int[mu]_x
-     (`|expR (- ((y.1 - x) ^+ 2%R / 2)) / Num.sqrt (2 * pi)|%:E *
-      normal_prob x 1 V *
-      (normal_pdf 0 1 x)%:E).
-
-Local Definition int_normal_noisy1
-    (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
-  \int[normal_prob (y.1 / 2) (Num.sqrt 2)^-1]_x
-    ((NngNum (normr_ge0 (expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi))))%:num%:E *
-      normal_prob x 1 V)%E.
-
-Local Definition int_mu_noisy1
-   (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
-  \int[mu]_x
-     (`|expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi)|%:E *
-      (normal_prob x 1 V * (normal_pdf (y.1 / 2) (Num.sqrt 2)^-1 x)%:E)).
-
-Local Definition int_normal_noisy2
-    (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
-  \int[normal_prob (y.1 / 2) (Num.sqrt 2)^-1]_x normal_prob x 1 V.
-
-Local Definition int_mu_noisy2
-    (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
-  normal_prob (y.1 / 2) (Num.sqrt (3 / 2)) V.
-
-Lemma int_normal_mu_noisy0 y V : measurable V ->
-  int_normal_noisy0 y V = int_mu_noisy0 y V.
-Proof.
-move=> mV; rewrite /int_normal_noisy0.
-rewrite integral_normal_prob//.
-apply: integrableMr => //.
-    apply: (@measurableT_comp _ _ _ _ _ _ (@normr _ R^o)) => //.
-    apply: measurable_funM => //.
-    apply: measurableT_comp => //.
-    apply: measurableT_comp => //.
-    apply: measurable_funM => //.
-    apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => (t ^+ 2%R)%R)) => //.
-    exact: measurable_funB.
-  exists (Num.sqrt (2 * pi))^-1%R; split; first exact: num_real.
-  move=> x x_gt.
-  move=> p _.
-  rewrite /= normr_id.
-  have /normr_idP -> : (0 <= expR (- ((y.1 - p) ^+ 2%R / 2)) / (Num.sqrt (2 * pi)))%R.
-    apply: mulr_ge0; first exact: expR_ge0.
-    by rewrite invr_ge0 sqrtr_ge0// mulr_ge0// pi_ge0.
-  apply/ltW.
-  apply: le_lt_trans x_gt.
-  rewrite -[leRHS]mul1r ler_pM//.
-  by rewrite -expR0 ler_expR oppr_le0 mulr_ge0// ?sqr_ge0// expR0 invr_ge0.
-apply/integrableP; split.
-  exact: emeasurable_normal_prob.
-apply/abse_integralP => //.
-  exact: emeasurable_normal_prob.
-have/gee0_abs -> : 0 <= \int[normal_prob 0 1]_x normal_prob x 1 V.
-  exact: integral_ge0.
-apply: (@le_lt_trans _ _ (\int[normal_prob 0 1]_x (cst 1%R x)%:E)).
-  apply: ge0_le_integral => //.
-      exact: emeasurable_normal_prob.
-    apply/measurable_EFinP.
-    exact: measurable_cst.
-  move=> x _.
-  exact: probability_le1.
-by rewrite /= integral_cst// mul1e probability_setT ltry.
-Qed.
-
-Lemma int_normal_mu_noisy1 y V : measurable V ->
-  int_normal_noisy1 y V = int_mu_noisy1 y V.
-Proof.
-move=> mV; rewrite /int_normal_noisy1 integral_normal_prob//.
-  by under eq_integral do rewrite -muleA.
-apply/integrableP; split.
-  apply: measurable_funeM.
-  exact: emeasurable_normal_prob.
-apply: (@le_lt_trans _ _ (\int[normal_prob (y.1 / 2) (Num.sqrt 2)^-1]_x
-  ((NngNum (normr_ge0 (expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi))))%:num%:E
-   * (cst 1%R x)%:E))).
-apply: ge0_le_integral; [by []|by []| | | |].
-- apply: measurableT_comp => //.
-  apply: measurable_funeM.
-  exact: emeasurable_normal_prob.
-- by move=> x _; rewrite /= mule1.
-- rewrite /= mule1.
-  exact/measurable_EFinP.
-- move=> x _/=.
-  rewrite gee0_abs; last exact: mule_ge0.
-  by rewrite lee_pmul// probability_le1.
-- rewrite integralZr//; last exact: finite_measure_integrable_cst.
-  by rewrite integral_cst// mule1 probability_setT ltry.
-Qed.
-
-(* TODO: generalize and move outside *)
 Section conjugate_normal_property.
+Context {R : realType}.
+Local Notation mu := lebesgue_measure.
 
 Lemma conjugate_normal1 (m1 m2 s1 s2 : R) V : measurable V ->
   s1 != 0%R -> s2 != 0%R ->
@@ -461,8 +312,8 @@ Proof. by rewrite /normal_peak expr1n mul1r. Qed.
 (* Variable elimination and integration [Shan, Section 3.5, (9)],
  * also known as the reproductive property of normal distribution.
  *)
-Lemma normal_probD (m1 s1 m2 s2: R) V : s1 != 0%R -> s2 != 0%R ->
-measurable V ->
+Lemma normal_probD (m1 s1 m2 s2 : R) V : s1 != 0%R -> s2 != 0%R ->
+  measurable V ->
   \int[normal_prob m1 s1]_x normal_prob (m2 + x) s2 V =
   normal_prob (m1 + m2) (Num.sqrt (s1 ^+ 2 + s2 ^+ 2)) V.
 Proof.
@@ -490,10 +341,10 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E *
     rewrite !(sqrtrM 2) ?(@mulr_ge0 _ _ pi) ?sqr_ge0 ?pi_ge0//.
     rewrite !(sqrtrM pi) ?sqr_ge0//.
     rewrite ![in LHS]invfM.
-    rewrite mulrACA -(@sqrtrV _ 2)// -(expr2 (_ _^-1)).
+    rewrite mulrACA -(@sqrtrV _ 2)// -(expr2 (_ _^-1)%R).
     rewrite (@sqr_sqrtr _ 2^-1) ?invr_ge0//.
     rewrite mulrACA -(@sqrtrV _ pi) ?pi_ge0//.
-    rewrite -(expr2 (_ _^-1)) (@sqr_sqrtr _ pi^-1) ?invr_ge0// ?pi_ge0//.
+    rewrite -(expr2 (_ _^-1)%R) (@sqr_sqrtr _ pi^-1) ?invr_ge0// ?pi_ge0//.
     rewrite -!invfM; congr GRing.inv.
     by rewrite -[in RHS]mulr_natr (mulrC _ (Num.sqrt _)).
   apply: eq_integral.
@@ -508,18 +359,16 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E *
 
 set DS12 := S1 + S2.
 set MS12 := (S1 * S2)%R.
-set C := (((y * s1 ^+ 2)%R + (m1 * s2 ^+ 2)%R)%E - m2 * s1 ^+ 2) / DS12.
+set C := ((((y * s1 ^+ 2)%R + (m1 * s2 ^+ 2)%R)%E - m2 * s1 ^+ 2) / DS12)%R.
 
 under eq_integral do rewrite expRD EFinM.
-rewrite ge0_integralZr//=; last 3 first.
-      apply/measurable_EFinP.
-      apply: measurableT_comp => //.
-      apply: measurable_funM => //.
-      apply: measurableT_comp => //.
-      apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => t ^+ 2)%R) => //.
-      exact: measurable_funD.
-    by move=> z _; rewrite lee_fin ?expR_ge0.
-  by rewrite lee_fin expR_ge0.
+rewrite ge0_integralZr//=; last first.
+ apply/measurable_EFinP.
+ apply: measurableT_comp => //.
+ apply: measurable_funM => //.
+ apply: measurableT_comp => //.
+ apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => t ^+ 2)%R) => //.
+ exact: measurable_funD.
 rewrite /normal_peak /normal_fun.
 rewrite [in RHS]EFinM.
 rewrite [in RHS]sqr_sqrtr//; last first.
@@ -572,97 +421,142 @@ rewrite sqrtrM; last by rewrite addr_ge0 ?sqr_ge0.
 by rewrite mulrC.
 Qed.
 
-(*
-Lemma conjugate_normal (m1 m2 : R) V : measurable V ->
-  \int[normal_prob m1 (Num.sqrt 2)^-1]_x normal_prob (m2 + x) 1 V =
-  normal_prob (m1 + m2) (Num.sqrt (3 / 2)) V.
-Proof.
-move=> mV.
-rewrite conjugate_normal1//; apply: eq_integral => x1 _.
-clear V mV.
-rewrite conjugate_normal2//.
-rewrite normal_pdfE// /normal_pdf0.
-transitivity ((2 * pi * (Num.sqrt 2)^-1 * 1)^-1%:E *
-  \int[mu]_x0 (expR
-  (- (((Num.sqrt 2)^-1 ^+ 2 + 1 ^+ 2)%R /
-         (((Num.sqrt 2)^-1 ^+ 2 * 1 ^+ 2) *+ 2))%R *
-     (x0 - (x1 * (Num.sqrt 2)^-1 ^+ 2 + m1 * 1 ^+ 2 - m2 * (Num.sqrt 2)^-1 ^+ 2)
-         / ((Num.sqrt 2)^-1 ^+ 2 + 1 ^+ 2)%R ) ^+ 2 -
-       (x1 - (m1 + m2)) ^+ 2 / ((Num.sqrt (3 / 2) ^+ 2) *+ 2)))%:E).
-  congr *%E.
-    rewrite normal_peak1.
-    rewrite /normal_peak.
-    congr EFin.
-    rewrite exprVn sqr_sqrtr//.
-    rewrite -mulr_natl mulrA divff// mul1r.
-    rewrite -(mulr_natl pi) sqrtrM// invfM.
-    rewrite invfM divr1.
-    rewrite -[LHS]mulrA.
-    rewrite -[in RHS]mulrA [in RHS]mulrC.
-    rewrite -(invfM (Num.sqrt pi)) -expr2.
-    rewrite sqr_sqrtr// ?pi_ge0//.
-    rewrite -{3}(@sqr_sqrtr _ 2%R)// expr2.
-    rewrite 2!invfM invrK.
-    by rewrite -mulf_div divff// mulr1 mulrC.
-  apply: eq_integral.
-  move=> z _.
-  rewrite -expRD.
-  congr EFin.
-  congr expR.
-  rewrite (_ : (Num.sqrt (3 / 2) ^+ 2) = 3 / 2)%R; last by rewrite sqr_sqrtr.
-  rewrite (_ : (Num.sqrt 2)^-1 ^+ 2 = 1 / 2)%R; last first.
-    by rewrite exprVn sqr_sqrtr// div1r.
-  by field.
-
-(* gauss integral *)
-under eq_integral do rewrite expRD EFinM.
-rewrite ge0_integralZr//=; last first.
-  apply/measurable_EFinP.
-  apply: measurableT_comp => //.
-  apply: measurable_funM => //.
-  apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => t ^+ 2)%R) => //.
-  exact: measurable_funD.
-rewrite /=.
-rewrite /normal_peak /normal_fun.
-rewrite [in RHS]sqr_sqrtr//.
-rewrite -[in RHS]mulr_natr [in RHS]mulrAC divfK//.
-rewrite mulNr EFinM muleA.
-congr *%E; last first.
-  by rewrite sqr_sqrtr//.
-rewrite [X in _ * X = _](_ : _ = (Num.sqrt ((1 / 3) * pi *+ 2))%:E *
-   \int[mu]_z (normal_pdf ((x1 + 2 * m1 - m2) / 3) (Num.sqrt (1 / 3)) z)%:E); last first.
-  rewrite -ge0_integralZl//=; last 2 first.
-    by apply/measurable_EFinP; exact: measurable_normal_pdf.
-    by move=> /= z _; rewrite lee_fin normal_pdf_ge0.
-  apply: eq_integral => /= z _.
-  rewrite /normal_pdf gt_eqF// /normal_pdf0 /normal_peak /normal_fun.
-  rewrite (@sqr_sqrtr _ (1 / 3))// -EFinM; congr EFin.
-  rewrite [RHS]mulrA -[LHS]mul1r; congr (_ * expR _)%R.
-    by rewrite divff// gt_eqF// sqrtr_gt0 pmulrn_rgt0// mulr_gt0// pi_gt0.
-  rewrite -(mulr_natl (1 / 3)) mul1r.
-  rewrite sqr_sqrtr//.
-  by rewrite !mulNr (mulrC (3 / 2)%R) invfM invrK (mulrC 2^-1%R).
-rewrite integral_normal_pdf.
-rewrite mule1 -EFinM mul1r; congr EFin.
-rewrite -(mulr_natr (_ * pi)) sqrtrM ?mulr_ge0 ?pi_ge0//.
-rewrite invfM mulrCA -mulrA mulVf ?mulr1 ?gt_eqF//.
-rewrite !sqrtrM// invfM sqrtrV// -mulrA; congr *%R.
-rewrite -[X in (_ / X)%R]sqr_sqrtr ?pi_ge0//.
-by rewrite expr2 invfM mulrA divff ?div1r// gt_eqF// sqrtr_gt0 pi_gt0.
-Qed.
-*)
-
 End conjugate_normal_property.
 
-Lemma int_normal_mu_noisy2 y V : measurable V ->
-  int_normal_noisy2 y V = int_mu_noisy2 y V.
+Section noisy_programs.
+Local Open Scope lang_scope.
+Context {R : realType}.
+Local Notation mu := lebesgue_measure.
+
+Definition exp_normal1 {g} (e : exp D g Real) :=
+  [Normal e {1%R} {oner_neq0 R}].
+
+(* NB: exp_powR level setting is mistaken? *)
+(*     ((_ `^ _) * _) cannot write as (_ `^ _ * _) *)
+Definition noisyA' : @exp R P [:: ("y0", Real)] Real :=
+  [let "x" := Sample {exp_normal1 [{0}:R]} in
+   let "_" := Score ({expR 1} `^
+                       ({0}:R - (#{"y0"} - #{"x"}) ^+ {2%R} * {2^-1}:R))
+                     * {(Num.sqrt (2 * pi))^-1}:R in
+   let "z" := Sample {exp_normal1 [#{"x"}]} in
+   return #{"z"}].
+
+Definition noisyA : @exp R _ [:: ("y0", Real)] _ := [Normalize {noisyA'}].
+
+(* other programs from Sect. 2.3 of [Shan, POPL 2018],
+   nothing proved about them yet, just for the sake of completeness *)
+Definition guard_real {g} str (r : R) :
+ @exp R P [:: (str, _) ; g] _ :=
+  [if #{str} ==R {r}:R then return TT else Score {0}:R].
+
+Definition helloWrong (y0 : R) : @exp R _ [::] _ :=
+ [Normalize
+  let "x" := Sample {exp_normal1 (exp_real 0)} in
+  let "y" := Sample {exp_normal1 [#{"x"}]} in
+  let "_" := {guard_real "y" y0} in
+  let "z" := Sample {exp_normal1 [#{"x"}]} in
+  return #{"z"}].
+
+Definition helloJoint : @exp R _ [::] _ :=
+ [Normalize
+  let "x" := Sample {exp_normal1 (exp_real 0)} in
+  let "y" := Sample {exp_normal1 [#{"x"}]} in
+  let "z" := Sample {exp_normal1 [#{"x"}]} in
+ return (#{"y"}, #{"z"})].
+
+End noisy_programs.
+
+(* The following section contains the mathematical facts that are used
+   to verify the noisy program. They are proved beforehand as an attempt
+   to optimize the time spent by the Qed command of Rocq. *)
+Section noisy_subproofs.
+Local Open Scope lang_scope.
+Context {R : realType}.
+Local Notation mu := lebesgue_measure.
+
+Local Definition noisyA_semantics_normal
+    (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
+  \int[normal_prob 0 1]_x (fun z =>
+    `|expR (- ((y.1 - z) ^+ 2%R / 2)) / Num.sqrt (2 * pi)|%:E *
+     normal_prob z 1 V) x.
+
+Lemma noisyA_semantics_normalE y V : measurable V ->
+  noisyA_semantics_normal y V =
+  \int[mu]_x
+     (`|expR (- ((y.1 - x) ^+ 2%R / 2)) / Num.sqrt (2 * pi)|%:E *
+      normal_prob x 1 V *
+      (normal_pdf 0 1 x)%:E).
+Proof.
+move=> mV; rewrite /noisyA_semantics_normal.
+rewrite integral_normal_prob//.
+apply: integrableMr => //.
+    apply: (@measurableT_comp _ _ _ _ _ _ (@normr _ R^o)) => //.
+    apply: measurable_funM => //.
+    apply: measurableT_comp => //.
+    apply: measurableT_comp => //.
+    apply: measurable_funM => //.
+    apply: (@measurableT_comp _ _ _ _ _ _ (fun t : R => (t ^+ 2%R)%R)) => //.
+    exact: measurable_funB.
+  exists (Num.sqrt (2 * pi))^-1%R; split; first exact: num_real.
+  move=> x x_gt.
+  move=> p _.
+  rewrite /= normr_id ger0_norm; last by rewrite mulr_ge0// expR_ge0.
+  apply/ltW; apply: le_lt_trans x_gt.
+  rewrite -[leRHS]mul1r ler_pM ?expR_ge0//.
+  by rewrite -expR0 ler_expR oppr_le0 mulr_ge0// ?sqr_ge0// expR0 invr_ge0.
+apply/integrableP; split; first exact: emeasurable_normal_prob.
+apply/abse_integralP => //; first  exact: emeasurable_normal_prob.
+rewrite gee0_abs//; last exact: integral_ge0.
+apply: (@le_lt_trans _ _ (\int[normal_prob 0 1]_x (cst 1%R x)%:E)).
+  apply: ge0_le_integral => //; first exact: emeasurable_normal_prob.
+    by apply/measurable_EFinP; exact: measurable_cst.
+  by move=> x _; exact: probability_le1.
+by rewrite /= integral_cst// mul1e probability_setT ltry.
+Qed.
+
+Local Definition noisyB_semantics_normal
+    (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) :=
+  \int[normal_prob (y.1 / 2) (Num.sqrt 2)^-1]_x
+    ((NngNum (normr_ge0 (expR (- (y.1 ^+ 2%R / 4)) /
+                         Num.sqrt (4 * pi))))%:num%:E *
+      normal_prob x 1 V)%E.
+
+Lemma noisyB_semantics_normalE y V : measurable V ->
+  noisyB_semantics_normal y V =
+  \int[mu]_x
+     (`|expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi)|%:E *
+      (normal_prob x 1 V * (normal_pdf (y.1 / 2) (Num.sqrt 2)^-1 x)%:E)).
+Proof.
+move=> mV; rewrite /noisyB_semantics_normal integral_normal_prob//.
+  by under eq_integral do rewrite -muleA.
+apply/integrableP; split.
+  apply: measurable_funeM.
+  exact: emeasurable_normal_prob.
+apply: (@le_lt_trans _ _ (\int[normal_prob (y.1 / 2) (Num.sqrt 2)^-1]_x
+  ((NngNum (normr_ge0 (expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi))))%:num%:E
+   * (cst 1%R x)%:E))).
+apply: ge0_le_integral; [by []|by []| | |].
+- apply: measurableT_comp => //.
+  apply: measurable_funeM.
+  exact: emeasurable_normal_prob.
+- rewrite /= mule1.
+  exact/measurable_EFinP.
+- move=> x _/=.
+  rewrite gee0_abs; last exact: mule_ge0.
+  by rewrite lee_pmul// probability_le1.
+- rewrite integralZr//; last exact: finite_measure_integrable_cst.
+  by rewrite integral_cst// mule1 probability_setT ltry.
+Qed.
+
+Lemma noisyC_semanticsE (y : R) V : measurable V ->
+  \int[normal_prob y (Num.sqrt 2)^-1]_x normal_prob x 1 V =
+  normal_prob y (Num.sqrt (3 / 2)) V.
 Proof.
 move=> mV.
-rewrite /int_normal_noisy2.
-have := (@normal_probD (y.1 / 2) (Num.sqrt 2)^-1 0 1 _ _ _ mV).
+have := @normal_probD R (y ) (Num.sqrt 2)^-1 0 1 _ _ _ mV.
 under eq_integral do rewrite add0r.
 rewrite addr0.
-rewrite (_: ((Num.sqrt 2)^-1 ^+ 2 + 1 ^+ 2 = 3 / 2)%R); last first.
+rewrite (_ : ((Num.sqrt 2)^-1 ^+ 2 + 1 ^+ 2 = 3 / 2)%R)//; last first.
   rewrite exprVn sqr_sqrtr// expr1n -[in LHS]div1r -{3}(@divff _ 1%R)//.
   rewrite addf_div// 2!mulr1 mul1r (_:1%R = 1%:R)// -natrD.
 exact.
@@ -679,136 +573,38 @@ Local Notation mu := lebesgue_measure.
 (* definition of intermediate programs *)
 Definition neq0Vsqrt2 : ((Num.sqrt 2)^-1 != 0 :> R)%R.
 Proof. exact: lt0r_neq0. Qed.
-Definition exp_normal_Vsqrt2 {g} := @exp_normal R g _ neq0Vsqrt2.
 
-Definition noisy1' : @exp R _ [:: ("y0", Real)] Real :=
+Definition exp_normal_Vsqrt2 {g} (e : exp D g Real) :=
+  [Normal e {(Num.sqrt 2)^-1%R} {neq0Vsqrt2}].
+
+Definition tailB : @exp R _ [:: ("_", Unit); ("y0", Real)] Real :=
+  [let "x" := Sample {exp_normal_Vsqrt2 [#{"y0"} * {2^-1}:R]} in
+   let "z" := Sample {exp_normal1 [#{"x"}]} in
+   return #{"z"}].
+Definition noisyB' : @exp R _ [:: ("y0", Real)] Real :=
  [let "_" := Score ({expR 1} `^ ({0}:R - #{"y0"} ^+ {2%R} * {4^-1}:R)) *
                    {(Num.sqrt (4 * pi))^-1}:R in
-  let "x" := Sample {exp_normal_Vsqrt2 [#{"y0"} * {2^-1}:R ]} in
-  let "z" := Sample {exp_normal1 [#{"x"}]} in
- return #{"z"}].
-
-Definition noisy1 : @exp R _ [:: ("y0", Real)] _ := [Normalize {noisy1'}].
+  {tailB}].
+Definition noisyB : @exp R _ [:: ("y0", Real)] _ := [Normalize {noisyB'}].
 
 Definition neq0sqrt32 : (Num.sqrt (3 / 2) != 0 :> R)%R.
 Proof. exact: lt0r_neq0. Qed.
-Definition exp_normal_sqrt32 {g} := @exp_normal R g _ neq0sqrt32.
+Definition exp_normal_sqrt32 {g} (e : exp D g Real) :=
+  [Normal e {Num.sqrt (3 / 2)} {neq0sqrt32}].
 
-Definition noisy2' : @exp R _ [:: ("y0", Real)] _ :=
+Definition tailC : @exp R _ [:: ("_", Unit); ("y0", Real)] Real :=
+ [Sample {exp_normal_sqrt32 [#{"y0"} * {2^-1}:R]}].
+Definition noisyC' : @exp R _ [:: ("y0", Real)] _ :=
  [let "_" := Score ({expR 1} `^ ({0}:R - #{"y0"} ^+ {2%R} * {4^-1}:R)) *
                    {(Num.sqrt (4 * pi))^-1}:R in
-  Sample {exp_normal_sqrt32 [#{"y0"} * {2^-1}:R]}].
+  {tailC}].
+Definition noisyC : @exp R _ [:: ("y0", Real)] _ := [Normalize {noisyC'}].
 
-Definition noisy2 : @exp R _ [:: ("y0", Real)] _ := [Normalize {noisy2'}].
-
-(* from (7) to (9) in [Shan, POPL 2018] *)
-Lemma execP_noisy'12 y V : measurable V ->
- @execP R [:: ("_", Unit); ("y0", Real)] _
-   [let "x" := Sample {exp_normal_Vsqrt2 [#{"y0"} * {2^-1}:R ]} in
-    let "z" := Sample {exp_normal1 [#{"x"}]} in
-    return #{"z"}] y V =
- @execP R [:: ("_", Unit); ("y0", Real)] _
- [Sample {exp_normal_sqrt32 [#{"y0"} * {2^-1}:R]}] y V.
+Lemma noisyAB' y V : measurable V -> execP noisyA' y V = execP noisyB' y V.
 Proof.
 move=> mV.
-(* execute syntax *)
-rewrite !execP_letin.
-rewrite !execP_sample !execD_normal/=.
-rewrite (@execD_bin _ _ binop_mult) execD_real/=.
-rewrite execP_return.
-rewrite !exp_var'E (execD_var_erefl "y0") (execD_var_erefl "x") (execD_var_erefl "z")/=.
-rewrite !letin'E/=.
-under eq_integral do rewrite letin'E/=.
-rewrite /=.
-(* prove semantics *)
-under eq_integral do rewrite integral_normal_prob_dirac//=.
-exact: (int_normal_mu_noisy2 _ mV).
-Qed.
-
-(* semantics of noisy0 (turned into a local definition as an attempt to optimize Qed) *)
-Local Definition executed_noisy0' :=
-  (fun (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) =>
-   letin'
-    (sample (fun=> normal_prob 0 1)
-       (measurableT_comp (measurable_normal_prob2 GRing.oner_neq0) (kr 0)))
-    (letin'
-       (score
-          (measurable_funM
-             (measurableT_comp (measurable_powRr (expR 1))
-                (measurable_funB (kr 0)
-                   (measurable_funM
-                      (measurable_funX 2%R
-                         (measurable_funB (measurable_acc_typ [:: Real; Real] 1)
-                            (measurable_acc_typ [:: Real; Real] 0)))
-                      (kr 2^-1)))) (kr (Num.sqrt (2 * pi))^-1)))
-       (letin'
-          (sample
-             (fun
-                x : unit *
-                    (g_sigma_algebraType R.-ocitv.-measurable *
-                     (g_sigma_algebraType R.-ocitv.-measurable * unit)) =>
-              normal_prob x.2.1 1)
-             (measurableT_comp (measurable_normal_prob2 GRing.oner_neq0)
-                (measurable_acc_typ [:: Unit; Real; Real] 1)))
-        (ret (measurable_acc_typ [:: Real; Unit; Real; Real] 0)))) y V : \bar R).
-
-(* semantics of noisy1 (turned into a local definition as a attempt to optimized Qed) *)
-Local Definition executed_noisy1' :=
- (fun (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) =>
-  letin'
-    (score
-       (measurable_funM
-          (measurableT_comp (measurable_powRr (expR 1))
-             (measurable_funB (kr 0)
-                (measurable_funM
-                   (measurable_funX 2%R (measurable_acc_typ [:: Real] 0)) (kr 4^-1))))
-          (kr (Num.sqrt (4 * pi))^-1)))
-    (letin'
-       (sample
-          (fun x : unit * (g_sigma_algebraType R.-ocitv.-measurable * unit) =>
-           normal_prob (x.2.1 / 2) (Num.sqrt 2)^-1)
-          (measurableT_comp (measurable_normal_prob2 neq0Vsqrt2)
-             (measurable_funM (measurable_acc_typ [:: Unit; Real] 1) (kr 2^-1))))
-       (letin'
-          (sample
-             (fun
-                x : g_sigma_algebraType R.-ocitv.-measurable *
-                    (unit * (g_sigma_algebraType R.-ocitv.-measurable * unit)) =>
-              normal_prob x.1 1)
-             (measurableT_comp (measurable_normal_prob2 GRing.oner_neq0)
-                (measurable_acc_typ [:: Real; Unit; Real] 0)))
-          (ret (measurable_acc_typ [:: Real; Real; Unit; Real] 0)))) y V : \bar R).
-
-(*
-Local Definition executed_noisy1'_alter :=
- (fun (y : (@mctx R [:: ("y0", Real)])) (V : set (@mtyp R Real)) =>
-  letin'
-    (score
-       (measurable_funM
-          (measurableT_comp (measurable_powRr (expR 1))
-             (measurable_funB (kr 0)
-                (measurable_funM
-                   (measurable_funX 2%R (measurable_acc_typ [:: Real] 0))
-                   (kr 4^-1)))) (kr (Num.sqrt (4 * pi))^-1)))
-    (letin'
-       (sample
-          (fun x : unit * (g_sigma_algebraType R.-ocitv.-measurable * unit) =>
-           probability_normal_prob__canonical__measure_Probability 
-             (x.2.1 / 2) (Num.sqrt 2)^-1)
-          (measurableT_comp (measurable_normal_prob2 neq0Vsqrt2)
-             (measurable_funM (measurable_acc_typ [:: Unit; Real] 1) (kr 2^-1))))
-       (letin'
-          (sample
-             (fun=> probability_normal_prob__canonical__measure_Probability 0 1)
-             (measurableT_comp (measurable_normal_prob2 neq01) (kr 0)))
-          (ret
-             (measurable_funD (measurable_acc_typ [:: Real; Real; Unit; Real] 1)
-                (measurable_acc_typ [:: Real; Real; Unit; Real] 0))))) y V : \bar R).
-*)
-
-Lemma execP_noisy0'E y V : execP noisy0' y V = executed_noisy0' y V.
-Proof.
-rewrite !execP_letin.
+(* reduce the lhs *)
+rewrite 3![in LHS]execP_letin.
 rewrite execP_sample.
 rewrite execD_normal/=.
 rewrite execD_real/=.
@@ -822,48 +618,14 @@ rewrite execD_pow/=.
 rewrite (@execD_bin _ _ binop_minus)/=.
 rewrite exp_var'E/= (execD_var_erefl "y0")/=.
 rewrite exp_var'E/= (execD_var_erefl "x")/=.
-rewrite execD_real/=.
-rewrite execD_real/=.
-rewrite execP_sample.
+rewrite 2!execD_real/=.
+rewrite execP_sample/=.
 rewrite execD_normal/=.
 rewrite exp_var'E/= (execD_var_erefl "x")/=.
 rewrite execP_return/=.
 rewrite exp_var'E/= (execD_var_erefl "z")/=.
-done.
-Qed.
-
-Lemma executed_noisy0'_semantics y V : measurable V ->
-  executed_noisy0' y V = int_normal_noisy0 y V.
-Proof.
-move=> mV.
-rewrite /executed_noisy0'.
-rewrite [in LHS]letin'E/=.
-under [in LHS]eq_integral.
-  move=> x _.
-  rewrite letin'E/=.
-  under eq_integral.
-    move=> u _.
-    rewrite letin'E/=.
-    rewrite integral_normal_prob_dirac//.
-    over.
-  rewrite /=.
-  rewrite ge0_integral_mscale/=; first last.
-  - by move=> ? _.
-  - by [].
-  - exact: measurableT.
-  rewrite integral_dirac; first last.
-  - by [].
-  - exact: measurableT.
-  rewrite diracT mul1e.
-  rewrite sub0r.
-  rewrite -expRM mul1r.
-  over.
-by rewrite /=.
-Qed.
-
-Lemma execP_noisy1'E y V : execP noisy1' y V = executed_noisy1' y V.
-Proof.
-rewrite execP_letin.
+(* reduce the rhs *)
+rewrite [in RHS]execP_letin.
 rewrite execP_score.
 rewrite (@execD_bin _ _ binop_mult)/=.
 rewrite execD_pow_real/=.
@@ -886,50 +648,39 @@ rewrite execD_normal/=.
 rewrite exp_var'E/= (execD_var_erefl "x")/=.
 rewrite execP_return.
 rewrite exp_var'E/= (execD_var_erefl "z")/=.
-done.
-Qed.
-
-Lemma executed_noisy1'_semantics y V : measurable V ->
-  executed_noisy1' y V = int_normal_noisy1 y V.
-Proof.
-move=> mV; rewrite /executed_noisy1'.
-rewrite letin'E/=.
-under eq_integral.
-  move=> u _.
+(* semantics *)
+transitivity (noisyA_semantics_normal y V).
+  rewrite [in LHS]letin'E/=.
+  apply: eq_integral => x _.
+  rewrite letin'E/=.
+    under eq_integral.
+    move=> u _.
+    rewrite letin'E/= integral_normal_prob_dirac//.
+    over.
+  rewrite /=.
+  rewrite ge0_integral_mscale/=; [|by []..].
+  rewrite integral_dirac; [|by []..].
+  by rewrite diracT mul1e sub0r -expRM mul1r.
+transitivity (noisyB_semantics_normal y V); last first.
   rewrite letin'E/=.
   under eq_integral.
-    move=> x _.
+    move=> u _.
     rewrite letin'E/=.
-    rewrite integral_normal_prob_dirac//.
+    under eq_integral.
+      move=> x _.
+      rewrite letin'E/=.
+      rewrite integral_normal_prob_dirac//.
+      over.
     over.
-  over.
-rewrite ge0_integral_mscale//; first last.
-  move=> ? _.
-  exact: integral_ge0.
-rewrite integral_dirac//.
-rewrite diracT mul1e.
-rewrite sub0r -expRM mul1r.
-rewrite /=.
-rewrite -(@ge0_integralZl _ _ R (normal_prob _ _) _ measurableT _ _
-  (`|expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi)|%:E))//.
-exact: emeasurable_normal_prob.
-Qed.
-
-Lemma noisy'01 y V : measurable V -> execP noisy0' y V = execP noisy1' y V.
-Proof.
-move=> mV.
-(* lhs *)
-rewrite execP_noisy0'E.
-rewrite (executed_noisy0'_semantics _ mV).
-(* rhs *)
-rewrite execP_noisy1'E.
-rewrite (executed_noisy1'_semantics _ mV).
-(* semantics *)
-rewrite (int_normal_mu_noisy0 _ mV).
-rewrite (int_normal_mu_noisy1 _ mV).
-(* eq_integral *)
-apply: eq_integral.
-move=> x _.
+  rewrite /= ge0_integral_mscale//; first last.
+    by move=> ? _; exact: integral_ge0.
+  rewrite integral_dirac// diracT mul1e sub0r -expRM mul1r/=.
+  rewrite -(@ge0_integralZl _ _ R (normal_prob _ _) _ measurableT _ _
+    (`|expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi)|%:E))//.
+  exact: emeasurable_normal_prob.
+rewrite noisyA_semantics_normalE//.
+rewrite noisyB_semantics_normalE//.
+apply: eq_integral => /= x _.
 rewrite [in LHS]muleAC.
 rewrite [in RHS](muleC (normal_prob x 1 V)) muleA.
 congr (fun t => t * normal_prob x 1 V)%E.
@@ -961,36 +712,63 @@ congr Num.sqrt.
 lra.
 Qed.
 
-Lemma noisy'12 y V : measurable V -> execP noisy1' y V = execP noisy2' y V.
+(* from (7) to (9) in [Shan, POPL 2018] *)
+Lemma tailBC y V : measurable V ->
+  @execP R [:: ("_", Unit); ("y0", Real)] _ tailB y V =
+  @execP R [:: ("_", Unit); ("y0", Real)] _ tailC y V.
 Proof.
 move=> mV.
-rewrite /noisy1' /noisy2'.
-rewrite execP_letin/= [in RHS]execP_letin/=.
-rewrite letin'E [RHS]letin'E.
-by under eq_integral do rewrite execP_noisy'12//.
+(* execute lhs *)
+rewrite 2![in LHS]execP_letin.
+rewrite 2![in LHS]execP_sample.
+rewrite 2!execD_normal/=.
+rewrite (@execD_bin _ _ binop_mult) execD_real/=.
+rewrite execP_return.
+rewrite exp_var'E (execD_var_erefl "y0")/=.
+rewrite exp_var'E (execD_var_erefl "x")/=.
+rewrite exp_var'E (execD_var_erefl "z")/=.
+rewrite ![in LHS]letin'E/=.
+under eq_integral do rewrite letin'E/=.
+(* execute rhs *)
+rewrite [in RHS]execP_sample/=.
+rewrite execD_normal/=.
+rewrite (@execD_bin _ _ binop_mult) execD_real/=.
+rewrite exp_var'E (execD_var_erefl "y0")/=.
+(* prove semantics *)
+under eq_integral do rewrite integral_normal_prob_dirac//=.
+by rewrite noisyC_semanticsE.
 Qed.
 
-Lemma noisy'02 y V : measurable V -> execP noisy0' y V = execP noisy2' y V.
-Proof. by move=> mV; rewrite noisy'01// noisy'12. Qed.
+Lemma noisyBC' y V : measurable V -> execP noisyB' y V = execP noisyC' y V.
+Proof.
+move=> mV.
+rewrite /noisyB' /noisyC'.
+rewrite execP_letin/= [in RHS]execP_letin/=.
+rewrite letin'E [RHS]letin'E.
+by under eq_integral do rewrite tailBC//.
+Qed.
+
+Lemma noisyAC' y V : measurable V -> execP noisyA' y V = execP noisyC' y V.
+Proof. by move=> mV; rewrite noisyAB'// noisyBC'. Qed.
 
 End noisy_verification.
 
-(* Trying to shows why rewriting noisy1 to noisy2 is reproductive property *)
+(* Trying to show why rewriting noisyB to noisyC is reproductive property *)
 (*
-Section rewrite noisy1'_to_variable_addition.
+Section rewrite noisyB'_to_variable_addition.
 
-Definition noisy1'_alter : @exp R _ [:: ("y0", Real)] Real :=
+Definition noisyB'_alter : @exp R _ [:: ("y0", Real)] Real :=
  [let "_" := Score ({expR 1} `^ ({0}:R - #{"y0"} ^+ {2} * {4^-1}:R)) *
                    {(Num.sqrt (4 * pi))^-1}:R in
   let "x" := Sample {exp_normal_Vsqrt2 [#{"y0"} * {2^-1}:R]} in
   let "x1" := Sample {exp_normal1 [{0}:R]} in
  return #{"x"} + #{"x1"}].
 
-Definition noisy1_alter : @exp R _ [:: ("y0", Real)] _ :=
- [Normalize {noisy1'_alter}].
+Definition noisyB_alter : @exp R _ [:: ("y0", Real)] _ :=
+ [Normalize {noisyB'_alter}].
 
-Lemma execP_noisy1'_alterE y V :
-@execP R [:: ("y0", Real)] Real noisy1'_alter y V = executed_noisy1'_alter y V.
+Lemma execP_noisyB'_alterE y V :
+@execP R [:: ("y0", Real)] Real noisyB'_alter y V = executed_noisyB'_alter y V.
 Proof.
 rewrite 3!execP_letin.
 rewrite execP_return/=.
@@ -1011,13 +789,13 @@ rewrite (@execD_bin _ _ binop_mult)/=.
 rewrite execD_pow/=.
 rewrite 2!execD_real/=.
 rewrite 2!(exp_var'E "y0") 2!(execD_var_erefl "y0")/=.
-rewrite /executed_noisy1'_alter.
+rewrite /executed_noisyB'_alter.
 rewrite /=.
 Abort.
 
-Lemma noisy1_alterE y V : measurable V ->
-  @execP R [:: ("y0", Real)] Real noisy1' y V =
-  @execP R [:: ("y0", Real)] Real noisy1'_alter y V.
+Lemma noisyB_alterE y V : measurable V ->
+  @execP R [:: ("y0", Real)] Real noisyB' y V =
+  @execP R [:: ("y0", Real)] Real noisyB'_alter y V.
 Proof.
 move=> mV.
 rewrite 3![in RHS]execP_letin.
@@ -1063,10 +841,9 @@ rewrite -ge0_integralZl//; last first.
 rewrite sub0r.
 rewrite -expRM mul1r.
 
-rewrite execP_noisy1'E.
-by rewrite executed_noisy1'_semantics.
+rewrite execP_noisyB'E.
+by rewrite executed_noisyB'_semantics.
 Abort.
 
-End rewrite noisy1'_to_variable_addition.
+End rewrite noisyB'_to_variable_addition.
 *)
-
