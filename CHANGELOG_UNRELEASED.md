@@ -120,7 +120,7 @@
   + coercion `LfunType_of_LType`
   + definition `Lspace` with notation `mu.-Lspace p`
   + lemma `lfun_integrable`, `lfun1_integrable`, `lfun2_integrable_sqr`, `lfun2M2_1`
-  + lemma `lfunp_scale`, `lfunN`, `lfunD`, `lfunB`, `lfun_cst`, `lfun_sum`
+  + lemma `lfunp_scale`, `lfun0`, `lfun_cst`, `lfun_sum`
   + definitions `finlfun`, `lfun`, `lfun_key`
   + canonical `lfun_keyed`
   + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
@@ -133,6 +133,7 @@
   + lemma `Lspace_inclusion`
     `LnormN`, `Lnorm_natmul`, `fine_Lnorm_eq0`
   + lemma `lfun_inclusion`, `lfun_inclusion12`
+  + lemma `lfun_oppr_closed`
 
 - in `lebesgue_integral.v`:
   + lemma `mfunMn`
