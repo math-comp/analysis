@@ -1578,7 +1578,7 @@ End letinC.
 
 (* examples *)
 
-Lemma letin_sample_bernoulli d d' (T : measurableType d)
+Lemma letin_sample_bernoulli_prob d d' (T : measurableType d)
     (T' : measurableType d') (R : realType) (r : R)
     (u : R.-sfker [the measurableType _ of (T * bool)%type] ~> T') x y :
   (0 <= r <= 1)%R ->
@@ -1598,7 +1598,7 @@ Definition sample_and_return : R.-sfker T ~> _ :=
 Lemma sample_and_returnE t U : sample_and_return t U =
   (2 / 7%:R)%:E * \d_true U + (5%:R / 7%:R)%:E * \d_false U.
 Proof.
-rewrite /sample_and_return letin_sample_bernoulli; last lra.
+rewrite /sample_and_return letin_sample_bernoulli_prob; last lra.
 by rewrite !retE onem27.
 Qed.
 
@@ -1619,7 +1619,7 @@ Definition sample_and_branch : R.-sfker T ~> _ :=
 Lemma sample_and_branchE t U : sample_and_branch t U =
   (2 / 7)%:E * \d_(3%R : R) U + (5 / 7)%:E * \d_(10%R : R) U.
 Proof.
-rewrite /sample_and_branch letin_sample_bernoulli/=; last lra.
+rewrite /sample_and_branch letin_sample_bernoulli_prob/=; last lra.
 by rewrite !iteE/= onem27.
 Qed.
 
@@ -1638,9 +1638,9 @@ Lemma bernoulli_andE t U :
   bernoulli_and t U = sample_cst (bernoulli_prob (1 / 4)) t U.
 Proof.
 rewrite /bernoulli_and.
-rewrite letin_sample_bernoulli; last lra.
-rewrite (letin_sample_bernoulli (r := 1 / 2)); last lra.
-rewrite (letin_sample_bernoulli (r := 1 / 2)); last lra.
+rewrite letin_sample_bernoulli_prob; last lra.
+rewrite (letin_sample_bernoulli_prob (r := 1 / 2)); last lra.
+rewrite (letin_sample_bernoulli_prob (r := 1 / 2)); last lra.
 rewrite muleDr//= -muleDl//.
 rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
 have -> : (1 / 2 * (1 / 2) = 1 / 4%:R :> R)%R by rewrite mulf_div mulr1// -natrM.
@@ -1685,7 +1685,7 @@ Let kstaton_bus_poissonE t U : kstaton_bus_poisson t U =
   (5 / 7)%:E * (poisson4 10)%:E * \d_false U.
 Proof.
 rewrite /kstaton_bus_poisson /kstaton_bus.
-rewrite letin_sample_bernoulli; last lra.
+rewrite letin_sample_bernoulli_prob; last lra.
 rewrite -!muleA; congr (_ * _ + _ * _).
 - rewrite letin_kret//.
   rewrite letin_iteT//.
@@ -1735,7 +1735,7 @@ Let kstaton_bus_exponentialE t U : kstaton_bus_exponential t U =
   (5 / 7)%:E * (exp1560 10)%:E * \d_false U.
 Proof.
 rewrite /kstaton_bus.
-rewrite letin_sample_bernoulli; last lra.
+rewrite letin_sample_bernoulli_prob; last lra.
 rewrite -!muleA; congr (_ * _ + _ * _).
 - rewrite letin_kret//.
   rewrite letin_iteT//.
@@ -2083,12 +2083,12 @@ Qed.
 
 End letin'A.
 
-Lemma letin'_sample_bernoulli d d' (T : measurableType d)
+Lemma letin'_sample_bernoulli_prob d d' (T : measurableType d)
     (T' : measurableType d') (R : realType) (r : R) (r01 : (0 <= r <= 1)%R)
     (u : R.-sfker bool * T ~> T') x y :
   letin' (sample_cst (bernoulli_prob r)) u x y =
   r%:E * u (true, x) y + r.~%:E * u (false, x) y.
-Proof. by rewrite letin'_letin letin_sample_bernoulli. Qed.
+Proof. by rewrite letin'_letin letin_sample_bernoulli_prob. Qed.
 
 Section letin'_return.
 Context d d' d3 (X : measurableType d) (Y : measurableType d')
