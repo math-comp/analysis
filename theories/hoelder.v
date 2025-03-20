@@ -200,7 +200,7 @@ End lnorm.
 Section conjugate.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
-Hypothesis (p1 : (1 <= p)%E).
+Hypothesis p1 : (1 <= p)%E.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
@@ -819,6 +819,15 @@ case: p p1 f => //[r r1 f|? f].
   by rewrite normrZ EFinM.
 Qed.
 
+Lemma lfun_oppr_closed : oppr_closed lfun.
+Proof.
+move=> f /andP[mf /[!inE] lf].
+by rewrite rpredN/= mf/= inE/= /finite_norm oppr_Lnorm.
+Qed.
+
+HB.instance Definition _ := GRing.isOppClosed.Build _ lfun
+  lfun_oppr_closed.
+
 Lemma lfun_submod_closed : submod_closed lfun.
 Proof.
 split.
@@ -836,6 +845,7 @@ Qed.
 
 HB.instance Definition _ := GRing.isSubmodClosed.Build _ _ lfun
   lfun_submod_closed.
+
 HB.instance Definition _ := [SubChoice_isSubLmodule of LfunType mu p1 by <:].
 
 End lfun.
@@ -886,7 +896,6 @@ Qed.
 
 End Lspace_norm.
 
-
 Section Lspace.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
@@ -896,27 +905,21 @@ Arguments Lspace : clear implicits.
 
 Definition LType1 := LType mu (@lexx _ _ 1%E).
 
-Let le12 : (1 <= 2%:E :> \bar R)%E.
-Proof. by rewrite lee_fin (ler_nat _ 1 2). Qed.
-
-Definition LType2 := LType mu le12.
+Definition LType2 := LType mu (lee1n 2).
 
 Lemma lfun_integrable (f : {mfun T >-> R}) r :
-  1 <= r -> (f : T -> R) \in lfun mu r%:E -> mu.-integrable setT (fun x => (`|f x| `^ r)%:E).
+  1 <= r -> (f : T -> R) \in lfun mu r%:E ->
+  mu.-integrable setT (fun x => (`|f x| `^ r)%:E).
 Proof.
 rewrite inE => r0 /andP[_]; rewrite inE/= => lpf.
-have ? : measurable_fun [set: T] (fun x : T => (`|f x| `^ r)%:E).
+apply/integrableP; split => //.
   apply: measurableT_comp => //.
   apply: (measurableT_comp (measurable_powR _)) => //.
   exact: measurableT_comp.
-apply/integrableP; split => //.
-apply/abse_integralP => //.
-move: lpf.
-rewrite /finite_norm => /(poweR_lty r); rewrite powR_Lnorm// ?gt_eqF// ?(lt_le_trans ltr01)//.
-move=> ?.
-apply/abse_integralP => //.
-under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
-by [].
+move: lpf => /(poweR_lty r).
+rewrite powR_Lnorm// ?gt_eqF// ?(lt_le_trans ltr01)//.
+apply: le_lt_trans.
+by under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
 Qed.
 
 Lemma lfun1_integrable (f : {mfun T >-> R}) :
@@ -924,12 +927,10 @@ Lemma lfun1_integrable (f : {mfun T >-> R}) :
 Proof.
 move=> /lfun_integrable => /(_ (lexx _)).
 under eq_fun => x do rewrite powRr1//.
-move/integrableP => [? fley].
-apply/integrableP; split.
-  exact: measurableT_comp.
+move/integrableP => [mf fley].
+apply/integrableP; split; first exact: measurableT_comp.
 rewrite (le_lt_trans _ fley)//=.
-under [leRHS]eq_integral => x _ do rewrite normr_id.
-exact: lexx.
+by under [leRHS]eq_integral => x _ do rewrite normr_id.
 Qed.
 
 Lemma lfun2_integrable_sqr (f : {mfun T >-> R}) :
@@ -985,50 +986,26 @@ under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
 by [].
 Qed.
 
-Lemma lfunN (f : {mfun T >-> R}) r :
-  (f : T -> R) \in lfun mu r%:E -> (\- f : T -> R) \in lfun mu r%:E.
+Lemma lfun0 r : 1 <= r -> (cst 0 : T -> R) \in lfun mu r%:E.
 Proof.
-move=> lpf.
-rewrite inE; apply/andP; split; rewrite inE//= /finite_norm.
-rewrite unlock /Lnorm.
-under eq_integral => x _/= do rewrite normrN.
-move: lpf.
-rewrite inE; move/andP => [_]. rewrite inE/=/finite_norm unlock/Lnorm/=.
-exact.
-Qed.
-
-Lemma lfunD (f g : {mfun T >-> R}) r :
-    1 <= r -> (f : T -> R) \in lfun mu r%:E -> (g : T -> R) \in lfun mu r%:E ->
-  (f \+ g : T -> R) \in lfun mu r%:E.
-Proof.
-rewrite !inE => r1 /andP[_] +/andP[_]; rewrite !inE/= /finite_norm => lpf lpg.
-apply/andP; split; rewrite inE//= /finite_norm.
-apply: (le_lt_trans (minkowski mu _ _ r1)) => //.
-by rewrite lte_add_pinfty.
-Qed.
-
-Lemma lfunB (f g : {mfun T >-> R}) r :
-    1 <= r -> (f : T -> R) \in lfun mu r%:E -> (g : T -> R) \in lfun mu r%:E ->
-  (f \- g : T -> R) \in lfun mu r%:E.
-Proof.
-by move=> r1 lpf lpg; rewrite (_ : f \- g = f \+ (\- g))// lfunD//= lfunN.
+move=> r1; apply/andP; split.
+  by rewrite inE; exact: measurable_cst.
+by rewrite inE/= /finite_norm// Lnorm0.
 Qed.
 
 Lemma lfun_sum (F : seq {mfun T >-> R}) r :
     1 <= r -> (forall Fi, Fi \in F -> (Fi : T -> R) \in lfun mu r%:E) ->
   (\sum_(Fi <- F) Fi : T -> R) \in lfun mu r%:E.
 Proof.
-elim: F => //=[r1 _|F0 F ih r1 lpF].
-  rewrite big_nil inE/=; apply/andP; split; rewrite inE /finite_norm/=.
-    exact: measurable_cst.
-  by rewrite [X in Lnorm _ _ X](_ : _ = cst 0)%E ?Lnorm0 ?lee_fin.
-rewrite big_cons lfunD//; first by rewrite lpF ?mem_head.
+elim: F => //=[r1 _|F0 F ih r1 lpF]; first by rewrite big_nil lfun0.
+rewrite big_cons rpredD//; first by rewrite lpF ?mem_head.
 by rewrite ih// => Fi FiF; rewrite lpF ?in_cons ?FiF ?orbT.
 Qed.
 
 End Lspace.
+Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
 
-Section Lspace.
+Section Lspace_finite_measure.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {finite_measure set T -> \bar R}.
 
@@ -1041,8 +1018,7 @@ under eq_integral => x _ do rewrite ger0_norm ?powR_ge0//.
 by [].
 Qed.
 
-End Lspace.
-Notation "mu .-Lspace p" := (@Lspace _ _ _ mu p) : type_scope.
+End Lspace_finite_measure.
 
 Section lfun_inclusion.
 Context d (T : measurableType d) (R : realType).
@@ -1051,7 +1027,7 @@ Local Open Scope ereal_scope.
 
 Lemma lfun_inclusion (p q : \bar R) :
   forall (p1 : 1 <= p) (q1 : 1 <= q),
-    mu [set: T] < +oo -> p < q ->
+    mu [set: T] \is a fin_num -> p < q ->
     forall f : {mfun T >-> R},
       (f : T -> R) \in lfun mu q -> (f : T -> R) \in lfun mu p.
 Proof.
@@ -1076,7 +1052,7 @@ case=> //[p|]; case=> //[q|] p1 q1; last first.
   apply/andP; split; rewrite inE//= /finite_norm unlock /Lnorm.
   rewrite poweR_lty//; move: supf_lty => /ess_supr_bounded[M fM].
   rewrite (@le_lt_trans _ _ (\int[mu]_x (M `^ p)%:E)); [by []| |]; last first.
-    by rewrite integral_cst// lte_mul_pinfty// lee_fin powR_ge0.
+    by rewrite integral_cst// ltey_eq fin_numM.
   apply: ae_ge0_le_integral => //.
   - by move=> x _; rewrite lee_fin powR_ge0.
     apply/measurable_EFinP.
@@ -1120,18 +1096,13 @@ move=> h1 /lty_poweRy h2.
 apply: poweR_lty.
 apply: (le_lt_trans h1).
 rewrite muleC lte_mul_pinfty ?fin_numElt?poweR_ge0//.
-  by rewrite (lt_le_trans _ (poweR_ge0 _ _)) ?ltNyr// ?poweR_lty.
+  by rewrite (lt_le_trans _ (poweR_ge0 _ _))//= ltey_eq fin_num_poweR.
 rewrite poweR_lty// (lty_poweRy qinv0)//.
 by have:= ffin; rewrite /finite_norm unlock /Lnorm.
 Qed.
 
-Lemma lfun_inclusion12 (f : {mfun T >-> R}) :
-  mu [set: T] < +oo -> (f : T -> R) \in lfun mu (2%:E) -> (f : T -> R) \in lfun mu 1.
-Proof.
-move => muoo f2.
-have le12 : (1 <= 2%:E :> \bar R) by rewrite lee_fin (ler_nat _ 1 2).
-have lte12 : (1 < 2%:E :> \bar R) by rewrite lte_fin (ltr_nat _ 1 2).
-exact: (@lfun_inclusion 1 (2%:E) (lexx _) le12 _ lte12).
-Qed.
+Lemma lfun_inclusion12 (f : {mfun T >-> R}) : mu [set: T] \is a fin_num ->
+  (f : T -> R) \in lfun mu 2%:E -> (f : T -> R) \in lfun mu 1.
+Proof. by move=> ? ?; rewrite (@lfun_inclusion 1 (2%:E))// ?lee1n// lte1n. Qed.
 
 End lfun_inclusion.
