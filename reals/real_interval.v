@@ -294,7 +294,7 @@ rewrite in_itv/= xy/= natrD -natr1 natr_absz intr_norm -addrA nat1r addrA.
 apply: ltr_pwDr; first by rewrite ltr0n.
 rewrite -lterBDl (le_trans (le_ceil _)) //= le_eqVlt; apply/predU1P; left.
 apply/esym/normr_idP.
-rewrite ler0z -ceil_ge0 (lt_le_trans (@ltrN10 R))// subr_ge0.
+rewrite ler0z ceil_ge0 (lt_le_trans (@ltrN10 R))// subr_ge0.
 by case: b xy => //= /ltW.
 Qed.
 
@@ -343,7 +343,7 @@ Proof.
 rewrite -subTset => x _ /=; exists `|(floor `|x| + 1)%R|%N => //=.
 rewrite in_itv/= !natr_absz intr_norm intrD.
 have : `|x| < `|(floor `|x|)%:~R + 1|.
-  by rewrite [ltRHS]ger0_norm ?intrD1 ?lt_succ_floor// ler0z addr_ge0 ?floor_ge0.
+  by rewrite [ltRHS]ger0_norm ?intr1 ?lt_succ_floor// ler0z addr_ge0 ?floor_ge0.
 case: b => /=.
 - by move/ltW; rewrite ler_norml => /andP[-> ->].
 - by rewrite ltr_norml => /andP[-> /ltW->].

@@ -202,7 +202,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists `|ceil r^-1|%N => // s /=.
   rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
-  by rewrite natr_absz gtr0_norm -?ceil_gt0 ?invr_gt0// ceil_ge.
+  by rewrite natr_absz gtr0_norm ?ceil_gt0 ?invr_gt0// ceil_ge.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite leNgt distrC => /negP.
@@ -260,7 +260,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite distrC (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists `|ceil r^-1|%N => // s /=.
   rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
-  by rewrite natr_absz gtr0_norm -?ceil_gt0 ?invr_gt0 ?le_ceil ?num_real.
+  by rewrite natr_absz gtr0_norm ?ceil_gt0 ?invr_gt0 ?le_ceil ?num_real.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge distrC => /negP.
@@ -2800,7 +2800,7 @@ have FrBFl (x : elt_type) : exists m, m.+1%:R ^-1 < Fr (sval x) - Fl (sval x).
   exists (`|floor (Fr (sval x) - Fl (sval x))^-1|)%N.
   rewrite invf_plt ?posrE ?subr_gt0// -natr1 natr_absz ger0_norm; last first.
     by rewrite floor_ge0 invr_ge0// subr_ge0 ltW.
-  by rewrite intrD1 mathcomp_extra.lt_succ_floor// realE.
+  by rewrite intr1 mathcomp_extra.lt_succ_floor// realE.
 pose S m := [set x | x \in `]a, b[ /\ m.+1%:R ^-1 < Fr x - Fl x].
 have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
   path <%R a s ->

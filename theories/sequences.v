@@ -1195,7 +1195,7 @@ rewrite /series; near \oo => N; have xN : x < N%:R; last first.
   by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; apply: S1_sup.
 near: N; exists `|floor x|.+1 => // m; rewrite /mkset -(@ler_nat R).
 move/lt_le_trans => -> //; rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor x))//.
-by rewrite -intrD1 -natr1 lerD2r -(@gez0_abs (floor x)) ?floor_ge0// ltW.
+by rewrite -intr1 -natr1 lerD2r -(@gez0_abs (floor x)) ?floor_ge0// ltW.
 Unshelve. all: by end_near. Qed.
 
 End exponential_series_cvg.
@@ -2771,7 +2771,7 @@ have : cvg (a @ \oo).
       rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK -addn1 natrD.
       rewrite natr_absz gtr0_norm.
         by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
-      by rewrite -ceil_gt0 invr_gt0 divr_gt0.
+      by rewrite ceil_gt0 invr_gt0 divr_gt0.
     exists n.+1; rewrite -ltr_pdivlMl //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
       have [_ ] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply: (Pf (n, ar n)).
