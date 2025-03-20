@@ -640,8 +640,6 @@ Notation "e ^+ n" := (exp_pow e n)
   (in custom expr at level 1) : lang_scope.
 Notation "e `^ r" := (exp_pow_real e r)
   (in custom expr at level 1) : lang_scope.
-Notation "e `^ r" := (exp_pow_real e r)
-  (in custom expr at level 1) : lang_scope.
 Notation "e1 && e2" := (exp_bin binop_and e1 e2)
   (in custom expr at level 2) : lang_scope.
 Notation "e1 || e2" := (exp_bin binop_or e1 e2)
@@ -905,22 +903,8 @@ Section eval.
 Context {R : realType}.
 Implicit Type (g : ctx) (str : string).
 Local Open Scope lang_scope.
-Import MeasurableR.
 
-(* TODO: PR *)
-Lemma measurable_powRr b : measurable_fun setT (@powR R b).
-Proof.
-rewrite /powR.
-apply: measurable_fun_if => //.
-  rewrite preimage_true setTI/=.
-   case: (b == 0); rewrite ?set_true ?set_false.
-     apply: measurableT_comp => //.
-     exact: measurable_fun_eqr.
-   exact: measurable_fun_set0.
-rewrite preimage_false setTI.
-apply: measurableT_comp => //.
-exact: mulrr_measurable.
-Qed.
+Import MeasurableR.
 
 Inductive evalD : forall g t, exp D g t ->
   forall f : dval R g t, measurable_fun setT f -> Prop :=
@@ -936,7 +920,7 @@ Inductive evalD : forall g t, exp D g t ->
   [e ^+ {n}] -D> (fun x => (f x ^+ n)%R) ; (measurable_funX n mf)
 
 | eval_pow_real g (e : exp D g _) r f mf : e -D> f ; mf ->
-  [{r} `^ e] -D> (fun x => r `^ (f x)) ; measurableT_comp (measurable_powRr r) mf
+  [{r} `^ e] -D> (fun x => (r `^ (f x))%R) ; measurableT_comp (measurable_powRr r) mf
 
 | eval_bin g bop (e1 : exp D g _) f1 mf1 e2 f2 mf2 :
   e1 -D> f1 ; mf1 -> e2 -D> f2 ; mf2 ->

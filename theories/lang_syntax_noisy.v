@@ -353,7 +353,7 @@ under eq_integral do rewrite add0r.
 rewrite addr0.
 rewrite (_ : ((Num.sqrt 2)^-1 ^+ 2 + 1 ^+ 2 = 3 / 2)%R)//.
   rewrite exprVn sqr_sqrtr// expr1n -[in LHS]div1r -{3}(@divff _ 1%R)//.
-  rewrite addf_div// 2!mulr1 mul1r (_:1%R = 1%:R)// -natrD.
+  by rewrite addf_div// 2!mulr1 mul1r (_:1%R = 1%:R)// -natrD.
 exact.
 Qed.
 
