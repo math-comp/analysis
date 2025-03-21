@@ -4293,7 +4293,7 @@ Lemma ae_eq_comp2 U V (j : T -> U -> V) f g :
 Proof. by apply: filterS => x /[swap] + ->. Qed.
 
 Lemma ae_eq_funeposneg (f g : T -> \bar R) :
-  ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
+  (ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-)%E.
 Proof.
 split=> [fg|[pfg nfg]].
   by split; near=> x => Dx; rewrite !(funeposE,funenegE) (near fg).

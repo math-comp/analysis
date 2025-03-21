@@ -115,7 +115,6 @@ theories/hoelder.v
 theories/probability.v
 theories/independence.v
 theories/sampling.v
-theories/sampling_wip.v
 theories/convex.v
 theories/charge.v
 theories/kernel.v
