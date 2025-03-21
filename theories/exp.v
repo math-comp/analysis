@@ -536,6 +536,9 @@ have /expR_total_gt1[y [H1y H2y H3y]] : 1 <= x^-1 by rewrite ltW // !invf_cp1.
 by exists (-y); rewrite expRN H3y invrK.
 Qed.
 
+Lemma norm_expR : normr \o expR = (expR : R -> R).
+Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
+
 Local Open Scope convex_scope.
 Lemma convex_expR (t : {i01 R}) (a b : R^o) :
   expR (a <| t |> b) <= (expR a : R^o) <| t |> (expR b : R^o).
