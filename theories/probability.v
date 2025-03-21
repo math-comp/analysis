@@ -214,16 +214,19 @@ Lemma expectationB (X Y : {RV P >-> R}) :
   'E_P[X \- Y] = 'E_P[X] - 'E_P[Y].
 Proof. by move=> ? ?; rewrite unlock integralB_EFin ?lfun1_integrable. Qed.
 
+Let sum_sort (X : seq {RV P >-> R}) :
+  (\sum_(j <- X) MeasurableFun.sort j)%R = MeasurableFun.sort (\sum_(j <- X) j)%R.
+Proof. by elim/big_ind2 : _ => //= x1 y1 x2 y2 -> ->. Qed.
+
 Lemma expectation_sum (X : seq {RV P >-> R}) :
     (forall Xi, Xi \in X -> (Xi : T -> R) \in lfun P 1) ->
   'E_P[\sum_(Xi <- X) Xi] = \sum_(Xi <- X) 'E_P[Xi].
 Proof.
 elim: X => [|X0 X IHX] intX; first by rewrite !big_nil expectation_cst.
-have intX0 : (X0 : T -> R) \in lfun P 1.
-  by apply: intX; rewrite in_cons eqxx.
-have {}intX Xi : Xi \in X -> (Xi : T -> R) \in lfun P 1.
-  by move=> XiX; apply: intX; rewrite in_cons XiX orbT.
-by rewrite !big_cons expectationD ?IHX ?lfun_sum.
+rewrite !big_cons expectationD; last 2 first.
+  by rewrite intX// mem_head.
+  by rewrite -sum_sort big_seq rpred_sum// => Y YX/=; rewrite intX// inE YX orbT.
+by rewrite IHX//= => Xi XiX; rewrite intX// inE XiX orbT.
 Qed.
 
 End expectation_lemmas.
@@ -255,7 +258,7 @@ rewrite unlock [X in 'E_P[X]](_ : _ = (X \* Y \- fine 'E_P[X] \o* Y
   apply/funeqP => x /=; rewrite mulrDr !mulrDl/= mul1r.
   rewrite fineM ?expectation_fin_num// mulrNN addrA.
   by rewrite mulrN mulNr [Z in (X x * Y x - Z)%R]mulrC.
-rewrite expectationD/= ?rpredB ?lfunp_scale ?lfun_cst//.
+rewrite expectationD/= ?rpredB//= ?lfunp_scale ?lfun_cst//.
 rewrite 2?expectationB//= ?rpredB ?lfunp_scale// 3?expectationZl//= ?lfun_cst//.
 rewrite expectation_cst mule1 fineM ?expectation_fin_num// EFinM.
 rewrite !fineK ?expectation_fin_num//.

@@ -4,7 +4,7 @@
 (* Copyright (c) - 2016--2018 - Polytechnique                           *)
 
 (* -------------------------------------------------------------------- *)
-From Corelib Require Setoid.
+From Coq Require Setoid.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra.
 From mathcomp.classical Require Import boolp.
