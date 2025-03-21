@@ -721,6 +721,25 @@ Coercion LfunType_of_LType (f : LType) : LfunType mu p1 :=
 
 End Lequiv.
 
+Section mfun_extra.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}).
+
+Lemma mfunP (f : {mfun T >-> R}) : (f : T -> R) \in mfun.
+Proof. exact: valP. Qed.
+
+Import numFieldNormedType.Exports.
+
+Lemma mfun_scaler_closed : scaler_closed (@mfun _ _ T R).
+Proof. by move=> a/= f; rewrite !inE; exact: measurable_funM. Qed.
+
+HB.instance Definition _ := GRing.isScaleClosed.Build _ _ (@mfun _ _ T R)
+  mfun_scaler_closed.
+
+HB.instance Definition _ := [SubZmodule_isSubLmodule of {mfun T >-> R} by <:].
+
+End mfun_extra.
+
 Section lfun_pred.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
@@ -736,23 +755,25 @@ Proof. by move=> x /andP[]. Qed.
 
 End lfun_pred.
 
+Reserved Notation "[ 'lfun' 'of' f ]"
+  (at level 0, format "[ 'lfun'  'of'  f ]").
+Notation "[ 'lfun' 'of' f ]" := [the LfunType _ _ of f] : form_scope.
+
 Section lfun.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
-
 Notation lfun := (@lfun _ T R mu p).
+
 Section Sub.
 Context (f : T -> R) (fP : f \in lfun).
 Definition lfun_Sub1_subproof :=
   @isMeasurableFun.Build d _ T R f (set_mem (sub_lfun_mfun fP)).
 #[local] HB.instance Definition _ := lfun_Sub1_subproof.
+
 Definition lfun_Sub2_subproof :=
   @isLfun.Build d T R mu p p1 f (set_mem (sub_lfun_finlfun fP)).
-
-Import HBSimple.
-
 #[local] HB.instance Definition _ := lfun_Sub2_subproof.
-Definition lfun_Sub : LfunType mu p1 := f.
+Definition lfun_Sub := [lfun of f].
 End Sub.
 
 Lemma lfun_rect (K : LfunType mu p1 -> Type) :
@@ -776,25 +797,38 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of LfunType mu p1 by <:].
 
-Import numFieldNormedType.Exports.
-
 Lemma lfuny0 : finite_norm mu p (cst 0).
 Proof. by rewrite /finite_norm Lnorm0// ltry. Qed.
 
 HB.instance Definition _ := @isLfun.Build d T R mu p p1 (cst 0) lfuny0.
 
-Lemma mfunP (f : {mfun T >-> R}) : (f : T -> R) \in mfun.
-Proof. exact: valP. Qed.
-
 Lemma lfunP (f : LfunType mu p1) : (f : T -> R) \in lfun.
 Proof. exact: valP. Qed.
 
-Lemma mfun_scaler_closed : scaler_closed (@mfun _ _ T R).
-Proof. move=> a/= f; rewrite !inE; exact: measurable_funM. Qed.
+Lemma lfun_oppr_closed : oppr_closed lfun.
+Proof.
+move=> f /andP[mf /[!inE] lf].
+by rewrite rpredN/= mf/= inE/= /finite_norm oppr_Lnorm.
+Qed.
 
-HB.instance Definition _ := GRing.isScaleClosed.Build _ _ (@mfun _ _ T R)
-  mfun_scaler_closed.
-HB.instance Definition _ := [SubZmodule_isSubLmodule of {mfun T >-> R} by <:].
+HB.instance Definition _ := GRing.isOppClosed.Build _ lfun
+  lfun_oppr_closed.
+
+(* NB: not used directly by HB.instance *)
+Lemma lfun_addr_closed : addr_closed lfun.
+Proof.
+split.
+  by rewrite inE rpred0/= inE/= /finite_norm/= Lnorm0.
+move=> f g /andP[mf /[!inE]/= lf] /andP[mg /[!inE]/= lg].
+rewrite rpredD//= inE/=.
+rewrite /finite_norm.
+rewrite (le_lt_trans (@eminkowski _ _ _ mu f g p _ _ _))//.
+- by rewrite inE in mf.
+- by rewrite inE in mg.
+- by rewrite lte_add_pinfty.
+Qed.
+
+Import numFieldNormedType.Exports.
 
 Lemma LnormZ (f : LfunType mu p1) a :
   ('N[mu]_p[EFin \o (a \*: f)] = `|a|%:E * 'N[mu]_p[EFin \o f])%E.
@@ -818,15 +852,6 @@ case: p p1 f => //[r r1 f|? f].
   rewrite -ess_supZl//; apply/eq_ess_sup/nearW => t /=.
   by rewrite normrZ EFinM.
 Qed.
-
-Lemma lfun_oppr_closed : oppr_closed lfun.
-Proof.
-move=> f /andP[mf /[!inE] lf].
-by rewrite rpredN/= mf/= inE/= /finite_norm oppr_Lnorm.
-Qed.
-
-HB.instance Definition _ := GRing.isOppClosed.Build _ lfun
-  lfun_oppr_closed.
 
 Lemma lfun_submod_closed : submod_closed lfun.
 Proof.
@@ -984,22 +1009,6 @@ rewrite muleC lte_mul_pinfty// ?lee_fin ?powR_ge0//.
 move: lpf => /(lfun_integrable r1) /integrableP [_].
 under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
 by [].
-Qed.
-
-Lemma lfun0 r : 1 <= r -> (cst 0 : T -> R) \in lfun mu r%:E.
-Proof.
-move=> r1; apply/andP; split.
-  by rewrite inE; exact: measurable_cst.
-by rewrite inE/= /finite_norm// Lnorm0.
-Qed.
-
-Lemma lfun_sum (F : seq {mfun T >-> R}) r :
-    1 <= r -> (forall Fi, Fi \in F -> (Fi : T -> R) \in lfun mu r%:E) ->
-  (\sum_(Fi <- F) Fi : T -> R) \in lfun mu r%:E.
-Proof.
-elim: F => //=[r1 _|F0 F ih r1 lpF]; first by rewrite big_nil lfun0.
-rewrite big_cons rpredD//; first by rewrite lpF ?mem_head.
-by rewrite ih// => Fi FiF; rewrite lpF ?in_cons ?FiF ?orbT.
 Qed.
 
 End Lspace.
