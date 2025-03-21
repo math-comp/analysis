@@ -163,7 +163,7 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Lemma expectation_def (X : {RV P >-> R}) : 'E_P[X] = (\int[P]_w (X w)%:E)%E.
 Proof. by rewrite unlock. Qed.
 
-Lemma expectation_fin_num (X : {RV P >-> R}) : (X : T -> R) \in lfun P 1 ->
+Lemma expectation_fin_num (X : T -> R) : X \in lfun P 1 ->
   'E_P[X] \is a fin_num.
 Proof. by move=> ?; rewrite unlock integral_fune_fin_num ?lfun1_integrable. Qed.
 
@@ -180,12 +180,12 @@ move: iX => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
 exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
-Lemma expectationZl (X : {RV P >-> R}) (iX : (X : T -> R) \in lfun P 1)
-  (k : R) : 'E_P[k \o* X] = k%:E * 'E_P [X].
-Proof. by rewrite unlock muleC -integralZr ?lfun1_integrable. Qed.
+Lemma expectationZl (X : T -> R) (k : R) : X \in lfun P 1 ->
+  'E_P[k \o* X] = k%:E * 'E_P [X].
+Proof. by move=> ?; rewrite unlock muleC -integralZr ?lfun1_integrable. Qed.
 
-Lemma expectation_ge0 (X : {RV P >-> R}) :
-  (forall x, 0 <= X x)%R -> 0 <= 'E_P[X].
+Lemma expectation_ge0 (X : T -> R) : (forall x, 0 <= X x)%R ->
+  0 <= 'E_P[X].
 Proof.
 by move=> ?; rewrite unlock integral_ge0// => x _; rewrite lee_fin.
 Qed.
@@ -204,28 +204,22 @@ move=> mX mY X0 Y0 XY; rewrite unlock ae_ge0_le_integral => //.
   by apply: XYN => /=; apply: contra_not h; rewrite lee_fin.
 Qed.
 
-Lemma expectationD (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 -> (Y : T -> R) \in lfun P 1 ->
+Lemma expectationD (X Y : T -> R) : X \in lfun P 1 -> Y \in lfun P 1 ->
   'E_P[X \+ Y] = 'E_P[X] + 'E_P[Y].
 Proof. by move=> ? ?; rewrite unlock integralD_EFin ?lfun1_integrable. Qed.
 
-Lemma expectationB (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 -> (Y : T -> R) \in lfun P 1 ->
+Lemma expectationB (X Y : T -> R) : X \in lfun P 1 -> Y \in lfun P 1 ->
   'E_P[X \- Y] = 'E_P[X] - 'E_P[Y].
 Proof. by move=> ? ?; rewrite unlock integralB_EFin ?lfun1_integrable. Qed.
 
-Let sum_sort (X : seq {RV P >-> R}) :
-  (\sum_(j <- X) MeasurableFun.sort j)%R = MeasurableFun.sort (\sum_(j <- X) j)%R.
-Proof. by elim/big_ind2 : _ => //= x1 y1 x2 y2 -> ->. Qed.
-
-Lemma expectation_sum (X : seq {RV P >-> R}) :
-    (forall Xi, Xi \in X -> (Xi : T -> R) \in lfun P 1) ->
+Lemma expectation_sum (X : seq (T -> R)) :
+    (forall Xi, Xi \in X -> Xi \in lfun P 1) ->
   'E_P[\sum_(Xi <- X) Xi] = \sum_(Xi <- X) 'E_P[Xi].
 Proof.
 elim: X => [|X0 X IHX] intX; first by rewrite !big_nil expectation_cst.
 rewrite !big_cons expectationD; last 2 first.
   by rewrite intX// mem_head.
-  by rewrite -sum_sort big_seq rpred_sum// => Y YX/=; rewrite intX// inE YX orbT.
+  by rewrite big_seq rpred_sum// => Y YX/=; rewrite intX// inE YX orbT.
 by rewrite IHX//= => Xi XiX; rewrite intX// inE XiX orbT.
 Qed.
 
@@ -246,10 +240,9 @@ Section covariance_lemmas.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
-Lemma covarianceE (X Y : {mfun T >-> R}) :
-    (X : T -> R) \in lfun P 1 ->
-    (Y : T -> R) \in lfun P 1 ->
-    ((X * Y)%R : T -> R) \in lfun P 1 ->
+Lemma covarianceE (X Y : T -> R) :
+    X \in lfun P 1 -> Y \in lfun P 1 ->
+    (X * Y)%R \in lfun P 1 ->
   covariance P X Y = 'E_P[X * Y] - 'E_P[X] * 'E_P[Y].
 Proof.
 move=> l1X l1Y l1XY.
@@ -270,34 +263,31 @@ Proof.
 by rewrite unlock; congr expectation; apply/funeqP => x /=; rewrite mulrC.
 Qed.
 
-Lemma covariance_fin_num (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 ->
-    (Y : T -> R) \in lfun P 1 ->
-    ((X * Y)%R : T -> R) \in lfun P 1 ->
+Lemma covariance_fin_num (X Y : T -> R) :
+    X \in lfun P 1 -> Y \in lfun P 1 ->
+    (X * Y)%R \in lfun P 1 ->
   covariance P X Y \is a fin_num.
 Proof.
 by move=> ? ? ?; rewrite covarianceE// fin_numB fin_numM expectation_fin_num.
 Qed.
 
-Lemma covariance_cst_l c (X : {RV P >-> R}) : covariance P (cst c) X = 0.
+Lemma covariance_cst_l c (X : T -> R) : covariance P (cst c) X = 0.
 Proof.
 rewrite unlock expectation_cst/=.
 rewrite [X in 'E_P[X]](_ : _ = cst 0%R) ?expectation_cst//.
 by apply/funeqP => x; rewrite /GRing.mul/= subrr mul0r.
 Qed.
 
-Lemma covariance_cst_r (X : {RV P >-> R}) c : covariance P X (cst c) = 0.
+Lemma covariance_cst_r (X : T -> R) c : covariance P X (cst c) = 0.
 Proof. by rewrite covarianceC covariance_cst_l. Qed.
 
-Lemma covarianceZl a (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 ->
-    (Y : T -> R) \in lfun P 1 ->
-    ((X * Y)%R : T -> R) \in lfun P 1 ->
+Lemma covarianceZl a (X Y : T -> R) :
+    X \in lfun P 1 -> Y \in lfun P 1 ->
+    (X * Y)%R \in lfun P 1 ->
   covariance P (a \o* X)%R Y = a%:E * covariance P X Y.
 Proof.
 move=> X1 Y1 XY1.
-have aXY : (a \o* X * Y = a \o* (X * Y))%R.
-  by apply/funeqP => x; rewrite mulrAC.
+have aXY : (a \o* X * Y = a \o* (X * Y))%R by apply/funeqP => x; rewrite mulrAC.
 rewrite [LHS]covarianceE => [||//|] //=; last 2 first.
 - by rewrite lfunp_scale.
 - by rewrite aXY lfunp_scale.
@@ -305,20 +295,18 @@ rewrite covarianceE// aXY !expectationZl//.
 by rewrite -muleA -muleBr// fin_num_adde_defr// expectation_fin_num.
 Qed.
 
-Lemma covarianceZr a (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 ->
-    (Y : T -> R) \in lfun P 1 ->
-    ((X * Y)%R : T -> R) \in lfun P 1 ->
+Lemma covarianceZr a (X Y : T -> R) :
+    X \in lfun P 1 -> Y \in lfun P 1 ->
+    (X * Y)%R \in lfun P 1 ->
   covariance P X (a \o* Y)%R = a%:E * covariance P X Y.
 Proof.
 move=> X1 Y1 XY1.
 by rewrite [in RHS]covarianceC covarianceC covarianceZl; last rewrite mulrC.
 Qed.
 
-Lemma covarianceNl (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 ->
-    (Y : T -> R) \in lfun P 1 ->
-    ((X * Y)%R : T -> R) \in lfun P 1 ->
+Lemma covarianceNl (X Y : T -> R) :
+    X \in lfun P 1 -> Y \in lfun P 1 ->
+    (X * Y)%R \in lfun P 1 ->
   covariance P (\- X)%R Y = - covariance P X Y.
 Proof.
 move=> X1 Y1 XY1.
@@ -326,26 +314,22 @@ have -> : (\- X = -1 \o* X)%R by apply/funeqP => x /=; rewrite mulrN mulr1.
 by rewrite covarianceZl// EFinN mulNe mul1e.
 Qed.
 
-Lemma covarianceNr (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 ->
-    (Y : T -> R) \in lfun P 1 ->
-    ((X * Y)%R : T -> R) \in lfun P 1 ->
+Lemma covarianceNr (X Y : T -> R) :
+    X \in lfun P 1 -> Y \in lfun P 1 ->
+    (X * Y)%R \in lfun P 1 ->
   covariance P X (\- Y)%R = - covariance P X Y.
 Proof. by move=> X1 Y1 XY1; rewrite !(covarianceC X) covarianceNl 1?mulrC. Qed.
 
-Lemma covarianceNN (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 1 ->
-    (Y : T -> R) \in lfun P 1 ->
-    ((X * Y)%R : T -> R) \in lfun P 1 ->
+Lemma covarianceNN (X Y : T -> R) :
+    X \in lfun P 1 -> Y \in lfun P 1 ->
+    (X * Y)%R \in lfun P 1 ->
   covariance P (\- X)%R (\- Y)%R = covariance P X Y.
 Proof.
 by move=> ? ? ?; rewrite covarianceNl//= ?covarianceNr ?oppeK ?mulrN//= ?rpredN.
 Qed.
 
-Lemma covarianceDl (X Y Z : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-    (Y : T -> R) \in lfun P 2%:E ->
-    (Z : T -> R) \in lfun P 2%:E ->
+Lemma covarianceDl (X Y Z : T -> R) :
+    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
   covariance P (X \+ Y)%R Z = covariance P X Z + covariance P Y Z.
 Proof.
 move=> X2 Y2 Z2.
@@ -362,19 +346,15 @@ rewrite oppeD ?fin_num_adde_defr ?fin_numM ?expectation_fin_num//.
 by rewrite addeACA 2?covarianceE.
 Qed.
 
-Lemma covarianceDr (X Y Z : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-    (Y : T -> R) \in lfun P 2%:E ->
-    (Z : T -> R) \in lfun P 2%:E ->
+Lemma covarianceDr (X Y Z : T -> R) :
+    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
   covariance P X (Y \+ Z)%R = covariance P X Y + covariance P X Z.
 Proof.
 by move=> X2 Y2 Z2; rewrite covarianceC covarianceDl ?(covarianceC X) 1?mulrC.
 Qed.
 
-Lemma covarianceBl (X Y Z : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-    (Y : T -> R) \in lfun P 2%:E ->
-    (Z : T -> R) \in lfun P 2%:E ->
+Lemma covarianceBl (X Y Z : T -> R) :
+    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
   covariance P (X \- Y)%R Z = covariance P X Z - covariance P Y Z.
 Proof.
 move=> X2 Y2 Z2.
@@ -385,10 +365,8 @@ have YZ1 := lfun2M2_1 Y2 Z2.
 by rewrite -[(X \- Y)%R]/(X \+ (\- Y))%R covarianceDl ?covarianceNl ?rpredN.
 Qed.
 
-Lemma covarianceBr (X Y Z : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-    (Y : T -> R) \in lfun P 2%:E ->
-    (Z : T -> R) \in lfun P 2%:E ->
+Lemma covarianceBr (X Y Z : T -> R) :
+    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
   covariance P X (Y \- Z)%R = covariance P X Y - covariance P X Z.
 Proof.
 move=> X2 Y2 Z2.
@@ -408,23 +386,21 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Definition variance (X : T -> R) := covariance P X X.
 Local Notation "''V_' P [ X ]" := (variance X).
 
-Lemma varianceE (X : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
+Lemma varianceE (X : T -> R) : X \in lfun P 2%:E ->
   'V_P[X] = 'E_P[X ^+ 2] - ('E_P[X]) ^+ 2.
 Proof.
 move=> X2.
 by rewrite /variance covarianceE ?lfun2M2_1// lfun_inclusion12 ?fin_num_measure.
 Qed.
 
-Lemma variance_fin_num (X : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
+Lemma variance_fin_num (X : T -> R) : X \in lfun P 2%:E ->
   'V_P[X] \is a fin_num.
 Proof.
 move=> X2.
 by rewrite covariance_fin_num ?lfun2M2_1// lfun_inclusion12 ?fin_num_measure.
 Qed.
 
-Lemma variance_ge0 (X : {RV P >-> R}) : (0 <= 'V_P[X])%E.
+Lemma variance_ge0 (X : T -> R) : 0 <= 'V_P[X].
 Proof.
 by rewrite /variance unlock; apply: expectation_ge0 => x; exact: sqr_ge0.
 Qed.
@@ -436,28 +412,25 @@ rewrite [X in 'E_P[X]](_ : _ = cst 0%R) ?expectation_cst//.
 by apply/funext => x; rewrite /GRing.exp/GRing.mul/= subrr mulr0.
 Qed.
 
-Lemma varianceZ a (X : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
+Lemma varianceZ a (X : T -> R) : X \in lfun P 2%:E ->
   'V_P[(a \o* X)%R] = (a ^+ 2)%:E * 'V_P[X].
 Proof.
 move=> X2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
 have X1 := lfun_inclusion12 Pfin X2.
-rewrite /variance covarianceZl ?covarianceZr ?lfun2M2_1 ?lfunp_scale ?ler1n//.
-by rewrite muleA EFinM.
+rewrite /variance covarianceZl//=.
+- by rewrite covarianceZr// ?muleA ?EFinM// lfun2M2_1.
+- by rewrite lfunp_scale.
+- by rewrite lfun2M2_1// lfunp_scale// ler1n.
 Qed.
 
-Lemma varianceN (X : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-  'V_P[(\- X)%R] = 'V_P[X].
+Lemma varianceN (X : T -> R) : X \in lfun P 2%:E -> 'V_P[(\- X)%R] = 'V_P[X].
 Proof.
 move=> X2.
 by rewrite /variance covarianceNN ?lfun2M2_1 ?lfun_inclusion12 ?fin_num_measure.
 Qed.
 
-Lemma varianceD (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-    (Y : T -> R) \in lfun P 2%:E ->
+Lemma varianceD (X Y : T -> R) : X \in lfun P 2%:E -> Y \in lfun P 2%:E ->
   'V_P[X \+ Y]%R = 'V_P[X] + 'V_P[Y] + 2%:E * covariance P X Y.
 Proof.
 move=> X2 Y2.
@@ -471,9 +444,7 @@ rewrite (covarianceC P Y X) [LHS]addeA [LHS](ACl (1*4*(2*3)))/=.
 by rewrite -[2%R]/(1 + 1)%R EFinD muleDl ?mul1e// covariance_fin_num.
 Qed.
 
-Lemma varianceB (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-    (Y : T -> R) \in lfun P 2%:E ->
+Lemma varianceB (X Y : T -> R) : X \in lfun P 2%:E -> Y \in lfun P 2%:E ->
   'V_P[(X \- Y)%R] = 'V_P[X] + 'V_P[Y] - 2%:E * covariance P X Y.
 Proof.
 move=> X2 Y2.
@@ -485,16 +456,14 @@ rewrite -[(X \- Y)%R]/(X \+ (\- Y))%R.
 by rewrite varianceD/= ?varianceN ?covarianceNr ?muleN ?rpredN.
 Qed.
 
-Lemma varianceD_cst_l c (X : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
+Lemma varianceD_cst_l c (X : T -> R) : X \in lfun P 2%:E ->
   'V_P[(cst c \+ X)%R] = 'V_P[X].
 Proof.
 move=> X2.
 by rewrite varianceD ?lfun_cst// variance_cst add0e covariance_cst_l mule0 adde0.
 Qed.
 
-Lemma varianceD_cst_r (X : {RV P >-> R}) c :
-    (X : T -> R) \in lfun P 2%:E ->
+Lemma varianceD_cst_r (X : T -> R) c : X \in lfun P 2%:E ->
   'V_P[(X \+ cst c)%R] = 'V_P[X].
 Proof.
 move=> X2.
@@ -502,24 +471,20 @@ have -> : (X \+ cst c = cst c \+ X)%R by apply/funeqP => x /=; rewrite addrC.
 exact: varianceD_cst_l.
 Qed.
 
-Lemma varianceB_cst_l c (X : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
+Lemma varianceB_cst_l c (X : T -> R) : X \in lfun P 2%:E ->
   'V_P[(cst c \- X)%R] = 'V_P[X].
 Proof.
 move=> X2; rewrite -[(cst c \- X)%R]/(cst c \+ (\- X))%R.
 by rewrite varianceD_cst_l/= ?rpredN// varianceN.
 Qed.
 
-Lemma varianceB_cst_r (X : {RV P >-> R}) c :
-    (X : T -> R) \in lfun P 2%:E ->
+Lemma varianceB_cst_r (X : T -> R) c : X \in lfun P 2%:E ->
   'V_P[(X \- cst c)%R] = 'V_P[X].
 Proof.
 by move=> X2; rewrite -[(X \- cst c)%R]/(X \+ (cst (- c)))%R varianceD_cst_r.
 Qed.
 
-Lemma covariance_le (X Y : {RV P >-> R}) :
-    (X : T -> R) \in lfun P 2%:E ->
-    (Y : T -> R) \in lfun P 2%:E ->
+Lemma covariance_le (X Y : T -> R) : X \in lfun P 2%:E -> Y \in lfun P 2%:E ->
   covariance P X Y <= sqrte 'V_P[X] * sqrte 'V_P[Y].
 Proof.
 move=> X2 Y2.
@@ -557,8 +522,7 @@ Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
-Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) :
-    (0 < eps)%R ->
+Lemma markov (X : {RV P >-> R}) (f : R -> R) (eps : R) : (0 < eps)%R ->
     measurable_fun [set: R] f -> (forall r, 0 <= r -> 0 <= f r)%R ->
     {in Num.nneg &, {homo f : x y / x <= y}}%R ->
   (f eps)%:E * P [set x | eps%:E <= `| (X x)%:E | ] <=
@@ -575,7 +539,7 @@ apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
 - by rewrite unlock.
 Qed.
 
-Definition mmt_gen_fun (X : {RV P >-> R}) (t : R) := 'E_P[expR \o t \o* X].
+Definition mmt_gen_fun (X : T -> R) (t : R) := 'E_P[expR \o t \o* X].
 Local Notation "'M_ X t" := (mmt_gen_fun X t).
 
 Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
