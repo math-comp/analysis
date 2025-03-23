@@ -260,6 +260,10 @@ Proof. by case: n => n; rewrite ?invr_ge0 exprn_ge0. Qed.
 Lemma exprz_gt0 [R : numDomainType] n (x : R) (hx : 0 < x) : (0 < x ^ n).
 Proof. by case: n => n; rewrite ?invr_gt0 exprn_gt0. Qed.
 
+(**********************)
+(* not yet backported *)
+(**********************)
+
 Section num_trunc_floor_ceil.
 Context {R : archiNumDomainType}.
 Implicit Type x : R.
