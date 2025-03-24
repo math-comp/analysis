@@ -1030,6 +1030,29 @@ rewrite lnK//; last by rewrite posrE addr_gt0// mulr_gt0// ?invr_gt0.
 by rewrite (mulrC _ p^-1) (mulrC _ q^-1).
 Qed.
 
+Definition powR_itv i :=
+  match i with
+  | Itv.Top => Itv.Real `]-oo, +oo[
+  | Itv.Real (Interval l u) =>
+      Itv.Real (Interval (IntItv.keep_pos_bound l) +oo%O)
+  end.
+
+Lemma num_spec_powR (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) p
+    (r := powR_itv i) :
+  Itv.spec (@Itv.num_sem R) r (powR x%:num p).
+Proof.
+rewrite {}/r; case: i x => [|[l u]] x /=; [by apply/and3P; rewrite ?num_real|].
+case: x => [x /=/and3P[xr lx xu]]; apply/and3P; split; [exact: num_real| |by[]].
+case: l lx => [[] [[|l] |//] |//]; rewrite !bnd_simp => lx.
+- by rewrite powR_ge0.
+- by apply: powR_gt0;  apply: lt_le_trans lx.
+- by apply: powR_gt0; apply: le_lt_trans lx.
+- by apply: powR_gt0; apply: le_lt_trans lx.
+Qed.
+
+Canonical powR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) p :=
+  Itv.mk (num_spec_powR x p).
+
 End PowR.
 Notation "a `^ x" := (powR a x) : ring_scope.
 
