@@ -514,9 +514,7 @@ rewrite -(ffact_fact (leq_addl _ _)) addnK.
 rewrite mulNr -!mulrA -mulrBr mulr_gt0 ?exprn_gt0 //.
 set u := _.+1.
 rewrite natrM invfM.
-rewrite -[X in _ < X - _]mul1r !mulrA -mulrBl divr_gt0 //; last first.
-  by rewrite (ltr_nat _ 0) fact_gt0.
-rewrite subr_gt0.
+rewrite -[X in _ < X - _]mul1r !mulrA -mulrBl divr_gt0 // subr_gt0.
 set v := _ ^_ _; rewrite -[ltRHS](divff (_ : v%:R != 0)); last first.
   by rewrite lt0r_neq0 // (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite ltr_pM2r; last by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.
