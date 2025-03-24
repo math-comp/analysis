@@ -1393,10 +1393,7 @@ Definition normal_pdf (m s x : R) : R :=
   (sqrtr (s ^+2 * pi *+ 2))^-1 * expR (- (x - m) ^+ 2 / (s ^+ 2*+ 2)).
 
 Lemma normal_pdf_ge0 m s x : 0 <= normal_pdf m s x.
-Proof.
-rewrite /normal_pdf; case: ifP => // _.
-by rewrite mulr_ge0 ?expR_ge0// invr_ge0 mulr_ge0.
-Qed.
+Proof. by rewrite /normal_pdf; case: ifP. Qed.
 
 Lemma normal_pdf_gt0 m s x : s != 0 -> 0 < normal_pdf m s x.
 Proof.
@@ -1573,9 +1570,6 @@ apply: (@le_trans _ _
     (\int[mu]_(x in A) (Num.sqrt (sigma ^+ 2 * pi *+ 2))^-1%:E))%E; last first.
   by rewrite integral_cst//= muA0 mule0.
 apply: ge0_le_integral => //=.
-- move=> x _; rewrite lee_fin.
-  have := normal_pdf_ge0 m sigma x.
-  by rewrite /normal_pdf ifF//; exact/negP/negP.
 - apply/measurable_funTS/measurableT_comp => //.
   apply: measurable_funM => //; apply: measurableT_comp => //.
   apply: measurable_funM => //; apply: measurableT_comp => //.

@@ -554,6 +554,44 @@ have [ab|/ltW ba] := leP a b.
 Qed.
 Local Close Scope convex_scope.
 
+Definition expR_itv_boundl b :=
+  Order.max (BRight 0%Z) (IntItv.add_boundl b (BLeft 1)).
+
+Definition expR_itv_boundr b :=
+  match b with
+  | BSide _ (Negz _) => BLeft 1%Z
+  | BSide b 0%Z => BSide b 1%Z
+  | _ => +oo%O
+  end.
+
+Definition expR_itv i :=
+  match i with
+  | Itv.Top => Itv.Real `[0%Z, +oo[
+  | Itv.Real (Interval l u) =>
+      Itv.Real (Interval (expR_itv_boundl l) (expR_itv_boundr u))
+  end.
+
+Lemma num_spec_expR (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i)
+    (r := expR_itv i) :
+  Itv.spec (@Itv.num_sem R) r (expR x%:num).
+Proof.
+rewrite {}/r; case: i x => [|[l u]] x /=.
+  by apply/and3P; rewrite ?num_real// bnd_simp expR_ge0.
+case: x => [x /=/and3P[xr lx xu]]; apply/and3P; split; [exact: num_real| | ].
+- rewrite Instances.num_itv_bound_max maxEge.
+  case: ifP; rewrite ?bnd_simp ?expR_gt0// => _.
+  apply: le_trans (Instances.num_itv_add_boundl lx _) _; first exact: lexx.
+  by rewrite bnd_simp addrC expR_ge1Dx.
+- case: u xu => [[] [[|//] | u] |//]; rewrite !bnd_simp.
+  + by rewrite expR_lt1.
+  + by rewrite expR_lt1 => /lt_trans; apply.
+  + by rewrite expR_le1.
+  + by rewrite expR_lt1 => /le_lt_trans; apply.
+Qed.
+
+Canonical expR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) :=
+  Itv.mk (num_spec_expR x).
+
 End expR.
 
 #[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `expRM_natl`")]

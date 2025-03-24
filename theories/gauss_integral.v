@@ -165,10 +165,8 @@ have ? : `|x| <= maxr `|c + e| `|c - e|.
   rewrite -lerN2 => /le_trans; apply.
   by rewrite -normrN ler_norm.
 rewrite (@le_trans _ _ (2 * ((maxr `|c + e| `|c - e|) * expR (- 0 ^+ 2))))//.
-  rewrite ler_pM2l// ler_pM ?expR_ge0//.
-  by rewrite expr0n/= oppr0 expR0 gauss_fun_le1.
-near: M.
-by apply: nbhs_pinfty_ge; rewrite num_real.
+rewrite ler_pM2l// ler_pM ?expR_ge0//.
+by rewrite expr0n/= oppr0 expR0 gauss_fun_le1.
 Unshelve. all: end_near. Qed.
 
 Let cvg_dintegral01_u x :
