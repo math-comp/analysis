@@ -1317,7 +1317,6 @@ move=> mE; rewrite integral_indic//= /uniform_prob setIT -ge0_integralZl//=.
   case: ifPn => //.
   by rewrite inE/= in_itv/= => axb; rewrite indicE (negbTE xE) mule0.
 - exact/measurable_EFinP/measurable_indic.
-- by move=> x _; rewrite lee_fin.
 - by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 Qed.
 

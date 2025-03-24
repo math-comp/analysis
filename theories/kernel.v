@@ -544,8 +544,7 @@ rewrite [X in measurable_fun _ X](_ : _ = fun x => r%:E *
     \int[l x]_y (\1_(k_ n @^-1` [set r]) (x, y))%:E); last first.
   apply/funext => x; under eq_integral do rewrite EFinM.
   have [r0|r0] := leP 0%R r.
-    rewrite ge0_integralZl//; last by move=> *; rewrite lee_fin.
-    exact/measurable_EFinP/measurableT_comp.
+    by rewrite ge0_integralZl//; exact/measurable_EFinP/measurableT_comp.
   rewrite integral0_eq; last first.
     by move=> y _; rewrite preimage_nnfun0// indic0 mule0.
   by rewrite integral0_eq ?mule0// => y _; rewrite preimage_nnfun0// indic0.
