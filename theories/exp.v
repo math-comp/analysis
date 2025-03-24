@@ -444,6 +444,13 @@ case: ltrgt0P => [x_gt0|xN|->]; last by rewrite expR0.
 - by rewrite -[x]opprK expRN invf_cp1 ?expR_gt0 // expR_gt1 lterNE.
 Qed.
 
+Lemma expR_le1 x : (expR x <= 1) = (x <= 0).
+Proof.
+case: ltrgt0P => [||->]; last by rewrite expR0 lexx.
+- by rewrite -expR_gt1 ltNge => /negbTE.
+- by rewrite -expR_lt1 => /ltW.
+Qed.
+
 Lemma expRB x y : expR (x - y) = expR x / expR y.
 Proof. by rewrite expRD expRN. Qed.
 
