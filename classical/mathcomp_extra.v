@@ -229,6 +229,12 @@ Proof. by rewrite -sqrtC_ge0; apply: ger0_real. Qed.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use `sqrtC_real` instead")]
 Notation real_sqrtC := sqrtC_real.
 
+Lemma exprz_ge0 [R : numDomainType] n (x : R) (hx : 0 <= x) : (0 <= x ^ n).
+Proof. by case: n => n; rewrite ?invr_ge0 exprn_ge0. Qed.
+
+Lemma exprz_gt0 [R : numDomainType] n (x : R) (hx : 0 < x) : (0 < x ^ n).
+Proof. by case: n => n; rewrite ?invr_gt0 exprn_gt0. Qed.
+
 (**********************)
 (* not yet backported *)
 (**********************)
