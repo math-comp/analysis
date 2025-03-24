@@ -464,6 +464,18 @@ End CosSin.
 Arguments sin {R}.
 Arguments cos {R}.
 
+Lemma num_spec_sin {R : realType} (x : R) :
+  Itv.spec (@Itv.num_sem R) (Itv.Real `[-1, 1]%Z) (sin x).
+Proof. by apply/and3P; rewrite ?num_real !bnd_simp ?sin_geN1 ?sin_le1. Qed.
+
+Canonical sin_inum {R : realType} (x : R) := Itv.mk (num_spec_sin x).
+
+Lemma num_spec_cos {R : realType} (x : R) :
+  Itv.spec (@Itv.num_sem R) (Itv.Real `[-1, 1]%Z) (cos x).
+Proof. by apply/and3P; rewrite ?num_real !bnd_simp ?cos_geN1 ?cos_le1. Qed.
+
+Canonical cos_inum {R : realType} (x : R) := Itv.mk (num_spec_cos x).
+
 Section Pi.
 Variable R : realType.
 Implicit Types (x y : R) (n k : nat).
