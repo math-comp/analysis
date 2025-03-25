@@ -7395,3 +7395,75 @@ rewrite muleA lee_pmul//.
 Unshelve. all: by end_near. Qed.
 
 End nice_lebesgue_differentiation.
+
+Section near_monotone_convergence.
+Local Open Scope ereal_scope.
+
+Context d (T : measurableType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+Variables (D : set T) (mD : measurable D) (g' : (T -> \bar R)^nat).
+Hypothesis mg' : forall n, measurable_fun D (g' n).
+Hypothesis near_g'0 : \forall n \near \oo, forall x, D x -> 0 <= g' n x.
+Hypothesis near_nd_g' : \forall N \near \oo, (forall x : T, D x ->
+  {in [set k| (N <= k)%N]&,  {homo g'^~ x : n m / (n <= m)%N >-> (n <= m)%E}}).
+Let f' := fun x => limn (g'^~ x).
+
+Lemma near_monotone_convergence :
+(\int[mu]_(x in D) (fun x0 : T => limn (g'^~ x0)) x)%E =
+limn (fun n : nat => (\int[mu]_(x in D) g' n x)%E).
+Proof.
+have [N0 _ H0] := near_g'0.
+have [N1 _ H1] := near_nd_g'.
+pose N := maxn N0 N1.
+transitivity (\int[mu]_(x in D) limn (fun n : nat => g' (n + N) x)).
+  apply/esym/eq_integral.
+  move=> x; rewrite inE/= => Dx.
+  apply/cvg_lim => //.
+  rewrite (cvg_shiftn _ (g'^~ x) _).
+  apply: (@near_ereal_nondecreasing_is_cvgn _ (g'^~ x)).
+  by exists N1 => // ? /= ?; exact: H1.
+apply/esym/cvg_lim => //.
+rewrite -(cvg_shiftn N).
+apply: cvg_monotone_convergence => //.
+  move=> n x Dx.
+  apply: H0 => //=.
+  apply: (leq_trans (leq_maxl N0 N1)).
+  exact: leq_addl.
+move=> x Dx n m nm.
+apply: (H1 N) => //; rewrite ?inE/=.
+- exact: leq_maxr.
+- exact: leq_addl.
+- exact: leq_addl.
+- exact: leq_add.
+Qed.
+
+Lemma cvg_near_monotone_convergence :
+  \int[mu]_(x in D) g' n x @[n \oo] --> \int[mu]_(x in D) f' x.
+Proof.
+have [N0 _ Hg'0] := near_g'0.
+have [N1 _ Hndg'] := near_nd_g'.
+pose N := maxn N0 N1.
+have N0N : (N0 <= N)%N by apply: (leq_maxl N0 N1).
+have N1N : (N1 <= N)%N by apply: (leq_maxr N0 N1).
+have g'_ge0 n x : D x -> (N <= n)%N -> 0 <= g' n x.
+  move=> + Nn.
+  apply: Hg'0 => /=.
+  exact: (leq_trans N0N).
+have ndg' n m x : D x -> (N <= n)%N -> (n <= m)%N -> g' n x <= g' m x.
+  move=> Dx Nn nm.
+  apply: (Hndg' N); rewrite ?inE//=.
+  exact: leq_trans nm.
+rewrite near_monotone_convergence.
+apply: near_ereal_nondecreasing_is_cvgn.
+exists N => //.
+move=> k/= Nk n m; rewrite !inE/= => kn km nm.
+apply: ge0_le_integral => // t Dt; [| |].
+- apply: g'_ge0 => //.
+  exact: leq_trans kn.
+- apply: g'_ge0 => //.
+  exact: leq_trans km.
+- apply: ndg' => //.
+  exact: leq_trans kn.
+Qed.
+
+End near_monotone_convergence.
