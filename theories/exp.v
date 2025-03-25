@@ -549,6 +549,74 @@ Local Close Scope convex_scope.
 
 End expR.
 
+Section exp_coeff_properties.
+Variable R : realType.
+Implicit Types x : R.
+
+Lemma normr_exp_coeff_near_nonincreasing x :
+  \forall n \near \oo,
+  `|exp_coeff x n.+1| <= `|exp_coeff x n|.
+Proof.
+exists `|archimedean.Num.Def.ceil x |%N => //.
+move=> n/= H.
+rewrite exp_coeffE exprS mulrA normrM [leRHS]normrM ler_pM//.
+rewrite factS mulnC natrM invfM -mulrA normrM ler_piMr//.
+rewrite normrM normfV ler_pdivrMl; last by rewrite normr_gt0 lt0r_neq0.
+by rewrite mulr1 (le_trans (abs_ceil_ge _))// gtr0_norm// ler_nat ltnS.
+Qed.
+
+Lemma series_exp_coeff_near_ge0 x:
+  \forall n \near \oo, 0 <= (series (exp_coeff x)) n.
+Proof.
+apply: (cvgr_ge (expR x)); last exact: expR_gt0.
+exact: is_cvg_series_exp_coeff.
+Qed.
+
+Lemma exp_coeff2_near_nondecreasing x :
+ \forall N \near \oo, nondecreasing_seq
+     (fun n => (series (exp_coeff x) (2 * (n + N))%N)).
+Proof.
+have -[N _ Hnear] := normr_exp_coeff_near_nonincreasing x.
+exists N => //n/= Nn; apply/nondecreasing_seqP => k.
+rewrite /series/= addSn mulnS add2n !big_nat_recr//= -addrA lerDl.
+rewrite -[X in _ <= _ + X]opprK subr_ge0 (le_trans (ler_norm _))// normrN.
+have : (N <= (2 * (k + n)))%N.
+  by rewrite mulnDr -(add0n N) leq_add// mulSn mul1n -(add0n N) leq_add.
+move/Hnear => H; rewrite (le_trans H)// ler_norml lexx andbT.
+suff Hsuff : 0 <= exp_coeff x (2 * (k + n))%N.
+  by apply: (le_trans _ Hsuff); rewrite lerNl oppr0.
+by rewrite mulr_ge0// exprn_even_ge0// mul2n odd_double.
+Qed.
+
+Lemma exp_coeff2_near_in_increasing x :
+ \forall N \near \oo, {in [set k | (N <= k)%N] &,
+nondecreasing_seq (fun n => (series (exp_coeff x) (2 * n)%N))}.
+Proof.
+have -[N _ Hnear] := normr_exp_coeff_near_nonincreasing x.
+exists N => //k/= Nk n m; rewrite !inE/= => kn km nm.
+have kn2 : (2 * k <= 2 * n)%N by rewrite leq_pmul2l.
+have km2 : (2 * k <= 2 * m)%N by rewrite leq_pmul2l.
+rewrite /series/= (big_cat_nat _ _ _ _ kn2)// (big_cat_nat _ _ _ _ km2)// lerD2.
+have nm2 : (2 * n <= 2 * m)%N by rewrite leq_pmul2l.
+rewrite (big_cat_nat _ _ _ _ nm2)//=.
+rewrite lerDl -(add0n (2 * n)%N) big_addn -mulnBr.
+elim: (m - n)%N; first by rewrite muln0 big_mkord big_ord0.
+move=> {km nm km2 nm2} {}m IH.
+rewrite mul2n doubleS 2?big_nat_recr//= -addrA addr_ge0// -?mul2n//.
+rewrite -[X in _ <= _ + X]opprK subr_ge0 (le_trans (ler_norm _))// normrN.
+rewrite addSn -mulnDr.
+have : (N <= (2 * (m + n)))%N.
+  rewrite mulnDr -(add0n N) leq_add//.
+  by rewrite (leq_trans _ kn2)// (leq_trans Nk)// leq_pmull.
+move/Hnear => H.
+rewrite (le_trans H)// ler_norml lexx andbT.
+suff Hsuff : 0 <= exp_coeff x (2 * (m + n))%N.
+  by rewrite (le_trans _ Hsuff)// lerNl oppr0.
+by rewrite mulr_ge0// exprn_even_ge0// mul2n odd_double.
+Qed.
+
+End exp_coeff_properties.
+
 #[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `expRM_natl`")]
 Notation expRMm := expRM_natl (only parsing).
 
