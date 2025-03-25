@@ -36,6 +36,29 @@
 - in `derive.v`:
   + lemmas `derive_shift`, `is_derive_shift`
 
+- in `interval_inference.v`:
+  + definitions `IntItv.exprz`, `Instances.natmul_itv`
+  + lemmas `Instances.num_spec_exprz`, `Instances.nat_spec_factorial`
+  + canonical instance `Instances.exprz_inum`,
+    `Instances.factorial_inum`
+
+- in `mathcomp_extra.v`:
+  + lemmas `exprz_ge0` and `exprz_gt0`
+
+- in `exp.v`
+  + lemmas `expR_le1`, `num_spec_expR`, `num_spec_powR`
+  + definitions `expR_itv_boundl`, `expR_itv_boundr`, `expR_itv`,
+    `powR_itv`
+  + canonical instance `expR_inum`, `powR_inum`
+
+- in `numfun.v`:
+  + lemma `num_spec_indic`
+  + canonical instance `indic_inum`
+
+- in `trigo.v`:
+  + lemmas `num_spec_sin`, `num_spec_cos`
+  + canonical instances `sin_inum`, `cos_inum`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
@@ -44,6 +67,12 @@
     `continuous_oneDsqr`, `continuous_oneDsqr`
 - moved, generalized, and renamed from `gauss_integral` to `trigo.v`:
   + `integral01_oneDsqr` -> `integral0_oneDsqr`
+
+- in `interval_inference.v`:
+  + definition `IntItv.exprn_le1_bound`
+  + lemmas `Instances.nat_spec_succ`, `Instances.num_spec_natmul`,
+    `Instances.num_spec_intmul`, `Instances.num_itv_bound_exprn_le1`
+  + canonical instance `Instances.succn_inum`
 
 ### Renamed
 
