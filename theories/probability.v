@@ -3743,6 +3743,29 @@ Admitted.
       added by the integral of `normal_pdf a s x` on ]a - e, a + e[
  *)
 
+Let normal_pdf0 m s x : R := normal_peak s * normal_fun m s x.
+
+Let normal_pdf0_ge0 m x : 0 <= normal_pdf0 m s x.
+Proof. by rewrite mulr_ge0 ?normal_peak_ge0 ?expR_ge0. Qed.
+
+Let continuous_normal_pdf0 m : continuous (normal_pdf0 m s).
+Proof.
+move=> x; apply: cvgM; first exact: cvg_cst.
+apply: (@cvg_comp _ R^o _ _ _ _
+   (nbhs (- (x - m) ^+ 2 / (s ^+ 2 *+ 2)))); last exact: continuous_expR.
+apply: cvgM; last exact: cvg_cst; apply: (@cvgN _ R^o).
+apply: (@cvg_comp _ _ _ _ (@GRing.exp R^~ 2) _ (nbhs (x - m))).
+  apply: (@cvgB _ R^o) => //; exact: cvg_cst.
+exact: sqr_continuous.
+Qed.
+
+Let normal_pdf0_ub m x : normal_pdf0 m s x <= normal_peak s.
+Proof.
+rewrite /normal_pdf0 ler_piMr ?normal_peak_ge0//.
+rewrite -[leRHS]expR0 ler_expR mulNr oppr_le0 mulr_ge0// ?sqr_ge0//.
+by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
+Qed.
+
 Let g' a e : R -> R := fun x => if x \in (ball a e : set R^o) then
   normal_peak s else normal_pdf0 e s `|x - a|.
 
@@ -4006,7 +4029,8 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ _ (a - e) (a + e) _ _ _ g) => 
   apply/abse_integralP => //=.
     by apply/measurable_EFinP; exact: measurable_normal_pdf.
   by rewrite integral_normal_pdf ltry.
-move=> x ax.
+move=> x.
+rewrite !in_itv/= => /andP[aex xae].
 apply/aeW => y Vy.
 rewrite ger0_norm; last exact: normal_pdf_ge0.
 rewrite normal_pdfE// /g /g'.
@@ -4016,7 +4040,6 @@ rewrite /normal_pdf0 ler_pM//.
 rewrite ler_expR !mulNr lerN2 ler_pM //.
   exact: sqr_ge0.
   by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
-move: ax; rewrite in_itv/= => /andP[aex xae].
 move: aey; move/negP/nandP; rewrite -!leNgt => -[yae|aey].
   rewrite -normrN opprB ger0_norm; last first.
     by rewrite subr_ge0 (le_trans yae)// gerBl.
