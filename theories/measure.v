@@ -1515,6 +1515,12 @@ by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
   [exact: mf|exact/esym/eq_preimage].
 Qed.
 
+Lemma measurable_fun_eqP D (f g : T1 -> T2) :
+  {in D, f =1 g} -> measurable_fun D f <-> measurable_fun D g.
+Proof.
+by move=> eq_fg; split; apply/eq_measurable_fun => // ? ?; rewrite eq_fg.
+Qed.
+
 Lemma measurable_cst D (r : T2) : measurable_fun D (cst r : T1 -> _).
 Proof.
 by move=> mD /= Y mY; rewrite preimage_cst; case: ifPn; rewrite ?setIT ?setI0.
@@ -1581,6 +1587,8 @@ End measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ id) =>
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
+#[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
+Arguments measurable_fun_eqP {d1 d2 T1 T2 D} f {g}.
 #[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
 Notation measurable_fun_ext := eq_measurable_fun (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_id`")]
@@ -3645,6 +3653,13 @@ HB.instance Definition _ :=
 
 End mnormalize.
 
+Lemma mnormalize_id  d (T : measurableType d) (R : realType)
+  (P P' : probability T R) : mnormalize P P' = P.
+Proof.
+apply/funext => x; rewrite /mnormalize/= probability_setT.
+by rewrite onee_eq0/= invr1 mule1.
+Qed.
+
 Section pdirac.
 Context d (T : measurableType d) (R : realType).
 
@@ -4248,7 +4263,7 @@ Lemma le_outer_measure : {homo mu : A B / A `<=` B >-> A <= B}.
 Proof.
 move=> A B AB; pose B_ k := if k is 0%N then B else set0.
 have -> : mu B = \sum_(n <oo) mu (B_ n).
-  rewrite nneseries_recl; last by move=> ?; rewrite outer_measure_ge0.
+  rewrite nneseries_recl//; last by move=> ? ?; rewrite outer_measure_ge0.
   rewrite eseries_cond/= eseries0 ?adde0// => -[|]//= k _ _.
   by rewrite outer_measure0.
 apply: subset_outer_measure_sigma_subadditive => //.
@@ -5292,8 +5307,10 @@ End partial_measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ (pair^~ _)) =>
   solve [apply: measurable_pair2] : core.
 
+(* [Lemma 14.13, Klenke 2014] *)
 Section measurable_section.
-Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
+Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
+  (T3 : measurableType d3).
 
 Lemma measurable_xsection (A : set (T1 * T2)) (x : T1) :
   measurable A -> measurable (xsection A x).
@@ -5310,6 +5327,14 @@ move=> mA; pose i (x : T1) := (x, y).
 have mi : measurable_fun setT i by exact: measurable_pair2.
 by rewrite ysectionE -[X in measurable X]setTI; exact: mi.
 Qed.
+
+Lemma measurable_prod1 (f : T1 * T2 -> T3) (y : T2) :
+  measurable_fun setT f -> measurable_fun setT (fun x => f (x, y)).
+Proof. by move=> mf; exact: measurableT_comp. Qed.
+
+Lemma measurable_prod2 (f : T1 * T2 -> T3) (x : T1) :
+  measurable_fun setT f -> measurable_fun setT (fun y => f (x, y)).
+Proof. by move=> mf; exact: measurableT_comp. Qed.
 
 End measurable_section.
 
