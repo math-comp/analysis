@@ -1121,6 +1121,13 @@ Definition exp_coeff x := [sequence x ^+ n / n`!%:R]_n.
 
 Local Notation exp := exp_coeff.
 
+Lemma exp_coeff_gt0 x n : 0 < x -> 0 < exp x n.
+Proof.
+move=> x0; rewrite /exp/= divr_gt0//.
+  by rewrite exprn_gt0.
+by rewrite (_:0%R = 0%:R)// ltr_nat; exact: fact_gt0.
+Qed.
+
 Lemma exp_coeff_ge0 x n : 0 <= x -> 0 <= exp x n.
 Proof. by move=> x0; rewrite /exp divr_ge0 // exprn_ge0. Qed.
 
