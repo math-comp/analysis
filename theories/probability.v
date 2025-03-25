@@ -3746,6 +3746,29 @@ Admitted.
       added by the integral of `normal_pdf a s x` on ]a - e, a + e[
  *)
 
+Let normal_pdf0 m s x : R := normal_peak s * normal_fun m s x.
+
+Let normal_pdf0_ge0 m x : 0 <= normal_pdf0 m s x.
+Proof. by rewrite mulr_ge0 ?normal_peak_ge0 ?expR_ge0. Qed.
+
+Let continuous_normal_pdf0 m : continuous (normal_pdf0 m s).
+Proof.
+move=> x; apply: cvgM; first exact: cvg_cst.
+apply: (@cvg_comp _ R^o _ _ _ _
+   (nbhs (- (x - m) ^+ 2 / (s ^+ 2 *+ 2)))); last exact: continuous_expR.
+apply: cvgM; last exact: cvg_cst; apply: (@cvgN _ R^o).
+apply: (@cvg_comp _ _ _ _ (@GRing.exp R^~ 2) _ (nbhs (x - m))).
+  apply: (@cvgB _ R^o) => //; exact: cvg_cst.
+exact: sqr_continuous.
+Qed.
+
+Let normal_pdf0_ub m x : normal_pdf0 m s x <= normal_peak s.
+Proof.
+rewrite /normal_pdf0 ler_piMr ?normal_peak_ge0//.
+rewrite -[leRHS]expR0 ler_expR mulNr oppr_le0 mulr_ge0// ?sqr_ge0//.
+by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
+Qed.
+
 Let g' a e : R -> R := fun x => if x \in (ball a e : set R^o) then
   normal_peak s else normal_pdf0 e s `|x - a|.
 
