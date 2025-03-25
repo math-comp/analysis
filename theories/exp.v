@@ -1363,77 +1363,88 @@ Qed.
 Lemma fin_num_poweR x y : x \is a fin_num -> y \is a fin_num -> x `^ y \is a fin_num.
 Proof. by case: x => //r; case: y => //s _ _; rewrite poweR_EFin. Qed.
 
-  Lemma poweRM x y r : (r != 0)%R -> 0 <= x -> 0 <= y -> (x * y) `^ r%:E = x `^ r%:E * y `^ r%:E.
-  Proof.
-  have [->|rN0] := eqVneq r 0%R; first by rewrite !poweRe0 mule1.
-  have powyrM s : (0 <= s)%R -> (+oo * s%:E) `^ r%:E = +oo `^ r%:E * s%:E `^ r%:E.
-    case: ltgtP => // [s_gt0 _|<- _]; last first.
-      by rewrite poweR0e // !mule0 poweR0e.
-      rewrite gt0_mulye //;move: rN0;case: (ltgtP r 0%R) => // p0 _.
-        by rewrite poweRyNe ?mul0e.
-        rewrite poweRyPe // gt0_mulye // poweR_gt0_lt0r //. apply /andP => //=.
-        by rewrite lee_fin le0r p0 orbC //= ltry.
-  case: x y => [x||] [y||]// _ x0 y0.
-  - by rewrite ?poweR_EFin -EFinM; f_equal; rewrite powRM.
-  - by rewrite muleC [X in _ = X]muleC powyrM.
-  - by rewrite powyrM.
-  - rewrite mulyy; move: rN0; case: (ltgtP r 0%R) => // rN0 _.
-    + by rewrite poweRyNe ?mule0.
-    + by rewrite poweRyPe ?mulyy.
-  Qed.
+Lemma poweRM x y r : (r != 0)%R -> 0 <= x -> 0 <= y -> (x * y) `^ r%:E = x `^ r%:E * y `^ r%:E.
+Proof.
+have [->|rN0] := eqVneq r 0%R; first by rewrite !poweRe0 mule1.
+have powyrM s : (0 <= s)%R -> (+oo * s%:E) `^ r%:E = +oo `^ r%:E * s%:E `^ r%:E.
+  case: ltgtP => // [s_gt0 _|<- _]; last first.
+    by rewrite poweR0e// !mule0 poweR0e.
+  rewrite gt0_mulye//; case: (ltgtP r 0%R) rN0 => // p0 _.
+    by rewrite poweRyNe ?mul0e.
+  rewrite poweRyPe// gt0_mulye// poweR_gt0_lt0r//.
+  by rewrite lee_fin le0r p0 orbC ?ltry.
+case: x y => [x||] [y||]// _ x0 y0.
+- by rewrite ?poweR_EFin -EFinM; f_equal; rewrite powRM.
+- by rewrite muleC [X in _ = X]muleC powyrM.
+- by rewrite powyrM.
+rewrite mulyy; move: rN0; case: (ltgtP r 0%R) => // rN0 _.
+  by rewrite poweRyNe ?mule0.
+by rewrite poweRyPe ?mulyy.
+Qed.
   
-  Definition poweRrM_def x y z := 
-    ((x <= 1) || (0 <= y) || (x*y*z < +oo)) && ((1 <= x) || (-oo < y*z)).
+Definition poweRrM_def x y z :=
+  ((x <= 1) || (0 <= y) || (x*y*z < +oo)) && ((1 <= x) || (-oo < y*z)).
 
-  Lemma poweRrM (x y z : \bar R) : poweRrM_def x y z -> x `^ (y * z) = (x `^ y) `^ z. 
-  Proof.
-  rewrite /poweRrM_def; have [x0|x0|->] := (ltgtP x 0); last first.
-  - have [->|y0] := eqVneq y 0; have [->|z0] := eqVneq z 0;
-    rewrite ?mul0e ?mule0 ?poweRe0 ?poweR1e ?poweR0e ?mule_neq0 //.
-  - move: x y z x0 => [x||]//[y||]//[z||]// => x0; 
-    try have [y0|y0|y0]:= (ltgtP y%:E 0);try have [z0|z0|z0]:= (ltgtP z%:E 0);
-    try have ?:= negbT (gt_eqF y0);try have ?:= negbT (gt_eqF z0);
-    try have yz0:= mule_gt0 y0 z0;try have yz0:= mule_lt0_gt0 y0 z0;
-    try have yz0:= mule_gt0_lt0 y0 z0;try have yz0:= mule_lt0_lt0 y0 z0;
-    last first; rewrite ?y0 ?z0 ?mulyy ?mulNyy ?mulNyNy ?mulyNy ?mul0e ?mule0
-    ?(gt0_muleNy y0) ?(lt0_muleNy y0) ?(gt0_muley y0) ?(lt0_muley y0)
-    ?(gt0_mulNye z0) ?(lt0_mulNye z0) ?(gt0_mulye z0) ?(lt0_mulye z0).
-  all: rewrite ?leye_eq ?leeNy_eq ?leey ?mulNyy ?mulNyy ?orbT ?(gt_eqF ltNy0)
+Lemma poweRrM_defE x y z :
+  ((x <= 1) || (0 <= y) || (x*y*z < +oo)) && ((1 <= x) || (-oo < y*z)) = 
+    if 1 < x then (0 <= y) || (x*y*z < +oo) else (-oo < y*z) || (x == 1).
+Proof.
+case: ifPn => h.
+- by rewrite (@ltW _ _ 1 x)//= andbT leNgt h.
+- by rewrite leNgt h/= eq_le (leNgt x 1) h/= orbC.
+Qed.
+
+Lemma poweRrM (x y z : \bar R) : poweRrM_def x y z -> x `^ (y * z) = (x `^ y) `^ z. 
+Proof.
+rewrite /poweRrM_def; have [x0|x0|->] := (ltgtP x 0); last first.
+- have [->|y0] := eqVneq y 0; have [->|z0] := eqVneq z 0;
+  by rewrite ?mul0e ?mule0 ?poweRe0 ?poweR1e ?poweR0e ?mule_neq0.
+- move: x y z x0 => [x||]//[y||]//[z||]// => x0; 
+  try have [y0|y0|y0]:= (ltgtP y%:E 0);try have [z0|z0|z0]:= (ltgtP z%:E 0);
+  try have ?:= negbT (gt_eqF y0);try have ?:= negbT (gt_eqF z0);
+  try have yz0:= mule_gt0 y0 z0;try have yz0:= mule_lt0_gt0 y0 z0;
+  try have yz0:= mule_gt0_lt0 y0 z0;try have yz0:= mule_lt0_lt0 y0 z0;
+  last first; rewrite ?y0 ?z0 ?mulyy ?mulNyy ?mulNyNy ?mulyNy ?mul0e ?mule0
+  ?(gt0_muleNy y0) ?(lt0_muleNy y0) ?(gt0_muley y0) ?(lt0_muley y0)
+  ?(gt0_mulNye z0) ?(lt0_mulNye z0) ?(gt0_mulye z0) ?(lt0_mulye z0).
+all:
+  rewrite ?leye_eq ?leeNy_eq ?leey ?mulNyy ?mulNyy ?orbT ?(gt_eqF ltNy0)
     ?(lt0_mulye y0) ?(gt0_muleNy x0) ?(gt0_mulNye z0) ?(lt0_mulNye z0).
-  all: try by rewrite 
-    ?(poweRyPe yz0) ?(poweRyNe yz0) ?(poweRyNe ltNy0) ?(poweRyPe lt0y) 
-    ?(poweRyPe y0) ?(poweRyNe y0) ?(poweRyPe z0) ?(poweRyNe z0) ?poweRe0 
-    ?poweR0e ?poweR1e ?(poweRyNe ltNy0) ?(poweRyPe lt0y) ?(poweRyPe y0) 
-    ?(poweRyNe y0) ?(poweRyPe z0) ?(poweRyNe z0).
-  all: try by (rewrite -EFinM !poweR_EFin; f_equal; rewrite powRrM).
-  all: try have [x1|x1|->] := (ltgtP x%:E 1); rewrite ?poweR1e //.
-  all: try (have gelt0x1 : 0 <= x%:E < 1; 
-    first by apply /andP; split => //; rewrite le_eqVlt x0 orbC). 
-  all: try (have ltlt0x1 : 0 < x%:E < 1; first by apply /andP; split).
-  all: try (have ? : (0 < x <= 1)%R; 
-    first by apply /andP; split => //=; rewrite le_eqVlt -lte_fin x1 orbC).
-  all: try (have ?: (y <= 0)%R;first by rewrite le_eqVlt -lte_fin y0 orbC).
-  all: try (have ?: (1 <= x)%R;first by rewrite le_eqVlt -lte_fin x1 orbC).
-  all: try (have ? : x%:E `^ y%:E != 1; 
+all: try
+  by rewrite 
+       ?(poweRyPe yz0) ?(poweRyNe yz0) ?(poweRyNe ltNy0) ?(poweRyPe lt0y) 
+       ?(poweRyPe y0) ?(poweRyNe y0) ?(poweRyPe z0) ?(poweRyNe z0) ?poweRe0 
+       ?poweR0e ?poweR1e ?(poweRyNe ltNy0) ?(poweRyPe lt0y) ?(poweRyPe y0) 
+       ?(poweRyNe y0) ?(poweRyPe z0) ?(poweRyNe z0).
+all: try by (rewrite -EFinM !poweR_EFin; f_equal; rewrite powRrM).
+all: try have [x1|x1|->] := (ltgtP x%:E 1); rewrite ?poweR1e //.
+all: try (have gelt0x1 : 0 <= x%:E < 1; 
+          first by apply /andP; split => //; rewrite le_eqVlt x0 orbC). 
+all: try (have ltlt0x1 : 0 < x%:E < 1; first by apply /andP; split).
+all: try (have ? : (0 < x <= 1)%R; 
+          first by apply /andP; split => //=; rewrite le_eqVlt -lte_fin x1 orbC).
+all: try (have ?: (y <= 0)%R;first by rewrite le_eqVlt -lte_fin y0 orbC).
+all: try (have ?: (1 <= x)%R;first by rewrite le_eqVlt -lte_fin x1 orbC).
+all: try (have ? : x%:E `^ y%:E != 1; 
     first by rewrite poweR_EFin eqe; apply /negP; rewrite powR_eq1 -eqe 
     ?(lt_eqF x1) ?(gt_eqF x1) -eqe ?(lt_eqF y0) ?(gt_eqF y0) orbC//=;
     move=> ltx0;rewrite -falseE -(@ltxx _ R 0%R);apply: (lt_trans _ ltx0)). 
-  all: try (have ? : 1 != x%:E `^ y%:E; first by rewrite eq_sym).
-  all: try (have ? : x%:E `^ y%:E != 0%R; first by rewrite poweR_EFin eqe;
-    apply /negP; rewrite powR_eq0 -eqe (gt_eqF x0)).
-  all: have ? := poweR_ge0.
-  all: rewrite ?(poweRey_lt1 gelt0x1) ?(poweReNy_lt1 ltlt0x1)
-    ?(poweReNy_gt1 x1) ?(poweRey_gt1 x1).
-  all: try by rewrite ?(poweRyNe ltNy0) ?(poweRyPe lt0y) ?(poweRyNe z0)
-    ?(poweRyPe z0) ?(poweReNy_gt1 x1) ?(poweRey_gt1 x1) ?poweR0e.
-  all: try by rewrite muleAC ?(gt0_muleNy x0) ?(lt0_mulNye y0).
-  3,5,6: rewrite ?poweReNy_lt1 ?poweRey_lt1 ?lt_def//.
-  1,2,6: rewrite ?poweReNy_gt1 ?poweRey_gt1 ?lt_def//.
-  all: try do 2 (apply /andP; split) =>//; try (apply /andP; split) =>//;
-    rewrite ?poweR_EFin ?lee_fin -?(powRr0 x).
-  all: try by apply /ger_powR => //; rewrite le0r; apply /orP; right.
-  all: try by apply /ler_powR => //; rewrite le0r; apply /orP; right.
-- by rewrite [X in _ = X `^ _]lt0_poweR // poweR1e lt0_poweR.
+all: try (have ? : 1 != x%:E `^ y%:E; first by rewrite eq_sym).
+all: try (have ? : x%:E `^ y%:E != 0%R; first by rewrite poweR_EFin eqe;
+          apply /negP; rewrite powR_eq0 -eqe (gt_eqF x0)).
+all: have ? := poweR_ge0.
+all: rewrite ?(poweRey_lt1 gelt0x1) ?(poweReNy_lt1 ltlt0x1)
+       ?(poweReNy_gt1 x1) ?(poweRey_gt1 x1).
+all: try by rewrite ?(poweRyNe ltNy0) ?(poweRyPe lt0y) ?(poweRyNe z0)
+              ?(poweRyPe z0) ?(poweReNy_gt1 x1) ?(poweRey_gt1 x1) ?poweR0e.
+all: try by rewrite muleAC ?(gt0_muleNy x0) ?(lt0_mulNye y0).
+3,5,6: rewrite ?poweReNy_lt1 ?poweRey_lt1 ?lt_def//.
+1,2,6: rewrite ?poweReNy_gt1 ?poweRey_gt1 ?lt_def//.
+all: try do 2 (apply /andP; split) =>//; try (apply /andP; split) =>//;
+       rewrite ?poweR_EFin ?lee_fin -?(powRr0 x).
+all: try by apply /ger_powR => //; rewrite le0r; apply /orP; right.
+all: try by apply /ler_powR => //; rewrite le0r; apply /orP; right.
+by rewrite [X in _ = X `^ _]lt0_poweR // poweR1e lt0_poweR.
 Qed.
 
 Lemma poweRAC x y z : 
@@ -1508,7 +1519,7 @@ Definition poweRD_def x y z : bool :=
   | x%:E , -oo , +oo => (x <= 0)%R || (1 <= x)%R
   | x%:E , +oo , -oo => (x <= 0)%R || (1 <= x)%R
   | x%:E , _ , _ => x == 0%R
-  | +oo , y%:E , z%:E => 
+  | +oo , y%:E , z%:E =>
       if (y + z < 0)%R then ((y <= 0) && (z <= 0))%R else
       if (y + z > 0)%R then ((y >= 0)%R && (z >= 0))%R else
       ((y == 0) && (z == 0))%R
@@ -1519,14 +1530,14 @@ Definition poweRD_def x y z : bool :=
 Notation "x '`^?' ( y +? z )" := (poweRD_def x y z) : ereal_scope.
 
 Lemma poweRD x y z : x `^? ( y +? z ) -> x `^ (y + z) = x `^ y * x `^ z.
-Proof. 
+Proof.
 case: x => [a||]; case: y => [b||]; case: z => [c||] //=.
 by rewrite -EFinD !poweR_EFin -EFinM => Ddef; f_equal; rewrite (powRD Ddef).
-all: try by move => /eqP ->; 
-  rewrite ?addey ?addye ?addNye ?addeNy 
+all: try by move => /eqP ->;
+  rewrite ?addey ?addye ?addNye ?addeNy
     ?(@poweR0e +oo) ?(@poweR0e -oo) ?mule0 ?mul0e.
-all: try (rewrite ?addeNy ?addNye => /orP [|]; 
-  case: (ltrgtP a 0) => // a0 +; 
+all: try (rewrite ?addeNy ?addNye => /orP [|];
+  case: (ltrgtP a 0) => // a0 +;
   case: (ltrgtP a 1) => // a1).
 all: try by rewrite !lt0_poweR ?lte_fin ?mul1e.
 all: try by rewrite a0 !poweR0e // mul0e.
@@ -1595,7 +1606,6 @@ Proof. by move=> y0 z0 x0 h; rewrite poweRD. Qed.
 Lemma poweRB x y z : x `^?(y +? - z) -> x `^ (y - z) = x `^ y * x `^ (- z).
 Proof. by move=> rs; rewrite poweRD. Qed.
 
-  
 Lemma poweR12_sqrt x : 0 <= x -> x `^ (2^-1%:E) = sqrte x.
 Proof.
 move: x => [x|_|//]; last by rewrite poweRyPe.
@@ -1619,7 +1629,6 @@ rewrite ?poweR_EFin -?EFinM -?EFinD ?lee_fin ?conjugate_powR
 ?poweRyPe ?gt0_muley ?gt0_mulye ?lte_fin ?invr_gt0 
 ?addye ?addey ?negbT ?gt_eqF ?poweR_EFin -?EFinM ?ltNyr //.
 Qed.
-
 
 End poweR.
 Notation "a `^ x" := (poweR a x) : ereal_scope.
