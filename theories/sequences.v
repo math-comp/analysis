@@ -2919,3 +2919,33 @@ by rewrite invfM invrK mulrCA ler_pM2l // invf_div // ler_pM2r.
 Qed.
 
 End banach_steinhaus.
+
+Section near_ereal_nondecreasing_is_cvgn.
+
+Let G N := ([set n | (N <= n)%N]).
+
+Lemma ereal_shiftn_nondecreasing_cvgn (R : realType) (u_ : (\bar R) ^nat)
+ (N : nat) :
+{in G N &, nondecreasing_seq u_ }
+      -> u_ @ \oo --> ereal_sup (range (fun n => u_ (n + N))).
+Proof.
+move=> H.
+rewrite -(cvg_shiftn N).
+apply: ereal_nondecreasing_cvgn.
+move=> k m km.
+apply: H; rewrite /G ?inE//=.
+- exact: leq_addl.
+- exact: leq_addl.
+- exact: leq_add.
+Qed.
+
+Lemma near_ereal_nondecreasing_is_cvgn (R : realType) (u_ : (\bar R) ^nat) :
+  (\forall N \near \oo, {in G N &, nondecreasing_seq u_ }) -> cvgn u_.
+Proof.
+move=> [] N _ H.
+apply/cvg_ex; exists (ereal_sup (range (fun n =>  u_ (n + N)))).
+apply: ereal_shiftn_nondecreasing_cvgn.
+by apply: (H N); rewrite /G ?inE/=.
+Qed.
+
+End near_ereal_nondecreasing_is_cvgn.

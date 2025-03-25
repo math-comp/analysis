@@ -36,6 +36,9 @@
 - in `derive.v`:
   + lemmas `derive_shift`, `is_derive_shift`
 
+- in `lebesgue_integral.v`
+  + lemmas `near_monotone_convergence`, `cvg_near_monotone_convergence`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
