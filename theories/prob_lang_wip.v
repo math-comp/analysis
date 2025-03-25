@@ -32,7 +32,6 @@ Notation mu := (@lebesgue_measure R).
 Hypothesis integral_poisson_density : forall k,
   (\int[mu]_x (@poisson_pdf R k x)%:E = 1%E)%E.
 
-(* density function for poisson *)
 Definition poisson1 := @poisson_pdf R 1%N.
 
 Lemma poisson1_ge0 (x : R) : 0 <= poisson1 x.

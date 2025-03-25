@@ -20,6 +20,8 @@ From mathcomp Require Import lebesgue_integral trigo probability kernel charge.
 (* ```                                                                        *)
 (*          poisson_pdf == Poisson pdf                                        *)
 (*      exponential_pdf == exponential distribution pdf                       *)
+(*                         TODO: favor the formalization in probability.v     *)
+(*                         instead                                            *)
 (*   measurable_sum X Y == the type X + Y, as a measurable type               *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -113,11 +115,7 @@ subst p2.
 by f_equal.
 Qed.
 
-Definition dep_uncurry (A : Type) (B : A -> Type) (C : Type) :
-    (forall a : A, B a -> C) -> {a : A & B a} -> C :=
-  fun f p => let (a, Ba) := p in f a Ba.
-
-(* NB: to be PRed to probability.v *)
+(* TODO: move to probability.v *)
 Section poisson_pdf.
 Variable R : realType.
 Local Open Scope ring_scope.
@@ -150,11 +148,11 @@ Definition poisson10 := poisson_pdf 4 10%:R. (* 0.019 *)
 
 End poisson_pdf.
 
+(* TODO: redefine using the new theory of exponential probability in probability.v *)
 Section exponential_pdf.
 Variable R : realType.
 Local Open Scope ring_scope.
 
-(* density function for exponential *)
 Definition exponential_pdf x r : R := r * expR (- r * x).
 
 Lemma exponential_pdf_gt0 x r : 0 < r -> 0 < exponential_pdf x r.
