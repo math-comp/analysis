@@ -464,6 +464,18 @@ End CosSin.
 Arguments sin {R}.
 Arguments cos {R}.
 
+Lemma num_spec_sin {R : realType} (x : R) :
+  Itv.spec (@Itv.num_sem R) (Itv.Real `[-1, 1]%Z) (sin x).
+Proof. by apply/and3P; rewrite ?num_real !bnd_simp ?sin_geN1 ?sin_le1. Qed.
+
+Canonical sin_inum {R : realType} (x : R) := Itv.mk (num_spec_sin x).
+
+Lemma num_spec_cos {R : realType} (x : R) :
+  Itv.spec (@Itv.num_sem R) (Itv.Real `[-1, 1]%Z) (cos x).
+Proof. by apply/and3P; rewrite ?num_real !bnd_simp ?cos_geN1 ?cos_le1. Qed.
+
+Canonical cos_inum {R : realType} (x : R) := Itv.mk (num_spec_cos x).
+
 Section Pi.
 Variable R : realType.
 Implicit Types (x y : R) (n k : nat).
@@ -514,9 +526,7 @@ rewrite -(ffact_fact (leq_addl _ _)) addnK.
 rewrite mulNr -!mulrA -mulrBr mulr_gt0 ?exprn_gt0 //.
 set u := _.+1.
 rewrite natrM invfM.
-rewrite -[X in _ < X - _]mul1r !mulrA -mulrBl divr_gt0 //; last first.
-  by rewrite (ltr_nat _ 0) fact_gt0.
-rewrite subr_gt0.
+rewrite -[X in _ < X - _]mul1r !mulrA -mulrBl divr_gt0 // subr_gt0.
 set v := _ ^_ _; rewrite -[ltRHS](divff (_ : v%:R != 0)); last first.
   by rewrite lt0r_neq0 // (ltr_nat _ 0) ffact_gt0 leq_addl.
 rewrite ltr_pM2r; last by rewrite invr_gt0 (ltr_nat _ 0) ffact_gt0 leq_addl.

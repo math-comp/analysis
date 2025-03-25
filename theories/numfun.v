@@ -296,6 +296,16 @@ Definition indic {T} {R : ringType} (A : set T) (x : T) : R := (x \in A)%:R.
 Reserved Notation "'\1_' A" (at level 8, A at level 2, format "'\1_' A") .
 Notation "'\1_' A" := (indic A) : ring_scope.
 
+Lemma num_spec_indic {T} {R : numDomainType} (A : set T) (x : T) :
+  Itv.spec (@Itv.num_sem R) (Itv.Real `[0, 1]%Z) (indic A x).
+Proof.
+apply/and3P; split; rewrite ?realn// bnd_simp ?mulrn_wge0//.
+by rewrite -pmulrn ler_nat leq_b1.
+Qed.
+
+Canonical indic_inum {T} {R : numDomainType} (A : set T) (x : T) :=
+  Itv.mk (@num_spec_indic T R A x).
+
 Section indic_lemmas.
 Context (T : Type) (R : ringType).
 Implicit Types A D : set T.

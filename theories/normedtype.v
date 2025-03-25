@@ -5290,8 +5290,7 @@ have /Aco [] := covA.
   by rewrite -{1}(subrK p q) ler_normD.
 move=> D _ DcovA.
 exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
-rewrite bigmax_real//; last by move=> ? _; rewrite realz.
-split => // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
+rewrite bigmax_real//; split=> // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
 apply; apply: le_lt_trans ltmaxx.
 have : n \in enum_fset D by [].
 by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
