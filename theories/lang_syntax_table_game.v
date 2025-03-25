@@ -67,6 +67,7 @@ by rewrite {}/A {}/B !setTI ysectionE.
 Qed.
 
 Local Open Scope lang_scope.
+(* NB: consider moving to lang_syntax.v *)
 Lemma execP_letin_uniform {R : realType}
   g t str (s0 s1 : exp P ((str, Real) :: g) t) :
   (forall (p : R) x U, (0 <= p <= 1)%R ->
@@ -86,7 +87,7 @@ Qed.
 
 End execP_letin_uniform.
 
-(* NB: generic lemmas about bouned, to be moved *)
+(* NB: generic lemmas about bounded, to be moved *)
 Section bounded.
 Local Open Scope ring_scope.
 Local Open Scope lang_scope.

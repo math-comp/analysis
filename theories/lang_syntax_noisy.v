@@ -42,11 +42,11 @@ Local Open Scope ereal_scope.
 Local Open Scope string_scope.
 
 (* TODO: PR *)
-Section ge0_fin_measurable_probability_integrable.
+Section ge0_bounded_measurable_probability_integrable.
 Context d {T : measurableType d} {R : realType} {p : probability T R}
    {f : T -> \bar R}.
 
-Lemma ge0_fin_measurable_probability_integrable :
+Lemma ge0_bounded_measurable_probability_integrable :
   (forall x, 0 <= f x) ->
   (exists M : R, forall x, f x <= M%:E) ->
   measurable_fun setT f ->
@@ -63,7 +63,7 @@ apply (@le_lt_trans _ _ (\int[p]_x M%:E)).
 by rewrite integral_cst// probability_setT mule1 ltry.
 Qed.
 
-End ge0_fin_measurable_probability_integrable.
+End ge0_bounded_measurable_probability_integrable.
 
 (* TODO: PR *)
 Section pkernel_probability_integrable.
@@ -74,9 +74,8 @@ Lemma pkernel_probability_integrable V : measurable V ->
   p.-integrable setT (fun x => f x V).
 Proof.
 move=> mV.
-apply: ge0_fin_measurable_probability_integrable => //.
-  exists 1%R.
-  move=> x.
+apply: ge0_bounded_measurable_probability_integrable => //.
+  exists 1%R => x.
   apply: (@le_trans _ _ (f x setT)).
     by apply: le_measure; rewrite ?inE.
   by rewrite prob_kernel.
@@ -202,7 +201,8 @@ Qed.
 
 End normal_prob_lemmas.
 
-Section conjugate_normal_property.
+(* TODO: move to probability.v *)
+Section normal_probD.
 Context {R : realType}.
 Local Notation mu := lebesgue_measure.
 
@@ -211,13 +211,13 @@ Let normal_pdf0 m s x : R := normal_peak s * normal_fun m s x.
 Let measurable_normal_pdf0 m s : measurable_fun setT (normal_pdf0 m s).
 Proof. by apply: measurable_funM => //=; exact: measurable_normal_fun. Qed.
 
-Lemma conjugate_normal1 (m1 m2 s1 s2 : R) V : measurable V ->
+Lemma normal_probD1 (m1 m2 s1 s2 : R) V : measurable V ->
   s1 != 0%R -> s2 != 0%R ->
   \int[normal_prob m1 s1]_x normal_prob (m2 + x) s2 V =
   \int[mu]_(y in V) \int[mu]_x (normal_pdf (m2 + x) s2 y * normal_pdf m1 s1 x)%:E.
 Proof.
 move=> mV s10 s20; rewrite integral_normal_prob//; last first.
-  apply: ge0_fin_measurable_probability_integrable => //=.
+  apply: ge0_bounded_measurable_probability_integrable => //=.
     by exists 1%R => ?; exact: probability_le1.
   apply: (@measurableT_comp _ _ _ _ _ _
       (fun x => normal_prob x s2 V) _ (fun x => m2 + x)).
@@ -283,7 +283,7 @@ move/negP in xV.
 by move/mem_set.
 Qed.
 
-Lemma conjugate_normal2 (y m1 m2 s1 s2 : R) : s1 != 0%R -> s2 != 0%R ->
+Lemma normal_probD2 (y m1 m2 s1 s2 : R) : s1 != 0%R -> s2 != 0%R ->
   \int[mu]_x (normal_pdf (m1 + x)%E s1 y * normal_pdf m2 s2 x)%:E =
   (normal_peak s1 * normal_peak s2)%:E *
   \int[mu]_z (normal_fun (m1 + z) s1 y * normal_fun m2 s2 z)%:E.
@@ -314,9 +314,9 @@ Lemma normal_probD (m1 s1 m2 s2 : R) V : s1 != 0%R -> s2 != 0%R ->
   normal_prob (m1 + m2) (Num.sqrt (s1 ^+ 2 + s2 ^+ 2)) V.
 Proof.
 move=> s10 s20 mV.
-rewrite conjugate_normal1//; apply: eq_integral => y _.
+rewrite normal_probD1//; apply: eq_integral => y _.
 clear V mV.
-rewrite conjugate_normal2//.
+rewrite normal_probD2//.
 have s1s20 : (s1 ^+ 2 + s2 ^+ 2 != 0)%R.
   by rewrite lt0r_neq0// addr_gt0// exprn_even_gt0.
 have sqs1s20 : Num.sqrt (s1 ^+ 2 + s2 ^+ 2) != 0%R.
@@ -417,7 +417,7 @@ rewrite sqrtrM; last by rewrite addr_ge0 ?sqr_ge0.
 by rewrite mulrC.
 Qed.
 
-End conjugate_normal_property.
+End normal_probD.
 
 Section noisy_programs.
 Local Open Scope lang_scope.
@@ -583,7 +583,6 @@ rewrite (_ : ((Num.sqrt 2)^-1 ^+ 2 + 1 ^+ 2 = 3 / 2)%R)//; last first.
   rewrite addf_div// 2!mulr1 mul1r (_:1%R = 1%:R)// -natrD.
 exact.
 Qed.
-
 
 End noisy_subproofs.
 
