@@ -2916,6 +2916,29 @@ Admitted.
       added by the integral of `normal_pdf a s x` on ]a - e, a + e[
  *)
 
+Let normal_pdf0 m s x : R := normal_peak s * normal_fun m s x.
+
+Let normal_pdf0_ge0 m x : 0 <= normal_pdf0 m s x.
+Proof. by rewrite mulr_ge0 ?normal_peak_ge0 ?expR_ge0. Qed.
+
+Let continuous_normal_pdf0 m : continuous (normal_pdf0 m s).
+Proof.
+move=> x; apply: cvgM; first exact: cvg_cst.
+apply: (@cvg_comp _ R^o _ _ _ _
+   (nbhs (- (x - m) ^+ 2 / (s ^+ 2 *+ 2)))); last exact: continuous_expR.
+apply: cvgM; last exact: cvg_cst; apply: (@cvgN _ R^o).
+apply: (@cvg_comp _ _ _ _ (@GRing.exp R^~ 2) _ (nbhs (x - m))).
+  apply: (@cvgB _ R^o) => //; exact: cvg_cst.
+exact: sqr_continuous.
+Qed.
+
+Let normal_pdf0_ub m x : normal_pdf0 m s x <= normal_peak s.
+Proof.
+rewrite /normal_pdf0 ler_piMr ?normal_peak_ge0//.
+rewrite -[leRHS]expR0 ler_expR mulNr oppr_le0 mulr_ge0// ?sqr_ge0//.
+by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
+Qed.
+
 Let g' a e : R -> R := fun x => if x \in (ball a e : set R^o) then
   normal_peak s else normal_pdf0 e s `|x - a|.
 
@@ -3179,7 +3202,8 @@ apply: (@continuity_under_integral _ _ _ mu _ _ _ _ (a - e) (a + e) _ _ _ g) => 
   apply/abse_integralP => //=.
     by apply/measurable_EFinP; exact: measurable_normal_pdf.
   by rewrite integral_normal_pdf ltry.
-move=> x ax.
+move=> x.
+rewrite !in_itv/= => /andP[aex xae].
 apply/aeW => y Vy.
 rewrite ger0_norm; last exact: normal_pdf_ge0.
 rewrite normal_pdfE// /g /g'.
@@ -3189,7 +3213,6 @@ rewrite /normal_pdf0 ler_pM//.
 rewrite ler_expR !mulNr lerN2 ler_pM //.
   exact: sqr_ge0.
   by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
-move: ax; rewrite in_itv/= => /andP[aex xae].
 move: aey; move/negP/nandP; rewrite -!leNgt => -[yae|aey].
   rewrite -normrN opprB ger0_norm; last first.
     by rewrite subr_ge0 (le_trans yae)// gerBl.
@@ -3254,21 +3277,6 @@ apply: H => /=.
 by rewrite (lt_le_trans grze)// ge_min lexx.
 Qed.
 
-Lemma derive1Mr [R : realFieldType] [f : R^o -> R^o] [x r : R^o] :
-  derivable f x 1 -> ((fun x => f x * r)^`()%classic x = (r * f^`()%classic x)%R :> R)%R.
-Proof.
-move=> fx1.
-rewrite derive1E (deriveM fx1); last by [].
-by rewrite -derive1E derive1_cst scaler0 add0r derive1E.
-Qed.
-
-Lemma derive1Ml [R : realFieldType] [f : R^o -> R^o] [x r : R^o] :
-  derivable f x 1 -> ((fun x => r * f x)^`()%classic x = (r * f^`()%classic x)%R :> R)%R.
-Proof.
-under eq_fun do rewrite mulrC.
-exact: derive1Mr.
-Qed.
-
 Lemma continuous_onemXn {R : realType} (n : nat) x :
   {for x, continuous (fun y : R => `1-y ^+ n)%R}.
 Proof.
@@ -3329,8 +3337,9 @@ rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=
 - by move=> x x01; exact: continuous_onemXn.
 - exact: derivable_oo_continuous_bnd_onemXnMr.
 - move=> x x01.
-  rewrite derive1Mr//; last  exact: onemXn_derivable.
-  by rewrite derive_onemXn mulrA mulVf// mul1r.
+  rewrite derive1Mr//; last exact: onemXn_derivable.
+  rewrite derive_onemXn.
+  by rewrite mulrAC divff// mul1r.
 Qed.
 
 End move.
@@ -3571,7 +3580,7 @@ rewrite (@Rintegration_by_parts _ _
   exact: derivable_oo_continuous_bnd_onemXnMr.
   move=> x x01.
   rewrite derive1Mr; last exact: onemXn_derivable.
-  by rewrite derive_onemXn mulrA mulVf// mul1r.
+  by rewrite derive_onemXn mulrAC divff// mul1r.
 rewrite {1}/onem !(expr1n,mul1r,expr0n,subr0,subrr,mul0r,oppr0)/=.
 rewrite sub0r.
 transitivity (a.+1%:R / b.+1%:R * (\int[mu]_(x in `[0, 1]) (XMonemX a b.+1 x)) : R)%R.
