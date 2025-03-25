@@ -71,15 +71,13 @@ Reserved Notation "e -P> k" (at level 40).
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* In this module, we use our lemma continuous_FTC2 to compute the value of
- * integration of the indicator function over the interval [0, 1].
- * we can use our lemma continuous_FTC2 because it requires continuous
- * within [0, 1], which the indicator function satisfies.
- * we also shows that the indicator function is not continuous in [0, 1],
- * required by previous version of lemma continuous_FTC2. This shows that
- * our lemma continuous_FTC2 is
- * enough weak to be usable in practice.
- *)
+(* In this module, we use the lemma continuous_FTC2 to compute the value of
+   integration of the indicator function over the interval [0, 1].
+   We can use the lemma continuous_FTC2 because it requires continuity within
+   [0, 1], which the indicator function satisfies.
+   We also show that the indicator function is not continuous in [0, 1].
+   This shows that the lemma continuous_FTC2 is * enough weak to be usable
+   in practice. *)
 Module integral_indicator_function.
 Section integral_indicator_function.
 
@@ -450,8 +448,7 @@ Defined.
 
 End binop.
 
-(* TODO: rename *)
-(* TODO: generalize? *)
+(* TODO: rename, generalize? *)
 Section relop.
 Inductive relop :=
 | relop_le | relop_lt | relop_eq .
