@@ -1365,7 +1365,7 @@ rewrite -EFinM lee_fin -powRM ?expR_ge0// ge0_ler_powR ?nnegrE//.
 Qed.
 
 (* [theorem 2.4, Rajani] / [thm 4.4.(2), MU] *)
-Theorem bernoulli_trial_inequality1 n (X_ : n.-tuple (bernoulliRV P p)) (delta : R) :
+Theorem sampling_ineq1 n (X_ : n.-tuple (bernoulliRV P p)) (delta : R) :
   (0 < delta)%R ->
   let X := bool_trial_value X_ in
   let mu := 'E_(\X_n P)[X] in
@@ -1492,7 +1492,7 @@ Qed.
 End xlnx_bounding.
 
 (* [Theorem 2.6, Rajani] / [thm 4.5.(2), MU] *)
-Theorem bernoulli_trial_inequality3 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
+Theorem sampling_ineq3 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
   (0 < delta < 1)%R ->
   let X' := bool_trial_value X : {RV \X_n P >-> R : realType} in
   let mu := 'E_(\X_n P)[X'] in
@@ -1648,7 +1648,7 @@ Hypothesis p01 : (0 <= p <= 1)%R.
 Local Open Scope ereal_scope.
 
 (* [Theorem 2.5, Rajani] *)
-Theorem bernoulli_trial_inequality2 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
+Theorem sampling_ineq2 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
   let X' := bool_trial_value X in
   let mu := 'E_(\X_n P)[X'] in
   (0 < n)%nat ->
@@ -1659,7 +1659,7 @@ Proof.
 move=> X' mu n0 /[dup] delta01 /andP[delta0 _].
 apply: (@le_trans _ _ (expR ((delta - (1 + delta) * ln (1 + delta)) * fine mu))%:E).
   rewrite expRM expRB (mulrC _ (ln _)) expRM lnK; last rewrite posrE addr_gt0//.
-  exact: bernoulli_trial_inequality1.
+  exact: sampling_ineq1.
 apply: (@le_trans _ _ (expR ((delta - (delta + delta ^+ 2 / 3)) * fine mu))%:E).
   rewrite lee_fin ler_expR ler_wpM2r//.
     by rewrite fine_ge0//; apply: expectation_ge0 => t; exact: bernoulli_trial_ge0.
@@ -1671,7 +1671,7 @@ by rewrite opprD addrA subrr add0r mulrC mulrN mulNr mulrA.
 Qed.
 
 (* [Corollary 2.7, Rajani] / [Corollary 4.7, MU] *)
-Corollary bernoulli_trial_inequality4 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
+Corollary samping_ineq4 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
   (0 < delta < 1)%R ->
   (0 < n)%nat ->
   (0 < p)%R ->
@@ -1709,9 +1709,9 @@ rewrite measureU; last 3 first.
   rewrite lte_pmul2r//; first by rewrite lte_fin ltrD2l gt0_cp.
   by rewrite fineK /mu/X' expectation_bernoulli_trial// lte_fin  mulr_gt0 ?ltr0n.
 rewrite mulr2n EFinD leeD//=.
-- by apply: bernoulli_trial_inequality2; rewrite //d0 d1.
+- by apply: sampling_ineq2; rewrite //d0 d1.
 - have d01 : (0 < delta < 1)%R by rewrite d0.
-  apply: (le_trans (@bernoulli_trial_inequality3 _ _ _ _ p p01 _ X delta d01)).
+  apply: (le_trans (@sampling_ineq3 _ _ _ _ p p01 _ X delta d01)).
   rewrite lee_fin ler_expR !mulNr lerN2.
   rewrite ler_pM//; last by rewrite lef_pV2 ?posrE ?ler_nat.
   rewrite mulr_ge0 ?fine_ge0 ?sqr_ge0//.
@@ -1750,7 +1750,7 @@ have step1 : (\X_n P) [set i | `| X' i - p | >= epsilon * p]%R <=
   rewrite -mulrA.
   have -> : (p * n%:R)%R = fine (p * n%:R)%:E by [].
   rewrite -(mulrC _ p) -(expectation_bernoulli_trial p01 X).
-  exact: (@bernoulli_trial_inequality4 _ X epsilon).
+  exact: (@samling_ineq4 _ X epsilon).
 have step2 : (\X_n P) [set i | `| X' i - p | >= theta]%R <=
     ((expR (- (n%:R * theta ^+ 2) / 3)) *+ 2)%:E.
   rewrite thetaE; move/le_trans : step1; apply.
