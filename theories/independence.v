@@ -1614,25 +1614,6 @@ move=> /(_ measurableT [set y] (measurable_set1 y)).
 by rewrite setTI.
 Qed.
 
-Lemma Lnorm_normr (X : T -> R) p :
-  'N[P]_p[EFin \o normr \o X] = 'N[P]_p[EFin \o X].
-Proof.
-rewrite unlock/=.
-have -> : (abse \o ((EFin \o normr) \o X)) = abse \o (EFin \o X).
-  by apply: funext => x/=; rewrite normr_id.
-case: p => [r|//|//].
-by under eq_integral => x _ do rewrite normr_id.
-Qed.
-
-Lemma lfun_norm (X : {RV P >-> R}) :
-  (X : T -> R) \in lfun P 1 -> (normr \o X) \in lfun P 1.
-Proof.
-move=> /andP[mX finX]; apply/andP; split.
-  by rewrite inE/=; exact: measurableT_comp.
-rewrite inE/=/finite_norm Lnorm_normr.
-by move: finX; rewrite inE.
-Qed.
-
 Lemma integrable_expectationM' (X Y : {RV P >-> R}) :
   independent_RVs2 (P := P) X Y ->
   (X : T -> R) \in lfun P 1 -> (Y : T -> R) \in lfun P 1 ->

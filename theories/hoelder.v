@@ -100,6 +100,16 @@ rewrite unlock invr1// poweRe1//; under eq_integral do [rewrite poweRe1//=] => /
 exact: integral_ge0.
 Qed.
 
+Lemma Lnorm_abse f p :
+  'N_p[abse \o f] = 'N_p[f].
+Proof.
+rewrite unlock/=.
+have -> : (abse \o (abse \o f)) = abse \o f.
+  by apply: funext => x/=; rewrite abse_id.
+case: p => [r|//|//].
+by under eq_integral => x _ do rewrite abse_id.
+Qed.
+
 Lemma eq_Lnorm p f g : f =1 g -> 'N_p[f] = 'N_p[g].
 Proof. by move=> fg; congr Lnorm; apply/eq_fun => ?; rewrite /= fg. Qed.
 
@@ -1125,6 +1135,17 @@ case: ifPn => P0//.
 apply: (@le_lt_trans _ _ M%:E).
   by rewrite ess_sup_ler.
 by rewrite ltry.
+Qed.
+
+Lemma lfun_norm (f : T -> R) :
+  f \in lfun mu 1 -> (normr \o f) \in lfun mu 1.
+Proof.
+move=> /andP[].
+rewrite !inE/= => mf finf; apply/andP; split.
+  by rewrite inE/=; exact: measurableT_comp.
+rewrite inE/=/finite_norm.
+under [X in 'N[_]__[X]]eq_fun => x do rewrite -abse_EFin.
+by rewrite Lnorm_abse.
 Qed.
 
 End lfun_inclusion.
