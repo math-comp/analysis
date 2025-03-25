@@ -36,6 +36,9 @@
 - in `derive.v`:
   + lemmas `derive_shift`, `is_derive_shift`
 
+- in `sequences.v`:
+  + lemma `exp_coeff_gt0`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
