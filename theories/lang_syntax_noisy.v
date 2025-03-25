@@ -357,7 +357,6 @@ rewrite (_ : ((Num.sqrt 2)^-1 ^+ 2 + 1 ^+ 2 = 3 / 2)%R)//.
 exact.
 Qed.
 
-
 End noisy_subproofs.
 
 (* this section contains the verification of the noisy program per se *)
