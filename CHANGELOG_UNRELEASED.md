@@ -24,7 +24,7 @@
 
 - in `probability.v`:
   + definition `cdf`
-  + lemmas `cdf_ge0`, `cdf_le1`, `cdf_nondecreasing`, `cdf_cvgr1y`, `cdf_cvgr0Ny`
+  + lemmas `cdf_ge0`, `cdf_le1`, `cdf_nondecreasing`, `cdf_cvgr1y`, `cdf_cvgr0Ny`, `cdf_right_continuous`
 
 ### Changed
 
