@@ -58,6 +58,8 @@
 
 - in `mathcomp_extra.v`:
   + lemmas `intrN`, `real_floor_itv`, `real_ge_floor`, `real_ceil_itv`
+- in `ftc.v`:
+  + lemma `continuous_under_integral`
 
 - in `set_interval.v`:
   + lemma `subset_itv`
