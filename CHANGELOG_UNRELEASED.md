@@ -59,6 +59,9 @@
   + lemmas `num_spec_sin`, `num_spec_cos`
   + canonical instances `sin_inum`, `cos_inum`
 
+- in `ftc.v`:
+  + lemma `continuous_under_integral`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
