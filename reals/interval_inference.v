@@ -1638,11 +1638,5 @@ Definition s_of_pq (p q : {i01 R}) : {i01 R} :=
 Lemma s_of_p0 (p : {i01 R}) : s_of_pq p 0%:i01 = p.
 Proof. by apply/val_inj; rewrite /= subr0 mulr1 subKr. Qed.
 
-Canonical onem_itv01 (p : {i01 R}) : {i01 R} :=
-  @Itv.mk _ _ _ (onem p%:num) [itv of 1 - p%:num].
-
-Definition s_of_pq' (p q : {i01 R}) : {i01 R} :=
-  (`1- (`1-(p%:num) * `1-(q%:num)))%:i01.
-
 End Test3.
 End Test3.

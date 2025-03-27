@@ -55,7 +55,7 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldTopology.Exports.
-From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra unstable.
 
 Local Open Scope ring_scope.
 

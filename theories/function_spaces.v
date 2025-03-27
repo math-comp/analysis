@@ -2,7 +2,7 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import cardinality mathcomp_extra fsbigop reals.
+From mathcomp Require Import cardinality mathcomp_extra unstable fsbigop reals.
 From mathcomp Require Import interval_inference topology separation_axioms.
 
 (**md**************************************************************************)

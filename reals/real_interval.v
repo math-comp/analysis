@@ -14,7 +14,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra unstable.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.

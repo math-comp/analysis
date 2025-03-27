@@ -2,10 +2,11 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import reals ereal interval_inference topology normedtype.
-From mathcomp Require Import landau sequences derive realfun exp realfun.
-From mathcomp Require Import measure lebesgue_measure lebesgue_integral ftc.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions reals ereal interval_inference topology.
+From mathcomp Require Import normedtype landau sequences derive realfun exp.
+From mathcomp Require Import realfun measure lebesgue_measure lebesgue_integral.
+From mathcomp Require Import ftc.
 
 (**md**************************************************************************)
 (* # Theory of trigonometric functions                                        *)
