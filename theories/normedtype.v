@@ -284,14 +284,8 @@ End pseudoMetricnormedzmodule_lemmas.
 
 Lemma bigcup_ballT {R : realType} : \bigcup_n ball (0%R : R) n%:R = setT.
 Proof.
-apply/seteqP; split => // x _; have [x0|x0] := ltP 0%R x.
-  exists `|ceil x|.+1 => //.
-  rewrite /ball /= sub0r normrN gtr0_norm// (le_lt_trans (ceil_ge _))//.
-  by rewrite -natr1 natr_absz -abszE gtz0_abs// ?ceil_gt0// ltr_pwDr.
-exists `|ceil (- x)|.+1 => //.
-rewrite /ball /= sub0r normrN ler0_norm// (le_lt_trans (ceil_ge _))//.
-rewrite -natr1 natr_absz -abszE gez0_abs ?ltr_pwDr// ceil_ge0 ltrNl opprK.
-by rewrite (le_lt_trans x0).
+rewrite -[RHS](bigcup_itvT false true); apply: eq_bigcup => //= n _.
+by apply/seteqP; split=> [?|?]; rewrite /ball/= sub0r normrN in_itv/= ltr_norml.
 Qed.
 
 Section lower_semicontinuous.
@@ -679,10 +673,7 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
   have [i iFan] : exists i, F (a + i.+1%:R) < F a - n%:R.
     move/cvgrNy_lt : nyF.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
-    exists `|ceil (z - a)|%N.
-    rewrite zFan// -ltrBlDl.
-    rewrite (le_lt_trans (Num.Theory.le_ceil _))  ?num_real//.
-    by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
+    by exists (trunc (z - a)); rewrite zFan// -ltrBlDl ltStrunc.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
   exists `|ceil (F (a + n.+1%:R) - F a)%R|.+1 => //=.
@@ -710,15 +701,14 @@ Proof.
 move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
 - move=> y/= [n _]/=; rewrite in_itv/= => /andP[Fany yFa].
   have [i iFan] : exists i, F (a - i.+1%:R) < F a - n%:R.
-    move/cvgrNy_lt : nyF.
-    move/(_ (F a - n%:R)) => [z [zreal zFan]].
+    move/cvgrNy_lt : nyF => /(_ (F a - n%:R))[z [zreal zFan]].
     exists `|ceil (a - z)|%N.
     rewrite zFan// ltrBlDr -ltrBlDl.
     rewrite (le_lt_trans (Num.Theory.le_ceil _)) ?num_real//.
     by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
-  exists `| ceil (F (a - n.+1%:R) - F a)%R |.+1 => //=.
+  exists `|ceil (F (a - n.+1%:R) - F a)|.+1 => //=.
   rewrite in_itv/= zFa andbT lerBlDr -lerBlDl (le_trans _ (abs_ceil_ge _))//.
   by rewrite ler_normr orbC opprB lerB// ltW.
 Qed.
@@ -6145,23 +6135,23 @@ Notation r_gt0 := vitali_collection_partition_ub_gt0.
 Lemma ex_vitali_collection_partition i :
   V i -> exists n, vitali_collection_partition n i.
 Proof.
-move=> Vi; pose f := floor (r / (radius (B i))%:num).
-have f_ge0 : 0 <= f by rewrite floor_ge0// divr_ge0// ltW// (r_gt0 Vi).
-have [m /andP[mf fm]] := leq_ltn_expn `|f|.-1.
+move=> Vi; pose f := trunc (r / (radius (B i))%:num).
+have f_ge0 : (0 <= f)%N.
+  by rewrite trunc_ge_nat// divr_ge0// (le_trans _ (VBr Vi)).
+have [m /andP[mf fm]] := leq_ltn_expn f.-1.
 exists m; split => //; apply/andP; split => [{mf}|{fm}].
-  rewrite -(@ler_nat R) in fm.
+- rewrite -(@ler_nat R) in fm.
   rewrite ltr_pdivrMr// mulrC -ltr_pdivrMr// (lt_le_trans _ fm)//.
-  rewrite (lt_le_trans (lt_succ_floor _))//= -/f intrD -natr1 lerD2r//.
-  have [<-|f0] := eqVneq 0 f; first by rewrite /= ler0n.
-  rewrite prednK//; last by rewrite absz_gt0 eq_sym.
-  by rewrite natr_absz// ger0_norm.
-move: m => [|m] in mf *; first by rewrite expn0 divr1 VBr.
-rewrite -(@ler_nat R) in mf.
-rewrite ler_pdivlMr// mulrC -ler_pdivlMr//.
-have [f0|f0] := eqVneq 0 f.
-  by move: mf; rewrite -f0 absz0 leNgt expnS ltr_nat leq_pmulr// expn_gt0.
-rewrite (le_trans mf)// prednK//; last by rewrite absz_gt0 eq_sym.
-by rewrite natr_absz// ger0_norm// ge_floor.
+  rewrite (lt_le_trans (ltStrunc _))//= -/f.
+  have [<-|f0] := eqVneq 0 f; first by rewrite /= ler_nat.
+  by rewrite prednK// lt0n eq_sym.
+- move: m => [|m] in mf *; first by rewrite expn0 divr1 VBr.
+  rewrite ler_pdivlMr// mulrC -ler_pdivlMr//.
+  rewrite -(@ler_nat R) in mf.
+  have [f0|f0] := eqVneq 0 f.
+    by move: mf; rewrite -f0 leNgt expnS ltr_nat leq_pmulr// expn_gt0.
+  rewrite (le_trans mf)// prednK//; last by rewrite lt0n eq_sym.
+  by rewrite /f ge_trunc// divr_ge0// (le_trans _ (VBr Vi)).
 Qed.
 
 Lemma cover_vitali_collection_partition :
