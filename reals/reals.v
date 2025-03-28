@@ -474,10 +474,6 @@ Proof. exact: mem_rg1_floor. Qed.
 Lemma Rfloor_le x : Rfloor x <= x.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `ge_floor` instead")]
-Lemma floor_le x : (floor x)%:~R <= x.
-Proof. by rewrite ge_floor. Qed.
-
 Lemma lt_succ_Rfloor x : x < Rfloor x + 1.
 Proof. by case/andP: (mem_rg1_Rfloor x). Qed.
 
@@ -521,10 +517,6 @@ Proof. by move=> ?; rewrite -Rfloor0 le_Rfloor. Qed.
 
 Lemma Rfloor_lt0 x : x < 0 -> Rfloor x < 0.
 Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
-
-#[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.floor_le` instead")]
-Lemma le_floor : {homo @Num.floor R : x y / x <= y}.
-Proof. exact: Num.Theory.floor_le. Qed.
 
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.

@@ -126,6 +126,9 @@
     to new file `unstable.v` that shouldn't be used outside of
     Analysis)
 
+- in `reals.v`:
+  + lemmas `floor_le`, `le_floor` (deprecated since 1.3.0)
+
 ### Infrastructure
 
 ### Misc
