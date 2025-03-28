@@ -58,8 +58,11 @@
 
 - in `mathcomp_extra.v`:
   + lemmas `intrN`, `real_floor_itv`, `real_ge_floor`, `real_ceil_itv`
+- in `lebesgue_integral.v`:
+  + lemma `dominated_cvg` (was previous `Local`)
+
 - in `ftc.v`:
-  + lemma `continuous_under_integral`
+  + lemma `continuity_under_integral`
 
 - in `set_interval.v`:
   + lemma `subset_itv`

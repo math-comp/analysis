@@ -4541,7 +4541,7 @@ rewrite addeC -leeBlDr// subee// leeNr oppe0 => lim_ge0.
 by apply/limn_esup_le_cvg => // n; rewrite integral_ge0// => x _; rewrite /g_.
 Qed.
 
-Local Lemma dominated_cvg :
+Lemma dominated_cvg :
   \int[mu]_(x in D) f_ n x @[n \oo] --> \int[mu]_(x in D) f x.
 Proof.
 have h n : `| \int[mu]_(x in D) f_ n x - \int[mu]_(x in D) f x |
