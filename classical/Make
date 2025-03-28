@@ -13,6 +13,7 @@ contra.v
 wochoice.v
 classical_sets.v
 mathcomp_extra.v
+unstable.v
 functions.v
 cardinality.v
 fsbigop.v

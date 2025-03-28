@@ -1,9 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals interval_inference ereal.
-From mathcomp Require Import topology normedtype sequences esum numfun.
 From HB Require Import structures.
+From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop reals.
+From mathcomp Require Import interval_inference ereal topology normedtype.
+From mathcomp Require Import sequences esum numfun.
 
 (**md**************************************************************************)
 (* # Measure Theory                                                           *)

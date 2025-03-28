@@ -52,7 +52,7 @@ Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
 Import Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
-From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra unstable.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.

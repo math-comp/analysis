@@ -3,10 +3,10 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum archimedean.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp Require Import finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality contra ereal reals interval_inference.
-From mathcomp Require Import topology prodnormedzmodule tvs normedtype derive.
-From mathcomp Require Import sequences real_interval.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality contra ereal reals.
+From mathcomp Require Import interval_inference topology prodnormedzmodule tvs.
+From mathcomp Require Import normedtype derive sequences real_interval.
 
 (**md**************************************************************************)
 (* # Real-valued functions over reals                                         *)

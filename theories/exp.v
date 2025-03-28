@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
-From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import mathcomp_extra reals ereal interval_inference.
+From mathcomp Require Import boolp classical_sets functions mathcomp_extra.
+From mathcomp Require Import unstable reals ereal interval_inference.
 From mathcomp Require Import topology tvs normedtype landau sequences derive.
 From mathcomp Require Import realfun interval_inference convex.
 

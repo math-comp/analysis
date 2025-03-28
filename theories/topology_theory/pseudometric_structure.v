@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
-From mathcomp Require Import all_classical.
+From mathcomp Require Import all_classical unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure.
 

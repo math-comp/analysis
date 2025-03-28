@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
-From mathcomp Require Import mathcomp_extra boolp classical_sets.
 From HB Require Import structures.
+From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions.
 
 (**md**************************************************************************)

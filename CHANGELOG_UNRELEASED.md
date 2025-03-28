@@ -105,6 +105,30 @@
   + lemma `Pos_to_natE` (moved to `Rstruct.v`)
   + lemma `deg_le2_ge0` (available as `deg_le2_poly_ge0` in `ssrnum.v`
     since MathComp 2.1.0)
+  + definitions `monotonous`, `boxed`, `onem`, `inv_fun`,
+    `bound_side`, `swap`, `prodA`, `prodAr`, `map_pair`, `sigT_fun`
+    (moved to new file `unstable.v` that shouldn't be used outside of
+    Analysis)
+  + notations `` `1 - r ``, `f \^-1` (moved to new file `unstable.v`
+    that shouldn't be used outside of Analysis)
+  + lemmas `dependent_choice_Type`, `maxr_absE`, `minr_absE`,
+    `le_bigmax_seq`, `bigmax_sup_seq`, `leq_ltn_expn`, `last_filterP`,
+    `path_lt_filter0`, `path_lt_filterT`, `path_lt_head`,
+    `path_lt_last_filter`, `path_lt_le_last`, `sumr_le0`,
+    `fset_nat_maximum`, `image_nat_maximum`, `card_fset_sum1`,
+    `onem0`, `onem1`, `onemK`, `add_onemK`, `onem_gt0`, `onem_ge0`,
+    `onem_le1`, `onem_lt1`, `onemX_ge0`, `onemX_lt1`, `onemD`,
+    `onemMr`, `onemM`, `onemV`, `lez_abs2`, `ler_gtP`, `ler_ltP`,
+    `real_ltr_distlC`, `prodAK`, `prodArK`, `swapK`, `lt_min_lt`,
+    `intrD1`, `intr1D`, `ge_trunc`, `lt_succ_trunc`, `trunc_ge_nat`,
+    `trunc_lt_nat`, `floor_lt_int`, `floor_ge0`, `floor_le0`,
+    `floor_lt0`, `floor_eq`, `floor_neq0`, `ceil_gt_int`, `ceil_ge0`,
+    `ceil_gt0`, `ceil_le0`, `abs_ceil_ge`, `nat_int`, `bij_forall`,
+    `and_prop_in`, `mem_inc_segment`, `mem_dec_segment`,
+    `partition_disjoint_bigfcup`, `partition_disjoint_bigfcup`,
+    `prodr_ile1`, `size_filter_gt0`, `ltr_sum`, `ltr_sum_nat` (moved
+    to new file `unstable.v` that shouldn't be used outside of
+    Analysis)
 
 ### Infrastructure
 

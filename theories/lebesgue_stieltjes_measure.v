@@ -2,8 +2,8 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat archimedean.
 From HB Require Import structures.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions fsbigop cardinality.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions fsbigop cardinality.
 From mathcomp Require Import reals ereal interval_inference topology numfun.
 From mathcomp Require Import normedtype sequences esum real_interval measure.
 From mathcomp Require Import realfun.
