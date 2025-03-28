@@ -59,6 +59,12 @@
   + lemmas `num_spec_sin`, `num_spec_cos`
   + canonical instances `sin_inum`, `cos_inum`
 
+- in `lebesgue_integral.v`:
+  + lemma `dominated_cvg` (was previous `Local`)
+
+- in `ftc.v`:
+  + lemma `continuity_under_integral`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
