@@ -14,7 +14,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
-From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra unstable.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -150,10 +150,8 @@ Lemma itv_bnd_inftyEbigcup b x : [set` Interval (BSide b x) +oo%O] =
 Proof.
 rewrite predeqE => y; split=> /=; last first.
   by move=> [n _]/=; rewrite in_itv => /andP[xy yn]; rewrite in_itv /= xy.
-rewrite in_itv /= andbT => xy; exists `|floor y|%N.+1 => //=.
-rewrite in_itv /= xy /=.
-have [y0|y0] := ltP 0 y; last by rewrite (le_lt_trans y0)// ltr_pwDr.
-by rewrite -natr1 natr_absz ger0_norm ?floor_ge0 1?ltW// intrD1 lt_succ_floor.
+rewrite in_itv /= andbT => xy; exists (trunc y).+1 => //=.
+by rewrite in_itv /= xy /= lt_succ_trunc.
 Qed.
 
 Lemma itv_o_inftyEbigcup x :
@@ -240,12 +238,8 @@ move gxE : (g x) => gx; case: gx gxE => [gx| |gxoo fxoo]; last 2 first.
   - by exists 0%N => //; rewrite /E/= gxoo addey// ?leey// -ltNye.
 move fxE : (f x) => fx; case: fx fxE => [fx fxE gxE|fxoo gxE _|//]; last first.
   by exists 0%N => //; rewrite /E/= fxoo gxE// addye// leey.
-rewrite lte_fin -subr_gt0 => fgx; exists `|floor (fx - gx)^-1|%N => //.
-rewrite /E/= -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0; last exact/ltW.
-rewrite fxE gxE lee_fin -[leRHS]invrK lef_pV2//.
-- by rewrite intrD1 ltW// lt_succ_floor.
-- by rewrite posrE// ltr_pwDr// ler0z floor_ge0 invr_ge0 ltW.
-- by rewrite posrE invr_gt0.
+rewrite lte_fin -subr_gt0 => fgx; exists (trunc (fx - gx)^-1) => //.
+by rewrite /E/= fxE gxE lee_fin invf_ple ?posrE//; apply/ltW/lt_succ_trunc.
 Qed.
 
 End set_ereal.
@@ -257,10 +251,8 @@ apply/seteqP; split=> [x ->|].
   by move=> i _/=; rewrite in_itv/= lexx ltrBlDr ltrDl invr_gt0 ltr0n.
 move=> x rx; apply/esym/eqP; rewrite eq_le (itvP (rx 0%N _))// andbT.
 apply/ler_addgt0Pl => e e_gt0; rewrite -lerBlDl ltW//.
-have := rx `|floor e^-1|%N I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
-rewrite lerD2l lerN2 -lef_pV2 ?invrK//; last by rewrite posrE.
-rewrite -natr1 natr_absz ger0_norm ?floor_ge0 ?invr_ge0 1?ltW//.
-by rewrite intrD1 lt_succ_floor.
+have := rx (trunc e^-1) I; rewrite /= in_itv => /andP[/le_lt_trans->]//.
+by rewrite lerB// invf_ple ?posrE//; apply/ltW/lt_succ_trunc.
 Qed.
 
 Lemma itv_bnd_open_bigcup (R : realType) b (r s : R) :

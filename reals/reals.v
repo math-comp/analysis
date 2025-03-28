@@ -52,7 +52,7 @@ Unset Printing Implicit Defensive.
 Unset SsrOldRewriteGoalsOrder.
 
 Import Order.TTheory Order.Syntax GRing.Theory Num.Def Num.Theory.
-From mathcomp Require Import mathcomp_extra.
+From mathcomp Require Import mathcomp_extra unstable.
 
 (* -------------------------------------------------------------------- *)
 Delimit Scope real_scope with real.
@@ -528,12 +528,8 @@ Proof. exact: Num.Theory.floor_le. Qed.
 
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
-move=> yx; exists `|floor (x - y)^-1|%N.
-rewrite -ltrBrDl -{2}(invrK (x - y)%R) ltf_pV2 ?qualifE/= ?ltr0n//.
-  by rewrite invr_gt0 subr_gt0.
-rewrite -natr1 natr_absz ger0_norm.
-  by rewrite -floor_ge_int// invr_ge0 subr_ge0 ltW.
-by rewrite intrD1 lt_succ_floor.
+move=> yx; exists (trunc (x - y)^-1).
+by rewrite -ltrBrDl invf_plt 1?posrE 1?subr_gt0// lt_succ_trunc.
 Qed.
 
 End FloorTheory.

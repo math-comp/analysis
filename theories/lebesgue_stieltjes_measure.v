@@ -2,8 +2,8 @@
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat archimedean.
 From HB Require Import structures.
-From mathcomp.classical Require Import mathcomp_extra boolp classical_sets.
-From mathcomp.classical Require Import functions fsbigop cardinality.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions fsbigop cardinality.
 From mathcomp Require Import reals ereal interval_inference topology numfun.
 From mathcomp Require Import normedtype sequences esum real_interval measure.
 From mathcomp Require Import realfun.
@@ -434,8 +434,7 @@ have [D De] : exists D : nat -> {posnum R}, forall i,
   suff : forall i, exists di : {posnum R},
       f ((b i).2 + di%:num) <= f ((b i).2) + (e%:num / 2) / 2 ^ i.+1.
     by move/choice => -[g hg]; exists g.
-  move=> k; apply nondecreasing_right_continuousP => //.
-  by rewrite divr_gt0 // exprn_gt0.
+  by move=> k; apply nondecreasing_right_continuousP.
 have acbd : `[ a.1 + c%:num / 2, a.2] `<=`
             \bigcup_i `](b i).1, (b i).2 + (D i)%:num[%classic.
   apply: (@subset_trans _ `]a.1, a.2]).

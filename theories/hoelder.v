@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals ereal.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop reals ereal.
 From mathcomp Require Import topology normedtype sequences real_interval.
 From mathcomp Require Import esum measure lebesgue_measure lebesgue_integral.
 From mathcomp Require Import numfun exp convex interval_inference.
@@ -108,10 +108,7 @@ Local Notation "'N_ p [ f ]" := (Lnorm counting p f).
 
 Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
   'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
-Proof.
-move=> p0; rewrite unlock gt_eqF// ge0_integral_count// => k.
-by rewrite lee_fin powR_ge0.
-Qed.
+Proof. by move=> p0; rewrite unlock gt_eqF// ge0_integral_count. Qed.
 
 End lnorm.
 
@@ -386,24 +383,19 @@ rewrite unlock (gt_eqF (lt_le_trans _ p1))// poweR_lty//.
 pose x := \int[mu]_x (2 `^ (p - 1) * (`|f x| `^ p + `|g x| `^ p))%:E.
 apply: (@le_lt_trans _ _ x).
   rewrite ge0_le_integral//=.
-  - by move=> t _; rewrite lee_fin// powR_ge0.
   - apply/measurable_EFinP/measurableT_comp_powR/measurableT_comp => //.
     exact: measurable_funD.
-  - by move=> t _; rewrite lee_fin mulr_ge0 ?addr_ge0 ?powR_ge0.
   - by apply/measurable_EFinP/measurable_funM/measurable_funD => //;
       exact/measurableT_comp_powR/measurableT_comp.
   - by move=> ? _; rewrite lee_fin.
 rewrite {}/x; under eq_integral do rewrite EFinM.
-rewrite ge0_integralZl_EFin ?powR_ge0//; last 2 first.
-  - by move=> x _; rewrite lee_fin addr_ge0// powR_ge0.
-  - by apply/measurable_EFinP/measurable_funD => //;
-      exact/measurableT_comp_powR/measurableT_comp.
+rewrite ge0_integralZl_EFin ?powR_ge0//; last first.
+  by apply/measurable_EFinP/measurable_funD => //;
+    exact/measurableT_comp_powR/measurableT_comp.
 rewrite lte_mul_pinfty ?lee_fin ?powR_ge0//.
 under eq_integral do rewrite EFinD.
-rewrite ge0_integralD//; last 4 first.
-  - by move=> x _; rewrite lee_fin powR_ge0.
+rewrite ge0_integralD//; last 2 first.
   - exact/measurable_EFinP/measurableT_comp_powR/measurableT_comp.
-  - by move=> x _; rewrite lee_fin powR_ge0.
   - exact/measurable_EFinP/measurableT_comp_powR/measurableT_comp.
 by rewrite lte_add_pinfty// -powR_Lnorm ?(gt_eqF (lt_trans _ p1))// poweR_lty.
 Qed.
@@ -439,22 +431,18 @@ under eq_integral => x _ do rewrite -mulr_powRB1//.
 apply: (@le_trans _ _
     (\int[mu]_x ((`|f x| + `|g x|) * `|f x + g x| `^ (p - 1))%:E)).
   rewrite ge0_le_integral//.
-  - by move=> ? _; rewrite lee_fin mulr_ge0// powR_ge0.
   - apply: measurableT_comp => //; apply: measurable_funM.
       exact/measurableT_comp/measurable_funD.
     exact/measurableT_comp_powR/measurableT_comp/measurable_funD.
-  - by move=> ? _; rewrite lee_fin mulr_ge0// powR_ge0.
   - apply/measurableT_comp => //; apply: measurable_funM.
       by apply/measurable_funD => //; exact: measurableT_comp.
     exact/measurableT_comp_powR/measurableT_comp/measurable_funD.
   - by move=> ? _; rewrite lee_fin ler_wpM2r// ?powR_ge0// ler_normD.
 under eq_integral=> ? _ do rewrite mulrDl EFinD.
-rewrite ge0_integralD//; last 4 first.
-  - by move=> x _; rewrite lee_fin mulr_ge0// powR_ge0.
+rewrite ge0_integralD//; last 2 first.
   - apply: measurableT_comp => //; apply: measurable_funM.
       exact: measurableT_comp.
     exact/measurableT_comp_powR/measurableT_comp/measurable_funD.
-  - by move=> x _; rewrite lee_fin mulr_ge0// powR_ge0.
   - apply: measurableT_comp => //; apply: measurable_funM.
       exact: measurableT_comp.
     exact/measurableT_comp_powR/measurableT_comp/measurable_funD.

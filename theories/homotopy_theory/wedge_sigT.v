@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2024 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop reals topology.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop reals topology.
 From mathcomp Require Import separation_axioms function_spaces.
 
 (**md**************************************************************************)

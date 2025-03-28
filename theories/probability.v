@@ -1,9 +1,9 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
-From mathcomp Require Import all_ssreflect ssralg.
-From mathcomp Require Import poly ssrnum ssrint interval archimedean finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop.
 From HB Require Import structures.
+From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import ssralg poly ssrnum ssrint interval archimedean finmap.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import reals interval_inference ereal topology normedtype.
 From mathcomp Require Import sequences derive esum measure exp trigo realfun.
@@ -98,7 +98,7 @@ Proof. by rewrite preimage_range probability_setT. Qed.
 
 Definition distribution d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (P : probability T R) (X : {mfun T >-> T'}) :=
-  pushforward P (@measurable_funP _ _ _ _ X).
+  pushforward P (@measurable_funP _ _ _ _ _ X).
 
 Section distribution_is_probability.
 Context d d' {T : measurableType d} {T' : measurableType d'} {R : realType}
@@ -642,8 +642,17 @@ rewrite -(fineK (variance_fin_num X1 X2)) -(fineK (variance_fin_num Y1 Y2)).
 rewrite -(fineK (covariance_fin_num X1 Y1 XY1)).
 rewrite -EFin_expe -EFinM lee_fin -(@ler_pM2l _ 4) ?ltr0n// [leRHS]mulrA.
 rewrite [in leLHS](_ : 4 = 2 * 2)%R -natrM// [in leLHS]natrM mulrACA -expr2.
-rewrite -subr_le0; apply: deg_le2_ge0 => r; rewrite -lee_fin !EFinD.
-rewrite EFinM fineK ?variance_fin_num// muleC -varianceZ//.
+rewrite -subr_le0.
+set a := fine (variance X).
+set b := (2 * fine (covariance P X Y))%R.
+set c := fine (variance Y).
+pose p := Poly [:: c; b; a].
+have -> : a = p`_2 by rewrite !coefE.
+have -> : b = p`_1 by rewrite !coefE.
+have -> : c = p`_0 by rewrite !coefE.
+rewrite deg_le2_poly_ge0 ?size_Poly// => r.
+rewrite horner_Poly/= mul0r add0r mulrDl -mulrA -expr2.
+rewrite -lee_fin !EFinD EFinM fineK ?variance_fin_num// muleC -varianceZ//.
 rewrite 2!EFinM ?fineK ?variance_fin_num// ?covariance_fin_num//.
 rewrite -muleA [_ * r%:E]muleC -covarianceZl//.
 rewrite addeAC -varianceD ?variance_ge0//=.
@@ -1419,7 +1428,6 @@ move=> mE; rewrite integral_indic//= /uniform_prob setIT -ge0_integralZl//=.
   case: ifPn => //.
   by rewrite inE/= in_itv/= => axb; rewrite indicE (negbTE xE) mule0.
 - exact/measurable_EFinP/measurable_indic.
-- by move=> x _; rewrite lee_fin.
 - by rewrite lee_fin invr_ge0// ltW// subr_gt0.
 Qed.
 
@@ -1495,10 +1503,7 @@ Definition normal_pdf (m s x : R) : R :=
   (sqrtr (s ^+2 * pi *+ 2))^-1 * expR (- (x - m) ^+ 2 / (s ^+ 2*+ 2)).
 
 Lemma normal_pdf_ge0 m s x : 0 <= normal_pdf m s x.
-Proof.
-rewrite /normal_pdf; case: ifP => // _.
-by rewrite mulr_ge0 ?expR_ge0// invr_ge0 mulr_ge0.
-Qed.
+Proof. by rewrite /normal_pdf; case: ifP. Qed.
 
 Lemma normal_pdf_gt0 m s x : s != 0 -> 0 < normal_pdf m s x.
 Proof.
@@ -1675,9 +1680,6 @@ apply: (@le_trans _ _
     (\int[mu]_(x in A) (Num.sqrt (sigma ^+ 2 * pi *+ 2))^-1%:E))%E; last first.
   by rewrite integral_cst//= muA0 mule0.
 apply: ge0_le_integral => //=.
-- move=> x _; rewrite lee_fin.
-  have := normal_pdf_ge0 m sigma x.
-  by rewrite /normal_pdf ifF//; exact/negP/negP.
 - apply/measurable_funTS/measurableT_comp => //.
   do 2 (apply: measurable_funM => //; apply: measurableT_comp => //).
   by apply: measurableT_comp (exprn_measurable _) _ => /=; exact: measurable_funD.

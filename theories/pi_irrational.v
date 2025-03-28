@@ -1,9 +1,9 @@
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop interval_inference reals ereal.
-From mathcomp Require Import topology normedtype sequences real_interval esum.
-From mathcomp Require Import measure lebesgue_measure numfun realfun.
-From mathcomp Require Import lebesgue_integral derive charge ftc trigo.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality fsbigop interval_inference.
+From mathcomp Require Import reals ereal topology normedtype sequences.
+From mathcomp Require Import real_interval esum measure lebesgue_measure numfun.
+From mathcomp Require Import realfun lebesgue_integral derive charge ftc trigo.
 
 (**md**************************************************************************)
 (* # Formalisation of A simple proof that pi is irrational by Ivan Niven      *)

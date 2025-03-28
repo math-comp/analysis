@@ -2,9 +2,9 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import set_interval reals interval_inference ereal.
-From mathcomp Require Import topology tvs normedtype landau.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions set_interval reals interval_inference.
+From mathcomp Require Import ereal topology tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Definitions and lemmas about sequences                                   *)

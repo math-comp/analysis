@@ -1,8 +1,8 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
-From mathcomp Require Import boolp classical_sets functions.
-From mathcomp Require Import mathcomp_extra reals ereal interval_inference.
+From mathcomp Require Import boolp classical_sets functions mathcomp_extra.
+From mathcomp Require Import unstable reals ereal interval_inference.
 From mathcomp Require Import topology tvs normedtype landau sequences derive.
 From mathcomp Require Import realfun interval_inference convex.
 
@@ -444,6 +444,13 @@ case: ltrgt0P => [x_gt0|xN|->]; last by rewrite expR0.
 - by rewrite -[x]opprK expRN invf_cp1 ?expR_gt0 // expR_gt1 lterNE.
 Qed.
 
+Lemma expR_le1 x : (expR x <= 1) = (x <= 0).
+Proof.
+case: ltrgt0P => [||->]; last by rewrite expR0 lexx.
+- by rewrite -expR_gt1 ltNge => /negbTE.
+- by rewrite -expR_lt1 => /ltW.
+Qed.
+
 Lemma expRB x y : expR (x - y) = expR x / expR y.
 Proof. by rewrite expRD expRN. Qed.
 
@@ -546,6 +553,44 @@ have [ab|/ltW ba] := leP a b.
   + by move=> z zab; rewrite derive_expR; exact: derivable_expR.
 Qed.
 Local Close Scope convex_scope.
+
+Definition expR_itv_boundl b :=
+  Order.max (BRight 0%Z) (IntItv.add_boundl b (BLeft 1)).
+
+Definition expR_itv_boundr b :=
+  match b with
+  | BSide _ (Negz _) => BLeft 1%Z
+  | BSide b 0%Z => BSide b 1%Z
+  | _ => +oo%O
+  end.
+
+Definition expR_itv i :=
+  match i with
+  | Itv.Top => Itv.Real `[0%Z, +oo[
+  | Itv.Real (Interval l u) =>
+      Itv.Real (Interval (expR_itv_boundl l) (expR_itv_boundr u))
+  end.
+
+Lemma num_spec_expR (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i)
+    (r := expR_itv i) :
+  Itv.spec (@Itv.num_sem R) r (expR x%:num).
+Proof.
+rewrite {}/r; case: i x => [|[l u]] x /=.
+  by apply/and3P; rewrite ?num_real// bnd_simp expR_ge0.
+case: x => [x /=/and3P[xr lx xu]]; apply/and3P; split; [exact: num_real| | ].
+- rewrite Instances.num_itv_bound_max maxEge.
+  case: ifP; rewrite ?bnd_simp ?expR_gt0// => _.
+  apply: le_trans (Instances.num_itv_add_boundl lx _) _; first exact: lexx.
+  by rewrite bnd_simp addrC expR_ge1Dx.
+- case: u xu => [[] [[|//] | u] |//]; rewrite !bnd_simp.
+  + by rewrite expR_lt1.
+  + by rewrite expR_lt1 => /lt_trans; apply.
+  + by rewrite expR_le1.
+  + by rewrite expR_lt1 => /le_lt_trans; apply.
+Qed.
+
+Canonical expR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) :=
+  Itv.mk (num_spec_expR x).
 
 End expR.
 
@@ -984,6 +1029,29 @@ rewrite lnK ?posrE// lnK ?posrE// => /le_trans; apply.
 rewrite lnK//; last by rewrite posrE addr_gt0// mulr_gt0// ?invr_gt0.
 by rewrite (mulrC _ p^-1) (mulrC _ q^-1).
 Qed.
+
+Definition powR_itv i :=
+  match i with
+  | Itv.Top => Itv.Real `]-oo, +oo[
+  | Itv.Real (Interval l u) =>
+      Itv.Real (Interval (IntItv.keep_pos_bound l) +oo%O)
+  end.
+
+Lemma num_spec_powR (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) p
+    (r := powR_itv i) :
+  Itv.spec (@Itv.num_sem R) r (powR x%:num p).
+Proof.
+rewrite {}/r; case: i x => [|[l u]] x /=; [by apply/and3P; rewrite ?num_real|].
+case: x => [x /=/and3P[xr lx xu]]; apply/and3P; split; [exact: num_real| |by[]].
+case: l lx => [[] [[|l] |//] |//]; rewrite !bnd_simp => lx.
+- by rewrite powR_ge0.
+- by apply: powR_gt0;  apply: lt_le_trans lx.
+- by apply: powR_gt0; apply: le_lt_trans lx.
+- by apply: powR_gt0; apply: le_lt_trans lx.
+Qed.
+
+Canonical powR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) p :=
+  Itv.mk (num_spec_powR x p).
 
 End PowR.
 Notation "a `^ x" := (powR a x) : ring_scope.
