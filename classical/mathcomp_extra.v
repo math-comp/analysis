@@ -109,7 +109,37 @@ Arguments dfwith {I T} f i x.
 
 Definition idempotent_fun (U : Type) (f : U -> U) := f \o f =1 f.
 
+Section intrN.
+
+Variable R : ringType.
+
+Implicit Types n : int.
+
+Lemma intrN n : (- n)%:~R = - n%:~R :> R. Proof. exact: mulrNz. Qed.
+
+End intrN.
+
 From mathcomp Require Import archimedean.
+Import Num.Theory.
+
+Section num_floor_ceil.
+Context {R : archiNumDomainType}.
+Implicit Type x : R.
+
+Lemma real_floor_itv x : x \is Num.real ->
+  (Num.floor x)%:~R <= x < (Num.floor x + 1)%:~R.
+Proof. by case: (x \is _) (archimedean.Num.Theory.floorP x). Qed.
+
+Lemma real_ge_floor x : x \is Num.real -> (Num.floor x)%:~R <= x.
+Proof. by move=> /real_floor_itv /andP[]. Qed.
+
+Lemma real_ceil_itv x : x \is Num.real ->
+  (Num.ceil x - 1)%:~R < x <= (Num.ceil x)%:~R.
+Proof.
+by move=> Rx; rewrite -opprD !mulrNz ltrNl lerNr andbC real_floor_itv ?realN.
+Qed.
+
+End num_floor_ceil.
 
 Section floor_ceil.
 Context {R : archiDomainType}.

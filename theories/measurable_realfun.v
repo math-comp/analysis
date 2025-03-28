@@ -442,13 +442,11 @@ rewrite [X in measurable X](_ : _ =
   apply: bigcupT_measurable => k; rewrite -(setIid D) setIACA.
   exact/measurableI/emeasurable_fun_infty_c/emeasurable_fun_c_infty.
 rewrite predeqE => t; split => [/= [Dt ft]|].
-  exists `|ceil `|fine (f t)| |%N => //=; split=> //; split.
-    rewrite -[leRHS](fineK ft) lee_fin lerNl pmulrn abszE ceil_ge_int ger0_norm.
-      by rewrite ceil_le// -normrN ler_norm.
-    by rewrite -(ceil0 R) ceil_le.
-  rewrite -[leLHS](fineK ft) lee_fin pmulrn abszE ceil_ge_int ger0_norm.
-    by rewrite ceil_le// ler_norm.
-  by rewrite -(ceil0 R) ceil_le.
+  exists (trunc `|fine (f t)|).+1 => //=; split=> //; split.
+    rewrite -[leRHS](fineK ft) lee_fin lerNl.
+    by rewrite (le_trans (ler_norm _))// normrN ltW// ltStrunc.
+  rewrite -[leLHS](fineK ft) lee_fin (le_trans (ler_norm _))//.
+  by rewrite ltW// ltStrunc.
 move=> [n _] [/= Dt [nft fnt]]; split => //; rewrite fin_numElt.
 by rewrite (lt_le_trans _ nft) ?ltNyr//= (le_lt_trans fnt)// ltry.
 Qed.
@@ -693,8 +691,7 @@ move=> [r|/(_ O Logic.I)|]//.
 move=> /(_ `|floor r|%N Logic.I); rewrite /= in_itv/= ltNge.
 rewrite lee_fin; have [r0|r0] := leP 0%R r.
   by rewrite (le_trans _ r0) // lerNl oppr0 ler0n.
-rewrite lerNl -abszN natr_absz gtr0_norm; last first.
-  by rewrite ltrNr oppr0 -floor_lt0.
+rewrite lerNl -abszN natr_absz gtr0_norm; last by rewrite ltrNr oppr0 floor_lt0.
 by rewrite mulrNz lerNl opprK ge_floor.
 Qed.
 
@@ -704,7 +701,7 @@ rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
 move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
-by rewrite natr_absz gtr0_norm// ?le_ceil// -ceil_gt0.
+by rewrite natr_absz gtr0_norm// ?le_ceil// ceil_gt0.
 Qed.
 
 End erealwithrays.

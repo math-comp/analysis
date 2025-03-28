@@ -200,9 +200,8 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   apply/cvgrPdist_lt => r r0; near=> t.
   rewrite /sval/=; case: cid => x [px xpt _].
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists `|ceil r^-1|%N => // s /=.
-  rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
-  by rewrite natr_absz gtr0_norm -?ceil_gt0 ?invr_gt0// ceil_ge.
+  near: t; exists (trunc r^-1) => // s /= rs.
+  by rewrite (le_trans (ltW (ltStrunc _)))// ler_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite leNgt distrC => /negP.
@@ -258,9 +257,8 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   apply/cvgrPdist_lt => r r0; near=> t.
   rewrite /sval/=; case: cid => x [xpt _].
   rewrite distrC (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists `|ceil r^-1|%N => // s /=.
-  rewrite -ltnS -(@ltr_nat R) => /ltW; apply: le_trans.
-  by rewrite natr_absz gtr0_norm -?ceil_gt0 ?invr_gt0 ?le_ceil ?num_real.
+  near: t; exists (trunc r^-1) => // s /= rs.
+  by rewrite (le_trans (ltW (ltStrunc _)))// ler_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge distrC => /negP.
@@ -293,9 +291,8 @@ have y_p : y_ n @[n --> \oo] --> p.
   rewrite /y_ /sval/=; case: cid2 => //= x /andP[_ + _].
   rewrite -ltrBlDl => /lt_le_trans; apply.
   rewrite -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
-  near: t.
-  exists `|ceil e^-1|%N => // k /=; rewrite pmulrn ceil_ge_int// -lez_nat abszE.
-  by move=> /(le_trans (ler_norm _)) /le_trans; apply; rewrite lez_nat leqnSn.
+  near: t; exists (trunc e^-1) => // s /= es.
+  by rewrite (le_trans (ltW (ltStrunc _)))// ler_nat.
 have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
 have mn : (m <= n)%N by near: n; exists m.
@@ -2797,10 +2794,8 @@ have FrBFl (x : elt_type) : exists m, m.+1%:R ^-1 < Fr (sval x) - Fl (sval x).
     apply: (@nondecreasing_at_left_at_right _ _ a b) => //.
     by case: x {Fc Fd cd} => x/= /[1!inE] -[].
   have {}FlFr : Fl (sval x) < Fr (sval x) by rewrite lt_neqAle FlFr andbT.
-  exists (`|floor (Fr (sval x) - Fl (sval x))^-1|)%N.
-  rewrite invf_plt ?posrE ?subr_gt0// -natr1 natr_absz ger0_norm; last first.
-    by rewrite floor_ge0 invr_ge0// subr_ge0 ltW.
-  by rewrite intrD1 mathcomp_extra.lt_succ_floor// realE.
+  exists (trunc (Fr (sval x) - Fl (sval x))^-1).
+  by rewrite invf_plt ?posrE ?subr_gt0// ltStrunc.
 pose S m := [set x | x \in `]a, b[ /\ m.+1%:R ^-1 < Fr x - Fl x].
 have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
   path <%R a s ->
@@ -2826,7 +2821,7 @@ have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
   by rewrite -big_nat.
 have fin_S m : finite_set (S m).
   apply: contrapT => /infinite_set_fset.
-  move=> /(_ (m.+1 * `|ceil (F b - F a)|).+1)[B BSm mFbFaB].
+  move=> /(_ (m.+1 * (trunc (F b - F a)).+1).+1)[B BSm mFbFaB].
   set s := sort <=%R B.
   have := jumpfafb m s.
   have HsSm n : (n < size s)%N -> nth b s n \in S m.
@@ -2841,18 +2836,16 @@ have fin_S m : finite_set (S m).
     by rewrite sort_lt_sorted; exact: fset_uniq.
   move/(_ Hpas){Hpas}.
   contra; rewrite -ltNge => _.
-  apply: (@le_lt_trans _ _`|ceil (F b - F a)|%:R).
-    by rewrite natr_absz intr_norm ler_normr ceil_ge.
-  apply: (@lt_trans _ _ (m.+1%:R^-1 * #|` B|%:R)).
-    by rewrite ltr_pdivlMl// -natrM ltr_nat.
+  rewrite (lt_le_trans (ltStrunc _))//.
+  apply: (@le_trans _ _ (m.+1%:R^-1 * #|` B|%:R)).
+    by rewrite ler_pdivlMl// -natrM ler_nat ltnW.
   rewrite card_fset_sum1 natr_sum mulr_sumr mulr1 big_tnth cardfE.
   rewrite -(big_mkord xpredT (fun=> m.+1%:R^-1)) size_sort cardfE.
-  rewrite ltr_sum_nat//; first by rewrite -cardfE (leq_trans _ mFbFaB).
-  move=> k; rewrite leq0n/= => kB.
+  rewrite ler_sum_nat// => k /[!leq0n]/= kB.
   have : nth b s k \in S m.
     apply/mem_set/BSm => /=; rewrite -(@mem_sort _ <=%R).
     by apply/mem_nth; rewrite size_sort cardfE.
-  by rewrite inE => -[].
+  by rewrite /S inE/= => -[_ /ltW].
 suff -> : A = \bigcup_m S m.
   by apply: bigcup_countable => // n _; exact: finite_set_countable.
 rewrite eqEsubset; split.

@@ -481,12 +481,8 @@ Lemma wlength_sigma_finite (f : R -> R) :
 Proof.
 exists (fun k => `](- k%:R), k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
-  exists `|(floor `|x| + 1)%R|%N; rewrite //= in_itv/=.
-  rewrite !natr_absz intr_norm intrD.
-  suff: `|x| < `|(floor `|x|)%:~R + 1| by rewrite ltr_norml => /andP[-> /ltW->].
-  rewrite [ltRHS]ger0_norm//.
-    by rewrite intrD1 (le_lt_trans _ (lt_succ_floor _))// ?ler_norm.
-  by rewrite addr_ge0// ler0z floor_ge0.
+  exists (trunc `|x|).+1; rewrite //= in_itv/=.
+  by have := ltStrunc `|x|; rewrite ltr_norml => /andP[-> /ltW->].
 move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.
 Qed.
