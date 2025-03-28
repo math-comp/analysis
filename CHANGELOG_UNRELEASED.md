@@ -4,9 +4,6 @@
 
 ### Added
 
-- file `mathcomp_extra.v`
-  + lemmas `ge_trunc`, `lt_succ_trunc`, `trunc_ge_nat`, `trunc_lt_nat`
-
 - file `Rstruct.v`
   + lemma `Pos_to_natE` (from `mathcomp_extra.v`)
   + lemmas `RabsE`, `RdistE`, `sum_f_R0E`, `factE`
@@ -120,8 +117,7 @@
     `onem_le1`, `onem_lt1`, `onemX_ge0`, `onemX_lt1`, `onemD`,
     `onemMr`, `onemM`, `onemV`, `lez_abs2`, `ler_gtP`, `ler_ltP`,
     `real_ltr_distlC`, `prodAK`, `prodArK`, `swapK`, `lt_min_lt`,
-    `intrD1`, `intr1D`, `ge_trunc`, `lt_succ_trunc`, `trunc_ge_nat`,
-    `trunc_lt_nat`, `floor_lt_int`, `floor_ge0`, `floor_le0`,
+    `intrD1`, `intr1D`, `floor_lt_int`, `floor_ge0`, `floor_le0`,
     `floor_lt0`, `floor_eq`, `floor_neq0`, `ceil_gt_int`, `ceil_ge0`,
     `ceil_gt0`, `ceil_le0`, `abs_ceil_ge`, `nat_int`, `bij_forall`,
     `and_prop_in`, `mem_inc_segment`, `mem_dec_segment`,
