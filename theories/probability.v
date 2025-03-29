@@ -175,8 +175,8 @@ have cdf_n1 : (cdf X n%:R)@[n --> \oo] --> 1.
   pose F n := X @^-1` `]-oo, n%:R].
   have <- : \bigcup_n F n = setT.
     rewrite -preimage_bigcup -subTset => t _; exists `|Num.ceil (X t)|%N => //.
-    rewrite set_itvE/= (le_trans (le_ceil _))// (le_trans (ler_norm _))//.
-    by rewrite -intr_norm.
+    rewrite set_itvE/= (le_trans (le_ceil _))//.
+    by rewrite (le_trans (ler_norm (Num.ceil (X t))%:~R)) -?intr_norm.
   apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
   move=> n m nm; apply/subsetPset => x/=; rewrite !in_itv/= => /le_trans.
   by apply; rewrite ler_nat.
