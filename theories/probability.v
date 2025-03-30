@@ -210,46 +210,33 @@ have cdf_opp_n0 : ((cdf X \o -%R) n%:R)@[n --> \oo] --> 0.
 by rewrite (_ : 0%E = s)// (cvg_unique _ cdf_opp_ns cdf_opp_n0).
 Qed.
 
-Lemma cdf_right_continuous: right_continuous (cdf X).
+Lemma cdf_right_continuous : right_continuous (cdf X).
 Proof.
 move=> a.
-pose s := fine (ereal_inf [set (cdf X r) | r in [set` `]a, a + 1%R]]]).
-have cdf_s : (cdf X r)@[r --> a^'+] --> s%:E.
+pose s := fine (ereal_inf [set cdf X r | r in `]a, a + 1%R]]).
+have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
   rewrite /s fineK.
-  - apply: nondecreasing_at_right_cvge; [rewrite ltBSide /= ?ltrDl //|].
-    by move=> ????; apply: cdf_nondecreasing.
+  - apply: nondecreasing_at_right_cvge; first by rewrite ltBSide /= ?ltrDl.
+    by move=> *; exact: cdf_nondecreasing.
   - apply/fin_numPlt/andP; split=>//.
-    + rewrite (lt_le_trans (ltNyr 0%R)) ?lb_ereal_inf /lbound //= => l.
-      by case=> ? _ => <-; exact: cdf_ge0.
-    + rewrite (le_lt_trans _ (ltry 1%R)) // ereal_inf_le //=.
-      exists (cdf X (a+1)); [| exact: cdf_le1].
-      by exists (a+1%R); [rewrite in_itv /=; apply/andP; rewrite ltrDl |].
-have cdf_ns : (cdf X (a + n.+1%:R^-1))@[n --> \oo] --> s%:E.
+    + by rewrite (lt_le_trans (ltNyr 0%R)) ?lb_ereal_inf//= => l[? _] <-.
+    + rewrite (le_lt_trans _ (ltry 1%R))// ereal_inf_le//=.
+      exists (cdf X (a + 1)); last exact: cdf_le1.
+      by exists (a + 1%R) => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
+have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
   move/cvge_at_rightP : cdf_s; apply; split=> [n|]; rewrite ?ltrDl //.
-  rewrite (@eq_cvg _ _ _ _ ((fun _ => a:R^o) + (fun n => n.+1%:R^-1))) //=.
-  rewrite -{2}(addr0 a); apply: cvgD; [apply: cvg_cst |].
-  by rewrite gtr0_cvgV0 ?cvg_shiftS; [apply: cvgr_idn | near=> n].
-have cdf_na : (cdf X (a + n.+1%:R^-1))@[n --> \oo] --> cdf X a.
+  rewrite -[X in _ --> X]addr0; apply: (@cvgD _ R^o); first exact: cvg_cst.
+  by rewrite gtr0_cvgV0 ?cvg_shiftS; [exact: cvgr_idn | near=> n].
+have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
   pose F n := X @^-1` `]-oo, a + n.+1%:R^-1].
-  have F_msr n : d.-measurable (F n).
-    exact: measurable_sfunP.
-  have cap: \bigcap_n F n = X @^-1` `]-oo, a].
-    rewrite /F -preimage_bigcap.
-    suff ->: \bigcap_n `]-oo, a + n.+1%:R^-1]%classic = `]-oo, a]%classic =>//.
-    rewrite eqEsubset; split=> [| x /=].
-    - apply: subsetC2=> x /=; rewrite in_itv /= => /negP.
-      rewrite -real_ltNge /bigcap //= => ax xa.
-      case: (ltr_add_invr ax) => m.
-      by move: (xa m I); rewrite in_itv /= leNgt => /negP.
-    - rewrite in_itv /= => xa; rewrite /bigcap /= => n _; rewrite in_itv /=.
-      by rewrite (le_trans xa) ?lerDl.
-  have : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
-    apply: nonincreasing_cvg_mu=>//[||m n mn].
-    - by rewrite (le_lt_trans (probability_le1 _ _)) ?ltry.
-    - exact: bigcap_measurable.
-    - apply/subsetPset=> x; rewrite /F/= !in_itv=> /le_trans; apply.
-      by rewrite lerD // lef_pV2 ?ler_nat ?posrE.
-  by rewrite /cdf/distribution/pushforward/F cap.
+  suff : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
+    by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itv_NycEbigcap.
+  apply: nonincreasing_cvg_mu => [| | |m n mn].
+  - by rewrite -ge0_fin_numE// fin_num_measure//; exact: measurable_sfunP.
+  - by move=> ?; exact: measurable_sfunP.
+  - by apply: bigcap_measurable => // ? _; exact: measurable_sfunP.
+  - apply/subsetPset; apply: preimage_subset; apply: subset_itvl.
+    by rewrite bnd_simp lerD2l lef_pV2 ?posrE// ler_nat.
 by rewrite -(cvg_unique _ cdf_ns cdf_na).
 Unshelve. all: by end_near. Qed.
 

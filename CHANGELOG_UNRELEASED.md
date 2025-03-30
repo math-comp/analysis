@@ -109,6 +109,9 @@
   + definition `cdf`
   + lemmas `cdf_ge0`, `cdf_le1`, `cdf_nondecreasing`, `cdf_cvgr1y`, `cdf_cvgr0Ny`, `cdf_right_continuous`
 
+- in `real_interval.v`:
+  + lemma `itv_NycEbigcap`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package

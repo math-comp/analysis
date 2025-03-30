@@ -647,6 +647,7 @@ Proof.
 by rewrite set_itvE predeqE => r; split=> // _; rewrite /preimage /= ltNyr.
 Qed.
 
+(* NB: see also itv_c_inftyEbigcap *)
 Lemma eitv_bnd_infty b r : `[r%:E, +oo[%classic =
   \bigcap_k [set` Interval (BSide b (r - k.+1%:R^-1)%:E) +oo%O] :> set _.
 Proof.
@@ -665,6 +666,7 @@ rewrite predeqE => x; split=> [|].
   + by rewrite lte_fin ltrBlDr ltNge (ltW skr).
 Qed.
 
+(* NB: see also itv_NycEbigcap in real_interval.v *)
 Lemma eitv_infty_bnd b r : `]-oo, r%:E]%classic =
   \bigcap_k [set` Interval -oo%O (BSide b (r%:E + k.+1%:R^-1%:E))] :> set _.
 Proof.
