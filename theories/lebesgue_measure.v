@@ -1128,7 +1128,7 @@ have {}EBr2 : \esum_(i in E) mu (closure (B i)) <=
   by apply: bigcup_measurable => *; exact: measurable_closure.
 have finite_set_F i : finite_set (F i).
   apply: contrapT.
-  pose M := `|ceil ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))|.+1.
+  pose M := (trunc ((r%:num + 2) *+ 2 / (1 / (2 ^ i.+1)%:R))).+1.
   move/(infinite_set_fset M) => [/= C CsubFi McardC].
   have MC : (M%:R * (1 / (2 ^ i.+1)%:R))%:E <=
             mu (\bigcup_(j in [set` C]) closure (B j)).
@@ -1168,9 +1168,7 @@ have finite_set_F i : finite_set (F i).
     - by move=> /= x [n Fni Bnx]; exists n => //; exists i.
   have {CFi Fir2} := le_trans MC (le_trans CFi Fir2).
   apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
-  rewrite -[M%:R]natr1 natr_absz ger0_norm; last first.
-    by rewrite -[leLHS](ceil0 R) ceil_le.
-  by rewrite -ltr_pdivrMr// intrD1 floor_lt_int ltzD1 ceil_floor// lerDl.
+  by rewrite -ltr_pdivrMr// /M ltStrunc.
 have mur2_fin_num_ : mu (ball (0:R) (r%:num + 2))%R < +oo.
   by rewrite lebesgue_measure_ball// ltry.
 have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =
@@ -1490,7 +1488,7 @@ have {}Hc : mu (\bigcup_(k in G) closure (B k) `\`
   rewrite setIidr; last exact: bigcup_subset.
   by rewrite lteBlDr-?lteBlDl//; exact: muGSfin.
 have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
-  pose M := `|ceil (fine (mu O) / r%:num)|.+1.
+  pose M := (trunc (fine (mu O) / r%:num)).+1.
   apply: contrapT => /infinite_set_fset /= /(_ M)[G0 G0G'r MG0].
   have : mu O < mu (\bigcup_(k in bigB G r%:num) closure (B k)).
     apply: (@lt_le_trans _ _ (mu (\bigcup_(k in [set` G0]) closure (B k)))).
@@ -1503,9 +1501,7 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
           by rewrite lee_fin ler_wpM2l// ler_nat count_predT.
         rewrite EFinM -lte_pdivrMl// muleC -(@fineK _ (mu O)); last first.
           by rewrite ge0_fin_numE//; case/andP: OAoo => ?; exact: lt_trans.
-        rewrite -EFinM /M lte_fin (le_lt_trans (ceil_ge _))//.
-        rewrite -natr1 natr_absz ger0_norm ?ltrDl//.
-        by rewrite -ceil_ge0// (@lt_le_trans _ _ 0%R)// divr_ge0// fine_ge0.
+        by rewrite -EFinM /M lte_fin ltStrunc.
       rewrite big_seq [in leRHS]big_seq.
       apply: lee_sum => //= i /G0G'r [iG rBi].
       rewrite -[leRHS]fineK//; last first.

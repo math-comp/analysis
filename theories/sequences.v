@@ -1190,12 +1190,11 @@ Qed.
 
 Lemma is_cvg_series_exp_coeff_pos : cvgn (series (exp x)).
 Proof.
-rewrite /series; near \oo => N; have xN : x < N%:R; last first.
-  rewrite -(@is_cvg_series_restrict N.+1).
-  by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; apply: S1_sup.
-near: N; exists `|floor x|.+1 => // m; rewrite /mkset -(@ler_nat R).
-move/lt_le_trans => -> //; rewrite (lt_le_trans (mathcomp_extra.lt_succ_floor x))//.
-by rewrite -intrD1 -natr1 lerD2r -(@gez0_abs (floor x)) ?floor_ge0// ltW.
+rewrite /series; near \oo => N; have xN : x < N%:R.
+  near: N; exists (trunc x).+2 => // m/= xm.
+  by rewrite (lt_trans (ltStrunc _))// ltr_nat.
+rewrite -(@is_cvg_series_restrict N.+1).
+by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; exact: S1_sup.
 Unshelve. all: by end_near. Qed.
 
 End exponential_series_cvg.
@@ -2767,11 +2766,8 @@ have : cvg (a @ \oo).
   have [n rne] : exists n, 2 * (r n)%:num < e.
     pose eps := e / 2.
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
-      exists `|ceil eps^-1|%N.
-      rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK -addn1 natrD.
-      rewrite natr_absz gtr0_norm.
-        by rewrite (le_lt_trans (ceil_ge _)) // ltrDl.
-      by rewrite -ceil_gt0 invr_gt0 divr_gt0.
+      exists (trunc eps^-1).
+      by rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK ltStrunc.
     exists n.+1; rewrite -ltr_pdivlMl //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
       have [_ ] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply: (Pf (n, ar n)).
@@ -2872,16 +2868,16 @@ set O_inf := \bigcap_i (O i).
 have O_infempty : O_inf = set0.
   rewrite -subset0 => x.
   have [M FxM] := BoundedF x; rewrite /O_inf /O /=.
-  move=> /(_ `|ceil M|%N Logic.I)[f Ff]; apply/negP; rewrite -leNgt.
-  rewrite (le_trans (FxM _ Ff))// (le_trans (ceil_ge _))//.
-  by have := lez_abs (ceil M); rewrite -(@ler_int K).
+  move=> /(_ (trunc M).+1 Logic.I)[f Ff]; apply/negP; rewrite -leNgt.
+  by rewrite (le_trans (FxM _ Ff))// ltW// ltStrunc.
 have ContraBaire : exists i, not (dense (O i)).
   have dOinf : ~ dense O_inf.
     rewrite /dense O_infempty ; apply /existsNP; exists setT; elim.
     - by move=> x; rewrite setI0.
     - by exists point.
     - exact: openT.
-  have /contra_not/(_ dOinf) : (forall i, open (O i) /\ dense (O i)) -> dense (O_inf).
+  have /contra_not/(_ dOinf) :
+      (forall i, open (O i) /\ dense (O i)) -> dense (O_inf).
     exact: Baire.
   move=> /asboolPn /existsp_asboolPn[n /and_asboolP /nandP Hn].
   by exists n; case: Hn => /asboolPn.
@@ -2895,11 +2891,11 @@ exists ((n + n)%:R * k * 2 / r%:num)=> f Ff y Hx; move: (Propf f Ff) => [ _ linf
 case: (eqVneq y 0) => [-> | Zeroy].
   move: (linear0 (pack_linear linf)) => /= ->.
   by rewrite normr0 !mulr_ge0 // (le_trans _ Hx).
-have majballi : forall f x, F f -> (ball x0 r%:num) x -> `|f x | <= n%:R.
-  move=> g x Fg /(H x); rewrite leNgt.
+have majballi g x : F g -> (ball x0 r%:num) x -> `|g x| <= n%:R.
+  move=> Fg /(H x); rewrite leNgt.
   by rewrite /O setC_bigcup /= => /(_ _ Fg)/negP.
-have majball : forall f x, F f -> (ball x0 r%:num) x -> `|f (x - x0)| <= n%:R + n%:R.
-  move=> g x Fg; move: (Propf g Fg) => [Bg Lg].
+have majball g x : F g -> (ball x0 r%:num) x -> `|g (x - x0)| <= n%:R + n%:R.
+  move=> Fg; have [Bg Lg] := Propf g Fg.
   move: (linearB (pack_linear Lg)) => /= -> Ballx.
   apply/(le_trans (ler_normB _ _))/lerD; first exact: majballi.
   by apply: majballi => //; exact/ball_center.
