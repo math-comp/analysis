@@ -164,17 +164,16 @@ Proof. by move=> r s rs; rewrite le_measure ?inE//; exact: subitvPr. Qed.
 Lemma cdf_cvgr1y : (cdf X r)@[r --> +oo%R] --> 1.
 Proof.
 pose s : \bar R := ereal_sup (range (cdf X)).
-have cdf_s : (cdf X r)@[r --> +oo%R] --> s.
+have cdf_s : cdf X r @[r --> +oo%R] --> s.
   exact: nondecreasing_cvge cdf_nondecreasing.
-have cdf_ns : (cdf X n%:R)@[n --> \oo%R] --> s.
+have cdf_ns : cdf X n%:R @[n --> \oo%R] --> s.
   by move/cvge_pinftyP : cdf_s; apply; exact/cvgryPge/nbhs_infty_ger.
-have cdf_n1 : (cdf X n%:R)@[n --> \oo] --> 1.
+have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
   rewrite -(@probability_setT _ _ _ P).
   pose F n := X @^-1` `]-oo, n%:R].
   have <- : \bigcup_n F n = setT.
-    rewrite -preimage_bigcup -subTset => t _; exists `|Num.ceil (X t)|%N => //.
-    rewrite set_itvE/= (le_trans (le_ceil _))//.
-    by rewrite (le_trans (ler_norm (Num.ceil (X t))%:~R)) -?intr_norm.
+    rewrite -preimage_bigcup -subTset => t _/=.
+    by exists (trunc (X t)).+1 => //=; rewrite in_itv/= ltW// ltStrunc.
   apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
   move=> n m nm; apply/subsetPset => x/=; rewrite !in_itv/= => /le_trans.
   by apply; rewrite ler_nat.
@@ -184,24 +183,21 @@ Qed.
 Lemma cdf_cvgr0Ny : (cdf X r)@[r --> -oo%R] --> 0.
 Proof.
 rewrite cvgNy_compNP.
-have cdf_opp_noninc : {homo (cdf X \o -%R) : q r / (q <= r)%R >-> q >= r}.
+have cdf_opp_noninc : {homo cdf X \o -%R : q r / (q <= r)%R >-> q >= r}.
   by move=> q r; rewrite -lterN2; exact: cdf_nondecreasing.
 pose s := ereal_inf (range (cdf X \o -%R)).
-have cdf_opp_s : ((cdf X \o -%R) r)@[r --> +oo%R] --> s.
+have cdf_opp_s : (cdf X \o -%R) r @[r --> +oo%R] --> s.
   exact: nonincreasing_cvge cdf_opp_noninc.
-have cdf_opp_ns : ((cdf X \o -%R) n%:R)@[n --> \oo] --> s.
+have cdf_opp_ns : (cdf X \o -%R) n%:R @[n --> \oo] --> s.
   by move/cvge_pinftyP : cdf_opp_s; apply; exact/cvgryPge/nbhs_infty_ger.
-have cdf_opp_n0 : ((cdf X \o -%R) n%:R)@[n --> \oo] --> 0.
+have cdf_opp_n0 : (cdf X \o -%R) n%:R @[n --> \oo] --> 0.
   rewrite -(measure0 P).
   pose F n := X @^-1` `]-oo, (- n%:R)%R].
   have <- : \bigcap_n F n = set0.
     rewrite -subset0 => t.
-    set m := `|Num.ceil `|X t|%R|.+1.
+    set m := (trunc `|X t|).+1.
     move=> /(_ m I); rewrite /F/= in_itv/= leNgt => /negP; apply.
-    rewrite ltrNl /m -natr1 natr_absz intr_norm /= ger0_norm; last first.
-      rewrite ler0z ceil_ge0 (lt_le_trans (ltrN10 R))//.
-    rewrite (@le_lt_trans _ _ `|X t|%R)//; first by rewrite -normrN ler_norm.
-    by rewrite ltr_pwDr// le_ceil.
+    by rewrite ltrNl /m (le_lt_trans (ler_norm _))// normrN ltStrunc.
   apply: nonincreasing_cvg_mu => //=.
   + by rewrite (le_lt_trans (probability_le1 _ _)) ?ltry.
   + exact: bigcap_measurable.
