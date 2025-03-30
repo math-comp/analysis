@@ -59,6 +59,13 @@
 - in `mathcomp_extra.v`:
   + lemmas `intrN`, `real_floor_itv`, `real_ge_floor`, `real_ceil_itv`
 
+- in `realfun.v`:
+  + lemmas `cvge_pinftyP`, `nonincreasing_cvge`
+
+- in `probability.v`:
+  + definition `cdf`
+  + lemmas `cdf_ge0`, `cdf_le1`, `cdf_nondecreasing`, `cdf_cvgr1y`, `cdf_cvgr0Ny`, `cdf_right_continuous`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
