@@ -133,6 +133,22 @@ Section set_itv_realType.
 Variable R : realType.
 Implicit Types x : R.
 
+Lemma itv_NycEbigcap b (r : R) : `]-oo, r]%classic =
+  \bigcap_k [set` Interval -oo%O (BSide b (r + k.+1%:R^-1))].
+Proof.
+apply/seteqP; split => /= [x/=|x].
+- rewrite in_itv/= => xr k _/=; rewrite in_itv/=.
+  case: b => /=.
+  + by rewrite (le_lt_trans xr)// ltrDl.
+  + by rewrite (le_trans xr)// lerDl.
+- move=> br/=; rewrite in_itv/= leNgt; apply/negP => /ltr_add_invr[k rkx].
+  have /= {br} := br k Logic.I.
+  rewrite in_itv/=.
+  case: b => /=.
+  + by apply/negP; rewrite -leNgt ltW.
+  + by rewrite leNgt rkx.
+Qed.
+
 Lemma itv_c_inftyEbigcap x :
   `[x, +oo[%classic = \bigcap_k `]x - k.+1%:R^-1, +oo[%classic.
 Proof.
