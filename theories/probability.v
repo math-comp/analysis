@@ -201,7 +201,7 @@ have cdf_opp_n0 : ((cdf X \o -%R) n%:R)@[n --> \oo] --> 0.
     set m := `|Num.ceil `|X t|%R|.+1.
     move=> /(_ m I); rewrite /F/= in_itv/= leNgt => /negP; apply.
     rewrite ltrNl /m -natr1 natr_absz intr_norm /= ger0_norm; last first.
-      by rewrite ler0z -ceil_ge0 (lt_le_trans (ltrN10 R)).
+      rewrite ler0z ceil_ge0 (lt_le_trans (ltrN10 R))//.
     rewrite (@le_lt_trans _ _ `|X t|%R)//; first by rewrite -normrN ler_norm.
     by rewrite ltr_pwDr// le_ceil.
   apply: nonincreasing_cvg_mu => //=.
