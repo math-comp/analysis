@@ -97,6 +97,10 @@
     `Instances.num_spec_intmul`, `Instances.num_itv_bound_exprn_le1`
   + canonical instance `Instances.succn_inum`
 
+- in `lebesgue_integral_properties.v`
+  (new file with contents moved from `lebesgue_integral.v`)
+  + `le_normr_integral` renamed to `le_normr_Rintegral`
+
 ### Renamed
 
 - in `lebesgue_integral.v`:

@@ -1057,9 +1057,9 @@ apply: Itv.spec_real2 (Itv.P x) (Itv.P y).
 case: x y => [x /= _] [y /= _] => {xi yi r} -[lx ux] [ly uy]/=.
 move=> /andP[xr /=/andP[lxx xux]] /andP[yr /=/andP[lyy yuy]].
 apply/and3P; split; rewrite ?min_real//= num_itv_bound_min real_BSide_min//.
-- apply: (comparable_min_le_min (comparable_num_itv_bound _ _)) => //.
+- apply: (comparable_le_min2 (comparable_num_itv_bound _ _)) => //.
   exact: real_comparable.
-- apply: (comparable_min_le_min _ (comparable_num_itv_bound _ _)) => //.
+- apply: (comparable_le_min2 _ (comparable_num_itv_bound _ _)) => //.
   exact: real_comparable.
 Qed.
 
@@ -1071,9 +1071,9 @@ apply: Itv.spec_real2 (Itv.P x) (Itv.P y).
 case: x y => [x /= _] [y /= _] => {xi yi r} -[lx ux] [ly uy]/=.
 move=> /andP[xr /=/andP[lxx xux]] /andP[yr /=/andP[lyy yuy]].
 apply/and3P; split; rewrite ?max_real//= num_itv_bound_max real_BSide_max//.
-- apply: (comparable_max_le_max (comparable_num_itv_bound _ _)) => //.
+- apply: (comparable_le_max2 (comparable_num_itv_bound _ _)) => //.
   exact: real_comparable.
-- apply: (comparable_max_le_max _ (comparable_num_itv_bound _ _)) => //.
+- apply: (comparable_le_max2 _ (comparable_num_itv_bound _ _)) => //.
   exact: real_comparable.
 Qed.
 
@@ -1325,7 +1325,7 @@ Lemma num_spec_sqrtC (i : Itv.t) (x : num_def R i) (r := sqrtC_itv i) :
 Proof.
 rewrite {}/r; case: i x => [//| [l u] [x /=/and3P[xr /= lx xu]]].
 case: l lx => [bl [l |//] |[]//] lx; apply/and3P; split=> //=.
-  by apply: real_sqrtC; case: bl lx => /[!bnd_simp] [|/ltW]; apply: le_trans.
+  by apply: sqrtC_real; case: bl lx => /[!bnd_simp] [|/ltW]; apply: le_trans.
 case: bl lx => /[!bnd_simp] lx.
 - by rewrite sqrtC_ge0; apply: le_trans lx.
 - by rewrite sqrtC_gt0; apply: le_lt_trans lx.

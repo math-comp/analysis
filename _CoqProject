@@ -86,7 +86,16 @@ theories/forms.v
 theories/derive.v
 theories/measure.v
 theories/numfun.v
-theories/lebesgue_integral.v
+
+theories/lebesgue_integral_theory/lebesgue_integral.v
+theories/lebesgue_integral_theory/simple_functions.v
+theories/lebesgue_integral_theory/lebesgue_integral_definition.v
+theories/lebesgue_integral_theory/lebesgue_integral_properties.v
+theories/lebesgue_integral_theory/lebesgue_integral_dominated_convergence.v
+theories/lebesgue_integral_theory/lebesgue_Rintegral.v
+theories/lebesgue_integral_theory/lebesgue_integral_fubini.v
+theories/lebesgue_integral_theory/lebesgue_integral_differentiation.v
+
 theories/ftc.v
 theories/hoelder.v
 theories/probability.v

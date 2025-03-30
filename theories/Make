@@ -50,7 +50,16 @@ forms.v
 derive.v
 measure.v
 numfun.v
-lebesgue_integral.v
+
+lebesgue_integral_theory/lebesgue_integral.v
+lebesgue_integral_theory/simple_functions.v
+lebesgue_integral_theory/lebesgue_integral_definition.v
+lebesgue_integral_theory/lebesgue_integral_properties.v
+lebesgue_integral_theory/lebesgue_integral_dominated_convergence.v
+lebesgue_integral_theory/lebesgue_Rintegral.v
+lebesgue_integral_theory/lebesgue_integral_fubini.v
+lebesgue_integral_theory/lebesgue_integral_differentiation.v
+
 ftc.v
 hoelder.v
 probability.v

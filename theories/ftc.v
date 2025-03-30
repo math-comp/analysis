@@ -304,7 +304,7 @@ have {}g_d1f_0 : (\int[mu]_(y in B) `|g_ n y - ('d1 f) a y|) @[n --> \oo] --> 0.
   exact/fine_cvg.
 apply: (@squeeze_cvgr _ _ _ _ (cst 0) _ _ _ _ _ g_d1f_0) => //.
 - apply/nearW => n.
-  rewrite /= normr_ge0/= le_normr_integral//.
+  rewrite /= normr_ge0/= le_normr_Rintegral//.
   rewrite /comp; under eq_fun do rewrite EFinB.
   by apply: integrableB => //; exact: intg_.
 - exact: cvg_cst.
@@ -641,7 +641,7 @@ rewrite /= [leRHS](_ : _ = \int[mu]_(x in `[a, c]) `| f x |%:E)%E; last first.
   by rewrite restrict_EFin/= restrict_normr.
 rewrite /int /parameterized_integral /=.
 apply: (@le_trans _ _ ((\int[mu]_(t in `[a, c]) `|f t|))%:E).
-  by apply: le_normr_integral => //; exact: integrableS intf.
+  by apply: le_normr_Rintegral => //; exact: integrableS intf.
 set rhs : \bar R := leRHS.
 have [->|rhsoo] := eqVneq rhs +oo%E; first by rewrite leey.
 rewrite /rhs /Rintegral -/rhs.
@@ -689,7 +689,7 @@ rewrite Rintegral_setU//=; last 2 first.
   by rewrite leNgt => /negbTE ->.
 have xbab : `]x, b] `<=` `[a, b].
   by apply: subset_itvr; rewrite bnd_simp; near: x; exact: nbhs_left_ge.
-rewrite -addrAC subrr add0r (le_trans (le_normr_integral _ _))//.
+rewrite -addrAC subrr add0r (le_trans (le_normr_Rintegral _ _))//.
   exact: integrableS intf.
 rewrite [leLHS](_ : _ = (\int[mu]_(t in `]x, b]) normr (fab t)))//; last first.
   apply: eq_Rintegral => //= z; rewrite inE/= in_itv/= => /andP[xz zb].
@@ -737,7 +737,7 @@ have [xz|xz|->] := ltgtP x z; last by rewrite subrr normr0 ltW.
     exact: ltW.
   have xzab : `]x, z] `<=` `[a, b].
     by apply: subset_itvScc; rewrite bnd_simp; exact/ltW.
-  apply: (le_trans (le_normr_integral _ _)) => //; first exact: integrableS intf.
+  apply: (le_trans (le_normr_Rintegral _ _)) => //; first exact: integrableS intf.
   rewrite -(setIidl xzab) Rintegral_mkcondr/=.
   under eq_Rintegral do rewrite restrict_normr.
   apply/ltW/int_normr_cont => //.
@@ -759,7 +759,7 @@ have [xz|xz|->] := ltgtP x z; last by rewrite subrr normr0 ltW.
   have intzxf : mu.-integrable `[z, x] (EFin \o f) by exact: integrableS intf.
   rewrite Rintegral_itv_obnd_cbnd//; last first.
     by apply: (@integrableS _ _ _ mu `[z, x]) => //; exact: subset_itv_oc_cc.
-  apply: (le_trans (le_normr_integral _ _)) => //.
+  apply: (le_trans (le_normr_Rintegral _ _)) => //.
   rewrite -(setIidl zxab) Rintegral_mkcondr/=.
   under eq_Rintegral do rewrite restrict_normr.
   apply/ltW/int_normr_cont => //.
