@@ -206,7 +206,7 @@ Proof.
 have moc (a b : R) : measurable `]a, b].
   by apply: sub_sigma_algebra; apply: is_ocitv.
 have mopoo (x : R) : measurable `]x, +oo[.
-  by rewrite itv_bnd_infty_bigcup; exact: bigcup_measurable.
+  by rewrite itv_bndy_bigcup_BRight; exact: bigcup_measurable.
 have mnooc (x : R) : measurable `]-oo, x].
   by rewrite -setCitvr; exact/measurableC.
 have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
