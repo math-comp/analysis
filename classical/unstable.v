@@ -451,7 +451,7 @@ Lemma real_ceil_le_int_tmp x n : x \is Num.real ->
   (Num.ceil x <= n) = (x <= n%:~R).
 Proof.
 rewrite -realN; move=> /(real_floor_ge_int_tmp (- n)).
-by rewrite mulrNz lerNl => ->; rewrite lerN2.
+by rewrite ?ceilNfloor mulrNz lerNl => ->; rewrite lerN2.
 Qed.
 
 #[deprecated(since="mathcomp-analyss 1.10.0",
@@ -474,19 +474,21 @@ by move=> xr; apply/eqP/idP => [<-|]; [exact: real_ceil_itv|exact: ceil_def].
 Qed.
 
 Lemma real_ceil_ge0 x : x \is Num.real -> (0 <= Num.ceil x) = (-1 < x).
-Proof. by move=> ?; rewrite oppr_ge0 real_floor_le0 ?realN// ltrNl. Qed.
+Proof.
+by move=> ?; rewrite ?ceilNfloor oppr_ge0 real_floor_le0 ?realN// ltrNl.
+Qed.
 
 Lemma ceil_lt0 x : Num.ceil x < 0 = (x <= -1).
-Proof. by rewrite oppr_lt0 floor_gt0 lerNr. Qed.
+Proof. by rewrite ?ceilNfloor oppr_lt0 floor_gt0 lerNr. Qed.
 
 Lemma real_ceil_le0 x : x \is Num.real -> (Num.ceil x <= 0) = (x <= 0).
 Proof. by move=> ?; rewrite real_ceil_le_int_tmp. Qed.
 
 Lemma ceil_gt0 x : (Num.ceil x > 0) = (x > 0).
-Proof. by rewrite oppr_gt0 floor_lt0 oppr_lt0. Qed.
+Proof. by rewrite ?ceilNfloor oppr_gt0 floor_lt0 oppr_lt0. Qed.
 
 Lemma ceil_neq0 x : (Num.ceil x != 0) = (x <= -1) || (x > 0).
-Proof. by rewrite oppr_eq0 floor_neq0 oppr_lt0 lerNr orbC. Qed.
+Proof. by rewrite ?ceilNfloor oppr_eq0 floor_neq0 oppr_lt0 lerNr orbC. Qed.
 
 End num_trunc_floor_ceil.
 
@@ -549,7 +551,7 @@ Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
 rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
   by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.le_ceil _))// lerDl.
-by rewrite !ler0_norm ?ceil_le0// opprK intrD1 ltW// lt_floorD1.
+by rewrite !ler0_norm ?ceil_le0// ?ceilNfloor opprK intrD1 ltW// lt_floorD1.
 Qed.
 
 End trunc_floor_ceil.

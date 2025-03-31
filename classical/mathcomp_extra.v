@@ -136,7 +136,8 @@ Proof. by move=> /real_floor_itv /andP[]. Qed.
 Lemma real_ceil_itv x : x \is Num.real ->
   (Num.ceil x - 1)%:~R < x <= (Num.ceil x)%:~R.
 Proof.
-by move=> Rx; rewrite -opprD !mulrNz ltrNl lerNr andbC real_floor_itv ?realN.
+move=> Rx.
+by rewrite ?ceilNfloor -opprD !mulrNz ltrNl lerNr andbC real_floor_itv ?realN.
 Qed.
 
 End num_floor_ceil.
@@ -163,10 +164,10 @@ Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (Num.ceil x <= z).
 Proof. exact: Num.Theory.ceil_le_int. Qed.
 
 Lemma ceilN x : Num.ceil (- x) = - Num.floor x.
-Proof. by rewrite /Num.ceil opprK. Qed.
+Proof. by rewrite ?ceilNfloor /Num.ceil opprK. Qed.
 
 Lemma floorN x : Num.floor (- x) = - Num.ceil x.
-Proof. by rewrite /Num.ceil opprK. Qed.
+Proof. by rewrite ?ceilNfloor /Num.ceil opprK. Qed.
 
 End floor_ceil.
 
