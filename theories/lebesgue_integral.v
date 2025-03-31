@@ -1527,17 +1527,11 @@ Proof.
 move=> Dx fxoo; have approx_x n : approx n x = n%:R.
   rewrite /approx foo_B1// mulr1 big1 ?add0r// => /= i _.
   by rewrite fgen_A0 // ?mulr0 // fxoo leey.
-case/cvg_ex => /= l; have [l0|l0] := leP 0%R l.
-- move=> /cvgrPdist_lt/(_ _ ltr01) -[n _].
-  move=> /(_ ((trunc l).+2 + n)%N) /= /(_ (leq_addl _ _)); apply/negP.
-  rewrite -leNgt approx_x distrC addSnnS natrD ger0_norm//; last first.
-    by rewrite subr_ge0 ltW// (lt_le_trans (ltStrunc _))// lerDl.
-  by rewrite lerBrDl lerD ?ler1n// ltW// ltStrunc.
-- move=> /cvgrPdist_lt/(_ _ ltr01)[n _].
-  move=> /(_ ((trunc l).+2 + n))/(_ (leq_addl _ _)); apply/negP.
-  rewrite approx_x -leNgt distrC natrD ger0_norm; last first.
-    by rewrite subr_ge0 -natr1 -addrA ler_wpDr// ltW// ltStrunc.
-  by rewrite lerBrDl -natr1 -addrA nat1r lerD ?ler1n// ltW// ltStrunc.
+move=> /cvg_ex[/= l /cvgrPdist_lt/(_ _ ltr01) [n _]].
+move=> /(_ ((trunc l).+2 + n) (leq_addl _ _)); apply/negP.
+rewrite -leNgt approx_x distrC natrD addrAC ger0_norm ler_wpDr//.
+  by rewrite lerBrDl -natr1 lerD// ltW// ltStrunc.
+by rewrite subr_ge0 -natr1 ler_wpDr// ltW// ltStrunc.
 Qed.
 
 Lemma ecvg_approx (f0 : forall x, D x -> (0 <= f x)%E) x :
@@ -3856,7 +3850,7 @@ move=> mf; split=> [iDf0|Df0].
     rewrite predeqE => t; split=> [[Dt ft0]|[n _ /= [Dt nft]]].
       have [ftoo|ftoo] := eqVneq `|f t| +oo.
         by exists 0%N => //; split => //=; rewrite ftoo /= leey.
-      pose m := (trunc (fine `|f t|)^-1).
+      pose m := trunc (fine `|f t|)^-1.
       have ftfin : `|f t|%E \is a fin_num by rewrite ge0_fin_numE// ltey.
       exists m => //; split => //=.
       rewrite -(@fineK _ `|f t|) // lee_fin invf_ple; last 2 first.
