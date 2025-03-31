@@ -35,8 +35,8 @@ From mathcomp Require Import ftc gauss_integral.
 (*            dRV_dom X == domain of the discrete random variable X           *)
 (*           dRV_enum X == bijection between the domain and the range of X    *)
 (*              pmf X r := fine (P (X @^-1` [set r]))                         *)
-(*              cdf X r := cumulative distribution function of X              *)
-(*                         (= distribution P X (`]-oo, r]))                   *)
+(*              cdf X r == cumulative distribution function of X              *)
+(*                      := distribution P X `]-oo, r]                         *)
 (*        enum_prob X k == probability of the kth value in the range of X     *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -228,7 +228,7 @@ have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
 have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
   pose F n := X @^-1` `]-oo, a + n.+1%:R^-1].
   suff : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
-    by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itv_NycEbigcap.
+    by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itvNycEbigcap.
   apply: nonincreasing_cvg_mu => [| | |m n mn].
   - by rewrite -ge0_fin_numE// fin_num_measure//; exact: measurable_sfunP.
   - by move=> ?; exact: measurable_sfunP.
