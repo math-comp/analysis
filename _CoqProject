@@ -73,7 +73,15 @@ theories/function_spaces.v
 theories/ereal.v
 theories/cantor.v
 theories/tvs.v
-theories/normedtype.v
+
+theories/normed_theory/num_normedtype.v
+theories/normed_theory/pseudometric_normed_Zmodule.v
+theories/normed_theory/normed_module.v
+theories/normed_theory/complete_normed_module.v
+theories/normed_theory/urysohn.v
+theories/normed_theory/vitali_lemma.v
+theories/normed_theory/normedtype.v
+
 theories/realfun.v
 theories/sequences.v
 theories/exp.v
