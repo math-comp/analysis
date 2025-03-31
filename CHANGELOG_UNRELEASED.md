@@ -67,7 +67,7 @@
   + lemmas `cdf_ge0`, `cdf_le1`, `cdf_nondecreasing`, `cdf_cvgr1y`, `cdf_cvgr0Ny`, `cdf_right_continuous`
 
 - in `real_interval.v`:
-  + lemma `itv_NycEbigcap`
+  + lemma `itvNycEbigcap`
 
 ### Changed
 
@@ -97,6 +97,11 @@
   + `min_le_min` -> `le_min2`
   + `max_le_max` -> `le_max2`
   + `real_sqrtC` -> `sqrtC_real`
+
+- in ``
+  + `itv_c_inftyEbigcap` -> `itvcyEbigcap`
+  + `itv_bnd_inftyEbigcup` -> `itvbndyEbigcup`
+  + `itv_o_inftyEbigcup` -> `itvoyEbigcup`
 
 ### Generalized
 
