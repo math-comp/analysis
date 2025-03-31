@@ -111,7 +111,7 @@
 
 - in `real_interval.v`:
   + lemma `itvNycEbigcap`
-- in `normedtype.v`:
+- in `normed_module.v` (new file):
   + lemma `near0Z`
 
 - in `derive.v`:
@@ -225,7 +225,8 @@
 
 - in `sequences.v`:
   + lemma `nneseries_recl` genralized with a filtering predicate `P`
-- in `normedtype.v`:
+
+- in `num_normedtype.v` (new file):
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
 
 ### Deprecated
