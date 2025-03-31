@@ -35,6 +35,8 @@ From mathcomp Require Import ftc gauss_integral.
 (*            dRV_dom X == domain of the discrete random variable X           *)
 (*           dRV_enum X == bijection between the domain and the range of X    *)
 (*              pmf X r := fine (P (X @^-1` [set r]))                         *)
+(*              cdf X r := cumulative distribution function of X              *)
+(*                         (= distribution P X (`]-oo, r]))                   *)
 (*        enum_prob X k == probability of the kth value in the range of X     *)
 (* ```                                                                        *)
 (*                                                                            *)
