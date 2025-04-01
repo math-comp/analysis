@@ -40,7 +40,7 @@ Local Open Scope ring_scope.
 (** definitions and lemmas to make a bridge between MathComp intervals and
     classical sets *)
 Section set_itv_porderType.
-Variables (d : Order.disp_t) (T : porderType d).
+Variables (disp : Order.disp_t) (T : porderType disp).
 Implicit Types (i j : interval T) (x y : T) (a : itv_bound T).
 
 Definition neitv i := [set` i] != set0.
@@ -77,31 +77,15 @@ Qed.
 
 Lemma subset_itvl (a b c : itv_bound T) : (b <= c)%O ->
   [set` Interval a b] `<=` [set` Interval a c].
-Proof.
-case: c => [[|] c bc x/=|[//|_] x/=].
-- rewrite !in_itv/= => /andP[->/=].
-  case: b bc => [[|]/=|[|]//] b bc.
-    by move=> /lt_le_trans; exact.
-  by move=> /le_lt_trans; exact.
-- rewrite !in_itv/= => /andP[->/=].
-  case: b bc => [[|]/=|[|]//] b bc.
-    by move=> /ltW /le_trans; apply.
-  by move=> /le_trans; apply.
-- by move: x; rewrite le_ninfty => /eqP ->.
-- by rewrite !in_itv/=; case: a => [[|]/=|[|]//] a /andP[->].
-Qed.
+Proof. by move=> /subitvPr /subsetP h; apply/subsetP => x /h. Qed.
 
 Lemma subset_itvr (a b c : itv_bound T) : (c <= a)%O ->
   [set` Interval a b] `<=` [set` Interval c b].
-Proof.
-move=> ac x/=; rewrite !in_itv/= => /andP[ax ->]; rewrite andbT.
-move: c a ax ac => [[|] c [[|]/= a ax|[|]//=]|[//|]]; rewrite ?bnd_simp.
-- by move=> /le_trans; exact.
-- by move=> /le_trans; apply; exact/ltW.
-- by move=> /lt_le_trans; exact.
-- by move=> /le_lt_trans; exact.
-- by move=> [[|]|[|]//].
-Qed.
+Proof. by move=> /subitvPl /subsetP h; apply/subsetP => x /h. Qed.
+
+Lemma subset_itv (a b c d : itv_bound T) : (c <= a)%O -> (b <= d)%O ->
+  [set` Interval a b] `<=` [set` Interval c d].
+Proof. by move=> ac bd; apply/(subset_trans (subset_itvl _))/subset_itvr. Qed.
 
 Lemma subset_itvScc (a b : itv_bound T) (c e : T) :
     (BLeft c <= a)%O -> (b <= BRight e)%O ->
@@ -228,7 +212,7 @@ by rewrite andbT; split => //; exact/nesym/eqP.
 Qed.
 
 End set_itv_porderType.
-Arguments neitv {d T} _.
+Arguments neitv {disp T} _.
 #[deprecated(since="mathcomp-analysis 1.4.0", note="renamed to subset_itvScc")]
 Notation subset_itvS := subset_itvScc (only parsing).
 

@@ -59,6 +59,9 @@
 - in `mathcomp_extra.v`:
   + lemmas `intrN`, `real_floor_itv`, `real_ge_floor`, `real_ceil_itv`
 
+- in `set_interval.v`:
+  + lemma `subset_itv`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
