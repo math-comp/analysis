@@ -105,7 +105,7 @@ Qed.
 
 (* NB: not used *)
 Lemma sintegralEnnsfun (f : {nnsfun T >-> R}) : sintegral mu f =
-  (\sum_(x \in [set r | r > 0]%R) (x%:E * mu (f @^-1` [set x])))%E.
+  \sum_(x \in [set r | r > 0]%R) x%:E * mu (f @^-1` [set x]).
 Proof.
 rewrite (fsbig_widen _ setT) ?sintegralET//.
 move=> x [_ /=]; case: ltgtP => //= [xlt0 _|<-]; last by rewrite mul0e.
@@ -170,7 +170,7 @@ transitivity (\sum_(x \in F) \sum_(y \in G) x%:E * m (pf x `&` pg y) +
               \sum_(x \in F) \sum_(y \in G) y%:E * m (pf x `&` pg y)).
   do 2![rewrite -fsbig_split//; apply: eq_fsbigr => _ /set_mem [? _ <-]].
   by rewrite EFinD ge0_muleDl// ?lee_fin.
-congr (_ + _)%E; last rewrite exchange_fsbig//; apply: eq_fsbigr => x _.
+congr +%E; last rewrite exchange_fsbig//; apply: eq_fsbigr => x _.
   by rewrite -ge0_mule_fsumr// additive_nnsfunr nnsfun_cover setIT.
 by rewrite -ge0_mule_fsumr// additive_nnsfunl nnsfun_cover setTI.
 Qed.
@@ -307,7 +307,7 @@ suff {cg1g}<- : limn (fun n => sintegral mu (g1 c n)) = sintegral mu f.
     by apply: is_cvg_sintegral => //= x m n /(le_ffleg c)/lefP/(_ x).
   rewrite -limeMl // lee_lim//; first exact: is_cvgeMl.
   - by apply: is_cvg_sintegral => // m n mn; apply/lefP => t; apply: nd_g.
-  - by apply: nearW; exact: cg1g.
+  - exact/nearW/cg1g.
 suff : sintegral mu (g1 c n) @[n \oo] --> sintegral mu f by apply/cvg_lim.
 rewrite [X in X @ \oo --> _](_ : _ = fun n => \sum_(x <- fset_set (range f))
     x%:E * mu (f @^-1` [set x] `&` fleg c n)); last first.

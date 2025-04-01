@@ -306,7 +306,7 @@ have ball_itv2 r : 0 < r -> ball x r = `[x - r, x + r] `\` [set x + r; x - r].
 have ritv r : 0 < r -> mu `[x - r, x + r]%classic = (r *+ 2)%:E.
   move=> /gt0_cp rE; rewrite /= lebesgue_measure_itv/= lte_fin.
   rewrite ler_ltD // ?rE // -EFinD; congr (_ _).
-  by rewrite opprB addrAC [_ - _]addrC addrA subrr add0r.
+  by rewrite opprD opprK addrACA subrr add0r.
 move=> oA intf ctsfx Ax.
 apply: cvg_zero.
 apply/cvgrPdist_le => eps epos; apply: filter_app (@nbhs_right_gt rT 0).

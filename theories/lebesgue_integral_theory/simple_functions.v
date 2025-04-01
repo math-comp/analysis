@@ -436,7 +436,7 @@ HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).
 
 Definition cst_nnsfun (r : {nonneg R}) : {nnsfun T >-> R} := cst r%:num.
 
-Definition nnsfun0 : {nnsfun T >-> R} := cst_nnsfun 0%R%:nng.
+Definition nnsfun0 : {nnsfun T >-> R} := cst_nnsfun 0%:nng.
 
 Lemma indic_nnfun_subproof (D : set T) : forall x, 0 <= (\1_D) x :> R.
 Proof. by []. Qed.
