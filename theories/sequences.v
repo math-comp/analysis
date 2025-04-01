@@ -1192,7 +1192,7 @@ Lemma is_cvg_series_exp_coeff_pos : cvgn (series (exp x)).
 Proof.
 rewrite /series; near \oo => N; have xN : x < N%:R.
   near: N; exists (trunc x).+2 => // m/= xm.
-  by rewrite (lt_trans (ltStrunc _))// ltr_nat.
+  by rewrite (lt_trans (truncnS_gt _))// ltr_nat.
 rewrite -(@is_cvg_series_restrict N.+1).
 by apply: (nondecreasing_is_cvgn (incr_S1 N)); eexists; exact: S1_sup.
 Unshelve. all: by end_near. Qed.
@@ -2767,7 +2767,7 @@ have : cvg (a @ \oo).
     pose eps := e / 2.
     have [n n1e] : exists n, n.+1%:R^-1 < eps.
       exists (trunc eps^-1).
-      by rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK ltStrunc.
+      by rewrite -ltf_pV2 ?(posrE,divr_gt0)// invrK truncnS_gt.
     exists n.+1; rewrite -ltr_pdivlMl //.
     have /lt_trans : (r n.+1)%:num < n.+1%:R^-1.
       have [_ ] : P n.+1 (a n, r n) (a n.+1, r n.+1) by apply: (Pf (n, ar n)).
@@ -2869,7 +2869,7 @@ have O_infempty : O_inf = set0.
   rewrite -subset0 => x.
   have [M FxM] := BoundedF x; rewrite /O_inf /O /=.
   move=> /(_ (trunc M).+1 Logic.I)[f Ff]; apply/negP; rewrite -leNgt.
-  by rewrite (le_trans (FxM _ Ff))// ltW// ltStrunc.
+  by rewrite (le_trans (FxM _ Ff))// ltW// truncnS_gt.
 have ContraBaire : exists i, not (dense (O i)).
   have dOinf : ~ dense O_inf.
     rewrite /dense O_infempty ; apply /existsNP; exists setT; elim.

@@ -338,7 +338,7 @@ exists `|Num.floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
 rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// -natr1.
 rewrite natr_absz ger0_norm; last first.
   by rewrite -floor_ge_int ?invr_ge0 ?num_real // ltW.
-by rewrite intrD1 ltW// lt_floorD1 ?num_real.
+by rewrite intrD1 ltW// floorD1_gt ?num_real.
 Qed.
 
 (** Specific pseudoMetric spaces *)

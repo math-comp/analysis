@@ -2332,7 +2332,7 @@ move=> infA; apply/eqyP => r r0.
 have [B BA Br] := infinite_set_fset (trunc r).+1 infA.
 apply: esum_ge; exists [set` B] => //.
 apply: (@le_trans _ _ (trunc r).+1%:R%:E).
-  by rewrite lee_fin ltW// ltStrunc.
+  by rewrite lee_fin ltW// truncnS_gt.
 move: Br; rewrite -(@ler_nat R) -lee_fin => /le_trans; apply.
 rewrite (eq_fsbigr (cst 1))/=; last first.
   by move=> i /[!inE] /BA /mem_set iA; rewrite diracE iA.

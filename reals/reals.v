@@ -466,7 +466,7 @@ Lemma RfloorE x : Rfloor x = (floor x)%:~R.
 Proof. by []. Qed.
 
 Lemma mem_rg1_floor x : (range1 (floor x)%:~R) x.
-Proof. by rewrite /range1 /mkset intrD1 ge_floor lt_floorD1. Qed.
+Proof. by rewrite /range1 /mkset intrD1 ge_floor floorD1_gt. Qed.
 
 Lemma mem_rg1_Rfloor x : (range1 (Rfloor x)) x.
 Proof. exact: mem_rg1_floor. Qed.
@@ -521,7 +521,7 @@ Proof. by move=> x0; rewrite (le_lt_trans _ x0) // Rfloor_le. Qed.
 Lemma ltr_add_invr (y x : R) : y < x -> exists k, y + k.+1%:R^-1 < x.
 Proof.
 move=> yx; exists (trunc (x - y)^-1).
-by rewrite -ltrBrDl invf_plt 1?posrE 1?subr_gt0// ltStrunc.
+by rewrite -ltrBrDl invf_plt 1?posrE 1?subr_gt0// truncnS_gt.
 Qed.
 
 End FloorTheory.

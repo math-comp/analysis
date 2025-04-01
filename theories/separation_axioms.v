@@ -753,7 +753,7 @@ Qed.
 
 Local Lemma distN_le e1 e2 : e1 > 0 -> e1 <= e2 -> (distN e2 <= distN e1)%N.
 Proof.
-move=> e1pos e1e2; rewrite /distN le_trunc// lef_pV2// posrE.
+move=> e1pos e1e2; rewrite /distN le_truncn// lef_pV2// posrE.
 by rewrite (lt_le_trans e1pos).
 Qed.
 
@@ -958,7 +958,7 @@ Lemma countable_uniform_bounded (x y : T) : @ball _ type x 2 y.
 Proof.
 rewrite /ball; exists O%N; rewrite /n_step_ball; split; rewrite // /distN.
 rewrite (_ : Num.trunc _ = 0)//.
-by apply/eqP; rewrite trunc_eq// invr_ge0// ler0n/= invf_lt1// ltr1n.
+by apply/eqP; rewrite truncn_eq// invr_ge0// ler0n/= invf_lt1// ltr1n.
 Qed.
 
 End countable_uniform.

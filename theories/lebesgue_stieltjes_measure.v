@@ -482,7 +482,7 @@ Proof.
 exists (fun k => `](- k%:R), k%:R]%classic).
   apply/esym; rewrite -subTset => /= x _ /=.
   exists (trunc `|x|).+1; rewrite //= in_itv/=.
-  by have := ltStrunc `|x|; rewrite ltr_norml => /andP[-> /ltW->].
+  by have := truncnS_gt `|x|; rewrite ltr_norml => /andP[-> /ltW->].
 move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.
 Qed.
