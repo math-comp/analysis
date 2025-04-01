@@ -62,6 +62,21 @@
 - in `set_interval.v`:
   + lemma `subset_itv`
 
+- in `mathcomp_extra.v`:
+  + lemmas `truncn_le`, `real_truncnS_gt`, `truncn_ge_nat`,
+    `truncn_gt_nat`, `truncn_lt_nat`, `real_truncn_le_nat`,
+    `truncn_eq`, `le_truncn`, `real_floorD1_gt`,
+    `real_floor_ge_int_tmp`, `real_floor_ge_int`, `real_floor_lt_int`,
+    `le_floor`, `real_floor_eq`, `real_floor_ge0`, `floor_lt0`,
+    `real_floor_le0`, `floor_gt0`, `floor_neq0`,
+    `real_ceil_le_int_tmp`, `real_ceil_le_int`, `real_ceil_gt_int`,
+    `real_ceil_eq`, `le_ceil_tmp`, `real_ceil_ge0`, `ceil_lt0`,
+    `real_ceil_le0`, `ceil_gt0`, `ceil_neq0`, `truncS_gt`,
+    `truncn_le_nat`, `floorD1_gt`, `floor_ge_int_tmp`, `floor_lt_int`,
+    `floor_eq`, `floor_ge0`, `floor_le0`, `ceil_le_int`,
+    `ceil_le_int_tmp`, `ceil_gt_int`, `ceil_eq`, `ceil_ge0`,
+    `ceil_le0`, `natr_int`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package

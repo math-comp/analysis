@@ -444,9 +444,9 @@ rewrite [X in measurable X](_ : _ =
 rewrite predeqE => t; split => [/= [Dt ft]|].
   exists (trunc `|fine (f t)|).+1 => //=; split=> //; split.
     rewrite -[leRHS](fineK ft) lee_fin lerNl.
-    by rewrite (le_trans (ler_norm _))// normrN ltW// ltStrunc.
+    by rewrite (le_trans (ler_norm _))// normrN ltW// truncnS_gt.
   rewrite -[leLHS](fineK ft) lee_fin (le_trans (ler_norm _))//.
-  by rewrite ltW// ltStrunc.
+  by rewrite ltW// truncnS_gt.
 move=> [n _] [/= Dt [nft fnt]]; split => //; rewrite fin_numElt.
 by rewrite (lt_le_trans _ nft) ?ltNyr//= (le_lt_trans fnt)// ltry.
 Qed.

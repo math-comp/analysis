@@ -673,7 +673,7 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
   have [i iFan] : exists i, F (a + i.+1%:R) < F a - n%:R.
     move/cvgrNy_lt : nyF.
     move/(_ (F a - n%:R)) => [z [zreal zFan]].
-    by exists (trunc (z - a)); rewrite zFan// -ltrBlDl ltStrunc.
+    by exists (trunc (z - a)); rewrite zFan// -ltrBlDl truncnS_gt.
   by exists i => //=; rewrite in_itv/= yFa (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].
   exists `|ceil (F (a + n.+1%:R) - F a)%R|.+1 => //=.
@@ -5272,7 +5272,7 @@ Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
 Proof.
 rewrite compact_cover => Aco.
 have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (floor `|p| + 1) => //=; rewrite lt_floorD1.
+  by move=> p _; exists (floor `|p| + 1) => //=; rewrite floorD1_gt.
 have /Aco [] := covA.
   move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
   apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
@@ -6137,12 +6137,12 @@ Lemma ex_vitali_collection_partition i :
 Proof.
 move=> Vi; pose f := trunc (r / (radius (B i))%:num).
 have f_ge0 : (0 <= f)%N.
-  by rewrite trunc_ge_nat// divr_ge0// (le_trans _ (VBr Vi)).
+  by rewrite truncn_ge_nat// divr_ge0// (le_trans _ (VBr Vi)).
 have [m /andP[mf fm]] := leq_ltn_expn f.-1.
 exists m; split => //; apply/andP; split => [{mf}|{fm}].
 - rewrite -(@ler_nat R) in fm.
   rewrite ltr_pdivrMr// mulrC -ltr_pdivrMr// (lt_le_trans _ fm)//.
-  rewrite (lt_le_trans (ltStrunc _))//= -/f.
+  rewrite (lt_le_trans (truncnS_gt _))//= -/f.
   have [<-|f0] := eqVneq 0 f; first by rewrite /= ler_nat.
   by rewrite prednK// lt0n eq_sym.
 - move: m => [|m] in mf *; first by rewrite expn0 divr1 VBr.
@@ -6151,7 +6151,7 @@ exists m; split => //; apply/andP; split => [{mf}|{fm}].
   have [f0|f0] := eqVneq 0 f.
     by move: mf; rewrite -f0 leNgt expnS ltr_nat leq_pmulr// expn_gt0.
   rewrite (le_trans mf)// prednK//; last by rewrite lt0n eq_sym.
-  by rewrite /f ge_trunc// divr_ge0// (le_trans _ (VBr Vi)).
+  by rewrite /f truncn_le// divr_ge0// (le_trans _ (VBr Vi)).
 Qed.
 
 Lemma cover_vitali_collection_partition :

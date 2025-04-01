@@ -1168,7 +1168,7 @@ have finite_set_F i : finite_set (F i).
     - by move=> /= x [n Fni Bnx]; exists n => //; exists i.
   have {CFi Fir2} := le_trans MC (le_trans CFi Fir2).
   apply/negP; rewrite -ltNge lebesgue_measure_ball// lte_fin.
-  by rewrite -ltr_pdivrMr// /M ltStrunc.
+  by rewrite -ltr_pdivrMr// /M truncnS_gt.
 have mur2_fin_num_ : mu (ball (0:R) (r%:num + 2))%R < +oo.
   by rewrite lebesgue_measure_ball// ltry.
 have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =
@@ -1501,7 +1501,7 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
           by rewrite lee_fin ler_wpM2l// ler_nat count_predT.
         rewrite EFinM -lte_pdivrMl// muleC -(@fineK _ (mu O)); last first.
           by rewrite ge0_fin_numE//; case/andP: OAoo => ?; exact: lt_trans.
-        by rewrite -EFinM /M lte_fin ltStrunc.
+        by rewrite -EFinM /M lte_fin truncnS_gt.
       rewrite big_seq [in leRHS]big_seq.
       apply: lee_sum => //= i /G0G'r [iG rBi].
       rewrite -[leRHS]fineK//; last first.

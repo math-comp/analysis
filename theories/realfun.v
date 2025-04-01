@@ -201,7 +201,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite /sval/=; case: cid => x [px xpt _].
   rewrite distrC (lt_le_trans xpt)// -(@invrK _ r) lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists (trunc r^-1) => // s /= rs.
-  by rewrite (le_trans (ltW (ltStrunc _)))// ler_nat.
+  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite leNgt distrC => /negP.
@@ -258,7 +258,7 @@ exists (fun n => sval (cid (He (PosNum (invn n))))).
   rewrite /sval/=; case: cid => x [xpt _].
   rewrite distrC (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
   near: t; exists (trunc r^-1) => // s /= rs.
-  by rewrite (le_trans (ltW (ltStrunc _)))// ler_nat.
+  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge distrC => /negP.
@@ -292,7 +292,7 @@ have y_p : y_ n @[n --> \oo] --> p.
   rewrite -ltrBlDl => /lt_le_trans; apply.
   rewrite -(invrK e) lef_pV2// ?posrE ?invr_gt0//.
   near: t; exists (trunc e^-1) => // s /= es.
-  by rewrite (le_trans (ltW (ltStrunc _)))// ler_nat.
+  by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 have /fine_cvgP[[m _ mfy_] /= _] := h _ (conj py_ y_p).
 near \oo => n.
 have mn : (m <= n)%N by near: n; exists m.
@@ -2795,7 +2795,7 @@ have FrBFl (x : elt_type) : exists m, m.+1%:R ^-1 < Fr (sval x) - Fl (sval x).
     by case: x {Fc Fd cd} => x/= /[1!inE] -[].
   have {}FlFr : Fl (sval x) < Fr (sval x) by rewrite lt_neqAle FlFr andbT.
   exists (trunc (Fr (sval x) - Fl (sval x))^-1).
-  by rewrite invf_plt ?posrE ?subr_gt0// ltStrunc.
+  by rewrite invf_plt ?posrE ?subr_gt0// truncnS_gt.
 pose S m := [set x | x \in `]a, b[ /\ m.+1%:R ^-1 < Fr x - Fl x].
 have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
   path <%R a s ->
@@ -2836,7 +2836,7 @@ have fin_S m : finite_set (S m).
     by rewrite sort_lt_sorted; exact: fset_uniq.
   move/(_ Hpas){Hpas}.
   contra; rewrite -ltNge => _.
-  rewrite (lt_le_trans (ltStrunc _))//.
+  rewrite (lt_le_trans (truncnS_gt _))//.
   apply: (@le_trans _ _ (m.+1%:R^-1 * #|` B|%:R)).
     by rewrite ler_pdivlMl// -natrM ler_nat ltnW.
   rewrite card_fset_sum1 natr_sum mulr_sumr mulr1 big_tnth cardfE.
