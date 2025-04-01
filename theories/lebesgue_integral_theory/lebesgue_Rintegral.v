@@ -8,15 +8,22 @@ From mathcomp Require Import topology tvs normedtype sequences real_interval.
 From mathcomp Require Import function_spaces esum measure lebesgue_measure.
 From mathcomp Require Import numfun realfun simple_functions.
 From mathcomp Require Import lebesgue_integral_definition.
-From mathcomp Require Import lebesgue_integral_properties.
+From mathcomp Require Import lebesgue_integral_approximation.
+From mathcomp Require Import lebesgue_integral_monotone_convergence.
+From mathcomp Require Import lebesgue_integral_nonneg.
+From mathcomp Require Import lebesgue_integrable.
+From mathcomp Require Import lebesgue_integral_dominated_convergence.
 
 (**md**************************************************************************)
 (* # The Lebesgue Integral for real-valued functions                          *)
 (*                                                                            *)
 (* Detailed contents:                                                         *)
-(* ````                                                                       *)
+(* ```                                                                        *)
 (*       Rintegral mu D f := fine (\int[mu]_(x in D) f x).                    *)
-(* ````                                                                       *)
+(* ```                                                                        *)
+(*                                                                            *)
+(* This file recasts lemmas about `integral` to `Rintegral`. It also          *)
+(* established that Continuous functions are dense in $L^1$.                  *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -43,8 +50,6 @@ Notation "\int [ mu ]_ ( x 'in' D ) f" :=
   (Rintegral mu D (fun x => f)%R) : ring_scope.
 Notation "\int [ mu ]_ x f" :=
   (Rintegral mu setT (fun x => f)%R) : ring_scope.
-
-(** The rest of this file recast lemmas about `integral` to `Rintegral` *)
 
 Section Rintegral.
 Context d {T : measurableType d} {R : realType}.

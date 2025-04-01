@@ -2,19 +2,20 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
-From mathcomp Require Import boolp classical_sets functions cardinality reals.
-From mathcomp Require Import fsbigop interval_inference ereal topology tvs.
-From mathcomp Require Import normedtype sequences real_interval esum measure.
+From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
+From mathcomp Require Import functions cardinality reals fsbigop.
+From mathcomp Require Import interval_inference ereal topology tvs normedtype.
+From mathcomp Require Import sequences real_interval esum measure.
 From mathcomp Require Import lebesgue_measure numfun realfun function_spaces.
 From mathcomp Require Import simple_functions.
 
 (**md**************************************************************************)
-(* # Definition of the Lebesgue Integral                                      *)
+(* # Definition of the Lebesgue integral                                      *)
 (*                                                                            *)
 (* This file contains the definition of the Lebesgue integral. It starts      *)
-(* with the integral of simple functions, proves basic properties (linearity, *)
-(* non-decreasingness, etc.), and then defines the integral of measurable     *)
-(* functions.                                                                 *)
+(* with the integral of simple functions, proves their basic properties       *)
+(* (linearity, non-decreasingness, etc.), and then defines the integral of    *)
+(* measurable functions.                                                      *)
 (*                                                                            *)
 (* Main notations:                                                            *)
 (* | Coq notation          |  | Meaning                         |             *)
@@ -26,12 +27,12 @@ From mathcomp Require Import simple_functions.
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (*                                                                            *)
 (* Detailed contents:                                                         *)
-(* ````                                                                       *)
+(* ```                                                                        *)
 (*         sintegral mu f == integral of the function f with the measure mu   *)
 (*  \int[mu]_(x in D) f x == integral of the measurable function f over the   *)
 (*                           domain D with measure mu                         *)
 (*         \int[mu]_x f x := \int[mu]_(x in setT) f x                         *)
-(* ````                                                                       *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -40,7 +41,6 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Import numFieldNormedType.Exports.
-From mathcomp Require Import mathcomp_extra.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -52,8 +52,7 @@ Reserved Notation "\int [ mu ]_ i F"
   (at level 36, F at level 36, mu at level 10, i at level 0,
     right associativity, format "'[' \int [ mu ]_ i '/  '  F ']'").
 
-(** Definition of Simple Integrals *)
-
+(** Definition of simple integrals: *)
 Section simple_fun_raw_integral.
 Local Open Scope ereal_scope.
 Variables (T : Type) (R : numDomainType) (mu : set T -> \bar R) (f : T -> R).
@@ -209,26 +208,6 @@ by apply: le_sintegral => // => x; exact/nd_f.
 Qed.
 
 End is_cvg_sintegral.
-
-Definition proj_nnsfun d (T : measurableType d) (R : realType)
-    (f : {nnsfun T >-> R}) (A : set T) (mA : measurable A) :=
-  mul_nnsfun f (indic_nnsfun R mA).
-
-Section mrestrict.
-Import HBNNSimple.
-
-Definition mrestrict d (T : measurableType d) (R : realType) (f : {nnsfun T >-> R})
-  A (mA : measurable A) : f \_ A = proj_nnsfun f mA.
-Proof.
-apply/funext => x /=; rewrite /patch mindicE.
-by case: ifP; rewrite (mulr0, mulr1).
-Qed.
-
-End mrestrict.
-
-Definition scale_nnsfun d (T : measurableType d) (R : realType)
-    (f : {nnsfun T >-> R}) (k : R) (k0 : 0 <= k) :=
-  mul_nnsfun (cst_nnsfun T (NngNum k0)) f.
 
 Section sintegral_nondecreasing_limit_lemma.
 Context d (T : measurableType d) (R : realType).
@@ -442,7 +421,7 @@ Proof.
 by rewrite [in LHS]/integral funepos_restrict funeneg_restrict -!ge0_integralE.
 Qed.
 
-Lemma integral0 D : \int_(x in D) (cst 0 x) = 0.
+Lemma integral0 D : \int_(x in D) cst 0 x = 0.
 Proof. by rewrite ge0_integralE// erestrict0 nnintegral0. Qed.
 
 Lemma integral0_eq D f :
@@ -472,3 +451,45 @@ Notation "\int [ mu ]_ ( x 'in' D ) f" :=
 Notation "\int [ mu ]_ x f" :=
   ((integral mu setT (fun x => f)%E))%E : ereal_scope.
 Arguments eq_integral {d T R mu D} g.
+
+Section integral_indic.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType)
+        (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Implicit Type A : set T.
+
+Import HBNNSimple.
+
+Lemma integral_indic A : measurable A ->
+  \int[mu]_(x in D) (\1_A x)%:E = mu (A `&` D).
+Proof.
+move=> mA; rewrite (_ : \1_A = indic_nnsfun R mA)// integral_nnsfun//=.
+by rewrite restrict_indic sintegral_indic//; exact: measurableI.
+Qed.
+
+End integral_indic.
+
+Section domain_change.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variable mu : {measure set T -> \bar R}.
+
+Lemma integral_mkcond D f : \int[mu]_(x in D) f x = \int[mu]_x (f \_ D) x.
+Proof. by rewrite /integral patch_setT. Qed.
+
+Import HBNNSimple.
+
+Lemma integralT_nnsfun (h : {nnsfun T >-> R}) :
+  \int[mu]_x (h x)%:E = sintegral mu h.
+Proof. by rewrite integral_nnsfun// patch_setT. Qed.
+
+Lemma integral_mkcondr D P f :
+  \int[mu]_(x in D `&` P) f x = \int[mu]_(x in D) (f \_ P) x.
+Proof. by rewrite integral_mkcond [RHS]integral_mkcond patch_setI. Qed.
+
+Lemma integral_mkcondl D P f :
+  \int[mu]_(x in P `&` D) f x = \int[mu]_(x in D) (f \_ P) x.
+Proof. by rewrite setIC integral_mkcondr. Qed.
+
+End domain_change.
+Arguments integral_mkcond {d T R mu} D f.

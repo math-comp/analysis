@@ -775,6 +775,22 @@ Qed.
 
 End lebesgue_measure_itv.
 
+Section compact_finite_measure.
+Context (rT : realType).
+Let mu : measure _ _ := @lebesgue_measure rT.
+Let R  : measurableType _ := measurableTypeR rT.
+
+Lemma compact_finite_measure (A : set R) : compact A -> (mu A < +oo)%E.
+Proof.
+move=> /[dup]/compact_measurable => mA /compact_bounded[N [_ N1x]].
+have AN1 : A `<=` `[- (`|N| + 1), `|N| + 1].
+  by move=> z Az; rewrite set_itvcc /= -ler_norml N1x// ltr_pwDr// ler_norm.
+rewrite (le_lt_trans (le_measure _ _ _ AN1)) ?inE//=.
+by rewrite lebesgue_measure_itv/= lte_fin gtrN// EFinD ltry.
+Qed.
+
+End compact_finite_measure.
+
 Lemma lebesgue_measure_rat (R : realType) :
   lebesgue_measure (range ratr : set R) = 0%E.
 Proof.

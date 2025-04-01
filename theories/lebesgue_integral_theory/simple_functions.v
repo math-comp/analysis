@@ -11,18 +11,8 @@ From mathcomp Require Import function_spaces.
 (**md**************************************************************************)
 (* # Simple functions                                                         *)
 (*                                                                            *)
-(* This file contains a formalization of simple functions and provides basic  *)
-(* (addition, etc.).                                                          *)
-(*                                                                            *)
-(* Detailed contents:                                                         *)
-(* ````                                                                       *)
-(*       {mfun aT >-> rT} == type of measurable functions                     *)
-(*                           aT and rT are sigmaRingType's.                   *)
-(*         {sfun T >-> R} == type of simple functions                         *)
-(*       {nnsfun T >-> R} == type of non-negative simple functions            *)
-(*           cst_nnsfun r == constant simple function                         *)
-(*                nnsfun0 := cst_nnsfun 0                                     *)
-(* ````                                                                       *)
+(* This file contains a formalization of simple functions and with basic      *)
+(* properties (addition, etc.).                                               *)
 (*                                                                            *)
 (* About the use of simple functions:                                         *)
 (* Because of a limitation of HB <= 1.8.0, we need some care to be able to    *)
@@ -31,11 +21,36 @@ From mathcomp Require Import function_spaces.
 (* module HBSimple (resp. HBNNSimple).                                        *)
 (* As a consequence, we need to import HBSimple (resp. HBNNSimple) to use the *)
 (* coercion from simple functions (resp. non-negative simple functions) to    *)
-(* Coq functions.                                                             *)
+(* Rocq functions.                                                            *)
 (* Also, assume that f (e.g., cst, indic) is equipped with the structure of   *)
 (* MeasurableFun. For f to be equipped with the structure of SimpleFun        *)
 (* (resp. NonNegSimpleFun), one need locally to import HBSimple (resp.        *)
 (* HBNNSimple) and to instantiate FiniteImage (resp. NonNegFun) locally.      *)
+(*                                                                            *)
+(* Detailed contents:                                                         *)
+(* ````                                                                       *)
+(*       {mfun aT >-> rT} == type of measurable functions                     *)
+(*                           aT and rT are sigmaRingType's.                   *)
+(*         {sfun T >-> R} == type of simple functions                         *)
+(*       {nnsfun T >-> R} == type of non-negative simple functions            *)
+(*              mindic mD := \1_D where mD is a proof that D is measurable    *)
+(*          indic_mfun mD := mindic mD                                        *)
+(*         scale_mfun k f := k \o* f                                          *)
+(*           max_mfun f g := f \max g                                         *)
+(*          indic_sfun mD := mindic _ mD                                      *)
+(*             cst_sfun r == constant simple function                         *)
+(*           max_sfun f g := f \max f                                         *)
+(*           cst_nnsfun r == constant simple function                         *)
+(*                nnsfun0 := cst_nnsfun 0                                     *)
+(*         add_nnsfun f g := f \+ g                                           *)
+(*         mul_nnsfun f g := f \* g                                           *)
+(*         max_nnsfun f g := f \max g                                         *)
+(*       proj_nssfun f mA == projection of the function f to the set A        *)
+(*                            mA is a proof that A is measurable              *)
+(*       scale_nnsfun k f == scales f by the non-negative real number k       *)
+(*         sum_nnsfun f n := \big[add_nnsfun/nnsfun0]_(i < n) f i             *)
+(*      bigmax_nnsfun f n := \big[max_nnsfun/nnsfun0]_(i < n) f i             *)
+(* ````                                                                       *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -103,14 +118,6 @@ Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
 Lemma measurable_sfunP {d d'} {aT : measurableType d} {rT : measurableType d'}
   (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
 Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
-
-HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
-  fun_ge0 : forall x, 0 <= f x
-}.
-HB.structure Definition NonNegFun aT rT := {f of @isNonNegFun aT rT f}.
-Notation "{ 'nnfun' aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
-Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
-#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
 
 Module HBNNSimple.
 Import HBSimple.
@@ -488,6 +495,26 @@ End nnsfun_bin.
 Arguments add_nnsfun {d T R} _ _.
 Arguments mul_nnsfun {d T R} _ _.
 Arguments max_nnsfun {d T R} _ _.
+
+Definition scale_nnsfun d (T : measurableType d) (R : realType)
+    (f : {nnsfun T >-> R}) (k : R) (k0 : 0 <= k) :=
+  mul_nnsfun (cst_nnsfun T (NngNum k0)) f.
+
+Definition proj_nnsfun d (T : measurableType d) (R : realType)
+    (f : {nnsfun T >-> R}) (A : set T) (mA : measurable A) :=
+  mul_nnsfun f (indic_nnsfun R mA).
+
+Section mrestrict.
+Import HBNNSimple.
+
+Lemma mrestrict d (T : measurableType d) (R : realType) (f : {nnsfun T >-> R})
+  A (mA : measurable A) : f \_ A = proj_nnsfun f mA.
+Proof.
+apply/funext => x /=; rewrite /patch mindicE.
+by case: ifP; rewrite (mulr0, mulr1).
+Qed.
+
+End mrestrict.
 
 Section nnsfun_iter.
 Context d (T : measurableType d) (R : realType) (D : set T).

@@ -9,7 +9,8 @@ From mathcomp Require Import sequences function_spaces.
 (**md**************************************************************************)
 (* # Numerical functions                                                      *)
 (*                                                                            *)
-(* This file provides definitions and lemmas about numerical functions.       *)
+(* This file provides definitions and lemmas about numerical functions and    *)
+(* theorems such as Tietze's extension theorem.                               *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*    {nnfun T >-> R} == type of non-negative functions                       *)
@@ -25,6 +26,11 @@ From mathcomp Require Import sequences function_spaces.
 (*                                                                            *)
 (******************************************************************************)
 
+Reserved Notation "{ 'nnfun' aT >-> T }"
+  (at level 0, format "{ 'nnfun'  aT  >->  T }").
+Reserved Notation "[ 'nnfun' 'of' f ]"
+  (at level 0, format "[ 'nnfun'  'of'  f ]").
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -38,10 +44,6 @@ HB.mixin Record isNonNegFun (aT : Type) (rT : numDomainType) (f : aT -> rT) := {
   fun_ge0 : forall x, (0 <= f x)%R
 }.
 HB.structure Definition NonNegFun aT rT := {f of @isNonNegFun aT rT f}.
-Reserved Notation "{ 'nnfun' aT >-> T }"
-  (at level 0, format "{ 'nnfun'  aT  >->  T }").
-Reserved Notation "[ 'nnfun' 'of' f ]"
-  (at level 0, format "[ 'nnfun'  'of'  f ]").
 Notation "{ 'nnfun' aT >-> T }" := (@NonNegFun.type aT T) : form_scope.
 Notation "[ 'nnfun' 'of' f ]" := [the {nnfun _ >-> _} of f] : form_scope.
 #[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: fun_ge0] : core.
@@ -578,6 +580,7 @@ Qed.
 Let onem_twothirds : 1 - 2/3 = 1/3 :> R.
 Proof. by apply/eqP; rewrite subr_eq/= -mulrDl nat1r divrr// unitfE. Qed.
 
+(** Tietze's theorem: *)
 Lemma continuous_bounded_extension (f : X -> R^o) M :
   0 < M -> {within A, continuous f} -> (forall x, A x -> `|f x| <= M) ->
   exists g, [/\ {in A, f =1 g}, continuous g & forall x, `|g x| <= M].

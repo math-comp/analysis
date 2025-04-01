@@ -8,24 +8,27 @@ From mathcomp Require Import topology tvs normedtype sequences real_interval.
 From mathcomp Require Import esum function_spaces measure lebesgue_measure.
 From mathcomp Require Import numfun realfun simple_functions.
 From mathcomp Require Import lebesgue_integral_definition.
-From mathcomp Require Import lebesgue_integral_properties.
+From mathcomp Require Import lebesgue_integral_approximation.
+From mathcomp Require Import lebesgue_integral_monotone_convergence.
+From mathcomp Require Import lebesgue_integral_nonneg.
+From mathcomp Require Import lebesgue_integrable.
 From mathcomp Require Import lebesgue_integral_dominated_convergence.
 From mathcomp Require Import lebesgue_Rintegral.
 
 (**md**************************************************************************)
-(* # Lebesgue's Differentiation Theorem                                       *)
+(* # Lebesgue's differentiation theorem                                       *)
 (*                                                                            *)
 (* This file contains a formalization of Lebesgue's differentiation theorem.  *)
 (* This includes standard lemmas such as the Hardy–Littlewood maximal         *)
 (* inequality.                                                                *)
 (*                                                                            *)
-(* Main reference:                                                            *)
+(* Main references:                                                           *)
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (* - R. Affeldt, Z. Stone. A Comprehensive Overview of the Lebesgue           *)
 (*   Differentiation Theorem in Coq. ITP 2024                                 *)
 (*                                                                            *)
 (* Detailed contents:                                                         *)
-(* ````                                                                       *)
+(* ```                                                                        *)
 (* locally_integrable D f == the real number-valued function f is locally     *)
 (*                           integrable on D                                  *)
 (*               iavg f A := "average" of the real-valued function f over     *)
@@ -39,7 +42,7 @@ From mathcomp Require Import lebesgue_Rintegral.
 (*        lebesgue_pt f x == Lebesgue point at x of the real-valued           *)
 (*                           function f                                       *)
 (*   nicely_shrinking x E == the sequence of sets E is nicely shrinking to x  *)
-(* ````                                                                       *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -52,122 +55,11 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-Section simple_density_L1.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (E : set T) (mE : measurable E).
-
-Local Open Scope ereal_scope.
-
-Lemma measurable_bounded_integrable (f : T -> R^o)  :
-  mu E < +oo -> measurable_fun E f ->
-  [bounded f x | x in E] -> mu.-integrable E (EFin \o f).
-Proof.
-move=> Afin mfA bdA; apply/integrableP; split; first exact/measurable_EFinP.
-have [M [_ mrt]] := bdA; apply: le_lt_trans.
-  apply: (integral_le_bound (`|M| + 1)%:E) => //; first exact: measurableT_comp.
-  by apply: aeW => z Az; rewrite lee_fin mrt// ltr_pwDr// ler_norm.
-by rewrite lte_mul_pinfty.
-Qed.
-
-Import HBSimple.
-Import HBNNSimple.
-
-Let sfun_dense_L1_pos (f : T -> \bar R) :
-  mu.-integrable E f -> (forall x, E x -> 0 <= f x) ->
-  exists g_ : {sfun T >-> R}^nat,
-    [/\ forall n, mu.-integrable E (EFin \o g_ n),
-        forall x, E x -> EFin \o g_^~ x @ \oo --> f x &
-        (fun n => \int[mu]_(z in E) `|f z - (g_ n z)%:E|) @ \oo --> 0].
-Proof.
-move=> intf fpos; case/integrableP: (intf) => mfE _.
-pose g_ n := nnsfun_approx mE mfE n.
-have [] // := @dominated_convergence _ _ _ mu _ mE (fun n => EFin \o g_ n) f f.
-- by move=> ?; exact/measurable_EFinP/measurable_funTS.
-- apply: aeW => ? ?; under eq_fun => ? do rewrite /g_ nnsfun_approxE.
-  exact: ecvg_approx.
-- apply: aeW => /= ? ? ?; rewrite ger0_norm // /g_ nnsfun_approxE.
-  exact: le_approx.
-move=> _ /= fg0 gfcvg; exists g_; split.
-- move=> n; apply: (le_integrable mE _ _ intf).
-    exact/measurable_EFinP/measurable_funTS.
-  move=> ? ?; rewrite /g_ !gee0_abs ?lee_fin ?fpos//.
-  by rewrite /= nnsfun_approxE le_approx.
-- exact: cvg_nnsfun_approx.
-- by apply: cvg_trans fg0; under eq_fun => ? do under eq_fun => t do
-     rewrite EFinN -[_ - _]oppeK fin_num_oppeB // abseN addeC.
-Qed.
-
-Lemma approximation_sfun_integrable (f : T -> \bar R):
-  mu.-integrable E f ->
-  exists g_ : {sfun T >-> R}^nat,
-    [/\ forall n, mu.-integrable E (EFin \o g_ n),
-        forall x, E x -> EFin \o g_^~ x @ \oo --> f x &
-        (fun n => \int[mu]_(z in E) `|f z - (g_ n z)%:E|) @ \oo --> 0].
-Proof.
-move=> intf.
-have [//|p_ [intp pf pl1]] := sfun_dense_L1_pos (integrable_funepos mE intf).
-have [//|n_ [intn nf nl1]] := sfun_dense_L1_pos (integrable_funeneg mE intf).
-exists (fun n => p_ n - n_ n)%R; split.
-- move=> n; rewrite /comp; under eq_fun => ? do rewrite sfunB /= EFinB.
-  by apply: integrableB => //; [exact: intp | exact: intn].
-- move=> ? ?; rewrite /comp; under eq_fun => ? do rewrite sfunB /= EFinB.
-  rewrite [f]funeposneg; apply: cvgeB => //;[|exact: pf|exact:nf].
-  exact: add_def_funeposneg.
-have fpn z n : f z - ((p_ n - n_ n) z)%:E =
-    (f^\+ z - (p_ n z)%:E) - (f^\- z - (n_ n z)%:E).
-  rewrite sfunB EFinB fin_num_oppeB // {1}[f]funeposneg -addeACA.
-  by congr (_ _); rewrite fin_num_oppeB.
-case/integrableP: (intf) => mf _.
-have mfpn n : mu.-integrable E (fun z => f z - ((p_ n - n_ n) z)%:E).
-  under eq_fun => ? do rewrite fpn; apply: integrableB => //.
-    by apply: integrableB => //; [exact: integrable_funepos | exact: intp].
-  by apply: integrableB => //; [exact: integrable_funeneg | exact: intn].
-apply/fine_cvgP; split => //.
-  near=> N; case/integrableP: (mfpn N) => _; rewrite ge0_fin_numE //.
-  exact: integral_ge0.
-apply/cvg_ballP=> _/posnumP[eps]; have e2p : (0 < eps%:num/2)%R by [].
-case/fine_cvgP: pl1 => + /cvg_ballP/(_ _ e2p); apply: filter_app2.
-case/fine_cvgP: nl1 => + /cvg_ballP/(_ _ e2p); apply: filter_app2.
-near=> n; rewrite /ball /=; do 3 rewrite distrC subr0.
-move=> finfn ne2 finfp pe2; rewrite [_%:num]splitr.
-rewrite (le_lt_trans _ (ltrD pe2 ne2))// (le_trans _ (ler_normD _ _))//.
-under [fun z => _ (f^\+ z + _)]eq_fun => ? do rewrite EFinN.
-under [fun z => _ (f^\- z + _)]eq_fun => ? do rewrite EFinN.
-have mfp : mu.-integrable E (fun z => `|f^\+ z - (p_ n z)%:E|).
-  apply/integrable_abse/integrableB => //; first exact: integrable_funepos.
-  exact: intp.
-have mfn : mu.-integrable E (fun z => `|f^\- z - (n_ n z)%:E|).
-  apply/integrable_abse/integrableB => //; first exact: integrable_funeneg.
-  exact: intn.
-rewrite -[x in (_ <= `|x|)%R]fineD // -integralD //.
-move: finfn finfp => _ _.
-rewrite !ger0_norm ?fine_ge0 ?integral_ge0 ?fine_le//.
-- by apply: integral_fune_fin_num => //; exact/integrable_abse/mfpn.
-- by apply: integral_fune_fin_num => //; exact: integrableD.
-- apply: ge0_le_integral => //.
-  + by apply: measurableT_comp => //; case/integrableP: (mfpn n).
-  + by move=> x Ex; rewrite adde_ge0.
-  + by apply: emeasurable_funD; [move: mfp | move: mfn]; case/integrableP.
-  + by move=> ? ?; rewrite fpn; exact: lee_abs_sub.
-  + by move=> x Ex; rewrite adde_ge0.
-Unshelve. all: by end_near. Qed.
-
-End simple_density_L1.
-
-Section continuous_density_L1.
+Section continuous_compact_integrable.
 Context (rT : realType).
 Let mu : measure _ _ := @lebesgue_measure rT.
 Let R  : measurableType _ := measurableTypeR rT.
 Local Open Scope ereal_scope.
-
-Lemma compact_finite_measure (A : set R^o) : compact A -> mu A < +oo.
-Proof.
-move=> /[dup]/compact_measurable => mA /compact_bounded[N [_ N1x]].
-have AN1 : (A `<=` `[- (`|N| + 1), `|N| + 1])%R.
-  by move=> z Az; rewrite set_itvcc /= -ler_norml N1x// ltr_pwDr// ler_norm.
-rewrite (le_lt_trans (le_measure _ _ _ AN1)) ?inE//=.
-by rewrite lebesgue_measure_itv/= lte_fin gtrN// EFinD ltry.
-Qed.
 
 Lemma continuous_compact_integrable (f : R -> R^o) (A : set R^o) :
   compact A -> {within A, continuous f} -> mu.-integrable A (EFin \o f).
@@ -179,6 +71,14 @@ move=> cptA ctsfA; apply: measurable_bounded_integrable.
 - have /compact_bounded[M [_ mrt]] := continuous_compact ctsfA cptA.
   by exists M; split; rewrite ?num_real // => ? ? ? ?; exact: mrt.
 Qed.
+
+End continuous_compact_integrable.
+
+Section continuous_density_L1.
+Context (rT : realType).
+Let mu : measure _ _ := @lebesgue_measure rT.
+Let R  : measurableType _ := measurableTypeR rT.
+Local Open Scope ereal_scope.
 
 Import HBSimple.
 

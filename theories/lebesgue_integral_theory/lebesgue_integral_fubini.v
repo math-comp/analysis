@@ -8,7 +8,9 @@ From mathcomp Require Import topology tvs normedtype sequences real_interval.
 From mathcomp Require Import esum measure lebesgue_measure numfun realfun.
 From mathcomp Require Import function_spaces simple_functions.
 From mathcomp Require Import lebesgue_integral_definition.
-From mathcomp Require Import lebesgue_integral_properties.
+From mathcomp Require Import lebesgue_integral_approximation.
+From mathcomp Require Import lebesgue_integral_monotone_convergence.
+From mathcomp Require Import lebesgue_integral_nonneg lebesgue_integrable.
 
 (**md**************************************************************************)
 (* # Fubini theorems for the Lebesgue Integral                                *)
@@ -20,14 +22,14 @@ From mathcomp Require Import lebesgue_integral_properties.
 (* - Daniel Li, Intégration et applications, 2016                             *)
 (*                                                                            *)
 (* Detailed contents:                                                         *)
-(* ````                                                                       *)
+(* ```                                                                        *)
 (*               m1 \x m2 == product measure over T1 * T2, m1 is a measure    *)
 (*                           measure over T1, and m2 is a sigma finite        *)
 (*                           measure over T2                                  *)
 (*              m1 \x^ m2 == product measure over T1 * T2, m2 is a measure    *)
 (*                           measure over T1, and m1 is a sigma finite        *)
 (*                           measure over T2                                  *)
-(* ````                                                                       *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
