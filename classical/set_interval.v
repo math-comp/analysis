@@ -103,6 +103,14 @@ move: c a ax ac => [[|] c [[|]/= a ax|[|]//=]|[//|]]; rewrite ?bnd_simp.
 - by move=> [[|]|[|]//].
 Qed.
 
+Lemma subset_itvW_bound (x y z u : itv_bound T) :
+  (x <= y)%O -> (z <= u)%O -> [set` Interval y z] `<=` [set` Interval x u].
+Proof.
+move=> xy zu.
+by apply: (@subset_trans _ [set` Interval x z]);
+  [exact: subset_itvr | exact: subset_itvl].
+Qed.
+
 Lemma subset_itvScc (a b : itv_bound T) (c e : T) :
     (BLeft c <= a)%O -> (b <= BRight e)%O ->
   [set` Interval a b] `<=` [set` `[c, e]].
