@@ -238,13 +238,13 @@ Notation comparable_max_le_max := comparable_le_max2.
 
 Lemma le_min2 d (T : orderType d) (x y z t : T) :
   (x <= z)%O -> (y <= t)%O -> (Order.min x y <= Order.min z t)%O.
-Proof. exact: comparable_min_le_min. Qed.
+Proof. exact: comparable_le_min2. Qed.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use `le_min2` instead")]
 Notation min_le_min := le_min2.
 
 Lemma le_max2 d (T : orderType d) (x y z t : T) :
   (x <= z)%O -> (y <= t)%O -> (Order.max x y <= Order.max z t)%O.
-Proof. exact: comparable_max_le_max. Qed.
+Proof. exact: comparable_le_max2. Qed.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="use `le_max2` instead")]
 Notation max_le_max := le_max2.
 

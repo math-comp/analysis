@@ -58,6 +58,11 @@
 
 - in `mathcomp_extra.v`:
   + lemmas `intrN`, `real_floor_itv`, `real_ge_floor`, `real_ceil_itv`
+- in `lebesgue_integral.v`:
+  + lemma `dominated_cvg` (was previous `Local`)
+
+- in `ftc.v`:
+  + lemma `continuity_under_integral`
 
 - in `set_interval.v`:
   + lemma `subset_itv`
@@ -77,6 +82,20 @@
     `ceil_le_int_tmp`, `ceil_gt_int`, `ceil_eq`, `ceil_ge0`,
     `ceil_le0`, `natr_int`
 
+- new directory `lebesgue_integral_theory` with new files:
+  + `simple_functions.v`
+  + `lebesgue_integral_definition.v`
+  + `lebesgue_integral_approximation.v`
+  + `lebesgue_integral_monotone_convergence.v`
+  + `lebesgue_integral_nonneg.v`
+  + `lebesgue_integrable.v`
+  + `lebesgue_integral_dominated_convergence.v`
+  + `lebesgue_integral_under.v`
+  + `lebesgue_Rintegral.v`
+  + `lebesgue_integral_fubini.v`
+  + `lebesgue_integral_differentiation.v`
+  + `lebesgue_integral.v`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
@@ -91,6 +110,18 @@
   + lemmas `Instances.nat_spec_succ`, `Instances.num_spec_natmul`,
     `Instances.num_spec_intmul`, `Instances.num_itv_bound_exprn_le1`
   + canonical instance `Instances.succn_inum`
+
+- in `lebesgue_integral_properties.v`
+  (new file with contents moved from `lebesgue_integral.v`)
+  + `le_normr_integral` renamed to `le_normr_Rintegral`
+
+- moved to `lebesgue_measure.v` (from old `lebesgue_integral.v`)
+  + `compact_finite_measure`
+
+- moved from `ftc.v` to `lebesgue_integral_under.v` (new file)
+  + notation `'d1`, definition `partial1of2`, lemmas `partial1of2E`,
+    `cvg_differentiation_under_integral`, `differentiation_under_integral`,
+    `derivable_under_integral`
 
 ### Renamed
 
@@ -152,6 +183,9 @@
 
 - in `reals.v`:
   + lemmas `floor_le`, `le_floor` (deprecated since 1.3.0)
+
+- file `lebesgue_integral.v` (split in several files in the directory
+  `lebesgue_integral_theory`)
 
 ### Infrastructure
 

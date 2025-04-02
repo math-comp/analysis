@@ -75,6 +75,7 @@ From mathcomp Require Export filter.
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
+
 Reserved Notation "A ^°" (at level 1, format "A ^°").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
