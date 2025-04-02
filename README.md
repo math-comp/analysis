@@ -40,7 +40,7 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
   - Pierre-Yves Strub (initial)
   - Laurent Théry
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.19 to 8.20 (or dev)
+- Compatible Coq versions: Coq 8.20 to 9.0 (or dev)
 - Additional dependencies:
   - [MathComp ssreflect 2.1.0 or later](https://math-comp.github.io)
   - [MathComp fingroup 2.1.0 or later](https://math-comp.github.io)

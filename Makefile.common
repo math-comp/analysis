@@ -162,7 +162,7 @@ coq2html:
   -dependency-graph depend.dot \
   -title "Mathcomp Analysis" \
   -d html/ -base mathcomp -Q theories analysis \
-  -coqlib https://coq.inria.fr/doc/V8.19.2/stdlib/ \
+  -coqlib https://coq.inria.fr/doc/V8.20.1/stdlib/ \
   -external https://math-comp.github.io/htmldoc/ mathcomp.ssreflect \
   -external https://math-comp.github.io/htmldoc/ mathcomp.algebra
 
