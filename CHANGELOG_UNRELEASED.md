@@ -123,6 +123,10 @@
     `cvg_differentiation_under_integral`, `differentiation_under_integral`,
     `derivable_under_integral`
 
+- moved from `normedtype.v` (old file) to `num_topology`
+  + lemmas `nbhsN`, `cvg_compNP`, `nbhsNimage`, `nearN`, `openN`,
+    `closedN`, `dnbhsN`
+
 ### Renamed
 
 - in `lebesgue_integral.v`:
@@ -148,6 +152,9 @@
 
 - in `real_interval.v`:
   + lemmas `bigcup_itvT`, `itv_bndy_bigcup_BRight`, `itv_bndy_bigcup_BLeft_shift`
+
+- in `normedtype.v`:
+  + `lower_semicontinuous`, `lower_semicontinuousP` generalized from `realType` to `numFieldType`
 
 ### Deprecated
 
