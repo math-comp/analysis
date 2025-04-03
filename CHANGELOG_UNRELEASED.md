@@ -125,6 +125,9 @@
 
 - in `classical_sets.v`:
   + change implicit arguments of `subsetT`
+- moved from `normedtype.v` (old file) to `num_topology`
+  + lemmas `nbhsN`, `cvg_compNP`, `nbhsNimage`, `nearN`, `openN`,
+    `closedN`, `dnbhsN`
 
 ### Renamed
 
@@ -157,6 +160,9 @@
 
 - in `real_interval.v`:
   + lemmas `bigcup_itvT`, `itv_bndy_bigcup_BRight`, `itv_bndy_bigcup_BLeft_shift`
+
+- in `normedtype.v`:
+  + `lower_semicontinuous`, `lower_semicontinuousP` generalized from `realType` to `numFieldType`
 
 ### Deprecated
 
