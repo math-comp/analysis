@@ -174,6 +174,9 @@
 
 - in `classical_sets.v`:
   + change implicit arguments of `subsetT`
+- moved from `normedtype.v` (old file) to `num_topology`
+  + lemmas `nbhsN`, `cvg_compNP`, `nbhsNimage`, `nearN`, `openN`,
+    `closedN`, `dnbhsN`
 
 ### Renamed
 
@@ -225,6 +228,8 @@
 
 - in `sequences.v`:
   + lemma `nneseries_recl` genralized with a filtering predicate `P`
+- in `normedtype.v`:
+  + `lower_semicontinuous`, `lower_semicontinuousP` generalized from `realType` to `numFieldType`
 
 - in `num_normedtype.v` (new file):
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`

@@ -91,6 +91,60 @@ End numFieldTopology.
 
 Import numFieldTopology.Exports.
 
+Lemma nbhsN {R : numFieldType} (x : R) : nbhs (- x) = -%R @ x.
+Proof.
+rewrite predeqE => A; split=> //= -[] e e_gt0 xeA; exists e => //= y /=.
+  by move=> ?; apply: xeA => //=; rewrite -opprD normrN.
+by rewrite -opprD normrN => ?; rewrite -[y]opprK; apply: xeA; rewrite /= opprK.
+Qed.
+
+Lemma cvg_compNP {T : topologicalType} {R : numFieldType} (f : R -> T) (a : R)
+    (l : T) :
+  (f \o -%R) x @[x --> a] --> l <-> f x @[x --> (- a)] --> l.
+Proof. by rewrite nbhsN. Qed.
+
+Lemma nbhsNimage {R : numFieldType} (x : R) :
+  nbhs (- x) = [set -%R @` A | A in nbhs x].
+Proof.
+rewrite nbhsN /fmap/=; under eq_set => A do rewrite preimageEinv//= inv_oppr.
+by rewrite (eq_imageK opprK opprK).
+Qed.
+
+Lemma nearN {R : numFieldType} (x : R) (P : R -> Prop) :
+  (\forall y \near - x, P y) <-> \near x, P (- x).
+Proof. by rewrite -near_simpl nbhsN. Qed.
+
+Lemma openN {R : numFieldType} (A : set R) : open A -> open [set - x | x in A].
+Proof.
+move=> Aop; rewrite openE => _ [x /Aop x_A <-].
+by rewrite /interior nbhsNimage; exists A.
+Qed.
+
+Lemma closedN (R : numFieldType) (A : set R) :
+  closed A -> closed [set - x | x in A].
+Proof.
+move=> Acl x clNAx.
+suff /Acl : closure A (- x) by exists (- x)=> //; rewrite opprK.
+move=> B oppx_B; have : [set - x | x in A] `&` [set - x | x in B] !=set0.
+  by apply: clNAx; rewrite -[x]opprK nbhsNimage; exists B.
+move=> [y [[z Az oppzey] [t Bt opptey]]]; exists (- y).
+by split; [rewrite -oppzey opprK|rewrite -opptey opprK].
+Qed.
+
+Lemma dnbhsN {R : numFieldType} (r : R) :
+  (- r)%R^' = (fun A => -%R @` A) @` r^'.
+Proof.
+apply/seteqP; split=> [A [e/= e0 reA]|_/= [A [e/= e0 reA <-]]].
+  exists (-%R @` A).
+    exists e => // x/= rxe xr; exists (- x)%R; rewrite ?opprK//.
+    by apply: reA; rewrite ?eqr_opp//= opprK addrC distrC.
+  rewrite image_comp (_ : _ \o _ = idfun) ?image_id// funeqE => x/=.
+  by rewrite opprK.
+exists e => //= x/=; rewrite -opprD normrN => axe xa.
+exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?eqr_oppLR//=.
+by rewrite opprK.
+Qed.
+
 Lemma in_continuous_mksetP {T : realFieldType} {U : realFieldType}
     (i : interval T) (f : T -> U) :
   {in i, continuous f} <-> {in [set` i], continuous f}.
