@@ -27,8 +27,9 @@ From mathcomp Require Export filter.
 (*                             is convertible to G (globally A)               *)
 (*            finI_from D f == set of \bigcap_(i in E) f i where E is a       *)
 (*                             finite subset of D                             *)
-(*               interior U == all of the points which are locally in U,      *)
+(*                       U° == all of the points which are locally in U,      *)
 (*                             i.e., the largest open set contained in U      *)
+(*                             This is a notation for `interior U`.           *)
 (*                closure U == the smallest closed set containing U           *)
 (*                regopen U == U is regular open,                             *)
 (*                             i.e., equal to the interior of its closure     *)
@@ -76,7 +77,7 @@ From mathcomp Require Export filter.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "A ^°" (at level 1, format "A ^°").
+Reserved Notation "A °" (at level 1, format "A °").
 Reserved Notation "[ 'locally' P ]" (at level 0, format "[ 'locally'  P ]").
 Reserved Notation "x ^'" (at level 2, format "x ^'").
 
@@ -142,20 +143,20 @@ Qed.
 
 Definition interior (A : set T) := (@nbhs _ T)^~ A.
 
-Local Notation "A ^°" := (interior A).
+Local Notation "A °" := (interior A).
 
-Lemma interior_subset (A : set T) : A^° `<=` A.
+Lemma interior_subset (A : set T) : A° `<=` A.
 Proof.
 by move=> p; rewrite /interior nbhsE => -[? [? ?]]; apply.
 Qed.
 
-Lemma openE : open = [set A : set T | A `<=` A^°].
+Lemma openE : open = [set A : set T | A `<=` A°].
 Proof. exact: openE_subproof. Qed.
 
 Lemma nbhs_singleton (p : T) (A : set T) : nbhs p A -> A p.
 Proof. by rewrite nbhsE => - [? [_ ?]]; apply. Qed.
 
-Lemma nbhs_interior (p : T) (A : set T) : nbhs p A -> nbhs p A^°.
+Lemma nbhs_interior (p : T) (A : set T) : nbhs p A -> nbhs p A°.
 Proof.
 rewrite nbhsE /open_nbhs openE => - [B [Bop Bp] sBA].
 by exists B => // q Bq; apply: filterS sBA _; apply: Bop.
@@ -185,21 +186,21 @@ Proof.
 by rewrite openE => Aop Bop p [/Aop|/Bop]; apply: filterS => ??; [left|right].
 Qed.
 
-Lemma open_subsetE (A B : set T) : open A -> (A `<=` B) = (A `<=` B^°).
+Lemma open_subsetE (A B : set T) : open A -> (A `<=` B) = (A `<=` B°).
 Proof.
 rewrite openE => Aop; rewrite propeqE; split.
   by move=> sAB p Ap; apply: filterS sAB _; apply: Aop.
 by move=> sAB p /sAB /interior_subset.
 Qed.
 
-Lemma open_interior (A : set T) : open A^°.
+Lemma open_interior (A : set T) : open A°.
 Proof.
 rewrite openE => p; rewrite /interior nbhsE => - [B [Bop Bp]].
 by rewrite open_subsetE //; exists B.
 Qed.
 
 Lemma interior_bigcup I (D : set I) (f : I -> set T) :
-  \bigcup_(i in D) (f i)^° `<=` (\bigcup_(i in D) f i)^°.
+  \bigcup_(i in D) (f i)° `<=` (\bigcup_(i in D) f i)°.
 Proof.
 move=> p [i Di]; rewrite /interior nbhsE => - [B [Bop Bp] sBfi].
 by exists B => // ? /sBfi; exists i.
@@ -215,7 +216,7 @@ Proof. by move=> [Aop Ap] [Bop Bp]; split; [apply: openI|split]. Qed.
 Lemma open_nbhs_nbhs (p : T) (A : set T) : open_nbhs p A -> nbhs p A.
 Proof. by rewrite nbhsE => p_A; exists A. Qed.
 
-Lemma interiorI (A B : set T) : (A `&` B)^° = A^° `&` B^°.
+Lemma interiorI (A B : set T) : (A `&` B)° = A° `&` B°.
 Proof.
 rewrite /interior predeqE => //= x; rewrite nbhsE; split => [[B0 ?] | []].
 - by rewrite subsetI => // -[? ?]; split; exists B0.
@@ -244,7 +245,10 @@ Global Instance alias_nbhs_pfilter {T : topologicalType} x :
   @ProperFilter T^o (@nbhs T^o T x).
 Proof. exact: @nbhs_pfilter T x. Qed.
 
-Notation "A ^°" := (interior A) : classical_set_scope.
+Reserved Notation "A ^°" (at level 1, format "A ^°").
+Notation "A °" := (interior A) : classical_set_scope.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="use the notation instead ° instead of ^°")]
+Notation "A ^°" := (A°) (only parsing).
 
 Lemma continuousP (S T : topologicalType) (f : S -> T) :
   continuous f <-> forall A, open A -> open (f @^-1` A).
@@ -374,14 +378,14 @@ Local Notation "[ 'locally' P ]" := (@locally_of _ _ _ (Phantom _ P)).
 (* e.g. [locally [bounded f x | x in A]]                  *)
 (* see lemmas bounded_locally in normedtype.v for example *)
 
-Lemma within_interior (x : T) : A^° x -> within A (nbhs x) = nbhs x.
+Lemma within_interior (x : T) : A° x -> within A (nbhs x) = nbhs x.
 Proof.
 move=> Aox; rewrite eqEsubset; split; last exact: cvg_within.
 rewrite ?nbhsE => W /= => [[B + BsubW]].
 rewrite open_nbhsE => [[oB nbhsB]].
-exists (B `&` A^°); last by move=> t /= [] /BsubW + /interior_subset; apply.
+exists (B `&` A°); last by move=> t /= [] /BsubW + /interior_subset; apply.
 rewrite open_nbhsE; split; first by apply: openI => //; exact: open_interior.
-by apply: filterI => //; move:(open_interior A); rewrite openE; exact.
+by apply: filterI => //; have := open_interior A; rewrite openE; exact.
 Qed.
 
 Lemma within_subset B F : Filter F -> A `<=` B -> within A F `=>` within B F.
@@ -821,9 +825,9 @@ End closure_lemmas.
 Section regular_open_closed.
 Variable T : topologicalType.
 
-Definition regopen (A : set T) := (closure A)^° = A.
+Definition regopen (A : set T) := (closure A)° = A.
 
-Definition regclosed (A : set T) := closure (A^°) = A.
+Definition regclosed (A : set T) := closure (A°) = A.
 
 End regular_open_closed.
 
@@ -831,7 +835,7 @@ Section closure_interior_lemmas.
 Variable T : topologicalType.
 Implicit Types (A B : set T).
 
-Lemma interiorC A : (~` A)^° = ~` closure A.
+Lemma interiorC A : (~` A)° = ~` closure A.
 Proof.
 rewrite eqEsubset; split=> x; rewrite /closure /interior nbhsE /= -existsNE.
   case=> U ? /disjoints_subset UA; exists U; rewrite not_implyE.
@@ -843,7 +847,7 @@ exact/eqP/negbNE/negP/set0P.
 Qed.
 
 (* TODO: rename to closureC after removing the deprecated one *)
-Lemma closure_setC A : closure (~` A) = ~` A^°.
+Lemma closure_setC A : closure (~` A) = ~` A°.
 Proof. by apply: setC_inj; rewrite -interiorC !setCK. Qed.
 
 Lemma interior_id A : open A <-> interior A = A.
@@ -857,16 +861,16 @@ Proof. exact/esym/closure_id/closedT. Qed.
 Lemma closure0 : closure (@set0 T) = set0.
 Proof. exact/esym/closure_id/closed0. Qed.
 
-Lemma interiorT : (@setT T)^° = setT.
+Lemma interiorT : (@setT T)° = setT.
 Proof. exact/interior_id/openT. Qed.
 
-Lemma interior0 : (@set0 T)^° = set0.
+Lemma interior0 : (@set0 T)° = set0.
 Proof. exact/interior_id/open0. Qed.
 
 Lemma closureU A B : closure (A `|` B) = closure A `|` closure B.
 Proof. by apply: setC_inj; rewrite setCU -!interiorC -interiorI setCU. Qed.
 
-Lemma interiorU A B : A^° `|` B^° `<=` (A `|` B)^°.
+Lemma interiorU A B : A° `|` B° `<=` (A `|` B)°.
 Proof.
 by apply: subsetC2; rewrite setCU -!closure_setC setCU; exact: closureI.
 Qed.
@@ -876,7 +880,7 @@ Lemma closureEbigcap A :
 Proof. exact: closureE. Qed.
 
 Lemma interiorEbigcup A :
-  A^° = \bigcup_(x in [set U | open U /\ U `<=` A]) x.
+  A° = \bigcup_(x in [set U | open U /\ U `<=` A]) x.
 Proof.
 apply: setC_inj; rewrite -closure_setC closureEbigcap setC_bigcup.
 rewrite -[RHS](bigcap_image _ setC idfun) /=.
@@ -885,7 +889,7 @@ apply: eq_bigcapl; split => X /=.
 by case=> Y + <-; rewrite closedC setCS.
 Qed.
 
-Lemma interior_closed_regopen A : closed A -> regopen A^°.
+Lemma interior_closed_regopen A : closed A -> regopen A°.
 Proof.
 move=> cA; rewrite /regopen eqEsubset; split=> x.
   rewrite /closure [X in X -> _]/interior nbhsE => -[] U oxU UciA.

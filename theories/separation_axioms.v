@@ -247,11 +247,11 @@ rewrite propeqE open_hausdorff; split => T2T a b /T2T[[/=]].
   have /nbhs_ballP[_/posnumP[r] rA]: nbhs a A by apply: open_nbhs_nbhs.
   have /nbhs_ballP[_/posnumP[s] rB]: nbhs b B by apply: open_nbhs_nbhs.
   by exists (r, s) => /=; rewrite (subsetI_eq0 _ _ ABeq0).
-move=> r s /eqP brs_eq0; exists ((ball a r%:num)^°, (ball b s%:num)^°) => /=.
+move=> r s /eqP brs_eq0; exists ((ball a r%:num)°, (ball b s%:num)°) => /=.
   split; by rewrite inE; apply: nbhs_singleton; apply: nbhs_interior;
             apply/nbhs_ballP; apply: in_filter_from => /=.
 split; do ?by apply: open_interior.
-by rewrite (subsetI_eq0 _ _ brs_eq0)//; apply: interior_subset.
+by rewrite (subsetI_eq0 _ _ brs_eq0)//; exact: interior_subset.
 Qed.
 End ball_hausdorff.
 
@@ -490,7 +490,7 @@ by apply/closure_subset/disjoints_subset; rewrite setIC.
 Qed.
 
 Lemma compact_normal_local (K : set T) : hausdorff_space T -> compact K ->
-  forall A : set T, A `<=` K^° -> {for A, normal_space}.
+  forall A : set T, A `<=` K° -> {for A, normal_space}.
 Proof.
 move=> hT cptV A AK clA B snAB; have /compact_near_coveringP cvA : compact A.
   apply/(subclosed_compact clA cptV)/(subset_trans AK).
@@ -516,7 +516,7 @@ have cvP (x : T) : A x -> \forall x' \near x & i \near F, (~` i) x'.
       apply: open_nbhs_nbhs; split; first exact/closed_openC/closed_closure.
       exact/(subsetC _ nBZ)/(subset_trans cDC).
     by have := @closed_closure _ (~` closure D); rewrite closure_id => <-.
-  near=> y U => /=; have Dy : D^° y by exact: (near nD _).
+  near=> y U => /=; have Dy : D° y by exact: (near nD _).
   have UclD : U `<=` closure (~` closure D).
     exact: (near (small_set_sub snBD) U).
   move=> Uy; have [z [/= + Dz]] := UclD _ Uy _ Dy.

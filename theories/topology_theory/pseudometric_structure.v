@@ -194,39 +194,40 @@ Proof. exact: ball_center_subproof. Qed.
 
 Section pseudoMetricType_numDomainType.
 Context {R : numDomainType} {M : pseudoMetricType R}.
+Implicit Types x y z : M.
 
-Lemma ballxx (x : M) (e : R) : 0 < e -> ball x e x.
+Lemma ballxx x (e : R) : 0 < e -> ball x e x.
 Proof. by move=> e_gt0; apply: ball_center (PosNum e_gt0). Qed.
 
-Lemma ball_sym (x y : M) (e : R) : ball x e y -> ball y e x.
+Lemma ball_sym x y (e : R) : ball x e y -> ball y e x.
 Proof. exact: ball_sym_subproof. Qed.
 
-Lemma ball_symE (x y : M) (e : R) : ball x e y = ball y e x.
+Lemma ball_symE x y (e : R) : ball x e y = ball y e x.
 Proof. by rewrite propeqE; split; exact/ball_sym. Qed.
 
-Lemma ball_triangle (y x z : M) (e1 e2 : R) :
+Lemma ball_triangle y x z (e1 e2 : R) :
   ball x e1 y -> ball y e2 z -> ball x (e1 + e2) z.
 Proof. exact: ball_triangle_subproof. Qed.
 
-Lemma nbhsx_ballx (x : M) (eps : R) : 0 < eps -> nbhs x (ball x eps).
+Lemma nbhsx_ballx x (eps : R) : 0 < eps -> nbhs x (ball x eps).
 Proof. by move=> e0; apply/nbhs_ballP; exists eps. Qed.
 
-Lemma open_nbhs_ball (x : M) (eps : {posnum R}) : open_nbhs x (ball x eps%:num)^°.
+Lemma open_nbhs_ball x (eps : {posnum R}) : open_nbhs x (ball x eps%:num)°.
 Proof.
 split; first exact: open_interior.
 by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhsx_ballx.
 Qed.
 
-Lemma le_ball (x : M) (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
+Lemma le_ball x (e1 e2 : R) : e1 <= e2 -> ball x e1 `<=` ball x e2.
 Proof.
 move=> le12 y. case: comparableP le12 => [lte12 _|//|//|->//].
 by rewrite -[e2](subrK e1); apply/ball_triangle/ballxx; rewrite subr_gt0.
 Qed.
 
-Lemma near_ball (y : M) (eps : R) : 0 < eps -> \forall y' \near y, ball y eps y'.
+Lemma near_ball y (eps : R) : 0 < eps -> \forall y' \near y, ball y eps y'.
 Proof. exact: nbhsx_ballx. Qed.
 
-Lemma dnbhs_ball (a : M) (e : R) : (0 < e)%R -> a^' (ball a e `\ a).
+Lemma dnbhs_ball x (e : R) : (0 < e)%R -> x^' (ball x e `\ x).
 Proof.
 move: e => _/posnumP[e]; rewrite /dnbhs /within /=; near=> r => ra.
 split => //=; last exact/eqP.

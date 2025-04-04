@@ -306,10 +306,10 @@ by move=> E /fsubE [n fnA]; exists (f n) => //; exists n.
 Qed.
 
 Lemma open_nbhs_entourage (U : uniformType) (x : U) (A : set (U * U)) :
-  entourage A -> open_nbhs x (xsection A x)^°.
+  entourage A -> open_nbhs x (xsection A x)°.
 Proof.
 move=> entA; split; first exact: open_interior.
-by apply: nbhs_singleton; apply: nbhs_interior; apply: nbhs_entourage.
+by apply: nbhs_singleton; apply: nbhs_interior; exact: nbhs_entourage.
 Qed.
 
 Definition unif_continuous (U V : uniformType) (f : U -> V) :=

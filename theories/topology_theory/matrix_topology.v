@@ -43,7 +43,7 @@ Proof. by move=> [P M_P]; apply=> ??; apply: nbhs_singleton. Qed.
 
 Lemma mx_nbhs_nbhs M (A : set 'M[T]_(m, n)) : nbhs M A -> nbhs M (nbhs^~ A).
 Proof.
-move=> [P M_P sPA]; exists (fun i j => (P i j)^°).
+move=> [P M_P sPA]; exists (fun i j => (P i j)°).
   by move=> ? ?; apply: nbhs_interior.
 by move=> ? ?; exists P.
 Qed.

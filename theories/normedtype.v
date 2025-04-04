@@ -4097,12 +4097,12 @@ Proof.
 split.
   move=> + A clA nAx => /(_ (~` A)) [].
     by apply: open_nbhs_nbhs; split => //; exact: closed_openC.
-  move=> U Ux /subsetC; rewrite setCK => AclU; exists U^°.
+  move=> U Ux /subsetC; rewrite setCK => AclU; exists U°.
   exists (~` closure U) ; split => //; first exact: open_interior.
     exact/closed_openC/closed_closure.
   apply/disjoints_subset; rewrite setCK.
   exact: (subset_trans (@interior_subset _ _) (@subset_closure _ _)).
-move=> + A Ax => /(_ (~` A^°)) []; [|exact|].
+move=> + A Ax => /(_ (~` A°)) []; [|exact|].
   exact/open_closedC/open_interior.
 move=> U [V] [oU oV Ux /subsetC cAV /disjoints_subset UV]; exists U.
   exact/open_nbhs_nbhs.
@@ -4125,8 +4125,8 @@ have eps' (D : set X) : closed D -> forall x, exists eps : {posnum R}, ~ D x ->
   exact: (subset_trans beU (subset_trans UV0 _)).
 pose epsA x := projT1 (cid (eps' _ clB x)).
 pose epsB x := projT1 (cid (eps' _ clA x)).
-exists (\bigcup_(x in A) interior (ball x ((epsA x)%:num / 2)%:pos%:num)).
-exists (\bigcup_(x in B) interior (ball x ((epsB x)%:num / 2)%:pos%:num)).
+exists (\bigcup_(x in A) (ball x ((epsA x)%:num / 2)%:pos%:num)°).
+exists (\bigcup_(x in B) (ball x ((epsB x)%:num / 2)%:pos%:num)°).
 split.
 - by apply: bigcup_open => ? ?; exact: open_interior.
 - by apply: bigcup_open => ? ?; exact: open_interior.
@@ -4778,12 +4778,12 @@ Qed.
 End open_union_rat.
 
 Lemma right_bounded_interior (R : realType) (X : set R) :
-  has_ubound X -> X^° `<=` [set r | r < sup X].
+  has_ubound X -> X° `<=` [set r | r < sup X].
 Proof.
 move=> uX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP supXr|]; last first.
   by apply/negP; rewrite -leNgt sup_ubound//; exact: interior_subset.
-suff : ~ X^° (sup X) by rewrite supXr.
+suff : ~ X° (sup X) by rewrite supXr.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (sup X + f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addNKr normrN.
@@ -4793,12 +4793,12 @@ by apply/negP; rewrite -ltNge; rewrite ltrDl.
 Qed.
 
 Lemma left_bounded_interior (R : realType) (X : set R) :
-  has_lbound X -> X^° `<=` [set r | inf X < r].
+  has_lbound X -> X° `<=` [set r | inf X < r].
 Proof.
 move=> lX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP rinfX|]; last first.
   by apply/negP; rewrite -leNgt inf_lbound//; exact: interior_subset.
-suff : ~ X^° (inf X) by rewrite -rinfX.
+suff : ~ X° (inf X) by rewrite -rinfX.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrC subrK.
@@ -4820,7 +4820,7 @@ Section interval_realType.
 Variable R : realType.
 
 Lemma interval_left_unbounded_interior (X : set R) : is_interval X ->
-  ~ has_lbound X -> has_ubound X -> X^° = [set r | r < sup X].
+  ~ has_lbound X -> has_ubound X -> X° = [set r | r < sup X].
 Proof.
 move=> iX lX uX; rewrite eqEsubset; split; first exact: right_bounded_interior.
 rewrite -(open_subsetE _ (@open_lt _ _)) => r rsupX.
@@ -4831,7 +4831,7 @@ by rewrite subKr => re; apply: (iX y e); rewrite ?ltW.
 Qed.
 
 Lemma interval_right_unbounded_interior (X : set R) : is_interval X ->
-  has_lbound X -> ~ has_ubound X -> X^° = [set r | inf X < r].
+  has_lbound X -> ~ has_ubound X -> X° = [set r | inf X < r].
 Proof.
 move=> iX lX uX; rewrite eqEsubset; split; first exact: left_bounded_interior.
 rewrite -(open_subsetE _ (@open_gt _ _)) => r infXr.
@@ -4842,7 +4842,7 @@ by rewrite addrC subrK => er; apply: (iX e y); rewrite ?ltW.
 Qed.
 
 Lemma interval_bounded_interior (X : set R) : is_interval X ->
-  has_lbound X -> has_ubound X -> X^° = [set r | inf X < r < sup X].
+  has_lbound X -> has_ubound X -> X° = [set r | inf X < r < sup X].
 Proof.
 move=> iX bX aX; rewrite eqEsubset; split=> [r Xr|].
   apply/andP; split;
@@ -4859,7 +4859,7 @@ have /sup_adherent/(_ hsX)[f Xf] : 0 < sup X - r by rewrite subr_gt0.
 by rewrite subKr => rf; apply: (iX e f); rewrite ?ltW.
 Qed.
 
-Lemma interior_set1 (a : R) : [set a]^° = set0.
+Lemma interior_set1 (a : R) : [set a]° = set0.
 Proof.
 rewrite interval_bounded_interior; first last.
 - by exists a => [?]/= ->; apply: lexx.
@@ -4870,7 +4870,7 @@ rewrite interval_bounded_interior; first last.
 Qed.
 
 Lemma interior_itv_bnd (x y : R) (a b : bool) :
-  [set` Interval (BSide a x) (BSide b y)]^° = `]x, y[%classic.
+  [set` Interval (BSide a x) (BSide b y)]° = `]x, y[%classic.
 Proof.
 have [|xy] := leP y x.
   rewrite le_eqVlt => /predU1P[-> |yx].
@@ -4885,7 +4885,7 @@ exact: set_itvoo.
 Qed.
 
 Lemma interior_itv_bndy (x : R) (b : bool) :
-  [set` Interval (BSide b x) (BInfty _ false)]^° = `]x, +oo[%classic.
+  [set` Interval (BSide b x) (BInfty _ false)]° = `]x, +oo[%classic.
 Proof.
 rewrite interval_right_unbounded_interior//; first last.
     by apply: hasNubound_itv; rewrite lt_eqF.
@@ -4895,7 +4895,7 @@ by rewrite set_itv_o_infty.
 Qed.
 
 Lemma interior_itv_Nybnd (y : R) (b : bool) :
-  [set` Interval (BInfty _ true) (BSide b y)]^° = `]-oo, y[%classic.
+  [set` Interval (BInfty _ true) (BSide b y)]° = `]-oo, y[%classic.
 Proof.
 rewrite interval_left_unbounded_interior//; first last.
     by apply: hasNlbound_itv; rewrite gt_eqF.
@@ -4905,7 +4905,7 @@ by apply: set_itv_infty_o.
 Qed.
 
 Lemma interior_itv_Nyy :
-  [set` Interval (BInfty R true) (BInfty _ false)]^° = `]-oo, +oo[%classic.
+  [set` Interval (BInfty R true) (BInfty _ false)]° = `]-oo, +oo[%classic.
 Proof. by rewrite set_itv_infty_infty; apply: interiorT. Qed.
 
 Definition interior_itv :=
@@ -5594,7 +5594,7 @@ Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricNormedZmodType R)
 Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
 
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
-  (r : R) : 0 < r -> (closed_ball x r)^° = ball x r.
+  (r : R) : 0 < r -> (closed_ball x r)° = ball x r.
 Proof.
 move=> r0; rewrite eqEsubset; split; last first.
   by rewrite -open_subsetE; [exact: subset_closure | exact: ball_open].
@@ -5611,7 +5611,7 @@ by rewrite ger0_norm // ltrDl normr_gt0; near: e; exists 1 => /=.
 Unshelve. all: by end_near. Qed.
 
 Lemma open_nbhs_closed_ball (R : realType) (V : normedModType R) (x : V)
-  (r : R) : 0 < r -> open_nbhs x (closed_ball x r)^°.
+  (r : R) : 0 < r -> open_nbhs x (closed_ball x r)°.
 Proof.
 move=> r0; split; first exact: open_interior.
 by rewrite interior_closed_ballE //; exact: ballxx.
