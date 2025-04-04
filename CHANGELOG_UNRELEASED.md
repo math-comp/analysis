@@ -137,6 +137,12 @@
   + `max_le_max` -> `le_max2`
   + `real_sqrtC` -> `sqrtC_real`
 
+- in `boolp.v`:
+  + `eq_fun2` -> `eq2_fun`
+  + `eq_fun3` -> `eq3_fun`
+  + `eq_forall2` -> `eq2_forall`
+  + `eq_forall3` -> `eq3_forall`
+
 ### Generalized
 
 - in `constructive_ereal.v`:
@@ -186,6 +192,10 @@
 
 - file `lebesgue_integral.v` (split in several files in the directory
   `lebesgue_integral_theory`)
+
+- in `classical_sets.v`:
+  + notations `setvI`, `setIv`, `bigcup_set`, `bigcup_set_cond`, `bigcap_set`,
+    `bigcap_set_cond`
 
 ### Infrastructure
 

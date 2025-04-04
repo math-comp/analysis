@@ -672,7 +672,7 @@ Lemma limit_pointEnbhs E :
   limit_point E = [set p | globally (E `\ p) `#` nbhs p].
 Proof.
 under eq_fun do rewrite meets_globallyl; rewrite funeqE => p /=.
-apply/eq_forall2 => x px; apply/eq_exists => y.
+apply/eq2_forall => x px; apply/eq_exists => y.
 by rewrite propeqE; split => [[/eqP ? ?]|[[? /eqP ?]]]; do 2?split.
 Qed.
 

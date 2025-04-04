@@ -1211,10 +1211,6 @@ Proof. by move=> NDr; apply/setDidPl/disjoints_subset/subsetCr => _ ->. Qed.
 End basic_lemmas.
 #[global]
 Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
-#[deprecated(since="mathcomp-analysis 0.6", note="Use setICl instead.")]
-Notation setvI := setICl (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6", note="Use setICr instead.")]
-Notation setIv := setICr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.2.0", note="Use notin_setE instead.")]
 Notation notin_set := notin_setE (only parsing).
 Arguments setU_id2r {T} C {A B}.
@@ -2220,14 +2216,6 @@ Lemma bigcap_seq (s : seq T) (f : T -> set U) :
 Proof. by apply: setC_inj; rewrite setC_bigcap setC_bigsetI bigcup_seq. Qed.
 
 End bigcup_seq.
-#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcup_seq instead")]
-Notation bigcup_set := bigcup_seq (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcup_seq_cond instead")]
-Notation bigcup_set_cond := bigcup_seq_cond (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcap_seq instead")]
-Notation bigcap_set := bigcap_seq (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.4",note="Use bigcap_seq_cond instead")]
-Notation bigcap_set_cond := bigcap_seq_cond (only parsing).
 
 Lemma bigcup_pred [T : finType] [U : Type] (P : {pred T}) (f : T -> set U) :
   \bigcup_(t in [set` P]) f t = \big[setU/set0]_(t in P) f t.
@@ -2505,7 +2493,7 @@ HB.mixin Record isBiPointed (X : Type) of Equality X := {
 }.
 
 #[short(type="biPointedType")]
-HB.structure Definition BiPointed := 
+HB.structure Definition BiPointed :=
   { X of Choice X & isBiPointed X }.
 
 Variant squashed T : Prop := squash (x : T).
