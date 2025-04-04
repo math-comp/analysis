@@ -120,7 +120,7 @@ by move=> + x Ax => /(_ x Ax); case: (nbhs_subspaceP x) => //=; exact: Q.
 Qed.
 
 Lemma nbhs_subspace_interior (x : T) :
-  A^° x -> nbhs x = (nbhs (x : subspace A)).
+  A° x -> nbhs x = (nbhs (x : subspace A)).
 Proof.
 move=> /[dup] /[dup] /interior_subset ? /within_interior <- ?.
 by case: RHS / nbhs_subspaceP.
@@ -187,7 +187,7 @@ have oxF : forall x : T, (U `&` A) x ->
   move=> x /[dup] UAx /= [??]; move: (oUA _ UAx);
     case: nbhs_subspaceP => // ?.
   rewrite withinE /= => [[V nbhsV UV]]; rewrite -setIA setIid in UV.
-  exists V^°; split; first rewrite open_nbhsE; first split => //.
+  exists V°; split; first rewrite open_nbhsE; first split => //.
   - exact: open_interior.
   - exact: nbhs_interior.
   - by rewrite UV=> t [/interior_subset] ??; split.

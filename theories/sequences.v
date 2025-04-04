@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat archimedean.
@@ -2728,19 +2728,19 @@ have {OpenD Dy} openIDF0 : open (D `&` F 0%N).
 have /open_nbhs_nbhs/nbhs_closedballP[r0 Ball_a0] : open_nbhs a0 (D `&` F 0%N).
   by [].
 pose P (m : nat) (arn : U * {posnum K}) (arm : U * {posnum K}) :=
-  closed_ball arm.1 (arm.2%:num) `<=` (closed_ball arn.1 arn.2%:num)^° `&` F m
+  closed_ball arm.1 (arm.2%:num) `<=` (closed_ball arn.1 arn.2%:num)° `&` F m
   /\ arm.2%:num < m.+1%:R^-1.
 have Ar : forall na : nat * (U * {posnum K}), exists b : U * {posnum K},
     P na.1.+1 na.2 b.
   move=> [n [an rn]].
   have [ openFn denseFn] := odF n.+1.
-  have [an1 B0Fn2an1] : exists x, ((closed_ball an rn%:num)^° `&` F n.+1) x.
+  have [an1 B0Fn2an1] : exists x, ((closed_ball an rn%:num)° `&` F n.+1) x.
     have [//|? ?] := @open_nbhs_closed_ball _ _ an rn%:num.
     by apply: denseFn => //; exists an.
-  have openIB0Fn1 : open ((closed_ball an rn%:num)^° `&` F n.+1).
+  have openIB0Fn1 : open ((closed_ball an rn%:num)° `&` F n.+1).
     by apply/openI => //; exact/open_interior.
   have /open_nbhs_nbhs/nbhs_closedballP[rn01 Ball_an1] :
-    open_nbhs an1 ((closed_ball an rn%:num)^° `&` F n.+1) by [].
+    open_nbhs an1 ((closed_ball an rn%:num)° `&` F n.+1) by [].
   have n31_gt0 : n.+3%:R^-1 > 0 :> K by [].
   have majr : minr (PosNum n31_gt0)%:num rn01%:num > 0 by [].
   exists (an1, PosNum majr); split.
@@ -2888,7 +2888,7 @@ have [n [x0 [r H]] k] :
    /((@subsetI_eq0 _ (ball x r) O0 (O i) (O i)))]]]] /(_ bxr) bxrOi.
   by exists i, x, (PosNum r0); apply/disjoints_subset/bxrOi.
 exists ((n + n)%:R * k * 2 / r%:num)=> f Ff y Hx; move: (Propf f Ff) => [ _ linf].
-case: (eqVneq y 0) => [-> | Zeroy].
+have [->|Zeroy] := eqVneq y 0.
   move: (linear0 (pack_linear linf)) => /= ->.
   by rewrite normr0 !mulr_ge0 // (le_trans _ Hx).
 have majballi g x : F g -> (ball x0 r%:num) x -> `|g x| <= n%:R.
