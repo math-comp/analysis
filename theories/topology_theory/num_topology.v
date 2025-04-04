@@ -88,8 +88,55 @@ HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
 Module Exports. HB.reexport. End Exports.
 
 End numFieldTopology.
-
 Import numFieldTopology.Exports.
+
+Lemma closure_sup (R : realType) (A : set R) :
+  A !=set0 -> has_ubound A -> closure A (sup A).
+Proof.
+move=> A0 ?; have [|AsupA] := pselect (A (sup A)); first exact: subset_closure.
+rewrite closure_limit_point; right => U /nbhs_ballP[_ /posnumP[e]] supAeU.
+suff [x [Ax /andP[sAex xsA]]] : exists x, A x /\ sup A - e%:num < x < sup A.
+  exists x; split => //; first by rewrite lt_eqF.
+  apply supAeU; rewrite /ball /= ltr_distl (addrC x e%:num) -ltrBlDl sAex.
+  by rewrite andbT (le_lt_trans _ xsA) // lerBlDl lerDr.
+apply: contrapT => /forallNP Ax.
+suff /(sup_le_ub A0) : ubound A (sup A - e%:num).
+  by rewrite leNgt => /negP; apply; rewrite ltrBlDl ltrDr.
+move=> y Ay; have /not_andP[//|/negP] := Ax y.
+rewrite negb_and leNgt => /orP[//|]; apply: contra => sAey.
+rewrite lt_neqAle sup_upper_bound // andbT.
+by apply: contra_not_neq AsupA => <-.
+Qed.
+
+Lemma right_bounded_interior (R : realType) (X : set R) :
+  has_ubound X -> X^° `<=` [set r | r < sup X].
+Proof.
+move=> uX r Xr; rewrite /mkset ltNge; apply/negP.
+rewrite le_eqVlt => /orP[/eqP supXr|]; last first.
+  by apply/negP; rewrite -leNgt sup_ubound//; exact: interior_subset.
+suff : ~ X^° (sup X) by rewrite supXr.
+case/nbhs_ballP => _/posnumP[e] supXeX.
+have [f XsupXf] : exists f : {posnum R}, X (sup X + f%:num).
+  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addNKr normrN.
+  by rewrite gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
+have : sup X + f%:num <= sup X by exact: sup_ubound.
+by apply/negP; rewrite -ltNge; rewrite ltrDl.
+Qed.
+
+Lemma left_bounded_interior (R : realType) (X : set R) :
+  has_lbound X -> X^° `<=` [set r | inf X < r].
+Proof.
+move=> lX r Xr; rewrite /mkset ltNge; apply/negP.
+rewrite le_eqVlt => /orP[/eqP rinfX|]; last first.
+  by apply/negP; rewrite -leNgt inf_lbound//; exact: interior_subset.
+suff : ~ X^° (inf X) by rewrite -rinfX.
+case/nbhs_ballP => _/posnumP[e] supXeX.
+have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
+  exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrC subrK.
+  by rewrite gtr0_norm // ltr_pdivrMr // ltr_pMr // ltr1n.
+have : inf X <= inf X - f%:num by exact: inf_lbound.
+by apply/negP; rewrite -ltNge; rewrite ltrBlDr ltrDl.
+Qed.
 
 Lemma nbhsN {R : numFieldType} (x : R) : nbhs (- x) = -%R @ x.
 Proof.
