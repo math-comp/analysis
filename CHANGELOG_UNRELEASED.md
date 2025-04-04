@@ -175,8 +175,9 @@
 - in `classical_sets.v`:
   + change implicit arguments of `subsetT`
 - moved from `normedtype.v` (old file) to `num_topology`
+- moved from `normedtype.v` (old file) to `num_topology.v`
   + lemmas `nbhsN`, `cvg_compNP`, `nbhsNimage`, `nearN`, `openN`,
-    `closedN`, `dnbhsN`
+    `closedN`, `dnbhsN`, `closure_sup`, `right_bounded_interior`, `left_bounded_interior`
 
 ### Renamed
 
@@ -213,6 +214,14 @@
   + `SFiniteKernel_isFinite` -> `isMeasureFamUub`
   + `FiniteKernel_isSubProbability` -> `isSubProbabilityKernel`
   + `SubProbability_isProbability` -> `isProbabilityKernel`
+- in `set_interval.v`:
+  + `set_itv_infty_infty` -> `set_itvNyy`
+  + `set_itv_o_infty` -> `set_itvoy`
+  + `set_itv_c_infty` -> `set_itvcy`
+  + `set_itv_infty_o` -> `set_itvNyo`
+  + `set_itv_infty_c` -> `set_itvNyc`
+  + `set_itv_pinfty_bnd` -> `set_itv_ybnd`
+  + `set_itv_bnd_ninfty` -> `set_itv_bndNy`
 
 ### Generalized
 

@@ -40,6 +40,8 @@ cantor.v
 tvs.v
 
 normed_theory/num_normedtype.v
+normed_theory/matrix_normedtype.v
+normed_theory/ereal_normedtype.v
 normed_theory/pseudometric_normed_Zmodule.v
 normed_theory/normed_module.v
 normed_theory/complete_normed_module.v

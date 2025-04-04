@@ -1614,19 +1614,16 @@ rewrite (@increasing_ge0_integration_by_substitutiony (\- (F \o -%R))%R); last 8
   rewrite derive1N; last exact: derivable_id.
   by rewrite derive1_id mulrN1 opprK.
 - split => /=.
-    move=> z; rewrite in_itv/= andbT => bz.
+  + move=> z; rewrite in_itv/= andbT => bz.
     apply: diff_derivable; apply: differentiable_comp; apply/derivable1_diffP.
       apply: diff_derivable; apply: differentiable_comp; apply/derivable1_diffP.
         exact: derivable_opp.
       by apply: dFN; rewrite ltrNl.
     exact: derivable_opp.
-  rewrite opprK.
-  apply/cvg_at_rightNP.
-  rewrite opprK.
-  apply: cvgN.
-  apply: cvg_trans Fb.
-  apply: near_eq_cvg; near=> x.
-  by rewrite /= opprK.
+  - rewrite opprK; apply/cvg_at_rightNP.
+    rewrite opprK; apply: cvgN.
+    apply: cvg_trans Fb.
+    by apply: near_eq_cvg; near=> x; rewrite /= opprK.
 - move/cvgNy_compNP in FNyNy.
   apply/cvgNrNy.
   rewrite [X in X @ _ --> _](_ : _ = F \o -%R)//.
@@ -1639,20 +1636,19 @@ rewrite (@increasing_ge0_integration_by_substitutiony (\- (F \o -%R))%R); last 8
 - move=> z; rewrite in_itv/= opprK andbT => Fbz.
   by apply: G0; rewrite in_itv/= ltrNl.
 rewrite -[in RHS](opprK b) ge0_integration_by_substitutionNy; last 2 first.
-  apply/continuous_within_itvNycP; split => //.
-    move=> z; rewrite in_itv/= opprK => zb.
+  apply/continuous_within_itvNycP; split.
+  - move=> z; rewrite in_itv/= opprK => zb.
     apply: continuousM; last by apply: cdF; rewrite in_itv.
     apply: continuous_comp.
       move/derivable_within_continuous: dF.
       rewrite continuous_open_subspace; last exact: interval_open.
       by apply; rewrite inE/= in_itv.
     by apply: cG; rewrite in_itv/= ndF ?in_itv//= ltW.
-  rewrite opprK; apply: cvgM => //.
-  exact: (increasing_cvg_at_left_comp _ ndF).
+  - rewrite opprK; apply: cvgM => //.
+    exact: (increasing_cvg_at_left_comp _ ndF).
   rewrite opprK => x.
   rewrite in_itv/= => xb.
-  rewrite mulr_ge0//.
-    by apply: G0; rewrite in_itv/= ndF ?in_itv//= ltW.
+  rewrite mulr_ge0//; first by apply: G0; rewrite in_itv/= ndF ?in_itv//= ltW.
   apply: (@incr_derive1_ge0_itvNy _ _ false b).
   - move=> z; rewrite inE/= in_itv/= => zb.
     by apply: dF; rewrite in_itv.
@@ -1663,8 +1659,7 @@ have mG : measurable_fun `]-oo, (F b)[ G.
 have mF : measurable_fun `]-oo, b[ F.
   apply: open_continuous_measurable_fun => // x xNyb.
   move/derivable_within_continuous : dF.
-  rewrite continuous_open_subspace; last exact: interval_open.
-  exact.
+  by rewrite continuous_open_subspace; [exact|exact: interval_open].
 rewrite -[RHS]integral_itv_obnd_cbnd; last first.
   apply: (@measurable_comp _ _ _ _ _ _ `]-oo, b]) => //=.
     rewrite opp_itv_bndy opprK/=.
@@ -1790,14 +1785,14 @@ Lemma ge0_symfun_integralT (f : R -> R) : (forall x, 0 <= f x)%R ->
 Proof.
 move=> f0 cf evenf.
 have mf : measurable_fun [set: R] f by exact: continuous_measurable_fun.
-have mposnums : measurable [set x : R | 0 <= x]%R by rewrite -set_itv_c_infty.
+have mposnums : measurable [set x : R | 0 <= x]%R by rewrite -set_itvcy.
 rewrite -(setUv [set x : R | 0 <= x]%R) ge0_integral_setU//= ; last 4 first.
   exact: measurableC.
   by apply/measurable_EFinP; rewrite setUv.
   by move=> x _; rewrite lee_fin.
   exact/disj_setPCl.
 rewrite mule_natl mule2n; congr +%E.
-rewrite -set_itv_c_infty// setCitvr.
+rewrite -set_itvcy// setCitvr.
 rewrite integral_itv_bndo_bndc; last exact: measurable_funTS.
 rewrite -{1}oppr0 ge0_integration_by_substitutionNy//.
 - apply: eq_integral => /= x; rewrite inE/= in_itv/= andbT => x0.

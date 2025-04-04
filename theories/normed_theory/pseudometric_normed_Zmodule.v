@@ -47,7 +47,7 @@ HB.structure Definition PseudoMetricNormedZmod (R : numDomainType) :=
 Section pseudoMetricNormedZmod_lemmas.
 Context {K : numDomainType} {V : pseudoMetricNormedZmodType K}.
 
-(** balls defined by the norm: *)
+(**md Balls defined by the norm: *)
 Local Notation ball_norm := (ball_ (@normr K V)).
 
 Lemma ball_normE : ball_norm = ball.
@@ -342,27 +342,3 @@ HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K (U * V)%type
   prod_norm_ball.
 
 End prod_PseudoMetricNormedZmodule.
-
-Section matrix_PseudoMetricNormedZmodule.
-Variables (K : numFieldType) (m n : nat).
-
-Local Lemma ball_gt0 (x y : 'M[K]_(m.+1, n.+1)) e : ball x e y -> 0 < e.
-Proof. by move/(_ ord0 ord0); apply: le_lt_trans. Qed.
-
-Lemma mx_norm_ball : @ball _ 'M[K]_(m.+1, n.+1) = ball_ (fun x => `| x |).
-Proof.
-rewrite /normr /ball_ predeq3E => x e y /=; rewrite mx_normE; split => xey.
-- have e_gt0 : 0 < e := ball_gt0 xey.
-  move: e_gt0 (e_gt0) xey => /ltW/nonnegP[{}e] e_gt0 xey.
-  rewrite num_lt; apply/bigmax_ltP => /=.
-  by rewrite -num_lt /=; split => // -[? ?] _; rewrite !mxE; exact: xey.
-- have e_gt0 : 0 < e by rewrite (le_lt_trans _ xey).
-  move: e_gt0 (e_gt0) xey => /ltW/nonnegP[{}e] e_gt0.
-  move=> /(bigmax_ltP _ _ _ (fun _ => _%:itv)) /= [e0 xey] i j.
-  by move: (xey (i, j)); rewrite !mxE; exact.
-Qed.
-
-HB.instance Definition _ :=
-  NormedZmod_PseudoMetric_eq.Build K 'M[K]_(m.+1, n.+1) mx_norm_ball.
-
-End matrix_PseudoMetricNormedZmodule.

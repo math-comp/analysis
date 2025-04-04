@@ -75,6 +75,8 @@ theories/cantor.v
 theories/tvs.v
 
 theories/normed_theory/num_normedtype.v
+theories/normed_theory/matrix_normedtype.v
+theories/normed_theory/ereal_normedtype.v
 theories/normed_theory/pseudometric_normed_Zmodule.v
 theories/normed_theory/normed_module.v
 theories/normed_theory/complete_normed_module.v

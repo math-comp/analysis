@@ -19,8 +19,10 @@ From mathcomp Require Export measurable_realfun lebesgue_stieltjes_measure.
 (* disjoint closed balls such that $\lambda(A \setminus \bigcup_k D_k) = 0$.  *)
 (*                                                                            *)
 (* Main references:                                                           *)
-(* - Daniel Li, Intégration et applications, 2016                             *)
-(* - Achim Klenke, Probability Theory 2nd edition, 2014                       *)
+(* - Daniel Li. Intégration et applications. 2016                             *)
+(* - Achim Klenke. Probability Theory 2nd edition. 2014                       *)
+(* - R. Affeldt, C. Cohen. Measure Construction by Extension in Dependent     *)
+(*   Type Theory with Application to Integration. JAR 2023                    *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*           lebesgue_measure == the Lebesgue measure                         *)
@@ -731,7 +733,7 @@ Qed.
 Let lebesgue_measure_itv_infty_infty :
   lebesgue_measure ([set` Interval -oo%O +oo%O] : set R) = +oo%E.
 Proof.
-rewrite set_itv_infty_infty -(setUv (`]-oo, 0[)) setCitv.
+rewrite set_itvNyy -(setUv (`]-oo, 0[)) setCitv.
 rewrite [X in _ `|` (X `|` _) ]set_itvE set0U measureU//; last first.
   apply/seteqP; split => //= x [] /= /[swap].
   by rewrite !in_itv/= andbT ltNge => ->//.
@@ -767,7 +769,8 @@ Qed.
 Lemma lebesgue_measure_closed_ball (x r : R) : 0 <= r ->
   lebesgue_measure (closed_ball x r) = (r *+ 2)%:E.
 Proof.
-rewrite le_eqVlt => /predU1P[<-|r0]; first by rewrite mul0rn closed_ball0// measure0.
+rewrite le_eqVlt => /predU1P[<-|r0].
+  by rewrite mul0rn closed_ball0// measure0.
 rewrite closed_ball_itv// lebesgue_measure_itv/= lte_fin -ltrBlDl addrAC.
 rewrite subrr add0r gtrN// ?mulr_gt0// -EFinD; congr (_%:E).
 by rewrite opprB addrAC addrCA subrr addr0 -mulr2n.
