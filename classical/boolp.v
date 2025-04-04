@@ -258,27 +258,35 @@ Lemma eq_fun T rT (U V : T -> rT) :
   (forall x : T, U x = V x) -> (fun x => U x) = (fun x => V x).
 Proof. by move=> /funext->. Qed.
 
-Lemma eq_fun2 T1 T2 rT (U V : T1 -> T2 -> rT) :
+Lemma eq2_fun T1 T2 rT (U V : T1 -> T2 -> rT) :
   (forall x y, U x y = V x y) -> (fun x y => U x y) = (fun x y => V x y).
 Proof. by move=> UV; rewrite funeq2E => x y; rewrite UV. Qed.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq2_fun`.")]
+Notation eq_fun2 := eq2_fun (only parsing).
 
-Lemma eq_fun3  T1 T2 T3 rT (U V : T1 -> T2 -> T3 -> rT) :
+Lemma eq3_fun  T1 T2 T3 rT (U V : T1 -> T2 -> T3 -> rT) :
   (forall x y z, U x y z = V x y z) ->
   (fun x y z => U x y z) = (fun x y z => V x y z).
 Proof. by move=> UV; rewrite funeq3E => x y z; rewrite UV. Qed.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq3_fun`.")]
+Notation eq_fun3 := eq3_fun (only parsing).
 
 Lemma eq_forall T (U V : T -> Prop) :
   (forall x : T, U x = V x) -> (forall x, U x) = (forall x, V x).
 Proof. by move=> e; rewrite propeqE; split=> ??; rewrite (e,=^~e). Qed.
 
-Lemma eq_forall2 T S (U V : forall x : T, S x -> Prop) :
+Lemma eq2_forall T S (U V : forall x : T, S x -> Prop) :
   (forall x y, U x y = V x y) -> (forall x y, U x y) = (forall x y, V x y).
-Proof. by move=> UV; apply/eq_forall => x; apply/eq_forall. Qed.
+Proof. by move=> UV; apply/eq_forall => x; exact/eq_forall. Qed.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq2_forall`.")]
+Notation eq_forall2 := eq2_forall (only parsing).
 
-Lemma eq_forall3 T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
+Lemma eq3_forall T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
   (forall x y z, U x y z = V x y z) ->
   (forall x y z, U x y z) = (forall x y z, V x y z).
-Proof. by move=> UV; apply/eq_forall2 => x y; apply/eq_forall. Qed.
+Proof. by move=> UV; apply/eq2_forall => x y; exact/eq_forall. Qed.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq3_forall`.")]
+Notation eq_forall3 := eq3_forall (only parsing).
 
 Lemma eq_exists T (U V : T -> Prop) :
   (forall x : T, U x = V x) -> (exists x, U x) = (exists x, V x).
@@ -286,14 +294,18 @@ Proof.
 by move=> e; rewrite propeqE; split=> - [] x ?; exists x; rewrite (e,=^~e).
 Qed.
 
-Lemma eq_exists2 T S (U V : forall x : T, S x -> Prop) :
+Lemma eq2_exists T S (U V : forall x : T, S x -> Prop) :
   (forall x y, U x y = V x y) -> (exists x y, U x y) = (exists x y, V x y).
-Proof. by move=> UV; apply/eq_exists => x; apply/eq_exists. Qed.
+Proof. by move=> UV; apply/eq_exists => x; exact/eq_exists. Qed.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq2_exists`.")]
+Notation eq_exists2 := eq2_exists (only parsing).
 
-Lemma eq_exists3 T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
+Lemma eq3_exists T S R (U V : forall (x : T) (y : S x), R x y -> Prop) :
   (forall x y z, U x y z = V x y z) ->
   (exists x y z, U x y z) = (exists x y z, V x y z).
-Proof. by move=> UV; apply/eq_exists2 => x y; apply/eq_exists. Qed.
+Proof. by move=> UV; apply/eq2_exists => x y; exact/eq_exists. Qed.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `eq3_exists`.")]
+Notation eq_exists3 := eq3_exists (only parsing).
 
 Lemma eq_exist T (P : T -> Prop) (s t : T) (p : P s) (q : P t) :
   s = t -> exist P s p = exist P t q.
