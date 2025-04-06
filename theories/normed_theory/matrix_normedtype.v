@@ -13,8 +13,9 @@ From mathcomp Require Import normed_module.
 (**md**************************************************************************)
 (* # Normed topological Abelian group of matrices                             *)
 (*                                                                            *)
-(* We prove the Heine-Borel theorem, more precisely that a closed and bounded *)
-(* set of vectors in $\mathbb{R}^n$ is compact.                               *)
+(* This file defines a `normedModType` of space of matrices. It also proves   *)
+(* the Heine-Borel theorem, more precisely that a closed and bounded set of   *)
+(* vectors in $\bar{R}^n$ is compact and various lemmas about compact sets.   *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*           mx_norm M == norm of the matrix M                                *)
@@ -185,7 +186,7 @@ Proof. exact: ler_normD. Qed.
 
 End example_of_sharing.
 
-Section matrix_PseudoMetricNormedZmodule.
+Section matrix_pseudoMetricNormedZmod.
 Variables (K : numFieldType) (m n : nat).
 
 Local Lemma ball_gt0 (x y : 'M[K]_(m.+1, n.+1)) e : ball x e y -> 0 < e.
@@ -207,7 +208,23 @@ Qed.
 HB.instance Definition _ :=
   NormedZmod_PseudoMetric_eq.Build K 'M[K]_(m.+1, n.+1) mx_norm_ball.
 
-End matrix_PseudoMetricNormedZmodule.
+End matrix_pseudoMetricNormedZmod.
+
+Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n.+1) :
+  bounded_set A -> closed A -> compact A.
+Proof.
+move=> [M [Mreal normAltM]] Acl.
+have Mnco : compact
+  [set v : 'rV[R]_n.+1 | forall i, v ord0 i \in `[(- (M + 1)), (M + 1)]].
+  apply: (@rV_compact _  _ (fun _ => `[(- (M + 1)), (M + 1)]%classic)).
+  by move=> _; apply: segment_compact.
+apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
+suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
+apply: le_trans (normvleM _ _); last by rewrite ltrDl.
+have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v x.1 x.2| | x : 'I_1 * 'I_n.+1].
+  by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
+by rewrite [leRHS]/normr /= mx_normrE; apply/bigmax_geP; right => /=; exists j.
+Qed.
 
 Section matrix_NormedModule.
 Variables (K : numFieldType) (m n : nat).
@@ -226,19 +243,3 @@ HB.instance Definition _ :=
     mx_normZ.
 
 End matrix_NormedModule.
-
-Lemma bounded_closed_compact (R : realType) n (A : set 'rV[R]_n.+1) :
-  bounded_set A -> closed A -> compact A.
-Proof.
-move=> [M [Mreal normAltM]] Acl.
-have Mnco : compact
-  [set v : 'rV[R]_n.+1 | forall i, v ord0 i \in `[(- (M + 1)), (M + 1)]].
-  apply: (@rV_compact _  _ (fun _ => `[(- (M + 1)), (M + 1)]%classic)).
-  by move=> _; apply: segment_compact.
-apply: subclosed_compact Acl Mnco _ => v /normAltM normvleM i.
-suff : `|v ord0 i : R| <= M + 1 by rewrite ler_norml.
-apply: le_trans (normvleM _ _); last by rewrite ltrDl.
-have /mapP[j Hj ->] : `|v ord0 i| \in [seq `|v x.1 x.2| | x : 'I_1 * 'I_n.+1].
-  by apply/mapP; exists (ord0, i) => //=; rewrite mem_enum.
-by rewrite [leRHS]/normr /= mx_normrE; apply/bigmax_geP; right => /=; exists j.
-Qed.

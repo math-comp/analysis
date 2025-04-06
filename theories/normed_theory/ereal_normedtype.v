@@ -26,7 +26,7 @@ From mathcomp Require Import num_normedtype.
 (*                                                                            *)
 (* ## Lower semicontinuous                                                    *)
 (* ```                                                                        *)
-(*         lower_semicontinuous f == the extented real-valued function f is   *)
+(*         lower_semicontinuous f == the extended real-valued function f is   *)
 (*                                   lower-semicontinuous. The type of f is   *)
 (*                                   X -> \bar R with X : topologicalType and *)
 (*                                   R : realType                             *)
