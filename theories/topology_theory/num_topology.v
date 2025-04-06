@@ -192,6 +192,16 @@ exists (- x)%R; rewrite ?opprK//; apply: reA; rewrite ?eqr_oppLR//=.
 by rewrite opprK.
 Qed.
 
+Lemma withinN {R : numFieldType} (A : set R) (r : R) :
+  within A (nbhs (- r)) = - x @[x --> within (-%R @` A) (nbhs r)].
+Proof.
+rewrite eqEsubset /=; split; move=> E /= [e e0 reE]; exists e => //.
+  move=> s rse sA; apply: reE; last by rewrite memNE opprK.
+  by rewrite /= opprK addrC distrC.
+move=> s res rs; rewrite -(opprK s); apply: reE; last by rewrite -memNE.
+by rewrite /= opprK -normrN opprD.
+Qed.
+
 Lemma in_continuous_mksetP {T : realFieldType} {U : realFieldType}
     (i : interval T) (f : T -> U) :
   {in i, continuous f} <-> {in [set` i], continuous f}.

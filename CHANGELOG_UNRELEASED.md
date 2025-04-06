@@ -177,7 +177,8 @@
 - moved from `normedtype.v` (old file) to `num_topology`
 - moved from `normedtype.v` (old file) to `num_topology.v`
   + lemmas `nbhsN`, `cvg_compNP`, `nbhsNimage`, `nearN`, `openN`,
-    `closedN`, `dnbhsN`, `closure_sup`, `right_bounded_interior`, `left_bounded_interior`
+    `closedN`, `dnbhsN`, `closure_sup`, `right_bounded_interior`, `left_bounded_interior`,
+    `withinN`
 
 ### Renamed
 
@@ -242,8 +243,15 @@
 
 - in `num_normedtype.v` (new file):
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
+- in `pseudometric_normed_Zmodule.v`:
+  + generalized from `normedModType` to `pseudoMetricNormedZmodType`:
+    * lemmas `cvgr_norm_lty`, `cvgr_norm_ley`, `cvgr_norm_gtNy`,
+      `cvgr_norm_geNy`, `cvg_bounded`
 
 ### Deprecated
+
+- in `normed_theory` (was in `normedtype.v` before the split)
+  + `pseudoMetricNormedZModType_hausdorff` (use `norm_hausdorff` instead)
 
 ### Removed
 

@@ -185,7 +185,7 @@ HB.instance Definition _ := Uniform_isComplete.Build 'M[T]_(m, n) mx_complete.
 
 End matrix_Complete.
 
-(** matrices *)
+(**md Matrices: *)
 Section matrix_PseudoMetric.
 Variables (m n : nat) (R : numDomainType) (T : pseudoMetricType R).
 Implicit Types (x y : 'M[T]_(m, n)) (e : R).
@@ -227,3 +227,4 @@ End matrix_PseudoMetric.
 
 HB.instance Definition _ (R : numFieldType) (T : completePseudoMetricType R)
   (m n : nat) := Uniform_isComplete.Build 'M[T]_(m, n) cauchy_cvg.
+

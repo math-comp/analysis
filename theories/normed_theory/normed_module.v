@@ -26,35 +26,14 @@ From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 (* We endow `numFieldType` with the types of norm-related notions (accessible *)
 (* with `Import numFieldNormedType.Exports`).                                 *)
 (*                                                                            *)
-(* ## Domination notations                                                    *)
-(* See also Lipschitz below.                                                  *)
+(* ## Hulls                                                                   *)
 (* ```                                                                        *)
-(*                      self_sub f x := f x.1 - f x.2                         *)
-(*              dominated_by h k f F == `|f| <= k * `|h|, near F              *)
-(*     strictly_dominated_by h k f F == `|f| < k * `|h|, near F               *)
-(*                  bounded_near f F == f is bounded near F                   *)
-(*            [bounded f x | x in A] == f is bounded on A, ie F := globally A *)
-(*   [locally [bounded f x | x in A] == f is locally bounded on A             *)
-(*                       bounded_set == set of bounded sets                   *)
-(*                                   := [set A | [bounded x | x in A]]        *)
-(*                       bounded_fun == set of functions bounded on their     *)
-(*                                      whole domain                          *)
-(*                                   := [set f | [bounded f x | x in setT]]   *)
+(*                        Rhull A == the real interval hull of a set A        *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* ```                                                                        *)
-(*                         shift x y == y + x                                 *)
-(*                          center c := shift (- c)                           *)
-(*                                      This is a notation.                   *)
-(* ```                                                                        *)
-(*                                                                            *)
-(* ## Let and right filters                                                   *)
-(* ```                                                                        *)
-(*                     x^'-, x^'+ == filters on real numbers for predicates   *)
-(*                                   s.t. nbhs holds on the left/right of x   *)
-(* ```                                                                        *)
 (* ## Lipschitz functions                                                     *)
 (* ```                                                                        *)
+(*                      self_sub f x := f x.1 - f x.2                         *)
 (*                  lipschitz_on f F == f is lipschitz near F                 *)
 (*               k.-lipschitz_on f F == f is k.-lipschitz near F              *)
 (*                  k.-lipschitz_A f == f is k.-lipschitz on A                *)
@@ -66,23 +45,8 @@ From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 (*                                                                            *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* ## Hulls                                                                   *)
-(* ```                                                                        *)
-(*                           Rhull A == the real interval hull of a set A     *)
-(* ```                                                                        *)
-(*                                                                            *)
-(* ## Closed balls                                                            *)
-(* ```                                                                        *)
-(*             closed_ball_ norm x e := [set y | norm (x - y) <= e]           *)
-(*                       closed_ball == closure of a ball                     *)
-(* ```                                                                        *)
-(*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "x ^'+" (at level 3, left associativity, format "x ^'+").
-Reserved Notation "x ^'-" (at level 3, left associativity, format "x ^'-").
-Reserved Notation "[ 'bounded' E | x 'in' A ]"
-  (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
 Reserved Notation "k .-lipschitz_on f"
   (at level 2, format "k .-lipschitz_on  f").
 Reserved Notation "k .-lipschitz_ A f"
@@ -123,40 +87,21 @@ HB.builders Context K V of PseudoMetricNormedZmod_Lmodule_isNormedModule K V.
 (* NB: These lemmas are done later with more machinery. They should
    be simplified once normedtype is split, and the present section can
    depend on near lemmas on pseudometricnormedzmodtype? *)
+(* add_continuous has been moved to pseudometric_normed_Zmodule.v,
+  scale_continuous is proved but is not proved again anymore later in this file *)
 Lemma add_continuous : continuous (fun x : V * V => x.1 + x.2).
-Proof.
-move=> [/= x y]; apply/cvg_ballP => e e0 /=.
-exists (ball x (e / 2), ball y (e / 2)) => /=.
-  by split; apply: nbhsx_ballx; rewrite divr_gt0.
-rewrite -ball_normE /ball_/= => xy /= [nx ny].
-by rewrite opprD addrACA (le_lt_trans (ler_normD _ _)) // (splitr e) ltrD.
-Qed.
+Proof. exact: add_continuous. Qed.
 
 Lemma scale_continuous : continuous (fun z : K^o * V => z.1 *: z.2).
 Proof.
-move=> [/= k x]; apply/cvg_ballP => e e0 /=.
-near +oo_K => M.
-pose r := `|e| / 2 / M.
-exists (ball k r, ball x r).
-  by split; apply: nbhsx_ballx; rewrite !divr_gt0// normr_gt0// gt_eqF.
-rewrite -ball_normE /ball/= => lz /= [nk nx].
-have := @ball_split _ _ (k *: lz.2)  (k *: x)  (lz.1 *: lz.2) `|e|.
-rewrite -ball_normE /= real_lter_normr ?gtr0_real//.
-rewrite (_ : _ < - e = false) ?orbF; last by rewrite ltr_nnorml// oppr_le0 ltW.
-apply.
-  rewrite -scalerBr normrZ -(@ltr_pM2r _ M^-1) ?invr_gt0//.
-  by rewrite (le_lt_trans _ nx)// mulrC ler_pdivrMl// ler_wpM2r// invr_gt0.
-rewrite -scalerBl normrZ.
-rewrite (@le_lt_trans _ _ (`|k - lz.1| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
-rewrite (@le_trans _ _ (`|lz.2| + `|x|)) ?lerDl//.
-rewrite (@le_trans _ _ (`|x| + (`|x| + r)))//.
-  rewrite addrC lerD// -lerBlDl -(normrN x) (le_trans (lerB_normD _ _))//.
-  by rewrite distrC ltW.
-rewrite [leRHS](_ : _ = M^-1 * (M *  M)); last first.
-  by rewrite mulrA mulVf ?mul1r// gt_eqF.
-rewrite [leLHS](_ : _ = M^-1 * (M * (`|x| + `|x|) + `|e| / 2)); last first.
-  by rewrite mulrDr mulrA mulVf ?mul1r ?gt_eqF// mulrC addrA.
-by rewrite ler_wpM2l ?invr_ge0// ?ltW// -ltrBrDl -mulrBr ltr_pM// ltrBrDl.
+move=> [/= k x]; apply/cvgrPdist_lt => _/posnumP[e]; near +oo_K => M.
+near=> l z => /=; have M0 : 0 < M by [].
+rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normrZ.
+  rewrite (@le_lt_trans _ _ (M * `|x - z|)) ?ler_wpM2r -?ltr_pdivlMl//.
+  by near: z; apply: cvgr_dist_lt; rewrite // mulr_gt0 ?invr_gt0.
+rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
+  by near: z; near: M; apply: cvg_bounded (@cvg_refl _ _).
+by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
 Unshelve. all: by end_near. Qed.
 
 Lemma locally_convex :
@@ -193,22 +138,15 @@ HB.instance Definition _ :=
 
 HB.end.
 
-Section standard_topology.
+(**md see also `Section standard_topology_pseudoMetricNormedZmod` in
+  `pseudometric_normed_Zmodule.v` *)
+Section standard_topology_normedMod.
 Variable R : numFieldType.
-HB.instance Definition _ := Num.NormedZmodule.on R^o.
 
-HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R R^o erefl.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Tvs_isNormedModule.Build R R^o (@normrM _).
 
-End standard_topology.
-
-Lemma ball_itv {R : realFieldType} (x r : R) :
-  ball x r = `]x - r, x + r[%classic.
-Proof.
-rewrite -(@ball_normE _ R^o) /ball_ set_itvE.
-by apply/seteqP; split => t/=; rewrite ltr_distlC.
-Qed.
+End standard_topology_normedMod.
 
 Module numFieldNormedType.
 
@@ -283,16 +221,6 @@ Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
-Lemma withinN {R : numFieldType} (A : set R) a :
-  within A (nbhs (- a)) = - x @[x --> within (-%R @` A) (nbhs a)].
-Proof.
-rewrite eqEsubset /=; split; move=> E /= [e e0 aeE]; exists e => //.
-  move=> r are ra; apply: aeE; last by rewrite memNE opprK.
-  by rewrite /= opprK addrC distrC.
-move=> r aer ar; rewrite -(opprK r); apply: aeE; last by rewrite -memNE.
-by rewrite /= opprK -normrN opprD.
-Qed.
-
 Lemma scaler1 {R : numFieldType} h : h%:A = h :> R.
 Proof. by rewrite /GRing.scale/= mulr1. Qed.
 
@@ -327,209 +255,12 @@ by near: z; exact: near_in_itvoo.
 Unshelve. all: by end_near. Qed.
 
 Section NormedModule_numDomainType.
-Variables (R : numDomainType) (V : normedModType R).
+Variables (K : numDomainType) (V : normedModType K).
 
 Lemma normrZV (x : V) : `|x| \in GRing.unit -> `| `| x |^-1 *: x | = 1.
 Proof. by move=> nxu; rewrite normrZ normrV// normr_id mulVr. Qed.
 
-End NormedModule_numDomainType.
-
-Section NormedModule_numFieldType.
-Variables (R : numFieldType) (V : normedModType R).
-
-Lemma normfZV (x : V) : x != 0 -> `| `|x|^-1 *: x | = 1.
-Proof. by rewrite -normr_eq0 -unitfE => /normrZV->. Qed.
-
-End NormedModule_numFieldType.
-
-Definition self_sub (K : numDomainType) (V W : normedModType K)
-  (f : V -> W) (x : V * V) : W := f x.1 - f x.2.
-Arguments self_sub {K V W} f x /.
-
-Definition fun1 {T : Type} {K : numFieldType} : T -> K := fun=> 1.
-Arguments fun1 {T K} x /.
-
-Definition dominated_by {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K}
-  (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
-  F [set x | `|f x| <= k * `|h x|].
-
-Definition strictly_dominated_by {T : Type} {K : numDomainType} {V W : pseudoMetricNormedZmodType K}
-  (h : T -> V) (k : K) (f : T -> W) (F : set_system T) :=
-  F [set x | `|f x| < k * `|h x|].
-
-Lemma sub_dominatedl (T : Type) (K : numDomainType)
-    (V W : pseudoMetricNormedZmodType K)
-    (h : T -> V) (k : K) (F G : set_system T) : F `=>` G ->
-  (@dominated_by T K V W h k)^~ G `<=` (dominated_by h k)^~ F.
-Proof. by move=> FG f; exact: FG. Qed.
-
-Lemma sub_dominatedr (T : Type) (K : numDomainType)
-    (V : pseudoMetricNormedZmodType K)
-    (h : T -> V) (k : K) (f g : T -> V) (F : set_system T) (FF : Filter F) :
-   (\forall x \near F, `|f x| <= `|g x|) ->
-   dominated_by h k g F -> dominated_by h k f F.
-Proof. by move=> le_fg; apply: filterS2 le_fg => x; apply: le_trans. Qed.
-
-Lemma dominated_by1 {T : Type} {K : numFieldType}
-    {V : pseudoMetricNormedZmodType K} :
-  @dominated_by T K _ V fun1 = fun k f F => F [set x | `|f x| <= k].
-Proof.
-rewrite funeq3E => k f F.
-by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
-Qed.
-
-Lemma strictly_dominated_by1 {T : Type} {K : numFieldType}
-    {V : pseudoMetricNormedZmodType K} :
-  @strictly_dominated_by T K _ V fun1 = fun k f F => F [set x | `|f x| < k].
-Proof.
-rewrite funeq3E => k f F.
-by congr F; rewrite funeqE => x/=; rewrite normr1 mulr1.
-Qed.
-
-Lemma ex_dom_bound {T : Type} {K : numFieldType}
-    {V W : pseudoMetricNormedZmodType K}
-    (h : T -> V) (f : T -> W) (F : set_system T) {PF : ProperFilter F}:
-  (\forall M \near +oo, dominated_by h M f F) <->
-  exists M, dominated_by h M f F.
-Proof.
-rewrite /dominated_by; split => [/pinfty_ex_gt0[M M_gt0]|[M]] FM.
-  by exists M.
-have [] := pselect (exists x, (h x != 0) && (`|f x| <= M * `|h x|)); last first.
-  rewrite -forallNE => Nex; exists 0; split => //.
-  move=> k k_gt0; apply: filterS FM => x /= f_le_Mh.
-  have /negP := Nex x; rewrite negb_and negbK f_le_Mh orbF => /eqP h_eq0.
-  by rewrite h_eq0 normr0 !mulr0 in f_le_Mh *.
-case => x0 /andP[hx0_neq0] /(le_trans (normr_ge0 _)) /ger0_real.
-rewrite realrM // ?normr_eq0// => M_real.
-exists M; split => // k Mk; apply: filterS FM => x /le_trans/= ->//.
-by rewrite ler_wpM2r// ltW.
-Qed.
-
-Lemma ex_strict_dom_bound {T : Type} {K : numFieldType}
-    {V W : pseudoMetricNormedZmodType K}
-    (h : T -> V) (f : T -> W) (F : set_system T) {PF : ProperFilter F} :
-  (\forall x \near F, h x != 0) ->
-  (\forall M \near +oo, dominated_by h M f F) <->
-   exists M, strictly_dominated_by h M f F.
-Proof.
-move=> hN0; rewrite ex_dom_bound /dominated_by /strictly_dominated_by.
-split => -[] M FM; last by exists M; apply: filterS FM => x /ltW.
-exists (M + 1); apply: filterS2 hN0 FM => x hN0 /le_lt_trans/= ->//.
-by rewrite ltr_pM2r ?normr_gt0// ltrDl.
-Qed.
-
-Definition bounded_near {T : Type} {K : numFieldType}
-    {V : pseudoMetricNormedZmodType K}
-  (f : T -> V) (F : set_system T) :=
-  \forall M \near +oo, F [set x | `|f x| <= M].
-
-Lemma boundedE {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K} :
-  @bounded_near T K V = fun f F => \forall M \near +oo, dominated_by fun1 M f F.
-Proof. by rewrite dominated_by1. Qed.
-
-Lemma sub_boundedr (T : Type) (K : numFieldType) (V : pseudoMetricNormedZmodType K)
-     (F G : set_system T) : F `=>` G ->
-  (@bounded_near T K V)^~ G `<=` bounded_near^~ F.
-Proof. by move=> FG f; rewrite /bounded_near; apply: filterS=> M; apply: FG. Qed.
-
-Lemma sub_boundedl (T : Type) (K : numFieldType) (V : pseudoMetricNormedZmodType K)
-     (f g : T -> V) (F : set_system T) (FF : Filter F) :
- (\forall x \near F, `|f x| <= `|g x|) ->  bounded_near g F -> bounded_near f F.
-Proof.
-move=> le_fg; rewrite /bounded_near; apply: filterS => M.
-by apply: filterS2 le_fg => x; apply: le_trans.
-Qed.
-
-Lemma ex_bound {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  (f : T -> V) (F : set_system T) {PF : ProperFilter F}:
-  bounded_near f F <-> exists M, F [set x | `|f x| <= M].
-Proof. by rewrite boundedE ex_dom_bound dominated_by1. Qed.
-
-Lemma ex_strict_bound {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  (f : T -> V) (F : set_system T) {PF : ProperFilter F}:
-  bounded_near f F <-> exists M, F [set x | `|f x| < M].
-Proof.
-rewrite boundedE ex_strict_dom_bound ?strictly_dominated_by1//.
-by near=> x; rewrite oner_eq0.
-Unshelve. all: by end_near. Qed.
-
-Lemma ex_strict_bound_gt0 {T : Type} {K : numFieldType} {V : pseudoMetricNormedZmodType K}
-  (f : T -> V) (F : set_system T) {PF : Filter F}:
-  bounded_near f F -> exists2 M, M > 0 & F [set x | `|f x| < M].
-Proof.
-move=> /pinfty_ex_gt0[M M_gt0 FM]; exists (M + 1); rewrite ?addr_gt0//.
-by apply: filterS FM => x /le_lt_trans/= ->//; rewrite ltrDl.
-Qed.
-
-(** Normed vector spaces have some continuous functions that are in fact
-continuous on pseudoMetricNormedZmodType *)
-Section NVS_continuity_pseudoMetricNormedZmodType.
-Context {K : numFieldType} {V : pseudoMetricNormedZmodType K}.
-
-Lemma opp_continuous : continuous (@GRing.opp V).
-Proof.
-move=> x; apply/cvgrPdist_lt=> e e0; near do rewrite -opprD normrN.
-exact: cvgr_dist_lt.
-Unshelve. all: by end_near. Qed.
-
-Lemma add_continuous : continuous (fun z : V * V => z.1 + z.2).
-Proof.
-move=> [/= x y]; apply/cvgrPdist_lt=> _/posnumP[e]; near=> a b => /=.
-by rewrite opprD addrACA normm_lt_split.
-Unshelve. all: by end_near. Qed.
-
-Lemma natmul_continuous n : continuous (fun x : V => x *+ n).
-Proof.
-case: n => [|n] x; first exact: cvg_cst.
-apply/cvgrPdist_lt=> _/posnumP[e]; near=> a.
-by rewrite -mulrnBl normrMn -mulr_natr -ltr_pdivlMr.
-Unshelve. all: by end_near. Qed.
-
-Lemma norm_continuous : continuous (normr : V -> K).
-Proof.
-move=> x; apply/cvgrPdist_lt => e e0; apply/nbhs_normP; exists e => //= y.
-exact/le_lt_trans/ler_dist_dist.
-Qed.
-
-End NVS_continuity_pseudoMetricNormedZmodType.
-
-Section prod_NormedModule.
-Context {K : numFieldType} {U V : normedModType K}.
-
-Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
-Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
-
-HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Tvs_isNormedModule.Build K (U * V)%type
-  prod_norm_scale.
-
-End prod_NormedModule.
-
-Section Shift.
-Context {R : zmodType} {T : Type}.
-
-Definition shift (x y : R) := y + x.
-Notation center c := (shift (- c)).
-Arguments shift x / y.
-
-Lemma comp_shiftK (x : R) (f : R -> T) : (f \o shift x) \o center x = f.
-Proof. by rewrite funeqE => y /=; rewrite addrNK. Qed.
-
-Lemma comp_centerK (x : R) (f : R -> T) : (f \o center x) \o shift x = f.
-Proof. by rewrite funeqE => y /=; rewrite addrK. Qed.
-
-Lemma shift0 : shift 0 = id.
-Proof. by rewrite funeqE => x /=; rewrite addr0. Qed.
-
-Lemma center0 : center 0 = id.
-Proof. by rewrite oppr0 shift0. Qed.
-
-End Shift.
-Arguments shift {R} x / y.
-Notation center c := (shift (- c)).
-
-Lemma near_shift {K : numDomainType} {R : normedModType K}
-   (y x : R) (P : set R) :
+Lemma near_shift (y x : V) (P : set V) :
    (\near x, P x) = (\forall z \near y, (P \o shift (x - y)) z).
 Proof.
 (* rewrite propeqE nbhs0P [X in _ <-> X]nbhs0P/= -propeqE. *)
@@ -540,15 +271,72 @@ apply/nbhs_normP; exists e%:num => //= t et.
 by have /= := ye (t - (x - y)); rewrite opprB addrCA subrKA addrNK; exact.
 Qed.
 
-Lemma cvg_comp_shift {T : Type} {K : numDomainType} {R : normedModType K}
-  (x y : R) (f : R -> T) :
+Lemma cvg_comp_shift {T : Type} (x y : V) (f : V -> T) :
   (f \o shift x) @ y = f @ (y + x).
 Proof.
 rewrite funeqE => A; rewrite /= !near_simpl (near_shift (y + x)).
 by rewrite (_ : _ \o _ = A \o f) // funeqE=> z; rewrite /= opprD addNKr addrNK.
 Qed.
 
-Section continuous_shift.
+Lemma ball_open (x : V) (r : K) : 0 < r -> open (ball x r).
+Proof.
+rewrite openE -ball_normE /interior => r0 y /= Bxy; near=> z.
+rewrite /= (le_lt_trans (ler_distD y _ _)) // addrC -ltrBrDr.
+by near: z; apply: cvgr_dist_lt; rewrite // subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma ball_open_nbhs (x : V) (r : K) : 0 < r -> open_nbhs x (ball x r).
+Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
+
+End NormedModule_numDomainType.
+
+Definition self_sub (K : numDomainType) (V W : normedModType K)
+  (f : V -> W) (x : V * V) : W := f x.1 - f x.2.
+Arguments self_sub {K V W} f x /.
+
+Section NormedModule_numFieldType.
+Variables (K : numFieldType) (V : normedModType K).
+
+Lemma normfZV (x : V) : x != 0 -> `| `|x|^-1 *: x | = 1.
+Proof. by rewrite -normr_eq0 -unitfE => /normrZV->. Qed.
+
+Lemma cvg_at_rightE (f : K -> V) x :
+  cvg (f @ x^') -> lim (f @ x^') = lim (f @ x^'+).
+Proof.
+move=> cvfx; apply/Logic.eq_sym.
+apply: (@cvg_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+by exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
+Qed.
+
+Lemma cvg_at_leftE (f : K -> V) x :
+  cvg (f @ x^') -> lim (f @ x^') = lim (f @ x^'-).
+Proof.
+move=> cvfx; apply/Logic.eq_sym.
+apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
+exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
+by apply: xe_A => //; rewrite eq_sym.
+Qed.
+
+Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
+Proof. exact: scale_continuous. Abort.
+
+Arguments scale_continuous _ _ : clear implicits.
+
+Lemma scaler_continuous k : continuous (fun x : V => k *: x).
+Proof.
+by move=> x; apply: (cvg_comp2 (cvg_cst _) cvg_id (scale_continuous _ _ (_, _))).
+Qed.
+
+Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
+Proof.
+by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous _ _ (_, _))).
+Qed.
+
+End NormedModule_numFieldType.
+Arguments cvg_at_rightE {K V} f x.
+Arguments cvg_at_leftE {K V} f x.
+
+Section NormedModule_continuous.
 Variables (K : numFieldType) (U V : normedModType K).
 
 Lemma continuous_shift (f : U -> V) u :
@@ -565,946 +353,7 @@ rewrite continuous_shift; split=> [cfu|].
 by move/(continuous_withinNx _ _).1/cvg_trans; apply; rewrite /= add0r.
 Qed.
 
-End continuous_shift.
-
-Lemma ball_open (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
-  0 < r -> open (ball x r).
-Proof.
-rewrite openE -ball_normE /interior => r0 y /= Bxy; near=> z.
-rewrite /= (le_lt_trans (ler_distD y _ _)) // addrC -ltrBrDr.
-by near: z; apply: cvgr_dist_lt; rewrite // subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma ball_open_nbhs (R : numDomainType) (V : normedModType R) (x : V) (r : R) :
-  0 < r -> open_nbhs x (ball x r).
-Proof. by move=> e0; split; [exact: ball_open|exact: ballxx]. Qed.
-
-Section at_left_right.
-Variable R : numFieldType.
-
-Definition at_left (x : R) := within (fun u => u < x) (nbhs x).
-Definition at_right (x : R) := within (fun u => x < u) (nbhs x).
-Local Notation "x ^'-" := (at_left x) : classical_set_scope.
-Local Notation "x ^'+" := (at_right x) : classical_set_scope.
-
-Global Instance at_right_proper_filter (x : R) : ProperFilter x^'+.
-Proof.
-apply: Build_ProperFilter => -[_/posnumP[d] /(_ (x + d%:num / 2))].
-apply; last by rewrite ltrDl.
-by rewrite /= opprD addNKr normrN ger0_norm// gtr_pMr// invf_lt1// ltr1n.
-Qed.
-
-Global Instance at_left_proper_filter (x : R) : ProperFilter x^'-.
-Proof.
-apply: Build_ProperFilter => -[_ /posnumP[d] /(_ (x - d%:num / 2))].
-apply; last by rewrite gtrBl.
-by rewrite /= opprB addrC subrK ger0_norm// gtr_pMr// invf_lt1// ltr1n.
-Qed.
-
-Lemma nbhs_right0P x (P : set R) :
-  (\forall y \near x^'+, P y) <-> \forall e \near 0^'+, P (x + e).
-Proof.
-rewrite !near_withinE !near_simpl nbhs0P -propeqE.
-by apply: (@eq_near _ (nbhs (0 : R))) => y; rewrite ltrDl.
-Qed.
-
-Lemma nbhs_left0P x (P : set R) :
-  (\forall y \near x^'-, P y) <-> \forall e \near 0^'+, P (x - e).
-Proof.
-rewrite !near_withinE !near_simpl nbhs0P; split=> Px.
-  rewrite -oppr0 nearN; near=> e; rewrite ltrN2 opprK => e_lt0.
-  by apply: (near Px) => //; rewrite gtrDl.
-by rewrite -oppr0 nearN; near=> e; rewrite gtrDl oppr_lt0; apply: (near Px).
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_right_leftP (p : R) (P : pred R) :
-  (\forall x \near (- p)^'+, (P \o -%R) x) <-> (\forall x \near p^'-, P x).
-Proof.
-by rewrite nbhs_right0P nbhs_left0P; split;
-  apply: filterS=> r/=; rewrite opprD opprK.
-Qed.
-
-Lemma nbhs_right_gt x : \forall y \near x^'+, x < y.
-Proof. by rewrite near_withinE; apply: nearW. Qed.
-
-Lemma nbhs_left_lt x : \forall y \near x^'-, y < x.
-Proof. by rewrite near_withinE; apply: nearW. Qed.
-
-Lemma nbhs_right_neq x : \forall y \near x^'+, y != x.
-Proof. by rewrite near_withinE; apply: nearW => ? /gt_eqF->. Qed.
-
-Lemma nbhs_left_neq x : \forall y \near x^'-, y != x.
-Proof. by rewrite near_withinE; apply: nearW => ? /lt_eqF->. Qed.
-
-Lemma nbhs_right_ge x : \forall y \near x^'+, x <= y.
-Proof. by rewrite near_withinE; apply: nearW; apply/ltW. Qed.
-
-Lemma nbhs_left_le x : \forall y \near x^'-, y <= x.
-Proof. by rewrite near_withinE; apply: nearW => ?; apply/ltW. Qed.
-
-Lemma nbhs_right_lt x z : x < z -> \forall y \near x^'+, y < z.
-Proof.
-move=> xz; exists (z - x) => //=; first by rewrite subr_gt0.
-by move=> y /= + xy; rewrite distrC ?ger0_norm ?subr_ge0 1?ltW// ltrD2r.
-Qed.
-
-Lemma nbhs_right_ltW x z : x < z -> \forall y \near nbhs x^'+, y <= z.
-Proof.
-by move=> xz; near=> y; apply/ltW; near: y; exact: nbhs_right_lt.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_right_ltDr x e : 0 < e -> \forall y \near x ^'+, y - x < e.
-Proof.
-move=> e0; near=> y; rewrite ltrBlDr; near: y.
-by apply: nbhs_right_lt; rewrite ltrDr.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_right_le x z : x < z -> \forall y \near x^'+, y <= z.
-Proof. by move=> xz; near do apply/ltW; apply: nbhs_right_lt.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_left_gt x z : z < x -> \forall y \near x^'-, z < y.
-Proof.
-move=> xz; rewrite nbhs_left0P; near do rewrite -ltrN2 opprB ltrBlDl.
-by apply: nbhs_right_lt; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_left_ge x z : z < x -> \forall y \near x^'-, z <= y.
-Proof.
-by move=> xz; near do apply/ltW; apply: nbhs_left_gt.
-Unshelve. all: by end_near. Qed.
-
-Lemma nbhs_left_ltBl x e : 0 < e -> \forall y \near x^'-, x - y < e.
-Proof.
-move=> e0; near=> y; rewrite -ltrBrDl ltrNl opprB; near: y.
-by apply: nbhs_left_gt; rewrite ltrBlDr ltrDl.
-Unshelve. all: by end_near. Qed.
-
-Let fun_predC (T : choiceType) (f : T -> T) (p : pred T) : involutive f ->
-  [set f x | x in p] = [set x | x in p \o f].
-Proof.
-by move=> fi; apply/seteqP; split => _/= [y hy <-];
-  exists (f y) => //; rewrite fi.
-Qed.
-
-Lemma at_rightN a : (- a)^'+ = -%R @ a^'-.
-Proof.
-rewrite /at_right withinN [X in within X _](_ : _ = [set u | u < a])//.
-rewrite (@fun_predC _ -%R)/=; last exact: opprK.
-by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
-Qed.
-
-Lemma at_leftN a : (- a)^'- = -%R @ a^'+.
-Proof.
-rewrite /at_left withinN [X in within X _](_ : _ = [set u | a < u])//.
-rewrite (@fun_predC _ -%R)/=; last exact: opprK.
-by rewrite image_id; under eq_fun do rewrite ltrNl opprK.
-Qed.
-
-(* NB: In not_near_at_rightP (and not_near_at_rightP), R has type numFieldType.
-  It is possible realDomainType could make the proof simpler and at least as
-  useful. *)
-Lemma not_near_at_rightP (p : R) (P : pred R) :
-  ~ (\forall x \near p^'+, P x) <->
-  forall e : {posnum R}, exists2 x, p < x < p + e%:num & ~ P x.
-Proof.
-split=> [pPf e|ex_notPx].
-- apply: contrapT => /forallPNP peP; apply: pPf; near=> t.
-  apply: contrapT; apply: peP; apply/andP; split.
-  + by near: t; exact: nbhs_right_gt.
-  + by near: t; apply: nbhs_right_lt; rewrite ltrDl.
-- rewrite /at_right near_withinE nearE.
-  rewrite -filter_from_ballE /filter_from/= -forallPNP => _ /posnumP[d].
-  have [x /andP[px xpd] notPx] := ex_notPx d; rewrite -existsNP; exists x => /=.
-  apply: contra_not notPx; apply => //.
-  by rewrite /ball/= ltr0_norm ?subr_lt0// opprB ltrBlDl.
-Unshelve. all: by end_near. Qed.
-
-Lemma not_near_at_leftP (p : R) (P : pred R) :
-  ~ (\forall x \near p^'-, P x) <->
-  forall e : {posnum R}, exists2 x : R, p - e%:num < x < p & ~ P x.
-Proof.
-rewrite -nbhs_right_leftP not_near_at_rightP; split => + e => /(_ e)[r pre Pr].
-- by exists (- r) => //; rewrite ltrNr andbC ltrNl opprB addrC.
-- by exists (- r) => /=; rewrite ?opprK// ltrN2 ltrNl opprD opprK andbC.
-Qed.
-
-End at_left_right.
-#[global] Typeclasses Opaque at_left at_right.
-Notation "x ^'-" := (at_left x) : classical_set_scope.
-Notation "x ^'+" := (at_right x) : classical_set_scope.
-
-#[global] Hint Extern 0 (Filter (nbhs _^'+)) =>
-  (apply: at_right_proper_filter) : typeclass_instances.
-
-#[global] Hint Extern 0 (Filter (nbhs _^'-)) =>
-  (apply: at_left_proper_filter) : typeclass_instances.
-
-Lemma cvg_at_leftNP {T : topologicalType} {R : numFieldType}
-    (f : R -> T) a (l : T) :
-  f @ a^'- --> l <-> f \o -%R @ (- a)^'+ --> l.
-Proof.
-by rewrite at_rightN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
-Qed.
-
-Lemma cvg_at_rightNP {T : topologicalType} {R : numFieldType}
-    (f : R -> T) a (l : T) :
-  f @ a^'+ --> l <-> f \o -%R @ (- a)^'- --> l.
-Proof.
-by rewrite at_leftN -?fmap_comp; under [_ \o _]eq_fun => ? do rewrite /= opprK.
-Qed.
-
-Section open_itv_subset.
-Context {R : realType}.
-Variables (A : set R) (x : R).
-
-Lemma open_itvoo_subset :
-  open A -> A x -> \forall r \near 0^'+, `]x - r, x + r[ `<=` A.
-Proof.
-move=> /[apply] -[] _/posnumP[r] /subset_ball_prop_in_itv xrA.
-exists r%:num => //= k; rewrite /= distrC subr0 set_itvoo => /ltr_normlW kr k0.
-by apply/(subset_trans _ xrA)/subset_itvW; apply/ltW;
-  [rewrite ler_ltB | rewrite ler_ltD].
-Qed.
-
-Lemma open_itvcc_subset :
-  open A -> A x -> \forall r \near 0^'+, `[x - r, x + r] `<=` A.
-Proof.
-move=> /[apply] -[] _/posnumP[r].
-have -> : r%:num = 2 * (r%:num / 2) by rewrite mulrCA divff// mulr1.
-move/subset_ball_prop_in_itvcc => /= xrA; exists (r%:num / 2) => //= k.
-rewrite /= distrC subr0 set_itvcc => /ltr_normlW kr k0.
-move=> z /andP [xkz zxk]; apply: xrA => //; rewrite in_itv/=; apply/andP; split.
-  by rewrite (le_trans _ xkz)// lerB// ltW.
-by rewrite (le_trans zxk)// lerD// ltW.
-Qed.
-
-End open_itv_subset.
-
-Section at_left_right_topologicalType.
-Variables (R : numFieldType) (V : topologicalType) (f : R -> V) (x : R).
-
-Lemma cvg_at_right_filter (l : V) :
-  f z @[z --> x] --> l -> f z @[z --> x^'+] --> l.
-Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
-
-Lemma cvg_at_left_filter (l : V) :
-  f z @[z --> x] --> l -> f z @[z --> x^'-] --> l.
-Proof. exact: (@cvg_within_filter _ _ _ (nbhs x)). Qed.
-
-Lemma cvg_at_right_within : f x @[x --> x^'+] --> f x ->
-  f x @[x --> within (fun u => x <= u) (nbhs x)] --> f x.
-Proof.
-move=> fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
-by move/predU1P => [<-|]; [exact: nbhs_singleton | near: z; exact: fxr].
-Unshelve. all: by end_near. Qed.
-
-Lemma cvg_at_left_within : f x @[x --> x^'-] --> f x ->
-  f x @[x --> within (fun u => u <= x) (nbhs x)] --> f x.
-Proof.
-move=> fxr U Ux; rewrite ?near_simpl ?near_withinE; near=> z; rewrite le_eqVlt.
-by move/predU1P => [->|]; [exact: nbhs_singleton | near: z; exact: fxr].
-Unshelve. all: by end_near. Qed.
-
-End at_left_right_topologicalType.
-
-Section at_left_right_pmNormedZmod.
-Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
-
-Lemma nbhsr0P (P : set V) x :
-  (\forall y \near x, P y) <->
-  (\forall e \near 0^'+, forall y, `|x - y| <= e -> P y).
-Proof.
-rewrite nbhs0P/= near_withinE/= !near_simpl.
-split=> /nbhs_norm0P[/= _/posnumP[e] /(_ _) Px]; apply/nbhs_norm0P.
-  exists e%:num => //= r /= re yr y xyr; rewrite -[y](addrNK x) addrC.
-  by apply: Px; rewrite /= distrC (le_lt_trans _ re)// gtr0_norm.
-exists (e%:num / 2) => //= r /= re; apply: (Px (e%:num / 2)) => //=.
-  by rewrite gtr0_norm// ltr_pdivrMr// ltr_pMr// ltr1n.
-by rewrite opprD addNKr normrN ltW.
-Qed.
-
-Let cvgrP {F : set_system V} {FF : Filter F} (y : V) : [<->
-  F --> y;
-  forall eps, 0 < eps -> \forall t \near F, `|y - t| <= eps;
-  \forall eps \near 0^'+, \forall t \near F, `|y - t| <= eps;
-  \forall eps \near 0^'+, \forall t \near F, `|y - t| < eps].
-Proof.
-tfae; first by move=> *; apply: cvgr_dist_le.
-- by move=> Fy; near do apply: Fy; apply: nbhs_right_gt.
-- move=> Fy; near=> e; near (0:R)^'+ => d; near=> x.
-  rewrite (@le_lt_trans _ _ d)//; first by near: x; near: d.
-  by near: d; apply: nbhs_right_lt; near: e; apply: nbhs_right_gt.
-- move=> Fy; apply/cvgrPdist_lt => e e_gt0; near (0:R)^'+ => d.
-  near=> x; rewrite (@lt_le_trans _ _ d)//; first by near: x; near: d.
-  by near: d; apply: nbhs_right_le.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgrPdist_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, `|y - f t| <= eps.
-Proof. exact: (cvgrP _ 0 1)%N. Qed.
-
-Lemma cvgrPdist_ltp {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|y - f t| < eps.
-Proof. exact: (cvgrP _ 0 3)%N. Qed.
-
-Lemma cvgrPdist_lep {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|y - f t| <= eps.
-Proof. exact: (cvgrP _ 0 2)%N. Qed.
-
-Lemma cvgrPdistC_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, `|f t - y| <= eps.
-Proof.
-rewrite cvgrPdist_le.
-by under [X in X <-> _]eq_forall do under eq_near do rewrite distrC.
-Qed.
-
-Lemma cvgrPdistC_ltp {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|f t - y| < eps.
-Proof.
-by rewrite cvgrPdist_ltp; under eq_near do under eq_near do rewrite distrC.
-Qed.
-
-Lemma cvgrPdistC_lep {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y <-> \forall eps \near 0^'+, \forall t \near F, `|f t - y| <= eps.
-Proof.
-by rewrite cvgrPdist_lep; under eq_near do under eq_near do rewrite distrC.
-Qed.
-
-Lemma cvgr0Pnorm_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
-  f @ F --> 0 <-> forall eps, 0 < eps -> \forall t \near F, `|f t| <= eps.
-Proof.
-rewrite cvgrPdistC_le.
-by under [X in X <-> _]eq_forall do under eq_near do rewrite subr0.
-Qed.
-
-Lemma cvgr0Pnorm_ltp {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
-  f @ F --> 0 <-> \forall eps \near 0^'+, \forall t \near F, `|f t| < eps.
-Proof.
-by rewrite cvgrPdistC_ltp; under eq_near do under eq_near do rewrite subr0.
-Qed.
-
-Lemma cvgr0Pnorm_lep {T} {F : set_system T} {FF : Filter F} (f : T -> V) :
-  f @ F --> 0 <-> \forall eps \near 0^'+, \forall t \near F, `|f t| <= eps.
-Proof.
-by rewrite cvgrPdistC_lep; under eq_near do under eq_near do rewrite subr0.
-Qed.
-
-Lemma cvgr_norm_lt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y -> forall u, `|y| < u -> \forall t \near F, `|f t| < u.
-Proof.
-move=> Fy z zy; near (0:R)^'+ => k; near=> x; have : `|f x - y| < k.
-  by near: x; apply: cvgr_distC_lt => //; near: k; apply: nbhs_right_gt.
-move=> /(le_lt_trans (ler_dist_dist _ _)) /real_ltr_normlW.
-rewrite realB// ltrBlDl => /(_ _)/lt_le_trans; apply => //.
-by rewrite -lerBrDl; near: k; apply: nbhs_right_le; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_norm_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y -> forall u, `|y| < u -> \forall t \near F, `|f t| <= u.
-Proof.
-by move=> fy u yu; near do apply/ltW; apply: cvgr_norm_lt yu.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_norm_gt {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y -> forall u, `|y| > u -> \forall t \near F, `|f t| > u.
-Proof.
-move=> Fy z zy; near (0:R)^'+ => k; near=> x; have: `|f x - y| < k.
-  by near: x; apply: cvgr_distC_lt => //; near: k; apply: nbhs_right_gt.
-move=> /(le_lt_trans (ler_dist_dist _ _)); rewrite distrC => /real_ltr_normlW.
-rewrite realB// ltrBlDl  -ltrBlDr => /(_ isT); apply: le_lt_trans.
-rewrite lerBrDl -lerBrDr; near: k; apply: nbhs_right_le.
-by rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_norm_ge {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y -> forall u, `|y| > u -> \forall t \near F, `|f t| >= u.
-Proof.
-by move=> fy u yu; near do apply/ltW; apply: cvgr_norm_gt yu.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_neq0 {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
-  f @ F --> y -> y != 0 -> \forall t \near F, f t != 0.
-Proof.
-move=> Fy z; near do rewrite -normr_gt0.
-by apply: (@cvgr_norm_gt _ _ _ _ y); rewrite // normr_gt0.
-Unshelve. all: by end_near. Qed.
-
-End at_left_right_pmNormedZmod.
-Arguments cvgr_norm_lt {R V T F FF f}.
-Arguments cvgr_norm_le {R V T F FF f}.
-Arguments cvgr_norm_gt {R V T F FF f}.
-Arguments cvgr_norm_ge {R V T F FF f}.
-Arguments cvgr_neq0 {R V T F FF f}.
-
-#[global] Hint Extern 0 (is_true (`|_ - ?x| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_dist_lt end : core.
-#[global] Hint Extern 0 (is_true (`|?x - _| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_distC_lt end : core.
-#[global] Hint Extern 0 (is_true (`|?x| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_lt end : core.
-#[global] Hint Extern 0 (is_true (`|_ - ?x| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_dist_le end : core.
-#[global] Hint Extern 0 (is_true (`|?x - _| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_distC_le end : core.
-#[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_le end : core.
-
-#[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_gt end : core.
-#[global] Hint Extern 0 (is_true (?x < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_lt end : core.
-#[global] Hint Extern 0 (is_true (?x != _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_neq end : core.
-#[global] Hint Extern 0 (is_true (?x != _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_neq end : core.
-#[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_gt end : core.
-#[global] Hint Extern 0 (is_true (?x < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_lt end : core.
-#[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_ge end : core.
-#[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
-#[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_ge end : core.
-#[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
-
-#[global] Hint Extern 0 (ProperFilter _^'-) =>
-  (apply: at_left_proper_filter) : typeclass_instances.
-#[global] Hint Extern 0 (ProperFilter _^'+) =>
-  (apply: at_right_proper_filter) : typeclass_instances.
-
-Section at_left_rightR.
-Variable (R : numFieldType).
-
-Lemma real_cvgr_lt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real -> f @ F --> y ->
-  forall z, z > y -> \forall t \near F, f t \is Num.real -> f t < z.
-Proof.
-move=> yr Fy z zy; near=> x => fxr.
-rewrite -(ltrD2r (- y)) real_ltr_normlW// ?rpredB//.
-by near: x; apply: cvgr_distC_lt => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma real_cvgr_le {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real ->  f @ F --> y ->
-  forall z, z > y -> \forall t \near F, f t \is Num.real -> f t <= z.
-Proof.
-move=> /real_cvgr_lt/[apply] + ? z0 => /(_ _ z0).
-by apply: filterS => ? /[apply]/ltW.
-Qed.
-
-Lemma real_cvgr_gt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real -> f @ F --> y ->
-  forall z, y > z -> \forall t \near F, f t \is Num.real -> f t > z.
-Proof.
-move=> yr Fy z zy; near=> x => fxr.
-rewrite -ltrN2 -(ltrD2l y) real_ltr_normlW// ?rpredB//.
-by near: x; apply: cvgr_dist_lt => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma real_cvgr_ge {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-    y \is Num.real -> f @ F --> y ->
-  forall z, z < y -> \forall t \near F, f t \is Num.real -> f t >= z.
-Proof.
-move=> /real_cvgr_gt/[apply] + ? z0 => /(_ _ z0).
-by apply: filterS => ? /[apply]/ltW.
-Qed.
-
-End at_left_rightR.
-Arguments real_cvgr_le {R T F FF f}.
-Arguments real_cvgr_lt {R T F FF f}.
-Arguments real_cvgr_ge {R T F FF f}.
-Arguments real_cvgr_gt {R T F FF f}.
-
-Section realFieldType.
-Context (R : realFieldType).
-
-Lemma at_right_in_segment (x : R) (P : set R) :
-  (\forall e \near 0^'+, {in `[x - e, x + e], forall x, P x}) <-> (\near x, P x).
-Proof.
-rewrite nbhsr0P -propeqE; apply: eq_near => y /=.
-by rewrite -propeqE; apply: eq_forall => z; rewrite ler_distlC.
-Qed.
-
-Lemma cvgr_lt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, z > y -> \forall t \near F, f t < z.
-Proof.
-move=> Fy z zy; near=> x; rewrite -(ltrD2r (- y)) ltr_normlW//.
-by near: x; apply: cvgr_distC_lt => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_le {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, z > y -> \forall t \near F, f t <= z.
-Proof.
-by move=> /cvgr_lt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
-Qed.
-
-Lemma cvgr_gt {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, y > z -> \forall t \near F, f t > z.
-Proof.
-move=> Fy z zy; near=> x; rewrite -ltrN2 -(ltrD2l y) ltr_normlW//.
-by near: x; apply: cvgr_dist_lt => //; rewrite subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_ge {T} {F : set_system T} {FF : Filter F} (f : T -> R) (y : R) :
-  f @ F --> y -> forall z, z < y -> \forall t \near F, f t >= z.
-Proof.
-by move=> /cvgr_gt + ? z0 => /(_ _ z0); apply: filterS => ?; apply/ltW.
-Qed.
-
-End realFieldType.
-Arguments cvgr_le {R T F FF f}.
-Arguments cvgr_lt {R T F FF f}.
-Arguments cvgr_ge {R T F FF f}.
-Arguments cvgr_gt {R T F FF f}.
-
-Section LinearContinuousBounded.
-Variables (R : numFieldType) (V W : normedModType R).
-
-Lemma linear_boundedP (f : {linear V -> W}) : bounded_near f (nbhs 0) <->
-  \forall r \near +oo, forall x, `|f x| <= r * `|x|.
-Proof.
-split=> [|/pinfty_ex_gt0 [r r0 Bf]]; last first.
-  apply/ex_bound; exists r; apply/nbhs_norm0P; exists 1 => //= x /=.
-  by rewrite -(gtr_pMr _ r0) => /ltW; exact/le_trans/Bf.
-rewrite /bounded_near => /pinfty_ex_gt0 [M M0 /nbhs_norm0P [_/posnumP[e] efM]].
-near (0 : R)^'+ => d; near=> r => x.
-have[->|x0] := eqVneq x 0; first by rewrite raddf0 !normr0 mulr0.
-have nd0 : d / `|x| > 0 by rewrite divr_gt0 ?normr_gt0.
-have: `|f (d / `|x| *: x)| <= M.
-  by apply: efM => /=; rewrite normrZ gtr0_norm// divfK ?normr_eq0//.
-rewrite linearZ/= normrZ gtr0_norm// -ler_pdivlMl//; move/le_trans; apply.
-rewrite invfM invrK mulrAC ler_wpM2r//; near: r; apply: nbhs_pinfty_ge.
-by rewrite rpredM// ?rpredV ?gtr0_real.
-Unshelve. all: by end_near. Qed.
-
-Lemma continuous_linear_bounded (x : V) (f : {linear V -> W}) :
-  {for 0, continuous f} -> bounded_near f (nbhs x).
-Proof.
-rewrite /prop_for/continuous_at linear0 /bounded_near => f0.
-near=> M; apply/nbhs0P.
-near do rewrite /= linearD (le_trans (ler_normD _ _))// -lerBrDl.
-by apply: cvgr0_norm_le; rewrite // subr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma bounded_linear_continuous (f : {linear V -> W}) :
-  bounded_near f (nbhs (0 : V)) -> continuous f.
-Proof.
-move=> /linear_boundedP [y [yreal fr]] x; near +oo_R => r.
-apply/(@cvgrPdist_lt _ _ _ (nbhs x)) => e e_gt0; near=> z; rewrite -linearB.
-rewrite (le_lt_trans (fr r _ _))// -?ltr_pdivlMl//.
-by near: z; apply: cvgr_dist_lt => //; rewrite mulrC divr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Lemma continuousfor0_continuous (f : {linear V -> W}) :
-  {for 0, continuous f} -> continuous f.
-Proof. by move=> /continuous_linear_bounded/bounded_linear_continuous. Qed.
-
-Lemma linear_bounded_continuous (f : {linear V -> W}) :
-  bounded_near f (nbhs 0) <-> continuous f.
-Proof.
-split; first exact: bounded_linear_continuous.
-by move=> /(_ 0); exact: continuous_linear_bounded.
-Qed.
-
-Lemma bounded_funP (f : {linear V -> W}) :
-  (forall r, exists M, forall x, `|x| <= r -> `|f x| <= M) <->
-  bounded_near f (nbhs (0 : V)).
-Proof.
-split => [/(_ 1) [M Bf]|/linear_boundedP fr y].
-  apply/ex_bound; exists M; apply/nbhs_normP => /=; exists 1 => //= x /=.
-  by rewrite sub0r normrN => x1; exact/Bf/ltW.
-near +oo_R => r; exists (r * y) => x xe.
-rewrite (@le_trans _ _ (r * `|x|)) //; first by move: {xe} x; near: r.
-by rewrite ler_pM.
-Unshelve. all: by end_near. Qed.
-
-End LinearContinuousBounded.
-
-Notation "[ 'bounded' E | x 'in' A ]" :=
-  (bounded_near (fun x => E) (globally A)).
-Notation bounded_set := [set A | [bounded x | x in A]].
-Notation bounded_fun := [set f | [bounded f x | x in setT]].
-
-Lemma bounded_cst (K : numFieldType) {V : pseudoMetricNormedZmodType K}
-  (k : V) T (A : set T) : [bounded k | _ in A].
-Proof.
-rewrite /bounded_near; near=> M => t At /=.
-by near: M; exact: nbhs_pinfty_ge.
-Unshelve. all: end_near. Qed.
-
-Lemma bounded_fun_has_ubound (T : Type) (R : realFieldType) (a : T -> R) :
-  bounded_fun a -> has_ubound (range a).
-Proof.
-move=> [M [Mreal]]/(_ (`|M| + 1)).
-rewrite (le_lt_trans (ler_norm _)) ?ltrDl// => /(_ erefl) aM.
-by exists (`|M| + 1) => _ [n _ <-]; rewrite (le_trans (ler_norm _))// aM.
-Qed.
-
-Lemma bounded_funN (T : Type) (R : realFieldType) (a : T -> R) :
-  bounded_fun a -> bounded_fun (- a).
-Proof.
-move=> [M [Mreal aM]]; rewrite /bounded_fun /bounded_near; near=> x => y /= _.
-by rewrite normrN; apply: aM.
-Unshelve. all: by end_near. Qed.
-
-Lemma bounded_fun_has_lbound (T : Type) (R : realFieldType) (a : T -> R) :
-  bounded_fun a -> has_lbound (range a).
-Proof.
-move=> /bounded_funN/bounded_fun_has_ubound ba; apply/has_lb_ubN.
-by apply: subset_has_ubound ba => _ [_ [n _] <- <-]; exists n.
-Qed.
-
-Lemma bounded_funD (T : Type) (R : realFieldType) (a b : T -> R) :
-  bounded_fun a -> bounded_fun b -> bounded_fun (a \+ b).
-Proof.
-move=> [M [Mreal Ma]] [N [Nreal Nb]].
-rewrite /bounded_fun/bounded_near; near=> x => y /= _.
-rewrite (le_trans (ler_normD _ _))// [x]splitr.
-by rewrite lerD// (Ma, Nb)// ltr_pdivlMr//;
-   near: x; apply: nbhs_pinfty_gt; rewrite ?rpredM ?rpred_nat.
-Unshelve. all: by end_near. Qed.
-
-Lemma bounded_locally (T : topologicalType)
-    (R : numFieldType) (V : normedModType R) (A : set T) (f : T -> V) :
-  [bounded f x | x in A] -> [locally [bounded f x | x in A]].
-Proof. by move=> /sub_boundedr AB x Ax; apply: AB; apply: within_nbhsW. Qed.
-
-Notation "k .-lipschitz_on f" :=
-  (dominated_by (self_sub id) k (self_sub f)) : type_scope.
-
-Lemma sub_klipschitz (K : numFieldType) (V W : normedModType K) (k : K)
-    (f : V -> W) (F G : set_system (V * V)) :
-  F `=>` G -> k.-lipschitz_on f G -> k.-lipschitz_on f F.
-Proof. exact. Qed.
-
-Definition lipschitz_on (K : numFieldType) (V W : normedModType K)
-           (f : V -> W) (F : set_system (V * V)) :=
-  \forall M \near +oo, M.-lipschitz_on f F.
-
-Lemma sub_lipschitz (K : numFieldType) (V W : normedModType K)
-    (f : V -> W) (F G : set_system (V * V)) :
-  F `=>` G -> lipschitz_on f G -> lipschitz_on f F.
-Proof. by move=> FG; rewrite /lipschitz_on; apply: filterS => M; apply: FG. Qed.
-
-Lemma klipschitzW (K : numFieldType) (V W : normedModType K) (k : K)
-      (f : V -> W) (F : set_system (V * V)) {PF : ProperFilter F} :
-  k.-lipschitz_on f F -> lipschitz_on f F.
-Proof. by move=> f_lip; apply/ex_dom_bound; exists k. Qed.
-
-Notation "k .-lipschitz_ A f" :=
-  (k.-lipschitz_on f (globally (A `*` A))) : type_scope.
-Notation "k .-lipschitz f" := (k.-lipschitz_setT f) : type_scope.
-Notation "[ 'lipschitz' E | x 'in' A ]" :=
-  (lipschitz_on (fun x => E) (globally (A `*` A))) : type_scope.
-Notation lipschitz f := [lipschitz f x | x in setT].
-
-Lemma lipschitz_set0 (K : numFieldType) (V W : normedModType K)
-  (f : V -> W) : [lipschitz f x | x in set0].
-Proof. by apply: nearW; rewrite setX0 => ?; apply: globally0. Qed.
-
-Lemma lipschitz_set1 (K : numFieldType) (V W : normedModType K)
-  (f : V -> W) (a : V) : [lipschitz f x | x in [set a]].
-Proof.
-apply: (@klipschitzW _ _ _ `|f a|).
-  exact: (@globally_properfilter _ _ (a, a)).
-by move=> [x y] /= [] -> ->; rewrite !subrr !normr0 mulr0.
-Qed.
-
-Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R) (k : R)
-    (f : V -> W) (A : set V) :
-  k.-lipschitz_A f -> [locally k.-lipschitz_A f].
-Proof. by move=> + x Ax; apply: sub_klipschitz; apply: within_nbhsW. Qed.
-
-Lemma lipschitz_locally (R : numFieldType) (V W : normedModType R)
-    (A : set V) (f : V -> W) :
-  [lipschitz f x | x in A] -> [locally [lipschitz f x | x in A]].
-Proof. by move=> + x Ax; apply: sub_lipschitz; apply: within_nbhsW. Qed.
-
-Lemma lipschitz_id (R : numFieldType) (V : normedModType R) :
-  1.-lipschitz (@id V).
-Proof. by move=> [/= x y] _; rewrite mul1r. Qed.
-Arguments lipschitz_id {R V}.
-
-Section contractions.
-Context {R : numDomainType} {X Y : normedModType R} {U : set X} {V : set Y}.
-
-Definition contraction (q : {nonneg R}) (f : {fun U >-> V}) :=
-  q%:num < 1 /\ q%:num.-lipschitz_U f.
-
-Definition is_contraction (f : {fun U >-> V}) := exists q, contraction q f.
-
-End contractions.
-
-Lemma contraction_fixpoint_unique {R : realDomainType}
-    {X : normedModType R} (U : set X) (f : {fun U >-> U}) (x y : X) :
-  is_contraction f -> U x -> U y -> x = f x -> y = f y -> x = y.
-Proof.
-case => q [q1 ctrfq] Ux Uy fixx fixy; apply/subr0_eq/normr0_eq0/eqP.
-have [->|xyneq] := eqVneq x y; first by rewrite subrr normr0.
-have xypos : 0 < `|x - y| by rewrite normr_gt0 subr_eq0.
-suff : `|x - y| <= q%:num * `|x - y| by rewrite ler_pMl // leNgt q1.
-by rewrite [in leLHS]fixx [in leLHS]fixy; exact: (ctrfq (_, _)).
-Qed.
-
-Section NormedModule_numFieldType.
-Variables (R : numFieldType) (V : normedModType R).
-
-Section cvgr_norm_infty.
-Variables (I : Type) (F : set_system I) (FF : Filter F) (f : I -> V) (y : V).
-
-Lemma cvgr_norm_lty :
-  f @ F --> y -> \forall M \near +oo, \forall y' \near F, `|f y'| < M.
-Proof. by move=> Fy; near do exact: (cvgr_norm_lt y).
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_norm_ley :
-  f @ F --> y -> \forall M \near +oo, \forall y' \near F, `|f y'| <= M.
-Proof.
-by move=> Fy; near do exact: (cvgr_norm_le y).
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_norm_gtNy :
-  f @ F --> y -> \forall M \near -oo, \forall y' \near F, `|f y'| > M.
-Proof.
-by move=> Fy; near do exact: (cvgr_norm_gt y).
-Unshelve. all: by end_near. Qed.
-
-Lemma cvgr_norm_geNy :
-  f @ F --> y -> \forall M \near -oo, \forall y' \near F, `|f y'| >= M.
-Proof.
-by move=> Fy; near do exact: (cvgr_norm_ge y).
-Unshelve. all: by end_near. Qed.
-
-End cvgr_norm_infty.
-
-Lemma cvg_bounded {I} {F : set_system I} {FF : Filter F} (f : I -> V) (y : V) :
-  f @ F --> y -> bounded_near f F.
-Proof. exact: cvgr_norm_ley. Qed.
-
-End NormedModule_numFieldType.
-Arguments cvgr_norm_lty {R V I F FF}.
-Arguments cvgr_norm_ley {R V I F FF}.
-Arguments cvgr_norm_gtNy {R V I F FF}.
-Arguments cvgr_norm_geNy {R V I F FF}.
-Arguments cvg_bounded {R V I F FF}.
-#[global]
-Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
-
-Module Export NbhsNorm.
-Definition nbhs_simpl := (nbhs_simpl,@nbhs_nbhs_norm,@filter_from_norm_nbhs).
-End NbhsNorm.
-
-Lemma cvg_at_rightE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
-  cvg (f @ x^') -> lim (f @ x^') = lim (f @ x^'+).
-Proof.
-move=> cvfx; apply/Logic.eq_sym.
-apply: (@cvg_lim _ _ _ (at_right _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
-by exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _]; apply: xe_A.
-Qed.
-Arguments cvg_at_rightE {R V} f x.
-
-Lemma cvg_at_leftE (R : numFieldType) (V : normedModType R) (f : R -> V) x :
-  cvg (f @ x^') -> lim (f @ x^') = lim (f @ x^'-).
-Proof.
-move=> cvfx; apply/Logic.eq_sym.
-apply: (@cvg_lim _ _ _ (at_left _)) => // A /cvfx /nbhs_ballP [_ /posnumP[e] xe_A].
-exists e%:num => //= y xe_y; rewrite lt_def => /andP [xney _].
-by apply: xe_A => //; rewrite eq_sym.
-Qed.
-Arguments cvg_at_leftE {R V} f x.
-
-Section continuous_within_itvP.
-Context {R : realType}.
-Implicit Type f : R -> R.
-
-Let near_at_left (a : itv_bound R) b f eps : (a < BLeft b)%O -> 0 < eps ->
-  {within [set` Interval a (BRight b)], continuous f} ->
-  \forall t \near b^'-, normr (f b - f t) < eps.
-Proof.
-move=> ab eps_gt0 cf.
-move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (cf b).
-rewrite /dnbhs/= near_withinE !near_simpl /prop_near1 /nbhs/=.
-rewrite -nbhs_subspace_in//; last first.
-  rewrite /= in_itv/= lexx andbT.
-  by move: a ab {cf} => [[a|a]/=|[|]//]; rewrite bnd_simp// => /ltW.
-rewrite /within/= near_simpl; apply: filter_app.
-move: a ab {cf} => [a0 a/= /[!bnd_simp] ab|[_|//]].
-- exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
-  apply=> //; rewrite ?lt_eqF// !in_itv/= (ltW ac)/= andbT; move: cba => /=.
-  rewrite gtr0_norm ?subr_gt0// ltrD2l ltrNr opprK => {}ac.
-  by case: a0 => //=; exact/ltW.
-- by exists 1%R => //= c cb1 + bc; apply; rewrite ?lt_eqF ?in_itv/= ?ltW.
-Qed.
-
-Let near_at_right a (b : itv_bound R) f eps : (BRight a < b)%O -> 0 < eps ->
-  {within [set` Interval (BLeft a) b], continuous f} ->
-  \forall t \near a^'+, normr (f a - f t) < eps.
-Proof.
-move=> ab eps_gt0 cf.
-move/continuous_withinNx/cvgrPdist_lt/(_ _ eps_gt0) : (cf a).
-rewrite /dnbhs/= near_withinE !near_simpl// /prop_near1 /nbhs/=.
-rewrite -nbhs_subspace_in//; last first.
-  rewrite /= in_itv/= lexx//=.
-  by move: b ab {cf} => [[b|b]/=|[|]//]; rewrite bnd_simp// => /ltW.
-rewrite /within/= near_simpl; apply: filter_app.
-move: b ab {cf} => [b0 b/= /[!bnd_simp] ab|[//|_]].
-- exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
-  apply=> //; rewrite ?gt_eqF// !in_itv/= (ltW ac)/=; move: cba => /=.
-  rewrite ltr0_norm ?subr_lt0// opprB ltrD2r.
-  by case: b0 => //= /ltW.
-- by exists 2%R => //= c ca1 + ac; apply; rewrite ?gt_eqF ?in_itv/= ?ltW.
-Qed.
-
-Lemma continuous_within_itvP a b f : a < b ->
-  {within `[a, b], continuous f} <->
-  [/\ {in `]a, b[, continuous f}, f @ a^'+ --> f a & f @b^'- --> f b].
-Proof.
-move=> ab; split=> [abf|].
-  split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=..].
-  - rewrite -continuous_open_subspace; last exact: interval_open.
-    by move: abf; exact/continuous_subspaceW/subset_itvW.
-  - by apply: near_at_right => //; rewrite bnd_simp.
-  - by apply: near_at_left => //; rewrite bnd_simp.
-case=> ctsoo ctsL ctsR; apply/subspace_continuousP => x /andP[].
-rewrite !bnd_simp/= !le_eqVlt => /predU1P[<-{x}|ax] /predU1P[|].
-- by move/eqP; rewrite lt_eqF.
-- move=> _; apply/cvgrPdist_lt => eps eps_gt0 /=.
-  move/cvgrPdist_lt/(_ _ eps_gt0): ctsL; rewrite /at_right !near_withinE.
-  apply: filter_app; exists (b - a); rewrite /= ?subr_gt0// => c cba + ac.
-  have : a <= c by move: ac => /andP[].
-  by rewrite le_eqVlt => /predU1P[->|/[swap] /[apply]//]; rewrite subrr normr0.
-- move=> ->; apply/cvgrPdist_lt => eps eps_gt0 /=.
-  move/cvgrPdist_lt/(_ _ eps_gt0): ctsR; rewrite /at_left !near_withinE.
-  apply: filter_app; exists (b - a); rewrite /= ?subr_gt0 // => c cba + ac.
-  have : c <= b by move: ac => /andP[].
-  by rewrite le_eqVlt => /predU1P[->|/[swap] /[apply]//]; rewrite subrr normr0.
-- move=> xb; have aboox : x \in `]a, b[ by rewrite !in_itv/= ax.
-  rewrite within_interior; first exact: ctsoo.
-  suff : `]a, b[ `<=` interior `[a, b] by exact.
-  by rewrite -open_subsetE; [exact: subset_itvW| exact: interval_open].
-Qed.
-
-Lemma continuous_within_itvcyP a (f : R -> R) :
-  {within `[a, +oo[, continuous f} <->
-  {in `]a, +oo[, continuous f} /\ f x @[x --> a^'+] --> f a.
-Proof.
-split=> [cf|].
-  split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=].
-  - rewrite -continuous_open_subspace; last exact: interval_open.
-    by apply: continuous_subspaceW cf => ?; rewrite /= !in_itv !andbT/= => /ltW.
-  - by apply: near_at_right => //; rewrite bnd_simp.
-move=> [cf fa]; apply/subspace_continuousP => x /andP[].
-rewrite bnd_simp/= le_eqVlt => /predU1P[<-{x}|ax] _.
-- apply/cvgrPdist_lt => eps eps_gt0/=; move/cvgrPdist_lt/(_ _ eps_gt0) : fa.
-  rewrite /at_right !near_withinE; apply: filter_app.
-  exists 1%R => //= c c1a /[swap]; rewrite in_itv/= andbT le_eqVlt.
-  by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
-- have xaoo : x \in `]a, +oo[ by rewrite in_itv/= andbT.
-  rewrite within_interior; first exact: cf.
-  suff : `]a, +oo[ `<=` interior `[a, +oo[ by exact.
-  rewrite -open_subsetE; last exact: interval_open.
-  by move=> ?/=; rewrite !in_itv/= !andbT; exact: ltW.
-Qed.
-
-Lemma continuous_within_itvNycP b (f : R -> R) :
-  {within `]-oo, b], continuous f} <->
-  {in `]-oo, b[, continuous f} /\ f x @[x --> b^'-] --> f b.
-Proof.
-split=> [cf|].
-  split; [apply/in_continuous_mksetP|apply/cvgrPdist_lt => eps eps_gt0 /=].
-  - rewrite -continuous_open_subspace; last exact: interval_open.
-    by apply: continuous_subspaceW cf => ?/=; rewrite !in_itv/=; exact: ltW.
-  - by apply: near_at_left => //; rewrite bnd_simp.
-move=> [cf fb]; apply/subspace_continuousP => x /andP[_].
-rewrite bnd_simp/= le_eqVlt=> /predU1P[->{x}|xb].
-- apply/cvgrPdist_lt => eps eps_gt0/=; move/cvgrPdist_lt/(_ _ eps_gt0) : fb.
-  rewrite /at_right !near_withinE; apply: filter_app.
-  exists 1%R => //= c c1b /[swap]; rewrite in_itv/= le_eqVlt.
-  by move=> /predU1P[->|/[swap]/[apply]//]; rewrite subrr normr0.
-- have xb_i : x \in `]-oo, b[ by rewrite in_itv/=.
-  rewrite within_interior; first exact: cf.
-  suff : `]-oo, b[ `<=` interior `]-oo, b] by exact.
-  rewrite -open_subsetE; last exact: interval_open.
-  by move=> ?/=; rewrite !in_itv/=; exact: ltW.
-Qed.
-
-End continuous_within_itvP.
-
-Lemma within_continuous_continuous {R : realType} a b (f : R -> R) x : (a < b)%R ->
-  {within `[a, b], continuous f} -> x \in `]a, b[ -> {for x, continuous f}.
-Proof.
-by move=> ab /continuous_within_itvP-/(_ ab)[+ _] /[swap] xab cf; exact.
-Qed.
-
-Module Export NearNorm.
-Definition near_simpl := (@near_simpl, @nbhs_normE, @filter_from_normE,
-  @near_nbhs_norm).
-Ltac near_simpl := rewrite ?near_simpl.
-End NearNorm.
-
-Section prod_NormedModule_lemmas.
-Context {T : Type} {K : numDomainType} {U V : normedModType K}.
-
-Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
-  {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
-  (F, G) --> (y, z) <->
-  forall eps, 0 < eps ->
-   \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
-Proof. exact: fcvgrPdist_lt. Qed.
-
-Lemma cvgr2dist_ltP {I J} {F : set_system I} {G : set_system J}
-  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
-  (f @ F, g @ G) --> (y, z) <->
-  forall eps, 0 < eps ->
-   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
-Proof.
-rewrite fcvgr2dist_ltP; split=> + e e0 => /(_ e e0);
-  by rewrite !near_simpl// => ?; rewrite !near_simpl.
-Qed.
-
-Lemma cvgr2dist_lt {I J} {F : set_system I} {G : set_system J}
-  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
-  (f @ F, g @ G) --> (y, z) ->
-  forall eps, 0 < eps ->
-   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
-Proof. by rewrite cvgr2dist_ltP. Qed.
-
-End prod_NormedModule_lemmas.
-Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
-Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
-
-Section NVS_continuity_normedModType.
-Context {K : numFieldType} {V : normedModType K}.
-
-Lemma scale_continuous : continuous (fun z : K * V => z.1 *: z.2).
-Proof.
-move=> [/= k x]; apply/cvgrPdist_lt => _/posnumP[e]; near +oo_K => M.
-near=> l z => /=; have M0 : 0 < M by [].
-rewrite (@distm_lt_split _ _ (k *: z)) // -?(scalerBr, scalerBl) normrZ.
-  rewrite (@le_lt_trans _ _ (M * `|x - z|)) ?ler_wpM2r -?ltr_pdivlMl//.
-  by near: z; apply: cvgr_dist_lt; rewrite // mulr_gt0 ?invr_gt0.
-rewrite (@le_lt_trans _ _ (`|k - l| * M)) ?ler_wpM2l -?ltr_pdivlMr//.
-  by near: z; near: M; apply: cvg_bounded (@cvg_refl _ _).
-by near: l; apply: cvgr_dist_lt; rewrite // divr_gt0.
-Unshelve. all: by end_near. Qed.
-
-Arguments scale_continuous _ _ : clear implicits.
-
-Lemma scaler_continuous k : continuous (fun x : V => k *: x).
-Proof.
-by move=> x; apply: (cvg_comp2 (cvg_cst _) cvg_id (scale_continuous (_, _))).
-Qed.
-
-Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
-Proof.
-by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous (_, _))).
-Qed.
-
-End NVS_continuity_normedModType.
+End NormedModule_continuous.
 
 Lemma near0Z {R : numFieldType} {V : normedModType R} (y : V) (P : set V) :
   (\forall x \near 0, P x) -> (\forall k \near 0, P (k *: y)).
@@ -1539,82 +388,6 @@ Unshelve. all: by end_near. Qed.
 
 End NVS_continuity_mul.
 
-Section cvg_composition_pseudometric.
-Context {K : numFieldType} {V : pseudoMetricNormedZmodType K} {T : Type}.
-Context (F : set_system T) {FF : Filter F}.
-Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
-
-Lemma cvgN f a : f @ F --> a -> - f @ F --> - a.
-Proof. by move=> ?; apply: continuous_cvg => //; exact: opp_continuous. Qed.
-
-Lemma cvgNP f a : - f @ F --> - a <-> f @ F --> a.
-Proof. by split=> /cvgN//; rewrite !opprK. Qed.
-
-Lemma is_cvgN f : cvg (f @ F) -> cvg (- f @ F).
-Proof. by move=> /cvgN /cvgP. Qed.
-
-Lemma is_cvgNE f : cvg ((- f) @ F) = cvg (f @ F).
-Proof. by rewrite propeqE; split=> /cvgN; rewrite ?opprK => /cvgP. Qed.
-
-Lemma cvgMn f n a : f @ F --> a -> ((@GRing.natmul _)^~n \o f) @ F --> a *+ n.
-Proof. by move=> ?;  apply: continuous_cvg => //; exact: natmul_continuous. Qed.
-
-Lemma is_cvgMn f n : cvg (f @ F) -> cvg (((@GRing.natmul _)^~n \o f) @ F).
-Proof. by move=> /cvgMn /cvgP. Qed.
-
-Lemma cvgD f g a b : f @ F --> a -> g @ F --> b -> (f + g) @ F --> a + b.
-Proof. by move=> ? ?; apply: continuous2_cvg => //; apply add_continuous. Qed.
-
-Lemma is_cvgD f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f + g @ F).
-Proof. by have := cvgP _ (cvgD _ _); apply. Qed.
-
-Lemma cvgB f g a b : f @ F --> a -> g @ F --> b -> (f - g) @ F --> a - b.
-Proof. by move=> ? ?; apply: cvgD => //; apply: cvgN. Qed.
-
-Lemma is_cvgB f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f - g @ F).
-Proof. by have := cvgP _ (cvgB _ _); apply. Qed.
-
-Lemma is_cvgDlE f g : cvg (g @ F) -> cvg ((f + g) @ F) = cvg (f @ F).
-Proof.
-move=> g_cvg; rewrite propeqE; split; last by move=> /is_cvgD; apply.
-by move=> /is_cvgB /(_ g_cvg); rewrite addrK.
-Qed.
-
-Lemma is_cvgDrE f g : cvg (f @ F) -> cvg ((f + g) @ F) = cvg (g @ F).
-Proof. by rewrite addrC; apply: is_cvgDlE. Qed.
-
-Lemma cvg_sub0 f g a : (f - g) @ F --> (0 : V) -> g @ F --> a -> f @ F --> a.
-Proof.
-by move=> Cfg Cg; have := cvgD Cfg Cg; rewrite subrK add0r; apply.
-Qed.
-
-Lemma cvg_zero f a : (f - cst a) @ F --> (0 : V) -> f @ F --> a.
-Proof. by move=> Cfa; apply: cvg_sub0 Cfa (cvg_cst _). Qed.
-
-Lemma subr_cvg0 f a : (fun x => f x - a) @ F --> 0 <-> f @ F --> a.
-Proof.
-split=> [?|fFk]; first exact: cvg_zero.
-by rewrite -(@subrr _ a)//; apply: cvgB => //; exact: cvg_cst.
-Qed.
-
-Lemma cvg_norm f a : f @ F --> a -> `|f x| @[x --> F] --> (`|a| : K).
-Proof. by apply: continuous_cvg; apply: norm_continuous. Qed.
-
-Lemma is_cvg_norm f : cvg (f @ F) -> cvg ((Num.norm \o f : T -> K) @ F).
-Proof. by have := cvgP _ (cvg_norm _); apply. Qed.
-
-Lemma norm_cvg0P f : `|f x| @[x --> F] --> 0 <-> f @ F --> 0.
-Proof.
-split; last by move=> /cvg_norm; rewrite normr0.
-move=> f0; apply/cvgr0Pnorm_lt => e e_gt0.
-by near do rewrite -normr_id; apply: cvgr0_norm_lt.
-Unshelve. all: by end_near. Qed.
-
-Lemma norm_cvg0 f : `|f x| @[x --> F] --> 0 -> f @ F --> 0.
-Proof. by rewrite norm_cvg0P. Qed.
-
-End cvg_composition_pseudometric.
-
 Section cvg_composition_normed.
 Context {K : numFieldType} {V : normedModType K} {T : Type}.
 Context (F : set_system T) {FF : Filter F}.
@@ -1622,7 +395,12 @@ Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
 
 Lemma cvgZ s f k a : s @ F --> k -> f @ F --> a ->
                      s x *: f x @[x --> F] --> k *: a.
-Proof. by move=> ? ?; apply: continuous2_cvg => //; apply scale_continuous. Qed.
+Proof.
+move=> ? ?; apply: continuous2_cvg => //.
+have := (@scale_continuous K V (k, a)).
+rewrite /continuous_at/=.
+exact.
+Qed.
 
 Lemma is_cvgZ s f : cvg (s @ F) ->
   cvg (f @ F) -> cvg ((fun x => s x *: f x) @ F).
@@ -1698,27 +476,6 @@ exact: is_cvgMrE.
 Qed.
 
 End cvg_composition_field.
-
-Section limit_composition_pseudometric.
-Context {K : numFieldType} {V : pseudoMetricNormedZmodType K} {T : Type}.
-Context (F : set_system T) {FF : ProperFilter F}.
-Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a : V).
-
-Lemma limN f : cvg (f @ F) -> lim (- f @ F) = - lim (f @ F).
-Proof. by move=> ?; apply: cvg_lim => //; apply: cvgN. Qed.
-
-Lemma limD f g : cvg (f @ F) -> cvg (g @ F) ->
-   lim (f + g @ F) = lim (f @ F) + lim (g @ F).
-Proof. by move=> ? ?; apply: cvg_lim => //; apply: cvgD. Qed.
-
-Lemma limB f g : cvg (f @ F) -> cvg (g @ F) ->
-   lim (f - g @ F) = lim (f @ F) - lim (g @ F).
-Proof. by move=> ? ?; apply: cvg_lim => //; apply: cvgB. Qed.
-
-Lemma lim_norm f : cvg (f @ F) -> lim ((fun x => `|f x| : K) @ F) = `|lim (f @ F)|.
-Proof. by move=> ?; apply: cvg_lim => //; apply: cvg_norm. Qed.
-
-End limit_composition_pseudometric.
 
 Section limit_composition_normed.
 Context {K : numFieldType} {V : normedModType K} {T : Type}.
@@ -2138,51 +895,6 @@ Qed.
 
 End max_cts.
 
-Section closure_left_right_open.
-Variable R : realFieldType.
-Implicit Types z : R.
-
-Lemma closure_gt z : closure ([set x | z < x] : set R) = [set x | z <= x].
-Proof.
-rewrite eqEsubset; split.
-  by rewrite closureE; apply: smallest_sub => // ? /ltW.
-move=> v; rewrite /mkset le_eqVlt => /predU1P[<-{v}|]; last first.
-  by move=> ?; exact: subset_closure.
-move=> B [e /= e0 zB]; near (0 : R)^'+ => d.
-exists (z + d); split; rewrite /= ?ltrDl//; apply: zB => /=.
-by rewrite opprD addNKr normrN gtr0_norm//.
-Unshelve. all: by end_near. Qed.
-
-Lemma closure_lt z : closure ([set x : R | x < z]) = [set x | x <= z].
-Proof.
-rewrite eqEsubset; split.
-  by rewrite closureE; apply: smallest_sub => // ? /ltW.
-move=> v; rewrite /mkset le_eqVlt => /predU1P[<-{z}|]; last first.
-  by move=> ?; exact: subset_closure.
-move=> B [e /= e0 vB]; near (0 : R)^'+ => d.
-exists (v - d); split; rewrite /= ?gtrDl ?oppr_lt0//; apply: vB => /=.
-by rewrite opprB addrC addrNK gtr0_norm//; near: d.
-Unshelve. all: by end_near. Qed.
-
-End closure_left_right_open.
-
-Section cvg_seq_bounded.
-Context {K : numFieldType}.
-Local Notation "'+oo'" := (@pinfty_nbhs K).
-
-Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
-  cvgn a -> bounded_fun a.
-Proof.
-move=> /cvg_bounded/ex_bound => -[/= Moo] => -[N _ /(_ _) aM].
-have Moo_real : Moo \is Num.real by rewrite ger0_real ?(le_trans _ (aM N _))/=.
-rewrite /bounded_near /=; near=> M => n _.
-have [nN|nN]/= := leqP N n; first by apply: (le_trans (aM _ _)).
-move: n nN; suff /(_ (Ordinal _)) : forall n : 'I_N, `|a n| <= M by [].
-by near: M; apply: filter_forall => i; apply: nbhs_pinfty_ge.
-Unshelve. all: by end_near. Qed.
-
-End cvg_seq_bounded.
-
 Lemma limit_pointP (T : archiFieldType) (A : set T) (x : T) :
   limit_point A x <-> exists a_ : nat -> T,
     [/\ a_ @` setT `<=` A, forall n, a_ n != x & a_ @ \oo --> x].
@@ -2209,6 +921,8 @@ Proof.
 move=> cf; apply: cvg_lim => //; move/cvg_ex : cf => [l fl].
 by apply: (cvg_comp fl); rewrite (cvg_lim _ fl).
 Qed.
+
+
 
 Section ecvg_realFieldType_proper.
 Context {I} {F : set_system I} {FF : ProperFilter F} {R : realFieldType}.
@@ -2734,24 +1448,48 @@ apply/connected_intervalP/connected_continuous_connected => //.
 exact: segment_connected.
 Qed.
 
-Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
-  compact A -> bounded_set A.
+Section prod_NormedModule.
+Context {K : numFieldType} {U V : normedModType K}.
+
+Lemma prod_norm_scale (l : K) (x : U * V) : `| l *: x | = `|l| * `| x |.
+Proof. by rewrite prod_normE /= !normrZ maxr_pMr. Qed.
+
+HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Tvs_isNormedModule.Build K (U * V)%type
+  prod_norm_scale.
+
+End prod_NormedModule.
+
+Section prod_NormedModule_lemmas.
+Context {T : Type} {K : numDomainType} {U V : normedModType K}.
+
+Lemma fcvgr2dist_ltP {F : set_system U} {G : set_system V}
+  {FF : Filter F} {FG : Filter G} (y : U) (z : V) :
+  (F, G) --> (y, z) <->
+  forall eps, 0 < eps ->
+   \forall y' \near F & z' \near G, `| (y, z) - (y', z') | < eps.
+Proof. exact: fcvgrPdist_lt. Qed.
+
+Lemma cvgr2dist_ltP {I J} {F : set_system I} {G : set_system J}
+  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
+  (f @ F, g @ G) --> (y, z) <->
+  forall eps, 0 < eps ->
+   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
 Proof.
-rewrite compact_cover => Aco.
-have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
-  by move=> p _; exists (floor `|p| + 1) => //=; rewrite floorD1_gt.
-have /Aco [] := covA.
-  move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
-  apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
-  rewrite -ball_normE /= ltrBrDr distrC; apply: le_lt_trans.
-  by rewrite -{1}(subrK p q) ler_normD.
-move=> D _ DcovA.
-exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
-rewrite bigmax_real//; split=> // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
-apply; apply: le_lt_trans ltmaxx.
-have : n \in enum_fset D by [].
-by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
+rewrite fcvgr2dist_ltP; split=> + e e0 => /(_ e e0);
+  by rewrite !near_simpl// => ?; rewrite !near_simpl.
 Qed.
+
+Lemma cvgr2dist_lt {I J} {F : set_system I} {G : set_system J}
+  {FF : Filter F} {FG : Filter G} (f : I -> U) (g : J -> V) (y : U) (z : V) :
+  (f @ F, g @ G) --> (y, z) ->
+  forall eps, 0 < eps ->
+   \forall i \near F & j \near G, `| (y, z) - (f i, g j) | < eps.
+Proof. by rewrite cvgr2dist_ltP. Qed.
+
+End prod_NormedModule_lemmas.
+Arguments cvgr2dist_ltP {_ _ _ _ _ F G FF FG}.
+Arguments cvgr2dist_lt {_ _ _ _ _ F G FF FG}.
 
 (* Local properties in R *)
 
@@ -2903,10 +1641,188 @@ Qed.
 (* by apply (Hd (u, v)) => /=; split; apply sub_abs_ball; rewrite absrB. *)
 (* Qed. *)
 
-Section Closed_Ball.
+Lemma bounded_locally (T : topologicalType)
+    (R : numFieldType) (V : normedModType R) (A : set T) (f : T -> V) :
+  [bounded f x | x in A] -> [locally [bounded f x | x in A]].
+Proof. by move=> /sub_boundedr AB x Ax; apply: AB; apply: within_nbhsW. Qed.
 
-Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
-  (x : V) (e : R) := [set y | norm (x - y) <= e].
+Notation "k .-lipschitz_on f" :=
+  (dominated_by (self_sub id) k (self_sub f)) : type_scope.
+
+Lemma sub_klipschitz (K : numFieldType) (V W : normedModType K) (k : K)
+    (f : V -> W) (F G : set_system (V * V)) :
+  F `=>` G -> k.-lipschitz_on f G -> k.-lipschitz_on f F.
+Proof. exact. Qed.
+
+Definition lipschitz_on (K : numFieldType) (V W : normedModType K)
+           (f : V -> W) (F : set_system (V * V)) :=
+  \forall M \near +oo, M.-lipschitz_on f F.
+
+Lemma sub_lipschitz (K : numFieldType) (V W : normedModType K)
+    (f : V -> W) (F G : set_system (V * V)) :
+  F `=>` G -> lipschitz_on f G -> lipschitz_on f F.
+Proof. by move=> FG; rewrite /lipschitz_on; apply: filterS => M; apply: FG. Qed.
+
+Lemma klipschitzW (K : numFieldType) (V W : normedModType K) (k : K)
+      (f : V -> W) (F : set_system (V * V)) {PF : ProperFilter F} :
+  k.-lipschitz_on f F -> lipschitz_on f F.
+Proof. by move=> f_lip; apply/ex_dom_bound; exists k. Qed.
+
+Notation "k .-lipschitz_ A f" :=
+  (k.-lipschitz_on f (globally (A `*` A))) : type_scope.
+Notation "k .-lipschitz f" := (k.-lipschitz_setT f) : type_scope.
+Notation "[ 'lipschitz' E | x 'in' A ]" :=
+  (lipschitz_on (fun x => E) (globally (A `*` A))) : type_scope.
+Notation lipschitz f := [lipschitz f x | x in setT].
+
+Lemma lipschitz_set0 (K : numFieldType) (V W : normedModType K)
+  (f : V -> W) : [lipschitz f x | x in set0].
+Proof. by apply: nearW; rewrite setX0 => ?; apply: globally0. Qed.
+
+Lemma lipschitz_set1 (K : numFieldType) (V W : normedModType K)
+  (f : V -> W) (a : V) : [lipschitz f x | x in [set a]].
+Proof.
+apply: (@klipschitzW _ _ _ `|f a|).
+  exact: (@globally_properfilter _ _ (a, a)).
+by move=> [x y] /= [] -> ->; rewrite !subrr !normr0 mulr0.
+Qed.
+
+Lemma klipschitz_locally (R : numFieldType) (V W : normedModType R) (k : R)
+    (f : V -> W) (A : set V) :
+  k.-lipschitz_A f -> [locally k.-lipschitz_A f].
+Proof. by move=> + x Ax; apply: sub_klipschitz; apply: within_nbhsW. Qed.
+
+Lemma lipschitz_locally (R : numFieldType) (V W : normedModType R)
+    (A : set V) (f : V -> W) :
+  [lipschitz f x | x in A] -> [locally [lipschitz f x | x in A]].
+Proof. by move=> + x Ax; apply: sub_lipschitz; apply: within_nbhsW. Qed.
+
+Lemma lipschitz_id (R : numFieldType) (V : normedModType R) :
+  1.-lipschitz (@id V).
+Proof. by move=> [/= x y] _; rewrite mul1r. Qed.
+Arguments lipschitz_id {R V}.
+
+Section LinearContinuousBounded.
+Variables (R : numFieldType) (V W : normedModType R).
+
+Lemma linear_boundedP (f : {linear V -> W}) : bounded_near f (nbhs 0) <->
+  \forall r \near +oo, forall x, `|f x| <= r * `|x|.
+Proof.
+split=> [|/pinfty_ex_gt0 [r r0 Bf]]; last first.
+  apply/ex_bound; exists r; apply/nbhs_norm0P; exists 1 => //= x /=.
+  by rewrite -(gtr_pMr _ r0) => /ltW; exact/le_trans/Bf.
+rewrite /bounded_near => /pinfty_ex_gt0 [M M0 /nbhs_norm0P [_/posnumP[e] efM]].
+near (0 : R)^'+ => d; near=> r => x.
+have[->|x0] := eqVneq x 0; first by rewrite raddf0 !normr0 mulr0.
+have nd0 : d / `|x| > 0 by rewrite divr_gt0 ?normr_gt0.
+have: `|f (d / `|x| *: x)| <= M.
+  by apply: efM => /=; rewrite normrZ gtr0_norm// divfK ?normr_eq0//.
+rewrite linearZ/= normrZ gtr0_norm// -ler_pdivlMl//; move/le_trans; apply.
+rewrite invfM invrK mulrAC ler_wpM2r//; near: r; apply: nbhs_pinfty_ge.
+by rewrite rpredM// ?rpredV ?gtr0_real.
+Unshelve. all: by end_near. Qed.
+
+Lemma continuous_linear_bounded (x : V) (f : {linear V -> W}) :
+  {for 0, continuous f} -> bounded_near f (nbhs x).
+Proof.
+rewrite /prop_for/continuous_at linear0 /bounded_near => f0.
+near=> M; apply/nbhs0P.
+near do rewrite /= linearD (le_trans (ler_normD _ _))// -lerBrDl.
+by apply: cvgr0_norm_le; rewrite // subr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma bounded_linear_continuous (f : {linear V -> W}) :
+  bounded_near f (nbhs (0 : V)) -> continuous f.
+Proof.
+move=> /linear_boundedP [y [yreal fr]] x; near +oo_R => r.
+apply/(@cvgrPdist_lt _ _ _ (nbhs x)) => e e_gt0; near=> z; rewrite -linearB.
+rewrite (le_lt_trans (fr r _ _))// -?ltr_pdivlMl//.
+by near: z; apply: cvgr_dist_lt => //; rewrite mulrC divr_gt0.
+Unshelve. all: by end_near. Qed.
+
+Lemma continuousfor0_continuous (f : {linear V -> W}) :
+  {for 0, continuous f} -> continuous f.
+Proof. by move=> /continuous_linear_bounded/bounded_linear_continuous. Qed.
+
+Lemma linear_bounded_continuous (f : {linear V -> W}) :
+  bounded_near f (nbhs 0) <-> continuous f.
+Proof.
+split; first exact: bounded_linear_continuous.
+by move=> /(_ 0); exact: continuous_linear_bounded.
+Qed.
+
+Lemma bounded_funP (f : {linear V -> W}) :
+  (forall r, exists M, forall x, `|x| <= r -> `|f x| <= M) <->
+  bounded_near f (nbhs (0 : V)).
+Proof.
+split => [/(_ 1) [M Bf]|/linear_boundedP fr y].
+  apply/ex_bound; exists M; apply/nbhs_normP => /=; exists 1 => //= x /=.
+  by rewrite sub0r normrN => x1; exact/Bf/ltW.
+near +oo_R => r; exists (r * y) => x xe.
+rewrite (@le_trans _ _ (r * `|x|)) //; first by move: {xe} x; near: r.
+by rewrite ler_pM.
+Unshelve. all: by end_near. Qed.
+
+End LinearContinuousBounded.
+
+Section contractions.
+Context {R : numDomainType} {X Y : normedModType R} {U : set X} {V : set Y}.
+
+Definition contraction (q : {nonneg R}) (f : {fun U >-> V}) :=
+  q%:num < 1 /\ q%:num.-lipschitz_U f.
+
+Definition is_contraction (f : {fun U >-> V}) := exists q, contraction q f.
+
+End contractions.
+
+Lemma contraction_fixpoint_unique {R : realDomainType}
+    {X : normedModType R} (U : set X) (f : {fun U >-> U}) (x y : X) :
+  is_contraction f -> U x -> U y -> x = f x -> y = f y -> x = y.
+Proof.
+case => q [q1 ctrfq] Ux Uy fixx fixy; apply/subr0_eq/normr0_eq0/eqP.
+have [->|xyneq] := eqVneq x y; first by rewrite subrr normr0.
+have xypos : 0 < `|x - y| by rewrite normr_gt0 subr_eq0.
+suff : `|x - y| <= q%:num * `|x - y| by rewrite ler_pMl // leNgt q1.
+by rewrite [in leLHS]fixx [in leLHS]fixy; exact: (ctrfq (_, _)).
+Qed.
+
+Section cvg_seq_bounded.
+Context {K : numFieldType}.
+Local Notation "'+oo'" := (@pinfty_nbhs K).
+
+Lemma cvg_seq_bounded {V : normedModType K} (a : nat -> V) :
+  cvgn a -> bounded_fun a.
+Proof.
+move=> /cvg_bounded/ex_bound => -[/= Moo] => -[N _ /(_ _) aM].
+have Moo_real : Moo \is Num.real by rewrite ger0_real ?(le_trans _ (aM N _))/=.
+rewrite /bounded_near /=; near=> M => n _.
+have [nN|nN]/= := leqP N n; first by apply: (le_trans (aM _ _)).
+move: n nN; suff /(_ (Ordinal _)) : forall n : 'I_N, `|a n| <= M by [].
+by near: M; apply: filter_forall => i; apply: nbhs_pinfty_ge.
+Unshelve. all: by end_near. Qed.
+
+End cvg_seq_bounded.
+
+Lemma compact_bounded (K : realType) (V : normedModType K) (A : set V) :
+  compact A -> bounded_set A.
+Proof.
+rewrite compact_cover => Aco.
+have covA : A `<=` \bigcup_(n : int) [set p | `|p| < n%:~R].
+  by move=> p _; exists (floor `|p| + 1) => //=; rewrite floorD1_gt.
+have /Aco [] := covA.
+  move=> n _; rewrite openE => p; rewrite /= -subr_gt0 => ltpn.
+  apply/nbhs_ballP; exists (n%:~R - `|p|) => // q.
+  rewrite -ball_normE /= ltrBrDr distrC; apply: le_lt_trans.
+  by rewrite -{1}(subrK p q) ler_normD.
+move=> D _ DcovA.
+exists (\big[maxr/0]_(i : D) (fsval i)%:~R).
+rewrite bigmax_real//; split=> // x ltmaxx p /DcovA [n Dn /lt_trans /(_ _)/ltW].
+apply; apply: le_lt_trans ltmaxx.
+have : n \in enum_fset D by [].
+by rewrite enum_fsetE => /mapP[/= i iD ->]; exact/le_bigmax.
+Qed.
+
+Section Closed_Ball_normedModType.
 
 Lemma closed_closed_ball_ (R : realFieldType) (V : normedModType R)
   (x : V) (e : R) : closed (closed_ball_ normr x e).
@@ -2916,20 +1832,6 @@ apply: (closed_comp _ (@closed_le _ _)) => y _.
 apply: (continuous_comp _ (@norm_continuous _ _ _)).
 exact: (continuousB (@cst_continuous _ _ _ _)).
 Qed.
-
-Definition closed_ball (R : numDomainType) (V : pseudoMetricType R)
-  (x : V) (e : R) := closure (ball x e).
-
-Lemma closed_ball0 (R : realFieldType) (a r : R) :
-  r <= 0 -> closed_ball a r = set0.
-Proof.
-move=> /ball0 r0; apply/seteqP; split => // y.
-by rewrite /closed_ball r0 closure0.
-Qed.
-
-Lemma closed_ballxx (R : numDomainType) (V : pseudoMetricType R) (x : V)
-  (e : R) : 0 < e -> closed_ball x e x.
-Proof. by move=> ?; exact/subset_closure/ballxx. Qed.
 
 Lemma closed_ballE (R : realFieldType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> closed_ball x r = closed_ball_ normr x r.
@@ -2955,10 +1857,6 @@ rewrite -ball_normE /ball_ /= opprD addrA addrN add0r normrN normrZ.
 rewrite normfZV ?subr_eq0// mulr1 normrM (gtr0_norm s0) gtr0_norm //.
 by rewrite ltr_pdivrMr // ltr_pMr // ltr1n.
 Qed.
-
-Lemma closed_ball_closed (R : realFieldType) (V : pseudoMetricType R) (x : V)
-  (r : R) : closed (closed_ball x r).
-Proof. exact: closed_closure. Qed.
 
 Lemma closed_ball_itv (R : realFieldType) (x r : R) : 0 < r ->
   closed_ball x r = `[x - r, x + r]%classic.
@@ -3002,10 +1900,6 @@ apply: (subset_trans (closed_ball_subset _ _) xrB) => //=.
 by rewrite lter_pdivrMr // ltr_pMr // ltr1n.
 Qed.
 
-Lemma subset_closed_ball (R : realFieldType) (V : pseudoMetricType R) (x : V)
-  (r : R) : ball x r `<=` closed_ball x r.
-Proof. exact: subset_closure. Qed.
-
 Lemma open_subball {R : numFieldType} {M : normedModType R} (A : set M)
   (x : M) : open A -> A x -> \forall e \near 0^'+, ball x e `<=` A.
 Proof.
@@ -3034,18 +1928,6 @@ move=> x _; rewrite withinET; exists (closed_ball x 1).
 by split; [apply: closed_ballR_compact | apply: closed_ball_closed].
 Qed.
 
-Lemma subset_closure_half (R : realFieldType) (V : pseudoMetricType R) (x : V)
-  (r : R) : 0 < r -> closed_ball x (r / 2) `<=` ball x r.
-Proof.
-move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].
-  exact: nbhsx_ballx.
-by move=> y [+/ball_sym]; rewrite [t in ball x t z]splitr; apply: ball_triangle.
-Qed.
-
-Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricNormedZmodType R)
-  (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
-Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
-
 Lemma interior_closed_ballE (R : realType) (V : normedModType R) (x : V)
   (r : R) : 0 < r -> (closed_ball x r)° = ball x r.
 Proof.
@@ -3070,4 +1952,4 @@ move=> r0; split; first exact: open_interior.
 by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
-End Closed_Ball.
+End Closed_Ball_normedModType.
