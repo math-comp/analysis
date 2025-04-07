@@ -123,6 +123,9 @@
     `cvg_differentiation_under_integral`, `differentiation_under_integral`,
     `derivable_under_integral`
 
+- in `classical_sets.v`:
+  + change implicit arguments of `subsetT`
+
 ### Renamed
 
 - in `lebesgue_integral.v`:
