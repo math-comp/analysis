@@ -1209,6 +1209,8 @@ Lemma not_setD1 a A : ~ A a -> A `\ a = A.
 Proof. by move=> NDr; apply/setDidPl/disjoints_subset/subsetCr => _ ->. Qed.
 
 End basic_lemmas.
+Arguments subsetT {T} A.
+
 #[global]
 Hint Resolve subsetUl subsetUr subIsetl subIsetr subDsetl subDsetr : core.
 #[deprecated(since="mathcomp-analysis 1.2.0", note="Use notin_setE instead.")]

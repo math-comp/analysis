@@ -157,7 +157,7 @@ From mathcomp Require Import sequences esum numfun.
 (*                                                                            *)
 (* ## Instances of measures                                                   *)
 (* ```                                                                        *)
-(*  pushforward mf m == pushforward/image measure of m by f, where mf is a    *)
+(*  pushforward m mf == pushforward/image measure of m by f, where mf is a    *)
 (*                      proof that f is measurable                            *)
 (*                      m has type set T -> \bar R.                           *)
 (*              \d_a == Dirac measure                                         *)
