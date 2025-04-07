@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
-From mathcomp Require Import all_classical unstable.
+From mathcomp Require Import all_classical mathcomp_extra unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure.
 
@@ -334,11 +334,8 @@ apply/countable_uniformityP.
 exists (fun n => [set xy : T * T | ball xy.1 n.+1%:R^-1 xy.2]); last first.
   by move=> n; exact: (entourage_ball _ n.+1%:R^-1%:pos).
 move=> E; rewrite -entourage_ballE => -[e e0 subE].
-exists `|Num.floor e^-1|%N; apply: subset_trans subE => xy; apply: le_ball.
-rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// -natr1.
-rewrite natr_absz ger0_norm; last first.
-  by rewrite -floor_ge_int ?invr_ge0 ?num_real // ltW.
-by rewrite intrD1 ltW// floorD1_gt ?num_real.
+exists (Num.trunc e^-1); apply: subset_trans subE => xy; apply: le_ball.
+by rewrite /= -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0// ltW// truncnS_gt.
 Qed.
 
 (** Specific pseudoMetric spaces *)
