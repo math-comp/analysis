@@ -435,6 +435,7 @@ Context  {K : numDomainType} {E : NbhsLmodule.type K}  {F : NbhsZmodule.type} {s
 Definition lcfun : {pred E -> F} := mem [set f | linear_for s f /\ continuous f ].
 Definition lcfun_key : pred_key lcfun. Proof. exact. Qed.
 Canonical lcfun_keyed := KeyedPred lcfun_key.
+
 End lcfun_pred.
 
 Reserved Notation "'{' 'linear_continuous' U '->' V '|' s '}'"
@@ -448,6 +449,7 @@ Notation "{ 'linear_continuous' U -> V | s }" := (@LinearContinuous.type _ U%typ
 Notation "{ 'linear_continuous' U -> V }" := {linear_continuous U%type -> V%type | *:%R}
   : type_scope.
 
+  
 Section lcfun.
 Context {R : numDomainType} {E : NbhsLmodule.type R}
   {F : NbhsZmodule.type} {s : GRing.Scale.law R F}.
@@ -466,23 +468,24 @@ End Sub.
 Lemma lcfun_rect (K : T -> Type) :
   (forall f (Pf : f \in lcfun), K (lcfun_Sub Pf)) -> forall u : T, K u.
 Proof.
-rewrite /lcfun_Sub /lcfun /=.
-move=> Ksub [f [[Pf]]]/=.
-suff -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)).
-move=> flin fcont.
-Fail apply: (Ksub {|
-      LinearContinuous.sort := f;
-      LinearContinuous.class :=
-        {|
-          LinearContinuous.GRing_isSemiAdditive_mixin :=
-            {| GRing.isSemiAdditive.semi_additive_subproof := set_mem (mem_set Pf) |};
-          LinearContinuous.GRing_isScalable_mixin := flin;
-          LinearContinuous.topology_structure_isContinuous_mixin := fcont
-        |}
-    |}).
-admit. 
-by []. 
-Admitted. (* No idea what's going on here *)
+move=> Ksub [f [[Pf1] [Pf2] [Pf3]]]/=.
+set G := (G in K G).
+have Pf : f \in lcfun.
+  by rewrite inE /=; split => // x u v; rewrite Pf1 Pf2.
+suff -> : G = lcfun_Sub Pf by apply: Ksub.
+congr LinearContinuous.Pack.
+congr LinearContinuous.Class.
+- by congr GRing.isSemiAdditive.Axioms_; apply: Prop_irrelevance.
+- by congr GRing.isScalable.Axioms_; apply: Prop_irrelevance.
+- by congr isContinuous.Axioms_; apply: Prop_irrelevance.
+Qed.
+
+(* Lemma lcfun_elim (K : ( E -> F) -> Type) : *)
+(*  ( forall u : T, K u) ->  (forall f (Pf : f \in lcfun),  K f). *)
+(* Proof. *)
+(* Admitted. (* HB.pack*) *) (* marche pas bien avec la tactique elim *)
+
+  
 
 Lemma lcfun_valP f (Pf : f \in lcfun) : lcfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
@@ -495,8 +498,24 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 HB.instance Definition _ := [Choice of {linear_continuous E -> F | s} by <:].
 End lcfun.
 
+Variant lcfun_spec (R : numDomainType) (E : tvsType R)  (F : tvsType R) (f : E -> F) :
+  (E -> F) -> bool -> Type :=
+  | Islcfun (l : {linear_continuous E -> F}) : lcfun_spec f (l) true.
 
-Section lcfun_linearcontinuousType.
+Check posnumP.
+
+(*to be renamed ?*)
+Lemma lcfunE (R : numDomainType) (E : tvsType R)  (F : tvsType R) (s : GRing.Scale.law R F)
+  (f : E -> F) :
+  (f \in (@lcfun R E F s) ) ->
+  lcfun_spec f f (f \in (@lcfun R E F s)).
+Proof.
+  move=> f_lc. 
+(* move=> x_gt0; case: real_ltgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _. *)
+(* by rewrite -[x]/(PosNum x_gt0)%:num; constructor. *)
+Admitted.
+
+Section lcfun_comp.
 
 
 Context {R : numDomainType} {E F : NbhsLmodule.type R}
@@ -515,12 +534,12 @@ HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
 
 (* TODO: do the identity? *)
 
-End lcfun_linearcontinuousType.
-
+End lcfun_comp.
 
 Section lcfun_lmodtype.
-Context  {R : numDomainType}  {E F : tvsType R} {s : GRing.Scale.law R F}
-    ( f g : {linear_continuous E -> F}).
+Context {R : numDomainType} {E F G: tvsType R} {s : GRing.Scale.law R F} {s' : GRing.Scale.law R G}.
+
+Implicit Types (r : R) (f g : {linear_continuous E -> F}) (h : {linear_continuous F -> G}).  
 
 Import GRing.Theory.
 
@@ -531,43 +550,54 @@ Qed.
 
 HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
-Check (\0 : {linear_continuous E -> F}).
-
 Lemma lcfun0 : (\0 : {linear_continuous E -> F}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
 
-Lemma add_fun_continuous : continuous (f \+ g).
+Lemma add_fun_continuous f g : continuous (f \+ g).
+Proof.
+have -> : (f  \+ g ) = ( fun x => x.1 + x.2) \o  ( fun x => (f x , g x )) by apply: funext =>  x /=.
+move=> x; apply: continuous_comp; last by apply: add_continuous.
+suff  : continuous f /\ continuous g by  admit. 
+by split; apply: cts_fun.
+Admitted.
+
+HB.instance Definition _ f g := isContinuous.Build E F (f \+ g)  (@add_fun_continuous f g).
+
+Lemma scale_fun_continuous r g : continuous (r \*: g).
 Proof.
 Admitted.
 
-HB.instance Definition _ := isContinuous.Build E F (f \+ g)  add_fun_continuous.
+HB.instance Definition _ r g := isContinuous.Build E F (r \*: g)  (@scale_fun_continuous r g).
 
-(* Fail HB.instance Definition _ := @isLinearContinuous.Build R E F s (\0 : E -> F) *)
-(*  null_fun_is_linear null_fun_continuous. *)
+Lemma opp_fun_continuous f : continuous (\- f).
+Proof.
+Admitted.
 
-Fail Program Definition lcfun_zmodMixin (R : numDomainType) (E F : tvsType R):=
-  @GRing.isZmodule.Build {linear_continuous E -> F}  (\0 : {linear_continuous E -> F})
-    (fun f x => - f x) (fun f g => f \+ g)    _ _ _ _.
-(*Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
-Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
-HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.*)
+HB.instance Definition _ f := isContinuous.Build E F (\- f)  (@opp_fun_continuous f).
 
-(* Program Definition lcfun_lmodMixin := @GRing.Zmodule_isLmodule.Build R {linear_continuous E -> F} *)
-(*   (fun k f => k \*: f) _ _ _ _. *)
-(* Next Obligation. by move=> k f v; rewrite funeqE=> x; exact: scalerA. Qed. *)
-(* Next Obligation. by move=> f; rewrite funeqE=> x /=; rewrite scale1r. Qed. *)
-(* Next Obligation. *)
-(* by move=> f g h; rewrite funeqE => x /=; rewrite scalerDr. *)
-(* Qed. *)
-(* Next Obligation. *)
-(* by move=> f g h; rewrite funeqE => x /=; rewrite scalerDl. *)
-(* Qed. *)
-(* HB.instance Definition _ := lcfun_lmodMixin. *)
-(* End fct_lmod. *)
+(* Context (f g : {linear_continuous E -> F}) (r : R). *)
+(* Check (r \*: f \+ g : {linear_continuous E -> F}). *)
 
- 
+
+
+Lemma lcfun_submod_closed  : submod_closed (@lcfun R E F s).
+Proof.
+  split; first by rewrite inE; split; first apply/linearP; apply: cst_continuous.  
+  move=> r /= _ _  /lcfunE[f] /lcfunE[g].
+  rewrite !inE /= =>  [[lf cf] [lg cg]]; split.
+  (* HB pack et subst *) (* move => l u v. apply/linearP.*)   admit.
+  Check (@add_fun_continuous _ f g).
+Admitted.  
+
+
+HB.instance Definition _ :=
+  @GRing.isSubmodClosed.Build _  _ lcfun lcfun_submod_closed.
+
+HB.instance Definition _ :=
+  [SubChoice_isSubLmodule of {linear_continuous E -> F | s} by <:].
+
+Check {linear_continuous E -> F |s } : lmodType _ .
 End lcfun_lmodtype.
+
 
 (* make use of  {family fam, U -> V}  *)
 
