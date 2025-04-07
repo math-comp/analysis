@@ -739,6 +739,9 @@ Definition fin_num := [qualify a x : \bar R | (x != -oo) && (x != +oo)].
 Fact fin_num_key : pred_key fin_num. Proof. by []. Qed.
 (*Canonical fin_num_keyd := KeyedQualifier fin_num_key.*)
 
+Lemma fin_numP_EFin x : reflect (exists r, x = r%:E) (x \in fin_num).
+Proof. by case: x => [r'||]//=; constructor; [exists r'| case | case ]. Qed.
+
 Lemma fin_numE x : (x \is a fin_num) = (x != -oo) && (x != +oo).
 Proof. by []. Qed.
 

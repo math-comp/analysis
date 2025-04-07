@@ -96,6 +96,12 @@
   + `lebesgue_integral_differentiation.v`
   + `lebesgue_integral.v`
 
+- in `sequences.v`:
+  + lemmas `nneseriesD1`, `geometric_ge0`
+
+- in `constructive_ereal.v`:
+  + lemmas `fin_numP_EFin`, `EFin_bigmax`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
@@ -154,6 +160,9 @@
 
 - in `real_interval.v`:
   + lemmas `bigcup_itvT`, `itv_bndy_bigcup_BRight`, `itv_bndy_bigcup_BLeft_shift`
+
+- in `sequences.v`:
+  + lemma `nneseries_recl` genralized with a filtering predicate `P`
 
 ### Deprecated
 
