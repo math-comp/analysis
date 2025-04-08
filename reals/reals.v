@@ -38,7 +38,7 @@
 (*                                                                            *)
 (******************************************************************************)
 
-From Coq Require Import Setoid.
+From Corelib Require Import Setoid.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean.
 From mathcomp Require Import boolp classical_sets set_interval.
