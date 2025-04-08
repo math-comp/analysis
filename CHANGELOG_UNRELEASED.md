@@ -125,6 +125,11 @@
 
 - in `classical_sets.v`:
   + change implicit arguments of `subsetT`
+- moved from `normedtype.v` (old file) to `num_topology`
+- moved from `normedtype.v` (old file) to `num_topology.v`
+  + lemmas `nbhsN`, `cvg_compNP`, `nbhsNimage`, `nearN`, `openN`,
+    `closedN`, `dnbhsN`, `closure_sup`, `right_bounded_interior`, `left_bounded_interior`,
+    `withinN`
 
 ### Renamed
 
@@ -145,6 +150,14 @@
   + `eq_fun3` -> `eq3_fun`
   + `eq_forall2` -> `eq2_forall`
   + `eq_forall3` -> `eq3_forall`
+- in `set_interval.v`:
+  + `set_itv_infty_infty` -> `set_itvNyy`
+  + `set_itv_o_infty` -> `set_itvoy`
+  + `set_itv_c_infty` -> `set_itvcy`
+  + `set_itv_infty_o` -> `set_itvNyo`
+  + `set_itv_infty_c` -> `set_itvNyc`
+  + `set_itv_pinfty_bnd` -> `set_itv_ybnd`
+  + `set_itv_bnd_ninfty` -> `set_itv_bndNy`
 
 ### Generalized
 
@@ -158,7 +171,18 @@
 - in `real_interval.v`:
   + lemmas `bigcup_itvT`, `itv_bndy_bigcup_BRight`, `itv_bndy_bigcup_BLeft_shift`
 
+- in `normedtype.v`:
+  + `lower_semicontinuous`, `lower_semicontinuousP` generalized from `realType` to `numFieldType`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + generalized from `normedModType` to `pseudoMetricNormedZmodType`:
+    * lemmas `cvgr_norm_lty`, `cvgr_norm_ley`, `cvgr_norm_gtNy`,
+      `cvgr_norm_geNy`, `cvg_bounded`
+
 ### Deprecated
+
+- in `normed_theory` (was in `normedtype.v` before the split)
+  + `pseudoMetricNormedZModType_hausdorff` (use `norm_hausdorff` instead)
 
 ### Removed
 
