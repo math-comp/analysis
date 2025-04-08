@@ -22,7 +22,7 @@ Reserved Notation "'[ u , v ]_ M"
 Reserved Notation "'[ u ]_ M" (at level 2, format "''[' u ]_ M").
 Reserved Notation "'[ u ]" (at level 2, format "''[' u ]").
 Reserved Notation "u '``_' i"
-    (at level 3, i at level 2, format "u '``_' i").
+    (at level 3, i at level 2, left associativity, format "u '``_' i").
 Reserved Notation "A ^_|_"    (at level 8, format "A ^_|_").
 Reserved Notation "A _|_ B" (at level 69, format "A  _|_  B").
 Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui").

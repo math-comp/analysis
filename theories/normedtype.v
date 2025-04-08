@@ -137,10 +137,10 @@ Reserved Notation "f @`[ a , b ]" (at level 20, b at level 9,
   format "f  @`[ a ,  b ]").
 Reserved Notation "f @`] a , b [" (at level 20, b at level 9,
   format "f  @`] a ,  b [").
-Reserved Notation "x ^'+" (at level 3, format "x ^'+").
-Reserved Notation "x ^'-" (at level 3, format "x ^'-").
-Reserved Notation "+oo_ R" (at level 3, format "+oo_ R").
-Reserved Notation "-oo_ R" (at level 3, format "-oo_ R").
+Reserved Notation "x ^'+" (at level 3, left associativity, format "x ^'+").
+Reserved Notation "x ^'-" (at level 3, left associativity, format "x ^'-").
+Reserved Notation "+oo_ R" (at level 3, left associativity, format "+oo_ R").
+Reserved Notation "-oo_ R" (at level 3, left associativity, format "-oo_ R").
 Reserved Notation "[ 'bounded' E | x 'in' A ]"
   (at level 0, x name, format "[ 'bounded'  E  |  x  'in'  A ]").
 Reserved Notation "k .-lipschitz_on f"
