@@ -444,7 +444,7 @@ Lemma compact_second_countable {R : realType} {T : pseudoPMetricType R} :
   compact [set: T] -> @second_countable T.
 Proof.
 have npos n : (0:R) < n.+1%:R^-1 by [].
-pose f n (z : T): set T := (ball z (PosNum (npos n))%:num)^°.
+pose f n (z : T): set T := (ball z (PosNum (npos n))%:num)°.
 move=> cmpt; have h n : finite_subset_cover [set: T] (f n) [set: T].
   move: cmpt; rewrite compact_cover; apply.
   - by move=> z _; rewrite /f; exact: open_interior.

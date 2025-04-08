@@ -39,7 +39,7 @@ Lemma prod_nbhs_nbhs (p : T * U) (A : set (T * U)) :
   prod_nbhs p A -> prod_nbhs p (prod_nbhs^~ A).
 Proof.
 move=> [QR [/nbhs_interior p1_Q /nbhs_interior p2_R] sQRA].
-by exists (QR.1^°, QR.2^°) => // ??; exists QR.
+by exists (QR.1°, QR.2°) => // ??; exists QR.
 Qed.
 
 HB.instance Definition _ := hasNbhs.Build (T * U)%type prod_nbhs.
