@@ -1591,24 +1591,23 @@ Section ger0_derive1_le.
 Context {R : realType}.
 Variables (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
-Hypothesis dfge0 : forall x, x \in `]a, b[%R -> 0 <= (f^`())%classic x.
+Hypothesis dfge0 : forall x, x \in `]a, b[%R -> 0 <= f^`() x.
 
 Lemma ger0_derive1_le (sa sb : bool) :
   {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in Interval (BSide sa a) (BSide sb b) &, {homo f : x y / x <= y >-> x <= y}}.
+  {in Interval (BSide sa a) (BSide sb b) &, {homo f : x y / x <= y}}.
 Proof.
 move=> cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
-have HMVT1: {within `[x, y], continuous f}.
+move: (xy); rewrite le_eqVlt=> /predU1P[-> | xy']; first by rewrite lexx.
+rewrite !itv_boundlr -subr_ge0 /= => /andP[ax _] /andP[_ yb].
+have HMVT1 : {within `[x, y], continuous f}.
   exact/(continuous_subspaceW _ cf)/subset_itv.
-have zab: forall z, z \in `]x, y[%R -> z \in `]a, b[%R.
-  apply/subset_itv.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
-have HMVT0 (z : R^o) : z \in `]x, y[%R -> is_derive z 1 f ((f^`())%classic z).
+have zab : `]x, y[ `<=` `]a, b[.
+  clear -ax yb; apply/subset_itv.
+    by move: sa ax => []; rewrite !bnd_simp// => /ltW.
+  by move: sb yb => []; rewrite !bnd_simp// => /ltW.
+have HMVT0 z : z \in `]x, y[%R -> is_derive z 1 f (f^`() z).
   by move=> zxy; rewrite derive1E; exact/derivableP/df/zab.
-rewrite -subr_ge0.
-move: (xy); rewrite le_eqVlt=> /orP [/eqP-> | xy']; first by rewrite subrr.
 have[z zxy ->]:= MVT xy' HMVT0 HMVT1.
 by rewrite mulr_ge0// ?subr_ge0// dfge0// zab.
 Qed.
@@ -1637,41 +1636,34 @@ Variables (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
 Hypothesis dfle0 : forall x, x \in `]a, b[%R -> f^`() x <= 0.
 
-(* TODO: check that this can be proved in terms of ger0_derive1_homo *)
 Lemma ler0_derive1_le (sa sb : bool) :
   {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in Interval (BSide sa a) (BSide sb b) &, {homo f : x y / x <= y >-> y <= x}}.
+  {in Interval (BSide sa a) (BSide sb b) &, {homo f : x y /~ x <= y}}.
 Proof.
-move=> cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax xb /andP [] ay yb.
-have HMVT1: {within `[x, y], continuous f}.
-  exact/(continuous_subspaceW _ cf)/subset_itv.
-have zab : forall z, z \in `]x, y[%R -> z \in `]a, b[%R.
-  apply/subset_itv.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
-have HMVT0 (z : R^o) : z \in `]x, y[%R -> is_derive z 1 f (f^`() z).
-  by move=> zxy; rewrite derive1E; exact/derivableP/df/zab.
-rewrite -subr_le0.
-move: (xy); rewrite le_eqVlt=> /orP [/eqP-> | xy']; first by rewrite subrr.
-have[z zxy ->]:= MVT xy' HMVT0 HMVT1.
-by rewrite mulr_le0_ge0// ?subr_ge0// dfle0// zab.
+move=> cf.
+suff : {in Interval (BSide sa a) (BSide sb b) &, {homo (- f) : x y / x <= y}}.
+  by move=> h y x iy ix xy; move: (h x y ix iy xy); rewrite opprfctE lerNl opprK.
+apply: ger0_derive1_le.
+- move => x xab; exact/derivableN/df.
+- move => x xab; rewrite derive1E deriveN; last exact: df.
+  by rewrite -derive1E oppr_ge0 dfle0.
+by move=> x; exact/continuousN/cf.
 Qed.
 
 Lemma ler0_derive1_le_cc :{within `[a, b], continuous f} ->
-  {in `[a, b]%R &, {homo f : x y / x <= y >-> y <= x}}.
+  {in `[a, b]%R &, {homo f : x y /~ x <= y}}.
 Proof. exact: ler0_derive1_le. Qed.
 
 Lemma ler0_derive1_le_co : {within `[a, b[, continuous f} ->
-  {in `[a, b[%R &, {homo f : x y / x <= y >-> y <= x}}.
+  {in `[a, b[%R &, {homo f : x y /~ x <= y}}.
 Proof. exact: ler0_derive1_le. Qed.
 
 Lemma ler0_derive1_le_oc : {within `]a, b], continuous f} ->
-  {in `]a, b]%R &, {homo f : x y / x <= y >-> y <= x}}.
+  {in `]a, b]%R &, {homo f : x y /~ x <= y}}.
 Proof. exact: ler0_derive1_le. Qed.
 
 Lemma ler0_derive1_le_oo : {in `]a, b[, continuous f} ->
-  {in `]a, b[%R &, {homo f : x y / x <= y >-> y <= x}}.
+  {in `]a, b[%R &, {homo f : x y /~ x <= y}}.
 Proof. by rewrite -continuous_open_subspace//; exact: ler0_derive1_le. Qed.
 
 End ler0_derive1_le.
@@ -1684,117 +1676,52 @@ Lemma ler0_derive1_nincr (R : realType) (f : R -> R) (a b : R) :
   {within `[a, b], continuous f} ->
   forall x y, a <= x -> x <= y -> y <= b -> f y <= f x.
 Proof.
-move=> fdrvbl dfle0 ctsf x y leax lexy leyb.
-apply: ler0_derive1_le_cc; [ exact: fdrvbl | exact: dfle0 | by [] | | | by [] ].
-  by rewrite in_itv/= leax (le_trans lexy leyb).
-by rewrite in_itv/= (le_trans leax lexy) leyb.
+move=> df dfle0 cf x y ax xy yb.
+by apply: ler0_derive1_le_cc; [ exact: df | exact: dfle0 | by [] | | | by [] ];
+  rewrite in_itv/= ?ax ?yb ?andbT/= ?(le_trans ax)// (le_trans _ yb).
 Qed.
 
-Section ltr0_derive1_lt.
+Section gtr0_derive1_lt.
 Context {R : realType}.
 Variables (f : R -> R) (a b : R).
 Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
-Hypothesis dfgt0 : forall x, x \in `]a, b[%R -> f^`() x < 0.
+Hypothesis dfgt0 : forall x, x \in `]a, b[%R -> 0 < f^`() x.
 
-Lemma ltr0_derive1_lt (sa sb : bool) :
+Lemma gtr0_derive1_lt (sa sb : bool) :
   {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in Interval (BSide sa a) (BSide sb b) &, {homo f : x y / x < y >-> y < x}}.
+  {in Interval (BSide sa a) (BSide sb b) &, {homo f : x y / x < y}}.
 Proof.
 move=> cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
+rewrite !itv_boundlr /= -subr_gt0 => /andP [] ax ? /andP [] ? yb.
 have HMVT1: {within `[x, y], continuous f}.
   exact/(continuous_subspaceW _ cf)/subset_itv.
-have zab: forall z, z \in `]x, y[%R -> z \in `]a, b[%R.
-  apply/subset_itv.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
+have zab : `]x, y[ `<=` `]a, b[.
+  clear -ax yb; apply/subset_itv.
+    by move: sa ax => []; rewrite !bnd_simp// => /ltW.
+  by move: sb yb => []; rewrite !bnd_simp// => /ltW.
 have HMVT0 (z : R^o) : z \in `]x, y[%R -> is_derive z 1 f (f^`() z).
   by move=> zxy; rewrite derive1E; exact/derivableP/df/zab.
-rewrite -subr_lt0.
-have[z zxy ->]:= MVT xy HMVT0 HMVT1.
-by rewrite nmulr_rlt0// ?subr_gt0// dfgt0// zab.
-Qed.
-
-Lemma ltr0_derive1_lt_cc : {within `[a, b], continuous f} ->
-  {in `[a, b]%R &, {homo f : x y / x < y >-> y < x}}.
-Proof. exact: ltr0_derive1_lt. Qed.
-
-Lemma ltr0_derive1_lt_co : {within `[a, b[, continuous f} ->
-  {in `[a, b[%R &, {homo f : x y / x < y >-> y < x}}.
-Proof. exact: ltr0_derive1_lt. Qed.
-
-Lemma ltr0_derive1_lt_oc : {within `]a, b], continuous f} ->
-  {in `]a, b]%R &, {homo f : x y / x < y >-> y < x}}.
-Proof. exact: ltr0_derive1_lt. Qed.
-
-Lemma ltr0_derive1_lt_oo : {in `]a, b[, continuous f} ->
-  {in `]a, b[%R &, {homo f : x y / x < y >-> y < x}}.
-Proof. by rewrite -continuous_open_subspace//; exact: ltr0_derive1_lt. Qed.
-
-End ltr0_derive1_lt.
-
-(* wip *)
-
-Lemma ltr0_derive1_decr (R : realType) (f : R -> R) (a b : R) :
-  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x, x \in `]a, b[%R -> f^`() x < 0) ->
-  {within `[a, b], continuous f}%classic ->
-  forall x y, a <= x -> x < y -> y <= b -> f y < f x.
-Proof.
-move=> fdrvbl dflt0 ctsf x y leax ltxy leyb.
-apply: ltr0_derive1_lt; [ exact: fdrvbl | exact: dflt0 | by [] | | | by [] ].
-  by rewrite in_itv/= leax (ltW (lt_le_trans ltxy leyb)).
-by rewrite in_itv/= (ltW (le_lt_trans leax ltxy)) leyb.
-Qed.
-
-Lemma gtr0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
-  (forall x : R, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[%R -> 0 < f^`() x) ->
-  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in (Interval (BSide sa a) (BSide sb b)) &, {homo f : x y / x < y >-> x < y}}.
-Proof.
-move=> df dfgt0 cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
-have HMVT1: {within `[x, y], continuous f}.
-  exact/(continuous_subspaceW _ cf)/subset_itv.
-have zab: forall z, z \in `]x, y[%R -> z \in `]a, b[%R.
-  apply/subset_itv.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
-have HMVT0 (z : R^o) : z \in `]x, y[%R -> is_derive z 1 f ((f^`())%classic z).
-  by move=> zxy; rewrite derive1E; exact/derivableP/df/zab.
-rewrite -subr_gt0.
 have[z zxy ->]:= MVT xy HMVT0 HMVT1.
 by rewrite mulr_gt0// ?subr_gt0// dfgt0// zab.
 Qed.
 
-Lemma gtr0_derive1_homo_cc (R : realType) (f : R^o -> R^o) (a b : R) :
-  (forall x : R, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[%R -> 0 < f^`() x) ->
-  {within [set` `[a, b]%R], continuous f} ->
-  {in `[a, b]%R &, {homo f : x y / x < y >-> x < y}}.
-Proof. exact: gtr0_derive1_homo. Qed.
+Lemma gtr0_derive1_lt_cc : {within `[a, b], continuous f} ->
+  {in `[a, b]%R &, {homo f : x y / x < y}}.
+Proof. exact: gtr0_derive1_lt. Qed.
 
-Lemma gtr0_derive1_homo_co (R : realType) (f : R^o -> R^o) (a b : R) :
-  (forall x : R, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[%R -> 0 < f^`() x) ->
-  {within [set` `[a, b[%R], continuous f} ->
-  {in `[a, b[%R &, {homo f : x y / x < y >-> x < y}}.
-Proof. exact: gtr0_derive1_homo. Qed.
+Lemma gtr0_derive1_lt_co : {within `[a, b[, continuous f} ->
+  {in `[a, b[%R &, {homo f : x y / x < y}}.
+Proof. exact: gtr0_derive1_lt. Qed.
 
-Lemma gtr0_derive1_homo_oc (R : realType) (f : R^o -> R^o) (a b : R) :
-  (forall x : R, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[%R -> 0 < f^`() x) ->
-  {within [set` `]a, b]%R], continuous f} ->
-  {in `]a, b]%R &, {homo f : x y / x < y >-> x < y}}.
-Proof. exact: gtr0_derive1_homo. Qed.
+Lemma gtr0_derive1_lt_oc : {within `]a, b], continuous f} ->
+  {in `]a, b]%R &, {homo f : x y / x < y}}.
+Proof. exact: gtr0_derive1_lt. Qed.
 
-Lemma gtr0_derive1_homo_oo (R : realType) (f : R^o -> R^o) (a b : R) :
-  (forall x : R, x \in `]a, b[%R -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[%R -> 0 < f^`() x) ->
-  {in `]a, b[, continuous f} ->
-  {in `]a, b[%R &, {homo f : x y / x < y >-> x < y}}.
-Proof. by rewrite -continuous_open_subspace//; exact: gtr0_derive1_homo. Qed.
+Lemma gtr0_derive1_lt_oo : {in `]a, b[, continuous f} ->
+  {in `]a, b[%R &, {homo f : x y / x < y}}.
+Proof. by rewrite -continuous_open_subspace//; exact: gtr0_derive1_lt. Qed.
+
+End gtr0_derive1_lt.
 
 #[deprecated(since="mathcomp-analysis 1.10.0",
   note="use `gtr0_le_derive1` instead")]
@@ -1804,11 +1731,69 @@ Lemma gtr0_derive1_incr (R : realType) (f : R -> R) (a b : R) :
   {within `[a, b], continuous f}%classic ->
   forall x y, a <= x -> x < y -> y <= b -> f x < f y.
 Proof.
-move=> abf abf' cf x y ax xy yb; apply: (@gtr0_derive1_homo_cc _ _ a b) => //;
+move=> abf abf' cf x y ax xy yb; apply: (@gtr0_derive1_lt_cc _ _ a b) => //;
   rewrite in_itv/= ?ax ?yb ?andbT/=.
 - by rewrite (le_trans (ltW xy)).
 - by rewrite (le_trans _ (ltW xy)).
 Qed.
+
+Section ltr0_derive1_lt.
+Context {R : realType}.
+Variables (f : R -> R) (a b : R).
+Hypothesis df : forall x, x \in `]a, b[%R -> derivable f x 1.
+Hypothesis dflt0 : forall x, x \in `]a, b[%R -> f^`() x < 0.
+
+Lemma ltr0_derive1_lt (sa sb : bool) :
+  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
+  {in Interval (BSide sa a) (BSide sb b) &, {homo f : x y /~ x < y}}.
+Proof.
+move=> cf.
+suff : {in Interval (BSide sa a) (BSide sb b) &, {homo (- f) : x y / x < y}}.
+  by move=> h x y ix iy xy; move: (h y x iy ix xy); rewrite opprfctE ltrNl opprK.
+apply: gtr0_derive1_lt.
+- move => x xab; exact/derivableN/df.
+- move => x xab; rewrite derive1E deriveN; last exact: df.
+  by rewrite -derive1E oppr_gt0 dflt0.
+by move=> x; exact/continuousN/cf.
+Qed.
+
+Lemma ltr0_derive1_lt_cc : {within `[a, b], continuous f} ->
+  {in `[a, b]%R &, {homo f : x y /~ x < y}}.
+Proof. exact: ltr0_derive1_lt. Qed.
+
+Lemma ltr0_derive1_lt_co : {within `[a, b[, continuous f} ->
+  {in `[a, b[%R &, {homo f : x y /~ x < y}}.
+Proof. exact: ltr0_derive1_lt. Qed.
+
+Lemma ltr0_derive1_lt_oc : {within `]a, b], continuous f} ->
+  {in `]a, b]%R &, {homo f : x y /~ x < y}}.
+Proof. exact: ltr0_derive1_lt. Qed.
+
+Lemma ltr0_derive1_lt_oo : {in `]a, b[, continuous f} ->
+  {in `]a, b[%R &, {homo f : x y /~ x < y}}.
+Proof. by rewrite -continuous_open_subspace//; exact: ltr0_derive1_lt. Qed.
+
+End ltr0_derive1_lt.
+
+#[deprecated(since="mathcomp-analysis 1.10.0",
+  note="use `ler0_derive1_lt_cc` instead")]
+Lemma ltr0_derive1_decr (R : realType) (f : R -> R) (a b : R) :
+  (forall x, x \in `]a, b[%R -> derivable f x 1) ->
+  (forall x, x \in `]a, b[%R -> f^`() x < 0) ->
+  {within `[a, b], continuous f}%classic ->
+  forall x y, a <= x -> x < y -> y <= b -> f y < f x.
+Proof.
+move=> df f'0 cf x y ax xy yb.
+apply: ltr0_derive1_lt_cc; [ exact: df | exact: f'0 | by [] | | | by [] ];
+  rewrite !in_itv/= ?ax ?yb ?andbT/=.
+  by rewrite (le_trans _ (ltW xy)).
+by rewrite (le_trans (ltW xy)).
+Qed.
+
+#[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
+  H : x \is_near _ |- _ => by near: x; apply: nbhs_pinfty_ge; rewrite num_real end : core.
+#[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
+  H : x \is_near _ |- _ => by near: x; apply: nbhs_ninfty_le; rewrite num_real end : core.
 
 Lemma ler0_derive1_nincry {R : realType} (f : R -> R) (a : R) :
   (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
@@ -1816,18 +1801,14 @@ Lemma ler0_derive1_nincry {R : realType} (f : R -> R) (a : R) :
   {within `[a, +oo[, continuous f} ->
   forall x y, a <= x -> x <= y -> f y <= f x.
 Proof.
-move=> fdrvbl dfle0 fcont x y ax xy.
+move=> df dfle0 cf x y ax xy.
 near (pinfty_nbhs R)%R => N.
-apply: (@ler0_derive1_nincr _ _ a N) => //.
-- move=> r /[!in_itv]/= /andP[ar rN].
-  by apply: fdrvbl; rewrite !in_itv/= andbT ar.
-- move=> r /[!in_itv]/= /andP[ar rN].
-  by apply: dfle0; rewrite !in_itv/= andbT ar.
-- apply: continuous_subspaceW fcont.
-  exact: subset_itvl.
-- near: N.
-  apply: nbhs_pinfty_ge.
-  by rewrite num_real.
+apply: (@ler0_derive1_le_cc _ _ a N) => [r|r| | | | // ]; rewrite ?in_itv/=.
+- by move=> /andP[ar rN]; apply: df; rewrite !in_itv/= andbT ar.
+- by move=> /andP[ar rN]; apply: dfle0; rewrite !in_itv/= andbT ar.
+- exact/continuous_subspaceW/cf/subset_itvl.
+- by rewrite (le_trans ax)/=.
+- by rewrite ax/=.
 Unshelve. all: end_near. Qed.
 
 Lemma ler0_derive1_nincrNy {R : realType} (f : R -> R) (b : R) :
@@ -1836,18 +1817,14 @@ Lemma ler0_derive1_nincrNy {R : realType} (f : R -> R) (b : R) :
   {within `]-oo, b], continuous f} ->
   forall x y, x <= y -> y <= b -> f y <= f x.
 Proof.
-move=> fdrvbl dfle0 fcont x y ax xy.
+move=> df dfle0 cf x y xy yb.
 near (ninfty_nbhs R)%R => N.
-apply: (@ler0_derive1_nincr _ _ N b) => //.
-- move=> r /[!in_itv]/= /andP[Nr rb].
-  by apply: fdrvbl; rewrite !in_itv/= rb.
-- move=> r /[!in_itv]/= /andP[Nr rb].
-  by apply: dfle0; rewrite !in_itv/= rb.
-- apply: continuous_subspaceW fcont.
-  exact: subset_itvr.
-- near: N.
-  apply: nbhs_ninfty_le.
-  by rewrite num_real.
+apply: (@ler0_derive1_le_cc _ _ N b) => [r|r| | | | // ]; rewrite ?in_itv/=.
+- by move=> /andP[Nr rb]; apply: df; rewrite !in_itv/= rb.
+- by move=> /andP[Nr rb]; apply: dfle0; rewrite !in_itv/= rb.
+- exact/continuous_subspaceW/cf/subset_itvr.
+- by rewrite yb andbT.
+by rewrite (le_trans xy)//= andbT.
 Unshelve. all: end_near. Qed.
 
 Lemma ger0_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
@@ -1856,33 +1833,29 @@ Lemma ger0_derive1_ndecr (R : realType) (f : R -> R) (a b : R) :
   {within `[a,b], continuous f} ->
   forall x y, a <= x -> x <= y -> y <= b -> f x <= f y.
 Proof.
-move=> fdrvbl dfge0 fcont x y; rewrite -[f _ <= _]lerN2.
-apply (@ler0_derive1_nincr _ (- f)) => t tab; first exact/derivableN/fdrvbl.
-  rewrite derive1E deriveN; last exact: fdrvbl.
-  by rewrite oppr_le0 -derive1E; apply: dfge0.
-by apply: continuousN; exact: fcont.
+move=> df dfge0 cf x y ax xy yb.
+by apply: (@ger0_derive1_le_cc _ _ a b) => //;
+  rewrite in_itv/= ?(le_trans _ xy)//= ?(le_trans xy) ?andbT.
 Qed.
 #[deprecated(since="mathcomp-analysis 1.9.0",
   note="renamed to `ger0_derive1_ndecr`")]
 Notation le0r_derive1_ndecr := ger0_derive1_ndecr (only parsing).
 
-Lemma ger0_derive1_ndecry {R : realType} (f : R -> R) (a b : R) :
+Lemma ger0_derive1_ndecry {R : realType} (f : R -> R) (a : R) :
   (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
   (forall x, x \in `]a, +oo[%R -> 0 <= f^`() x) ->
   {within `[a, +oo[, continuous f} ->
   forall x y, a <= x -> x <= y -> f x <= f y.
 Proof.
-move=> fdrvbl dfge0 fcont x y ax xy; rewrite -[f _ <= _]lerN2.
-apply: (@ler0_derive1_nincry _ (- f)) => //.
-- move=> r /[!in_itv]/=/[!andbT] xr; apply/derivableN.
-  by apply: fdrvbl; rewrite !in_itv/= andbT (le_lt_trans ax).
-- move=> r /[!in_itv]/=/[!andbT] /(le_lt_trans ax) xr.
-  rewrite derive1E deriveN; last by (apply: fdrvbl; rewrite in_itv/= andbT).
-  by rewrite -derive1E oppr_le0; apply: dfge0; rewrite in_itv/= andbT.
-- move=> r; apply: continuousN; move: r.
-  apply: continuous_subspaceW fcont.
-  exact: subset_itvr.
-Qed.
+move=> df dfge0 cf x y ax xy.
+near (pinfty_nbhs R)%R => N.
+apply: (@ger0_derive1_le_cc _ _ a N) => [r|r| | | | // ]; rewrite ?in_itv/=.
+- by move=> /andP[ar rN]; apply: df; rewrite !in_itv/= andbT ar.
+- by move=> /andP[ar rN]; apply: dfge0; rewrite !in_itv/= andbT ar.
+- exact/continuous_subspaceW/cf/subset_itvl.
+- by rewrite (le_trans ax)/=.
+- by rewrite (le_trans ax)/=.
+Unshelve. all: end_near. Qed.
 
 Lemma ger0_derive1_ndecrNy {R : realType} (f : R -> R) (b : R) :
   (forall x, x \in `]-oo, b[%R -> derivable f x 1) ->
@@ -1890,17 +1863,15 @@ Lemma ger0_derive1_ndecrNy {R : realType} (f : R -> R) (b : R) :
   {within `]-oo, b], continuous f} ->
   forall x y, x <= y -> y <= b -> f x <= f y.
 Proof.
-move=> fdrvbl dfge0 fcont x y xy yb; rewrite -[f _ <= _]lerN2.
-apply: (@ler0_derive1_nincrNy _ (- f)) => //.
-- move=> r /[!in_itv]/= ry; apply/derivableN.
-  by apply: fdrvbl; rewrite !in_itv/= (lt_le_trans ry).
-- move=> r /[!in_itv]/= ry; have rb := lt_le_trans ry yb.
-  rewrite derive1E deriveN; last by (apply: fdrvbl; rewrite in_itv/=).
-  by rewrite -derive1E oppr_le0; apply: dfge0; rewrite in_itv/=.
-- move=> r; apply: continuousN; move: r.
-  apply: continuous_subspaceW fcont.
-  exact: subset_itvl.
-Qed.
+move=> df dfge0 cf x y xy yb.
+near (ninfty_nbhs R)%R => N.
+apply: (@ger0_derive1_le_cc _ _ N b) => [r|r| | | | // ]; rewrite ?in_itv/=.
+- by move=> /andP[Nr rb]; apply: df; rewrite !in_itv/=.
+- by move=> /andP[Nr rb]; apply: dfge0; rewrite !in_itv/=.
+- exact/continuous_subspaceW/cf/subset_itvr.
+- by rewrite (le_trans xy)//= andbT.
+- by rewrite yb andbT.
+Unshelve. all: end_near. Qed.
 
 Lemma decr_derive1_le0 {R : realFieldType} (f : R -> R) (D : set R) (x : R) :
   {in D° : set R, forall x, derivable f x 1%R} ->
