@@ -98,10 +98,10 @@ Local Notation "'d1 f" := (partial1of2 f).
 Let partial1_u x t : ('d1 u) x t = - 2 * x * gauss_fun x * gauss_fun (t * x).
 Proof.
 rewrite partial1of2E /u /= deriveMr//= -derive1E.
-rewrite derive1_comp// [in X in _ * (_ * X)]derive1E deriveMr//=.
+rewrite derive1_comp// [in X in _ * (_ * X)]derive1Mr//.
 rewrite mulrCA (mulrA (oneDsqr _)^-1) mulVf// mul1r.
-rewrite deriveN// exp_derive expr1 mulrC !mulNr; congr -%R.
-rewrite -mulrA scaler1; congr *%R.
+rewrite derive1N// exp_derive1 expr1 mulrC !mulNr; congr -%R.
+rewrite -mulrA; congr *%R.
 rewrite -expRD /oneDsqr mulrDr mulr1 exprMn opprD mulrC.
 by rewrite derive1E -[in RHS]derive_expR.
 Qed.
@@ -242,8 +242,7 @@ rewrite [LHS]mulrC.
 rewrite [RHS]mulrCA; congr *%R.
 rewrite /integral0_gauss [in LHS]/Rintegral.
 have derM : ( *%R^~ x)^`() = cst x.
-  apply/funext => z.
-  by rewrite derive1E deriveMr// derive_id mulr1.
+  by apply/funext => z; rewrite derive1Mr// derive1_id mulr1.
 have := @integration_by_substitution_increasing R (fun t => t * x)
   gauss_fun _ _ ltr01.
 rewrite -/mu mul0r mul1r => ->//=; last 6 first.
