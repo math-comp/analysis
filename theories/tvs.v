@@ -282,6 +282,7 @@ Local Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: 
 Proof.
 (* NB: This lemma is proved once again in normedtype, in a shorter way with much more machinery *)
 (*     To be rewritten once normedtype is split and tvs can depend on these lemmas *)
+(* NB2: seems hard to, as it depends on  cvgrPdist_lt which is proved in Section pseudoMetricNormedZmod_numDomainType with context {K : numDomainType} {V : pseudoMetricNormedZmodType K}. *)  
 move=> [k x]; apply/cvg_ballP => e le0 /=.
 pose M : R := maxr (`|e| + 1) (maxr `|k| (`|x| + `|x| + 2^-1 + 1)).
 have M0l : 0 < `|e| + 1 by rewrite ltr_wpDl.
@@ -552,19 +553,16 @@ HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
 Lemma lcfun0 : (\0 : {linear_continuous E -> F}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
 
-(*temp copy of lemma in normedtype, to be refactored *)
+(* NB TODO: move section cvg_composition_pseudometric in normedtype.v here, to generalize it on tvstype *)
+(*Next lemmas are duplicates *)
 
 Lemma cvgD  (U : set_system E) {FF : Filter U} f g a b : f @ U --> a -> g @ U --> b -> (f \+ g) @ U --> a + b.
 Proof. by move=> ? ?; apply: continuous2_cvg => //; apply add_continuous. Qed.
 
-(* Duplicate continuousD in normedtype *)
 Lemma continuousD f g : continuous (f \+ g).
 Proof. by move=> /= x; apply: cvgD; apply: cts_fun. Qed.
 
 HB.instance Definition _ f g := isContinuous.Build E F (f \+ g)  (@continuousD f g).
-
-(* Duplicate continuousM in normedtype *)
-
 
 Lemma cvgZ  (U : set_system E) {FF : Filter U} l f r a : l @ U  --> r -> f @ U --> a ->
                      l x *: f x @[x --> U] --> r *: a.
