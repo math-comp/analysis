@@ -1268,9 +1268,9 @@ End derive_id.
 
 Section Derive_lemmasVR.
 Variables (R : numFieldType) (V : normedModType R).
-Implicit Types f g : V -> R.
+Implicit Types (f g : V -> R) (x v : V).
 
-Fact der_mult f g (x v : V) :
+Fact der_mult f g x v :
   derivable f x v -> derivable g x v ->
   (fun h => h^-1 *: (((f * g) \o shift x) (h *: v) - (f * g) x)) @
   0^' --> f x *: 'D_v g x + g x *: 'D_v f x.
@@ -1290,29 +1290,29 @@ suff : {for 0, continuous (fun h : R => f(h *: v + x))}.
 exact/differentiable_continuous/derivable1_diffP/(derivable1P _ _ _).1.
 Qed.
 
-Lemma deriveM f g (x v : V) : derivable f x v -> derivable g x v ->
+Lemma deriveM f g x v : derivable f x v -> derivable g x v ->
   'D_v (f * g) x = f x *: 'D_v g x + g x *: 'D_v f x.
 Proof. by move=> df dg; apply: cvg_lim (der_mult df dg). Qed.
 
-Lemma derivableM f g (x v : V) :
+Lemma derivableM f g x v :
   derivable f x v -> derivable g x v -> derivable (f * g) x v.
 Proof.
 move=> df dg; apply/cvg_ex; exists (f x *: 'D_v g x + g x *: 'D_v f x).
 exact: der_mult.
 Qed.
 
-Lemma deriveMr f (r : R) (x v : V) :
-  derivable f x v -> 'D_v (r \o* f) x = (r * 'D_v f x)%R.
+Lemma deriveMr f (r : R) x v :
+  derivable f x v -> 'D_v (r \o* f) x = r * 'D_v f x.
 Proof.
 move/deriveM => /(_ _ (derivable_cst _ _ _)) ->.
 by rewrite derive_cst scaler0 add0r.
 Qed.
 
-Lemma deriveMl f (r : R) (x v : V) :
-  derivable f x v -> 'D_v (r \*o f) x = (r * 'D_v f x)%R.
+Lemma deriveMl f (r : R) x v :
+  derivable f x v -> 'D_v (r \*o f) x = r * 'D_v f x.
 Proof. by move=> fxv; rewrite -deriveMr// mul_funC. Qed.
 
-Global Instance is_deriveM f g (x v : V) (df dg : R) :
+Global Instance is_deriveM f g x v (df dg : R) :
   is_derive x v f df -> is_derive x v g dg ->
   is_derive x v (f * g) (f x *: dg + g x *: df).
 Proof.
@@ -1320,7 +1320,7 @@ move=> dfx dgx; apply: DeriveDef; first exact: derivableM.
 by rewrite deriveM // !derive_val.
 Qed.
 
-Global Instance is_deriveX f n (x v : V) (df : R) :
+Global Instance is_deriveX f n x v (df : R) :
   is_derive x v f df -> is_derive x v (f ^+ n.+1) ((n.+1%:R * f x ^+n) *: df).
 Proof.
 move=> dfx; elim: n => [|n ihn]; first by rewrite expr1 expr0 mulr1 scale1r.
@@ -1329,14 +1329,14 @@ rewrite scalerA -scalerDl mulrCA -[f x * _]exprS.
 by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
 Qed.
 
-Lemma derivableX f n (x v : V) : derivable f x v -> derivable (f ^+ n) x v.
+Lemma derivableX f n x v : derivable f x v -> derivable (f ^+ n) x v.
 Proof. by case: n => [_|n /derivableP]; [rewrite expr0|]. Qed.
 
-Lemma deriveX f n (x v : V) : derivable f x v ->
+Lemma deriveX f n x v : derivable f x v ->
   'D_v (f ^+ n.+1) x = (n.+1%:R * f x ^+ n) *: 'D_v f x.
 Proof. by move=> /derivableP df; rewrite derive_val. Qed.
 
-Fact der_inv f (x v : V) : f x != 0 -> derivable f x v ->
+Fact der_inv f x v : f x != 0 -> derivable f x v ->
   (fun h => h^-1 *: (((fun y => (f y)^-1) \o shift x) (h *: v) - (f x)^-1)) @
   0^' --> - (f x) ^-2 *: 'D_v f x.
 Proof.
@@ -1369,7 +1369,7 @@ Lemma deriveV f x v : f x != 0 -> derivable f x v ->
   'D_v (fun y => (f y)^-1) x = - (f x) ^- 2 *: 'D_v f x.
 Proof. by move=> fxn0 df; apply: cvg_lim (der_inv fxn0 df). Qed.
 
-Lemma derivableV f (x v : V) :
+Lemma derivableV f x v :
   f x != 0 -> derivable f x v -> derivable (fun y => (f y)^-1) x v.
 Proof.
 move=> df dg; apply/cvg_ex; exists (- (f x) ^- 2 *: 'D_v f x).
@@ -1379,17 +1379,27 @@ Qed.
 End Derive_lemmasVR.
 
 Lemma derive_shift {R : numFieldType} (v k : R) :
-  'D_v (shift k : R^o -> R^o) = cst v.
+  'D_v (shift k : R -> R) = cst v.
 Proof.
 by apply/funext => x/=; rewrite deriveD// derive_id derive_cst addr0.
 Qed.
 
 Lemma is_derive_shift {R : numFieldType} x v (k : R) :
-  is_derive x v (shift k : R^o -> R^o) v.
+  is_derive x v (shift k) v.
 Proof. by apply: DeriveDef => //; rewrite derive_val addr0. Qed.
 
 Lemma derive1_cst {R : numFieldType} (k : R) t : (cst k)^`() t = 0.
 Proof. by rewrite derive1E derive_cst. Qed.
+
+Lemma derive1Mr {R : numFieldType} (f : R -> R) (x r : R) :
+  derivable f x 1 ->
+  (fun x => f x * r)^`()%classic x = r * f^`()%classic x.
+Proof. by move=> ?; rewrite derive1E deriveMr ?derive1E. Qed.
+
+Lemma derive1Ml {R : numFieldType} (f : R -> R) (x r : R) :
+  derivable f x 1 ->
+  (fun x => r * f x)^`()%classic x = r * f^`()%classic x :> R.
+Proof. by move=> ?; rewrite derive1E deriveMl ?derive1E. Qed.
 
 Lemma exprn_derivable {R : numFieldType} n (x : R) v :
   derivable (@GRing.exp R ^~ n) x v.
