@@ -510,9 +510,9 @@ Lemma lcfunE (R : numDomainType) (E : tvsType R)  (F : tvsType R) (s : GRing.Sca
   (f \in (@lcfun R E F s) ) ->
   lcfun_spec f f (f \in (@lcfun R E F s)).
 Proof.
-  move=> f_lc. 
-(* move=> x_gt0; case: real_ltgt0P (x_gt0) => []; rewrite ?gtr0_real // => _ _. *)
-(* by rewrite -[x]/(PosNum x_gt0)%:num; constructor. *)
+  move=> f_lc. have -> : (f \in lcfun) = true. admit.
+  have {2}-> :(f = (@lcfun_Sub R E F s f f_lc)) by rewrite lcfun_valP.
+  Fail constructor.
 Admitted.
 
 Section lcfun_comp.
@@ -537,7 +537,7 @@ HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
 End lcfun_comp.
 
 Section lcfun_lmodtype.
-Context {R : numDomainType} {E F G: tvsType R} {s : GRing.Scale.law R F} {s' : GRing.Scale.law R G}.
+Context {R : numFieldType} {E F G: tvsType R}  {s : GRing.Scale.law R F}.
 
 Implicit Types (r : R) (f g : {linear_continuous E -> F}) (h : {linear_continuous F -> G}).  
 
@@ -552,42 +552,61 @@ HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
 Lemma lcfun0 : (\0 : {linear_continuous E -> F}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
 
-Lemma add_fun_continuous f g : continuous (f \+ g).
+(*temp copy of lemma in normedtype, to be refactored *)
+
+Lemma cvgD  (U : set_system E) {FF : Filter U} f g a b : f @ U --> a -> g @ U --> b -> (f \+ g) @ U --> a + b.
+Proof. by move=> ? ?; apply: continuous2_cvg => //; apply add_continuous. Qed.
+
+(* Duplicate continuousD in normedtype *)
+Lemma continuousD f g : continuous (f \+ g).
+Proof. by move=> /= x; apply: cvgD; apply: cts_fun. Qed.
+
+HB.instance Definition _ f g := isContinuous.Build E F (f \+ g)  (@continuousD f g).
+
+(* Duplicate continuousM in normedtype *)
+
+
+Lemma cvgZ  (U : set_system E) {FF : Filter U} l f r a : l @ U  --> r -> f @ U --> a ->
+                     l x *: f x @[x --> U] --> r *: a.
+Proof. move=> ? ?; apply: continuous2_cvg => //. Fail apply: scale_continuous.
+Admitted. (* weird, normedtype uses "apply scale_continuous" which leads to infinite computation here *)
+
+Lemma cvgZr (U : set_system E) {FF : Filter U} k f a : f @ U --> a -> k \*: f @ U --> k *: a.
+Proof. apply: cvgZ => //; exact: cvg_cst. Qed.
+
+Lemma continuousM r g : continuous (r \*: g).
+Proof. by move=> /= x; apply: cvgZr; apply: cts_fun. Qed.
+
+HB.instance Definition _ r g := isContinuous.Build E F (r \*: g)  (@continuousM r g).
+
+Lemma continuousB f : continuous (\- f).
 Proof.
-have -> : (f  \+ g ) = ( fun x => x.1 + x.2) \o  ( fun x => (f x , g x )) by apply: funext =>  x /=.
-move=> x; apply: continuous_comp; last by apply: add_continuous.
-suff  : continuous f /\ continuous g by  admit. 
-by split; apply: cts_fun.
 Admitted.
 
-HB.instance Definition _ f g := isContinuous.Build E F (f \+ g)  (@add_fun_continuous f g).
+HB.instance Definition _ f := isContinuous.Build E F (\- f)  (@continuousB f).
 
-Lemma scale_fun_continuous r g : continuous (r \*: g).
+Lemma add_fun_is_linear f g : linear (f \+ g). 
 Proof.
-Admitted.
-
-HB.instance Definition _ r g := isContinuous.Build E F (r \*: g)  (@scale_fun_continuous r g).
-
-Lemma opp_fun_continuous f : continuous (\- f).
-Proof.
-Admitted.
-
-HB.instance Definition _ f := isContinuous.Build E F (\- f)  (@opp_fun_continuous f).
-
-(* Context (f g : {linear_continuous E -> F}) (r : R). *)
-(* Check (r \*: f \+ g : {linear_continuous E -> F}). *)
-
-
-
+  move => r x y.
+  by rewrite /= ?raddf0 ?addr0// !raddfD addrCA -!addrA addrCA /= !linearZ_LR. 
+Qed.
+  
 Lemma lcfun_submod_closed  : submod_closed (@lcfun R E F s).
 Proof.
   split; first by rewrite inE; split; first apply/linearP; apply: cst_continuous.  
   move=> r /= _ _  /lcfunE[f] /lcfunE[g].
-  rewrite !inE /= =>  [[lf cf] [lg cg]]; split.
-  (* HB pack et subst *) (* move => l u v. apply/linearP.*)   admit.
-  Check (@add_fun_continuous _ f g).
+  rewrite inE /=; split. 
+  Fail apply: (@GRing.add_fun_is_semi_additive E F ( s r f) g).
+  Fail apply: add_fun_is_linear.
+  move => l a b. 
+  rewrite /= ?raddf0 ?addr0// !raddfD /=.
+  Fail rewrite (@raddfD _ _  (r \*: f \+ g) (l *: a) b).
+  rewrite addrCA -!addrA addrCA /=. Check linearZ_LR. Check (@linearZ_LR R E F _ ((r \*: f + g)) l a).
+  Fail rewrite -[s]/(GRing.scale).
+  Unset Printing Notations.
+  admit.
+  apply: continuousD.
 Admitted.  
-
 
 HB.instance Definition _ :=
   @GRing.isSubmodClosed.Build _  _ lcfun lcfun_submod_closed.
