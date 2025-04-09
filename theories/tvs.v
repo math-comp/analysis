@@ -280,9 +280,11 @@ Qed.
 
 Local Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
-(* NB: This lemma is proved once again in normedtype, in a shorter way with much more machinery *)
-(*     To be rewritten once normedtype is split and tvs can depend on these lemmas *)
-(* NB2: seems hard to, as it depends on  cvgrPdist_lt which is proved in Section pseudoMetricNormedZmod_numDomainType with context {K : numDomainType} {V : pseudoMetricNormedZmodType K}. *)  
+(* NB: This lemma is proved once again in normedtype, in a shorter way with
+  much more machinery *)
+(* NB2: make tvs.v depend on pseudometric_normed_Zmodule.v once PR#1544 is
+merged.  The two structures are independant and this will allow to use lemmas as
+cvgr_dist on more concrete specific instances of tvstype*)
 move=> [k x]; apply/cvg_ballP => e le0 /=.
 pose M : R := maxr (`|e| + 1) (maxr `|k| (`|x| + `|x| + 2^-1 + 1)).
 have M0l : 0 < `|e| + 1 by rewrite ltr_wpDl.
@@ -415,7 +417,7 @@ End prod_Tvs.
 
 
 HB.structure Definition LinearContinuous (K : numDomainType) (E : NbhsLmodule.type K)
-  (F : NbhsZmodule.type) s :=
+  (F : NbhsZmodule.type) (s : K -> F -> F) :=
   {f of @GRing.Linear K E F s f &  @Continuous E F f }.
 
 HB.factory Structure isLinearContinuous  (K : numDomainType) (E : NbhsLmodule.type K)
@@ -449,7 +451,6 @@ Notation "{ 'linear_continuous' U -> V | s }" := (@LinearContinuous.type _ U%typ
   : type_scope.
 Notation "{ 'linear_continuous' U -> V }" := {linear_continuous U%type -> V%type | *:%R}
   : type_scope.
-
   
 Section lcfun.
 Context {R : numDomainType} {E : NbhsLmodule.type R}
@@ -481,13 +482,6 @@ congr LinearContinuous.Class.
 - by congr isContinuous.Axioms_; apply: Prop_irrelevance.
 Qed.
 
-(* Lemma lcfun_elim (K : ( E -> F) -> Type) : *)
-(*  ( forall u : T, K u) ->  (forall f (Pf : f \in lcfun),  K f). *)
-(* Proof. *)
-(* Admitted. (* HB.pack*) *) (* marche pas bien avec la tactique elim *)
-
-  
-
 Lemma lcfun_valP f (Pf : f \in lcfun) : lcfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
@@ -497,27 +491,20 @@ Lemma lcfuneqP (f g : {linear_continuous E -> F | s}) : f = g <-> f =1 g.
 Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {linear_continuous E -> F | s} by <:].
-End lcfun.
 
-Variant lcfun_spec (R : numDomainType) (E : tvsType R)  (F : tvsType R) (f : E -> F) :
-  (E -> F) -> bool -> Type :=
-  | Islcfun (l : {linear_continuous E -> F}) : lcfun_spec f (l) true.
-
-Check posnumP.
+Variant lcfun_spec (f : E -> F) : (E -> F) -> bool -> Type :=
+  | Islcfun (l : {linear_continuous E -> F | s}) : lcfun_spec f l true.
 
 (*to be renamed ?*)
-Lemma lcfunE (R : numDomainType) (E : tvsType R)  (F : tvsType R) (s : GRing.Scale.law R F)
-  (f : E -> F) :
-  (f \in (@lcfun R E F s) ) ->
-  lcfun_spec f f (f \in (@lcfun R E F s)).
+Lemma lcfunE (f : E -> F) : (f \in lcfun) -> lcfun_spec f f (f \in lcfun).
 Proof.
-  move=> f_lc. have -> : (f \in lcfun) = true. admit.
-  have {2}-> :(f = (@lcfun_Sub R E F s f f_lc)) by rewrite lcfun_valP.
-  Fail constructor.
-Admitted.
+move=> /[dup] f_lc ->.
+have {2}-> :(f = (lcfun_Sub f_lc)) by rewrite lcfun_valP.
+constructor.
+Qed.
 
+End lcfun.
 Section lcfun_comp.
-
 
 Context {R : numDomainType} {E F : NbhsLmodule.type R}
   {S : NbhsZmodule.type} {s : GRing.Scale.law R S}
@@ -534,11 +521,11 @@ HB.instance Definition _ := @isLinearContinuous.Build R E S s (g \o f)
   lcfun_comp_subproof1 lcfun_comp_subproof2.
 
 (* TODO: do the identity? *)
-
 End lcfun_comp.
 
 Section lcfun_lmodtype.
-Context {R : numFieldType} {E F G: tvsType R}  {s : GRing.Scale.law R F}.
+  Context {R : numFieldType} {E F G: tvsType R}.
+    (* {s : GRing.Scale.law R F}. *)
 
 Implicit Types (r : R) (f g : {linear_continuous E -> F}) (h : {linear_continuous F -> G}).  
 
@@ -553,8 +540,10 @@ HB.instance Definition _ := isContinuous.Build E F \0 null_fun_continuous.
 
 Lemma lcfun0 : (\0 : {linear_continuous E -> F}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
 
-(* NB TODO: move section cvg_composition_pseudometric in normedtype.v here, to generalize it on tvstype *)
-(*Next lemmas are duplicates *)
+(* NB TODO: move section cvg_composition_pseudometric in normedtype.v here, to
+generalize it on tvstype *)
+(* Next lemmas are duplicates *)
+(* TODO once PR1544 is merged *)
 
 Lemma cvgD  (U : set_system E) {FF : Filter U} f g a b : f @ U --> a -> g @ U --> b -> (f \+ g) @ U --> a + b.
 Proof. by move=> ? ?; apply: continuous2_cvg => //; apply add_continuous. Qed.
@@ -566,8 +555,9 @@ HB.instance Definition _ f g := isContinuous.Build E F (f \+ g)  (@continuousD f
 
 Lemma cvgZ  (U : set_system E) {FF : Filter U} l f r a : l @ U  --> r -> f @ U --> a ->
                      l x *: f x @[x --> U] --> r *: a.
-Proof. move=> ? ?; apply: continuous2_cvg => //. Fail apply: scale_continuous.
-Admitted. (* weird, normedtype uses "apply scale_continuous" which leads to infinite computation here *)
+Proof.
+move=> ? ?; apply: continuous2_cvg => //; exact: (scale_continuous (_, _)).
+Qed.
 
 Lemma cvgZr (U : set_system E) {FF : Filter U} k f a : f @ U --> a -> k \*: f @ U --> k *: a.
 Proof. apply: cvgZ => //; exact: cvg_cst. Qed.
@@ -577,42 +567,19 @@ Proof. by move=> /= x; apply: cvgZr; apply: cts_fun. Qed.
 
 HB.instance Definition _ r g := isContinuous.Build E F (r \*: g)  (@continuousM r g).
 
-Lemma continuousB f : continuous (\- f).
+Lemma lcfun_submod_closed  : submod_closed (@lcfun R E F *:%R).
 Proof.
-Admitted.
-
-HB.instance Definition _ f := isContinuous.Build E F (\- f)  (@continuousB f).
-
-Lemma add_fun_is_linear f g : linear (f \+ g). 
-Proof.
-  move => r x y.
-  by rewrite /= ?raddf0 ?addr0// !raddfD addrCA -!addrA addrCA /= !linearZ_LR. 
+split; first by rewrite inE; split; first apply/linearP; apply: cst_continuous.  
+move=> r /= _ _  /lcfunE[f] /lcfunE[g].
+by rewrite inE /=; split; [exact: linearP | exact: continuousD].
 Qed.
-  
-Lemma lcfun_submod_closed  : submod_closed (@lcfun R E F s).
-Proof.
-  split; first by rewrite inE; split; first apply/linearP; apply: cst_continuous.  
-  move=> r /= _ _  /lcfunE[f] /lcfunE[g].
-  rewrite inE /=; split. 
-  Fail apply: (@GRing.add_fun_is_semi_additive E F ( s r f) g).
-  Fail apply: add_fun_is_linear.
-  move => l a b. 
-  rewrite /= ?raddf0 ?addr0// !raddfD /=.
-  Fail rewrite (@raddfD _ _  (r \*: f \+ g) (l *: a) b).
-  rewrite addrCA -!addrA addrCA /=. Check linearZ_LR. Check (@linearZ_LR R E F _ ((r \*: f + g)) l a).
-  Fail rewrite -[s]/(GRing.scale).
-  Unset Printing Notations.
-  admit.
-  apply: continuousD.
-Admitted.  
 
 HB.instance Definition _ :=
   @GRing.isSubmodClosed.Build _  _ lcfun lcfun_submod_closed.
 
 HB.instance Definition _ :=
-  [SubChoice_isSubLmodule of {linear_continuous E -> F | s} by <:].
+  [SubChoice_isSubLmodule of {linear_continuous E -> F } by <:].
 
-Check {linear_continuous E -> F |s } : lmodType _ .
 End lcfun_lmodtype.
 
 
