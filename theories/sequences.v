@@ -2131,7 +2131,7 @@ move=> u_ub u_lb; have : sups (- u) @ \oo --> inf (range (sups (- u))).
   apply: cvg_sups_inf.
   - by move: u_lb => /has_lb_ubN; rewrite image_comp.
   - by move: u_ub => /has_ub_lbN; rewrite image_comp.
-rewrite /inf => /(@cvg_comp _ _ _ _ (fun x => - x)).
+rewrite /inf => /(cvg_comp _ (fun x => - x)).
 rewrite supsN /comp /= -[in X in _ -> X --> _](opprK (infs u)); apply.
 rewrite image_comp /comp /= -(opprK (sup (range (infs u)))); apply: cvgN.
 by rewrite (_ : [set _ | _ in setT] = (range (infs u))) // opprK.
