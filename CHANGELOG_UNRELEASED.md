@@ -111,6 +111,11 @@
 
 - in `real_interval.v`:
   + lemma `itvNycEbigcap`
+- in `normedtype.v`:
+  + lemma `near0Z`
+
+- in `derive.v`:
+  + lemma `near_derive`
 
 ### Changed
 
