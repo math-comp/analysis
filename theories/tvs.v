@@ -39,6 +39,7 @@ From mathcomp Require Import separation_axioms.
 (* - The product of two Tvs is endowed with the structure of Tvs.             *)
 (******************************************************************************)
 
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -607,12 +608,24 @@ Definition uniform_lcfun_family R {E : tvsType R} (F : tvsType R) (s : GRing.Sca
   (fam : set E -> Prop) :=
   {linear_continuous E -> F | s}.
 
+Reserved Notation "'{' 'family_lcfun' fam , U '->' V '|' s '}'"
+  (at level 0, U at level 98, V at level 99,
+   format "{ 'family_lcfun' fam ,  U  ->  V  |  s }").
+Reserved Notation "'{' 'family_lcfun' fam , U '->' V '}'"
+  (at level 0, U at level 98, V at level 99,
+    format "{ 'family_lcfun'  fam , U  ->  V }").
+Reserved Notation "'{' 'family_lcfun' fam ,  F '-->' f '|' s '}'"
+  (at level 0, F at level 98, f at level 99,
+    format  "{ 'family_lcfun' fam , F --> f | s }").
+Reserved Notation "'{' 'family_lcfun' fam ,  F '-->' f  '}'"
+  (at level 0, F at level 98, f at level 99,
+   format  "{ 'family_lcfun' fam , F --> f }").
 Notation "{ 'family_lcfun' fam , U -> V '|' s }" :=  (@uniform_lcfun_family _ U V s fam).
 Notation "{ 'family_lcfun' fam , U -> V }" :=  (@uniform_lcfun_family _ U V ( *:%R) fam).
-(* Notation "{ 'family_lcfun' fam , F --> f '|' s }" := *)
-(*   (cvg_to F (@nbhs _ {family_lcfun fam, _ -> _ | _ } f)) : type_scope. *)
-(* Notation "{ 'family_lcfun' fam , F --> f }" := *)
-(*   (cvg_to F (@nbhs _ {family_lcfun fam, _ -> _ } f)) : type_scope. *)
+Notation "{ 'family_lcfun' fam , F --> f '|' s }" :=
+  (cvg_to F (@nbhs _ {family_lcfun fam , _ -> _ | _ } f)) : type_scope.
+Notation "{ 'family_lcfun' fam , F --> f }" :=
+  (cvg_to F (@nbhs _ {family_lcfun fam, _ -> _ } f)) : type_scope.
 
 
 
