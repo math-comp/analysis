@@ -267,7 +267,7 @@ Lemma open_comp  {T U : topologicalType} (f : T -> U) (D : set U) :
   {in f @^-1` D, continuous f} -> open D -> open (f @^-1` D).
 Proof.
 rewrite !openE => fcont Dop x /= Dfx.
-by apply: fcont; [rewrite inE|apply: Dop].
+by apply: fcont; [rewrite inE|exact: Dop].
 Qed.
 
 Lemma cvg_fmap {T: topologicalType} {U : topologicalType}
@@ -295,7 +295,7 @@ Lemma continuous_cvg {T : Type} {V U : topologicalType}
   f @ F --> a -> (h \o f) @ F --> h a.
 Proof.
 move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
-exact: (@cvg_comp _ _ _ _ h _ _ _ fa).
+exact: (cvg_comp _ h fa).
 Qed.
 
 Lemma continuous_is_cvg {T : Type} {V U : ptopologicalType} [F : set_system T]
@@ -314,7 +314,7 @@ Lemma continuous2_cvg {T : Type} {V W U : topologicalType}
   f @ F --> a -> g @ F --> b -> (fun x => h (f x) (g x)) @ F --> h a b.
 Proof.
 move=> h_continuous fa fb; apply: (cvg_trans _ h_continuous).
-exact: (@cvg_comp _ _ _ _ (fun x => h x.1 x.2) _ _ _ (cvg_pair fa fb)).
+exact: (cvg_comp _ (fun x => h x.1 x.2) (cvg_pair fa fb)).
 Qed.
 
 Lemma cvg_near_cst (T : Type) (U : topologicalType)
@@ -322,7 +322,7 @@ Lemma cvg_near_cst (T : Type) (U : topologicalType)
   (\forall x \near F, f x = l) -> f @ F --> l.
 Proof.
 move=> fFl P /=; rewrite !near_simpl => Pl.
-by apply: filterS fFl => _ ->; apply: nbhs_singleton.
+by apply: filterS fFl => _ ->; exact: nbhs_singleton.
 Qed.
 Arguments cvg_near_cst {T U} l {f F FF}.
 

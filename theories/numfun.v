@@ -308,7 +308,7 @@ Qed.
 Canonical indic_inum {T} {R : numDomainType} (A : set T) (x : T) :=
   Itv.mk (@num_spec_indic T R A x).
 
-Section indic_lemmas.
+Section indic_ringType.
 Context (T : Type) (R : ringType).
 Implicit Types A D : set T.
 
@@ -373,21 +373,7 @@ move=> x; rewrite fimfunE fsbig_finite//= (big_nth 0)/= big_mkord.
 exact: eq_bigr.
 Qed.
 
-End indic_lemmas.
-
-Lemma patch_indic T {R : numFieldType} (f : T -> R) (D : set T) :
-  f \_ D = (f \* \1_D)%R.
-Proof.
-apply/funext => x /=; rewrite patchE /= indicE.
-by case: ifPn => _; rewrite ?(mulr1, mulr0).
-Qed.
-
-Lemma epatch_indic T (R : numDomainType) (f : T -> \bar R) (D : set T) :
-  (f \_ D = f \* (EFin \o \1_D))%E.
-Proof.
-apply/funext => x; rewrite patchE/= indicE.
-by case: ifPn => /=; rewrite ?mule1// mule0.
-Qed.
+End indic_ringType.
 
 Lemma xsection_indic (R : ringType) T1 T2 (A : set (T1 * T2)) x :
   xsection A x = (fun y => (\1_A (x, y) : R)) @^-1` [set 1].
@@ -403,6 +389,26 @@ Proof.
 apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
   by rewrite mem_ysection => ->.
 by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
+Qed.
+
+Lemma bounded_indic T {R : numFieldType} (A : set T) :
+  [bounded \1_A x : R^o | x in A].
+Proof.
+by exists 1; split => // r r1 t At/=; rewrite indicE mem_set//= normr1 ltW.
+Qed.
+
+Lemma patch_indic T {R : numFieldType} (f : T -> R) (D : set T) :
+  f \_ D = (f \* \1_D)%R.
+Proof.
+apply/funext => x /=; rewrite patchE /= indicE.
+by case: ifPn => _; rewrite ?(mulr1, mulr0).
+Qed.
+
+Lemma epatch_indic T (R : numDomainType) (f : T -> \bar R) (D : set T) :
+  (f \_ D = f \* (EFin \o \1_D))%E.
+Proof.
+apply/funext => x; rewrite patchE/= indicE.
+by case: ifPn => /=; rewrite ?mule1// mule0.
 Qed.
 
 Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :
