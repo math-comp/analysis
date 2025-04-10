@@ -336,7 +336,7 @@ have dvg_approx := dvg_approx Dx fxoo.
     by move=> m n mn; have := nd_approx mn => /lefP; exact.
   move/nondecreasing_dvgn_lt => /(_ dvg_approx).
   by rewrite fxoo => ?; apply/cvgeryP.
-rewrite -(@fineK _ (f x)); first exact: (cvg_comp (cvg_approx f0 Dx fxoo)).
+rewrite -(@fineK _ (f x)); first exact: (cvg_comp _ _ (cvg_approx f0 Dx fxoo)).
 by rewrite ge0_fin_numE// f0.
 Qed.
 

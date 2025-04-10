@@ -34,7 +34,7 @@ Proof. by rewrite -expR0 ler_expR lerNl oppr0 sqr_ge0. Qed.
 
 Lemma cvg_gauss_fun : gauss_fun x @[x --> +oo%R] --> (0:R).
 Proof.
-by apply: (@cvg_comp _ _ _ (fun x => x ^+ 2) (fun x => expR (- x)));
+by apply: (cvg_comp (fun x => x ^+ 2) (fun x => expR (- x)));
   [exact: cvgr_expr2|exact: cvgr_expR].
 Qed.
 
@@ -44,7 +44,7 @@ Proof. by apply: measurableT_comp => //; exact: measurableT_comp. Qed.
 Lemma continuous_gauss_fun : continuous gauss_fun.
 Proof.
 move=> x; apply: (@continuous_comp _ _ _ (fun x : R => - x ^+ 2) expR).
-  apply: cvgN; apply: (@cvg_comp _ _ _ (fun z => z) (fun z => z ^+ 2)).
+  apply: cvgN; apply: (cvg_comp (fun z => z) (fun z => z ^+ 2)).
     exact: cvg_id.
   exact: exprn_continuous.
 exact: continuous_expR.
@@ -109,7 +109,7 @@ Qed.
 Let continuous_NsqrM x : continuous (fun r : R => - (r * x) ^+ 2).
 Proof.
 move=> z; apply: cvgN => /=.
-apply: (@cvg_comp _ _ _ (fun z => z * x) (fun z => z ^+ 2)).
+apply: (cvg_comp (fun z => z * x) (fun z => z ^+ 2)).
   by apply: cvgMl; exact: cvg_id.
 exact: exprn_continuous.
 Qed.
