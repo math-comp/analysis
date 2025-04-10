@@ -96,6 +96,12 @@
   + `lebesgue_integral_differentiation.v`
   + `lebesgue_integral.v`
 
+- in `normedtype.v`:
+  + lemma `near0Z`
+
+- in `derive.v`:
+  + lemma `near_derive`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package

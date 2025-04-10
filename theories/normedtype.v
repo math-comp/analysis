@@ -5395,6 +5395,11 @@ rewrite propeqE; split=> /= /nbhs_normP [_/posnumP[e] ye];
 apply/nbhs_normP; exists e%:num => //= t et.
   by apply: ye; rewrite /= distrC addrCA [x + _]addrC addrK distrC.
 by have /= := ye (t - (x - y)); rewrite opprB addrCA subrKA addrNK; exact.
+
+Lemma near0Z {R : numFieldType} {V : tvsType R} (y : V) (P : set V) :
+  (\forall x \near 0, P x) -> (\forall k \near 0, P (k *: y)).
+Proof.
+by have /= := @scalel_continuous R V y 0 _; rewrite scale0r; apply.
 Qed.
 
 Lemma cvg_comp_shift {T : Type} {K : numDomainType} {R : normedModType K}
