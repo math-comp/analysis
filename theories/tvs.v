@@ -85,6 +85,7 @@ Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A ->
   0 < lambda -> lambda < 1 -> lambda *: x + (1 - lambda) *: y \in A.
 
+(*TODO : name it convexTvs*)
 HB.mixin Record Uniform_isTvs (R : numDomainType) E
     of Uniform E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
@@ -581,6 +582,7 @@ HB.instance Definition _ :=
 HB.instance Definition _ :=
   [SubChoice_isSubLmodule of {linear_continuous E -> F } by <:].
 
+Check ({linear_continuous E -> F} : lmodType R).
 End lcfun_lmodtype.
 
 
@@ -604,50 +606,51 @@ tvstype *)
  
 (*What follows is adapted from {family fam, U -> V} in
 function_space.v. Should we copy instances from family fam to family_lcfun fam ? *)
-Definition uniform_lcfun_family R {E : tvsType R} (F : tvsType R) (s : GRing.Scale.law R F)
-  (fam : set E -> Prop) :=
-  {linear_continuous E -> F | s}.
+Definition uniform_lcfun_family R {E : tvsType R} (F : tvsType R)  (fam : set E -> Prop) : Type :=
+  {linear_continuous E -> F}.
 
-Reserved Notation "'{' 'family_lcfun' fam , U '->' V '|' s '}'"
-  (at level 0, U at level 98, V at level 99,
-   format "{ 'family_lcfun' fam ,  U  ->  V  |  s }").
+(* Reserved Notation "'{' 'family_lcfun' fam , U '->' V '|' s '}'" *)
+(*   (at level 0, U at level 98, V at level 99, *)
+(*    format "{ 'family_lcfun' fam ,  U  ->  V  |  s }"). *)
 Reserved Notation "'{' 'family_lcfun' fam , U '->' V '}'"
   (at level 0, U at level 98, V at level 99,
-    format "{ 'family_lcfun'  fam , U  ->  V }").
-Reserved Notation "'{' 'family_lcfun' fam ,  F '-->' f '|' s '}'"
-  (at level 0, F at level 98, f at level 99,
-    format  "{ 'family_lcfun' fam , F --> f | s }").
+    format "{ 'family_lcfun'  fam ,  U  ->  V }").
+(* Reserved Notation "'{' 'family_lcfun' fam ,  F '-->' f '|' s '}'" *)
+(*   (at level 0, F at level 98, f at level 99, *)
+(*     format  "{ 'family_lcfun' fam , F --> f | s }"). *)
 Reserved Notation "'{' 'family_lcfun' fam ,  F '-->' f  '}'"
   (at level 0, F at level 98, f at level 99,
-   format  "{ 'family_lcfun' fam , F --> f }").
-Notation "{ 'family_lcfun' fam , U -> V '|' s }" :=  (@uniform_lcfun_family _ U V s fam).
-Notation "{ 'family_lcfun' fam , U -> V }" :=  (@uniform_lcfun_family _ U V ( *:%R) fam).
-Notation "{ 'family_lcfun' fam , F --> f '|' s }" :=
-  (cvg_to F (@nbhs _ {family_lcfun fam , _ -> _ | _ } f)) : type_scope.
+   format  "{ 'family_lcfun' fam ,  F  -->  f }").
+(* Notation "{ 'family_lcfun' fam , U -> V '|' s }" :=  (@uniform_lcfun_family _ U V s fam). *)
+Notation "{ 'family_lcfun' fam , U -> V }" :=  (@uniform_lcfun_family _ U V fam).
+(* Notation "{ 'family_lcfun' fam , F --> f '|' s }" := *)
+(*   (cvg_to F (@nbhs _ {family_lcfun fam , _ -> _ | _ } f)) : type_scope. *)
 Notation "{ 'family_lcfun' fam , F --> f }" :=
-  (cvg_to F (@nbhs _ {family_lcfun fam, _ -> _ } f)) : type_scope.
+  (cvg_to F (@nbhs _ {family_lcfun fam,  _ -> _ } f)) : type_scope.
 
+(* we can´t use unfiorm, it is defined on E -> F and not on our space. We need to define it on {linear_continuous E -> F} , inducing its topology from uniform` E- > F *)
+HB.instance Definition _  R {E : tvsType R} (F : tvsType R)  (fam : set E -> Prop) :=
+  Topological.copy {family_lcfun fam, E -> F} (sup_topology (fun k : sigT fam =>
+       Uniform.class {uniform` projT1 k -> F})).
 
+HB.instance Definition _ {R} {U V : tvsType R}  (fam : set U -> Prop) :=
+  Uniform.copy {family_lcfun fam, U -> V} (sup_topology (fun k : sigT fam =>
+  Uniform.class {uniform` projT1 k -> V})).
 
-(* HB.instance Definition _ {R} {U V : tvsType R} (s : GRing.Scale.law R V) *)
-(*     (fam : set U -> Prop) := *)
-(*   Uniform.copy {family_lcfun fam, U -> V | s} (sup_topology (fun k : sigT fam => *)
-(*        Uniform.class {uniform` projT1 k -> V})). *)
-
-(* HB.factory Record UniformLinCont_isTvs (R : numDomainType) (E : tvsType R) (F : tvsType R) (B : set_system  E) of Topological {family_lcfun B , E -> F} & GRing.Lmodule {linear_continuous E -> F}  := { *)
-(*   bornoC : forall x : E, exists b : set E,  (B b) /\ (b x) ; *)
-(*   bornoU : forall P Q  : set E, B P -> B Q -> B (P `|` Q) ; *)
-(*   bornoS : forall P Q : set E, P `<=` Q -> B Q -> B  P *)
-(*   }. *)
+HB.factory Record UniformLinCont_isTvs (R : numDomainType) (E : tvsType R) (F : tvsType R) (B : set_system  E) of Topological {family_lcfun B , E -> F} & GRing.Lmodule {linear_continuous E -> F }  := {
+  bornoC : forall x : E, exists b : set E,  (B b) /\ (b x) ;
+  bornoU : forall P Q  : set E, B P -> B Q -> B (P `|` Q) ;
+  bornoS : forall P Q : set E, P `<=` Q -> B Q -> B  P
+  }.
 
 (* HB.builders Context R E F B of UniformLinCont_isTvs R E F B. *)
 
 
-(* (* HB.instance Definition _ := TopologicalLmod_isTvs {linearcontinuous E -> F} *) *)
-(* (*     entourage_filter entourage_refl *) *)
-(* (*     entourage_inv entourage_split_ex *) *)
-(* (*     nbhsE. *) *)
-(* (* HB.end. *) *)
+(* HB.instance Definition _ := TopologicalLmod_isTvs {linearcontinuous E -> F} *)
+(*     entourage_filter entourage_refl *)
+(*     entourage_inv entourage_split_ex *)
+(*     nbhsE. *)
+(* HB.end. *)
 
 
 
