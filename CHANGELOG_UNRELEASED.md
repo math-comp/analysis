@@ -96,6 +96,20 @@
   + `lebesgue_integral_differentiation.v`
   + `lebesgue_integral.v`
 
+- in `numfun.v`:
+  + lemma `bounded_indic`
+
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_indic_itv`
+
+- in `probability.v`:
+  + definitions `normal_fun`, `normal_peak`
+  + lemmas `measurable_normal_fun`, `normal_fun_ge0`, `normal_fun_center`
+  + lemmas `normal_peak_ge0`, `normal_peak_gt0`
+  + lemma `normal_pdfE`
+  + lemma `normal_pdf_ge0`, `normal_pdf_ub`
+  + lemma `integrable_normal_pdf`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
@@ -125,6 +139,12 @@
 
 - in `classical_sets.v`:
   + change implicit arguments of `subsetT`
+
+- in `filter.v`:
+  + change implicit arguments of `cvg_comp`
+
+- in `probability.v`:
+  + definition `normal_pdf` changed to use `normal_fun` and `normal_peak`
 
 ### Renamed
 
