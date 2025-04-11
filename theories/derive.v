@@ -1886,7 +1886,7 @@ Lemma near_eq_derivable (R : numFieldType) (V W : normedModType R)
   {near a, f =1 g} -> derivable f a v -> derivable g a v.
 Proof.
 move=> vn0 nfg /cvg_ex[/= l fl]; apply/cvg_ex; exists l => /=.
-by apply: cvg_trans fl; apply: near_eq_cvg; apply/cvg_within/near_derive.
+exact/(cvg_trans _ fl)/near_eq_cvg/cvg_within/near_eq_growth_rate.
 Qed.
 
 Lemma near_eq_derive (R : numFieldType) (V W : normedModType R)
@@ -1894,7 +1894,7 @@ Lemma near_eq_derive (R : numFieldType) (V W : normedModType R)
   v != 0 -> (\near a, f a = g a) -> 'D_v f a = 'D_v g a.
 Proof.
 move=> v0 fg; rewrite /derive; congr (lim _).
-rewrite eqEsubset; split; apply/near_eq_cvg; apply/cvg_within/near_derive => //.
+rewrite eqEsubset; split; apply/near_eq_cvg/cvg_within/near_eq_growth_rate => //.
 by near do apply/esym.
 Unshelve. all: by end_near. Qed.
 
