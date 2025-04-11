@@ -202,7 +202,7 @@ Lemma limf_esup_ge0 f F : ~ F set0 ->
 Proof.
 move=> F0 f0; rewrite limf_esupE; apply: lb_ereal_inf => /= x [A].
 have [-> /F0//|/set0P[y Ay FA] <-{x}] := eqVneq A set0.
-by apply: ereal_sup_le; exists (f y).
+by apply: ereal_sup_ge; exists (f y).
 Qed.
 
 End limf_esup_einf_realType.

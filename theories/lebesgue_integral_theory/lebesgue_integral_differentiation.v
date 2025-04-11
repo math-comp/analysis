@@ -424,7 +424,7 @@ Local Notation HL := HL_maximal.
 Lemma HL_maximal_ge0 f D : locally_integrable D f ->
   forall x, 0 <= HL (f \_ D) x.
 Proof.
-move=> Df x; apply: ereal_sup_le => //=.
+move=> Df x; apply: ereal_sup_ge => //=.
 pose k := \int[mu]_(x in D `&` ball x 1) `|f x|%:E.
 exists ((fine (mu (ball x 1)))^-1%:E * k); last first.
   rewrite mule_ge0 ?integral_ge0//.
