@@ -100,7 +100,7 @@
   + lemmas `nneseriesD1`, `geometric_ge0`
 
 - in `constructive_ereal.v`:
-  + lemmas `fin_numP_EFin`, `EFin_bigmax`
+  + lemmas `EFin_fin_numP`, `EFin_bigmax`
 
 ### Changed
 
