@@ -122,7 +122,7 @@ have gt0_e: 0 < e by rewrite subr_gt0.
 move=> x y; rewrite !inE/= /eclamp pmulr_rle0 // invr_le0.
 rewrite lern0 /= !ltr_distl => /andP[_ lt1] /andP[lt2 _].
 apply/(lt_trans lt1)/(le_lt_trans _ lt2).
-by rewrite lerBrDl addrCA -splitr /e addrCA subrr addr0.
+by rewrite lerBrDl addrCA -splitr /e addrC subrK.
 Qed.
 
 Lemma separable {R : realType} (l1 l2 : \bar R) :
@@ -303,9 +303,8 @@ Lemma ncvgM u v lu lv : ncvg u lu%:E -> ncvg v lv%:E ->
 Proof.
 move=> cu cv; pose a := u \- lu%:S; pose b := v \- lv%:S.
 have eq: (u \* v) =1 (lu * lv)%:S \+ ((lu%:S \* b) \+ (a \* v)).
-  move=> n; rewrite {}/a {}/b /= [u n+_]addrC [(_+_)*(v n)]mulrDl.
-  rewrite !addrA -[LHS]add0r; congr (_ + _); rewrite mulrDr.
-  by rewrite !(mulrN, mulNr) (addrCA (lu * lv)) subrr addr0 subrr.
+  move=> n; rewrite {}/a {}/b /=.
+  by rewrite addrC mulrBr addrAC subrK addrC mulrBl subrK.
 apply/(ncvg_eq eq); rewrite -[X in X%:E]addr0; apply/ncvgD.
   by apply/ncvgC. rewrite -[X in X%:E]addr0; apply/ncvgD.
 + apply/ncvgMr; first rewrite -[X in X%:E](subrr lv).
@@ -388,7 +387,7 @@ case: l1 l2 => [l1||] [l2||] //=; first last.
 move=> lt_12; pose e := l2 - l1 => /(_ (B l2 e)).
 case=> K cv; exists K => n /cv; rewrite !inE eclamp_id ?subr_gt0 //.
 rewrite ltr_distl => /andP[] /(le_lt_trans _) h _; apply: h.
-by rewrite {cv}/e opprB addrCA subrr addr0.
+by rewrite {cv}/e subKr.
 Qed.
 
 Lemma ncvg_lt (u : nat -> R) (l1 l2 : \bar R) :
