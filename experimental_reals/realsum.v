@@ -465,8 +465,7 @@ apply/eqP; case: (x =P _) => // /eqP /lt_total /orP[]; last first.
 move=> lt_xS; pose e := psum S - x.
   have ge0_e: 0 < e by rewrite subr_gt0.
 case: (sup_adherent ge0_e (summable_sup smS)) => y.
-case=> /= J ->; rewrite /e /psum (asboolT smS).
-rewrite opprB addrCA subrr addr0 => lt_xSJ.
+case=> /= J ->; rewrite /e /psum (asboolT smS) subKr => lt_xSJ.
 pose k := \max_(j : J) (val j); have lt_x_uSk: x < u k.+1.
   apply/(lt_le_trans lt_xSJ); rewrite /u big_ord_mkfset.
   rewrite (eq_bigr (S \o val)) => /= [j _|]; first by rewrite ger0_norm.
