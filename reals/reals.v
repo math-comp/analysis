@@ -700,13 +700,10 @@ have [/andP[a b] c] : x *+ n < m%:~R <= 1 + x *+ n /\ 1 + x *+ n < y *+ n.
   split; [apply/andP; split|] => //; first by rewrite -lerBlDl.
   by move: nyx; rewrite mulrnDl -ltrBrDr mulNrn.
 have n_gt0 : n != 0%N by apply: contraTN nyx => /eqP ->; rewrite mulr0n ltr10.
-exists (m%:Q / n%:Q); rewrite in_itv /=; apply/andP; split.
-  rewrite rmorphM/= (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
-  rewrite ltr_pdivlMr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
-  by rewrite mulrC // !ratr_int mulr_natl.
-rewrite rmorphM /= (@rmorphV _ _ _ n%:~R); first by rewrite unitfE // intr_eq0.
-rewrite ltr_pdivrMr /=; first by rewrite ltr0q ltr0z ltz_nat lt0n.
-by rewrite 2!ratr_int mulr_natr (le_lt_trans _ c).
+exists (m%:Q / n%:Q); rewrite in_itv /=.
+rewrite fmorph_div !rmorph_int ltr_pdivlMr/=; first by rewrite ltr0n lt0n.
+rewrite ltr_pdivrMr; first by rewrite ltr0n lt0n.
+by rewrite !mulr_natr nxm (le_lt_trans _ c).
 Qed.
 
 End rat_in_itvoo.
