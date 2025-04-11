@@ -7,7 +7,7 @@ From mathcomp Require Import archimedean.
 From mathcomp Require Import cardinality set_interval ereal reals.
 From mathcomp Require Import interval_inference topology prodnormedzmodule.
 From mathcomp Require Import function_spaces.
-From mathcomp Require Export real_interval separation_axioms tvs.
+From mathcomp Require Export real_interval tvs.
 
 (**md**************************************************************************)
 (* # Norm-related Notions                                                     *)

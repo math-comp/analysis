@@ -6,7 +6,6 @@ From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions cardinality.
 From mathcomp Require Import set_interval ereal reals interval_inference.
 From mathcomp Require Import topology prodnormedzmodule function_spaces.
-From mathcomp Require Import separation_axioms.
 
 (**md**************************************************************************)
 (* # Topological vector spaces                                                *)
