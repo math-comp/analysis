@@ -281,8 +281,7 @@ Qed.
 Lemma sup_le_ub {E} x : E !=set0 -> (ubound E) x -> sup E <= x.
 Proof.
 move=> hasE leEx; set y := sup E; pose z := (x + y) / 2%:R.
-have Dz: 2%:R * z = x + y.
-  by rewrite mulrCA divff ?mulr1 // pnatr_eq0.
+have Dz: 2%:R * z = x + y by rewrite mulrC divfK// pnatr_eq0.
 have ubE : has_sup E by split => //; exists x.
 have [/downP [t Et lezt] | leyz] := sup_total z ubE.
   rewrite -(lerD2l x) -Dz -mulr2n -[leRHS]mulr_natl.
@@ -334,8 +333,7 @@ have e2pos : 0 < eps / 2%:R by rewrite divr_gt0// ltr0n.
 have [r Ar supBr] := sup_adherent e2pos supA.
 have [s Bs supAs] := sup_adherent e2pos supB.
 have := ltrD supBr supAs.
-rewrite -addrA [-_+_]addrC -addrA -opprD -splitr addrA /= opprD opprK addrA.
-rewrite subrr add0r; apply/negP; rewrite -leNgt.
+rewrite -addrACA -opprD -splitr subKr; apply/negP; rewrite -leNgt.
 by apply: sup_upper_bound => //; exists r => //; exists s.
 Qed.
 
