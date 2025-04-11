@@ -885,15 +885,17 @@ Lemma cvgenyP {R : realType} {T} {F : set_system T} {FF : Filter F} (f : T -> na
    (((f n)%:R : R)%:E @[n --> F] --> +oo%E) <-> (f @ F --> \oo).
 Proof. by rewrite cvgeryP cvgrnyP. Qed.
 
-Lemma gt0_cvgMlNy {R : realFieldType} (M : R) (f : R -> R) : (0 < M)%R ->
-  (f r) @[r --> -oo] --> -oo -> (f r * M)%R @[r --> -oo] --> -oo.
+Lemma gt0_cvgMlNy {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
+  (f : R -> R) :
+  (0 < M)%R -> (f r) @[r --> F] --> -oo -> (f r * M)%R @[r --> F] --> -oo.
 Proof.
 move=> M0 /cvgrNyPle fy; apply/cvgrNyPle => A.
 by apply: filterS (fy (A / M)) => x; rewrite ler_pdivlMr.
 Qed.
 
-Lemma gt0_cvgMly {R : realFieldType} (M : R) (f : R -> R) : (0 < M)%R ->
-  f r @[r --> +oo] --> +oo -> (f r * M)%R @[r --> +oo] --> +oo.
+Lemma gt0_cvgMly {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
+  (f : R -> R) :
+  (0 < M)%R -> f r @[r --> F] --> +oo -> (f r * M)%R @[r --> F] --> +oo.
 Proof.
 move=> M0 /cvgryPge fy; apply/cvgryPge => A.
 apply: filterS (fy (A / M)) => x.
