@@ -158,6 +158,9 @@
 - in `real_interval.v`:
   + lemmas `bigcup_itvT`, `itv_bndy_bigcup_BRight`, `itv_bndy_bigcup_BLeft_shift`
 
+- in `normedtype.v`:
+  + lemmas "gt0_cvgMlNy", "gt0_cvgMly"
+
 ### Deprecated
 
 ### Removed
