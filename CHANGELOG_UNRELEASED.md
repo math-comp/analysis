@@ -26,6 +26,10 @@
 - in `lebesgue_integral_approximation.v`:
   + lemma `measurable_prod`
 
+- in `exp.v`:
+  + lemmas `lnNy`, `powR_cvg0`, `derivable_powR`, `powR_derive1`
+  + Instance `is_derive1_powR`
+
 ### Changed
 
 - in `pi_irrational`:
