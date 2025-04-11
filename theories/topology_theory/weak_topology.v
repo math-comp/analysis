@@ -6,7 +6,9 @@ From mathcomp Require Import uniform_structure order_topology.
 From mathcomp Require Import pseudometric_structure.
 
 (**md**************************************************************************)
-(* # Weak topology                                                            *)
+(* This file defines the weak topology on S with respect to a function        *)
+(*  whose domain is S. This topology is also known as initial topology on S   *)
+(*  with respect to f.                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*         weak_topology f == weak topology by a function f : S -> T on S     *)
