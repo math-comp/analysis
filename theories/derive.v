@@ -1871,7 +1871,7 @@ rewrite diff_comp // !derive1E' //= -[X in 'd  _ _ X = _]mulr1.
 by rewrite [LHS]linearZ mulrC.
 Qed.
 
-Lemma near_derive (R : numFieldType) (V W : normedModType R)
+Lemma near_eq_growth_rate (R : numFieldType) (V W : normedModType R)
     (f g : V -> W) (a v : V) : v != 0 -> {near a, f =1 g} ->
    \forall h \near 0,
      h^-1 *: (f (h *: v + a) - f a) = h^-1 *: (g (h *: v + a) - g a).
