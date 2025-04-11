@@ -96,6 +96,10 @@
   + `lebesgue_integral_differentiation.v`
   + `lebesgue_integral.v`
 
+- in `exp.v`:
+  + lemmas `lnNy`, `powR_cvg0`, `derivable_powR`, `powR_derive1`
+  + Instance `is_derive1_powR`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
