@@ -933,20 +933,13 @@ End test.
 (* TODO : define bornology and topology of uniform convergence, show it's a
 tvstype *)
 (* Not used in the following *)
-(* Class Bornology {T : Type} (B : set_system T) := { *)
-(*   bornoC : forall x, exists b,  (B b) /\ (b x) ; *)
-(*   bornoU : forall P Q  : set T, B P -> B Q -> B (P `|` Q) ; *)
-(*   bornoS : forall P Q : set T, P `<=` Q -> B Q -> B  P *)
-(*   }. *)
-
-(* Global Hint Mode Bornology - ! : typeclass_instances. *)
 
 (* (*why with typeclasses and not with HB ? *) *)
 
 (*What follows is adapted from {family fam, U -> V} in
 function_space.v. Should we copy instances from family fam to family_lcfun fam ? *)
-Definition uniform_lcfun_family R {E : ctvsType R} (F : ctvsType R)  (fam : set E -> Prop) : Type :=
-  {linear_continuous E -> F}.
+ Definition uniform_lcfun_family R {E : ctvsType R} (F : ctvsType R)  (fam : set E -> Prop) : Type := 
+   {linear_continuous E -> F}.
 
 (* Reserved Notation "'{' 'family_lcfun' fam , U '->' V '|' s '}'" *)
 (*   (at level 0, U at level 98, V at level 99, *)
@@ -970,21 +963,79 @@ Notation "{ 'family_lcfun' fam , F --> f }" :=
 
 (* we can´t use unfiorm, it is defined on E -> F and not on our space. We need to define it on {linear_continuous E -> F} , inducing its topology from uniform` E- > F *)
 
-Locate sup_topology.
-Search (continuousType _ _). Locate continuousEP.
-
 
 (*md
 Define bounded 
-Define bornology
+TODO generalize bounded_fun_norm in sequence.v
+Define bornology and bounded function -  prove continuous -> bounded
+Generalize bounded_near in normedtype.v
 Define uniform convergence on bornology
 Prove continuous embedding into topologies already defined on spaces of functions.
-*)
 
-(*First lemma to formalize : Prop 1 in 2.10 Jarchow *)
+Pour E_{sigma} : utiliser des tags, ie des identité annotées
+ *)
 
-(* W is a 0-basis for a linear topology 3~aonG iff 38 consists ofG-bounded
-sets only. In that case, if F is Hausdorff and 38 covers X, then J~a is Hausdorff*)
+
+Reserved Notation "'{' 'linear_continuous_' B , U '->' V '}'"
+  (at level 0, U at level 98, V at level 99,
+    format "{ 'linear_continuous_' B ,  U  ->  V }").
+Reserved Notation "'{' 'linear_continuous_' B , F '-->' f '}'"
+  (at level 0, F at level 98, f at level 99,
+    format "{ 'linear_continuous_'  B  ,  F  -->  f }").
+
+
+Definition bounded  (R : numFieldType) (E : ctvsType R) (b : set E) := forall (V : set E), (nbhs 0 V -> exists r, b `<=` ((fun x => r *: x )@` V)).
+
+Notation "{ 'linear_continuous_'  fam , U -> V }" :=  (@uniform_lcfun_family _ U V fam).
+Notation "{ 'linear_continuous_'  fam , F --> f }" :=
+  (cvg_to F (@nbhs _ {linear_continuous_ fam,  _ -> _ } f)) : type_scope.
+
+Definition nbhs_lineartopology  (R : numFieldType) (E : ctvsType R) (F : ctvsType R) b U :=
+  [set f : {linear_continuous E -> F}| f @` b `<=` U ]. 
+
+
+HB.mixin Record isBornology  (R : numFieldType) (E : ctvsType R) (B : set_system E) := {
+  bornoC : forall x, exists b,  (B b) /\ (b x) ;
+  bornoS : forall P Q : set E, P `<=` Q -> B Q -> B P;
+  bornoI : forall P Q : set E, B P -> B Q -> B (P `&` Q); (*wikipedia*)
+    (* bornoZ : forall r : R, forall  Q : set E, B Q -> exists P, (B P /\ (((fun x => r *: x )@`Q `<=`  P))) (*why ??*) In Jarchow*)
+  }.
+
+#[short(type="bornologyType")]
+  HB.structure Definition Bornology R E := {B of @isBornology R E B}.
+
+(*
+Pointed Type on linear_continuous, filteredtype, nbhsType, topologicaltype
+
+ *)
+
+(* Reco Cyril: copier / généraliser les defs de function_space.v, puis montrer que la prebase c ést nbhs_lineartopology. Compliqué parce que 
+Notation "{ 'uniform`' A -> V }" := (@uniform_fun _ A V) : type_scope.
+ne se généralise pas facilement en 
+Notation "{ 'linear_continuous` `' A -> V }" := (linear_continuous A ->  V) : type_scope.
+
+(* HB.instance Definition _ {R} {U V : tvsType R}  (fam : set U -> Prop) := *)
+(*   Uniform.copy {family_lcfun fam, U -> V} (sup_topology (fun k : sigT fam => *)
+(*   Uniform.class {uniform` projT1 k -> V})). *)
+
+(* HB.factory Record UniformLinCont_isTvs (R : numDomainType) (E : tvsType R) (F : tvsType R) (B : set_system  E) of Topological {family_lcfun B , E -> F} & GRing.Lmodule {linear_continuous E -> F }  := { *)
+(*   bornoC : forall x : E, exists b : set E,  (B b) /\ (b x) ; *)
+(*   bornoU : forall P Q  : set E, B P -> B Q -> B (P `|` Q) ; *)
+(*   bornoS : forall P Q : set E, P `<=` Q -> B Q -> B  P *)
+(*   }. *)
+
+(* HB.builders Context R E F B of UniformLinCont_isTvs R E F B. *)
+
+
+
+
+(*First lemmas to formalize : 
+- Prop 1 in 2.10 Jarchow  (* W is a 0-basis for a linear topology 3~aonG iff 38 consists ofG-bounded
+sets only. In that case, if F is Hausdorff and 38 covers X, then J~a is Hausdorf *)
+- Prop 2 in 8.4 Jarchow 
+
+Then define notations and prove compatibility with function_spaces.v notations*)
+
 
 (** examples **)
 (* HB.instance Definition _ (U : Type) (T : U -> topologicalType) := *)
@@ -1038,3 +1089,4 @@ Check (E)'.
 Notation " E ''' ":= {linear_continuous E -> R^o} (at level 80). 
 
 End dual.
+*)
