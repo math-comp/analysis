@@ -116,7 +116,7 @@
 
 - file `separation_axioms.v` moved from `theories` to
   `theories/topology_theory`
-- `topology` now exports `separation_axiom`
+- `topology.v` now exports `separation_axioms`
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
 - moved from `gauss_integral` to `trigo.v`:
