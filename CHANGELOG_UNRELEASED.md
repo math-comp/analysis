@@ -101,6 +101,16 @@
 
 - in `constructive_ereal.v`:
   + lemmas `EFin_fin_numP`, `EFin_bigmax`
+- new directory `normed_theory` (that replaces `normedtype.v`) with new files:
+  + `complete_normed_module.v`
+  + `num_normedtype.v`
+  + `ereal_normedtype.v`
+  + `pseudometric_normed_Zmodule.v`
+  + `matrix_normedtype.v`
+  + `urysohn.v`
+  + `normed_module.v`
+  + `vitali_lemma.v`
+  + `normedtype.v`
 
 - in `realfun.v`:
   + lemmas `cvge_pinftyP`, `nonincreasing_cvge`
@@ -180,6 +190,9 @@
     `closedN`, `dnbhsN`, `closure_sup`, `right_bounded_interior`, `left_bounded_interior`,
     `withinN`
 
+- the contents of `normedtype.v` (old file) can be found in the files in directory
+  `normed_theory` unless stated otherwise
+
 ### Renamed
 
 - in `lebesgue_integral.v`:
@@ -239,6 +252,7 @@
 - in `sequences.v`:
   + lemma `nneseries_recl` genralized with a filtering predicate `P`
 - in `normedtype.v`:
+- in `ereal_normedtype.v` (new file, was `normedtype.v`):
   + `lower_semicontinuous`, `lower_semicontinuousP` generalized from `realType` to `numFieldType`
 
 - in `num_normedtype.v` (new file):
@@ -299,6 +313,8 @@
 
 - in `filter.v`:
   + definition `at_point` (redundant with `principal_filter`)
+- file `normedtype.v` (split in several files in the directory
+  `normed_theory`)
 
 ### Infrastructure
 
