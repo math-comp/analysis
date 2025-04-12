@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_classical unstable.
 From mathcomp Require Import interval_inference reals topology_structure.
@@ -6,9 +6,10 @@ From mathcomp Require Import uniform_structure order_topology.
 From mathcomp Require Import pseudometric_structure.
 
 (**md**************************************************************************)
-(* This file defines the weak topology on S with respect to a function        *)
-(*  whose domain is S. This topology is also known as initial topology on S   *)
-(*  with respect to f.                                                        *)
+(* # Weak/initial topology                                                    *)
+(* This file defines the weak topology for `S` by a function `f` whose domain *)
+(* is `S`. This topology is also known as initial topology on `S` with        *)
+(* respect to `f`.                                                            *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*         weak_topology f == weak topology by a function f : S -> T on S     *)
