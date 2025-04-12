@@ -7,9 +7,9 @@ From mathcomp Require Import pseudometric_structure.
 
 (**md**************************************************************************)
 (* # Weak/initial topology                                                    *)
-(* This file defines the weak topology for `S` by a function `f` whose domain *)
-(* is `S`. This topology is also known as initial topology on `S` with        *)
-(* respect to `f`.                                                            *)
+(* This file defines the weak topology for $S$ by a function $f$ whose domain *)
+(* is $S$. This topology is also known as initial topology on $S$ with        *)
+(* respect to $f$.                                                            *)
 (*                                                                            *)
 (* ```                                                                        *)
 (*         weak_topology f == weak topology by a function f : S -> T on S     *)
