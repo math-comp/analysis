@@ -163,7 +163,7 @@ Lemma cdf_le1 r : cdf X r <= 1. Proof. exact: probability_le1. Qed.
 Lemma cdf_nondecreasing : nondecreasing_fun (cdf X).
 Proof. by move=> r s rs; rewrite le_measure ?inE//; exact: subitvPr. Qed.
 
-Lemma cdf_cvgr1y : (cdf X r)@[r --> +oo%R] --> 1.
+Lemma cvg_cdfy1 : cdf X @ +oo%R --> 1.
 Proof.
 pose s : \bar R := ereal_sup (range (cdf X)).
 have cdf_s : cdf X r @[r --> +oo%R] --> s.
@@ -182,7 +182,7 @@ have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
 by rewrite -(cvg_unique _ cdf_ns cdf_n1).
 Qed.
 
-Lemma cdf_cvgr0Ny : (cdf X r)@[r --> -oo%R] --> 0.
+Lemma cvg_cdfNy0 : cdf X @ -oo%R --> 0.
 Proof.
 rewrite cvgNy_compNP.
 have cdf_opp_noninc : {homo cdf X \o -%R : q r / (q <= r)%R >-> q >= r}.
@@ -211,7 +211,7 @@ Qed.
 Lemma cdf_right_continuous : right_continuous (cdf X).
 Proof.
 move=> a.
-pose s := fine (ereal_inf [set cdf X r | r in `]a, a + 1%R]]).
+pose s := fine (ereal_inf (cdf X @` `]a, a + 1%R]%classic)).
 have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
   rewrite /s fineK.
   - apply: nondecreasing_at_right_cvge; first by rewrite ltBSide /= ?ltrDl.
