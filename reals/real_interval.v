@@ -133,7 +133,20 @@ Section set_itv_realType.
 Variable R : realType.
 Implicit Types x : R.
 
-Lemma itv_c_inftyEbigcap x :
+Lemma itvNycEbigcap b x : `]-oo, x]%classic =
+  \bigcap_k [set` Interval -oo%O (BSide b (x + k.+1%:R^-1))].
+Proof.
+apply/seteqP; split => /= [r/=|r].
+- rewrite in_itv/= => xr k _/=; rewrite in_itv/=; case: b => /=.
+  + by rewrite (le_lt_trans xr)// ltrDl.
+  + by rewrite (le_trans xr)// lerDl.
+- move=> br/=; rewrite in_itv/= leNgt; apply/negP => /ltr_add_invr[k rkx].
+  have /= {br} := br k Logic.I; rewrite in_itv/=; case: b => /=.
+  + by apply/negP; rewrite -leNgt ltW.
+  + by rewrite leNgt rkx.
+Qed.
+
+Lemma itvcyEbigcap x :
   `[x, +oo[%classic = \bigcap_k `]x - k.+1%:R^-1, +oo[%classic.
 Proof.
 rewrite predeqE => y; split=> /= [|xy].
@@ -145,7 +158,7 @@ have {xy}/= := xy k Logic.I.
 by rewrite in_itv /= andbT; apply/negP; rewrite -leNgt lerBrDr ltW.
 Qed.
 
-Lemma itv_bnd_inftyEbigcup b x : [set` Interval (BSide b x) +oo%O] =
+Lemma itvbndyEbigcup b x : [set` Interval (BSide b x) +oo%O] =
   \bigcup_k [set` Interval (BSide b x) (BLeft k%:R)].
 Proof.
 rewrite predeqE => y; split=> /=; last first.
@@ -154,7 +167,7 @@ rewrite in_itv /= andbT => xy; exists (trunc y).+1 => //=.
 by rewrite in_itv /= xy /= truncnS_gt.
 Qed.
 
-Lemma itv_o_inftyEbigcup x :
+Lemma itvoyEbigcup x :
   `]x, +oo[%classic = \bigcup_k `[x + k.+1%:R^-1, +oo[%classic.
 Proof.
 rewrite predeqE => y; split => [|[n _]]/=.
@@ -166,6 +179,12 @@ by rewrite in_itv /= andbT (lt_le_trans _ xny) // ltrDl invr_gt0.
 Qed.
 
 End set_itv_realType.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `itvcyEbigcap`")]
+Notation itv_c_inftyEbigcap := itvcyEbigcap (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `itvbndyEbigcup`")]
+Notation itv_bnd_inftyEbigcup := itvbndyEbigcup (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `itvoyEbigcup`")]
+Notation itv_o_inftyEbigcup := itvoyEbigcup (only parsing).
 
 Coercion ereal_of_itv_bound T (b : itv_bound T) : \bar T :=
   match b with BSide _ y => y%:E | +oo%O => +oo%E | -oo%O => -oo%E end.

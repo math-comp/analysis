@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect.
-From mathcomp Require Import ssralg poly ssrnum ssrint interval finmap.
+From mathcomp Require Import ssralg poly ssrnum ssrint interval archimedean finmap.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
@@ -35,6 +35,8 @@ From mathcomp Require Import ftc gauss_integral.
 (*            dRV_dom X == domain of the discrete random variable X           *)
 (*           dRV_enum X == bijection between the domain and the range of X    *)
 (*              pmf X r := fine (P (X @^-1` [set r]))                         *)
+(*              cdf X r == cumulative distribution function of X              *)
+(*                      := distribution P X `]-oo, r]                         *)
 (*        enum_prob X k == probability of the kth value in the range of X     *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -145,6 +147,98 @@ Lemma integral_distribution (X : {RV P >-> T'}) (f : T' -> \bar R) :
 Proof. by move=> mf intf; rewrite integral_pushforward. Qed.
 
 End transfer_probability.
+
+Definition cdf d (T : measurableType d) (R : realType) (P : probability T R)
+  (X : {RV P >-> R}) (r : R) := distribution P X `]-oo, r].
+
+Section cumulative_distribution_function.
+Context d {T : measurableType d} {R : realType} (P : probability T R).
+Variable X : {RV P >-> R}.
+Local Open Scope ereal_scope.
+
+Lemma cdf_ge0 r : 0 <= cdf X r. Proof. by []. Qed.
+
+Lemma cdf_le1 r : cdf X r <= 1. Proof. exact: probability_le1. Qed.
+
+Lemma cdf_nondecreasing : nondecreasing_fun (cdf X).
+Proof. by move=> r s rs; rewrite le_measure ?inE//; exact: subitvPr. Qed.
+
+Lemma cvg_cdfy1 : cdf X @ +oo%R --> 1.
+Proof.
+pose s : \bar R := ereal_sup (range (cdf X)).
+have cdf_s : cdf X r @[r --> +oo%R] --> s.
+  exact: nondecreasing_cvge cdf_nondecreasing.
+have cdf_ns : cdf X n%:R @[n --> \oo%R] --> s.
+  by move/cvge_pinftyP : cdf_s; apply; exact/cvgryPge/nbhs_infty_ger.
+have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
+  rewrite -(@probability_setT _ _ _ P).
+  pose F n := X @^-1` `]-oo, n%:R].
+  have <- : \bigcup_n F n = setT.
+    rewrite -preimage_bigcup -subTset => t _/=.
+    by exists (trunc (X t)).+1 => //=; rewrite in_itv/= ltW// truncnS_gt.
+  apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
+  move=> n m nm; apply/subsetPset => x/=; rewrite !in_itv/= => /le_trans.
+  by apply; rewrite ler_nat.
+by rewrite -(cvg_unique _ cdf_ns cdf_n1).
+Qed.
+
+Lemma cvg_cdfNy0 : cdf X @ -oo%R --> 0.
+Proof.
+rewrite cvgNy_compNP.
+have cdf_opp_noninc : {homo cdf X \o -%R : q r / (q <= r)%R >-> q >= r}.
+  by move=> q r; rewrite -lterN2; exact: cdf_nondecreasing.
+pose s := ereal_inf (range (cdf X \o -%R)).
+have cdf_opp_s : (cdf X \o -%R) r @[r --> +oo%R] --> s.
+  exact: nonincreasing_cvge cdf_opp_noninc.
+have cdf_opp_ns : (cdf X \o -%R) n%:R @[n --> \oo] --> s.
+  by move/cvge_pinftyP : cdf_opp_s; apply; exact/cvgryPge/nbhs_infty_ger.
+have cdf_opp_n0 : (cdf X \o -%R) n%:R @[n --> \oo] --> 0.
+  rewrite -(measure0 P).
+  pose F n := X @^-1` `]-oo, (- n%:R)%R].
+  have <- : \bigcap_n F n = set0.
+    rewrite -subset0 => t.
+    set m := (trunc `|X t|).+1.
+    move=> /(_ m I); rewrite /F/= in_itv/= leNgt => /negP; apply.
+    by rewrite ltrNl /m (le_lt_trans (ler_norm _))// normrN truncnS_gt.
+  apply: nonincreasing_cvg_mu => //=.
+  + by rewrite (le_lt_trans (probability_le1 _ _)) ?ltry.
+  + exact: bigcap_measurable.
+  + move=> m n mn; apply/subsetPset => x/=; rewrite !in_itv => /le_trans; apply.
+    by rewrite lerN2 ler_nat.
+by rewrite (_ : 0%E = s)// (cvg_unique _ cdf_opp_ns cdf_opp_n0).
+Qed.
+
+Lemma cdf_right_continuous : right_continuous (cdf X).
+Proof.
+move=> a.
+pose s := fine (ereal_inf (cdf X @` `]a, a + 1%R]%classic)).
+have cdf_s : cdf X r @[r --> a^'+] --> s%:E.
+  rewrite /s fineK.
+  - apply: nondecreasing_at_right_cvge; first by rewrite ltBSide /= ?ltrDl.
+    by move=> *; exact: cdf_nondecreasing.
+  - apply/fin_numPlt/andP; split=>//.
+    + by rewrite (lt_le_trans (ltNyr 0%R)) ?lb_ereal_inf//= => l[? _] <-.
+    + rewrite (le_lt_trans _ (ltry 1%R))// ereal_inf_le//=.
+      exists (cdf X (a + 1)); last exact: cdf_le1.
+      by exists (a + 1%R) => //; rewrite in_itv /=; apply/andP; rewrite ltrDl.
+have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
+  move/cvge_at_rightP : cdf_s; apply; split=> [n|]; rewrite ?ltrDl //.
+  rewrite -[X in _ --> X]addr0; apply: (@cvgD _ R^o); first exact: cvg_cst.
+  by rewrite gtr0_cvgV0 ?cvg_shiftS; [exact: cvgr_idn | near=> n].
+have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
+  pose F n := X @^-1` `]-oo, a + n.+1%:R^-1].
+  suff : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
+    by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itvNycEbigcap.
+  apply: nonincreasing_cvg_mu => [| | |m n mn].
+  - by rewrite -ge0_fin_numE// fin_num_measure//; exact: measurable_sfunP.
+  - by move=> ?; exact: measurable_sfunP.
+  - by apply: bigcap_measurable => // ? _; exact: measurable_sfunP.
+  - apply/subsetPset; apply: preimage_subset; apply: subset_itvl.
+    by rewrite bnd_simp lerD2l lef_pV2 ?posrE// ler_nat.
+by rewrite -(cvg_unique _ cdf_ns cdf_na).
+Unshelve. all: by end_near. Qed.
+
+End cumulative_distribution_function.
 
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.

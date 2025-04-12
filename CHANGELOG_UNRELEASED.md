@@ -102,6 +102,16 @@
 - in `constructive_ereal.v`:
   + lemmas `EFin_fin_numP`, `EFin_bigmax`
 
+- in `realfun.v`:
+  + lemmas `cvge_pinftyP`, `nonincreasing_cvge`
+
+- in `probability.v`:
+  + definition `cdf`
+  + lemmas `cdf_ge0`, `cdf_le1`, `cdf_nondecreasing`, `cvg_cdfy1`, `cvg_cdfNy0`, `cdf_right_continuous`
+
+- in `real_interval.v`:
+  + lemma `itvNycEbigcap`
+
 ### Changed
 
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
@@ -151,6 +161,10 @@
   + `eq_fun3` -> `eq3_fun`
   + `eq_forall2` -> `eq2_forall`
   + `eq_forall3` -> `eq3_forall`
+- in `real_interval.v`:
+  + `itv_c_inftyEbigcap` -> `itvcyEbigcap`
+  + `itv_bnd_inftyEbigcup` -> `itvbndyEbigcup`
+  + `itv_o_inftyEbigcup` -> `itvoyEbigcup`
 
 ### Generalized
 
