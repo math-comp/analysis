@@ -111,8 +111,6 @@
 
 - in `real_interval.v`:
   + lemma `itvNycEbigcap`
-- in `derive.v`:
-  + lemmas `derive1Mr`, `derive1Ml`
 
 ### Changed
 
