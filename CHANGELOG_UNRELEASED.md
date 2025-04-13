@@ -166,6 +166,10 @@
   + `itv_bnd_inftyEbigcup` -> `itvbndyEbigcup`
   + `itv_o_inftyEbigcup` -> `itvoyEbigcup`
 
+- in `measure.v`:
+  + `measurable_fun_prod` -> `measurable_fun_pair`
+  + `prod_measurable_funP` -> `measurable_fun_pairP`
+
 ### Generalized
 
 - in `constructive_ereal.v`:
@@ -222,6 +226,10 @@
 - in `classical_sets.v`:
   + notations `setvI`, `setIv`, `bigcup_set`, `bigcup_set_cond`, `bigcap_set`,
     `bigcap_set_cond`
+
+- in `measure.v`:
+  + notations `measurable_fun_fst`, `measurable_fun_snd`, `measurable_fun_swap`
+    (deprecated since 0.6.3)
 
 ### Infrastructure
 

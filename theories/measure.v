@@ -5207,7 +5207,7 @@ Section prod_measurable_fun.
 Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
         (T2 : measurableType d2).
 
-Lemma prod_measurable_funP (h : T -> T1 * T2) : measurable_fun setT h <->
+Lemma measurable_fun_pairP (h : T -> T1 * T2) : measurable_fun setT h <->
   measurable_fun setT (fst \o h) /\ measurable_fun setT (snd \o h).
 Proof.
 apply: (@iff_trans _ (g_sigma_preimageU (fst \o h) (snd \o h) `<=` measurable)).
@@ -5220,42 +5220,38 @@ apply: (@iff_trans _ (g_sigma_preimageU (fst \o h) (snd \o h) `<=` measurable)).
   by rewrite subUset; split=> [|] A [C mC <-]; [exact: mf1|exact: mf2].
 Qed.
 
-Lemma measurable_fun_prod (f : T -> T1) (g : T -> T2) :
+Lemma measurable_fun_pair (f : T -> T1) (g : T -> T2) :
   measurable_fun setT f -> measurable_fun setT g ->
   measurable_fun setT (fun x => (f x, g x)).
-Proof. by move=> mf mg; exact/prod_measurable_funP. Qed.
+Proof. by move=> mf mg; exact/measurable_fun_pairP. Qed.
 
 End prod_measurable_fun.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_fun_prod`")]
-Notation measurable_fun_pair := measurable_fun_prod (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `measurable_fun_pair`")]
+Notation measurable_fun_prod := measurable_fun_pair (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `pair_measurable_funP`")]
+Notation prod_measurable_funP := measurable_fun_pairP (only parsing).
 
 Section prod_measurable_proj.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
 
 Lemma measurable_fst : measurable_fun [set: T1 * T2] fst.
 Proof.
-by have /prod_measurable_funP[] := @measurable_id _ (T1 * T2)%type setT.
+by have /measurable_fun_pairP[] := @measurable_id _ (T1 * T2)%type setT.
 Qed.
 #[local] Hint Resolve measurable_fst : core.
 
 Lemma measurable_snd : measurable_fun [set: T1 * T2] snd.
 Proof.
-by have /prod_measurable_funP[] := @measurable_id _ (T1 * T2)%type setT.
+by have /measurable_fun_pairP[] := @measurable_id _ (T1 * T2)%type setT.
 Qed.
 #[local] Hint Resolve measurable_snd : core.
 
 Lemma measurable_swap : measurable_fun [set: _] (@swap T1 T2).
-Proof. exact: measurable_fun_prod. Qed.
+Proof. exact: measurable_fun_pair. Qed.
 
 End prod_measurable_proj.
 Arguments measurable_fst {d1 d2 T1 T2}.
 Arguments measurable_snd {d1 d2 T1 T2}.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_fst`")]
-Notation measurable_fun_fst := measurable_fst (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_snd`")]
-Notation measurable_fun_snd := measurable_snd (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_swap`")]
-Notation measurable_fun_swap := measurable_swap (only parsing).
 #[global] Hint Extern 0 (measurable_fun _ fst) =>
   solve [apply: measurable_fst] : core.
 #[global] Hint Extern 0 (measurable_fun _ snd) =>
@@ -5278,14 +5274,14 @@ Lemma measurable_pair1 (x : T1) : measurable_fun [set: T2] (pair x).
 Proof.
 have m1pairx : measurable_fun [set: T2] (fst \o pair x) by exact/measurable_cst.
 have m2pairx : measurable_fun [set: T2] (snd \o pair x) by exact/measurable_id.
-exact/(prod_measurable_funP _).
+exact/measurable_fun_pairP.
 Qed.
 
 Lemma measurable_pair2 (y : T2) : measurable_fun [set: T1] (pair^~ y).
 Proof.
 have m1pairy : measurable_fun [set: T1] (fst \o pair^~y) by exact/measurable_id.
 have m2pairy : measurable_fun [set: T1] (snd \o pair^~y) by exact/measurable_cst.
-exact/(prod_measurable_funP _).
+exact/measurable_fun_pairP.
 Qed.
 
 End partial_measurable_fun.
