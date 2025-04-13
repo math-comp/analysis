@@ -189,7 +189,7 @@
 - in `sequences.v`:
   + lemma `nneseries_recl` genralized with a filtering predicate `P`
 - in `normedtype.v`:
-  + lemmas "gt0_cvgMlNy", "gt0_cvgMly"
+  + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
 
 ### Deprecated
 
