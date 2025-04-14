@@ -356,6 +356,22 @@ Qed.
 
 End measurable_bounded_integrable.
 
+Lemma integrable_indic_itv {R : realType} (a b : R) (b0 b1 : bool) :
+  let mu := lebesgue_measure in
+  mu.-integrable setT (EFin \o \1_[set` Interval (BSide b0 a) (BSide b1 b)]).
+Proof.
+have [ab|ba] := leP a b; last first.
+  rewrite set_itv_ge//; first by rewrite indic0//; exact: integrable0.
+  by rewrite -leNgt leBSide; move: b0 b1 => [] []//=; exact/ltW.
+set i := [set` _]; rewrite (_ : _ \o _ = (cst 1%E) \_ i); last first.
+  by apply/funext => r/=; rewrite indic_restrict restrict_EFin.
+rewrite {}/i; apply/integrable_restrict => //=.
+rewrite setTI; apply: measurable_bounded_integrable => //=.
+  rewrite lebesgue_measure_itv//=.
+  by case: ifPn => // _; rewrite -EFinB ltry.
+exact: bounded_cst.
+Qed.
+
 Section integrable_finite_measure.
 Context d (T : measurableType d) {R : realType}.
 Variable mu : {finite_measure set T -> \bar R}.
