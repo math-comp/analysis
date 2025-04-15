@@ -351,7 +351,7 @@ HB.instance Definition _ :=
   @isFiniteTransition.Build d d' X Y R k finite_transition_finite.
 
 HB.instance Definition _ :=
-  @isMeasureFamUub.Build  d d' X Y R k measure_uub.
+  @isMeasureFamUub.Build d d' X Y R k measure_uub.
 
 HB.end.
 
