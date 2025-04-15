@@ -115,7 +115,7 @@
   + lemma `near0Z`
 
 - in `derive.v`:
-  + lemma `near_derive`
+  + lemma `near_eq_growth_rate`
 
 ### Changed
 
