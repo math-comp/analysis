@@ -5,7 +5,11 @@ From mathcomp Require Import archimedean.
 From mathcomp Require Import boolp classical_sets functions wochoice.
 From mathcomp Require Import cardinality mathcomp_extra unstable fsbigop.
 From mathcomp Require Import set_interval filter reals interval_inference.
-From mathcomp Require Import topology.
+From mathcomp Require Import topology_structure compact subspace_topology.
+From mathcomp Require Import discrete_topology order_topology.
+From mathcomp Require Import pseudometric_structure num_topology.
+From mathcomp Require Import one_point_compactification uniform_structure.
+From mathcomp Require Import connected supremum_topology sigT_topology.
 
 (**md**************************************************************************)
 (* # Separation Axioms                                                        *)

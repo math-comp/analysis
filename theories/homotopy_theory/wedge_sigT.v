@@ -3,7 +3,7 @@ From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra finmap generic_quotient.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop reals topology.
-From mathcomp Require Import separation_axioms function_spaces.
+From mathcomp Require Import function_spaces.
 
 (**md**************************************************************************)
 (* # wedge sum for sigT                                                       *)

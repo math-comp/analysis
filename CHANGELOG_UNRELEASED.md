@@ -114,6 +114,10 @@
 
 ### Changed
 
+- file `separation_axioms.v` moved from `theories` to
+  `theories/topology_theory`
+- `topology.v` now exports `separation_axioms`
+
 - file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
 - moved from `gauss_integral` to `trigo.v`:
   + `oneDsqr`, `oneDsqr_ge1`, `oneDsqr_inum`, `oneDsqrV_le1`,
