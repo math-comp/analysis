@@ -5270,14 +5270,14 @@ Context d d1 d2 (T : measurableType d) (T1 : measurableType d1)
   (T2 : measurableType d2).
 Variable f : T1 * T2 -> T.
 
-Lemma measurable_pair1 (x : T1) : measurable_fun [set: T2] (pair x).
+Lemma pair1_measurable (x : T1) : measurable_fun [set: T2] (pair x).
 Proof.
 have m1pairx : measurable_fun [set: T2] (fst \o pair x) by exact/measurable_cst.
 have m2pairx : measurable_fun [set: T2] (snd \o pair x) by exact/measurable_id.
 exact/measurable_fun_pairP.
 Qed.
 
-Lemma measurable_pair2 (y : T2) : measurable_fun [set: T1] (pair^~ y).
+Lemma pair2_measurable (y : T2) : measurable_fun [set: T1] (pair^~ y).
 Proof.
 have m1pairy : measurable_fun [set: T1] (fst \o pair^~y) by exact/measurable_id.
 have m2pairy : measurable_fun [set: T1] (snd \o pair^~y) by exact/measurable_cst.
@@ -5286,9 +5286,14 @@ Qed.
 
 End partial_measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ (pair _)) =>
-  solve [apply: measurable_pair1] : core.
+  solve [apply: pair1_measurable] : core.
 #[global] Hint Extern 0 (measurable_fun _ (pair^~ _)) =>
-  solve [apply: measurable_pair2] : core.
+  solve [apply: pair2_measurable] : core.
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `pair1_measurable`")]
+Notation measurable_pair1 := pair1_measurable (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `pair2_measurable`")]
+Notation measurable_pair2 := pair2_measurable (only parsing).
+
 
 (* [Lemma 14.13, Klenke 2014] *)
 Section measurable_section.

@@ -114,6 +114,27 @@
 
 - in `lebesgue_integral_theory/lebesgue_Rintegral.v`
   + lemma `RintegralD`
+- in `numfun.v`:
+  + lemmas `indicC`, `indic_bigcup`
+
+- in `measure.v`:
+  + lemmas `measurable_fun_pair1`, `measurable_fun_pair2`
+
+- in `kernel.v`:
+  + mixin `isSigmaFiniteTransitionKernel`, structure `SigmaFiniteTransitionKernel`,
+    notations `sigma_finite_kernel`, `R .-sigmafker X ~> Y`
+  + mixin `isFiniteTransition`, structure `FiniteTransitionKernel`,
+    notations `finite_transition_kernel`, `R .-ftker X ~> Y`
+  + lemmas `sprob_kernelP`, `sprob_kernel_le1`
+  + definition `kfcomp`, lemma `measurable_kfcomp`
+  + definitions `kproduct`, `kproduct_snd`
+  + lemmas `measurable_kproduct`, `semi_sigma_additive_kproduct`
+  + definition `mkproduct`
+  + theorem `sigma_finite_mkproduct`
+  + definition `kcomp_noparam`
+  + lemma `kcomp_noparamE`
+  + definition `mkcomp_noparam`
+  + theorem `sprob_mkcomp_noparam`
 
 ### Changed
 
@@ -176,6 +197,14 @@
 - in `measure.v`:
   + `measurable_fun_prod` -> `measurable_fun_pair`
   + `prod_measurable_funP` -> `measurable_fun_pairP`
+  + `measurable_pair1` -> `pair1_measurable`
+  + `measurable_pair2` -> `pair2_measurable`
+
+- in `kernel.v`:
+  + `Kernel_isSFinite_subdef` -> `isSFiniteKernel_subdef`
+  + `SFiniteKernel_isFinite` -> `isMeasureFamUub`
+  + `FiniteKernel_isSubProbability` -> `isSubProbabilityKernel`
+  + `SubProbability_isProbability` -> `isProbabilityKernel`
 
 ### Generalized
 

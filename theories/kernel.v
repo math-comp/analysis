@@ -206,13 +206,13 @@ HB.mixin Record isSFiniteKernel_subdef d d'
     forall n, measure_fam_uub (s n) &
     forall x U, measurable U -> k x U = kseries s x U }.
 
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isSFiniteKernel_subdef instead.")]
 Notation Kernel_isSFinite_subdef x1 x2 x3 x4 x5 x6 :=
   (isSFiniteKernel_subdef x1 x2 x3 x4 x5 x6).
 
 Module Kernel_isSFinite_subdef.
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isSFiniteKernel_subdef.Build instead.")]
 Notation Build x1 x2 x3 x4 x5 x6 :=
   (isSFiniteKernel_subdef.Build x1 x2 x3 x4 x5 x6) (only parsing).
@@ -285,13 +285,13 @@ HB.mixin Record isMeasureFamUub d d'
     (k : X -> {measure set Y -> \bar R}) := {
   measure_uub : measure_fam_uub k }.
 
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isMeasureFamUub instead.")]
 Notation SFiniteKernel_isFinite x1 x2 x3 x4 x5 x6 :=
   (isMeasureFamUub x1 x2 x3 x4 x5 x6).
 
 Module SFiniteKernel_isFinite.
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isMeasureFamUub.Build instead.")]
 Notation Build x1 x2 x3 x4 x5 x6 :=
   (isMeasureFamUub.Build x1 x2 x3 x4 x5 x6) (only parsing).
@@ -453,13 +453,13 @@ HB.mixin Record isSubProbabilityKernel d d'
     (k : X -> {measure set Y -> \bar R}) := {
   sprob_kernel : ereal_sup [set k x [set: Y] | x in [set: X]] <= 1 }.
 
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isSubProbabilityKernel instead.")]
 Notation FiniteKernel_isSubProbability x1 x2 x3 x4 x5 x6 :=
   (isSubProbabilityKernel x1 x2 x3 x4 x5 x6).
 
 Module FiniteKernel_isSubProbability.
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isSubProbabilityKernel.Build instead.")]
 Notation Build x1 x2 x3 x4 x5 x6 :=
   (isSubProbabilityKernel.Build x1 x2 x3 x4 x5 x6) (only parsing).
@@ -512,13 +512,13 @@ HB.mixin Record isProbabilityKernel d d'
     (k : X -> {measure set Y -> \bar R}) := {
   prob_kernel : forall x, k x [set: Y] = 1 }.
 
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isProbabilityKernel instead.")]
 Notation SubProbability_isProbability x1 x2 x3 x4 x5 x6 :=
   (isProbabilityKernel x1 x2 x3 x4 x5 x6).
 
 Module SubProbability_isProbability.
-#[deprecated(since="mathcomp-analysis 1.9.0",
+#[deprecated(since="mathcomp-analysis 1.10.0",
              note="Use isProbabilityKernel.Build instead.")]
 Notation Build x1 x2 x3 x4 x5 x6 :=
   (isProbabilityKernel.Build x1 x2 x3 x4 x5 x6) (only parsing).
