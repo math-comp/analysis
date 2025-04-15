@@ -1802,9 +1802,9 @@ by rewrite (le_trans (ltW xy)).
 Qed.
 
 #[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
-  H : x \is_near _ |- _ => by near: x; apply: nbhs_pinfty_ge; rewrite num_real end : core.
+  H : x \is_near _ |- _ => near: x; apply: nbhs_pinfty_ge; exact: num_real end : core.
 #[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
-  H : x \is_near _ |- _ => by near: x; apply: nbhs_ninfty_le; rewrite num_real end : core.
+  H : x \is_near _ |- _ => near: x; apply: nbhs_ninfty_le; exact: num_real end : core.
 
 Lemma ler0_derive1_nincry {R : realType} (f : R -> R) (a : R) :
   (forall x, x \in `]a, +oo[%R -> derivable f x 1) ->
