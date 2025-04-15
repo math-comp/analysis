@@ -253,7 +253,8 @@ Lemma derivable_nbhs (f : V -> W) a v :
 Proof.
 move=> df; apply/eqaddoP => _/posnumP[e].
 rewrite -nbhs_nearE nbhs_simpl /= dnbhsE; split; last first.
-  rewrite /at_point opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
+  apply/principal_filterP.
+  rewrite opprD -![(_ + _ : _ -> _) _]/(_ + _) scale0r add0r.
   by rewrite addrCA addKr normrN scale0r !normr0 mulr0.
 have /eqolimP := df.
 move=> /eqaddoP /(_ e%:num) /(_ [gt0 of e%:num]).
@@ -288,7 +289,7 @@ Lemma derivable_nbhsx (f : V -> W) a v :
   +o_(h \near (nbhs 0)) h.
 Proof.
 move=> /derivable_nbhs; rewrite funeqE => df.
-by apply: eqaddoEx => h; have /= := (df h); rewrite addrC => ->.
+by apply: eqaddoEx => h; have /= := df h; rewrite addrC => ->.
 Qed.
 
 Lemma derivable_nbhsxP (f : V -> W) a v :

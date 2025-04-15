@@ -599,14 +599,16 @@ Lemma nbhs_dnbhs_neq {T : topologicalType} (p : T) :
   \forall x \near nbhs p^', x != p.
 Proof. exact: withinT. Qed.
 
-Lemma dnbhsE (T : topologicalType) (x : T) : nbhs x = x^' `&` at_point x.
+Lemma nbhs_dnbhs {T : topologicalType} (x : T) : x^' `=>` nbhs x.
+Proof. exact: cvg_within. Qed.
+
+Lemma dnbhsE (T : topologicalType) (x : T) :
+  nbhs x = x^' `&` principal_filter x.
 Proof.
-rewrite predeqE => A; split=> [x_A|[x_A Ax]].
-  split; last exact: nbhs_singleton.
-  move: x_A; rewrite nbhsE => -[B [oB x_B sBA]]; rewrite /dnbhs nbhsE.
-  by exists B => // ? /sBA.
-move: x_A; rewrite /dnbhs !nbhsE => -[B [oB x_B sBA]]; exists B => //.
-by move=> y /sBA Ay; case: (eqVneq y x) => [->|].
+rewrite predeqE => A; split=> [x_A|[+ Ax]].
+  by split; [exact: nbhs_dnbhs|apply/principal_filterP; exact: nbhs_singleton].
+rewrite /dnbhs !nbhsE => -[B [oB x_B sBA]]; exists B => //.
+by move=> y /sBA Ay; case: (eqVneq y x) => [->|//]; exact/principal_filterP.
 Qed.
 
 Global Instance dnbhs_filter {T : topologicalType} (x : T) : Filter x^'.
@@ -621,15 +623,14 @@ Lemma cvg_fmap2 (T U : Type) (f : T -> U):
 Proof. by move=> F G H A fFA ; exact: H (preimage f A) fFA. Qed.
 
 Lemma cvg_within_filter {T U} {f : T -> U} (F : set_system T) {FF : (Filter F) }
-  (G : set_system U) : forall (D : set T), (f @ F) --> G -> (f @ within D F) --> G.
-Proof. move=> ?;  exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed.
+  (G : set_system U) (D : set T) : (f @ F) --> G -> (f @ within D F) --> G.
+Proof. exact: cvg_trans (cvg_fmap2 (cvg_within _)). Qed.
 
 Lemma cvg_app_within {T} {U : ptopologicalType} (f : T -> U) (F : set_system T)
   (D : set T): Filter F -> cvg (f @ F) -> cvg (f @ within D F).
-Proof. by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter. Qed.
-
-Lemma nbhs_dnbhs {T : topologicalType} (x : T) : x^' `=>` nbhs x.
-Proof. exact: cvg_within. Qed.
+Proof.
+by move => FF /cvg_ex [l H]; apply/cvg_ex; exists l; exact: cvg_within_filter.
+Qed.
 
 (** meets *)
 
@@ -646,7 +647,6 @@ Proof. by rewrite meetsC meets_openr meetsC. Qed.
 (** Closed sets in topological spaces *)
 
 Section Closed.
-
 Context {T : topologicalType}.
 
 Definition closure (A : set T) :=
@@ -742,7 +742,7 @@ Proof.
 by apply/propext; split=> [/closed_openC|]; [rewrite setCK|exact: open_closedC].
 Qed.
 
-Lemma openC (D : set T) : open (~`D) = closed (D).
+Lemma openC (D : set T) : open (~` D) = closed D.
 Proof. by rewrite -closedC setCK. Qed.
 
 Lemma closed_closure (A : set T) : closed (closure A).
@@ -756,7 +756,7 @@ Proof.
 rewrite !closedE=> f_continuous D_cl x /= xDf.
 apply: D_cl; apply: contra_not xDf => fxD.
 have NDfx : ~ D (f x).
-  by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; apply.
+  by move: fxD; rewrite -nbhs_nearE nbhsE => - [A [? ?]]; exact.
 by apply: f_continuous fxD; rewrite inE.
 Qed.
 

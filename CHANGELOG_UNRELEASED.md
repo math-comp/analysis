@@ -237,6 +237,9 @@
   + notations `measurable_fun_fst`, `measurable_fun_snd`, `measurable_fun_swap`
     (deprecated since 0.6.3)
 
+- in `filter.v`:
+  + definition `at_point` (redundant with `principal_filter`)
+
 ### Infrastructure
 
 ### Misc

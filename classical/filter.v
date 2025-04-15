@@ -100,7 +100,6 @@ From mathcomp Require Import cardinality mathcomp_extra fsbigop set_interval.
 (*                       globally A == filter of the sets containing A        *)
 (*                @frechet_filter T := [set S : set T | finite_set (~` S)]    *)
 (*                                     a.k.a. cofinite filter                 *)
-(*                       at_point a == filter of the sets containing a        *)
 (*                       within D F == restriction of the filter F to the     *)
 (*                                     domain D                               *)
 (*               principal_filter x == filter containing every superset of x  *)
@@ -990,18 +989,6 @@ End frechet_filter.
 Global Instance frechet_properfilter_nat : ProperFilter (@frechet_filter nat).
 Proof. by apply: frechet_properfilter; exact: infinite_nat. Qed.
 
-Section at_point.
-
-Context {T : Type}.
-
-Definition at_point (a : T) (P : set T) : Prop := P a.
-
-Global Instance at_point_filter (a : T) : ProperFilter (at_point a).
-Proof. by constructor=> //; constructor=> // P Q subPQ /subPQ. Qed.
-Typeclasses Opaque at_point.
-
-End at_point.
-
 (** Filters for pairs *)
 
 Global Instance filter_prod_filter T U (F : set_system T) (G : set_system U) :
@@ -1030,16 +1017,14 @@ Lemma filter_prod1 {T U} {F : set_system T} {G : set_system U}
   {FG : Filter G} (P : set T) :
   (\forall x \near F, P x) -> \forall x \near F & _ \near G, P x.
 Proof.
-move=> FP; exists (P, setT)=> //= [|[?? []//]].
-by split=> //; apply: filterT.
+by move=> FP; exists (P, setT)=> //= [|[?? []//]]; split=> //; exact: filterT.
 Qed.
 
 Lemma filter_prod2 {T U} {F : set_system T} {G : set_system U}
   {FF : Filter F} (P : set U) :
   (\forall y \near G, P y) -> \forall _ \near F & y \near G, P y.
 Proof.
-move=> FP; exists (setT, P)=> //= [|[?? []//]].
-by split=> //; apply: filterT.
+by move=> FP; exists (setT, P)=> //= [|[?? []//]]; split=> //; exact: filterT.
 Qed.
 
 Program Definition in_filter_prod {T U} {F : set_system T} {G : set_system U}
@@ -1047,22 +1032,19 @@ Program Definition in_filter_prod {T U} {F : set_system T} {G : set_system U}
   @InFilter _ _ (fun x => prop_of P x.1 /\ prop_of Q x.2) _.
 Next Obligation.
 move=> T U F G P Q.
-by exists (prop_of P, prop_of Q) => //=; split; apply: prop_ofP.
+by exists (prop_of P, prop_of Q) => //=; split; exact: prop_ofP.
 Qed.
 
 Lemma near_pair {T U} {F : set_system T} {G : set_system U}
-      {FF : Filter F} {FG : Filter G}
-      (P : in_filter F) (Q : in_filter G) x :
-       prop_of P x.1 -> prop_of Q x.2 -> prop_of (in_filter_prod P Q) x.
-Proof. by case: x=> x y; do ?rewrite prop_ofE /=; split. Qed.
+    {FF : Filter F} {FG : Filter G} (P : in_filter F) (Q : in_filter G) x :
+  prop_of P x.1 -> prop_of Q x.2 -> prop_of (in_filter_prod P Q) x.
+Proof. by case: x=> x y; do ?rewrite prop_ofE/=. Qed.
 
-Lemma cvg_fst {T U F G} {FG : Filter G} :
-  (@fst T U) @ filter_prod F G --> F.
-Proof. by move=> P; apply: filter_prod1. Qed.
+Lemma cvg_fst {T U F G} {FG : Filter G} : (@fst T U) @ filter_prod F G --> F.
+Proof. by move=> P; exact: filter_prod1. Qed.
 
-Lemma cvg_snd {T U F G} {FF : Filter F} :
-  (@snd T U) @ filter_prod F G --> G.
-Proof. by move=> P; apply: filter_prod2. Qed.
+Lemma cvg_snd {T U F G} {FF : Filter F} : (@snd T U) @ filter_prod F G --> G.
+Proof. by move=> P; exact: filter_prod2. Qed.
 
 Lemma near_map {T U} (f : T -> U) (F : set_system T) (P : set U) :
   (\forall y \near f @ F, P y) = (\forall x \near F, P (f x)).
@@ -1416,7 +1398,7 @@ Lemma proper_image (T U : Type) (f : T -> U) (F : set_system T) :
   ProperFilter F -> f @` setT = setT -> ProperFilter [set f @` A | A in F].
 Proof.
 move=> FF fsurj; apply: Build_ProperFilter_ex; last exact: filter_image.
-by move=> _ [A FA <-]; have /filter_ex [p Ap] := FA; exists (f p); exists p.
+by move=> _ [A FA <-]; have /filter_ex [p Ap] := FA; exists (f p), p.
 Qed.
 
 Lemma principal_filter_ultra {T : Type} (x : T) :
@@ -1434,22 +1416,22 @@ Proof.
 move=> FU; case: (pselect (F (~` A))) => [|nFnA]; first by right.
 left; suff : ProperFilter (filter_from (F `|` [set A `&` B | B in F]) id).
   move=> /max_filter <-; last by move=> B FB; exists B => //; left.
-  by exists A => //; right; exists setT; [apply: filterT|rewrite setIT].
+  by exists A => //; right; exists setT; [exact: filterT|rewrite setIT].
 apply: filter_from_proper; last first.
   move=> B [|[C FC <-]]; first exact: filter_ex.
   apply: contrapT => /asboolP; rewrite asbool_neg => /forallp_asboolPn AC0.
-  by apply: nFnA; apply: filterS FC => p Cp Ap; apply: (AC0 p).
+  by apply: nFnA; apply: filterS FC => p Cp Ap; exact: (AC0 p).
 apply: filter_from_filter.
-  by exists A; right; exists setT; [apply: filterT|rewrite setIT].
+  by exists A; right; exists setT; [exact: filterT|rewrite setIT].
 move=> B C [FB|[DB FDB <-]].
-  move=> [FC|[DC FDC <-]]; first by exists (B `&` C)=> //; left; apply: filterI.
+  move=> [FC|[DC FDC <-]]; first by exists (B `&` C)=> //; left; exact: filterI.
   exists (A `&` (B `&` DC)); last by rewrite setICA.
-  by right; exists (B `&` DC) => //; apply: filterI.
+  by right; exists (B `&` DC) => //; exact: filterI.
 move=> [FC|[DC FDC <-]].
   exists (A `&` (DB `&` C)); last by rewrite setIA.
-  by right; exists (DB `&` C) => //; apply: filterI.
+  by right; exists (DB `&` C) => //; exact: filterI.
 exists (A `&` (DB `&` DC)); last by move=> ??; rewrite setIACA setIid.
-by right; exists (DB `&` DC) => //; apply: filterI.
+by right; exists (DB `&` DC) => //; exact: filterI.
 Qed.
 
 Lemma ultra_image (T U : Type) (f : T -> U) (F : set_system T) :
@@ -1462,7 +1444,7 @@ have [//|FnAf] := in_ultra_setVsetC (f @^-1` A) FU.
 have : G (f @` (~` (f @^-1` A))) by apply: sfFG; exists (~` (f @^-1` A)).
 suff : ~ G (f @` (~` (f @^-1` A))) by [].
 rewrite preimage_setC image_preimage // => GnA.
-by have /filter_ex [? []] : G (A `&` (~` A)) by apply: filterI.
+by have /filter_ex [? []] : G (A `&` (~` A)) by exact: filterI.
 Qed.
 
 End UltraFilters.
@@ -1473,9 +1455,9 @@ Global Instance smallest_filter_filter {T : Type} (F : set (set T)) :
   Filter (smallest Filter F).
 Proof.
 split.
-- by move=> G [? _]; apply: filterT.
-- by move=> ? ? sFP sFQ ? [? ?]; apply: filterI; [apply: sFP | apply: sFQ].
-- by move=> ? ? /filterS + sFP ? [? ?]; apply; apply: sFP.
+- by move=> G [? _]; exact: filterT.
+- by move=> ? ? sFP sFQ ? [? ?]; apply: filterI; [exact: sFP | exact: sFQ].
+- by move=> ? ? /filterS + sFP ? [? ?]; apply; exact: sFP.
 Qed.
 
 Fixpoint filterI_iter {T : Type} (F : set (set T)) (n : nat) :=
