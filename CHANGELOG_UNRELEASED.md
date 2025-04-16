@@ -112,6 +112,9 @@
 - in `real_interval.v`:
   + lemma `itvNycEbigcap`
 
+- in `lebesgue_integral_theory/lebesgue_Rintegral.v`
+  + lemma `RintegralD`
+
 ### Changed
 
 - file `separation_axioms.v` moved from `theories` to
