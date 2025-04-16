@@ -171,6 +171,15 @@ move=> mD mf1 mf2 f12; rewrite /Rintegral fine_le//.
 - by apply/le_integral => // x xD; rewrite lee_fin f12//; exact/set_mem.
 Qed.
 
+Lemma RintegralD D f1 f2 : measurable D ->
+  mu.-integrable D (EFin \o f1) -> mu.-integrable D (EFin \o f2) ->
+  \int[mu]_(x in D) (f1 x + f2 x) =
+  \int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x.
+Proof.
+move=> mD if1 if2.
+by rewrite /Rintegral integralD_EFin// fineD//; exact: integral_fune_fin_num.
+Qed.
+
 Lemma RintegralB D f1 f2 : measurable D ->
   mu.-integrable D (EFin \o f1) -> mu.-integrable D (EFin \o f2) ->
   \int[mu]_(x in D) (f1 x - f2 x) =
