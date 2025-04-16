@@ -111,6 +111,11 @@
 
 - in `real_interval.v`:
   + lemma `itvNycEbigcap`
+- in `normedtype.v`:
+  + lemma `near0Z`
+
+- in `derive.v`:
+  + lemma `near_eq_growth_rate`
 
 - in `lebesgue_integral_theory/lebesgue_Rintegral.v`
   + lemma `RintegralD`

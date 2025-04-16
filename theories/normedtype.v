@@ -5398,6 +5398,12 @@ apply/nbhs_normP; exists e%:num => //= t et.
 by have /= := ye (t - (x - y)); rewrite opprB addrCA subrKA addrNK; exact.
 Qed.
 
+Lemma near0Z {R : numFieldType} {V : normedModType R} (y : V) (P : set V) :
+  (\forall x \near 0, P x) -> (\forall k \near 0, P (k *: y)).
+Proof.
+by have /= := @scalel_continuous R V y 0 _; rewrite scale0r; apply.
+Qed.
+
 Lemma cvg_comp_shift {T : Type} {K : numDomainType} {R : normedModType K}
   (x y : R) (f : R -> T) :
   (f \o shift x) @ y = f @ (y + x).
