@@ -813,8 +813,8 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
   rewrite (le_trans _ (ltW x1y)) // real_ler_norm // realB //.
     rewrite ltrBrDr in M'x.
     rewrite -comparabler0 (@comparabler_trans _ (M + 1)%R) //.
-      by rewrite /Order.comparable (ltW M'x) orbT.
-    by rewrite comparabler0 realD.
+      try by rewrite /Order.comparable (ltW M'x) orbT. (* TODO: remove this line and the one below when requiring MathComp >= 2.5.0 and add a by at beginning of previous line *)
+    try by rewrite comparabler0 realD.
   by rewrite num_real. (* where we really use realFieldType *)
 - exists (M - 1)%R; split; first by rewrite realB.
   move=> -[x| _ |_] //=; last by exists M.
@@ -826,8 +826,8 @@ move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
   rewrite (le_trans _ (ltW x1y)) // distrC real_ler_norm // realB //.
     by rewrite num_real. (* where we really use realFieldType *)
   rewrite addrC -ltrBrDr in M'x.
-  rewrite -comparabler0 (@comparabler_trans _ (M - 1)%R) //.
-    by rewrite /Order.comparable (ltW M'x).
+  rewrite -comparabler0 (@comparabler_trans _ (M - 1)%R) => [//||].
+    by rewrite /Order.comparable (ltW M'x). (* TODO: remove this line and the one below when requiring MathComp >= 2.5.0 and add a by at beginning of previous line *)
   by rewrite comparabler0 realB.
 Qed.
 
