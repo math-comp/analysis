@@ -1463,7 +1463,7 @@ Proof.
 move=> mA; apply: (@measurable_kfcomp _ _ (T0 * T1)%type T2 R k
     (fun abc => (\1_A (abc.1.2, abc.2))%:E)) => //.
 apply/measurable_EFinP => //=; apply: measurableT_comp => //=.
-apply/prod_measurable_funP; split => /=.
+apply/measurable_fun_pairP; split => /=.
   rewrite [X in measurable_fun _ X](_ : _ = snd \o fst)//.
   exact: measurableT_comp.
 by rewrite [X in measurable_fun _ X](_ : _ = snd).
@@ -1473,8 +1473,7 @@ Local Lemma intker_indicE A x y : measurable A ->
   intker_indic k A (x, y) = k (x, y) (xsection A y).
 Proof.
 move=> mA; rewrite /intker_indic(*NB:lemma?*) integral_indic//; last first.
-  rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
-  exact: measurable_xsection.
+  by rewrite -[X in measurable X]xsectionE; exact: measurable_xsection.
 by rewrite setIT xsectionE.
 Qed.
 
@@ -1488,8 +1487,7 @@ rewrite /intker_indic -(@integral_nneseries _ _ R (k (x, y)) _ measurableT
   (fun i z => (\1_(A i) (y, z))%:E))//.
 - by apply: eq_integral => z _ /=; rewrite indic_bigcup.
 - move=> n; apply/measurable_EFinP => //; apply: measurable_indic.
-  rewrite -[X in measurable X]/(_ @^-1` _) -xsectionE.
-  exact: measurable_xsection.
+  by rewrite -[X in measurable X]xsectionE; exact: measurable_xsection.
 Qed.
 
 End intker_indic_lemmas.

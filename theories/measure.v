@@ -5228,7 +5228,7 @@ Proof. by move=> mf mg; exact/measurable_fun_pairP. Qed.
 End prod_measurable_fun.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `measurable_fun_pair`")]
 Notation measurable_fun_prod := measurable_fun_pair (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `pair_measurable_funP`")]
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `measurable_fun_pairP`")]
 Notation prod_measurable_funP := measurable_fun_pairP (only parsing).
 
 Section prod_measurable_proj.
@@ -5293,7 +5293,6 @@ End partial_measurable_fun.
 Notation measurable_pair1 := pair1_measurable (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed `pair2_measurable`")]
 Notation measurable_pair2 := pair2_measurable (only parsing).
-
 
 (* [Lemma 14.13, Klenke 2014] *)
 Section measurable_section.
