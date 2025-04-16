@@ -126,7 +126,7 @@
   + mixin `isFiniteTransition`, structure `FiniteTransitionKernel`,
     notations `finite_transition_kernel`, `R .-ftker X ~> Y`
   + lemmas `sprob_kernelP`, `sprob_kernel_le1`
-  + definition `kfcomp`, lemma `measurable_kfcomp`
+  + definition `kfcomp`, lemmas `kfcompk1`, `kfcompkindic`, `measurable_kfcomp`
   + definitions `kproduct`, `kproduct_snd`
   + lemmas `measurable_kproduct`, `semi_sigma_additive_kproduct`
   + definition `mkproduct`
