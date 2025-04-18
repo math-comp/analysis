@@ -1558,3 +1558,108 @@ Qed.
 
 End lebesgue_measure_integral.
 Arguments integral_Sset1 {R f A} r.
+
+Section ge0_nondecreasing_set_seq_cvg_integral.
+Context {R : realType}.
+Variables (S : (set R)^nat) (f : R -> \bar R).
+
+Local Open Scope ereal_scope.
+
+Hypotheses (nndS : nondecreasing_seq S) (mS : (forall i, measurable (S i))).
+Hypothesis (mf : (forall i, measurable_fun (S i) f)).
+Hypothesis (f0 : forall i x, S i x -> 0 <= f x).
+
+Notation mu := lebesgue_measure.
+
+Lemma ge0_nondecreasing_set_seq_nondecreasing_integral_seq :
+  nondecreasing_seq (fun i => \int[mu]_(x in S i) f x).
+Proof.
+apply/nondecreasing_seqP => n.
+apply: ge0_subset_integral => //=; [exact: mS|exact: mS|exact: mf| |].
+- by move=> ?; exact: f0.
+- by rewrite -subsetEset; exact: nndS.
+Qed.
+
+Lemma ge0_nondecreasing_set_seq_cvg_integral :
+  \int[mu]_(x in (S i)) f x @[i --> \oo] -->
+    \int[mu]_(x in \bigcup_i S i) f x.
+Proof.
+apply: cvg_toP.
+  apply: ereal_nondecreasing_is_cvgn.
+  exact: ge0_nondecreasing_set_seq_nondecreasing_integral_seq.
+under eq_fun do rewrite integral_mkcond/=.
+rewrite -monotone_convergence//=; last 3 first.
+- by move=> n; apply/(measurable_restrictT f).
+- by move=> n x _; apply: erestrict_ge0 => {}x Snx; apply: f0 Snx.
+- move=> x _; apply/nondecreasing_seqP => n; apply: restrict_lee => //.
+    by move=> {}x Snx; apply: f0 Snx.
+  by rewrite -subsetEset; exact: nndS.
+rewrite [RHS]integral_mkcond/=.
+apply: eq_integral => /=; rewrite /g_sigma_algebraType/ocitv_type => x _.
+transitivity (ereal_sup (range (fun n => (f \_ (S n)) x))).
+  apply/cvg_lim => //.
+  apply/ereal_nondecreasing_cvgn/nondecreasing_seqP => n; apply: restrict_lee.
+    by move=> {}x Snx; apply: f0 Snx.
+  by rewrite -subsetEset; exact: nndS.
+apply/eqP; rewrite eq_le; apply/andP; split.
+- apply: ub_ereal_sup => _/= [n _ <-].
+  apply: restrict_lee => //; last exact: bigcup_sup.
+  by move=> ? [? _ Smy]; apply: f0 Smy.
+- rewrite patchE; case: ifPn=> [|/negP].
+    rewrite inE => -[n _ Snx].
+    apply: ereal_sup_le; exists (f \_ (S n) x) => //.
+    by rewrite patchE mem_set.
+  rewrite inE -[X in X -> _]/((~` _) x) setC_bigcup => nSx.
+  apply/ereal_sup_le; exists point => //=; exists 0%R => //.
+  by rewrite patchE memNset//; exact: nSx.
+Qed.
+
+End ge0_nondecreasing_set_seq_cvg_integral.
+
+Section le0_nondecreasing_set_seq_cvg_integral.
+Context {R : realType}.
+Variables (S : (set R)^nat) (f : R -> \bar R).
+
+Local Open Scope ereal_scope.
+
+Hypotheses (nndS : nondecreasing_seq S) (mS : (forall i, measurable (S i))).
+Hypothesis (mf : (forall i, measurable_fun (S i) f)).
+Hypothesis (f0 : forall i x, S i x -> f x <= 0).
+
+Notation mu := lebesgue_measure.
+
+Let intNS n : (- \int[mu]_(x in S n) f x) = \int[mu]_(x in S n) - f x.
+Proof.
+apply/esym; apply: integralN => /=.
+apply: fin_num_adde_defr.
+rewrite integral0_eq// => x Snx.
+by rewrite (@le0_funeposE _ _ (S n))// ?inE//; apply: f0.
+Qed.
+
+Let mNf i : measurable_fun (S i) (\- f).
+Proof. by apply: measurableT_comp => //; exact: mf. Qed.
+
+Let Nf_ge0 i x: S i x -> 0%R <= - f x.
+Proof. by move=> Six; rewrite leeNr oppe0; exact: f0 Six. Qed.
+
+Lemma le0_nondecreasing_set_seq_nonincreasing_integral_seq :
+  nonincreasing_seq (fun i => \int[mu]_(x in S i) f x).
+Proof.
+move=> m n mn; rewrite -leeN2 2!intNS.
+exact: ge0_nondecreasing_set_seq_nondecreasing_integral_seq.
+Qed.
+
+Lemma le0_nondecreasing_set_seq_cvg_integral :
+ \int[mu]_(x in (S i)) f x @[i --> \oo] -->
+  \int[mu]_(x in \bigcup_i S i) f x.
+Proof.
+apply/cvgeNP.
+rewrite -integralN/=; last first.
+  apply: fin_num_adde_defr.
+  rewrite integral0_eq// => x [n _ Snx].
+  by rewrite (le0_funeposE (@f0 n))// inE.
+under eq_cvg do rewrite intNS.
+exact: ge0_nondecreasing_set_seq_cvg_integral.
+Qed.
+
+End le0_nondecreasing_set_seq_cvg_integral.
