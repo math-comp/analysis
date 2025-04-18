@@ -1560,8 +1560,9 @@ End lebesgue_measure_integral.
 Arguments integral_Sset1 {R f A} r.
 
 Section ge0_nondecreasing_set_seq_cvg_integral.
-Context {R : realType}.
-Variables (S : (set R)^nat) (f : R -> \bar R).
+Context {d : measure_display} {T : measurableType d} {R : realType}.
+Variables (S : (set T)^nat) (f : T -> \bar R).
+Variable (mu : measure T R).
 
 Local Open Scope ereal_scope.
 
@@ -1569,13 +1570,11 @@ Hypotheses (nndS : nondecreasing_seq S) (mS : (forall i, measurable (S i))).
 Hypothesis (mf : (forall i, measurable_fun (S i) f)).
 Hypothesis (f0 : forall i x, S i x -> 0 <= f x).
 
-Notation mu := lebesgue_measure.
-
 Lemma ge0_nondecreasing_set_seq_nondecreasing_integral_seq :
   nondecreasing_seq (fun i => \int[mu]_(x in S i) f x).
 Proof.
 apply/nondecreasing_seqP => n.
-apply: ge0_subset_integral => //=; [exact: mS|exact: mS|exact: mf| |].
+apply: ge0_subset_integral => //=.
 - by move=> ?; exact: f0.
 - by rewrite -subsetEset; exact: nndS.
 Qed.
@@ -1617,8 +1616,9 @@ Qed.
 End ge0_nondecreasing_set_seq_cvg_integral.
 
 Section le0_nondecreasing_set_seq_cvg_integral.
-Context {R : realType}.
-Variables (S : (set R)^nat) (f : R -> \bar R).
+Context {d : measure_display} {T : measurableType d} {R : realType}.
+Variables (S : (set T)^nat) (f : T -> \bar R).
+Variable (mu : measure T R).
 
 Local Open Scope ereal_scope.
 
