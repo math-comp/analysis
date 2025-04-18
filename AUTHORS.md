@@ -1,14 +1,14 @@
 # Authors of this library
 
-- Reynald Affeldt, AIST (National Institute of Advanced Industrial Science and Technology, Japan)
+- Reynald Affeldt, AIST (National Institute of Advanced Industrial Science and Technology, Japan), initial author
 - Yves Bertot, Inria
 - Alessandro Bruni, IT-University of Copenhagen
-- Cyril Cohen, Inria -> Inria, ENS de Lyon, CNRS, UCBL, LIP
+- Cyril Cohen, Inria -> Inria, ENS de Lyon, CNRS, UCBL, LIP, initial author
 - Marie Kerjean, CNRS
-- Assia Mahboubi, Inria
-- Damien Rouhling, when at Inria
+- Assia Mahboubi, Inria, initial author
+- Damien Rouhling, when at Inria, initial author
 - Pierre Roux, Onera
 - Kazuhiko Sakaguchi, University of Tsukuba -> Inria -> CNRS, Inria, ENS de Lyon, UCBL, LIP
 - Zachary Stone,
-- Pierre-Yves Strub, when at École polytechnique
+- Pierre-Yves Strub, when at École polytechnique, initial author
 - Laurent Théry, Inria
