@@ -1,7 +1,14 @@
-# Initial authors of this library
+# Authors of this library
 
-- Reynald Affeldt, AIST (National Institute of Advanced Industrial Science and Technology, Japan)
-- Cyril Cohen, Inria
-- Assia Mahboubi, Inria
-- Damien Rouhling, Inria
-- Pierre-Yves Strub, École polytechnique
+Reynald Affeldt
+Yves Bertot
+Alessandro Bruni
+Cyril Cohen
+Marie Kerjean
+Assia Mahboubi
+Damien Rouhling
+Pierre Roux
+Kazuhiko Sakaguchi
+Zachary Stone
+Pierre-Yves Strub
+Laurent Théry
