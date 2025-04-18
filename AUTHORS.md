@@ -10,5 +10,5 @@
 - Pierre Roux, Onera
 - Kazuhiko Sakaguchi, University of Tsukuba -> Inria -> CNRS, Inria, ENS de Lyon, UCBL, LIP
 - Zachary Stone,
-- Pierre-Yves Strub, when at  École polytechnique
+- Pierre-Yves Strub, when at École polytechnique
 - Laurent Théry, Inria
