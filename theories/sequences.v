@@ -1109,7 +1109,7 @@ have Cng : cvgn [normed series (g h)].
   apply: series_le_cvg (Hg _ hLk) _ => [//|?|].
     exact: le_trans (Hg _ hLk _).
   by under eq_fun do rewrite mulrC.
-apply: (le_trans (lim_series_norm Cng)).
+apply: (le_trans (@lim_series_norm _ R^o _ Cng)).
 rewrite -[_ * _](lim_seriesZ _ Cf) (lim_series_le Cng Ckf) // => n.
 by rewrite [leRHS]mulrC; apply: Hg.
 Qed.

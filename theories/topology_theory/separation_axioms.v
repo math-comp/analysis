@@ -216,7 +216,6 @@ Proof.
 by move=> p q /(_ _ _ (discrete_set1 p) (discrete_set1 q)) [] // x [] -> ->.
 Qed.
 
-
 Lemma order_hausdorff {d} {T : orderTopologicalType d} : hausdorff_space T.
 Proof.
 rewrite open_hausdorff=> p q; wlog : p q / (p < q)%O.

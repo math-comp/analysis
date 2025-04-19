@@ -101,6 +101,16 @@
 
 - in `constructive_ereal.v`:
   + lemmas `EFin_fin_numP`, `EFin_bigmax`
+- new directory `normedtype_theory` (that replaces `normedtype.v`) with new files:
+  + `complete_normed_module.v`
+  + `num_normedtype.v`
+  + `ereal_normedtype.v`
+  + `pseudometric_normed_Zmodule.v`
+  + `matrix_normedtype.v`
+  + `urysohn.v`
+  + `normed_module.v`
+  + `vitali_lemma.v`
+  + `normedtype.v`
 
 - in `realfun.v`:
   + lemmas `cvge_pinftyP`, `nonincreasing_cvge`
@@ -111,7 +121,7 @@
 
 - in `real_interval.v`:
   + lemma `itvNycEbigcap`
-- in `normedtype.v`:
+- in `normed_module.v` (new file):
   + lemma `near0Z`
 
 - in `derive.v`:
@@ -174,6 +184,14 @@
 
 - in `classical_sets.v`:
   + change implicit arguments of `subsetT`
+- moved from `normedtype.v` (old file) to `num_topology`
+- moved from `normedtype.v` (old file) to `num_topology.v`
+  + lemmas `nbhsN`, `cvg_compNP`, `nbhsNimage`, `nearN`, `openN`,
+    `closedN`, `dnbhsN`, `closure_sup`, `right_bounded_interior`, `left_bounded_interior`,
+    `withinN`
+
+- the contents of `normedtype.v` (old file) can be found in the files in directory
+  `normed_theory` unless stated otherwise
 
 ### Renamed
 
@@ -210,6 +228,14 @@
   + `SFiniteKernel_isFinite` -> `isMeasureFamUub`
   + `FiniteKernel_isSubProbability` -> `isSubProbabilityKernel`
   + `SubProbability_isProbability` -> `isProbabilityKernel`
+- in `set_interval.v`:
+  + `set_itv_infty_infty` -> `set_itvNyy`
+  + `set_itv_o_infty` -> `set_itvoy`
+  + `set_itv_c_infty` -> `set_itvcy`
+  + `set_itv_infty_o` -> `set_itvNyo`
+  + `set_itv_infty_c` -> `set_itvNyc`
+  + `set_itv_pinfty_bnd` -> `set_itv_ybnd`
+  + `set_itv_bnd_ninfty` -> `set_itv_bndNy`
 
 ### Generalized
 
@@ -226,9 +252,20 @@
 - in `sequences.v`:
   + lemma `nneseries_recl` genralized with a filtering predicate `P`
 - in `normedtype.v`:
+- in `ereal_normedtype.v` (new file, was `normedtype.v`):
+  + `lower_semicontinuous`, `lower_semicontinuousP` generalized from `realType` to `numFieldType`
+
+- in `num_normedtype.v` (new file):
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
+- in `pseudometric_normed_Zmodule.v`:
+  + generalized from `normedModType` to `pseudoMetricNormedZmodType`:
+    * lemmas `cvgr_norm_lty`, `cvgr_norm_ley`, `cvgr_norm_gtNy`,
+      `cvgr_norm_geNy`, `cvg_bounded`
 
 ### Deprecated
+
+- in `normed_theory` (was in `normedtype.v` before the split)
+  + `pseudoMetricNormedZModType_hausdorff` (use `norm_hausdorff` instead)
 
 ### Removed
 
@@ -276,6 +313,8 @@
 
 - in `filter.v`:
   + definition `at_point` (redundant with `principal_filter`)
+- file `normedtype.v` (split in several files in the directory
+  `normed_theory`)
 
 ### Infrastructure
 
