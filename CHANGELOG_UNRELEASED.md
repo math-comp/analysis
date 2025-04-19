@@ -101,7 +101,7 @@
 
 - in `constructive_ereal.v`:
   + lemmas `EFin_fin_numP`, `EFin_bigmax`
-- new directory `normed_theory` (that replaces `normedtype.v`) with new files:
+- new directory `normedtype_theory` (that replaces `normedtype.v`) with new files:
   + `complete_normed_module.v`
   + `num_normedtype.v`
   + `ereal_normedtype.v`

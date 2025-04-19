@@ -39,15 +39,15 @@ function_spaces.v
 cantor.v
 tvs.v
 
-normed_theory/num_normedtype.v
-normed_theory/matrix_normedtype.v
-normed_theory/ereal_normedtype.v
-normed_theory/pseudometric_normed_Zmodule.v
-normed_theory/normed_module.v
-normed_theory/complete_normed_module.v
-normed_theory/urysohn.v
-normed_theory/vitali_lemma.v
-normed_theory/normedtype.v
+normedtype_theory/num_normedtype.v
+normedtype_theory/matrix_normedtype.v
+normedtype_theory/ereal_normedtype.v
+normedtype_theory/pseudometric_normed_Zmodule.v
+normedtype_theory/normed_module.v
+normedtype_theory/complete_normed_module.v
+normedtype_theory/urysohn.v
+normedtype_theory/vitali_lemma.v
+normedtype_theory/normedtype.v
 
 realfun.v
 sequences.v
