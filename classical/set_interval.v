@@ -149,32 +149,32 @@ Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= bnd_simp ltxx. Qed.
 Lemma set_itvco0 x : `[x, x[%classic = set0.
 Proof. by rewrite -subset0 => y /=; rewrite itv_ge//= bnd_simp ltxx. Qed.
 
-Lemma set_itv_infty_infty : `]-oo, +oo[%classic = @setT T.
+Lemma set_itvNyy : `]-oo, +oo[%classic = @setT T.
 Proof. by rewrite predeqE. Qed.
 
-Lemma set_itv_o_infty x : `]x, +oo[%classic = [set z | (x < z)%O].
+Lemma set_itvoy x : `]x, +oo[%classic = [set z | (x < z)%O].
 Proof. by rewrite predeqE => r /=; rewrite in_itv andbT. Qed.
 
-Lemma set_itv_c_infty x : `[x, +oo[%classic = [set z | (x <= z)%O].
+Lemma set_itvcy x : `[x, +oo[%classic = [set z | (x <= z)%O].
 Proof. by rewrite predeqE /mkset => r; rewrite in_itv andbT. Qed.
 
-Lemma set_itv_infty_o x : `]-oo, x[%classic = [set z | (z < x)%O].
+Lemma set_itvNyo x : `]-oo, x[%classic = [set z | (z < x)%O].
 Proof. by rewrite predeqE /mkset => r; rewrite in_itv. Qed.
 
-Lemma set_itv_infty_c x : `]-oo, x]%classic = [set z | (z <= x)%O].
+Lemma set_itvNyc x : `]-oo, x]%classic = [set z | (z <= x)%O].
 Proof. by rewrite predeqE /mkset => r; rewrite in_itv. Qed.
 
-Lemma set_itv_pinfty_bnd a : [set` Interval +oo%O a] = set0.
+Lemma set_itv_ybnd a : [set` Interval +oo%O a] = set0.
 Proof. by apply/eqP/negPn/negP => /neitv_lt_bnd. Qed.
 
-Lemma set_itv_bnd_ninfty a : [set` Interval a -oo%O] = set0.
+Lemma set_itv_bndNy a : [set` Interval a -oo%O] = set0.
 Proof. by apply/eqP/negPn/negP => /neitv_lt_bnd /=; case: a => [[]a|[]]. Qed.
 
-Definition set_itv_infty_set0 := (set_itv_bnd_ninfty, set_itv_pinfty_bnd).
+Definition set_itv_infty_set0 := (set_itv_bndNy, set_itv_ybnd).
 
 Definition set_itvE := (set_itv1, set_itvoo0, set_itvoc0, set_itvco0, set_itvoo,
-  set_itvcc, set_itvoc, set_itvco, set_itv_infty_infty, set_itv_o_infty,
-  set_itv_c_infty, set_itv_infty_o, set_itv_infty_c, set_itv_infty_set0).
+  set_itvcc, set_itvoc, set_itvco, set_itvNyy, set_itvoy,
+  set_itvcy, set_itvNyo, set_itvNyc, set_itv_infty_set0).
 
 Lemma set_itvxx a : [set` Interval a a] = set0.
 Proof. by move: a => [[|] a |[|]]; rewrite !set_itvE. Qed.
@@ -213,8 +213,22 @@ Qed.
 
 End set_itv_porderType.
 Arguments neitv {disp T} _.
-#[deprecated(since="mathcomp-analysis 1.4.0", note="renamed to subset_itvScc")]
+#[deprecated(since="mathcomp-analysis 1.4.0", note="renamed to `subset_itvScc`")]
 Notation subset_itvS := subset_itvScc (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvNyy`")]
+Notation set_itv_infty_infty := set_itvNyy (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvoy`")]
+Notation set_itv_o_infty := set_itvoy (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvcy`")]
+Notation set_itv_c_infty := set_itvcy (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvNyo`")]
+Notation set_itv_infty_o := set_itvNyo (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itvNyc`")]
+Notation set_itv_infty_c := set_itvNyc (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itv_ybnd`")]
+Notation set_itv_pinfty_bnd := set_itv_ybnd (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `set_itv_bndNy`")]
+Notation set_itv_bnd_ninfty := set_itv_bndNy (only parsing).
 
 Section set_itv_orderType.
 Variables (d : Order.disp_t) (T : orderType d).

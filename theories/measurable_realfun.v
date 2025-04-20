@@ -225,7 +225,7 @@ have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
 case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
 - by rewrite -setU1itv//; exact/measurableU.
 - by rewrite oooE; exact/measurableD.
-- by rewrite set_itv_infty_infty.
+- by rewrite set_itvNyy.
 Qed.
 #[local] Hint Resolve measurable_itv : core.
 
@@ -542,7 +542,7 @@ Definition G : set (set R) := [set A | exists x, A = `[x, +oo[%classic].
 Lemma measurable_itv_bnd_infty b x :
   G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
 Proof.
-case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itv_c_infty.
+case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itvcy.
 rewrite itvoyEbigcup; apply: bigcupT_measurable => k.
 by apply: sub_sigma_algebra; eexists; reflexivity.
 Qed.
@@ -1204,16 +1204,16 @@ Definition G : set (set nat) := [set A | exists x, A = `[x, +oo[%classic].
 Lemma measurable_itv_bnd_infty b x :
   G.-sigma.-measurable [set` Interval (BSide b x) +oo%O].
 Proof.
-case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itv_c_infty.
+case: b; first by apply: sub_sigma_algebra; exists x; rewrite set_itvcy.
 rewrite [X in measurable X](_ : _ =
-    \bigcup_(k in [set k | k >= x]%N) `[k.+1, +oo[%classic); last first.
-  apply/seteqP; split => [z /=|/= z [t/= xt]].
-    rewrite in_itv/= andbT => xz; exists z.-1 => /=.
-      by rewrite -ltnS//=; case: z xz.
-    by case: z xz => //= z xz; rewrite in_itv/= lexx andbT.
-  by rewrite !in_itv/= !andbT; apply: lt_le_trans; rewrite ltEnat/= ltnS.
-rewrite bigcup_mkcond; apply: bigcupT_measurable => k.
-by case: ifPn => //= _; apply: sub_sigma_algebra; eexists; reflexivity.
+    \bigcup_(k in [set k | k >= x]%N) `[k.+1, +oo[%classic).
+  rewrite bigcup_mkcond; apply: bigcupT_measurable => k.
+  by case: ifPn => //= _; apply: sub_sigma_algebra; eexists; reflexivity.
+apply/seteqP; split => [z /=|/= z [t/= xt]].
+  rewrite in_itv/= andbT => xz; exists z.-1 => /=.
+    by rewrite -ltnS//=; case: z xz.
+  by case: z xz => //= z xz; rewrite in_itv/= lexx andbT.
+by rewrite !in_itv/= !andbT; apply: lt_le_trans; rewrite ltEnat/= ltnS.
 Qed.
 
 Lemma measurable_itv_bounded a b y : a != +oo%O ->
