@@ -745,23 +745,23 @@ move=> [s||]/=.
   by move=> x xru; apply: uA; move: xru; rewrite EFinM lte_pdivlMl.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvgeMl f x y : y \is a fin_num ->
+Lemma cvgeZl f x y : y \is a fin_num ->
   f @ F --> x -> (fun n => y * f n) @ F --> y * x.
 Proof. by move: y => [r| |]// _ /cvg_comp; apply; exact: mule_continuous. Qed.
 
-Lemma is_cvgeMl f y : y \is a fin_num ->
+Lemma is_cvgeZl f y : y \is a fin_num ->
   cvg (f @ F) -> cvg ((fun n => y * f n) @ F).
-Proof. by move=> fy /(cvgeMl fy)/cvgP. Qed.
+Proof. by move=> fy /(cvgeZl fy)/cvgP. Qed.
 
-Lemma cvgeMr f x y : y \is a fin_num ->
+Lemma cvgeZr f x y : y \is a fin_num ->
   f @ F --> x -> (fun n => f n * y) @ F --> x * y.
 Proof.
-by move=> ? ?; rewrite muleC; under eq_fun do rewrite muleC; exact: cvgeMl.
+by move=> ? ?; rewrite muleC; under eq_fun do rewrite muleC; exact: cvgeZl.
 Qed.
 
-Lemma is_cvgeMr f y : y \is a fin_num ->
+Lemma is_cvgeZr f y : y \is a fin_num ->
   cvg (f @ F) -> cvg ((fun n => f n * y) @ F).
-Proof. by move=> fy /(cvgeMr fy)/cvgP. Qed.
+Proof. by move=> fy /(cvgeZr fy)/cvgP. Qed.
 
 Lemma cvg_abse0P f : abse \o f @ F --> 0 <-> f @ F --> 0.
 Proof.
@@ -869,6 +869,14 @@ Unshelve. all: end_near. Qed.
 End ecvg_realFieldType.
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `sube_cvg0`")]
 Notation cvge_sub0 := sube_cvg0 (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `cvgeZl`")]
+Notation cvgeMl := cvgeZl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `is_cvgeZl`")]
+Notation is_cvgeMl := is_cvgeZl (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `cvgeZr`")]
+Notation cvgeMr := cvgeZr (only parsing).
+#[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `is_cvgeZr`")]
+Notation is_cvgeMr := is_cvgeZr (only parsing).
 
 Section max_cts.
 Context {R : realType} {T : topologicalType}.
@@ -940,11 +948,11 @@ Proof. by move=> cf cg fg; apply/cvg_lim => //; exact: cvgeD. Qed.
 
 Lemma limeMl f y : y \is a fin_num -> cvg (f @ F) ->
   lim ((fun n => y * f n) @ F) = y * lim (f @ F).
-Proof. by move=> yfn cf; apply/cvg_lim => //; exact: cvgeMl. Qed.
+Proof. by move=> yfn cf; apply/cvg_lim => //; exact: cvgeZl. Qed.
 
 Lemma limeMr f y : y \is a fin_num -> cvg (f @ F) ->
   lim ((fun n => f n * y) @ F) = lim (f @ F) * y.
-Proof. by move=> yfn cf; apply/cvg_lim => //; apply: cvgeMr. Qed.
+Proof. by move=> yfn cf; apply/cvg_lim => //; apply: cvgeZr. Qed.
 
 Lemma is_cvgeM f g :
   lim (f @ F) *? lim (g @ F) -> cvg (f @ F) -> cvg (g @ F) -> cvg (f \* g @ F).

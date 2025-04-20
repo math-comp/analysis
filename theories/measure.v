@@ -2426,7 +2426,7 @@ move=> F mF tF mUF; rewrite [X in X @ \oo --> _](_ : _ =
 rewrite /mscale; have [->|r0] := eqVneq r%:num 0%R.
   rewrite mul0e [X in X @ \oo --> _](_ : _ = cst 0); first exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
-by apply: cvgeMl => //; exact: measure_semi_sigma_additive.
+by apply: cvgeZl => //; exact: measure_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mscale
@@ -3628,7 +3628,7 @@ case: ifPn => [_|_]; first exact: measure_semi_sigma_additive.
 rewrite [X in X @ _ --> _](_ : _ = (fun n => \sum_(0 <= i < n) mu (F i)) \*
                                cst (fine (mu setT))^-1%:E); last first.
   by apply/funext => n; rewrite -ge0_sume_distrl.
-by apply: cvgeMr => //; exact: measure_semi_sigma_additive.
+by apply: cvgeZr => //; exact: measure_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _ mnormalize

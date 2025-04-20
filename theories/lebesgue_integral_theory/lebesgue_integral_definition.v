@@ -284,7 +284,7 @@ have cg1g n : c%:E * sintegral mu (g1 c n) <= sintegral mu (g n).
 suff {cg1g}<- : limn (fun n => sintegral mu (g1 c n)) = sintegral mu f.
   have is_cvg_g1 : cvgn (fun n => sintegral mu (g1 c n)).
     by apply: is_cvg_sintegral => //= x m n /(le_ffleg c)/lefP/(_ x).
-  rewrite -limeMl // lee_lim//; first exact: is_cvgeMl.
+  rewrite -limeMl // lee_lim//; first exact: is_cvgeZl.
   - by apply: is_cvg_sintegral => // m n mn; apply/lefP => t; apply: nd_g.
   - exact/nearW/cg1g.
 suff : sintegral mu (g1 c n) @[n \oo] --> sintegral mu f by apply/cvg_lim.
@@ -316,7 +316,7 @@ rewrite sintegralE fsbig_finite//=.
 apply: cvg_nnesum=> [r _|r _].
   near=> A; apply: (mulemu_ge0 (fun x => f @^-1` [set x] `&` fleg c A)) => r0.
   by rewrite preimage_nnfun0// set0I.
-apply: cvgeMl => //=; rewrite [X in _ --> X](_ : _ =
+apply: cvgeZl => //=; rewrite [X in _ --> X](_ : _ =
     mu (\bigcup_n (f @^-1` [set r] `&` fleg c n))); last first.
   by rewrite -setI_bigcupr bigcup_fleg// setIT.
 have ? k i : measurable (f @^-1` [set k] `&` fleg c i) by exact: measurableI.

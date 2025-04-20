@@ -417,7 +417,7 @@ move=> F mF tF mUF; rewrite /cscale; rewrite [X in X @ _ --> _](_ : _ =
 rewrite /mscale; have [->|r0] := eqVneq r 0%R.
   rewrite mul0e [X in X @ _ --> _](_ : _ = (fun=> 0)); first exact: cvg_cst.
   by under eq_fun do rewrite mul0e.
-by apply: cvgeMl => //; apply: charge_semi_sigma_additive.
+by apply: cvgeZl => //; exact: charge_semi_sigma_additive.
 Qed.
 
 HB.instance Definition _ := isCharge.Build _ _ _ cscale
@@ -665,7 +665,7 @@ Proof.
 move=> u0 h.
 have u2 n : u n = 2%:E * (u n * 2^-1%:E) by rewrite muleCA -EFinM divff ?mule1.
 rewrite (eq_cvg _ _ u2) -[X in _ --> X]/(nbhs 0).
-rewrite -(mule0 2%:E); apply: cvgeMl => //.
+rewrite -(mule0 2%:E); apply: cvgeZl => //.
 by apply: (mine_cvg_0_cvg_0 lte01) => // n; rewrite mule_ge0.
 Qed.
 
@@ -1927,8 +1927,8 @@ have -> : \int[nu]_(x in E) f x =
   - by move=> x Ex a b ab; rewrite lee_fin; exact/lefP/nd_nnsfun_approx.
 have -> : \int[mu]_(x in E) (f \* g) x =
     lim (\int[mu]_(x in E) ((EFin \o h n) \* g) x @[n --> \oo]).
-  have fg x :E x -> f x * g x = lim (((EFin \o h n) \* g) x @[n --> \oo]).
-    by move=> Ex; apply/esym/cvg_lim => //; apply: cvgeMr;
+  have fg x : E x -> f x * g x = lim (((EFin \o h n) \* g) x @[n --> \oo]).
+    by move=> Ex; apply/esym/cvg_lim => //; apply: cvgeZr;
       [exact: f_fin_num|exact: cvg_nnsfun_approx].
   under eq_integral => x /[!inE] /fg -> //.
   apply: monotone_convergence => [//| | |].
