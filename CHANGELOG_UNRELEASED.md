@@ -164,6 +164,9 @@
   + lemma `normal_pdf_ge0`, `normal_pdf_ub`
   + lemma `integrable_normal_pdf`
 
+- in `derive.v`:
+  + lemmas `derive1Mr`, `derive1Ml`
+
 ### Changed
 
 - file `separation_axioms.v` moved from `theories` to
