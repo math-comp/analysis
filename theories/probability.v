@@ -1532,8 +1532,7 @@ Proof. by apply: measurable_funM => //=; exact: measurable_normal_fun. Qed.
 
 Lemma measurable_normal_pdf m s : measurable_fun setT (normal_pdf m s).
 Proof.
-rewrite /normal_pdf; have [_|s0] := eqVneq s 0; first exact: measurable_indic.
-exact: measurable_normal_pdf0.
+by rewrite /normal_pdf; have [_|] := eqVneq s 0; first exact: measurable_indic.
 Qed.
 
 Let continuous_normal_pdf0 m s : continuous (normal_pdf0 m s).
@@ -1555,18 +1554,13 @@ by rewrite invr_ge0 mulrn_wge0// sqr_ge0.
 Qed.
 
 Lemma normal_pdf_ge0 m s x : 0 <= normal_pdf m s x.
-Proof. by rewrite /normal_pdf; case: ifP => // _; exact: normal_pdf0_ge0. Qed.
+Proof. by rewrite /normal_pdf; case: ifP. Qed.
 
 Lemma continuous_normal_pdf m s : s != 0 -> continuous (normal_pdf m s).
-Proof.
-rewrite /normal_pdf; have [//|s0 _] := eqVneq s 0.
-exact: continuous_normal_pdf0.
-Qed.
+Proof. by rewrite /normal_pdf; have [|] := eqVneq s 0. Qed.
 
 Lemma normal_pdf_ub m s x : s != 0 -> normal_pdf m s x <= normal_peak s.
-Proof.
-by rewrite /normal_pdf; have [//|s0 _] := eqVneq s 0; exact: normal_pdf0_ub.
-Qed.
+Proof. by rewrite /normal_pdf; have [|] := eqVneq s 0. Qed.
 
 End normal_density.
 
@@ -1589,7 +1583,7 @@ congr expR; rewrite mulNr exprMn exprVn; congr (- (_ * _^-1)%R).
 by rewrite sqr_sqrtr// pmulrn_lge0// sqr_ge0.
 Qed.
 
-Lemma F'E : F^`()%classic = cst (Num.sqrt (sigma ^+ 2 *+ 2))^-1.
+Let F'E : F^`()%classic = cst (Num.sqrt (sigma ^+ 2 *+ 2))^-1.
 Proof.
 apply/funext => x; rewrite /F derive1E deriveM// deriveD// derive_cst scaler0.
 by rewrite add0r derive_id derive_cst addr0 scaler1.
