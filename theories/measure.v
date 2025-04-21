@@ -5303,7 +5303,7 @@ Lemma measurable_xsection (A : set (T1 * T2)) (x : T1) :
   measurable A -> measurable (xsection A x).
 Proof.
 move=> mA; pose i (y : T2) := (x, y).
-have mi : measurable_fun setT i by exact: measurable_pair1.
+have mi : measurable_fun setT i by exact: pair1_measurable.
 by rewrite xsectionE -[X in measurable X]setTI; exact: mi.
 Qed.
 
@@ -5311,7 +5311,7 @@ Lemma measurable_ysection (A : set (T1 * T2)) (y : T2) :
   measurable A -> measurable (ysection A y).
 Proof.
 move=> mA; pose i (x : T1) := (x, y).
-have mi : measurable_fun setT i by exact: measurable_pair2.
+have mi : measurable_fun setT i by exact: pair2_measurable.
 by rewrite ysectionE -[X in measurable X]setTI; exact: mi.
 Qed.
 

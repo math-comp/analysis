@@ -97,7 +97,7 @@ Lemma diff_continuous (x : filter_on V) (f : V -> W) :
   differentiable f x -> continuous ('d f x).
 Proof. by move=> /diffP []. Qed.
 (* We should have a continuous class or structure *)
-Hint Extern 0 (continuous _) => exact: diff_continuous : core.
+Hint Extern 0 (continuous _) => solve[apply: diff_continuous] : core.
 
 Lemma diffE (F : filter_on V) (f : V -> W) :
   differentiable f F ->
@@ -124,7 +124,7 @@ Context {K : numFieldType (*TODO: to numDomainType?*)} {V W : normedModType K}.
 Local Notation differentiable f F :=
   (@differentiable_def _ _ _ f _ (Phantom _ (nbhs F))).
 Local Notation "''d' f x" := (@diff _ _ _ _ (Phantom _ (nbhs x)) f).
-Hint Extern 0 (continuous _) => exact: diff_continuous : core.
+Hint Extern 0 (continuous _) => solve[now apply: diff_continuous] : core.
 
 Lemma diff_locallyxP (x : V) (f : V -> W) :
   differentiable f x <-> continuous ('d f x) /\
@@ -164,7 +164,8 @@ Notation differentiable f F := (@differentiable_def _ _ _ f _ (Phantom _ (nbhs F
 
 Notation "'is_diff' F" := (is_diff_def (Phantom _ (nbhs F))).
 #[global] Hint Extern 0 (differentiable _ _) => solve[apply: ex_diff] : core.
-#[global] Hint Extern 0 ({for _, continuous _}) => exact: diff_continuous : core.
+#[global] Hint Extern 0 ({for _, continuous _}) =>
+  solve[now apply: diff_continuous] : core.
 
 Lemma differentiableP (R : numDomainType) (V W : normedModType R) (f : V -> W) x :
   differentiable f x -> is_diff x f ('d f x).
