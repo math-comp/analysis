@@ -237,6 +237,12 @@
   + `set_itv_pinfty_bnd` -> `set_itv_ybnd`
   + `set_itv_bnd_ninfty` -> `set_itv_bndNy`
 
+- in `normed_module.v` (new file):
+  + `cvgeMl` -> `cvgeZl`
+  + `is_cvgeMl` -> `is_cvgeZl`
+  + `cvgeMr` -> `cvgeZr`
+  + `is_cvgeMr` -> `is_cvgeZr`
+
 ### Generalized
 
 - in `constructive_ereal.v`:

@@ -2558,7 +2558,7 @@ apply: fine_cvg; rewrite /neg_tv fineM // ?fin_numB ?xbfin //= EFinM.
 under eq_fun => i do rewrite EFinN.
 apply: (@cvg_trans _ (((TV a n f - (f n)%:E) * 2^-1%:E)%E @[n --> x^'+])).
   exact: cvg_id.
-apply: cvgeMr; first by [].
+apply: cvgeZr; first by [].
 rewrite fineD; [|by []..].
 rewrite EFinB; apply: cvgeB; [by []| |].
   apply/ fine_cvgP; split; first exists (b - x).
