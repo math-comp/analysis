@@ -26,21 +26,9 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
 
 ## Meta
 
-- Author(s):
-  - Reynald Affeldt (initial)
-  - Alessandro Bruni
-  - Yves Bertot
-  - Cyril Cohen (initial)
-  - Marie Kerjean
-  - Assia Mahboubi (initial)
-  - Damien Rouhling (initial)
-  - Pierre Roux
-  - Kazuhiko Sakaguchi
-  - Zachary Stone
-  - Pierre-Yves Strub (initial)
-  - Laurent Théry
+- [Authors](AUTHORS.md)
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.19 to 8.20 (or dev)
+- Compatible Coq versions: Coq 8.19 to 8.20, Rocq 9.0 (or dev)
 - Additional dependencies:
   - [MathComp ssreflect 2.1.0 or later](https://math-comp.github.io)
   - [MathComp fingroup 2.1.0 or later](https://math-comp.github.io)
@@ -49,7 +37,7 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
   - [MathComp field 2.1.0 or later](https://math-comp.github.io)
   - [MathComp finmap 2.0.0](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
-  - [Hierarchy Builder 1.4.0 or later](https://github.com/math-comp/hierarchy-builder)
+  - [Hierarchy Builder 1.7.0 or later](https://github.com/math-comp/hierarchy-builder)
 - Coq namespace: `mathcomp.analysis`
 
 ## Building and installation instructions
