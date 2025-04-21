@@ -26,21 +26,9 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
 
 ## Meta
 
-- Author(s):
-  - Reynald Affeldt (initial)
-  - Alessandro Bruni
-  - Yves Bertot
-  - Cyril Cohen (initial)
-  - Marie Kerjean
-  - Assia Mahboubi (initial)
-  - Damien Rouhling (initial)
-  - Pierre Roux
-  - Kazuhiko Sakaguchi
-  - Zachary Stone
-  - Pierre-Yves Strub (initial)
-  - Laurent Théry
+- [Authors](AUTHORS.md)
 - License: [CeCILL-C](LICENSE)
-- Compatible Coq versions: Coq 8.19 to 8.20 (or dev)
+- Compatible Rocq versions: Coq 8.19 to 8.20, Rocq 9.0 (or dev)
 - Additional dependencies:
   - [MathComp ssreflect 2.1.0 or later](https://math-comp.github.io)
   - [MathComp fingroup 2.1.0 or later](https://math-comp.github.io)
@@ -49,8 +37,8 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
   - [MathComp field 2.1.0 or later](https://math-comp.github.io)
   - [MathComp finmap 2.0.0](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
-  - [Hierarchy Builder 1.4.0 or later](https://github.com/math-comp/hierarchy-builder)
-- Coq namespace: `mathcomp.analysis`
+  - [Hierarchy Builder 1.7.0 or later](https://github.com/math-comp/hierarchy-builder)
+- Coq/Rocq namespace: `mathcomp.analysis`
 
 ## Building and installation instructions
 
@@ -89,7 +77,7 @@ We try to preserve backward compatibility as best as we can.
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_9_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_10_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
 It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
 
 Overview presentations:
