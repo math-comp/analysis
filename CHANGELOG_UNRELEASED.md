@@ -166,6 +166,16 @@
 
 - in `derive.v`:
   + lemmas `derive1Mr`, `derive1Ml`
+- in `derive.v`:
+  + lemmas `ger0_derive1_le`, `ger0_derive1_le_cc`, `ger0_derive1_le_co`,
+    `ger0_derive1_le_oc`, `ger0_derive1_le_oo`
+  + lemmas `gtr0_derive1_lt`, `gtr0_derive1_lt_cc`, `gtr0_derive1_lt_co`,
+    `gtr0_derive1_lt_oc`, `gtr0_derive1_lt_oo`
+  + lemmas `ler0_derive1_le`, `ler0_derive1_le_cc`, `ler0_derive1_le_co`,
+    `ler0_derive1_le_oc`, `ler0_derive1_le_oo`
+  + lemmas `ltr0_derive1_lt`, `ltr0_derive1_lt_cc`, `ltr0_derive1_lt_co`,
+    `ltr0_derive1_lt_oc`, `ltr0_derive1_lt_oo`
+
 
 ### Changed
 
@@ -294,6 +304,9 @@
 
 - in `normed_theory` (was in `normedtype.v` before the split)
   + `pseudoMetricNormedZModType_hausdorff` (use `norm_hausdorff` instead)
+- in `derive.v`:
+  + `ler0_derive1_nincr` (use `ler0_derive1_le_cc`)
+  + `gtr0_derive1_incr` (use `gtr0_le_derive1`)
 
 ### Removed
 

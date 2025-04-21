@@ -388,17 +388,17 @@ Arguments cvgr0_norm_lt {_ _ _ F FF}.
 Arguments cvgr0_norm_le {_ _ _ F FF}.
 
 #[global] Hint Extern 0 (is_true (`|_ - ?x| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_dist_lt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_dist_lt] end : core.
 #[global] Hint Extern 0 (is_true (`|?x - _| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_distC_lt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_distC_lt] end : core.
 #[global] Hint Extern 0 (is_true (`|?x| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_lt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr0_norm_lt] end : core.
 #[global] Hint Extern 0 (is_true (`|_ - ?x| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_dist_le end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_dist_le] end : core.
 #[global] Hint Extern 0 (is_true (`|?x - _| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_distC_le end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr_distC_le] end : core.
 #[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_le end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: cvgr0_norm_le] end : core.
 
 Section pseudoMetricNormedZmod_numFieldType.
 Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
@@ -777,39 +777,26 @@ Arguments cvgr_norm_gt {R V T F FF f}.
 Arguments cvgr_norm_ge {R V T F FF f}.
 Arguments cvgr_neq0 {R V T F FF f}.
 
-#[global] Hint Extern 0 (is_true (`|_ - ?x| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_dist_lt end : core.
-#[global] Hint Extern 0 (is_true (`|?x - _| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_distC_lt end : core.
-#[global] Hint Extern 0 (is_true (`|?x| < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_lt end : core.
-#[global] Hint Extern 0 (is_true (`|_ - ?x| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_dist_le end : core.
-#[global] Hint Extern 0 (is_true (`|?x - _| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr_distC_le end : core.
-#[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: cvgr0_norm_le end : core.
-
 #[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_gt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_gt] end : core.
 #[global] Hint Extern 0 (is_true (?x < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_lt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_lt] end : core.
 #[global] Hint Extern 0 (is_true (?x != _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_neq end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_neq] end : core.
 #[global] Hint Extern 0 (is_true (?x != _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_neq end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_neq] end : core.
 #[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_gt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_gt] end : core.
 #[global] Hint Extern 0 (is_true (?x < _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_lt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_lt] end : core.
 #[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_ge end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_ge] end : core.
 #[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_le] end : core.
 #[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_right_ge end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_right_ge] end : core.
 #[global] Hint Extern 0 (is_true (?x <= _)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_left_le end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_left_le] end : core.
 
 #[global] Hint Extern 0 (ProperFilter _^'-) =>
   (apply: at_left_proper_filter) : typeclass_instances.

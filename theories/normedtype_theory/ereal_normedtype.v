@@ -115,17 +115,17 @@ Qed.
 End lower_semicontinuous.
 
 #[global] Hint Extern 0 (is_true (_ < ?x)%E) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_gt end : core.
+  H : x \is_near _ |- _ => solve[near: x; apply: ereal_nbhs_pinfty_gt] end : core.
 #[global] Hint Extern 0 (is_true (_ <= ?x)%E) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_ge end : core.
+  H : x \is_near _ |- _ => solve[near: x; apply: ereal_nbhs_pinfty_ge] end : core.
 #[global] Hint Extern 0 (is_true (_ > ?x)%E) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_lt end : core.
+  H : x \is_near _ |- _ => solve[near: x; apply: ereal_nbhs_ninfty_lt] end : core.
 #[global] Hint Extern 0 (is_true (_ >= ?x)%E) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_le end : core.
+  H : x \is_near _ |- _ => solve[near: x; apply: ereal_nbhs_ninfty_le] end : core.
 #[global] Hint Extern 0 (is_true (fine ?x \is Num.real)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_pinfty_real end : core.
+  H : x \is_near _ |- _ => solve[near: x; apply: ereal_nbhs_pinfty_real] end : core.
 #[global] Hint Extern 0 (is_true (fine ?x \is Num.real)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: ereal_nbhs_ninfty_real end : core.
+  H : x \is_near _ |- _ => solve[near: x; apply: ereal_nbhs_ninfty_real] end : core.
 
 Section ecvg_infty_numField.
 Local Open Scope ereal_scope.

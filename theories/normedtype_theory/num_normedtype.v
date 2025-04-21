@@ -218,7 +218,7 @@ by rewrite {2}(splitr e%:num) ltr_pwDl.
 Qed.
 
 #[global] Hint Extern 0 (ProperFilter _^') =>
-  (apply: Proper_dnbhs_numFieldType) : typeclass_instances.
+  solve[apply: Proper_dnbhs_numFieldType] : typeclass_instances.
 
 Definition pinfty_nbhs (R : numFieldType) : set_system R :=
   fun P => exists M, M \is Num.real /\ forall x, M < x -> P x.
@@ -338,17 +338,17 @@ Qed.
 End infty_nbhs_instances.
 
 #[global] Hint Extern 0 (is_true (_ < ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_pinfty_gt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_pinfty_gt] end : core.
 #[global] Hint Extern 0 (is_true (_ <= ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_pinfty_ge end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_pinfty_ge] end : core.
 #[global] Hint Extern 0 (is_true (_ > ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_ninfty_lt end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_ninfty_lt] end : core.
 #[global] Hint Extern 0 (is_true (_ >= ?x)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_ninfty_le end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_ninfty_le] end : core.
 #[global] Hint Extern 0 (is_true (?x \is Num.real)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_pinfty_real end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_pinfty_real] end : core.
 #[global] Hint Extern 0 (is_true (?x \is Num.real)) => match goal with
-  H : x \is_near _ |- _ => near: x; exact: nbhs_ninfty_real end : core.
+  H : x \is_near _ |- _ => solve[near: x; now apply: nbhs_ninfty_real] end : core.
 
 Section cvg_infty_numField.
 Context {R : numFieldType}.
