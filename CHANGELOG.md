@@ -34,14 +34,14 @@ Latest releases: [[1.10.0] - 2025-04-21](#1100---2025-04-21), [[1.9.0] - 2025-02
 - in `set_interval.v`:
   + lemma `subset_itv`
 
-- file `Rstruct.v`
+- in `Rstruct.v`:
   + lemma `Pos_to_natE` (from `mathcomp_extra.v`)
   + lemmas `RabsE`, `RdistE`, `sum_f_R0E`, `factE`
 
 - in `Rstruct_topology.v`:
   + lemma `RexpE`
 
-- file `constructive_ereal.v`:
+- in `constructive_ereal.v`:
   + definition `iter_mule`
   + lemma `prodEFin`
   + lemmas `EFin_fin_numP`, `EFin_bigmax`
@@ -65,7 +65,7 @@ Latest releases: [[1.10.0] - 2025-04-21](#1100---2025-04-21), [[1.9.0] - 2025-02
   + lemmas `ltr0_derive1_lt`, `ltr0_derive1_lt_cc`, `ltr0_derive1_lt_co`,
     `ltr0_derive1_lt_oc`, `ltr0_derive1_lt_oo`
 
-- file `exp.v`:
+- in `exp.v`:
   + lemma `expR_sum`
   + lemmas `expR_le1`, `num_spec_expR`, `num_spec_powR`
   + definitions `expR_itv_boundl`, `expR_itv_boundr`, `expR_itv`,
