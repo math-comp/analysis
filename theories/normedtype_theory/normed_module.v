@@ -702,14 +702,14 @@ Qed.
 Lemma abse_continuous : continuous (@abse R).
 Proof.
 case=> [r|A /= [r [rreal rA]]|A /= [r [rreal rA]]]/=.
-- exact/(cvg_comp (@norm_continuous _ R r)).
+- exact/(cvg_comp _ _ (@norm_continuous _ R r)).
 - by exists r; split => // y ry; apply: rA; rewrite (lt_le_trans ry)// lee_abs.
 - exists (- r)%R; rewrite realN; split => // y; rewrite EFinN -lteNr => yr.
   by apply: rA; rewrite (lt_le_trans yr)// -abseN lee_abs.
 Qed.
 
 Lemma cvg_abse f (a : \bar R) : f @ F --> a -> `|f x|%E @[x --> F] --> `|a|%E.
-Proof. by apply: continuous_cvg => //; apply: abse_continuous. Qed.
+Proof. by apply: continuous_cvg => //; exact: abse_continuous. Qed.
 
 Lemma is_cvg_abse (f : I -> \bar R) : cvg (f @ F) -> cvg (`|f x|%E @[x --> F]).
 Proof. by move/cvg_abse/cvgP. Qed.
@@ -927,10 +927,8 @@ Lemma EFin_lim (R : realFieldType) (f : nat -> R) : cvgn f ->
   limn (EFin \o f) = (limn f)%:E.
 Proof.
 move=> cf; apply: cvg_lim => //; move/cvg_ex : cf => [l fl].
-by apply: (cvg_comp fl); rewrite (cvg_lim _ fl).
+by apply: (cvg_comp _ _ fl); rewrite (cvg_lim _ fl).
 Qed.
-
-
 
 Section ecvg_realFieldType_proper.
 Context {I} {F : set_system I} {FF : ProperFilter F} {R : realFieldType}.

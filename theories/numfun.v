@@ -308,7 +308,7 @@ Qed.
 Canonical indic_inum {T} {R : numDomainType} (A : set T) (x : T) :=
   Itv.mk (@num_spec_indic T R A x).
 
-Section indic_lemmas.
+Section indic_ringType.
 Context (T : Type) (R : ringType).
 Implicit Types A D : set T.
 
@@ -376,7 +376,7 @@ move=> x; rewrite fimfunE fsbig_finite//= (big_nth 0)/= big_mkord.
 exact: eq_bigr.
 Qed.
 
-End indic_lemmas.
+End indic_ringType.
 
 Lemma indic_bigcup T {R : realType} (A : (set T)^nat) (t : T) :
   trivIset [set: nat] A ->
@@ -425,6 +425,12 @@ Proof.
 apply/seteqP; split => [x/mem_set/=|x/=]; rewrite indicE.
   by rewrite mem_ysection => ->.
 by rewrite /ysection/=; case: (_ \in _) => //= /esym/eqP /[!oner_eq0].
+Qed.
+
+Lemma bounded_indic T {R : numFieldType} (A : set T) :
+  [bounded \1_A x : R^o | x in A].
+Proof.
+by exists 1; split => // r r1 t At/=; rewrite indicE mem_set//= normr1 ltW.
 Qed.
 
 Lemma indic_restrict {T : pointedType} {R : numFieldType} (A : set T) :

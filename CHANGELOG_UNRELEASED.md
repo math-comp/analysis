@@ -150,6 +150,19 @@
   + lemma `kcomp_noparamE`
   + definition `mkcomp_noparam`
   + theorem `sprob_mkcomp_noparam`
+- in `numfun.v`:
+  + lemma `bounded_indic`
+
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_indic_itv`
+
+- in `probability.v`:
+  + definitions `normal_fun`, `normal_peak`
+  + lemmas `measurable_normal_fun`, `normal_fun_ge0`, `normal_fun_center`
+  + lemmas `normal_peak_ge0`, `normal_peak_gt0`
+  + lemma `normal_pdfE`
+  + lemma `normal_pdf_ge0`, `normal_pdf_ub`
+  + lemma `integrable_normal_pdf`
 
 ### Changed
 
@@ -192,6 +205,12 @@
 
 - the contents of `normedtype.v` (old file) can be found in the files in directory
   `normed_theory` unless stated otherwise
+
+- in `filter.v`:
+  + change implicit arguments of `cvg_comp`
+
+- in `probability.v`:
+  + definition `normal_pdf` changed to use `normal_fun` and `normal_peak`
 
 ### Renamed
 

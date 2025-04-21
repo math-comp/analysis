@@ -901,6 +901,7 @@ Lemma cvg_comp T U V (f : T -> U) (g : U -> V)
   (F : set_system T) (G : set_system U) (H : set_system V) :
   f @ F `=>` G -> g @ G `=>` H -> g \o f @ F `=>` H.
 Proof. by move=> fFG gGH; apply: cvg_trans gGH => P /fFG. Qed.
+Arguments cvg_comp {T U V} f g {F G H}.
 
 Lemma cvgi_comp T U V (f : T -> U) (g : U -> set V)
   (F : set_system T) (G : set_system U) (H : set_system V) :
