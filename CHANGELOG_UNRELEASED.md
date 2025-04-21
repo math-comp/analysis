@@ -151,6 +151,9 @@
   + definition `mkcomp_noparam`
   + theorem `sprob_mkcomp_noparam`
 
+- in `derive.v`:
+  + lemmas `derive1Mr`, `derive1Ml`
+
 ### Changed
 
 - file `separation_axioms.v` moved from `theories` to

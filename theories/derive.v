@@ -1393,8 +1393,8 @@ Proof. by rewrite derive1E derive_cst. Qed.
 
 Lemma derive1Mr {R : numFieldType} (f : R -> R) (x r : R) :
   derivable f x 1 ->
-  (fun x => f x * r)^`()%classic x = r * f^`()%classic x.
-Proof. by move=> ?; rewrite derive1E deriveMr ?derive1E. Qed.
+  (fun x => f x * r)^`()%classic x = f^`()%classic x * r.
+Proof. by move=> ?; rewrite derive1E deriveMr ?derive1E 1?mulrC. Qed.
 
 Lemma derive1Ml {R : numFieldType} (f : R -> R) (x r : R) :
   derivable f x 1 ->
