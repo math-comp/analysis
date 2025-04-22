@@ -4,6 +4,9 @@
 
 ### Added
 
+- in `theories/showcase`
+  + add new file `gauss_integral_alternative.v`
+
 ### Changed
 
 ### Renamed
