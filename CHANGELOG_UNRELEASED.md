@@ -8,6 +8,9 @@
 
 ### Renamed
 
+- in `kernel.v`:
+  + `isFiniteTransition` -> `isFiniteTransitionKernel`
+
 ### Generalized
 
 ### Deprecated
