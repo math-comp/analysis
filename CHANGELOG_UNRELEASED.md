@@ -158,6 +158,8 @@
            `ge0_nondecreasing_set_cvg_integral`,
            `le0_nondecreasing_set_nonincreasing_integral`,
 	   `le0_nondecreasing_set_cvg_integral`
+- in `theories/showcase`
+  + add new file `gauss_integral_alternative.v`
 
 ### Changed
 
