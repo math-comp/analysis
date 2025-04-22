@@ -1516,6 +1516,12 @@ by move=> fg mf mD A mA; rewrite [X in measurable X](_ : _ = D `&` f @^-1` A);
   [exact: mf|exact/esym/eq_preimage].
 Qed.
 
+Lemma measurable_fun_eqP D (f g : T1 -> T2) :
+  {in D, f =1 g} -> measurable_fun D f <-> measurable_fun D g.
+Proof.
+by move=> eq_fg; split; apply/eq_measurable_fun => // ? ?; rewrite eq_fg.
+Qed.
+
 Lemma measurable_cst D (r : T2) : measurable_fun D (cst r : T1 -> _).
 Proof.
 by move=> mD /= Y mY; rewrite preimage_cst; case: ifPn; rewrite ?setIT ?setI0.
@@ -1582,6 +1588,7 @@ End measurable_fun.
 #[global] Hint Extern 0 (measurable_fun _ id) =>
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
+Arguments measurable_fun_eqP {d1 d2 T1 T2 D} f {g}.
 #[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
 Notation measurable_fun_ext := eq_measurable_fun (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_id`")]
@@ -3646,6 +3653,13 @@ HB.instance Definition _ :=
   Measure_isProbability.Build _ _ _ mnormalize mnormalize1.
 
 End mnormalize.
+
+Lemma mnormalize_id d (T : measurableType d) (R : realType)
+  (P P' : probability T R) : mnormalize P P' = P.
+Proof.
+apply/funext => x; rewrite /mnormalize/= probability_setT.
+by rewrite onee_eq0/= invr1 mule1.
+Qed.
 
 Section pdirac.
 Context d (T : measurableType d) (R : realType).
