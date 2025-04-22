@@ -267,16 +267,28 @@ HB.structure Definition SigmaFiniteTransitionKernel
 Notation "R .-sigmafker X ~> Y" := (sigma_finite_kernel X%type Y R).
 
 (* interface for finite transition kernel *)
-HB.mixin Record isFiniteTransition
+HB.mixin Record isFiniteTransitionKernel
     d d' (X : measurableType d) (Y : measurableType d')
     (R : realType) (k : X -> {measure set Y -> \bar R}) := {
   kernel_finite_transition : forall x, fin_num_fun (k x) }.
+
+#[deprecated(since="mathcomp-analysis 1.11.0",
+             note="Use isFiniteTransitionKernel instead.")]
+Notation isFiniteTransition x1 x2 x3 x4 x5 x6 :=
+  (isFiniteTransitionKernel x1 x2 x3 x4 x5 x6).
 
 #[short(type=finite_transition_kernel)]
 HB.structure Definition FiniteTransitionKernel
     d d' (X : measurableType d) (Y : measurableType d') (R : realType) :=
   { k of @SFiniteKernel _ _ _ _ _ k &
-         isFiniteTransition _ _ X Y R k }.
+         isFiniteTransitionKernel _ _ X Y R k }.
+
+Module isFiniteTransition.
+#[deprecated(since="mathcomp-analysis 1.11.0",
+             note="Use isFiniteTransitionKernel.Build instead.")]
+Notation Build x1 x2 x3 x4 x5 x6 :=
+  (isFiniteTransitionKernel.Build x1 x2 x3 x4 x5 x6) (only parsing).
+End isFiniteTransition.
 
 Notation "R .-ftker X ~> Y" := (finite_transition_kernel X%type Y R).
 
@@ -348,7 +360,7 @@ by rewrite (lt_trans (kr x)) ?ltry.
 Qed.
 
 HB.instance Definition _ :=
-  @isFiniteTransition.Build d d' X Y R k finite_transition_finite.
+  @isFiniteTransitionKernel.Build d d' X Y R k finite_transition_finite.
 
 HB.instance Definition _ :=
   @isMeasureFamUub.Build d d' X Y R k measure_uub.
