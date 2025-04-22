@@ -173,7 +173,7 @@ End gauss_integral_preliminaries.
 (* in gauss_integral *)
 Definition u {R : realType} (x t : R) := @gauss_integral_proof.u R x t.
 
-Section application_to_gauss_integral.
+Section u_properties.
 Local Open Scope ring_scope.
 Context {R : realType}.
 Let mu := @lebesgue_measure R.
@@ -233,7 +233,7 @@ rewrite -expRD /oneDsqr mulrDr mulr1 exprMn opprD mulrC.
 by rewrite derive1E -[in RHS]derive_expR.
 Qed.
 
-End application_to_gauss_integral.
+End u_properties.
 
 Section gauss_dominates.
 Context {R : realType}.
@@ -298,15 +298,13 @@ Qed.
 
 Lemma d1tmp (x' y : R) : 'd1 u x' y = (oneDsqr y * - 2 * x' * u x' y)%R.
 Proof.
-rewrite partial1_u /u.
-rewrite -![in RHS]mulrA [RHS]mulrC -![in RHS]mulrA.
-rewrite mulVf ?oneDsqr_neq0// mulr1.
-rewrite -!mulrA; congr (_ * (_ * _))%R.
+rewrite partial1_u -![in RHS]mulrA [RHS]mulrC -![in RHS]mulrA.
+rewrite mulVf ?oneDsqr_neq0// mulr1 -!mulrA; congr (_ * (_ * _))%R.
 rewrite -expRD exprMn_comm//; last by rewrite /GRing.comm mulrC.
 by rewrite mulrDr mulr1 mulNr mulrC.
 Qed.
 
-Lemma u_dominates (x : R) : (0 < x)%R ->
+Lemma u_dominates (x : R) (x0 : (0 < x)%R) :
   \forall e \near (0:R)%R^'+,
   let I := (ball x e : set R) : set R in
   let c := ((x - e)%R : R) : R in
@@ -317,33 +315,19 @@ Lemma u_dominates (x : R) : (0 < x)%R ->
   `[0%R, +oo[%classic y ->
   (normr (('d1 u) x1 y) <= max_y * expR (- c ^+ 2 * y ^+ 2))%R.
 Proof.
-move=> x0.
-near=> e.
-move=> x' y Ix' /= y0.
+near=> e; move=> x' y /=; rewrite in_itv/= d1tmp => /andP[/ltW xex' x'xe] y0.
 have x'0 : (0 < x')%R.
-  move: Ix'; rewrite /= in_itv/= => /andP[+ _]; apply: le_lt_trans.
-  by rewrite subr_ge0; near: e; apply: nbhs_right_le.
-rewrite {}d1tmp {}/u/=.
-rewrite [leLHS](_ : _ = 2 * normr x' * (expR (- x' ^+ 2 * oneDsqr y)))%R; last first.
-  rewrite -![in LHS]mulrA (mulrC (oneDsqr y)) -![in LHS]mulrA.
-  rewrite mulVf ?oneDsqr_neq0// mulr1.
+  by rewrite (lt_le_trans _ xex')// subr_gt0; near: e; apply: nbhs_right_lt.
+rewrite [leLHS](_ : _ = 2 * normr x' * (expR (- x' ^+ 2 * oneDsqr y)))%R;
+    last first.
+  rewrite /u/gauss_integral_proof.u.
+  rewrite -2![in LHS]mulrA mulrC -3![in LHS]mulrA mulVf ?oneDsqr_neq0// mulr1.
   rewrite normrM normrN (@ger0_norm _ 2)//.
   by rewrite normrM (@ger0_norm _ (expR _)) ?expR_ge0// mulrA.
-rewrite /oneDsqr.
-rewrite mulrDr mulr1.
-rewrite expRD.
-rewrite mulrA.
-rewrite ler_pM//.
-- move: y0; rewrite in_itv/= andbT => y0.
-  rewrite ger0_norm//.
-  by apply: helper_max; apply/ltW.
-- exact/ltW.
-- rewrite ler_expR 2!mulNr lerN2 ler_wpM2r// ?sqr_ge0//.
-  rewrite /I /ball/= in Ix'.
-  rewrite ler_sqr; last 2 first.
-  + by rewrite nnegrE subr_ge0; near: e; exact: nbhs_right_le.
-  + by rewrite nnegrE ltW.
-  by move: Ix'; rewrite in_itv/= => /andP[/ltW].
+rewrite mulrDr mulr1 expRD mulrA ler_pM//.
+  by move: y0; rewrite in_itv/= andbT => y0; rewrite ger0_norm ?helper_max ?ltW.
+rewrite ler_expR 2!mulNr lerN2 ler_wpM2r// ?sqr_ge0//.
+by rewrite ler_sqr ?nnegrE// ltW// subr_gt0; near: e; exact: nbhs_right_lt.
 Unshelve. end_near. Qed.
 
 End gauss_dominates.
@@ -366,28 +350,30 @@ Let int0yu (x : R) := (\int[mu]_(y in `[0%R, +oo[) (u x y))%R.
 
 Let dudx x0 y0 : R := (u^~ y0)^`() x0.
 
+Lemma int0yu_fin_num x : \int[mu]_(x0 in `[0%R, +oo[) (u x x0)%:E \is a fin_num.
+Proof.
+move: (integrable_u x).
+have int0yu_ge0 : 0%R <= \int[mu]_(x0 in `[0%R, +oo[) (u x x0)%:E.
+  by apply: integral_ge0 => y _; rewrite lee_fin u_ge0.
+move/integrableP => [_].
+rewrite ge0_fin_numE => //.
+have : measurable_fun `[(0:R)%R, +oo[ (EFin \o u x).
+  apply/measurable_EFinP; apply/measurable_funTS.
+  exact: measurable_u.
+move/(abse_integralP mu (measurable_itv _)) => [_].
+by rewrite -(@ge0_fin_numE _ (`| _|))// abse_fin_num ge0_fin_numE/=.
+Qed.
+
 Lemma int0yu0 : int0yu x @[x --> +oo%R] --> 0%R.
 Proof.
-apply/cvgrPdist_le => /= e e0.
-near=> x.
-rewrite sub0r ler0_norm ?opprK ?oppr_le0; last first.
-  by apply: Rintegral_ge0 => ? ?; exact: u_ge0.
-apply: (@le_trans _ _ (expR (- x ^+ 2) * int0yu 0%R)%R).
+apply/cvgrPdist_le => /= e e0; near=> x; rewrite sub0r.
+rewrite ler0_norm ?oppr_le0; last by apply: Rintegral_ge0 => ? ?; exact: u_ge0.
+rewrite opprK (@le_trans _ _ (expR (- x ^+ 2) * int0yu 0%R)%R)//.
   rewrite [X in (_ <= X * _)%R]EFinK.
   rewrite -fineM//; last by rewrite integral_u0.
   rewrite -integralZl//; last exact: integrable_u.
   apply: fine_le.
-  - move: (integrable_u x).
-    (* lemma? *)
-    have int0yu_ge0 : 0%R <= \int[mu]_(x0 in `[0%R, +oo[) (u x x0)%:E.
-      by apply: integral_ge0 => y _; rewrite lee_fin u_ge0.
-    move/integrableP => [_].
-    rewrite ge0_fin_numE => //.
-    have : measurable_fun `[(0:R)%R, +oo[ (EFin \o u x).
-      apply/measurable_EFinP; apply/measurable_funTS.
-      exact: measurable_u.
-    move/(abse_integralP mu (measurable_itv _)) => [_].
-    by rewrite -(@ge0_fin_numE _ (`| _|))// abse_fin_num ge0_fin_numE/=.
+  - exact: int0yu_fin_num.
   - rewrite integralZl//; last exact: integrable_u.
     by apply: fin_numM => //; rewrite integral_u0.
   apply: le_integral => //; first exact: integrable_u.
