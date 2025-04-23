@@ -29,7 +29,7 @@ exact/continuous_horner.
 Qed.
 
 (* TODO: move somewhere to classical *)
-Definition rational {R : realType} (x : R) := exists m n, x = (m%:R / n%:R)%R.
+Definition rational {R : realType} (x : R) := exists m n, x = (m%:~R / n%:R)%R.
 
 Module pi_irrational.
 Local Open Scope ring_scope.
@@ -411,6 +411,10 @@ Lemma pi_irrationnal {R : realType} : ~ rational (pi : R).
 Proof.
 move=> [a [b]]; have [->|b0 piratE] := eqVneq b O.
   by rewrite invr0 mulr0; apply/eqP; rewrite gt_eqF// pi_gt0.
+have [na ana] : exists na, (a%:~R = na %:R :> R)%R.
+  exists `|a|; rewrite natr_absz gtr0_norm//.
+  by have := @pi_gt0 R; rewrite piratE pmulr_lgt0 ?invr_gt0 ?ltr0n ?lt0n// ltr0z.
+rewrite {}ana in piratE.
 have [N _] := pi_irrational.intfsin_small b0 (esym piratE) (@ltr01 R).
 near \oo%classic => n.
 have Nn : (N <= n)%N by near: n; exists N.
