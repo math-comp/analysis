@@ -6,6 +6,9 @@
 
 ### Changed
 
+- in `pi_irrational`:
+  + definition `rational`
+
 ### Renamed
 
 - in `kernel.v`:
