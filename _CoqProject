@@ -133,6 +133,7 @@ theories/all_analysis.v
 
 theories/showcase/summability.v
 theories/showcase/pnt.v
+theories/showcase/sorgenfreyline.v
 
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
