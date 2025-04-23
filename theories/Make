@@ -86,3 +86,4 @@ pi_irrational.v
 gauss_integral.v
 all_analysis.v
 showcase/summability.v
+showcase/sorgenfreyline.v
