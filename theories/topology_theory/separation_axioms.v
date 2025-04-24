@@ -15,7 +15,7 @@ From mathcomp Require Import connected supremum_topology sigT_topology.
 (* # Separation Axioms                                                        *)
 (*                                                                            *)
 (* This file introduces the separation axioms, a series of topological        *)
-(* properties about separating points and sets. They are somtimes denoted by  *)
+(* properties about separating points and sets. They are sometimes denoted by *)
 (* the names T0 through T6. Although we use their full names (hausdorff,      *)
 (* accessible, uniform, etc). This file also provides related topological     *)
 (* properties like zero dimensional and perfect, and discrete.                *)

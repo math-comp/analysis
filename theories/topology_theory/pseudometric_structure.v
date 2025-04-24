@@ -9,7 +9,7 @@ From mathcomp Require Import uniform_structure.
 (* # PseudoMetric Spaces                                                      *)
 (* This file provides pseudometric spaces, complete pseudometric spaces,      *)
 (* and the corresponding theory. Note that a classic metric space is simply   *)
-(* pseudometric + hausdorff. However we will make extensive use of the of the *)
+(* pseudometric + hausdorff. However we will make extensive use of the        *)
 (* non-hausdorff case, such as in our proof of Urysohn's lemma.               *)
 (*                                                                            *)
 (* ## Mathematical structures                                                 *)
