@@ -15,17 +15,15 @@ Unset Printing Implicit Defensive.
 Local Open Scope ring_scope.
 Import GRing.Theory Num.Theory.
 
-Reserved Notation "'[ u , v ]"
-  (at level 2, format "'[hv' ''[' u , '/ '  v ] ']'").
-Reserved Notation "'[ u , v ]_ M"
-         (at level 2, format "'[hv' ''[' u , '/ '  v ]_ M ']'").
-Reserved Notation "'[ u ]_ M" (at level 2, format "''[' u ]_ M").
-Reserved Notation "'[ u ]" (at level 2, format "''[' u ]").
+Reserved Notation "'[ u , v ]" (format "'[hv' ''[' u , '/ '  v ] ']'").
+Reserved Notation "'[ u , v ]_ M" (format "'[hv' ''[' u , '/ '  v ]_ M ']'").
+Reserved Notation "'[ u ]_ M" (format "''[' u ]_ M").
+Reserved Notation "'[ u ]" (format "''[' u ]").
 Reserved Notation "u '``_' i"
-    (at level 3, i at level 2, left associativity, format "u '``_' i").
+  (at level 3, i at level 2, left associativity, format "u '``_' i").
 Reserved Notation "A ^_|_"    (at level 8, format "A ^_|_").
 Reserved Notation "A _|_ B" (at level 69, format "A  _|_  B").
-Reserved Notation "eps_theta .-sesqui" (at level 2, format "eps_theta .-sesqui").
+Reserved Notation "eps_theta .-sesqui" (format "eps_theta .-sesqui").
 
 Notation "u '``_' i" := (u (0 : 'I_1) i) : ring_scope.
 Notation "''e_' i" := (delta_mx 0 i)
