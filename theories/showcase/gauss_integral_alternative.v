@@ -1,13 +1,9 @@
-From HB Require Import structures.
-From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
-From mathcomp Require Import archimedean.
-From mathcomp Require Import mathcomp_extra boolp classical_sets functions.
-From mathcomp Require Import cardinality fsbigop interval_inference reals ereal.
-From mathcomp Require Import topology normedtype sequences esum exp.
-From mathcomp Require Import measure lebesgue_measure numfun lebesgue_integral.
-From mathcomp Require Import interval_inference real_interval realfun derive trigo ftc.
-From mathcomp Require Import gauss_integral.
-From mathcomp Require Import ring lra.
+From mathcomp Require Import all_ssreflect ssralg ssrnum interval.
+From mathcomp Require Import boolp classical_sets functions reals ereal.
+From mathcomp Require Import topology normedtype sequences exp measure.
+From mathcomp Require Import lebesgue_measure numfun lebesgue_integral.
+From mathcomp Require Import interval_inference real_interval realfun derive.
+From mathcomp Require Import trigo ftc gauss_integral.
 
 (**md**************************************************************************)
 (* # Improper Integral                                                        *)
