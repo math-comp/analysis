@@ -492,24 +492,17 @@ Unshelve. end_near. Qed.
 Let dint0yuE_substep1 x (x0 : (0 < x)%R) :
   int0yu^`() x = (\int[mu]_(y in `[0, +oo[) dudx x y)%R.
 Proof.
-pose Ndudx (x y : R) : R := -%R (fun y => (u^~ y)^`() x) y.
 near ((0:R)%R^'+) => e.
-pose I : set R := ball x e.
-have openI : open I by apply: ball_open.
 have xex : `](x - e)%R, (x + e)[%classic x by rewrite -ball_itv; exact: ballxx.
-pose c : R := (x - e)%R.
-pose G := (fun y => (max_y) * expR (- c ^+ 2 * y ^+ 2))%R.
+pose G := (fun y => (max_y) * expR (- (x - e)%R ^+ 2 * y ^+ 2))%R.
 rewrite (@differentiation_under_integral R _ _ mu _ _ _ _ _ _ xex _ _ G)//.
 - by move=> ? _; exact: integrable_u.
-- by move=> /= y; rewrite mulr_ge0// ?expR_ge0// max_y_ge0.
-- rewrite (_ : _ \o _ = (fun x => (max_y)%:E * (expR (- c ^+ 2 * x ^+ 2))%:E))//.
-  apply: integrableZl => //=.
-  under [X in _.-integrable _ X]eq_fun => ?.
-    rewrite mulNr -exprMn_comm; last exact: mulrC.
-    over.
-  apply: integrable0y_gaussZl; rewrite gt_eqF// subr_gt0.
+- by move=> ?; rewrite mulr_ge0// ?expR_ge0// max_y_ge0.
+- under [X in _ _ X]eq_fun do rewrite EFinM mulNr.
+  under [X in _ _ X]eq_fun do (rewrite -exprMn_comm; last exact: mulrC).
+  apply/integrableZl=> //; rewrite integrable0y_gaussZl ?gt_eqF// subr_gt0.
   by near: e; exact: nbhs_right_lt.
-- by clear openI; rewrite {}/I /G {G}/c/=; near: e; exact: u_dominates.
+- by rewrite {}/G; near: e; exact: u_dominates.
 Unshelve. end_near. Qed.
 
 Let dint0yuE_substep2 x (x0 : (0 < x)%R) :
