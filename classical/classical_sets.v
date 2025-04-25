@@ -1743,14 +1743,21 @@ Proof.
 by apply/disj_setPS/disj_setPS; rewrite -some_setI -some_set0 sub_image_someP.
 Qed.
 
-
 Lemma inl_in_set_inr A B (x : A) (Y : set B) :
   inl x \in [set inr y | y in Y] = false.
+Proof. by apply/negP; rewrite inE/= => -[]. Qed.
+
+Lemma inr_in_set_inl A B (y : B) (X : set A) :
+  inr y \in [set inl x | x in X] = false.
 Proof. by apply/negP; rewrite inE/= => -[]. Qed.
 
 Lemma inr_in_set_inr A B (y : B) (Y : set B) :
   inr y \in [set @inr A B y | y in Y] = (y \in Y).
 Proof. by apply/idP/idP => [/[!inE][/= [x ? [<-]]]|/[!inE]]//; exists y. Qed.
+
+Lemma inl_in_set_inl A B (x : A) (X : set A) :
+  inl x \in [set @inl A B x | x in X] = (x \in X).
+Proof. by apply/idP/idP => [/[!inE][/= [y ? [<-]]]|/[!inE]]//; exists x. Qed.
 
 Section bigop_lemmas.
 Context {T I : Type}.
