@@ -64,6 +64,7 @@ theories/topology_theory/one_point_compactification.v
 theories/topology_theory/sigT_topology.v
 theories/topology_theory/discrete_topology.v
 theories/topology_theory/separation_axioms.v
+theories/topology_theory/metric_structure.v
 
 theories/homotopy_theory/homotopy.v
 theories/homotopy_theory/wedge_sigT.v
