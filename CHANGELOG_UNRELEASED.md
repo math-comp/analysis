@@ -36,6 +36,8 @@
 - in `exp.v`:
   + lemmas `lnNy`, `powR_cvg0`, `derivable_powR`, `powR_derive1`
   + Instance `is_derive1_powR`
+- in `realfun.v`:
+	+ lemma `cvge_ninftyP`
 
 ### Changed
 
