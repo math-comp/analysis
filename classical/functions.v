@@ -119,9 +119,10 @@ Add Search Blacklist "_mixin_".
 (* ```                                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
-(* Section function_space == canonical ringType and lmodType                  *)
-(*                           structures for functions whose range is          *)
-(*                           a ringType, comRingType, or lmodType.            *)
+(* Section function_space == canonical nmodType, zmodType, ringType,          *)
+(*                           comRingType, and lmodType structures for         *)
+(*                           functions whose range is nmodType, zmodType,     *)
+(*                           ringType, comRingType, and lmodType resp.        *)
 (*                   fctE == multi-rule for fct                               *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -2568,29 +2569,62 @@ Qed.
 
 Obligation Tactic := idtac.
 
-Program Definition fct_nmodMixin (T : Type) (M : nmodType) :=
-  @GRing.isNmodule.Build (T -> M) \0 (fun f g => f \+ g) _ _ _.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
-Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
-HB.instance Definition _ (T : Type) (M : nmodType) := fct_nmodMixin T M.
+Section fct_nmodType.
+Variables (T : Type) (M : nmodType).
+Implicit Types f g h : T -> M.
 
-Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @GRing.Nmodule_isZmodule.Build (T -> M) (fun f x => - f x) _.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite [LHS]addNr. Qed.
-HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.
+Let addrA : associative (fun f g => f \+ g).
+Proof. by move=> f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
 
-Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
-  @GRing.Zmodule_isRing.Build (T -> M) (cst 1) (fun f g => f \* g) _ _ _ _ _ _.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDl. Qed.
-Next Obligation. by move=> T M f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
-Next Obligation.
-by move=> T M ; apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0.
-Qed.
-HB.instance Definition _ (T : pointedType) (M : ringType) := fct_ringMixin T M.
+Let addrC : commutative (fun f g => f \+ g).
+Proof. by move=> f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
+
+Let add0r : left_id \0 (fun f g => f \+ g).
+Proof. by move=> f; rewrite funeqE=> x /=; rewrite add0r. Qed.
+
+HB.instance Definition _ :=
+  @GRing.isNmodule.Build (T -> M) \0 (fun f g => f \+ g) addrA addrC add0r.
+
+End fct_nmodType.
+
+Section fct_zmodType.
+Variables (T : Type) (M : zmodType).
+Implicit Types f : T -> M.
+
+Let addNr : left_inverse 0 (fun f => \- f) +%R.
+Proof. by move=> f; rewrite funeqE=> x /=; rewrite [LHS]addNr. Qed.
+
+HB.instance Definition _ :=
+  @GRing.Nmodule_isZmodule.Build (T -> M) (fun f => \- f) addNr.
+
+End fct_zmodType.
+
+Section fct_ringType.
+Variables (T : pointedType) (M : ringType).
+Implicit Types f g h : T -> M.
+
+Let mulrA : associative (fun f g => f \* g).
+Proof. by move=> f g h; rewrite funeqE=> x /=; rewrite mulrA. Qed.
+
+Let mul1r : left_id (cst 1) (fun f g => f \* g).
+Proof. by move=> f; rewrite funeqE=> x /=; rewrite mul1r. Qed.
+
+Let mulr1 : right_id (cst 1) (fun f g => f \* g).
+Proof. by move=> f; rewrite funeqE=> x /=; rewrite mulr1. Qed.
+
+Let mulrDl : left_distributive (fun f g => f \* g) +%R.
+Proof. by move=> f g h; rewrite funeqE=> x/=; rewrite mulrDl. Qed.
+
+Let mulrDr : right_distributive (fun f g => f \* g) +%R.
+Proof. by move=> f g h; rewrite funeqE=> x/=; rewrite mulrDr. Qed.
+
+Let oner_neq0 : cst 1 != 0 :> (T -> M).
+Proof. by apply/eqP; rewrite funeqE => /(_ point) /eqP; rewrite oner_eq0. Qed.
+
+HB.instance Definition _ := @GRing.Zmodule_isRing.Build (T -> M) (cst 1)
+  (fun f g => f \* g) mulrA mul1r mulr1 mulrDl mulrDr oner_neq0.
+
+End fct_ringType.
 
 Program Definition fct_comRingType (T : pointedType) (M : comRingType) :=
   GRing.Ring_hasCommutativeMul.Build (T -> M) _.
