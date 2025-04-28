@@ -576,14 +576,25 @@ Section measurable_sum.
 Context d (T : measurableType d) (R : realType).
 Implicit Types (D : set T) (f g : T -> R).
 
-Lemma measurable_sum D I s (h : I -> (T -> R)) :
-  (forall n, measurable_fun D (h n)) ->
+Lemma measurable_sum D I s (h : I -> T -> R) :
+  (forall i, measurable_fun D (h i)) ->
   measurable_fun D (fun x => \sum_(i <- s) h i x).
 Proof.
 move=> mh; apply/measurable_EFinP.
 rewrite (_ : _ \o _ = (fun t => \sum_(i <- s) (h i t)%:E)); last first.
   by apply/funext => t/=; rewrite -sumEFin.
 by apply/emeasurable_sum => i; exact/measurable_EFinP.
+Qed.
+
+Lemma measurable_prod D (I : eqType) (s : seq I) (h : I -> T -> R) :
+  (forall i, i \in s -> measurable_fun D (h i)) ->
+  measurable_fun D (fun x => \prod_(i <- s) h i x).
+Proof.
+elim: s => [mh|x y ih mh].
+  by under eq_fun do rewrite big_nil//=; exact: measurable_cst.
+under eq_fun do rewrite big_cons//=; apply: measurable_funM => //.
+- by apply: mh; rewrite mem_head.
+- by apply: ih => n ny; apply: mh; rewrite inE orbC ny.
 Qed.
 
 End measurable_sum.
