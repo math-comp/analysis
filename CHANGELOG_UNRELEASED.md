@@ -70,33 +70,6 @@
 
 - in `pi_irrational`:
   + definition `rational`
-- new directory `lebesgue_integral_theory` with new files:
-  + `simple_functions.v`
-  + `lebesgue_integral_definition.v`
-  + `lebesgue_integral_approximation.v`
-  + `lebesgue_integral_monotone_convergence.v`
-  + `lebesgue_integral_nonneg.v`
-  + `lebesgue_integrable.v`
-  + `lebesgue_integral_dominated_convergence.v`
-  + `lebesgue_integral_under.v`
-  + `lebesgue_Rintegral.v`
-  + `lebesgue_integral_fubini.v`
-  + `lebesgue_integral_differentiation.v`
-  + `lebesgue_integral.v`
-- in `boolp.v`:
-  + lemmas `orW`, `or3W`, `or4W`
-
-- in `classical_sets.v`:
-  + lemma `image_nonempty`
-
-- in `mathcomp_extra.v`:
-  + lemmas `eq_exists2l`, `eq_exists2r`
-
-- in `ereal.v`:
-  + lemmas `ereal_infEN`, `ereal_supN`, `ereal_infN`, `ereal_supEN`
-  + lemmas `ereal_supP`, `ereal_infP`, `ereal_sup_gtP`, `ereal_inf_ltP`,
-    `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
-    `ereal_sup_real`, `ereal_inf_real`
 
 - in `charge.v`:
   + lemma `ae_eq_mul2l`
@@ -136,11 +109,8 @@
   + lemma `lfun_oppr_closed`
   + lemma `lfun_addr_closed`
 
-- in `lebesgue_integral.v`:
+- in `simple_functions.v`:
   + lemma `mfunMn`
-
-- in `classical_sets.v`:
-  + lemma `set_cst`
 
 - in `measurable_realfun.v`:
   + lemmas `ereal_inf_seq`, `ereal_sup_seq`,
@@ -154,9 +124,6 @@
   + module `ProperNotations` with notations `++>`, `==>`, `~~>`
   + instances `comp_ae_eq`, `comp_ae_eq2`, `comp_ae_eq2'`, `sub_ae_eq2`
   + lemmas `ae_eq_comp2`, `ae_foralln`
-
-- in `functions.v`:
-  + lemma `natmulfctE`
 
 - new file `ess_sup_inf.v`:
   + lemma `measure0_ae`
@@ -185,32 +152,6 @@
 - in `probability.v`:
   + lemma `lfun1_expectation_lty`
 
-### Changed
-
-- file `nsatz_realtype.v` moved from `reals` to `reals-stdlib` package
-- moved from `gauss_integral` to `trigo.v`:
-  + `oneDsqr`, `oneDsqr_ge1`, `oneDsqr_inum`, `oneDsqrV_le1`,
-    `continuous_oneDsqr`, `continuous_oneDsqr`
-- moved, generalized, and renamed from `gauss_integral` to `trigo.v`:
-  + `integral01_oneDsqr` -> `integral0_oneDsqr`
-
-- in `interval_inference.v`:
-  + definition `IntItv.exprn_le1_bound`
-  + lemmas `Instances.nat_spec_succ`, `Instances.num_spec_natmul`,
-    `Instances.num_spec_intmul`, `Instances.num_itv_bound_exprn_le1`
-  + canonical instance `Instances.succn_inum`
-
-- in `lebesgue_integral_properties.v`
-  (new file with contents moved from `lebesgue_integral.v`)
-  + `le_normr_integral` renamed to `le_normr_Rintegral`
-
-- moved to `lebesgue_measure.v` (from old `lebesgue_integral.v`)
-  + `compact_finite_measure`
-
-- moved from `ftc.v` to `lebesgue_integral_under.v` (new file)
-  + notation `'d1`, definition `partial1of2`, lemmas `partial1of2E`,
-    `cvg_differentiation_under_integral`, `differentiation_under_integral`,
-    `derivable_under_integral`
 - in `hoelder.v`:
   + lemmas `Lnorm_eq0_eq0`
 
@@ -258,35 +199,10 @@
 
 - in `measurable_realfun.v`
   + lemma `measurable_ln`
-- in `ereal.v`:
-  + lemmas `ereal_infEN`, `ereal_supN`, `ereal_infN`, `ereal_supEN`
-  + lemmas `ereal_supP`, `ereal_infP`, `ereal_sup_gtP`, `ereal_inf_ltP`,
-    `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
-    `ereal_sup_real`, `ereal_inf_real`
-- in `boolp.v`:
-  + `eq_fun2` -> `eq2_fun`
-  + `eq_fun3` -> `eq3_fun`
-  + `eq_forall2` -> `eq2_forall`
-  + `eq_forall3` -> `eq3_forall`
-- in `ereal.v`:
-  + `ereal_sup_le` -> `ereal_sup_ge`
 
 - in `hoelder.v`:
   + `minkowski` -> `minkowski_EFin`
-  + `Lnorm_ge0` -> `Lnormr_ge0`
-  + `Lnorm_eq0_eq0` -> `Lnormr_eq0_eq0`
 
-### Generalized
-
-- in `constructive_ereal.v`:
-  + lemma `EFin_natmul`
-
-- in `lebesgue_integral.v`
-  + lemmas `measurable_funP`, `ge0_integral_pushforward`,
-    `integrable_pushforward`, `integral_pushforward`
-
-- in `real_interval.v`:
-  + lemmas `bigcup_itvT`, `itv_bndy_bigcup_BRight`, `itv_bndy_bigcup_BLeft_shift`
 - in `hoelder.v`:
   + definition `Lnorm` generalized to functions with codomain `\bar R`
     (this impacts the notation `'N_p[f]`)
@@ -300,44 +216,7 @@
 ### Removed
 
 - in `functions.v`:
-  + definitions `fct_ringMixin`, `fct_ringMixin` (was only used in an `HB.instance`)
-- file `mathcomp_extra.v`
-  + lemma `Pos_to_natE` (moved to `Rstruct.v`)
-  + lemma `deg_le2_ge0` (available as `deg_le2_poly_ge0` in `ssrnum.v`
-    since MathComp 2.1.0)
-  + definitions `monotonous`, `boxed`, `onem`, `inv_fun`,
-    `bound_side`, `swap`, `prodA`, `prodAr`, `map_pair`, `sigT_fun`
-    (moved to new file `unstable.v` that shouldn't be used outside of
-    Analysis)
-  + notations `` `1 - r ``, `f \^-1` (moved to new file `unstable.v`
-    that shouldn't be used outside of Analysis)
-  + lemmas `dependent_choice_Type`, `maxr_absE`, `minr_absE`,
-    `le_bigmax_seq`, `bigmax_sup_seq`, `leq_ltn_expn`, `last_filterP`,
-    `path_lt_filter0`, `path_lt_filterT`, `path_lt_head`,
-    `path_lt_last_filter`, `path_lt_le_last`, `sumr_le0`,
-    `fset_nat_maximum`, `image_nat_maximum`, `card_fset_sum1`,
-    `onem0`, `onem1`, `onemK`, `add_onemK`, `onem_gt0`, `onem_ge0`,
-    `onem_le1`, `onem_lt1`, `onemX_ge0`, `onemX_lt1`, `onemD`,
-    `onemMr`, `onemM`, `onemV`, `lez_abs2`, `ler_gtP`, `ler_ltP`,
-    `real_ltr_distlC`, `prodAK`, `prodArK`, `swapK`, `lt_min_lt`,
-    `intrD1`, `intr1D`, `floor_lt_int`, `floor_ge0`, `floor_le0`,
-    `floor_lt0`, `floor_eq`, `floor_neq0`, `ceil_gt_int`, `ceil_ge0`,
-    `ceil_gt0`, `ceil_le0`, `abs_ceil_ge`, `nat_int`, `bij_forall`,
-    `and_prop_in`, `mem_inc_segment`, `mem_dec_segment`,
-    `partition_disjoint_bigfcup`, `partition_disjoint_bigfcup`,
-    `prodr_ile1`, `size_filter_gt0`, `ltr_sum`, `ltr_sum_nat` (moved
-    to new file `unstable.v` that shouldn't be used outside of
-    Analysis)
-
-- in `reals.v`:
-  + lemmas `floor_le`, `le_floor` (deprecated since 1.3.0)
-
-- file `lebesgue_integral.v` (split in several files in the directory
-  `lebesgue_integral_theory`)
-
-- in `classical_sets.v`:
-  + notations `setvI`, `setIv`, `bigcup_set`, `bigcup_set_cond`, `bigcap_set`,
-    `bigcap_set_cond`
+  + definitions `fct_zmodMixin`, `fct_ringMixin` (was only used in an `HB.instance`)
 
 - in `measure.v`:
   + definition `almost_everywhere_notation`

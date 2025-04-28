@@ -21,6 +21,7 @@ Local Open Scope ring_scope.
 Local Open Scope real_scope.
 
 Section ProofIrrelevantChoice.
+
 Context {T : choiceType}.
 
 Lemma existsTP (P : T -> Prop) : { x : T | P x } + (forall x, ~ P x).
