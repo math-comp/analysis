@@ -71,6 +71,9 @@
 
 - in `normedtype.v`:
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
+- in `functions.v`:
+  + `fct_sumE`, `addrfctE`, `sumrfctE` (from `zmodType` to `nmodType`)
+  + `scalerfctE` (from `pointedType` to `Type`)
 
 ### Deprecated
 
