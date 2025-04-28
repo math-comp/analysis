@@ -79,6 +79,9 @@
 
 ### Removed
 
+- in `functions.v`:
+  + definitions `fct_ringMixin`, `fct_ringMixin` (was only used in an `HB.instance`)
+
 ### Infrastructure
 
 ### Misc
