@@ -35,6 +35,9 @@
   + lemmas `in_set1`, `inr_in_set_inr`, `inl_in_set_inr`, `mem_image`, `mem_range`, `image_f`
   + lemmas `inr_in_set_inl`, `inl_in_set_inl`
 
+- in `lebesgue_integral_approximation.v`:
+  + lemma `measurable_prod`
+
 ### Changed
 
 - in `pi_irrational`:
