@@ -2568,13 +2568,16 @@ Qed.
 
 Obligation Tactic := idtac.
 
-Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
-  @GRing.isZmodule.Build (T -> M) \0 (fun f x => - f x) (fun f g => f \+ g)
-     _ _ _ _.
+Program Definition fct_nmodMixin (T : Type) (M : nmodType) :=
+  @GRing.isNmodule.Build (T -> M) \0 (fun f g => f \+ g) _ _ _.
 Next Obligation. by move=> T M f g h; rewrite funeqE=> x /=; rewrite addrA. Qed.
 Next Obligation. by move=> T M f g; rewrite funeqE=> x /=; rewrite addrC. Qed.
 Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite add0r. Qed.
-Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite addNr. Qed.
+HB.instance Definition _ (T : Type) (M : nmodType) := fct_nmodMixin T M.
+
+Program Definition fct_zmodMixin (T : Type) (M : zmodType) :=
+  @GRing.Nmodule_isZmodule.Build (T -> M) (fun f x => - f x) _.
+Next Obligation. by move=> T M f; rewrite funeqE=> x /=; rewrite [LHS]addNr. Qed.
 HB.instance Definition _ (T : Type) (M : zmodType) := fct_zmodMixin T M.
 
 Program Definition fct_ringMixin (T : pointedType) (M : ringType) :=
@@ -2612,7 +2615,7 @@ Qed.
 HB.instance Definition _ := fct_lmodMixin.
 End fct_lmod.
 
-Lemma fct_sumE (I T : Type) (M : zmodType) r (P : {pred I}) (f : I -> T -> M)
+Lemma fct_sumE (I T : Type) (M : nmodType) r (P : {pred I}) (f : I -> T -> M)
     (x : T) :
   (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
 Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
@@ -2627,13 +2630,13 @@ Section function_space_lemmas.
 Local Open Scope ring_scope.
 Import GRing.Theory.
 
-Lemma addrfctE (T : Type) (K : zmodType) (f g : T -> K) :
+Lemma addrfctE (T : Type) (K : nmodType) (f g : T -> K) :
   f + g = (fun x => f x + g x).
 Proof. by []. Qed.
 
-Lemma sumrfctE (T : Type) (K : zmodType) (s : seq (T -> K)) :
+Lemma sumrfctE (T : Type) (K : nmodType) (s : seq (T -> K)) :
   \sum_(f <- s) f = (fun x => \sum_(f <- s) f x).
-Proof. by apply/funext => x;elim/big_ind2 : _ => // _ a _ b <- <-. Qed.
+Proof. by apply/funext => x; elim/big_ind2 : _ => // _ a _ b <- <-. Qed.
 
 Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
@@ -2642,7 +2645,7 @@ Lemma mulrfctE (T : pointedType) (K : ringType) (f g : T -> K) :
   f * g = (fun x => f x * g x).
 Proof. by []. Qed.
 
-Lemma scalrfctE (T : pointedType) (K : ringType) (L : lmodType K)
+Lemma scalrfctE (T : Type) (K : ringType) (L : lmodType K)
     k (f : T -> L) :
   k *: f = (fun x : T => k *: f x).
 Proof. by []. Qed.
