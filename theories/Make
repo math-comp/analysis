@@ -9,6 +9,7 @@
 
 ereal.v
 landau.v
+ess_sup_inf.v
 topology_theory/topology.v
 topology_theory/bool_topology.v
 topology_theory/compact.v
@@ -77,6 +78,9 @@ lebesgue_integral_theory/lebesgue_integral.v
 ftc.v
 hoelder.v
 probability.v
+independence.v
+sampling.v
+sampling_wip.v
 lebesgue_stieltjes_measure.v
 convex.v
 charge.v

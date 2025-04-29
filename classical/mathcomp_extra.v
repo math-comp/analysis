@@ -260,6 +260,10 @@ Proof. by case: n => n; rewrite ?invr_ge0 exprn_ge0. Qed.
 Lemma exprz_gt0 [R : numDomainType] n (x : R) (hx : 0 < x) : (0 < x ^ n).
 Proof. by case: n => n; rewrite ?invr_gt0 exprn_gt0. Qed.
 
+(**********************)
+(* not yet backported *)
+(**********************)
+
 Section num_trunc_floor_ceil.
 Context {R : archiNumDomainType}.
 Implicit Type x : R.
@@ -470,3 +474,42 @@ Proof. by move=>  ? ? []. Qed.
 
 Lemma inl_inj {A B} : injective (@inl A B).
 Proof. by move=>  ? ? []. Qed.
+
+Lemma eq_exists2l (A : Type) (P P' Q : A -> Prop) :
+  (forall x, P x <-> P' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P' x & Q x).
+Proof.
+by move=> eqQ; split=> -[x p q]; exists x; move: p q; rewrite ?eqQ.
+Qed.
+
+Lemma eq_exists2r (A : Type) (P Q Q' : A -> Prop) :
+  (forall x, Q x <-> Q' x) ->
+  (exists2 x, P x & Q x) <-> (exists2 x, P x & Q' x).
+Proof.
+by move=> eqP; split=> -[x p q]; exists x; move: p q; rewrite ?eqP.
+Qed.
+
+Declare Scope signature_scope.
+Delimit Scope signature_scope with signature.
+
+Import -(notations) Morphisms.
+Arguments Proper {A}%_type R%_signature m.
+Arguments respectful {A B}%_type (R R')%_signature _ _.
+
+Module ProperNotations.
+
+Notation " R ++> R' " := (@respectful _ _ (R%signature) (R'%signature))
+  (right associativity, at level 55) : signature_scope.
+
+Notation " R ==> R' " := (@respectful _ _ (R%signature) (R'%signature))
+  (right associativity, at level 55) : signature_scope.
+
+Notation " R ~~> R' " := (@respectful _ _ (Program.Basics.flip (R%signature)) (R'%signature))
+  (right associativity, at level 55) : signature_scope.
+
+Export -(notations) Morphisms.
+End ProperNotations.
+
+Lemma mulr_funEcomp (R : semiRingType) (T : Type) (x : R) (f : T -> R) :
+  x \o* f = *%R^~ x \o f.
+Proof. by []. Qed.

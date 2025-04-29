@@ -29,7 +29,6 @@ classical/filter.v
 reals/constructive_ereal.v
 reals/reals.v
 reals/real_interval.v
-reals/signed.v
 reals/interval_inference.v
 reals/prodnormedzmodule.v
 reals/all_reals.v
@@ -69,6 +68,7 @@ theories/homotopy_theory/homotopy.v
 theories/homotopy_theory/wedge_sigT.v
 theories/homotopy_theory/continuous_path.v
 
+theories/ess_sup_inf.v
 theories/function_spaces.v
 theories/ereal.v
 theories/cantor.v
@@ -113,6 +113,7 @@ theories/lebesgue_integral_theory/lebesgue_integral.v
 theories/ftc.v
 theories/hoelder.v
 theories/probability.v
+theories/sampling.v
 theories/convex.v
 theories/charge.v
 theories/kernel.v

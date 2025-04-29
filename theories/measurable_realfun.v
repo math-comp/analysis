@@ -1034,6 +1034,12 @@ by move=> mf mg mD; move: (mD); apply: measurable_fun_if => //;
   [exact: measurable_fun_ltr|exact: measurable_funS mg|exact: measurable_funS mf].
 Qed.
 
+Lemma measurable_funrpos D f : measurable_fun D f -> measurable_fun D f^\+.
+Proof. by move=> mf; exact: measurable_maxr. Qed.
+
+Lemma measurable_funrneg D f : measurable_fun D f -> measurable_fun D f^\-.
+Proof. by move=> mf; apply: measurable_maxr => //; exact: measurableT_comp. Qed.
+
 Lemma measurable_minr D f g :
   measurable_fun D f -> measurable_fun D g -> measurable_fun D (f \min g).
 Proof.
@@ -1560,6 +1566,50 @@ Notation emeasurable_fun_funeneg := measurable_funeneg (only parsing).
 #[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_esup`")]
 Notation measurable_fun_lim_esup := measurable_fun_limn_esup (only parsing).
 
+Section ereal_inf_sup_seq.
+Context {R : realType}.
+Implicit Types (S : set (\bar R)).
+Local Open Scope ereal_scope.
+
+Lemma ereal_inf_seq S : S != set0 ->
+  {u : nat -> \bar R | forall i, S (u i) & u @ \oo --> ereal_inf S}.
+Proof.
+move=> SN0; apply/cid2; have [|Ninfy] := eqVneq (ereal_inf S) +oo.
+  move=> /[dup]/ereal_inf_pinfty/subset_set1/orW[/eqP/negPn/[!SN0]//|->] ->.
+  by exists (fun=> +oo) => //; apply: cvg_cst.
+suff: exists2 v : (\bar R)^nat, v @ \oo --> ereal_inf S &
+        forall n, exists2 x : \bar R, x \in S & x < v n.
+  move=> [v vcvg] /(_ _)/sig2W-/all_sig/= [u /all_and2[/(_ _)/set_mem Su u_lt]].
+  exists u => //; move: vcvg.
+  have: cst (ereal_inf S) @ \oo --> ereal_inf S by exact: cvg_cst.
+  apply: squeeze_cvge; apply: nearW => n; rewrite /cst/=.
+  by rewrite ereal_inf_le /= 1?ltW; last by exists (u n).
+have [infNy|NinfNy] := eqVneq (ereal_inf S) -oo.
+  exists [sequence - (n%:R%:E)]_n => /=; last first.
+  by move=> n; setoid_rewrite set_mem_set; apply: lb_ereal_infNy_adherent.
+  rewrite infNy; apply/cvgNey; under eq_cvg do rewrite EFinN oppeK.
+  by apply/cvgeryP/cvgr_idn.
+have inf_fin : ereal_inf S \is a fin_num by case: ereal_inf Ninfy NinfNy.
+exists [sequence ereal_inf S + n.+1%:R^-1%:E]_n => /=; last first.
+  by move=> n; setoid_rewrite set_mem_set; apply: lb_ereal_inf_adherent.
+ apply/sube_cvg0 => //=; apply/cvg_abse0P.
+ rewrite (@eq_cvg _ _ _ _ (fun n => n.+1%:R^-1%:E)).
+   exact: cvge_harmonic.
+by move=> n /=; rewrite /= addrAC subee// add0e gee0_abs//.
+Unshelve. all: by end_near. Qed.
+
+Lemma ereal_sup_seq S : S != set0 ->
+  {u : nat -> \bar R | forall i, S (u i) & u @ \oo --> ereal_sup S}.
+Proof.
+move=> SN0; have NSN0 : [set - x | x in S] != set0.
+  by have /set0P[x Sx] := SN0; apply/set0P; exists (- x), x.
+have [u /= Nxu] := ereal_inf_seq NSN0.
+rewrite ereal_infN => /cvgeN; rewrite oppeK => Nu_to_sup.
+by exists (fun n => - u n) => // i; have [? ? <-] := Nxu i; rewrite oppeK.
+Qed.
+
+End ereal_inf_sup_seq.
+
 Section open_itv_cover.
 Context {R : realType}.
 Implicit Types (A : set R).
@@ -1571,7 +1621,7 @@ Lemma outer_measure_open_itv_cover A : (l^* A)%mu =
   ereal_inf [set \sum_(k <oo) l (F k) | F in open_itv_cover A].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- apply: le_ereal_inf => _ /= [F [Fitv AF <-]].
+  apply: le_ereal_inf => _ /= [F [Fitv AF <-]].
   exists (fun i => `](sval (cid (Fitv i))).1, (sval (cid (Fitv i))).2]%classic).
   + split=> [i|].
     * have [?|?] := ltP (sval (cid (Fitv i))).1 (sval (cid (Fitv i))).2.
@@ -1583,56 +1633,104 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   + apply: eq_eseriesr => k _; rewrite /l wlength_itv/=.
     case: (Fitv k) => /= -[a b]/= Fkab.
     by case: cid => /= -[x1 x2] ->; rewrite wlength_itv.
-- have [/lb_ereal_inf_adherent lA|] :=
-      boolP ((l^* A)%mu \is a fin_num); last first.
-    rewrite ge0_fin_numE ?outer_measure_ge0// -leNgt leye_eq => /eqP ->.
-    exact: leey.
-  apply/lee_addgt0Pr => /= e e0.
-  have : (0 < e / 2)%R by rewrite divr_gt0.
-  move=> /lA[_ [/= F [mF AF]] <-]; rewrite -/((l^* A)%mu) => lFe.
-  have Fcover n : exists2 B, F n `<=` B &
-      is_open_itv B /\ l B <= l (F n) + (e / 2 ^+ n.+2)%:E.
-    have [[a b] _ /= abFn] := mF n.
-    exists `]a, b + e / 2^+n.+2[%classic.
-      rewrite -abFn => x/= /[!in_itv] /andP[->/=] /le_lt_trans; apply.
-      by rewrite ltrDl divr_gt0.
-    split; first by exists (a, b + e / 2^+n.+2).
-    have [ab|ba] := ltP a b.
-      rewrite /l -abFn !wlength_itv//= !lte_fin ifT.
-        by rewrite ab -!EFinD lee_fin addrAC.
-      by rewrite ltr_wpDr// divr_ge0// ltW.
-    rewrite -abFn [in leRHS]set_itv_ge ?bnd_simp -?leNgt// /l wlength0 add0r.
-    rewrite wlength_itv//=; case: ifPn => [abe|_]; last first.
-      by rewrite lee_fin divr_ge0// ltW.
-    by rewrite -EFinD addrAC lee_fin -[leRHS]add0r lerD2r subr_le0.
-  pose G := fun n => sval (cid2 (Fcover n)).
-  have FG n : F n `<=` G n by rewrite /G; case: cid2.
-  have Gitv n : is_open_itv (G n) by rewrite /G; case: cid2 => ? ? [].
-  have lGFe n : l (G n) <= l (F n) + (e / 2 ^+ n.+2)%:E.
-    by rewrite /G; case: cid2 => ? ? [].
-  have AG : A `<=` \bigcup_k G k.
-    by apply: (subset_trans AF) => [/= r [n _ /FG Gnr]]; exists n.
-  apply: (@le_trans _ _ (\sum_(0 <= k <oo) (l (F k) + (e / 2 ^+ k.+2)%:E))).
-    apply: (@le_trans _ _ (\sum_(0 <= k <oo) l (G k))).
-      by apply: ereal_inf_lbound => /=; exists G.
-    exact: lee_nneseries.
-  rewrite nneseriesD//; last first.
-    by move=> i _; rewrite lee_fin// divr_ge0// ltW.
-  rewrite [in leRHS](splitr e) EFinD addeA leeD//; first exact/ltW.
-  have := @cvg_geometric_eseries_half R e 1; rewrite expr1.
-  rewrite [X in eseries X](_ : _ = (fun k => (e / (2 ^+ (k.+2))%:R)%:E)); last first.
-    by apply/funext => n; rewrite addn2 natrX.
-  move/cvg_lim => <-//; apply: lee_nneseries => //.
-  - by move=> n _; rewrite lee_fin divr_ge0// ltW.
-  - by move=> n _; rewrite lee_fin -natrX.
+have [/lb_ereal_inf_adherent lA|] :=
+    boolP ((l^* A)%mu \is a fin_num); last first.
+  rewrite ge0_fin_numE ?outer_measure_ge0// -leNgt leye_eq => /eqP ->.
+  exact: leey.
+apply/lee_addgt0Pr => /= e e0.
+have : (0 < e / 2)%R by rewrite divr_gt0.
+move=> /lA[_ [/= F [mF AF]] <-]; rewrite -/((l^* A)%mu) => lFe.
+have Fcover n : exists2 B, F n `<=` B &
+    is_open_itv B /\ l B <= l (F n) + (e / 2 ^+ n.+2)%:E.
+  have [[a b] _ /= abFn] := mF n.
+  exists `]a, b + e / 2^+n.+2[%classic.
+    rewrite -abFn => x/= /[!in_itv] /andP[->/=] /le_lt_trans; apply.
+    by rewrite ltrDl divr_gt0.
+  split; first by exists (a, b + e / 2^+n.+2).
+  have [ab|ba] := ltP a b.
+    rewrite /l -abFn !wlength_itv//= !lte_fin ifT.
+      by rewrite ab -!EFinD lee_fin addrAC.
+    by rewrite ltr_wpDr// divr_ge0// ltW.
+  rewrite -abFn [in leRHS]set_itv_ge ?bnd_simp -?leNgt// /l wlength0 add0r.
+  rewrite wlength_itv//=; case: ifPn => [abe|_]; last first.
+    by rewrite lee_fin divr_ge0// ltW.
+  by rewrite -EFinD addrAC lee_fin -[leRHS]add0r lerD2r subr_le0.
+pose G := fun n => sval (cid2 (Fcover n)).
+have FG n : F n `<=` G n by rewrite /G; case: cid2.
+have Gitv n : is_open_itv (G n) by rewrite /G; case: cid2 => ? ? [].
+have lGFe n : l (G n) <= l (F n) + (e / 2 ^+ n.+2)%:E.
+  by rewrite /G; case: cid2 => ? ? [].
+have AG : A `<=` \bigcup_k G k.
+  by apply: (subset_trans AF) => [/= r [n _ /FG Gnr]]; exists n.
+apply: (@le_trans _ _ (\sum_(0 <= k <oo) (l (F k) + (e / 2 ^+ k.+2)%:E))).
+  apply: (@le_trans _ _ (\sum_(0 <= k <oo) l (G k))).
+    by apply: ereal_inf_lbound => /=; exists G.
+  exact: lee_nneseries.
+rewrite nneseriesD//; last first.
+  by move=> i _; rewrite lee_fin// divr_ge0// ltW.
+rewrite [in leRHS](splitr e) EFinD addeA leeD//; first exact/ltW.
+have := @cvg_geometric_eseries_half R e 1; rewrite expr1.
+rewrite [X in eseries X](_ : _ = (fun k => (e / (2 ^+ (k.+2))%:R)%:E)); last first.
+  by apply/funext => n; rewrite addn2 natrX.
+move/cvg_lim => <-//; apply: lee_nneseries => //.
+- by move=> n _; rewrite lee_fin divr_ge0// ltW.
+- by move=> n _; rewrite lee_fin -natrX.
 Qed.
 
 End open_itv_cover.
 
+Section ereal_supZ.
+Context {R : realType}.
+Implicit Types (r s : R) (A : set R) (X : set (\bar R)).
+Local Open Scope ereal_scope.
+
+Lemma ereal_sup_cst T x (A : set T) : A != set0 ->
+   ereal_sup [set x | _ in A] = x :> \bar R.
+Proof. by move=> AN0; rewrite set_cst ifN// ereal_sup1. Qed.
+
+Lemma ereal_inf_cst T x (A : set T) : A != set0 ->
+   ereal_inf [set x | _ in A] = x :> \bar R.
+Proof. by move=> AN0; rewrite set_cst ifN// ereal_inf1. Qed.
+
+Lemma ereal_sup_pZl X r : (0 < r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> /[dup] r_gt0; rewrite lt0r => /andP[r_neq0 r_ge0].
+gen have gen : r r_gt0 {r_ge0 r_neq0} X /
+    ereal_sup [set r%:E * x | x in X] <= r%:E * ereal_sup X.
+  apply/ereal_supP => y/= [x Ax <-]; rewrite lee_pmul2l//=.
+  by apply/ereal_supP => //=; exists x.
+apply/eqP; rewrite eq_le gen//= -lee_pdivlMl//.
+rewrite (le_trans _ (gen _ _ _)) ?invr_gt0 ?image_comp//=.
+by under eq_imagel do rewrite /= muleA -EFinM mulVf ?mul1e//=; rewrite image_id.
+Qed.
+
+Lemma ereal_supZl X r : X != set0 -> (0 <= r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> AN0; have [r_gt0|//|<-] := ltgtP => _; first by rewrite ereal_sup_pZl.
+by rewrite mul0e; under eq_imagel do rewrite mul0e/=; rewrite ereal_sup_cst.
+Qed.
+
+Lemma ereal_inf_pZl X r : (0 < r)%R ->
+  ereal_inf [set r%:E * x | x in X] = r%:E * ereal_inf X.
+Proof.
+move=> r_gt0; rewrite !ereal_infEN muleN image_comp/=; congr (- _).
+by under eq_imagel do rewrite /= -muleN; rewrite -image_comp ereal_sup_pZl.
+Qed.
+
+Lemma ereal_infZl X r : X != set0 -> (0 < r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> XN0 r_gt0; rewrite !ereal_supEN muleN image_comp/=; congr (- _).
+by under eq_imagel do rewrite /= -muleN; rewrite -image_comp ereal_inf_pZl.
+Qed.
+
+End ereal_supZ.
+
 Section egorov.
 Context d {R : realType} {T : measurableType d}.
 Context (mu : {measure set T -> \bar R}).
-
 Local Open Scope ereal_scope.
 
 (*TODO : this generalizes to any metric space with a borel measure*)

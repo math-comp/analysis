@@ -1242,6 +1242,13 @@ Notation bigcupM1l := bigcupX1l (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="renamed to bigcupX1r.")]
 Notation bigcupM1r := bigcupX1r (only parsing).
 
+Lemma set_cst {T I} (x : T) (A : set I) :
+   [set x | _ in A] = if A == set0 then set0 else [set x].
+Proof.
+apply/seteqP; split=> [_ [i +] <-|t]; first by case: ifPn => // /eqP ->.
+by case: ifPn => // /set0P[i Ai ->{t}]; exists i.
+Qed.
+
 Section set_order.
 Import Order.TTheory.
 
@@ -1532,6 +1539,9 @@ Proof. by move=> b [x [Aa Ba <-]]; split; apply: imageP. Qed.
 Lemma nonempty_image f A : f @` A !=set0 -> A !=set0.
 Proof. by case=> b [a]; exists a. Qed.
 
+Lemma image_nonempty f A : A !=set0 -> f @` A !=set0.
+Proof. by move=> [x] Ax; exists (f x), x. Qed.
+
 Lemma image_subset f A B : A `<=` B -> f @` A `<=` f @` B.
 Proof. by move=> AB _ [a Aa <-]; exists a => //; apply/AB. Qed.
 
@@ -1654,6 +1664,8 @@ Proof. by rewrite preimage_false; under eq_fun do rewrite inE. Qed.
 
 End image_lemmas.
 Arguments sub_image_setI {aT rT f A B} t _.
+Arguments subset_set1 {_ _ _}.
+Arguments subset_set2 {_ _ _ _}.
 
 Lemma image2_subset {aT bT rT : Type} (f : aT -> bT -> rT)
     (A B : set aT) (C D : set bT) : A `<=` B -> C `<=` D ->
