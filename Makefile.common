@@ -44,7 +44,7 @@ all: config build
 
 Makefile.coq: pre-makefile $(COQPROJECT) Makefile
 	(echo "From mathcomp.algebra Require Import interval_inference." > test_interval_inference.v \
-	 && (rocq c test_interval_inference.v > /dev/null 2>&1) \
+	 && (coqc test_interval_inference.v > /dev/null 2>&1) \
 	 && test -f interval_inference.v -o -f reals/interval_inference.v \
 	 && touch rm_interval_inference) || true
 	$(RM) test_interval_inference.v
