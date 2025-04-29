@@ -6,9 +6,11 @@
 # pre-makefile::, this-clean:: and __always__:: may be extended      #
 # Additionally, the following variables may be customized:           #
 SUBDIRS?=
-COQBIN?=$(dir $(shell which coqtop))
-COQMAKEFILE?=$(COQBIN)coq_makefile
-COQDEP?=$(COQBIN)coqdep
+COQBIN?=$(dir $(shell command -v coqtop || command -v rocq))
+COQMAKEFILE?=$(shell command -v coq_makefile || echo "$(COQBIN)rocq makefile")
+COQC?=$(shell command -v coqc || echo "$(COQBIN)rocq c")
+COQDEP?=$(shell command -v coqdep || echo "$(COQBIN)rocq dep")
+COQDOC?=$(shell command -v coqdoc || echo "$(COQBIN)rocq doc")
 COQPROJECT?=_CoqProject
 COQMAKEOPTIONS?=
 COQMAKEFILEOPTIONS?=
@@ -44,7 +46,7 @@ all: config build
 
 Makefile.coq: pre-makefile $(COQPROJECT) Makefile
 	(echo "From mathcomp.algebra Require Import interval_inference." > test_interval_inference.v \
-	 && (coqc test_interval_inference.v > /dev/null 2>&1) \
+	 && ($(COQC) test_interval_inference.v > /dev/null 2>&1) \
 	 && test -f interval_inference.v -o -f reals/interval_inference.v \
 	 && touch rm_interval_inference) || true
 	$(RM) test_interval_inference.v
@@ -135,7 +137,7 @@ doc: __always__ Makefile.coq
 # let's forget about the dependency graph for the time being...
 #	cd _build_doc && grep -v vio: .Makefile.coq.d > depend
 #	cd _build_doc && cat depend | $(MATHCOMP)etc/buildlibgraph $(COQFILES) > htmldoc/depend.js
-	cd _build_doc && $(COQBIN)coqdoc -t "MathComp Analysis" \
+	cd _build_doc && $(COQDOC) -t "MathComp Analysis" \
 		-g --utf8 -Q classical mathcomp.classical -Q theories mathcomp.analysis \
 		--parse-comments \
 		--multi-index $(COQFILES) -d htmldoc
@@ -147,7 +149,7 @@ doc-clean:
 	rm -rf _build_doc/
 
 coq2html:
-	coqdep -f _CoqProject > depend.d
+	$(COQDEP) -f _CoqProject > depend.d
 	../coq2html/ocamldot/ocamldot depend.d > depend.dot
 	gsed -i 's/Classical/mathcomp\.classical/' depend.dot
 	gsed -i 's/Theories/mathcomp\.analysis/' depend.dot
