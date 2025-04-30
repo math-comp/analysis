@@ -1083,10 +1083,9 @@ rewrite -ge0_integral_bigsetU//=; first last.
 rewrite big_mkord -bigsetU_seqDU.
 move: n => [|n].
   rewrite big_ord0 integral_set0.
-  apply: ereal_sup_le.
+  apply: ereal_sup_ge.
   exists (\int[mu]_(x in `[0%R, 1%:R]) (f x)%:E) => //.
-  apply: integral_ge0.
-  by move=> ? _; rewrite lee_fin f0.
+  by apply: integral_ge0 => /= ? _; rewrite lee_fin f0.
 rewrite [X in \int[_]_(_ in X) _](_ : _ = `[0%R, n.+1%:R]%classic); last first.
   rewrite eqEsubset; split => x/=; rewrite in_itv/=.
     rewrite -(bigcup_mkord _ (fun k => `[0%R, k.+1%:R]%classic)).
@@ -1097,7 +1096,7 @@ rewrite [X in \int[_]_(_ in X) _](_ : _ = `[0%R, n.+1%:R]%classic); last first.
   rewrite -(bigcup_mkord _ (fun k => `[0%R, k.+1%:R]%classic)).
   exists n => //=.
   by rewrite in_itv/= x0 Snx.
-apply: ereal_sup_le.
+apply: ereal_sup_ge.
 exists (\int[mu]_(x in `[0%R, n.+1%:R]) (f x)%:E); first by exists n.
 apply: ge0_subset_integral => //= [|? _]; last by rewrite lee_fin f0.
 exact/measurable_EFinP/measurableT_comp.

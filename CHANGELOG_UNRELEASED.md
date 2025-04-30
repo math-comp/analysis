@@ -81,6 +81,9 @@
 
 - file `lebesgue_integral_approximation.v` -> `measurable_fun_approximation.v`
 
+- in `ereal.v`:
+  + `ereal_sup_le` -> `ereal_sup_ge`
+
 ### Generalized
 
 - in `normedtype.v`:
@@ -88,6 +91,11 @@
 - in `functions.v`:
   + `fct_sumE`, `addrfctE`, `sumrfctE` (from `zmodType` to `nmodType`)
   + `scalerfctE` (from `pointedType` to `Type`)
+- in `ereal.v`:
+  + lemmas `ereal_infEN`, `ereal_supN`, `ereal_infN`, `ereal_supEN`
+  + lemmas `ereal_supP`, `ereal_infP`, `ereal_sup_gtP`, `ereal_inf_ltP`,
+    `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
+    `ereal_sup_real`, `ereal_inf_real`
 
 ### Deprecated
 
