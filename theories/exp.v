@@ -1070,8 +1070,7 @@ exact/cvgNy_compNP/cvgr_expR.
 Unshelve. end_near. Qed.
 
 Lemma derivable_powR v x : v != 0 ->
-  {in `]0, +oo[, forall a,
-    derivable (powR ^~ x) a v}.
+  {in `]0, +oo[, forall a, derivable (powR ^~ x) a v}.
 Proof.
 move=> v0 a; rewrite in_itv/= andbT => a0.
 apply: (@near_eq_derivable _ _ _ (fun a' => expR (x * ln a'))) => //.
