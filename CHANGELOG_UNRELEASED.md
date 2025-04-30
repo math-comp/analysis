@@ -48,6 +48,8 @@
 - in `unstable.v`:
   + lemmas `eq_exists2l`, `eq_exists2r`
   + module `ProperNotations` with notations `++>`, `==>`, `~~>`
+- in `functions.v`:
+  + lemma `natmulfctE`
 
 ### Changed
 
@@ -71,10 +73,16 @@
 
 - in `normedtype.v`:
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
+- in `functions.v`:
+  + `fct_sumE`, `addrfctE`, `sumrfctE` (from `zmodType` to `nmodType`)
+  + `scalerfctE` (from `pointedType` to `Type`)
 
 ### Deprecated
 
 ### Removed
+
+- in `functions.v`:
+  + definitions `fct_ringMixin`, `fct_ringMixin` (was only used in an `HB.instance`)
 
 ### Infrastructure
 
