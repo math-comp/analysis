@@ -1093,6 +1093,21 @@ Proof. by case: x => // x xf; rewrite poweR_EFin powRN. Qed.
 Lemma poweRNyr r : r != 0%R -> -oo `^ r = 0.
 Proof. by move=> r0 /=; rewrite (negbTE r0). Qed.
 
+Lemma poweRE x r :
+  poweR x r = if r == 0%R then
+                (if x \is a fin_num then fine x `^ r else 1)%:E
+               else if x == +oo then +oo
+                    else if x == -oo then 0
+                    else (fine x `^ r)%:E.
+Proof.
+case: ifPn => [/eqP r0|r0].
+  case: ifPn => finx; last by rewrite r0 poweRe0.
+  by rewrite -poweR_EFin; case: x finx.
+case: ifPn => [/eqP ->|xy]; first by rewrite poweRyr.
+case: ifPn => [/eqP ->|xNy]; first by rewrite poweRNyr.
+by rewrite -poweR_EFin// fineK// fin_numE xNy.
+Qed.
+
 Lemma poweR_eqy x r : x `^ r = +oo -> x = +oo.
 Proof. by case: x => [x| |] //=; case: ifP. Qed.
 

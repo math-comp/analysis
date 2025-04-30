@@ -6,11 +6,11 @@ From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions cardinality reals fsbigop.
 From mathcomp Require Import interval_inference topology ereal tvs normedtype.
 From mathcomp Require Import sequences real_interval function_spaces esum.
-From mathcomp Require Import measure lebesgue_measure numfun realfun.
-From mathcomp Require Import simple_functions lebesgue_integral_definition.
+From mathcomp Require Import measure lebesgue_measure numfun realfun exp.
+From mathcomp Require Import simple_functions.
 
 (**md**************************************************************************)
-(* # Approximation theorem for the Lebesgue integral                          *)
+(* # Approximation theorem for measurable functions                           *)
 (*                                                                            *)
 (* Applications: measurability of arithmetic of functions, Lusin's theorem.   *)
 (*                                                                            *)
@@ -672,6 +672,26 @@ by under eq_fun do rewrite eq_le.
 Qed.
 
 End emeasurable_fun_comparison.
+
+Lemma measurable_poweR (R : realType) r :
+  measurable_fun [set: \bar R] (poweR ^~ r).
+Proof.
+under eq_fun do rewrite poweRE.
+rewrite -/(measurable_fun _ _).
+apply: measurable_fun_ifT => //=.
+  apply/measurable_EFinP => //=.
+  apply: measurable_fun_ifT => //=.
+    apply: (measurable_fun_bool true).
+    rewrite setTI (_ : _ @^-1` _ = EFin @` setT).
+      by apply: measurable_image_EFin; exact: measurableT.
+    apply/seteqP; split => [x finx|x [s sx <-//]]/=.
+    by exists (fine x) => //; rewrite fineK.
+  exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)).
+apply: measurable_fun_ifT => //=; first exact: measurable_fun_eqe.
+apply: measurable_fun_ifT => //=; first exact: measurable_fun_eqe.
+apply/measurable_EFinP => //=.
+exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)).
+Qed.
 
 Section measurable_comparison.
 Context d (T : measurableType d) (R : realType).
