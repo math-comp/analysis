@@ -463,19 +463,19 @@ rewrite lteNl => /ereal_sup_gt[_ [y Sy <-]].
 by rewrite lteNl oppeK => xlty; exists y.
 Qed.
 
-Lemma ereal_infEN S : ereal_inf S = - ereal_sup [set - x | x in S].
+Lemma ereal_infEN S : ereal_inf S = - ereal_sup (-%E @` S).
 Proof. by []. Qed.
 
-Lemma ereal_supN S : ereal_sup [set - x | x in S] = - ereal_inf S.
+Lemma ereal_supN S : ereal_sup (-%E @` S) = - ereal_inf S.
 Proof. by rewrite oppeK. Qed.
 
-Lemma ereal_infN S : ereal_inf [set - x | x in S] = - ereal_sup S.
+Lemma ereal_infN S : ereal_inf (-%E @` S) = - ereal_sup S.
 Proof.
 rewrite /ereal_inf; congr (- ereal_sup _) => /=.
-by rewrite image_comp/=; under eq_imagel do rewrite /= oppeK; rewrite image_id.
+by rewrite image_comp -[RHS]image_id; apply: eq_imagel => /= ?; rewrite oppeK.
 Qed.
 
-Lemma ereal_supEN S : ereal_sup S = - ereal_inf [set - x | x in S].
+Lemma ereal_supEN S : ereal_sup S = - ereal_inf (-%E @` S).
 Proof. by rewrite ereal_infN oppeK. Qed.
 
 End ereal_supremum.
@@ -675,9 +675,8 @@ End ereal_supremum_realType.
 Notation ereal_sup_ub := ereal_sup_ubound (only parsing).
 #[deprecated(since="mathcomp-analysis 1.3.0", note="Renamed `ereal_inf_lbound`.")]
 Notation ereal_inf_lb := ereal_inf_lbound (only parsing).
-#[deprecated(since="mathcomp-analysis 1.10.0", note="Renamed `ereal_sup_ge`.")]
+#[deprecated(since="mathcomp-analysis 1.11.0", note="Renamed `ereal_sup_ge`.")]
 Notation ereal_sup_le := ereal_sup_ge.
-
 Arguments ereal_supP {R S x}.
 Arguments ereal_infP {R S x}.
 Arguments ereal_sup_gtP {R S x}.

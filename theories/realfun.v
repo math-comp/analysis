@@ -989,9 +989,9 @@ Qed.
 Lemma lime_inf_sup f a : lime_inf f a <= lime_sup f a.
 Proof.
 rewrite lime_inf_lim lime_sup_lim; apply: lee_lim => //.
-near=> r; rewrite ereal_sup_le//.
-have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2)%R.
-  exists (a + r / 2)%R => //; split.
+near=> r; rewrite ereal_sup_ge//.
+have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2).
+  exists (a + r / 2) => //; split.
     rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
     by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
   by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
@@ -2316,7 +2316,7 @@ Lemma total_variationN a b f : TV a b (\- f) = TV a b f.
 Proof. by rewrite /TV; rewrite variationsN. Qed.
 
 Lemma total_variation_le a b f g : a <= b ->
-  (TV a b (f \+ g)%R <= TV a b f + TV a b g)%E.
+  (TV a b (f \+ g) <= TV a b f + TV a b g)%E.
 Proof.
 rewrite le_eqVlt => /predU1P[<-{b}|ab].
   by rewrite !total_variationxx adde0.
@@ -2336,7 +2336,7 @@ have BVabfg : BV a b (f \+ g).
 apply: ub_ereal_sup => y /= [r' [s' abs <-{r'} <-{y}]].
 apply: (@le_trans _ _ (variation a b f s' + variation a b g s')%:E).
   exact: variation_le.
-by rewrite EFinD leeD// ereal_sup_le//;
+by rewrite EFinD leeD// ereal_sup_ge//;
   (eexists; last exact: lexx); (eexists; last reflexivity);
   exact: variations_variation.
 Qed.
@@ -2351,7 +2351,7 @@ have [abf|abf] := pselect (BV a b f); last first.
   by apply: variations_neq0 => //; rewrite (lt_trans ac).
 have H s t : itv_partition a c s -> itv_partition c b t ->
     (TV a b f >= (variation a c f s)%:E + (variation c b f t)%:E)%E.
-  move=> acs cbt; rewrite -EFinD; apply: ereal_sup_le.
+  move=> acs cbt; rewrite -EFinD; apply: ereal_sup_ge.
   exists (variation a b f (s ++ t))%:E.
     eexists; last reflexivity.
     by exists (s ++ t) => //; exact: itv_partition_cat acs cbt.
@@ -2383,13 +2383,13 @@ rewrite le_eqVlt => /predU1P[<-{b}|cb]; first by rewrite total_variationxx adde0
 case : (pselect (bounded_variation a c f)); first last.
   move=> nbdac; have /eqP -> : TV a c f == +oo%E.
     have: (-oo < TV a c f)%E by apply: (lt_le_trans _ (total_variation_ge0 f (ltW ac))).
-    by rewrite ltNye_eq => /orP [] => // /bounded_variationP => /(_ (ltW ac)).
+    by rewrite ltNye_eq => /orP[|//] => /bounded_variationP => /(_ (ltW ac)).
   by rewrite addye ?leey // -ltNye (@lt_le_trans _ _ 0)%E // ?total_variation_ge0 // ltW.
-case : (pselect (bounded_variation c b f)); first last.
-  move=> nbdac; have /eqP -> : TV c b f == +oo%E.
+have [|nbdac] := pselect (bounded_variation c b f); first last.
+  have /eqP -> : TV c b f == +oo%E.
     have: (-oo < TV c b f)%E.
       exact: (lt_le_trans _ (total_variation_ge0 f (ltW cb))).
-    by rewrite ltNye_eq => /orP [] => // /bounded_variationP => /(_ (ltW cb)).
+    by rewrite ltNye_eq => /orP[|//] => /bounded_variationP => /(_ (ltW cb)).
   rewrite addey ?leey // -ltNye (@lt_le_trans _ _ 0%E)//.
   exact/total_variation_ge0/ltW.
 move=> bdAB bdAC.
@@ -2402,7 +2402,7 @@ apply: (le_trans (variation_itv_partitionLR _ ac _ _)) => //.
 apply: sup_ubound => /=.
   case: bdAB => M ubdM; case: bdAC => N ubdN; exists (N + M).
   move=> q [?] [i pabi <-] [? [j pbcj <-]] <-.
-  by apply: lerD; [apply: ubdN;exists i|apply:ubdM;exists j].
+  by apply: lerD; [apply: ubdN; exists i|apply: ubdM; exists j].
 exists (variation a c f (itv_partitionL l c)).
   by apply: variations_variation; exact: itv_partitionLP pacl.
 exists (variation c b f (itv_partitionR l c)).
