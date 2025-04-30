@@ -35,8 +35,15 @@
   + lemmas `in_set1`, `inr_in_set_inr`, `inl_in_set_inr`, `mem_image`, `mem_range`, `image_f`
   + lemmas `inr_in_set_inl`, `inl_in_set_inl`
 
-- in `lebesgue_integral_approximation.v`:
+- in `lebesgue_integral_approximation.v` (now `measurable_fun_approximation.v`):
   + lemma `measurable_prod`
+  + lemma `measurable_fun_lte`
+  + lemma `measurable_fun_lee`
+  + lemma `measurable_fun_eqe`
+  + lemma `measurable_poweR`
+
+- in `exp.v`:
+  + lemma `poweRE`
 
 ### Changed
 
@@ -47,6 +54,14 @@
 
 - in `kernel.v`:
   + `isFiniteTransition` -> `isFiniteTransitionKernel`
+
+- in `lebesgue_integral_approximation.v`:
+  + `emeasurable_fun_lt` -> `measurable_lte`
+  + `emeasurable_fun_le` -> `measurable_lee`
+  + `emeasurable_fun_eq` -> `measurable_lee`
+  + `emeasurable_fun_neq` -> `measurable_neqe`
+
+- file `lebesgue_integral_approximation.v` -> `measurable_fun_approximation.v`
 
 ### Generalized
 

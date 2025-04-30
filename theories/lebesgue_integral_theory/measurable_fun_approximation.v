@@ -6,11 +6,11 @@ From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions cardinality reals fsbigop.
 From mathcomp Require Import interval_inference topology ereal tvs normedtype.
 From mathcomp Require Import sequences real_interval function_spaces esum.
-From mathcomp Require Import measure lebesgue_measure numfun realfun.
-From mathcomp Require Import simple_functions lebesgue_integral_definition.
+From mathcomp Require Import measure lebesgue_measure numfun realfun exp.
+From mathcomp Require Import simple_functions.
 
 (**md**************************************************************************)
-(* # Approximation theorem for the Lebesgue integral                          *)
+(* # Approximation theorem for measurable functions                           *)
 (*                                                                            *)
 (* Applications: measurability of arithmetic of functions, Lusin's theorem.   *)
 (*                                                                            *)
@@ -605,35 +605,93 @@ Context d {T : measurableType d} {R : realType}.
 Variables (D : set T) (mD : measurable D).
 Implicit Types f g : T -> \bar R.
 
-Lemma emeasurable_fun_lt f g : measurable_fun D f -> measurable_fun D g ->
+Lemma measurable_lte f g : measurable_fun D f -> measurable_fun D g ->
   measurable (D `&` [set x | f x < g x]).
 Proof.
 move=> mf mg; under eq_set do rewrite -sube_gt0.
 by apply: emeasurable_fun_o_infty => //; exact: emeasurable_funB.
 Qed.
 
-Lemma emeasurable_fun_le f g : measurable_fun D f -> measurable_fun D g ->
+Lemma measurable_lee f g : measurable_fun D f -> measurable_fun D g ->
   measurable (D `&` [set x | f x <= g x]).
 Proof.
 move=> mf mg; under eq_set do rewrite -sube_le0.
 by apply: emeasurable_fun_infty_c => //; exact: emeasurable_funB.
 Qed.
 
-Lemma emeasurable_fun_eq f g : measurable_fun D f -> measurable_fun D g ->
+Lemma measurable_eqe f g : measurable_fun D f -> measurable_fun D g ->
   measurable (D `&` [set x | f x = g x]).
 Proof.
 move=> mf mg; rewrite set_eq_le setIIr.
-by apply: measurableI; apply: emeasurable_fun_le.
+by apply: measurableI; exact: measurable_lee.
 Qed.
 
-Lemma emeasurable_fun_neq f g : measurable_fun D f -> measurable_fun D g ->
+Lemma measurable_neqe f g : measurable_fun D f -> measurable_fun D g ->
   measurable (D `&` [set x | f x != g x]).
 Proof.
 move=> mf mg; rewrite set_neq_lt setIUr.
-by apply: measurableU; exact: emeasurable_fun_lt.
+by apply: measurableU; exact: measurable_lte.
 Qed.
 
 End emeasurable_comparison.
+#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `measurable_lte`")]
+Notation emeasurable_fun_lt := measurable_lte (only parsing).
+#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `measurable_lee`")]
+Notation emeasurable_fun_le := measurable_lee (only parsing).
+#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `measurable_eqe`")]
+Notation emeasurable_fun_eq := measurable_eqe (only parsing).
+#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `measurable_neqe`")]
+Notation emeasurable_fun_neq := measurable_neqe (only parsing).
+
+Section emeasurable_fun_comparison.
+Context d (T : measurableType d) (R : realType).
+Implicit Types (D : set T) (f g : T -> \bar R).
+Local Open Scope ereal_scope.
+
+Lemma measurable_fun_lte D f g : measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x < g x).
+Proof.
+move=> mf mg mD; apply: (measurable_fun_bool true) => //.
+exact: measurable_lte.
+Qed.
+
+Lemma measurable_fun_lee D f g : measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x <= g x).
+Proof.
+move=> mf mg mD; apply: (measurable_fun_bool true) => //.
+exact: measurable_lee.
+Qed.
+
+Lemma measurable_fun_eqe D f g : measurable_fun D f -> measurable_fun D g ->
+  measurable_fun D (fun x => f x == g x).
+Proof.
+move=> mf mg.
+rewrite (_ : (fun x => f x == g x) = (fun x => (f x <= g x) && (g x <= f x))).
+  by apply: measurable_and; exact: measurable_fun_lee.
+by under eq_fun do rewrite eq_le.
+Qed.
+
+End emeasurable_fun_comparison.
+
+Lemma measurable_poweR (R : realType) r :
+  measurable_fun [set: \bar R] (poweR ^~ r).
+Proof.
+under eq_fun do rewrite poweRE.
+rewrite -/(measurable_fun _ _).
+apply: measurable_fun_ifT => //=.
+  apply/measurable_EFinP => //=.
+  apply: measurable_fun_ifT => //=.
+    apply: (measurable_fun_bool true).
+    rewrite setTI (_ : _ @^-1` _ = EFin @` setT).
+      by apply: measurable_image_EFin; exact: measurableT.
+    apply/seteqP; split => [x finx|x [s sx <-//]]/=.
+    by exists (fine x) => //; rewrite fineK.
+  exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)).
+apply: measurable_fun_ifT => //=; first exact: measurable_fun_eqe.
+apply: measurable_fun_ifT => //=; first exact: measurable_fun_eqe.
+apply/measurable_EFinP => //=.
+exact: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)).
+Qed.
 
 Section measurable_comparison.
 Context d (T : measurableType d) (R : realType).
@@ -644,7 +702,7 @@ Lemma measurable_fun_le D f g :
   measurable (D `&` [set x | f x <= g x]).
 Proof.
 move=> mD mf mg; under eq_set => x do rewrite -lee_fin.
-by apply: emeasurable_fun_le => //; exact: measurableT_comp.
+by apply: measurable_lee => //; exact: measurableT_comp.
 Qed.
 
 End measurable_comparison.

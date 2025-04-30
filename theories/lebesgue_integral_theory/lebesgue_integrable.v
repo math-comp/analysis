@@ -7,8 +7,8 @@ From mathcomp Require Import functions cardinality reals fsbigop.
 From mathcomp Require Import interval_inference topology ereal tvs normedtype.
 From mathcomp Require Import sequences real_interval function_spaces esum.
 From mathcomp Require Import measure lebesgue_measure numfun realfun.
-From mathcomp Require Import simple_functions lebesgue_integral_definition.
-From mathcomp Require Import lebesgue_integral_approximation.
+From mathcomp Require Import simple_functions measurable_fun_approximation.
+From mathcomp Require Import lebesgue_integral_definition.
 From mathcomp Require Import lebesgue_integral_monotone_convergence.
 From mathcomp Require Import lebesgue_integral_nonneg.
 
@@ -982,7 +982,7 @@ move=> itf itg fg; pose E j := D `&` [set x | f x - g x >= j.+1%:R^-1%:E].
 have msf := measurable_int _ itf.
 have msg := measurable_int _ itg.
 have mE j : measurable (E j).
-  rewrite /E; apply: emeasurable_fun_le => //.
+  rewrite /E; apply: measurable_lee => //.
   by apply/(emeasurable_funD msf)/measurableT_comp => //; case: mg.
 have muE j : mu (E j) = 0.
   apply/eqP; rewrite -measure_le0.
@@ -1031,12 +1031,9 @@ have mufg : mu (D `&` [set x | f x < g x]) = 0.
 have h : ~` [set x | D x -> f x = g x] = D `&` [set x | f x != g x].
   apply/seteqP; split => [x/= /not_implyP[? /eqP]//|x/= [Dx fgx]].
   by apply/not_implyP; split => //; exact/eqP.
-apply/negligibleP.
-  by rewrite h; apply: emeasurable_fun_neq.
-rewrite h set_neq_lt setIUr measureU//.
+apply/negligibleP; first by rewrite h; apply: measurable_neqe.
+rewrite h set_neq_lt setIUr measureU//; [|exact: measurable_lte..|].
 - by rewrite [X in X + _]mufg add0e [LHS]mugf.
-- exact: emeasurable_fun_lt.
-- exact: emeasurable_fun_lt.
 - apply/seteqP; split => [x [[Dx/= + [_]]]|//].
   by move=> /lt_trans => /[apply]; rewrite ltxx.
 Qed.

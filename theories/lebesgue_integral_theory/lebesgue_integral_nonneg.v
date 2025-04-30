@@ -7,8 +7,8 @@ From mathcomp Require Import functions cardinality reals fsbigop.
 From mathcomp Require Import interval_inference topology ereal tvs normedtype.
 From mathcomp Require Import sequences real_interval function_spaces esum.
 From mathcomp Require Import measure lebesgue_measure numfun realfun.
-From mathcomp Require Import simple_functions lebesgue_integral_definition.
-From mathcomp Require Import lebesgue_integral_approximation.
+From mathcomp Require Import simple_functions measurable_fun_approximation.
+From mathcomp Require Import lebesgue_integral_definition.
 From mathcomp Require Import lebesgue_integral_monotone_convergence.
 
 (**md**************************************************************************)
@@ -138,7 +138,7 @@ rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
 - by move=> x m n mn; rewrite /kg ler_pM//; exact/lefP/nd_nnsfun_approx.
 - move=> x.
   rewrite [X in X @ \oo --> _](_ : _ = (fun n => k%:E * (g n x)%:E)) ?funeqE//.
-  exact/cvgeMl/cvg_nnsfun_approx.
+  exact/cvgeZl/cvg_nnsfun_approx.
 Qed.
 
 End ge0_integralZl_EFin.

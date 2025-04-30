@@ -1,7 +1,7 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Export simple_functions.
+From mathcomp Require Export measurable_fun_approximation.
 From mathcomp Require Export lebesgue_integral_definition.
-From mathcomp Require Export lebesgue_integral_approximation.
 From mathcomp Require Export lebesgue_integral_monotone_convergence.
 From mathcomp Require Export lebesgue_integral_nonneg.
 From mathcomp Require Export lebesgue_integrable.

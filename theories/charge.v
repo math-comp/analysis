@@ -1405,12 +1405,12 @@ Lemma measurable_is_max_approxRN m j : measurable (E m j).
 Proof.
 rewrite is_max_approxRNE; apply: measurableI => /=.
   rewrite -[X in measurable X]setTI.
-  by apply: emeasurable_fun_eq => //; [exact: measurable_max_approxRN_seq|
-                                       exact: measurable_approxRN_seq].
+  by apply: measurable_eqe => //; [exact: measurable_max_approxRN_seq|
+                                   exact: measurable_approxRN_seq].
 rewrite [T in measurable T](_ : _ =
   \bigcap_(k in `I_j) [set x | g_ k x < g_ j x])//.
 apply: bigcap_measurableType => k _.
-by rewrite -[X in measurable X]setTI; apply: emeasurable_fun_lt => //;
+by rewrite -[X in measurable X]setTI; apply: measurable_lte => //;
   exact: measurable_approxRN_seq.
 Qed.
 

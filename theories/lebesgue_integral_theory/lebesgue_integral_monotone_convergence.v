@@ -7,8 +7,8 @@ From mathcomp Require Import functions cardinality reals fsbigop.
 From mathcomp Require Import interval_inference topology ereal tvs normedtype.
 From mathcomp Require Import sequences real_interval function_spaces esum.
 From mathcomp Require Import measure lebesgue_measure numfun realfun.
-From mathcomp Require Import simple_functions lebesgue_integral_definition.
-From mathcomp Require Import lebesgue_integral_approximation.
+From mathcomp Require Import simple_functions measurable_fun_approximation.
+From mathcomp Require Import lebesgue_integral_definition.
 
 (**md**************************************************************************)
 (* # Monotone convergence theorem for the Lebesgue Integral                   *)
