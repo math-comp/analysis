@@ -70,7 +70,7 @@ Lemma integrable_locally f (A : set R) : measurable A ->
 Proof.
 move=> mA intf; split.
 - move/integrableP : intf => [mf _].
-  by apply/(measurable_restrictT _ _).1 => //; exact/EFin_measurable_fun.
+  by apply/(measurable_restrictT _ _).1 => //; exact/measurable_EFinP.
 - exact: openT.
 - move=> K _ cK.
   move/integrableP : intf => [mf].
@@ -78,7 +78,7 @@ move=> mA intf; split.
   under eq_integral do rewrite restrict_EFin restrict_normr.
   apply: le_lt_trans.
   apply: ge0_subset_integral => //=; first exact: compact_measurable.
-  apply/EFin_measurable_fun/measurableT_comp/EFin_measurable_fun => //=.
+  apply/measurable_EFinP/measurableT_comp/measurable_EFinP => //=.
   move/(measurable_restrictT _ _).1 : mf => /=.
   by rewrite restrict_EFin; exact.
 Qed.

@@ -99,7 +99,7 @@ theories/numfun.v
 
 theories/lebesgue_integral_theory/simple_functions.v
 theories/lebesgue_integral_theory/lebesgue_integral_definition.v
-theories/lebesgue_integral_theory/lebesgue_integral_approximation.v
+theories/lebesgue_integral_theory/measurable_fun_approximation.v
 theories/lebesgue_integral_theory/lebesgue_integral_monotone_convergence.v
 theories/lebesgue_integral_theory/lebesgue_integral_nonneg.v
 theories/lebesgue_integral_theory/lebesgue_integrable.v
