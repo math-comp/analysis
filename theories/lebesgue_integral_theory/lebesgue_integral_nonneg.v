@@ -138,7 +138,7 @@ rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
 - by move=> x m n mn; rewrite /kg ler_pM//; exact/lefP/nd_nnsfun_approx.
 - move=> x.
   rewrite [X in X @ \oo --> _](_ : _ = (fun n => k%:E * (g n x)%:E)) ?funeqE//.
-  exact/cvgeMl/cvg_nnsfun_approx.
+  exact/cvgeZl/cvg_nnsfun_approx.
 Qed.
 
 End ge0_integralZl_EFin.
