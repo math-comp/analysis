@@ -109,7 +109,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Obligation Tactic := idtac.
+Local Obligation Tactic := idtac.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope classical_set_scope.
@@ -152,13 +152,13 @@ HB.instance Definition _ (U : Type) (T : U -> uniformType) :=
   Uniform.copy (forall x : U, T x) (prod_topology T).
 
 HB.instance Definition _ (U T : topologicalType) :=
-  Topological.copy 
-    (continuousType U T) 
+  Topological.copy
+    (continuousType U T)
     (weak_topology (id : continuousType U T -> (U -> T))).
 
 HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
-  Uniform.copy 
-    (continuousType U T) 
+  Uniform.copy
+    (continuousType U T)
     (weak_topology (id : continuousType U T -> (U -> T))).
 
 End ArrowAsProduct.
@@ -222,9 +222,9 @@ Lemma tychonoff (I : eqType) (T : I -> topologicalType)
   (forall i, compact (A i)) ->
   compact [set f : forall i, T i | forall i, A i (f i)].
 Proof.
-case: (pselect ([set f : forall i, T i | forall i, A i (f i)] == set0)). 
-  move/eqP => -> _; exact: compact0.
-case/negP/set0P=> a0 Aa0 Aco; rewrite compact_ultra => F FU FA.
+have [-> _|] := eqVneq [set f : forall i, T i | forall i, A i (f i)] set0.
+  exact: compact0.
+case/set0P => a0 Aa0 Aco; rewrite compact_ultra => F FU FA.
 set subst_coord := fun (i : I) (pi : T i) (f : forall x : I, T x) (j : I) =>
   if eqP is ReflectT e then ecast i (T i) (esym e) pi else f j.
 have subst_coordT i pi f : subst_coord i pi f i = pi.
@@ -244,12 +244,12 @@ have pFA i : pF i (A i).
   move=> Aipi; have [f Af] := filter_ex FA.
   exists (subst_coord i pi f); last exact: subst_coordT.
   move=> j; have [<-{j}|] := eqVneq i j; first by rewrite subst_coordT.
-  by move=> /subst_coordN ->; apply: Af.
+  by move=> /subst_coordN ->; exact: Af.
 have cvpFA i : A i `&` [set p | pF i --> p] !=set0.
   by rewrite -ultra_cvg_clusterE; apply: Aco.
 exists (fun i => xget (a0 i) (A i `&` [set p | pF i --> p])).
 split=> [i|]; first by have /(xgetPex (a0 i)) [] := cvpFA i.
-apply/cvg_sup => i; apply/cvg_image=> //. 
+apply/cvg_sup => i; apply/cvg_image=> //.
 by have /(xgetPex (a0 i)) [] := cvpFA i.
 Qed.
 
@@ -423,11 +423,9 @@ Qed.
 
 End product_embeddings.
 
-Global Instance prod_topology_filter (U : Type) (T : U -> ptopologicalType) (f : prod_topology T) :
-  ProperFilter (nbhs f).
-Proof.
-exact: nbhs_pfilter.
-Qed.
+Global Instance prod_topology_filter (U : Type) (T : U -> ptopologicalType)
+  (f : prod_topology T) : ProperFilter (nbhs f).
+Proof. exact: nbhs_pfilter. Qed.
 
 End product_spaces.
 
@@ -514,8 +512,11 @@ Unshelve. all: by end_near. Qed.
 HB.instance Definition _ := Uniform_isComplete.Build
   (arrow_uniform_type T U) fun_complete.
 
-HB.instance Definition _ (R : numFieldType) :=
-  Uniform_isComplete.Build (arrow_uniform_type T U) cauchy_cvg.
+(*HB.instance Definition _ (R : numFieldType) :=
+  Uniform_isComplete.Build (arrow_uniform_type T U) cauchy_cvg.*)
+(* NB: commented out because
+Warning: HB: no new instance is generated [HB.no-new-instance,HB,elpi,default]
+*)
 
 End fun_Complete.
 
@@ -554,13 +555,13 @@ HB.instance Definition _ (U : choiceType) (R : numFieldType)
   PseudoMetric.copy (U -> V) (arrow_uniform_type U V).
 
 HB.instance Definition _ (U : topologicalType) (T : uniformType) :=
-  Uniform.copy 
-    (continuousType U T) 
+  Uniform.copy
+    (continuousType U T)
     (weak_topology (id : continuousType U T -> (U -> T))).
 
-HB.instance Definition _ (U : topologicalType) (R : realType) 
+HB.instance Definition _ (U : topologicalType) (R : realType)
      (T : pseudoMetricType R) :=
-  PseudoMetric.on 
+  PseudoMetric.on
     (weak_topology (id : continuousType U T -> (U -> T))).
 
 End ArrowAsUniformType.
