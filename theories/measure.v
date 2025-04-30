@@ -5421,21 +5421,3 @@ Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
 Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
 
 End absolute_continuity_lemmas.
-
-Section essential_supremum.
-Context d {T : semiRingOfSetsType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Implicit Types f : T -> R.
-
-Definition ess_sup f :=
-  ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
-
-Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
-  0 <= ess_sup f.
-Proof.
-move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP rf <-]; rewrite leNgt.
-apply/negP => r0; apply/negP : rf; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
-by apply/seteqP; split => // x _ /=; rewrite in_itv/= (lt_le_trans _ (f0 x)).
-Qed.
-
-End essential_supremum.
