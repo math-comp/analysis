@@ -42,16 +42,6 @@
 
 ### Generalized
 
-- in `constructive_ereal.v`:
-  + lemma `EFin_natmul`
-
-- in `lebesgue_integral.v`
-  + lemmas `measurable_funP`, `ge0_integral_pushforward`,
-    `integrable_pushforward`, `integral_pushforward`
-
-- in `real_interval.v`:
-  + lemmas `bigcup_itvT`, `itv_bndy_bigcup_BRight`, `itv_bndy_bigcup_BLeft_shift`
-
 - in `normedtype.v`:
   + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
 
