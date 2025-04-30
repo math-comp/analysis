@@ -15,6 +15,28 @@
 
 - new file `internal_Eqdep_dec.v` (don't use, internal, to be removed)
 
+- in `measure.v`:
+  + lemmas `mnormalize_id`, `measurable_fun_eqP`
+
+- in `ftc.v`:
+  + lemma `integrable_locally`
+
+- in `constructive_ereal.v`:
+  + lemma `EFin_bigmax`
+
+- in `mathcomp_extra.v`:
+  + lemmas `inr_inj`, `inl_inj`
+
+- in `classical_sets.v`:
+  + lemmas `in_set1`, `inr_in_set_inr`, `inl_in_set_inr`, `mem_image`, `mem_range`, `image_f`
+  + lemmas `inr_in_set_inl`, `inl_in_set_inl`
+
+- in `lebesgue_integral_approximation.v`:
+  + lemma `measurable_prod`
+
+- in `measure.v`:
+  + lemma `preimage_set_system_compS`
+
 - in `numfun.v`:
   + defintions `funrpos`, `funrneg` with notations `^\+` and `^\-`
   + lemmas `funrpos_ge0`, `funrneg_ge0`, `funrposN`, `funrnegN`, `ge0_funrposE`,
@@ -60,28 +82,6 @@
 
 - file `lebesgue_integral.v`:
   + lemma `measurable_fun_le`
-
-- in `trigo.v`:
-  + lemma `integral0oo_atan`
-
-- in `measure.v`:
-  + lemmas `mnormalize_id`, `measurable_fun_eqP`
-
-- in `ftc.v`:
-  + lemma `integrable_locally`
-
-- in `constructive_ereal.v`:
-  + lemma `EFin_bigmax`
-
-- in `mathcomp_extra.v`:
-  + lemmas `inr_inj`, `inl_inj`
-
-- in `classical_sets.v`:
-  + lemmas `in_set1`, `inr_in_set_inr`, `inl_in_set_inr`, `mem_image`, `mem_range`, `image_f`
-  + lemmas `inr_in_set_inl`, `inl_in_set_inl`
-
-- in `lebesgue_integral_approximation.v`:
-  + lemma `measurable_prod`
 
 ### Changed
 
