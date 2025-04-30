@@ -60,6 +60,8 @@
 - in `unstable.v`:
   + lemmas `eq_exists2l`, `eq_exists2r`
   + module `ProperNotations` with notations `++>`, `==>`, `~~>`
+- in `functions.v`:
+  + lemma `natmulfctE`
 
 ### Changed
 
