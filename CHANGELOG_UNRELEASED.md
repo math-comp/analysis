@@ -26,6 +26,16 @@
 - in `lebesgue_integral_approximation.v`:
   + lemma `measurable_prod`
 
+- in `boolp.v`:
+  + lemmas `orW`, `or3W`, `or4W`
+  
+- in `classical_sets.v`:
+  + lemmas `set_cst`, `image_nonempty`
+
+- in `unstable.v`:
+  + lemmas `eq_exists2l`, `eq_exists2r`
+  + module `ProperNotations` with notations `++>`, `==>`, `~~>`
+
 ### Changed
 
 - in `pi_irrational`:
