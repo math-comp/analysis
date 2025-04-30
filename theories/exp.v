@@ -1059,8 +1059,7 @@ Qed.
 Canonical powR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) p :=
   Itv.mk (num_spec_powR x p).
 
-Lemma powR_cvg0 (x : R) : 0 < x ->
-  a `^ x @[a --> 0^'+] --> 0.
+Lemma powR_cvg0 (x : R) : 0 < x -> a `^ x @[a --> 0^'+] --> 0.
 Proof.
 move=> x0; apply: (@cvg_trans _ ((expR (ln a * x)) @[a --> 0^'+])).
   by apply: near_eq_cvg; near=> a; rewrite /powR gt_eqF 1?mulrC.
