@@ -2672,6 +2672,10 @@ Lemma sumrfctE (T : Type) (K : nmodType) (s : seq (T -> K)) :
   \sum_(f <- s) f = (fun x => \sum_(f <- s) f x).
 Proof. by apply/funext => x; elim/big_ind2 : _ => // _ a _ b <- <-. Qed.
 
+Lemma natmulfctE (U : Type) (K : nmodType) (f : U -> K) n :
+  f *+ n = (fun x => f x *+ n).
+Proof. by elim: n => [//|n h]; rewrite funeqE=> ?; rewrite !mulrSr h. Qed.
+
 Lemma opprfctE (T : Type) (K : zmodType) (f : T -> K) : - f = (fun x => - f x).
 Proof. by []. Qed.
 
