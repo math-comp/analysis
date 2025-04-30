@@ -505,19 +505,20 @@ rewrite pmulrn ceil_le_int// [ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
-Lemma gt0_cvgMlNy {R : realFieldType} (M : R) (f : R -> R) : (0 < M)%R ->
-  (f r) @[r --> -oo] --> -oo -> (f r * M)%R @[r --> -oo] --> -oo.
+Lemma gt0_cvgMlNy {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
+  (f : R -> R) :
+  (0 < M)%R -> (f r) @[r --> F] --> -oo -> (f r * M)%R @[r --> F] --> -oo.
 Proof.
 move=> M0 /cvgrNyPle fy; apply/cvgrNyPle => A.
 by apply: filterS (fy (A / M)) => x; rewrite ler_pdivlMr.
 Qed.
 
-Lemma gt0_cvgMly {R : realFieldType} (M : R) (f : R -> R) : (0 < M)%R ->
-  f r @[r --> +oo] --> +oo -> (f r * M)%R @[r --> +oo] --> +oo.
+Lemma gt0_cvgMly {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
+  (f : R -> R) :
+  (0 < M)%R -> f r @[r --> F] --> +oo -> (f r * M)%R @[r --> F] --> +oo.
 Proof.
 move=> M0 /cvgryPge fy; apply/cvgryPge => A.
-apply: filterS (fy (A / M)) => x.
-by rewrite ler_pdivrMr.
+by apply: filterS (fy (A / M)) => x; rewrite ler_pdivrMr.
 Qed.
 
 Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)

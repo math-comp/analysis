@@ -790,6 +790,12 @@ by rewrite !lnK// -(@ler_ln) ?posrE ?expR_gt0 ?conv_gt0// expRK.
 Qed.
 Local Close Scope convex_scope.
 
+Lemma lnNy : ln x @[x --> 0^'+] --> -oo.
+Proof.
+apply/cvgrNyPle => y; near=> x; rewrite -ler_expR lnK; last by rewrite posrE.
+by near: x; apply: nbhs_right_le; exact: expR_gt0.
+Unshelve. end_near. Qed.
+
 End Ln.
 
 Section PowR.
@@ -1052,6 +1058,52 @@ Qed.
 
 Canonical powR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) p :=
   Itv.mk (num_spec_powR x p).
+
+Lemma powR_cvg0 (x : R) : 0 < x -> a `^ x @[a --> 0^'+] --> 0.
+Proof.
+move=> x0; apply: (@cvg_trans _ ((expR (ln a * x)) @[a --> 0^'+])).
+  by apply: near_eq_cvg; near=> a; rewrite /powR gt_eqF 1?mulrC.
+apply: (@cvg_comp _ _ _ _ _ _ (@ninfty_nbhs R)).
+  by apply: gt0_cvgMlNy; rewrite ?x0//; exact: lnNy.
+exact/cvgNy_compNP/cvgr_expR.
+Unshelve. end_near. Qed.
+
+Lemma derivable_powR v x : v != 0 ->
+  {in `]0, +oo[, forall a, derivable (powR ^~ x) a v}.
+Proof.
+move=> v0 a; rewrite in_itv/= andbT => a0.
+apply: (@near_eq_derivable _ _ _ (fun a' => expR (x * ln a'))) => //.
+  by near=> b; rewrite /powR gt_eqF//; near: b; exact: lt_nbhsr.
+apply: diff_derivable; apply: differentiable_comp; last exact/derivable1_diffP.
+apply: differentiableM => //; apply/derivable1_diffP.
+by apply: ex_derive; exact: is_derive1_ln.
+Unshelve. end_near. Qed.
+
+Lemma powR_derive1 a : {in `]0, +oo[%R,
+  (powR ^~ a) ^`()%classic =1 (fun x => a * x `^ (a - 1))}.
+Proof.
+move=> x; rewrite in_itv/= andbT => x0.
+rewrite derive1E.
+rewrite (@near_eq_derive _ _ _ _ (fun x => expR (a * ln x)))//; last first.
+  by near=> z; rewrite /powR gt_eqF//; near: z; exact: lt_nbhsr.
+rewrite -derive1E.
+rewrite derive1_comp//=; last first.
+  by apply: derivableM => //; apply: ex_derive; exact: is_derive1_ln.
+rewrite 2!derive1E.
+rewrite deriveM//; last by apply: ex_derive; exact: is_derive1_ln.
+rewrite !derive_val scaler0 addr0.
+have [_ ->] := (is_derive1_ln x0).
+rewrite mulrC powRB; last by rewrite (@gt_eqF _ _ x)//; apply: implybT.
+by rewrite powRr1 ?ltW// mulrA [in RHS]mulrAC /powR gt_eqF.
+Unshelve. end_near. Qed.
+
+Global Instance is_derive1_powR (a x : R) : 0 < x ->
+  is_derive x 1 (powR ^~ a) (a * x `^ (a - 1))%R.
+Proof.
+move=> x_gt0; split.
+  by apply: derivable_powR; rewrite ?in_itv/= ?andbT.
+by rewrite -derive1E powR_derive1// in_itv andbT.
+Qed.
 
 End PowR.
 Notation "a `^ x" := (powR a x) : ring_scope.

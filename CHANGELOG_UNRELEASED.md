@@ -45,6 +45,10 @@
 - in `exp.v`:
   + lemma `poweRE`
 
+- in `exp.v`:
+  + lemmas `lnNy`, `powR_cvg0`, `derivable_powR`, `powR_derive1`
+  + Instance `is_derive1_powR`
+
 ### Changed
 
 - in `pi_irrational`:
@@ -64,6 +68,9 @@
 - file `lebesgue_integral_approximation.v` -> `measurable_fun_approximation.v`
 
 ### Generalized
+
+- in `normedtype.v`:
+  + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
 
 ### Deprecated
 
