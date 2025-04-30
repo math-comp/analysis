@@ -7,6 +7,7 @@ From HB Require Import structures.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
 From mathcomp Require Import reals ereal topology normedtype sequences.
 From mathcomp Require Import esum measure exp numfun lebesgue_measure.
+From mathcomp Require Import measurable_realfun.
 From mathcomp Require Import lebesgue_integral kernel probability.
 From mathcomp Require Import hoelder.
 
@@ -1130,7 +1131,7 @@ move=> XY iX iY.
 transitivity ('E_P[(X^\+ - X^\-) * (Y^\+ - Y^\-)]).
   congr ('E_P[_]).
   apply/funext => /=t.
-  by rewrite [in LHS](funrposneg X)/= [in LHS](funrposneg Y).
+  by rewrite !funrposBneg.
 have ? : P.-integrable [set: T] (EFin \o X^\-%R).
   rewrite -funerneg; apply/integrable_funeneg => //.
   exact/Lfun1_integrable.
@@ -1205,7 +1206,7 @@ transitivity ('E_P[X^\+ - X^\-] * 'E_P[Y^\+ - Y^\-]).
     by rewrite fin_num_adde_defr// expectation_fin_num//; exact/Lfun1_integrable.
     rewrite -expectationB//=; [|exact/Lfun1_integrable..].
     by rewrite -expectationB//; exact/Lfun1_integrable.
-by congr *%E; congr ('E_P[_]); rewrite [RHS]funrposneg.
+by congr *%E; congr ('E_P[_]); rewrite funrposBneg.
 Qed.
 
 Lemma prodE (s : seq nat) (X : {RV P >-> R}^nat) (t : T) :
