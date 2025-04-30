@@ -374,6 +374,19 @@ move /not_near_inftyP => eps_sep; exists (PosNum eps_gt0) => A /=.
 by case: (eps_sep _ (num_real A)) => x ? ?; exists x.
 Unshelve. all: by end_near. Qed.
 
+(* NB: almost the same proof as cvg_ninftyP *)
+Lemma cvge_ninftyP (f : R -> \bar R) (l : \bar R) :
+  f x @[x --> -oo] --> l <->
+    forall u : R^nat, (u n @[n --> \oo] --> -oo) -> f (u n) @[n --> \oo] --> l.
+Proof.
+rewrite cvgNy_compNP cvge_pinftyP/= (@bij_forall R^nat _ -%R)//.
+have u_opp (u : R^nat) :
+    ((- u) n @[n --> \oo] --> +oo) = (u n @[n --> \oo] --> -oo).
+  by rewrite propeqE cvgNry.
+by under eq_forall do
+  (rewrite u_opp; under (eq_cvg _ (nbhs l)) do rewrite opprK).
+Qed.
+
 End cvge_fun_dvg_seq.
 
 Section fun_cvg_realType.
