@@ -51,6 +51,12 @@
 - in `functions.v`:
   + lemma `natmulfctE`
 
+- in `ereal.v`:
+  + lemmas `ereal_infEN`, `ereal_supN`, `ereal_infN`, `ereal_supEN`
+  + lemmas `ereal_supP`, `ereal_infP`, `ereal_sup_gtP`, `ereal_inf_ltP`,
+    `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
+    `ereal_sup_real`, `ereal_inf_real`
+
 ### Changed
 
 - in `pi_irrational`:
@@ -79,11 +85,9 @@
 - in `functions.v`:
   + `fct_sumE`, `addrfctE`, `sumrfctE` (from `zmodType` to `nmodType`)
   + `scalerfctE` (from `pointedType` to `Type`)
-- in `ereal.v`:
-  + lemmas `ereal_infEN`, `ereal_supN`, `ereal_infN`, `ereal_supEN`
-  + lemmas `ereal_supP`, `ereal_infP`, `ereal_sup_gtP`, `ereal_inf_ltP`,
-    `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
-    `ereal_sup_real`, `ereal_inf_real`
+
+- in `measurable_realfun.v`
+  + lemma `measurable_ln`
 
 ### Deprecated
 
@@ -91,6 +95,21 @@
 
 - in `functions.v`:
   + definitions `fct_ringMixin`, `fct_ringMixin` (was only used in an `HB.instance`)
+
+- in `measurable_realfun.v`:
+  + notation `measurable_fun_ln` (deprecated since 0.6.3)
+  + notations `emeasurable_itv_bnd_pinfty`, `emeasurable_itv_ninfty_bnd` (deprecated since 0.6.2)
+  + notation `measurable_fun_lim_sup` (deprecated since 0.6.6)
+  + notation `measurable_fun_max` (deprecated since 0.6.3)
+  + notation `measurable_fun_er_map` (deprecated since 0.6.3)
+  + notations `emeasurable_funN`, `emeasurable_fun_max`, `emeasurable_fun_min`,
+    `emeasurable_fun_funepos`, `emeasurable_fun_funeneg` (deprecated since 0.6.3)
+  + notation `measurable_fun_lim_esup` (deprecated since 0.6.6)
+
+- in `measure.v`:
+  + notation `measurable_fun_ext` (deprecated since 0.6.2)
+  + notations `measurable_fun_id`, `measurable_fun_cst`, `measurable_fun_comp` (deprecated since 0.6.3)
+  + notation `measurable_funT_comp` (deprecated since 0.6.3)
 
 ### Infrastructure
 
