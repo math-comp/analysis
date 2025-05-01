@@ -4239,16 +4239,15 @@ Proof. by apply: filterS => x /= /[apply] ->; rewrite mulr1. Qed.
 Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
 Proof. by apply: filterS => x /[apply] /= ->. Qed.
 
-Lemma ae_foralln (P : nat -> T -> Prop) : (forall n, \forall x \ae mu, P n x) -> \forall x \ae mu, forall n, P n x.
+Lemma ae_foralln (P : nat -> T -> Prop) :
+  (forall n, \forall x \ae mu, P n x) -> \forall x \ae mu, forall n, P n x.
 Proof.
 move=> /(_ _)/cid - /all_sig[A /all_and3[Ameas muA0 NPA]].
 have seqDUAmeas := seqDU_measurable Ameas.
 exists (\bigcup_n A n); split => //.
 - exact/bigcup_measurable.
-- rewrite seqDU_bigcup_eq measure_bigcup//.
-  rewrite eseries0// => i _ _.
-  rewrite (@subset_measure0 _ _ _ _ _ (A i))//=.
-  exact: subset_seqDU.
+- rewrite seqDU_bigcup_eq measure_bigcup// eseries0// => i _ _.
+  by rewrite (@subset_measure0 _ _ _ _ _ (A i))//=; apply: subset_seqDU.
 - by move=> x /=; rewrite -existsNP => -[n NPnx]; exists n => //; apply: NPA.
 Qed.
 
