@@ -1540,7 +1540,7 @@ Lemma outer_measure_open_itv_cover A : (l^* A)%mu =
   ereal_inf [set \sum_(k <oo) l (F k) | F in open_itv_cover A].
 Proof.
 apply/eqP; rewrite eq_le; apply/andP; split.
-- apply: le_ereal_inf => _ /= [F [Fitv AF <-]].
+  apply: le_ereal_inf => _ /= [F [Fitv AF <-]].
   exists (fun i => `](sval (cid (Fitv i))).1, (sval (cid (Fitv i))).2]%classic).
   + split=> [i|].
     * have [?|?] := ltP (sval (cid (Fitv i))).1 (sval (cid (Fitv i))).2.
@@ -1552,48 +1552,48 @@ apply/eqP; rewrite eq_le; apply/andP; split.
   + apply: eq_eseriesr => k _; rewrite /l wlength_itv/=.
     case: (Fitv k) => /= -[a b]/= Fkab.
     by case: cid => /= -[x1 x2] ->; rewrite wlength_itv.
-- have [/lb_ereal_inf_adherent lA|] :=
-      boolP ((l^* A)%mu \is a fin_num); last first.
-    rewrite ge0_fin_numE ?outer_measure_ge0// -leNgt leye_eq => /eqP ->.
-    exact: leey.
-  apply/lee_addgt0Pr => /= e e0.
-  have : (0 < e / 2)%R by rewrite divr_gt0.
-  move=> /lA[_ [/= F [mF AF]] <-]; rewrite -/((l^* A)%mu) => lFe.
-  have Fcover n : exists2 B, F n `<=` B &
-      is_open_itv B /\ l B <= l (F n) + (e / 2 ^+ n.+2)%:E.
-    have [[a b] _ /= abFn] := mF n.
-    exists `]a, b + e / 2^+n.+2[%classic.
-      rewrite -abFn => x/= /[!in_itv] /andP[->/=] /le_lt_trans; apply.
-      by rewrite ltrDl divr_gt0.
-    split; first by exists (a, b + e / 2^+n.+2).
-    have [ab|ba] := ltP a b.
-      rewrite /l -abFn !wlength_itv//= !lte_fin ifT.
-        by rewrite ab -!EFinD lee_fin addrAC.
-      by rewrite ltr_wpDr// divr_ge0// ltW.
-    rewrite -abFn [in leRHS]set_itv_ge ?bnd_simp -?leNgt// /l wlength0 add0r.
-    rewrite wlength_itv//=; case: ifPn => [abe|_]; last first.
-      by rewrite lee_fin divr_ge0// ltW.
-    by rewrite -EFinD addrAC lee_fin -[leRHS]add0r lerD2r subr_le0.
-  pose G := fun n => sval (cid2 (Fcover n)).
-  have FG n : F n `<=` G n by rewrite /G; case: cid2.
-  have Gitv n : is_open_itv (G n) by rewrite /G; case: cid2 => ? ? [].
-  have lGFe n : l (G n) <= l (F n) + (e / 2 ^+ n.+2)%:E.
-    by rewrite /G; case: cid2 => ? ? [].
-  have AG : A `<=` \bigcup_k G k.
-    by apply: (subset_trans AF) => [/= r [n _ /FG Gnr]]; exists n.
-  apply: (@le_trans _ _ (\sum_(0 <= k <oo) (l (F k) + (e / 2 ^+ k.+2)%:E))).
-    apply: (@le_trans _ _ (\sum_(0 <= k <oo) l (G k))).
-      by apply: ereal_inf_lbound => /=; exists G.
-    exact: lee_nneseries.
-  rewrite nneseriesD//; last first.
-    by move=> i _; rewrite lee_fin// divr_ge0// ltW.
-  rewrite [in leRHS](splitr e) EFinD addeA leeD//; first exact/ltW.
-  have := @cvg_geometric_eseries_half R e 1; rewrite expr1.
-  rewrite [X in eseries X](_ : _ = (fun k => (e / (2 ^+ (k.+2))%:R)%:E)); last first.
-    by apply/funext => n; rewrite addn2 natrX.
-  move/cvg_lim => <-//; apply: lee_nneseries => //.
-  - by move=> n _; rewrite lee_fin divr_ge0// ltW.
-  - by move=> n _; rewrite lee_fin -natrX.
+have [/lb_ereal_inf_adherent lA|] :=
+    boolP ((l^* A)%mu \is a fin_num); last first.
+  rewrite ge0_fin_numE ?outer_measure_ge0// -leNgt leye_eq => /eqP ->.
+  exact: leey.
+apply/lee_addgt0Pr => /= e e0.
+have : (0 < e / 2)%R by rewrite divr_gt0.
+move=> /lA[_ [/= F [mF AF]] <-]; rewrite -/((l^* A)%mu) => lFe.
+have Fcover n : exists2 B, F n `<=` B &
+    is_open_itv B /\ l B <= l (F n) + (e / 2 ^+ n.+2)%:E.
+  have [[a b] _ /= abFn] := mF n.
+  exists `]a, b + e / 2^+n.+2[%classic.
+    rewrite -abFn => x/= /[!in_itv] /andP[->/=] /le_lt_trans; apply.
+    by rewrite ltrDl divr_gt0.
+  split; first by exists (a, b + e / 2^+n.+2).
+  have [ab|ba] := ltP a b.
+    rewrite /l -abFn !wlength_itv//= !lte_fin ifT.
+      by rewrite ab -!EFinD lee_fin addrAC.
+    by rewrite ltr_wpDr// divr_ge0// ltW.
+  rewrite -abFn [in leRHS]set_itv_ge ?bnd_simp -?leNgt// /l wlength0 add0r.
+  rewrite wlength_itv//=; case: ifPn => [abe|_]; last first.
+    by rewrite lee_fin divr_ge0// ltW.
+  by rewrite -EFinD addrAC lee_fin -[leRHS]add0r lerD2r subr_le0.
+pose G := fun n => sval (cid2 (Fcover n)).
+have FG n : F n `<=` G n by rewrite /G; case: cid2.
+have Gitv n : is_open_itv (G n) by rewrite /G; case: cid2 => ? ? [].
+have lGFe n : l (G n) <= l (F n) + (e / 2 ^+ n.+2)%:E.
+  by rewrite /G; case: cid2 => ? ? [].
+have AG : A `<=` \bigcup_k G k.
+  by apply: (subset_trans AF) => [/= r [n _ /FG Gnr]]; exists n.
+apply: (@le_trans _ _ (\sum_(0 <= k <oo) (l (F k) + (e / 2 ^+ k.+2)%:E))).
+  apply: (@le_trans _ _ (\sum_(0 <= k <oo) l (G k))).
+    by apply: ereal_inf_lbound => /=; exists G.
+  exact: lee_nneseries.
+rewrite nneseriesD//; last first.
+  by move=> i _; rewrite lee_fin// divr_ge0// ltW.
+rewrite [in leRHS](splitr e) EFinD addeA leeD//; first exact/ltW.
+have := @cvg_geometric_eseries_half R e 1; rewrite expr1.
+rewrite [X in eseries X](_ : _ = (fun k => (e / (2 ^+ (k.+2))%:R)%:E)); last first.
+  by apply/funext => n; rewrite addn2 natrX.
+move/cvg_lim => <-//; apply: lee_nneseries => //.
+- by move=> n _; rewrite lee_fin divr_ge0// ltW.
+- by move=> n _; rewrite lee_fin -natrX.
 Qed.
 
 End open_itv_cover.
@@ -1601,7 +1601,6 @@ End open_itv_cover.
 Section egorov.
 Context d {R : realType} {T : measurableType d}.
 Context (mu : {measure set T -> \bar R}).
-
 Local Open Scope ereal_scope.
 
 (*TODO : this generalizes to any metric space with a borel measure*)

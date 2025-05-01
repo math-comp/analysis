@@ -71,6 +71,13 @@
 - in `constructive_ereal.v`:
   + lemmas `expe_ge0`, `expe_eq0`, `expe_gt0`
 
+- in `ereal.v`:
+  + lemmas `ereal_sup_cst`, `ereal_inf_cst`,
+    `ereal_sup_pZl`, `ereal_supZl`, `ereal_inf_pZl`, `ereal_infZl`
+
+- in `sequences.v`:
+  + lemmas `ereal_inf_seq`, `ereal_sup_seq`
+
 ### Changed
 
 - in `pi_irrational`:
