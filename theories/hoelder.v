@@ -118,7 +118,7 @@ rewrite unlock /Lnorm NfE; case: p => /= [r|//|//].
 by under eq_integral => x _ do rewrite abseN.
 Qed.
 
-Lemma Lnorm_cst1 r : ('N_r%:E[cst 1] = (mu setT)`^(r^-1)).
+Lemma Lnorm_cst1 r : 'N_r%:E[cst 1] = mu [set: T] `^ (r^-1).
 Proof.
 rewrite unlock /Lnorm; under eq_integral do rewrite /= normr1 powR1.
 by rewrite integral_cst// mul1e.
@@ -143,8 +143,7 @@ case: p => [r||//].
   have {H} : \int[mu]_x `| `|f x| `^ r | = 0%R.
     under eq_integral.
       move=> x _.
-      rewrite gee0_abs; last first.
-        by rewrite poweR_ge0.
+      rewrite gee0_abs; last by rewrite poweR_ge0.
       over.
     exact: H.
   have mp : measurable_fun [set: T] (fun x : T => `|f x| `^ r).
@@ -157,29 +156,15 @@ case: p => [r||//].
   by rewrite abse_eq0 => /eqP.
 - case: ifPn => [mu0 _|].
     move=> /abs_sup_eq0_ae_eq/=.
-    apply: filterS => x/= /(_ I) /eqP + _.
-    by move=> /eqP.
+    by apply: filterS => x/= /(_ I) /eqP + _ => /eqP.
   rewrite ltNge => /negbNE mu0 _ _.
   suffices mueq0: mu setT = 0 by exact: ae_eq0.
   by apply/eqP; rewrite eq_le mu0/=.
 Qed.
 
-End Lnorm_properties.
-
-Section Lnorm_properties.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Local Open Scope ereal_scope.
-Implicit Types (p : \bar R) (f g : T -> R) (r : R).
-
-Local Notation "'N_ p [ f ]" := (Lnorm mu p (EFin \o f)).
-
 Lemma powR_Lnorm f r : r != 0%R ->
-  'N_r%:E[f] `^ r = \int[mu]_x (`| f x | `^ r)%:E.
+  'N_r%:E[f] `^ r = \int[mu]_x `| f x | `^ r.
 Proof. by move=> r0; rewrite poweR_Lnorm. Qed.
-
-Lemma oppr_Lnorm f p : 'N_p[\- f]%R = 'N_p[f].
-Proof. by rewrite -[RHS]oppe_Lnorm. Qed.
 
 End Lnorm_properties.
 
@@ -523,7 +508,9 @@ under eq_integral do rewrite EFinD.
 rewrite ge0_integralD//; last 2 first.
   - exact/measurable_EFinP/measurableT_comp_powR/measurableT_comp.
   - exact/measurable_EFinP/measurableT_comp_powR/measurableT_comp.
-by rewrite lte_add_pinfty// -powR_Lnorm ?(gt_eqF (lt_trans _ p1))// poweR_lty.
+by rewrite lte_add_pinfty//;
+  under eq_integral do rewrite -poweR_EFin -abse_EFin;
+  rewrite -powR_Lnorm// poweR_lty.
 Qed.
 
 Lemma minkowski_EFin f g p :
@@ -553,7 +540,10 @@ suff : 'N_p%:E[(f \+ g)%R] `^ p <= ('N_p%:E[f] + 'N_p%:E[g]) *
   by rewrite fineK// 1?muleC// fin_num_poweR// ge0_fin_numE ?Lnorm_ge0.
 have p0 : (0 < p)%R by exact: (lt_trans _ p1).
 rewrite powR_Lnorm ?gt_eqF//.
-under eq_integral => x _ do rewrite -mulr_powRB1//.
+under eq_integral.
+  move=> x _.
+  rewrite abse_EFin poweR_EFin -mulr_powRB1//.
+  over.
 apply: (@le_trans _ _
     (\int[mu]_x ((`|f x| + `|g x|) * `|f x + g x| `^ (p - 1))%:E)).
   rewrite ge0_le_integral//.
@@ -575,7 +565,9 @@ rewrite ge0_integralD//; last 2 first.
 rewrite [leRHS](_ : _ = ('N_p%:E[f] + 'N_p%:E[g]) *
     (\int[mu]_x (`|f x + g x| `^ p)%:E) `^ `1-(p^-1)).
   rewrite muleDl; last 2 first.
-    - rewrite fin_num_poweR// -powR_Lnorm ?gt_eqF// fin_num_poweR//.
+    - rewrite fin_num_poweR//.
+      under eq_integral do rewrite -poweR_EFin -abse_EFin.
+      rewrite -powR_Lnorm ?gt_eqF// fin_num_poweR//.
       by rewrite ge0_fin_numE ?Lnorm_ge0.
     - by rewrite ge0_adde_def// inE Lnorm_ge0.
   apply: leeD.
@@ -613,7 +605,8 @@ rewrite poweRD; last by rewrite poweRD_defE gt_eqF ?implyFb// subr_gt0 invf_lt1.
 rewrite poweRe1; last by apply: integral_ge0 => x _; rewrite lee_fin powR_ge0.
 congr (_ * _); rewrite poweRN.
 - by rewrite unlock fine_poweR.
-- by rewrite -powR_Lnorm ?gt_eqF// fin_num_poweR// ge0_fin_numE ?Lnorm_ge0.
+- under eq_integral do rewrite -poweR_EFin -abse_EFin.
+  by rewrite -powR_Lnorm ?gt_eqF// fin_num_poweR// ge0_fin_numE ?Lnorm_ge0.
 Qed.
 
 Lemma lerB_DLnorm f g p :
@@ -625,7 +618,8 @@ rewrite (_ : f = ((f \+ g) \+ (-%R \o g))%R); last first.
   by apply: funext => x /=; rewrite -addrA subrr addr0.
 rewrite [X in _ <= 'N__[X] + _](_ : _ = (f \+ g)%R); last first.
   by apply: funext => x /=; rewrite -addrA [X in _ + _ + X]addrC subrr addr0.
-rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last by rewrite oppr_Lnorm.
+rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last first.
+  by rewrite (_ : _ \o _ = \- (EFin \o g))// oppe_Lnorm.
 by apply: minkowski_EFin => //;
   [exact: measurable_funD|exact: measurableT_comp].
 Qed.
@@ -812,7 +806,8 @@ Proof. exact: valP. Qed.
 Lemma lfun_oppr_closed : oppr_closed lfun.
 Proof.
 move=> f /andP[mf /[!inE] lf].
-by rewrite rpredN/= mf/= inE/= /finite_norm oppr_Lnorm.
+rewrite rpredN/= mf/= inE/= /finite_norm.
+by rewrite (_ : _ \o _ = \- (EFin \o f))%E// oppe_Lnorm.
 Qed.
 
 HB.instance Definition _ := GRing.isOppClosed.Build _ lfun
@@ -899,7 +894,7 @@ Lemma ler_LnormD (f g : ty) : nm (f + g) <= nm f + nm g.
 Proof. by rewrite -lee_fin EFinD !finite_norm_fine eminkowski. Qed.
 
 Lemma LnormrN (f : ty) : nm (\-f) = nm f.
-Proof. by rewrite /nm oppr_Lnorm. Qed.
+Proof. by rewrite /nm (_ : _ \o _ = \- (EFin \o f))%E// oppe_Lnorm. Qed.
 
 Lemma Lnormr_natmul (f : ty) k : nm (f *+ k) = nm f *+ k.
 Proof.

@@ -75,7 +75,7 @@
   + lemma `ae_eq_mul2l`
 
 - in `hoelder.v`
-  + lemmas `Lnorm0`, `oppr_Lnorm`, `Lnorm_cst1`
+  + lemmas `Lnorm0`, `Lnorm_cst1`
   + definition `conjugate`
   + lemma `conjugateE`
   + lemmas `lerB_DLnorm`, `lerB_LnormD`, `eminkowski`
@@ -111,11 +111,6 @@
 
 - in `simple_functions.v`:
   + lemma `mfunMn`
-
-- in `measurable_realfun.v`:
-  + lemmas `ereal_inf_seq`, `ereal_sup_seq`,
-    `ereal_sup_cst`, `ereal_inf_cst`, `ereal_sup_pZl`,
-    `ereal_supZl`, `ereal_inf_pZl`, `ereal_infZl`
 
 - in `measure.v`:
   + lemmas `seqDU_measurable`, `measure_gt0`
@@ -236,6 +231,9 @@
   + notation `measurable_fun_ext` (deprecated since 0.6.2)
   + notations `measurable_fun_id`, `measurable_fun_cst`, `measurable_fun_comp` (deprecated since 0.6.3)
   + notation `measurable_funT_comp` (deprecated since 0.6.3)
+
+- in `hoelder.v`:
+  + lemma `oppr_Lnorm`
 
 ### Infrastructure
 
