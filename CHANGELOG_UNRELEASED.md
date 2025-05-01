@@ -57,6 +57,13 @@
     `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
     `ereal_sup_real`, `ereal_inf_real`
 
+- in `ereal.v`:
+  + lemmas `ereal_sup_cst`, `ereal_inf_cst`,
+    `ereal_sup_pZl`, `ereal_supZl`, `ereal_inf_pZl`, `ereal_infZl`
+
+- in `sequences.v`:
+  + lemmas `ereal_inf_seq`, `ereal_sup_seq`
+
 ### Changed
 
 - in `pi_irrational`:
