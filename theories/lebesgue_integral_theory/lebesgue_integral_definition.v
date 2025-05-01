@@ -65,8 +65,7 @@ Proof. by []. Qed.
 
 End simple_fun_raw_integral.
 
-#[global] Hint Extern 0 (is_true (0 <= (_ : {measure set _ -> \bar _}) _)%E) =>
-  solve [apply: measure_ge0] : core.
+#[global] Hint Extern 0 (is_true (0 <= _)) => solve [apply: measure_ge0] : core.
 
 Section sintegral_lemmas.
 Context d (T : sigmaRingType d) (R : realType).

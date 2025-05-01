@@ -109,12 +109,12 @@ by apply: contra_not_neq AsupA => <-.
 Qed.
 
 Lemma right_bounded_interior (R : realType) (X : set R) :
-  has_ubound X -> X^° `<=` [set r | r < sup X].
+  has_ubound X -> X° `<=` [set r | r < sup X].
 Proof.
 move=> uX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP supXr|]; last first.
   by apply/negP; rewrite -leNgt sup_ubound//; exact: interior_subset.
-suff : ~ X^° (sup X) by rewrite supXr.
+suff : ~ X° (sup X) by rewrite supXr.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (sup X + f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprD addNKr normrN.
@@ -124,12 +124,12 @@ by apply/negP; rewrite -ltNge; rewrite ltrDl.
 Qed.
 
 Lemma left_bounded_interior (R : realType) (X : set R) :
-  has_lbound X -> X^° `<=` [set r | inf X < r].
+  has_lbound X -> X° `<=` [set r | inf X < r].
 Proof.
 move=> lX r Xr; rewrite /mkset ltNge; apply/negP.
 rewrite le_eqVlt => /orP[/eqP rinfX|]; last first.
   by apply/negP; rewrite -leNgt inf_lbound//; exact: interior_subset.
-suff : ~ X^° (inf X) by rewrite -rinfX.
+suff : ~ X° (inf X) by rewrite -rinfX.
 case/nbhs_ballP => _/posnumP[e] supXeX.
 have [f XsupXf] : exists f : {posnum R}, X (inf X - f%:num).
   exists (e%:num / 2)%:pos; apply supXeX; rewrite /ball /= opprB addrC subrK.

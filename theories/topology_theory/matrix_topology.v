@@ -53,13 +53,6 @@ HB.instance Definition _ := Nbhs_isNbhsTopological.Build 'M[T]_(m, n)
 
 End matrix_Topology.
 
-Section matrix_PointedTopology.
-Variables (m n : nat) (T : pointedType).
-Implicit Types M : 'M[T]_(m, n).
-HB.instance Definition _ := Pointed.on 'M[T]_(m, n).
-
-End matrix_PointedTopology.
-
 Section matrix_Uniform.
 Local Open Scope relation_scope.
 Variables (m n : nat) (T : uniformType).
