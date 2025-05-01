@@ -391,10 +391,6 @@ Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1|
                                             apply: emeasurable_set1] : core.
 #[global]
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
-#[deprecated(since="mathcomp-analysis 0.6.2", note="use `emeasurable_itv` instead")]
-Notation emeasurable_itv_bnd_pinfty := emeasurable_itv (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.2", note="use `emeasurable_itv` instead")]
-Notation emeasurable_itv_ninfty_bnd := emeasurable_itv (only parsing).
 
 Lemma fine_measurable (R : realType) (D : set (\bar R)) : measurable D ->
   measurable_fun D fine.
@@ -1125,27 +1121,20 @@ by rewrite -[_ @^-1` _]setTI; exact: m1.
 Qed.
 
 End measurable_fun_realType.
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_sup`")]
-Notation measurable_fun_lim_sup := measurable_fun_limn_sup (only parsing).
 
-Lemma measurable_ln (R : realType) : measurable_fun [set~ (0:R)] (@ln R).
+Lemma measurable_ln (R : realType) : measurable_fun [set: R] (@ln R).
 Proof.
-rewrite (_ : [set~ 0] = `]-oo, 0[ `|` `]0, +oo[); last first.
-  by rewrite -(setCitv `[0, 0]); apply/seteqP; split => [|]x/=;
-    rewrite in_itv/= -eq_le eq_sym; [move/eqP/negbTE => ->|move/negP/eqP].
+rewrite -set_itvNyy (@itv_bndbnd_setU _ _ _ (BRight 0))//.
 apply/measurable_funU => //; split.
 - apply/measurable_restrictT => //=.
   rewrite (_ : _ \_ _ = cst 0)//; apply/funext => y; rewrite patchE.
   by case: ifPn => //; rewrite inE/= in_itv/= => y0; rewrite ln0// ltW.
-- have : {in `]0, +oo[%classic, continuous (@ln R)}.
-    by move=> x; rewrite inE/= in_itv/= andbT => x0; exact: continuous_ln.
-  rewrite -continuous_open_subspace; last exact: interval_open.
-  by move/subspace_continuous_measurable_fun; apply; exact: measurable_itv.
+- apply: subspace_continuous_measurable_fun => //.
+  rewrite continuous_open_subspace; last exact: interval_open.
+  by move=> x; rewrite inE/= in_itv/= andbT => x0; exact: continuous_ln.
 Qed.
 #[global] Hint Extern 0 (measurable_fun _ (@ln _)) =>
   solve [apply: measurable_ln] : core.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_ln` instead")]
-Notation measurable_fun_ln := measurable_ln (only parsing).
 
 Lemma measurable_expR (R : realType) : measurable_fun [set: R] expR.
 Proof. by apply: continuous_measurable_fun; exact: continuous_expR. Qed.
@@ -1170,13 +1159,11 @@ Notation measurable_fun_pow := measurable_funX (only parsing).
 
 Lemma measurable_powR (R : realType) p : measurable_fun [set: R] (@powR R ^~ p).
 Proof.
-apply: measurable_fun_if => //.
+apply: measurable_fun_ifT => //.
 - apply: (measurable_fun_bool true).
   rewrite (_ : _ @^-1` _ = [set 0]) ?setTI//.
   by apply/seteqP; split => [_ /eqP ->//|_ -> /=]; rewrite eqxx.
-- rewrite setTI; apply: measurableT_comp => //.
-  rewrite (_ : _ @^-1` _ = [set~ 0]); first exact: measurableT_comp.
-  by apply/seteqP; split => [x /negP/negP/eqP|x x0]//=; exact/negbTE/eqP.
+- by apply: measurableT_comp => //; exact: measurable_funM.
 Qed.
 #[global] Hint Extern 0 (measurable_fun _ (@powR _ ^~ _)) =>
   solve [apply: measurable_powR] : core.
@@ -1191,9 +1178,6 @@ rewrite /powR; apply: measurable_fun_if => //.
 - rewrite preimage_false setTI; apply: measurableT_comp => //.
   exact: mulrr_measurable.
 Qed.
-
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxr` instead")]
-Notation measurable_fun_max := measurable_maxr (only parsing).
 
 Module NGenCInfty.
 Section ngencinfty.
@@ -1457,8 +1441,6 @@ apply: measurable_fun_ifT => //=.
 + by apply: (measurable_fun_bool true); exact/emeasurable_fin_num.
 + exact/measurable_EFinP/measurableT_comp.
 Qed.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_er_map`")]
-Notation measurable_fun_er_map := measurable_er_map (only parsing).
 
 Section emeasurable_fun.
 Local Open Scope ereal_scope.
@@ -1546,19 +1528,6 @@ exact: measurable_fun_limn_esup.
 Qed.
 End emeasurable_fun.
 Arguments emeasurable_fun_cvg {d T R D} f_.
-
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurableT_comp` instead")]
-Notation emeasurable_funN := measurableT_comp (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_maxe` instead")]
-Notation emeasurable_fun_max := measurable_maxe (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_mine` instead")]
-Notation emeasurable_fun_min := measurable_mine (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_funepos` instead")]
-Notation emeasurable_fun_funepos := measurable_funepos (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="use `measurable_funeneg` instead")]
-Notation emeasurable_fun_funeneg := measurable_funeneg (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed `measurable_fun_limn_esup`")]
-Notation measurable_fun_lim_esup := measurable_fun_limn_esup (only parsing).
 
 Section open_itv_cover.
 Context {R : realType}.

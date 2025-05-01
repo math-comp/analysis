@@ -1589,14 +1589,6 @@ End measurable_fun.
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Arguments measurable_fun_eqP {d1 d2 T1 T2 D} f {g}.
-#[deprecated(since="mathcomp-analysis 0.6.2", note="renamed `eq_measurable_fun`")]
-Notation measurable_fun_ext := eq_measurable_fun (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_id`")]
-Notation measurable_fun_id := measurable_id (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_cst`")]
-Notation measurable_fun_cst := measurable_cst (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurable_comp`")]
-Notation measurable_fun_comp := measurable_comp (only parsing).
 
 Section measurable_fun_measurableType.
 Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
@@ -1708,8 +1700,6 @@ End measurable_fun_measurableType.
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Arguments measurable_fun_bool {d1 T1 D f} b.
-#[deprecated(since="mathcomp-analysis 0.6.3", note="renamed `measurableT_comp`")]
-Notation measurable_funT_comp := measurableT_comp (only parsing).
 
 Section measurability.
 
