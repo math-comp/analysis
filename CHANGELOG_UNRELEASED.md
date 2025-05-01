@@ -68,6 +68,8 @@
   + lemmas `ereal_supP`, `ereal_infP`, `ereal_sup_gtP`, `ereal_inf_ltP`,
     `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
     `ereal_sup_real`, `ereal_inf_real`
+- in `constructive_ereal.v`:
+  + lemmas `expe_ge0`, `expe_eq0`, `expe_gt0`
 
 ### Changed
 
