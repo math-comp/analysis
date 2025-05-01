@@ -38,7 +38,6 @@ From mathcomp Require Import normedtype derive sequences real_interval.
 (*    total_variation a b f == the sup over all variations of f from a to b   *)
 (*             neg_tv a f x == the decreasing component of f                  *)
 (*             pos_tv a f x == the increasing component of f                  *)
-(*                                                                            *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* Limit superior and inferior for functions:                                 *)
