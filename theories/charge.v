@@ -2100,13 +2100,15 @@ Proof.
 move=> mE mf; rewrite [in RHS](funeposneg f) integralB //; last 2 first.
   - exact: integrable_funepos.
   - exact: integrable_funeneg.
-rewrite -(ae_eq_integral _ _ _ _ _
-    (ae_eq_mul2l f (ae_eq_Radon_Nikodym_SigmaFinite mE)))//; last 2 first.
-- apply: emeasurable_funM => //; first exact: measurable_int mf.
-  apply: measurable_funTS.
-  exact: measurable_int (Radon_Nikodym_SigmaFinite.f_integrable _).
-- apply: emeasurable_funM => //; first exact: measurable_int mf.
-  exact: measurable_funTS.
+transitivity (\int[mu]_(x in E) (f x * Radon_Nikodym_SigmaFinite.f nu mu x)).
+  apply: ae_eq_integral => //.
+  - apply: emeasurable_funM => //; first exact: measurable_int mf.
+    exact: measurable_funTS.
+  - apply: emeasurable_funM => //; first exact: measurable_int mf.
+    apply: measurable_funTS.
+    exact: measurable_int (Radon_Nikodym_SigmaFinite.f_integrable _).
+  - apply: ae_eqe_mul2l.
+    exact/ae_eq_sym/ae_eq_Radon_Nikodym_SigmaFinite.
 rewrite [in LHS](funeposneg f).
 under [in LHS]eq_integral => x xE. rewrite muleBl; last 2 first.
   - exact: Radon_Nikodym_SigmaFinite.f_fin_num.

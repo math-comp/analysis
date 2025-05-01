@@ -273,6 +273,8 @@ From mathcomp Require Import sequences esum numfun.
 (* ## More measure-theoretic definitions                                      *)
 (* ```                                                                        *)
 (*  m1 `<< m2 == m1 is absolutely continuous w.r.t. m2 or m2 dominates m1     *)
+(*  ess_sup f == essential supremum of the function f : T -> R where T is a   *)
+(*               semiRingOfSetsType and R is a realType                       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -4262,6 +4264,15 @@ Proof. by move=> BA; apply: filterS => x + /BA; apply. Qed.
 
 End ae_eq_lemmas.
 
+Section ae_eqe.
+Context d (T : sigmaRingType d) (R : realType).
+Implicit Types (mu : {measure set T -> \bar R}) (D : set T) (f g h : T -> \bar R).
+
+Lemma ae_eqe_mul2l mu D f g h : ae_eq mu D f g -> ae_eq mu D (h \* f)%E (h \* g).
+Proof. by apply: filterS => x /= /[apply] ->. Qed.
+
+End ae_eqe.
+
 Definition sigma_subadditive {T} {R : numFieldType}
   (mu : set T -> \bar R) := forall (F : (set T) ^nat),
   mu (\bigcup_n (F n)) <= \sum_(i <oo) mu (F i).
@@ -5402,3 +5413,21 @@ Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
 Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
 
 End absolute_continuity_lemmas.
+
+Section essential_supremum.
+Context d {T : semiRingOfSetsType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types f : T -> R.
+
+Definition ess_sup f :=
+  ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
+
+Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
+  0 <= ess_sup f.
+Proof.
+move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP rf <-]; rewrite leNgt.
+apply/negP => r0; apply/negP : rf; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
+by apply/seteqP; split => // x _ /=; rewrite in_itv/= (lt_le_trans _ (f0 x)).
+Qed.
+
+End essential_supremum.
