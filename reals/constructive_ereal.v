@@ -3538,6 +3538,27 @@ Proof. by case: x => [x|//|//]; rewrite !qualifE/=. Qed.
 
 End sqrte.
 
+Section expe.
+Variable R : numDomainType.
+Implicit Types x : \bar R.
+Implicit Types n : nat.
+
+Lemma expe_eq0 x n : (x ^+ n == 0) = (n > 0)%N && (x == 0).
+Proof.
+by elim: n => [|n IHn]; [rewrite gt_eqF|rewrite expeS mule_eq0 IHn andKb].
+Qed.
+
+Lemma expe_gt0 x n : 0 < x -> 0 < x ^+ n.
+Proof. by elim: n => //n ih /[dup] /ih xn0 x0; rewrite expeS mule_gt0. Qed.
+
+Lemma expe_ge0 x n : 0 <= x -> 0 <= x ^+ n.
+Proof.
+by rewrite le_eqVlt => /orP[/eqP <-|];
+  [case: n => //n; rewrite expeS mul0e | move/expe_gt0/ltW].
+Qed.
+
+End expe.
+
 Module DualAddTheory.
 Export DualAddTheoryNumDomain.
 Export DualAddTheoryRealDomain.
