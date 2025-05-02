@@ -43,15 +43,9 @@ Latest releases: [[1.11.0] - 2025-05-02](#1110---2025-05-02), [[1.10.0] - 2025-0
   + lemma `cvge_ninftyP`
 
 - in `exp.v`:
-  + lemma `norm_expR`
-  + lemmas `expeR_eqy`
-  + lemmas `lt0_ln`
-  + lemmas `lt0_powR`, `powR_eq1`
-  + Section `Lne`
-  + definition `lne`
-  + lemmas `lne0`, `lner`, `expeRK`, `lneK`, `lneK_eq`, `lne1`, `lneM`, 
-    `lne_inj`, `lneV`, `lne_div`, `ltr_lne`, `ler_lne`, `lneXn`, `le_lne1Dx`, 
-    `lne_sublinear`, `lne_ge0`, `lne_lt0`, `lne_gt0`, `lne_le0_le0`
+  + lemma `poweRE`
+  + lemmas `lnNy`, `powR_cvg0`, `derivable_powR`, `powR_derive1`
+  + Instance `is_derive1_powR`
 
 - in `measure.v`:
   + lemmas `mnormalize_id`, `measurable_fun_eqP`
