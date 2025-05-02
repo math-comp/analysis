@@ -21,7 +21,8 @@ From mathcomp Require Import realfun interval_inference convex.
 (*   pseries_diffs f i == (i + 1) * f (i + 1)                                 *)
 (*                                                                            *)
 (*             expeR x == extended real number-valued exponential function    *)
-(*                ln x == the natural logarithm                               *)
+(*                ln x == the natural logarithm, in ring_scope                *)
+(*                lne x == the natural logarithm, in ereal_scope              *)
 (*              s `^ r == power function, in ring_scope (assumes s >= 0)      *)
 (*              e `^ r == power function, in ereal_scope (assumes e >= 0)     *)
 (*          riemannR a == sequence n |-> 1 / (n.+1) `^ a where a has a type   *)
@@ -535,7 +536,7 @@ case: (lerP 1 x) => [/expR_total_gt1[y [_ _ Hy]]|x_lt1 x_gt0].
 have /expR_total_gt1[y [H1y H2y H3y]] : 1 <= x^-1 by rewrite ltW // !invf_cp1.
 by exists (-y); rewrite expRN H3y invrK.
 Qed.
-
+Lemma norm_expR : normr \o expR = (expR : R -> R). Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 Local Open Scope convex_scope.
 Lemma convex_expR (t : {i01 R}) (a b : R^o) :
   expR (a <| t |> b) <= (expR a : R^o) <| t |> (expR b : R^o).
@@ -616,7 +617,7 @@ Proof. by case: x => //= r; rewrite lte_fin expR_gt0. Qed.
 
 Lemma expeR_eq0 x : (expeR x == 0) = (x == -oo).
 Proof. by case: x => //= [r|]; rewrite ?eqxx// eqe expR_eq0. Qed.
-
+Lemma expeR_eqy x : (expeR x == +oo) = (x == +oo). Proof. by case : x => //= [r|]. Qed. 
 Lemma expeRD x y : expeR (x + y) = expeR x * expeR y.
 Proof.
 case: x => /= [r| |]; last by rewrite mul0e.
@@ -765,7 +766,7 @@ Proof.
 have [x0|x0 x1] := leP x 0; first by rewrite ln0.
 by rewrite -ler_expR expR0 lnK.
 Qed.
-
+Lemma lt0_ln (x : R) : x < 0 -> ln x = 0. Proof. move=> x0; rewrite /ln/= getPN//= => y /eqP eqx; by move: x0; rewrite -eqx le_gtF// expR_ge0. Qed.
 Lemma continuous_ln x : 0 < x -> {for x, continuous ln}.
 Proof.
 move=> x_gt0; rewrite -[x]lnK//.
@@ -1103,6 +1104,26 @@ Proof.
 move=> x_gt0; split.
   by apply: derivable_powR; rewrite ?in_itv/= ?andbT.
 by rewrite -derive1E powR_derive1// in_itv andbT.
+Qed.
+
+Lemma lt0_powR {x} {p} : (x < 0)%R -> x `^ p = 1.
+Proof.
+move => lts0; rewrite /powR; case : ifP => /eqP eqs0.
+- by rewrite eqs0 in lts0; move : lts0; rewrite ltxx.
+- move : lts0; rewrite lt_def => /andP [? les0].
+  by rewrite (ln0 les0) mulr0 expR0.
+Qed.
+
+Lemma powR_eq1 x p : (x `^ p == 1) = (x == 1) || (x < 0) || (p == 0).
+Proof.
+have [-> | x1] := eqVneq x 1 => //=; first by rewrite powR1 eq_refl.
+have [-> | p0] := eqVneq p 0; rewrite ?powRr0 ? eq_refl orbC //=.
+case : (ltgtP x 0) => [x0 | x0 | ->]; first by rewrite (lt0_powR x0) eq_refl.
+  + rewrite /powR [X in if X then _ else _]eq_sym (lt_eqF x0).
+    rewrite -expR0; apply /negP => /eqP /expR_inj /eqP.
+    rewrite mulf_eq0 (negbTE p0) -ln1 //= => /eqP /(ln_inj x0 ltr01) /eqP.
+    by rewrite (negbTE x1).
+  + by rewrite powR0 // eq_sym oner_eq0.
 Qed.
 
 End PowR.

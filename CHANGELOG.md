@@ -43,9 +43,10 @@ Latest releases: [[1.11.0] - 2025-05-02](#1110---2025-05-02), [[1.10.0] - 2025-0
   + lemma `cvge_ninftyP`
 
 - in `exp.v`:
-  + lemma `poweRE`
-  + lemmas `lnNy`, `powR_cvg0`, `derivable_powR`, `powR_derive1`
-  + Instance `is_derive1_powR`
+  + lemma `norm_expR`
+  + lemmas `expeR_eqy`
+  + lemmas `lt0_ln`
+  + lemmas `lt0_powR`, `powR_eq1`
 
 - in `measure.v`:
   + lemmas `mnormalize_id`, `measurable_fun_eqP`
