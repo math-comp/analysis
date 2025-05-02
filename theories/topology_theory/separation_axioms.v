@@ -51,7 +51,6 @@ From mathcomp Require Import connected supremum_topology sigT_topology.
 (*                            includes `iter n split_ent E`.                  *)
 (*                            Critically, `gauge E` forms a uniform space     *)
 (*                            with a countable uniformity.                    *)
-(*          perfect_set A  := closed A /\ limit_point A = A                   *)
 (* ```                                                                        *)
 (******************************************************************************)
 
