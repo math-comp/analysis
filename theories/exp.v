@@ -309,7 +309,7 @@ End PseriesDiff.
 
 Section expR.
 Variable R : realType.
-Implicit Types x : R.
+Implicit Types x y : R.
 
 Lemma expR0 : expR 0 = 1 :> R.
 Proof.
@@ -537,20 +537,20 @@ by exists (-y); rewrite expRN H3y invrK.
 Qed.
 
 Local Open Scope convex_scope.
-Lemma convex_expR (t : {i01 R}) (a b : R^o) :
-  expR (a <| t |> b) <= (expR a : R^o) <| t |> (expR b : R^o).
+Lemma convex_expR (t : {i01 R}) x y :
+  expR (x <| t |> y) <= expR x <| t |> expR y.
 Proof.
-have [ab|/ltW ba] := leP a b.
+have [xy|/ltW yx] := leP x y.
 - apply: second_derivative_convex => //.
-  + by move=> x axb; rewrite derive_expR derive_val expR_ge0.
+  + by move=> z xzy; rewrite derive_expR derive_val expR_ge0.
   + exact/cvg_at_left_filter/continuous_expR.
   + exact/cvg_at_right_filter/continuous_expR.
-  + by move=> z zab; rewrite derive_expR; exact: derivable_expR.
+  + by move=> z xzy; rewrite derive_expR; exact: derivable_expR.
 - rewrite convC [leRHS]convC; apply: second_derivative_convex => //.
-  + by move=> x axb; rewrite derive_expR derive_val expR_ge0.
+  + by move=> z xzy; rewrite derive_expR derive_val expR_ge0.
   + exact/cvg_at_left_filter/continuous_expR.
   + exact/cvg_at_right_filter/continuous_expR.
-  + by move=> z zab; rewrite derive_expR; exact: derivable_expR.
+  + by move=> z xzy; rewrite derive_expR; exact: derivable_expR.
 Qed.
 Local Close Scope convex_scope.
 
@@ -669,7 +669,7 @@ End expeR.
 
 Section Ln.
 Variable R : realType.
-Implicit Types x : R.
+Implicit Types x y : R.
 
 Notation exp := (@expR R).
 
@@ -773,7 +773,7 @@ apply: nbhs_singleton (near_can_continuous _ _); near=> z; first exact: expRK.
 by apply: continuous_expR.
 Unshelve. all: by end_near. Qed.
 
-Global Instance is_derive1_ln (x : R) : 0 < x -> is_derive x 1 ln x^-1.
+Global Instance is_derive1_ln x : 0 < x -> is_derive x 1 ln x^-1.
 Proof.
 move=> x_gt0; rewrite -[x]lnK//.
 apply: (@is_derive_inverse R expR); first by near=> z; apply: expRK.
@@ -782,10 +782,10 @@ by rewrite lnK // lt0r_neq0.
 Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
-Lemma concave_ln (t : {i01 R}) (a b : R^o) : 0 < a -> 0 < b ->
-  (ln a : R^o) <| t |> (ln b : R^o) <= ln (a <| t |> b).
+Lemma concave_ln (t : {i01 R}) x y : 0 < x -> 0 < y ->
+  ln x <| t |> ln y <= ln (x <| t |> y).
 Proof.
-move=> a0 b0; have := convex_expR t (ln a) (ln b).
+move=> x0 y0; have := convex_expR t (ln x) (ln y).
 by rewrite !lnK// -(@ler_ln) ?posrE ?expR_gt0 ?conv_gt0// expRK.
 Qed.
 Local Close Scope convex_scope.

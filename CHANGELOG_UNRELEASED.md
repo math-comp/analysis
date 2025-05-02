@@ -59,6 +59,9 @@
 - in `constructive_ereal.v`:
   + lemmas `expe_ge0`, `expe_eq0`, `expe_gt0`
 
+- in `convex.v`:
+  + `convType` on `realDomainType`, `realFieldType` and `realType`
+
 ### Changed
 
 - in `pi_irrational`:
@@ -115,6 +118,8 @@
   + notation `measurable_fun_ext` (deprecated since 0.6.2)
   + notations `measurable_fun_id`, `measurable_fun_cst`, `measurable_fun_comp` (deprecated since 0.6.3)
   + notation `measurable_funT_comp` (deprecated since 0.6.3)
+- in `convex.v`:
+  + instance of `convType` for `R^o` with `R : realDomainType`
 
 ### Infrastructure
 
