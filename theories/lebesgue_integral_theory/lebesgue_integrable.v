@@ -519,8 +519,6 @@ Lemma integralZr r :
 Proof. by rewrite muleC -integralZl; under eq_integral do rewrite muleC. Qed.
 
 End integralZl.
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl` instead")]
-Notation integralM := integralZl (only parsing).
 
 Section integralD_EFin.
 Local Open Scope ereal_scope.

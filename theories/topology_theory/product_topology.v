@@ -227,8 +227,6 @@ exists (N2, N1`*`G); first by split => //; exists (N1, G).
 case=> a [b i] /= [N2a [N1b]] Gi.
 by apply: (ngPr (b, a, i)); split => //; exact: N1N2N.
 Unshelve. all: by end_near. Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `compact_setX`")]
-Notation compact_setM := compact_setX (only parsing).
 
 Lemma swap_continuous {X Y : topologicalType} : continuous (@swap X Y).
 Proof.

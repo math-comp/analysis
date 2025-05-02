@@ -77,7 +77,7 @@ We try to preserve backward compatibility as best as we can.
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_10_0/index.html) (using a fork of [`coq2html`](https://github.com/xavierleroy/coq2html)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_11_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
 It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
 
 Overview presentations:
@@ -92,6 +92,7 @@ Publications about MathComp-Analysis:
 - [Measure Construction by Extension in Dependent Type Theory with Application to Integration](https://arxiv.org/pdf/2209.02345.pdf) (2023) doi:[10.1007/s10817-023-09671-5](https://doi.org/10.1007/s10817-023-09671-5)
 - [The Radon-Nikodým Theorem and the Lebesgue-Stieltjes Measure in Coq](https://www.jstage.jst.go.jp/article/jssst/41/2/41_2_41/_pdf/-char/en) (2024) doi:[10.11309/jssst.41.2_41](https://doi.org/10.11309/jssst.41.2_41)
 - [A Comprehensive Overview of the Lebesgue Differentiation Theorem in Coq](https://drops.dagstuhl.de/storage/00lipics/lipics-vol309-itp2024/LIPIcs.ITP.2024.5/LIPIcs.ITP.2024.5.pdf) (2024) doi:[10.4230/LIPIcs.ITP.2024.5](https://doi.org/10.4230/LIPIcs.ITP.2024.5)
+- [Prouver que pi est irrationnel avec MathComp-Analysis](https://hal.science/hal-04859455/document) (2025)
 
 Other work using MathComp-Analysis:
 - [A Formal Classical Proof of Hahn-Banach in Coq](https://lipn.univ-paris13.fr/~kerjean/slides/slidesTYPES19.pdf) (2019)
@@ -99,6 +100,8 @@ Other work using MathComp-Analysis:
 - [CoqQ: Foundational Verification of Quantum Programs](https://arxiv.org/pdf/2207.11350.pdf) (2023)
 - [Experimenting with an intrinsically-typed probabilistic programming language in Coq](https://staff.aist.go.jp/reynald.affeldt/documents/syntax-aplas2023.pdf) (2023)
 - [Taming Differentiable Logics with Coq Formalisation](https://drops.dagstuhl.de/storage/00lipics/lipics-vol309-itp2024/LIPIcs.ITP.2024.4/LIPIcs.ITP.2024.4.pdf) (2024)
+- [Décomposition Algébrique Cylindrique en Coq/Rocq](https://inria.hal.science/hal-04859512/document) (2025)
+- [Semantics of Probabilistic Programs using s-Finite Kernels in Dependent Type Theory](https://dl.acm.org/doi/pdf/10.1145/3732291) (2025)
 
 ## Development information
 
