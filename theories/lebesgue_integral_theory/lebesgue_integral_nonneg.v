@@ -142,8 +142,6 @@ rewrite (@nd_ge0_integral_lim _ _ _ mu (fun x => k%:E * h1 x) kg).
 Qed.
 
 End ge0_integralZl_EFin.
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl_EFin` instead")]
-Notation ge0_integralM_EFin := ge0_integralZl_EFin (only parsing).
 
 Section ge0_linearityD.
 Local Open Scope ereal_scope.
@@ -322,8 +320,6 @@ by rewrite ge0_integralZl// muleC.
 Qed.
 
 End ge0_integralZ.
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `ge0_integralZl` instead")]
-Notation ge0_integralM := ge0_integralZl (only parsing).
 
 Section integralZl_indic.
 Local Open Scope ereal_scope.
@@ -354,10 +350,6 @@ Qed.
 
 End integralZl_indic.
 Arguments integralZl_indic {d T R m D} mD f.
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl_indic` instead")]
-Notation integralM_indic := integralZl_indic (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.4", note="use `integralZl_indic_nnsfun` instead")]
-Notation integralM_indic_nnsfun := integralZl_indic_nnsfun (only parsing).
 
 Section ge0_integral_mscale.
 Local Open Scope ereal_scope.

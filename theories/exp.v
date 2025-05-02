@@ -1108,9 +1108,6 @@ Qed.
 End PowR.
 Notation "a `^ x" := (powR a x) : ring_scope.
 
-#[deprecated(since="mathcomp-analysis 0.6.5", note="renamed `ge0_ler_powR`")]
-Notation gt0_ler_powR := ge0_ler_powR.
-
 Section poweR.
 Local Open Scope ereal_scope.
 Context {R : realType}.

@@ -238,16 +238,6 @@ Lemma fcvg_ballP {F} {FF : Filter F} (y : M) :
   F --> y <-> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by rewrite -filter_fromP !nbhs_simpl /=. Qed.
 
-Lemma __deprecated__cvg_ballPpos {F} {FF : Filter F} (y : M) :
-  F --> y <-> forall eps : {posnum R}, \forall y' \near F, ball y eps%:num y'.
-Proof.
-split => [/fcvg_ballP + eps|pos]; first exact.
-by apply/fcvg_ballP=> _/posnumP[eps] //.
-Qed.
-#[deprecated(since="mathcomp-analysis 0.6.0",
-  note="use a combination of `cvg_ballP` and `posnumP`")]
-Notation cvg_ballPpos := __deprecated__cvg_ballPpos (only parsing).
-
 Lemma fcvg_ball {F} {FF : Filter F} (y : M) :
   F --> y -> forall eps : R, 0 < eps -> \forall y' \near F, ball y eps y'.
 Proof. by move/fcvg_ballP. Qed.
@@ -292,9 +282,6 @@ Qed.
 
 Arguments nbhsx_ballx {R M} x eps.
 Arguments near_ball {R M} y eps.
-
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `cvg_ball`")]
-Notation app_cvg_locally := cvg_ball (only parsing).
 
 Section pseudoMetricType_numFieldType.
 Context {R : numFieldType} {M : pseudoMetricType R}.

@@ -1648,7 +1648,7 @@ rewrite (@increasing_ge0_integration_by_substitutiony (\- (F \o -%R))%R); last 8
   by apply: funext => r/=; rewrite fctE opprK.
 - apply/continuous_within_itvcyP; split.
     move=> x; rewrite in_itv/= opprK andbT => Fbx.
-    apply: continuous_comp; first exact: opp_continuous.
+    apply: continuous_comp; first exact: oppr_continuous.
     by apply: cG; rewrite in_itv/= ltrNl.
   by rewrite /= !opprK; exact/cvg_at_leftNP.
 - move=> z; rewrite in_itv/= opprK andbT => Fbz.
