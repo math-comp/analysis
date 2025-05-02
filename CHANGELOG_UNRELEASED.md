@@ -59,6 +59,12 @@
 - in `constructive_ereal.v`:
   + lemmas `expe_ge0`, `expe_eq0`, `expe_gt0`
 
+- in `lebesgue_integral_theory/lebesgue_integral_nonneg.v`:
+  + lemmas `ge0_nondecreasing_set_seq_nondecreasing_integral_seq`,
+           `ge0_nondecreasing_set_seq_cvg_integral`,
+           `le0_nondecreasing_set_seq_nonincreasing_integral_seq`,
+	   `le0_nondecreasing_set_seq_cvg_integral`
+
 ### Changed
 
 - in `pi_irrational`:
