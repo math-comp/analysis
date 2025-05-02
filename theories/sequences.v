@@ -488,12 +488,6 @@ Lemma cvg_has_inf u_ : cvgn u_ -> has_inf (u_ @` setT).
 Proof. by move/is_cvgN/cvg_has_sup; rewrite -has_inf_supN image_comp. Qed.
 
 End sequences_R_lemmas_realFieldType.
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `nonincreasing_cvgn_ge`")]
-Notation nonincreasing_cvg_ge := nonincreasing_cvgn_ge (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `nondecreasing_cvgn_le`")]
-Notation nondecreasing_cvg_le := nondecreasing_cvgn_le (only parsing).
 
 Section partial_sum.
 Variables (V : zmodType) (u_ : V ^nat).
@@ -702,27 +696,6 @@ by split=> //; apply/eqP; rewrite -subr_eq0 -limB //; exact/eqP/cvg_lim.
 Qed.
 
 End sequences_R_lemmas.
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `nonincreasing_cvgn`")]
-Notation nonincreasing_cvg := nonincreasing_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `nondecreasing_cvgn`")]
-Notation nondecreasing_cvg := nondecreasing_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `nonincreasing_is_cvgn`")]
-Notation nonincreasing_is_cvg := nonincreasing_is_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `nondecreasing_is_cvgn`")]
-Notation nondecreasing_is_cvg := nondecreasing_is_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `nondecreasing_dvgn_lt`")]
-Notation nondecreasing_dvg_lt := nondecreasing_dvgn_lt (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `near_nondecreasing_is_cvgn`")]
-Notation near_nondecreasing_is_cvg := near_nondecreasing_is_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `near_nonincreasing_is_cvgn`")]
-Notation near_nonincreasing_is_cvg := near_nonincreasing_is_cvgn (only parsing).
 
 Definition harmonic {R : fieldType} : R ^nat := [sequence n.+1%:R^-1]_n.
 Arguments harmonic {R} n /.
@@ -1429,9 +1402,6 @@ by rewrite -(oppeK (u_ m)) -leeNr ni_u.
 Qed.
 
 End sequences_ereal_realDomainType.
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `ereal_nondecreasing_oppn`")]
-Notation ereal_nondecreasing_opp := ereal_nondecreasing_oppn (only parsing).
 
 Section sequences_ereal.
 Local Open Scope ereal_scope.
@@ -1952,18 +1922,6 @@ by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
 
 End sequences_ereal.
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `ereal_nondecreasing_cvgn`")]
-Notation ereal_nondecreasing_cvg := ereal_nondecreasing_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `ereal_nondecreasing_is_cvgn`")]
-Notation ereal_nondecreasing_is_cvg := ereal_nondecreasing_is_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `ereal_nonincreasing_cvgn`")]
-Notation ereal_nonincreasing_cvg := ereal_nonincreasing_cvgn (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6",
-  note="renamed to `ereal_nonincreasing_is_cvgn`")]
-Notation ereal_nonincreasing_is_cvg := ereal_nonincreasing_is_cvgn (only parsing).
 
 Arguments nneseries_split {R f} _ _.
 
@@ -2387,31 +2345,6 @@ Qed.
 
 End limn_sup_limn_inf.
 
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_sup`")]
-Notation lim_sup := limn_sup (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_inf`")]
-Notation lim_inf := limn_sup (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_infN`")]
-Notation lim_infN := limn_infN (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_supE`")]
-Notation lim_supE := limn_supE (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_infE`")]
-Notation lim_infE := limn_infE (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_inf_sup`")]
-Notation lim_inf_le_lim_sup := limn_inf_sup (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvg_limn_infE`")]
-Notation cvg_lim_infE := cvg_limn_infE (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvg_limn_supE`")]
-Notation cvg_lim_supE := cvg_limn_supE (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `le_limn_supD`")]
-Notation le_lim_supD := le_limn_supD (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `le_limn_infD`")]
-Notation le_lim_infD := le_limn_infD (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_supD`")]
-Notation lim_supD := limn_supD (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_infD`")]
-Notation lim_infD := limn_infD (only parsing).
-
 Section esups_einfs.
 Variable R : realType.
 Implicit Types (u : (\bar R)^nat).
@@ -2658,24 +2591,6 @@ by move/cvg_lim : ul => ->.
 Qed.
 
 End lim_esup_inf.
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_einf_shift`")]
-Notation lim_einf_shift := limn_einf_shift (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_esup_le_cvg`")]
-Notation lim_esup_le_cvg := limn_esup_le_cvg (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_einfN`")]
-Notation lim_einfN := limn_einfN (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_esupN`")]
-Notation lim_esupN := limn_esupN (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `limn_einf_sup`")]
-Notation lim_einf_sup := limn_einf_sup (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvgNy_limn_einf_sup`")]
-Notation cvgNy_lim_einf_sup := cvgNy_limn_einf_sup (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `cvg_limn_einf_sup`")]
-Notation cvg_lim_einf_sup := cvg_limn_einf_sup (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `is_cvg_limn_einfE`")]
-Notation is_cvg_lim_einfE := is_cvg_limn_einfE (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.6", note="renamed to `is_cvg_limn_esupE`")]
-Notation is_cvg_lim_esupE := is_cvg_limn_esupE (only parsing).
 
 Lemma geometric_le_lim {R : realType} (n : nat) (a x : R) :
   0 <= a -> 0 < x -> `|x| < 1 -> series (geometric a x) n <= a * (1 - x)^-1.

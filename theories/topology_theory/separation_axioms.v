@@ -395,12 +395,6 @@ move=> f_prop fl; apply: get_unique => // l' fl'; exact: cvgi_unique _ fl' fl.
 Qed.
 
 End hausdorff_ptopologicalType.
-
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvg_lim`")]
-Notation cvg_map_lim := cvg_lim (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed to `cvgi_lim`")]
-Notation cvgi_map_lim := cvgi_lim (only parsing).
-
 #[global] Hint Resolve close_refl : core.
 Arguments close_cvg {T} F1 F2 {FF2} _.
 

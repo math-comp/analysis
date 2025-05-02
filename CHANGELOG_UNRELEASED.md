@@ -80,60 +80,13 @@
 
 ### Changed
 
-- in `pi_irrational`:
-  + definition `rational`
-
 ### Renamed
 
-- in `kernel.v`:
-  + `isFiniteTransition` -> `isFiniteTransitionKernel`
-
-- in `lebesgue_integral_approximation.v`:
-  + `emeasurable_fun_lt` -> `measurable_lte`
-  + `emeasurable_fun_le` -> `measurable_lee`
-  + `emeasurable_fun_eq` -> `measurable_lee`
-  + `emeasurable_fun_neq` -> `measurable_neqe`
-
-- file `lebesgue_integral_approximation.v` -> `measurable_fun_approximation.v`
-
-- in `ereal.v`:
-  + `ereal_sup_le` -> `ereal_sup_ge`
-
-- in `pseudometric_normed_Zmodule.v`:
-  + `opp_continuous` -> `oppr_continuous`
-
 ### Generalized
-
-- in `normedtype.v`:
-  + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
-- in `functions.v`:
-  + `fct_sumE`, `addrfctE`, `sumrfctE` (from `zmodType` to `nmodType`)
-  + `scalerfctE` (from `pointedType` to `Type`)
-
-- in `measurable_realfun.v`
-  + lemma `measurable_ln`
 
 ### Deprecated
 
 ### Removed
-
-- in `functions.v`:
-  + definitions `fct_ringMixin`, `fct_ringMixin` (was only used in an `HB.instance`)
-
-- in `measurable_realfun.v`:
-  + notation `measurable_fun_ln` (deprecated since 0.6.3)
-  + notations `emeasurable_itv_bnd_pinfty`, `emeasurable_itv_ninfty_bnd` (deprecated since 0.6.2)
-  + notation `measurable_fun_lim_sup` (deprecated since 0.6.6)
-  + notation `measurable_fun_max` (deprecated since 0.6.3)
-  + notation `measurable_fun_er_map` (deprecated since 0.6.3)
-  + notations `emeasurable_funN`, `emeasurable_fun_max`, `emeasurable_fun_min`,
-    `emeasurable_fun_funepos`, `emeasurable_fun_funeneg` (deprecated since 0.6.3)
-  + notation `measurable_fun_lim_esup` (deprecated since 0.6.6)
-
-- in `measure.v`:
-  + notation `measurable_fun_ext` (deprecated since 0.6.2)
-  + notations `measurable_fun_id`, `measurable_fun_cst`, `measurable_fun_comp` (deprecated since 0.6.3)
-  + notation `measurable_funT_comp` (deprecated since 0.6.3)
 
 ### Infrastructure
 

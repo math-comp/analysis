@@ -1,6 +1,159 @@
 # Changelog
 
-Latest releases: [[1.10.0] - 2025-04-21](#1100---2025-04-21), [[1.9.0] - 2025-02-20](#190---2025-02-20), and [[1.8.0] - 2024-12-19](#180---2024-12-19)
+Latest releases: [[1.11.0] - 2025-05-02](#1110---2025-05-02), [[1.10.0] - 2025-04-21](#1100---2025-04-21), and [[1.9.0] - 2025-02-20](#190---2025-02-20)
+
+## [1.11.0] - 2025-05-02
+
+### Added
+
+- in `unstable.v`:
+  + lemmas `eq_exists2l`, `eq_exists2r`
+  + module `ProperNotations` with notations `++>`, `==>`, `~~>`
+
+- in `mathcomp_extra.v`:
+  + lemmas `inr_inj`, `inl_inj`
+
+- in `boolp.v`:
+  + lemmas `orW`, `or3W`, `or4W`
+
+- in `classical_sets.v`:
+  + lemmas `in_set1`, `inr_in_set_inr`, `inl_in_set_inr`, `mem_image`, `mem_range`, `image_f`
+  + lemmas `inr_in_set_inl`, `inl_in_set_inl`
+  + lemmas `set_cst`, `image_nonempty`
+
+- in `functions.v`:
+  + lemma `natmulfctE`
+
+- in `constructive_ereal.v`:
+  + lemma `EFin_bigmax`
+  + lemmas `expe_ge0`, `expe_eq0`, `expe_gt0`
+
+- in `ereal.v`:
+  + lemmas `ereal_infEN`, `ereal_supN`, `ereal_infN`, `ereal_supEN`
+  + lemmas `ereal_supP`, `ereal_infP`, `ereal_sup_gtP`, `ereal_inf_ltP`,
+    `ereal_inf_leP`, `ereal_sup_geP`, `lb_ereal_infNy_adherent`,
+    `ereal_sup_real`, `ereal_inf_real`
+  + lemmas `ereal_sup_cst`, `ereal_inf_cst`,
+    `ereal_sup_pZl`, `ereal_supZl`, `ereal_inf_pZl`, `ereal_infZl`
+
+- in `sequences.v`:
+  + lemmas `ereal_inf_seq`, `ereal_sup_seq`
+
+- in `realfun.v`:
+  + lemma `cvge_ninftyP`
+
+- in `exp.v`:
+  + lemma `poweRE`
+  + lemmas `lnNy`, `powR_cvg0`, `derivable_powR`, `powR_derive1`
+  + Instance `is_derive1_powR`
+
+- in `measure.v`:
+  + lemmas `mnormalize_id`, `measurable_fun_eqP`
+
+- in `lebesgue_integral_approximation.v` (now `measurable_fun_approximation.v`):
+  + lemma `measurable_prod`
+  + lemma `measurable_fun_lte`
+  + lemma `measurable_fun_lee`
+  + lemma `measurable_fun_eqe`
+  + lemma `measurable_poweR`
+
+- in `ftc.v`:
+  + lemma `integrable_locally`
+
+- in `probability.v`:
+  + lemmas `eq_bernoulli`, `eq_bernoulliV2`
+
+### Changed
+
+- in `pi_irrational`:
+  + definition `rational`
+
+### Renamed
+
+- in `kernel.v`:
+  + `isFiniteTransition` -> `isFiniteTransitionKernel`
+
+- in `ereal.v`:
+  + `ereal_sup_le` -> `ereal_sup_ge`
+
+- in `pseudometric_normed_Zmodule.v`:
+  + `opp_continuous` -> `oppr_continuous`
+
+- in `lebesgue_integral_approximation.v` (now `measurable_fun_approximation.v`):
+  + `emeasurable_fun_lt` -> `measurable_lte`
+  + `emeasurable_fun_le` -> `measurable_lee`
+  + `emeasurable_fun_eq` -> `measurable_lee`
+  + `emeasurable_fun_neq` -> `measurable_neqe`
+
+- file `lebesgue_integral_approximation.v` -> `measurable_fun_approximation.v`
+
+### Generalized
+
+- in `functions.v`:
+  + `fct_sumE`, `addrfctE`, `sumrfctE` (from `zmodType` to `nmodType`)
+  + `scalerfctE` (from `pointedType` to `Type`)
+
+- in `normedtype.v`:
+  + lemmas `gt0_cvgMlNy`, `gt0_cvgMly`
+
+- in `measurable_realfun.v`
+  + lemma `measurable_ln`
+
+### Removed
+
+- in `functions.v`:
+  + definitions `fct_ringMixin`, `fct_ringMixin` (was only used in an `HB.instance`)
+
+- in `constructive_ereal.v`:
+  + notations `esum_ninftyP`, `esum_ninfty`, `esum_pinftyP`, `esum_pinfty` (deprecated since 0.6.0)
+
+- in `pseudometric_structure.v`:
+  + notations `cvg_ballPpos`, `app_cvg_locally` (deprecated since 0.6.0)
+
+- in `product_topology.v`:
+  + notation `compact_setM` (deprecated since 0.6.0)
+
+- in `separation_axioms.v`:
+  + notations `cvg_map_lim`, `cvgi_map_lim` (deprecated since 0.6.6)
+
+- in `sequences.v`:
+  + notation `nonincreasing_cvg_ge` (deprecated since 0.6.6)
+  + notation `nondecreasing_cvg_le` (deprecated since 0.6.6)
+  + notations `nonincreasing_cvg`, `nondecreasing_cvg`, `nonincreasing_is_cvg`,
+    `nondecreasing_is_cvg`, `nondecreasing_dvg_lt`, `near_nondecreasing_is_cvg`,
+    `near_nonincreasing_is_cvg` (deprecated since 0.6.6)
+  + notation `ereal_nondecreasing_opp` (deprecated since 0.6.6)
+  + notations `ereal_nondecreasing_cvg`, `ereal_nondecreasing_is_cvg`, `ereal_nonincreasing_cvg`,
+    `ereal_nonincreasing_is_cvg` (deprecated since 0.6.6)
+  + notations `lim_sup`, `lim_inf`, `lim_infN`, `lim_supE`, `lim_infE`, `lim_inf_le_lim_sup`,
+    `cvg_lim_infE`, `cvg_lim_supE`, `le_lim_supD`, `le_lim_infD`, `lim_supD`, `lim_infD`
+  + notations `lim_einf_shift`, `lim_esup_le_cvg`, `lim_einfN`, `lim_esupN`, `lim_einf_sup`,
+    `cvgNy_lim_einf_sup`, `cvg_lim_einf_sup`, `is_cvg_lim_einfE`, `is_cvg_lim_esupE`
+
+- in `exp.v`:
+  + notation `gt0_ler_powR` (deprecated since 0.6.5)
+
+- in `measure.v`:
+  + notation `measurable_fun_ext` (deprecated since 0.6.2)
+  + notations `measurable_fun_id`, `measurable_fun_cst`, `measurable_fun_comp` (deprecated since 0.6.3)
+  + notation `measurable_funT_comp` (deprecated since 0.6.3)
+
+- in `measurable_realfun.v`:
+  + notation `measurable_fun_ln` (deprecated since 0.6.3)
+  + notations `emeasurable_itv_bnd_pinfty`, `emeasurable_itv_ninfty_bnd` (deprecated since 0.6.2)
+  + notation `measurable_fun_lim_sup` (deprecated since 0.6.6)
+  + notation `measurable_fun_max` (deprecated since 0.6.3)
+  + notation `measurable_fun_er_map` (deprecated since 0.6.3)
+  + notations `emeasurable_funN`, `emeasurable_fun_max`, `emeasurable_fun_min`,
+    `emeasurable_fun_funepos`, `emeasurable_fun_funeneg` (deprecated since 0.6.3)
+  + notation `measurable_fun_lim_esup` (deprecated since 0.6.6)
+
+- in `lebesgue_integral_nonneg.v`:
+  + notations `ge0_integralM_EFin`, `ge0_integralM`, `integralM_indic`, `integralM_indic_nnsfun`
+    (deprecated since 0.6.4)
+
+- in `lebesgue_integrable.v`:
+  + notation `integralM` (deprecated since 0.6.4)
 
 ## [1.10.0] - 2025-04-21
 

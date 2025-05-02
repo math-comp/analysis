@@ -1180,15 +1180,6 @@ move=> fio; apply/idP/existsP => [/eqP /=|[/= i /andP[Pi /eqP fi]]].
 by apply/eqP/esum_eqyP => //; exists i.
 Qed.
 
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqNyP`")]
-Notation esum_ninftyP := esum_eqNyP (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqNy`")]
-Notation esum_ninfty := esum_eqNy (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqyP`")]
-Notation esum_pinftyP := esum_eqyP (only parsing).
-#[deprecated(since="mathcomp-analysis 0.6.0", note="renamed `esum_eqy`")]
-Notation esum_pinfty := esum_eqy (only parsing).
-
 Lemma adde_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x + y.
 Proof. by move: x y => [r0| |] [r1| |] // ? ?; rewrite !lee_fin addr_ge0. Qed.
 

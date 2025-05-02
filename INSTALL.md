@@ -48,7 +48,7 @@ $ opam install coq-mathcomp-analysis
 ```
 To install a precise version, type, say
 ```
-$ opam install coq-mathcomp-analysis.1.9.0
+$ opam install coq-mathcomp-analysis.1.11.0
 ```
 4. Everytime you want to work in this same context, you need to type
 ```
@@ -88,7 +88,7 @@ $ opam install coq-mathcomp-field.2.3.0
 ```
 3. Install the Finite maps library
 ```
-$ opam install coq-mathcomp-finmap.2.1.0
+$ opam install coq-mathcomp-finmap.2.2.0
 ```
 4. Install the Hierarchy Builder
 ```
