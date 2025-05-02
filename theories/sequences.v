@@ -1286,6 +1286,50 @@ Unshelve. all: by end_near. Qed.
 
 (** Sequences of extended real numbers *)
 
+Section ereal_inf_sup_seq.
+Context {R : realType}.
+Implicit Types (S : set (\bar R)).
+Local Open Scope ereal_scope.
+
+Lemma ereal_inf_seq S : S != set0 ->
+  {u : (\bar R)^nat | forall i, S (u i) & u @ \oo --> ereal_inf S}.
+Proof.
+move=> SN0; apply/cid2; have [|Ninfy] := eqVneq (ereal_inf S) +oo.
+  move=> /[dup]/ereal_inf_pinfty/subset_set1/orW[/eqP/negPn/[!SN0]//|->] ->.
+  by exists (fun=> +oo) => //; apply: cvg_cst.
+suff: exists2 v : (\bar R)^nat, v @ \oo --> ereal_inf S &
+        forall n, exists2 x : \bar R, x \in S & x < v n.
+  move=> [v vcvg] /(_ _)/sig2W-/all_sig/= [u /all_and2[/(_ _)/set_mem Su u_lt]].
+  exists u => //; move: vcvg.
+  have: cst (ereal_inf S) @ \oo --> ereal_inf S by exact: cvg_cst.
+  apply: squeeze_cvge; apply: nearW => n; rewrite /cst/=.
+  by rewrite ereal_inf_le /= 1?ltW; last by exists (u n).
+have [infNy|NinfNy] := eqVneq (ereal_inf S) -oo.
+  exists [sequence - (n%:R%:E)]_n => /=; last first.
+    by move=> n; setoid_rewrite set_mem_set; apply: lb_ereal_infNy_adherent.
+  rewrite infNy; apply/cvgNey; under eq_cvg do rewrite EFinN oppeK.
+  exact/cvgeryP/cvgr_idn.
+have inf_fin : ereal_inf S \is a fin_num by case: ereal_inf Ninfy NinfNy.
+exists [sequence ereal_inf S + n.+1%:R^-1%:E]_n => /=; last first.
+  by move=> n; setoid_rewrite set_mem_set; exact: lb_ereal_inf_adherent.
+apply/sube_cvg0 => //=; apply/cvg_abse0P.
+rewrite (@eq_cvg _ _ _ _ (fun n => n.+1%:R^-1%:E)).
+  exact: cvge_harmonic.
+by move=> n /=; rewrite /= addrAC subee// add0e gee0_abs.
+Unshelve. all: by end_near. Qed.
+
+Lemma ereal_sup_seq S : S != set0 ->
+  {u : nat -> \bar R | forall i, S (u i) & u @ \oo --> ereal_sup S}.
+Proof.
+move=> SN0; have NSN0 : [set - x | x in S] != set0.
+  by have /set0P[x Sx] := SN0; apply/set0P; exists (- x), x.
+have [u /= Nxu] := ereal_inf_seq NSN0.
+rewrite ereal_infN => /cvgeN; rewrite oppeK => Nu_to_sup.
+by exists (\- u) => // i; have [? ? <-] := Nxu i; rewrite oppeK.
+Qed.
+
+End ereal_inf_sup_seq.
+
 Notation "\big [ op / idx ]_ ( m <= i <oo | P ) F" :=
   (limn (fun n => (\big[ op / idx ]_(m <= i < n | P) F))) : big_scope.
 Notation "\big [ op / idx ]_ ( m <= i <oo ) F" :=

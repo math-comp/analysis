@@ -684,6 +684,60 @@ Arguments ereal_inf_ltP {R S x}.
 Arguments ereal_sup_geP {R S x}.
 Arguments ereal_inf_leP {R S x}.
 
+Section ereal_sup_cst.
+Context {R : realFieldType}.
+Implicit Types (x : \bar R) (X : set (\bar R)).
+Local Open Scope ereal_scope.
+
+Lemma ereal_sup_cst T x (A : set T) : A != set0 -> ereal_sup (cst x @` A) = x.
+Proof. by move=> AN0; rewrite set_cst ifN// ereal_sup1. Qed.
+
+Lemma ereal_inf_cst T x (A : set T) : A != set0 -> ereal_inf (cst x @` A) = x.
+Proof. by move=> AN0; rewrite set_cst ifN// ereal_inf1. Qed.
+
+End ereal_sup_cst.
+
+Section ereal_supZ.
+Context {R : realType}.
+Implicit Types (r s : R) (X : set (\bar R)).
+Local Open Scope ereal_scope.
+
+Lemma ereal_sup_pZl X r : (0 < r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> /[dup] r_gt0; rewrite lt0r => /andP[r_neq0 r_ge0].
+gen have gen : r r_gt0 {r_ge0 r_neq0} X /
+    ereal_sup [set r%:E * x | x in X] <= r%:E * ereal_sup X.
+  apply/ereal_supP => y/= [x Ax <-]; rewrite lee_pmul2l//=.
+  by apply/ereal_supP => //=; exists x.
+apply/eqP; rewrite eq_le gen//= -lee_pdivlMl//.
+rewrite (le_trans _ (gen _ _ _)) ?invr_gt0 ?image_comp//=.
+by under eq_imagel do rewrite /= muleA -EFinM mulVf ?mul1e//=; rewrite image_id.
+Qed.
+
+Lemma ereal_supZl X r : X != set0 -> (0 <= r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> AN0; have [r_gt0|//|<-] := ltgtP => _; first by rewrite ereal_sup_pZl.
+by rewrite mul0e; under eq_imagel do rewrite mul0e/=; rewrite ereal_sup_cst.
+Qed.
+
+Lemma ereal_inf_pZl X r : (0 < r)%R ->
+  ereal_inf [set r%:E * x | x in X] = r%:E * ereal_inf X.
+Proof.
+move=> r_gt0; rewrite !ereal_infEN muleN image_comp/=; congr (- _).
+by under eq_imagel do rewrite /= -muleN; rewrite -image_comp ereal_sup_pZl.
+Qed.
+
+Lemma ereal_infZl X r : X != set0 -> (0 < r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> XN0 r_gt0; rewrite !ereal_supEN muleN image_comp/=; congr (- _).
+by under eq_imagel do rewrite /= -muleN; rewrite -image_comp ereal_inf_pZl.
+Qed.
+
+End ereal_supZ.
+
 Lemma restrict_abse T (R : numDomainType) (f : T -> \bar R) (D : set T) :
   (abse \o f) \_ D = abse \o (f \_ D).
 Proof.
