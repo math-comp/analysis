@@ -516,7 +516,7 @@ continuous on pseudoMetricNormedZmodType *)
 Section continuity_pseudoMetricNormedZmodType.
 Context {K : numFieldType} {V : pseudoMetricNormedZmodType K}.
 
-Lemma opp_continuous : continuous (@GRing.opp V).
+Lemma oppr_continuous : continuous (@GRing.opp V).
 Proof.
 move=> x; apply/cvgrPdist_lt=> e e0; near do rewrite -opprD normrN.
 exact: cvgr_dist_lt.
@@ -542,6 +542,8 @@ by exists e => //= y; exact/le_lt_trans/ler_dist_dist.
 Qed.
 
 End continuity_pseudoMetricNormedZmodType.
+#[deprecated(since="mathcomp-analysis 1.11.0", note="renamed to `oppr_continuous`")]
+Notation opp_continuous := oppr_continuous (only parsing).
 
 (* TODO: generalize to R : numFieldType *)
 Section hausdorff.
@@ -1115,7 +1117,7 @@ Context (F : set_system T) {FF : Filter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a b : V).
 
 Lemma cvgN f a : f @ F --> a -> - f @ F --> - a.
-Proof. by move=> ?; apply: continuous_cvg => //; exact: opp_continuous. Qed.
+Proof. by move=> ?; apply: continuous_cvg => //; exact: oppr_continuous. Qed.
 
 Lemma cvgNP f a : - f @ F --> - a <-> f @ F --> a.
 Proof. by split=> /cvgN//; rewrite !opprK. Qed.
