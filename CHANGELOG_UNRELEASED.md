@@ -80,6 +80,9 @@
 - in `ereal.v`:
   + `ereal_sup_le` -> `ereal_sup_ge`
 
+- in `pseudometric_normed_Zmodule.v`:
+  + `opp_continuous` -> `oppr_continuous`
+
 ### Generalized
 
 - in `normedtype.v`:

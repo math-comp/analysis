@@ -1377,7 +1377,7 @@ apply: (@segment_can_le (- b) (- a) (f \o -%R) (- g));
     rewrite /= ?lerN2 ?opprK //.
   pose fun_neg : subspace `[-b,-a] -> subspace `[a,b] := itvN_oppr a b.
   move=> z; apply: (@continuous_comp _ _ _ [fun of fun_neg]); last exact: fC.
-  exact/subspaceT_continuous/continuous_subspaceT/opp_continuous.
+  exact/subspaceT_continuous/continuous_subspaceT/oppr_continuous.
 by move=> z zab; rewrite -[- g]/(@GRing.opp _ \o g)/= fK ?opprK// oppr_itvcc.
 Qed.
 
