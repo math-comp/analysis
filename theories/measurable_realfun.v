@@ -1529,6 +1529,50 @@ Qed.
 End emeasurable_fun.
 Arguments emeasurable_fun_cvg {d T R D} f_.
 
+Section ereal_inf_sup_seq.
+Context {R : realType}.
+Implicit Types (S : set (\bar R)).
+Local Open Scope ereal_scope.
+
+Lemma ereal_inf_seq S : S != set0 ->
+  {u : nat -> \bar R | forall i, S (u i) & u @ \oo --> ereal_inf S}.
+Proof.
+move=> SN0; apply/cid2; have [|Ninfy] := eqVneq (ereal_inf S) +oo.
+  move=> /[dup]/ereal_inf_pinfty/subset_set1/orW[/eqP/negPn/[!SN0]//|->] ->.
+  by exists (fun=> +oo) => //; apply: cvg_cst.
+suff: exists2 v : (\bar R)^nat, v @ \oo --> ereal_inf S &
+        forall n, exists2 x : \bar R, x \in S & x < v n.
+  move=> [v vcvg] /(_ _)/sig2W-/all_sig/= [u /all_and2[/(_ _)/set_mem Su u_lt]].
+  exists u => //; move: vcvg.
+  have: cst (ereal_inf S) @ \oo --> ereal_inf S by exact: cvg_cst.
+  apply: squeeze_cvge; apply: nearW => n; rewrite /cst/=.
+  by rewrite ereal_inf_le /= 1?ltW; last by exists (u n).
+have [infNy|NinfNy] := eqVneq (ereal_inf S) -oo.
+  exists [sequence - (n%:R%:E)]_n => /=; last first.
+  by move=> n; setoid_rewrite set_mem_set; apply: lb_ereal_infNy_adherent.
+  rewrite infNy; apply/cvgNey; under eq_cvg do rewrite EFinN oppeK.
+  by apply/cvgeryP/cvgr_idn.
+have inf_fin : ereal_inf S \is a fin_num by case: ereal_inf Ninfy NinfNy.
+exists [sequence ereal_inf S + n.+1%:R^-1%:E]_n => /=; last first.
+  by move=> n; setoid_rewrite set_mem_set; apply: lb_ereal_inf_adherent.
+ apply/sube_cvg0 => //=; apply/cvg_abse0P.
+ rewrite (@eq_cvg _ _ _ _ (fun n => n.+1%:R^-1%:E)).
+   exact: cvge_harmonic.
+by move=> n /=; rewrite /= addrAC subee// add0e gee0_abs//.
+Unshelve. all: by end_near. Qed.
+
+Lemma ereal_sup_seq S : S != set0 ->
+  {u : nat -> \bar R | forall i, S (u i) & u @ \oo --> ereal_sup S}.
+Proof.
+move=> SN0; have NSN0 : [set - x | x in S] != set0.
+  by have /set0P[x Sx] := SN0; apply/set0P; exists (- x), x.
+have [u /= Nxu] := ereal_inf_seq NSN0.
+rewrite ereal_infN => /cvgeN; rewrite oppeK => Nu_to_sup.
+by exists (fun n => - u n) => // i; have [? ? <-] := Nxu i; rewrite oppeK.
+Qed.
+
+End ereal_inf_sup_seq.
+
 Section open_itv_cover.
 Context {R : realType}.
 Implicit Types (A : set R).
@@ -1597,6 +1641,55 @@ move/cvg_lim => <-//; apply: lee_nneseries => //.
 Qed.
 
 End open_itv_cover.
+
+Section ereal_supZ.
+Context {R : realType}.
+Implicit Types (r s : R) (A : set R) (X : set (\bar R)).
+Local Open Scope ereal_scope.
+
+Lemma ereal_sup_cst T x (A : set T) : A != set0 ->
+   ereal_sup [set x | _ in A] = x :> \bar R.
+Proof. by move=> AN0; rewrite set_cst ifN// ereal_sup1. Qed.
+
+Lemma ereal_inf_cst T x (A : set T) : A != set0 ->
+   ereal_inf [set x | _ in A] = x :> \bar R.
+Proof. by move=> AN0; rewrite set_cst ifN// ereal_inf1. Qed.
+
+Lemma ereal_sup_pZl X r : (0 < r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> /[dup] r_gt0; rewrite lt0r => /andP[r_neq0 r_ge0].
+gen have gen : r r_gt0 {r_ge0 r_neq0} X /
+    ereal_sup [set r%:E * x | x in X] <= r%:E * ereal_sup X.
+  apply/ereal_supP => y/= [x Ax <-]; rewrite lee_pmul2l//=.
+  by apply/ereal_supP => //=; exists x.
+apply/eqP; rewrite eq_le gen//= -lee_pdivlMl//.
+rewrite (le_trans _ (gen _ _ _)) ?invr_gt0 ?image_comp//=.
+by under eq_imagel do rewrite /= muleA -EFinM mulVf ?mul1e//=; rewrite image_id.
+Qed.
+
+Lemma ereal_supZl X r : X != set0 -> (0 <= r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> AN0; have [r_gt0|//|<-] := ltgtP => _; first by rewrite ereal_sup_pZl.
+by rewrite mul0e; under eq_imagel do rewrite mul0e/=; rewrite ereal_sup_cst.
+Qed.
+
+Lemma ereal_inf_pZl X r : (0 < r)%R ->
+  ereal_inf [set r%:E * x | x in X] = r%:E * ereal_inf X.
+Proof.
+move=> r_gt0; rewrite !ereal_infEN muleN image_comp/=; congr (- _).
+by under eq_imagel do rewrite /= -muleN; rewrite -image_comp ereal_sup_pZl.
+Qed.
+
+Lemma ereal_infZl X r : X != set0 -> (0 < r)%R ->
+  ereal_sup [set r%:E * x | x in X] = r%:E * ereal_sup X.
+Proof.
+move=> XN0 r_gt0; rewrite !ereal_supEN muleN image_comp/=; congr (- _).
+by under eq_imagel do rewrite /= -muleN; rewrite -image_comp ereal_inf_pZl.
+Qed.
+
+End ereal_supZ.
 
 Section egorov.
 Context d {R : realType} {T : measurableType d}.
