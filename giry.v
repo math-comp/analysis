@@ -1,5 +1,7 @@
-From mathcomp Require Import all_ssreflect all_algebra boolp classical_sets functions.
-From mathcomp Require Import reals topology separation_axioms ereal sequences numfun measure measurable_realfun lebesgue_measure lebesgue_integral.
+From mathcomp Require Import all_ssreflect all_algebra boolp classical_sets.
+From mathcomp Require Import fsbigop functions reals topology separation_axioms.
+From mathcomp Require Import ereal sequences numfun measure measurable_realfun.
+From mathcomp Require Import lebesgue_measure lebesgue_integral.
 (*
 From clutch.prob.monad Require Export prelude.
 From clutch.prelude Require Import classical.
@@ -339,103 +341,64 @@ Section giry_join.
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
-Variable (M : giryM (giryM T R) R).
+Variable M : giryM (giryM T R) R.
 
 Definition gJoin_ev (S : set T) := gInt (gEval S) M.
 
-Let gJoin0 : gJoin_ev set0 = 0%E.
-Proof.
-  rewrite /gJoin_ev /gEval.
-  apply integral0_eq.
-  auto.
-Qed.
+Let gJoin0 : gJoin_ev set0 = 0.
+Proof. by rewrite /gJoin_ev /gEval /gInt integral0_eq. Qed.
 
-Let gJoin_ge0 A : (0 <= gJoin_ev A)%E.
-Proof.
-  rewrite /gJoin_ev.
-  apply integral_ge0.
-  auto.
-Qed.
+Let gJoin_ge0 A : 0 <= gJoin_ev A.
+Proof. by rewrite /gJoin_ev integral_ge0. Qed.
 
 (* TODO: Cleaner proof? *)
 Let gJoin_semi_sigma_additive : semi_sigma_additive (gJoin_ev).
 Proof.
-  rewrite /gJoin_ev /gInt.
-  rewrite /gEval /=.
-  intros F HF HFTriv HcupF.
-  eapply cvg_trans.
-  {
-    erewrite eq_cvg; last first.
-    intros ?.
-    rewrite -ge0_integral_sum; auto.
-    by reflexivity.
-    intros.
-    apply gEval_meas_fun; auto.
-    auto.
-  }
-  eapply cvg_trans.
-  {
-    apply cvg_monotone_convergence; auto.
-    {
-      intros n.
-      apply emeasurable_fun_sum.
-      intros.
-      apply gEval_meas_fun; auto.
-    }
-    {
-      intros n ? ?.
-      rewrite sume_ge0; auto.
-    }
-    intros ? ?.
-    intros ? ? ?.
-    rewrite ereal_nondecreasing_series //.
-  }
-  simpl.
-  have -> :(\int[M]_x x (\bigcup_n F n) = \int[M]_x \big[+%R/0%R]_(0 <= k <oo) x (F k));
-    last by [].
-  apply eq_integral.
-  intros μ Hμ'.
-  simpl.
+move=> F mF tF _.
+rewrite /gJoin_ev /gInt /gEval /=.
+rewrite [X in _ --> X](_ : _ = \int[M]_x \sum_(0 <= k <oo) x (F k)); last first.
+  apply eq_integral => mu _.
   apply/esym/cvg_lim => //.
   exact: measure_sigma_additive.
+rewrite [X in X @ _](_ : _ =
+    (fun n => \int[M]_x \sum_(0 <= i < n)  x (F i))); last first.
+  apply/funext => n.
+  rewrite -ge0_integral_sum// => m.
+  exact: gEval_meas_fun.
+apply: cvg_monotone_convergence => //.
+- move=> n; apply: emeasurable_sum => m.
+  exact: gEval_meas_fun.
+- by move=> n x _; rewrite sume_ge0.
+- by move=> x _ m n mn; exact: ereal_nondecreasing_series.
 Qed.
+
+HB.instance Definition _ := isMeasure.Build d _ R gJoin_ev
+  gJoin0 gJoin_ge0 gJoin_semi_sigma_additive.
 
 (* TODO: Cleaner proof? *)
-Let gJoin_setT : (gJoin_ev setT <= 1)%E.
+Let gJoin_setT : gJoin_ev setT <= 1.
 Proof.
-  rewrite /gJoin_ev.
-  apply (@Order.le_trans _ _ (1%:E * (M setT))); last first.
-  {
-    rewrite mul1e.
-    apply sprobability_setT.
-  }
-  eapply Order.le_trans; last first.
-  {
-    apply (@integral_le_bound _ _ R M _ (gEval setT) 1); auto.
-    apply gEval_meas_fun; auto.
-    apply (aeW M).
-    intros ??.
-    rewrite gee0_abs; auto.
-    rewrite /gEval.
-    apply (@sprobability_setT d T R x).
-  }
-  apply ge0_le_integral; auto.
-  apply gEval_meas_fun; auto.
-  intros; apply abse_ge0.
-  apply (@measurableT_comp _ _ _ _ _ _ abse).
-  apply abse_measurable.
-  apply gEval_meas_fun; auto.
-  intros ??.
-  rewrite gee0_abs; auto.
+rewrite /gJoin_ev.
+rewrite (@le_trans _ _ (\int[M]_x `|gEval setT x|))//; last first.
+  rewrite (@le_trans _ _ (1%E * M setT))//; last first.
+    by rewrite mul1e sprobability_setT.
+  rewrite integral_le_bound//.
+    exact: gEval_meas_fun.
+  apply/aeW => x _.
+  by rewrite gee0_abs// sprobability_setT.
+rewrite ge0_le_integral//=.
+- exact: gEval_meas_fun.
+- by move=> x _; rewrite abse_ge0.
+- by apply: measurableT_comp => //; exact: gEval_meas_fun.
+- by move=> x _; rewrite gee0_abs.
 Qed.
 
-HB.instance Definition _ := isMeasure.Build d _ R gJoin_ev gJoin0 gJoin_ge0 gJoin_semi_sigma_additive.
-HB.instance Definition _ := Measure_isSubProbability.Build _ _ _ gJoin_ev gJoin_setT.
+HB.instance Definition _ :=
+  Measure_isSubProbability.Build _ _ _ gJoin_ev gJoin_setT.
 
 Definition gJoin : giryM T R := gJoin_ev.
 
 End giry_join.
-
 
 Section giry_join_meas_fun.
   Local Open Scope classical_set_scope.
@@ -460,33 +423,18 @@ Import HBNNSimple.
 Lemma gJoinSInt (M : giryM (giryM T R) R) (h : {nnsfun T >-> R}) :
   sintegral (gJoin M) h = \int[M]_μ sintegral μ h.
 Proof.
-  etransitivity; last first.
-  {
-    eapply eq_integral.
-    intros μ Hμ.
-    rewrite sintegralE.
-    by reflexivity.
-  }
-  simpl.
-  rewrite ge0_integral_fsum; auto; last first.
-  {
-    intros ???.
-    apply nnsfun_mulemu_ge0.
-  }
-  {
-    intros ?.
-    apply measurable_funeM.
-    apply gEval_meas_fun; auto.
-  }
-  rewrite sintegralE /=.
-  have Heq x : (x%:E * gJoin_ev M (h @^-1` [set x]) = \int[M]_μ (x%:E * μ (h @^-1` [set x])))%E.
-    rewrite integralZl//.
-    have := finite_measure_integrable_cst M 1.
-    apply: le_integrable => //; first exact: gEval_meas_fun.
-    move=> mu _ /=.
-    rewrite normr1 gee0_abs// (le_trans _ (@sprobability_setT _ _ _ mu))//.
-    by rewrite le_measure// ?inE.
-  apply: fsbigop.eq_fsbigr => //.
+under eq_integral do rewrite sintegralE.
+rewrite ge0_integral_fsum//; last 2 first.
+  by move=> r; apply: measurable_funeM; exact: gEval_meas_fun.
+  by move=> n x _; exact: nnsfun_mulemu_ge0.
+rewrite sintegralE /=.
+apply: fsbigop.eq_fsbigr => // r rh.
+rewrite integralZl//.
+have := finite_measure_integrable_cst M 1.
+apply: le_integrable => //; first exact: gEval_meas_fun.
+move=> mu _ /=.
+rewrite normr1 gee0_abs// (le_trans _ (@sprobability_setT _ _ _ mu))//.
+by rewrite le_measure// ?inE.
 Qed.
 
 (* TODO: Messy proof, cleanup *)
