@@ -13,20 +13,25 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
-Section giryM_def.
-Local Open Scope classical_set_scope.
+(* TODO: small PR to measure.v? *)
+Section mzero_subprobability.
 Context d (T : measurableType d) (R : realType).
-
-
-
-Definition giryM : Type := @subprobability d T R.
 
 Let mzero_setT : (@mzero d T R setT <= 1)%E.
 Proof. by rewrite /mzero/=. Qed.
 
+HB.instance Definition _ :=
+  Measure_isSubProbability.Build _ _ _ (@mzero d T R) mzero_setT.
+End mzero_subprobability.
+
+Section giryM_def.
+Local Open Scope classical_set_scope.
+Context d (T : measurableType d) (R : realType).
+
+Definition giryM : Type := @subprobability d T R.
+
 HB.instance Definition _ := gen_eqMixin giryM.
 HB.instance Definition _ := gen_choiceMixin giryM.
-HB.instance Definition _ := Measure_isSubProbability.Build _ _ _ (@mzero d T R) mzero_setT.
 HB.instance Definition _ := isPointed.Build giryM mzero.
 
 Definition gEval (S : set T) (mu : giryM) := mu S.
@@ -236,21 +241,7 @@ Variables (f : T1 -> T2) (Hmf : measurable_fun setT f) (μ1 : giryM T1 R).
 
 Definition gMap_ev := pushforward μ1 Hmf.
 
-Let gMap0 : gMap_ev set0 = 0%E.
-Proof.
-  rewrite /gMap_ev measure0 //.
-Qed.
-
-Let gMap_ge0 A : (0 <= gMap_ev A)%E.
-Proof.
-  rewrite /gMap_ev measure_ge0 //.
-Qed.
-
-Let gMap_semi_sigma_additive : semi_sigma_additive (gMap_ev).
-Proof.
-  rewrite /gMap_ev.
-  apply measure_semi_sigma_additive.
-Qed.
+HB.instance Definition _ := Measure.on gMap_ev.
 
 Let gMap_setT : (gMap_ev setT <= 1)%E.
 Proof.
@@ -259,7 +250,6 @@ Proof.
 Qed.
 
 
-HB.instance Definition _ := isMeasure.Build d2 T2 R gMap_ev gMap0 gMap_ge0 gMap_semi_sigma_additive.
 HB.instance Definition _ := Measure_isSubProbability.Build _ _ _ gMap_ev gMap_setT.
 
 Definition gMap : giryM T2 R := gMap_ev.
@@ -329,10 +319,7 @@ Lemma gRet_meas_fun : measurable_fun setT gRet.
 Proof.
   rewrite /gRet /dirac.
   apply giryM_cod_meas_fun; simpl.
-  intros S HmS.
-  rewrite /dirac.
-  apply EFin_measurable_fun.
-  apply measurable_indic; auto.
+exact: measurable_fun_dirac.
 Qed.
 
 
@@ -765,41 +752,16 @@ Context (R : realType).
 Variable (μ12 : giryM T1 R * giryM T2 R).
 
 (* https://en.wikipedia.org/wiki/Giry_monad#Product_distributions  *)
-Definition gProd_ev  (S : set (T1 * T2)) := product_measure1 μ12.1 μ12.2 S.
+Definition gProd_ev := (μ12.1 \x μ12.2)%E.
 
-
-Let gProd0 : gProd_ev set0 = 0%E.
-Proof.
-  rewrite /gProd_ev.
-  auto.
-Qed.
-
-Let gProd_ge0 A : (0 <= gProd_ev A)%E.
-Proof.
-  rewrite /gProd_ev.
-  auto.
-Qed.
-
-Let gProd_semi_sigma_additive : semi_sigma_additive (gProd_ev).
-Proof.
-  rewrite /gProd_ev /=.
-  apply measure_semi_sigma_additive.
-Qed.
+HB.instance Definition _ := Measure.on gProd_ev.
 
 Let gProd_setT : (gProd_ev setT <= 1)%E.
 Proof.
-  rewrite /gProd_ev.
-  rewrite -setXTT.
-  rewrite product_measure1E; auto.
-  eapply (@Order.le_trans _ _ (1*1)%E); [ | rewrite mul1e; auto].
-  apply (@lee_pmul _ (μ12.1 setT) 1 (μ12.2 setT) 1); auto.
-  apply (@sprobability_setT d1 T1 _ μ12.1).
-  apply (@sprobability_setT d2 T2 _ μ12.2).
-  apply Order.isDuallyPOrder.le_refl.
+rewrite -setXTT [leLHS]product_measure1E// -[1%E]mule1.
+by rewrite lee_pmul// sprobability_setT.
 Qed.
 
-
-HB.instance Definition _ := isMeasure.Build _ _ R gProd_ev gProd0 gProd_ge0 gProd_semi_sigma_additive.
 HB.instance Definition _ := Measure_isSubProbability.Build _ _ _ gProd_ev gProd_setT.
 Definition gProd : giryM (T1*T2)%type R := gProd_ev.
 
@@ -836,14 +798,13 @@ Qed.
 Lemma subprobability_prod_setC
   (P : giryM T1 R * giryM T2 R) (A : set (prod T1 T2)) :
   measurable A ->
-  (product_measure1 P.1 P.2) (~` A) =
-    ((product_measure1 P.1 P.2) [set: T1 * T2] - (product_measure1 P.1 P.2) A)%E.
+  ((P.1 \x P.2) (~` A) = (P.1 \x P.2) [set: T1 * T2] - (P.1 \x P.2) A)%E.
 Proof.
 move=> mA.
 rewrite  -(setvU A) measureU ?addeK ?setICl//.
 - simpl.
   rewrite ge0_fin_numE //.
-  apply (@Order.POrderTheory.le_lt_trans _ _ (((product_measure1 P.1 P.2) setT))).
+  apply (@Order.POrderTheory.le_lt_trans _ _ ((P.1 \x P.2)%E setT)).
   rewrite le_measure; auto.
   apply mem_set; auto.
   apply mem_set; auto.
@@ -950,4 +911,3 @@ Proof.
 Qed.
 
 End giry_prod_int.
-
