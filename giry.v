@@ -776,24 +776,6 @@ Local Open Scope classical_set_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2).
 Context (R : realType).
 
-(* Is this already a mathcomp lemma? *)
-Lemma measurable_setI {d : measure_display} {T: measurableType d}
-(A B : set T) (HA : d.-measurable A) (HB : d.-measurable B) :
-  d.-measurable (A `&` B).
-Proof.
-  rewrite -(setCK (A `&` B)).
-  rewrite setCI.
-  apply measurableC.
-  rewrite -bigcup2E.
-  apply bigcup_measurable.
-  intros i ?.
-  simpl.
-  case (i == 0). apply measurableC; auto.
-  case (i == 1). apply measurableC; auto.
-  apply measurable0.
-Qed.
-
-
 (* TODO: Clean up, maybe move elsewhere *)
 Lemma subprobability_prod_setC
   (P : giryM T1 R * giryM T2 R) (A : set (prod T1 T2)) :
@@ -835,30 +817,18 @@ Proof.
   apply dynkin_induction; simpl.
   - rewrite measurable_prod_measurableType //.
   - intros A B [A1 HA1 [A2 HA2 <-]] [B1 HB1 [B2 HB2 <-]].
-    exists (A1 `&` B1); auto.
-    apply measurable_setI; auto.
-    exists (A2 `&` B2); auto.
-    apply measurable_setI; auto.
-    rewrite setXI //.
+    exists (A1 `&` B1); first exact: measurableI.
+    exists (A2 `&` B2); first exact: measurableI.
+    by rewrite setXI.
   - eapply eq_measurable_fun; [intros ??; rewrite -setXTT product_measure1E // |].
-    apply emeasurable_funM.
-    apply (@measurableT_comp _ _ _ _ _ _ (gEval _) _ fst).
-    apply gEval_meas_fun; auto.
-    apply (@measurable_fst _ _ (giryM T1 R) (giryM T2 R)).
-
-    apply (@measurableT_comp _ _ _ _ _ _ (gEval _) _ snd).
-    apply gEval_meas_fun; auto.
-    apply (@measurable_snd _ _ (giryM T1 R) (giryM T2 R)).
+    apply: emeasurable_funM;
+    apply: (@measurableT_comp _ _ _ _ _ _ (gEval _)) => //;
+    exact: gEval_meas_fun.
   - intros S [A HA [B HB <-]].
     eapply eq_measurable_fun; [intros ??; rewrite product_measure1E // |].
-    apply emeasurable_funM.
-    apply (@measurableT_comp _ _ _ _ _ _ (gEval _) _ fst).
-    apply gEval_meas_fun; auto.
-    apply (@measurable_fst _ _ (giryM T1 R) (giryM T2 R)).
-
-    apply (@measurableT_comp _ _ _ _ _ _ (gEval _) _ snd).
-    apply gEval_meas_fun; auto.
-    apply (@measurable_snd _ _ (giryM T1 R) (giryM T2 R)).
+    apply: emeasurable_funM;
+    apply: (@measurableT_comp _ _ _ _ _ _ (gEval _)) => //;
+    exact: gEval_meas_fun.
   - intros S HmS HS.
     eapply (eq_measurable_fun).
       intros ??. simpl in x. rewrite (subprobability_prod_setC x).
@@ -867,15 +837,9 @@ Proof.
       by [].
       by [].
     apply emeasurable_funB; auto; simpl.
-    apply emeasurable_funM.
-    apply (@measurableT_comp _ _ _ _ _ _ (gEval _) _ fst).
-    apply gEval_meas_fun; auto.
-    apply (@measurable_fst _ _ (giryM T1 R) (giryM T2 R)).
-
-    apply (@measurableT_comp _ _ _ _ _ _ (gEval _) _ snd).
-    apply gEval_meas_fun; auto.
-    apply (@measurable_snd _ _ (giryM T1 R) (giryM T2 R)).
-
+    apply: emeasurable_funM;
+    apply: (@measurableT_comp _ _ _ _ _ _ (gEval _)) => //;
+    exact: gEval_meas_fun.
   - intros F HmF HF Hn.
     eapply eq_measurable_fun.
       intros ??.
