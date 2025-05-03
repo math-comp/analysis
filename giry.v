@@ -1,5 +1,5 @@
 From mathcomp Require Import all_ssreflect all_algebra boolp classical_sets functions.
-From mathcomp Require Import reals topology separation_axioms ereal sequences measure measurable_realfun lebesgue_measure lebesgue_integral.
+From mathcomp Require Import reals topology separation_axioms ereal sequences numfun measure measurable_realfun lebesgue_measure lebesgue_integral.
 (*
 From clutch.prob.monad Require Export prelude.
 From clutch.prelude Require Import classical.
@@ -11,6 +11,7 @@ From HB Require Import structures.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 (* TODO: small PR to measure.v? *)
@@ -265,17 +266,12 @@ Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).
 
 Lemma gMap_to_int (f : T1 -> T2) (Hmf : measurable_fun setT f) (μ1 : giryM T1 R)
   (S : set T2) (HmS : measurable S):
-    (gMap Hmf μ1 S = \int[μ1]_x (numfun.indic S (f x))%:E)%E.
+    (gMap Hmf μ1 S = \int[μ1]_x (\1_S (f x))%:E)%E.
 Proof.
-  rewrite /gMap /gMap_ev.
-  rewrite -{1}(setIT S).
-  rewrite -(integral_indic (pushforward μ1 Hmf)); auto.
-  rewrite ge0_integral_pushforward; auto.
-  apply EFin_measurable_fun.
-  apply measurable_indic; auto.
-  intros y.
-  rewrite /numfun.indic.
-  case: (y \in S); auto.
+rewrite -[in LHS](setIT S) -[LHS]integral_indic//.
+rewrite ge0_integral_pushforward//.
+  exact/measurable_EFinP/measurable_indic.
+by move=> y _; rewrite lee_fin.
 Qed.
 
 Lemma gMap_meas_fun (f : T1 -> T2) (Hmf : measurable_fun setT f):
@@ -295,11 +291,7 @@ Lemma gMapInt (f : T1 -> T2) (Hmf : measurable_fun setT f) (μ : giryM T1 R)
   (h : T2 -> \bar R) (Hmh : measurable_fun setT h) (Hpos : forall x, 0 <= h x):
   gInt h (gMap Hmf μ) = gInt (h \o f) μ.
 Proof.
-  rewrite /gInt.
-  have Haux : (forall S, d2.-measurable S -> S `<=` [set : T2] -> gMap Hmf μ S = pushforward μ Hmf S); auto.
-  erewrite (eq_measure_integral _ Haux).
-  rewrite ge0_integral_pushforward; auto.
-  by [].
+exact: ge0_integral_pushforward.
 Qed.
 
 
@@ -371,11 +363,6 @@ Proof.
   rewrite /gJoin_ev /gInt.
   rewrite /gEval /=.
   intros F HF HFTriv HcupF.
-  have Hμ : (forall (μ : giryM T R), semi_sigma_additive μ).
-  {
-    intros; auto.
-    apply measure_semi_sigma_additive.
-  }
   eapply cvg_trans.
   {
     erewrite eq_cvg; last first.
@@ -409,11 +396,8 @@ Proof.
   apply eq_integral.
   intros μ Hμ'.
   simpl.
-  rewrite /semi_sigma_additive in Hμ.
-  specialize (Hμ μ F HF HFTriv HcupF).
-  symmetry.
-  apply cvg_lim; auto.
-  apply eventually_filter.
+  apply/esym/cvg_lim => //.
+  exact: measure_sigma_additive.
 Qed.
 
 (* TODO: Cleaner proof? *)
@@ -473,7 +457,7 @@ Qed.
 Import HBNNSimple.
 
 (* TODO: Messy proof, cleanup *)
-Lemma gJoinSInt (M : giryM (giryM T R) R) (h : {nnsfun T >-> R} ) (Hmh : measurable_fun setT h) :
+Lemma gJoinSInt (M : giryM (giryM T R) R) (h : {nnsfun T >-> R}) :
   sintegral (gJoin M) h = \int[M]_μ sintegral μ h.
 Proof.
   etransitivity; last first.
@@ -495,121 +479,48 @@ Proof.
     apply gEval_meas_fun; auto.
   }
   rewrite sintegralE /=.
-  have Heq: forall x, (x%:E * gJoin_ev M (h @^-1` [set x]))%E = (\int[M]_μ (x%:E * μ (h @^-1` [set x])))%E.
-  {
-    intro x.
-    rewrite integralZl; auto.
-    eapply le_integrable; last first.
-    apply (finite_measure_integrable_cst _ 1).
-    intros μ ?.
-    simpl.
-    rewrite Num.Theory.normr1.
-    rewrite gee0_abs.
-    eapply Order.le_trans; [ | apply (@sprobability_setT _ _ _ μ)].
-    apply le_measure; auto.
-    rewrite in_setE //.
-    rewrite in_setE //.
-    apply subsetT.
-    rewrite measure_ge0 //.
-    apply gEval_meas_fun; auto.
-    auto.
-    }
+  have Heq x : (x%:E * gJoin_ev M (h @^-1` [set x]) = \int[M]_μ (x%:E * μ (h @^-1` [set x])))%E.
+    rewrite integralZl//.
+    have := finite_measure_integrable_cst M 1.
+    apply: le_integrable => //; first exact: gEval_meas_fun.
+    move=> mu _ /=.
+    rewrite normr1 gee0_abs// (le_trans _ (@sprobability_setT _ _ _ mu))//.
+    by rewrite le_measure// ?inE.
   apply: fsbigop.eq_fsbigr => //.
 Qed.
 
 (* TODO: Messy proof, cleanup *)
 
 Lemma gJoinInt (M : giryM (giryM T R) R)
-  (h : T -> \bar R) (Hmh : measurable_fun setT h) (Hpos : forall x, 0 <= h x):
-  gInt h (gJoin M) = gInt (fun (μ : giryM T R) => \int[μ]_x h x) M.
+    (h : T -> \bar R) (mh : measurable_fun setT h) (h_ge0 : forall x, 0 <= h x) :
+  gInt h (gJoin M) = gInt (fun μ : giryM T R => \int[μ]_x h x) M.
 Proof.
-  have HTmeas : d.-measurable [set: T]; auto.
-  have Hhge0' : (forall t, [set: T] t -> 0 <= h t); auto.
-  pose proof (approximation HTmeas Hmh Hhge0') as [g [Hgmono Hgconv]].
-
-  set gE := (fun n => EFin \o (g n)).
-  have HgEmeas : (forall n : nat, measurable_fun [set: T] (gE n)).
-  {
-    intro.
-    rewrite /gE /=.
-    apply EFin_measurable_fun; auto.
-  }
-  have HgEge0: (forall (n : nat) (x : T), [set: T] x -> 0 <= gE n x).
-  {
-    intros.
-    rewrite /gE /= //.
-    apply g.
-  }
-  have HgEmono : (forall x: T, [set: T] x -> {homo gE^~ x : n m / (Order.le n m) >-> n <= m}).
-  {
-    intros x Hx n m Hnm.
-    apply lee_tofin.
-    pose (lefP _ _ (Hgmono n m Hnm)); auto.
-  }
-
-  (* By MCT, limit of the integrals of g_n is the integral of the limit of g_n *)
-  have Hcvg := (monotone_convergence _ _ HgEmeas HgEge0 HgEmono).
-  rewrite /gInt.
-  (* TODO: Fix failing inference? *)
-
-  have Hgconv' : forall x : T,
-      [set: T] x ->
-      h x = (lim (fmap (EFin \o (fun x0 : nat => g x0 x)) (@nbhs nat _ eventually))).
-  {
-    intros x Hx.
-    specialize (Hgconv x Hx).
-    pose (Hgconv2 := cvgP _ Hgconv).
-    rewrite (cvg_unique _ Hgconv Hgconv2); auto.
-  }
-
-  have Hcvg' :
-    forall t : measure T _,
-      d.-measurable [set: T] ->
-      \int[t]_x h x =
-        lim (fmap (fun n : nat => \int[t]_x gE n x) (@nbhs nat _ eventually)).
-  {
-    intros ??.
-    rewrite -Hcvg. auto.
-    apply eq_integral => x Hx.
-    rewrite Hgconv'; auto.
-    apply set_mem => //.
-    by [].
-  }
-  rewrite Hcvg'; auto.
-  rewrite (@congr_lim _ _ (fun n : nat => \int[M]_μ \int[μ]_x gE n x)); last first.
-  {
-    apply functional_extensionality_dep.
-    intros n.
-    rewrite integralT_nnsfun.
-    rewrite gJoinSInt.
-    apply eq_integral.
-    intros ??.
-    rewrite integralT_nnsfun //.
-    auto.
-  }
-  erewrite (@eq_integral _ _ _ M _ _ (fun μ => \int[μ]_x h x)); last first.
-  {
-    intros ??. rewrite Hcvg' //.
-  }
-  rewrite monotone_convergence; auto.
-  {
-    intros n.
-    eapply (gInt_meas_fun (HgEmeas n)); auto.
-    intros.
-    apply HgEge0; auto.
-    apply set_mem.
-    apply in_setT.
-  }
-  {
-    intros.
-    apply integral_ge0; auto.
-  }
-  {
-    intros ?????.
-    apply ge0_le_integral; auto.
-    intros ??; auto.
-    apply HgEmono; auto.
-  }
+pose g := nnsfun_approx measurableT mh.
+pose gE := fun n => EFin \o (g n).
+have mgE n : measurable_fun setT (gE n) by exact/measurable_EFinP.
+have gE_ge0 n x : 0 <= gE n x by rewrite lee_fin.
+have nd_gE x : {homo gE ^~ x : n m / (n <= m)%O >-> n <= m}.
+  by move=> *; exact/lefP/nd_nnsfun_approx.
+(* By MCT, limit of the integrals of g_n is the integral of the limit of g_n *)
+rewrite /gInt.
+transitivity (limn (fun n => \int[gJoin M]_x gE n x)).
+  rewrite -monotone_convergence//.
+  apply: eq_integral => t _.
+  by apply/esym/cvg_lim => //; exact: cvg_nnsfun_approx.
+transitivity (limn (fun n => \int[M]_μ \int[μ]_x gE n x)).
+  apply: congr_lim; apply/funext => n.
+  rewrite integralT_nnsfun.
+  rewrite gJoinSInt.
+  apply: eq_integral => x _.
+  by rewrite integralT_nnsfun.
+rewrite -monotone_convergence//; last 3 first.
+  by move=> n; exact: gInt_meas_fun.
+  by move=> n x _; exact: integral_ge0.
+  by move=> x _ m n mn; apply: ge0_le_integral => // t _; exact: nd_gE.
+apply: eq_integral => mu _.
+rewrite -monotone_convergence//.
+apply: eq_integral => t _.
+by apply/cvg_lim => //; exact: cvg_nnsfun_approx.
 Qed.
 
 End giry_join_meas_fun.
@@ -783,21 +694,9 @@ Lemma subprobability_prod_setC
   ((P.1 \x P.2) (~` A) = (P.1 \x P.2) [set: T1 * T2] - (P.1 \x P.2) A)%E.
 Proof.
 move=> mA.
-rewrite  -(setvU A) measureU ?addeK ?setICl//.
-- simpl.
-  rewrite ge0_fin_numE //.
-  apply (@Order.POrderTheory.le_lt_trans _ _ ((P.1 \x P.2)%E setT)).
-  rewrite le_measure; auto.
-  apply mem_set; auto.
-  apply mem_set; auto.
-  apply subsetT.
-  apply (@Order.POrderTheory.le_lt_trans _ _ 1%E); auto.
-  rewrite -(mul1e 1).
-  rewrite -setXTT product_measure1E; auto.
-  apply (@lee_pmul _ (P.1 setT)); auto.
-  apply sprobability_setT.
-  apply sprobability_setT.
-  apply (ltry (GRing.one R)).
+rewrite -(setvU A) measureU//= ?addeK ?setICl//.
+- rewrite -/(gProd_ev _).
+  exact: fin_num_measure.
 - exact: measurableC.
 Qed.
 
