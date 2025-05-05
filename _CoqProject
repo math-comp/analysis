@@ -92,6 +92,7 @@ theories/esum.v
 theories/measurable_realfun.v
 theories/lebesgue_measure.v
 theories/lebesgue_stieltjes_measure.v
+theories/sequences_wip.v
 theories/forms.v
 theories/derive.v
 theories/measure.v
