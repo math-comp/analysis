@@ -1132,3 +1132,12 @@ by rewrite -(existT_inj2 lr).
 Qed.
 
 End sigT_separations.
+
+Section perfectlynormalspace.
+Context (R : realType) (T : topologicalType).
+
+Definition perfectly_normal_space :=
+  forall E F : set T, exists f : T -> R,
+    continuous f /\ E `<=` f @^-1` [set 0] /\ F `<=` f @^-1` [set 1].
+
+End perfectlynormalspace.
