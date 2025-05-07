@@ -260,4 +260,11 @@ split => //.
 exact: connected1.
 Qed.
 
+
+Definition sdist (E : set sorgenfrey) (x : sorgenfrey) :=
+  let xl := inf [set y | x - y \in E /\ 0 < y] in
+  let xr := inf [set y | x + y \in E /\ 0 <= y] in
+  if x - xl \in E then Order.min xl xr else Order.min 1 xr.
+
+
 End Sorgenfrey_line.
