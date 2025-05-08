@@ -859,6 +859,22 @@ Qed.
 
 End open_itv_subset.
 
+Lemma dense_set1C {R : realType} (r : R) : dense (~` [set r]).
+Proof.
+move=> /= O O0 oO.
+suff [s Os /eqP sr] : exists2 s, O s & s != r by exists s; split.
+case: O0 => o Oo.
+have [->{r}|ro] := eqVneq r o; last by exists o => //; rewrite eq_sym.
+have [e' /= e'0 e'o] := open_itvoo_subset oO Oo.
+near (0:R)^'+ => e.
+exists (o + e/2)%R; last by rewrite gt_eqF// ltrDl// divr_gt0.
+apply: (e'o e) => //=.
+  by rewrite sub0r normrN gtr0_norm.
+rewrite in_itv/= !ltrD2l; apply/andP; split.
+  by rewrite (@lt_le_trans _ _ 0%R) ?divr_ge0// ltrNl oppr0.
+by rewrite gtr_pMr// invf_lt1// ltr1n.
+Unshelve. all: by end_near. Qed.
+
 Section pseudoMetricNormedZmod_numFieldType.
 Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
 Variables (I : Type) (F : set_system I) (FF : Filter F) (f : I -> V) (y : V).

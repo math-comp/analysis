@@ -935,6 +935,23 @@ move=> /existsNP[X /not_implyP[[x Xx] /not_implyP[ Ox /forallNP A]]].
 by exists X; split; [exists x | rewrite -subset0; apply/A].
 Qed.
 
+Lemma denseI (T : topologicalType) (A B : set T) :
+  open A -> dense A -> dense B -> dense (A `&` B).
+Proof.
+move=> oA dA dB C C0 oC.
+have CA0 : C `&` A !=set0 by exact: dA.
+suff: (C `&` A) `&` B !=set0 by rewrite setIA.
+by apply: dB => //; exact: openI.
+Qed.
+
+Lemma dense0 {R : ptopologicalType} : ~ dense (@set0 R).
+Proof.
+apply/existsNP; exists setT.
+apply/not_implyP; split; first exact/set0P/setT0.
+apply/not_implyP; split; first exact: openT.
+by rewrite setTI => -[].
+Qed.
+
 Section ClopenSets.
 Implicit Type T : topologicalType.
 
