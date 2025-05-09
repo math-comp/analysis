@@ -72,47 +72,21 @@ Qed.
 Let b_join i j t : D i -> D j -> b i t -> b j t ->
     exists k, [/\ D k, b k t & b k `<=` b i `&` b j].
 Proof.
-move=> Di Dj bit bjt.
-exists (Order.max i.1 j.1, Order.min i.2 j.2)%R.
-rewrite /D /=.
-rewrite /b /= in_itv.
-split; trivial.
-  rewrite /=.
-  rewrite comparable_ge_max; last first.
-    rewrite /Order.comparable.
-    apply:real_leVge; apply:num_real; apply:num_real.
-  rewrite comparable_lt_min; last first.
-    apply:real_leVge; apply:num_real; apply:num_real.
-  (*rewrite Bool.andb_assoc.*)
-  have:( t \in `[ i.1, i.2 [%R ).
-    by rewrite in_itv /=; apply bit.
-  have:( t \in `[ j.1, j.2 [%R ).
-    by rewrite in_itv /=; apply bjt.
-  Check(t \in `[j.1, j.2[%R).
-  rewrite !in_itv /=.
-  case/andP => -> ->.
-  by case/andP => -> ->.
-rewrite /=.
-move=> x.
-rewrite /= !in_itv /=.
-rewrite comparable_ge_max; last first.
-  apply:real_leVge; apply:num_real; apply:num_real.
-case/andP => /andP [] -> ->.
-rewrite comparable_lt_min; last first.
-  apply:real_leVge; apply:num_real; apply:num_real.
-by case/andP => -> ->.
+move=> _ _; case: i=> i1 i2; case: j=> j1 j2.
+rewrite /b /= !in_itv /= => /andP [] i1t ti2 /andP [] j1t tj2.
+exists (Order.max i1 j1, Order.min i2 j2).
+rewrite /D /= in_itv /= subsetI.
+case: (leP i1 j1) => ij1; case: (leP i2 j2) => ij2.
+all: rewrite !(i1t, ti2, j1t, tj2)/=.
+all: split=> //; split; apply: subset_itv.
+all: by rewrite leBSide //= ltW.
 Qed.
 
-
-Fail Check R:topologicalType.
-Fail Check R^o : topologicalType.
-HB.about GRing.regular.
-(* prove I is pointed *)
-#[export, non_forgetful_inheritance]
+#[non_forgetful_inheritance]
 HB.instance Definition _ := @isPointed.Build R 0.
+#[non_forgetful_inheritance]
 HB.instance Definition Sorgenfrey_mixin := @isBaseTopological.Build R I D b b_cover b_join. 
 Definition sorgenfrey := HB.pack_for topologicalType _ Sorgenfrey_mixin.
-Check sorgenfrey : topologicalType.
 
 Lemma open_separated (T : topologicalType) (A B : set T) :
   open A -> open B -> (A `&` B = set0 -> separated A B).
