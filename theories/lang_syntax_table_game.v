@@ -562,7 +562,13 @@ under eq_integral.
   rewrite patchE x0 XMonemX0n.
   over.
 rewrite /= => ->; congr bernoulli_prob.
-by rewrite /div_beta_fun addn0 !beta_funE/=; repeat rewrite !factE/=; field.
+(*by rewrite /div_beta_fun addn0 !beta_funE/=; repeat rewrite !factE/=; field.*)
+rewrite /div_beta_fun addn0 !beta_funE/=.
+(* temporary measure to avoid stack overflow *)
+rewrite mulrAC -mulrA mulrAC 2!invfM 3!mulrA mulfV ?gt_eqF// 2!div1r.
+rewrite !addnS !addn0.
+rewrite (factS 11) (factS 10) (factS 9).
+by rewrite !factE; field.
 Qed.
 
 Lemma dirac_bool {R : realType} (U : set bool) :

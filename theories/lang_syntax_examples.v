@@ -1,5 +1,5 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
-From Coq Require Import String.
+Require Import String.
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import interval_inference.
@@ -63,6 +63,8 @@ Import numFieldTopology.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
+Local Open Scope string_scope.
+
 Local Open Scope string_scope.
 
 (* simple tests to check bidirectional hints *)
@@ -696,9 +698,20 @@ transitivity (beta_prob_bernoulli_prob 6 4 1 0 U : \bar R).
 rewrite beta_prob_bernoulli_probE// !bernoulli_probE//=; last 2 first.
   lra.
   by rewrite div_beta_fun_ge0 div_beta_fun_le1.
-by congr (_ * _ + _ * _)%:E;
-  rewrite /div_beta_fun/= /onem !beta_funE/=; repeat rewrite !factE/=; field.
+(*by congr (_ * _ + _ * _)%:E;
+  rewrite /div_beta_fun/= /onem !beta_funE/=; repeat rewrite !factE/=; field.*)
+ (* temporary measure to avoid stack overflow *)
+suff : div_beta_fun 6 4 1 0 = 3 / 5 :> R by move->.
+rewrite /div_beta_fun/= /onem !beta_funE.
+rewrite addn0 invfM mulrCA invrK.
+rewrite addn1 8!addnS 2!addn0.
+by rewrite (factS 9) !factS fact0; field.
 Qed.
+(*
+congr (_ * _ + _ * _)%:E.
+rewrite !factE/= !factE; field.
+Qed.
+*)
 
 End beta_bernoulli_bernoulli.
 
