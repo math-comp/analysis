@@ -19,6 +19,54 @@ Local Open Scope classical_set_scope.
 Section general_topology.
 Context {T : topologicalType}.
 
+Section connected_separated.
+Let open_half_separated (A B : set T) :
+  open A -> open B -> A `&` B = set0 -> closure A `&` B = set0.
+Proof.
+move=> oA oB.
+rewrite disjoints_subset -subset0.
+move=> /closure_subset; rewrite closure_setC.
+move: oB=> /interior_id -> /(@setSI _ B).
+by rewrite setICl.
+Qed.
+
+Lemma open_separated (A B : set T) :
+  open A -> open B -> A `&` B = set0 -> separated A B.
+Proof.
+move=> oA oB AB0; split; first exact: open_half_separated.
+by rewrite setIC; apply: open_half_separated=> //; rewrite setIC.
+Qed.
+
+Lemma subset_separated2l (A B C : set T) :
+  B `<=` C -> separated A C -> separated A B.
+Proof.
+move=> BC []; rewrite -!subset0.
+have:= BC => /(@setIS _ (closure A)) /subset_trans /[apply] ?.
+have:= closure_subset BC=> /(@setIS _ A) /subset_trans /[apply] ?.
+by split; rewrite -!subset0.
+Qed.
+
+Lemma subset_separated2r (A B C : set T) :
+  B `<=` C -> separated C A -> separated B A.
+Proof. by rewrite !(separatedC _ A); exact: subset_separated2l. Qed.
+
+Lemma subset_separated (A B C D : set T) :
+  A `<=` B -> C `<=` D -> separated B D -> separated A C.
+Proof. by move=> ? /subset_separated2l /[apply]; exact: subset_separated2r. Qed.
+
+Lemma connectedPn (A : set T) :
+  ~ connected A <->
+    (exists E1 E2 : set T,
+        [/\ E1 !=set0, E2 !=set0, A = E1 `|` E2 & separated E1 E2]).
+Proof.
+split; first by move/connectedPn=> [] E [] *; exists (E false), (E true).
+case=> E1 [] E2 [] *.
+apply/connectedPn; exists (fun b=> if b then E2 else E1); split=> //.
+by case.
+Qed.
+
+End connected_separated.
+
 Section extra.
 
 (* TODO: better name? *)
@@ -88,131 +136,36 @@ HB.instance Definition _ := @isPointed.Build R 0.
 HB.instance Definition Sorgenfrey_mixin := @isBaseTopological.Build R I D b b_cover b_join. 
 Definition sorgenfrey := HB.pack_for topologicalType _ Sorgenfrey_mixin.
 
-Let open_half_separated  (T : topologicalType) (A B : set T) :
-  open A -> open B -> A `&` B = set0 -> closure A `&` B = set0.
-Proof.
-move=> oA oB.
-rewrite disjoints_subset -subset0.
-move=> /closure_subset; rewrite closure_setC.
-move: oB=> /interior_id -> /(@setSI _ B).
-by rewrite setICl.
-Qed.
-
-Lemma open_separated (T : topologicalType) (A B : set T) :
-  open A -> open B -> A `&` B = set0 -> separated A B.
-Proof.
-move=> oA oB AB0; split; first exact: open_half_separated.
-by rewrite setIC; apply: open_half_separated=> //; rewrite setIC.
-Qed.
-
-Lemma subset_separated (T : topologicalType) (A B C : set T) :
-  B `<=` C -> separated A C -> separated A B.
-Proof.
-move=> BC []; rewrite -!subset0.
-have:= BC => /(@setIS _ (closure A)) /subset_trans /[apply] ?.
-have:= closure_subset BC=> /(@setIS _ A) /subset_trans /[apply] ?.
-by split; rewrite -!subset0.
-Qed.
-
 Lemma sorgenfrey_totally_disconnected : totally_disconnected [set: sorgenfrey].
 Proof.
-rewrite /totally_disconnected.
-move=> x Rx.
-(*rewrite /setT /set1.*)
-rewrite /connected_component.
-have:forall C : set sorgenfrey, C x -> connected C -> C = [set x].
-  move=> C Cx.
-  apply:contraPP.
-  move=> Cneqsetx.
-  have[y [yx Cy]]:(exists y, y != x /\ C y).
-    apply/not_existsP.
-    move:Cneqsetx.
-    contra.
-    move=> H.
-    apply:funext.
-    move=> y.
-    move:(H y).
-    rewrite not_andE.
-    move=>Hy.
-    rewrite propeqP /=.
-    split.
-      case:Hy => //.
-      move/negP.
-      rewrite negbK.
-      by move/eqP.
-    by move->.
-  wlog xy : x y yx Cx Cy {Rx Cneqsetx} / x < y.
-    move:(yx). 
-    rewrite neq_lt.
-    case/orP.
-      move=> ylx H.
-      apply:(H y x) => //.
-      by rewrite eq_sym.        
-    move=> xly H.
-    by apply:(H x y) => //.
-  rewrite connectedPn.
-  exists (fun b => if b then C `&` `]-oo, y[ else C `&` `[ y, +oo[).
-  split.
-  - case.
-      exists x.
-      by split.
-    exists y.
-    split => //=.
-    by rewrite in_itv /= lexx.
-  - rewrite -setIUr.
-    move:(setCitv `[y, y[%R ).
-    rewrite /=.
-    rewrite setUC => <-.
-    by rewrite set_itvco0 setC0 setIT.
-  apply: (subset_separated (C := `]-oo, y[)); first exact: subIsetr.
-  rewrite separatedC. 
-  apply: (subset_separated (C := `[y, +oo[)); first exact: subIsetr.
-  apply: open_separated. 
-  - have -> : `]-oo, y[ = \bigcup_( z in `]-oo, y[ ) `[z, y[.
-      apply/seteqP.
-      split => w Hw /=.
-        exists w => //=.
-        move: Hw.
-        by rewrite /= !in_itv /= lexx => ->.
-      by case: Hw => t /= /[!in_itv] /= _ /andP [].
-    apply: bigcup_open => w ? /=.
-    rewrite /open /=.
-    exists [set (w, y)] => //.
-    by rewrite bigcup_set1.
-  - have -> : `[y, +oo[ = \bigcup_( z in `[y, +oo[ ) `[y, z[.
-      apply/seteqP.
-      split => w Hw /=.
-        exists (w+1) => //=.
-          move: Hw.
-          rewrite /= !in_itv /=.
-          rewrite andbC /= andbC /=.
-          by apply/(ler_wpDr ler01).
-        rewrite in_itv /=.
-        apply/andP.
-        split.
-          move:Hw. 
-          by rewrite /= in_itv /= andbC.
-        apply:ltr_pwDr; last by [].
-        by apply: ltr01.
-      rewrite in_itv /= andbC /=.
-      by case: Hw => t /= /[!in_itv] /= _ /andP [].
-    apply: bigcup_open => w ? /=.
-    rewrite /open /=.
-    exists [set (y, w)] => //.
-    by rewrite bigcup_set1.
-  apply/seteqP.
-  split => w //=.
-  by rewrite !in_itv /= leNgt => -[] ->.
-move=> H.
-rewrite ( _ : [set C | _ ] = [set [set x]]). 
-  by rewrite bigcup_set1.
-apply/seteqP.
-split => C //=.
-  case=>*.
-  exact: H.
-move->.
-split => //.
-exact: connected1.
+move=> x _.
+apply/seteqP; split=> y //=; last by move->; apply: connected_component_refl.
+case=> C [] Cx _ + Cy; apply: contraPP=> yx.
+wlog xy : x y yx Cx Cy / x < y.
+  have/eqP:= yx; rewrite real_neqr_lt ?num_real// => /orP [].
+    by move/[swap]/[apply]/(_ (nesym yx)); exact.
+  by move/[swap]/[apply]; exact.
+apply/connectedPn; exists (C `&` `]-oo, y[ ), (C `&` `[y, +oo[ ); split.
+- by exists x.
+- by exists y; split=> //=; rewrite in_itv /= lexx.
+- by rewrite -setIUr -itv_bndbnd_setU// set_itvNyy setIT.
+apply: subset_separated; [exact: subIsetr | exact: subIsetr |].
+apply: open_separated.
+- have-> : `]-oo, y[ = \bigcup_(z in `]-oo, y[ ) `[z, y[.
+    apply/seteqP; split=> w /=; rewrite in_itv/=.
+      by move=> wy; exists w=> //=; rewrite in_itv/= lexx.
+    by case=> z /=; rewrite !in_itv/= => _ /andP [].
+  apply: bigcup_open=> w ?; exists [set (w, y)]=> //.
+  exact: bigcup_set1.
+- have-> : `[y, +oo[ = \bigcup_(z in `[y, +oo[ ) `[y, z[.
+    apply/seteqP; split=> w /=; rewrite in_itv/= andbT.
+      move=> yw; exists (w+1) => /=; rewrite in_itv/= ?ler_wpDr//.
+      by rewrite yw/= ltrDl.
+    by case=> z /=; rewrite !in_itv/= => _ /andP [].
+  apply: bigcup_open=> w _; exists [set (y, w)]=> //.
+  exact: bigcup_set1.
+rewrite -subset0=> w [] /=; rewrite !in_itv /= andbT.
+by move/lt_le_trans/[apply]; rewrite ltxx.
 Qed.
 
 
