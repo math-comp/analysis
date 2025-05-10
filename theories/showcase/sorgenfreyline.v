@@ -88,52 +88,33 @@ HB.instance Definition _ := @isPointed.Build R 0.
 HB.instance Definition Sorgenfrey_mixin := @isBaseTopological.Build R I D b b_cover b_join. 
 Definition sorgenfrey := HB.pack_for topologicalType _ Sorgenfrey_mixin.
 
-Lemma open_separated (T : topologicalType) (A B : set T) :
-  open A -> open B -> (A `&` B = set0 -> separated A B).
+Let open_half_separated  (T : topologicalType) (A B : set T) :
+  open A -> open B -> A `&` B = set0 -> closure A `&` B = set0.
 Proof.
 move=> oA oB.
-apply:contraPP.
-rewrite /separated.
-rewrite not_andP.
-case.
-  contra.
-  rewrite disjoints_subset => AsubnB.
-  rewrite disjoints_subset.
-  move:(closure_subset AsubnB).
-  have:closed (~` B).
-    by apply:open_closedC.
-  move/closure_id => csB. 
-  by rewrite -csB.
-contra.
-rewrite setIC.
-rewrite disjoints_subset => BsubnA.
-rewrite setIC disjoints_subset.
-move:(closure_subset BsubnA).
-have:closed (~` A).
-  by apply:open_closedC.
-move/closure_id => csA.
-by rewrite -csA.
+rewrite disjoints_subset -subset0.
+move=> /closure_subset; rewrite closure_setC.
+move: oB=> /interior_id -> /(@setSI _ B).
+by rewrite setICl.
 Qed.
 
-Lemma separated_sub (T : topologicalType)(A B C : set T) :
-  separated A B -> C `<=` B -> separated A C.
+Lemma open_separated (T : topologicalType) (A B : set T) :
+  open A -> open B -> A `&` B = set0 -> separated A B.
 Proof.
-rewrite /separated.
-case.
-move=> cAB0 AcB0. 
-move=> CB.
-split.
-  rewrite setIC disjoints_subset.
-  apply (subset_trans CB).
-  by rewrite -disjoints_subset setIC.
-rewrite setIC disjoints_subset.
-apply (subset_trans (closure_subset CB)).
-by rewrite -disjoints_subset setIC.
+move=> oA oB AB0; split; first exact: open_half_separated.
+by rewrite setIC; apply: open_half_separated=> //; rewrite setIC.
 Qed.
 
-Check sorgenfrey.
+Lemma subset_separated (T : topologicalType) (A B C : set T) :
+  B `<=` C -> separated A C -> separated A B.
+Proof.
+move=> BC []; rewrite -!subset0.
+have:= BC => /(@setIS _ (closure A)) /subset_trans /[apply] ?.
+have:= closure_subset BC=> /(@setIS _ A) /subset_trans /[apply] ?.
+by split; rewrite -!subset0.
+Qed.
 
-Lemma sorgenfrey_line_totally_disconnected : totally_disconnected [set: sorgenfrey].
+Lemma sorgenfrey_totally_disconnected : totally_disconnected [set: sorgenfrey].
 Proof.
 rewrite /totally_disconnected.
 move=> x Rx.
@@ -183,9 +164,9 @@ have:forall C : set sorgenfrey, C x -> connected C -> C = [set x].
     rewrite /=.
     rewrite setUC => <-.
     by rewrite set_itvco0 setC0 setIT.
-  apply: (separated_sub (B := `]-oo, y[)); last by apply: subIsetr.
+  apply: (subset_separated (C := `]-oo, y[)); first exact: subIsetr.
   rewrite separatedC. 
-  apply: (separated_sub (B := `[y, +oo[)); last by apply: subIsetr.
+  apply: (subset_separated (C := `[y, +oo[)); first exact: subIsetr.
   apply: open_separated. 
   - have -> : `]-oo, y[ = \bigcup_( z in `]-oo, y[ ) `[z, y[.
       apply/seteqP.
