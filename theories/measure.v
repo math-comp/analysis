@@ -219,10 +219,18 @@ From mathcomp Require Import sequences esum numfun.
 (*                              sigma-subadditivity                           *)
 (*          mu.-negligible A == A is mu negligible                            *)
 (*    measure_is_complete mu == the measure mu is complete                    *)
-(*    {ae mu, forall x, P x} == P holds almost everywhere for the measure mu, *)
+(*                {ae mu, P} == P holds almost everywhere for the measure mu, *)
 (*                              declared as an instance of the type of        *)
 (*                              filters                                       *)
-(*               ae_eq D f g == f is equal to g almost everywhere             *)
+(*                              P must be of the form forall x, Q x.          *)
+(*                              Prefer this notation when P is an existing    *)
+(*                              statement (i.e., a definition) that needs to  *)
+(*                              be relativised.                               *)
+(*     \forall x \ae mu, P x == equivalent to {ae mu, forall x, P x}          *)
+(*                              Prefer this notation when the statement       *)
+(*                              forall x, P x does not stand alone.           *)
+(*      f = g %[ae mu in D ] == f is equal to g almost everywhere in D        *)
+(*            f = g %[ae mu] == f is equal to g almost everywhere             *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ## Measure extension theorem                                               *)
@@ -282,6 +290,7 @@ From mathcomp Require Import sequences esum numfun.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+Import ProperNotations.
 Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 
 Reserved Notation "'s<|' D , G '|>'" (at level 40, G, D at next level).
@@ -1306,6 +1315,10 @@ move=> A B mA mB; case: (semi_measurableD A B) => // [D [Dfin Dl -> _]].
 by apply: fin_bigcup_measurable.
 Qed.
 
+Lemma seqDU_measurable (F : sequence (set T)) :
+   (forall n, measurable (F n)) -> forall n, measurable (seqDU F n).
+Proof. by move=> Fmeas n; apply/measurableD/bigsetU_measurable. Qed.
+
 End ringofsets_lemmas.
 
 Section algebraofsets_lemmas.
@@ -1997,6 +2010,9 @@ Proof.
 have /[!big_ord0] ->// := @measure_semi_additive _ _ _ mu (fun=> set0) 0%N.
 exact: trivIset_set0.
 Qed.
+
+Lemma measure_gt0 x : (0%R < mu x) = (mu x != 0).
+Proof. by rewrite lt_def measure_ge0 andbT. Qed.
 
 Hint Resolve measure0 : core.
 
@@ -4092,7 +4108,8 @@ Qed.
 Section ae.
 
 Definition almost_everywhere d (T : semiRingOfSetsType d) (R : realFieldType)
-  (mu : set T -> \bar R) (P : T -> Prop) := mu.-negligible (~` [set x | P x]).
+    (mu : set T -> \bar R) : set_system T :=
+  fun P => mu.-negligible (~` [set x | P x]).
 
 Let almost_everywhereT d (T : semiRingOfSetsType d) (R : realFieldType)
     (mu : {content set T -> \bar R}) : almost_everywhere mu setT.
@@ -4111,16 +4128,14 @@ Proof.
 by rewrite /almost_everywhere => mA mB; rewrite setCI; exact: negligibleU.
 Qed.
 
-#[global]
-Instance ae_filter_ringOfSetsType d {T : ringOfSetsType d} (R : realFieldType)
+Definition ae_filter_ringOfSetsType d {T : ringOfSetsType d} (R : realFieldType)
   (mu : {measure set T -> \bar R}) : Filter (almost_everywhere mu).
 Proof.
 by split; [exact: almost_everywhereT|exact: almost_everywhereI|
   exact: almost_everywhereS].
 Qed.
 
-#[global]
-Instance ae_properfilter_algebraOfSetsType d {T : algebraOfSetsType d}
+Definition ae_properfilter_algebraOfSetsType d {T : algebraOfSetsType d}
     (R : realFieldType) (mu : {measure set T -> \bar R}) :
   mu [set: T] > 0 -> ProperFilter (almost_everywhere mu).
 Proof.
@@ -4133,85 +4148,138 @@ End ae.
 
 #[global] Hint Extern 0 (Filter (almost_everywhere _)) =>
   (apply: ae_filter_ringOfSetsType) : typeclass_instances.
+#[global] Hint Extern 0 (Filter (nbhs (almost_everywhere _))) =>
+  (apply: ae_filter_ringOfSetsType) : typeclass_instances.
 
 #[global] Hint Extern 0 (ProperFilter (almost_everywhere _)) =>
   (apply: ae_properfilter_algebraOfSetsType) : typeclass_instances.
+#[global] Hint Extern 0 (ProperFilter (nbhs (almost_everywhere _))) =>
+  (apply: ae_properfilter_algebraOfSetsType) : typeclass_instances.
 
-Definition almost_everywhere_notation d (T : semiRingOfSetsType d)
-    (R : realFieldType) (mu : set T -> \bar R) (P : T -> Prop)
-  & (phantom Prop (forall x, P x)) := almost_everywhere mu P.
-Notation "{ 'ae' m , P }" :=
-  (almost_everywhere_notation m (inPhantom P)) : type_scope.
+Notation "{ 'ae' m , P }" := {near almost_everywhere m, P} : type_scope.
+Notation "\forall x \ae mu , P" := (\forall x \near almost_everywhere mu, P)
+  (format "\forall  x  \ae  mu ,  P",
+  x name, P at level 200, at level 200): type_scope.
+Definition ae_eq d (T : semiRingOfSetsType d) (R : realType) (mu : {measure set T -> \bar R})
+  (V : T -> Type) D (f g : forall x, V x) := (\forall x \ae mu, D x -> f x = g x).
+Notation "f = g %[ae mu 'in' D ]" := (\forall x \ae mu, D x -> f x = g x)
+  (format "f  =  g  '%[ae'  mu  'in'  D ]", g at next level, D at level 200, at level 70).
+Notation "f = g %[ae mu ]" := (f = g %[ae mu in setT ])
+  (format "f  =  g  '%[ae'  mu ]", g at next level, at level 70).
 
-Lemma aeW {d} {T : semiRingOfSetsType d} {R : realFieldType}
+Lemma aeW {d} {T : ringOfSetsType d} {R : realFieldType}
     (mu : {measure set _ -> \bar R}) (P : T -> Prop) :
-  (forall x, P x) -> {ae mu, forall x, P x}.
+  (forall x, P x) -> \forall x \ae mu, P x.
 Proof.
 move=> aP; have -> : P = setT by rewrite predeqE => t; split.
 by apply/negligibleP; [rewrite setCT|rewrite setCT measure0].
 Qed.
 
+Instance ae_eq_equiv d (T : ringOfSetsType d) R mu V D :
+  RelationClasses.Equivalence (@ae_eq d T R mu V D).
+Proof.
+split.
+- by move=> f; near=> x.
+- by move=> f g eqfg; near=> x => Dx; rewrite (near eqfg).
+- by move=> f g h eqfg eqgh; near=> x => Dx; rewrite (near eqfg) ?(near eqgh).
+Unshelve. all: by end_near. Qed.
+
 Section ae_eq.
-Local Open Scope ereal_scope.
+Local Open Scope ring_scope.
 Context d (T : sigmaRingType d) (R : realType).
+Implicit Types (U V : Type) (W : ringType).
 Variables (mu : {measure set T -> \bar R}) (D : set T).
-Implicit Types f g h i : T -> \bar R.
+Local Notation ae_eq := (ae_eq mu D).
 
-Definition ae_eq f g := {ae mu, forall x, D x -> f x = g x}.
-
-Lemma ae_eq0 f g : measurable D -> mu D = 0 -> ae_eq f g.
+Lemma ae_eq0 U (f g : T -> U) : measurable D -> mu D = 0 -> f = g %[ae mu in D].
 Proof. by move=> mD D0; exists D; split => // t/= /not_implyP[]. Qed.
 
-Lemma ae_eq_comp (j : \bar R -> \bar R) f g :
+Instance comp_ae_eq U V (j : T -> U -> V) :
+  Proper (ae_eq ==> ae_eq) (fun f x => j x (f x)).
+Proof. by move=> f g; apply: filterS => x /[apply] /= ->. Qed.
+
+Instance comp_ae_eq2 U U' V (j : T -> U -> U' -> V) :
+  Proper (ae_eq ==> ae_eq ==> ae_eq) (fun f g x => j x (f x) (g x)).
+Proof. by move=> f f' + g g'; apply: filterS2 => x + + Dx => -> // ->. Qed.
+
+Instance comp_ae_eq2' U U' V (j : U -> U' -> V) :
+  Proper (ae_eq ==> ae_eq ==> ae_eq) (fun f g x => j (f x) (g x)).
+Proof. by move=> f f' + g g'; apply: filterS2 => x + + Dx => -> // ->. Qed.
+
+Instance sub_ae_eq2 : Proper (ae_eq ==> ae_eq ==> ae_eq) (@GRing.sub_fun T R).
+Proof. exact: (@comp_ae_eq2' _ _  R (fun x y => x - y)). Qed.
+
+Lemma ae_eq_refl U (f : T -> U) : ae_eq f f. Proof. exact/aeW. Qed.
+Hint Resolve ae_eq_refl : core.
+
+Lemma ae_eq_comp U V (j : U -> V) f g :
   ae_eq f g -> ae_eq (j \o f) (j \o g).
-Proof. by apply: filterS => x /[apply] /= ->. Qed.
+Proof. by move->. Qed.
 
-Lemma ae_eq_funeposneg f g : ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
+Lemma ae_eq_comp2 U V (j : T -> U -> V) f g :
+  ae_eq f g -> ae_eq (fun x => j x (f x)) (fun x => j x (g x)).
+Proof. by apply: filterS => x /[swap] + ->. Qed.
+
+Lemma ae_eq_funeposneg (f g : T -> \bar R) :
+  ae_eq f g <-> ae_eq f^\+ g^\+ /\ ae_eq f^\- g^\-.
 Proof.
-split=> [fg|[]].
-  split; apply: filterS fg => x /[apply].
-    by rewrite !funeposE => ->.
-  by rewrite !funenegE => ->.
-apply: filterS2 => x + + Dx => /(_ Dx) fg /(_ Dx) gf.
-by rewrite (funeposneg f) (funeposneg g) fg gf.
-Qed.
+split=> [fg|[pfg nfg]].
+  by split; near=> x => Dx; rewrite !(funeposE,funenegE) (near fg).
+by near=> x => Dx; rewrite (funeposneg f) (funeposneg g) ?(near pfg, near nfg).
+Unshelve. all: by end_near. Qed.
 
-Lemma ae_eq_refl f : ae_eq f f. Proof. exact/aeW. Qed.
+Lemma ae_eq_sym U (f g : T -> U) : ae_eq f g -> ae_eq g f.
+Proof. by symmetry. Qed.
 
-Lemma ae_eq_sym f g : ae_eq f g -> ae_eq g f.
-Proof. by apply: filterS => x + Dx => /(_ Dx). Qed.
+Lemma ae_eq_trans U (f g h : T -> U) : ae_eq f g -> ae_eq g h -> ae_eq f h.
+Proof. by apply transitivity. Qed.
 
-Lemma ae_eq_trans f g h : ae_eq f g -> ae_eq g h -> ae_eq f h.
-Proof. by apply: filterS2 => x + + Dx => /(_ Dx) ->; exact. Qed.
+Lemma ae_eq_sub W (f g h i : T -> W) : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
+Proof. by apply: filterS2 => x + + Dx => /= /(_ Dx) -> /(_ Dx) ->. Qed.
 
-Lemma ae_eq_sub f g h i : ae_eq f g -> ae_eq h i -> ae_eq (f \- h) (g \- i).
-Proof. by apply: filterS2 => x + + Dx => /(_ Dx) -> /(_ Dx) ->. Qed.
+Lemma ae_eq_mul2r W (f g h : T -> W) : ae_eq f g -> ae_eq (f \* h) (g \* h).
+Proof. by move=>/(ae_eq_comp2 (fun x y => y * h x)). Qed.
 
-Lemma ae_eq_mul2r f g h : ae_eq f g -> ae_eq (f \* h) (g \* h).
-Proof. by apply: filterS => x /[apply] ->. Qed.
+Lemma ae_eq_mul2l W (f g h : T -> W) : ae_eq f g -> ae_eq (h \* f) (h \* g).
+Proof. by move=>/(ae_eq_comp2 (fun x y => h x * y)). Qed.
 
-Lemma ae_eq_mul2l f g h : ae_eq f g -> ae_eq (h \* f) (h \* g).
-Proof. by apply: filterS => x /[apply] ->. Qed.
+Lemma ae_eq_mul1l W (f g : T -> W) : ae_eq f (cst 1) -> ae_eq g (g \* f).
+Proof. by apply: filterS => x /= /[apply] ->; rewrite mulr1. Qed.
 
-Lemma ae_eq_mul1l f g : ae_eq f (cst 1) -> ae_eq g (g \* f).
-Proof. by apply: filterS => x /[apply] ->; rewrite mule1. Qed.
-
-Lemma ae_eq_abse f g : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
+Lemma ae_eq_abse (f g : T -> \bar R) : ae_eq f g -> ae_eq (abse \o f) (abse \o g).
 Proof. by apply: filterS => x /[apply] /= ->. Qed.
+
+Lemma ae_foralln (P : nat -> T -> Prop) :
+  (forall n, \forall x \ae mu, P n x) -> \forall x \ae mu, forall n, P n x.
+Proof.
+move=> /(_ _)/cid - /all_sig[A /all_and3[Ameas muA0 NPA]].
+have seqDUAmeas := seqDU_measurable Ameas.
+exists (\bigcup_n A n); split => //.
+- exact/bigcup_measurable.
+- rewrite seqDU_bigcup_eq measure_bigcup// eseries0// => i _ _.
+  by rewrite (@subset_measure0 _ _ _ _ _ (A i))//=; apply: subset_seqDU.
+- by move=> x /=; rewrite -existsNP => -[n NPnx]; exists n => //; apply: NPA.
+Qed.
 
 End ae_eq.
 
 Section ae_eq_lemmas.
-Context d (T : sigmaRingType d) (R : realType).
-Implicit Types mu : {measure set T -> \bar R}.
+Context d (T : sigmaRingType d) (R : realType) (U : Type).
+Implicit Types (mu : {measure set T -> \bar R}) (A : set T) (f g : T -> U).
 
 Lemma ae_eq_subset mu A B f g : B `<=` A -> ae_eq mu A f g -> ae_eq mu B f g.
-Proof.
-move=> BA [N [mN N0 fg]]; exists N; split => //.
-by apply: subset_trans fg; apply: subsetC => z /= /[swap] /BA ? ->.
-Qed.
+Proof. by move=> BA; apply: filterS => x + /BA; apply. Qed.
 
 End ae_eq_lemmas.
+
+Section ae_eqe.
+Context d (T : sigmaRingType d) (R : realType).
+Implicit Types (mu : {measure set T -> \bar R}) (D : set T) (f g h : T -> \bar R).
+
+Lemma ae_eqe_mul2l mu D f g h : ae_eq mu D f g -> ae_eq mu D (h \* f)%E (h \* g).
+Proof. by apply: filterS => x /= /[apply] ->. Qed.
+
+End ae_eqe.
 
 Definition sigma_subadditive {T} {R : numFieldType}
   (mu : set T -> \bar R) := forall (F : (set T) ^nat),
@@ -5345,8 +5413,8 @@ End absolute_continuity.
 Notation "m1 `<< m2" := (measure_dominates m1 m2).
 
 Section absolute_continuity_lemmas.
-Context d (T : measurableType d) (R : realType).
-Implicit Types m : {measure set T -> \bar R}.
+Context d (T : measurableType d) (R : realType) (U : Type).
+Implicit Types (m : {measure set T -> \bar R}) (f g : T -> U).
 
 Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
   m2 `<< m1 -> ae_eq m1 E f g -> ae_eq m2 E f g.
