@@ -6,6 +6,8 @@ From mathcomp Require Import topology normedtype sequences esum numfun.
 From mathcomp Require Import measure lebesgue_measure.
 
 (**md**************************************************************************)
+(* # Essential infimum and essential supremum                                 *)
+(*                                                                            *)
 (* ```                                                                        *)
 (*  ess_sup f == essential supremum of the function f : T -> R where T is a   *)
 (*               semiRingOfSetsType and R is a realType                       *)
@@ -26,13 +28,9 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 
 Section essential_supremum.
-Context d {T : measurableType d} {R : realType}.
+Context d {T : semiRingOfSetsType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Implicit Types (f g : T -> \bar R) (h k : T -> R).
-
-(* TODO: move *)
-Lemma measure0_ae (P : set T) : mu [set: T] = 0 -> \forall x \ae mu, P x.
-Proof. by move=> x; exists setT; split. Qed.
 
 Definition ess_sup f := ereal_inf [set y | \forall x \ae mu, f x <= y].
 
@@ -40,12 +38,19 @@ Lemma ess_supEae (f : T -> \bar R) :
   ess_sup f = ereal_inf [set y | \forall x \ae mu, f x <= y].
 Proof. by []. Qed.
 
-Lemma ae_le_measureP f y : measurable_fun setT f ->
-  (\forall x \ae mu, f x <= y) <-> (mu (f @^-1` `]y, +oo[) = 0).
+End essential_supremum.
+
+Section essential_supremum_lemmas.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types (f g : T -> \bar R) (h k : T -> R) (x y : \bar R) (r : R).
+
+Lemma ae_le_measureP f y : measurable_fun [set: T] f ->
+  (\forall x \ae mu, f x <= y) <-> mu (f @^-1` `]y, +oo[) = 0.
 Proof.
 move=> f_meas; have fVroo_meas : d.-measurable (f @^-1` `]y, +oo[).
   by rewrite -[_ @^-1` _]setTI; apply/f_meas=> //; exact/emeasurable_itv.
-have setCfVroo : (f @^-1` `]y, +oo[) = ~` [set x | f x <= y].
+have setCfVroo : f @^-1` `]y, +oo[ = ~` [set x | f x <= y].
   by apply: setC_inj; rewrite preimage_setC setCitv/= set_itvxx setU0 setCK.
 split.
   move=> [N [dN muN0 inN]]; rewrite (subset_measure0 _ dN)// => x.
@@ -54,7 +59,9 @@ set N := (X in mu X) => muN0; exists N; rewrite -setCfVroo.
 by split => //; exact: fVroo_meas.
 Qed.
 
-Lemma ess_supEmu0 (f : T -> \bar R) : measurable_fun setT f ->
+Local Notation ess_sup := (ess_sup mu).
+
+Lemma ess_supEmu0 f : measurable_fun [set: T] f ->
    ess_sup f = ereal_inf [set y | mu (f @^-1` `]y, +oo[) = 0].
 Proof.
 by move=> ?; congr (ereal_inf _); apply/predeqP => r; exact: ae_le_measureP.
@@ -92,21 +99,21 @@ move=> fg; apply/eqP; rewrite eq_le !le_ess_sup//=;
   by apply: filterS fg => x ->.
 Qed.
 
-Lemma ess_sup_cst r : 0 < mu [set: T] -> ess_sup (cst r) = r.
+Lemma ess_sup_cst x : 0 < mu [set: T] -> ess_sup (cst x) = x.
 Proof.
 move=> muT_gt0; apply/eqP; rewrite eq_le; apply/andP; split.
   by apply/ess_supP => //; apply: nearW.
 have ae_proper := ae_properfilter_algebraOfSetsType muT_gt0.
-by near (almost_everywhere mu) => x; near: x; apply: ess_sup_ge.
+by near (almost_everywhere mu) => y; near: y; apply: ess_sup_ge.
 Unshelve. all: by end_near. Qed.
 
-Lemma ess_sup_ae_cst f r : 0 < mu [set: T] ->
-  (\forall x \ae mu, f x = r) -> ess_sup f = r.
+Lemma ess_sup_ae_cst f y : 0 < mu [set: T] ->
+  (\forall x \ae mu, f x = y) -> ess_sup f = y.
 Proof. by move=> muT_gt0 /= /eq_ess_sup->; rewrite ess_sup_cst. Qed.
 
-Lemma ess_sup_gee f y : 0 < mu [set: T] ->
-  (\forall x \ae mu, y <= f x)%E -> y <= ess_sup f.
-Proof. by move=> *; rewrite -(ess_sup_cst y)//; apply: le_ess_sup. Qed.
+Lemma ess_sup_gee f a : 0 < mu [set: T] ->
+  (\forall x \ae mu, a <= f x) -> a <= ess_sup f.
+Proof. by move=> *; rewrite -(ess_sup_cst a)//; apply: le_ess_sup. Qed.
 
 Lemma abs_sup_eq0_ae_eq f : ess_sup (abse \o f) = 0 -> f = \0 %[ae mu].
 Proof.
@@ -123,22 +130,22 @@ move=> muT_gt0 f0; apply/eqP; rewrite eq_le; apply/andP; split.
 by rewrite -[0]ess_sup_cst// le_ess_sup//=; near=> x; rewrite abse_ge0.
 Unshelve. all: by end_near. Qed.
 
-Lemma ess_sup_pZl f (a : R) : (0 < a)%R ->
-  ess_sup (cst a%:E \* f) = a%:E * ess_sup f.
+Lemma ess_sup_pZl f r : (0 < r)%R ->
+  ess_sup (cst r%:E \* f) = r%:E * ess_sup f.
 Proof.
-move=> /[dup] /ltW a_ge0 a_gt0.
-gen have esc_le : a f a_ge0 a_gt0 /
-    (ess_sup (cst a%:E \* f) <= a%:E * ess_sup f)%E.
+move=> /[dup] /ltW r_ge0 r_gt0.
+gen have esc_le : r f r_ge0 r_gt0 /
+    ess_sup (cst r%:E \* f) <= r%:E * ess_sup f.
   by apply/ess_supP; near do rewrite /cst/= lee_pmul2l//; apply/ess_supP.
 apply/eqP; rewrite eq_le esc_le// -lee_pdivlMl//=.
 apply: le_trans (esc_le _ _ _ _); rewrite ?invr_gt0 ?invr_ge0//.
 by under eq_fun do rewrite muleA -EFinM mulVf ?mul1e ?gt_eqF//.
 Unshelve. all: by end_near. Qed.
 
-Lemma ess_supZl f (a : R) : mu [set: T] > 0 -> (0 <= a)%R ->
-  ess_sup (cst a%:E \* f) = a%:E * ess_sup f.
+Lemma ess_supZl f r : mu [set: T] > 0 -> (0 <= r)%R ->
+  ess_sup (cst r%:E \* f) = r%:E * ess_sup f.
 Proof.
-move=> muTN0; case: ltgtP => // [a_gt0|<-] _; first exact: ess_sup_pZl.
+move=> muTN0; case: ltgtP => // [r_gt0|<-] _; first exact: ess_sup_pZl.
 by under eq_fun do rewrite mul0e; rewrite mul0e ess_sup_cst.
 Qed.
 
@@ -150,7 +157,7 @@ Qed.
 
 Lemma ess_supD f g : ess_sup (f \+ g) <= ess_sup f + ess_sup g.
 Proof.
-by apply/ess_supP; near do rewrite lee_add//; apply/ess_supP.
+by apply/ess_supP; near do rewrite leeD//; apply/ess_supP.
 Unshelve. all: by end_near. Qed.
 
 Lemma ess_sup_absD f g :
@@ -160,11 +167,20 @@ rewrite (le_trans _ (ess_supD _ _))// le_ess_sup//.
 by apply/nearW => x; apply/lee_abs_add.
 Qed.
 
-End essential_supremum.
+End essential_supremum_lemmas.
 Arguments ess_sup_ae_cst {d T R mu f}.
 Arguments ess_supP {d T R mu f a}.
 
 Section real_essential_supremum.
+Context d {T : semiRingOfSetsType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types f : T -> R.
+
+Notation ess_supr f := (ess_sup mu (EFin \o f)).
+
+End real_essential_supremum.
+
+Section real_essential_supremum_lemmas.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Implicit Types f : T -> R.
@@ -198,7 +214,7 @@ Proof. by move=> muT f0; apply/ess_sup_gee => //=; apply: nearW. Qed.
 Lemma ess_sup_ler f y : (forall t, (f t)%:E <= y) -> ess_supr f <= y.
 Proof. by move=> ?; apply/ess_supP; apply: nearW. Qed.
 
-Lemma ess_sup_cstr y : (0 < mu setT)%E -> (ess_supr (cst y) = y%:E)%E.
+Lemma ess_sup_cstr y : 0 < mu [set: T] -> ess_supr (cst y) = y%:E.
 Proof. by move=> muN0; rewrite (ess_sup_ae_cst y%:E)//=; apply: nearW. Qed.
 
 Lemma ess_suprD f g : ess_supr (f \+ g) <= ess_supr f + ess_supr g.
@@ -211,22 +227,30 @@ rewrite (le_trans _ (ess_suprD _ _))// le_ess_sup//.
 by apply/nearW => x; apply/ler_normD.
 Qed.
 
-End real_essential_supremum.
+End real_essential_supremum_lemmas.
 Notation ess_supr mu f := (ess_sup mu (EFin \o f)).
 
 Section essential_infimum.
-Context d {T : measurableType d} {R : realType}.
+Context d {T : semiRingOfSetsType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Implicit Types f : T -> \bar R.
 
 Definition ess_inf f := ereal_sup [set y | \forall x \ae mu, y <= f x].
-Notation ess_sup := (ess_sup mu).
 
-Lemma ess_infEae (f : T -> \bar R) :
-  ess_inf f = ereal_sup [set y | \forall x \ae mu, y <= f x].
+Lemma ess_infEae f : ess_inf f = ereal_sup [set y | \forall x \ae mu, y <= f x].
 Proof. by []. Qed.
 
-Lemma ess_infEN (f : T -> \bar R) : ess_inf f = - ess_sup (\- f).
+End essential_infimum.
+
+Section essential_infimum_lemmas.
+Context d {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types (f : T -> \bar R) (x y : \bar R) (r : R).
+
+Local Notation ess_inf := (ess_inf mu).
+Local Notation ess_sup := (ess_sup mu).
+
+Lemma ess_infEN f : ess_inf f = - ess_sup (\- f).
 Proof.
 rewrite ess_supEae ess_infEae ereal_infEN oppeK; congr (ereal_sup _).
 apply/seteqP; split=> [y /= y_le|_ [/= y y_ge <-]].
@@ -234,18 +258,18 @@ apply/seteqP; split=> [y /= y_le|_ [/= y y_ge <-]].
 by apply: filterS y_ge => x; rewrite leeNl.
 Qed.
 
-Lemma ess_supEN (f : T -> \bar R) : ess_sup f = - ess_inf (\- f).
+Lemma ess_supEN f : ess_sup f = - ess_inf (\- f).
 Proof.
 by rewrite ess_infEN oppeK; apply/eq_ess_sup/nearW => ?; rewrite oppeK.
 Qed.
 
-Lemma ess_infN (f : T -> \bar R) : ess_inf (\- f) = - ess_sup f.
+Lemma ess_infN f : ess_inf (\- f) = - ess_sup f.
 Proof. by rewrite ess_supEN oppeK. Qed.
 
-Lemma ess_supN (f : T -> \bar R) : ess_sup (\- f) = - ess_inf f.
+Lemma ess_supN f : ess_sup (\- f) = - ess_inf f.
 Proof. by rewrite ess_infEN oppeK. Qed.
 
-Lemma ess_infP f a : reflect (\forall x \ae mu, a <= f x) (a <= ess_inf f).
+Lemma ess_infP f y : reflect (\forall x \ae mu, y <= f x) (y <= ess_inf f).
 Proof.
 by rewrite ess_infEN leeNr; apply: (iffP ess_supP);
    apply: filterS => x; rewrite leeN2.
@@ -267,28 +291,27 @@ move=> fg; apply/eqP; rewrite eq_le !le_ess_inf//=;
   by apply: filterS fg => x ->.
 Qed.
 
-Lemma ess_inf_cst r : 0 < mu [set: T] -> ess_inf (cst r) = r.
+Lemma ess_inf_cst x : 0 < mu [set: T] -> ess_inf (cst x) = x.
 Proof.
-by move=> ?; rewrite ess_infEN (ess_sup_ae_cst (- r)) ?oppeK//=; apply: nearW.
+by move=> ?; rewrite ess_infEN (ess_sup_ae_cst (- x)) ?oppeK//=; apply: nearW.
 Qed.
 
-Lemma ess_inf_ae_cst f r : 0 < mu [set: T] ->
-  (\forall x \ae mu, f x = r) -> ess_inf f = r.
+Lemma ess_inf_ae_cst f y : 0 < mu [set: T] ->
+  (\forall x \ae mu, f x = y) -> ess_inf f = y.
 Proof. by move=> muT_gt0 /= /eq_ess_inf->; rewrite ess_inf_cst. Qed.
 
 Lemma ess_inf_gee f y : 0 < mu [set: T] ->
-  (\forall x \ae mu, y <= f x)%E -> y <= ess_inf f.
+  (\forall x \ae mu, y <= f x) -> y <= ess_inf f.
 Proof. by move=> *; rewrite -(ess_inf_cst y)//; apply: le_ess_inf. Qed.
 
-Lemma ess_inf_pZl f (a : R) : (0 < a)%R ->
-  (ess_inf (cst a%:E \* f) = a%:E * ess_inf f).
+Lemma ess_inf_pZl f r : (0 < r)%R -> ess_inf (cst r%:E \* f) = r%:E * ess_inf f.
 Proof.
-move=> a_gt0; rewrite !ess_infEN muleN; congr (- _)%E.
+move=> r_gt0; rewrite !ess_infEN muleN; congr (- _).
 by under eq_fun do rewrite -muleN; rewrite ess_sup_pZl.
 Qed.
 
-Lemma ess_infZl f (a : R) : mu [set: T] > 0 -> (0 <= a)%R ->
-  (ess_inf (cst a%:E \* f) = a%:E * ess_inf f).
+Lemma ess_infZl f r : mu [set: T] > 0 -> (0 <= r)%R ->
+  ess_inf (cst r%:E \* f) = r%:E * ess_inf f.
 Proof.
 move=> muTN0; case: ltgtP => // [a_gt0|<-] _; first exact: ess_inf_pZl.
 by under eq_fun do rewrite mul0e; rewrite mul0e ess_inf_cst.
@@ -302,17 +325,17 @@ Qed.
 
 Lemma ess_infD f g : ess_inf (f \+ g) >= ess_inf f + ess_inf g.
 Proof.
-by apply/ess_infP; near do rewrite lee_add//; apply/ess_infP.
+by apply/ess_infP; near do rewrite leeD//; apply/ess_infP.
 Unshelve. all: by end_near. Qed.
 
-End essential_infimum.
+End essential_infimum_lemmas.
 Arguments ess_inf_ae_cst {d T R mu f}.
-Arguments ess_infP {d T R mu f a}.
+Arguments ess_infP {d T R mu f y}.
 
 Section real_essential_infimum.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
-Implicit Types f : T -> R.
+Implicit Types (f : T -> R) (x : \bar R) (r : R).
 
 Notation ess_infr f := (ess_inf mu (EFin \o f)).
 
@@ -325,19 +348,19 @@ have inff_fin : ess_infr f \is a fin_num by case: ess_inf ltfy inffNy.
 by exists (fine (ess_infr f)); near do rewrite -lee_fin fineK//; apply/ess_infP.
 Unshelve. all: by end_near. Qed.
 
-Lemma ess_infrZl f (y : R) : mu setT > 0 -> (0 <= y)%R ->
-  ess_infr (cst y \* f)%R = y%:E * ess_infr f.
+Lemma ess_infrZl f r : mu [set: T] > 0 -> (0 <= r)%R ->
+  ess_infr (cst r \* f)%R = r%:E * ess_infr f.
 Proof. by move=> muT_gt0 r_ge0; rewrite -ess_infZl. Qed.
 
 Lemma ess_inf_ger f x : 0 < mu [set: T] -> (forall t, x <= (f t)%:E) ->
   x <= ess_infr f.
 Proof. by move=> muT f0; apply/ess_inf_gee => //=; apply: nearW. Qed.
 
-Lemma ess_inf_ler f y : (forall t, y <= (f t)%:E) -> y <= ess_infr f.
+Lemma ess_inf_ler f x : (forall t, x <= (f t)%:E) -> x <= ess_infr f.
 Proof. by move=> ?; apply/ess_infP; apply: nearW. Qed.
 
-Lemma ess_inf_cstr y : (0 < mu setT)%E -> (ess_infr (cst y) = y%:E)%E.
-Proof. by move=> muN0; rewrite (ess_inf_ae_cst y%:E)//=; apply: nearW. Qed.
+Lemma ess_inf_cstr r : 0 < mu [set: T] -> ess_infr (cst r) = r%:E.
+Proof. by move=> muN0; rewrite (ess_inf_ae_cst r%:E)//=; apply: nearW. Qed.
 
 End real_essential_infimum.
 Notation ess_infr mu f := (ess_inf mu (EFin \o f)).
