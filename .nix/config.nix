@@ -56,7 +56,6 @@ in
 
   bundles."9.0".coqPackages = common-bundle // {
     coq.override.version = "9.0";
-    mathcomp.override.version = "2.3.0";
   };
 
   bundles."master" = { rocqPackages = {
@@ -64,6 +63,8 @@ in
     stdlib.override.version = "master";
     rocq-elpi.override.version = "master";
     rocq-elpi.override.elpi-version = "2.0.7";
+    mathcomp-analysis.job = false;  # current bug in coq-nix-toolbox
+    mathcomp-analysis-stdlib.job = false;
   }; coqPackages = common-bundle // {
     coq.override.version = "master";
     stdlib.override.version = "master";
