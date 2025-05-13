@@ -36,12 +36,14 @@ jobs:
         run: opam install -y --deps-only . && opam exec -- make -j 4
 
       - name: Build coq2html
-        run: opam install -y coq-rocqnavi && opam show coq-rocqnavi
+        run: exit 0  # currently broken
+#        run: opam install -y coq-rocqnavi && opam show coq-rocqnavi
 
       - name: Generate Documents
         run: |
           mkdir -p artifact/${{ env.destination_dir }}
-          opam exec -- coq2html -title "Mathcomp Analysis" -d artifact/${{ env.destination_dir }} -base mathcomp -Q theories analysis -coqlib https://coq.inria.fr/doc/V8.18.0/stdlib/ -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.ssreflect -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.algebra classical/*.glob classical/*.v theories/*.glob theories/*.v
+          exit 0  # currently broken
+#          opam exec -- coq2html -title "Mathcomp Analysis" -d artifact/${{ env.destination_dir }} -base mathcomp -Q theories analysis -coqlib https://coq.inria.fr/doc/V8.18.0/stdlib/ -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.ssreflect -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.algebra classical/*.glob classical/*.v theories/*.glob theories/*.v
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
