@@ -30,12 +30,11 @@ Local Open Scope ereal_scope.
 Section essential_supremum.
 Context d {T : semiRingOfSetsType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
-Implicit Types (f g : T -> \bar R) (h k : T -> R).
+Implicit Type f : T -> \bar R.
 
 Definition ess_sup f := ereal_inf [set y | \forall x \ae mu, f x <= y].
 
-Lemma ess_supEae (f : T -> \bar R) :
-  ess_sup f = ereal_inf [set y | \forall x \ae mu, f x <= y].
+Lemma ess_supEae f : ess_sup f = ereal_inf [set y | \forall x \ae mu, f x <= y].
 Proof. by []. Qed.
 
 End essential_supremum.
@@ -45,6 +44,8 @@ Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
 Implicit Types (f g : T -> \bar R) (h k : T -> R) (x y : \bar R) (r : R).
 
+(* NB: note that this lemma does not depends on the new definitions introduced
+   in this file and might be move earlier in the file hierarchy later *)
 Lemma ae_le_measureP f y : measurable_fun [set: T] f ->
   (\forall x \ae mu, f x <= y) <-> mu (f @^-1` `]y, +oo[) = 0.
 Proof.
@@ -78,11 +79,11 @@ rewrite lime_ge//; first by apply/cvgP: uinf.
 by apply: nearW; near: x; apply/ae_foralln => n; apply: uI.
 Unshelve. all: by end_near. Qed.
 
-Lemma ess_supP f a : reflect (\forall x \ae mu, f x <= a) (ess_sup f <= a).
+Lemma ess_supP f y : reflect (\forall x \ae mu, f x <= y) (ess_sup f <= y).
 Proof.
 apply: (iffP (ereal_inf_leP _)) => /=; last 2 first.
-- by move=> [y fy ya]; near do apply: le_trans ya.
-- by move=> fa; exists a.
+- by move=> [z fz zy]; near do apply: le_trans zy.
+- by move=> fy; exists y.
 by rewrite -ess_supEae//; exact: ess_sup_ge.
 Unshelve. all: by end_near. Qed.
 
@@ -169,7 +170,7 @@ Qed.
 
 End essential_supremum_lemmas.
 Arguments ess_sup_ae_cst {d T R mu f}.
-Arguments ess_supP {d T R mu f a}.
+Arguments ess_supP {d T R mu f y}.
 
 Section real_essential_supremum.
 Context d {T : semiRingOfSetsType d} {R : realType}.
@@ -183,7 +184,7 @@ End real_essential_supremum.
 Section real_essential_supremum_lemmas.
 Context d {T : measurableType d} {R : realType}.
 Variable mu : {measure set T -> \bar R}.
-Implicit Types f : T -> R.
+Implicit Types (f : T -> R) (r : R).
 
 Notation ess_supr f := (ess_sup mu (EFin \o f)).
 
@@ -203,8 +204,8 @@ move=> /abs_sup_eq0_ae_eq; apply: filterS => x /= /(_ _)/eqP.
 by rewrite eqe => /(_ _)/eqP.
 Qed.
 
-Lemma ess_suprZl f (y : R) : mu setT > 0 -> (0 <= y)%R ->
-  ess_supr (cst y \* f)%R = y%:E * ess_supr f.
+Lemma ess_suprZl f r : mu [set: T] > 0 -> (0 <= r)%R ->
+  ess_supr (cst r \* f)%R = r%:E * ess_supr f.
 Proof. by move=> muT_gt0 r_ge0; rewrite -ess_supZl. Qed.
 
 Lemma ess_sup_ger f x : 0 < mu [set: T] -> (forall t, x <= (f t)%:E) ->
