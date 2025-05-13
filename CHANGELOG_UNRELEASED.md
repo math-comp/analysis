@@ -4,8 +4,6 @@
 
 ### Added
 
-### Changed
-
 - in `sequences.v`:
   + lemma `subset_seqDU`
 
@@ -17,12 +15,22 @@
   + lemma `ae_foralln`
   + lemma `ae_eqe_mul2l`
 
+- in `reals.v`:
+  + definition `irrational`
+  + lemmas `irrationalE`, `rationalP` 
+
+- file `borel_hierarchy.v`:
+  + lemmas ``
+
 ### Changed
 
 - in `measure.v`:
   + notation `{ae mu, P}` (near use `{near _, _}` notation)
   + definition `ae_eq`
   + `ae_eq` lemmas now for `ringType`-valued functions (instead of `\bar R`)
+
+- moved from `pi_irrational.v` to `reals.v` and changed
+  + definition `rational`
 
 ### Renamed
 
