@@ -66,6 +66,17 @@ apply/not_implyP; split; first exact: openT.
 by rewrite setTI => -[].
 Qed.
 
+Section Fsigma.
+
+Definition Fsigma (R : topologicalType) (S : set R) :=
+  exists2 A_ : (set R)^nat,
+ (forall i : nat, closed (A_ i)) & S = \bigcup_i (A_ i).
+
+Lemma closed_Fsigma (R : topologicalType) (S : set R) : closed S -> Fsigma S.
+Proof. by exists (fun=> S)=> //; rewrite bigcup_const. Qed.
+
+End Fsigma.
+
 Section Gdelta.
 
 Definition Gdelta (R : topologicalType) (S : set R) :=
@@ -73,10 +84,7 @@ Definition Gdelta (R : topologicalType) (S : set R) :=
  (forall i : nat, open (A_ i)) & S = \bigcap_i (A_ i).
 
 Lemma open_Gdelta (R : topologicalType) (S : set R) : open S -> Gdelta S.
-Proof.
-exists (bigcap2 S setT)=> [i |]; last by rewrite bigcap2E setIT.
-by rewrite /bigcap2; case: ifP => // _; case: ifP => // _; apply: openT.
-Qed.
+Proof. by exists (fun=> S)=> //; rewrite bigcap_const. Qed.
 
 Section irrat_Gdelta.
 Context {R : realType}.
