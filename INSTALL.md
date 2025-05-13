@@ -2,16 +2,16 @@
 
 ## Requirements
 
-- [The Coq Proof Assistant version ≥ 8.20](https://coq.inria.fr)
+- [The Coq Proof Assistant version ≥ 8.20 / Rocq Prover version ≥ 9.0](https://rocq-prover.org)
 - [Mathematical Components version ≥ 2.2.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 2.1.0](https://github.com/math-comp/finmap)
-- [Hierarchy builder version >= 1.7.0](https://github.com/math-comp/hierarchy-builder)
-- [bigenough >= 1.0.0](https://github.com/math-comp/bigenough)
+- [Hierarchy builder version ≥ 1.7.0](https://github.com/math-comp/hierarchy-builder)
+- [bigenough ≥ 1.0.0](https://github.com/math-comp/bigenough)
 
 These requirements can be installed in a custom way, or through
 [opam](https://opam.ocaml.org/) (the recommended way) using
-the repository https://coq.inria.fr/opam/released, which you can add by typing
-`opam repo add coq-released https://coq.inria.fr/opam/released`.
+the repository https://rocq-prover.org/opam/released, which you can add by typing
+`opam repo add rocq-released https://rocq-prover.org/opam/released`.
 
 Detailed instructions for possible installations of Mathematical Components are located
 [here](https://github.com/math-comp/math-comp/blob/master/INSTALL.md).
@@ -22,8 +22,10 @@ Detailed instructions for possible installations of Mathematical Components are 
   + type `opam install coq-mathcomp-analysis.X.Y.Z` where `X.Y.Z` is the version number
     (all the dependencies should be automatically installed, assuming `opam` has been properly
     configured and `coq-released` repository is added)
-- Custom (assuming the requirements are met):
-  + type `make` to use the provided `Makefile`
+- Custom:
+  + first, install the required dependencies, for example with opam
+    type `opam install --deps-only coq-mathcomp-analysis.X.Y.Z`
+  + assuming the requirements are met, type `make` to use the provided `Makefile`
 
 ## From scratch instructions
 
@@ -40,7 +42,7 @@ $ sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/instal
 $ export OPAMROOT=~/.opam_mathcomp_analysis # opam configuration, metadata, logs, temporary directories and caches
 $ opam init -j4 # adapt to the number of cores you have
 $ eval `opam config env`
-$ opam repo add coq-released https://coq.inria.fr/opam/released
+$ opam repo add rocq-released https://rocq-prover.org/opam/released
 ```
 3. Install our package (and all its dependencies)
 ```
@@ -71,7 +73,7 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.20.0 and MathComp 2.3.0. For other versions, update the
+With the example of Coq 8.20.1 and MathComp 2.3.0. For other versions, update the
 version numbers accordingly.
 
 1. Install Coq 8.20.1
