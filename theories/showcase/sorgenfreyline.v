@@ -183,23 +183,19 @@ From mathcomp Require Import ring.
 Lemma abs_subr_min (x y t u : R) :
   `|Num.min x y - Num.min t u| <= Num.max `|x - t| `|y - u|.
 Proof.
-have cxy : x >=< y by rewrite comparablerE num_real.
-have ctu : t >=< u by rewrite comparablerE num_real.
+wlog xy: x y t u / x <= y.
+  move=> H.
+  case/boolP: (x <= y) => [/H //| xy].
+  by rewrite minC (minC t) maxC H // ltW // ltNge.
+case: (lerP x y); [move=> _ | by rewrite ltNge xy].
 have cxtyu : `|x-t| >=< `|y-u| by rewrite comparablerE num_real.
-case: (comparable_leP cxy) => xy; case: (comparable_leP ctu) => tu;
-  rewrite comparable_le_max //.
-- by rewrite lexx.
-- case: (lerP x u) => xu.
-    case: (lerP x t) => xt. by rewrite lerD2r ltW.
-    by rewrite leNgt (lt_trans tu xt) in xu.
-  case: (lerP u y) => uy. by rewrite lerD2r xy orbT.
-  by rewrite leNgt (lt_trans uy xu) in xy.
-- case: (lerP y t) => yt.
-    case: (lerP y u) => uy. by rewrite lerD2r tu orbT.
-    by rewrite leNgt (lt_le_trans uy yt) in tu.
-  case: (lerP t x) => xt. by rewrite lerD2r (ltW xy).
-  by rewrite ltNge (ltW (lt_trans xt yt)) in xy.
-- by rewrite lexx orbT.
+case: (lerP t u) => tu; rewrite comparable_le_max //.
+  by rewrite lexx.
+case: (lerP x u) => xu.
+  case: (lerP x t) => xt. by rewrite lerD2r ltW.
+  by rewrite leNgt (lt_trans tu xt) in xu.
+case: (lerP u y) => uy. by rewrite lerD2r xy orbT.
+by rewrite leNgt (lt_trans uy xu) in xy.
 Qed.
 
 Lemma le_inf_n0 (E : set R) (x : R) : x \in E -> inf E != 0 -> inf E <= x.
