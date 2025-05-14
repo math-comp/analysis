@@ -5,7 +5,7 @@ From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop reals ereal.
 From mathcomp Require Import topology normedtype sequences real_interval.
 From mathcomp Require Import esum measure lebesgue_measure lebesgue_integral.
-From mathcomp Require Import numfun exp convex interval_inference.
+From mathcomp Require Import numfun exp convex interval_inference ess_sup_inf.
 
 (**md**************************************************************************)
 (* # Hoelder's Inequality                                                     *)
@@ -43,7 +43,7 @@ HB.lock Definition Lnorm {d} {T : measurableType d} {R : realType}
               mu (f @^-1` (setT `\ 0%R))
             else
               (\int[mu]_x (`|f x| `^ p)%:E) `^ p^-1)%E
-  | +oo%E => (if mu [set: T] > 0 then ess_sup mu (normr \o f) else 0)%E
+  | +oo%E => (if mu [set: T] > 0 then ess_supr mu (normr \o f) else 0)%E
   | -oo%E => 0%E
   end.
 Canonical locked_Lnorm := Unlockable Lnorm.unlock.
@@ -68,7 +68,7 @@ Lemma Lnorm_ge0 p f : 0 <= 'N_p[f].
 Proof.
 rewrite unlock; move: p => [r/=|/=|//].
   by case: ifPn => // r0; exact: poweR_ge0.
-by case: ifPn => // /ess_sup_ge0; apply => t/=.
+by case: ifPn => // /ess_sup_ger; apply => t/=.
 Qed.
 
 Lemma eq_Lnorm p f g : f =1 g -> 'N_p[f] = 'N_p[g].
