@@ -4160,14 +4160,21 @@ Notation "{ 'ae' m , P }" := {near almost_everywhere m, P} : type_scope.
 Notation "\forall x \ae mu , P" := (\forall x \near almost_everywhere mu, P)
   (format "\forall  x  \ae  mu ,  P",
   x name, P at level 200, at level 200): type_scope.
-Definition ae_eq d (T : semiRingOfSetsType d) (R : realType) (mu : {measure set T -> \bar R})
-  (V : T -> Type) D (f g : forall x, V x) := (\forall x \ae mu, D x -> f x = g x).
+Definition ae_eq d (T : semiRingOfSetsType d) (R : realType)
+    (mu : {measure set T -> \bar R}) (V : T -> Type) D (f g : forall x, V x) :=
+  \forall x \ae mu, D x -> f x = g x.
 Notation "f = g %[ae mu 'in' D ]" := (\forall x \ae mu, D x -> f x = g x)
-  (format "f  =  g  '%[ae'  mu  'in'  D ]", g at next level, D at level 200, at level 70).
+  (format "f  =  g  '%[ae'  mu  'in'  D ]",
+   g at next level, D at level 200, at level 70).
 Notation "f = g %[ae mu ]" := (f = g %[ae mu in setT ])
   (format "f  =  g  '%[ae'  mu ]", g at next level, at level 70).
 
-Lemma aeW {d} {T : ringOfSetsType d} {R : realFieldType}
+Lemma measure0_ae d {T : algebraOfSetsType d} {R : realType}
+    (mu : {measure set T -> \bar R}) (P : set T) :
+  mu [set: T] = 0 -> \forall x \ae mu, P x.
+Proof. by move=> x; exists setT. Qed.
+
+Lemma aeW {d} {T : semiRingOfSetsType d} {R : realFieldType}
     (mu : {measure set _ -> \bar R}) (P : T -> Prop) :
   (forall x, P x) -> \forall x \ae mu, P x.
 Proof.
@@ -5421,21 +5428,3 @@ Lemma measure_dominates_ae_eq m1 m2 f g E : measurable E ->
 Proof. by move=> mE m21 [A [mA A0 ?]]; exists A; split => //; exact: m21. Qed.
 
 End absolute_continuity_lemmas.
-
-Section essential_supremum.
-Context d {T : semiRingOfSetsType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Implicit Types f : T -> R.
-
-Definition ess_sup f :=
-  ereal_inf (EFin @` [set r | mu (f @^-1` `]r, +oo[) = 0]).
-
-Lemma ess_sup_ge0 f : 0 < mu [set: T] -> (forall t, 0 <= f t)%R ->
-  0 <= ess_sup f.
-Proof.
-move=> muT f0; apply: lb_ereal_inf => _ /= [r /eqP rf <-]; rewrite leNgt.
-apply/negP => r0; apply/negP : rf; rewrite gt_eqF// (_ : _ @^-1` _ = setT)//.
-by apply/seteqP; split => // x _ /=; rewrite in_itv/= (lt_le_trans _ (f0 x)).
-Qed.
-
-End essential_supremum.
