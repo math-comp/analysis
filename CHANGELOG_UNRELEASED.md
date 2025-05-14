@@ -58,6 +58,9 @@
   + definition `almost_everywhere_notation`
   + lemma `ess_sup_ge0`
 
+- in `mathcomp_extra.v`:
+  + lemmas `inr_inj`, `inl_inj`
+
 ### Infrastructure
 
 ### Misc
