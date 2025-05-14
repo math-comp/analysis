@@ -243,28 +243,62 @@ rewrite !image2E.
 by apply/seteqP; split => c /= [] [x y] /= [] Hx Hy <-; exists (y,x).
 Qed.
 
+Let dl_shift x z :
+  x < z -> `]x, z] `<=` ~` E -> dl z = [set t + (z - x) | t in dl x].
+Proof.
+move=> xz xzNE.
+apply/seteqP; rewrite /dl; split => t /= [].
+  move => ztE y0.
+  case: (ltrP x (z-t)) => ztx.
+    suff : z - t \notin E by rewrite ztE.
+    rewrite -in_setC inE.
+    apply: xzNE.
+    by rewrite /= in_itv /= ztx lerBlDr lerDl.
+  exists (x - (z-t)).
+    by rewrite opprD addrA subrr opprK add0r ztE subr_ge0.
+  by rewrite (addrC z) opprD opprK !addrA addrNK addrC addKr.
+move=> w [] xwE w0 <-.
+rewrite !opprD (addrCA z) !addrA addrK addrC opprK.
+by rewrite subr_ge0 ler_wpDl // ltW.
+Qed.
+
+Let dr_shift x z :
+  x < z -> `]x, z] `<=` ~` E -> dr x = [set t + (z - x) | t in dr z].
+Proof.
+move=> xz xzNE.
+apply/seteqP; rewrite /dr; split => t /= [].
+  move => xtE y0.
+  case: (ltrP z (x+t)) => zxt; last first.
+    suff : x + t \notin E by rewrite xtE.
+    rewrite -in_setC inE.
+    apply: xzNE.
+    by rewrite /= in_itv /= zxt ltrDl y0.
+  exists (x + t - z).
+    by rewrite addrA (addrC z) addrK xtE subr_gt0.
+  by rewrite addrA (addrAC _ _ z) addrK (addrC x) addrK.
+move=> w [] xwE w0 <-.
+rewrite !addrA addrAC (addrC x) addrK addrC.
+by rewrite subr_gt0 ltr_wpDr // ltW.
+Qed.
+
 Lemma continuous_sdist :
   forall x, @continuous_at sorgenfrey Rtopo x sdist.
 Proof.
-move=> x N.
+move=> x B.
 rewrite -(@filter_from_ballE R (GRing_regular__canonical__pseudometric_structure_PseudoMetric R)).
-case => eps /= eps0 epsN.
+case => eps /= eps0 epsB.
 pose xepsE := [set y | x + y \in E /\ 0 < y < eps].
 pose eps' := xget eps xepsE.
 exists (`[x,x+eps'[); split => //=.
-- exists [set (x,x+eps')].
-    by move=> i /= ->.
+- exists [set (x,x+eps')] => //.
   by rewrite bigcup_set1.
 - rewrite in_itv /= lexx ltrDl /eps' /=.
-  case: (xgetP eps xepsE) => //.
-  move=> y ->.
-  by rewrite /xepsE /= => -[] _ /andP[].
+  by case: (xgetP eps xepsE) => // y -> [] _ /andP[].
 rewrite -image_sub.
 move=> y /= [] z.
 rewrite in_itv /= => /andP[xz zx] <- {y}.
-apply: epsN.
-rewrite /ball /=.
-rewrite /sdist.
+apply: epsB.
+rewrite /ball /sdist /=.
 have [<-|xz'] := eqVneq x z.
   by rewrite subrr normr0.
 have {xz xz'} xz: x < z by rewrite lt_neqAle xz'.
@@ -298,18 +332,12 @@ case/boolP: (xepsE == set0).
     suff : xepsE y by rewrite xepsE0.
     by rewrite /xepsE /= Hy y0 -(ltrD2l x) (le_lt_trans xyz).
   have dlxz : dl z = [set t + (z - x) | t in dl x].
-    apply/seteqP; rewrite /dl; split => t /= [].
-      move => ztE y0.
-      case: (ltrP x (z-t)) => ztx.
-        suff : z-t-x \in xepsE by rewrite xepsE0 inE.
-        rewrite inE /xepsE /= addrA (addrC x) addrK ztE.
-        by rewrite subr_gt0 ztx ltrBlDl ltrBlDr ltr_wpDr.
-      exists (x - (z-t)).
-        by rewrite opprD addrA subrr opprK add0r ztE subr_ge0.
-      by rewrite (addrC z) opprD opprK !addrA addrNK addrC addKr.
-    move=> w [] xwE w0 <-.
-    rewrite !opprD (addrCA z) !addrA addrK addrC opprK.
-    by rewrite subr_ge0 ler_wpDl // ltW.
+    apply: dl_shift => // t /=.
+    rewrite in_itv /= => /andP[] xt tz.
+    apply: contraPnot xepsE0.
+    rewrite -inE => Et; apply/eqP/set0P.
+    exists (t-x); rewrite /xepsE /= addrA (addrC x) addrK.
+    by rewrite subr_gt0 xt ltrBlDl (le_lt_trans tz).
   have [dlx0|] := eqVneq (dl x) set0.
     rewrite dlx0 inf0 subr0.
     case: ifPn => xinE.
