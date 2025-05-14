@@ -228,6 +228,21 @@ Proof. by move=> y; rewrite inE => -[]. Qed.
 Let dr_ge0 x : {in dr x, forall y : R, y >= 0}.
 Proof. by move=> y; rewrite inE => -[] _ /ltW. Qed.
 
+Lemma image2_set1 A B C (S : set A) (eb : B) (f : A -> B -> C) :
+  [set f x y | x in S & y in [set eb]] = [set f x eb | x in S].
+Proof.
+apply/seteqP; split => y /= [] u dlxu.
+  by case=> v -> <-; exists u.
+by move <-; exists u => //; exists eb.
+Qed.
+
+Lemma image2X A B C (SA : set A) (SB : set B) (f : A -> B -> C) :
+  [set f x y | x in SA & y in SB] = [set f x y | y in SB & x in SA].
+Proof.
+rewrite !image2E.
+by apply/seteqP; split => c /= [] [x y] /= [] Hx Hy <-; exists (y,x).
+Qed.
+
 Lemma continuous_sdist :
   forall x, @continuous_at sorgenfrey Rtopo x sdist.
 Proof.
@@ -257,16 +272,12 @@ set xr : R := if dr x == set0 then _ else _.
 set zr : R := if dr z == set0 then _ else _.
 case/boolP: (xepsE == set0).
   move/eqP => xepsE0.
-  have Heps' : eps' = eps.
-    rewrite /eps'.
-    case: (xgetP eps xepsE) => //.
-    move=> y ->.
-    by rewrite xepsE0.
+  have Heps' : eps' = eps by rewrite /eps' xgetPN // xepsE0 => t.
   rewrite {}Heps' {eps'} in zx.
   have znE : z \notin E.
     apply/negP => zE.
     suff : xepsE (z-x) by rewrite xepsE0.
-    by rewrite /xepsE /= addrA (addrC x) addrK zE ltrBrDl addr0 ltrBlDl xz zx.
+    by rewrite /xepsE /= addrA (addrC x) addrK subr_gt0 xz ltrBlDl.
   have Hr : `|Num.min 1 xr - Num.min 1 zr| < eps.
     rewrite /xr /zr.
     case: ifPn => drx0.
@@ -275,29 +286,29 @@ case/boolP: (xepsE == set0).
       suff : y + z - x \in dr x by rewrite (eqP drx0) inE.
       rewrite inE /dr /= addrA (addrC x) addrK addrC Hy.
       by rewrite subr_gt0 ltr_wpDr // ltW.
-    rewrite ifF. rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //. admit.
+    rewrite ifF.
+      rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //.
+      rewrite subrr normr0 maxEle normr_ge0.
+      admit.
     apply/negbTE/set0P.
     case/set0P: drx0 => y [] Hy y0.
     exists (y + x - z).
-    rewrite /dr /= addrA (addrC z) addrK addrC Hy.
-    rewrite subr_gt0 ltNge.
+    rewrite /dr /= addrA (addrC z) addrK addrC Hy subr_gt0 ltNge.
     split => //; apply/negP => xyz.
     suff : xepsE y by rewrite xepsE0.
     by rewrite /xepsE /= Hy y0 -(ltrD2l x) (le_lt_trans xyz).
   have dlxz : dl z = [set t + (z - x) | t in dl x].
     apply/seteqP; rewrite /dl; split => t /= [].
       move => ztE y0.
-      case/boolP: (z - t > x) => ztx.
+      case: (ltrP x (z-t)) => ztx.
         suff : z-t-x \in xepsE by rewrite xepsE0 inE.
         rewrite inE /xepsE /= addrA (addrC x) addrK ztE.
-        rewrite ltrBrDl addr0 ztx ltrBlDl.
-        by rewrite -(subr0 (x+eps)) ltr_leB.
-      rewrite -leNgt in ztx.
+        by rewrite subr_gt0 ztx ltrBlDl ltrBlDr ltr_wpDr.
       exists (x - (z-t)).
         by rewrite opprD addrA subrr opprK add0r ztE subr_ge0.
-      by rewrite (addrC z) opprD opprK !addrA addrNK addrAC subrr add0r.
+      by rewrite (addrC z) opprD opprK !addrA addrNK addrC addKr.
     move=> w [] xwE w0 <-.
-    rewrite !opprD (addrCA z) !addrA addrK addrC opprK xwE.
+    rewrite !opprD (addrCA z) !addrA addrK addrC opprK.
     by rewrite subr_ge0 ler_wpDl // ltW.
   have [dlx0|] := eqVneq (dl x) set0.
     rewrite dlx0 inf0 subr0.
@@ -306,18 +317,12 @@ case/boolP: (xepsE == set0).
       by rewrite inE /dl /= subr0.
     by rewrite dlxz dlx0 image_set0 inf0 subr0 (negbTE znE).
   case/set0P => w Hw.
-  have xzl : x - inf (dl x) = z - inf (dl z).
-    rewrite dlxz.
-    rewrite (_ : [set _ | _ in _] = [set t + y | t in dl x & y in [set z - x]]).
-      rewrite inf_sumE.
-      - by rewrite inf1 !opprD !addrA (addrC z) addrK (opprK x) addrC.
-      - split. by exists w.
-        exists 0. move=> u. rewrite -inE. exact: dl_ge0.
-      - exact: has_inf1.
-    apply/seteqP; split => y /= [] u dlxu.
-      by move <-; exists u => //; exists (z-x).
-    by case=> v -> <-; exists u.
-  rewrite -xzl.
+  have <- : x - inf (dl x) = z - inf (dl z).
+    rewrite dlxz -image2_set1 inf_sumE.
+    - by rewrite inf1 !opprD !addrA (addrC z) addrK (opprK x) addrC.
+    - split. by exists w.
+      exists 0. move=> u. rewrite -inE. exact: dl_ge0.
+    - exact: has_inf1.
   case: ifPn => xlE //.
   rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //. admit.
 move/set0P/xgetPex => /(_ eps).
