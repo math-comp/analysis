@@ -88,6 +88,44 @@
   + lemmas `ess_infr_bounded`, `ess_infrZl`, `ess_inf_ger`, `ess_inf_ler`,
     `ess_inf_cstr`
 
+- in `simple_functions.v`:
+  + lemma `mfunMn`
+
+- in `hoelder.v`
+  + lemmas `Lnorm0`, `Lnorm_cst1`
+  + definition `conjugate`
+  + lemma `conjugateE`
+  + lemmas `lerB_DLnorm`, `lerB_LnormD`, `eminkowski`
+  + definition `finite_norm`
+  + mixin `isLfun` with field `lfuny`
+  + structure `Lfun`
+  + notation `LfunType`
+  + definition `Lequiv`
+  + canonical `Lequiv_canonical`
+  + definition `LspaceType`
+  + lemma `LequivP`
+  + record `LType`
+  + coercion `LfunType_of_LType`
+  + definition `Lspace` with notation `mu.-Lspace p`
+  + lemma `lfun_integrable`, `lfun1_integrable`, `lfun2_integrable_sqr`, `lfun2M2_1`
+  + lemma `lfunp_scale`, `lfun_cst`,
+  + definitions `finlfun`, `lfun`, `lfun_key`
+  + canonical `lfun_keyed`
+  + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
+  + definition `lfun_Sub`
+  + lemmas `lfun_rect`, `lfun_valP`, `lfuneqP`, `lfuny0`, `mfunP`, `lfunP`,
+    `mfun_scaler_closed`
+  + lemmas `LnormZ`, `lfun_submod_closed`
+  + lemmas `finite_norm_fine`, `ler_LnormD`,
+    `LnormrN`, `fine_Lnormr_eq0`
+  + lemma `fine_Lnormr_eq0`
+  + lemma `lfun_inclusion`, `lfun_inclusion12`
+  + lemma `lfun_oppr_closed`
+  + lemma `lfun_addr_closed`
+  + lemmas `poweR_Lnorm`, `oppe_Lnorm`
+
+### Changed
+
 - in `measure.v`:
   + notation `{ae mu, P}` (near use `{near _, _}` notation)
   + definition `ae_eq`
@@ -126,6 +164,8 @@
   + HB class `UniformZmodule` moved to `PreUniformZmodule`
   + HB class `UniformLmodule` moved to `PreUniformLmodule`
 
+- in `hoelder.v`:
+  + `minkowski` -> `minkowski_EFin`
 
 ### Generalized
 
@@ -133,6 +173,18 @@
   + `derive_cst`, `derive1_cst`
 - in `convex.v`
   + parameter `R` of `convType` from `realDomainType` to `numDomainType`
+- in `hoelder.v`:
+  + definition `Lnorm` generalized to functions with codomain `\bar R`
+    (this impacts the notation `'N_p[f]`)
+  + lemmas `Lnorm1`, `eq_Lnorm` (from `f : _ -> R` to `f : _ -> \bar R`)
+
+- in `probability.v`
+  + lemma `cantelli`
+  + lemmas `expectation_fin_num`, `expectationZl`, `expectationD`, `expectationB`, `expectation_sum`,
+    `covarianceE`, `covariance_fin_num`, `covarianceZl`, `covarianceZr`, `covarianceNl`,
+    `covarianceNr`, `covarianceNN`, `covarianceDl`, `covarianceDr`, `covarianceBl`, `covarianceBr`,
+     `varianceE`, `variance_fin_num`, `varianceZ`, `varianceN`, `varianceD`, `varianceB`,
+     `varianceD_cst_l`, `varianceD_cst_r`, `varianceB_cst_l`, `varianceB_cst_r`, `covariance_le`
 
 ### Deprecated
 
