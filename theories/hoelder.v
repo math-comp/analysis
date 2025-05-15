@@ -162,8 +162,7 @@ case: p => [r||//].
   by apply/eqP; rewrite eq_le mu0/=.
 Qed.
 
-Lemma powR_Lnorm f r : r != 0%R ->
-  'N_r%:E[f] `^ r = \int[mu]_x `| f x | `^ r.
+Lemma powR_Lnorm f r : r != 0%R -> 'N_r%:E[f] `^ r = \int[mu]_x `| f x | `^ r.
 Proof. by move=> r0; rewrite poweR_Lnorm. Qed.
 
 End Lnorm_properties.
