@@ -123,6 +123,7 @@
   + lemma `lfun_oppr_closed`
   + lemma `lfun_addr_closed`
   + lemmas `poweR_Lnorm`, `oppe_Lnorm`
+  + lemma `integrable_poweR`
 
 ### Changed
 
