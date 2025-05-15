@@ -38,7 +38,7 @@ Qed.
 
 HB.instance Definition _ := Order_isNbhs.Build _ nat nat_nbhs_itv.
 HB.instance Definition _ := DiscreteUniform_ofNbhs.Build nat.
-HB.instance Definition _ {R : numDomainType} := 
+HB.instance Definition _ {R : numDomainType} :=
   @DiscretePseudoMetric_ofUniform.Build R nat.
 
 Lemma nbhs_infty_gt N : \forall n \near \oo, (N < n)%N.
