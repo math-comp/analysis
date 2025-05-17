@@ -618,7 +618,8 @@ rewrite (_ : f = ((f \+ g) \+ (-%R \o g))%R); last first.
 rewrite [X in _ <= 'N__[X] + _](_ : _ = (f \+ g)%R); last first.
   by apply: funext => x /=; rewrite -addrA [X in _ + _ + X]addrC subrr addr0.
 rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last first.
-  by rewrite (_ : _ \o _ = \- (EFin \o g))// oppe_Lnorm.
+  rewrite (_ : _ \o _ = \- (EFin \o g))//.
+  exact/esym/oppe_Lnorm.
 by apply: minkowski_EFin => //;
   [exact: measurable_funD|exact: measurableT_comp].
 Qed.
@@ -806,7 +807,8 @@ Lemma lfun_oppr_closed : oppr_closed lfun.
 Proof.
 move=> f /andP[mf /[!inE] lf].
 rewrite rpredN/= mf/= inE/= /finite_norm.
-by rewrite (_ : _ \o _ = \- (EFin \o f))%E// oppe_Lnorm.
+rewrite (_ : _ \o _ = \- (EFin \o f))%E//.
+by rewrite (oppe_Lnorm _ (EFin \o f)).
 Qed.
 
 HB.instance Definition _ := GRing.isOppClosed.Build _ lfun
@@ -893,7 +895,10 @@ Lemma ler_LnormD (f g : ty) : nm (f + g) <= nm f + nm g.
 Proof. by rewrite -lee_fin EFinD !finite_norm_fine eminkowski. Qed.
 
 Lemma LnormrN (f : ty) : nm (\-f) = nm f.
-Proof. by rewrite /nm (_ : _ \o _ = \- (EFin \o f))%E// oppe_Lnorm. Qed.
+Proof.
+rewrite /nm (_ : _ \o _ = \- (EFin \o f))%E//; congr fine.
+exact: oppe_Lnorm.
+Qed.
 
 Lemma Lnormr_natmul (f : ty) k : nm (f *+ k) = nm f *+ k.
 Proof.
