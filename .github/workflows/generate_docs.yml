@@ -28,20 +28,19 @@ jobs:
         with:
           ocaml-compiler: 4.14
           opam-repositories: |
-            coq-extra-dev: https://coq.inria.fr/opam/extra-dev
             coq-released: https://coq.inria.fr/opam/released
             default: https://github.com/ocaml/opam-repository.git
 
       - name: Build Mathcomp Analysis
         run: opam install -y --deps-only . && opam exec -- make -j 4
 
-      - name: Build coq2html
-        run: opam install -y coq-rocqnavi && opam show coq-rocqnavi
+      - name: Build rocqnavi
+        run: opam install -y rocq-navi && opam show rocq-navi
 
       - name: Generate Documents
         run: |
           mkdir -p artifact/${{ env.destination_dir }}
-          opam exec -- coq2html -title "Mathcomp Analysis" -d artifact/${{ env.destination_dir }} -base mathcomp -Q theories analysis -coqlib https://coq.inria.fr/doc/V8.18.0/stdlib/ -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.ssreflect -external https://math-comp.github.io/htmldoc_2_1_0/ mathcomp.algebra classical/*.glob classical/*.v theories/*.glob theories/*.v
+          opam exec -- rocqnavi -title "Mathcomp Analysis" -d artifact/${{ env.destination_dir }} -base mathcomp -Q theories analysis -coqlib https://coq.inria.fr/doc/V8.20.0/stdlib/ -external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect -external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra $(find . -name "*.v" -or -name "*.glob")
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
