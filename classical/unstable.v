@@ -65,7 +65,7 @@ Proof.
 apply: canRL (mulfK _) _ => //; rewrite ?pnatr_eq0//.
 case: lerP => _; (* TODO: ring *) rewrite [2%:R]mulr2n mulrDr mulr1.
   by rewrite addrCA addrK.
-by rewrite addrC subrKA.
+by rewrite (addrC (x + y)) subrKA.
 Qed.
 
 Lemma minr_absE (x y : R) : Num.min x y = (x + y - `|x - y|) / 2%:R.
