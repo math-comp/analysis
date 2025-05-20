@@ -707,9 +707,6 @@ Proof. by elim: n => //= n ->. Qed.
 Lemma enatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar R.
 Proof. by elim: n => //= n ->. Qed.
 
-Lemma EFin_natmul (r : R) n : (r *+ n)%:E = r%:E *+ n.
-Proof. by case: n => //; elim => //= n <-. Qed.
-
 Lemma mule2n x : x *+ 2 = x + x. Proof. by []. Qed.
 
 Lemma expe2 x : x ^+ 2 = x * x. Proof. by []. Qed.
@@ -799,13 +796,16 @@ Lemma EFinB r r' : (r - r')%:E = r%:E - r'%:E. Proof. by []. Qed.
 
 Lemma EFinM r r' : (r * r')%:E = r%:E * r'%:E. Proof. by []. Qed.
 
+Lemma EFin_natmul (r : R) n : (r *+ n)%:E = r%:E *+ n.
+Proof. exact: raddfMn. Qed.
+
 Lemma prodEFin T s (P : pred T) (f : T -> R) :
   \prod_(i <- s | P i) (f i)%:E = (\prod_(i <- s | P i) f i)%:E.
 Proof. by elim/big_ind2 : _ => // _ x _ y -> ->; rewrite EFinM. Qed.
 
 Lemma sumEFin I s P (F : I -> R) :
   \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%:E.
-Proof. by rewrite (big_morph _ EFinD erefl). Qed.
+Proof. exact/esym/raddf_sum. Qed.
 
 Lemma EFin_min : {morph (@EFin R) : r s / Num.min r s >-> Order.min r s}.
 Proof. by move=> x y; rewrite !minElt lte_fin -fun_if. Qed.
@@ -3321,8 +3321,8 @@ move: x y => [x||] [y||] // in x0 h *.
     by rewrite -lte_fin (lt_le_trans _ (h _ h01))// mule_gt0// lte_fin.
   rewrite lee_fin leNgt; apply/negP => yx.
   have /h : (0 < (y + x) / (2 * x) < 1)%R.
-    apply/andP; split; first by rewrite divr_gt0 // ?addr_gt0// ?mulr_gt0.
-    by rewrite ltr_pdivrMr ?mulr_gt0// mul1r mulr_natl mulr2n ltrD2r.
+    rewrite ltr_pdivlMr ?ltr_pdivrMr ?mulr_gt0// mul0r mul1r.
+    by rewrite mulr_natl mulr2n ltrD2r yx addr_gt0.
   rewrite -(EFinM _ x) lee_fin invrM ?unitfE// ?gt_eqF// -mulrA mulrAC.
   by rewrite mulVr ?unitfE ?gt_eqF// mul1r; apply/negP; rewrite -ltNge midf_lt.
 - by rewrite leey.
