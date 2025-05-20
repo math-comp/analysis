@@ -44,7 +44,7 @@ Local Open Scope convex_scope.
 
 HB.mixin Record isConvexSpace (R : realDomainType) T := {
   conv : {i01 R} -> T -> T -> T ;
-  conv0 : forall a b, conv 0%:i01 a b = a ;
+  conv1 : forall a b, conv 1%:i01 a b = a ;
   convmm : forall (p : {i01 R}) a, conv p a a = a ;
   convC : forall (p : {i01 R}) a b, conv p a b = conv (1 - p%:inum)%:i01 b a;
   convA : forall (p q r : {i01 R}) (a b c : T),
@@ -62,10 +62,10 @@ Section convex_space_lemmas.
 Context R (A : convType R).
 Implicit Types a b : A.
 
-Lemma conv1 a b : a <| 1%:i01 |> b = b.
+Lemma conv0 a b : a <| 0%:i01 |> b = b.
 Proof.
-rewrite convC/= [X in _ <| X |> _](_ : _ = 0%:i01) ?conv0//.
-by apply/val_inj => /=; rewrite subrr.
+rewrite convC/= [X in _ <| X |> _](_ : _ = 1%:i01) ?conv1//.
+by apply/val_inj => /=; rewrite subr0.
 Qed.
 
 End convex_space_lemmas.
@@ -80,13 +80,13 @@ Implicit Type p q r : {i01 R}.
 
 Let E := convex_lmodType E'.
 
-Let avg p (a b : E) := `1-(p%:inum) *: a + p%:inum *: b.
+Let avg p (a b : E) := p%:inum *: a + `1-(p%:inum) *: b.
 
-Let avg0 a b : avg 0%:i01 a b = a.
-Proof. by rewrite /avg/= onem0 scale0r scale1r addr0. Qed.
+Let avg1 a b : avg 1%:i01 a b = a.
+Proof. by rewrite /avg/= onem1 scale0r scale1r addr0. Qed.
 
 Let avgI p x : avg p x x = x.
-Proof. by rewrite /avg -scalerDl/= addrC add_onemK scale1r. Qed.
+Proof. by rewrite /avg -scalerDl/= add_onemK scale1r. Qed.
 
 Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. by rewrite /avg onemK addrC. Qed.
