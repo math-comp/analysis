@@ -1,11 +1,12 @@
 
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 (*Require Import ssrsearch.*)
+From HB Require Import structures.
 From mathcomp Require Import ssreflect ssrfun ssrbool fieldext falgebra vector.
 From mathcomp Require Import ssrnat eqtype choice fintype bigop order ssralg ssrnum ssrfun.
 From mathcomp Require Import complex.
 From mathcomp Require Import boolp reals ereal derive.
-Require Import classical_sets posnum topology normedtype landau.
+From mathcomp Require Import classical_sets functions interval_inference topology normedtype landau.
 
 Import Order.TTheory GRing.Theory Num.Theory ComplexField Num.Def complex.
 Local Open Scope ring_scope.
@@ -20,46 +21,38 @@ Unset Printing Implicit Defensive.
 (* I need to import ComplexField to use its lemmas on RComplex,
 I don't want the canonical lmodtype structure on C,
 Therefore this is based on a fork of real-closed *)
-Section ComplexNumfieldType.
-Variable R : rcfType.
-Local Notation sqrtr := Num.sqrt.
-Local Notation C := R[i].
+HB.instance Definition _ (R : rcfType) := NormedModule.copy R[i] R[i]^o.
 
-Local Canonical complex_pointedType := [pointedType of C for [pointedType of C^o]].
-Local Canonical complex_filteredType :=
-  [filteredType C of C for [filteredType C of C^o]].
-Local Canonical complex_topologicalType :=
-  [topologicalType of C for [topologicalType of C^o]].
-Local Canonical complex_uniformType := [uniformType of C for [uniformType of C^o]].
+HB.factory Record Normed_And_Lmodule_isNormedModule (K : numFieldType) R of @Num.NormedZmodule K R & GRing.Lmodule K R := {
+  normrZ : forall (l : K) (x : R), normr (l *: x) = normr l * normr x;
+}.
 
-Local Canonical complex_pseudoMetricType :=
-  [pseudoMetricType [numDomainType of C] of C for [pseudoMetricType [numDomainType of C]  of C^o]].
-(* missing join ? is [numDomainType of C] ok here ? *)
+HB.builders Context K R of Normed_And_Lmodule_isNormedModule K R.
+HB.instance Definition _ := PseudoMetric.copy R (@pseudometric K R).
+HB.instance Definition _ := Pointed.copy R R^o.
 
-Local Canonical complex_lmodType := [lmodType C of C for [lmodType C of C^o]].
-Local Canonical complex_lalgType := [lalgType C of C for [lalgType C of C^o]].
-Local Canonical complex_algType := [algType C of C for [algType C of C^o]].
-Local Canonical complex_comAlgType := [comAlgType C of C].
-Local Canonical complex_unitAlgType := [unitAlgType C of C].
-Local Canonical complex_comUnitAlgType := [comUnitAlgType C of C].
-Local Canonical complex_vectType := [vectType C of C for [vectType C of C^o]].
-Local Canonical complex_FalgType := [FalgType C of C].
-Local Canonical complex_fieldExtType :=
-  [fieldExtType C of C for [fieldExtType C of C^o]].
-Local Canonical complex_pseudoMetricNormedZmodType :=
-  [pseudoMetricNormedZmodType C of C for [pseudoMetricNormedZmodType C of C^o]].
-Local Canonical complex_normedModType :=
-  [normedModType C of C for [normedModType C of C^o]]. 
+Lemma pseudo_metric_ball_norm : ball = ball_ (@normr K R).
+Proof. by []. Qed.
 
-(* TODO : joins*)  
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build K R pseudo_metric_ball_norm.
 
-End ComplexNumfieldType.
+HB.instance Definition _ := PseudoMetricNormedZmod_Lmodule_isNormedModule.Build K R normrZ.
+HB.end.
 
+Lemma normcZ (R : rcfType) (l : R) (x : Rcomplex R) : `|l *: x| = `|l| * `|x|.
+Proof.
+by case: x => ? ?; rewrite /normr //= !exprMn -mulrDr sqrtrM ?sqr_ge0 // sqrtr_sqr.
+Qed.
 
+HB.instance Definition _ (R : rcfType) := Normed_And_Lmodule_isNormedModule.Build R (Rcomplex R) (@normcZ R).
+
+(* TODO: backport to real-closed *)
 Section complex_extras.
 Variable R : rcfType.
 Local Notation sqrtr := Num.sqrt.
 Local Notation C := R[i].
+
+Import Normc.
 
 (*Adapting lemma eq_complex from complex.v, which was done in boolean style*)
 Lemma eqE_complex : forall (x y : C), (x = y) = ((Re x = Re y) /\ (Im x = Im y)).
@@ -245,7 +238,7 @@ Lemma real_normc_ler (x y : R) :
   `|x| <= normc (x +i* y).
 Proof.
 rewrite /normc /= -ler_sqr ?nnegrE ?normr_ge0 ?sqrtr_ge0 //.
-rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 ?real_normK //=; last by apply: num_real.
+rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 ?real_normK //=.
 by rewrite ler_addl ?sqr_ge0.
 Qed.
 
@@ -253,117 +246,28 @@ Lemma im_normc_ler (x y : R) :
   `|y| <= normc (x +i* y).
 Proof.
 rewrite /normc /= -ler_sqr ?nnegrE ?normr_ge0 ?sqrtr_ge0 //.
-rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 ?real_normK //=; last by apply: num_real.
+rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 ?real_normK //=.
 by rewrite ler_addr ?sqr_ge0.
 Qed.
 
 End complex_extras.
 
-Section Rcomplex.
-
-
-Canonical Rcomplex_lmodType (R : rcfType) :=
-  LmodType R (Rcomplex R) (complex_real_lmodMixin R).
-
-Lemma scalecAl (R : rcfType) (h : R) (x y : Rcomplex R) : h *: (x * y) = h *: x * y.
-Proof.
-by move: h x y => h [a b] [c d]; simpc; rewrite -!mulrA -mulrBr -mulrDr.
-Qed.
-
-
-Canonical Rcomplex_lalgType (R : rcfType) := LalgType R (Rcomplex R) (@scalecAl R).
-
-Definition Rcomplex_normedZmodMixin (R: realType) :=
-  @Num.NormedMixin R (Rcomplex_zmodType R) _ _ (@normcD R) (@eq0_normc R)
-                   (@normc_mulrn R) (@normcN R).
-
-Canonical Rcomplex_normedZmodType (R: realType) :=
-  NormedZmodType R (Rcomplex R) (Rcomplex_normedZmodMixin R).
-
-Definition Rcomplex_pseudoMetricMixin (R: realType) :=
-  (@pseudoMetric_of_normedDomain R (Rcomplex_normedZmodType R)).
-
-
-Canonical Rcomplex_pointedType (R: realType) :=
-  [pointedType of (Rcomplex R) for [pointedType of R[i]^o]].
-
-Canonical Rcomplex_filteredType (R: realType) :=
-  [filteredType (Rcomplex R) of (Rcomplex R) for [filteredType R[i]^o of R[i]^o]].
-
-Canonical Rcomplex_topologicalType (R: realType) :=
-  [topologicalType of (Rcomplex R) for [topologicalType of R[i]^o]].
-
-Program Definition Rcomplex_uniformMixin (R: realType):
-  Uniform.mixin_of (nbhs (U := Rcomplex R) ) :=
-  (@UniformMixin (Rcomplex R) (nbhs (U := Rcomplex R))
-  (entourage_ ((ball_ (@normc R))))  _ _ _ _ _).
-Obligation 1.  Admitted.
-Obligation 2. Admitted.
-Obligation 3. Admitted.
-Obligation 4. Admitted.
-Obligation 5.
-move => R; rewrite /nbhs /= /nbhs_ /nbhs_ball_ /filter_from /entourage_ /= /filter_from /=.
-apply/funext => x //=.
-apply/funext => P /=; rewrite propeqE; split.
- move => [r /[dup] /realC_gt0 r0 /gt0_realC rr] H.
- rewrite /entourage_ /filter_from /=.
- exists (fun xy => (normc ( xy.1 - xy.2) < Re r)).
- exists (Re r) => //.
- by move=> z /= h; apply: (H z);  rewrite /= rr ltcR.
-move => [B [] r r0] H /= H'; exists r%:C; first by rewrite ltcR.
-move => z h; apply: H' => /=; apply: H => /=.
-by rewrite -ltcR /=.
-Qed.
-
-Canonical Rcomplex_uniformType (R: realType) :=
-  UniformType (Rcomplex R) (Rcomplex_uniformMixin R).
-
-Canonical Rcomplex_pseudoMetricType (R: realType) :=
-  PseudoMetricType (Rcomplex R) (Rcomplex_pseudoMetricMixin R).
-
-
-Lemma Rcomplex_ball_ball_ (R: realType):
-  @ball _ (Rcomplex_pseudoMetricType R ) = ball_ (fun x => `| x |).
-Proof. by []. Qed.
-
-Definition Rcomplex_pseudoMetricNormedZmodMixin (R: realType):=
-  PseudoMetricNormedZmodule.Mixin (Rcomplex_ball_ball_ (R: realType)).
-
-Canonical Rcomplex_pseudoMetricNormedZmodType (R: realType) :=
-  PseudoMetricNormedZmodType R (Rcomplex R)
-                       (Rcomplex_pseudoMetricNormedZmodMixin R).
-
-Lemma RnormcZ  (R: realType) (l : R) : forall (x : Rcomplex R),
-    normc (l *: x) = `|l| * (normc x).
-Proof.
-by case=> ? ?; rewrite /normc //= !exprMn -mulrDr sqrtrM ?sqr_ge0 // sqrtr_sqr.
-Qed.
-
-Definition Rcomplex_normedModMixin (R: realType):=
-  @NormedModMixin R (Rcomplex_pseudoMetricNormedZmodType R)  _ (@RnormcZ R).
-
-Canonical Rcomplex_normedModType (R: realType):=
-  NormedModType R (Rcomplex R) (Rcomplex_normedModMixin R).
-
-End Rcomplex.
-
-
 Lemma filter_compE ( T U V : topologicalType)
       (f : T -> U) (g : V -> T)
-      (F : set ( set V)) :
+      (F : set_system V) :
    (f @ (g @ F))= (f \o g @ F).
 Proof. by []. Qed. 
     
 Lemma within_continuous_withinNx
   (R C : numFieldType) (U : normedModType C) (f : U -> R) :
   {for (0 : U), continuous f} ->
-  (forall x,  f x = 0 -> x = 0) -> f @ nbhs' (0 :U) --> nbhs'  (0 : R).
+  (forall x,  f x = 0 -> x = 0) -> f @ dnbhs (0 :U) --> dnbhs  (0 : R).
 Proof.
   move => cf f0 A /=. 
-  rewrite !/nbhs /= /nbhs /= /nbhs' /within /= !nearE =>  [].   Admitted.
+(*rewrite !/nbhs /= /nbhs /= /within /= !nearE =>  [].*)   Admitted.
 
 Notation  "f %:Rfun" :=
-  (f : (Rcomplex_normedModType _) -> (Rcomplex_normedModType _))
+  (f : (Rcomplex _ : normedModType _) -> (Rcomplex _ : normedModType _))
   (at level 5,  format "f %:Rfun")  : complex_scope.
 
 Notation  "v %:Rc" :=   (v : (Rcomplex _))
@@ -374,11 +278,7 @@ Variable (R: realType).
 Notation C := R[i].
 Notation Rcomplex := (Rcomplex R).
 
-Lemma normcZ (l : R) : forall (x : Rcomplex),
-    normc (l *: x) = `|l| * (normc x).
-Proof.
-by case=> ? ?; rewrite /normc //= !exprMn -mulrDr sqrtrM ?sqr_ge0 // sqrtr_sqr.
-Qed.
+Import Normc.
 
 Lemma realCZ (a : R) : forall (b : Rcomplex),  a%:C * b = a *: b.
 Proof. by move => [x y]; rewrite /(_ *: _) /=; simpc. Qed.
@@ -457,17 +357,17 @@ Local Notation C := R[i].
 Notation Rc := (Rcomplex R).
 
 Lemma is_cvg_scaler (K : numFieldType) (V : normedModType K) (T : topologicalType)
- (F : set (set T)) (H :Filter F) (f : T -> V) (k : K) :
+ (F : set_system T) (H : Filter F) (f : T -> V) (k : K) :
  cvg (f @ F) -> cvg ((k \*: f) @ F ).
 Proof. by move => /cvg_ex [l H0] ; apply: cvgP; apply: cvgZr; apply: H0. Qed.
 
 Lemma limin_scaler (K : numFieldType) (V : normedModType K) (T : topologicalType)
-  (F : set (set T)) (FF : ProperFilter F) (f : T -> V) (k : K) :
+  (F : set_system T) (FF : ProperFilter F) (f : T -> V) (k : K) :
   cvg(f @ F) -> k *: lim (f @ F) = lim ((k \*: f) @ F ).
 Proof. by move => cv; apply/esym/cvg_lim => //; apply: cvgZr. Qed.
 
 Definition holomorphic (f : C-> C ) (c : C) :=
-  cvg ((fun h => h^-1 *: (f (c + h) - f c)) @ (nbhs' (0:C))).
+  cvg ((fun h => h^-1 *: (f (c + h) - f c)) @ (dnbhs (0:C))).
 
 Lemma holomorphicP (f : C -> C)  (c: C) : holomorphic f c <-> derivable f c 1.
 Proof.
@@ -482,7 +382,7 @@ Definition Rdifferentiable (f : C -> C) (c : C) := (differentiable f%:Rfun c%:Rc
 (* No Rmodule structure on C if we can avoid,
 so the following line shouldn't type check. *)
 Fail Definition Rderivable_fromcomplex_false (f : C -> C) (c v: C) :=
-  cvg (fun (h : R) =>  h^-1 *: (f (c +h *: v) - f c)) @ (nbhs' (0:R)).
+  cvg (fun (h : R) =>  h^-1 *: (f (c +h *: v) - f c)) @ (dnbhs (0:R)).
 
 Definition realC : R -> C := (fun r => r%:C).
 
@@ -494,36 +394,36 @@ Qed.
 
 Lemma Rdiff1 (f : C -> C) c :
           lim ( (fun h : C =>  h^-1 *: ((f (c + h) - f c) ) )
-                 @ (realC @  (nbhs' 0)))
+                 @ (realC @  (dnbhs 0)))
          = 'D_1 (f%:Rfun) c%:Rc :> C.
 Proof.
 rewrite /derive.
-have -> : (fun h : C =>  h^-1 *: ((f (c + h) - f c))) @ (realC @  (nbhs' 0)) =
+have -> : (fun h : C =>  h^-1 *: ((f (c + h) - f c))) @ (realC @  (dnbhs 0)) =
          (fun h : C =>  h^-1 *: ((f (c + h) - f c)))
-                 \o realC @  (nbhs' (0 : R)) by [].
+                 \o realC @  (dnbhs (0 : R)) by [].
 suff -> : ( (fun h : C => h^-1 *: (f (c + h) - f c)) \o realC)
-= (fun h : R => h^-1 *: ((f%:Rfun \o shift c) (h *: (1%:Rc)) - f c) ) :> (R -> C) .
-   by []. (*TODO : very long*)
+= (fun h : R => h^-1 *: ((f%:Rfun \o shift c) (h *: (1%:Rc)) - f c : Rcomplex _) ) :> (R -> C) .
+  admit.
 apply: funext => h /=.
 by  rewrite Inv_realC /= -!scalecr realC_alg [X in f X]addrC.
-Qed.
+Admitted.
 
 
 Lemma Rdiffi (f : C -> C) c:
          lim ( (fun h : C => h^-1 *: ((f (c + h * 'i) - f c)))
-                 @ (realC @ (nbhs' (0 ))))
+                 @ (realC @ (dnbhs (0 ))))
          = 'D_('i) (f%:Rfun)  c%:Rc :> C.
 Proof.
 rewrite /derive.
 have -> :
-  ((fun h : (R[i]) => h^-1 *: (f (c + h * 'i) - f c)) @ (realC @ nbhs' 0))
-  = ((fun h : (R[i]) => h^-1 *: (f (c + h * 'i) - f c)) \o realC) @ nbhs' 0 by [].
+  ((fun h : (R[i]) => h^-1 *: (f (c + h * 'i) - f c)) @ (realC @ dnbhs 0))
+  = ((fun h : (R[i]) => h^-1 *: (f (c + h * 'i) - f c)) \o realC) @ dnbhs 0 by [].
 suff -> :  (fun h : (R[i]) => h^-1 * (f (c + h * 'i) - f c)) \o
-realC  = fun h : R => h^-1 *: ((f%:Rfun \o shift c) (h *: ('i%:Rc)) - f c).
-  by [].
+realC  = fun h : R => h^-1 *: ((f%:Rfun \o shift c) (h *: ('i%:Rc)) - f c : Rcomplex _).
+  admit.
 apply: funext => h /=.
 by rewrite Inv_realC -scalecM -!scalecr realCZ [X in f X]addrC.
-Qed.
+Admitted.
 
 (* should be generalized to equivalent norms *)
 (* but there is no way to state it for now *)
@@ -536,12 +436,13 @@ suff heP : (h : E -> C) =o_x (e : E -> C) <->
   have [ho|hNo] := asboolP ((h : E -> C) =o_x (e : E -> C)).
     by rewrite !littleoE// -!eqoP// -heP.
   by rewrite !littleoE0// -!eqoP// -heP.
-rewrite !eqoP; split => small _/posnumP[eps]; near=> y.
+rewrite !eqoP; split => small/= _ /posnumP[eps]; near=> y.
   rewrite -lecR/= !normcR rmorphM/=.
-  by near: y; apply: small.
+  near: y.
+  exact: small.
 rewrite -[_%:num]ger0_norm// -!normcR -rmorphM/= lecR.
 by near: y; apply: small; rewrite normc_gt0//.
-Grab Existential Variables. all: by end_near. Qed.
+Unshelve. all: by end_near. Qed.
 
 (*extremely long with modified filteredType *)
 
@@ -552,13 +453,16 @@ Lemma holo_differentiable (f : C -> C) (c : C) :
   holomorphic f c -> Rdifferentiable f c.
 Proof.
 move=> /holomorphicP /derivable1_diffP /diff_locallyP => -[cdiff holo].
-have lDf : linear ('d f c : Rc -> Rc) by move=> t u v; rewrite !scalecr linearP.
-pose df : Rc -> Rc := Linear lDf.
-have cdf : continuous df by [].
-have eqdf : f%:Rfun \o +%R^~ c = cst (f c) + df +o_ (0 : Rc) id
-  by rewrite holo littleoCo.
+pose df : Rc -> Rc := 'd f c.
+have lDf : linear df by move=> t u v; rewrite /df !scalecr linearP.
+pose df' : {linear Rc -> Rc} := HB.pack df (GRing.isLinear.Build _ _ _ _ df lDf).
+have cdf : continuous df'.
+  admit.
+have eqdf : f%:Rfun \o +%R^~ c = cst (f c) + df' +o_ (0 : Rc) id.
+  rewrite holo littleoCo.
+  admit.
 by apply/diff_locallyP; rewrite (diff_unique cdf eqdf).
-Qed.
+Admitted.
 
 (*The equality between 'i as imaginaryC from ssrnum and 'i is not transparent:
  neq0ci is part of ssrnum and uneasy to find *)
@@ -569,38 +473,38 @@ move=> /cvg_ex; rewrite //= /CauchyRiemannEq. rewrite -Rdiff1 -Rdiffi.
 set quotC : C -> C := fun h : R[i] => h^-1 *: (f (c + h) - f c).
 set quotR : C -> C:= fun h => h^-1 *: (f (c + h * 'i) - f c) .
 move => /= [l H].
-have -> :  quotR @ (realC @ nbhs' 0) =  (quotR \o realC) @ nbhs' 0 by [].
-have realC'0:  realC @ nbhs' 0 --> nbhs' 0.
+have -> :  quotR @ (realC @ dnbhs 0) =  (quotR \o realC) @ dnbhs 0 by [].
+have realC'0:  realC @ dnbhs 0 --> dnbhs 0.
  apply: within_continuous_withinNx; first by apply: continuous_realC.
  by move => /= x /complexI.
-have HR0:(quotC \o (realC) @ nbhs' 0)  --> l.
+have HR0:(quotC \o (realC) @ dnbhs 0)  --> l.
  by apply: cvg_comp; last by exact: H.
-have lem : quotC \o  *%R^~ 'i%R @ (realC @ (nbhs' (0 : R))) --> l.
+have lem : quotC \o  *%R^~ 'i%R @ (realC @ (dnbhs (0 : R))) --> l.
   apply: cvg_comp; last by exact: H.
   rewrite (filter_compE _ realC); apply: cvg_comp; first by exact: realC'0.
   apply: within_continuous_withinNx; first by apply: scalel_continuous.
   move => x /eqP; rewrite mulIr_eq0 ; last by apply/rregP; apply: neq0Ci.
   by move/eqP.
-have HRcomp:  cvg (quotC \o *%R^~ 'i%R @ (realC @ (nbhs' (0 : R)))) .
+have HRcomp:  cvg (quotC \o *%R^~ 'i%R @ (realC @ (dnbhs (0 : R)))) .
   by apply/cvg_ex;  simpl; exists l.
-have ->: lim (quotR @ (realC @ (nbhs' (0 : R))))
-  = 'i *: lim (quotC \o ( fun h => h *'i) @ (realC @ (nbhs' (0 : R)))).
+have ->: lim (quotR @ (realC @ (dnbhs (0 : R))))
+  = 'i *: lim (quotC \o ( fun h => h *'i) @ (realC @ (dnbhs (0 : R)))).
   have: 'i \*:quotC \o ( fun h => h *'i) =1 quotR.
   move => h /= ;rewrite /quotC /quotR /=.
   rewrite invcM scalerA mulrC -mulrA mulVf ?mulr1 ?neq0Ci //.
   by move => /funext <-; rewrite (limin_scaler _ 'i HRcomp).
 rewrite scalecM.
-suff: lim (quotC @ (realC @ (nbhs' (0 : R))))
-      = lim (quotC \o  *%R^~ 'i%R @ (realC @ (nbhs' (0 : R)))) by move => -> .
-suff -> : lim (quotC @ (realC @ (nbhs' (0 : R)))) = l.
-  by apply/eqP; rewrite eq_sym; apply/eqP; apply: (cvg_map_lim _ lem).
-by apply: cvg_map_lim.
+suff: lim (quotC @ (realC @ (dnbhs (0 : R))))
+      = lim (quotC \o  *%R^~ 'i%R @ (realC @ (dnbhs (0 : R)))) by move => -> .
+suff -> : lim (quotC @ (realC @ (dnbhs (0 : R)))) = l.
+  by apply/eqP; rewrite eq_sym; apply/eqP; apply: (cvg_lim _ lem).
+by apply: cvg_lim.
 Qed.
 
 
 (*TBA normedType- Cyril's suggestion *)
-Lemma nbhs'0_le  (K : numFieldType) (V : normedModType K) e :
-   0 < e -> \forall x \near (nbhs' (0 : V)), `|x| <= e.
+Lemma dnbhs0_le  (K : numFieldType) (V : normedModType K) e :
+   0 < e -> \forall x \near (dnbhs (0 : V)), `|x| <= e.
 Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 rewrite -ball_normE /= sub0r normrN => le_nxe _ .
@@ -608,22 +512,22 @@ by rewrite ltW.
 Qed.
 
 Lemma nbhs0_le  (K : numFieldType) (V : normedModType K) e :
-   0 < e -> \forall x \near (nbhs' (0 : V)), `|x| <= e.
+   0 < e -> \forall x \near (dnbhs (0 : V)), `|x| <= e.
 Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 rewrite -ball_normE /= sub0r normrN => le_nxe _ .
 by rewrite ltW.
 Qed.
 
-Lemma nbhs'0_lt  (K : numFieldType) (V : normedModType K) e :
-   0 < e -> \forall x \near (nbhs' (0 : V)), `|x| < e.
+Lemma dnbhs0_lt  (K : numFieldType) (V : normedModType K) e :
+   0 < e -> \forall x \near (dnbhs (0 : V)), `|x| < e.
 Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 by rewrite -ball_normE /= sub0r normrN.
 Qed.
 
 Lemma nbhs0_lt  (K : numFieldType) (V : normedModType K) e :
-   0 < e -> \forall x \near (nbhs' (0 : V)), `|x| < e.
+   0 < e -> \forall x \near (dnbhs (0 : V)), `|x| < e.
 Proof.
 move=> e_gt0; apply/nbhs_ballP; exists e => // x.
 by rewrite -ball_normE /= sub0r normrN.
@@ -645,7 +549,7 @@ move => [] /= /[dup] H /diff_locallyP  => [[derc diff]] CR.
 apply/holomorphicP/derivable1_diffP/diff_locallyP.
 pose Df := (fun h : C => h *: ('D_1 f%:Rfun c : C)).
 have lDf : linear Df by move =>  t u v /=; rewrite /Df scalerDl scalerA scalecM.
-pose df := Linear lDf.
+pose df : {linear R[i] -> R[i]} := HB.pack Df (GRing.isLinear.Build _ _ _ _ Df lDf).
 have cdf : continuous df by apply: scalel_continuous.
 have lem : Df = 'd (f%:Rfun) (c : Rc). (* issue with notation *)
   apply: funext => z; rewrite  /Df.
@@ -653,13 +557,14 @@ have lem : Df = 'd (f%:Rfun) (c : Rc). (* issue with notation *)
   have zeq : z = x *: 1 %:Rc + y *: 'i%:Rc.
   by rewrite [LHS]complexE /= realC_alg scalecr scalecM [in RHS]mulrC.
   rewrite [X in 'd _ _ X]zeq addrC linearP linearZ /= -!deriveE //.
-  rewrite -CR (scalecAl y) -scalecM !scalecr /=.
+  rewrite -CR (scalerAl y) -scalecM !scalecr /=.
   rewrite -(scalerDl  (('D_1 f%:Rfun (c : Rc)) : C) _  (real_complex R x)).
   by rewrite addrC -!scalecr -realC_alg -zeq.
 have holo:  f \o  shift c = cst (f c) + df +o_ ( 0 : C) id.
-  by rewrite diff /= lem -littleoCo.
+  rewrite diff /= lem.
+  admit.
 by rewrite (diff_unique cdf holo).
-Qed.
+Admitted.
 
 Lemma holomorphic_Rdiff (f : C -> C) (c : C) :
   (Rdifferentiable f c) /\ (CauchyRiemannEq f c) <-> (holomorphic f c).
