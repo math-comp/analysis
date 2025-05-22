@@ -1735,7 +1735,7 @@ Lemma reindex_bigcup {aT rT I} (f : aT -> I) (P : set aT) (Q : set I)
     (F : I -> set rT) : set_fun P Q f -> set_surj P Q f ->
   \bigcup_(x in Q) F x = \bigcup_(x in P) F (f x).
 Proof.
-by move=> /image_subP fPQ /(surj_image_eq fPQ)<-; rewrite bigcup_image.
+by move=> /image_subP fPQ /(surj_image_eq fPQ) QE; rewrite -[Q]QE bigcup_image.
 Qed.
 Arguments reindex_bigcup {aT rT I} f P Q.
 
@@ -1743,7 +1743,7 @@ Lemma reindex_bigcap {aT rT I} (f : aT -> I) (P : set aT) (Q : set I)
     (F : I -> set rT) : set_fun P Q f -> set_surj P Q f ->
   \bigcap_(x in Q) F x = \bigcap_(x in P) F (f x).
 Proof.
-by move=> /image_subP fPQ /(surj_image_eq fPQ)<-; rewrite bigcap_image.
+by move=> /image_subP fPQ /(surj_image_eq fPQ) QE; rewrite -[Q]QE bigcap_image.
 Qed.
 Arguments reindex_bigcap {aT rT I} f P Q.
 
