@@ -1961,3 +1961,102 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball_normedModType.
+
+(* equip a normedZmodType with a structure of normed module *)
+
+Definition pseudometric (K : realType) (M : normedZmodType K) : Type := M.
+
+HB.instance Definition _ (K : realType) (M : normedZmodType K) :=
+  Choice.on (pseudometric M).
+HB.instance Definition _ (K : realType) (M : normedZmodType K) :=
+  Num.NormedZmodule.on (pseudometric M).
+HB.instance Definition _ (K : realType) (M : normedZmodType K) :=
+  isPointed.Build M 0.
+
+Section isnormedmodule.
+Variables (K : realType) (M' : normedZmodType K).
+
+Notation M := (pseudometric M').
+
+Local Definition ball (x : M) (r : K) : set M := ball_ Num.norm x r.
+
+Local Definition ent : set_system (M * M) :=
+  entourage_ ball.
+
+Local Definition nbhs (x : M) : set_system M :=
+  nbhs_ ent x.
+
+Local Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
+
+HB.instance Definition _ := hasNbhs.Build M nbhs.
+
+Local Lemma ball_center x (e : K) : 0 < e -> ball x e x.
+Proof. by rewrite /ball/= subrr normr0. Qed.
+
+Local Lemma ball_sym x y (e : K) : ball x e y -> ball y e x.
+Proof. by rewrite /ball /= distrC. Qed.
+
+Local Lemma ball_triangle x y z e1 e2 : ball x e1 y -> ball y e2 z ->
+  ball x (e1 + e2) z.
+Proof.
+rewrite /ball /= => ? ?.
+(*rewrite -[z](subrK y) -addrA. (le_lt_trans (ler_normD _ _))// addrC ltrD.*)
+Admitted.
+
+Local Lemma entourageE : ent = entourage_ ball.
+Proof. by []. Qed.
+
+HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K M
+  ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
+
+End isnormedmodule.
+
+HB.factory Record Lmodule_isNormed (R : realType) M
+    of GRing.Lmodule R M := {
+ norm : M -> R;
+ ler_normD : forall x y, norm (x + y) <= norm x + norm y ;
+(* normrMn : forall x n, norm (x *+ n) = norm x *+ n ;*)
+ normrN : forall x, norm (- x) = norm x ;
+ normrZ : forall (l : R) (x : M), norm (l *: x) = `|l| * norm x ;
+ normr0_eq0 : forall x : M, norm x = 0 -> x = 0
+}.
+
+HB.builders Context R M of Lmodule_isNormed R M.
+
+HB.about Num.Zmodule_isNormed.Build.
+
+Lemma normrMn x n : norm (x *+ n) = norm x *+ n.
+Admitted. (* from normrZ *)
+
+HB.instance Definition _ := Num.Zmodule_isNormed.Build
+  R M ler_normD normr0_eq0 normrMn normrN.
+
+Check M : normedZmodType R.
+
+Check (@pseudometric R M).
+
+HB.saturate pseudometric.
+
+Check (pseudometric M : pseudoMetricType R).
+
+HB.instance Definition _ := PseudoMetric.copy M (pseudometric M).
+HB.instance Definition _ := isPointed.Build M 0.
+
+Lemma whatever : NormedZmod_PseudoMetric_eq R M.
+Proof.
+by constructor.
+Qed.
+
+HB.instance Definition _ := whatever.
+
+Lemma coucou : PseudoMetricNormedZmod_Lmodule_isNormedModule R M.
+Proof.
+constructor.
+exact: normrZ.
+Qed.
+
+HB.instance Definition _ := coucou.
+
+Check M : normedModType R.
+
+HB.end.
