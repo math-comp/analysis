@@ -97,6 +97,7 @@ theories/forms.v
 theories/derive.v
 theories/measure.v
 theories/numfun.v
+theories/holomorphy.v
 
 theories/lebesgue_integral_theory/simple_functions.v
 theories/lebesgue_integral_theory/lebesgue_integral_definition.v

@@ -1959,3 +1959,155 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball_normedModType.
+
+(* equip a normedZmodType with a structure of normed module *)
+
+Definition pseudometric (K : numFieldType) (M : normedZmodType K) : Type := M.
+
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  Choice.on (pseudometric M).
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  Num.NormedZmodule.on (pseudometric M).
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  isPointed.Build M 0.
+
+Section isnormedmodule.
+Variables (K : numFieldType) (M' : normedZmodType K).
+
+Notation M := (pseudometric M').
+
+Local Definition ball (x : M) (r : K) : set M := ball_ Num.norm x r.
+
+Local Definition ent : set_system (M * M) :=
+  entourage_ ball.
+
+Local Definition nbhs (x : M) : set_system M :=
+  nbhs_ ent x.
+
+Local Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
+
+HB.instance Definition _ := hasNbhs.Build M nbhs.
+
+Local Lemma ball_center x (e : K) : 0 < e -> ball x e x.
+Proof. by rewrite /ball/= subrr normr0. Qed.
+
+Local Lemma ball_sym x y (e : K) : ball x e y -> ball y e x.
+Proof. by rewrite /ball /= distrC. Qed.
+
+Local Lemma ball_triangle x y z e1 e2 : ball x e1 y -> ball y e2 z ->
+  ball x (e1 + e2) z.
+Proof.
+rewrite /ball /= => ? ?.
+rewrite -[x](subrK y) -(addrA (x + _)).
+by rewrite (le_lt_trans (ler_normD _ _))// ltrD.
+Qed.
+
+Local Lemma entourageE : ent = entourage_ ball.
+Proof. by []. Qed.
+
+HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K M
+  ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
+
+End isnormedmodule.
+
+HB.factory Record Lmodule_isNormed (R : numFieldType) M
+    of GRing.Lmodule R M := {
+ norm : M -> R;
+ ler_normD : forall x y, norm (x + y) <= norm x + norm y ;
+(* normrMn : forall x n, norm (x *+ n) = norm x *+ n ;*)
+ normrN : forall x, norm (- x) = norm x ;
+ normrZ : forall (l : R) (x : M), norm (l *: x) = `|l| * norm x ;
+ normr0_eq0 : forall x : M, norm x = 0 -> x = 0
+}.
+
+HB.builders Context R M of Lmodule_isNormed R M.
+
+(*HB.about Num.Zmodule_isNormed.Build.*)
+
+Lemma normrMn x n : norm (x *+ n) = norm x *+ n.
+Proof.
+have := normrZ n%:R x.
+rewrite ger0_norm// mulr_natl => <-.
+by rewrite scaler_nat.
+Qed.
+
+HB.instance Definition _ := Num.Zmodule_isNormed.Build
+  R M ler_normD normr0_eq0 normrMn normrN.
+
+Check M : normedZmodType R.
+
+Check (@pseudometric R M).
+
+HB.saturate pseudometric.
+
+Check (pseudometric M : pseudoMetricType R).
+
+HB.instance Definition _ := PseudoMetric.copy M (pseudometric M).
+HB.instance Definition _ := isPointed.Build M 0.
+
+Local Lemma NormedZmod_PseudoMetric_eq_pseudometric
+  : NormedZmod_PseudoMetric_eq R M.
+Proof. by constructor. Qed.
+
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq_pseudometric.
+
+Lemma PseudoMetricNormedZmod_Lmodule_isNormedModule_pseudometric
+  : PseudoMetricNormedZmod_Lmodule_isNormedModule R M.
+Proof. by constructor; exact: normrZ. Qed.
+
+HB.instance Definition _ :=
+  PseudoMetricNormedZmod_Lmodule_isNormedModule_pseudometric.
+
+Check M : normedModType R.
+
+HB.end.
+
+HB.factory Record Uniform_Lmodule_isNormed (R : numFieldType) M of Uniform M & GRing.Lmodule R M := {
+ norm : M -> R;
+ ler_normD : forall x y, norm (x + y) <= norm x + norm y ;
+ normrZ : forall (l : R) (x : M), norm (l *: x) = `|l| * norm x ;
+ normr0_eq0 : forall x : M, norm x = 0 -> x = 0 ;
+ entourage_norm : forall x : M, nbhs_ball_ (ball_ norm) x = filter.nbhs x;
+}.
+
+HB.builders Context R M of Uniform_Lmodule_isNormed R M.
+
+Lemma normrMn (x : M) (n : nat) : norm (x *+ n) = norm x *+ n.
+Proof.
+  admit.
+Admitted.
+
+
+Lemma normrN (x : M) : norm (- x) = norm x.
+Proof. admit. Admitted.
+
+HB.instance Definition _ := Num.Zmodule_isNormed.Build R M ler_normD normr0_eq0 normrMn normrN.
+HB.instance Definition _ := isPointed.Build M 0.
+
+Definition ball := ball_ (fun x : M => `|x|).
+
+Lemma ball_center_subproof (x : M) (e : R) : 0 < e -> ball x e x.
+Proof. by rewrite /ball /ball_/= subrr normr0. Qed.
+
+Lemma ball_sym_subproof (x y : M) (e : R) : ball x e y -> ball y e x.
+Proof. by rewrite /ball /ball_/= distrC. Qed.
+
+Lemma ball_triangle_subproof (x y z : M) (e1 e2 : R) :
+        ball x e1 y ->
+        ball y e2 z ->
+        ball x (e1 + e2)%E z.
+Proof.
+rewrite /ball /ball_/= => ? ?.
+rewrite -[x](subrK y) -(addrA (x + _)).
+by rewrite (le_lt_trans (ler_normD _ _))// ltrD.
+Qed.
+
+Lemma entourageE_subproof : entourage = entourage_ ball.
+Proof. admit. Admitted.
+
+HB.instance Definition _ := Uniform_isPseudoMetric.Build R M ball_center_subproof ball_sym_subproof ball_triangle_subproof entourageE_subproof.
+
+HB.about NormedZmod_PseudoMetric_eq.Build.
+; PseudoMetricNormedZmod_Lmodule_isNormedModule
+
+HB.howto M normedModType.
