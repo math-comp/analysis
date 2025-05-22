@@ -2038,7 +2038,7 @@ Check M : normedZmodType R.
 
 Check (@pseudometric R M).
 
-(*HB.saturate pseudometric.*)
+HB.saturate pseudometric.
 
 Check (pseudometric M : pseudoMetricType R).
 
