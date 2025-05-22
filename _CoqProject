@@ -97,6 +97,7 @@ theories/trigo.v
 theories/esum.v
 theories/derive.v
 theories/numfun.v
+theories/holomorphy.v
 
 theories/measure_theory/measurable_structure.v
 theories/measure_theory/measure_function.v

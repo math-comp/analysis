@@ -510,6 +510,36 @@ Proof.
 by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous _ _ (_, _))).
 Qed.
 
+Lemma dnbhs0_le e :
+   0 < e -> \forall x \near (0 : V)^', `|x| <= e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+rewrite -ball_normE /= sub0r normrN => le_nxe _ .
+by rewrite ltW.
+Qed.
+
+Lemma nbhs0_le e :
+   0 < e -> \forall x \near (0 : V)^', `|x| <= e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+rewrite -ball_normE /= sub0r normrN => le_nxe _ .
+by rewrite ltW.
+Qed.
+
+Lemma dnbhs0_lt e :
+   0 < e -> \forall x \near (0 : V)^', `|x| < e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+by rewrite -ball_normE /= sub0r normrN.
+Qed.
+
+Lemma nbhs0_lt e :
+   0 < e -> \forall x \near (0 : V)^', `|x| < e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+by rewrite -ball_normE /= sub0r normrN.
+Qed.
+
 End NormedModule_numFieldType.
 Arguments cvg_at_rightE {K V} f x.
 Arguments cvg_at_leftE {K V} f x.
