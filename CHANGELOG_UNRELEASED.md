@@ -4,7 +4,18 @@
 
 ### Added
 
+- in `unstable.v`:
+  + lemma `subrKC`
+
+- in `convex.v`:
+  + module `ConvexAssoc`
+  + lemmas `convR_itv`, `convR_line_path`, `le_convR`
+
 ### Changed
+
+- in `convex.v`:
+  + convex combination operator `a <| t |> b` changed from
+    `(1-t)a + tb` to `ta + (1-t)b`
 
 - in `sequences.v`:
   + lemma `subset_seqDU`
@@ -48,10 +59,15 @@
 - in `measure.v`
   + definition `ess_sup` moved to `ess_sup_inf.v`
 
+- in `convex.v`
+  + lemma `conv_gt0` to `convR_gt0`
+
 ### Generalized
 
 - in `derive.v`:
   + `derive_cst`, `derive1_cst`
+- in `convex.v`
+  + parameter `R` of `convType` from `realDomainType` to `numDomainType`
 
 ### Deprecated
 
