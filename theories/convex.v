@@ -61,19 +61,10 @@ rewrite -[LHS]opprK -mulrN -[X in - X = _](addrK ((1 - p) * 1)).
 rewrite -mulrDr (addrC _ 1) -spq mulr1 prs.
 by rewrite !opprB addrC subrKA mulrDr mulr1 mulrN mulrC.
 Qed.
-Lemma pq_sr' (R : numDomainType) (p q r s : {i01 R}) :
-  p%:num = r%:num * s%:num ->
-  `1-(s%:num) = `1-(p%:num) * `1-(q%:num) ->
-  `1-(p%:num) * q%:num = s%:num * `1-(r%:num).
-Proof. exact: pq_sr. Qed.
 Lemma sE (R : ringType) (p q s : R) :
   1 - s = (1 - p) * (1 - q) ->
   s = 1 - (1 - p) * (1 - q).
 Proof. by move/eqP; rewrite subr_eq addrC -subr_eq => /eqP ->. Qed.
-Lemma sE' (R : numDomainType) (p q s : {i01 R}) :
-  `1-(s%:num) = `1-(p%:num) * `1-(q%:num) ->
-  s%:num = `1- (`1-(p%:num) * `1-(q%:num)).
-Proof. exact: sE. Qed.
 Lemma qE (R : comUnitRingType) (p q r s : R) :
   (1 - p) \is a GRing.unit ->
   p = r * s ->
@@ -83,23 +74,12 @@ Proof.
 move=> p1unit /pq_sr /[apply] /(congr1 ( *%R (1 - p)^-1)).
 by rewrite mulrA mulVr// mul1r mulrC.
 Qed.
-Lemma qE' (R : numDomainType) (p q r s : {i01 R}) :
-  `1-(p%:num) \is a GRing.unit ->
-  p%:num = r%:num * s%:num ->
-  `1-(s%:num) = `1-(p%:num) * `1-(q%:num) ->
-  q%:num = (s%:num * `1-(r%:num)) / `1-(p%:num).
-Proof. exact: qE. Qed.
 Lemma rE (R : unitRingType) (p r s : R) :
   s \is a GRing.unit -> p = r * s -> r = p / s.
 Proof.
 move=> sunit /(congr1 ( *%R^~ s^-1)) ->.
 by rewrite -mulrA divrr// mulr1.
 Qed.
-Lemma rE' (R : numFieldType) (p r s : {i01 R}) :
-  s%:num \is a GRing.unit ->
-  p%:num = r%:num * s%:num ->
-  r%:num = p%:num / s%:num.
-Proof. exact: rE. Qed.
 End lemmas.
 End ConvexAssoc.
 
@@ -155,7 +135,7 @@ Proof.
 move=> p q r s a b c prs spq; rewrite /avg.
 rewrite [in LHS]scalerDr [in LHS]addrA [in RHS]scalerDr; congr (_ + _ + _).
 - by rewrite scalerA mulrC prs.
-- by rewrite !scalerA; congr *:%R; rewrite (ConvexAssoc.pq_sr' prs).
+- by rewrite !scalerA; congr *:%R; rewrite (ConvexAssoc.pq_sr prs).
 - by rewrite scalerA spq.
 Qed.
 
@@ -227,17 +207,6 @@ Lemma convR_line_path (a b : R^o) (t : {i01 R}) : a <| t |> b = line_path b a t%
 Proof. by rewrite convRCE. Qed.
 
 End conv_numDomainType.
-
-Section conv_numFieldType.
-Context {R : numFieldType}.
-
-Lemma le_convR (a b : R^o) : a < b -> increasing_fun (fun t => conv t b a).
-Proof.
-move/le_line_path => + t u => /(_ t%:num u%:num) /=.
-by rewrite !convR_line_path -num_le.
-Qed.
-
-End conv_numFieldType.
 
 Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
   forall (t : {i01 R}), {in D &, forall (x y : R^o), (f (x <| t |> y) <= f x <| t |> f y)%R}.
