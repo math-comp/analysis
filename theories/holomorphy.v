@@ -23,6 +23,25 @@ I don't want the canonical lmodtype structure on C,
 Therefore this is based on a fork of real-closed *)
 HB.instance Definition _ (R : rcfType) := NormedModule.copy R[i] R[i]^o.
 
+HB.instance Definition _ (R : rcfType) := Uniform.copy (Rcomplex R) R[i].
+HB.instance Definition _ (R : rcfType) := Pointed.copy (Rcomplex R) R[i].
+
+Section Rcomplex_NormedModType.
+Variable (R : rcfType).
+HB.howto Rcomplex normedModType 11.
+
+Definition ball : R -> Rcomplex R -> R -> Prop
+    - ball_center_subproof : forall (x : M) (e : R), 0 < e -> ball x e x
+    - ball_sym_subproof : forall (x y : M) (e : R), ball x e y -> ball y e x
+    - ball_triangle_subproof :
+        forall (x y z : M) (e1 e2 : R),
+        ball x e1 y -> ball y e2 z -> ball x (e1 + e2)%E z
+    - entourageE_subproof : entourage = entourage_ ball
+
+HB.about Uniform_isPseudoMetric.Build.
+; NormedZmod_PseudoMetric_eq;
+      PseudoMetricNormedZmod_Lmodule_isNormedModule
+
 HB.factory Record Normed_And_Lmodule_isNormedModule (K : numFieldType) R of @Num.NormedZmodule K R & GRing.Lmodule K R := {
   normrZ : forall (l : K) (x : R), normr (l *: x) = normr l * normr x;
 }.
@@ -239,7 +258,7 @@ Lemma real_normc_ler (x y : R) :
 Proof.
 rewrite /normc /= -ler_sqr ?nnegrE ?normr_ge0 ?sqrtr_ge0 //.
 rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 ?real_normK //=.
-by rewrite ler_addl ?sqr_ge0.
+by rewrite lerDl ?sqr_ge0.
 Qed.
 
 Lemma im_normc_ler (x y : R) :
@@ -247,7 +266,7 @@ Lemma im_normc_ler (x y : R) :
 Proof.
 rewrite /normc /= -ler_sqr ?nnegrE ?normr_ge0 ?sqrtr_ge0 //.
 rewrite sqr_sqrtr ?addr_ge0 ?sqr_ge0 ?real_normK //=.
-by rewrite ler_addr ?sqr_ge0.
+by rewrite lerDr ?sqr_ge0.
 Qed.
 
 End complex_extras.
@@ -403,6 +422,14 @@ have -> : (fun h : C =>  h^-1 *: ((f (c + h) - f c))) @ (realC @  (dnbhs 0)) =
                  \o realC @  (dnbhs (0 : R)) by [].
 suff -> : ( (fun h : C => h^-1 *: (f (c + h) - f c)) \o realC)
 = (fun h : R => h^-1 *: ((f%:Rfun \o shift c) (h *: (1%:Rc)) - f c : Rcomplex _) ) :> (R -> C) .
+STOP.
+rewrite /=.
+f_equal => /=.
+Set Printing All.
+Search lim Logic.eq .
+Search (lim _ = lim _).
+Set Printing All.
+apply: lim_eq.
   admit.
 apply: funext => h /=.
 by  rewrite Inv_realC /= -!scalecr realC_alg [X in f X]addrC.
