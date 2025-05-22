@@ -8,8 +8,8 @@
   + lemma `subrKC`
 
 - in `convex.v`:
-  + module `ConvexAssoc`
-  + lemmas `convR_itv`, `convR_line_path`, `le_convR`
+  + module `ConvexAssoc` containing `ConvexAssoc.law` and helper lemmas
+  + lemmas `convR_itv`, `convR_line_path`
 
 ### Changed
 
