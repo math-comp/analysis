@@ -1427,7 +1427,7 @@ Lemma continuous_curry (f : U * V -> W) :
     continuous (curry f) /\ forall u, continuous (curry f u).
 Proof.
 move=> ctsf; split; first last.
-  move=> u z; apply: continuous_comp; last exact: ctsf.
+  move=> u z; apply: (continuous_comp _ (ctsf (u, z))).
   by apply: cvg_pair => //=; exact: cvg_cst.
 move=> x; apply/compact_open_cvgP => K O /= cptK oO fKO.
 near=> z => w /= [+ + <-]; near: z.
