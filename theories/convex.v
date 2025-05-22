@@ -14,15 +14,15 @@ From HB Require Import structures.
 (* completed with material from infotheo.                                     *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*   isConvexSpace R T == interface for convex spaces                         *)
+(*   isConvexSpace R T == interface for convex spaces with R : numDomainType  *)
 (*       ConvexSpace R == structure of convex space                           *)
 (*         a <| t |> b == convexity operator                                  *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* E : lmodType R with R : realDomainType and R : realDomainType are shown to *)
-(* be convex spaces with the following aliases:                               *)
-(*       convex_lmodType E == E : lmodType T as a convex spaces               *)
-(* convex_realDomainType R == R : realDomainType as a convex space            *)
+(* For R : numDomainType, E : lmodType R and R itself are shown to be convex  *)
+(* spaces with the following aliases:                                         *)
+(*       convex_lmodType E == E : lmodType R as a convex spaces               *)
+(*  convex_numDomainType R == R : numDomainType as a convex space             *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -42,18 +42,77 @@ Import numFieldNormedType.Exports.
 Declare Scope convex_scope.
 Local Open Scope convex_scope.
 
-HB.mixin Record isConvexSpace (R : realDomainType) T := {
+Module ConvexAssoc.
+Section def.
+Variables (R : numDomainType) (T : Type) (conv : {i01 R} -> T -> T -> T).
+Definition law :=
+  forall (p q r s : {i01 R}) (a b c : T),
+    p%:num = r%:num * s%:num -> `1- (s%:num) = `1- (p%:num) * `1- (q%:num) ->
+    conv p a (conv q b c) = conv s (conv r a b) c.
+End def.
+Section lemmas.
+Lemma pq_sr (R : comRingType) (p q r s : R) :
+  p = r * s ->
+  1 - s = (1 - p) * (1 - q) ->
+  (1 - p) * q = s * (1 - r).
+Proof.
+move=> prs spq.
+rewrite -[LHS]opprK -mulrN -[X in - X = _](addrK ((1 - p) * 1)).
+rewrite -mulrDr (addrC _ 1) -spq mulr1 prs.
+by rewrite !opprB addrC subrKA mulrDr mulr1 mulrN mulrC.
+Qed.
+Lemma pq_sr' (R : numDomainType) (p q r s : {i01 R}) :
+  p%:num = r%:num * s%:num ->
+  `1-(s%:num) = `1-(p%:num) * `1-(q%:num) ->
+  `1-(p%:num) * q%:num = s%:num * `1-(r%:num).
+Proof. exact: pq_sr. Qed.
+Lemma sE (R : ringType) (p q s : R) :
+  1 - s = (1 - p) * (1 - q) ->
+  s = 1 - (1 - p) * (1 - q).
+Proof. by move/eqP; rewrite subr_eq addrC -subr_eq => /eqP ->. Qed.
+Lemma sE' (R : numDomainType) (p q s : {i01 R}) :
+  `1-(s%:num) = `1-(p%:num) * `1-(q%:num) ->
+  s%:num = `1- (`1-(p%:num) * `1-(q%:num)).
+Proof. exact: sE. Qed.
+Lemma qE (R : comUnitRingType) (p q r s : R) :
+  (1 - p) \is a GRing.unit ->
+  p = r * s ->
+  1 - s = (1 - p) * (1 - q) ->
+  q = (s * (1 - r)) / (1 - p).
+Proof.
+move=> p1unit /pq_sr /[apply] /(congr1 ( *%R (1 - p)^-1)).
+by rewrite mulrA mulVr// mul1r mulrC.
+Qed.
+Lemma qE' (R : numDomainType) (p q r s : {i01 R}) :
+  `1-(p%:num) \is a GRing.unit ->
+  p%:num = r%:num * s%:num ->
+  `1-(s%:num) = `1-(p%:num) * `1-(q%:num) ->
+  q%:num = (s%:num * `1-(r%:num)) / `1-(p%:num).
+Proof. exact: qE. Qed.
+Lemma rE (R : unitRingType) (p r s : R) :
+  s \is a GRing.unit -> p = r * s -> r = p / s.
+Proof.
+move=> sunit /(congr1 ( *%R^~ s^-1)) ->.
+by rewrite -mulrA divrr// mulr1.
+Qed.
+Lemma rE' (R : numFieldType) (p r s : {i01 R}) :
+  s%:num \is a GRing.unit ->
+  p%:num = r%:num * s%:num ->
+  r%:num = p%:num / s%:num.
+Proof. exact: rE. Qed.
+End lemmas.
+End ConvexAssoc.
+
+HB.mixin Record isConvexSpace (R : numDomainType) T := {
   conv : {i01 R} -> T -> T -> T ;
   conv1 : forall a b, conv 1%:i01 a b = a ;
   convmm : forall (p : {i01 R}) a, conv p a a = a ;
   convC : forall (p : {i01 R}) a b, conv p a b = conv (1 - p%:inum)%:i01 b a;
-  convA : forall (p q r : {i01 R}) (a b c : T),
-    p%:inum * (`1-(q%:inum)) = (`1-(p%:inum * q%:inum)) * r%:inum ->
-    conv p a (conv q b c) = conv (p%:inum * q%:inum)%:i01 (conv r a b) c
+  convA : ConvexAssoc.law conv
 }.
 
 #[short(type=convType)]
-HB.structure Definition ConvexSpace (R : realDomainType) :=
+HB.structure Definition ConvexSpace (R : numDomainType) :=
   {T of isConvexSpace R T & Choice T}.
 
 Notation "a <| p |> b" := (conv p a b) : convex_scope.
@@ -72,10 +131,10 @@ End convex_space_lemmas.
 
 Local Open Scope convex_scope.
 
-Definition convex_lmodType {R : realDomainType} (E : lmodType R) : Type := E.
+Definition convex_lmodType {R : numDomainType} (E : lmodType R) : Type := E.
 
 Section lmodType_convex_space.
-Context {R : realDomainType} {E' : lmodType R}.
+Context {R : numDomainType} {E' : lmodType R}.
 Implicit Type p q r : {i01 R}.
 
 Let E := convex_lmodType E'.
@@ -91,70 +150,94 @@ Proof. by rewrite /avg -scalerDl/= add_onemK scale1r. Qed.
 Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. by rewrite /avg onemK addrC. Qed.
 
-Let avgA p q r (a b c : E) :
-  p%:inum * (`1-(q%:inum)) = (`1-(p%:inum * q%:inum)) * r%:inum ->
-  avg p a (avg q b c) = avg (p%:inum * q%:inum)%:i01 (avg r a b) c.
+Let avgA : ConvexAssoc.law avg.
 Proof.
-move=> pq; rewrite /avg.
+move=> p q r s a b c prs spq; rewrite /avg.
 rewrite [in LHS]scalerDr [in LHS]addrA [in RHS]scalerDr; congr (_ + _ + _).
-- rewrite scalerA; congr (_ *: _) => /=.
-  by rewrite mulrDr mulr1 mulrN -pq mulrBr mulr1 opprB addrA subrK.
-- by rewrite 2!scalerA; congr (_ *: _).
-- by rewrite scalerA.
+- by rewrite scalerA mulrC prs.
+- by rewrite !scalerA; congr *:%R; rewrite (ConvexAssoc.pq_sr' prs).
+- by rewrite scalerA spq.
 Qed.
 
 HB.instance Definition _ := Choice.on E.
 
 HB.instance Definition _ :=
-  isConvexSpace.Build R E avg0 avgI avgC avgA.
+  isConvexSpace.Build R E avg1 avgI avgC avgA.
 
 End lmodType_convex_space.
 
-Definition convex_realDomainType (R : realDomainType) : Type := R^o.
+Definition convex_numDomainType (R : numDomainType) : Type := R^o.
 
-Section realDomainType_convex_space.
-Context {R : realDomainType}.
+Section numDomainType_convex_space.
+Context {R : numDomainType}.
 Implicit Types p q : {i01 R}.
 
-Let E := @convex_realDomainType R.
+Let E := @convex_numDomainType R.
+(* TODO: this E is not used. Why? *)
 
 Let avg p (a b : convex_lmodType R^o) := a <| p |> b.
 
-Let avg0 a b : avg 0%:i01 a b = a.
-Proof. by rewrite /avg conv0. Qed.
+Let avg1 a b : avg 1%:i01 a b = a.
+Proof. exact: conv1. Qed.
 
 Let avgI p x : avg p x x = x.
-Proof. by rewrite /avg convmm. Qed.
+Proof. exact: convmm. Qed.
 
 Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
-Proof. by rewrite /avg convC. Qed.
+Proof. exact: convC. Qed.
 
-Let avgA p q r (a b c : R) :
-  p%:inum * (`1-(q%:inum)) = (`1-(p%:inum * q%:inum)) * r%:inum ->
-  avg p a (avg q b c) = avg (p%:inum * q%:inum)%:i01 (avg r a b) c.
-Proof. by move=> h; rewrite /avg (convA _ _ r). Qed.
+Let avgA : ConvexAssoc.law avg.
+Proof. exact: convA. Qed.
 
 HB.instance Definition _ := @isConvexSpace.Build R R^o
-  _ avg0 avgI avgC avgA.
+  _ avg1 avgI avgC avgA.
 
-End realDomainType_convex_space.
+End numDomainType_convex_space.
 
-Section conv_realDomainType.
-Context {R : realDomainType}.
+Section conv_numDomainType.
+Context {R : numDomainType}.
 
-Lemma conv_gt0 (a b : R^o) (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
+Lemma convR_gt0 (a b : R^o) (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
 Proof.
 move=> a0 b0.
 have [->|t0] := eqVneq t 0%:i01; first by rewrite conv0.
 have [->|t1] := eqVneq t 1%:i01; first by rewrite conv1.
-rewrite addr_gt0// mulr_gt0//; last by rewrite lt_neqAle eq_sym t0/=.
-by rewrite onem_gt0// lt_neqAle t1/=.
+rewrite addr_gt0// mulr_gt0//; first by rewrite lt_neqAle eq_sym t0 ge0.
+by rewrite subr_gt0 lt_neqAle t1 le1.
 Qed.
 
-Lemma convRE (a b : R^o) (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * a + t%:inum * b.
+Lemma convRE (a b : R^o) (t : {i01 R}) : a <| t |> b = t%:inum * a + `1-(t%:inum) * b.
 Proof. by []. Qed.
 
-End conv_realDomainType.
+Lemma convR_itv (a b : R^o) (t : {i01 R}) : a <= b ->  a <| t |> b \in `[a, b].
+Proof.
+move=> ab; rewrite convRE in_itv /=.
+rewrite -{1}(subrKC a b).
+rewrite mulrDr addrA -mulrDl.
+rewrite subrKC mul1r.
+rewrite lerDl mulr_ge0/=; [|by rewrite subr_ge0 le1|by rewrite subr_ge0].
+rewrite -[leRHS](convmm t b) convRE lerD//.
+by rewrite ler_wpM2l.
+Qed.
+
+Let convRCE (a b : R^o) (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * b + t%:inum * a.
+Proof. by rewrite addrC convRE. Qed.
+
+Lemma convR_line_path (a b : R^o) (t : {i01 R}) : a <| t |> b = line_path b a t%:num.
+Proof. by rewrite convRCE. Qed.
+
+End conv_numDomainType.
+
+Section conv_numFieldType.
+Context {R : numFieldType}.
+
+Lemma le_convR (a b : R^o) : a < b -> increasing_fun (fun t => conv t b a).
+Proof.
+move/le_line_path => + t u => /(_ t%:num u%:num) /=.
+by rewrite !convR_line_path -num_le.
+Qed.
+
+End conv_numFieldType.
 
 Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
   forall (t : {i01 R}), {in D &, forall (x y : R^o), (f (x <| t |> y) <= f x <| t |> f y)%R}.
@@ -183,10 +266,12 @@ Qed.
 Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
   forall t, f (a <| t |> b) <= f a <| t |> f b.
 Proof.
-move=> ab h t; set x := a <| t |> b; have /h : a <= x <= b.
-  by rewrite -(conv1 a b) -{1}(conv0 a b) /x !le_line_path//= ge0/=.
+move=> ba h t; set x := a <| t |> b; have /h : a <= x <= b.
+  by have:= convR_itv t (ltW ba); rewrite in_itv/=.
 rewrite subr_ge0 => /le_trans; apply.
-by rewrite LE// /x line_pathK ?lt_eqF// convC line_pathK ?gt_eqF.
+rewrite LE// /x convR_line_path.
+rewrite line_pathK ?gt_eqF//.
+by rewrite line_path_sym line_pathK// lt_eqF.
 Qed.
 
 Hypothesis HDf : {in `]a, b[, forall x, derivable f x 1}.
