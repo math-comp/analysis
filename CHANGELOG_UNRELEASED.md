@@ -4,6 +4,12 @@
 
 ### Added
 
+- in `tvs.v`
+  + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
+  + mixin `PreTopologicalNmodule_isTopologicalNmodule`,
+    `TopologicalNmodule_isTopologicalLmodule`
+  + structure `topologicalLmodule`
+
 ### Changed
 
 - in `sequences.v`:
@@ -43,10 +49,20 @@
   + definition `ae_eq`
   + `ae_eq` lemmas now for `ringType`-valued functions (instead of `\bar R`)
 
++ in `tvs.v`
+  + HB class `UniformZmodule` now contains `TopologicalZmodule`
+  + HB class `UniformLmodule` now contains `TopologicalLmodule`
+
 ### Renamed
 
 - in `measure.v`
   + definition `ess_sup` moved to `ess_sup_inf.v`
+
+- in `tvs.v`
+  + HB class `TopologicalNmodule` moved to `PreTopologicalNmodule`
+  + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
+  + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
+  + structure `topologicalLmodule` moved to `preTopologicalLmodule`
 
 ### Generalized
 
