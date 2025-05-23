@@ -28,18 +28,24 @@ From mathcomp Require Import topology function_spaces.
 (*   topologicalLmodType K == topologicalNmodule and Lmodule over K with a    *)
 (*                            continuous scaling operation.                   *)
 (*                            The HB class is TopologicalLmodule.             *)
-(*          UniformZmodule == HB class, joint of Uniform and                  *)
+(*          UniformNmodule == HB class, joint of Uniform and Nmodule with a   *)
+(*                            uniformly continuous addition                   *)
+(*       PreUniformZmodule == HB class, joint of Uniform and                  *)
 (*                            TopologicalZmodule                              *)
-(*        UniformLmodule K == HB class, joint of Uniform and                  *)
+(*          UniformZmodule == HB class, joint of UniformNmodule and Zmodule   *)
+(*     PreUniformLmodule K == HB class, joint of Uniform and                  *)
 (*                            TopologicalLmodule over K                       *)
 (*                            K is a numDomainType.                           *)
+(*        UniformLmodule K == HB class, joint of UniformNmodule and Lmodule   *)
+(*                            with a uniformly continuous scaling operation   *)
+(*                            K is a numFieldType.                            *)
 (*                convex A == A : set M is a convex set of elements of M      *)
 (*                            M is an Lmodule over R : numDomainType.         *)
 (*              tvsType R  == interface type for a locally convex topological *)
 (*                            vector space on a numDomain R                   *)
 (*                            A tvs is constructed over a uniform space.      *)
 (*                            The HB class is Tvs.                            *)
-(*   TopologicalLmod_isTvs == factory allowing the construction of a tvs from *)
+(*PreTopologicalLmod_isTvs == factory allowing the construction of a tvs from *)
 (*                            an Lmodule which is also a topological space.   *)
 (*  ```                                                                       *)
 (* HB instances:                                                              *)
@@ -96,9 +102,25 @@ HB.structure Definition PreTopologicalLmodule (K : numDomainType) :=
 HB.structure Definition TopologicalLmodule (K : numDomainType) :=
   {M of TopologicalNmodule M & TopologicalNmodule_isTopologicalLmodule K M}.
 
-HB.structure Definition UniformZmodule := {M of Uniform M & TopologicalZmodule M}.
-HB.structure Definition UniformLmodule (K : numDomainType) :=
+HB.structure Definition PreUniformNmodule := {M of Uniform M & TopologicalNmodule M}.
+
+HB.mixin Record PreUniformNmodule_isUniformNmodule M of PreUniformNmodule M := {
+  add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2)
+}.
+
+HB.structure Definition UniformNmodule := {M of PreUniformNmodule M & PreUniformNmodule_isUniformNmodule M}.
+
+HB.structure Definition PreUniformZmodule := {M of Uniform M & TopologicalZmodule M}.
+HB.structure Definition UniformZmodule := {M of UniformNmodule M & GRing.Zmodule M}.
+
+HB.structure Definition PreUniformLmodule (K : numDomainType) :=
   {M of Uniform M & TopologicalLmodule K M}.
+
+HB.mixin Record PreUniformLmodule_isUniformLmodule (R : numFieldType) M of PreUniformLmodule R M := {
+  scale_unif_continuous : unif_continuous (fun z : R^o * M => z.1 *: z.2) ;
+}.
+
+HB.structure Definition UniformLmodule (R : numFieldType) := {M of PreUniformLmodule R M & PreUniformLmodule_isUniformLmodule R M}.
 
 Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A ->
@@ -108,7 +130,7 @@ HB.mixin Record Uniform_isTvs (R : numDomainType) E
     of Uniform E & GRing.Lmodule R E := {
   locally_convex : exists2 B : set (set E),
     (forall b, b \in B -> convex b) & basis B
-}.
+}.'
 
 #[short(type="tvsType")]
 HB.structure Definition Tvs (R : numDomainType) :=
