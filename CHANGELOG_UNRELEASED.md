@@ -12,6 +12,11 @@
     * implemented through a module `ConvexQuasiAssoc` containing
       `law` and helper lemmas
   + lemmas `convR_itv`, `convR_line_path`
+- in `tvs.v`
+  + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
+  + mixin `PreTopologicalNmodule_isTopologicalNmodule`,
+    `TopologicalNmodule_isTopologicalLmodule`
+  + structure `topologicalLmodule`
 
 ### Changed
 
@@ -59,6 +64,9 @@
 - in `convex.v`:
   + definition `convex_realDomainType` generalized and
     renamed accordingly `convex_numDomainType`
++ in `tvs.v`
+  + HB class `UniformZmodule` now contains `TopologicalZmodule`
+  + HB class `UniformLmodule` now contains `TopologicalLmodule`
 
 ### Renamed
 
@@ -67,6 +75,11 @@
 
 - in `convex.v`
   + lemma `conv_gt0` to `convR_gt0`
+- in `tvs.v`
+  + HB class `TopologicalNmodule` moved to `PreTopologicalNmodule`
+  + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
+  + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
+  + structure `topologicalLmodule` moved to `preTopologicalLmodule`
 
 ### Generalized
 
