@@ -14,8 +14,10 @@
   + lemmas `convR_itv`, `convR_line_path`
 - in `tvs.v`
   + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
-  + mixin `PreTopologicalNmodule_isTopologicalNmodule`,
+    `UniformNmodule`, `UniformZmodule`, `UniformLmodule`
+  + mixin `TopologicalNmodule_isTopologicalNmodule`,
     `TopologicalNmodule_isTopologicalLmodule`
+    `PreUniformNmodule_isUniformNmodule`, `PreUniformLmodule_isUniformLmodule`
   + structure `topologicalLmodule`
 
 ### Changed
@@ -80,6 +82,10 @@
   + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
   + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
   + structure `topologicalLmodule` moved to `preTopologicalLmodule`
+  + HB class `UniformNmodule` moved to `PreUniformNmodule`
+  + HB class `UniformZmodule` moved to `PreUniformZmodule`
+  + HB class `UniformLmodule` moved to `PreUniformLmodule`
+
 
 ### Generalized
 
