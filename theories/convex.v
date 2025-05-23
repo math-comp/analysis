@@ -238,9 +238,7 @@ Proof.
 move=> ba h t; set x := a <| t |> b; have /h : a <= x <= b.
   by have:= convR_itv t (ltW ba); rewrite in_itv/=.
 rewrite subr_ge0 => /le_trans; apply.
-rewrite LE// /x convR_line_path.
-rewrite line_pathK ?gt_eqF//.
-by rewrite line_path_sym line_pathK// lt_eqF.
+by rewrite LE// /x {2}convC 2!convR_line_path !line_pathK//= ?(eq_sym b) lt_eqF.
 Qed.
 
 Hypothesis HDf : {in `]a, b[, forall x, derivable f x 1}.
