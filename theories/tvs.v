@@ -21,7 +21,7 @@ From mathcomp Require Import topology function_spaces.
 (*                            continuous addition                             *)
 (*   PreTopologicalZmodule == HB class, joint of Topological and Zmodule      *)
 (*      TopologicalZmodule == HB class, joint of TopologicalNmodule and       *)
-(*                            Zmodule                                         *)
+(*                            Zmodule with a continuous opposite operator     *)
 (*preTopologicalLmodType K == topological space and Lmodule over K            *)
 (*                            K is a numDomainType.                           *)
 (*                            The HB class is PreTopologicalLmodule.          *)
@@ -33,6 +33,7 @@ From mathcomp Require Import topology function_spaces.
 (*                            uniformly continuous addition                   *)
 (*       PreUniformZmodule == HB class, joint of Uniform and Zmodule          *)
 (*          UniformZmodule == HB class, joint of UniformNmodule and Zmodule   *)
+(*                            with uniformly continuous opposite operator     *)
 (*     PreUniformLmodule K == HB class, joint of Uniform and Lmodule over K   *)
 (*                            K is a numDomainType.                           *)
 (*        UniformLmodule K == HB class, joint of UniformNmodule and Lmodule   *)
@@ -189,11 +190,11 @@ HB.structure Definition UniformNmodule := {M of PreUniformNmodule M & PreUniform
 
 HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
 
-HB.mixin Record UniformNmodule_isUniformNmodule M of Uniform M & GRing.Zmodule M := {
+HB.mixin Record UniformNmodule_isUniformZmodule M of Uniform M & GRing.Zmodule M := {
   opp_unif_continuous : unif_continuous (-%R : M -> M)
 }.
 
-HB.structure Definition UniformZmodule := {M of UniformNmodule M & GRing.Zmodule M & UniformNmodule_isUniformNmodule M}.
+HB.structure Definition UniformZmodule := {M of UniformNmodule M & GRing.Zmodule M & UniformNmodule_isUniformZmodule M}.
 
 HB.factory Record PreUniformNmodule_isUniformZmodule M of Uniform M & GRing.Zmodule M := {
   sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2)
@@ -233,7 +234,7 @@ by congr entourage; rewrite eqEsubset; split=> x /=; rewrite !opprK.
 Qed.
 
 HB.instance Definition _ := PreUniformNmodule_isUniformNmodule.Build M add_unif_continuous.
-HB.instance Definition _ := UniformNmodule_isUniformNmodule.Build M opp_unif_continuous.
+HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build M opp_unif_continuous.
 
 HB.end.
 
@@ -287,7 +288,7 @@ by congr entourage; rewrite eqEsubset; split=> x /=; rewrite !scaleN1r.
 Qed.
 
 #[warning="-HB.no-new-instance"]
-HB.instance Definition _ := UniformNmodule_isUniformNmodule.Build M opp_unif_continuous.
+HB.instance Definition _ := UniformNmodule_isUniformZmodule.Build M opp_unif_continuous.
 HB.instance Definition _ := PreUniformLmodule_isUniformLmodule.Build R M scale_unif_continuous.
 
 HB.end.
