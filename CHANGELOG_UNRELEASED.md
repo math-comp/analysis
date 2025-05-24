@@ -4,13 +4,24 @@
 
 ### Added
 
+- in `num_topology.v`
+  + `topologicalType` instance on `R^o` for `R : numDomainType`
+
 - in `tvs.v`
   + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
     `UniformNmodule`, `UniformZmodule`, `UniformLmodule`
-  + mixin `TopologicalNmodule_isTopologicalNmodule`,
-    `TopologicalNmodule_isTopologicalLmodule`
-    `PreUniformNmodule_isUniformNmodule`, `PreUniformLmodule_isUniformLmodule`
+  + mixin `PreTopologicalNmodule_isTopologicalNmodule`,
+    `TopologicalNmodule_isTopologicalZmodule`,
+    `TopologicalZmodule_isTopologicalLmodule`,
+    `PreUniformNmodule_isUniformNmodule`,
+    `UniformNmodule_isUniformZmodule`,
+    `PreUniformLmodule_isUniformLmodule`
   + structure `topologicalLmodule`
+  + factories `PreTopologicalNmodule_isTopologicalZmodule`,
+    `TopologicalNmodule_isTopologicalLmodule`,
+    `PreUniformNmodule_isUniformZmodule`,
+    `UniformNmodule_isUniformLmodule`
+  + lemmas `sub_continuous`, `sub_unif_continuous`
 
 ### Changed
 
