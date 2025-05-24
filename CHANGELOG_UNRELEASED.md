@@ -4,6 +4,25 @@
 
 ### Added
 
+- in `num_topology.v`
+  + `topologicalType` instance on `R^o` for `R : numDomainType`
+
+- in `tvs.v`
+  + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
+    `UniformNmodule`, `UniformZmodule`, `UniformLmodule`
+  + mixin `PreTopologicalNmodule_isTopologicalNmodule`,
+    `TopologicalNmodule_isTopologicalZmodule`,
+    `TopologicalZmodule_isTopologicalLmodule`,
+    `PreUniformNmodule_isUniformNmodule`,
+    `UniformNmodule_isUniformZmodule`,
+    `PreUniformLmodule_isUniformLmodule`
+  + structure `topologicalLmodule`
+  + factories `PreTopologicalNmodule_isTopologicalZmodule`,
+    `TopologicalNmodule_isTopologicalLmodule`,
+    `PreUniformNmodule_isUniformZmodule`,
+    `UniformNmodule_isUniformLmodule`
+  + lemmas `sub_continuous`, `sub_unif_continuous`
+
 ### Changed
 
 - in `sequences.v`:
@@ -43,10 +62,24 @@
   + definition `ae_eq`
   + `ae_eq` lemmas now for `ringType`-valued functions (instead of `\bar R`)
 
++ in `tvs.v`
+  + HB class `UniformZmodule` now contains `TopologicalZmodule`
+  + HB class `UniformLmodule` now contains `TopologicalLmodule`
+
 ### Renamed
 
 - in `measure.v`
   + definition `ess_sup` moved to `ess_sup_inf.v`
+
+- in `tvs.v`
+  + HB class `TopologicalNmodule` moved to `PreTopologicalNmodule`
+  + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
+  + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
+  + structure `topologicalLmodule` moved to `preTopologicalLmodule`
+  + HB class `UniformNmodule` moved to `PreUniformNmodule`
+  + HB class `UniformZmodule` moved to `PreUniformZmodule`
+  + HB class `UniformLmodule` moved to `PreUniformLmodule`
+
 
 ### Generalized
 
