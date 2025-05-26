@@ -51,7 +51,7 @@
 ### Generalized
 
 - in `derive.v`:
-  + `derive_cstr`, `derive1_cst`
+  + `derive_cst`, `derive1_cst`
 
 ### Deprecated
 
