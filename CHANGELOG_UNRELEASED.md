@@ -50,6 +50,9 @@
 
 ### Generalized
 
+- in `derive.v`:
+  + `derive_cstr`, `derive1_cst`
+
 ### Deprecated
 
 ### Removed
