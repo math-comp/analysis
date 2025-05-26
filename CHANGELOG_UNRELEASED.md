@@ -124,6 +124,9 @@
 
 ### Generalized
 
+- in `derive.v`:
+  + `derive_cst`, `derive1_cst`
+
 ### Deprecated
 
 ### Removed
