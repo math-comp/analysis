@@ -8,7 +8,7 @@
   + lemma `subrKC`
 
 - in `convex.v`:
-  + module `ConvexAssoc` containing `ConvexAssoc.law` and helper lemmas
+  + module `QuasiAssoc` containing `QuasiAssoc.law` and helper lemmas
   + lemmas `convR_itv`, `convR_line_path`
 
 ### Changed
@@ -53,6 +53,10 @@
   + notation `{ae mu, P}` (near use `{near _, _}` notation)
   + definition `ae_eq`
   + `ae_eq` lemmas now for `ringType`-valued functions (instead of `\bar R`)
+
+- in `convex.v`:
+  + definition `convex_realDomainType` generalized and
+    renamed accordingly `convex_numDomainType`
 
 ### Renamed
 

@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap.
 From mathcomp Require Import matrix interval zmodp vector fieldext falgebra.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
@@ -11,9 +11,10 @@ From HB Require Import structures.
 (* # Convexity                                                                *)
 (*                                                                            *)
 (* This file provides a small account of convexity using convex spaces, to be *)
-(* completed with material from infotheo.                                     *)
+(* completed with material from InfoTheo.                                     *)
 (*                                                                            *)
 (* ```                                                                        *)
+(*      QuasiAssoc.law == law of quasi-associativity                          *)
 (*   isConvexSpace R T == interface for convex spaces with R : numDomainType  *)
 (*       ConvexSpace R == structure of convex space                           *)
 (*         a <| t |> b == convexity operator                                  *)
@@ -42,15 +43,21 @@ Import numFieldNormedType.Exports.
 Declare Scope convex_scope.
 Local Open Scope convex_scope.
 
-Module ConvexAssoc.
+Module QuasiAssoc.
 Section def.
 Variables (R : numDomainType) (T : Type) (conv : {i01 R} -> T -> T -> T).
-Definition law :=
-  forall (p q r s : {i01 R}) (a b c : T),
-    p%:num = r%:num * s%:num -> `1- (s%:num) = `1- (p%:num) * `1- (q%:num) ->
-    conv p a (conv q b c) = conv s (conv r a b) c.
+
+Local Notation "x <| p |> y" := (conv p x y).
+
+Definition law := forall (p q r s : {i01 R}) (a b c : T),
+  p%:num = r%:num * s%:num ->
+  `1- (s%:num) = `1- (p%:num) * `1- (q%:num) ->
+  a <| p |> (b <| q |> c) = (a <| r |> b) <| s |> c.
 End def.
+
+(** technical relations between the parameters of the quasi-associativity law *)
 Section lemmas.
+
 Lemma pq_sr (R : comRingType) (p q r s : R) :
   p = r * s ->
   1 - s = (1 - p) * (1 - q) ->
@@ -61,12 +68,14 @@ rewrite -[LHS]opprK -mulrN -[X in - X = _](addrK ((1 - p) * 1)).
 rewrite -mulrDr (addrC _ 1) -spq mulr1 prs.
 by rewrite !opprB addrC subrKA mulrDr mulr1 mulrN mulrC.
 Qed.
+
 Lemma sE (R : ringType) (p q s : R) :
   1 - s = (1 - p) * (1 - q) ->
   s = 1 - (1 - p) * (1 - q).
 Proof. by move/eqP; rewrite subr_eq addrC -subr_eq => /eqP ->. Qed.
+
 Lemma qE (R : comUnitRingType) (p q r s : R) :
-  (1 - p) \is a GRing.unit ->
+  1 - p \is a GRing.unit ->
   p = r * s ->
   1 - s = (1 - p) * (1 - q) ->
   q = (s * (1 - r)) / (1 - p).
@@ -74,21 +83,24 @@ Proof.
 move=> p1unit /pq_sr /[apply] /(congr1 ( *%R (1 - p)^-1)).
 by rewrite mulrA mulVr// mul1r mulrC.
 Qed.
+
 Lemma rE (R : unitRingType) (p r s : R) :
   s \is a GRing.unit -> p = r * s -> r = p / s.
 Proof.
 move=> sunit /(congr1 ( *%R^~ s^-1)) ->.
 by rewrite -mulrA divrr// mulr1.
 Qed.
+
 End lemmas.
-End ConvexAssoc.
+
+End QuasiAssoc.
 
 HB.mixin Record isConvexSpace (R : numDomainType) T := {
   conv : {i01 R} -> T -> T -> T ;
   conv1 : forall a b, conv 1%:i01 a b = a ;
   convmm : forall (p : {i01 R}) a, conv p a a = a ;
   convC : forall (p : {i01 R}) a b, conv p a b = conv (1 - p%:inum)%:i01 b a;
-  convA : ConvexAssoc.law conv
+  convA : QuasiAssoc.law conv
 }.
 
 #[short(type=convType)]
@@ -130,12 +142,12 @@ Proof. by rewrite /avg -scalerDl/= add_onemK scale1r. Qed.
 Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. by rewrite /avg onemK addrC. Qed.
 
-Let avgA : ConvexAssoc.law avg.
+Let avgA : QuasiAssoc.law avg.
 Proof.
 move=> p q r s a b c prs spq; rewrite /avg.
 rewrite [in LHS]scalerDr [in LHS]addrA [in RHS]scalerDr; congr (_ + _ + _).
 - by rewrite scalerA mulrC prs.
-- by rewrite !scalerA; congr *:%R; rewrite (ConvexAssoc.pq_sr prs).
+- by rewrite !scalerA; congr *:%R; rewrite (QuasiAssoc.pq_sr prs).
 - by rewrite scalerA spq.
 Qed.
 
@@ -152,9 +164,6 @@ Section numDomainType_convex_space.
 Context {R : numDomainType}.
 Implicit Types p q : {i01 R}.
 
-Let E := @convex_numDomainType R.
-(* TODO: this E is not used. Why? *)
-
 Let avg p (a b : convex_lmodType R^o) := a <| p |> b.
 
 Let avg1 a b : avg 1%:i01 a b = a.
@@ -166,7 +175,7 @@ Proof. exact: convmm. Qed.
 Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. exact: convC. Qed.
 
-Let avgA : ConvexAssoc.law avg.
+Let avgA : QuasiAssoc.law avg.
 Proof. exact: convA. Qed.
 
 HB.instance Definition _ := @isConvexSpace.Build R R^o
@@ -186,10 +195,11 @@ rewrite addr_gt0// mulr_gt0//; first by rewrite lt_neqAle eq_sym t0 ge0.
 by rewrite subr_gt0 lt_neqAle t1 le1.
 Qed.
 
-Lemma convRE (a b : R^o) (t : {i01 R}) : a <| t |> b = t%:inum * a + `1-(t%:inum) * b.
+Lemma convRE (a b : R^o) (t : {i01 R}) :
+  a <| t |> b = t%:inum * a + `1-(t%:inum) * b.
 Proof. by []. Qed.
 
-Lemma convR_itv (a b : R^o) (t : {i01 R}) : a <= b ->  a <| t |> b \in `[a, b].
+Lemma convR_itv (a b : R^o) (t : {i01 R}) : a <= b -> a <| t |> b \in `[a, b].
 Proof.
 move=> ab; rewrite convRE in_itv /=.
 rewrite -{1}(subrKC a b).
@@ -200,16 +210,19 @@ rewrite -[leRHS](convmm t b) convRE lerD//.
 by rewrite ler_wpM2l.
 Qed.
 
-Let convRCE (a b : R^o) (t : {i01 R}) : a <| t |> b = `1-(t%:inum) * b + t%:inum * a.
+Let convRCE (a b : R^o) (t : {i01 R}) :
+  a <| t |> b = `1-(t%:inum) * b + t%:inum * a.
 Proof. by rewrite addrC convRE. Qed.
 
-Lemma convR_line_path (a b : R^o) (t : {i01 R}) : a <| t |> b = line_path b a t%:num.
+Lemma convR_line_path (a b : R^o) (t : {i01 R}) :
+  a <| t |> b = line_path b a t%:num.
 Proof. by rewrite convRCE. Qed.
 
 End conv_numDomainType.
 
 Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
-  forall (t : {i01 R}), {in D &, forall (x y : R^o), (f (x <| t |> y) <= f x <| t |> f y)%R}.
+  forall (t : {i01 R}),
+    {in D &, forall (x y : R^o), (f (x <| t |> y) <= f x <| t |> f y)%R}.
 (* TODO: generalize to convTypes once we have ordered convTypes (mathcomp 2) *)
 
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)

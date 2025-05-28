@@ -344,8 +344,8 @@ move=> p1; rewrite (@le_trans _ _ ((2^-1 * `| f x | + 2^-1 * `| g x |) `^ p))//.
   rewrite ge0_ler_powR ?nnegrE ?(le_trans _ p1)//.
   by rewrite (le_trans (ler_normD _ _))// 2!normrM ger0_norm.
 rewrite {2 4}(_ : 2^-1 = 1 - 2^-1); last by rewrite {2}(splitr 1) div1r addrK.
-apply: (convex_powR p1 (Itv01 _ _)); rewrite // ?inE/= ?in_itv/= ?normr_ge0//.
-by rewrite invf_le1 ?ler1n.
+by apply: (convex_powR p1 (Itv01 _ _)) => //=;
+  rewrite ?inE/= ?in_itv/= ?normr_ge0// ?invr_ge0// invf_le1 ?ler1n.
 Qed.
 
 Let measurableT_comp_powR f p :
