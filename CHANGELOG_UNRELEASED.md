@@ -8,7 +8,9 @@
   + lemma `subrKC`
 
 - in `convex.v`:
-  + module `QuasiAssoc` containing `QuasiAssoc.law` and helper lemmas
+  + definition `convex_quasi_associative`
+    * implemented through a module `ConvexQuasiAssoc` containing
+      `law` and helper lemmas
   + lemmas `convR_itv`, `convR_line_path`
 
 ### Changed

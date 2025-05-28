@@ -14,16 +14,20 @@ From HB Require Import structures.
 (* completed with material from InfoTheo.                                     *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*      QuasiAssoc.law == law of quasi-associativity                          *)
-(*   isConvexSpace R T == interface for convex spaces with R : numDomainType  *)
-(*       ConvexSpace R == structure of convex space                           *)
-(*         a <| t |> b == convexity operator                                  *)
+(*  convex_quasi_associative == quasi-associativity of the operator of        *)
+(*                              convex spaces                                 *)
+(*         isConvexSpace R T == interface for convex spaces with              *)
+(*                              R : numDomainType                             *)
+(*                              The HB class is ConvexSpace.                  *)
+(*               a <| t |> b == convexity operator                            *)
 (* ```                                                                        *)
 (*                                                                            *)
-(* For R : numDomainType, E : lmodType R and R itself are shown to be convex  *)
-(* spaces with the following aliases:                                         *)
-(*       convex_lmodType E == E : lmodType R as a convex spaces               *)
+(* For `R : numDomainType`, `E : lmodType R` and `R` itself are shown to be   *)
+(* convex spaces with the following aliases:                                  *)
+(* ```                                                                        *)
+(*       convex_lmodType E == E : lmodType R as a convex space                *)
 (*  convex_numDomainType R == R : numDomainType as a convex space             *)
+(* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
 
@@ -43,7 +47,7 @@ Import numFieldNormedType.Exports.
 Declare Scope convex_scope.
 Local Open Scope convex_scope.
 
-Module QuasiAssoc.
+Module ConvexQuasiAssoc.
 Section def.
 Variables (R : numDomainType) (T : Type) (conv : {i01 R} -> T -> T -> T).
 
@@ -93,14 +97,16 @@ Qed.
 
 End lemmas.
 
-End QuasiAssoc.
+End ConvexQuasiAssoc.
+
+Definition convex_quasi_associative := ConvexQuasiAssoc.law.
 
 HB.mixin Record isConvexSpace (R : numDomainType) T := {
   conv : {i01 R} -> T -> T -> T ;
   conv1 : forall a b, conv 1%:i01 a b = a ;
   convmm : forall (p : {i01 R}) a, conv p a a = a ;
   convC : forall (p : {i01 R}) a b, conv p a b = conv (1 - p%:inum)%:i01 b a;
-  convA : QuasiAssoc.law conv
+  convA : convex_quasi_associative conv
 }.
 
 #[short(type=convType)]
@@ -142,12 +148,12 @@ Proof. by rewrite /avg -scalerDl/= add_onemK scale1r. Qed.
 Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. by rewrite /avg onemK addrC. Qed.
 
-Let avgA : QuasiAssoc.law avg.
+Let avgA : convex_quasi_associative avg.
 Proof.
 move=> p q r s a b c prs spq; rewrite /avg.
 rewrite [in LHS]scalerDr [in LHS]addrA [in RHS]scalerDr; congr (_ + _ + _).
 - by rewrite scalerA mulrC prs.
-- by rewrite !scalerA; congr *:%R; rewrite (QuasiAssoc.pq_sr prs).
+- by rewrite !scalerA; congr *:%R; rewrite (ConvexQuasiAssoc.pq_sr prs).
 - by rewrite scalerA spq.
 Qed.
 
@@ -175,7 +181,7 @@ Proof. exact: convmm. Qed.
 Let avgC p x y : avg p x y = avg (1 - (p%:inum))%:i01 y x.
 Proof. exact: convC. Qed.
 
-Let avgA : QuasiAssoc.law avg.
+Let avgA : convex_quasi_associative avg.
 Proof. exact: convA. Qed.
 
 HB.instance Definition _ := @isConvexSpace.Build R R^o
@@ -275,7 +281,8 @@ have [c2 Ic2 Hc2] : exists2 c2, x < c2 < b & (f b - f x) / (b - x) = 'D_1 f c2.
   have derivef z : z \in `]x, b[ -> is_derive z 1 f ('D_1 f z).
     by move=> zxb; apply/derivableP/xbf; exact: zxb.
   have [|z zxb fbfx] := MVT xb derivef.
-    apply/(derivable_oo_continuous_bnd_within (And3 xbf _ cvg_left))/cvg_at_right_filter.
+    apply/(derivable_oo_continuous_bnd_within (And3 xbf _ cvg_left)).
+    apply/cvg_at_right_filter.
     have := derivable_within_continuous HDf.
     rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
@@ -286,7 +293,8 @@ have [c1 Ic1 Hc1] : exists2 c1, a < c1 < x & (f x - f a) / (x - a) = 'D_1 f c1.
   have derivef z : z \in `]a, x[ -> is_derive z 1 f ('D_1 f z).
     by move=> zax; apply /derivableP/axf.
   have [|z zax fxfa] := MVT ax derivef.
-    apply/(derivable_oo_continuous_bnd_within (And3 axf cvg_right _))/cvg_at_left_filter.
+    apply/(derivable_oo_continuous_bnd_within (And3 axf cvg_right _)).
+    apply/cvg_at_left_filter.
     have := derivable_within_continuous HDf.
     rewrite continuous_open_subspace//.
     by apply; rewrite inE/= in_itv/= ax.
