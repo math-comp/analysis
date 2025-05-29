@@ -176,10 +176,10 @@ Section lnorm.
 Context d {T : measurableType d} {R : realType}.
 Local Open Scope ereal_scope.
 (** lp-norm is just Lp-norm applied to counting *)
-Local Notation "'N_ p [ f ]" := (Lnorm counting p (EFin \o f)).
+Local Notation "'N_ p [ f ]" := (Lnorm counting p f).
 
-Lemma Lnorm_counting p (f : R^nat) : (0 < p)%R ->
-  'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)%:E) `^ p^-1.
+Lemma Lnorm_counting p (f : (\bar R)^nat) : (0 < p)%R ->
+  'N_p%:E [f] = (\sum_(k <oo) (`| f k | `^ p)) `^ p^-1.
 Proof.
 by move=> p0; rewrite unlock ge0_integral_count// => k; rewrite poweR_ge0.
 Qed.
@@ -293,7 +293,7 @@ Qed.
 Lemma hoelder (f g : T -> R) p q :
     measurable_fun [set: T] f -> measurable_fun [set: T] g ->
     (0 < p)%R -> (0 < q)%R -> (p^-1 + q^-1 = 1)%R ->
- 'N_1[(f \* g)%R] <= 'N_p%:E[f] * 'N_q%:E[g].
+  'N_1[(f \* g)%R] <= 'N_p%:E[f] * 'N_q%:E[g].
 Proof.
 move=> mf mg p0 q0 pq.
 have [f0|f0] := eqVneq 'N_p%:E[f] 0%E; first exact: hoelder0.

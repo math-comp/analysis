@@ -116,7 +116,7 @@
 - in `hoelder.v`:
   + definition `Lnorm` generalized to functions with codomain `\bar R`
     (this impacts the notation `'N_p[f]`)
-  + lemmas `Lnorm1`, `eq_Lnorm` (from `f : _ -> R` to `f : _ -> \bar R`)
+  + lemmas `Lnorm1`, `eq_Lnorm`, `Lnorm_counting` (from `f : _ -> R` to `f : _ -> \bar R`)
 
 - in `probability.v`
   + lemma `cantelli`
