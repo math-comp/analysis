@@ -36,24 +36,19 @@ split.
   move=> [] e e0 /subsetP/(_ p).
   by rewrite !in_setE/= subrr normr0.
 split=> [|P Q|P Q].
-- exists 1; first exact: ltr01.
-  exact: subsetT.
+- by exists 1; [exact: ltr01|exact: subsetT].
 - move=> [] /= e e0 /subsetP eP [] /= f f0 /subsetP fQ.
   exists (Order.min e f) => /=.
-    rewrite [Num.min e f]/(Order.min e f).
-    by case: ifP.
+    by rewrite [Num.min e f]/(Order.min e f); case: ifP.
   apply/subsetP => x.
   rewrite in_setE in_setI/= => pef.
   apply/andP; split.
-    apply/eP; rewrite in_setE/=.
-    apply: (lt_le_trans pef).
-    case: (@real_ltP _ e f) => //; exact: gtr0_real.
-  apply/fQ; rewrite in_setE/=.
-  apply: (lt_le_trans pef).
-  case: (@real_ltP _ f e) => //; exact: gtr0_real.
+    apply/eP/mem_set/(lt_le_trans pef).
+    by case: (@real_ltP _ e f) => //; exact: gtr0_real.
+  apply/fQ/mem_set/(lt_le_trans pef).
+  by case: (@real_ltP _ f e) => //; exact: gtr0_real.
 - move=> PQ [] /= e e0 eP.
-  exists e => //.
-  exact: (subset_trans eP).
+  by exists e => //; exact: (subset_trans eP).
 Qed.
 
 Lemma nbhs_singleton (p : R^o) (A : set R) : nbhs p A -> A p.
@@ -64,26 +59,25 @@ Qed.
 
 Lemma nbhs_nbhs (p : R^o) (A : set R) : nbhs p A -> nbhs p (nbhs^~ A).
 Proof.
-move=> [] /= e e0 /subsetP eA.
-exists e => //.
-apply/subsetP => x.
-rewrite !inE/= => xe.
+move=> [] /= e e0 /subsetP eA; exists e => //.
+apply/subsetP => x /[!inE]/= xe.
 exists (e - `|p - x|); first by rewrite /= subr_gt0.
-apply/subsetP => y.
-rewrite inE/= -subr_gt0 -addrA -opprD subr_gt0 => ye.
-apply: eA; rewrite inE/=.
-have ->: p - y = (p - x) + (x - y).
-  by rewrite addrA; congr (_ - _); rewrite -addrA addNr addr0.
-exact: (le_lt_trans (ler_normD _ _) ye).
+apply/subsetP => y; rewrite inE/= ltrBrDl => ye.
+apply/eA/mem_set => /=.
+by rewrite -(subrK x p) -addrA (le_lt_trans (ler_normD _ _)).
 Qed.
-End TopologicalNumDomainType.
+
 End TopologicalNumDomainType.
 
-HB.instance Definition _ (R : numDomainType) := Nbhs_isNbhsTopological.Build R^o (@TopologicalNumDomainType.nbhs_filter R) (@TopologicalNumDomainType.nbhs_singleton R) (@TopologicalNumDomainType.nbhs_nbhs R).
+End TopologicalNumDomainType.
 
-HB.instance Definition _ (R : numFieldType) :=
-  Nbhs_isPseudoMetric.Build R R^o
-    nbhs_ball_normE ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+HB.instance Definition _ (R : numDomainType) := Nbhs_isNbhsTopological.Build R^o
+  (@TopologicalNumDomainType.nbhs_filter R)
+  (@TopologicalNumDomainType.nbhs_singleton R)
+  (@TopologicalNumDomainType.nbhs_nbhs R).
+
+HB.instance Definition _ (R : numFieldType) := Nbhs_isPseudoMetric.Build R R^o
+  nbhs_ball_normE ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
 
 HB.instance Definition _ (R : numFieldType) :=
   Uniform_isPseudoMetric.Build R R^o
