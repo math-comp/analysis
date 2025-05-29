@@ -97,8 +97,8 @@
   + lemma `conjugateE`
   + lemmas `lerB_DLnorm`, `lerB_LnormD`, `eminkowski`
   + definition `finite_norm`
-  + mixin `isLfun` with field `lfuny`
-  + structure `Lfun`
+  + mixin `isLfunction` with field `Lfunction_finite`
+  + structure `Lfunction`
   + notation `LfunType`
   + definition `Lequiv`
   + canonical `Lequiv_canonical`
@@ -107,21 +107,21 @@
   + record `LType`
   + coercion `LfunType_of_LType`
   + definition `Lspace` with notation `mu.-Lspace p`
-  + lemma `lfun_integrable`, `lfun1_integrable`, `lfun2_integrable_sqr`, `lfun2M2_1`
-  + lemma `lfunp_scale`, `lfun_cst`,
-  + definitions `finlfun`, `lfun`, `lfun_key`
-  + canonical `lfun_keyed`
-  + lemmas `sub_lfun_mfun`, `sub_lfun_finlfun`
-  + definition `lfun_Sub`
-  + lemmas `lfun_rect`, `lfun_valP`, `lfuneqP`, `lfuny0`, `mfunP`, `lfunP`,
+  + lemma `Lfun_integrable`, `Lfun1_integrable`, `Lfun2_integrable_sqr`, `Lfun2_mul_Lfun1`
+  + lemma `Lfun_scale`, `Lfun_cst`,
+  + definitions `finLfun`, `Lfun`, `Lfun_key`
+  + canonical `Lfun_keyed`
+  + lemmas `sub_Lfun_mfun`, `sub_Lfun_finLfun`
+  + definition `Lfun_Sub`
+  + lemmas `Lfun_rect`, `Lfun_valP`, `LfuneqP`, `finite_norm_cst0`, `mfunP`, `LfunP`,
     `mfun_scaler_closed`
-  + lemmas `LnormZ`, `lfun_submod_closed`
+  + lemmas `LnormZ`, `Lfun_submod_closed`
   + lemmas `finite_norm_fine`, `ler_LnormD`,
     `LnormrN`, `fine_Lnormr_eq0`
   + lemma `fine_Lnormr_eq0`
-  + lemma `lfun_inclusion`, `lfun_inclusion12`
-  + lemma `lfun_oppr_closed`
-  + lemma `lfun_addr_closed`
+  + lemma `Lfun_subset`, `Lfun_subset12`
+  + lemma `Lfun_oppr_closed`
+  + lemma `Lfun_addr_closed`
   + lemmas `poweR_Lnorm`, `oppe_Lnorm`
   + lemma `integrable_poweR`
 

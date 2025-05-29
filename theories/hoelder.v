@@ -30,8 +30,8 @@ From mathcomp Require Import lebesgue_integral numfun exp convex.
 (*                          L-norm                                            *)
 (*                          p1 is a proof that the extended real number p is  *)
 (*                          greater or equal to 1.                            *)
-(*                          The HB class is Lfun.                             *)
-(*            f \in lfun == holds for f : LfunType mu p1                      *)
+(*                          The HB class is Lfunction.                        *)
+(*            f \in Lfun == holds for f : LfunType mu p1                      *)
 (*            Lequiv f g == f is equal to g almost everywhere                 *)
 (*                          The functions f and g have type LfunType mu p1.   *)
 (*                          Lequiv is made a canonical equivalence relation.  *)
@@ -619,7 +619,7 @@ rewrite [X in _ <= 'N__[X] + _](_ : _ = (f \+ g)%R); last first.
   by apply: funext => x /=; rewrite -addrA [X in _ + _ + X]addrC subrr addr0.
 rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last first.
   rewrite (_ : _ \o _ = \- (EFin \o g))//.
-  exact/esym/oppe_Lnorm.
+  by have := oppe_Lnorm mu (EFin \o g) p%:E.
 by apply: minkowski_EFin => //;
   [exact: measurable_funD|exact: measurableT_comp].
 Qed.
@@ -655,29 +655,30 @@ Definition finite_norm d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (f : T -> R) :=
   ('N[ mu ]_p [ EFin \o f ] < +oo)%E.
 
-HB.mixin Record isLfun d (T : measurableType d) (R : realType)
+HB.mixin Record isLfunction d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) (f : T -> R)
   of @MeasurableFun d _ T R f := {
-  lfuny : finite_norm mu p f
+  Lfunction_finite : finite_norm mu p f
 }.
 
 #[short(type=LfunType)]
-HB.structure Definition Lfun d (T : measurableType d) (R : realType)
+HB.structure Definition Lfunction d (T : measurableType d) (R : realType)
     (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) :=
-  {f of @MeasurableFun d _ T R f & isLfun d T R mu p p1 f}.
+  {f of @MeasurableFun d _ T R f & isLfunction d T R mu p p1 f}.
 
-Arguments lfuny {d} {T} {R} {mu} {p} _.
-#[global] Hint Resolve lfuny : core.
-#[global] Hint Extern 0 (@LfunType _ _ _ _ _) => solve [apply: lfuny] : core.
+Arguments Lfunction_finite {d} {T} {R} {mu} {p} _.
+#[global] Hint Resolve Lfunction_finite : core.
+#[global] Hint Extern 0 (@LfunType _ _ _ _ _) =>
+  solve [apply: Lfunction_finite] : core.
 
-Section Lfun_canonical.
+Section LfunType_canonical.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
 
 HB.instance Definition _ := gen_eqMixin (LfunType mu p1).
 HB.instance Definition _ := gen_choiceMixin (LfunType mu p1).
 
-End Lfun_canonical.
+End LfunType_canonical.
 
 Section Lequiv.
 Context d (T : measurableType d) (R : realType).
@@ -738,90 +739,86 @@ HB.instance Definition _ := [SubZmodule_isSubLmodule of {mfun T >-> R} by <:].
 
 End mfun_extra.
 
-Section lfun_pred.
+Section Lfun_pred.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R).
 
-Definition finlfun : {pred _ -> _} := mem [set f | finite_norm mu p f].
-Definition lfun : {pred _ -> _} := [predI @mfun _ _ T R & finlfun].
-Definition lfun_key : pred_key lfun. Proof. exact. Qed.
-Canonical lfun_keyed := KeyedPred lfun_key.
-Lemma sub_lfun_mfun : {subset lfun <= mfun}.
+Definition finLfun : {pred _ -> _} := mem [set f | finite_norm mu p f].
+Definition Lfun : {pred _ -> _} := [predI @mfun _ _ T R & finLfun].
+Definition Lfun_key : pred_key Lfun. Proof. exact. Qed.
+Canonical Lfun_keyed := KeyedPred Lfun_key.
+Lemma sub_Lfun_mfun : {subset Lfun <= mfun}.
 Proof. by move=> x /andP[]. Qed.
-Lemma sub_lfun_finlfun : {subset lfun <= finlfun}.
+Lemma sub_Lfun_finLfun : {subset Lfun <= finLfun}.
 Proof. by move=> x /andP[]. Qed.
 
-End lfun_pred.
+End Lfun_pred.
 
-Reserved Notation "[ 'lfun' 'of' f ]"
-  (at level 0, format "[ 'lfun'  'of'  f ]").
-Notation "[ 'lfun' 'of' f ]" := [the LfunType _ _ of f] : form_scope.
-
-Section lfun.
+Section Lfun.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
-Notation lfun := (@lfun _ T R mu p).
+Notation Lfun := (@Lfun _ T R mu p).
 
 Section Sub.
-Context (f : T -> R) (fP : f \in lfun).
-Definition lfun_Sub1_subproof :=
-  @isMeasurableFun.Build d _ T R f (set_mem (sub_lfun_mfun fP)).
-#[local] HB.instance Definition _ := lfun_Sub1_subproof.
+Context (f : T -> R) (fP : f \in Lfun).
+Definition Lfun_Sub1_subproof :=
+  @isMeasurableFun.Build d _ T R f (set_mem (sub_Lfun_mfun fP)).
+#[local] HB.instance Definition _ := Lfun_Sub1_subproof.
 
-Definition lfun_Sub2_subproof :=
-  @isLfun.Build d T R mu p p1 f (set_mem (sub_lfun_finlfun fP)).
-#[local] HB.instance Definition _ := lfun_Sub2_subproof.
-Definition lfun_Sub := [lfun of f].
+Definition Lfun_Sub2_subproof :=
+  @isLfunction.Build d T R mu p p1 f (set_mem (sub_Lfun_finLfun fP)).
+#[local] HB.instance Definition _ := Lfun_Sub2_subproof.
+Definition Lfun_Sub := [the LfunType _ _ of f].
 End Sub.
 
-Lemma lfun_rect (K : LfunType mu p1 -> Type) :
-  (forall f (Pf : f \in lfun), K (lfun_Sub Pf)) -> forall u, K u.
+Lemma Lfun_rect (K : LfunType mu p1 -> Type) :
+  (forall f (Pf : f \in Lfun), K (Lfun_Sub Pf)) -> forall u, K u.
 Proof.
 move=> Ksub [f [[Pf1] [Pf2]]].
-have Pf : f \in lfun by apply/andP; rewrite ?inE.
-have -> : Pf1 = set_mem (sub_lfun_mfun Pf) by [].
-have -> : Pf2 = set_mem (sub_lfun_finlfun Pf) by [].
+have Pf : f \in Lfun by apply/andP; rewrite ?inE.
+have -> : Pf1 = set_mem (sub_Lfun_mfun Pf) by [].
+have -> : Pf2 = set_mem (sub_Lfun_finLfun Pf) by [].
 exact: Ksub.
 Qed.
 
-Lemma lfun_valP f (Pf : f \in lfun) : lfun_Sub Pf = f :> (_ -> _).
+Lemma Lfun_valP f (Pf : f \in Lfun) : Lfun_Sub Pf = f :> (_ -> _).
 Proof. by []. Qed.
 
 HB.instance Definition _ :=
-  isSub.Build _ _ (LfunType mu p1) lfun_rect lfun_valP.
+  isSub.Build _ _ (LfunType mu p1) Lfun_rect Lfun_valP.
 
-Lemma lfuneqP (f g : LfunType mu p1) : f = g <-> f =1 g.
-Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
+Lemma LfuneqP (f g : LfunType mu p1) : f = g <-> f =1 g.
+Proof. by split=> [->//|fg]; exact/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of LfunType mu p1 by <:].
 
-Lemma lfuny0 : finite_norm mu p (cst 0).
+Lemma finite_norm_cst0 : finite_norm mu p (cst 0).
 Proof. by rewrite /finite_norm Lnorm0// ltry. Qed.
 
-HB.instance Definition _ := @isLfun.Build d T R mu p p1 (cst 0) lfuny0.
+HB.instance Definition _ :=
+  @isLfunction.Build d T R mu p p1 (cst 0) finite_norm_cst0.
 
-Lemma lfunP (f : LfunType mu p1) : (f : T -> R) \in lfun.
+Lemma LfunP (f : LfunType mu p1) : (f : T -> R) \in Lfun.
 Proof. exact: valP. Qed.
 
-Lemma lfun_oppr_closed : oppr_closed lfun.
+Lemma Lfun_oppr_closed : oppr_closed Lfun.
 Proof.
 move=> f /andP[mf /[!inE] lf].
 rewrite rpredN/= mf/= inE/= /finite_norm.
 rewrite (_ : _ \o _ = \- (EFin \o f))%E//.
-by rewrite (oppe_Lnorm _ (EFin \o f)).
+by have -> := oppe_Lnorm mu (EFin \o f) p.
 Qed.
 
-HB.instance Definition _ := GRing.isOppClosed.Build _ lfun
-  lfun_oppr_closed.
+HB.instance Definition _ := GRing.isOppClosed.Build _ Lfun
+  Lfun_oppr_closed.
 
 (* NB: not used directly by HB.instance *)
-Lemma lfun_addr_closed : addr_closed lfun.
+Lemma Lfun_addr_closed : addr_closed Lfun.
 Proof.
 split.
   by rewrite inE rpred0/= inE/= /finite_norm/= Lnorm0.
 move=> f g /andP[mf /[!inE]/= lf] /andP[mg /[!inE]/= lg].
-rewrite rpredD//= inE/=.
-rewrite /finite_norm.
+rewrite rpredD//= inE/= /finite_norm.
 rewrite (le_lt_trans (@eminkowski _ _ _ mu f g p _ _ _))//.
 - by rewrite inE in mf.
 - by rewrite inE in mg.
@@ -843,7 +840,8 @@ case: p p1 f => //[r r1 f|? f].
       exact: measurableT_comp.
     apply: (@lty_poweRy _ _ r^-1).
       by rewrite gt_eqF// invr_gt0 ?(lt_le_trans ltr01).
-    rewrite [ltLHS](_ : _ = 'N[mu]_r%:E[EFin \o f]%E); first exact: (lfuny r1 f).
+    rewrite [ltLHS](_ : _ = 'N[mu]_r%:E[EFin \o f]%E).
+      exact: Lfunction_finite.
     rewrite unlock /Lnorm.
     by under eq_integral do rewrite gee0_abs ?lee_fin ?powR_ge0//.
   rewrite poweRM ?integral_ge0//.
@@ -853,27 +851,27 @@ case: p p1 f => //[r r1 f|? f].
   by rewrite normrZ EFinM.
 Qed.
 
-Lemma lfun_submod_closed : submod_closed lfun.
+Lemma Lfun_submod_closed : submod_closed Lfun.
 Proof.
 split.
-  by rewrite -[0]/(cst 0); exact: lfunP.
+  by rewrite -[0]/(cst 0); exact: LfunP.
 move=> a/= f g fP gP.
-rewrite -[f]lfun_valP -[g]lfun_valP.
-move: (lfun_Sub _) (lfun_Sub _) => {fP} f {gP} g.
+rewrite -[f]Lfun_valP -[g]Lfun_valP.
+move: (Lfun_Sub _) (Lfun_Sub _) => {fP} f {gP} g.
 rewrite !inE rpredD ?rpredZ ?mfunP//=.
 apply: mem_set => /=; apply: (le_lt_trans (eminkowski _ _ _ _)) => //.
 - suff: a *: (g : T -> R) \in mfun by exact: set_mem.
   by rewrite rpredZ//; exact: mfunP.
-- rewrite lte_add_pinfty//; last exact: lfuny.
-  by rewrite LnormZ lte_mul_pinfty// ?lee_fin//; exact: lfuny.
+- rewrite lte_add_pinfty//; last exact: Lfunction_finite.
+  by rewrite LnormZ lte_mul_pinfty// ?lee_fin//; exact: Lfunction_finite.
 Qed.
 
-HB.instance Definition _ := GRing.isSubmodClosed.Build _ _ lfun
-  lfun_submod_closed.
+HB.instance Definition _ := GRing.isSubmodClosed.Build _ _ Lfun
+  Lfun_submod_closed.
 
 HB.instance Definition _ := [SubChoice_isSubLmodule of LfunType mu p1 by <:].
 
-End lfun.
+End Lfun.
 
 Section Lspace_norm.
 Context d (T : measurableType d) (R : realType).
@@ -888,7 +886,7 @@ Let nm f := fine ('N[mu]_p[EFin \o f]).
 Lemma finite_norm_fine (f : ty) : (nm f)%:E = 'N[mu]_p[EFin \o f]%E.
 Proof.
 rewrite /nm fineK// fin_numElt (lt_le_trans ltNy0) ?Lnorm_ge0//=.
-exact: lfuny.
+exact: Lfunction_finite.
 Qed.
 
 Lemma ler_LnormD (f g : ty) : nm (f + g) <= nm f + nm g.
@@ -937,8 +935,8 @@ Definition LType1 := LType mu (@lexx _ _ 1%E).
 
 Definition LType2 := LType mu (lee1n 2).
 
-Lemma lfun_integrable (f : T -> R) r :
-  1 <= r -> f \in lfun mu r%:E ->
+Lemma Lfun_integrable (f : T -> R) r :
+  1 <= r -> f \in Lfun mu r%:E ->
   mu.-integrable setT (fun x => (`|f x| `^ r)%:E).
 Proof.
 rewrite inE => r0 /andP[/[!inE]/= mf] lpf.
@@ -952,10 +950,10 @@ apply: le_lt_trans.
 by under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
 Qed.
 
-Lemma lfun1_integrable (f : T -> R) :
-  f \in lfun mu 1 -> mu.-integrable setT (EFin \o f).
+Lemma Lfun1_integrable (f : T -> R) :
+  f \in Lfun mu 1 -> mu.-integrable setT (EFin \o f).
 Proof.
-move=> /[dup] lf /lfun_integrable => /(_ (lexx _)).
+move=> /[dup] lf /Lfun_integrable => /(_ (lexx _)).
 under eq_fun => x do rewrite powRr1//.
 move/integrableP => [mf fley].
 apply/integrableP; split.
@@ -965,7 +963,7 @@ rewrite (le_lt_trans _ fley)//=.
 by under [leRHS]eq_integral => x _ do rewrite normr_id.
 Qed.
 
-Lemma lfun2_integrable_sqr (f : T -> R) : f \in lfun mu 2%:E ->
+Lemma Lfun2_integrable_sqr (f : T -> R) : f \in Lfun mu 2%:E ->
   mu.-integrable [set: T] (EFin \o (fun x => f x ^+ 2)).
 Proof.
 rewrite inE => /andP[mf]; rewrite inE/= => l2f.
@@ -988,8 +986,8 @@ rewrite gt0_ler_poweR//.
   + by move=> t _/=; rewrite lee_fin normrX powR_mulrn.
 Qed.
 
-Lemma lfun2M2_1 (f g : T -> R) : f \in lfun mu 2%:E -> g \in lfun mu 2%:E ->
-  f \* g \in lfun mu 1.
+Lemma Lfun2_mul_Lfun1 (f g : T -> R) : f \in Lfun mu 2%:E -> g \in Lfun mu 2%:E ->
+  f \* g \in Lfun mu 1.
 Proof.
 move=> l2f l2g.
 move: (l2f) (l2g) => /[!inE] /andP[/[!inE]/= mf _] /andP[/[!inE]/= mg _].
@@ -1003,8 +1001,8 @@ by move: l2f; rewrite inE => /andP[_]; rewrite inE/=.
 by move: l2g; rewrite inE => /andP[_]; rewrite inE/=.
 Qed.
 
-Lemma lfunp_scale (f : T -> R) a r :
-  1 <= r -> f \in lfun mu r%:E -> a \o* f \in lfun mu r%:E.
+Lemma Lfun_scale (f : T -> R) a r :
+  1 <= r -> f \in Lfun mu r%:E -> a \o* f \in Lfun mu r%:E.
 Proof.
 move=> r1 /[dup] lf lpf.
 rewrite inE; apply/andP; split.
@@ -1013,9 +1011,9 @@ rewrite inE; apply/andP; split.
 rewrite !inE/= /finite_norm unlock /Lnorm.
 rewrite poweR_lty//=.
 under eq_integral => x _ do rewrite normrM powRM// EFinM.
-rewrite integralZr// ?lfun_integrable//.
+rewrite integralZr// ?Lfun_integrable//.
 rewrite muleC lte_mul_pinfty// ?lee_fin ?powR_ge0//.
-move: lpf => /(lfun_integrable r1) /integrableP[_].
+move: lpf => /(Lfun_integrable r1) /integrableP[_].
 under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
 by [].
 Qed.
@@ -1027,7 +1025,7 @@ Section Lspace_finite_measure.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {finite_measure set T -> \bar R}.
 
-Lemma lfun_cst c r : cst c \in lfun mu r%:E.
+Lemma Lfun_cst c r : cst c \in Lfun mu r%:E.
 Proof.
 rewrite inE; apply/andP; split; rewrite inE//= /finite_norm unlock/Lnorm poweR_lty//.
 under eq_integral => x _/= do rewrite (_ : `|c| `^ r = cst (`|c| `^ r) x)//.
@@ -1038,14 +1036,14 @@ Qed.
 
 End Lspace_finite_measure.
 
-Section lfun_inclusion.
+Section Lfun_subset.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
 Local Open Scope ereal_scope.
 
-Lemma lfun_inclusion (p q : \bar R) : forall (p1 : 1 <= p) (q1 : 1 <= q),
+Lemma Lfun_subset (p q : \bar R) : forall (p1 : 1 <= p) (q1 : 1 <= q),
   mu [set: T] \is a fin_num ->
-  p <= q -> {subset lfun mu q <= lfun mu p}.
+  p <= q -> {subset Lfun mu q <= Lfun mu p}.
 Proof.
 have := measure_ge0 mu [set: T].
 rewrite le_eqVlt => /predU1P[mu0 p1 q1 muTfin pq f +|mu_pos].
@@ -1073,7 +1071,7 @@ move: p q => [p| |//] [q| |]// p1 q1.
   have := @hoelder _ _ _ mu (fun x => `|f x| `^ p)%R (cst 1)%R r r'.
   rewrite (_ : (_ \* cst 1)%R = (fun x => `|f x| `^ p))%R -?fctM ?mulr1//.
   rewrite Lnorm_cst1 unlock /Lnorm invr1.
-  have mfp : measurable_fun [set: T] (fun x : T => (`|f x| `^ p)%R).
+  have mfp : measurable_fun [set: T] (fun x => (`|f x| `^ p)%R).
     apply: (@measurableT_comp _ _ _ _ _ _ (@powR R ^~ p)) => //.
     exact: measurableT_comp.
   have m1 : measurable_fun [set: T] (@cst _ R 1%R) by exact: measurable_cst.
@@ -1115,8 +1113,8 @@ move: p q => [p| |//] [q| |]// p1 q1.
 - by move=> muTfin _.
 Qed.
 
-Lemma lfun_inclusion12 : mu [set: T] \is a fin_num ->
-  {subset lfun mu 2%:E <= lfun mu 1}.
-Proof. by move=> ?; apply: lfun_inclusion => //; rewrite lee1n. Qed.
+Lemma Lfun_subset12 : mu [set: T] \is a fin_num ->
+  {subset Lfun mu 2%:E <= Lfun mu 1}.
+Proof. by move=> ?; apply: Lfun_subset => //; rewrite lee1n. Qed.
 
-End lfun_inclusion.
+End Lfun_subset.
