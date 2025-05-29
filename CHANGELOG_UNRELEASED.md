@@ -18,6 +18,7 @@
 - in `tvs.v`
   + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
     `UniformNmodule`, `UniformZmodule`, `UniformLmodule`
+  + notation `topologicalZmodType`
   + mixin `PreTopologicalNmodule_isTopologicalNmodule`,
     `TopologicalNmodule_isTopologicalZmodule`,
     `TopologicalZmodule_isTopologicalLmodule`,
