@@ -17,7 +17,7 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 (* the type probability T R (a measure that sums to 1).                       *)
 (*                                                                            *)
 (* About integrability: as a rule of thumb, in this file, we favor the use    *)
-(* of `lfun P n` hypotheses instead of the `integrable` predicate from        *)
+(* of `Lfun P n` hypotheses instead of the `integrable` predicate from        *)
 (* `lebesgue_integral.v`.                                                     *)
 (*                                                                            *)
 (* ```                                                                        *)
@@ -260,9 +260,9 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Lemma expectation_def (X : {RV P >-> R}) : 'E_P[X] = (\int[P]_w (X w)%:E)%E.
 Proof. by rewrite unlock. Qed.
 
-Lemma expectation_fin_num (X : T -> R) : X \in lfun P 1 ->
+Lemma expectation_fin_num (X : T -> R) : X \in Lfun P 1 ->
   'E_P[X] \is a fin_num.
-Proof. by move=> ?; rewrite unlock integral_fune_fin_num ?lfun1_integrable. Qed.
+Proof. by move=> ?; rewrite unlock integral_fune_fin_num ?Lfun1_integrable. Qed.
 
 Lemma expectation_cst r : 'E_P[cst r] = r%:E.
 Proof. by rewrite unlock/= integral_cst//= probability_setT mule1. Qed.
@@ -277,9 +277,9 @@ move: iX => /integrableP[? Xoo]; rewrite (le_lt_trans _ Xoo)// unlock.
 exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
-Lemma expectationZl (X : T -> R) (k : R) : X \in lfun P 1 ->
+Lemma expectationZl (X : T -> R) (k : R) : X \in Lfun P 1 ->
   'E_P[k \o* X] = k%:E * 'E_P [X].
-Proof. by move=> ?; rewrite unlock muleC -integralZr ?lfun1_integrable. Qed.
+Proof. by move=> ?; rewrite unlock muleC -integralZr ?Lfun1_integrable. Qed.
 
 Lemma expectation_ge0 (X : T -> R) : (forall x, 0 <= X x)%R ->
   0 <= 'E_P[X].
@@ -301,16 +301,16 @@ move=> mX mY X0 Y0 XY; rewrite unlock ae_ge0_le_integral => //.
   by apply: XYN => /=; apply: contra_not h; rewrite lee_fin.
 Qed.
 
-Lemma expectationD (X Y : T -> R) : X \in lfun P 1 -> Y \in lfun P 1 ->
+Lemma expectationD (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
   'E_P[X \+ Y] = 'E_P[X] + 'E_P[Y].
-Proof. by move=> ? ?; rewrite unlock integralD_EFin ?lfun1_integrable. Qed.
+Proof. by move=> ? ?; rewrite unlock integralD_EFin ?Lfun1_integrable. Qed.
 
-Lemma expectationB (X Y : T -> R) : X \in lfun P 1 -> Y \in lfun P 1 ->
+Lemma expectationB (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
   'E_P[X \- Y] = 'E_P[X] - 'E_P[Y].
-Proof. by move=> ? ?; rewrite unlock integralB_EFin ?lfun1_integrable. Qed.
+Proof. by move=> ? ?; rewrite unlock integralB_EFin ?Lfun1_integrable. Qed.
 
 Lemma expectation_sum (X : seq (T -> R)) :
-    (forall Xi, Xi \in X -> Xi \in lfun P 1) ->
+    (forall Xi, Xi \in X -> Xi \in Lfun P 1) ->
   'E_P[\sum_(Xi <- X) Xi] = \sum_(Xi <- X) 'E_P[Xi].
 Proof.
 elim: X => [|X0 X IHX] intX; first by rewrite !big_nil expectation_cst.
@@ -338,8 +338,8 @@ Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
 Lemma covarianceE (X Y : T -> R) :
-    X \in lfun P 1 -> Y \in lfun P 1 ->
-    (X * Y)%R \in lfun P 1 ->
+    X \in Lfun P 1 -> Y \in Lfun P 1 ->
+    (X * Y)%R \in Lfun P 1 ->
   covariance P X Y = 'E_P[X * Y] - 'E_P[X] * 'E_P[Y].
 Proof.
 move=> l1X l1Y l1XY.
@@ -348,8 +348,8 @@ rewrite unlock [X in 'E_P[X]](_ : _ = (X \* Y \- fine 'E_P[X] \o* Y
   apply/funeqP => x /=; rewrite mulrDr !mulrDl/= mul1r.
   rewrite fineM ?expectation_fin_num// mulrNN addrA.
   by rewrite mulrN mulNr [Z in (X x * Y x - Z)%R]mulrC.
-rewrite expectationD/= ?rpredB//= ?lfunp_scale ?lfun_cst//.
-rewrite 2?expectationB//= ?rpredB ?lfunp_scale// 3?expectationZl//= ?lfun_cst//.
+rewrite expectationD/= ?rpredB//= ?Lfun_scale ?Lfun_cst//.
+rewrite 2?expectationB//= ?rpredB ?Lfun_scale// 3?expectationZl//= ?Lfun_cst//.
 rewrite expectation_cst mule1 fineM ?expectation_fin_num// EFinM.
 rewrite !fineK ?expectation_fin_num//.
 by rewrite muleC subeK ?fin_numM ?expectation_fin_num.
@@ -361,8 +361,8 @@ by rewrite unlock; congr expectation; apply/funeqP => x /=; rewrite mulrC.
 Qed.
 
 Lemma covariance_fin_num (X Y : T -> R) :
-    X \in lfun P 1 -> Y \in lfun P 1 ->
-    (X * Y)%R \in lfun P 1 ->
+    X \in Lfun P 1 -> Y \in Lfun P 1 ->
+    (X * Y)%R \in Lfun P 1 ->
   covariance P X Y \is a fin_num.
 Proof.
 by move=> ? ? ?; rewrite covarianceE// fin_numB fin_numM expectation_fin_num.
@@ -379,31 +379,29 @@ Lemma covariance_cst_r (X : T -> R) c : covariance P X (cst c) = 0.
 Proof. by rewrite covarianceC covariance_cst_l. Qed.
 
 Lemma covarianceZl a (X Y : T -> R) :
-    X \in lfun P 1 -> Y \in lfun P 1 ->
-    (X * Y)%R \in lfun P 1 ->
+    X \in Lfun P 1 -> Y \in Lfun P 1 ->
+    (X * Y)%R \in Lfun P 1 ->
   covariance P (a \o* X)%R Y = a%:E * covariance P X Y.
 Proof.
 move=> X1 Y1 XY1.
 have aXY : (a \o* X * Y = a \o* (X * Y))%R by apply/funeqP => x; rewrite mulrAC.
 rewrite [LHS]covarianceE => [||//|] //=; last 2 first.
-- by rewrite lfunp_scale.
-- by rewrite aXY lfunp_scale.
+- by rewrite Lfun_scale.
+- by rewrite aXY Lfun_scale.
 rewrite covarianceE// aXY !expectationZl//.
 by rewrite -muleA -muleBr// fin_num_adde_defr// expectation_fin_num.
 Qed.
 
-Lemma covarianceZr a (X Y : T -> R) :
-    X \in lfun P 1 -> Y \in lfun P 1 ->
-    (X * Y)%R \in lfun P 1 ->
+Lemma covarianceZr a (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
+    (X * Y)%R \in Lfun P 1 ->
   covariance P X (a \o* Y)%R = a%:E * covariance P X Y.
 Proof.
 move=> X1 Y1 XY1.
 by rewrite [in RHS]covarianceC covarianceC covarianceZl; last rewrite mulrC.
 Qed.
 
-Lemma covarianceNl (X Y : T -> R) :
-    X \in lfun P 1 -> Y \in lfun P 1 ->
-    (X * Y)%R \in lfun P 1 ->
+Lemma covarianceNl (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
+    (X * Y)%R \in Lfun P 1 ->
   covariance P (\- X)%R Y = - covariance P X Y.
 Proof.
 move=> X1 Y1 XY1.
@@ -411,32 +409,30 @@ have -> : (\- X = -1 \o* X)%R by apply/funeqP => x /=; rewrite mulrN mulr1.
 by rewrite covarianceZl// EFinN mulNe mul1e.
 Qed.
 
-Lemma covarianceNr (X Y : T -> R) :
-    X \in lfun P 1 -> Y \in lfun P 1 ->
-    (X * Y)%R \in lfun P 1 ->
+Lemma covarianceNr (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
+    (X * Y)%R \in Lfun P 1 ->
   covariance P X (\- Y)%R = - covariance P X Y.
 Proof. by move=> X1 Y1 XY1; rewrite !(covarianceC X) covarianceNl 1?mulrC. Qed.
 
-Lemma covarianceNN (X Y : T -> R) :
-    X \in lfun P 1 -> Y \in lfun P 1 ->
-    (X * Y)%R \in lfun P 1 ->
+Lemma covarianceNN (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
+    (X * Y)%R \in Lfun P 1 ->
   covariance P (\- X)%R (\- Y)%R = covariance P X Y.
 Proof.
 by move=> ? ? ?; rewrite covarianceNl//= ?covarianceNr ?oppeK ?mulrN//= ?rpredN.
 Qed.
 
 Lemma covarianceDl (X Y Z : T -> R) :
-    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
+    X \in Lfun P 2%:E -> Y \in Lfun P 2%:E -> Z \in Lfun P 2%:E ->
   covariance P (X \+ Y)%R Z = covariance P X Z + covariance P Y Z.
 Proof.
 move=> X2 Y2 Z2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
-have X1 := lfun_inclusion12 Pfin X2.
-have Y1 := lfun_inclusion12 Pfin Y2.
-have Z1 := lfun_inclusion12 Pfin Z2.
-have XY1 := lfun2M2_1 X2 Y2.
-have YZ1 := lfun2M2_1 Y2 Z2.
-have XZ1 := lfun2M2_1 X2 Z2.
+have X1 := Lfun_subset12 Pfin X2.
+have Y1 := Lfun_subset12 Pfin Y2.
+have Z1 := Lfun_subset12 Pfin Z2.
+have XY1 := Lfun2_mul_Lfun1 X2 Y2.
+have YZ1 := Lfun2_mul_Lfun1 Y2 Z2.
+have XZ1 := Lfun2_mul_Lfun1 X2 Z2.
 rewrite [LHS]covarianceE//= ?mulrDl ?compreDr ?rpredD//= 2?expectationD//=.
 rewrite muleDl ?fin_num_adde_defr ?expectation_fin_num//.
 rewrite oppeD ?fin_num_adde_defr ?fin_numM ?expectation_fin_num//.
@@ -444,33 +440,33 @@ by rewrite addeACA 2?covarianceE.
 Qed.
 
 Lemma covarianceDr (X Y Z : T -> R) :
-    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
+    X \in Lfun P 2%:E -> Y \in Lfun P 2%:E -> Z \in Lfun P 2%:E ->
   covariance P X (Y \+ Z)%R = covariance P X Y + covariance P X Z.
 Proof.
 by move=> X2 Y2 Z2; rewrite covarianceC covarianceDl ?(covarianceC X) 1?mulrC.
 Qed.
 
 Lemma covarianceBl (X Y Z : T -> R) :
-    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
+    X \in Lfun P 2%:E -> Y \in Lfun P 2%:E -> Z \in Lfun P 2%:E ->
   covariance P (X \- Y)%R Z = covariance P X Z - covariance P Y Z.
 Proof.
 move=> X2 Y2 Z2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
-have Y1 := lfun_inclusion12 Pfin Y2.
-have Z1 := lfun_inclusion12 Pfin Z2.
-have YZ1 := lfun2M2_1 Y2 Z2.
+have Y1 := Lfun_subset12 Pfin Y2.
+have Z1 := Lfun_subset12 Pfin Z2.
+have YZ1 := Lfun2_mul_Lfun1 Y2 Z2.
 by rewrite -[(X \- Y)%R]/(X \+ (\- Y))%R covarianceDl ?covarianceNl ?rpredN.
 Qed.
 
 Lemma covarianceBr (X Y Z : T -> R) :
-    X \in lfun P 2%:E -> Y \in lfun P 2%:E -> Z \in lfun P 2%:E ->
+    X \in Lfun P 2%:E -> Y \in Lfun P 2%:E -> Z \in Lfun P 2%:E ->
   covariance P X (Y \- Z)%R = covariance P X Y - covariance P X Z.
 Proof.
 move=> X2 Y2 Z2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
-have Y1 := lfun_inclusion12 Pfin Y2.
-have Z1 := lfun_inclusion12 Pfin Z2.
-have YZ1 := lfun2M2_1 Y2 Z2.
+have Y1 := Lfun_subset12 Pfin Y2.
+have Z1 := Lfun_subset12 Pfin Z2.
+have YZ1 := Lfun2_mul_Lfun1 Y2 Z2.
 by rewrite !(covarianceC X) covarianceBl 1?(mulrC _ X).
 Qed.
 
@@ -483,18 +479,18 @@ Context d (T : measurableType d) (R : realType) (P : probability T R).
 Definition variance (X : T -> R) := covariance P X X.
 Local Notation "''V_' P [ X ]" := (variance X).
 
-Lemma varianceE (X : T -> R) : X \in lfun P 2%:E ->
+Lemma varianceE (X : T -> R) : X \in Lfun P 2%:E ->
   'V_P[X] = 'E_P[X ^+ 2] - ('E_P[X]) ^+ 2.
 Proof.
-move=> X2.
-by rewrite /variance covarianceE ?lfun2M2_1// lfun_inclusion12 ?fin_num_measure.
+move=> X2; rewrite /variance.
+by rewrite covarianceE ?Lfun2_mul_Lfun1// Lfun_subset12 ?fin_num_measure.
 Qed.
 
-Lemma variance_fin_num (X : T -> R) : X \in lfun P 2%:E ->
+Lemma variance_fin_num (X : T -> R) : X \in Lfun P 2%:E ->
   'V_P[X] \is a fin_num.
 Proof.
 move=> X2.
-by rewrite covariance_fin_num ?lfun2M2_1// lfun_inclusion12 ?fin_num_measure.
+by rewrite covariance_fin_num ?Lfun2_mul_Lfun1// Lfun_subset12 ?fin_num_measure.
 Qed.
 
 Lemma variance_ge0 (X : T -> R) : 0 <= 'V_P[X].
@@ -509,58 +505,58 @@ rewrite [X in 'E_P[X]](_ : _ = cst 0%R) ?expectation_cst//.
 by apply/funext => x; rewrite /GRing.exp/GRing.mul/= subrr mulr0.
 Qed.
 
-Lemma varianceZ a (X : T -> R) : X \in lfun P 2%:E ->
+Lemma varianceZ a (X : T -> R) : X \in Lfun P 2%:E ->
   'V_P[(a \o* X)%R] = (a ^+ 2)%:E * 'V_P[X].
 Proof.
 move=> X2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
-have X1 := lfun_inclusion12 Pfin X2.
+have X1 := Lfun_subset12 Pfin X2.
 rewrite /variance covarianceZl//=.
-- by rewrite covarianceZr// ?muleA ?EFinM// lfun2M2_1.
-- by rewrite lfunp_scale.
-- by rewrite lfun2M2_1// lfunp_scale// ler1n.
+- by rewrite covarianceZr// ?muleA ?EFinM// Lfun2_mul_Lfun1.
+- by rewrite Lfun_scale.
+- by rewrite Lfun2_mul_Lfun1// Lfun_scale// ler1n.
 Qed.
 
-Lemma varianceN (X : T -> R) : X \in lfun P 2%:E -> 'V_P[(\- X)%R] = 'V_P[X].
+Lemma varianceN (X : T -> R) : X \in Lfun P 2%:E -> 'V_P[(\- X)%R] = 'V_P[X].
 Proof.
-move=> X2.
-by rewrite /variance covarianceNN ?lfun2M2_1 ?lfun_inclusion12 ?fin_num_measure.
+move=> X2; rewrite /variance.
+by rewrite covarianceNN ?Lfun2_mul_Lfun1 ?Lfun_subset12 ?fin_num_measure.
 Qed.
 
-Lemma varianceD (X Y : T -> R) : X \in lfun P 2%:E -> Y \in lfun P 2%:E ->
+Lemma varianceD (X Y : T -> R) : X \in Lfun P 2%:E -> Y \in Lfun P 2%:E ->
   'V_P[X \+ Y]%R = 'V_P[X] + 'V_P[Y] + 2%:E * covariance P X Y.
 Proof.
 move=> X2 Y2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
-have X1 := lfun_inclusion12 Pfin X2.
-have Y1 := lfun_inclusion12 Pfin Y2.
-have XY1 := lfun2M2_1 X2 Y2.
+have X1 := Lfun_subset12 Pfin X2.
+have Y1 := Lfun_subset12 Pfin Y2.
+have XY1 := Lfun2_mul_Lfun1 X2 Y2.
 rewrite -['V_P[_]]/(covariance P (X \+ Y)%R (X \+ Y)%R).
 rewrite covarianceDl ?rpredD ?lee1n//= covarianceDr// covarianceDr//.
 rewrite (covarianceC P Y X) [LHS]addeA [LHS](ACl (1*4*(2*3)))/=.
 by rewrite -[2%R]/(1 + 1)%R EFinD muleDl ?mul1e// covariance_fin_num.
 Qed.
 
-Lemma varianceB (X Y : T -> R) : X \in lfun P 2%:E -> Y \in lfun P 2%:E ->
+Lemma varianceB (X Y : T -> R) : X \in Lfun P 2%:E -> Y \in Lfun P 2%:E ->
   'V_P[(X \- Y)%R] = 'V_P[X] + 'V_P[Y] - 2%:E * covariance P X Y.
 Proof.
 move=> X2 Y2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
-have X1 := lfun_inclusion12 Pfin X2.
-have Y1 := lfun_inclusion12 Pfin Y2.
-have XY1 := lfun2M2_1 X2 Y2.
+have X1 := Lfun_subset12 Pfin X2.
+have Y1 := Lfun_subset12 Pfin Y2.
+have XY1 := Lfun2_mul_Lfun1 X2 Y2.
 rewrite -[(X \- Y)%R]/(X \+ (\- Y))%R.
 by rewrite varianceD/= ?varianceN ?covarianceNr ?muleN ?rpredN.
 Qed.
 
-Lemma varianceD_cst_l c (X : T -> R) : X \in lfun P 2%:E ->
+Lemma varianceD_cst_l c (X : T -> R) : X \in Lfun P 2%:E ->
   'V_P[(cst c \+ X)%R] = 'V_P[X].
 Proof.
 move=> X2.
-by rewrite varianceD ?lfun_cst// variance_cst add0e covariance_cst_l mule0 adde0.
+by rewrite varianceD ?Lfun_cst// variance_cst add0e covariance_cst_l mule0 adde0.
 Qed.
 
-Lemma varianceD_cst_r (X : T -> R) c : X \in lfun P 2%:E ->
+Lemma varianceD_cst_r (X : T -> R) c : X \in Lfun P 2%:E ->
   'V_P[(X \+ cst c)%R] = 'V_P[X].
 Proof.
 move=> X2.
@@ -568,27 +564,27 @@ have -> : (X \+ cst c = cst c \+ X)%R by apply/funeqP => x /=; rewrite addrC.
 exact: varianceD_cst_l.
 Qed.
 
-Lemma varianceB_cst_l c (X : T -> R) : X \in lfun P 2%:E ->
+Lemma varianceB_cst_l c (X : T -> R) : X \in Lfun P 2%:E ->
   'V_P[(cst c \- X)%R] = 'V_P[X].
 Proof.
 move=> X2; rewrite -[(cst c \- X)%R]/(cst c \+ (\- X))%R.
 by rewrite varianceD_cst_l/= ?rpredN// varianceN.
 Qed.
 
-Lemma varianceB_cst_r (X : T -> R) c : X \in lfun P 2%:E ->
+Lemma varianceB_cst_r (X : T -> R) c : X \in Lfun P 2%:E ->
   'V_P[(X \- cst c)%R] = 'V_P[X].
 Proof.
 by move=> X2; rewrite -[(X \- cst c)%R]/(X \+ (cst (- c)))%R varianceD_cst_r.
 Qed.
 
-Lemma covariance_le (X Y : T -> R) : X \in lfun P 2%:E -> Y \in lfun P 2%:E ->
+Lemma covariance_le (X Y : T -> R) : X \in Lfun P 2%:E -> Y \in Lfun P 2%:E ->
   covariance P X Y <= sqrte 'V_P[X] * sqrte 'V_P[Y].
 Proof.
 move=> X2 Y2.
 have Pfin : P setT \is a fin_num := fin_num_measure P _ measurableT.
-have X1 := lfun_inclusion12 Pfin X2.
-have Y1 := lfun_inclusion12 Pfin Y2.
-have XY1 := lfun2M2_1 X2 Y2.
+have X1 := Lfun_subset12 Pfin X2.
+have Y1 := Lfun_subset12 Pfin Y2.
+have XY1 := Lfun2_mul_Lfun1 X2 Y2.
 rewrite -sqrteM ?variance_ge0//.
 rewrite lee_sqrE ?sqrte_ge0// sqr_sqrte ?mule_ge0 ?variance_ge0//.
 rewrite -(fineK (variance_fin_num X2)) -(fineK (variance_fin_num Y2)).
@@ -609,7 +605,7 @@ rewrite -lee_fin !EFinD EFinM fineK ?variance_fin_num// muleC -varianceZ//.
 rewrite 2!EFinM ?fineK ?variance_fin_num// ?covariance_fin_num//.
 rewrite -muleA [_ * r%:E]muleC -covarianceZl//.
 rewrite addeAC -varianceD ?variance_ge0//=.
-by rewrite lfunp_scale// ler1n.
+by rewrite Lfun_scale// ler1n.
 Qed.
 
 End variance.
@@ -678,19 +674,19 @@ by move=> /le_trans; apply; rewrite /variance [in leRHS]unlock.
 Qed.
 
 Lemma cantelli (X : {RV P >-> R}) (lambda : R) :
-    (X : T -> R) \in lfun P 2%:E -> (0 < lambda)%R ->
+    (X : T -> R) \in Lfun P 2%:E -> (0 < lambda)%R ->
   P [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
   <= (fine 'V_P[X] / (fine 'V_P[X] + lambda^2))%:E.
 Proof.
 move=> /[dup] X2.
-move=> /(lfun_inclusion12 (fin_num_measure P _ measurableT)) X1 lambda_gt0.
+move=> /(Lfun_subset12 (fin_num_measure P _ measurableT)) X1 lambda_gt0.
 have finEK : (fine 'E_P[X])%:E = 'E_P[X] by rewrite fineK ?expectation_fin_num.
 have finVK : (fine 'V_P[X])%:E = 'V_P[X] by rewrite fineK ?variance_fin_num.
 pose Y := (X \- cst (fine 'E_P[X]))%R.
-have Y2 : (Y : T -> R) \in lfun P 2%:E.
-  by rewrite /Y rpredB ?lee1n//= => _; rewrite lfun_cst.
+have Y2 : (Y : T -> R) \in Lfun P 2%:E.
+  by rewrite /Y rpredB ?lee1n//= => _; rewrite Lfun_cst.
 have EY : 'E_P[Y] = 0.
-  rewrite expectationB ?lfun_cst//= expectation_cst.
+  rewrite expectationB ?Lfun_cst//= expectation_cst.
   by rewrite finEK subee// expectation_fin_num.
 have VY : 'V_P[Y] = 'V_P[X] by rewrite varianceB_cst_r.
 have le (u : R) : (0 <= u)%R ->
@@ -699,11 +695,11 @@ have le (u : R) : (0 <= u)%R ->
   move=> uge0; rewrite EFinM.
   have -> : (fine 'V_P[X] + u^2)%:E = 'E_P[(Y \+ cst u)^+2]%R.
     rewrite -VY -[RHS](@subeK _ _ (('E_P[(Y \+ cst u)%R])^+2)); last first.
-      rewrite fin_numX// expectation_fin_num//= rpredD ?lfun_cst//.
-      by rewrite rpredB// lfun_cst.
+      rewrite fin_numX// expectation_fin_num//= rpredD ?Lfun_cst//.
+      by rewrite rpredB// Lfun_cst.
     rewrite -varianceE/=; last first.
-      by rewrite rpredD ?lee1n//= => _; rewrite lfun_cst.
-    rewrite -expe2 expectationD/= ?lfun_cst//; last by rewrite rpredB ?lfun_cst.
+      by rewrite rpredD ?lee1n//= => _; rewrite Lfun_cst.
+    rewrite -expe2 expectationD/= ?Lfun_cst//; last by rewrite rpredB ?Lfun_cst.
     rewrite EY// add0e expectation_cst -EFinM.
     by rewrite (varianceD_cst_r _ Y2) EFinD fineK ?variance_fin_num.
   have le : [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
@@ -715,7 +711,7 @@ have le (u : R) : (0 <= u)%R ->
     - by rewrite lerD2r -lee_fin EFinB finEK.
   apply: (le_trans (le_measure _ _ _ le)).
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
-    by apply: emeasurable_funB=> //; apply/measurable_int/(lfun1_integrable X1).
+    by apply: emeasurable_funB=> //; apply/measurable_int/(Lfun1_integrable X1).
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
     rewrite measurable_EFinP [X in measurable_fun _ X](_ : _ =
       (fun x => x ^+ 2) \o (fun x => Y x + u))%R//.
