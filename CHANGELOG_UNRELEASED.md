@@ -12,6 +12,25 @@
     * implemented through a module `ConvexQuasiAssoc` containing
       `law` and helper lemmas
   + lemmas `convR_itv`, `convR_line_path`
+- in `num_topology.v`
+  + `topologicalType` instance on `R^o` for `R : numDomainType`
+
+- in `tvs.v`
+  + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
+    `UniformNmodule`, `UniformZmodule`, `UniformLmodule`
+  + notation `topologicalZmodType`
+  + mixin `PreTopologicalNmodule_isTopologicalNmodule`,
+    `TopologicalNmodule_isTopologicalZmodule`,
+    `TopologicalZmodule_isTopologicalLmodule`,
+    `PreUniformNmodule_isUniformNmodule`,
+    `UniformNmodule_isUniformZmodule`,
+    `PreUniformLmodule_isUniformLmodule`
+  + structure `topologicalLmodule`
+  + factories `PreTopologicalNmodule_isTopologicalZmodule`,
+    `TopologicalNmodule_isTopologicalLmodule`,
+    `PreUniformNmodule_isUniformZmodule`,
+    `UniformNmodule_isUniformLmodule`
+  + lemmas `sub_continuous`, `sub_unif_continuous`
 
 ### Changed
 
@@ -59,6 +78,9 @@
 - in `convex.v`:
   + definition `convex_realDomainType` generalized and
     renamed accordingly `convex_numDomainType`
++ in `tvs.v`
+  + HB class `UniformZmodule` now contains `TopologicalZmodule`
+  + HB class `UniformLmodule` now contains `TopologicalLmodule`
 
 ### Renamed
 
@@ -67,6 +89,15 @@
 
 - in `convex.v`
   + lemma `conv_gt0` to `convR_gt0`
+- in `tvs.v`
+  + HB class `TopologicalNmodule` moved to `PreTopologicalNmodule`
+  + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
+  + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
+  + structure `topologicalLmodule` moved to `preTopologicalLmodule`
+  + HB class `UniformNmodule` moved to `PreUniformNmodule`
+  + HB class `UniformZmodule` moved to `PreUniformZmodule`
+  + HB class `UniformLmodule` moved to `PreUniformLmodule`
+
 
 ### Generalized
 

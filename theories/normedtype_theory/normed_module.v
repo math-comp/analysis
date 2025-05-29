@@ -131,8 +131,10 @@ by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
 Qed.
 
 HB.instance Definition _ :=
- Uniform_isTvs.Build K V add_continuous scale_continuous locally_convex.
-
+  PreTopologicalNmodule_isTopologicalNmodule.Build V add_continuous.
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalLmodule.Build K V scale_continuous.
+HB.instance Definition _ := Uniform_isTvs.Build K V locally_convex.
 HB.instance Definition _ :=
   PseudoMetricNormedZmod_Tvs_isNormedModule.Build K V normrZ.
 

@@ -12,26 +12,43 @@ From mathcomp Require Import topology function_spaces.
 (*                                                                            *)
 (* This file introduces locally convex topological vector spaces.             *)
 (* ```                                                                        *)
-(*            NbhsNmodule == HB class, join of Nbhs and Nmodule               *)
-(*            NbhsZmodule == HB class, join of Nbhs and Zmodule               *)
-(*          NbhsLmodule K == HB class, join of Nbhs and Lmodule over K        *)
-(*                           K is a numDomainType.                            *)
-(*     TopologicalNmodule == HB class, joint of Topological and Nmodule       *)
-(*     TopologicalZmodule == HB class, joint of Topological and Zmodule       *)
-(*  topologicalLmodType K == topological space and Lmodule over K             *)
-(*                           K is a numDomainType.                            *)
-(*                           The HB class is TopologicalLmodule.              *)
-(*         UniformZmodule == HB class, joint of Uniform and Zmodule           *)
-(*       UniformLmodule K == HB class, joint of Uniform and Lmodule over K    *)
-(*                           K is a numDomainType.                            *)
-(*               convex A == A : set M is a convex set of elements of M       *)
-(*                           M is an Lmodule over R : numDomainType.          *)
-(*             tvsType R  == interface type for a locally convex topological  *)
-(*                           vector space on a numDomain R                    *)
-(*                           A tvs is constructed over a uniform space.       *)
-(*                           The HB class is Tvs.                             *)
-(*  TopologicalLmod_isTvs == factory allowing the construction of a tvs from  *)
-(*                           an Lmodule which is also a topological space.    *)
+(*              NbhsNmodule == HB class, join of Nbhs and Nmodule             *)
+(*              NbhsZmodule == HB class, join of Nbhs and Zmodule             *)
+(*            NbhsLmodule K == HB class, join of Nbhs and Lmodule over K      *)
+(*                             K is a numDomainType.                          *)
+(*    PreTopologicalNmodule == HB class, join of Topological and Nmodule      *)
+(*       TopologicalNmodule == HB class, PreTopologicalNmodule with a         *)
+(*                             continuous addition                            *)
+(*    PreTopologicalZmodule == HB class, join of Topological and Zmodule      *)
+(*      topologicalZmodType == topological abelian group                      *)
+(*       TopologicalZmodule == HB class, join of TopologicalNmodule and       *)
+(*                             Zmodule with a continuous opposite operator    *)
+(* preTopologicalLmodType K == topological space and Lmodule over K           *)
+(*                             K is a numDomainType                           *)
+(*                             The HB class is PreTopologicalLmodule.         *)
+(*    topologicalLmodType K == topologicalNmodule and Lmodule over K with a   *)
+(*                             continuous scaling operation                   *)
+(*                             The HB class is TopologicalLmodule.            *)
+(*        PreUniformNmodule == HB class, join of Uniform and Nmodule          *)
+(*           UniformNmodule == HB class, join of Uniform and Nmodule with a   *)
+(*                             uniformly continuous addition                  *)
+(*        PreUniformZmodule == HB class, join of Uniform and Zmodule          *)
+(*           UniformZmodule == HB class, join of UniformNmodule and Zmodule   *)
+(*                             with uniformly continuous opposite operator    *)
+(*      PreUniformLmodule K == HB class, join of Uniform and Lmodule over K   *)
+(*                             K is a numDomainType.                          *)
+(*         UniformLmodule K == HB class, join of UniformNmodule and Lmodule   *)
+(*                             with a uniformly continuous scaling operation  *)
+(*                             K is a numFieldType.                           *)
+(*                 convex A == A : set M is a convex set of elements of M     *)
+(*                             M is an Lmodule over R : numDomainType.        *)
+(*               tvsType R  == interface type for a locally convex            *)
+(*                             tvs on a numDomain R                           *)
+(*                             A tvs is constructed over a uniform space.     *)
+(*                             The HB class is Tvs.                           *)
+(* PreTopologicalLmod_isTvs == factory allowing the construction of a tvs     *)
+(*                             from an Lmodule which is also a topological    *)
+(*                             space                                          *)
 (*  ```                                                                       *)
 (* HB instances:                                                              *)
 (* - The type R^o (R : numFieldType) is endowed with the structure of Tvs.    *)
@@ -62,18 +79,244 @@ HB.structure Definition NbhsZmodule := {M of Nbhs M & GRing.Zmodule M}.
 HB.structure Definition NbhsLmodule (K : numDomainType) :=
   {M of Nbhs M & GRing.Lmodule K M}.
 
-HB.structure Definition TopologicalNmodule :=
+HB.structure Definition PreTopologicalNmodule :=
   {M of Topological M & GRing.Nmodule M}.
-HB.structure Definition TopologicalZmodule :=
+
+HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule M
+    of PreTopologicalNmodule M := {
+  add_continuous : continuous (fun x : M * M => x.1 + x.2) ;
+}.
+
+HB.structure Definition TopologicalNmodule :=
+  {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
+
+HB.structure Definition PreTopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
+
+HB.mixin Record TopologicalNmodule_isTopologicalZmodule M
+    of Topological M & GRing.Zmodule M := {
+  opp_continuous : continuous (-%R : M -> M) ;
+}.
+
+#[short(type="topologicalZmodType")]
+HB.structure Definition TopologicalZmodule :=
+  {M of TopologicalNmodule M & GRing.Zmodule M
+        & TopologicalNmodule_isTopologicalZmodule M}.
+
+HB.factory Record PreTopologicalNmodule_isTopologicalZmodule M
+    of Topological M & GRing.Zmodule M := {
+  sub_continuous : continuous (fun x : M * M => x.1 - x.2) ;
+}.
+
+HB.builders Context M of PreTopologicalNmodule_isTopologicalZmodule M.
+
+Lemma opp_continuous : continuous (-%R : M -> M).
+Proof.
+move=> x; rewrite /continuous_at.
+rewrite -(@eq_cvg _ _ _ (fun x => 0 - x)); last by move=> y; exact: add0r.
+rewrite -[- x]add0r.
+apply: (@continuous_comp _ _ _ (fun x => (0, x)) (fun x : M * M => x.1 - x.2)).
+  by apply: cvg_pair => /=; [exact: cvg_cst|exact: cvg_id].
+exact: sub_continuous.
+Qed.
+
+Lemma add_continuous : continuous (fun x : M * M => x.1 + x.2).
+Proof.
+move=> x; rewrite /continuous_at.
+rewrite -(@eq_cvg _ _ _ (fun x => x.1 - (- x.2))); last first.
+  by move=> y; rewrite opprK.
+rewrite -[in x.1 + _](opprK x.2).
+apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2)) (fun x => x.1 - x.2)).
+  apply: cvg_pair; first exact: cvg_fst.
+  by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
+exact: sub_continuous.
+Qed.
+
+HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build M add_continuous.
+
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalZmodule.Build M opp_continuous.
+
+HB.end.
+
+Section TopologicalZmoduleTheory.
+Variables (M : topologicalZmodType).
+
+Lemma sub_continuous : continuous (fun x : M * M => x.1 - x.2).
+Proof.
+move=> x; apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2))
+  (fun x : M * M => x.1 + x.2)); last exact: add_continuous.
+apply: cvg_pair; first exact: cvg_fst.
+by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
+Qed.
+
+End TopologicalZmoduleTheory.
+
+#[short(type="preTopologicalLmodType")]
+HB.structure Definition PreTopologicalLmodule (K : numDomainType) :=
+  {M of Topological M & GRing.Lmodule K M}.
+
+HB.mixin Record TopologicalZmodule_isTopologicalLmodule (R : numDomainType) M
+    of Topological M & GRing.Lmodule R M := {
+  scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) ;
+}.
 
 #[short(type="topologicalLmodType")]
 HB.structure Definition TopologicalLmodule (K : numDomainType) :=
-  {M of Topological M & GRing.Lmodule K M}.
+  {M of TopologicalZmodule M & GRing.Lmodule K M
+        & TopologicalZmodule_isTopologicalLmodule K M}.
 
-HB.structure Definition UniformZmodule := {M of Uniform M & GRing.Zmodule M}.
-HB.structure Definition UniformLmodule (K : numDomainType) :=
+HB.factory Record TopologicalNmodule_isTopologicalLmodule (R : numDomainType) M
+    of Topological M & GRing.Lmodule R M := {
+  scale_continuous : continuous (fun z : R^o * M => z.1 *: z.2) ;
+}.
+
+HB.builders Context R M of TopologicalNmodule_isTopologicalLmodule R M.
+
+Lemma opp_continuous : continuous (-%R : M -> M).
+Proof.
+move=> x; rewrite /continuous_at.
+rewrite -(@eq_cvg _ _ _ (fun x => -1 *: x)); last by move=> y; rewrite scaleN1r.
+rewrite -[- x]scaleN1r.
+apply: (@continuous_comp M (R^o * M)%type M (fun x => (-1, x))
+  (fun x => x.1 *: x.2)); last exact: scale_continuous.
+by apply: (@cvg_pair _ _ _ _ (nbhs (-1 : R^o))); [exact: cvg_cst|exact: cvg_id].
+Qed.
+
+#[warning="-HB.no-new-instance"]
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalZmodule.Build M opp_continuous.
+HB.instance Definition _ :=
+  TopologicalZmodule_isTopologicalLmodule.Build R M scale_continuous.
+
+HB.end.
+
+HB.structure Definition PreUniformNmodule := {M of Uniform M & GRing.Nmodule M}.
+
+HB.mixin Record PreUniformNmodule_isUniformNmodule M of PreUniformNmodule M := {
+  add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2)
+}.
+
+HB.structure Definition UniformNmodule :=
+  {M of PreUniformNmodule M & PreUniformNmodule_isUniformNmodule M}.
+
+HB.structure Definition PreUniformZmodule := {M of Uniform M & GRing.Zmodule M}.
+
+HB.mixin Record UniformNmodule_isUniformZmodule M
+    of Uniform M & GRing.Zmodule M := {
+  opp_unif_continuous : unif_continuous (-%R : M -> M)
+}.
+
+HB.structure Definition UniformZmodule :=
+  {M of UniformNmodule M & GRing.Zmodule M & UniformNmodule_isUniformZmodule M}.
+
+HB.factory Record PreUniformNmodule_isUniformZmodule M
+    of Uniform M & GRing.Zmodule M := {
+  sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2)
+}.
+
+HB.builders Context M of PreUniformNmodule_isUniformZmodule M.
+
+Lemma opp_unif_continuous : unif_continuous (-%R : M -> M).
+Proof.
+have unif : unif_continuous (fun x => (0, x) : M * M).
+  move=> /= U [[]] /= U1 U2 [] U1e U2e /subsetP U12.
+  apply: filterS U2e => x xU2/=.
+  have /U12 : ((0, 0), x) \in U1 `*` U2.
+    by rewrite in_setX/= (mem_set xU2) andbT inE; exact: entourage_refl.
+  by rewrite inE/= => -[[[a1 a2] [b1 b2]]]/= /[swap]-[] -> -> <-.
+move=> /= U /sub_unif_continuous /unif /=.
+rewrite -comp_preimage/= /comp/= /nbhs/=.
+by congr entourage => /=; rewrite eqEsubset; split=> x /=; rewrite !sub0r.
+Qed.
+
+Lemma add_unif_continuous : unif_continuous (fun x : M * M => x.1 + x.2).
+Proof.
+have unif: unif_continuous (fun x => (x.1, -x.2) : M * M).
+  move=> /= U [[]]/= U1 U2 [] U1e /opp_unif_continuous.
+  rewrite /nbhs/= => U2e /subsetP U12.
+  apply: (@filterS _ _ entourage_filter
+      ((fun xy => (xy.1.1, xy.2.1, (-xy.1.2, -xy.2.2))) @^-1` (U1 `*` U2))).
+    move=> /= [] [] a1 a2 [] b1 b2/= [] ab1 ab2.
+    have /U12 : (a1, b1, (-a2, -b2)) \in U1 `*` U2 by rewrite !inE.
+    by rewrite inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
+  exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
+  by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
+move=> /= U /sub_unif_continuous/unif; rewrite /nbhs/=.
+rewrite -comp_preimage/=/comp/=.
+by congr entourage; rewrite eqEsubset; split=> x /=; rewrite !opprK.
+Qed.
+
+HB.instance Definition _ :=
+  PreUniformNmodule_isUniformNmodule.Build M add_unif_continuous.
+HB.instance Definition _ :=
+  UniformNmodule_isUniformZmodule.Build M opp_unif_continuous.
+
+HB.end.
+
+Section UniformZmoduleTheory.
+Variables (M : UniformZmodule.type).
+
+Lemma sub_unif_continuous : unif_continuous (fun x : M * M => x.1 - x.2).
+Proof.
+suff unif: unif_continuous (fun x => (x.1, - x.2) : M * M).
+  by move=> /= U /add_unif_continuous/unif; rewrite /nbhs/= -comp_preimage.
+move=> /= U [[]]/= U1 U2 [] U1e /opp_unif_continuous.
+rewrite /nbhs/= => U2e /subsetP U12.
+apply: (@filterS _ _ entourage_filter
+    ((fun xy => (xy.1.1, xy.2.1, (- xy.1.2, - xy.2.2))) @^-1` (U1 `*` U2))).
+  move=> /= [] [] a1 a2 [] b1 b2/= [] ab1 ab2.
+  have /U12 : (a1, b1, (-a2, -b2)) \in U1 `*` U2 by rewrite !inE.
+  by rewrite inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
+exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
+by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
+Qed.
+
+End UniformZmoduleTheory.
+
+HB.structure Definition PreUniformLmodule (K : numDomainType) :=
   {M of Uniform M & GRing.Lmodule K M}.
+
+HB.mixin Record PreUniformLmodule_isUniformLmodule (R : numFieldType) M
+    of PreUniformLmodule R M := {
+  scale_unif_continuous : unif_continuous (fun z : R^o * M => z.1 *: z.2) ;
+}.
+
+HB.structure Definition UniformLmodule (R : numFieldType) :=
+  {M of UniformZmodule M & GRing.Lmodule R M
+        & PreUniformLmodule_isUniformLmodule R M}.
+
+HB.factory Record UniformNmodule_isUniformLmodule (R : numFieldType) M
+    of PreUniformLmodule R M := {
+  scale_unif_continuous : unif_continuous (fun z : R^o * M => z.1 *: z.2) ;
+}.
+
+HB.builders Context R M of UniformNmodule_isUniformLmodule R M.
+
+Lemma opp_unif_continuous : unif_continuous (-%R : M -> M).
+Proof.
+have unif: unif_continuous (fun x => (-1, x) : R^o * M).
+  move=> /= U [[]] /= U1 U2 [] U1e U2e /subsetP U12.
+  rewrite /nbhs/=.
+  apply: filterS U2e => x xU2/=.
+  have /U12 : ((-1, -1), x) \in U1 `*` U2.
+    rewrite in_setX/= (mem_set xU2) andbT.
+    by apply/mem_set; exact: entourage_refl.
+  by rewrite inE/= => [[[]]] [] a1 a2 [] b1 b2/= abU [] {2}<- <- <-/=.
+move=> /= U /scale_unif_continuous/unif/=.
+rewrite /nbhs/=.
+rewrite -comp_preimage/=/comp/=.
+by congr entourage; rewrite eqEsubset; split=> x /=; rewrite !scaleN1r.
+Qed.
+
+#[warning="-HB.no-new-instance"]
+HB.instance Definition _ :=
+  UniformNmodule_isUniformZmodule.Build M opp_unif_continuous.
+HB.instance Definition _ :=
+  PreUniformLmodule_isUniformLmodule.Build R M scale_unif_continuous.
+
+HB.end.
 
 Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
   forall x y (lambda : R), x \in A -> y \in A ->
@@ -81,18 +324,16 @@ Definition convex (R : numDomainType) (M : lmodType R) (A : set M) :=
 
 HB.mixin Record Uniform_isTvs (R : numDomainType) E
     of Uniform E & GRing.Lmodule R E := {
-  add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
-  scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
   locally_convex : exists2 B : set (set E),
     (forall b, b \in B -> convex b) & basis B
 }.
 
 #[short(type="tvsType")]
 HB.structure Definition Tvs (R : numDomainType) :=
-  {E of Uniform_isTvs R E & Uniform E & GRing.Lmodule R E}.
+  {E of Uniform_isTvs R E & Uniform E & TopologicalLmodule R E}.
 
 Section properties_of_topologicalLmodule.
-Context (R : numDomainType) (E : topologicalLmodType R) (U : set E).
+Context (R : numDomainType) (E : preTopologicalLmodType R) (U : set E).
 
 Lemma nbhsN_subproof (f : continuous (fun z : R^o * E => z.1 *: z.2)) (x : E) :
   nbhs x U -> nbhs (-x) (-%R @` U).
@@ -127,7 +368,7 @@ Unshelve. all: by end_near. Qed.
 
 End properties_of_topologicalLmodule.
 
-HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
+HB.factory Record PreTopologicalLmod_isTvs (R : numDomainType) E
     of Topological E & GRing.Lmodule R E := {
   add_continuous : continuous (fun x : E * E => x.1 + x.2) ;
   scale_continuous : continuous (fun z : R^o * E => z.1 *: z.2) ;
@@ -135,7 +376,7 @@ HB.factory Record TopologicalLmod_isTvs (R : numDomainType) E
     (forall b, b \in B -> convex b) & basis B
   }.
 
-HB.builders Context R E of TopologicalLmod_isTvs R E.
+HB.builders Context R E of PreTopologicalLmod_isTvs R E.
 
 Definition entourage : set_system (E * E) :=
   fun P => exists (U : set E), nbhs (0 : E) U  /\
@@ -348,8 +589,11 @@ move=> x B; rewrite -nbhs_ballE/= => -[r] r0 Bxr /=.
 by exists (ball x r) => //; split; [exists x, r|exact: ballxx].
 Qed.
 
-HB.instance Definition _ := Uniform_isTvs.Build R R^o
-  standard_add_continuous standard_scale_continuous standard_locally_convex.
+HB.instance Definition _ :=
+  PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
+HB.instance Definition _ :=
+  TopologicalNmodule_isTopologicalLmodule.Build R R^o standard_scale_continuous.
+HB.instance Definition _ := Uniform_isTvs.Build R R^o standard_locally_convex.
 
 End standard_topology.
 
@@ -359,8 +603,8 @@ Context (K : numFieldType) (E F : tvsType K).
 Local Lemma prod_add_continuous : continuous (fun x : (E * F) * (E * F) => x.1 + x.2).
 Proof.
 move => [/= xy1 xy2] /= U /= [] [A B] /= [nA nB] nU.
-have [/= A0 [A01 A02] nA1] := @add_continuous K E (xy1.1, xy2.1) _ nA.
-have [/= B0 [B01 B02] nB1] := @add_continuous K F (xy1.2, xy2.2) _ nB.
+have [/= A0 [A01 A02] nA1] := @add_continuous E (xy1.1, xy2.1) _ nA.
+have [/= B0 [B01 B02] nB1] := @add_continuous F (xy1.2, xy2.2) _ nB.
 exists ([set xy | A0.1 xy.1 /\ B0.1 xy.2], [set xy | A0.2 xy.1 /\ B0.2 xy.2]).
   by split; [exists (A0.1, B0.1)|exists (A0.2, B0.2)].
 move => [[x1 y1][x2 y2]] /= [] [] a1 b1 [] a2 b2.
@@ -401,8 +645,11 @@ move => [x1 y1] [x2 y2] l /[!inE] /= -[xe1 yf1] [xe2 yf2] l0 l1.
 by split; rewrite -inE; [apply: Bcb; rewrite ?inE|apply: Bcf; rewrite ?inE].
 Qed.
 
+HB.instance Definition _ := PreTopologicalNmodule_isTopologicalNmodule.Build
+  (E * F)%type prod_add_continuous.
+HB.instance Definition _ := TopologicalNmodule_isTopologicalLmodule.Build
+  K (E * F)%type prod_scale_continuous.
 HB.instance Definition _ :=
-  Uniform_isTvs.Build K (E * F)%type
-  prod_add_continuous prod_scale_continuous prod_locally_convex.
+  Uniform_isTvs.Build K (E * F)%type prod_locally_convex.
 
 End prod_Tvs.
