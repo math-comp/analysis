@@ -786,7 +786,7 @@ Lemma concave_ln (t : {i01 R}) (a b : R^o) : 0 < a -> 0 < b ->
   (ln a : R^o) <| t |> (ln b : R^o) <= ln (a <| t |> b).
 Proof.
 move=> a0 b0; have := convex_expR t (ln a) (ln b).
-by rewrite !lnK// -(@ler_ln) ?posrE ?expR_gt0 ?conv_gt0// expRK.
+by rewrite !lnK// -(@ler_ln) ?posrE ?expR_gt0 ?convR_gt0// expRK.
 Qed.
 Local Close Scope convex_scope.
 
@@ -1026,11 +1026,13 @@ rewrite le_eqVlt => /predU1P[<-|b0] p0 q0 pq.
 have iq1 : q^-1 <= 1 by rewrite -pq ler_wpDl// invr_ge0 ltW.
 have ap0 : (0 < a `^ p)%R by rewrite powR_gt0.
 have bq0 : (0 < b `^ q)%R by rewrite powR_gt0.
-have := @concave_ln _ (Itv01 (eqbRL (invr_ge0 _) (ltW q0)) iq1) _ _ ap0 bq0.
+have := @concave_ln _ (Itv01 (eqbRL (invr_ge0 _) (ltW q0)) iq1) _ _ bq0 ap0.
+rewrite 2!(convC (Itv01 _ _)).
 have pq' : (p^-1 = 1 - q^-1)%R by rewrite -pq addrK.
+have qp' : (q^-1 = 1 - p^-1)%R by rewrite -pq addrAC subrr add0r.
 rewrite !convRE/= /onem -pq' -[_ <= ln _]ler_expR expRD (mulrC p^-1).
-rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF// (mulrC q^-1).
 rewrite ln_powR mulrAC divff ?mul1r ?gt_eqF//.
+rewrite ln_powR -qp' mulrA mulVf ?gt_eqF// ?mul1r.
 rewrite lnK ?posrE// lnK ?posrE// => /le_trans; apply.
 rewrite lnK//; last by rewrite posrE addr_gt0// mulr_gt0// ?invr_gt0.
 by rewrite (mulrC _ p^-1) (mulrC _ q^-1).

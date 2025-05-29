@@ -35,6 +35,11 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
+Section ssralg.
+Lemma subrKC {V : zmodType} (x y : V) : x + (y - x) = y.
+Proof. by rewrite addrC subrK. Qed.
+End ssralg.
+
 (* NB: Coq 8.17.0 generalizes dependent_choice from Set to Type
    making the following lemma redundant *)
 Section dependent_choice_Type.

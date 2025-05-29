@@ -291,15 +291,15 @@ Lemma convex_powR p : 1 <= p ->
 Proof.
 move=> p1 t x y /[!inE] /= /[!in_itv] /= /[!andbT] x_ge0 y_ge0.
 have p0 : 0 < p by rewrite (lt_le_trans _ p1).
-rewrite !convRE; set w1 := `1-(t%:inum); set w2 := t%:inum.
-have [->|w10] := eqVneq w1 0.
-  rewrite !mul0r !add0r; have [->|w20] := eqVneq w2 0.
-    by rewrite !mul0r powR0// gt_eqF.
-  by rewrite ge1r_powRZ// /w2 lt_neqAle eq_sym w20/=; apply/andP.
+rewrite !convRE; set w1 := t%:num; set w2 := `1-(t%:inum).
 have [->|w20] := eqVneq w2 0.
-  by rewrite !mul0r !addr0 ge1r_powRZ// onem_le1// andbT lt0r w10 onem_ge0.
+  rewrite !mul0r !addr0; have [->|w10] := eqVneq w1 0.
+    by rewrite !mul0r powR0// gt_eqF.
+  by rewrite ge1r_powRZ// /w1 lt_neqAle eq_sym w10/=; apply/andP.
+have [->|w10] := eqVneq w1 0.
+  by rewrite !mul0r !add0r ge1r_powRZ// onem_le1// andbT lt0r w20 onem_ge0.
 have [->|p_neq1] := eqVneq p 1.
-  by rewrite !powRr1// addr_ge0// mulr_ge0// /w2 ?onem_ge0.
+  by rewrite !powRr1// addr_ge0// mulr_ge0// /w1 ?onem_ge0.
 have {p_neq1} {}p1 : 1 < p by rewrite lt_neqAle eq_sym p_neq1.
 pose q := p / (p - 1).
 have q1 : 1 <= q by rewrite /q ler_pdivlMr// ?mul1r ?gerBl// subr_gt0.
@@ -308,15 +308,15 @@ have pq1 : p^-1 + q^-1 = 1.
   rewrite /q invf_div -{1}(div1r p) -mulrDl addrCA subrr addr0.
   by rewrite mulfV// gt_eqF.
 rewrite -(@powRr1 _ (w1 * x `^ p + w2 * y `^ p)); last first.
-  by rewrite addr_ge0// mulr_ge0// ?powR_ge0// /w2 ?onem_ge0// itv_ge0.
+  by rewrite addr_ge0// mulr_ge0// ?powR_ge0// /w1 ?onem_ge0// itv_ge0.
 have -> : 1 = p^-1 * p by rewrite mulVf ?gt_eqF.
 rewrite powRrM (ge0_ler_powR (le_trans _ (ltW p1)))//.
-- by rewrite nnegrE addr_ge0// mulr_ge0 /w2 ?onem_ge0.
+- by rewrite nnegrE addr_ge0// mulr_ge0 /w1 ?onem_ge0.
 - by rewrite nnegrE powR_ge0.
 have -> : w1 * x + w2 * y = w1 `^ (p^-1) * w1 `^ (q^-1) * x +
                             w2 `^ (p^-1) * w2 `^ (q^-1) * y.
   rewrite -!powRD pq1; [|exact/implyP..].
-  by rewrite !powRr1// /w2 ?onem_ge0.
+  by rewrite !powRr1// /w1 ?onem_ge0.
 apply: (@le_trans _ _ ((w1 * x `^ p + w2 * y `^ p) `^ (p^-1) *
                        (w1 + w2) `^ q^-1)).
   pose a1 := w1 `^ p^-1 * x. pose a2 := w2 `^ p^-1 * y.
@@ -324,9 +324,9 @@ apply: (@le_trans _ _ ((w1 * x `^ p + w2 * y `^ p) `^ (p^-1) *
   have : a1 * b1 + a2 * b2 <= (a1 `^ p + a2 `^ p) `^ p^-1 *
                               (b1 `^ q + b2 `^ q) `^ q^-1.
     by apply: hoelder2 => //; rewrite ?mulr_ge0 ?powR_ge0.
-  rewrite ?powRM ?powR_ge0 -?powRrM ?mulVf ?powRr1 ?gt_eqF ?onem_ge0/w2//.
+  rewrite ?powRM ?powR_ge0 -?powRrM ?mulVf ?powRr1 ?gt_eqF ?onem_ge0/w1//.
   by rewrite mulrAC (mulrAC _ y) => /le_trans; exact.
-by rewrite {2}/w1 {2}/w2 subrK powR1 mulr1.
+by rewrite {2}/w1 {2}/w2 subrKC powR1 mulr1.
 Qed.
 
 End convex_powR.
@@ -343,9 +343,9 @@ Proof.
 move=> p1; rewrite (@le_trans _ _ ((2^-1 * `| f x | + 2^-1 * `| g x |) `^ p))//.
   rewrite ge0_ler_powR ?nnegrE ?(le_trans _ p1)//.
   by rewrite (le_trans (ler_normD _ _))// 2!normrM ger0_norm.
-rewrite {1 3}(_ : 2^-1 = 1 - 2^-1); last by rewrite {2}(splitr 1) div1r addrK.
-rewrite (@convex_powR _ _ p1 (Itv01 _ _))// ?inE/= ?in_itv/= ?normr_ge0 ?invr_ge0//.
-by rewrite invf_le1 ?ler1n.
+rewrite {2 4}(_ : 2^-1 = 1 - 2^-1); last by rewrite {2}(splitr 1) div1r addrK.
+by apply: (convex_powR p1 (Itv01 _ _)) => //=;
+  rewrite ?inE/= ?in_itv/= ?normr_ge0// ?invr_ge0// invf_le1 ?ler1n.
 Qed.
 
 Let measurableT_comp_powR f p :
