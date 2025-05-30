@@ -594,7 +594,7 @@ have [k FGk] : exists k : R, {in `]a, b[, (F - G =1 cst k)%R}.
       apply: subset_itvSoo zxy => //=; rewrite bnd_simp.
       * by move: xab; rewrite in_itv/= => /andP[/ltW].
       * by move: yab; rewrite in_itv/= => /andP[_ /ltW].
-  move=> H; pose c := (a + b) / 2.
+  move=> H; pose c := ((a + b) / 2)%R.
   exists (F c - G c)%R => u /(H u c); apply.
   by rewrite in_itv/= midf_lt//= midf_lt.
 have [c GFc] : exists c : R, forall x, x \in `]a, b[ -> (F x - G x)%R = c.
@@ -706,7 +706,7 @@ transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
         by apply: dF; rewrite (lt_le_trans _ aSn)// ltrDl.
       move/continuous_within_itvP.
       by rewrite ltrD2l ltr_nat ltnS => /(_ (ltnSn _))[].
-  - have : {within `[a + n%:R + 2^-1, a + n.+1%:R], continuous F}.
+  - have : {within `[a + n%:R + 2^-1%R, a + n.+1%:R], continuous F}.
       apply: derivable_within_continuous => x.
       rewrite in_itv/= => /andP[aSn _].
       by apply: dF; rewrite (lt_le_trans _ aSn)// -addrA ltrDl ltr_wpDl.

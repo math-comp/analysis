@@ -898,7 +898,7 @@ Proof.
 move=> mD muDoo epspos.
 have /ereal_inf_lt[z [/= M' covDM sMz zDe]] : mu D < mu D + (eps / 2)%:E.
   by rewrite lte_spaddre ?lte_fin ?divr_gt0// ge0_fin_numE.
-pose e2 n := (eps / 2) / (2 ^ n.+1)%:R.
+pose e2 n := ((eps / 2) / (2 ^ n.+1)%:R)%R.
 have e2pos n : (0 < e2 n)%R by rewrite ?divr_gt0.
 pose M n := if pselect (M' n = set0) then set0 else
             (`] inf (M' n), sup (M' n) + e2 n [%classic)%R.
@@ -991,7 +991,7 @@ move=> mD finD epspos.
 wlog : eps epspos D mD finD / exists ab : R * R, D `<=` `[ab.1, ab.2]%classic.
   move=> WL; have [] := @lebesgue_nearly_bounded _ (eps / 2)%R mD finD.
     by rewrite divr_gt0.
-  case=> a b /= muDabe; have [] := WL (eps / 2) _ (D `&` `[a,b]).
+  case=> a b /= muDabe; have [] := WL (eps / 2)%R _ (D `&` `[a,b]).
   - by rewrite divr_gt0.
   - exact: measurableI.
   - by rewrite (le_lt_trans _ finD)// le_measure// inE//; exact: measurableI.
@@ -1157,7 +1157,7 @@ have finite_set_F i : finite_set (F i).
     rewrite /= nneseries_esum//= set_mem_set// esum_fset// fsbig_finite//=.
     rewrite set_fsetK.
     apply: (@le_trans _ _ (\sum_(i0 <- C) (1 / (2 ^ i.+1)%:R)%:E)).
-      under eq_bigr do rewrite -(mul1r (_ / _)) EFinM.
+      under eq_bigr do rewrite -(mul1r (_ / _)%R) EFinM.
       rewrite -ge0_sume_distrl// EFinM lee_wpmul2r// sumEFin lee_fin.
       by rewrite -(natr_sum _ _ _ (cst 1%N)) ler_nat -card_fset_sum1.
     rewrite big_seq [in leRHS]big_seq; apply: lee_sum => // j.

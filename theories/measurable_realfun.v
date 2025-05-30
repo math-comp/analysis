@@ -1562,10 +1562,10 @@ move=> /lA[_ [/= F [mF AF]] <-]; rewrite -/((l^* A)%mu) => lFe.
 have Fcover n : exists2 B, F n `<=` B &
     is_open_itv B /\ l B <= l (F n) + (e / 2 ^+ n.+2)%:E.
   have [[a b] _ /= abFn] := mF n.
-  exists `]a, b + e / 2^+n.+2[%classic.
+  exists `]a, (b + e / 2^+n.+2)%R[%classic.
     rewrite -abFn => x/= /[!in_itv] /andP[->/=] /le_lt_trans; apply.
     by rewrite ltrDl divr_gt0.
-  split; first by exists (a, b + e / 2^+n.+2).
+  split; first by exists (a, b + e / 2^+n.+2)%R.
   have [ab|ba] := ltP a b.
     rewrite /l -abFn !wlength_itv//= !lte_fin ifT.
       by rewrite ab -!EFinD lee_fin addrAC.
@@ -1621,7 +1621,7 @@ have Einc k : nonincreasing_seq (E k).
   by exists i => //; exact: mi.
 have mE k n : measurable (E k n).
   apply: bigcup_measurable => q /= ?.
-  have -> : [set x | h q x >= k.+1%:R^-1]%R = h q @^-1` `[k.+1%:R^-1, +oo[.
+  have -> : [set x | h q x >= k.+1%:R^-1]%R = h q @^-1` `[(k.+1%:R^-1)%R, +oo[.
     by rewrite eqEsubset; split => z; rewrite /= in_itv /= andbT.
   exact: mfunh.
 have nEcvg x k : exists n, A x -> (~` E k n) x.
@@ -1637,7 +1637,7 @@ have Ek0 k : \bigcap_n (E k n) = set0.
     by have [N /(_ Az) ?] := nEcvg z k; exists N.
   by exists 0%N => //; rewrite setC_bigcup => n _ [].
 have badn' k : exists n, mu (E k n) < ((eps / 2) / (2 ^ k.+1)%:R)%:E.
-  pose ek : R := eps / 2 / (2 ^ k.+1)%:R.
+  pose ek : R := (eps / 2 / (2 ^ k.+1)%:R)%R.
   have : mu \o E k @ \oo --> mu set0.
     rewrite -(Ek0 k); apply: nonincreasing_cvg_mu => //.
     - by rewrite (le_lt_trans _ finA)// le_measure// ?inE// => ? [? _ []].

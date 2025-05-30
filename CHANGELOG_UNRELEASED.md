@@ -32,6 +32,18 @@
     `UniformNmodule_isUniformLmodule`
   + lemmas `sub_continuous`, `sub_unif_continuous`
 
+- in `constructive_ereal.v`:
+  + `inve` a total involutive inversion function on `\bar R`, denoted `^-1` in
+     the `ereal_scope` coinciding with `x^-1%R` when `x != 0` but such that
+     `0^-1 = +oo` and `-oo^-1 = -oo`,
+  + notation `x / y` in `ereal_scope` for `x / y = x * y^-1`/,
+  + lemmas `inver`, `inveP`, `fine_invr`, `inve0`, `inve1`, `invey`, `invey`,
+    `inveNy`, `inveK`, `invr_inj`, `inveN`, `inve_eq0`, `inve_ge0`, `inve_gt0`,
+  + predicate `inveM_def` with notation `x *^-1? y` defining a sufficient
+    condition for the inverse and product to commute,
+  + compatibility lemma `mule_defE` to bridge the former definition of
+    `mule_def` with the new one.
+
 ### Changed
 
 - in `convex.v`:
@@ -68,8 +80,6 @@
   + lemmas `ess_infr_bounded`, `ess_infrZl`, `ess_inf_ger`, `ess_inf_ler`,
     `ess_inf_cstr`
 
-### Changed
-
 - in `measure.v`:
   + notation `{ae mu, P}` (near use `{near _, _}` notation)
   + definition `ae_eq`
@@ -78,9 +88,14 @@
 - in `convex.v`:
   + definition `convex_realDomainType` generalized and
     renamed accordingly `convex_numDomainType`
-+ in `tvs.v`
+- in `tvs.v`
   + HB class `UniformZmodule` now contains `TopologicalZmodule`
   + HB class `UniformLmodule` now contains `TopologicalLmodule`
+
+- in `constructive_ereal.v`:
+  + `mule` has special cases optimizing computation for +oo and -oo
+  + `mule_def` has been rewritten to optimize computation in several cases.
+  
 
 ### Renamed
 
