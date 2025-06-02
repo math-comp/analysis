@@ -16,9 +16,7 @@ From mathcomp Require Import lebesgue_integral numfun exp convex.
 (*                                                                            *)
 (* ```                                                                        *)
 (*         'N[mu]_p[f] == the Lp-norm of f with measure mu                    *)
-(*         conjugate p == a real number q such that p^-1 + q^-1 = 1 when      *)
-(*                        p is real, otherwise conjugate +oo = 1 and          *)
-(*                        conjugate -oo = 0                                   *)
+(* hoelder_conjugate p == an extended real number q s.t. p^-1 + q^-1 = 1      *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* Lp-spaces and properties of Lp-norms:                                      *)
@@ -82,16 +80,19 @@ Implicit Types (p : \bar R) (f g : T -> \bar R) (r : R).
 
 Local Notation "'N_ p [ f ]" := (Lnorm mu p f).
 
-Lemma Lnorm0 p : 1 <= p -> 'N_p[cst 0] = 0.
+(* TODO: true to remove conditions when we enable
+(mu (f @^-1` (setT `\ 0%R))) when p = 0
+*)
+Lemma Lnorm0 p : p != 0 -> 'N_p[cst 0] = 0.
 Proof.
-rewrite unlock /Lnorm.
-case: p => [r||//].
-- rewrite lee_fin => r1.
-  have r0 : r != 0%R by rewrite gt_eqF// (lt_le_trans _ r1).
+rewrite unlock /Lnorm; case: p => [r|_|_].
+- rewrite eqe => r0.
   under eq_integral => x _ do rewrite /= normr0 powR0//.
   by rewrite integral0 poweR0r// invr_neq0.
-case: ifPn => //mu0 _; rewrite (ess_sup_ae_cst 0)//.
-by apply: nearW => x; rewrite /= normr0.
+- case: ifPn => // mu0; apply: ess_sup_ae_cst => //.
+  by apply/nearW => x/=; rewrite normr0.
+- case: ifPn => // mu0; apply: ess_inf_ae_cst => //.
+  by apply/nearW => x/=; rewrite normr0.
 Qed.
 
 Lemma Lnorm1 f : 'N_1[f] = \int[mu]_x `|f x|.
@@ -186,38 +187,83 @@ Qed.
 
 End lnorm.
 
-Section conjugate.
+(* TODO: move *)
+Lemma fine_eq1 {R : numDomainType} (x : \bar R) :
+  x \is a fin_num -> (fine x == 1%R) = (x == 1%E).
+Proof. by move: x => [x| |]. Qed.
+
+Local Open Scope ereal_scope.
+Lemma divee {R : realFieldType} (x : \bar R) : x != 0 -> x \is a fin_num ->
+  x / x = 1.
+Proof.
+move: x => [x|//|//].
+by rewrite eqe => x0; rewrite inver (negbTE x0) -EFinM divff.
+Qed.
+Local Close Scope ereal_scope.
+
+Section hoelder_conjugate.
 Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R).
-Hypothesis p1 : (1 <= p)%E.
+Variables (mu : {measure set T -> \bar R}).
 
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
-Definition conjugate :=
-  match p with
-  | r%:E => [get q : R | r^-1 + q^-1 = 1]%:E
-  | +oo  => 1
-  | -oo  => 0
-  end.
+Definition hoelder_conjugate (p : \bar R) : \bar R :=
+  if p == +oo then 1 else
+  if p == -oo then 0 else
+  if p == 0 then -oo else
+  p / (p - 1).
 
-Lemma conjugateE :
-  conjugate = if p is r%:E then (r * (r-1)^-1)%:E
-              else if p == +oo then 1 else 0.
+Local Notation "p ^*" := (hoelder_conjugate p) : ereal_scope.
+
+Lemma hoelder_conjugate0 : 0^* = -oo.
+Proof. by rewrite /hoelder_conjugate/= eqxx. Qed.
+
+Lemma hoelder_conjugate1 : 1^* = +oo.
+Proof. by rewrite /hoelder_conjugate/= onee_eq0 EFinN subee// inve0 mul1e. Qed.
+
+Lemma hoelder_conjugate2 : 2%:E^* = 2%:E.
 Proof.
-rewrite /conjugate.
-case: p p1 => [r|//=|//].
-rewrite lee_fin => r1.
-have r0 : r != 0%R by rewrite gt_eqF// (lt_le_trans _ r1).
-congr EFin; apply: get_unique.
-  by rewrite invf_div mulrBl divff// mul1r addrCA subrr addr0.
-move=> /= y ry1.
-suff -> : y = (1 - r^-1)^-1.
-  by rewrite -(mul1r r^-1) -{1}(divff r0) -mulrBl invf_div.
-by rewrite -ry1 -addrAC subrr add0r invrK.
+rewrite /hoelder_conjugate/= eqe/= pnatr_eq0/=.
+by rewrite {2}(natrD _ 1 1) {2}EFinD EFinN addeK// inve1 mule1.
 Qed.
 
-End conjugate.
+Lemma hoelder_conjugatey : +oo^* = 1.
+Proof. by []. Qed.
+
+Lemma hoelder_conjugateNy : -oo^* = 0.
+Proof. by []. Qed.
+
+Lemma hoelder_conjugate_eqy (p : \bar R) : +oo = p^* -> p = 1.
+Proof.
+move: p => [p| |].
+- rewrite /hoelder_conjugate/=; case: ifPn => [/eqP p0//|p0].
+  rewrite -EFinD inver subr_eq0 -eqe.
+  by case: ifPn => // /eqP ->.
+- by rewrite hoelder_conjugatey.
+- by rewrite hoelder_conjugateNy.
+Qed.
+
+Lemma hoelder_conjugateK : involutive hoelder_conjugate.
+Proof.
+move=> [x| |]; last 2 first.
+  by rewrite hoelder_conjugatey hoelder_conjugate1.
+  by rewrite hoelder_conjugateNy hoelder_conjugate0.
+rewrite /hoelder_conjugate/= !eqe.
+have [x0/=|x0/=] := eqVneq x 0%R; first by rewrite x0.
+rewrite -EFinD inver subr_eq0 -eqe.
+have [x1/=|x1/=] := eqVneq x 1%R.
+  by rewrite x1 mul1e eqxx.
+rewrite ifF; last first.
+  apply/negbTE; rewrite -EFinM eqe; apply/eqP.
+  move=> /(congr1 (fun z => z * (x - 1)))%R.
+  by rewrite mul0r -mulrA mulVf ?subr_eq0// mulr1 => /eqP; exact/negP.
+rewrite -!(EFinM,EFinD) -[X in (_ / _ - X)%R](@divff _ (x - 1)) ?subr_eq0//.
+rewrite -mulrBl opprB (addrC x (1 - _)%R) subrK div1r.
+by rewrite EFinM -muleA divee ?mule1// eqe invr_eq0 subr_eq0.
+Qed.
+
+End hoelder_conjugate.
 
 Section hoelder.
 Context d {T : measurableType d} {R : realType}.
@@ -793,7 +839,7 @@ Proof. by split=> [->//|fg]; exact/val_inj/funext. Qed.
 HB.instance Definition _ := [Choice of LfunType mu p1 by <:].
 
 Lemma finite_norm_cst0 : finite_norm mu p (cst 0).
-Proof. by rewrite /finite_norm Lnorm0// ltry. Qed.
+Proof. by rewrite /finite_norm Lnorm0// gt_eqF// (lt_le_trans _ p1). Qed.
 
 HB.instance Definition _ :=
   @isLfunction.Build d T R mu p p1 (cst 0) finite_norm_cst0.
@@ -816,7 +862,7 @@ HB.instance Definition _ := GRing.isOppClosed.Build _ Lfun
 Lemma Lfun_addr_closed : addr_closed Lfun.
 Proof.
 split.
-  by rewrite inE rpred0/= inE/= /finite_norm/= Lnorm0.
+  by rewrite inE rpred0/= inE/=; exact: finite_norm_cst0.
 move=> f g /andP[mf /[!inE]/= lf] /andP[mg /[!inE]/= lg].
 rewrite rpredD//= inE/= /finite_norm.
 rewrite (le_lt_trans (@eminkowski _ _ _ mu f g p _ _ _))//.
@@ -1052,7 +1098,7 @@ rewrite le_eqVlt => /predU1P[mu0 p1 q1 muTfin pq f +|mu_pos].
   rewrite /finite_norm unlock /Lnorm.
   move: p p1 {pq} => [r r1| |//]; last by rewrite -mu0 ltxx ltry.
   under eq_integral do rewrite /= -[(_ `^ _)%R]ger0_norm ?powR_ge0//=.
-  rewrite (@integral_abs_eq0 _ _ _ _ setT setT (fun x => (`|f x| `^ r)%:E))//.
+  rewrite (@integral_abs_eq0 _ _ _ _ _ (fun x => (`|f x| `^ r)%:E))//.
     by rewrite poweR0r// invr_neq0// gt_eqF// -lte_fin (lt_le_trans _ r1).
   apply/measurable_EFinP/(@measurableT_comp _ _ _ _ _ _ (@powR R ^~ r)) => //.
   exact: measurableT_comp.
@@ -1065,9 +1111,9 @@ move: p q => [p| |//] [q| |]// p1 q1.
   have p0 : (0 < p)%R by rewrite (lt_le_trans ltr01).
   have pN0 : p != 0%R by rewrite gt_eqF.
   have q0 : (0 < q)%R by rewrite (lt_le_trans ltr01).
-  have qinv0 : q^-1 != 0%R by rewrite invr_neq0// gt_eqF.
-  pose r := q / p.
-  pose r' := (1 - r^-1)^-1.
+  have qinv0 : (q^-1 != 0)%R by rewrite invr_neq0// gt_eqF.
+  pose r := (q / p)%R.
+  pose r' := (1 - r^-1)^-1%R.
   have := @hoelder _ _ _ mu (fun x => `|f x| `^ p)%R (cst 1)%R r r'.
   rewrite (_ : (_ \* cst 1)%R = (fun x => `|f x| `^ p))%R -?fctM ?mulr1//.
   rewrite Lnorm_cst1 unlock /Lnorm invr1.
@@ -1079,7 +1125,7 @@ move: p q => [p| |//] [q| |]// p1 q1.
   have r'0 : (0 < r')%R.
     by rewrite /r' invr_gt0 subr_gt0 invf_lt1 ?(lt_trans ltr01)//;
       rewrite /r ltr_pdivlMr// mul1r.
-  have rr'1 : r^-1 + r'^-1 = 1%R.
+  have rr'1 : (r^-1 + r'^-1 = 1)%R.
     by rewrite /r' /r invf_div invrK addrCA subrr addr0.
   move=> /(_ mfp m1 r0 r'0 rr'1).
   under [in leLHS] eq_integral do rewrite /= powRr1// norm_powR// normrE.

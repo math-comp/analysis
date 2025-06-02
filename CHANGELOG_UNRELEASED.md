@@ -93,8 +93,9 @@
 
 - in `hoelder.v`
   + lemmas `Lnorm0`, `Lnorm_cst1`
-  + definition `conjugate`
-  + lemma `conjugateE`
+  + definition `hoelder_conjugate`
+  + lemmas `hoelder_conjugate0`, `hoelder_conjugate1`, `hoelder_conjugate2`,
+    `hoelder_conjugatey`, `hoelder_conjugateK`
   + lemmas `lerB_DLnorm`, `lerB_LnormD`, `eminkowski`
   + definition `finite_norm`
   + mixin `isLfunction` with field `Lfunction_finite`
