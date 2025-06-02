@@ -41,7 +41,8 @@
     `inveNy`, `inveK`, `invr_inj`, `inveN`, `inve_eq0`, `inve_ge0`, `inve_gt0`,
     `inv_gt0P`, `inve_lt0`, `inve_le0`, `inve_le0P`,
   + predicate `inveM_def` with notation `x *^-1? y` defining a sufficient
-    condition for the inverse and product to commute,
+    condition for the inverse and product to commute, with lemmas `inveMP`,
+    `inveM_defE`, `inveM` and `fin_inveM_def`,
   + compatibility lemma `mule_defE` to bridge the former definition of
     `mule_def` with the new one.
 

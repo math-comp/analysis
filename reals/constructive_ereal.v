@@ -3363,43 +3363,58 @@ Variable R : realFieldType.
 Implicit Types x y : \bar R.
 Implicit Types r : R.
 
-Definition inveM_def_subdef x y := [&&
-  ((x == 0) && (y \is a fin_num)) ==> (y >= 0),
-  (x == +oo) ==> (y >= 0) &
-  (x == -oo) ==> [&& y >= 0 & y != +oo] ].
-Arguments inveM_def_subdef /.
-
 Definition inveM_def x y :=
-  [&& x *? y, inveM_def_subdef x y & inveM_def_subdef y x].
+  match x, y with
+  | r%:E, s%:E => [&& (r == 0) ==> (s >= 0) & (s == 0) ==> (r >= 0)]%R
+  | +oo, +oo => true
+  |  -oo, -oo | +oo, -oo | -oo, +oo => false
+  | r%:E, +oo | +oo, r%:E => (r > 0)%R
+  | r%:E, -oo | -oo, r%:E => (r > 0)%R
+  end.
+Arguments inveM_def : simpl never.
+
 Notation "x *^-1? y" := (inveM_def x y)
   (format "x  *^-1?  y", at level 50) : ereal_scope.
 
-Lemma inveM x y : x *^-1? y -> (x * y)^-1 = x^-1 * y^-1.
+Lemma inveM_defE x y : (x *^-1? y) =
+  [&& (x == 0) ==> (0 <= y < +oo),
+      (y == 0) ==> (0 <= x < +oo),
+      (`|x| == +oo) ==> (y > 0) &
+      (`|y| == +oo) ==> (x > 0)].
 Proof.
-rewrite /inveM_def mule_defE /inveM_def_subdef.
-case: (inveP x) => [|||r rN0]; rewrite ?eqxx/= ?andbT.
-- rewrite mul0e inve0 normr0 andbF orbF !lexx !implybT ?andbT.
-  case: (inveP y) => //= r; rewrite lee_fin; case: ltgtP => //= r_gt0 _ _.
-  by rewrite gt0_mulye// lte_fin invr_gt0.
-- case: (inveP y) => [|||s sN0]//; rewrite ?eqxx ?mul0e//= ?andbT.
-  rewrite eqe (negPf sN0) /= andbT lee_fin; case: ltgtP sN0 => //s_gt0.
-  by rewrite gt0_mulye// mul0e.
-- case: (inveP y) => [|||s sN0]; rewrite ?eqxx// ?(andbF,andbT)//=.
-  rewrite -lt_def => s_gt0.
-  by rewrite gt0_mulNye// gt0_mulNye// lte_fin invr_gt0.
-rewrite eqe (negPf rN0) /=.
-case: (inveP y) => [|||s sNO]; rewrite ?eqxx/= ?andbT lee_fin => r_ge0.
-- by rewrite mule0 gt0_muley ?inve0// lte_fin invr_gt0; case: ltgtP rN0 r_ge0.
-- by rewrite mule0 gt0_muley ?invey// lte_fin; case: ltgtP rN0 r_ge0.
-- by case: ltgtP rN0 r_ge0 => // *; rewrite !gt0_muleNy// lte_fin invr_gt0.
-- by rewrite -!EFinM !inver (negPf (mulf_neq0 _ _))// invfM.
+rewrite /inveM_def; case: x y => [r||]//= [s||]//=;
+by rewrite ?eqe ?ltry ?ltxx ?andbT// lte_fin; case: ltgtP; rewrite //= andbF.
 Qed.
+
+Lemma inveMP x y : reflect ((x * y)^-1 = x^-1 * y^-1) (x *^-1? y).
+Proof.
+rewrite /inveM_def.
+case: (inveP x) => [|||r rN0]; case: (inveP y) => [|||s sN0]//=;
+rewrite ?(eqxx, lexx, ltxx, mule0, mul0e, mulyy, inve0, invey)//=;
+    do ?by constructor.
+- by rewrite mulyr sgrV implybT andbT; case: sgrP sN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulyr; case: sgrP sN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite !mulNyr sgrV; case: sgrP sN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulry sgrV implybT andTb; case: sgrP rN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulry; case: sgrP rN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulrNy [RHS]mulrNy sgrV; case: sgrP rN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite !inver invfM EFinM mulf_eq0 (negPf rN0) (negPf sN0);
+     constructor.
+Qed.
+
+Lemma inveM x y : x *^-1? y -> (x * y)^-1 = x^-1 * y^-1.
+Proof. by move/inveMP. Qed.
 
 Lemma fin_inveM_def x y : x != 0 -> y != 0 ->
   x \is a fin_num -> y \is a fin_num -> x *^-1? y.
 Proof.
-rewrite /inveM_def/=; case: x => [r||]//=; case: y => [s||]//= rN0 sN0 -> ->.
-by rewrite !andbT (negPf rN0) (negPf sN0) /=.
+by rewrite /inveM_def/=; case: x y => [r||]//= [s||]//= /[!eqe]/negPf-> /negPf->.
 Qed.
 
 Lemma lee_addgt0Pr x y :
