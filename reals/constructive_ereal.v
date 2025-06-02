@@ -572,9 +572,9 @@ Notation "x * y" := (mule x%dE y%dE : \bar^d _) : ereal_dual_scope.
 Notation "x * y" := (mule x%E y%E) : ereal_scope.
 Notation "`| x |" := (abse x%dE : \bar^d _) : ereal_dual_scope.
 Notation "`| x |" := (abse x%E) : ereal_scope.
-Notation "x ^-1" := (inve (x%dE : \bar^d _)) : ereal_dual_scope.
+Notation "x ^-1" := (inve x%dE : \bar^d _) : ereal_dual_scope.
 Notation "x ^-1" := (inve x) : ereal_scope.
-Notation "x / y" := (mule x%dE (inve y%dE : \bar^d _) : \bar^d _) : ereal_dual_scope.
+Notation "x / y" := (mule x%dE (inve y%dE) : \bar^d _) : ereal_dual_scope.
 Notation "x / y" := (mule x (inve y)) : ereal_scope.
 Arguments abse {R}.
 Notation "x ^+ n" := (expe x%dE n : \bar^d _) : ereal_dual_scope.
