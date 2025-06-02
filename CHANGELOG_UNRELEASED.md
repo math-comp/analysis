@@ -39,6 +39,7 @@
   + notation `x / y` in `ereal_scope` for `x / y = x * y^-1`,
   + lemmas `inver`, `inveP`, `fine_invr`, `inve0`, `inve1`, `invey`, `invey`,
     `inveNy`, `inveK`, `invr_inj`, `inveN`, `inve_eq0`, `inve_ge0`, `inve_gt0`,
+    `inv_gt0P`, `inve_lt0`, `inve_le0`, `inve_le0P`,
   + predicate `inveM_def` with notation `x *^-1? y` defining a sufficient
     condition for the inverse and product to commute,
   + compatibility lemma `mule_defE` to bridge the former definition of

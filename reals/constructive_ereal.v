@@ -2423,12 +2423,29 @@ Proof.
 by case: inveP; rewrite ?le0y ?lexx //= => r; rewrite lee_fin invr_ge0.
 Qed.
 
-Lemma inve_gt0 x :
-  (0 <= x) ==> ((x != 0) && (x != +oo)) -> (0 < x^-1) = (0 < x).
+Lemma inve_gt0 x : x != 0 -> x != +oo -> (0 < x^-1) = (0 < x).
 Proof.
 rewrite !lt_def inve_eq0 inve_ge0.
-by case: leP => /[!(andbT, andbF)]//= _ /andP[-> ->].
+by case: leP => /[!(andbT, andbF)]//= _ -> ->.
 Qed.
+
+Lemma inve_gt0P x : reflect ((0 < x^-1) = (0 < x)) ((x != 0) && (x != +oo)).
+Proof.
+apply/(iffP idP); first by move=> /andP[]; exact:inve_gt0.
+case: eqP => [->|x0]; first by rewrite inve0 lt0y ltxx.
+by case: eqP => [->|xy]; first by rewrite invey ltxx lt0y.
+Qed.
+
+Lemma inve_le0P x : reflect ((x^-1 <= 0) = (x <= 0)) ((x != 0) && (x != +oo)).
+Proof.
+by rewrite !leNgt; apply/(iffP idP)=> [/inve_gt0P->|/negb_inj /inve_gt0P].
+Qed.
+
+Lemma inve_le0 x : x != 0 -> x != +oo -> (x^-1 <= 0) = (x <= 0).
+Proof. by move=> xN0 xNy; rewrite !leNgt inve_gt0. Qed.
+
+Lemma inve_lt0 x : (x^-1 < 0) = (x < 0).
+Proof. by rewrite !ltNge inve_ge0. Qed.
 
 Lemma gee_pMl y x : y \is a fin_num -> 0 <= x -> y <= 1 -> y * x <= x.
 Proof.
