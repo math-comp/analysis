@@ -2424,7 +2424,7 @@ by case: inveP; rewrite ?le0y ?lexx //= => r; rewrite lee_fin invr_ge0.
 Qed.
 
 Lemma inve_gt0 x :
-   (0 <= x) ==> ((x != 0) && (x != +oo)) -> (0 < x^-1) = (0 < x).
+  (0 <= x) ==> ((x != 0) && (x != +oo)) -> (0 < x^-1) = (0 < x).
 Proof.
 rewrite !lt_def inve_eq0 inve_ge0.
 by case: leP => /[!(andbT, andbF)]//= _ /andP[-> ->].
@@ -3346,10 +3346,10 @@ Variable R : realFieldType.
 Implicit Types x y : \bar R.
 Implicit Types r : R.
 
-Definition inveM_def_subdef x y :=  [&&
-   ((x == 0) && (y \is a fin_num)) ==> (y >= 0),
-   (x == +oo) ==> (y >= 0) &
-   (x == -oo) ==> [&& y >= 0 & y != +oo] ].
+Definition inveM_def_subdef x y := [&&
+  ((x == 0) && (y \is a fin_num)) ==> (y >= 0),
+  (x == +oo) ==> (y >= 0) &
+  (x == -oo) ==> [&& y >= 0 & y != +oo] ].
 Arguments inveM_def_subdef /.
 
 Definition inveM_def x y :=

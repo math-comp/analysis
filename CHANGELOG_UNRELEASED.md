@@ -36,7 +36,7 @@
   + `inve` a total involutive inversion function on `\bar R`, denoted `^-1` in
      the `ereal_scope` coinciding with `x^-1%R` when `x != 0` but such that
      `0^-1 = +oo` and `-oo^-1 = -oo`,
-  + notation `x / y` in `ereal_scope` for `x / y = x * y^-1`/,
+  + notation `x / y` in `ereal_scope` for `x / y = x * y^-1`,
   + lemmas `inver`, `inveP`, `fine_invr`, `inve0`, `inve1`, `invey`, `invey`,
     `inveNy`, `inveK`, `invr_inj`, `inveN`, `inve_eq0`, `inve_ge0`, `inve_gt0`,
   + predicate `inveM_def` with notation `x *^-1? y` defining a sufficient
