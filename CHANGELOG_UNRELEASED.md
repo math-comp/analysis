@@ -46,6 +46,7 @@
   + compatibility lemma `mule_defE` to bridge the former definition of
     `mule_def` with the new one.
   + lemma `fin_numV`
+  + lemmas `mulVe`, `lefe_pV2`
 
 - in `lebesgue_integral_differentiation.v`:
   + lemma `nicely_shrinking_fin_num`
@@ -101,6 +102,9 @@
 - in `constructive_ereal.v`:
   + `mule` has special cases optimizing computation for +oo and -oo
   + `mule_def` has been rewritten to optimize computation in several cases.
+
+- in `lebesgue_integral_nonneg.v`:
+  + lemma `integral_abs_eq0` (remove redundant hypotheses)
 
 - in `lebesgue_integral_differentiation.v`:
   + definition `iavg` (to use `inve`)
