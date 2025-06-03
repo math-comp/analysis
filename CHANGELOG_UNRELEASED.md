@@ -55,6 +55,17 @@
 - in `normed_module.v`:
   + definition `pseudoMetric_normed`
   + factory `Lmodule_isNormed`
+- in `num_normedtype.v`:
+  + lemmas `gt0_cvgMrNy`, `gt0_cvgMry`
+
+- in `probability.v`:
+  + definition `exponential_pdf`
+  + lemmas `exponential_pdf_ge0`, `lt0_exponential_pdf`,
+    `measurable_exponential_pdf`, `exponential_pdfE`,
+    `in_continuous_exponential_pdf`, `within_continuous_exponential_pdf`
+  + definition `exponential_prob`
+  + lemmas `derive1_exponential_pdf`, `exponential_prob_itv0c`,
+    `integral_exponential_pdf`, `integrable_exponential_pdf`
 
 ### Changed
 
