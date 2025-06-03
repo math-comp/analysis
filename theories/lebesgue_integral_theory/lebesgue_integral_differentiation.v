@@ -372,18 +372,16 @@ Local Open Scope ereal_scope.
 
 Local Notation mu := lebesgue_measure.
 
-Definition iavg f A := (fine (mu A))^-1%:E * \int[mu]_(y in A) `| (f y)%:E |.
+Definition iavg f A := (mu A)^-1 * \int[mu]_(y in A) `| (f y)%:E |.
 
 Lemma iavg0 f : iavg f set0 = 0.
 Proof. by rewrite /iavg integral_set0 mule0. Qed.
 
 Lemma iavg_ge0 f A : 0 <= iavg f A.
-Proof.
-by rewrite /iavg mule_ge0 ?integral_ge0// lee_fin invr_ge0// fine_ge0.
-Qed.
+Proof. by rewrite /iavg mule_ge0 ?integral_ge0// inve_ge0. Qed.
 
 Lemma iavg_restrict f D A : measurable D -> measurable A ->
-  iavg (f \_ D) A = ((fine (mu A))^-1)%:E * \int[mu]_(y in D `&` A) `|f y|%:E.
+  iavg (f \_ D) A = (mu A)^-1 * \int[mu]_(y in D `&` A) `|f y|%:E.
 Proof.
 move=> mD mA; rewrite /iavg setIC [in RHS]integral_mkcondr/=; congr *%E.
 apply: eq_integral => /= y yx1.
@@ -395,10 +393,20 @@ Lemma iavgD f g A : measurable A -> mu A < +oo ->
   iavg (f \+ g)%R A <= iavg f A + iavg g A.
 Proof.
 move=> mA Aoo mf mg; have [r0|r0] := eqVneq (mu A) 0.
-  by rewrite /iavg r0/= invr0 !mul0e adde0.
-rewrite -muleDr//=; last by rewrite ge0_adde_def// inE integral_ge0.
-rewrite lee_pmul2l//; last first.
-  by rewrite lte_fin invr_gt0// fine_gt0// Aoo andbC/= lt0e r0/=.
+  rewrite /iavg.
+  rewrite (@integral_abs_eq0 _ _ _ mu A)//= ?mule0; last first.
+    by apply/measurable_EFinP; exact: measurable_funD.
+  rewrite (@integral_abs_eq0 _ _ _ mu A _ (EFin \o f))//= ?mule0; last first.
+    exact: measurableT_comp.
+  rewrite (@integral_abs_eq0 _ _ _ mu A _ (EFin \o g))//= ?mule0; last first.
+    exact: measurableT_comp.
+  by rewrite adde0.
+rewrite -muleDr//=; last 2 first.
+  by rewrite fin_numV// -ltNye// (@lt_le_trans _ _ 0).
+  by rewrite ge0_adde_def// inE integral_ge0.
+rewrite lee_pmul2l//; last 2 first.
+  by rewrite fin_numV// -ltNye// (@lt_le_trans _ _ 0).
+  by rewrite inve_gt0 -?ltey// measure_gt0.
 rewrite -ge0_integralD//=; [|by do 2 apply: measurableT_comp..].
 apply: ge0_le_integral => //=.
 - by do 2 apply: measurableT_comp => //; exact: measurable_funD.
@@ -426,11 +434,12 @@ Lemma HL_maximal_ge0 f D : locally_integrable D f ->
 Proof.
 move=> Df x; apply: ereal_sup_ge => //=.
 pose k := \int[mu]_(x in D `&` ball x 1) `|f x|%:E.
-exists ((fine (mu (ball x 1)))^-1%:E * k); last first.
-  by rewrite mule_ge0 ?integral_ge0// lee_fin// invr_ge0// fine_ge0.
+exists ((mu (ball x 1))^-1 * k); last first.
+  by rewrite mule_ge0 ?inve_ge0// integral_ge0.
 exists 1%R; first by rewrite in_itv/= ltr01.
-rewrite iavg_restrict//; last exact: measurable_ball.
-by case: Df => _ /open_measurable.
+rewrite iavg_restrict//.
+  by case: Df => _ /open_measurable.
+exact: measurable_ball.
 Qed.
 
 Lemma HL_maximalT_ge0 f : locally_integrable setT f -> forall x, 0 <= HL f x.
@@ -466,10 +475,10 @@ have k_gt0 : 0 < k.
 move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
   move: afxr; rewrite -{a}a0 => xrk.
   near (0%R : R)^'+ => d.
-  have xrdk : 0 < (fine (mu (ball x (r + d))))^-1%:E * k.
-    rewrite mule_gt0// lte_fin invr_gt0// fine_gt0//.
+  have xrdk : 0 < (mu (ball x (r + d)))^-1 * k.
     rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW.
-    by rewrite ltry andbT lte_fin pmulrn_lgt0// addr_gt0.
+    rewrite mule_gt0// inver mulrn_eq0/= gt_eqF; last by rewrite addr_gt0.
+    by rewrite lte_fin// invr_gt0// pmulrn_lgt0// addr_gt0.
   exists (ball x d).
     by split; [exact: ball_open|exact: ballxx].
   move=> y; rewrite /ball/= => xyd.
@@ -485,8 +494,7 @@ move: a0; rewrite le_eqVlt => /predU1P[a0|a0].
     by rewrite in_itv/= andbT addr_gt0.
   apply/lt_le_trans/(lt_le_trans xrdk); rewrite /iavg.
   do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
-  rewrite lee_wpmul2l// lee_fin invr_ge0// fine_ge0// lee_fin pmulrn_rge0//.
-  by rewrite addr_gt0.
+  by rewrite lee_wpmul2l// inve_ge0 lee_fin pmulrn_rge0// addr_gt0.
 have ka_pos : (fine k / a)%R \is Num.pos.
   by rewrite posrE divr_gt0// fine_gt0 // k_gt0/= locally_integrable_ltbally.
 have k_fin_num : k \is a fin_num.
@@ -495,16 +503,18 @@ have kar : (0 < 2^-1 * (fine k / a) - r)%R.
   move: afxr; rewrite -{1}(fineK k_fin_num) -lte_pdivrMr; last first.
     by rewrite fine_gt0// k_gt0/= ltey_eq k_fin_num.
   rewrite (lebesgue_measure_ball _ (ltW r0))//.
-  rewrite -!EFinM !lte_fin -invf_div ltf_pV2 ?posrE ?pmulrn_lgt0//.
+  rewrite -!EFinM inver mulrn_eq0/= gt_eqF// lte_fin -invf_div.
+  rewrite ltf_pV2 ?posrE ?pmulrn_lgt0//.
   rewrite /= -[in X in X -> _]mulr_natl -ltr_pdivlMl//.
   by rewrite -[in X in X -> _]subr_gt0.
 near (0%R : R)^'+ => d.
-have axrdk : a%:E < (fine (mu (ball x (r + d))))^-1%:E * k.
+have axrdk : a%:E < (mu (ball x (r + d)))^-1 * k.
   rewrite lebesgue_measure_ball//; last by rewrite addr_ge0// ltW.
+  rewrite inver mulrn_eq0/= gt_eqF ?addr_gt0//.
   rewrite -(fineK k_fin_num) -lte_pdivrMr; last first.
     by rewrite fine_gt0// k_gt0/= locally_integrable_ltbally.
   rewrite -!EFinM !lte_fin -invf_div ltf_pV2//; last first.
-    by rewrite posrE fine_gt0// ltry andbT lte_fin pmulrn_lgt0// addr_gt0.
+    by rewrite posrE// pmulrn_lgt0// addr_gt0.
   rewrite -mulr_natl -ltr_pdivlMl// -ltrBrDl.
   by near: d; exact: nbhs_right_lt.
 exists (ball x d).
@@ -517,15 +527,13 @@ have ? : k <= \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
   apply: ge0_subset_integral => //; [exact: measurable_ball|
                                      exact: measurable_ball|].
   exact/measurable_funTS/measurableT_comp/measurableT_comp.
-have afxrdi : a%:E < (fine (mu (ball x (r + d))))^-1%:E *
+have afxrdi : a%:E < (mu (ball x (r + d)))^-1 *
     \int[mu]_(z in ball y (r + d)) `|(f z)%:E|.
-  apply/(lt_le_trans axrdk)/lee_wpmul2l => //.
-  by rewrite lee_fin invr_ge0 fine_ge0.
+  by apply/(lt_le_trans axrdk)/lee_wpmul2l => //; rewrite inve_ge0.
 have /lt_le_trans : a%:E < iavg f (ball y (r + d)).
   apply: (lt_le_trans afxrdi); rewrite /iavg.
   do 2 (rewrite lebesgue_measure_ball; last by rewrite addr_ge0// ltW).
-  rewrite lee_wpmul2l ?lexx// lee_fin invr_ge0// fine_ge0//= lee_fin.
-  by rewrite pmulrn_rge0// addr_gt0.
+  by rewrite inver.
 apply; apply: ereal_sup_ubound => /=.
 by exists (r + d)%R => //; rewrite in_itv/= andbT addr_gt0.
 Unshelve. all: by end_near. Qed.
@@ -562,9 +570,10 @@ have cMfx_int x : c%:E < HL f x ->
   have ? : 0 < (fine (mu (ball x r)))%:E.
     rewrite lte_fin fine_gt0// (lebesgue_measure_ball _ (ltW r0))// ltry.
     by rewrite lte_fin mulrn_wgt0.
-  rewrite /iavg -(@lte_pmul2r _ (fine (mu (ball x r)))%:E)//.
-  rewrite muleAC -[in X in _ < X]EFinM mulVf ?gt_eqF// mul1e fineK//.
-  by rewrite ge0_fin_numE// (lebesgue_measure_ball _ (ltW r0)) ltry.
+  rewrite /iavg (lebesgue_measure_ball _ (ltW r0)).
+  rewrite inver mulrn_eq0//= gt_eqF//.
+  rewrite -(@lte_pmul2r _ (r *+ 2)%:E)//; last by rewrite lte_fin// pmulrn_rgt0.
+  by rewrite muleAC -[in X in _ < X]EFinM mulVf ?gt_eqF ?pmulrn_rgt0// mul1e.
 set B := fun r => ball r (r_ r).
 have {}Kcmf : K `<=` cover [set i | HL f i > c%:E] (fun i => ball i (r_ i)).
   by move=> r /Kcmf /= cMfr; exists r => //; exact: ballxx.
@@ -697,7 +706,9 @@ near (0%R:R)^'+ => r.
 have r0 : (0 < r)%R by near: r; exact: nbhs_right_gt.
 have [d /= d0 {}fx'] := fx' _ e0.
 near=> t; have [t0|t0] := leP t 0%R; first by rewrite davg0.
-by rewrite fin_numM// exf/=.
+rewrite fin_numM//.
+  by rewrite (lebesgue_measure_ball _ (ltW _))// inver mulrn_eq0/= gt_eqF.
+by rewrite exf/=.
 Unshelve. all: by end_near. Qed.
 
 Lemma continuous_cvg_davg : davg f x r @[r --> 0%R] --> 0.
@@ -712,8 +723,8 @@ near=> t.
 have [t0|t0] := leP t 0%R; first by rewrite /= davg0//= subrr normr0 ltW.
 rewrite sub0r normrN /= ger0_norm; last by rewrite fine_ge0// davg_ge0.
 rewrite -lee_fin fineK//; last by rewrite dfx//= sub0r normrN gtr0_norm.
-rewrite /davg/= /iavg/= lee_pdivrMl//; last first.
-  by rewrite fine_gt0// lebesgue_measure_ball// ?ltry ?lte_fin ?mulrn_wgt0 ?ltW.
+rewrite /davg/= /iavg/= (lebesgue_measure_ball _ (ltW t0))//.
+rewrite inver mulrn_eq0/= gt_eqF// lee_pdivrMl//; last by rewrite pmulrn_rgt0.
 rewrite (@le_trans _ _ (\int[mu]_(y in ball x t) e%:E))//.
   apply: ge0_le_integral => //=.
   - exact: measurable_ball.
@@ -723,7 +734,7 @@ rewrite (@le_trans _ _ (\int[mu]_(y in ball x t) e%:E))//.
   - move=> y xty; rewrite lee_fin distrC fx'//; apply: (lt_le_trans xty).
     by near: t; exact: nbhs0_ltW.
 rewrite integral_cst//=; last exact: measurable_ball.
-by rewrite muleC fineK// (lebesgue_measure_ball _ (ltW t0)).
+by rewrite muleC (lebesgue_measure_ball _ (ltW t0)).
 Unshelve. all: by end_near. Qed.
 
 End continuous_cvg_davg.
@@ -809,10 +820,10 @@ near=> e.
 apply: ub_ereal_sup => _ [b [eb] /= b0] <-.
 suff : forall r, davg f x r <= HL_maximal f x + `|f x|%:E by exact.
 move=> r.
-apply: (@le_trans _ _ ((fine (mu (ball x r)))^-1%:E *
+apply: (@le_trans _ _ ((mu (ball x r))^-1 *
     \int[mu]_(y in ball x r) (`|(f y)%:E| + `|(f x)%:E|))).
   - rewrite /davg lee_wpmul2l//.
-      by rewrite lee_fin invr_ge0 fine_ge0.
+      by rewrite inve_ge0.
     apply: ge0_le_integral => //.
     + exact: measurable_ball.
     + do 2 apply: measurableT_comp => //=; apply: measurable_funB => //.
@@ -821,7 +832,7 @@ apply: (@le_trans _ _ ((fine (mu (ball x r)))^-1%:E *
     + apply: emeasurable_funD => //; do 2 apply: measurableT_comp => //.
       exact: measurable_funS mf.
   by move=> /= y xry; rewrite -EFinD lee_fin// ler_normB.
-rewrite [leLHS](_ : _ = (fine (mu (ball x r)))^-1%:E *
+rewrite [leLHS](_ : _ = (mu (ball x r))^-1 *
   (\int[mu]_(y in ball x r) `|(f y)%:E| +
    \int[mu]_(y in ball x r) `|(f x)%:E|)); last first.
   congr *%E; rewrite ge0_integralD//=; first exact: measurable_ball.
@@ -829,16 +840,16 @@ rewrite [leLHS](_ : _ = (fine (mu (ball x r)))^-1%:E *
 have [r0|r0] := lerP r 0.
   rewrite (ball0 _ _).2// !integral_set0 adde0 mule0 adde_ge0//.
   by apply: HL_maximalT_ge0; split => //; exact: openT.
-rewrite muleDr//; last by rewrite ge0_adde_def// inE integral_ge0.
+rewrite muleDr//; last 2 first.
+  by rewrite (lebesgue_measure_ball _ (ltW r0)) inver mulrn_eq0//= gt_eqF.
+  by rewrite ge0_adde_def// inE integral_ge0.
 rewrite leeD//.
-  by apply: ereal_sup_ubound => /=; exists r => //; rewrite in_itv/= r0.
+   by apply: ereal_sup_ubound => /=; exists r => //; rewrite in_itv/= r0.
 under eq_integral do rewrite -(mule1 `| _ |).
 rewrite ge0_integralZl//; last exact: measurable_ball.
-rewrite integral_cst//; last exact: measurable_ball.
+rewrite integral_cst//=; last exact: measurable_ball.
 rewrite mul1e muleCA !(lebesgue_measure_ball _ (ltW r0)).
-rewrite [X in _ * (_ * X)](_ : _ = mu (ball x r))//.
-rewrite (lebesgue_measure_ball _ (ltW r0))//.
-by rewrite /= -EFinM mulVf ?mulr1// mulrn_eq0/= gt_eqF.
+by rewrite inver mulrn_eq0 ?gt_eqF// -EFinM mulVf ?mulr1// mulrn_eq0/= gt_eqF//.
 Unshelve. all: by end_near. Qed.
 
 End lim_sup_davg.
@@ -1116,7 +1127,7 @@ Local Notation mu := lebesgue_measure.
 Local Open Scope ereal_scope.
 
 Lemma lebesgue_density (A : set R) : measurable A ->
-  {ae mu, forall x, mu (A `&` ball x r) * (fine (mu (ball x r)))^-1%:E
+  {ae mu, forall x, mu (A `&` ball x r) * (mu (ball x r))^-1
                       @[r --> 0^'+] --> (\1_A x)%:E}.
 Proof.
 move=> mA; have := lebesgue_differentiation (locally_integrable_indic openT mA).
@@ -1124,18 +1135,19 @@ apply: filter_app; first exact: (ae_filter_ringOfSetsType mu).
 apply: aeW => /= x Ax.
 apply: (sube_cvg0 _ _).1 => //.
 move: Ax; rewrite /lebesgue_pt /davg /= -/mu => Ax.
-have : (fine (mu (ball x r)))^-1%:E *
+have : (mu (ball x r))^-1 *
        `|\int[mu]_(y in ball x r) (\1_A y - \1_A x)%:E | @[r --> 0^'+] --> 0.
   apply: (@squeeze_cvge _ _ _ R (cst 0) _ _ _ _ _ Ax) => //; [|exact: cvg_cst].
   near=> a.
-  apply/andP; split; first by rewrite mule_ge0// lee_fin invr_ge0// fine_ge0.
-  rewrite lee_pmul2l//; last first.
-    rewrite lte_fin invr_gt0// fine_gt0//.
-    by rewrite lebesgue_measure_ball// ltry andbT lte_fin mulrn_wgt0.
+  apply/andP; split; first by rewrite mule_ge0// inve_ge0.
+  rewrite lee_pmul2l//; last 2 first.
+    by rewrite lebesgue_measure_ball// fin_numV// eqe mulrn_eq0/= gt_eqF.
+    rewrite lebesgue_measure_ball// inver mulrn_eq0/= gt_eqF// lte_fin.
+    by rewrite invr_gt0// pmulrn_rgt0.
   apply: le_abse_integral => //; first exact: measurable_ball.
   by apply/measurable_EFinP; exact: measurable_funB.
 set f := (f in f r @[r --> 0^'+] --> _ -> _).
-rewrite (_ : f = fun r => (fine (mu (ball x r)))^-1%:E *
+rewrite (_ : f = fun r => (mu (ball x r))^-1 *
    `|mu (A `&` ball x r) - (\1_A x)%:E * mu (ball x r)|); last first.
   apply/funext => r; rewrite /f integralB_EFin//=; last 3 first.
     - exact: measurable_ball.
@@ -1159,7 +1171,7 @@ rewrite (_ : f = fun r => (fine (mu (ball x r)))^-1%:E *
 rewrite indicE; have [xA xrA0|xA] := boolP (x \in A); last first.
   apply: iffRL; apply/propeqP; apply: eq_cvg => r.
   by rewrite -mulNrn mulr0n adde0 mul0e sube0 gee0_abs// muleC.
-have {xrA0} /cvgeN : (fine (mu (ball x r)))^-1%:E *
+have {xrA0} /cvgeN : (mu (ball x r))^-1 *
     (mu (ball x r) - mu (A `&` ball x r)) @[r --> 0^'+] --> 0.
   move: xrA0; apply: cvg_trans; apply: near_eq_cvg; near=> r.
   rewrite mul1e lee0_abs; last first.
@@ -1169,12 +1181,12 @@ have {xrA0} /cvgeN : (fine (mu (ball x r)))^-1%:E *
   rewrite fin_num_adde_defl// fin_numN ge0_fin_numE//.
   by rewrite lebesgue_measure_ball// ltry.
 rewrite oppe0; apply: cvg_trans; apply: near_eq_cvg; near=> r.
-rewrite -mulNrn mulr1n muleBr//; last first.
+rewrite -mulNrn mulr1n muleBr//; last 2 first.
+  by rewrite lebesgue_measure_ball// inver mulrn_eq0//= gt_eqF.
   by rewrite fin_num_adde_defr// ge0_fin_numE// lebesgue_measure_ball//= ?ltry.
-rewrite (_ : (fine (mu (ball x r)))^-1%:E * mu (ball x r) = 1); last first.
-  rewrite -[X in _ * X](@fineK _ (mu (ball x r)))//; last first.
-    by rewrite lebesgue_measure_ball//= ?ltry.
-  by rewrite -EFinM mulVf// lebesgue_measure_ball//= gt_eqF// mulrn_wgt0.
+rewrite (_ : (mu (ball x r))^-1 * mu (ball x r) = 1); last first.
+  rewrite lebesgue_measure_ball// inver mulrn_eq0//= gt_eqF//.
+  by rewrite -EFinM mulVf// mulrn_eq0/= gt_eqF.
 by rewrite oppeB// addeC EFinN muleC.
 Unshelve. all: by end_near. Qed.
 
@@ -1210,6 +1222,12 @@ rewrite (@le_lt_trans _ _ (lebesgue_measure (ball x (r_ n)%:num)))//.
 by rewrite lebesgue_measure_ball// ltry.
 Qed.
 
+Lemma nicely_shrinking_fin_num x E : nicely_shrinking x E ->
+  forall n, mu (E n) \is a fin_num.
+Proof.
+by move=> xE n; rewrite ge0_fin_numE// (nicely_shrinking_lty xE).
+Qed.
+
 End nicely_shrinking.
 
 Section nice_lebesgue_differentiation.
@@ -1221,7 +1239,7 @@ Local Notation mu := lebesgue_measure.
 
 Lemma nice_lebesgue_differentiation (f : R -> R) :
   locally_integrable setT f -> forall x, lebesgue_pt f x ->
-  (fine (mu (E x n)))^-1%:E * \int[mu]_(y in E x n) (f y)%:E
+  (mu (E x n))^-1 * \int[mu]_(y in E x n) (f y)%:E
     @[n --> \oo] --> (f x)%:E.
 Proof.
 move=> locf x fx; apply: (sube_cvg0 _ _).1 => //=; apply/cvg_abse0P.
@@ -1242,23 +1260,26 @@ apply: (@squeeze_cvge _ _ _ _ (cst 0) _
     [exact: cvg_cst | apply: fx; split => //; exact: r_0].
 near=> n.
 apply/andP; split => //=.
-apply: (@le_trans _ _ ((fine (mu (E x n)))^-1%:E *
+apply: (@le_trans _ _ ((mu (E x n))^-1 *
                        `| \int[mu]_(y in E x n) ((f y)%:E + (- f x)%:E) |)).
   have fxE : (- f x)%:E =
-             (fine (mu (E x n)))^-1%:E * \int[mu]_(y in E x n) (- f x)%:E.
+             (mu (E x n))^-1 * \int[mu]_(y in E x n) (- f x)%:E.
     rewrite integral_cst//=; last exact: (hE _).1.
-    rewrite muleCA -[X in _ * (_ * X)](@fineK _ (mu (E x n))); last first.
-      by rewrite ge0_fin_numE// (nicely_shrinking_lty (hE x)).
+    rewrite muleCA -(@fineK _ (mu (E x n))); last first.
+      exact: nicely_shrinking_fin_num.
+    rewrite inver gt_eqF; last first.
+      rewrite fine_gt0// (nicely_shrinking_gt0 (hE x))//=.
+      by rewrite (nicely_shrinking_lty (hE x)).
     rewrite -EFinM mulVf ?mulr1// neq_lt fine_gt0 ?orbT//.
     by rewrite (nicely_shrinking_gt0 (hE x))//= (nicely_shrinking_lty (hE x)).
-  rewrite [in leLHS]fxE -muleDr//; last first.
+  rewrite [in leLHS]fxE -muleDr//; last 2 first.
+    rewrite fin_numV//.
+      by rewrite -measure_gt0/= (nicely_shrinking_gt0 (hE x)).
+    by rewrite -ltNye (@lt_le_trans _ _ 0).
     rewrite integral_cst//=; last exact: (hE _).1.
-    rewrite fin_num_adde_defl// fin_numM// gt0_fin_numE.
-      by rewrite (nicely_shrinking_lty (hE x)).
-    by rewrite (nicely_shrinking_gt0 (hE x)).
-  rewrite abseM gee0_abs; last by rewrite lee_fin// invr_ge0// fine_ge0.
-  rewrite lee_pmul//; first by rewrite lee_fin// invr_ge0// fine_ge0.
-  rewrite integralD//=.
+    by rewrite fin_num_adde_defl// fin_numM// (nicely_shrinking_fin_num (hE x)).
+  rewrite abseM gee0_abs; last by rewrite inve_ge0.
+  rewrite lee_pmul ?inve_ge0// integralD//=.
   - exact: (hE x).1.
   - apply/integrableP; split.
       by apply/measurable_EFinP; case: locf => + _ _; exact: measurable_funS.
@@ -1275,16 +1296,20 @@ apply: (@le_trans _ _ ((fine (mu (E x n)))^-1%:E *
   rewrite integral_cst //=; last exact: (hE _).1.
   by rewrite lte_mul_pinfty// (nicely_shrinking_lty (hE x)).
 rewrite muleA lee_pmul//.
-- by rewrite lee_fin invr_ge0// fine_ge0.
-- rewrite -(@invrK _ C) -EFinM -invfM lee_fin lef_pV2//; last 2 first.
+- by rewrite inve_ge0.
+- rewrite -(@invrK _ C).
+  rewrite -(fineK (nicely_shrinking_fin_num (hE x) _)).
+  rewrite inver gt_eqF; last first.
+    rewrite fine_gt0// (nicely_shrinking_gt0 (hE x))//=.
+    by rewrite (nicely_shrinking_lty (hE x)).
+  rewrite lebesgue_measure_ball// inver mulrn_eq0/= gt_eqF//.
+  rewrite -EFinM -invfM lee_fin lef_pV2//; last 2 first.
     rewrite posrE fine_gt0// (nicely_shrinking_gt0 (hE x))//=.
     by rewrite (nicely_shrinking_lty (hE x)).
-    rewrite posrE mulr_gt0// ?invr_gt0// fine_gt0//.
-    by rewrite lebesgue_measure_ball// ltry andbT lte_fin mulrn_wgt0.
+    by rewrite posrE mulr_gt0// ?invr_gt0// fine_gt0//.
   rewrite lter_pdivrMl // -lee_fin EFinM fineK; last first.
-    by rewrite lebesgue_measure_ball// ltry andbT lte_fin mulrn_wgt0.
-  rewrite fineK; last by rewrite ge0_fin_numE// (nicely_shrinking_lty (hE x)).
-  exact: muEr_.
+    by rewrite (nicely_shrinking_fin_num (hE x)).
+  by have := muEr_ n; rewrite lebesgue_measure_ball.
 - apply: le_trans.
   + apply: le_abse_integral => //; first exact: (hE x).1.
     apply/measurable_EFinP; apply/measurable_funB => //.

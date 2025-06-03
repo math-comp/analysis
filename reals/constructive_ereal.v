@@ -2447,6 +2447,11 @@ Proof. by move=> xN0 xNy; rewrite !leNgt inve_gt0. Qed.
 Lemma inve_lt0 x : (x^-1 < 0) = (x < 0).
 Proof. by rewrite !ltNge inve_ge0. Qed.
 
+Lemma fin_numV x : x != 0 -> x != -oo -> x^-1 \is a fin_num.
+Proof.
+by move: x => [x| |]//; rewrite eqe => x0 _; rewrite inver (negbTE x0).
+Qed.
+
 Lemma gee_pMl y x : y \is a fin_num -> 0 <= x -> y <= 1 -> y * x <= x.
 Proof.
 move=> yfin; rewrite le_eqVlt => /predU1P[<-|]; first by rewrite mule0.
