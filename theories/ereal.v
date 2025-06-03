@@ -941,8 +941,8 @@ Lemma ereal_nbhs_nbhs (p : \bar R) (A : set (\bar R)) :
 Proof.
 move: p => -[p| [M [Mreal MA]] | [M [Mreal MA]]] //=.
 - move=> /nbhs_ballP[_/posnumP[e]] ballA.
-  apply/nbhs_ballP; exists (e%:num / 2) => //= r per.
-  apply/nbhs_ballP; exists (e%:num / 2) => //= x rex.
+  apply/nbhs_ballP; exists (e%:num / 2)%R => //= r per.
+  apply/nbhs_ballP; exists (e%:num / 2)%R => //= x rex.
   apply/ballA/(@ball_splitl _ _ r) => //; exact/ball_sym.
 - exists (M + 1)%R; split; first by rewrite realD.
   move=> -[x| _ |_] //=; last by exists M.
@@ -1106,7 +1106,7 @@ suff [x [? [ubSx x1]]] : exists x, (x < csup)%R /\ ubound (contract @` S) x /\
   exists (expand x); split => [|y Sy].
     by rewrite -(contractK (ereal_sup S)) lt_expand // inE // contract_le1.
   by rewrite -(contractK y) le_expand //; apply: ubSx; exists y.
-exists ((supc + csup) / 2); split; first by rewrite midf_lt.
+exists ((supc + csup) / 2)%R; split; first by rewrite midf_lt.
 split => [r [y Sy <-{r}]|].
   rewrite (@le_trans _ _ supc) ?midf_le //; last by rewrite ltW.
   apply: sup_ubound; last by exists y.

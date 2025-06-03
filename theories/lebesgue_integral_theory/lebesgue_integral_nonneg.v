@@ -1310,16 +1310,15 @@ rewrite (_ : (fun _ => _) = cst 0) // ?lim_cst// funeqE => n.
 by rewrite -(if_0 n); apply: eq_integral => x _; rewrite gee0_abs// /f_.
 Unshelve. all: by end_near. Qed.
 
-Lemma integral_abs_eq0 D (N : set T) (f : T -> \bar R) :
-  measurable N -> measurable D -> N `<=` D -> measurable_fun D f ->
+Lemma integral_abs_eq0 (N : set T) (f : T -> \bar R) :
+  measurable N -> measurable_fun N f ->
   mu N = 0 -> \int[mu]_(x in N) `|f x| = 0.
 Proof.
-move=> mN mD ND mf muN0; rewrite integralEpatch//.
+move=> mN mf muN0; rewrite integralEpatch//.
 rewrite (eq_integral (abse \o (f \_ N))); last first.
   by move=> t _; rewrite restrict_abse.
 apply/ae_eq_integral_abs => //.
-  apply/measurable_restrict => //; rewrite setIidr//.
-  exact: (measurable_funS mD).
+  by apply/measurable_restrict => //; rewrite setIidr.
 exists N; split => // t /= /not_implyP[_].
 by rewrite patchE; case: ifPn => //; rewrite inE.
 Qed.
@@ -1340,8 +1339,10 @@ rewrite -integral_mkcondr [X in _ + X = _](_ : _ = 0) ?adde0//.
 rewrite -integral_mkcondr (eq_integral (abse \o f)); last first.
   move=> x; rewrite in_setI => /andP[xD xN].
   by rewrite /= gee0_abs// f0//; rewrite inE in xD.
-rewrite (@integral_abs_eq0 D)//; first exact: measurableI.
-by apply: (subset_measure0 _ _ _ muN0) => //; exact: measurableI.
+rewrite integral_abs_eq0//.
+- exact: measurableI.
+- exact: measurable_funS mf.
+- by apply: (subset_measure0 _ _ _ muN0) => //; exact: measurableI.
 Qed.
 
 Lemma ge0_ae_eq_integral (D : set T) (f g : T -> \bar R) :

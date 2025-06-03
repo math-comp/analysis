@@ -32,6 +32,26 @@
     `UniformNmodule_isUniformLmodule`
   + lemmas `sub_continuous`, `sub_unif_continuous`
 
+- in `constructive_ereal.v`:
+  + `inve` a total involutive inversion function on `\bar R`, denoted `^-1` in
+     the `ereal_scope` coinciding with `x^-1%R` when `x != 0` but such that
+     `0^-1 = +oo` and `-oo^-1 = -oo`,
+  + notation `x / y` in `ereal_scope` for `x / y = x * y^-1`,
+  + lemmas `inver`, `inveP`, `fine_invr`, `inve0`, `inve1`, `invey`, `invey`,
+    `inveNy`, `inveK`, `invr_inj`, `inveN`, `inve_eq0`, `inve_ge0`, `inve_gt0`,
+    `inv_gt0P`, `inve_lt0`, `inve_le0`, `inve_le0P`,
+  + predicate `inveM_def` with notation `x *^-1? y` defining a sufficient
+    condition for the inverse and product to commute, with lemmas `inveMP`,
+    `inveM_defE`, `inveM` and `fin_inveM_def`,
+  + compatibility lemma `mule_defE` to bridge the former definition of
+    `mule_def` with the new one.
+  + lemma `fin_numV`
+  + lemmas `mulVe`, `lee_pV2`, `lte_pV2`, `ltee_pV2`, `inve_pge`, `inve_pgt`,
+    `inve_ple`, `inve_plt`, `inve_gt1`, `inve_ge1`.
+
+- in `lebesgue_integral_differentiation.v`:
+  + lemma `nicely_shrinking_fin_num`
+
 ### Changed
 
 - in `convex.v`:
@@ -68,8 +88,6 @@
   + lemmas `ess_infr_bounded`, `ess_infrZl`, `ess_inf_ger`, `ess_inf_ler`,
     `ess_inf_cstr`
 
-### Changed
-
 - in `measure.v`:
   + notation `{ae mu, P}` (near use `{near _, _}` notation)
   + definition `ae_eq`
@@ -78,9 +96,19 @@
 - in `convex.v`:
   + definition `convex_realDomainType` generalized and
     renamed accordingly `convex_numDomainType`
-+ in `tvs.v`
+- in `tvs.v`
   + HB class `UniformZmodule` now contains `TopologicalZmodule`
   + HB class `UniformLmodule` now contains `TopologicalLmodule`
+
+- in `constructive_ereal.v`:
+  + `mule` has special cases optimizing computation for +oo and -oo
+  + `mule_def` has been rewritten to optimize computation in several cases.
+
+- in `lebesgue_integral_nonneg.v`:
+  + lemma `integral_abs_eq0` (remove redundant hypotheses)
+
+- in `lebesgue_integral_differentiation.v`:
+  + definition `iavg` (to use `inve`)
 
 ### Renamed
 

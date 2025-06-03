@@ -68,8 +68,10 @@ have /integrableP intone : mu.-integrable D (f \_ N).
     by apply/measurable_restrict => //; exact: measurable_funS mf.
   rewrite (eq_integral ((abse \o f) \_ N)); last first.
     by move=> t _; rewrite restrict_abse.
-  rewrite -integral_mkcondr (@integral_abs_eq0 _ _ _ _ D)//; first exact: measurableI.
-  by apply: (subset_measure0 _ _ _ muN0) => //; exact: measurableI.
+  rewrite -integral_mkcondr integral_abs_eq0//.
+  - exact: measurableI.
+  - exact: measurable_funS mf.
+  - by apply: (subset_measure0 _ _ _ muN0) => //; exact: measurableI.
 have h1 : mu.-integrable D f <-> mu.-integrable D (f \_ ~` N).
   split=> [/integrableP intf|/integrableP intCf].
     apply/integrableP; split.

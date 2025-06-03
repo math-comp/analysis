@@ -524,11 +524,9 @@ have mfg : measurable (D `&` [set x | f x *? g x]).
               (g @^-1` (~` [set 0]) `|` f @^-1` (~` [set -oo; +oo])).
      by rewrite setIIr; apply: measurableI;
         rewrite setIUr; apply: measurableU; do ?[apply: mf|apply: mg].
-   apply/predeqP=> x; rewrite /preimage/= /mule_def !(negb_and, negb_or).
-   rewrite !(rwP2 eqP idP) !(rwP2 negP idP) !(rwP2 orP idP).
-   rewrite !(rwP2 negP idP) !(rwP2 orP idP) !(rwP2 andP idP).
-   rewrite eqe_absl leey andbT (orbC (g x == +oo)).
-   by rewrite eqe_absl leey andbT (orbC (f x == +oo)).
+   apply/predeqP=> x; rewrite /preimage/= /mule_def/=.
+   rewrite !(rwP2 eqP idP, rwP2 negP idP, rwP2 orP idP, rwP2 andP idP).
+   by case: (f x) (g x) => [?||] [?||]//=; rewrite ?(orbT, andbT, orbF).
 wlog fg : D mD mf mg mfg / forall x, D x -> f x *? g x => [hwlogM|]; last first.
   have [f_ f_cvg] := approximation_sfun mD mf.
   have [g_ g_cvg] := approximation_sfun mD mg.
@@ -772,7 +770,7 @@ Proof.
 move: eps=> _/posnumP[eps] mf; pose f' := EFin \o f.
 have mf' : measurable_fun A f' by exact/measurable_EFinP.
 have [/= g_ gf'] := @approximation_sfun _ R rT _ _ mA mf'.
-pose e2n n := (eps%:num / 2) / (2 ^ n.+1)%:R.
+pose e2n n := ((eps%:num / 2) / (2 ^ n.+1)%:R)%R.
 have e2npos n : (0 < e2n n)%R by rewrite divr_gt0.
 have gK' n := @lusin_simple (g_ n) (e2n n) (e2npos n).
 pose gK n := projT1 (cid (gK' n)); have gKP n := projT2 (cid (gK' n)).

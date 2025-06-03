@@ -229,7 +229,7 @@ have cdf_ns : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> s%:E.
   rewrite -[X in _ --> X]addr0; apply: (@cvgD _ R^o); first exact: cvg_cst.
   by rewrite gtr0_cvgV0 ?cvg_shiftS; [exact: cvgr_idn | near=> n].
 have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
-  pose F n := X @^-1` `]-oo, a + n.+1%:R^-1].
+  pose F n := X @^-1` `]-oo, a + n.+1%:R^-1%R].
   suff : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
     by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itvNycEbigcap.
   apply: nonincreasing_cvg_mu => [| | |m n mn].
