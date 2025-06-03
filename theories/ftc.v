@@ -136,7 +136,7 @@ apply: cvg_at_right_left_dnbhs.
   rewrite {ixdf} -/mu.
   rewrite [g in g n @[n --> _] --> _ -> _](_ : _ =
       fun n => (d n)^-1%:E * \int[mu]_(y in E x n) (f y)%:E); last first.
-    by apply/funext => n; rewrite muE.
+    by apply/funext => n; rewrite muE inver// gt_eqF.
   move/fine_cvgP => [_ /=].
   set g := _ \o _ => gf.
   set h := (f in f n @[n --> \oo] --> _).
@@ -231,7 +231,8 @@ apply: cvg_at_right_left_dnbhs.
   rewrite /g /= fineM//=; last first.
     apply: integral_fune_fin_num => //; first exact: (nice_E _).1.
     by apply: integrableS intf => //; exact: (nice_E _).1.
-  by rewrite muE/= invrN mulNr -mulrN.
+    by rewrite muE inver oppr_eq0 lt_eqF.
+  by rewrite muE/= inver oppr_eq0 lt_eqF// invrN mulNr -mulrN.
 Unshelve. all: by end_near. Qed.
 
 Let FTC0_restrict f a x (u : R) : (x < u)%R ->
@@ -594,7 +595,7 @@ have [k FGk] : exists k : R, {in `]a, b[, (F - G =1 cst k)%R}.
       apply: subset_itvSoo zxy => //=; rewrite bnd_simp.
       * by move: xab; rewrite in_itv/= => /andP[/ltW].
       * by move: yab; rewrite in_itv/= => /andP[_ /ltW].
-  move=> H; pose c := (a + b) / 2.
+  move=> H; pose c := ((a + b) / 2)%R.
   exists (F c - G c)%R => u /(H u c); apply.
   by rewrite in_itv/= midf_lt//= midf_lt.
 have [c GFc] : exists c : R, forall x, x \in `]a, b[ -> (F x - G x)%R = c.
@@ -706,7 +707,7 @@ transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
         by apply: dF; rewrite (lt_le_trans _ aSn)// ltrDl.
       move/continuous_within_itvP.
       by rewrite ltrD2l ltr_nat ltnS => /(_ (ltnSn _))[].
-  - have : {within `[a + n%:R + 2^-1, a + n.+1%:R], continuous F}.
+  - have : {within `[a + n%:R + 2^-1%R, a + n.+1%:R], continuous F}.
       apply: derivable_within_continuous => x.
       rewrite in_itv/= => /andP[aSn _].
       by apply: dF; rewrite (lt_le_trans _ aSn)// -addrA ltrDl ltr_wpDl.

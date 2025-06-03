@@ -33,6 +33,7 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (* |                 `r%:E` |==| injects real numbers into `\bar R`         | *)
 (* |        `+%E, -%E, *%E` |==| addition/opposite/multiplication for       | *)
 (* |                        |  | extended reals                             | *)
+(* |        `x^-1`, `x / y` |==| inverse and division for extended reals    | *)
 (* | `er_map (f : T -> T')` |==| the `\bar T -> \bar T'` lifting of `f`     | *)
 (* |                `sqrte` |==| square root for extended reals             | *)
 (* |       `` `\| x \|%E `` |==| the absolute value of `x`                  | *)
@@ -46,6 +47,7 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (* |                        |  | nor $-\infty + \infty$                     | *)
 (* |               `x *? y` |==| the multiplication of `x` and `y` is not   | *)
 (* |                        |  | of the form $0 * +\infty$ or $0 * -\infty$ | *)
+(* |            `x *^-1? y` |==| the inverse commutes with the product      | *)
 (* | `(_ <= _)%E`, `(_ < _)%E`,|==| comparison relations for extended reals | *)
 (* | `(_ >= _)%E`, `(_ > _)%E` |  |                                         | *)
 (* | `(\sum_(i in A) f i)%E`|==| bigop-like notation in scope `%E`          | *)
@@ -59,6 +61,7 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (*                    r%:E == injects real numbers into \bar R                *)
 (*           +%E, -%E, *%E == addition/opposite/multiplication for extended   *)
 (*                            reals                                           *)
+(*             x^-1, x / y == inverse and division for extended reals         *)
 (*    er_map (f : T -> T') == the \bar T -> \bar T' lifting of f              *)
 (*                   sqrte == square root for extended reals                  *)
 (*                `| x |%E == the absolute value of x                         *)
@@ -72,6 +75,7 @@ From mathcomp Require Import mathcomp_extra interval_inference.
 (*                            nor -oo + oo                                    *)
 (*                  x *? y == the multiplication of the extended real numbers *)
 (*                            x and y is not of the form 0 * +oo or 0 * -oo   *)
+(*               x *^-1? y == the inverse commutes with the product           *)
 (*  (_ <= _)%E, (_ < _)%E, == comparison relations for extended reals         *)
 (*  (_ >= _)%E, (_ > _)%E                                                     *)
 (*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
@@ -531,6 +535,8 @@ Implicit Types x y z : \bar R.
 Definition mule x y :=
   match x, y with
   | x%:E , y%:E => (x * y)%:E
+  | +oo, +oo | -oo, -oo => +oo
+  | +oo, -oo | -oo, +oo => -oo
   | -oo, y | y, -oo => if y == 0 then 0 else if 0 < y then -oo else +oo
   | +oo, y | y, +oo => if y == 0 then 0 else if 0 < y then +oo else -oo
   end.
@@ -538,10 +544,19 @@ Arguments mule : simpl never.
 
 Definition abse x : \bar R := if x is r%:E then `|r|%:E else +oo.
 
+Definition inve x :=
+  match x with
+  | x%:E => if x == 0%R then +oo else (x^-1)%:E
+  | +oo => 0
+  | -oo => -oo
+  end.
+Arguments inve : simpl never.
+
 Definition expe x n := iterop n mule x 1.
 
 End ERealArith.
 Arguments mule : simpl never.
+Arguments inve : simpl never.
 
 Notation "+%dE"  := (@GRing.add (\bar^d _)).
 Notation "+%E"   := (@GRing.add (\bar _)).
@@ -557,6 +572,10 @@ Notation "x * y" := (mule x%dE y%dE : \bar^d _) : ereal_dual_scope.
 Notation "x * y" := (mule x%E y%E) : ereal_scope.
 Notation "`| x |" := (abse x%dE : \bar^d _) : ereal_dual_scope.
 Notation "`| x |" := (abse x%E) : ereal_scope.
+Notation "x ^-1" := (inve x%dE : \bar^d _) : ereal_dual_scope.
+Notation "x ^-1" := (inve x) : ereal_scope.
+Notation "x / y" := (mule x%dE (inve y%dE) : \bar^d _) : ereal_dual_scope.
+Notation "x / y" := (mule x (inve y)) : ereal_scope.
 Arguments abse {R}.
 Notation "x ^+ n" := (expe x%dE n : \bar^d _) : ereal_dual_scope.
 Notation "x ^+ n" := (expe x%E n) : ereal_scope.
@@ -940,32 +959,36 @@ Lemma EFin_expe r n : (r ^+ n)%:E = r%:E ^+ n.
 Proof. by elim: n => [//|n IHn]; rewrite exprS EFinM IHn expeS. Qed.
 
 Definition mule_def x y :=
-  ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
-
+  match x, y with
+  | _%:E, _%:E | +oo, +oo | -oo, -oo | +oo, -oo | -oo, +oo => true
+  | r%:E, _ | _, r%:E => (r != 0%R)
+  end.
+Arguments mule_def : simpl never.
 Local Notation "x *? y" := (mule_def x y).
 
-Lemma mule_defC x y : x *? y = y *? x.
-Proof. by rewrite [in LHS]/mule_def orbC. Qed.
-
-Lemma mule_def_fin x y : x \is a fin_num -> y \is a fin_num -> x *? y.
+Definition mule_defE x y : x *? y =
+  ~~ (((x == 0) && (`| y | == +oo)) || ((y == 0) && (`| x | == +oo))).
 Proof.
-move: x y => [x| |] [y| |] finx finy//.
-by rewrite /mule_def negb_or 2!negb_and/= 2!orbT.
+by rewrite /mule_def; case: x => [r||]; case: y => [s||]//=;
+   rewrite ?(andbF, orbF, eqxx, andbT).
 Qed.
 
-Lemma mule_def_neq0_infty x y : x != 0 -> y \isn't a fin_num -> x *? y.
-Proof. by move: x y => [x| |] [y| |]// x0 _; rewrite /mule_def (negbTE x0). Qed.
+Lemma mule_defC x y : x *? y = y *? x.
+Proof. by rewrite !mule_defE orbC. Qed.
 
-Lemma mule_def_infty_neq0 x y : x \isn't a fin_num -> y!= 0 -> x *? y.
-Proof. by move: x y => [x| |] [y| |]// _ y0; rewrite /mule_def (negbTE y0). Qed.
+Lemma mule_def_fin x y : x \is a fin_num -> y \is a fin_num -> x *? y.
+Proof. by case: x y => [r||] [s||]. Qed.
+
+Lemma mule_def_neq0_infty x y : x != 0 -> y \isn't a fin_num -> x *? y.
+Proof. by case: x y => [?||] [?||]. Qed.
+
+Lemma mule_def_infty_neq0 x y : x \isn't a fin_num -> y != 0 -> x *? y.
+Proof. by case: x y => [?||] [?||]. Qed.
 
 Lemma neq0_mule_def x y :  x * y != 0 -> x *? y.
 Proof.
-move: x y => [x| |] [y| |] //; first by rewrite mule_def_fin.
-- by have [->|?] := eqVneq x 0%R; rewrite ?mul0e ?eqxx// mule_def_neq0_infty.
-- by have [->|?] := eqVneq x 0%R; rewrite ?mul0e ?eqxx// mule_def_neq0_infty.
-- by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
-- by have [->|?] := eqVneq y 0%R; rewrite ?mule0 ?eqxx// mule_def_infty_neq0.
+by move: x y => [x| |] [y| |] //=;
+   apply: contra_neq => -> //=; rewrite (mule0, mul0e).
 Qed.
 
 Lemma ltpinfty_adde_def : {in [pred x | x < +oo] &, forall x y, x +? y}.
@@ -1211,11 +1234,11 @@ Lemma sume_le0 T (f : T -> \bar R) (P : pred T) :
   (forall t, P t -> f t <= 0) -> forall l, \sum_(i <- l | P i) f i <= 0.
 Proof. by move=> f0 l; elim/big_rec : _ => // t x Pt; apply/adde_le0/f0. Qed.
 
-Lemma mulNyy : -oo * +oo = -oo :> \bar R. Proof. by rewrite /mule /= lt0y. Qed.
+Lemma mulNyy : -oo * +oo = -oo :> \bar R. Proof. by []. Qed.
 
-Lemma mulyNy : +oo * -oo = -oo :> \bar R. Proof. by rewrite muleC mulNyy. Qed.
+Lemma mulyNy : +oo * -oo = -oo :> \bar R. Proof. by []. Qed.
 
-Lemma mulyy : +oo * +oo = +oo :> \bar R. Proof. by rewrite /mule /= lt0y. Qed.
+Lemma mulyy : +oo * +oo = +oo :> \bar R. Proof. by []. Qed.
 
 Lemma mulNyNy : -oo * -oo = +oo :> \bar R. Proof. by []. Qed.
 
@@ -1298,7 +1321,6 @@ move: x y => [x| |] [y| |] //; rewrite /mule/= ?(lee_fin, lte_fin).
 - by move=> x0 _; case: ifP => _ //; rewrite lt_leAnge /= x0 andbF leNy0.
 - move=> _; rewrite le_eqVlt => /predU1P[<-|->]; first by rewrite eqxx.
   by case: ifP => _ //; rewrite leNy0.
-- by rewrite lt0y leNy0.
 Qed.
 
 Lemma mule_ge0_le0 x y : 0 <= x -> y <= 0 -> x * y <= 0.
@@ -1338,18 +1360,14 @@ Proof. by case: x => [x //||//]; rewrite /= real0 /Order.comparable le0y. Qed.
 Lemma real_muleN (x y : \bar R) : (0 >=< x)%O -> (0 >=< y)%O ->
   x * - y = - (x * y).
 Proof.
-rewrite !real_fine; case: x y => [x||] [y||] /= xr yr; rewrite /mule/=.
+rewrite !real_fine; case: x y => [x||] [y||] /= xr yr; rewrite /mule//=.
 - by rewrite mulrN.
 - by case: ifP; rewrite ?oppe0//; case: ifP.
 - by case: ifP; rewrite ?oppe0//; case: ifP.
 - rewrite EFinN oppe_eq0; case: ifP; rewrite ?oppe0// oppe_gt0 !lte_fin.
   by case: (real_ltgtP xr yr) => // <-; rewrite eqxx.
-- by case: ifP.
-- by case: ifP.
 - rewrite EFinN oppe_eq0; case: ifP; rewrite ?oppe0// oppe_gt0 !lte_fin.
   by case: (real_ltgtP xr yr) => // <-; rewrite eqxx.
-- by rewrite lt0y.
-- by rewrite lt0y.
 Qed.
 
 Lemma real_mulNe (x y : \bar R) : (0 >=< x)%O -> (0 >=< y)%O ->
@@ -1849,11 +1867,9 @@ move: x y => [x| |] [y| |]; rewrite ?(lte_fin,andbF,andbT,orbF,eqxx,andbT)//=.
     move=> ->; rewrite ?(mulN1e,mul1e,sgr0,mul0e).
 - by rewrite mulr_infty; have [/ltr0_sg|/gtr0_sg|] := ltgtP y 0%R;
     move=> ->; rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mulyy ltry.
-- by rewrite mulyNy.
+- by rewrite ltry.
 - by rewrite mulr_infty; have [/ltr0_sg|/gtr0_sg|] := ltgtP y 0%R;
     move=> ->; rewrite ?(mulN1e,mul1e,sgr0,mul0e).
-- by rewrite mulNyy.
 - by rewrite ltNyr.
 Qed.
 
@@ -2323,17 +2339,14 @@ rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
   + rewrite lte_fin -[in LHS](addr0 0%R) ltr_leD // lte_fin s0.
     by case: ltgtP t0 => // [t0|[<-{t}]] _; [rewrite gt_eqF|rewrite eqxx].
   + by move: t0; rewrite lee_fin; case: (ltgtP t).
-- by rewrite ltry; case: ltgtP s0.
-- by rewrite ltry; case: ltgtP t0.
-- by rewrite ltry.
+- by case: ltgtP s0.
+- by case: ltgtP t0.
 - rewrite !eqe paddr_eq0 //; move: s0; rewrite lee_fin.
   case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0e.
   + rewrite lte_fin -[in LHS](addr0 0%R) ltr_leD // lte_fin s0.
     by case: ltgtP t0 => // [t0|[<-{t}]].
   + by move: t0; rewrite lee_fin; case: (ltgtP t).
-- by rewrite ltry; case: ltgtP s0.
-- by rewrite ltry; case: ltgtP s0.
-- by rewrite ltry; case: ltgtP s0.
+- by case: ltgtP s0.
 Qed.
 
 Lemma ge0_muleDr x y z : 0 <= y -> 0 <= z -> x * (y + z) = x * y + x * z.
@@ -2351,9 +2364,7 @@ rewrite /mule/=; move: x y z => [r| |] [s| |] [t| |] //= s0 t0.
   + rewrite !lte_fin -[in LHS](addr0 0%R) ltNge lerD // ?ltW //=.
     by rewrite !ltNge ltW //.
   + by case: (ltgtP t).
-- by rewrite ltry; case: ltgtP s0.
-- by rewrite ltry; case: ltgtP t0.
-- by rewrite ltry.
+- by case: ltgtP s0.
 - rewrite !eqe naddr_eq0 //; move: s0; rewrite lee_fin.
   case: (ltgtP s) => //= [s0|->{s}] _; rewrite ?add0e.
   + rewrite !lte_fin -[in LHS](addr0 0%R) ltNge lerD // ?ltW //=.
@@ -2365,6 +2376,81 @@ Qed.
 
 Lemma le0_muleDr x y z : y <= 0 -> z <= 0 -> x * (y + z) = x * y + x * z.
 Proof. by move=> y0 z0; rewrite !(muleC x) le0_muleDl. Qed.
+
+Lemma inver r : r%:E^-1 = if r == 0%R then +oo else r^-1%R%:E.
+Proof. by []. Qed.
+
+Variant inve_spec : \bar R -> \bar R -> Type :=
+| InveZero : inve_spec 0 +oo
+| InvePInfty : inve_spec +oo 0
+| InveNInfty : inve_spec -oo -oo
+| InveNZero r : r != 0%R -> inve_spec r%:E r^-1%:E.
+
+Lemma inveP x : inve_spec x x^-1.
+Proof.
+rewrite /inve; case: x => [r||]/=; do ?by constructor.
+by case: eqVneq => // [->|]; constructor.
+Qed.
+
+Lemma fine_invr r : fine r%:E^-1 = r^-1%R.
+Proof. by rewrite inver; case: eqP => //= ->; rewrite invr0. Qed.
+
+Lemma inve0 : 0^-1 = +oo :> \bar R. Proof. by rewrite inver eqxx. Qed.
+Lemma inve1 : 1^-1 = 1 :> \bar R. Proof. by rewrite inver oner_eq0 invr1. Qed.
+Lemma invey : +oo^-1 = 0 :> \bar R. Proof. by []. Qed.
+Lemma inveNy : -oo^-1 = -oo :> \bar R. Proof. by []. Qed.
+
+Lemma inveK : involutive (inve : \bar R -> \bar R).
+Proof.
+move=> x; case: (inveP x); rewrite ?inve0//= => r r_neq0.
+by rewrite inver invr_eq0 (negPf r_neq0) invrK.
+Qed.
+
+Lemma invr_inj : injective (inve : \bar R -> \bar R).
+Proof. exact: can_inj inveK. Qed.
+
+Lemma inveN x : x \is a fin_num -> x != 0 -> (- x)^-1 = - x^-1.
+Proof.
+case: (inveP x); rewrite ?eqxx//= => r r_neq0 _ _; rewrite EFinN.
+by rewrite -invrN// inver oppr_eq0 (negPf r_neq0).
+Qed.
+
+Lemma inve_eq0 x : (x^-1 == 0) = (x == +oo).
+Proof. by case: inveP; rewrite ?eqxx //= => r /negPf; rewrite eqe invr_eq0. Qed.
+
+Lemma inve_ge0 x : (0 <= x^-1) = (0 <= x).
+Proof.
+by case: inveP; rewrite ?le0y ?lexx //= => r; rewrite lee_fin invr_ge0.
+Qed.
+
+Lemma inve_gt0 x : x != 0 -> x != +oo -> (0 < x^-1) = (0 < x).
+Proof.
+rewrite !lt_def inve_eq0 inve_ge0.
+by case: leP => /[!(andbT, andbF)]//= _ -> ->.
+Qed.
+
+Lemma inve_gt0P x : reflect ((0 < x^-1) = (0 < x)) ((x != 0) && (x != +oo)).
+Proof.
+apply/(iffP idP); first by move=> /andP[]; exact:inve_gt0.
+case: eqP => [->|x0]; first by rewrite inve0 lt0y ltxx.
+by case: eqP => [->|xy]; first by rewrite invey ltxx lt0y.
+Qed.
+
+Lemma inve_le0P x : reflect ((x^-1 <= 0) = (x <= 0)) ((x != 0) && (x != +oo)).
+Proof.
+by rewrite !leNgt; apply/(iffP idP)=> [/inve_gt0P->|/negb_inj /inve_gt0P].
+Qed.
+
+Lemma inve_le0 x : x != 0 -> x != +oo -> (x^-1 <= 0) = (x <= 0).
+Proof. by move=> xN0 xNy; rewrite !leNgt inve_gt0. Qed.
+
+Lemma inve_lt0 x : (x^-1 < 0) = (x < 0).
+Proof. by rewrite !ltNge inve_ge0. Qed.
+
+Lemma fin_numV x : x != 0 -> x != -oo -> x^-1 \is a fin_num.
+Proof.
+by move: x => [x| |]//; rewrite eqe => x0 _; rewrite inver (negbTE x0).
+Qed.
 
 Lemma gee_pMl y x : y \is a fin_num -> 0 <= x -> y <= 1 -> y * x <= x.
 Proof.
@@ -2391,7 +2477,6 @@ move=> [y| |] [z| |]//.
       by rewrite mul0e.
     by rewrite mulr_infty ltr0_sg// mulN1e leNye.
   + by move=> _; rewrite mulyy leey.
-  + by move=> _; rewrite mulNyy leNye.
   + by move=> _; rewrite mulNyy leNye.
 Qed.
 
@@ -2495,11 +2580,7 @@ have xoo r : `|r%:E * +oo| = `|r|%:E * +oo.
 move=> [x| |] [y| |] //=; first by rewrite normrM.
 - by rewrite -abseN -muleNN abseN -EFinN xoo normrN.
 - by rewrite muleC xoo muleC.
-- by rewrite mulyy.
-- by rewrite mulyy mulyNy.
 - by rewrite -abseN -muleNN abseN -EFinN xoo normrN.
-- by rewrite mulyy mulNyy.
-- by rewrite mulyy.
 Qed.
 
 Lemma fine_max :
@@ -2600,7 +2681,7 @@ Qed.
 
 Lemma lee_pemull x y : 0 <= y -> 1 <= x -> y <= x * y.
 Proof.
-move: x y => [x| |] [y| |] //; last by rewrite mulyy.
+move: x y => [x| |] [y| |] //.
 - by rewrite -EFinM 3!lee_fin; exact: ler_peMl.
 - move=> _; rewrite lee_fin => x1.
   by rewrite mulr_infty gtr0_sg ?mul1e// (lt_le_trans _ x1).
@@ -2610,7 +2691,7 @@ Qed.
 
 Lemma lee_nemull x y : y <= 0 -> 1 <= x -> x * y <= y.
 Proof.
-move: x y => [x| |] [y| |] //; last by rewrite mulyNy.
+move: x y => [x| |] [y| |] //.
 - by rewrite -EFinM 3!lee_fin; exact: ler_neMl.
 - move=> _; rewrite lee_fin => x1.
   by rewrite mulr_infty gtr0_sg ?mul1e// (lt_le_trans _ x1).
@@ -3287,6 +3368,116 @@ Variable R : realFieldType.
 Implicit Types x y : \bar R.
 Implicit Types r : R.
 
+Definition inveM_def x y :=
+  match x, y with
+  | r%:E, s%:E => [&& (r == 0) ==> (s >= 0) & (s == 0) ==> (r >= 0)]%R
+  | +oo, +oo => true
+  |  -oo, -oo | +oo, -oo | -oo, +oo => false
+  | r%:E, +oo | +oo, r%:E => (r > 0)%R
+  | r%:E, -oo | -oo, r%:E => (r > 0)%R
+  end.
+Arguments inveM_def : simpl never.
+
+Notation "x *^-1? y" := (inveM_def x y)
+  (format "x  *^-1?  y", at level 50) : ereal_scope.
+
+Lemma inveM_defE x y : (x *^-1? y) =
+  [&& (x == 0) ==> (0 <= y < +oo),
+      (y == 0) ==> (0 <= x < +oo),
+      (`|x| == +oo) ==> (y > 0) &
+      (`|y| == +oo) ==> (x > 0)].
+Proof.
+rewrite /inveM_def; case: x y => [r||]//= [s||]//=;
+by rewrite ?eqe ?ltry ?ltxx ?andbT// lte_fin; case: ltgtP; rewrite //= andbF.
+Qed.
+
+Lemma inveMP x y : reflect ((x * y)^-1 = x^-1 * y^-1) (x *^-1? y).
+Proof.
+rewrite /inveM_def.
+case: (inveP x) => [|||r rN0]; case: (inveP y) => [|||s sN0]//=;
+rewrite ?(eqxx, lexx, ltxx, mule0, mul0e, mulyy, inve0, invey)//=;
+    do ?by constructor.
+- by rewrite mulyr sgrV implybT andbT; case: sgrP sN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulyr; case: sgrP sN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite !mulNyr sgrV; case: sgrP sN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulry sgrV implybT andTb; case: sgrP rN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulry; case: sgrP rN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite mulrNy [RHS]mulrNy sgrV; case: sgrP rN0 => //=;
+     rewrite (mulN1e, mul1e); constructor.
+- by rewrite !inver invfM EFinM mulf_eq0 (negPf rN0) (negPf sN0);
+     constructor.
+Qed.
+
+Lemma inveM x y : x *^-1? y -> (x * y)^-1 = x^-1 * y^-1.
+Proof. by move/inveMP. Qed.
+
+Lemma fin_inveM_def x y : x != 0 -> y != 0 ->
+  x \is a fin_num -> y \is a fin_num -> x *^-1? y.
+Proof.
+by rewrite /inveM_def/=; case: x y => [r||]//= [s||]//= /[!eqe]/negPf-> /negPf->.
+Qed.
+
+Lemma mulVe x : x != 0 -> x \is a fin_num -> x^-1 * x = 1.
+Proof.
+move: x => [||]// r; rewrite eqe => r0 _.
+by rewrite inver (negbTE r0) -EFinM mulVf.
+Qed.
+
+Local Notation nonneg := [pred x : \bar R | x >= 0].
+
+Lemma lee_pV2 : {in nonneg &, {mono inve : x y /~ x <= y}}.
+Proof.
+move=> x y; case: (inveP x) => [|||r]; case: (inveP y) => [|||s]//=;
+rewrite ?inE ?lexx// ?lee_fin.
+- by case: (ltgtP s).
+- by case: (ltgtP s) => //= s_gt0 _ _ _; rewrite invr_ge0 (ltW s_gt0) leey.
+- by case: (ltgtP r) => //= r_gt0; rewrite leey.
+- by case: (ltgtP r) => //= r_gt0 _ _ _; rewrite invr_le0 (lt_geF).
+by case: (ltgtP s 0%R); case: (ltgtP r 0%R) => // *; rewrite lef_pV2.
+Qed.
+
+Lemma lte_pV2 : {in nonneg &, {mono inve : x y /~ x < y}}.
+Proof. exact: leW_nmono_in lee_pV2. Qed.
+
+Definition ltee_pV2 := (lee_pV2, lte_pV2).
+
+Lemma inve_pge : {in nonneg &, forall x y, (x <= y^-1) = (y <= x^-1)}.
+Proof.
+move=> x y /[!inE]; case: (inveP x) => [|||r]; rewrite ?lee_fin ?ltxx//=.
+- move=> _; case: (inveP y) => [|||s]; rewrite ?lexx//= lee_fin => ? s_ge0.
+  by rewrite lee_fin invr_ge0 s_ge0 leey.
+- move=> _; case: (inveP y) => [|||s]; rewrite ?lexx//= lee_fin => sN0 s_ge0.
+  by rewrite lee_fin [RHS]lt_geF// lt_def sN0.
+case: ltgtP => // r_gt0 _ _.
+case: (inveP y) => [|||s sN0]; rewrite ?ltxx//= ?lte_fin ?lee_fin.
+- by rewrite leey invr_ge0 (ltW r_gt0).
+- by rewrite [LHS]lt_geF.
+by case: ltgtP sN0 => // s_gt0; rewrite -lef_pV2 ?qualifE/= ?invr_gt0// invrK.
+Qed.
+
+Lemma inve_pgt : {in nonneg &, forall x y, (x < y^-1) = (y < x^-1)}.
+Proof.
+move=> x y /[!inE] sgt0 ygt0; rewrite !lt_def inve_pge//.
+by rewrite (can2_eq inveK inveK) eq_sym.
+Qed.
+
+Lemma inve_ple : {in nonneg &, forall x y, (x^-1 <= y) = (y^-1 <= x)}.
+Proof. by move=> x y ? ?; rewrite -lee_pV2 ?inveK// inE inve_ge0. Qed.
+
+Lemma inve_plt : {in nonneg &, forall x y, (x^-1 < y) = (y^-1 < x)}.
+Proof. by move=> x y ? ?; rewrite -lte_pV2 ?inveK// inE inve_ge0. Qed.
+
+Lemma inve_gt1 x : 0 <= x -> (1 < x^-1) = (x < 1).
+Proof. by move=> x0; rewrite inve_pgt ?inve1//= inE/= ?lee01. Qed.
+
+Lemma inve_ge1 x : 0 <= x -> (1 <= x^-1) = (x <= 1).
+Proof. by move=> x0; rewrite inve_pge ?inve1//= inE/= ?lee01. Qed.
+
 Lemma lee_addgt0Pr x y :
   reflect (forall e, (0 < e)%R -> x <= y + e%:E) (x <= y).
 Proof.
@@ -3520,8 +3711,7 @@ case: x y => [x||] [y||] //= age0.
   + by rewrite sqrtr0 sgr0 mul0e sqrte0.
   + by rewrite mul1e/= -sqrtr_gt0 -sgr_gt0 -lte_fin => /gt0_muley->.
   + by move=> y0; rewrite EFinN mulN1e/= ltr0_sqrtr// sgr0 mul0e.
-- by rewrite mulyy.
-- by rewrite mulyNy mule0.
+- by rewrite mule0.
 Qed.
 
 Lemma sqr_sqrte x : 0 <= x -> sqrte x ^+ 2 = x.
@@ -4359,7 +4549,7 @@ wlog : r r1 r_pneq0 r_nneq0 / (0 <= r)%R => wlog_r0.
 rewrite /contract !ger0_norm //; last first.
   by rewrite divr_ge0 // subr_ge0 (le_trans _ (ltW r1)) // ler_norm.
 apply: (@mulIr _ (1 + r / (1 - r))%R); first by rewrite unitfE.
-rewrite -(mulrA (r / _)) mulVr ?unitfE // mulr1.
+rewrite -(mulrA (r / _)%R) mulVr ?unitfE // mulr1.
 rewrite -[X in (X + _ / _)%R](@divrr _ (1 - r)%R) -?mulrDl ?subrK ?div1r //.
 by rewrite unitfE subr_eq0 eq_sym lt_eqF // ltr_normlW.
 Qed.

@@ -148,7 +148,7 @@ rewrite (ae_eq_integral (cst 0)) => [|//||//|]; first by rewrite integral0.
   by rewrite normrM => ->; rewrite mul0r.
 Qed.
 
-Let normalized p f x := `|f x| / fine 'N_p%:E[f].
+Let normalized p f x := (`|f x| / fine 'N_p%:E[f])%R.
 
 Let normalized_ge0 p f x : (0 <= normalized p f x)%R.
 Proof. by rewrite /normalized divr_ge0// fine_ge0// Lnorm_ge0. Qed.

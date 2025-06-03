@@ -1543,7 +1543,7 @@ have cvgM : (M - m.+1%:R^-1%:E) @[m --> \oo] --> M.
   + by rewrite fin_num_adde_defl.
   + exact: cvg_cst.
   + apply/fine_cvgP; split; first exact: nearW.
-    rewrite [X in X @ _ --> _](_ : _ = (fun x => x.+1%:R^-1))//.
+    rewrite [X in X @ _ --> _](_ : _ = (fun x => x.+1%:R^-1)%R)//.
     apply/gtr0_cvgV0; first exact: nearW.
     apply/cvgrnyP.
     rewrite [X in X @ _](_ : _ = fun n => n + 1)%N; first exact: cvg_addnr.
@@ -1567,9 +1567,9 @@ have [muA0|] := eqVneq (mu A) 0.
     move=> x _; rewrite -(@gee0_abs _ (_ + _)); last first.
       by rewrite adde_ge0 ?fRN_ge0.
     over.
-  rewrite (@integral_abs_eq0 _ _ _ _ setT)//.
+  rewrite integral_abs_eq0//.
     by rewrite (le_lt_trans _ h)// integral_ge0// => x Ax; exact: fRN_ge0.
-  by apply: emeasurable_funD => //; exact: measurable_fun_fRN.
+  by apply: emeasurable_funD => //; exact: measurable_funS measurable_fun_fRN.
 rewrite neq_lt ltNge measure_ge0//= => muA_gt0.
 pose mid := ((fine (nu A) - fine (\int[mu]_(x in A) fRN x)) / 2)%R.
 pose e := (mid / fine (mu A))%R.

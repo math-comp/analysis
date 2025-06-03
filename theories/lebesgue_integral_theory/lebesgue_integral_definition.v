@@ -133,7 +133,7 @@ have [->|r0] := eqVneq r 0%R.
 rewrite !sintegralET ge0_mule_fsumr; last exact: nnsfun_mulemu_ge0.
 rewrite (reindex_fsbigT ( *%R r))/=; last first.
   by exists ( *%R r^-1); [exact: mulKf|exact: mulVKf].
-by apply: eq_fsbigr => x; rewrite preimage_cstM// [_ / r]mulrC mulKf// muleA.
+by apply: eq_fsbigr => x; rewrite preimage_cstM// [(_ / r)%R]mulrC mulKf// muleA.
 Qed.
 
 End sintegralrM.
