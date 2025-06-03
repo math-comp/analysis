@@ -265,9 +265,6 @@ Section derive_and_integral_u.
 
 Local Import Num Num.Theory.
 
-(* gauss_integral_proof.integral0y_gauss in gauss_integral *)
-Definition int0y_gauss_fun : R := (\int[mu]_(x in `[0%R, +oo[) (gauss_fun x))%R.
-
 Let int0yu (x : R) := (\int[mu]_(y in `[0%R, +oo[) (u x y))%R.
 
 Lemma int0yu_fin_num x : \int[mu]_(x0 in `[0%R, +oo[) (u x x0)%:E \is a fin_num.
@@ -444,7 +441,6 @@ rewrite /Rintegral (_ : - 2 * x = fine (- 2 * x)%:E)%R//.
 rewrite -fineM//; last first.
   rewrite ge0_fin_numE; last by apply: integral_ge0 => ? _; exact: expR_ge0.
   apply: (@le_lt_trans _ _ (\int[mu]_(y in `[0%R, +oo[) (gauss_fun (x * y))%:E)).
-    rewrite /int0y_gauss_fun/=.
     apply: ge0_le_integral => //.
     - apply/measurable_EFinP/measurable_funTS.
       apply: measurableT_comp => //.
@@ -493,7 +489,8 @@ by rewrite mulVf// mul1r -mulr2n mulNr mulr_natl.
 Qed.
 
 Lemma dint0yuE : {in `]0%R, +oo[,
-  int0yu^`() =1 (fun x => (- 2) * int0y_gauss_fun * gauss_fun x)%R}.
+  int0yu^`() =1
+ (fun x => (- 2) * gauss_integral_proof.integral0y_gauss * gauss_fun x)%R}.
 Proof.
 move=> x; rewrite in_itv/= => /andP[x0 _].
 rewrite dint0yuE_substep1//.
@@ -614,7 +611,7 @@ rewrite [in RHS]expr2 invfM// mulrA.
 apply: (@mulIf _ (- 2)%R) => //; rewrite [RHS]mulrN divfK// mulrC -[RHS]add0r.
 apply: EFin_inj; rewrite EFinB.
 have cdint0yu x : {for x, continuous
-    (fun x1 : R => (- 2 * int0y_gauss_fun * gauss_fun x1)%R)}.
+(fun x1 : R => (- 2 * gauss_integral_proof.integral0y_gauss * gauss_fun x1)%R)}.
   apply: continuousM; first exact: cvg_cst.
   by move=> ?; exact: continuous_gauss_fun.
 rewrite -integral_u0 -[X in _ = 0%:E - X]fineK; last by rewrite integral_u0.
@@ -641,3 +638,5 @@ by rewrite fineK// ?integral0y_gauss_fin_num.
 Qed.
 
 End Gauss_integration.
+
+End gauss_integral_alternative.
