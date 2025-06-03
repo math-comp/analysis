@@ -46,7 +46,7 @@
   + compatibility lemma `mule_defE` to bridge the former definition of
     `mule_def` with the new one.
   + lemma `fin_numV`
-  + lemmas `mulVe`, `lefe_pV2`
+  + lemmas `mulVe`, `lee_pV2`
 
 - in `lebesgue_integral_differentiation.v`:
   + lemma `nicely_shrinking_fin_num`
