@@ -32,6 +32,12 @@
     `UniformNmodule_isUniformLmodule`
   + lemmas `sub_continuous`, `sub_unif_continuous`
 
+- in `lebesgue_integral_theory/lebesgue_integral_nonneg.v`:
+  + lemmas `ge0_nondecreasing_set_seq_nondecreasing_integral_seq`,
+           `ge0_nondecreasing_set_seq_cvg_integral`,
+           `le0_nondecreasing_set_seq_nonincreasing_integral_seq`,
+	   `le0_nondecreasing_set_seq_cvg_integral`
+
 ### Changed
 
 - in `convex.v`:
