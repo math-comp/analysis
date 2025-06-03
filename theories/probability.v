@@ -247,6 +247,79 @@ Unshelve. all: by end_near. Qed.
 
 End cumulative_distribution_function.
 
+Section cdf_of_lebesgue_stieltjes_mesure.
+Context {R : realType} (f : cumulative R)
+  (f_y1 : f @ +oo --> (1:R)) (f_Ny0 : f @ -oo --> (0:R)).
+Local Open Scope measure_display_scope.
+
+Let T := g_sigma_algebraType R.-ocitv.-measurable.
+Let lsf := lebesgue_stieltjes_measure f.
+
+Let lebesgue_stieltjes_setT : lsf setT = 1%E.
+Proof.
+pose I n := `]-(n%:R):R, n%:R]%classic.
+have <- : \bigcup_n I n = setT.
+  rewrite -subTset=> x _; rewrite /bigcup/=; exists (truncn`|x|).+1=>//.
+  by rewrite /I/= subset_itv_oo_oc// in_itv/= -real_ltr_norml//= truncnS_gt.
+have cvg_cup : (lsf \o I) n @[n --> \oo] --> lsf (\bigcup_n I n).
+  apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
+  by move=> *; apply/subsetPset/subset_itv; rewrite leBSide/= ?lerN2 ler_nat.
+have cvg_1 : (lsf \o I) n @[n --> \oo] --> 1%E.
+  rewrite /comp/I/lsf/lebesgue_stieltjes_measure/measure_extension/=.
+  suff : ((f n%:R)%:E - (f (1 *- n))%:E)%E @[n --> \oo] --> 1%E => ?.
+    under eq_cvg=> n.
+      rewrite measurable_mu_extE/=; last exact: is_ocitv.
+      rewrite wlength_itv_bnd; last exact: (le_trans _ (ler0n R n)).
+      over.
+    assumption.
+  rewrite -(sube0 1); apply: cvgeB=>//; apply: cvg_EFin; try by near=> F.
+    by rewrite /comp; apply/(cvg_comp _ _ (@cvgr_idn R))/f_y1.
+  rewrite /comp/=; apply: ((iffLR (cvg_ninftyP _ _)) f_Ny0).
+  by apply: (cvg_comp _ _ (@cvgr_idn R)); rewrite ninfty.
+by rewrite -(cvg_unique _ cvg_cup cvg_1).
+Unshelve. all: end_near. Qed.
+
+HB.instance Definition _ := @Measure_isProbability.Build _ _ _
+  (lebesgue_stieltjes_measure f) lebesgue_stieltjes_setT.
+
+Let idTR : T -> R := (fun x => x).
+
+Lemma measurable_idTR : measurable_fun setT idTR.
+Proof. by apply: measurable_id. Qed.
+
+#[local] HB.instance Definition _ :=
+  @isMeasurableFun.Build _ _ T R idTR measurable_idTR.
+
+Let Xid : {RV lsf >-> R} := idTR.
+
+Lemma cdf_lebesgue_stieltjes_id r : cdf Xid r = EFin (f r).
+Proof.
+rewrite /= preimage_id.
+have <- : (\bigcup_n `]-n%:R, r]%classic) = `]-oo, r]%classic.
+  apply/seteqP; split=> x/=; first by case=> n _/=; rewrite !in_itv/=; case/andP.
+  rewrite in_itv/= => xr; exists (truncn`|x|).+1=>//=; rewrite in_itv/=.
+  apply/andP; split=>//; rewrite ltrNl -normrN.
+  apply: le_lt_trans; [exact: ler_norm | exact: truncnS_gt].
+have cvg_cup : (lsf `]-n%:R, r])@[n --> \oo] -->
+  lsf (\bigcup_n `]-n%:R, r]%classic).
+  apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
+  by move=> *; apply/subsetPset/subset_itv; rewrite leBSide//= lerN2 ler_nat//.
+have cvg_fr : (lsf `]-n%:R, r])@[n --> \oo] --> (f r)%:E.
+  suff : ((f r)%:E - (f (-n%:R))%:E)%E@[n --> \oo] --> (f r)%:E.
+    apply: cvg_trans; apply: near_eq_cvg; near=> n.
+    rewrite /lsf/lebesgue_stieltjes_measure/measure_extension/=.
+    rewrite measurable_mu_extE/= ?wlength_itv_bnd//; last exact: is_ocitv.
+    near: n; exists (truncn`|r|).+1=>// n/=; rewrite truncn_lt_nat// lerNl.
+    by move/ltW; apply /le_trans; rewrite -normrN ler_norm.
+  rewrite -[X in _ --> X](sube0 (f r)%:E).
+  apply: cvgeB=>//; first exact: cvg_cst.
+  apply: cvg_comp; [apply: cvg_comp; last exact: f_Ny0 | by[]].
+  by apply: cvg_comp; [exact: cvgr_idn | rewrite ninfty].
+by rewrite -(cvg_unique _ cvg_cup cvg_fr).
+Unshelve. all: by end_near. Qed.
+
+End cdf_of_lebesgue_stieltjes_mesure.
+
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
 Canonical expectation_unlockable := Unlockable expectation.unlock.
