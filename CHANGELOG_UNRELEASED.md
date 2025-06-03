@@ -52,6 +52,51 @@
 - in `lebesgue_integral_differentiation.v`:
   + lemma `nicely_shrinking_fin_num`
 
+- in `unstable.v`
+  + lemmas `scalecE`, `normcr`, `Im_mul`, `mulrnc`, `complexA`, `normc_natmul`,
+    `nomrc_mulrn`, `gt0_normc`, `gt0_realC`, `ltc0E`, `ltc0P`, `ltcP`, `lecP`,
+    `realC_gt0`, `Creal_gtE`, `realC_norm`, `eqCr`, `eqCI`, `neqCr0`,
+    `real_normc_ler`, `im_normc_ler`
+  + notations `f %:Rfun`, `v %:Rc`
+  + lemmas `realCZ`, `realC_alg`, `scalecr`, `scalecV`
+
+- in `function_spaces.v`
+  + lemmas `cvg_big`, `continuous_big`
+
+- file `holomorphy.v`
+  + instance of `normedModType` on `complex`
+  + definition `ball_Rcomplex`
+  + lemmas `entourage_RcomplexE`, `normcZ`, `Rcomplex_findim`
+  + instance of `normedVectType` on `complex`
+  + definitions `holomorphic`, `Rdifferentiable`, `realC`, `CauchyRiemannEq`
+  + lemmas `holomorphicP`, `continuous_realC`, `Rdiff1`, `Rdiffi`, `littleoCo`,
+    `holo_differentiable`, `holo_CauchyRiemann`, `Diff_CR_holo`,
+    `holomorphic_Rdiff`
+
+- in `landau.v`
+  + lemma `littleoE0`
+
+- in `normed_module.v`
+  + structure `normedVectType`
+  + lemmas `dnbhs0_le`, `nbhs0_le`, `dnbrg0_lt`, `nbhs0_lt`
+  + definition `pseudometric`
+  + instance of `normedZmodType`, `pointedType` and `pseudoMetricType`
+    on `pseudometric`
+  + definitions `oo_norm`, `oo_space`,
+  + instance of `normedModType` on `oo_space`
+  + lemmas `oo_closed_ball_compact`, `equivalence_norms`,
+    `linear_findim_continuous`
+
+- in `num_topology.v`
+  + instance of `pseudoMetricType` on `GRing.regular`
+
+- in `uniform_structure`
+  + lemma `within_continuous_withinNx`
+
+- in `tvs.v`
+  + lemmas `cvg_sum`, `sum_continuous`, `entourage_nbhsE`
+  + instance of `UniformZmodule.type` on `GRing.regular`
+
 ### Changed
 
 - in `convex.v`:

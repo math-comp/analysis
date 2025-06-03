@@ -97,6 +97,7 @@ HB.instance Definition _ :=
   Lmodule_hasFinDim.Build R (Rcomplex R) Rcomplex_findim.
 
 End Rcomplex_NormedModType.
+End Rcomplex_NormedModType.
 
 Section Holomorphe_der.
 Variable R : realType.
