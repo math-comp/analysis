@@ -3428,16 +3428,13 @@ move: x => [||]// r; rewrite eqe => r0 _.
 by rewrite inver (negbTE r0) -EFinM mulVf.
 Qed.
 
-Lemma lefe_pV2 x y : x > 0 -> y > 0 -> (x <= y) = (y^-1 <= x^-1).
+Lemma lefe_pV2 x y : x > 0 -> y > 0 -> (y^-1 <= x^-1) = (x <= y).
 Proof.
-move: x y => [x| |] [y| |]//=.
-- rewrite !lte_fin => x0 y0.
-  by rewrite !inver !gt_eqF// !lee_fin lef_pV2 ?posrE.
-- rewrite lte_fin => x0 _.
-  by rewrite invey inver gt_eqF// lee_fin invr_ge0 leey (ltW x0).
-- rewrite lte_fin => _ x0.
-  by rewrite invey inver gt_eqF// lee_fin invr_le0 leye_eq/= leNgt x0.
-- by move=> _ _; rewrite invey !lexx.
+move: x y => [x| |] [y| |]//=; rewrite ?lte_fin => x0 y0.
+- by rewrite !inver !gt_eqF// !lee_fin lef_pV2 ?posrE.
+- by rewrite invey inver gt_eqF// lee_fin invr_ge0 leey (ltW x0).
+- by rewrite invey inver gt_eqF// lee_fin invr_le0 leye_eq/= leNgt y0.
+- by rewrite invey !lexx.
 Qed.
 
 Lemma lee_addgt0Pr x y :
