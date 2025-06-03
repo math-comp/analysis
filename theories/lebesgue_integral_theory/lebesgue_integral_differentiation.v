@@ -1224,9 +1224,7 @@ Qed.
 
 Lemma nicely_shrinking_fin_num x E : nicely_shrinking x E ->
   forall n, mu (E n) \is a fin_num.
-Proof.
-by move=> xE n; rewrite ge0_fin_numE// (nicely_shrinking_lty xE).
-Qed.
+Proof. by move=> xE n; rewrite ge0_fin_numE// (nicely_shrinking_lty xE). Qed.
 
 End nicely_shrinking.
 

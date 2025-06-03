@@ -136,7 +136,7 @@ apply: cvg_at_right_left_dnbhs.
   rewrite {ixdf} -/mu.
   rewrite [g in g n @[n --> _] --> _ -> _](_ : _ =
       fun n => (d n)^-1%:E * \int[mu]_(y in E x n) (f y)%:E); last first.
-    by apply/funext => n; rewrite muE.
+    by apply/funext => n; rewrite muE inver// gt_eqF.
   move/fine_cvgP => [_ /=].
   set g := _ \o _ => gf.
   set h := (f in f n @[n --> \oo] --> _).
@@ -231,7 +231,8 @@ apply: cvg_at_right_left_dnbhs.
   rewrite /g /= fineM//=; last first.
     apply: integral_fune_fin_num => //; first exact: (nice_E _).1.
     by apply: integrableS intf => //; exact: (nice_E _).1.
-  by rewrite muE/= invrN mulNr -mulrN.
+    by rewrite muE inver oppr_eq0 lt_eqF.
+  by rewrite muE/= inver oppr_eq0 lt_eqF// invrN mulNr -mulrN.
 Unshelve. all: by end_near. Qed.
 
 Let FTC0_restrict f a x (u : R) : (x < u)%R ->
