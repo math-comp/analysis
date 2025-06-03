@@ -3428,14 +3428,55 @@ move: x => [||]// r; rewrite eqe => r0 _.
 by rewrite inver (negbTE r0) -EFinM mulVf.
 Qed.
 
-Lemma lee_pV2 x y : x > 0 -> y > 0 -> (y^-1 <= x^-1) = (x <= y).
+Local Notation nonneg := [pred x : \bar R | x >= 0].
+
+Lemma lee_pV2 : {in nonneg &, {mono inve : x y /~ x <= y}}.
 Proof.
-move: x y => [x| |] [y| |]//=; rewrite ?lte_fin => x0 y0.
-- by rewrite !inver !gt_eqF// !lee_fin lef_pV2 ?posrE.
-- by rewrite invey inver gt_eqF// lee_fin invr_ge0 leey (ltW x0).
-- by rewrite invey inver gt_eqF// lee_fin invr_le0 leye_eq/= leNgt y0.
-- by rewrite invey !lexx.
+move=> x y; case: (inveP x) => [|||r]; case: (inveP y) => [|||s]//=;
+rewrite ?inE ?lexx// ?lee_fin.
+- by case: (ltgtP s).
+- by case: (ltgtP s) => //= s_gt0 _ _ _; rewrite invr_ge0 (ltW s_gt0) leey.
+- by case: (ltgtP r) => //= r_gt0; rewrite leey.
+- by case: (ltgtP r) => //= r_gt0 _ _ _; rewrite invr_le0 (lt_geF).
+by case: (ltgtP s 0%R); case: (ltgtP r 0%R) => // *; rewrite lef_pV2.
 Qed.
+
+Lemma lte_pV2 : {in nonneg &, {mono inve : x y /~ x < y}}.
+Proof. exact: leW_nmono_in lee_pV2. Qed.
+
+Definition ltee_pV2 := (lee_pV2, lte_pV2).
+
+Lemma inve_pge : {in nonneg &, forall x y, (x <= y^-1) = (y <= x^-1)}.
+Proof.
+move=> x y /[!inE]; case: (inveP x) => [|||r]; rewrite ?lee_fin ?ltxx//=.
+- move=> _; case: (inveP y) => [|||s]; rewrite ?lexx//= lee_fin => ? s_ge0.
+  by rewrite lee_fin invr_ge0 s_ge0 leey.
+- move=> _; case: (inveP y) => [|||s]; rewrite ?lexx//= lee_fin => sN0 s_ge0.
+  by rewrite lee_fin [RHS]lt_geF// lt_def sN0.
+case: ltgtP => // r_gt0 _ _.
+case: (inveP y) => [|||s sN0]; rewrite ?ltxx//= ?lte_fin ?lee_fin.
+- by rewrite leey invr_ge0 (ltW r_gt0).
+- by rewrite [LHS]lt_geF.
+by case: ltgtP sN0 => // s_gt0; rewrite -lef_pV2 ?qualifE/= ?invr_gt0// invrK.
+Qed.
+
+Lemma inve_pgt : {in nonneg &, forall x y, (x < y^-1) = (y < x^-1)}.
+Proof.
+move=> x y /[!inE] sgt0 ygt0; rewrite !lt_def inve_pge//.
+by rewrite (can2_eq inveK inveK) eq_sym.
+Qed.
+
+Lemma inve_ple : {in nonneg &, forall x y, (x^-1 <= y) = (y^-1 <= x)}.
+Proof. by move=> x y ? ?; rewrite -lee_pV2 ?inveK// inE inve_ge0. Qed.
+
+Lemma inve_plt : {in nonneg &, forall x y, (x^-1 < y) = (y^-1 < x)}.
+Proof. by move=> x y ? ?; rewrite -lte_pV2 ?inveK// inE inve_ge0. Qed.
+
+Lemma inve_gt1 x : 0 <= x -> (1 < x^-1) = (x < 1).
+Proof. by move=> x0; rewrite inve_pgt ?inve1//= inE/= ?lee01. Qed.
+
+Lemma inve_ge1 x : 0 <= x -> (1 <= x^-1) = (x <= 1).
+Proof. by move=> x0; rewrite inve_pge ?inve1//= inE/= ?lee01. Qed.
 
 Lemma lee_addgt0Pr x y :
   reflect (forall e, (0 < e)%R -> x <= y + e%:E) (x <= y).
