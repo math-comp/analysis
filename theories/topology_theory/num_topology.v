@@ -83,6 +83,10 @@ HB.instance Definition _ (R : numFieldType) :=
   Uniform_isPseudoMetric.Build R R^o
     ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
 
+HB.instance Definition _ (R : numFieldType) :=
+  Uniform_isPseudoMetric.Build R R^o
+    ball_norm_center ball_norm_symmetric ball_norm_triangle erefl.
+
 Lemma real_order_nbhsE (R : realFieldType) (x : R^o) : nbhs x =
   filter_from (fun i => itv_open_ends i /\ x \in i) (fun i => [set` i]).
 Proof.

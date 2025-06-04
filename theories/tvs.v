@@ -90,6 +90,22 @@ HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule M
 HB.structure Definition TopologicalNmodule :=
   {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
 
+Section TopologicalNmodule_Theory.
+
+Lemma cvg_sum (T : Type) (U : TopologicalNmodule.type) (F : set_system T)
+  (I : Type) (r : seq I) (P : pred I) (Ff : I -> T -> U) (Fa : I -> U) :
+  Filter F -> (forall i, P i -> Ff i x @[x --> F] --> Fa i) ->
+  \sum_(i <- r | P i) Ff i x @[x --> F] --> \sum_(i <- r| P i) Fa i.
+Proof. by move=> FF Ffa; apply: cvg_big => //; apply: add_continuous. Qed.
+
+Lemma sum_continuous (T : topologicalType) (M : TopologicalNmodule.type) 
+  (I : Type) (r : seq I) (P : pred I) (F : I -> T -> M) :
+  (forall i : I, P i -> continuous (F i)) ->
+  continuous (fun x1 : T => \sum_(i <- r | P i) F i x1).
+Proof. by move=> FC0; apply: continuous_big => //; apply: add_continuous. Qed.
+
+End TopologicalNmodule_Theory.
+
 HB.structure Definition PreTopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
 
@@ -271,6 +287,27 @@ apply: (@filterS _ _ entourage_filter
   by rewrite inE/= => [] [] [] [] c1 c2 [] d1 d2/= cd [] <- <- <- <-.
 exists (U1, ((fun xy : M * M => (- xy.1, - xy.2)) @^-1` U2)); first by split.
 by move=> /= [] [] a1 a2 [] b1 b2/= [] aU bU; exists (a1, b1, (a2, b2)).
+Qed.
+
+Lemma entourage_nbhsE : @entourage M = filter_from (nbhs 0) (fun X => [set x | x.2 - x.1 \in X]).
+Proof.
+have map_uniform (T U : uniformType) (S : set (U * U)%type) (f : T * T -> U) : unif_continuous f -> entourage S -> exists ST : set (T * T)%type, entourage ST /\ {in ST, forall x, forall y, (f (x.1, y), f (x.2, y)) \in S}.
+  move=> fu /fu [[]]/= ST1 ST2 [] ? ? /subsetP STf.
+  exists ST1; split=> // x xST1 y.
+  have /STf: (x, (y, y)) \in ST1 `*` ST2.
+    rewrite in_setX xST1/= unfold_in/=.
+    apply/asboolT.
+    exact: entourage_refl.
+  rewrite in_setE/= => -[] [] [] a1 a2 [] b1 b2 /= abS [] <- {2}<- <-/=.
+  exact: asboolT.
+rewrite eqEsubset; split; apply/subsetP => U; rewrite !inE /filter_from/=.
+  move=> /(map_uniform _ _ _ _ sub_unif_continuous)/= [] V [] Ve VU.
+  exists (xsection V 0); first exact: nbhs_entourage.
+  apply/subsetP => [] [] x y; rewrite inE/= mem_xsection => /VU/(_ (-x))/=.
+  by rewrite opprK -addrA addNr add0r addr0.
+move=> [] V /nbhsP[] U' /(map_uniform _ _ _ _ add_unif_continuous)/= [] W [] We WU' /subsetP U'V /subsetP VU.
+apply/(filterS _ We)/subsetP => -[] a b /WU'/=/(_ (-a)); rewrite subrr => abU'.
+by apply/VU; rewrite inE/=; apply: U'V; rewrite mem_xsection.
 Qed.
 
 End UniformZmoduleTheory.
@@ -514,6 +551,16 @@ rewrite /ball /ball_/= => xy /= [nx ny].
 by rewrite opprD addrACA (le_lt_trans (ler_normD _ _)) // (splitr e) ltrD.
 Qed.
 
+Local Lemma standard_sub_unif_continuous : unif_continuous (fun x : R^o * R^o => x.1 - x.2).
+Proof.
+move=> /= U; rewrite /nbhs/= -!entourage_ballE => -[]/= e e0 /subsetP eU.
+exists (e / 2) => /=; first exact: divr_gt0.
+apply/subsetP => -[] [] a1 a2 [] b1 b2/=; rewrite inE/= => -[]/=.
+rewrite /ball/= => abe1 abe2.
+apply: eU => /=; rewrite inE/= /ball/= opprD addrACA -opprD.
+by rewrite (le_lt_trans (ler_normB _ _))// (splitr e) ltrD.
+Qed.
+
 Local Lemma standard_scale_continuous : continuous (fun z : R^o * R^o => z.1 *: z.2).
 Proof.
 (* NB: This lemma is proved once again in normedtype, in a shorter way with much more machinery *)
@@ -591,6 +638,7 @@ Qed.
 
 HB.instance Definition _ :=
   PreTopologicalNmodule_isTopologicalNmodule.Build R^o standard_add_continuous.
+HB.instance Definition _ := PreUniformNmodule_isUniformZmodule.Build R^o standard_sub_unif_continuous.
 HB.instance Definition _ :=
   TopologicalNmodule_isTopologicalLmodule.Build R R^o standard_scale_continuous.
 HB.instance Definition _ := Uniform_isTvs.Build R R^o standard_locally_convex.

@@ -20,6 +20,9 @@ From mathcomp Require Import ereal_normedtype pseudometric_normed_Zmodule.
 (*                normedModType K == interface type for a normed module       *)
 (*                                   structure over the numDomainType K       *)
 (*                                   The HB class is NormedModule.            *)
+(*               normedVectType K == interface type for a normed vectType     *)
+(*                                   structure over the numDomainType K       *)
+(*                                   The HB class is NormedVector.            *)
 (*                           `|x| == the norm of x (notation from ssrnum.v)   *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -139,6 +142,10 @@ HB.instance Definition _ :=
   PseudoMetricNormedZmod_Tvs_isNormedModule.Build K V normrZ.
 
 HB.end.
+
+#[short(type="normedVectType")]
+HB.structure Definition NormedVector (K : numDomainType) :=
+  {T of NormedModule K T & Vector K T}.
 
 (**md see also `Section standard_topology_pseudoMetricNormedZmod` in
   `pseudometric_normed_Zmodule.v` *)
@@ -332,6 +339,36 @@ Qed.
 Lemma scalel_continuous (x : V) : continuous (fun k : K => k *: x).
 Proof.
 by move=> k; apply: (cvg_comp2 cvg_id (cvg_cst _) (scale_continuous _ _ (_, _))).
+Qed.
+
+Lemma dnbhs0_le e :
+   0 < e -> \forall x \near (0 : V)^', `|x| <= e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+rewrite -ball_normE /= sub0r normrN => le_nxe _ .
+by rewrite ltW.
+Qed.
+
+Lemma nbhs0_le e :
+   0 < e -> \forall x \near (0 : V)^', `|x| <= e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+rewrite -ball_normE /= sub0r normrN => le_nxe _ .
+by rewrite ltW.
+Qed.
+
+Lemma dnbhs0_lt e :
+   0 < e -> \forall x \near (0 : V)^', `|x| < e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+by rewrite -ball_normE /= sub0r normrN.
+Qed.
+
+Lemma nbhs0_lt e :
+   0 < e -> \forall x \near (0 : V)^', `|x| < e.
+Proof.
+move=> e_gt0; apply/nbhs_ballP; exists e => // x.
+by rewrite -ball_normE /= sub0r normrN.
 Qed.
 
 End NormedModule_numFieldType.
@@ -1961,3 +1998,282 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball_normedModType.
+
+(* equip a normedZmodType with a structure of normed module *)
+
+Definition pseudometric (K : numFieldType) (M : normedZmodType K) : Type := M.
+
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  Choice.on (pseudometric M).
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  Num.NormedZmodule.on (pseudometric M).
+HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
+  isPointed.Build M 0.
+
+Section isnormedmodule.
+Variables (K : numFieldType) (M' : normedZmodType K).
+
+Notation M := (pseudometric M').
+
+Local Definition ball (x : M) (r : K) : set M := ball_ Num.norm x r.
+
+Local Definition ent : set_system (M * M) :=
+  entourage_ ball.
+
+Local Definition nbhs (x : M) : set_system M :=
+  nbhs_ ent x.
+
+Local Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
+
+HB.instance Definition _ := hasNbhs.Build M nbhs.
+
+Local Lemma ball_center x (e : K) : 0 < e -> ball x e x.
+Proof. by rewrite /ball/= subrr normr0. Qed.
+
+Local Lemma ball_sym x y (e : K) : ball x e y -> ball y e x.
+Proof. by rewrite /ball /= distrC. Qed.
+
+Local Lemma ball_triangle x y z e1 e2 : ball x e1 y -> ball y e2 z ->
+  ball x (e1 + e2) z.
+Proof.
+rewrite /ball /= => ? ?.
+rewrite -[x](subrK y) -(addrA (x + _)).
+by rewrite (le_lt_trans (ler_normD _ _))// ltrD.
+Qed.
+
+Local Lemma entourageE : ent = entourage_ ball.
+Proof. by []. Qed.
+
+HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K M
+  ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
+
+End isnormedmodule.
+
+Section InfiniteNorm.
+Variables (R : numFieldType) (V : vectType R) (B : (\dim (@fullv _ V)).-tuple V).
+Let V' := @fullv _ V.
+Hypothesis (Bbasis : basis_of V' B).
+
+(* FIXME: Check naming. *)
+Definition oo_norm x := \big[Order.max/0]_(i < \dim V') `|coord B i x|.
+
+Definition oo_space : Type := (fun=> V) Bbasis.
+
+HB.instance Definition _ := Vector.on oo_space.
+
+HB.instance Definition _ := Pointed.copy oo_space V^o.
+
+Lemma oo_norm_ge0 x : 0 <= oo_norm x.
+Proof.
+rewrite /oo_norm.
+elim: (index_enum _) => /=; first by rewrite big_nil.
+by move=> i l IHl; rewrite big_cons /Order.max/=; case: ifP.
+Qed.
+
+Lemma le_coord_oo_norm x i : `|coord B i x| <= oo_norm x.
+Proof.
+rewrite /oo_norm; elim: (index_enum _) (mem_index_enum i) => //= j l IHl.
+rewrite inE big_cons /Order.max/= => /orP[/eqP <-|/IHl {}IHl]; case: ifP => [/ltW|]//.
+move=> /negP/negP.
+have bR: \big[Order.max/0]_(i <- l) `|coord B i x| \is Num.real.
+  exact: bigmax_real.
+move: (real_comparable bR (normr_real (coord B j x))).
+by move=> /comparable_leNgt <- /(le_trans IHl).
+Qed.
+
+Lemma ler_oo_normD x y : oo_norm (x + y) <= oo_norm x + oo_norm y.
+Proof.
+apply: bigmax_le => [|/= i _].
+  by apply: addr_ge0; apply: oo_norm_ge0.
+rewrite raddfD/=.
+by apply/(le_trans (ler_normD _ _))/lerD; apply: le_coord_oo_norm.
+Qed.
+
+Lemma oo_norm0_eq0 x : oo_norm x = 0 -> x = 0.
+Proof.
+move=> x0.
+rewrite (coord_basis Bbasis (memvf x)).
+suff: forall i, coord B i x = 0.
+  move=> {}x0.
+  under eq_bigr do rewrite x0.
+  by rewrite -scaler_sumr scale0r.
+move=> i; apply/normr0_eq0/le_anti/andP; split; last exact: normr_ge0.
+by rewrite -x0; apply: le_coord_oo_norm.
+Qed.
+
+Lemma oo_normZ r x : oo_norm (r *: x) = `|r| * oo_norm x.
+Proof.
+rewrite /oo_norm.
+under eq_bigr do rewrite linearZ normrZ/=.
+elim: (index_enum _) => [|i l IHl]; first by rewrite !big_nil mulr0.
+by rewrite !big_cons IHl maxr_pMr.
+Qed.
+
+Lemma oo_normMn x n : oo_norm (x *+ n) = oo_norm x *+ n.
+Proof. by rewrite -scaler_nat oo_normZ normr_nat mulr_natl. Qed.
+
+Lemma oo_normN x : oo_norm (- x) = oo_norm x.
+Proof. by rewrite -scaleN1r oo_normZ normrN1 mul1r. Qed.
+
+HB.instance Definition _ := Num.Zmodule_isNormed.Build R oo_space ler_oo_normD oo_norm0_eq0 oo_normMn oo_normN.
+
+HB.instance Definition _ := PseudoMetric.copy oo_space (pseudometric oo_space).
+
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R oo_space erefl.
+
+HB.instance Definition _ := PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R oo_space oo_normZ.
+
+End InfiniteNorm.
+
+Section EquivalenceNorms.
+Variables (R : realType) (V : vectType R).
+Let V' := @fullv _ V.
+Let Voo := oo_space (vbasisP (@fullv _ V)).
+
+(* N.B. Get Trocq to prove the continuity part automatically. *)
+Lemma oo_closed_ball_compact : compact (closed_ball (0 : Voo) 1).
+Proof.
+rewrite closed_ballE/closed_ball_//=.
+under eq_set do rewrite sub0r normrN.
+rewrite -[forall x, _]/(compact _).
+pose f (X : {ptws 'I_(\dim V') -> R^o}) : Voo := \sum_(i < \dim V') (X i) *: (vbasis V')`_i.
+have -> : [set x : Voo | `|x| <= 1] = f @` [set X | forall i, `[-1, 1]%classic (X i)].
+  apply/seteqP; split=> x/=.
+    move=> x1; exists (fun i => coord (vbasis V') i x); last first.
+      exact/esym/(@coord_vbasis _ _ (x : V))/memvf.
+    move=> i; rewrite in_itv/= -ler_norml.
+    apply: (le_trans _ x1).
+    exact: le_coord_oo_norm.
+  move=> [X] X1 <-.
+  rewrite /normr/=/oo_norm.
+  apply: bigmax_le => //= i _.
+  rewrite coord_sum_free; last exact/basis_free/vbasisP.
+  rewrite ler_norml.
+  exact: X1.
+apply: (@continuous_compact _ _ f); last first.
+  apply: (@tychonoff 'I_(\dim V') (fun=> R^o) (fun=> `[-1, 1 : R^o]%classic)).
+  move=> _.
+  exact: segment_compact.
+apply/continuous_subspaceT/sum_continuous => i _/= x.
+exact/continuousZl/proj_continuous. 
+Qed.
+
+Lemma equivalence_norms (N : V -> R) :
+  N 0 = 0 -> (forall x, 0 <= N x) -> (forall x, N x = 0 -> x = 0) -> (forall x y, N (x + y) <= N x + N y) ->
+  (forall r x, N (r *: x) = `|r| * N x) ->
+  exists M, 0 < M /\ forall x : Voo, `|x| <= M * N x /\ N x <= M * `|x|.
+Proof.
+move=> N0 N_ge0 N0_eq0 ND NZ.
+set M0 := 1 + \sum_(i < \dim V') N (vbasis V')`_i.
+have N_sum (I : Type) (r : seq I) (F : I -> V):
+  N (\sum_(i <- r) F i) <= \sum_(i <- r) N (F i).
+  elim: r => [|x r IHr]; first by rewrite !big_nil N0.
+  by rewrite !big_cons; apply/(le_trans (ND _ _))/lerD.
+have leNoo: forall x : Voo, N x <= M0 * `|x|.
+  move=> x.
+  rewrite [in leLHS](coord_vbasis (memvf (x : V))).
+  apply: (le_trans (N_sum _ _ _)).
+  rewrite mulrDl mul1r mulr_suml -[leLHS]add0r.
+  apply: lerD => //.
+  apply: ler_sum => /= i _.
+  rewrite NZ mulrC; apply: ler_pM => //.
+  exact: le_coord_oo_norm.
+have M00 : 0 < M0.
+  rewrite -[ltLHS]addr0.
+  by apply: ltr_leD => //; apply: sumr_ge0.
+have NC0 : continuous (N : Voo -> R).
+  move=> /= x.
+  rewrite /continuous_at.
+  apply: cvg_zero; first exact: nbhs_filter.
+  apply/cvgr0Pnorm_le; first exact: nbhs_filter.
+  move=> /= e e0.
+  near=> y.
+    rewrite -[_ y]/(N y - N x).
+    apply: (@le_trans _ _ (N (y - x))).
+      apply/real_ler_normlP.
+        by apply: realB; apply: ger0_real.
+      have NB a b : N a <= N b + N (a - b).
+        by rewrite -[a in N a]addr0 -(subrr b) addrCA ND.
+      rewrite opprB !lerBlDl; split; last exact: NB.
+      by rewrite -opprB -scaleN1r NZ normrN1 mul1r NB.
+    apply: (le_trans (leNoo _)).
+    rewrite mulrC -ler_pdivlMr// -opprB normrN.
+  near: y; apply: cvgr_dist_le; first exact: cvg_id.
+  exact: divr_gt0.
+have: compact [set x : Voo | `|x| = 1].
+  apply: (subclosed_compact  _ oo_closed_ball_compact); last first.
+    apply/subsetP => x.
+    rewrite closed_ballE// !inE/=.
+    by rewrite /closed_ball_/= sub0r normrN => ->.
+  apply: (@closed_comp _ _ _ [set 1 : R]); last exact: closed_eq.
+  by rewrite /prop_in1 => + _; apply: norm_continuous.
+move=> /(@continuous_compact _ _ (N : Voo -> R)) -/(_ _)/wrap[].
+  exact: continuous_subspaceT.
+move=> /(@continuous_compact _ _ (@GRing.inv R)) -/(_ _)/wrap[].
+  move=> /= x.
+  rewrite /continuous_at.
+  apply: (@continuous_in_subspaceT _ _ [set N x | x in [set x : Voo | `|x| = 1]] (@GRing.inv R)).
+  move=> r /set_mem/=[] y y1 <-.
+  apply: inv_continuous.
+  apply/negP => /eqP/N0_eq0 y0.
+  move: y1; rewrite y0 normr0 => /esym.
+  by move: (@oner_neq0 R) => /eqP.
+move=> /compact_bounded[] M1 [] M1R /(_ (1 + M1)).
+rewrite -subr_gt0 -addrA subrr addr0 => /(_ ltr01).
+rewrite /globally/= => M1N.
+exists (maxr M0 (1 + M1)).
+split=> [|x]; first by apply: (lt_le_trans M00); rewrite le_max lexx.
+split; last first.
+  apply/(le_trans (leNoo x))/ler_pM => //; first exact/ltW.
+  by rewrite /maxr; case: ifP => // /ltW.
+have [->|x0] := eqVneq x 0; first by rewrite normr0 N0 mulr0.
+have Nx0: 0 < N x.
+  rewrite lt0r N_ge0 andbT.
+  by move: x0; apply: contra => /eqP/N0_eq0/eqP.
+have normx0 : 0 < `|x|.
+  move: (lt_le_trans Nx0 (leNoo x)).
+  by rewrite pmulr_rgt0.
+move: M1N => /(_ (`|x| / N x)) -/(_ _)/wrap[].
+  exists (N x / `|x|); last by rewrite invf_div.
+  exists (`|x|^-1 *: x); last first.
+    by rewrite NZ mulrC ger0_norm.
+  rewrite normrZ mulrC ger0_norm.
+    by rewrite divrr//; apply: unitf_gt0.
+  by rewrite invr_ge0; apply: ltW.
+rewrite ger0_norm; last exact: divr_ge0.
+rewrite ler_pdivrMr// => xle.
+apply: (le_trans xle).
+rewrite -subr_ge0 -mulrBl pmulr_lge0// subr_ge0.
+by rewrite le_max lexx orbT.
+Unshelve. all: by end_near.
+Qed.
+
+End EquivalenceNorms.
+
+Section LinearContinuous.
+Variables (R : realType) (V : normedVectType R) (W : normedModType R).
+
+Lemma linear_findim_continuous (f : {linear V -> W}) : continuous f.
+Proof.
+set V' := @fullv _ V.
+set B := vbasis V' => /= x.
+rewrite /continuous_at.
+rewrite [x in f x](coord_vbasis (memvf x)) raddf_sum.
+rewrite (@eq_cvg _ _ _ _ (fun y => \sum_(i < \dim V') coord B i y *: f B`_i)); last first.
+  move=> y; rewrite [y in LHS](coord_vbasis (memvf y)) raddf_sum.
+  by apply: eq_big => // i _; apply: linearZ.
+apply: cvg_sum => i _.
+rewrite [X in _ --> X]linearZ/= -/B.
+apply: cvgZl.
+move: x; apply/linear_bounded_continuous/bounded_funP => r/=.
+have := @equivalence_norms R V (@normr R V) (@normr0 _ _) (@normr_ge0 _ _) (@normr0_eq0 _ _) (@ler_normD _ _) (@normrZ _ _).
+move=> [] M [] M0 MP.
+exists (M * r) => x.
+move: MP => /(_ x)[] Mx Mx' xr.
+apply/(le_trans (le_coord_oo_norm _ _ _))/(le_trans Mx).
+rewrite -subr_ge0 -mulrBr; apply: mulr_ge0; first exact: ltW.
+by rewrite subr_ge0. 
+Qed.
+
+End LinearContinuous.
+

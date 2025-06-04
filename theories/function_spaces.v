@@ -1557,6 +1557,40 @@ End cartesian_closed.
 
 End currying.
 
+Section big_continuous.
+
+Lemma cvg_big (T : Type) (U : topologicalType) [F : set_system T] [I : Type]
+    (r : seq I) (P : pred I) (Ff : I -> T -> U) (Fa : I -> U)
+    (op : U -> U -> U) (x0 : U):
+  Filter F ->
+  continuous (fun x : U * U => op x.1 x.2) ->
+  (forall i, P i -> Ff i x @[x --> F] --> Fa i) ->
+  \big[op/x0]_(i <- r | P i) (Ff i x) @[x --> F] -->
+    \big[op/x0]_(i <- r | P i) Fa i.
+Proof.
+move=> FF opC0 cvg_f.
+elim: r => [|x r IHr].
+  rewrite big_nil.
+  under eq_cvg do rewrite big_nil.
+  exact: cvg_cst.
+rewrite big_cons (eq_cvg _ _ (fun x => big_cons _ _ _ _ _ _)).
+case/boolP: (P x) => // Px.
+apply: (@cvg_comp _ _ _ (fun x1 => (Ff x x1, \big[op/x0]_(j <- r | P j) Ff j x1)) _ _ (nbhs (Fa x, \big[op/x0]_(j <- r | P j) Fa j)) _ _ (continuous_curry_cvg opC0)).
+by apply: cvg_pair => //; apply: cvg_f.
+Qed.
+
+Lemma continuous_big [K T : topologicalType] [I : Type] (r : seq I)
+    (P : pred I) (F : I -> T -> K) (op : K -> K -> K) (x0 : K) :
+  continuous (fun x : K * K => op x.1 x.2) ->
+  (forall i, P i -> continuous (F i)) ->
+  continuous (fun x => \big[op/x0]_(i <- r | P i) F i x).
+Proof.
+move=> op_cont f_cont x.
+by apply: cvg_big => // i /f_cont; apply.
+Qed.
+
+End big_continuous.
+
 Definition eval {X Y : topologicalType} : continuousType X Y * X -> Y :=
   uncurry (id : continuousType X Y -> (X -> Y)).
 
