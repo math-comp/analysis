@@ -168,10 +168,11 @@ rewrite -subset0=> w [] /=; rewrite !in_itv /= andbT.
 by move/lt_le_trans/[apply]; rewrite ltxx.
 Qed.
 
-(* Pseudo-distance function for perfectly normal space *)
+Section distance.
 Variable E : set sorgenfrey.
 Hypothesis CE : closed E.
 
+(* Pseudo-distance function for perfectly normal space *)
 Let dl x := [set y | x - y \in E /\ 0 <= y].
 Let dr x := [set y | x + y \in E /\ 0 < y].
 Definition sdist (x : sorgenfrey) : R :=
@@ -433,5 +434,6 @@ suff : x+y \notin E by rewrite xyE.
 rewrite -in_setC inE. apply: aE => /=.
 by rewrite in_itv /= xya' (le_trans ax) // ler_wpDr // ltW.
 Qed.
+End distance.
 
 End Sorgenfrey_line.
