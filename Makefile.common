@@ -125,7 +125,7 @@ DOCDIR=html
 
 $(DOCDIR)/dependency_graph.pre:
 	mkdir -p $(DOCDIR)
-	coqdep -f _CoqProject | perl html_doc/generate_deps.pl > $(DOCDIR)/dependency_graph.pre
+	coqdep -f _CoqProject | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
 
 $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 	mkdir -p $(DOCDIR)
