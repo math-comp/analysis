@@ -23,6 +23,9 @@ jobs:
           branch_name=${{ github.head_ref }}
           echo "destination_dir=mathcomp-analysis_$branch_name" >> $GITHUB_ENV
 
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2
+
       - name: Set-up OCaml
         uses: ocaml/setup-ocaml@v3
         with:
@@ -34,13 +37,14 @@ jobs:
       - name: Build Mathcomp Analysis
         run: opam install -y --deps-only . && opam exec -- make -j 4
 
-      - name: Build rocqnavi
-        run: opam install -y rocq-navi && opam show rocq-navi
+      - name: Install Rocqnavi
+        run: opam install -y rocq-navi
 
       - name: Generate Documents
         run: |
-          mkdir -p artifact/${{ env.destination_dir }}
-          opam exec -- rocqnavi -title "Mathcomp Analysis" -d artifact/${{ env.destination_dir }} -base mathcomp -Q theories analysis -coqlib https://coq.inria.fr/doc/V8.20.0/stdlib/ -external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect -external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra $(find . -name "*.v" -or -name "*.glob")
+          mkdir -p artifact
+          opam exec -- make html
+          cp -r html artifact/${{ env.destination_dir }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
