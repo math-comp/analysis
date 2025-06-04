@@ -1,7 +1,3 @@
-<!---
-This file was generated from `meta.yml`, please do not edit manually.
-Follow the instructions on https://github.com/coq-community/templates to regenerate.
---->
 # Analysis library compatible with Mathematical Components
 
 [![Nix CI][nix-action-shield]][nix-action-link]
@@ -11,9 +7,9 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [nix-action-link]: https://github.com/math-comp/analysis/actions?query=branch%3Amaster+event%3Apush
 
 [chat-shield]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
-[chat-link]: https://coq.zulipchat.com/login/#narrow/stream/237666-math-comp-analysis
+[chat-link]: https://rocq-prover.zulipchat.com/#narrow/channel/237666-math-comp-analysis
 
-This repository contains a real analysis library for the Coq proof-assistant.
+This repository contains a real analysis library for the Coq / Rocq proof-assistant.
 It is based on the [Mathematical Components](https://math-comp.github.io/) library.
 
 In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the following packages:
@@ -46,7 +42,7 @@ The easiest way to install the latest released version of MathComp-Analysis libr
 via the [opam](https://opam.ocaml.org/doc/Install.html) package manager:
 
 ```shell
-opam repo add coq-released https://coq.inria.fr/opam/released
+opam repo add rocq-released https://rocq-prover.org/opam/released
 opam install coq-mathcomp-analysis
 ```
 Note that the packages `coq-mathcomp-classical` and `coq-mathcomp-reals` will be installed as dependencies.
@@ -58,7 +54,7 @@ To build and install manually, make sure that the dependencies are met and do:
 ``` shell
 git clone https://github.com/math-comp/analysis.git
 cd analysis
-make   # or make -j <number-of-cores-on-your-machine> 
+make   # or make -j <number-of-cores-on-your-machine>
 make install
 ```
 

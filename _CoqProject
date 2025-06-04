@@ -69,6 +69,7 @@ theories/homotopy_theory/homotopy.v
 theories/homotopy_theory/wedge_sigT.v
 theories/homotopy_theory/continuous_path.v
 
+theories/ess_sup_inf.v
 theories/function_spaces.v
 theories/ereal.v
 theories/cantor.v

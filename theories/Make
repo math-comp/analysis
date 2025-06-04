@@ -35,6 +35,7 @@ homotopy_theory/homotopy.v
 homotopy_theory/wedge_sigT.v
 homotopy_theory/continuous_path.v
 
+ess_sup_inf.v
 function_spaces.v
 cantor.v
 tvs.v

@@ -1241,7 +1241,7 @@ move=> dfx; apply: DeriveDef; first exact: derivableZ.
 by rewrite deriveZ // derive_val.
 Qed.
 
-Lemma derive_cst (k : R) (x v : V) : 'D_v (cst k) x = 0.
+Lemma derive_cst (k : W) (x v : V) : 'D_v (cst k) x = 0.
 Proof. by rewrite derive_val. Qed.
 
 End Derive_lemmasVW.
@@ -1389,7 +1389,8 @@ Lemma is_derive_shift {R : numFieldType} x v (k : R) :
   is_derive x v (shift k) v.
 Proof. by apply: DeriveDef => //; rewrite derive_val addr0. Qed.
 
-Lemma derive1_cst {R : numFieldType} (k : R) t : (cst k)^`() t = 0.
+Lemma derive1_cst {R : numFieldType} (V : normedModType R) (k : V) t :
+  (cst k)^`() t = 0.
 Proof. by rewrite derive1E derive_cst. Qed.
 
 Lemma derive1Mr {R : numFieldType} (f : R -> R) (x r : R) :

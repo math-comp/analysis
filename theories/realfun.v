@@ -989,12 +989,12 @@ Lemma lime_inf_sup f a : lime_inf f a <= lime_sup f a.
 Proof.
 rewrite lime_inf_lim lime_sup_lim; apply: lee_lim => //.
 near=> r; rewrite ereal_sup_ge//.
-have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2).
-  exists (a + r / 2) => //; split.
+have ? : exists2 x, ball a r x /\ x <> a & f x = f (a + r / 2)%R.
+  exists (a + r / 2)%R => //; split.
     rewrite /ball/= opprD addrA subrr sub0r normrN gtr0_norm ?divr_gt0//.
     by rewrite ltr_pdivrMr// ltr_pMr// ltr1n.
   by apply/eqP; rewrite gt_eqF// ltr_pwDr// divr_gt0.
-by exists (f (a + r / 2)) => //=; rewrite inf_ballE ereal_inf_lbound.
+by exists (f (a + r / 2))%R => //=; rewrite inf_ballE ereal_inf_lbound.
 Unshelve. all: by end_near. Qed.
 
 Local Lemma lim_lime_sup' f a l :
