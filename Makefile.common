@@ -119,54 +119,24 @@ endif
 %.vo: __always__ Makefile.coq
 	+$(COQMAKE) $@
 
-# the doc targets doc and doc-clean are essentially copied from the Mathematical
-# Components repository
-# we reuse the scripts from the math-comp git repo (which is hard wired)
-# modulo one fix: we change builddoc_lib.sh:l.18 to s/\(\*{5,}+\)//g;
+# Html documentation
 
-MATHCOMP = ../math-comp/
+DOCDIR=html
 
-doc: __always__ Makefile.coq
-	mkdir -p _build_doc/
-	cp -r $(COQFILES) -t _build_doc/ --parents
-	cp _CoqProject Makefile* _build_doc
-	mkdir -p _build_doc/htmldoc
-	. $(MATHCOMP)etc/utils/builddoc_lib.sh; \
-		cd _build_doc && mangle_sources $(COQFILES)
-	+cd _build_doc && $(COQMAKE)
-# let's forget about the dependency graph for the time being...
-#	cd _build_doc && grep -v vio: .Makefile.coq.d > depend
-#	cd _build_doc && cat depend | $(MATHCOMP)etc/buildlibgraph $(COQFILES) > htmldoc/depend.js
-	cd _build_doc && $(COQDOC) -t "MathComp Analysis" \
-		-g --utf8 -Q classical mathcomp.classical -Q theories mathcomp.analysis \
-		--parse-comments \
-		--multi-index $(COQFILES) -d htmldoc
-	. $(MATHCOMP)etc/utils/builddoc_lib.sh; \
-		cd _build_doc && postprocess_html
-	cp $(MATHCOMP)etc/artwork/coqdoc.css _build_doc/htmldoc
+$(DOCDIR)/dependency_graph.pre:
+	mkdir -p $(DOCDIR)
+	coqdep -f _CoqProject | perl etc/builddoc_dependency_dot.pl > $(DOCDIR)/dependency_graph.pre
 
-doc-clean:
-	rm -rf _build_doc/
+$(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
+	mkdir -p $(DOCDIR)
+	tred $(DOCDIR)/dependency_graph.pre > $(DOCDIR)/dependency_graph.dot
 
-coq2html:
-	$(COQDEP) -f _CoqProject > depend.d
-	../coq2html/ocamldot/ocamldot depend.d > depend.dot
-	gsed -i 's/Classical/mathcomp\.classical/' depend.dot
-	gsed -i 's/Theories/mathcomp\.analysis/' depend.dot
-	gsed -i 's/Reals_stdlib/mathcomp\.reals_stdlib/' depend.dot
-	gsed -i 's/Experimental_reals/mathcomp\.experimental_reals/' depend.dot
-	gsed -i 's/Reals/mathcomp\.reals/' depend.dot
-	gsed -i 's/Analysis_stdlib/mathcomp\.analysis_stdlib/' depend.dot
-	gsed -i 's/\//\./g' depend.dot
-	../coq2html/tools/generate-hierarchy-graph.sh
-	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs ../coq2html/coq2html \
-  -hierarchy-graph hierarchy-graph.dot \
-  -dependency-graph depend.dot \
-  -title "Mathcomp Analysis" \
-  -d html/ -base mathcomp -Q theories analysis \
-  -coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
-  -external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
-  -external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra
-
-coq2html-clean:
-	rm -f */*.glob
+html: build $(DOCDIR)/dependency_graph.dot
+	mkdir -p $(DOCDIR)
+	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs rocqnavi \
+	-title "Mathcomp Analysis" \
+	-d $(DOCDIR) -base mathcomp -Q theories analysis \
+	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
+	-dependency-graph $(DOCDIR)/dependency_graph.dot \
+	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
+	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra
