@@ -140,17 +140,16 @@ Qed.
 End gauss_integral_preliminaries.
 
 Section u_properties.
-(* remove *)
-Local Open Scope ring_scope.
 
-Lemma integral_u0 : (\int[mu]_(y in `[0%R, +oo[) (u 0%R y)%:E = (@pi R / 2)%:E)%E.
+Lemma integral0y_u0 :
+   (\int[mu]_(y in `[0%R, +oo[) (u 0%R y)%:E = (@pi R / 2)%:E).
 Proof.
 rewrite /gauss_integral_proof.u expr0n/= oppr0.
 under eq_integral do rewrite mul0r expR0 div1r.
 exact: integral0y_oneDsqr.
 Qed.
 
-Lemma integrable_u x : mu.-integrable `[0%R, +oo[ (EFin \o u x).
+Lemma integrable0y_u x : mu.-integrable `[0%R, +oo[ (EFin \o u x).
 Proof.
 have ? : measurable_fun `[(0%R : R), +oo[ (EFin \o u x).
   apply/measurable_EFinP/measurable_funTS.
@@ -168,7 +167,7 @@ apply: (@le_lt_trans _ _ (\int[mu]_(y in `[0%R, +oo[) (EFin \o u 0%R) y))%E.
   move=> z z0; rewrite lee_fin ler_pdivrMr ?oneDsqr_gt0// divfK ?oneDsqr_neq0//.
   rewrite ler_expR expr0n oppr0/= mul0r pmulr_lle0 ?oneDsqr_gt0//.
   by rewrite lerNl oppr0 sqr_ge0.
-by rewrite integral_u0 ltry.
+by rewrite integral0y_u0 ltry.
 Qed.
 
 End u_properties.
@@ -177,31 +176,30 @@ Section gauss_dominates.
 
 Definition max_x : R := (Num.sqrt 2)^-1.
 
-Lemma max_x_ge0 : (0 <= max_x)%R. Proof. by rewrite invr_ge0. Qed.
+Let max_x_ge0 : (0 <= max_x)%R. Proof. by rewrite invr_ge0. Qed.
 
 Definition max_y : R := 2 / Num.sqrt 2 / Num.sqrt (expR 1).
 
 Lemma max_y_ge0 : (0 <= max_y)%R. Proof. by rewrite mulr_ge0. Qed.
 
-(* TODO: rename *)
 Definition ndgauss (x : R) := (2 * x * expR (- x ^+ 2))%R.
 
 Definition nd2gauss (x : R) := (expR (- x ^+ 2) * (2 - 4 * x ^+ 2))%R.
 
-Lemma ndgaussE : ndgauss^`() = nd2gauss.
+Let ndgaussE : ndgauss^`() = nd2gauss.
 Proof.
 apply/funext => x; rewrite /ndgauss/= derive1E derive_val/GRing.scale/= 2!mulr1.
 rewrite -mulr2n mulrCA mulrN -mulrDr addrC; congr (_ * (_ + - _))%R.
 by rewrite expr2 -(mulr_natr x) mulrCA mulrAC -mulrC mulrA -natrM.
 Qed.
 
-Lemma ndgauss_maxE : ndgauss max_x = max_y.
+Let ndgauss_maxE : ndgauss max_x = max_y.
 Proof.
 rewrite /ndgauss/= /max_x exprVn expRN sqr_sqrtr//.
 by rewrite -(div1r 2) expRM powR12_sqrt ?expR_ge0//.
 Qed.
 
-Lemma ndgauss_ub (x : R) : (0 <= x)%R -> (ndgauss x <= max_y)%R.
+Let ndgauss_ub (x : R) : (0 <= x)%R -> (ndgauss x <= max_y)%R.
 Proof.
 rewrite le_eqVlt => /predU1P[<- |x0].
   rewrite /ndgauss mulr0 mul0r; exact: max_y_ge0.
@@ -224,7 +222,7 @@ have [xmax|xmax] := leP x max_x.
   by rewrite /max_x exprVn sqr_sqrtr//.
 Qed.
 
-Lemma d1u_tmp (x' y : R) : 'd1 u x' y = (oneDsqr y * - 2 * x' * u x' y)%R.
+Let d1u_tmp (x' y : R) : 'd1 u x' y = (oneDsqr y * - 2 * x' * u x' y)%R.
 Proof.
 rewrite gauss_integral_proof.partial1_u.
 rewrite -![in RHS]mulrA [RHS]mulrC -![in RHS]mulrA.
@@ -269,7 +267,7 @@ Let int0yu (x : R) := (\int[mu]_(y in `[0%R, +oo[) (u x y))%R.
 
 Lemma int0yu_fin_num x : \int[mu]_(x0 in `[0%R, +oo[) (u x x0)%:E \is a fin_num.
 Proof.
-move: (integrable_u x).
+move: (integrable0y_u x).
 have int0yu_ge0 : 0%R <= \int[mu]_(x0 in `[0%R, +oo[) (u x x0)%:E.
   by apply: integral_ge0 => y _; rewrite lee_fin gauss_integral_proof.u_ge0.
 move/integrableP => [_].
@@ -281,7 +279,7 @@ move/(abse_integralP mu (measurable_itv _)) => [_].
 by rewrite -(@ge0_fin_numE _ (`| _|))// abse_fin_num ge0_fin_numE/=.
 Qed.
 
-Lemma int0yu0 : int0yu x @[x --> +oo%R] --> 0%R.
+Lemma cvgy_int0yu0 : int0yu x @[x --> +oo%R] --> 0%R.
 Proof.
 apply/cvgrPdist_le => /= e e0; near=> x; rewrite sub0r.
 rewrite ler0_norm ?oppr_le0; last first.
@@ -296,14 +294,14 @@ rewrite opprK (@le_trans _ _ (expR (- x ^+ 2) * int0yu 0%R)%R)//.
   - apply/measurable_funTS/measurable_EFinP.
     exact: gauss_integral_proof.measurable_u.
   - by move=> ? _; rewrite lee_fin gauss_integral_proof.u_ge0.
-  apply: le_integral => //; first exact: integrable_u.
-    by rewrite integrableZl//; exact: integrable_u.
+  apply: le_integral => //; first exact: integrable0y_u.
+    by rewrite integrableZl//; exact: integrable0y_u.
   move=> y _.
   rewrite lee_fin ler_pdivrMr ?oneDsqr_gt0//.
   rewrite mulrA divfK ?oneDsqr_neq0//.
   rewrite expr0n oppr0/= mul0r expR0 mulr1 ler_expR.
   by rewrite ler_neMr ?oneDsqr_ge1// oppr_le0; exact: sqr_ge0.
-rewrite /int0yu/Rintegral integral_u0/=.
+rewrite /int0yu/Rintegral integral0y_u0/=.
 rewrite -ler_pdivlMr; last exact: lt_le_trans (pihalf_ge1 _).
 rewrite expRN -[leRHS]invrK lef_pV2 ?posrE; last 2 first.
 - exact: expR_gt0.
@@ -314,7 +312,7 @@ rewrite ler_expR -ler_sqrt; last exact: sqr_ge0.
 by rewrite sqrtr_sqr ger0_norm.
 Unshelve. end_near. Qed.
 
-Lemma integrable0y_gaussZl (c : R) : (c != 0)%R -> mu.-integrable `[0%R, +oo[
+Let integrable0y_gaussZl (c : R) : (c != 0)%R -> mu.-integrable `[0%R, +oo[
   (fun z => (expR (- (c * z) ^+ 2))%:E).
 Proof.
 suff : (forall c : R, (0 < c)%R -> mu.-integrable `[0%R, +oo[
@@ -342,7 +340,8 @@ under eq_integral.
 rewrite ge0_integralZl//; first last.
   - by rewrite lee_fin invr_ge0 ltW.
   - move=> x _.
-    by rewrite !fctE derive1E derive_val /GRing.scale/= mulr1 lee_fin mulr_ge0 ?gauss_fun_ge0 ?ltW.
+    rewrite !fctE derive1E derive_val /GRing.scale/= mulr1.
+    by rewrite lee_fin mulr_ge0 ?gauss_fun_ge0 ?ltW.
   - under [X in _ _ X]eq_fun.
       move=> x.
       rewrite !fctE derive1E derive_val /GRing.scale/= mulr1.
@@ -370,14 +369,14 @@ rewrite -ge0_fin_numE mulr0; first exact: integral0y_gauss_fin_num.
 by apply: integral_ge0 => ? _; rewrite lee_fin gauss_fun_ge0.
 Qed.
 
-Lemma derivable_u (x y : R) : derivable (u^~ y) x 1.
+Let derivable_u (x y : R) : derivable (u^~ y) x 1.
 Proof.
 rewrite /u/gauss_integral_proof.u.
 apply/derivable1_diffP/differentiableM; last by apply: differentiableV => //.
 by apply: differentiable_comp => //; exact/derivable1_diffP.
 Qed.
 
-Lemma substE x : (0 < x)%R ->
+Let substE x : (0 < x)%R ->
   \int[mu]_(y in `[0%R, +oo[) (expR (- x ^+ 2 * oneDsqr y))%:E =
   \int[mu]_(y in `[0%R, +oo[)
                     ((((fun z => gauss_fun x / x * gauss_fun z) \o
@@ -389,12 +388,12 @@ rewrite mulrAC divfK//; last by rewrite gt_eqF.
 by rewrite mulrDr mulr1 mulNr -exprMn expRD.
 Qed.
 
-Lemma der_mulrE (x : R) : (fun z => (x * z)%R)^`() = cst x.
+Let der_mulrE (x : R) : (fun z => (x * z)%R)^`() = cst x.
 Proof.
 by apply/funext => ?; rewrite derive1E derive_val fctE /GRing.scale/= mulr1.
 Qed.
 
-Lemma int_substE x : (0 < x)%R ->
+Let int_substE x : (0 < x)%R ->
   \int[mu]_(y in `[0%R, +oo[) (expR (- x ^+ 2 * oneDsqr y))%:E
  = \int[mu]_(x1 in `[0%R, +oo[) (gauss_fun x / x * gauss_fun x1)%:E.
 Proof.
@@ -420,7 +419,7 @@ near ((0:R)%R^'+) => e.
 have xex : `](x - e)%R, (x + e)[%classic x by rewrite -ball_itv; exact: ballxx.
 pose G := (fun y => (max_y) * expR (- (x - e)%R ^+ 2 * y ^+ 2))%R.
 rewrite (@differentiation_under_integral R _ _ mu _ _ _ _ _ _ xex _ _ G)//.
-- by move=> ? _; exact: integrable_u.
+- by move=> ? _; exact: integrable0y_u.
 - by move=> ?; rewrite mulr_ge0// ?expR_ge0// max_y_ge0.
 - under [X in _ _ X]eq_fun do rewrite EFinM mulNr.
   under [X in _ _ X]eq_fun do (rewrite -exprMn_comm; last exact: mulrC).
@@ -440,7 +439,8 @@ have mexpRVxexpR (D : set R) :
 rewrite /Rintegral (_ : - 2 * x = fine (- 2 * x)%:E)%R//.
 rewrite -fineM//; last first.
   rewrite ge0_fin_numE; last by apply: integral_ge0 => ? _; exact: expR_ge0.
-  apply: (@le_lt_trans _ _ (\int[mu]_(y in `[0%R, +oo[) (gauss_fun (x * y))%:E)).
+  apply: (@le_lt_trans _ _
+       (\int[mu]_(y in `[0%R, +oo[) (gauss_fun (x * y))%:E)).
     apply: ge0_le_integral => //.
     - apply/measurable_EFinP/measurable_funTS.
       apply: measurableT_comp => //.
@@ -504,7 +504,7 @@ rewrite fineM//=; last exact: integral0y_gauss_fin_num.
 by rewrite -3!mulrA [X in (-2 * X)%R]mulrCA !mulrA mulfK ?gt_eqF// mulrAC.
 Unshelve. all: end_near. Qed.
 
-Lemma cvg_u (y : R) : u x y @[x --> 0%R^'] --> u 0 y.
+Let cvg_u (y : R) : u x y @[x --> 0%R^'] --> u 0 y.
 Proof.
 apply/cvgrPdist_lep; near=> e; near=> t.
 rewrite {1}/u/gauss_integral_proof.u. rewrite expr0n/= oppr0 mul0r expR0.
@@ -534,7 +534,7 @@ have ballx_x : `](x - e)%R, (x + e)%R[%classic x.
 pose c : R := (x - e)%R.
 apply: (@derivable_under_integral _ _ (measurableTypeR R) _ _ _ _ _ _ _ ballx_x
    _ _ (fun y => (max_y) * expR (- c ^+ 2 * y ^+ 2))%R) => //.
-- by move=> ? _; exact: integrable_u.
+- by move=> ? _; exact: integrable0y_u.
 - by move=> /= ?; rewrite mulr_ge0// ?expR_ge0// max_y_ge0.
 - rewrite (_ : _ \o _ = (fun x=> (max_y)%:E * (expR (- c ^+ 2 * x ^+ 2))%:E))//.
   apply: integrableZl => //=.
@@ -554,13 +554,14 @@ rewrite /int0yu.
 suff : [/\ mu.-integrable `[0%R, +oo[ (EFin \o u 0),
 \int[mu]_(x in `[0%R, +oo[) `|(EFin \o u (x_ n)) x - (EFin \o u 0) x|
    @[n --> \oo] --> 0%E
-   & \int[mu]_(x in `[0%R, +oo[) (EFin \o u (x_ n)) x @[n --> \oo] --> 
+   & \int[mu]_(x in `[0%R, +oo[) (EFin \o u (x_ n)) x @[n --> \oo] -->
    \int[mu]_(x in `[0%R, +oo[) (EFin \o u 0) x].
   move=> [_ lim_norm0 cvgint0yu].
   apply: fine_cvg; rewrite fineK; first exact: cvgint0yu.
-  rewrite integral_u0 ge0_fin_numE; first by rewrite ltry.
+  rewrite integral0y_u0 ge0_fin_numE; first by rewrite ltry.
   by rewrite lee_fin divr_ge0// pi_ge0.
-have intbl0y_u0 : mu.-integrable `[0%R, +oo[ (EFin \o u 0) by exact: integrable_u.
+have intbl0y_u0 : mu.-integrable `[0%R, +oo[ (EFin \o u 0).
+  exact: integrable0y_u.
 apply: (dominated_convergence _ _ _ _ intbl0y_u0) => //.
 - move=> n; apply/measurable_funTS/measurable_EFinP.
   exact: gauss_integral_proof.measurable_u.
@@ -614,8 +615,8 @@ have cdint0yu x : {for x, continuous
 (fun x1 : R => (- 2 * gauss_integral_proof.integral0y_gauss * gauss_fun x1)%R)}.
   apply: continuousM; first exact: cvg_cst.
   by move=> ?; exact: continuous_gauss_fun.
-rewrite -integral_u0 -[X in _ = 0%:E - X]fineK; last by rewrite integral_u0.
-rewrite -(le0_continuous_FTC2y _ _ int0yu0 _ _ dint0yuE); last 4 first.
+rewrite -integral0y_u0 -[X in _ = 0%:E - X]fineK; last by rewrite integral0y_u0.
+rewrite -(le0_continuous_FTC2y _ _ cvgy_int0yu0 _ _ dint0yuE); last 4 first.
 - move=> x x0; rewrite -mulN1r -!mulrA mulN1r lerNl oppr0.
   rewrite pmulr_rge0// mulr_ge0 ?gauss_fun_ge0//.
   exact: gauss_integral_proof.integral0y_gauss_ge0.
