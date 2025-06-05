@@ -1336,7 +1336,7 @@ Lemma derivableX f n x v : derivable f x v -> derivable (f ^+ n) x v.
 Proof. by case: n => [_|n /derivableP]; [rewrite expr0|]. Qed.
 
 Lemma deriveX f n x v : derivable f x v ->
-  'D_v (f ^+ n.+1) x = (n.+1%:R * f x ^+ n) *: 'D_v f x.
+  'D_v (f ^+ n) x = (n%:R * f x ^+ n.-1) *: 'D_v f x.
 Proof. by move=> /derivableP df; rewrite derive_val. Qed.
 
 Fact der_inv f x v : f x != 0 -> derivable f x v ->
@@ -1415,14 +1415,14 @@ by apply: derivableM; first exact: derivable_id.
 Qed.
 
 Lemma exp_derive {R : numFieldType} n x v :
-  'D_v (@GRing.exp R ^~ n.+1) x = n.+1%:R *: x ^+ n *: v.
+  'D_v (@GRing.exp R ^~ n) x = n%:R *: x ^+ n.-1 *: v.
 Proof.
 have /= := @deriveX R R id n x v (@derivable_id _ _ _ _).
 by rewrite fctE => ->; rewrite derive_id.
 Qed.
 
 Lemma exp_derive1 {R : numFieldType} n x :
-  (@GRing.exp R ^~ n.+1)^`() x = n.+1%:R *: x ^+ n.
+  (@GRing.exp R ^~ n)^`() x = n%:R *: x ^+ n.-1.
 Proof. by rewrite derive1E exp_derive [LHS]mulr1. Qed.
 
 Lemma EVT_max (R : realType) (f : R -> R) (a b : R) : (* TODO : Filter not infered *)
