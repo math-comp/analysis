@@ -4,7 +4,7 @@ From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum finmap matrix.
 From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
 From mathcomp Require Import archimedean.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import functions cardinality set_interval.
+From mathcomp Require Import filter functions cardinality set_interval.
 From mathcomp Require Import interval_inference ereal reals topology.
 From mathcomp Require Import function_spaces real_interval.
 From mathcomp Require Import prodnormedzmodule tvs num_normedtype.
@@ -230,38 +230,36 @@ Module Exports. Export numFieldTopology.Exports. HB.reexport. End Exports.
 End numFieldNormedType.
 Import numFieldNormedType.Exports.
 
-Definition pseudoMetric_normed (K : numFieldType) (M : normedZmodType K) : Type
-  := M.
+Definition pseudoMetric_normed (M : Type) : Type := M.
 
 HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
   Choice.on (pseudoMetric_normed M).
 HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
   Num.NormedZmodule.on (pseudoMetric_normed M).
-(*HB.instance Definition _ (K : numFieldType) (M : normedZmodType K) :=
-  isPointed.Build M 0.*)
 
+Module pseudoMetric_from_normedZmodType.
 Section pseudoMetric_from_normedZmodType.
 Variables (K : numFieldType) (M : normedZmodType K).
 
 Notation T := (pseudoMetric_normed M).
 
-Local Definition ball (x : T) (r : K) : set T := ball_ Num.norm x r.
+Definition ball (x : T) (r : K) : set T := ball_ Num.norm x r.
 
-Local Definition ent : set_system (T * T) := entourage_ ball.
+Definition ent : set_system (T * T) := entourage_ ball.
 
-Local Definition nbhs (x : T) : set_system T := nbhs_ ent x.
+Definition nbhs (x : T) : set_system T := nbhs_ ent x.
 
-Local Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
+Lemma nbhsE : nbhs = nbhs_ ent. Proof. by []. Qed.
 
-HB.instance Definition _ := hasNbhs.Build T nbhs.
+#[export] HB.instance Definition _ := hasNbhs.Build T nbhs.
 
-Local Lemma ball_center x (e : K) : 0 < e -> ball x e x.
+Lemma ball_center x (e : K) : 0 < e -> ball x e x.
 Proof. by rewrite /ball/= subrr normr0. Qed.
 
-Local Lemma ball_sym x y (e : K) : ball x e y -> ball y e x.
+Lemma ball_sym x y (e : K) : ball x e y -> ball y e x.
 Proof. by rewrite /ball /= distrC. Qed.
 
-Local Lemma ball_triangle x y z e1 e2 : ball x e1 y -> ball y e2 z ->
+Lemma ball_triangle x y z e1 e2 : ball x e1 y -> ball y e2 z ->
   ball x (e1 + e2) z.
 Proof.
 rewrite /ball /= => ? ?.
@@ -269,13 +267,16 @@ rewrite -[x](subrK y) -(addrA (x + _)).
 by rewrite (le_lt_trans (ler_normD _ _))// ltrD.
 Qed.
 
-Local Lemma entourageE : ent = entourage_ ball.
+Lemma entourageE : ent = entourage_ ball.
 Proof. by []. Qed.
 
-HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K T
+#[export] HB.instance Definition _ := @Nbhs_isPseudoMetric.Build K T
   ent nbhsE ball ball_center ball_sym ball_triangle entourageE.
 
 End pseudoMetric_from_normedZmodType.
+Module Exports. HB.reexport. End Exports.
+End pseudoMetric_from_normedZmodType.
+Export pseudoMetric_from_normedZmodType.Exports.
 
 HB.factory Record Lmodule_isNormed (R : numFieldType) M
     of GRing.Lmodule R M := {
@@ -299,23 +300,14 @@ Proof. by have := normrZ (- 1)%R x; rewrite scaleN1r normrN normr1 mul1r. Qed.
 HB.instance Definition _ := Num.Zmodule_isNormed.Build
   R M ler_normD normr0_eq0 normrMn normrN.
 
-(*HB.saturate pseudoMetric_normed.*)
-
 HB.instance Definition _ := PseudoMetric.copy M (pseudoMetric_normed M).
+
 HB.instance Definition _ := isPointed.Build M 0.
 
-Local Lemma NormedZmod_PseudoMetric_eq_pseudometric
-  : NormedZmod_PseudoMetric_eq R M.
-Proof. by constructor. Qed.
-
-HB.instance Definition _ := NormedZmod_PseudoMetric_eq_pseudometric.
-
-Lemma PseudoMetricNormedZmod_Lmodule_isNormedModule_pseudometric
-  : PseudoMetricNormedZmod_Lmodule_isNormedModule R M.
-Proof. by constructor; exact: normrZ. Qed.
+HB.instance Definition _ := NormedZmod_PseudoMetric_eq.Build R M erefl.
 
 HB.instance Definition _ :=
-  PseudoMetricNormedZmod_Lmodule_isNormedModule_pseudometric.
+  PseudoMetricNormedZmod_Lmodule_isNormedModule.Build R M normrZ.
 
 HB.end.
 
