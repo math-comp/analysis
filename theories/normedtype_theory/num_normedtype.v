@@ -505,21 +505,30 @@ rewrite pmulrn ceil_le_int// [ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
-Lemma gt0_cvgMlNy {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
-  (f : R -> R) :
-  (0 < M)%R -> (f r) @[r --> F] --> -oo -> (f r * M)%R @[r --> F] --> -oo.
+Section gt0_cvg.
+Context {R : realFieldType} {F : set_system R} {FF : Filter F}.
+Variables (M : R) (f : R -> R).
+Hypothesis M0 : 0 < M.
+
+Lemma gt0_cvgMlNy : (f r) @[r --> F] --> -oo -> (f r * M)%R @[r --> F] --> -oo.
 Proof.
-move=> M0 /cvgrNyPle fy; apply/cvgrNyPle => A.
+move=> /cvgrNyPle fy; apply/cvgrNyPle => A.
 by apply: filterS (fy (A / M)) => x; rewrite ler_pdivlMr.
 Qed.
 
-Lemma gt0_cvgMly {R : realFieldType} {F : set_system R} {FF : Filter F} (M : R)
-  (f : R -> R) :
-  (0 < M)%R -> f r @[r --> F] --> +oo -> (f r * M)%R @[r --> F] --> +oo.
+Lemma gt0_cvgMrNy : (f r) @[r --> F] --> -oo -> (M * f r)%R @[r --> F] --> -oo.
+Proof. by move=> fy; under eq_fun do rewrite mulrC; exact: gt0_cvgMlNy. Qed.
+
+Lemma gt0_cvgMly : f r @[r --> F] --> +oo -> (f r * M)%R @[r --> F] --> +oo.
 Proof.
-move=> M0 /cvgryPge fy; apply/cvgryPge => A.
+move=> /cvgryPge fy; apply/cvgryPge => A.
 by apply: filterS (fy (A / M)) => x; rewrite ler_pdivrMr.
 Qed.
+
+Lemma gt0_cvgMry : f r @[r --> F] --> +oo -> (M * f r)%R @[r --> F] --> +oo.
+Proof. by move=> fy; under eq_fun do rewrite mulrC; exact: gt0_cvgMly. Qed.
+
+End gt0_cvg.
 
 Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
     (l : set_system T) :
@@ -538,7 +547,6 @@ Proof.
 have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
 by rewrite (eq_cvg +oo _ f_opp) fmap_comp ninfty.
 Qed.
-
 
 Section monotonic_itv_bigcup.
 Context {R : realType}.
