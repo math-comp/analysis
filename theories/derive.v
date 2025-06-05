@@ -1322,9 +1322,11 @@ by rewrite deriveM // !derive_val.
 Qed.
 
 Global Instance is_deriveX f n x v (df : R) :
-  is_derive x v f df -> is_derive x v (f ^+ n.+1) ((n.+1%:R * f x ^+n) *: df).
+  is_derive x v f df -> is_derive x v (f ^+ n) ((n%:R * f x ^+ n.-1) *: df).
 Proof.
-move=> dfx; elim: n => [|n ihn]; first by rewrite expr1 expr0 mulr1 scale1r.
+case: n => [fdf|n dfx].
+  by rewrite expr0 mul0r scale0r; exact: is_derive_cst.
+elim: n => [|n ihn]; first by rewrite expr1 expr0 mulr1 scale1r.
 rewrite exprS; apply: is_derive_eq.
 rewrite scalerA -scalerDl mulrCA -[f x * _]exprS.
 by rewrite [in LHS]mulr_natl exprfctE -mulrSr mulr_natl.
