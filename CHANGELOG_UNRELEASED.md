@@ -52,6 +52,9 @@
 - in `lebesgue_integral_differentiation.v`:
   + lemma `nicely_shrinking_fin_num`
 
+- in `probability.v`:
+  + lemmas `measurable_idTR`, `cdf_lebesgue_stieltjes_id`
+
 ### Changed
 
 - in `convex.v`:
