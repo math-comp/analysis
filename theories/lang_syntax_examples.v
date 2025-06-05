@@ -713,7 +713,8 @@ Let ite_3_10 : R.-sfker mbool * munit ~> measurableTypeR R :=
   ite macc0of2 (@ret _ _ _ (measurableTypeR R) R _ (kr 3)) (@ret _ _ _ (measurableTypeR R) R _ (kr 10)).
 
 Let score_poisson4 : R.-sfker measurableTypeR R * (mbool * munit) ~> munit :=
-  score (measurableT_comp (measurable_poisson_pdf 4) (@macc0of2 _ _ (measurableTypeR R) _)).
+  score (measurableT_comp (measurable_poisson_pmf 4 measurableT)
+                          (@macc0of2 _ _ (measurableTypeR R) _)).
 
 Let kstaton_bus' :=
   letin' sample_bern
@@ -755,7 +756,7 @@ Lemma exec_staton_bus : execD staton_bus_syntax =
   existT _ (normalize_pt kstaton_bus') (measurable_normalize_pt _).
 Proof. by rewrite execD_normalize_pt exec_staton_bus0'. Qed.
 
-Let poisson4 := @poisson_pdf R 4%N.
+Let poisson4 := @poisson_pmf R ^~ 4%N.
 
 Let staton_bus_probability U :=
   ((2 / 7)%:E * (poisson4 3)%:E * \d_true U +
@@ -773,13 +774,13 @@ rewrite -!muleA; congr (_ * _ + _ * _)%E.
   rewrite letin'_retk//.
   rewrite letin'_kret//.
   rewrite /score_poisson4.
-  by rewrite /score/= /mscale/= ger0_norm//= poisson_pdf_ge0.
+  by rewrite /score/= /mscale/= ger0_norm//= poisson_pmf_ge0.
 - by rewrite onem27.
 - rewrite letin'_iteF//.
   rewrite letin'_retk//.
   rewrite letin'_kret//.
   rewrite /score_poisson4.
-  by rewrite /score/= /mscale/= ger0_norm//= poisson_pdf_ge0.
+  by rewrite /score/= /mscale/= ger0_norm//= poisson_pmf_ge0.
 Qed.
 
 End staton_bus.
@@ -808,7 +809,8 @@ Let ite_3_10 : R.-sfker mbool * munit ~> measurableTypeR R :=
   ite macc0of2 (@ret _ _ _ (measurableTypeR R) R _ (kr 3)) (@ret _ _ _ (measurableTypeR R) R _ (kr 10)).
 
 Let score_poisson4 : R.-sfker measurableTypeR R * (mbool * munit) ~> munit :=
-  score (measurableT_comp (measurable_poisson_pdf 4) (@macc0of3' _ _ _ (measurableTypeR R) _ _)).
+  score (measurableT_comp (measurable_poisson_pmf 4 measurableT)
+                          (@macc0of3' _ _ _ (measurableTypeR R) _ _)).
 
 (* same as kstaton_bus _ (measurable_poisson 4) but expressed with letin'
    instead of letin *)
@@ -884,7 +886,7 @@ rewrite execP_return exp_var'E/= (execD_var_erefl "x") //=.
 by apply/eq_sfkernel => /= -[[] [a [b []]]] U0.
 Qed.
 
-Let poisson4 := @poisson_pdf R 4%N.
+Let poisson4 := @poisson_pmf R ^~ 4%N.
 
 Lemma exec_staton_busA0 U : execP staton_busA_syntax0 tt U =
   ((2 / 7%:R)%:E * (poisson4 3%:R)%:E * \d_true U +
