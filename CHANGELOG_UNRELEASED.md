@@ -66,6 +66,8 @@
   + definition `exponential_prob`
   + lemmas `derive1_exponential_pdf`, `exponential_prob_itv0c`,
     `integral_exponential_pdf`, `integrable_exponential_pdf`
+- in `exp.v`
+  + lemma `expR_ge1Dxn`
 
 ### Changed
 
