@@ -52,6 +52,15 @@
 - in `lebesgue_integral_differentiation.v`:
   + lemma `nicely_shrinking_fin_num`
 
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `continuous_comp_cvg`
+
+- in `derive.v`:
+  + lemma `derive1_onem`
+
+- in `ftc.v`:
+  + lemmas `integration_by_substitution_onem`, `Rintegration_by_substitution_onem`
+
 ### Changed
 
 - in `convex.v`:
@@ -126,6 +135,12 @@
   + HB class `UniformZmodule` moved to `PreUniformZmodule`
   + HB class `UniformLmodule` moved to `PreUniformLmodule`
 
+- in `probability.v`:
+  + `bernoulli` -> `bernoulli_prob`
+  + `bernoulli_probE` -> `bernoulliE`
+  + `integral_bernoulli_prob` -> `integral_bernoulli_prob`
+  + `measurable_bernoulli` -> `measurable_bernoulli_prob`
+  + `measurable_bernoulli2` -> `measurable_bernoulli_prob2`
 
 ### Generalized
 
