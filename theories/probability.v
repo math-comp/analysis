@@ -3936,33 +3936,16 @@ Qed.
 
 End normal_kernel.
 
-(* TODO: move to derive.v, etc. *)
-Section move.
-
-Lemma cvg_comp_filter {R : realType} (f g : R -> R) (r l : R) :
-  continuous f ->
-  (f \o g) x @[x --> r] --> l ->
-  f x @[x --> g r] --> l.
+Lemma continuous_comp_cvg {R : numFieldType} (U V : pseudoMetricNormedZmodType R)
+  (f : U -> V) (g : R -> U) (r : R) (l : V) : continuous f ->
+  (f \o g) x @[x --> r] --> l -> f x @[x --> g r] --> l.
 Proof.
-move=> cf fgrl.
-apply/(@cvgrPdist_le _ R^o) => /= e e0.
+move=> cf fgl; apply/(@cvgrPdist_le _ V) => /= e e0.
 have e20 : 0 < e / 2 by rewrite divr_gt0.
-move/(@cvgrPdist_le _ R^o) : fgrl => /(_ _ e20) fgrl.
-have := cf (g r).
-move=> /(@cvgrPdist_le _ R^o) => /(_ _ e20)[x x0]H.
-exists (minr x (e/2)).
-  by rewrite lt_min x0.
-move=> z.
-rewrite /ball_ /= => grze.
-rewrite -[X in X - _](subrK (f (g r))).
-rewrite -(addrA _ _ (- f z)).
-apply: (le_trans (ler_normD _ _)).
-rewrite (splitr e) lerD//.
-  case: fgrl => d /= d0 K.
-  apply: K.
-  by rewrite /ball_/= subrr normr0.
-apply: H => /=.
-by rewrite (lt_le_trans grze)// ge_min lexx.
-Qed.
-
-End move.
+move/(@cvgrPdist_le _ V) : fgl => /(_ _ e20) fgl.
+have /(@cvgrPdist_le _ V) /(_ _ e20) fgf := cf (g r).
+rewrite !near_simpl/=; near=> t.
+rewrite -(@subrK _ (f (g r)) l) -(addrA (_ + _)) (le_trans (ler_normD _ _))//.
+rewrite (splitr e) lerD//; last by near: t.
+by case: fgl => d /= d0; apply; rewrite /ball_/= subrr normr0.
+Unshelve. all: by end_near. Qed.

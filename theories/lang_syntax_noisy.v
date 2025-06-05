@@ -13,7 +13,7 @@ From mathcomp Require Import lang_syntax_util lang_syntax lang_syntax_examples.
 (**md**************************************************************************)
 (* # Observing a noisy draw from a normal distribution                        *)
 (*                                                                            *)
-(* Formalization of the HelloRight example (Sect. 2.3 of [Shan, POPL 2018]).  *)
+(* Formalization of Shan's HelloRight example (Sec. 2.3 of [Shan, POPL 2018]).*)
 (*                                                                            *)
 (* ref:                                                                       *)
 (* - Chung-chieh Shan, Equational reasoning for probabilistic programming,    *)
@@ -41,20 +41,18 @@ Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope string_scope.
 
-(* TODO: PR *)
+(* TODO: PR? *)
 Section ge0_bounded_measurable_probability_integrable.
 Context d {T : measurableType d} {R : realType} {p : probability T R}
    {f : T -> \bar R}.
 
 Lemma ge0_bounded_measurable_probability_integrable :
-  (forall x, 0 <= f x) ->
-  (exists M : R, forall x, f x <= M%:E) ->
-  measurable_fun setT f ->
-  p.-integrable setT f.
+  (forall x, 0 <= f x) -> (exists M : R, forall x, f x <= M%:E) ->
+  measurable_fun setT f -> p.-integrable setT f.
 Proof.
 move=> f0 [M fleM] mf.
 apply/integrableP; split => //.
-apply (@le_lt_trans _ _ (\int[p]_x M%:E)).
+rewrite (@le_lt_trans _ _ (\int[p]_x M%:E))//.
   apply: ge0_le_integral => //=.
     exact: measurableT_comp.
   move=> t _.
@@ -76,17 +74,17 @@ Proof.
 move=> mV.
 apply: ge0_bounded_measurable_probability_integrable => //.
   exists 1%R => x.
-  apply: (@le_trans _ _ (f x setT)).
-    by apply: le_measure; rewrite ?inE.
+  rewrite (@le_trans _ _ (f x setT))//.
+    by rewrite le_measure ?inE.
   by rewrite prob_kernel.
 exact: measurable_kernel.
 Qed.
 
 End pkernel_probability_integrable.
 
-(* TODO: move to probability.v *)
-Section normal_prob_properties.
-Context {R : realType}.
+(* TODO: move to probability.v? *)
+Section normal_prob_lemmas.
+Context {R: realType}.
 Local Notation mu := lebesgue_measure.
 
 Local Open Scope charge_scope.
@@ -97,31 +95,24 @@ Lemma normal_pdf_uniq_ae (m s : R) (s0 : (s != 0)%R) :
                (EFin \o (@normal_pdf R m s)).
 Proof.
 apply: integral_ae_eq => //.
-    apply: Radon_Nikodym_integrable => /=.
-    exact: normal_prob_dominates.
-  apply/measurable_EFinP.
-  exact: measurable_normal_pdf.
-move=> /= E _ mE.
-by rewrite -Radon_Nikodym_integral//=; apply: normal_prob_dominates.
+- by apply: Radon_Nikodym_integrable => /=; exact: normal_prob_dominates.
+- by apply/measurable_EFinP; exact: measurable_normal_pdf.
+- move=> /= E _ mE.
+  by rewrite -Radon_Nikodym_integral//=; exact: normal_prob_dominates.
 Qed.
 
-End normal_prob_properties.
+Local Close Scope charge_scope.
 
-(* TODO: move *)
-Section normal_prob_lemmas.
-Context {R: realType}.
-Local Notation mu := lebesgue_measure.
-
-Lemma emeasurable_normal_prob (s : R) U : s != 0%R -> measurable U ->
-   measurable_fun setT (fun x => normal_prob x s U).
+Lemma measurable_normal_prob (s : R) U : s != 0%R -> measurable U ->
+  measurable_fun setT (fun x => normal_prob x s U).
 Proof.
 move=> s0 mU.
 under [X in _ _ X]eq_fun.
-  move=> x.
+  move=> /= x.
   rewrite -(@fineK _ (_ x _ _)); last first.
     rewrite ge0_fin_numE//.
-    apply: (@le_lt_trans _ _ (normal_prob x s setT)).
-      by apply: le_measure; rewrite ?inE.
+    rewrite (@le_lt_trans _ _ (normal_prob x s setT))//.
+      by rewrite le_measure ?inE.
     by rewrite probability_setT ltry.
   over.
 apply/measurable_EFinP.
@@ -139,19 +130,18 @@ move=> mU intf.
 move/integrableP : (intf) => [mf intf_lty].
 rewrite -(Radon_Nikodym_change_of_variables (normal_prob_dominates m s))//=.
 apply: ae_eq_integral => //=.
-    apply: emeasurable_funM => //.
-    apply: measurable_funTS.
-    have : charge_of_finite_measure (normal_prob m s) `<< mu.
-      exact: normal_prob_dominates m s.
-    move/Radon_Nikodym_integrable.
-    by move/integrableP => [].
-  apply: emeasurable_funM => //.
+- apply: emeasurable_funM => //.
+  apply: measurable_funTS.
+  have : charge_of_finite_measure (normal_prob m s) `<< mu.
+    exact: normal_prob_dominates m s.
+  by move=> /Radon_Nikodym_integrable /integrableP[].
+- apply: emeasurable_funM => //.
   apply/measurable_EFinP.
   apply: measurable_funTS.
   exact: measurable_normal_pdf.
-apply: ae_eqe_mul2l.
-apply: (ae_eq_subset (@subsetT _ U)).
-exact: (normal_pdf_uniq_ae m s0).
+- apply: ae_eqe_mul2l.
+  apply: (ae_eq_subset (@subsetT _ U)).
+  exact: (normal_pdf_uniq_ae m s0).
 Qed.
 
 Lemma normal_prob_integrable_dirac (m s : R) (V : set R): measurable V ->
@@ -159,21 +149,20 @@ Lemma normal_prob_integrable_dirac (m s : R) (V : set R): measurable V ->
 Proof.
 move=> mV.
 apply/integrableP; split; first exact: measurable_fun_dirac.
-rewrite -(setUv V).
-rewrite ge0_integral_setU => //; first last.
-      exact/disj_setPCl.
-    rewrite setUv.
-    apply: measurableT_comp => //.
-    exact: measurable_fun_dirac.
+rewrite -(setUv V) ge0_integral_setU//; last 3 first.
   exact: measurableC.
+  rewrite setUv.
+  apply: measurableT_comp => //.
+  exact: measurable_fun_dirac.
+  exact/disj_setPCl.
 under eq_integral.
   move=> x Vx.
   rewrite diracE Vx/= normr1.
   over.
 under [X in _ + X < _]eq_integral.
-  move=> x.
+  move=> /= x.
   rewrite inE/= => nVx.
-  have {}nVx := (memNset nVx).
+  have {}nVx := memNset nVx.
   rewrite indicE nVx/= normr0.
   over.
 rewrite !integral_cst//=; last exact: measurableC.
@@ -183,16 +172,13 @@ exact: ltey.
 Qed.
 
 Lemma integral_normal_prob_dirac (s : R) (m : R) V :
-  (s != 0)%R ->
-  measurable V ->
-  \int[normal_prob m s]_x0 (\d_x0 V) = normal_prob m s V.
+  (s != 0)%R -> measurable V ->
+  \int[normal_prob m s]_x (\d_x V) = normal_prob m s V.
 Proof.
 move=> s0 mV.
-rewrite integral_normal_prob => //; last first.
-  exact: (normal_prob_integrable_dirac m s).
+rewrite integral_normal_prob//; last exact: normal_prob_integrable_dirac.
 under eq_integral do rewrite diracE.
-rewrite /normal_prob.
-rewrite [in RHS]integral_mkcond.
+rewrite /= /normal_prob [in RHS]integral_mkcond.
 under [in RHS]eq_integral do rewrite patchE.
 rewrite /=.
 apply: eq_integral => x _.
@@ -221,66 +207,44 @@ move=> mV s10 s20; rewrite integral_normal_prob//; last first.
     by exists 1%R => ?; exact: probability_le1.
   apply: (@measurableT_comp _ _ _ _ _ _
       (fun x => normal_prob x s2 V) _ (fun x => m2 + x)).
-    exact: emeasurable_normal_prob.
+    exact: measurable_normal_prob.
   exact: measurable_funD.
-transitivity (\int[mu]_x
-  \int[mu]_y ((normal_pdf (m2 + x) s2 y *
-               normal_pdf m1 s1 x)%:E * (\1_V y)%:E)).
+transitivity (\int[mu]_x \int[mu]_y
+    ((normal_pdf (m2 + x) s2 y * normal_pdf m1 s1 x)%:E * (\1_V y)%:E)).
   apply: eq_integral => y _.
-  rewrite /normal_prob.
-  rewrite -integralZr//; last first.
-    apply: (integrableS measurableT) => //.
-    exact: integrable_normal_pdf.
-  transitivity (\int[mu]_(x in V) (normal_pdf (m2 + y) s2 x *
-                                   normal_pdf m1 s1 y)%:E).
-    apply: eq_integral => z _.
-    by rewrite -EFinM.
-  rewrite integral_mkcond.
-  by rewrite epatch_indic.
+  rewrite /normal_prob -integralZr//; last first.
+    by apply: (integrableS measurableT) => //; exact: integrable_normal_pdf.
+  transitivity (\int[mu]_(x in V)
+      (normal_pdf (m2 + y) s2 x * normal_pdf m1 s1 y)%:E).
+    by apply: eq_integral => z _; rewrite -EFinM.
+  by rewrite integral_mkcond epatch_indic.
 rewrite (@fubini_tonelli _ _ _ _ _ mu mu (EFin \o
   ((fun xz : R * R => (normal_pdf (m2 + xz.1) s2 xz.2 *
-                       normal_pdf m1 s1 xz.1)%R
-   * \1_V xz.2)%R)))/=; last 2 first.
+                       normal_pdf m1 s1 xz.1)%R * \1_V xz.2)%R)))/=; last 2 first.
   apply/measurable_EFinP; apply: measurable_funM => /=; last first.
-    apply: measurable_indic.
-    rewrite -[X in measurable X]setTX.
+    apply: measurable_indic; rewrite -[X in measurable X]setTX.
     exact: measurableX.
-  apply: measurable_funM.
-    rewrite [X in measurable_fun _  X](_ : _ = (fun x0 =>
-        normal_pdf0 0 s2 (x0.2 - (m2 + x0.1)%E))) /=; last first.
-      apply/funext=> x0.
-      rewrite /normal_pdf0.
-      rewrite normal_pdfE//.
-      by rewrite normal_fun_center.
-    apply: measurableT_comp.
-      exact: measurable_normal_pdf0.
-    rewrite /=.
+  apply: measurable_funM => /=.
+    rewrite [X in measurable_fun _  X](_ : _ = (fun x =>
+        normal_pdf0 0 s2 (x.2 - (m2 + x.1)%E)))/=; last first.
+      by apply/funext=> x0; rewrite /normal_pdf0 normal_pdfE// normal_fun_center.
+    apply: measurableT_comp => /=; first exact: measurable_normal_pdf0.
     under eq_fun do rewrite opprD.
-    apply: measurable_funD => //=.
-    exact: measurable_funB.
+    by apply: measurable_funD => //=; exact: measurable_funB.
   by apply: measurableT_comp => //; exact: measurable_normal_pdf.
-  move=> x/=.
-  by rewrite lee_fin !mulr_ge0 ?normal_pdf_ge0.
-transitivity (\int[mu]_x
-   \int[mu]_x0
-      ((fun x0 =>
-        (normal_pdf (m2 + x0) s2 x * normal_pdf m1 s1 x0)%:E) \_ (fun=> V x)) x0).
-  apply: eq_integral => x0 _.
-  rewrite /=.
+  by move=> x/=; rewrite lee_fin !mulr_ge0 ?normal_pdf_ge0.
+transitivity (\int[mu]_x \int[mu]_y
+    ((fun y => (normal_pdf (m2 + y) s2 x * normal_pdf m1 s1 y)%:E) \_ (fun=> V x)) y).
+  apply: eq_integral => x0 _ /=.
   under eq_integral do rewrite EFinM.
   by rewrite -epatch_indic.
 rewrite [RHS]integral_mkcond/=.
 apply: eq_integral => /= x0 _.
-rewrite patchE.
-case: ifPn => xV.
-  apply: eq_integral => z _/=.
-  rewrite patchE.
-  by rewrite ifT.
+rewrite patchE; case: ifPn => xV.
+  by apply: eq_integral => z _/=; rewrite patchE ifT.
 apply: integral0_eq => /= z _.
-rewrite patchE ifF//; apply/negbTE.
-rewrite notin_setE/=.
-move/negP in xV.
-by move/mem_set.
+rewrite patchE ifF//; apply/negbTE; rewrite notin_setE/=.
+by move/negP : xV; rewrite inE.
 Qed.
 
 Lemma normal_probD2 (y m1 m2 s1 s2 : R) : s1 != 0%R -> s2 != 0%R ->
@@ -290,16 +254,15 @@ Lemma normal_probD2 (y m1 m2 s1 s2 : R) : s1 != 0%R -> s2 != 0%R ->
 Proof.
 move=> s10 s20.
 rewrite -ge0_integralZl//=; last 3 first.
-- apply/measurable_EFinP => //=; apply: measurable_funM => //=.
-  + rewrite /normal_fun.
+  apply/measurable_EFinP => //=; apply: measurable_funM => //=.
+  - rewrite /normal_fun.
     under eq_fun do rewrite -(sqrrN (y - _)) opprB (addrC m1) -addrA -opprB.
     exact: measurable_normal_fun.
-  + exact: measurable_normal_fun.
-- by move=> z _; rewrite lee_fin mulr_ge0// expR_ge0.
-- by rewrite lee_fin mulr_ge0// ?normal_peak_ge0.
+  - exact: measurable_normal_fun.
+  by move=> z _; rewrite lee_fin mulr_ge0// expR_ge0.
+  by rewrite lee_fin mulr_ge0// ?normal_peak_ge0.
 apply: eq_integral => /= z _.
-rewrite 2?normal_pdfE// /normal_pdf0 mulrACA /normal_fun.
-by congr EFin.
+by rewrite 2?normal_pdfE// /normal_pdf0 mulrACA /normal_fun.
 Qed.
 
 Lemma normal_peak1 : normal_peak 1 = (Num.sqrt (pi *+ 2))^-1%R :> R.
@@ -346,17 +309,14 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E *
   apply: eq_integral.
   move=> x _.
   rewrite -expRD.
-  congr EFin.
-  congr expR.
+  congr ((expR _)%:E).
   rewrite sqr_sqrtr; last first.
     rewrite mulr_ge0 ?invr_ge0// ?addr_ge0 ?(@mulr_ge0 _ (_ ^+ 2))// ?sqr_ge0//.
   field.
   by apply/and3P; split.
-
 set DS12 := S1 + S2.
 set MS12 := (S1 * S2)%R.
 set C := ((((y * s1 ^+ 2)%R + (m1 * s2 ^+ 2)%R)%E - m2 * s1 ^+ 2) / DS12)%R.
-
 under eq_integral do rewrite expRD EFinM.
 rewrite ge0_integralZr//=; last first.
  apply/measurable_EFinP.
@@ -370,7 +330,6 @@ rewrite [in RHS]EFinM.
 rewrite [in RHS]sqr_sqrtr//; last first.
   by rewrite addr_ge0// sqr_ge0.
 rewrite muleA; congr *%E; last by rewrite -mulNr.
-
 (* gauss integral *)
 have MS12DS12_gt0 : (0 < MS12 / DS12)%R.
   rewrite divr_gt0//.
@@ -390,12 +349,12 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E
   rewrite exprn_even_gt0//=.
   by rewrite lt0r_neq0// sqrtr_gt0.
 rewrite ge0_integralZl//; last 3 first.
-- apply/measurable_EFinP.
+  apply/measurable_EFinP.
   exact: measurable_normal_pdf.
-- move=> x _.
+  move=> x _.
   rewrite lee_fin.
   exact: normal_pdf_ge0.
-- rewrite lee_fin invr_ge0.
+  rewrite lee_fin invr_ge0.
   exact: normal_peak_ge0.
 rewrite integral_normal_pdf.
 rewrite mule1 -EFinM; congr EFin.
@@ -497,11 +456,11 @@ apply: integrableMr => //.
   apply/ltW; apply: le_lt_trans x_gt.
   rewrite -[leRHS]mul1r ler_pM ?expR_ge0//.
   by rewrite -expR0 ler_expR oppr_le0 mulr_ge0// ?sqr_ge0// expR0 invr_ge0.
-apply/integrableP; split; first exact: emeasurable_normal_prob.
-apply/abse_integralP => //; first  exact: emeasurable_normal_prob.
+apply/integrableP; split; first exact: measurable_normal_prob.
+apply/abse_integralP => //; first exact: measurable_normal_prob.
 rewrite gee0_abs//; last exact: integral_ge0.
 apply: (@le_lt_trans _ _ (\int[normal_prob 0 1]_x (cst 1%R x)%:E)).
-  apply: ge0_le_integral => //; first exact: emeasurable_normal_prob.
+  apply: ge0_le_integral => //; first exact: measurable_normal_prob.
     by apply/measurable_EFinP; exact: measurable_cst.
   by move=> x _; exact: probability_le1.
 by rewrite /= integral_cst// mul1e probability_setT ltry.
@@ -523,17 +482,14 @@ Proof.
 move=> mV; rewrite /noisyB_semantics_normal integral_normal_prob//.
   by under eq_integral do rewrite -muleA.
 apply/integrableP; split.
-  apply: measurable_funeM.
-  exact: emeasurable_normal_prob.
+  by apply: measurable_funeM; exact: measurable_normal_prob.
 apply: (@le_lt_trans _ _ (\int[normal_prob (y.1 / 2) (Num.sqrt 2)^-1]_x
   ((NngNum (normr_ge0 (expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi))))%:num%:E
    * (cst 1%R x)%:E))).
 apply: ge0_le_integral; [by []|by []| | |].
 - apply: measurableT_comp => //.
-  apply: measurable_funeM.
-  exact: emeasurable_normal_prob.
-- rewrite /= mule1.
-  exact/measurable_EFinP.
+  by apply: measurable_funeM; exact: measurable_normal_prob.
+- by rewrite /= mule1; exact/measurable_EFinP.
 - move=> x _/=.
   rewrite abseM/= lee_pmul//.
   rewrite gee0_abs; last exact: measure_ge0.
@@ -558,14 +514,16 @@ rewrite mulrA mulrAC -(@sqrtrV _ 2)//.
 rewrite /normal_peak sqr_sqrtr; last by rewrite invr_ge0.
 rewrite /normal_fun subr0 sqr_sqrtr; last by rewrite invr_ge0.
 rewrite -mulrA mulrAC mulrA.
-rewrite [X in (X / _ / _)%R = _](_ : _ = expR (- x ^+ 2 / (1 ^+ 2 *+ 2) - (y.1 - x) ^+ 2%R / 2)); last first.
+rewrite [X in (X / _ / _)%R = _](_ : _ =
+    expR (- x ^+ 2 / (1 ^+ 2 *+ 2) - (y.1 - x) ^+ 2%R / 2)); last first.
   by rewrite mulrC -expRD -mulrA.
-rewrite [RHS]mulrAC [X in _ = (_ * X / _)%R]mulrC mulrA -mulrA -[RHS]mulrA -expRD -2!invfM.
+rewrite [RHS]mulrAC [X in _ = (_ * X / _)%R]mulrC mulrA -mulrA -[RHS]mulrA.
+rewrite -expRD -2!invfM.
 congr ((expR _) * _^-1)%R.
   lra.
 rewrite -2?sqrtrM; last 2 first.
-- by rewrite -mulr_natr mulrAC mulVf// mul1r pi_ge0.
-- by rewrite expr1n mul1r mulrn_wge0// pi_ge0.
+  by rewrite -mulr_natr mulrAC mulVf// mul1r pi_ge0.
+  by rewrite expr1n mul1r mulrn_wge0// pi_ge0.
 congr Num.sqrt.
 lra.
 Qed.
@@ -699,7 +657,7 @@ transitivity (noisyB_semantics_normal y V); last first.
   rewrite ger0_norm; last by rewrite mulr_ge0// expR_ge0.
   rewrite -(@ge0_integralZl _ _ R (normal_prob _ _) _ measurableT _ _
     (expR (- (y.1 ^+ 2%R / 4)) / Num.sqrt (4 * pi))%:E)//.
-  exact: emeasurable_normal_prob.
+  exact: measurable_normal_prob.
 rewrite noisyA_semantics_normalE//.
 rewrite noisyB_semantics_normalE//.
 apply: eq_integral => x _.
