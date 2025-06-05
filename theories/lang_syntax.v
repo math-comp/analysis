@@ -145,7 +145,7 @@ move/left_right_continuousP.
 apply/not_andP; left.
 move/(@cvgrPdist_le _ R^o).
 apply/existsNP.
-exists (2%:R^-1)%R.
+exists 2%:R^-1%R.
 rewrite not_implyE; split; first by rewrite invr_gt0.
 move=> [e /= e0].
 move/(_ (-(e / 2))%R).
@@ -289,12 +289,6 @@ move=> x y x01 y01.
 by rewrite le_eqVlt => /predU1P[->//|/dF] => /(_ x01 y01)/ltW.
 Qed.
 
-Lemma derive1_onem {R : realType} : (fun x0 : R => (1 - x0)%R : R^o)^`() = (cst (-1)%R).
-Proof.
-apply/funext => x.
-by rewrite derive1E deriveB// derive_id derive_cst sub0r.
-Qed.
-
 Local Close Scope ereal_scope.
 Lemma cvg_comp_filter {R : realType} (f g : R -> R) (r l : R) :
   continuous f ->
@@ -322,135 +316,6 @@ apply: H => /=.
 by rewrite (lt_le_trans grze)// ge_min lexx.
 Qed.
 Local Open Scope ereal_scope.
-
-Section change_of_variables_onem.
-Context {R : realType}.
-Let mu := (@lebesgue_measure R).
-
-Lemma onem_change (G : R -> R) (r : R) :
-  (0 <= r <= 1)%R ->
-  {within `[0%R, r], continuous G} ->
-  (\int[mu]_(x in `[0%R, r]) (G x)%:E =
-  \int[mu]_(x in `[(1 - r)%R, 1%R]) (G (1 - x))%:E).
-Proof.
-move=> r01 cG.
-have := @integration_by_substitution_decreasing R (fun x => 1 - x)%R G (1 - r) 1%R.
-rewrite opprB subrr addrCA subrr addr0.
-move=> ->//.
-- apply: eq_integral => x xr.
-  rewrite !fctE.
-  by rewrite derive1_onem opprK mulr1.
-- rewrite lerBlDl lerDr.
-  by case/andP : r01.
-- by move=> x y _ _ xy; rewrite ler_ltB.
-- by rewrite derive1_onem; move=> ? ?; apply: cvg_cst.
-- by rewrite derive1_onem; exact: is_cvg_cst.
-- by rewrite derive1_onem; exact: is_cvg_cst.
-- split => /=.
-  + move=> x xr1.
-    by apply: derivableB => //.
-  + apply: cvg_at_right_filter.
-    rewrite opprB addrCA addrA addrK.
-    apply: (@cvg_comp_filter _ _ (fun x => 1 - x)%R)=> //=.
-      move=> x.
-      apply: (@continuousB _ R^o)  => //.
-      exact: cvg_cst.
-    under eq_fun do rewrite opprD addrA subrr add0r opprK.
-    apply: cvg_id.
-    apply: cvg_at_left_filter.
-    apply: (@cvgB _ R^o) => //.
-    exact: cvg_cst.
-Qed.
-
-Lemma Ronem_change (G : R -> R) (r : R) :
-  (0 <= r <= 1)%R ->
-  {within `[0%R, r], continuous G} ->
-  (\int[mu]_(x in `[0%R, r]) (G x) =
-  \int[mu]_(x in `[(1 - r)%R, 1%R]) (G (1 - x)))%R.
-Proof.
-move=> r01 cG.
-rewrite [in LHS]/Rintegral.
-by rewrite onem_change.
-Qed.
-
-End change_of_variables_onem.
-
-Section factD.
-
-Let factD' n m : (n`! * m`! <= (n + m).+1`!)%N.
-Proof.
-elim: n m => /= [m|n ih m].
-  by rewrite fact0 mul1n add0n factS leq_pmull.
-rewrite 2!factS [in X in (_ <= _ * X)%N]addSn -mulnA leq_mul//.
-by rewrite ltnS addSnnS leq_addr.
-Qed.
-
-Lemma factD n m : (n`! * m.-1`! <= (n + m)`!)%N.
-Proof.
-case: m => //= [|m].
-  by rewrite fact0 muln1 addn0.
-by rewrite addnS factD'.
-Qed.
-
-End factD.
-
-Lemma leq_prod2 (x y n m : nat) : (n <= x)%N -> (m <= y)%N ->
-  (\prod_(m <= i < y) i * \prod_(n <= i < x) i <= \prod_(n + m <= i < x + y) i)%N.
-Proof.
-move=> nx my; rewrite big_addn -addnBA//.
-rewrite [in leqRHS]/index_iota -addnBAC// iotaD big_cat/=.
-rewrite mulnC leq_mul//.
-  by apply: leq_prod; move=> i _; rewrite leq_addr.
-rewrite subnKC//.
-rewrite -[in leqLHS](add0n m) big_addn.
-rewrite [in leqRHS](_ : y - m = ((y - m + x) - x))%N; last first.
-  by rewrite -addnBA// subnn addn0.
-rewrite -[X in iota X _](add0n x) big_addn -addnBA// subnn addn0.
-by apply: leq_prod => i _; rewrite leq_add2r leq_addr.
-Qed.
-
-Lemma leq_fact2 (x y n m : nat) : (n <= x) %N -> (m <= y)%N ->
-  (x`! * y`! * ((n + m).+1)`! <= n`! * m`! * ((x + y).+1)`!)%N.
-Proof.
-move=> nx my.
-rewrite (fact_split nx) -!mulnA leq_mul2l; apply/orP; right.
-rewrite (fact_split my) mulnCA -!mulnA leq_mul2l; apply/orP; right.
-rewrite [leqRHS](_ : _ = (n + m).+1`! * \prod_((n + m).+2 <= i < (x + y).+2) i)%N; last first.
-  by rewrite -fact_split// ltnS leq_add.
-rewrite mulnA mulnC leq_mul2l; apply/orP; right.
-do 2 rewrite -addSn -addnS.
-exact: leq_prod2.
-Qed.
-
-Lemma bounded_norm_expn_onem {R : realType} (a b : nat) :
-  [bounded `|x ^+ a * (1 - x) ^+ b|%R : R^o | x in (`[0%R, 1%R]%classic : set R)].
-Proof.
-exists 1%R; split; [by rewrite num_real|move=> x x1 /= y].
-rewrite in_itv/= => /andP[y0 y1].
-rewrite ger0_norm// ger0_norm; last first.
-  by rewrite mulr_ge0 ?exprn_ge0// subr_ge0.
-rewrite (le_trans _ (ltW x1))// mulr_ile1 ?exprn_ge0//.
-- by rewrite subr_ge0.
-- by rewrite exprn_ile1.
-- rewrite exprn_ile1 ?subr_ge0//.
-  by rewrite lerBlDl addrC -lerBlDl subrr.
-Qed.
-
-Lemma measurable_fun_expn_onem {R : realType} a b :
-  measurable_fun setT (fun x : R => x ^+ a * x.~ ^+ b)%R.
-Proof.
-apply/measurable_funM => //; apply/measurable_funX => //.
-exact: measurable_funB.
-Qed.
-
-Lemma onemXn_derivable {R : realType} n (x : R) :
-  derivable (fun y : R^o => y.~ ^+ n : R^o)%R x 1.
-Proof.
-have := @derivableX R R^o (@onem R) n x 1%R.
-rewrite fctE.
-apply.
-exact: derivableB.
-Qed.
 
 Lemma deriveX_idfun {R : realType} n x :
   'D_1 (@GRing.exp R^o ^~ n.+1) x = n.+1%:R *: (x ^+ n)%R.
@@ -490,22 +355,7 @@ rewrite (@continuous_FTC2 _ (fun x : R => x ^+ n)%R F)//.
 by apply: continuous_subspaceT; exact: exprn_continuous.
 Qed.
 
-Lemma integral_onemXn {R : realType} n :
-  fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (x.~ ^+ n)%:E) = n.+1%:R^-1%R :> R.
-Proof.
-rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=.
-- rewrite subrr subr0 expr0n/= mul0r expr1n mul1r sub0r.
-  by rewrite -invrN -2!mulNrn opprK.
-- apply: continuous_in_subspaceT.
-  by move=> x x01; exact: continuous_onemXn.
-- exact: derivable_oo_continuous_bnd_onemXnMr.
-- move=> x x01.
-  rewrite derive1Mr//; last exact: onemXn_derivable.
-  by rewrite derive_onemXn mulrC mulrA mulVf// mul1r.
-Qed.
-
 Local Open Scope ereal_scope.
-
 Local Open Scope ring_scope.
 
 Declare Scope lang_scope.
@@ -981,8 +831,8 @@ Inductive evalD : forall g t, exp D g t ->
 
 | eval_poisson g n (e : exp D g _) f mf :
   e -D> f ; mf ->
-  exp_poisson n e -D> poisson_pdf n \o f ;
-                      measurableT_comp (measurable_poisson_pdf n) mf
+  exp_poisson n e -D> poisson_pmf ^~ n \o f ;
+                      measurableT_comp (measurable_poisson_pmf n measurableT) mf
 
 | eval_normalize g t (e : exp P g t) k :
   e -P> k ->
@@ -1371,7 +1221,7 @@ all: rewrite {z g t}.
 - by eexists; eexists; exact: eval_uniform.
 - by eexists; eexists; exact: eval_beta.
 - move=> g h e [f [mf H]].
-  by exists (poisson_pdf h \o f); eexists; exact: eval_poisson.
+  by exists (poisson_pmf ^~ h \o f); eexists; exact: eval_poisson.
 - move=> g t e [k ek].
   by exists (normalize_pt k); eexists; exact: eval_normalize.
 - move=> g t1 t2 x e1 [k1 ev1] e2 [k2 ev2].
@@ -1569,8 +1419,9 @@ Proof. exact/execD_evalD/eval_normalize/evalP_execP. Qed.
 
 Lemma execD_poisson g n (e : exp D g Real) :
   execD (exp_poisson n e) =
-    existT _ (poisson_pdf n \o projT1 (execD e))
-             (measurableT_comp (measurable_poisson_pdf n) (projT2 (execD e))).
+    existT _ (poisson_pmf ^~ n \o projT1 (execD e))
+             (measurableT_comp (measurable_poisson_pmf n measurableT)
+                               (projT2 (execD e))).
 Proof. exact/execD_evalD/eval_poisson/evalD_execD. Qed.
 
 Lemma execP_if g st e1 e2 e3 :
@@ -1634,4 +1485,5 @@ f_equal.
 apply: eq_kernel => y V.
 exact: He.
 Qed.
+
 Local Close Scope lang_scope.
