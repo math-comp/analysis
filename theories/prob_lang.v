@@ -1647,7 +1647,7 @@ Definition sample_and_branch : R.-sfker T ~> _ :=
     (ite macc1of2 (ret (@k3 _ _ R)) (ret k10)).
 
 Lemma sample_and_branchE t U : sample_and_branch t U =
-  (2 / 7)%:E * \d_(3 : R) U + (5 / 7)%:E * \d_(10 : R) U.
+  (2 / 7)%:E * \d_(3%R : R) U + (5 / 7)%:E * \d_(10%R : R) U.
 Proof.
 rewrite /sample_and_branch letin_sample_bernoulli/=; last lra.
 by rewrite !iteE/= onem27.

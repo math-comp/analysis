@@ -92,7 +92,7 @@ Import Notations.
 Hypothesis integral_poisson_density : forall k,
   (\int[mu]_x (@poisson_pdf R k x)%:E = 1%E)%E.
 
-Let f1 x := ((poisson1 (x : R)) ^-1)%R.
+Let f1 x := ((poisson1 (x : R))^-1)%R.
 
 Let mf1 : measurable_fun setT f1.
 rewrite /f1 /poisson1 /poisson_pdf.

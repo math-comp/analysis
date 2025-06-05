@@ -214,13 +214,13 @@ Definition prog0 : @exp R _ [::] _ :=
   return {1}:N <= #{"y"}].
 
 Definition tail1 : @exp R _ [:: ("_", Unit); ("x", Nat) ; ("p", Real)] _ :=
-  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3}]}].
+  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%R}]}].
 
 Definition tail2 : @exp R _ [:: ("_", Unit); ("p", Real)] _ :=
-  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3}]}].
+  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%R}]}].
 
 Definition tail3 : @exp R _ [:: ("p", Real); ("_", Unit)] _ :=
-  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3}]}].
+  [Sample {exp_bernoulli [{1}:R - {[{1}:R - #{"p"}]} ^+ {3%R}]}].
 
 Definition prog1 : @exp R _ [::] _ :=
  [Normalize
@@ -233,14 +233,14 @@ Definition prog2 : @exp R _ [::] _ :=
  [Normalize
   let "p" := Sample {exp_uniform 0 1 (@ltr01 R)} in
   let "_" :=
-    Score {[{56}:R * #{"p"} ^+ {5} * {[{1}:R - #{"p"}]} ^+ {3}]} in
+    Score {[{56}:R * #{"p"} ^+ {5%R} * {[{1}:R - #{"p"}]} ^+ {3%R}]} in
   {tail2}].
 
 Definition prog2' : @exp R _ [::] _ :=
  [Normalize
   let "p" := Sample {exp_beta 1 1} in
   let "_" := Score
-    {[{56}:R * #{"p"} ^+ {5} * {[{1}:R - #{"p"}]} ^+ {3}]} in
+    {[{56}:R * #{"p"} ^+ {5%R} * {[{1}:R - #{"p"}]} ^+ {3%R}]} in
   {tail2}].
 
 Definition prog3 : @exp R _ [::] _ :=
@@ -377,7 +377,7 @@ rewrite execD_pow/=.
 rewrite (@execD_bin _ _ binop_minus)/=/=.
 rewrite 2!execD_real/=.
 rewrite (execD_var_erefl "p")/=.
-rewrite -(mulrA 56).
+rewrite -(mulrA 56%R).
 exact: prog12_subproof.
 Qed.
 
@@ -504,7 +504,7 @@ rewrite /beta_pdf /XMonemX01 2!patchE; case: ifPn => [y01|_]; last first.
 rewrite ger0_norm; last first.
   by rewrite mulr_ge0// XMonemX_ge0//; rewrite inE in y01.
 rewrite [X in _ = _ * X]EFinM [in RHS]muleCA.
-rewrite /= XMonemX00 mul1r [in LHS](mulrC 56) [in LHS]EFinM -[in LHS]muleA; congr *%E.
+rewrite /= XMonemX00 mul1r [in LHS](mulrC 56%R) [in LHS]EFinM -[in LHS]muleA; congr *%E.
 by rewrite !betafunE/=; repeat rewrite !factE/=; rewrite -EFinM; congr EFin; lra.
 
 Qed.

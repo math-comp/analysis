@@ -151,7 +151,7 @@ move/left_right_continuousP.
 apply/not_andP; left.
 move/(@cvgrPdist_le _ R^o).
 apply/existsNP.
-exists (2%:R^-1)%R.
+exists 2%:R^-1%R.
 rewrite not_implyE; split; first by rewrite invr_gt0.
 move=> [e /= e0].
 move/(_ (-(e / 2))%R).
@@ -690,7 +690,7 @@ split.
   exact: exprn_continuous.
 Qed.
 
-Lemma derive_onemXn {R : realType} (n : nat) x :
+Lemma derive_onemXn {R : realType} n x :
   ((fun y : R => `1-y ^+ n.+1 : R^o)^`() x = - n.+1%:R * `1-x ^+ n)%R.
 Proof.
 rewrite (@derive1_comp _ (@onem R) (fun x => GRing.exp x n.+1))//; last first.
@@ -700,7 +700,8 @@ by rewrite -derive1E derive1_cst derive_id sub0r mulrN1 [in RHS]mulNr.
 Qed.
 
 Lemma integral_onemXn {R : realType} n :
-  fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n)%:E) = n.+1%:R^-1%R :> R.
+  fine (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n)%:E)
+  = (n.+1%:R^-1)%R :> R.
 Proof.
 rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=.
 - rewrite subrr subr0 expr0n/= mul0r expr1n mul1r sub0r.
@@ -723,7 +724,7 @@ exact: continuous_XMonemX.
 Qed.
 
 Lemma Rintegral_onemXn {R : realType} n :
-  (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n))%R = n.+1%:R^-1%R :> R.
+  (\int[lebesgue_measure]_(x in `[0%R, 1%R]) (`1-x ^+ n) = n.+1%:R^-1 :> R)%R.
 Proof.
 rewrite /Rintegral.
 rewrite (@continuous_FTC2 _ _ (fun x : R => ((1 - x) ^+ n.+1 / - n.+1%:R))%R)//=.
