@@ -248,6 +248,7 @@ jobs:
     needs:
     - coq
     - mathcomp-finmap
+    - hierarchy-builder
     - mathcomp-bigenough
     - mathcomp-bigenough
     - stdlib
