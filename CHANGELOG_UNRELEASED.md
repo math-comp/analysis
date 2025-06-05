@@ -52,6 +52,10 @@
 - in `lebesgue_integral_differentiation.v`:
   + lemma `nicely_shrinking_fin_num`
 
+- in `normed_module.v`:
+  + definition `pseudoMetric_normed`
+  + factory `Lmodule_isNormed`
+
 ### Changed
 
 - in `convex.v`:
