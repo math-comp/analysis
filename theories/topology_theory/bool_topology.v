@@ -7,8 +7,7 @@ From mathcomp Require Import discrete_topology.
 
 (**md**************************************************************************)
 (* # Topology for boolean numbers                                             *)
-(*          pseudoMetric_bool == an alias for bool equipped with the          *)
-(*                               discrete pseudometric                        *)
+(* This file equips bool with the discrete pseudometric.                      *)
 (******************************************************************************)
 
 Import Order.TTheory GRing.Theory Num.Theory.
