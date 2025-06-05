@@ -319,20 +319,31 @@ rewrite -addn1 series_addn series_exp_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /exp_coeff /= expr0n mul0r.
 Unshelve. all: by end_near. Qed.
 
-Local Lemma expR_ge1Dx_subproof x : 0 <= x -> 1 + x <= expR x.
+Lemma expR_ge1Dxn x n : 0 <= x ->
+   1 + x ^+ n.+1 / n.+1`!%:R <= expR x.
 Proof.
 move=> x_ge0; rewrite /expR.
-pose f (x : R) i := (i == 0%nat)%:R + x *+ (i == 1%nat).
-have F n : (1 < n)%nat -> \sum_(0 <= i < n) (f x i) = 1 + x.
-  move=> /subnK<-.
-  by rewrite addn2 !big_nat_recl //= /f /= mulr1n !mulr0n big1 ?add0r ?addr0.
-have -> : 1 + x = limn (series (f x)).
-  by apply/esym/lim_near_cst => //; near=> n; apply: F; near: n.
-apply: ler_lim; first by apply: is_cvg_near_cst; near=> n; apply: F; near: n.
+pose f n (x : R) i := ((i == 0%nat)%:R + x ^+ n / n`!%:R *+ (i == n)).
+have F m : (n.+1 < m)%nat ->
+  \sum_(0 <= i < m) (f n.+1 x i) = 1 + x ^+ n.+1 / n.+1`!%:R.
+  move=> n1m.
+  rewrite (@big_cat_nat _ _ _ n.+2)//= big_nat_recr// big_nat_recl//=.
+  rewrite big_nat_cond big1 ?addr0; last first.
+    by move=> i; rewrite /f andbT => /andP[_ iltn]; rewrite add0r lt_eqF.
+  rewrite big_nat_cond big1 ?addr0; last first.
+    move=> i; rewrite /f andbT => /andP[Sni iltm]; rewrite 2?gt_eqF ?add0r//.
+    exact: ltn_trans Sni.
+  by rewrite /f/= add0r mulr0n addr0 eq_refl 2!mulr1n.
+have -> : 1 + x ^+ n.+1 / n.+1`!%:R = limn (series (f n.+1 x)).
+  by apply/esym/(@lim_near_cst R^o) => //; near=> k; apply: F; near:k.
+apply: ler_lim; first by apply: is_cvg_near_cst; near=> k; apply: F; near: k.
   exact: is_cvg_series_exp_coeff.
-by near=> n; apply: ler_sum => -[|[|i]] _;
-  rewrite /f /exp_coeff /= !(mulr0n, mulr1n, expr0, expr1, divr1, addr0, add0r)
-          // exp_coeff_ge0.
+near=> k; apply: ler_sum => -[|[|i]] _; rewrite /f/exp_coeff/= ?add0r.
+- by rewrite !(mulr0n, expr0, addr0, divr1).
+- case: n F; first by rewrite !(mulr0n, mulr1n, expr0, addr0, add0r, divr1).
+  by move=> n F; rewrite mulr0n expr1 divr1.
+- case: (@eqVneq _ i.+2 n.+1) => [-> |]; rewrite ?mulr1n//.
+  by rewrite mulr0n divr_ge0// exprn_ge0.
 Unshelve. all: by end_near. Qed.
 
 Lemma exp_coeffE x : exp_coeff x = (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n).
@@ -386,7 +397,8 @@ Proof. by rewrite -[X in _ X * _ = _]addr0 expRxDyMexpx expR0. Qed.
 
 Lemma pexpR_gt1 x : 0 < x -> 1 < expR x.
 Proof.
-by move=> x0; rewrite (lt_le_trans _ (expR_ge1Dx_subproof (ltW x0)))// ltrDl.
+move=> x0; rewrite (lt_le_trans _ (expR_ge1Dxn 0%N (ltW x0)))// ltrDl.
+by rewrite expr1 divr1.
 Qed.
 
 Lemma expR_gt0 x : 0 < expR x.

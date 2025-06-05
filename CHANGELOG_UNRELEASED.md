@@ -52,6 +52,9 @@
 - in `lebesgue_integral_differentiation.v`:
   + lemma `nicely_shrinking_fin_num`
 
+- in `exp.v`
+  + lemma `expR_ge1Dxn`
+
 ### Changed
 
 - in `convex.v`:
