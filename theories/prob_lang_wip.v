@@ -28,19 +28,19 @@ Variable R : realType.
 Local Open Scope ring_scope.
 Notation mu := (@lebesgue_measure R).
 Hypothesis integral_poisson_density : forall k,
-  (\int[mu]_x (@poisson_pdf R k x)%:E = 1%E)%E.
+  (\int[mu]_x (@poisson_pmf R x k)%:E = 1%E)%E.
 
 (* density function for poisson *)
-Definition poisson1 := @poisson_pdf R 1%N.
+Definition poisson1 r := @poisson_pmf R r 1%N.
 
 Lemma poisson1_ge0 (x : R) : 0 <= poisson1 x.
-Proof. exact: poisson_pdf_ge0. Qed.
+Proof. exact: poisson_pmf_ge0. Qed.
 
 Definition mpoisson1 (V : set R) : \bar R :=
   (\int[lebesgue_measure]_(x in V) (poisson1 x)%:E)%E.
 
 Lemma measurable_fun_poisson1 : measurable_fun setT poisson1.
-Proof. exact: measurable_poisson_pdf. Qed.
+Proof. exact: measurable_poisson_pmf. Qed.
 
 Let mpoisson10 : mpoisson1 set0 = 0%E.
 Proof. by rewrite /mpoisson1 integral_set0. Qed.
@@ -48,7 +48,7 @@ Proof. by rewrite /mpoisson1 integral_set0. Qed.
 Lemma mpoisson1_ge0 A : (0 <= mpoisson1 A)%E.
 Proof.
 apply: integral_ge0 => x Ax.
-by rewrite lee_fin poisson1_ge0.
+rewrite lee_fin poisson1_ge0//.
 Qed.
 
 Let mpoisson1_sigma_additive : semi_sigma_additive mpoisson1.
@@ -57,12 +57,12 @@ move=> /= F mF tF mUF.
 rewrite /mpoisson1/= integral_bigcup//=; last first.
   apply/integrableP; split.
     apply/measurable_EFinP.
-    exact: measurable_funS (measurable_poisson_pdf _).
+    exact: measurable_funS (measurable_poisson_pmf _ measurableT).
   rewrite (_ : (fun x => _) = (EFin \o poisson1)); last first.
     by apply/funext => x; rewrite gee0_abs// lee_fin poisson1_ge0//.
   apply: le_lt_trans.
     apply: (@ge0_subset_integral _ _ _ _ _ setT) => //=.
-      by apply/measurable_EFinP; exact: measurable_poisson_pdf.
+      by apply/measurable_EFinP; exact: measurable_poisson_pmf.
     by move=> ? _; rewrite lee_fin poisson1_ge0//.
   by rewrite /= integral_poisson_density// ltry.
 apply: is_cvg_ereal_nneg_natsum_cond => n _ _.
@@ -90,19 +90,19 @@ Variable R : realType.
 Notation mu := (@lebesgue_measure R).
 Import Notations.
 Hypothesis integral_poisson_density : forall k,
-  (\int[mu]_x (@poisson_pdf R k x)%:E = 1%E)%E.
+  (\int[mu]_x (@poisson_pmf R x k)%:E = 1%E)%E.
 
-Let f1 x := ((poisson1 (x : R)) ^-1)%R.
+Let f1 x := ((poisson1 (x : R))^-1)%R.
 
 Let mf1 : measurable_fun setT f1.
-rewrite /f1 /poisson1 /poisson_pdf.
+rewrite /f1 /poisson1 /poisson_pmf.
 apply: (measurable_comp (F := [set r : R | r != 0%R])) => //.
 - exact: open_measurable.
 - move=> /= r [t ? <-].
   by case: ifPn => // t0; rewrite gt_eqF ?mulr_gt0 ?expR_gt0//= invrK ltr0n.
 - apply: open_continuous_measurable_fun => //.
   by apply/in_setP => x /= x0; exact: inv_continuous.
-- exact: measurable_poisson_pdf.
+- exact: measurable_poisson_pmf.
 Qed.
 
 Definition staton_counting : R.-sfker X ~> _ :=

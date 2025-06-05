@@ -18,8 +18,6 @@ From mathcomp Require Import lebesgue_integral trigo probability kernel charge.
 (*   ESOP 2017                                                                *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*          poisson_pdf == Poisson pdf                                        *)
-(*      exponential_pdf == exponential distribution pdf                       *)
 (*   measurable_sum X Y == the type X + Y, as a measurable type               *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -113,60 +111,25 @@ subst p2.
 by f_equal.
 Qed.
 
-(* NB: to be PRed to probability.v *)
-Section poisson_pdf.
-Variable R : realType.
-Local Open Scope ring_scope.
+Definition poisson3 {R : realType} := @poisson_pmf R 3%:R 4. (* 0.168 *)
+Definition poisson10 {R : realType} := @poisson_pmf R 10%:R 4. (* 0.019 *)
 
-(* density function for Poisson *)
-Definition poisson_pdf k r : R :=
-  if r > 0 then r ^+ k / k`!%:R^-1 * expR (- r) else 1%:R.
-
-Lemma poisson_pdf_ge0 k r : 0 <= poisson_pdf k r.
+(* TODO: move *)
+Lemma poisson_pmf_gt0 {R : realType} k (r : R) :
+  (0 < r -> 0 < poisson_pmf r k.+1)%R.
 Proof.
-rewrite /poisson_pdf; case: ifPn => r0//.
-by rewrite mulr_ge0 ?expR_ge0// mulr_ge0// exprn_ge0 ?ltW.
-Qed.
-
-Lemma poisson_pdf_gt0 k r : 0 < r -> 0 < poisson_pdf k.+1 r.
-Proof.
-move=> r0; rewrite /poisson_pdf r0 mulr_gt0  ?expR_gt0//.
+move=> r0; rewrite /poisson_pmf r0 mulr_gt0  ?expR_gt0//.
 by rewrite divr_gt0// ?exprn_gt0// invr_gt0 ltr0n fact_gt0.
 Qed.
 
-Lemma measurable_poisson_pdf k : measurable_fun setT (poisson_pdf k).
+Lemma exponential_pdf_gt0 {R : realType} (r : R) x :
+  (0 < r -> 0 < x -> 0 < exponential_pdf r x)%R.
 Proof.
-rewrite /poisson_pdf; apply: measurable_fun_if => //.
-  exact: measurable_fun_ltr.
-by apply: measurable_funM => /=;
-  [exact: measurable_funM|exact: measurableT_comp].
+move=> r0 x0; rewrite /exponential_pdf/=.
+rewrite patchE/= ifT; last first.
+  by rewrite inE/= in_itv/= (ltW x0).
+by rewrite mulr_gt0// expR_gt0.
 Qed.
-
-Definition poisson3 := poisson_pdf 4 3%:R. (* 0.168 *)
-Definition poisson10 := poisson_pdf 4 10%:R. (* 0.019 *)
-
-End poisson_pdf.
-
-Section exponential_pdf.
-Variable R : realType.
-Local Open Scope ring_scope.
-
-(* density function for exponential *)
-Definition exponential_pdf x r : R := r * expR (- r * x).
-
-Lemma exponential_pdf_gt0 x r : 0 < r -> 0 < exponential_pdf x r.
-Proof. by move=> r0; rewrite /exponential_pdf mulr_gt0// expR_gt0. Qed.
-
-Lemma exponential_pdf_ge0 x r : 0 <= r -> 0 <= exponential_pdf x r.
-Proof. by move=> r0; rewrite /exponential_pdf mulr_ge0// expR_ge0. Qed.
-
-Lemma measurable_exponential_pdf x : measurable_fun setT (exponential_pdf x).
-Proof.
-apply: measurable_funM => //=; apply: measurableT_comp => //.
-exact: measurable_funM.
-Qed.
-
-End exponential_pdf.
 
 (* X + Y is a measurableType if X and Y are *)
 HB.instance Definition _ (X Y : pointedType) :=
@@ -412,7 +375,7 @@ rewrite big1 ?adde0//= => j jk.
 rewrite ifF// lte_fin lee_fin.
 move: jk; rewrite neq_ltn/= => /orP[|] jr.
 - suff : (j.+1%:R <= `|f t|)%R by rewrite leNgt => /negbTE ->; rewrite andbF.
-  rewrite (_ : j.+1%:R = j.+1%:~R)// floor_ge_int//.
+  rewrite (_ : j.+1%:R = j.+1%:~R)// -floor_ge_int_tmp//.
   move: jr; rewrite -lez_nat => /le_trans; apply.
   by rewrite -[leRHS](@ger0_norm _ (floor `|f t|)) ?floor_ge0.
 - suff : (`|f t| < j%:R)%R by rewrite ltNge => /negbTE ->.
@@ -1481,12 +1444,13 @@ Qed.
 (* hard constraints to express score below 1 *)
 Lemma score_fail (r : R) : (0 <= r <= 1)%R ->
   score (kr r) =
-  letin (sample_cst (bernoulli r) : R.-pker T ~> _)
+  letin (sample_cst (bernoulli_prob r) : R.-pker T ~> _)
         (ite (@macc1of2 _ _ _ _) (ret ktt) fail).
 Proof.
 move=> /andP[r0 r1]; apply/eq_sfkernel => x U.
 rewrite letinE/= /sample; unlock.
-by rewrite /mscale/= ger0_norm// integral_bernoulli ?r0//= 2!iteE//= failE mule0 adde0.
+rewrite /mscale/= ger0_norm// integral_bernoulli_prob ?r0//=.
+by rewrite 2!iteE//= failE mule0 adde0.
 Qed.
 
 End insn1_lemmas.
@@ -1612,9 +1576,9 @@ Lemma letin_sample_bernoulli d d' (T : measurableType d)
     (T' : measurableType d') (R : realType) (r : R)
     (u : R.-sfker [the measurableType _ of (T * bool)%type] ~> T') x y :
   (0 <= r <= 1)%R ->
-  letin (sample_cst (bernoulli r)) u x y =
+  letin (sample_cst (bernoulli_prob r)) u x y =
   r%:E * u (x, true) y + (`1- r)%:E * u (x, false) y.
-Proof. by move=> r01; rewrite letinE/= integral_bernoulli. Qed.
+Proof. by move=> r01; rewrite letinE/= integral_bernoulli_prob. Qed.
 
 Section sample_and_return.
 Import Notations.
@@ -1622,7 +1586,7 @@ Context d (T : measurableType d) (R : realType).
 
 Definition sample_and_return : R.-sfker T ~> _ :=
   letin
-    (sample_cst (bernoulli (2 / 7))) (* T -> B *)
+    (sample_cst (bernoulli_prob (2 / 7))) (* T -> B *)
     (ret macc1of2) (* T * B -> B *).
 
 Lemma sample_and_returnE t U : sample_and_return t U =
@@ -1643,7 +1607,7 @@ Context d (T : measurableType d) (R : realType).
    return r *)
 Definition sample_and_branch : R.-sfker T ~> _ :=
   letin
-    (sample_cst (bernoulli (2 / 7))) (* T -> B *)
+    (sample_cst (bernoulli_prob (2 / 7))) (* T -> B *)
     (ite macc1of2 (ret (@k3 _ _ R)) (ret k10)).
 
 Lemma sample_and_branchE t U : sample_and_branch t U =
@@ -1660,12 +1624,12 @@ Context d (T : measurableType d) (R : realType).
 Import Notations.
 
 Definition bernoulli_and : R.-sfker T ~> mbool :=
-    (letin (sample_cst (bernoulli (1 / 2)))
-     (letin (sample_cst (bernoulli (1 / 2)))
+    (letin (sample_cst (bernoulli_prob (1 / 2)))
+     (letin (sample_cst (bernoulli_prob (1 / 2)))
         (ret (measurable_and macc1of3 macc2of3)))).
 
 Lemma bernoulli_andE t U :
-  bernoulli_and t U = sample_cst (bernoulli (1 / 4)) t U.
+  bernoulli_and t U = sample_cst (bernoulli_prob (1 / 4)) t U.
 Proof.
 rewrite /bernoulli_and.
 rewrite letin_sample_bernoulli; last lra.
@@ -1675,7 +1639,7 @@ rewrite muleDr//= -muleDl//.
 rewrite !muleA -addeA -muleDl// -!EFinM !onem1S/= -splitr mulr1.
 have -> : (1 / 2 * (1 / 2) = 1 / 4%:R :> R)%R by rewrite mulf_div mulr1// -natrM.
 rewrite [in RHS](_ : 1 / 4 = (1 / 4)%:nng%:num)%R//.
-rewrite bernoulliE/=; last lra.
+rewrite bernoulli_probE/=; last lra.
 rewrite -!EFinM; congr( _ + (_ * _)%:E).
 by rewrite /onem; lra.
 Qed.
@@ -1687,7 +1651,7 @@ Import Notations.
 Context d (T : measurableType d) (R : realType) (h : R -> R).
 Hypothesis mh : measurable_fun setT h.
 Definition kstaton_bus : R.-sfker T ~> mbool :=
-  letin (sample_cst (bernoulli (2 / 7)))
+  letin (sample_cst (bernoulli_prob (2 / 7)))
   (letin
     (letin (ite macc1of2 (ret k3) (ret k10))
       (score (measurableT_comp mh macc2of3)))
@@ -1704,8 +1668,8 @@ End staton_bus.
 Section staton_bus_poisson.
 Import Notations.
 Context d (T : measurableType d) (R : realType).
-Let poisson4 := @poisson_pdf R 4%N.
-Let mpoisson4 := @measurable_poisson_pdf R 4%N.
+Let poisson4 r := @poisson_pmf R r 4%N.
+Let mpoisson4 := @measurable_poisson_pmf R setT 4%N measurableT.
 
 Definition kstaton_bus_poisson : R.-sfker R ~> mbool :=
   kstaton_bus _ mpoisson4.
@@ -1720,12 +1684,12 @@ rewrite -!muleA; congr (_ * _ + _ * _).
 - rewrite letin_kret//.
   rewrite letin_iteT//.
   rewrite letin_retk//.
-  by rewrite scoreE//= => r r0; exact: poisson_pdf_ge0.
+  by rewrite scoreE//= => r r0; exact: poisson_pmf_ge0.
 - by rewrite onem27.
   rewrite letin_kret//.
   rewrite letin_iteF//.
   rewrite letin_retk//.
-  by rewrite scoreE//= => r r0; exact: poisson_pdf_ge0.
+  by rewrite scoreE//= => r r0; exact: poisson_pmf_ge0.
 Qed.
 
 (* true -> 2/7 * 0.168 = 2/7 * 3^4 e^-3 / 4! *)
@@ -1740,7 +1704,7 @@ Lemma staton_busE P (t : R) U :
 Proof.
 rewrite /staton_bus normalizeE !kstaton_bus_poissonE !diracT !mule1 ifF //.
 apply/negbTE; rewrite gt_eqF// lte_fin.
-by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// poisson_pdf_gt0// ltr0n.
+by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// poisson_pmf_gt0// ltr0n.
 Qed.
 
 End staton_bus_poisson.
@@ -1770,12 +1734,14 @@ rewrite -!muleA; congr (_ * _ + _ * _).
 - rewrite letin_kret//.
   rewrite letin_iteT//.
   rewrite letin_retk//.
-  rewrite scoreE//= => r r0; exact: exponential_pdf_ge0.
+  rewrite scoreE//= => r r0; apply: exponential_pdf_ge0 => //.
+  by rewrite ler0q; lra.
 - by rewrite onem27.
   rewrite letin_kret//.
   rewrite letin_iteF//.
   rewrite letin_retk//.
-  by rewrite scoreE//= => r r0; exact: exponential_pdf_ge0.
+  rewrite scoreE//= => r r0; apply: exponential_pdf_ge0.
+  by rewrite ler0q; lra.
 Qed.
 
 (* true -> 5/7 * 0.019 = 5/7 * 10^4 e^-10 / 4! *)
@@ -1791,11 +1757,11 @@ Proof.
 rewrite /staton_bus.
 rewrite normalizeE /= !kstaton_bus_exponentialE !diracT !mule1 ifF //.
 apply/negbTE; rewrite gt_eqF// lte_fin.
-by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n// exponential_pdf_gt0 ?ltr0n.
+by rewrite addr_gt0// mulr_gt0//= ?divr_gt0// ?ltr0n//;
+  rewrite exponential_pdf_gt0 ?ltr0n// ltr0q; lra.
 Qed.
 
 End staton_bus_exponential.
-
 
 Section von_neumann_trick.
 Context d {T : measurableType d} {R : realType}.
@@ -1845,12 +1811,12 @@ Lemma trickE gamma X : trick gamma X =
   (r *+ (inl tt \in X) +
    q *+ ((inr true \in X) + (inr false \in X)))%:E.
 Proof.
-have Dbernoulli : D =1 bernoulli p by exact/eq_bernoulli/Dtrue.
+have Dbernoulli : D =1 bernoulli_prob p by exact/eq_bernoulli/Dtrue.
 have p_itv01 : (0 <= p <= 1)%R.
   by rewrite -2!lee_fin -Dtrue?measure_ge0 ?probability_le1.
 pose eqbern := eq_measure_integral _ (fun x _ _ => Dbernoulli x).
 rewrite /trick/= /kcomp.
-do 2?rewrite ?eqbern ?integral_bernoulli//= /kcomp/=.
+do 2?rewrite ?eqbern ?integral_bernoulli_prob//= /kcomp/=.
 rewrite !integral_dirac ?diracT//= ?mul1e.
 rewrite !iteE//= ?diracE/= /kcomp/=.
 rewrite !integral_dirac /acc1of4/= ?diracT ?diracE ?mul1e//.
@@ -1911,7 +1877,8 @@ HB.instance Definition _ gamma := Measure_isProbability.Build _ _ _
 HB.instance Definition _ := Kernel_isProbability.Build _ _ _ _ _
   kvon_neumann_trick von_neumann_trick_prob_kernelT.
 
-Theorem von_neumann_trickP gamma : von_neumann_trick gamma =1 bernoulli 2^-1.
+Theorem von_neumann_trickP gamma :
+  von_neumann_trick gamma =1 bernoulli_prob 2^-1.
 Proof. by apply: eq_bernoulli; rewrite von_neumann_trick_prob_kernel. Qed.
 
 End von_neumann_trick_proof.
@@ -2113,7 +2080,7 @@ End letin'A.
 Lemma letin'_sample_bernoulli d d' (T : measurableType d)
     (T' : measurableType d') (R : realType) (r : R) (r01 : (0 <= r <= 1)%R)
     (u : R.-sfker bool * T ~> T') x y :
-  letin' (sample_cst (bernoulli r)) u x y =
+  letin' (sample_cst (bernoulli_prob r)) u x y =
   r%:E * u (true, x) y + (`1- r)%:E * u (false, x) y.
 Proof. by rewrite letin'_letin letin_sample_bernoulli. Qed.
 
@@ -2175,12 +2142,12 @@ Arguments fail' {d d' X Y R}.
 Lemma score_fail' d (X : measurableType d) {R : realType}
     (r : R) (r01 : (0 <= r <= 1)%R) :
   score (kr r) =
-  letin' (sample_cst (bernoulli r) : R.-pker X ~> _)
+  letin' (sample_cst (bernoulli_prob r) : R.-pker X ~> _)
          (ite macc0of2 (ret ktt) fail').
 Proof.
 move: r01 => /andP[r0 r1]; apply/eq_sfkernel => x U.
 rewrite letin'E/= /sample; unlock.
-rewrite integral_bernoulli ?r0//=.
+rewrite integral_bernoulli_prob ?r0//=.
 by rewrite /mscale/= iteE//= iteE//= fail'E mule0 adde0 ger0_norm.
 Qed.
 
@@ -2194,7 +2161,7 @@ Definition gauss_pdf := @normal_pdf R 0 1.
 Lemma normal_pdf_gt0 m s x : 0 < s -> 0 < normal_pdf m s x :> R.
 Proof.
 move=> s0; rewrite /normal_pdf gt_eqF// mulr_gt0 ?expR_gt0// invr_gt0.
-by rewrite sqrtr_gt0 pmulrn_rgt0// mulr_gt0 ?pi_gt0 ?exprn_gt0.
+by rewrite sqrtr_gt0 mulrn_wgt0// mulr_gt0 ?pi_gt0 ?exprn_gt0.
 Qed.
 
 Lemma gauss_pdf_gt0 x : 0 < gauss_pdf x.
