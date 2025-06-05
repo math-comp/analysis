@@ -138,6 +138,9 @@
 - in `convex.v`
   + parameter `R` of `convType` from `realDomainType` to `numDomainType`
 
+- in `derive.v`:
+  + lemmas `is_deriveX`, `deriveX`, `exp_derive`, `exp_derive1`
+
 ### Deprecated
 
 ### Removed
