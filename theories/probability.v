@@ -73,6 +73,9 @@ From mathcomp Require Import charge ftc gauss_integral hoelder.
 (*             beta_pdf == probability density function for beta              *)
 (*            beta_prob == beta probability measure                           *)
 (* div_beta_fun a b c d := beta_fun (a + c) (b + d) / beta_fun a b            *)
+(*       poisson_pmf r  == a pmf of Poisson distribution with parameter r : R *)
+(*       poisson_prob r == probability measure of Poisson distribution when   *)
+(*                         0 <= r and \d_0%N otherwise                        *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -3911,3 +3914,147 @@ by rewrite -!EFin_beta_fun -EFinM divff// gt_eqF// beta_fun_gt0.
 Qed.
 
 End beta_prob_bernoulliE.
+
+Section poisson_pmf.
+Local Open Scope ring_scope.
+Context {R : realType}.
+Implicit Types (rate : R) (k : nat).
+
+Definition poisson_pmf (rate : R) (k : nat) : R :=
+          (rate ^+ k) * k`!%:R^-1 * expR (- rate).
+
+Lemma poisson_pmf_ge0 rate k (rate0 : 0 <= rate) : 0 <= poisson_pmf rate k.
+Proof.
+by rewrite /poisson_pmf 2?mulr_ge0// exprn_ge0.
+Qed.
+
+End poisson_pmf.
+
+Lemma measurable_poisson_pmf {R : realType} D (rate : R) k :
+  measurable_fun D (@poisson_pmf R ^~ k).
+Proof.
+apply: measurable_funM; first exact: measurable_funM.
+by apply: measurable_funTS; exact: measurableT_comp.
+Qed.
+
+Definition poisson_prob {R : realType} (rate : R) (k : nat)
+   : set nat -> \bar R :=
+  fun U => if (0 <= rate)%R then
+    \esum_(k in U) (poisson_pmf rate k)%:E else \d_0%N U.
+
+Section poisson.
+Context {R : realType} (rate : R) (k : nat).
+Local Open Scope ereal_scope.
+
+Local Notation poisson := (poisson_prob rate k).
+
+Let poisson0 : poisson set0 = 0.
+Proof. by rewrite /poisson measure0; case: ifPn => //; rewrite esum_set0. Qed.
+
+Let poisson_ge0 U : 0 <= poisson U.
+Proof.
+rewrite /poisson; case: ifPn => // rate0; apply: esum_ge0 => /= n Un.
+by rewrite lee_fin poisson_pmf_ge0.
+Qed.
+
+Let poisson_sigma_additive : semi_sigma_additive poisson.
+Proof.
+move=> F mF tF mUF; rewrite /poisson; case: ifPn => rate0; last first.
+  exact: measure_semi_sigma_additive.
+apply: cvg_toP.
+  apply: ereal_nondecreasing_is_cvgn => a b ab.
+  apply: lee_sum_nneg_natr => // n _ _.
+  by apply: esum_ge0 => /= ? _; exact: poisson_pmf_ge0.
+by rewrite nneseries_sum_bigcup// => i; rewrite lee_fin poisson_pmf_ge0.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ poisson
+  poisson0 poisson_ge0 poisson_sigma_additive.
+
+Let poisson_setT : poisson [set: _] = 1.
+Proof.
+rewrite /poisson; case: ifPn; last by move=> _; rewrite probability_setT.
+move=> rate0; rewrite /poisson_pmf.
+have pkn n : 0%R <= (rate ^+ n / n`!%:R * expR (- rate))%:E.
+  by rewrite lee_fin poisson_pmf_ge0.
+apply/esym.
+rewrite [LHS](_ : _ = (expR rate)%:E * (expR (- rate))%:E); last first.
+  by rewrite -EFinM expRN divff// gt_eqF ?expR_gt0.
+transitivity
+  ((\esum_(k0 in setT) (rate ^+ k0 / k0`!%:R)%:E) * (expR (- rate))%:E).
+  congr *%E.
+  rewrite -EFin_lim; last exact: is_cvg_series_exp_coeff.
+  transitivity (ereal_sup (range (EFin \o (fun n : nat => (\sum_(0 <= k0 < n) rate ^+ k0 / k0`!%:R)%R)))).
+    apply: cvg_lim => //.
+    rewrite /esum/series/exp_coeff/=.
+    apply: ereal_nondecreasing_cvgn.
+    apply: nondecreasing_series => n _ _.
+    exact: exp_coeff_ge0.
+  apply/eqP; rewrite eq_le; apply/andP; split.
+    apply: le_ereal_sup => _ [n _ <-]/=.
+    exists `I_n => //.
+    rewrite -fsbig_ord/=.
+    rewrite big_mkord.
+    by rewrite sumEFin.
+  apply: ub_ereal_sup.
+  move=> /= e/= [S [fS _] <-].
+  apply: ereal_sup_ge.
+  have /finite_fsetP[X SX] := fS.
+  set N : nat := \max_(x <- X) x.
+  exists ((\sum_(0 <= k0 < N.+1) rate ^+ k0 / k0`!%:R)%:E) => //.
+  rewrite fsbig_finite//=.
+  rewrite -sumEFin.
+  rewrite [leRHS](_ : _ =
+     (\sum_(i <- fset_set `I_N.+1) (rate ^+ i / i`!%:R)%:E)%R); last first.
+    rewrite -Iiota.
+    rewrite -fsbig_finite//=.
+    rewrite -fsbig_seq//.
+    rewrite -/(iota 0 N.+1).
+    apply: iota_uniq.
+  apply: lee_sum_nneg_subfset => /=.
+    apply/subsetP.
+    move=> n; rewrite 2!inE.
+    rewrite 2?in_fset_set// 2!inE => Sn/=.
+    rewrite ltnS.
+    apply: leq_bigmax_seq => //.
+    by rewrite SX in Sn.
+  move=> n _ _.
+  by rewrite lee_fin mulr_ge0// exprn_ge0.
+(* TODO: lemma *)
+under [RHS]eq_esum do rewrite mulrC.
+rewrite muleC -ereal_sup_pZl; last exact: expR_gt0.
+apply/eqP; rewrite eq_le; apply/andP; split => /=.
+  apply: le_ereal_sup => _ [_ [N fN <-] <-]; exists N => //.
+  rewrite ge0_mule_fsumr//.
+  by move=> ?; exact: exp_coeff_ge0.
+apply: le_ereal_sup => _ [N fN <-]/=.
+exists (\sum_(x1 \in N) (rate ^+ x1 / x1`!%:R)%:E)%R; first by exists N.
+rewrite ge0_mule_fsumr//.
+by move=> ?; exact: exp_coeff_ge0.
+Qed.
+
+HB.instance Definition _ :=
+  @Measure_isProbability.Build _ _ R poisson poisson_setT.
+
+End poisson.
+
+Lemma measurable_poisson_prob (R : realType) (n : nat) :
+  measurable_fun setT (poisson_prob ^~ n : R -> pprobability _ _).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+  (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
+rewrite /poisson_prob/=.
+set f := (X in measurable_fun _ X).
+apply: measurable_fun_if => //=.
+  by exact: measurable_fun_ler.
+apply: (eq_measurable_fun (fun t =>
+    \sum_(k <oo | k \in Ys) (poisson_pmf t k)%:E))%E.
+  move=> x /set_mem[_/= x01].
+  rewrite nneseries_esum// -1?[in RHS](set_mem_set Ys)// => k kYs.
+  by rewrite lee_fin poisson_pmf_ge0.
+apply: ge0_emeasurable_sum.
+  by move=> k x/= [_ x01] _; rewrite lee_fin poisson_pmf_ge0.
+move=> k Ysk; apply/measurableT_comp => //.
+exact: measurable_poisson_pmf.
+Qed.
