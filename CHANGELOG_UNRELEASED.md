@@ -67,6 +67,14 @@
   + lemmas `derive1_exponential_pdf`, `exponential_prob_itv0c`,
     `integral_exponential_pdf`, `integrable_exponential_pdf`
 
+- in `sequences.v`:
+  + lemma `exp_coeff_gt0`
+
+- in `exp.v`:
+  + lemmas `normr_exp_coeff_near_nonincreasing`,
+           `series_exp_coeff_near_nondecreasing`,
+	   `exp_coeff2_near_in_increasing`
+
 ### Changed
 
 - in `convex.v`:
