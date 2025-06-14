@@ -170,9 +170,9 @@ rewrite -mulrA mulrC -mulrA mulr_natl -[X in _ *+ X]subn0 -sumr_const_nat.
 apply ler_sum_nat => i /=.
 case: n => //= n ni.
 rewrite normrM.
-pose d := (n.-1 - i)%nat.
-rewrite -[(n - i)%nat]prednK ?subn_gt0// predn_sub -/d.
-rewrite -(subnK (_ : i <= n.-1)%nat) -/d; last first.
+pose d := (n.-1 - i)%N.
+rewrite -[(n - i)%N]prednK ?subn_gt0// predn_sub -/d.
+rewrite -(subnK (_ : i <= n.-1)%N) -/d; last first.
   by rewrite -ltnS prednK// (leq_ltn_trans _ ni).
 rewrite addnC exprD mulrAC -mulrA.
 apply: ler_pM => //.
@@ -182,7 +182,7 @@ apply: le_trans (_ : d.+1%:R * K ^+ d <= _); last first.
   by rewrite ler_nat ltnS /d -subn1 -subnDA leq_subr.
 rewrite (le_trans (ler_norm_sum _ _ _))//.
 rewrite mulr_natl -[X in _ *+ X]subn0 -sumr_const_nat ler_sum_nat//= => j jd1.
-rewrite -[in leRHS](subnK (_ : j <= d)%nat) -1?ltnS // addnC exprD normrM.
+rewrite -[in leRHS](subnK (_ : j <= d)%N) -1?ltnS // addnC exprD normrM.
 by rewrite ler_pM// normrX lerXn2r// qualifE/= (le_trans _ zLK).
 Qed.
 
@@ -319,34 +319,33 @@ rewrite -addn1 series_addn series_exp_coeff0 big_add1 big1 ?addr0//.
 by move=> i _; rewrite /exp_coeff /= expr0n mul0r.
 Unshelve. all: by end_near. Qed.
 
-Lemma expR_ge1Dxn x n : 0 <= x ->
-   1 + x ^+ n.+1 / n.+1`!%:R <= expR x.
+Lemma expR_ge1Dxn x n : 0 <= x -> 1 + x ^+ n.+1 / n.+1`!%:R <= expR x.
 Proof.
 move=> x_ge0; rewrite /expR.
-pose f n (x : R) i := ((i == 0%nat)%:R + x ^+ n / n`!%:R *+ (i == n)).
-have F m : (n.+1 < m)%nat ->
-  \sum_(0 <= i < m) (f n.+1 x i) = 1 + x ^+ n.+1 / n.+1`!%:R.
+pose f n (x : R) i := (i == 0)%:R + x ^+ n / n`!%:R *+ (i == n).
+have F m : (n.+1 < m)%N ->
+    \sum_(0 <= i < m) (f n.+1 x i) = 1 + x ^+ n.+1 / n.+1`!%:R.
   move=> n1m.
   rewrite (@big_cat_nat _ _ _ n.+2)//= big_nat_recr// big_nat_recl//=.
   rewrite big_nat_cond big1 ?addr0; last first.
-    by move=> i; rewrite /f andbT => /andP[_ iltn]; rewrite add0r lt_eqF.
+    by move=> i /[!andbT] /[!leq0n]/= ni; rewrite /f/= lt_eqF//= add0r.
   rewrite big_nat_cond big1 ?addr0; last first.
-    move=> i; rewrite /f andbT => /andP[Sni iltm]; rewrite 2?gt_eqF ?add0r//.
-    exact: ltn_trans Sni.
-  by rewrite /f/= add0r mulr0n addr0 eq_refl 2!mulr1n.
-have -> : 1 + x ^+ n.+1 / n.+1`!%:R = limn (series (f n.+1 x)).
-  by apply/esym/(@lim_near_cst R^o) => //; near=> k; apply: F; near:k.
+    move=> i /[!andbT] /andP[ni mi]; rewrite /f !gtn_eqF//= ?add0r//.
+    exact: ltn_trans ni.
+  by rewrite /f/= add0r mulr0n addr0 eqxx 2!mulr1n.
+rewrite [leLHS](_ : _ = limn (series (f n.+1 x))); last first.
+  by apply/esym/(@lim_near_cst R^o) => //; near=> k; apply: F; near: k.
 apply: ler_lim; first by apply: is_cvg_near_cst; near=> k; apply: F; near: k.
   exact: is_cvg_series_exp_coeff.
-near=> k; apply: ler_sum => -[|[|i]] _; rewrite /f/exp_coeff/= ?add0r.
+near=> k; apply: ler_sum => -[|[|i]] _; rewrite /f /exp_coeff/= ?add0r.
 - by rewrite !(mulr0n, expr0, addr0, divr1).
 - case: n F; first by rewrite !(mulr0n, mulr1n, expr0, addr0, add0r, divr1).
   by move=> n F; rewrite mulr0n expr1 divr1.
-- case: (@eqVneq _ i.+2 n.+1) => [-> |]; rewrite ?mulr1n//.
+- rewrite eqSS; case: eqP => [->|_]; rewrite ?mulr1n//.
   by rewrite mulr0n divr_ge0// exprn_ge0.
 Unshelve. all: by end_near. Qed.
 
-Lemma exp_coeffE x : exp_coeff x = (fun n => (fun n => (n`!%:R)^-1) n * x ^+ n).
+Lemma exp_coeffE x : exp_coeff x = fun n => (fun n => (n`!%:R)^-1) n * x ^+ n.
 Proof. by apply/funext => i; rewrite /exp_coeff /= mulrC. Qed.
 
 Import GRing.Theory.
