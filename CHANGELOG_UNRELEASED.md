@@ -69,6 +69,14 @@
 - in `exp.v`
   + lemma `expR_ge1Dxn`
 
+- in `sequences.v`:
+  + lemma `exp_coeff_gt0`
+
+- in `exp.v`:
+  + lemmas `normr_exp_coeff_near_nonincreasing`,
+           `series_exp_coeff_near_nondecreasing`,
+	   `exp_coeff2_near_in_increasing`
+
 ### Changed
 
 - in `convex.v`:
