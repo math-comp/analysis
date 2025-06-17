@@ -264,8 +264,8 @@ rewrite inveM; last first.
   rewrite invr_eq0 subr_eq0; apply/implyP => /eqP ->.
   by rewrite lee01/= ltry.
 rewrite inver (negbTE p0) inver invr_eq0 subr_eq0 (negbTE p1) invrK.
-rewrite EFinB muleBr// mule1 -EFinM mulVf// -EFinD addrC.
-by rewrite (subrK p^-1%R).
+rewrite EFinB muleBr// mule1 -EFinM mulVf// -EFinD.
+by rewrite (addrC p^-1%R) (subrK p^-1%R).
 Qed.
 
 Lemma hoelder_conjugateP p q : p > -oo -> p != 0 ->
