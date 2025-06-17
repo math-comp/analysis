@@ -2311,6 +2311,13 @@ rewrite -(big_mkord xpredT F) -bigcup_seq.
 by apply: eq_bigcupl; split=> i; rewrite /= mem_index_iota leq0n.
 Qed.
 
+Lemma bigcup_mkord_ord n (G : 'I_n.+1 -> set T) :
+  \bigcup_(i < n.+1) G (inord i) = \big[setU/set0]_(i < n.+1) G i.
+Proof.
+rewrite bigcup_mkord; apply: eq_bigr => /= i _; congr G.
+by apply/val_inj => /=; rewrite inordK.
+Qed.
+
 Lemma bigcap_mkord n F : \bigcap_(i < n) F i = \big[setI/setT]_(i < n) F i.
 Proof. by apply: setC_inj; rewrite setC_bigsetI setC_bigcap bigcup_mkord. Qed.
 
@@ -2493,6 +2500,8 @@ HB.instance Definition _ := isPointed.Build Prop False.
 HB.instance Definition _ := isPointed.Build nat 0.
 HB.instance Definition _ (T T' : pointedType) :=
   isPointed.Build (T * T')%type (point, point).
+HB.instance Definition _ (n : nat) (T : pointedType) :=
+  isPointed.Build (n.-tuple T) (nseq n point).
 HB.instance Definition _ m n (T : pointedType) :=
   isPointed.Build 'M[T]_(m, n) (\matrix_(_, _) point)%R.
 HB.instance Definition _ (T : choiceType) := isPointed.Build (option T) None.
