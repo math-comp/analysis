@@ -756,8 +756,7 @@ rewrite (_ : f = ((f \+ g) \+ (-%R \o g))%R); last first.
 rewrite [X in _ <= 'N__[X] + _](_ : _ = (f \+ g)%R); last first.
   by apply: funext => x /=; rewrite -addrA [X in _ + _ + X]addrC subrr addr0.
 rewrite (_ : 'N__[g] = 'N_p%:E[-%R \o g]); last first.
-  rewrite (_ : _ \o _ = \- (EFin \o g))//.
-  by have := oppe_Lnorm mu (EFin \o g) p%:E.
+  by rewrite (_ : _ \o _ = \- (EFin \o g))//; exact/esym/oppe_Lnorm.
 by apply: minkowski_EFin => //;
   [exact: measurable_funD|exact: measurableT_comp].
 Qed.
