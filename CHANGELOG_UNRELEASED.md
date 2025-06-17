@@ -126,6 +126,15 @@
   + lemmas `poweR_Lnorm`, `oppe_Lnorm`
   + lemma `integrable_poweR`
 
+- in `hoelder.v`:
+  + lemmas `hoelder_conjugate_div`, `hoelder_div_conjugate`,
+    `hoelder_Mconjugate`, `hoelder_conjugateP`,
+    `hoelder_conjugate_eq1`, `hoelder_conjugate_eqNy`, `hoelder_conjugate_eqy`,
+    `hoelder_conjugateNy`
+
+- in `constructive_ereal.v`:
+  + lemmas `div1e`, `divee`, `inve_eq1`, `Nyconjugate`
+
 ### Changed
 
 - in `measure.v`:

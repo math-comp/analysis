@@ -2418,6 +2418,15 @@ Qed.
 Lemma inve_eq0 x : (x^-1 == 0) = (x == +oo).
 Proof. by case: inveP; rewrite ?eqxx //= => r /negPf; rewrite eqe invr_eq0. Qed.
 
+Lemma inve_eq1 x : (x^-1 == 1) = (x == 1).
+Proof.
+move: x => [x| |]/=.
+- rewrite inver; case: ifPn => [/eqP ->|x0]; last by rewrite !eqe invr_eq1.
+  by rewrite eqe// [RHS]eq_sym oner_eq0; apply/negbTE.
+- by rewrite invey eq_sym onee_eq0.
+- by rewrite inveNy.
+Qed.
+
 Lemma inve_ge0 x : (0 <= x^-1) = (0 <= x).
 Proof.
 by case: inveP; rewrite ?le0y ?lexx //= => r; rewrite lee_fin invr_ge0.
@@ -2450,6 +2459,13 @@ Proof. by rewrite !ltNge inve_ge0. Qed.
 Lemma fin_numV x : x != 0 -> x != -oo -> x^-1 \is a fin_num.
 Proof.
 by move: x => [x| |]//; rewrite eqe => x0 _; rewrite inver (negbTE x0).
+Qed.
+
+Lemma div1e x : 1 / x = x^-1.
+Proof.
+move: x => [x| |]/=; first by rewrite mul1e.
+- by rewrite invey mule0.
+- by rewrite inveNy mul1e.
 Qed.
 
 Lemma gee_pMl y x : y \is a fin_num -> 0 <= x -> y <= 1 -> y * x <= x.
@@ -3477,6 +3493,41 @@ Proof. by move=> x0; rewrite inve_pgt ?inve1//= inE/= ?lee01. Qed.
 
 Lemma inve_ge1 x : 0 <= x -> (1 <= x^-1) = (x <= 1).
 Proof. by move=> x0; rewrite inve_pge ?inve1//= inE/= ?lee01. Qed.
+
+Lemma divee x : x \is a fin_num -> x != 0 -> x / x = 1.
+Proof.
+move: x => [x|//|//] _.
+by rewrite eqe => x0; rewrite inver (negbTE x0) -EFinM divff.
+Qed.
+
+Lemma Nyconjugate x y : x \is a fin_num -> y != -oo ->
+  x^-1 + y^-1 = 1 -> y = x / (x - 1).
+Proof.
+move=> xfin yNy; have [->|x1] := eqVneq x 1.
+  rewrite subee// inve0 mul1e inve1 => /eqP.
+  rewrite -addeC eq_sym -sube_eq//; last by rewrite fin_num_adde_defl.
+  rewrite subee// => /eqP /esym; case: y yNy => // r _.
+  rewrite inver; case: ifPn => // r0 [] /(congr1 (fun z => z^-1)%R).
+  by rewrite invrK invr0 => /eqP; rewrite (negbTE r0).
+have [->|x0] := eqVneq x 0.
+  rewrite inve0 mul0e => /eqP; rewrite addeC eq_sym -sube_eq//; last first.
+    rewrite /adde_def eqxx/= andbT negb_and/= orbT/=.
+    apply: contra yNy => /eqP /(congr1 inve).
+    by rewrite inveK inveNy => ->.
+  rewrite eq_sym/= addeC/= => /eqP /(congr1 inve).
+  by rewrite inveK// inveNy => /eqP; rewrite (negbTE yNy).
+have xNy : x != -oo by move: xfin; rewrite fin_numE => /andP[].
+move=> /eqP; rewrite eq_sym addeC -sube_eq//; last first.
+  by rewrite fin_num_adde_defl// fin_numV.
+move=> /eqP /(congr1 inve) /=; rewrite inveK => <-.
+rewrite -[X in X - _](@divee x)// -[X in _ - X]div1e -muleBl.
+- move: x xfin {xNy} x1 x0 => [x| |]// _; rewrite !eqe => x1 x0.
+  rewrite inver/= (negbTE x0)/= -EFinD -EFinM.
+  rewrite inver mulf_eq0 subr_eq0 (negbTE x1)/= invr_eq0.
+  by rewrite (negbTE x0) invfM// invrK mulrC EFinM inver/= subr_eq0 (negbTE x1).
+- by rewrite fin_numV// ?gt_eqF// ltNye.
+- by rewrite fin_num_adde_defl.
+Qed.
 
 Lemma lee_addgt0Pr x y :
   reflect (forall e, (0 < e)%R -> x <= y + e%:E) (x <= y).

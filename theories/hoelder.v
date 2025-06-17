@@ -192,59 +192,7 @@ Context {R : realFieldType}.
 Implicit Type x y : \bar R.
 Local Open Scope ereal_scope.
 
-Lemma div1e x : 1 / x = x^-1.
-Proof.
-move: x => [x| |]/=.
-- by rewrite mul1e.
-- by rewrite invey mule0.
-- by rewrite inveNy mul1e.
-Qed.
 
-Lemma divee x : x != 0 -> x \is a fin_num -> x / x = 1.
-Proof.
-move: x => [x|//|//].
-by rewrite eqe => x0; rewrite inver (negbTE x0) -EFinM divff.
-Qed.
-
-Lemma inve_eq1 x : x^-1 = 1 <-> x = 1.
-Proof.
-move: x => [x| |]/=.
-- split=> [|[->]]; last by rewrite inve1.
-  by move=> /(congr1 (fun x => x^-1)); rewrite inveK inve1 => ->.
-- by rewrite invey; split => // /eqP; rewrite eq_sym onee_eq0.
-- by rewrite inveNy.
-Qed.
-
-Lemma inve_div x y : x \is a fin_num -> 0 < x -> (x / y)^-1 = y / x.
-Proof.
-move: x y => [x| |] [y| |]//=.
-- rewrite !lte_fin => xfin x0.
-  rewrite inver//; case: ifPn => [/eqP->|y0].
-    by rewrite mul0e gt0_muley ?lte_fin.
-  rewrite inver mulf_eq0 gt_eqF//= invr_eq0 (negbTE y0).
-  by rewrite invf_div// inver gt_eqF.
-- rewrite lte_fin => _ x0.
-  by rewrite invey mule0 inve0 gt0_mulye// inve_gt0// eqe gt_eqF.
-- rewrite !lte_fin => _ x0.
-  by rewrite gt0_mulNye ?inve_gt0// ?gt_eqF// inveNy gt0_muleNy.
-Qed.
-
-(** NB: does not hold in general when x = +oo *)
-Lemma ereal_conjugate x y : x \is a fin_num -> 1 < x ->
-  x^-1 + y^-1 = 1 -> y = x / (x - 1).
-Proof.
-move=> xfin x1 /eqP; rewrite eq_sym addeC -sube_eq//; last first.
-  by rewrite fin_num_adde_defl// fin_numV// ?gt_eqF ?(lt_trans _ x1)// ltNye.
-move=> /eqP /(congr1 inve) /=; rewrite inveK => <-.
-rewrite -[X in X - _](@divee x)//; last first.
-  by rewrite gt_eqF// (lt_trans _ x1).
-rewrite -[X in _ - X]div1e -muleBl.
-- rewrite inve_div//.
-  + by rewrite fin_numB// xfin.
-  + by rewrite sube_gt0.
-- by rewrite fin_numV// ?gt_eqF// (lt_trans _ x1)// ltNyr.
-- by rewrite fin_num_adde_defl.
-Qed.
 
 End ereal.
 
@@ -301,22 +249,6 @@ move: p => [p| |].
 - by rewrite hoelder_conjugateNy.
 Qed.
 
-Lemma hoelder_conjugateK : involutive hoelder_conjugate.
-Proof.
-move=> [x| |]; last 2 first.
-  by rewrite hoelder_conjugatey hoelder_conjugate1.
-  by rewrite hoelder_conjugateNy hoelder_conjugate0.
-rewrite /hoelder_conjugate/= !eqe.
-have [->//=|x0/=] := eqVneq x 0%R.
-rewrite -EFinD inver subr_eq0 -eqe.
-have [->/=|x1/=] := eqVneq x 1%R; first by rewrite mul1e eqxx.
-rewrite -EFinM eqe mulf_eq0 (negbTE x0)/= invr_eq0 subr_eq0 (negbTE x1).
-rewrite -EFinD -[X in (_ / _ - X)%R](@divff _ (x - 1)) ?subr_eq0//.
-rewrite -mulrBl opprB (addrC x (1 - _)%R) subrK div1r.
-by rewrite EFinM -muleA divee ?mule1// eqe invr_eq0 subr_eq0.
-Qed.
-
-(** NB: 0^-1 + 0^*^-1 = -oo *)
 Lemma hoelder_conjugate_eq1 (p : \bar R) : p > -oo -> p != 0 ->
   p^-1 + (p^*)^-1 = 1.
 Proof.
@@ -335,61 +267,91 @@ rewrite inver (negbTE p0) inver invr_eq0 subr_eq0 (negbTE p1) invrK.
 by rewrite EFinB muleBr// mule1 -EFinM mulVf// -EFinD addrC subrK.
 Qed.
 
-Lemma hoelder_conjugateP p q : p >= 1 -> p^-1 + q^-1 = 1 <-> q = p^*.
+Lemma hoelder_conjugateP p q : p > -oo -> p != 0 ->
+  p^-1 + q^-1 = 1 <-> q = p^*.
 Proof.
-rewrite le_eqVlt => /predU1P[<-|].
-  rewrite inve1 hoelder_conjugate1; split.
-    move=> /esym/eqP; rewrite addeC -sube_eq//; last first.
-      by rewrite fin_num_adde_defl.
-    by rewrite subee// => /eqP /(congr1 inve); rewrite inveK inve0.
-  by move=> ->; rewrite invey adde0.
-have [->|] := eqVneq q -oo.
-  rewrite inveNy addeNy => p1; split => // /esym /hoelder_conjugate_eqNy /eqP.
-  by rewrite gt_eqF// (lt_trans _ p1).
-rewrite -ltNye => qNy p1.
-have {}p1' : (p \is a fin_num) \/ p == +oo by apply/orP; case: p p1.
-case: p1' => [pfin|/eqP -> /=]; last first.
-  by rewrite hoelder_conjugatey invey add0r; exact: inve_eq1.
-have {}q1' : (q \is a fin_num) \/ q == +oo by apply/orP; case: q qNy.
-case: q1' => [qfin|/eqP -> /=]; last first.
-  rewrite invey addr0; split.
-  - by move/inve_eq1 => ->; rewrite hoelder_conjugate1.
-  - by move/esym/hoelder_conjugate_eqy => ->/=; rewrite inve1.
-split => [pq1|pq]; last first.
-  rewrite pq hoelder_conjugate_eq1//.
-    by rewrite (lt_trans _ p1)// ltNyr.
-  by rewrite gt_eqF// (lt_trans _ p1).
-rewrite /hoelder_conjugate ifF; last first.
-  by apply/negbTE; move/fin_numP : pfin => -[].
-rewrite gt_eqF; last first.
-  by move: pfin; rewrite fin_numE => /andP[pNy _]; rewrite ltNye.
-rewrite gt_eqF// ?(lt_trans _ p1)//.
-exact: ereal_conjugate.
+move=> pNy p0.
+have [->|py] := eqVneq p +oo.
+  rewrite hoelder_conjugatey invey add0e; split => /eqP.
+    by rewrite inve_eq1 => /eqP.
+  by rewrite -inve_eq1 => /eqP.
+have pfin : p \is a fin_num by rewrite fin_numE py andbT -ltNye.
+have [->|qNy] := eqVneq q -oo.
+  rewrite inveNy addeNy; split => // /esym /hoelder_conjugate_eqNy /eqP.
+  by rewrite (negbTE p0).
+split => [pq1|pq]; last by rewrite pq hoelder_conjugate_eq1.
+rewrite /hoelder_conjugate (negbTE py)//.
+rewrite ifF//; last first.
+  by apply/negbTE; move: pfin; rewrite fin_numE => /andP[].
+by rewrite (negbTE p0); exact: Nyconjugate.
 Qed.
 
-(** NB: 0 / 0^* = 0 *)
-Lemma hoelder_div_conjugate p :
-  (*p > -oo -> p != 0 -> *) p = -oo \/ p >= 1 -> p / p^* = p - 1.
+Lemma hoelder_conjugateK : involutive hoelder_conjugate.
 Proof.
-move=> [->|p1].
-  by rewrite hoelder_conjugateNy inve0 mulNyy.
-have [->|py] := eqVneq p +oo.
-  by rewrite hoelder_conjugatey inve1 mule1.
-rewrite /hoelder_conjugate (negbTE py) ifF//; last first.
-  by apply/negbTE; rewrite -ltNye (lt_le_trans _ p1)// ltNye.
-rewrite ifF; last by apply/negbTE; rewrite gt_eqF// (lt_le_trans _ p1).
-have pfin : p \is a fin_num.
-  by rewrite fin_numE py andbT gt_eqF// (lt_le_trans _ p1)// ltNyr.
-move: p1; rewrite le_eqVlt => /predU1P[<-|p1].
-  by rewrite subee// inve0 !mul1e invey.
-rewrite inveM//.
+move=> [x| |]; last 2 first.
+  by rewrite hoelder_conjugatey hoelder_conjugate1.
+  by rewrite hoelder_conjugateNy hoelder_conjugate0.
+rewrite /hoelder_conjugate/= !eqe.
+have [->//=|x0/=] := eqVneq x 0%R.
+rewrite -EFinD inver subr_eq0 -eqe.
+have [->/=|x1/=] := eqVneq x 1%R; first by rewrite mul1e eqxx.
+rewrite -EFinM eqe mulf_eq0 (negbTE x0)/= invr_eq0 subr_eq0 (negbTE x1).
+rewrite -EFinD -[X in (_ / _ - X)%R](@divff _ (x - 1)) ?subr_eq0//.
+rewrite -mulrBl opprB (addrC x (1 - _)%R) subrK div1r.
+by rewrite EFinM -muleA divee ?mule1// eqe invr_eq0 subr_eq0.
+Qed.
+
+Lemma hoelder_Mconjugate p : p > -oo -> p != 0 -> p * p^* = p + p^*.
+Proof.
+move=> pNy p0.
+rewrite /hoelder_conjugate.
+case: ifPn => [/eqP ->|py]; first by rewrite mule1.
+rewrite gt_eqF// (negbTE p0).
+have [->|p1] := eqVneq p 1; first by rewrite subee// inve0 !mul1e.
+rewrite -[X in _ = X + _]mule1.
+have pfin : p \is a fin_num by rewrite fin_numE -ltNye pNy.
+rewrite -[X in _ * X + _](@divee _ (p - 1)); last first.
+  by rewrite sube_eq ?add0e.
+  by rewrite fin_numB// pfin.
+rewrite [in RHS]muleA -muleDl; last 2 first.
+  rewrite fin_numV//; first by rewrite sube_eq// add0e.
+  by rewrite sube_eq// -ltNye.
+  by rewrite fin_num_adde_defl.
+by rewrite muleA muleBr ?fin_num_adde_defl// mule1 subeK.
+Qed.
+
+Lemma hoelder_div_conjugate p : p > -oo -> p != 0 -> p / p^* = p - 1.
+Proof.
+move=> pNy p0.
+rewrite /hoelder_conjugate; case: ifPn => [/eqP->|py].
+  by rewrite inve1 mule1.
+rewrite gt_eqF// (negbTE p0).
+have ? : p \is a fin_num by rewrite fin_numE py andbT -ltNye.
+have [->|p1] := eqVneq p 1; first by rewrite subee// inve0 !mul1e invey.
+rewrite inveM.
   by rewrite inveK muleA divee// ?mul1e// gt_eqF// (lt_trans _ p1).
-apply: fin_inveM_def => //.
-- by rewrite gt_eqF// (lt_trans _ p1).
-- by rewrite inve_eq0 sube_eq.
-- rewrite fin_numV//.
-  + by rewrite sube_eq// add0e gt_eqF.
-  + by rewrite sube_eq// addNye -ltNye (le_lt_trans _ p1)// leNye.
+apply: fin_inveM_def => //; first by rewrite inve_eq0 sube_eq.
+rewrite fin_numV//; first by rewrite sube_eq// add0e.
+by rewrite sube_eq// -ltNye.
+Qed.
+
+Lemma hoelder_conjugate_div p : p > -oo -> p != 0 -> p^* / p = p^* - 1.
+Proof.
+move=> pNy p0.
+rewrite /hoelder_conjugate; case: ifPn => [/eqP->|py].
+  by rewrite invey mule0 subee.
+rewrite gt_eqF// (negbTE p0).
+have ? : p \is a fin_num by rewrite fin_numE py andbT -ltNye.
+rewrite muleAC divee//.
+have [->|p1] := eqVneq p 1; first by rewrite subee// inve0 mul1e.
+rewrite -[X in _ = _ - X](@divee _ (p - 1)); last first.
+  by rewrite sube_eq// add0e.
+  by rewrite fin_numB//; apply/andP.
+rewrite -muleBl//; last 2 first.
+  rewrite fin_numV//; first by rewrite sube_eq// add0e.
+  by rewrite sube_eq// -ltNye.
+  by rewrite fin_num_adde_defr.
+by rewrite oppeB ?fin_num_adde_defl// addeA subee// add0e.
 Qed.
 
 End hoelder_conjugate.
