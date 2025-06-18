@@ -85,6 +85,14 @@
            `ge0_nondecreasing_set_cvg_integral`,
            `le0_nondecreasing_set_nonincreasing_integral`,
 	   `le0_nondecreasing_set_cvg_integral`
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `continuous_comp_cvg`
+
+- in `derive.v`:
+  + lemma `derive1_onem`
+
+- in `ftc.v`:
+  + lemmas `integration_by_substitution_onem`, `Rintegration_by_substitution_onem`
 
 ### Changed
 
@@ -160,6 +168,12 @@
   + HB class `UniformZmodule` moved to `PreUniformZmodule`
   + HB class `UniformLmodule` moved to `PreUniformLmodule`
 
+- in `probability.v`:
+  + `bernoulli` -> `bernoulli_prob`
+  + `bernoulli_probE` -> `bernoulliE`
+  + `integral_bernoulli_prob` -> `integral_bernoulli_prob`
+  + `measurable_bernoulli` -> `measurable_bernoulli_prob`
+  + `measurable_bernoulli2` -> `measurable_bernoulli_prob2`
 
 ### Generalized
 
