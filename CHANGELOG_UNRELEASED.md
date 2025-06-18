@@ -62,6 +62,19 @@
   + `measure_extension.v`
   + `measurable_function.v`
   + `measure.v`
+- in `lebesgue_integral_theory/lebesgue_integral_nonneg.v`:
+  + lemmas `ge0_nondecreasing_set_nondecreasing_integral`,
+           `ge0_nondecreasing_set_cvg_integral`,
+           `le0_nondecreasing_set_nonincreasing_integral`,
+	   `le0_nondecreasing_set_cvg_integral`
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `continuous_comp_cvg`
+
+- in `derive.v`:
+  + lemma `derive1_onem`
+
+- in `ftc.v`:
+  + lemmas `integration_by_substitution_onem`, `Rintegration_by_substitution_onem`
 
 - in `realfun.v`:
   + lemmas `derivable_oy_continuous_within_itvcy`,
@@ -353,6 +366,26 @@
   + `le_ereal_inf` -> `ereal_inf_le_tmp`
   + `lb_ereal_inf` -> `le_ereal_inf_tmp`
   + `ereal_sup_ge` -> `le_ereal_sup_tmp`
+- in `measure.v`
+  + definition `ess_sup` moved to `ess_sup_inf.v`
+
+- in `convex.v`
+  + lemma `conv_gt0` to `convR_gt0`
+- in `tvs.v`
+  + HB class `TopologicalNmodule` moved to `PreTopologicalNmodule`
+  + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
+  + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
+  + structure `topologicalLmodule` moved to `preTopologicalLmodule`
+  + HB class `UniformNmodule` moved to `PreUniformNmodule`
+  + HB class `UniformZmodule` moved to `PreUniformZmodule`
+  + HB class `UniformLmodule` moved to `PreUniformLmodule`
+
+- in `probability.v`:
+  + `bernoulli` -> `bernoulli_prob`
+  + `bernoulli_probE` -> `bernoulliE`
+  + `integral_bernoulli_prob` -> `integral_bernoulli_prob`
+  + `measurable_bernoulli` -> `measurable_bernoulli_prob`
+  + `measurable_bernoulli2` -> `measurable_bernoulli_prob2`
 
 - in `sequences.v`:
   + `adjacent` -> `adjacent_seq`
