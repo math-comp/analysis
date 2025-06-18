@@ -772,8 +772,8 @@ Lemma integral_pushforward : measurable D ->
   \int[mu]_(x in phi @^-1` D) (f \o phi) x.
 Proof.
 move=> mD.
-rewrite integralE.
-under [X in X - _]eq_integral do rewrite funepos_comp.
+rewrite [RHS]integralE.
+under [X in X - _]eq_integral do rewrite funepos_comp/=.
 under [X in _ - X]eq_integral do rewrite funeneg_comp.
 rewrite -[X in _ = X - _]ge0_integral_pushforward//; last first.
   exact/measurable_funepos/measurable_funTS.

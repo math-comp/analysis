@@ -212,7 +212,7 @@ Qed.
 
 Lemma nearN {R : numFieldType} (x : R) (P : R -> Prop) :
   (\forall y \near - x, P y) <-> \near x, P (- x).
-Proof. by rewrite -near_simpl nbhsN. Qed.
+Proof. by rewrite -[X in X <-> _]near_simpl nbhsN. Qed.
 
 Lemma openN {R : numFieldType} (A : set R) : open A -> open [set - x | x in A].
 Proof.

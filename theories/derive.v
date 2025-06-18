@@ -542,7 +542,8 @@ exists df; split=> //; apply: eqaddoEx => z.
 rewrite (hdf _ dxf) !addrA lim_id // /(_ \o _) /= subrK [f _ + _]addrC addrK.
 rewrite -addrA -[LHS]addr0; congr (_ + _).
 apply/eqP; rewrite eq_sym addrC addr_eq0 oppox; apply/eqP.
-by rewrite littleo_center0 (comp_centerK x id) -[- _ in RHS](comp_centerK x).
+rewrite [in LHS]littleo_center0 (comp_centerK x id).
+by rewrite -[- _ in RHS](comp_centerK x).
 Qed.
 
 Lemma diff_cst (V W : normedModType R) a x : ('d (cst a) x : V -> W) = 0.
@@ -1910,7 +1911,7 @@ have Dhx : D° (h + x).
       by near: h; apply: dnbhs0_lt; exact: mulr_gt0.
     by rewrite normrM ger0_norm// mulr_gt0// normr_gt0.
   apply: ball_sym; rewrite /ball/= addrK.
-  by rewrite normrM ger0_norm// ltr_pMl ?normr_gt0// ltr1n.
+  by rewrite normrM (@ger0_norm _ 2)// ltr_pMl ?normr_gt0// ltr1n.
 move: h0; rewrite neq_lt => /orP[h0|h0].
 - rewrite nmulr_rle0 ?invr_lt0// subr_ge0 ltW//.
   by apply: decrf; rewrite ?in_itv ?andbT ?gtrDr// inE; exact: interior_subset.

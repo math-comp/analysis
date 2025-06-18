@@ -336,9 +336,9 @@ have LfE : L x - f x =
 have {Hc1 Hc2} -> : L x - f x = (b - x) * (x - a) * (c2 - c1) / (b - a) *
                                 (('D_1 f c2 - 'D_1 f c1) / (c2 - c1)).
   rewrite LfE Hc2 Hc1.
-  rewrite -(mulrC (b - x)) mulrA -mulrBr.
+  rewrite -(mulrC (b - x)) [in LHS]mulrA -mulrBr.
   rewrite (mulrC ('D_1 f c2 - _)) ![in RHS]mulrA; congr *%R.
-  rewrite -2!mulrA; congr *%R.
+rewrite -2![RHS]mulrA; congr *%R.
   by rewrite mulrCA divff ?mulr1// subr_eq0 gt_eqF.
 rewrite {}h mulr_ge0//; last first.
   rewrite DDf_ge0//; apply/andP; split.

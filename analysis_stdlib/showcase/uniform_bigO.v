@@ -53,7 +53,7 @@ wlog lex12 : x / (`|x.1| <= `|x.2|).
   by rewrite addrC [`|_|]maxC (ler_norm (x.2, x.1)).
 rewrite [`|_|]max_r // -[X in X * _]ger0_norm // -normrM.
 rewrite -sqrtr_sqr ler_wsqrtr // exprMn sqr_sqrtr // mulr_natl mulr2n lerD2r.
-rewrite -[_ ^+ 2]ger0_norm ?sqr_ge0 // -[X in _ <=X]ger0_norm ?sqr_ge0 //.
+rewrite -[leLHS]ger0_norm ?sqr_ge0 // -[leRHS]ger0_norm ?sqr_ge0 //.
 by rewrite !normrX lerXn2r // nnegrE normr_ge0.
 Qed.
 

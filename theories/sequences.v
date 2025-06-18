@@ -834,7 +834,7 @@ case => [|n].
   rewrite /arithmetic_mean/= invr1 mul1r !seriesEnat/=.
   by rewrite big_nat1 subrr big_geq.
 rewrite /arithmetic_mean /= seriesEnat /= big_nat_recl //=.
-under eq_bigr do rewrite eq_sum_telescope.
+under eq_bigr do rewrite [u_ _]eq_sum_telescope.
 rewrite big_split /= big_const_nat iter_addr addr0 addrA -mulrS mulrDr.
 rewrite -(mulr_natl (u_ O)) mulrA mulVr ?unitfE ?pnatr_eq0 // mul1r opprD addrA.
 rewrite eq_sum_telescope (addrC (u_ O)) addrK.

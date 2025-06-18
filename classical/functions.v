@@ -2455,7 +2455,7 @@ End set_bij_lemmas.
 Lemma bij_II_D1 T n (A : set T) (f : nat -> T) :
   set_bij `I_n.+1 A f -> set_bij `I_n (A `\ f n) f.
 Proof.
-rewrite IIS -image_set1; apply: bij_sub_setUll.
+rewrite IIS -[[set f n]]image_set1; apply: bij_sub_setUll.
 by apply/disj_setPS => i [/= /[swap]->]; rewrite ltnn.
 Qed.
 
