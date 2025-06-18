@@ -817,6 +817,20 @@ Arguments cvgr_neq0 {R V T F FF f}.
 #[global] Hint Extern 0 (ProperFilter _^'+) =>
   (apply: at_right_proper_filter) : typeclass_instances.
 
+Lemma continuous_comp_cvg {R : numFieldType} (U V : pseudoMetricNormedZmodType R)
+  (f : U -> V) (g : R -> U) (r : R) (l : V) : continuous f ->
+  (f \o g) x @[x --> r] --> l -> f x @[x --> g r] --> l.
+Proof.
+move=> cf fgl; apply/(@cvgrPdist_le _ V) => /= e e0.
+have e20 : 0 < e / 2 by rewrite divr_gt0.
+move/(@cvgrPdist_le _ V) : fgl => /(_ _ e20) fgl.
+have /(@cvgrPdist_le _ V) /(_ _ e20) fgf := cf (g r).
+rewrite !near_simpl/=; near=> t.
+rewrite -(@subrK _ (f (g r)) l) -(addrA (_ + _)) (le_trans (ler_normD _ _))//.
+rewrite (splitr e) lerD//; last by near: t.
+by case: fgl => d /= d0; apply; rewrite /ball_/= subrr normr0.
+Unshelve. all: by end_near. Qed.
+
 Section closure_left_right_open.
 Variable R : realFieldType.
 Implicit Types z : R.
