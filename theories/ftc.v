@@ -164,7 +164,7 @@ apply: cvg_at_right_left_dnbhs.
   have ixdf : {near \oo,
       (fun n => \int[mu]_(t in [set` Interval a (BRight (x + d n))]) (f t)%:E -
                 \int[mu]_(t in [set` Interval a (BRight x)]) (f t)%:E) =1
-      (fun n => - \int[mu]_(y in E x n) (f y)%:E)}.
+      (fun n => - (\int[mu]_(y in E x n) (f y)%:E))}.
     case: a ax {F}; last first.
       move=> [_|//].
       apply: nearW => n.

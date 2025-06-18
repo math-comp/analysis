@@ -295,7 +295,7 @@ Qed.
 
 Lemma derivable_nbhsxP (f : V -> W) a v :
   derivable f a v <-> forall h, f (a + h *: v) = f a + h *: 'D_v f a
-  +o_(h \near nbhs 0) h.
+  +o_(h \near (nbhs 0)) h.
 Proof.
 split; first exact: derivable_nbhsx.
 move=> df; apply/derivable_nbhsP; apply/eqaddoE; rewrite funeqE => h.

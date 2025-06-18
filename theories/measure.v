@@ -301,58 +301,64 @@ Import Order.TTheory GRing.Theory Num.Def Num.Theory.
 Reserved Notation "'s<|' D , G '|>'" (at level 40, G, D at next level).
 Reserved Notation "'s<<' A '>>'".
 Reserved Notation "'d<<' D '>>'".
-Reserved Notation "mu .-negligible" (at level 2, format "mu .-negligible").
-Reserved Notation "{ 'ae' m , P }" (at level 0, format "{ 'ae'  m ,  P }").
-Reserved Notation "mu .-measurable" (at level 2, format "mu .-measurable").
+Reserved Notation "mu .-negligible" (format "mu .-negligible").
+Reserved Notation "{ 'ae' m , P }" (format "{ 'ae'  m ,  P }").
+Reserved Notation "mu .-measurable" (format "mu .-measurable").
 Reserved Notation "'\d_' a" (at level 8, a at level 2, format "'\d_' a").
-Reserved Notation "G .-sigma" (at level 1, format "G .-sigma").
-Reserved Notation "G .-sigma.-measurable"
- (at level 2, format "G .-sigma.-measurable").
-Reserved Notation "d .-ring" (at level 1, format "d .-ring").
-Reserved Notation "d .-ring.-measurable"
- (at level 2, format "d .-ring.-measurable").
-Reserved Notation "mu .-cara" (at level 1, format "mu .-cara").
-Reserved Notation "mu .-cara.-measurable"
- (at level 2, format "mu .-cara.-measurable").
-Reserved Notation "mu .-caratheodory"
-  (at level 2, format "mu .-caratheodory").
-Reserved Notation "'<<l' D , G '>>'"
-  (at level 2, format "'<<l'  D ,  G  '>>'").
-Reserved Notation "'<<l' G '>>'"
-  (at level 2, format "'<<l'  G  '>>'").
-Reserved Notation "'<<d' G '>>'"
-  (at level 2, format "'<<d'  G '>>'").
-Reserved Notation "'<<s' D , G '>>'"
-  (at level 2, format "'<<s'  D ,  G  '>>'").
-Reserved Notation "'<<s' G '>>'"
-  (at level 2, format "'<<s'  G  '>>'").
-Reserved Notation "'<<r' G '>>'"
-  (at level 2, format "'<<r'  G '>>'").
-Reserved Notation "'<<sr' G '>>'"
-  (at level 2, format "'<<sr'  G '>>'").
-Reserved Notation "'<<M' G '>>'"
-  (at level 2, format "'<<M'  G '>>'").
-Reserved Notation "{ 'content' fUV }" (at level 0, format "{ 'content'  fUV }").
+Reserved Notation "G .-sigma" (format "G .-sigma").
+Reserved Notation "G .-sigma.-measurable" (format "G .-sigma.-measurable").
+Reserved Notation "d .-ring" (format "d .-ring").
+Reserved Notation "d .-ring.-measurable" (format "d .-ring.-measurable").
+Reserved Notation "mu .-cara" (format "mu .-cara").
+Reserved Notation "mu .-cara.-measurable" (format "mu .-cara.-measurable").
+Reserved Notation "mu .-caratheodory" (format "mu .-caratheodory").
+Reserved Notation "'<<l' D , G '>>'" (format "'<<l'  D ,  G  '>>'").
+Reserved Notation "'<<l' G '>>'" (format "'<<l'  G  '>>'").
+Reserved Notation "'<<d' G '>>'" (format "'<<d'  G '>>'").
+Reserved Notation "'<<s' D , G '>>'" (format "'<<s'  D ,  G  '>>'").
+Reserved Notation "'<<s' G '>>'" (format "'<<s'  G  '>>'").
+Reserved Notation "'<<r' G '>>'" (format "'<<r'  G '>>'").
+Reserved Notation "'<<sr' G '>>'" (format "'<<sr'  G '>>'").
+Reserved Notation "'<<M' G '>>'" (format "'<<M'  G '>>'").
+Reserved Notation "{ 'content' fUV }" (format "{ 'content'  fUV }").
+Reserved Notation "{ 'content' 'set' T '->' '\bar' R }"
+  (T at level 37, format "{ 'content'  'set'  T  '->'  '\bar'  R }").
 Reserved Notation "[ 'content' 'of' f 'as' g ]"
-  (at level 0, format "[ 'content'  'of'  f  'as'  g ]").
-Reserved Notation "[ 'content' 'of' f ]"
-  (at level 0, format "[ 'content'  'of'  f ]").
-Reserved Notation "{ 'measure' fUV }"
-  (at level 0, format "{ 'measure'  fUV }").
+  (format "[ 'content'  'of'  f  'as'  g ]").
+Reserved Notation "[ 'content' 'of' f ]" (format "[ 'content'  'of'  f ]").
+Reserved Notation "{ 'measure' fUV }" (format "{ 'measure'  fUV }").
+Reserved Notation "{ 'measure' 'set' T '->' '\bar' R }"
+  (T at level 37, format "{ 'measure'  'set'  T  '->'  '\bar'  R }").
 Reserved Notation "[ 'measure' 'of' f 'as' g ]"
-  (at level 0, format "[ 'measure'  'of'  f  'as'  g ]").
-Reserved Notation "[ 'measure' 'of' f ]"
-  (at level 0, format "[ 'measure'  'of'  f ]").
-Reserved Notation "{ 'outer_measure' fUV }"
-  (at level 0, format "{ 'outer_measure'  fUV }").
+  (format "[ 'measure'  'of'  f  'as'  g ]").
+Reserved Notation "[ 'measure' 'of' f ]" (format "[ 'measure'  'of'  f ]").
+Reserved Notation "{ 'outer_measure' fUV }" (format "{ 'outer_measure'  fUV }").
 Reserved Notation "[ 'outer_measure' 'of' f 'as' g ]"
-  (at level 0, format "[ 'outer_measure'  'of'  f  'as'  g ]").
+  (format "[ 'outer_measure'  'of'  f  'as'  g ]").
 Reserved Notation "[ 'outer_measure' 'of' f ]"
-  (at level 0, format "[ 'outer_measure'  'of'  f ]").
-Reserved Notation "p .-prod" (at level 1, format "p .-prod").
-Reserved Notation "p .-prod.-measurable"
- (at level 2, format "p .-prod.-measurable").
+  (format "[ 'outer_measure'  'of'  f ]").
+Reserved Notation "p .-prod" (format "p .-prod").
+Reserved Notation "p .-prod.-measurable" (format "p .-prod.-measurable").
 Reserved Notation "m1 `<< m2" (at level 51).
+Reserved Notation "{ 'sfinite_measure' 'set' T '->' '\bar' R }"
+  (T at level 37, format "{ 'sfinite_measure'  'set'  T  '->'  '\bar'  R }").
+Reserved Notation "{ 'sigma_finite_content' 'set' T '->' '\bar' R }"
+  (T at level 37,
+   format "{ 'sigma_finite_content'  'set'  T  '->'  '\bar'  R }").
+Reserved Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }"
+  (T at level 37,
+   format "{ 'sigma_finite_measure'  'set'  T  '->'  '\bar'  R }").
+Reserved Notation "{ 'finite_measure' 'set' T '->' '\bar' R }"
+  (T at level 37, format "{ 'finite_measure'  'set'  T  '->'  '\bar'  R }").
+Reserved Notation "{ 'ae' m , P }" (format "{ 'ae'  m ,  P }").
+Reserved Notation "\forall x \ae mu , P"
+  (at level 200, x name, P at level 200, format "\forall  x  \ae  mu ,  P").
+Reserved Notation "f = g %[ae mu 'in' D ]"
+  (at level 70, g at next level, format "f  =  g  '%[ae'  mu  'in'  D ]").
+Reserved Notation "f = g %[ae mu ]"
+  (at level 70, g at next level, format "f  =  g  '%[ae'  mu ]").
+Reserved Notation "{ 'outer_measure' 'set' T '->' '\bar' R }"
+  (T at level 37, format "{ 'outer_measure'  'set'  T  '->'  '\bar'  R }").
 
 Inductive measure_display := default_measure_display.
 Declare Scope measure_display_scope.
@@ -1982,9 +1988,7 @@ HB.structure Definition Content d
   mu & isContent d T R mu }.
 
 Notation content := Content.type.
-Notation "{ 'content' 'set' T '->' '\bar' R }" :=
-  (content T R) (at level 36, T, R at next level,
-    format "{ 'content'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+Notation "{ 'content' 'set' T '->' '\bar' R }" := (content T R) : ring_scope.
 
 Arguments measure_ge0 {d T R} _.
 
@@ -2148,8 +2152,7 @@ HB.structure Definition Measure d (T : semiRingOfSetsType d)
   {mu of Content d mu & Content_isMeasure d T R mu }.
 
 Notation "{ 'measure' 'set' T '->' '\bar' R }" := (measure T%type R)
-  (at level 36, T, R at next level,
-    format "{ 'measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+  : ring_scope.
 
 Section measure_signed.
 Context d (R : numFieldType) (T : semiRingOfSetsType d).
@@ -2696,7 +2699,7 @@ HB.instance Definition _ := Pointed.on rT.
 HB.instance Definition _ := isRingOfSets.Build (display d) rT
   (@setring0 T measurable) (@setringU T measurable) (@setringD T measurable).
 
-Local Notation "d .-ring" := (display d) (at level 1, format "d .-ring").
+Local Notation "d .-ring" := (display d).
 Local Notation "d .-ring.-measurable" :=
   ((d%mdisp.-ring).-measurable : set (set (type _))).
 
@@ -2918,8 +2921,7 @@ End Exports.
 End SetRing.
 Export SetRing.Exports.
 
-Notation "d .-ring" := (SetRing.display d)
-  (at level 1, format "d .-ring") : measure_display_scope.
+Notation "d .-ring" := (SetRing.display d) : measure_display_scope.
 Notation "d .-ring.-measurable" :=
   ((d%mdisp.-ring).-measurable : set (set (SetRing.type _))) : classical_set_scope.
 
@@ -3333,8 +3335,7 @@ Notation "Measure_isSFinite_subdef.Build" := (@isSFinite.Build _ _ _ _ _) (only 
 Notation sfinite_measure_subdef := s_finite (only parsing).
 
 Notation "{ 'sfinite_measure' 'set' T '->' '\bar' R }" :=
-  (SFiniteMeasure.type T R) (at level 36, T, R at next level,
-    format "{ 'sfinite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+  (SFiniteMeasure.type T R) : ring_scope.
 
 HB.mixin Record isSigmaFinite d (T : semiRingOfSetsType d) (R : numFieldType)
   (mu : set T -> \bar R) := { sigma_finiteT : sigma_finite setT mu }.
@@ -3347,18 +3348,14 @@ Arguments sigma_finiteT {d T R} s.
 #[global] Hint Resolve sigma_finiteT : core.
 
 Notation "{ 'sigma_finite_content' 'set' T '->' '\bar' R }" :=
-  (sigma_finite_content T R) (at level 36, T, R at next level,
-    format "{ 'sigma_finite_content'  'set'  T  '->'  '\bar'  R }")
-  : ring_scope.
+  (sigma_finite_content T R) : ring_scope.
 
 #[short(type="sigma_finite_measure")]
 HB.structure Definition SigmaFiniteMeasure d T R :=
   { mu of @SFiniteMeasure d T R mu & isSigmaFinite d T R mu }.
 
 Notation "{ 'sigma_finite_measure' 'set' T '->' '\bar' R }" :=
-  (sigma_finite_measure T R) (at level 36, T, R at next level,
-    format "{ 'sigma_finite_measure'  'set'  T  '->'  '\bar'  R }")
-  : ring_scope.
+  (sigma_finite_measure T R) : ring_scope.
 
 HB.factory Record Measure_isSigmaFinite d (T : measurableType d)
     (R : realType) (mu : set T -> \bar R) of isMeasure _ _ _ mu :=
@@ -3405,8 +3402,7 @@ HB.structure Definition FiniteMeasure d (T : sigmaRingType d) (R : realType) :=
 Arguments fin_num_measure {d T R} _.
 
 Notation "{ 'finite_measure' 'set' T '->' '\bar' R }" :=
-  (FiniteMeasure.type T R) (at level 36, T, R at next level,
-    format "{ 'finite_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+  (FiniteMeasure.type T R) : ring_scope.
 
 HB.factory Record Measure_isFinite d (T : measurableType d)
     (R : realType) (k : set T -> \bar R)
@@ -4163,16 +4159,12 @@ End ae.
 
 Notation "{ 'ae' m , P }" := {near almost_everywhere m, P} : type_scope.
 Notation "\forall x \ae mu , P" := (\forall x \near almost_everywhere mu, P)
-  (format "\forall  x  \ae  mu ,  P",
-  x name, P at level 200, at level 200): type_scope.
+  : type_scope.
 Definition ae_eq d (T : semiRingOfSetsType d) (R : realType)
     (mu : {measure set T -> \bar R}) (V : T -> Type) D (f g : forall x, V x) :=
   \forall x \ae mu, D x -> f x = g x.
-Notation "f = g %[ae mu 'in' D ]" := (\forall x \ae mu, D x -> f x = g x)
-  (format "f  =  g  '%[ae'  mu  'in'  D ]",
-   g at next level, D at level 200, at level 70).
-Notation "f = g %[ae mu ]" := (f = g %[ae mu in setT ])
-  (format "f  =  g  '%[ae'  mu ]", g at next level, at level 70).
+Notation "f = g %[ae mu 'in' D ]" := (\forall x \ae mu, D x -> f x = g x).
+Notation "f = g %[ae mu ]" := (f = g %[ae mu in setT ]).
 
 Lemma measure0_ae d {T : algebraOfSetsType d} {R : realType}
     (mu : {measure set T -> \bar R}) (P : set T) :
@@ -4309,8 +4301,7 @@ HB.structure Definition OuterMeasure (R : numFieldType) (T : Type) :=
   {mu & isOuterMeasure R T mu}.
 
 Notation "{ 'outer_measure' 'set' T '->' '\bar' R }" := (outer_measure R T)
-  (at level 36, T, R at next level,
-    format "{ 'outer_measure'  'set'  T  '->'  '\bar'  R }") : ring_scope.
+  : ring_scope.
 
 #[global] Hint Extern 0 (_ set0 = 0%R) => solve [apply: outer_measure0] : core.
 #[global] Hint Extern 0 (sigma_subadditive _) =>
@@ -4549,7 +4540,7 @@ Qed.
 
 Lemma caratheodory_lime_le (A : (set T) ^nat) : (forall n, M (A n)) ->
   trivIset setT A -> forall X,
-  \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` \bigcup_k A k) <= mu X.
+  \sum_(k <oo) mu (X `&` A k) + mu (X `&` ~` (\bigcup_k A k)) <= mu X.
 Proof.
 move=> MA tA X.
 set A' := \bigcup_k A k; set B := fun n => \big[setU/set0]_(k < n) (A k).
@@ -4577,7 +4568,7 @@ Lemma caratheodory_measurable_trivIset_bigcup (A : (set T) ^nat) :
   (forall n, M (A n)) -> trivIset setT A -> M (\bigcup_k (A k)).
 Proof.
 move=> MA tA; apply: le_caratheodory_measurable => X /=.
-have /(leeD2r (mu (X `&` ~` \bigcup_k A k))) := outer_measure_bigcup_lim A X.
+have /(leeD2r (mu (X `&` ~` (\bigcup_k A k)))) := outer_measure_bigcup_lim A X.
 by move/le_trans; apply; exact: caratheodory_lime_le.
 Qed.
 

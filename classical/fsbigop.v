@@ -16,11 +16,11 @@ From mathcomp Require Import functions cardinality.
 (******************************************************************************)
 
 Reserved Notation "\big [ op / idx ]_ ( i '\in' A ) F"
-  (at level 36, F at level 36, op, idx at level 10, i, A at level 50,
+  (F at level 36, A at level 60,
            format "'[' \big [ op / idx ]_ ( i  '\in'  A ) '/  '  F ']'").
 
 Reserved Notation "\sum_ ( i '\in' A ) F"
-  (at level 41, F at level 41, i, A at level 50,
+  (F at level 41, A at level 60,
     format "'[' \sum_ ( i  '\in'  A ) '/  '  F ']'").
 
 Set Implicit Arguments.

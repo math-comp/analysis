@@ -272,7 +272,7 @@ Definition notE {nP} P : (~ nProp false nP P) = nP := lax_notE P.
 Definition notP {nP P} := MoveView (@lax_notP false nP P).
 
 Fact proper_nPropP nP P : (~ pnProp nP P) = nP. Proof. by case: P. Qed.
-Definition notI {nP} P : pnProp nP P = ~ nP := canRL notK (proper_nPropP P).
+Definition notI {nP} P : pnProp nP P = (~ nP) := canRL notK (proper_nPropP P).
 
 (** Rule 1: proper negation simplification, delegated to properNegatedProp. *)
 Canonical proper_nProp nP P :=

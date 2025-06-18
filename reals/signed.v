@@ -129,41 +129,39 @@ Attributes deprecated(since="mathcomp-analysis 1.9.0",
 (******************************************************************************)
 
 Reserved Notation "{ 'compare' x0 & nz & cond }"
-  (at level 0, x0 at level 200, nz at level 200,
-   format "{ 'compare'  x0  &  nz  &  cond }").
+  (format "{ 'compare'  x0  &  nz  &  cond }").
 Reserved Notation "{ 'num' R & nz & cond }"
-  (at level 0, R at level 200, nz at level 200,
-   format "{ 'num'  R  &  nz  &  cond }").
-Reserved Notation "{ = x0 }" (at level 0, format "{ =  x0 }").
-Reserved Notation "{ > x0 }" (at level 0, format "{ >  x0 }").
-Reserved Notation "{ < x0 }" (at level 0, format "{ <  x0 }").
-Reserved Notation "{ >= x0 }" (at level 0, format "{ >=  x0 }").
-Reserved Notation "{ <= x0 }" (at level 0, format "{ <=  x0 }").
-Reserved Notation "{ >=< x0 }" (at level 0, format "{ >=<  x0 }").
-Reserved Notation "{ >< x0 }" (at level 0, format "{ ><  x0 }").
-Reserved Notation "{ != x0 }" (at level 0, format "{ !=  x0 }").
-Reserved Notation "{ ?= x0 }" (at level 0, format "{ ?=  x0 }").
-Reserved Notation "{ = x0 : T }" (at level 0, format "{ =  x0  :  T }").
-Reserved Notation "{ > x0 : T }" (at level 0, format "{ >  x0  :  T }").
-Reserved Notation "{ < x0 : T }" (at level 0, format "{ <  x0  :  T }").
-Reserved Notation "{ >= x0 : T }" (at level 0, format "{ >=  x0  :  T }").
-Reserved Notation "{ <= x0 : T }" (at level 0, format "{ <=  x0  :  T }").
-Reserved Notation "{ >=< x0 : T }" (at level 0, format "{ >=<  x0  :  T }").
-Reserved Notation "{ >< x0 : T }" (at level 0, format "{ ><  x0  :  T }").
-Reserved Notation "{ != x0 : T }" (at level 0, format "{ !=  x0  :  T }").
-Reserved Notation "{ ?= x0 : T }" (at level 0, format "{ ?=  x0  :  T }").
-Reserved Notation "=0" (at level 0, format "=0").
-Reserved Notation ">=0" (at level 0, format ">=0").
-Reserved Notation "<=0" (at level 0, format "<=0").
-Reserved Notation ">=<0" (at level 0, format ">=<0").
-Reserved Notation ">?<0" (at level 0, format ">?<0").
-Reserved Notation "!=0" (at level 0, format "!=0").
-Reserved Notation "?=0" (at level 0, format "?=0").
+  (format "{ 'num'  R  &  nz  &  cond }").
+Reserved Notation "{ = x0 }" (format "{ =  x0 }").
+Reserved Notation "{ > x0 }" (format "{ >  x0 }").
+Reserved Notation "{ < x0 }" (format "{ <  x0 }").
+Reserved Notation "{ >= x0 }" (format "{ >=  x0 }").
+Reserved Notation "{ <= x0 }" (format "{ <=  x0 }").
+Reserved Notation "{ >=< x0 }" (format "{ >=<  x0 }").
+Reserved Notation "{ >< x0 }" (format "{ ><  x0 }").
+Reserved Notation "{ != x0 }" (format "{ !=  x0 }").
+Reserved Notation "{ ?= x0 }" (format "{ ?=  x0 }").
+Reserved Notation "{ = x0 : T }" (format "{ =  x0  :  T }").
+Reserved Notation "{ > x0 : T }" (format "{ >  x0  :  T }").
+Reserved Notation "{ < x0 : T }" (format "{ <  x0  :  T }").
+Reserved Notation "{ >= x0 : T }" (format "{ >=  x0  :  T }").
+Reserved Notation "{ <= x0 : T }" (format "{ <=  x0  :  T }").
+Reserved Notation "{ >=< x0 : T }" (format "{ >=<  x0  :  T }").
+Reserved Notation "{ >< x0 : T }" (format "{ ><  x0  :  T }").
+Reserved Notation "{ != x0 : T }" (format "{ !=  x0  :  T }").
+Reserved Notation "{ ?= x0 : T }" (format "{ ?=  x0  :  T }").
+Reserved Notation "=0" (format "=0").
+Reserved Notation ">=0" (format ">=0").
+Reserved Notation "<=0" (format "<=0").
+Reserved Notation ">=<0" (format ">=<0").
+Reserved Notation ">?<0" (format ">?<0").
+Reserved Notation "!=0" (format "!=0").
+Reserved Notation "?=0" (format "?=0").
 
-Reserved Notation "x %:sgn" (at level 2, format "x %:sgn").
-Reserved Notation "x %:num" (at level 2, format "x %:num").
-Reserved Notation "x %:posnum" (at level 2, format "x %:posnum").
-Reserved Notation "x %:nngnum" (at level 2, format "x %:nngnum").
+Reserved Notation "x %:sgn" (format "x %:sgn").
+Reserved Notation "x %:num" (format "x %:num").
+Reserved Notation "x %:posnum" (format "x %:posnum").
+Reserved Notation "x %:nngnum" (format "x %:nngnum").
 Reserved Notation "[ 'sgn' 'of' x ]" (format "[ 'sgn' 'of'  x ]").
 Reserved Notation "[ 'gt0' 'of' x ]" (format "[ 'gt0' 'of'  x ]").
 Reserved Notation "[ 'lt0' 'of' x ]" (format "[ 'lt0' 'of'  x ]").
@@ -172,10 +170,10 @@ Reserved Notation "[ 'le0' 'of' x ]" (format "[ 'le0' 'of'  x ]").
 Reserved Notation "[ 'cmp0' 'of' x ]" (format "[ 'cmp0' 'of'  x ]").
 Reserved Notation "[ 'neq0' 'of' x ]" (format "[ 'neq0' 'of'  x ]").
 
-Reserved Notation "{ 'posnum' R }" (at level 0, format "{ 'posnum'  R }").
-Reserved Notation "{ 'nonneg' R }" (at level 0, format "{ 'nonneg'  R }").
-Reserved Notation "x %:pos" (at level 2, format "x %:pos").
-Reserved Notation "x %:nng" (at level 2, format "x %:nng").
+Reserved Notation "{ 'posnum' R }" (format "{ 'posnum'  R }").
+Reserved Notation "{ 'nonneg' R }" (format "{ 'nonneg'  R }").
+Reserved Notation "x %:pos" (format "x %:pos").
+Reserved Notation "x %:nng" (format "x %:nng").
 
 Reserved Notation "!! x" (at level 100, only parsing).
 

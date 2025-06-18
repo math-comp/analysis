@@ -105,16 +105,15 @@ Declare Scope R_scope.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 
-Reserved Notation "{o_ F f }" (at level 0, F at level 0, format "{o_ F  f }").
-Reserved Notation "[littleo 'of' f 'for' fT ]" (at level 0, f at level 0,
+Reserved Notation "{o_ F f }" (F at level 0, format "{o_ F  f }").
+Reserved Notation "[littleo 'of' f 'for' fT ]" (f at level 10,
   format "[littleo  'of'  f  'for'  fT ]").
-Reserved Notation "[littleo 'of' f ]" (at level 0, f at level 0,
-  format "[littleo  'of'  f ]").
+Reserved Notation "[littleo 'of' f ]" (format "[littleo  'of'  f ]").
 
 Reserved Notation "'o_ x" (at level 200, x at level 0, only parsing).
 Reserved Notation "'o" (at level 200, only parsing).
 (* Parsing *)
-Reserved Notation "[o_ x e 'of' f ]" (at level 0, x, e at level 0, only parsing).
+Reserved Notation "[o_ x e 'of' f ]" (at level 0, x at level 0, only parsing).
 (*Printing*)
 Reserved Notation "[o '_' x e 'of' f ]"
   (at level 0, x, e at level 0, format "[o '_' x  e  'of'  f ]").
@@ -176,11 +175,11 @@ Reserved Notation "fx '==o_(' x \near F ')' hx"
    F at level 0, hx at next level,
    format "fx  '==o_(' x  \near  F ')'  hx").
 
-Reserved Notation "{O_ F f }" (at level 0, F at level 0, format "{O_ F  f }").
-Reserved Notation "[bigO 'of' f 'for' fT ]" (at level 0, f at level 0,
-  format "[bigO  'of'  f  'for'  fT ]").
-Reserved Notation "[bigO 'of' f ]" (at level 0, f at level 0,
-  format "[bigO  'of'  f ]").
+Reserved Notation "{O_ F f }" (F at level 0, format "{O_ F  f }").
+Reserved Notation "[bigO 'of' f 'for' fT ]"
+  (format "[bigO  'of'  f  'for'  fT ]").
+Reserved Notation "[bigO 'of' f ]"
+  (format "[bigO  'of'  f ]").
 
 Reserved Notation "'O_ x" (at level 200, x at level 0, only parsing).
 Reserved Notation "'O" (at level 200, only parsing).
@@ -255,9 +254,9 @@ Reserved Notation "f '~~_' F g"
 Reserved Notation "{Omega_ F f }"
   (at level 0, F at level 0, format "{Omega_ F  f }").
 Reserved Notation "[bigOmega 'of' f 'for' fT ]"
-  (at level 0, f at level 0, format "[bigOmega  'of'  f  'for'  fT ]").
+  (at level 0, format "[bigOmega  'of'  f  'for'  fT ]").
 Reserved Notation "[bigOmega 'of' f ]"
-  (at level 0, f at level 0, format "[bigOmega  'of'  f ]").
+  (at level 0, format "[bigOmega  'of'  f ]").
 Reserved Notation "[Omega_ x e 'of' f ]"
   (at level 0, x, e at level 0, only parsing).
 (* Printing *)
@@ -273,14 +272,14 @@ Reserved Notation "f '=Omega_' F h"
 Reserved Notation "{Theta_ F g }"
   (at level 0, F at level 0, format "{Theta_  F  g }").
 Reserved Notation "[bigTheta 'of' f 'for' fT ]"
-  (at level 0, f at level 0, format "[bigTheta  'of'  f  'for'  fT ]").
+  (at level 0, format "[bigTheta  'of'  f  'for'  fT ]").
 Reserved Notation "[bigTheta 'of' f ]"
-  (at level 0, f at level 0, format "[bigTheta  'of'  f ]").
+  (at level 0, format "[bigTheta  'of'  f ]").
 Reserved Notation "[Theta_ x e 'of' f ]"
-  (at level 0, x, e at level 0, only parsing).
+  (at level 0, x at level 0, only parsing).
 (*Printing*)
 Reserved Notation "[Theta '_' x e 'of' f ]"
-  (at level 0, x, e at level 0, format "[Theta '_' x  e  'of'  f ]").
+  (at level 0, x at level 0, format "[Theta '_' x  e  'of'  f ]").
 Reserved Notation "'Theta_ F g"
   (at level 0, F at level 0, format "''Theta_' F g").
 Reserved Notation "f '=Theta_' F h"

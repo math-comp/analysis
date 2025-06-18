@@ -50,11 +50,9 @@ Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
 Reserved Notation "'N[ mu ]_ p [ F ]"
-  (at level 5, F at level 36, mu at level 10,
-  format "'[' ''N[' mu ]_ p '/  ' [ F ] ']'").
+  (format "'[' ''N[' mu ]_ p '/  ' [ F ] ']'").
 (* for use as a local notation when the measure is in context: *)
-Reserved Notation "'N_ p [ F ]"
-  (at level 5, F at level 36, format "'[' ''N_' p '/  ' [ F ] ']'").
+Reserved Notation "'N_ p [ F ]" (format "'[' ''N_' p '/  ' [ F ] ']'").
 Reserved Notation "mu .-Lspace p" (at level 4, format "mu .-Lspace  p").
 
 Declare Scope Lnorm_scope.

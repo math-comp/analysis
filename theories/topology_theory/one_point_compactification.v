@@ -29,7 +29,7 @@ HB.instance Definition _ := Pointed.on opc.
 
 Definition one_point_nbhs (x : opc) : set_system opc :=
   if x is Some x' then Some @ nbhs x' else
-    filter_from (compact `&` closed) (fun U => (Some @` ~`U) `|` [set None]).
+    filter_from (compact `&` closed) (fun U => (Some @` (~`U)) `|` [set None]).
 
 Let one_point_filter (x : opc) : ProperFilter (one_point_nbhs x).
 Proof.

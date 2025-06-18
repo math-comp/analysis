@@ -1410,7 +1410,7 @@ Qed.
 
 Lemma continuous_inj_image_segment a b f : a <= b ->
     {within `[a, b], continuous f} -> {in `[a, b] &, injective f} ->
-  f @` `[a, b] = f @`[a, b]%classic.
+  f @` `[a, b] = (f @`[a, b])%classic.
 Proof.
 move=> leab fct finj; apply: mono_surj_image_segment => //.
   exact: itv_continuous_inj_mono.
@@ -2818,7 +2818,7 @@ by rewrite /y_/x_ ltW//= ts.
 Unshelve. all: end_near. Qed.
 
 Lemma discontinuity_countable :
-  countable [set x | x \in `]a, b[ /\ discontinuity F x].
+  countable [set x | x \in (`]a, b[) /\ discontinuity F x].
 Proof.
 have [|ab] := leP b a.
   rewrite le_eqVlt => /predU1P[->|ba].
@@ -2840,7 +2840,7 @@ have FrBFl (x : elt_type) : exists m, m.+1%:R ^-1 < Fr (sval x) - Fl (sval x).
   have {}FlFr : Fl (sval x) < Fr (sval x) by rewrite lt_neqAle FlFr andbT.
   exists (trunc (Fr (sval x) - Fl (sval x))^-1).
   by rewrite invf_plt ?posrE ?subr_gt0// truncnS_gt.
-pose S m := [set x | x \in `]a, b[ /\ m.+1%:R ^-1 < Fr x - Fl x].
+pose S m := [set x | x \in (`]a, b[) /\ m.+1%:R ^-1 < Fr x - Fl x].
 have jumpfafb m (s : seq R) : (forall i, (i < size s)%N -> nth b s i \in S m) ->
   path <%R a s ->
     \sum_(0 <= i < size s) (Fr (nth b s i) - Fl (nth b s i)) <= F b - F a.

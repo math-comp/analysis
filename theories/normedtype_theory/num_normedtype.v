@@ -42,10 +42,8 @@ From mathcomp Require Import prodnormedzmodule tvs.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "f @`[ a , b ]" (at level 20, b at level 9,
-  format "f  @`[ a ,  b ]").
-Reserved Notation "f @`] a , b [" (at level 20, b at level 9,
-  format "f  @`] a ,  b [").
+Reserved Notation "f @`[ a , b ]" (format "f  @`[ a ,  b ]").
+Reserved Notation "f @`] a , b [" (format "f  @`] a ,  b [").
 Reserved Notation "+oo_ R" (at level 3, left associativity, format "+oo_ R").
 Reserved Notation "-oo_ R" (at level 3, left associativity, format "-oo_ R").
 
@@ -107,7 +105,7 @@ Qed.
 
 Lemma mono_surj_image_segment a b f : a <= b ->
     monotonous `[a, b] f -> set_surj `[a, b] (f @`[a, b]) f ->
-  f @` `[a, b] = f @`[a, b]%classic.
+  (f @` `[a, b] = f @`[a, b])%classic.
 Proof.
 move=> leab fmono; apply: surj_image_eq => _ /= [x xab <-];
 exact: mono_mem_image_segment.
