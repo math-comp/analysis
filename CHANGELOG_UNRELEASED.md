@@ -122,6 +122,55 @@
   + lemmas `ess_infr_bounded`, `ess_infrZl`, `ess_inf_ger`, `ess_inf_ler`,
     `ess_inf_cstr`
 
+- in `simple_functions.v`:
+  + lemma `mfunMn`
+
+- in `hoelder.v`
+  + lemmas `Lnorm0`, `Lnorm_cst1`
+  + definition `hoelder_conjugate`
+  + lemmas `hoelder_conjugate0`, `hoelder_conjugate1`, `hoelder_conjugate2`,
+    `hoelder_conjugatey`, `hoelder_conjugateK`
+  + lemmas `lerB_DLnorm`, `lerB_LnormD`, `eminkowski`
+  + definition `finite_norm`
+  + mixin `isLfunction` with field `Lfunction_finite`
+  + structure `Lfunction`
+  + notation `LfunType`
+  + definition `Lequiv`
+  + canonical `Lequiv_canonical`
+  + definition `LspaceType`
+  + lemma `LequivP`
+  + record `LType`
+  + coercion `LfunType_of_LType`
+  + definition `Lspace` with notation `mu.-Lspace p`
+  + lemma `Lfun_integrable`, `Lfun1_integrable`, `Lfun2_integrable_sqr`, `Lfun2_mul_Lfun1`
+  + lemma `Lfun_scale`, `Lfun_cst`,
+  + definitions `finLfun`, `Lfun`, `Lfun_key`
+  + canonical `Lfun_keyed`
+  + lemmas `sub_Lfun_mfun`, `sub_Lfun_finLfun`
+  + definition `Lfun_Sub`
+  + lemmas `Lfun_rect`, `Lfun_valP`, `LfuneqP`, `finite_norm_cst0`, `mfunP`, `LfunP`,
+    `mfun_scaler_closed`
+  + lemmas `LnormZ`, `Lfun_submod_closed`
+  + lemmas `finite_norm_fine`, `ler_LnormD`,
+    `LnormrN`, `fine_Lnormr_eq0`
+  + lemma `fine_Lnormr_eq0`
+  + lemma `Lfun_subset`, `Lfun_subset12`
+  + lemma `Lfun_oppr_closed`
+  + lemma `Lfun_addr_closed`
+  + lemmas `poweR_Lnorm`, `oppe_Lnorm`
+  + lemma `integrable_poweR`
+
+- in `hoelder.v`:
+  + lemmas `hoelder_conjugate_div`, `hoelder_div_conjugate`,
+    `hoelder_Mconjugate`, `hoelder_conjugateP`,
+    `hoelder_conjugate_eq1`, `hoelder_conjugate_eqNy`, `hoelder_conjugate_eqy`,
+    `hoelder_conjugateNy`
+
+- in `constructive_ereal.v`:
+  + lemmas `div1e`, `divee`, `inve_eq1`, `Nyconjugate`
+
+### Changed
+
 - in `measure.v`:
   + notation `{ae mu, P}` (near use `{near _, _}` notation)
   + definition `ae_eq`
@@ -160,6 +209,8 @@
   + HB class `UniformZmodule` moved to `PreUniformZmodule`
   + HB class `UniformLmodule` moved to `PreUniformLmodule`
 
+- in `hoelder.v`:
+  + `minkowski` -> `minkowski_EFin`
 
 ### Generalized
 
@@ -167,6 +218,18 @@
   + `derive_cst`, `derive1_cst`
 - in `convex.v`
   + parameter `R` of `convType` from `realDomainType` to `numDomainType`
+- in `hoelder.v`:
+  + definition `Lnorm` generalized to functions with codomain `\bar R`
+    (this impacts the notation `'N_p[f]`)
+  + lemmas `Lnorm1`, `eq_Lnorm`, `Lnorm_counting` (from `f : _ -> R` to `f : _ -> \bar R`)
+
+- in `probability.v`
+  + lemma `cantelli`
+  + lemmas `expectation_fin_num`, `expectationZl`, `expectationD`, `expectationB`, `expectation_sum`,
+    `covarianceE`, `covariance_fin_num`, `covarianceZl`, `covarianceZr`, `covarianceNl`,
+    `covarianceNr`, `covarianceNN`, `covarianceDl`, `covarianceDr`, `covarianceBl`, `covarianceBr`,
+     `varianceE`, `variance_fin_num`, `varianceZ`, `varianceN`, `varianceD`, `varianceB`,
+     `varianceD_cst_l`, `varianceD_cst_r`, `varianceB_cst_l`, `varianceB_cst_r`, `covariance_le`
 
 - in `derive.v`:
   + lemmas `is_deriveX`, `deriveX`, `exp_derive`, `exp_derive1`
