@@ -30,7 +30,6 @@ reals/constructive_ereal.v
 reals/reals.v
 reals/real_interval.v
 reals/signed.v
-reals/interval_inference.v
 reals/prodnormedzmodule.v
 reals/all_reals.v
 experimental_reals/xfinmap.v

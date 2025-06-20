@@ -182,8 +182,6 @@ Definition sdist (x : sorgenfrey) : R :=
 From mathcomp Require Import topology normedtype.
 Let Rtopo := num_topology.numFieldTopology.Real_sort__canonical__topology_structure_Topological R.
 
-From mathcomp Require Import ring.
-
 Lemma abs_subr_min (x y t u : R) :
   `|Num.min x y - Num.min t u| <= Num.max `|x - t| `|y - u|.
 Proof.
@@ -192,8 +190,7 @@ wlog: x y t u / x <= y.
   case/boolP: (x <= y) => [/H //| xy].
   by rewrite minC (minC t) maxC H // ltW // ltNge.
 case: (lerP x y) => // xy _.
-have cxtyu : `|x-t| >=< `|y-u| by rewrite comparablerE num_real.
-case: (lerP t u) => tu; rewrite comparable_le_max //.
+case: (lerP t u) => tu; rewrite le_max.
   by rewrite lexx.
 case: (lerP x u) => xu.
   case: (lerP x t) => xt. by rewrite lerD2r ltW.
@@ -313,6 +310,13 @@ case/boolP: (xepsE == set0).
     apply/negP => zE.
     suff : xepsE (z-x) by rewrite xepsE0.
     by rewrite /xepsE /= addrA (addrC x) addrK subr_gt0 xz ltrBlDl.
+  have drzx : dr x = [set t + (z - x) | t in dr z].
+    apply: dr_shift => // t /=.
+    rewrite in_itv /= => /andP[] xt tz.
+    apply: contraPnot xepsE0.
+    rewrite -inE => Et; apply/eqP/set0P.
+    exists (t-x); rewrite /xepsE /= addrA (addrC x) addrK.
+    by rewrite subr_gt0 xt ltrBlDl (le_lt_trans tz).
   have Hr : `|Num.min 1 xr - Num.min 1 zr| < eps.
     rewrite /xr /zr.
     case: ifPn => drx0.
@@ -321,17 +325,29 @@ case/boolP: (xepsE == set0).
       suff : y + z - x \in dr x by rewrite (eqP drx0) inE.
       rewrite inE /dr /= addrA (addrC x) addrK addrC Hy.
       by rewrite subr_gt0 ltr_wpDr // ltW.
+    have drz0 : dr z !=set0.
+      case/set0P: drx0 => y [] Hy y0.
+      exists (y + x - z).
+      rewrite /dr /= addrA (addrC z) addrK addrC Hy subr_gt0 ltNge.
+      split => //; apply/negP => xyz.
+      suff : xepsE y by rewrite xepsE0.
+      by rewrite /xepsE /= Hy y0 -(ltrD2l x) (le_lt_trans xyz).
     rewrite ifF.
       rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //.
       rewrite subrr normr0 maxEle normr_ge0.
-      admit.
-    apply/negbTE/set0P.
-    case/set0P: drx0 => y [] Hy y0.
-    exists (y + x - z).
-    rewrite /dr /= addrA (addrC z) addrK addrC Hy subr_gt0 ltNge.
-    split => //; apply/negP => xyz.
-    suff : xepsE y by rewrite xepsE0.
-    by rewrite /xepsE /= Hy y0 -(ltrD2l x) (le_lt_trans xyz).
+        rewrite drzx.
+        rewrite -image2_set1.
+        rewrite inf_sumE //.
+          rewrite inf1.
+          rewrite addrAC.
+          rewrite subrr add0r.
+          move/ltW: xz.
+          rewrite ler_def.
+          move/eqP ->.
+          by rewrite ltrBlDl. 
+        split. by [].
+        exists 0. by move=> y [] _ /ltW.
+    exact/negbTE/set0P.
   have dlxz : dl z = [set t + (z - x) | t in dl x].
     apply: dl_shift => // t /=.
     rewrite in_itv /= => /andP[] xt tz.
@@ -346,14 +362,40 @@ case/boolP: (xepsE == set0).
       by rewrite inE /dl /= subr0.
     by rewrite dlxz dlx0 image_set0 inf0 subr0 (negbTE znE).
   case/set0P => w Hw.
-  have <- : x - inf (dl x) = z - inf (dl z).
+  have inf_dlxz : x - inf (dl x) = z - inf (dl z).
     rewrite dlxz -image2_set1 inf_sumE.
     - by rewrite inf1 !opprD !addrA (addrC z) addrK (opprK x) addrC.
     - split. by exists w.
       exists 0. move=> u. rewrite -inE. exact: dl_ge0.
     - exact: has_inf1.
+  rewrite -inf_dlxz.
   case: ifPn => xlE //.
-  rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //. admit.
+  rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //.
+  rewrite gt_max ltr_norml.
+  rewrite -[inf(dl x)]addr0.
+  rewrite -(subrr (-z)) opprK addrA -[_ - _]addrA -inf_dlxz.
+  rewrite -!addrA addrC !addrA subrK addrC.
+  rewrite (@le_lt_trans _ _ 0 (_ - _) ) //; first last.
+    by rewrite subr_le0 ltW.
+  rewrite ltrBrDl ltrBlDr zx /=.
+  rewrite /xr /zr. 
+  rewrite drzx.
+  have[-> | drz0] := eqVneq (dr z) set0.
+    by rewrite image_set0 eqxx subrr normr0 eps0.
+  case:ifPn.
+    move/eqP /image_set0_set0 /eqP.
+    by rewrite (negPf drz0).
+  move=> drx0.
+  have inf_drxz : inf (dr x) = inf (dr z) + z - x.
+    rewrite drzx -image2_set1 inf_sumE.
+    - by rewrite inf1 addrA.
+    - split. by apply/set0P.
+      exists 0. move=> u. rewrite -inE. exact: dr_ge0.
+    - exact: has_inf1.
+  rewrite -drzx inf_drxz.
+  rewrite -!addrA addrC !addrA subrK ltr_norml.
+  rewrite (@lt_le_trans _ _ 0) ?ltrBlDl //= ?subr_ge0 ?ltW //. 
+  by rewrite oppr_lt0.
 move/set0P/xgetPex => /(_ eps).
 rewrite -/eps' => -[] eps'E Heps'.
 rewrite -/(sdist x) -/(sdist z).
@@ -367,8 +409,8 @@ have eps'l : forall t, x <= t < x + eps' -> 0 <= sdist t < eps.
     rewrite /dr /= (addrC _ (-t)) addrA subrr add0r eps'E.
     rewrite addrC subr_gt0 //; by case/andP: Ht.
   move=> drt0.
-  rewrite comparable_le_min; last exact/real_leVge/num_real/num_real.
-  rewrite comparable_gt_min; last exact/real_leVge/num_real/num_real.
+  rewrite le_min.
+  rewrite gt_min.
   rewrite {1}/xl fun_if inf_ge0 // ler01 if_same /=.
   rewrite inf_ge0 /=; last by move=> u; rewrite inE => -[] _ /ltW.
   case/andP: Ht => xt tx.
@@ -383,11 +425,11 @@ have Hx : 0 <= sdist x < eps.
   by apply: eps'l; rewrite lexx ltrDl; case/andP: Heps'.
 have Hz : 0 <= sdist z < eps.
   by apply: eps'l; rewrite zx ltW // xz.
-rewrite -maxrN comparable_gt_max; last exact/real_leVge/num_real/num_real.
+rewrite -maxrN gt_max.
 case/andP: Hx => Hx1 Hx2.
 case/andP: Hz => Hz1 Hz2.
 by rewrite opprB !ltrBlDr !ltr_wpDr.
-Admitted.
+Qed.
 
 Lemma zeroset_sdist :  E = sdist @^-1` [set 0].
 Proof.
@@ -435,5 +477,16 @@ rewrite -in_setC inE. apply: aE => /=.
 by rewrite in_itv /= xya' (le_trans ax) // ler_wpDr // ltW.
 Qed.
 End distance.
+
+Lemma sorgenfrey_line_perfectly_norml_space : 
+  perfectly_normal_space R sorgenfrey.
+Proof.
+move=> E cE.
+exists (sdist E).
+split.
+  exact: continuous_sdist.
+exact: zeroset_sdist.
+Qed.
+
 
 End Sorgenfrey_line.
