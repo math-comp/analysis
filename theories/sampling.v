@@ -141,51 +141,6 @@ by case=> /eqP /(congr1 (@fset_set _)) /[!set_fsetK] /eqP H;
 Qed.
 End fset.
 
-Lemma gtr0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
-  (forall x : R, x \in `]a, b[ -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[ -> 0 < 'D_1 f x) ->
-  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in (Interval (BSide sa a) (BSide sb b)) &, {homo f : x y / x < y >-> x < y}}.
-Proof.
-move=> df dfgt0 cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
-have HMVT1: {within `[x, y], continuous f}%classic.
-  exact/(continuous_subspaceW _ cf)/subset_itv.
-have zab z : z \in `]x, y[ -> z \in `]a, b[.
-  apply: subset_itv.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
-have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
-  by move=> zxy; exact/derivableP/df/zab.
-rewrite -subr_gt0.
-have[z zxy ->]:= MVT xy HMVT0 HMVT1.
-rewrite mulr_gt0// ?subr_gt0// dfgt0//.
-exact: zab.
-Qed.
-
-Lemma ger0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
-  (forall x : R, x \in `]a, b[ -> derivable f x 1) ->
-  (forall x : R, x \in `]a, b[ -> 0 <= 'D_1 f x) ->
-  {within [set` (Interval (BSide sa a) (BSide sb b))], continuous f} ->
-  {in (Interval (BSide sa a) (BSide sb b)) &, {homo f : x y / x <= y >-> x <= y}}.
-Proof.
-move=> df dfge0 cf x y + + xy.
-rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
-have HMVT1: {within `[x, y], continuous f}%classic.
-  exact/(continuous_subspaceW _ cf)/subset_itv.
-have zab z : z \in `]x, y[ -> z \in `]a, b[.
-  apply/subset_itv.
-    by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
-  by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
-have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
-  by move=> zxy; exact/derivableP/df/zab.
-rewrite -subr_ge0.
-move: (xy); rewrite le_eqVlt=> /orP [/eqP-> | xy']; first by rewrite subrr.
-have[z zxy ->]:= MVT xy' HMVT0 HMVT1.
-rewrite mulr_ge0// ?subr_ge0// dfge0//.
-exact: zab.
-Qed.
-
 (* TODO: integral_fune_lt_pinfty does not look useful a lemma *)
 
 Lemma bounded_RV_integrable d (T : measurableType d) (R : realType)
@@ -1474,11 +1429,12 @@ rewrite in_itv=> /andP [] x0 x1.
 fold (f x).
 simpl in idf.
 rewrite -f1E.
-apply: (@gtr0_derive1_homo _ f 0 1 false false).
+apply: (@gtr0_derive1_lt _ f 0 1 _ _ false false).
 - move=> t /[!in_itv] /= /andP [] + _.
   by case/idf=> ? /@ex_derive.
 - move=> t /[!in_itv] /= /andP [] t0 t1.
-  apply: Df_gt0=> //.
+  rewrite derive1E.
+  apply: Df_gt0 => //.
   by rewrite (lt_eqF t1).
 - apply: derivable_within_continuous => t /[!in_itv] /= /andP [] + _.
   by case/idf=> ? /@ex_derive.
@@ -1495,12 +1451,13 @@ have x0 : 0 < x by rewrite (lt_trans _ x1).
 fold (f x).
 simpl in idf.
 rewrite -f1E.
-apply: (@gtr0_derive1_homo _ f 1 x true false).
+apply: (@gtr0_derive1_lt _ f 1 x _ _ true false).
 - move=> t /[!in_itv] /= /andP [] + _ => t1.
   have: 0 < t by rewrite (lt_trans _ t1).
   by case/idf=> ? /@ex_derive.
 - move=> t /[!in_itv] /= /andP [] t1 tx.
   have t0: 0 < t by rewrite (lt_trans _ t1).
+  rewrite derive1E.
   apply: Df_gt0=> //.
   by rewrite (gt_eqF t1).
 - apply: derivable_within_continuous => t /[!in_itv] /= /andP [] + _ => t1.
@@ -1683,9 +1640,9 @@ have dfge0 y : y \in `]0, 1[ -> 0 <= df y.
   rewrite expRM/= powR_mulrn ?expR_ge0// lnK ?posrE//.
   rewrite !exprS expr0 mulr1 -!natrM mulnE /=.
   exact/with_interval.exp2_le8_conversion/with_interval.exp2_le8.
-apply: (@ger0_derive1_homo R f 0 1 true false).
+apply: (@ger0_derive1_le R f 0 1 _ _ true false).
 - by move=> y /y1oo /idf /@ex_derive.
-- by move=> y /[dup] /y1oo /idf /@derive_val ->; exact: dfge0.
+- by move=> y /[dup] /y1oo /idf /@derive_val; rewrite derive1E => ->; exact: dfge0.
 - by apply: derivable_within_continuous=> y /y1cc /idf /@ex_derive.
 - by rewrite bound_itvE.
 - exact: subset_itv_oo_cc.
