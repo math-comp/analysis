@@ -141,16 +141,6 @@ by case=> /eqP /(congr1 (@fset_set _)) /[!set_fsetK] /eqP H;
 Qed.
 End fset.
 
-(* TODO: this generalize subset_itv! *)
-Lemma subset_itvW_bound (d : Order.disp_t) (T : porderType d)
-  (x y z u : itv_bound T) :
-  (x <= y)%O -> (z <= u)%O -> [set` Interval y z] `<=` [set` Interval x u].
-Proof.
-move=> xy zu.
-by apply: (@subset_trans _ [set` Interval x z]);
-  [exact: subset_itvr | exact: subset_itvl].
-Qed.
-
 Lemma gtr0_derive1_homo (R : realType) (f : R^o -> R^o) (a b : R) (sa sb : bool) :
   (forall x : R, x \in `]a, b[ -> derivable f x 1) ->
   (forall x : R, x \in `]a, b[ -> 0 < 'D_1 f x) ->
@@ -160,9 +150,9 @@ Proof.
 move=> df dfgt0 cf x y + + xy.
 rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
 have HMVT1: {within `[x, y], continuous f}%classic.
-  exact/(continuous_subspaceW _ cf)/subset_itvW_bound.
+  exact/(continuous_subspaceW _ cf)/subset_itv.
 have zab z : z \in `]x, y[ -> z \in `]a, b[.
-  apply: subset_itvW_bound.
+  apply: subset_itv.
     by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
   by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
 have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
@@ -182,9 +172,9 @@ Proof.
 move=> df dfge0 cf x y + + xy.
 rewrite !itv_boundlr /= => /andP [] ax ? /andP [] ? yb.
 have HMVT1: {within `[x, y], continuous f}%classic.
-  exact/(continuous_subspaceW _ cf)/subset_itvW_bound.
+  exact/(continuous_subspaceW _ cf)/subset_itv.
 have zab z : z \in `]x, y[ -> z \in `]a, b[.
-  apply: subset_itvW_bound.
+  apply/subset_itv.
     by move: ax; clear; case: sa; rewrite !bnd_simp// => /ltW.
   by move: yb; clear; case: sb; rewrite !bnd_simp// => /ltW.
 have HMVT0 (z : R^o) : z \in `]x, y[ -> is_derive z 1 f ('D_1 f z).
