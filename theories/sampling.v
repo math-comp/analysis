@@ -113,19 +113,6 @@ HB.instance Definition _ (n : nat) := @isMeasurable.Build default_measure_displa
   'I_n.+1 discrete_measurable discrete_measurable0
   discrete_measurableC discrete_measurableU.
 
-Section move_to_bigop_nat_lemmas.
-Context {T : Type}.
-Implicit Types (A : set T).
-
-Lemma bigcup_mkord_ord n (F : 'I_n.+1 -> set T) :
-  \bigcup_(i < n.+1) F (inord i) = \big[setU/set0]_(i < n.+1) F i.
-Proof.
-rewrite bigcup_mkord; apply: eq_bigr => /= i _; congr F.
-by apply/val_inj => /=;rewrite inordK.
-Qed.
-
-End move_to_bigop_nat_lemmas.
-
 Section fset.
 Local Open Scope fset_scope.
 Lemma fset_bool : forall B : {fset bool},
