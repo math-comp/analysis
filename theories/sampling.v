@@ -141,29 +141,6 @@ by case=> /eqP /(congr1 (@fset_set _)) /[!set_fsetK] /eqP H;
 Qed.
 End fset.
 
-Lemma finite_prod_fin_num {R : realType} n (F : 'I_n -> \bar R) :
-  (forall i, F i \is a fin_num)%E -> (\prod_(i < n) F i \is a fin_num)%E.
-Proof.
-move: F; elim: n => n; first by rewrite big_ord0 fin_numE.
-move=> ih F Foo.
-rewrite big_ord_recl fin_numM//.
-apply:ih => i.
-exact: Foo.
-Qed.
-
-Lemma finite_prod_ge0 {R : realType} n (F : 'I_n -> \bar R) :
-  (forall i, 0 <= F i < +oo)%E -> (\prod_(i < n) F i < +oo)%E.
-Proof.
-move: F; elim: n => n; first by rewrite big_ord0 ltry.
-move=> ih F Foo.
-rewrite big_ord_recl lte_mul_pinfty//.
-- by have /andP[] := Foo ord0.
-- rewrite fin_numElt.
-  have /andP[F0 ->] := Foo ord0.
-  by rewrite (@lt_le_trans _ _ 0%E).
-by rewrite ih.
-Qed.
-
 (* TODO: this generalize subset_itv! *)
 Lemma subset_itvW_bound (d : Order.disp_t) (T : porderType d)
   (x y z u : itv_bound T) :
@@ -1084,11 +1061,9 @@ have h2 : (\prod_(i < n) Tnth (behead_tuple X) i)%R \in Lfun (\X_n P) 1.
     exact: measurable_tuple_prod.
   have := IH (behead_tuple X).
   rewrite unlock /= => ->; last by move => x /mem_behead/lfunX.
-  rewrite abse_prod finite_prod_ge0// => i.
-  rewrite abse_ge0//= abse_integralP//; last first.
-    exact: measurableT_comp.
-  have: (tnth (behead_tuple X) i) \in X by apply/mem_behead/mem_tnth.
-  by move/(lfunX (tnth (behead_tuple X) i))/Lfun1_integrable/integrableP => [_].
+  rewrite abse_prod -ge0_fin_numE ?prode_ge0// prode_fin_num// => i _.
+  rewrite abse_fin_num integral_fune_fin_num//.
+  exact/Lfun1_integrable/lfunX/mem_behead/mem_tnth.
 rewrite [LHS](@integral_ipro _ _ _ _ _ MF) /pro2; last first.
   rewrite /MF/F; apply/integrableP; split.
     exact: measurableT_comp.
@@ -1133,12 +1108,9 @@ have ? : \int[\X_n P]_x0 (\prod_(i < n) tnth X (lift ord0 i) (tnth x0 i))%:E < +
     apply: eq_integral => /=x _.
     by rewrite /Tnth fct_prodE.
   rewrite IH.
-    rewrite ltey_eq finite_prod_fin_num//= => i.
-    rewrite fin_num_abs unlock.
-    apply/abse_integralP => //.
-      exact: measurableT_comp.
-    have: (tnth (behead_tuple X) i) \in X by apply/mem_behead/mem_tnth.
-    by move/(lfunX (tnth (behead_tuple X) i))/Lfun1_integrable/integrableP => [_/=].
+    rewrite ltey_eq prode_fin_num// => i _.
+    rewrite expectation_fin_num//.
+    exact/lfunX/mem_behead/mem_tnth.
   by move=> Xi XiX; rewrite lfunX//= mem_behead.
 have ? : measurable_fun [set: n.-tuple T]
     (fun x : n.-tuple T => \prod_(i < n) tnth X (lift ord0 i) (tnth x i))%R.
