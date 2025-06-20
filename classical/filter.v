@@ -1600,7 +1600,7 @@ Proof.
 by rewrite meetsC meets_globallyl; under eq_forall do rewrite setIC.
 Qed.
 
-Lemma meetsxx T (F : set_system T) (FF : Filter F) : F `#` F = ~ (F set0).
+Lemma meetsxx T (F : set_system T) (FF : Filter F) : F `#` F = (~ (F set0)).
 Proof.
 rewrite propeqE; split => [FmF F0|]; first by have [x []] := FmF _ _ F0 F0.
 move=> FN0 A B /filterI FAI {}/FAI FAB; apply/set0P/eqP => AB0.

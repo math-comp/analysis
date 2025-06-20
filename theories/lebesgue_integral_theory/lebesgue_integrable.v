@@ -72,22 +72,22 @@ have /integrableP intone : mu.-integrable D (f \_ N).
   - exact: measurableI.
   - exact: measurable_funS mf.
   - by apply: (subset_measure0 _ _ _ muN0) => //; exact: measurableI.
-have h1 : mu.-integrable D f <-> mu.-integrable D (f \_ ~` N).
+have h1 : mu.-integrable D f <-> mu.-integrable D (f \_ (~` N)).
   split=> [/integrableP intf|/integrableP intCf].
     apply/integrableP; split.
       by apply/measurable_restrict => //; exact: measurable_funS mf.
-    rewrite (eq_integral ((abse \o f) \_ ~` N)); last first.
+    rewrite (eq_integral ((abse \o f) \_ (~` N))); last first.
       by move=> t _; rewrite restrict_abse.
     rewrite -integral_mkcondr; case: intf => _; apply: le_lt_trans.
     by apply: ge0_subset_integral => //=; [exact:measurableI|
                                            exact:measurableT_comp].
   apply/integrableP; split => //; rewrite (funID N f).
-  have mDfcN : measurable_fun D (f \_ ~` N).
+  have mDfcN : measurable_fun D (f \_ (~` N)).
     by apply/measurable_restrict => //; exact: measurable_funS mf.
   have mDfN : measurable_fun D (f \_ N).
     by apply/measurable_restrict => //; exact: measurable_funS mf.
   apply: (@le_lt_trans _ _
-    (\int[mu]_(x in D) (`|(f \_ ~` N) x| + `|(f \_ N) x|))).
+    (\int[mu]_(x in D) (`|(f \_ (~` N)) x| + `|(f \_ N) x|))).
     apply: ge0_le_integral => //.
     - by apply: measurableT_comp => //; exact: emeasurable_funD.
     - by move=> ? ?; exact: adde_ge0.
@@ -95,13 +95,13 @@ have h1 : mu.-integrable D f <-> mu.-integrable D (f \_ ~` N).
     - by move=> *; rewrite lee_abs_add.
   rewrite ge0_integralD//; [|exact: measurableT_comp..].
   by apply: lte_add_pinfty; [case: intCf|case: intone].
-suff : mu.-integrable D (f \_ ~` N) <-> mu.-integrable (D `\` N) f.
+suff : mu.-integrable D (f \_ (~` N)) <-> mu.-integrable (D `\` N) f.
   exact: iff_trans.
 apply: iff_sym.
 split=> [/integrableP intCf|/integrableP intCf]; apply/integrableP.
 - split.
   + by apply/measurable_restrict => //; exact: measurable_funS mf.
-  + rewrite (eq_integral ((abse \o f) \_ ~` N)); last first.
+  + rewrite (eq_integral ((abse \o f) \_ (~` N))); last first.
       by move=> t _; rewrite restrict_abse.
     rewrite -integral_mkcondr //; case: intCf => _; apply: le_lt_trans.
     apply: ge0_subset_integral => //=; [exact: measurableI|exact: measurableD|].
@@ -200,7 +200,7 @@ Lemma integrableB f g : mu_int f -> mu_int g -> mu_int (f \- g).
 Proof. by move=> fi gi; exact/(integrableD fi)/integrableN. Qed.
 
 Lemma integrable_add_def f : mu_int f ->
-  \int[mu]_(x in D) f^\+ x +? - \int[mu]_(x in D) f^\- x.
+  \int[mu]_(x in D) f^\+ x +? - (\int[mu]_(x in D) f^\- x).
 Proof.
 move=> /integrableP[mf]; rewrite -[fun x => _]/(abse \o f) fune_abse => foo.
 rewrite ge0_integralD // in foo; last 2 first.

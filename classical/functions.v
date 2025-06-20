@@ -165,6 +165,7 @@ Reserved Notation "'{' 'splitbij' A '>->' B '}'"
   (format "'{' 'splitbij'  A  '>->'  B '}'").
 
 Reserved Notation "[ 'fun' 'of' f ]" (format "[ 'fun'  'of'  f ]").
+Reserved Notation "[ 'fun' f 'in' A ]" (format "[ 'fun'  f  'in'  A ]").
 Reserved Notation "[ 'oinv' 'of' f ]" (format "[ 'oinv'  'of'  f ]").
 Reserved Notation "[ 'inv' 'of' f ]" (format "[ 'inv'  'of'  f ]").
 Reserved Notation "[ 'oinv' 'of' f ]" (format "[ 'oinv'  'of'  f ]").
@@ -928,9 +929,7 @@ HB.instance Definition _ : OCanV _ _ A (f @` A) (funin A f) :=
    ((fun _ => id) : set_surj A (f @` A) f).
 
 End funin_surj.
-Notation "[ 'fun' f 'in' A ]" := (funin A f)
-  (at level 0, f at next level,
-   format "[ 'fun'  f  'in'  A ]") : function_scope.
+Notation "[ 'fun' f 'in' A ]" := (funin A f) : function_scope.
 #[global] Hint Resolve set_fun_image : core.
 
 (** Partial injection *)
@@ -2704,5 +2703,5 @@ Definition fctE :=
 
 End function_space_lemmas.
 
-Lemma inv_funK T (R : unitRingType) (f : T -> R) : f\^-1\^-1%R = f.
+Lemma inv_funK T (R : unitRingType) (f : T -> R) : (f\^-1\^-1)%R = f.
 Proof. by apply/funeqP => x; rewrite /inv_fun/= GRing.invrK. Qed.

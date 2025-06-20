@@ -219,76 +219,39 @@ Unset Printing Implicit Defensive.
 
 Declare Scope classical_set_scope.
 
-Reserved Notation "[ 'set' x : T | P ]"
-  (at level 0, x at level 99, only parsing).
-Reserved Notation "[ 'set' x | P ]"
-  (at level 0, x, P at level 99, format "[ 'set'  x  |  P ]").
-Reserved Notation "[ 'set' E | x 'in' A ]" (at level 0, E, x at level 99,
-  format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'").
+Reserved Notation "[ 'set' x : T | P ]" (only parsing).
+Reserved Notation "[ 'set' x | P ]" (format "[ 'set'  x  |  P ]").
+Reserved Notation "[ 'set' E | x 'in' A ]"
+  (format "[ '[hv' 'set'  E '/ '  |  x  'in'  A ] ']'").
 Reserved Notation "[ 'set' E | x 'in' A & y 'in' B ]"
-  (at level 0, E, x at level 99,
-  format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'").
-Reserved Notation "[ 'set' a ]"
-  (at level 0, a at level 99, format "[ 'set'  a ]").
-Reserved Notation "[ 'set' : T ]" (at level 0, format "[ 'set' :  T ]").
-Reserved Notation "[ 'set' a : T ]"
-  (at level 0, a at level 99, format "[ 'set'  a   :  T ]").
+  (format "[ '[hv' 'set'  E '/ '  |  x  'in'  A  &  y  'in'  B ] ']'").
+Reserved Notation "[ 'set' a ]" (format "[ 'set'  a ]").
+Reserved Notation "[ 'set' : T ]" (format "[ 'set' :  T ]").
+Reserved Notation "[ 'set' a : T ]" (format "[ 'set'  a   :  T ]").
 Reserved Notation "A `|` B" (at level 52, left associativity).
 Reserved Notation "a |` A" (at level 52, left associativity).
-Reserved Notation "[ 'set' a1 ; a2 ; .. ; an ]"
-  (at level 0, a1 at level 99, format "[ 'set'  a1 ;  a2 ;  .. ;  an ]").
 Reserved Notation "A `&` B"  (at level 48, left associativity).
 Reserved Notation "A `*` B"  (at level 46, left associativity).
 Reserved Notation "A `*`` B"  (at level 46, left associativity).
 Reserved Notation "A ``*` B"  (at level 46, left associativity).
-Reserved Notation "A .`1" (at level 2, left associativity, format "A .`1").
-Reserved Notation "A .`2" (at level 2, left associativity, format "A .`2").
+Reserved Notation "A .`1" (format "A .`1").
+Reserved Notation "A .`2" (format "A .`2").
 Reserved Notation "~` A" (at level 35, right associativity).
-Reserved Notation "[ 'set' ~ a ]" (at level 0, format "[ 'set' ~  a ]").
+Reserved Notation "[ 'set' ~ a ]" (format "[ 'set' ~  a ]").
 Reserved Notation "A `\` B" (at level 50, left associativity).
 Reserved Notation "A `\ b" (at level 50, left associativity).
 Reserved Notation "A `+` B" (at level 54, left associativity).
-Reserved Notation "\bigcup_ ( i < n ) F"
-  (at level 41, F at level 41, i, n at level 50,
-           format "'[' \bigcup_ ( i  <  n ) '/  '  F ']'").
-Reserved Notation "\bigcup_ ( i >= n ) F"
-  (at level 41, F at level 41, i, n at level 50,
-           format "'[' \bigcup_ ( i  >=  n ) '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i < n ) F"
-  (at level 41, F at level 41, i, n at level 50,
-           format "'[' \bigcap_ ( i  <  n ) '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i >= n ) F"
-  (at level 41, F at level 41, i, n at level 50,
-           format "'[' \bigcap_ ( i  >=  n ) '/  '  F ']'").
-Reserved Notation "\bigcup_ ( i 'in' P ) F"
-  (at level 41, F at level 41, i, P at level 50,
-           format "'[' \bigcup_ ( i  'in'  P ) '/  '  F ']'").
-Reserved Notation "\bigcup_ ( i : T ) F"
-  (at level 41, F at level 41, i at level 50,
-           format "'[' \bigcup_ ( i  :  T ) '/  '  F ']'").
-Reserved Notation "\bigcup_ i F"
-  (at level 41, F at level 41, i at level 0,
-           format "'[' \bigcup_ i '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i 'in' P ) F"
-  (at level 41, F at level 41, i, P at level 50,
-           format "'[' \bigcap_ ( i  'in'  P ) '/  '  F ']'").
-Reserved Notation "\bigcap_ ( i : T ) F"
-  (at level 41, F at level 41, i at level 50,
-           format "'[' \bigcap_ ( i  :  T ) '/  '  F ']'").
-Reserved Notation "\bigcap_ i F"
-  (at level 41, F at level 41, i at level 0,
-           format "'[' \bigcap_ i '/  '  F ']'").
 Reserved Notation "A `<` B" (at level 70, no associativity).
 Reserved Notation "A `<=` B" (at level 70, no associativity).
 Reserved Notation "A `<=>` B" (at level 70, no associativity).
 Reserved Notation "f @^-1` A" (at level 24).
 Reserved Notation "f @` A" (at level 24).
 Reserved Notation "A !=set0" (at level 80).
-Reserved Notation "[ 'set`' p ]" (at level 0, format "[ 'set`'  p ]").
-Reserved Notation "[ 'disjoint' A & B ]" (at level 0,
-  format "'[hv' [ 'disjoint' '/  '  A '/'  &  B ] ']'").
+Reserved Notation "[ 'set`' p ]" (format "[ 'set`'  p ]").
+Reserved Notation "[ 'disjoint' A & B ]"
+  (format "'[hv' [ 'disjoint' '/  '  A '/'  &  B ] ']'").
 Reserved Notation "F `#` G"
- (at level 48, left associativity, format "F  `#`  G").
+  (at level 48, left associativity, format "F  `#`  G").
 Reserved Notation "'`I_' n" (at level 8, n at level 2, format "'`I_' n").
 
 Definition set T := T -> Prop.
@@ -542,7 +505,7 @@ Lemma set_memK {A} {u : T} : cancel (@set_mem A u) mem_set. Proof. by []. Qed.
 Lemma memNset (A : set T) (u : T) : ~ A u -> u \in A = false.
 Proof. by apply: contra_notF; rewrite inE. Qed.
 
-Lemma notin_setE (A : set T) x : (x \notin A : Prop) = ~ (A x).
+Lemma notin_setE (A : set T) x : (x \notin A : Prop) = (~ A x).
 Proof. by apply/propext; split=> /asboolPn. Qed.
 
 Lemma setTPn (A : set T) : A != setT <-> exists t, ~ A t.
@@ -2040,11 +2003,11 @@ Lemma bigcap_setD1 (x : I) F (X : set I) : X x ->
 Proof. by move=> Xx; rewrite -bigcap_setU1 setD1K. Qed.
 
 Lemma setC_bigsetU U (s : seq T) (f : T -> set U) (P : pred T) :
-   (~` \big[setU/set0]_(t <- s | P t) f t) = \big[setI/setT]_(t <- s | P t) ~` f t.
+   (~` (\big[setU/set0]_(t <- s | P t) f t)) = \big[setI/setT]_(t <- s | P t) ~` f t.
 Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setC0 ?setCU. Qed.
 
 Lemma setC_bigsetI U (s : seq T) (f : T -> set U) (P : pred T) :
-  (~` \big[setI/setT]_(t <- s | P t) f t) =
+  (~` (\big[setI/setT]_(t <- s | P t) f t)) =
   \big[setU/set0]_(t <- s | P t) ~` f t.
 Proof. by elim/big_rec2: _ => [|i X Y Pi <-]; rewrite ?setCT ?setCI. Qed.
 
@@ -2671,7 +2634,7 @@ by rewrite neq_ltn => /orP[] /h; apply/eqP/set0P; exists t.
 Qed.
 
 Lemma subsetC_trivIset T (F : nat -> set T) :
-  (forall n, F n.+1 `<=` ~` \big[setU/set0]_(i < n.+1) F i) -> trivIset setT F.
+  (forall n, F n.+1 `<=` ~` (\big[setU/set0]_(i < n.+1) F i)) -> trivIset setT F.
 Proof.
 move=> sF; apply: ltn_trivIset => n m h; rewrite setIC; apply/disjoints_subset.
 by case: n h => // n h; apply: (subset_trans (sF n)); exact/subsetC/bigsetU_sup.

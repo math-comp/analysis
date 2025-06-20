@@ -290,14 +290,14 @@ move=> fsetI clI; case: wedge_nbhs_specP => [//|i0 bcA|i z zNp0 /= wNz].
   exact: wedge_prod_pointE.
 rewrite [x in nbhs x _]/wedge_prod /= wedge_lift_funE; first last.
   exact: wedge_prod_pointE.
-have : wedge_prod @` (A `&` (@wedge_lift i @` ~`[set p0 i]))
+have : wedge_prod @` (A `&` (@wedge_lift i @` (~`[set p0 i])))
     `<=`  wedge_prod @` A.
   by move=> ? [] ? [] + /= [w] wpi => /[swap] <- Aw <-; exists (wedge_lift w).
 move/filterS; apply; apply/nbhs_subspace_ex.
   exists (wedge_lift z) => //.
   by rewrite /wedge_prod wedge_lift_funE //; exact: wedge_prod_pointE.
 exists (proj i @^-1` (@wedge_lift i @^-1`
-    (A `&` (@wedge_lift i @` ~`[set p0 i])))).
+    (A `&` (@wedge_lift i @` (~`[set p0 i]))))).
   apply/ proj_continuous; rewrite /proj dfwithin preimage_setI; apply: filterI.
     exact: wNz.
   have /filterS := @preimage_image _ _ (@wedge_lift i) (~` [set p0 i]).

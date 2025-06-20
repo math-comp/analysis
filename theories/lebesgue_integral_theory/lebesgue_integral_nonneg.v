@@ -423,8 +423,8 @@ Context d (T : measurableType d) (R : realType)
         (mu : {measure set T -> \bar R}).
 
 Lemma integralN D (f : T -> \bar R) :
-  \int[mu]_(x in D) f^\+ x +? (- \int[mu]_(x in D) f^\- x) ->
-  \int[mu]_(x in D) - f x = - \int[mu]_(x in D) f x.
+  \int[mu]_(x in D) f^\+ x +? (- (\int[mu]_(x in D) f^\- x)) ->
+  \int[mu]_(x in D) - f x = - (\int[mu]_(x in D) f x).
 Proof.
 have [f_fin _|] := boolP (\int[mu]_(x in D) f^\- x \is a fin_num).
   rewrite integralE// [in RHS]integralE// fin_num_oppeD ?fin_numN// oppeK addeC.
@@ -440,7 +440,7 @@ Qed.
 
 Lemma integral_ge0N (D : set T) (f : T -> \bar R) :
   (forall x, D x -> 0 <= f x) ->
-  \int[mu]_(x in D) - f x = - \int[mu]_(x in D) f x.
+  \int[mu]_(x in D) - f x = - (\int[mu]_(x in D) f x).
 Proof.
 move=> f0; rewrite integralN // (eq_integral _ _ (ge0_funenegE _))// integral0.
 by rewrite oppe0 fin_num_adde_defl.
@@ -1617,7 +1617,7 @@ Hypotheses (nndF : nondecreasing_seq F) (mF : forall i, measurable (F i)).
 Hypothesis mf : forall i, measurable_fun (F i) f.
 Hypothesis f0 : forall i x, F i x -> f x <= 0.
 
-Let intNS n : (- \int[mu]_(x in F n) f x) = \int[mu]_(x in F n) - f x.
+Let intNS n : (- (\int[mu]_(x in F n) f x)) = \int[mu]_(x in F n) - f x.
 Proof.
 apply/esym; apply: integralN => /=; apply: fin_num_adde_defr.
 rewrite integral0_eq// => x Fnx.

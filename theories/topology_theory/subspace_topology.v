@@ -23,7 +23,7 @@ From mathcomp Require Import product_topology.
 (******************************************************************************)
 
 Reserved Notation "{ 'within' A , 'continuous' f }"
-  (at level 70, A at level 69, format "{ 'within'  A ,  'continuous'  f }").
+  (format "{ 'within'  A ,  'continuous'  f }").
 
 Set Implicit Arguments.
 Unset Strict Implicit.

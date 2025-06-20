@@ -34,11 +34,6 @@ From mathcomp Require Import num_normedtype.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "f @`[ a , b ]" (at level 20, b at level 9,
-  format "f  @`[ a ,  b ]").
-Reserved Notation "f @`] a , b [" (at level 20, b at level 9,
-  format "f  @`] a ,  b [").
-
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.

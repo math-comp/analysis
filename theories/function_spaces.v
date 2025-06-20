@@ -387,7 +387,7 @@ Lemma join_product_open (A : set T) : open A ->
 Proof.
 move=> oA; rewrite openE => y /= [x Ax] jxy.
 have [// | i nAfiy] := @sepf (~` A) x (open_closedC oA).
-pose B : set PU := proj i @^-1` (~` closure (f_ i @` ~` A)).
+pose B : set PU := proj i @^-1` (~` closure (f_ i @` (~` A))).
 apply: (@filterS _ _ _ (range join_product `&` B)).
   move=> z [[w ?]] wzE Bz; exists w => //.
   move: Bz; rewrite /B -wzE -interiorC interiorEbigcup.

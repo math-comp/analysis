@@ -71,14 +71,11 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 
 Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
-Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]", at level 5).
-Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]", at level 5).
-Reserved Notation "'M_ X t" (format "''M_' X  t",
-  at level 5, t, X at next level).
-Reserved Notation "{ 'dmfun' aT >-> T }"
-  (at level 0, format "{ 'dmfun'  aT  >->  T }").
-Reserved Notation "'{' 'dRV' P >-> R '}'"
-  (at level 0, format "'{' 'dRV'  P  '>->'  R '}'").
+Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]").
+Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]").
+Reserved Notation "'M_ X t" (at level 5, t, X at level 4, format "''M_' X  t").
+Reserved Notation "{ 'dmfun' aT >-> T }" (format "{ 'dmfun'  aT  >->  T }").
+Reserved Notation "'{' 'dRV' P >-> R '}'" (format "'{' 'dRV'  P  '>->'  R '}'").
 
 Set Implicit Arguments.
 Unset Strict Implicit.
