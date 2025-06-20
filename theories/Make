@@ -86,4 +86,4 @@ pi_irrational.v
 gauss_integral.v
 all_analysis.v
 showcase/summability.v
-showcase/gauss_integral_alternative.v
+showcase/gauss_integral_unbounded.v
