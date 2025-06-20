@@ -158,9 +158,8 @@
            `ge0_nondecreasing_set_cvg_integral`,
            `le0_nondecreasing_set_nonincreasing_integral`,
 	   `le0_nondecreasing_set_cvg_integral`
-- in `theories/showcase`
-  + add new file `gauss_integral_alternative.v`
-- in new file `gauss_integral_alternative`
+
+- in new file `gauss_integral_unbounded`
   + add lemmas `integral0y_gauss_fin_num`,
                `integral0y_u0`,
 	       `integrable0y_u`,
@@ -168,9 +167,9 @@
 	       `u_dominates`,
 	       `int0yu_fin_num`,
 	       `cvgy_int0yu0`,
-	       `dint0yuE`,
+	       `derive1_int0yuE`,
 	       `derivable_int0yu`,
-	       `rc_int0yu0`,
+	       `rcvg0_int0yu`,
 	       `gauss_integration`
 
 ### Changed
