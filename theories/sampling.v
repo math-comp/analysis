@@ -107,15 +107,6 @@ HB.instance Definition _ := MeasurableFun.on bool_to_real.
 
 End bool_to_real.
 
-Section mfunM.
-Context {d} (T : measurableType d) {R : realType}.
-
-HB.instance Definition _ (f g : {mfun T >-> R}) :=
-  @isMeasurableFun.Build d _ _ _ (f \* g)%R
-    (measurable_funM (measurable_funPT f) (measurable_funPT g)).
-
-End mfunM.
-
 HB.instance Definition _ (n : nat) := isPointed.Build 'I_n.+1 ord0.
 
 HB.instance Definition _ (n : nat) := @isMeasurable.Build default_measure_display
