@@ -62,7 +62,7 @@ Let mu : {measure set _ -> \bar R} := @lebesgue_measure R.
 
 Definition integral0y_gauss := \int[mu]_(x in `[0%R, +oo[) gauss_fun x.
 
-Let integral0y_gauss_ge0 : 0 <= integral0y_gauss.
+Lemma integral0y_gauss_ge0 : 0 <= integral0y_gauss.
 Proof. by apply: Rintegral_ge0 => //= x _; rewrite gauss_fun_ge0. Qed.
 
 Definition integral0_gauss x := \int[mu]_(t in `[0, x]) gauss_fun t.
@@ -81,10 +81,10 @@ Qed.
 
 Definition u x t := expR (- x ^+ 2 * oneDsqr t) / oneDsqr t.
 
-Let u_ge0 x t : 0 <= u x t.
+Lemma u_ge0 x t : 0 <= u x t.
 Proof. by rewrite /u divr_ge0// ?expR_ge0. Qed.
 
-Let measurable_u x : measurable_fun setT (u x).
+Lemma measurable_u x : measurable_fun setT (u x).
 Proof.
 apply: measurable_funM => //=.
   apply: measurableT_comp => //=; apply: measurable_funM => //=.
@@ -95,7 +95,7 @@ Qed.
 
 Local Notation "'d1 f" := (partial1of2 f).
 
-Let partial1_u x t : ('d1 u) x t = - 2 * x * gauss_fun x * gauss_fun (t * x).
+Lemma partial1_u x t : ('d1 u) x t = - 2 * x * gauss_fun x * gauss_fun (t * x).
 Proof.
 rewrite partial1of2E /u /= deriveMr//= -derive1E.
 rewrite derive1_comp// [in X in _ * (_ * X)]derive1Mr//.
