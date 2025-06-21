@@ -188,38 +188,6 @@ apply/integrableP; split => //.
 by under eq_integral do rewrite abse_id.
 Qed.
 
-Definition g_sigma_preimage d (rT : semiRingOfSetsType d) (aT : Type)
-    (n : nat) (f : 'I_n -> aT -> rT) : set (set aT) :=
-  <<s \big[setU/set0]_(i < n) preimage_set_system setT (f i) measurable >>.
-
-Lemma g_sigma_preimage_comp d1 {T1 : semiRingOfSetsType d1} n
-    {T : pointedType} (f1 : 'I_n -> T -> T1) [T3 : Type] (g : T3 -> T) :
-  g_sigma_preimage (fun i => f1 i \o g) =
-  preimage_set_system [set: T3] g (g_sigma_preimage f1).
-Proof.
-rewrite {1}/g_sigma_preimage.
-rewrite -g_sigma_preimageE; congr (<<s _ >>).
-destruct n as [|n].
-  rewrite !big_ord0 /preimage_set_system/=.
-  by apply/esym; rewrite -subset0 => t/= [].
-rewrite predeqE => C; split.
-- rewrite -bigcup_mkord_ord => -[i Ii [A mA <-{C}]].
-  exists (f1 (Ordinal Ii) @^-1` A).
-    rewrite -bigcup_mkord_ord; exists i => //.
-    exists A => //; rewrite setTI// (_ : Ordinal _ = inord i)//.
-    by apply/val_inj => /=;rewrite inordK.
-  rewrite !setTI// -comp_preimage// (_ : Ordinal _ = inord i)//.
-  by apply/val_inj => /=;rewrite inordK.
-- move=> [A].
-  rewrite -bigcup_mkord_ord => -[i Ii [B mB <-{A}]] <-{C}.
-  rewrite -bigcup_mkord_ord.
-  exists i => //.
-  by exists B => //; rewrite !setTI -comp_preimage.
-Qed.
-
-HB.instance Definition _ (n : nat) (T : pointedType) :=
-  isPointed.Build (n.-tuple T) (nseq n point).
-
 Lemma countable_range_bool d (T : measurableType d) (b : bool) :
   countable (range (@cst T _ b)).
 Proof. exact: countableP. Qed.
@@ -229,27 +197,6 @@ HB.instance Definition _ d (T : measurableType d) b :=
 
 Definition measure_tuple_display : measure_display -> measure_display.
 Proof. exact. Qed.
-
-Section measurable_tuple.
-Context {d} {T : measurableType d}.
-Variable n : nat.
-
-Let coors : 'I_n -> n.-tuple T -> T := fun i x => @tnth n T x i.
-
-Let tuple_set0 : g_sigma_preimage coors set0.
-Proof. exact: sigma_algebra0. Qed.
-
-Let tuple_setC A : g_sigma_preimage coors A -> g_sigma_preimage coors (~` A).
-Proof. exact: sigma_algebraC. Qed.
-
-Let tuple_bigcup (F : _^nat) : (forall i, g_sigma_preimage coors (F i)) ->
-  g_sigma_preimage coors (\bigcup_i (F i)).
-Proof. exact: sigma_algebra_bigcup. Qed.
-
-HB.instance Definition _ := @isMeasurable.Build (measure_tuple_display d)
-  (n.-tuple T) (g_sigma_preimage coors) tuple_set0 tuple_setC tuple_bigcup.
-
-End measurable_tuple.
 
 Lemma measurable_tnth d (T : measurableType d) n (i : 'I_n) :
   measurable_fun [set: n.-tuple T] (@tnth _ T ^~ i).
@@ -416,6 +363,7 @@ rewrite [X in measurable_fun _ X](_ : _
 by apply: measurable_prod => /= i _; apply/measurableT_comp.
 Qed.
 
+(* TODO: check this warning (and the entire section) *)
 HB.instance Definition _ m n (s : m.-tuple {mfun T >-> R}) (f : 'I_n -> 'I_m) :=
   isMeasurableFun.Build _ _ _ _ (\prod_(i < n) Tnth s (f i))%R (measurable_tuple_prod s f).
 
