@@ -137,17 +137,6 @@ Qed.
 
 End move_to_bigop_nat_lemmas.
 
-Local Open Scope ereal_scope.
-Lemma fin_num_prod {R : numDomainType} I (s : seq I) (P : pred I) (F : I -> \bar R) :
-  (forall i, P i -> F i \is a fin_num) ->
-  \prod_(i <- s | P i) F i \is a fin_num.
-Proof.
-elim/big_ind : _ => //.
-- by move=> x y ihx ihy PF; rewrite fin_numM ?ihx ?ihy.
-- by move=> i Pi; exact.
-Qed.
-Local Close Scope ereal_scope.
-
 Lemma finite_prod_ge0 {R : realType} n (F : 'I_n -> \bar R) :
   (forall i, 0 <= F i < +oo)%E -> (\prod_(i < n) F i < +oo)%E.
 Proof.
@@ -1118,7 +1107,7 @@ have ? : \int[\X_n P]_x0 (\prod_(i < n) tnth X (lift ord0 i) (tnth x0 i))%:E < +
     apply: eq_integral => /=x _.
     by rewrite /Tnth fct_prodE.
   rewrite IH.
-    rewrite ltey_eq fin_num_prod//= => i _.
+    rewrite ltey_eq prode_fin_num//= => i _.
     rewrite fin_num_abs unlock.
     apply/abse_integralP => //.
       exact: measurableT_comp.
