@@ -1154,14 +1154,14 @@ Local Open Scope ereal_scope.
 
 Definition lne x :=
   match x with
-  | x'%:E => if x' == 0%R then -oo else (ln x')%:E
+  | r%:E => if r == 0%R then -oo else (ln r)%:E
   | +oo => +oo
-  | -oo => 0
+  | -oo => -oo
   end.
 
-Lemma lne0 x : x < 0 -> lne x = 0.
+Lemma lne0 x : x \is a fin_num -> x < 0 -> lne x = 0.
 Proof.
-by move: x => [x||]//=; rewrite lte_fin => x0; rewrite lt_eqF ?ln0// ltW.
+by move: x => [r _| |]//=; rewrite lte_fin => x0; rewrite lt_eqF ?ln0// ltW.
 Qed.
 
 Lemma lne_EFin r : (r != 0)%R -> lne (r%:E) = (ln r)%:E.
@@ -1183,7 +1183,7 @@ case: ifPn => [/eqP->|r0]; first by rewrite eqxx lexx.
 by rewrite eqe lnK_eq lee_fin lt_def r0.
 Qed.
 
-Lemma lne1 : lne 1 = 0. Proof. by rewrite lne_EFin //= ln1. Qed.
+Lemma lne1 : lne 1 = 0. Proof. by rewrite lne_EFin//= ln1. Qed.
 
 Lemma lneM : {in `]0, +oo] &, {morph lne : x y / x * y >-> x + y}}.
 Proof.
@@ -1197,14 +1197,13 @@ Proof. by move=> x y /lneK {2}<- /lneK {2}<- ->. Qed.
 Lemma lneV r : (0 < r)%R -> lne r^-1%:E = - lne (r%:E).
 Proof. by move=> r0; rewrite !lne_EFin ?gt_eqF ?invr_gt0// lnV. Qed.
 
-Lemma lne_div x y :
-  0 < x -> 0 < y -> lne (x * (fine y)^-1%:E) = lne x - lne y.
+Lemma lne_div : {in `]0, +oo] &, {morph lne : x y / x / y >-> x - y}}.
 Proof.
-case: x => //[x|]; case: y => //[y|]; rewrite ?lte_fin => a0 b0/=.
-- by rewrite !ifF ?gt_eqF ?divr_gt0// ln_div.
-- by rewrite ifT ?invr0 ?mulr0// addeNy.
-- by rewrite ifF ?gt0_mulye ?lte_fin ?invr_gt0// gt_eqF.
-- by rewrite invr0 mule0/= eqxx addeNy.
+move=> [x| |] [y| |]//; rewrite !in_itv/= !leey !andbT ?lte_fin => x0 y0.
+- by rewrite inver// !gt_eqF//= mulf_eq0// invr_eq0 !gt_eqF//= ln_div.
+- by rewrite mulr0 eqxx gt_eqF.
+- by rewrite inver !gt_eqF// gt0_mulye// lte_fin invr_gt0.
+- by rewrite invey mule0/= eqxx.
 Qed.
 
 Lemma lte_lne : {in `[0, +oo] &, {mono lne : x y / x < y}}.
@@ -1252,7 +1251,7 @@ Qed.
 
 Fact le1_lne_le0 x : x <= 1 -> lne x <= 0.
 Proof.
-move: x => [r r1| |]//.
+move: x => [r r1| |]//=.
 by rewrite /lne; case: ifPn => // r0; rewrite lee_fin ln_le0.
 Qed.
 
