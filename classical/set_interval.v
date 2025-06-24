@@ -535,8 +535,21 @@ Section line_path_factor_numDomainType.
 Variable R : numDomainType.
 Implicit Types (a b t r : R) (A : set R).
 
-Lemma mem_1B_itvcc t : (1 - t \in `[0, 1]) = (t \in `[0, 1]).
-Proof. by rewrite !in_itv/= subr_ge0 gerDl oppr_le0 andbC. Qed.
+Lemma memB_itv (x y : bool) a b t :
+  (b - t \in Interval (BSide x a) (BSide y b)) =
+  (a + t \in Interval (BSide (~~ y) a) (BSide (~~ x) b)).
+Proof.
+rewrite !in_itv/= /Order.lteif !if_neg.
+by rewrite gerBl gtrBl lerDl ltrDl lerBrDr ltrBrDr andbC.
+Qed.
+
+Lemma memB_itv0 (x y : bool) (a b : R) :
+  (b - a \in Interval (BSide x 0) (BSide y b)) =
+  (a \in Interval (BSide (~~ y) 0) (BSide (~~ x) b)).
+Proof. by rewrite memB_itv add0r. Qed.
+
+Lemma __deprepcated__mem_1B_itvcc t : (1 - t \in `[0, 1]) = (t \in `[0, 1]).
+Proof. exact: memB_itv0. Qed.
 
 Definition line_path a b t : R := (1 - t) * a + t * b.
 
@@ -591,6 +604,8 @@ Lemma ndline_pathE a b (ab : a < b) : ndline_path ab = line_path a b.
 Proof. by []. Qed.
 
 End line_path_factor_numDomainType.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="use `memB_itv0` instead")]
+Notation mem_1B_itvcc := __deprepcated__mem_1B_itvcc (only parsing).
 
 Section line_path_factor_numFieldType.
 Variable R : numFieldType.

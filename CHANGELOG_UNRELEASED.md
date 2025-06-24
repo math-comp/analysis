@@ -86,6 +86,9 @@
            `le0_nondecreasing_set_nonincreasing_integral`,
 	   `le0_nondecreasing_set_cvg_integral`
 
+- in `set_interval.v`:
+  + lemma `memB_itv`, `memB_itv0`
+
 ### Changed
 
 - in `convex.v`:
@@ -235,6 +238,9 @@
   + lemmas `is_deriveX`, `deriveX`, `exp_derive`, `exp_derive1`
 
 ### Deprecated
+
+- in `set_interval.v`:
+  + lemma `mem_1B_itvcc`
 
 ### Removed
 
