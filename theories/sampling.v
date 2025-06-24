@@ -75,6 +75,7 @@ Import hoelder ess_sup_inf.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
+(* PR in progress *)
 Lemma memB_itv (R : numDomainType) (b0 b1 : bool) (x y z : R) :
   (y - z \in Interval (BSide b0 x) (BSide b1 y)) =
   (x + z \in Interval (BSide (~~ b1) x) (BSide (~~ b0) y)).
@@ -83,21 +84,20 @@ rewrite !in_itv /= /Order.lteif !if_neg.
 by rewrite gerBl gtrBl lerDl ltrDl lerBrDr ltrBrDr andbC.
 Qed.
 
-(* generalizes mem_1B_itvcc *)
+(* PR in progress *)
 Lemma memB_itv0 (R : numDomainType) (b0 b1 : bool) (x y : R) :
   (y - x \in Interval (BSide b0 0) (BSide b1 y)) =
   (x \in Interval (BSide (~~ b1) 0) (BSide (~~ b0) y)).
 Proof. by rewrite memB_itv add0r. Qed.
 
 Section bool_to_real.
-Context d (T : measurableType d) (R : realType) (P : probability T R) (f : {mfun T >-> bool}).
+Context d (T : measurableType d) (R : realType) (P : probability T R)
+  (f : {mfun T >-> bool}).
 Definition bool_to_real : T -> R := (fun x => x%:R) \o (f : T -> bool).
 
 Lemma measurable_bool_to_real : measurable_fun [set: T] bool_to_real.
 Proof.
-rewrite /bool_to_real.
-apply: measurableT_comp => //=.
-exact: (@measurable_funPT _ _ _ _ f).
+by apply: measurableT_comp => //=; exact: (@measurable_funPT _ _ _ _ f).
 Qed.
 
 HB.instance Definition _ :=
@@ -113,20 +113,18 @@ HB.instance Definition _ (n : nat) := @isMeasurable.Build default_measure_displa
   'I_n.+1 discrete_measurable discrete_measurable0
   discrete_measurableC discrete_measurableU.
 
-Section fset.
-Local Open Scope fset_scope.
-Lemma fset_bool : forall B : {fset bool},
-    [\/ B == [fset true], B == [fset false], B == fset0 | B == [fset true; false]].
+Section move_to_bigop_nat_lemmas.
+Context {T : Type}.
+Implicit Types (A : set T).
+
+Lemma bigcup_mkord_ord n (F : 'I_n.+1 -> set T) :
+  \bigcup_(i < n.+1) F (inord i) = \big[setU/set0]_(i < n.+1) F i.
 Proof.
-move=> B.
-have:= set_bool [set` B].
-rewrite -!set_fset1 -set_fset0.
-rewrite (_ : [set: bool] = [set` [fset true; false]]); last first.
-  by apply/seteqP; split=> -[]; rewrite /= !inE eqxx.
-by case=> /eqP /(congr1 (@fset_set _)) /[!set_fsetK] /eqP H;
-   [apply: Or41|apply: Or42|apply: Or43|apply: Or44].
+rewrite bigcup_mkord; apply: eq_bigr => /= i _; congr F.
+by apply/val_inj => /=;rewrite inordK.
 Qed.
-End fset.
+
+End move_to_bigop_nat_lemmas.
 
 (* TODO: integral_fune_lt_pinfty does not look useful a lemma *)
 
@@ -504,7 +502,7 @@ Definition psi n := fun w : n.+1.-tuple T => (thead w, [the _.-tuple _ of behead
 
 Lemma mpsi n : measurable_fun [set: _.-tuple _] (@psi n).
 Proof.
-by apply/measurable_fun_prod => /=;
+by apply/measurable_fun_pair => /=;
   [exact: measurable_tnth|exact: measurable_behead].
 Qed.
 
@@ -1266,13 +1264,14 @@ Qed.
 Lemma mmt_gen_fun_expectation n (X_ : n.-tuple (bernoulliRV P p)) (t : R) :
   (0 <= t)%R ->
   let X := bool_trial_value X_ : {RV \X_n P >-> R : realType} in
-  mmt_gen_fun (\X_n P) X t <= (expR (fine 'E_(\X_n P)[X] * (expR t - 1)))%:E.
+  mmt_gen_fun (\X_n P) X t <= expeR ('E_(\X_n P)[X] * (expR t - 1)%:E).
 Proof.
 move=> t_ge0/=.
 have /andP[p0 p1] := p01.
-rewrite binomial_mmt_gen_fun// lee_fin.
+rewrite binomial_mmt_gen_fun//.
 rewrite expectation_bernoulli_trial//.
 rewrite addrCA -{2}(mulr1 p) -mulrN -mulrDr.
+rewrite /= lee_fin.
 rewrite -mulrA (mulrC (n%:R)) expRM ge0_ler_powR// ?nnegrE ?expR_ge0//.
   by rewrite addr_ge0// mulr_ge0// subr_ge0 -expR0 ler_expR.
 exact: expR_ge1Dx.
@@ -1319,11 +1318,13 @@ set mu := 'E_(\X_n P)[X].
 set t := ln (1 + delta).
 have t0 : (0 < t)%R by rewrite ln_gt0// ltrDl.
 apply: (le_trans (chernoff _ _ t0)).
-apply: (@le_trans _ _ ((expR (fine mu * (expR t - 1)))%:E *
+apply: (@le_trans _ _ ((expeR (mu * (expR t - 1)%:E)) *
                        (expR (- (t * ((1 + delta) * fine mu))))%:E)).
   rewrite lee_pmul2r ?lte_fin ?expR_gt0//.
-  by apply: mmt_gen_fun_expectation => //; exact: ltW.
-rewrite mulrC expRM -mulNr mulrA expRM.
+  rewrite (le_trans (mmt_gen_fun_expectation p01 _ (ltW t0)))//.
+rewrite -(@fineK _ mu)//; last first.
+  by rewrite /mu expectation_bernoulli_trial.
+rewrite [expeR _]/= mulrC expRM -mulNr mulrA expRM.
 exact: end_thm24.
 Qed.
 
@@ -1364,7 +1365,7 @@ rewrite in_itv=> /andP [] x0 x1.
 fold (f x).
 simpl in idf.
 rewrite -f1E.
-apply: (@gtr0_derive1_lt _ f 0 1 _ _ false false).
+apply: (@gtr0_derive1_lt_oc _ f 0 1).
 - move=> t /[!in_itv] /= /andP [] + _.
   by case/idf=> ? /@ex_derive.
 - move=> t /[!in_itv] /= /andP [] t0 t1.
@@ -1378,15 +1379,14 @@ apply: (@gtr0_derive1_lt _ f 0 1 _ _ false false).
 - assumption.
 Qed.
 
-Let sqrxB2xlnx_gt1 (c x : R) :
-  1 < x -> 1 < x ^+ 2 - 2 * x * ln x.
+Let sqrxB2xlnx_gt1 (c x : R) : 1 < x -> 1 < x ^+ 2 - 2 * x * ln x.
 Proof.
 move=> x1.
 have x0 : 0 < x by rewrite (lt_trans _ x1).
 fold (f x).
 simpl in idf.
 rewrite -f1E.
-apply: (@gtr0_derive1_lt _ f 1 x _ _ true false).
+apply: (@gtr0_derive1_lt_cc _ f 1 x).
 - move=> t /[!in_itv] /= /andP [] + _ => t1.
   have: 0 < t by rewrite (lt_trans _ t1).
   by case/idf=> ? /@ex_derive.
@@ -1575,9 +1575,10 @@ have dfge0 y : y \in `]0, 1[ -> 0 <= df y.
   rewrite expRM/= powR_mulrn ?expR_ge0// lnK ?posrE//.
   rewrite !exprS expr0 mulr1 -!natrM mulnE /=.
   exact/with_interval.exp2_le8_conversion/with_interval.exp2_le8.
-apply: (@ger0_derive1_le R f 0 1 _ _ true false).
+apply: (@ger0_derive1_le_cc R f 0 1).
 - by move=> y /y1oo /idf /@ex_derive.
-- by move=> y /[dup] /y1oo /idf /@derive_val; rewrite derive1E => ->; exact: dfge0.
+- move=> y /[dup] /y1oo /idf /@derive_val.
+  by rewrite derive1E => ->; exact: dfge0.
 - by apply: derivable_within_continuous=> y /y1cc /idf /@ex_derive.
 - by rewrite bound_itvE.
 - exact: subset_itv_oo_cc.
@@ -1628,9 +1629,11 @@ Corollary sampling_ineq4 n (X : n.-tuple (bernoulliRV P p)) (delta : R) :
   (\X_n P) [set i | `|X' i - fine mu | >=  delta * fine mu]%R <=
   (expR (- (fine mu * delta ^+ 2) / 3)%R *+ 2)%:E.
 Proof.
-move=> /andP[d0 d1] n0 p0 /=.
+move=> /andP[d0 d1] n0 p0/=.
 set X' := bool_trial_value X.
 set mu := 'E_(\X_n P)[X'].
+have mu_gt0 : (0 < fine mu)%R.
+  by rewrite /mu /X' expectation_bernoulli_trial// mulr_gt0// ltr0n.
 under eq_set => x.
   rewrite ler_normr.
   rewrite lerBrDl opprD opprK -{1}(mul1r (fine mu)) -mulrDl.
@@ -1639,32 +1642,22 @@ under eq_set => x.
   rewrite -!lee_fin.
   over.
 rewrite /=.
-rewrite set_orb.
-rewrite measureU; last 3 first.
-- rewrite -(@setIidr _ setT [set _ | _]) ?subsetT//.
-  apply: emeasurable_fun_le => //.
-  apply/measurable_EFinP.
-  exact: measurableT_comp.
-- rewrite -(@setIidr _ setT [set _ | _]) ?subsetT//.
-  apply: emeasurable_fun_le => //.
-  apply/measurable_EFinP.
-  exact: measurableT_comp.
-- rewrite disjoints_subset => x /=.
-  rewrite /mem /in_mem/= => X0; apply/negP.
-  rewrite -ltNge.
-  apply: (@lt_le_trans _ _ _ _ _ _ X0).
-  rewrite !EFinM.
-  rewrite lte_pmul2r//; first by rewrite lte_fin ltrD2l gt0_cp.
-  by rewrite fineK /mu/X' expectation_bernoulli_trial// lte_fin  mulr_gt0 ?ltr0n.
+rewrite set_orb measureU; last 3 first.
+- rewrite -[X in measurable X]setTI; apply: measurable_lee => //.
+  exact/measurable_EFinP/measurableT_comp.
+- rewrite -[X in measurable X]setTI; apply: measurable_lee => //.
+  exact/measurable_EFinP/measurableT_comp.
+- rewrite disjoints_subset => /= x deltaX; apply/negP.
+  rewrite -ltNge (lt_le_trans _ deltaX)// lte_fin ltr_pM2r//.
+  by rewrite ltrD2l gt0_cp.
 rewrite mulr2n EFinD leeD//=.
 - by apply: sampling_ineq2; rewrite //d0 d1.
 - have d01 : (0 < delta < 1)%R by rewrite d0.
-  apply: (le_trans (@sampling_ineq3 _ _ _ _ p p01 _ X delta d01)).
+  rewrite (le_trans (sampling_ineq3 p01 X d01))//.
   rewrite lee_fin ler_expR !mulNr lerN2.
   rewrite ler_pM//; last by rewrite lef_pV2 ?posrE ?ler_nat.
-  rewrite mulr_ge0 ?fine_ge0 ?sqr_ge0//.
-  rewrite /mu unlock /expectation integral_ge0// => x _.
-  by rewrite /X' lee_fin; exact: bernoulli_trial_ge0.
+  rewrite mulr_ge0 ?sqr_ge0// fine_ge0//.
+  by rewrite /mu expectation_ge0//= => t; exact: bernoulli_trial_ge0.
 Qed.
 
 (* [Theorem 3.1, Rajani] / [thm 4.7, MU] *)
@@ -1716,7 +1709,7 @@ suff : delta%:E >= (\X_n P) [set i | (`|X' i - p| >=(*NB: this >= in the pdf *) 
   have ? : measurable [set i | (`|X' i - p| < theta)%R].
     under eq_set => x do rewrite -lte_fin.
     rewrite -(@setIidr _ setT [set _ | _]) ?subsetT /X'//.
-    by apply: emeasurable_fun_lt => //; apply: measurableT_comp => //;
+    by apply: measurable_lte => //; apply: measurableT_comp => //;
       apply: measurableT_comp => //; apply: measurable_funD => //;
       apply: measurable_funM.
   rewrite probability_setC// lee_subel_addr//.
@@ -1725,7 +1718,7 @@ suff : delta%:E >= (\X_n P) [set i | (`|X' i - p| >=(*NB: this >= in the pdf *) 
   rewrite le_measure ?inE//.
     under eq_set => x do rewrite -lee_fin.
     rewrite -(@setIidr _ setT [set _ | _]) ?subsetT /X'//.
-    by apply: emeasurable_fun_le => //; apply: measurableT_comp => //;
+    by apply: measurable_lee => //; apply: measurableT_comp => //;
       apply: measurableT_comp => //; apply: measurable_funD => //;
       apply: measurable_funM.
   by move=> t/= /ltW.
