@@ -8359,5 +8359,3 @@ All norms and absolute values have been unified, both in their denotation `|_| a
 - NIX support
   + see `config.nix`, `default.nix`
   + for the CI also
-
-### Misc
