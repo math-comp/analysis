@@ -137,37 +137,24 @@ Qed.
 
 End move_to_bigop_nat_lemmas.
 
-Section fset.
-Local Open Scope fset_scope.
-Lemma fset_bool : forall B : {fset bool},
-    [\/ B == [fset true], B == [fset false], B == fset0 | B == [fset true; false]].
+Local Open Scope ereal_scope.
+Lemma fin_num_prod {R : numDomainType} I (s : seq I) (P : pred I) (F : I -> \bar R) :
+  (forall i, P i -> F i \is a fin_num) ->
+  \prod_(i <- s | P i) F i \is a fin_num.
 Proof.
-move=> B.
-have:= set_bool [set` B].
-rewrite -!set_fset1 -set_fset0.
-rewrite (_ : [set: bool] = [set` [fset true; false]]); last first.
-  by apply/seteqP; split=> -[]; rewrite /= !inE eqxx.
-by case=> /eqP /(congr1 (@fset_set _)) /[!set_fsetK] /eqP H;
-   [apply: Or41|apply: Or42|apply: Or43|apply: Or44].
+elim/big_ind : _ => //.
+- by move=> x y ihx ihy PF; rewrite fin_numM ?ihx ?ihy.
+- by move=> i Pi; exact.
 Qed.
-End fset.
-
-Lemma finite_prod_fin_num {R : realType} n (F : 'I_n -> \bar R) :
-  (forall i, F i \is a fin_num)%E -> (\prod_(i < n) F i \is a fin_num)%E.
-Proof.
-move: F; elim: n => n; first by rewrite big_ord0 fin_numE.
-move=> ih F Foo.
-rewrite big_ord_recl fin_numM//.
-apply:ih => i.
-exact: Foo.
-Qed.
+Local Close Scope ereal_scope.
 
 Lemma finite_prod_ge0 {R : realType} n (F : 'I_n -> \bar R) :
   (forall i, 0 <= F i < +oo)%E -> (\prod_(i < n) F i < +oo)%E.
 Proof.
 move: F; elim: n => n; first by rewrite big_ord0 ltry.
 move=> ih F Foo.
-rewrite big_ord_recl lte_mul_pinfty//.
+rewrite big_ord_recl.
+rewrite lte_mul_pinfty//.
 - by have /andP[] := Foo ord0.
 - rewrite fin_numElt.
   have /andP[F0 ->] := Foo ord0.
@@ -1131,7 +1118,7 @@ have ? : \int[\X_n P]_x0 (\prod_(i < n) tnth X (lift ord0 i) (tnth x0 i))%:E < +
     apply: eq_integral => /=x _.
     by rewrite /Tnth fct_prodE.
   rewrite IH.
-    rewrite ltey_eq finite_prod_fin_num//= => i.
+    rewrite ltey_eq fin_num_prod//= => i _.
     rewrite fin_num_abs unlock.
     apply/abse_integralP => //.
       exact: measurableT_comp.
