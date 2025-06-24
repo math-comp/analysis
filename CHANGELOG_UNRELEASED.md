@@ -86,6 +86,9 @@
            `le0_nondecreasing_set_nonincreasing_integral`,
 	   `le0_nondecreasing_set_cvg_integral`
 
+- in `lebesgue_integral_fubini.v`:
+  + lemmas `integral21_prod_meas2`, `integral12_prod_meas2`
+
 ### Changed
 
 - in `convex.v`:
@@ -211,6 +214,10 @@
 
 - in `hoelder.v`:
   + `minkowski` -> `minkowski_EFin`
+
+- in `lebesgue_integral_fubiniv.`:
+  + `fubini1` -> `integral12_prod_meas1`
+  + `fubini2` -> `integral21_prod_meas1`
 
 ### Generalized
 
