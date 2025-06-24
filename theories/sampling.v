@@ -137,6 +137,7 @@ Let ltnP_sumbool (a b : nat) : {(a < b)%N} + {(a >= b)%N}.
 Proof. by case: ltnP => _; [left|right]. Qed.
 
 (* TODO: clean, move near integrable_sum, refactor *)
+(* NB: not used *)
 Lemma integrable_sum_ord n (t : 'I_n -> (T -> \bar R)) :
   (forall i, mu.-integrable D (t i)) ->
   mu.-integrable D (fun x => \sum_(i < n) t i x).
@@ -261,21 +262,11 @@ Proof. exact: countableP. Qed.
 HB.instance Definition _ d (T : measurableType d) b :=
   MeasurableFun_isDiscrete.Build d _ T _  (cst b) (countable_range_bool T b).
 
-Definition measure_tuple_display : measure_display -> measure_display.
-Proof. exact. Qed.
-
-Lemma measurable_tnth d (T : measurableType d) n (i : 'I_n) :
-  measurable_fun [set: n.-tuple T] (@tnth _ T ^~ i).
-Proof.
-move=> _ Y mY; rewrite setTI; apply: sub_sigma_algebra => /=.
-rewrite -bigcup_seq/=; exists i => //=; first by rewrite mem_index_enum.
-by exists Y => //; rewrite setTI.
-Qed.
-
 Section measurable_cons.
 Context d d1 (T : measurableType d) (T1 : measurableType d1).
 
-Lemma cons_measurable_funP (n : nat) (h : T -> n.-tuple T1) :
+(* NB: not used anymore *)
+Let cons_measurable_funP (n : nat) (h : T -> n.-tuple T1) :
   measurable_fun setT h <->
   forall i : 'I_n,  measurable_fun setT ((@tnth _ T1 ^~ i) \o h).
 Proof.
@@ -305,29 +296,6 @@ apply: (@iff_trans _ (g_sigma_preimage
   exact: mh.
 Qed.
 
-Lemma measurable_cons (f : T -> T1) n (g : T -> n.-tuple T1) :
-  measurable_fun setT f -> measurable_fun setT g ->
-  measurable_fun setT (fun x : T => [the n.+1.-tuple T1 of (f x) :: (g x)]).
-Proof.
-move=> mf mg; apply/cons_measurable_funP => /= i.
-have [->|i0] := eqVneq i ord0.
-  by rewrite (_ : _ \o _ = f).
-have @j : 'I_n.
-  apply: (@Ordinal _ i.-1).
-  rewrite prednK//.
-    have := ltn_ord i.
-    by rewrite ltnS.
-  by rewrite lt0n.
-rewrite (_ : _ \o _ = (fun x => tnth (g x) j))//.
-  apply: (@measurableT_comp _ _ _ _ _ _
-    (fun x : n.-tuple T1 => tnth x j) _ g) => //.
-  exact: measurable_tnth.
-apply/funext => t/=.
-rewrite (_ : i = lift ord0 j) ?tnthS//.
-apply/val_inj => /=.
-by rewrite /bump/= add1n prednK// lt0n.
-Qed.
-
 End measurable_cons.
 
 (* NB: not used *)
@@ -351,47 +319,6 @@ apply/esym.
 rewrite size_behead size_tuple in ti.
 have := @nth_ord_enum _ ord0 (Ordinal ti).
 by move=> ->.
-Qed.
-
-Lemma measurable_behead d (T : measurableType d) n :
-  measurable_fun setT (fun x : n.+1.-tuple T => [tuple of behead x] : n.-tuple T).
-Proof.
-red=> /=.
-move=> _ Y mY.
-rewrite setTI.
-set bh := (bh in preimage bh).
-have bhYE : (bh @^-1` Y) = [set x :: y | x in setT & y in Y].
-  rewrite /bh.
-  apply/seteqP; split=> x /=.
-    move=> ?; exists (thead x)=> //.
-    exists [tuple of behead x] => //=.
-    by rewrite [in RHS](tuple_eta x).
-  case=> x0 _ [] y Yy xE.
-  suff->: [tuple of behead x] = y by [].
-  apply/val_inj=> /=.
-  by rewrite -xE.
-have:= mY.
-rewrite /measurable/= => + F [] sF.
-pose F' := image_set_system setT bh F.
-move=> /(_ F') /=.
-have-> : F' Y = F (bh @^-1` Y) by rewrite /F' /image_set_system /= setTI.
-move=> /[swap] H; apply; split; first exact: sigma_algebra_image.
-move=> A; rewrite /= /F' /image_set_system /= setTI.
-set X := (X in X A).
-move => XA.
-apply: H; rewrite big_ord_recl /=; right.
-set X' := (X' in X' (preimage _ _)).
-have-> : X' = preimage_set_system setT bh X.
-  rewrite /X.
-  rewrite (big_morph _ (preimage_set_systemU _ _) (preimage_set_system0 _ _)).
-  apply: eq_bigr=> i _.
-  rewrite -preimage_set_system_comp.
-  congr preimage_set_system.
-  apply: funext=> t.
-  rewrite (tuple_eta t) /bh /= tnthS.
-  by congr tnth; apply/val_inj.
-exists A=> //.
-by rewrite setTI.
 Qed.
 
 Section tuple_sum.
@@ -813,25 +740,16 @@ case: p => [r|//|//].
 by under eq_integral => x _ do rewrite abse_id.
 Qed.
 
-
-Lemma Lfun1_integrable (f : T -> R) :
+Lemma Lfun1_integrable' (f : T -> R) :
   f \in Lfun mu 1 <-> mu.-integrable setT (EFin \o f).
 Proof.
 split.
-  move=> /[dup] lf /Lfun_integrable => /(_ (lexx _)).
-  under eq_fun => x do rewrite powRr1//.
-  move/integrableP => [mf fley].
-  apply/integrableP; split.
-    move: lf; rewrite inE => /andP[/[!inE]/= {}mf _].
-    exact: measurableT_comp.
-  rewrite (le_lt_trans _ fley)//=.
-  by under [leRHS]eq_integral => x _ do rewrite normr_id.
+  exact: Lfun1_integrable.
 move/integrableP => [mF iF].
 rewrite inE; apply/andP; split; rewrite inE/=.
   exact/measurable_EFinP.
 by rewrite /finite_norm Lnorm1.
 Qed.
-
 
 End move.
 
@@ -883,7 +801,7 @@ rewrite expectation_sum/=.
   rewrite big_map big_enum/=.
   apply: eq_bigr => i i_n.
   rewrite unlock.
-  exact: integral_ipro_tnth.  
+  exact: integral_ipro_tnth.
 move=> Xi /tnthP[i] ->.
 pose j := cast_ord (card_ord _) i.
 rewrite /image_tuple tnth_map.
@@ -988,7 +906,7 @@ pose build_mF := isMeasurableFun.Build _ _ _ _ F mF.
 pose MF : {mfun _ >-> _} := HB.pack F build_mF.
 have h1 : (thead X : _ -> _) \in Lfun P 1 by exact/lfunX/mem_tnth.
 have h2 : (\prod_(i < n) Tnth (behead_tuple X) i)%R \in Lfun (\X_n P) 1.
-  apply/Lfun1_integrable/integrableP => /=; split.
+  apply/Lfun1_integrable'/integrableP => /=; split.
     apply: measurableT_comp => //.
     exact: measurable_tuple_prod.
   under eq_integral => x _ do rewrite -abse_EFin.
@@ -1255,8 +1173,8 @@ transitivity ('E_(\X_n P)[ \prod_(i < n) Tnth (mktuple mmtX) i ])%R.
   by rewrite /Tnth !tnth_map /mmtX/= tnth_ord_tuple.
 rewrite /mmtX.
 rewrite expectation_product; last first.
-- move=> _ /mapP [/= i _ ->]. 
-  apply/Lfun1_integrable.
+- move=> _ /mapP [/= i _ ->].
+  apply/Lfun1_integrable'.
   apply: (bounded_RV_integrable (expR `|t|)) => // t0.
   rewrite expR_ge0/= ler_expR/=.
   rewrite /bool_to_real/=.
