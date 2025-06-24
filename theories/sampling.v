@@ -129,68 +129,43 @@ End move_to_bigop_nat_lemmas.
 Section integrable_theory.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}).
+Variables mu : {measure set T -> \bar R}.
 Variables (D : set T) (mD : measurable D).
-Implicit Type f g : T -> \bar R.
 
-Let ltnP_sumbool (a b : nat) : {(a < b)%N} + {(a >= b)%N}.
-Proof. by case: ltnP => _; [left|right]. Qed.
+Notation mu_int := (integrable mu D).
 
-(* TODO: clean, move near integrable_sum, refactor *)
-(* NB: not used *)
-Lemma integrable_sum_ord n (t : 'I_n -> (T -> \bar R)) :
-  (forall i, mu.-integrable D (t i)) ->
-  mu.-integrable D (fun x => \sum_(i < n) t i x).
+Lemma integrable_sum I (s : seq I) (P : pred I) (h : I -> T -> \bar R) :
+  (forall i, P i -> mu_int (h i)) ->
+  mu_int (fun x => \sum_(i <- s | P i) h i x).
 Proof.
-move=> intt.
-pose s0 := fun k => match ltnP_sumbool k n with
-  | left kn => t (Ordinal kn)
-  | right _ => cst 0%E
-  end.
-pose s := [tuple of map s0 (index_iota 0 n)].
-suff: mu.-integrable D (fun x => (\sum_(i <- s) i x)%R).
-  apply: eq_integrable => // i iT.
-  rewrite big_map/=.
-  rewrite big_mkord.
-  apply: eq_bigr => /= j _.
-  rewrite /s0.
-  case: ltnP_sumbool => // jn.
-  f_equal.
-  exact/val_inj.
-  have := ltn_ord j.
-  by rewrite ltnNge jn.
-apply: (@integrable_sum d T R mu D mD s) => /= h /mapP[/= k].
-rewrite mem_index_iota leq0n/= => kn ->{h}.
-have := intt (Ordinal kn).
-rewrite /s0.
-case: ltnP_sumbool => //.
-by rewrite leqNgt kn.
+elim: s => [_|i s ih hs].
+  by under eq_fun do rewrite big_nil; exact: integrable0.
+under eq_fun do rewrite big_cons.
+have [Pi|Pi] := boolP (P i); last exact: ih.
+by apply: integrableD => //; [exact: hs|exact: ih].
 Qed.
 
 End integrable_theory.
 
-(* TODO: clean, move near integrableD, refactor *)
 Section integral_sum.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables (I : eqType) (f : I -> (T -> \bar R)).
+Variables (I : Type) (f : I -> (T -> \bar R)).
 Hypothesis intf : forall n, mu.-integrable D (f n).
 
-Lemma integral_sum (s : seq I) :
-  \int[mu]_(x in D) (\sum_(k <- s) f k x) =
-  \sum_(k <- s) \int[mu]_(x in D) (f k x).
+Lemma integral_sum (s : seq I) (P : pred I) :
+  \int[mu]_(x in D) (\sum_(k <- s | P k) f k x) =
+  \sum_(k <- s | P k) \int[mu]_(x in D) (f k x).
 Proof.
 elim: s => [|h t ih].
   under eq_integral do rewrite big_nil.
   by rewrite integral0 big_nil.
 rewrite big_cons -ih -integralD//.
-  by apply: eq_integral => x xD; rewrite big_cons.
-rewrite [X in _.-integrable _ X](_ : _ =
-    (fun x => (\sum_(h0 <- [seq f i | i <- t]) h0 x))); last first.
-  by apply/funext => x; rewrite big_map.
-apply: integrable_sum => //= g /mapP[i ti ->{g}].
-exact: intf.
+  case: ifPn => Ph.
+    by apply: eq_integral => x xD; rewrite big_cons Ph.
+  by apply: eq_integral => x xD; rewrite big_cons (negbTE Ph).
+by apply: integrable_sum => //.
 Qed.
 
 End integral_sum.
