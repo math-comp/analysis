@@ -604,7 +604,7 @@ Lemma ndline_pathE a b (ab : a < b) : ndline_path ab = line_path a b.
 Proof. by []. Qed.
 
 End line_path_factor_numDomainType.
-#[deprecated(since="mathcomp-analysis 1.12.0", note="use to `memB_itv0` instead")]
+#[deprecated(since="mathcomp-analysis 1.12.0", note="use `memB_itv0` instead")]
 Notation mem_1B_itvcc := __deprepcated__mem_1B_itvcc (only parsing).
 
 Section line_path_factor_numFieldType.
