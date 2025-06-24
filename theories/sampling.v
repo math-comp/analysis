@@ -75,21 +75,6 @@ Import hoelder ess_sup_inf.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-(* PR in progress *)
-Lemma memB_itv (R : numDomainType) (b0 b1 : bool) (x y z : R) :
-  (y - z \in Interval (BSide b0 x) (BSide b1 y)) =
-  (x + z \in Interval (BSide (~~ b1) x) (BSide (~~ b0) y)).
-Proof.
-rewrite !in_itv /= /Order.lteif !if_neg.
-by rewrite gerBl gtrBl lerDl ltrDl lerBrDr ltrBrDr andbC.
-Qed.
-
-(* PR in progress *)
-Lemma memB_itv0 (R : numDomainType) (b0 b1 : bool) (x y : R) :
-  (y - x \in Interval (BSide b0 0) (BSide b1 y)) =
-  (x \in Interval (BSide (~~ b1) 0) (BSide (~~ b0) y)).
-Proof. by rewrite memB_itv add0r. Qed.
-
 Section bool_to_real.
 Context d (T : measurableType d) (R : realType) (P : probability T R)
   (f : {mfun T >-> bool}).
@@ -145,6 +130,7 @@ apply: (@le_integrable _ T R _ _ measurableT _ (EFin \o cst M)).
 Qed.
 Arguments bounded_RV_integrable {d T R P X} M.
 
+(* PR in progress *)
 Lemma integral21_prod_meas2 {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
     {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
     (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
@@ -157,6 +143,7 @@ apply: product_measure_unique => // B C mB mC/=.
 by rewrite product_measure2E.
 Qed.
 
+(* PR in progress *)
 Lemma integral12_prod_meas2 {d1} {T1 : measurableType d1}
     {d2} {T2 : measurableType d2} {R : realType}
     (m1 : {sigma_finite_measure set T1 -> \bar R})
@@ -170,21 +157,17 @@ apply: product_measure_unique => // B C mB mC/=.
 by rewrite product_measure2E.
 Qed.
 
-Lemma integrable_prodP {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
+Lemma integrable_prod_measP {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
   {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
   (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
-  (m1 \x m2)%E.-integrable [set: T1 * T2] f ->
+  (m1 \x m2)%E.-integrable [set: T1 * T2] f <->
   (m1 \x^ m2)%E.-integrable [set: T1 * T2] f.
 Proof.
-move=> /integrableP[mf intf]; apply/integrableP; split => //.
-rewrite -integral21_prod_meas2//=.
-  rewrite fubini2//=.
-  apply/integrableP; split => //.
-    exact/measurableT_comp.
-  by under eq_integral do rewrite abse_id.
-apply/integrableP; split => //.
-  exact/measurableT_comp.
-by under eq_integral do rewrite abse_id.
+split => /integrableP[mf intf]; apply/integrableP; split => //.
+- rewrite (eq_measure_integral (m1 \x m2)%E)//= => C mC _.
+  by apply/esym/product_measure_unique => //= *; rewrite product_measure2E.
+- rewrite (eq_measure_integral (m1 \x^ m2)%E)//= => C mC _.
+  by apply: product_measure_unique => //= *; rewrite product_measure2E.
 Qed.
 
 Lemma countable_range_bool d (T : measurableType d) (b : bool) :
@@ -465,7 +448,7 @@ rewrite -(@integral_pushforward _ _ _ _ R _ (@mphi n) _ setT
   congr pair.
   exact/val_inj.
 rewrite /=.
-apply/integrable_prodP.
+apply/integrable_prod_measP.
 rewrite /=.
 apply/integrableP; split => /=.
   apply: measurableT_comp => //=.
