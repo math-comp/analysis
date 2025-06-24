@@ -96,6 +96,8 @@
 
 - in `hoelder.v`:
   + lemmas `Lnorm_abse`, `Lfun_norm`
+- in `lebesgue_integral_fubini.v`:
+  + lemmas `integral21_prod_meas2`, `integral12_prod_meas2`
 
 ### Changed
 
@@ -235,6 +237,10 @@
 
 - in `hoelder.v`:
   + `minkowski` -> `minkowski_EFin`
+
+- in `lebesgue_integral_fubiniv.`:
+  + `fubini1` -> `integral12_prod_meas1`
+  + `fubini2` -> `integral21_prod_meas1`
 
 ### Generalized
 

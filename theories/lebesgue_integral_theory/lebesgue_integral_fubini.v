@@ -964,29 +964,45 @@ apply: ge0_le_integral; [by []|by []|exact: measurableT_comp|..].
   + by move=> x _; rewrite gee0_abs// -/((abse \o f) (x, y)) fune_abse leeDr.
 Qed.
 
-Lemma fubini1 : \int[m1]_x F x = \int[m1 \x m2]_z f z.
+Lemma integral12_prod_meas1 : \int[m1]_x F x = \int[m1 \x m2]_z f z.
 Proof.
 rewrite FE integralB; [|by[]|exact: integrable_Fplus|exact: integrable_Fminus].
 by rewrite [in RHS]integralE ?fubini_tonelli1//;
   [exact: measurable_funeneg|exact: measurable_funepos].
 Qed.
 
-Lemma fubini2 : \int[m2]_x G x = \int[m1 \x m2]_z f z.
+Lemma integral21_prod_meas1 : \int[m2]_x G x = \int[m1 \x m2]_z f z.
 Proof.
 rewrite GE integralB; [|by[]|exact: integrable_Gplus|exact: integrable_Gminus].
 by rewrite [in RHS]integralE ?fubini_tonelli2//;
   [exact: measurable_funeneg|exact: measurable_funepos].
 Qed.
 
+Lemma integral21_prod_meas2 : \int[m2]_x G x = \int[m1 \x^ m2]_z f z.
+Proof.
+rewrite integral21_prod_meas1; apply: eq_measure_integral => //= A mA _.
+by apply: product_measure_unique => // B C mB mC/=; rewrite product_measure2E.
+Qed.
+
+Lemma integral12_prod_meas2 : \int[m1]_x F x = \int[m1 \x^ m2]_z f z.
+Proof.
+rewrite integral12_prod_meas1//; apply: eq_measure_integral => //= A mA _.
+by apply: product_measure_unique => // B C mB mC/=; rewrite product_measure2E.
+Qed.
+
 Theorem Fubini :
   \int[m1]_x \int[m2]_y f (x, y) = \int[m2]_y \int[m1]_x f (x, y).
-Proof. by rewrite fubini1 -fubini2. Qed.
+Proof. by rewrite integral12_prod_meas1 -integral21_prod_meas1. Qed.
 
 End fubini.
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `integrable12ltyP`")]
 Notation fubini1a := integrable12ltyP (only parsing).
 #[deprecated(since="mathcomp-analysis 1.10.0", note="renamed to `integrable21ltyP`")]
 Notation fubini1b := integrable21ltyP (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `integral12_prod_meas1`")]
+Notation fubini1 := integral12_prod_meas1 (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `integral21_prod_meas1`")]
+Notation fubini2 := integral21_prod_meas1 (only parsing).
 
 Section sfinite_fubini.
 Local Open Scope ereal_scope.
