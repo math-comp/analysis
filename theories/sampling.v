@@ -1411,13 +1411,14 @@ Qed.
 Lemma mmt_gen_fun_expectation n (X_ : n.-tuple (bernoulliRV P p)) (t : R) :
   (0 <= t)%R ->
   let X := bool_trial_value X_ : {RV \X_n P >-> R : realType} in
-  'M_X t <= (expR (fine 'E_(\X_n P)[X] * (expR t - 1)))%:E.
+  'M_X t <= expeR ('E_(\X_n P)[X] * (expR t - 1)%:E).
 Proof.
 move=> t_ge0/=.
 have /andP[p0 p1] := p01.
-rewrite binomial_mmt_gen_fun// lee_fin.
+rewrite binomial_mmt_gen_fun//.
 rewrite expectation_bernoulli_trial//.
 rewrite addrCA -{2}(mulr1 p) -mulrN -mulrDr.
+rewrite /= lee_fin.
 rewrite -mulrA (mulrC (n%:R)) expRM ge0_ler_powR// ?nnegrE ?expR_ge0//.
   by rewrite addr_ge0// mulr_ge0// subr_ge0 -expR0 ler_expR.
 exact: expR_ge1Dx.
@@ -1464,11 +1465,13 @@ set mu := 'E_(\X_n P)[X].
 set t := ln (1 + delta).
 have t0 : (0 < t)%R by rewrite ln_gt0// ltrDl.
 apply: (le_trans (chernoff _ _ t0)).
-apply: (@le_trans _ _ ((expR (fine mu * (expR t - 1)))%:E *
+apply: (@le_trans _ _ ((expeR (mu * (expR t - 1)%:E)) *
                        (expR (- (t * ((1 + delta) * fine mu))))%:E)).
   rewrite lee_pmul2r ?lte_fin ?expR_gt0//.
-  by apply: mmt_gen_fun_expectation => //; exact: ltW.
-rewrite mulrC expRM -mulNr mulrA expRM.
+  by rewrite (le_trans (mmt_gen_fun_expectation p01 _ (ltW t0))).
+rewrite -(@fineK _ mu)//; last first.
+  by rewrite /mu expectation_bernoulli_trial.
+rewrite [expeR _]/= mulrC expRM -mulNr mulrA expRM.
 exact: end_thm24.
 Qed.
 
