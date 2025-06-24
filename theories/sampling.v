@@ -145,7 +145,7 @@ apply: (@le_integrable _ T R _ _ measurableT _ (EFin \o cst M)).
 Qed.
 Arguments bounded_RV_integrable {d T R P X} M.
 
-Lemma fubini2' {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
+Lemma integral21_prod_meas2 {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
     {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
     (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
   (m1 \x m2)%E.-integrable [set: T1 * T2] f ->
@@ -157,8 +157,9 @@ apply: product_measure_unique => // B C mB mC/=.
 by rewrite product_measure2E.
 Qed.
 
-Lemma fubini1' {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
-    {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
+Lemma integral12_prod_meas2 {d1} {T1 : measurableType d1}
+    {d2} {T2 : measurableType d2} {R : realType}
+    (m1 : {sigma_finite_measure set T1 -> \bar R})
     (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
   (m1 \x m2)%E.-integrable [set: T1 * T2] f ->
   (\int[m1]_x fubini_F m2 f x = \int[(m1 \x^ m2)%E]_z f z)%E.
@@ -176,7 +177,7 @@ Lemma integrable_prodP {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
   (m1 \x^ m2)%E.-integrable [set: T1 * T2] f.
 Proof.
 move=> /integrableP[mf intf]; apply/integrableP; split => //.
-rewrite -fubini2'//=.
+rewrite -integral21_prod_meas2//=.
   rewrite fubini2//=.
   apply/integrableP; split => //.
     exact/measurableT_comp.
@@ -626,11 +627,11 @@ case; case => [i0|i im].
     exact/Lfun1_integrable/tnth_Lfun/lfunFi/mem_tnth.
   under eq_fun => x do
     rewrite /Tnth (_ : tnth (_ :: _) _ = tnth [tuple of x.1 :: x.2] ord0)// tnth0.
-  rewrite -fubini1'/fubini_F/=; last first.
+  rewrite -integral12_prod_meas2 /fubini_F/=; last first.
     apply/integrable12ltyP => /=.
       apply: measurableT_comp => //=.
       exact: measurableT_comp.
-    under eq_integral => x _ do rewrite integral_cst//= probability_setT mule1. 
+    under eq_integral => x _ do rewrite integral_cst//= probability_setT mule1.
     have /lfunFi : tnth F (Ordinal i0) \in F by apply/tnthP; exists (Ordinal i0).
     by move/Lfun1_integrable /integrableP => [_].
   apply: eq_integral => x _.
@@ -642,7 +643,7 @@ have liftjm : Ordinal im = lift ord0 (Ordinal jm).
   by apply: val_inj; rewrite /= /bump add1n.
 rewrite (tuple_eta F).
 under eq_integral => x _ do rewrite /Tnth !liftjm !tnthS.
-rewrite -fubini2'/fubini_G/=; last first.
+rewrite -integral21_prod_meas2 /fubini_G/=; last first.
   apply/integrable12ltyP => /=.
     apply: measurableT_comp => //=.
     apply: measurableT_comp => //=.
@@ -726,7 +727,8 @@ Lemma expectation_pro2 d1 d2 (T1 : measurableType d1) (T2 : measurableType d2)
 Proof.
 move=> /[dup]lX /sub_Lfun_mfun +/[dup]lY /sub_Lfun_mfun.
 rewrite !inE/= => mX mY.
-rewrite unlock /expectation/=. rewrite /pro2. rewrite -fubini1'/=; last first.
+rewrite unlock /expectation/=. rewrite /pro2.
+rewrite -integral12_prod_meas2/=; last first.
   apply/integrable21ltyP.
   - apply/measurable_EFinP => //=.
     by apply: measurable_funM => //=; apply/measurableT_comp.
@@ -882,7 +884,7 @@ have ? :  \int[\X_n P]_x `|\prod_(i < n) tnth X (lift ord0 i) (tnth x i)|%:E < +
   congr (`| _ |%:E).
   apply: eq_bigr => i _.
   by rewrite {1}(tuple_eta X) tnthS.
-rewrite -fubini1' /fubini_F/=; last first.
+rewrite -integral12_prod_meas2 /fubini_F/=; last first.
   apply/integrable21ltyP => //=.
     apply: measurableT_comp => //.
     apply: measurable_funM => //=.
