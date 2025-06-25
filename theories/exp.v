@@ -608,8 +608,6 @@ Canonical expR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) :=
   Itv.mk (num_spec_expR x).
 
 End expR.
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `expRM_natl`")]
-Notation expRMm := expRM_natl (only parsing).
 
 Section expeR.
 Context {R : realType}.
@@ -1159,7 +1157,7 @@ Definition lne x :=
   | -oo => -oo
   end.
 
-Lemma lne0 x : x <= 0 -> lne x = -oo.
+Lemma le0_lneNy x : x <= 0 -> lne x = -oo.
 Proof.
 by move: x => [r| |]//=; case: ifPn => //; rewrite lee_fin => /negbTE ->.
 Qed.
