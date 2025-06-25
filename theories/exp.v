@@ -1159,7 +1159,7 @@ Definition lne x :=
   | -oo => -oo
   end.
 
-Lemma lne0 x : x <= 0 -> lne x = -oo.
+Lemma le0_lneNy x : x <= 0 -> lne x = -oo.
 Proof.
 by move: x => [r| |]//=; case: ifPn => //; rewrite lee_fin => /negbTE ->.
 Qed.
