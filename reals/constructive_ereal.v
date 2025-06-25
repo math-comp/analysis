@@ -726,7 +726,11 @@ Proof. by elim: n => //= n ->. Qed.
 Lemma enatmul_ninfty n : -oo *+ n.+1 = -oo :> \bar R.
 Proof. by elim: n => //= n ->. Qed.
 
+Lemma mule0n x : x *+ 0 = 0. Proof. by []. Qed.
+
 Lemma mule2n x : x *+ 2 = x + x. Proof. by []. Qed.
+
+Lemma expe0 x : x ^+ 0 = 1. Proof. by []. Qed.
 
 Lemma expe2 x : x ^+ 2 = x * x. Proof. by []. Qed.
 
@@ -861,6 +865,9 @@ Proof. by move=> [x| |] [y| |]. Qed.
 Lemma addeC : commutative (S := \bar R) +%E. Proof. exact: addrC. Qed.
 
 Lemma adde0 : right_id (0 : \bar R) +%E. Proof. exact: addr0. Qed.
+
+Lemma muleS x n : x *+ n.+1 = x + x *+ n.
+Proof. by case: n => //=; rewrite adde0. Qed.
 
 Lemma add0e : left_id (0 : \bar R) +%E. Proof. exact: add0r. Qed.
 
