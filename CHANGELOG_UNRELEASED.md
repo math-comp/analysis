@@ -95,6 +95,9 @@
     `lne_inj`, `lneV`, `lne_div`, `lte_lne`, `lee_lne`, `lneXn`, `le_lne1Dx`, 
     `lne_sublinear`, `lne_ge0`, `lne_lt0`, `lne_gt0`, `le1_lne_le0`
 
+- in `constructive_ereal.v`:
+  + lemma `expe0`, `mule0n`, `muleS`
+
 ### Changed
 
 - in `convex.v`:
