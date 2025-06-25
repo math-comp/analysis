@@ -279,27 +279,43 @@ rewrite !addrA addrAC (addrC x) addrK addrC.
 by rewrite subr_gt0 ltr_wpDr // ltW.
 Qed.
 
-Lemma continuous_sdist :
-  forall x, @continuous_at sorgenfrey Rtopo x sdist.
+Definition continuous_at_sorgenfrey_to_Rtopo x (f : sorgenfrey -> R) :=
+  forall eps : R, 0 < eps -> exists2 d : R, 0 < d & forall y : R, x <= y < x + d -> `|f x - f y| < eps.
+
+Lemma continuous_at_sorgenfrey_to_RtopoP f x :
+  continuous_at_sorgenfrey_to_Rtopo x f -> @continuous_at sorgenfrey Rtopo x f.
 Proof.
-move=> x B.
+move=> H B.
 rewrite -(@filter_from_ballE R (GRing_regular__canonical__pseudometric_structure_PseudoMetric R)).
 case => eps /= eps0 epsB.
-pose xepsE := [set y | x + y \in E /\ 0 < y < eps].
-pose eps' := xget eps xepsE.
-exists (`[x,x+eps'[); split => //=.
-- exists [set (x,x+eps')] => //.
+change (nbhs (f y @[y --> x]) B).
+case: (H eps eps0) => /= d d0 H'.
+exists (`[x,x+d[); split => //=.
+- exists [set (x,x+d)] => //.
   by rewrite bigcup_set1.
-- rewrite in_itv /= lexx ltrDl /eps' /=.
-  by case: (xgetP eps xepsE) => // y -> [] _ /andP[].
+- by rewrite in_itv /= lexx ltrDl d0.
 rewrite -image_sub.
 move=> y /= [] z.
 rewrite in_itv /= => /andP[xz zx] <- {y}.
 apply: epsB.
-rewrite /ball /sdist /=.
+apply: H'.
+by rewrite xz zx.
+Qed.
+
+Lemma continuous_sdist :
+  forall x, @continuous_at sorgenfrey Rtopo x sdist.
+Proof.
+move=> x.
+apply: continuous_at_sorgenfrey_to_RtopoP => /= eps eps0.
+pose xepsE := [set y | x + y \in E /\ 0 < y < eps].
+pose eps' := xget eps xepsE.
+exists eps'.
+  by rewrite /eps'; case: (xgetP eps xepsE) => // y -> [] _ /andP[].
+move=> z /andP [] xz zx. 
 have [<-|xz'] := eqVneq x z.
   by rewrite subrr normr0.
 have {xz xz'} xz: x < z by rewrite lt_neqAle xz'.
+rewrite /sdist.
 set xr : R := if dr x == set0 then _ else _.
 set zr : R := if dr z == set0 then _ else _.
 case/boolP: (xepsE == set0).
@@ -319,19 +335,15 @@ case/boolP: (xepsE == set0).
     by rewrite subr_gt0 xt ltrBlDl (le_lt_trans tz).
   have Hr : `|Num.min 1 xr - Num.min 1 zr| < eps.
     rewrite /xr /zr.
-    case: ifPn => drx0.
-      suff -> : dr z == set0 by rewrite subrr normr0.
-      apply/notP => /negP/set0P [] y [] Hy y0.
-      suff : y + z - x \in dr x by rewrite (eqP drx0) inE.
-      rewrite inE /dr /= addrA (addrC x) addrK addrC Hy.
-      by rewrite subr_gt0 ltr_wpDr // ltW.
-    have drz0 : dr z !=set0.
-      case/set0P: drx0 => y [] Hy y0.
-      exists (y + x - z).
-      rewrite /dr /= addrA (addrC z) addrK addrC Hy subr_gt0 ltNge.
-      split => //; apply/negP => xyz.
-      suff : xepsE y by rewrite xepsE0.
-      by rewrite /xepsE /= Hy y0 -(ltrD2l x) (le_lt_trans xyz).
+    case/boolP: (dr z == set0) => [/eqP |] drz0.
+      move: drzx.
+      rewrite drz0 image_set0 => /eqP ->.
+      by rewrite subrr normr0.
+    have drx0 : dr x !=set0.
+      case/set0P : drz0 => z0 drzz0.
+      rewrite drzx.
+      exists (z0 + (z - x)) => /=.
+      by exists z0.
     rewrite ifF.
       rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //.
       rewrite subrr normr0 maxEle normr_ge0.
@@ -345,7 +357,7 @@ case/boolP: (xepsE == set0).
           rewrite ler_def.
           move/eqP ->.
           by rewrite ltrBlDl. 
-        split. by [].
+        split. exact/set0P.
         exists 0. by move=> y [] _ /ltW.
     exact/negbTE/set0P.
   have dlxz : dl z = [set t + (z - x) | t in dl x].
