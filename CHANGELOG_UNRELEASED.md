@@ -315,8 +315,9 @@
   + definition `poisson_pmf`, lemmas `poisson_pmf_ge0`, `measurable_poisson_pmf`,
   + definition `poisson_prob`
 - in `realfun.v`
+- in `realfun.v`:
   + lemmas `derivable_oy_continuous_within_itvcy`,
-           `derivable_oy_continuous_within_itvNyc`
+           `derivable_oy_continuous_within_itvNyc`,
   + lemmas `derivable_oo_continuous_bndW`,
            `derivable_oy_continuous_bndW_oo`,
            `derivable_oy_continuous_bndW`,
