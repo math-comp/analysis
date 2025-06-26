@@ -196,6 +196,9 @@
 - in `lebesgue_integral_differentiation.v`:
   + definition `iavg` (to use `inve`)
 
+- in `measure.v`:
+  + fourth argument of `probability_setT` is now explicit
+
 ### Renamed
 
 - in `measure.v`
