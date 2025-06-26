@@ -186,14 +186,15 @@ apply: (@le_lt_trans _ _ (\int[mu]_(x in D) (`|f x| + `|g x|))).
 by rewrite ge0_integralD //; [exact: lte_add_pinfty| exact: measurableT_comp..].
 Qed.
 
-Lemma integrable_sum (s : seq (T -> \bar R)) :
-  (forall h, h \in s -> mu_int h) -> mu_int (fun x => \sum_(h <- s) h x).
+Lemma integrable_sum I (s : seq I) (P : pred I) (h : I -> T -> \bar R) :
+  (forall i, P i -> mu_int (h i)) ->
+  mu_int (fun x => \sum_(i <- s | P i) h i x).
 Proof.
-elim: s => [_|h s ih hs].
+elim: s => [_|i s ih hs].
   by under eq_fun do rewrite big_nil; exact: integrable0.
-under eq_fun do rewrite big_cons; apply: integrableD => //.
-- by apply: hs; rewrite in_cons eqxx.
-- by apply: ih => k ks; apply: hs; rewrite in_cons ks orbT.
+under eq_fun do rewrite big_cons.
+have [Pi|Pi] := boolP (P i); last exact: ih.
+by apply: integrableD => //; [exact: hs|exact: ih].
 Qed.
 
 Lemma integrableB f g : mu_int f -> mu_int g -> mu_int (f \- g).
@@ -622,7 +623,7 @@ Section integralD.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
-Variables (f1 f2 : T -> \bar R).
+Variables f1 f2 : T -> \bar R.
 Hypotheses (if1 : mu.-integrable D f1) (if2 : mu.-integrable D f2).
 
 Let mf1 : measurable_fun D f1. Proof. exact: measurable_int if1. Qed.
@@ -680,6 +681,28 @@ transitivity (\int[mu]_(x in D) (EFin \o (g1 \+ g2)%R) x).
 Qed.
 
 End integralD.
+
+Section integral_sum.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
+Variables (I : Type) (f : I -> (T -> \bar R)).
+Hypothesis intf : forall n, mu.-integrable D (f n).
+
+Lemma integral_sum (s : seq I) (P : pred I) :
+  \int[mu]_(x in D) (\sum_(k <- s | P k) f k x) =
+  \sum_(k <- s | P k) \int[mu]_(x in D) (f k x).
+Proof.
+elim: s => [|h t ih].
+  under eq_integral do rewrite big_nil.
+  by rewrite integral0 big_nil.
+rewrite big_cons -ih -integralD//; last exact: integrable_sum.
+case: ifPn => Ph.
+  by apply: eq_integral => x xD; rewrite big_cons Ph.
+by apply: eq_integral => x xD; rewrite big_cons/= (negbTE Ph).
+Qed.
+
+End integral_sum.
 
 Section integralB.
 Local Open Scope ereal_scope.

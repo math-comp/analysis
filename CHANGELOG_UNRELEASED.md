@@ -88,6 +88,8 @@
 
 - in `set_interval.v`:
   + lemma `memB_itv`, `memB_itv0`
+- in `lebesgue_integrable.v`:
+  + lemma `integral_sum`
 
 ### Changed
 
@@ -236,6 +238,9 @@
 
 - in `derive.v`:
   + lemmas `is_deriveX`, `deriveX`, `exp_derive`, `exp_derive1`
+
+- in `lebesgue_integrable.v`:
+  + lemma `integrable_sum`
 
 ### Deprecated
 
