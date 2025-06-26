@@ -261,7 +261,9 @@ Proof. by rewrite unlock. Qed.
 
 Lemma expectation_fin_num (X : T -> R) : X \in Lfun P 1 ->
   'E_P[X] \is a fin_num.
-Proof. by move=> ?; rewrite unlock integral_fune_fin_num ?Lfun1_integrable. Qed.
+Proof.
+by move=> ?; rewrite unlock integral_fune_fin_num//; exact/Lfun1_integrable.
+Qed.
 
 Lemma expectation_cst r : 'E_P[cst r] = r%:E.
 Proof. by rewrite unlock/= integral_cst//= probability_setT mule1. Qed.
@@ -278,7 +280,9 @@ Qed.
 
 Lemma expectationZl (X : T -> R) (k : R) : X \in Lfun P 1 ->
   'E_P[k \o* X] = k%:E * 'E_P [X].
-Proof. by move=> ?; rewrite unlock muleC -integralZr ?Lfun1_integrable. Qed.
+Proof.
+by move=> ?; rewrite unlock muleC -integralZr//; exact/Lfun1_integrable.
+Qed.
 
 Lemma expectation_ge0 (X : T -> R) : (forall x, 0 <= X x)%R ->
   0 <= 'E_P[X].
@@ -302,11 +306,15 @@ Qed.
 
 Lemma expectationD (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
   'E_P[X \+ Y] = 'E_P[X] + 'E_P[Y].
-Proof. by move=> ? ?; rewrite unlock integralD_EFin ?Lfun1_integrable. Qed.
+Proof.
+by move=> ? ?; rewrite unlock integralD_EFin//; exact/Lfun1_integrable.
+Qed.
 
 Lemma expectationB (X Y : T -> R) : X \in Lfun P 1 -> Y \in Lfun P 1 ->
   'E_P[X \- Y] = 'E_P[X] - 'E_P[Y].
-Proof. by move=> ? ?; rewrite unlock integralB_EFin ?Lfun1_integrable. Qed.
+Proof.
+by move=> ? ?; rewrite unlock integralB_EFin//; exact/Lfun1_integrable.
+Qed.
 
 Lemma expectation_sum (X : seq (T -> R)) :
     (forall Xi, Xi \in X -> Xi \in Lfun P 1) ->
@@ -710,11 +718,12 @@ have le (u : R) : (0 <= u)%R ->
     - by rewrite lerD2r -lee_fin EFinB finEK.
   apply: (le_trans (le_measure _ _ _ le)).
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
-    by apply: emeasurable_funB=> //; apply/measurable_int/(Lfun1_integrable X1).
+    apply: emeasurable_funB=> //.
+    by move/Lfun1_integrable : X1 => /measurable_int.
   - rewrite -[[set _ | _]]setTI inE; apply: emeasurable_fun_c_infty => [//|].
     rewrite measurable_EFinP [X in measurable_fun _ X](_ : _ =
       (fun x => x ^+ 2) \o (fun x => Y x + u))%R//.
-    by apply/measurableT_comp => //; apply/measurable_funD.
+    by apply/measurableT_comp => //; exact/measurable_funD.
   set eps := ((lambda + u) ^ 2)%R.
   have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_wpDr.
   rewrite (lee_pdivlMr _ _ peps) muleC.
