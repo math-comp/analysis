@@ -1088,16 +1088,18 @@ by under eq_integral => x _ do rewrite gee0_abs ?lee_fin ?powR_ge0//.
 Qed.
 
 Lemma Lfun1_integrable (f : T -> R) :
-  f \in Lfun mu 1 -> mu.-integrable setT (EFin \o f).
+  f \in Lfun mu 1 <-> mu.-integrable setT (EFin \o f).
 Proof.
-move=> /[dup] lf /Lfun_integrable => /(_ (lexx _)).
-under eq_fun => x do rewrite powRr1//.
-move/integrableP => [mf fley].
-apply/integrableP; split.
-  move: lf; rewrite inE => /andP[/[!inE]/= {}mf _].
-   exact: measurableT_comp.
-rewrite (le_lt_trans _ fley)//=.
-by under [leRHS]eq_integral => x _ do rewrite normr_id.
+split.
+- move=> /[dup] lf /Lfun_integrable => /(_ (lexx _)).
+  under eq_fun => x do rewrite powRr1//.
+  move/integrableP => [mf fley]; apply/integrableP; split.
+    by move: lf; rewrite inE=> /andP[/[!inE]/= {}mf _]; exact: measurableT_comp.
+  rewrite (le_lt_trans _ fley)//=.
+  by under [leRHS]eq_integral => x _ do rewrite normr_id.
+- move/integrableP => [mF iF].
+  rewrite inE; apply/andP; split; rewrite inE/=; first exact/measurable_EFinP.
+  by rewrite /finite_norm Lnorm1.
 Qed.
 
 Lemma Lfun2_integrable_sqr (f : T -> R) : f \in Lfun mu 2%:E ->
