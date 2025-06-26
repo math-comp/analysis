@@ -177,7 +177,7 @@ have cdf_s : cdf X r @[r --> +oo%R] --> s.
 have cdf_ns : cdf X n%:R @[n --> \oo%R] --> s.
   by move/cvge_pinftyP : cdf_s; apply; exact/cvgryPge/nbhs_infty_ger.
 have cdf_n1 : cdf X n%:R @[n --> \oo] --> 1.
-  rewrite -(@probability_setT _ _ _ P).
+  rewrite -(probability_setT P).
   pose F n := X @^-1` `]-oo, n%:R].
   have <- : \bigcup_n F n = setT.
     rewrite -preimage_bigcup -subTset => t _/=.
@@ -995,7 +995,7 @@ Lemma eq_bernoulli (P : probability bool R) :
 Proof.
 move=> Ptrue sb; rewrite /bernoulli /bernoulli_pmf.
 have Pfalse: P [set false] = (1 - p%:E)%E.
-  rewrite -Ptrue -(@probability_setT _ _ _ P) setT_bool measureU//; last first.
+  rewrite -Ptrue -(probability_setT P) setT_bool measureU//; last first.
     by rewrite disjoints_subset => -[]//.
   by rewrite addeAC subee ?add0e//= Ptrue.
 have: (0 <= p%:E <= 1)%E by rewrite -Ptrue measure_ge0 probability_le1.
@@ -1040,7 +1040,7 @@ Lemma eq_bernoulliV2 {R : realType} (P : probability bool R) :
   P [set true] = P [set false] -> P =1 bernoulli 2^-1.
 Proof.
 move=> Ptrue_eq_false; apply/eq_bernoulli.
-have : P [set: bool] = 1%E := probability_setT.
+have : P [set: bool] = 1%E := probability_setT P.
 rewrite setT_bool measureU//=; last first.
   by rewrite disjoints_subset => -[]//.
 rewrite Ptrue_eq_false -mule2n; move/esym/eqP.

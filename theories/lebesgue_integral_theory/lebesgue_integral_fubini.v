@@ -430,6 +430,33 @@ Qed.
 
 End product_measure2E.
 
+Section product_probability_measures.
+Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
+  (R : realType) (P1 : probability T1 R) (P2 : probability T2 R).
+Local Open Scope ereal_scope.
+
+Local Notation pro1 := (P1 \x P2).
+
+Let pro1_setT : pro1 [set: T1 * T2] = 1.
+Proof.
+rewrite -setXTT product_measure1E// -[RHS]mule1.
+by rewrite -{1}(probability_setT P1) -(probability_setT P2).
+Qed.
+
+HB.instance Definition _ := Measure_isProbability.Build _ _ _ pro1 pro1_setT.
+
+Local Notation pro2 := (P1 \x^ P2).
+
+Let pro2_setT : pro2 setT = 1.
+Proof.
+rewrite -setXTT product_measure2E// -[RHS]mule1.
+by rewrite -{1}(probability_setT P1) -(probability_setT P2).
+Qed.
+
+HB.instance Definition _ := Measure_isProbability.Build _ _ _ pro2 pro2_setT.
+
+End product_probability_measures.
+
 Section fubini_functions.
 Local Open Scope ereal_scope.
 Context d1 d2 (T1 : measurableType d1) (T2 : measurableType d2) (R : realType).

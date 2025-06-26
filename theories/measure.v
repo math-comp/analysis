@@ -3578,6 +3578,8 @@ HB.mixin Record isProbability d (T : measurableType d) (R : realType)
 HB.structure Definition Probability d (T : measurableType d) (R : realType) :=
   {P of @SubProbability d T R P & isProbability d T R P }.
 
+Arguments probability_setT {d T R} s.
+
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
   gen_eqMixin (probability T R).
 HB.instance Definition _ d (T : measurableType d) (R : realType) :=
@@ -3587,15 +3589,11 @@ Section probability_lemmas.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
 Lemma probability_le1 (A : set T) : measurable A -> P A <= 1.
-Proof.
-move=> mA; rewrite -(@probability_setT _ _ _ P).
-by apply: le_measure => //; rewrite ?in_setE.
-Qed.
+Proof. by move=> mA; rewrite -(probability_setT P) ?le_measure ?in_setE. Qed.
 
 Lemma probability_setC (A : set T) : measurable A -> P (~` A) = 1 - P A.
 Proof.
-move=> mA.
-rewrite -(@probability_setT _ _ _ P) -(setvU A) measureU ?addeK ?setICl//.
+move=> mA; rewrite -(probability_setT P) -(setvU A) measureU ?addeK ?setICl//.
 - by rewrite fin_num_measure.
 - exact: measurableC.
 Qed.
