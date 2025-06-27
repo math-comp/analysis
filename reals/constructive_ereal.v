@@ -820,7 +820,7 @@ Proof. exact: raddfMn. Qed.
 
 Lemma prodEFin T s (P : pred T) (f : T -> R) :
   \prod_(i <- s | P i) (f i)%:E = (\prod_(i <- s | P i) f i)%:E.
-Proof. by elim/big_ind2 : _ => // _ x _ y -> ->; rewrite EFinM. Qed.
+Proof. by elim/big_ind2 : _ => // ? x ? y -> ->; rewrite EFinM. Qed.
 
 Lemma sumEFin I s P (F : I -> R) :
   \sum_(i <- s | P i) (F i)%:E = (\sum_(i <- s | P i) F i)%:E.
@@ -916,7 +916,7 @@ Lemma adde_defNN x y : - x +? - y = x +? y.
 Proof. by rewrite adde_defN oppeK. Qed.
 
 Lemma oppe_eq0 x : (- x == 0)%E = (x == 0)%E.
-Proof. by rewrite -(can_eq oppeK) oppe0. Qed.
+Proof. by rewrite -[RHS](can_eq oppeK) oppe0. Qed.
 
 Lemma oppeD x y : x +? y -> - (x + y) = - x - y.
 Proof. by move: x y => [x| |] [y| |] //= _; rewrite opprD. Qed.
@@ -2483,7 +2483,7 @@ move: x => [x|_|//].
   move=> [y| |] [z| |]//; first by rewrite !lee_fin// ler_pM2r.
   - by move=> _; rewrite mulr_infty gtr0_sg// mul1e leey.
   - by move=> _; rewrite mulr_infty gtr0_sg// mul1e leNye.
-  - by move=> _; rewrite 2!mulr_infty gtr0_sg// 2!mul1e.
+  - by move=> _; rewrite mulNyr mulyr gtr0_sg// 2!mul1e.
 move=> [y| |] [z| |]//.
 - rewrite lee_fin => yz.
   have [z0|z0|] := ltgtP 0%R z.

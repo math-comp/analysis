@@ -510,7 +510,7 @@ Proof. by move: b => [] [] /= <-; exact/propext. Qed.
 Canonical false_neq P b := BoolNeqRHS (@false_neqP P b).
 
 Local Fact eqType_neqP (T : eqType) (x y : T) : (x <> y) = (x != y).
-Proof. by rewrite (reflect_eq eqP) (reflect_eq negP). Qed.
+Proof. by rewrite [in LHS](reflect_eq eqP) (reflect_eq negP). Qed.
 Canonical eqType_neq (T : eqType) x y :=
   @NeqRHS (x != y) T x (Wrap y) (eqType_neqP x y).
 Local Fact eq_op_posP (T : eqType) x y : (x == y :> T : Prop) = (x = y).

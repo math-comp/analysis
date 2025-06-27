@@ -707,8 +707,8 @@ Lemma uniform_set1 F (f : U -> V) (x : U) :
   Filter F -> {uniform [set x], F --> f} = (g x @[g --> F] --> f x).
 Proof.
 move=> FF; rewrite propeqE; split.
-  move=> + W => /(_ [set t | W (t x)]) +; rewrite -nbhs_entourageE.
-  rewrite uniform_nbhs => + [Q entQ subW].
+  move=> + W => /(_ [set t | W (t x)]) +.
+  rewrite -[in X in _ -> X]nbhs_entourageE uniform_nbhs => + [Q entQ subW].
   by apply; exists Q; split => // h Qf; exact/subW/xsectionP/Qf.
 move=> Ff W; rewrite uniform_nbhs => [[E] [entE subW]].
 apply: (filterS subW); move/(nbhs_entourage (f x))/Ff: entE => //=; near_simpl.

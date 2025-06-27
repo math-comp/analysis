@@ -2808,7 +2808,7 @@ apply/trivIsetP => i j Di Dj ij.
 rewrite {}s12 {s2}; have [si|si] := ltnP i (size s); last first.
   by rewrite (nth_default set0) ?size_map// set0I.
 rewrite (nth_map O) //; have [sj|sj] := ltnP j (size s); last first.
-  by rewrite (nth_default set0) ?size_map// setI0.
+  by rewrite setIC (nth_default set0) ?size_map// set0I.
 have nth_mem k : k < size s -> nth O s k \in iota 0 (size s1).
   by move=> ?; rewrite -(perm_mem ss1) mem_nth.
 rewrite (nth_map O)// ts1 ?(nth_uniq,(perm_uniq ss1),iota_uniq)//; apply/s1D.

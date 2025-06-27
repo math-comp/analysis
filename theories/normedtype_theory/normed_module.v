@@ -810,7 +810,7 @@ Proof. by move=> /cvg_ex[l fl]; apply: (cvgP (- l)); exact: cvgeN. Qed.
 Lemma is_cvgeNE f : cvg (\- f @ F) = cvg (f @ F).
 Proof.
 rewrite propeqE; split=> /cvgeNP/cvgP//.
-by under eq_is_cvg do rewrite oppeK.
+by under [X in X -> _]eq_is_cvg do rewrite oppeK.
 Qed.
 
 Lemma mule_continuous (r : R) : continuous (mule r%:E).

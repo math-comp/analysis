@@ -1592,7 +1592,7 @@ Let integral_normal_fun : sigma != 0 ->
   (\int[mu]_x (normal_fun x)%:E)%E = normal_peak^-1%:E.
 Proof.
 move=> s0; rewrite -integral_gaussFF'//; apply: eq_integral => /= x _.
-rewrite F'E !fctE/= EFinM -muleA -EFinM mulVf ?mulr1.
+rewrite F'E !fctE/= EFinM -muleA -EFinM mulVf ?mulr1 ?mule1.
   by rewrite normal_gauss_fun.
 by rewrite gt_eqF// sqrtr_gt0 pmulrn_lgt0// exprn_even_gt0.
 Qed.

@@ -5439,7 +5439,7 @@ move=> /(_ F') /=.
 have -> : F' Y = F (f @^-1` Y) by rewrite /F' /image_set_system /= setTI.
 move=> /[swap] bigF; apply; split; first exact: sigma_algebra_image.
 move=> A; rewrite /= {}/F' /image_set_system /= setTI.
-set bign := (X in X A) => bignA.
+set bign := (X in X A -> _) => bignA.
 apply: bigF; rewrite big_ord_recl /=; right.
 set bign1 := (X in X (_ @^-1` _)).
 have -> : bign1 = preimage_set_system [set: n.+1.-tuple T] f bign.

@@ -1031,7 +1031,7 @@ Lemma cvgNy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
   f x @[x --> -oo] --> l <-> (f \o -%R) x @[x --> +oo] --> l.
 Proof.
 have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
-by rewrite (eq_cvg -oo _ f_opp) fmap_comp ninftyN.
+by rewrite (eq_cvg -oo _ f_opp) [in X in X <-> _]fmap_comp ninftyN.
 Qed.
 
 (* PR in progress *)
@@ -1040,7 +1040,7 @@ Lemma cvgy_compNP {T : topologicalType} {R : numFieldType} (f : R -> T)
   f x @[x --> +oo] --> l <-> (f \o -%R) x @[x --> -oo] --> l.
 Proof.
 have f_opp : f =1 (fun x => (f \o -%R) (- x)) by move=> x; rewrite /comp opprK.
-by rewrite (eq_cvg +oo _ f_opp) fmap_comp ninfty.
+by rewrite (eq_cvg +oo _ f_opp) [in X in X <-> _]fmap_comp ninfty.
 Qed.
 
 Section integration_by_substitution.
@@ -1606,7 +1606,7 @@ rewrite (@increasing_ge0_integration_by_substitutiony (\- (F \o -%R))%R); last 8
     apply: dFcompN.
     rewrite ltrNl.
     by near: z; exact: nbhs_right_gt.
-  rewrite fctE derive1_comp; last 2 first.
+  rewrite fctE [LHS]derive1_comp; last 2 first.
     exact: derivable_id.
     apply: dFN; rewrite ltrNl.
     by near: z; exact: nbhs_right_gt.
