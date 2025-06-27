@@ -325,9 +325,9 @@ Arguments tuple_of_pair {d T} n.
 Arguments measurable_tuple_of_pair {d T} n.
 Arguments measurable_pair_of_tuple {d T} n.
 
-Section iterated_product_finite_measures.
+Section iterated_product_sigma_finite_measures.
 Context d (T : measurableType d) (R : realType)
-  (P : {finite_measure set T -> \bar R}).
+  (P : {sigma_finite_measure set T -> \bar R}).
 
 Fixpoint ipro n : set (n.-tuple T) -> \bar R :=
   match n with
@@ -360,7 +360,7 @@ Qed.
 HB.instance Definition _ n := isMeasure.Build _ _ _ (@ipro n)
   (ipro_measure n).1 (ipro_measure n).2.1 (ipro_measure n).2.2.
 
-End iterated_product_finite_measures.
+End iterated_product_sigma_finite_measures.
 Arguments ipro {d T R} P n.
 
 Notation "\X_ n P" := (ipro P n).
@@ -368,7 +368,7 @@ Notation "\X_ n P" := (ipro P n).
 Section iterated_product_probability_measures.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
-Lemma ipro_setT n : \X_n P [set: n.-tuple T] = 1%E.
+Let ipro_setT n : \X_n P [set: n.-tuple T] = 1%E.
 Proof.
 elim: n => [|n ih]/=; first by rewrite diracT.
 rewrite /product_measure2 /ysection/=.
