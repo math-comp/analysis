@@ -201,6 +201,15 @@
 - in `measure.v`:
   + fourth argument of `probability_setT` is now explicit
 
+- in `hoelder.v`:
+  + generalized the quotient of Lspaces to all measurable functions rather than just Lp functions.
+  + consequently,
+    * updated notation for measurable functions from `LfunType` to `{mfun_ mu , U >-> V }`
+    * renamed definitions and lemmas from `Lequiv`, `Lequiv_refl`, `Lequiv_sym`, `Lequiv_trans`,
+      `LspaceType` to `ae_eq_op`, `ae_eq_op_refl`, `ae_eq_op_sym`, `ae_eq_op_trans`, `aeEqMfun`
+   * renamed lemma `LequivP` to `ae_eqP`
+
+
 ### Renamed
 
 - in `measure.v`
