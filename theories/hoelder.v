@@ -30,9 +30,10 @@ From mathcomp Require Import lebesgue_integral numfun exp convex.
 (*                          greater or equal to 1.                            *)
 (*                          The HB class is Lfunction.                        *)
 (*            f \in Lfun == holds for f : LfunType mu p1                      *)
-(*            Lequiv f g == f is equal to g almost everywhere                 *)
-(*                          The functions f and g have type LfunType mu p1.   *)
-(*                          Lequiv is made a canonical equivalence relation.  *)
+(*          ae_eq_op f g == boolean version of ae_eq,                         *)
+(*                          ae_eq_op is canonically an equivalence relation   *)
+(*  {mfun_mu, T1 >-> T2} == the quotient of measurable functions T1 -> T2,    *)
+(*                          quotiented by the equivalence relation ae_eq_op   *)
 (*      LspaceType mu p1 == type of the elements of the Lp space for the      *)
 (*                          measure mu                                        *)
 (*          mu.-Lspace p == Lp space as a set                                 *)
@@ -804,45 +805,61 @@ HB.instance Definition _ := gen_choiceMixin (LfunType mu p1).
 
 End LfunType_canonical.
 
-Section Lequiv.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E).
+Section AeEqEquiv.
+Context d1 d2 (R : realType) (T1 : measurableType d1) (T2 : measurableType d2).
+Variables (mu : {measure set T1 -> \bar R}).
 
-Definition Lequiv (f g : LfunType mu p1) := `[< f = g %[ae mu] >].
+Definition ae_eq_op (f g : {mfun T1 >-> T2}) := `[< f = g %[ae mu] >].
 
-Let Lequiv_refl : reflexive Lequiv.
+Let ae_eq_op_refl : reflexive ae_eq_op.
 Proof.
 by move=> f; exact/asboolP/(filterS _ (ae_eq_refl mu setT (EFin \o f))).
 Qed.
 
-Let Lequiv_sym : symmetric Lequiv.
+Let ae_eq_op_sym : symmetric ae_eq_op.
 Proof.
 by move=> f g; apply/idP/idP => /asboolP h; apply/asboolP/ae_eq_sym.
 Qed.
 
-Let Lequiv_trans : transitive Lequiv.
+Let ae_eq_op_trans : transitive ae_eq_op.
 Proof.
 by move=> f g h /asboolP gf /asboolP fh; apply/asboolP/(ae_eq_trans gf fh).
 Qed.
 
-Canonical Lequiv_canonical :=
-  EquivRel Lequiv Lequiv_refl Lequiv_sym Lequiv_trans.
+Canonical ae_eq_op_canonical :=
+  EquivRel ae_eq_op ae_eq_op_refl ae_eq_op_sym ae_eq_op_trans.
 
 Local Open Scope quotient_scope.
 
-Definition LspaceType := {eq_quot Lequiv}.
-HB.instance Definition _ := Choice.on LspaceType.
-HB.instance Definition _ := EqQuotient.on LspaceType.
+Definition aeEqMfun : Type := {eq_quot ae_eq_op}.
+HB.instance Definition _ := Choice.on aeEqMfun.
+HB.instance Definition _ := EqQuotient.on aeEqMfun.
+Definition aqEqMfun_to_fun (f : aeEqMfun) : T1 -> T2 := repr f.
+Coercion aqEqMfun_to_fun : aeEqMfun >-> Funclass.
 
-Lemma LequivP (f g : LfunType mu p1) :
-  reflect (f = g %[ae mu]) (f == g %[mod LspaceType]).
+Lemma ae_eqP (f g : aeEqMfun) : reflect (f = g %[ae mu]) (f == g %[mod aeEqMfun]).
 Proof. by apply/(iffP idP); rewrite eqmodE// => /asboolP. Qed.
 
-Record LType := MemLType { Lfun_class : LspaceType }.
-Coercion LfunType_of_LType (f : LType) : LfunType mu p1 :=
-  repr (Lfun_class f).
+End AeEqEquiv.
 
-End Lequiv.
+Reserved Notation "{ 'mfun_' mu , U >-> V }"
+  (at level 0, U at level 69, format "{ 'mfun_'  mu ,  U  >->  V }").
+
+Notation "{ 'mfun_' mu , aT >-> T }" := (@aeEqMfun _ _ _ aT T mu)
+   : form_scope.
+
+Import numFieldNormedType.Exports HBNNSimple.
+
+HB.mixin Record isFinLebesgue d (T : measurableType d) (R : realType)
+    (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E)
+    (f : {mfun_ mu, T >-> measurableTypeR R}) := {
+  Lebesgue_finite : finite_norm mu p f
+}.
+
+#[short(type=LspaceType)]
+HB.structure Definition LebesgueSpace d (T : measurableType d) (R : realType)
+    (mu : {measure set T -> \bar R}) (p : \bar R) (p1 : (1 <= p)%E) :=
+  {f of isFinLebesgue d T R mu p p1 f}.
 
 Section mfun_extra.
 Context d (T : measurableType d) (R : realType).
@@ -1052,12 +1069,12 @@ Section Lspace.
 Context d (T : measurableType d) (R : realType).
 Variable mu : {measure set T -> \bar R}.
 
-Definition Lspace p (p1 : (1 <= p)%E) := [set: LType mu p1].
+Definition Lspace p (p1 : (1 <= p)%E) := [set: LspaceType mu p1].
 Arguments Lspace : clear implicits.
 
-Definition LType1 := LType mu (@lexx _ _ 1%E).
+Definition LspaceType1 := LspaceType mu (@lexx _ _ 1%E).
 
-Definition LType2 := LType mu (lee1n 2).
+Definition LspaceType2 := LspaceType mu (lee1n 2).
 
 Lemma Lfun_norm (f : T -> R) : f \in Lfun mu 1 -> normr \o f \in Lfun mu 1.
 Proof.
