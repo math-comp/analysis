@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import mathcomp_extra unstable boolp interval_inference.
@@ -95,7 +95,7 @@ Qed.
 
 Lemma Lnorm1 f : 'N_1[f] = \int[mu]_x `|f x|.
 Proof.
-rewrite unlock invr1// poweRe1//; under eq_integral do [rewrite poweRe1//=] => //.
+rewrite unlock invr1 ?poweRe1//; under eq_integral do [rewrite poweRe1//] => //.
 exact: integral_ge0.
 Qed.
 
@@ -109,10 +109,9 @@ move=> r0; rewrite unlock -poweRrM mulVf// poweRe1//.
 by apply: integral_ge0 => x _; exact: poweR_ge0.
 Qed.
 
-Lemma oppe_Lnorm f p : 'N_p[\- f]%E = 'N_p[f].
+Lemma oppe_Lnorm f p : 'N_p[\- f] = 'N_p[f].
 Proof.
-have NfE : abse \o (\- f) = abse \o f.
-  by apply/funext => x /=; rewrite abseN.
+have NfE : abse \o (\- f) = abse \o f by apply/funext => x /=; rewrite abseN.
 rewrite unlock /Lnorm NfE; case: p => /= [r|//|//].
 by under eq_integral => x _ do rewrite abseN.
 Qed.
@@ -130,29 +129,22 @@ rewrite unlock; move: p => [r/=|/=|//]; first exact: poweR_ge0.
 - by case: ifPn => // muT0; apply/ess_infP/nearW => x /=.
 Qed.
 
-Lemma Lnorm_eq0_eq0 f p :
-  measurable_fun setT f -> (0 < p)%E -> 'N_p[f] = 0 -> f = \0 %[ae mu].
+Lemma Lnorm_eq0_eq0 f p : measurable_fun [set: T] f -> 0 < p ->
+  'N_p[f] = 0 -> f = \0 %[ae mu].
 Proof.
-rewrite unlock /Lnorm => mf.
-case: p => [r||//].
+rewrite unlock /Lnorm => mf; case: p => [r||//].
 - rewrite lte_fin => r0 /poweR_eq0_eq0 => /(_ (integral_ge0 _ _)) h.
-  have : \int[mu]_x `|f x| `^ r = 0.
-    by apply: h => x _; rewrite poweR_ge0.
-  move=> H.
-  have {H} : \int[mu]_x `| `|f x| `^ r | = 0%R.
+  have : \int[mu]_x `| `|f x| `^ r | = 0%R.
     under eq_integral.
-      move=> x _.
-      rewrite gee0_abs; last by rewrite poweR_ge0.
-      over.
-    exact: H.
-  have mp : measurable_fun [set: T] (fun x : T => `|f x| `^ r).
+      move=> x _; rewrite gee0_abs; last by rewrite poweR_ge0. over.
+    by apply: h => x _; rewrite poweR_ge0.
+  have mp : measurable_fun [set: T] (fun x => `|f x| `^ r).
     apply: (@measurableT_comp _ _ _ _ _ _ (fun x => x `^ r)) => //=.
-      by apply (measurableT_comp (measurable_poweR _)) => //.
+      exact: (measurableT_comp (measurable_poweR _)).
     exact: measurableT_comp.
   move/(ae_eq_integral_abs mu measurableT mp).
   apply: filterS => x/= /[apply].
-  move=> /poweR_eq0_eq0 /eqP => /(_ (abse_ge0 _)).
-  by rewrite abse_eq0 => /eqP.
+  by move=> /poweR_eq0_eq0 /eqP => /(_ (abse_ge0 _)); rewrite abse_eq0 => /eqP.
 - case: ifPn => [mu0 _|].
     move=> /abs_sup_eq0_ae_eq/=.
     by apply: filterS => x/= /(_ I) /eqP + _ => /eqP.
@@ -164,12 +156,16 @@ Qed.
 Lemma powR_Lnorm f r : r != 0%R -> 'N_r%:E[f] `^ r = \int[mu]_x `| f x | `^ r.
 Proof. by move=> r0; rewrite poweR_Lnorm. Qed.
 
+Lemma Lnorm_abse f p : 'N_p[abse \o f] = 'N_p[f].
+Proof.
+rewrite unlock/=; have -> : abse \o (abse \o f) = abse \o f.
+  by apply: funext => x/=; rewrite abse_id.
+by case: p => [r|//|//]; under eq_integral => x _ do rewrite abse_id.
+Qed.
+
 End Lnorm_properties.
-
-#[global]
-Hint Extern 0 (0 <= Lnorm _ _ _) => solve [apply: Lnorm_ge0] : core.
-
 Notation "'N[ mu ]_ p [ f ]" := (Lnorm mu p f) : ereal_scope.
+#[global] Hint Extern 0 (0 <= Lnorm _ _ _) => solve [apply: Lnorm_ge0] : core.
 
 Section lnorm.
 Context d {T : measurableType d} {R : realType}.
@@ -184,15 +180,6 @@ by move=> p0; rewrite unlock ge0_integral_count// => k; rewrite poweR_ge0.
 Qed.
 
 End lnorm.
-
-Section ereal.
-Context {R : realFieldType}.
-Implicit Type x y : \bar R.
-Local Open Scope ereal_scope.
-
-
-
-End ereal.
 
 Section hoelder_conjugate.
 Context d (T : measurableType d) (R : realType).
@@ -432,14 +419,14 @@ Lemma hoelder (f g : T -> R) p q :
   'N_1[(f \* g)%R] <= 'N_p%:E[f] * 'N_q%:E[g].
 Proof.
 move=> mf mg p0 q0 pq.
-have [f0|f0] := eqVneq 'N_p%:E[f] 0%E; first exact: hoelder0.
-have [g0|g0] := eqVneq 'N_q%:E[g] 0%E.
+have [f0|f0] := eqVneq 'N_p%:E[f] 0; first exact: hoelder0.
+have [g0|g0] := eqVneq 'N_q%:E[g] 0.
   rewrite muleC; apply: le_trans; last by apply: hoelder0 => //; rewrite addrC.
   by under eq_Lnorm do rewrite /= mulrC.
 have {f0}fpos : 0 < 'N_p%:E[f] by rewrite lt0e f0 Lnorm_ge0.
 have {g0}gpos : 0 < 'N_q%:E[g] by rewrite lt0e g0 Lnorm_ge0.
-have [foo|foo] := eqVneq 'N_p%:E[f] +oo%E; first by rewrite foo gt0_mulye ?leey.
-have [goo|goo] := eqVneq 'N_q%:E[g] +oo%E; first by rewrite goo gt0_muley ?leey.
+have [foo|foo] := eqVneq 'N_p%:E[f] +oo; first by rewrite foo gt0_mulye ?leey.
+have [goo|goo] := eqVneq 'N_q%:E[g] +oo; first by rewrite goo gt0_muley ?leey.
 pose F := normalized p f; pose G := normalized q g.
 rewrite [leLHS](_ : _ = 'N_1[(F \* G)%R] * 'N_p%:E[f] * 'N_q%:E[g]); last first.
   rewrite !Lnorm1; under [in RHS]eq_integral.
@@ -1071,6 +1058,15 @@ Arguments Lspace : clear implicits.
 Definition LType1 := LType mu (@lexx _ _ 1%E).
 
 Definition LType2 := LType mu (lee1n 2).
+
+Lemma Lfun_norm (f : T -> R) : f \in Lfun mu 1 -> normr \o f \in Lfun mu 1.
+Proof.
+case/andP; rewrite !inE/= => mf finf; apply/andP; split.
+  by rewrite inE/=; exact: measurableT_comp.
+rewrite inE/=/finite_norm.
+under [X in ('N[_]__[X])%E]eq_fun => x do rewrite -abse_EFin.
+by rewrite Lnorm_abse.
+Qed.
 
 Lemma Lfun_integrable (f : T -> R) r :
   1 <= r -> f \in Lfun mu r%:E ->

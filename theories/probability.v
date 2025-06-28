@@ -1,7 +1,7 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
-From mathcomp Require Import all_ssreflect.
-From mathcomp Require Import ssralg poly ssrnum ssrint interval archimedean finmap.
+From mathcomp Require Import all_ssreflect ssralg.
+From mathcomp Require Import poly ssrnum ssrint interval archimedean finmap.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions cardinality fsbigop.
 From mathcomp Require Import exp numfun lebesgue_measure lebesgue_integral.
@@ -21,27 +21,26 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 (* `lebesgue_integral.v`.                                                     *)
 (*                                                                            *)
 (* ```                                                                        *)
-(*        {RV P >-> T'} == random variable: a measurable function to the      *)
-(*                         measurableType T' from the measured space          *)
-(*                         characterized by the probability P                 *)
-(*     distribution P X == measure image of the probability measure P by the  *)
-(*                         random variable X : {RV P -> T'}                   *)
-(*                         P as type probability T R with T of type           *)
-(*                         measurableType.                                    *)
-(*                         Declared as an instance of probability measure.    *)
-(*              'E_P[X] == expectation of the real measurable function X      *)
-(*       covariance X Y == covariance between real random variable X and Y    *)
-(*              'V_P[X] == variance of the real random variable X             *)
-(*                'M_ X == moment generating function of the random variable  *)
-(*                         X                                                  *)
-(*      {dmfun T >-> R} == type of discrete real-valued measurable functions  *)
-(*        {dRV P >-> R} == real-valued discrete random variable               *)
-(*            dRV_dom X == domain of the discrete random variable X           *)
-(*           dRV_enum X == bijection between the domain and the range of X    *)
-(*              pmf X r := fine (P (X @^-1` [set r]))                         *)
-(*              cdf X r == cumulative distribution function of X              *)
-(*                      := distribution P X `]-oo, r]                         *)
-(*        enum_prob X k == probability of the kth value in the range of X     *)
+(*      {RV P >-> T'} == random variable: a measurable function to the        *)
+(*                       measurableType T' from the measured space            *)
+(*                       characterized by the probability P                   *)
+(*   distribution P X == measure image of the probability measure P by the    *)
+(*                       random variable X : {RV P -> T'}                     *)
+(*                       P as type probability T R with T of type             *)
+(*                       measurableType.                                      *)
+(*                       Declared as an instance of probability measure.      *)
+(*            'E_P[X] == expectation of the real measurable function X        *)
+(*     covariance X Y == covariance between real random variable X and Y      *)
+(*            'V_P[X] == variance of the real random variable X               *)
+(*              'M_ X == moment generating function of the random variable X  *)
+(*    {dmfun T >-> R} == type of discrete real-valued measurable functions    *)
+(*      {dRV P >-> R} == real-valued discrete random variable                 *)
+(*          dRV_dom X == domain of the discrete random variable X             *)
+(*         dRV_enum X == bijection between the domain and the range of X      *)
+(*            pmf X r := fine (P (X @^-1` [set r]))                           *)
+(*            cdf X r == cumulative distribution function of X                *)
+(*                    := distribution P X `]-oo, r]                           *)
+(*      enum_prob X k == probability of the kth value in the range of X       *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* ```                                                                        *)
@@ -618,6 +617,10 @@ Qed.
 End variance.
 Notation "'V_ P [ X ]" := (variance P X).
 
+Definition mmt_gen_fun d (T : measurableType d) (R : realType)
+  (P : probability T R) (X : T -> R) (t : R) := ('E_P[expR \o t \o* X])%E.
+Notation "'M_ X t" := (mmt_gen_fun X t).
+
 Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
@@ -639,11 +642,8 @@ apply: (le_trans (@le_integral_comp_abse _ _ _ P _ measurableT (EFin \o X)
 - by rewrite unlock.
 Qed.
 
-Definition mmt_gen_fun (X : T -> R) (t : R) := 'E_P[expR \o t \o* X].
-Local Notation "'M_ X t" := (mmt_gen_fun X t).
-
 Lemma chernoff (X : {RV P >-> R}) (r a : R) : (0 < r)%R ->
-  P [set x | X x >= a]%R <= 'M_X r * (expR (- (r * a)))%:E.
+  P [set x | X x >= a]%R <= 'M_P X r * (expR (- (r * a)))%:E.
 Proof.
 move=> t0; rewrite /mmt_gen_fun.
 have -> : expR \o r \o* X = (normr \o normr) \o (expR \o r \o* X).
