@@ -623,6 +623,127 @@ Definition mmt_gen_fun d (T : measurableType d) (R : realType)
   (P : probability T R) (X : T -> R) (t : R) := ('E_P[expR \o t \o* X])%E.
 Notation "'M_ P X" := (@mmt_gen_fun _ _ _ P X).
 
+Local Open Scope ereal_scope.
+(* TODO: move to constructive_ereal.v *)
+Lemma eqe_div {R : realType} (x y z t : \bar R) :
+  y \is a fin_num -> t \is a fin_num ->
+  y != 0%R -> t != 0 -> ((x / y) == (z / t)) = ((x * t) == (z * y)).
+Proof.
+move: x y z t => [x| |] [y| |] [z| |] [t| |]//=; rewrite ?eqe => _ _ y0 t0.
+- by rewrite !inver (negbTE y0) (negbTE t0) -!EFinM eqe eqr_div.
+- rewrite !inver (negbTE y0) (negbTE t0) -!EFinM.
+  move: t0; rewrite neq_lt => /orP[|] t0.
+  + rewrite lt0_mulye ?lte_fin ?invr_lt0//.
+    rewrite EFinM mule_eq_ninfty !lte_fin/= orbF.
+    apply/orP/idP; first by move=> [/andP[z0 /eqP]|/andP[z0 /eqP]].
+    move: y0; rewrite neq_lt => /orP[|] y0.
+    * by rewrite lt0_mulye.
+    * by rewrite gt0_mulye.
+  + rewrite gt0_mulye ?lte_fin ?invr_gt0//=.
+     move: y0; rewrite neq_lt => /orP[|] y0.
+     * by rewrite lt0_mulye.
+     * by rewrite gt0_mulye.
+- rewrite !inver (negbTE y0) (negbTE t0) -!EFinM.
+  move: t0; rewrite neq_lt => /orP[|] t0.
+  + rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+    rewrite EFinM mule_eq_pinfty !lte_fin/= orbF.
+    apply/orP/idP; first by move=> [/andP[z0 /eqP]|/andP[z0 /eqP]].
+    move: y0; rewrite neq_lt => /orP[|] y0.
+    * by rewrite lt0_mulNye.
+    * by rewrite gt0_mulNye.
+  + rewrite gt0_mulNye ?lte_fin ?invr_gt0//=.
+    move: y0; rewrite neq_lt => /orP[|] y0.
+    * by rewrite lt0_mulNye.
+    * by rewrite gt0_mulNye.
+- rewrite !inver (negbTE y0) (negbTE t0) -!EFinM.
+  move: y0; rewrite neq_lt => /orP[|] y0.
+  + rewrite lt0_mulye ?lte_fin ?invr_lt0//.
+    rewrite eq_sym EFinM mule_eq_ninfty !lte_fin/= orbF.
+    apply/orP/idP; first by move=> [/andP[z0 /eqP]|/andP[z0 /eqP]].
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * by rewrite lt0_mulye.
+    * by rewrite gt0_mulye.
+  + rewrite gt0_mulye ?lte_fin ?invr_gt0//=.
+     move: t0; rewrite neq_lt => /orP[|] t0.
+     * by rewrite lt0_mulye.
+     * by rewrite gt0_mulye.
+- rewrite !inver (negbTE y0) (negbTE t0).
+  move: y0; rewrite neq_lt => /orP[|] y0.
+  + rewrite lt0_mulye ?lte_fin ?invr_lt0//.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+      by rewrite !lt0_mulye ?lte_fin ?invr_lt0.
+    do 2 rewrite gt0_mulye ?lte_fin ?invr_gt0// .
+    by rewrite lt0_mulye ?lte_fin ?invr_gt0// .
+  + rewrite gt0_mulye ?lte_fin ?invr_gt0//=.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * do 2 rewrite lt0_mulye ?lte_fin ?invr_lt0//.
+      by rewrite gt0_mulye ?lte_fin ?invr_gt0.
+    * do 2 rewrite gt0_mulye ?lte_fin ?invr_gt0//.
+      by rewrite gt0_mulye ?lte_fin ?invr_gt0.
+- rewrite !inver (negbTE y0) (negbTE t0).
+  move: y0; rewrite neq_lt => /orP[|] y0.
+  + rewrite lt0_mulye ?lte_fin ?invr_lt0//.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+      rewrite !lt0_mulye ?lte_fin ?invr_lt0//.
+      by rewrite !lt0_mulNye ?lte_fin ?invr_lt0.
+    rewrite gt0_mulye ?lte_fin ?invr_gt0//.
+    rewrite gt0_mulNye ?lte_fin ?invr_gt0//.
+    by rewrite lt0_mulNye ?lte_fin ?invr_lt0.
+  + rewrite gt0_mulye ?lte_fin ?invr_gt0//.
+    rewrite (@gt0_mulNye _ y%:E) ?lte_fin ?invr_gt0//.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+      rewrite !lt0_mulye ?lte_fin ?invr_lt0//.
+      by rewrite !lt0_mulNye ?lte_fin ?invr_lt0.
+    rewrite gt0_mulye ?lte_fin ?invr_gt0//.
+    by rewrite gt0_mulNye ?lte_fin ?invr_gt0.
+- rewrite !inver (negbTE y0) (negbTE t0) -!EFinM.
+  move: y0; rewrite neq_lt => /orP[|] y0.
+  + rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+    rewrite eq_sym EFinM mule_eq_pinfty !lte_fin/= orbF.
+    apply/orP/idP; first by move=> [/andP[z0 /eqP]|/andP[z0 /eqP]].
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * by rewrite lt0_mulNye.
+    * by rewrite gt0_mulNye.
+  + rewrite gt0_mulNye ?lte_fin ?invr_gt0//=.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * by rewrite lt0_mulNye.
+    * by rewrite gt0_mulNye.
+- rewrite !inver (negbTE y0) (negbTE t0).
+  move: y0; rewrite neq_lt => /orP[|] y0.
+  + rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+    rewrite (@lt0_mulye _ y%:E) ?lte_fin ?invr_lt0//.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+      by rewrite lt0_mulye ?lte_fin ?invr_lt0//.
+    * rewrite gt0_mulNye ?lte_fin ?invr_gt0//.
+      by rewrite gt0_mulye ?lte_fin ?invr_gt0//.
+  + rewrite gt0_mulNye ?lte_fin ?invr_gt0//=.
+  + rewrite (@gt0_mulye _ y%:E) ?lte_fin ?invr_gt0//=.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+      by rewrite lt0_mulye ?lte_fin ?invr_lt0//.
+    * rewrite gt0_mulNye ?lte_fin ?invr_gt0//.
+      by rewrite gt0_mulye ?lte_fin ?invr_gt0//.
+- rewrite !inver (negbTE y0) (negbTE t0).
+  move: y0; rewrite neq_lt => /orP[|] y0.
+  + rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+  + rewrite (@lt0_mulNye _ y%:E) ?lte_fin ?invr_lt0//.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+      by rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+    * rewrite gt0_mulNye ?lte_fin ?invr_gt0//.
+      by rewrite gt0_mulNye ?lte_fin ?invr_gt0//.
+  + rewrite gt0_mulNye ?lte_fin ?invr_gt0//=.
+  + rewrite (@gt0_mulNye _ y%:E) ?lte_fin ?invr_gt0//=.
+    move: t0; rewrite neq_lt => /orP[|] t0.
+    * rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+      by rewrite lt0_mulNye ?lte_fin ?invr_lt0//.
+    * rewrite gt0_mulNye ?lte_fin ?invr_gt0//.
+      by rewrite gt0_mulNye ?lte_fin ?invr_gt0//.
+Qed.
+
+Local Close Scope ereal_scope.
+
 Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
@@ -685,7 +806,7 @@ Qed.
 Lemma cantelli (X : {RV P >-> R}) (lambda : R) :
     (X : T -> R) \in Lfun P 2%:E -> (0 < lambda)%R ->
   P [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
-  <= (fine 'V_P[X] / (fine 'V_P[X] + lambda^2))%:E.
+  <= 'V_P[X] / ('V_P[X] + (lambda^2)%:E).
 Proof.
 move=> /[dup] X2.
 move=> /(Lfun_subset12 (fin_num_measure P _ measurableT)) X1 lambda_gt0.
@@ -700,9 +821,9 @@ have EY : 'E_P[Y] = 0.
 have VY : 'V_P[Y] = 'V_P[X] by rewrite varianceB_cst_r.
 have le (u : R) : (0 <= u)%R ->
     P [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
-    <= ((fine 'V_P[X] + u^2) / (lambda + u)^2)%:E.
+    <= (('V_P[X] + (u^2)%:E) / ((lambda + u)^2)%:E).
   move=> uge0; rewrite EFinM.
-  have -> : (fine 'V_P[X] + u^2)%:E = 'E_P[(Y \+ cst u)^+2]%R.
+  have -> : ('V_P[X] + (u^2)%:E) = 'E_P[(Y \+ cst u)^+2]%R.
     rewrite -VY -[RHS](@subeK _ _ (('E_P[(Y \+ cst u)%R])^+2)); last first.
       rewrite fin_numX// expectation_fin_num//= rpredD ?Lfun_cst//.
       by rewrite rpredB// Lfun_cst.
@@ -710,7 +831,7 @@ have le (u : R) : (0 <= u)%R ->
       by rewrite rpredD ?lee1n//= => _; rewrite Lfun_cst.
     rewrite -expe2 expectationD/= ?Lfun_cst//; last by rewrite rpredB ?Lfun_cst.
     rewrite EY// add0e expectation_cst -EFinM.
-    by rewrite (varianceD_cst_r _ Y2) EFinD fineK ?variance_fin_num.
+    by rewrite (varianceD_cst_r _ Y2) -expr2 exprnP.
   have le : [set x | lambda%:E <= (X x)%:E - 'E_P[X]]
       `<=` [set x | ((lambda + u)^2)%:E <= ((Y x + u)^+2)%:E].
     move=> x /= le; rewrite lee_fin; apply: lerXn2r.
@@ -728,7 +849,7 @@ have le (u : R) : (0 <= u)%R ->
     by apply/measurableT_comp => //; exact/measurable_funD.
   set eps := ((lambda + u) ^ 2)%R.
   have peps : (0 < eps)%R by rewrite exprz_gt0 ?ltr_wpDr.
-  rewrite (lee_pdivlMr _ _ peps) muleC.
+  rewrite inver gt_eqF// (lee_pdivlMr _ _ peps) muleC.
   under eq_set => x.
     rewrite -[leRHS]gee0_abs ?lee_fin ?sqr_ge0 -?lee_fin => [|//].
     rewrite -[(_ ^+ 2)%R]/(((Y \+ cst u) ^+ 2) x)%R; over.
@@ -740,13 +861,22 @@ have le (u : R) : (0 <= u)%R ->
 pose u0 := (fine 'V_P[X] / lambda)%R.
 have u0ge0 : (0 <= u0)%R.
   by apply: divr_ge0 (ltW lambda_gt0); rewrite -lee_fin finVK variance_ge0.
-apply: le_trans (le _ u0ge0) _; rewrite lee_fin le_eqVlt; apply/orP; left.
-rewrite eqr_div; [|apply: lt0r_neq0..]; last 2 first.
-- by rewrite exprz_gt0 -1?[ltLHS]addr0 ?ltr_leD.
-- by rewrite ltr_wpDl ?fine_ge0 ?variance_ge0 ?exprz_gt0.
-apply/eqP; have -> : fine 'V_P[X] = (u0 * lambda)%R.
+apply: le_trans (le _ u0ge0) _; rewrite le_eqVlt; apply/orP; left.
+rewrite eqe_div//; last 3 first.
+  by rewrite -finVK.
+  by rewrite eqe sqrf_eq0 gt_eqF// ltr_wpDr.
+  rewrite gt_eqF// lte_paddl ?lte_fin ?exprz_gt0//.
+  by move: u0ge0; rewrite pmulr_lge0 ?invr_gt0// -lee_fin finVK.
+have -> : 'V_P[X] = (u0 * lambda)%:E.
   by rewrite /u0 -mulrA mulVr ?mulr1 ?unitfE ?gt_eqF.
-by rewrite -mulrDl -mulrDr (addrC u0) [in RHS](mulrAC u0) -exprnP expr2 !mulrA.
+rewrite /= -!EFinD.
+rewrite -(exprnP _ 2) expr2 -mulrDr.
+rewrite -(exprnP _ 2) expr2 -mulrDl.
+rewrite -EFinM.
+rewrite [in eqbLHS](mulrC _ lambda).
+rewrite -mulrA (mulrCA _ lambda).
+rewrite 3!mulrA -(mulrA (_ * _)%R) EFinM.
+by rewrite (addrC lambda) -expr2.
 Qed.
 
 End markov_chebyshev_cantelli.
