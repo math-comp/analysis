@@ -782,7 +782,7 @@ rewrite -[X in _ = _ - X]ge0_integral_pushforward//; last first.
 rewrite -integralB//=; last first.
 - by apply: integrable_funeneg => //=; exact: integrable_pushforward.
 - by apply: integrable_funepos => //=; exact: integrable_pushforward.
-- by apply/eq_integral=> // x _; last by rewrite /= [in LHS](funeposneg f).
+- by apply/eq_integral=> // x _; rewrite /= [in LHS](funeposneg f).
 Qed.
 
 End transfer.
