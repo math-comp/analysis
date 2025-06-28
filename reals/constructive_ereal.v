@@ -2603,7 +2603,7 @@ Lemma abse_prod {I : Type} (r : seq I) (P : pred I) (F : I -> \bar R) :
   `|\prod_(i <- r | P i) F i| = \prod_(i <- r | P i) `|F i|.
 Proof.
 elim/big_ind2 : _ => //; first by rewrite abse1.
-by move=> x1 x2 ? ? <- <-; rewrite abseM.
+by move=> ? ? ? ? <- <-; rewrite abseM.
 Qed.
 
 Lemma fine_max :

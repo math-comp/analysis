@@ -91,6 +91,12 @@
 - in `lebesgue_integrable.v`:
   + lemma `integral_sum`
 
+- in `constructive_ereal.v`:
+  + lemmas `abse_prod`
+
+- in `hoelder.v`:
+  + lemmas `Lnorm_abse`, `Lfun_norm`
+
 ### Changed
 
 - in `convex.v`:

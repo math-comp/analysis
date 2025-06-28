@@ -1061,8 +1061,7 @@ Definition LType2 := LType mu (lee1n 2).
 
 Lemma Lfun_norm (f : T -> R) : f \in Lfun mu 1 -> normr \o f \in Lfun mu 1.
 Proof.
-move=> /andP[].
-rewrite !inE/= => mf finf; apply/andP; split.
+case/andP; rewrite !inE/= => mf finf; apply/andP; split.
   by rewrite inE/=; exact: measurableT_comp.
 rewrite inE/=/finite_norm.
 under [X in ('N[_]__[X])%E]eq_fun => x do rewrite -abse_EFin.
