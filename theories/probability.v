@@ -32,7 +32,9 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 (*            'E_P[X] == expectation of the real measurable function X        *)
 (*     covariance X Y == covariance between real random variable X and Y      *)
 (*            'V_P[X] == variance of the real random variable X               *)
-(*              'M_ X == moment generating function of the random variable X  *)
+(*             'M_P X == moment generating function of the random variable X  *)
+(*                       with sample space corresponding to the probability   *)
+(*                       measure P                                            *)
 (*    {dmfun T >-> R} == type of discrete real-valued measurable functions    *)
 (*      {dRV P >-> R} == real-valued discrete random variable                 *)
 (*          dRV_dom X == domain of the discrete random variable X             *)
@@ -72,7 +74,7 @@ Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
 Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]").
 Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]").
-Reserved Notation "'M_ X t" (at level 5, t, X at level 4, format "''M_' X  t").
+Reserved Notation "'M_ P X" (at level 5, P, X at level 4, format "''M_' P  X").
 Reserved Notation "{ 'dmfun' aT >-> T }" (format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'" (format "'{' 'dRV'  P  '>->'  R '}'").
 
@@ -619,7 +621,7 @@ Notation "'V_ P [ X ]" := (variance P X).
 
 Definition mmt_gen_fun d (T : measurableType d) (R : realType)
   (P : probability T R) (X : T -> R) (t : R) := ('E_P[expR \o t \o* X])%E.
-Notation "'M_ X t" := (mmt_gen_fun X t).
+Notation "'M_ P X" := (@mmt_gen_fun _ _ _ P X).
 
 Section markov_chebyshev_cantelli.
 Local Open Scope ereal_scope.
