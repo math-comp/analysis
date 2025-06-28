@@ -520,14 +520,14 @@ Import HBNNSimple.
 
 Lemma ge0_integral_pushforward D (f : Y -> \bar R) :
   measurable D -> measurable_fun D f -> {in D, forall y, 0 <= f y} ->
-  \int[pushforward mu mphi]_(y in D) f y =
+  \int[pushforward mu phi]_(y in D) f y =
   \int[mu]_(x in phi @^-1` D) (f \o phi) x.
 Proof.
 move=> mD mf f0.
 have mphiD : measurable (phi @^-1` D).
   by rewrite -(setTI (_ @^-1` _)); exact: (measurable_funP mphi_pack).
 pose f_ := nnsfun_approx mD mf.
-transitivity (limn (fun n => \int[pushforward mu mphi]_(x in D) (f_ n x)%:E)).
+transitivity (limn (fun n => \int[pushforward mu phi]_(x in D) (f_ n x)%:E)).
   rewrite -monotone_convergence//.
   - apply: eq_integral => y /[!inE] yD; apply/esym/cvg_lim => //.
     by apply: cvg_nnsfun_approx=> // *; apply: f0; rewrite inE.

@@ -488,16 +488,16 @@ Variables (R : realFieldType) (nu : {charge set T1 -> \bar R}).
 
 Hypothesis mf : measurable_fun setT f.
 
-Let pushforward0 : pushforward nu mf set0 = 0.
+Let pushforward0 : pushforward nu f set0 = 0.
 Proof. by rewrite /pushforward preimage_set0 charge0. Qed.
 
-Let pushforward_finite A : measurable A -> pushforward nu mf A \is a fin_num.
+Let pushforward_finite A : measurable A -> pushforward nu f A \is a fin_num.
 Proof.
 move=> mA; apply: fin_num_measure.
 by rewrite -[X in measurable X]setTI; exact: mf.
 Qed.
 
-Let pushforward_sigma_additive : semi_sigma_additive (pushforward nu mf).
+Let pushforward_sigma_additive : semi_sigma_additive (pushforward nu f).
 Proof.
 move=> F mF tF mUF; rewrite /pushforward preimage_bigcup.
 apply: charge_semi_sigma_additive.
@@ -507,7 +507,7 @@ apply: charge_semi_sigma_additive.
 - by rewrite -preimage_bigcup -[X in measurable X]setTI; exact: mf.
 Qed.
 
-HB.instance Definition _ := isCharge.Build _ _ _ (pushforward nu mf)
+HB.instance Definition _ := isCharge.Build _ _ _ (pushforward nu f)
   pushforward0 pushforward_finite pushforward_sigma_additive.
 
 End pushforward_charge.
@@ -528,7 +528,7 @@ Section dominates_pushforward.
 Lemma dominates_pushforward d d' (T : measurableType d) (T' : measurableType d')
   (R : realType) (mu : {measure set T -> \bar R})
   (nu : {charge set T -> \bar R}) (f : T -> T') (mf : measurable_fun setT f) :
-  nu `<< mu -> pushforward nu mf `<< pushforward mu mf.
+  nu `<< mu -> pushforward nu f `<< pushforward mu f.
 Proof.
 by move=> numu A mA; apply: numu; rewrite -[X in measurable X]setTI; exact: mf.
 Qed.

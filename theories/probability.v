@@ -105,7 +105,7 @@ Proof. by rewrite preimage_range probability_setT. Qed.
 
 Definition distribution d d' (T : measurableType d) (T' : measurableType d')
     (R : realType) (P : probability T R) (X : {mfun T >-> T'}) :=
-  pushforward P (@measurable_funP _ _ _ _ _ X).
+  pushforward P X.
 
 Section distribution_is_probability.
 Context d d' {T : measurableType d} {T' : measurableType d'} {R : realType}

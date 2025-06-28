@@ -113,6 +113,7 @@
   + lemma `ae_eq_comp2`
   + lemma `ae_foralln`
   + lemma `ae_eqe_mul2l`
+  + definition `pushforward` (to take a function instead of a proof)
 
 - new file `ess_sup_inf.v`:
   + lemma `measure0_ae`
