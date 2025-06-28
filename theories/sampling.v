@@ -74,20 +74,6 @@ Reserved Notation "\X_ n P" (at level 10, n, P at next level,
 Lemma norm_expR {R : realType} : normr \o expR = (expR : R -> R).
 Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 
-Local Open Scope ereal_scope.
-Lemma abse_prod {R : realDomainType} [I : Type] (r : seq I) (Q : pred I) (F : I -> \bar R) :
-  `|\prod_(i <- r | Q i) F i| = (\prod_(i <- r | Q i) `|F i|).
-Proof.
-elim/big_ind2 : _ => //.
-  by rewrite abse1.
-move=> x1 x2 ? ? <- <-.
-by rewrite abseM.
-Qed.
-Local Close Scope ereal_scope.
-
-(* TODO: put back in probability.v *)
-Notation "'M_ X t" := (mmt_gen_fun X t).
-
 Lemma preimage_set1 T {U : eqType} (X : T -> U) r :
   X @^-1` [set r] = [set i | X i == r].
 Proof. by apply/seteqP; split => [x /eqP H//|x /eqP]. Qed.
@@ -141,34 +127,6 @@ Lemma integral_prod_meas1E {d1} {T1 : measurableType d1}
   (m1 \x m2)%E.-integrable [set: T1 * T2] f ->
   (\int[m1 \x^ m2]_x f x = \int[(m1 \x m2)%E]_z f z)%E.
 Proof. by move=> intf; rewrite -fubini1// integral12_prod_meas2. Qed.
-
-Section PR_to_hoelder.
-Context d {T : measurableType d} {R : realType}.
-Variable mu : {measure set T -> \bar R}.
-Local Open Scope ereal_scope.
-Implicit Types (p : \bar R) (f g : T -> \bar R) (r : R).
-
-Lemma Lnorm_abse f p : 'N[mu]_p[abse \o f] = 'N[mu]_p[f].
-Proof.
-rewrite unlock/=.
-have -> : (abse \o (abse \o f)) = abse \o f.
-  by apply: funext => x/=; rewrite abse_id.
-case: p => [r|//|//].
-by under eq_integral => x _ do rewrite abse_id.
-Qed.
-
-Lemma Lfun_norm (f : T -> R) :
-  f \in Lfun mu 1 -> normr \o f \in Lfun mu 1.
-Proof.
-move=> /andP[].
-rewrite !inE/= => mf finf; apply/andP; split.
-  by rewrite inE/=; exact: measurableT_comp.
-rewrite inE/=/finite_norm.
-under [X in 'N[_]__[X]]eq_fun => x do rewrite -abse_EFin.
-by rewrite Lnorm_abse.
-Qed.
-
-End PR_to_hoelder.
 
 Section PR_to_hoelder.
 Context d (T : measurableType d) (R : realType).
@@ -643,26 +601,6 @@ Section properties_of_independence.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 
-(* TODO: delete? *)
-Lemma boundedM U (f g : U -> R) (A : set U) :
-  [bounded f x | x in A] ->
-  [bounded g x | x in A] ->
-  [bounded (f x * g x)%R | x in A].
-Proof.
-move=> bF bG.
-rewrite/bounded_near.
-case: bF => M1 [M1real M1f].
-case: bG => M2 [M2real M2g].
-near=> M.
-rewrite/globally/= => x xA.
-rewrite normrM.
-rewrite (@le_trans _ _ (`|M1 + 1| * `|M2 + 1|)%R)//.
-rewrite ler_pM//.
-  by rewrite M1f// (lt_le_trans _ (ler_norm _))// ltrDl.
-by rewrite M2g// (lt_le_trans _ (ler_norm _))// ltrDl.
-Unshelve. all: by end_near.
-Qed.
-
 Lemma expectation_ipro_prod n (X : n.-tuple {RV P >-> R}) :
     [set` X] `<=` Lfun P 1 ->
   'E_(\X_n P)[ \prod_(i < n) Tnth X i] = \prod_(i < n) 'E_P[ (tnth X i) ].
@@ -724,10 +662,12 @@ under eq_fun.
 have /Lfun1_integrable/integrableP/=[mXi iXi] := lfunX _ (mem_tnth ord0 X).
 have ? : \int[\X_n P]_x0 (\prod_(i < n) tnth X (lift ord0 i) (tnth x0 i))%:E < +oo.
   under eq_integral => x _.
-    rewrite [X in X%:E](_ : _ = \prod_(i < n) tnth (behead_tuple X) i (tnth x i))%R; last first.
+    rewrite [X in X%:E](_ : _ =
+        \prod_(i < n) tnth (behead_tuple X) i (tnth x i))%R; last first.
       by apply: eq_bigr => i _; rewrite (tuple_eta X) tnthS -tuple_eta.
     over.
-  rewrite /= -(_ : 'E_(\X_n P)[\prod_(i < n) Tnth (behead_tuple X) i]%R = \int[\X_n P]_x _); last first.
+  rewrite /= -(_ : 'E_(\X_n P)[\prod_(i < n) Tnth (behead_tuple X) i]%R
+      = \int[\X_n P]_x _); last first.
     rewrite unlock.
     apply: eq_integral => /=x _.
     by rewrite /Tnth fct_prodE.
@@ -742,7 +682,7 @@ have ? : measurable_fun [set: n.-tuple T]
   apply: measurableT_comp => //.
   exact: measurable_tnth.
 rewrite /=.
-have ? :  \int[\X_n P]_x `|\prod_(i < n) tnth X (lift ord0 i) (tnth x i)|%:E < +oo.
+have ? : \int[\X_n P]_x `|\prod_(i < n) tnth X (lift ord0 i) (tnth x i)|%:E < +oo.
   move: h2 => /Lfun1_integrable/integrableP[?].
   apply: le_lt_trans.
   rewrite le_eqVlt; apply/orP; left; apply/eqP.
@@ -781,7 +721,8 @@ rewrite /= integralZr//; last exact/Lfun1_integrable/lfunX/mem_tnth.
 rewrite fineK; last first.
   rewrite fin_num_abs. apply/abse_integralP => //.
   exact/measurable_EFinP.
-rewrite [X in _ * X](_ : _ = 'E_(\X_n P)[\prod_(i < n) Tnth (behead X) i])%R; last first.
+rewrite [X in _ * X](_ : _ =
+    'E_(\X_n P)[\prod_(i < n) Tnth (behead X) i])%R; last first.
   rewrite [in RHS]unlock /Tnth.
   apply: eq_integral => x _.
   rewrite fct_prodE; congr (_%:E).
