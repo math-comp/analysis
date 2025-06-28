@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
@@ -2599,6 +2599,13 @@ move=> [x| |] [y| |] //=; first by rewrite normrM.
 - by rewrite -abseN -muleNN abseN -EFinN xoo normrN.
 Qed.
 
+Lemma abse_prod {I : Type} (r : seq I) (P : pred I) (F : I -> \bar R) :
+  `|\prod_(i <- r | P i) F i| = \prod_(i <- r | P i) `|F i|.
+Proof.
+elim/big_ind2 : _ => //; first by rewrite abse1.
+by move=> x1 x2 ? ? <- <-; rewrite abseM.
+Qed.
+
 Lemma fine_max :
   {in fin_num &, {mono @fine R : x y / maxe x y >-> (Num.max x y)%:E}}.
 Proof.
@@ -2606,7 +2613,7 @@ by move=> [x| |] [y| |]//= _ _; apply/esym; have [ab|ba] := leP x y;
   [apply/max_idPr; rewrite lee_fin|apply/max_idPl; rewrite lee_fin ltW].
 Qed.
 
-Lemma EFin_bigmax  {I : Type} (s : seq I) (P : I -> bool) (F : I -> R) r :
+Lemma EFin_bigmax {I : Type} (s : seq I) (P : I -> bool) (F : I -> R) r :
   \big[maxe/r%:E]_(i <- s | P i) (F i)%:E =
   (\big[Num.max/r]_(i <- s | P i) F i)%:E.
 Proof. by rewrite (big_morph _ EFin_max erefl). Qed.
