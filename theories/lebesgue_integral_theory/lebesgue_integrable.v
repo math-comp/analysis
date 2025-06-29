@@ -757,7 +757,7 @@ Let mf_mixin := isMeasurableFun.Build _ _ _ _ _ mf.
 Let mf_pack := MeasurableFun.Pack (MeasurableFun.Class mf_mixin).
 
 Lemma integrable_pushforward :
-  measurable D -> (pushforward mu mphi).-integrable D f.
+  measurable D -> (pushforward mu phi).-integrable D f.
 Proof.
 move=> mD; apply/integrableP; split; first exact: (measurable_funP mf_pack).
 move/integrableP : (intf) => [_]; apply: le_lt_trans.
@@ -768,7 +768,7 @@ Qed.
 Local Open Scope ereal_scope.
 
 Lemma integral_pushforward : measurable D ->
-  \int[pushforward mu mphi]_(y in D) f y =
+  \int[pushforward mu phi]_(y in D) f y =
   \int[mu]_(x in phi @^-1` D) (f \o phi) x.
 Proof.
 move=> mD.
@@ -782,7 +782,7 @@ rewrite -[X in _ = _ - X]ge0_integral_pushforward//; last first.
 rewrite -integralB//=; last first.
 - by apply: integrable_funeneg => //=; exact: integrable_pushforward.
 - by apply: integrable_funepos => //=; exact: integrable_pushforward.
-- by apply/eq_integral => x _; rewrite /= [in LHS](funeposneg f).
+- by apply/eq_integral=> // x _; rewrite /= [in LHS](funeposneg f).
 Qed.
 
 End transfer.
