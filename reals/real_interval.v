@@ -167,6 +167,15 @@ rewrite in_itv /= andbT => xy; exists (trunc y).+1 => //=.
 by rewrite in_itv /= xy /= truncnS_gt.
 Qed.
 
+Lemma itvNybndEbigcup b x : [set` Interval -oo%O (BSide b x)] =
+  \bigcup_k [set` Interval (BRight (- k%:R)) (BSide b x)].
+Proof.
+rewrite predeqE => y; split=> /=; last first.
+  by move=> [n _]/=; rewrite in_itv => /andP[ny yx]; rewrite in_itv.
+rewrite in_itv /= => yx; exists (trunc `|y|).+1 => //=; rewrite in_itv/=.
+by rewrite yx /= andbT ltrNl (le_lt_trans (ler_norm _))// normrN truncnS_gt.
+Qed.
+
 Lemma itvoyEbigcup x :
   `]x, +oo[%classic = \bigcup_k `[x + k.+1%:R^-1, +oo[%classic.
 Proof.

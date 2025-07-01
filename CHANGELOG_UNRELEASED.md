@@ -113,7 +113,10 @@
 - in `lebesgue_integral_definition.v`:
   + lemmas `le_measure_sintegral`, `ge0_le_measure_integral`
 - in `probability.v`:
-  + lemmas `measurable_idTR`, `cdf_lebesgue_stieltjes_id`
+  + lemma `cdf_lebesgue_stieltjes_id`
+
+- in `real_interval.v`:
+  + lemma `itvNybndEbigcup`
 
 ### Changed
 
