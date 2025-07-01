@@ -322,7 +322,7 @@ apply: cvg_lim => //.
 pose g1 : R -> W := fun h => (h^-1 * h) *: 'd f a v.
 pose g2 : R -> W := fun h : R => h^-1 *: k (h *: v ).
 rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: cvgD.
-  rewrite -(scale1r (_ _ v)); apply: cvgZl => /= X [e e0].
+  rewrite -(scale1r (_ _ v)); apply: cvgZr_tmp => /= X [e e0].
   rewrite /ball_ /= => eX.
   apply/nbhs_ballP.
   by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE //= subrr normr0.
@@ -434,7 +434,7 @@ Fact dscale (f : V -> W) k x :
   differentiable f x -> continuous (k \*: 'd f x) /\
   (k *: f) \o shift x = cst ((k *: f) x) + k \*: 'd f x +o_ 0 id.
 Proof.
-move=> df; split; first by move=> ?; apply: continuousZr.
+move=> df; split; first by move=> ?; apply: continuousZl_tmp.
 apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite -[(k *: f) _]/(_ *: _) diff_locallyx // !scalerDr scaleox.
 Qed.
@@ -447,7 +447,7 @@ Fact dscalel (k : V -> R) (f : W) x :
     cst (k x *: f) + (fun z => 'd k x z *: f) +o_ 0 id.
 Proof.
 move=> df; split.
-  move=> ?; exact/continuousZl/diff_continuous.
+  move=> ?; exact/continuousZr_tmp/diff_continuous.
 apply/eqaddoE; rewrite funeqE => y /=.
 by rewrite diff_locallyx //= !scalerDl scaleolx.
 Qed.
@@ -945,7 +945,7 @@ move=> xn0; suff: continuous (fun h : R => - (1 / x) ^+ 2 *: h) /\
   rewrite !mul1r !GRing.exprVn.
   rewrite (_ : (fun x => x^-1) =  (fun x => 1 / x ))//.
   by rewrite funeqE => y; rewrite mul1r.
-split; first by move=> ?; apply: continuousZr.
+split; first by move=> ?; exact: continuousZl_tmp.
 apply/eqaddoP => _ /posnumP[e]; near=> h.
 rewrite -[(_ + _ : R -> R) h]/(_ + _) -[(- _ : R -> R) h]/(- _) /=.
 rewrite opprD scaleNr opprK /cst /=.
@@ -1222,7 +1222,7 @@ Proof.
 move=> df; evar (h : R -> W); rewrite [X in X @ _](_ : _ = h) /=; last first.
   rewrite funeqE => r.
   by rewrite scalerBr !scalerA mulrC -!scalerA -!scalerBr /h.
-exact: cvgZr.
+exact: cvgZl_tmp.
 Qed.
 
 Lemma deriveZ f (k : R) (x v : V) : derivable f x v ->
@@ -1285,7 +1285,7 @@ evar (fg : R -> R); rewrite [X in X @ _](_ : _ = fg) /=; last first.
     by rewrite !scalerBr -addrA ![g x *: _]mulrC addKr.
   rewrite scalerDr scalerA mulrC -scalerA.
   by rewrite [_ *: (g x *: _)]scalerA mulrC -scalerA /fg.
-apply: cvgD; last exact: cvgZr df.
+apply: cvgD; last exact: cvgZl_tmp df.
 apply: cvg_comp2 (@scale_continuous _ _ (_, _)) => /=; last exact: dg.
 suff : {for 0, continuous (fun h : R => f(h *: v + x))}.
   by move=> /continuous_withinNx; rewrite scale0r add0r.

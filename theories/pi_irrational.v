@@ -395,7 +395,7 @@ near: n.
 have : pi * (pi * a) ^+ n / n`!%:R @[n --> \oo] --> 0.
   rewrite -[X in _ --> X](mulr0 pi).
   under eq_fun do rewrite -mulrA.
-  by apply: cvgMr; exact: exp_fact.
+  by apply: cvgMl_tmp; exact: exp_fact.
 move/cvgrPdist_lt => /(_ e e0).
 apply: filterS => n.
 rewrite sub0r normrN ger0_norm; last first.

@@ -496,25 +496,35 @@ Lemma is_cvgZ s f : cvg (s @ F) ->
   cvg (f @ F) -> cvg ((fun x => s x *: f x) @ F).
 Proof. by have := cvgP _ (cvgZ _ _); apply. Qed.
 
-Lemma cvgZl s k a : s @ F --> k -> s x *: a @[x --> F] --> k *: a.
+Lemma cvgZr_tmp s k a : s @ F --> k -> s x *: a @[x --> F] --> k *: a.
 Proof. by move=> ?; apply: cvgZ => //; exact: cvg_cst. Qed.
 
-Lemma is_cvgZl s a : cvg (s @ F) -> cvg ((fun x => s x *: a) @ F).
-Proof. by have := cvgP _ (cvgZl  _); apply. Qed.
+Lemma is_cvgZr_tmp s a : cvg (s @ F) -> cvg ((fun x => s x *: a) @ F).
+Proof. by have := cvgP _ (cvgZr_tmp  _); apply. Qed.
 
-Lemma cvgZr k f a : f @ F --> a -> k \*: f @ F --> k *: a.
-Proof. apply: cvgZ => //; exact: cvg_cst. Qed.
+Lemma cvgZl_tmp k f a : f @ F --> a -> k \*: f @ F --> k *: a.
+Proof. by apply: cvgZ => //; exact: cvg_cst. Qed.
 
-Lemma is_cvgZr k f : cvg (f @ F) -> cvg (k *: f  @ F).
-Proof. by have := cvgP _ (cvgZr  _); apply. Qed.
+Lemma is_cvgZl_tmp k f : cvg (f @ F) -> cvg (k *: f  @ F).
+Proof. by have := cvgP _ (cvgZl_tmp  _); apply. Qed.
 
-Lemma is_cvgZrE k f : k != 0 -> cvg (k *: f @ F) = cvg (f @ F).
+Lemma is_cvgZlE k f : k != 0 -> cvg (k *: f @ F) = cvg (f @ F).
 Proof.
-move=> k_neq0; rewrite propeqE; split => [/(@cvgZr k^-1)|/(@cvgZr k)/cvgP//].
+move=> k_neq0; rewrite propeqE; split => [/(@cvgZl_tmp k^-1)|/(@cvgZl_tmp k)/cvgP//].
 by under [_ \*: _]funext => x /= do rewrite scalerK//; apply: cvgP.
 Qed.
 
 End cvg_composition_normed.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgZr_tmp`")]
+Notation cvgZl := cvgZr_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgZr_tmp`")]
+Notation is_cvgZl := is_cvgZr_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgZl_tmp`")]
+Notation cvgZr := cvgZl_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgZl_tmp`")]
+Notation is_cvgZr := is_cvgZl_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgZlE`")]
+Notation is_cvgZrE := is_cvgZlE (only parsing).
 
 Section cvg_composition_field.
 Context {K : numFieldType}  {T : Type}.
@@ -538,34 +548,46 @@ Proof. by move=> /cvgV cvf /cvf /cvgP. Qed.
 Lemma cvgM f g a b : f @ F --> a -> g @ F --> b -> (f \* g) @ F --> a * b.
 Proof. exact: cvgZ. Qed.
 
-Lemma cvgMl f a b : f @ F --> a -> (f x * b) @[x --> F] --> a * b.
-Proof. exact: cvgZl. Qed.
+Lemma cvgMr_tmp f a b : f @ F --> a -> f x * b @[x --> F] --> a * b.
+Proof. exact: cvgZr_tmp. Qed.
 
-Lemma cvgMr g a b : g @ F --> b -> (a * g x) @[x --> F] --> a * b.
-Proof. exact: cvgZr. Qed.
+Lemma cvgMl_tmp g a b : g @ F --> b -> a * g x @[x --> F] --> a * b.
+Proof. exact: cvgZl_tmp. Qed.
 
 Lemma is_cvgM f g : cvg (f @ F) -> cvg (g @ F) -> cvg (f \* g @ F).
 Proof. exact: is_cvgZ. Qed.
 
-Lemma is_cvgMr g a (f := fun=> a) : cvg (g @ F) -> cvg (f \* g @ F).
-Proof. exact: is_cvgZr. Qed.
+Lemma is_cvgMl_tmp g a (f := fun=> a) : cvg (g @ F) -> cvg (f \* g @ F).
+Proof. exact: is_cvgZl_tmp. Qed.
 
-Lemma is_cvgMrE g a (f := fun=> a) : a != 0 -> cvg (f \* g @ F) = cvg (g @ F).
-Proof. exact: is_cvgZrE. Qed.
+Lemma is_cvgMlE_tmp g a (f := fun=> a) : a != 0 -> cvg (f \* g @ F) = cvg (g @ F).
+Proof. exact: is_cvgZlE. Qed.
 
-Lemma is_cvgMl f a (g := fun=> a) : cvg (f @ F) -> cvg (f \* g @ F).
+Lemma is_cvgMr_tmp f a (g := fun=> a) : cvg (f @ F) -> cvg (f \* g @ F).
 Proof.
 move=> f_cvg; have -> : f \* g = g \* f by apply/funeqP=> x; rewrite /= mulrC.
-exact: is_cvgMr.
+exact: is_cvgMl_tmp.
 Qed.
 
-Lemma is_cvgMlE f a (g := fun=> a) : a != 0 -> cvg (f \* g @ F) = cvg (f @ F).
+Lemma is_cvgMrE_tmp f a (g := fun=> a) : a != 0 -> cvg (f \* g @ F) = cvg (f @ F).
 Proof.
 move=> a_neq0; have -> : f \* g = g \* f by apply/funeqP=> x; rewrite /= mulrC.
-exact: is_cvgMrE.
+exact: is_cvgMlE_tmp.
 Qed.
 
 End cvg_composition_field.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgMr_tmp`")]
+Notation cvgMl := cvgMr_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `cvgMl_tmp`")]
+Notation cvgMr := cvgMl_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgMl_tmp`")]
+Notation is_cvgMr := is_cvgMl_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgMr_tmp`")]
+Notation is_cvgMl := is_cvgMr_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgMrE_tmp`")]
+Notation is_cvgMlE := is_cvgMrE_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `is_cvgMlE_tmp`")]
+Notation is_cvgMrE := is_cvgMlE_tmp (only parsing).
 
 Section limit_composition_normed.
 Context {K : numFieldType} {V : normedModType K} {T : Type}.
@@ -573,17 +595,21 @@ Context (F : set_system T) {FF : ProperFilter F}.
 Implicit Types (f g : T -> V) (s : T -> K) (k : K) (x : T) (a : V).
 
 Lemma limZ s f : cvg (s @ F) -> cvg (f @ F) ->
-   lim ((fun x => s x *: f x) @ F) = lim (s @ F) *: lim (f @ F).
-Proof. by move=> ? ?; apply: cvg_lim => //; apply: cvgZ. Qed.
+  lim ((fun x => s x *: f x) @ F) = lim (s @ F) *: lim (f @ F).
+Proof. by move=> ? ?; apply: cvg_lim => //; exact: cvgZ. Qed.
 
-Lemma limZl s a : cvg (s @ F) ->
-   lim ((fun x => s x *: a) @ F) = lim (s @ F) *: a.
-Proof. by move=> ?; apply: cvg_lim => //; apply: cvgZl. Qed.
+Lemma limZr_tmp s a : cvg (s @ F) ->
+  lim ((fun x => s x *: a) @ F) = lim (s @ F) *: a.
+Proof. by move=> ?; apply: cvg_lim => //; exact: cvgZr_tmp. Qed.
 
-Lemma limZr k f : cvg (f @ F) -> lim (k *: f @ F) = k *: lim (f @ F).
-Proof. by move=> ?; apply: cvg_lim => //; apply: cvgZr. Qed.
+Lemma limZl_tmp k f : cvg (f @ F) -> lim (k *: f @ F) = k *: lim (f @ F).
+Proof. by move=> ?; apply: cvg_lim => //; exact: cvgZl_tmp. Qed.
 
 End limit_composition_normed.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `limZr_tmp`")]
+Notation limZl := limZr_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `limZl_tmp`")]
+Notation limZr := limZl_tmp (only parsing).
 
 Section limit_composition_field.
 Context {K : numFieldType} {T : Type}.
@@ -591,8 +617,8 @@ Context (F : set_system T) {FF : ProperFilter F}.
 Implicit Types (f g : T -> K).
 
 Lemma limM f g : cvg (f @ F) -> cvg (g @ F) ->
-   lim (f \* g @ F) = lim (f @ F) * lim (g @ F).
-Proof. by move=> ? ?; apply: cvg_lim => //; apply: cvgM. Qed.
+  lim (f \* g @ F) = lim (f @ F) * lim (g @ F).
+Proof. by move=> ? ?; apply: cvg_lim => //; exact: cvgM. Qed.
 
 End limit_composition_field.
 
@@ -603,13 +629,13 @@ Implicit Types (f g : T -> K) (a b : K).
 
 Lemma limV f : lim (f @ F) != 0 -> lim (f\^-1 @ F) = (lim (f @ F))^-1.
 Proof.
-by move=> ?; apply: cvg_lim => //; apply: cvgV => //; apply: cvgNpoint.
+by move=> ?; apply: cvg_lim => //; apply: cvgV => //; exact: cvgNpoint.
 Qed.
 
 Lemma is_cvgVE f : lim (f @ F) != 0 -> cvg (f\^-1 @ F) = cvg (f @ F).
 Proof.
 move=> ?; apply/propeqP; split=> /is_cvgV; last exact.
-by rewrite inv_funK; apply; rewrite limV ?invr_eq0//.
+by rewrite inv_funK; apply; rewrite limV ?invr_eq0.
 Qed.
 
 End cvg_composition_field_proper.
@@ -655,24 +681,28 @@ Lemma continuousZ s f x :
   {for x, continuous (fun x => s x *: f x)}.
 Proof. by move=> ? ?; apply: cvgZ. Qed.
 
-Lemma continuousZr f k x :
+Lemma continuousZl_tmp f k x :
   {for x, continuous f} -> {for x, continuous (k \*: f)}.
-Proof. by move=> ?; apply: cvgZr. Qed.
+Proof. by move=> ?; exact: cvgZl_tmp. Qed.
 
-Lemma continuousZl s a x :
+Lemma continuousZr_tmp s a x :
   {for x, continuous s} -> {for x, continuous (fun z => s z *: a)}.
-Proof. by move=> ?; apply: cvgZl. Qed.
+Proof. by move=> ?; exact: cvgZr_tmp. Qed.
 
 Lemma continuousM s t x :
   {for x, continuous s} -> {for x, continuous t} ->
   {for x, continuous (s \* t)}.
-Proof. by move=> f_cont g_cont; apply: cvgM. Qed.
+Proof. by move=> f_cont g_cont; exact: cvgM. Qed.
 
 Lemma continuousV s x : s x != 0 ->
   {for x, continuous s} -> {for x, continuous (fun x => (s x)^-1%R)}.
 Proof. by move=> ?; apply: cvgV. Qed.
 
 End local_continuity.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `continuousZl_tmp`")]
+Notation continuousZr := continuousZl_tmp (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `continuousZr_tmp`")]
+Notation continuousZl := continuousZr_tmp (only parsing).
 
 Section cvg_fin.
 Context {R : numFieldType}.

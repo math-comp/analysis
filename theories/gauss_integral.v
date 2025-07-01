@@ -110,7 +110,7 @@ Let continuous_NsqrM x : continuous (fun r : R => - (r * x) ^+ 2).
 Proof.
 move=> z; apply: cvgN => /=.
 apply: (cvg_comp (fun z => z * x) (fun z => z ^+ 2)).
-  by apply: cvgMl; exact: cvg_id.
+  by apply: cvgMr_tmp; exact: cvg_id.
 exact: exprn_continuous.
 Qed.
 
@@ -127,7 +127,7 @@ Proof.
 rewrite /u /= => y; rewrite /continuous_at.
 apply: cvgM; last exact: continuous_oneDsqrV.
 apply: continuous_comp => /=; last exact: continuous_expR.
-by apply: cvgMr; exact: continuous_oneDsqr.
+by apply: cvgMl_tmp; exact: continuous_oneDsqr.
 Qed.
 
 Definition integral01_u x := \int[mu]_(t in `[0, 1]) u x t.
