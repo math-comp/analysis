@@ -263,7 +263,7 @@ Proof. by rewrite unlock. Qed.
 Lemma expectation_fin_num (X : T -> R) : X \in Lfun P 1 ->
   'E_P[X] \is a fin_num.
 Proof.
-by move=> ?; rewrite unlock integral_fune_fin_num//; exact/Lfun1_integrable.
+by move=> ?; rewrite unlock integrable_fin_num//; exact/Lfun1_integrable.
 Qed.
 
 Lemma expectation_cst r : 'E_P[cst r] = r%:E.

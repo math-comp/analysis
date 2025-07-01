@@ -262,7 +262,7 @@ under eq_integral do rewrite fctE/= EFinM.
 have ? : mu.-integrable `[0, 1] (fun y => (gauss_fun (y * x))%:E).
   apply: continuous_compact_integrable => //; first exact: segment_compact.
   by apply: continuous_subspaceT => z; exact: continuous_gaussM.
-rewrite integralZr//= fineM//=; last exact: integral_fune_fin_num.
+rewrite integralZr//= fineM//=; last exact: integrable_fin_num.
 by rewrite mulrC.
 Qed.
 
@@ -288,10 +288,10 @@ have -> : gauss_fun x = \int[mu]_(t in `[0, 1]) cst (gauss_fun x) t.
   rewrite Rintegral_cst//.
   by rewrite /mu/= lebesgue_measure_itv//= lte01 oppr0 addr0 mulr1.
 rewrite fine_le//.
-- apply: integral_fune_fin_num => //=.
+- apply: integrable_fin_num => //=.
   apply: continuous_compact_integrable; first exact: segment_compact.
   by apply: continuous_in_subspaceT => z _; exact: continuous_u.
-- apply: integral_fune_fin_num => //=.
+- apply: integrable_fin_num => //=.
   apply: continuous_compact_integrable; first exact: segment_compact.
   by apply: continuous_subspaceT => z; exact: cvg_cst.
 apply: ge0_le_integral => //=.

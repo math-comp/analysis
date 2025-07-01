@@ -1140,7 +1140,7 @@ Let nu0 : nu set0 = 0. Proof. by rewrite /nu integral_set0. Qed.
 
 Let finnu A : measurable A -> nu A \is a fin_num.
 Proof.
-by move=> mA; apply: integral_fune_fin_num => //=; exact: integrableS intf.
+by move=> mA; apply: integrable_fin_num => //=; exact: integrableS intf.
 Qed.
 
 Let snu : semi_sigma_additive nu.
@@ -1151,10 +1151,10 @@ rewrite (_ : SF = fun n =>
     \sum_(0 <= i < n) (\int[mu]_(x in F i) f^\- x)); last first.
   apply/funext => n; rewrite /SF; under eq_bigr do rewrite /nu integralE.
   rewrite big_split/= sumeN//= => i j _ _.
-  rewrite fin_num_adde_defl// integral_fune_fin_num//= integrable_funeneg//=.
+  rewrite fin_num_adde_defl// integrable_fin_num//= integrable_funeneg//=.
   exact: integrableS intf.
 rewrite /nu integralE; apply: cvgeD.
-- rewrite fin_num_adde_defr// integral_fune_fin_num//=.
+- rewrite fin_num_adde_defr// integrable_fin_num//=.
   by apply: integrable_funepos => //=; exact: integrableS intf.
 - apply/semi_sigma_additive_nng_induced => //.
   by apply: measurable_funepos; exact: (measurable_int mu).
