@@ -541,3 +541,102 @@ HB.instance Definition _ (f : cumulative R) :=
 
 End completed_lebesgue_stieltjes_measure.
 Arguments completed_lebesgue_stieltjes_measure {R}.
+
+Section salgebra_R_ssets.
+Variable R : realType.
+
+Definition measurableTypeR := g_sigma_algebraType (R.-ocitv.-measurable).
+Definition measurableR : set (set R) :=
+  (R.-ocitv.-measurable).-sigma.-measurable.
+
+HB.instance Definition _ := Pointed.on R.
+HB.instance Definition R_isMeasurable :
+  isMeasurable default_measure_display R :=
+  @isMeasurable.Build _ measurableTypeR measurableR
+    measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
+(*HB.instance (Real.sort R) R_isMeasurable.*)
+
+Lemma measurable_set1 (r : R) : measurable [set r].
+Proof.
+rewrite set1_bigcap_oc; apply: bigcap_measurable => // k _.
+by apply: sub_sigma_algebra; exact/is_ocitv.
+Qed.
+#[local] Hint Resolve measurable_set1 : core.
+
+Lemma measurable_itv (i : interval R) : measurable [set` i].
+Proof.
+have moc (a b : R) : measurable `]a, b].
+  by apply: sub_sigma_algebra; apply: is_ocitv.
+have mopoo (x : R) : measurable `]x, +oo[.
+  by rewrite itv_bndy_bigcup_BRight; exact: bigcup_measurable.
+have mnooc (x : R) : measurable `]-oo, x].
+  by rewrite -setCitvr; exact/measurableC.
+have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
+  case: (boolP (a < b)) => ab; last by rewrite !set_itv_ge ?set0D.
+  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx andbF.
+have moo (a b : R) : measurable `]a, b[.
+  by rewrite ooE; exact: measurableD.
+have mcc (a b : R) : measurable `[a, b].
+  case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
+  by rewrite -setU1itv//; apply/measurableU.
+have mco (a b : R) : measurable `[a, b[.
+  case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
+  by rewrite -setU1itv//; apply/measurableU.
+have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
+  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx.
+case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
+- by rewrite -setU1itv//; exact/measurableU.
+- by rewrite oooE; exact/measurableD.
+- by rewrite set_itvNyy.
+Qed.
+#[local] Hint Resolve measurable_itv : core.
+
+End salgebra_R_ssets.
+#[global]
+Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
+#[global]
+Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
+
+HB.mixin Record isCumulative01 (R : numFieldType) (f : R -> R) := {
+  cumulativeNy0 : f @ -oo --> (0:R) ;
+  cumulativey1 : f @ +oo --> (1:R) }.
+
+#[short(type=cumulative01)]
+HB.structure Definition Cumulative01 (R : numFieldType) :=
+  { f of isCumulative01 R f & Cumulative R f}.
+
+Arguments cumulativeNy0 {R} s.
+Arguments cumulativey1 {R} s.
+
+Section probability_measure_of_lebesgue_stieltjes_mesure.
+Context {R : realType} (f : cumulative01 R).
+Local Open Scope measure_display_scope.
+
+Let T := g_sigma_algebraType R.-ocitv.-measurable.
+Let lsf := lebesgue_stieltjes_measure f.
+
+Let lebesgue_stieltjes_setT : lsf setT = 1%E.
+Proof.
+rewrite -(bigcup_itvT false false).
+pose I n : set R := `]- (n%:R), n%:R]%classic.
+have : (lsf \o I) n @[n --> \oo] --> 1%E.
+  have -> : lsf \o I = (fun n => (f n%:R)%:E - (f (- n%:R))%:E)%E.
+    apply/funext=> n; rewrite /= /lsf/= /lebesgue_stieltjes_measure.
+    rewrite /measure_extension measurable_mu_extE/=; last exact: is_ocitv.
+    by rewrite wlength_itv_bnd// ge0_cp.
+  rewrite -(sube0 1); apply: cvgeB => //.
+  - by apply/cvg_EFin; [near=> F
+                       |exact/(cvg_comp _ _ (@cvgr_idn R))/cumulativey1].
+  - apply/cvg_EFin; [by near=> F|apply: (cvg_ninftyP _ _).1 => //].
+      exact: cumulativeNy0.
+    by apply: (cvg_comp _ _ (@cvgr_idn R)); rewrite ninfty.
+have : (lsf \o I) n @[n --> \oo] --> lsf (\bigcup_n I n).
+  apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
+  by move=> *; apply/subsetPset/subset_itv; rewrite leBSide/= ?lerN2 ler_nat.
+exact: cvg_unique.
+Unshelve. all: end_near. Qed.
+
+HB.instance Definition _ := @Measure_isProbability.Build _ _ _
+  (lebesgue_stieltjes_measure f) lebesgue_stieltjes_setT.
+
+End probability_measure_of_lebesgue_stieltjes_mesure.

@@ -243,6 +243,9 @@
       `LspaceType` to `ae_eq_op`, `ae_eq_op_refl`, `ae_eq_op_sym`, `ae_eq_op_trans`, `aeEqMfun`
    * renamed lemma `LequivP` to `ae_eqP`
 
+- moved from `measurable_realfun.v` to `lebesgue_stieltjes_measure.v`:
+  + definitions `measurableTypeR`, `measurableR`
+  + lemmas `measurable_set1`, `measurable_itv`
 
 ### Renamed
 

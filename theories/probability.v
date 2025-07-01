@@ -248,34 +248,11 @@ Unshelve. all: by end_near. Qed.
 End cumulative_distribution_function.
 
 Section cdf_of_lebesgue_stieltjes_mesure.
-Context {R : realType} (f : cumulative R)
-  (f_y1 : f @ +oo --> (1:R)) (f_Ny0 : f @ -oo --> (0:R)).
+Context {R : realType} (f : cumulative01 R).
 Local Open Scope measure_display_scope.
 
 Let T := g_sigma_algebraType R.-ocitv.-measurable.
 Let lsf := lebesgue_stieltjes_measure f.
-
-Let lebesgue_stieltjes_setT : lsf setT = 1%E.
-Proof.
-rewrite -(bigcup_itvT false false).
-pose I n : set R := `]- (n%:R), n%:R]%classic.
-have : (lsf \o I) n @[n --> \oo] --> 1%E.
-  have -> : lsf \o I = (fun n => (f n%:R)%:E - (f (- n%:R))%:E)%E.
-    apply/funext=> n; rewrite /= /lsf/= /lebesgue_stieltjes_measure.
-    rewrite /measure_extension measurable_mu_extE/=; last exact: is_ocitv.
-    by rewrite wlength_itv_bnd// ge0_cp.
-  rewrite -(sube0 1); apply: cvgeB => //.
-  - by apply/cvg_EFin; [near=> F|exact/(cvg_comp _ _ (@cvgr_idn R))/f_y1].
-  - apply/cvg_EFin; [by near=> F|apply: (cvg_ninftyP _ _).1 => //].
-    by apply: (cvg_comp _ _ (@cvgr_idn R)); rewrite ninfty.
-have : (lsf \o I) n @[n --> \oo] --> lsf (\bigcup_n I n).
-  apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
-  by move=> *; apply/subsetPset/subset_itv; rewrite leBSide/= ?lerN2 ler_nat.
-exact: cvg_unique.
-Unshelve. all: end_near. Qed.
-
-HB.instance Definition _ := @Measure_isProbability.Build _ _ _
-  (lebesgue_stieltjes_measure f) lebesgue_stieltjes_setT.
 
 Let idTR : T -> R := idfun.
 
@@ -292,7 +269,7 @@ have : lsf `]-n%:R, r] @[n --> \oo] --> (f r)%:E.
     rewrite measurable_mu_extE/= ?wlength_itv_bnd//; last exact: is_ocitv.
     by rewrite lerNl; near: n; exact: nbhs_infty_ger.
   rewrite -[X in _ --> X](sube0 (f r)%:E); apply: (cvgeB _ (cvg_cst _ )) => //.
-  apply: (cvg_comp _ _ (cvg_comp _ _ _ f_Ny0)) => //.
+  apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy0 f))) => //.
   by apply: (cvg_comp _ _ cvgr_idn); rewrite ninfty.
 have : lsf `]- n%:R, r] @[n --> \oo] --> lsf (\bigcup_n `]-n%:R, r]%classic).
   apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
