@@ -99,6 +99,9 @@
 - in `lebesgue_integral_fubini.v`:
   + lemmas `integral21_prod_meas2`, `integral12_prod_meas2`
 
+- in `lebesgue_integral_nonneg.v`:
+  + lemma `ge0_integral_ereal_sup` (was a `Let`)
+
 ### Changed
 
 - in `convex.v`:

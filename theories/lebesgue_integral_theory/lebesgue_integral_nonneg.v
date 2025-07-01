@@ -1047,7 +1047,7 @@ Variable f : R -> R.
 Hypothesis f0 : (forall x, 0 <= f x)%R.
 Hypothesis mf : measurable_fun setT f.
 
-Let ge0_integral_ereal_sup :
+Lemma ge0_integral_ereal_sup :
   \int[mu]_(x in `[0%R, +oo[) (f x)%:E =
   ereal_sup [set \int[mu]_(x in `[0%R, i.+1%:R]) (f x)%:E | i in [set: nat]].
 Proof.
