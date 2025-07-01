@@ -303,6 +303,22 @@
   + definition `almost_everywhere_notation`
   + lemma `ess_sup_ge0`
 
+- in `exp.v`:
+  + notation `expRMm` (deprecated since 1.1.0)
+
+- in `constructive_ereal.v`:
+  + notations `lee_addl`, `lee_addr`, `lee_add2l`, `lee_add2r`, `lee_add`,
+    `lee_sub`, `lee_add2lE`, `lee_oppl`, `lee_oppr`, `lte_oppl`, `lte_oppr`,
+    `lte_add`, `lte_add2lE`, `lte_addl`, `lte_addr` (deprecated since 1.1.0)
+
+- in `measure.v`:
+  + notations `sub_additive`, `sigma_sub_additive`, `content_sub_additive`,
+    `ring_sigma_sub_additive`, `Content_SubSigmaAdditive_isMeasure.Build`,
+    `measure_sigma_sub_additive`, `measure_sigma_sub_additive_tail`,
+    `Measure_isSFinite_subdef.Build`, `sfinite_measure_subdef`,
+    `@SigmaFinite_isFinite.Build`, `FiniteMeasure_isSubProbability.Build`
+    (deprecated since 1.1.0)
+
 ### Infrastructure
 
 ### Misc
