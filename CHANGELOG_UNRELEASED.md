@@ -241,6 +241,22 @@
 - in `lebesgue_integral_fubiniv.`:
   + `fubini1` -> `integral12_prod_meas1`
   + `fubini2` -> `integral21_prod_meas1`
+- in `normed_module.v`:
+  + `cvgZl` -> `cvgZr_tmp`
+  + `is_cvgZl` -> `is_cvgZr_tmp`
+  + `cvgZr` -> `cvgZl_tmp`
+  + `is_cvgZr` -> `is_cvgZl_tmp`
+  + `is_cvgZrE` -> `is_cvgZlE`
+  + `cvgMl` -> `cvgMr_tmp`
+  + `cvgMr` -> `cvgMl_tmp`
+  + `is_cvgMr` -> `is_cvgMl_tmp`
+  + `is_cvgMrE` -> `is_cvgMlE_tmp`
+  + `is_cvgMl` -> `is_cvgMr_tmp`
+  + `is_cvgMlE` -> `is_cvgMrE_tmp`
+  + `limZl` -> `limZr_tmp`
+  + `limZr` -> `limZl_tmp`
+  + `continuousZr` -> `continuousZl_tmp`
+  + `continuousZl` -> `continuousZr_tmp`
 
 ### Generalized
 

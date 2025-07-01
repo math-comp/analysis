@@ -223,7 +223,7 @@ suff Cc : limn (h^-1 *: (series (shx h - sx))) @[h --> 0^'] --> limn (series s).
     move=> t; rewrite /ball /= sub0r normrN => H tNZ.
     rewrite (lt_le_trans H)// ler_pdivrMr // mulr2n mulrDr mulr1.
     by rewrite ler_wpDr // subr_ge0 ltW.
-  rewrite limZr; last exact/is_cvg_seriesB/Csx.
+  rewrite limZl_tmp; last exact/is_cvg_seriesB/Csx.
   by rewrite lim_seriesB; last exact: Csx.
 apply: cvg_zero => /=.
 suff Cc : limn

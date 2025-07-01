@@ -554,11 +554,11 @@ Lemma lim_seriesN f : cvg (series f @ \oo) ->
 Proof. by move=> cf; rewrite seriesN limN. Qed.
 
 Lemma is_cvg_seriesZ f k : cvgn (series f) -> cvgn (series (k *: f)).
-Proof. by move=> cf; rewrite seriesZ; exact: is_cvgZr. Qed.
+Proof. by move=> cf; rewrite seriesZ; exact: is_cvgZl_tmp. Qed.
 
 Lemma lim_seriesZ f k : cvgn (series f) ->
   limn (series (k *: f)) = k *: limn (series f).
-Proof. by move=> cf; rewrite seriesZ limZr. Qed.
+Proof. by move=> cf; rewrite seriesZ limZl_tmp. Qed.
 
 Lemma is_cvg_seriesD f g :
   cvgn (series f) -> cvgn (series g) -> cvgn (series (f + g)).
@@ -930,7 +930,7 @@ Proof.
 move=> Nz_lt1; apply/norm_cvg0P; pose t := (1 - `|z|).
 apply: (@squeeze_cvgr _ _ _ _ (cst 0) (t^-1 *: @harmonic R)); last 2 first.
 - exact: cvg_cst.
-- by rewrite -(scaler0 _ t^-1); exact: (cvgZr cvg_harmonic).
+- by rewrite -(scaler0 _ t^-1); exact: (cvgZl_tmp cvg_harmonic).
 near=> n; rewrite normr_ge0 normrX/= ler_pdivlMl ?subr_gt0//.
 rewrite -(@ler_pM2l _ n.+1%:R)// mulfV// [t * _]mulrC mulr_natl.
 have -> : 1 = (`|z| + t) ^+ n.+1 by rewrite addrC addrNK expr1n.
@@ -956,7 +956,7 @@ Lemma cvg_geometric_series (R : archiFieldType) (a z : R) : `|z| < 1 ->
 Proof.
 move=> Nz_lt1; rewrite geometric_seriesE ?lt_eqF 1?ltr_normlW//.
 have -> : a / (1 - z) = (a * (1 - 0)) / (1 - z) by rewrite subr0 mulr1.
-by apply: cvgMl; apply: cvgMr; apply: cvgB; [apply: cvg_cst|apply: cvg_expr].
+by apply: cvgMr_tmp; apply: cvgMl_tmp; apply: cvgB; [apply: cvg_cst|apply: cvg_expr].
 Qed.
 
 Lemma cvg_geometric_series_half (R : archiFieldType) (r : R) n :
@@ -1117,7 +1117,7 @@ Let S0 N n := (N ^ N)%:R * \sum_(N.+1 <= i < n) (x / N%:R) ^+ i.
 
 Let is_cvg_S0 N : x < N%:R -> cvgn (S0 N).
 Proof.
-move=> xN; apply: is_cvgZr; rewrite is_cvg_series_restrict exprn_geometric.
+move=> xN; apply: is_cvgZl_tmp; rewrite is_cvg_series_restrict exprn_geometric.
 apply/is_cvg_geometric_series; rewrite normrM normfV.
 by rewrite ltr_pdivrMr ?mul1r !ger0_norm // 1?ltW // (lt_trans x0).
 Qed.
@@ -2809,7 +2809,7 @@ rewrite eqOP; split => [|Bf].
   by near: M.
 Unshelve. all: by end_near. Qed.
 
-(* TODO: to be changed once PR#1107 is integrated, and the following put in evt.v *)
+(* TODO: to be changed once PR#1107 is integrated, and the following put in tvs.v *)
 
 (* Definition bounded_top (K: realType) (E : normedModType K) (B : set E) :=
 forall (U : set E), nbhs 0 U ->
