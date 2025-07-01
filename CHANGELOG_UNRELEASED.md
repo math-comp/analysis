@@ -257,6 +257,8 @@
   + `limZr` -> `limZl_tmp`
   + `continuousZr` -> `continuousZl_tmp`
   + `continuousZl` -> `continuousZr_tmp`
+- in `realfun.v`:
+  + `variationD` -> `variation_cat`
 
 ### Generalized
 
