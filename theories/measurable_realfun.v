@@ -221,12 +221,10 @@ Lemma measurable_fun_itv_co (x y : R) b0 b1 (f : R -> R) :
   measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
   measurable_fun `[x, y[ f.
 Proof.
-move: b0 b1 => [|] [|]//.
-- by apply: measurable_funS => //; apply: subset_itvl; rewrite bnd_simp.
-- exact: measurable_fun_itv_obnd_cbnd.
-- move=> mf.
-  have : measurable_fun `[x, y] f by exact: measurable_fun_itv_obnd_cbnd.
-  by apply: measurable_funS => //; apply: subset_itvl; rewrite bnd_simp.
+move: b0 b1 => [|] [?|?]//.
+- exact/measurable_fun_itv_bndo_bndcP.
+- exact/measurable_fun_itv_obnd_cbndP.
+- by exact/measurable_fun_itv_bndo_bndcP/measurable_fun_itv_obnd_cbndP.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 1.9.0", note="use `measurable_fun_itv_bndo_bndc` instead")]
@@ -234,24 +232,20 @@ Lemma measurable_fun_itv_oc (x y : R) b0 b1 (f : R -> R) :
   measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
   measurable_fun `]x, y] f.
 Proof.
-move: b0 b1 => [|] [|]//.
-- move=> mf.
-  have : measurable_fun `[x, y] f by exact: measurable_fun_itv_bndo_bndc.
-  by apply: measurable_funS => //; apply: subset_itvr; rewrite bnd_simp.
-- by apply: measurable_funS => //; apply: subset_itvr; rewrite bnd_simp.
-- exact: measurable_fun_itv_bndo_bndc.
+move: b0 b1 => [|] [?|?]//.
+- exact/measurable_fun_itv_bndo_bndcP/measurable_fun_itv_obnd_cbndP.
+- exact/measurable_fun_itv_obnd_cbndP.
+- exact/measurable_fun_itv_bndo_bndcP.
 Qed.
 
 Lemma measurable_fun_itv_cc (x y : R) b0 b1 (f : R -> R) :
   measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
   measurable_fun `[x, y] f.
 Proof.
-move: b0 b1 => [|] [|]//.
-- exact: measurable_fun_itv_bndo_bndc.
-- move=> mf.
-  have : measurable_fun `[x, y[ f by exact: measurable_fun_itv_obnd_cbnd.
-  exact: measurable_fun_itv_bndo_bndc.
-- exact: measurable_fun_itv_obnd_cbnd.
+move: b0 b1 => [|] [?|?]//.
+- exact/measurable_fun_itv_bndo_bndcP.
+- exact/measurable_fun_itv_obnd_cbndP/measurable_fun_itv_bndo_bndcP.
+- exact/measurable_fun_itv_obnd_cbndP.
 Qed.
 
 HB.instance Definition _ := (ereal_isMeasurable (R.-ocitv.-measurable)).

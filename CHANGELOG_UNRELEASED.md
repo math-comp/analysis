@@ -60,6 +60,11 @@
 - in `constructive_ereal.v`:
   + lemma `mulN1e`
 
+- in `measurable_realfun.v`:
+  + generalized and renamed:
+    * `measurable_fun_itv_bndo_bndc` -> `measurable_fun_itv_bndo_bndcP`
+    * `measurable_fun_itv_obnd_cbnd` -> `measurable_fun_itv_obnd_cbndP`
+
 ### Renamed
 
 - in `lebesgue_stieltjes_measure.v`:

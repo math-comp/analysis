@@ -684,7 +684,7 @@ transitivity (\sum_(0 <= i <oo) ((F (a + i.+1%:R))%:E - (F (a + i%:R))%:E)).
     by rewrite lee_fin; exact: f_ge0.
   apply: eq_eseriesr => n _.
   rewrite seqDUE/= integral_itv_obnd_cbnd; last first.
-    apply: measurable_fun_itv_bndo_bndc.
+    apply/measurable_fun_itv_bndo_bndcP.
     apply: open_continuous_measurable_fun => //.
     move: cf => /continuous_within_itvcyP[cf _] x.
     rewrite inE/= in_itv/= => /andP[anx _].
@@ -1284,12 +1284,12 @@ Proof.
 move=> decrF cdF /cvg_ex[/= dFa cdFa] /cvg_ex[/= dFoo cdFoo].
 move=> [dF cFa] Fny /continuous_within_itvNycP[cG cGFa] G0.
 have mG n : measurable_fun `](F (a + n.+1%:R)), (F a)] G.
-  apply: measurable_fun_itv_bndo_bndc.
+  apply/measurable_fun_itv_bndo_bndcP.
   apply: open_continuous_measurable_fun; first exact: interval_open.
   move=> x; rewrite inE/= in_itv/= => /andP[_ xFa].
   by apply: cG; rewrite in_itv.
 have mGFNF' i : measurable_fun `[a, (a + i.+1%:R)[ ((G \o F) * - F^`())%R.
-  apply: measurable_fun_itv_obnd_cbnd.
+  apply/measurable_fun_itv_obnd_cbndP.
   apply: open_continuous_measurable_fun; first exact: interval_open.
   move=> x; rewrite inE/= in_itv/= => /andP[ax _].
   apply: continuousM; last first.
@@ -1391,7 +1391,7 @@ transitivity (limn (fun n =>
 apply: congr_lim; apply/funext => -[|n].
   by rewrite addr0 set_itvco0 set_itvoo0 !integral_set0.
 rewrite integral_itv_bndo_bndc; last first.
-  apply: measurable_fun_itv_obnd_cbnd; apply: measurable_funS (mG n) => //.
+  apply/measurable_fun_itv_obnd_cbndP; apply: measurable_funS (mG n) => //.
   by apply: subset_itvl; rewrite bnd_simp.
 rewrite integration_by_substitution_decreasing.
 - rewrite integral_itv_bndo_bndc// ?integral_itv_obnd_cbnd//.
@@ -1683,7 +1683,7 @@ rewrite -[RHS]integral_itv_obnd_cbnd; last first.
   apply: (@measurable_comp _ _ _ _ _ _ `]-oo, b]) => //=.
     rewrite opp_itv_bndy opprK/=.
     by apply: subset_itvl; rewrite bnd_simp.
-  apply: measurable_fun_itv_bndo_bndc; apply: measurable_funM => //.
+  apply/measurable_fun_itv_bndo_bndcP; apply: measurable_funM => //.
   - apply: (@measurable_comp _ _ _ _ _ _ `]-oo, F b[) => //=.
     move=> x/= [r]; rewrite in_itv/= => rb <-{x}.
     by rewrite in_itv/= ndF ?in_itv//= ltW.
