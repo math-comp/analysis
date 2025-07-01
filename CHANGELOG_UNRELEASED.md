@@ -118,6 +118,9 @@
 - in `real_interval.v`:
   + lemma `itvNybndEbigcup`
 
+- in `lebesgue_stieltjes_measure.v`:
+  + mixin `isCumulative01`, structure `Cumulative01` with type `cumulative01`
+
 ### Changed
 
 - in `convex.v`:
