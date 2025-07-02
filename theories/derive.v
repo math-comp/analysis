@@ -325,7 +325,7 @@ rewrite (_ : g = g1 + g2) ?funeqE // -(addr0 (_ _ v)); apply: cvgD.
   rewrite -(scale1r (_ _ v)); apply: cvgZr_tmp => /= X [e e0].
   rewrite /ball_ /= => eX.
   apply/nbhs_ballP.
-  by exists e => //= x _ x0; apply eX; rewrite mulVr // ?unitfE //= subrr normr0.
+  by exists e => //= x _ x0; apply eX; rewrite mulVf//= subrr normr0.
 rewrite /g2.
 have [->|v0] := eqVneq v 0.
   rewrite (_ : (fun _ => _) = cst 0); first exact: cvg_cst.
@@ -340,7 +340,7 @@ rewrite ltr_pdivlMr ?normr_gt0 // => jvi j0.
 rewrite add0r normrN normrZ -ltr_pdivlMl ?normr_gt0 ?invr_neq0 //.
 have /Hi/le_lt_trans -> // : ball 0 i (j *: v).
    by rewrite -ball_normE/= add0r normrN (le_lt_trans _ jvi) // normrZ.
-rewrite -(mulrC e) -mulrA -ltr_pdivlMl // mulrA mulVr ?unitfE ?gt_eqF //.
+rewrite -(mulrC e) -mulrA -ltr_pdivlMl // mulrA mulVf ?gt_eqF//.
 rewrite normrV ?unitfE // div1r invrK ltr_pdivrMl; last first.
   by rewrite pmulr_rgt0 // normr_gt0.
 rewrite normrZ mulrC -mulrA.

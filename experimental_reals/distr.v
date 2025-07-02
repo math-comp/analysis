@@ -335,7 +335,7 @@ Definition mflip (xt : R) :=
 Lemma isd_mflip xt : isdistr (mflip xt).
 Proof. apply/isdistr_finP; split=> [b|].
 + by case: b; rewrite ?subr_ge0 cp01_clamp.
-+ by rewrite /index_enum !unlock /= addr0 addrCA subrr addr0.
++ by rewrite /index_enum !unlock /= addr0 addrC subrK.
 Qed.
 
 Definition dflip (xt : R) := locked (mkdistr (isd_mflip xt)).
@@ -1133,7 +1133,7 @@ Qed.
 
 Lemma pr_and A B mu : \P_[mu] [predI A & B] =
   \P_[mu] A + \P_[mu] B - \P_[mu] [predU A & B].
-Proof. by rewrite pr_or opprB addrCA subrr addr0. Qed.
+Proof. by rewrite pr_or subKr. Qed.
 
 Lemma ler_pr_or A B mu :
   \P_[mu] [predU A & B] <= \P_[mu] A + \P_[mu] B.
