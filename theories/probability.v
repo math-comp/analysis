@@ -1854,3 +1854,108 @@ HB.instance Definition _ :=
   @Measure_isProbability.Build _ _ R exponential exponential_setT.
 
 End exponential_prob.
+
+Section poisson_pmf.
+Local Open Scope ring_scope.
+Context {R : realType}.
+Implicit Types (rate : R) (k : nat).
+
+Definition poisson_pmf (rate : R) (k : nat) : R :=
+          (rate ^+ k) * k`!%:R^-1 * expR (- rate).
+
+Lemma poisson_pmf_ge0 rate k (rate0 : 0 <= rate) : 0 <= poisson_pmf rate k.
+Proof.
+by rewrite /poisson_pmf 2?mulr_ge0// exprn_ge0.
+Qed.
+
+End poisson_pmf.
+
+Lemma measurable_poisson_pmf {R : realType} D (rate : R) k :
+  measurable_fun D (@poisson_pmf R ^~ k).
+Proof.
+apply: measurable_funM; first exact: measurable_funM.
+by apply: measurable_funTS; exact: measurableT_comp.
+Qed.
+
+Definition poisson_prob {R : realType} (rate : R) (k : nat)
+   : set nat -> \bar R :=
+  fun U => if (0 <= rate)%R then
+    \esum_(k in U) (poisson_pmf rate k)%:E else \d_0%N U.
+
+Section poisson.
+Context {R : realType} (rate : R) (k : nat).
+Local Open Scope ereal_scope.
+
+Local Notation poisson := (poisson_prob rate k).
+
+Let poisson0 : poisson set0 = 0.
+Proof. by rewrite /poisson measure0; case: ifPn => //; rewrite esum_set0. Qed.
+
+Let poisson_ge0 U : 0 <= poisson U.
+Proof.
+rewrite /poisson; case: ifPn => // rate0; apply: esum_ge0 => /= n Un.
+by rewrite lee_fin poisson_pmf_ge0.
+Qed.
+
+Let poisson_sigma_additive : semi_sigma_additive poisson.
+Proof.
+move=> F mF tF mUF; rewrite /poisson; case: ifPn => rate0; last first.
+  exact: measure_semi_sigma_additive.
+apply: cvg_toP.
+  apply: ereal_nondecreasing_is_cvgn => a b ab.
+  apply: lee_sum_nneg_natr => // n _ _.
+  by apply: esum_ge0 => /= ? _; exact: poisson_pmf_ge0.
+by rewrite nneseries_sum_bigcup// => i; rewrite lee_fin poisson_pmf_ge0.
+Qed.
+
+HB.instance Definition _ := isMeasure.Build _ _ _ poisson
+  poisson0 poisson_ge0 poisson_sigma_additive.
+
+Let poisson_setT : poisson [set: _] = 1.
+Proof.
+rewrite /poisson; case: ifPn; last by move=> _; rewrite probability_setT.
+move=> rate0; rewrite /poisson_pmf.
+have pkn n : 0%R <= (rate ^+ n / n`!%:R * expR (- rate))%:E.
+  by rewrite lee_fin poisson_pmf_ge0.
+apply/esym.
+rewrite [LHS](_ : _ = (expR (- rate))%:E * (expR rate)%:E); last first.
+  by rewrite -EFinM expRN mulVf ?gt_eqF ?expR_gt0.
+under eq_esum do rewrite mulrC.
+rewrite /esum.
+under eq_imagel => A [? _] do rewrite fsumEFin// -fsbig_distrr//= EFinM.
+rewrite -(image_comp _ (fun x => (expR (- rate))%:E * x)).
+rewrite ereal_supZl// ; last first.
+  apply/set0P.
+  by exists (\sum_(i \in [set 0%N]) rate ^+ i / i`!%:R)%:E; exists [set 0%N].
+under eq_imagel => A [? _] do rewrite -fsumEFin//.
+have := @esum_limn_ge0 R (fun i => (rate ^+ i / i`!%:R)%R).
+rewrite /esum => ->; last by move=> n; exact: exp_coeff_ge0.
+rewrite -[X in _ * X = _]EFin_lim; last by exact: is_cvg_series_exp_coeff.
+by rewrite /series/=/exp_coeff/=.
+Qed.
+
+HB.instance Definition _ :=
+  @Measure_isProbability.Build _ _ R poisson poisson_setT.
+
+End poisson.
+
+Lemma measurable_poisson_prob (R : realType) (n : nat) :
+  measurable_fun setT (poisson_prob ^~ n : R -> pprobability _ _).
+Proof.
+apply: (@measurability _ _ _ _ _ _
+  (@pset _ _ _ : set (set (pprobability _ R)))) => //.
+move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
+rewrite /poisson_prob/=.
+set f := (X in measurable_fun _ X).
+apply: measurable_fun_if => //=.
+  by exact: measurable_fun_ler.
+apply: (eq_measurable_fun (fun t =>
+    \sum_(k <oo | k \in Ys) (poisson_pmf t k)%:E))%E.
+  move=> x /set_mem[_/= x01].
+  rewrite nneseries_esum// -1?[in RHS](set_mem_set Ys)// => k kYs.
+  by rewrite lee_fin poisson_pmf_ge0.
+apply: ge0_emeasurable_sum.
+  by move=> k x/= [_ x01] _; rewrite lee_fin poisson_pmf_ge0.
+move=> k Ysk; apply/measurableT_comp => //.
+exact: measurable_poisson_pmf.
+Qed.

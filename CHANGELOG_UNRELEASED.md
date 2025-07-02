@@ -101,6 +101,14 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + lemma `ge0_integral_ereal_sup` (was a `Let`)
+- in `esum.v`:
+  + lemma `esum_limn_ge0`
+
+- in `probability.v`:
+  + Definition `poisson_pmf`, `poisson_prob`
+  + lemmas `poisson_pmf_ge0`, `measurable_poisson_pmf`,
+           `measurable_poisson_prob`
+  + instance `poisson_prob`
 
 ### Changed
 
