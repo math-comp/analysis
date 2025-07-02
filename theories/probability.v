@@ -248,7 +248,7 @@ Unshelve. all: by end_near. Qed.
 End cumulative_distribution_function.
 
 Section cdf_of_lebesgue_stieltjes_mesure.
-Context {R : realType} (f : cumulative01 R).
+Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
 
 Let T := g_sigma_algebraType R.-ocitv.-measurable.

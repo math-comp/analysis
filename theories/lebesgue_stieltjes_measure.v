@@ -36,9 +36,9 @@ From mathcomp Require Import realfun.
 (*                                 f is a cumulative function.                *)
 (* completed_lebesgue_stieltjes_measure f == the completed Lebesgue-Stieltjes *)
 (*                                 measure                                    *)
-(*               cumulative01 R == type of cumulative functions f such that   *)
-(*                                 f @ -oo --> 0 and f @ +oo --> 1            *)
-(*                                 The HB class is Cumulative01.              *)
+(*     cumulative_bounded R l r == type of cumulative functions f such that   *)
+(*                                 f @ -oo --> l and f @ +oo --> r            *)
+(*                                 The HB class is CumulativeBounded.         *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
@@ -600,19 +600,19 @@ Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 #[global]
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
 
-HB.mixin Record isCumulative01 (R : numFieldType) (f : R -> R) := {
-  cumulativeNy0 : f @ -oo --> (0:R) ;
-  cumulativey1 : f @ +oo --> (1:R) }.
+HB.mixin Record isCumulativeBounded (R : numFieldType) (l r : R) (f : R -> R) := {
+  cumulativeNy0 : f @ -oo --> l ;
+  cumulativey1 : f @ +oo --> r }.
 
-#[short(type=cumulative01)]
-HB.structure Definition Cumulative01 (R : numFieldType) :=
-  { f of isCumulative01 R f & Cumulative R f}.
+#[short(type=cumulativeBounded)]
+HB.structure Definition CumulativeBounded (R : numFieldType) (l r : R) :=
+  { f of isCumulativeBounded R l r f & Cumulative R f}.
 
-Arguments cumulativeNy0 {R} s.
-Arguments cumulativey1 {R} s.
+Arguments cumulativeNy0 {R l r} s.
+Arguments cumulativey1 {R l r} s.
 
 Section probability_measure_of_lebesgue_stieltjes_mesure.
-Context {R : realType} (f : cumulative01 R).
+Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
 
 Let T := g_sigma_algebraType R.-ocitv.-measurable.

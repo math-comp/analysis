@@ -119,7 +119,7 @@
   + lemma `itvNybndEbigcup`
 
 - in `lebesgue_stieltjes_measure.v`:
-  + mixin `isCumulative01`, structure `Cumulative01` with type `cumulative01`
+  + mixin `isCumulativeBounded`, structure `CumulativeBounded` with type `cumulative_bounded`
 
 ### Changed
 
