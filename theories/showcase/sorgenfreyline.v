@@ -254,7 +254,7 @@ apply/seteqP; rewrite /dl; split => t /= [].
     by rewrite /= in_itv /= ztx lerBlDr lerDl.
   exists (x - (z-t)).
     by rewrite opprD addrA subrr opprK add0r ztE subr_ge0.
-  by rewrite (addrC z) opprD opprK !addrA addrNK addrC addKr.
+  by rewrite (addrC z) opprD opprK !addrA subrK addrC addKr.
 move=> w [] xwE w0 <-.
 rewrite !opprD (addrCA z) !addrA addrK addrC opprK.
 by rewrite subr_ge0 ler_wpDl // ltW.
@@ -272,10 +272,10 @@ apply/seteqP; rewrite /dr; split => t /= [].
     apply: xzNE.
     by rewrite /= in_itv /= zxt ltrDl y0.
   exists (x + t - z).
-    by rewrite addrA (addrC z) addrK xtE subr_gt0.
-  by rewrite addrA (addrAC _ _ z) addrK (addrC x) addrK.
+    by rewrite addrC subrK xtE subr_gt0.
+  by rewrite addrA subrK addrC addKr.
 move=> w [] xwE w0 <-.
-rewrite !addrA addrAC (addrC x) addrK addrC.
+rewrite !addrA addrC addrA addKr addrC.
 by rewrite subr_gt0 ltr_wpDr // ltW.
 Qed.
 
@@ -395,7 +395,7 @@ case/boolP: (xepsE == set0).
   rewrite gt_max ltr_norml.
   rewrite -[inf(dl x)]addr0.
   rewrite -(subrr (-z)) opprK addrA -[_ - _]addrA -(inf_dlxz dlxz) //.
-  rewrite -!addrA addrC !addrA subrK addrC.
+  rewrite addrA addrC addrA addKr addrC.
   rewrite (@le_lt_trans _ _ 0 (_ - _) ) //; first last.
     by rewrite subr_le0 ltW.
   rewrite ltrBrDl ltrBlDr zx /=.
@@ -414,7 +414,7 @@ case/boolP: (xepsE == set0).
       exists 0. move=> u. rewrite -inE. exact: dr_ge0.
     - exact: has_inf1.
   rewrite -drzx inf_drxz.
-  rewrite -!addrA addrC !addrA subrK ltr_norml.
+  rewrite addrC addrA addKr ltr_norml.
   rewrite (@lt_le_trans _ _ 0) ?ltrBlDl //= ?subr_ge0 ?ltW //. 
   by rewrite oppr_lt0.
 move/set0P/xgetPex => /(_ eps).
