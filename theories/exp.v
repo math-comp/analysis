@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
 From mathcomp Require Import interval rat.
 From mathcomp Require Import boolp classical_sets functions mathcomp_extra.
@@ -604,9 +604,6 @@ Canonical expR_inum (i : Itv.t) (x : Itv.def (@Itv.num_sem R) i) :=
   Itv.mk (num_spec_expR x).
 
 End expR.
-
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `expRM_natl`")]
-Notation expRMm := expRM_natl (only parsing).
 
 Section expeR.
 Context {R : realType}.

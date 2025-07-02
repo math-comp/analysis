@@ -2859,36 +2859,6 @@ Arguments lee_sum_nneg_natl {R}.
 Arguments lee_sum_npos_natl {R}.
 #[global] Hint Extern 0 (is_true (0 <= `| _ |)%E) => solve [apply: abse_ge0] : core.
 
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeDl instead.")]
-Notation lee_addl := leeDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeDr instead.")]
-Notation lee_addr := leeDr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD2l instead.")]
-Notation lee_add2l := leeD2l (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD2r instead.")]
-Notation lee_add2r := leeD2r (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD instead.")]
-Notation lee_add := leeD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeB instead.")]
-Notation lee_sub := leeB (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeD2lE instead.")]
-Notation lee_add2lE := leeD2lE (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeNl instead.")]
-Notation lee_oppl := leeNl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use leeNr instead.")]
-Notation lee_oppr := leeNr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteNl instead.")]
-Notation lte_oppl := lteNl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteNr instead.")]
-Notation lte_oppr := lteNr (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteD instead.")]
-Notation lte_add := lteD (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteD2lE instead.")]
-Notation lte_add2lE := lteD2lE (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteDl instead.")]
-Notation lte_addl := lteDl (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="Use lteDr instead.")]
-Notation lte_addr := lteDr (only parsing).
 #[deprecated(since="mathcomp-analysis 1.2.0", note="Use gee_pMl instead.")]
 Notation gee_pmull := gee_pMl (only parsing).
 #[deprecated(since="mathcomp-analysis 1.2.0", note="Use geeDl instead.")]

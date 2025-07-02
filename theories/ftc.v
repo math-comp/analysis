@@ -116,7 +116,7 @@ apply: cvg_at_right_left_dnbhs.
     - rewrite addeAC -[X in _ - X]integral_itv_bndo_bndc//=; last first.
         by case: locf => + _ _; exact: measurable_funS.
       rewrite subee ?add0e//.
-      by apply: integral_fune_fin_num => //; exact: integrableS intf.
+      by apply: integrable_fin_num => //; exact: integrableS intf.
     - by case: locf => + _ _; exact: measurable_funS.
     - apply/disj_setPRL => z/=.
       rewrite /E /= !in_itv/= => /andP[xz zxdn].
@@ -130,8 +130,8 @@ apply: cvg_at_right_left_dnbhs.
       fun n => (d n)^-1 *: fine (\int[mu]_(t in E x n) (f t)%:E)); last first.
     apply/funext => n; congr (_ *: _); rewrite -fineB/=.
     by rewrite /= (addrC (d n) x) ixdf.
-    by apply: integral_fune_fin_num => //; exact: integrableS intf.
-    by apply: integral_fune_fin_num => //; exact: integrableS intf.
+    by apply: integrable_fin_num => //; exact: integrableS intf.
+    by apply: integrable_fin_num => //; exact: integrableS intf.
   have := nice_lebesgue_differentiation nice_E locf fx.
   rewrite {ixdf} -/mu.
   rewrite [g in g n @[n --> _] --> _ -> _](_ : _ =
@@ -143,7 +143,7 @@ apply: cvg_at_right_left_dnbhs.
   suff : g = h by move=> <-.
   apply/funext => n.
   rewrite /g /h /= fineM//.
-  apply: integral_fune_fin_num => //; first exact: (nice_E _).1.
+  apply: integrable_fin_num => //; first exact: (nice_E _).1.
   by apply: integrableS intf => //; exact: (nice_E _).1.
 - apply/cvg_at_leftP => d [d_gt0 d0].
   have {}Nd_gt0 n : (0 < - d n)%R by rewrite ltrNr oppr0.
@@ -173,7 +173,7 @@ apply: cvg_at_right_left_dnbhs.
       rewrite -/mu -[LHS]oppeK; congr oppe.
       rewrite oppeB; last first.
         rewrite fin_num_adde_defl// fin_numN//.
-        by apply: integral_fune_fin_num => //; exact: integrableS intf.
+        by apply: integrable_fin_num => //; exact: integrableS intf.
       rewrite addeC.
       rewrite (_ : `]-oo, x] = `]-oo, (x + d n)%R] `|` E x n)%classic; last first.
         by rewrite -itv_bndbnd_setU//= bnd_simp ler_wnDr// ltW.
@@ -182,7 +182,7 @@ apply: cvg_at_right_left_dnbhs.
         rewrite -[X in X - _]integral_itv_bndo_bndc//; last first.
           by case: locf => + _ _; exact: measurable_funS.
         rewrite subee ?add0e//.
-        by apply: integral_fune_fin_num => //; exact: integrableS intf.
+        by apply: integrable_fin_num => //; exact: integrableS intf.
       - exact: (nice_E _).1.
       - by case: locf => + _ _; exact: measurable_funS.
       - apply/disj_setPLR => z/=.
@@ -198,7 +198,7 @@ apply: cvg_at_right_left_dnbhs.
     rewrite -/mu -[LHS]oppeK; congr oppe.
     rewrite oppeB; last first.
       rewrite fin_num_adde_defl// fin_numN//.
-      by apply: integral_fune_fin_num => //; exact: integrableS intf.
+      by apply: integrable_fin_num => //; exact: integrableS intf.
     rewrite addeC.
     rewrite (@itv_bndbnd_setU _ _ _ (BRight (x - - d n)%R))//; last 2 first.
       case: b in ax * => /=; rewrite bnd_simp.
@@ -211,7 +211,7 @@ apply: cvg_at_right_left_dnbhs.
     - rewrite addeAC -[X in X - _]integral_itv_bndo_bndc//; last first.
         by case: locf => + _ _; exact: measurable_funS.
       rewrite opprK subee ?add0e//.
-      by apply: integral_fune_fin_num => //; exact: integrableS intf.
+      by apply: integrable_fin_num => //; exact: integrableS intf.
     - by case: locf => + _ _; exact: measurable_funS.
     - apply/disj_setPLR => z/=.
       rewrite /E /= !in_itv/= => /andP[az zxdn].
@@ -220,8 +220,8 @@ apply: cvg_at_right_left_dnbhs.
           @[n --> \oo] --> f x.
     apply: cvg_trans; apply: near_eq_cvg; near=> n;  congr (_ *: _).
     rewrite /F -fineN -fineB; last 2 first.
-      by apply: integral_fune_fin_num => //; exact: integrableS intf.
-      by apply: integral_fune_fin_num => //; exact: integrableS intf.
+      by apply: integrable_fin_num => //; exact: integrableS intf.
+      by apply: integrable_fin_num => //; exact: integrableS intf.
     by congr fine => /=; apply/esym; rewrite (addrC _ x); near: n.
   have := nice_lebesgue_differentiation nice_E locf fx.
   rewrite {ixdf} -/mu.
@@ -229,7 +229,7 @@ apply: cvg_at_right_left_dnbhs.
   set g := _ \o _ => gf.
   rewrite (@eq_cvg _ _ _ _ g)// => n.
   rewrite /g /= fineM//=; last first.
-    apply: integral_fune_fin_num => //; first exact: (nice_E _).1.
+    apply: integrable_fin_num => //; first exact: (nice_E _).1.
     by apply: integrableS intf => //; exact: (nice_E _).1.
     by rewrite muE inver oppr_eq0 lt_eqF.
   by rewrite muE/= inver oppr_eq0 lt_eqF// invrN mulNr -mulrN.
@@ -377,7 +377,7 @@ have acbc : `[a, c] `<=` `[a, b].
   apply: subset_itvl; rewrite bnd_simp; move: ac; near: c.
   exact: lt_nbhsl_le.
 rewrite -lee_fin fineK; last first.
-  apply: integral_fune_fin_num => //=.
+  apply: integrable_fin_num => //=.
   rewrite (_ : (fun _ => _) = abse \o ((EFin \o f) \_ `[a, b])); last first.
     by apply/funext => x /=; rewrite restrict_EFin.
   apply/integrable_abse/integrable_restrict => //=.
@@ -641,7 +641,7 @@ have GbFbc : G b = (F b - c)%R.
 rewrite -EFinB -cE -GbFbc /G /Rintegral/= fineK//.
   rewrite integralEpatch//=.
   by under eq_integral do rewrite restrict_EFin.
-exact: integral_fune_fin_num.
+exact: integrable_fin_num.
 Unshelve. all: by end_near. Qed.
 
 Lemma ge0_continuous_FTC2y (f F : R -> R) a (l : R) :
@@ -826,7 +826,7 @@ have ? : mu.-integrable `[a, b] (fun x => ((f * G) x)%:E).
   + have := derivable_oo_continuous_bnd_within Gab.
     by move/subspace_continuousP; exact.
 rewrite /= integralD//=.
-- by rewrite addeAC subee ?add0e// integral_fune_fin_num.
+- by rewrite addeAC subee ?add0e// integrable_fin_num.
 - apply: continuous_compact_integrable => //; first exact: segment_compact.
   apply/subspace_continuousP => x abx;apply: cvgM.
   + have := derivable_oo_continuous_bnd_within Fab.

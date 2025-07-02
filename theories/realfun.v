@@ -2016,23 +2016,23 @@ move=> /nonincreasing_funN ndNf abs; have := nondecreasing_variation ndNf abs.
 by rewrite opprK addrC => <-; rewrite variationN.
 Qed.
 
-Lemma variationD a b c f s t : a <= c -> c <= b ->
+Lemma variation_cat a b c f s t : a <= c -> c <= b ->
   itv_partition a c s -> itv_partition c b t ->
-  variation a c f s + variation c b f t = variation a b f (s ++ t).
+  variation a b f (s ++ t) = variation a c f s + variation c b f t.
 Proof.
 rewrite le_eqVlt => /predU1P[<-{c} cb|ac].
   by move=> /itv_partitionxx ->; rewrite variation_nil add0r.
 rewrite le_eqVlt => /predU1P[<-{b}|cb].
   by move=> ? /itv_partitionxx ->; rewrite variation_nil addr0 cats0.
-move=> acs cbt; rewrite /variation /= [in RHS]/index_iota subn0 size_cat.
-rewrite iotaD add0n big_cat/= -[in X in _ = X + _](subn0 (size s)); congr +%R.
+move=> acs cbt; rewrite /variation /= [in LHS]/index_iota subn0 size_cat.
+rewrite iotaD add0n big_cat/= -[in X in X + _ = _](subn0 (size s)); congr +%R.
   rewrite -/(index_iota 0 (size s)) 2!big_nat.
   apply: eq_bigr => k /[!leq0n] /= ks.
   rewrite nth_cat ks -cat_cons nth_cat /= ltnS (ltnW ks).
   by rewrite !(set_nth_default b c)//= ltnS ltnW.
-rewrite -[in RHS](addnK (size s) (size t)).
+rewrite -[in LHS](addnK (size s) (size t)).
 rewrite -/(index_iota (size s) (size t + size s)).
-rewrite -{1}[in RHS](add0n (size s)) big_addn addnK 2!big_nat; apply: eq_bigr.
+rewrite -{1}[in LHS](add0n (size s)) big_addn addnK 2!big_nat; apply: eq_bigr.
 move=> k /[!leq0n]/= kt.
 rewrite nth_cat {1}(addnC k) -ltn_subRL subnn ltn0 addnK.
 case: k kt => [t0 /=|k kt].
@@ -2152,9 +2152,9 @@ have waW : w <= a := ltW wa.
 case: ifPn => [|] nXA.
   move/eqP : nXA itvxt itvxb => -> itvat itvt /= ta.
   rewrite -[_ :: t]cat1s -[_ :: s]cat1s.
-  rewrite -?(@variationD _ _ a)//; [|exact: itv_partition1..].
+  rewrite ?(@variation_cat _ _ a)//; [|exact: itv_partition1..].
   by rewrite lerD// IH.
-move=> xts; rewrite -[_ :: s]cat1s -(@variationD _ _ a) => //; last first.
+move=> xts; rewrite -[_ :: s]cat1s (@variation_cat _ _ a) => //; last first.
   exact: itv_partition1.
 have [y [s' s'E]] : exists y s', s = y :: s'.
   by case: {itvas itvws IH} s xts => // y s' ?; exists y, s'.
@@ -2162,10 +2162,12 @@ apply: (@le_trans _ _ (variation w b f s)).
   rewrite IH//.
   case: itvws => /= /andP[_]; rewrite s'E /= => /andP[ay ys' lyb].
   by split => //; rewrite (path_lt_head wa)//= ys' andbT.
-by rewrite variationD //; [exact: le_variation | exact: itv_partition1].
+by rewrite -variation_cat//; [exact: le_variation | exact: itv_partition1].
 Qed.
 
 End variation.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="use `variation_cat` instead")]
+Notation variationD := variation_cat (only parsing).
 
 Section bounded_variation.
 Context {R : realType}.
@@ -2354,7 +2356,7 @@ have H s t : itv_partition a c s -> itv_partition c b t ->
   exists (variation a b f (s ++ t))%:E.
     eexists; last reflexivity.
     by exists (s ++ t) => //; exact: itv_partition_cat acs cbt.
-  by rewrite variationD// ltW.
+  by rewrite -variation_cat// ltW.
 rewrite [leRHS]ereal_sup_EFin//; last first.
   by apply: variations_neq0; rewrite (lt_trans ac).
 have acf : BV a c f := bounded_variationl (ltW ac) (ltW cb) abf.
@@ -2366,7 +2368,7 @@ rewrite -EFinD -sup_sumE; last 2 first.
   by split => //; exact: variations_neq0.
 apply: le_sup.
 - move=> r/= [s [l' acl' <-{s}]] [t [l cbl] <-{t} <-{r}].
-  exists (variation a b f (l' ++ l)); split; last by rewrite variationD// ltW.
+  exists (variation a b f (l' ++ l)); split; last by rewrite -variation_cat// ltW.
   exact/variations_variation/(itv_partition_cat acl' cbl).
 - have [r acfr] := variations_neq0 f ac.
   have [s cbfs] := variations_neq0 f cb.
@@ -2406,7 +2408,7 @@ exists (variation a c f (itv_partitionL l c)).
   by apply: variations_variation; exact: itv_partitionLP pacl.
 exists (variation c b f (itv_partitionR l c)).
   by apply: variations_variation; exact: itv_partitionRP pacl.
-by rewrite variationD// ?ltW//;
+by rewrite -variation_cat// ?ltW//;
   [exact: itv_partitionLP pacl|exact: itv_partitionRP pacl].
 Qed.
 
@@ -2540,7 +2542,7 @@ move: xt; rewrite le_eqVlt => /predU1P[->|xt].
   by rewrite total_variationxx/=.
 have : variation x b f (i :: j) <= variation x t f (t :: nil) +
                                    variation t b f (i :: j).
-  rewrite variationD//; last 2 first.
+  rewrite -variation_cat//; last 2 first.
     exact: itv_partition1.
     by rewrite /itv_partition/= ti ij ijb.
   exact: le_variation.

@@ -328,8 +328,8 @@ have mfn : mu.-integrable E (fun z => `|f^\- z - (n_ n z)%:E|).
 rewrite -[X in (_ <= `|X|)%R]fineD // -integralD //.
 move: finfn finfp => _ _.
 rewrite !ger0_norm ?fine_ge0 ?integral_ge0 ?fine_le//.
-- by apply: integral_fune_fin_num => //; exact/integrable_abse/mfpn.
-- by apply: integral_fune_fin_num => //; exact: integrableD.
+- by apply: integrable_fin_num => //; exact/integrable_abse/mfpn.
+- by apply: integrable_fin_num => //; exact: integrableD.
 - apply: ge0_le_integral => //.
   + by apply: measurableT_comp => //; case/integrableP: (mfpn n).
   + by move=> x Ex; rewrite adde_ge0.

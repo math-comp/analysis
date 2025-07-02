@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra archimedean finmap.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
@@ -1906,10 +1906,6 @@ move=> /(amx (bigcup2 A B))->.
 Qed.
 
 End additivity.
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `subadditive`")]
-Notation sub_additive := subadditive (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `measurable_subset_sigma_subadditive`")]
-Notation sigma_sub_additive := measurable_subset_sigma_subadditive (only parsing).
 
 Section ring_additivity.
 Context d (R : numFieldType) (T : ringOfSetsType d) (mu : set T -> \bar R).
@@ -3016,8 +3012,6 @@ Qed.
 (* Qed. *)
 
 End more_content_semiring_lemmas.
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `content_sub_additive`")]
-Notation content_sub_additive := content_subadditive (only parsing).
 
 Section content_ring_lemmas.
 Context d (R : realType) (T : ringOfSetsType d).
@@ -3119,8 +3113,6 @@ by under eq_fun do under eq_bigr do rewrite SetRing.RmuE//=.
 Qed.
 
 End ring_sigma_subadditive_content.
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `ring_sigma_subadditive`")]
-Notation ring_sigma_sub_additive := ring_sigma_subadditive (only parsing).
 
 #[key="mu"]
 HB.factory Record Content_SigmaSubAdditive_isMeasure d (R : realType)
@@ -3134,16 +3126,6 @@ HB.instance Definition _ := Content_isMeasure.Build d T R mu
   (semiring_sigma_additive (measure_sigma_subadditive)).
 
 HB.end.
-
-#[deprecated(since="mathcomp-analysis 1.1.0",
-  note="renamed `Content_SigmaSubAdditive_isMeasure.Build`")]
-Notation "'Content_SubSigmaAdditive_isMeasure.Build' d R T mu" :=
-  (@Content_SigmaSubAdditive_isMeasure.Build d R T mu)
-  (at level 2, d, R, T, mu at next level, only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0",
-  note="renamed `measure_sigma_subadditive`")]
-Notation measure_sigma_sub_additive :=
-  Content_SigmaSubAdditive_isMeasure.measure_sigma_subadditive (only parsing).
 
 Section more_premeasure_ring_lemmas.
 Context d (R : realType) (T : semiRingOfSetsType d).
@@ -3246,8 +3228,6 @@ rewrite (@eq_eseriesr _ _ (fun n => mu (if (N <= n)%N then F n else set0))).
     by under eq_bigcupr do rewrite mem_not_I.
 - by move=> o _; rewrite (fun_if mu) measure0.
 Qed.
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `measure_sigma_subadditive_tail`")]
-Notation measure_sigma_sub_additive_tail := measure_sigma_subadditive_tail (only parsing).
 
 Section ring_sigma_content.
 Context d (R : realType) (T : semiRingOfSetsType d)
@@ -3329,11 +3309,6 @@ HB.structure Definition SFiniteMeasure d (T : sigmaRingType d) (R : realType) :=
   {mu of @Measure _ T R mu & isSFinite _ T R mu }.
 Arguments s_finite {d T R} _.
 
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isSFinite.Build`")]
-Notation "Measure_isSFinite_subdef.Build" := (@isSFinite.Build _ _ _ _ _) (only parsing).
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `s_finite`")]
-Notation sfinite_measure_subdef := s_finite (only parsing).
-
 Notation "{ 'sfinite_measure' 'set' T '->' '\bar' R }" :=
   (SFiniteMeasure.type T R) : ring_scope.
 
@@ -3392,10 +3367,6 @@ HB.mixin Record isFinite d (T : semiRingOfSetsType d) (R : numDomainType)
 
 HB.structure Definition FinNumFun d (T : semiRingOfSetsType d)
   (R : numFieldType) := { k of isFinite _ T R k }.
-
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isFinite.Build`")]
-Notation "'@SigmaFinite_isFinite.Build' d T R k" :=
-  (@isFinite.Build d T R k) (at level 2, d, T, R, k at next level, only parsing).
 
 HB.structure Definition FiniteMeasure d (T : sigmaRingType d) (R : realType) :=
   { k of @SigmaFiniteMeasure _ _ _ k & isFinite _ T R k }.
@@ -3547,10 +3518,6 @@ HB.mixin Record isSubProbability d (T : sigmaRingType d) (R : realType)
 #[short(type=subprobability)]
 HB.structure Definition SubProbability d (T : measurableType d) (R : realType)
   := {mu of @FiniteMeasure d T R mu & isSubProbability d T R mu }.
-
-#[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `isSubProbability.Build`")]
-Notation "'FiniteMeasure_isSubProbability.Build' d T R P" :=
-  (@isSubProbability.Build d T R P) (at level 2, d, T, R, P at next level, only parsing).
 
 HB.factory Record Measure_isSubProbability d (T : measurableType d)
     (R : realType) (P : set T -> \bar R) of isMeasure _ _ _ P :=

@@ -115,7 +115,7 @@ have [g [gfe2 ig]] : exists g : {sfun R >-> rT},
   have [g_ [intG ?]] := approximation_sfun_integrable mE intf.
   move/fine_fcvg/cvg_ballP/(_ (eps%:num / 2)%R) => -[] // n _ Nb; exists (g_ n).
   have fg_fin_num : \int[mu]_(z in E) `|(f z - g_ n z)%:E| \is a fin_num.
-    rewrite integral_fune_fin_num// integrable_abse//.
+    rewrite integrable_fin_num// integrable_abse//.
     by under eq_fun do rewrite EFinB; apply: integrableB => //; exact: intG.
   split; last exact: intG.
   have /= := Nb _ (leqnn n); rewrite /ball/= sub0r normrN -fine_abse// -lte_fin.
@@ -228,9 +228,9 @@ have -> : f x = (r *+ 2)^-1 * \int[mu]_(z in `[x - r, x + r]) cst (f x) z.
 have intRf : mu.-integrable `[x - r, x + r] (EFin \o f).
   exact: (@integrableS _ _ _ mu _ _ _ _ _ xrA intf).
 rewrite /= -mulrBr -fineB; first last.
-- rewrite integral_fune_fin_num// continuous_compact_integrable// => ?.
+- rewrite integrable_fin_num// continuous_compact_integrable// => ?.
   exact: cvg_cst.
-- by rewrite integral_fune_fin_num.
+- by rewrite integrable_fin_num.
 rewrite -integralB_EFin //; first last.
   by apply: continuous_compact_integrable => // ?; exact: cvg_cst.
 under [fun _ => _ + _ ]eq_fun => ? do rewrite -EFinD.
@@ -239,17 +239,17 @@ have int_fx : mu.-integrable `[x - r, x + r] (fun z => (f z - f x)%:E).
   rewrite integrableB// continuous_compact_integrable// => ?.
   exact: cvg_cst.
 rewrite normrM ger0_norm // -fine_abse //; first last.
-  by rewrite integral_fune_fin_num.
+  by rewrite integrable_fin_num.
 suff : (\int[mu]_(z in `[(x - r)%R, (x + r)%R]) `|f z - f x|%:E <=
     (r *+ 2 * eps)%:E)%E.
   move=> intfeps; apply: le_trans.
     apply: (ler_pM r20 _ (le_refl _)); first exact: fine_ge0.
     apply: fine_le; last apply: le_abse_integral => //.
-    - by rewrite abse_fin_num integral_fune_fin_num.
-    - by rewrite integral_fune_fin_num// integrable_abse.
+    - by rewrite abse_fin_num integrable_fin_num.
+    - by rewrite integrable_fin_num// integrable_abse.
     - by case/integrableP : int_fx.
   rewrite ler_pdivrMl ?mulrn_wgt0 // -[_ * _]/(fine (_%:E)).
-  by rewrite fine_le// integral_fune_fin_num// integrable_abse.
+  by rewrite fine_le// integrable_fin_num// integrable_abse.
 apply: le_trans.
 - apply: (@integral_le_bound _ _ _ _ _ (fun z => (f z - f x)%:E) eps%:E) => //.
   + by case/integrableP: int_fx.

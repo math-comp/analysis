@@ -92,7 +92,7 @@ Lemma RintegralZl D f r : measurable D -> mu.-integrable D (EFin \o f) ->
   \int[mu]_(x in D) (r * f x) = r * \int[mu]_(x in D) f x.
 Proof.
 move=> mD intf; rewrite (_ : r = fine r%:E)// -fineM//; last first.
-  exact: integral_fune_fin_num.
+  exact: integrable_fin_num.
 by congr fine; under eq_integral do rewrite EFinM; exact: integralZl.
 Qed.
 
@@ -177,7 +177,7 @@ Lemma RintegralD D f1 f2 : measurable D ->
   \int[mu]_(x in D) f1 x + \int[mu]_(x in D) f2 x.
 Proof.
 move=> mD if1 if2.
-by rewrite /Rintegral integralD_EFin// fineD//; exact: integral_fune_fin_num.
+by rewrite /Rintegral integralD_EFin// fineD//; exact: integrable_fin_num.
 Qed.
 
 Lemma RintegralB D f1 f2 : measurable D ->
@@ -186,7 +186,7 @@ Lemma RintegralB D f1 f2 : measurable D ->
   \int[mu]_(x in D) f1 x - \int[mu]_(x in D) f2 x.
 Proof.
 move=> mD if1 if2.
-by rewrite /Rintegral integralB_EFin// fineB//; exact: integral_fune_fin_num.
+by rewrite /Rintegral integralB_EFin// fineB//; exact: integrable_fin_num.
 Qed.
 
 End Rintegral.

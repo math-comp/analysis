@@ -99,6 +99,9 @@
 - in `lebesgue_integral_fubini.v`:
   + lemmas `integral21_prod_meas2`, `integral12_prod_meas2`
 
+- in `lebesgue_integral_nonneg.v`:
+  + lemma `ge0_integral_ereal_sup` (was a `Let`)
+
 ### Changed
 
 - in `convex.v`:
@@ -257,6 +260,12 @@
   + `limZr` -> `limZl_tmp`
   + `continuousZr` -> `continuousZl_tmp`
   + `continuousZl` -> `continuousZr_tmp`
+- in `realfun.v`:
+  + `variationD` -> `variation_cat`
+
+- in `lebesgue_integrable.v`:
+  + `integral_fune_lt_pinfty` -> `integrable_lty`
+  + `integral_fune_fin_num` -> `integrable_fin_num`
 
 ### Generalized
 
@@ -293,6 +302,22 @@
 - in `measure.v`:
   + definition `almost_everywhere_notation`
   + lemma `ess_sup_ge0`
+
+- in `exp.v`:
+  + notation `expRMm` (deprecated since 1.1.0)
+
+- in `constructive_ereal.v`:
+  + notations `lee_addl`, `lee_addr`, `lee_add2l`, `lee_add2r`, `lee_add`,
+    `lee_sub`, `lee_add2lE`, `lee_oppl`, `lee_oppr`, `lte_oppl`, `lte_oppr`,
+    `lte_add`, `lte_add2lE`, `lte_addl`, `lte_addr` (deprecated since 1.1.0)
+
+- in `measure.v`:
+  + notations `sub_additive`, `sigma_sub_additive`, `content_sub_additive`,
+    `ring_sigma_sub_additive`, `Content_SubSigmaAdditive_isMeasure.Build`,
+    `measure_sigma_sub_additive`, `measure_sigma_sub_additive_tail`,
+    `Measure_isSFinite_subdef.Build`, `sfinite_measure_subdef`,
+    `@SigmaFinite_isFinite.Build`, `FiniteMeasure_isSubProbability.Build`
+    (deprecated since 1.1.0)
 
 ### Infrastructure
 

@@ -720,12 +720,12 @@ Qed.
 
 End integralB.
 
-Section integrable_fune.
+Section integrable_lty_fin_num.
 Context d (T : measurableType d) (R : realType).
 Variables (mu : {measure set T -> \bar R}) (D : set T) (mD : measurable D).
 Local Open Scope ereal_scope.
 
-Lemma integral_fune_lt_pinfty (f : T -> \bar R) :
+Lemma integrable_lty (f : T -> \bar R) :
   mu.-integrable D f -> \int[mu]_(x in D) f x < +oo.
 Proof.
 move=> intf; rewrite (funeposneg f) integralB//;
@@ -734,15 +734,19 @@ rewrite lte_add_pinfty ?integral_funepos_lt_pinfty// lteNl ltNye_eq.
 by rewrite integrable_neg_fin_num.
 Qed.
 
-Lemma integral_fune_fin_num (f : T -> \bar R) :
+Lemma integrable_fin_num (f : T -> \bar R) :
   mu.-integrable D f -> \int[mu]_(x in D) f x \is a fin_num.
 Proof.
-move=> h; apply/fin_numPlt; rewrite integral_fune_lt_pinfty// andbC/= -/(- +oo).
-rewrite lteNl -integralN; first exact/integral_fune_lt_pinfty/integrableN.
+move=> h; apply/fin_numPlt; rewrite integrable_lty// andbC/= -/(- +oo).
+rewrite lteNl -integralN; first exact/integrable_lty/integrableN.
 by rewrite fin_num_adde_defl// fin_numN integrable_neg_fin_num.
 Qed.
 
-End integrable_fune.
+End integrable_lty_fin_num.
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `integrable_lty`")]
+Notation integral_fune_lt_pinfty := integrable_lty (only parsing).
+#[deprecated(since="mathcomp-analysis 1.12.0", note="renamed to `integrable_fin_num`")]
+Notation integral_fune_fin_num := integrable_fin_num (only parsing).
 
 Section transfer.
 Context d1 d2 (X : measurableType d1) (Y : measurableType d2) (R : realType).
