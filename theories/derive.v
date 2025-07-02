@@ -341,8 +341,7 @@ rewrite add0r normrN normrZ -ltr_pdivlMl ?normr_gt0 ?invr_neq0 //.
 have /Hi/le_lt_trans -> // : ball 0 i (j *: v).
    by rewrite -ball_normE/= add0r normrN (le_lt_trans _ jvi) // normrZ.
 rewrite -(mulrC e) -mulrA -ltr_pdivlMl // mulrA mulVf ?gt_eqF//.
-rewrite normrV ?unitfE // div1r invrK ltr_pdivrMl; last first.
-  by rewrite pmulr_rgt0 // normr_gt0.
+rewrite normfV div1r invrK ltr_pdivrMl; last by rewrite pmulr_rgt0 // normr_gt0.
 rewrite normrZ mulrC -mulrA.
 by rewrite ltr_pMl ?ltr1n // pmulr_rgt0 ?normm_gt0 // normr_gt0.
 Qed.
@@ -709,8 +708,8 @@ suff /he : ball 0 e%:num (k^-1 *: x).
   rewrite -ball_normE /= distrC subr0 => /ltW /le_trans; apply.
   by rewrite ger0_norm /k // mulVf.
 rewrite -ball_normE /= distrC subr0 normrZ.
-rewrite normfV ger0_norm /k // invrM ?unitfE // mulrAC mulVf //.
-by rewrite invf_div mul1r [ltRHS]splitr; apply: ltr_pwDr.
+rewrite normfV ger0_norm /k // invfM/= -mulrA mulVf ?gt_eqF//.
+by rewrite mulr1 invf_div gtr_pMr// invf_lt1// ltr1n.
 Qed.
 
 Lemma linear_eqO (V' W' : normedModType R) (f : {linear V' -> W'}) :
@@ -784,10 +783,8 @@ suff /he : ball 0 e%:num (ku^-1 *: u, kv^-1 *: v).
   by rewrite mulrA [ku * _]mulrAC expr2.
 rewrite -ball_normE /= distrC subr0.
 have -> : (ku^-1 *: u, kv^-1 *: v) =
-  (e%:num / 2) *: ((PosNum un0)%:num ^-1 *: u, (PosNum vn0)%:num ^-1 *: v).
-  rewrite invrM ?unitfE // [kv ^-1]invrM ?unitfE //.
-  rewrite mulrC -[_ *: u]scalerA [X in X *: v]mulrC -[_ *: v]scalerA.
-  by rewrite invf_div.
+    (e%:num / 2) *: ((PosNum un0)%:num ^-1 *: u, (PosNum vn0)%:num ^-1 *: v).
+  by rewrite invfM [kv ^-1]invfM invf_div -[_ *: u]scalerA -[_ *: v]scalerA.
 rewrite normrZ ger0_norm // -mulrA gtr_pMr // ltr_pdivrMl // mulr1.
 by rewrite prod_normE/= !normrZ !normfV !normr_id !mulVf ?gt_eqF// maxxx ltr1n.
 Qed.

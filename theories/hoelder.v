@@ -440,9 +440,9 @@ rewrite [leLHS](_ : _ = 'N_1[(F \* G)%R] * 'N_p%:E[f] * 'N_q%:E[g]); last first.
   rewrite -!muleA [X in _ * X](_ : _ = 1) ?mule1// EFinM muleACA.
   rewrite (_ : _ * 'N_p%:E[f] = 1) ?mul1e; last first.
     rewrite -[X in _ * X]fineK; last by rewrite ge0_fin_numE ?ltey// Lnorm_ge0.
-    by rewrite -EFinM mulVr ?unitfE ?gt_eqF// fine_gt0// fpos/= ltey.
+    by rewrite -EFinM mulVf ?gt_eqF// fine_gt0// fpos/= ltey.
   rewrite -[X in _ * X]fineK; last by rewrite ge0_fin_numE ?ltey// Lnorm_ge0.
-  by rewrite -EFinM mulVr ?unitfE ?gt_eqF// fine_gt0// gpos/= ltey.
+  by rewrite -EFinM mulVf ?gt_eqF// fine_gt0// gpos/= ltey.
 rewrite -(mul1e ('N_p%:E[f] * _)) -muleA lee_pmul ?mule_ge0 ?Lnorm_ge0//.
 rewrite [leRHS](_ : _ = \int[mu]_x (F x `^ p / p + G x `^ q / q)%:E).
   rewrite Lnorm1 ae_ge0_le_integral //.

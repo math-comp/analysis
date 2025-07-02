@@ -719,8 +719,8 @@ Notation near_in_itv := near_in_itvoo (only parsing).
 Lemma near_infty_natSinv_lt (R : archiFieldType) (e : {posnum R}) :
   \forall n \near \oo, n.+1%:R^-1 < e%:num.
 Proof.
-near=> n; rewrite -(@ltr_pM2r _ n.+1%:R) // mulVr ?unitfE //.
-rewrite -(@ltr_pM2l _ e%:num^-1) // mulr1 mulrA mulVr ?unitfE // mul1r.
+near=> n; rewrite -(@ltr_pM2r _ n.+1%:R) // mulVf.
+rewrite -(@ltr_pM2l _ e%:num^-1) // mulr1 mulrA mulVf// mul1r.
 rewrite (lt_trans (archi_boundP _)) // ltr_nat.
 by near: n; exists (Num.bound e%:num^-1).
 Unshelve. all: by end_near. Qed.
@@ -729,10 +729,10 @@ Lemma near_infty_natSinv_expn_lt (R : archiFieldType) (e : {posnum R}) :
   \forall n \near \oo, 1 / 2 ^+ n < e%:num.
 Proof.
 near=> n.
-rewrite -(@ltr_pM2r _ (2 ^+ n)) // -?natrX ?ltr0n ?expn_gt0//.
-rewrite mul1r mulVr ?unitfE ?gt_eqF// ?ltr0n ?expn_gt0//.
-rewrite -(@ltr_pM2l _ e%:num^-1) // mulr1 mulrA mulVr ?unitfE // mul1r.
-rewrite (lt_trans (archi_boundP _)) // natrX upper_nthrootP //.
+rewrite -(@ltr_pM2r _ (2 ^+ n))// -?natrX ?ltr0n ?expn_gt0//.
+rewrite mul1r mulVf ?gt_eqF//.
+rewrite -(@ltr_pM2l _ e%:num^-1)// mulr1 mulrA mulVf// mul1r.
+rewrite (lt_trans (archi_boundP _))// natrX upper_nthrootP//.
 near: n; eexists; last by move=> m; exact.
 by [].
 Unshelve. all: by end_near. Qed.

@@ -535,7 +535,7 @@ have Bjrn : (radius (B j))%:num > r / (2 ^ n.+1)%:R.
 exists j; split => //.
 - by case: Dj => m /= mn Dm; exists m.
 - rewrite (le_trans _ (ltW Bjrn))// ler_pdivrMr// expnSr natrM.
-  by rewrite invrM ?unitfE// mulrAC -mulrA (mulrA 2) divff// div1r.
+  by rewrite invfM -!mulrA mulVf// mulr1.
 - move=> x Bix.
   rewrite is_ball_closure//; last first.
     by rewrite (ballE (is_ballB j)) scale_ballE; [exact: is_ball_ball|].

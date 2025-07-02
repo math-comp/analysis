@@ -995,7 +995,7 @@ move=> mf mg; rewrite (_ : (_ \* _) = (fun x => 2%:R^-1 * (f x + g x) ^+ 2)
     exact: measurableT_comp (exprn_measurable _) _.
 rewrite funeqE => x /=; rewrite -2!mulrBr sqrrD (addrC (f x ^+ 2)) -addrA.
 rewrite -(addrA (f x * g x *+ 2)) -opprB opprK (addrC (g x ^+ 2)) addrK.
-by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVr ?mul1r// unitfE.
+by rewrite -(mulr_natr (f x * g x)) -(mulrC 2) mulrA mulVf ?mul1r.
 Qed.
 
 Lemma measurable_fun_ltr D f g : measurable_fun D f -> measurable_fun D g ->
