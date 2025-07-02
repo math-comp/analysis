@@ -265,7 +265,7 @@
 
 - in `lebesgue_integrable.v`:
   + `integral_fune_lt_pinfty` -> `integrable_lty`
-  + integral_fune_fin_num` -> `integrable_fin_num`
+  + `integral_fune_fin_num` -> `integrable_fin_num`
 
 ### Generalized
 
