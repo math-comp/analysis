@@ -279,6 +279,19 @@ rewrite !addrA addrAC (addrC x) addrK addrC.
 by rewrite subr_gt0 ltr_wpDr // ltW.
 Qed.
 
+Lemma inf_dlxz x z :  
+  dl z = [set t + (z - x) | t in dl x] -> 
+  dl x !=set0 -> 
+  x - inf (dl x) = z - inf (dl z).
+Proof.
+move=> dlxz dlx0.
+rewrite dlxz -image2_set1 inf_sumE.
+- by rewrite inf1 !opprD !addrA (addrC z) addrK (opprK x) addrC.
+- split => //.
+  exists 0. move=> u. rewrite -inE. exact: dl_ge0.
+- exact: has_inf1.
+Qed.
+
 Definition continuous_at_sorgenfrey_to_Rtopo x (f : sorgenfrey -> R) :=
   forall eps : R, 0 < eps -> exists2 d : R, 0 < d & forall y : R, x <= y < x + d -> `|f x - f y| < eps.
 
@@ -311,6 +324,7 @@ pose xepsE := [set y | x + y \in E /\ 0 < y < eps].
 pose eps' := xget eps xepsE.
 exists eps'.
   by rewrite /eps'; case: (xgetP eps xepsE) => // y -> [] _ /andP[].
+(* forall z : R, x <= z < x + eps' -> `|sdist x - sdist z| < eps *)
 move=> z /andP [] xz zx. 
 have [<-|xz'] := eqVneq x z.
   by rewrite subrr normr0.
@@ -325,13 +339,14 @@ case/boolP: (xepsE == set0).
   have znE : z \notin E.
     apply/negP => zE.
     suff : xepsE (z-x) by rewrite xepsE0.
-    by rewrite /xepsE /= addrA (addrC x) addrK subr_gt0 xz ltrBlDl.
+    by rewrite /xepsE /= addrC subrK subr_gt0 xz ltrBlDl.
   have drzx : dr x = [set t + (z - x) | t in dr z].
     apply: dr_shift => // t /=.
+    (* t - x in xepsE -> False *)
     rewrite in_itv /= => /andP[] xt tz.
     apply: contraPnot xepsE0.
     rewrite -inE => Et; apply/eqP/set0P.
-    exists (t-x); rewrite /xepsE /= addrA (addrC x) addrK.
+    exists (t-x); rewrite /xepsE /= addrC subrK.
     by rewrite subr_gt0 xt ltrBlDl (le_lt_trans tz).
   have Hr : `|Num.min 1 xr - Num.min 1 zr| < eps.
     rewrite /xr /zr.
@@ -365,7 +380,7 @@ case/boolP: (xepsE == set0).
     rewrite in_itv /= => /andP[] xt tz.
     apply: contraPnot xepsE0.
     rewrite -inE => Et; apply/eqP/set0P.
-    exists (t-x); rewrite /xepsE /= addrA (addrC x) addrK.
+    exists (t-x); rewrite /xepsE /= addrC subrK.
     by rewrite subr_gt0 xt ltrBlDl (le_lt_trans tz).
   have [dlx0|] := eqVneq (dl x) set0.
     rewrite dlx0 inf0 subr0.
@@ -373,19 +388,13 @@ case/boolP: (xepsE == set0).
       suff : 0 \in dl x by rewrite inE dlx0.
       by rewrite inE /dl /= subr0.
     by rewrite dlxz dlx0 image_set0 inf0 subr0 (negbTE znE).
-  case/set0P => w Hw.
-  have inf_dlxz : x - inf (dl x) = z - inf (dl z).
-    rewrite dlxz -image2_set1 inf_sumE.
-    - by rewrite inf1 !opprD !addrA (addrC z) addrK (opprK x) addrC.
-    - split. by exists w.
-      exists 0. move=> u. rewrite -inE. exact: dl_ge0.
-    - exact: has_inf1.
-  rewrite -inf_dlxz.
+  move/set0P => dlx0.  
+  rewrite -(inf_dlxz dlxz) //.
   case: ifPn => xlE //.
   rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //.
   rewrite gt_max ltr_norml.
   rewrite -[inf(dl x)]addr0.
-  rewrite -(subrr (-z)) opprK addrA -[_ - _]addrA -inf_dlxz.
+  rewrite -(subrr (-z)) opprK addrA -[_ - _]addrA -(inf_dlxz dlxz) //.
   rewrite -!addrA addrC !addrA subrK addrC.
   rewrite (@le_lt_trans _ _ 0 (_ - _) ) //; first last.
     by rewrite subr_le0 ltW.
