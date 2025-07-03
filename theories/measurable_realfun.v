@@ -183,52 +183,6 @@ End puncture_ereal_itv.
 Section salgebra_R_ssets.
 Variable R : realType.
 
-Definition measurableTypeR := g_sigma_algebraType (R.-ocitv.-measurable).
-Definition measurableR : set (set R) :=
-  (R.-ocitv.-measurable).-sigma.-measurable.
-
-HB.instance Definition _ := Pointed.on R.
-HB.instance Definition R_isMeasurable :
-  isMeasurable default_measure_display R :=
-  @isMeasurable.Build _ measurableTypeR measurableR
-    measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
-(*HB.instance (Real.sort R) R_isMeasurable.*)
-
-Lemma measurable_set1 (r : R) : measurable [set r].
-Proof.
-rewrite set1_bigcap_oc; apply: bigcap_measurable => // k _.
-by apply: sub_sigma_algebra; exact/is_ocitv.
-Qed.
-#[local] Hint Resolve measurable_set1 : core.
-
-Lemma measurable_itv (i : interval R) : measurable [set` i].
-Proof.
-have moc (a b : R) : measurable `]a, b].
-  by apply: sub_sigma_algebra; apply: is_ocitv.
-have mopoo (x : R) : measurable `]x, +oo[.
-  by rewrite itv_bndy_bigcup_BRight; exact: bigcup_measurable.
-have mnooc (x : R) : measurable `]-oo, x].
-  by rewrite -setCitvr; exact/measurableC.
-have ooE (a b : R) : `]a, b[%classic = `]a, b] `\ b.
-  case: (boolP (a < b)) => ab; last by rewrite !set_itv_ge ?set0D.
-  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx andbF.
-have moo (a b : R) : measurable `]a, b[.
-  by rewrite ooE; exact: measurableD.
-have mcc (a b : R) : measurable `[a, b].
-  case: (boolP (a <= b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU1itv//; apply/measurableU.
-have mco (a b : R) : measurable `[a, b[.
-  case: (boolP (a < b)) => ab; last by rewrite set_itv_ge.
-  by rewrite -setU1itv//; apply/measurableU.
-have oooE (b : R) : `]-oo, b[%classic = `]-oo, b] `\ b.
-  by rewrite -setUitv1// setUDK// => x [->]; rewrite /= in_itv/= ltxx.
-case: i => [[[] a|[]] [[] b|[]]] => //; do ?by rewrite set_itv_ge.
-- by rewrite -setU1itv//; exact/measurableU.
-- by rewrite oooE; exact/measurableD.
-- by rewrite set_itvNyy.
-Qed.
-#[local] Hint Resolve measurable_itv : core.
-
 Lemma measurable_fun_itv_bndo_bndc (a : itv_bound R) (b : R)
     (f : R -> R) :
   measurable_fun [set` Interval a (BLeft b)] f ->
@@ -387,8 +341,7 @@ Qed.
 
 End salgebra_R_ssets.
 #[global]
-Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1|
-                                            apply: emeasurable_set1] : core.
+Hint Extern 0 (measurable [set _]) => solve [apply: emeasurable_set1] : core.
 #[global]
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
 

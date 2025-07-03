@@ -247,6 +247,38 @@ Unshelve. all: by end_near. Qed.
 
 End cumulative_distribution_function.
 
+Section cdf_of_lebesgue_stieltjes_mesure.
+Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
+Local Open Scope measure_display_scope.
+
+Let T := g_sigma_algebraType R.-ocitv.-measurable.
+Let lsf := lebesgue_stieltjes_measure f.
+
+Let idTR : T -> R := idfun.
+
+#[local] HB.instance Definition _ :=
+  @isMeasurableFun.Build _ _ T R idTR (@measurable_id _ _ setT).
+
+Lemma cdf_lebesgue_stieltjes_id r : cdf (idTR : {RV lsf >-> R}) r = (f r)%:E.
+Proof.
+rewrite /= preimage_id itvNybndEbigcup.
+have : lsf `]-n%:R, r] @[n --> \oo] --> (f r)%:E.
+  suff : ((f r)%:E - (f (-n%:R))%:E)%E @[n --> \oo] --> (f r)%:E.
+    apply: cvg_trans; apply: near_eq_cvg; near=> n.
+    rewrite /lsf /lebesgue_stieltjes_measure /measure_extension/=.
+    rewrite measurable_mu_extE/= ?wlength_itv_bnd//; last exact: is_ocitv.
+    by rewrite lerNl; near: n; exact: nbhs_infty_ger.
+  rewrite -[X in _ --> X](sube0 (f r)%:E); apply: (cvgeB _ (cvg_cst _ )) => //.
+  apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy0 f))) => //.
+  by apply: (cvg_comp _ _ cvgr_idn); rewrite ninfty.
+have : lsf `]- n%:R, r] @[n --> \oo] --> lsf (\bigcup_n `]-n%:R, r]%classic).
+  apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
+  by move=> *; apply/subsetPset/subset_itv; rewrite leBSide//= lerN2 ler_nat.
+exact: cvg_unique.
+Unshelve. all: by end_near. Qed.
+
+End cdf_of_lebesgue_stieltjes_mesure.
+
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.
 Canonical expectation_unlockable := Unlockable expectation.unlock.
