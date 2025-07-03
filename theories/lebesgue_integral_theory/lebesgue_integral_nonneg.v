@@ -1541,7 +1541,7 @@ have [xy|yx _|-> _] := ltgtP x y; last 2 first.
 move=> mf.
 transitivity (\int[mu]_(z in [set` Interval (BSide b0 x) (BLeft y)]) (f z)%:E).
   case: b1 => //; rewrite -integral_itv_bndo_bndc//.
-  by case: b0 => //; exact: measurable_fun_itv_obnd_cbnd.
+  by case: b0 => //; exact/measurable_fun_itv_obnd_cbndP.
 by case: b0 => //; rewrite -integral_itv_obnd_cbnd.
 Qed.
 

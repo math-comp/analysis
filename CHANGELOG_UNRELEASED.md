@@ -238,6 +238,10 @@
       `LspaceType` to `ae_eq_op`, `ae_eq_op_refl`, `ae_eq_op_sym`, `ae_eq_op_trans`, `aeEqMfun`
    * renamed lemma `LequivP` to `ae_eqP`
 
+- in `measurable_realfun.v`:
+  + generalized and renamed:
+    * `measurable_fun_itv_bndo_bndc` -> `measurable_fun_itv_bndo_bndcP`
+    * `measurable_fun_itv_obnd_cbnd` -> `measurable_fun_itv_obnd_cbndP`
 
 ### Renamed
 
