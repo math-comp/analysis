@@ -85,6 +85,7 @@
            `ge0_nondecreasing_set_cvg_integral`,
            `le0_nondecreasing_set_nonincreasing_integral`,
 	   `le0_nondecreasing_set_cvg_integral`
+  + lemmas `sintegral_le_measure`, `ge0_integral_le_measure`
 
 - in `set_interval.v`:
   + lemma `memB_itv`, `memB_itv0`

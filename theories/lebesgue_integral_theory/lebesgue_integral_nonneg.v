@@ -1648,3 +1648,35 @@ exact: ge0_nondecreasing_set_cvg_integral.
 Qed.
 
 End le0_nondecreasing_set_cvg_integral.
+
+Section ge0_integral_le_measure.
+Local Open Scope ereal_scope.
+Local Open Scope classical_set_scope.
+Context {d} {T : measurableType d} [R : realType].
+Variables (mu1 mu2 : measure T R).
+Hypothesis (Hml : (forall S, measurable S -> mu1 S <= mu2 S)).
+
+Import HBNNSimple. 
+
+Lemma sintegral_le_measure (h : {nnsfun T >-> R}):
+  sintegral mu1 h <= sintegral mu2 h.
+Proof.
+rewrite !sintegralE /=. 
+apply/ lee_fsum => // i [a Ha <-]. 
+apply: lee_pmul => //; first by apply/ lee_tofin.
+by apply: Hml.
+Qed.
+
+Lemma ge0_integral_le_measure (f : T -> \bar R) S (Hms: measurable S): 
+  (forall x, 0 <= f x) -> 
+  measurable_fun setT f ->
+  (\int[mu1]_(x in S) f x <= \int[mu2]_(x in S) f x).
+Proof.
+move=> Hf0 Hfm.
+rewrite !ge0_integralE //=. 
+apply: ub_ereal_sup => x [h Hh] /= <-.
+apply: ereal_sup_ge; exists (sintegral mu2 h) => //=; first by eexists. 
+by apply: sintegral_le_measure.
+Qed.
+
+End ge0_integral_le_measure.
