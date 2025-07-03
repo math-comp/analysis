@@ -119,6 +119,22 @@ Lemma eq_sintegral d (T : sigmaRingType d) (R : numDomainType)
 Proof. by move=> /funext->. Qed.
 Arguments eq_sintegral {d T R mu} g.
 
+Section le_measure_sintegral.
+Local Open Scope ereal_scope.
+Context {d} {T : measurableType d} {R : realType}.
+Variables m1 m2 : {measure set T -> \bar R}.
+Hypothesis m12 : forall S, measurable S -> m1 S <= m2 S.
+
+Import HBNNSimple.
+
+Lemma le_measure_sintegral (f : {nnsfun T >-> R}) :
+  sintegral m1 f <= sintegral m2 f.
+Proof.
+by rewrite !sintegralE lee_fsum// => r [t _ <-]; rewrite lee_pmul ?lee_fin ?m12.
+Qed.
+
+End le_measure_sintegral.
+
 Section sintegralrM.
 Local Open Scope ereal_scope.
 Context d (T : sigmaRingType d) (R : realType).
@@ -450,6 +466,25 @@ Notation "\int [ mu ]_ ( x 'in' D ) f" :=
 Notation "\int [ mu ]_ x f" :=
   ((integral mu setT (fun x => f)%E))%E : ereal_scope.
 Arguments eq_integral {d T R mu D} g.
+
+Section ge0_le_measure_integral.
+Local Open Scope ereal_scope.
+Context {d} {T : measurableType d} {R : realType}.
+Variables m1 m2 : {measure set T -> \bar R}.
+Hypothesis m12 : forall S, measurable S -> m1 S <= m2 S.
+
+Import HBNNSimple.
+
+Lemma ge0_le_measure_integral (f : T -> \bar R) S : measurable S ->
+  (forall x, 0 <= f x) -> measurable_fun [set: T] f ->
+  \int[m1]_(x in S) f x <= \int[m2]_(x in S) f x.
+Proof.
+move=> ms f0 mf; rewrite !ge0_integralE //= ub_ereal_sup// => _ [h/= hfS] <-.
+by apply: ereal_sup_ge; exists (sintegral m2 h);
+  [exists h|exact: le_measure_sintegral].
+Qed.
+
+End ge0_le_measure_integral.
 
 Section integral_indic.
 Local Open Scope ereal_scope.

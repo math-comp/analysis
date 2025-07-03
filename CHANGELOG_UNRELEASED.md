@@ -85,7 +85,6 @@
            `ge0_nondecreasing_set_cvg_integral`,
            `le0_nondecreasing_set_nonincreasing_integral`,
 	   `le0_nondecreasing_set_cvg_integral`
-  + lemmas `sintegral_le_measure`, `ge0_integral_le_measure`
 
 - in `set_interval.v`:
   + lemma `memB_itv`, `memB_itv0`
@@ -102,6 +101,9 @@
 
 - in `lebesgue_integral_nonneg.v`:
   + lemma `ge0_integral_ereal_sup` (was a `Let`)
+
+- in `lebesgue_integral_definition.v`:
+  + lemmas `le_measure_sintegral`, `ge0_le_measure_integral`
 
 ### Changed
 
