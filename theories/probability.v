@@ -745,7 +745,7 @@ rewrite eqr_div; [|apply: lt0r_neq0..]; last 2 first.
 - by rewrite exprz_gt0 -1?[ltLHS]addr0 ?ltr_leD.
 - by rewrite ltr_wpDl ?fine_ge0 ?variance_ge0 ?exprz_gt0.
 apply/eqP; have -> : fine 'V_P[X] = (u0 * lambda)%R.
-  by rewrite /u0 -mulrA mulVr ?mulr1 ?unitfE ?gt_eqF.
+  by rewrite /u0 -mulrA mulVf ?mulr1 ?gt_eqF.
 by rewrite -mulrDl -mulrDr (addrC u0) [in RHS](mulrAC u0) -exprnP expr2 !mulrA.
 Qed.
 

@@ -825,7 +825,7 @@ suff abel : forall n,
     set h := 'o_\oo (@harmonic R).
     apply/eqoP => _/posnumP[e] /=.
     near=> n; rewrite normr1 mulr1 normrM -ler_pdivlMl ?normr_gt0//.
-    rewrite mulrC -normrV ?unitfE //.
+    rewrite mulrC -normfV.
     near: n.
     by case: (eqoP eventually_filterType (@harmonic R) h) => Hh _; apply Hh.
   move: (cesaro a_o); rewrite /arithmetic_mean /series /= -/a_.
@@ -836,7 +836,7 @@ case => [|n].
 rewrite /arithmetic_mean /= seriesEnat /= big_nat_recl //=.
 under eq_bigr do rewrite [u_ _]eq_sum_telescope.
 rewrite big_split /= big_const_nat iter_addr addr0 addrA -mulrS mulrDr.
-rewrite -(mulr_natl (u_ O)) mulrA mulVr ?unitfE ?pnatr_eq0 // mul1r opprD addrA.
+rewrite -(mulr_natl (u_ O)) mulrA mulVf ?pnatr_eq0// mul1r opprD addrA.
 rewrite eq_sum_telescope (addrC (u_ O)) addrK.
 rewrite [X in _ - _ * X](_ : _ =
     \sum_(0 <= i < n.+1) \sum_(0 <= k < n.+1 | (k < i.+1)%N) a_ k); last first.
@@ -863,7 +863,7 @@ rewrite [X in _ - _ * X](_ : _ =
 rewrite big_distrr /= big_mkord (big_morph _ (@opprD _) (@oppr0 _)).
 rewrite seriesEord -big_split /= big_add1 /= big_mkord; apply: eq_bigr => i _.
 rewrite mulrCA -[X in X - _]mulr1 -mulrBr [RHS]mulrC; congr (_ * _).
-rewrite -[X in X - _](@divrr _ (n.+2)%:R) ?unitfE ?pnatr_eq0 //.
+rewrite -[X in X - _](@divff _ (n.+2)%:R) ?pnatr_eq0//.
 rewrite [in X in _ - X]mulrC -mulrBl; congr (_ / _).
 rewrite -natrB; last by rewrite (@leq_trans n.+1) // leq_subr.
 rewrite subnBA; by [rewrite addSnnS addnC addnK | rewrite ltnW].
@@ -966,8 +966,7 @@ rewrite (_ : series _ = series (geometric (r / (2 ^ n.+1)%:R) 2^-1%R)); last fir
   rewrite funeqE => m; rewrite /series /=; apply: eq_bigr => k _.
   by rewrite expnD natrM (mulrC (2 ^ k)%:R) invfM exprVn (natrX _ 2 k) mulrA.
 apply: cvg_trans.
-  apply: cvg_geometric_series.
-  by rewrite ger0_norm // invr_lt1 // ?ltr1n // unitfE.
+  by apply: cvg_geometric_series; rewrite ger0_norm // invf_lt1 // ?ltr1n.
 rewrite [X in (X - _)%R](splitr 1) div1r addrK.
 by rewrite -mulrA -invfM expnSr natrM -mulrA divff// mulr1 natrX.
 Qed.
@@ -2634,7 +2633,7 @@ have /le_trans -> // : `| y n - y (n + m)| <=
   rewrite -[q%:num]/(q'%:num) -!mulrA -mulrDr ler_pM// {}/q'/=.
   rewrite -!/(`1-_) -mulrDr exprSr onemM -addrA.
   rewrite -[in leRHS](mulrC _ `1-(_ ^+ m)) -onemMr onemK.
-  by rewrite [in leRHS]mulrDl mulrAC mulrV ?mul1r// unitf_gt0// onem_gt0.
+  by rewrite [in leRHS]mulrDl mulrAC mulfV ?mul1r// gt_eqF// onem_gt0.
 rewrite geometric_seriesE ?lt_eqF//= -[leRHS]mulr1 (ACl (1*4*2*3))/= -/C.
 by rewrite ler_wpM2l// 1?mulr_ge0// lerBlDr lerDl.
 Qed.

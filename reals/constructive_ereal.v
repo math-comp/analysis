@@ -3533,21 +3533,21 @@ move=> x0; apply/(iffP idP) => [xy r /andP[r0 r1]|h].
   move: x0 xy; rewrite le_eqVlt => /predU1P[<-|x0 xy]; first by rewrite mule0.
   by rewrite (le_trans _ xy)// gee_pMl// ltW.
 have h01 : (0 < (2^-1 : R) < 1)%R by rewrite invr_gt0 ?invf_lt1 ?ltr0n ?ltr1n.
-move: x y => [x||] [y||] // in x0 h *.
-- move: (x0); rewrite lee_fin le_eqVlt => /predU1P[<-|{}x0].
-    by rewrite (le_trans _ (h _ h01))// mule_ge0// lee_fin.
-  have y0 : (0 < y)%R.
-    by rewrite -lte_fin (lt_le_trans _ (h _ h01))// mule_gt0// lte_fin.
-  rewrite lee_fin leNgt; apply/negP => yx.
-  have /h : (0 < (y + x) / (2 * x) < 1)%R.
-    rewrite ltr_pdivlMr ?ltr_pdivrMr ?mulr_gt0// mul0r mul1r.
-    by rewrite mulr_natl mulr2n ltrD2r yx addr_gt0.
-  rewrite -(EFinM _ x) lee_fin invrM ?unitfE// ?gt_eqF// -mulrA mulrAC.
-  by rewrite mulVr ?unitfE ?gt_eqF// mul1r; apply/negP; rewrite -ltNge midf_lt.
+move: x y => [x||] [y||] // in x0 h *; last 4 first.
 - by rewrite leey.
 - by have := h _ h01.
 - by have := h _ h01; rewrite mulr_infty sgrV gtr0_sg // mul1e.
 - by have := h _ h01; rewrite mulr_infty sgrV gtr0_sg // mul1e.
+move: (x0); rewrite lee_fin le_eqVlt => /predU1P[<-|{}x0].
+  by rewrite (le_trans _ (h _ h01))// mule_ge0// lee_fin.
+have y0 : (0 < y)%R.
+  by rewrite -lte_fin (lt_le_trans _ (h _ h01))// mule_gt0// lte_fin.
+rewrite lee_fin leNgt; apply/negP => yx.
+have /h : (0 < (y + x) / (2 * x) < 1)%R.
+  apply/andP; split; first by rewrite divr_gt0 // ?addr_gt0// ?mulr_gt0.
+  by rewrite ltr_pdivrMr ?mulr_gt0// mul1r mulr_natl mulr2n ltrD2r.
+rewrite -EFinM lee_fin invfM -mulrA divfK ?gt_eqF//.
+by apply/negP; rewrite -ltNge midf_lt.
 Qed.
 
 Lemma lte_pdivrMl r x y : (0 < r)%R -> (r^-1%:E * y < x) = (y < r%:E * x).
@@ -3606,9 +3606,9 @@ Lemma lee_pdivrMl r x y : (0 < r)%R -> (r^-1%:E * y <= x) = (y <= r%:E * x).
 Proof.
 move=> r0; apply/idP/idP.
 - rewrite le_eqVlt => /predU1P[<-|]; last by rewrite lte_pdivrMl// => /ltW.
-  by rewrite muleA -EFinM divrr ?mul1e// unitfE gt_eqF.
+  by rewrite muleA -EFinM divff ?mul1e// gt_eqF.
 - rewrite le_eqVlt => /predU1P[->|]; last by rewrite -lte_pdivrMl// => /ltW.
-  by rewrite muleA -EFinM mulVr ?mul1e// unitfE gt_eqF.
+  by rewrite muleA -EFinM mulVf ?mul1e// gt_eqF.
 Qed.
 
 Lemma lee_pdivrMr r x y : (0 < r)%R -> (y * r^-1%:E <= x) = (y <= x * r%:E).
@@ -3618,9 +3618,9 @@ Lemma lee_pdivlMl r y x : (0 < r)%R -> (x <= r^-1%:E * y) = (r%:E * x <= y).
 Proof.
 move=> r0; apply/idP/idP.
 - rewrite le_eqVlt => /predU1P[->|]; last by rewrite lte_pdivlMl// => /ltW.
-  by rewrite muleA -EFinM divrr ?mul1e// unitfE gt_eqF.
+  by rewrite muleA -EFinM divff ?mul1e// gt_eqF.
 - rewrite le_eqVlt => /predU1P[<-|]; last by rewrite -lte_pdivlMl// => /ltW.
-  by rewrite muleA -EFinM mulVr ?mul1e// unitfE gt_eqF.
+  by rewrite muleA -EFinM mulVf ?mul1e// gt_eqF.
 Qed.
 
 Lemma lee_pdivlMr r x y : (0 < r)%R -> (x <= y * r^-1%:E) = (x * r%:E <= y).
@@ -4512,8 +4512,7 @@ Definition contract x : R :=
 
 Lemma contract_lt1 r : (`|contract r%:E| < 1)%R.
 Proof.
-rewrite normrM normrV ?unitfE //.
-rewrite ltr_pdivrMr // ?mul1r//; last by rewrite gtr0_norm.
+rewrite normrM normfV// ltr_pdivrMr // ?mul1r//; last by rewrite gtr0_norm.
 by rewrite [ltRHS]gtr0_norm ?ltrDr// ltr_pwDl.
 Qed.
 
@@ -4561,25 +4560,23 @@ move=> r; rewrite inE le_eqVlt => /orP[|r1].
     by [rewrite expand1|rewrite expandN1].
 rewrite /expand 2!leNgt ltrNl; case/ltr_normlP : (r1) => -> -> /=.
 have r_pneq0 : (1 + r / (1 - r) != 0)%R.
-  rewrite -[X in (X + _)%R](@divrr _ (1 - r)%R) -?mulrDl; last first.
-    by rewrite unitfE subr_eq0 eq_sym lt_eqF // ltr_normlW.
+  rewrite -[X in (X + _)%R](@divff _ (1 - r)%R) -?mulrDl; last first.
+    by rewrite subr_eq0 eq_sym lt_eqF // ltr_normlW.
   by rewrite subrK mulf_neq0 // invr_eq0 subr_eq0 eq_sym lt_eqF // ltr_normlW.
 have r_nneq0 : (1 - r / (1 + r) != 0)%R.
-  rewrite -[X in (X + _)%R](@divrr _ (1 + r)%R) -?mulrBl; last first.
-    by rewrite unitfE addrC addr_eq0 gt_eqF // ltrNnormlW.
-  rewrite addrK mulf_neq0 // invr_eq0 addr_eq0 -eqr_oppLR eq_sym gt_eqF //.
-  exact: ltrNnormlW.
+  rewrite -[X in (X + _)%R](@divff _ (1 + r)%R) -?mulrBl; last first.
+    by rewrite addrC addr_eq0 gt_eqF // ltrNnormlW.
+  by rewrite addrK mulf_neq0// invr_eq0 addr_eq0 -eqr_oppLR lt_eqF// ltrNnormlW.
 wlog : r r1 r_pneq0 r_nneq0 / (0 <= r)%R => wlog_r0.
   have [r0|r0] := lerP 0 r; first by rewrite wlog_r0.
   move: (wlog_r0 (- r)%R).
   rewrite !(normrN, opprK, mulNr) oppr_ge0 => /(_ r1 r_nneq0 r_pneq0 (ltW r0)).
-  by move/eqP; rewrite eqr_opp => /eqP.
+  by move/oppr_inj.
 rewrite /contract !ger0_norm //; last first.
   by rewrite divr_ge0 // subr_ge0 (le_trans _ (ltW r1)) // ler_norm.
-apply: (@mulIr _ (1 + r / (1 - r))%R); first by rewrite unitfE.
-rewrite -(mulrA (r / _)%R) mulVr ?unitfE // mulr1.
-rewrite -[X in (X + _ / _)%R](@divrr _ (1 - r)%R) -?mulrDl ?subrK ?div1r //.
-by rewrite unitfE subr_eq0 eq_sym lt_eqF // ltr_normlW.
+apply: (@mulIf _ (1 + r / (1 - r))%R); rewrite // divfK//.
+rewrite -[X in (X + _ / _)%R](@divff _ (1 - r)%R) -?mulrDl ?subrK ?div1r //.
+by rewrite subr_eq0 eq_sym lt_eqF // ltr_normlW.
 Qed.
 
 Lemma le_contract : {mono contract : x y / (x <= y)%O}.

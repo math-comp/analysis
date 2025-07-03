@@ -626,14 +626,13 @@ rewrite itv_bnd_open_bigcup//; transitivity (limn (lebesgue_measure \o
   - by move=> ?; exact: measurable_itv.
   - by apply: bigcup_measurable => k _; exact: measurable_itv.
   - move=> n m nm; apply/subsetPset => x /=; rewrite !in_itv/= => /andP[->/=].
-    by move/le_trans; apply; rewrite lerB// ler_pV2 ?ler_nat//;
-      rewrite inE ltr0n andbT unitfE.
+    by move/le_trans; apply; rewrite lerB// lef_pV2 ?ler_nat ?posrE.
 rewrite (_ : _ \o _ = (fun n => (1 - n.+1%:R^-1)%:E)); last first.
   apply/funext => n /=; rewrite lebesgue_measure_itvoc.
   have [->|n0] := eqVneq n 0%N.
     by rewrite invr1 subrr set_itvoc0 wlength0.
   rewrite wlength_itv/= lte_fin ifT; last first.
-    by rewrite ler_ltB// invr_lt1 ?unitfE// ltr1n ltnS lt0n.
+    by rewrite ler_ltB// invf_lt1// ltr1n ltnS lt0n.
   by rewrite !(EFinB,EFinN) fin_num_oppeB// addeAC addeA subee// add0e.
 apply/cvg_lim => //=; apply/fine_cvgP; split => /=; first exact: nearW.
 apply/(@cvgrPdist_lt _ R^o) => _/posnumP[e].

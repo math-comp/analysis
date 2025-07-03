@@ -575,7 +575,7 @@ move=> x Ax; have := fA1 _ Ax; rewrite 2!ler_norml => /andP[Mfx fxM].
 have [xL|xL] := leP (f x) (-(1/3) * M%:num).
   have: [set g x | x in A `&` f@^-1` `]-oo, -(1/3) * M%:num]] (g x) by exists x.
   move/gL3=> ->; rewrite !mulNr opprK; apply/andP; split.
-    by rewrite -lerBlDr -opprD -2!mulrDl natr1 divrr ?unitfE// mul1r.
+    by rewrite -lerBlDr -opprD -2!mulrDl natr1 divff// mul1r.
   rewrite -lerBrDr -2!mulrBl -(@natrB _ 2 1)// (le_trans xL)//.
   by rewrite ler_pM2r// ltW// gtrN// divr_gt0.
 have [xR|xR] := lerP (1/3 * M%:num) (f x).
@@ -584,7 +584,7 @@ have [xR|xR] := lerP (1/3 * M%:num) (f x).
   move/gR3 => ->; apply/andP; split.
     rewrite lerBrDl -2!mulrBl (le_trans _ xR)// ler_pM2r//.
     by rewrite ler_wpM2r ?invr_ge0 ?ler0n// lerBlDl natr1 ler1n.
-  by rewrite lerBlDl -2!mulrDl nat1r divrr ?mul1r// unitfE.
+  by rewrite lerBlDl -2!mulrDl nat1r divff ?mul1r.
 have /andP[ng3 pg3] : -(1/3) * M%:num <= g x <= 1/3 * M%:num.
   by apply: grng; exists x.
 rewrite ?(intrD _ 1 1) !mulrDl; apply/andP; split.
@@ -606,7 +606,7 @@ by move=> bd pm cf; have [g ?] := tietze_step' pm cf bd; exists g.
 Qed.
 
 Let onem_twothirds : 1 - 2/3 = 1/3 :> R.
-Proof. by apply/eqP; rewrite subr_eq/= -mulrDl nat1r divrr// unitfE. Qed.
+Proof. by apply/eqP; rewrite subr_eq/= -mulrDl nat1r divff. Qed.
 
 (** Tietze's theorem: *)
 Lemma continuous_bounded_extension (f : X -> R^o) M :
@@ -681,7 +681,7 @@ exists (lim (h_ @ \oo)); split.
   rewrite (le_trans (lim_series_norm _))//; apply: le_trans.
     exact/(lim_series_le cvg_gt _ (g_bd ^~ t))/is_cvg_geometric_series.
   rewrite (cvg_lim _ (cvg_geometric_series _))//; last exact: Rhausdorff.
-  by rewrite onem_twothirds mulrAC divrr ?mul1r// unitfE.
+  by rewrite onem_twothirds mulrAC divff mul1r.
 Unshelve. all: by end_near. Qed.
 
 End Tietze.

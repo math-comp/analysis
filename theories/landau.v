@@ -1334,8 +1334,8 @@ rewrite eqOmegaE eqOmegaO [in RHS]bigOE //.
 have [W1 k1 ?] := bigOmega; have [W2 k2 ?] := bigOmega.
 near=> k; near=> x; rewrite [`|_|]normrM.
 rewrite (@le_trans _ _ ((k2%:num * k1%:num)^-1 * `|(W1 * W2) x|)) //.
-  rewrite invrM ?unitfE ?gtr_eqF // -mulrA ler_pdivlMl //.
-  rewrite ler_pdivlMl // (mulrA k1%:num) mulrCA (@normrM _ (W1 x)).
+  rewrite invfM -mulrA ler_pdivlMl// ler_pdivlMl//.
+  rewrite (mulrCA k2%:num) (mulrA k1%:num) (@normrM _ (W1 x)).
   by rewrite ler_pM ?mulr_ge0 //; near: x.
 by rewrite ler_wpM2r // ltW //.
 Unshelve. all: by end_near. Qed.

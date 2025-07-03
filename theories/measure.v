@@ -3618,7 +3618,7 @@ Proof.
 rewrite /mnormalize; case: ifPn; first by rewrite probability_setT.
 rewrite negb_or => /andP[ft0 ftoo].
 have ? : mu setT \is a fin_num by rewrite ge0_fin_numE// ltey.
-by rewrite -{1}(@fineK _ (mu setT))// -EFinM divrr// ?unitfE fine_eq0.
+by rewrite -{1}(@fineK _ (mu setT))// -EFinM divff// fine_eq0.
 Qed.
 
 HB.instance Definition _ :=

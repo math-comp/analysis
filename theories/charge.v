@@ -864,7 +864,7 @@ have : cvg (series (fun n => fine (maxe (z_ (v n) * 2^-1%:E) (- 1%E))) n @[n -->
 move/cvg_series_cvg_0 => maxe_cvg_0.
 apply: not_s_cvg_0.
 rewrite (_ : _ \o _ = (fun n => z_ (v n) * 2^-1%:E) \* cst 2%:E); last first.
-  by apply/funext => n/=; rewrite -muleA -EFinM mulVr ?mule1// unitfE.
+  by apply/funext => n/=; rewrite -muleA -EFinM mulVf ?mule1.
 rewrite (_ : 0 = 0 * 2%:E); last by rewrite mul0e.
 apply: cvgeM; [by rewrite mule_def_fin| |exact: cvg_cst].
 apply/fine_cvgP; split.
@@ -1586,8 +1586,8 @@ exists (PosNum e_gt0); rewrite ge0_integralD//; last 2 first.
 rewrite integral_cst// -lteBrDr//; last first.
   by rewrite fin_numM// fin_num_measure.
 rewrite -[X in _ * X](@fineK _ (mu A)) ?fin_num_measure//.
-rewrite -EFinM -mulrA mulVr ?mulr1; last first.
-  by rewrite unitfE gt_eqF// fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
+rewrite -EFinM -mulrA mulVf ?mulr1; last first.
+  by rewrite gt_eqF// fine_gt0// muA_gt0/= ltey_eq fin_num_measure.
 rewrite lteBrDl// addeC -lteBrDl//; last first.
 rewrite -(@fineK _ (nu A))// ?fin_num_measure// -[X in _ - X](@fineK _)//.
 rewrite -EFinB lte_fin /mid ltr_pdivrMr// ltr_pMr// ?ltr1n// subr_gt0.

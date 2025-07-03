@@ -1975,7 +1975,7 @@ have [es|se] := leP s e%:num; last first.
   by apply: B0y; rewrite -ball_normE /ball_ /= distrC xye.
 exists (y + (s / 2) *: (`|x - y|^-1 *: (x - y))); split; [apply: Be|apply: B0y].
   rewrite /= opprD addrA -[X in `|X - _|](scale1r (x - y)) scalerA -scalerBl.
-  rewrite -[X in X - _](@divrr _ `|x - y|) ?unitfE ?normr_eq0 ?subr_eq0//.
+  rewrite -[X in X - _](@divff _ `|x - y|) ?normr_eq0 ?subr_eq0//.
   rewrite -mulrBl -scalerA normrZ normfZV ?subr_eq0// mulr1.
   rewrite gtr0_norm; first by rewrite ltrBlDl xye ltrDr mulr_gt0.
   by rewrite subr_gt0 xye ltr_pdivrMr // mulr_natr mulr2n ltr_pwDl.

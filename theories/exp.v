@@ -1003,7 +1003,7 @@ rewrite le_eqVlt => /predU1P[<-|a0].
   by rewrite powR0 ?invr_eq0 ?pnatr_eq0// sqrtr0.
 have /eqP : (a `^ (2^-1)) ^+ 2 = (Num.sqrt a) ^+ 2.
   rewrite sqr_sqrtr; last exact: ltW.
-  by rewrite /powR gt_eqF// -expRM_natl mulrA divrr ?mul1r ?unitfE// lnK.
+  by rewrite /powR gt_eqF// -expRM_natl mulrA divff ?mul1r// lnK.
 rewrite eqf_sqr => /predU1P[//|/eqP h].
 have : 0 < a `^ 2^-1 by exact: powR_gt0.
 by rewrite h oppr_gt0 ltNge sqrtr_ge0.

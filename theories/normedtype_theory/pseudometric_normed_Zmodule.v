@@ -412,8 +412,7 @@ apply/negPn/negP => /set0P[c] []; rewrite -ball_normE /ball_ => acr bcr.
 have r22 : r%:num * 2 = r%:num + r%:num.
   by rewrite (_ : 2 = 1 + 1) // mulrDr mulr1.
 move: (ltrD acr bcr); rewrite -r22 (distrC b c).
-move/(le_lt_trans (ler_distD c a b)).
-by rewrite -mulrA mulVr ?mulr1 ?ltxx // unitfE.
+by move/(le_lt_trans (ler_distD c a b)); rewrite -mulrA mulVf// mulr1 ltxx.
 Qed.
 Local Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
 
