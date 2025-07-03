@@ -324,6 +324,10 @@ rewrite fsbig_finite//= -(big_rmcond_in P)/=; first exact: lee_sum_fset_lim.
 by move=> k; rewrite in_fset_set// inE => /PF ->.
 Qed.
 
+Lemma nneseries_esumT {R : realType} (a : nat -> \bar R) :
+  (forall n, 0 <= a n) -> \sum_(i <oo) a i = \esum_(i in [set: nat]) a i.
+Proof. by move=> a0; rewrite nneseries_esum// set_true. Qed.
+
 Lemma reindex_esum (R : realType) (T T' : choiceType)
     (P : set T) (Q : set T') (e : T -> T') (a : T' -> \bar R) :
     set_bij P Q e ->

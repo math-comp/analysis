@@ -1850,6 +1850,7 @@ Notation sigma_algebra_image_class := sigma_algebra_image (only parsing).
 
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `g_sigma_preimageE`")]
 Notation sigma_algebra_preimage_classE := g_sigma_preimageE (only parsing).
+Arguments measurability {d d' aT rT D f} _.
 
 Local Open Scope ereal_scope.
 
@@ -2463,9 +2464,7 @@ Let mseries0 : mseries set0 = 0.
 Proof. by rewrite /mseries ereal_series eseries0. Qed.
 
 Let mseries_ge0 B : 0 <= mseries B.
-Proof.
-by rewrite /mseries ereal_series nneseries_esum//; exact: esum_ge0.
-Qed.
+Proof. by rewrite /mseries ereal_series nneseries_esum//; exact: esum_ge0. Qed.
 
 Let mseries_sigma_additive : semi_sigma_additive mseries.
 Proof.
@@ -3198,7 +3197,7 @@ rewrite esum_bigcup//; last first.
    move=> /(decomp_neq0 DUBiN0) [y Yy].
    apply: (@trivIset_seqDU _ B) => //; exists y.
    by split => //; [exact: YBi|exact: YBj].
-rewrite nneseries_esum// set_true le_esum// => i _.
+rewrite nneseries_esumT// le_esum// => i _.
 rewrite [leLHS](_ : _ = \sum_(j \in decomp (seqDU B i)) mu j); last first.
   by rewrite esum_fset//; exact: decomp_finite_set.
 rewrite -SetRing.Rmu_fin_bigcup//=; last 3 first.
@@ -4939,7 +4938,7 @@ pose g i := (f^-1%FUN i).2; exists g; first split.
   exact: decomp_measurable.
 - move=> i /XS [k _]; rewrite -[F k]cover_decomp => -[D /= DFk Di].
   by exists (f (k, D)) => //; rewrite /g invK// inE.
-rewrite !nneseries_esum//= /measure ?set_true.
+rewrite !nneseries_esumT//= /measure.
 transitivity (\esum_(i in setT) \sum_(X0 \in decomp (F i)) mu X0); last first.
   by apply: eq_esum => /= k _; rewrite fsbig_finite//; exact: decomp_finite_set.
 rewrite -(eq_esum (fun _ _ => esum_fset _ _))//; last first.

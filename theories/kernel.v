@@ -448,12 +448,12 @@ have kE i : k i x U = \sum_(j <oo) p i j x U.
 transitivity (\esum_(l in [set: nat] `*` [set: nat]) p l.1 l.2 x U).
   rewrite (_ : _ `*` _ = setT `*`` (fun=> setT)); last by apply/seteqP; split.
   rewrite -(@esum_esum _ _ _ _ _ (fun i j => p i j x U))//.
-  rewrite nneseries_esum// -fun_true; apply: eq_esum => i _.
-  by rewrite kE// nneseries_esum.
+  rewrite nneseries_esumT//; apply: eq_esum => i _.
+  by rewrite kE// nneseries_esumT.
 rewrite (reindex_esum [set: nat] _ f)//; last first.
   have := @bijTT _ _ f.
   by rewrite -setTT_bijective/= -[in X in set_bij _ X _ -> _](@setXTT nat nat).
-by rewrite nneseries_esum// fun_true; exact: eq_esum.
+by rewrite nneseries_esumT//; exact: eq_esum.
 Qed.
 
 HB.instance Definition _ :=
@@ -795,7 +795,7 @@ Let measurable_fun_kprobability U : measurable U ->
   measurable_fun [set: X] (kprobability mP ^~ U).
 Proof.
 move=> mU.
-apply: (measurability (ErealGenInftyO.measurableE R)) => _ /= -[_ [r ->] <-].
+apply: (measurability _ (ErealGenInftyO.measurableE R)) => _ /= -[_ [r ->] <-].
 rewrite setTI preimage_itvNyo -/(P @^-1` mset U r).
 have [r0|r0] := leP 0%R r; last by rewrite lt0_mset// preimage_set0.
 have [r1|r1] := leP r 1%R; last by rewrite gt1_mset// preimage_setT.
@@ -930,8 +930,7 @@ Lemma measurable_fun_mnormalize d d' (X : measurableType d)
     (Y : measurableType d') (R : realType) (k : R.-ker X ~> Y) :
   measurable_fun [set: X] (fun x => mnormalize (k x) point : pprobability Y R).
 Proof.
-apply: (@measurability _ _ _ _ _ _
-  (@pset _ _ _ : set (set (pprobability Y R)))) => //.
+apply: (measurability (@pset _ _ _ : set (set (pprobability Y R)))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-.
 rewrite /mnormalize /mset /preimage/=.
 apply: emeasurable_fun_infty_o => //.
@@ -1061,7 +1060,7 @@ have [kl hkl] : exists kl : (R.-fker X ~> Z) ^nat, forall x U,
   have /ppcard_eqP[f] : ([set: nat] #= [set: nat * nat])%card.
     by rewrite card_eq_sym; exact: card_nat2.
   exists (fun i => l_ (f i).2 \; k_ (f i).1) => x U.
-  by rewrite (reindex_esum [set: nat] _ f)// nneseries_esum// fun_true.
+  by rewrite (reindex_esum [set: nat] _ f)// nneseries_esumT.
 exists kl => x U mU.
 transitivity ((kseries l_ \; kseries k_) x U).
   rewrite /= /kcomp [in RHS](eq_measure_integral (l x)); last first.
@@ -1075,8 +1074,8 @@ transitivity (\sum_(i <oo) \sum_(j <oo) (l_ j \; k_ i) x U).
 rewrite /mseries -hkl/=.
 rewrite (_ : setT = setT `*`` (fun=> setT)); last by apply/seteqP; split.
 rewrite -(@esum_esum _ _ _ _ _ (fun i j => (l_ j \; k_ i) x U))//.
-rewrite nneseries_esum; last by move=> n _; exact: nneseries_ge0.
-by rewrite fun_true; apply: eq_esum => /= i _; rewrite nneseries_esum// fun_true.
+rewrite nneseries_esumT; last by move=> *; exact: nneseries_ge0.
+by apply: eq_esum => /= i _; rewrite nneseries_esumT.
 Qed.
 
 Lemma measurable_fun_mkcomp_sfinite U : measurable U ->
