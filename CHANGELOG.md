@@ -9,7 +9,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
 - in `unstable.v`:
   + lemma `subrKC`
 
-- in `classical_sets.v`
+- in `classical_sets.v`:
   + lemma `bigcup_mkord_ord`
 
 - in `set_interval.v`:
@@ -38,7 +38,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
 - in `real_interval.v`:
   + lemma `itvNybndEbigcup`
 
-- in `num_topology.v`
+- in `num_topology.v`:
   + `topologicalType` instance on `R^o` for `R : numDomainType`
 
 - in `convex.v`:
@@ -47,7 +47,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
       `law` and helper lemmas
   + lemmas `convR_itv`, `convR_line_path`
 
-- in `tvs.v`
+- in `tvs.v`:
   + HB classes `TopologicalNmodule`, `TopologicalZmodule`, `TopologicalLmodule`
     `UniformNmodule`, `UniformZmodule`, `UniformLmodule`
   + notation `topologicalZmodType`
@@ -77,7 +77,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
 - in `esum.v`:
   + lemma `nneseries_esumT`
 
-- in `exp.v`
+- in `exp.v`:
   + lemma `expR_ge1Dxn`
 
 - in `measure.v`:
@@ -208,7 +208,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
 - in `sequences.v`:
   + change the implicit arguments of lemma `is_cvg_series_exp_coeff`
 
-- in `tvs.v`
+- in `tvs.v`:
   + HB class `UniformZmodule` now contains `TopologicalZmodule`
   + HB class `UniformLmodule` now contains `TopologicalLmodule`
 
@@ -232,15 +232,15 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
   + definitions `measurableTypeR`, `measurableR`
   + lemmas `measurable_set1`, `measurable_itv`
 
-- in `measure.v`
+- in `measure.v`:
   + definition `ess_sup` moved to `ess_sup_inf.v`
 
 ### Renamed
 
-- in `convex.v`
+- in `convex.v`:
   + lemma `conv_gt0` to `convR_gt0`
 
-- in `tvs.v`
+- in `tvs.v`:
   + HB class `TopologicalNmodule` moved to `PreTopologicalNmodule`
   + HB class `TopologicalZmodule` moved to `PreTopologicalZmodule`
   + HB class `TopologicalLmodule` moved to `PreTopologicalLmodule`
@@ -269,7 +269,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
 - in `realfun.v`:
   + `variationD` -> `variation_cat`
 
-- in `lebesgue_integral_fubiniv.`:
+- in `lebesgue_integral_fubini.v`:
   + `fubini1` -> `integral12_prod_meas1`
   + `fubini2` -> `integral21_prod_meas1`
 
@@ -282,7 +282,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
 
 ### Generalized
 
-- in `convex.v`
+- in `convex.v`:
   + parameter `R` of `convType` from `realDomainType` to `numDomainType`
 
 - in `derive.v`:
@@ -297,7 +297,7 @@ Latest releases: [[1.12.0] - 2025-07-03](#1120---2025-07-03), [[1.11.0] - 2025-0
     (this impacts the notation `'N_p[f]`)
   + lemmas `Lnorm1`, `eq_Lnorm`, `Lnorm_counting` (from `f : _ -> R` to `f : _ -> \bar R`)
 
-- in `probability.v`
+- in `probability.v`:
   + lemma `cantelli`
   + lemmas `expectation_fin_num`, `expectationZl`, `expectationD`, `expectationB`, `expectation_sum`,
     `covarianceE`, `covariance_fin_num`, `covarianceZl`, `covarianceZr`, `covarianceNl`,
