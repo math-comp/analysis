@@ -102,7 +102,7 @@
 - in `lebesgue_integral_nonneg.v`:
   + lemma `ge0_integral_ereal_sup` (was a `Let`)
 - in `esum.v`:
-  + lemma `esum_limn_ge0`
+  + lemma `nneseries_esumT`
 
 - in `probability.v`:
   + Definition `poisson_pmf`, `poisson_prob`
@@ -193,6 +193,12 @@
 
 - in `constructive_ereal.v`:
   + lemmas `div1e`, `divee`, `inve_eq1`, `Nyconjugate`
+
+- in `measure.v`:
+  + change the implicit arguments of lemma `measurability`
+
+- in `sequences.v`:
+  + change the implicit arguments of lemma `is_cvg_series_exp_coeff`
 
 ### Changed
 

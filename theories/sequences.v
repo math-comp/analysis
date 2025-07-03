@@ -1197,6 +1197,7 @@ Lemma cvg_exp_coeff x : exp x @ \oo --> 0.
 Proof. exact: (cvg_series_cvg_0 (@is_cvg_series_exp_coeff x)). Qed.
 
 End exponential_series.
+Arguments is_cvg_series_exp_coeff {R} x.
 
 (* TODO: generalize *)
 Definition expR {R : realType} (x : R) : R := limn (series (exp_coeff x)).

@@ -1157,7 +1157,7 @@ Lemma ae_measurable_fun : ae_eq mu D f g ->
   measurable_fun D f -> measurable_fun D g.
 Proof.
 move=> [N [mN N0 subN]] mf B mB mD.
-apply: (measurability (ErealGenOInfty.measurableE R)) => // _ [_ [x ->] <-].
+apply: (measurability _ (ErealGenOInfty.measurableE R)) => // _ [_ [x ->] <-].
 rewrite [X in measurable X](_ : _ = D `&` ~` N `&` (f @^-1` `]x%:E, +oo[)
     `|` (D `&` N `&` g @^-1` `]x%:E, +oo[)); last first.
   apply/seteqP; split=> [y /= [Dy gyxoo]|y /= [[[Dy Ny] fyxoo]|]].

@@ -324,6 +324,10 @@ rewrite fsbig_finite//= -(big_rmcond_in P)/=; first exact: lee_sum_fset_lim.
 by move=> k; rewrite in_fset_set// inE => /PF ->.
 Qed.
 
+Lemma nneseries_esumT {R : realType} (a : nat -> \bar R) :
+  (forall n, 0 <= a n) -> \sum_(i <oo) a i = \esum_(i in [set: nat]) a i.
+Proof. by move=> a0; rewrite nneseries_esum// set_true. Qed.
+
 Lemma reindex_esum (R : realType) (T T' : choiceType)
     (P : set T) (Q : set T') (e : T -> T') (a : T' -> \bar R) :
     set_bij P Q e ->
@@ -660,40 +664,3 @@ by rewrite ge0_esum_posneg// ge0_esum_posneg// => /eqP ->.
 Qed.
 
 End esumB.
-
-Section elim_limn_ge0.
-
-Local Open Scope classical_set_scope.
-Local Open Scope ring_scope.
-Variables (R : realType).
-Context {f : nat -> R}.
-Hypothesis (f0 : forall n, 0 <= f n).
-
-Lemma esum_limn_ge0 :
- \esum_(i in [set: nat]) (f i)%:E
-  = limn
-      (EFin \o (fun n : nat => (\sum_(0 <= k < n) f k)%R)).
-Proof.
-transitivity
-    (ereal_sup (range (fun n => (\sum_(0 <= k < n) f k)%:E))); last first.
-  apply/esym/cvg_lim => //.
-  apply: ereal_nondecreasing_cvgn.
-  exact: nondecreasing_series.
-apply/eqP; rewrite eq_le; apply/andP; split; last first.
-  apply: le_ereal_sup => _ [n _ <-]/=.
-  by exists `I_n => //; rewrite -fsbig_ord/= sumEFin big_mkord.
-apply: ub_ereal_sup => /= e/= [S [fS _] <-]; apply: ereal_sup_ge.
-have /finite_fsetP[X SX] := fS.
-set N : nat := \max_(x <- X) x.
-exists ((\sum_(0 <= k < N.+1) f k)%:E) => //.
-rewrite fsbig_finite//= -sumEFin.
-rewrite [leRHS](_ : _ = (\sum_(i <- fset_set `I_N.+1) (f i)%:E)%R); last first.
-  rewrite -Iiota -fsbig_finite; last by rewrite /=.
-  by rewrite -fsbig_seq//; exact: iota_uniq.
-apply: lee_sum_nneg_subfset => /=.
-  apply/subsetP => n; rewrite 2!inE 2?in_fset_set// 2!inE => Sn/=.
-  by rewrite ltnS; apply: leq_bigmax_seq => //; rewrite SX in Sn.
-by move=> n _ _; rewrite lee_fin.
-Qed.
-
-End elim_limn_ge0.

@@ -1174,7 +1174,7 @@ have finite_set_F i : finite_set (F i).
       exact/(@bigcup_sup _ _ _ _ (closure \o B))/CsubFi.
   have Fir2 : mu (\bigcup_(j in F i) closure (B j)) <=
               mu (ball (0:R) (r%:num + 2))%R.
-    rewrite (le_trans _ EBr2)// -(set_mem_set E) -nneseries_esum //.
+    rewrite (le_trans _ EBr2)// -(set_mem_set E) -nneseries_esum//.
     rewrite E_partition -measure_bigcup//=; last 2 first.
       by move=> ? _; exact: measurable_closure.
       apply: trivIset_bigcup => //.
@@ -1207,7 +1207,7 @@ have FE : \sum_(n <oo) \esum_(i in F n) mu (closure (B i)) =
     by apply/(trivIset_mkcond _ _).1; apply: sub_trivIset tDB => x [[]].
     rewrite -bigcup_mkcond; apply: bigcup_measurable => k _.
     exact: measurable_closure.
-  rewrite esum_mkcond//= nneseries_esum// -fun_true//=.
+  rewrite esum_mkcond//= nneseries_esumT//.
   by under eq_esum do rewrite (fun_if mu) (measure0 mu).
 apply/eqP; rewrite -measure_le0.
 apply/lee_addgt0Pr => _ /posnumP[e]; rewrite add0e.

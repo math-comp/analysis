@@ -132,7 +132,7 @@ Proof. by rewrite /sin_coeff /= odd_double /= !mul0r. Qed.
 Lemma is_cvg_series_sin_coeff x : cvg (series (sin_coeff x) @ \oo).
 Proof.
 apply: normed_cvg.
-apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
+apply: series_le_cvg; last exact: (is_cvg_series_exp_coeff `|x|).
 - by move=> n; rewrite normr_ge0.
 - by move=> n; rewrite divr_ge0.
 - move=> n /=; rewrite /exp_coeff /sin_coeff /=.
@@ -210,7 +210,7 @@ Qed.
 Lemma is_cvg_series_cos_coeff x : cvg (series (cos_coeff x) @ \oo).
 Proof.
 apply: normed_cvg.
-apply: series_le_cvg; last exact: (@is_cvg_series_exp_coeff _ `|x|).
+apply: series_le_cvg; last exact: (is_cvg_series_exp_coeff `|x|).
 - by move=> n; rewrite normr_ge0.
 - by move=> n; rewrite divr_ge0.
 - move=> n /=; rewrite /exp_coeff /cos_coeff /=.
