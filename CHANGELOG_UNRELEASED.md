@@ -110,6 +110,9 @@
            `measurable_poisson_prob`
   + instance `poisson_prob`
 
+- in `lebesgue_integral_definition.v`:
+  + lemmas `le_measure_sintegral`, `ge0_le_measure_integral`
+
 ### Changed
 
 - in `convex.v`:
