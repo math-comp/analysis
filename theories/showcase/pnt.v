@@ -603,7 +603,7 @@ Lemma Abel_discretep (R : comPzRingType) (a b : nat -> R) (n p : nat) :
     (\sum_(p <= k < n.+1) (a k) * (b k) = a p * b p - A p * b p.+1 +
     A n * b n + \sum_(p.+1 <= k < n) A k * (b k - b k.+1))%R.
 Proof.
-move=> ngtp A. 
+move=> ngtp A.
 rewrite big_nat_recl; last exact: ltnW.
 rewrite [in LHS](pred_Sn n) -(big_add1 _ _ _ _ predT (fun i => (a i * b i)%R)).
 have telesum: forall k, k > 0 -> (a k = A k - A k.-1)%R => [k kgt0|].
@@ -1299,3 +1299,31 @@ under eq_big_seq => i. rewrite mem_index_iota => iinbounds.
     rewrite (subDnCA _ (leqnn n)) subnn addn0. over.
 by rewrite -big_mkcond.
 Qed.
+
+Lemma Mertens2 (R : realType) (x : R) : (x > 1)%R -> let R0 := fun t =>
+    (\sum_(2 <= p < `|floor x|.+1 | prime p) (ln p%:R / p%:R) - ln t)%R in
+    let a0 := (1 - (ln (ln 2))%:E +
+    \int_(t in `[2%R, +oo[) (R0 t / (t * (ln t) `^ 2))%:E)%E in let C0 := 10%:R in
+    ((\sum_(2 <= p < `|floor x|.+1 | prime p) p%:R^-1)%:E <=
+    (ln (ln x))%:E + a0 + (C0 / ln x)%:E)%E.
+Proof.
+move=> xge1.
+set u := fun n => if prime n then (ln n%:R / n%:R)%R else 0%R : R.
+set f := fun t => (ln t)^-1 : R.
+set R0 := fun t =>
+    (\sum_(2 <= p < `|floor x|.+1 | prime p) (ln p%:R / p%:R) - ln t)%R.
+rewrite [in X in let _ := _ in X]big_mkcond big_nat /=.
+set a := (1 - (ln (ln 2))%:E +
+    \int_(t in `[2%R, +oo[) (R0 t / (t * (ln t) `^ 2))%:E)%E.
+set C := 10%:R.
+under eq_bigr => p /andP [] pgt1 _.
+    rewrite -[X in if _ then X else _]mulr1.
+    rewrite -[X in (_ * X)%R](@divff _ (ln p%:R)); last first.
+        by apply /lt0r_neq0 /ln_gt0; rewrite ltr1n.
+    rewrite mulrA [X in (X / _)%R]mulrC -(mul0r (ln p%:R)^-1).
+    rewrite -(fun_if (fun x => x / ln p%:R)). over.
+have <-: `|floor (1 : R)|.+1 = 2 by rewrite floor1 absz1.
+rewrite -big_nat. rewrite (@Abel_continuous _ _ _ f u); last first.
+- admit.
+- rewrite /derivable_oo_continuous_bnd //=; split => [t /andP [] tge1 tlex||].
+    - move=> //= t0.
