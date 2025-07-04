@@ -30,7 +30,6 @@ reals/constructive_ereal.v
 reals/reals.v
 reals/real_interval.v
 reals/signed.v
-reals/interval_inference.v
 reals/prodnormedzmodule.v
 reals/all_reals.v
 experimental_reals/xfinmap.v
@@ -93,7 +92,6 @@ theories/esum.v
 theories/measurable_realfun.v
 theories/lebesgue_measure.v
 theories/lebesgue_stieltjes_measure.v
-theories/forms.v
 theories/derive.v
 theories/measure.v
 theories/numfun.v

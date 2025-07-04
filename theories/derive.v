@@ -1,9 +1,10 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum matrix interval poly.
+From mathcomp Require Import sesquilinear.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
 From mathcomp Require Import functions reals interval_inference topology.
-From mathcomp Require Import prodnormedzmodule tvs normedtype landau forms.
+From mathcomp Require Import prodnormedzmodule tvs normedtype landau.
 
 (**md**************************************************************************)
 (* # Differentiation                                                          *)
