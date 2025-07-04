@@ -23,6 +23,80 @@
 - in set_interval.v
   + definitions `itv_is_closed_unbounded`, `itv_is_cc`, `itv_closed_ends`
 
+- in `set_interval.v`:
+  + lemmas `itv_setU_setT`, `disjoint_rays`
+
+- in `constructive_ereal.v`:
+  + lemma `ltgte_fin_num`
+
+- in `probability.v`:
+  + definition `ccdf`
+  + lemmas `lebesgue_stieltjes_cdf_id`, `cdf_ccdf_1`, `ccdf_nonincreasing`, `cvg_ccdfy0`, `cvg_ccdfNy1`, `ccdf_right_continuous`, `ge0_expectation_ccdf`
+  + corollaries `ccdf_cdf_1`, `ccdf_1_cdf`, `cdf_1_ccdf`
+
+- in `num_normedtype.v`:
+  + lemma `nbhs_infty_gtr`
+- in `function_spaces.v`:
+  + lemmas `cvg_big`, `continuous_big`
+
+- in `realfun.v`:
+  + lemma `cvg_addrl_Ny`
+
+- in `constructive_ereal.v`:
+  + lemmas `mule_natr`, `dmule_natr`
+  + lemmas `inve_eqy`, `inve_eqNy`
+
+- in `uniform_structure.v`:
+  + lemma `continuous_injective_withinNx`
+
+- in `constructive_ereal.v`:
+  + variants `Ione`, `Idummy_placeholder`
+  + inductives `Inatmul`, `IEFin`
+  + definition `parse`, `print`
+  + number notations in scopes `ereal_dual_scope` and `ereal_scope`
+  + notation `- 1` in scopes `ereal_dual_scope` and `ereal_scope`
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `le0_ball0`
+- in `theories/landau.v`:
+  + lemma `littleoE0`
+
+- in `constructive_ereal.v`:
+  + lemma `lt0_adde`
+
+- in `unstable.v`
+  + lemmas `coprime_prodr`, `Gauss_dvd_prod`, `expn_prod`, `mono_leq_infl`,
+    `card_big_setU`
+
+- file `pnt.v`
+  + definitions `next_prime`, `prime_seq`
+  + lemmas `leq_prime_seq`, `mem_prime_seq`
+  + theorem `dvg_sum_inv_prime_seq`
+- new directory `theories/measure_theory` with new files:
+  + `measurable_structure.v`
+  + `measure_function.v`
+  + `counting_measure.v`
+  + `dirac_measure.v`
+  + `probability_measure.v`
+  + `measure_negligible.v`
+  + `measure_extension.v`
+  + `measurable_function.v`
+  + `measure.v`
+
+- in `realfun.v`:
+  + lemmas `derivable_oy_continuous_within_itvcy`,
+           `derivable_oy_continuous_within_itvNyc`
+  + lemmas `derivable_oo_continuousW`,
+           `derivable_oy_continuousWoo`,
+           `derivable_oy_continuousW`,
+           `derivable_Nyo_continuousWoo`,
+           `derivable_Nyo_continuousW`
+
+- in `ftc.v`:
+  + lemmas `integration_by_partsy_ge0_ge0`,
+           `integration_by_partsy_le0_ge0`,
+           `integration_by_partsy_le0_le0`,
+           `integration_by_partsy_ge0_le0`
+
 ### Changed
 - in set_interval.v
   + `itv_is_closed_unbounded` (fix the definition)
