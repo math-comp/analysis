@@ -22,6 +22,11 @@
 
 ### Renamed
 
+- in `lebesgue_stieltjes_measure.v`:
+  + `cumulativeNy0` -> `cumulativeNy`
+  + `cumulativey1` -> `cumulativey`
+	+ `cumulativey1` -> `cumulativey`
+
 ### Generalized
 
 - in `lebesgue_stieltjes_measure.v` generalized (codomain is now an `orderNbhsType`):
