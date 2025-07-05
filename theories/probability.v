@@ -269,7 +269,7 @@ have : lsf `]-n%:R, r] @[n --> \oo] --> (f r)%:E.
     rewrite measurable_mu_extE/= ?wlength_itv_bnd//; last exact: is_ocitv.
     by rewrite lerNl; near: n; exact: nbhs_infty_ger.
   rewrite -[X in _ --> X](sube0 (f r)%:E); apply: (cvgeB _ (cvg_cst _ )) => //.
-  apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy0 f))) => //.
+  apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy f))) => //.
   by apply: (cvg_comp _ _ cvgr_idn); rewrite ninfty.
 have : lsf `]- n%:R, r] @[n --> \oo] --> lsf (\bigcup_n `]-n%:R, r]%classic).
   apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
