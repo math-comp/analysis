@@ -601,15 +601,15 @@ Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
 
 HB.mixin Record isCumulativeBounded (R : numFieldType) (l r : R) (f : R -> R) := {
-  cumulativeNy0 : f @ -oo --> l ;
-  cumulativey1 : f @ +oo --> r }.
+  cumulativeNy : f @ -oo --> l ;
+  cumulativey : f @ +oo --> r }.
 
 #[short(type=cumulativeBounded)]
 HB.structure Definition CumulativeBounded (R : numFieldType) (l r : R) :=
   { f of isCumulativeBounded R l r f & Cumulative R f}.
 
-Arguments cumulativeNy0 {R l r} s.
-Arguments cumulativey1 {R l r} s.
+Arguments cumulativeNy {R l r} s.
+Arguments cumulativey {R l r} s.
 
 Section probability_measure_of_lebesgue_stieltjes_mesure.
 Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
@@ -629,9 +629,9 @@ have : (lsf \o I) n @[n --> \oo] --> 1%E.
     by rewrite wlength_itv_bnd// ge0_cp.
   rewrite -(sube0 1); apply: cvgeB => //.
   - by apply/cvg_EFin; [near=> F
-                       |exact/(cvg_comp _ _ (@cvgr_idn R))/cumulativey1].
+                       |exact/(cvg_comp _ _ (@cvgr_idn R))/cumulativey].
   - apply/cvg_EFin; [by near=> F|apply: (cvg_ninftyP _ _).1 => //].
-      exact: cumulativeNy0.
+      exact: cumulativeNy.
     by apply: (cvg_comp _ _ (@cvgr_idn R)); rewrite ninfty.
 have : (lsf \o I) n @[n --> \oo] --> lsf (\bigcup_n I n).
   apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
