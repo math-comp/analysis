@@ -51,7 +51,7 @@ in
 
   bundles."8.20".coqPackages = common-bundle // {
     coq.override.version = "8.20";
-    mathcomp.override.version = "2.2.0";
+    mathcomp.override.version = "2.3.0";
   };
 
   bundles."9.0".coqPackages = common-bundle // {

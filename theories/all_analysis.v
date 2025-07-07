@@ -11,7 +11,6 @@ From mathcomp Require Export exp.
 From mathcomp Require Export trigo.
 From mathcomp Require Export esum.
 From mathcomp Require Export lebesgue_measure.
-From mathcomp Require Export forms.
 From mathcomp Require Export derive.
 From mathcomp Require Export measure.
 From mathcomp Require Export numfun.
