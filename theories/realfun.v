@@ -1763,6 +1763,42 @@ Unshelve. all: by end_near. Qed.
 
 End is_derive_inverse.
 
+Global Instance is_derive1_sqrt {K : realType} (x : K) : 0 < x -> is_derive x 1 Num.sqrt (2 * Num.sqrt x)^-1.
+Proof.
+move=> x_gt0.
+have sqrtK : {in Num.pos, cancel (@Num.sqrt K) (fun x => x ^+ 2)}.
+  by move=> a a0; rewrite sqr_sqrtr// ltW.
+rewrite -[x]sqrtK//.
+apply: (@is_derive_inverse K (fun x => x ^+ 2)).
+- near=> z.
+  rewrite sqrtr_sqr gtr0_norm//.
+  have [xz|zx|->] := ltgtP z (Num.sqrt x); last first.
+  + by rewrite sqrtr_gt0.
+  + by rewrite (lt_trans _ zx)// sqrtr_gt0.
+  + move: xz.
+    near: z.
+    exists (Num.sqrt x / 2).
+      rewrite /=.
+      rewrite mulr_gt0 //.
+      by rewrite sqrtr_gt0 x_gt0.
+    move=> r/=.
+    move=> /[swap] rx.
+    rewrite gtr0_norm ?subr_gt0//ltrBlDl -ltrBlDr.
+    apply: le_lt_trans.
+    rewrite subr_ge0 ger_pMr.
+      rewrite invf_le1.
+        by rewrite ler1n.
+      by [].
+    by rewrite sqrtr_gt0.
+- near=> z.
+  exact: exprn_continuous.
+- rewrite !sqrtK//; split.
+    exact: exprn_derivable.
+  by rewrite exp_derive expr1 scaler1.
+- by rewrite mulf_neq0 ?pnatr_eq0// gt_eqF// sqrtr_gt0 exprn_gt0// sqrtr_gt0.
+Unshelve. all: by end_near. 
+Qed.
+
 #[global] Hint Extern 0 (is_derive _ _ (fun _ => (_ _)^-1) _) =>
   (eapply is_deriveV; first by []) : typeclass_instances.
 
