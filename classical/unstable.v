@@ -471,5 +471,5 @@ Notation " R ~~> R' " := (@respectful _ _ (Program.Basics.flip (R%signature)) (R
 Export -(notations) Morphisms.
 End ProperNotations.
 
-Lemma sqrK {K : rcfType} : {in Num.pos, cancel (@Num.sqrt K) (fun x => x ^+ 2)}.
-Proof. by move=> r r0; rewrite sqr_sqrtr// ltW. Qed.
+Lemma sqrtK {K : rcfType} : {in Num.nneg, cancel (@Num.sqrt K) (fun x => x ^+ 2)}.
+Proof. by move=> r r0; rewrite sqr_sqrtr. Qed.

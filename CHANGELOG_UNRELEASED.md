@@ -5,7 +5,7 @@
 ### Added
 
 - in `unstable.v`:
-  + lemma `sqrK`
+  + lemma `sqrtK`
 
 - in `realfun.v`:
   + instance `is_derive1_sqrt`

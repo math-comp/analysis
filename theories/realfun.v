@@ -1767,7 +1767,7 @@ Global Instance is_derive1_sqrt {K : realType} (x : K) : 0 < x ->
   is_derive x 1 Num.sqrt (2 * Num.sqrt x)^-1.
 Proof.
 move=> x0.
-rewrite -[x]sqrK//; apply: (@is_derive_inverse _ (fun x => x ^+ 2)).
+rewrite -[x](sqrtK (ltW x0)); apply: (@is_derive_inverse _ (fun x => x ^+ 2)).
 - near=> z; rewrite sqrtr_sqr gtr0_norm//.
   have [xz|zx|->] := ltgtP z (Num.sqrt x); last 2 first.
     by rewrite (lt_trans _ zx)// sqrtr_gt0.
@@ -1778,7 +1778,7 @@ rewrite -[x]sqrK//; apply: (@is_derive_inverse _ (fun x => x ^+ 2)).
   apply: le_lt_trans.
   by rewrite subr_ge0 ger_pMr ?sqrtr_gt0// invf_le1// ler1n.
 - by near=> z; exact: exprn_continuous.
-- rewrite !sqrK//; split; first exact: exprn_derivable.
+- rewrite !(sqrtK (ltW x0)); split; first exact: exprn_derivable.
   by rewrite exp_derive expr1 scaler1.
 - by rewrite mulf_neq0// gt_eqF// sqrtr_gt0 exprn_gt0// sqrtr_gt0.
 Unshelve. all: by end_near. Qed.
