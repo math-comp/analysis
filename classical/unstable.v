@@ -35,11 +35,6 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
-Section ssralg.
-Lemma subrKC {V : zmodType} (x y : V) : x + (y - x) = y.
-Proof. by rewrite addrC subrK. Qed.
-End ssralg.
-
 (* NB: Coq 8.17.0 generalizes dependent_choice from Set to Type
    making the following lemma redundant *)
 Section dependent_choice_Type.
@@ -164,10 +159,6 @@ Qed.
 End path_lt.
 Arguments last_filterP {d T a} P s.
 
-Lemma sumr_le0 (R : numDomainType) I (r : seq I) (P : pred I) (F : I -> R) :
-  (forall i, P i -> F i <= 0)%R -> (\sum_(i <- r | P i) F i <= 0)%R.
-Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_wnDl/F0. Qed.
-
 Inductive boxed T := Box of T.
 
 Reserved Notation "`1- r" (format "`1- r", at level 2).
@@ -191,10 +182,6 @@ Proof.
 have [i _ /(_ _ isT) mf] := @arg_maxnP _ (@ord0 n) xpredT f isT.
 by exists i; split; rewrite ?leq_ord// => j jn; have := mf (@Ordinal n.+1 j jn).
 Qed.
-
-Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) :
-  #|` A| = (\sum_(i <- A) 1)%N.
-Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
 
 Arguments big_rmcond {R idx op I r} P.
 Arguments big_rmcond_in {R idx op I r} P.
@@ -411,7 +398,7 @@ Qed.
 
 End FsetPartitions.
 
-(* TODO: move to ssrnum *)
+(* PR 1420 to MathComp in progress *)
 Lemma prodr_ile1 {R : realDomainType} (s : seq R) :
   (forall x, x \in s -> 0 <= x <= 1)%R -> (\prod_(j <- s) j <= 1)%R.
 Proof.
@@ -423,11 +410,11 @@ rewrite mulr_ile1 ?andbT//.
 by rewrite ih// => e xs; rewrite xs01// in_cons xs orbT.
 Qed.
 
-(* TODO: move to ssrnum *)
-
+(* PR 1420 to MathComp in progress *)
 Lemma size_filter_gt0 T P (r : seq T) : (size (filter P r) > 0)%N = (has P r).
 Proof. by elim: r => //= x r; case: ifP. Qed.
 
+(* PR 1420 to MathComp in progress *)
 Lemma ltr_sum [R : numDomainType] [I : Type] (r : seq I)
     [P : pred I] [F G : I -> R] :
   has P r ->
@@ -440,6 +427,7 @@ rewrite !big_cons ltr_leD// ?ltFG// -(all_filterP Pr) !big_filter.
 by rewrite ler_sum => // i Pi; rewrite ltW ?ltFG.
 Qed.
 
+(* PR 1420 to MathComp in progress *)
 Lemma ltr_sum_nat [R : numDomainType] [m n : nat] [F G : nat -> R] :
   (m < n)%N -> (forall i : nat, (m <= i < n)%N -> F i < G i) ->
   \sum_(m <= i < n) F i < \sum_(m <= i < n) G i.
@@ -447,7 +435,6 @@ Proof.
 move=> lt_mn i; rewrite big_nat [ltRHS]big_nat ltr_sum//.
 by apply/hasP; exists m; rewrite ?mem_index_iota leqnn lt_mn.
 Qed.
-
 
 Lemma eq_exists2l (A : Type) (P P' Q : A -> Prop) :
   (forall x, P x <-> P' x) ->

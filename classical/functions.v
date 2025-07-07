@@ -2652,6 +2652,11 @@ Lemma fct_sumE (I T : Type) (M : nmodType) r (P : {pred I}) (f : I -> T -> M) :
   \sum_(i <- r | P i) f i = fun x => \sum_(i <- r | P i) f i x.
 Proof. by apply/funext => ?; elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
+Lemma fct_prodE (I : Type) (T : pointedType) (M : ringType) r (P : {pred I})
+    (f : I -> T -> M) :
+  \prod_(i <- r | P i) f i = fun x => \prod_(i <- r | P i) f i x.
+Proof. by apply/funext => ?; elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+
 Lemma mul_funC (T : Type) {R : comSemiRingType} (f : T -> R) (r : R) :
   r \*o f = r \o* f.
 Proof. by apply/funext => x/=; rewrite mulrC. Qed.
@@ -2669,6 +2674,10 @@ Proof. by []. Qed.
 Lemma sumrfctE (T : Type) (K : nmodType) (s : seq (T -> K)) :
   \sum_(f <- s) f = (fun x => \sum_(f <- s) f x).
 Proof. exact: fct_sumE. Qed.
+
+Lemma prodrfctE (T : pointedType) (K : ringType) (s : seq (T -> K)) :
+  \prod_(f <- s) f = (fun x => \prod_(f <- s) f x).
+Proof. exact: fct_prodE. Qed.
 
 Lemma natmulfctE (U : Type) (K : nmodType) (f : U -> K) n :
   f *+ n = (fun x => f x *+ n).

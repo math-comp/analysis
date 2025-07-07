@@ -9,6 +9,14 @@
 
 - in `realfun.v`:
   + instance `is_derive1_sqrt`
+- in `mathcomp_extra.v`:
+  + lemmas `subrKC`, `sumr_le0`, `card_fset_sum1`
+
+- in `functions.v`:
+  + lemmas `fct_prodE`, `prodrfctE`
+
+- in `exp.v:
+  + lemma `norm_expR`
 
 ### Changed
 

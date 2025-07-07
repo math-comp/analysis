@@ -410,6 +410,9 @@ Qed.
 
 Lemma expR_ge0 x : 0 <= expR x. Proof. by rewrite ltW// expR_gt0. Qed.
 
+Lemma norm_expR : normr \o expR = (expR : R -> R).
+Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
+
 Lemma expR_eq0 x : (expR x == 0) = false.
 Proof. by rewrite gt_eqF ?expR_gt0. Qed.
 
