@@ -209,7 +209,7 @@ Lemma nbhs_right_le x z : x < z -> \forall y \near x^'+, y <= z.
 Proof. by move=> xz; near do apply/ltW; apply: nbhs_right_lt.
 Unshelve. all: by end_near. Qed.
 
-(* NB: In not_near_at_rightP (and not_near_at_rightP), R has type numFieldType.
+(* NB: In not_near_at_rightP, R has type numFieldType.
   It is possible realDomainType could make the proof simpler and at least as
   useful. *)
 Lemma not_near_at_rightP (p : R) (P : pred R) :
