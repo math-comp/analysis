@@ -470,3 +470,21 @@ Proof. by move=>  ? ? []. Qed.
 
 Lemma inl_inj {A B} : injective (@inl A B).
 Proof. by move=>  ? ? []. Qed.
+
+(**************************)
+(* MathComp 2.5 additions *)
+(**************************)
+
+Section ssralg.
+Lemma subrKC {V : zmodType} (x y : V) : x + (y - x) = y.
+Proof. by rewrite addrC subrK. Qed.
+End ssralg.
+
+Lemma sumr_le0 (R : numDomainType) I (r : seq I) (P : pred I) (F : I -> R) :
+  (forall i, P i -> F i <= 0)%R -> (\sum_(i <- r | P i) F i <= 0)%R.
+Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_wnDl/F0. Qed.
+
+(* to appear in coq-mathcomp-finmap > 2.2.1 *)
+Lemma card_fset_sum1 (T : choiceType) (A : {fset T}) :
+  #|` A| = (\sum_(i <- A) 1)%N.
+Proof. by rewrite big_seq_fsetE/= sum1_card cardfE. Qed.
