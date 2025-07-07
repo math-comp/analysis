@@ -1,12 +1,23 @@
 (* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrint ssrnum matrix.
-From mathcomp Require Import rat interval zmodp vector fieldext falgebra.
-From mathcomp Require Import archimedean finmap.
+From mathcomp Require Import interval_inference rat interval zmodp vector.
+From mathcomp Require Import fieldext falgebra archimedean finmap.
 From mathcomp Require Import mathcomp_extra unstable boolp classical_sets.
-From mathcomp Require Import interval_inference reals topology_structure.
+From mathcomp Require Import contra reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 From mathcomp Require Import num_topology product_topology separation_axioms.
+
+(**md**************************************************************************)
+(* # Metric spaces                                                            *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*   metricType K == metric structure with distance mdist                     *)
+(*                   The mixin is defined by extending PseudoMetric.          *)
+(*                   The HB class is Metric.                                  *)
+(*                   R^o with R : numFieldType is shown to be a metric space. *)
+(* ```                                                                        *)
+(******************************************************************************)
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -67,9 +78,9 @@ Qed.
 
 Lemma metric_hausdorff : hausdorff_space T.
 Proof.
-move=> p q pq; apply: contrapT => qp; move: pq.
+move=> p q pq; absurd_not => qp; move: pq.
 pose D := dist p q / 2; have D0 : 0 < D.
-  by rewrite divr_gt0// mdist_gt0; exact/eqP.
+  by rewrite divr_gt0// mdist_gt0.
 have p2Dq : ~ ball p (dist p q) q by rewrite ballEmdist/= ltxx.
 move=> /(_ (ball p _) (ball q _) (nbhsx_ballx _ _ D0) (nbhsx_ballx _ _ D0)).
 move/set0P/eqP; apply; rewrite -subset0 => x [pDx /ball_sym qDx].
@@ -93,22 +104,18 @@ Proof. by move/normr0_eq0/eqP; rewrite subr_eq0 => /eqP. Qed.
 Let ballEmdist x d : ball x d = [set y | dist x y < d].
 Proof. by apply/seteqP; split => [|]/= A; rewrite /ball/= distrC. Qed.
 
-Fail Check R^o : metricType R.
-
 HB.instance Definition _ :=
   @isMetric.Build R R^o dist dist_ge0 dist_positivity ballEmdist.
-
-Check R^o : metricType R.
 
 End numFieldType_metric.
 
 Module metricType_numDomainType.
 (* tentative generalization of the section
 pseudoMetricNormedZmod_numDomainType
-from pseudoMetricNormedZmod_numDomainType
+from pseudoMetricNormedZmod
 to
 metricType *)
-Section tmp.
+Section metricType_numDomainType.
 Context {K : numDomainType} {V : metricType K}.
 
 Local Notation ball_mdist := (fun x d => [set y : V | mdist x y < d]).
@@ -158,9 +165,9 @@ Proof.
 by move=> ? ? ?; near do rewrite ltW//; apply: cvgr_dist_lt.
 Unshelve. all: by end_near. Qed.
 
-End tmp.
+End metricType_numDomainType.
 
-Section tmp2.
+Section at_left_right_metricType.
 (* tentative generalization of the section
 at_left_right_pseudoMetricNormedZmod
 from
@@ -209,18 +216,21 @@ Lemma cvgrPdist_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, mdist y (f t) <= eps.
 Proof. exact: (cvgrP _ 0 1)%N. Qed.
 
-End tmp2.
+End at_left_right_metricType.
 
-Section tmp3.
+End metricType_numDomainType.
+
+Section cvg_nbhsP.
 Variables (R : realType) (V : metricType R).
+
+Import metricType_numDomainType.
 
 Lemma cvg_nbhsP (f : V -> V) (p l : V) : f x @[x --> p] --> l <->
   (forall u : nat -> V, (u n @[n --> \oo] --> p) -> f (u n) @[n --> \oo] --> l).
 Proof.
 split=> [/cvgrPdist_le /= fpl u /cvgrPdist_lt /= uyp|pfl].
   apply/cvgrPdist_le => e /fpl.
-  rewrite -filter_from_mdist_nbhs.
-  move=> [d d0 pdf].
+  rewrite -filter_from_mdist_nbhs => -[d d0 pdf].
   by apply: filterS (uyp d d0) => t /pdf.
 apply: contrapT => fpl; move: pfl; apply/existsNP.
 suff: exists2 x : nat -> V,
@@ -232,26 +242,21 @@ have [e He] : exists e : {posnum R}, forall d : {posnum R},
   apply/cvgrPdist_le => e e0; have /existsNP[d] := h (PosNum e0).
   move/forallNP => {}h; near=> t.
   have /not_andP[abs|/negP] := h t.
-  - exfalso; apply: abs.
+  - absurd: abs.
     near: t.
-    rewrite !near_simpl.
-    rewrite /prop_near1.
-    rewrite -nbhs_nbhs_mdist.
-    exists d%:num => //= z/=.
-    by rewrite metric_sym.
+    rewrite !near_simpl /prop_near1 -nbhs_nbhs_mdist.
+    by exists d%:num => //= z/=; rewrite metric_sym.
   - by rewrite -ltNge metric_sym => /ltW.
-have invn n : 0 < n.+1%:R^-1 :> R by rewrite invr_gt0.
-exists (fun n => sval (cid (He (PosNum (invn n))))).
+exists (fun n => sval (cid (He n.+1%:R^-1%:pos))).
   apply/cvgrPdist_lt => r r0; near=> t.
   rewrite /sval/=; case: cid => x [xpt _].
-  rewrite metric_sym (lt_le_trans xpt)// -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
-  near: t; exists (trunc r^-1) => // s /= rs.
+  rewrite metric_sym (lt_le_trans xpt)//.
+  rewrite -[leRHS]invrK lef_pV2 ?posrE ?invr_gt0//.
+  near: t; exists (truncn r^-1) => // s /= rs.
   by rewrite (le_trans (ltW (truncnS_gt _)))// ler_nat.
 move=> /cvgrPdist_lt/(_ e%:num (ltac:(by [])))[] n _ /(_ _ (leqnn _)).
 rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge metric_sym => /negP.
 Unshelve. all: end_near. Qed.
 
-End tmp3.
-
-End metricType_numDomainType.
+End cvg_nbhsP.
