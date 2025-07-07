@@ -254,6 +254,16 @@ rewrite EFinB muleBr// mule1 -EFinM mulVf// -EFinD.
 by rewrite (addrC p^-1%R) (subrK p^-1%R).
 Qed.
 
+Lemma hoelder_conj_ge1 (p : \bar R) : 1 <= p -> 1 <= p^*.
+Proof.
+move: p => [r|//|//].
+rewrite !le_eqVlt => /orP[/eqP <-|r1].
+  by rewrite hoelder_conjugate1 ltey//.
+rewrite /hoelder_conjugate/= !(@gt_eqF _ _ (r%:E)) ?(lt_trans lte01 _)//.
+apply/orP; right; rewrite inver ?gt_eqF ?subr_gt0// -EFinM.
+by rewrite lte_fin ltr_pdivlMr ?subr_gt0// mul1r gtrBl.
+Qed.
+
 Lemma hoelder_conjugateP p q : p > -oo -> p != 0 ->
   p^-1 + q^-1 = 1 <-> q = p^*.
 Proof.
