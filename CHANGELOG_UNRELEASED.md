@@ -14,6 +14,9 @@
 
 ### Generalized
 
+- in `functions.v`
+  + lemma `fct_sumE` (from a pointwise equality to a functional one)
+
 ### Deprecated
 
 ### Removed

@@ -2648,10 +2648,9 @@ Qed.
 HB.instance Definition _ := fct_lmodMixin.
 End fct_lmod.
 
-Lemma fct_sumE (I T : Type) (M : nmodType) r (P : {pred I}) (f : I -> T -> M)
-    (x : T) :
-  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
-Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
+Lemma fct_sumE (I T : Type) (M : nmodType) r (P : {pred I}) (f : I -> T -> M) :
+  \sum_(i <- r | P i) f i = fun x => \sum_(i <- r | P i) f i x.
+Proof. by apply/funext => ?; elim/big_rec2: _ => //= i y ? Pi <-. Qed.
 
 Lemma mul_funC (T : Type) {R : comSemiRingType} (f : T -> R) (r : R) :
   r \*o f = r \o* f.
@@ -2669,7 +2668,7 @@ Proof. by []. Qed.
 
 Lemma sumrfctE (T : Type) (K : nmodType) (s : seq (T -> K)) :
   \sum_(f <- s) f = (fun x => \sum_(f <- s) f x).
-Proof. by apply/funext => x; elim/big_ind2 : _ => // _ a _ b <- <-. Qed.
+Proof. exact: fct_sumE. Qed.
 
 Lemma natmulfctE (U : Type) (K : nmodType) (f : U -> K) n :
   f *+ n = (fun x => f x *+ n).
