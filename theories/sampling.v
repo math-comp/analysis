@@ -74,10 +74,6 @@ Reserved Notation "\X_ n P" (at level 10, n, P at next level,
 Lemma norm_expR {R : realType} : normr \o expR = (expR : R -> R).
 Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 
-Lemma preimage_set1 T {U : eqType} (X : T -> U) r :
-  X @^-1` [set r] = [set i | X i == r].
-Proof. by apply/seteqP; split => [x /eqP H//|x /eqP]. Qed.
-
 (* PR in progress *)
 Lemma integrable_prod_measP {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
   {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
@@ -733,18 +729,18 @@ rewrite /bool_to_real/=; exists 1%R; split => // r r1/= s _.
 by rewrite (le_trans _ (ltW r1))// ler_norml lern1 (@le_trans _ _ 0%R) ?leq_b1.
 Qed.
 
-Lemma bernoulli_RV1 (X : bernoulliRV P p) : P [set i | X i == 1%R] = p%:E.
+Lemma bernoulli_RV1 (X : bernoulliRV P p) : P [set i | X i = 1%R] = p%:E.
 Proof.
-have/(congr1 (fun f => f [set 1%:R])):= @bernoulliP _ _ _ _ _ X.
+have /(congr1 (fun f => f [set 1%:R])) := @bernoulliP _ _ _ _ _ X.
 rewrite bernoulli_probE// diracE/= mem_set// mule1// diracE/= memNset//.
-by rewrite mule0 adde0 -preimage_set1 /distribution /= => <-.
+by rewrite mule0 adde0 /distribution /= => <-.
 Qed.
 
-Lemma bernoulli_RV2 (X : bernoulliRV P p) : P [set i | X i == 0%R] = (`1-p)%:E.
+Lemma bernoulli_RV2 (X : bernoulliRV P p) : P [set i | X i = 0%R] = (`1-p)%:E.
 Proof.
 have/(congr1 (fun f => f [set 0%:R])):= @bernoulliP _ _ _ _ _ X.
 rewrite bernoulli_probE// diracE/= memNset// mule0// diracE/= mem_set// add0e mule1.
-by rewrite /distribution /= => <-; rewrite -preimage_set1.
+by rewrite /distribution /= => <-.
 Qed.
 
 Lemma bernoulli_expectation (X : bernoulliRV P p) :
@@ -885,10 +881,7 @@ under eq_integral.
   over.
 rewrite integral_cst//.
 rewrite /A /B /preimage /=.
-under eq_set do rewrite (propext (rwP eqP)).
-rewrite bernoulli_RV1.
-under eq_set do rewrite (propext (rwP eqP)).
-rewrite bernoulli_RV2.
+rewrite bernoulli_RV1 bernoulli_RV2.
 rewrite -EFinD; congr (_ + _)%:E; rewrite mulrC//.
 by rewrite expR0 mulr1.
 Qed.
