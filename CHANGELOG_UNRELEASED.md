@@ -89,14 +89,17 @@
 	   `le0_nondecreasing_set_cvg_integral`
 - in `exp.v`:
   + lemma `norm_expR`
+
+- in `exp.v`:
   + lemmas `expeR_eqy`
-  + lemmas `lt0_ln`
-  + lemmas `lt0_powR`, `powR_eq1`
-  + Section `Lne`
+  + lemmas `lt0_powR1`, `powR_eq1`
   + definition `lne`
   + lemmas `lne0`, `lne_EFin`, `expeRK`, `lneK`, `lneK_eq`, `lne1`, `lneM`, 
-    `lne_inj`, `lneV`, `lne_div`, `ltr_lne`, `ler_lne`, `lneXn`, `le_lne1Dx`, 
-    `lne_sublinear`, `lne_ge0`, `lne_lt0`, `lne_gt0`, `lne_le0_le0`
+    `lne_inj`, `lneV`, `lne_div`, `lte_lne`, `lee_lne`, `lneXn`, `le_lne1Dx`, 
+    `lne_sublinear`, `lne_ge0`, `lne_lt0`, `lne_gt0`, `le1_lne_le0`
+
+- in `constructive_ereal.v`:
+  + lemma `expe0`, `mule0n`, `muleS`
 
 ### Changed
 
