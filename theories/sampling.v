@@ -35,8 +35,8 @@ Unset Printing Implicit Defensive.
 (*     \X_n P == the product probability measure P \x P \x ... \x P           *)
 (*                                                                            *)
 (* ## Lemmas for Expectation of Sum and Product on the Product Measure        *)
-(* - expectation_sum_ipro: The expectation of the sum of random variables on  *)
-(*   the product measure is the sum of their expectations.                    *)
+(* - expectation_sum_power_measure: The expectation of the sum of random      *)
+(*   variables on the power measure is the sum of their expectations.         *)
 (* - expectation_product: The expectation of the product of random variables  *)
 (*   on the product measure is the product of their expectations.             *)
 (*   Independence of the variables follows by construction on the product     *)
@@ -69,10 +69,6 @@ Local Open Scope ring_scope.
 
 Reserved Notation "\X_ n P" (at level 10, n, P at next level,
   format "\X_ n  P").
-
-(* NB: also in Jairo's PR about lne *)
-Lemma norm_expR {R : realType} : normr \o expR = (expR : R -> R).
-Proof. by apply/funext => x /=; rewrite ger0_norm ?expR_ge0. Qed.
 
 (* PR in progress *)
 Lemma integrable_prod_measP {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
@@ -165,9 +161,7 @@ HB.instance Definition _ n (X : n.-tuple {mfun T >-> R}) (i : 'I_n) :=
 Lemma measurable_sum_Tnth n (X : n.-tuple {mfun T >-> R}) :
   measurable_fun [set: n.-tuple T] (\sum_(i < n) Tnth X i).
 Proof.
-rewrite [X in measurable_fun _ X](_ : _
-    = (fun x => \sum_(i < n) Tnth X i x)); last first.
-  by apply/funext => x; rewrite fct_sumE.
+rewrite fct_sumE.
 apply: measurable_sum => i/=; apply/measurableT_comp => //.
 exact: measurable_tnth.
 Qed.
@@ -178,9 +172,7 @@ HB.instance Definition _ n (s : n.-tuple {mfun T >-> R}) :=
 Lemma measurable_prod_Tnth m n (s : m.-tuple {mfun T >-> R}) (f : 'I_n -> 'I_m) :
   measurable_fun [set: m.-tuple T] (\prod_(i < n) Tnth s (f i))%R.
 Proof.
-rewrite [X in measurable_fun _ X](_ : _
-    = (fun x => \prod_(i < n) Tnth s (f i) x)); last first.
-  by apply/funext => x; rewrite fct_prodE.
+rewrite fct_prodE.
 by apply: measurable_prod => /= i _; apply/measurableT_comp.
 Qed.
 
@@ -263,31 +255,32 @@ Arguments tuple_of_pair {d T} n.
 Arguments measurable_tuple_of_pair {d T} n.
 Arguments measurable_pair_of_tuple {d T} n.
 
-Section iterated_product_sigma_finite_measures.
+Section power_measure_sigma_finite_measure.
 Context d (T : measurableType d) (R : realType)
   (P : {sigma_finite_measure set T -> \bar R}).
 
-Fixpoint ipro n : set (n.-tuple T) -> \bar R :=
+Fixpoint power_measure n : set (n.-tuple T) -> \bar R :=
   match n with
   | 0%N => \d_([::] : 0.-tuple T)
-  | m.+1 => fun A => (P \x^ @ipro m)%E (pair_of_tuple m @` A)
+  | m.+1 => fun A => (P \x^ @power_measure m)%E (pair_of_tuple m @` A)
   end.
 
-Let ipro_measure n : @ipro n set0 = 0 /\ (forall A, 0 <= @ipro n A)%E
-  /\ semi_sigma_additive (@ipro n).
+Let power_measureP n : @power_measure n set0 = 0
+  /\ (forall A, 0 <= @power_measure n A)%E
+  /\ semi_sigma_additive (@power_measure n).
 Proof.
 elim: n => //= [|n ih].
   by repeat split => //; exact: measure_semi_sigma_additive.
-pose build_Mpro := isMeasure.Build _ _ _ (@ipro n) ih.1 ih.2.1 ih.2.2.
-pose Mpro : measure _ R := HB.pack (@ipro n) build_Mpro.
-pose ppro : measure _ R := (P \x^ Mpro)%E.
+pose build_pow_meas := isMeasure.Build _ _ _ (@power_measure n) ih.1 ih.2.1 ih.2.2.
+pose pow_meas : measure _ R := HB.pack (@power_measure n) build_pow_meas.
+pose Ppow_meas : measure _ R := (P \x^ pow_meas)%E.
 split.
   rewrite image_set0 /product_measure2 /=.
   under eq_fun => x do rewrite ysection0 measure0 (_ : 0 = cst 0 x)//.
-  by rewrite (_ : @ipro n = Mpro)// integral_cst// mul0e.
+  by rewrite (_ : @power_measure n = pow_meas)// integral_cst// mul0e.
 split.
-  by move => A; rewrite (_ : @ipro n = Mpro).
-rewrite (_ : @ipro n = Mpro)// (_ : (P \x^ Mpro)%E = ppro)//.
+  by move => A; rewrite (_ : @power_measure n = pow_meas).
+rewrite (_ : @power_measure n = pow_meas)// (_ : (P \x^ pow_meas)%E = Ppow_meas)//.
 move=> F mF dF mUF.
 rewrite image_bigcup; apply: measure_semi_sigma_additive.
 - by move=> i ; apply: measurable_image_pair_of_tuple.
@@ -295,18 +288,18 @@ rewrite image_bigcup; apply: measure_semi_sigma_additive.
 - by apply: bigcup_measurable => j _; apply: measurable_image_pair_of_tuple.
 Qed.
 
-HB.instance Definition _ n := isMeasure.Build _ _ _ (@ipro n)
-  (ipro_measure n).1 (ipro_measure n).2.1 (ipro_measure n).2.2.
+HB.instance Definition _ n := isMeasure.Build _ _ _ (@power_measure n)
+  (power_measureP n).1 (power_measureP n).2.1 (power_measureP n).2.2.
 
-End iterated_product_sigma_finite_measures.
-Arguments ipro {d T R} P n.
+End power_measure_sigma_finite_measure.
+Arguments power_measure {d T R} P n.
 
-Notation "\X_ n P" := (ipro P n).
+Notation "\X_ n P" := (power_measure P n).
 
-Section iterated_product_probability_measures.
+Section power_measure_probability_measure.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 
-Let ipro_setT n : \X_n P [set: n.-tuple T] = 1%E.
+Let power_measureT n : \X_n P [set: n.-tuple T] = 1%E.
 Proof.
 elim: n => [|n ih]/=; first by rewrite diracT.
 rewrite /product_measure2 /ysection/=.
@@ -326,15 +319,15 @@ by rewrite integral_cst// mul1e.
 Qed.
 
 HB.instance Definition _ n :=
-  Measure_isProbability.Build _ _ _ (\X_n P) (@ipro_setT n).
+  Measure_isProbability.Build _ _ _ (\X_n P) (@power_measureT n).
 
-End iterated_product_probability_measures.
+End power_measure_probability_measure.
 
-Section integral_ipro.
+Section integral_power_measure.
 Context d (T : measurableType d) (R : realType).
 Local Open Scope ereal_scope.
 
-Lemma ge0_integral_iproS (P : {finite_measure set T -> \bar R})
+Lemma ge0_integral_power_measureS (P : {finite_measure set T -> \bar R})
     n (f : n.+1.-tuple T -> R) :
     measurable_fun [set: n.+1.-tuple T] f ->
     (forall x, 0 <= f x)%R ->
@@ -350,7 +343,7 @@ rewrite -(@ge0_integral_pushforward _ _ _ _ R _ (@measurable_tuple_of_pair _ _ n
 - by move=> x/= _; rewrite lee_fin.
 Qed.
 
-Lemma ipro_tnth n A i (P : probability T R) : d.-measurable A ->
+Lemma power_measure_tnth n A i (P : probability T R) : d.-measurable A ->
   (\X_n P) ((@tnth n T)^~ i @^-1` A) = P A.
 Proof.
 elim: n A i => [A [] []//|n ih A [] [i0|m mn mA]].
@@ -370,7 +363,7 @@ elim: n A i => [A [] []//|n ih A [] [i0|m mn mA]].
   by rewrite -[X in measurable X]setTI; exact: measurable_tnth.
 Qed.
 
-Lemma integral_iproS (P : probability T R)
+Lemma integral_power_measureS (P : probability T R)
     n (f : n.+1.-tuple T -> R) :
     (\X_n.+1 P).-integrable [set: n.+1.-tuple T] (EFin \o f) ->
   \int[\X_n.+1 P]_w (f w)%:E = \int[P \x^ \X_n P]_w (f (w.1 :: w.2))%:E.
@@ -413,14 +406,14 @@ rewrite -(@integral_pushforward _ _ _ _ R _ (measurable_tuple_of_pair n) _
 - exact: measurableT.
 Qed.
 
-Lemma integral_ipro_tnth (P : probability T R) n (f : {mfun T >-> R}) i :
+Lemma integral_power_measure_tnth (P : probability T R) n (f : {mfun T >-> R}) i :
   \int[\X_n P]_x `|f (tnth x i)|%:E = \int[P]_x (`|f x|)%:E.
 Proof.
 rewrite -(preimage_setT ((@tnth n _)^~ i)).
 rewrite -(@ge0_integral_pushforward _ _ _ _ _ _ (measurable_tnth i) (\X_n P) _
     (EFin \o normr \o f) measurableT).
 - apply: eq_measure_integral => /=; first exact: measurable_tnth.
-  by move=> _ A mA _/=; rewrite /pushforward ipro_tnth.
+  by move=> _ A mA _/=; rewrite /pushforward power_measure_tnth.
 - by do 2 apply: measurableT_comp.
 - by move=> y _/=; rewrite lee_fin normr_ge0.
 Qed.
@@ -437,23 +430,23 @@ move=> mF iF; apply/andP; rewrite !inE/=; split.
   exact: measurable_tnth.
 rewrite /finite_norm unlock /Lnorm/= invr1 poweRe1 ?integral_ge0//.
 under eq_integral => x _ do rewrite powRr1//.
-by rewrite (integral_ipro_tnth _ (tnth F i)).
+by rewrite (integral_power_measure_tnth _ (tnth F i)).
 Qed.
 
-End integral_ipro.
+End integral_power_measure.
 
-Section integral_ipro_Tnth.
+Section integral_power_measure_Tnth.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 
-Lemma integral_ipro_Tnth n (F : n.-tuple {mfun T >-> R}) (i : 'I_n) :
+Lemma integral_power_measure_Tnth n (F : n.-tuple {mfun T >-> R}) (i : 'I_n) :
     (forall Fi : {mfun T >-> R}, Fi \in F -> (Fi : T -> R) \in Lfun P 1) ->
   \int[\X_n P]_x (Tnth F i x)%:E = \int[P]_x (tnth F i x)%:E.
 Proof.
 elim: n F i => [F []//|m ih F i lfunFi/=].
 rewrite -/(\X_m.+1 P).
 move: i => [] [i0|i im].
-  rewrite [LHS](@integral_iproS _ _ _ _ m); last first.
+  rewrite [LHS](@integral_power_measureS _ _ _ _ m); last first.
     exact/Lfun1_integrable/tnth_Lfun/lfunFi/mem_tnth.
   under eq_fun => x do
     rewrite /Tnth (_ : tnth (_ :: _) _ = tnth [tuple of x.1 :: x.2] ord0)// tnth0.
@@ -464,7 +457,7 @@ move: i => [] [i0|i im].
     have /lfunFi : tnth F (Ordinal i0) \in F by apply/tnthP; exists (Ordinal i0).
     by case/Lfun1_integrable/integrableP.
   by apply: eq_integral => x _; rewrite integral_cst//= probability_setT mule1.
-rewrite [LHS](@integral_iproS _ _ _ _ m); last first.
+rewrite [LHS](@integral_power_measureS _ _ _ _ m); last first.
   exact/Lfun1_integrable/tnth_Lfun/lfunFi/mem_tnth.
 have jm : (i < m)%N by rewrite ltnS in im.
 pose j := Ordinal jm.
@@ -490,13 +483,13 @@ rewrite [LHS]ih; last by move=> Fi FiF; apply: lfunFi; rewrite mem_behead.
 by apply: eq_integral => x _; rewrite liftj tnthS.
 Qed.
 
-End integral_ipro_Tnth.
+End integral_power_measure_Tnth.
 
 Section properties_of_expectation.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 
-Lemma expectation_ipro_sum n (X : n.-tuple {RV P >-> R}) :
+Lemma expectation_power_measure_sum n (X : n.-tuple {RV P >-> R}) :
     [set` X] `<=` Lfun P 1 ->
   'E_(\X_n P)[\sum_(i < n) Tnth X i] = \sum_(i < n) 'E_P[(tnth X i)].
 Proof.
@@ -506,7 +499,7 @@ rewrite (_ : \sum_(i < n) Tnth X i = \sum_(Xi <- [seq Tnth X i | i in 'I_n]) Xi)
 rewrite expectation_sum/=.
   rewrite big_map big_enum/=.
   apply: eq_bigr => i i_n.
-  by rewrite unlock; exact: integral_ipro_Tnth.
+  by rewrite unlock; exact: integral_power_measure_Tnth.
 move=> Xi /tnthP[i] ->.
 pose j := cast_ord (card_ord _) i.
 rewrite /image_tuple tnth_map.
@@ -568,7 +561,7 @@ Section properties_of_independence.
 Context d (T : measurableType d) (R : realType) (P : probability T R).
 Local Open Scope ereal_scope.
 
-Lemma expectation_ipro_prod n (X : n.-tuple {RV P >-> R}) :
+Lemma expectation_power_measure_prod n (X : n.-tuple {RV P >-> R}) :
     [set` X] `<=` Lfun P 1 ->
   'E_(\X_n P)[ \prod_(i < n) Tnth X i] = \prod_(i < n) 'E_P[ (tnth X i) ].
 Proof.
@@ -593,13 +586,13 @@ have h2 : (\prod_(i < n) Tnth (behead_tuple X) i)%R \in Lfun (\X_n P) 1.
   rewrite abse_prod -ge0_fin_numE ?prode_ge0// prode_fin_num// => i _.
   rewrite abse_fin_num integrable_fin_num//.
   exact/Lfun1_integrable/lfunX/mem_behead/mem_tnth.
-rewrite [LHS](@integral_iproS _ _ _ _ _ MF); last first.
+rewrite [LHS](@integral_power_measureS _ _ _ _ _ MF); last first.
   rewrite /MF/F; apply/integrableP; split; first exact: measurableT_comp.
-  rewrite ge0_integral_iproS/=; [|exact: measurableT_comp|by []].
+  rewrite ge0_integral_power_measureS/=; [|exact: measurableT_comp|by []].
   rewrite [ltLHS](_ : _ = \int[P \x^ (\X_n P)]_x (`|thead X x.1|
       * `|(\prod_(i < n) Tnth (behead_tuple X) i) x.2|)%:E); last first.
     apply: eq_integral => x _.
-    rewrite big_ord_recl normrM /Tnth (tuple_eta X) !fct_prodE/= !tnth0/=.
+    rewrite !fct_prodE/= big_ord_recl normrM /Tnth (tuple_eta X) !tnth0/=.
     congr ((_ * `| _ |)%:E).
     by apply: eq_bigr => i _/=; rewrite !tnthS -tuple_eta.
   pose tuple_prod := (\prod_(i < n) Tnth (behead_tuple X) i)%R.
@@ -618,13 +611,9 @@ rewrite [LHS](@integral_iproS _ _ _ _ _ MF); last first.
     by move: h1 => /Lfun1_integrable/integrableP[_].
   by move: h2 => /Lfun1_integrable/integrableP[_].
 under eq_fun.
-  move=> /=x.
-  rewrite /F/MF big_ord_recl/= /Tnth/= fctE tnth0.
-  rewrite fct_prodE.
-  under eq_bigr.
-    move=> i _.
-    rewrite tnthS.
-    over.
+  move=> /= x.
+  rewrite /F /MF big_ord_recl/= /Tnth/= fctE tnth0 fct_prodE.
+  under eq_bigr do rewrite tnthS.
   over.
 have /Lfun1_integrable/integrableP/=[mXi iXi] := lfunX _ (mem_tnth ord0 X).
 have ? : \int[\X_n P]_x0 (\prod_(i < n) tnth X (lift ord0 i) (tnth x0 i))%:E < +oo.
@@ -635,35 +624,28 @@ have ? : \int[\X_n P]_x0 (\prod_(i < n) tnth X (lift ord0 i) (tnth x0 i))%:E < +
     over.
   rewrite /= -(_ : 'E_(\X_n P)[\prod_(i < n) Tnth (behead_tuple X) i]%R
       = \int[\X_n P]_x _); last first.
-    rewrite unlock.
-    apply: eq_integral => /=x _.
-    by rewrite /Tnth fct_prodE.
+    by rewrite unlock fct_prodE.
   rewrite IH.
     rewrite ltey_eq prode_fin_num// => i _.
     rewrite expectation_fin_num//.
     exact/lfunX/mem_behead/mem_tnth.
   by move=> Xi XiX; rewrite lfunX//= mem_behead.
 have ? : measurable_fun [set: n.-tuple T]
-    (fun x : n.-tuple T => \prod_(i < n) tnth X (lift ord0 i) (tnth x i))%R.
-  apply: measurable_prod => //= i i_n.
-  apply: measurableT_comp => //.
-  exact: measurable_tnth.
-rewrite /=.
+    (fun x => \prod_(i < n) tnth X (lift ord0 i) (tnth x i))%R.
+  apply: measurable_prod => //= i _.
+  by apply: measurableT_comp => //; exact: measurable_tnth.
 have ? : \int[\X_n P]_x `|\prod_(i < n) tnth X (lift ord0 i) (tnth x i)|%:E < +oo.
   move: h2 => /Lfun1_integrable/integrableP[?].
   apply: le_lt_trans.
   rewrite le_eqVlt; apply/orP; left; apply/eqP.
-  apply: eq_integral => x _/=.
-  rewrite fct_prodE/=.
-  congr (`| _ |%:E).
-  apply: eq_bigr => i _.
-  by rewrite {1}(tuple_eta X) tnthS.
+  apply: eq_integral => x _ /=.
+  rewrite fct_prodE/=; congr (`| _ |%:E).
+  by apply: eq_bigr => i _; rewrite {1}(tuple_eta X) tnthS.
 rewrite -integral12_prod_meas2 /fubini_F/=; last first.
   apply/integrable21ltyP => //=.
     apply: measurableT_comp => //=; apply: measurable_funM => //=.
       exact: measurableT_comp.
-    apply: measurable_prod => //= i i_n.
-    apply: measurableT_comp => //.
+    apply: measurable_prod => //= i _; apply: measurableT_comp => //.
     exact: (measurableT_comp (measurable_tnth i) measurable_snd).
   under eq_integral => y _.
     under eq_integral => x _ do rewrite normrM EFinM.
@@ -678,24 +660,22 @@ rewrite -integral12_prod_meas2 /fubini_F/=; last first.
 under eq_integral => x _.
   under eq_integral => y _ do rewrite EFinM.
   rewrite integralZl/=; last 2 first.
-  - apply: measurableT.
-  - by apply/integrableP; split => //; first by apply: measurableT_comp => //.
+  - exact: measurableT.
+  - by apply/integrableP; split => //; first exact: measurableT_comp.
   rewrite -[X in _ * X]fineK; last first.
   rewrite fin_num_abs. apply/abse_integralP => //.
-    exact/measurable_EFinP.
+  exact/measurable_EFinP.
   over.
 rewrite /= integralZr//; last exact/Lfun1_integrable/lfunX/mem_tnth.
 rewrite fineK; last first.
-  rewrite fin_num_abs. apply/abse_integralP => //.
-  exact/measurable_EFinP.
+  by rewrite fin_num_abs; apply/abse_integralP => //; exact/measurable_EFinP.
 rewrite [X in _ * X](_ : _ =
     'E_(\X_n P)[\prod_(i < n) Tnth (behead X) i])%R; last first.
   rewrite [in RHS]unlock /Tnth.
   apply: eq_integral => x _.
   rewrite fct_prodE; congr (_%:E).
   apply: eq_bigr => i _.
-  rewrite tnth_behead.
-  congr (tnth X _ _).
+  rewrite tnth_behead; congr (tnth X _ _).
   by apply: val_inj => /=; rewrite /bump/= inordK// ltnS.
 rewrite IH; last by move => x /mem_behead/lfunX.
 rewrite big_ord_recl/=; congr (_ * _).
@@ -811,22 +791,18 @@ Proof. by rewrite /bool_to_real/=; case: (X t). Qed.
 Lemma expectation_bernoulli_trial n (X : n.-tuple (bernoulliRV P p)) :
   'E_(\X_n P)[bool_trial_value X] = (n%:R * p)%:E.
 Proof.
-rewrite expectation_ipro_sum; last first.
+rewrite expectation_power_measure_sum; last first.
   by move=> Xi /tnthP [i] ->; rewrite tnth_map; apply: Lfun_bernoulli.
 transitivity (\sum_(i < n) p%:E).
   by apply: eq_bigr => k _; rewrite !tnth_map bernoulli_expectation.
 by rewrite sumEFin big_const_ord iter_addr addr0 mulrC mulr_natr.
 Qed.
 
-Lemma bernoulli_trial_ge0 n (X : n.-tuple (bernoulliRV P p)) :
-  (forall t, 0 <= bool_trial_value X t)%R.
+Lemma bernoulli_trial_ge0 n (X : n.-tuple (bernoulliRV P p)) t :
+  (0 <= bool_trial_value X t)%R.
 Proof.
-move=> t.
-rewrite /bool_trial_value/=.
-rewrite [in leRHS]fct_sumE.
-apply/sumr_ge0 => /= i _.
-rewrite /Tnth.
-by rewrite !tnth_map.
+rewrite /bool_trial_value/= fct_sumE; apply/sumr_ge0 => /= i _.
+by rewrite /Tnth !tnth_map.
 Qed.
 
 Lemma bernoulli_trial_mmt_gen_fun n (X_ : n.-tuple (bernoulliRV P p)) (t : R) :
@@ -840,7 +816,7 @@ transitivity ('E_(\X_n P)[ \prod_(i < n) Tnth (mktuple mmtX) i ]).
   rewrite fct_sumE big_distrl/= expR_sum [in RHS]fct_prodE.
   apply: eq_bigr => i _.
   by rewrite /Tnth !tnth_map /mmtX/= tnth_ord_tuple.
-rewrite expectation_ipro_prod; last first.
+rewrite expectation_power_measure_prod; last first.
   move=> _ /mapP [/= i _ ->].
   apply/Lfun1_integrable/bounded_integrable => //.
   exists (expR `|t|); split => // M etM x _ /=.
@@ -865,9 +841,8 @@ have mA : measurable A by exact: measurable_sfunP.
 have mB : measurable B by exact: measurable_sfunP.
 have dAB : [disjoint A & B]
   by rewrite /disj_set /A /B preimage_true preimage_false setICr.
-have TAB: setT = A `|` B by rewrite -preimage_setU -setT_bool preimage_setT.
-rewrite unlock.
-rewrite TAB integral_setU_EFin -?TAB//.
+have TAB : setT = A `|` B by rewrite -preimage_setU -setT_bool preimage_setT.
+rewrite unlock TAB integral_setU_EFin -?TAB//.
 under eq_integral.
   move=> x /=.
   rewrite /A inE /bool_to_real /= => ->.
@@ -958,9 +933,8 @@ apply: (le_trans (chernoff _ _ t0)).
 apply: (@le_trans _ _ ((expeR (mu * (expR t - 1)%:E)) *
                        (expR (- (t * ((1 + delta) * fine mu))))%:E)).
   rewrite lee_pmul2r ?lte_fin ?expR_gt0//.
-  rewrite (le_trans (mmt_gen_fun_expectation p01 _ (ltW t0)))//.
-rewrite -(@fineK _ mu)//; last first.
-  by rewrite /mu expectation_bernoulli_trial.
+  by rewrite (le_trans (mmt_gen_fun_expectation p01 _ (ltW t0))).
+rewrite -(@fineK _ mu)//; last by rewrite /mu expectation_bernoulli_trial.
 rewrite [expeR _]/= mulrC expRM -mulNr mulrA expRM.
 exact: end_thm24.
 Qed.
@@ -970,6 +944,7 @@ Local Open Scope ring_scope.
 Local Arguments derive_val {R V W a v f df}.
 
 Let f (x : R) := x ^+ 2 - 2 * x * ln x.
+
 Let idf (x : R) : 0 < x -> {df : R | is_derive x 1 f df}.
 Proof.
 move=> x0.
@@ -979,13 +954,15 @@ apply: is_deriveN.
 apply: is_deriveM; first by [].
 exact: is_derive1_ln.
 Defined.
+
 Let f1E : f 1 = 1. Proof. by rewrite /f expr1n ln1 !mulr0 subr0. Qed.
+
 Let Df_gt0 (x : R) : 0 < x -> x != 1 -> 0 < 'D_1 f x.
 Proof.
 move=> x0 x1.
-rewrite (derive_val (svalP (idf x0))) /=.
+rewrite (derive_val (svalP (idf x0)))/=.
 clear idf.
-rewrite exp_derive deriveM// derive_cst derive_id .
+rewrite exp_derive deriveM// derive_cst derive_id.
 rewrite scaler0 addr0 /GRing.scale /= !mulr1 expr1.
 rewrite -mulrA divff ?lt0r_neq0//.
 rewrite (mulrC _ 2) -mulrDr -mulrBr mulr_gt0//.
@@ -995,61 +972,47 @@ rewrite -[ltLHS]addr0 -(subrr 1) addrCA expR_gt1Dx//.
 by rewrite subr_eq0.
 Qed.
 
-Let sqrxB2xlnx_lt1 (c x : R) :
-  x \in `]0, 1[ -> x ^+ 2 - 2 * x * ln x < 1.
+Let sqrxB2xlnx_lt1 (c x : R) : x \in `]0, 1[ -> x ^+ 2 - 2 * x * ln x < 1.
 Proof.
-rewrite in_itv=> /andP [] x0 x1.
-fold (f x).
-simpl in idf.
-rewrite -f1E.
-apply: (@gtr0_derive1_lt_oc _ f 0 1).
-- move=> t /[!in_itv] /= /andP [] + _.
-  by case/idf=> ? /@ex_derive.
-- move=> t /[!in_itv] /= /andP [] t0 t1.
-  rewrite derive1E.
-  apply: Df_gt0 => //.
-  by rewrite (lt_eqF t1).
-- apply: derivable_within_continuous => t /[!in_itv] /= /andP [] + _.
-  by case/idf=> ? /@ex_derive.
-- by rewrite in_itv/=; apply/andP; split=> //; apply/ltW.
+rewrite in_itv=> /andP[/= x0 x1].
+rewrite -/(f x) -f1E; apply: (@gtr0_derive1_lt_oc _ f 0 1).
+- by move=> t /[!in_itv] /= /andP[+ _] => /idf[? /@ex_derive].
+- move=> t /[!in_itv] /= /andP[t0 t1].
+  by rewrite derive1E Df_gt0// lt_eqF.
+- apply: derivable_within_continuous => t /[!in_itv] /= /andP[+ _].
+  by case/idf => ? /@ex_derive.
+- by rewrite in_itv/= x0/= ltW.
 - by rewrite in_itv /= ltr01 lexx.
-- assumption.
+- exact: x1.
 Qed.
 
 Let sqrxB2xlnx_gt1 (c x : R) : 1 < x -> 1 < x ^+ 2 - 2 * x * ln x.
 Proof.
 move=> x1.
-have x0 : 0 < x by rewrite (lt_trans _ x1).
-fold (f x).
-simpl in idf.
-rewrite -f1E.
-apply: (@gtr0_derive1_lt_cc _ f 1 x).
-- move=> t /[!in_itv] /= /andP [] + _ => t1.
-  have: 0 < t by rewrite (lt_trans _ t1).
-  by case/idf=> ? /@ex_derive.
-- move=> t /[!in_itv] /= /andP [] t1 tx.
-  have t0: 0 < t by rewrite (lt_trans _ t1).
-  rewrite derive1E.
-  apply: Df_gt0=> //.
-  by rewrite (gt_eqF t1).
-- apply: derivable_within_continuous => t /[!in_itv] /= /andP [] + _ => t1.
-  have: 0 < t by rewrite (lt_le_trans _ t1).
-  by case/idf=> ? /@ex_derive.
-- by rewrite in_itv/=; apply/andP; split=> //; apply/ltW.
+have x0 := lt_trans ltr01 x1.
+rewrite -/(f x) -f1E; apply: (@gtr0_derive1_lt_cc _ f 1 x).
+- move=> t /[!in_itv] /= /andP[t1 _].
+  by have /idf[? /@ex_derive] := lt_trans ltr01 t1.
+- move=> t /[!in_itv] /= /andP[t1 tx].
+  have t0 := lt_trans ltr01 t1.
+  by rewrite derive1E Df_gt0// gt_eqF.
+- apply: derivable_within_continuous => t /[!in_itv] /= /andP[t1 _].
+  by have /idf[? /@ex_derive] := lt_le_trans ltr01 t1.
+- by rewrite in_itv/= lexx/= ltW.
 - by rewrite in_itv /= lexx andbT ltW.
-- assumption.
+- exact: x1.
 Qed.
 
 Lemma xlnx_lbound_i01 (c x : R) :
   c <= 2 -> x \in `]0, 1[ -> x ^+ 2 - 1 < c * x * ln x.
 Proof.
 pose c' := c - 2.
-have-> : c = c' + 2 by rewrite /c' addrAC -addrA subrr addr0.
+have -> : c = c' + 2 by rewrite /c' subrK.
 rewrite -lerBrDr subrr.
 move: c'; clear c => c.
 rewrite ltrBlDr -ltrBlDl.
 rewrite le_eqVlt=> /orP [/eqP-> |]; first by rewrite add0r; exact: sqrxB2xlnx_lt1.
-move=> c0 /[dup] x01 /[!in_itv] /andP [] x0 x1.
+move=> c0 /[dup] x01 /[!in_itv] /andP[x0 x1].
 rewrite -mulrA (addrC c) mulrDl !mulrA opprD addrA.
 rewrite -[ltRHS]addr0 ltrD// ?sqrxB2xlnx_lt1// oppr_lt0.
 by rewrite -mulrA nmulr_lgt0// nmulr_llt0// ln_lt0.
@@ -1182,8 +1145,8 @@ have idf (y : R^o) : 0 < 1 + y -> is_derive y (1:R) f (df y).
   move=> y1.
   rewrite (_ : df y = df0 y).
     apply: is_deriveB; last exact: is_deriveD.
-    apply: is_deriveM=> //.
-    apply: is_derive1_comp=> //.
+    apply: is_deriveM => //.
+    apply: is_derive1_comp => //.
     exact: is_derive1_ln.
   rewrite /df0.
   rewrite deriveD// derive_cst derive_id.
@@ -1193,21 +1156,19 @@ have idf (y : R^o) : 0 < 1 + y -> is_derive y (1:R) f (df y).
   reflexivity.
 clear df0.
 have y1cc y : y \in `[0, 1] -> 0 < 1 + y.
-  rewrite in_itv /= => /andP [] y0 ?.
-  by have y1: 0 < 1 + y by apply: (le_lt_trans y0); rewrite ltrDr.
+  by rewrite in_itv /= => /andP[y0 t1]; rewrite ltr_wpDr.
 have y1oo y : y \in `]0, 1[ -> 0 < 1 + y by move/subset_itv_oo_cc/y1cc.
 have dfge0 y : y \in `]0, 1[ -> 0 <= df y.
-  move=> y01.
-  have:= y01.
-  rewrite /df in_itv /= => /andP [] y0 y1.
+  move=> /[dup] y01.
+  rewrite /df in_itv /= => /andP[y0 y1].
   rewrite -lerBlDl opprK add0r -mulr2n -(mulr_natl _ 2) mulrA.
   rewrite [in leLHS](_ : y = 1 + y - 1); last by rewrite addrAC subrr add0r.
-  pose iy:= Itv01 (ltW y0) (ltW y1).
-  have y1E: 1 + y = @convex.conv _ R^o iy 2 1.
+  pose iy := Itv01 (ltW y0) (ltW y1).
+  have y1E : 1 + y = @convex.conv _ R^o iy 2 1.
     rewrite convRE /= /onem mulr1 (mulr_natr _ 2) mulr2n.
     by rewrite addrACA subrr addr0 addrC.
-  rewrite y1E; apply: (le_trans _ (concave_ln _ _ _))=> //.
-  rewrite -y1E addrAC subrr add0r convRE ln1 mulr0 addr0 /=.
+  rewrite y1E; apply: le_trans (concave_ln _ _ _) => //.
+  rewrite -y1E addrAC subrr add0r convRE ln1 mulr0 addr0/=.
   rewrite mulrC ler_pM// ?(@ltW _ _ 0)// mulrC.
   rewrite ler_pdivrMr//.
   rewrite -[leLHS]expRK -[leRHS]expRK ler_ln ?posrE ?expR_gt0//.
@@ -1221,7 +1182,7 @@ apply: (@ger0_derive1_le_cc R f 0 1).
 - by apply: derivable_within_continuous=> y /y1cc /idf /@ex_derive.
 - by rewrite bound_itvE.
 - exact: subset_itv_oo_cc.
-- by have:= x01; rewrite in_itv=> /andP /= [] /ltW.
+- by have:= x01; rewrite in_itv=> /andP[/ltW].
 Qed.
 
 End xlnx_bounding_with_interval.
