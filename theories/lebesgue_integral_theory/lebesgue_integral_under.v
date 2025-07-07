@@ -63,7 +63,7 @@ have BZ_cf x : x \in B `\` Z -> continuous (f ^~ x).
   by rewrite inE/= => -[Bx nZx]; exact: ncfZ.
 have [vu|uv] := lerP v u.
   by move: Ia; rewrite /I set_itv_ge// -leNgt bnd_simp.
-apply/cvg_nbhsP => w wa.
+apply/(@cvg_nbhsP _ R^o) => w wa.
 have /near_in_itvoo[e /= e0 aeuv] : a \in `]u, v[ by rewrite inE.
 move/cvgrPdist_lt : (wa) => /(_ _ e0)[N _ aue].
 have IwnN n : I (w (n + N)) by apply: aeuv; apply: aue; exact: leq_addl.
@@ -114,7 +114,7 @@ apply: (@dominated_cvg _ _ _ mu _ _
   have : x \in B `\` Z.
     move: BZUUx; rewrite inE/= => -[Bx nZUUx]; rewrite inE/=; split => //.
     by apply: contra_not nZUUx; left.
-  by move/(BZ_cf x)/(_ a)/cvg_nbhsP; apply; rewrite (cvg_shiftn N).
+  by move/(BZ_cf x)/(_ a)/(@cvg_nbhsP _ R^o); apply; rewrite (cvg_shiftn N).
 - by apply: (integrableS mB) => //; exact: measurableD.
 - move=> n x [Bx ZUUx]; rewrite lee_fin.
   move/subsetCPl : (Ug_ub n); apply => //=.
@@ -125,7 +125,8 @@ End continuity_under_integral.
 
 Section differentiation_under_integral.
 
-Definition partial1of2 {R : realType} {T : Type} (f : R -> T -> R) : R -> T -> R := fun x y => (f ^~ y)^`() x.
+Definition partial1of2 {R : realType} {T : Type} (f : R -> T -> R) : R -> T -> R :=
+  fun x y => (f ^~ y)^`() x.
 
 Local Notation "'d1 f" := (partial1of2 f).
 
