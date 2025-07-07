@@ -4,6 +4,12 @@
 
 ### Added
 
+- in `unstable.v`:
+  + lemma `sqrK`
+
+- in `realfun.v`:
+  + instance `is_derive1_sqrt`
+
 ### Changed
 
 ### Renamed
