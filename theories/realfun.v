@@ -232,10 +232,6 @@ apply: cvg_at_right_left_dnbhs.
 - by apply/cvg_at_leftP => u [pu ?]; apply: pfl; split => // n; rewrite lt_eqF.
 Unshelve. all: end_near. Qed.
 
-Lemma cvg_nbhsP f p l : f x @[x --> p] --> l <->
-  (forall u : R^nat, (u n @[n --> \oo] --> p) -> f (u n) @[n --> \oo] --> l).
-Proof. exact: @metricType_numDomainType.cvg_nbhsP R R^o f p l. Qed.
-
 End cvgr_fun_cvg_seq.
 
 Section cvge_fun_cvg_seq.

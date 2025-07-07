@@ -8,6 +8,17 @@ From mathcomp Require Import interval_inference reals topology_structure.
 From mathcomp Require Import uniform_structure pseudometric_structure.
 From mathcomp Require Import num_topology product_topology separation_axioms.
 
+(**md**************************************************************************)
+(* # Metric spaces                                                            *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*   metricType K == metric structure with distance mdist                     *)
+(*                   The mixin is defined by extending PseudoMetric.          *)
+(*                   The HB class is Metric.                                  *)
+(*                   R^o with R : numFieldType is shown to be a metric space. *)
+(* ```                                                                        *)
+(******************************************************************************)
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -93,22 +104,18 @@ Proof. by move/normr0_eq0/eqP; rewrite subr_eq0 => /eqP. Qed.
 Let ballEmdist x d : ball x d = [set y | dist x y < d].
 Proof. by apply/seteqP; split => [|]/= A; rewrite /ball/= distrC. Qed.
 
-Fail Check R^o : metricType R.
-
 HB.instance Definition _ :=
   @isMetric.Build R R^o dist dist_ge0 dist_positivity ballEmdist.
-
-Check R^o : metricType R.
 
 End numFieldType_metric.
 
 Module metricType_numDomainType.
 (* tentative generalization of the section
 pseudoMetricNormedZmod_numDomainType
-from pseudoMetricNormedZmod_numDomainType
+from pseudoMetricNormedZmod
 to
 metricType *)
-Section tmp.
+Section metricType_numDomainType.
 Context {K : numDomainType} {V : metricType K}.
 
 Local Notation ball_mdist := (fun x d => [set y : V | mdist x y < d]).
@@ -158,9 +165,9 @@ Proof.
 by move=> ? ? ?; near do rewrite ltW//; apply: cvgr_dist_lt.
 Unshelve. all: by end_near. Qed.
 
-End tmp.
+End metricType_numDomainType.
 
-Section tmp2.
+Section at_left_right_metricType.
 (* tentative generalization of the section
 at_left_right_pseudoMetricNormedZmod
 from
@@ -209,10 +216,14 @@ Lemma cvgrPdist_le {T} {F : set_system T} {FF : Filter F} (f : T -> V) (y : V) :
   f @ F --> y <-> forall eps, 0 < eps -> \forall t \near F, mdist y (f t) <= eps.
 Proof. exact: (cvgrP _ 0 1)%N. Qed.
 
-End tmp2.
+End at_left_right_metricType.
 
-Section tmp3.
+End metricType_numDomainType.
+
+Section cvg_nbhsP.
 Variables (R : realType) (V : metricType R).
+
+Import metricType_numDomainType.
 
 Lemma cvg_nbhsP (f : V -> V) (p l : V) : f x @[x --> p] --> l <->
   (forall u : nat -> V, (u n @[n --> \oo] --> p) -> f (u n) @[n --> \oo] --> l).
@@ -252,6 +263,4 @@ rewrite /sval/=; case: cid => // x [px xpn].
 by rewrite ltNge metric_sym => /negP.
 Unshelve. all: end_near. Qed.
 
-End tmp3.
-
-End metricType_numDomainType.
+End cvg_nbhsP.
