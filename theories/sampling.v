@@ -79,33 +79,6 @@ Lemma preimage_set1 T {U : eqType} (X : T -> U) r :
 Proof. by apply/seteqP; split => [x /eqP H//|x /eqP]. Qed.
 
 (* PR in progress *)
-Lemma integral21_prod_meas2 {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
-    {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
-    (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
-  (m1 \x m2)%E.-integrable [set: T1 * T2] f ->
-  (\int[m2]_x fubini_G m1 f x = \int[(m1 \x^ m2)%E]_z f z)%E.
-Proof.
-move=> intf; rewrite fubini2//.
-apply: eq_measure_integral => //= A mA _.
-apply: product_measure_unique => // B C mB mC/=.
-by rewrite product_measure2E.
-Qed.
-
-(* PR in progress *)
-Lemma integral12_prod_meas2 {d1} {T1 : measurableType d1}
-    {d2} {T2 : measurableType d2} {R : realType}
-    (m1 : {sigma_finite_measure set T1 -> \bar R})
-    (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
-  (m1 \x m2)%E.-integrable [set: T1 * T2] f ->
-  (\int[m1]_x fubini_F m2 f x = \int[(m1 \x^ m2)%E]_z f z)%E.
-Proof.
-move=> intf; rewrite fubini1//.
-apply: eq_measure_integral => //= A mA _.
-apply: product_measure_unique => // B C mB mC/=.
-by rewrite product_measure2E.
-Qed.
-
-(* PR in progress *)
 Lemma integrable_prod_measP {d1} {T1 : measurableType d1} d2 {T2 : measurableType d2}
   {R : realType} (m1 : {sigma_finite_measure set T1 -> \bar R})
   (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
@@ -126,7 +99,7 @@ Lemma integral_prod_meas1E {d1} {T1 : measurableType d1}
     (m2 : {sigma_finite_measure set T2 -> \bar R}) (f : T1 * T2 -> \bar R) :
   (m1 \x m2)%E.-integrable [set: T1 * T2] f ->
   (\int[m1 \x^ m2]_x f x = \int[(m1 \x m2)%E]_z f z)%E.
-Proof. by move=> intf; rewrite -fubini1// integral12_prod_meas2. Qed.
+Proof. by move=> intf; rewrite -integral12_prod_meas1// integral12_prod_meas2. Qed.
 
 Section PR_to_hoelder.
 Context d (T : measurableType d) (R : realType).
@@ -228,10 +201,10 @@ Local Open Scope ereal_scope.
 Definition pair_of_tuple n (w : n.+1.-tuple T) :=
   (thead w, [the _.-tuple _ of behead w]).
 
-Lemma measurable_pair_of_tuple n :
-  measurable_fun [set: _.-tuple _] (@pair_of_tuple n).
+Lemma measurable_pair_of_tuple n (D : set (n.+1.-tuple T)) :
+  measurable_fun D (@pair_of_tuple n).
 Proof.
-by apply/measurable_fun_pair => /=;
+by apply/measurable_funTS/measurable_fun_pair => /=;
   [exact: measurable_tnth|exact: measurable_behead].
 Qed.
 
@@ -409,9 +382,8 @@ Proof.
 move=> /integrableP[mf intf].
 rewrite -(@integral_pushforward _ _ _ _ R _ (measurable_tuple_of_pair n) _
     setT (fun x : n.+1.-tuple T => (f x)%:E)).
-- apply: eq_measure_integral => //.
-    exact: measurable_tuple_of_pair.
-  by move=> ? A mA _ /=; rewrite image_pair_of_tuple.
+- apply: eq_measure_integral => /=; first exact: measurable_tuple_of_pair.
+  by move=> _ A mA _ /=; rewrite image_pair_of_tuple.
 - exact: mf.
 - rewrite /=.
   apply/integrable_prod_measP => /=.
@@ -423,14 +395,14 @@ rewrite -(@integral_pushforward _ _ _ _ R _ (measurable_tuple_of_pair n) _
        \o (pair_of_tuple n)) x); last first.
     by apply: eq_integral => x _ /=; rewrite tuple_of_pairK.
   rewrite le_eqVlt; apply/orP; left; apply/eqP.
-  rewrite -[RHS](@integral_pushforward _ _ _ _ R _ (measurable_pair_of_tuple n)
+  rewrite -[RHS](@integral_pushforward _ _ _ _ R _ (measurable_pair_of_tuple n setT)
      _ setT (fun x => (abse \o (EFin \o (f \o (tuple_of_pair n)))) x))//.
-  + apply: eq_measure_integral => //.
-      exact: measurable_pair_of_tuple.
-    move=> ? A mA _.
-    apply: product_measure_unique => // B C mB mC.
-    rewrite /= /pushforward/= -product_measure2E//; congr (_ _).
-    by rewrite image_preimage// range_pair_of_tuple.
+  + apply: eq_measure_integral => /=; first exact: measurable_pair_of_tuple.
+    move=> _ A mA _/=; rewrite /pushforward /=.
+    rewrite image_pair_of_tuple -comp_preimage (_ : _ \o _ = id); last first.
+      by apply/funext=> x/=; rewrite pair_of_tupleK.
+    rewrite preimage_id; apply: product_measure_unique => // B C mB mC.
+    by rewrite /= /pushforward/= -product_measure2E.
   + apply/measurable_EFinP => //=; apply: measurableT_comp => //=.
     by apply: measurableT_comp => //=; [exact/measurable_EFinP|
                                         exact: measurable_tuple_of_pair].
@@ -449,12 +421,11 @@ Lemma integral_ipro_tnth (P : probability T R) n (f : {mfun T >-> R}) i :
   \int[\X_n P]_x `|f (tnth x i)|%:E = \int[P]_x (`|f x|)%:E.
 Proof.
 rewrite -(preimage_setT ((@tnth n _)^~ i)).
-rewrite -(@ge0_integral_pushforward _ _ _ _ _ _ (measurable_tnth i) (\X_n P) _ (EFin \o normr \o f) measurableT).
-- apply: eq_measure_integral => //=.
-    exact: measurable_tnth.
-  move=> mtnth A mA _/=.
-  by rewrite /pushforward ipro_tnth.
-- by do 2 apply: measurableT_comp => //.
+rewrite -(@ge0_integral_pushforward _ _ _ _ _ _ (measurable_tnth i) (\X_n P) _
+    (EFin \o normr \o f) measurableT).
+- apply: eq_measure_integral => /=; first exact: measurable_tnth.
+  by move=> _ A mA _/=; rewrite /pushforward ipro_tnth.
+- by do 2 apply: measurableT_comp.
 - by move=> y _/=; rewrite lee_fin normr_ge0.
 Qed.
 
@@ -583,16 +554,16 @@ rewrite -integral12_prod_meas2/=; last first.
       by apply: integral_ge0 => //.
     rewrite lte_mul_pinfty//.
     - exact: integral_ge0.
-    - exact/integral_fune_fin_num/Lfun1_integrable/Lfun_norm.
+    - exact/integrable_fin_num/Lfun1_integrable/Lfun_norm.
     - by move: lX => /Lfun1_integrable/integrableP[_ /=].
 rewrite /fubini_F/=.
 under eq_integral => x _.
   under eq_integral => y _ do rewrite EFinM.
   rewrite integralZl//; last exact/Lfun1_integrable.
-  rewrite -[X in _ * X]fineK ?integral_fune_fin_num//; last exact/Lfun1_integrable.
+  rewrite -[X in _ * X]fineK ?integrable_fin_num//; last exact/Lfun1_integrable.
   over.
 rewrite /=integralZr//; last exact/Lfun1_integrable.
-by rewrite fineK// integral_fune_fin_num; last exact/Lfun1_integrable.
+by rewrite fineK// integrable_fin_num; last exact/Lfun1_integrable.
 Qed.
 
 End properties_of_expectation.
@@ -624,7 +595,7 @@ have h2 : (\prod_(i < n) Tnth (behead_tuple X) i)%R \in Lfun (\X_n P) 1.
   have := IH (behead_tuple X).
   rewrite unlock /= => ->; last by move => x /mem_behead/lfunX.
   rewrite abse_prod -ge0_fin_numE ?prode_ge0// prode_fin_num// => i _.
-  rewrite abse_fin_num integral_fune_fin_num//.
+  rewrite abse_fin_num integrable_fin_num//.
   exact/Lfun1_integrable/lfunX/mem_behead/mem_tnth.
 rewrite [LHS](@integral_iproS _ _ _ _ _ MF); last first.
   rewrite /MF/F; apply/integrableP; split; first exact: measurableT_comp.
@@ -746,7 +717,7 @@ HB.mixin Record RV_isBernoulli d (T : measurableType d) (R : realType)
 #[short(type=bernoulliRV)]
 HB.structure Definition BernoulliRV d (T : measurableType d) (R : realType)
     (P : probability T R) (p : R) :=
-  {X of @RV_isBernoulli _ _ _ P p X}.
+  {X of @RV_isBernoulli _ _ _ P p X & MeasurableFun d X}.
 Arguments bernoulliRV {d T R}.
 
 Section properties_of_BernoulliRV.
