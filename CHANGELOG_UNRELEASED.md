@@ -20,6 +20,15 @@
 - in `hoelder.v`
   + lemma `hoelder_conj_ge1`
 
+- in `realfun.v`:
+  + lemmas `derivable_oy_continuous_within_itvcy`,
+           `derivable_oy_continuous_within_itvNyc`,
+  + lemmas `derivable_oo_continuous_bndW`,
+           `derivable_oy_continuous_bndW_oo`,
+           `derivable_oy_continuous_bndW`,
+           `derivable_Nyo_continuous_bndW_oo`,
+           `derivable_Nyo_continuous_bndW`
+
 ### Changed
 
 ### Renamed
