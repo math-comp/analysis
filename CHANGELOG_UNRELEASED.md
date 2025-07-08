@@ -17,6 +17,8 @@
 
 - in `exp.v:
   + lemma `norm_expR`
+- in `hoelder.v`
+  + lemma `hoelder_conj_ge1`
 
 ### Changed
 
