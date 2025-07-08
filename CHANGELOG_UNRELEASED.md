@@ -19,7 +19,7 @@
   + lemma `norm_expR`
 
 - in `reals.v`:
-  + definitions `rational`, `irrational`
+  + definition `irrational`
   + lemmas `irrationalE`, `rationalP` 
 
 - in `topology_structure.v`:
