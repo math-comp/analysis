@@ -183,13 +183,14 @@ Qed.
 End lnorm.
 
 Section hoelder_conjugate.
-Context d (T : measurableType d) (R : realType).
-Variables (mu : {measure set T -> \bar R}).
+Context {d} {T : measurableType d} {R : realType}.
+Variable mu : {measure set T -> \bar R}.
+Implicit Types p q : \bar R.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
-Definition hoelder_conjugate (p : \bar R) : \bar R :=
+Definition hoelder_conjugate p : \bar R :=
   if p == +oo then 1 else
   if p == -oo then 0 else
   if p == 0 then -oo else
@@ -215,7 +216,7 @@ Proof. by []. Qed.
 Lemma hoelder_conjugateNy : -oo^* = 0.
 Proof. by []. Qed.
 
-Lemma hoelder_conjugate_eqy (p : \bar R) : p^* = +oo -> p = 1.
+Lemma hoelder_conjugate_eqy p : p^* = +oo -> p = 1.
 Proof.
 move: p => [p| |].
 - rewrite /hoelder_conjugate/=; case: ifPn => [/eqP p0//|p0].
@@ -225,7 +226,7 @@ move: p => [p| |].
 - by rewrite hoelder_conjugateNy.
 Qed.
 
-Lemma hoelder_conjugate_eqNy (p : \bar R) : p^* = -oo -> p = 0.
+Lemma hoelder_conjugate_eqNy p : p^* = -oo -> p = 0.
 Proof.
 move: p => [p| |].
 - rewrite /hoelder_conjugate/=; case: ifPn => [/eqP p0//|p0].
@@ -235,7 +236,7 @@ move: p => [p| |].
 - by rewrite hoelder_conjugateNy.
 Qed.
 
-Lemma hoelder_conjugate_eq1 (p : \bar R) : p > -oo -> p != 0 ->
+Lemma hoelder_conjugate_eq1 p : p > -oo -> p != 0 ->
   p^-1 + (p^*)^-1 = 1.
 Proof.
 move=> pNy p0; rewrite /hoelder_conjugate/=.
@@ -254,14 +255,12 @@ rewrite EFinB muleBr// mule1 -EFinM mulVf// -EFinD.
 by rewrite (addrC p^-1%R) (subrK p^-1%R).
 Qed.
 
-Lemma hoelder_conj_ge1 (p : \bar R) : 1 <= p -> 1 <= p^*.
+Lemma hoelder_conj_ge1 p : 1 <= p -> 1 <= p^*.
 Proof.
-move: p => [r|//|//].
-rewrite !le_eqVlt => /orP[/eqP <-|r1].
-  by rewrite hoelder_conjugate1 ltey//.
-rewrite /hoelder_conjugate/= !(@gt_eqF _ _ (r%:E)) ?(lt_trans lte01 _)//.
-apply/orP; right; rewrite inver ?gt_eqF ?subr_gt0// -EFinM.
-by rewrite lte_fin ltr_pdivlMr ?subr_gt0// mul1r gtrBl.
+move: p => [r|//|//]; rewrite le_eqVlt => /predU1P[<-|r1].
+  by rewrite hoelder_conjugate1 leey.
+rewrite /hoelder_conjugate/= gt_eqF ?(lt_trans lte01)// inver subr_eq0 gt_eqF//.
+by rewrite -EFinM lee_fin ler_pdivlMr ?subr_gt0// mul1r lerBlDl lerDr.
 Qed.
 
 Lemma hoelder_conjugateP p q : p > -oo -> p != 0 ->
