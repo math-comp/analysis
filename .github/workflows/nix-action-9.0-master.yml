@@ -281,6 +281,10 @@ jobs:
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
         "9.0-master" --argstr job "stdlib"
     - if: steps.stepCheck.outputs.status != 'fetched'
+      name: 'Building/fetching previous CI target: interval'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.0" --argstr
+        job "interval"
+    - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
         "9.0-master" --argstr job "mathcomp-analysis-single"
@@ -342,17 +346,17 @@ jobs:
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
         "9.0-master" --argstr job "rocq-core"
     - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-analysis'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "9.0-master" --argstr job "mathcomp-analysis"
+      name: 'Building/fetching previous CI target: mathcomp-field'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.0" --argstr
+        job "mathcomp-field"
     - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: mathcomp-reals-stdlib'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "9.0-master" --argstr job "mathcomp-reals-stdlib"
+      name: 'Building/fetching previous CI target: mathcomp-bigenough'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.0" --argstr
+        job "mathcomp-bigenough"
     - if: steps.stepCheck.outputs.status != 'fetched'
-      name: 'Building/fetching previous CI target: stdlib'
-      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
-        "9.0-master" --argstr job "stdlib"
+      name: 'Building/fetching previous CI target: hierarchy-builder'
+      run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle "9.0" --argstr
+        job "hierarchy-builder"
     - if: steps.stepCheck.outputs.status != 'fetched'
       name: Building/fetching current CI target
       run: NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link --argstr bundle 
