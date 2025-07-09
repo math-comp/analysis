@@ -60,6 +60,7 @@ lebesgue_measure.v
 derive.v
 measure.v
 numfun.v
+borel_hierarchy.v
 
 lebesgue_integral_theory/simple_functions.v
 lebesgue_integral_theory/lebesgue_integral_definition.v

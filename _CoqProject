@@ -96,6 +96,7 @@ theories/lebesgue_stieltjes_measure.v
 theories/derive.v
 theories/measure.v
 theories/numfun.v
+theories/borel_hierarchy.v
 
 theories/lebesgue_integral_theory/simple_functions.v
 theories/lebesgue_integral_theory/lebesgue_integral_definition.v

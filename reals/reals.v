@@ -36,6 +36,11 @@
 (*      Rceil x == the ceil of x as a real number, i.e., - Rfloor (- x)       *)
 (* ```                                                                        *)
 (*                                                                            *)
+(* ```                                                                        *)
+(*     @rational R == set of rational numbers of type R : realType            *)
+(*   @irrational R == the complement of rational R                            *)
+(* ```                                                                        *)
+(*                                                                            *)
 (******************************************************************************)
 
 From Corelib Require Import Setoid.
@@ -708,3 +713,33 @@ by rewrite 2!ratr_int mulr_natr (le_lt_trans _ c).
 Qed.
 
 End rat_in_itvoo.
+
+Section rational.
+Context {R : realType}.
+
+Definition rational : set R := ratr @` [set: rat].
+
+Lemma rationalP (r : R) :
+  rational r <-> exists (a : int) (b : nat), r = a%:~R / b%:R.
+Proof.
+split=> [[q _ <-{r}]|[a [b ->]]]; last first.
+  exists (a%:~R / b%:R) => //.
+  by rewrite ratr_is_multiplicative ratr_int fmorphV//= ratr_nat.
+have [n d nd] := ratP q.
+have [n0|n0] := leP 0 n.
+  exists n, d.+1.
+  by rewrite ratr_is_multiplicative ratr_int fmorphV/= ratr_nat.
+exists (- `|n|), d.+1.
+by rewrite ratr_is_multiplicative ltr0_norm// opprK fmorphV//= !ratr_int.
+Qed.
+
+Definition irrational : set R := ~` rational.
+
+Lemma irrationalE : irrational = \bigcap_(q : rat) ~` (ratr @` [set q]).
+Proof.
+apply/seteqP; split => [r/= rE q _/=|r/= rE [q] _ qr]; last first.
+  by apply: (rE q Logic.I) => /=; exists q.
+by apply: contra_not rE => -[_ -> <-{r}]; exists q.
+Qed.
+
+End rational.
