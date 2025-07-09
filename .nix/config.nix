@@ -107,6 +107,7 @@ in {
       interval.job = false;
       ssprove.job = false;
       mathcomp-infotheo.job = false;
+      mathcomp-analysis-stdlib.job = false;  # because of the interval dependency
     };
   };
 
