@@ -9,5 +9,6 @@
 # introduced in Rocq 9.3
 -arg -w -arg -rewrite-rw
 
+sampling.v
 Rstruct_topology.v
 showcase/uniform_bigO.v
