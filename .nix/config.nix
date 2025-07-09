@@ -79,6 +79,7 @@ in
     mathcomp-finmap.override.version = "master";
     ssprove.job = false;
     mathcomp-analysis-stdlib.job = false;  # because of the interval dependency
+    mathcomp-analysis-single.job = false;  # same
   }; };
 
   ## Cachix caches to use in CI
