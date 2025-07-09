@@ -1,2 +1,4 @@
-{ mathcomp-analysis, version ? null }:
-mathcomp-analysis.override {single = true; inherit version;}
+{ mathcomp-analysis, interval, version ? null }:
+(mathcomp-analysis.overrideAttrs (o:
+  { propagatedBuildInputs = o.propagatedBuildInputs ++ [ interval ]; }
+)).override {single = true; inherit version;}
