@@ -308,15 +308,15 @@ rewrite drzx -image2_set1 inf_sumE.
 - exact: has_inf1.
 Qed.
 
-Lemma sdist_in_le x t eps :
-  x + eps \in E -> x <= t < x + eps -> sdist t <= eps.
+Lemma sdist_in_le x t d :
+  x + d \in E -> x <= t < x + d -> sdist t <= d.
 Proof.
-move=> epsE /andP[xt tx] /=.
+move=> dE /andP[xt tx] /=.
 rewrite /sdist.
 rewrite ge_min; apply/orP; right.
-have Ht : dr t (eps + x - t) by rewrite /dr /= addrC subrK subr_gt0 addrC.
-have /set0P /negbTE -> : dr t !=set0 by exists (eps+x-t).
-apply: (le_trans _ _ (y:=eps+x-t)).
+have Ht : dr t (d + x - t) by rewrite /dr /= addrC subrK subr_gt0 addrC.
+have /set0P /negbTE -> : dr t !=set0 by exists (d+x-t).
+apply: (le_trans _ _ (y:=d+x-t)).
   have [-> | infdr0] := eqVneq (inf (dr t)) 0.
     by rewrite subr_ge0 addrC ltW.
   by rewrite le_inf_n0 // inE.
@@ -355,11 +355,10 @@ Proof.
 move=> x.
 apply: continuous_at_sorgenfrey_to_RtopoP => /= eps eps0.
 pose xepsE := [set y | x + y \in E /\ 0 < y < eps].
-pose eps' := xget eps xepsE.
-exists eps'.
-  by rewrite /eps'; case: (xgetP eps xepsE) => // y -> [] _ /andP[].
+exists (xget eps xepsE).
+  by case: (xgetP eps xepsE) => // y -> [] _ /andP[].
 (* forall z : R, x <= z < x + eps' -> `|sdist x - sdist z| < eps *)
-move=> z /andP [] xz zx. 
+move=> z /andP[xz zx].
 have [<-|xz'] := eqVneq x z.
   by rewrite subrr normr0.
 have {xz xz'} xz: x < z by rewrite lt_neqAle xz'.
@@ -368,16 +367,16 @@ set xr : R := if dr x == set0 then _ else _.
 set zr : R := if dr z == set0 then _ else _.
 case/boolP: (xepsE == set0) => [xepsE0 | /set0P]; last first.
   move/xgetPex => /= /(_ eps).
-  rewrite -/eps' => -[] xE /andP[eps'0 Heps'].
-  rewrite -/(sdist x) -/(sdist z) (le_lt_trans _ Heps') //.
-  have Hx : sdist x <= eps' by apply: (sdist_in_le xE); rewrite // lexx ltrDl.
-  have Hz : sdist z <= eps' by apply: (sdist_in_le xE); rewrite // zx ltW // xz.
+  set d := xget eps xepsE in zx *.
+  case=> xdE /andP[d0 deps].
+  rewrite -/(sdist x) -/(sdist z) (le_lt_trans _ deps) //.
+  have Hx : sdist x <= d by apply: (sdist_in_le xdE); rewrite // lexx ltrDl.
+  have Hz : sdist z <= d by apply: (sdist_in_le xdE); rewrite // zx ltW // xz.
   by rewrite lerPnormB // sdist_ge0.
-have Heps' : eps' = eps by rewrite /eps' xgetPN // (eqP xepsE0) => t.
-rewrite {}Heps' {eps'} in zx.
+rewrite xgetPN in zx; last by move=> t; rewrite (eqP xepsE0).
 have xznE : `]x,z] `<=` ~`E.
   move=> t /=.
-  rewrite in_itv /= => /andP[] xt tz.
+  rewrite in_itv /= => /andP[xt tz].
   apply: contraTnot xepsE0.
   rewrite -inE => Et; apply/set0P.
   exists (t-x); rewrite /xepsE /= addrC subrK.
