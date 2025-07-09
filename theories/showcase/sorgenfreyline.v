@@ -226,6 +226,9 @@ Proof. by move=> y; rewrite inE => -[]. Qed.
 Let dr_ge0 x : {in dr x, forall y : R, y >= 0}.
 Proof. by move=> y; rewrite inE => -[] _ /ltW. Qed.
 
+Lemma sdist_ge0 x : 0 <= sdist x.
+Proof. by rewrite /sdist le_min !fun_if ler01 !inf_ge0 // !if_same. Qed.
+
 Lemma image2_set1 A B C (S : set A) (eb : B) (f : A -> B -> C) :
   [set f x y | x in S & y in [set eb]] = [set f x eb | x in S].
 Proof.
@@ -279,7 +282,7 @@ rewrite !addrA addrC addrA addKr addrC.
 by rewrite subr_gt0 ltr_wpDr // ltW.
 Qed.
 
-Lemma inf_dlxz x z :  
+Lemma inf_dlxz x z :
   dl z = [set t + (z - x) | t in dl x] -> 
   dl x !=set0 -> 
   x - inf (dl x) = z - inf (dl z).
@@ -289,6 +292,19 @@ rewrite dlxz -image2_set1 inf_sumE.
 - by rewrite inf1 !opprD !addrA (addrC z) addrK (opprK x) addrC.
 - split => //.
   exists 0. move=> u. rewrite -inE. exact: dl_ge0.
+- exact: has_inf1.
+Qed.
+
+Lemma inf_drxz x z :
+  dr x = [set t + (z - x) | t in dr z] ->
+  dr z != set0 ->
+  inf (dr x) = inf (dr z) + z - x.
+Proof.
+move=> drzx drz0.
+rewrite drzx -image2_set1 inf_sumE.
+- by rewrite inf1 addrA.
+- split. by apply/set0P.
+  exists 0. move=> u. rewrite -inE. exact: dr_ge0.
 - exact: has_inf1.
 Qed.
 
@@ -350,31 +366,26 @@ case/boolP: (xepsE == set0).
     by rewrite subr_gt0 xt ltrBlDl (le_lt_trans tz).
   have Hr : `|Num.min 1 xr - Num.min 1 zr| < eps.
     rewrite /xr /zr.
-    case/boolP: (dr z == set0) => [/eqP |] drz0.
+    case/boolP: (dr z == set0) => [/eqP | /set0P] drz0.
       move: drzx.
       rewrite drz0 image_set0 => /eqP ->.
       by rewrite subrr normr0.
     have drx0 : dr x !=set0.
-      case/set0P : drz0 => z0 drzz0.
+      case : drz0 => z0 drzz0.
       rewrite drzx.
       exists (z0 + (z - x)) => /=.
       by exists z0.
-    rewrite ifF.
-      rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //.
-      rewrite subrr normr0 maxEle normr_ge0.
-        rewrite drzx.
-        rewrite -image2_set1.
-        rewrite inf_sumE //.
-          rewrite inf1.
-          rewrite addrAC.
-          rewrite subrr add0r.
-          move/ltW: xz.
-          rewrite ler_def.
-          move/eqP ->.
-          by rewrite ltrBlDl. 
-        split. exact/set0P.
-        exists 0. by move=> y [] _ /ltW.
-    exact/negbTE/set0P.
+    have inf_drlt : `|inf (dr x) - inf (dr z)| < eps.
+      rewrite drzx -image2_set1 inf_sumE //.
+        rewrite inf1 addrAC subrr add0r.
+        move/ltW: xz.
+        rewrite ler_def => /eqP ->.
+        by rewrite ltrBlDl. 
+      split => //.
+      exists 0; by move=> y [] _ /ltW.
+    rewrite ifF; last exact/negbTE/set0P.
+    rewrite (le_lt_trans (abs_subr_min _ _ _ _)) //.
+    by rewrite subrr normr0 maxEle normr_ge0.      
   have dlxz : dl z = [set t + (z - x) | t in dl x].
     apply: dl_shift => // t /=.
     rewrite in_itv /= => /andP[] xt tz.
@@ -407,49 +418,33 @@ case/boolP: (xepsE == set0).
     move/eqP /image_set0_set0 /eqP.
     by rewrite (negPf drz0).
   move=> drx0.
-  have inf_drxz : inf (dr x) = inf (dr z) + z - x.
-    rewrite drzx -image2_set1 inf_sumE.
-    - by rewrite inf1 addrA.
-    - split. by apply/set0P.
-      exists 0. move=> u. rewrite -inE. exact: dr_ge0.
-    - exact: has_inf1.
-  rewrite -drzx inf_drxz.
+  rewrite -drzx (inf_drxz drzx) //.
   rewrite addrC addrA addKr ltr_norml.
   rewrite (@lt_le_trans _ _ 0) ?ltrBlDl //= ?subr_ge0 ?ltW //. 
   by rewrite oppr_lt0.
 move/set0P/xgetPex => /(_ eps).
 rewrite -/eps' => -[] eps'E Heps'.
 rewrite -/(sdist x) -/(sdist z).
-have eps'l : forall t, x <= t < x + eps' -> 0 <= sdist t < eps.
-  move=> t Ht /=.
+have eps'l : forall t, x <= t < x + eps' -> sdist t < eps.
+  move=> t /andP[xt tx] /=.
   rewrite /sdist.
-  set xl : R := if _ then _ else 1.
-  case: ifPn.
-    move/negP; elim; apply/negP/set0P.
-    exists (x+eps'-t).
-    rewrite /dr /= (addrC _ (-t)) addrA subrr add0r eps'E.
-    rewrite addrC subr_gt0 //; by case/andP: Ht.
-  move=> drt0.
-  rewrite le_min.
-  rewrite gt_min.
-  rewrite {1}/xl fun_if inf_ge0 // ler01 if_same /=.
-  rewrite inf_ge0 /=; last by move=> u; rewrite inE => -[] _ /ltW.
-  case/andP: Ht => xt tx.
-  rewrite orbC (@le_lt_trans _ _ (eps'+x-t)) //.
+  rewrite gt_min; apply/orP; right.
+  have /negbTE -> : dr t != set0.
+    apply/set0P; exists (x+eps'-t).
+    by rewrite /dr /= (addrC _ (-t)) addrA subrr add0r eps'E addrC subr_gt0.
+  rewrite (@le_lt_trans _ _ (eps'+x-t)) //.
     have [-> | infdr0] := eqVneq (inf (dr t)) 0.
       by rewrite subr_ge0 addrC ltW.
     rewrite le_inf_n0 // inE /dr /= (addrC _ (-t)) addrA subrr add0r addrC.
     by rewrite eps'E addrC subr_gt0.
   case/andP: Heps' => eps'0 Heps'.
   by rewrite (le_lt_trans _ Heps') // -addrA gerDl lerBlDl addr0.
-have Hx : 0 <= sdist x < eps.
+have Hx : sdist x < eps.
   by apply: eps'l; rewrite lexx ltrDl; case/andP: Heps'.
-have Hz : 0 <= sdist z < eps.
+have Hz : sdist z < eps.
   by apply: eps'l; rewrite zx ltW // xz.
 rewrite -maxrN gt_max.
-case/andP: Hx => Hx1 Hx2.
-case/andP: Hz => Hz1 Hz2.
-by rewrite opprB !ltrBlDr !ltr_wpDr.
+by rewrite opprB !ltrBlDr !ltr_wpDr // sdist_ge0.
 Qed.
 
 Lemma zeroset_sdist :  E = sdist @^-1` [set 0].
