@@ -131,9 +131,9 @@ theories/gauss_integral.v
 
 theories/all_analysis.v
 
-theories/sampling.v
 theories/showcase/summability.v
 theories/showcase/pnt.v
 
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v
+analysis_stdlib/sampling.v
