@@ -24,6 +24,10 @@ in
   ## when calling `nix-shell` and `nix-build` without the `--argstr job` argument
   shell-attribute = "mathcomp-analysis-single";
 
+  ## Set this when the package has no rocqPackages version yet
+  ## (either in nixpkgs or in .nix/rocq-overlays)
+  no-rocq-yet = true;
+
   ## Maybe the shortname of the library is different from
   ## the name of the nixpkgs attribute, if so, set it here:
   # pname = "{{shortname}}";
@@ -58,13 +62,17 @@ in
     coq.override.version = "9.0";
   };
 
+  bundles."9.1".coqPackages = common-bundle // {
+    coq.override.version = "9.1";
+    ssprove.job = false;  # not yet available for 9.1
+  };
+
   bundles."master" = { rocqPackages = {
     rocq-core.override.version = "master";
     stdlib.override.version = "master";
     rocq-elpi.override.version = "master";
     rocq-elpi.override.elpi-version = "2.0.7";
-    mathcomp-analysis.job = false;  # current bug in coq-nix-toolbox
-    mathcomp-analysis-stdlib.job = false;
+    hierarchy-builder.override.version = "master";
   }; coqPackages = common-bundle // {
     coq.override.version = "master";
     stdlib.override.version = "master";
