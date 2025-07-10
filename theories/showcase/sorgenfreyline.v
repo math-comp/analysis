@@ -269,31 +269,23 @@ rewrite !addrA addrC addrA addKr addrC.
 by rewrite subr_gt0 ltr_wpDr // ltW.
 Qed.
 
+Lemma inf_shift (s1 s2 : set R) (d : R) :
+  s2 = [set t + d | t in s1] ->
+  has_inf s1 ->
+  inf s2 = inf s1 + d.
+Proof. by move=> -> lbs1; rewrite -image2_set1 inf_sumE // inf1. Qed.
+
 Lemma inf_dlxz x z :
-  dl z = [set t + (z - x) | t in dl x] -> 
-  dl x !=set0 -> 
+  dl z = [set t + (z - x) | t in dl x] ->
+  dl x !=set0 ->
   inf (dl z) = inf (dl x) + z - x.
-Proof.
-move=> dlxz dlx0.
-rewrite dlxz -image2_set1 inf_sumE.
-- by rewrite inf1 addrA.
-- split => //.
-  exists 0. move=> u. exact: dl_ge0.
-- exact: has_inf1.
-Qed.
+Proof. by move=> H *; rewrite -addrA -(inf_shift H)//; split=>//; exists 0. Qed.
 
 Lemma inf_drxz x z :
   dr x = [set t + (z - x) | t in dr z] ->
-  dr z != set0 ->
+  dr z !=set0 ->
   inf (dr x) = inf (dr z) + z - x.
-Proof.
-move=> drzx drz0.
-rewrite drzx -image2_set1 inf_sumE.
-- by rewrite inf1 addrA.
-- split. by apply/set0P.
-  exists 0. move=> u. exact: dr_ge0.
-- exact: has_inf1.
-Qed.
+Proof. by move=> H *; rewrite -addrA -(inf_shift H)//; split=>//; exists 0. Qed.
 
 Lemma sdist_in_le x t d :
   x + d \in E -> x <= t < x + d -> sdist t <= d.
@@ -377,8 +369,8 @@ apply/andP; split; last first.
     by rewrite image_set0 eqxx subrr normr0 eps0.
   case: ifPn => [/eqP /image_set0_set0 /eqP | drx0].
     by rewrite (negPf drz0).
-  rewrite -drzx (inf_drxz drzx) // addrC addrA addKr.
-  by rewrite ltr_distl zx ltrBlDr ltr_wpDr // ltW.
+  rewrite -drzx (inf_drxz drzx); last exact/set0P.
+  by rewrite addrC addrA addKr ltr_distl zx ltrBlDr ltr_wpDr // ltW.
 - have dlxz : dl z = [set t + (z - x) | t in dl x] by apply: dl_shift.
   case/boolP: (dl x == set0) => [/eqP | /set0P] dlx0.
     rewrite dlx0 inf0 subr0.
