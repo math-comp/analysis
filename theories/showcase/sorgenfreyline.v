@@ -1,6 +1,6 @@
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect all_algebra all_fingroup.
-From mathcomp Require Import wochoice contra.
+From mathcomp Require Import wochoice contra mathcomp_extra.
 From mathcomp Require Import boolp classical_sets set_interval.
 From mathcomp Require Import topology_structure separation_axioms connected.
 From mathcomp Require Import reals.
@@ -182,14 +182,13 @@ Definition sdist (x : sorgenfrey) : R :=
 From mathcomp Require Import topology normedtype.
 Let Rtopo := num_topology.numFieldTopology.Real_sort__canonical__topology_structure_Topological R.
 
-Local Lemma dlE x : dl x = (shift x) @` (-%R @` E) `&` `[0, +oo[.
+Local Lemma dlE x : dl x = [set shift x (- y) | y in E] `&` `[0, +oo[.
 Proof.
 rewrite /dl; apply/seteqP; split=> y /=; rewrite in_itv inE /=.
   case=> Exy ->; split => //.
-  exists (y - x); last by rewrite subrK.
-  by exists (x - y) => //; rewrite opprB.
-case=> -[] v [] w Ew <- <- /[!andbT] ->; split => //.
-by rewrite opprD opprK mathcomp_extra.subrKC.
+  by exists (x - y) => //; rewrite opprB addrAC addrK.
+case=> -[] u Eu <- /[!andbT] ->; split => //.
+by rewrite opprD opprK subrKC.
 Qed.
 
 Local Lemma drE x : dr x = (center x) @` E `&` `]0, +oo[.
