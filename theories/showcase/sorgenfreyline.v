@@ -199,32 +199,19 @@ case: (lerP u y) => uy. by rewrite lerD2r xy orbT.
 by rewrite leNgt (lt_trans uy xu) in xy.
 Qed.
 
-Lemma le_inf_n0 (S : set R) (x : R) : x \in S -> inf S != 0 -> inf S <= x.
-Proof.
-move=> xS infS0.
-rewrite -(inf1 x) le_inf //.
-- rewrite image_set1 => z /= ->.
-  apply/downP; exists (-x) => //.
-  by exists x => //; rewrite -inE.
-- by exists x.
-- move: infS0.
-  by apply: contraNP => /inf_out ->.
-Qed.
-
-Lemma inf_ge0 (S : set R) : {in S, forall x : R, x >= 0} -> inf S >= 0.
+Lemma inf_ge0 (S : set R) : lbound S 0 -> inf S >= 0.
 Proof.
 move=> S_ge0.
 case/boolP: (S == set0) => [/eqP -> | /set0P S0].
   by rewrite inf0.
-apply: lb_le_inf => // x Sx.
-by apply: S_ge0; rewrite inE.
+by apply: lb_le_inf.
 Qed.
 
-Let dl_ge0 x : {in dl x, forall y : R, y >= 0}.
-Proof. by move=> y; rewrite inE => -[]. Qed.
+Let dl_ge0 x : lbound (dl x) 0.
+Proof. by move=> y []. Qed.
 
-Let dr_ge0 x : {in dr x, forall y : R, y >= 0}.
-Proof. by move=> y; rewrite inE => -[] _ /ltW. Qed.
+Let dr_ge0 x : lbound (dr x) 0.
+Proof. move=> y [] _; exact: ltW. Qed.
 
 Lemma sdist_ge0 x : 0 <= sdist x.
 Proof. by rewrite /sdist le_min !fun_if ler01 !inf_ge0 // !if_same. Qed.
@@ -291,7 +278,7 @@ move=> dlxz dlx0.
 rewrite dlxz -image2_set1 inf_sumE.
 - by rewrite inf1 addrA.
 - split => //.
-  exists 0. move=> u. rewrite -inE. exact: dl_ge0.
+  exists 0. move=> u. exact: dl_ge0.
 - exact: has_inf1.
 Qed.
 
@@ -304,7 +291,7 @@ move=> drzx drz0.
 rewrite drzx -image2_set1 inf_sumE.
 - by rewrite inf1 addrA.
 - split. by apply/set0P.
-  exists 0. move=> u. rewrite -inE. exact: dr_ge0.
+  exists 0. move=> u. exact: dr_ge0.
 - exact: has_inf1.
 Qed.
 
@@ -317,9 +304,7 @@ rewrite ge_min; apply/orP; right.
 have Ht : dr t (d + x - t) by rewrite /dr /= addrC subrK subr_gt0 addrC.
 have /set0P /negbTE -> : dr t !=set0 by exists (d+x-t).
 apply: (le_trans _ _ (y:=d+x-t)).
-  have [-> | infdr0] := eqVneq (inf (dr t)) 0.
-    by rewrite subr_ge0 addrC ltW.
-  by rewrite le_inf_n0 // inE.
+  by apply: inf_lbound => //; exists 0.
 by rewrite lerBlDr lerD.
 Qed.
 
@@ -410,45 +395,31 @@ Qed.
 
 Lemma zeroset_sdist :  E = sdist @^-1` [set 0].
 Proof.
-rewrite /sdist.
 apply/seteqP; split => x /= Hx.
-  suff -> : inf (dl x) = 0.
-    rewrite subr0 ifT; last by rewrite inE.
-    case: ifP => _; case: lerP => //.
-      by rewrite ltNge ler01.
-    by rewrite ltNge inf_ge0.
-  apply/eqP; rewrite eq_le inf_ge0 //.
-  rewrite -[X in _ <= X]inf1 le_inf /dl //=.
-  - move=> y []z /= -> <- /=.
-    exists (-0); split => //=.
-    exists 0 => //; by rewrite subr0 inE.
-  - by exists 0.
-  - split. exists 0 => /=; by rewrite subr0 inE.
-    by exists 0 => y [].
-move/eqP: Hx; rewrite /sdist.
-rewrite minEle; case: ifP => _.
+  suff /eqP H : inf (dl x) == 0.
+    apply/esym/eqP; rewrite eq_le sdist_ge0 /sdist H /=.
+    by rewrite subr0 ifT ?inE // ge_min lexx.
+  rewrite eq_le inf_ge0 // andbT.
+  apply: inf_lbound.
+    exists 0. by move => t /dl_ge0.
+  by rewrite /dl /= subr0 inE.
+move/eqP: Hx; rewrite /sdist minEle.
+case: ifP => _.
   case: ifP; last by rewrite (negbTE (@oner_neq0 _)).
   rewrite inE => /[swap] /eqP ->.
   by rewrite subr0.
 case: ifPn; first by rewrite (negbTE (@oner_neq0 _)).
 move=> n0 /eqP infeq.
-case/boolP: (x \in E); first by rewrite inE.
-rewrite -in_setC inE.
+apply/notP => xE.
 have : open (~` E) by rewrite openC.
-rewrite openE /= => HE xE.
-suff: False by [].
-case: (HE x xE) => opx [] /= [] L HL <- [] /= [a a'] La.
-rewrite /b /= in_itv /= => xa.
+rewrite openE /= => /(_ x xE) [] opx [] /= [] L HL <- [] /= [a a'] La.
+rewrite /b /= in_itv /= => /andP[ax xa'].
 move/(subset_trans (bigcup_sup La)) => /= aE.
-have := @inf_adherent _ (dr x) (a' -x).
-case/andP: xa => ax xa'.
-rewrite subr_gt0 xa'.
-have hE : has_inf (dr x).
-  split. by apply/set0P.
-  exists 0. by move=> y [] _ /ltW.
-case/(_ isT hE) => y yxr.
+have a'x_gt0 : a' - x > 0 by rewrite subr_gt0 xa'.
+have hE : has_inf (dr x) by split; [apply/set0P | exists 0].
+case: (inf_adherent a'x_gt0 hE) => y drxy.
 rewrite infeq add0r ltrBrDl => xya'.
-case: yxr => xyE y0.
+case: drxy => xyE y0.
 suff : x+y \notin E by rewrite xyE.
 rewrite -in_setC inE. apply: aE => /=.
 by rewrite in_itv /= xya' (le_trans ax) // ler_wpDr // ltW.
@@ -464,6 +435,5 @@ split.
   exact: continuous_sdist.
 exact: zeroset_sdist.
 Qed.
-
 
 End Sorgenfrey_line.
