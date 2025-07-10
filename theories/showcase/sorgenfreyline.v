@@ -182,6 +182,25 @@ Definition sdist (x : sorgenfrey) : R :=
 From mathcomp Require Import topology normedtype.
 Let Rtopo := num_topology.numFieldTopology.Real_sort__canonical__topology_structure_Topological R.
 
+Local Lemma dlE x : dl x = (shift x) @` (-%R @` E) `&` `[0, +oo[.
+Proof.
+rewrite /dl; apply/seteqP; split=> y /=; rewrite in_itv inE /=.
+  case=> Exy ->; split => //.
+  exists (y - x); last by rewrite subrK.
+  by exists (x - y) => //; rewrite opprB.
+case=> -[] v [] w Ew <- <- /[!andbT] ->; split => //.
+by rewrite opprD opprK mathcomp_extra.subrKC.
+Qed.
+
+Local Lemma drE x : dr x = (center x) @` E `&` `]0, +oo[.
+Proof.
+rewrite /dr; apply/seteqP; split=> y /=; rewrite in_itv inE /=.
+  case=> Exy ->; split => //.
+  by exists (x + y) => //; rewrite addrAC subrr add0r.
+case=> -[] v Ev <- /[!andbT] ->; split => //.
+by rewrite mathcomp_extra.subrKC.
+Qed.
+
 Lemma abs_subr_min (x y t u : R) :
   `|Num.min x y - Num.min t u| <= Num.max `|x - t| `|y - u|.
 Proof.
