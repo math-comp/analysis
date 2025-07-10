@@ -426,7 +426,7 @@ by rewrite in_itv /= xya' (le_trans ax) // ler_wpDr // ltW.
 Qed.
 End distance.
 
-Lemma sorgenfrey_line_perfectly_norml_space : 
+Lemma sorgenfrey_line_perfectly_normal_space : 
   perfectly_normal_space R sorgenfrey.
 Proof.
 move=> E cE.
