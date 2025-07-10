@@ -95,6 +95,22 @@ Proof. by rewrite funeqE => x /=; rewrite addr0. Qed.
 Lemma center0 : center 0 = id.
 Proof. by rewrite oppr0 shift0. Qed.
 
+Lemma centerN (x y : R) : center x (- y) = - shift x y.
+Proof. by rewrite /shift opprD. Qed.
+
+Lemma shiftN (x y : R) : shift x (- y) = - center x y.
+Proof. by rewrite /shift opprD opprK. Qed.
+
+Lemma image_centerN (E : set R) (x : R) :
+  [set center x (- y) | y in E] =[set - (shift x y) | y in E].
+Proof.
+by apply/seteqP; split => y [] u Eu <- /=; exists u => //; rewrite opprD.
+Qed.
+
+Lemma image_shiftN (E : set R) (x : R) :
+  [set shift x (- y) | y in E] = [set - (center x y) | y in E].
+Proof. by rewrite -(opprK x) image_centerN opprK. Qed.
+
 End Shift.
 Arguments shift {R} x / y.
 Notation center c := (shift (- c)).
