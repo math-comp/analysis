@@ -446,9 +446,8 @@ have hE : has_inf (dr x) by split; [apply/set0P | exists 0].
 case: (inf_adherent a'x_gt0 hE) => y drxy.
 rewrite infeq add0r ltrBrDl => xya'.
 case: drxy => xyE y0.
-suff : x+y \notin E by rewrite xyE.
-rewrite -in_setC inE. apply: aE => /=.
-by rewrite in_itv /= xya' (le_trans ax) // ler_wpDr // ltW.
+elim: (aE (x + y)); last by rewrite -inE.
+by rewrite /= in_itv /= xya' (le_trans ax) // ler_wpDr // ltW.
 Qed.
 End distance.
 
