@@ -275,18 +275,15 @@ Let dl_shift x z :
 Proof.
 move=> xz xzNE.
 apply/seteqP; rewrite /dl; split => t /= [].
-  move => ztE y0.
+  move=> ztE t0.
   case: (ltrP x (z-t)) => ztx.
-    suff : z - t \notin E by rewrite ztE.
-    rewrite -in_setC inE.
-    apply: xzNE.
-    by rewrite /= in_itv /= ztx lerBlDr lerDl.
+    elim: (xzNE (z-t)); last by rewrite -inE.
+    by rewrite /= in_itv /= ztx gerBl.
   exists (x - (z-t)).
-    by rewrite opprD addrA subrr opprK add0r ztE subr_ge0.
+    by rewrite subr_ge0 opprD addrA subrr add0r opprK.
   by rewrite (addrC z) opprD opprK !addrA subrK addrC addKr.
 move=> w [] xwE w0 <-.
-rewrite !opprD (addrCA z) !addrA addrK addrC opprK.
-by rewrite subr_ge0 ler_wpDl // ltW.
+by rewrite !opprD (addrCA z) !addrA addrK addrC opprK subr_ge0 ler_wpDl // ltW.
 Qed.
 
 Let dr_shift x z :
@@ -294,12 +291,10 @@ Let dr_shift x z :
 Proof.
 move=> xz xzNE.
 apply/seteqP; rewrite /dr; split => t /= [].
-  move => xtE y0.
-  case: (ltrP z (x+t)) => zxt; last first.
-    suff : x + t \notin E by rewrite xtE.
-    rewrite -in_setC inE.
-    apply: xzNE.
-    by rewrite /= in_itv /= zxt ltrDl y0.
+  move=> xtE t0.
+  case: (lerP (x+t) z) => zxt.
+    elim: (xzNE (x+t)); last by rewrite -inE.
+    by rewrite /= in_itv /= zxt ltrDl t0.
   exists (x + t - z).
     by rewrite addrC subrK xtE subr_gt0.
   by rewrite addrA subrK addrC addKr.
