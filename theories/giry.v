@@ -361,7 +361,7 @@ rewrite ge0_integral_fsum//; last 2 first.
 rewrite sintegralE /=.
 apply: fsbigop.eq_fsbigr => // r rh.
 rewrite integralZl//.
-have := finite_measure_integrable_cst M 1.
+have := finite_measure_integrable_cst M 1 measurableT.
 apply: le_integrable => //; first exact: measurable_giry_ev.
 move=> mu _ /=.
 rewrite normr1 (le_trans _ (@sprobability_setT _ _ _ mu))// gee0_abs//.
