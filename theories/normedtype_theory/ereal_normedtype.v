@@ -482,3 +482,40 @@ split=> [|[Py]] [x [xr Px]]; last by exists x; split=> // -[y||]//; apply: Px.
 by split; [|exists x; split=> // y xy]; apply: Px.
 Qed.
 End nbhs_ereal.
+
+Section ereal_OrderNbhs.
+Variable R : realFieldType.
+
+Lemma ereal_order_nbhsE (x : \bar R) :
+  nbhs x = filter_from (fun i => itv_open_ends i /\ x \in i) (fun i => [set` i]).
+Proof.
+apply/seteqP; split=> A.
+  rewrite /nbhs/=/ereal_nbhs/=; case x =>[r||].
+  - rewrite /nbhs/=/nbhs_ball_/filter_from/=; case=> e e_pos ball_re.
+    exists `](r - e)%:E, (r + e)%:E[ =>[|y/=].
+      split; first by rewrite/itv_open_ends/=; right.
+      rewrite in_itv/= EFinB gte_subl// EFinD lteDl//; exact/andP.
+    rewrite in_itv/= => /[dup]/gte_lte_real/fineK<-.
+    rewrite !lte_fin => fy; apply: ball_re.
+    by rewrite /ball_/= -opprB normrN ltr_norml ltrBrDl (ltrBlDl _ r).
+  - case=> M [? MA]; rewrite /filter_from/=.
+    exists `]M%:E, +oo[ =>[|y/=]; rewrite in_itv/= andbT; last exact: MA.
+    by split; first by rewrite/itv_open_ends; left.
+  - case=> M [? MA]; rewrite /filter_from/=.
+    exists `]-oo, M%:E[ =>[|y/=]; rewrite in_itv/=; last exact: MA.
+    by split; first by rewrite /itv_open_ends; left.
+rewrite /filter_from/= => [][][][[]r|[]][[]s|[]][][];
+  rewrite /itv_is_ray/itv_is_bd_open// in_itv/= =>_.
+  - rewrite /nbhs/=/ereal_nbhs/= => /[dup]/gte_lte_real/fineK<-.
+    case/andP=> rx sx rsA; apply: (nbhs_interval rx sx) => *.
+    by apply: rsA =>/=; rewrite in_itv/=; apply/andP.
+  - rewrite nbhsE/= => rx ?; exists (`]r, +oo[)%classic; rewrite /open_nbhs//.
+    by split; [rewrite set_itvE; exact: open_ereal_gt_ereal | exact: rx].
+  - rewrite nbhsE/= => xs ?; exists (`]-oo, s[)%classic; rewrite /open_nbhs//.
+    by split; [rewrite set_itvE; exact: open_ereal_lt_ereal | exact: xs].
+  - by rewrite set_itvE/= subTset => _ ->; exact: filter_nbhsT.
+Qed.
+
+HB.instance Definition _ := Order_isNbhs.Build _ (\bar R) ereal_order_nbhsE.
+
+End ereal_OrderNbhs.
