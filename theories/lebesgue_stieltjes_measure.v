@@ -60,23 +60,24 @@ Reserved Notation "R .-ocitv.-measurable"
 Notation right_continuous f :=
   (forall x, f%function @ at_right x --> f%function x).
 
-Lemma right_continuousW (R : numFieldType) (f : R -> R) :
-  continuous f -> right_continuous f.
+Lemma right_continuousW (R : numFieldType) {d} (U : orderNbhsType d)
+  (f : R -> U) : continuous f -> right_continuous f.
 Proof. by move=> cf x; apply: cvg_within_filter; exact/cf. Qed.
 
-HB.mixin Record isCumulative (R : numFieldType) (f : R -> R) := {
-  cumulative_is_nondecreasing : {homo f : x y / x <= y} ;
+HB.mixin Record isCumulative (R : numFieldType) {d} (U : orderNbhsType d)
+  (f : R -> U) := {
+  cumulative_is_nondecreasing : nondecreasing f ;
   cumulative_is_right_continuous : right_continuous f }.
 
 #[short(type=cumulative)]
-HB.structure Definition Cumulative (R : numFieldType) :=
-  { f of isCumulative R f }.
+HB.structure Definition Cumulative
+  (R : numFieldType) {d} (U : orderNbhsType d) := { f of isCumulative R d U f }.
 
-Arguments cumulative_is_nondecreasing {R} _.
-Arguments cumulative_is_right_continuous {R} _.
+Arguments cumulative_is_nondecreasing {R d U} _.
+Arguments cumulative_is_right_continuous {R d U} _.
 
-Lemma nondecreasing_right_continuousP (R : numFieldType) (a : R) (e : R)
-    (f : cumulative R) :
+Lemma nondecreasing_right_continuousP (R : realFieldType) (a : R) (e : R)
+    (f : cumulative R R) :
   e > 0 -> exists d : {posnum R}, f (a + d%:num) <= f a + e.
 Proof.
 move=> e0; move: (cumulative_is_right_continuous f).
@@ -100,7 +101,7 @@ Proof. by []. Qed.
 Let id_rc : right_continuous (@idfun R).
 Proof. by apply/right_continuousW => x; exact: cvg_id. Qed.
 
-HB.instance Definition _ := isCumulative.Build R idfun id_nd id_rc.
+HB.instance Definition _ := isCumulative.Build R _ R idfun id_nd id_rc.
 End id_is_cumulative.
 (* /TODO: move? *)
 
@@ -373,7 +374,7 @@ apply/andP; split=> //; apply: contraTneq xbj => ->.
 by rewrite in_itv/= le_gtF// (itvP xabi).
 Qed.
 
-Lemma wlength_ge0 (f : cumulative R) (I : set (ocitv_type R)) :
+Lemma wlength_ge0 (f : cumulative R R) (I : set (ocitv_type R)) :
   (0 <= wlength f I)%E.
 Proof.
 by rewrite -(wlength0 f) le_wlength//; exact: cumulative_is_nondecreasing.
@@ -381,14 +382,14 @@ Qed.
 
 #[local] Hint Extern 0 (0%:E <= wlength _ _) => solve[apply: wlength_ge0] : core.
 
-HB.instance Definition _ (f : cumulative R) :=
+HB.instance Definition _ (f : cumulative R R) :=
   isContent.Build _ _ R (wlength f)
     (wlength_ge0 f)
     (wlength_semi_additive f).
 
 Hint Extern 0 (measurable _) => solve [apply: is_ocitv] : core.
 
-Lemma cumulative_content_sub_fsum (f : cumulative R) (D : {fset nat}) a0 b0
+Lemma cumulative_content_sub_fsum (f : cumulative R R) (D : {fset nat}) a0 b0
     (a b : nat -> R) : (forall i, i \in D -> a i <= b i) ->
     `]a0, b0] `<=` \big[setU/set0]_(i <- D) `]a i, b i]%classic ->
   f b0 - f a0 <= \sum_(i <- D) (f (b i) - f (a i)).
@@ -406,7 +407,7 @@ rewrite -sumEFin fsbig_finite//= set_fsetK// big_seq [in leRHS]big_seq.
 by apply: lee_sum => i iD; rewrite wlength_itv_bnd// Dab.
 Qed.
 
-Lemma wlength_sigma_subadditive (f : cumulative R) :
+Lemma wlength_sigma_subadditive (f : cumulative R R) :
   measurable_subset_sigma_subadditive (wlength f).
 Proof.
 move=> I A /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym AE => -[a _ <-].
@@ -475,7 +476,7 @@ rewrite big_seq [in X in (_ <= X)%E]big_seq; apply: lee_sum => k kX.
 by rewrite AE leeD2l// lee_fin lerBlDl natrX De.
 Qed.
 
-HB.instance Definition _ (f : cumulative R) :=
+HB.instance Definition _ (f : cumulative R R) :=
   Content_SigmaSubAdditive_isMeasure.Build _ _ _
     (wlength f) (wlength_sigma_subadditive f).
 
@@ -490,17 +491,18 @@ move=> k; split => //; rewrite wlength_itv /= -EFinB.
 by case: ifP; rewrite ltey.
 Qed.
 
-Definition lebesgue_stieltjes_measure (f : cumulative R) :=
+Definition lebesgue_stieltjes_measure (f : cumulative R R) :=
   measure_extension (wlength f).
-HB.instance Definition _ (f : cumulative R) :=
+HB.instance Definition _ (f : cumulative R R) :=
   Measure.on (lebesgue_stieltjes_measure f).
 
-Let sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R) :
+Let sigmaT_finite_lebesgue_stieltjes_measure (f : cumulative R R) :
   sigma_finite setT (lebesgue_stieltjes_measure f).
 Proof. exact/measure_extension_sigma_finite/wlength_sigma_finite. Qed.
 
-HB.instance Definition _ (f : cumulative R) := @Measure_isSigmaFinite.Build _ _ _
-  (lebesgue_stieltjes_measure f) (sigmaT_finite_lebesgue_stieltjes_measure f).
+HB.instance Definition _ (f : cumulative R R) :=
+  @Measure_isSigmaFinite.Build _ _ _ (lebesgue_stieltjes_measure f)
+    (sigmaT_finite_lebesgue_stieltjes_measure f).
 
 End wlength_extension.
 Arguments lebesgue_stieltjes_measure {R}.
@@ -512,7 +514,7 @@ Section lebesgue_stieltjes_measure.
 Variable R : realType.
 Let gitvs : measurableType _ := g_sigma_algebraType (@ocitv R).
 
-Lemma lebesgue_stieltjes_measure_unique (f : cumulative R)
+Lemma lebesgue_stieltjes_measure_unique (f : cumulative R R)
     (mu : {measure set gitvs -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
   forall X, measurable X -> lebesgue_stieltjes_measure f X = mu X.
@@ -527,17 +529,17 @@ End lebesgue_stieltjes_measure.
 Section completed_lebesgue_stieltjes_measure.
 Context {R : realType}.
 
-Definition completed_lebesgue_stieltjes_measure (f : cumulative R) :=
+Definition completed_lebesgue_stieltjes_measure (f : cumulative R R) :=
   @completed_measure_extension _ _ _ (wlength f).
 
-HB.instance Definition _ (f : cumulative R) :=
+HB.instance Definition _ (f : cumulative R R) :=
   Measure.on (@completed_lebesgue_stieltjes_measure f).
 
-Let sigmaT_finite_completed_lebesgue_stieltjes_measure (f : cumulative R) :
+Let sigmaT_finite_completed_lebesgue_stieltjes_measure (f : cumulative R R) :
   sigma_finite setT (@completed_lebesgue_stieltjes_measure f).
 Proof. exact/completed_measure_extension_sigma_finite/wlength_sigma_finite. Qed.
 
-HB.instance Definition _ (f : cumulative R) :=
+HB.instance Definition _ (f : cumulative R R) :=
   @Measure_isSigmaFinite.Build _ _ _
     (@completed_lebesgue_stieltjes_measure f)
     (sigmaT_finite_completed_lebesgue_stieltjes_measure f).
@@ -619,7 +621,7 @@ HB.mixin Record isCumulativeBounded (R : numFieldType) (l r : R) (f : R -> R) :=
   cumulativey : f @ +oo --> r }.
 
 #[short(type=cumulativeBounded)]
-HB.structure Definition CumulativeBounded (R : numFieldType) (l r : R) :=
+HB.structure Definition CumulativeBounded (R : realFieldType) (l r : R) :=
   { f of isCumulativeBounded R l r f & Cumulative R f}.
 
 Arguments cumulativeNy {R l r} s.

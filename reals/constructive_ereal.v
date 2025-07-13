@@ -1695,6 +1695,13 @@ Proof. by move: x => [x| |]//=; rewrite lee_fin => x0; rewrite ltNyr. Qed.
 Lemma lt0_fin_numE x : x < 0 -> (x \is a fin_num) = (-oo < x).
 Proof. by move/ltW; exact: le0_fin_numE. Qed.
 
+Lemma gte_lte_real (x a b : \bar R) : (a < x < b) -> x \is a fin_num.
+Proof.
+case/andP => [ax xb]; apply/fin_numPlt/andP; split.
+  exact: (le_lt_trans (leNye a) ax).
+exact: (lt_le_trans xb (leey b)).
+Qed.
+
 Lemma eqyP x : x = +oo <-> (forall A, (0 < A)%R -> A%:E <= x).
 Proof.
 split=> [-> // A A0|Ax]; first by rewrite leey.
