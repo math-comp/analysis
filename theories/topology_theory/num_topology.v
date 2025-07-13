@@ -138,6 +138,10 @@ HB.instance Definition _ (R : realFieldType) :=
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
 
+#[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : realType) :=
+  Order_isNbhs.Build _ R (@real_order_nbhsE R).
+
 Module Exports. HB.reexport. End Exports.
 
 End numFieldTopology.
