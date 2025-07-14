@@ -132,11 +132,11 @@ HB.instance Definition _ (R : numClosedFieldType) :=
   PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : realFieldType) :=
-  Order_isNbhs.Build _ R (@real_order_nbhsE R).
+HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
+HB.instance Definition _ (R : realFieldType) :=
+  Order_isNbhs.Build _ R (@real_order_nbhsE R).
 
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : realType) :=
