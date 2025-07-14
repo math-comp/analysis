@@ -93,7 +93,7 @@ by rewrite opprB ltrBlDl => fa; exact: ltW.
 Qed.
 
 Section id_is_cumulative.
-Variable R : realType.
+Variable R : realFieldType.
 
 Let id_nd : {homo @idfun R : x y / x <= y}.
 Proof. by []. Qed.
