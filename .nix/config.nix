@@ -8,8 +8,7 @@ let
     mathcomp-analysis-stdlib.job = true;
     ssprove.override.version = "main";
   };
-in
-{
+in {
   ## DO NOT CHANGE THIS
   format = "1.0.0";
   ## unless you made an automated or manual update
@@ -46,16 +45,21 @@ in
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.20";
+  default-bundle = "8.20-2.4.0";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
 
-  bundles."8.20".coqPackages = common-bundle // {
+  bundles."8.20-2.3.0".coqPackages = common-bundle // {
     coq.override.version = "8.20";
     mathcomp.override.version = "2.3.0";
+  };
+
+  bundles."8.20-2.4.0".coqPackages = common-bundle // {
+    coq.override.version = "8.20";
+    mathcomp.override.version = "2.4.0";
   };
 
   bundles."9.0".coqPackages = common-bundle // {
@@ -67,29 +71,32 @@ in
     ssprove.job = false;  # not yet available for 9.1
   };
 
-  bundles."master" = { rocqPackages = {
-    rocq-core.override.version = "master";
-    stdlib.override.version = "master";
-    rocq-elpi.override.version = "master";
-    rocq-elpi.override.elpi-version = "2.0.7";
-    hierarchy-builder.override.version = "master";
-  }; coqPackages = common-bundle // {
-    coq.override.version = "master";
-    stdlib.override.version = "master";
-    coq-elpi.override.version = "master";
-    coq-elpi.override.elpi-version = "2.0.7";
-    hierarchy-builder.override.version = "master";
-    mathcomp.override.version = "master";
-    mathcomp-bigenough.override.version = "master";
-    mathcomp-finmap.override.version = "master";
-    ssprove.job = false;
-  }; };
+  bundles."master" = {
+    rocqPackages = {
+      rocq-core.override.version = "master";
+      stdlib.override.version = "master";
+      rocq-elpi.override.version = "master";
+      rocq-elpi.override.elpi-version = "2.0.7";
+      hierarchy-builder.override.version = "master";
+    };
+    coqPackages = common-bundle // {
+      coq.override.version = "master";
+      stdlib.override.version = "master";
+      coq-elpi.override.version = "master";
+      coq-elpi.override.elpi-version = "2.0.7";
+      hierarchy-builder.override.version = "master";
+      mathcomp.override.version = "master";
+      mathcomp-bigenough.override.version = "master";
+      mathcomp-finmap.override.version = "master";
+      ssprove.job = false;
+    };
+  };
 
   ## Cachix caches to use in CI
   ## Below we list some standard ones
-  cachix.coq = {};
+  cachix.coq = { };
   cachix.math-comp.authToken = "CACHIX_AUTH_TOKEN";
-  cachix.coq-community = {};
+  cachix.coq-community = { };
 
   ## If you have write access to one of these caches you can
   ## provide the auth token or signing key through a secret
