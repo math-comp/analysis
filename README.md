@@ -33,7 +33,7 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
   - [MathComp field 2.1.0 or later](https://math-comp.github.io)
   - [MathComp finmap 2.0.0](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
-  - [Hierarchy Builder 1.7.0 or later](https://github.com/math-comp/hierarchy-builder)
+  - [Hierarchy Builder 1.8.0 or later](https://github.com/math-comp/hierarchy-builder)
 - Coq/Rocq namespace: `mathcomp.analysis`
 
 ## Building and installation instructions
