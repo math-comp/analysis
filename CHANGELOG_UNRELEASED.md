@@ -35,6 +35,9 @@
 - in `pseudometric_normed_Zmodule.v`:
   + lemma `dense_set1C`
 
+- in `probability.v`:
+	  + lemmas `cdf_fin_num`, `lebesgue_stieltjes_cdf_id`
+
 - new file `borel_hierarchy.v`:
   + definitions `Gdelta`, `Fsigma`
   + lemmas `closed_Fsigma`, `Gdelta_measurable`, `Gdelta_subspace_open`,
