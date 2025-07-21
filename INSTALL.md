@@ -5,7 +5,7 @@
 - [The Coq Proof Assistant version ≥ 8.20 / Rocq Prover version ≥ 9.0](https://rocq-prover.org)
 - [Mathematical Components version ≥ 2.2.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 2.1.0](https://github.com/math-comp/finmap)
-- [Hierarchy builder version ≥ 1.7.0](https://github.com/math-comp/hierarchy-builder)
+- [Hierarchy builder version ≥ 1.8.0](https://github.com/math-comp/hierarchy-builder)
 - [bigenough ≥ 1.0.0](https://github.com/math-comp/bigenough)
 
 These requirements can be installed in a custom way, or through
