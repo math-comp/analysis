@@ -180,7 +180,8 @@ Definition sdist (x : sorgenfrey) : R :=
             (if dr x == set0 then 1 else inf (dr x)).
 
 From mathcomp Require Import topology normedtype.
-Let Rtopo := num_topology.numFieldTopology.Real_sort__canonical__topology_structure_Topological R.
+Let Rtopo := num_topology.numFieldTopology
+  .Real_sort__canonical__topology_structure_Topological R.
 
 Local Lemma dlE x : dl x = [set shift x (- y) | y in E] `&` `[0, +oo[.
 Proof.
@@ -280,10 +281,10 @@ apply/seteqP; rewrite /dl; split => t /= [].
     elim: (xzNE (z-t)); last by rewrite -inE.
     by rewrite /= in_itv /= ztx gerBl.
   exists (x - (z-t)).
-    by rewrite subr_ge0 opprD addrA subrr add0r opprK.
-  by rewrite (addrC z) opprD opprK !addrA subrK addrC addKr.
+    by rewrite subKr subr_ge0.
+  by rewrite addrAC (addrC x) subrK subKr.
 move=> w [] xwE w0 <-.
-by rewrite !opprD (addrCA z) !addrA addrK addrC opprK subr_ge0 ler_wpDl // ltW.
+by rewrite opprD opprB addrC !addrA subrK addrC subr_ge0 ler_wpDl // ltW.
 Qed.
 
 Let dr_shift x z :
@@ -296,11 +297,10 @@ apply/seteqP; rewrite /dr; split => t /= [].
     elim: (xzNE (x+t)); last by rewrite -inE.
     by rewrite /= in_itv /= zxt ltrDl t0.
   exists (x + t - z).
-    by rewrite addrC subrK xtE subr_gt0.
+    by rewrite addrC subrK subr_gt0.
   by rewrite addrA subrK addrC addKr.
 move=> w [] xwE w0 <-.
-rewrite !addrA addrC addrA addKr addrC.
-by rewrite subr_gt0 ltr_wpDr // ltW.
+by rewrite addrC addrA subrK addrC subr_gt0 ltr_wpDr // ltW.
 Qed.
 
 Lemma inf_shift (s1 s2 : set R) (d : R) :
