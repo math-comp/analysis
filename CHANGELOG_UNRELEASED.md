@@ -3,6 +3,15 @@
 ## [Unreleased]
 
 ### Added
+- in `convex.v`
+  + reserved notation `a <| p *> b`
+
+### Changed
+
+- in `convex.v`
+  + notation `a <| p |> b` -> `a <* p |> a`
+
+### Added
 
 - in `unstable.v`:
   + lemma `sqrtK`

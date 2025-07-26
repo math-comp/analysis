@@ -19,7 +19,8 @@ From HB Require Import structures.
 (*         isConvexSpace R T == interface for convex spaces with              *)
 (*                              R : numDomainType                             *)
 (*                              The HB class is ConvexSpace.                  *)
-(*               a <| t |> b == convexity operator                            *)
+(*               a <* t |> b == convexity operator with weight t on the       *)
+(*                              first summand a (and 1-t on b)                *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* For `R : numDomainType`, `E : lmodType R` and `R` itself are shown to be   *)
@@ -31,7 +32,8 @@ From HB Require Import structures.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "x <| p |> y" (format "x  <| p |>  y", at level 49).
+Reserved Notation "x <| p *> y" (format "x  <| p *>  y", at level 49).
+Reserved Notation "x <* p |> y" (format "x  <* p |>  y", at level 49).
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -51,12 +53,12 @@ Module ConvexQuasiAssoc.
 Section def.
 Variables (R : numDomainType) (T : Type) (conv : {i01 R} -> T -> T -> T).
 
-Local Notation "x <| p |> y" := (conv p x y).
+Local Notation "x <* p |> y" := (conv p x y).
 
 Definition law := forall (p q r s : {i01 R}) (a b c : T),
   p%:num = r%:num * s%:num ->
   `1- (s%:num) = `1- (p%:num) * `1- (q%:num) ->
-  a <| p |> (b <| q |> c) = (a <| r |> b) <| s |> c.
+  a <* p |> (b <* q |> c) = (a <* r |> b) <* s |> c.
 End def.
 
 (** technical relations between the parameters of the quasi-associativity law *)
@@ -113,15 +115,15 @@ HB.mixin Record isConvexSpace (R : numDomainType) T := {
 HB.structure Definition ConvexSpace (R : numDomainType) :=
   {T of isConvexSpace R T & Choice T}.
 
-Notation "a <| p |> b" := (conv p a b) : convex_scope.
+Notation "a <* p |> b" := (conv p a b) : convex_scope.
 
 Section convex_space_lemmas.
 Context R (A : convType R).
 Implicit Types a b : A.
 
-Lemma conv0 a b : a <| 0%:i01 |> b = b.
+Lemma conv0 a b : a <* 0%:i01 |> b = b.
 Proof.
-rewrite convC/= [X in _ <| X |> _](_ : _ = 1%:i01) ?conv1//.
+rewrite convC/= [X in _ <* X |> _](_ : _ = 1%:i01) ?conv1//.
 by apply/val_inj => /=; rewrite subr0.
 Qed.
 
@@ -170,7 +172,7 @@ Section numDomainType_convex_space.
 Context {R : numDomainType}.
 Implicit Types p q : {i01 R}.
 
-Let avg p (a b : convex_lmodType R^o) := a <| p |> b.
+Let avg p (a b : convex_lmodType R^o) := a <* p |> b.
 
 Let avg1 a b : avg 1%:i01 a b = a.
 Proof. exact: conv1. Qed.
@@ -192,7 +194,7 @@ End numDomainType_convex_space.
 Section conv_numDomainType.
 Context {R : numDomainType}.
 
-Lemma convR_gt0 (a b : R^o) (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <| t |> b.
+Lemma convR_gt0 (a b : R^o) (t : {i01 R}) : 0 < a -> 0 < b -> 0 < a <* t |> b.
 Proof.
 move=> a0 b0.
 have [->|t0] := eqVneq t 0%:i01; first by rewrite conv0.
@@ -202,10 +204,10 @@ by rewrite subr_gt0 lt_neqAle t1 le1.
 Qed.
 
 Lemma convRE (a b : R^o) (t : {i01 R}) :
-  a <| t |> b = t%:inum * a + `1-(t%:inum) * b.
+  a <* t |> b = t%:inum * a + `1-(t%:inum) * b.
 Proof. by []. Qed.
 
-Lemma convR_itv (a b : R^o) (t : {i01 R}) : a <= b -> a <| t |> b \in `[a, b].
+Lemma convR_itv (a b : R^o) (t : {i01 R}) : a <= b -> a <* t |> b \in `[a, b].
 Proof.
 move=> ab; rewrite convRE in_itv /=.
 rewrite -{1}(subrKC a b).
@@ -217,18 +219,20 @@ by rewrite ler_wpM2l.
 Qed.
 
 Let convRCE (a b : R^o) (t : {i01 R}) :
-  a <| t |> b = `1-(t%:inum) * b + t%:inum * a.
+  a <* t |> b = `1-(t%:inum) * b + t%:inum * a.
 Proof. by rewrite addrC convRE. Qed.
 
-Lemma convR_line_path (a b : R^o) (t : {i01 R}) :
-  a <| t |> b = line_path b a t%:num.
+Local Notation "x <| p *> y" := (line_path x y p%:num).
+
+Lemma convR_line_path (a b : R^o) (p : {i01 R}) :
+  a <* p |> b = b <| p *> a.
 Proof. by rewrite convRCE. Qed.
 
 End conv_numDomainType.
 
 Definition convex_function (R : realType) (D : set R) (f : R -> R^o) :=
   forall (t : {i01 R}),
-    {in D &, forall (x y : R^o), (f (x <| t |> y) <= f x <| t |> f y)%R}.
+    {in D &, forall (x y : R^o), (f (x <* t |> y) <= f x <* t |> f y)%R}.
 (* TODO: generalize to convTypes once we have ordered convTypes (mathcomp 2) *)
 
 (* ref: http://www.math.wisc.edu/~nagel/convexity.pdf *)
@@ -252,9 +256,9 @@ by rewrite -addrA -mulrN -mulrDr (addrC (f b)).
 Qed.
 
 Let convexf_ptP : a < b -> (forall x, a <= x <= b -> 0 <= L x - f x) ->
-  forall t, f (a <| t |> b) <= f a <| t |> f b.
+  forall t, f (a <* t |> b) <= f a <* t |> f b.
 Proof.
-move=> ba h t; set x := a <| t |> b; have /h : a <= x <= b.
+move=> ba h t; set x := a <* t |> b; have /h : a <= x <= b.
   by have:= convR_itv t (ltW ba); rewrite in_itv/=.
 rewrite subr_ge0 => /le_trans; apply.
 by rewrite LE// /x {2}convC 2!convR_line_path !line_pathK//= ?(eq_sym b) lt_eqF.
@@ -267,7 +271,7 @@ Let cDf : {within `]a, b[, continuous Df}.
 Proof. by apply: derivable_within_continuous => z zab; exact: HDDf. Qed.
 
 Lemma second_derivative_convex (t : {i01 R}) : a <= b ->
-  f (a <| t |> b) <= f a <| t |> f b.
+  f (a <* t |> b) <= f a <* t |> f b.
 Proof.
 rewrite le_eqVlt => /predU1P[<-|/[dup] ab]; first by rewrite !convmm.
 move/convexf_ptP; apply => x /andP[].

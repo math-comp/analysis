@@ -552,7 +552,7 @@ Qed.
 
 Local Open Scope convex_scope.
 Lemma convex_expR (t : {i01 R}) (a b : R^o) :
-  expR (a <| t |> b) <= (expR a : R^o) <| t |> (expR b : R^o).
+  expR (a <* t |> b) <= (expR a : R^o) <* t |> (expR b : R^o).
 Proof.
 have [ab|/ltW ba] := leP a b.
 - apply: second_derivative_convex => //.
@@ -794,7 +794,7 @@ Unshelve. all: by end_near. Qed.
 
 Local Open Scope convex_scope.
 Lemma concave_ln (t : {i01 R}) (a b : R^o) : 0 < a -> 0 < b ->
-  (ln a : R^o) <| t |> (ln b : R^o) <= ln (a <| t |> b).
+  (ln a : R^o) <* t |> (ln b : R^o) <= ln (a <* t |> b).
 Proof.
 move=> a0 b0; have := convex_expR t (ln a) (ln b).
 by rewrite !lnK// -(@ler_ln) ?posrE ?expR_gt0 ?convR_gt0// expRK.
