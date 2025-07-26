@@ -21,6 +21,7 @@ From HB Require Import structures.
 (*                              The HB class is ConvexSpace.                  *)
 (*               a <* t |> b == convexity operator with weight t on the       *)
 (*                              first summand a (and 1-t on b)                *)
+(*               a <| t *> b == similar, but weight t on b                    *)
 (* ```                                                                        *)
 (*                                                                            *)
 (* For `R : numDomainType`, `E : lmodType R` and `R` itself are shown to be   *)
@@ -115,7 +116,8 @@ HB.mixin Record isConvexSpace (R : numDomainType) T := {
 HB.structure Definition ConvexSpace (R : numDomainType) :=
   {T of isConvexSpace R T & Choice T}.
 
-Notation "a <* p |> b" := (conv p a b) : convex_scope.
+Notation "a <| p *> b" := (conv p b a) : convex_scope.
+Notation "a <* p |> b" := (b <| p *> a) : convex_scope.
 
 Section convex_space_lemmas.
 Context R (A : convType R).
@@ -222,10 +224,8 @@ Let convRCE (a b : R^o) (t : {i01 R}) :
   a <* t |> b = `1-(t%:inum) * b + t%:inum * a.
 Proof. by rewrite addrC convRE. Qed.
 
-Local Notation "x <| p *> y" := (line_path x y p%:num).
-
 Lemma convR_line_path (a b : R^o) (p : {i01 R}) :
-  a <* p |> b = b <| p *> a.
+  a <| p *> b = line_path a b p%:num.
 Proof. by rewrite convRCE. Qed.
 
 End conv_numDomainType.

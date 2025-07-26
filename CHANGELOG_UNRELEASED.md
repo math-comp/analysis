@@ -4,7 +4,7 @@
 
 ### Added
 - in `convex.v`
-  + reserved notation `a <| p *> b`
+  + notation `a <| p *> b`
 
 ### Changed
 
