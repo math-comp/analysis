@@ -111,16 +111,16 @@ case:(px E cE) => f [] cf ->.
 pose f' := f + cst (y - x). 
 exists f'.
 split.
-rewrite /f'.
-move=> z.
-apply: continuousD.
-exact:cf.
-exact:cst_continuous.
+  rewrite /f'.
+  move=> z.
+  apply: continuousD.
+    exact:cf.
+  exact:cst_continuous.
 apply/seteqP.
 rewrite /f' /cst /=.
 split => z /=.
-rewrite addrfctE => ->.
-by rewrite subrKC.
+  rewrite addrfctE => ->.
+  by rewrite subrKC.
 rewrite addrfctE.
 move/eqP.
 by rewrite eq_sym -subr_eq opprB subrKC eq_sym => /eqP.
