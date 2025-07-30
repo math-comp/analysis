@@ -21,8 +21,10 @@ Unset Printing Implicit Defensive.
 
 Import Order.TTheory GRing.Theory Num.Theory.
 Import numFieldNormedType.Exports.
+Import numFieldTopology.Exports.
 
 Local Open Scope classical_set_scope.
+Local Open Scope ring_scope.
 
 Section Gdelta_Fsigma.
 Context {T : topologicalType}.
@@ -94,3 +96,46 @@ have /Baire : forall n, open (C n) /\ dense (C n).
   - by apply: denseI => //; apply oB.
 by rewrite -C0; exact: dense0.
 Qed.
+
+Section perfectlynormalspace.
+Context (R : realType) (T : topologicalType).
+
+Definition perfectly_normal_space (x : R) :=
+  forall E : set T, closed E -> 
+    exists f : T -> R, continuous f /\ E = f @^-1` [set x].
+
+Lemma perfectly_normal_spaceP x y : perfectly_normal_space x -> perfectly_normal_space y.
+Proof.
+move=>px E cE.
+case:(px E cE) => f [] cf ->.
+pose f' := f + cst (y - x). 
+exists f'.
+split.
+rewrite /f'.
+move=> z.
+apply: continuousD.
+exact:cf.
+exact:cst_continuous.
+apply/seteqP.
+rewrite /f' /cst /=.
+split => z /=.
+rewrite addrfctE => ->.
+by rewrite subrKC.
+rewrite addrfctE.
+move/eqP.
+by rewrite eq_sym -subr_eq opprB subrKC eq_sym => /eqP.
+Qed.
+
+Definition perfectly_normal_space01 :=
+  forall E F : set T, closed E -> closed F -> [disjoint E & F] ->
+    exists f : T -> R, continuous f /\ E = f @^-1` [set 0] /\ F = f @^-1` [set 1] 
+      /\ f @` [set: T] = `[0, 1]%classic.
+
+Definition perfectly_normal_space_G_delta :=
+  normal_space T /\ forall E : set T, closed E -> Gdelta E.
+
+Lemma perfectly_normal_space01P : perfectly_normal_space <-> perfectly_normal_space01.
+Proof.
+Admitted.
+
+End perfectlynormalspace.
