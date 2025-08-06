@@ -22,7 +22,7 @@ From mathcomp Require Import realfun interval_inference convex.
 (*                                                                            *)
 (*             expeR x == extended real number-valued exponential function    *)
 (*                ln x == the natural logarithm, in ring_scope                *)
-(*                lne x == the natural logarithm, in ereal_scope              *)
+(*               lne x == the natural logarithm, in ereal_scope               *)
 (*              s `^ r == power function, in ring_scope (assumes s >= 0)      *)
 (*              e `^ r == power function, in ereal_scope (assumes e >= 0)     *)
 (*          riemannR a == sequence n |-> 1 / (n.+1) `^ a where a has a type   *)
@@ -1217,40 +1217,48 @@ elim: n x => [x x0|n ih x x0]; first by rewrite expe0 mule0n lne1.
 by rewrite expeS lneM ?ih ?muleS// in_itv/= ?expe_gt0// ?x0/= leey.
 Qed.
 
-Lemma le_lne1Dx x : - 1%E <= x -> lne (1 + x) <= x.
+Lemma le_lne1Dx x : - 1 <= x -> lne (1 + x) <= x.
 Proof.
 move=> ?; rewrite -lee_expeR lneK ?expeR_ge1Dx //.
 by rewrite in_itv //= leey andbT addrC -(oppeK 1) sube_ge0.
 Qed.
 
-Lemma lne_sublinear x : 0 < x < +oo -> lne x < x.
+Lemma lne_sublinear x : x \is a fin_num -> lne x < x.
 Proof.
-case: x => [r| |]//; rewrite ?ltxx ?andbF// lte_fin => /andP[r0 _].
-by rewrite lne_EFin// lte_fin ln_sublinear.
+move=> xfin; have [x0|x0] := leP x 0.
+  by rewrite le0_lneNy// ltNye_eq xfin.
+have ? : (0 < fine x)%R by rewrite fine_gt0// x0/= ltey_eq xfin.
+by rewrite -(fineK xfin) lne_EFin// lte_fin ln_sublinear.
 Qed.
 
-Lemma lne_ge0 x : 1 <= x -> 0 <= lne x.
+Lemma lne_ge0 x : (0 <= lne x) = (1 <= x).
 Proof.
+apply/idP/idP.
+  case: x => [r||]//=; last by move=> _; rewrite leey.
+  case: ifPn => //; rewrite -ltNge lee_fin => r0.
+  by rewrite -ln1 ler_ln// posrE.
 case: x => [r||]//; rewrite ?leey// lee_fin => r1.
 by rewrite lne_EFin// ?(lt_le_trans _ r1)// lee_fin ln_ge0.
 Qed.
 
-Lemma lne_lt0 x : 0 < x < 1 -> lne x < 0.
+Lemma lne_lt0 x : (lne x < 0) = (x < 1).
+Proof. by rewrite 2!ltNge lne_ge0. Qed.
+
+Lemma lne_eq0 x : (lne x == 0) = (x == 1).
 Proof.
-by move=> /andP[? ?]; rewrite -lte_expeR expeR0 lneK ?in_itv//= leey andbT ?ltW.
+apply/idP/idP => /eqP; last by move=> ->; rewrite lne1.
+have [|x0] := leP x 0.
+  by case: x => [r| |]//; rewrite lee_fin => /= ->.
+rewrite -lne1 => /lne_inj.
+rewrite ?in_itv/= ?leey ?andbT// => /(_ _ _)/eqP.
+by apply => //; exact: ltW.
 Qed.
 
-Lemma lne_gt0 x : 1 < x -> 0 < lne x.
-Proof.
-move=> x1; rewrite -lte_expeR expeR0 lneK// in_itv/= leey andbT.
-by rewrite (le_trans _ (ltW x1)).
-Qed.
+Lemma lne_gt0 x : (0 < lne x) = (1 < x).
+Proof. by rewrite 2!lt_neqAle eq_sym lne_eq0 eq_sym lne_ge0. Qed.
 
-Fact le1_lne_le0 x : x <= 1 -> lne x <= 0.
-Proof.
-move: x => [r r1| |]//=.
-by rewrite /lne; case: ifPn => // r0; rewrite lee_fin ln_le0.
-Qed.
+Lemma lne_le0 x : (lne x <= 0) = (x <= 1).
+Proof. by rewrite 2!leNgt lne_gt0. Qed.
 
 End Lne.
 
