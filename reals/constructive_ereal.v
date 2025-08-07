@@ -155,7 +155,6 @@ Notation "0" := (@GRing.zero (\bar^d _)) : ereal_dual_scope.
 Notation "0" := (@GRing.zero (\bar _)) : ereal_scope.
 Notation "1" := (1%R%:E : dual_extended _) : ereal_dual_scope.
 Notation "1" := (1%R%:E) : ereal_scope.
-Notation "- 1" := ((-1)%R%:E) : ereal_scope.
 
 Bind    Scope ereal_dual_scope with dual_extended.
 Bind    Scope ereal_scope with extended.
@@ -685,10 +684,10 @@ Proof. by rewrite lee_fin ler0N1. Qed.
 Lemma lte0N1 : 0 < (-1)%:E :> \bar R = false.
 Proof. by rewrite lte_fin ltr0N1. Qed.
 
-Lemma lteN10 : - 1 < 0 :> \bar R.
+Lemma lteN10 : - 1%E < 0 :> \bar R.
 Proof. by rewrite lte_fin ltrN10. Qed.
 
-Lemma leeN10 : - 1 <= 0 :> \bar R.
+Lemma leeN10 : - 1%E <= 0 :> \bar R.
 Proof. by rewrite lee_fin lerN10. Qed.
 
 Lemma lte0n n : (0 < n%:R%:E :> \bar R) = (0 < n)%N.
@@ -1274,13 +1273,13 @@ Proof. by move=> rreal; rewrite muleC real_mulrNy. Qed.
 
 Definition real_mulr_infty := (real_mulry, real_mulyr, real_mulrNy, real_mulNyr).
 
-Lemma mulN1e x : (- 1) * x = - x.
+Lemma mulN1e x : (- 1%E) * x = - x.
 Proof.
 by case: x => [r| |]/=;
   rewrite /mule ?mulN1r// eqe oppr_eq0 oner_eq0/= lte_fin oppr_gt0 ltr10.
 Qed.
 
-Lemma muleN1 x : x * (- 1) = - x. Proof. by rewrite muleC mulN1e. Qed.
+Lemma muleN1 x : x * (- 1%E) = - x. Proof. by rewrite muleC mulN1e. Qed.
 
 Lemma mule_neq0 x y : x != 0 -> y != 0 -> x * y != 0.
 Proof.

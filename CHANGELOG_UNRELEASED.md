@@ -49,9 +49,6 @@
     `lne_sublinear`, `lne_ge0`, `lne_lt0`, `lne_gt0`, `lne_le0`
   + lemma `lne_eq0`
 
-- in `constructive_ereal.v`:
-  + notation `- 1` in scope `ereal_scope`
-
 - in `charge.v`:
   + definition `copp`, lemma `cscaleN1`
 

@@ -1217,7 +1217,7 @@ elim: n x => [x x0|n ih x x0]; first by rewrite expe0 mule0n lne1.
 by rewrite expeS lneM ?ih ?muleS// in_itv/= ?expe_gt0// ?x0/= leey.
 Qed.
 
-Lemma le_lne1Dx x : - 1 <= x -> lne (1 + x) <= x.
+Lemma le_lne1Dx x : - 1%E <= x -> lne (1 + x) <= x.
 Proof.
 move=> ?; rewrite -lee_expeR lneK ?expeR_ge1Dx //.
 by rewrite in_itv //= leey andbT addrC -(oppeK 1) sube_ge0.
@@ -1473,7 +1473,7 @@ move=> /andP[a0 a1].
 have : forall n, harmonic n <= riemannR a n.
   move=> [/=|n]; first by rewrite powR1 invr1.
   rewrite -[leRHS]div1r ler_pdivlMr ?powR_gt0// mulrC ler_pdivrMr//.
-  by rewrite mul1r -[leRHS]powRr1// (ler_powR)// ler1n.
+  by rewrite mul1r -[leRHS]powRr1// ler_powR// ler1n.
 move/(series_le_cvg harmonic_ge0 (fun i => ltW (riemannR_gt0 i a0))).
 by move/contra_not; apply; exact: dvg_harmonic.
 Qed.
