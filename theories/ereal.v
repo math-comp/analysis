@@ -1066,7 +1066,7 @@ Definition lt_expandRL := monoRL_in
 Lemma contract_eq0 x : (contract x == 0%R) = (x == 0).
 Proof. by rewrite -(can_eq contractK) contract0. Qed.
 
-Lemma contract_eqN1 x : (contract x == -1) = (x == -oo).
+Lemma contract_eqN1 x : (contract x == (- 1)%R) = (x == -oo).
 Proof. by rewrite -(can_eq contractK). Qed.
 
 Lemma contract_eq1 x : (contract x == 1%R) = (x == +oo).
@@ -1352,7 +1352,7 @@ move: reN1; rewrite eq_sym neq_lt => /orP[reN1|reN1].
       rewrite (@lt_le_trans _ _ 1%R) // ?lerDr//.
       by rewrite (le_lt_trans (ler_norm _))// contract_lt1.
     have ? : (`|contract r%:E + e%:num| < 1)%R.
-      rewrite ltr_norml re1 andbT -(addr0 (-1)) ler_ltD //.
+      rewrite ltr_norml re1 andbT -(addr0 (- 1)%R) ler_ltD //.
       by move: (contract_le1 r%:E); rewrite ler_norml => /andP[].
     pose e' : R := Num.min
       (r - fine (expand (contract r%:E - e%:num)))%R

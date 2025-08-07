@@ -1430,7 +1430,7 @@ Lemma ge0_integration_by_substitutionNy G a :
   \int[mu]_(x in `[a, +oo[) ((G \o -%R) x)%:E.
 Proof.
 move=> /continuous_within_itvNycP[cG GNa] G0.
-have Dopp : (@GRing.opp R)^`() = cst (-1).
+have Dopp : (@GRing.opp R)^`() = cst (- 1)%R.
   by apply/funext => z; rewrite derive1E derive_val.
 rewrite decreasing_ge0_integration_by_substitutiony//; last 7 first.
   by move=> x y _ _; rewrite ltrN2.
