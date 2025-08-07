@@ -51,6 +51,8 @@
 
 - in `charge.v`:
   + definition `copp`, lemma `cscaleN1`
+- in `classical_orders.v`:
+  + lemma `big_lexi_order_prefix_closed_itv`
 
 ### Changed
 
