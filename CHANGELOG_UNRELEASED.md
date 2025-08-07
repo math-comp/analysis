@@ -50,12 +50,18 @@
   + lemma `lne_eq0`
 
 - in `constructive_ereal.v`:
-  + notation `- 1`
+  + notation `- 1` in scope `ereal_scope`
+
+- in `charge.v`:
+  + definition `copp`, lemma `cscaleN1`
 
 ### Changed
 
 - moved from `pi_irrational.v` to `reals.v` and changed
   + definition `rational`
+
+- in `constructive_ereal.v`:
+  + lemma `mulN1e`
 
 ### Renamed
 

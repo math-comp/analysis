@@ -43,7 +43,9 @@ From mathcomp Require Import lebesgue_measure lebesgue_integral.
 (*                              non-measurable sets                           *)
 (*                     czero == zero charge                                   *)
 (*               cscale r nu == charge nu scaled by a factor r : R            *)
-(*          charge_add n1 n2 == the charge corresponding to the sum of        *)
+(*                   copp nu == the charge corresponding to the opposite of   *)
+(*                              the charges nu                                *)
+(*                cadd n1 n2 == the charge corresponding to the sum of        *)
 (*                              charges n1 and n2                             *)
 (* charge_of_finite_measure mu == charge corresponding to a finite measure mu *)
 (* ```                                                                        *)
@@ -439,6 +441,38 @@ Proof.
 move=> /negbTE c0 munu E mE /eqP; rewrite /cscale mule_eq0 eqe c0/=.
 by move=> /eqP/munu; exact.
 Qed.
+
+Section charge_opp.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType).
+Variables (nu : {charge set T -> \bar R}).
+
+Definition copp := \- nu.
+
+Let copp0 : copp set0 = 0.
+Proof. by rewrite /copp charge0 oppe0. Qed.
+
+Let copp_finite A : measurable A -> copp A \is a fin_num.
+Proof. by move=> mA; rewrite fin_numN fin_num_measure. Qed.
+
+Let copp_sigma_additive : semi_sigma_additive copp.
+Proof.
+move=> F mF tF mUF; rewrite /copp; under eq_fun.
+  move=> n; rewrite sumeN; last first.
+    by move=> p q _ _; rewrite fin_num_adde_defl// fin_num_measure.
+  over.
+exact/cvgeN/charge_semi_sigma_additive.
+Qed.
+
+HB.instance Definition _ := isCharge.Build _ _ _ copp
+  copp0 copp_finite copp_sigma_additive.
+
+End charge_opp.
+
+Lemma cscaleN1 {d} {T : ringOfSetsType d} {R : realFieldType}
+    (nu : {charge set T -> \bar R}) :
+  cscale (-1) nu = \- nu.
+Proof. by rewrite /cscale/=; apply/funext => x; rewrite mulN1e. Qed.
 
 Section charge_add.
 Local Open Scope ereal_scope.
@@ -944,7 +978,7 @@ Local Definition cjordan_neg : {charge set T -> \bar R} :=
   cscale (-1) (crestr0 nu mN).
 
 Lemma cjordan_negE A : cjordan_neg A = - crestr0 nu mN A.
-Proof. by rewrite /= /cscale/= EFinN mulN1e. Qed.
+Proof. by rewrite /= cscaleN1. Qed.
 
 Let positive_set_cjordan_neg E : 0 <= cjordan_neg E.
 Proof.
@@ -970,7 +1004,7 @@ Lemma jordan_decomp (A : set T) : measurable A ->
   nu A = cadd jordan_pos (cscale (-1) jordan_neg) A.
 Proof.
 move=> mA.
-rewrite /cadd cjordan_posE /= /cscale EFinN mulN1e cjordan_negE oppeK.
+rewrite /cadd cjordan_posE/= cscaleN1 cjordan_negE oppeK.
 rewrite /crestr0 mem_set// -[in LHS](setIT A).
 case: nuPN => _ _ <- PN0; rewrite setIUr chargeU//.
 - exact: measurableI.
@@ -1045,7 +1079,7 @@ Lemma abse_charge_variation d (T : measurableType d) (R : realType)
   measurable A -> `|nu A| <= charge_variation PN A.
 Proof.
 move=> mA.
-rewrite (jordan_decomp PN mA) /cadd/= /cscale/= mulN1e /charge_variation.
+rewrite (jordan_decomp PN mA) /cadd/= cscaleN1 /charge_variation.
 by rewrite (le_trans (lee_abs_sub _ _))// !gee0_abs.
 Qed.
 
@@ -2034,8 +2068,7 @@ exists (fp \- fn); split; first by move=> x; rewrite fin_numB// fpfin fnfin.
   exact: integrableB.
 move=> E mE; rewrite [LHS](jordan_decomp nuPN mE)// integralB//;
   [|exact: (integrableS measurableT)..].
-rewrite -fpE ?inE// -fnE ?inE//= /cadd/= jordan_posE jordan_negE.
-by rewrite /cscale EFinN mulN1e.
+by rewrite -fpE ?inE// -fnE ?inE//= /cadd/= cscaleN1.
 Qed.
 
 Definition Radon_Nikodym : T -> \bar R :=

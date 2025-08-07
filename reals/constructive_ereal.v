@@ -1274,10 +1274,10 @@ Proof. by move=> rreal; rewrite muleC real_mulrNy. Qed.
 
 Definition real_mulr_infty := (real_mulry, real_mulyr, real_mulrNy, real_mulNyr).
 
-Lemma mulN1e x : - 1%E * x = - x.
+Lemma mulN1e x : (- 1) * x = - x.
 Proof.
-rewrite -EFinN /mule/=; case: x => [x||];
-  do ?[by rewrite mulN1r|by rewrite eqe oppr_eq0 oner_eq0 lte_fin ltr0N1].
+by case: x => [r| |]/=;
+  rewrite /mule ?mulN1r// eqe oppr_eq0 oner_eq0/= lte_fin oppr_gt0 ltr10.
 Qed.
 
 Lemma muleN1 x : x * (- 1) = - x. Proof. by rewrite muleC mulN1e. Qed.
@@ -1292,7 +1292,7 @@ Qed.
 Lemma mule_eq0 x y : (x * y == 0) = (x == 0) || (y == 0).
 Proof.
 apply/idP/idP => [|/orP[] /eqP->]; rewrite ?(mule0, mul0e)//.
-by apply: contraTT => /norP[]; apply: mule_neq0.
+by apply: contraTT => /norP[]; exact: mule_neq0.
 Qed.
 
 Lemma mule_ge0 x y : 0 <= x -> 0 <= y -> 0 <= x * y.

@@ -151,10 +151,10 @@ Proof.
 move=> mD r; rewrite /Rintegral/= integral_cst//.
 have := leey (mu D); rewrite le_eqVlt => /predU1P[->/=|muy]; last first.
   by rewrite fineM// ge0_fin_numE.
-rewrite mulr_infty/=; have [_|r0|r0] := sgrP r.
-- by rewrite mul0e/= mulr0.
-- by rewrite mul1e/= mulr0.
-- by rewrite mulN1e/= mulr0.
+rewrite mulr0 mulr_infty/=; have [_|r0|r0] := sgrP r.
+- by rewrite mul0e.
+- by rewrite mul1e.
+- by rewrite mulN1e.
 Qed.
 
 Lemma le_Rintegral D f1 f2 : measurable D ->
