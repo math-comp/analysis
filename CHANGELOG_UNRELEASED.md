@@ -35,6 +35,9 @@
   + lemmas `closed_Fsigma`, `Gdelta_measurable`, `Gdelta_subspace_open`,
     `irrational_Gdelta`, `not_rational_Gdelta`
 
+- in `classical_orders.v`:
+  + lemma `big_lexi_order_prefix_closed_itv`
+
 ### Changed
 
 - moved from `pi_irrational.v` to `reals.v` and changed
