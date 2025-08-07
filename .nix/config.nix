@@ -62,13 +62,23 @@ in {
     mathcomp.override.version = "2.4.0";
   };
 
-  bundles."9.0".coqPackages = common-bundle // {
-    coq.override.version = "9.0";
+  bundles."9.0" = {
+    rocqPackages = {
+      rocq-core.override.version = "9.0";
+    };
+    coqPackages = common-bundle // {
+      coq.override.version = "9.0";
+    };
   };
 
-  bundles."9.1".coqPackages = common-bundle // {
-    coq.override.version = "9.1";
-    ssprove.job = false;  # not yet available for 9.1
+  bundles."9.1" = {
+    rocqPackages = {
+      rocq-core.override.version = "9.1";
+    };
+    coqPackages = common-bundle // {
+      coq.override.version = "9.1";
+      ssprove.job = false;  # not yet available for 9.1
+    };
   };
 
   bundles."master" = {
@@ -76,14 +86,14 @@ in {
       rocq-core.override.version = "master";
       stdlib.override.version = "master";
       rocq-elpi.override.version = "master";
-      rocq-elpi.override.elpi-version = "2.0.7";
+      rocq-elpi.override.elpi-version = "3.0.1";
       hierarchy-builder.override.version = "master";
     };
     coqPackages = common-bundle // {
       coq.override.version = "master";
       stdlib.override.version = "master";
       coq-elpi.override.version = "master";
-      coq-elpi.override.elpi-version = "2.0.7";
+      coq-elpi.override.elpi-version = "3.0.1";
       hierarchy-builder.override.version = "master";
       mathcomp.override.version = "master";
       mathcomp-bigenough.override.version = "master";
