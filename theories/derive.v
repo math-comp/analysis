@@ -353,7 +353,7 @@ Section DifferentialR2.
 Variable R : numFieldType.
 Implicit Type (V : normedModType R).
 
-Lemma derivemxE m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
+Lemma deriveEjacobian m n (f : 'rV[R]_m.+1 -> 'rV[R]_n.+1) (a v : 'rV[R]_m.+1) :
   differentiable f a -> 'D_ v f a = v *m jacobian f a.
 Proof. by move=> /deriveE->; rewrite /jacobian mul_rV_lin1. Qed.
 
@@ -390,9 +390,10 @@ Lemma derive1Sn V (f : R -> V) n : f^`(n.+1) = f^`()^`(n).
 Proof. exact: iterSr. Qed.
 
 End DifferentialR2.
-
 Notation "f ^` ()" := (derive1 f) : classical_set_scope.
 Notation "f ^` ( n )" := (derive1n n f) : classical_set_scope.
+#[deprecated(since="mathcomp-analysis 1.13.0", note="renamed to `deriveEjacobian`")]
+Notation derivemxE := deriveEjacobian (only parsing).
 
 Section DifferentialR3.
 Variable R : numFieldType.
