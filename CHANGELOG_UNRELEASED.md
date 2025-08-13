@@ -66,6 +66,22 @@
   + generalized and renamed:
     * `measurable_fun_itv_bndo_bndc` -> `measurable_fun_itv_bndo_bndcP`
     * `measurable_fun_itv_obnd_cbnd` -> `measurable_fun_itv_obnd_cbndP`
+- moved from `simple_functions.v` to `measure.v`
+  + notations `{mfun _ >-> _}`, `[mfun of _]`
+  + mixin `isMeasurableFun`, structure `MesurableFun`, lemmas `measurable_funP`, `measurable_sfunP`
+  + definitions `mfun`, `mfun_key`, canonical `mfun_keyed`
+  + definitions `mfun_Sub_subproof`, `mfun_Sub`
+  + lemmas `mfun_rect`, `mfun_valP`, `mfuneqP`
+  + lemma `measurableT_comp_subproof`
+
+- moved from `simple_functions.v` to `measurable_realfun.v`
+  + lemmas `mfun_subring_closed`, `mfun0`, `mfun1`, `mfunN`,
+    `mfunD`, `mfunB`, `mfunM`, `mfunMn`, `mfun_sum`, `mfun_prod`, `mfunX`
+  + definitions `mindic`, `indic_mfun`, `scale_mfun`, `max_mfun`
+  + lemmas `mindicE`, `max_mfun_subproof`
+
+- moved from `simple_functions.v` to `lebesgue_stieltjes_measure.v`
+  + lemma `measurable_sfun_inP`
 
 ### Renamed
 
@@ -80,6 +96,12 @@
 - in `derive.v`:
   + `derivemxE` -> `deriveEjacobian`
 
+- `measurable_sfunP` -> `measurable_funPTI`
+  (and moved from from `simple_functions.v` to `measure.v`)
+
+- `measurable_sfun_inP` -> `measurable_funP1`
+  (and moved from `simple_functions.v` to `lebesgue_stieltjes_measure.v`)
+
 ### Generalized
 
 - in `functions.v`
@@ -90,6 +112,9 @@
 ### Removed
 
 - file `forms.v` (superseded by MathComp's `sesquilinear.v`)
+
+- in `simple_functions.v`:
+  + duplicated hints about `measurable_set1`
 
 ### Infrastructure
 
