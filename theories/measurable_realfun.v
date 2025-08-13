@@ -183,37 +183,30 @@ End puncture_ereal_itv.
 Section salgebra_R_ssets.
 Variable R : realType.
 
-Lemma measurable_fun_itv_bndo_bndc (a : itv_bound R) (b : R)
-    (f : R -> R) :
-  measurable_fun [set` Interval a (BLeft b)] f ->
+Lemma measurable_fun_itv_bndo_bndcP (a : itv_bound R) (b : R) (f : R -> R) :
+  measurable_fun [set` Interval a (BLeft b)] f <->
   measurable_fun [set` Interval a (BRight b)] f.
 Proof.
-have [ab|ab] := leP a (BLeft b).
-- move: a => [a0 a|[|//]] in ab *;
-    move=> mf; rewrite -setUitv1//; apply/measurable_funU => //;
-    by split => //; exact: measurable_fun_set1.
-- move: a => [[|] a|[|]//] in ab *; rewrite bnd_simp in ab.
-  + move=> _; rewrite set_itv_ge// ?bnd_simp -?ltNge//.
-    exact: measurable_fun_set0.
-  + move=> _; rewrite set_itv_ge// ?bnd_simp -?leNgt//.
-    exact: measurable_fun_set0.
+split; [have [ab ?|ab _] := leP a (BLeft b) |have [ab _|ab] := leP (BLeft b) a].
+- rewrite -setUitv1//; apply/measurable_funU => //; split => //.
+  exact: measurable_fun_set1.
+- by rewrite set_itv_ge -?leNgt//; exact: measurable_fun_set0.
+- by rewrite set_itv_ge -?leNgt//; exact: measurable_fun_set0.
+- by rewrite -setUitv1 ?ltW// => /measurable_funU[].
 Qed.
 
-Lemma measurable_fun_itv_obnd_cbnd (a : R) (b : itv_bound R)
-    (f : R -> R) :
-  measurable_fun [set` Interval (BRight a) b] f ->
+Lemma measurable_fun_itv_obnd_cbndP (a : R) (b : itv_bound R) (f : R -> R) :
+  measurable_fun [set` Interval (BRight a) b] f <->
   measurable_fun [set` Interval (BLeft a) b] f.
 Proof.
-have [ab|ab] := leP (BRight a) b.
-- move: b => [[|] b|[//|]] in ab *;
-    move=> mf; rewrite -setU1itv//; apply/measurable_funU => //;
-    by split => //; exact: measurable_fun_set1.
-- move: b => [[|] b|[|//]] in ab *; rewrite bnd_simp in ab.
-  + move=> _; rewrite set_itv_ge// ?bnd_simp -?leNgt//.
-    exact: measurable_fun_set0.
-  + move=> _; rewrite set_itv_ge// ?bnd_simp -?ltNge//.
-    exact: measurable_fun_set0.
-  + by move=> _; rewrite set_itv_ge//=; exact: measurable_fun_set0.
+split; [have [ab mf|ab _] := leP (BRight a) b|
+        have [ab _|ab] := leP b (BRight a)].
+- rewrite -setU1itv//; apply/measurable_funU => //; split => //.
+  exact: measurable_fun_set1.
+- rewrite set_itv_ge; first exact: measurable_fun_set0.
+  by rewrite -leNgt; case: b ab => -[].
+- by rewrite set_itv_ge// -?leNgt//; exact: measurable_fun_set0.
+- by rewrite -setU1itv ?ltW// => /measurable_funU[].
 Qed.
 
 #[deprecated(since="mathcomp-analysis 1.9.0", note="use `measurable_fun_itv_obnd_cbnd` instead")]
@@ -221,10 +214,12 @@ Lemma measurable_fun_itv_co (x y : R) b0 b1 (f : R -> R) :
   measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
   measurable_fun `[x, y[ f.
 Proof.
-move: b0 b1 => [|] [?|?]//.
-- exact/measurable_fun_itv_bndo_bndcP.
-- exact/measurable_fun_itv_obnd_cbndP.
-- by exact/measurable_fun_itv_bndo_bndcP/measurable_fun_itv_obnd_cbndP.
+move: b0 b1 => [|] [|]//.
+- by apply: measurable_funS => //; apply: subset_itvl; rewrite bnd_simp.
+- by move/measurable_fun_itv_obnd_cbndP.
+- move=> mf.
+  have : measurable_fun `[x, y] f by exact/measurable_fun_itv_obnd_cbndP.
+  by apply: measurable_funS => //; apply: subset_itvl; rewrite bnd_simp.
 Qed.
 
 #[deprecated(since="mathcomp-analysis 1.9.0", note="use `measurable_fun_itv_bndo_bndc` instead")]
@@ -232,20 +227,24 @@ Lemma measurable_fun_itv_oc (x y : R) b0 b1 (f : R -> R) :
   measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
   measurable_fun `]x, y] f.
 Proof.
-move: b0 b1 => [|] [?|?]//.
-- exact/measurable_fun_itv_bndo_bndcP/measurable_fun_itv_obnd_cbndP.
-- exact/measurable_fun_itv_obnd_cbndP.
-- exact/measurable_fun_itv_bndo_bndcP.
+move: b0 b1 => [|] [|]//.
+- move=> mf.
+  have : measurable_fun `[x, y] f by exact/measurable_fun_itv_bndo_bndcP.
+  by apply: measurable_funS => //; apply: subset_itvr; rewrite bnd_simp.
+- by apply: measurable_funS => //; apply: subset_itvr; rewrite bnd_simp.
+- by move/measurable_fun_itv_bndo_bndcP.
 Qed.
 
 Lemma measurable_fun_itv_cc (x y : R) b0 b1 (f : R -> R) :
   measurable_fun [set` Interval (BSide b0 x) (BSide b1 y)] f ->
   measurable_fun `[x, y] f.
 Proof.
-move: b0 b1 => [|] [?|?]//.
-- exact/measurable_fun_itv_bndo_bndcP.
-- exact/measurable_fun_itv_obnd_cbndP/measurable_fun_itv_bndo_bndcP.
-- exact/measurable_fun_itv_obnd_cbndP.
+move: b0 b1 => [|] [|]//.
+- by move/measurable_fun_itv_bndo_bndcP.
+- move=> mf.
+  have : measurable_fun `[x, y[ f by exact/measurable_fun_itv_obnd_cbndP.
+  by move/measurable_fun_itv_bndo_bndcP.
+- by move/measurable_fun_itv_obnd_cbndP.
 Qed.
 
 HB.instance Definition _ := (ereal_isMeasurable (R.-ocitv.-measurable)).
