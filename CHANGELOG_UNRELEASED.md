@@ -77,6 +77,9 @@
   + `ltr_expeR` -> `lte_expeR`
   + `ler_expeR` -> `lee_expeR`
 
+- in `derive.v`:
+  + `derivemxE` -> `deriveEjacobian`
+
 ### Generalized
 
 - in `functions.v`
