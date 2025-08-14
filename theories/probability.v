@@ -783,6 +783,21 @@ Qed.
 
 End markov_chebyshev_cantelli.
 
+Section hoeffding.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+(* note: requires independence, it might be that we need the product sample space *)
+Lemma hoeffding n (X : n.-tuple {RV P >-> R}) (a b : n.-tuple R) (t : R) :
+  (forall i, {ae P, forall t, tnth a i <= tnth X i t <= tnth b i}%R) ->
+  let S : {RV P >-> R} := (\sum_(i < n) tnth X i)%R in
+  (0 < t)%R ->
+  P [set x | (S x)%:E - 'E_P[S] >= t%:E] <= (expR (- 2 * t^+2 / (\sum_(i < n) (tnth b i - tnth a i)^+2)))%:E.
+Proof.
+Admitted.
+
+End hoeffding.
+
 HB.mixin Record MeasurableFun_isDiscrete d d' (T : measurableType d)
     (T' : measurableType d') (X : T -> T') of @MeasurableFun d d' T T' X := {
   countable_range : countable (range X)
