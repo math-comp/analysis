@@ -54,6 +54,10 @@
 - in `classical_orders.v`:
   + lemma `big_lexi_order_prefix_closed_itv`
 
+- in `constructive_ereal.v`:
+  + lemmas `mule_natr`, `dmule_natr`
+  + lemmas `inve_eqy`, `inve_eqNy`
+
 ### Changed
 
 - moved from `pi_irrational.v` to `reals.v` and changed
