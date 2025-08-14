@@ -21,7 +21,7 @@ Unset Printing Implicit Defensive.
 (* # A Sampling Theorem                                                       *)
 (*                                                                            *)
 (* This file contains a formalization of a sampling theorem. The proof is     *)
-(* decompose in two sections: sampling_theorem_part1 and                      *)
+(* decomposed in two sections: sampling_theorem_part1 and                     *)
 (* sampling_theorem_part2.                                                    *)
 (*                                                                            *)
 (* References:                                                                *)
