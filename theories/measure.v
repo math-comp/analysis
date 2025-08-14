@@ -1542,9 +1542,12 @@ by rewrite -(setTI (_ @^-1` _)); exact: measurable_funPT.
 Qed.
 Arguments measurable_funP {d d' aT rT D} s.
 
-Lemma measurable_sfunP {d d'} {aT : measurableType d} {rT : measurableType d'}
+Lemma measurable_funPTI {d d'} {aT : measurableType d} {rT : measurableType d'}
   (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
 Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.13.0", note="renamed to `measurable_funPTI`")]
+Notation measurable_sfunP := measurable_funPTI (only parsing).
 
 Section mfun_pred.
 Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
@@ -1805,7 +1808,7 @@ Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
   {d3} {T3 : measurableType d3}.
 Variables (f : {mfun T2 >-> T3}) (g : {mfun T1 >-> T2}).
 
-Lemma measurableT_comp_subproof : measurable_fun setT (f \o g).
+Let measurableT_comp_subproof : measurable_fun setT (f \o g).
 Proof. exact: measurableT_comp. Qed.
 
 HB.instance Definition _ := isMeasurableFun.Build _ _ _ _ (f \o g)

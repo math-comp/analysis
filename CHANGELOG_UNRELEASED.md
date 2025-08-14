@@ -68,11 +68,14 @@
     * `measurable_fun_itv_obnd_cbnd` -> `measurable_fun_itv_obnd_cbndP`
 - moved from `simple_functions.v` to `measure.v`
   + notations `{mfun _ >-> _}`, `[mfun of _]`
-  + mixin `isMeasurableFun`, structure `MesurableFun`, lemmas `measurable_funP`, `measurable_sfunP`
+  + mixin `isMeasurableFun`, structure `MesurableFun`, lemmas `measurable_funP`
   + definitions `mfun`, `mfun_key`, canonical `mfun_keyed`
   + definitions `mfun_Sub_subproof`, `mfun_Sub`
   + lemmas `mfun_rect`, `mfun_valP`, `mfuneqP`
   + lemma `measurableT_comp_subproof`
+
+- moved from `simple_functions.v` to `measure.v` and renamed:
+  + lemma `measurable_sfunP` -> `measurable_funPTI`
 
 - moved from `simple_functions.v` to `measurable_realfun.v`
   + lemmas `mfun_subring_closed`, `mfun0`, `mfun1`, `mfunN`,
@@ -80,8 +83,8 @@
   + definitions `mindic`, `indic_mfun`, `scale_mfun`, `max_mfun`
   + lemmas `mindicE`, `max_mfun_subproof`
 
-- moved from `simple_functions.v` to `lebesgue_stieltjes_measure.v`
-  + lemma `measurable_sfun_inP`
+- moved from `simple_functions.v` to `lebesgue_stieltjes_measure.v` and renamed:
+  + lemma `measurable_sfun_inP` -> `measurable_funP1`
 
 ### Renamed
 
@@ -115,6 +118,7 @@
 
 - in `simple_functions.v`:
   + duplicated hints about `measurable_set1`
+  + lemma `measurableT_comp_subproof` turned into a `Let` (now in `measure.v`)
 
 ### Infrastructure
 

@@ -601,15 +601,18 @@ Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
 Hint Extern 0 (measurable [set` _] ) => exact: measurable_itv : core.
 
 #[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
-  solve [apply: measurable_sfunP; exact: measurable_set1] : core.
+  solve [apply: measurable_funPTI; exact: measurable_set1] : core.
 
-Lemma measurable_sfun_inP {d} {aT : measurableType d} {rT : realType}
+Lemma measurable_funP1 {d} {aT : measurableType d} {rT : realType}
    (f : {mfun aT >-> rT}) D (y : rT) :
   measurable D -> measurable (D `&` f @^-1` [set y]).
-Proof. by move=> Dm; exact: measurableI. Qed.
+Proof. move=> mD; exact: measurable_funP. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.13.0", note="renamed to `measurable_funP1`")]
+Notation measurable_sfun_inP := measurable_funP1 (only parsing).
 
 #[global] Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
-  solve [apply: measurable_sfun_inP; assumption] : core.
+  solve [apply: measurable_funP1; assumption] : core.
 
 HB.mixin Record isCumulativeBounded (R : numFieldType) (l r : R) (f : R -> R) := {
   cumulativeNy : f @ -oo --> l ;
