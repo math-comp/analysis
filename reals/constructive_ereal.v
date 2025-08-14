@@ -2434,6 +2434,15 @@ move: x => [x| |]/=.
 - by rewrite inveNy.
 Qed.
 
+Lemma inve_eqy x : (x^-1 == +oo) = (x == 0).
+Proof.
+case: x => [r| |] //=; apply/idP/idP => [|]; first by rewrite inver; case: ifPn.
+by rewrite eqe => /eqP ->; rewrite inver// eqxx.
+Qed.
+
+Lemma inve_eqNy x : (x^-1 == -oo) = (x == -oo).
+Proof. by case: x => [r| |] //=; rewrite inver; case: ifPn. Qed.
+
 Lemma inve_ge0 x : (0 <= x^-1) = (0 <= x).
 Proof.
 by case: inveP; rewrite ?le0y ?lexx //= => r; rewrite lee_fin invr_ge0.
@@ -2743,6 +2752,9 @@ move: x => [x| |] ih.
 - by rewrite mulry gtr0_sg// mul1e enatmul_pinfty.
 - by rewrite mulrNy gtr0_sg// mul1e enatmul_ninfty.
 Qed.
+
+Lemma mule_natr x n : x * n%:R%:E = x *+ n.
+Proof. by rewrite muleC mule_natl. Qed.
 
 Lemma lte_pmul x1 y1 x2 y2 :
   0 <= x1 -> 0 <= x2 -> x1 < y1 -> x2 < y2 -> x1 * x2 < y1 * y2.
@@ -3279,6 +3291,9 @@ Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
 
 Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
 Proof. by rewrite mule_natl ednatmulE. Qed.
+
+Lemma dmule_natr x n : x * n%:R%:E = x *+ n.
+Proof. by rewrite mule_natr ednatmulE. Qed.
 
 Lemma lee_pdaddl y x z : 0 <= x -> y <= z -> y <= x + z.
 Proof. by move=> *; rewrite -[y]dadd0e lee_dD. Qed.
