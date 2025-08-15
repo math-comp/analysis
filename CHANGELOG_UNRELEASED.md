@@ -7,6 +7,9 @@
 - in `constructive_ereal.v`:
   + lemma `ltgte_fin_num`
 
+- in `num_normedtype.v`:
+  + lemma `nbhs_infty_gtr`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
