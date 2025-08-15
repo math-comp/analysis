@@ -654,6 +654,26 @@ rewrite measureU //; apply/seteqP; split => // x []/=.
 by rewrite in_itv/= => + xa; rewrite xa ltxx andbF.
 Qed.
 
+Lemma countable_lebesgue_measure0 (A : set R) :
+  countable A -> lebesgue_measure A = 0.
+Proof.
+move/countable_injP => [f injf].
+rewrite -(injpinv_image (fun=> 0) injf).
+rewrite [X in lebesgue_measure X](_ : _ = \bigcup_(x in f @` A)
+    [set 'pinv_(fun=> 0) A f x]); last first.
+  rewrite eqEsubset; split => [r [n]|r [n]].
+    by move=> [t At ftn] Afnr; exists n => //=; exists t.
+  by move=> [t At ftn] /= rAfn; exists n => //=; exists t.
+rewrite measure_bigcup/=; last 2 first.
+  by move=> ? _; exact: measurable_set1.
+  move=> i j [r Ar <-] [s As <-].
+  by rewrite !pinvKV ?inE// => -[x [/= <- <-]].
+apply: lim_near_cst => //.
+apply/nearW => n.
+under eq_bigr do rewrite lebesgue_measure_set1.
+by rewrite big_const_idem//= addr0.
+Qed.
+
 Let lebesgue_measure_itvoo (a b : R) :
   (lebesgue_measure (`]a, b[ : set R) = wlength idfun `]a, b[)%classic.
 Proof.
@@ -801,12 +821,8 @@ rewrite (_ : range _ = \bigcup_n [set ratr (f1 n)]); last first.
   apply/seteqP; split => [_ [q _ <-]|_ [n _ /= ->]]; last by exists (f1 n).
   exists (f q) => //=; rewrite /f1 pinvKV// ?in_setE// => x y _ _.
   by apply: bij_inj; rewrite -setTT_bijective.
-rewrite measure_bigcup//; last first.
-  apply/trivIsetP => i j _ _ ij; apply/seteqP; split => //= _ [/= ->].
-  move=> /fmorph_inj.
-  have /set_bij_inj /[apply] := bijpinv_bij (fun=> 0) bijf.
-  by rewrite in_setE => /(_ Logic.I Logic.I); exact/eqP.
-by rewrite eseries0// => n _ _; exact: lebesgue_measure_set1.
+apply/countable_lebesgue_measure0/bigcup_countable => //.
+exact: card_lexx.
 Qed.
 
 Section negligible_outer_measure.
