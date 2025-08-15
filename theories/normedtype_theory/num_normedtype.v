@@ -716,6 +716,14 @@ End near_in_itv.
   note="use `near_in_itvoo` instead")]
 Notation near_in_itv := near_in_itvoo (only parsing).
 
+Lemma nbhs_infty_gtr {R : archiFieldType} (r : R) :
+  \forall n \near \oo, r < n%:R.
+Proof.
+exists `|ceil r|.+1 => // n/=; rewrite -(ler_nat R); apply: lt_le_trans.
+rewrite -natr1 -[ltLHS]addr0 ler_ltD//.
+by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
+Qed.
+
 Lemma near_infty_natSinv_lt (R : archiFieldType) (e : {posnum R}) :
   \forall n \near \oo, n.+1%:R^-1 < e%:num.
 Proof.

@@ -54,6 +54,9 @@
 - in `classical_orders.v`:
   + lemma `big_lexi_order_prefix_closed_itv`
 
+- in `num_normedtype.v`:
+  + lemma `nbhs_infty_gtr`
+
 ### Changed
 
 - moved from `pi_irrational.v` to `reals.v` and changed
