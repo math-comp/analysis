@@ -66,6 +66,8 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 (*      normal_prob m s == normal probability measure                         *)
 (*    exponential_pdf r == pdf of the exponential distribution with rate r    *)
 (*   exponential_prob r == exponential probability measure                    *)
+(*      poisson_pmf r k == pmf of the Poisson distribution with parameter r   *)
+(*       poisson_prob r == Poisson probability measure                        *)
 (* ```                                                                        *)
 (*                                                                            *)
 (******************************************************************************)
