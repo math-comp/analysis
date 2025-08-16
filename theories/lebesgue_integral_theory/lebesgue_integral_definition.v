@@ -248,7 +248,7 @@ rewrite /fleg [X in _ X](_ : _ = \big[setU/set0]_(y <- fset_set (range f))
     \big[setU/set0]_(x <- fset_set (range (g n)) | c * y <= x)
       (f @^-1` [set y] `&` (g n @^-1` [set x]))).
   apply: bigsetU_measurable => r _; apply: bigsetU_measurable => r' crr'.
-  exact/measurableI/measurable_sfunP.
+  exact/measurableI.
 rewrite predeqE => t; split => [/= cfgn|].
 - rewrite -bigcup_seq; exists (f t); first by rewrite /= in_fset_set//= mem_set.
   rewrite -bigcup_seq_cond; exists (g n t) => //=.
