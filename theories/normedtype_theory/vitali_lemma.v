@@ -443,7 +443,7 @@ have H0 : elt_prop (D0, 0%N, set0).
   - by move=> F D0F FH0; apply: maxD0 => // i Fi; exact: (FH0 _ Fi).1.
 have [v [Hv0 HvRel]] : {v : nat -> elt_type |
     v 0%N = exist _ _ H0 /\ forall n, Rel (v n) (v n.+1)}.
-  apply: dependent_choice_Type => -[[[Dn n] Un] Hn].
+  apply: dependent_choice => -[[[Dn n] Un] Hn].
   pose Hn1 := H_ n.+1 (Un `|` Dn).
   have [Dn1 maxDn1] :=
     ex_maximal_disjoint_subcollection (closure\o B) Hn1.

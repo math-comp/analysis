@@ -711,7 +711,7 @@ rewrite setD0 => A0D.
 have [v [v0 Pv]] : {v : nat -> elt_type |
     v 0%N = exist _ (A0, d_ set0, A0) (And4 mA0 A0D (d_ge0 set0) A0d0) /\
     forall n, elt_rel (v n) (v n.+1)}.
-  apply: dependent_choice_Type => -[[[A' ?] U] [/= mA' A'D]].
+  apply: dependent_choice => -[[[A' ?] U] [/= mA' A'D]].
   have [A1 [mA1 A1DU A1t1]] := next_elt U.
   have A1D : A1 `<=` D by apply: (subset_trans A1DU); apply: subDsetl.
   by exists (exist _ (A1, d_ U, U `|` A1) (And4 mA1 A1D (d_ge0 U) A1t1)).
@@ -836,7 +836,7 @@ have [A0 [_ negA0 A0s0]] := next_elt set0.
 have [v [v0 Pv]] : {v |
     v 0%N = exist _ (A0, s_ set0, A0) (And3 (s_le0 set0) negA0 A0s0) /\
     forall n, elt_rel (v n) (v n.+1)}.
-  apply: dependent_choice_Type => -[[[A s] U] [/= s_le0' nsA]].
+  apply: dependent_choice => -[[[A s] U] [/= s_le0' nsA]].
   have [A' [? nsA' A's'] ] := next_elt U.
   by exists (exist _ (A', s_ U, U `|` A') (And3 (s_le0 U) nsA' A's')).
 have Ubig n : U_ (v n) = \big[setU/set0]_(i < n.+1) A_ (v i).

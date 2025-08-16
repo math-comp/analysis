@@ -35,26 +35,12 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
-(* NB: Coq 8.17.0 generalizes dependent_choice from Set to Type
-   making the following lemma redundant *)
-Section dependent_choice_Type.
-Context X (R : X -> X -> Prop).
-
-Lemma dependent_choice_Type : (forall x, {y | R x y}) ->
-  forall x0, {f | f 0%N = x0 /\ forall n, R (f n) (f n.+1)}.
-Proof.
-move=> h x0.
-set (f := fix f n := if n is n'.+1 then proj1_sig (h (f n')) else x0).
-exists f; split => //.
-intro n; induction n; simpl; apply: proj2_sig.
-Qed.
-End dependent_choice_Type.
-
 Section max_min.
 Variable R : realFieldType.
 
 Let nz2 : 2%:R != 0 :> R. Proof. by rewrite pnatr_eq0. Qed.
 
+(* NB: to appear in MathComp 2.5.0 (PR #1416) *)
 Lemma maxr_absE (x y : R) : Num.max x y = (x + y + `|x - y|) / 2%:R.
 Proof.
 apply: canRL (mulfK _) _ => //; rewrite ?pnatr_eq0//.
@@ -63,6 +49,7 @@ case: lerP => _; (* TODO: ring *) rewrite [2%:R]mulr2n mulrDr mulr1.
 by rewrite (addrC (x + y)) subrKA.
 Qed.
 
+(* NB: to appear in MathComp 2.5.0 (PR #1416) *)
 Lemma minr_absE (x y : R) : Num.min x y = (x + y - `|x - y|) / 2%:R.
 Proof.
 apply: (addrI (Num.max x y)); rewrite addr_max_min maxr_absE. (* TODO: ring *)
@@ -77,7 +64,8 @@ Section bigmax_seq.
 Context d {T : orderType d} {x : T} {I : eqType}.
 Variables (r : seq I) (i0 : I) (P : pred I).
 
-(* NB: as of [2023-08-28], bigop.leq_bigmax_seq already exists for nat *)
+(* NB: as of [2023-08-28], bigop.leq_bigmax_seq already exists for nat,
+   PRed to MathComp (PR #1449) *)
 Lemma le_bigmax_seq F :
   i0 \in r -> P i0 -> (F i0 <= \big[Order.max/x]_(i <- r | P i) F i)%O.
 Proof.
@@ -86,7 +74,8 @@ move=> /predU1P[<-|i0t]; first by rewrite Pi0 le_max// lexx.
 by case: ifPn => Ph; [rewrite le_max ih// orbT|rewrite ih].
 Qed.
 
-(* NB: as of [2023-08-28], bigop.bigmax_sup_seq already exists for nat *)
+(* NB: as of [2023-08-28], bigop.bigmax_sup_seq already exists for nat,
+   PRed to MathComp (PR #1449) *)
 Lemma bigmax_sup_seq (m : T) (F : I -> T) :
   i0 \in r -> P i0 -> (m <= F i0)%O ->
   (m <= \big[Order.max/x]_(i <- r | P i) F i)%O.
