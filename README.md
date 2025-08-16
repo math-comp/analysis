@@ -26,12 +26,12 @@ In terms of [opam](https://opam.ocaml.org/doc/Install.html), it comes as the fol
 - License: [CeCILL-C](LICENSE)
 - Compatible Rocq versions: Coq 8.20, Rocq 9.0 (or dev)
 - Additional dependencies:
-  - [MathComp ssreflect 2.1.0 or later](https://math-comp.github.io)
-  - [MathComp fingroup 2.1.0 or later](https://math-comp.github.io)
-  - [MathComp algebra 2.1.0 or later](https://math-comp.github.io)
-  - [MathComp solvable 2.1.0 or later](https://math-comp.github.io)
-  - [MathComp field 2.1.0 or later](https://math-comp.github.io)
-  - [MathComp finmap 2.0.0](https://github.com/math-comp/finmap)
+  - [MathComp ssreflect 2.3.0 or later](https://math-comp.github.io)
+  - [MathComp fingroup 2.3.0 or later](https://math-comp.github.io)
+  - [MathComp algebra 2.3.0 or later](https://math-comp.github.io)
+  - [MathComp solvable 2.3.0 or later](https://math-comp.github.io)
+  - [MathComp field 2.3.0 or later](https://math-comp.github.io)
+  - [MathComp finmap 2.1.0](https://github.com/math-comp/finmap)
   - [MathComp bigenough 1.0.0](https://github.com/math-comp/bigenough)
   - [Hierarchy Builder 1.8.0 or later](https://github.com/math-comp/hierarchy-builder)
 - Coq/Rocq namespace: `mathcomp.analysis`
@@ -73,7 +73,7 @@ We try to preserve backward compatibility as best as we can.
 
 Each file is documented in its header in ASCII.
 
-[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_12_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
+[HTML rendering of the source code](https://math-comp.github.io/analysis/htmldoc_1_13_0/index.html) (using [`rocqnavi`](https://github.com/affeldt-aist/rocqnavi)).
 It includes inheritance diagrams for the mathematical structures that MathComp-Analysis adds on top of MathComp's ones.
 
 Overview presentations:
