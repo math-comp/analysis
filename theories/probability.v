@@ -237,9 +237,9 @@ have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
   suff : P (F n) @[n --> \oo] --> P (\bigcap_n F n).
     by rewrite [in X in _ --> X -> _]/F -preimage_bigcap -itvNycEbigcap.
   apply: nonincreasing_cvg_mu => [| | |m n mn].
-  - by rewrite -ge0_fin_numE// fin_num_measure//; exact: measurable_sfunP.
-  - by move=> ?; exact: measurable_sfunP.
-  - by apply: bigcap_measurable => // ? _; exact: measurable_sfunP.
+  - by rewrite -ge0_fin_numE// fin_num_measure//; exact: measurable_funPTI.
+  - by move=> ?; exact: measurable_funPTI.
+  - by apply: bigcap_measurable => // ? _; exact: measurable_funPTI.
   - apply/subsetPset; apply: preimage_subset; apply: subset_itvl.
     by rewrite bnd_simp lerD2l lef_pV2 ?posrE// ler_nat.
 by rewrite -(cvg_unique _ cdf_ns cdf_na).

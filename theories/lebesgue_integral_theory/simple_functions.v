@@ -29,15 +29,8 @@ From mathcomp Require Import function_spaces.
 (*                                                                            *)
 (* Detailed contents:                                                         *)
 (* ````                                                                       *)
-(*       {mfun aT >-> rT} == type of measurable functions                     *)
-(*                           aT and rT are sigmaRingType's.                   *)
 (*         {sfun T >-> R} == type of simple functions                         *)
-(*             f \in mfun == holds for f : {mfun _ >-> _}                     *)
 (*       {nnsfun T >-> R} == type of non-negative simple functions            *)
-(*              mindic mD := \1_D where mD is a proof that D is measurable    *)
-(*          indic_mfun mD := mindic mD                                        *)
-(*         scale_mfun k f := k \o* f                                          *)
-(*           max_mfun f g := f \max g                                         *)
 (*          indic_sfun mD := mindic _ mD                                      *)
 (*             cst_sfun r == constant simple function                         *)
 (*           max_sfun f g := f \max f                                         *)
@@ -55,10 +48,6 @@ From mathcomp Require Import function_spaces.
 (*                                                                            *)
 (******************************************************************************)
 
-Reserved Notation "{ 'mfun' aT >-> T }"
-  (at level 0, format "{ 'mfun'  aT  >->  T }").
-Reserved Notation "[ 'mfun' 'of' f ]"
-  (at level 0, format "[ 'mfun'  'of'  f ]").
 Reserved Notation "{ 'nnfun' aT >-> T }"
   (at level 0, format "{ 'nnfun'  aT  >->  T }").
 Reserved Notation "[ 'nnfun' 'of' f ]"
@@ -81,31 +70,6 @@ Import numFieldNormedType.Exports.
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
 
-#[global]
-Hint Extern 0 (measurable [set _]) => solve [apply: measurable_set1] : core.
-
-HB.mixin Record isMeasurableFun d d' (aT : sigmaRingType d) (rT : sigmaRingType d')
-    (f : aT -> rT) := {
-  measurable_funPT : measurable_fun [set: aT] f
-}.
-HB.structure Definition MeasurableFun d d' aT rT :=
-  {f of @isMeasurableFun d d' aT rT f}.
-Arguments measurable_funPT {d d' aT rT} s.
-
-Notation "{ 'mfun' aT >-> T }" := (@MeasurableFun.type _ _ aT T) : form_scope.
-Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
-#[global] Hint Extern 0 (measurable_fun [set: _] _) =>
-  solve [apply: measurable_funPT] : core.
-
-Lemma measurable_funP {d d' : measure_display}
-  {aT : measurableType d} {rT : sigmaRingType d'}
-  (D : set aT) (s : {mfun aT >-> rT}) : measurable_fun D s.
-Proof.
-move=> mD Y mY; apply: measurableI => //.
-by rewrite -(setTI (_ @^-1` _)); exact: measurable_funPT.
-Qed.
-Arguments measurable_funP {d d' aT rT D} s.
-
 Module HBSimple.
 
 HB.structure Definition SimpleFun d (aT : sigmaRingType d) (rT : realType) :=
@@ -115,10 +79,6 @@ End HBSimple.
 
 Notation "{ 'sfun' aT >-> T }" := (@HBSimple.SimpleFun.type _ aT T) : form_scope.
 Notation "[ 'sfun' 'of' f ]" := [the {sfun _ >-> _} of f] : form_scope.
-
-Lemma measurable_sfunP {d d'} {aT : measurableType d} {rT : measurableType d'}
-  (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
-Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
 
 Module HBNNSimple.
 Import HBSimple.
@@ -131,137 +91,6 @@ End HBNNSimple.
 
 Notation "{ 'nnsfun' aT >-> T }" := (@HBNNSimple.NonNegSimpleFun.type _ aT%type T) : form_scope.
 Notation "[ 'nnsfun' 'of' f ]" := [the {nnsfun _ >-> _} of f] : form_scope.
-
-Section mfun_pred.
-Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
-Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
-Definition mfun_key : pred_key mfun. Proof. exact. Qed.
-Canonical mfun_keyed := KeyedPred mfun_key.
-End mfun_pred.
-
-Section mfun.
-Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
-Notation T := {mfun aT >-> rT}.
-Notation mfun := (@mfun _ _ aT rT).
-
-Section Sub.
-Context (f : aT -> rT) (fP : f \in mfun).
-Definition mfun_Sub_subproof := @isMeasurableFun.Build d _ aT rT f (set_mem fP).
-#[local] HB.instance Definition _ := mfun_Sub_subproof.
-Definition mfun_Sub := [mfun of f].
-End Sub.
-
-Lemma mfun_rect (K : T -> Type) :
-  (forall f (Pf : f \in mfun), K (mfun_Sub Pf)) -> forall u : T, K u.
-Proof.
-move=> Ksub [f [[Pf]]]/=.
-by suff -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)) by apply: Ksub.
-Qed.
-
-Lemma mfun_valP f (Pf : f \in mfun) : mfun_Sub Pf = f :> (_ -> _).
-Proof. by []. Qed.
-
-HB.instance Definition _ := isSub.Build _ _ T mfun_rect mfun_valP.
-
-Lemma mfuneqP (f g : {mfun aT >-> rT}) : f = g <-> f =1 g.
-Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
-
-HB.instance Definition _ := [Choice of {mfun aT >-> rT} by <:].
-
-HB.instance Definition _ x := isMeasurableFun.Build d _ aT rT (cst x)
-  (@measurable_cst _ _ aT rT setT x).
-
-End mfun.
-
-Section mfun_realType.
-Context {rT : realType}.
-
-HB.instance Definition _ := @isMeasurableFun.Build _ _ _ rT
-  (@normr rT rT) (@normr_measurable rT setT).
-
-HB.instance Definition _ :=
-  isMeasurableFun.Build _ _ _ _ (@expR rT) (@measurable_expR rT).
-
-End mfun_realType.
-
-Section mfun_measurableType.
-Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
-  {d3} {T3 : measurableType d3}.
-Variables (f : {mfun T2 >-> T3}) (g : {mfun T1 >-> T2}).
-
-Lemma measurableT_comp_subproof : measurable_fun setT (f \o g).
-Proof. exact: measurableT_comp. Qed.
-
-HB.instance Definition _ := isMeasurableFun.Build _ _ _ _ (f \o g)
-  measurableT_comp_subproof.
-
-End mfun_measurableType.
-
-Section ring.
-Context d (aT : measurableType d) (rT : realType).
-
-Lemma mfun_subring_closed : subring_closed (@mfun _ _ aT rT).
-Proof.
-split=> [|f g|f g]; rewrite !inE/=.
-- exact: measurable_cst.
-- exact: measurable_funB.
-- exact: measurable_funM.
-Qed.
-HB.instance Definition _ := GRing.isSubringClosed.Build _
-  (@mfun d default_measure_display aT rT) mfun_subring_closed.
-HB.instance Definition _ := [SubChoice_isSubComRing of {mfun aT >-> rT} by <:].
-
-Implicit Types (f g : {mfun aT >-> rT}).
-
-Lemma mfun0 : (0 : {mfun aT >-> rT}) =1 cst 0 :> (_ -> _). Proof. by []. Qed.
-Lemma mfun1 : (1 : {mfun aT >-> rT}) =1 cst 1 :> (_ -> _). Proof. by []. Qed.
-Lemma mfunN f : - f = \- f :> (_ -> _). Proof. by []. Qed.
-Lemma mfunD f g : f + g = f \+ g :> (_ -> _). Proof. by []. Qed.
-Lemma mfunB f g : f - g = f \- g :> (_ -> _). Proof. by []. Qed.
-Lemma mfunM f g : f * g = f \* g :> (_ -> _). Proof. by []. Qed.
-Lemma mfunMn f n : (f *+ n) = (fun x => f x *+ n) :> (_ -> _).
-Proof. by apply/funext=> x; elim: n => //= n; rewrite !mulrS !mfunD /= => ->. Qed.
-Lemma mfun_sum I r (P : {pred I}) (f : I -> {mfun aT >-> rT}) (x : aT) :
-  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
-Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-Lemma mfun_prod I r (P : {pred I}) (f : I -> {mfun aT >-> rT}) (x : aT) :
-  (\sum_(i <- r | P i) f i) x = \sum_(i <- r | P i) f i x.
-Proof. by elim/big_rec2: _ => //= i y ? Pi <-. Qed.
-Lemma mfunX f n : f ^+ n = (fun x => f x ^+ n) :> (_ -> _).
-Proof. by apply/funext=> x; elim: n => [|n IHn]//; rewrite !exprS mfunM/= IHn. Qed.
-
-HB.instance Definition _ f g := MeasurableFun.copy (f \+ g) (f + g).
-HB.instance Definition _ f g := MeasurableFun.copy (\- f) (- f).
-HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
-HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
-
-Definition mindic (D : set aT) of measurable D : aT -> rT := \1_D.
-
-Lemma mindicE (D : set aT) (mD : measurable D) :
-  mindic mD = (fun x => (x \in D)%:R).
-Proof. by rewrite /mindic funeqE => t; rewrite indicE. Qed.
-
-HB.instance Definition _ D mD := @isMeasurableFun.Build _ _ aT rT (mindic mD)
-  (@measurable_indic _ aT rT setT D mD).
-
-Definition indic_mfun (D : set aT) (mD : measurable D) : {mfun aT >-> rT} :=
-  mindic mD.
-
-HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst k).
-Definition scale_mfun k f : {mfun aT >-> rT} := k \o* f.
-
-Lemma max_mfun_subproof f g : @isMeasurableFun d _ aT rT (f \max g).
-Proof. by split; apply: measurable_maxr. Qed.
-
-HB.instance Definition _ f g := max_mfun_subproof f g.
-
-Definition max_mfun f g : {mfun aT >-> _} := f \max g.
-
-End ring.
-Arguments indic_mfun {d aT rT} _.
-(* TODO: move earlier?*)
-#[global] Hint Extern 0  (measurable_fun _ (\1__ : _ -> _)) =>
-  (exact: measurable_indic ) : core.
 
 Section sfun_pred.
 Context {d} {aT : sigmaRingType d} {rT : realType}.
@@ -311,7 +140,7 @@ Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
 
 HB.instance Definition _ := [Choice of {sfun aT >-> rT} by <:].
 
-(* NB: already instantiated in cardinality.v *)
+(* NB: already in cardinality.v *)
 HB.instance Definition _ x : @FImFun aT rT (cst x) := FImFun.on (cst x).
 
 Definition cst_sfun x : {sfun aT >-> rT} := cst x.
@@ -371,16 +200,17 @@ HB.instance Definition _ f g := MeasurableFun.copy (f \- g) (f - g).
 HB.instance Definition _ f g := MeasurableFun.copy (f \* g) (f * g).
 
 Import HBSimple.
-(* NB: already instantiated in lebesgue_integral.v *)
+
+(* TODO: mv to `measurable_realfun.v`? *)
 HB.instance Definition _ (D : set aT) (mD : measurable D) :
    @FImFun aT rT (mindic _ mD) := FImFun.on (mindic _ mD).
-
 Definition indic_sfun (D : set aT) (mD : measurable D) : {sfun aT >-> rT} :=
   mindic rT mD.
 
 HB.instance Definition _ k f := MeasurableFun.copy (k \o* f) (f * cst_sfun k).
 Definition scale_sfun k f : {sfun aT >-> rT} := k \o* f.
 
+(* NB: already in `measurable_realfun.v` *)
 HB.instance Definition _ f g := max_mfun_subproof f g.
 Definition max_sfun f g : {sfun aT >-> _} := f \max g.
 
@@ -440,9 +270,6 @@ Lemma cst_nnfun_subproof (x : {nonneg R}) : forall t : T, 0 <= cst x%:num t.
 Proof. by move=> /=. Qed.
 HB.instance Definition _ x := @isNonNegFun.Build T R (cst x%:num)
   (cst_nnfun_subproof x).
-
-(* NB: already instantiated in cardinality.v *)
-HB.instance Definition _ x : @FImFun T R (cst x) := FImFun.on (cst x).
 
 Definition cst_nnsfun (r : {nonneg R}) : {nnsfun T >-> R} := cst r%:num.
 
@@ -553,18 +380,6 @@ by rewrite -(fsbig_widen (range f)) ?nnsfun_cover//= => x [_ /preimage10].
 Qed.
 
 End nnsfun_cover.
-
-(* FIXME: shouldn't we avoid calling [done] in a hint? *)
-#[global] Hint Extern 0 (measurable (_ @^-1` [set _])) =>
-  solve [apply: measurable_sfunP; exact: measurable_set1] : core.
-
-Lemma measurable_sfun_inP {d} {aT : measurableType d} {rT : realType}
-   (f : {mfun aT >-> rT}) D (y : rT) :
-  measurable D -> measurable (D `&` f @^-1` [set y]).
-Proof. by move=> Dm; exact: measurableI. Qed.
-
-#[global] Hint Extern 0 (measurable (_ `&` _ @^-1` [set _])) =>
-  solve [apply: measurable_sfun_inP; assumption] : core.
 
 Section measure_fsbig.
 Local Open Scope ereal_scope.

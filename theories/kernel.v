@@ -1189,18 +1189,14 @@ Let integral_kcomp_nnsfun x (f : {nnsfun Z >-> R}) :
 Proof.
 under [in LHS]eq_integral do rewrite fimfunE -fsumEFin//.
 rewrite ge0_integral_fsum//; last 2 first.
-  - move=> r; apply/measurable_EFinP/measurableT_comp => [//|].
-    have fr : measurable (f @^-1` [set r]) by exact/measurable_sfunP.
-    by rewrite (_ : \1__ = mindic R fr).
+  - by move=> r; exact/measurable_EFinP/measurableT_comp.
   - by move=> r z _; rewrite EFinM nnfun_muleindic_ge0.
 under [in RHS]eq_integral.
   move=> y _.
   under eq_integral.
     by move=> z _; rewrite fimfunE -fsumEFin//; over.
   rewrite /= ge0_integral_fsum//; last 2 first.
-    - move=> r; apply/measurable_EFinP/measurableT_comp => [//|].
-      have fr : measurable (f @^-1` [set r]) by exact/measurable_sfunP.
-      by rewrite (_ : \1__ = mindic R fr).
+    - by move=> r; exact/measurable_EFinP/measurableT_comp.
     - by move=> r z _; rewrite EFinM nnfun_muleindic_ge0.
   under eq_fsbigr.
     move=> r _.
@@ -1218,15 +1214,14 @@ rewrite /= ge0_integral_fsum//; last 2 first.
 apply: eq_fsbigr => r _.
 rewrite (integralZl_indic _ (fun r => f @^-1` [set r]))//; last first.
   exact: preimage_nnfun0.
-rewrite /= integral_kcomp_indic; last exact/measurable_sfunP.
+rewrite /= integral_kcomp_indic//.
 have [r0|r0] := leP 0%R r.
-  rewrite ge0_integralZl//; last first.
-    exact: measurableT_comp (measurable_kernel k (f @^-1` [set r]) _) _.
-  by under eq_integral do rewrite integral_indic// setIT.
-rewrite integral0_eq ?mule0; last first.
-   move=> y _; rewrite integral0_eq// => z _.
-   by rewrite preimage_nnfun0// indic0.
-by rewrite integral0_eq// => y _; rewrite preimage_nnfun0// measure0 mule0.
+  rewrite ge0_integralZl//.
+    by under eq_integral do rewrite integral_indic// setIT.
+  exact: measurableT_comp (measurable_kernel k (f @^-1` [set r]) _) _.
+rewrite integral0_eq ?mule0.
+  by rewrite integral0_eq// => y _; rewrite preimage_nnfun0// measure0 mule0.
+by move=> y _; rewrite integral0_eq// => z _; rewrite preimage_nnfun0// indic0.
 Qed.
 
 (* [Lemma 3, Staton 2017 ESOP] (4/4) *)

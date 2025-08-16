@@ -211,6 +211,9 @@ From mathcomp Require Import sequences esum numfun.
 (*                                                                            *)
 (* ```                                                                        *)
 (*        measurable_fun D f == the function f with domain D is measurable    *)
+(*          {mfun aT >-> rT} == type of measurable functions                  *)
+(*                              aT and rT are sigmaRingType's.                *)
+(*                f \in mfun == holds for f : {mfun _ >-> _}                  *)
 (* preimage_set_system D f G == set system of the preimages by f of sets in G *)
 (*    image_set_system D f G == set system of the sets with a preimage by f   *)
 (*                              in G                                          *)
@@ -359,6 +362,10 @@ Reserved Notation "f = g %[ae mu ]"
   (at level 70, g at next level, format "f  =  g  '%[ae'  mu ]").
 Reserved Notation "{ 'outer_measure' 'set' T '->' '\bar' R }"
   (T at level 37, format "{ 'outer_measure'  'set'  T  '->'  '\bar'  R }").
+Reserved Notation "{ 'mfun' aT >-> T }"
+  (at level 0, format "{ 'mfun'  aT  >->  T }").
+Reserved Notation "[ 'mfun' 'of' f ]"
+  (at level 0, format "[ 'mfun'  'of'  f ]").
 
 Inductive measure_display := default_measure_display.
 Declare Scope measure_display_scope.
@@ -1513,6 +1520,42 @@ Definition measurable_fun d d' (T : sigmaRingType d) (U : sigmaRingType d')
     (D : set T) (f : T -> U) :=
   measurable D -> forall Y, measurable Y -> measurable (D `&` f @^-1` Y).
 
+HB.mixin Record isMeasurableFun d d' (aT : sigmaRingType d) (rT : sigmaRingType d')
+    (f : aT -> rT) := {
+  measurable_funPT : measurable_fun [set: aT] f
+}.
+HB.structure Definition MeasurableFun d d' aT rT :=
+  {f of @isMeasurableFun d d' aT rT f}.
+Arguments measurable_funPT {d d' aT rT} s.
+
+Notation "{ 'mfun' aT >-> T }" := (@MeasurableFun.type _ _ aT T) : form_scope.
+Notation "[ 'mfun' 'of' f ]" := [the {mfun _ >-> _} of f] : form_scope.
+#[global] Hint Extern 0 (measurable_fun [set: _] _) =>
+  solve [apply: measurable_funPT] : core.
+
+Lemma measurable_funP {d d' : measure_display}
+  {aT : measurableType d} {rT : sigmaRingType d'}
+  (D : set aT) (s : {mfun aT >-> rT}) : measurable_fun D s.
+Proof.
+move=> mD Y mY; apply: measurableI => //.
+by rewrite -(setTI (_ @^-1` _)); exact: measurable_funPT.
+Qed.
+Arguments measurable_funP {d d' aT rT D} s.
+
+Lemma measurable_funPTI {d d'} {aT : measurableType d} {rT : measurableType d'}
+  (f : {mfun aT >-> rT}) (Y : set rT) : measurable Y -> measurable (f @^-1` Y).
+Proof. by move=> mY; rewrite -[f @^-1` _]setTI; exact: measurable_funP. Qed.
+
+#[deprecated(since="mathcomp-analysis 1.13.0", note="renamed to `measurable_funPTI`")]
+Notation measurable_sfunP := measurable_funPTI (only parsing).
+
+Section mfun_pred.
+Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
+Definition mfun : {pred aT -> rT} := mem [set f | measurable_fun setT f].
+Definition mfun_key : pred_key mfun. Proof. exact. Qed.
+Canonical mfun_keyed := KeyedPred mfun_key.
+End mfun_pred.
+
 Section measurable_fun.
 Context d1 d2 d3 (T1 : sigmaRingType d1) (T2 : sigmaRingType d2)
         (T3 : sigmaRingType d3).
@@ -1613,6 +1656,41 @@ End measurable_fun.
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Arguments measurable_fun_eqP {d1 d2 T1 T2 D} f {g}.
+
+
+Section mfun.
+Context {d d'} {aT : sigmaRingType d} {rT : sigmaRingType d'}.
+Notation T := {mfun aT >-> rT}.
+Notation mfun := (@mfun _ _ aT rT).
+
+Section Sub.
+Context (f : aT -> rT) (fP : f \in mfun).
+Definition mfun_Sub_subproof := @isMeasurableFun.Build d _ aT rT f (set_mem fP).
+#[local] HB.instance Definition _ := mfun_Sub_subproof.
+Definition mfun_Sub := [mfun of f].
+End Sub.
+
+Lemma mfun_rect (K : T -> Type) :
+  (forall f (Pf : f \in mfun), K (mfun_Sub Pf)) -> forall u : T, K u.
+Proof.
+move=> Ksub [f [[Pf]]]/=.
+by suff -> : Pf = (set_mem (@mem_set _ [set f | _] f Pf)) by apply: Ksub.
+Qed.
+
+Lemma mfun_valP f (Pf : f \in mfun) : mfun_Sub Pf = f :> (_ -> _).
+Proof. by []. Qed.
+
+HB.instance Definition _ := isSub.Build _ _ T mfun_rect mfun_valP.
+
+Lemma mfuneqP (f g : {mfun aT >-> rT}) : f = g <-> f =1 g.
+Proof. by split=> [->//|fg]; apply/val_inj/funext. Qed.
+
+HB.instance Definition _ := [Choice of {mfun aT >-> rT} by <:].
+
+HB.instance Definition _ x := isMeasurableFun.Build d _ aT rT (cst x)
+  (@measurable_cst _ _ aT rT setT x).
+
+End mfun.
 
 Section measurable_fun_measurableType.
 Context d1 d2 d3 (T1 : measurableType d1) (T2 : measurableType d2)
@@ -1724,6 +1802,19 @@ End measurable_fun_measurableType.
   solve [apply: measurable_id] : core.
 Arguments eq_measurable_fun {d1 d2 T1 T2 D} f {g}.
 Arguments measurable_fun_bool {d1 T1 D f} b.
+
+Section mfun_measurableType.
+Context {d1} {T1 : measurableType d1} {d2} {T2 : measurableType d2}
+  {d3} {T3 : measurableType d3}.
+Variables (f : {mfun T2 >-> T3}) (g : {mfun T1 >-> T2}).
+
+Let measurableT_comp_subproof : measurable_fun setT (f \o g).
+Proof. exact: measurableT_comp. Qed.
+
+HB.instance Definition _ := isMeasurableFun.Build _ _ _ _ (f \o g)
+  measurableT_comp_subproof.
+
+End mfun_measurableType.
 
 Section measurability.
 
