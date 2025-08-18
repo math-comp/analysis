@@ -62,6 +62,14 @@ in {
     mathcomp.override.version = "2.4.0";
   };
 
+  bundles."8.20-master".coqPackages = common-bundle // {
+    coq.override.version = "8.20";
+    mathcomp.override.version = "master";
+    mathcomp-bigenough.override.version = "master";
+    mathcomp-finmap.override.version = "master";
+    ssprove.job = false;
+  };
+
   bundles."9.0" = {
     rocqPackages = {
       rocq-core.override.version = "9.0";
