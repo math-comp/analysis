@@ -1666,7 +1666,7 @@ HB.instance Definition _ :=
 
 Let measure_uub : measure_fam_uub kernel_snd.
 Proof.
-exists 2 => /= -[x y].
+exists 2%R => /= -[x y].
 rewrite /kernel_snd/= (@le_lt_trans _ _ 1%:E) ?lte1n//.
 exact: sprob_kernel_le1.
 Qed.
