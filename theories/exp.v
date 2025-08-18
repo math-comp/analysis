@@ -1170,8 +1170,8 @@ Proof. by case=> //=[x|]; rewrite ?lexx// leNgt expR_gt0/= expRK. Qed.
 
 Lemma lneK : {in `[0, +oo], cancel lne (@expeR R)}.
 Proof.
-move=> [r|//|//]; rewrite in_itv => //= /andP[]; rewrite lee_fin.
-by rewrite le_eqVlt => /predU1P[<- _|r0 _]; rewrite ?lexx// leNgt r0/= lnK.
+case=> [r|//|//] /[!in_itv]/=/andP[]; rewrite le_eqVlt eqe lte_fin.
+by move=> /predU1P[<- _|r0 _]; rewrite ?lexx// leNgt r0/= lnK.
 Qed.
 
 Lemma lneK_eq x : (expeR (lne x) == x) = (0 <= x).
