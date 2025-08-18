@@ -45,7 +45,7 @@ in {
 
   ## select an entry to build in the following `bundles` set
   ## defaults to "default"
-  default-bundle = "8.20-2.4.0";
+  default-bundle = "9.0";
 
   ## write one `bundles.name` attribute set per
   ## alternative configuration
@@ -60,6 +60,14 @@ in {
   bundles."8.20-2.4.0".coqPackages = common-bundle // {
     coq.override.version = "8.20";
     mathcomp.override.version = "2.4.0";
+  };
+
+  bundles."8.20-master".coqPackages = common-bundle // {
+    coq.override.version = "8.20";
+    mathcomp.override.version = "master";
+    mathcomp-bigenough.override.version = "master";
+    mathcomp-finmap.override.version = "master";
+    ssprove.job = false;
   };
 
   bundles."9.0" = {
