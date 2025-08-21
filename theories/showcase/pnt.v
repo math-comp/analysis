@@ -4,16 +4,30 @@ From mathcomp Require Import sequences reals interval
 rat all_analysis archimedean ssrint.
 Import Order.OrdinalOrder Num.Theory Order.POrderTheory
 finset GRing.Theory Num.Def.
+
+(**md**************************************************************************)
+(* # The Prime Number Theorem                                                 *)
+(*                                                                            *)
+(* This file aims at formalizing Daboussi's proof of the prime number theorem.*)
+(* The main theorem proved so far is the divergence of the sum of the         *)
+(* reciprocals of the prime numbers.                                          *)
+(*                                                                            *)
+(* ```                                                                        *)
+(*             prime_seq == the sequence of prime numbers                     *)
+(* ```                                                                        *)
+(*                                                                            *)
+(******************************************************************************)
+
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
 Local Open Scope ring_scope.
 Local Open Scope ereal_scope.
 Local Open Scope order_scope.
 Local Open Scope classical_set_scope.
 Local Open Scope set_scope.
 Local Open Scope nat_scope.
-
-Set Implicit Arguments.
-Unset Strict Implicit.
-Unset Printing Implicit Defensive.
 
 Fixpoint prime_search (i j : nat) : nat :=
   match j with
@@ -106,11 +120,13 @@ have := (leq_ltn_trans kb2 kb1).
 by rewrite ltnn.
 Qed. 
 
-Definition P (k N : nat) := 
-  [set n : 'I_N.+1 |all (fun p => p < prime_seq k) (primes n)]%SET.
-Definition G (k N : nat) := ~: (P k N).
+Section DivergenceSumInversePrimeNumbers.
 
-Lemma cardPcardG : forall k N, #|G k N| + #|P k N| = N.+1.
+Let P (k N : nat) := 
+  [set n : 'I_N.+1 |all (fun p => p < prime_seq k) (primes n)]%SET.
+Let G (k N : nat) := ~: (P k N).
+
+Fact cardPcardG : forall k N, #|G k N| + #|P k N| = N.+1.
 Proof.
 move=> k N. rewrite addnC.
 have: (P k N) :|: (G k N) = [set : 'I_N.+1]%SET by rewrite finset.setUCr.
@@ -118,7 +134,7 @@ rewrite -cardsUI finset.setICr cards0.
 by rewrite -[X in _ + _ = X]card_ord addn0 -cardsT => ->.
 Qed.
 
-Lemma cardG (R : realType) (k N : nat) :
+Fact cardG (R : realType) (k N : nat) :
   (\big[+%R/0%R]_(k <= k0 <oo) ((prime_seq k0)%:R^-1 : R)%:E < (2^-1)%:E)%E
   -> k <= N.+1 -> ~~ odd N -> N > 0 -> (#|G k N| < (N./2)).
 Proof.
@@ -281,7 +297,7 @@ rewrite val_insubd x3b3 /= => x2eqx3. move: x3b2.
 by rewrite ltnS -x2eqx3.
 Qed.
 
-Lemma cardP (R : realType) (k : nat) :
+Fact cardP (R : realType) (k : nat) :
   #|P k (2 ^ (2 * k + 2))| <= (2 ^ (2 * k + 1)).+1.
 Proof.
 set N := 2 ^ (2 * k + 2).
@@ -459,3 +475,5 @@ apply: (@cardG R); first by move: Rklthalf; rewrite /un div1r.
 - by rewrite /N addn2 expnS mul2n odd_double.
 - by rewrite /N expn_gt0; apply/orP; left.
 Qed.
+
+End DivergenceSumInversePrimeNumbers.
