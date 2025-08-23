@@ -8,12 +8,7 @@
   + lemma `ltgte_fin_num`
 
 - in `probability.v`:
-	  + lemmas `cdf_fin_num`, `lebesgue_stieltjes_cdf_id`
-
-- new file `borel_hierarchy.v`:
-  + definitions `Gdelta`, `Fsigma`
-  + lemmas `closed_Fsigma`, `Gdelta_measurable`, `Gdelta_subspace_open`,
-    `irrational_Gdelta`, `not_rational_Gdelta`
+  + lemmas `cdf_fin_num`, `lebesgue_stieltjes_cdf_id`
 
 - in `num_normedtype.v`:
   + lemma `nbhs_infty_gtr`
