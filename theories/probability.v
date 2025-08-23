@@ -281,7 +281,7 @@ have : lsf `]-n%:R, r] @[n --> \oo] --> (f r)%:E.
   apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy f))) => //.
   by apply: (cvg_comp _ _ cvgr_idn); rewrite ninfty.
 have : lsf `]- n%:R, r] @[n --> \oo] --> lsf (\bigcup_n `]-n%:R, r]%classic).
-  apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
+  apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
   by move=> *; apply/subsetPset/subset_itv; rewrite leBSide//= lerN2 ler_nat.
 exact: cvg_unique.
 Unshelve. all: by end_near. Qed.
@@ -327,16 +327,16 @@ Let lscdf := lebesgue_stieltjes_measure fcdf.
 Lemma lebesgue_stieltjes_cdf_id (A : set _) (mA : measurable A) : lscdf A = P A.
 Proof.
 apply: lebesgue_stieltjes_measure_unique => [I [[a b]]/= _ <- | //].
-rewrite /lebesgue_stieltjes_measure/measure_extension/=.
+rewrite /lebesgue_stieltjes_measure /measure_extension/=.
 rewrite measurable_mu_extE/=; last exact: is_ocitv.
-case: (leP a b) => [ab | ba]; last first.
+have [ab | ba] := leP a b; last first.
   by rewrite set_itv_ge ?wlength0 ?measure0// bnd_simp -leNgt ltW.
 rewrite wlength_itv_bnd// EFinB !fineK ?cdf_fin_num//.
-rewrite /fcdf/cdf/distribution/pushforward !preimage_id.
+rewrite /cdf /distribution /pushforward !preimage_id.
 have : `]a, b]%classic = `]-oo, b] `\` `]-oo, a] => [|->].
   by rewrite -[RHS]setCK setCD setCitvl setUC -[LHS]setCK setCitv.
 rewrite measureD ?setIidr//; first exact: subset_itvl.
-exact/(le_lt_trans _ (ltry 1))/probability_le1.
+by rewrite -ge0_fin_numE// fin_num_measure.
 Qed.
 
 End lebesgue_stieltjes_measure_of_cdf.
