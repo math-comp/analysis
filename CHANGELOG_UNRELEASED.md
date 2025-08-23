@@ -10,6 +10,10 @@
 - in `num_normedtype.v`:
   + lemma `nbhs_infty_gtr`
 
+- in `constructive_ereal.v`:
+  + lemmas `mule_natr`, `dmule_natr`
+  + lemmas `inve_eqy`, `inve_eqNy`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
