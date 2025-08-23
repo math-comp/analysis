@@ -261,13 +261,12 @@ Section cdf_of_lebesgue_stieltjes_measure.
 Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
 
-Let T := g_sigma_algebraType R.-ocitv.-measurable.
-Let lsf := lebesgue_stieltjes_measure f.
-
-Let idTR : T -> R := idfun.
+Let idTR : measurableTypeR R -> R := idfun.
 
 #[local] HB.instance Definition _ :=
-  @isMeasurableFun.Build _ _ T R idTR (@measurable_id _ _ setT).
+  @isMeasurableFun.Build _ _ _ _ idTR (@measurable_id _ _ setT).
+
+Let lsf := lebesgue_stieltjes_measure f.
 
 Lemma cdf_lebesgue_stieltjes_id r : cdf (idTR : {RV lsf >-> R}) r = (f r)%:E.
 Proof.
@@ -290,22 +289,19 @@ Unshelve. all: by end_near. Qed.
 End cdf_of_lebesgue_stieltjes_measure.
 
 Section lebesgue_stieltjes_measure_of_cdf.
-Context {R : realType}
-  (P : probability (g_sigma_algebraType R.-ocitv.-measurable) R).
+Context {R : realType} (P : probability (measurableTypeR R) R).
 Local Open Scope measure_display_scope.
 
-Let T := g_sigma_algebraType R.-ocitv.-measurable.
-
-Let idTR : T -> R := idfun.
+Let idTR : measurableTypeR R -> R := idfun.
 
 #[local] HB.instance Definition _ :=
-  @isMeasurableFun.Build _ _ T R idTR (@measurable_id _ _ setT).
+  @isMeasurableFun.Build _ _ _ _ idTR (@measurable_id _ _ setT).
 
 Let fcdf r := fine (cdf (idTR : {RV P >-> R}) r).
 
 Let fcdf_nd : nondecreasing fcdf.
 Proof.
-by move=> *; apply: fine_le; [exact: cdf_fin_num .. | exact: cdf_nondecreasing].
+by move=> *; apply: fine_le; [exact: cdf_fin_num.. | exact: cdf_nondecreasing].
 Qed.
 
 Let fcdf_rc : right_continuous fcdf.
@@ -328,7 +324,7 @@ Proof. exact/fine_cvg/cvg_cdfy1. Qed.
 
 Let lscdf := lebesgue_stieltjes_measure fcdf.
 
-Lemma lebesgue_stieltjes_cdf_id (A : set T) (mA : measurable A) : lscdf A = P A.
+Lemma lebesgue_stieltjes_cdf_id (A : set _) (mA : measurable A) : lscdf A = P A.
 Proof.
 apply: lebesgue_stieltjes_measure_unique => [I [[a b]]/= _ <- | //].
 rewrite /lebesgue_stieltjes_measure/measure_extension/=.

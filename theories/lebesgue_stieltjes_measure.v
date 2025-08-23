@@ -510,12 +510,14 @@ Arguments lebesgue_stieltjes_measure {R}.
 #[deprecated(since="mathcomp-analysis 1.1.0", note="renamed `wlength_sigma_subadditive`")]
 Notation wlength_sigma_sub_additive := wlength_sigma_subadditive (only parsing).
 
+Definition measurableTypeR (R : realType) :=
+  g_sigma_algebraType R.-ocitv.-measurable.
+
 Section lebesgue_stieltjes_measure.
 Variable R : realType.
-Let gitvs : measurableType _ := g_sigma_algebraType (@ocitv R).
 
 Lemma lebesgue_stieltjes_measure_unique (f : cumulative R R)
-    (mu : {measure set gitvs -> \bar R}) :
+    (mu : {measure set (measurableTypeR R) -> \bar R}) :
     (forall X, ocitv X -> lebesgue_stieltjes_measure f X = mu X) ->
   forall X, measurable X -> lebesgue_stieltjes_measure f X = mu X.
 Proof.
@@ -550,14 +552,13 @@ Arguments completed_lebesgue_stieltjes_measure {R}.
 Section salgebra_R_ssets.
 Variable R : realType.
 
-Definition measurableTypeR := g_sigma_algebraType (R.-ocitv.-measurable).
 Definition measurableR : set (set R) :=
   (R.-ocitv.-measurable).-sigma.-measurable.
 
 HB.instance Definition _ := Pointed.on R.
 HB.instance Definition R_isMeasurable :
   isMeasurable default_measure_display R :=
-  @isMeasurable.Build _ measurableTypeR measurableR
+  @isMeasurable.Build _ (measurableTypeR R) measurableR
     measurable0 (@measurableC _ _) (@bigcupT_measurable _ _).
 (*HB.instance (Real.sort R) R_isMeasurable.*)
 
@@ -631,7 +632,6 @@ Section probability_measure_of_lebesgue_stieltjes_mesure.
 Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
 
-Let T := g_sigma_algebraType R.-ocitv.-measurable.
 Let lsf := lebesgue_stieltjes_measure f.
 
 Let lebesgue_stieltjes_setT : lsf setT = 1%E.

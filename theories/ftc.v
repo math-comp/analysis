@@ -348,7 +348,7 @@ Proof. by move=> xu locf F ax fx; exact: (@continuous_FTC1 _ _ _ u). Qed.
 End FTC.
 
 Definition parameterized_integral {R : realType}
-    (mu : {measure set (g_sigma_algebraType (R.-ocitv.-measurable)) -> \bar R})
+    (mu : {measure set (measurableTypeR R) -> \bar R})
     a x (f : R -> R) : R :=
   (\int[mu]_(t in `[a, x]) f t)%R.
 
