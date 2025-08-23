@@ -33,6 +33,8 @@
   + notation `- 1` in scopes `ereal_dual_scope` and `ereal_scope`
 - in `pseudometric_normed_Zmodule.v`:
   + lemma `le0_ball0`
+- in `theories/landau.v`:
+  + lemma `littleoE0`
 
 ### Changed
 
