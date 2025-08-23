@@ -33,8 +33,7 @@ Variable (R : numDomainType).
 Lemma nbhs_filter (p : R^o) : ProperFilter (nbhs p).
 Proof.
 split.
-  move=> [] e e0 /subsetP/(_ p).
-  by rewrite !in_setE/= subrr normr0.
+  by move=> [] e e0 /subsetP/(_ p); rewrite !in_setE/= subrr normr0.
 split=> [|P Q|P Q].
 - by exists 1; [exact: ltr01|exact: subsetT].
 - move=> [] /= e e0 /subsetP eP [] /= f f0 /subsetP fQ.
@@ -89,9 +88,9 @@ Proof.
 rewrite eqEsubset; split => U.
   case => _ /posnumP[e] xeU.
   exists (`]x - e%:num, x + e%:num[); first split; first by right.
-    by rewrite in_itv /= -real_lter_distl subrr // normr0.
-  apply: (subset_trans _ xeU) => z /=.
-  by rewrite in_itv /= -real_lter_distl //= distrC.
+    by rewrite in_itv/= -lter_distl subrr normr0.
+  apply: subset_trans xeU => z /=.
+  by rewrite in_itv /= -lter_distl distrC.
 case => [][[[]l|[]]] [[]r|[]] [[]]//= _.
 - move=> xlr lrU; exists (Order.min (x - l) (r - x)).
     by rewrite /= lt_min ?lterBDr ?add0r ?(itvP xlr).
@@ -103,12 +102,12 @@ case => [][[[]l|[]]] [[]r|[]] [[]]//= _.
 - move=> xl lU; exists (x - l) => /=; first by rewrite lterBDr add0r (itvP xl).
   apply/(subset_trans _ lU)/subset_ball_prop_in_itv.
   suff : (`]x - (x - l), x + (x - l)[ <= `]l, +oo[)%O.
-    by move/subitvP => H ?; exact: H.
+    by move/subitvP => + ?; exact.
   by rewrite subitvE lteBSide/= subKr lexx.
 - move=> xr rU; exists (r - x) => /=; first by rewrite lterBDr add0r (itvP xr).
   apply/(subset_trans _ rU)/subset_ball_prop_in_itv.
   suff : (`]x - (r - x), x + (r - x)[ <= `]-oo, r[)%O.
-    by move/subitvP => H ?; exact: H.
+    by move/subitvP => + ?; exact.
   by rewrite subitvE lteBSide/= addrC subrK.
 - by move=> _; rewrite set_itvE subTset => ->; exists 1 => /=.
 Qed.
@@ -132,11 +131,15 @@ HB.instance Definition _ (R : numClosedFieldType) :=
   PseudoPointedMetric.copy R R^o.
 
 #[export, non_forgetful_inheritance]
+HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
+
+#[export, non_forgetful_inheritance]
 HB.instance Definition _ (R : realFieldType) :=
   Order_isNbhs.Build _ R (@real_order_nbhsE R).
 
 #[export, non_forgetful_inheritance]
-HB.instance Definition _ (R : numFieldType) := PseudoPointedMetric.copy R R^o.
+HB.instance Definition _ (R : realType) :=
+  Order_isNbhs.Build _ R (@real_order_nbhsE R).
 
 Module Exports. HB.reexport. End Exports.
 
