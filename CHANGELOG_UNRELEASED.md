@@ -9,6 +9,8 @@
 
 - in `num_normedtype.v`:
   + lemma `nbhs_infty_gtr`
+- in `function_spaces.v`:
+  + lemmas `cvg_big`, `continuous_big`
 
 ### Changed
 
