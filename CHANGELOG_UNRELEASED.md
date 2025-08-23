@@ -10,6 +10,9 @@
 - in `num_normedtype.v`:
   + lemma `nbhs_infty_gtr`
 
+- in `uniform_structure.v`:
+  + lemma `within_continuous_withinNx`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
