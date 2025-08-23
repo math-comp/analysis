@@ -7,6 +7,9 @@
 - in `constructive_ereal.v`:
   + lemma `ltgte_fin_num`
 
+- in `theories/landau.v`:
+  + lemma `littleoE0`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
