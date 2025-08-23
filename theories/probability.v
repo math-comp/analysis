@@ -247,6 +247,9 @@ have cdf_na : cdf X (a + n.+1%:R^-1) @[n --> \oo] --> cdf X a.
 by rewrite -(cvg_unique _ cdf_ns cdf_na).
 Unshelve. all: by end_near. Qed.
 
+HB.instance Definition _ := isCumulative.Build R _ (\bar R) (cdf X)
+  cdf_nondecreasing cdf_right_continuous.
+
 End cumulative_distribution_function.
 
 Section cdf_of_lebesgue_stieltjes_mesure.
