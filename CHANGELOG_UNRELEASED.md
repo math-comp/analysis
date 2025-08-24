@@ -71,6 +71,15 @@
 
 - in `derive.v`:
   + lemmas `compact_EVT_max`, `compact_EVT_min`, `EVT_max_rV`, `EVT_min_rV`
+- in `tvs.v`
+  + lemmas `cvg_sum`, `sum_continuous`
+
+- in `normed_module.v`:
+  + structure `NormedVector`
+  + definitions `normedVectType`, `max_norm`, `max_space`
+  + lemmas `max_norm_ge0`, `le_coord_max_norm`, `ler_max_normD`, `max_norm0_eq0`,
+    `max_normZ`, `max_normMn`, `max_normN`, `sup_closed_ball_compact`,
+    `equivalence_norms`, `linear_findim_continuous`
 
 ### Changed
 
