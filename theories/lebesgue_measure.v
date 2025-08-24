@@ -335,7 +335,7 @@ End hlength_extension.
 End LebesgueMeasure.
 
 Definition lebesgue_measure {R : realType} :
-  set (g_sigma_algebraType R.-ocitv.-measurable) -> \bar R :=
+  set (measurableTypeR R) -> \bar R :=
   lebesgue_stieltjes_measure idfun.
 HB.instance Definition _ (R : realType) := Measure.on (@lebesgue_measure R).
 HB.instance Definition _ (R : realType) :=
@@ -399,7 +399,7 @@ have mF_ m : mu (F_ m) < completed_mu E + m.+1%:R^-1%:E.
   apply: lee_nneseries => // n _.
   by rewrite -((measurable_mu_extE hlength) (A m n))//; have [/(_ n)] := mA m.
 pose F := \bigcap_n (F_ n).
-have FM : @measurable _ (g_sigma_algebraType R.-ocitv.-measurable) F.
+have FM : @measurable _ (measurableTypeR R) F.
   apply: bigcapT_measurable => k; apply: bigcupT_measurable => i.
   by apply: sub_sigma_algebra; have [/(_ i)] := mA k.
 have EF : E `<=` F by exact: sub_bigcap.
@@ -434,7 +434,7 @@ have mG_ m : mu (G_ m) < completed_mu (F `\` E) + m.+1%:R^-1%:E.
   apply: lee_nneseries => // n _.
   by rewrite -((measurable_mu_extE hlength) (B m n))//; have [/(_ n)] := mB m.
 pose G := \bigcap_n (G_ n).
-have GM : @measurable _ (g_sigma_algebraType R.-ocitv.-measurable) G.
+have GM : @measurable _ (measurableTypeR R) G.
   apply: bigcapT_measurable => k; apply: bigcupT_measurable => i.
   by apply: sub_sigma_algebra; have [/(_ i)] := mB k.
 have FEG : F `\` E `<=` G by exact: sub_bigcap.

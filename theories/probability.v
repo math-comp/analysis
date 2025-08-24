@@ -169,6 +169,11 @@ Lemma cdf_ge0 r : 0 <= cdf X r. Proof. by []. Qed.
 
 Lemma cdf_le1 r : cdf X r <= 1. Proof. exact: probability_le1. Qed.
 
+Lemma cdf_fin_num r : cdf X r \is a fin_num.
+Proof.
+by rewrite ge0_fin_numE ?cdf_ge0//; exact/(le_lt_trans (cdf_le1 r))/ltry.
+Qed.
+
 Lemma cdf_nondecreasing : nondecreasing_fun (cdf X).
 Proof. by move=> r s rs; rewrite le_measure ?inE//; exact: subitvPr. Qed.
 
@@ -252,17 +257,16 @@ HB.instance Definition _ := isCumulative.Build R _ (\bar R) (cdf X)
 
 End cumulative_distribution_function.
 
-Section cdf_of_lebesgue_stieltjes_mesure.
+Section cdf_of_lebesgue_stieltjes_measure.
 Context {R : realType} (f : cumulativeBounded (0:R) (1:R)).
 Local Open Scope measure_display_scope.
 
-Let T := g_sigma_algebraType R.-ocitv.-measurable.
-Let lsf := lebesgue_stieltjes_measure f.
-
-Let idTR : T -> R := idfun.
+Let idTR : measurableTypeR R -> R := idfun.
 
 #[local] HB.instance Definition _ :=
-  @isMeasurableFun.Build _ _ T R idTR (@measurable_id _ _ setT).
+  @isMeasurableFun.Build _ _ _ _ idTR (@measurable_id _ _ setT).
+
+Let lsf := lebesgue_stieltjes_measure f.
 
 Lemma cdf_lebesgue_stieltjes_id r : cdf (idTR : {RV lsf >-> R}) r = (f r)%:E.
 Proof.
@@ -277,12 +281,65 @@ have : lsf `]-n%:R, r] @[n --> \oo] --> (f r)%:E.
   apply: (cvg_comp _ _ (cvg_comp _ _ _ (cumulativeNy f))) => //.
   by apply: (cvg_comp _ _ cvgr_idn); rewrite ninfty.
 have : lsf `]- n%:R, r] @[n --> \oo] --> lsf (\bigcup_n `]-n%:R, r]%classic).
-  apply: nondecreasing_cvg_mu; rewrite /I//; first exact: bigcup_measurable.
+  apply: nondecreasing_cvg_mu => //; first exact: bigcup_measurable.
   by move=> *; apply/subsetPset/subset_itv; rewrite leBSide//= lerN2 ler_nat.
 exact: cvg_unique.
 Unshelve. all: by end_near. Qed.
 
-End cdf_of_lebesgue_stieltjes_mesure.
+End cdf_of_lebesgue_stieltjes_measure.
+
+Section lebesgue_stieltjes_measure_of_cdf.
+Context {R : realType} (P : probability (measurableTypeR R) R).
+Local Open Scope measure_display_scope.
+
+Let idTR : measurableTypeR R -> R := idfun.
+
+#[local] HB.instance Definition _ :=
+  @isMeasurableFun.Build _ _ _ _ idTR (@measurable_id _ _ setT).
+
+Let fcdf r := fine (cdf (idTR : {RV P >-> R}) r).
+
+Let fcdf_nd : nondecreasing fcdf.
+Proof.
+by move=> *; apply: fine_le; [exact: cdf_fin_num.. | exact: cdf_nondecreasing].
+Qed.
+
+Let fcdf_rc : right_continuous fcdf.
+Proof.
+move=> a; apply: fine_cvg.
+by rewrite fineK; [exact: cdf_right_continuous | exact: cdf_fin_num].
+Qed.
+
+#[local] HB.instance Definition _ :=
+  isCumulative.Build R _ R fcdf fcdf_nd fcdf_rc.
+
+Let fcdf_Ny0 : fcdf @ -oo --> (0:R).
+Proof. exact/fine_cvg/cvg_cdfNy0. Qed.
+
+Let fcdf_y1 : fcdf @ +oo --> (1:R).
+Proof. exact/fine_cvg/cvg_cdfy1. Qed.
+
+#[local] HB.instance Definition _ :=
+  isCumulativeBounded.Build R 0 1 fcdf fcdf_Ny0 fcdf_y1.
+
+Let lscdf := lebesgue_stieltjes_measure fcdf.
+
+Lemma lebesgue_stieltjes_cdf_id (A : set _) (mA : measurable A) : lscdf A = P A.
+Proof.
+apply: lebesgue_stieltjes_measure_unique => [I [[a b]]/= _ <- | //].
+rewrite /lebesgue_stieltjes_measure /measure_extension/=.
+rewrite measurable_mu_extE/=; last exact: is_ocitv.
+have [ab | ba] := leP a b; last first.
+  by rewrite set_itv_ge ?wlength0 ?measure0// bnd_simp -leNgt ltW.
+rewrite wlength_itv_bnd// EFinB !fineK ?cdf_fin_num//.
+rewrite /cdf /distribution /pushforward !preimage_id.
+have : `]a, b]%classic = `]-oo, b] `\` `]-oo, a] => [|->].
+  by rewrite -[RHS]setCK setCD setCitvl setUC -[LHS]setCK setCitv.
+rewrite measureD ?setIidr//; first exact: subset_itvl.
+by rewrite -ge0_fin_numE// fin_num_measure.
+Qed.
+
+End lebesgue_stieltjes_measure_of_cdf.
 
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.

@@ -7,6 +7,9 @@
 - in `constructive_ereal.v`:
   + lemma `ltgte_fin_num`
 
+- in `probability.v`:
+  + lemmas `cdf_fin_num`, `lebesgue_stieltjes_cdf_id`
+
 - in `num_normedtype.v`:
   + lemma `nbhs_infty_gtr`
 
