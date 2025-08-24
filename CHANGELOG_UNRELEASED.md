@@ -26,6 +26,15 @@
 
 - in `normed_module.v`:
   + lemmas `closure_itvoo`
+- in `unstable.v`:
+  + structure `Norm`
+  + lemmas `normMn`, `normN`, `ler_norm_sum`
+
+- in `normed_module.v`:
+  + structure `NormedVector`
+  + definition `normedVectType`
+  + lemmas `sup_closed_ball_compact`, `equivalence_norms`,
+    `linear_findim_continuous`
 
 ### Changed
 

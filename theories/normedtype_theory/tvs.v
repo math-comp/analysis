@@ -112,7 +112,7 @@ HB.structure Definition TopologicalNmodule :=
   {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
 
 Section TopologicalNmodule_theory.
-Variable (E : topologicalType) (F : TopologicalNmodule.type).
+Variable (E : topologicalType) (F : TopologicalNmodule.type) (U : set_system E).
 
 (** TODO:
   We have observed one thing:
@@ -121,12 +121,23 @@ Variable (E : topologicalType) (F : TopologicalNmodule.type).
   We think that it should be defined at the beginning of `pseudometric_normed_zmodule.v` and that
   `pseudometric_normedZmodType` should be defined using `topologicalNmodule`.
   We have realized this because of the lemmas such as `cvgD/fun_cvgD` that we needed to duplicate. *)
-Lemma fun_cvgD (U : set_system E) {FF : Filter U} (f g : E -> F) a b :
+Lemma fun_cvgD {FF : Filter U} (f g : E -> F) a b :
   f @ U --> a -> g @ U --> b -> (f \+ g) @ U --> a + b.
 Proof.
 move=> fa ga.
 by apply: continuous2_cvg; [exact: (add_continuous (a, b))|by []..].
 Qed.
+
+Lemma cvg_sum (I : Type) (r : seq I) (P : pred I)
+    (Ff : I -> E -> F) (Fa : I -> F) :
+  Filter U -> (forall i, P i -> Ff i x @[x --> U] --> Fa i) ->
+  \sum_(i <- r | P i) Ff i x @[x --> U] --> \sum_(i <- r| P i) Fa i.
+Proof. by move=> FF Ffa; apply: cvg_big => //; apply: add_continuous. Qed.
+
+Lemma sum_continuous (I : Type) (r : seq I) (P : pred I) (f : I -> E -> F) :
+  (forall i : I, P i -> continuous (f i)) ->
+  continuous (fun x1 : E => \sum_(i <- r | P i) f i x1).
+Proof. by move=> FC0; apply: continuous_big => //; apply: add_continuous. Qed.
 
 End TopologicalNmodule_theory.
 
