@@ -42,6 +42,8 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 (*            pmf X r := fine (P (X @^-1` [set r]))                           *)
 (*            cdf X r == cumulative distribution function of X                *)
 (*                    := distribution P X `]-oo, r]                           *)
+(*           ccdf X r == complementary cumulative distribution function of X  *)
+(*                    := distribution P X `]r, +oo[                           *)
 (*      enum_prob X k == probability of the kth value in the range of X       *)
 (* ```                                                                        *)
 (*                                                                            *)
