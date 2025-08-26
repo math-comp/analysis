@@ -530,6 +530,30 @@ Lemma set_itv_splitD i :
   [set` i] = [set` Interval i.1 +oo%O] `\` [set` Interval i.2 +oo%O].
 Proof. by rewrite set_itv_splitI/= setDE setCitvr. Qed.
 
+Lemma NycUoy_setT x : `]-oo, x] `|` `]x, +oo[ = setT.
+Proof.
+rewrite -subTset => z//= _; rewrite !in_itv/= andbT.
+by case: (leP z x); [left | right].
+Qed.
+
+Lemma NycIoy_set0 x : `]-oo, x] `&` `]x, +oo[ = set0.
+Proof.
+rewrite -subset0 => z /=; rewrite !in_itv/= andbT.
+by case => /le_lt_trans/[apply]; rewrite lt_irreflexive.
+Qed.
+
+Lemma NyoUcy_setT x : `]-oo, x[ `|` `[x, +oo[ = setT.
+Proof.
+rewrite -subTset => z//= _; rewrite !in_itv/= andbT.
+by case: (ltP z x); [left | right].
+Qed.
+
+Lemma NyoIcy_set0 x : `]-oo, x[ `&` `[x, +oo[ = set0.
+Proof.
+rewrite -subset0 => z /=; rewrite !in_itv/= andbT.
+by case => /lt_le_trans/[apply]; rewrite lt_irreflexive.
+Qed.
+
 End set_itv_porderType.
 
 Section line_path_factor_numDomainType.
