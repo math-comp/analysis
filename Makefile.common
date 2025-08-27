@@ -132,33 +132,14 @@ $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 	tred $(DOCDIR)/dependency_graph.pre > $(DOCDIR)/dependency_graph.dot
 
 html: build $(DOCDIR)/dependency_graph.dot
+	etc/rocqnavi_generate-hierarchy-graph.sh "hierarchy-graph.dot"
 	mkdir -p $(DOCDIR)
 	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs rocqnavi \
 	-title "Mathcomp Analysis" \
 	-d $(DOCDIR) -base mathcomp -Q theories analysis \
 	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
 	-dependency-graph $(DOCDIR)/dependency_graph.dot \
+	-hierarchy-graph "hierarchy-graph.dot" \
 	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
 	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra
 
-machtml: build $(DOCDIR)/dependency_graph.dot
-	coqdep -f _CoqProject > depend.d
-	cat -n depend.d >&2
-	gsed -i 's/Classical/mathcomp\.classical/' depend.dot
-	gsed -i 's/Theories/mathcomp\.analysis/' depend.dot
-	gsed -i 's/Reals_stdlib/mathcomp\.reals_stdlib/' depend.dot
-	gsed -i 's/Experimental_reals/mathcomp\.experimental_reals/' depend.dot
-	gsed -i 's/Reals/mathcomp\.reals/' depend.dot
-	gsed -i 's/Analysis_stdlib/mathcomp\.analysis_stdlib/' depend.dot
-	gsed -i 's/\//\./g' depend.dot
-	../coq2html/tools/generate-hierarchy-graph.sh
-	rm test_interval_inference.glob
-	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs ../coq2html/rocqnavi \
-	-title "Mathcomp Analysis" \
-	-d $(DOCDIR) -base mathcomp -Q theories analysis \
-	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
-	-hierarchy-graph "hierarchy-graph.dot" \
-	-dependency-graph $(DOCDIR)/dependency_graph.dot \
-	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
-	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra \
-	-index-blacklist ../coq2html/tools/index-blacklist
