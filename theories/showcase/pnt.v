@@ -1,9 +1,8 @@
-From mathcomp Require Import all_ssreflect classical_sets
-boolp topology ssralg ereal ssrnum.
-From mathcomp Require Import sequences reals interval
-rat all_analysis archimedean ssrint.
-Import Order.OrdinalOrder Num.Theory Order.POrderTheory
-finset GRing.Theory Num.Def.
+From mathcomp Require Import all_ssreflect classical_sets boolp topology ssralg.
+From mathcomp Require Import ereal ssrnum sequences reals interval rat.
+From mathcomp Require Import all_analysis archimedean ssrint.
+Import Order.OrdinalOrder Num.Theory Order.POrderTheory finset GRing.Theory.
+Import Num.Def.
 
 (**md**************************************************************************)
 (* # The Prime Number Theorem                                                 *)
@@ -29,59 +28,66 @@ Local Open Scope classical_set_scope.
 Local Open Scope set_scope.
 Local Open Scope nat_scope.
 
-Fixpoint prime_search (i j : nat) : nat :=
-  match j with
-  | 0 => i`!.+1
-  | j'.+1 => if prime (i`!.+1 - j) then i`!.+1 - j else prime_search i j'
-  end.
+Section prime_seq.
 
-Fixpoint prime_seq (n : nat) : nat :=
-  match n with
-  | 0 => 2
-  | i.+1 => let k := prime_seq i in prime_search k (k`! - k)
-  end.
+Let next_prime_subproof (i : nat) : {j : 'I_(i`! - i).+1 | prime (i.+1 + j)}.
+Proof.
+suff: [exists j : 'I_(i`! - i).+1, prime (i.+1 + (tnth (ord_tuple _) j))].
+  rewrite (existsb_tnth (fun x : 'I_(i`! - i).+1 => prime (i.+1 + x))).
+  move=> /(nth_find ord0) ij.
+  by eexists; apply: ij.
+apply/negbNE/negP; rewrite negb_exists => /forallP noprime.
+set q := pdiv (i`!.+1).
+have qprime: prime q by apply/pdiv_prime/fact_gt0.
+case: (leqP q i) => [qlei|iltq].
+  have /dvdn_fact : 0 < q <= i by rewrite pdiv_gt0.
+  by rewrite (@dvdn_add_eq _ _ 1) ?Euclid_dvd1 // addn1; apply: pdiv_dvd.
+have qlt : q - i.+1 < (i`! - i).+1.
+  by rewrite -subSn// subSS -subSn ?fact_geq//; apply/leq_sub2r/pdiv_leq.
+move: (noprime (Ordinal qlt)) => /negP; apply.
+by rewrite tnth_ord_tuple subnKC// ltnW.
+Qed.
+
+Definition next_prime (i : nat) : nat :=
+  i.+1 + [arg min_(j < val (next_prime_subproof i) | prime (i.+1 + j)) val j].
+
+Lemma prime_next_prime (i : nat) : prime (next_prime i).
+Proof.
+by rewrite /next_prime; case: arg_minnP => //; case: next_prime_subproof.
+Qed.
+
+Lemma next_prime_min (i j : nat) : i < j < next_prime i -> ~~ prime j.
+Proof.
+rewrite /next_prime.
+case: arg_minnP => [|k kP kmin]; first by case: next_prime_subproof.
+move=> /andP[] ij.
+rewrite -(ltn_subLR _ ij) => jk.
+have jlt := ltn_trans jk (ltn_ord k).
+apply/negP; rewrite -[j](subnKC ij) => jP.
+move: (kmin (Ordinal jlt) jP) => /= /(leq_trans jk).
+by rewrite ltnn.
+Qed.
+
+Lemma next_prime_lt i : i < next_prime i.
+Proof.
+rewrite /next_prime.
+case: arg_minnP => [|j _ _]; first by case: next_prime_subproof.
+exact: leq_addr.
+Qed.
+
+Definition prime_seq (n : nat) : nat := iter n next_prime 2.
 
 Lemma leq_prime_seq: {mono prime_seq : m n / m <= n}.
 Proof.
 move=> m n.
 apply: (@Order.NatMonotonyTheory.incn_inP _ nat predT) => // {m n} [n /= _ _].
-have prgtid i : forall j, i < i`!.+1 - j -> prime_search i j > i.
-  elim=> /= [_|n0 HR]; first exact: (leq_ltn_trans (fact_geq i) (ltnSn i`!)).
-  case: (prime (i`!.+1 - n0.+1)) => [// | ilt].
-  exact/HR/(leq_trans _ (leq_sub2l i`!.+1 (leqnSn n0))).
-set k := prime_seq n. set pk := prime_search k (k`! - k).
-apply: prgtid. rewrite subnBAC; last exact: leqnSn.
-  by rewrite -ltn_subLR// subnn subSnn.
-exact: fact_geq. 
+exact: next_prime_lt.
 Qed.
 
 Lemma mem_prime_seq (p : nat) : p \in range prime_seq = prime p.
 Proof.
 apply/idP/idP => [|primep].
-  rewrite inE => -[] [|n] _ <- //.
-  set i := prime_seq n. 
-  suff find_prime: forall (j : nat),
-      (forall k : nat, j < k <= i`! - i -> ~ prime (i`!.+1 - k))
-      -> prime (prime_search i j).
-    apply: (find_prime (i`! - i)) => k /andP [] kb1 kb2.
-    have := (leq_ltn_trans kb2 kb1).
-    by rewrite ltnn.
-  elim=> [/= nprimeltq|n0 HR NoPrimeBefore /=]; last first.
-    case: ifP => // noprime. apply: HR => k.
-    case: (ltnP n0.+1 k) => [n01ltk|klen0] /andP [] ? ?.
-      by apply: NoPrimeBefore; rewrite n01ltk.
-    suff ->: k = n0.+1 by rewrite noprime.
-    by apply: eqP; rewrite eqn_leq klen0.
-  set q := pdiv (i`!.+1).
-  have qprime: prime q by apply/pdiv_prime /fact_gt0.
-  move: (pdiv_leq (ltn0Sn i`!)). rewrite leq_eqVlt => /orP [/eqP <- //|].
-  case: (leqP q i) => [qlei|iltq qlt]; last first.
-    move: (nprimeltq (i`!.+1 - q)).
-    rewrite subn_gt0 qlt /= (@leq_sub2lE _ i.+1) => [/(_ iltq)|].
-      by rewrite subKn// ltnW.
-    exact: fact_geq.
-  have /dvdn_fact : 0 < q <= i by rewrite pdiv_gt0.
-  by rewrite (@dvdn_add_eq _ _ 1) ?Euclid_dvd1 // addn1; apply: pdiv_dvd.
+  by rewrite inE => -[] [|n] _ <- //=; apply: prime_next_prime.
 case: (@Order.TotalTheory.arg_maxP _ _ 'I_p.+1 ord0
     (fun m => prime_seq m <= p) prime_seq) => /= [|n pgepsi pptargmax].
   exact: prime_gt1.
@@ -92,33 +98,13 @@ have pltpsni1: p < prime_seq n.+1.
   move: (contra (pptargmax (Ordinal nltp))).
   rewrite [(_ <= _)%O](leq_prime_seq (Ordinal nltp) n) ltnn => /(_ erefl).
   by rewrite ltnNge.
-suff NoPrime k : prime_seq n < k < prime_seq n.+1 -> ~~ prime k => [|/=].
-  move: pgepsi.
-  rewrite leq_eqVlt => /orP [/eqP <-|psnltp]; first by rewrite inE.
-  move: (NoPrime p). rewrite psnltp pltpsni1 => /(_ erefl).
-  by rewrite primep.
-set psn := prime_seq n.
-rewrite -[X in X < _](subKn (fact_geq psn)).
-elim: (psn`! - psn) => /= [|n0 HR].
-  rewrite subn0 ltnS => /andP [] kb1 kb2.
-  have := (leq_ltn_trans kb2 kb1).
-  by rewrite ltnn.
-case: (boolP (prime (psn`! - n0))) => [_ /andP [] kb1| noprime /andP []].
-  case: (ltnP n0 psn`!) => [n0ltpsnf|]; last first.
-    rewrite -subn_eq0 subSS => /eqP ->.
-    by rewrite ltn0.
-  rewrite subSn// ltnS => kb2.
-  have := (leq_ltn_trans kb2 kb1).
-  by rewrite ltnn.
-case: (leqP k (psn`! - n0)); last by move=> kb1 _ kb2; apply: HR; rewrite kb1.
-rewrite leq_eqVlt => /orP [/eqP -> _ _ // | kb1].
-rewrite -subSn; last first.
-  rewrite -(@ltn_sub2rE n0) // subnn.
-  exact: (leq_ltn_trans _ kb1).
-rewrite subSS => kb2.
-have := (leq_ltn_trans kb2 kb1).
-by rewrite ltnn.
+move: pgepsi.
+rewrite leq_eqVlt => /orP [/eqP <-|psnltp]; first by rewrite inE.
+move: (@next_prime_min (prime_seq n) p). rewrite psnltp pltpsni1 => /(_ erefl).
+by rewrite primep.
 Qed. 
+
+End prime_seq.
 
 Section DivergenceSumInversePrimeNumbers.
 
