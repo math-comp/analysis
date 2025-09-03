@@ -140,6 +140,8 @@ html: build $(DOCDIR)/dependency_graph.dot
 	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
 	-dependency-graph $(DOCDIR)/dependency_graph.dot \
 	-hierarchy-graph "hierarchy-graph.dot" \
+        -index-blacklist etc/rocqnavi_index-blacklist \
+        -show-type-information-using-coqtop-process \
 	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
 	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra
 
