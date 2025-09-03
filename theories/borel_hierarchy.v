@@ -126,16 +126,47 @@ move/eqP.
 by rewrite eq_sym -subr_eq opprB subrKC eq_sym => /eqP.
 Qed.
 
+Definition perfectly_normal_space' (x : R) :=
+  forall E : set T, open E -> 
+    exists f : T -> R, continuous f /\ E = f @^-1` ~`[set x].
+
 Definition perfectly_normal_space01 :=
   forall E F : set T, closed E -> closed F -> [disjoint E & F] ->
     exists f : T -> R, continuous f /\ E = f @^-1` [set 0] /\ F = f @^-1` [set 1] 
       /\ f @` [set: T] = `[0, 1]%classic.
 
-Definition perfectly_normal_space_G_delta :=
+Definition perfectly_normal_space_Gdelta :=
   normal_space T /\ forall E : set T, closed E -> Gdelta E.
 
-Lemma perfectly_normal_space01P : perfectly_normal_space <-> perfectly_normal_space01.
+Let perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
 Proof.
 Admitted.
+Let perfectly_normal_space_23 : perfectly_normal_space' 0 -> perfectly_normal_space 0.
+Proof.
+Admitted.
+Let perfectly_normal_space_34 : perfectly_normal_space 0 -> perfectly_normal_space01.
+Proof.
+Admitted.
+Let perfectly_normal_space_41 : perfectly_normal_space01 -> perfectly_normal_space_Gdelta.
+Proof.
+Admitted.
+
+Theorem Vedenissoff_closed : perfectly_normal_space_Gdelta <-> perfectly_normal_space 0.
+Proof.
+move: perfectly_normal_space_12 perfectly_normal_space_23 perfectly_normal_space_34 perfectly_normal_space_41.
+tauto.
+Qed.
+
+Theorem Vedenissoff_open : perfectly_normal_space_Gdelta <-> perfectly_normal_space' 0.
+Proof.
+move: perfectly_normal_space_12 perfectly_normal_space_23 perfectly_normal_space_34 perfectly_normal_space_41.
+tauto.
+Qed.
+
+Theorem Vedenissoff01 : perfectly_normal_space_Gdelta <-> perfectly_normal_space01.
+Proof.
+move: perfectly_normal_space_12 perfectly_normal_space_23 perfectly_normal_space_34 perfectly_normal_space_41.
+tauto.
+Qed.
 
 End perfectlynormalspace.
