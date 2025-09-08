@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect all_algebra all_fingroup.
 From mathcomp Require Import wochoice contra mathcomp_extra.
 From mathcomp Require Import boolp classical_sets set_interval.
 From mathcomp Require Import topology_structure separation_axioms connected.
-From mathcomp Require Import reals.
+From mathcomp Require Import reals borel_hierarchy.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -452,7 +452,7 @@ Qed.
 End distance.
 
 Lemma sorgenfrey_line_perfectly_normal_space : 
-  perfectly_normal_space R sorgenfrey.
+  perfectly_normal_space sorgenfrey (0 : R).
 Proof.
 move=> E cE.
 exists (sdist E).
