@@ -141,14 +141,29 @@ Definition perfectly_normal_space_Gdelta :=
 Let perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
 Proof.
 Admitted.
+
 Let perfectly_normal_space_23 : perfectly_normal_space' 0 -> perfectly_normal_space 0.
 Proof.
-Admitted.
+move=> pns' E cE.
+case: (pns' (~`E)).
+  by rewrite openC.
+move=> f [cf f0].
+exists f.
+split.
+  by [].
+by rewrite -[RHS]setCK preimage_setC -f0 setCK.
+Qed.
+
 Let perfectly_normal_space_34 : perfectly_normal_space 0 -> perfectly_normal_space01.
 Proof.
 Admitted.
 Let perfectly_normal_space_41 : perfectly_normal_space01 -> perfectly_normal_space_Gdelta.
 Proof.
+move=> pns01.
+split.
+  move=> A cA B AB.
+  rewrite /set_nbhs.
+  (*exists (~`B).*)
 Admitted.
 
 Theorem Vedenissoff_closed : perfectly_normal_space_Gdelta <-> perfectly_normal_space 0.
