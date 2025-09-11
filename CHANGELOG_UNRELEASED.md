@@ -13,6 +13,9 @@
 - in `num_normedtype.v`:
   + lemma `nbhs_infty_gtr`
 
+- in `realfun.v`:
+  + lemma `cvg_addrl_Ny`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
