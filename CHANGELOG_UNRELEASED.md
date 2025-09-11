@@ -44,6 +44,9 @@
   + lemmas `wlength_ge0`, `cumulative_content_sub_fsum`, `wlength_sigma_subadditive`, `lebesgue_stieltjes_measure_unique`
   + definitions `lebesgue_stieltjes_measure`, `completed_lebesgue_stieltjes_measure`
 
+- moved from `vitali_lemma.v` to `pseudometric_normed_Zmodule.v` and renamed:
+  + `closure_ball` -> `closure_ballE`
+
 ### Renamed
 
 ### Generalized

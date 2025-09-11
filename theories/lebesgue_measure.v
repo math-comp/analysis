@@ -1350,8 +1350,8 @@ apply: le_trans; apply: lee_nneseries => //; first by move=> *; exact: esum_ge0.
 move=> n _.
 rewrite -(set_mem_set (F n)) -nneseries_esum// -nneseries_esum// -nneseriesZl//.
 apply: lee_nneseries => // m mFn.
-rewrite (ballE (is_ballB m))// closure_ball lebesgue_measure_closed_ball//.
-rewrite scale_ballE// closure_ball lebesgue_measure_closed_ball//.
+rewrite (ballE (is_ballB m))// closure_ballE lebesgue_measure_closed_ball//.
+rewrite scale_ballE// closure_ballE lebesgue_measure_closed_ball//.
 by rewrite -EFinM mulrnAr.
 Qed.
 
@@ -1390,7 +1390,7 @@ Let vitali_cover_mclosure (F : set nat) k :
   vitali_cover A B F -> (R.-ocitv.-measurable).-sigma.-measurable (closure (B k)).
 Proof.
 case => + _ => /(_ k)/ballE ->.
-by rewrite closure_ball; exact: measurable_closed_ball.
+by rewrite closure_ballE; exact: measurable_closed_ball.
 Qed.
 
 Let vitali_cover_measurable (F : set nat) k :
@@ -1452,7 +1452,7 @@ have muGSfin C : C `<=` G -> mu (\bigcup_(k in C) closure (B k)) \is a fin_num.
   apply: lee_nneseries => // n _.
   case: ifPn => [/set_mem nC|]; last by rewrite measure0.
   rewrite (vitali_cover_ballE _ ABF) ifT; last exact/mem_set/CG.
-  by rewrite closure_ball lebesgue_measure_closed_ball// lebesgue_measure_ball.
+  by rewrite closure_ballE lebesgue_measure_closed_ball// lebesgue_measure_ball.
 have muGfin : mu (\bigcup_(k in G) closure (B k)) \is a fin_num.
   by rewrite -(bigB0 G) muGSfin.
 have [c Hc] : exists c : {posnum R},
@@ -1540,8 +1540,8 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
       apply: lee_sum => //= i /G0G'r [iG rBi].
       rewrite -[leRHS]fineK//; last first.
         rewrite (vitali_cover_ballE _ ABF).
-        by rewrite closure_ball lebesgue_measure_closed_ball.
-      rewrite (vitali_cover_ballE _ ABF) closure_ball.
+        by rewrite closure_ballE lebesgue_measure_closed_ball.
+      rewrite (vitali_cover_ballE _ ABF) closure_ballE.
       by rewrite lebesgue_measure_closed_ball// fineK// lee_fin mulr2n ler_wpDl.
     rewrite le_measure? inE//; last exact: bigcup_subset.
     - by apply: bigcup_measurable => k _; exact: vitali_cover_mclosure ABF.
@@ -1557,7 +1557,7 @@ have bigBG_fin (r : {posnum R}) : finite_set (bigB G r%:num).
       move/trivIsetP : tB => /(_ _ _ Gi Gj ij).
       by apply: subsetI_eq0 => //=; exact: subset_closure.
     rewrite /= lee_nneseries// => n _.
-    rewrite (vitali_cover_ballE _ ABF)// closure_ball.
+    rewrite (vitali_cover_ballE _ ABF)// closure_ballE.
     by rewrite lebesgue_measure_closed_ball// lebesgue_measure_ball.
   rewrite le_measure? inE//.
   + by apply: bigcup_measurable => k _; exact: vitali_cover_measurable ABF.

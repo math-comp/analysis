@@ -1223,6 +1223,10 @@ Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
 Definition closed_ball (R : numDomainType) (V : pseudoMetricType R)
   (x : V) (e : R) := closure (ball x e).
 
+Lemma closure_ballE (R : numDomainType) (V : pseudoMetricType R)
+  (c : V) (r : R) : closure (ball c r) = closed_ball c r.
+Proof. by []. Qed.
+
 Lemma closed_ball0 (R : realDomainType) (V : pseudoMetricNormedZmodType R)
   (v : V) (r : R) : r <= 0 -> closed_ball v r = set0.
 Proof.
@@ -1254,6 +1258,8 @@ Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricType R)
 Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
 
 End Closed_Ball.
+#[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `closure_ballE`")]
+Notation closure_ball := closure_ballE (only parsing).
 
 Section limit_composition_pseudometric.
 Context {K : numFieldType} {V : pseudoMetricNormedZmodType K} {T : Type}.

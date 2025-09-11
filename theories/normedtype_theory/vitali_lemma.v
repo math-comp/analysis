@@ -202,12 +202,6 @@ Lemma is_ball_closure (A : set R) : is_ball A ->
   closure A = closed_ball (cpoint A) (radius A)%:num.
 Proof. by move=> ballA; rewrite /closed_ball -ballE. Qed.
 
-Lemma closure_ball (c r : R) : closure (ball c r) = closed_ball c r.
-Proof.
-have [r0|r0] := leP r 0; first by rewrite closed_ball0// le0_ball0// closure0.
-by rewrite (is_ball_closure (is_ball_ball _ _)) cpoint_ball// radius_ball ?ltW.
-Qed.
-
 Lemma scale_ballE k x r : 0 <= k -> k *` ball x r = ball x (k * r).
 Proof.
 move=> k0; have [r0|r0] := ltP 0 r.
