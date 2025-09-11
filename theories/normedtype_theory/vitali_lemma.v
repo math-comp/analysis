@@ -204,8 +204,7 @@ Proof. by move=> ballA; rewrite /closed_ball -ballE. Qed.
 
 Lemma closure_ball (c r : R) : closure (ball c r) = closed_ball c r.
 Proof.
-have [r0|r0] := leP r 0.
-  by rewrite closed_ball0// ((ball0 _ _).2 r0) closure0.
+have [r0|r0] := leP r 0; first by rewrite closed_ball0// le0_ball0// closure0.
 by rewrite (is_ball_closure (is_ball_ball _ _)) cpoint_ball// radius_ball ?ltW.
 Qed.
 

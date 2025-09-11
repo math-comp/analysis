@@ -31,6 +31,8 @@
   + definition `parse`, `print`
   + number notations in scopes `ereal_dual_scope` and `ereal_scope`
   + notation `- 1` in scopes `ereal_dual_scope` and `ereal_scope`
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `le0_ball0`
 
 ### Changed
 
@@ -45,6 +47,12 @@
 ### Renamed
 
 ### Generalized
+
+- in `pseudometric_normed_Zmodule.v`:
+  + lemma `closed_ball0` (`realFieldType` -> `pseudoMetricNormedZmodType`)
+  + lemmas `closed_ball_closed`, `subset_closed_ball` (`realFieldType` -> `numDomainType`)
+  + lemma `subset_closure_half` (`realFieldType` -> `numFieldType`)
+  + lemma `le_closed_ball` (`pseudoMetricNormedZmodType` -> `pseudoMetricType`)
 
 - in `lebesgue_stieltjes_measure.v` generalized (codomain is now an `orderNbhsType`):
   + lemma `right_continuousW`

@@ -334,8 +334,7 @@ Proof. by rewrite ball_itv; exact: measurable_itv. Qed.
 
 Lemma measurable_closed_ball (x : R) r : measurable (closed_ball x r).
 Proof.
-have [r0|r0] := leP r 0; first by rewrite closed_ball0.
-rewrite closed_ball_itv//.
+by have [r0|r0] := leP r 0; [rewrite closed_ball0|rewrite closed_ball_itv].
 Qed.
 
 End salgebra_R_ssets.
