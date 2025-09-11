@@ -113,6 +113,9 @@ move=> P [r [rreal rP]]; exists (r - M); split.
 by move=> m/=; rewrite ltrBrDr => /rP.
 Qed.
 
+Lemma cvg_addrl_Ny (M : R) : M + r @[r --> -oo] --> -oo.
+Proof. by under eq_fun do rewrite addrC; exact: cvg_addrr_Ny. Qed.
+
 (* NB: see cvg_centern in sequences.v *)
 Lemma cvg_centerr (M : R) (T : topologicalType) (f : R -> T) (l : T) :
   (f (n - M) @[n --> +oo] --> l) = (f r @[r --> +oo] --> l).
@@ -164,6 +167,7 @@ rewrite neq_lt => /orP[tp|pt].
   move=> z/= + _ => /lt_le_trans; apply.
   by rewrite ler_pdivrMr// ler_pMr// ler1n.
 Unshelve. all: by end_near. Qed.
+
 End fun_cvg_realFieldType.
 
 Section cvgr_fun_cvg_seq.
