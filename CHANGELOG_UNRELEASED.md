@@ -11,7 +11,7 @@
   + lemma `nbhs_infty_gtr`
 
 - in `uniform_structure.v`:
-  + lemma `within_continuous_withinNx`
+  + lemma `continuous_injective_withinNx`
 
 ### Changed
 
