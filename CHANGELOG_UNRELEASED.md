@@ -18,6 +18,10 @@
 - in `realfun.v`:
   + lemma `cvg_addrl_Ny`
 
+- in `constructive_ereal.v`:
+  + lemmas `mule_natr`, `dmule_natr`
+  + lemmas `inve_eqy`, `inve_eqNy`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
