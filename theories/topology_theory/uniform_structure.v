@@ -289,16 +289,11 @@ Lemma within_continuous_withinNx
   {for x, continuous f} ->
   (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
 Proof.
-move=> cf fI A.
-rewrite /nbhs /= /dnbhs !withinE/= => -[] V Vfx AV.
-exists (f @^-1` V); first exact: (cf _ Vfx).
-apply/seteqP; split=> y/= [] fyAV yx; split=> //.
-  suff: f y \in A `&` (fun y : U => y != f x) by rewrite AV inE => -[].
-  rewrite inE/=; split=> //.
-  by move: yx; apply: contra => /eqP /fI /eqP.
-suff: f y \in V `&` (fun y : U => y != f x) by rewrite -AV inE => -[].
-rewrite inE/=; split=> //.
-by move: yx; apply: contra => /eqP /fI /eqP.
+move=> cf fI A; rewrite /nbhs /= /dnbhs !withinE/= => -[V Vfx AV].
+exists (f @^-1` V); first exact: cf Vfx.
+by apply/seteqP; split=> y/=;
+  move/predeqP : AV => /(_ (f y))/= AV [AVfy yx];
+  have /contra_neq /(_ yx) := fI y; tauto.
 Qed.
 
 (* This property is primarily useful for metrizability on uniform spaces *)
