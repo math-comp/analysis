@@ -284,6 +284,18 @@ rewrite !near_simpl near_withinE near_simpl => Pf; near=> y.
 by have [->|] := eqVneq y x; [by apply: nbhs_singleton|near: y].
 Unshelve. all: by end_near. Qed.
 
+Lemma continuous_injective_withinNx
+  (T U : topologicalType) (f : T -> U) (x : T) :
+  {for x, continuous f} ->
+  (forall y, f y = f x -> y = x) -> f @ x^' --> (f x)^'.
+Proof.
+move=> cf fI A; rewrite /nbhs /= /dnbhs !withinE/= => -[V Vfx AV].
+exists (f @^-1` V); first exact: cf Vfx.
+by apply/seteqP; split=> y/=;
+  move/predeqP : AV => /(_ (f y))/= AV [AVfy yx];
+  have /contra_neq /(_ yx) := fI y; tauto.
+Qed.
+
 (* This property is primarily useful for metrizability on uniform spaces *)
 Definition countable_uniformity (T : uniformType) :=
   exists R : set_system (T * T), [/\
