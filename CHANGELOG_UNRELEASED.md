@@ -22,6 +22,9 @@
   + lemmas `mule_natr`, `dmule_natr`
   + lemmas `inve_eqy`, `inve_eqNy`
 
+- in `uniform_structure.v`:
+  + lemma `continuous_injective_withinNx`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
