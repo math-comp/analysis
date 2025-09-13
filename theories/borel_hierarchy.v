@@ -144,11 +144,9 @@ Admitted.
 
 Let perfectly_normal_space_23 : perfectly_normal_space' 0 -> perfectly_normal_space 0.
 Proof.
-move=> pns' E cE.
-case: (pns' (~`E)).
+move=> pns' E cE; case: (pns' (~`E)).
   by rewrite openC.
-move=> f [cf f0].
-exists f.
+move=> f [cf f0]; exists f.
 split.
   by [].
 by rewrite -[RHS]setCK preimage_setC -f0 setCK.
@@ -161,9 +159,12 @@ Let perfectly_normal_space_41 : perfectly_normal_space01 -> perfectly_normal_spa
 Proof.
 move=> pns01.
 split.
-  move=> A cA B AB.
-  rewrite /set_nbhs.
-  (*exists (~`B).*)
+  move=> A cA B /set_nbhsP [C] [oC] AC.
+  have:= pns01 A (~`C) cA.
+  case. by apply: open_closedC. by apply/disj_setPCl.
+  move=> f [cf [f0 [f1 f01]]].
+  exists (f @^-1` `[0, 1/2 [).
+    move=> a Aa.
 Admitted.
 
 Theorem Vedenissoff_closed : perfectly_normal_space_Gdelta <-> perfectly_normal_space 0.
