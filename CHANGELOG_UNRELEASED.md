@@ -43,7 +43,7 @@
     `card_big_setU`
 
 - file `pnt.v`
-  + definitions `prime_search`, `prime_seq`
+  + definitions `next_prime`, `prime_seq`
   + lemmas `leq_prime_seq`, `mem_prime_seq`
   + theorem `DivergenceSumInversePrimeNumbers`
 
