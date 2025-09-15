@@ -25,6 +25,13 @@
 - in `uniform_structure.v`:
   + lemma `continuous_injective_withinNx`
 
+- in `constructive_ereal.v`:
+  + variants `Ione`, `Idummy_placeholder`
+  + inductives `Inatmul`, `IEFin`
+  + definition `parse`, `print`
+  + number notations in scopes `ereal_dual_scope` and `ereal_scope`
+  + notation `- 1` in scopes `ereal_dual_scope` and `ereal_scope`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
