@@ -530,29 +530,15 @@ Lemma set_itv_splitD i :
   [set` i] = [set` Interval i.1 +oo%O] `\` [set` Interval i.2 +oo%O].
 Proof. by rewrite set_itv_splitI/= setDE setCitvr. Qed.
 
-Lemma NycUoy_setT x : `]-oo, x] `|` `]x, +oo[ = setT.
-Proof.
-rewrite -subTset => z//= _; rewrite !in_itv/= andbT.
-by case: (leP z x); [left | right].
-Qed.
+Lemma NyUy_setT b x :
+  ([set` Interval -oo%O (BSide b x)]) `|`
+  ([set` Interval (BSide b x) +oo%O]) = [set: T].
+Proof. by rewrite -itv_bndbnd_setU// set_itvE. Qed.
 
-Lemma NycIoy_set0 x : `]-oo, x] `&` `]x, +oo[ = set0.
-Proof.
-rewrite -subset0 => z /=; rewrite !in_itv/= andbT.
-by case => /le_lt_trans/[apply]; rewrite lt_irreflexive.
-Qed.
-
-Lemma NyoUcy_setT x : `]-oo, x[ `|` `[x, +oo[ = setT.
-Proof.
-rewrite -subTset => z//= _; rewrite !in_itv/= andbT.
-by case: (ltP z x); [left | right].
-Qed.
-
-Lemma NyoIcy_set0 x : `]-oo, x[ `&` `[x, +oo[ = set0.
-Proof.
-rewrite -subset0 => z /=; rewrite !in_itv/= andbT.
-by case => /lt_le_trans/[apply]; rewrite lt_irreflexive.
-Qed.
+Lemma NyIy_set0 b x :
+  ([set` Interval -oo%O (BSide b x)]) `&`
+  ([set` Interval (BSide b x) +oo%O]) = set0.
+Proof. by rewrite -(set_itvxx (BSide b x)) [RHS]set_itv_splitI setIC. Qed.
 
 End set_itv_porderType.
 

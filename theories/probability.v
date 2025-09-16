@@ -353,8 +353,8 @@ Local Open Scope ereal_scope.
 
 Lemma cdf_ccdf_1 r : cdf X r + ccdf X r = 1.
 Proof.
-rewrite /cdf/ccdf -measureU //=; last exact: NycIoy_set0.
-by rewrite NycUoy_setT probability_setT.
+rewrite /cdf/ccdf -measureU //=; last exact: NyIy_set0.
+by rewrite NyUy_setT probability_setT.
 Qed.
 
 Corollary ccdf_cdf_1 r : ccdf X r + cdf X r = 1.

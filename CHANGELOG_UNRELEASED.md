@@ -5,7 +5,7 @@
 ### Added
 
 - in `set_interval.v`:
-  + lemmas `NycUoy_setT`, `NycIoy_set0`, `NyoUcy_setT`, `NyoIcy_set0`
+  + lemmas `NyUy_setT`, `NyIy_set0`
 
 - in `constructive_ereal.v`:
   + lemma `ltgte_fin_num`
