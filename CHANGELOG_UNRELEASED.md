@@ -38,14 +38,15 @@
 
 - in `constructive_ereal.v`:
   + lemma `lt0_adde`
+
 - in `unstable.v`
-  + lemmas `coprime_prodr`, `Gauss_dvd_prod`, `expn_prod`, `mono_ext`,
+  + lemmas `coprime_prodr`, `Gauss_dvd_prod`, `expn_prod`, `mono_leq_infl`,
     `card_big_setU`
 
 - file `pnt.v`
   + definitions `next_prime`, `prime_seq`
   + lemmas `leq_prime_seq`, `mem_prime_seq`
-  + theorem `DivergenceSumInversePrimeNumbers`
+  + theorem `dvg_sum_inv_prime_seq`
 
 ### Changed
 

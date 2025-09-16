@@ -94,7 +94,7 @@ case: (@Order.TotalTheory.arg_maxP _ _ 'I_p.+1 ord0
 have pltpsni1: p < prime_seq n.+1.
   move: (valP n). rewrite leq_eqVlt => /orP [|nltp].
     rewrite eqSS => /eqP ->.
-    exact/mono_ext/leq_prime_seq.
+    exact/mono_leq_infl/leq_prime_seq.
   have := contra (pptargmax (Ordinal nltp)).
   rewrite [(_ <= _)%O](leq_prime_seq (Ordinal nltp) n) ltnn => /(_ erefl).
   by rewrite ltnNge.
@@ -106,13 +106,13 @@ Qed.
 
 End prime_seq.
 
-Section DivergenceSumInversePrimeNumbers.
+Section dvg_sum_inv_prime_seq.
 
 Let P (k N : nat) :=
   [set n : 'I_N.+1 |all (fun p => p < prime_seq k) (primes n)]%SET.
 Let G (k N : nat) := ~: P k N.
 
-Fact cardPcardG k N : #|G k N| + #|P k N| = N.+1.
+Let cardPcardG k N : #|G k N| + #|P k N| = N.+1.
 Proof.
 rewrite addnC.
 have : (P k N) :|: (G k N) = [set : 'I_N.+1]%SET by rewrite finset.setUCr.
@@ -120,7 +120,7 @@ rewrite -cardsUI finset.setICr cards0.
 by rewrite -[X in _ + _ = X]card_ord addn0 -cardsT => ->.
 Qed.
 
-Fact cardG (R : realType) (k N : nat) :
+Let cardG (R : realType) (k N : nat) :
   (\sum_(k <= k0 <oo) ((prime_seq k0)%:R^-1 : R)%:E < (2^-1)%:E)%E
   -> k <= N.+1 -> ~~ odd N -> N > 0 -> (#|G k N| < (N./2)).
 Proof.
@@ -148,7 +148,7 @@ suff cardEi : forall i, k <= i ->
     have ileqN : i < N.+1.
       apply: (leq_ltn_trans _ (ltn_ord x)).
       apply: (leq_trans _ (dvdn_leq xneq0 pidvdx)).
-      exact/mono_ext/leq_prime_seq.
+      exact/mono_leq_infl/leq_prime_seq.
     exists (Ordinal ileqN) => /=; first by rewrite -leq_prime_seq.
     by rewrite inE mem_primes xneq0 pidvdx/= andbT -mem_prime_seq inE.
   apply: (leq_ltn_trans (card_big_setU _ _ E)).
@@ -281,8 +281,7 @@ rewrite val_insubd x3b3 /= => x2eqx3. move: x3b2.
 by rewrite ltnS -x2eqx3.
 Qed.
 
-Fact cardP (k : nat) :
-  #|P k (2 ^ (k.*2 + 2))| <= (2 ^ (k.*2 + 1)).+1.
+Let cardP (k : nat) : #|P k (2 ^ (k.*2 + 2))| <= (2 ^ (k.*2 + 1)).+1.
 Proof.
 set N := 2 ^ (k.*2 + 2).
 set P' := fun k N => P k N :\ ord0.
@@ -313,7 +312,7 @@ have eqseq : forall n k, n < k ->
     by rewrite mem_primes => /andP[_ /andP[]].
   apply: (@leq_ltn_trans k0.-1); first by rewrite ltn_predRL.
   rewrite prednK ?(ltn_trans _ nlek)//.
-  exact/mono_ext/leq_prime_seq.
+  exact/mono_leq_infl/leq_prime_seq.
 have binB (n : 'I_N.+1) :
     (\prod_(i < k) (prime_seq i) ^ (logn (prime_seq i) n)./2) <
     (2 ^ (k + 1)).+1.
@@ -410,7 +409,7 @@ rewrite cardsX cardsE card_tuple card_bool cardsC1 card_ord.
 by rewrite -expnD addnA addnn.
 Qed.
 
-Theorem DivergenceSumInversePrimeNumbers (R : realType) :
+Theorem dvg_sum_inv_prime_seq (R : realType) :
   (\sum_(0 <= i < n) (((prime_seq i)%:R : R)^-1)%:E)%R @[n --> \oo] --> +oo%E.
 Proof.
 set un := fun i => (((prime_seq i)%:R : R)^-1)%:E.
@@ -453,4 +452,4 @@ apply: (@cardG R); first by move: Rklthalf; rewrite /un div1r.
 - by rewrite /N expn_gt0.
 Qed.
 
-End DivergenceSumInversePrimeNumbers.
+End dvg_sum_inv_prime_seq.

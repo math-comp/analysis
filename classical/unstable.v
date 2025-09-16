@@ -138,7 +138,7 @@ Qed.
 Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
   {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
 
-Lemma mono_ext f : {mono f : m n / (m <= n)%N} -> forall n, (n <= f n)%N.
+Lemma mono_leq_infl f : {mono f : m n / (m <= n)%N} -> forall n, (n <= f n)%N.
 Proof.
 move=> fincr; elim=> [//| n HR]; rewrite (leq_ltn_trans HR)//.
 by rewrite ltn_neqAle fincr (inj_eq (incn_inj fincr)) -ltn_neqAle.
