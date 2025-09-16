@@ -400,6 +400,18 @@ Arguments cvgr0_norm_le {_ _ _ F FF}.
 #[global] Hint Extern 0 (is_true (`|?x| <= _)) => match goal with
   H : x \is_near _ |- _ => solve[near: x; now apply: cvgr0_norm_le] end : core.
 
+Section pseudoMetricNormedZmod_realDomainType.
+
+Lemma le0_ball0 (R : realDomainType) (V : pseudoMetricNormedZmodType R) (a : V) (r : R) :
+  r <= 0 -> ball a r = set0.
+Proof.
+move=> r0; rewrite -subset0 => y.
+rewrite -ball_normE /ball_/= ltNge => /negP; apply.
+by rewrite (le_trans r0).
+Qed.
+
+End pseudoMetricNormedZmod_realDomainType.
+
 Section pseudoMetricNormedZmod_numFieldType.
 Variables (R : numFieldType) (V : pseudoMetricNormedZmodType R).
 
@@ -420,10 +432,11 @@ Local Hint Extern 0 (hausdorff_space _) => solve[apply: norm_hausdorff] : core.
 (*       i.e. where the generic lemma is applied, *)
 (*            check that norm_hausdorff is not used in a hard way *)
 
-Lemma norm_closeE (x y : V): close x y = (x = y). Proof. exact: closeE. Qed.
+Lemma norm_closeE (x y : V) : close x y = (x = y). Proof. exact: closeE. Qed.
 Lemma norm_close_eq (x y : V) : close x y -> x = y. Proof. exact: close_eq. Qed.
 
-Lemma norm_cvg_unique {F} {FF : ProperFilter F} : is_subset1 [set x : V | F --> x].
+Lemma norm_cvg_unique {F} {FF : ProperFilter F} :
+  is_subset1 [set x : V | F --> x].
 Proof. exact: cvg_unique. Qed.
 
 Lemma norm_cvg_eq (x y : V) : x --> y -> x = y. Proof. exact: (@cvg_eq V). Qed.
@@ -1210,26 +1223,29 @@ Definition closed_ball_ (R : numDomainType) (V : zmodType) (norm : V -> R)
 Definition closed_ball (R : numDomainType) (V : pseudoMetricType R)
   (x : V) (e : R) := closure (ball x e).
 
-Lemma closed_ball0 (R : realFieldType) (a r : R) :
-  r <= 0 -> closed_ball a r = set0.
+Lemma closure_ballE (R : numDomainType) (V : pseudoMetricType R)
+  (c : V) (r : R) : closure (ball c r) = closed_ball c r.
+Proof. by []. Qed.
+
+Lemma closed_ball0 (R : realDomainType) (V : pseudoMetricNormedZmodType R)
+  (v : V) (r : R) : r <= 0 -> closed_ball v r = set0.
 Proof.
-move=> /ball0 r0; apply/seteqP; split => // y.
-by rewrite /closed_ball r0 closure0.
+by move=> r0; rewrite -subset0 => w; rewrite /closed_ball le0_ball0// closure0.
 Qed.
 
 Lemma closed_ballxx (R : numDomainType) (V : pseudoMetricType R) (x : V)
   (e : R) : 0 < e -> closed_ball x e x.
 Proof. by move=> ?; exact/subset_closure/ballxx. Qed.
 
-Lemma closed_ball_closed (R : realFieldType) (V : pseudoMetricType R) (x : V)
+Lemma closed_ball_closed (R : numDomainType) (V : pseudoMetricType R) (x : V)
   (r : R) : closed (closed_ball x r).
 Proof. exact: closed_closure. Qed.
 
-Lemma subset_closed_ball (R : realFieldType) (V : pseudoMetricType R) (x : V)
+Lemma subset_closed_ball (R : numDomainType) (V : pseudoMetricType R) (x : V)
   (r : R) : ball x r `<=` closed_ball x r.
 Proof. exact: subset_closure. Qed.
 
-Lemma subset_closure_half (R : realFieldType) (V : pseudoMetricType R) (x : V)
+Lemma subset_closure_half (R : numFieldType) (V : pseudoMetricType R) (x : V)
   (r : R) : 0 < r -> closed_ball x (r / 2) `<=` ball x r.
 Proof.
 move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].
@@ -1237,11 +1253,13 @@ move:r => _/posnumP[r] z /(_ (ball z ((r%:num/2)%:pos)%:num)) [].
 by move=> y [+/ball_sym]; rewrite [t in ball x t z]splitr; apply: ball_triangle.
 Qed.
 
-Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricNormedZmodType R)
+Lemma le_closed_ball (R : numFieldType) (M : pseudoMetricType R)
   (x : M) (e1 e2 : R) : (e1 <= e2)%O -> closed_ball x e1 `<=` closed_ball x e2.
 Proof. by rewrite /closed_ball => le; apply/closure_subset/le_ball. Qed.
 
 End Closed_Ball.
+#[deprecated(since="mathcomp-analysis 1.14.0", note="renamed to `closure_ballE`")]
+Notation closure_ball := closure_ballE (only parsing).
 
 Section limit_composition_pseudometric.
 Context {K : numFieldType} {V : pseudoMetricNormedZmodType K} {T : Type}.
