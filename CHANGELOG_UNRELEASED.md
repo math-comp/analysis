@@ -5,7 +5,7 @@
 ### Added
 
 - in `set_interval.v`:
-  + lemmas `NyUy_setT`, `NyIy_set0`
+  + lemmas `itv_setU_setT`, `disjoint_rays`
 
 - in `constructive_ereal.v`:
   + lemma `ltgte_fin_num`
