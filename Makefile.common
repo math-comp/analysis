@@ -132,14 +132,14 @@ $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 	tred $(DOCDIR)/dependency_graph.pre > $(DOCDIR)/dependency_graph.dot
 
 html: build $(DOCDIR)/dependency_graph.dot
-	etc/rocqnavi_generate-hierarchy-graph.sh "hierarchy-graph.dot"
+	etc/rocqnavi_generate-hierarchy-graph.sh $(DOCDIR)/hierarchy_graph.dot
 	mkdir -p $(DOCDIR)
 	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs rocqnavi \
 	-title "Mathcomp Analysis" \
 	-d $(DOCDIR) -base mathcomp -Q theories analysis \
 	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
 	-dependency-graph $(DOCDIR)/dependency_graph.dot \
-	-hierarchy-graph "hierarchy-graph.dot" \
+	-hierarchy-graph $(DOCDIR)/hierarchy_graph.dot \
         -index-blacklist etc/rocqnavi_index-blacklist \
         -show-type-information-using-coqtop-process \
 	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
