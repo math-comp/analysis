@@ -19,7 +19,7 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
-Import Order.TTheory GRing.Theory Num.Theory.
+Import Order.TTheory GRing.Theory Num.Theory Num.Def.
 Import numFieldNormedType.Exports.
 Import numFieldTopology.Exports.
 
@@ -138,6 +138,33 @@ Definition perfectly_normal_space01 :=
 Definition perfectly_normal_space_Gdelta :=
   normal_space T /\ forall E : set T, closed E -> Gdelta E.
 
+Lemma perfectly_normal_space01_normal :
+  perfectly_normal_space01 -> normal_space T.
+Proof.
+move=> pns01 A cA B /set_nbhsP[C] [oC AC CB].
+case: (pns01 A (~` C) cA).
+- by rewrite closedC.
+- exact/disj_setPCl.
+move=> f [/continuousP /= cf] [f0] [f1] f01.
+exists (f @^-1` `]-oo, 1/2]).
+  apply/set_nbhsP.
+  exists (f @^-1` `]-oo, 1/2[).
+  split => //.
+  - exact: cf.
+  - by rewrite f0 => x /= ->; rewrite in_itv /=.
+  - by apply: preimage_subset => x /=; rewrite !in_itv /=; apply: ltW.
+apply: subset_trans CB.
+have<-:= proj1 (closure_id _).
+  have<-:= (setCK C).
+  rewrite f1 preimage_setC.
+  apply: preimage_subset => x /=; rewrite in_itv /=.
+  apply: contraTnot => ->.
+  by rewrite -ltNge ltr_pdivrMr // mul1r ltr1n.
+have/continuousP /continuous_closedP:= cf.
+apply.
+exact: lray_closed.
+Qed.
+
 Let perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
 Proof.
 Admitted.
@@ -155,17 +182,36 @@ Qed.
 Let perfectly_normal_space_34 : perfectly_normal_space 0 -> perfectly_normal_space01.
 Proof.
 Admitted.
+
 Let perfectly_normal_space_41 : perfectly_normal_space01 -> perfectly_normal_space_Gdelta.
 Proof.
 move=> pns01.
 split.
-  move=> A cA B /set_nbhsP [C] [oC] AC.
-  have:= pns01 A (~`C) cA.
-  case. by apply: open_closedC. by apply/disj_setPCl.
-  move=> f [cf [f0 [f1 f01]]].
-  exists (f @^-1` `[0, 1/2 [).
-    move=> a Aa.
-Admitted.
+  exact: perfectly_normal_space01_normal.
+move=> E cE.
+have [] := pns01 _ _ cE closed0.
+  by apply/disj_setPLR; rewrite setC0.
+move=> f [cf] [f0] [f1] f01.
+exists (fun n => f @^-1` `]-oo, 1/n.+1%:R[).
+  move=> n; move/continuousP: cf; exact.
+rewrite f0.
+apply/seteqP; split => x /= Hx.
+  by move=> i _ /=; rewrite Hx in_itv /= divr_gt0.
+case: (ltrgtP (f x) 0) => // fx.
+  have : f x \notin range f.
+    by rewrite f01 mem_setE in_itv /= negb_and -ltNge fx.
+  move/negP; elim.
+  by rewrite inE /=; exists x.
+suff : False by [].
+have /= := Hx (truncn (1 / f x)) I.
+rewrite in_itv /=.
+have /real_truncnS_gt := num_real (1 / f x).
+rewrite -ltf_pV2; last first.
+- by rewrite posrE divr_gt0.
+- by rewrite posrE.
+rewrite !div1r invrK => /lt_trans/[apply].
+by rewrite ltxx.
+Qed.
 
 Theorem Vedenissoff_closed : perfectly_normal_space_Gdelta <-> perfectly_normal_space 0.
 Proof.
