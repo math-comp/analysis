@@ -36,6 +36,16 @@
 - in `theories/landau.v`:
   + lemma `littleoE0`
 
+- in `tvs.v`
+  + lemmas `cvg_sum`, `sum_continuous`
+
+- in `normed_module.v`:
+  + structure `NormedVector`
+  + definitions `normedVectType`, `oo_norm`, `oo_space`
+  + lemmas `oo_norm_ge0`, `le_coord_oo_norm`, `ler_oo_normD`, `oo_norm0_eq0`,
+    `oo_normZ`, `oo_normMn`, `oo_normN`, `oo_closed_ball_compact`,
+    `equivalence_norms`, `linear_findim_continuous`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
