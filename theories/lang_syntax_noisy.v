@@ -312,8 +312,7 @@ transitivity (((Num.sqrt S1 * Num.sqrt S2 * pi *+ 2)^-1)%:E *
   congr ((expR _)%:E).
   rewrite sqr_sqrtr; last first.
     rewrite mulr_ge0 ?invr_ge0// ?addr_ge0 ?(@mulr_ge0 _ (_ ^+ 2))// ?sqr_ge0//.
-  field.
-  by apply/and3P; split.
+  by field; do ?[apply/and3P; split].
 set DS12 := S1 + S2.
 set MS12 := (S1 * S2)%R.
 set C := ((((y * s1 ^+ 2)%R + (m1 * s2 ^+ 2)%R)%E - m2 * s1 ^+ 2) / DS12)%R.
