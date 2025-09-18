@@ -39,6 +39,15 @@
 - in `constructive_ereal.v`:
   + lemma `lt0_adde`
 
+- in `unstable.v`
+  + lemmas `coprime_prodr`, `Gauss_dvd_prod`, `expn_prod`, `mono_leq_infl`,
+    `card_big_setU`
+
+- file `pnt.v`
+  + definitions `next_prime`, `prime_seq`
+  + lemmas `leq_prime_seq`, `mem_prime_seq`
+  + theorem `dvg_sum_inv_prime_seq`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
