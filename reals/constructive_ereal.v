@@ -1802,6 +1802,17 @@ Qed.
 Lemma lte_add_pinfty x y : x < +oo -> y < +oo -> x + y < +oo.
 Proof. by move: x y => -[r [r'| |]| |] // ? ?; rewrite -EFinD ltry. Qed.
 
+Lemma lt0_adde x y : x + y < 0 -> (x < 0) || (y < 0).
+Proof.
+move: x y => [x| |] [y| |]//; rewrite ?lee_fin ?lte_fin.
+- rewrite !ltNge -negb_and; apply: contra.
+  by move=> /andP[? ?]; rewrite addr_ge0.
+- by move=> _; rewrite ltNyr orbT.
+- by move=> _; rewrite ltNyr.
+- by move=> _; rewrite ltNy0.
+- by rewrite ltNy0.
+Qed.
+
 Lemma lte_sum_pinfty I (s : seq I) (P : pred I) (f : I -> \bar R) :
   (forall i, P i -> f i < +oo) -> \sum_(i <- s | P i) f i < +oo.
 Proof.
