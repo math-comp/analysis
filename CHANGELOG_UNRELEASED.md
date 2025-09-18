@@ -36,6 +36,9 @@
 - in `theories/landau.v`:
   + lemma `littleoE0`
 
+- in `constructive_ereal.v`:
+  + lemma `lt0_adde`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
