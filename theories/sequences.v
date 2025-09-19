@@ -707,7 +707,7 @@ Proof. by rewrite /=. Qed.
 Lemma harmonic_ge0 {R : numFieldType} i : 0 <= harmonic i :> R.
 Proof. exact/ltW/harmonic_gt0. Qed.
 
-Lemma cvg_harmonic {R : archiFieldType} : @harmonic R @ \oo --> 0.
+Lemma cvg_harmonic {R : archiRealFieldType} : @harmonic R @ \oo --> 0.
 Proof.
 apply/cvgrPdist_le => _/posnumP[e]; near=> i.
 rewrite distrC subr0 ger0_norm//= -lef_pV2 ?qualifE//= invrK.
@@ -715,7 +715,8 @@ rewrite (le_trans (ltW (archi_boundP _)))// ler_nat -add1n -leq_subLR.
 by near: i; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvge_harmonic {R : archiFieldType} : (EFin \o @harmonic R) @ \oo --> 0%E.
+Lemma cvge_harmonic {R : archiRealFieldType} :
+  (EFin \o @harmonic R) @ \oo --> 0%E.
 Proof. by apply: cvg_EFin; [exact: nearW | exact: cvg_harmonic]. Qed.
 
 Lemma dvg_harmonic (R : numFieldType) : ~ cvgn (series (@harmonic R)).
@@ -749,7 +750,7 @@ Definition root_mean_square (R : realType) (u_ : R ^nat) : R ^nat :=
   [sequence Num.sqrt (n.+1%:R^-1 * series v_ n.+1)]_n.
 
 Section cesaro.
-Variable R : archiFieldType.
+Variable R : archiRealFieldType.
 
 Theorem cesaro (u_ : R ^nat) (l : R) : u_ @ \oo --> l ->
   arithmetic_mean u_ @ \oo --> l.
@@ -783,7 +784,7 @@ Unshelve. all: by end_near. Qed.
 End cesaro.
 
 Section cesaro_converse.
-Variable R : archiFieldType.
+Variable R : archiRealFieldType.
 
 Let cesaro_converse_off_by_one (u_ : R ^nat) :
     [sequence n.+1%:R^-1 * series u_ n.+1]_n @ \oo --> 0 ->
@@ -915,7 +916,7 @@ Arguments geometric {R} a z n /.
 Lemma exprn_geometric (R : fieldType) : (@GRing.exp R) = geometric 1.
 Proof. by rewrite funeq2E => z n /=; rewrite mul1r. Qed.
 
-Lemma cvg_arithmetic (R : archiFieldType) a (z : R) :
+Lemma cvg_arithmetic (R : archiRealFieldType) a (z : R) :
   z > 0 -> arithmetic a z @ \oo --> +oo.
 Proof.
 move=> z_gt0; apply/cvgryPge => A; near=> n => /=.
@@ -924,7 +925,7 @@ rewrite ler_normlW// ltW// (lt_le_trans (archi_boundP _))// ler_nat.
 by near: n; apply: nbhs_infty_ge.
 Unshelve. all: by end_near. Qed.
 
-Lemma cvg_expr (R : archiFieldType) (z : R) :
+Lemma cvg_expr (R : archiRealFieldType) (z : R) :
   `|z| < 1 -> (GRing.exp z : R ^nat) @ \oo --> 0.
 Proof.
 move=> Nz_lt1; apply/norm_cvg0P; pose t := (1 - `|z|).
@@ -951,15 +952,16 @@ rewrite seriesEnat !mulrBr [in LHS]mulr1 mulr_suml -opprB -sumrB.
 by under eq_bigr do rewrite -mulrA -exprSr; rewrite telescope_sumr// opprB.
 Qed.
 
-Lemma cvg_geometric_series (R : archiFieldType) (a z : R) : `|z| < 1 ->
+Lemma cvg_geometric_series (R : archiRealFieldType) (a z : R) : `|z| < 1 ->
   series (geometric a z) @ \oo --> (a * (1 - z)^-1).
 Proof.
 move=> Nz_lt1; rewrite geometric_seriesE ?lt_eqF 1?ltr_normlW//.
 have -> : a / (1 - z) = (a * (1 - 0)) / (1 - z) by rewrite subr0 mulr1.
-by apply: cvgMr_tmp; apply: cvgMl_tmp; apply: cvgB; [apply: cvg_cst|apply: cvg_expr].
+by apply: cvgMr_tmp; apply: cvgMl_tmp; apply: cvgB;
+  [apply: cvg_cst|apply: cvg_expr].
 Qed.
 
-Lemma cvg_geometric_series_half (R : archiFieldType) (r : R) n :
+Lemma cvg_geometric_series_half (R : archiRealFieldType) (r : R) n :
   series (fun k => r / (2 ^ (k + n.+1))%:R : R^o) @ \oo --> (r / 2 ^+ n : R^o).
 Proof.
 rewrite (_ : series _ = series (geometric (r / (2 ^ n.+1)%:R) 2^-1%R)); last first.
@@ -978,11 +980,11 @@ Proof.
 by rewrite (big_addn 0 _ m) addnC addnK; under eq_bigr do rewrite exprD mulrC.
 Qed.
 
-Lemma cvg_geometric (R : archiFieldType) (a z : R) : `|z| < 1 ->
+Lemma cvg_geometric (R : archiRealFieldType) (a z : R) : `|z| < 1 ->
   geometric a z @ \oo --> 0.
 Proof. by move=> /cvg_geometric_series/cvgP/cvg_series_cvg_0. Qed.
 
-Lemma is_cvg_geometric_series (R : archiFieldType) (a z : R) : `|z| < 1 ->
+Lemma is_cvg_geometric_series (R : archiRealFieldType) (a z : R) : `|z| < 1 ->
   cvgn (series (geometric a z)).
 Proof. by move=> /cvg_geometric_series/cvgP; apply. Qed.
 
@@ -1371,7 +1373,7 @@ Arguments eseries {R} u_ n : simpl never.
 Arguments etelescope {R} u_ n : simpl never.
 Notation "[ 'series' E ]_ n" := (eseries [sequence E%E]_n) : ereal_scope.
 
-Lemma cvg_geometric_eseries_half {R : archiFieldType} (r : R) (n : nat) :
+Lemma cvg_geometric_eseries_half {R : archiRealFieldType} (r : R) (n : nat) :
   eseries (fun k => (r / (2 ^ (k + n.+1))%:R)%:E) @ \oo --> (r / 2 ^+ n)%:E.
 Proof.
 apply: cvg_EFin => //.
@@ -1923,8 +1925,52 @@ by move/(lt_le_trans Ml); rewrite ltxx.
 Unshelve. all: by end_near. Qed.
 
 End sequences_ereal.
-
 Arguments nneseries_split {R f} _ _.
+
+Local Open Scope ereal_scope.
+Lemma epsilon_trick (R : realType) (A : (\bar R)^nat) e
+    (P : pred nat) : (forall n, 0 <= A n) -> (0 <= e)%R ->
+  \sum_(i <oo | P i) (A i + (e / (2 ^ i.+1)%:R)%:E) <=
+  \sum_(i <oo | P i) A i + e%:E.
+Proof.
+move=> A0 /nonnegP[{}e].
+rewrite (@le_trans _ _ (lim ((fun n => (\sum_(0 <= i < n | P i) A i) +
+    \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) @ \oo))) //.
+  rewrite nneseriesD // limeD //.
+  - rewrite leeD2l //; apply: lee_lim => //.
+    + exact: is_cvg_nneseries.
+    + exact: is_cvg_nneseries.
+    + by near=> n; exact: lee_sum_nneg_subset.
+  - exact: is_cvg_nneseries.
+  - exact: is_cvg_nneseries.
+  - exact: adde_def_nneseries.
+suff cvggeo : (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ i.+1)%:R)%:E) @ \oo -->
+    e%:num%:E.
+  rewrite limeD //.
+  - by rewrite leeD2l // (cvg_lim _ cvggeo).
+  - exact: is_cvg_nneseries.
+  - by apply: is_cvg_nneseries => ?; rewrite lee_fin divr_ge0.
+  - by rewrite (cvg_lim _ cvggeo) //= fin_num_adde_defl.
+rewrite (_ : (fun n => _) = EFin \o
+    (fun n => \sum_(0 <= i < n) (e%:num / (2 ^ (i + 1))%:R))%R); last first.
+  rewrite funeqE => n /=; rewrite (@big_morph _ _ EFin 0 adde)//.
+  by under [in RHS]eq_bigr do rewrite addn1.
+apply: cvg_comp; last by apply cvg_refl.
+have := cvg_geometric_series_half e%:num O.
+by rewrite expr0 divr1; apply: cvg_trans.
+Unshelve. all: by end_near. Qed.
+
+Lemma epsilon_trick0 (R : realType) (eps : R) (P : pred nat) :
+  (0 <= eps)%R -> \sum_(i <oo | P i) (eps / (2 ^ i.+1)%:R)%:E <= eps%:E.
+Proof.
+move=> epspos; have := epsilon_trick P (fun=> lexx 0) epspos.
+(* TODO: breaks coq 8.15 and below *)
+(* (under eq_eseriesr  do rewrite add0e) => /le_trans; apply. *)
+rewrite (@eq_eseriesr _ (fun n => 0 + _) (fun n => (eps/(2^n.+1)%:R)%:E)).
+  by move/le_trans; apply; rewrite eseries0 ?add0e; [exact: lexx | move=> ? ?].
+by move=> ? ?; rewrite add0e.
+Qed.
+Local Close Scope ereal_scope.
 
 Section minr_cvg_0.
 Local Open Scope ring_scope.

@@ -39,7 +39,8 @@ experimental_reals/realsum.v
 experimental_reals/distr.v
 reals_stdlib/Rstruct.v
 reals_stdlib/nsatz_realtype.v
-theories/all_analysis.v
+
+theories/ereal.v
 theories/landau.v
 
 theories/topology_theory/topology.v
@@ -70,7 +71,6 @@ theories/homotopy_theory/continuous_path.v
 
 theories/ess_sup_inf.v
 theories/function_spaces.v
-theories/ereal.v
 theories/cantor.v
 theories/tvs.v
 
@@ -89,12 +89,22 @@ theories/sequences.v
 theories/exp.v
 theories/trigo.v
 theories/esum.v
-theories/measurable_realfun.v
-theories/lebesgue_measure.v
-theories/lebesgue_stieltjes_measure.v
 theories/derive.v
-theories/measure.v
 theories/numfun.v
+
+theories/measure_theory/measurable_structure.v
+theories/measure_theory/measure_function.v
+theories/measure_theory/counting_measure.v
+theories/measure_theory/dirac_measure.v
+theories/measure_theory/probability_measure.v
+theories/measure_theory/measure_negligible.v
+theories/measure_theory/measure_extension.v
+theories/measure_theory/measurable_function.v
+theories/measure_theory/measure.v
+
+theories/measurable_realfun.v
+theories/lebesgue_stieltjes_measure.v
+theories/lebesgue_measure.v
 theories/borel_hierarchy.v
 
 theories/lebesgue_integral_theory/simple_functions.v
@@ -118,7 +128,11 @@ theories/charge.v
 theories/kernel.v
 theories/pi_irrational.v
 theories/gauss_integral.v
+
+theories/all_analysis.v
+
 theories/showcase/summability.v
 theories/showcase/pnt.v
+
 analysis_stdlib/Rstruct_topology.v
 analysis_stdlib/showcase/uniform_bigO.v

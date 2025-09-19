@@ -9,6 +9,7 @@
 
 ereal.v
 landau.v
+
 topology_theory/topology.v
 topology_theory/bool_topology.v
 topology_theory/compact.v
@@ -55,11 +56,23 @@ sequences.v
 exp.v
 trigo.v
 esum.v
-measurable_realfun.v
-lebesgue_measure.v
 derive.v
-measure.v
 numfun.v
+
+measure_theory/measurable_structure.v
+measure_theory/measure_function.v
+measure_theory/counting_measure.v
+measure_theory/dirac_measure.v
+measure_theory/probability_measure.v
+measure_theory/measure_negligible.v
+measure_theory/outer_measure.v
+measure_theory/measure_extension.v
+measure_theory/measurable_function.v
+measure_theory/measure.v
+
+measurable_realfun.v
+lebesgue_stieltjes_measure.v
+lebesgue_measure.v
 borel_hierarchy.v
 
 lebesgue_integral_theory/simple_functions.v
@@ -78,7 +91,6 @@ lebesgue_integral_theory/lebesgue_integral.v
 ftc.v
 hoelder.v
 probability.v
-lebesgue_stieltjes_measure.v
 convex.v
 charge.v
 kernel.v

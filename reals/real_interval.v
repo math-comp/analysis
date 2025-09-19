@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import fingroup perm rat archimedean finmap.
 From mathcomp Require Import boolp classical_sets functions.
@@ -306,7 +306,7 @@ apply eq_bigcupr => k _; apply/seteqP; split=> [_/= [y ysr] <-|x/= xsr].
 by exists (- x); rewrite ?oppr_itv//= opprK// negbK opprB opprK addrC.
 Qed.
 
-Lemma itv_bndy_bigcup_BLeft_shift {R : archiDomainType} b (x : R) n:
+Lemma itv_bndy_bigcup_BLeft_shift {R : archiRealDomainType} b (x : R) n:
   [set` Interval (BSide b x) +oo%O] =
   \bigcup_i [set` Interval (BSide b x) (BLeft (x + (i + n)%:R))].
 Proof.
@@ -316,7 +316,7 @@ move=> xy; exists (trunc (y - x)).+1 => //=.
 by rewrite in_itv/= xy/= natrD addrA ltr_wpDr// -ltrBDl truncnS_gt.
 Qed.
 
-Lemma itv_bndy_bigcup_BRight (R : archiDomainType) b (x : R) :
+Lemma itv_bndy_bigcup_BRight (R : archiRealDomainType) b (x : R) :
   [set` Interval (BSide b x) +oo%O] =
   \bigcup_n [set` Interval (BSide b x) (BRight (x + n%:R))].
 Proof.
@@ -353,7 +353,7 @@ Qed.
 #[deprecated(since="mathcomp-analysis 1.9.0", note="renamed to `itvNy_bnd_bigcup_BLeft`")]
 Notation itv_infty_bnd_bigcup := itvNy_bnd_bigcup_BLeft (only parsing).
 
-Lemma bigcup_itvT {R : archiDomainType} b1 b2 :
+Lemma bigcup_itvT {R : archiRealDomainType} b1 b2 :
   \bigcup_n [set` Interval (BSide b1 (- n%:R)) (BSide b2 n%:R)] = [set: R].
 Proof.
 rewrite -subTset => x _ /=; exists (trunc `|x|).+1 => //=.
