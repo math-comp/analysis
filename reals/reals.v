@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 (* -------------------------------------------------------------------- *)
 (* Copyright (c) - 2015--2016 - IMDEA Software Institute                *)
 (* Copyright (c) - 2015--2018 - Inria                                   *)
@@ -119,7 +119,7 @@ End has_bound_lemmas.
 
 (* -------------------------------------------------------------------- *)
 
-HB.mixin Record ArchimedeanField_isReal R of Num.ArchiField R := {
+HB.mixin Record ArchimedeanField_isReal R of Num.ArchiRealField R := {
   sup_upper_bound_subdef : forall E : set R,
     has_sup E -> ubound E (supremum 0 E) ;
   sup_adherent_subdef : forall (E : set R) (eps : R),
@@ -128,7 +128,7 @@ HB.mixin Record ArchimedeanField_isReal R of Num.ArchiField R := {
 
 #[short(type=realType)]
 HB.structure Definition Real := {R of ArchimedeanField_isReal R
-  & Num.ArchiField R & Num.RealClosedField R}.
+  & Num.ArchiRealField R & Num.RealClosedField R}.
 
 Bind Scope ring_scope with Real.sort.
 
@@ -654,10 +654,10 @@ Qed.
 
 Section rat_in_itvoo.
 
-Let bound_div (R : archiFieldType) (x y : R) : nat :=
+Let bound_div (R : archiRealFieldType) (x y : R) : nat :=
   if y < 0 then 0%N else Num.bound (y / x).
 
-Let archi_bound_divP (R : archiFieldType) (x y : R) :
+Let archi_bound_divP (R : archiRealFieldType) (x y : R) :
   0 < x -> y < x *+ bound_div x y.
 Proof.
 move=> x0; have [y0|y0] := leP 0 y; last by rewrite /bound_div y0 mulr0n.
@@ -665,7 +665,7 @@ rewrite /bound_div (ltNge y 0) y0/= -mulr_natl -ltr_pdivrMr//.
 by rewrite archi_boundP// (divr_ge0 _(ltW _)).
 Qed.
 
-Lemma rat_in_itvoo (R : archiFieldType) (x y : R) :
+Lemma rat_in_itvoo (R : archiRealFieldType) (x y : R) :
   x < y -> exists q, ratr q \in `]x, y[.
 Proof.
 move=> xy; move: (xy); rewrite -subr_gt0.

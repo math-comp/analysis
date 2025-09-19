@@ -202,7 +202,7 @@ Context {R : realType}.
 
 Notation hlength := (@hlength R).
 
-Lemma hlength_semi_additive : measure.semi_additive hlength.
+Lemma hlength_semi_additive : measure_function.semi_additive hlength.
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.

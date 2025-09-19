@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval.
 From mathcomp Require Import finmap fingroup perm rat archimedean.
 From HB Require Import structures.
@@ -309,7 +309,8 @@ End wlength.
 Section wlength_extension.
 Context {R : realType}.
 
-Lemma wlength_semi_additive (f : R -> R) : measure.semi_additive (wlength f).
+Lemma wlength_semi_additive (f : R -> R) :
+  measure_function.semi_additive (wlength f).
 Proof.
 move=> /= I n /(_ _)/cid2-/all_sig[b]/all_and2[_]/(_ _)/esym-/funext {I}->.
 move=> Itriv [[/= a1 a2] _] /esym /[dup] + ->.

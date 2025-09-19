@@ -521,11 +521,11 @@ Lemma notB : ((~ True) = False) * ((~ False) = True).
 Proof. by rewrite /not; split; eqProp. Qed.
 
 Lemma andB : left_id True and * right_id True and
-          * (left_zero False and * right_zero False and * idempotent and).
+          * (left_zero False and * right_zero False and * idempotent_op and).
 Proof. by do ![split] => /PropB[]; eqProp=> // -[]. Qed.
 
 Lemma orB : left_id False or * right_id False or
-          * (left_zero True or * right_zero True or * idempotent or).
+          * (left_zero True or * right_zero True or * idempotent_op or).
 Proof. do ![split] => /PropB[]; eqProp=> -[] //; by [left | right]. Qed.
 
 Lemma implyB : let imply (P Q : Prop) :=  P -> Q in
