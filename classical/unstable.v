@@ -363,7 +363,7 @@ Implicit Type x : R.
 Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
 rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
-  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.le_ceil _))// lerDl.
+  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.ceil_ge _))// lerDl.
 by rewrite !ler0_norm ?ceil_le0// ?ceilNfloor opprK intrD1 ltW// floorD1_gt.
 Qed.
 
