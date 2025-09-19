@@ -80,6 +80,11 @@
 
 ### Removed
 
+- file `interval_inference.v` (now in MathComp)
+
+- in file `all_reals.v`
+  + export of `interval_inference` (now in mathcomp-algebra, but not automatically exported)
+
 ### Infrastructure
 
 ### Misc
