@@ -507,7 +507,7 @@ Lemma Rfloor0 : Rfloor 0 = 0 :> R. Proof. by rewrite /Rfloor floor0. Qed.
 Lemma Rfloor1 : Rfloor 1 = 1 :> R. Proof. by rewrite /Rfloor floor1. Qed.
 
 Lemma le_Rfloor : {homo (@Rfloor R) : x y / x <= y}.
-Proof. by move=> x y /Num.Theory.floor_le; rewrite ler_int. Qed.
+Proof. by move=> x y /Num.Theory.le_floor; rewrite ler_int. Qed.
 
 Lemma Rfloor_ge_int x (n : int) : (n%:~R <= x)= (n%:~R <= Rfloor x).
 Proof. by rewrite ler_int floor_ge_int. Qed.
@@ -541,20 +541,20 @@ Lemma Rceil0 : Rceil 0 = 0 :> R.
 Proof. by rewrite /Rceil ceil0. Qed.
 
 Lemma Rceil_ge x : x <= Rceil x.
-Proof. by rewrite Num.Theory.le_ceil ?num_real. Qed.
+Proof. by rewrite Num.Theory.ceil_ge ?num_real. Qed.
 
 Lemma le_Rceil : {homo (@Rceil R) : x y / x <= y}.
-Proof. by move=> x y ?; rewrite /Rceil ler_int ceil_le. Qed.
+Proof. by move=> x y ?; rewrite /Rceil ler_int le_ceil_tmp. Qed.
 
 Lemma Rceil_ge0 x : 0 <= x -> 0 <= Rceil x.
-Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) ceil_le. Qed.
+Proof. by move=> x0; rewrite /Rceil ler0z -(ceil0 R) le_ceil_tmp. Qed.
 
 Lemma RceilE x : Rceil x = (ceil x)%:~R.
 Proof. by []. Qed.
 
 #[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le` instead")]
 Lemma le_ceil : {homo @Num.ceil R : x y / x <= y}.
-Proof. exact: ceil_le. Qed.
+Proof. exact: le_ceil_tmp. Qed.
 
 End CeilTheory.
 
