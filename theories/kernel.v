@@ -1,4 +1,4 @@
-(* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
+(* mathcomp analysis (c) 2025 Inria and AIST. License: CeCILL-C.              *)
 From HB Require Import structures.
 From mathcomp Require Import all_ssreflect ssralg ssrnum ssrint interval finmap.
 From mathcomp Require Import archimedean.
@@ -194,7 +194,7 @@ Lemma measure_fam_uubP : measure_fam_uub <->
 Proof.
 split => [|] [r kr]; last by exists r%:num.
 suff r_gt0 : (0 < r)%R by exists (PosNum r_gt0).
-by rewrite -lte_fin; apply: (le_lt_trans _ (kr point)).
+by rewrite -lte_fin; exact: le_lt_trans (kr point).
 Qed.
 
 End measure_fam_uub.
