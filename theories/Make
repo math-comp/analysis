@@ -65,7 +65,6 @@ measure_theory/counting_measure.v
 measure_theory/dirac_measure.v
 measure_theory/probability_measure.v
 measure_theory/measure_negligible.v
-measure_theory/outer_measure.v
 measure_theory/measure_extension.v
 measure_theory/measurable_function.v
 measure_theory/measure.v
