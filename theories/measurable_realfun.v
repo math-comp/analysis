@@ -646,7 +646,7 @@ rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
 move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
-by rewrite natr_absz gtr0_norm// ?le_ceil// ceil_gt0.
+by rewrite natr_absz gtr0_norm// ?ceil_ge// ceil_gt0.
 Qed.
 
 End erealwithrays.

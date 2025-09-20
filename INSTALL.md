@@ -3,7 +3,7 @@
 ## Requirements
 
 - [The Coq Proof Assistant version ≥ 8.20 / Rocq Prover version ≥ 9.0](https://rocq-prover.org)
-- [Mathematical Components version ≥ 2.3.0](https://github.com/math-comp/math-comp)
+- [Mathematical Components version ≥ 2.4.0](https://github.com/math-comp/math-comp)
 - [Finmap library version ≥ 2.1.0](https://github.com/math-comp/finmap)
 - [Hierarchy builder version ≥ 1.8.0](https://github.com/math-comp/hierarchy-builder)
 - [bigenough ≥ 1.0.0](https://github.com/math-comp/bigenough)
@@ -73,7 +73,7 @@ using [proof general for emacs](https://github.com/ProofGeneral/PG)
 
 ## Break-down of phase 3 of the installation procedure step by step
 
-With the example of Coq 8.20.1 and MathComp 2.3.0. For other versions, update the
+With the example of Coq 8.20.1 and MathComp 2.4.0. For other versions, update the
 version numbers accordingly.
 
 1. Install Coq 8.20.1
@@ -82,11 +82,11 @@ $ opam install coq.8.20.1
 ```
 2. Install the Mathematical Components
 ```
-$ opam install coq-mathcomp-ssreflect.2.3.0
-$ opam install coq-mathcomp-fingroup.2.3.0
-$ opam install coq-mathcomp-algebra.2.3.0
-$ opam install coq-mathcomp-solvable.2.3.0
-$ opam install coq-mathcomp-field.2.3.0
+$ opam install coq-mathcomp-ssreflect.2.4.0
+$ opam install coq-mathcomp-fingroup.2.4.0
+$ opam install coq-mathcomp-algebra.2.4.0
+$ opam install coq-mathcomp-solvable.2.4.0
+$ opam install coq-mathcomp-field.2.4.0
 ```
 3. Install the Finite maps library
 ```

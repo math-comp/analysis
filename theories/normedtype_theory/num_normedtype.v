@@ -499,7 +499,7 @@ Proof.
 split=> [/cvgryPge|/cvgnyPge] Foo.
   by apply/cvgnyPge => A; near do rewrite -(@ler_nat R); apply: Foo.
 apply/cvgryPgey; near=> A; near=> n.
-rewrite pmulrn ceil_le_int// [ceil _]intEsign.
+rewrite pmulrn -ceil_le_int_tmp [ceil _]intEsign.
 by rewrite le_gtF ?expr0 ?mul1r ?lez_nat ?ceil_ge0//; near: n; apply: Foo.
 Unshelve. all: by end_near. Qed.
 
@@ -591,7 +591,7 @@ move=> dF nyF; rewrite itvNy_bnd_bigcup_BLeft eqEsubset; split.
     move/cvgrNy_lt : nyF => /(_ (F a - n%:R))[z [zreal zFan]].
     exists `|ceil (a - z)|%N.
     rewrite zFan// ltrBlDr -ltrBlDl.
-    rewrite (le_lt_trans (Num.Theory.le_ceil _)) ?num_real//.
+    rewrite (le_lt_trans (Num.Theory.ceil_ge _)) ?num_real//.
     by rewrite (le_lt_trans (ler_norm _))// -natr1 -intr_norm ltrDl.
   by exists i => //=; rewrite in_itv/= yFa andbT (lt_le_trans _ Fany).
 - move=> z/= [n _ /=]; rewrite in_itv/= => /andP[Fanz zFa].

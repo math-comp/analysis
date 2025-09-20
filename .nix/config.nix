@@ -52,11 +52,6 @@ in {
   ## When generating GitHub Action CI, one workflow file
   ## will be created per bundle
 
-  bundles."8.20-2.3.0".coqPackages = common-bundle // {
-    coq.override.version = "8.20";
-    mathcomp.override.version = "2.3.0";
-  };
-
   bundles."8.20-2.4.0".coqPackages = common-bundle // {
     coq.override.version = "8.20";
     mathcomp.override.version = "2.4.0";
