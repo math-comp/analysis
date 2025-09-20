@@ -42,6 +42,8 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 (*            pmf X r := fine (P (X @^-1` [set r]))                           *)
 (*            cdf X r == cumulative distribution function of X                *)
 (*                    := distribution P X `]-oo, r]                           *)
+(*           ccdf X r == complementary cumulative distribution function of X  *)
+(*                    := distribution P X `]r, +oo[                           *)
 (*      enum_prob X k == probability of the kth value in the range of X       *)
 (* ```                                                                        *)
 (*                                                                            *)
@@ -340,6 +342,59 @@ by rewrite -ge0_fin_numE// fin_num_measure.
 Qed.
 
 End lebesgue_stieltjes_measure_of_cdf.
+
+Definition ccdf d (T : measurableType d) (R : realType) (P : probability T R)
+  (X : {RV P >-> R}) (r : R) := distribution P X `]r, +oo[.
+
+Section complementary_cumulative_distribution_function.
+Context d {T : measurableType d} {R : realType} (P : probability T R).
+Variable X : {RV P >-> R}.
+Local Open Scope ereal_scope.
+
+Lemma cdf_ccdf_1 r : cdf X r + ccdf X r = 1.
+Proof.
+rewrite /cdf/ccdf -measureU//= -eq_opE; last exact: disjoint_rays.
+by rewrite itv_setU_setT probability_setT.
+Qed.
+
+Corollary ccdf_cdf_1 r : ccdf X r + cdf X r = 1.
+Proof. by rewrite -(cdf_ccdf_1 r) addeC. Qed.
+
+Corollary ccdf_1_cdf r : ccdf X r = 1 - cdf X r.
+Proof. by rewrite -(ccdf_cdf_1 r) addeK ?cdf_fin_num. Qed.
+
+Lemma ccdf_fin_num r : ccdf X r \is a fin_num.
+Proof. by rewrite ccdf_1_cdf fin_numB cdf_fin_num -fine1. Qed.
+
+Corollary cdf_1_ccdf r : cdf X r = 1 - ccdf X r.
+Proof. by rewrite -(cdf_ccdf_1 r) addeK ?ccdf_fin_num. Qed.
+
+Lemma ccdf_nonincreasing : nonincreasing_fun (ccdf X).
+Proof. by move=> r s rs; rewrite le_measure ?inE//; exact: subitvPl. Qed.
+
+Lemma cvg_ccdfy0 : ccdf X @ +oo%R --> 0.
+Proof.
+have : 1 - cdf X r @[r --> +oo%R] --> 1 - 1.
+  by apply: cvgeB; [| exact: cvg_cst | exact: cvg_cdfy1].
+by rewrite subee// (eq_cvg _ _ ccdf_1_cdf).
+Qed.
+
+Lemma cvg_ccdfNy1 : ccdf X @ -oo%R --> 1.
+Proof.
+have : 1 - cdf X r @[r --> -oo%R] --> 1 - 0.
+  by apply: cvgeB; [| exact: cvg_cst | exact: cvg_cdfNy0].
+by rewrite sube0 (eq_cvg _ _ ccdf_1_cdf).
+Qed.
+
+Lemma ccdf_right_continuous : right_continuous (ccdf X).
+Proof.
+move=> r.
+have : 1 - cdf X s @[s --> r^'+] --> 1 - cdf X r.
+  by apply: cvgeB; [| exact: cvg_cst | exact: cdf_right_continuous].
+by rewrite ccdf_1_cdf (eq_cvg _ _ ccdf_1_cdf).
+Qed.
+
+End complementary_cumulative_distribution_function.
 
 HB.lock Definition expectation {d} {T : measurableType d} {R : realType}
   (P : probability T R) (X : T -> R) := (\int[P]_w (X w)%:E)%E.

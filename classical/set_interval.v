@@ -530,6 +530,11 @@ Lemma set_itv_splitD i :
   [set` i] = [set` Interval i.1 +oo%O] `\` [set` Interval i.2 +oo%O].
 Proof. by rewrite set_itv_splitI/= setDE setCitvr. Qed.
 
+Lemma itv_setU_setT b x :
+  ([set` Interval -oo%O (BSide b x)]) `|`
+  ([set` Interval (BSide b x) +oo%O]) = [set: T].
+Proof. by rewrite -itv_bndbnd_setU// set_itvE. Qed.
+
 End set_itv_porderType.
 
 Section line_path_factor_numDomainType.
@@ -776,6 +781,10 @@ Proof.
 case: i j => [a b] [c d]; rewrite /disjoint_itv/disj_set /= -set_itvI.
 by split => [/negPn//|?]; apply/negPn.
 Qed.
+
+Lemma disjoint_rays {R : realFieldType} b (x : R) :
+  disjoint_itv (Interval -oo%O (BSide b x)) (Interval (BSide b x) +oo%O).
+Proof. by rewrite eq_opE -(set_itvxx (BSide b x)) [RHS]set_itv_splitI setIC. Qed.
 
 Section open_endpoints.
 Context {d} {T : porderType d}.
