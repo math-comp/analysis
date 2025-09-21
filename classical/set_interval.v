@@ -505,6 +505,18 @@ Qed.
 
 (** lemmas between itv and set-theoretic operations *)
 Section set_itv_porderType.
+Variables (d : Order.disp_t) (T : porderType d).
+Implicit Types (a : itv_bound T) (x y : T) (i j : interval T) (b : bool).
+
+Lemma set_itv_splitI i : [set` i] = [set` Interval i.1 +oo%O] `&` [set` Interval -oo%O i.2].
+Proof.
+case: i => [a a']; apply/predeqP=> x/=.
+by rewrite [in X in X <-> _]itv_splitI (rwP andP).
+Qed.
+
+End set_itv_porderType.
+
+Section set_itv_orderType.
 Variables (d : Order.disp_t) (T : orderType d).
 Implicit Types (a : itv_bound T) (x y : T) (i j : interval T) (b : bool).
 
@@ -513,12 +525,6 @@ Proof. by apply/predeqP => y /=; rewrite -predC_itvl (rwP negP). Qed.
 
 Lemma setCitvr a : ~` [set` Interval a +oo%O] = [set` Interval -oo%O a].
 Proof. by rewrite -setCitvl setCK. Qed.
-
-Lemma set_itv_splitI i : [set` i] = [set` Interval i.1 +oo%O] `&` [set` Interval -oo%O i.2].
-Proof.
-case: i => [a a']; apply/predeqP=> x/=.
-by rewrite [in X in X <-> _]itv_splitI (rwP andP).
-Qed.
 
 Lemma setCitv i :
   ~` [set` i] = [set` Interval -oo%O i.1] `|` [set` Interval i.2 +oo%O].
@@ -535,7 +541,7 @@ Lemma itv_setU_setT b x :
   ([set` Interval (BSide b x) +oo%O]) = [set: T].
 Proof. by rewrite -itv_bndbnd_setU// set_itvE. Qed.
 
-End set_itv_porderType.
+End set_itv_orderType.
 
 Section line_path_factor_numDomainType.
 Variable R : numDomainType.
@@ -758,13 +764,37 @@ Qed.
 Arguments trivIset_set_itv_nth {R} _ {s}.
 
 Section disjoint_itv.
-Context {R : numDomainType}.
+Context {disp : Order.disp_t} {T : porderType disp}.
 
-Definition disjoint_itv : rel (interval R) :=
+Definition disjoint_itv : rel (interval T) :=
   fun a b => [disjoint [set` a] & [set` b]].
 
-Lemma disjoint_itvxx (i : interval R) : neitv i -> ~~ disjoint_itv i i.
+Lemma disjoint_itvxx (i : interval T) : neitv i -> ~~ disjoint_itv i i.
 Proof. by move=> i0; rewrite /disjoint_itv/= /disj_set /= setIid. Qed.
+
+Lemma disjoint_rays b (x : T) :
+  disjoint_itv (Interval -oo%O (BSide b x)) (Interval (BSide b x) +oo%O).
+Proof. by rewrite eq_opE -(set_itvxx (BSide b x)) [RHS]set_itv_splitI setIC. Qed.
+
+End disjoint_itv.
+
+Section disjoint_itv_orderType.
+Context {disp : Order.disp_t} {T : orderType disp}.
+
+Lemma disjoint_neitv (i j : interval T) :
+  disjoint_itv i j <-> ~~ neitv (itv_meet i j).
+Proof.
+case: i j => [a b] [c d]; rewrite /disjoint_itv/disj_set /= -set_itvI.
+by split => [/negPn//|?]; apply/negPn.
+Qed.
+
+End disjoint_itv_orderType.
+
+Section disjoint_itv_numDomain.
+
+Context {R : numDomainType}.
+
+Import Order.Theory.
 
 Lemma lt_disjoint (i j : interval R) :
   (forall x y, x \in i -> y \in j -> x < y) -> disjoint_itv i j.
@@ -773,18 +803,7 @@ move=> ij; apply/eqP; rewrite predeqE => x; split => // -[xi xj].
 by have := ij _ _ xi xj; rewrite ltxx.
 Qed.
 
-End disjoint_itv.
-
-Lemma disjoint_neitv {R : realFieldType} (i j : interval R) :
-  disjoint_itv i j <-> ~~ neitv (itv_meet i j).
-Proof.
-case: i j => [a b] [c d]; rewrite /disjoint_itv/disj_set /= -set_itvI.
-by split => [/negPn//|?]; apply/negPn.
-Qed.
-
-Lemma disjoint_rays {R : realFieldType} b (x : R) :
-  disjoint_itv (Interval -oo%O (BSide b x)) (Interval (BSide b x) +oo%O).
-Proof. by rewrite eq_opE -(set_itvxx (BSide b x)) [RHS]set_itv_splitI setIC. Qed.
+End disjoint_itv_numDomain.
 
 Section open_endpoints.
 Context {d} {T : porderType d}.

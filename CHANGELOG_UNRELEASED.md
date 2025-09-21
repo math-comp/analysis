@@ -51,6 +51,11 @@
 
 ### Generalized
 
+- in `set_interval.v`:
+  + lemma `set_itv_splitI` (generalized from `orderType` to `porderType`)
+	+ lemma `disjoint_itvxx` (generalized from `numDomainType` to `porderType`)
+	+ lemma `disjoint_neitv` (generalized from `realFieldType` to `orderType`)
+
 - in `lebesgue_stieltjes_measure.v` generalized (codomain is now an `orderNbhsType`):
   + lemma `right_continuousW`
   + record `isCumulative`
