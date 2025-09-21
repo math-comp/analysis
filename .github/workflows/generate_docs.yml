@@ -38,7 +38,7 @@ jobs:
         run: opam install -y --deps-only . && opam exec -- make -j 4
 
       - name: Install Rocqnavi
-        run: opam install -y rocq-navi
+        run: opam install -y rocq-navi.0.3.1
 
       - name: Generate Documents
         run: |

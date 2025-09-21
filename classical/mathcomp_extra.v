@@ -147,22 +147,22 @@ Context {R : archiDomainType}.
 Implicit Type x : R.
 
 Lemma ge_floor x : (Num.floor x)%:~R <= x.
-Proof. exact: Num.Theory.ge_floor. Qed.
+Proof. exact: Num.Theory.floor_le_tmp. Qed.
 
 #[deprecated(since="mathcomp 2.4.0", note="Use floor_ge_int_tmp instead.")]
 Lemma floor_ge_int x (z : int) : (z%:~R <= x) = (z <= Num.floor x).
-Proof. exact: Num.Theory.floor_ge_int. Qed.
+Proof. by rewrite floor_ge_int_tmp. Qed.
 
 Lemma lt_succ_floor x : x < (Num.floor x + 1)%:~R.
 Proof. exact: Num.Theory.lt_succ_floor. Qed.
 
 #[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.le_ceil` instead")]
 Lemma ceil_ge x : x <= (Num.ceil x)%:~R.
-Proof. exact: Num.Theory.le_ceil. Qed.
+Proof. exact: Num.Theory.ceil_ge. Qed.
 
 #[deprecated(since="mathcomp-analysis 1.3.0", note="use `Num.Theory.ceil_le_int`")]
 Lemma ceil_ge_int x (z : int) : (x <= z%:~R) = (Num.ceil x <= z).
-Proof. exact: Num.Theory.ceil_le_int. Qed.
+Proof. by rewrite Num.Theory.ceil_le_int_tmp. Qed.
 
 Lemma ceilN x : Num.ceil (- x) = - Num.floor x.
 Proof. by rewrite ?ceilNfloor /Num.ceil opprK. Qed.
@@ -331,7 +331,7 @@ by move=> ?; rewrite [RHS]real_ltNge ?realz -?real_floor_ge_int_tmp -?ltNge.
 Qed.
 
 Lemma le_floor : {homo (@Num.floor R) : x y / x <= y}.
-Proof. exact: floor_le. Qed.
+Proof. exact: le_floor. Qed.
 
 Lemma real_floor_eq x n : x \is Num.real ->
   (Num.floor x == n) = (n%:~R <= x < (n + 1)%:~R).
@@ -392,7 +392,7 @@ by move=> xr; apply/eqP/idP => [<-|]; [exact: real_ceil_itv|exact: ceil_def].
 Qed.
 
 Lemma le_ceil_tmp : {homo (@Num.ceil R) : x y / x <= y}.
-Proof. exact: ceil_le. Qed.
+Proof. exact: le_ceil_tmp. Qed.
 
 Lemma real_ceil_ge0 x : x \is Num.real -> (0 <= Num.ceil x) = (-1 < x).
 Proof.

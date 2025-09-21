@@ -334,8 +334,7 @@ Proof. by rewrite ball_itv; exact: measurable_itv. Qed.
 
 Lemma measurable_closed_ball (x : R) r : measurable (closed_ball x r).
 Proof.
-have [r0|r0] := leP r 0; first by rewrite closed_ball0.
-rewrite closed_ball_itv//.
+by have [r0|r0] := leP r 0; [rewrite closed_ball0|rewrite closed_ball_itv].
 Qed.
 
 End salgebra_R_ssets.
@@ -647,7 +646,7 @@ rewrite eqEsubset; split=> [_ -> i _/=|]; first by rewrite in_itv /= ltry.
 move=> [r| |/(_ O Logic.I)] // /(_ `|ceil r|%N Logic.I); rewrite /= in_itv /=.
 rewrite andbT lte_fin ltNge.
 have [r0|r0] := ltP 0%R r; last by rewrite (le_trans r0).
-by rewrite natr_absz gtr0_norm// ?le_ceil// ceil_gt0.
+by rewrite natr_absz gtr0_norm// ?ceil_ge// ceil_gt0.
 Qed.
 
 End erealwithrays.

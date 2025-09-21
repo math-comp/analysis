@@ -45,25 +45,6 @@ all: config build
 .PHONY: pre-makefile
 
 Makefile.coq: pre-makefile $(COQPROJECT) Makefile
-	(echo "From mathcomp.algebra Require Import interval_inference." > test_interval_inference.v \
-	 && ($(COQC) test_interval_inference.v > /dev/null 2>&1) \
-	 && test -f interval_inference.v -o -f reals/interval_inference.v \
-	 && touch rm_interval_inference) || true
-	$(RM) test_interval_inference.v
-	test -f rm_interval_inference \
-	  && sed -i.bak '/interval_inference/ d' $(COQPROJECT) \
-	  && $(RM) $(COQPROJECT).bak || true
-	test -f rm_interval_inference \
-	  && sed -i.bak '/interval_inference/ d' all_reals.v \
-	  && $(RM) all_reals.v.bak || true
-	test -f rm_interval_inference \
-	  && sed -i.bak '/interval_inference/ d' reals/all_reals.v \
-	  && $(RM) reals/all_reals.v.bak || true
-	test -f rm_interval_inference && $(RM) interval_inference.v || true
-	test -f rm_interval_inference && $(RM) reals/interval_inference.v || true
-	$(RM) rm_interval_inference
-	# Remove everything above when requiring mathcomp >= 2.4.0
-	# (also remove file reals/interval_inference.v and references to it)
 	$(COQMAKEFILE) $(COQMAKEFILEOPTIONS) -f $(COQPROJECT) -o Makefile.coq
 
 # Global config, build, clean and distclean --------------------------
@@ -132,33 +113,15 @@ $(DOCDIR)/dependency_graph.dot: $(DOCDIR)/dependency_graph.pre
 	tred $(DOCDIR)/dependency_graph.pre > $(DOCDIR)/dependency_graph.dot
 
 html: build $(DOCDIR)/dependency_graph.dot
+	etc/rocqnavi_generate-hierarchy-graph.sh $(DOCDIR)/hierarchy_graph.dot
 	mkdir -p $(DOCDIR)
 	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs rocqnavi \
 	-title "Mathcomp Analysis" \
 	-d $(DOCDIR) -base mathcomp -Q theories analysis \
 	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
 	-dependency-graph $(DOCDIR)/dependency_graph.dot \
-	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
-	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra
-
-machtml: build $(DOCDIR)/dependency_graph.dot
-	coqdep -f _CoqProject > depend.d
-	cat -n depend.d >&2
-	gsed -i 's/Classical/mathcomp\.classical/' depend.dot
-	gsed -i 's/Theories/mathcomp\.analysis/' depend.dot
-	gsed -i 's/Reals_stdlib/mathcomp\.reals_stdlib/' depend.dot
-	gsed -i 's/Experimental_reals/mathcomp\.experimental_reals/' depend.dot
-	gsed -i 's/Reals/mathcomp\.reals/' depend.dot
-	gsed -i 's/Analysis_stdlib/mathcomp\.analysis_stdlib/' depend.dot
-	gsed -i 's/\//\./g' depend.dot
-	../coq2html/tools/generate-hierarchy-graph.sh
-	rm test_interval_inference.glob
-	find . -not -path '*/.*' -name "*.v" -or -name "*.glob" | xargs ../coq2html/rocqnavi \
-	-title "Mathcomp Analysis" \
-	-d $(DOCDIR) -base mathcomp -Q theories analysis \
-	-coqlib https://rocq-prover.org/doc/V8.20.1/stdlib/ \
-	-hierarchy-graph "hierarchy-graph.dot" \
-	-dependency-graph $(DOCDIR)/dependency_graph.dot \
-	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.ssreflect \
-	-external https://math-comp.github.io/htmldoc_2_3_0/ mathcomp.algebra \
-	-index-blacklist ../coq2html/tools/index-blacklist
+	-hierarchy-graph $(DOCDIR)/hierarchy_graph.dot \
+        -index-blacklist etc/rocqnavi_index-blacklist \
+        -show-type-information-using-coqtop-process \
+	-external https://math-comp.github.io/htmldoc_2_4_0/ mathcomp.ssreflect \
+	-external https://math-comp.github.io/htmldoc_2_4_0/ mathcomp.algebra

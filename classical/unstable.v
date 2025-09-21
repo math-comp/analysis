@@ -35,6 +35,47 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
 
+Lemma coprime_prodr (I : Type) (r : seq I) (P : {pred I}) (F : I -> nat) (a : I)
+    (l : seq I) :
+  all (coprime (F a)) [seq F i | i <- [seq i <- l | P i]] ->
+  coprime (F a) (\prod_(j <- l | P j) F j).
+Proof.
+elim: l => /= [_|h t ih]; first by rewrite big_nil coprimen1.
+rewrite big_cons; case: ifPn => // Ph.
+rewrite map_cons => /= /andP[FaFh FatP].
+by rewrite coprimeMr FaFh/= ih.
+Qed.
+
+Lemma Gauss_dvd_prod (I : eqType) (r : seq I) (P : {pred I}) (F : I -> nat)
+    (n : nat) :
+  pairwise coprime [seq F i | i <- [seq i <- r | P i]] ->
+  reflect (forall i, i \in r -> P i -> F i %| n)
+          (\prod_(i <- r | P i) F i %| n).
+Proof.
+elim: r => /= [_|a l HI].
+  by rewrite big_nil dvd1n; apply: ReflectT => i; rewrite in_nil.
+rewrite big_cons; case: ifP => [Pa|nPa]; last first.
+  move/HI/equivP; apply; split=> [Fidvdn i|Fidvdn i il].
+    by rewrite in_cons => /predU1P[->|]; [rewrite nPa|exact: Fidvdn].
+  by apply: Fidvdn; rewrite in_cons il orbT.
+rewrite map_cons pairwise_cons => /andP[allcoprimea pairwisecoprime].
+rewrite Gauss_dvd; last exact: coprime_prodr.
+apply: (equivP (andPP idP (HI pairwisecoprime))).
+split=> [[Fadvdn Fidvdn] i|Fidvdn].
+  by rewrite in_cons => /predU1P[->//|]; exact: Fidvdn.
+split=> [|i il].
+  by apply: Fidvdn => //; exact: mem_head.
+by apply: Fidvdn; rewrite in_cons il orbT.
+Qed.
+
+Lemma expn_prod (I : eqType) (r : seq I) (P : {pred I}) (F : I -> nat)
+    (n : nat) :
+  ((\prod_(i <- r | P i) F i) ^ n = \prod_(i <- r | P i) (F i) ^ n)%N.
+Proof.
+elim: r => [|a l]; first by rewrite !big_nil exp1n.
+by rewrite !big_cons; case: ifPn => // Pa <-; rewrite expnMn.
+Qed.
+
 Section max_min.
 Variable R : realFieldType.
 
@@ -96,6 +137,12 @@ Qed.
 
 Definition monotonous d (T : porderType d) (pT : predType T) (A : pT) (f : T -> T) :=
   {in A &, {mono f : x y / (x <= y)%O}} \/ {in A &, {mono f : x y /~ (x <= y)%O}}.
+
+Lemma mono_leq_infl f : {mono f : m n / (m <= n)%N} -> forall n, (n <= f n)%N.
+Proof.
+move=> fincr; elim=> [//| n HR]; rewrite (leq_ltn_trans HR)//.
+by rewrite ltn_neqAle fincr (inj_eq (incn_inj fincr)) -ltn_neqAle.
+Qed.
 
 (* NB: these lemmas have been introduced to develop the theory of bounded variation *)
 Section path_lt.
@@ -176,6 +223,14 @@ Arguments big_rmcond {R idx op I r} P.
 Arguments big_rmcond_in {R idx op I r} P.
 
 Reserved Notation "`1- x" (format "`1- x", at level 2).
+
+Lemma card_big_setU (I : Type) (T : finType) (r : seq I) (P : {pred I})
+    (F : I -> {set T}) :
+  (#|\bigcup_(i <- r | P i)  F i| <= \sum_(i <- r | P i) #|F i|)%N.
+Proof.
+elim/big_ind2 : _ => // [|m A n B Am Bn]; first by rewrite cards0.
+by rewrite (leq_trans (leq_card_setU _ _))// leq_add.
+Qed.
 
 Section onem.
 Variable R : numDomainType.
@@ -308,7 +363,7 @@ Implicit Type x : R.
 Lemma abs_ceil_ge x : `|x| <= `|Num.ceil x|.+1%:R.
 Proof.
 rewrite -natr1 natr_absz; have [x0|x0] := ltP 0 x.
-  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.le_ceil _))// lerDl.
+  by rewrite !gtr0_norm ?ceil_gt0// (le_trans (Num.Theory.ceil_ge _))// lerDl.
 by rewrite !ler0_norm ?ceil_le0// ?ceilNfloor opprK intrD1 ltW// floorD1_gt.
 Qed.
 
