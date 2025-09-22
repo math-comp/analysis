@@ -74,8 +74,8 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 
 Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
-Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]").
-Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]").
+Reserved Notation "''E_' P [ X ]" (at level 5, P, X at level 4, format "''E_' P [ X ]").
+Reserved Notation "''V_' P [ X ]" (at level 5, P, X at level 4, format "''V_' P [ X ]").
 Reserved Notation "'M_ P X" (at level 5, P, X at level 4, format "''M_' P  X").
 Reserved Notation "{ 'dmfun' aT >-> T }" (format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'" (format "'{' 'dRV'  P  '>->'  R '}'").
@@ -844,6 +844,40 @@ by rewrite -mulrDl -mulrDr (addrC u0) [in RHS](mulrAC u0) -exprnP expr2 !mulrA.
 Qed.
 
 End markov_chebyshev_cantelli.
+
+Section hoeffding.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Print Grammar constr.
+
+Lemma hoeffding (X : {RV P >-> R}) (a b s : R) :
+  (s > 0)%R ->
+  {ae P, forall i, a <= X i <= b}%R ->
+  'E_P[fun i => expR (s * (X i - fine 'E_P[X]))]%R <= (expR (s ^+ 2 * (b - a) ^+ 2 * 8^-1))%:E.
+Proof.
+Admitted.
+
+(* note: requires independence, it might be that we need the product sample space *)
+Lemma hoeffding_ineq n (X : n.-tuple {RV P >-> R}) (a b : n.-tuple R) (t : R) :
+  (forall i, {ae P, forall t, tnth a i <= tnth X i t <= tnth b i}%R) ->
+  let S : {RV P >-> R} := (\sum_(i < n) tnth X i)%R in
+  (0 < t)%R ->
+  P [set x | (S x)%:E - 'E_P[S] >= t%:E] <= (expR (- 2 * t^+2 / (\sum_(i < n) (tnth b i - tnth a i)^+2)))%:E.
+Proof.
+move=> hXab S t0.
+pose s := (4 * t / (\sum_i (tnth b i - tnth a i) ^+ 2))%R.
+have -> : [set x | t%:E <= (S x)%:E - 'E_P[S]] = [set x | expeR (s * t)%:E <= expeR (s%:E * (S x)%:E - 'E_P[S])].
+  admit.
+apply: (@le_trans _ _ (expeR (- s * t)%:E * 'E_P[fun x => expR(s * (S x - fine 'E_P[S]))])).
+  admit. (* Markov's inequality *)
+rewrite [leLHS](_ : _ = expeR (- s * t)%:E * \prod_i 'E_P[fun x => expR (s * (tnth X i x - fine 'E_P[tnth X i]))]); last first.
+  admit.
+rewrite [leRHS](_ : _ = expeR (- s * t)%:E * (\prod_i (expR (s ^+ 2 * (tnth b i - tnth a i) ^+ 2 * 8^-1))%:E)).
+  admit.
+Admitted.
+
+End hoeffding.
 
 HB.mixin Record MeasurableFun_isDiscrete d d' (T : measurableType d)
     (T' : measurableType d') (X : T -> T') of @MeasurableFun d d' T T' X := {
