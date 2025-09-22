@@ -83,7 +83,7 @@
 
 - in `set_interval.v`:
   + lemma `set_itv_splitI` (generalized from `orderType` to `porderType`)
-	+ lemma `disjoint_itvxx` (generalized from `numDomainType` to `porderType`)
+  + lemma `disjoint_itvxx` (generalized from `numDomainType` to `porderType`)
 	+ lemma `disjoint_neitv` (generalized from `realFieldType` to `orderType`)
 
 ### Deprecated
