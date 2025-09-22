@@ -538,7 +538,7 @@ Proof. by rewrite set_itv_splitI/= setDE setCitvr. Qed.
 
 Lemma itv_setU_setT b x :
   [set` Interval -oo%O (BSide b x)] `|`
-  ([set` Interval (BSide b x) +oo%O]) = [set: T].
+  [set` Interval (BSide b x) +oo%O] = [set: T].
 Proof. by rewrite -itv_bndbnd_setU// set_itvE. Qed.
 
 End set_itv_orderType.
