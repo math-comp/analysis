@@ -180,7 +180,7 @@ HB.instance Definition _ := NormedModule.copy R R^o.
 End rcfType.
 
 Section archiFieldType.
-Variable (R : archiFieldType).
+Variable (R : archiRealFieldType).
 #[export, non_forgetful_inheritance]
 HB.instance Definition _ := GRing.ComAlgebra.copy R R^o.
 #[export, non_forgetful_inheritance]
@@ -1023,7 +1023,7 @@ Qed.
 
 End max_cts.
 
-Lemma limit_pointP (T : archiFieldType) (A : set T) (x : T) :
+Lemma limit_pointP (T : archiRealFieldType) (A : set T) (x : T) :
   limit_point A x <-> exists a_ : nat -> T,
     [/\ a_ @` setT `<=` A, forall n, a_ n != x & a_ @ \oo --> x].
 Proof.

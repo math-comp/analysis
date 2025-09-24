@@ -100,7 +100,8 @@ Local Open Scope classical_set_scope.
 Local Open Scope ereal_scope.
 
 HB.mixin Record isAdditiveCharge d (T : semiRingOfSetsType d) (R : numFieldType)
-  (mu : set T -> \bar R) := { charge_semi_additive : measure.semi_additive mu }.
+  (mu : set T -> \bar R) :=
+  { charge_semi_additive : measure_function.semi_additive mu }.
 
 #[short(type=additive_charge)]
 HB.structure Definition AdditiveCharge d (T : semiRingOfSetsType d)
@@ -135,7 +136,7 @@ Let finite : fin_num_fun mu. Proof. exact: charge_finite. Qed.
 
 HB.instance Definition _ := isFinite.Build d T R mu finite.
 
-Let semi_additive : measure.semi_additive mu.
+Let semi_additive : measure_function.semi_additive mu.
 Proof.
 move=> I n mI trivI mUI.
 rewrite (semi_sigma_additive_is_additive charge0)//.
@@ -165,7 +166,7 @@ Qed.
 Hint Resolve charge0 : core.
 
 Lemma charge_semi_additiveW nu :
-  nu set0 = 0 -> measure.semi_additive nu -> semi_additive2 nu.
+  nu set0 = 0 -> measure_function.semi_additive nu -> semi_additive2 nu.
 Proof.
 move=> nu0 anu A B mA mB + AB; rewrite -bigcup2inE bigcup_mkord.
 move=> /(anu (bigcup2 A B)) ->.
@@ -296,7 +297,7 @@ Qed.
 HB.instance Definition _ := isFinite.Build _ _ _
   restr crestr_finite_measure_function.
 
-Let crestr_semi_additive : measure.semi_additive restr.
+Let crestr_semi_additive : measure_function.semi_additive restr.
 Proof.
 move=> F n mF tF mU; pose FD i := F i `&` D.
 have mFD i : measurable (FD i) by exact: measurableI.
@@ -400,7 +401,7 @@ Proof. by move=> mU; apply: fin_numM => //; exact: fin_num_measure. Qed.
 HB.instance Definition _ := isFinite.Build _ _ _
   cscale cscale_finite_measure_function.
 
-Let cscale_semi_additive : measure.semi_additive cscale.
+Let cscale_semi_additive : measure_function.semi_additive cscale.
 Proof.
 move=> F n mF tF mU; rewrite /cscale charge_semi_additive//.
 rewrite fin_num_sume_distrr// => i j _ _.

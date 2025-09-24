@@ -716,7 +716,7 @@ End near_in_itv.
   note="use `near_in_itvoo` instead")]
 Notation near_in_itv := near_in_itvoo (only parsing).
 
-Lemma nbhs_infty_gtr {R : archiFieldType} (r : R) :
+Lemma nbhs_infty_gtr {R : archiRealFieldType} (r : R) :
   \forall n \near \oo, r < n%:R.
 Proof.
 exists `|ceil r|.+1 => // n/=; rewrite -(ler_nat R); apply: lt_le_trans.
@@ -724,7 +724,7 @@ rewrite -natr1 -[ltLHS]addr0 ler_ltD//.
 by rewrite (le_trans (ceil_ge _))// natr_absz ler_int ler_norm.
 Qed.
 
-Lemma near_infty_natSinv_lt (R : archiFieldType) (e : {posnum R}) :
+Lemma near_infty_natSinv_lt (R : archiRealFieldType) (e : {posnum R}) :
   \forall n \near \oo, n.+1%:R^-1 < e%:num.
 Proof.
 near=> n; rewrite -(@ltr_pM2r _ n.+1%:R) // mulVf.
@@ -733,7 +733,7 @@ rewrite (lt_trans (archi_boundP _)) // ltr_nat.
 by near: n; exists (Num.bound e%:num^-1).
 Unshelve. all: by end_near. Qed.
 
-Lemma near_infty_natSinv_expn_lt (R : archiFieldType) (e : {posnum R}) :
+Lemma near_infty_natSinv_expn_lt (R : archiRealFieldType) (e : {posnum R}) :
   \forall n \near \oo, 1 / 2 ^+ n < e%:num.
 Proof.
 near=> n.
