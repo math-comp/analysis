@@ -76,8 +76,10 @@ From mathcomp Require Import ftc gauss_integral hoelder.
 
 Reserved Notation "'{' 'RV' P >-> R '}'"
   (at level 0, format "'{' 'RV'  P  '>->'  R '}'").
-Reserved Notation "''E_' P [ X ]" (format "''E_' P [ X ]").
-Reserved Notation "''V_' P [ X ]" (format "''V_' P [ X ]").
+Reserved Notation "''E_' P [ X ]"
+  (at level 5, P, X at level 4, format "''E_' P [ X ]").
+Reserved Notation "''V_' P [ X ]"
+  (at level 5, P, X at level 4, format "''V_' P [ X ]").
 Reserved Notation "'M_ P X" (at level 5, P, X at level 4, format "''M_' P  X").
 Reserved Notation "{ 'dmfun' aT >-> T }" (format "{ 'dmfun'  aT  >->  T }").
 Reserved Notation "'{' 'dRV' P >-> R '}'" (format "'{' 'dRV'  P  '>->'  R '}'").
@@ -429,7 +431,7 @@ exact: le_trans (le_abse_integral _ _ _).
 Qed.
 
 Lemma expectationZl (X : T -> R) (k : R) : X \in Lfun P 1 ->
-  'E_P[k \o* X] = k%:E * 'E_P [X].
+  'E_P[k \o* X] = k%:E * 'E_P[X].
 Proof.
 by move=> ?; rewrite unlock muleC -integralZr//; exact/Lfun1_integrable.
 Qed.
