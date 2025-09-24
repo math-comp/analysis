@@ -3,6 +3,15 @@
 ## [Unreleased]
 
 ### Added
+- in `convex.v`
+  + notation `a <| p *> b`
+
+### Changed
+
+- in `convex.v`
+  + notation `a <| p |> b` -> `a <* p |> a`
+
+### Added
 
 - in `set_interval.v`:
   + lemmas `itv_setU_setT`, `disjoint_rays`
