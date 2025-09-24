@@ -4,11 +4,16 @@
 
 ### Added
 
+- in `set_interval.v`:
+  + lemmas `itv_setU_setT`, `disjoint_rays`
+
 - in `constructive_ereal.v`:
   + lemma `ltgte_fin_num`
 
 - in `probability.v`:
-  + lemmas `cdf_fin_num`, `lebesgue_stieltjes_cdf_id`
+  + definition `ccdf`
+  + lemmas `cdf_fin_num`, `lebesgue_stieltjes_cdf_id`, `cdf_ccdf_1`, `ccdf_fin_num`, `ccdf_nonincreasing`, `cvg_ccdfy0`, `cvg_ccdfNy1`, `ccdf_right_continuous`
+  + corollaries `ccdf_cdf_1`, `ccdf_1_cdf`, `cdf_1_ccdf`
 
 - in `num_normedtype.v`:
   + lemma `nbhs_infty_gtr`
@@ -317,6 +322,11 @@
   + lemma `right_continuousW`
   + record `isCumulative`
   + definition `Cumulative`
+
+- in `set_interval.v`:
+  + lemma `set_itv_splitI` (generalized from `orderType` to `porderType`)
+  + lemma `disjoint_itvxx` (generalized from `numDomainType` to `porderType`)
+  + lemma `disjoint_neitv` (generalized from `realFieldType` to `orderType`)
 
 ### Deprecated
 
