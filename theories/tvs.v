@@ -84,11 +84,41 @@ HB.structure Definition PreTopologicalNmodule :=
 
 HB.mixin Record PreTopologicalNmodule_isTopologicalNmodule M
     of PreTopologicalNmodule M := {
-  add_continuous : continuous (fun x : M * M => x.1 + x.2) ;
+  add_continuous : continuous (fst \+ snd : M * M -> M) ;
 }.
 
 HB.structure Definition TopologicalNmodule :=
   {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
+
+Section TopologicalNmoduleTheory.
+Variables (M N : TopologicalNmodule.type).
+
+Let addfun_continuous (f g : continuousType M N) : continuous (f \+ g).
+Proof.
+move=> x.
+apply: (@continuous_comp _ _ _ (fun x => (f x, g x)) (fst \+ snd)); last first.
+  exact: add_continuous.
+apply: cvg_pair; apply: cts_fun.
+Qed.
+
+HB.instance Definition _ (f g : continuousType M N) :=
+  isContinuous.Build M N (f \+ g) (@addfun_continuous f g).
+
+Let addrA : associative (fun f g : continuousType M N => f \+ g).
+Proof. by move=> f g h; apply/continuousEP => x; apply: addrA. Qed.
+
+Let addrC : @commutative _ (continuousType M N)
+  (fun f g : continuousType M N => f \+ g).
+Proof. by move=> f g; apply/continuousEP => x; apply: addrC. Qed.
+
+Let add0r : @left_id (continuousType M N) _ (cst 0)
+  (fun f g : continuousType M N => f \+ g).
+Proof. by move=> f; apply/continuousEP => x; apply: add0r. Qed.
+
+HB.instance Definition _ :=
+  GRing.isNmodule.Build (continuousType M N) addrA addrC add0r.
+
+End TopologicalNmoduleTheory.
 
 HB.structure Definition PreTopologicalZmodule :=
   {M of Topological M & GRing.Zmodule M}.
@@ -141,7 +171,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Section TopologicalZmoduleTheory.
-Variables (M : topologicalZmodType).
+Variables (M N : topologicalZmodType).
 
 Lemma sub_continuous : continuous (fun x : M * M => x.1 - x.2).
 Proof.
@@ -150,6 +180,21 @@ move=> x; apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2))
 apply: cvg_pair; first exact: cvg_fst.
 by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
 Qed.
+
+Lemma oppfun_continuous (f : continuousType M N) : continuous (\- f).
+Proof.
+move=> x; apply: (continuous_comp (@cts_fun _ _ f _) (@opp_continuous N _)).
+Qed.
+
+HB.instance Definition _ (f : continuousType M N) :=
+  isContinuous.Build _ _ (\- f) (@oppfun_continuous f).
+
+Let addNr : @left_inverse (continuousType M N) _ _
+  0%R (fun f : continuousType M N => \- f) +%R.
+Proof. by move=> f; apply/continuousEP => x; apply: addNr. Qed.
+
+HB.instance Definition _ :=
+  GRing.Nmodule_isZmodule.Build (continuousType M N) addNr.
 
 End TopologicalZmoduleTheory.
 
@@ -191,6 +236,42 @@ HB.instance Definition _ :=
   TopologicalZmodule_isTopologicalLmodule.Build R M scale_continuous.
 
 HB.end.
+
+Section TopologicalLmoduleTheory.
+Variables (K : numDomainType) (M N : topologicalLmodType K).
+
+Lemma scalefun_continuous (k : K) (f : continuousType M N) :
+  continuous (k \*: f).
+Proof.
+move=> x.
+apply: (@continuous_comp _ _ _ (fun x => (k : K^o, f x)) (fun x => x.1 *: x.2));
+  last exact: scale_continuous.
+apply: (cvg_pair (@cst_continuous _ K^o k x)).
+exact: cts_fun.
+Qed.
+
+HB.instance Definition _ (k : K) (f : continuousType M N) :=
+  isContinuous.Build _ _ (k \*: f) (@scalefun_continuous k f).
+
+Let scalerA (a b : K) (f : continuousType M N) :
+  a \*: (b \*: f) = (a * b) \*: f :> continuousType M N.
+Proof. by apply/continuousEP => x; apply: scalerA. Qed.
+
+Let scale1r : left_id 1 (fun k (f : continuousType M N) => k \*: f).
+Proof. by move=> f; apply/continuousEP => x; apply: scale1r. Qed.
+
+Let scalerDr :
+  right_distributive (fun k (f : continuousType M N) => k \*: f) +%R.
+Proof. by move=> f g h; apply/continuousEP => x; apply: scalerDr. Qed.
+
+Let scalerDl (f : continuousType M N) :
+  {morph (fun k => k \*: f : continuousType M N) : a b / a + b}.
+Proof. by move=> a b; apply/continuousEP => x; apply: scalerDl. Qed.
+
+HB.instance Definition _ := GRing.Zmodule_isLmodule.Build K (continuousType M N)
+  scalerA scale1r scalerDr scalerDl.
+
+End TopologicalLmoduleTheory.
 
 HB.structure Definition PreUniformNmodule := {M of Uniform M & GRing.Nmodule M}.
 
