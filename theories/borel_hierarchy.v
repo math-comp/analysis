@@ -22,6 +22,7 @@ Unset Printing Implicit Defensive.
 Import Order.TTheory GRing.Theory Num.Theory Num.Def.
 Import numFieldNormedType.Exports.
 Import numFieldTopology.Exports.
+Import exp.
 
 Local Open Scope classical_set_scope.
 Local Open Scope ring_scope.
@@ -179,8 +180,40 @@ have/boolp.choice[f_n Hn]: forall n, exists f : T -> R,
   - rewrite hE.
     rewrite -subsets_disjoint.
     exact: bigcap_inf.
-pose f := fun x => (\sum_(n <oo) (f_n n x)%:E / (2^+n.+1)%:E)%E.
-(* exists f. *)
+pose f_sum := fun n => \sum_(k < n) (f_n k \* cst (2^-k.+1)).
+rewrite /= in f_sum.
+have cf_sum n : continuous (f_sum n).
+  move=> x.
+  elim: n  => [| n IH].
+  - rewrite /f_sum big_ord0.
+    exact: cst_continuous.
+  - rewrite /f_sum big_ord_recr /=.
+    apply: continuousD.
+      exact IH.
+    apply: continuousM.
+      by case: (Hn n) => /(_ x).
+    exact: cst_continuous.
+pose f := fun x => limn (f_sum^~ x).
+rewrite /= in f.
+exists f.
+split.
+  move=> x nfx.
+  rewrite -filter_from_ballE.
+  case.
+  move=> eps /= eps0 epsB.
+  pose n := (2 + truncn (- ln eps / ln 2))%N.
+  move: (cf_sum n).
+  have eps0' : eps / 2 > 0 by exact: divr_gt0.
+  move/continuousP/(_ _ (ball_open (f_sum n x) eps0')) : (cf_sum n) => /= ofs.
+  rewrite nbhs_filterE.
+  rewrite fmapE.
+  rewrite nbhsE /=.
+  set B := _ @^-1` _ in ofs.
+  exists B.
+    split => //.
+    exact: ballxx.
+  apply: subset_trans (preimage_subset (f:=f) epsB).
+  rewrite /B /preimage /ball => t /=.
 Admitted.
 
 Let perfectly_normal_space_13 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
