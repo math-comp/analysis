@@ -91,7 +91,7 @@ HB.structure Definition TopologicalNmodule :=
   {M of PreTopologicalNmodule M & PreTopologicalNmodule_isTopologicalNmodule M}.
 
 Section TopologicalNmoduleTheory.
-Variables (M N : TopologicalNmodule.type).
+Variables (M : topologicalType) (N : TopologicalNmodule.type).
 
 Let addfun_continuous (f g : continuousType M N) : continuous (f \+ g).
 Proof.
@@ -171,12 +171,12 @@ HB.instance Definition _ :=
 HB.end.
 
 Section TopologicalZmoduleTheory.
-Variables (M N : topologicalZmodType).
+Variables (M : topologicalType) (N : topologicalZmodType).
 
-Lemma sub_continuous : continuous (fun x : M * M => x.1 - x.2).
+Lemma sub_continuous : continuous (fun x : N * N => x.1 - x.2).
 Proof.
-move=> x; apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2))
-  (fun x : M * M => x.1 + x.2)); last exact: add_continuous.
+move=> x; apply: (@continuous_comp _ _ _ (fun x => (x.1, - x.2)) (fst \+ snd));
+  last exact: add_continuous.
 apply: cvg_pair; first exact: cvg_fst.
 by apply: continuous_comp; [exact: cvg_snd|exact: opp_continuous].
 Qed.
@@ -238,7 +238,7 @@ HB.instance Definition _ :=
 HB.end.
 
 Section TopologicalLmoduleTheory.
-Variables (K : numDomainType) (M N : topologicalLmodType K).
+Variables (K : numDomainType) (M : topologicalType) (N : topologicalLmodType K).
 
 Lemma scalefun_continuous (k : K) (f : continuousType M N) :
   continuous (k \*: f).
@@ -734,3 +734,90 @@ HB.instance Definition _ :=
   Uniform_isTvs.Build K (E * F)%type prod_locally_convex.
 
 End prod_Tvs.
+
+#[short(type="c0linType")]
+HB.structure Definition ContinuousLinear
+  (K : numDomainType) (M N : preTopologicalLmodType K) :=
+  {f of @Continuous M N f & @GRing.Linear K M N *:%R f}.
+
+HB.instance Definition _ (K : numDomainType) (M : preTopologicalLmodType K) :=
+  Continuous.on (@idfun M).
+
+HB.instance Definition _ (K : numDomainType) (M N T : preTopologicalLmodType K)
+  (f : c0linType M N) (g : c0linType N T) :=
+  Continuous.on (comp g f).
+
+HB.instance Definition _ (K : numDomainType) (M N : topologicalLmodType K)
+  (f g : c0linType M N) :=
+  Continuous.on (f \+ g).
+
+HB.instance Definition _ (K : numDomainType) (M N : topologicalLmodType K)
+  (f : c0linType M N) :=
+  Continuous.on (\- f).
+
+HB.instance Definition _ (K : numDomainType) (M N : topologicalLmodType K)
+  (k : K) (f : c0linType M N) :=
+  Continuous.on (k \*: f).
+
+Section ContinuousLinear_sub_Continuous.
+Variables (K : numDomainType) (M N : preTopologicalLmodType K).
+
+Lemma c0linEP (f g : c0linType M N) : f = g <-> f =1 g.
+Proof.
+split=> [-> //|/funext].
+case: f g => f + [] g +/= fg.
+rewrite fg => -[] [] fc0 [] fadd [] fscal [] [] gc0 [] gadd [] gscal.
+congr ContinuousLinear.Pack.
+congr ContinuousLinear.Class.
+- by congr isContinuous.Axioms_; apply: Prop_irrelevance.
+- by congr GRing.isSemiAdditive.Axioms_; apply: Prop_irrelevance.
+- by congr GRing.isScalable.Axioms_; apply: Prop_irrelevance.
+Qed.
+
+Let val (f : c0linType M N) := f : continuousType M N.
+
+Let sub_subproof (f : continuousType M N) : `[< linear_for *:%R f >] ->
+  ContinuousLinear.axioms_ (f : continuousType M N).
+Proof.
+move=> /asboolP flin.
+set g := (HB.pack_for (c0linType M N) (Continuous.sort f)
+  (GRing.isLinear.Build K M N *:%R f flin)).
+exact: (ContinuousLinear.class g).
+Qed.
+
+Let sub (f : continuousType M N) : `[< linear_for *:%R f >] -> c0linType M N.
+Proof. by exists f; apply: sub_subproof. Defined.
+
+Let subK f Pf : val (@sub f Pf) = f.
+Proof. exact/continuousEP. Qed.
+
+Let sub_rect P : (forall f Pf, P (@sub f Pf)) -> forall f, P f.
+Proof.
+move=> /[swap] f /(_ f _)/wrap[].
+  by apply/asboolP => k x y; rewrite [LHS]raddfD/= linearZ.
+by move=> xP; congr P; apply/c0linEP.
+Qed.
+
+HB.instance Definition _ := isSub.Build _ _ (c0linType M N) sub_rect subK.
+
+HB.instance Definition _ :=
+  Choice.copy (c0linType M N) (sub_type (c0linType M N)).
+
+End ContinuousLinear_sub_Continuous.
+
+Section ContinuousLinear_sub_Continuous.
+Variables (K : numDomainType) (M : preTopologicalLmodType K) (N : topologicalLmodType K).
+
+Let submod_closed : @submod_closed K (continuousType M N)
+  (fun f => `[< linear_for *:%R f >]).
+Proof.
+split=> [|k f g]; first by rewrite inE => k x y; rewrite addr0 scaler0.
+rewrite !inE => flin glin r x y.
+rewrite [X in _ *: X + _ = _]flin [X in _ + X = _]glin !scalerDr !scalerA.
+by rewrite addrACA mulrC.
+Qed.
+
+HB.instance Definition _ := GRing.SubChoice_isSubLmodule.Build
+  K (continuousType M N) _ (c0linType M N) submod_closed.
+
+End ContinuousLinear_sub_Continuous.

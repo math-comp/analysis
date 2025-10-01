@@ -2079,3 +2079,67 @@ by rewrite interior_closed_ballE //; exact: ballxx.
 Qed.
 
 End Closed_Ball_normedModType.
+
+Section LinearContinuous.
+Variables (R : realType) (M N : normedModType R).
+
+Let norm (f : c0linType M N) := sup [set `|f x| | x in [set x | `|x| <= 1]].
+
+Let normP (f : c0linType M N) : has_sup [set `|f x| | x in [set x | `|x| <= 1]].
+Proof.
+have := @cts_fun _ _ f 0 (ball 0 1) => /(_ _)/wrap[].
+  by rewrite linear0; apply: nbhsx_ballx.
+move=> /nbhs_closedballP => -[] [] e/= /andP[_].
+rewrite /map_itv/= in_itv/= mulr0z andbT => e0 fe.
+split; first by exists 0, 0 => /=; rewrite ?linear0 normr0.
+exists (e^-1)%R => d [] x/= x1 <-.
+rewrite -[leRHS]mul1r ler_pdivlMr// -(gtr0_norm e0) mulrC -normrZ -linearZ.
+move: fe => /(_ (e *: x))/= /(_ _)/wrap[]; last first.
+  by rewrite -ball_normE/= add0r normrN => /ltW.
+rewrite closed_ballE//= /closed_ball_/= add0r normrN normrZ gtr0_norm//.
+by rewrite -ler_pdivlMl// mulVf// lt0r_neq0.
+Qed.
+
+Let ler_normD f g : norm (f + g) <= norm f + norm g.
+Proof.
+apply: sup_le_ub; first by case: (normP (f + g)).
+move=> _ []/= x x1 <-.
+apply/(le_trans (ler_normD _ _))/lerD.
+  by apply: (sup_upper_bound (normP f)); exists x.
+by apply: (sup_upper_bound (normP g)); exists x.
+Qed.
+
+Let normr0_eq0 f : norm f = 0 -> f = 0.
+Proof.
+move=> f0; apply/c0linEP => x.
+have [->|] := eqVneq x 0; first exact: linear0.
+rewrite -normr_gt0 -invr_gt0 => x0.
+apply/eqP; rewrite -normr_le0.
+rewrite -(pmulr_rle0 _ x0) -(gtr0_norm x0) -normrZ -linearZ -f0.
+apply: (sup_upper_bound (normP f)); exists (`|x|^-1 *: x) => //=.
+by rewrite normrZ (gtr0_norm x0) mulVf// lt0r_neq0// -invr_gt0.
+Qed.
+
+Let normrZ l f : norm (l *: f) = `|l| * norm f.
+Proof.
+apply/le_anti/andP; split.
+  apply: sup_le_ub; first by case: (normP (l *: f)).
+  move=> _ []/= x x1 <-.
+  rewrite normrZ; apply: ler_pM => //.
+  by apply: (sup_upper_bound (normP f)); exists x.
+have [->|] := eqVneq l 0.
+  rewrite normr0 mul0r scale0r.
+  by apply: (sup_upper_bound (normP 0)); exists 0 => /=; rewrite ?cstE normr0.
+rewrite -normr_gt0 => l0.
+rewrite -ler_pdivlMl//.
+apply: sup_le_ub; first by case: (normP f).
+move=> _ []/= x x1 <-.
+rewrite ler_pdivlMl// -normrZ.
+by apply: (sup_upper_bound (normP (l *: f))); exists x.
+Qed.
+
+
+HB.instance Definition _ := Lmodule_isNormed.Build R (c0linType M N)
+  ler_normD normrZ normr0_eq0.
+
+End LinearContinuous.
