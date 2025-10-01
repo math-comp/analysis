@@ -165,11 +165,46 @@ apply.
 exact: lray_closed.
 Qed.
 
-Let perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
+Let perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space 0.
+Proof.
+move=> pnsGd E cE.
+case: (pnsGd) => nT cEGdE.
+have[U oU hE]:= cEGdE E cE.
+have/boolp.choice[f_n Hn]: forall n, exists f : T -> R, 
+  [/\ continuous f, range f `<=` `[0, 1], f @` E `<=` [set 0] & f @` (~` U n) `<=` [set 1]].
+  move=> n.
+  apply/uniform_separatorP.
+  apply: normal_uniform_separator => //.
+  - by rewrite closedC.
+  - rewrite hE.
+    rewrite -subsets_disjoint.
+    exact: bigcap_inf.
+pose f := fun x => (\sum_(n <oo) (f_n n x)%:E / (2^+n.+1)%:E)%E.
+(* exists f. *)
+Admitted.
+
+Let perfectly_normal_space_13 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
+move=> pnsGd E oE.
+case: (pnsGd) => nT cEGdE.
+have clcpE: closed (~`E).
+  by rewrite closedC.
+have[U oU hE]:= cEGdE (~` E) clcpE.
+have/boolp.choice[f_n Hn]: forall n, exists f : T -> R, 
+  [/\ continuous f, range f `<=` `[0, 1], f @` (~` E) `<=` [set 0] & f @` (~` U n) `<=` [set 1]].
+  move=> n.
+  apply/uniform_separatorP.
+  apply: normal_uniform_separator => //.
+  - by rewrite closedC.
+  - rewrite hE.
+    rewrite -subsets_disjoint.
+    exact: bigcap_inf.
+Admitted.
+
+Let perfectly_normal_space_23 : perfectly_normal_space 0 -> perfectly_normal_space' 0.
 Proof.
 Admitted.
 
-Let perfectly_normal_space_23 : perfectly_normal_space' 0 -> perfectly_normal_space 0.
+Let perfectly_normal_space_32 : perfectly_normal_space' 0 -> perfectly_normal_space 0.
 Proof.
 move=> pns' E cE; case: (pns' (~`E)).
   by rewrite openC.
@@ -179,38 +214,37 @@ split.
 by rewrite -[RHS]setCK preimage_setC -f0 setCK.
 Qed.
 
-Let perfectly_normal_space_34 : perfectly_normal_space 0 -> perfectly_normal_space01.
+Let perfectly_normal_space_24 : perfectly_normal_space 0 -> perfectly_normal_space01.
 Proof.
 Admitted.
 
-Let perfectly_normal_space_41 : perfectly_normal_space01 -> perfectly_normal_space_Gdelta.
+Let perfectly_normal_space_34 : perfectly_normal_space' 0 -> perfectly_normal_space01.
 Proof.
-move=> pns01.
-split.
-  exact: perfectly_normal_space01_normal.
-move=> E cE.
-have [] := pns01 _ _ cE closed0.
-  by apply/disj_setPLR; rewrite setC0.
-move=> f [cf] [f0] [f1] f01.
-exists (fun n => f @^-1` `]-oo, 1/n.+1%:R[).
-  move=> n; move/continuousP: cf; exact.
-rewrite f0.
-apply/seteqP; split => x /= Hx.
-  by move=> i _ /=; rewrite Hx in_itv /= divr_gt0.
-case: (ltrgtP (f x) 0) => // fx.
-  have : f x \notin range f.
-    by rewrite f01 mem_setE in_itv /= negb_and -ltNge fx.
-  move/negP; elim.
-  by rewrite inE /=; exists x.
-suff : False by [].
-have /= := Hx (truncn (1 / f x)) I.
-rewrite in_itv /=.
-have /real_truncnS_gt := num_real (1 / f x).
-rewrite -ltf_pV2; last first.
-- by rewrite posrE divr_gt0.
-- by rewrite posrE.
-rewrite !div1r invrK => /lt_trans/[apply].
-by rewrite ltxx.
+Admitted.
+
+Local Lemma perfectly_normal_space_42 :                                 
+perfectly_normal_space01  -> perfectly_normal_space 0.                  
+Proof.                                                                  
+move=> + E cE => /(_ E set0 cE closed0).                                
+rewrite disj_set2E setI0 eqxx => /(_ erefl).                            
+case=> f [] cf [] Ef [] _ _.                                            
+by exists f; split.                                                     
+Qed.                                                                    
+                                                                        
+Let perfectly_normal_space_41 :
+  perfectly_normal_space01 -> perfectly_normal_space_Gdelta.
+Proof.            
+move=> pns01; split; first exact: perfectly_normal_space01_normal.
+move=> E cE; case:(perfectly_normal_space_42 pns01 cE) => // f [] cf Ef.
+exists (fun n => f @^-1` `]-n.+1%:R^-1,n.+1%:R^-1[%classic).
+  by move=> n; move/continuousP: cf; apply; exact: itv_open.
+rewrite -preimage_bigcap (_ : bigcap _ _ = [set 0])//.
+rewrite eqEsubset; split; last first.
+  by move=> x -> n _ /=; rewrite in_itv//= oppr_lt0 andbb invr_gt0.
+apply: subsetC2; rewrite setC_bigcap => x /= /eqP x0.
+exists (trunc `|x^-1|) => //=; rewrite in_itv/= -ltr_norml ltNge.
+apply/negP; rewrite negbK.
+by rewrite invf_ple ?posrE// ?normr_gt0// -normfV ltW// truncnS_gt.
 Qed.
 
 Theorem Vedenissoff_closed : perfectly_normal_space_Gdelta <-> perfectly_normal_space 0.
