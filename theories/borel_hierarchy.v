@@ -166,19 +166,26 @@ apply.
 exact: lray_closed.
 Qed.
 
+Lemma EFin_series (f : R^nat) : EFin \o series f = eseries (EFin \o f).
+Proof.
+apply/boolp.funext => n.
+rewrite /series /eseries /=.
+elim: n => [|n IH]; first by rewrite !big_geq.
+by rewrite !big_nat_recr //= EFinD IH.
+Qed.
+
 Let perfectly_normal_space_12 : perfectly_normal_space_Gdelta -> perfectly_normal_space 0.
 Proof.
 move=> pnsGd E cE.
 case: (pnsGd) => nT cEGdE.
-have[U oU hE]:= cEGdE E cE.
+have[U oU HE]:= cEGdE E cE.
 have/boolp.choice[f_n Hn]: forall n, exists f : T -> R, 
   [/\ continuous f, range f `<=` `[0, 1], f @` E `<=` [set 0] & f @` (~` U n) `<=` [set 1]].
   move=> n.
   apply/uniform_separatorP.
   apply: normal_uniform_separator => //.
   - by rewrite closedC.
-  - rewrite hE.
-    rewrite -subsets_disjoint.
+  - rewrite HE -subsets_disjoint.
     exact: bigcap_inf.
 pose f_sum := fun n => \sum_(0 <= k < n) (f_n k \* cst (2^-k.+1)).
 have cf_sum n : continuous (f_sum n).
@@ -187,13 +194,46 @@ have cf_sum n : continuous (f_sum n).
   rewrite big_nat_recr //=; apply: continuousD => //.
   apply/continuousM/cst_continuous.
   by case: (Hn n) => /(_ x).
-have f_sumE x n : f_sum n x = \sum_(0 <= k < n) (f_n k x * 2^-k.+1).
-  rewrite /f_sum.
+have f_sumE x : f_sum ^~ x = [series f_n k x * 2^-k.+1]_k.
+  apply/boolp.funext => n.
+  rewrite /f_sum /series /mk_sequence.
   elim: n => [|n IH]; first by rewrite !big_geq.
   by rewrite !big_nat_recr //= [X in X _ _ x]/GRing.add /= IH.
 pose f := fun x => limn (f_sum^~ x).
 rewrite /= in f.
 exists f.
+have ndf_sum y : {homo f_sum^~ y : a b / (a <= b)%N >-> a <= b}.
+  move=> a b ab.
+  rewrite /f_sum.
+  rewrite (big_cat_nat _ ab) //= lerDl.
+  elim/big_rec: _ => //= i f0 _.
+  rewrite /GRing.add /= => /le_trans; apply.
+  rewrite lerDr mulr_ge0 //.
+    case: (Hn i) => _ Hr _ _.
+    have /Hr /= := imageT (f_n i) y.
+    by rewrite in_itv /= => /andP[].
+  by rewrite invr_ge0 exprn_ge0.
+(*have Hub y m k : (\sum_(m <= i < k) f_n i \* cst (2 ^- i.+1)) y <= 2^-m.
+  apply: (@le_trans _ _ (2^-m - 2^-k)); last first.
+  by rewrite gerBl invr_ge0 exprn_ge0.*)
+have Hcvg y : cvgn (f_sum^~ y).
+  apply: nondecreasing_is_cvgn => //.
+  exists 1 => z /= [m] _ <-.
+  rewrite /f_sum.
+  apply: (@le_trans _ _ (1 - 2^-m)); last by rewrite gerBl invr_ge0 exprn_ge0.
+  elim: m => [|m IH]; first by rewrite big_geq // expr0 invr1 subrr.
+  rewrite big_nat_recr //=.
+  have Hm : f_n m y * 2 ^- m.+1 <= 2 ^- m.+1.
+    case: (Hn m) => _ Hr _ _.
+    have /Hr /= := imageT (f_n m) y.
+    rewrite in_itv /= => /andP[f0 f1].
+    by rewrite -[leRHS]mul1r ler_pM.
+  apply: (le_trans (lerD IH Hm)).
+  rewrite -addrA.
+  have -> : 2^- m = 2 * 2^-m.+1 :> R.
+    by rewrite exprS invfM mulrA mulfV // mul1r.
+  rewrite -{1}add1n {1}mulrnDr mulrDl !mul1r opprD !addrA -addrA.
+  by rewrite [_ + 2^- _]addrC subrr addr0.
 split.
   move=> x Nfx.
   rewrite -filter_from_ballE.
@@ -210,37 +250,6 @@ split.
     exact: ballxx.
   apply: subset_trans (preimage_subset (f:=f) HB).
   rewrite /B /preimage /ball => t /=.
-  have ndf_sum y : {homo f_sum^~ y : a b / (a <= b)%N >-> a <= b}.
-    move=> a b ab.
-    rewrite /f_sum.
-    rewrite (big_cat_nat _ ab) //= lerDl.
-    elim/big_rec: _ => //= i f0 _.
-    rewrite /GRing.add /= => /le_trans; apply.
-    rewrite lerDr mulr_ge0 //.
-      case: (Hn i) => _ Hr _ _.
-      have /Hr /= := imageT (f_n i) y.
-      by rewrite in_itv /= => /andP[].
-    by rewrite invr_ge0 exprn_ge0.
-  have Hcvg y : cvgn (f_sum^~ y).
-    apply: nondecreasing_is_cvgn => //.
-    exists 1 => z /= [m] _ <-.
-    rewrite /f_sum.
-    apply: (@le_trans _ _ (1 - 2^-m)); last first.
-      by rewrite gerBl invr_ge0 exprn_ge0.
-    elim: m => [|m IH].
-      by rewrite big_geq // expr0 invr1 subrr.
-    rewrite big_nat_recr //=.
-    have Hm : f_n m y * 2 ^- m.+1 <= 2 ^- m.+1.
-      case: (Hn m) => _ Hr _ _.
-      have /Hr /= := imageT (f_n m) y.
-      rewrite in_itv /= => /andP[f0 f1].
-      by rewrite -[leRHS]mul1r ler_pM.
-    apply: (le_trans (lerD IH Hm)).
-    rewrite -addrA.
-    have -> : 2^- m = 2 * 2^-m.+1 :> R.
-      by rewrite exprS invfM mulrA mulfV // mul1r.
-    rewrite -{1}add1n {1}mulrnDr mulrDl !mul1r opprD !addrA -addrA.
-    by rewrite [_ + 2^- _]addrC subrr addr0.
   have Hf y :
     f y = f_sum n y + limn (fun n' => \sum_(n <= k < n') f_n k y * 2^- k.+1).
     have /= := nondecreasing_telescope_sumey n _ (ndf_sum y).
@@ -260,9 +269,34 @@ split.
       case: (leP n k) => nk.
         by rewrite !big_nat_recr //= IH EFinD.
       by rewrite !big_geq.
-    rewrite is_cvg_series_restrict /series /mk_sequence.
-    under [X in cvgn X]boolp.funext do rewrite -f_sumE.
-    exact: Hcvg.
+    move: (Hcvg y).
+    by rewrite is_cvg_series_restrict f_sumE.
+  move=> feps.
+  rewrite !Hf opprD addrA (addrAC (f_sum n x)) -(addrA (_ - _)).
+  apply: (le_lt_trans (ler_normD _ _)).
+  rewrite (splitr eps).
+  apply: ltr_leD => //.
+  admit.
+apply/seteqP; split => x /= Hx.
+  apply: EFin_inj.
+  rewrite -EFin_lim // f_sumE EFin_series /= eseries0 // => i _ _ /=.
+  case: (Hn i) => _ _ /(_ (f_n i x)) /= => ->.
+    by rewrite mul0r.
+  by exists x.
+apply: contraPP Hx.
+rewrite (_ : (~ E x) = setC E x) // HE setC_bigcap /= => -[] i _ HU.
+case: (Hn i) => _ _ _ /(_ (f_n i x)) /= => Hfix.
+rewrite /f => Hf.
+have := (nondecreasing_cvgn_le (ndf_sum x) (Hcvg x) i.+1).
+have := ndf_sum x _ _ (leq0n i.+1).
+rewrite Hf {1}/f_sum big_geq // => /[swap] fi_le0.
+rewrite le0r ltNge fi_le0 orbF.
+rewrite /f_sum big_nat_recr //= [X in X _ _ x]/GRing.add /= -/(f_sum i).
+rewrite Hfix; last by exists x.
+rewrite mul1r /cst => /eqP fi0.
+have := ndf_sum x _ _ (leq0n i).
+rewrite {1}/f_sum big_geq // -[0 x]fi0 gerDl.
+by rewrite leNgt invr_gt0 exprn_gt0.
 Admitted.
 
 Let perfectly_normal_space_13 : perfectly_normal_space_Gdelta -> perfectly_normal_space' 0.
