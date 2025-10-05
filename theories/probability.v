@@ -169,6 +169,9 @@ Context d {T : measurableType d} {R : realType} (P : probability T R).
 Variable X : {RV P >-> R}.
 Local Open Scope ereal_scope.
 
+Lemma cdf_def r : cdf X r = P [set x | (X x <= r)%R].
+Proof. by[]. Qed.
+
 Lemma cdf_ge0 r : 0 <= cdf X r. Proof. by []. Qed.
 
 Lemma cdf_le1 r : cdf X r <= 1. Proof. exact: probability_le1. Qed.
@@ -353,6 +356,12 @@ Context d {T : measurableType d} {R : realType} (P : probability T R).
 Variable X : {RV P >-> R}.
 Local Open Scope ereal_scope.
 
+Lemma ccdf_def r : ccdf X r = P [set x | (r < X x)%R].
+Proof.
+rewrite /ccdf/distribution/pushforward/preimage/=.
+by under eq_set do rewrite in_itv/= andbT.
+Qed.
+
 Lemma cdf_ccdf_1 r : cdf X r + ccdf X r = 1.
 Proof.
 rewrite /cdf/ccdf -measureU//= -eq_opE; last exact: disjoint_rays.
@@ -482,6 +491,85 @@ Qed.
 End expectation_lemmas.
 #[deprecated(since="mathcomp-analysis 1.8.0", note="renamed to `expectationZl`")]
 Notation expectationM := expectationZl (only parsing).
+
+Section tail_expectation_formula.
+Local Open Scope ereal_scope.
+Context d (T : measurableType d) (R : realType) (P : probability T R).
+
+Let mu : {measure set _ -> \bar R} := @lebesgue_measure R.
+
+Lemma expectation_nonneg_tail (X : {RV P >-> R}) : (forall x, 0 <= X x)%R ->
+  'E_P[X] = \int[mu]_(r in `[0%R, +oo[) ccdf X r.
+Proof.
+pose GR := measurableTypeR R.
+pose distrX := distribution P X.
+pose D : set R := `[0%R, +oo[%classic.
+move=> X_ge0.
+transitivity (\int[P]_x ((EFin \_ D) \o X) x).
+  rewrite expectation_def /comp; apply: eq_integral => x _.
+  by rewrite /D patchE ifT// set_itvE inE /=.
+transitivity (\int[distrX]_r (EFin \_ D) r).
+  rewrite ge0_integral_distribution -?measurable_restrictT /D //.
+  by apply: erestrict_ge0 => r /=; rewrite in_itv/= andbT lee_fin.
+transitivity (\int[distrX]_r (\int[mu]_(s in D) (\1_`]-oo, r[ s)%:E)).
+  apply: eq_integral => r _.
+  rewrite integral_indic /D//= setIC -(set_itv_splitI `[0%R, r[).
+  rewrite lebesgue_measure_itv/= lte_fin patchE.
+  have [r_pos | r_neg | r0] := ltgtP.
+  - by rewrite ifT/= -?EFinD ?subr0// inE/= in_itv/= ltW.
+  - rewrite ifF//; apply/negP.
+    by rewrite inE/= in_itv/= andbT; apply/negP; rewrite -ltNge.
+  - by rewrite ifT -r0 // inE /= bound_itvE.
+transitivity (\int[distrX]_r (\int[mu]_s (\1_`[0, r[ s)%:E)).
+  apply: eq_integral => r _; rewrite /D integral_mkcond.
+  apply: eq_integral => s _ /=.
+  have [s_ge0 | s_lt0] := (leP 0%R s).
+  - have [s_ltr | s_ger] := (ltP s r).
+    + rewrite indicE mem_set/=; last by rewrite in_itv/= s_ge0 s_ltr.
+      by rewrite patchE/= ifT ?indicE mem_set//= in_itv/= andbT.
+    + rewrite indicE memNset/=; last by
+        rewrite in_itv/= => /andP [] _ /(le_lt_trans s_ger); rewrite ltxx.
+      rewrite patchE/= ifT//; last by rewrite mem_set//= in_itv/= andbT.
+      rewrite indicE memNset//= in_itv/=. 
+      by move=> /(le_lt_trans s_ger); rewrite ltxx.
+  - rewrite indicE memNset/=; last by
+      rewrite in_itv/= => /andP [] /(lt_le_trans s_lt0); rewrite ltxx.
+    rewrite patchE/= ifF// memNset//= in_itv/= andbT.
+    by move=> /(lt_le_trans s_lt0); rewrite ltxx.
+transitivity (\int[mu]_s (\int[distrX]_r (\1_`[0, r[ s)%:E)).
+  rewrite (fubini_tonelli (fun p : R * GR => (\1_`[0, p.1[ p.2)%:E))//=.
+  apply: measurableT_comp =>//; apply: measurable_indic =>/=.
+  pose fsnd := (fun p : R * GR => (0 <= p.2)%R).
+  pose f21 := (fun p : R * GR => (p.2 < p.1)%R).
+  have ->: (fun p : R * GR => is_true (p.2 \in `[0%R, p.1[)) =
+    fsnd @^-1` [set true] `&` f21 @^-1` [set true].
+    by apply/seteqP; split => p; rewrite in_itv/= => /andP.
+  apply: measurableI.
+  - have : measurable_fun setT fsnd by exact: measurable_fun_ler.
+    by move=> /(_ measurableT [set true]); rewrite setTI; exact.
+  - have : measurable_fun setT f21 by exact: measurable_fun_ltr.
+    by move=> /(_ measurableT [set true]); rewrite setTI; exact.
+transitivity (\int[mu]_(s in D) (\int[distrX]_r (\1_`[0, r[ s)%:E)).
+  rewrite [in RHS]integral_mkcond/=.
+  apply: eq_integral => s _; rewrite patchE /D.
+  have [s_ge0 | s_lt0] := (leP 0%R s);
+    first by rewrite ifT// in_setE/= in_itv andbT.
+  rewrite ifF; last by
+    rewrite memNset//= in_itv/= ?andbT => /(lt_le_trans s_lt0); rewrite ltxx.
+  by apply: integral0_eq => r _; rewrite indicE/= memNset//= in_itv/= =>
+    /andP[] /(lt_le_trans s_lt0); rewrite ltxx.
+apply: eq_integral => s; rewrite /D inE/= in_itv/= andbT => s_ge0.
+rewrite integral_indic //=.
+  rewrite /distribution/pushforward/preimage setIT/= ccdf_def.
+  by under eq_set do rewrite in_itv/= s_ge0.
+pose fgts := fun r : R => (s < r)%R.
+have : measurable_fun setT fgts by exact: measurable_fun_ltr.
+suff ->: (fun r : R => is_true (s \in `[0%R, r[)) = fgts @^-1` [set true].
+  by move=> /(_ measurableT [set true]); rewrite setTI; exact.
+by apply: eq_set => r; rewrite in_itv/= s_ge0.
+Qed.
+
+End tail_expectation_formula.
 
 HB.lock Definition covariance {d} {T : measurableType d} {R : realType}
     (P : probability T R) (X Y : T -> R) :=
