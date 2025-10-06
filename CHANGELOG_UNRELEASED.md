@@ -308,6 +308,10 @@
     * lemmas `measurable_xsection`, `measurable_ysection`,
       `measurable_fun_pair1`, `measurable_fun_pair2`
 
+- in `probability.v`:
+  + definition `poisson_pmf`, lemmas `poisson_pmf_ge0`, `measurable_poisson_pmf`,
+  + definition `poisson_prob`
+
 ### Renamed
 
 ### Generalized
@@ -327,6 +331,9 @@
   + lemma `set_itv_splitI` (generalized from `orderType` to `porderType`)
   + lemma `disjoint_itvxx` (generalized from `numDomainType` to `porderType`)
   + lemma `disjoint_neitv` (generalized from `realFieldType` to `orderType`)
+
+- in `probabilitity.v`:
+  + lemma `exponential_pdf_ge0` (hypothesis generalized)
 
 ### Deprecated
 
