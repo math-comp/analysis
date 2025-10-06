@@ -197,8 +197,7 @@ have cf_sum n : continuous (f_sum n).
 have f_sumE x : f_sum ^~ x = [series f_n k x * 2^-k.+1]_k.
   apply/boolp.funext => n.
   rewrite /f_sum /series /mk_sequence.
-  elim: n => [|n IH]; first by rewrite !big_geq.
-  by rewrite !big_nat_recr //= [X in X _ _ x]/GRing.add /= IH.
+  exact: (big_morph (fun f => f x)).
 pose f := fun x => limn (f_sum^~ x).
 rewrite /= in f.
 exists f.
@@ -265,10 +264,7 @@ split.
     rewrite -H EFinD; congr (_ + _).
     rewrite -EFin_lim.
       apply/congr_lim/boolp.funext => k /=.
-      elim: k => [|k IH]; first by rewrite !big_geq.
-      case: (leP n k) => nk.
-        by rewrite !big_nat_recr //= IH EFinD.
-      by rewrite !big_geq.
+      exact/esym/big_morph.
     move: (Hcvg y).
     by rewrite is_cvg_series_restrict f_sumE.
   move=> feps.
