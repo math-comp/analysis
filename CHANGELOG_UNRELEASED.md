@@ -308,6 +308,9 @@
     * lemmas `measurable_xsection`, `measurable_ysection`,
       `measurable_fun_pair1`, `measurable_fun_pair2`
 
+- in `constructive_ereal.v`:
+  + instance of `Monoid.isLaw` for `mine`
+
 - in `probability.v`:
   + definition `poisson_pmf`, lemmas `poisson_pmf_ge0`, `measurable_poisson_pmf`,
   + definition `poisson_prob`

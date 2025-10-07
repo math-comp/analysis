@@ -1827,7 +1827,7 @@ Section exponential_pdf.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
 Variable rate : R.
-Hypothesis rate_gt0 : 0 <= rate.
+Hypothesis rate_ge0 : 0 <= rate.
 
 Let exponential_pdfT x := rate * expR (- rate * x).
 Definition exponential_pdf := exponential_pdfT \_ `[0%R, +oo[.
@@ -2069,12 +2069,9 @@ rewrite [RHS](_ : _ = (expR (- rate))%:E * (expR rate)%:E); last first.
   by rewrite -EFinM expRN mulVf ?gt_eqF ?expR_gt0.
 rewrite -nneseries_esumT; last by move=> *; rewrite lee_fin poisson_pmf_ge0.
 under eq_eseriesr.
-  move=> n _.
-  rewrite /poisson_pmf rate0 EFinM muleC.
-  over.
+  move=> n _; rewrite /poisson_pmf rate0 EFinM muleC; over.
 rewrite /= nneseriesZl/=; last first.
-  move=> n _.
-  by rewrite lee_fin divr_ge0// exprn_ge0// ltW.
+  by move=> n _; rewrite lee_fin divr_ge0// exprn_ge0// ltW.
 congr *%E; rewrite expRE -EFin_lim; last first.
   rewrite /pseries/=; under eq_fun do rewrite mulrC.
   exact: is_cvg_series_exp_coeff.
