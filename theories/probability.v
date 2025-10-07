@@ -1827,14 +1827,14 @@ Section exponential_pdf.
 Context {R : realType}.
 Notation mu := lebesgue_measure.
 Variable rate : R.
-Hypothesis rate_gt0 : 0 < rate.
+Hypothesis rate_ge0 : 0 <= rate.
 
 Let exponential_pdfT x := rate * expR (- rate * x).
 Definition exponential_pdf := exponential_pdfT \_ `[0%R, +oo[.
 
 Lemma exponential_pdf_ge0 x : 0 <= exponential_pdf x.
 Proof.
-by apply: restrict_ge0 => {}x _; apply: mulr_ge0; [exact: ltW|exact: expR_ge0].
+by apply: restrict_ge0 => {}x _; apply: mulr_ge0 => //; exact: expR_ge0.
 Qed.
 
 Lemma lt0_exponential_pdf x : x < 0 -> exponential_pdf x = 0.
@@ -1894,7 +1894,6 @@ Context {R : realType}.
 Local Open Scope ring_scope.
 Notation mu := lebesgue_measure.
 Variable rate : R.
-Hypothesis rate_gt0 : 0 < rate.
 
 Lemma derive1_exponential_pdf :
   {in `]0, +oo[%R, (fun x => - (expR : R^o -> R^o) (- rate * x))^`()%classic
@@ -1931,21 +1930,22 @@ apply: (@continuous_FTC2 _ _ (fun x => - expR (- rate * x))) => //.
   by apply: derive1_exponential_pdf; rewrite in_itv/= andbT.
 Qed.
 
-Lemma integral_exponential_pdf : (\int[mu]_x (exponential_pdf rate x)%:E = 1)%E.
+Lemma integral_exponential_pdf (rate_gt0 : 0 < rate) :
+  (\int[mu]_x (exponential_pdf rate x)%:E = 1)%E.
 Proof.
 have mEex : measurable_fun setT (EFin \o exponential_pdf rate).
   by apply/measurable_EFinP; exact: measurable_exponential_pdf.
 rewrite -(setUv `[0, +oo[%classic) ge0_integral_setU//=; last 4 first.
   exact: measurableC.
   by rewrite setUv.
-  by move=> x _; rewrite lee_fin exponential_pdf_ge0.
+  by move=> x _; rewrite lee_fin exponential_pdf_ge0// ltW.
   exact/disj_setPCl.
 rewrite [X in _ + X]integral0_eq ?adde0; last first.
   by move=> x x0; rewrite /exponential_pdf patchE ifF// memNset.
 rewrite (@ge0_continuous_FTC2y _ _
   (fun x => - (expR (- rate * x))) _ 0)//.
 - by rewrite mulr0 expR0 EFinN oppeK add0e.
-- by move=> x _; apply: exponential_pdf_ge0.
+- by move=> x _; apply: exponential_pdf_ge0; exact: ltW.
 - exact: within_continuous_exponential_pdf.
 - rewrite -oppr0; apply: (@cvgN _ R^o).
   rewrite (_ : (fun x => expR (- rate * x)) =
@@ -1957,15 +1957,17 @@ rewrite (@ge0_continuous_FTC2y _ _
 - exact: derive1_exponential_pdf.
 Qed.
 
-Lemma integrable_exponential_pdf :
+Lemma integrable_exponential_pdf (rate_gt0 : 0 < rate) :
   mu.-integrable setT (EFin \o (exponential_pdf rate)).
 Proof.
 have mEex : measurable_fun setT (EFin \o exponential_pdf rate).
   by apply/measurable_EFinP; exact: measurable_exponential_pdf.
 apply/integrableP; split => //.
-under eq_integral do rewrite /= ger0_norm ?exponential_pdf_ge0//.
-by rewrite /= integral_exponential_pdf ltry.
+under eq_integral do rewrite /= ger0_norm ?(exponential_pdf_ge0 (ltW _))//.
+by rewrite /= integral_exponential_pdf// ltry.
 Qed.
+
+Hypothesis rate_gt0 : 0 < rate.
 
 Local Notation exponential := (exponential_prob rate).
 
@@ -1975,7 +1977,7 @@ Proof. by rewrite /exponential integral_set0. Qed.
 Let exponential_ge0 A : (0 <= exponential A)%E.
 Proof.
 rewrite /exponential integral_ge0//= => x _.
-by rewrite lee_fin exponential_pdf_ge0.
+by rewrite lee_fin exponential_pdf_ge0// ltW.
 Qed.
 
 Let exponential_sigma_additive : semi_sigma_additive exponential.
@@ -1983,11 +1985,11 @@ Proof.
 move=> /= F mF tF mUF; rewrite /exponential; apply: cvg_toP.
   apply: ereal_nondecreasing_is_cvgn => m n mn.
   apply: lee_sum_nneg_natr => // k _ _; apply: integral_ge0 => /= x Fkx.
-  by rewrite lee_fin; apply: exponential_pdf_ge0.
+  by rewrite lee_fin exponential_pdf_ge0// ltW.
 rewrite ge0_integral_bigcup//=.
 - apply/measurable_funTS/measurableT_comp => //.
   exact: measurable_exponential_pdf.
-- by move=> x _; rewrite lee_fin exponential_pdf_ge0.
+- by move=> x _; rewrite lee_fin exponential_pdf_ge0// ltW.
 Qed.
 
 HB.instance Definition _ := isMeasure.Build _ _ _
@@ -2007,23 +2009,28 @@ Context {R : realType}.
 Implicit Types (rate : R) (k : nat).
 
 Definition poisson_pmf rate k : R :=
-  (rate ^+ k) * k`!%:R^-1 * expR (- rate).
+  if rate > 0 then (rate ^+ k) * k`!%:R^-1 * expR (- rate) else 1.
 
-Lemma poisson_pmf_ge0 rate k : 0 <= rate -> 0 <= poisson_pmf rate k.
-Proof. by move=> r0; rewrite /poisson_pmf 2?mulr_ge0// exprn_ge0. Qed.
+Lemma poisson_pmf_ge0 rate k : 0 <= poisson_pmf rate k.
+Proof.
+rewrite /poisson_pmf; case: ifPn => // rate0.
+by rewrite 2?mulr_ge0// exprn_ge0// ltW.
+Qed.
 
 End poisson_pmf.
 
-Lemma measurable_poisson_pmf {R : realType} D (rate : R) k :
+Lemma measurable_poisson_pmf {R : realType} D k : measurable D ->
   measurable_fun D (@poisson_pmf R ^~ k).
 Proof.
+move=> mD; rewrite /poisson_pmf; apply: measurable_fun_if => //.
+  exact: measurable_fun_ltr.
 apply: measurable_funM; first exact: measurable_funM.
 by apply: measurable_funTS; exact: measurableT_comp.
 Qed.
 
 Definition poisson_prob {R : realType} (rate : R) (k : nat)
    : set nat -> \bar R :=
-  fun U => if 0 <= rate then
+  fun U => if 0 < rate then
     \esum_(k in U) (poisson_pmf rate k)%:E else \d_0%N U.
 
 Section poisson.
@@ -2061,8 +2068,10 @@ rewrite /poisson; case: ifPn => [rate0|_]; last by rewrite probability_setT.
 rewrite [RHS](_ : _ = (expR (- rate))%:E * (expR rate)%:E); last first.
   by rewrite -EFinM expRN mulVf ?gt_eqF ?expR_gt0.
 rewrite -nneseries_esumT; last by move=> *; rewrite lee_fin poisson_pmf_ge0.
-under eq_eseriesr do rewrite EFinM muleC.
-rewrite nneseriesZl/=; last by move=> *; rewrite lee_fin divr_ge0// exprn_ge0.
+under eq_eseriesr.
+  move=> n _; rewrite /poisson_pmf rate0 EFinM muleC; over.
+rewrite /= nneseriesZl/=; last first.
+  by move=> n _; rewrite lee_fin divr_ge0// exprn_ge0// ltW.
 congr *%E; rewrite expRE -EFin_lim; last first.
   rewrite /pseries/=; under eq_fun do rewrite mulrC.
   exact: is_cvg_series_exp_coeff.
@@ -2080,12 +2089,16 @@ Lemma measurable_poisson_prob {R : realType} n :
 Proof.
 apply: (measurability (@pset _ _ _ : set (set (pprobability _ R)))) => //.
 move=> _ -[_ [r r01] [Ys mYs <-]] <-; apply: emeasurable_fun_infty_o => //=.
-apply: measurable_fun_if => //=; first exact: measurable_fun_ler.
+apply: measurable_fun_if => //=; first exact: measurable_fun_ltr.
 apply: (eq_measurable_fun (fun t =>
     \sum_(k <oo | k \in Ys) (poisson_pmf t k)%:E))%E.
   move=> x /set_mem[_/= x01].
   by rewrite nneseries_esum ?set_mem_set// =>*; rewrite lee_fin poisson_pmf_ge0.
 apply: ge0_emeasurable_sum.
   by move=> k x/= [_ x01] _; rewrite lee_fin poisson_pmf_ge0.
-by move=> k Ysk; apply/measurableT_comp => //; exact: measurable_poisson_pmf.
+move=> k Ysk; apply/measurableT_comp => //.
+apply: measurable_poisson_pmf => //.
+rewrite setTI.
+rewrite (_ : _ @^-1` _ = `]0, +oo[%classic)//.
+by apply/seteqP; split => /= x /=; rewrite in_itv/= andbT.
 Qed.
