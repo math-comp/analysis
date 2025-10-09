@@ -1192,7 +1192,125 @@ Definition derivable_Nyo_continuous_bnd (f : R -> V) (x : R) :=
 Definition derivable_oy_continuous_bnd (f : R -> V) (x : R) :=
   {in `]x, +oo[, forall x, derivable f x 1} /\ f @ x^'+ --> f x.
 
+Lemma derivable_oy_continuous_within_itvcy (f : R -> V) (x : R) :
+  derivable_oy_continuous_bnd f x -> {within `[x, +oo[, continuous f}.
+Proof.
+move=> [df cfx]; apply/subspace_continuousP => z /=.
+rewrite in_itv/= => /andP[]; rewrite le_eqVlt => /predU1P[<-{z} _|].
+  apply: cvg_trans (cvg_at_right_within cfx); apply: cvg_app.
+  by apply: within_subset => z/=; rewrite in_itv/= => /andP[].
+move=> xz _; apply: cvg_within_filter.
+apply/differentiable_continuous; rewrite -derivable1_diffP.
+by apply: df; rewrite in_itv/= xz.
+Qed.
+
+Lemma derivable_Noy_continuous_within_itvNyc (f : R -> V) (x : R) :
+  derivable_Nyo_continuous_bnd f x -> {within `]-oo, x], continuous f}.
+Proof.
+move=> [df cfx]; apply/subspace_continuousP => z /=.
+rewrite in_itv/=; rewrite le_eqVlt => /predU1P[->{z}|].
+  apply: cvg_trans (cvg_at_left_within cfx); apply: cvg_app.
+  by apply: within_subset => z/=; rewrite in_itv.
+move=> cx; apply: cvg_within_filter.
+apply/differentiable_continuous; rewrite -derivable1_diffP.
+by apply: df; rewrite in_itv.
+Qed.
+
 End derivable_oo_continuous_bnd.
+
+Section derivable_oo_continuousW.
+Context {R : realFieldType} {V : normedModType R}.
+
+Lemma derivable_oo_continuousW (a b c d : R) (f : R -> V) :
+  c < d ->
+  `[c, d] `<=` `[a, b] ->
+  derivable_oo_continuous_bnd f a b ->
+  derivable_oo_continuous_bnd f c d.
+Proof.
+move=> cd cdab [/[dup]df + fa fb].
+have /andP[ac db] : (a <= c) && (d <= b).
+  have /= := cdab c.
+  rewrite !in_itv/= !lexx/= => /(_ (ltW cd))/andP[-> _]/=.
+  have /= := cdab d.
+  by rewrite !in_itv/= !lexx andbT => /(_ (ltW cd))/andP[].
+move/derivable_within_continuous; rewrite continuous_open_subspace// => cf.
+split.
+- by apply: in1_subset_itv df; exact: subset_itvW.
+- move: ac; rewrite le_eqVlt => /predU1P[<- //|ac].
+  apply: cvg_at_right_filter.
+  by apply: cf; rewrite inE/= in_itv/= ac/= (lt_le_trans cd).
+- move: db; rewrite le_eqVlt => /predU1P[-> //|db].
+  apply: cvg_at_left_filter.
+  by apply cf; rewrite inE/= in_itv/= db andbT (le_lt_trans ac).
+Qed.
+
+Lemma derivable_oy_continuousWoo (a c d : R) (f : R -> V) :
+  c < d ->
+  a <= c ->
+  derivable_oy_continuous_bnd f a ->
+  derivable_oo_continuous_bnd f c d.
+Proof.
+move=> cd ac [df fa]; split.
+- by apply: in1_subset_itv df; exact: subset_itv.
+- move: ac; rewrite le_eqVlt => /predU1P[<-//|ac].
+  apply: cvg_at_right_filter.
+  have := derivable_within_continuous df.
+  rewrite continuous_open_subspace//; apply.
+  by rewrite inE/= in_itv/= ac.
+- apply: cvg_at_left_filter.
+  have := derivable_within_continuous df.
+  rewrite continuous_open_subspace//; apply.
+  by rewrite inE/= in_itv/= (le_lt_trans ac cd).
+Qed.
+
+Lemma derivable_oy_continuousW (a c : R) (f : R -> V) :
+  a <= c ->
+  derivable_oy_continuous_bnd f a ->
+  derivable_oy_continuous_bnd f c.
+Proof.
+move=> ac [df fa]; split.
+- by apply: in1_subset_itv df; exact: subset_itv.
+- move: ac; rewrite le_eqVlt => /predU1P[<- //|ac].
+  apply: cvg_at_right_filter.
+  have := derivable_within_continuous df.
+  rewrite continuous_open_subspace//; apply.
+  by rewrite inE/= in_itv/= ac.
+Qed.
+
+Lemma derivable_Nyo_continuousWoo (b c d : R) (f : R -> V) :
+  c < d ->
+  d <= b ->
+  derivable_Nyo_continuous_bnd f b ->
+  derivable_oo_continuous_bnd f c d.
+Proof.
+move=> cd db [df fa]; split.
+- by apply: in1_subset_itv df; exact: subset_itv.
+- apply: cvg_at_right_filter.
+  have := derivable_within_continuous df.
+  rewrite continuous_open_subspace//; apply.
+  by rewrite inE/= in_itv/= (lt_le_trans cd db).
+- move: db; rewrite le_eqVlt => /predU1P[-> //|db].
+  apply: cvg_at_left_filter.
+  have := derivable_within_continuous df.
+  rewrite continuous_open_subspace//; apply.
+  by rewrite inE/= in_itv.
+Qed.
+
+Lemma derivable_Nyo_continuousW (b d : R) (f : R -> V) :
+  d <= b ->
+  derivable_Nyo_continuous_bnd f b ->
+  derivable_Nyo_continuous_bnd f d.
+Proof.
+move=> db [df fa]; split.
+- by apply: in1_subset_itv df; exact: subset_itv.
+- move: db; rewrite le_eqVlt => /predU1P[-> //|db].
+  apply: cvg_at_left_filter.
+  have := derivable_within_continuous df.
+  rewrite continuous_open_subspace//; apply.
+  by rewrite inE/= in_itv.
+Qed.
+
+End derivable_oo_continuousW.
 
 Section real_inverse_functions.
 Variable R : realType.

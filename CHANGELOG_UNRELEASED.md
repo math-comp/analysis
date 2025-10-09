@@ -63,6 +63,15 @@
   + `measurable_function.v`
   + `measure.v`
 
+- in `realfun.v`:
+  + lemmas `derivable_oy_continuous_within_itvcy`,
+           `derivable_oy_continuous_within_itvNyc`
+  + lemmas `derivable_oo_continuousW`,
+           `derivable_oy_continuousWoo`,
+           `derivable_oy_continuousW`,
+           `derivable_Nyo_continuousWoo`,
+           `derivable_Nyo_continuousW`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
