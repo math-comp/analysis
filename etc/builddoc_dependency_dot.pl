@@ -7,6 +7,7 @@ print "  subgraph cluster_experimental_reals { label=\"ExperimentalReals\" }\n";
 print "  subgraph cluster_analysis { label=\"Analysis\" }\n";
 print "  subgraph cluster_topology { label=\"Topology\" }\n";
 print "  subgraph cluster_normedtype { label=\"NormedType\" }\n";
+print "  subgraph cluster_measure { label=\"Measure\" }\n";
 print "  subgraph cluster_lebesgue_integral { label=\"Lebesgue_integral\" }\n";
 while (<>) {
   if (m/([^\s]*)\.vo.*:(.*)/) {
@@ -26,6 +27,9 @@ while (<>) {
     }elsif ($path =~ m/theories\/lebesgue_integral_theory/) {
         $url="mathcomp.analysis.lebesgue_integral_theory.$src.html";
         print "subgraph cluster_lebesgue_integral { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=10,fontcolor=white]}";
+    }elsif ($path =~ m/theories\/measure_theory/) {
+        $url="mathcomp.analysis.measure_theory.$src.html";
+        print "subgraph cluster_measure { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=11]}";
     }elsif ($path =~ m/theories/) {
        $url="mathcomp.analysis.$src.html";
        print "subgraph cluster_analysis { \"$path\/$src\"[label=\"$src\",URL=\"$url\",fillcolor=5]}";
