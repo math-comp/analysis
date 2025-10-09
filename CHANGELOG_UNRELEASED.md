@@ -63,6 +63,15 @@
   + `measurable_function.v`
   + `measure.v`
 
+- in `realfun.v`:
+  + lemmas `derivable_oy_continuous_within_itvcy`,
+           `derivable_oy_continuous_within_itvNyc`,
+  + lemmas `derivable_oo_continuousW`,
+           `derivable_oy_continuousWoo`,
+           `derivable_oy_continuousW`,
+           `derivable_Nyo_continuousWoo`,
+           `derivable_Nyo_continuousW`
+
 ### Changed
 
 - in `lebesgue_stieltjes_measure.v` specialized from `numFieldType` to `realFieldType`:
@@ -314,39 +323,6 @@
 - in `probability.v`:
   + definition `poisson_pmf`, lemmas `poisson_pmf_ge0`, `measurable_poisson_pmf`,
   + definition `poisson_prob`
-- in `realfun.v`
-- in `realfun.v`:
-  + lemmas `derivable_oy_continuous_within_itvcy`,
-           `derivable_oy_continuous_within_itvNyc`,
-  + lemmas `derivable_oo_continuous_bndW`,
-           `derivable_oy_continuous_bndW_oo`,
-           `derivable_oy_continuous_bndW`,
-           `derivable_Nyo_continuous_bndW_oo`,
-           `derivable_Nyo_continuous_bndW`
-
-### Changed
-
-- in `measure.v`:
-  + notation `{ae mu, P}` (near use `{near _, _}` notation)
-  + definition `ae_eq`
-  + `ae_eq` lemmas now for `ringType`-valued functions (instead of `\bar R`)
-
-- in `convex.v`:
-  + definition `convex_realDomainType` generalized and
-    renamed accordingly `convex_numDomainType`
-- in `tvs.v`
-  + HB class `UniformZmodule` now contains `TopologicalZmodule`
-  + HB class `UniformLmodule` now contains `TopologicalLmodule`
-
-- in `constructive_ereal.v`:
-  + `mule` has special cases optimizing computation for +oo and -oo
-  + `mule_def` has been rewritten to optimize computation in several cases.
-
-- in `lebesgue_integral_nonneg.v`:
-  + lemma `integral_abs_eq0` (remove redundant hypotheses)
-
-- in `lebesgue_integral_differentiation.v`:
-  + definition `iavg` (to use `inve`)
 
 ### Renamed
 
