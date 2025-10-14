@@ -21,7 +21,7 @@ From mathcomp Require Import prodnormedzmodule tvs.
 (*         ninfty_nbhs == filter for -oo (for a numFieldType)                 *)
 (*                        Notation: -oo (ring_scope)                          *)
 (*       is_interval E == the set E is an interval                            *)
-(*  bigcup_ointsub U q == union of open real interval included                *)
+(*  bigcup_ointsub U q == union of open real intervals included               *)
 (*                        in U and that contain the rational                  *)
 (*                        number q                                            *)
 (* ```                                                                        *)
@@ -807,6 +807,16 @@ Qed.
 Lemma bigcup_ointsub_sub U q : bigcup_ointsub U q `<=` U.
 Proof. by move=> y [A [[oA _ +] _ Ay]]; exact. Qed.
 
+Lemma bigcup_ointsub_sup U q A :
+  open A -> is_interval A -> A `<=` U -> A (ratr q) ->
+  A `<=` bigcup_ointsub U q.
+Proof. by move=> oA itvA AU Aq x Ax; exists A. Qed.
+
+Lemma bigcup_ointsub_mem U q r : bigcup_ointsub U q r -> ratr q \in U.
+Proof. by case => /= V [[oV Vitv VU] Vq Vr]; exact/mem_set/VU. Qed.
+
+(**md see `open_disjoint_itv` in `normed_module.v` for a cover of
+  disjoint open intervals *)
 Lemma open_bigcup_rat U : open U ->
   U = \bigcup_(q in [set q | ratr q \in U]) bigcup_ointsub U q.
 Proof.
